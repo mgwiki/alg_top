@@ -1,0 +1,45 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: update-wiki
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: "0 0 * * *" #runs at 00:00 UTC everyday
+  workflow_dispatch:
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+    - run: python3 -m pip install lxml 
+    - name: check and htmlize
+      run: |
+        find mglib/ -type f | parallel --will-cite './bin/megalodonw.pl 180 {} {}'
+        ls sig | parallel --will-cite './bin/megalodonw.pl 10 sig/{} sig/{}'
+        ls sig | parallel --will-cite './bin/megalodonw.pl 40 sig/{}  -html docs/sig/{}.html sig/{} '
+        find mglib/ -type f | perl -pe 's/^mglib\///' | parallel --will-cite ' tmp=$(mktemp) && ./bin/megalodonw.pl 180 mglib/{}  -html "$tmp" mglib/{}  && perl ./bin/insert_comments.pl mglib/{} "$tmp" docs/{}.html next 0 && rm -f "$tmp" && python3 ./bin/mk_ajax.py docs/{}.html'
+        ./bin/indexer.py -r docs
+        for i in `find docs/sig/ -type f && find docs/ -type f -not -path 'docs/sig/*'`; do perl -e '$h=$ARGV[0]; while(<>) {if(m/<a name=([^\/]+)/) {$l=$1} while(m/php\?b=([0-9A-Fa-f]{64})\b/g) { print "$1:\047$h\047:$l\n"}   }' $i; done > etc/rindex.txt
+    - name: update the repo
+      run: |
+        git config --local user.name "wiki updater"
+        git config --local user.email "mgwiki@github.com"
+        git add .
+        git commit -m "Update mgwiki" || true
+    - name: push changes 
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        force: true
