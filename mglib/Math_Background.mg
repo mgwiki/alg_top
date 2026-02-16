@@ -12574,10 +12574,255 @@ apply andI.
       homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
         (graph V (apply_fun p))).
   { exact HslicesEx. }
-  (** Remaining gap:
-      build restricted slices over W from HslicesPack and HWsub,
-      preserving disjointness and proving union = preimage_of E p W. **)
-  admit.
+  apply HslicesPack.
+  let slices.
+  assume Hslices.
+  claim Htrip :
+    (slices c= Te /\ pairwise_disjoint slices) /\
+    Union slices = preimage_of E p U.
+  {
+    exact (andEL
+      ((slices c= Te /\ pairwise_disjoint slices) /\
+       Union slices = preimage_of E p U)
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (apply_fun p)))
+      Hslices).
+  }
+  claim Hsub : slices c= Te.
+  {
+    exact (andEL
+      (slices c= Te)
+      (pairwise_disjoint slices)
+      (andEL
+        (slices c= Te /\ pairwise_disjoint slices)
+        (Union slices = preimage_of E p U)
+        Htrip)).
+  }
+  claim Hpd : pairwise_disjoint slices.
+  {
+    exact (andER
+      (slices c= Te)
+      (pairwise_disjoint slices)
+      (andEL
+        (slices c= Te /\ pairwise_disjoint slices)
+        (Union slices = preimage_of E p U)
+        Htrip)).
+  }
+  claim Hunion : Union slices = preimage_of E p U.
+  {
+    exact (andER
+      (slices c= Te /\ pairwise_disjoint slices)
+      (Union slices = preimage_of E p U)
+      Htrip).
+  }
+  claim Hhome :
+    forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (apply_fun p)).
+  {
+    exact (andER
+      ((slices c= Te /\ pairwise_disjoint slices) /\
+       Union slices = preimage_of E p U)
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (apply_fun p)))
+      Hslices).
+  }
+  set preW := preimage_of E p W.
+  set slicesW := {V :/\: preW|V :e slices}.
+  claim HpdW : pairwise_disjoint slicesW.
+  {
+    let A B.
+    assume HAw HBw Hneq.
+    apply (ReplE slices (fun V:set => V :/\: preW) A HAw).
+    let VA.
+    assume HVApack.
+    claim HVA : VA :e slices.
+    {
+      exact (andEL
+        (VA :e slices)
+        (A = VA :/\: preW)
+        HVApack).
+    }
+    claim HAeq : A = VA :/\: preW.
+    {
+      exact (andER
+        (VA :e slices)
+        (A = VA :/\: preW)
+        HVApack).
+    }
+    apply (ReplE slices (fun V:set => V :/\: preW) B HBw).
+    let VB.
+    assume HVBpack.
+    claim HVB : VB :e slices.
+    {
+      exact (andEL
+        (VB :e slices)
+        (B = VB :/\: preW)
+        HVBpack).
+    }
+    claim HBeq : B = VB :/\: preW.
+    {
+      exact (andER
+        (VB :e slices)
+        (B = VB :/\: preW)
+        HVBpack).
+    }
+    claim HVneq : VA <> VB.
+    {
+      assume HVeq.
+      claim HABeq : A = B.
+      {
+        rewrite HAeq.
+        rewrite HBeq.
+        rewrite HVeq.
+        reflexivity.
+      }
+      exact (Hneq HABeq).
+    }
+    claim Hdisj : VA :/\: VB = Empty.
+    {
+      exact (Hpd VA VB HVA HVB HVneq).
+    }
+    apply set_ext.
+    - let z.
+      assume Hz.
+      claim HzA : z :e A.
+      {
+        exact (binintersectE1 A B z Hz).
+      }
+      claim HzB : z :e B.
+      {
+        exact (binintersectE2 A B z Hz).
+      }
+      claim HzVApre : z :e VA :/\: preW.
+      {
+        rewrite <- HAeq.
+        exact HzA.
+      }
+      claim HzVBpre : z :e VB :/\: preW.
+      {
+        rewrite <- HBeq.
+        exact HzB.
+      }
+      claim HzVA : z :e VA.
+      {
+        exact (binintersectE1 VA preW z HzVApre).
+      }
+      claim HzVB : z :e VB.
+      {
+        exact (binintersectE1 VB preW z HzVBpre).
+      }
+      claim HzInt : z :e VA :/\: VB.
+      {
+        exact (binintersectI VA VB z HzVA HzVB).
+      }
+      exact (mem_eqR z (VA :/\: VB) Empty Hdisj HzInt).
+    - let z.
+      assume HzE.
+      exact (EmptyE z HzE (z :e A :/\: B)).
+  }
+  claim HunionW : Union slicesW = preW.
+  {
+    apply set_ext.
+    - let z.
+      assume HzUnion.
+      apply (UnionE slicesW z HzUnion).
+      let V0.
+      assume HV0pack.
+      claim HzV0 : z :e V0.
+      {
+        exact (andEL
+          (z :e V0)
+          (V0 :e slicesW)
+          HV0pack).
+      }
+      claim HV0W : V0 :e slicesW.
+      {
+        exact (andER
+          (z :e V0)
+          (V0 :e slicesW)
+          HV0pack).
+      }
+      apply (ReplE slices (fun V:set => V :/\: preW) V0 HV0W).
+      let V.
+      assume HVpack.
+      claim HV0eq : V0 = V :/\: preW.
+      {
+        exact (andER
+          (V :e slices)
+          (V0 = V :/\: preW)
+          HVpack).
+      }
+      claim HzInt : z :e V :/\: preW.
+      {
+        rewrite <- HV0eq.
+        exact HzV0.
+      }
+      exact (binintersectE2 V preW z HzInt).
+    - let z.
+      assume HzPreW.
+      claim HzE : z :e E.
+      {
+        exact (SepE1 E (fun t:set => apply_fun p t :e W) z HzPreW).
+      }
+      claim HzW : apply_fun p z :e W.
+      {
+        exact (SepE2 E (fun t:set => apply_fun p t :e W) z HzPreW).
+      }
+      claim HzU : apply_fun p z :e U.
+      {
+        exact (HWsub (apply_fun p z) HzW).
+      }
+      claim HzPreU : z :e preimage_of E p U.
+      {
+        exact (SepI E (fun t:set => apply_fun p t :e U) z HzE HzU).
+      }
+      claim HzUnionSlices : z :e Union slices.
+      {
+        exact (mem_eqL
+          z
+          (Union slices)
+          (preimage_of E p U)
+          Hunion
+          HzPreU).
+      }
+      apply (UnionE slices z HzUnionSlices).
+      let V.
+      assume HVpack.
+      claim HzV : z :e V.
+      {
+        exact (andEL
+          (z :e V)
+          (V :e slices)
+          HVpack).
+      }
+      claim HVslice : V :e slices.
+      {
+        exact (andER
+          (z :e V)
+          (V :e slices)
+          HVpack).
+      }
+      claim HzInt : z :e V :/\: preW.
+      {
+        exact (binintersectI V preW z HzV HzPreW).
+      }
+      claim HVinW : V :/\: preW :e slicesW.
+      {
+        exact (ReplI slices (fun V0:set => V0 :/\: preW) V HVslice).
+      }
+      exact (UnionI slicesW z (V :/\: preW) HzInt HVinW).
+  }
+  witness slicesW.
+  apply andI.
+  - apply andI.
+    + apply andI.
+      * admit.
+      * exact HpdW.
+    + exact HunionW.
+  - admit.
 Admitted.
 
 (** from S53 text (line 545 in algtop.tex) **)
