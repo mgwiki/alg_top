@@ -12980,6 +12980,218 @@ claim Hfalse : False.
 exact (FalseE Hfalse (z :e Empty)).
 Qed.
 
+(** Infrastructure: extract an evenly-covered neighborhood and a slice through a point **)
+(** Proven Bob **)
+Theorem covering_map_slice_through_point : forall E Te B Tb p x:set,
+  covering_map E Te B Tb p -> x :e E ->
+  exists Ue slices Sx:set,
+    Ue :e Tb /\ apply_fun p x :e Ue /\
+    slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p Ue /\
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) Ue (subspace_topology B Tb Ue)
+        (graph V (fun z:set => apply_fun p z))) /\
+    x :e Sx /\ Sx :e slices.
+let E Te B Tb p x.
+assume Hcov HxE.
+claim Hcont : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    (andEL
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+      Hcov)).
+}
+claim Hf : function_on p E B.
+{
+  exact (continuous_map_function_on E Te B Tb p Hcont).
+}
+claim HpxB : apply_fun p x :e B.
+{
+  exact (Hf x HxE).
+}
+claim Hloc :
+  exists Ue:set, Ue :e Tb /\ apply_fun p x :e Ue /\ evenly_covered E Te B Tb p Ue.
+{
+  exact (andER
+    (continuous_map E Te B Tb p /\ surjective_map E B p)
+    (forall b:set, b :e B ->
+      exists Ue:set, Ue :e Tb /\ b :e Ue /\ evenly_covered E Te B Tb p Ue)
+    Hcov
+    (apply_fun p x)
+    HpxB).
+}
+apply Hloc.
+let Ue.
+assume HUePack.
+claim HUeOpen : Ue :e Tb.
+{
+  exact (andEL
+    (Ue :e Tb)
+    (apply_fun p x :e Ue)
+    (andEL
+      (Ue :e Tb /\ apply_fun p x :e Ue)
+      (evenly_covered E Te B Tb p Ue)
+      HUePack)).
+}
+claim HpxUe : apply_fun p x :e Ue.
+{
+  exact (andER
+    (Ue :e Tb)
+    (apply_fun p x :e Ue)
+    (andEL
+      (Ue :e Tb /\ apply_fun p x :e Ue)
+      (evenly_covered E Te B Tb p Ue)
+      HUePack)).
+}
+claim HevenUe : evenly_covered E Te B Tb p Ue.
+{
+  exact (andER
+    (Ue :e Tb /\ apply_fun p x :e Ue)
+    (evenly_covered E Te B Tb p Ue)
+    HUePack).
+}
+claim HexSlices :
+  exists slices:set,
+    slices c= Te /\
+    pairwise_disjoint slices /\
+    Union slices = preimage_of E p Ue /\
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) Ue (subspace_topology B Tb Ue)
+        (graph V (fun z:set => apply_fun p z))).
+{
+  exact (andER
+    (Ue :e Tb)
+    (exists slices:set,
+      slices c= Te /\
+      pairwise_disjoint slices /\
+      Union slices = preimage_of E p Ue /\
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) Ue (subspace_topology B Tb Ue)
+          (graph V (fun z:set => apply_fun p z))))
+    HevenUe).
+}
+apply HexSlices.
+let slices.
+assume Hs.
+claim Htrip :
+  (slices c= Te /\ pairwise_disjoint slices) /\
+  Union slices = preimage_of E p Ue.
+{
+  exact (andEL
+    ((slices c= Te /\ pairwise_disjoint slices) /\
+     Union slices = preimage_of E p Ue)
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) Ue (subspace_topology B Tb Ue)
+        (graph V (fun z:set => apply_fun p z)))
+    Hs).
+}
+claim HsubSlices : slices c= Te.
+{
+  exact (andEL
+    (slices c= Te)
+    (pairwise_disjoint slices)
+    (andEL
+      (slices c= Te /\ pairwise_disjoint slices)
+      (Union slices = preimage_of E p Ue)
+      Htrip)).
+}
+claim HpdSlices : pairwise_disjoint slices.
+{
+  exact (andER
+    (slices c= Te)
+    (pairwise_disjoint slices)
+    (andEL
+      (slices c= Te /\ pairwise_disjoint slices)
+      (Union slices = preimage_of E p Ue)
+      Htrip)).
+}
+claim HunionSlices : Union slices = preimage_of E p Ue.
+{
+  exact (andER
+    (slices c= Te /\ pairwise_disjoint slices)
+    (Union slices = preimage_of E p Ue)
+    Htrip).
+}
+claim HhomeSlices :
+  forall V:set, V :e slices ->
+    homeomorphism V (subspace_topology E Te V) Ue (subspace_topology B Tb Ue)
+      (graph V (fun z:set => apply_fun p z)).
+{
+  exact (andER
+    ((slices c= Te /\ pairwise_disjoint slices) /\
+     Union slices = preimage_of E p Ue)
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) Ue (subspace_topology B Tb Ue)
+        (graph V (fun z:set => apply_fun p z)))
+    Hs).
+}
+claim HxPreUe : x :e preimage_of E p Ue.
+{
+  exact (SepI
+    E
+    (fun z:set => apply_fun p z :e Ue)
+    x
+    HxE
+    HpxUe).
+}
+claim HxUnionSlices : x :e Union slices.
+{
+  exact (mem_eqL
+    x
+    (Union slices)
+    (preimage_of E p Ue)
+    HunionSlices
+    HxPreUe).
+}
+claim HexSx : exists Sx:set, x :e Sx /\ Sx :e slices.
+{
+  exact (UnionE slices x HxUnionSlices).
+}
+apply HexSx.
+let Sx.
+assume HSx.
+witness Ue.
+witness slices.
+witness Sx.
+claim HxSx : x :e Sx.
+{
+  exact (andEL
+    (x :e Sx)
+    (Sx :e slices)
+    HSx).
+}
+claim HSxSlice : Sx :e slices.
+{
+  exact (andER
+    (x :e Sx)
+    (Sx :e slices)
+    HSx).
+}
+apply andI.
+- apply andI.
+  + apply andI.
+    * apply andI.
+      {
+        apply andI.
+        - apply andI.
+          + apply andI.
+            * exact HUeOpen.
+            * exact HpxUe.
+          + exact HsubSlices.
+        - exact HpdSlices.
+      }
+      {
+        exact HunionSlices.
+      }
+    * exact HhomeSlices.
+  + exact HxSx.
+- exact HSxSlice.
+Qed.
+
 (** Bounty 50 **)
 Theorem ex53_6a_regular : forall E Te B Tb p:set,
   covering_map E Te B Tb p -> regular_space B Tb -> regular_space E Te.
