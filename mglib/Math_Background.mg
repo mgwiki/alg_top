@@ -17381,6 +17381,128 @@ apply xm (A = B).
   exact (EmptyE x HxE (A = B)).
 Qed.
 
+(** Infrastructure: a homeomorphic sheet has a unique point over each base point **)
+(** Proven Bob **)
+Theorem homeomorphic_sheet_unique_fiber_point : forall E Te B Tb p V U b:set,
+  homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+    (graph V (fun z:set => apply_fun p z)) ->
+  b :e U ->
+  exists x:set, x :e V /\ apply_fun p x = b /\
+    forall y:set, y :e V -> apply_fun p y = b -> y = x.
+let E Te B Tb p V U b.
+assume Hhome HbU.
+claim HinvPack :
+  exists g:set,
+    continuous_map U (subspace_topology B Tb U) V (subspace_topology E Te V) g /\
+    (forall x:set, x :e V ->
+      apply_fun g (apply_fun (graph V (fun z:set => apply_fun p z)) x) = x) /\
+    (forall y:set, y :e U ->
+      apply_fun (graph V (fun z:set => apply_fun p z)) (apply_fun g y) = y).
+{
+  exact (homeomorphism_inverse_package
+    V (subspace_topology E Te V)
+    U (subspace_topology B Tb U)
+    (graph V (fun z:set => apply_fun p z))
+    Hhome).
+}
+apply HinvPack.
+let g.
+assume HgPack.
+claim Hcontg : continuous_map U (subspace_topology B Tb U) V (subspace_topology E Te V) g.
+{
+  exact (andEL
+    (continuous_map U (subspace_topology B Tb U) V (subspace_topology E Te V) g)
+    (forall x:set, x :e V ->
+      apply_fun g (apply_fun (graph V (fun z:set => apply_fun p z)) x) = x)
+    (andEL
+      (continuous_map U (subspace_topology B Tb U) V (subspace_topology E Te V) g /\
+       (forall x:set, x :e V ->
+         apply_fun g (apply_fun (graph V (fun z:set => apply_fun p z)) x) = x))
+      (forall y:set, y :e U ->
+        apply_fun (graph V (fun z:set => apply_fun p z)) (apply_fun g y) = y)
+      HgPack)).
+}
+claim Hfung : function_on g U V.
+{
+  exact (continuous_map_function_on
+    U (subspace_topology B Tb U)
+    V (subspace_topology E Te V)
+    g
+    Hcontg).
+}
+claim Hleft :
+  forall x:set, x :e V ->
+    apply_fun g (apply_fun (graph V (fun z:set => apply_fun p z)) x) = x.
+{
+  exact (andER
+    (continuous_map U (subspace_topology B Tb U) V (subspace_topology E Te V) g)
+    (forall x:set, x :e V ->
+      apply_fun g (apply_fun (graph V (fun z:set => apply_fun p z)) x) = x)
+    (andEL
+      (continuous_map U (subspace_topology B Tb U) V (subspace_topology E Te V) g /\
+       (forall x:set, x :e V ->
+         apply_fun g (apply_fun (graph V (fun z:set => apply_fun p z)) x) = x))
+      (forall y:set, y :e U ->
+        apply_fun (graph V (fun z:set => apply_fun p z)) (apply_fun g y) = y)
+      HgPack)).
+}
+claim Hright :
+  forall y:set, y :e U ->
+    apply_fun (graph V (fun z:set => apply_fun p z)) (apply_fun g y) = y.
+{
+  exact (andER
+    (continuous_map U (subspace_topology B Tb U) V (subspace_topology E Te V) g /\
+     (forall x:set, x :e V ->
+       apply_fun g (apply_fun (graph V (fun z:set => apply_fun p z)) x) = x))
+    (forall y:set, y :e U ->
+      apply_fun (graph V (fun z:set => apply_fun p z)) (apply_fun g y) = y)
+    HgPack).
+}
+witness (apply_fun g b).
+claim HgbV : apply_fun g b :e V.
+{
+  exact (Hfung b HbU).
+}
+claim HgraphGb :
+  apply_fun (graph V (fun z:set => apply_fun p z)) (apply_fun g b) = b.
+{
+  exact (Hright b HbU).
+}
+claim Hpgb :
+  apply_fun p (apply_fun g b) = b.
+{
+  rewrite <- (apply_fun_graph
+    V
+    (fun z:set => apply_fun p z)
+    (apply_fun g b)
+    HgbV).
+  exact HgraphGb.
+}
+apply andI.
+- apply andI.
+  + exact HgbV.
+  + exact Hpgb.
+- let y.
+  assume HyV Hypyb.
+  claim HgyY :
+    apply_fun g (apply_fun (graph V (fun z:set => apply_fun p z)) y) = y.
+  {
+    exact (Hleft y HyV).
+  }
+  claim HgyEq : apply_fun g (apply_fun p y) = y.
+  {
+    rewrite <- (apply_fun_graph V (fun z:set => apply_fun p z) y HyV).
+    exact HgyY.
+  }
+  claim Hgby : apply_fun g b = y.
+  {
+    rewrite <- Hypyb.
+    exact HgyEq.
+  }
+  rewrite <- Hgby.
+  reflexivity.
+Qed.
+
 (** from S53 Exercise 6b (line 694 in algtop.tex) **)
 (** LATEX VERSION: If B is compact and p^{-1}(b) is finite for each b in B, **)
 (** then E is compact. **)
@@ -17536,6 +17658,66 @@ claim Hsubcover :
             (G0 c= Fam /\ finite G0)
             ({x :e E | apply_fun p x = b} c= Union G0)
             HG0pack)).
+      }
+      claim HevenU0 : evenly_covered E Te B Tb p U0.
+      {
+        exact (andER
+          (U0 :e Tb /\ b :e U0)
+          (evenly_covered E Te B Tb p U0)
+          HU0pack).
+      }
+      claim HexSlices :
+        exists slices:set,
+          slices c= Te /\
+          pairwise_disjoint slices /\
+          Union slices = preimage_of E p U0 /\
+          (forall V:set, V :e slices ->
+            homeomorphism V (subspace_topology E Te V) U0 (subspace_topology B Tb U0)
+              (graph V (fun z:set => apply_fun p z))).
+      {
+        exact (andER
+          (U0 :e Tb)
+          (exists slices:set,
+            slices c= Te /\
+            pairwise_disjoint slices /\
+            Union slices = preimage_of E p U0 /\
+            (forall V:set, V :e slices ->
+              homeomorphism V (subspace_topology E Te V) U0 (subspace_topology B Tb U0)
+                (graph V (fun z:set => apply_fun p z))))
+          HevenU0).
+      }
+      claim HsliceFiberPoint :
+        forall slices:set,
+          slices c= Te /\
+          pairwise_disjoint slices /\
+          Union slices = preimage_of E p U0 /\
+          (forall V:set, V :e slices ->
+            homeomorphism V (subspace_topology E Te V) U0 (subspace_topology B Tb U0)
+              (graph V (fun z:set => apply_fun p z))) ->
+          forall V:set, V :e slices ->
+            exists x:set, x :e V /\ apply_fun p x = b /\
+              forall y:set, y :e V -> apply_fun p y = b -> y = x.
+      {
+        let slices.
+        assume HsPack.
+        claim HhomeSlices :
+          forall V:set, V :e slices ->
+            homeomorphism V (subspace_topology E Te V) U0 (subspace_topology B Tb U0)
+              (graph V (fun z:set => apply_fun p z)).
+        {
+          exact (andER
+            (slices c= Te /\ pairwise_disjoint slices /\ Union slices = preimage_of E p U0)
+            (forall V:set, V :e slices ->
+              homeomorphism V (subspace_topology E Te V) U0 (subspace_topology B Tb U0)
+                (graph V (fun z:set => apply_fun p z)))
+            HsPack).
+        }
+        let V.
+        assume HVslice.
+        exact (homeomorphic_sheet_unique_fiber_point
+          E Te B Tb p V U0 b
+          (HhomeSlices V HVslice)
+          HUbU0).
       }
       claim Hshrink :
         exists U:set, U :e Tb /\ b :e U /\ preimage_of E p U c= Union G0.
