@@ -15067,6 +15067,51 @@ apply andI.
 - exact HclV1SubU.
 Qed.
 
+(** Infrastructure: complete regularity on the base gives regularity upstairs for coverings **)
+(** Proven Bob **)
+Theorem covering_map_completely_regular_base_regular : forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  completely_regular_space B Tb ->
+  regular_space E Te.
+let E Te B Tb p.
+assume Hcov HcompB.
+claim HregB : regular_space B Tb.
+{
+  exact (completely_regular_space_implies_regular B Tb HcompB).
+}
+exact (ex53_6a_regular E Te B Tb p Hcov HregB).
+Qed.
+
+(** Infrastructure: complete regularity on the base gives Hausdorff upstairs for coverings **)
+(** Proven Bob **)
+Theorem covering_map_completely_regular_base_Hausdorff : forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  completely_regular_space B Tb ->
+  Hausdorff_space E Te.
+let E Te B Tb p.
+assume Hcov HcompB.
+claim HHB : Hausdorff_space B Tb.
+{
+  exact (completely_regular_space_implies_Hausdorff B Tb HcompB).
+}
+exact (ex53_6a_hausdorff E Te B Tb p Hcov HHB).
+Qed.
+
+(** Infrastructure: complete regularity on the base gives one-point sets closed upstairs **)
+(** Proven Bob **)
+Theorem covering_map_completely_regular_base_one_point_sets_closed : forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  completely_regular_space B Tb ->
+  one_point_sets_closed E Te.
+let E Te B Tb p.
+assume Hcov HcompB.
+claim HHE : Hausdorff_space E Te.
+{
+  exact (covering_map_completely_regular_base_Hausdorff E Te B Tb p Hcov HcompB).
+}
+exact (Hausdorff_one_point_sets_closed E Te HHE).
+Qed.
+
 (** from S53 Exercise 6a (line 692 in algtop.tex) **)
 (** LATEX VERSION: If p: E -> B is a covering map and B is completely regular, **)
 (** then E is completely regular. **)
@@ -15075,8 +15120,80 @@ Qed.
 Theorem ex53_6a_completely_regular : forall E Te B Tb p:set,
   covering_map E Te B Tb p -> completely_regular_space B Tb ->
   completely_regular_space E Te.
-admit.
+let E Te B Tb p.
+assume Hcov HcompB.
+claim Hcont : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    (andEL
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+      Hcov)).
+}
+claim HtopE : topology_on E Te.
+{
+  exact (continuous_map_topology_dom E Te B Tb p Hcont).
+}
+claim HoneptE : one_point_sets_closed E Te.
+{
+  exact (covering_map_completely_regular_base_one_point_sets_closed
+    E Te B Tb p Hcov HcompB).
+}
+claim HregE : regular_space E Te.
+{
+  exact (covering_map_completely_regular_base_regular
+    E Te B Tb p Hcov HcompB).
+}
+claim HsepGoal :
+  forall x:set, x :e E ->
+  forall F:set, closed_in E Te F -> x /:e F ->
+    exists f:set, continuous_map E Te R R_standard_topology f /\
+      apply_fun f x = 0 /\
+      forall y:set, y :e F -> apply_fun f y = 1.
+{
+  let x.
+  assume HxE.
+  let F.
+  assume HFclosed HxNotF.
+  (** Remaining gap:
+      construct a continuous real-valued separator on E from the base
+      complete-regular separator via local trivialization around x. **)
+  admit.
+}
+exact (andI
+  (topology_on E Te)
+  (one_point_sets_closed E Te /\
+    forall x:set, x :e E ->
+      forall F:set, closed_in E Te F -> x /:e F ->
+        exists f:set, continuous_map E Te R R_standard_topology f /\
+          apply_fun f x = 0 /\
+          forall y:set, y :e F -> apply_fun f y = 1)
+  HtopE
+  (andI
+    (one_point_sets_closed E Te)
+    (forall x:set, x :e E ->
+      forall F:set, closed_in E Te F -> x /:e F ->
+        exists f:set, continuous_map E Te R R_standard_topology f /\
+          apply_fun f x = 0 /\
+          forall y:set, y :e F -> apply_fun f y = 1)
+    HoneptE
+    HsepGoal)).
 Admitted.
+
+(** Infrastructure: Hausdorff transfer for covering maps with Hausdorff base **)
+(** Proven Bob **)
+Theorem covering_map_lch_base_Hausdorff_upstairs : forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  locally_compact B Tb ->
+  Hausdorff_space B Tb ->
+  Hausdorff_space E Te.
+let E Te B Tb p.
+assume Hcov _ HHB.
+exact (ex53_6a_hausdorff E Te B Tb p Hcov HHB).
+Qed.
 
 (** from S53 Exercise 6a (line 692 in algtop.tex) **)
 (** LATEX VERSION: If p: E -> B is a covering map and B is locally compact Hausdorff, **)
@@ -15087,7 +15204,19 @@ Theorem ex53_6a_locally_compact_hausdorff : forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
   locally_compact B Tb -> Hausdorff_space B Tb ->
   locally_compact E Te /\ Hausdorff_space E Te.
-admit.
+let E Te B Tb p.
+assume Hcov HlocB HHB.
+claim HHE : Hausdorff_space E Te.
+{
+  exact (covering_map_lch_base_Hausdorff_upstairs
+    E Te B Tb p Hcov HlocB HHB).
+}
+apply andI.
+- (** Remaining gap:
+      derive local compactness upstairs from the local homeomorphism
+      structure of a covering map and local compactness on the base. **)
+  admit.
+- exact HHE.
 Admitted.
 
 (** from S53 Exercise 6b (line 694 in algtop.tex) **)
