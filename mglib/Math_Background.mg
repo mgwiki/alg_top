@@ -12895,6 +12895,42 @@ exact (open_in_subspace_if_ambient_open
   HtopX HYopen HUsubsetY HUopenIn).
 Qed.
 
+(** Infrastructure: promote subspace-closure bound to ambient bound when closure stays in carrier **)
+(** Proven Bob **)
+Theorem closure_subspace_bound_to_ambient : forall X Tx Y A U:set,
+  topology_on X Tx -> Y c= X -> A c= Y ->
+  (closure_of Y (subspace_topology X Tx Y) A c= U) ->
+  (closure_of X Tx A c= Y) ->
+  closure_of X Tx A c= U.
+let X Tx Y A U.
+assume HtopX HYsub HAsub HclSub HclInY.
+let z.
+assume HzCl.
+claim HclEq : closure_of Y (subspace_topology X Tx Y) A = (closure_of X Tx A) :/\: Y.
+{
+  exact (closure_in_subspace X Tx Y A HtopX HYsub HAsub).
+}
+claim HzInt : z :e (closure_of X Tx A) :/\: Y.
+{
+  exact (binintersectI
+    (closure_of X Tx A)
+    Y
+    z
+    HzCl
+    (HclInY z HzCl)).
+}
+claim HzSub : z :e closure_of Y (subspace_topology X Tx Y) A.
+{
+  exact (mem_eqL
+    z
+    (closure_of Y (subspace_topology X Tx Y) A)
+    ((closure_of X Tx A) :/\: Y)
+    HclEq
+    HzInt).
+}
+exact (HclSub z HzSub).
+Qed.
+
 (** Bounty 50 **)
 Theorem ex53_6a_regular : forall E Te B Tb p:set,
   covering_map E Te B Tb p -> regular_space B Tb -> regular_space E Te.
@@ -13043,7 +13079,35 @@ claim HclAmbientInter : (closure_of E Te V0) :/\: Ux c= (U :/\: Ux).
   rewrite <- HclEq.
   exact HclSub.
 }
-admit.
+claim HclStayUx : closure_of E Te V0 c= Ux.
+{
+  admit.
+}
+claim HclSubUcap : closure_of E Te V0 c= (U :/\: Ux).
+{
+  exact (closure_subspace_bound_to_ambient
+    E Te Ux V0 (U :/\: Ux)
+    HtopE
+    HUxSubE
+    HV0SubUx
+    HclSub
+    HclStayUx).
+}
+claim HclSubU : closure_of E Te V0 c= U.
+{
+  exact (Subq_tra
+    (closure_of E Te V0)
+    (U :/\: Ux)
+    U
+    HclSubUcap
+    (binintersect_Subq_1 U Ux)).
+}
+witness V0.
+apply andI.
+- apply andI.
+  + exact HV0OpenE.
+  + exact HxV0.
+- exact HclSubU.
 Admitted.
 
 (** from S53 Exercise 6a (line 692 in algtop.tex) **)
