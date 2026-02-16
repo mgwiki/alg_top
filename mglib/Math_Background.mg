@@ -9105,10 +9105,62 @@ Definition loop_space : set -> set -> set -> set :=
     {f :e function_space unit_interval X |
       loop_at X Tx x0 f}.
 
+(** Proven Bob **)
+Theorem loop_space_in_function_space : forall X Tx x0 f:set,
+  f :e loop_space X Tx x0 ->
+  f :e function_space unit_interval X.
+let X Tx x0 f.
+assume Hf.
+exact (SepE1
+  (function_space unit_interval X)
+  (fun g:set => loop_at X Tx x0 g)
+  f
+  Hf).
+Qed.
+
+(** Proven Bob **)
+Theorem loop_space_has_loop_at : forall X Tx x0 f:set,
+  f :e loop_space X Tx x0 ->
+  loop_at X Tx x0 f.
+let X Tx x0 f.
+assume Hf.
+exact (SepE2
+  (function_space unit_interval X)
+  (fun g:set => loop_at X Tx x0 g)
+  f
+  Hf).
+Qed.
+
 (** helper: the path homotopy equivalence class of a loop **)
 Definition path_homotopy_class_loop : set -> set -> set -> set -> set :=
   fun X Tx x0 f =>
     {g :e loop_space X Tx x0 | path_homotopic X Tx x0 x0 f g}.
+
+(** Proven Bob **)
+Theorem path_homotopy_class_loop_in_loop_space : forall X Tx x0 f g:set,
+  g :e path_homotopy_class_loop X Tx x0 f ->
+  g :e loop_space X Tx x0.
+let X Tx x0 f g.
+assume Hg.
+exact (SepE1
+  (loop_space X Tx x0)
+  (fun h:set => path_homotopic X Tx x0 x0 f h)
+  g
+  Hg).
+Qed.
+
+(** Proven Bob **)
+Theorem path_homotopy_class_loop_has_homotopy : forall X Tx x0 f g:set,
+  g :e path_homotopy_class_loop X Tx x0 f ->
+  path_homotopic X Tx x0 x0 f g.
+let X Tx x0 f g.
+assume Hg.
+exact (SepE2
+  (loop_space X Tx x0)
+  (fun h:set => path_homotopic X Tx x0 x0 f h)
+  g
+  Hg).
+Qed.
 
 (** from S52 Definition (line 358 in algtop.tex): the fundamental group **)
 (** LATEX VERSION: The set of path homotopy classes of loops based at x0, with the path product operation, is called the fundamental group of X relative to x0, denoted pi1(X, x0). **)
