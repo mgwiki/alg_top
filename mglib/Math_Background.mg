@@ -13130,6 +13130,75 @@ claim HclAmbientInter : (closure_of E Te V0) :/\: Ux c= (U :/\: Ux).
 }
 claim HclStayUx : closure_of E Te V0 c= Ux.
 {
+  claim Hf : function_on p E B.
+  {
+    exact (continuous_map_function_on E Te B Tb p Hcont).
+  }
+  claim HpxB : apply_fun p x :e B.
+  {
+    exact (Hf x HxE).
+  }
+  claim HlocB :
+    exists Ue:set, Ue :e Tb /\ apply_fun p x :e Ue /\ evenly_covered E Te B Tb p Ue.
+  {
+    exact (andER
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists Ue:set, Ue :e Tb /\ b :e Ue /\ evenly_covered E Te B Tb p Ue)
+      Hcov
+      (apply_fun p x)
+      HpxB).
+  }
+  apply HlocB.
+  let Ue.
+  assume HUePack.
+  claim HUeOpen : Ue :e Tb.
+  {
+    exact (andEL
+      (Ue :e Tb)
+      (apply_fun p x :e Ue)
+      (andEL
+        (Ue :e Tb /\ apply_fun p x :e Ue)
+        (evenly_covered E Te B Tb p Ue)
+        HUePack)).
+  }
+  claim HpxUe : apply_fun p x :e Ue.
+  {
+    exact (andER
+      (Ue :e Tb)
+      (apply_fun p x :e Ue)
+      (andEL
+        (Ue :e Tb /\ apply_fun p x :e Ue)
+        (evenly_covered E Te B Tb p Ue)
+        HUePack)).
+  }
+  claim HevenUe : evenly_covered E Te B Tb p Ue.
+  {
+    exact (andER
+      (Ue :e Tb /\ apply_fun p x :e Ue)
+      (evenly_covered E Te B Tb p Ue)
+      HUePack).
+  }
+  claim HexSlices :
+    exists slices:set,
+      slices c= Te /\
+      pairwise_disjoint slices /\
+      Union slices = preimage_of E p Ue /\
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) Ue (subspace_topology B Tb Ue)
+          (graph V (fun z:set => apply_fun p z))).
+  {
+    exact (andER
+      (Ue :e Tb)
+      (exists slices:set,
+        slices c= Te /\
+        pairwise_disjoint slices /\
+        Union slices = preimage_of E p Ue /\
+        (forall V:set, V :e slices ->
+          homeomorphism V (subspace_topology E Te V) Ue (subspace_topology B Tb Ue)
+            (graph V (fun z:set => apply_fun p z))))
+      HevenUe).
+  }
   admit.
 }
 claim HclSubUcap : closure_of E Te V0 c= (U :/\: Ux).
