@@ -8417,6 +8417,198 @@ Definition reverse_path : set -> set :=
 (** LATEX VERSION: e_x denotes the constant path at x, carrying all of I to x. **)
 Definition constant_path : set -> set := fun x => const_fun unit_interval x.
 
+(** helper: endpoint values of constant paths **)
+(** Proven Bob **)
+Theorem constant_path_apply : forall x t:set,
+  t :e unit_interval ->
+  apply_fun (constant_path x) t = x.
+let x t.
+assume Ht.
+rewrite (const_fun_apply unit_interval x t Ht).
+exact (fun P H => H).
+Qed.
+
+(** Proven Bob **)
+Theorem constant_path_at_zero : forall x:set,
+  apply_fun (constant_path x) 0 = x.
+let x.
+rewrite (const_fun_apply unit_interval x 0 zero_in_unit_interval).
+exact (fun P H => H).
+Qed.
+
+(** Proven Bob **)
+Theorem constant_path_at_one : forall x:set,
+  apply_fun (constant_path x) 1 = x.
+let x.
+rewrite (const_fun_apply unit_interval x 1 one_in_unit_interval).
+exact (fun P H => H).
+Qed.
+
+(** helper: endpoint values of reversed paths **)
+(** Proven Bob **)
+Theorem reverse_path_apply : forall f t:set,
+  t :e unit_interval ->
+  apply_fun (reverse_path f) t = apply_fun f (apply_fun flip_unit_interval t).
+let f t.
+assume Ht.
+rewrite (compose_fun_apply unit_interval flip_unit_interval f t Ht).
+exact (fun P H => H).
+Qed.
+
+(** Proven Bob **)
+Theorem reverse_path_apply_formula : forall f t:set,
+  t :e unit_interval ->
+  apply_fun (reverse_path f) t = apply_fun f (add_SNo 1 (minus_SNo t)).
+let f t.
+assume Ht.
+rewrite (reverse_path_apply f t Ht).
+rewrite (flip_unit_interval_apply t Ht).
+exact (fun P H => H).
+Qed.
+
+(** Proven Bob **)
+Theorem reverse_path_at_zero : forall f:set,
+  apply_fun (reverse_path f) 0 = apply_fun f 1.
+let f.
+rewrite (compose_fun_apply unit_interval flip_unit_interval f 0 zero_in_unit_interval).
+rewrite flip_unit_interval_at_0.
+exact (fun P H => H).
+Qed.
+
+(** Proven Bob **)
+Theorem reverse_path_at_one : forall f:set,
+  apply_fun (reverse_path f) 1 = apply_fun f 0.
+let f.
+rewrite (compose_fun_apply unit_interval flip_unit_interval f 1 one_in_unit_interval).
+rewrite flip_unit_interval_at_1.
+exact (fun P H => H).
+Qed.
+
+(** Proven Bob **)
+Theorem constant_path_continuous : forall X Tx x:set,
+  topology_on X Tx ->
+  x :e X ->
+  continuous_map unit_interval unit_interval_topology X Tx (constant_path x).
+let X Tx x.
+assume Htop Hx.
+exact (const_fun_continuous unit_interval unit_interval_topology X Tx x
+  unit_interval_topology_on Htop Hx).
+Qed.
+
+(** Proven Bob **)
+Theorem reverse_path_continuous : forall X Tx f:set,
+  continuous_map unit_interval unit_interval_topology X Tx f ->
+  continuous_map unit_interval unit_interval_topology X Tx (reverse_path f).
+let X Tx f.
+assume Hf.
+exact (composition_continuous
+  unit_interval unit_interval_topology
+  unit_interval unit_interval_topology
+  X Tx
+  flip_unit_interval f
+  flip_unit_interval_continuous
+  Hf).
+Qed.
+
+(** Proven Bob **)
+Theorem compose_fun_apply_identity_graph : forall A X f a:set,
+  function_on f A X ->
+  a :e A ->
+  apply_fun (compose_fun A f (graph X (fun x:set => x))) a = apply_fun f a.
+let A X f a.
+assume Hf Ha.
+rewrite (compose_fun_apply A f (graph X (fun x:set => x)) a Ha).
+rewrite (apply_fun_graph X (fun x:set => x) (apply_fun f a) (Hf a Ha)).
+exact (fun P H => H).
+Qed.
+
+(** Proven Bob **)
+Theorem total_function_space_total_function_on_algtop : forall X Y f:set,
+  f :e total_function_space X Y ->
+  total_function_on f X Y.
+let X Y f.
+assume Hf.
+exact (andEL
+  (total_function_on f X Y)
+  (functional_graph f)
+  (SepE2
+    (Power (setprod X Y))
+    (fun g:set => total_function_on g X Y /\ functional_graph g)
+    f
+    Hf)).
+Qed.
+
+(** Proven Bob **)
+Theorem total_function_space_functional_graph_algtop : forall X Y f:set,
+  f :e total_function_space X Y ->
+  functional_graph f.
+let X Y f.
+assume Hf.
+exact (andER
+  (total_function_on f X Y)
+  (functional_graph f)
+  (SepE2
+    (Power (setprod X Y))
+    (fun g:set => total_function_on g X Y /\ functional_graph g)
+    f
+    Hf)).
+Qed.
+
+(** Proven Bob **)
+Theorem total_function_space_function_on_algtop : forall X Y f:set,
+  f :e total_function_space X Y ->
+  function_on f X Y.
+let X Y f.
+assume Hf.
+exact (total_function_on_function_on
+  f X Y
+  (total_function_space_total_function_on_algtop X Y f Hf)).
+Qed.
+
+(** Proven Bob **)
+Theorem identity_graph_function_on_algtop : forall X:set,
+  function_on (graph X (fun x:set => x)) X X.
+let X.
+let x.
+assume Hx.
+rewrite (apply_fun_graph X (fun y:set => y) x Hx).
+exact Hx.
+Qed.
+
+(** Proven Bob **)
+Theorem compose_fun_identity_graph_in_total_function_space_algtop : forall A X f:set,
+  function_on f A X ->
+  compose_fun A f (graph X (fun x:set => x)) :e total_function_space A X.
+let A X f.
+assume Hf.
+exact (compose_fun_in_total_function_space
+  A X X
+  f (graph X (fun x:set => x))
+  Hf
+  (identity_graph_function_on_algtop X)).
+Qed.
+
+(** Proven Bob **)
+Theorem compose_fun_identity_graph_eq_algtop : forall A X f:set,
+  f :e total_function_space A X ->
+  compose_fun A f (graph X (fun x:set => x)) = f.
+let A X f.
+assume Hf.
+apply (total_function_space_extensional A X
+  (compose_fun A f (graph X (fun x:set => x)))
+  f).
+- exact (compose_fun_identity_graph_in_total_function_space_algtop
+    A X f
+    (total_function_space_function_on_algtop A X f Hf)).
+- exact Hf.
+- let a.
+  assume Ha.
+  exact (compose_fun_apply_identity_graph
+    A X f a
+    (total_function_space_function_on_algtop A X f Hf)
+    Ha).
+Qed.
+
 (** from S51 (line 200 in algtop.tex): path product is continuous **)
 (** EFFORT: 6 lines textbook, difficulty 6/10, USD 120 **)
 (** Bounty 120 **)
@@ -8663,17 +8855,122 @@ Definition group_homomorphism : set -> set -> set -> set -> set -> prop :=
     (forall x y:set, x :e G1 -> y :e G1 ->
       apply_fun phi (apply_fun mult1 (x, y)) = apply_fun mult2 (apply_fun phi x, apply_fun phi y)).
 
+(** Proven Bob **)
+Theorem group_homomorphism_function_on : forall G1 mult1 G2 mult2 phi:set,
+  group_homomorphism G1 mult1 G2 mult2 phi ->
+  function_on phi G1 G2.
+let G1 mult1 G2 mult2 phi.
+assume Hphi.
+exact (andEL
+  (function_on phi G1 G2)
+  (forall x y:set, x :e G1 -> y :e G1 ->
+    apply_fun phi (apply_fun mult1 (x, y)) = apply_fun mult2 (apply_fun phi x, apply_fun phi y))
+  Hphi).
+Qed.
+
+(** Proven Bob **)
+Theorem group_homomorphism_mult_rule : forall G1 mult1 G2 mult2 phi x y:set,
+  group_homomorphism G1 mult1 G2 mult2 phi ->
+  x :e G1 ->
+  y :e G1 ->
+  apply_fun phi (apply_fun mult1 (x, y)) = apply_fun mult2 (apply_fun phi x, apply_fun phi y).
+let G1 mult1 G2 mult2 phi x y.
+assume Hphi Hx Hy.
+exact (andER
+  (function_on phi G1 G2)
+  (forall u v:set, u :e G1 -> v :e G1 ->
+    apply_fun phi (apply_fun mult1 (u, v)) = apply_fun mult2 (apply_fun phi u, apply_fun phi v))
+  Hphi
+  x y Hx Hy).
+Qed.
+
 (** helper: group isomorphism **)
 Definition group_isomorphism : set -> set -> set -> set -> set -> prop :=
   fun G1 mult1 G2 mult2 phi =>
     group_homomorphism G1 mult1 G2 mult2 phi /\
     bijection G1 G2 phi.
 
+(** Proven Bob **)
+Theorem group_isomorphism_homomorphism : forall G1 mult1 G2 mult2 phi:set,
+  group_isomorphism G1 mult1 G2 mult2 phi ->
+  group_homomorphism G1 mult1 G2 mult2 phi.
+let G1 mult1 G2 mult2 phi.
+assume Hiso.
+exact (andEL
+  (group_homomorphism G1 mult1 G2 mult2 phi)
+  (bijection G1 G2 phi)
+  Hiso).
+Qed.
+
+(** Proven Bob **)
+Theorem group_isomorphism_bijection : forall G1 mult1 G2 mult2 phi:set,
+  group_isomorphism G1 mult1 G2 mult2 phi ->
+  bijection G1 G2 phi.
+let G1 mult1 G2 mult2 phi.
+assume Hiso.
+exact (andER
+  (group_homomorphism G1 mult1 G2 mult2 phi)
+  (bijection G1 G2 phi)
+  Hiso).
+Qed.
+
 (** helper: a loop based at x0 **)
 Definition loop_at : set -> set -> set -> set -> prop :=
   fun X Tx x0 f =>
     continuous_map unit_interval unit_interval_topology X Tx f /\
     apply_fun f 0 = x0 /\ apply_fun f 1 = x0.
+
+Theorem loop_at_constant_path : forall X Tx x0:set,
+  topology_on X Tx ->
+  x0 :e X ->
+  loop_at X Tx x0 (constant_path x0).
+let X Tx x0.
+assume Htop Hx0.
+admit.
+Admitted.
+
+Theorem loop_at_reverse_path : forall X Tx x0 f:set,
+  loop_at X Tx x0 f ->
+  loop_at X Tx x0 (reverse_path f).
+let X Tx x0 f.
+assume Hloop.
+admit.
+Admitted.
+
+(** Proven Bob **)
+Theorem loop_at_constant_path_unfolded : forall X Tx x0:set,
+  topology_on X Tx ->
+  x0 :e X ->
+  continuous_map unit_interval unit_interval_topology X Tx (constant_path x0) /\
+  apply_fun (constant_path x0) 0 = x0 /\
+  apply_fun (constant_path x0) 1 = x0.
+let X Tx x0.
+assume Htop Hx0.
+apply andI.
+- apply andI.
+  + exact (constant_path_continuous X Tx x0 Htop Hx0).
+  + exact (constant_path_at_zero x0).
+- exact (constant_path_at_one x0).
+Qed.
+
+(** Proven Bob **)
+Theorem loop_at_reverse_path_unfolded : forall X Tx x0 f:set,
+  continuous_map unit_interval unit_interval_topology X Tx f ->
+  apply_fun f 0 = x0 ->
+  apply_fun f 1 = x0 ->
+  continuous_map unit_interval unit_interval_topology X Tx (reverse_path f) /\
+  apply_fun (reverse_path f) 0 = x0 /\
+  apply_fun (reverse_path f) 1 = x0.
+let X Tx x0 f.
+assume Hf H0 H1.
+apply andI.
+- apply andI.
+  + exact (reverse_path_continuous X Tx f Hf).
+  + rewrite (reverse_path_at_zero f).
+    exact H1.
+- rewrite (reverse_path_at_one f).
+  exact H0.
+Qed.
 
 (** helper: the set of all continuous loops based at x0 **)
 Definition loop_space : set -> set -> set -> set :=
@@ -8692,6 +8989,19 @@ Definition fundamental_group : set -> set -> set -> set :=
   fun X Tx x0 =>
     {path_homotopy_class_loop X Tx x0 f | f :e loop_space X Tx x0}.
 
+(** Proven Bob **)
+Theorem path_homotopy_class_in_fundamental_group : forall X Tx x0 f:set,
+  f :e loop_space X Tx x0 ->
+  path_homotopy_class_loop X Tx x0 f :e fundamental_group X Tx x0.
+let X Tx x0 f.
+assume Hf.
+exact (ReplI
+  (loop_space X Tx x0)
+  (fun g:set => path_homotopy_class_loop X Tx x0 g)
+  f
+  Hf).
+Qed.
+
 (** helper: the multiplication on fundamental_group **)
 Definition fundamental_group_mult : set -> set -> set -> set :=
   fun X Tx x0 =>
@@ -8701,6 +9011,53 @@ Definition fundamental_group_mult : set -> set -> set -> set :=
           (path_concat
             (Eps_i (fun f:set => f :e p 0))
             (Eps_i (fun g:set => g :e p 1)))).
+
+(** Proven Bob **)
+Theorem fundamental_group_mult_apply : forall X Tx x0 p:set,
+  p :e setprod (fundamental_group X Tx x0) (fundamental_group X Tx x0) ->
+  apply_fun (fundamental_group_mult X Tx x0) p
+  = path_homotopy_class_loop X Tx x0
+      (path_concat
+        (Eps_i (fun f:set => f :e p 0))
+        (Eps_i (fun g:set => g :e p 1))).
+let X Tx x0 p.
+assume Hp.
+exact (apply_fun_graph
+  (setprod (fundamental_group X Tx x0) (fundamental_group X Tx x0))
+  (fun q:set =>
+    path_homotopy_class_loop X Tx x0
+      (path_concat
+        (Eps_i (fun f:set => f :e q 0))
+        (Eps_i (fun g:set => g :e q 1))))
+  p
+  Hp).
+Qed.
+
+(** Proven Bob **)
+Theorem fundamental_group_mult_apply_on_loop_classes : forall X Tx x0 f g:set,
+  f :e loop_space X Tx x0 ->
+  g :e loop_space X Tx x0 ->
+  apply_fun (fundamental_group_mult X Tx x0)
+    (path_homotopy_class_loop X Tx x0 f, path_homotopy_class_loop X Tx x0 g)
+  = path_homotopy_class_loop X Tx x0
+      (path_concat
+        (Eps_i (fun h:set =>
+          h :e (path_homotopy_class_loop X Tx x0 f, path_homotopy_class_loop X Tx x0 g) 0))
+        (Eps_i (fun h:set =>
+          h :e (path_homotopy_class_loop X Tx x0 f, path_homotopy_class_loop X Tx x0 g) 1))).
+let X Tx x0 f g.
+assume Hf Hg.
+exact (fundamental_group_mult_apply
+  X Tx x0
+  (path_homotopy_class_loop X Tx x0 f, path_homotopy_class_loop X Tx x0 g)
+  (tuple_2_setprod_by_pair_Sigma
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x0)
+    (path_homotopy_class_loop X Tx x0 f)
+    (path_homotopy_class_loop X Tx x0 g)
+    (path_homotopy_class_in_fundamental_group X Tx x0 f Hf)
+    (path_homotopy_class_in_fundamental_group X Tx x0 g Hg))).
+Qed.
 
 (** helper: the identity element of fundamental_group **)
 Definition fundamental_group_id : set -> set -> set -> set :=
@@ -8714,6 +9071,38 @@ Definition fundamental_group_inv : set -> set -> set -> set :=
       (fun cls:set =>
         path_homotopy_class_loop X Tx x0
           (reverse_path (Eps_i (fun f:set => f :e cls)))).
+
+(** Proven Bob **)
+Theorem fundamental_group_inv_apply : forall X Tx x0 cls:set,
+  cls :e fundamental_group X Tx x0 ->
+  apply_fun (fundamental_group_inv X Tx x0) cls
+  = path_homotopy_class_loop X Tx x0
+      (reverse_path (Eps_i (fun f:set => f :e cls))).
+let X Tx x0 cls.
+assume Hcls.
+exact (apply_fun_graph
+  (fundamental_group X Tx x0)
+  (fun c:set =>
+    path_homotopy_class_loop X Tx x0
+      (reverse_path (Eps_i (fun f:set => f :e c))))
+  cls
+  Hcls).
+Qed.
+
+(** Proven Bob **)
+Theorem fundamental_group_inv_apply_on_loop_class : forall X Tx x0 f:set,
+  f :e loop_space X Tx x0 ->
+  apply_fun (fundamental_group_inv X Tx x0)
+    (path_homotopy_class_loop X Tx x0 f)
+  = path_homotopy_class_loop X Tx x0
+      (reverse_path (Eps_i (fun g:set => g :e path_homotopy_class_loop X Tx x0 f))).
+let X Tx x0 f.
+assume Hf.
+exact (fundamental_group_inv_apply
+  X Tx x0
+  (path_homotopy_class_loop X Tx x0 f)
+  (path_homotopy_class_in_fundamental_group X Tx x0 f Hf)).
+Qed.
 
 (** from S52 (line 361 in algtop.tex): the fundamental group is a group **)
 (** LATEX VERSION: It follows from Theorem 51.2 that the path product, when restricted to loops at x0, satisfies the axioms for a group. **)
@@ -8750,6 +9139,43 @@ Definition basepoint_change_map : set -> set -> set -> set -> set -> set :=
           (path_concat (reverse_path alpha)
             (path_concat (Eps_i (fun f:set => f :e cls)) alpha))).
 
+(** Proven Bob **)
+Theorem basepoint_change_map_apply : forall X Tx x0 x1 alpha cls:set,
+  cls :e fundamental_group X Tx x0 ->
+  apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls
+  = path_homotopy_class_loop X Tx x1
+      (path_concat (reverse_path alpha)
+        (path_concat (Eps_i (fun f:set => f :e cls)) alpha)).
+let X Tx x0 x1 alpha cls.
+assume Hcls.
+exact (apply_fun_graph
+  (fundamental_group X Tx x0)
+  (fun c:set =>
+    path_homotopy_class_loop X Tx x1
+      (path_concat (reverse_path alpha)
+        (path_concat (Eps_i (fun f:set => f :e c)) alpha)))
+  cls
+  Hcls).
+Qed.
+
+(** Proven Bob **)
+Theorem basepoint_change_map_apply_on_loop_class : forall X Tx x0 x1 alpha f:set,
+  f :e loop_space X Tx x0 ->
+  apply_fun (basepoint_change_map X Tx x0 x1 alpha)
+    (path_homotopy_class_loop X Tx x0 f)
+  = path_homotopy_class_loop X Tx x1
+      (path_concat (reverse_path alpha)
+        (path_concat
+          (Eps_i (fun g:set => g :e path_homotopy_class_loop X Tx x0 f))
+          alpha)).
+let X Tx x0 x1 alpha f.
+assume Hf.
+exact (basepoint_change_map_apply
+  X Tx x0 x1 alpha
+  (path_homotopy_class_loop X Tx x0 f)
+  (path_homotopy_class_in_fundamental_group X Tx x0 f Hf)).
+Qed.
+
 (** from S52 Theorem 52.1 (line 396 in algtop.tex): alpha-hat is a group isomorphism **)
 (** LATEX VERSION: The map alpha-hat is a group isomorphism from pi1(X,x0) to pi1(X,x1). **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
@@ -8776,7 +9202,17 @@ Theorem Corollary_52_2_path_connected_pi1_isomorphic : forall X Tx x0 x1:set,
       (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
       (fundamental_group X Tx x1) (fundamental_group_mult X Tx x1)
       phi.
-admit.
+let X Tx x0 x1.
+assume Hpc Hx0 Hx1.
+apply (path_connected_space_paths X Tx x0 x1 Hpc Hx0 Hx1).
+let alpha.
+assume Halpha.
+witness (basepoint_change_map X Tx x0 x1 alpha).
+apply (Theorem_52_1_basepoint_isomorphism X Tx x0 x1 alpha).
+- exact (path_connected_space_topology X Tx Hpc).
+- exact (path_witness_continuous X Tx x0 x1 alpha Halpha).
+- exact (path_between_at_zero X x0 x1 alpha (path_witness_between X Tx x0 x1 alpha Halpha)).
+- exact (path_between_at_one X x0 x1 alpha (path_witness_between X Tx x0 x1 alpha Halpha)).
 Admitted.
 
 (** from S52 Definition (line 426 in algtop.tex): simply connected spaces **)
@@ -8809,6 +9245,40 @@ Definition induced_homomorphism : set -> set -> set -> set -> set -> set -> set 
         path_homotopy_class_loop Y Ty y0
           (compose_fun unit_interval (Eps_i (fun f:set => f :e cls)) h)).
 
+(** Proven Bob **)
+Theorem induced_homomorphism_apply : forall X Tx x0 Y Ty y0 h cls:set,
+  cls :e fundamental_group X Tx x0 ->
+  apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls
+  = path_homotopy_class_loop Y Ty y0
+      (compose_fun unit_interval (Eps_i (fun f:set => f :e cls)) h).
+let X Tx x0 Y Ty y0 h cls.
+assume Hcls.
+exact (apply_fun_graph
+  (fundamental_group X Tx x0)
+  (fun c:set =>
+    path_homotopy_class_loop Y Ty y0
+      (compose_fun unit_interval (Eps_i (fun f:set => f :e c)) h))
+  cls
+  Hcls).
+Qed.
+
+(** Proven Bob **)
+Theorem induced_homomorphism_apply_on_loop_class : forall X Tx x0 Y Ty y0 h f:set,
+  f :e loop_space X Tx x0 ->
+  apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h)
+    (path_homotopy_class_loop X Tx x0 f)
+  = path_homotopy_class_loop Y Ty y0
+      (compose_fun unit_interval
+        (Eps_i (fun g:set => g :e path_homotopy_class_loop X Tx x0 f))
+        h).
+let X Tx x0 Y Ty y0 h f.
+assume Hf.
+exact (induced_homomorphism_apply
+  X Tx x0 Y Ty y0 h
+  (path_homotopy_class_loop X Tx x0 f)
+  (path_homotopy_class_in_fundamental_group X Tx x0 f Hf)).
+Qed.
+
 (** from S52 (line 458 in algtop.tex): h-star is a homomorphism **)
 (** LATEX VERSION: The map h-star is a well-defined group homomorphism. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
@@ -8820,6 +9290,8 @@ Theorem induced_homomorphism_is_homomorphism : forall X Tx x0 Y Ty y0 h:set,
     (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
     (fundamental_group Y Ty y0) (fundamental_group_mult Y Ty y0)
     (induced_homomorphism X Tx x0 Y Ty y0 h).
+let X Tx x0 Y Ty y0 h.
+assume Hh Hbase Hx0.
 admit.
 Admitted.
 
@@ -8836,6 +9308,18 @@ Theorem Theorem_52_4_functorial_composition : forall X Tx x0 Y Ty y0 Z Tz z0 h k
     = apply_fun (compose_fun (fundamental_group X Tx x0)
         (induced_homomorphism X Tx x0 Y Ty y0 h)
         (induced_homomorphism Y Ty y0 Z Tz z0 k)) cls.
+let X Tx x0 Y Ty y0 Z Tz z0 h k.
+assume Hh Hk Hx0 Hy0 Hx.
+let cls.
+assume Hcls.
+rewrite (induced_homomorphism_apply
+  X Tx x0 Z Tz z0 (compose_fun X h k) cls Hcls).
+rewrite (compose_fun_apply
+  (fundamental_group X Tx x0)
+  (induced_homomorphism X Tx x0 Y Ty y0 h)
+  (induced_homomorphism Y Ty y0 Z Tz z0 k)
+  cls
+  Hcls).
 admit.
 Admitted.
 
@@ -8846,6 +9330,12 @@ Theorem Theorem_52_4_functorial_identity : forall X Tx x0:set,
   topology_on X Tx -> x0 :e X ->
   forall cls:set, cls :e fundamental_group X Tx x0 ->
     apply_fun (induced_homomorphism X Tx x0 X Tx x0 (graph X (fun x:set => x))) cls = cls.
+let X Tx x0.
+assume Htop Hx0.
+let cls.
+assume Hcls.
+rewrite (induced_homomorphism_apply
+  X Tx x0 X Tx x0 (graph X (fun x:set => x)) cls Hcls).
 admit.
 Admitted.
 
@@ -8860,6 +9350,8 @@ Theorem Corollary_52_5_homeomorphism_isomorphism : forall X Tx x0 Y Ty y0 h:set,
     (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
     (fundamental_group Y Ty y0) (fundamental_group_mult Y Ty y0)
     (induced_homomorphism X Tx x0 Y Ty y0 h).
+let X Tx x0 Y Ty y0 h.
+assume Hhome Hbase Hx0.
 admit.
 Admitted.
 
