@@ -1,6 +1,6 @@
 (** Balance Alice 1340 **)
 (** Balance Bob 1100 **)
-(** Balance Charlie 998 **)
+(** Balance Charlie 1020 **)
 
 (** Sum of Balences and Bounties 48150 **)
 
@@ -11851,15 +11851,175 @@ Admitted.
 (** LATEX VERSION: If p: E -> B is a covering map, then p is a local homeomorphism: **)
 (** each point e of E has a neighborhood mapped homeomorphically onto an open set in B. **)
 (** EFFORT: 2 lines textbook, difficulty 1/10, USD 20 **)
-(** Bounty 22 **)
-(** Lock Charlie 2026-02-17T21:50:20Z **)
+(** Collected Charlie 22 **)
+(** Proven Charlie **)
 Theorem covering_map_local_homeomorphism : forall E Te B Tb p e:set,
   covering_map E Te B Tb p -> e :e E ->
   exists U V:set, U :e Te /\ e :e U /\ V :e Tb /\
     homeomorphism U (subspace_topology E Te U) V (subspace_topology B Tb V)
       (graph U (fun x:set => apply_fun p x)).
-admit.
-Admitted.
+let E Te B Tb p e.
+assume Hcov He.
+claim Hpair : continuous_map E Te B Tb p /\ surjective_map E B p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p /\ surjective_map E B p)
+    (forall b:set, b :e B ->
+      exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+    Hcov).
+}
+claim Hpcont : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    Hpair).
+}
+claim Hfun : function_on p E B.
+{
+  exact (continuous_map_function_on E Te B Tb p Hpcont).
+}
+claim Hlocal : forall b:set, b :e B ->
+  exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U.
+{
+  exact (andER
+    (continuous_map E Te B Tb p /\ surjective_map E B p)
+    (forall b:set, b :e B ->
+      exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+    Hcov).
+}
+claim HpeB : apply_fun p e :e B.
+{
+  exact (Hfun e He).
+}
+apply (Hlocal (apply_fun p e) HpeB).
+let W.
+assume HW.
+claim HWW : W :e Tb /\ apply_fun p e :e W.
+{
+  exact (andEL
+    (W :e Tb /\ apply_fun p e :e W)
+    (evenly_covered E Te B Tb p W)
+    HW).
+}
+claim HWtb : W :e Tb.
+{
+  exact (andEL
+    (W :e Tb)
+    (apply_fun p e :e W)
+    HWW).
+}
+claim HpeW : apply_fun p e :e W.
+{
+  exact (andER
+    (W :e Tb)
+    (apply_fun p e :e W)
+    HWW).
+}
+claim Heven : evenly_covered E Te B Tb p W.
+{
+  exact (andER
+    (W :e Tb /\ apply_fun p e :e W)
+    (evenly_covered E Te B Tb p W)
+    HW).
+}
+claim HslicesEx : exists slices:set,
+  slices c= Te /\
+  pairwise_disjoint slices /\
+  Union slices = preimage_of E p W /\
+  (forall V:set, V :e slices ->
+    homeomorphism V (subspace_topology E Te V) W (subspace_topology B Tb W)
+      (graph V (fun x:set => apply_fun p x))).
+{
+  exact (andER
+    (W :e Tb)
+    (exists slices:set,
+      slices c= Te /\
+      pairwise_disjoint slices /\
+      Union slices = preimage_of E p W /\
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) W (subspace_topology B Tb W)
+          (graph V (fun x:set => apply_fun p x))))
+    Heven).
+}
+apply HslicesEx.
+let slices.
+assume Hslices.
+claim Habc : (slices c= Te /\ pairwise_disjoint slices) /\
+  Union slices = preimage_of E p W.
+{
+  exact (andEL
+    ((slices c= Te /\ pairwise_disjoint slices) /\
+     Union slices = preimage_of E p W)
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) W (subspace_topology B Tb W)
+        (graph V (fun x:set => apply_fun p x)))
+    Hslices).
+}
+claim Hhome : forall V:set, V :e slices ->
+  homeomorphism V (subspace_topology E Te V) W (subspace_topology B Tb W)
+    (graph V (fun x:set => apply_fun p x)).
+{
+  exact (andER
+    ((slices c= Te /\ pairwise_disjoint slices) /\
+     Union slices = preimage_of E p W)
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) W (subspace_topology B Tb W)
+        (graph V (fun x:set => apply_fun p x)))
+    Hslices).
+}
+claim HsTe : slices c= Te.
+{
+  exact (andEL
+    (slices c= Te)
+    (pairwise_disjoint slices)
+    (andEL
+      (slices c= Te /\ pairwise_disjoint slices)
+      (Union slices = preimage_of E p W)
+      Habc)).
+}
+claim Hunion : Union slices = preimage_of E p W.
+{
+  exact (andER
+    (slices c= Te /\ pairwise_disjoint slices)
+    (Union slices = preimage_of E p W)
+    Habc).
+}
+claim Hepre : e :e preimage_of E p W.
+{
+  exact (SepI E (fun x:set => apply_fun p x :e W) e He HpeW).
+}
+claim HeUnion : e :e Union slices.
+{
+  exact (Hunion (fun a b:set => e :e b) Hepre).
+}
+apply (UnionE slices e HeUnion).
+let U.
+assume HU.
+claim HeU : e :e U.
+{
+  exact (andEL
+    (e :e U)
+    (U :e slices)
+    HU).
+}
+claim HUslices : U :e slices.
+{
+  exact (andER
+    (e :e U)
+    (U :e slices)
+    HU).
+}
+witness U.
+witness W.
+apply andI.
+- apply andI.
+  + apply andI.
+    * exact (HsTe U HUslices).
+    * exact HeU.
+  + exact HWtb.
+- exact (Hhome U HUslices).
+Qed.
 
 (** Infrastructure: Trigonometric functions cos and sin, jointly characterized **)
 (** via the Pythagorean identity, initial values, and addition formulas **)
