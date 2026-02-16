@@ -13482,6 +13482,28 @@ claim HclStayUx : closure_of E Te V0 c= Ux.
   {
     exact (slice_subset_of_preimage_from_union E p Ue slices Sx HunionSlices HSxSlice).
   }
+  claim HSxMapsUe : forall z:set, z :e Sx -> apply_fun p z :e Ue.
+  {
+    let z.
+    assume HzSx.
+    exact (slice_point_maps_into_even_base E p Ue slices Sx z
+      HunionSlices
+      HSxSlice
+      HzSx).
+  }
+  claim HSxSubE : Sx c= E.
+  {
+    exact (Subq_tra
+      Sx
+      (preimage_of E p Ue)
+      E
+      HSxSubPreUe
+      (Sep_Subq E (fun z:set => apply_fun p z :e Ue))).
+  }
+  claim HxSxUx : x :e Sx :/\: Ux.
+  {
+    exact (binintersectI Sx Ux x HxSx HxUx).
+  }
   admit.
 }
 claim HclSubUcap : closure_of E Te V0 c= (U :/\: Ux).
