@@ -18261,6 +18261,166 @@ claim Hsubcover :
           * exact HGG0.
         + exact Hcontrol.
       }
+      apply HexSlices.
+      let slices.
+      assume HsPack.
+      claim HunionSlices : Union slices = preimage_of E p U0.
+      {
+        exact (andER
+          (slices c= Te /\ pairwise_disjoint slices)
+          (Union slices = preimage_of E p U0)
+          (andEL
+            (slices c= Te /\ pairwise_disjoint slices /\ Union slices = preimage_of E p U0)
+            (forall V:set, V :e slices ->
+              homeomorphism V (subspace_topology E Te V) U0 (subspace_topology B Tb U0)
+                (graph V (fun z:set => apply_fun p z)))
+            HsPack)).
+      }
+      claim HpointLocalControl :
+        forall x:set, x :e {x0 :e E | apply_fun p x0 = b} ->
+          exists Sx W G:set,
+            Sx :e slices /\ x :e Sx /\
+            W :e Tb /\ b :e W /\ W c= U0 /\ G :e G0 /\
+            (forall z:set, z :e Sx -> apply_fun p z :e W -> z :e G).
+      {
+        let x.
+        assume HxFib.
+        claim HxE : x :e E.
+        {
+          exact (SepE1 E (fun x0:set => apply_fun p x0 = b) x HxFib).
+        }
+        claim Hpxb : apply_fun p x = b.
+        {
+          exact (SepE2 E (fun x0:set => apply_fun p x0 = b) x HxFib).
+        }
+        claim HpxU0 : apply_fun p x :e U0.
+        {
+          rewrite Hpxb.
+          exact HUbU0.
+        }
+        claim HxPreU0 : x :e preimage_of E p U0.
+        {
+          exact (SepI E (fun x0:set => apply_fun p x0 :e U0) x HxE HpxU0).
+        }
+        claim HxUnionSlices : x :e Union slices.
+        {
+          exact (mem_eqL
+            x
+            (Union slices)
+            (preimage_of E p U0)
+            HunionSlices
+            HxPreU0).
+        }
+        apply (UnionE slices x HxUnionSlices).
+        let Sx.
+        assume HSxPack.
+        claim HxSx : x :e Sx.
+        {
+          exact (andEL
+            (x :e Sx)
+            (Sx :e slices)
+            HSxPack).
+        }
+        claim HSxslice : Sx :e slices.
+        {
+          exact (andER
+            (x :e Sx)
+            (Sx :e slices)
+            HSxPack).
+        }
+        claim HsliceControl :
+          exists W G:set,
+            W :e Tb /\ b :e W /\ W c= U0 /\ G :e G0 /\
+            (forall z:set, z :e Sx -> apply_fun p z :e W -> z :e G).
+        {
+          exact (HsliceLocalControl slices HsPack Sx HSxslice).
+        }
+        apply HsliceControl.
+        let W.
+        assume HWPack.
+        apply HWPack.
+        let G.
+        assume HGPack.
+        claim HWG1 :
+          (((W :e Tb /\ b :e W) /\ W c= U0) /\ G :e G0).
+        {
+          exact (andEL
+            (((W :e Tb /\ b :e W) /\ W c= U0) /\ G :e G0)
+            (forall z:set, z :e Sx -> apply_fun p z :e W -> z :e G)
+            HGPack).
+        }
+        claim HWpairSub :
+          ((W :e Tb /\ b :e W) /\ W c= U0).
+        {
+          exact (andEL
+            ((W :e Tb /\ b :e W) /\ W c= U0)
+            (G :e G0)
+            HWG1).
+        }
+        claim HGG0 : G :e G0.
+        {
+          exact (andER
+            ((W :e Tb /\ b :e W) /\ W c= U0)
+            (G :e G0)
+            HWG1).
+        }
+        claim HWpair : W :e Tb /\ b :e W.
+        {
+          exact (andEL
+            (W :e Tb /\ b :e W)
+            (W c= U0)
+            HWpairSub).
+        }
+        claim HWopen : W :e Tb.
+        {
+          exact (andEL
+            (W :e Tb)
+            (b :e W)
+            HWpair).
+        }
+        claim HbW : b :e W.
+        {
+          exact (andER
+            (W :e Tb)
+            (b :e W)
+            HWpair).
+        }
+        claim HWsubU0 : W c= U0.
+        {
+          exact (andER
+            (W :e Tb /\ b :e W)
+            (W c= U0)
+            HWpairSub).
+        }
+        claim Hcontrol :
+          forall z:set, z :e Sx -> apply_fun p z :e W -> z :e G.
+        {
+          exact (andER
+            (((W :e Tb /\ b :e W) /\ W c= U0) /\ G :e G0)
+            (forall z:set, z :e Sx -> apply_fun p z :e W -> z :e G)
+            HGPack).
+        }
+        witness Sx.
+        witness W.
+        witness G.
+        apply andI.
+        - apply andI.
+          + apply andI.
+            * apply andI.
+              {
+                apply andI.
+                - apply andI.
+                  + exact HSxslice.
+                  + exact HxSx.
+                - exact HWopen.
+              }
+              {
+                exact HbW.
+              }
+            * exact HWsubU0.
+          + exact HGG0.
+        - exact Hcontrol.
+      }
       claim Hshrink :
         exists U:set, U :e Tb /\ b :e U /\ preimage_of E p U c= Union G0.
       {
