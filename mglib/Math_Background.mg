@@ -13234,6 +13234,327 @@ claim HzPre : z :e preimage_of E p Ue.
 exact (SepE2 E (fun t:set => apply_fun p t :e Ue) z HzPre).
 Qed.
 
+(** Infrastructure: in a pairwise-disjoint sheet decomposition, complement of one sheet **)
+(** is the union of all other sheets **)
+(** Proven Bob **)
+Theorem slice_complement_as_union_others : forall E p U slices Ux:set,
+  pairwise_disjoint slices ->
+  Union slices = preimage_of E p U ->
+  Ux :e slices ->
+  (preimage_of E p U) :\: Ux = Union {V :e slices | V <> Ux}.
+let E p U slices Ux.
+assume Hpd Hunion HUxSlice.
+apply set_ext.
+- let z.
+  assume Hz.
+  claim HzPre : z :e preimage_of E p U.
+  {
+    exact (setminusE1 (preimage_of E p U) Ux z Hz).
+  }
+  claim HznUx : z /:e Ux.
+  {
+    exact (setminusE2 (preimage_of E p U) Ux z Hz).
+  }
+  claim HzUnion : z :e Union slices.
+  {
+    exact (mem_eqL
+      z
+      (Union slices)
+      (preimage_of E p U)
+      Hunion
+      HzPre).
+  }
+  apply (UnionE slices z HzUnion).
+  let V.
+  assume HVpack.
+  claim HzV : z :e V.
+  {
+    exact (andEL
+      (z :e V)
+      (V :e slices)
+      HVpack).
+  }
+  claim HVslice : V :e slices.
+  {
+    exact (andER
+      (z :e V)
+      (V :e slices)
+      HVpack).
+  }
+  apply xm (V = Ux).
+  + assume Heq.
+    claim HzUx : z :e Ux.
+    {
+      rewrite <- Heq.
+      exact HzV.
+    }
+    claim Hfalse : False.
+    {
+      exact (HznUx HzUx).
+    }
+    exact (FalseE Hfalse (z :e Union {V0 :e slices | V0 <> Ux})).
+  + assume Hneq.
+    claim HVother : V :e {V0 :e slices | V0 <> Ux}.
+    {
+      exact (SepI
+        slices
+        (fun V0:set => V0 <> Ux)
+        V
+        HVslice
+        Hneq).
+    }
+    exact (UnionI {V0 :e slices | V0 <> Ux} z V HzV HVother).
+- let z.
+  assume Hz.
+  apply (UnionE {V :e slices | V <> Ux} z Hz).
+  let V.
+  assume HVpack.
+  claim HzV : z :e V.
+  {
+    exact (andEL
+      (z :e V)
+      (V :e {V0 :e slices | V0 <> Ux})
+      HVpack).
+  }
+  claim HVother : V :e {V0 :e slices | V0 <> Ux}.
+  {
+    exact (andER
+      (z :e V)
+      (V :e {V0 :e slices | V0 <> Ux})
+      HVpack).
+  }
+  claim HVslice : V :e slices.
+  {
+    exact (SepE1
+      slices
+      (fun V0:set => V0 <> Ux)
+      V
+      HVother).
+  }
+  claim HVneq : V <> Ux.
+  {
+    exact (SepE2
+      slices
+      (fun V0:set => V0 <> Ux)
+      V
+      HVother).
+  }
+  claim HzUnionSlices : z :e Union slices.
+  {
+    exact (UnionI slices z V HzV HVslice).
+  }
+  claim HzPre : z :e preimage_of E p U.
+  {
+    exact (mem_eqR
+      z
+      (Union slices)
+      (preimage_of E p U)
+      Hunion
+      HzUnionSlices).
+  }
+  claim HznUx : z /:e Ux.
+  {
+    assume HzUx.
+    claim Hdisj : V :/\: Ux = Empty.
+    {
+      exact (Hpd V Ux HVslice HUxSlice HVneq).
+    }
+    claim HzInt : z :e V :/\: Ux.
+    {
+      exact (binintersectI V Ux z HzV HzUx).
+    }
+    claim HzEmpty : z :e Empty.
+    {
+      exact (mem_eqR z (V :/\: Ux) Empty Hdisj HzInt).
+    }
+    exact (EmptyE z HzEmpty False).
+  }
+  exact (setminusI (preimage_of E p U) Ux z HzPre HznUx).
+Qed.
+
+(** Infrastructure: each sheet is closed in the evenly-covered preimage subspace **)
+(** Proven Bob **)
+Theorem slice_closed_in_even_preimage_subspace : forall E Te p U slices Ux:set,
+  topology_on E Te ->
+  slices c= Te ->
+  pairwise_disjoint slices ->
+  Union slices = preimage_of E p U ->
+  Ux :e slices ->
+  closed_in
+    (preimage_of E p U)
+    (subspace_topology E Te (preimage_of E p U))
+    Ux.
+let E Te p U slices Ux.
+assume HtopE HsubSlices Hpd Hunion HUxSlice.
+set Y := preimage_of E p U.
+set Others := {V :e slices | V <> Ux}.
+set O := Union Others.
+claim HYsubE : Y c= E.
+{
+  exact (Sep_Subq E (fun z:set => apply_fun p z :e U)).
+}
+claim HtopY : topology_on Y (subspace_topology E Te Y).
+{
+  exact (subspace_topology_is_topology E Te Y HtopE HYsubE).
+}
+claim HUxSubY : Ux c= Y.
+{
+  exact (slice_subset_of_preimage_from_union E p U slices Ux Hunion HUxSlice).
+}
+claim HOthersSubTe : Others c= Te.
+{
+  let V.
+  assume HVother.
+  claim HVslice : V :e slices.
+  {
+    exact (SepE1 slices (fun V0:set => V0 <> Ux) V HVother).
+  }
+  exact (HsubSlices V HVslice).
+}
+claim HOopenE : O :e Te.
+{
+  exact (topology_union_closed E Te Others HtopE HOthersSubTe).
+}
+claim HOSubY : O c= Y.
+{
+  let z.
+  assume HzO.
+  apply (UnionE Others z HzO).
+  let V.
+  assume HVpack.
+  claim HzV : z :e V.
+  {
+    exact (andEL
+      (z :e V)
+      (V :e Others)
+      HVpack).
+  }
+  claim HVother : V :e Others.
+  {
+    exact (andER
+      (z :e V)
+      (V :e Others)
+      HVpack).
+  }
+  claim HVslice : V :e slices.
+  {
+    exact (SepE1 slices (fun V0:set => V0 <> Ux) V HVother).
+  }
+  claim HzUnionSlices : z :e Union slices.
+  {
+    exact (UnionI slices z V HzV HVslice).
+  }
+  exact (mem_eqR
+    z
+    (Union slices)
+    Y
+    Hunion
+    HzUnionSlices).
+}
+claim HOeqInt : O :/\: Y = O.
+{
+  apply set_ext.
+  - let z.
+    assume Hz.
+    exact (binintersectE1 O Y z Hz).
+  - let z.
+    assume HzO.
+    exact (binintersectI O Y z HzO (HOSubY z HzO)).
+}
+claim HOsubspace : O :e subspace_topology E Te Y.
+{
+  claim HOint : O :/\: Y :e subspace_topology E Te Y.
+  {
+    exact (subspace_topologyI E Te Y O HOopenE).
+  }
+  rewrite <- HOeqInt.
+  exact HOint.
+}
+claim Hcomp : Y :\: Ux = O.
+{
+  exact (slice_complement_as_union_others E p U slices Ux Hpd Hunion HUxSlice).
+}
+claim HYminusOeqUx : Y :\: O = Ux.
+{
+  rewrite <- Hcomp.
+  exact (setminus_setminus_eq Y Ux HUxSubY).
+}
+claim HUxComp : Ux = Y :\: O.
+{
+  rewrite HYminusOeqUx.
+  reflexivity.
+}
+apply (closed_inI
+  Y
+  (subspace_topology E Te Y)
+  Ux
+  HtopY
+  HUxSubY).
+witness O.
+apply andI.
+- exact HOsubspace.
+- exact HUxComp.
+Qed.
+
+(** Infrastructure: ambient closure bound via closedness in an ambient subspace **)
+(** Proven Bob **)
+Theorem ambient_closure_sub_closed_subspace : forall X Tx Y A C:set,
+  topology_on X Tx ->
+  Y c= X ->
+  A c= Y ->
+  closure_of X Tx A c= Y ->
+  closed_in Y (subspace_topology X Tx Y) C ->
+  A c= C ->
+  closure_of X Tx A c= C.
+let X Tx Y A C.
+assume HtopX HYsub HAsub HclInY HclosedC HAsubC.
+claim HtopY : topology_on Y (subspace_topology X Tx Y).
+{
+  exact (subspace_topology_is_topology X Tx Y HtopX HYsub).
+}
+claim HclEq :
+  closure_of Y (subspace_topology X Tx Y) A = (closure_of X Tx A) :/\: Y.
+{
+  exact (closure_in_subspace X Tx Y A HtopX HYsub HAsub).
+}
+claim HclYSubC : closure_of Y (subspace_topology X Tx Y) A c= C.
+{
+  exact (closure_subset_of_closed_superset
+    Y
+    (subspace_topology X Tx Y)
+    A
+    C
+    HtopY
+    HAsubC
+    HclosedC).
+}
+let z.
+assume HzCl.
+claim HzY : z :e Y.
+{
+  exact (HclInY z HzCl).
+}
+claim HzInt : z :e (closure_of X Tx A) :/\: Y.
+{
+  exact (binintersectI
+    (closure_of X Tx A)
+    Y
+    z
+    HzCl
+    HzY).
+}
+claim HzSub : z :e closure_of Y (subspace_topology X Tx Y) A.
+{
+  exact (mem_eqL
+    z
+    (closure_of Y (subspace_topology X Tx Y) A)
+    ((closure_of X Tx A) :/\: Y)
+    HclEq
+    HzInt).
+}
+exact (HclYSubC z HzSub).
+Qed.
+
 (** Infrastructure: local homeomorphism package with explicit containing slice family **)
 (** Proven Bob **)
 Theorem covering_map_local_homeomorphism_with_slices :
@@ -13804,6 +14125,167 @@ claim HclStayUx : closure_of E Te V0 c= Ux.
       (preimage_of E p (closure_of B Tb Vb))
       HclSubPreVb
       HclPreVb).
+  }
+  claim HexWbV1local :
+    exists Wb V1:set,
+      (Wb :e Tb /\ apply_fun p x :e Wb /\ closure_of B Tb Wb c= Vb) /\
+      (V1 :e Te /\ x :e V1 /\ V1 c= V0 /\ V1 c= preimage_of E p Wb).
+  {
+    exact HexWbV1.
+  }
+  apply HexWbV1local.
+  let Wb.
+  assume HWbV1pack.
+  apply HWbV1pack.
+  let V1.
+  assume Hpacks.
+  claim HbasePack : Wb :e Tb /\ apply_fun p x :e Wb /\ closure_of B Tb Wb c= Vb.
+  {
+    exact (andEL
+      (Wb :e Tb /\ apply_fun p x :e Wb /\ closure_of B Tb Wb c= Vb)
+      (V1 :e Te /\ x :e V1 /\ V1 c= V0 /\ V1 c= preimage_of E p Wb)
+      Hpacks).
+  }
+  claim HV1Pack : V1 :e Te /\ x :e V1 /\ V1 c= V0 /\ V1 c= preimage_of E p Wb.
+  {
+    exact (andER
+      (Wb :e Tb /\ apply_fun p x :e Wb /\ closure_of B Tb Wb c= Vb)
+      (V1 :e Te /\ x :e V1 /\ V1 c= V0 /\ V1 c= preimage_of E p Wb)
+      Hpacks).
+  }
+  claim HWbOpen : Wb :e Tb.
+  {
+    claim HbasePair : Wb :e Tb /\ apply_fun p x :e Wb.
+    {
+      exact (andEL
+        (Wb :e Tb /\ apply_fun p x :e Wb)
+        (closure_of B Tb Wb c= Vb)
+        HbasePack).
+    }
+    exact (andEL
+      (Wb :e Tb)
+      (apply_fun p x :e Wb)
+      HbasePair).
+  }
+  claim HclWbSubVb : closure_of B Tb Wb c= Vb.
+  {
+    exact (andER
+      (Wb :e Tb /\ apply_fun p x :e Wb)
+      (closure_of B Tb Wb c= Vb)
+      HbasePack).
+  }
+  claim HV1SubV0 : V1 c= V0.
+  {
+    claim HV1Pair : (V1 :e Te /\ x :e V1) /\ V1 c= V0.
+    {
+      exact (andEL
+        ((V1 :e Te /\ x :e V1) /\ V1 c= V0)
+        (V1 c= preimage_of E p Wb)
+        HV1Pack).
+    }
+    exact (andER
+      (V1 :e Te /\ x :e V1)
+      (V1 c= V0)
+      HV1Pair).
+  }
+  claim HV1SubPreWb : V1 c= preimage_of E p Wb.
+  {
+    exact (andER
+      ((V1 :e Te /\ x :e V1) /\ V1 c= V0)
+      (V1 c= preimage_of E p Wb)
+      HV1Pack).
+  }
+  claim HWbSubB : Wb c= B.
+  {
+    exact (topology_elem_subset B Tb Wb HtopB HWbOpen).
+  }
+  claim HWbSubVb : Wb c= Vb.
+  {
+    exact (subset_of_set_from_closure_sub B Tb Wb Vb HtopB HWbSubB HclWbSubVb).
+  }
+  claim HpreWbSubPreVb : preimage_of E p Wb c= preimage_of E p Vb.
+  {
+    exact (preimage_of_mono E p Wb Vb HWbSubVb).
+  }
+  claim HV1SubPreVb : V1 c= preimage_of E p Vb.
+  {
+    exact (Subq_tra
+      V1
+      (preimage_of E p Wb)
+      (preimage_of E p Vb)
+      HV1SubPreWb
+      HpreWbSubPreVb).
+  }
+  claim HpreWbSubE : preimage_of E p Wb c= E.
+  {
+    exact (Sep_Subq E (fun z:set => apply_fun p z :e Wb)).
+  }
+  claim HclSubPreWb :
+    closure_of E Te V1 c= closure_of E Te (preimage_of E p Wb).
+  {
+    exact (closure_monotone E Te V1 (preimage_of E p Wb) HtopE HV1SubPreWb HpreWbSubE).
+  }
+  claim HclPreWb :
+    closure_of E Te (preimage_of E p Wb) c= preimage_of E p (closure_of B Tb Wb).
+  {
+    exact (closure_preimage_contained E Te B Tb p Wb HtopE HtopB Hcont).
+  }
+  claim HclSubPreClWb :
+    closure_of E Te V1 c= preimage_of E p (closure_of B Tb Wb).
+  {
+    exact (Subq_tra
+      (closure_of E Te V1)
+      (closure_of E Te (preimage_of E p Wb))
+      (preimage_of E p (closure_of B Tb Wb))
+      HclSubPreWb
+      HclPreWb).
+  }
+  claim HpreClWbSubPreVb :
+    preimage_of E p (closure_of B Tb Wb) c= preimage_of E p Vb.
+  {
+    exact (preimage_of_mono E p (closure_of B Tb Wb) Vb HclWbSubVb).
+  }
+  claim HclV1SubPreVb : closure_of E Te V1 c= preimage_of E p Vb.
+  {
+    exact (Subq_tra
+      (closure_of E Te V1)
+      (preimage_of E p (closure_of B Tb Wb))
+      (preimage_of E p Vb)
+      HclSubPreClWb
+      HpreClWbSubPreVb).
+  }
+  claim HV1SubUx : V1 c= Ux.
+  {
+    exact (Subq_tra V1 V0 Ux HV1SubV0 HV0SubUx).
+  }
+  claim HpreVbSubE : preimage_of E p Vb c= E.
+  {
+    exact (Sep_Subq E (fun z:set => apply_fun p z :e Vb)).
+  }
+  claim HUxClosedInPreVb :
+    closed_in
+      (preimage_of E p Vb)
+      (subspace_topology E Te (preimage_of E p Vb))
+      Ux.
+  {
+    exact (slice_closed_in_even_preimage_subspace
+      E Te p Vb slices Ux
+      HtopE
+      HsubSlices
+      HpdSlices
+      HunionSlices
+      HUxSlice).
+  }
+  claim HclV1SubUx : closure_of E Te V1 c= Ux.
+  {
+    exact (ambient_closure_sub_closed_subspace
+      E Te (preimage_of E p Vb) V1 Ux
+      HtopE
+      HpreVbSubE
+      HV1SubPreVb
+      HclV1SubPreVb
+      HUxClosedInPreVb
+      HV1SubUx).
   }
   admit.
 }
