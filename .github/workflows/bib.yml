@@ -28,8 +28,8 @@ jobs:
       run: |
         find mglib/ -type f | parallel --will-cite './bin/megalodonw.pl 180 {} {}'
         ls sig | parallel --will-cite './bin/megalodonw.pl 10 sig/{} sig/{}'
-        ls sig | parallel --will-cite './bin/megalodonw.pl 40 sig/{}  -html docs/sig/{}.html sig/{} '
-        find mglib/ -type f | perl -pe 's/^mglib\///' | parallel --will-cite ' tmp=$(mktemp) && ./bin/megalodonw.pl 180 mglib/{}  -html "$tmp" mglib/{}  && perl ./bin/insert_comments.pl mglib/{} "$tmp" docs/{}.html next 0 && rm -f "$tmp" && python3 ./bin/mk_ajax.py docs/{}.html'
+        ls sig | parallel --will-cite './bin/megalodonw.pl 40 sig/{}  -nopfglinks -html docs/sig/{}.html sig/{} '
+        find mglib/ -type f | perl -pe 's/^mglib\///' | parallel --will-cite ' tmp=$(mktemp) && ./bin/megalodonw.pl 180 mglib/{}  -nopfglinks -html "$tmp" mglib/{}  && perl ./bin/insert_comments.pl mglib/{} "$tmp" docs/{}.html next 0 && rm -f "$tmp" && python3 ./bin/mk_ajax.py docs/{}.html'
         ./bin/indexer.py -r docs
         for i in `find docs/sig/ -type f && find docs/ -type f -not -path 'docs/sig/*'`; do perl -e '$h=$ARGV[0]; while(<>) {if(m/<a name=([^\/]+)/) {$l=$1} while(m/php\?b=([0-9A-Fa-f]{64})\b/g) { print "$1:\047$h\047:$l\n"}   }' $i; done > etc/rindex.txt
     - name: update the repo
@@ -37,7 +37,7 @@ jobs:
         git config --local user.name "wiki updater"
         git config --local user.email "mgwiki@github.com"
         git add .
-        git commit -m "Update mgwiki" || true
+        git commit -m "Update alg_top wiki" || true
     - name: push changes 
       uses: ad-m/github-push-action@master
       with:

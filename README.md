@@ -1,4 +1,4 @@
-# Welcome to our algebraic topology mgwiki!
+# Welcome to algebraic topology mgwiki!
 
 This is a wiki for formal mathematics written in the Megalodon system ([1],[2]).
 
