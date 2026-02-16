@@ -1,6 +1,6 @@
 (** Balance Alice 1340 **)
 (** Balance Bob 1100 **)
-(** Balance Charlie 1020 **)
+(** Balance Charlie 1015 **)
 
 (** Sum of Balences and Bounties 48150 **)
 
@@ -11841,7 +11841,8 @@ Admitted.
 (** from S53 text (line 547 in algtop.tex) **)
 (** LATEX VERSION: If p: E -> B is a covering map, then p is an open map. **)
 (** EFFORT: 6 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-17T21:55:42Z **)
 Theorem covering_map_is_open : forall E Te B Tb p:set,
   covering_map E Te B Tb p -> open_map E Te B Tb p.
 admit.
