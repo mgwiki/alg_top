@@ -15901,9 +15901,41 @@ claim HsepGoal :
   assume HxE.
   let F.
   assume HFclosed HxNotF.
+  claim Hloc :
+    exists Vb slices Ux:set,
+      (Ux :e Te /\ x :e Ux /\ Vb :e Tb /\
+        homeomorphism Ux (subspace_topology E Te Ux) Vb (subspace_topology B Tb Vb)
+          (graph Ux (fun z:set => apply_fun p z))) /\
+      (slices c= Te /\ pairwise_disjoint slices /\
+        Union slices = preimage_of E p Vb /\ Ux :e slices /\
+        (forall V:set, V :e slices ->
+          homeomorphism V (subspace_topology E Te V) Vb (subspace_topology B Tb Vb)
+            (graph V (fun z:set => apply_fun p z)))).
+  {
+    exact (covering_map_local_homeomorphism_with_slices
+      E Te B Tb p x Hcov HxE).
+  }
+  claim HsepReg :
+    exists U0 V0:set,
+      U0 :e Te /\ V0 :e Te /\ x :e U0 /\ F c= V0 /\ U0 :/\: V0 = Empty.
+  {
+    exact (andER
+      (one_point_sets_closed E Te)
+      (forall x0:set, x0 :e E ->
+        forall F0:set, closed_in E Te F0 -> x0 /:e F0 ->
+          exists U0 V0:set,
+            U0 :e Te /\ V0 :e Te /\ x0 :e U0 /\ F0 c= V0 /\ U0 :/\: V0 = Empty)
+      HregE
+      x
+      HxE
+      F
+      HFclosed
+      HxNotF).
+  }
   (** Remaining gap:
-      construct a continuous real-valued separator on E from the base
-      complete-regular separator via local trivialization around x. **)
+      combine regular separation upstairs with a local trivialization around x
+      and complete-regular separation on the base to build a global separator
+      f:E->R with f(x)=0 and f|F=1. **)
   admit.
 }
 exact (andI
@@ -15938,6 +15970,615 @@ assume Hcov _ HHB.
 exact (ex53_6a_hausdorff E Te B Tb p Hcov HHB).
 Qed.
 
+(** Infrastructure: local compactness transfers backward along homeomorphisms **)
+(** Proven Bob **)
+Theorem homeomorphism_preserves_locally_compact : forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  locally_compact Y Ty ->
+  locally_compact X Tx.
+let X Tx Y Ty f.
+assume Hhome HlocY.
+claim Hcontf : continuous_map X Tx Y Ty f.
+{
+  exact (homeomorphism_continuous X Tx Y Ty f Hhome).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (continuous_map_topology_dom X Tx Y Ty f Hcontf).
+}
+claim HtopY : topology_on Y Ty.
+{
+  exact (locally_compact_topology Y Ty HlocY).
+}
+claim Hfunf : function_on f X Y.
+{
+  exact (continuous_map_function_on X Tx Y Ty f Hcontf).
+}
+claim HinvPack :
+  exists g:set,
+    continuous_map Y Ty X Tx g /\
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x) /\
+    (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y).
+{
+  exact (homeomorphism_inverse_package X Tx Y Ty f Hhome).
+}
+apply HinvPack.
+let g.
+assume HgPack.
+claim Hcontg : continuous_map Y Ty X Tx g.
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g)
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+    (andEL
+      (continuous_map Y Ty X Tx g /\ forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+      (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+      HgPack)).
+}
+claim Hgf :
+  forall x:set, x :e X -> apply_fun g (apply_fun f x) = x.
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g)
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+    (andEL
+      (continuous_map Y Ty X Tx g /\ forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+      (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+      HgPack)).
+}
+claim Hfung : function_on g Y X.
+{
+  exact (continuous_map_function_on Y Ty X Tx g Hcontg).
+}
+claim Hlocal :
+  forall x:set, x :e X ->
+    exists C:set,
+      C c= X /\ compact_space C (subspace_topology X Tx C) /\
+      exists U:set, U :e Tx /\ x :e U /\ U c= C.
+{
+  let x.
+  assume HxX.
+  claim HfxY : apply_fun f x :e Y.
+  {
+    exact (Hfunf x HxX).
+  }
+  claim HlocAtY :
+    exists C:set,
+      C c= Y /\ compact_space C (subspace_topology Y Ty C) /\
+      exists U:set, U :e Ty /\ apply_fun f x :e U /\ U c= C.
+  {
+    exact (locally_compact_local Y Ty (apply_fun f x) HlocY HfxY).
+  }
+  apply HlocAtY.
+  let C.
+  assume HCpack.
+  claim HCsubY : C c= Y.
+  {
+    exact (andEL
+      (C c= Y)
+      (compact_space C (subspace_topology Y Ty C))
+      (andEL
+        (C c= Y /\ compact_space C (subspace_topology Y Ty C))
+        (exists U:set, U :e Ty /\ apply_fun f x :e U /\ U c= C)
+        HCpack)).
+  }
+  claim HCcompact : compact_space C (subspace_topology Y Ty C).
+  {
+    exact (andER
+      (C c= Y)
+      (compact_space C (subspace_topology Y Ty C))
+      (andEL
+        (C c= Y /\ compact_space C (subspace_topology Y Ty C))
+        (exists U:set, U :e Ty /\ apply_fun f x :e U /\ U c= C)
+        HCpack)).
+  }
+  claim HUpack : exists U:set, U :e Ty /\ apply_fun f x :e U /\ U c= C.
+  {
+    exact (andER
+      (C c= Y /\ compact_space C (subspace_topology Y Ty C))
+      (exists U:set, U :e Ty /\ apply_fun f x :e U /\ U c= C)
+      HCpack).
+  }
+  apply HUpack.
+  let U.
+  assume HUall.
+  claim HUopen : U :e Ty.
+  {
+    exact (andEL
+      (U :e Ty)
+      (apply_fun f x :e U)
+      (andEL
+        (U :e Ty /\ apply_fun f x :e U)
+        (U c= C)
+        HUall)).
+  }
+  claim HfxU : apply_fun f x :e U.
+  {
+    exact (andER
+      (U :e Ty)
+      (apply_fun f x :e U)
+      (andEL
+        (U :e Ty /\ apply_fun f x :e U)
+        (U c= C)
+        HUall)).
+  }
+  claim HUsubC : U c= C.
+  {
+    exact (andER
+      (U :e Ty /\ apply_fun f x :e U)
+      (U c= C)
+      HUall).
+  }
+  claim HCxSubX : image_of_fun g C c= X.
+  {
+    exact (image_of_sub_codomain g Y X C Hfung HCsubY).
+  }
+  claim HcontgOnC : continuous_map C (subspace_topology Y Ty C) X Tx g.
+  {
+    exact (continuous_on_subspace Y Ty X Tx g C HtopY HCsubY Hcontg).
+  }
+  claim HCxCompact :
+    compact_space (image_of_fun g C)
+      (subspace_topology X Tx (image_of_fun g C)).
+  {
+    exact (continuous_image_compact
+      C
+      (subspace_topology Y Ty C)
+      X
+      Tx
+      g
+      HCcompact
+      HcontgOnC).
+  }
+  claim HUxOpen : preimage_of X f U :e Tx.
+  {
+    exact (continuous_map_preimage X Tx Y Ty f Hcontf U HUopen).
+  }
+  claim HxUx : x :e preimage_of X f U.
+  {
+    exact (SepI
+      X
+      (fun z:set => apply_fun f z :e U)
+      x
+      HxX
+      HfxU).
+  }
+  claim HUxSubCx :
+    preimage_of X f U c= image_of_fun g C.
+  {
+    let z.
+    assume HzUx.
+    claim HzX : z :e X.
+    {
+      exact (SepE1 X (fun t:set => apply_fun f t :e U) z HzUx).
+    }
+    claim HfzU : apply_fun f z :e U.
+    {
+      exact (SepE2 X (fun t:set => apply_fun f t :e U) z HzUx).
+    }
+    claim HfzC : apply_fun f z :e C.
+    {
+      exact (HUsubC (apply_fun f z) HfzU).
+    }
+    claim Hgfz : apply_fun g (apply_fun f z) = z.
+    {
+      exact (Hgf z HzX).
+    }
+    claim HgfcIn : apply_fun g (apply_fun f z) :e image_of_fun g C.
+    {
+      exact (ReplI C (fun t:set => apply_fun g t) (apply_fun f z) HfzC).
+    }
+    rewrite <- Hgfz.
+    exact HgfcIn.
+  }
+  witness (image_of_fun g C).
+  apply andI.
+  * apply andI.
+    + exact HCxSubX.
+    + exact HCxCompact.
+  * witness (preimage_of X f U).
+    apply andI.
+    {
+      apply andI.
+      - exact HUxOpen.
+      - exact HxUx.
+    }
+    {
+      exact HUxSubCx.
+    }
+}
+exact (andI
+  (topology_on X Tx)
+  (forall x:set, x :e X ->
+    exists C:set,
+      C c= X /\ compact_space C (subspace_topology X Tx C) /\
+      exists U:set, U :e Tx /\ x :e U /\ U c= C)
+  HtopX
+  Hlocal).
+Qed.
+
+(** Infrastructure: open subspaces of locally compact Hausdorff spaces are locally compact **)
+(** Proven Bob **)
+Theorem open_subspace_locally_compact_Hausdorff : forall X Tx U:set,
+  locally_compact X Tx ->
+  Hausdorff_space X Tx ->
+  U :e Tx ->
+  locally_compact U (subspace_topology X Tx U).
+let X Tx U.
+assume HlocX HHX HUopen.
+claim HtopX : topology_on X Tx.
+{
+  exact (locally_compact_topology X Tx HlocX).
+}
+claim HUsubX : U c= X.
+{
+  exact (topology_elem_subset X Tx U HtopX HUopen).
+}
+claim HregX : regular_space X Tx.
+{
+  exact (ex32_3_locally_compact_Hausdorff_regular X Tx HlocX HHX).
+}
+claim Hlocal :
+  forall x:set, x :e U ->
+    exists C:set,
+      C c= U /\ compact_space C (subspace_topology U (subspace_topology X Tx U) C) /\
+      exists U1:set, U1 :e subspace_topology X Tx U /\ x :e U1 /\ U1 c= C.
+{
+  let x.
+  assume HxU.
+  claim Hshrink :
+    exists W:set,
+      W :e Tx /\ x :e W /\ closure_of X Tx W c= U /\
+      compact_space (closure_of X Tx W)
+        (subspace_topology X Tx (closure_of X Tx W)).
+  {
+    exact (locally_compact_regular_open_has_compact_closure_neighborhood
+      X Tx U x HlocX HregX HUopen HxU).
+  }
+  apply Hshrink.
+  let W.
+  assume HWpack.
+  claim HWpair : W :e Tx /\ x :e W.
+  {
+    exact (andEL
+      (W :e Tx /\ x :e W)
+      (closure_of X Tx W c= U)
+      (andEL
+        (W :e Tx /\ x :e W /\ closure_of X Tx W c= U)
+        (compact_space (closure_of X Tx W)
+          (subspace_topology X Tx (closure_of X Tx W)))
+        HWpack)).
+  }
+  claim HWopen : W :e Tx.
+  {
+    exact (andEL
+      (W :e Tx)
+      (x :e W)
+      HWpair).
+  }
+  claim HxW : x :e W.
+  {
+    exact (andER
+      (W :e Tx)
+      (x :e W)
+      HWpair).
+  }
+  claim HclWsubU : closure_of X Tx W c= U.
+  {
+    exact (andER
+      (W :e Tx /\ x :e W)
+      (closure_of X Tx W c= U)
+      (andEL
+        (W :e Tx /\ x :e W /\ closure_of X Tx W c= U)
+        (compact_space (closure_of X Tx W)
+          (subspace_topology X Tx (closure_of X Tx W)))
+        HWpack)).
+  }
+  claim HclWCompact :
+    compact_space (closure_of X Tx W)
+      (subspace_topology X Tx (closure_of X Tx W)).
+  {
+    exact (andER
+      (W :e Tx /\ x :e W /\ closure_of X Tx W c= U)
+      (compact_space (closure_of X Tx W)
+        (subspace_topology X Tx (closure_of X Tx W)))
+      HWpack).
+  }
+  claim HWsubX : W c= X.
+  {
+    exact (topology_elem_subset X Tx W HtopX HWopen).
+  }
+  claim HWsubClW : W c= closure_of X Tx W.
+  {
+    exact (closure_contains_set X Tx W HtopX HWsubX).
+  }
+  witness (closure_of X Tx W).
+  apply andI.
+  * apply andI.
+    + exact HclWsubU.
+    + claim HsubTrans :
+        subspace_topology U (subspace_topology X Tx U) (closure_of X Tx W) =
+        subspace_topology X Tx (closure_of X Tx W).
+      {
+        exact (ex16_1_subspace_transitive
+          X Tx U (closure_of X Tx W) HtopX HUsubX HclWsubU).
+      }
+      rewrite HsubTrans.
+      exact HclWCompact.
+  * witness (W :/\: U).
+    apply andI.
+    {
+      apply andI.
+      - exact (subspace_topologyI X Tx U W HWopen).
+      - exact (binintersectI W U x HxW HxU).
+    }
+    {
+      let z.
+      assume HzWU.
+      claim HzW : z :e W.
+      {
+        exact (binintersectE1 W U z HzWU).
+      }
+      exact (HWsubClW z HzW).
+    }
+}
+exact (andI
+  (topology_on U (subspace_topology X Tx U))
+  (forall x:set, x :e U ->
+    exists C:set,
+      C c= U /\ compact_space C (subspace_topology U (subspace_topology X Tx U) C) /\
+      exists U1:set, U1 :e subspace_topology X Tx U /\ x :e U1 /\ U1 c= C)
+  (subspace_topology_is_topology X Tx U HtopX HUsubX)
+  Hlocal).
+Qed.
+
+(** Infrastructure: local compactness transfer for covering maps over locally compact Hausdorff bases **)
+(** Proven Bob **)
+Theorem covering_map_lch_base_locally_compact_upstairs : forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  locally_compact B Tb ->
+  Hausdorff_space B Tb ->
+  locally_compact E Te.
+let E Te B Tb p.
+assume Hcov HlocB HHB.
+claim Hcont : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    (andEL
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+      Hcov)).
+}
+claim HtopE : topology_on E Te.
+{
+  exact (continuous_map_topology_dom E Te B Tb p Hcont).
+}
+claim HtopB : topology_on B Tb.
+{
+  exact (locally_compact_topology B Tb HlocB).
+}
+claim Hlocal :
+  forall x:set, x :e E ->
+    exists C:set,
+      C c= E /\ compact_space C (subspace_topology E Te C) /\
+      exists U1:set, U1 :e Te /\ x :e U1 /\ U1 c= C.
+{
+  let x.
+  assume HxE.
+  claim Hchart :
+    exists Vb slices Ux:set,
+      (Ux :e Te /\ x :e Ux /\ Vb :e Tb /\
+        homeomorphism Ux (subspace_topology E Te Ux) Vb (subspace_topology B Tb Vb)
+          (graph Ux (fun z:set => apply_fun p z))) /\
+      (slices c= Te /\ pairwise_disjoint slices /\
+        Union slices = preimage_of E p Vb /\ Ux :e slices /\
+        (forall V:set, V :e slices ->
+          homeomorphism V (subspace_topology E Te V) Vb (subspace_topology B Tb Vb)
+            (graph V (fun z:set => apply_fun p z)))).
+  {
+    exact (covering_map_local_homeomorphism_with_slices
+      E Te B Tb p x Hcov HxE).
+  }
+  apply Hchart.
+  let Vb.
+  assume HVbPack.
+  apply HVbPack.
+  let slices.
+  assume HsPack.
+  apply HsPack.
+  let Ux.
+  assume Hall.
+  claim Hmain :
+    Ux :e Te /\ x :e Ux /\ Vb :e Tb /\
+      homeomorphism Ux (subspace_topology E Te Ux) Vb (subspace_topology B Tb Vb)
+        (graph Ux (fun z:set => apply_fun p z)).
+  {
+    exact (andEL
+      (Ux :e Te /\ x :e Ux /\ Vb :e Tb /\
+        homeomorphism Ux (subspace_topology E Te Ux) Vb (subspace_topology B Tb Vb)
+          (graph Ux (fun z:set => apply_fun p z)))
+      (slices c= Te /\ pairwise_disjoint slices /\
+        Union slices = preimage_of E p Vb /\ Ux :e slices /\
+        (forall V:set, V :e slices ->
+          homeomorphism V (subspace_topology E Te V) Vb (subspace_topology B Tb Vb)
+            (graph V (fun z:set => apply_fun p z))))
+      Hall).
+  }
+  claim HpairVb : (Ux :e Te /\ x :e Ux) /\ Vb :e Tb.
+  {
+    exact (andEL
+      ((Ux :e Te /\ x :e Ux) /\ Vb :e Tb)
+      (homeomorphism Ux (subspace_topology E Te Ux) Vb (subspace_topology B Tb Vb)
+        (graph Ux (fun z:set => apply_fun p z)))
+      Hmain).
+  }
+  claim HUxpair : Ux :e Te /\ x :e Ux.
+  {
+    exact (andEL
+      (Ux :e Te /\ x :e Ux)
+      (Vb :e Tb)
+      HpairVb).
+  }
+  claim HUxOpen : Ux :e Te.
+  {
+    exact (andEL
+      (Ux :e Te)
+      (x :e Ux)
+      HUxpair).
+  }
+  claim HxUx : x :e Ux.
+  {
+    exact (andER
+      (Ux :e Te)
+      (x :e Ux)
+      HUxpair).
+  }
+  claim HVbOpen : Vb :e Tb.
+  {
+    exact (andER
+      (Ux :e Te /\ x :e Ux)
+      (Vb :e Tb)
+      HpairVb).
+  }
+  claim Hhome :
+    homeomorphism Ux (subspace_topology E Te Ux) Vb (subspace_topology B Tb Vb)
+      (graph Ux (fun z:set => apply_fun p z)).
+  {
+    exact (andER
+      ((Ux :e Te /\ x :e Ux) /\ Vb :e Tb)
+      (homeomorphism Ux (subspace_topology E Te Ux) Vb (subspace_topology B Tb Vb)
+        (graph Ux (fun z:set => apply_fun p z)))
+      Hmain).
+  }
+  claim HUxSubE : Ux c= E.
+  {
+    exact (topology_elem_subset E Te Ux HtopE HUxOpen).
+  }
+  claim HVbSubB : Vb c= B.
+  {
+    exact (topology_elem_subset B Tb Vb HtopB HVbOpen).
+  }
+  claim HlocVb : locally_compact Vb (subspace_topology B Tb Vb).
+  {
+    exact (open_subspace_locally_compact_Hausdorff
+      B Tb Vb HlocB HHB HVbOpen).
+  }
+  claim HlocUx : locally_compact Ux (subspace_topology E Te Ux).
+  {
+    exact (homeomorphism_preserves_locally_compact
+      Ux (subspace_topology E Te Ux)
+      Vb (subspace_topology B Tb Vb)
+      (graph Ux (fun z:set => apply_fun p z))
+      Hhome
+      HlocVb).
+  }
+  claim HlocAtx :
+    exists C:set,
+      C c= Ux /\ compact_space C (subspace_topology Ux (subspace_topology E Te Ux) C) /\
+      exists U1:set, U1 :e subspace_topology E Te Ux /\ x :e U1 /\ U1 c= C.
+  {
+    exact (locally_compact_local Ux (subspace_topology E Te Ux) x HlocUx HxUx).
+  }
+  apply HlocAtx.
+  let C.
+  assume HCpack.
+  claim HCsubUx : C c= Ux.
+  {
+    exact (andEL
+      (C c= Ux)
+      (compact_space C (subspace_topology Ux (subspace_topology E Te Ux) C))
+      (andEL
+        (C c= Ux /\ compact_space C (subspace_topology Ux (subspace_topology E Te Ux) C))
+        (exists U1:set, U1 :e subspace_topology E Te Ux /\ x :e U1 /\ U1 c= C)
+        HCpack)).
+  }
+  claim HCcompactSub :
+    compact_space C (subspace_topology Ux (subspace_topology E Te Ux) C).
+  {
+    exact (andER
+      (C c= Ux)
+      (compact_space C (subspace_topology Ux (subspace_topology E Te Ux) C))
+      (andEL
+        (C c= Ux /\ compact_space C (subspace_topology Ux (subspace_topology E Te Ux) C))
+        (exists U1:set, U1 :e subspace_topology E Te Ux /\ x :e U1 /\ U1 c= C)
+        HCpack)).
+  }
+  claim HU1pack :
+    exists U1:set, U1 :e subspace_topology E Te Ux /\ x :e U1 /\ U1 c= C.
+  {
+    exact (andER
+      (C c= Ux /\ compact_space C (subspace_topology Ux (subspace_topology E Te Ux) C))
+      (exists U1:set, U1 :e subspace_topology E Te Ux /\ x :e U1 /\ U1 c= C)
+      HCpack).
+  }
+  apply HU1pack.
+  let U1.
+  assume HU1all.
+  claim HU1sub : U1 :e subspace_topology E Te Ux.
+  {
+    exact (andEL
+      (U1 :e subspace_topology E Te Ux)
+      (x :e U1)
+      (andEL
+        (U1 :e subspace_topology E Te Ux /\ x :e U1)
+        (U1 c= C)
+        HU1all)).
+  }
+  claim HxU1 : x :e U1.
+  {
+    exact (andER
+      (U1 :e subspace_topology E Te Ux)
+      (x :e U1)
+      (andEL
+        (U1 :e subspace_topology E Te Ux /\ x :e U1)
+        (U1 c= C)
+        HU1all)).
+  }
+  claim HU1subC : U1 c= C.
+  {
+    exact (andER
+      (U1 :e subspace_topology E Te Ux /\ x :e U1)
+      (U1 c= C)
+      HU1all).
+  }
+  witness C.
+  apply andI.
+  * apply andI.
+    + exact (Subq_tra C Ux E HCsubUx HUxSubE).
+    + claim HsubTrans :
+        subspace_topology Ux (subspace_topology E Te Ux) C =
+        subspace_topology E Te C.
+      {
+        exact (ex16_1_subspace_transitive
+          E Te Ux C HtopE HUxSubE HCsubUx).
+      }
+      rewrite <- HsubTrans.
+      exact HCcompactSub.
+  * witness U1.
+    apply andI.
+    {
+      apply andI.
+      - exact (subspace_open_is_ambient_open_if_carrier_open
+          E Te Ux U1 HtopE HUxSubE HUxOpen HU1sub).
+      - exact HxU1.
+    }
+    {
+      exact HU1subC.
+    }
+}
+exact (andI
+  (topology_on E Te)
+  (forall x:set, x :e E ->
+    exists C:set,
+      C c= E /\ compact_space C (subspace_topology E Te C) /\
+      exists U1:set, U1 :e Te /\ x :e U1 /\ U1 c= C)
+  HtopE
+  Hlocal).
+Qed.
+
 (** from S53 Exercise 6a (line 692 in algtop.tex) **)
 (** LATEX VERSION: If p: E -> B is a covering map and B is locally compact Hausdorff, **)
 (** then E is locally compact Hausdorff. **)
@@ -15949,17 +16590,21 @@ Theorem ex53_6a_locally_compact_hausdorff : forall E Te B Tb p:set,
   locally_compact E Te /\ Hausdorff_space E Te.
 let E Te B Tb p.
 assume Hcov HlocB HHB.
+claim HlocE : locally_compact E Te.
+{
+  exact (covering_map_lch_base_locally_compact_upstairs
+    E Te B Tb p Hcov HlocB HHB).
+}
 claim HHE : Hausdorff_space E Te.
 {
   exact (covering_map_lch_base_Hausdorff_upstairs
     E Te B Tb p Hcov HlocB HHB).
 }
-apply andI.
-- (** Remaining gap:
-      derive local compactness upstairs from the local homeomorphism
-      structure of a covering map and local compactness on the base. **)
-  admit.
-- exact HHE.
+exact (andI
+  (locally_compact E Te)
+  (Hausdorff_space E Te)
+  HlocE
+  HHE).
 Admitted.
 
 (** from S53 Exercise 6b (line 694 in algtop.tex) **)
