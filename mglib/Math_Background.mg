@@ -12786,6 +12786,91 @@ Admitted.
 (** from S53 Exercise 6a (line 692 in algtop.tex) **)
 (** LATEX VERSION: If p: E -> B is a covering map and B is regular, then E is regular. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
+(** Infrastructure: covering map over regular base yields one-point sets closed upstairs **)
+(** Proven Bob **)
+Theorem covering_map_regular_base_one_point_sets_closed : forall E Te B Tb p:set,
+  covering_map E Te B Tb p -> regular_space B Tb -> one_point_sets_closed E Te.
+let E Te B Tb p.
+assume Hcov HregB.
+claim HHB : Hausdorff_space B Tb.
+{
+  exact (regular_space_implies_Hausdorff B Tb HregB).
+}
+claim HHE : Hausdorff_space E Te.
+{
+  exact (ex53_6a_hausdorff E Te B Tb p Hcov HHB).
+}
+exact (Hausdorff_one_point_sets_closed E Te HHE).
+Qed.
+
+(** Infrastructure: regularity criterion via closure shrinking + one-point closed **)
+(** Proven Bob **)
+Theorem regular_space_from_closure_shrink : forall X Tx:set,
+  topology_on X Tx ->
+  one_point_sets_closed X Tx ->
+  (forall x U:set, x :e X -> U :e Tx -> x :e U ->
+    exists V:set, V :e Tx /\ x :e V /\ closure_of X Tx V c= U) ->
+  regular_space X Tx.
+let X Tx.
+assume Htop Honept Hshrink.
+claim Hiff :
+  one_point_sets_closed X Tx ->
+    (regular_space X Tx <->
+      forall x U:set, x :e X -> U :e Tx -> x :e U ->
+        exists V:set, V :e Tx /\ x :e V /\ closure_of X Tx V c= U).
+{
+  exact (andEL
+    (one_point_sets_closed X Tx ->
+      (regular_space X Tx <->
+        forall x U:set, x :e X -> U :e Tx -> x :e U ->
+          exists V:set, V :e Tx /\ x :e V /\ closure_of X Tx V c= U))
+    (one_point_sets_closed X Tx ->
+      (normal_space X Tx <->
+        forall A U:set, closed_in X Tx A -> U :e Tx -> A c= U ->
+          exists V:set, V :e Tx /\ A c= V /\ closure_of X Tx V c= U))
+    (regular_normal_via_closure X Tx Htop)).
+}
+apply (iffER
+  (regular_space X Tx)
+  (forall x U:set, x :e X -> U :e Tx -> x :e U ->
+    exists V:set, V :e Tx /\ x :e V /\ closure_of X Tx V c= U)
+  (Hiff Honept)).
+exact Hshrink.
+Qed.
+
+(** Infrastructure: regularity passes to subspaces **)
+(** Proven Bob **)
+Theorem regular_space_subspace_of_regular : forall X Tx Y:set,
+  topology_on X Tx -> Y c= X ->
+  regular_space X Tx -> regular_space Y (subspace_topology X Tx Y).
+let X Tx Y.
+assume HtopX HYsub HregX.
+claim HsepPack :
+  (forall Y0:set, Y0 c= X ->
+    Hausdorff_space X Tx -> Hausdorff_space Y0 (subspace_topology X Tx Y0)) /\
+  (forall I Xi:set, Hausdorff_spaces_family I Xi ->
+    Hausdorff_space (product_space I Xi) (product_topology_full I Xi)) /\
+  (forall Y0:set, Y0 c= X ->
+    regular_space X Tx -> regular_space Y0 (subspace_topology X Tx Y0)) /\
+  (forall I Xi:set, regular_spaces_family I Xi ->
+    regular_space (product_space I Xi) (product_topology_full I Xi)).
+{
+  exact (separation_axioms_subspace_product X Tx HtopX).
+}
+apply (and4E
+  (forall Y0:set, Y0 c= X ->
+    Hausdorff_space X Tx -> Hausdorff_space Y0 (subspace_topology X Tx Y0))
+  (forall I Xi:set, Hausdorff_spaces_family I Xi ->
+    Hausdorff_space (product_space I Xi) (product_topology_full I Xi))
+  (forall Y0:set, Y0 c= X ->
+    regular_space X Tx -> regular_space Y0 (subspace_topology X Tx Y0))
+  (forall I Xi:set, regular_spaces_family I Xi ->
+    regular_space (product_space I Xi) (product_topology_full I Xi))
+  HsepPack).
+assume _ _ HregSub _.
+exact (HregSub Y HYsub HregX).
+Qed.
+
 (** Bounty 50 **)
 Theorem ex53_6a_regular : forall E Te B Tb p:set,
   covering_map E Te B Tb p -> regular_space B Tb -> regular_space E Te.
