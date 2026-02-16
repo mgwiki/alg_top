@@ -11630,7 +11630,6 @@ Admitted.
 (** LATEX VERSION: If X is path connected and x0, x1 are two points of X, then pi1(X,x0) is isomorphic to pi1(X,x1). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 20 **)
 (** Bounty 22 **)
-(** Lock Charlie 2026-02-17T22:15:29Z **)
 Theorem Corollary_52_2_path_connected_pi1_isomorphic : forall X Tx x0 x1:set,
   path_connected_space X Tx -> x0 :e X -> x1 :e X ->
   exists phi:set,
