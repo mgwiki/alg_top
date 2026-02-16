@@ -14366,7 +14366,559 @@ Theorem thm53_2_subspace_covering : forall E Te B Tb p B0:set,
     B0
     (subspace_topology B Tb B0)
     (graph (preimage_of E p B0) (fun x:set => apply_fun p x)).
-admit.
+let E Te B Tb p B0.
+assume Hcov HB0sub.
+set E0 := preimage_of E p B0.
+set p0 := graph E0 (fun x:set => apply_fun p x).
+claim Hpair : continuous_map E Te B Tb p /\ surjective_map E B p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p /\ surjective_map E B p)
+    (forall b:set, b :e B ->
+      exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+    Hcov).
+}
+claim Hcont : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    Hpair).
+}
+claim Hsurj : surjective_map E B p.
+{
+  exact (andER
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    Hpair).
+}
+claim HtopE : topology_on E Te.
+{
+  exact (continuous_map_topology_dom E Te B Tb p Hcont).
+}
+claim HtopB : topology_on B Tb.
+{
+  exact (continuous_map_topology_cod E Te B Tb p Hcont).
+}
+claim Hfun : function_on p E B.
+{
+  exact (continuous_map_function_on E Te B Tb p Hcont).
+}
+claim HE0subE : E0 c= E.
+{
+  exact (Sep_Subq E (fun x:set => apply_fun p x :e B0)).
+}
+claim HcontE0B : continuous_map E0 (subspace_topology E Te E0) B Tb p.
+{
+  exact (continuous_on_subspace_rule
+    E Te B Tb p E0
+    HtopE HtopB HE0subE Hcont).
+}
+claim HpIntoB0 : forall x:set, x :e E0 -> apply_fun p x :e B0.
+{
+  let x.
+  assume HxE0.
+  exact (SepE2 E (fun t:set => apply_fun p t :e B0) x HxE0).
+}
+claim HcontE0B0 :
+  continuous_map E0 (subspace_topology E Te E0) B0 (subspace_topology B Tb B0) p.
+{
+  exact (continuous_map_range_restrict
+    E0 (subspace_topology E Te E0)
+    B Tb p B0
+    HcontE0B
+    HB0sub
+    HpIntoB0).
+}
+claim Hfunp0 : function_on p0 E0 B0.
+{
+  let x.
+  assume HxE0.
+  rewrite (apply_fun_graph E0 (fun t:set => apply_fun p t) x HxE0).
+  exact (HpIntoB0 x HxE0).
+}
+claim Hcong : forall x:set, x :e E0 -> apply_fun p x = apply_fun p0 x.
+{
+  let x.
+  assume HxE0.
+  symmetry.
+  exact (apply_fun_graph E0 (fun t:set => apply_fun p t) x HxE0).
+}
+claim Hcontp0 :
+  continuous_map E0 (subspace_topology E Te E0) B0 (subspace_topology B Tb B0) p0.
+{
+  exact (continuous_map_congr_on
+    E0 (subspace_topology E Te E0)
+    B0 (subspace_topology B Tb B0)
+    p p0
+    HcontE0B0
+    Hfunp0
+    Hcong).
+}
+claim Hsurjp0 : surjective_map E0 B0 p0.
+{
+  prove function_on p0 E0 B0 /\
+    forall y:set, y :e B0 -> exists x:set, x :e E0 /\ apply_fun p0 x = y.
+  apply andI.
+  - exact Hfunp0.
+  - let y.
+    assume HyB0.
+    claim HyB : y :e B.
+    {
+      exact (HB0sub y HyB0).
+    }
+    claim Hex : exists x:set, x :e E /\ apply_fun p x = y.
+    {
+      exact (andER
+        (function_on p E B)
+        (forall b:set, b :e B -> exists x:set, x :e E /\ apply_fun p x = b)
+        Hsurj
+        y
+        HyB).
+    }
+    apply Hex.
+    let x.
+    assume HxPack.
+    claim HxE : x :e E.
+    {
+      exact (andEL
+        (x :e E)
+        (apply_fun p x = y)
+        HxPack).
+    }
+    claim Hpxy : apply_fun p x = y.
+    {
+      exact (andER
+        (x :e E)
+        (apply_fun p x = y)
+        HxPack).
+    }
+    claim HpxB0 : apply_fun p x :e B0.
+    {
+      rewrite Hpxy.
+      exact HyB0.
+    }
+    claim HxE0 : x :e E0.
+    {
+      exact (SepI E (fun t:set => apply_fun p t :e B0) x HxE HpxB0).
+    }
+    witness x.
+    apply andI.
+    + exact HxE0.
+    + rewrite (apply_fun_graph E0 (fun t:set => apply_fun p t) x HxE0).
+      exact Hpxy.
+}
+claim Hlocal : forall b:set, b :e B ->
+  exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U.
+{
+  exact (andER
+    (continuous_map E Te B Tb p /\ surjective_map E B p)
+    (forall b:set, b :e B ->
+      exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+    Hcov).
+}
+prove continuous_map E0 (subspace_topology E Te E0) B0 (subspace_topology B Tb B0) p0 /\
+  surjective_map E0 B0 p0 /\
+  (forall b:set, b :e B0 ->
+    exists U:set, U :e subspace_topology B Tb B0 /\ b :e U /\
+      evenly_covered E0 (subspace_topology E Te E0) B0 (subspace_topology B Tb B0) p0 U).
+apply andI.
+- apply andI.
+  + exact Hcontp0.
+  + exact Hsurjp0.
+- let b.
+  assume Hb0.
+  claim HbB : b :e B.
+  {
+    exact (HB0sub b Hb0).
+  }
+  apply (Hlocal b HbB).
+  let U.
+  assume HUpack.
+  claim HUtb : U :e Tb.
+  {
+    exact (andEL
+      (U :e Tb)
+      (b :e U)
+      (andEL
+        (U :e Tb /\ b :e U)
+        (evenly_covered E Te B Tb p U)
+        HUpack)).
+  }
+  claim HbU : b :e U.
+  {
+    exact (andER
+      (U :e Tb)
+      (b :e U)
+      (andEL
+        (U :e Tb /\ b :e U)
+        (evenly_covered E Te B Tb p U)
+        HUpack)).
+  }
+  set U0 := U :/\: B0.
+  claim HevenU : evenly_covered E Te B Tb p U.
+  {
+    exact (andER
+      (U :e Tb /\ b :e U)
+      (evenly_covered E Te B Tb p U)
+      HUpack).
+  }
+  witness U0.
+  apply andI.
+  + apply andI.
+    * exact (subspace_topologyI B Tb B0 U HUtb).
+    * exact (binintersectI U B0 b HbU Hb0).
+  + prove U0 :e subspace_topology B Tb B0 /\
+      exists slices0:set,
+        slices0 c= subspace_topology E Te E0 /\
+        pairwise_disjoint slices0 /\
+        Union slices0 = preimage_of E0 p0 U0 /\
+        (forall V0:set, V0 :e slices0 ->
+          homeomorphism V0 (subspace_topology E0 (subspace_topology E Te E0) V0)
+            U0 (subspace_topology B0 (subspace_topology B Tb B0) U0)
+            (graph V0 (fun x:set => apply_fun p0 x))).
+    apply andI.
+    * exact (subspace_topologyI B Tb B0 U HUtb).
+    * claim HslicesEx : exists slices:set,
+        slices c= Te /\
+        pairwise_disjoint slices /\
+        Union slices = preimage_of E p U /\
+        (forall V:set, V :e slices ->
+          homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+            (graph V (fun x:set => apply_fun p x))).
+      {
+        exact (andER
+          (U :e Tb)
+          (exists slices:set,
+            slices c= Te /\
+            pairwise_disjoint slices /\
+            Union slices = preimage_of E p U /\
+            (forall V:set, V :e slices ->
+              homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+                (graph V (fun x:set => apply_fun p x))))
+          HevenU).
+      }
+      apply HslicesEx.
+      let slices.
+      assume Hslices.
+      claim Htrip :
+        (slices c= Te /\ pairwise_disjoint slices) /\
+        Union slices = preimage_of E p U.
+      {
+        exact (andEL
+          ((slices c= Te /\ pairwise_disjoint slices) /\
+           Union slices = preimage_of E p U)
+          (forall V:set, V :e slices ->
+            homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+              (graph V (fun x:set => apply_fun p x)))
+          Hslices).
+      }
+      claim Hsub : slices c= Te.
+      {
+        exact (andEL
+          (slices c= Te)
+          (pairwise_disjoint slices)
+          (andEL
+            (slices c= Te /\ pairwise_disjoint slices)
+            (Union slices = preimage_of E p U)
+            Htrip)).
+      }
+      claim Hpd : pairwise_disjoint slices.
+      {
+        exact (andER
+          (slices c= Te)
+          (pairwise_disjoint slices)
+          (andEL
+            (slices c= Te /\ pairwise_disjoint slices)
+            (Union slices = preimage_of E p U)
+            Htrip)).
+      }
+      claim Hunion : Union slices = preimage_of E p U.
+      {
+        exact (andER
+          (slices c= Te /\ pairwise_disjoint slices)
+          (Union slices = preimage_of E p U)
+          Htrip).
+      }
+      set slices0 := {V :/\: E0|V :e slices}.
+      claim Hsub0 : slices0 c= subspace_topology E Te E0.
+      {
+        let A.
+        assume HA.
+        apply (ReplE slices (fun V:set => V :/\: E0) A HA).
+        let V.
+        assume HVpack.
+        claim HVslice : V :e slices.
+        {
+          exact (andEL
+            (V :e slices)
+            (A = V :/\: E0)
+            HVpack).
+        }
+        claim HAeq : A = V :/\: E0.
+        {
+          exact (andER
+            (V :e slices)
+            (A = V :/\: E0)
+            HVpack).
+        }
+        claim HVopen : V :e Te.
+        {
+          exact (Hsub V HVslice).
+        }
+        rewrite HAeq.
+        exact (subspace_topologyI E Te E0 V HVopen).
+      }
+      claim Hpd0 : pairwise_disjoint slices0.
+      {
+        let A B1.
+        assume HAw HBw Hneq.
+        apply (ReplE slices (fun V:set => V :/\: E0) A HAw).
+        let VA.
+        assume HVApack.
+        claim HVA : VA :e slices.
+        {
+          exact (andEL
+            (VA :e slices)
+            (A = VA :/\: E0)
+            HVApack).
+        }
+        claim HAeq : A = VA :/\: E0.
+        {
+          exact (andER
+            (VA :e slices)
+            (A = VA :/\: E0)
+            HVApack).
+        }
+        apply (ReplE slices (fun V:set => V :/\: E0) B1 HBw).
+        let VB.
+        assume HVBpack.
+        claim HVB : VB :e slices.
+        {
+          exact (andEL
+            (VB :e slices)
+            (B1 = VB :/\: E0)
+            HVBpack).
+        }
+        claim HBeq : B1 = VB :/\: E0.
+        {
+          exact (andER
+            (VB :e slices)
+            (B1 = VB :/\: E0)
+            HVBpack).
+        }
+        claim HVneq : VA <> VB.
+        {
+          assume HVeq.
+          claim HABeq : A = B1.
+          {
+            rewrite HAeq.
+            rewrite HBeq.
+            rewrite HVeq.
+            reflexivity.
+          }
+          exact (Hneq HABeq).
+        }
+        claim Hdisj : VA :/\: VB = Empty.
+        {
+          exact (Hpd VA VB HVA HVB HVneq).
+        }
+        apply set_ext.
+        - let z.
+          assume Hz.
+          claim HzA : z :e A.
+          {
+            exact (binintersectE1 A B1 z Hz).
+          }
+          claim HzB : z :e B1.
+          {
+            exact (binintersectE2 A B1 z Hz).
+          }
+          claim HzVA0 : z :e VA :/\: E0.
+          {
+            rewrite <- HAeq.
+            exact HzA.
+          }
+          claim HzVB0 : z :e VB :/\: E0.
+          {
+            rewrite <- HBeq.
+            exact HzB.
+          }
+          claim HzVA : z :e VA.
+          {
+            exact (binintersectE1 VA E0 z HzVA0).
+          }
+          claim HzVB : z :e VB.
+          {
+            exact (binintersectE1 VB E0 z HzVB0).
+          }
+          claim HzInt : z :e VA :/\: VB.
+          {
+            exact (binintersectI VA VB z HzVA HzVB).
+          }
+          exact (mem_eqR z (VA :/\: VB) Empty Hdisj HzInt).
+        - let z.
+          assume HzE.
+          exact (EmptyE z HzE (z :e A :/\: B1)).
+      }
+      witness slices0.
+      apply andI.
+      - apply andI.
+        + apply andI.
+          * exact Hsub0.
+          * exact Hpd0.
+        + claim Hunion0 : Union slices0 = preimage_of E0 p0 U0.
+          {
+            apply set_ext.
+            - let z.
+              assume HzUnion.
+              apply (UnionE slices0 z HzUnion).
+              let V0.
+              assume HV0pack.
+              claim HzV0 : z :e V0.
+              {
+                exact (andEL
+                  (z :e V0)
+                  (V0 :e slices0)
+                  HV0pack).
+              }
+              claim HV0in : V0 :e slices0.
+              {
+                exact (andER
+                  (z :e V0)
+                  (V0 :e slices0)
+                  HV0pack).
+              }
+              apply (ReplE slices (fun V:set => V :/\: E0) V0 HV0in).
+              let V.
+              assume HVpack.
+              claim HVslice : V :e slices.
+              {
+                exact (andEL
+                  (V :e slices)
+                  (V0 = V :/\: E0)
+                  HVpack).
+              }
+              claim HV0eq : V0 = V :/\: E0.
+              {
+                exact (andER
+                  (V :e slices)
+                  (V0 = V :/\: E0)
+                  HVpack).
+              }
+              claim HzInt : z :e V :/\: E0.
+              {
+                rewrite <- HV0eq.
+                exact HzV0.
+              }
+              claim HzV : z :e V.
+              {
+                exact (binintersectE1 V E0 z HzInt).
+              }
+              claim HzE0 : z :e E0.
+              {
+                exact (binintersectE2 V E0 z HzInt).
+              }
+              claim HzUnionSlices : z :e Union slices.
+              {
+                exact (UnionI slices z V HzV HVslice).
+              }
+              claim HzPreU : z :e preimage_of E p U.
+              {
+                exact (mem_eqR
+                  z
+                  (Union slices)
+                  (preimage_of E p U)
+                  Hunion
+                  HzUnionSlices).
+              }
+              claim HzU : apply_fun p z :e U.
+              {
+                exact (SepE2 E (fun t:set => apply_fun p t :e U) z HzPreU).
+              }
+              claim HzB0 : apply_fun p z :e B0.
+              {
+                exact (SepE2 E (fun t:set => apply_fun p t :e B0) z HzE0).
+              }
+              claim Hgraphz : apply_fun p0 z = apply_fun p z.
+              {
+                exact (apply_fun_graph E0 (fun t:set => apply_fun p t) z HzE0).
+              }
+              claim HzU0 : apply_fun p0 z :e U0.
+              {
+                rewrite Hgraphz.
+                exact (binintersectI U B0 (apply_fun p z) HzU HzB0).
+              }
+              exact (SepI E0 (fun t:set => apply_fun p0 t :e U0) z HzE0 HzU0).
+            - let z.
+              assume HzPre0.
+              claim HzE0 : z :e E0.
+              {
+                exact (SepE1 E0 (fun t:set => apply_fun p0 t :e U0) z HzPre0).
+              }
+              claim Hzp0U0 : apply_fun p0 z :e U0.
+              {
+                exact (SepE2 E0 (fun t:set => apply_fun p0 t :e U0) z HzPre0).
+              }
+              claim Hgraphz : apply_fun p0 z = apply_fun p z.
+              {
+                exact (apply_fun_graph E0 (fun t:set => apply_fun p t) z HzE0).
+              }
+              claim HzpU0 : apply_fun p z :e U0.
+              {
+                rewrite <- Hgraphz.
+                exact Hzp0U0.
+              }
+              claim HzpU : apply_fun p z :e U.
+              {
+                exact (binintersectE1 U B0 (apply_fun p z) HzpU0).
+              }
+              claim HzE : z :e E.
+              {
+                exact (SepE1 E (fun t:set => apply_fun p t :e B0) z HzE0).
+              }
+              claim HzPreU : z :e preimage_of E p U.
+              {
+                exact (SepI E (fun t:set => apply_fun p t :e U) z HzE HzpU).
+              }
+              claim HzUnionSlices : z :e Union slices.
+              {
+                exact (mem_eqL
+                  z
+                  (Union slices)
+                  (preimage_of E p U)
+                  Hunion
+                  HzPreU).
+              }
+              apply (UnionE slices z HzUnionSlices).
+              let V.
+              assume HVpack.
+              claim HzV : z :e V.
+              {
+                exact (andEL
+                  (z :e V)
+                  (V :e slices)
+                  HVpack).
+              }
+              claim HVslice : V :e slices.
+              {
+                exact (andER
+                  (z :e V)
+                  (V :e slices)
+                  HVpack).
+              }
+              claim HzInt : z :e V :/\: E0.
+              {
+                exact (binintersectI V E0 z HzV HzE0).
+              }
+              claim HVin0 : V :/\: E0 :e slices0.
+              {
+                exact (ReplI slices (fun V0:set => V0 :/\: E0) V HVslice).
+              }
+              exact (UnionI slices0 z (V :/\: E0) HzInt HVin0).
+          }
+          exact Hunion0.
+      - admit.
 Admitted.
 
 (** Infrastructure: Product of two maps f x g : X x X' -> Y x Y' **)
