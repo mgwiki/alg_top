@@ -1,5 +1,5 @@
 (** Balance Alice 1000 **)
-(** Balance Bob 1030 **)
+(** Balance Bob 1060 **)
 (** Balance Charlie 1000 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -8438,13 +8438,158 @@ Admitted.
 
 (** from S51 Lemma 51.1 (line 125 in algtop.tex): path homotopy reflexivity **)
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Bob 30 **)
+(** Proven Bob **)
 Theorem Lemma_51_1_path_homotopy_refl : forall X Tx x0 x1 f:set,
   continuous_map unit_interval unit_interval_topology X Tx f ->
   apply_fun f 0 = x0 -> apply_fun f 1 = x1 ->
   path_homotopic X Tx x0 x1 f f.
-admit.
-Admitted.
+let X Tx x0 x1 f.
+assume Hf H0 H1.
+prove continuous_map unit_interval unit_interval_topology X Tx f /\
+  continuous_map unit_interval unit_interval_topology X Tx f /\
+  apply_fun f 0 = x0 /\ apply_fun f 1 = x1 /\
+  apply_fun f 0 = x0 /\ apply_fun f 1 = x1 /\
+  exists F:set,
+    continuous_map unit_square unit_square_topology X Tx F /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 0) = apply_fun f s) /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 1) = apply_fun f s) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (0, t) = x0) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (1, t) = x1).
+apply andI.
+- exact (and6I
+    (continuous_map unit_interval unit_interval_topology X Tx f)
+    (continuous_map unit_interval unit_interval_topology X Tx f)
+    (apply_fun f 0 = x0)
+    (apply_fun f 1 = x1)
+    (apply_fun f 0 = x0)
+    (apply_fun f 1 = x1)
+    Hf Hf H0 H1 H0 H1).
+- witness (compose_fun unit_square (projection_map1 unit_interval unit_interval) f).
+  claim Lcont:
+    continuous_map unit_square unit_square_topology X Tx
+      (compose_fun unit_square (projection_map1 unit_interval unit_interval) f).
+  {
+    exact (composition_continuous
+      unit_square unit_square_topology
+      unit_interval unit_interval_topology
+      X Tx
+      (projection_map1 unit_interval unit_interval) f
+      (andEL
+        (continuous_map
+          (setprod unit_interval unit_interval)
+          (product_topology unit_interval unit_interval_topology unit_interval unit_interval_topology)
+          unit_interval unit_interval_topology
+          (projection_map1 unit_interval unit_interval))
+        (continuous_map
+          (setprod unit_interval unit_interval)
+          (product_topology unit_interval unit_interval_topology unit_interval unit_interval_topology)
+          unit_interval unit_interval_topology
+          (projection_map2 unit_interval unit_interval))
+        (projection_maps_continuous
+          unit_interval unit_interval_topology
+          unit_interval unit_interval_topology
+          unit_interval_topology_on
+          unit_interval_topology_on))
+      Hf).
+  }
+  claim Ls0: forall s:set, s :e unit_interval ->
+    apply_fun (compose_fun unit_square (projection_map1 unit_interval unit_interval) f) (s, 0)
+    = apply_fun f s.
+  {
+    let s.
+    assume Hs.
+    rewrite (compose_fun_apply
+      unit_square
+      (projection_map1 unit_interval unit_interval)
+      f
+      (s, 0)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 0 Hs zero_in_unit_interval)).
+    rewrite (projection1_apply
+      unit_interval unit_interval
+      (s, 0)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 0 Hs zero_in_unit_interval)).
+    rewrite tuple_2_0_eq.
+    exact (fun P H => H).
+  }
+  claim Ls1: forall s:set, s :e unit_interval ->
+    apply_fun (compose_fun unit_square (projection_map1 unit_interval unit_interval) f) (s, 1)
+    = apply_fun f s.
+  {
+    let s.
+    assume Hs.
+    rewrite (compose_fun_apply
+      unit_square
+      (projection_map1 unit_interval unit_interval)
+      f
+      (s, 1)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 1 Hs one_in_unit_interval)).
+    rewrite (projection1_apply
+      unit_interval unit_interval
+      (s, 1)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 1 Hs one_in_unit_interval)).
+    rewrite tuple_2_0_eq.
+    exact (fun P H => H).
+  }
+  claim Lt0: forall t:set, t :e unit_interval ->
+    apply_fun (compose_fun unit_square (projection_map1 unit_interval unit_interval) f) (0, t)
+    = x0.
+  {
+    let t.
+    assume Ht.
+    rewrite (compose_fun_apply
+      unit_square
+      (projection_map1 unit_interval unit_interval)
+      f
+      (0, t)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 0 t zero_in_unit_interval Ht)).
+    rewrite (projection1_apply
+      unit_interval unit_interval
+      (0, t)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 0 t zero_in_unit_interval Ht)).
+    rewrite tuple_2_0_eq.
+    exact H0.
+  }
+  claim Lt1: forall t:set, t :e unit_interval ->
+    apply_fun (compose_fun unit_square (projection_map1 unit_interval unit_interval) f) (1, t)
+    = x1.
+  {
+    let t.
+    assume Ht.
+    rewrite (compose_fun_apply
+      unit_square
+      (projection_map1 unit_interval unit_interval)
+      f
+      (1, t)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 1 t one_in_unit_interval Ht)).
+    rewrite (projection1_apply
+      unit_interval unit_interval
+      (1, t)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 1 t one_in_unit_interval Ht)).
+    rewrite tuple_2_0_eq.
+    exact H1.
+  }
+  exact (and5I
+    (continuous_map unit_square unit_square_topology X Tx
+      (compose_fun unit_square (projection_map1 unit_interval unit_interval) f))
+    (forall s:set, s :e unit_interval ->
+      apply_fun (compose_fun unit_square (projection_map1 unit_interval unit_interval) f) (s, 0)
+      = apply_fun f s)
+    (forall s:set, s :e unit_interval ->
+      apply_fun (compose_fun unit_square (projection_map1 unit_interval unit_interval) f) (s, 1)
+      = apply_fun f s)
+    (forall t:set, t :e unit_interval ->
+      apply_fun (compose_fun unit_square (projection_map1 unit_interval unit_interval) f) (0, t)
+      = x0)
+    (forall t:set, t :e unit_interval ->
+      apply_fun (compose_fun unit_square (projection_map1 unit_interval unit_interval) f) (1, t)
+      = x1)
+    Lcont Ls0 Ls1 Lt0 Lt1).
+Qed.
 
 (** from S51 Lemma 51.1 (line 125 in algtop.tex): path homotopy symmetry **)
 (** EFFORT: 2 lines textbook, difficulty 3/10, USD 40 **)
