@@ -1,6 +1,6 @@
 # Welcome to algebraic topology mgwiki!
 
-This is a wiki for formal mathematics written in the Megalodon system ([1],[2]).
+This is a wiki for formal mathematics written in the Megalodon system ([1],[2]). 
 
 Megalodon is an interactive theorem prover/proof checker based on higher-order Tarski-Grothendieck set theory. It is the successor system to Egal ([3]).
 
