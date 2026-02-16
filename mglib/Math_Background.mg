@@ -1,4 +1,4 @@
-(** Balance Alice 1010 **)
+(** Balance Alice 1120 **)
 (** Balance Bob 1100 **)
 (** Balance Charlie 1000 **)
 
@@ -9990,21 +9990,133 @@ Admitted.
 
 (** from S51 (line 200 in algtop.tex): path product starts at f(0) **)
 (** EFFORT: 3 lines textbook, difficulty 4/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Alice 2026-02-17T19:30:00 **)
+(** Collected Alice 55 **)
+(** Proven Alice **)
 Theorem path_concat_at_zero : forall f g:set,
   apply_fun (path_concat f g) 0 = apply_fun f 0.
-admit.
-Admitted.
+let f g.
+claim Hmem : (0, apply_fun f (mul_SNo 2 0)) :e path_concat f g.
+{
+  prove (0, apply_fun f (mul_SNo 2 0)) :e
+    {(t, apply_fun f (mul_SNo 2 t)) | t :e unit_interval_left_half}
+    :\/:
+    {(t, apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1))) | t :e unit_interval_right_half}.
+  apply binunionI1.
+  exact (ReplI unit_interval_left_half
+    (fun t:set => (t, apply_fun f (mul_SNo 2 t)))
+    0 zero_in_unit_interval_left_half).
+}
+claim Huniq : forall y:set, (0, y) :e path_concat f g -> y = apply_fun f (mul_SNo 2 0).
+{
+  let y.
+  prove (0, y) :e
+    {(t, apply_fun f (mul_SNo 2 t)) | t :e unit_interval_left_half}
+    :\/:
+    {(t, apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1))) | t :e unit_interval_right_half}
+    -> y = apply_fun f (mul_SNo 2 0).
+  assume Hy.
+  apply (binunionE
+    {(t, apply_fun f (mul_SNo 2 t)) | t :e unit_interval_left_half}
+    {(t, apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1))) | t :e unit_interval_right_half}
+    (0, y) Hy).
+  - assume Hyleft.
+    apply (ReplE_impred unit_interval_left_half
+      (fun t:set => (t, apply_fun f (mul_SNo 2 t)))
+      (0, y) Hyleft).
+    let t. assume Ht Heq.
+    claim Ht0 : 0 = t.
+    { exact (pair_eq_fst 0 y t (apply_fun f (mul_SNo 2 t)) Heq). }
+    claim Hyval : y = apply_fun f (mul_SNo 2 t).
+    { exact (pair_eq_snd 0 y t (apply_fun f (mul_SNo 2 t)) Heq). }
+    exact (Ht0 (fun a b:set => y = apply_fun f (mul_SNo 2 b)) Hyval).
+  - assume Hyright.
+    apply (ReplE_impred unit_interval_right_half
+      (fun t:set => (t, apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1))))
+      (0, y) Hyright).
+    let t. assume Ht Heq.
+    claim Ht0 : 0 = t.
+    { exact (pair_eq_fst 0 y t (apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1))) Heq). }
+    claim H0rh : 0 :e unit_interval_right_half.
+    { exact (Ht0 (fun a b:set => b :e unit_interval_right_half) Ht). }
+    exact (FalseE
+      (SepE2 unit_interval (fun s:set => ~ (Rlt s (eps_ 1))) 0 H0rh eps_1_pos_R)
+      (y = apply_fun f (mul_SNo 2 0))).
+}
+prove Eps_i (fun y:set => (0, y) :e path_concat f g) = apply_fun f 0.
+claim Heps : Eps_i (fun y:set => (0, y) :e path_concat f g) = apply_fun f (mul_SNo 2 0).
+{ exact (Eps_i_unique (fun y:set => (0, y) :e path_concat f g) (apply_fun f (mul_SNo 2 0)) Hmem Huniq). }
+rewrite Heps.
+rewrite (mul_SNo_zeroR 2 SNo_2).
+exact (fun P H => H).
+Qed.
 
 (** from S51 (line 200 in algtop.tex): path product ends at g(1) **)
 (** EFFORT: 3 lines textbook, difficulty 4/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Alice 2026-02-17T19:30:00 **)
+(** Collected Alice 55 **)
+(** Proven Alice **)
 Theorem path_concat_at_one : forall f g:set,
   apply_fun (path_concat f g) 1 = apply_fun g 1.
-admit.
-Admitted.
+let f g.
+claim Hmem : (1, apply_fun g (add_SNo (mul_SNo 2 1) (minus_SNo 1))) :e path_concat f g.
+{
+  prove (1, apply_fun g (add_SNo (mul_SNo 2 1) (minus_SNo 1))) :e
+    {(t, apply_fun f (mul_SNo 2 t)) | t :e unit_interval_left_half}
+    :\/:
+    {(t, apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1))) | t :e unit_interval_right_half}.
+  apply binunionI2.
+  exact (ReplI unit_interval_right_half
+    (fun t:set => (t, apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1))))
+    1 one_in_unit_interval_right_half).
+}
+claim Huniq : forall y:set, (1, y) :e path_concat f g -> y = apply_fun g (add_SNo (mul_SNo 2 1) (minus_SNo 1)).
+{
+  let y.
+  prove (1, y) :e
+    {(t, apply_fun f (mul_SNo 2 t)) | t :e unit_interval_left_half}
+    :\/:
+    {(t, apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1))) | t :e unit_interval_right_half}
+    -> y = apply_fun g (add_SNo (mul_SNo 2 1) (minus_SNo 1)).
+  assume Hy.
+  apply (binunionE
+    {(t, apply_fun f (mul_SNo 2 t)) | t :e unit_interval_left_half}
+    {(t, apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1))) | t :e unit_interval_right_half}
+    (1, y) Hy).
+  - assume Hyleft.
+    apply (ReplE_impred unit_interval_left_half
+      (fun t:set => (t, apply_fun f (mul_SNo 2 t)))
+      (1, y) Hyleft).
+    let t. assume Ht Heq.
+    claim Ht1 : 1 = t.
+    { exact (pair_eq_fst 1 y t (apply_fun f (mul_SNo 2 t)) Heq). }
+    claim H1lh : 1 :e unit_interval_left_half.
+    { exact (Ht1 (fun a b:set => b :e unit_interval_left_half) Ht). }
+    exact (FalseE
+      (SepE2 unit_interval (fun s:set => ~ (Rlt (eps_ 1) s)) 1 H1lh eps_1_lt1_R)
+      (y = apply_fun g (add_SNo (mul_SNo 2 1) (minus_SNo 1)))).
+  - assume Hyright.
+    apply (ReplE_impred unit_interval_right_half
+      (fun t:set => (t, apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1))))
+      (1, y) Hyright).
+    let t. assume Ht Heq.
+    claim Ht1 : 1 = t.
+    { exact (pair_eq_fst 1 y t (apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1))) Heq). }
+    claim Hyval : y = apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1)).
+    { exact (pair_eq_snd 1 y t (apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1))) Heq). }
+    exact (Ht1 (fun a b:set => y = apply_fun g (add_SNo (mul_SNo 2 b) (minus_SNo 1))) Hyval).
+}
+prove Eps_i (fun y:set => (1, y) :e path_concat f g) = apply_fun g 1.
+claim Heps : Eps_i (fun y:set => (1, y) :e path_concat f g) = apply_fun g (add_SNo (mul_SNo 2 1) (minus_SNo 1)).
+{ exact (Eps_i_unique (fun y:set => (1, y) :e path_concat f g) (apply_fun g (add_SNo (mul_SNo 2 1) (minus_SNo 1))) Hmem Huniq). }
+rewrite Heps.
+rewrite (mul_SNo_oneR 2 SNo_2).
+claim H2m1 : add_SNo 2 (minus_SNo 1) = 1.
+{ claim H2eq : 2 = add_SNo 1 1.
+  { exact (fun Q HQ => add_SNo_1_1_2 (fun a b:set => Q b a) HQ). }
+  rewrite H2eq.
+  exact (add_SNo_minus_R2 1 1 SNo_1 SNo_1). }
+rewrite H2m1.
+exact (fun Q H => H).
+Qed.
 
 (** from S51 (line 208 in algtop.tex): path product is well-defined on homotopy classes **)
 (** LATEX VERSION: [f] times [g] = [f times g] is well-defined on path-homotopy classes. **)
