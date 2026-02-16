@@ -1,4 +1,4 @@
-(** Balance Alice 1340 **)
+(** Balance Alice 1460 **)
 (** Balance Bob 1100 **)
 (** Balance Charlie 1000 **)
 
@@ -10524,15 +10524,230 @@ Qed.
 
 (** from S51 (line 200 in algtop.tex): path product is continuous **)
 (** EFFORT: 6 lines textbook, difficulty 6/10, USD 120 **)
-(** Bounty 120 **)
+(** Collected Alice 120 **)
+(** Proven Alice **)
 Theorem path_concat_continuous : forall X Tx x0 x1 x2 f g:set,
   continuous_map unit_interval unit_interval_topology X Tx f ->
   continuous_map unit_interval unit_interval_topology X Tx g ->
   apply_fun f 0 = x0 -> apply_fun f 1 = x1 ->
   apply_fun g 0 = x1 -> apply_fun g 1 = x2 ->
   continuous_map unit_interval unit_interval_topology X Tx (path_concat f g).
-admit.
-Admitted.
+let X Tx x0 x1 x2 f g.
+assume Hf Hg Hf0 Hf1 Hg0 Hg1.
+claim Hfon : function_on f unit_interval X.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology X Tx f Hf). }
+claim Hgon : function_on g unit_interval X.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology X Tx g Hg). }
+(** Auxiliary arithmetic: 2 times eps_1 = 1 and 2 times eps_1 minus 1 = 0 **)
+claim H2e1 : mul_SNo 2 (eps_ 1) = 1.
+{ exact (double_map_apply (eps_ 1) eps_1_in_unit_interval_left_half
+    (fun a b:set => a = 1) double_map_at_eps1). }
+claim H2em10 : add_SNo (mul_SNo 2 (eps_ 1)) (minus_SNo 1) = 0.
+{ exact (double_minus_one_map_apply (eps_ 1) eps_1_in_unit_interval_right_half
+    (fun a b:set => a = 0) double_minus_one_map_at_eps1). }
+(** Composition continuity on halves **)
+claim HfA : continuous_map unit_interval_left_half
+  (subspace_topology unit_interval unit_interval_topology unit_interval_left_half)
+  X Tx (compose_fun unit_interval_left_half double_map_left_half f).
+{ exact (composition_continuous
+    unit_interval_left_half
+    (subspace_topology unit_interval unit_interval_topology unit_interval_left_half)
+    unit_interval unit_interval_topology X Tx
+    double_map_left_half f double_map_continuous Hf). }
+claim HgB : continuous_map unit_interval_right_half
+  (subspace_topology unit_interval unit_interval_topology unit_interval_right_half)
+  X Tx (compose_fun unit_interval_right_half double_minus_one_map_right_half g).
+{ exact (composition_continuous
+    unit_interval_right_half
+    (subspace_topology unit_interval unit_interval_topology unit_interval_right_half)
+    unit_interval unit_interval_topology X Tx
+    double_minus_one_map_right_half g double_minus_one_map_continuous Hg). }
+(** Agreement on intersection LH cap RH = singleton eps_1 **)
+claim Hagree : forall x:set, x :e (unit_interval_left_half :/\: unit_interval_right_half) ->
+  apply_fun (compose_fun unit_interval_left_half double_map_left_half f) x =
+  apply_fun (compose_fun unit_interval_right_half double_minus_one_map_right_half g) x.
+{ let x. assume Hx.
+  claim HxLH : x :e unit_interval_left_half. { exact (binintersectE1 unit_interval_left_half unit_interval_right_half x Hx). }
+  claim HxRH : x :e unit_interval_right_half. { exact (binintersectE2 unit_interval_left_half unit_interval_right_half x Hx). }
+  claim Hxeq : x = eps_ 1.
+  { exact (singleton_elem x (eps_ 1)
+      (unit_interval_halves_intersection (fun a b:set => x :e a) Hx)). }
+  rewrite (compose_fun_apply unit_interval_left_half double_map_left_half f x HxLH).
+  rewrite (compose_fun_apply unit_interval_right_half double_minus_one_map_right_half g x HxRH).
+  rewrite Hxeq.
+  rewrite double_map_at_eps1.
+  rewrite double_minus_one_map_at_eps1.
+  rewrite Hf1. rewrite Hg0.
+  exact (fun Q H => H). }
+(** Pasting lemma gives continuous h on unit_interval **)
+claim Hpaste : exists h:set, continuous_map unit_interval unit_interval_topology X Tx h /\
+  ((forall x:set, x :e unit_interval_left_half -> apply_fun h x =
+    apply_fun (compose_fun unit_interval_left_half double_map_left_half f) x) /\
+   (forall x:set, x :e unit_interval_right_half -> apply_fun h x =
+    apply_fun (compose_fun unit_interval_right_half double_minus_one_map_right_half g) x)).
+{ exact (pasting_lemma unit_interval unit_interval_left_half unit_interval_right_half X
+    unit_interval_topology Tx
+    (compose_fun unit_interval_left_half double_map_left_half f)
+    (compose_fun unit_interval_right_half double_minus_one_map_right_half g)
+    unit_interval_topology_on
+    (andEL (closed_in unit_interval unit_interval_topology unit_interval_left_half)
+           (closed_in unit_interval unit_interval_topology unit_interval_right_half)
+           unit_interval_halves_closed)
+    (andER (closed_in unit_interval unit_interval_topology unit_interval_left_half)
+           (closed_in unit_interval unit_interval_topology unit_interval_right_half)
+           unit_interval_halves_closed)
+    unit_interval_halves_cover HfA HgB Hagree). }
+apply Hpaste. let h. assume Hhspec.
+apply Hhspec. assume Hch Hhsides.
+apply Hhsides. assume Hhleft Hhright.
+(** Path concat evaluation on left half via Eps_i_unique **)
+claim Hpc_left : forall t:set, t :e unit_interval_left_half ->
+  apply_fun (path_concat f g) t = apply_fun f (mul_SNo 2 t).
+{ let t. assume Ht.
+  claim Hmem : (t, apply_fun f (mul_SNo 2 t)) :e path_concat f g.
+  { prove (t, apply_fun f (mul_SNo 2 t)) :e
+      {(s, apply_fun f (mul_SNo 2 s)) | s :e unit_interval_left_half}
+      :\/:
+      {(s, apply_fun g (add_SNo (mul_SNo 2 s) (minus_SNo 1))) | s :e unit_interval_right_half}.
+    apply binunionI1.
+    exact (ReplI unit_interval_left_half (fun s:set => (s, apply_fun f (mul_SNo 2 s))) t Ht). }
+  claim Huniq : forall y:set, (t, y) :e path_concat f g -> y = apply_fun f (mul_SNo 2 t).
+  { let y.
+    prove (t, y) :e
+      {(s, apply_fun f (mul_SNo 2 s)) | s :e unit_interval_left_half}
+      :\/:
+      {(s, apply_fun g (add_SNo (mul_SNo 2 s) (minus_SNo 1))) | s :e unit_interval_right_half}
+      -> y = apply_fun f (mul_SNo 2 t).
+    assume Hy.
+    apply (binunionE
+      {(s, apply_fun f (mul_SNo 2 s)) | s :e unit_interval_left_half}
+      {(s, apply_fun g (add_SNo (mul_SNo 2 s) (minus_SNo 1))) | s :e unit_interval_right_half}
+      (t, y) Hy).
+    - assume Hyleft.
+      apply (ReplE_impred unit_interval_left_half
+        (fun s:set => (s, apply_fun f (mul_SNo 2 s)))
+        (t, y) Hyleft).
+      let s. assume Hs Heq.
+      claim Hts : t = s. { exact (pair_eq_fst t y s (apply_fun f (mul_SNo 2 s)) Heq). }
+      claim Hyval : y = apply_fun f (mul_SNo 2 s).
+      { exact (pair_eq_snd t y s (apply_fun f (mul_SNo 2 s)) Heq). }
+      exact (Hts (fun a b:set => y = apply_fun f (mul_SNo 2 b)) Hyval).
+    - assume Hyright.
+      apply (ReplE_impred unit_interval_right_half
+        (fun s:set => (s, apply_fun g (add_SNo (mul_SNo 2 s) (minus_SNo 1))))
+        (t, y) Hyright).
+      let s. assume Hs Heq.
+      claim Hts : t = s.
+      { exact (pair_eq_fst t y s (apply_fun g (add_SNo (mul_SNo 2 s) (minus_SNo 1))) Heq). }
+      claim Hyval : y = apply_fun g (add_SNo (mul_SNo 2 s) (minus_SNo 1)).
+      { exact (pair_eq_snd t y s (apply_fun g (add_SNo (mul_SNo 2 s) (minus_SNo 1))) Heq). }
+      claim HsLH : s :e unit_interval_left_half.
+      { exact (Hts (fun a b:set => a :e unit_interval_left_half) Ht). }
+      claim Hseq : s = eps_ 1.
+      { exact (singleton_elem s (eps_ 1)
+          (unit_interval_halves_intersection (fun a b:set => s :e a)
+            (binintersectI unit_interval_left_half unit_interval_right_half s HsLH Hs))). }
+      rewrite Hyval. rewrite Hts. rewrite Hseq.
+      rewrite H2em10. rewrite H2e1.
+      rewrite Hf1. rewrite Hg0.
+      exact (fun Q H => H). }
+  prove Eps_i (fun y:set => (t, y) :e path_concat f g) = apply_fun f (mul_SNo 2 t).
+  exact (Eps_i_unique (fun y:set => (t, y) :e path_concat f g)
+    (apply_fun f (mul_SNo 2 t)) Hmem Huniq). }
+(** Path concat evaluation on right half via Eps_i_unique **)
+claim Hpc_right : forall t:set, t :e unit_interval_right_half ->
+  apply_fun (path_concat f g) t = apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1)).
+{ let t. assume Ht.
+  claim Hmem : (t, apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1))) :e path_concat f g.
+  { prove (t, apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1))) :e
+      {(s, apply_fun f (mul_SNo 2 s)) | s :e unit_interval_left_half}
+      :\/:
+      {(s, apply_fun g (add_SNo (mul_SNo 2 s) (minus_SNo 1))) | s :e unit_interval_right_half}.
+    apply binunionI2.
+    exact (ReplI unit_interval_right_half
+      (fun s:set => (s, apply_fun g (add_SNo (mul_SNo 2 s) (minus_SNo 1)))) t Ht). }
+  claim Huniq : forall y:set, (t, y) :e path_concat f g ->
+    y = apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1)).
+  { let y.
+    prove (t, y) :e
+      {(s, apply_fun f (mul_SNo 2 s)) | s :e unit_interval_left_half}
+      :\/:
+      {(s, apply_fun g (add_SNo (mul_SNo 2 s) (minus_SNo 1))) | s :e unit_interval_right_half}
+      -> y = apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1)).
+    assume Hy.
+    apply (binunionE
+      {(s, apply_fun f (mul_SNo 2 s)) | s :e unit_interval_left_half}
+      {(s, apply_fun g (add_SNo (mul_SNo 2 s) (minus_SNo 1))) | s :e unit_interval_right_half}
+      (t, y) Hy).
+    - assume Hyleft.
+      apply (ReplE_impred unit_interval_left_half
+        (fun s:set => (s, apply_fun f (mul_SNo 2 s)))
+        (t, y) Hyleft).
+      let s. assume Hs Heq.
+      claim Hts : t = s.
+      { exact (pair_eq_fst t y s (apply_fun f (mul_SNo 2 s)) Heq). }
+      claim Hyval : y = apply_fun f (mul_SNo 2 s).
+      { exact (pair_eq_snd t y s (apply_fun f (mul_SNo 2 s)) Heq). }
+      claim HsRH : s :e unit_interval_right_half.
+      { exact (Hts (fun a b:set => a :e unit_interval_right_half) Ht). }
+      claim Hseq : s = eps_ 1.
+      { exact (singleton_elem s (eps_ 1)
+          (unit_interval_halves_intersection (fun a b:set => s :e a)
+            (binintersectI unit_interval_left_half unit_interval_right_half s Hs HsRH))). }
+      rewrite Hyval. rewrite Hts. rewrite Hseq.
+      rewrite H2em10. rewrite H2e1.
+      rewrite Hf1. rewrite Hg0.
+      exact (fun Q H => H).
+    - assume Hyright.
+      apply (ReplE_impred unit_interval_right_half
+        (fun s:set => (s, apply_fun g (add_SNo (mul_SNo 2 s) (minus_SNo 1))))
+        (t, y) Hyright).
+      let s. assume Hs Heq.
+      claim Hts : t = s.
+      { exact (pair_eq_fst t y s (apply_fun g (add_SNo (mul_SNo 2 s) (minus_SNo 1))) Heq). }
+      claim Hyval : y = apply_fun g (add_SNo (mul_SNo 2 s) (minus_SNo 1)).
+      { exact (pair_eq_snd t y s (apply_fun g (add_SNo (mul_SNo 2 s) (minus_SNo 1))) Heq). }
+      exact (Hts (fun a b:set => y = apply_fun g (add_SNo (mul_SNo 2 b) (minus_SNo 1))) Hyval). }
+  prove Eps_i (fun y:set => (t, y) :e path_concat f g) =
+    apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1)).
+  exact (Eps_i_unique (fun y:set => (t, y) :e path_concat f g)
+    (apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1))) Hmem Huniq). }
+(** function_on for path_concat **)
+claim Hfunc : function_on (path_concat f g) unit_interval X.
+{ prove forall t:set, t :e unit_interval -> apply_fun (path_concat f g) t :e X.
+  let t. assume Ht.
+  apply (binunionE unit_interval_left_half unit_interval_right_half t
+    (unit_interval_halves_cover (fun a b:set => t :e b) Ht)).
+  - assume HtLH. rewrite (Hpc_left t HtLH).
+    exact (Hfon (mul_SNo 2 t)
+      (double_map_apply t HtLH (fun a b:set => a :e unit_interval)
+        (double_map_function_on t HtLH))).
+  - assume HtRH. rewrite (Hpc_right t HtRH).
+    exact (Hgon (add_SNo (mul_SNo 2 t) (minus_SNo 1))
+      (double_minus_one_map_apply t HtRH (fun a b:set => a :e unit_interval)
+        (double_minus_one_map_function_on t HtRH))). }
+(** Pointwise agreement: h agrees with path_concat on all of unit_interval **)
+claim Hptwise : forall t:set, t :e unit_interval ->
+  apply_fun h t = apply_fun (path_concat f g) t.
+{ let t. assume Ht.
+  apply (binunionE unit_interval_left_half unit_interval_right_half t
+    (unit_interval_halves_cover (fun a b:set => t :e b) Ht)).
+  - assume HtLH.
+    rewrite (Hhleft t HtLH).
+    rewrite (compose_fun_apply unit_interval_left_half double_map_left_half f t HtLH).
+    rewrite (double_map_apply t HtLH).
+    rewrite (Hpc_left t HtLH).
+    exact (fun Q H => H).
+  - assume HtRH.
+    rewrite (Hhright t HtRH).
+    rewrite (compose_fun_apply unit_interval_right_half double_minus_one_map_right_half g t HtRH).
+    rewrite (double_minus_one_map_apply t HtRH).
+    rewrite (Hpc_right t HtRH).
+    exact (fun Q H => H). }
+(** Transfer continuity from h to path_concat f g **)
+exact (continuous_map_congr_on unit_interval unit_interval_topology X Tx
+  h (path_concat f g) Hch Hfunc Hptwise).
+Qed.
 
 (** from S51 (line 200 in algtop.tex): path product starts at f(0) **)
 (** EFFORT: 3 lines textbook, difficulty 4/10, USD 50 **)
