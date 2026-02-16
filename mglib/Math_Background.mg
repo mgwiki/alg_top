@@ -13643,6 +13643,95 @@ claim HV0OpenE : V0 :e Te.
     E Te Ux V0
     HtopE HUxSubE HUxOpen HV0SubOpen).
 }
+claim HexWbV1 :
+  exists Wb V1:set,
+    (Wb :e Tb /\ apply_fun p x :e Wb /\ closure_of B Tb Wb c= Vb) /\
+    (V1 :e Te /\ x :e V1 /\ V1 c= V0 /\ V1 c= preimage_of E p Wb).
+{
+  apply HshrinkVb.
+  let Wb.
+  assume HWbPack.
+  claim HWbOpen : Wb :e Tb.
+  {
+    exact (andEL
+      (Wb :e Tb)
+      (apply_fun p x :e Wb)
+      (andEL
+        (Wb :e Tb /\ apply_fun p x :e Wb)
+        (closure_of B Tb Wb c= Vb)
+        HWbPack)).
+  }
+  claim HpxWb : apply_fun p x :e Wb.
+  {
+    exact (andER
+      (Wb :e Tb)
+      (apply_fun p x :e Wb)
+      (andEL
+        (Wb :e Tb /\ apply_fun p x :e Wb)
+        (closure_of B Tb Wb c= Vb)
+        HWbPack)).
+  }
+  claim HclWbSubVb : closure_of B Tb Wb c= Vb.
+  {
+    exact (andER
+      (Wb :e Tb /\ apply_fun p x :e Wb)
+      (closure_of B Tb Wb c= Vb)
+      HWbPack).
+  }
+  set V1 := V0 :/\: preimage_of E p Wb.
+  claim HpreWbOpen : preimage_of E p Wb :e Te.
+  {
+    exact (continuous_map_preimage E Te B Tb p Hcont Wb HWbOpen).
+  }
+  claim HV1Open : V1 :e Te.
+  {
+    exact (topology_binintersect_closed E Te V0 (preimage_of E p Wb)
+      HtopE
+      HV0OpenE
+      HpreWbOpen).
+  }
+  claim HxPreWb : x :e preimage_of E p Wb.
+  {
+    exact (SepI
+      E
+      (fun z:set => apply_fun p z :e Wb)
+      x
+      HxE
+      HpxWb).
+  }
+  claim HxV1 : x :e V1.
+  {
+    exact (binintersectI
+      V0
+      (preimage_of E p Wb)
+      x
+      HxV0
+      HxPreWb).
+  }
+  claim HV1SubV0 : V1 c= V0.
+  {
+    exact (binintersect_Subq_1 V0 (preimage_of E p Wb)).
+  }
+  claim HV1SubPreWb : V1 c= preimage_of E p Wb.
+  {
+    exact (binintersect_Subq_2 V0 (preimage_of E p Wb)).
+  }
+  witness Wb.
+  witness V1.
+  apply andI.
+  - apply andI.
+    + apply andI.
+      * exact HWbOpen.
+      * exact HpxWb.
+    + exact HclWbSubVb.
+  - apply andI.
+    + apply andI.
+      * apply andI.
+        + exact HV1Open.
+        + exact HxV1.
+      * exact HV1SubV0.
+    + exact HV1SubPreWb.
+}
 claim HclEq :
   closure_of Ux (subspace_topology E Te Ux) V0 = (closure_of E Te V0) :/\: Ux.
 {
