@@ -13538,6 +13538,51 @@ claim HUxReg : regular_space Ux (subspace_topology E Te Ux).
     Hhome
     HVbReg).
 }
+claim HcontHome :
+  continuous_map Ux (subspace_topology E Te Ux)
+    Vb (subspace_topology B Tb Vb)
+    (graph Ux (fun z:set => apply_fun p z)).
+{
+  exact (andEL
+    (continuous_map Ux (subspace_topology E Te Ux)
+      Vb (subspace_topology B Tb Vb)
+      (graph Ux (fun z:set => apply_fun p z)))
+    (exists g:set,
+      continuous_map Vb (subspace_topology B Tb Vb)
+        Ux (subspace_topology E Te Ux) g /\
+      (forall u:set, u :e Ux ->
+        apply_fun g (apply_fun (graph Ux (fun z:set => apply_fun p z)) u) = u) /\
+      (forall v:set, v :e Vb ->
+        apply_fun (graph Ux (fun z:set => apply_fun p z)) (apply_fun g v) = v))
+    Hhome).
+}
+claim HgraphFunUx :
+  function_on (graph Ux (fun z:set => apply_fun p z)) Ux Vb.
+{
+  exact (continuous_map_function_on
+    Ux (subspace_topology E Te Ux)
+    Vb (subspace_topology B Tb Vb)
+    (graph Ux (fun z:set => apply_fun p z))
+    HcontHome).
+}
+claim HpxVb : apply_fun p x :e Vb.
+{
+  claim Hgx : apply_fun (graph Ux (fun z:set => apply_fun p z)) x = apply_fun p x.
+  {
+    exact (apply_fun_graph Ux (fun z:set => apply_fun p z) x HxUx).
+  }
+  rewrite <- Hgx.
+  exact (HgraphFunUx x HxUx).
+}
+claim HshrinkVb :
+  exists Wb:set, Wb :e Tb /\ apply_fun p x :e Wb /\ closure_of B Tb Wb c= Vb.
+{
+  exact (regular_space_open_nbhd_closure_sub
+    B Tb Vb (apply_fun p x)
+    HregB
+    HVbOpen
+    HpxVb).
+}
 claim HWsub : (U :/\: Ux) :e subspace_topology E Te Ux.
 {
   exact (subspace_topologyI E Te Ux U HUopen).
