@@ -1,5 +1,5 @@
 (** Balance Alice 1000 **)
-(** Balance Bob 1060 **)
+(** Balance Bob 1100 **)
 (** Balance Charlie 1000 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -8419,12 +8419,263 @@ Qed.
 
 (** from S51 Lemma 51.1 (line 125 in algtop.tex): homotopy symmetry **)
 (** EFFORT: 2 lines textbook, difficulty 3/10, USD 40 **)
-(** Bounty 40 **)
+(** Collected Bob 40 **)
+(** Proven Bob **)
 Theorem Lemma_51_1_homotopy_sym : forall X Tx Y Ty f f':set,
   homotopic_maps X Tx Y Ty f f' ->
   homotopic_maps X Tx Y Ty f' f.
-admit.
-Admitted.
+let X Tx Y Ty f f'.
+assume Hhom.
+claim Hpair:
+  continuous_map X Tx Y Ty f /\ continuous_map X Tx Y Ty f'.
+{
+  exact (andEL
+    (continuous_map X Tx Y Ty f /\ continuous_map X Tx Y Ty f')
+    (exists F:set,
+      continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        Y Ty F /\
+      (forall x:set, x :e X ->
+        apply_fun F (x, 0) = apply_fun f x) /\
+      (forall x:set, x :e X ->
+        apply_fun F (x, 1) = apply_fun f' x))
+    Hhom).
+}
+claim Hf : continuous_map X Tx Y Ty f.
+{
+  exact (andEL
+    (continuous_map X Tx Y Ty f)
+    (continuous_map X Tx Y Ty f')
+    Hpair).
+}
+claim Hf' : continuous_map X Tx Y Ty f'.
+{
+  exact (andER
+    (continuous_map X Tx Y Ty f)
+    (continuous_map X Tx Y Ty f')
+    Hpair).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (continuous_map_topology_dom X Tx Y Ty f Hf).
+}
+claim Hex :
+  exists F:set,
+    continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      Y Ty F /\
+    (forall x:set, x :e X ->
+      apply_fun F (x, 0) = apply_fun f x) /\
+    (forall x:set, x :e X ->
+      apply_fun F (x, 1) = apply_fun f' x).
+{
+  exact (andER
+    (continuous_map X Tx Y Ty f /\ continuous_map X Tx Y Ty f')
+    (exists F:set,
+      continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        Y Ty F /\
+      (forall x:set, x :e X ->
+        apply_fun F (x, 0) = apply_fun f x) /\
+      (forall x:set, x :e X ->
+        apply_fun F (x, 1) = apply_fun f' x))
+    Hhom).
+}
+apply Hex.
+let F.
+assume HF.
+claim Hcont0:
+  continuous_map (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    Y Ty F.
+{
+  exact (andEL
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      Y Ty F)
+    (forall x:set, x :e X -> apply_fun F (x, 0) = apply_fun f x)
+    (andEL
+      (continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        Y Ty F /\
+        (forall x:set, x :e X -> apply_fun F (x, 0) = apply_fun f x))
+      (forall x:set, x :e X -> apply_fun F (x, 1) = apply_fun f' x)
+      HF)).
+}
+claim H0:
+  forall x:set, x :e X -> apply_fun F (x, 0) = apply_fun f x.
+{
+  exact (andER
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      Y Ty F)
+    (forall x:set, x :e X -> apply_fun F (x, 0) = apply_fun f x)
+    (andEL
+      (continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        Y Ty F /\
+        (forall x:set, x :e X -> apply_fun F (x, 0) = apply_fun f x))
+      (forall x:set, x :e X -> apply_fun F (x, 1) = apply_fun f' x)
+      HF)).
+}
+claim H1:
+  forall x:set, x :e X -> apply_fun F (x, 1) = apply_fun f' x.
+{
+  exact (andER
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      Y Ty F /\
+      (forall x:set, x :e X -> apply_fun F (x, 0) = apply_fun f x))
+    (forall x:set, x :e X -> apply_fun F (x, 1) = apply_fun f' x)
+    HF).
+}
+prove continuous_map X Tx Y Ty f' /\
+  continuous_map X Tx Y Ty f /\
+  exists G:set,
+    continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      Y Ty G /\
+    (forall x:set, x :e X ->
+      apply_fun G (x, 0) = apply_fun f' x) /\
+    (forall x:set, x :e X ->
+      apply_fun G (x, 1) = apply_fun f x).
+apply andI.
+- apply andI.
+  + exact Hf'.
+  + exact Hf.
+- witness (compose_fun
+    (setprod X unit_interval)
+    (pair_map (setprod X unit_interval)
+      (projection_map1 X unit_interval)
+      (compose_fun (setprod X unit_interval) (projection_map2 X unit_interval) flip_unit_interval))
+    F).
+  apply andI.
+  + apply andI.
+    - exact (composition_continuous
+        (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        Y Ty
+        (pair_map (setprod X unit_interval)
+          (projection_map1 X unit_interval)
+          (compose_fun (setprod X unit_interval) (projection_map2 X unit_interval) flip_unit_interval))
+        F
+        (maps_into_products
+          (setprod X unit_interval)
+          (product_topology X Tx unit_interval unit_interval_topology)
+          X Tx
+          unit_interval unit_interval_topology
+          (projection_map1 X unit_interval)
+          (compose_fun (setprod X unit_interval) (projection_map2 X unit_interval) flip_unit_interval)
+          (andEL
+            (continuous_map
+              (setprod X unit_interval)
+              (product_topology X Tx unit_interval unit_interval_topology)
+              X Tx (projection_map1 X unit_interval))
+            (continuous_map
+              (setprod X unit_interval)
+              (product_topology X Tx unit_interval unit_interval_topology)
+              unit_interval unit_interval_topology
+              (projection_map2 X unit_interval))
+            (projection_maps_continuous
+              X Tx unit_interval unit_interval_topology
+              HtopX
+              unit_interval_topology_on))
+          (composition_continuous
+            (setprod X unit_interval)
+            (product_topology X Tx unit_interval unit_interval_topology)
+            unit_interval unit_interval_topology
+            unit_interval unit_interval_topology
+            (projection_map2 X unit_interval)
+            flip_unit_interval
+            (andER
+              (continuous_map
+                (setprod X unit_interval)
+                (product_topology X Tx unit_interval unit_interval_topology)
+                X Tx (projection_map1 X unit_interval))
+              (continuous_map
+                (setprod X unit_interval)
+                (product_topology X Tx unit_interval unit_interval_topology)
+                unit_interval unit_interval_topology
+                (projection_map2 X unit_interval))
+              (projection_maps_continuous
+                X Tx unit_interval unit_interval_topology
+                HtopX
+                unit_interval_topology_on))
+            flip_unit_interval_continuous))
+        Hcont0).
+    - let x.
+      assume Hx.
+      rewrite (compose_fun_apply
+        (setprod X unit_interval)
+        (pair_map (setprod X unit_interval)
+          (projection_map1 X unit_interval)
+          (compose_fun (setprod X unit_interval) (projection_map2 X unit_interval) flip_unit_interval))
+        F
+        (x, 0)
+        (tuple_2_setprod_by_pair_Sigma X unit_interval x 0 Hx zero_in_unit_interval)).
+      rewrite (pair_map_apply
+        (setprod X unit_interval)
+        X unit_interval
+        (projection_map1 X unit_interval)
+        (compose_fun (setprod X unit_interval) (projection_map2 X unit_interval) flip_unit_interval)
+        (x, 0)
+        (tuple_2_setprod_by_pair_Sigma X unit_interval x 0 Hx zero_in_unit_interval)).
+      rewrite (projection1_apply
+        X unit_interval
+        (x, 0)
+        (tuple_2_setprod_by_pair_Sigma X unit_interval x 0 Hx zero_in_unit_interval)).
+      rewrite (compose_fun_apply
+        (setprod X unit_interval)
+        (projection_map2 X unit_interval)
+        flip_unit_interval
+        (x, 0)
+        (tuple_2_setprod_by_pair_Sigma X unit_interval x 0 Hx zero_in_unit_interval)).
+      rewrite (projection2_apply
+        X unit_interval
+        (x, 0)
+        (tuple_2_setprod_by_pair_Sigma X unit_interval x 0 Hx zero_in_unit_interval)).
+      rewrite tuple_2_1_eq.
+      rewrite flip_unit_interval_at_0.
+      rewrite tuple_2_0_eq.
+      exact (H1 x Hx).
+  + let x.
+    assume Hx.
+    rewrite (compose_fun_apply
+      (setprod X unit_interval)
+      (pair_map (setprod X unit_interval)
+        (projection_map1 X unit_interval)
+        (compose_fun (setprod X unit_interval) (projection_map2 X unit_interval) flip_unit_interval))
+      F
+      (x, 1)
+      (tuple_2_setprod_by_pair_Sigma X unit_interval x 1 Hx one_in_unit_interval)).
+    rewrite (pair_map_apply
+      (setprod X unit_interval)
+      X unit_interval
+      (projection_map1 X unit_interval)
+      (compose_fun (setprod X unit_interval) (projection_map2 X unit_interval) flip_unit_interval)
+      (x, 1)
+      (tuple_2_setprod_by_pair_Sigma X unit_interval x 1 Hx one_in_unit_interval)).
+    rewrite (projection1_apply
+      X unit_interval
+      (x, 1)
+      (tuple_2_setprod_by_pair_Sigma X unit_interval x 1 Hx one_in_unit_interval)).
+    rewrite (compose_fun_apply
+      (setprod X unit_interval)
+      (projection_map2 X unit_interval)
+      flip_unit_interval
+      (x, 1)
+      (tuple_2_setprod_by_pair_Sigma X unit_interval x 1 Hx one_in_unit_interval)).
+    rewrite (projection2_apply
+      X unit_interval
+      (x, 1)
+      (tuple_2_setprod_by_pair_Sigma X unit_interval x 1 Hx one_in_unit_interval)).
+    rewrite tuple_2_1_eq.
+    rewrite flip_unit_interval_at_1.
+    rewrite tuple_2_0_eq.
+    exact (H0 x Hx).
+Qed.
 
 (** from S51 Lemma 51.1 (line 125 in algtop.tex): homotopy transitivity **)
 (** EFFORT: 5 lines textbook, difficulty 5/10, USD 100 **)
@@ -8609,6 +8860,148 @@ Theorem Lemma_51_1_path_homotopy_trans : forall X Tx x0 x1 f f' f'':set,
   path_homotopic X Tx x0 x1 f f''.
 admit.
 Admitted.
+
+(** helper: flip the homotopy parameter on X x I **)
+Definition homotopy_flip_map : set -> set :=
+  fun X =>
+    pair_map (setprod X unit_interval)
+      (projection_map1 X unit_interval)
+      (compose_fun (setprod X unit_interval) (projection_map2 X unit_interval) flip_unit_interval).
+
+(** Proven Bob **)
+Theorem homotopy_flip_map_eq : forall X:set,
+  homotopy_flip_map X
+  = pair_map (setprod X unit_interval)
+      (projection_map1 X unit_interval)
+      (compose_fun (setprod X unit_interval) (projection_map2 X unit_interval) flip_unit_interval).
+let X.
+exact (fun P H => H).
+Qed.
+
+(** Proven Bob **)
+Theorem homotopy_flip_map_apply_at_zero : forall X x:set,
+  x :e X ->
+  apply_fun (homotopy_flip_map X) (x, 0) = (x, 1).
+let X x.
+assume Hx.
+rewrite (homotopy_flip_map_eq X).
+rewrite (pair_map_apply
+  (setprod X unit_interval)
+  X unit_interval
+  (projection_map1 X unit_interval)
+  (compose_fun (setprod X unit_interval) (projection_map2 X unit_interval) flip_unit_interval)
+  (x, 0)
+  (tuple_2_setprod_by_pair_Sigma X unit_interval x 0 Hx zero_in_unit_interval)).
+rewrite (projection1_apply
+  X unit_interval
+  (x, 0)
+  (tuple_2_setprod_by_pair_Sigma X unit_interval x 0 Hx zero_in_unit_interval)).
+rewrite (compose_fun_apply
+  (setprod X unit_interval)
+  (projection_map2 X unit_interval)
+  flip_unit_interval
+  (x, 0)
+  (tuple_2_setprod_by_pair_Sigma X unit_interval x 0 Hx zero_in_unit_interval)).
+rewrite (projection2_apply
+  X unit_interval
+  (x, 0)
+  (tuple_2_setprod_by_pair_Sigma X unit_interval x 0 Hx zero_in_unit_interval)).
+rewrite tuple_2_1_eq.
+rewrite flip_unit_interval_at_0.
+rewrite tuple_2_0_eq.
+exact (fun P H => H).
+Qed.
+
+(** Proven Bob **)
+Theorem homotopy_flip_map_apply_at_one : forall X x:set,
+  x :e X ->
+  apply_fun (homotopy_flip_map X) (x, 1) = (x, 0).
+let X x.
+assume Hx.
+rewrite (homotopy_flip_map_eq X).
+rewrite (pair_map_apply
+  (setprod X unit_interval)
+  X unit_interval
+  (projection_map1 X unit_interval)
+  (compose_fun (setprod X unit_interval) (projection_map2 X unit_interval) flip_unit_interval)
+  (x, 1)
+  (tuple_2_setprod_by_pair_Sigma X unit_interval x 1 Hx one_in_unit_interval)).
+rewrite (projection1_apply
+  X unit_interval
+  (x, 1)
+  (tuple_2_setprod_by_pair_Sigma X unit_interval x 1 Hx one_in_unit_interval)).
+rewrite (compose_fun_apply
+  (setprod X unit_interval)
+  (projection_map2 X unit_interval)
+  flip_unit_interval
+  (x, 1)
+  (tuple_2_setprod_by_pair_Sigma X unit_interval x 1 Hx one_in_unit_interval)).
+rewrite (projection2_apply
+  X unit_interval
+  (x, 1)
+  (tuple_2_setprod_by_pair_Sigma X unit_interval x 1 Hx one_in_unit_interval)).
+rewrite tuple_2_1_eq.
+rewrite flip_unit_interval_at_1.
+rewrite tuple_2_0_eq.
+exact (fun P H => H).
+Qed.
+
+(** Proven Bob **)
+Theorem homotopy_flip_map_continuous : forall X Tx:set,
+  topology_on X Tx ->
+  continuous_map
+    (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    (homotopy_flip_map X).
+let X Tx.
+assume Htop.
+rewrite (homotopy_flip_map_eq X).
+exact (maps_into_products
+  (setprod X unit_interval)
+  (product_topology X Tx unit_interval unit_interval_topology)
+  X Tx
+  unit_interval unit_interval_topology
+  (projection_map1 X unit_interval)
+  (compose_fun (setprod X unit_interval) (projection_map2 X unit_interval) flip_unit_interval)
+  (andEL
+    (continuous_map
+      (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      X Tx (projection_map1 X unit_interval))
+    (continuous_map
+      (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      unit_interval unit_interval_topology
+      (projection_map2 X unit_interval))
+    (projection_maps_continuous
+      X Tx unit_interval unit_interval_topology
+      Htop
+      unit_interval_topology_on))
+  (composition_continuous
+    (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    unit_interval unit_interval_topology
+    unit_interval unit_interval_topology
+    (projection_map2 X unit_interval)
+    flip_unit_interval
+    (andER
+      (continuous_map
+        (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        X Tx (projection_map1 X unit_interval))
+      (continuous_map
+        (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        unit_interval unit_interval_topology
+        (projection_map2 X unit_interval))
+      (projection_maps_continuous
+        X Tx unit_interval unit_interval_topology
+        Htop
+        unit_interval_topology_on))
+    flip_unit_interval_continuous)).
+Qed.
 
 (** from S51 Definition (line 200 in algtop.tex): product of paths **)
 (** LATEX VERSION: If f is a path from x0 to x1 and g is a path from x1 to x2, define the product fg by h(s)=f(2s) for s in the left half, g(2s-1) for s in the right half. **)
