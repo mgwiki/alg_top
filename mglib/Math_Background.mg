@@ -1,5 +1,5 @@
 (** Balance Alice 1560 **)
-(** Balance Bob 1260 **)
+(** Balance Bob 1320 **)
 (** Balance Charlie 1143 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -18893,7 +18893,8 @@ Qed.
 (** LATEX VERSION: If B is compact and p^{-1}(b) is finite for each b in B, **)
 (** then E is compact. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 60 **)
+(** Collected Bob 60 **)
+(** Proven Bob **)
 Theorem ex53_6b_compact_finite_fiber : forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
   compact_space B Tb ->
@@ -19479,11 +19480,615 @@ claim Hsubcover :
       claim Hshrink :
         exists U:set, U :e Tb /\ b :e U /\ preimage_of E p U c= Union G0.
       {
-        (** Remaining local shrinking step:
-            starting from evenly_covered U0 around b and the finite family G0
-            covering the fiber p^{-1}(b), shrink to U containing b so that
-            preimage_of E p U is contained in Union G0. **)
-        admit.
+        set FibB := {x :e E | apply_fun p x = b}.
+        claim HtripSlices :
+          (slices c= Te /\ pairwise_disjoint slices) /\
+          Union slices = preimage_of E p U0.
+        {
+          exact (andEL
+            ((slices c= Te /\ pairwise_disjoint slices) /\ Union slices = preimage_of E p U0)
+            (forall V:set, V :e slices ->
+              homeomorphism V (subspace_topology E Te V) U0 (subspace_topology B Tb U0)
+                (graph V (fun z:set => apply_fun p z)))
+            HsPack).
+        }
+        claim HsubSlices : slices c= Te.
+        {
+          exact (andEL
+            (slices c= Te)
+            (pairwise_disjoint slices)
+            (andEL
+              (slices c= Te /\ pairwise_disjoint slices)
+              (Union slices = preimage_of E p U0)
+              HtripSlices)).
+        }
+        claim HpdSlices : pairwise_disjoint slices.
+        {
+          exact (andER
+            (slices c= Te)
+            (pairwise_disjoint slices)
+            (andEL
+              (slices c= Te /\ pairwise_disjoint slices)
+              (Union slices = preimage_of E p U0)
+              HtripSlices)).
+        }
+        set PickW := fun x:set =>
+          Eps_i (fun W:set =>
+            exists Sx G:set,
+              Sx :e slices /\ x :e Sx /\
+              W :e Tb /\ b :e W /\ W c= U0 /\ G :e G0 /\
+              (forall z:set, z :e Sx -> apply_fun p z :e W -> z :e G)).
+        claim HpickWData :
+          forall x:set, x :e FibB ->
+            exists Sx G:set,
+              Sx :e slices /\ x :e Sx /\
+              PickW x :e Tb /\ b :e PickW x /\ PickW x c= U0 /\ G :e G0 /\
+              (forall z:set, z :e Sx -> apply_fun p z :e PickW x -> z :e G).
+        {
+          let x.
+          assume HxFib.
+          claim HxControl :
+            exists Sx W G:set,
+              Sx :e slices /\ x :e Sx /\
+              W :e Tb /\ b :e W /\ W c= U0 /\ G :e G0 /\
+              (forall z:set, z :e Sx -> apply_fun p z :e W -> z :e G).
+          {
+            exact (HpointLocalControl x HxFib).
+          }
+          apply HxControl.
+          let Sx.
+          assume HSxPack.
+          apply HSxPack.
+          let W.
+          assume HWPack.
+          apply HWPack.
+          let G.
+          assume HGPack.
+          claim HWitness :
+            exists Sx0 G0x:set,
+              Sx0 :e slices /\ x :e Sx0 /\
+              W :e Tb /\ b :e W /\ W c= U0 /\ G0x :e G0 /\
+              (forall z:set, z :e Sx0 -> apply_fun p z :e W -> z :e G0x).
+          {
+            witness Sx.
+            witness G.
+            exact HGPack.
+          }
+          exact (Eps_i_ax
+            (fun W0:set =>
+              exists Sx0 G0x:set,
+                Sx0 :e slices /\ x :e Sx0 /\
+                W0 :e Tb /\ b :e W0 /\ W0 c= U0 /\ G0x :e G0 /\
+                (forall z:set, z :e Sx0 -> apply_fun p z :e W0 -> z :e G0x))
+            W
+            HWitness).
+        }
+        claim HpickWOpen : forall x:set, x :e FibB -> PickW x :e Tb.
+        {
+          let x.
+          assume HxFib.
+          apply (HpickWData x HxFib).
+          let Sx.
+          assume HSxPack.
+          apply HSxPack.
+          let G.
+          assume HGPack.
+          claim Hleft5 :
+            (((((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb) /\ b :e PickW x) /\ PickW x c= U0) /\ G :e G0).
+          {
+            exact (andEL
+              (((((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb) /\ b :e PickW x) /\ PickW x c= U0) /\ G :e G0)
+              (forall z:set, z :e Sx -> apply_fun p z :e PickW x -> z :e G)
+              HGPack).
+          }
+          claim Hleft4 :
+            ((((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb) /\ b :e PickW x) /\ PickW x c= U0).
+          {
+            exact (andEL
+              ((((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb) /\ b :e PickW x) /\ PickW x c= U0)
+              (G :e G0)
+              Hleft5).
+          }
+          claim Hleft3 :
+            (((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb) /\ b :e PickW x).
+          {
+            exact (andEL
+              (((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb) /\ b :e PickW x)
+              (PickW x c= U0)
+              Hleft4).
+          }
+          claim Hleft2 :
+            ((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb).
+          {
+            exact (andEL
+              ((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb)
+              (b :e PickW x)
+              Hleft3).
+          }
+          exact (andER
+            (Sx :e slices /\ x :e Sx)
+            (PickW x :e Tb)
+            Hleft2).
+        }
+        claim HpickWb : forall x:set, x :e FibB -> b :e PickW x.
+        {
+          let x.
+          assume HxFib.
+          apply (HpickWData x HxFib).
+          let Sx.
+          assume HSxPack.
+          apply HSxPack.
+          let G.
+          assume HGPack.
+          claim Hleft4 :
+            ((((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb) /\ b :e PickW x) /\ PickW x c= U0).
+          {
+            exact (andEL
+              ((((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb) /\ b :e PickW x) /\ PickW x c= U0)
+              (G :e G0)
+              (andEL
+                (((((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb) /\ b :e PickW x) /\ PickW x c= U0) /\ G :e G0)
+                (forall z:set, z :e Sx -> apply_fun p z :e PickW x -> z :e G)
+                HGPack)).
+          }
+          exact (andER
+            ((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb)
+            (b :e PickW x)
+            (andEL
+              (((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb) /\ b :e PickW x)
+              (PickW x c= U0)
+              Hleft4)).
+        }
+        claim HpickWSubU0 : forall x:set, x :e FibB -> PickW x c= U0.
+        {
+          let x.
+          assume HxFib.
+          apply (HpickWData x HxFib).
+          let Sx.
+          assume HSxPack.
+          apply HSxPack.
+          let G.
+          assume HGPack.
+          claim Hleft5 :
+            (((((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb) /\ b :e PickW x) /\ PickW x c= U0) /\ G :e G0).
+          {
+            exact (andEL
+              (((((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb) /\ b :e PickW x) /\ PickW x c= U0) /\ G :e G0)
+              (forall z:set, z :e Sx -> apply_fun p z :e PickW x -> z :e G)
+              HGPack).
+          }
+          claim Hleft4 :
+            ((((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb) /\ b :e PickW x) /\ PickW x c= U0).
+          {
+            exact (andEL
+              ((((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb) /\ b :e PickW x) /\ PickW x c= U0)
+              (G :e G0)
+              Hleft5).
+          }
+          exact (andER
+            (((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb) /\ b :e PickW x)
+            (PickW x c= U0)
+            Hleft4).
+        }
+        claim HpickWSheetControl :
+          forall x:set, x :e FibB ->
+            exists Sx G:set,
+              Sx :e slices /\ x :e Sx /\ G :e G0 /\
+              (forall z:set, z :e Sx -> apply_fun p z :e PickW x -> z :e G).
+        {
+          let x.
+          assume HxFib.
+          apply (HpickWData x HxFib).
+          let Sx.
+          assume HSxPack.
+          apply HSxPack.
+          let G.
+          assume HGPack.
+          claim Hleft5 :
+            (((((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb) /\ b :e PickW x) /\ PickW x c= U0) /\ G :e G0).
+          {
+            exact (andEL
+              (((((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb) /\ b :e PickW x) /\ PickW x c= U0) /\ G :e G0)
+              (forall z:set, z :e Sx -> apply_fun p z :e PickW x -> z :e G)
+              HGPack).
+          }
+          claim Hleft2 :
+            ((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb).
+          {
+            exact (andEL
+              ((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb)
+              (b :e PickW x)
+              (andEL
+                (((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb) /\ b :e PickW x)
+                (PickW x c= U0)
+                (andEL
+                  ((((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb) /\ b :e PickW x) /\ PickW x c= U0)
+                  (G :e G0)
+                  Hleft5))).
+          }
+          claim HSxPair : Sx :e slices /\ x :e Sx.
+          {
+            exact (andEL
+              (Sx :e slices /\ x :e Sx)
+              (PickW x :e Tb)
+              Hleft2).
+          }
+          claim HSxSlice : Sx :e slices.
+          {
+            exact (andEL
+              (Sx :e slices)
+              (x :e Sx)
+              HSxPair).
+          }
+          claim HxSx : x :e Sx.
+          {
+            exact (andER
+              (Sx :e slices)
+              (x :e Sx)
+              HSxPair).
+          }
+          claim HGG0x : G :e G0.
+          {
+            exact (andER
+              ((((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb) /\ b :e PickW x) /\ PickW x c= U0)
+              (G :e G0)
+              Hleft5).
+          }
+          claim Hcontrol :
+            forall z:set, z :e Sx -> apply_fun p z :e PickW x -> z :e G.
+          {
+            exact (andER
+              (((((Sx :e slices /\ x :e Sx) /\ PickW x :e Tb) /\ b :e PickW x) /\ PickW x c= U0) /\ G :e G0)
+              (forall z:set, z :e Sx -> apply_fun p z :e PickW x -> z :e G)
+              HGPack).
+          }
+          witness Sx.
+          witness G.
+          apply andI.
+          - apply andI.
+            + apply andI.
+              * exact HSxSlice.
+              * exact HxSx.
+            + exact HGG0x.
+          - exact Hcontrol.
+        }
+        set WFam := {PickW x|x :e FibB}.
+        claim HWFamFin : finite WFam.
+        {
+          exact (finite_Repl
+            FibB
+            HfinFiberB
+            (fun x:set => PickW x)).
+        }
+        claim HWFamSubTb : WFam c= Tb.
+        {
+          let W.
+          assume HWWFam.
+          apply (ReplE
+            FibB
+            (fun x:set => PickW x)
+            W
+            HWWFam).
+          let x.
+          assume HxWPack.
+          claim HxFib : x :e FibB.
+          {
+            exact (andEL
+              (x :e FibB)
+              (W = PickW x)
+              HxWPack).
+          }
+          claim HWeq : W = PickW x.
+          {
+            exact (andER
+              (x :e FibB)
+              (W = PickW x)
+              HxWPack).
+          }
+          rewrite HWeq.
+          exact (HpickWOpen x HxFib).
+        }
+        claim HWFamPowTb : WFam :e Power Tb.
+        {
+          exact (PowerI Tb WFam HWFamSubTb).
+        }
+        set U := intersection_of_family B WFam.
+        claim HUtb : U :e Tb.
+        {
+          exact (finite_intersection_in_topology
+            B Tb WFam
+            HtopB
+            HWFamPowTb
+            HWFamFin).
+        }
+        claim HUb : b :e U.
+        {
+          claim HbInEachW : forall W:set, W :e WFam -> b :e W.
+          {
+            let W.
+            assume HWWFam.
+            apply (ReplE
+              FibB
+              (fun x:set => PickW x)
+              W
+              HWWFam).
+            let x.
+            assume HxWPack.
+            claim HxFib : x :e FibB.
+            {
+              exact (andEL
+                (x :e FibB)
+                (W = PickW x)
+                HxWPack).
+            }
+            claim HWeq : W = PickW x.
+            {
+              exact (andER
+                (x :e FibB)
+                (W = PickW x)
+                HxWPack).
+            }
+            rewrite HWeq.
+            exact (HpickWb x HxFib).
+          }
+          claim HUbInt : b :e intersection_of_family B WFam.
+          {
+            exact (intersection_of_familyI
+              B
+              WFam
+              b
+              HbB
+              HbInEachW).
+          }
+          exact HUbInt.
+        }
+        claim HFibNonempty : exists x:set, x :e FibB.
+        {
+          claim HsurjEx :
+            forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y.
+          {
+            exact (andER
+              (function_on p E B)
+              (forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y)
+              Hsurj).
+          }
+          apply (HsurjEx b HbB).
+          let x.
+          assume HxPack.
+          witness x.
+          exact (SepI
+            E
+            (fun x0:set => apply_fun p x0 = b)
+            x
+            (andEL (x :e E) (apply_fun p x = b) HxPack)
+            (andER (x :e E) (apply_fun p x = b) HxPack)).
+        }
+        claim HpreUSubUnionG0 : preimage_of E p U c= Union G0.
+        {
+          let z.
+          assume HzPreU.
+          claim HzE : z :e E.
+          {
+            exact (SepE1
+              E
+              (fun t:set => apply_fun p t :e U)
+              z
+              HzPreU).
+          }
+          claim HpzU : apply_fun p z :e U.
+          {
+            exact (SepE2
+              E
+              (fun t:set => apply_fun p t :e U)
+              z
+              HzPreU).
+          }
+          apply HFibNonempty.
+          let x0.
+          assume Hx0Fib.
+          claim Hx0WFam : PickW x0 :e WFam.
+          {
+            exact (ReplI
+              FibB
+              (fun x:set => PickW x)
+              x0
+              Hx0Fib).
+          }
+          claim HpzPick0 : apply_fun p z :e PickW x0.
+          {
+            exact (intersection_of_familyE2
+              B
+              WFam
+              (apply_fun p z)
+              HpzU
+              (PickW x0)
+              Hx0WFam).
+          }
+          claim HpzU0 : apply_fun p z :e U0.
+          {
+            exact ((HpickWSubU0 x0 Hx0Fib) (apply_fun p z) HpzPick0).
+          }
+          claim HzPreU0 : z :e preimage_of E p U0.
+          {
+            exact (SepI
+              E
+              (fun t:set => apply_fun p t :e U0)
+              z
+              HzE
+              HpzU0).
+          }
+          claim HzUnionSlices : z :e Union slices.
+          {
+            exact (mem_eqL
+              z
+              (Union slices)
+              (preimage_of E p U0)
+              HunionSlices
+              HzPreU0).
+          }
+          apply (UnionE slices z HzUnionSlices).
+          let V.
+          assume HVPack.
+          claim HzV : z :e V.
+          {
+            exact (andEL
+              (z :e V)
+              (V :e slices)
+              HVPack).
+          }
+          claim HVslice : V :e slices.
+          {
+            exact (andER
+              (z :e V)
+              (V :e slices)
+              HVPack).
+          }
+          claim HexxV :
+            exists xV:set, xV :e V /\ apply_fun p xV = b /\
+              forall y:set, y :e V -> apply_fun p y = b -> y = xV.
+          {
+            exact (HsliceFiberPoint slices HsPack V HVslice).
+          }
+          apply HexxV.
+          let xV.
+          assume HxVPack.
+          claim HxVV : xV :e V.
+          {
+            exact (andEL
+              (xV :e V)
+              (apply_fun p xV = b)
+              (andEL
+                (xV :e V /\ apply_fun p xV = b)
+                (forall y:set, y :e V -> apply_fun p y = b -> y = xV)
+                HxVPack)).
+          }
+          claim HpxVb : apply_fun p xV = b.
+          {
+            exact (andER
+              (xV :e V)
+              (apply_fun p xV = b)
+              (andEL
+                (xV :e V /\ apply_fun p xV = b)
+                (forall y:set, y :e V -> apply_fun p y = b -> y = xV)
+                HxVPack)).
+          }
+          claim HVopen : V :e Te.
+          {
+            exact (HsubSlices V HVslice).
+          }
+          claim HVsubE : V c= E.
+          {
+            exact (topology_elem_subset E Te V HtopE HVopen).
+          }
+          claim HxVE : xV :e E.
+          {
+            exact (HVsubE xV HxVV).
+          }
+          claim HxVFib : xV :e FibB.
+          {
+            exact (SepI
+              E
+              (fun x0:set => apply_fun p x0 = b)
+              xV
+              HxVE
+              HpxVb).
+          }
+          claim HxVWFam : PickW xV :e WFam.
+          {
+            exact (ReplI
+              FibB
+              (fun x:set => PickW x)
+              xV
+              HxVFib).
+          }
+          claim HpzPickV : apply_fun p z :e PickW xV.
+          {
+            exact (intersection_of_familyE2
+              B
+              WFam
+              (apply_fun p z)
+              HpzU
+              (PickW xV)
+              HxVWFam).
+          }
+          apply (HpickWSheetControl xV HxVFib).
+          let Sx.
+          assume HSxPack.
+          apply HSxPack.
+          let G.
+          assume HGPack.
+          claim HleftSG : (Sx :e slices /\ xV :e Sx) /\ G :e G0.
+          {
+            exact (andEL
+              ((Sx :e slices /\ xV :e Sx) /\ G :e G0)
+              (forall z0:set, z0 :e Sx -> apply_fun p z0 :e PickW xV -> z0 :e G)
+              HGPack).
+          }
+          claim HSxSlice : Sx :e slices.
+          {
+            exact (andEL
+              (Sx :e slices)
+              (xV :e Sx)
+              (andEL
+                (Sx :e slices /\ xV :e Sx)
+                (G :e G0)
+                HleftSG)).
+          }
+          claim HxVSx : xV :e Sx.
+          {
+            exact (andER
+              (Sx :e slices)
+              (xV :e Sx)
+              (andEL
+                (Sx :e slices /\ xV :e Sx)
+                (G :e G0)
+                HleftSG)).
+          }
+          claim HGG0xV : G :e G0.
+          {
+            exact (andER
+              (Sx :e slices /\ xV :e Sx)
+              (G :e G0)
+              HleftSG).
+          }
+          claim Hcontrol :
+            forall z0:set, z0 :e Sx -> apply_fun p z0 :e PickW xV -> z0 :e G.
+          {
+            exact (andER
+              ((Sx :e slices /\ xV :e Sx) /\ G :e G0)
+              (forall z0:set, z0 :e Sx -> apply_fun p z0 :e PickW xV -> z0 :e G)
+              HGPack).
+          }
+          claim HSxEqV : Sx = V.
+          {
+            exact (pairwise_disjoint_point_unique_member
+              slices
+              Sx
+              V
+              xV
+              HpdSlices
+              HSxSlice
+              HVslice
+              HxVSx
+              HxVV).
+          }
+          claim HzSx : z :e Sx.
+          {
+            rewrite HSxEqV.
+            exact HzV.
+          }
+          claim HzG : z :e G.
+          {
+            exact (Hcontrol z HzSx HpzPickV).
+          }
+          exact (UnionI G0 z G HzG HGG0xV).
+        }
+        witness U.
+        apply andI.
+        - apply andI.
+          + exact HUtb.
+          + exact HUb.
+        - exact HpreUSubUnionG0.
       }
       apply Hshrink.
       let U.
@@ -19999,7 +20604,7 @@ exact (andI
   (forall Fam:set, open_cover_of E Te Fam -> has_finite_subcover E Te Fam)
   HtopE
   Hsubcover).
-Admitted.
+Qed.
 
 (** ================================================================ **)
 (** S54: The Fundamental Group of the Circle                         **)
