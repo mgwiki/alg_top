@@ -1,6 +1,6 @@
 (** Balance Alice 1545 **)
 (** Balance Bob 1320 **)
-(** Balance Charlie 1143 **)
+(** Balance Charlie 1135 **)
 
 (** Sum of Balences and Bounties 48150 **)
 
@@ -15659,7 +15659,8 @@ Definition product_of_maps : set -> set -> set -> set -> set := fun X X' f g =>
 (** LATEX VERSION: If p: E -> B and p': E' -> B' are covering maps, then **)
 (** p x p': E x E' -> B x B' is a covering map. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-17T23:55:00 **)
 Theorem thm53_3_product_covering : forall E Te B Tb p E' Te' B' Tb' p':set,
   covering_map E Te B Tb p -> covering_map E' Te' B' Tb' p' ->
   covering_map
