@@ -12039,7 +12039,49 @@ Definition covering_map : set -> set -> set -> set -> set -> prop :=
 Theorem evenly_covered_open_subset : forall E Te B Tb p U W:set,
   evenly_covered E Te B Tb p U -> W :e Tb -> W c= U ->
   evenly_covered E Te B Tb p W.
-admit.
+let E Te B Tb p U W.
+assume Heven HW HWsub.
+claim HslicesEx : exists slices:set,
+  slices c= Te /\
+  pairwise_disjoint slices /\
+  Union slices = preimage_of E p U /\
+  (forall V:set, V :e slices ->
+    homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+      (graph V (apply_fun p))).
+{
+  exact (andER
+    (U :e Tb)
+    (exists slices:set,
+      slices c= Te /\
+      pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (apply_fun p))))
+    Heven).
+}
+prove W :e Tb /\
+  exists slices:set,
+    slices c= Te /\
+    pairwise_disjoint slices /\
+    Union slices = preimage_of E p W /\
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) W (subspace_topology B Tb W)
+        (graph V (apply_fun p))).
+apply andI.
+- exact HW.
+- claim HslicesPack : exists slices:set,
+    slices c= Te /\
+    pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (apply_fun p))).
+  { exact HslicesEx. }
+  (** Remaining gap:
+      build restricted slices over W from HslicesPack and HWsub,
+      preserving disjointness and proving union = preimage_of E p W. **)
+  admit.
 Admitted.
 
 (** from S53 text (line 545 in algtop.tex) **)
