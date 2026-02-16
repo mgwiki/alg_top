@@ -12874,6 +12874,100 @@ Qed.
 (** Bounty 50 **)
 Theorem ex53_6a_regular : forall E Te B Tb p:set,
   covering_map E Te B Tb p -> regular_space B Tb -> regular_space E Te.
+let E Te B Tb p.
+assume Hcov HregB.
+claim Hcont : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    (andEL
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+      Hcov)).
+}
+claim HtopE : topology_on E Te.
+{
+  exact (continuous_map_topology_dom E Te B Tb p Hcont).
+}
+claim HoneptE : one_point_sets_closed E Te.
+{
+  exact (covering_map_regular_base_one_point_sets_closed E Te B Tb p Hcov HregB).
+}
+apply (regular_space_from_closure_shrink E Te HtopE HoneptE).
+let x U.
+assume HxE HUopen HxU.
+claim Hloc :
+  exists Ux Vb:set,
+    Ux :e Te /\ x :e Ux /\ Vb :e Tb /\
+      homeomorphism Ux (subspace_topology E Te Ux) Vb (subspace_topology B Tb Vb)
+        (graph Ux (fun z:set => apply_fun p z)).
+{
+  exact (covering_map_local_homeomorphism E Te B Tb p x Hcov HxE).
+}
+apply Hloc.
+let Ux.
+assume HUx.
+apply HUx.
+let Vb.
+assume Hrest.
+apply (and4E
+  (Ux :e Te)
+  (x :e Ux)
+  (Vb :e Tb)
+  (homeomorphism Ux (subspace_topology E Te Ux) Vb (subspace_topology B Tb Vb)
+    (graph Ux (fun z:set => apply_fun p z)))
+  Hrest).
+assume HUxOpen HxUx HVbOpen Hhome.
+claim HUxSubE : Ux c= E.
+{
+  exact (topology_elem_subset E Te Ux HtopE HUxOpen).
+}
+claim HVbSubB : Vb c= B.
+{
+  claim HtopB : topology_on B Tb.
+  {
+    exact (continuous_map_topology_cod E Te B Tb p Hcont).
+  }
+  exact (topology_elem_subset B Tb Vb HtopB HVbOpen).
+}
+claim HVbReg : regular_space Vb (subspace_topology B Tb Vb).
+{
+  claim HtopB : topology_on B Tb.
+  {
+    exact (regular_space_topology_on B Tb HregB).
+  }
+  exact (regular_space_subspace_of_regular B Tb Vb HtopB HVbSubB HregB).
+}
+claim HUxReg : regular_space Ux (subspace_topology E Te Ux).
+{
+  exact (homeomorphism_preserves_regular
+    Ux (subspace_topology E Te Ux)
+    Vb (subspace_topology B Tb Vb)
+    (graph Ux (fun z:set => apply_fun p z))
+    Hhome
+    HVbReg).
+}
+claim HWsub : (U :/\: Ux) :e subspace_topology E Te Ux.
+{
+  exact (subspace_topologyI E Te Ux U HUopen).
+}
+claim HxW : x :e (U :/\: Ux).
+{
+  exact (binintersectI U Ux x HxU HxUx).
+}
+claim HshrinkUx :
+  exists V0:set,
+    V0 :e subspace_topology E Te Ux /\ x :e V0 /\
+      closure_of Ux (subspace_topology E Te Ux) V0 c= (U :/\: Ux).
+{
+  exact (regular_space_open_nbhd_closure_sub
+    Ux (subspace_topology E Te Ux) (U :/\: Ux) x
+    HUxReg
+    HWsub
+    HxW).
+}
 admit.
 Admitted.
 
