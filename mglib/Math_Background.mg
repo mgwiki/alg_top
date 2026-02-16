@@ -13192,6 +13192,48 @@ apply andI.
 - exact HSxSlice.
 Qed.
 
+(** Infrastructure: each slice in a union decomposition is contained in the preimage **)
+(** Proven Bob **)
+Theorem slice_subset_of_preimage_from_union : forall E p Ue slices V:set,
+  Union slices = preimage_of E p Ue ->
+  V :e slices ->
+  V c= preimage_of E p Ue.
+let E p Ue slices V.
+assume Hunion HVslice.
+let z.
+assume HzV.
+claim HzUnion : z :e Union slices.
+{
+  exact (UnionI slices z V HzV HVslice).
+}
+exact (mem_eqR
+  z
+  (Union slices)
+  (preimage_of E p Ue)
+  Hunion
+  HzUnion).
+Qed.
+
+(** Infrastructure: points of a slice map into the base evenly-covered neighborhood **)
+(** Proven Bob **)
+Theorem slice_point_maps_into_even_base : forall E p Ue slices V z:set,
+  Union slices = preimage_of E p Ue ->
+  V :e slices ->
+  z :e V ->
+  apply_fun p z :e Ue.
+let E p Ue slices V z.
+assume Hunion HVslice HzV.
+claim HVsubPre : V c= preimage_of E p Ue.
+{
+  exact (slice_subset_of_preimage_from_union E p Ue slices V Hunion HVslice).
+}
+claim HzPre : z :e preimage_of E p Ue.
+{
+  exact (HVsubPre z HzV).
+}
+exact (SepE2 E (fun t:set => apply_fun p t :e Ue) z HzPre).
+Qed.
+
 (** Bounty 50 **)
 Theorem ex53_6a_regular : forall E Te B Tb p:set,
   covering_map E Te B Tb p -> regular_space B Tb -> regular_space E Te.
@@ -13438,18 +13480,7 @@ claim HclStayUx : closure_of E Te V0 c= Ux.
   }
   claim HSxSubPreUe : Sx c= preimage_of E p Ue.
   {
-    let z.
-    assume HzSx.
-    claim HzUnion : z :e Union slices.
-    {
-      exact (UnionI slices z Sx HzSx HSxSlice).
-    }
-    exact (mem_eqR
-      z
-      (Union slices)
-      (preimage_of E p Ue)
-      HunionSlices
-      HzUnion).
+    exact (slice_subset_of_preimage_from_union E p Ue slices Sx HunionSlices HSxSlice).
   }
   admit.
 }
