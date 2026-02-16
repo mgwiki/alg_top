@@ -1,6 +1,6 @@
 (** Balance Alice 1560 **)
 (** Balance Bob 1260 **)
-(** Balance Charlie 1093 **)
+(** Balance Charlie 1088 **)
 
 (** Sum of Balences and Bounties 48150 **)
 
@@ -14356,7 +14356,8 @@ Admitted.
 (** LATEX VERSION: Let p: E -> B be a covering map. If B0 is a subspace of B, **)
 (** and E0 = p^{-1}(B0), then the restriction p0: E0 -> B0 is a covering map. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-17T22:30:00 **)
 Theorem thm53_2_subspace_covering : forall E Te B Tb p B0:set,
   covering_map E Te B Tb p -> B0 c= B ->
   covering_map
