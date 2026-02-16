@@ -16833,12 +16833,410 @@ claim Hsubcover :
         Then let Ufam be the collection of those base neighborhoods. **)
     admit.
   }
-  (** Remaining assembly step:
-      apply compactness of B to Ufam, extract finite U0 c=Ufam with B c=Union U0,
-      then combine finitely many finite families G(U), U:e U0, using
-      finite_Union_of_finite_family to obtain a finite subfamily of Fam
-      covering E. **)
-  admit.
+  apply HbaseLocalRefinement.
+  let Ufam.
+  assume HUfamPack.
+  claim HUfamSubTb : Ufam c= Tb.
+  {
+    exact (andEL
+      (Ufam c= Tb)
+      (B c= Union Ufam)
+      (andEL
+        (Ufam c= Tb /\ B c= Union Ufam)
+        (forall U:set, U :e Ufam ->
+          exists G:set, G c= Fam /\ finite G /\ preimage_of E p U c= Union G)
+        HUfamPack)).
+  }
+  claim HBsubUnionUfam : B c= Union Ufam.
+  {
+    exact (andER
+      (Ufam c= Tb)
+      (B c= Union Ufam)
+      (andEL
+        (Ufam c= Tb /\ B c= Union Ufam)
+        (forall U:set, U :e Ufam ->
+          exists G:set, G c= Fam /\ finite G /\ preimage_of E p U c= Union G)
+        HUfamPack)).
+  }
+  claim HrefineLocal :
+    forall U:set, U :e Ufam ->
+      exists G:set, G c= Fam /\ finite G /\ preimage_of E p U c= Union G.
+  {
+    exact (andER
+      (Ufam c= Tb /\ B c= Union Ufam)
+      (forall U:set, U :e Ufam ->
+        exists G:set, G c= Fam /\ finite G /\ preimage_of E p U c= Union G)
+      HUfamPack).
+  }
+  claim HUfamSubPowB : Ufam c= Power B.
+  {
+    let U.
+    assume HUUfam.
+    exact (PowerI B U
+      (topology_elem_subset B Tb U HtopB (HUfamSubTb U HUUfam))).
+  }
+  claim HUfamMembersOpen : forall U:set, U :e Ufam -> U :e Tb.
+  {
+    let U.
+    assume HUUfam.
+    exact (HUfamSubTb U HUUfam).
+  }
+  claim HopenUfam : open_cover_of B Tb Ufam.
+  {
+    exact (open_cover_ofI
+      B Tb Ufam
+      HtopB
+      HUfamSubPowB
+      HBsubUnionUfam
+      HUfamMembersOpen).
+  }
+  claim HfinCoverB : has_finite_subcover B Tb Ufam.
+  {
+    exact (compact_space_subcover_property B Tb HcompB Ufam HopenUfam).
+  }
+  apply HfinCoverB.
+  let U0.
+  assume HU0pack.
+  claim HU0subUfam : U0 c= Ufam.
+  {
+    exact (andEL
+      (U0 c= Ufam)
+      (finite U0)
+      (andEL
+        (U0 c= Ufam /\ finite U0)
+        (B c= Union U0)
+        HU0pack)).
+  }
+  claim HU0fin : finite U0.
+  {
+    exact (andER
+      (U0 c= Ufam)
+      (finite U0)
+      (andEL
+        (U0 c= Ufam /\ finite U0)
+        (B c= Union U0)
+        HU0pack)).
+  }
+  claim HBsubUnionU0 : B c= Union U0.
+  {
+    exact (andER
+      (U0 c= Ufam /\ finite U0)
+      (B c= Union U0)
+      HU0pack).
+  }
+  claim HchoicePack :
+    forall U:set, U :e U0 ->
+      (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)) c= Fam /\
+      finite (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)) /\
+      preimage_of E p U c=
+        Union (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)).
+  {
+    let U.
+    assume HU0.
+    claim HUUfam : U :e Ufam.
+    {
+      exact (HU0subUfam U HU0).
+    }
+    claim HexG : exists G:set, G c= Fam /\ finite G /\ preimage_of E p U c= Union G.
+    {
+      exact (HrefineLocal U HUUfam).
+    }
+    apply HexG.
+    let G0.
+    assume HG0.
+    exact (Eps_i_ax
+      (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)
+      G0
+      HG0).
+  }
+  set GFam := {Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)|U :e U0}.
+  claim HGFamFin : finite GFam.
+  {
+    exact (finite_Repl
+      U0
+      HU0fin
+      (fun U:set => Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G))).
+  }
+  claim HGFamElFinite : forall A:set, A :e GFam -> finite A.
+  {
+    let A.
+    assume HAGFam.
+    apply (ReplE
+      U0
+      (fun U:set => Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G))
+      A
+      HAGFam).
+    let U.
+    assume HUApack.
+    claim HU0 : U :e U0.
+    {
+      exact (andEL
+        (U :e U0)
+        (A = Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G))
+        HUApack).
+    }
+    claim HAeq :
+      A = Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G).
+    {
+      exact (andER
+        (U :e U0)
+        (A = Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G))
+        HUApack).
+    }
+    claim Hpack :
+      (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)) c= Fam /\
+      finite (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)) /\
+      preimage_of E p U c=
+        Union (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)).
+    {
+      exact (HchoicePack U HU0).
+    }
+    claim HfinA :
+      finite (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)).
+    {
+      exact (andER
+        ((Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)) c= Fam)
+        (finite (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)))
+        (andEL
+          ((Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)) c= Fam /\
+           finite (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)))
+          (preimage_of E p U c=
+            Union (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)))
+          Hpack)).
+    }
+    rewrite HAeq.
+    exact HfinA.
+  }
+  claim HUnionGFamFin : finite (Union GFam).
+  {
+    exact (finite_Union_of_finite_family
+      GFam
+      HGFamFin
+      HGFamElFinite).
+  }
+  claim HGFamElSubFam : forall A:set, A :e GFam -> A c= Fam.
+  {
+    let A.
+    assume HAGFam.
+    apply (ReplE
+      U0
+      (fun U:set => Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G))
+      A
+      HAGFam).
+    let U.
+    assume HUApack.
+    claim HU0 : U :e U0.
+    {
+      exact (andEL
+        (U :e U0)
+        (A = Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G))
+        HUApack).
+    }
+    claim HAeq :
+      A = Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G).
+    {
+      exact (andER
+        (U :e U0)
+        (A = Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G))
+        HUApack).
+    }
+    claim Hpack :
+      (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)) c= Fam /\
+      finite (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)) /\
+      preimage_of E p U c=
+        Union (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)).
+    {
+      exact (HchoicePack U HU0).
+    }
+    claim HsubA :
+      (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)) c= Fam.
+    {
+      exact (andEL
+        ((Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)) c= Fam)
+        (finite (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)))
+        (andEL
+          ((Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)) c= Fam /\
+           finite (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)))
+          (preimage_of E p U c=
+            Union (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)))
+          Hpack)).
+    }
+    rewrite HAeq.
+    exact HsubA.
+  }
+  claim HUnionGFamSubFam : Union GFam c= Fam.
+  {
+    let W.
+    assume HWUnion.
+    apply (UnionE GFam W HWUnion).
+    let A.
+    assume HAWpack.
+    claim HWA : W :e A.
+    {
+      exact (andEL
+        (W :e A)
+        (A :e GFam)
+        HAWpack).
+    }
+    claim HAGFam : A :e GFam.
+    {
+      exact (andER
+        (W :e A)
+        (A :e GFam)
+        HAWpack).
+    }
+    exact ((HGFamElSubFam A HAGFam) W HWA).
+  }
+  claim HpreUnionU0Sub : preimage_of E p (Union U0) c= Union (Union GFam).
+  {
+    let z.
+    assume HzPreUnionU0.
+    claim HzE : z :e E.
+    {
+      exact (SepE1
+        E
+        (fun t:set => apply_fun p t :e Union U0)
+        z
+        HzPreUnionU0).
+    }
+    claim HpzUnionU0 : apply_fun p z :e Union U0.
+    {
+      exact (SepE2
+        E
+        (fun t:set => apply_fun p t :e Union U0)
+        z
+        HzPreUnionU0).
+    }
+    apply (UnionE U0 (apply_fun p z) HpzUnionU0).
+    let U.
+    assume HUpack.
+    claim HpzU : apply_fun p z :e U.
+    {
+      exact (andEL
+        (apply_fun p z :e U)
+        (U :e U0)
+        HUpack).
+    }
+    claim HU0 : U :e U0.
+    {
+      exact (andER
+        (apply_fun p z :e U)
+        (U :e U0)
+        HUpack).
+    }
+    claim HzPreU : z :e preimage_of E p U.
+    {
+      exact (SepI
+        E
+        (fun t:set => apply_fun p t :e U)
+        z
+        HzE
+        HpzU).
+    }
+    claim Hpack :
+      (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)) c= Fam /\
+      finite (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)) /\
+      preimage_of E p U c=
+        Union (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)).
+    {
+      exact (HchoicePack U HU0).
+    }
+    claim HpreUSub :
+      preimage_of E p U c=
+        Union (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)).
+    {
+      exact (andER
+        ((Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)) c= Fam /\
+         finite (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)))
+        (preimage_of E p U c=
+          Union (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)))
+        Hpack).
+    }
+    claim HzUnionChosen :
+      z :e Union (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G)).
+    {
+      exact (HpreUSub z HzPreU).
+    }
+    apply (UnionE
+      (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G))
+      z
+      HzUnionChosen).
+    let V.
+    assume HVpack.
+    claim HzV : z :e V.
+    {
+      exact (andEL
+        (z :e V)
+        (V :e Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G))
+        HVpack).
+    }
+    claim HVinChosen :
+      V :e Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G).
+    {
+      exact (andER
+        (z :e V)
+        (V :e Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G))
+        HVpack).
+    }
+    claim HchosenInGFam :
+      Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G) :e GFam.
+    {
+      exact (ReplI
+        U0
+        (fun U0elt:set => Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U0elt c= Union G))
+        U
+        HU0).
+    }
+    claim HVinUnionGFam : V :e Union GFam.
+    {
+      exact (UnionI
+        GFam
+        V
+        (Eps_i (fun G:set => G c= Fam /\ finite G /\ preimage_of E p U c= Union G))
+        HVinChosen
+        HchosenInGFam).
+    }
+    exact (UnionI
+      (Union GFam)
+      z
+      V
+      HzV
+      HVinUnionGFam).
+  }
+  claim HEsubPreUnionU0 : E c= preimage_of E p (Union U0).
+  {
+    let x.
+    assume HxE.
+    claim HpxB : apply_fun p x :e B.
+    {
+      exact (Hfun x HxE).
+    }
+    claim HpxUnionU0 : apply_fun p x :e Union U0.
+    {
+      exact (HBsubUnionU0 (apply_fun p x) HpxB).
+    }
+    exact (SepI
+      E
+      (fun t:set => apply_fun p t :e Union U0)
+      x
+      HxE
+      HpxUnionU0).
+  }
+  claim HEsubUnionUnionGFam : E c= Union (Union GFam).
+  {
+    exact (Subq_tra
+      E
+      (preimage_of E p (Union U0))
+      (Union (Union GFam))
+      HEsubPreUnionU0
+      HpreUnionU0Sub).
+  }
+  apply (has_finite_subcoverI E Te Fam (Union GFam)).
+  apply andI.
+  + apply andI.
+    * exact HUnionGFamSubFam.
+    * exact HUnionGFamFin.
+  + exact HEsubUnionUnionGFam.
 }
 exact (andI
   (topology_on E Te)
