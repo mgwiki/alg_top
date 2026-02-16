@@ -9199,7 +9199,87 @@ Theorem Lemma_51_1_homotopy_trans : forall X Tx Y Ty f f' f'':set,
   homotopic_maps X Tx Y Ty f f' ->
   homotopic_maps X Tx Y Ty f' f'' ->
   homotopic_maps X Tx Y Ty f f''.
-admit.
+let X Tx Y Ty f f' f''.
+assume H1 H2.
+claim Hcf : continuous_map X Tx Y Ty f.
+{ exact (homotopic_maps_left_continuous X Tx Y Ty f f' H1). }
+claim Hcf'' : continuous_map X Tx Y Ty f''.
+{ exact (homotopic_maps_right_continuous X Tx Y Ty f' f'' H2). }
+claim HtopX : topology_on X Tx.
+{ exact (continuous_map_topology_dom X Tx Y Ty f Hcf). }
+claim HtopY : topology_on Y Ty.
+{ exact (continuous_map_topology_cod X Tx Y Ty f Hcf). }
+(** Extract witnesses F and G via existential elimination **)
+apply (homotopic_maps_has_witness X Tx Y Ty f f' H1).
+let F. assume HFspec.
+apply HFspec. assume HcF_HF0 HF1.
+apply HcF_HF0. assume HcF HF0.
+apply (homotopic_maps_has_witness X Tx Y Ty f' f'' H2).
+let G. assume HGspec.
+apply HGspec. assume HcG_HG0 HG1.
+apply HcG_HG0. assume HcG HG0.
+(** Now construct the pasted homotopy using the pasting lemma **)
+(** Domain: setprod X unit_interval, split into setprod X LH and setprod X RH **)
+(** Left piece: compose_fun (X x LH) rescale_left F where rescale_left(x,t) = (x,2t) **)
+(** Right piece: compose_fun (X x RH) rescale_right G where rescale_right(x,t) = (x,2t-1) **)
+set A : set := setprod X unit_interval_left_half.
+set B : set := setprod X unit_interval_right_half.
+set XI : set := setprod X unit_interval.
+set TXI : set := product_topology X Tx unit_interval unit_interval_topology.
+set left_rescale : set := pair_map A
+  (projection_map1 X unit_interval_left_half)
+  (compose_fun A (projection_map2 X unit_interval_left_half) double_map_left_half).
+set right_rescale : set := pair_map B
+  (projection_map1 X unit_interval_right_half)
+  (compose_fun B (projection_map2 X unit_interval_right_half) double_minus_one_map_right_half).
+set fA : set := compose_fun A left_rescale F.
+set gB : set := compose_fun B right_rescale G.
+(** Apply pasting lemma **)
+claim Htop : topology_on XI TXI.
+{ exact (product_topology_is_topology X Tx unit_interval unit_interval_topology
+    HtopX unit_interval_topology_on). }
+claim HclosedA : closed_in XI TXI A.
+{ exact (ex17_3_product_of_closed_sets_closed X Tx unit_interval unit_interval_topology X unit_interval_left_half
+    (X_is_closed X Tx HtopX)
+    (andEL (closed_in unit_interval unit_interval_topology unit_interval_left_half)
+           (closed_in unit_interval unit_interval_topology unit_interval_right_half)
+           unit_interval_halves_closed)). }
+claim HclosedB : closed_in XI TXI B.
+{ exact (ex17_3_product_of_closed_sets_closed X Tx unit_interval unit_interval_topology X unit_interval_right_half
+    (X_is_closed X Tx HtopX)
+    (andER (closed_in unit_interval unit_interval_topology unit_interval_left_half)
+           (closed_in unit_interval unit_interval_topology unit_interval_right_half)
+           unit_interval_halves_closed)). }
+claim Hcover : A :\/: B = XI.
+{ admit. }
+claim HcontfA : continuous_map A (subspace_topology XI TXI A) Y Ty fA.
+{ admit. }
+claim HcontgB : continuous_map B (subspace_topology XI TXI B) Y Ty gB.
+{ admit. }
+claim Hagree : forall p:set, p :e (A :/\: B) -> apply_fun fA p = apply_fun gB p.
+{ admit. }
+claim Hpaste : exists h:set, continuous_map XI TXI Y Ty h /\
+  ((forall p:set, p :e A -> apply_fun h p = apply_fun fA p) /\
+   (forall p:set, p :e B -> apply_fun h p = apply_fun gB p)).
+{ exact (pasting_lemma XI A B Y TXI Ty fA gB Htop HclosedA HclosedB Hcover HcontfA HcontgB Hagree). }
+apply Hpaste.
+let HH. assume HHspec.
+apply HHspec. assume HcHH HHAB.
+apply HHAB. assume HHA HHB.
+(** Now prove the conclusion: homotopic_maps X Tx Y Ty f f'' **)
+prove continuous_map X Tx Y Ty f /\
+  continuous_map X Tx Y Ty f'' /\
+  exists W:set, continuous_map XI TXI Y Ty W /\
+    (forall x:set, x :e X -> apply_fun W (x, 0) = apply_fun f x) /\
+    (forall x:set, x :e X -> apply_fun W (x, 1) = apply_fun f'' x).
+apply and3I.
+- exact Hcf.
+- exact Hcf''.
+- witness HH.
+  apply and3I.
+  + exact HcHH.
+  + admit.
+  + admit.
 Admitted.
 
 (** from S51 Lemma 51.1 (line 125 in algtop.tex): path homotopy reflexivity **)
