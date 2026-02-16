@@ -1,6 +1,6 @@
 (** Balance Alice 1460 **)
 (** Balance Bob 1100 **)
-(** Balance Charlie 1070 **)
+(** Balance Charlie 1065 **)
 
 (** Sum of Balences and Bounties 48150 **)
 
@@ -12034,7 +12034,8 @@ Definition covering_map : set -> set -> set -> set -> set -> prop :=
 (** LATEX VERSION: If U is evenly covered by p and W is an open subset of U, **)
 (** then W is also evenly covered by p. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-17T22:12:15Z **)
 Theorem evenly_covered_open_subset : forall E Te B Tb p U W:set,
   evenly_covered E Te B Tb p U -> W :e Tb -> W c= U ->
   evenly_covered E Te B Tb p W.
