@@ -12931,6 +12931,55 @@ claim HzSub : z :e closure_of Y (subspace_topology X Tx Y) A.
 exact (HclSub z HzSub).
 Qed.
 
+(** Infrastructure: open sets disjoint from A are disjoint from closure(A) **)
+(** Proven Bob **)
+Theorem closure_disjoint_open : forall X Tx A O:set,
+  topology_on X Tx -> O :e Tx -> O :/\: A = Empty ->
+  (closure_of X Tx A) :/\: O = Empty.
+let X Tx A O.
+assume HtopX HOopen Hdisj.
+apply (Empty_Subq_eq ((closure_of X Tx A) :/\: O)).
+let z.
+assume HzInt.
+claim HzCl : z :e closure_of X Tx A.
+{
+  exact (binintersectE1 (closure_of X Tx A) O z HzInt).
+}
+claim HzO : z :e O.
+{
+  exact (binintersectE2 (closure_of X Tx A) O z HzInt).
+}
+claim HzX : z :e X.
+{
+  exact (SepE1 X (fun x:set =>
+    forall U0:set, U0 :e Tx -> x :e U0 -> U0 :/\: A <> Empty) z HzCl).
+}
+claim Hchar :
+  z :e closure_of X Tx A <->
+  (forall U0:set, U0 :e Tx -> z :e U0 -> U0 :/\: A <> Empty).
+{
+  exact (closure_characterization X Tx A z HtopX HzX).
+}
+claim Hall :
+  forall U0:set, U0 :e Tx -> z :e U0 -> U0 :/\: A <> Empty.
+{
+  exact (iffEL
+    (z :e closure_of X Tx A)
+    (forall U0:set, U0 :e Tx -> z :e U0 -> U0 :/\: A <> Empty)
+    Hchar
+    HzCl).
+}
+claim Hnonempty : O :/\: A <> Empty.
+{
+  exact (Hall O HOopen HzO).
+}
+claim Hfalse : False.
+{
+  exact (Hnonempty Hdisj).
+}
+exact (FalseE Hfalse (z :e Empty)).
+Qed.
+
 (** Bounty 50 **)
 Theorem ex53_6a_regular : forall E Te B Tb p:set,
   covering_map E Te B Tb p -> regular_space B Tb -> regular_space E Te.
