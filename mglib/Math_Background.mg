@@ -1,6 +1,6 @@
 (** Balance Alice 1340 **)
 (** Balance Bob 1100 **)
-(** Balance Charlie 1000 **)
+(** Balance Charlie 998 **)
 
 (** Sum of Balences and Bounties 48150 **)
 
@@ -11851,7 +11851,8 @@ Admitted.
 (** LATEX VERSION: If p: E -> B is a covering map, then p is a local homeomorphism: **)
 (** each point e of E has a neighborhood mapped homeomorphically onto an open set in B. **)
 (** EFFORT: 2 lines textbook, difficulty 1/10, USD 20 **)
-(** Bounty 20 **)
+(** Bounty 22 **)
+(** Lock Charlie 2026-02-17T21:50:20Z **)
 Theorem covering_map_local_homeomorphism : forall E Te B Tb p e:set,
   covering_map E Te B Tb p -> e :e E ->
   exists U V:set, U :e Te /\ e :e U /\ V :e Tb /\
