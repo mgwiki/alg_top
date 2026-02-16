@@ -1,5 +1,5 @@
 (** Balance Alice 1460 **)
-(** Balance Bob 1150 **)
+(** Balance Bob 1200 **)
 (** Balance Charlie 1065 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -12777,11 +12777,409 @@ Admitted.
 (** from S53 Exercise 6a (line 692 in algtop.tex) **)
 (** LATEX VERSION: If p: E -> B is a covering map and B is Hausdorff, then E is Hausdorff. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Collected Bob 50 **)
+(** Proven Bob **)
 Theorem ex53_6a_hausdorff : forall E Te B Tb p:set,
   covering_map E Te B Tb p -> Hausdorff_space B Tb -> Hausdorff_space E Te.
-admit.
-Admitted.
+let E Te B Tb p.
+assume Hcov HHB.
+claim Hcont : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    (andEL
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+      Hcov)).
+}
+claim HtopE : topology_on E Te.
+{
+  exact (continuous_map_topology_dom E Te B Tb p Hcont).
+}
+claim Hf : function_on p E B.
+{
+  exact (continuous_map_function_on E Te B Tb p Hcont).
+}
+claim HHausE :
+  topology_on E Te /\
+  forall x y:set, x :e E -> y :e E -> x <> y ->
+    exists U V : set, U :e Te /\ V :e Te /\ x :e U /\ y :e V /\ U :/\: V = Empty.
+{
+  apply andI.
+  - exact HtopE.
+  - let x y.
+  assume HxE HyE Hxyneq.
+  apply xm (apply_fun p x = apply_fun p y).
+  + assume Hpeq.
+    claim Hbx : apply_fun p x :e B.
+    {
+      exact (Hf x HxE).
+    }
+    claim Hloc :
+      exists U:set, U :e Tb /\ apply_fun p x :e U /\ evenly_covered E Te B Tb p U.
+    {
+      exact (andER
+        (continuous_map E Te B Tb p /\ surjective_map E B p)
+        (forall b:set, b :e B ->
+          exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+        Hcov
+        (apply_fun p x)
+        Hbx).
+    }
+    apply Hloc.
+    let U.
+    assume HU.
+    claim HpxU : apply_fun p x :e U.
+    {
+      exact (andER
+        (U :e Tb)
+        (apply_fun p x :e U)
+        (andEL
+          (U :e Tb /\ apply_fun p x :e U)
+          (evenly_covered E Te B Tb p U)
+          HU)).
+    }
+    claim HpyU : apply_fun p y :e U.
+    {
+      rewrite <- Hpeq.
+      exact HpxU.
+    }
+    claim Heven : evenly_covered E Te B Tb p U.
+    {
+      exact (andER
+        (U :e Tb /\ apply_fun p x :e U)
+        (evenly_covered E Te B Tb p U)
+        HU).
+    }
+    claim HexSlices :
+      exists slices:set,
+        slices c= Te /\
+        pairwise_disjoint slices /\
+        Union slices = preimage_of E p U /\
+        (forall V:set, V :e slices ->
+          homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+            (graph V (fun z:set => apply_fun p z))).
+    {
+      exact (andER
+        (U :e Tb)
+        (exists slices:set,
+          slices c= Te /\
+          pairwise_disjoint slices /\
+          Union slices = preimage_of E p U /\
+          (forall V:set, V :e slices ->
+            homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+              (graph V (fun z:set => apply_fun p z))))
+        Heven).
+    }
+    apply HexSlices.
+    let slices.
+    assume Hs.
+    claim Htrip :
+      (slices c= Te /\ pairwise_disjoint slices) /\
+      Union slices = preimage_of E p U.
+    {
+      exact (andEL
+        ((slices c= Te /\ pairwise_disjoint slices) /\
+         Union slices = preimage_of E p U)
+        (forall V:set, V :e slices ->
+          homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+            (graph V (fun z:set => apply_fun p z)))
+        Hs).
+    }
+    claim Hsub : slices c= Te.
+    {
+      exact (andEL
+        (slices c= Te)
+        (pairwise_disjoint slices)
+        (andEL
+          (slices c= Te /\ pairwise_disjoint slices)
+          (Union slices = preimage_of E p U)
+          Htrip)).
+    }
+    claim Hpd : pairwise_disjoint slices.
+    {
+      exact (andER
+        (slices c= Te)
+        (pairwise_disjoint slices)
+        (andEL
+          (slices c= Te /\ pairwise_disjoint slices)
+          (Union slices = preimage_of E p U)
+          Htrip)).
+    }
+    claim Hunion : Union slices = preimage_of E p U.
+    {
+      exact (andER
+        (slices c= Te /\ pairwise_disjoint slices)
+        (Union slices = preimage_of E p U)
+        Htrip).
+    }
+    claim Hhome :
+      forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (fun z:set => apply_fun p z)).
+    {
+      exact (andER
+        ((slices c= Te /\ pairwise_disjoint slices) /\
+         Union slices = preimage_of E p U)
+        (forall V:set, V :e slices ->
+          homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+            (graph V (fun z:set => apply_fun p z)))
+        Hs).
+    }
+    claim HxPre : x :e preimage_of E p U.
+    {
+      exact (SepI
+        E
+        (fun z:set => apply_fun p z :e U)
+        x
+        HxE
+        HpxU).
+    }
+    claim HyPre : y :e preimage_of E p U.
+    {
+      exact (SepI
+        E
+        (fun z:set => apply_fun p z :e U)
+        y
+        HyE
+        HpyU).
+    }
+    claim HxUnion : x :e Union slices.
+    {
+      exact (mem_eqL
+        x
+        (Union slices)
+        (preimage_of E p U)
+        Hunion
+        HxPre).
+    }
+    claim HyUnion : y :e Union slices.
+    {
+      exact (mem_eqL
+        y
+        (Union slices)
+        (preimage_of E p U)
+        Hunion
+        HyPre).
+    }
+    claim HexVx : exists Vx:set, x :e Vx /\ Vx :e slices.
+    {
+      exact (UnionE slices x HxUnion).
+    }
+    claim HexVy : exists Vy:set, y :e Vy /\ Vy :e slices.
+    {
+      exact (UnionE slices y HyUnion).
+    }
+    apply HexVx.
+    let Vx.
+    assume HVx.
+    apply HexVy.
+    let Vy.
+    assume HVy.
+    claim HxVx : x :e Vx.
+    {
+      exact (andEL
+        (x :e Vx)
+        (Vx :e slices)
+        HVx).
+    }
+    claim HVxslice : Vx :e slices.
+    {
+      exact (andER
+        (x :e Vx)
+        (Vx :e slices)
+        HVx).
+    }
+    claim HyVy : y :e Vy.
+    {
+      exact (andEL
+        (y :e Vy)
+        (Vy :e slices)
+        HVy).
+    }
+    claim HVyslice : Vy :e slices.
+    {
+      exact (andER
+        (y :e Vy)
+        (Vy :e slices)
+        HVy).
+    }
+    claim HVxopen : Vx :e Te.
+    {
+      exact (Hsub Vx HVxslice).
+    }
+    claim HVyopen : Vy :e Te.
+    {
+      exact (Hsub Vy HVyslice).
+    }
+    claim HneqSlices : Vx <> Vy.
+    {
+      assume Heq.
+      claim HyVx : y :e Vx.
+      {
+        rewrite Heq.
+        exact HyVy.
+      }
+      claim HVxhome :
+        homeomorphism Vx (subspace_topology E Te Vx) U (subspace_topology B Tb U)
+          (graph Vx (fun z:set => apply_fun p z)).
+      {
+        exact (Hhome Vx HVxslice).
+      }
+      claim HexInv :
+        exists g:set,
+          continuous_map U (subspace_topology B Tb U) Vx (subspace_topology E Te Vx) g /\
+          (forall u:set, u :e Vx ->
+            apply_fun g (apply_fun (graph Vx (fun z:set => apply_fun p z)) u) = u) /\
+          (forall v:set, v :e U ->
+            apply_fun (graph Vx (fun z:set => apply_fun p z)) (apply_fun g v) = v).
+      {
+        exact (andER
+          (continuous_map Vx (subspace_topology E Te Vx) U (subspace_topology B Tb U)
+            (graph Vx (fun z:set => apply_fun p z)))
+          (exists g:set,
+            continuous_map U (subspace_topology B Tb U) Vx (subspace_topology E Te Vx) g /\
+            (forall u:set, u :e Vx ->
+              apply_fun g (apply_fun (graph Vx (fun z:set => apply_fun p z)) u) = u) /\
+            (forall v:set, v :e U ->
+              apply_fun (graph Vx (fun z:set => apply_fun p z)) (apply_fun g v) = v))
+          HVxhome).
+      }
+      apply HexInv.
+      let g.
+      assume Hg.
+      apply (and3E
+        (continuous_map U (subspace_topology B Tb U) Vx (subspace_topology E Te Vx) g)
+        (forall u:set, u :e Vx ->
+          apply_fun g (apply_fun (graph Vx (fun z:set => apply_fun p z)) u) = u)
+        (forall v:set, v :e U ->
+          apply_fun (graph Vx (fun z:set => apply_fun p z)) (apply_fun g v) = v)
+        Hg).
+      assume _ Hleft _.
+      claim HxGraph :
+        apply_fun (graph Vx (fun z:set => apply_fun p z)) x = apply_fun p x.
+      {
+        exact (apply_fun_graph Vx (fun z:set => apply_fun p z) x HxVx).
+      }
+      claim HyGraph :
+        apply_fun (graph Vx (fun z:set => apply_fun p z)) y = apply_fun p y.
+      {
+        exact (apply_fun_graph Vx (fun z:set => apply_fun p z) y HyVx).
+      }
+      claim HimgEq :
+        apply_fun (graph Vx (fun z:set => apply_fun p z)) x =
+        apply_fun (graph Vx (fun z:set => apply_fun p z)) y.
+      {
+        rewrite HxGraph.
+        rewrite HyGraph.
+        exact Hpeq.
+      }
+      claim HgEq :
+        apply_fun g (apply_fun (graph Vx (fun z:set => apply_fun p z)) x) =
+        apply_fun g (apply_fun (graph Vx (fun z:set => apply_fun p z)) y).
+      {
+        rewrite HimgEq.
+        reflexivity.
+      }
+      claim Hxg :
+        apply_fun g (apply_fun (graph Vx (fun z:set => apply_fun p z)) x) = x.
+      {
+        exact (Hleft x HxVx).
+      }
+      claim Hyg :
+        apply_fun g (apply_fun (graph Vx (fun z:set => apply_fun p z)) y) = y.
+      {
+        exact (Hleft y HyVx).
+      }
+      claim Hxy : x = y.
+      {
+        rewrite <- Hxg.
+        rewrite <- Hyg.
+        exact HgEq.
+      }
+      exact (Hxyneq Hxy).
+    }
+    witness Vx.
+    witness Vy.
+    apply and5I.
+    - exact HVxopen.
+    - exact HVyopen.
+    - exact HxVx.
+    - exact HyVy.
+    - exact (Hpd Vx Vy HVxslice HVyslice HneqSlices).
+  + assume Hneq.
+    claim HpxB : apply_fun p x :e B.
+    {
+      exact (Hf x HxE).
+    }
+    claim HpyB : apply_fun p y :e B.
+    {
+      exact (Hf y HyE).
+    }
+    claim HsepB :
+      exists U V : set,
+        U :e Tb /\ V :e Tb /\ apply_fun p x :e U /\ apply_fun p y :e V /\ U :/\: V = Empty.
+    {
+      exact (Hausdorff_space_separation
+        B Tb (apply_fun p x) (apply_fun p y) HHB HpxB HpyB Hneq).
+    }
+    apply HsepB.
+    let U.
+    assume HU.
+    apply HU.
+    let V.
+    assume HUV.
+    apply (and5E
+      (U :e Tb)
+      (V :e Tb)
+      (apply_fun p x :e U)
+      (apply_fun p y :e V)
+      (U :/\: V = Empty)
+      HUV).
+    assume HUopen HVopen HpxU HpyV HUVempty.
+    witness (preimage_of E p U).
+    witness (preimage_of E p V).
+    apply and5I.
+    - exact (continuous_map_preimage E Te B Tb p Hcont U HUopen).
+    - exact (continuous_map_preimage E Te B Tb p Hcont V HVopen).
+    - exact (SepI E (fun z:set => apply_fun p z :e U) x HxE HpxU).
+    - exact (SepI E (fun z:set => apply_fun p z :e V) y HyE HpyV).
+    - apply set_ext.
+      * let z.
+        assume Hz.
+        claim HzU : z :e preimage_of E p U.
+        {
+          exact (binintersectE1 (preimage_of E p U) (preimage_of E p V) z Hz).
+        }
+        claim HzV : z :e preimage_of E p V.
+        {
+          exact (binintersectE2 (preimage_of E p U) (preimage_of E p V) z Hz).
+        }
+        claim HpU : apply_fun p z :e U.
+        {
+          exact (SepE2 E (fun w:set => apply_fun p w :e U) z HzU).
+        }
+        claim HpV : apply_fun p z :e V.
+        {
+          exact (SepE2 E (fun w:set => apply_fun p w :e V) z HzV).
+        }
+        claim HpInt : apply_fun p z :e U :/\: V.
+        {
+          exact (binintersectI U V (apply_fun p z) HpU HpV).
+        }
+        claim HpEmpty : apply_fun p z :e Empty.
+        {
+          exact (mem_eqR (apply_fun p z) (U :/\: V) Empty HUVempty HpInt).
+        }
+        exact (EmptyE (apply_fun p z) HpEmpty (z :e Empty)).
+      * let z.
+        assume HzE.
+        exact (EmptyE z HzE (z :e (preimage_of E p U) :/\: (preimage_of E p V))).
+}
+exact HHausE.
+Qed.
 
 (** from S53 Exercise 6a (line 692 in algtop.tex) **)
 (** LATEX VERSION: If p: E -> B is a covering map and B is regular, then E is regular. **)
