@@ -8988,6 +8988,50 @@ exact (andER
 Qed.
 
 (** Proven Bob **)
+Theorem loop_at_unpack_right : forall X Tx x0 f:set,
+  loop_at X Tx x0 f ->
+  continuous_map unit_interval unit_interval_topology X Tx f /\
+  (apply_fun f 0 = x0 /\ apply_fun f 1 = x0).
+let X Tx x0 f.
+assume Hloop.
+apply andI.
+- exact (loop_at_continuous X Tx x0 f Hloop).
+- apply andI.
+  + exact (loop_at_at_zero X Tx x0 f Hloop).
+  + exact (loop_at_at_one X Tx x0 f Hloop).
+Qed.
+
+(** Proven Bob **)
+Theorem loop_at_pack_right : forall X Tx x0 f:set,
+  continuous_map unit_interval unit_interval_topology X Tx f /\
+  (apply_fun f 0 = x0 /\ apply_fun f 1 = x0) ->
+  loop_at X Tx x0 f.
+let X Tx x0 f.
+assume H.
+apply (loop_at_fold X Tx x0 f).
+apply andI.
+- apply andI.
+  + exact (andEL
+      (continuous_map unit_interval unit_interval_topology X Tx f)
+      (apply_fun f 0 = x0 /\ apply_fun f 1 = x0)
+      H).
+  + exact (andEL
+      (apply_fun f 0 = x0)
+      (apply_fun f 1 = x0)
+      (andER
+        (continuous_map unit_interval unit_interval_topology X Tx f)
+        (apply_fun f 0 = x0 /\ apply_fun f 1 = x0)
+        H)).
+- exact (andER
+    (apply_fun f 0 = x0)
+    (apply_fun f 1 = x0)
+    (andER
+      (continuous_map unit_interval unit_interval_topology X Tx f)
+      (apply_fun f 0 = x0 /\ apply_fun f 1 = x0)
+      H)).
+Qed.
+
+(** Proven Bob **)
 Theorem loop_at_constant_path : forall X Tx x0:set,
   topology_on X Tx ->
   x0 :e X ->
