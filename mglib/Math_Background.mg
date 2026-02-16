@@ -1,5 +1,5 @@
 (** Balance Alice 1560 **)
-(** Balance Bob 1200 **)
+(** Balance Bob 1260 **)
 (** Balance Charlie 1093 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -17175,7 +17175,8 @@ Qed.
 (** LATEX VERSION: If p: E -> B is a covering map and B is locally compact Hausdorff, **)
 (** then E is locally compact Hausdorff. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 60 **)
-(** Bounty 60 **)
+(** Collected Bob 60 **)
+(** Proven Bob **)
 Theorem ex53_6a_locally_compact_hausdorff : forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
   locally_compact B Tb -> Hausdorff_space B Tb ->
@@ -17197,7 +17198,7 @@ exact (andI
   (Hausdorff_space E Te)
   HlocE
   HHE).
-Admitted.
+Qed.
 
 (** Infrastructure: finite subsets admit finite subfamilies from any ambient cover **)
 (** Proven Bob **)
