@@ -1,5 +1,5 @@
 (** Balance Alice 1000 **)
-(** Balance Bob 1000 **)
+(** Balance Bob 1030 **)
 (** Balance Charlie 1000 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -8344,12 +8344,78 @@ Definition path_homotopic : set -> set -> set -> set -> set -> set -> prop :=
 (** LATEX VERSION: Lemma 51.1: The relations ~ and ~p are equivalence relations. **)
 
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Bob 30 **)
+(** Proven Bob **)
 Theorem Lemma_51_1_homotopy_refl : forall X Tx Y Ty f:set,
   continuous_map X Tx Y Ty f ->
   homotopic_maps X Tx Y Ty f f.
-admit.
-Admitted.
+let X Tx Y Ty f.
+assume Hf.
+prove continuous_map X Tx Y Ty f /\
+  continuous_map X Tx Y Ty f /\
+  exists F:set,
+    continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      Y Ty F /\
+    (forall x:set, x :e X ->
+      apply_fun F (x, 0) = apply_fun f x) /\
+    (forall x:set, x :e X ->
+      apply_fun F (x, 1) = apply_fun f x).
+apply andI.
+- apply andI.
+  + exact Hf.
+  + exact Hf.
+- witness (compose_fun (setprod X unit_interval) (projection_map1 X unit_interval) f).
+  apply andI.
+  + apply andI.
+    - exact (composition_continuous
+        (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        X Tx Y Ty
+        (projection_map1 X unit_interval)
+        f
+        (andEL
+          (continuous_map (setprod X unit_interval)
+            (product_topology X Tx unit_interval unit_interval_topology)
+            X Tx (projection_map1 X unit_interval))
+          (continuous_map (setprod X unit_interval)
+            (product_topology X Tx unit_interval unit_interval_topology)
+            unit_interval unit_interval_topology
+            (projection_map2 X unit_interval))
+          (projection_maps_continuous
+            X Tx unit_interval unit_interval_topology
+            (continuous_map_topology_dom X Tx Y Ty f Hf)
+            unit_interval_topology_on))
+        Hf).
+    - let x.
+      assume Hx.
+      rewrite (compose_fun_apply
+        (setprod X unit_interval)
+        (projection_map1 X unit_interval)
+        f
+        (x, 0)
+        (tuple_2_setprod_by_pair_Sigma X unit_interval x 0 Hx zero_in_unit_interval)).
+      rewrite (projection1_apply
+        X unit_interval
+        (x, 0)
+        (tuple_2_setprod_by_pair_Sigma X unit_interval x 0 Hx zero_in_unit_interval)).
+      rewrite tuple_2_0_eq.
+      exact (fun P H => H).
+  + let x.
+    assume Hx.
+    rewrite (compose_fun_apply
+      (setprod X unit_interval)
+      (projection_map1 X unit_interval)
+      f
+      (x, 1)
+      (tuple_2_setprod_by_pair_Sigma X unit_interval x 1 Hx one_in_unit_interval)).
+    rewrite (projection1_apply
+      X unit_interval
+      (x, 1)
+      (tuple_2_setprod_by_pair_Sigma X unit_interval x 1 Hx one_in_unit_interval)).
+    rewrite tuple_2_0_eq.
+    exact (fun P H => H).
+Qed.
 
 (** from S51 Lemma 51.1 (line 125 in algtop.tex): homotopy symmetry **)
 (** EFFORT: 2 lines textbook, difficulty 3/10, USD 40 **)
