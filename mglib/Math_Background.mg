@@ -8920,22 +8920,105 @@ Definition loop_at : set -> set -> set -> set -> prop :=
     continuous_map unit_interval unit_interval_topology X Tx f /\
     apply_fun f 0 = x0 /\ apply_fun f 1 = x0.
 
+(** Proven Bob **)
+Theorem loop_at_unfold : forall X Tx x0 f:set,
+  loop_at X Tx x0 f ->
+  (continuous_map unit_interval unit_interval_topology X Tx f /\
+   apply_fun f 0 = x0) /\
+  apply_fun f 1 = x0.
+let X Tx x0 f.
+assume Hloop.
+exact Hloop.
+Qed.
+
+(** Proven Bob **)
+Theorem loop_at_fold : forall X Tx x0 f:set,
+  (continuous_map unit_interval unit_interval_topology X Tx f /\
+   apply_fun f 0 = x0) /\
+  apply_fun f 1 = x0 ->
+  loop_at X Tx x0 f.
+let X Tx x0 f.
+assume H.
+exact H.
+Qed.
+
+(** Proven Bob **)
+Theorem loop_at_continuous : forall X Tx x0 f:set,
+  loop_at X Tx x0 f ->
+  continuous_map unit_interval unit_interval_topology X Tx f.
+let X Tx x0 f.
+assume Hloop.
+exact (andEL
+  (continuous_map unit_interval unit_interval_topology X Tx f)
+  (apply_fun f 0 = x0)
+  (andEL
+    (continuous_map unit_interval unit_interval_topology X Tx f /\
+     apply_fun f 0 = x0)
+    (apply_fun f 1 = x0)
+    (loop_at_unfold X Tx x0 f Hloop))).
+Qed.
+
+(** Proven Bob **)
+Theorem loop_at_at_zero : forall X Tx x0 f:set,
+  loop_at X Tx x0 f ->
+  apply_fun f 0 = x0.
+let X Tx x0 f.
+assume Hloop.
+exact (andER
+  (continuous_map unit_interval unit_interval_topology X Tx f)
+  (apply_fun f 0 = x0)
+  (andEL
+    (continuous_map unit_interval unit_interval_topology X Tx f /\
+     apply_fun f 0 = x0)
+    (apply_fun f 1 = x0)
+    (loop_at_unfold X Tx x0 f Hloop))).
+Qed.
+
+(** Proven Bob **)
+Theorem loop_at_at_one : forall X Tx x0 f:set,
+  loop_at X Tx x0 f ->
+  apply_fun f 1 = x0.
+let X Tx x0 f.
+assume Hloop.
+exact (andER
+  (continuous_map unit_interval unit_interval_topology X Tx f /\
+   apply_fun f 0 = x0)
+  (apply_fun f 1 = x0)
+  (loop_at_unfold X Tx x0 f Hloop)).
+Qed.
+
+(** Proven Bob **)
 Theorem loop_at_constant_path : forall X Tx x0:set,
   topology_on X Tx ->
   x0 :e X ->
   loop_at X Tx x0 (constant_path x0).
 let X Tx x0.
 assume Htop Hx0.
-admit.
-Admitted.
+apply (loop_at_fold X Tx x0 (constant_path x0)).
+apply andI.
+- apply andI.
+  + exact (constant_path_continuous X Tx x0 Htop Hx0).
+  + exact (constant_path_at_zero x0).
+- exact (constant_path_at_one x0).
+Qed.
 
+(** Proven Bob **)
 Theorem loop_at_reverse_path : forall X Tx x0 f:set,
   loop_at X Tx x0 f ->
   loop_at X Tx x0 (reverse_path f).
 let X Tx x0 f.
 assume Hloop.
-admit.
-Admitted.
+apply (loop_at_fold X Tx x0 (reverse_path f)).
+apply andI.
+- apply andI.
+  + exact (reverse_path_continuous
+      X Tx f
+      (loop_at_continuous X Tx x0 f Hloop)).
+  + rewrite (reverse_path_at_zero f).
+    exact (loop_at_at_one X Tx x0 f Hloop).
+- rewrite (reverse_path_at_one f).
+  exact (loop_at_at_zero X Tx x0 f Hloop).
+Qed.
 
 (** Proven Bob **)
 Theorem loop_at_constant_path_unfolded : forall X Tx x0:set,
