@@ -16607,6 +16607,159 @@ exact (andI
   HHE).
 Admitted.
 
+(** Infrastructure: finite subsets admit finite subfamilies from any ambient cover **)
+(** Proven Bob **)
+Theorem finite_subset_has_finite_cover_subfamily : forall A Fam:set,
+  finite A ->
+  A c= Union Fam ->
+  exists G:set, G c= Fam /\ finite G /\ A c= Union G.
+let A Fam.
+assume HfinA HcovA.
+claim Hind :
+  forall X:set,
+    finite X ->
+    X c= Union Fam ->
+    exists G:set, G c= Fam /\ finite G /\ X c= Union G.
+{
+  apply (finite_ind
+    (fun X:set => X c= Union Fam ->
+      exists G:set, G c= Fam /\ finite G /\ X c= Union G)).
+  - assume _.
+    witness Empty.
+    apply andI.
+    + apply andI.
+      * exact (Subq_Empty Fam).
+      * exact finite_Empty.
+    + exact (Subq_Empty (Union Empty)).
+  - let X y.
+    assume HfinX HynotX HXind.
+    assume HcovAdjoin.
+    claim HcovX : X c= Union Fam.
+    {
+      exact (Subq_tra X (X :\/: {y}) (Union Fam)
+        (binunion_Subq_1 X {y})
+        HcovAdjoin).
+    }
+    apply (HXind HcovX).
+    let G.
+    assume HGpack.
+    claim HGsubFam : G c= Fam.
+    {
+      exact (andEL
+        (G c= Fam)
+        (finite G)
+        (andEL
+          (G c= Fam /\ finite G)
+          (X c= Union G)
+          HGpack)).
+    }
+    claim HGfin : finite G.
+    {
+      exact (andER
+        (G c= Fam)
+        (finite G)
+        (andEL
+          (G c= Fam /\ finite G)
+          (X c= Union G)
+          HGpack)).
+    }
+    claim HcovXG : X c= Union G.
+    {
+      exact (andER
+        (G c= Fam /\ finite G)
+        (X c= Union G)
+        HGpack).
+    }
+    claim Hyy : y :e X :\/: {y}.
+    {
+      exact (binunionI2 X {y} y (SingI y)).
+    }
+    claim HyUnionFam : y :e Union Fam.
+    {
+      exact (HcovAdjoin y Hyy).
+    }
+    claim HexU : exists U:set, y :e U /\ U :e Fam.
+    {
+      exact (UnionE Fam y HyUnionFam).
+    }
+    apply HexU.
+    let U.
+    assume HUpack.
+    claim HyU : y :e U.
+    {
+      exact (andEL
+        (y :e U)
+        (U :e Fam)
+        HUpack).
+    }
+    claim HUfam : U :e Fam.
+    {
+      exact (andER
+        (y :e U)
+        (U :e Fam)
+        HUpack).
+    }
+    witness (G :\/: {U}).
+    apply andI.
+    + apply andI.
+      * let W.
+        assume HWbig.
+        apply (binunionE G {U} W HWbig).
+        + assume HWG.
+           exact (HGsubFam W HWG).
+        + assume HWSing.
+           claim HWU : W = U.
+           {
+             exact (SingE U W HWSing).
+           }
+           rewrite HWU.
+           exact HUfam.
+      * exact (adjoin_finite G U HGfin).
+    + let z.
+      assume Hzbig.
+      apply (binunionE X {y} z Hzbig).
+      + assume HzX.
+         claim HzUnionG : z :e Union G.
+         {
+           exact (HcovXG z HzX).
+         }
+         apply (UnionE G z HzUnionG).
+         let W.
+         assume HWpack.
+         claim HzW : z :e W.
+         {
+           exact (andEL
+             (z :e W)
+             (W :e G)
+             HWpack).
+         }
+         claim HWG : W :e G.
+         {
+           exact (andER
+             (z :e W)
+             (W :e G)
+             HWpack).
+         }
+         claim HWbigFam : W :e G :\/: {U}.
+         {
+           exact (binunionI1 G {U} W HWG).
+         }
+         exact (UnionI (G :\/: {U}) z W HzW HWbigFam).
+      + assume HzySing.
+         claim Hzy : z = y.
+         {
+           exact (SingE y z HzySing).
+         }
+         rewrite Hzy.
+         claim HUb : U :e G :\/: {U}.
+         {
+           exact (binunionI2 G {U} U (SingI U)).
+         }
+         exact (UnionI (G :\/: {U}) y U HyU HUb).
+}
+exact (Hind A HfinA HcovA).
+Qed.
+
 (** from S53 Exercise 6b (line 694 in algtop.tex) **)
 (** LATEX VERSION: If B is compact and p^{-1}(b) is finite for each b in B, **)
 (** then E is compact. **)
@@ -16617,7 +16770,81 @@ Theorem ex53_6b_compact_finite_fiber : forall E Te B Tb p:set,
   compact_space B Tb ->
   (forall b:set, b :e B -> finite {x :e E | apply_fun p x = b}) ->
   compact_space E Te.
-admit.
+let E Te B Tb p.
+assume Hcov HcompB HfinFib.
+claim Hcont : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    (andEL
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+      Hcov)).
+}
+claim Hsurj : surjective_map E B p.
+{
+  exact (andER
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    (andEL
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+      Hcov)).
+}
+claim HtopE : topology_on E Te.
+{
+  exact (continuous_map_topology_dom E Te B Tb p Hcont).
+}
+claim HtopB : topology_on B Tb.
+{
+  exact (compact_space_topology B Tb HcompB).
+}
+claim Hfun : function_on p E B.
+{
+  exact (continuous_map_function_on E Te B Tb p Hcont).
+}
+claim Hsubcover :
+  forall Fam:set, open_cover_of E Te Fam -> has_finite_subcover E Te Fam.
+{
+  let Fam.
+  assume HopenFam.
+  claim HfamSubPow : Fam c= Power E.
+  {
+    exact (open_cover_of_family_sub E Te Fam HopenFam).
+  }
+  claim HEsubUnionFam : E c= Union Fam.
+  {
+    exact (open_cover_of_covers E Te Fam HopenFam).
+  }
+  claim HbaseLocalRefinement :
+    exists Ufam:set,
+      Ufam c= Tb /\
+      B c= Union Ufam /\
+      (forall U:set, U :e Ufam ->
+        exists G:set, G c= Fam /\ finite G /\ preimage_of E p U c= Union G).
+  {
+    (** Remaining core compactness step:
+        for each b in B, choose an evenly covered neighborhood U around b.
+        Use finite fiber over b and the ambient cover Fam of E to produce
+        a finite subfamily G(U) with preimage_of E p U c= Union G(U).
+        Then let Ufam be the collection of those base neighborhoods. **)
+    admit.
+  }
+  (** Remaining assembly step:
+      apply compactness of B to Ufam, extract finite U0 c=Ufam with B c=Union U0,
+      then combine finitely many finite families G(U), U:e U0, using
+      finite_Union_of_finite_family to obtain a finite subfamily of Fam
+      covering E. **)
+  admit.
+}
+exact (andI
+  (topology_on E Te)
+  (forall Fam:set, open_cover_of E Te Fam -> has_finite_subcover E Te Fam)
+  HtopE
+  Hsubcover).
 Admitted.
 
 (** ================================================================ **)
