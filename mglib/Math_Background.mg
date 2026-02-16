@@ -13342,129 +13342,81 @@ claim HclAmbientInter : (closure_of E Te V0) :/\: Ux c= (U :/\: Ux).
 }
 claim HclStayUx : closure_of E Te V0 c= Ux.
 {
-  claim Hf : function_on p E B.
+  claim HslicePack :
+    exists Ue slices Sx:set,
+      Ue :e Tb /\ apply_fun p x :e Ue /\
+      slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p Ue /\
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) Ue (subspace_topology B Tb Ue)
+          (graph V (fun z:set => apply_fun p z))) /\
+      x :e Sx /\ Sx :e slices.
   {
-    exact (continuous_map_function_on E Te B Tb p Hcont).
+    exact (covering_map_slice_through_point E Te B Tb p x Hcov HxE).
   }
-  claim HpxB : apply_fun p x :e B.
-  {
-    exact (Hf x HxE).
-  }
-  claim HlocB :
-    exists Ue:set, Ue :e Tb /\ apply_fun p x :e Ue /\ evenly_covered E Te B Tb p Ue.
-  {
-    exact (andER
-      (continuous_map E Te B Tb p /\ surjective_map E B p)
-      (forall b:set, b :e B ->
-        exists Ue:set, Ue :e Tb /\ b :e Ue /\ evenly_covered E Te B Tb p Ue)
-      Hcov
-      (apply_fun p x)
-      HpxB).
-  }
-  apply HlocB.
+  apply HslicePack.
   let Ue.
   assume HUePack.
+  apply HUePack.
+  let slices.
+  assume HsPack.
+  apply HsPack.
+  let Sx.
+  assume HSxPack.
+  apply (and4E
+    ((((Ue :e Tb /\ apply_fun p x :e Ue) /\ slices c= Te) /\
+      pairwise_disjoint slices) /\
+     Union slices = preimage_of E p Ue)
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) Ue (subspace_topology B Tb Ue)
+        (graph V (fun z:set => apply_fun p z)))
+    (x :e Sx)
+    (Sx :e slices)
+    HSxPack).
+  assume Hprefix HhomeSlices HxSx HSxSlice.
+  apply (and3E
+    ((Ue :e Tb /\ apply_fun p x :e Ue) /\ slices c= Te)
+    (pairwise_disjoint slices)
+    (Union slices = preimage_of E p Ue)
+    Hprefix).
+  assume HpairSub HpdSlices HunionSlices.
+  claim HUePair : Ue :e Tb /\ apply_fun p x :e Ue.
+  {
+    exact (andEL
+      (Ue :e Tb /\ apply_fun p x :e Ue)
+      (slices c= Te)
+      HpairSub).
+  }
+  claim HsubSlices : slices c= Te.
+  {
+    exact (andER
+      (Ue :e Tb /\ apply_fun p x :e Ue)
+      (slices c= Te)
+      HpairSub).
+  }
   claim HUeOpen : Ue :e Tb.
   {
     exact (andEL
       (Ue :e Tb)
       (apply_fun p x :e Ue)
-      (andEL
-        (Ue :e Tb /\ apply_fun p x :e Ue)
-        (evenly_covered E Te B Tb p Ue)
-        HUePack)).
+      HUePair).
   }
   claim HpxUe : apply_fun p x :e Ue.
   {
     exact (andER
       (Ue :e Tb)
       (apply_fun p x :e Ue)
-      (andEL
-        (Ue :e Tb /\ apply_fun p x :e Ue)
-        (evenly_covered E Te B Tb p Ue)
-        HUePack)).
+      HUePair).
   }
-  claim HevenUe : evenly_covered E Te B Tb p Ue.
+  claim HSxOpen : Sx :e Te.
   {
-    exact (andER
-      (Ue :e Tb /\ apply_fun p x :e Ue)
-      (evenly_covered E Te B Tb p Ue)
-      HUePack).
+    exact (HsubSlices Sx HSxSlice).
   }
-  claim HexSlices :
-    exists slices:set,
-      slices c= Te /\
-      pairwise_disjoint slices /\
-      Union slices = preimage_of E p Ue /\
-      (forall V:set, V :e slices ->
-        homeomorphism V (subspace_topology E Te V) Ue (subspace_topology B Tb Ue)
-          (graph V (fun z:set => apply_fun p z))).
+  claim HSxHome :
+    homeomorphism Sx (subspace_topology E Te Sx) Ue (subspace_topology B Tb Ue)
+      (graph Sx (fun z:set => apply_fun p z)).
   {
-    exact (andER
-      (Ue :e Tb)
-      (exists slices:set,
-        slices c= Te /\
-        pairwise_disjoint slices /\
-        Union slices = preimage_of E p Ue /\
-        (forall V:set, V :e slices ->
-          homeomorphism V (subspace_topology E Te V) Ue (subspace_topology B Tb Ue)
-            (graph V (fun z:set => apply_fun p z))))
-      HevenUe).
-  }
-  apply HexSlices.
-  let slices.
-  assume Hs.
-  claim Htrip :
-    (slices c= Te /\ pairwise_disjoint slices) /\
-    Union slices = preimage_of E p Ue.
-  {
-    exact (andEL
-      ((slices c= Te /\ pairwise_disjoint slices) /\
-       Union slices = preimage_of E p Ue)
-      (forall V:set, V :e slices ->
-        homeomorphism V (subspace_topology E Te V) Ue (subspace_topology B Tb Ue)
-          (graph V (fun z:set => apply_fun p z)))
-      Hs).
-  }
-  claim HsubSlices : slices c= Te.
-  {
-    exact (andEL
-      (slices c= Te)
-      (pairwise_disjoint slices)
-      (andEL
-        (slices c= Te /\ pairwise_disjoint slices)
-        (Union slices = preimage_of E p Ue)
-        Htrip)).
-  }
-  claim HpdSlices : pairwise_disjoint slices.
-  {
-    exact (andER
-      (slices c= Te)
-      (pairwise_disjoint slices)
-      (andEL
-        (slices c= Te /\ pairwise_disjoint slices)
-        (Union slices = preimage_of E p Ue)
-        Htrip)).
-  }
-  claim HunionSlices : Union slices = preimage_of E p Ue.
-  {
-    exact (andER
-      (slices c= Te /\ pairwise_disjoint slices)
-      (Union slices = preimage_of E p Ue)
-      Htrip).
-  }
-  claim HhomeSlices :
-    forall V:set, V :e slices ->
-      homeomorphism V (subspace_topology E Te V) Ue (subspace_topology B Tb Ue)
-        (graph V (fun z:set => apply_fun p z)).
-  {
-    exact (andER
-      ((slices c= Te /\ pairwise_disjoint slices) /\
-       Union slices = preimage_of E p Ue)
-      (forall V:set, V :e slices ->
-        homeomorphism V (subspace_topology E Te V) Ue (subspace_topology B Tb Ue)
-          (graph V (fun z:set => apply_fun p z)))
-      Hs).
+    exact (HhomeSlices Sx HSxSlice).
   }
   claim HxPreUe : x :e preimage_of E p Ue.
   {
@@ -13484,36 +13436,20 @@ claim HclStayUx : closure_of E Te V0 c= Ux.
       HunionSlices
       HxPreUe).
   }
-  claim HexSx : exists Sx:set, x :e Sx /\ Sx :e slices.
+  claim HSxSubPreUe : Sx c= preimage_of E p Ue.
   {
-    exact (UnionE slices x HxUnionSlices).
-  }
-  apply HexSx.
-  let Sx.
-  assume HSx.
-  claim HxSx : x :e Sx.
-  {
-    exact (andEL
-      (x :e Sx)
-      (Sx :e slices)
-      HSx).
-  }
-  claim HSxSlice : Sx :e slices.
-  {
-    exact (andER
-      (x :e Sx)
-      (Sx :e slices)
-      HSx).
-  }
-  claim HSxOpen : Sx :e Te.
-  {
-    exact (HsubSlices Sx HSxSlice).
-  }
-  claim HSxHome :
-    homeomorphism Sx (subspace_topology E Te Sx) Ue (subspace_topology B Tb Ue)
-      (graph Sx (fun z:set => apply_fun p z)).
-  {
-    exact (HhomeSlices Sx HSxSlice).
+    let z.
+    assume HzSx.
+    claim HzUnion : z :e Union slices.
+    {
+      exact (UnionI slices z Sx HzSx HSxSlice).
+    }
+    exact (mem_eqR
+      z
+      (Union slices)
+      (preimage_of E p Ue)
+      HunionSlices
+      HzUnion).
   }
   admit.
 }
