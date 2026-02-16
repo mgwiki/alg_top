@@ -16826,12 +16826,208 @@ claim Hsubcover :
       (forall U:set, U :e Ufam ->
         exists G:set, G c= Fam /\ finite G /\ preimage_of E p U c= Union G).
   {
-    (** Remaining core compactness step:
-        for each b in B, choose an evenly covered neighborhood U around b.
-        Use finite fiber over b and the ambient cover Fam of E to produce
-        a finite subfamily G(U) with preimage_of E p U c= Union G(U).
-        Then let Ufam be the collection of those base neighborhoods. **)
-    admit.
+    claim HlocalRefineAtPoint :
+      forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\
+          exists G:set, G c= Fam /\ finite G /\ preimage_of E p U c= Union G.
+    {
+      let b.
+      assume HbB.
+      claim HlocEven :
+        exists U0:set, U0 :e Tb /\ b :e U0 /\ evenly_covered E Te B Tb p U0.
+      {
+        exact (andER
+          (continuous_map E Te B Tb p /\ surjective_map E B p)
+          (forall b0:set, b0 :e B ->
+            exists U0:set, U0 :e Tb /\ b0 :e U0 /\ evenly_covered E Te B Tb p U0)
+          Hcov
+          b
+          HbB).
+      }
+      apply HlocEven.
+      let U0.
+      assume HU0pack.
+      claim HU0tb : U0 :e Tb.
+      {
+        exact (andEL
+          (U0 :e Tb)
+          (b :e U0)
+          (andEL
+            (U0 :e Tb /\ b :e U0)
+            (evenly_covered E Te B Tb p U0)
+            HU0pack)).
+      }
+      claim HUbU0 : b :e U0.
+      {
+        exact (andER
+          (U0 :e Tb)
+          (b :e U0)
+          (andEL
+            (U0 :e Tb /\ b :e U0)
+            (evenly_covered E Te B Tb p U0)
+            HU0pack)).
+      }
+      claim HfinFiberB : finite {x :e E | apply_fun p x = b}.
+      {
+        exact (HfinFib b HbB).
+      }
+      claim HFiberSubE : {x :e E | apply_fun p x = b} c= E.
+      {
+        exact (Sep_Subq E (fun x:set => apply_fun p x = b)).
+      }
+      claim HFiberSubUnionFam : {x :e E | apply_fun p x = b} c= Union Fam.
+      {
+        exact (Subq_tra
+          {x :e E | apply_fun p x = b}
+          E
+          (Union Fam)
+          HFiberSubE
+          HEsubUnionFam).
+      }
+      claim HfiberFiniteCover :
+        exists G0:set, G0 c= Fam /\ finite G0 /\ {x :e E | apply_fun p x = b} c= Union G0.
+      {
+        exact (finite_subset_has_finite_cover_subfamily
+          {x :e E | apply_fun p x = b}
+          Fam
+          HfinFiberB
+          HFiberSubUnionFam).
+      }
+      apply HfiberFiniteCover.
+      let G0.
+      assume HG0pack.
+      claim HG0subFam : G0 c= Fam.
+      {
+        exact (andEL
+          (G0 c= Fam)
+          (finite G0)
+          (andEL
+            (G0 c= Fam /\ finite G0)
+            ({x :e E | apply_fun p x = b} c= Union G0)
+            HG0pack)).
+      }
+      claim HG0fin : finite G0.
+      {
+        exact (andER
+          (G0 c= Fam)
+          (finite G0)
+          (andEL
+            (G0 c= Fam /\ finite G0)
+            ({x :e E | apply_fun p x = b} c= Union G0)
+            HG0pack)).
+      }
+      claim Hshrink :
+        exists U:set, U :e Tb /\ b :e U /\ preimage_of E p U c= Union G0.
+      {
+        (** Remaining local shrinking step:
+            starting from evenly_covered U0 around b and the finite family G0
+            covering the fiber p^{-1}(b), shrink to U containing b so that
+            preimage_of E p U is contained in Union G0. **)
+        admit.
+      }
+      apply Hshrink.
+      let U.
+      assume HUPack.
+      claim HUtb : U :e Tb.
+      {
+        exact (andEL
+          (U :e Tb)
+          (b :e U)
+          (andEL
+            (U :e Tb /\ b :e U)
+            (preimage_of E p U c= Union G0)
+            HUPack)).
+      }
+      claim HUbU : b :e U.
+      {
+        exact (andER
+          (U :e Tb)
+          (b :e U)
+          (andEL
+            (U :e Tb /\ b :e U)
+            (preimage_of E p U c= Union G0)
+            HUPack)).
+      }
+      claim HpreUSubUnionG0 : preimage_of E p U c= Union G0.
+      {
+        exact (andER
+          (U :e Tb /\ b :e U)
+          (preimage_of E p U c= Union G0)
+          HUPack).
+      }
+      witness U.
+      apply andI.
+      + apply andI.
+        * exact HUtb.
+        * exact HUbU.
+      + witness G0.
+        apply andI.
+        * apply andI.
+          + exact HG0subFam.
+          + exact HG0fin.
+        * exact HpreUSubUnionG0.
+    }
+    set Ufam := {U :e Tb | exists G:set, G c= Fam /\ finite G /\ preimage_of E p U c= Union G}.
+    witness Ufam.
+    apply andI.
+    - apply andI.
+      + let U.
+        assume HUUfam.
+        exact (SepE1
+          Tb
+          (fun U0:set => exists G:set, G c= Fam /\ finite G /\ preimage_of E p U0 c= Union G)
+          U
+          HUUfam).
+      + let b.
+        assume HbB.
+        apply (HlocalRefineAtPoint b HbB).
+        let U.
+        assume HUPack.
+        claim HUb : b :e U.
+        {
+          exact (andER
+            (U :e Tb)
+            (b :e U)
+            (andEL
+              (U :e Tb /\ b :e U)
+              (exists G:set, G c= Fam /\ finite G /\ preimage_of E p U c= Union G)
+              HUPack)).
+        }
+        claim HUtb : U :e Tb.
+        {
+          exact (andEL
+            (U :e Tb)
+            (b :e U)
+            (andEL
+              (U :e Tb /\ b :e U)
+              (exists G:set, G c= Fam /\ finite G /\ preimage_of E p U c= Union G)
+              HUPack)).
+        }
+        claim HUG :
+          exists G:set, G c= Fam /\ finite G /\ preimage_of E p U c= Union G.
+        {
+          exact (andER
+            (U :e Tb /\ b :e U)
+            (exists G:set, G c= Fam /\ finite G /\ preimage_of E p U c= Union G)
+            HUPack).
+        }
+        claim HUUfam : U :e Ufam.
+        {
+          exact (SepI
+            Tb
+            (fun U0:set => exists G:set, G c= Fam /\ finite G /\ preimage_of E p U0 c= Union G)
+            U
+            HUtb
+            HUG).
+        }
+        exact (UnionI Ufam b U HUb HUUfam).
+    - let U.
+      assume HUUfam.
+      exact (SepE2
+        Tb
+        (fun U0:set => exists G:set, G c= Fam /\ finite G /\ preimage_of E p U0 c= Union G)
+        U
+        HUUfam).
   }
   apply HbaseLocalRefinement.
   let Ufam.
