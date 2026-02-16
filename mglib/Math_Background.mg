@@ -9251,7 +9251,27 @@ claim HclosedB : closed_in XI TXI B.
            (closed_in unit_interval unit_interval_topology unit_interval_right_half)
            unit_interval_halves_closed)). }
 claim Hcover : A :\/: B = XI.
-{ admit. }
+{ apply set_ext.
+  - exact (binunion_Subq_min A B XI
+      (setprod_Subq X unit_interval_left_half X unit_interval (Subq_ref X) unit_interval_left_half_sub)
+      (setprod_Subq X unit_interval_right_half X unit_interval (Subq_ref X) unit_interval_right_half_sub)).
+  - let p. assume Hp.
+    claim Hp0X : (p 0) :e X.
+    { exact (ap0_Sigma X (fun _ : set => unit_interval) p Hp). }
+    claim Hp1LHRH : (p 1) :e unit_interval_left_half :\/: unit_interval_right_half.
+    { exact (unit_interval_halves_cover (fun a b:set => (p 1) :e a -> (p 1) :e b)
+        (binunion_Subq_min unit_interval_left_half unit_interval_right_half unit_interval
+          unit_interval_left_half_sub unit_interval_right_half_sub (p 1))
+        (ap1_Sigma X (fun _ : set => unit_interval) p Hp)). }
+    apply (setprod_eta X unit_interval p Hp (fun a b:set => b :e A :\/: B)).
+    apply (binunionE unit_interval_left_half unit_interval_right_half (p 1) Hp1LHRH).
+    + assume Hp1LH.
+      exact (binunionI1 A B (p 0, p 1)
+        (tuple_2_setprod_by_pair_Sigma X unit_interval_left_half (p 0) (p 1) Hp0X Hp1LH)).
+    + assume Hp1RH.
+      exact (binunionI2 A B (p 0, p 1)
+        (tuple_2_setprod_by_pair_Sigma X unit_interval_right_half (p 0) (p 1) Hp0X Hp1RH)).
+}
 claim HcontfA : continuous_map A (subspace_topology XI TXI A) Y Ty fA.
 { admit. }
 claim HcontgB : continuous_map B (subspace_topology XI TXI B) Y Ty gB.
@@ -9278,8 +9298,32 @@ apply and3I.
 - witness HH.
   apply and3I.
   + exact HcHH.
-  + admit.
-  + admit.
+  + let x. assume Hx.
+    claim HxA : (x, 0) :e A.
+    { exact (tuple_2_setprod_by_pair_Sigma X unit_interval_left_half x 0 Hx zero_in_unit_interval_left_half). }
+    rewrite (HHA (x, 0) HxA).
+    rewrite (compose_fun_apply A left_rescale F (x, 0) HxA).
+    rewrite (pair_map_apply A X unit_interval (projection_map1 X unit_interval_left_half) (compose_fun A (projection_map2 X unit_interval_left_half) double_map_left_half) (x, 0) HxA).
+    rewrite (projection1_apply X unit_interval_left_half (x, 0) HxA).
+    rewrite (tuple_2_0_eq x 0).
+    rewrite (compose_fun_apply A (projection_map2 X unit_interval_left_half) double_map_left_half (x, 0) HxA).
+    rewrite (projection2_apply X unit_interval_left_half (x, 0) HxA).
+    rewrite (tuple_2_1_eq x 0).
+    rewrite double_map_at_0.
+    exact (HF0 x Hx).
+  + let x. assume Hx.
+    claim HxB : (x, 1) :e B.
+    { exact (tuple_2_setprod_by_pair_Sigma X unit_interval_right_half x 1 Hx one_in_unit_interval_right_half). }
+    rewrite (HHB (x, 1) HxB).
+    rewrite (compose_fun_apply B right_rescale G (x, 1) HxB).
+    rewrite (pair_map_apply B X unit_interval (projection_map1 X unit_interval_right_half) (compose_fun B (projection_map2 X unit_interval_right_half) double_minus_one_map_right_half) (x, 1) HxB).
+    rewrite (projection1_apply X unit_interval_right_half (x, 1) HxB).
+    rewrite (tuple_2_0_eq x 1).
+    rewrite (compose_fun_apply B (projection_map2 X unit_interval_right_half) double_minus_one_map_right_half (x, 1) HxB).
+    rewrite (projection2_apply X unit_interval_right_half (x, 1) HxB).
+    rewrite (tuple_2_1_eq x 1).
+    rewrite double_minus_one_map_at_1.
+    exact (HG1 x Hx).
 Admitted.
 
 (** from S51 Lemma 51.1 (line 125 in algtop.tex): path homotopy reflexivity **)
