@@ -1,5 +1,5 @@
 (** Balance Alice 1545 **)
-(** Balance Bob 1320 **)
+(** Balance Bob 1308 **)
 (** Balance Charlie 1135 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -20859,7 +20859,8 @@ Definition path_lift : set -> set -> set -> set -> set -> set -> set -> set :=
 (** LATEX VERSION: Let p: E -> B be a covering map, p(e0) = b0. Any path f:[0,1] -> B **)
 (** beginning at b0 has a unique lifting to a path in E beginning at e0. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 120 **)
+(** Bounty 132 **)
+(** Lock Bob 2026-02-18T10:30:00 **)
 Theorem lemma54_1_path_lifting : forall E Te B Tb p e0 f:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun f 0 ->
