@@ -1,4 +1,4 @@
-(** Balance Alice 1000 **)
+(** Balance Alice 966 **)
 (** Balance Bob 1100 **)
 (** Balance Charlie 1000 **)
 
@@ -8679,7 +8679,8 @@ Qed.
 
 (** from S51 Lemma 51.1 (line 125 in algtop.tex): homotopy transitivity **)
 (** EFFORT: 5 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Alice 2026-02-17T19:30:00 **)
 Theorem Lemma_51_1_homotopy_trans : forall X Tx Y Ty f f' f'':set,
   homotopic_maps X Tx Y Ty f f' ->
   homotopic_maps X Tx Y Ty f' f'' ->
@@ -8844,7 +8845,8 @@ Qed.
 
 (** from S51 Lemma 51.1 (line 125 in algtop.tex): path homotopy symmetry **)
 (** EFFORT: 2 lines textbook, difficulty 3/10, USD 40 **)
-(** Bounty 40 **)
+(** Bounty 44 **)
+(** Lock Alice 2026-02-17T19:30:00 **)
 Theorem Lemma_51_1_path_homotopy_sym : forall X Tx x0 x1 f f':set,
   path_homotopic X Tx x0 x1 f f' ->
   path_homotopic X Tx x0 x1 f' f.
@@ -8853,7 +8855,8 @@ Admitted.
 
 (** from S51 Lemma 51.1 (line 125 in algtop.tex): path homotopy transitivity **)
 (** EFFORT: 6 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Alice 2026-02-17T19:30:00 **)
 Theorem Lemma_51_1_path_homotopy_trans : forall X Tx x0 x1 f f' f'':set,
   path_homotopic X Tx x0 x1 f f' ->
   path_homotopic X Tx x0 x1 f' f'' ->
@@ -9227,7 +9230,8 @@ Admitted.
 
 (** from S51 (line 200 in algtop.tex): path product starts at f(0) **)
 (** EFFORT: 3 lines textbook, difficulty 4/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Alice 2026-02-17T19:30:00 **)
 Theorem path_concat_at_zero : forall f g:set,
   apply_fun (path_concat f g) 0 = apply_fun f 0.
 admit.
@@ -9235,7 +9239,8 @@ Admitted.
 
 (** from S51 (line 200 in algtop.tex): path product ends at g(1) **)
 (** EFFORT: 3 lines textbook, difficulty 4/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Alice 2026-02-17T19:30:00 **)
 Theorem path_concat_at_one : forall f g:set,
   apply_fun (path_concat f g) 1 = apply_fun g 1.
 admit.
