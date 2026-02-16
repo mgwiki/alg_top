@@ -1,4 +1,4 @@
-(** Balance Alice 966 **)
+(** Balance Alice 1010 **)
 (** Balance Bob 1100 **)
 (** Balance Charlie 1000 **)
 
@@ -8845,13 +8845,259 @@ Qed.
 
 (** from S51 Lemma 51.1 (line 125 in algtop.tex): path homotopy symmetry **)
 (** EFFORT: 2 lines textbook, difficulty 3/10, USD 40 **)
-(** Bounty 44 **)
-(** Lock Alice 2026-02-17T19:30:00 **)
+(** Collected Alice 44 **)
+(** Proven Alice **)
 Theorem Lemma_51_1_path_homotopy_sym : forall X Tx x0 x1 f f':set,
   path_homotopic X Tx x0 x1 f f' ->
   path_homotopic X Tx x0 x1 f' f.
-admit.
-Admitted.
+let X Tx x0 x1 f f'.
+assume Hhom.
+prove continuous_map unit_interval unit_interval_topology X Tx f' /\
+  continuous_map unit_interval unit_interval_topology X Tx f /\
+  apply_fun f' 0 = x0 /\ apply_fun f' 1 = x1 /\
+  apply_fun f 0 = x0 /\ apply_fun f 1 = x1 /\
+  exists G:set,
+    continuous_map unit_square unit_square_topology X Tx G /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun G (s, 0) = apply_fun f' s) /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun G (s, 1) = apply_fun f s) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun G (0, t) = x0) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun G (1, t) = x1).
+apply (and7E
+  (continuous_map unit_interval unit_interval_topology X Tx f)
+  (continuous_map unit_interval unit_interval_topology X Tx f')
+  (apply_fun f 0 = x0)
+  (apply_fun f 1 = x1)
+  (apply_fun f' 0 = x0)
+  (apply_fun f' 1 = x1)
+  (exists F:set,
+    continuous_map unit_square unit_square_topology X Tx F /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 0) = apply_fun f s) /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 1) = apply_fun f' s) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (0, t) = x0) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (1, t) = x1))
+  Hhom).
+assume Hcf Hcf' Hf0 Hf1 Hf'0 Hf'1 Hex.
+apply Hex.
+let F.
+assume HF.
+apply (and5E
+  (continuous_map unit_square unit_square_topology X Tx F)
+  (forall s:set, s :e unit_interval ->
+    apply_fun F (s, 0) = apply_fun f s)
+  (forall s:set, s :e unit_interval ->
+    apply_fun F (s, 1) = apply_fun f' s)
+  (forall t:set, t :e unit_interval ->
+    apply_fun F (0, t) = x0)
+  (forall t:set, t :e unit_interval ->
+    apply_fun F (1, t) = x1)
+  HF).
+assume HFcont HFs0 HFs1 HF0t HF1t.
+apply and7I.
+- exact Hcf'.
+- exact Hcf.
+- exact Hf'0.
+- exact Hf'1.
+- exact Hf0.
+- exact Hf1.
+- witness (compose_fun unit_square
+    (pair_map unit_square
+      (projection_map1 unit_interval unit_interval)
+      (compose_fun unit_square (projection_map2 unit_interval unit_interval) flip_unit_interval))
+    F).
+  apply and5I.
+  + exact (composition_continuous
+      unit_square unit_square_topology
+      unit_square unit_square_topology
+      X Tx
+      (pair_map unit_square
+        (projection_map1 unit_interval unit_interval)
+        (compose_fun unit_square (projection_map2 unit_interval unit_interval) flip_unit_interval))
+      F
+      (maps_into_products
+        unit_square unit_square_topology
+        unit_interval unit_interval_topology
+        unit_interval unit_interval_topology
+        (projection_map1 unit_interval unit_interval)
+        (compose_fun unit_square (projection_map2 unit_interval unit_interval) flip_unit_interval)
+        (andEL
+          (continuous_map
+            unit_square unit_square_topology
+            unit_interval unit_interval_topology
+            (projection_map1 unit_interval unit_interval))
+          (continuous_map
+            unit_square unit_square_topology
+            unit_interval unit_interval_topology
+            (projection_map2 unit_interval unit_interval))
+          (projection_maps_continuous
+            unit_interval unit_interval_topology
+            unit_interval unit_interval_topology
+            unit_interval_topology_on
+            unit_interval_topology_on))
+        (composition_continuous
+          unit_square unit_square_topology
+          unit_interval unit_interval_topology
+          unit_interval unit_interval_topology
+          (projection_map2 unit_interval unit_interval)
+          flip_unit_interval
+          (andER
+            (continuous_map
+              unit_square unit_square_topology
+              unit_interval unit_interval_topology
+              (projection_map1 unit_interval unit_interval))
+            (continuous_map
+              unit_square unit_square_topology
+              unit_interval unit_interval_topology
+              (projection_map2 unit_interval unit_interval))
+            (projection_maps_continuous
+              unit_interval unit_interval_topology
+              unit_interval unit_interval_topology
+              unit_interval_topology_on
+              unit_interval_topology_on))
+          flip_unit_interval_continuous))
+      HFcont).
+  + let s. assume Hs.
+    rewrite (compose_fun_apply
+      unit_square
+      (pair_map unit_square
+        (projection_map1 unit_interval unit_interval)
+        (compose_fun unit_square (projection_map2 unit_interval unit_interval) flip_unit_interval))
+      F
+      (s, 0)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 0 Hs zero_in_unit_interval)).
+    rewrite (pair_map_apply
+      unit_square
+      unit_interval unit_interval
+      (projection_map1 unit_interval unit_interval)
+      (compose_fun unit_square (projection_map2 unit_interval unit_interval) flip_unit_interval)
+      (s, 0)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 0 Hs zero_in_unit_interval)).
+    rewrite (projection1_apply
+      unit_interval unit_interval
+      (s, 0)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 0 Hs zero_in_unit_interval)).
+    rewrite (compose_fun_apply
+      unit_square
+      (projection_map2 unit_interval unit_interval)
+      flip_unit_interval
+      (s, 0)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 0 Hs zero_in_unit_interval)).
+    rewrite (projection2_apply
+      unit_interval unit_interval
+      (s, 0)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 0 Hs zero_in_unit_interval)).
+    rewrite tuple_2_1_eq.
+    rewrite flip_unit_interval_at_0.
+    rewrite tuple_2_0_eq.
+    exact (HFs1 s Hs).
+  + let s. assume Hs.
+    rewrite (compose_fun_apply
+      unit_square
+      (pair_map unit_square
+        (projection_map1 unit_interval unit_interval)
+        (compose_fun unit_square (projection_map2 unit_interval unit_interval) flip_unit_interval))
+      F
+      (s, 1)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 1 Hs one_in_unit_interval)).
+    rewrite (pair_map_apply
+      unit_square
+      unit_interval unit_interval
+      (projection_map1 unit_interval unit_interval)
+      (compose_fun unit_square (projection_map2 unit_interval unit_interval) flip_unit_interval)
+      (s, 1)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 1 Hs one_in_unit_interval)).
+    rewrite (projection1_apply
+      unit_interval unit_interval
+      (s, 1)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 1 Hs one_in_unit_interval)).
+    rewrite (compose_fun_apply
+      unit_square
+      (projection_map2 unit_interval unit_interval)
+      flip_unit_interval
+      (s, 1)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 1 Hs one_in_unit_interval)).
+    rewrite (projection2_apply
+      unit_interval unit_interval
+      (s, 1)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 1 Hs one_in_unit_interval)).
+    rewrite tuple_2_1_eq.
+    rewrite flip_unit_interval_at_1.
+    rewrite tuple_2_0_eq.
+    exact (HFs0 s Hs).
+  + let t. assume Ht.
+    rewrite (compose_fun_apply
+      unit_square
+      (pair_map unit_square
+        (projection_map1 unit_interval unit_interval)
+        (compose_fun unit_square (projection_map2 unit_interval unit_interval) flip_unit_interval))
+      F
+      (0, t)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 0 t zero_in_unit_interval Ht)).
+    rewrite (pair_map_apply
+      unit_square
+      unit_interval unit_interval
+      (projection_map1 unit_interval unit_interval)
+      (compose_fun unit_square (projection_map2 unit_interval unit_interval) flip_unit_interval)
+      (0, t)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 0 t zero_in_unit_interval Ht)).
+    rewrite (projection1_apply
+      unit_interval unit_interval
+      (0, t)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 0 t zero_in_unit_interval Ht)).
+    rewrite (compose_fun_apply
+      unit_square
+      (projection_map2 unit_interval unit_interval)
+      flip_unit_interval
+      (0, t)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 0 t zero_in_unit_interval Ht)).
+    rewrite (projection2_apply
+      unit_interval unit_interval
+      (0, t)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 0 t zero_in_unit_interval Ht)).
+    rewrite tuple_2_0_eq.
+    rewrite tuple_2_1_eq.
+    exact (HF0t (apply_fun flip_unit_interval t) (flip_unit_interval_function_on t Ht)).
+  + let t. assume Ht.
+    rewrite (compose_fun_apply
+      unit_square
+      (pair_map unit_square
+        (projection_map1 unit_interval unit_interval)
+        (compose_fun unit_square (projection_map2 unit_interval unit_interval) flip_unit_interval))
+      F
+      (1, t)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 1 t one_in_unit_interval Ht)).
+    rewrite (pair_map_apply
+      unit_square
+      unit_interval unit_interval
+      (projection_map1 unit_interval unit_interval)
+      (compose_fun unit_square (projection_map2 unit_interval unit_interval) flip_unit_interval)
+      (1, t)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 1 t one_in_unit_interval Ht)).
+    rewrite (projection1_apply
+      unit_interval unit_interval
+      (1, t)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 1 t one_in_unit_interval Ht)).
+    rewrite (compose_fun_apply
+      unit_square
+      (projection_map2 unit_interval unit_interval)
+      flip_unit_interval
+      (1, t)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 1 t one_in_unit_interval Ht)).
+    rewrite (projection2_apply
+      unit_interval unit_interval
+      (1, t)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 1 t one_in_unit_interval Ht)).
+    rewrite tuple_2_0_eq.
+    rewrite tuple_2_1_eq.
+    exact (HF1t (apply_fun flip_unit_interval t) (flip_unit_interval_function_on t Ht)).
+Qed.
 
 (** from S51 Lemma 51.1 (line 125 in algtop.tex): path homotopy transitivity **)
 (** EFFORT: 6 lines textbook, difficulty 5/10, USD 100 **)
