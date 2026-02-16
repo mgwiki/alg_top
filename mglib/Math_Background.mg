@@ -1,5 +1,5 @@
 (** Balance Alice 1460 **)
-(** Balance Bob 1100 **)
+(** Balance Bob 1150 **)
 (** Balance Charlie 1065 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -13670,7 +13670,8 @@ apply andI.
   + exact HhomeSlices.
 Qed.
 
-(** Bounty 50 **)
+(** Collected Bob 50 **)
+(** Proven Bob **)
 Theorem ex53_6a_regular : forall E Te B Tb p:set,
   covering_map E Te B Tb p -> regular_space B Tb -> regular_space E Te.
 let E Te B Tb p.
@@ -14053,268 +14054,244 @@ claim HexWbV1 :
       * exact HV1SubV0.
     + exact HV1SubPreWb.
 }
-claim HclEq :
-  closure_of Ux (subspace_topology E Te Ux) V0 = (closure_of E Te V0) :/\: Ux.
+claim HexWbV1local :
+  exists Wb V1:set,
+    (Wb :e Tb /\ apply_fun p x :e Wb /\ closure_of B Tb Wb c= Vb) /\
+    (V1 :e Te /\ x :e V1 /\ V1 c= V0 /\ V1 c= preimage_of E p Wb).
 {
-  exact (closure_in_subspace E Te Ux V0 HtopE HUxSubE HV0SubUx).
+  exact HexWbV1.
 }
-claim HclAmbientInter : (closure_of E Te V0) :/\: Ux c= (U :/\: Ux).
+apply HexWbV1local.
+let Wb.
+assume HWbV1pack.
+apply HWbV1pack.
+let V1.
+assume Hpacks.
+claim HbasePack : Wb :e Tb /\ apply_fun p x :e Wb /\ closure_of B Tb Wb c= Vb.
 {
-  rewrite <- HclEq.
-  exact HclSub.
+  exact (andEL
+    (Wb :e Tb /\ apply_fun p x :e Wb /\ closure_of B Tb Wb c= Vb)
+    (V1 :e Te /\ x :e V1 /\ V1 c= V0 /\ V1 c= preimage_of E p Wb)
+    Hpacks).
 }
-claim HclStayUx : closure_of E Te V0 c= Ux.
+claim HV1Pack : V1 :e Te /\ x :e V1 /\ V1 c= V0 /\ V1 c= preimage_of E p Wb.
 {
-  claim HUxSubPreVb : Ux c= preimage_of E p Vb.
+  exact (andER
+    (Wb :e Tb /\ apply_fun p x :e Wb /\ closure_of B Tb Wb c= Vb)
+    (V1 :e Te /\ x :e V1 /\ V1 c= V0 /\ V1 c= preimage_of E p Wb)
+    Hpacks).
+}
+claim HtopB : topology_on B Tb.
+{
+  exact (regular_space_topology_on B Tb HregB).
+}
+claim HWbPair : Wb :e Tb /\ apply_fun p x :e Wb.
+{
+  exact (andEL
+    (Wb :e Tb /\ apply_fun p x :e Wb)
+    (closure_of B Tb Wb c= Vb)
+    HbasePack).
+}
+claim HWbOpen : Wb :e Tb.
+{
+  exact (andEL
+    (Wb :e Tb)
+    (apply_fun p x :e Wb)
+    HWbPair).
+}
+claim HclWbSubVb : closure_of B Tb Wb c= Vb.
+{
+  exact (andER
+    (Wb :e Tb /\ apply_fun p x :e Wb)
+    (closure_of B Tb Wb c= Vb)
+    HbasePack).
+}
+claim HV1Pair : (V1 :e Te /\ x :e V1) /\ V1 c= V0.
+{
+  exact (andEL
+    ((V1 :e Te /\ x :e V1) /\ V1 c= V0)
+    (V1 c= preimage_of E p Wb)
+    HV1Pack).
+}
+claim HV1OpenX : V1 :e Te /\ x :e V1.
+{
+  exact (andEL
+    (V1 :e Te /\ x :e V1)
+    (V1 c= V0)
+    HV1Pair).
+}
+claim HV1OpenE : V1 :e Te.
+{
+  exact (andEL
+    (V1 :e Te)
+    (x :e V1)
+    HV1OpenX).
+}
+claim HxV1 : x :e V1.
+{
+  exact (andER
+    (V1 :e Te)
+    (x :e V1)
+    HV1OpenX).
+}
+claim HV1SubV0 : V1 c= V0.
+{
+  exact (andER
+    (V1 :e Te /\ x :e V1)
+    (V1 c= V0)
+    HV1Pair).
+}
+claim HV1SubPreWb : V1 c= preimage_of E p Wb.
+{
+  exact (andER
+    ((V1 :e Te /\ x :e V1) /\ V1 c= V0)
+    (V1 c= preimage_of E p Wb)
+    HV1Pack).
+}
+claim HV1SubUx : V1 c= Ux.
+{
+  exact (Subq_tra V1 V0 Ux HV1SubV0 HV0SubUx).
+}
+claim HtopUxSub : topology_on Ux (subspace_topology E Te Ux).
+{
+  exact (regular_space_topology_on Ux (subspace_topology E Te Ux) HUxReg).
+}
+claim HclSubV1Ux : closure_of Ux (subspace_topology E Te Ux) V1 c= (U :/\: Ux).
+{
+  claim HclMonV1 :
+    closure_of Ux (subspace_topology E Te Ux) V1
+      c= closure_of Ux (subspace_topology E Te Ux) V0.
   {
-    exact (slice_subset_of_preimage_from_union E p Vb slices Ux HunionSlices HUxSlice).
-  }
-  claim HUxMapsVb : forall z:set, z :e Ux -> apply_fun p z :e Vb.
-  {
-    let z.
-    assume HzUx.
-    exact (slice_point_maps_into_even_base E p Vb slices Ux z
-      HunionSlices
-      HUxSlice
-      HzUx).
-  }
-  claim HV0SubPreVb : V0 c= preimage_of E p Vb.
-  {
-    exact (Subq_tra
-      V0
+    exact (closure_monotone
       Ux
-      (preimage_of E p Vb)
-      HV0SubUx
-      HUxSubPreVb).
-  }
-  claim HxPreVb : x :e preimage_of E p Vb.
-  {
-    exact (HUxSubPreVb x HxUx).
-  }
-  claim HxUnionSlices : x :e Union slices.
-  {
-    exact (mem_eqL
-      x
-      (Union slices)
-      (preimage_of E p Vb)
-      HunionSlices
-      HxPreVb).
-  }
-  claim HtopB : topology_on B Tb.
-  {
-    exact (regular_space_topology_on B Tb HregB).
-  }
-  claim HpreVbSubE : preimage_of E p Vb c= E.
-  {
-    exact (Sep_Subq E (fun z:set => apply_fun p z :e Vb)).
-  }
-  claim HclSubPreVb : closure_of E Te V0 c= closure_of E Te (preimage_of E p Vb).
-  {
-    exact (closure_monotone E Te V0 (preimage_of E p Vb) HtopE HV0SubPreVb HpreVbSubE).
-  }
-  claim HclPreVb :
-    closure_of E Te (preimage_of E p Vb) c= preimage_of E p (closure_of B Tb Vb).
-  {
-    exact (closure_preimage_contained E Te B Tb p Vb HtopE HtopB Hcont).
-  }
-  claim HclSubPreClVb : closure_of E Te V0 c= preimage_of E p (closure_of B Tb Vb).
-  {
-    exact (Subq_tra
-      (closure_of E Te V0)
-      (closure_of E Te (preimage_of E p Vb))
-      (preimage_of E p (closure_of B Tb Vb))
-      HclSubPreVb
-      HclPreVb).
-  }
-  claim HexWbV1local :
-    exists Wb V1:set,
-      (Wb :e Tb /\ apply_fun p x :e Wb /\ closure_of B Tb Wb c= Vb) /\
-      (V1 :e Te /\ x :e V1 /\ V1 c= V0 /\ V1 c= preimage_of E p Wb).
-  {
-    exact HexWbV1.
-  }
-  apply HexWbV1local.
-  let Wb.
-  assume HWbV1pack.
-  apply HWbV1pack.
-  let V1.
-  assume Hpacks.
-  claim HbasePack : Wb :e Tb /\ apply_fun p x :e Wb /\ closure_of B Tb Wb c= Vb.
-  {
-    exact (andEL
-      (Wb :e Tb /\ apply_fun p x :e Wb /\ closure_of B Tb Wb c= Vb)
-      (V1 :e Te /\ x :e V1 /\ V1 c= V0 /\ V1 c= preimage_of E p Wb)
-      Hpacks).
-  }
-  claim HV1Pack : V1 :e Te /\ x :e V1 /\ V1 c= V0 /\ V1 c= preimage_of E p Wb.
-  {
-    exact (andER
-      (Wb :e Tb /\ apply_fun p x :e Wb /\ closure_of B Tb Wb c= Vb)
-      (V1 :e Te /\ x :e V1 /\ V1 c= V0 /\ V1 c= preimage_of E p Wb)
-      Hpacks).
-  }
-  claim HWbOpen : Wb :e Tb.
-  {
-    claim HbasePair : Wb :e Tb /\ apply_fun p x :e Wb.
-    {
-      exact (andEL
-        (Wb :e Tb /\ apply_fun p x :e Wb)
-        (closure_of B Tb Wb c= Vb)
-        HbasePack).
-    }
-    exact (andEL
-      (Wb :e Tb)
-      (apply_fun p x :e Wb)
-      HbasePair).
-  }
-  claim HclWbSubVb : closure_of B Tb Wb c= Vb.
-  {
-    exact (andER
-      (Wb :e Tb /\ apply_fun p x :e Wb)
-      (closure_of B Tb Wb c= Vb)
-      HbasePack).
-  }
-  claim HV1SubV0 : V1 c= V0.
-  {
-    claim HV1Pair : (V1 :e Te /\ x :e V1) /\ V1 c= V0.
-    {
-      exact (andEL
-        ((V1 :e Te /\ x :e V1) /\ V1 c= V0)
-        (V1 c= preimage_of E p Wb)
-        HV1Pack).
-    }
-    exact (andER
-      (V1 :e Te /\ x :e V1)
-      (V1 c= V0)
-      HV1Pair).
-  }
-  claim HV1SubPreWb : V1 c= preimage_of E p Wb.
-  {
-    exact (andER
-      ((V1 :e Te /\ x :e V1) /\ V1 c= V0)
-      (V1 c= preimage_of E p Wb)
-      HV1Pack).
-  }
-  claim HWbSubB : Wb c= B.
-  {
-    exact (topology_elem_subset B Tb Wb HtopB HWbOpen).
-  }
-  claim HWbSubVb : Wb c= Vb.
-  {
-    exact (subset_of_set_from_closure_sub B Tb Wb Vb HtopB HWbSubB HclWbSubVb).
-  }
-  claim HpreWbSubPreVb : preimage_of E p Wb c= preimage_of E p Vb.
-  {
-    exact (preimage_of_mono E p Wb Vb HWbSubVb).
-  }
-  claim HV1SubPreVb : V1 c= preimage_of E p Vb.
-  {
-    exact (Subq_tra
+      (subspace_topology E Te Ux)
       V1
-      (preimage_of E p Wb)
-      (preimage_of E p Vb)
-      HV1SubPreWb
-      HpreWbSubPreVb).
+      V0
+      HtopUxSub
+      HV1SubV0
+      HV0SubUx).
   }
-  claim HpreWbSubE : preimage_of E p Wb c= E.
-  {
-    exact (Sep_Subq E (fun z:set => apply_fun p z :e Wb)).
-  }
-  claim HclSubPreWb :
-    closure_of E Te V1 c= closure_of E Te (preimage_of E p Wb).
-  {
-    exact (closure_monotone E Te V1 (preimage_of E p Wb) HtopE HV1SubPreWb HpreWbSubE).
-  }
-  claim HclPreWb :
-    closure_of E Te (preimage_of E p Wb) c= preimage_of E p (closure_of B Tb Wb).
-  {
-    exact (closure_preimage_contained E Te B Tb p Wb HtopE HtopB Hcont).
-  }
-  claim HclSubPreClWb :
-    closure_of E Te V1 c= preimage_of E p (closure_of B Tb Wb).
-  {
-    exact (Subq_tra
-      (closure_of E Te V1)
-      (closure_of E Te (preimage_of E p Wb))
-      (preimage_of E p (closure_of B Tb Wb))
-      HclSubPreWb
-      HclPreWb).
-  }
-  claim HpreClWbSubPreVb :
-    preimage_of E p (closure_of B Tb Wb) c= preimage_of E p Vb.
-  {
-    exact (preimage_of_mono E p (closure_of B Tb Wb) Vb HclWbSubVb).
-  }
-  claim HclV1SubPreVb : closure_of E Te V1 c= preimage_of E p Vb.
-  {
-    exact (Subq_tra
-      (closure_of E Te V1)
-      (preimage_of E p (closure_of B Tb Wb))
-      (preimage_of E p Vb)
-      HclSubPreClWb
-      HpreClWbSubPreVb).
-  }
-  claim HV1SubUx : V1 c= Ux.
-  {
-    exact (Subq_tra V1 V0 Ux HV1SubV0 HV0SubUx).
-  }
-  claim HpreVbSubE : preimage_of E p Vb c= E.
-  {
-    exact (Sep_Subq E (fun z:set => apply_fun p z :e Vb)).
-  }
-  claim HUxClosedInPreVb :
-    closed_in
-      (preimage_of E p Vb)
-      (subspace_topology E Te (preimage_of E p Vb))
-      Ux.
-  {
-    exact (slice_closed_in_even_preimage_subspace
-      E Te p Vb slices Ux
-      HtopE
-      HsubSlices
-      HpdSlices
-      HunionSlices
-      HUxSlice).
-  }
-  claim HclV1SubUx : closure_of E Te V1 c= Ux.
-  {
-    exact (ambient_closure_sub_closed_subspace
-      E Te (preimage_of E p Vb) V1 Ux
-      HtopE
-      HpreVbSubE
-      HV1SubPreVb
-      HclV1SubPreVb
-      HUxClosedInPreVb
-      HV1SubUx).
-  }
-  admit.
+  exact (Subq_tra
+    (closure_of Ux (subspace_topology E Te Ux) V1)
+    (closure_of Ux (subspace_topology E Te Ux) V0)
+    (U :/\: Ux)
+    HclMonV1
+    HclSub).
 }
-claim HclSubUcap : closure_of E Te V0 c= (U :/\: Ux).
+claim HWbSubB : Wb c= B.
 {
-  exact (closure_subspace_bound_to_ambient
-    E Te Ux V0 (U :/\: Ux)
-    HtopE
-    HUxSubE
-    HV0SubUx
-    HclSub
-    HclStayUx).
+  exact (topology_elem_subset B Tb Wb HtopB HWbOpen).
 }
-claim HclSubU : closure_of E Te V0 c= U.
+claim HWbSubVb : Wb c= Vb.
+{
+  exact (subset_of_set_from_closure_sub B Tb Wb Vb HtopB HWbSubB HclWbSubVb).
+}
+claim HpreWbSubPreVb : preimage_of E p Wb c= preimage_of E p Vb.
+{
+  exact (preimage_of_mono E p Wb Vb HWbSubVb).
+}
+claim HV1SubPreVb : V1 c= preimage_of E p Vb.
 {
   exact (Subq_tra
-    (closure_of E Te V0)
+    V1
+    (preimage_of E p Wb)
+    (preimage_of E p Vb)
+    HV1SubPreWb
+    HpreWbSubPreVb).
+}
+claim HpreWbSubE : preimage_of E p Wb c= E.
+{
+  exact (Sep_Subq E (fun z:set => apply_fun p z :e Wb)).
+}
+claim HclSubPreWb :
+  closure_of E Te V1 c= closure_of E Te (preimage_of E p Wb).
+{
+  exact (closure_monotone E Te V1 (preimage_of E p Wb) HtopE HV1SubPreWb HpreWbSubE).
+}
+claim HclPreWb :
+  closure_of E Te (preimage_of E p Wb) c= preimage_of E p (closure_of B Tb Wb).
+{
+  exact (closure_preimage_contained E Te B Tb p Wb HtopE HtopB Hcont).
+}
+claim HclSubPreClWb :
+  closure_of E Te V1 c= preimage_of E p (closure_of B Tb Wb).
+{
+  exact (Subq_tra
+    (closure_of E Te V1)
+    (closure_of E Te (preimage_of E p Wb))
+    (preimage_of E p (closure_of B Tb Wb))
+    HclSubPreWb
+    HclPreWb).
+}
+claim HpreClWbSubPreVb :
+  preimage_of E p (closure_of B Tb Wb) c= preimage_of E p Vb.
+{
+  exact (preimage_of_mono E p (closure_of B Tb Wb) Vb HclWbSubVb).
+}
+claim HclV1SubPreVb : closure_of E Te V1 c= preimage_of E p Vb.
+{
+  exact (Subq_tra
+    (closure_of E Te V1)
+    (preimage_of E p (closure_of B Tb Wb))
+    (preimage_of E p Vb)
+    HclSubPreClWb
+    HpreClWbSubPreVb).
+}
+claim HpreVbSubE : preimage_of E p Vb c= E.
+{
+  exact (Sep_Subq E (fun z:set => apply_fun p z :e Vb)).
+}
+claim HUxClosedInPreVb :
+  closed_in
+    (preimage_of E p Vb)
+    (subspace_topology E Te (preimage_of E p Vb))
+    Ux.
+{
+  exact (slice_closed_in_even_preimage_subspace
+    E Te p Vb slices Ux
+    HtopE
+    HsubSlices
+    HpdSlices
+    HunionSlices
+    HUxSlice).
+}
+claim HclV1SubUx : closure_of E Te V1 c= Ux.
+{
+  exact (ambient_closure_sub_closed_subspace
+    E Te (preimage_of E p Vb) V1 Ux
+    HtopE
+    HpreVbSubE
+    HV1SubPreVb
+    HclV1SubPreVb
+    HUxClosedInPreVb
+    HV1SubUx).
+}
+claim HclV1SubUcap : closure_of E Te V1 c= (U :/\: Ux).
+{
+  exact (closure_subspace_bound_to_ambient
+    E Te Ux V1 (U :/\: Ux)
+    HtopE
+    HUxSubE
+    HV1SubUx
+    HclSubV1Ux
+    HclV1SubUx).
+}
+claim HclV1SubU : closure_of E Te V1 c= U.
+{
+  exact (Subq_tra
+    (closure_of E Te V1)
     (U :/\: Ux)
     U
-    HclSubUcap
+    HclV1SubUcap
     (binintersect_Subq_1 U Ux)).
 }
-witness V0.
+witness V1.
 apply andI.
 - apply andI.
-  + exact HV0OpenE.
-  + exact HxV0.
-- exact HclSubU.
-Admitted.
+  + exact HV1OpenE.
+  + exact HxV1.
+- exact HclV1SubU.
+Qed.
 
 (** from S53 Exercise 6a (line 692 in algtop.tex) **)
 (** LATEX VERSION: If p: E -> B is a covering map and B is completely regular, **)
