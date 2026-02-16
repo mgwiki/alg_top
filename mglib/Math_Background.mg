@@ -17353,6 +17353,34 @@ claim Hind :
 exact (Hind A HfinA HcovA).
 Qed.
 
+(** Infrastructure: in a pairwise-disjoint family, a point determines the member uniquely **)
+(** Proven Bob **)
+Theorem pairwise_disjoint_point_unique_member : forall F A B x:set,
+  pairwise_disjoint F ->
+  A :e F -> B :e F ->
+  x :e A -> x :e B ->
+  A = B.
+let F A B x.
+assume Hpd HAF HBF HxA HxB.
+apply xm (A = B).
+- assume Heq.
+  exact Heq.
+- assume Hneq.
+  claim Hdisj : A :/\: B = Empty.
+  {
+    exact (Hpd A B HAF HBF Hneq).
+  }
+  claim HxAB : x :e A :/\: B.
+  {
+    exact (binintersectI A B x HxA HxB).
+  }
+  claim HxE : x :e Empty.
+  {
+    exact (mem_eqR x (A :/\: B) Empty Hdisj HxAB).
+  }
+  exact (EmptyE x HxE (A = B)).
+Qed.
+
 (** from S53 Exercise 6b (line 694 in algtop.tex) **)
 (** LATEX VERSION: If B is compact and p^{-1}(b) is finite for each b in B, **)
 (** then E is compact. **)
