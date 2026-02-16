@@ -17739,6 +17739,101 @@ apply andI.
   exact (binintersectE1 G V z HzGV).
 Qed.
 
+(** Infrastructure: open-base variant with explicit containment W c= U **)
+(** Proven Bob **)
+Theorem homeomorphic_sheet_lift_into_open_neighborhood_sub :
+  forall E Te B Tb p V U x G:set,
+  homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+    (graph V (fun z:set => apply_fun p z)) ->
+  topology_on B Tb ->
+  x :e V -> U :e Tb -> G :e Te -> x :e G ->
+  exists W:set, W :e Tb /\ apply_fun p x :e W /\ W c= U /\
+    (forall z:set, z :e V -> apply_fun p z :e W -> z :e G).
+let E Te B Tb p V U x G.
+assume Hhome HtopB HxV HUopen HGopen HxG.
+claim Hbase :
+  exists W0:set, W0 :e Tb /\ apply_fun p x :e W0 /\
+    (forall z:set, z :e V -> apply_fun p z :e W0 -> z :e G).
+{
+  exact (homeomorphic_sheet_lift_into_open_neighborhood
+    E Te B Tb p V U x G
+    Hhome
+    HxV
+    HGopen
+    HxG).
+}
+apply Hbase.
+let W0.
+assume HW0Pack.
+claim HW0open : W0 :e Tb.
+{
+  exact (andEL
+    (W0 :e Tb)
+    (apply_fun p x :e W0)
+    (andEL
+      (W0 :e Tb /\ apply_fun p x :e W0)
+      (forall z:set, z :e V -> apply_fun p z :e W0 -> z :e G)
+      HW0Pack)).
+}
+claim HpxW0 : apply_fun p x :e W0.
+{
+  exact (andER
+    (W0 :e Tb)
+    (apply_fun p x :e W0)
+    (andEL
+      (W0 :e Tb /\ apply_fun p x :e W0)
+      (forall z:set, z :e V -> apply_fun p z :e W0 -> z :e G)
+      HW0Pack)).
+}
+claim Hcontrol0 :
+  forall z:set, z :e V -> apply_fun p z :e W0 -> z :e G.
+{
+  exact (andER
+    (W0 :e Tb /\ apply_fun p x :e W0)
+    (forall z:set, z :e V -> apply_fun p z :e W0 -> z :e G)
+    HW0Pack).
+}
+claim Hcontf :
+  continuous_map V (subspace_topology E Te V) U (subspace_topology B Tb U)
+    (graph V (fun z:set => apply_fun p z)).
+{
+  exact (homeomorphism_continuous
+    V (subspace_topology E Te V)
+    U (subspace_topology B Tb U)
+    (graph V (fun z:set => apply_fun p z))
+    Hhome).
+}
+claim Hfunf :
+  function_on (graph V (fun z:set => apply_fun p z)) V U.
+{
+  exact (continuous_map_function_on
+    V (subspace_topology E Te V)
+    U (subspace_topology B Tb U)
+    (graph V (fun z:set => apply_fun p z))
+    Hcontf).
+}
+claim HpxU : apply_fun p x :e U.
+{
+  rewrite <- (apply_fun_graph V (fun z:set => apply_fun p z) x HxV).
+  exact (Hfunf x HxV).
+}
+set W := W0 :/\: U.
+witness W.
+apply andI.
+- apply andI.
+  + apply andI.
+    * exact (topology_binintersect_closed B Tb W0 U HtopB HW0open HUopen).
+    * exact (binintersectI W0 U (apply_fun p x) HpxW0 HpxU).
+  + exact (binintersect_Subq_2 W0 U).
+- let z.
+  assume HzV HpzW.
+  claim HpzW0 : apply_fun p z :e W0.
+  {
+    exact (binintersectE1 W0 U (apply_fun p z) HpzW).
+  }
+  exact (Hcontrol0 z HzV HpzW0).
+Qed.
+
 (** from S53 Exercise 6b (line 694 in algtop.tex) **)
 (** LATEX VERSION: If B is compact and p^{-1}(b) is finite for each b in B, **)
 (** then E is compact. **)
@@ -17965,7 +18060,7 @@ claim Hsubcover :
               (graph V (fun z:set => apply_fun p z))) ->
           forall V:set, V :e slices ->
             exists W G:set,
-              W :e Tb /\ b :e W /\ G :e G0 /\
+              W :e Tb /\ b :e W /\ W c= U0 /\ G :e G0 /\
               (forall z:set, z :e V -> apply_fun p z :e W -> z :e G).
       {
         let slices.
@@ -18094,44 +18189,62 @@ claim Hsubcover :
           exact (HhomeSlices V HVslice).
         }
         claim HlocWG :
-          exists W:set, W :e Tb /\ apply_fun p xV :e W /\
+          exists W:set, W :e Tb /\ apply_fun p xV :e W /\ W c= U0 /\
             (forall z:set, z :e V -> apply_fun p z :e W -> z :e G).
         {
-          exact (homeomorphic_sheet_lift_into_open_neighborhood
+          exact (homeomorphic_sheet_lift_into_open_neighborhood_sub
             E Te B Tb p V U0 xV G
             HhomeV
+            HtopB
             HxVV
+            HU0tb
             HGopen
             HxVG).
         }
         apply HlocWG.
         let W.
         assume HWPack.
+        claim HWW :
+          (W :e Tb /\ apply_fun p xV :e W) /\ W c= U0.
+        {
+          exact (andEL
+            ((W :e Tb /\ apply_fun p xV :e W) /\ W c= U0)
+            (forall z:set, z :e V -> apply_fun p z :e W -> z :e G)
+            HWPack).
+        }
+        claim HWWpair : W :e Tb /\ apply_fun p xV :e W.
+        {
+          exact (andEL
+            (W :e Tb /\ apply_fun p xV :e W)
+            (W c= U0)
+            HWW).
+        }
         claim HWopen : W :e Tb.
         {
           exact (andEL
             (W :e Tb)
             (apply_fun p xV :e W)
-            (andEL
-              (W :e Tb /\ apply_fun p xV :e W)
-              (forall z:set, z :e V -> apply_fun p z :e W -> z :e G)
-              HWPack)).
+            HWWpair).
         }
         claim HpxVW : apply_fun p xV :e W.
         {
           exact (andER
             (W :e Tb)
             (apply_fun p xV :e W)
-            (andEL
-              (W :e Tb /\ apply_fun p xV :e W)
-              (forall z:set, z :e V -> apply_fun p z :e W -> z :e G)
-              HWPack)).
+            HWWpair).
+        }
+        claim HWsubU0 : W c= U0.
+        {
+          exact (andER
+            (W :e Tb /\ apply_fun p xV :e W)
+            (W c= U0)
+            HWW).
         }
         claim Hcontrol :
           forall z:set, z :e V -> apply_fun p z :e W -> z :e G.
         {
           exact (andER
-            (W :e Tb /\ apply_fun p xV :e W)
+            ((W :e Tb /\ apply_fun p xV :e W) /\ W c= U0)
             (forall z:set, z :e V -> apply_fun p z :e W -> z :e G)
             HWPack).
         }
@@ -18140,9 +18253,11 @@ claim Hsubcover :
         apply andI.
         + apply andI.
           * apply andI.
-            + exact HWopen.
-            + rewrite <- HpxVb.
-              exact HpxVW.
+            + apply andI.
+              - exact HWopen.
+              - rewrite <- HpxVb.
+                exact HpxVW.
+            + exact HWsubU0.
           * exact HGG0.
         + exact Hcontrol.
       }
