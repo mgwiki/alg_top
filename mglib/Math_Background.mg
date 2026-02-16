@@ -9169,6 +9169,20 @@ Definition fundamental_group : set -> set -> set -> set :=
     {path_homotopy_class_loop X Tx x0 f | f :e loop_space X Tx x0}.
 
 (** Proven Bob **)
+Theorem fundamental_group_member_has_representative : forall X Tx x0 cls:set,
+  cls :e fundamental_group X Tx x0 ->
+  exists f:set, f :e loop_space X Tx x0 /\
+    cls = path_homotopy_class_loop X Tx x0 f.
+let X Tx x0 cls.
+assume Hcls.
+exact (ReplE
+  (loop_space X Tx x0)
+  (fun g:set => path_homotopy_class_loop X Tx x0 g)
+  cls
+  Hcls).
+Qed.
+
+(** Proven Bob **)
 Theorem path_homotopy_class_in_fundamental_group : forall X Tx x0 f:set,
   f :e loop_space X Tx x0 ->
   path_homotopy_class_loop X Tx x0 f :e fundamental_group X Tx x0.
