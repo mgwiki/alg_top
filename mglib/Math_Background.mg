@@ -13645,6 +13645,32 @@ claim HclStayUx : closure_of E Te V0 c= Ux.
       HunionSlices
       HxPreVb).
   }
+  claim HtopB : topology_on B Tb.
+  {
+    exact (regular_space_topology_on B Tb HregB).
+  }
+  claim HpreVbSubE : preimage_of E p Vb c= E.
+  {
+    exact (Sep_Subq E (fun z:set => apply_fun p z :e Vb)).
+  }
+  claim HclSubPreVb : closure_of E Te V0 c= closure_of E Te (preimage_of E p Vb).
+  {
+    exact (closure_monotone E Te V0 (preimage_of E p Vb) HtopE HV0SubPreVb HpreVbSubE).
+  }
+  claim HclPreVb :
+    closure_of E Te (preimage_of E p Vb) c= preimage_of E p (closure_of B Tb Vb).
+  {
+    exact (closure_preimage_contained E Te B Tb p Vb HtopE HtopB Hcont).
+  }
+  claim HclSubPreClVb : closure_of E Te V0 c= preimage_of E p (closure_of B Tb Vb).
+  {
+    exact (Subq_tra
+      (closure_of E Te V0)
+      (closure_of E Te (preimage_of E p Vb))
+      (preimage_of E p (closure_of B Tb Vb))
+      HclSubPreVb
+      HclPreVb).
+  }
   admit.
 }
 claim HclSubUcap : closure_of E Te V0 c= (U :/\: Ux).
