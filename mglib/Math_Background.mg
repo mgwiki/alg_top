@@ -1,6 +1,6 @@
 (** Balance Alice 1460 **)
 (** Balance Bob 1200 **)
-(** Balance Charlie 1063 **)
+(** Balance Charlie 1060 **)
 
 (** Sum of Balences and Bounties 48150 **)
 
@@ -12088,7 +12088,8 @@ Admitted.
 (** LATEX VERSION: If p: E -> B is a covering map, then for each b in B **)
 (** the subspace p^{-1}(b) of E has the discrete topology. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-17T22:20:44Z **)
 Theorem covering_map_discrete_fibers : forall E Te B Tb p b:set,
   covering_map E Te B Tb p -> b :e B ->
   subspace_topology E Te {x :e E | apply_fun p x = b} =
