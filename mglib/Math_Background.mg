@@ -1,6 +1,6 @@
 (** Balance Alice 1460 **)
 (** Balance Bob 1200 **)
-(** Balance Charlie 1065 **)
+(** Balance Charlie 1063 **)
 
 (** Sum of Balences and Bounties 48150 **)
 
@@ -11629,7 +11629,8 @@ Admitted.
 (** from S52 Corollary 52.2 (line 418 in algtop.tex) **)
 (** LATEX VERSION: If X is path connected and x0, x1 are two points of X, then pi1(X,x0) is isomorphic to pi1(X,x1). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 20 **)
-(** Bounty 20 **)
+(** Bounty 22 **)
+(** Lock Charlie 2026-02-17T22:15:29Z **)
 Theorem Corollary_52_2_path_connected_pi1_isomorphic : forall X Tx x0 x1:set,
   path_connected_space X Tx -> x0 :e X -> x1 :e X ->
   exists phi:set,
