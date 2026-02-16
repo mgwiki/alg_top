@@ -12871,6 +12871,30 @@ assume _ _ HregSub _.
 exact (HregSub Y HYsub HregX).
 Qed.
 
+(** Infrastructure: subspace-open sets are ambient-open when carrier is ambient-open **)
+(** Proven Bob **)
+Theorem subspace_open_is_ambient_open_if_carrier_open : forall X Tx Y U:set,
+  topology_on X Tx -> Y c= X -> Y :e Tx ->
+  U :e subspace_topology X Tx Y -> U :e Tx.
+let X Tx Y U.
+assume HtopX HYsub HYopen HUsub.
+claim HtopY : topology_on Y (subspace_topology X Tx Y).
+{
+  exact (subspace_topology_is_topology X Tx Y HtopX HYsub).
+}
+claim HUsubsetY : U c= Y.
+{
+  exact (subspace_topology_subset X Tx Y U HUsub).
+}
+claim HUopenIn : open_in Y (subspace_topology X Tx Y) U.
+{
+  exact (open_inI Y (subspace_topology X Tx Y) U HtopY HUsub).
+}
+exact (open_in_subspace_if_ambient_open
+  X Tx Y U
+  HtopX HYopen HUsubsetY HUopenIn).
+Qed.
+
 (** Bounty 50 **)
 Theorem ex53_6a_regular : forall E Te B Tb p:set,
   covering_map E Te B Tb p -> regular_space B Tb -> regular_space E Te.
@@ -12967,6 +12991,57 @@ claim HshrinkUx :
     HUxReg
     HWsub
     HxW).
+}
+apply HshrinkUx.
+let V0.
+assume HV0pack.
+claim Hpair : V0 :e subspace_topology E Te Ux /\ x :e V0.
+{
+  exact (andEL
+    (V0 :e subspace_topology E Te Ux /\ x :e V0)
+    (closure_of Ux (subspace_topology E Te Ux) V0 c= (U :/\: Ux))
+    HV0pack).
+}
+claim HclSub : closure_of Ux (subspace_topology E Te Ux) V0 c= (U :/\: Ux).
+{
+  exact (andER
+    (V0 :e subspace_topology E Te Ux /\ x :e V0)
+    (closure_of Ux (subspace_topology E Te Ux) V0 c= (U :/\: Ux))
+    HV0pack).
+}
+claim HV0SubOpen : V0 :e subspace_topology E Te Ux.
+{
+  exact (andEL
+    (V0 :e subspace_topology E Te Ux)
+    (x :e V0)
+    Hpair).
+}
+claim HxV0 : x :e V0.
+{
+  exact (andER
+    (V0 :e subspace_topology E Te Ux)
+    (x :e V0)
+    Hpair).
+}
+claim HV0SubUx : V0 c= Ux.
+{
+  exact (subspace_topology_subset E Te Ux V0 HV0SubOpen).
+}
+claim HV0OpenE : V0 :e Te.
+{
+  exact (subspace_open_is_ambient_open_if_carrier_open
+    E Te Ux V0
+    HtopE HUxSubE HUxOpen HV0SubOpen).
+}
+claim HclEq :
+  closure_of Ux (subspace_topology E Te Ux) V0 = (closure_of E Te V0) :/\: Ux.
+{
+  exact (closure_in_subspace E Te Ux V0 HtopE HUxSubE HV0SubUx).
+}
+claim HclAmbientInter : (closure_of E Te V0) :/\: Ux c= (U :/\: Ux).
+{
+  rewrite <- HclEq.
+  exact HclSub.
 }
 admit.
 Admitted.
