@@ -68405,6 +68405,70 @@ claim Hcore :
         t
         HtUnion).
     }
+    claim HpreU_implies_imageU :
+      forall t:set, t :e preimage_of unit_interval fcls U ->
+        apply_fun fcls t :e U.
+    {
+      let t.
+      assume HtPreU : t :e preimage_of unit_interval fcls U.
+      exact (SepE2
+        unit_interval
+        (fun s:set => apply_fun fcls s :e U)
+        t
+        HtPreU).
+    }
+    claim HpreV_implies_imageV :
+      forall t:set, t :e preimage_of unit_interval fcls V ->
+        apply_fun fcls t :e V.
+    {
+      let t.
+      assume HtPreV : t :e preimage_of unit_interval fcls V.
+      exact (SepE2
+        unit_interval
+        (fun s:set => apply_fun fcls s :e V)
+        t
+        HtPreV).
+    }
+    claim HnotPreU_implies_preV :
+      forall t:set, t :e unit_interval ->
+        ~(t :e preimage_of unit_interval fcls U) ->
+        t :e preimage_of unit_interval fcls V.
+    {
+      let t.
+      assume HtI : t :e unit_interval.
+      assume HnotPreU : ~(t :e preimage_of unit_interval fcls U).
+      apply (HpreCoverByCases t HtI).
+      - assume HtPreU : t :e preimage_of unit_interval fcls U.
+        claim Hfalse : False.
+        {
+          exact (HnotPreU HtPreU).
+        }
+        exact (FalseE
+          Hfalse
+          (t :e preimage_of unit_interval fcls V)).
+      - assume HtPreV : t :e preimage_of unit_interval fcls V.
+        exact HtPreV.
+    }
+    claim HnotPreV_implies_preU :
+      forall t:set, t :e unit_interval ->
+        ~(t :e preimage_of unit_interval fcls V) ->
+        t :e preimage_of unit_interval fcls U.
+    {
+      let t.
+      assume HtI : t :e unit_interval.
+      assume HnotPreV : ~(t :e preimage_of unit_interval fcls V).
+      apply (HpreCoverByCases t HtI).
+      - assume HtPreU : t :e preimage_of unit_interval fcls U.
+        exact HtPreU.
+      - assume HtPreV : t :e preimage_of unit_interval fcls V.
+        claim Hfalse : False.
+        {
+          exact (HnotPreV HtPreV).
+        }
+        exact (FalseE
+          Hfalse
+          (t :e preimage_of unit_interval fcls U)).
+    }
     claim HoverlapPathToLoopPoint :
       forall t:set, t :e preimage_of unit_interval fcls (U :/\: V) ->
         exists q:set,
