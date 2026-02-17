@@ -75423,7 +75423,128 @@ Theorem cor82_2_universal_covering_existence :
 let B Tb.
 apply iffI.
 - assume Huniv.
-  admit.
+  apply Huniv.
+  let E.
+  assume HETePack.
+  apply HETePack.
+  let Te.
+  assume HTepPack.
+  apply HTepPack.
+  let p.
+  assume Hpack.
+  claim Hcov : covering_map E Te B Tb p.
+  {
+    exact (andEL
+      (covering_map E Te B Tb p)
+      (simply_connected E Te)
+      Hpack).
+  }
+  claim HsimpE : simply_connected E Te.
+  {
+    exact (andER
+      (covering_map E Te B Tb p)
+      (simply_connected E Te)
+      Hpack).
+  }
+  claim HpcE : path_connected_space E Te.
+  {
+    exact (andEL
+      (path_connected_space E Te)
+      (exists x0:set, x0 :e E /\
+        fundamental_group E Te x0 = {fundamental_group_id E Te x0})
+      HsimpE).
+  }
+  claim Hcont : continuous_map E Te B Tb p.
+  {
+    apply (and3E
+      (continuous_map E Te B Tb p)
+      (surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+      Hcov).
+    assume Hcont0 Hsurj0 Hloc0.
+    exact Hcont0.
+  }
+  claim HsurjPt : forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y.
+  {
+    apply (and3E
+      (continuous_map E Te B Tb p)
+      (surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+      Hcov).
+    assume Hcont0 Hsurj0 Hloc0.
+    exact (andER
+      (function_on p E B)
+      (forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y)
+      Hsurj0).
+  }
+  claim HpcB : path_connected_space B Tb.
+  {
+    exact (continuous_image_path_connected
+      E
+      Te
+      B
+      Tb
+      p
+      HpcE
+      Hcont
+      HsurjPt).
+  }
+  claim HlpcB : locally_path_connected B Tb.
+  {
+    admit.
+  }
+  claim HsemiBProp :
+    forall b:set, b :e B ->
+      exists U:set, U :e Tb /\ b :e U /\
+        (forall cls:set,
+          cls :e fundamental_group U (subspace_topology B Tb U) b ->
+          apply_fun
+            (induced_homomorphism U (subspace_topology B Tb U) b B Tb b
+              (graph U (fun x:set => x)))
+            cls =
+          fundamental_group_id B Tb b).
+  {
+    let b.
+    assume Hb.
+    exact (lemma80_4_universal_cover_semilocal
+      E
+      Te
+      B
+      Tb
+      p
+      Hcov
+      HsimpE
+      b
+      Hb).
+  }
+  claim HsemiB : semilocally_simply_connected B Tb.
+  {
+    prove topology_on B Tb /\
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\
+          (forall cls:set,
+            cls :e fundamental_group U (subspace_topology B Tb U) b ->
+            apply_fun
+              (induced_homomorphism U (subspace_topology B Tb U) b B Tb b
+                (graph U (fun x:set => x)))
+              cls =
+            fundamental_group_id B Tb b)).
+    apply andI.
+    - exact (continuous_map_topology_cod
+        E
+        Te
+        B
+        Tb
+        p
+        Hcont).
+    - exact HsemiBProp.
+  }
+  apply and3I.
+  - exact HpcB.
+  - exact HlpcB.
+  - exact HsemiB.
 - assume Hrhs.
   apply (and3E
     (path_connected_space B Tb)
