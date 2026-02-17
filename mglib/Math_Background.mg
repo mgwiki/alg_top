@@ -1,6 +1,6 @@
 (** Balance Alice 2634 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 42049 **)
+(** Balance Charlie 42034 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -54156,7 +54156,8 @@ Definition points_directly_outward_Rn : set -> set -> set -> prop := fun n v x =
 (** from S55 Exercise 4(a) (line 1046 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, the identity map i: S^n -> S^n is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:50:00 **)
 Theorem ex55_4a_identity_Sn_not_nulhomotopic : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   ~(nulhomotopic (Sn n) (Sn_topology n) (Sn n) (Sn_topology n)
@@ -54167,7 +54168,8 @@ Admitted.
 (** from S55 Exercise 4(b) (line 1047 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, the inclusion j: S^n -> R^{n+1} - 0 is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:50:00 **)
 Theorem ex55_4b_inclusion_Sn_not_nulhomotopic : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   ~(nulhomotopic (Sn n) (Sn_topology n)
@@ -54294,7 +54296,8 @@ Admitted.
 (** from S56 Exercise 2 (line 1175 in algtop.tex) **)
 (** LATEX VERSION: Find a circle about the origin containing all roots of x^7 + x^2 + 1 = 0. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:50:00 **)
 (** Answer: radius 2 works since for |z| >= 2, |z^7| >= 128 > 5 >= |z^2| + 1 **)
 Theorem ex56_2_roots_of_x7_x2_1 : forall z:set, z :e setprod R R ->
   complex_add_R2 (complex_power_R2 z 7)
@@ -54343,7 +54346,8 @@ Admitted.
 (** from S57 Theorem 57.3 (line 1217 in algtop.tex): Borsuk-Ulam theorem for S^2 **)
 (** LATEX VERSION: Given a continuous map f: S^2 -> R^2, there is a point x of S^2 such that f(x) = f(-x). **)
 (** EFFORT: 4 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:50:00 **)
 Theorem thm57_3_borsuk_ulam_S2 : forall f:set,
   continuous_map (Sn 2) (Sn_topology 2) (setprod R R) R2_topology f ->
   exists x:set, x :e Sn 2 /\
@@ -60683,7 +60687,8 @@ Qed.
 
 (** from S58 Exercise 2(a) (line 1477 in algtop.tex): solid torus B^2 x S^1 has infinite cyclic pi1 **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:50:00 **)
 Theorem ex58_2a_solid_torus_pi1 : forall x0:set,
   x0 :e setprod B2 S1 ->
   exists phi:set,
