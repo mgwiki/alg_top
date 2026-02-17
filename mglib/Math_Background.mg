@@ -1,5 +1,5 @@
 (** Balance Alice 2010 **)
-(** Balance Bob 1593 **)
+(** Balance Bob 1591 **)
 (** Balance Charlie 1223 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -28113,6 +28113,33 @@ Qed.
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
 (** Bounty 132 **)
 (** Lock Bob 2026-02-18T10:30:00 **)
+
+(** from S54 Lemma 54.1 (temporary sub-bounty A) **)
+(** LATEX VERSION: Any point of the base has an evenly covered neighborhood under a covering map. **)
+(** EFFORT: 1 line, difficulty 1/10, USD 10 **)
+(** Bounty 11 **)
+(** Lock Bob 2026-02-18T01:00:00 **)
+Theorem lemma54_1_path_lifting_sub_bounty_A : forall E Te B Tb p b:set,
+  covering_map E Te B Tb p ->
+  b :e B ->
+  exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U.
+admit.
+Admitted.
+
+(** from S54 Lemma 54.1 (temporary sub-bounty B) **)
+(** LATEX VERSION: Small continuity witness for pulling back neighborhoods along a path. **)
+(** EFFORT: 1 line, difficulty 1/10, USD 10 **)
+(** Bounty 11 **)
+(** Lock Bob 2026-02-18T01:00:00 **)
+Theorem lemma54_1_path_lifting_sub_bounty_B : forall f B Tb p t:set,
+  continuous_map unit_interval unit_interval_topology B Tb f ->
+  t :e unit_interval ->
+  forall U:set, U :e Tb -> apply_fun f t :e U ->
+  exists N:set, N :e unit_interval_topology /\ t :e N /\
+    forall u:set, u :e N -> apply_fun f u :e U.
+admit.
+Admitted.
+
 Theorem lemma54_1_path_lifting : forall E Te B Tb p e0 f:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun f 0 ->
