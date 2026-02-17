@@ -68209,6 +68209,179 @@ claim Hcore :
         1
         H1prePair).
     }
+    claim HexGPairEndpoints :
+      exists G:set,
+        G c= UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V) /\
+        finite G /\
+        unit_interval c= Union G /\
+        (exists W0:set, W0 :e G /\ 0 :e W0 /\
+          (W0 = preimage_of unit_interval fcls U \/ W0 = preimage_of unit_interval fcls V)) /\
+        (exists W1:set, W1 :e G /\ 1 :e W1 /\
+          (W1 = preimage_of unit_interval fcls U \/ W1 = preimage_of unit_interval fcls V)).
+    {
+      apply HexGPair.
+      let G.
+      assume HGpack :
+        G c= UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V) /\
+        finite G /\
+        unit_interval c= Union G.
+      claim HGpair :
+        (G c= UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V)) /\
+        finite G.
+      {
+        exact (andEL
+          ((G c= UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V)) /\
+            finite G)
+          (unit_interval c= Union G)
+          HGpack).
+      }
+      claim HGsub :
+        G c= UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V).
+      {
+        exact (andEL
+          (G c= UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V))
+          (finite G)
+          HGpair).
+      }
+      claim HGfin : finite G.
+      {
+        exact (andER
+          (G c= UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V))
+          (finite G)
+          HGpair).
+      }
+      claim HGcover : unit_interval c= Union G.
+      {
+        exact (andER
+          ((G c= UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V)) /\
+            finite G)
+          (unit_interval c= Union G)
+          HGpack).
+      }
+      claim H0UnionG : 0 :e Union G.
+      {
+        exact (HGcover 0 zero_in_unit_interval).
+      }
+      claim H1UnionG : 1 :e Union G.
+      {
+        exact (HGcover 1 one_in_unit_interval).
+      }
+      claim H0Witness : exists W0:set, 0 :e W0 /\ W0 :e G.
+      {
+        exact (UnionE G 0 H0UnionG).
+      }
+      claim H1Witness : exists W1:set, 1 :e W1 /\ W1 :e G.
+      {
+        exact (UnionE G 1 H1UnionG).
+      }
+      apply H0Witness.
+      let W0.
+      assume HW0pack : 0 :e W0 /\ W0 :e G.
+      apply H1Witness.
+      let W1.
+      assume HW1pack : 1 :e W1 /\ W1 :e G.
+      claim H0W0 : 0 :e W0.
+      {
+        exact (andEL
+          (0 :e W0)
+          (W0 :e G)
+          HW0pack).
+      }
+      claim HW0G : W0 :e G.
+      {
+        exact (andER
+          (0 :e W0)
+          (W0 :e G)
+          HW0pack).
+      }
+      claim H1W1 : 1 :e W1.
+      {
+        exact (andEL
+          (1 :e W1)
+          (W1 :e G)
+          HW1pack).
+      }
+      claim HW1G : W1 :e G.
+      {
+        exact (andER
+          (1 :e W1)
+          (W1 :e G)
+          HW1pack).
+      }
+      claim HW0pair :
+        W0 :e UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V).
+      {
+        exact (HGsub W0 HW0G).
+      }
+      claim HW1pair :
+        W1 :e UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V).
+      {
+        exact (HGsub W1 HW1G).
+      }
+      claim HAB :
+        (G c= UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V)) /\
+        finite G.
+      {
+        apply andI.
+        - exact HGsub.
+        - exact HGfin.
+      }
+      claim HABC :
+        ((G c= UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V)) /\
+          finite G) /\
+        unit_interval c= Union G.
+      {
+        apply andI.
+        - exact HAB.
+        - exact HGcover.
+      }
+      claim HW0case :
+        exists W0:set, W0 :e G /\ 0 :e W0 /\
+          (W0 = preimage_of unit_interval fcls U \/ W0 = preimage_of unit_interval fcls V).
+      {
+        claim HW0uv :
+          W0 = preimage_of unit_interval fcls U \/ W0 = preimage_of unit_interval fcls V.
+        {
+          exact (UPairE
+            W0
+            (preimage_of unit_interval fcls U)
+            (preimage_of unit_interval fcls V)
+            HW0pair).
+        }
+        witness W0.
+        apply andI.
+        - apply andI.
+          + exact HW0G.
+          + exact H0W0.
+        - exact HW0uv.
+      }
+      claim HW1case :
+        exists W1:set, W1 :e G /\ 1 :e W1 /\
+          (W1 = preimage_of unit_interval fcls U \/ W1 = preimage_of unit_interval fcls V).
+      {
+        claim HW1uv :
+          W1 = preimage_of unit_interval fcls U \/ W1 = preimage_of unit_interval fcls V.
+        {
+          exact (UPairE
+            W1
+            (preimage_of unit_interval fcls U)
+            (preimage_of unit_interval fcls V)
+            HW1pair).
+        }
+        witness W1.
+        apply andI.
+        - apply andI.
+          + exact HW1G.
+          + exact H1W1.
+        - exact HW1uv.
+      }
+      witness G.
+      apply andI.
+      - apply andI.
+        + exact HABC.
+        + exact HW0case.
+      - exact HW1case.
+    }
     claim HpreUVne : preimage_of unit_interval fcls (U :/\: V) <> Empty.
     {
       exact (elem_implies_nonempty
