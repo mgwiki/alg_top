@@ -1,6 +1,6 @@
 (** Balance Alice 2634 **)
 (** Balance Bob 2577 **)
-(** Balance Charlie 0 **)
+(** Balance Charlie 73 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -34500,6 +34500,7 @@ apply andI.
 Admitted.
 
 (** S52 helper: reverse of a concatenation is homotopic to concatenation of reverses in opposite order **)
+(** Proven Charlie **)
 Theorem reverse_path_concat_homotopy_s52 : forall X Tx x0 x1 x2 alpha beta:set,
   continuous_map unit_interval unit_interval_topology X Tx alpha ->
   continuous_map unit_interval unit_interval_topology X Tx beta ->
@@ -34656,24 +34657,398 @@ claim Hrhs1 :
   rewrite (path_concat_at_one (reverse_path beta) (reverse_path alpha)).
   exact HrevAlpha1.
 }
-claim HrhsAsLhs :
-  path_concat (reverse_path beta) (reverse_path alpha)
-  =
-  reverse_path (path_concat alpha beta).
+claim HjoinAB : apply_fun alpha 1 = apply_fun beta 0.
 {
-  admit.
+  rewrite Halpha1.
+  rewrite Hbeta0.
+  reflexivity.
 }
-rewrite HrhsAsLhs.
-exact (Lemma_51_1_path_homotopy_refl
-  X
-  Tx
-  x2
-  x0
-  (reverse_path (path_concat alpha beta))
-  HlhsCont
-  Hlhs0
-  Hlhs1).
-Admitted.
+claim HjoinRev :
+  apply_fun (reverse_path beta) 1
+  =
+  apply_fun (reverse_path alpha) 0.
+{
+  rewrite (reverse_path_at_one beta).
+  rewrite (reverse_path_at_zero alpha).
+  symmetry.
+  exact HjoinAB.
+}
+claim Hpointwise :
+  forall s:set, s :e unit_interval ->
+    apply_fun (reverse_path (path_concat alpha beta)) s
+    =
+    apply_fun (path_concat (reverse_path beta) (reverse_path alpha)) s.
+{
+  let s.
+  assume Hs.
+  claim HsLHRH :
+    s :e unit_interval_left_half :\/: unit_interval_right_half.
+  {
+    exact (unit_interval_halves_cover
+      (fun a b:set => s :e a -> s :e b)
+      (binunion_Subq_min
+        unit_interval_left_half
+        unit_interval_right_half
+        unit_interval
+        unit_interval_left_half_sub
+        unit_interval_right_half_sub
+        s)
+      Hs).
+  }
+  apply (binunionE
+    unit_interval_left_half
+    unit_interval_right_half
+    s
+    HsLHRH).
+  - assume HsLH.
+    claim HsI : s :e unit_interval.
+    {
+      exact (unit_interval_left_half_sub s HsLH).
+    }
+    claim HflipRH :
+      apply_fun flip_unit_interval s :e unit_interval_right_half.
+    {
+      exact (flip_unit_interval_left_to_right s HsLH).
+    }
+    claim HflipI :
+      apply_fun flip_unit_interval s :e unit_interval.
+    {
+      exact (unit_interval_right_half_sub
+        (apply_fun flip_unit_interval s)
+        HflipRH).
+    }
+    claim H2sI : mul_SNo 2 s :e unit_interval.
+    {
+      rewrite <- (double_map_apply s HsLH).
+      exact (double_map_function_on s HsLH).
+    }
+    rewrite (reverse_path_apply_formula
+      (path_concat alpha beta)
+      s
+      HsI).
+    rewrite <- (flip_unit_interval_apply s HsI).
+    rewrite (path_concat_apply_right
+      alpha
+      beta
+      (apply_fun flip_unit_interval s)
+      HjoinAB
+      HflipRH).
+    rewrite (path_concat_apply_left
+      (reverse_path beta)
+      (reverse_path alpha)
+      s
+      HjoinRev
+      HsLH).
+    rewrite (reverse_path_apply_formula
+      beta
+      (mul_SNo 2 s)
+      H2sI).
+    claim HargLI :
+      add_SNo (mul_SNo 2 (apply_fun flip_unit_interval s)) (minus_SNo 1)
+      :e unit_interval.
+    {
+      rewrite <- (double_minus_one_map_apply
+        (apply_fun flip_unit_interval s)
+        HflipRH).
+      exact (double_minus_one_map_function_on
+        (apply_fun flip_unit_interval s)
+        HflipRH).
+    }
+    claim HflipArgL :
+      apply_fun
+        flip_unit_interval
+        (add_SNo (mul_SNo 2 (apply_fun flip_unit_interval s)) (minus_SNo 1))
+      = mul_SNo 2 s.
+    {
+      rewrite (flip_unit_interval_apply
+        (add_SNo (mul_SNo 2 (apply_fun flip_unit_interval s)) (minus_SNo 1))
+        HargLI).
+      rewrite (right_inverse_arith_1minus_2sminus1
+        (apply_fun flip_unit_interval s)
+        HflipRH).
+      rewrite <- (flip_unit_interval_apply
+        (apply_fun flip_unit_interval s)
+        HflipI).
+      rewrite (flip_unit_interval_involutive s HsI).
+      reflexivity.
+    }
+    rewrite <- (flip_unit_interval_involutive
+      (add_SNo (mul_SNo 2 (apply_fun flip_unit_interval s)) (minus_SNo 1))
+      HargLI).
+    rewrite HflipArgL.
+    rewrite (flip_unit_interval_apply
+      (mul_SNo 2 s)
+      H2sI).
+    reflexivity.
+  - assume HsRH.
+    claim HsI : s :e unit_interval.
+    {
+      exact (unit_interval_right_half_sub s HsRH).
+    }
+    claim HflipLH :
+      apply_fun flip_unit_interval s :e unit_interval_left_half.
+    {
+      exact (flip_unit_interval_right_to_left s HsRH).
+    }
+    claim H2flipI : mul_SNo 2 (apply_fun flip_unit_interval s) :e unit_interval.
+    {
+      rewrite <- (double_map_apply
+        (apply_fun flip_unit_interval s)
+        HflipLH).
+      exact (double_map_function_on
+        (apply_fun flip_unit_interval s)
+        HflipLH).
+    }
+    claim H2sMinus1I :
+      add_SNo (mul_SNo 2 s) (minus_SNo 1) :e unit_interval.
+    {
+      rewrite <- (double_minus_one_map_apply s HsRH).
+      exact (double_minus_one_map_function_on s HsRH).
+    }
+    rewrite (reverse_path_apply_formula
+      (path_concat alpha beta)
+      s
+      HsI).
+    rewrite <- (flip_unit_interval_apply s HsI).
+    rewrite (path_concat_apply_left
+      alpha
+      beta
+      (apply_fun flip_unit_interval s)
+      HjoinAB
+      HflipLH).
+    rewrite (path_concat_apply_right
+      (reverse_path beta)
+      (reverse_path alpha)
+      s
+      HjoinRev
+      HsRH).
+    rewrite (reverse_path_apply_formula
+      alpha
+      (add_SNo (mul_SNo 2 s) (minus_SNo 1))
+      H2sMinus1I).
+    claim HrightInvFlip :
+      add_SNo 1 (minus_SNo (add_SNo (mul_SNo 2 s) (minus_SNo 1)))
+      = mul_SNo 2 (apply_fun flip_unit_interval s).
+    {
+      rewrite (right_inverse_arith_1minus_2sminus1 s HsRH).
+      rewrite <- (flip_unit_interval_apply s HsI).
+      reflexivity.
+    }
+    rewrite HrightInvFlip.
+    reflexivity.
+}
+set F := compose_fun
+  unit_square
+  (projection_map1 unit_interval unit_interval)
+  (reverse_path (path_concat alpha beta)).
+claim HFcont :
+  continuous_map unit_square unit_square_topology X Tx F.
+{
+  exact (composition_continuous
+    unit_square
+    unit_square_topology
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    (projection_map1 unit_interval unit_interval)
+    (reverse_path (path_concat alpha beta))
+    (andEL
+      (continuous_map unit_square unit_square_topology unit_interval unit_interval_topology
+        (projection_map1 unit_interval unit_interval))
+      (continuous_map unit_square unit_square_topology unit_interval unit_interval_topology
+        (projection_map2 unit_interval unit_interval))
+      (projection_maps_continuous
+        unit_interval
+        unit_interval_topology
+        unit_interval
+        unit_interval_topology
+        unit_interval_topology_on
+        unit_interval_topology_on))
+    HlhsCont).
+}
+claim HFs0 :
+  forall s:set, s :e unit_interval ->
+    apply_fun F (s, 0)
+    =
+    apply_fun (reverse_path (path_concat alpha beta)) s.
+{
+  let s.
+  assume Hs.
+  rewrite (compose_fun_apply
+    unit_square
+    (projection_map1 unit_interval unit_interval)
+    (reverse_path (path_concat alpha beta))
+    (s, 0)
+    (tuple_2_setprod_by_pair_Sigma
+      unit_interval
+      unit_interval
+      s
+      0
+      Hs
+      zero_in_unit_interval)).
+  rewrite (projection1_apply
+    unit_interval
+    unit_interval
+    (s, 0)
+    (tuple_2_setprod_by_pair_Sigma
+      unit_interval
+      unit_interval
+      s
+      0
+      Hs
+      zero_in_unit_interval)).
+  rewrite tuple_2_0_eq.
+  reflexivity.
+}
+claim HFs1 :
+  forall s:set, s :e unit_interval ->
+    apply_fun F (s, 1)
+    =
+    apply_fun (path_concat (reverse_path beta) (reverse_path alpha)) s.
+{
+  let s.
+  assume Hs.
+  rewrite (compose_fun_apply
+    unit_square
+    (projection_map1 unit_interval unit_interval)
+    (reverse_path (path_concat alpha beta))
+    (s, 1)
+    (tuple_2_setprod_by_pair_Sigma
+      unit_interval
+      unit_interval
+      s
+      1
+      Hs
+      one_in_unit_interval)).
+  rewrite (projection1_apply
+    unit_interval
+    unit_interval
+    (s, 1)
+    (tuple_2_setprod_by_pair_Sigma
+      unit_interval
+      unit_interval
+      s
+      1
+      Hs
+      one_in_unit_interval)).
+  rewrite tuple_2_0_eq.
+  exact (Hpointwise s Hs).
+}
+claim HF0t :
+  forall t:set, t :e unit_interval ->
+    apply_fun F (0, t) = x2.
+{
+  let t.
+  assume Ht.
+  rewrite (compose_fun_apply
+    unit_square
+    (projection_map1 unit_interval unit_interval)
+    (reverse_path (path_concat alpha beta))
+    (0, t)
+    (tuple_2_setprod_by_pair_Sigma
+      unit_interval
+      unit_interval
+      0
+      t
+      zero_in_unit_interval
+      Ht)).
+  rewrite (projection1_apply
+    unit_interval
+    unit_interval
+    (0, t)
+    (tuple_2_setprod_by_pair_Sigma
+      unit_interval
+      unit_interval
+      0
+      t
+      zero_in_unit_interval
+      Ht)).
+  rewrite tuple_2_0_eq.
+  exact Hlhs0.
+}
+claim HF1t :
+  forall t:set, t :e unit_interval ->
+    apply_fun F (1, t) = x0.
+{
+  let t.
+  assume Ht.
+  rewrite (compose_fun_apply
+    unit_square
+    (projection_map1 unit_interval unit_interval)
+    (reverse_path (path_concat alpha beta))
+    (1, t)
+    (tuple_2_setprod_by_pair_Sigma
+      unit_interval
+      unit_interval
+      1
+      t
+      one_in_unit_interval
+      Ht)).
+  rewrite (projection1_apply
+    unit_interval
+    unit_interval
+    (1, t)
+    (tuple_2_setprod_by_pair_Sigma
+      unit_interval
+      unit_interval
+      1
+      t
+      one_in_unit_interval
+      Ht)).
+  rewrite tuple_2_0_eq.
+  exact Hlhs1.
+}
+apply (and7I
+  (continuous_map
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    (reverse_path (path_concat alpha beta)))
+  (continuous_map
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    (path_concat (reverse_path beta) (reverse_path alpha)))
+  (apply_fun (reverse_path (path_concat alpha beta)) 0 = x2)
+  (apply_fun (reverse_path (path_concat alpha beta)) 1 = x0)
+  (apply_fun (path_concat (reverse_path beta) (reverse_path alpha)) 0 = x2)
+  (apply_fun (path_concat (reverse_path beta) (reverse_path alpha)) 1 = x0)
+  (exists F0:set,
+    continuous_map unit_square unit_square_topology X Tx F0 /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F0 (s, 0) = apply_fun (reverse_path (path_concat alpha beta)) s) /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F0 (s, 1) = apply_fun (path_concat (reverse_path beta) (reverse_path alpha)) s) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F0 (0, t) = x2) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F0 (1, t) = x0))).
+- exact HlhsCont.
+- exact HrhsCont.
+- exact Hlhs0.
+- exact Hlhs1.
+- exact Hrhs0.
+- exact Hrhs1.
+- witness F.
+  exact (and5I
+    (continuous_map unit_square unit_square_topology X Tx F)
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 0) = apply_fun (reverse_path (path_concat alpha beta)) s)
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 1) = apply_fun (path_concat (reverse_path beta) (reverse_path alpha)) s)
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (0, t) = x2)
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (1, t) = x0)
+    HFcont
+    HFs0
+    HFs1
+    HF0t
+    HF1t).
+Qed.
 
 (** S52 helper: concatenating a path x0->x1 with a path x1->x0 gives a based loop at x0 **)
 (** Proven Bob **)
@@ -34837,8 +35212,8 @@ Qed.
 (** from S52 Exercise 2 (line 497 in algtop.tex) **)
 (** LATEX VERSION: If gamma = alpha . beta, then gamma-hat = beta-hat o alpha-hat. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 73 **)
-(** Lock Charlie 2026-02-18T13:45:00 **)
+(** Collected Charlie 73 **)
+(** Proven Charlie **)
 Theorem ex52_2_basepoint_composition : forall X Tx x0 x1 x2 alpha beta:set,
   topology_on X Tx ->
   continuous_map unit_interval unit_interval_topology X Tx alpha ->
@@ -35964,7 +36339,7 @@ claim HfinalClass :
     HfinalHom).
 }
 exact HfinalClass.
-Admitted.
+Qed.
 
 (** S52 helper: conjugation-step equalities used in Exercise 3 abelian => uniqueness direction **)
 Theorem ex52_3_helper_conj_pair : forall X Tx x0 x1 alpha beta cls delta_cls:set,
