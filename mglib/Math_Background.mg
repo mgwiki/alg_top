@@ -75278,7 +75278,330 @@ Theorem cor82_2_universal_covering_existence :
   <->
   (path_connected_space B Tb /\ locally_path_connected B Tb /\
    semilocally_simply_connected B Tb).
-admit.
+let B Tb.
+apply iffI.
+- assume Huniv.
+  admit.
+- assume Hrhs.
+  apply (and3E
+    (path_connected_space B Tb)
+    (locally_path_connected B Tb)
+    (semilocally_simply_connected B Tb)
+    Hrhs).
+  assume HpcB HlpcB HsemiB.
+  claim HbEx : exists b0:set, b0 :e B.
+  {
+    admit.
+  }
+  apply HbEx.
+  let b0.
+  assume Hb0.
+  set GB := fundamental_group B Tb b0.
+  set multB := fundamental_group_mult B Tb b0.
+  set idB := fundamental_group_id B Tb b0.
+  set invB := fundamental_group_inv B Tb b0.
+  claim HtrivSub : subgroup_of {idB} GB multB idB invB.
+  {
+    claim HtopB : topology_on B Tb.
+    {
+      exact (path_connected_space_topology B Tb HpcB).
+    }
+    claim HidB_mem : idB :e GB.
+    {
+      claim HconstLoopAtB : loop_at B Tb b0 (constant_path b0).
+      {
+        exact (loop_at_constant_path B Tb b0 HtopB Hb0).
+      }
+      claim HconstFSB : (constant_path b0) :e function_space unit_interval B.
+      {
+        exact (graph_in_function_space
+          unit_interval
+          B
+          (fun t:set => b0)
+          (fun t Ht => Hb0)).
+      }
+      claim HconstLoopB : (constant_path b0) :e loop_space B Tb b0.
+      {
+        exact (SepI
+          (function_space unit_interval B)
+          (fun g:set => loop_at B Tb b0 g)
+          (constant_path b0)
+          HconstFSB
+          HconstLoopAtB).
+      }
+      claim HidBDef : idB = path_homotopy_class_loop B Tb b0 (constant_path b0).
+      {
+        reflexivity.
+      }
+      rewrite HidBDef.
+      exact (path_homotopy_class_in_fundamental_group
+        B Tb b0 (constant_path b0) HconstLoopB).
+    }
+    claim HgrpB : group_structure GB multB idB invB.
+    {
+      exact (fundamental_group_is_group B Tb b0 HtopB Hb0).
+    }
+    apply (and6E
+      (function_on multB (setprod GB GB) GB)
+      (function_on invB GB GB)
+      (idB :e GB)
+      (forall x y z:set, x :e GB -> y :e GB -> z :e GB ->
+        apply_fun multB (apply_fun multB (x, y), z) = apply_fun multB (x, apply_fun multB (y, z)))
+      (forall x:set, x :e GB ->
+        apply_fun multB (idB, x) = x /\ apply_fun multB (x, idB) = x)
+      (forall x:set, x :e GB ->
+        apply_fun multB (x, apply_fun invB x) = idB /\
+        apply_fun multB (apply_fun invB x, x) = idB)
+      HgrpB).
+    assume HmultFun HinvFun HeB HassocB HidB HinvB.
+    prove {idB} c= GB /\
+      idB :e {idB} /\
+      (forall x y:set, x :e {idB} -> y :e {idB} -> apply_fun multB (x, y) :e {idB}) /\
+      (forall x:set, x :e {idB} -> apply_fun invB x :e {idB}).
+    apply and4I.
+    - let cls.
+      assume Hcls.
+      claim HclsEq : cls = idB.
+      {
+        exact (singleton_elem cls idB Hcls).
+      }
+      rewrite HclsEq.
+      exact HidB_mem.
+    - exact (SingI idB).
+    - let x y.
+      assume Hx Hy.
+      claim HxEq : x = idB.
+      {
+        exact (singleton_elem x idB Hx).
+      }
+      claim HyEq : y = idB.
+      {
+        exact (singleton_elem y idB Hy).
+      }
+      rewrite HxEq.
+      rewrite HyEq.
+      claim HmulId :
+        apply_fun multB (idB, idB) = idB.
+      {
+        exact (andEL
+          (apply_fun multB (idB, idB) = idB)
+          (apply_fun multB (idB, idB) = idB)
+          (HidB idB HidB_mem)).
+      }
+      rewrite HmulId.
+      exact (SingI idB).
+    - let x.
+      assume Hx.
+      claim HxEq : x = idB.
+      {
+        exact (singleton_elem x idB Hx).
+      }
+      rewrite HxEq.
+      claim HinvIdMem : apply_fun invB idB :e GB.
+      {
+        exact (HinvFun idB HidB_mem).
+      }
+      claim HleftIdInv :
+        apply_fun multB (idB, apply_fun invB idB) = apply_fun invB idB.
+      {
+        exact (andEL
+          (apply_fun multB (idB, apply_fun invB idB) = apply_fun invB idB)
+          (apply_fun multB (apply_fun invB idB, idB) = apply_fun invB idB)
+          (HidB (apply_fun invB idB) HinvIdMem)).
+      }
+      claim HinvAtId :
+        apply_fun multB (idB, apply_fun invB idB) = idB.
+      {
+        exact (andEL
+          (apply_fun multB (idB, apply_fun invB idB) = idB)
+          (apply_fun multB (apply_fun invB idB, idB) = idB)
+          (HinvB idB HidB_mem)).
+      }
+      claim HinvIdEq : apply_fun invB idB = idB.
+      {
+        rewrite <- HleftIdInv.
+        exact HinvAtId.
+      }
+      rewrite HinvIdEq.
+      exact (SingI idB).
+  }
+  claim HcoverEx :
+    exists E Te p e0:set,
+      covering_map E Te B Tb p /\ e0 :e E /\
+      apply_fun p e0 = b0 /\
+      path_connected_space E Te /\ locally_path_connected E Te /\
+      homomorphism_image
+        (fundamental_group E Te e0)
+        (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p) = {idB}.
+  {
+    exact (thm82_1_existence_of_covering
+      B
+      Tb
+      b0
+      HpcB
+      HlpcB
+      HsemiB
+      Hb0
+      {idB}
+      HtrivSub).
+  }
+  apply HcoverEx.
+  let E.
+  assume HETePack.
+  apply HETePack.
+  let Te.
+  assume HTepPack.
+  apply HTepPack.
+  let p.
+  assume HpePack.
+  apply HpePack.
+  let e0.
+  assume Hpack.
+  apply (and6E
+    (covering_map E Te B Tb p)
+    (e0 :e E)
+    (apply_fun p e0 = b0)
+    (path_connected_space E Te)
+    (locally_path_connected E Te)
+    (homomorphism_image
+      (fundamental_group E Te e0)
+      (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p) = {idB})
+    Hpack).
+  assume HcovE He0 Hp0eq HpcE HlpcE HimgEq.
+  set pstar := induced_homomorphism E Te e0 B Tb (apply_fun p e0) p.
+  set idE := fundamental_group_id E Te e0.
+  witness E.
+  witness Te.
+  witness p.
+  apply andI.
+  - exact HcovE.
+  - prove path_connected_space E Te /\
+      exists x0:set, x0 :e E /\
+        fundamental_group E Te x0 = {fundamental_group_id E Te x0}.
+    apply andI.
+    + exact HpcE.
+    + witness e0.
+      apply andI.
+      * exact He0.
+      * claim HtopE : topology_on E Te.
+        {
+          exact (path_connected_space_topology E Te HpcE).
+        }
+        claim HidE_mem : idE :e fundamental_group E Te e0.
+        {
+          claim HconstLoopAtE : loop_at E Te e0 (constant_path e0).
+          {
+            exact (loop_at_constant_path E Te e0 HtopE He0).
+          }
+          claim HconstFSE : (constant_path e0) :e function_space unit_interval E.
+          {
+            exact (graph_in_function_space
+              unit_interval
+              E
+              (fun t:set => e0)
+              (fun t Ht => He0)).
+          }
+          claim HconstLoopE : (constant_path e0) :e loop_space E Te e0.
+          {
+            exact (SepI
+              (function_space unit_interval E)
+              (fun g:set => loop_at E Te e0 g)
+              (constant_path e0)
+              HconstFSE
+              HconstLoopAtE).
+          }
+          claim HidEDef : idE = path_homotopy_class_loop E Te e0 (constant_path e0).
+          {
+            reflexivity.
+          }
+          rewrite HidEDef.
+          exact (path_homotopy_class_in_fundamental_group
+            E Te e0 (constant_path e0) HconstLoopE).
+        }
+        apply set_ext.
+        - let cls.
+          assume Hcls.
+          claim HimgCls :
+            apply_fun pstar cls :e
+            homomorphism_image
+              (fundamental_group E Te e0)
+              pstar.
+          {
+            exact (ReplI
+              (fundamental_group E Te e0)
+              (fun x:set => apply_fun pstar x)
+              cls
+              Hcls).
+          }
+          claim HimgClsSing :
+            apply_fun pstar cls :e {idB}.
+          {
+            rewrite <- HimgEq.
+            exact HimgCls.
+          }
+          claim HimgIdESing :
+            apply_fun pstar idE :e {idB}.
+          {
+            claim HimgIdE :
+              apply_fun pstar idE :e
+              homomorphism_image
+                (fundamental_group E Te e0)
+                pstar.
+            {
+              exact (ReplI
+                (fundamental_group E Te e0)
+                (fun x:set => apply_fun pstar x)
+                idE
+                HidE_mem).
+            }
+            rewrite <- HimgEq.
+            exact HimgIdE.
+          }
+          claim HimgClsEq :
+            apply_fun pstar cls = idB.
+          {
+            exact (singleton_elem
+              (apply_fun pstar cls)
+              idB
+              HimgClsSing).
+          }
+          claim HimgIdEq :
+            apply_fun pstar idE = idB.
+          {
+            exact (singleton_elem
+              (apply_fun pstar idE)
+              idB
+              HimgIdESing).
+          }
+          claim HclsEqIdE : cls = idE.
+          {
+            apply (thm54_6a_p_star_injective
+              E
+              Te
+              B
+              Tb
+              p
+              e0
+              HcovE
+              He0
+              cls
+              idE
+              Hcls
+              HidE_mem).
+            rewrite HimgClsEq.
+            rewrite HimgIdEq.
+            reflexivity.
+          }
+          rewrite HclsEqIdE.
+          exact (SingI idE).
+        - let cls.
+          assume Hcls.
+          claim HclsEq : cls = idE.
+          {
+            exact (singleton_elem cls idE Hcls).
+          }
+          rewrite HclsEq.
+          exact HidE_mem.
 Admitted.
 
 (** from S82 Exercises Exercise 1 (line 5384 in algtop.tex): simply connected implies semilocally simply connected **)
