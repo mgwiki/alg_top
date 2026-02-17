@@ -78187,6 +78187,133 @@ claim Hnat :
 exact (Hnat n (omega_nat_p n HnO) gs HgsFun Hterms).
 Qed.
 
+(** Helper: explicit finite word data plus trivial j-star already forces i-star image membership. **)
+Theorem lemma59_4a_word_data_trivial_j_implies_i_image :
+  forall X Tx U V x0 cls n gs:set,
+  topology_on X Tx ->
+  U :e Tx ->
+  V :e Tx ->
+  x0 :e U :/\: V ->
+  n :e omega ->
+  function_on gs n (fundamental_group X Tx x0) ->
+  (forall i:set, i :e n ->
+    (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+      apply_fun gs i =
+        apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+          (graph U (fun x:set => x))) ucls) \/
+    (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+      apply_fun gs i =
+        apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+          (graph V (fun x:set => x))) vcls)) ->
+  cls = nat_primrec (fundamental_group_id X Tx x0)
+    (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n ->
+  (forall clsV:set,
+    clsV :e fundamental_group V (subspace_topology X Tx V) x0 ->
+    apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+      (graph V (fun x:set => x))) clsV = fundamental_group_id X Tx x0) ->
+  exists ucls:set,
+    ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+    cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+      (graph U (fun x:set => x))) ucls.
+let X Tx U V x0 cls n gs.
+assume Htop : topology_on X Tx.
+assume HU : U :e Tx.
+assume HV : V :e Tx.
+assume Hx0UV : x0 :e U :/\: V.
+assume HnO : n :e omega.
+assume HgsFun : function_on gs n (fundamental_group X Tx x0).
+assume HgsTerms : forall i:set, i :e n ->
+  (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+    apply_fun gs i =
+      apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+        (graph U (fun x:set => x))) ucls) \/
+  (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+    apply_fun gs i =
+      apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+        (graph V (fun x:set => x))) vcls).
+assume HclsWord : cls = nat_primrec (fundamental_group_id X Tx x0)
+  (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n.
+assume Hj_triv : forall clsV:set,
+  clsV :e fundamental_group V (subspace_topology X Tx V) x0 ->
+  apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+    (graph V (fun x:set => x))) clsV = fundamental_group_id X Tx x0.
+claim Hx0U : x0 :e U.
+{
+  exact (binintersectE1 U V x0 Hx0UV).
+}
+claim Hterms_reduced : forall i:set, i :e n ->
+  (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+    apply_fun gs i =
+      apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+        (graph U (fun x:set => x))) ucls) \/
+  apply_fun gs i = fundamental_group_id X Tx x0.
+{
+  exact (lemma59_4a_i_or_j_term_reduces_when_j_trivial
+    X Tx U V x0 n gs
+    HgsTerms
+    Hj_triv).
+}
+claim Hword_i :
+  exists uacc:set,
+    uacc :e fundamental_group U (subspace_topology X Tx U) x0 /\
+    nat_primrec (fundamental_group_id X Tx x0)
+      (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n
+    =
+    apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+      (graph U (fun x:set => x))) uacc.
+{
+  exact (lemma59_4a_word_reduces_to_i_star_image
+    X
+    Tx
+    U
+    x0
+    n
+    gs
+    Htop
+    HU
+    Hx0U
+    HnO
+    HgsFun
+    Hterms_reduced).
+}
+apply Hword_i.
+let uacc.
+assume Huacc_pack : uacc :e fundamental_group U (subspace_topology X Tx U) x0 /\
+  nat_primrec (fundamental_group_id X Tx x0)
+    (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n
+  =
+  apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+    (graph U (fun x:set => x))) uacc.
+witness uacc.
+apply andI.
+- exact (andEL
+    (uacc :e fundamental_group U (subspace_topology X Tx U) x0)
+    (nat_primrec (fundamental_group_id X Tx x0)
+      (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n
+      =
+      apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+        (graph U (fun x:set => x))) uacc)
+    Huacc_pack).
+- claim HwordEq :
+    nat_primrec (fundamental_group_id X Tx x0)
+      (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n
+    =
+    apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+      (graph U (fun x:set => x))) uacc.
+  {
+    exact (andER
+      (uacc :e fundamental_group U (subspace_topology X Tx U) x0)
+      (nat_primrec (fundamental_group_id X Tx x0)
+        (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n
+        =
+        apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+          (graph U (fun x:set => x))) uacc)
+      Huacc_pack).
+  }
+  rewrite HclsWord.
+  exact HwordEq.
+Qed.
+
 Theorem ex59_4a_trivial_j_star : forall X Tx U V x0:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
