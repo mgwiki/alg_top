@@ -1,5 +1,5 @@
 (** Balance Alice 2634 **)
-(** Balance Bob 2901 **)
+(** Balance Bob 2577 **)
 (** Balance Charlie 40458 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -34678,8 +34678,7 @@ Qed.
 (** from S52 Exercise 2 (line 497 in algtop.tex) **)
 (** LATEX VERSION: If gamma = alpha . beta, then gamma-hat = beta-hat o alpha-hat. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Collected Bob 66 **)
-(** Proven Bob **)
+(** Bounty 66 **)
 Theorem ex52_2_basepoint_composition : forall X Tx x0 x1 x2 alpha beta:set,
   topology_on X Tx ->
   continuous_map unit_interval unit_interval_topology X Tx alpha ->
@@ -35805,7 +35804,7 @@ claim HfinalClass :
     HfinalHom).
 }
 exact HfinalClass.
-Qed.
+Admitted.
 
 (** S52 helper: conjugation-step equalities used in Exercise 3 abelian => uniqueness direction **)
 Theorem ex52_3_helper_conj_pair : forall X Tx x0 x1 alpha beta cls delta_cls:set,
@@ -35859,9 +35858,7 @@ Admitted.
 (** from S52 Exercise 3 (line 498 in algtop.tex) **)
 (** LATEX VERSION: pi1(X,x0) is abelian iff for every pair alpha, beta of paths from x0 to x1, alpha-hat = beta-hat. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Bob 100 **)
-(** Proven Bob **)
-(** Proven Bob **)
+(** Bounty 100 **)
 Theorem ex52_3_abelian_iff_unique_basepoint_change : forall X Tx x0:set,
   path_connected_space X Tx -> x0 :e X ->
   ((forall a b:set, a :e fundamental_group X Tx x0 -> b :e fundamental_group X Tx x0 ->
@@ -36130,7 +36127,7 @@ apply iffI.
     Huniq
     Ha
     Hb).
-Qed.
+Admitted.
 
 (** from S52 Exercise 4 (line 499 in algtop.tex): retraction and pi1 **)
 (** LATEX VERSION: Let r: X -> A be a retraction. If a0 in A, show that r-star: pi1(X,a0) -> pi1(A,a0) is surjective. **)
@@ -53048,9 +53045,7 @@ Admitted.
 (** alpha(1) = beta(0), and their lifts satisfy alpha_tilde(1) = beta_tilde(0), **)
 (** then alpha_tilde . beta_tilde is a lifting of alpha . beta. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Collected Bob 33 **)
-(** Proven Bob **)
-(** Proven Bob **)
+(** Bounty 33 **)
 Theorem ex54_3_lift_of_product : forall E Te B Tb p e0 alpha beta:set,
   covering_map E Te B Tb p -> e0 :e E ->
   continuous_map unit_interval unit_interval_topology B Tb alpha ->
@@ -53256,7 +53251,7 @@ exact (andI
     apply_fun (path_concat alpha beta) t)
   HconcatCont
   HconcatComm).
-Qed.
+Admitted.
 
 (** Infrastructure: complex inversion on S^1: z -> (z_0, -z_1) = conjugate = 1/z **)
 Definition S1_conjugate_map : set :=
@@ -54792,9 +54787,7 @@ Admitted. (** depends on unproved thm57_3_borsuk_ulam_S2 **)
 (** where both temperature and barometric pressure are equal. **)
 (** This is the Borsuk-Ulam theorem for S^2 -> R^2. **)
 (** EFFORT: 2 lines textbook, difficulty 1/10, USD 10 **)
-(** Collected Bob 10 **)
-(** Proven Bob **)
-(** Proven Bob **)
+(** Bounty 10 **)
 Theorem ex57_1_meteorology : forall f:set,
   continuous_map (Sn 2) (Sn_topology 2) (setprod R R) R2_topology f ->
   exists x:set, x :e Sn 2 /\
@@ -54802,7 +54795,7 @@ Theorem ex57_1_meteorology : forall f:set,
 let f.
 assume Hf.
 exact (thm57_3_borsuk_ulam_S2 f Hf).
-Qed.
+Admitted.
 
 (** from S57 Exercise 2 (line 1258 in algtop.tex) **)
 (** LATEX VERSION: If g: S^2 -> S^2 is continuous and g(x) != g(-x) for all x, then g is surjective. **)
@@ -56789,8 +56782,7 @@ admit.
 Admitted.
 
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 30 **)
-(** Collected Bob 30 **)
-(** Proven Bob **)
+(** Bounty 30 **)
 Theorem cor58_5_homotopic_maps_injective : forall X Tx Y Ty x0 h k:set,
   continuous_map X Tx Y Ty h ->
   continuous_map X Tx Y Ty k ->
@@ -56936,13 +56928,12 @@ claim HhEq :
     HalphaEq).
 }
 exact (HhInj cls1 cls2 Hcls1 Hcls2 HhEq).
-Qed.
+Admitted.
 
 (** from S58 Corollary 58.5 surjective case (line 1423 in algtop.tex) **)
 (** LATEX VERSION: Let h, k: X -> Y be homotopic. If h-star is surjective, so is k-star. **)
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 30 **)
-(** Collected Bob 30 **)
-(** Proven Bob **)
+(** Bounty 30 **)
 Theorem cor58_5_homotopic_maps_surjective : forall X Tx Y Ty x0 h k:set,
   continuous_map X Tx Y Ty h ->
   continuous_map X Tx Y Ty k ->
@@ -57077,13 +57068,12 @@ apply andI.
   rewrite HkEqAlpha.
   rewrite HhEqd.
   exact HdEq.
-Qed.
+Admitted.
 
 (** from S58 Corollary 58.5 trivial case (line 1423 in algtop.tex) **)
 (** LATEX VERSION: Let h, k: X -> Y be homotopic. If h-star is trivial, so is k-star. **)
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 30 **)
-(** Collected Bob 33 **)
-(** Proven Bob **)
+(** Bounty 33 **)
 Theorem cor58_5_homotopic_maps_trivial : forall X Tx Y Ty x0 h k:set,
   continuous_map X Tx Y Ty h ->
   continuous_map X Tx Y Ty k ->
@@ -57176,7 +57166,7 @@ claim Hdesired_cls :
   exact HbaseId.
 }
 exact Hdesired_cls.
-Qed.
+Admitted.
 
 (** helper: a constant map induces the trivial map on fundamental groups **)
 (** Proven Bob **)
@@ -57272,8 +57262,7 @@ Qed.
 (** from S58 Corollary 58.6 (line 1425 in algtop.tex) **)
 (** LATEX VERSION: If h: X -> Y is nulhomotopic, then h-star is the trivial homomorphism. **)
 (** EFFORT: 2 lines textbook, difficulty 1/10, USD 20 **)
-(** Collected Bob 22 **)
-(** Proven Bob **)
+(** Bounty 22 **)
 Theorem cor58_6_nulhomotopic_trivial : forall X Tx Y Ty h x0:set,
   continuous_map X Tx Y Ty h ->
   x0 :e X ->
@@ -57366,7 +57355,7 @@ claim Htarget :
     HconstTriv).
 }
 exact Htarget.
-Qed.
+Admitted.
 
 (** from S58 Theorem 58.7 (line 1429 in algtop.tex) **)
 (** LATEX VERSION: If f: X -> Y is a homotopy equivalence with f(x0) = y0, then f-star: pi_1(X,x0) -> pi_1(Y,y0) is an isomorphism. **)
