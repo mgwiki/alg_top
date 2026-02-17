@@ -20687,23 +20687,64 @@ claim HsurjUnique :
   {
     exact (HbetaFun y Hy).
   }
+  claim HalphaBetaId :
+    apply_fun (basepoint_change_map X Tx x0 x1 alpha) x = y.
+  {
+    rewrite (basepoint_change_map_apply
+      X
+      Tx
+      x0
+      x1
+      alpha
+      x
+      Hx).
+    claim HxExpand :
+      x
+      =
+      path_homotopy_class_loop
+        X
+        Tx
+        x0
+        (path_concat
+          (reverse_path beta)
+          (path_concat
+            (Eps_i (fun f:set => f :e y))
+            beta)).
+    {
+      rewrite <- (basepoint_change_map_apply
+        X
+        Tx
+        x1
+        x0
+        beta
+        y
+        Hy).
+      reflexivity.
+    }
+    rewrite HxExpand.
+    (** TODO Bob: reduce beta to reverse alpha and simplify conjugation to y. **)
+    admit.
+  }
   witness x.
   apply andI.
   - apply andI.
     + exact Hx.
-    + rewrite (basepoint_change_map_apply
-        X
-        Tx
-        x0
-        x1
-        alpha
-        x
-        Hx).
-      (** TODO Bob: show alpha-hat o beta-hat is identity on classes. **)
-      admit.
+    + exact HalphaBetaId.
   - let x'.
     assume Hx' Hx'eq.
-    (** TODO Bob: uniqueness from inverse-composition identity. **)
+    claim HbetaLiftEq :
+      apply_fun
+        (basepoint_change_map X Tx x1 x0 beta)
+        (apply_fun (basepoint_change_map X Tx x0 x1 alpha) x')
+      =
+      apply_fun
+        (basepoint_change_map X Tx x1 x0 beta)
+        y.
+    {
+      rewrite Hx'eq.
+      reflexivity.
+    }
+    (** TODO Bob: use reverse composition identity to derive x' = x from HbetaLiftEq. **)
     admit.
 }
 exact (andI
