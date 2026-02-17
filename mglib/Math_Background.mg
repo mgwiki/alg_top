@@ -68195,6 +68195,20 @@ exact (elem_implies_nonempty
       HxLt1))).
 Qed.
 
+Theorem lemma59_3_overlap_nonempty_from_coord0 : forall n x:set,
+  x :e Sn n ->
+  apply_fun x 0 = 0 ->
+  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
+   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
+let n x.
+assume HxSn Hx0.
+apply (lemma59_3_overlap_nonempty_from_point n x HxSn).
+- rewrite Hx0.
+  exact Rlt_minus1_0.
+- rewrite Hx0.
+  exact Rlt_0_1.
+Qed.
+
 Theorem lemma59_3_sphere_cover_data : forall n:set, n :e omega -> 2 c= n ->
   exists U V:set,
     U :e Sn_topology n /\ V :e Sn_topology n /\
