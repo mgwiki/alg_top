@@ -1,6 +1,6 @@
 (** Balance Alice 2634 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 41649 **)
+(** Balance Charlie 41640 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -60769,7 +60769,8 @@ Admitted.
 (** from S58 Exercise 2(f) (line 1485 in algtop.tex) **)
 (** LATEX VERSION: {x in R^2 : norm(x) > 1} has pi1 = Z (infinite cyclic). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 20 **)
-(** Bounty 20 **)
+(** Bounty 22 **)
+(** Lock Charlie 2026-02-18T13:30:00 **)
 Theorem ex58_2f_exterior_open_disk_pi1 :
   let X := {p :e EuclidPlane | SNoLt 1 (distance_R2 p (0, 0))} in
   let TX := subspace_topology EuclidPlane R2_topology X in
@@ -60785,7 +60786,8 @@ Admitted.
 (** from S58 Exercise 2(g) (line 1486 in algtop.tex) **)
 (** LATEX VERSION: {x in R^2 : norm(x) >= 1} has pi1 = Z (infinite cyclic). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 20 **)
-(** Bounty 20 **)
+(** Bounty 22 **)
+(** Lock Charlie 2026-02-18T13:30:00 **)
 Theorem ex58_2g_exterior_closed_disk_pi1 :
   let X := {p :e EuclidPlane | Rle 1 (distance_R2 p (0, 0))} in
   let TX := subspace_topology EuclidPlane R2_topology X in
@@ -60801,7 +60803,8 @@ Admitted.
 (** from S58 Exercise 2(h) (line 1487 in algtop.tex) **)
 (** LATEX VERSION: {x in R^2 : norm(x) < 1} (open disk) is simply connected. **)
 (** EFFORT: 2 lines textbook, difficulty 1/10, USD 10 **)
-(** Bounty 10 **)
+(** Bounty 11 **)
+(** Lock Charlie 2026-02-18T13:30:00 **)
 Theorem ex58_2h_open_disk_simply_connected :
   let X := {p :e EuclidPlane | SNoLt (distance_R2 p (0, 0)) 1} in
   let TX := subspace_topology EuclidPlane R2_topology X in
@@ -60813,7 +60816,8 @@ Admitted.
 (** LATEX VERSION: S^1 union (R+ x {0}) has pi1 = Z (infinite cyclic). **)
 (** The circle with a ray attached deformation retracts to S^1. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 20 **)
-(** Bounty 20 **)
+(** Bounty 22 **)
+(** Lock Charlie 2026-02-18T13:30:00 **)
 Theorem ex58_2i_circle_with_ray_pi1 :
   let X := S1 :\/: {p :e EuclidPlane | R2_ycoord p = 0 /\ Rle 0 (R2_xcoord p)} in
   let TX := subspace_topology EuclidPlane R2_topology X in
@@ -60830,7 +60834,8 @@ Admitted.
 (** LATEX VERSION: S^1 union (R+ x R) has pi1 = Z (infinite cyclic). **)
 (** The circle with a half-plane deformation retracts to S^1. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 20 **)
-(** Bounty 20 **)
+(** Bounty 22 **)
+(** Lock Charlie 2026-02-18T13:30:00 **)
 Theorem ex58_2j_circle_with_halfplane_pi1 :
   let X := S1 :\/: {p :e EuclidPlane | Rle 0 (R2_xcoord p)} in
   let TX := subspace_topology EuclidPlane R2_topology X in
