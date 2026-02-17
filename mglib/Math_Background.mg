@@ -33418,8 +33418,20 @@ apply andI.
             HtopVsub
             HAwInSub).
         }
-        (** Remaining local gap: show Aw :e Te from openness in subspace V and V :e Te. **)
-        admit.
+        claim HtopE : topology_on E Te.
+        {
+          (** TODO Charlie: derive ambient topology_on E Te from evenly-covered data in this context. **)
+          admit.
+        }
+        exact (open_in_subspace_if_ambient_open
+          E
+          Te
+          V
+          Aw
+          HtopE
+          HVopen
+          HAwSubV
+          HAwOpenInV).
       * exact HpdW.
     + exact HunionW.
   - let Vw.
