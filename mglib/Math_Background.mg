@@ -69865,7 +69865,218 @@ claim HxSqCoord1 : mul_SNo (apply_fun x 1) (apply_fun x 1) = 1.
 }
 claim HxNorm : euclidean_norm_sq (ordsucc n) x = 1.
 {
-  admit. (** pending: finite_real_sum of one-hot vector squares equals 1 **)
+  claim Hsum_contains1 :
+    forall m:set, m :e omega -> m c= ordsucc n -> 1 :e m ->
+      finite_real_sum
+        (fun i:set => mul_SNo (apply_fun x i) (apply_fun x i))
+        m = 1.
+  {
+    claim Hnat :
+      forall m:set, nat_p m ->
+        m c= ordsucc n -> 1 :e m ->
+        finite_real_sum
+          (fun i:set => mul_SNo (apply_fun x i) (apply_fun x i))
+          m = 1.
+    {
+      apply nat_ind.
+      - assume Hsub0 : 0 c= ordsucc n.
+        assume H10 : 1 :e 0.
+        claim Hfalse : False.
+        {
+          exact (EmptyE 1 H10).
+        }
+        exact (Hfalse
+          (finite_real_sum
+            (fun i:set => mul_SNo (apply_fun x i) (apply_fun x i))
+            0 = 1)).
+      - let m.
+        assume Hm : nat_p m.
+        assume IH :
+          m c= ordsucc n -> 1 :e m ->
+          finite_real_sum
+            (fun i:set => mul_SNo (apply_fun x i) (apply_fun x i))
+            m = 1.
+        assume HsubSm : ordsucc m c= ordsucc n.
+        assume H1inSm : 1 :e ordsucc m.
+        apply (ordsuccE m 1 H1inSm).
+        + assume H1inM : 1 :e m.
+          claim HsubM : m c= ordsucc n.
+          {
+            exact (Subq_tra
+              m
+              (ordsucc m)
+              (ordsucc n)
+              (ordsuccI1 m)
+              HsubSm).
+          }
+          claim HsumM :
+            finite_real_sum
+              (fun i:set => mul_SNo (apply_fun x i) (apply_fun x i))
+              m = 1.
+          {
+            exact (IH HsubM H1inM).
+          }
+          claim HmInDom : m :e ordsucc n.
+          {
+            exact (HsubSm
+              m
+              (ordsuccI2 m)).
+          }
+          claim HmNe1 : ~(m = 1).
+          {
+            assume HmEq1 : m = 1.
+            claim H11 : 1 :e 1.
+            {
+              exact (mem_eqR
+                1
+                m
+                1
+                HmEq1
+                H1inM).
+            }
+            exact (In_irref
+              1
+              H11).
+          }
+          claim HtermM0 :
+            mul_SNo (apply_fun x m) (apply_fun x m) = 0.
+          {
+            rewrite (apply_fun_graph
+              (ordsucc n)
+              (fun i:set => If_i (i = 1) 1 0)
+              m
+              HmInDom).
+            claim Hif0 : If_i (m = 1) 1 0 = 0.
+            {
+              exact (If_i_0
+                (m = 1)
+                1
+                0
+                HmNe1).
+            }
+            rewrite Hif0 at 1.
+            rewrite Hif0 at 1.
+            exact (mul_SNo_zeroL
+              0
+              SNo_0).
+          }
+          claim HfinDefSm :
+            finite_real_sum
+              (fun i:set => mul_SNo (apply_fun x i) (apply_fun x i))
+              (ordsucc m)
+            =
+            nat_primrec
+              0
+              (fun j r:set => add_SNo r (mul_SNo (apply_fun x j) (apply_fun x j)))
+              (ordsucc m).
+          {
+            reflexivity.
+          }
+          claim HfinDefM :
+            finite_real_sum
+              (fun i:set => mul_SNo (apply_fun x i) (apply_fun x i))
+              m
+            =
+            nat_primrec
+              0
+              (fun j r:set => add_SNo r (mul_SNo (apply_fun x j) (apply_fun x j)))
+              m.
+          {
+            reflexivity.
+          }
+          rewrite HfinDefSm.
+          rewrite (nat_primrec_S
+            0
+            (fun j r:set => add_SNo r (mul_SNo (apply_fun x j) (apply_fun x j)))
+            m
+            Hm).
+          rewrite <- HfinDefM.
+          rewrite HsumM.
+          rewrite HtermM0.
+          exact (add_SNo_0R
+            1
+            SNo_1).
+        + assume H1EqM : 1 = m.
+          rewrite <- H1EqM.
+          claim HfinDef2 :
+            finite_real_sum
+              (fun i:set => mul_SNo (apply_fun x i) (apply_fun x i))
+              (ordsucc 1)
+            =
+            nat_primrec
+              0
+              (fun j r:set => add_SNo r (mul_SNo (apply_fun x j) (apply_fun x j)))
+              (ordsucc 1).
+          {
+            reflexivity.
+          }
+          rewrite HfinDef2.
+          rewrite (nat_primrec_S
+            0
+            (fun j r:set => add_SNo r (mul_SNo (apply_fun x j) (apply_fun x j)))
+            1
+            nat_1).
+          rewrite (nat_primrec_S
+            0
+            (fun j r:set => add_SNo r (mul_SNo (apply_fun x j) (apply_fun x j)))
+            0
+            nat_0).
+          rewrite (nat_primrec_0
+            0
+            (fun j r:set => add_SNo r (mul_SNo (apply_fun x j) (apply_fun x j)))).
+          rewrite HxSqCoord0.
+          rewrite HxSqCoord1.
+          rewrite (add_SNo_0R
+            0
+            SNo_0).
+          exact (add_SNo_0L
+            1
+            SNo_1).
+    }
+    let m.
+    assume HmO : m :e omega.
+    assume HsubM : m c= ordsucc n.
+    assume H1inM : 1 :e m.
+    exact (Hnat
+      m
+      (omega_nat_p m HmO)
+      HsubM
+      H1inM).
+  }
+  claim HordsuccOmega : ordsucc n :e omega.
+  {
+    exact (nat_p_omega
+      (ordsucc n)
+      (nat_ordsucc n (omega_nat_p n Hn))).
+  }
+  claim HsubSelf : ordsucc n c= ordsucc n.
+  {
+    let i.
+    assume Hi : i :e ordsucc n.
+    exact Hi.
+  }
+  claim HsumN :
+    finite_real_sum
+      (fun i:set => mul_SNo (apply_fun x i) (apply_fun x i))
+      (ordsucc n)
+    = 1.
+  {
+    exact (Hsum_contains1
+      (ordsucc n)
+      HordsuccOmega
+      HsubSelf
+      H1in).
+  }
+  claim HnormDef :
+    euclidean_norm_sq (ordsucc n) x =
+    finite_real_sum
+      (fun i:set => mul_SNo (apply_fun x i) (apply_fun x i))
+      (ordsucc n).
+  {
+    reflexivity.
+  }
+  rewrite HnormDef.
+  exact HsumN.
 }
 witness x.
 apply andI.
