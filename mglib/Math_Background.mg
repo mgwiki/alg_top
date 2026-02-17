@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 24144 **)
+(** Balance Charlie 23988 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -53481,7 +53481,8 @@ Admitted.
 (** from S55 Lemma 55.3 direction (3) implies (1) (line 907 in algtop.tex) **)
 (** LATEX VERSION: If h-star is the trivial homomorphism, then h is nulhomotopic. **)
 (** EFFORT: 10 lines textbook, difficulty 6/10, USD 180 **)
-(** Bounty 180 **)
+(** Bounty 198 **)
+(** Lock Charlie 2026-02-18T11:50:58 **)
 Theorem lemma55_3_trivial_implies_nulhomotopic : forall X Tx h b0:set,
   continuous_map S1 S1_topology X Tx h ->
   b0 :e S1 ->
@@ -53786,7 +53787,8 @@ Admitted. (** was Qed but depends on unproved cor55_4a - changed to Admitted **)
 (** from S55 Theorem 55.5 (line 950 in algtop.tex) **)
 (** LATEX VERSION: Given a nonvanishing vector field on B^2, there exists a point of S^1 where the vector field points directly inward and a point of S^1 where it points directly outward. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 2026-02-18T11:50:58 **)
 Theorem thm55_5_nonvanishing_vector_field : forall v:set,
   continuous_map B2 B2_topology (setprod R R) R2_topology v ->
   (forall x:set, x :e B2 -> ~(apply_fun v x 0 = 0 /\ apply_fun v x 1 = 0)) ->
@@ -56487,7 +56489,8 @@ Admitted.
 (** from S58 Theorem 58.7 (line 1429 in algtop.tex) **)
 (** LATEX VERSION: If f: X -> Y is a homotopy equivalence with f(x0) = y0, then f-star: pi_1(X,x0) -> pi_1(Y,y0) is an isomorphism. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 2026-02-18T11:50:58 **)
 Theorem thm58_7_homotopy_equiv_isomorphism : forall X Tx Y Ty f x0:set,
   homotopy_equivalence X Tx Y Ty f ->
   x0 :e X ->
@@ -60239,7 +60242,8 @@ Admitted.
 (** from S59 Theorem 59.3 (line 1587 in algtop.tex) **)
 (** LATEX VERSION: If n >= 2, the n-sphere S^n is simply connected. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 2026-02-18T11:50:58 **)
 Theorem thm59_3_Sn_simply_connected : forall n:set,
   n :e omega -> 2 c= n ->
   simply_connected (Sn n) (Sn_topology n).
@@ -60533,7 +60537,8 @@ Definition double_torus_topology : set :=
 (** from S60 Theorem 60.6 (line 1759 in algtop.tex) **)
 (** LATEX VERSION: The fundamental group of the double torus is not abelian. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 2026-02-18T11:50:58 **)
 Theorem thm60_6_double_torus_nonabelian : forall x0:set,
   x0 :e double_torus ->
   ~(abelian_group
@@ -61931,7 +61936,8 @@ Admitted.
 (** For piecewise-differentiable loop f in Omega, F analytic on Omega, **)
 (** n(f,b)=0 for b not in Omega: n(f,a) F(a) = (1/(2 pi i)) integral_f F(z)/(z-a) dz **)
 (** EFFORT: 12 lines textbook, difficulty 6/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 2026-02-18T11:50:58 **)
 Theorem thm66_4_cauchy_integral_formula : forall f a Omega F:set,
   piecewise_differentiable_loop f ->
   holomorphic_on F Omega ->
@@ -62255,7 +62261,8 @@ Definition external_direct_sum : set -> set -> set -> set -> set -> set -> set -
 (** group G and monomorphisms i_alpha: G_alpha -> G such that G is the direct sum **)
 (** of the images i_alpha(G_alpha). **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 2026-02-18T11:50:58 **)
 Theorem thm67_4_existence_external_direct_sum :
   forall J Gfam multfam efam invfam:set,
   (forall alpha:set, alpha :e J ->
@@ -64381,7 +64388,8 @@ Definition polygon_pasting_topology : set -> set -> set :=
 (** of polygonal regions by pasting edges according to some labelling **)
 (** scheme. Then X is a compact Hausdorff space. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 2026-02-18T11:50:58 **)
 Theorem thm74_1_polygon_pasting_compact_hausdorff :
   forall n w:set,
   labelling_scheme n w ->
@@ -64898,7 +64906,8 @@ Admitted.
 (** LATEX VERSION: Torsion subgroup T(X) of H1(X) has order 2, **)
 (** and H1(X)/T(X) is free abelian of rank m-1. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 2026-02-18T11:50:58 **)
 Theorem thm75_4_H1_m_fold_projective_plane :
   forall m:set,
   m :e omega -> ordsucc 0 :e m ->
@@ -65303,7 +65312,8 @@ Qed.
 (** LATEX VERSION: If w = w0 (cc)(ab a^{-1} b^{-1}) w1, then **)
 (** w is equivalent to w0 (aa bb cc) w1. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 180 **)
-(** Bounty 180 **)
+(** Bounty 198 **)
+(** Lock Charlie 2026-02-18T11:50:58 **)
 Theorem lemma77_4_projective_absorbs_torus :
   forall n w:set,
   proper_labelling_scheme n w ->
