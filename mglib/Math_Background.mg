@@ -65754,13 +65754,368 @@ assume Hn : n :e omega.
 assume Hge2 : 2 c= n.
 set U := {x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)}.
 set V := {x :e Sn n | Rlt (apply_fun x 0) 1}.
+set coord0 := graph (euclidean_space (ordsucc n)) (fun x:set => apply_fun x 0).
+claim HtopE : topology_on (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n)).
+{
+  exact (lemma59_3_euclidean_topology_on (ordsucc n)).
+}
+claim H0in : 0 :e ordsucc n.
+{
+  exact (nat_0_in_ordsucc n (omega_nat_p n Hn)).
+}
+claim Hcoord0Cont :
+  continuous_map (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n))
+    R R_standard_topology coord0.
+{
+  admit. (** coordinate projection continuity in finite product **)
+}
 claim HUopen : U :e Sn_topology n.
 {
-  admit. (** upper cap is open in S^n **)
+  set WU := {x :e euclidean_space (ordsucc n) | Rlt (minus_SNo 1) (apply_fun x 0)}.
+  claim HWUopenE : WU :e euclidean_topology (ordsucc n).
+  {
+    set cminus := const_fun (euclidean_space (ordsucc n)) (minus_SNo 1).
+    claim HcminusCont :
+      continuous_map (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n))
+        R R_standard_topology cminus.
+    {
+      exact (const_fun_continuous
+        (euclidean_space (ordsucc n))
+        (euclidean_topology (ordsucc n))
+        R
+        R_standard_topology
+        (minus_SNo 1)
+        HtopE
+        R_standard_topology_is_topology
+        (real_minus_SNo 1 real_1)).
+    }
+    claim Hraw :
+      {x :e euclidean_space (ordsucc n) |
+        Rlt (apply_fun cminus x) (apply_fun coord0 x)} :e
+      euclidean_topology (ordsucc n).
+    {
+      exact (continuous_Rlt_preimage_open
+        (euclidean_space (ordsucc n))
+        (euclidean_topology (ordsucc n))
+        cminus
+        coord0
+        HcminusCont
+        Hcoord0Cont).
+    }
+    claim HWUeq :
+      WU = {x :e euclidean_space (ordsucc n) |
+        Rlt (apply_fun cminus x) (apply_fun coord0 x)}.
+    {
+      apply set_ext.
+      - let x.
+        assume HxWU : x :e WU.
+        claim HxE : x :e euclidean_space (ordsucc n).
+        {
+          exact (SepE1
+            (euclidean_space (ordsucc n))
+            (fun x:set => Rlt (minus_SNo 1) (apply_fun x 0))
+            x
+            HxWU).
+        }
+        claim Hxlt : Rlt (minus_SNo 1) (apply_fun x 0).
+        {
+          exact (SepE2
+            (euclidean_space (ordsucc n))
+            (fun x:set => Rlt (minus_SNo 1) (apply_fun x 0))
+            x
+            HxWU).
+        }
+        apply (SepI
+          (euclidean_space (ordsucc n))
+          (fun x:set => Rlt (apply_fun cminus x) (apply_fun coord0 x))
+          x
+          HxE).
+        rewrite (const_fun_apply (euclidean_space (ordsucc n)) (minus_SNo 1) x HxE).
+        rewrite (apply_fun_graph
+          (euclidean_space (ordsucc n))
+          (fun x:set => apply_fun x 0)
+          x
+          HxE).
+        exact Hxlt.
+      - let x.
+        assume HxRaw :
+          x :e {x :e euclidean_space (ordsucc n) |
+            Rlt (apply_fun cminus x) (apply_fun coord0 x)}.
+        claim HxE : x :e euclidean_space (ordsucc n).
+        {
+          exact (SepE1
+            (euclidean_space (ordsucc n))
+            (fun x:set => Rlt (apply_fun cminus x) (apply_fun coord0 x))
+            x
+            HxRaw).
+        }
+        claim HxltRaw : Rlt (apply_fun cminus x) (apply_fun coord0 x).
+        {
+          exact (SepE2
+            (euclidean_space (ordsucc n))
+            (fun x:set => Rlt (apply_fun cminus x) (apply_fun coord0 x))
+            x
+            HxRaw).
+        }
+        apply (SepI
+          (euclidean_space (ordsucc n))
+          (fun x:set => Rlt (minus_SNo 1) (apply_fun x 0))
+          x
+          HxE).
+        rewrite <- (const_fun_apply (euclidean_space (ordsucc n)) (minus_SNo 1) x HxE).
+        rewrite <- (apply_fun_graph
+          (euclidean_space (ordsucc n))
+          (fun x:set => apply_fun x 0)
+          x
+          HxE).
+        exact HxltRaw.
+    }
+    rewrite HWUeq.
+    exact Hraw.
+  }
+  claim HUeq : U = WU :/\: Sn n.
+  {
+    apply set_ext.
+    - let x.
+      assume HxU : x :e U.
+      claim HxSn : x :e Sn n.
+      {
+        exact (SepE1
+          (Sn n)
+          (fun x:set => Rlt (minus_SNo 1) (apply_fun x 0))
+          x
+          HxU).
+      }
+      claim Hxlt : Rlt (minus_SNo 1) (apply_fun x 0).
+      {
+        exact (SepE2
+          (Sn n)
+          (fun x:set => Rlt (minus_SNo 1) (apply_fun x 0))
+          x
+          HxU).
+      }
+      claim HxE : x :e euclidean_space (ordsucc n).
+      {
+        exact (SepE1
+          (euclidean_space (ordsucc n))
+          (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+          x
+          HxSn).
+      }
+      apply (binintersectI WU (Sn n) x).
+      + exact (SepI
+          (euclidean_space (ordsucc n))
+          (fun x:set => Rlt (minus_SNo 1) (apply_fun x 0))
+          x
+          HxE
+          Hxlt).
+      + exact HxSn.
+    - let x.
+      assume HxI : x :e WU :/\: Sn n.
+      claim HxWU : x :e WU.
+      {
+        exact (binintersectE1 WU (Sn n) x HxI).
+      }
+      claim HxSn : x :e Sn n.
+      {
+        exact (binintersectE2 WU (Sn n) x HxI).
+      }
+      claim Hxlt : Rlt (minus_SNo 1) (apply_fun x 0).
+      {
+        exact (SepE2
+          (euclidean_space (ordsucc n))
+          (fun x:set => Rlt (minus_SNo 1) (apply_fun x 0))
+          x
+          HxWU).
+      }
+      exact (SepI
+        (Sn n)
+        (fun x:set => Rlt (minus_SNo 1) (apply_fun x 0))
+        x
+        HxSn
+        Hxlt).
+  }
+  rewrite HUeq.
+  exact (subspace_topologyI
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    (Sn n)
+    WU
+    HWUopenE).
 }
 claim HVopen : V :e Sn_topology n.
 {
-  admit. (** lower cap is open in S^n **)
+  set WV := {x :e euclidean_space (ordsucc n) | Rlt (apply_fun x 0) 1}.
+  claim HWVopenE : WV :e euclidean_topology (ordsucc n).
+  {
+    set c1 := const_fun (euclidean_space (ordsucc n)) 1.
+    claim Hc1Cont :
+      continuous_map (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n))
+        R R_standard_topology c1.
+    {
+      exact (const_fun_continuous
+        (euclidean_space (ordsucc n))
+        (euclidean_topology (ordsucc n))
+        R
+        R_standard_topology
+        1
+        HtopE
+        R_standard_topology_is_topology
+        real_1).
+    }
+    claim Hraw :
+      {x :e euclidean_space (ordsucc n) |
+        Rlt (apply_fun coord0 x) (apply_fun c1 x)} :e
+      euclidean_topology (ordsucc n).
+    {
+      exact (continuous_Rlt_preimage_open_swapped
+        (euclidean_space (ordsucc n))
+        (euclidean_topology (ordsucc n))
+        c1
+        coord0
+        Hc1Cont
+        Hcoord0Cont).
+    }
+    claim HWVeq :
+      WV = {x :e euclidean_space (ordsucc n) |
+        Rlt (apply_fun coord0 x) (apply_fun c1 x)}.
+    {
+      apply set_ext.
+      - let x.
+        assume HxWV : x :e WV.
+        claim HxE : x :e euclidean_space (ordsucc n).
+        {
+          exact (SepE1
+            (euclidean_space (ordsucc n))
+            (fun x:set => Rlt (apply_fun x 0) 1)
+            x
+            HxWV).
+        }
+        claim Hxlt : Rlt (apply_fun x 0) 1.
+        {
+          exact (SepE2
+            (euclidean_space (ordsucc n))
+            (fun x:set => Rlt (apply_fun x 0) 1)
+            x
+            HxWV).
+        }
+        apply (SepI
+          (euclidean_space (ordsucc n))
+          (fun x:set => Rlt (apply_fun coord0 x) (apply_fun c1 x))
+          x
+          HxE).
+        rewrite (apply_fun_graph
+          (euclidean_space (ordsucc n))
+          (fun x:set => apply_fun x 0)
+          x
+          HxE).
+        rewrite (const_fun_apply (euclidean_space (ordsucc n)) 1 x HxE).
+        exact Hxlt.
+      - let x.
+        assume HxRaw :
+          x :e {x :e euclidean_space (ordsucc n) |
+            Rlt (apply_fun coord0 x) (apply_fun c1 x)}.
+        claim HxE : x :e euclidean_space (ordsucc n).
+        {
+          exact (SepE1
+            (euclidean_space (ordsucc n))
+            (fun x:set => Rlt (apply_fun coord0 x) (apply_fun c1 x))
+            x
+            HxRaw).
+        }
+        claim HxltRaw : Rlt (apply_fun coord0 x) (apply_fun c1 x).
+        {
+          exact (SepE2
+            (euclidean_space (ordsucc n))
+            (fun x:set => Rlt (apply_fun coord0 x) (apply_fun c1 x))
+            x
+            HxRaw).
+        }
+        apply (SepI
+          (euclidean_space (ordsucc n))
+          (fun x:set => Rlt (apply_fun x 0) 1)
+          x
+          HxE).
+        rewrite <- (apply_fun_graph
+          (euclidean_space (ordsucc n))
+          (fun x:set => apply_fun x 0)
+          x
+          HxE).
+        rewrite <- (const_fun_apply (euclidean_space (ordsucc n)) 1 x HxE).
+        exact HxltRaw.
+    }
+    rewrite HWVeq.
+    exact Hraw.
+  }
+  claim HVeq : V = WV :/\: Sn n.
+  {
+    apply set_ext.
+    - let x.
+      assume HxV : x :e V.
+      claim HxSn : x :e Sn n.
+      {
+        exact (SepE1
+          (Sn n)
+          (fun x:set => Rlt (apply_fun x 0) 1)
+          x
+          HxV).
+      }
+      claim Hxlt : Rlt (apply_fun x 0) 1.
+      {
+        exact (SepE2
+          (Sn n)
+          (fun x:set => Rlt (apply_fun x 0) 1)
+          x
+          HxV).
+      }
+      claim HxE : x :e euclidean_space (ordsucc n).
+      {
+        exact (SepE1
+          (euclidean_space (ordsucc n))
+          (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+          x
+          HxSn).
+      }
+      apply (binintersectI WV (Sn n) x).
+      + exact (SepI
+          (euclidean_space (ordsucc n))
+          (fun x:set => Rlt (apply_fun x 0) 1)
+          x
+          HxE
+          Hxlt).
+      + exact HxSn.
+    - let x.
+      assume HxI : x :e WV :/\: Sn n.
+      claim HxWV : x :e WV.
+      {
+        exact (binintersectE1 WV (Sn n) x HxI).
+      }
+      claim HxSn : x :e Sn n.
+      {
+        exact (binintersectE2 WV (Sn n) x HxI).
+      }
+      claim Hxlt : Rlt (apply_fun x 0) 1.
+      {
+        exact (SepE2
+          (euclidean_space (ordsucc n))
+          (fun x:set => Rlt (apply_fun x 0) 1)
+          x
+          HxWV).
+      }
+      exact (SepI
+        (Sn n)
+        (fun x:set => Rlt (apply_fun x 0) 1)
+        x
+        HxSn
+        Hxlt).
+  }
+  rewrite HVeq.
+  exact (subspace_topologyI
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    (Sn n)
+    WV
+    HWVopenE).
 }
 claim Hcover : Sn n = U :\/: V.
 {
