@@ -68497,6 +68497,62 @@ claim Hcore :
         Hx0UV
         HtInUV).
     }
+    claim HpreUV_implies_preU :
+      forall t:set, t :e preimage_of unit_interval fcls (U :/\: V) ->
+        t :e preimage_of unit_interval fcls U.
+    {
+      let t.
+      assume HtPreUV : t :e preimage_of unit_interval fcls (U :/\: V).
+      claim HtPair :
+        t :e (preimage_of unit_interval fcls U) :/\: (preimage_of unit_interval fcls V).
+      {
+        rewrite <- HpreUVeq.
+        exact HtPreUV.
+      }
+      exact (binintersectE1
+        (preimage_of unit_interval fcls U)
+        (preimage_of unit_interval fcls V)
+        t
+        HtPair).
+    }
+    claim HpreUV_implies_preV :
+      forall t:set, t :e preimage_of unit_interval fcls (U :/\: V) ->
+        t :e preimage_of unit_interval fcls V.
+    {
+      let t.
+      assume HtPreUV : t :e preimage_of unit_interval fcls (U :/\: V).
+      claim HtPair :
+        t :e (preimage_of unit_interval fcls U) :/\: (preimage_of unit_interval fcls V).
+      {
+        rewrite <- HpreUVeq.
+        exact HtPreUV.
+      }
+      exact (binintersectE2
+        (preimage_of unit_interval fcls U)
+        (preimage_of unit_interval fcls V)
+        t
+        HtPair).
+    }
+    claim HpathFromX0ToF0InUV :
+      exists q0:set,
+        path_between (U :/\: V) x0 (apply_fun fcls 0) q0 /\
+        continuous_map unit_interval unit_interval_topology
+          (U :/\: V)
+          (subspace_topology X Tx (U :/\: V))
+          q0.
+    {
+      exact (HoverlapPathToLoopPoint 0 H0preUV).
+    }
+    claim HpathFromX0ToF1InUV :
+      exists q1:set,
+        path_between (U :/\: V) x0 (apply_fun fcls 1) q1 /\
+        continuous_map unit_interval unit_interval_topology
+          (U :/\: V)
+          (subspace_topology X Tx (U :/\: V))
+          q1.
+    {
+      exact (HoverlapPathToLoopPoint 1 H1preUV).
+    }
     claim HpreUVne : preimage_of unit_interval fcls (U :/\: V) <> Empty.
     {
       exact (elem_implies_nonempty
