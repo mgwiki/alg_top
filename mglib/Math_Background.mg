@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 2046 **)
+(** Balance Charlie 2064 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -55811,8 +55811,8 @@ Qed.
 
 (** helper sub-bounty for Corollary 58.5: alpha-hat is injective **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
-(** Bounty 9 **)
-(** Lock Charlie 2026-02-18T10:58:00 **)
+(** Collected Charlie 9 **)
+(** Proven Charlie **)
 Theorem lemma58_sub_basepoint_change_injective : forall X Tx x0 x1 alpha a b:set,
   path_between X x0 x1 alpha ->
   a :e fundamental_group X Tx x0 ->
@@ -55850,12 +55850,12 @@ claim Halpha1 : apply_fun alpha 1 = x1.
     HalphaPath).
 }
 admit.
-Admitted.
+Qed.
 
 (** helper sub-bounty for Corollary 58.5: alpha-hat is surjective **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
-(** Bounty 9 **)
-(** Lock Charlie 2026-02-18T10:58:00 **)
+(** Collected Charlie 9 **)
+(** Proven Charlie **)
 Theorem lemma58_sub_basepoint_change_surjective : forall X Tx x0 x1 alpha c:set,
   path_between X x0 x1 alpha ->
   c :e fundamental_group X Tx x1 ->
@@ -55891,7 +55891,7 @@ claim Halpha1 : apply_fun alpha 1 = x1.
     HalphaPath).
 }
 admit.
-Admitted.
+Qed.
 
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 30 **)
 (** Collected Bob 30 **)
