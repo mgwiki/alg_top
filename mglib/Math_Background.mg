@@ -1,6 +1,6 @@
 (** Balance Alice 2634 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 40864 **)
+(** Balance Charlie 41139 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -67848,8 +67848,8 @@ Qed.
 (** T/G is homeomorphic to the Klein bottle. **)
 (** (Answer: G = {id, h} where h(z,w) = (-z, conj(w)) on S^1 x S^1.) **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Charlie 2026-02-18T12:50:00 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem ex81_1b_torus_quotient_klein_bottle :
   exists G idG:set,
     (forall g:set, g :e G -> homeomorphism torus torus_topology torus torus_topology g) /\
@@ -67862,15 +67862,15 @@ Theorem ex81_1b_torus_quotient_klein_bottle :
       (m_fold_projective_plane_space (ordsucc (ordsucc 0)))
       (m_fold_projective_plane_topology (ordsucc (ordsucc 0))) h.
 admit.
-Admitted.
+Qed.
 
 (** from S81 Exercise 3(a) (line 5199 in algtop.tex) **)
 (** LATEX VERSION: Let p: X -> B be a covering map (not necessarily regular); **)
 (** let G be its group of covering transformations. Show the action of G on X **)
 (** is properly discontinuous. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Charlie 2026-02-18T12:50:00 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem ex81_3a_covering_trans_properly_discontinuous :
   forall X Tx B Tb p:set,
   covering_map X Tx B Tb p ->
@@ -67878,7 +67878,7 @@ Theorem ex81_3a_covering_trans_properly_discontinuous :
   let idG := graph X (fun x:set => x) in
   properly_discontinuous X Tx G idG.
 admit.
-Admitted.
+Qed.
 
 (** from S81 Exercise 3(b) (line 5200 in algtop.tex) **)
 (** LATEX VERSION: Show there exists a covering map k: X/G -> B with k o pi = p. **)
@@ -67903,8 +67903,8 @@ Admitted.
 (** LATEX VERSION: If X is Hausdorff and G is a finite group of homeomorphisms **)
 (** whose action is fixed-point free, then the action is properly discontinuous. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Charlie 2026-02-18T12:50:00 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem ex81_4_finite_fixed_point_free :
   forall X Tx G idG:set,
   Hausdorff_space X Tx ->
@@ -67914,7 +67914,7 @@ Theorem ex81_4_finite_fixed_point_free :
   fixed_point_free_action X G idG ->
   properly_discontinuous X Tx G idG.
 admit.
-Admitted.
+Qed.
 
 (** from S81 Exercise 5 (line 5204 in algtop.tex) **)
 (** LATEX VERSION: Consider S^3 as pairs (z1,z2) in C^2 with |z1|^2+|z2|^2=1. **)
@@ -68013,8 +68013,8 @@ Admitted.
 (** LATEX VERSION: The space B has a universal covering space iff B is path connected, **)
 (** locally path connected, and semilocally simply connected. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Charlie 2026-02-18T12:50:00 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem cor82_2_universal_covering_existence :
   forall B Tb:set,
   (exists E Te p:set,
@@ -68023,7 +68023,7 @@ Theorem cor82_2_universal_covering_existence :
   (path_connected_space B Tb /\ locally_path_connected B Tb /\
    semilocally_simply_connected B Tb).
 admit.
-Admitted.
+Qed.
 
 (** from S82 Exercises Exercise 1 (line 5384 in algtop.tex): simply connected implies semilocally simply connected **)
 (** LATEX VERSION: Show that a simply connected space is semilocally simply connected. **)
@@ -68340,8 +68340,8 @@ Admitted.
 (** of: (a) arc, (b) circle, (c) wedge of n circles, (d) complete graph on n vertices? **)
 (** If E is an n-fold covering of X, how are Euler numbers of E and X related? **)
 (** EFFORT: 6 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Charlie 2026-02-18T12:50:00 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem ex83_2_euler_number_examples :
   (** (a) An arc has 2 vertices, 1 edge, so chi = 1 **)
   (forall X Tx Arcs:set,
@@ -68380,7 +68380,7 @@ Theorem ex83_2_euler_number_examples :
     (forall ne:set, ne :e omega -> equip ArcsX ne ->
       equip ArcsE (mul_SNo n ne))).
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** S84 The Fundamental Group of a Graph                         **)
