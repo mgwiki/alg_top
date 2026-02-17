@@ -34147,6 +34147,238 @@ claim Hseg_range : forall t:set, t :e unit_interval ->
 (** Continuity into (A, Ta) - admitted following the same gap as Example_51_1 line 16696 **)
 claim Hseg_cont_A : continuous_map unit_interval unit_interval_topology A Ta seg.
 {
+  set one_minus_t := flip_unit_interval.
+  set id_t := graph unit_interval (fun t:set => t).
+  set const_a0 := const_fun unit_interval a0.
+  set const_a := const_fun unit_interval a.
+  set left_term := compose_fun unit_interval (pair_map unit_interval one_minus_t const_a0) mul_fun_R.
+  set right_term := compose_fun unit_interval (pair_map unit_interval id_t const_a) mul_fun_R.
+  set segR := compose_fun unit_interval (pair_map unit_interval left_term right_term) add_fun_R.
+  claim HoneMinusI :
+    continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology one_minus_t.
+  {
+    exact flip_unit_interval_continuous.
+  }
+  claim HoneMinusR :
+    continuous_map unit_interval unit_interval_topology R R_standard_topology one_minus_t.
+  {
+    exact (continuous_map_range_expand
+      unit_interval
+      unit_interval_topology
+      unit_interval
+      unit_interval_topology
+      R
+      R_standard_topology
+      one_minus_t
+      HoneMinusI
+      unit_interval_sub_R
+      R_standard_topology_is_topology
+      (fun Q H => H)).
+  }
+  claim HidR :
+    continuous_map unit_interval unit_interval_topology R R_standard_topology id_t.
+  {
+    exact unit_interval_inclusion_continuous.
+  }
+  claim HconstA0 :
+    continuous_map unit_interval unit_interval_topology R R_standard_topology const_a0.
+  {
+    exact (const_fun_continuous
+      unit_interval
+      unit_interval_topology
+      R
+      R_standard_topology
+      a0
+      unit_interval_topology_on
+      R_standard_topology_is_topology
+      Ha0R).
+  }
+  claim HconstA :
+    continuous_map unit_interval unit_interval_topology R R_standard_topology const_a.
+  {
+    exact (const_fun_continuous
+      unit_interval
+      unit_interval_topology
+      R
+      R_standard_topology
+      a
+      unit_interval_topology_on
+      R_standard_topology_is_topology
+      HaR).
+  }
+  claim HleftR :
+    continuous_map unit_interval unit_interval_topology R R_standard_topology left_term.
+  {
+    exact (mul_two_continuous_R
+      unit_interval
+      unit_interval_topology
+      one_minus_t
+      const_a0
+      unit_interval_topology_on
+      HoneMinusR
+      HconstA0).
+  }
+  claim HrightR :
+    continuous_map unit_interval unit_interval_topology R R_standard_topology right_term.
+  {
+    exact (mul_two_continuous_R
+      unit_interval
+      unit_interval_topology
+      id_t
+      const_a
+      unit_interval_topology_on
+      HidR
+      HconstA).
+  }
+  claim HsegRcont :
+    continuous_map unit_interval unit_interval_topology R R_standard_topology segR.
+  {
+    exact (add_two_continuous_R
+      unit_interval
+      unit_interval_topology
+      left_term
+      right_term
+      unit_interval_topology_on
+      HleftR
+      HrightR).
+  }
+  claim HsegFunR : function_on seg unit_interval R.
+  {
+    claim HsegTotalR : total_function_on seg unit_interval R.
+    {
+      apply (total_function_on_graph
+        unit_interval
+        R
+        (fun t:set =>
+          add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a0) (mul_SNo t a))).
+      let t.
+      assume Ht.
+      exact (HAsubR
+        (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a0) (mul_SNo t a))
+        (Hseg_range t Ht)).
+    }
+    exact (total_function_on_function_on seg unit_interval R HsegTotalR).
+  }
+  claim HsegEqOn :
+    forall t:set, t :e unit_interval -> apply_fun segR t = apply_fun seg t.
+  {
+    let t.
+    assume Ht.
+    claim HoneValR : apply_fun one_minus_t t :e R.
+    {
+      exact (unit_interval_sub_R
+        (apply_fun one_minus_t t)
+        (flip_unit_interval_function_on t Ht)).
+    }
+    claim HidValR : apply_fun id_t t :e R.
+    {
+      rewrite (apply_fun_graph unit_interval (fun s:set => s) t Ht).
+      exact (unit_interval_sub_R t Ht).
+    }
+    claim HconstA0ValR : apply_fun const_a0 t :e R.
+    {
+      rewrite (const_fun_apply unit_interval a0 t Ht).
+      exact Ha0R.
+    }
+    claim HconstAValR : apply_fun const_a t :e R.
+    {
+      rewrite (const_fun_apply unit_interval a t Ht).
+      exact HaR.
+    }
+    claim HleftValR : apply_fun left_term t :e R.
+    {
+      rewrite (mul_of_pair_map_apply
+        unit_interval
+        one_minus_t
+        const_a0
+        t
+        Ht
+        HoneValR
+        HconstA0ValR).
+      exact (real_mul_SNo
+        (apply_fun one_minus_t t)
+        HoneValR
+        (apply_fun const_a0 t)
+        HconstA0ValR).
+    }
+    claim HrightValR : apply_fun right_term t :e R.
+    {
+      rewrite (mul_of_pair_map_apply
+        unit_interval
+        id_t
+        const_a
+        t
+        Ht
+        HidValR
+        HconstAValR).
+      exact (real_mul_SNo
+        (apply_fun id_t t)
+        HidValR
+        (apply_fun const_a t)
+        HconstAValR).
+    }
+    rewrite (add_of_pair_map_apply
+      unit_interval
+      left_term
+      right_term
+      t
+      Ht
+      HleftValR
+      HrightValR).
+    rewrite (mul_of_pair_map_apply
+      unit_interval
+      one_minus_t
+      const_a0
+      t
+      Ht
+      HoneValR
+      HconstA0ValR).
+    rewrite (mul_of_pair_map_apply
+      unit_interval
+      id_t
+      const_a
+      t
+      Ht
+      HidValR
+      HconstAValR).
+    rewrite (flip_unit_interval_apply t Ht).
+    rewrite (apply_fun_graph unit_interval (fun s:set => s) t Ht).
+    rewrite (const_fun_apply unit_interval a0 t Ht).
+    rewrite (const_fun_apply unit_interval a t Ht).
+    rewrite (apply_fun_graph
+      unit_interval
+      (fun s:set =>
+        add_SNo (mul_SNo (add_SNo 1 (minus_SNo s)) a0) (mul_SNo s a))
+      t
+      Ht).
+    reflexivity.
+  }
+  claim HsegContR :
+    continuous_map unit_interval unit_interval_topology R R_standard_topology seg.
+  {
+    exact (continuous_map_congr_on
+      unit_interval
+      unit_interval_topology
+      R
+      R_standard_topology
+      segR
+      seg
+      HsegRcont
+      HsegFunR
+      HsegEqOn).
+  }
+  claim HsegIntoA : forall t:set, t :e unit_interval -> apply_fun seg t :e A.
+  {
+    let t.
+    assume Ht.
+    rewrite (apply_fun_graph
+      unit_interval
+      (fun s:set =>
+        add_SNo (mul_SNo (add_SNo 1 (minus_SNo s)) a0) (mul_SNo s a))
+      t
+      Ht).
+    exact (Hseg_range t Ht).
+  }
   admit.
 }
 claim Ha0SNo : SNo a0. { exact (real_SNo a0 Ha0R). }
