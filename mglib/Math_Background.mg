@@ -15014,9 +15014,303 @@ claim HFraw_spec :
   (forall t:set, t :e unit_interval ->
     apply_fun Fraw (1, t) = x1).
 {
-  (** TODO Charlie: prove the affine homotopy obligations for Fraw(s,t)=(1-t)f(s)+tg(s):
-      continuity into A (via R and convexity) and the four boundary equations. **)
-  admit.
+  claim HfOnR : forall s:set, s :e unit_interval -> apply_fun f s :e R.
+  {
+    let s.
+    assume Hs.
+    exact (HAsubR (apply_fun f s) (HfOnA s Hs)).
+  }
+  claim HgOnR : forall s:set, s :e unit_interval -> apply_fun g s :e R.
+  {
+    let s.
+    assume Hs.
+    exact (HAsubR (apply_fun g s) (HgOnA s Hs)).
+  }
+  claim HFcontA :
+    continuous_map unit_square unit_square_topology A Ta Fraw.
+  {
+    (** TODO Charlie: continuity of Fraw into A via continuity into R and convex range constraints. **)
+    admit.
+  }
+  claim HFs0 :
+    forall s:set, s :e unit_interval ->
+      apply_fun Fraw (s, 0) = apply_fun f s.
+  {
+    let s.
+    assume Hs.
+    claim Hs0Sq : (s, 0) :e unit_square.
+    {
+      exact (tuple_2_setprod_by_pair_Sigma
+        unit_interval
+        unit_interval
+        s
+        0
+        Hs
+        zero_in_unit_interval).
+    }
+    claim HfsqR : apply_fun f_sq (s, 0) :e R.
+    {
+      rewrite (compose_fun_apply unit_square s_coord f (s, 0) Hs0Sq).
+      rewrite (projection1_apply unit_interval unit_interval (s, 0) Hs0Sq).
+      rewrite tuple_2_0_eq.
+      exact (HfOnR s Hs).
+    }
+    claim HgsqR : apply_fun g_sq (s, 0) :e R.
+    {
+      rewrite (compose_fun_apply unit_square s_coord g (s, 0) Hs0Sq).
+      rewrite (projection1_apply unit_interval unit_interval (s, 0) Hs0Sq).
+      rewrite tuple_2_0_eq.
+      exact (HgOnR s Hs).
+    }
+    claim Homt0R : apply_fun one_minus_t (s, 0) :e R.
+    {
+      rewrite (compose_fun_apply unit_square t_coord flip_unit_interval (s, 0) Hs0Sq).
+      rewrite (projection2_apply unit_interval unit_interval (s, 0) Hs0Sq).
+      rewrite tuple_2_1_eq.
+      rewrite flip_unit_interval_at_0.
+      exact real_1.
+    }
+    claim Ht0R : apply_fun t_coord (s, 0) :e R.
+    {
+      rewrite (projection2_apply unit_interval unit_interval (s, 0) Hs0Sq).
+      rewrite tuple_2_1_eq.
+      exact (unit_interval_sub_R 0 zero_in_unit_interval).
+    }
+    claim HleftR : apply_fun left_term (s, 0) :e R.
+    {
+      rewrite (mul_of_pair_map_apply
+        unit_square
+        f_sq
+        one_minus_t
+        (s, 0)
+        Hs0Sq
+        HfsqR
+        Homt0R).
+      exact (real_mul_SNo
+        (apply_fun f_sq (s, 0))
+        HfsqR
+        (apply_fun one_minus_t (s, 0))
+        Homt0R).
+    }
+    claim HrightR : apply_fun right_term (s, 0) :e R.
+    {
+      rewrite (mul_of_pair_map_apply
+        unit_square
+        g_sq
+        t_coord
+        (s, 0)
+        Hs0Sq
+        HgsqR
+        Ht0R).
+      exact (real_mul_SNo
+        (apply_fun g_sq (s, 0))
+        HgsqR
+        (apply_fun t_coord (s, 0))
+        Ht0R).
+    }
+    rewrite (add_of_pair_map_apply
+      unit_square
+      left_term
+      right_term
+      (s, 0)
+      Hs0Sq
+      HleftR
+      HrightR).
+    rewrite (mul_of_pair_map_apply
+      unit_square
+      f_sq
+      one_minus_t
+      (s, 0)
+      Hs0Sq
+      HfsqR
+      Homt0R).
+    rewrite (compose_fun_apply unit_square s_coord f (s, 0) Hs0Sq).
+    rewrite (projection1_apply unit_interval unit_interval (s, 0) Hs0Sq).
+    rewrite tuple_2_0_eq.
+    rewrite (compose_fun_apply unit_square t_coord flip_unit_interval (s, 0) Hs0Sq).
+    rewrite (projection2_apply unit_interval unit_interval (s, 0) Hs0Sq).
+    rewrite tuple_2_1_eq.
+    rewrite flip_unit_interval_at_0.
+    claim HSNof : SNo (apply_fun f s).
+    {
+      exact (real_SNo (apply_fun f s) (HfOnR s Hs)).
+    }
+    rewrite (mul_SNo_oneR (apply_fun f s) HSNof).
+    rewrite (mul_of_pair_map_apply
+      unit_square
+      g_sq
+      t_coord
+      (s, 0)
+      Hs0Sq
+      HgsqR
+      Ht0R).
+    rewrite (compose_fun_apply unit_square s_coord g (s, 0) Hs0Sq).
+    rewrite (projection1_apply unit_interval unit_interval (s, 0) Hs0Sq).
+    rewrite tuple_2_0_eq.
+    rewrite (projection2_apply unit_interval unit_interval (s, 0) Hs0Sq).
+    rewrite tuple_2_1_eq.
+    claim HSNog : SNo (apply_fun g s).
+    {
+      exact (real_SNo (apply_fun g s) (HgOnR s Hs)).
+    }
+    rewrite (mul_SNo_zeroR (apply_fun g s) HSNog).
+    rewrite (add_SNo_0R (apply_fun f s) HSNof).
+    reflexivity.
+  }
+  claim HFs1 :
+    forall s:set, s :e unit_interval ->
+      apply_fun Fraw (s, 1) = apply_fun g s.
+  {
+    let s.
+    assume Hs.
+    claim Hs1Sq : (s, 1) :e unit_square.
+    {
+      exact (tuple_2_setprod_by_pair_Sigma
+        unit_interval
+        unit_interval
+        s
+        1
+        Hs
+        one_in_unit_interval).
+    }
+    claim HfsqR : apply_fun f_sq (s, 1) :e R.
+    {
+      rewrite (compose_fun_apply unit_square s_coord f (s, 1) Hs1Sq).
+      rewrite (projection1_apply unit_interval unit_interval (s, 1) Hs1Sq).
+      rewrite tuple_2_0_eq.
+      exact (HfOnR s Hs).
+    }
+    claim HgsqR : apply_fun g_sq (s, 1) :e R.
+    {
+      rewrite (compose_fun_apply unit_square s_coord g (s, 1) Hs1Sq).
+      rewrite (projection1_apply unit_interval unit_interval (s, 1) Hs1Sq).
+      rewrite tuple_2_0_eq.
+      exact (HgOnR s Hs).
+    }
+    claim Homt1R : apply_fun one_minus_t (s, 1) :e R.
+    {
+      rewrite (compose_fun_apply unit_square t_coord flip_unit_interval (s, 1) Hs1Sq).
+      rewrite (projection2_apply unit_interval unit_interval (s, 1) Hs1Sq).
+      rewrite tuple_2_1_eq.
+      rewrite flip_unit_interval_at_1.
+      exact real_0.
+    }
+    claim Ht1R : apply_fun t_coord (s, 1) :e R.
+    {
+      rewrite (projection2_apply unit_interval unit_interval (s, 1) Hs1Sq).
+      rewrite tuple_2_1_eq.
+      exact (unit_interval_sub_R 1 one_in_unit_interval).
+    }
+    claim HleftR : apply_fun left_term (s, 1) :e R.
+    {
+      rewrite (mul_of_pair_map_apply
+        unit_square
+        f_sq
+        one_minus_t
+        (s, 1)
+        Hs1Sq
+        HfsqR
+        Homt1R).
+      exact (real_mul_SNo
+        (apply_fun f_sq (s, 1))
+        HfsqR
+        (apply_fun one_minus_t (s, 1))
+        Homt1R).
+    }
+    claim HrightR : apply_fun right_term (s, 1) :e R.
+    {
+      rewrite (mul_of_pair_map_apply
+        unit_square
+        g_sq
+        t_coord
+        (s, 1)
+        Hs1Sq
+        HgsqR
+        Ht1R).
+      exact (real_mul_SNo
+        (apply_fun g_sq (s, 1))
+        HgsqR
+        (apply_fun t_coord (s, 1))
+        Ht1R).
+    }
+    rewrite (add_of_pair_map_apply
+      unit_square
+      left_term
+      right_term
+      (s, 1)
+      Hs1Sq
+      HleftR
+      HrightR).
+    rewrite (mul_of_pair_map_apply
+      unit_square
+      f_sq
+      one_minus_t
+      (s, 1)
+      Hs1Sq
+      HfsqR
+      Homt1R).
+    rewrite (compose_fun_apply unit_square s_coord f (s, 1) Hs1Sq).
+    rewrite (projection1_apply unit_interval unit_interval (s, 1) Hs1Sq).
+    rewrite tuple_2_0_eq.
+    rewrite (compose_fun_apply unit_square t_coord flip_unit_interval (s, 1) Hs1Sq).
+    rewrite (projection2_apply unit_interval unit_interval (s, 1) Hs1Sq).
+    rewrite tuple_2_1_eq.
+    rewrite flip_unit_interval_at_1.
+    claim HSNof : SNo (apply_fun f s).
+    {
+      exact (real_SNo (apply_fun f s) (HfOnR s Hs)).
+    }
+    rewrite (mul_SNo_zeroR (apply_fun f s) HSNof).
+    rewrite (mul_of_pair_map_apply
+      unit_square
+      g_sq
+      t_coord
+      (s, 1)
+      Hs1Sq
+      HgsqR
+      Ht1R).
+    rewrite (compose_fun_apply unit_square s_coord g (s, 1) Hs1Sq).
+    rewrite (projection1_apply unit_interval unit_interval (s, 1) Hs1Sq).
+    rewrite tuple_2_0_eq.
+    rewrite (projection2_apply unit_interval unit_interval (s, 1) Hs1Sq).
+    rewrite tuple_2_1_eq.
+    claim HSNog : SNo (apply_fun g s).
+    {
+      exact (real_SNo (apply_fun g s) (HgOnR s Hs)).
+    }
+    rewrite (mul_SNo_oneR (apply_fun g s) HSNog).
+    rewrite (add_SNo_0L (apply_fun g s) HSNog).
+    reflexivity.
+  }
+  claim HF0t :
+    forall t:set, t :e unit_interval ->
+      apply_fun Fraw (0, t) = x0.
+  {
+    (** TODO Charlie: left boundary Fraw(0,t)=x0 via endpoint substitutions and real-ring algebra. **)
+    admit.
+  }
+  claim HF1t :
+    forall t:set, t :e unit_interval ->
+      apply_fun Fraw (1, t) = x1.
+  {
+    (** TODO Charlie: right boundary Fraw(1,t)=x1 via endpoint substitutions and real-ring algebra. **)
+    admit.
+  }
+  exact (and5I
+    (continuous_map unit_square unit_square_topology A Ta Fraw)
+    (forall s:set, s :e unit_interval ->
+      apply_fun Fraw (s, 0) = apply_fun f s)
+    (forall s:set, s :e unit_interval ->
+      apply_fun Fraw (s, 1) = apply_fun g s)
+    (forall t:set, t :e unit_interval ->
+      apply_fun Fraw (0, t) = x0)
+    (forall t:set, t :e unit_interval ->
+      apply_fun Fraw (1, t) = x1)
+    HFcontA
+    HFs0
+    HFs1
+    HF0t
+    HF1t).
 }
 claim HexistsF :
   exists F:set,
