@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 14084 **)
+(** Balance Charlie 13723 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -63981,7 +63981,8 @@ Admitted.
 (** Let p in S^1, a = h(p), k = h|S^1. Then i_star: pi1(A,a) -> pi1(X,a) is **)
 (** surjective with kernel = least normal subgroup containing image of k_star. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 500 **)
-(** Bounty 500 **)
+(** Bounty 550 **)
+(** Lock Charlie 2026-02-18T11:36:01 **)
 Theorem thm72_1_adjoining_two_cell :
   forall X Tx A h p:set,
   Hausdorff_space X Tx ->
@@ -64025,7 +64026,8 @@ Admitted.
 (** LATEX VERSION: If G is a finitely presented group, then there is a compact **)
 (** Hausdorff space X whose fundamental group is isomorphic to G. **)
 (** EFFORT: 15 lines textbook, difficulty 7/10, USD 300 **)
-(** Bounty 300 **)
+(** Bounty 330 **)
+(** Lock Charlie 2026-02-18T11:36:01 **)
 Theorem ex72_2_finitely_presented_realized :
   forall G multG eG invG:set,
   finitely_presented G multG eG invG ->
@@ -64378,7 +64380,8 @@ Admitted.
 (** the quotient of the free group on k generators alpha1,...,alphak by the **)
 (** least normal subgroup containing (alpha_{i1})^{e1}...(alpha_{in})^{en}. **)
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 400 **)
-(** Bounty 400 **)
+(** Bounty 440 **)
+(** Lock Charlie 2026-02-18T11:36:01 **)
 Theorem thm74_2_pi1_from_labelling_scheme :
   forall n w:set,
   labelling_scheme n w ->
@@ -65313,7 +65316,8 @@ Admitted.
 (** either to S^2, to the n-fold torus T_n, or to the m-fold projective **)
 (** plane P_m. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 420 **)
-(** Bounty 420 **)
+(** Bounty 462 **)
+(** Lock Charlie 2026-02-18T11:36:01 **)
 Theorem thm77_5_classification_of_surfaces :
   forall n w:set,
   proper_labelling_scheme n w ->
@@ -65486,7 +65490,8 @@ Qed.
 (** then X is homeomorphic to a space obtained from a polygonal **)
 (** region by pasting edges together in pairs. **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 240 **)
-(** Bounty 240 **)
+(** Bounty 264 **)
+(** Lock Charlie 2026-02-18T11:36:01 **)
 Theorem thm78_2_compact_surface_polygon_quotient :
   forall X Tx:set,
   topology_on X Tx ->
@@ -65534,7 +65539,8 @@ Definition manifold_boundary : set -> set -> set :=
 (** such that partial Y has k components, then Y is homeomorphic to X-with-k-holes, **)
 (** where X is either S^2 or the n-fold torus T_n or the m-fold projective plane P_m. **)
 (** EFFORT: 15 lines textbook, difficulty 7/10, USD 300 **)
-(** Bounty 300 **)
+(** Bounty 330 **)
+(** Lock Charlie 2026-02-18T11:36:01 **)
 Theorem ex76_4_two_manifold_with_boundary_classification :
   forall Y Ty:set,
   two_manifold_with_boundary Y Ty ->
@@ -66051,7 +66057,8 @@ Admitted.
 (** from S80 Lemma 80.2b (line 4965 in algtop.tex): if p and q covering, so is r **)
 (** LATEX VERSION: (b) If p and q are covering maps, so is r. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 280 **)
-(** Bounty 280 **)
+(** Bounty 308 **)
+(** Lock Charlie 2026-02-18T11:36:01 **)
 Theorem lemma80_2b_covering_composition :
   forall X Tx Y Ty Z Tz q r:set,
   path_connected_space X Tx -> locally_path_connected X Tx ->
@@ -66114,7 +66121,8 @@ Admitted.
 (** multiplication on Gtilde making it a topological group with identity etilde **)
 (** such that p is a homomorphism. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 400 **)
-(** Bounty 400 **)
+(** Bounty 440 **)
+(** Lock Charlie 2026-02-18T11:36:01 **)
 Theorem ex79_6_topological_group_covering_lift :
   forall G Tg multG eG invG:set,
   topological_group G Tg ->
@@ -66398,7 +66406,8 @@ Definition properly_discontinuous : set -> set -> set -> set -> prop :=
 (** iff the action of G is properly discontinuous. In this case, pi is regular **)
 (** and G is its group of covering transformations. **)
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
-(** Bounty 350 **)
+(** Bounty 385 **)
+(** Lock Charlie 2026-02-18T11:36:01 **)
 Theorem thm81_5_properly_discontinuous_covering :
   forall X Tx G idG:set,
   path_connected_space X Tx -> locally_path_connected X Tx ->
@@ -66935,7 +66944,8 @@ Admitted.
 (** then p maps B homeomorphically onto A_alpha. Furthermore, E is a linear graph **)
 (** with path components of p^{-1}(A_alpha) as its edges. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 420 **)
-(** Bounty 420 **)
+(** Bounty 462 **)
+(** Lock Charlie 2026-02-18T11:36:01 **)
 Theorem thm83_4_covering_of_graph_is_graph :
   forall X Tx Arcs E Te p:set,
   general_linear_graph X Tx Arcs ->
