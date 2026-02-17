@@ -52048,6 +52048,46 @@ Definition homotopy_lift : set -> set -> set -> set -> set -> set -> set -> set 
       (forall s t:set, s :e unit_interval -> t :e unit_interval ->
         apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t))).
 
+(** Infrastructure: Eps-selected homotopy_lift satisfies the package once a witness exists **)
+(** Proven Charlie **)
+Theorem homotopy_lift_from_exists_witness : forall E Te B Tb p e0 F:set,
+  (exists Ft:set,
+    continuous_map unit_square unit_square_topology E Te Ft /\
+    apply_fun Ft (0, 0) = e0 /\
+    (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+      apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t))) ->
+  continuous_map unit_square unit_square_topology E Te (homotopy_lift E Te B Tb p e0 F) /\
+  apply_fun (homotopy_lift E Te B Tb p e0 F) (0, 0) = e0 /\
+  (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun (homotopy_lift E Te B Tb p e0 F) (s, t)) = apply_fun F (s, t)).
+let E Te B Tb p e0 F.
+assume Hex.
+apply Hex.
+let Ft.
+assume HFt.
+exact (Eps_i_ax
+  (fun G:set =>
+    continuous_map unit_square unit_square_topology E Te G /\
+    apply_fun G (0, 0) = e0 /\
+    (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+      apply_fun p (apply_fun G (s, t)) = apply_fun F (s, t)))
+  Ft
+  HFt).
+Qed.
+
+(** Infrastructure: existence package for homotopy lifting in Lemma 54.2 **)
+Theorem lemma54_2_homotopy_lifting_exists : forall E Te B Tb p e0 F:set,
+  covering_map E Te B Tb p ->
+  e0 :e E -> apply_fun p e0 = apply_fun F (0, 0) ->
+  continuous_map unit_square unit_square_topology B Tb F ->
+  exists Ft:set,
+    continuous_map unit_square unit_square_topology E Te Ft /\
+    apply_fun Ft (0, 0) = e0 /\
+    (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+      apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t)).
+admit.
+Admitted.
+
 (** from S54 Lemma 54.2 (line 730 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map; p(e0) = b0. Let F: I x I -> B be **)
 (** continuous with F(0,0) = b0. There is a unique lifting F_tilde: I x I -> E with **)
@@ -52063,7 +52103,39 @@ Theorem lemma54_2_homotopy_lifting : forall E Te B Tb p e0 F:set,
   apply_fun (homotopy_lift E Te B Tb p e0 F) (0, 0) = e0 /\
   (forall s t:set, s :e unit_interval -> t :e unit_interval ->
     apply_fun p (apply_fun (homotopy_lift E Te B Tb p e0 F) (s, t)) = apply_fun F (s, t)).
-admit.
+let E Te B Tb p e0 F.
+assume Hcov He0 Hstart HFcont.
+claim Hex :
+  exists Ft:set,
+    continuous_map unit_square unit_square_topology E Te Ft /\
+    apply_fun Ft (0, 0) = e0 /\
+    (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+      apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t)).
+{
+  (** TODO Charlie: prove full homotopy lifting existence/compatibility package. **)
+  (** This is the remaining hard part of Lemma 54.2 and should reuse Lemma 54.1 lifts plus uniqueness gluing. **)
+  exact (lemma54_2_homotopy_lifting_exists
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    F
+    Hcov
+    He0
+    Hstart
+    HFcont).
+}
+exact (homotopy_lift_from_exists_witness
+  E
+  Te
+  B
+  Tb
+  p
+  e0
+  F
+  Hex).
 Admitted.
 
 (** from S54 Lemma 54.2 path homotopy preservation (line 783 in algtop.tex) **)
