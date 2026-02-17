@@ -63911,7 +63911,41 @@ claim Halpha1 : apply_fun alpha 1 = x1.
     alpha
     HalphaPath).
 }
-admit.
+claim HinjIfCont :
+  topology_on X Tx ->
+  continuous_map unit_interval unit_interval_topology X Tx alpha ->
+  a = b.
+{
+  assume HtopX HalphaCont.
+  claim Hbij :
+    bijection
+      (fundamental_group X Tx x0)
+      (fundamental_group X Tx x1)
+      (basepoint_change_map X Tx x0 x1 alpha).
+  {
+    exact (lemma52_1_basepoint_change_bijection
+      X
+      Tx
+      x0
+      x1
+      alpha
+      HtopX
+      HalphaCont
+      Halpha0
+      Halpha1).
+  }
+  exact (bijection_inj
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x1)
+    (basepoint_change_map X Tx x0 x1 alpha)
+    a
+    b
+    Hbij
+    Ha
+    Hb
+    Hab).
+}
+admit. (** remaining gap: obtain topology/continuity assumptions from current hypotheses **)
 Admitted.
 
 (** helper sub-bounty for Cor 58.5: alpha-hat is surjective **)
@@ -63952,7 +63986,39 @@ claim Halpha1 : apply_fun alpha 1 = x1.
     alpha
     HalphaPath).
 }
-admit.
+claim HsurjIfCont :
+  topology_on X Tx ->
+  continuous_map unit_interval unit_interval_topology X Tx alpha ->
+  exists a:set, a :e fundamental_group X Tx x0 /\
+    apply_fun (basepoint_change_map X Tx x0 x1 alpha) a = c.
+{
+  assume HtopX HalphaCont.
+  claim Hbij :
+    bijection
+      (fundamental_group X Tx x0)
+      (fundamental_group X Tx x1)
+      (basepoint_change_map X Tx x0 x1 alpha).
+  {
+    exact (lemma52_1_basepoint_change_bijection
+      X
+      Tx
+      x0
+      x1
+      alpha
+      HtopX
+      HalphaCont
+      Halpha0
+      Halpha1).
+  }
+  exact (bijection_surj
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x1)
+    (basepoint_change_map X Tx x0 x1 alpha)
+    c
+    Hbij
+    Hc).
+}
+admit. (** remaining gap: obtain topology/continuity assumptions from current hypotheses **)
 Admitted.
 
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 30 **)
