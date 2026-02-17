@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 2048 **)
+(** Balance Charlie 2046 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -55811,7 +55811,8 @@ Qed.
 
 (** helper sub-bounty for Corollary 58.5: alpha-hat is injective **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
-(** Bounty 8 **)
+(** Bounty 9 **)
+(** Lock Charlie 2026-02-18T10:58:00 **)
 Theorem lemma58_sub_basepoint_change_injective : forall X Tx x0 x1 alpha a b:set,
   path_between X x0 x1 alpha ->
   a :e fundamental_group X Tx x0 ->
@@ -55853,7 +55854,8 @@ Admitted.
 
 (** helper sub-bounty for Corollary 58.5: alpha-hat is surjective **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
-(** Bounty 8 **)
+(** Bounty 9 **)
+(** Lock Charlie 2026-02-18T10:58:00 **)
 Theorem lemma58_sub_basepoint_change_surjective : forall X Tx x0 x1 alpha c:set,
   path_between X x0 x1 alpha ->
   c :e fundamental_group X Tx x1 ->
