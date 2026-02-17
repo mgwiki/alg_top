@@ -1,6 +1,6 @@
 (** Balance Alice 3165 **)
 (** Balance Bob 3000 **)
-(** Balance Charlie 1000 **)
+(** Balance Charlie 1061 **)
 (** Balance Dave 1000 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -76456,8 +76456,8 @@ Admitted.
 (** LATEX VERSION: If X is Hausdorff and G is a finite group of homeomorphisms **)
 (** whose action is fixed-point free, then the action is properly discontinuous. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 61 **)
-(** Lock Charlie 1771382700 **)
+(** Collected Charlie 61 **)
+(** Proven Charlie **)
 Theorem ex81_4_finite_fixed_point_free :
   forall X Tx G idG:set,
   Hausdorff_space X Tx ->
@@ -76892,7 +76892,7 @@ apply andI.
       HgNe).
 }
 exact HpropDisc.
-Admitted.
+Qed.
 
 (** from S81 Exercise 5 (line 5204 in algtop.tex) **)
 (** LATEX VERSION: Consider S^3 as pairs (z1,z2) in C^2 with |z1|^2+|z2|^2=1. **)
