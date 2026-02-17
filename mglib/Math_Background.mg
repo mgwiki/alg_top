@@ -36646,6 +36646,103 @@ Theorem ex52_3_helper_unique_to_abelian_step : forall X Tx x0 a b:set,
   apply_fun (fundamental_group_mult X Tx x0) (b, a).
 let X Tx x0 a b.
 assume Hpc Hx0 Huniq Ha Hb.
+claim HtopX : topology_on X Tx.
+{
+  exact (path_connected_space_topology X Tx Hpc).
+}
+set alpha_loop := Eps_i (fun f:set => f :e a).
+claim HalphaLoop : alpha_loop :e loop_space X Tx x0.
+{
+  exact (eps_of_fundamental_group_member_in_loop_space_s52
+    X
+    Tx
+    x0
+    a
+    Ha).
+}
+claim HalphaLoopAt : loop_at X Tx x0 alpha_loop.
+{
+  exact (loop_space_has_loop_at
+    X
+    Tx
+    x0
+    alpha_loop
+    HalphaLoop).
+}
+claim HalphaCont :
+  continuous_map unit_interval unit_interval_topology X Tx alpha_loop.
+{
+  exact (loop_at_continuous
+    X
+    Tx
+    x0
+    alpha_loop
+    HalphaLoopAt).
+}
+claim Halpha0 : apply_fun alpha_loop 0 = x0.
+{
+  exact (loop_at_at_zero
+    X
+    Tx
+    x0
+    alpha_loop
+    HalphaLoopAt).
+}
+claim Halpha1 : apply_fun alpha_loop 1 = x0.
+{
+  exact (loop_at_at_one
+    X
+    Tx
+    x0
+    alpha_loop
+    HalphaLoopAt).
+}
+claim HconstCont :
+  continuous_map unit_interval unit_interval_topology X Tx (constant_path x0).
+{
+  exact (constant_path_continuous
+    X
+    Tx
+    x0
+    HtopX
+    Hx0).
+}
+claim Hconst0 : apply_fun (constant_path x0) 0 = x0.
+{
+  exact (constant_path_at_zero x0).
+}
+claim Hconst1 : apply_fun (constant_path x0) 1 = x0.
+{
+  exact (constant_path_at_one x0).
+}
+claim HuniqAtx0 :
+  forall cls:set, cls :e fundamental_group X Tx x0 ->
+    apply_fun (basepoint_change_map X Tx x0 x0 alpha_loop) cls
+    = apply_fun (basepoint_change_map X Tx x0 x0 (constant_path x0)) cls.
+{
+  let cls.
+  assume Hcls.
+  exact (Huniq
+    x0
+    alpha_loop
+    (constant_path x0)
+    Hx0
+    HalphaCont
+    HconstCont
+    Halpha0
+    Halpha1
+    Hconst0
+    Hconst1
+    cls
+    Hcls).
+}
+claim HconjEqIdOnB :
+  apply_fun (basepoint_change_map X Tx x0 x0 alpha_loop) b
+  = apply_fun (basepoint_change_map X Tx x0 x0 (constant_path x0)) b.
+{
+  exact (HuniqAtx0 b Hb).
+}
+(** TODO Charlie: turn HconjEqIdOnB into ab=ba via explicit conjugation on pi1(X,x0). **)
 admit.
 Admitted.
 
