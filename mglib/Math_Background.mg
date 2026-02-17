@@ -27555,8 +27555,21 @@ claim Ha0A : a0 :e A.
 }
 claim HpcA : path_connected_space A Ta.
 {
-  (** TODO Bob: build explicit piecewise-linear path between arbitrary points of A using star-convexity at a0. **)
-  admit.
+  claim Hpaths :
+    forall x y:set, x :e A -> y :e A ->
+      exists p:set, path_between A x y p /\
+        continuous_map unit_interval unit_interval_topology A Ta p.
+  {
+    (** TODO Bob: use star-convexity at a0 to join x to a0 and a0 to y, then concatenate. **)
+    admit.
+  }
+  exact (andI
+    (topology_on A Ta)
+    (forall x y:set, x :e A -> y :e A ->
+      exists p:set, path_between A x y p /\
+        continuous_map unit_interval unit_interval_topology A Ta p)
+    HtopA
+    Hpaths).
 }
 claim Hpi1Trivial :
   fundamental_group A Ta a0 = {fundamental_group_id A Ta a0}.
