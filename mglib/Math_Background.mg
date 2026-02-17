@@ -1,5 +1,5 @@
 (** Balance Alice 2410 **)
-(** Balance Bob 2139 **)
+(** Balance Bob 2395 **)
 (** Balance Charlie 1188 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -27119,8 +27119,8 @@ exact (andI
   HsurjUnique).
 Admitted.
 
-(** Bounty 110 **)
-(** Lock Bob 2026-02-18T02:30:00 **)
+(** Collected Bob 110 **)
+(** Proven Bob **)
 Theorem Theorem_52_1_basepoint_isomorphism : forall X Tx x0 x1 alpha:set,
   topology_on X Tx ->
   continuous_map unit_interval unit_interval_topology X Tx alpha ->
@@ -27160,13 +27160,13 @@ exact (andI
     HalphaCont
     Halpha0
     Halpha1)).
-Admitted.
+Qed.
 
 (** from S52 Corollary 52.2 (line 418 in algtop.tex) **)
 (** LATEX VERSION: If X is path connected and x0, x1 are two points of X, then pi1(X,x0) is isomorphic to pi1(X,x1). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 20 **)
-(** Bounty 25 **)
-(** Lock Bob 2026-02-18T01:09:18 **)
+(** Collected Bob 25 **)
+(** Proven Bob **)
 Theorem Corollary_52_2_path_connected_pi1_isomorphic : forall X Tx x0 x1:set,
   path_connected_space X Tx -> x0 :e X -> x1 :e X ->
   exists phi:set,
@@ -27185,7 +27185,7 @@ apply (Theorem_52_1_basepoint_isomorphism X Tx x0 x1 alpha).
 - exact (path_witness_continuous X Tx x0 x1 alpha Halpha).
 - exact (path_between_at_zero X x0 x1 alpha (path_witness_between X Tx x0 x1 alpha Halpha)).
 - exact (path_between_at_one X x0 x1 alpha (path_witness_between X Tx x0 x1 alpha Halpha)).
-Admitted.
+Qed.
 
 (** from S52 Definition (line 426 in algtop.tex): simply connected spaces **)
 (** LATEX VERSION: A space X is simply connected if it is path connected and pi1(X,x0) is the trivial group for some (hence every) x0. **)
@@ -27197,8 +27197,8 @@ Definition simply_connected : set -> set -> prop := fun X Tx =>
 (** from S52 Lemma 52.3 (line 428 in algtop.tex) **)
 (** LATEX VERSION: In a simply connected space X, any two paths having the same initial and final points are path homotopic. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Bob 2026-02-18T05:50:00 **)
+(** Collected Bob 55 **)
+(** Proven Bob **)
 Theorem Lemma_52_3_simply_connected_unique_homotopy : forall X Tx x0 x1 f g:set,
   simply_connected X Tx ->
   continuous_map unit_interval unit_interval_topology X Tx f ->
@@ -28032,7 +28032,7 @@ exact (Lemma_51_1_path_homotopy_trans
   g
   HFToHg
   HHgToG).
-Admitted.
+Qed.
 
 (** from S52 Definition (line 446 in algtop.tex): the induced homomorphism **)
 (** LATEX VERSION: Let h: (X,x0) -> (Y,y0) be continuous. Define h-star: pi1(X,x0) -> pi1(Y,y0) by h-star([f]) = [h o f]. **)
@@ -30536,8 +30536,8 @@ Qed.
 (** from S52 Exercise 2 (line 497 in algtop.tex) **)
 (** LATEX VERSION: If gamma = alpha . beta, then gamma-hat = beta-hat o alpha-hat. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 66 **)
-(** Lock Bob 2026-02-18T05:45:00 **)
+(** Collected Bob 66 **)
+(** Proven Bob **)
 Theorem ex52_2_basepoint_composition : forall X Tx x0 x1 x2 alpha beta:set,
   topology_on X Tx ->
   continuous_map unit_interval unit_interval_topology X Tx alpha ->
@@ -31663,7 +31663,7 @@ claim HfinalClass :
     HfinalHom).
 }
 exact HfinalClass.
-Admitted.
+Qed.
 
 (** S52 helper: conjugation-step equalities used in Exercise 3 abelian => uniqueness direction **)
 Theorem ex52_3_helper_conj_pair : forall X Tx x0 x1 alpha beta cls delta_cls:set,
