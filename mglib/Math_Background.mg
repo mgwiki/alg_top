@@ -1,6 +1,5 @@
 (** Balance Alice 2135 **)
-(** Balance Bob 2037 **)
-(** Balance Bob 2028 **)
+(** Balance Bob 2025 **)
 (** Balance Charlie 1223 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -33511,7 +33510,8 @@ Admitted.
 (** from S58 Exercise 6 (line 1495 in algtop.tex) **)
 (** LATEX VERSION: A retract of a contractible space is contractible. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Bob 2026-02-18T02:45:00 **)
 Theorem ex58_6_retract_of_contractible : forall X Tx A:set,
   topology_on X Tx ->
   contractible_space X Tx ->
