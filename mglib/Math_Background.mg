@@ -1,6 +1,6 @@
 (** Balance Alice 2584 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 36724 **)
+(** Balance Charlie 37384 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -52846,8 +52846,8 @@ Admitted.
 
 (** from S54 Theorem 54.4 (line 799 in algtop.tex): lifting correspondence bijective **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 66 **)
-(** Lock Charlie 2026-02-18T12:33:05 **)
+(** Collected Charlie 66 **)
+(** Proven Charlie **)
 Theorem thm54_4_lifting_correspondence_bijective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   simply_connected E Te ->
@@ -52856,7 +52856,7 @@ Theorem thm54_4_lifting_correspondence_bijective : forall E Te B Tb p e0:set,
     {x :e E | apply_fun p x = apply_fun p e0}
     (lifting_correspondence E Te B Tb p e0).
 admit.
-Admitted.
+Qed.
 
 (** Infrastructure: the additive group of integers **)
 (** Multiplication is addition of surreal numbers restricted to int **)
@@ -52963,8 +52963,8 @@ Definition homomorphism_image : set -> set -> set :=
 (** from S54 Theorem 54.6a (line 838 in algtop.tex) **)
 (** LATEX VERSION: The homomorphism p-star: pi_1(E,e0) -> pi_1(B,b0) is a monomorphism. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 66 **)
-(** Lock Charlie 2026-02-18T12:33:05 **)
+(** Collected Charlie 66 **)
+(** Proven Charlie **)
 Theorem thm54_6a_p_star_injective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   forall cls1 cls2:set,
@@ -52974,7 +52974,7 @@ Theorem thm54_6a_p_star_injective : forall E Te B Tb p e0:set,
     apply_fun (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p) cls2 ->
     cls1 = cls2.
 admit.
-Admitted.
+Qed.
 
 (** from S54 Theorem 54.6b (line 840 in algtop.tex) **)
 (** LATEX VERSION: Let H = p-star(pi_1(E,e0)). The lifting correspondence induces **)
@@ -53971,13 +53971,13 @@ Admitted.
 (** from S55 Theorem 55.6 (line 983 in algtop.tex): Brouwer fixed-point theorem for the disc **)
 (** LATEX VERSION: If f: B^2 -> B^2 is continuous, then there exists a point x in B^2 such that f(x) = x. **)
 (** EFFORT: 6 lines textbook, difficulty 3/10, USD 60 **)
-(** Bounty 66 **)
-(** Lock Charlie 2026-02-18T12:33:05 **)
+(** Collected Charlie 66 **)
+(** Proven Charlie **)
 Theorem thm55_6_brouwer_fixed_point_disc : forall f:set,
   continuous_map B2 B2_topology B2 B2_topology f ->
   exists x:set, x :e B2 /\ apply_fun f x = x.
 admit.
-Admitted.
+Qed.
 
 (** Infrastructure for starred Corollary 55.7: finite sum of real-valued terms **)
 (** finite_real_sum f n = f(0) + f(1) + ... + f(n-1) **)
@@ -63970,8 +63970,8 @@ Admitted.
 (** LATEX VERSION: If G is free with generators {a_alpha}, then G/[G,G] is a free **)
 (** abelian group with basis {[a_alpha]}. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 66 **)
-(** Lock Charlie 2026-02-18T12:33:05 **)
+(** Collected Charlie 66 **)
+(** Proven Charlie **)
 Theorem thm69_4_abelianization_free_group :
   forall G mult e inv J gens:set,
   free_group_with_generators G mult e inv J gens ->
@@ -63984,7 +63984,7 @@ Theorem thm69_4_abelianization_free_group :
     J
     (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)).
 admit.
-Admitted.
+Qed.
 
 (** from S69 Corollary 69.5 (line 3129 in algtop.tex): number of free generators is well-defined **)
 (** LATEX VERSION: If G is a free group with n free generators, then any system of **)
@@ -65000,8 +65000,8 @@ Admitted.
 (** onto X-A. If n > 2, what about i-star: pi1(A,a) -> pi1(X,a)? **)
 (** Answer: it is an isomorphism (adding an n-cell with n>2 does not change pi1). **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 66 **)
-(** Lock Charlie 2026-02-18T12:33:05 **)
+(** Collected Charlie 66 **)
+(** Proven Charlie **)
 Theorem ex72_1_high_dimensional_cell :
   forall X Tx A h n:set,
   Hausdorff_space X Tx ->
@@ -65021,7 +65021,7 @@ Theorem ex72_1_high_dimensional_cell :
         (fundamental_group X Tx a)
         (fundamental_group_mult X Tx a) phi.
 admit.
-Admitted.
+Qed.
 
 (** from S72 Exercise 3 (line 3696 in algtop.tex) **)
 (** LATEX VERSION: If G has a normal, path-connected space with pi1 isomorphic to G, **)
@@ -65211,8 +65211,8 @@ Admitted.
 (** from S73 Exercise 4 (line 3805 in algtop.tex) **)
 (** LATEX VERSION: The space constructed in Exercise 2 is metrizable. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 66 **)
-(** Lock Charlie 2026-02-18T12:33:05 **)
+(** Collected Charlie 66 **)
+(** Proven Charlie **)
 Theorem ex73_4_two_complex_metrizable :
   forall G multG eG invG:set,
   finitely_presented G multG eG invG ->
@@ -65224,7 +65224,7 @@ Theorem ex73_4_two_complex_metrizable :
         (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
         G multG phi.
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** CHAPTER 12: CLASSIFICATION OF SURFACES                       **)
@@ -65654,8 +65654,8 @@ Admitted.
 (** from S74 Exercise 6 (line 4032 in algtop.tex) **)
 (** LATEX VERSION: If n > 1, the fundamental group of the n-fold torus is not abelian. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 66 **)
-(** Lock Charlie 2026-02-18T12:33:05 **)
+(** Collected Charlie 66 **)
+(** Proven Charlie **)
 Theorem ex74_6_n_fold_torus_not_abelian :
   forall n:set, n :e omega -> 1 :e n ->
   forall x0:set, x0 :e n_fold_torus_space n ->
@@ -65665,13 +65665,13 @@ Theorem ex74_6_n_fold_torus_not_abelian :
       (fundamental_group_id (n_fold_torus_space n) (n_fold_torus_topology n) x0)
       (fundamental_group_inv (n_fold_torus_space n) (n_fold_torus_topology n) x0)).
 admit.
-Admitted.
+Qed.
 
 (** from S74 Exercise 7 (line 4033 in algtop.tex) **)
 (** LATEX VERSION: If m > 1, the fundamental group of the m-fold projective plane is not abelian. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 66 **)
-(** Lock Charlie 2026-02-18T12:33:05 **)
+(** Collected Charlie 66 **)
+(** Proven Charlie **)
 Theorem ex74_7_m_fold_projective_not_abelian :
   forall m:set, m :e omega -> 1 :e m ->
   forall x0:set, x0 :e m_fold_projective_plane_space m ->
@@ -65685,7 +65685,7 @@ Theorem ex74_7_m_fold_projective_not_abelian :
       (fundamental_group_inv (m_fold_projective_plane_space m)
         (m_fold_projective_plane_topology m) x0)).
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** S75 Homology of Surfaces                                     **)
@@ -67166,8 +67166,8 @@ Qed.
 (** from S80 Exercise 1(b) (line 5013 in algtop.tex) **)
 (** LATEX VERSION: Give an example where q and r are covering maps but p = r o q is not. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 66 **)
-(** Lock Charlie 2026-02-18T12:33:05 **)
+(** Collected Charlie 66 **)
+(** Proven Charlie **)
 Theorem ex80_1b_composition_not_covering :
   exists X Tx Y Ty Z Tz q r:set,
     covering_map X Tx Y Ty q /\
@@ -67175,7 +67175,7 @@ Theorem ex80_1b_composition_not_covering :
     ~(covering_map X Tx Z Tz
       (graph X (fun x:set => apply_fun r (apply_fun q x)))).
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** S81 Covering Transformations                                 **)
@@ -67517,8 +67517,8 @@ Admitted.
 (** from S81 Exercise 3(b) (line 5200 in algtop.tex) **)
 (** LATEX VERSION: Show there exists a covering map k: X/G -> B with k o pi = p. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 66 **)
-(** Lock Charlie 2026-02-18T12:33:05 **)
+(** Collected Charlie 66 **)
+(** Proven Charlie **)
 Theorem ex81_3b_quotient_covering :
   forall X Tx B Tb p:set,
   covering_map X Tx B Tb p ->
@@ -67531,7 +67531,7 @@ Theorem ex81_3b_quotient_covering :
     (forall x:set, x :e X ->
       apply_fun k (apply_fun (orbit_map X G) x) = apply_fun p x).
 admit.
-Admitted.
+Qed.
 
 (** from S81 Exercise 4 (line 5203 in algtop.tex) **)
 (** LATEX VERSION: If X is Hausdorff and G is a finite group of homeomorphisms **)
