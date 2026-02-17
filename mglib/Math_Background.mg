@@ -56934,7 +56934,7 @@ claim HhEq :
     HalphaEq).
 }
 exact (HhInj cls1 cls2 Hcls1 Hcls2 HhEq).
-Admitted.
+Qed.
 
 (** from S58 Corollary 58.5 surjective case (line 1423 in algtop.tex) **)
 (** LATEX VERSION: Let h, k: X -> Y be homotopic. If h-star is surjective, so is k-star. **)
@@ -57075,7 +57075,7 @@ apply andI.
   rewrite HkEqAlpha.
   rewrite HhEqd.
   exact HdEq.
-Admitted.
+Qed.
 
 (** from S58 Corollary 58.5 trivial case (line 1423 in algtop.tex) **)
 (** LATEX VERSION: Let h, k: X -> Y be homotopic. If h-star is trivial, so is k-star. **)
@@ -57174,7 +57174,7 @@ claim Hdesired_cls :
   exact HbaseId.
 }
 exact Hdesired_cls.
-Admitted.
+Qed.
 
 (** helper: a constant map induces the trivial map on fundamental groups **)
 (** Proven Bob **)
