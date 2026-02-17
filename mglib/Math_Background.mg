@@ -29216,6 +29216,126 @@ claim Hex :
       + exact HlocalLiftN0.
     - exact HlocalLiftN_comm.
   }
+  claim HNsubI : N c= unit_interval.
+  {
+    exact (topology_elem_subset
+      unit_interval
+      unit_interval_topology
+      N
+      unit_interval_topology_on
+      HNopen).
+  }
+  claim HfcontN_B :
+    continuous_map N (subspace_topology unit_interval unit_interval_topology N) B Tb f.
+  {
+    exact (continuous_on_subspace
+      unit_interval
+      unit_interval_topology
+      B
+      Tb
+      f
+      N
+      unit_interval_topology_on
+      HNsubI
+      Hfcont).
+  }
+  claim HtopB : topology_on B Tb.
+  {
+    exact (continuous_map_topology_cod
+      unit_interval
+      unit_interval_topology
+      B
+      Tb
+      f
+      Hfcont).
+  }
+  claim HUsubB : U c= B.
+  {
+    exact (topology_elem_subset
+      B
+      Tb
+      U
+      HtopB
+      HUopen).
+  }
+  claim HfcontN_U :
+    continuous_map N (subspace_topology unit_interval unit_interval_topology N) U (subspace_topology B Tb U) f.
+  {
+    exact (continuous_map_range_restrict
+      N
+      (subspace_topology unit_interval unit_interval_topology N)
+      B
+      Tb
+      f
+      U
+      HfcontN_B
+      HUsubB
+      HNmap).
+  }
+  set local_lift_Nc := compose_fun N f g0.
+  claim HlocalLiftNc_contV0 :
+    continuous_map N (subspace_topology unit_interval unit_interval_topology N)
+      V0 (subspace_topology E Te V0) local_lift_Nc.
+  {
+    exact (composition_continuous
+      N
+      (subspace_topology unit_interval unit_interval_topology N)
+      U
+      (subspace_topology B Tb U)
+      V0
+      (subspace_topology E Te V0)
+      f
+      g0
+      HfcontN_U
+      Hg0cont).
+  }
+  claim HlocalLiftNc_contE :
+    continuous_map N (subspace_topology unit_interval unit_interval_topology N)
+      E Te local_lift_Nc.
+  {
+    claim HV0TyEq : subspace_topology E Te V0 = subspace_topology E Te V0.
+    {
+      reflexivity.
+    }
+    exact (continuous_map_range_expand
+      N
+      (subspace_topology unit_interval unit_interval_topology N)
+      V0
+      (subspace_topology E Te V0)
+      E
+      Te
+      local_lift_Nc
+      HlocalLiftNc_contV0
+      HV0subE
+      HtopE
+      HV0TyEq).
+  }
+  claim HlocalLiftNc0 : apply_fun local_lift_Nc 0 = e0.
+  {
+    rewrite (compose_fun_apply N f g0 0 H0N).
+    exact Hg0f0e0.
+  }
+  claim HlocalLiftNc_comm :
+    forall u:set, u :e N ->
+      apply_fun p (apply_fun local_lift_Nc u) = apply_fun f u.
+  {
+    let u.
+    assume HuN.
+    rewrite (compose_fun_apply N f g0 u HuN).
+    exact (Hg0CommN u HuN).
+  }
+  claim HlocalLiftNc_data :
+    continuous_map N (subspace_topology unit_interval unit_interval_topology N) E Te local_lift_Nc /\
+    apply_fun local_lift_Nc 0 = e0 /\
+    (forall u:set, u :e N ->
+      apply_fun p (apply_fun local_lift_Nc u) = apply_fun f u).
+  {
+    apply andI.
+    - apply andI.
+      + exact HlocalLiftNc_contE.
+      + exact HlocalLiftNc0.
+    - exact HlocalLiftNc_comm.
+  }
   (** TODO Bob: construct and extend the local lift through N using HinvV0 and covering data. **)
   admit.
 }
