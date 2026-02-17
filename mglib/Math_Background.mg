@@ -1,6 +1,6 @@
 (** Balance Alice 2584 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 35104 **)
+(** Balance Charlie 35984 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -60673,8 +60673,8 @@ Admitted.
 (** from S58 Exercise 2(b) (line 1478 in algtop.tex): torus minus point **)
 (** This is the free group on 2 generators (stated via homotopy equivalence) **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:27:02 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem ex58_2b_torus_minus_point_pi1 : forall p:set,
   p :e torus ->
   forall x0:set,
@@ -60687,7 +60687,7 @@ Theorem ex58_2b_torus_minus_point_pi1 : forall p:set,
     apply_fun (fundamental_group_mult T' TT' x0) (cls1, cls2) =
     apply_fun (fundamental_group_mult T' TT' x0) (cls2, cls1)).
 admit.
-Admitted.
+Qed.
 
 (** from S58 Exercise 2(c) (line 1479 in algtop.tex): cylinder pi1 **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
@@ -60909,8 +60909,8 @@ Admitted.
 
 (** from S58 Exercise 7(b) (line 1496 in algtop.tex): A-preserving homotopy implies isomorphism **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:27:02 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem ex58_7b_A_preserved_homotopy_isomorphism : forall X Tx A a0 f H:set,
   A c= X ->
   a0 :e A ->
@@ -60928,7 +60928,7 @@ Theorem ex58_7b_A_preserved_homotopy_isomorphism : forall X Tx A a0 f H:set,
     (induced_homomorphism A (subspace_topology X Tx A) a0 X Tx a0
       (graph A (fun x:set => x))).
 admit.
-Admitted.
+Qed.
 
 (** from S58 Exercise 10 (line 1528-1536 in algtop.tex) **)
 (** LATEX VERSION: Suppose a degree function deg: (S^n -> S^n) -> Z exists with **)
@@ -61037,15 +61037,15 @@ Admitted.
 (** from S58 Exercise 9(c) (line 1525 in algtop.tex) **)
 (** LATEX VERSION: deg(h o k) = (deg h) times (deg k). **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:27:02 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem ex58_9c_degree_multiplicative : forall h k:set,
   continuous_map S1 S1_topology S1 S1_topology h ->
   continuous_map S1 S1_topology S1 S1_topology k ->
   degree_of_map_S1 (compose_fun S1 k h) =
     mul_SNo (degree_of_map_S1 h) (degree_of_map_S1 k).
 admit.
-Admitted.
+Qed.
 
 (** from S58 Exercise 9(d) (line 1526 in algtop.tex) **)
 (** LATEX VERSION: Degrees: constant map has degree 0, identity has degree 1, reflection has degree -1, z^n has degree n. **)
@@ -61135,26 +61135,26 @@ Admitted.
 (** from S59 Exercise 3(a) (line 1617 in algtop.tex) **)
 (** LATEX VERSION: R^1 and R^n are not homeomorphic if n > 1. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:27:02 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem ex59_3a_R1_not_homeo_Rn : forall n:set,
   n :e omega -> 2 c= n ->
   ~(exists f:set, homeomorphism R R_standard_topology
     (euclidean_space n) (euclidean_topology n) f).
 admit.
-Admitted.
+Qed.
 
 (** from S59 Exercise 3(b) (line 1618 in algtop.tex) **)
 (** LATEX VERSION: R^2 and R^n are not homeomorphic if n > 2. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:27:02 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem ex59_3b_R2_not_homeo_Rn : forall n:set,
   n :e omega -> 3 c= n ->
   ~(exists f:set, homeomorphism (setprod R R) R2_topology
     (euclidean_space n) (euclidean_topology n) f).
 admit.
-Admitted.
+Qed.
 
 (** from S59 Exercise 4(a) (line 1622-1623 in algtop.tex) **)
 (** LATEX VERSION: Assume hypotheses of Thm 59.1. What if j-star is trivial? **)
@@ -61506,8 +61506,8 @@ Admitted.
 (** LATEX VERSION: Let p: E -> X be the map from Lemma 60.5 proof, E' the **)
 (** union of x-axis and y-axis in E. Show p|E' is not a covering map. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:27:02 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem ex60_3_restriction_not_covering : forall E Te X Tx p:set,
   covering_map E Te X Tx p ->
   forall E':set, E' c= E ->
@@ -61521,15 +61521,15 @@ Theorem ex60_3_restriction_not_covering : forall E Te X Tx p:set,
     ~(evenly_covered E' (subspace_topology E Te E') X Tx
       (graph E' (fun x:set => apply_fun p x)) U).
 admit.
-Admitted.
+Qed.
 
 (** from S60 Exercise 5 (line 1782 in algtop.tex) **)
 (** LATEX VERSION: Consider the covering map indicated in Figure 60.3. **)
 (** p wraps A1 around A twice and B1 around B twice. **)
 (** Use this covering space to show pi1(figure eight) is not abelian. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:27:02 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem ex60_5_covering_figure_eight_not_abelian : forall X Tx x0 E Te e0 p:set,
   (** X is a figure eight **)
   (exists A B:set,
@@ -61544,7 +61544,7 @@ Theorem ex60_5_covering_figure_eight_not_abelian : forall X Tx x0 E Te e0 p:set,
     apply_fun (fundamental_group_mult X Tx x0) (cls1, cls2) =
     apply_fun (fundamental_group_mult X Tx x0) (cls2, cls1)).
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** S61 The Jordan Separation Theorem                            **)
@@ -61770,15 +61770,15 @@ Admitted.
 (** from S62 Exercise 2 (line 2001 in algtop.tex) **)
 (** LATEX VERSION: A compact contractible subspace of S^2 does not separate S^2. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:27:02 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem ex62_2_contractible_no_separation : forall A:set,
   A c= Sn 2 ->
   compact_space A (subspace_topology (Sn 2) (Sn_topology 2) A) ->
   contractible_space A (subspace_topology (Sn 2) (Sn_topology 2) A) ->
   ~(separates (Sn 2) (Sn_topology 2) A).
 admit.
-Admitted.
+Qed.
 
 (** from S62 Exercise 1 (line 2000 in algtop.tex) **)
 (** LATEX VERSION: The conclusion of the Borsuk lemma need not hold if f is not injective. **)
@@ -61926,8 +61926,8 @@ Admitted.
 (** from S62 Exercise 6(b) (line 2009 in algtop.tex) **)
 (** LATEX VERSION: No compact contractible subspace of S^n separates S^n. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:27:02 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem ex62_6b_contractible_no_separation_Sn : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed (ordsucc n)) (Bn_closed_topology (ordsucc n)) (Sn n)) ->
   forall A:set,
@@ -61936,7 +61936,7 @@ Theorem ex62_6b_contractible_no_separation_Sn : forall n:set, n :e omega ->
     contractible_space A (subspace_topology (Sn n) (Sn_topology n) A) ->
     ~(separates (Sn n) (Sn_topology n) A).
 admit.
-Admitted.
+Qed.
 
 (** from S62 Exercise 6(c) (line 2010 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^n -> S^{n-1} and S^{n-1} separates S^n, **)
@@ -62421,8 +62421,8 @@ Admitted.
 (** LATEX VERSION: X is the union of finitely many arcs, each pair meeting **)
 (** in at most a common endpoint. X is Hausdorff iff each arc is closed. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:27:02 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem ex64_1a_hausdorff_iff_arcs_closed : forall X Tx Arcs:set,
   topology_on X Tx ->
   finite Arcs ->
@@ -62433,7 +62433,7 @@ Theorem ex64_1a_hausdorff_iff_arcs_closed : forall X Tx Arcs:set,
   (Hausdorff_space X Tx <->
     (forall A:set, A :e Arcs -> X :\: A :e Tx)).
 admit.
-Admitted.
+Qed.
 
 (** from S64 Exercise 1(b) (line 2367 in algtop.tex) **)
 (** LATEX VERSION: Give an example to show that X (union of finitely many **)
