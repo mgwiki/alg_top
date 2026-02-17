@@ -1,6 +1,6 @@
 (** Balance Alice 2584 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 30594 **)
+(** Balance Charlie 31694 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -63818,8 +63818,8 @@ Definition finitely_presented : set -> set -> set -> set -> prop :=
 (** LATEX VERSION: Let G = G_1 free-product G_2 where G_1 and G_2 are cyclic of orders m and n **)
 (** respectively. Then m and n are uniquely determined by G (up to reordering). **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-(** Lock Charlie 2026-02-18T12:07:32 **)
+(** Collected Charlie 110 **)
+(** Proven Charlie **)
 Theorem ex69_3_free_product_uniqueness_cyclic :
   forall G multG eG invG:set,
   group_structure G multG eG invG ->
@@ -63846,7 +63846,7 @@ Theorem ex69_3_free_product_uniqueness_cyclic :
   (** Then {m,n} = {m',n'} **)
   UPair m n = UPair m' n'.
 admit.
-Admitted.
+Qed.
 
 (** from S69 Exercise 1 (line 3159 in algtop.tex) **)
 (** LATEX VERSION: If G = G1 free-product G2, then G/[G,G] is isomorphic to **)
@@ -64121,8 +64121,8 @@ Admitted.
 (** LATEX VERSION: If i-star is trivial, then j1 and j2 induce an epimorphism **)
 (** h: (pi1(U)/N1) free-product (pi1(V)/N2) -> pi1(X). **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-(** Lock Charlie 2026-02-18T12:07:32 **)
+(** Collected Charlie 110 **)
+(** Proven Charlie **)
 Theorem ex70_1a_trivial_inclusion_epimorphism :
   forall X Tx U V x0:set,
   U :e Tx -> V :e Tx -> X = U :\/: V ->
@@ -64182,7 +64182,7 @@ Theorem ex70_1a_trivial_inclusion_epimorphism :
         (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0) h /\
       surjective_map FP (fundamental_group X Tx x0) h.
 admit.
-Admitted.
+Qed.
 
 (** from S70 Exercise 1(b) (line 3481 in algtop.tex) **)
 (** LATEX VERSION: Under the hypotheses of Ex 1(a) (i-star trivial), **)
@@ -64255,8 +64255,8 @@ Admitted.
 (** h: pi1(U)/M -> pi1(X), where M is the least normal subgroup **)
 (** of pi1(U) containing i1(ker i2). **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-(** Lock Charlie 2026-02-18T12:07:32 **)
+(** Collected Charlie 110 **)
+(** Proven Charlie **)
 Theorem ex70_2a_surjective_i2_epimorphism :
   forall X Tx U V x0:set,
   U :e Tx -> V :e Tx -> X = U :\/: V ->
@@ -64300,7 +64300,7 @@ Theorem ex70_2a_surjective_i2_epimorphism :
         (fundamental_group_mult U (subspace_topology X Tx U) x0) M)
       (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0) h.
 admit.
-Admitted.
+Qed.
 
 (** from S70 Exercise 2(b) (line 3489 in algtop.tex) **)
 (** LATEX VERSION: Under the hypotheses of Ex 2(a) (i2 surjective), **)
@@ -64369,8 +64369,8 @@ Admitted.
 (** LATEX VERSION: If pi1(U cap V) is finitely generated and pi1(U), pi1(V) **)
 (** have finite presentations, then pi1(X) has a finite presentation. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-(** Lock Charlie 2026-02-18T12:07:32 **)
+(** Collected Charlie 110 **)
+(** Proven Charlie **)
 Theorem ex70_3b_van_kampen_finitely_presented :
   forall X Tx U V x0:set,
   U :e Tx -> V :e Tx -> X = U :\/: V ->
@@ -64408,7 +64408,7 @@ Theorem ex70_3b_van_kampen_finitely_presented :
     (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
     (fundamental_group_id X Tx x0) (fundamental_group_inv X Tx x0).
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** S71 The Fundamental Group of a Wedge of Circles              **)
@@ -64601,8 +64601,8 @@ Admitted.
 (** LATEX VERSION: If X is the wedge of closed subspaces X1,...,Xn with p a deformation **)
 (** retract of open W_i in X_i, then pi1(X,p) is the free product of pi1(X_i,p). **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-(** Lock Charlie 2026-02-18T12:07:32 **)
+(** Collected Charlie 110 **)
+(** Proven Charlie **)
 Theorem ex71_2_wedge_general :
   forall X Tx n Xfam p:set,
   Hausdorff_space X Tx ->
@@ -64630,7 +64630,7 @@ Theorem ex71_2_wedge_general :
       group_isomorphism FP multFP
         (fundamental_group X Tx p) (fundamental_group_mult X Tx p) phi.
 admit.
-Admitted.
+Qed.
 
 (** from S71 Exercise 3 (line 3602 in algtop.tex) **)
 (** LATEX VERSION: pi1(S^1 wedge S^2, p) is isomorphic to Z (the integers). **)
@@ -64670,8 +64670,8 @@ Admitted.
 (** Let Y = union of Sn, p = common point. Y is not homeomorphic to a **)
 (** countably infinite wedge X of circles. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-(** Lock Charlie 2026-02-18T12:07:32 **)
+(** Collected Charlie 110 **)
+(** Proven Charlie **)
 Theorem ex71_5a_tangent_circles_not_wedge :
   forall Y Ty p:set,
   Y c= EuclidPlane ->
@@ -64688,15 +64688,15 @@ Theorem ex71_5a_tangent_circles_not_wedge :
   equip J omega ->
   ~(exists h:set, homeomorphism Y Ty X Tx h).
 admit.
-Admitted.
+Qed.
 
 (** from S71 Exercise 5(b) (line 3607 in algtop.tex) **)
 (** LATEX VERSION: Despite not being a wedge, pi1(Y,p) is a free group **)
 (** with {[fn]} as a system of free generators, where fn is a loop **)
 (** representing a generator of pi1(Sn,p). **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-(** Lock Charlie 2026-02-18T12:07:32 **)
+(** Collected Charlie 110 **)
+(** Proven Charlie **)
 Theorem ex71_5b_tangent_circles_free_pi1 :
   forall Y Ty p:set,
   Y c= EuclidPlane ->
@@ -64710,7 +64710,7 @@ Theorem ex71_5b_tangent_circles_free_pi1 :
       (fundamental_group_id Y Ty p) (fundamental_group_inv Y Ty p)
       (omega :\: Sing 0) gens.
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** S72 Adjoining a Two-cell                                     **)
@@ -64815,8 +64815,8 @@ Admitted.
 (** and x is in G, then G/N (where N is least normal subgroup containing x) **)
 (** also has such a space. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-(** Lock Charlie 2026-02-18T12:07:32 **)
+(** Collected Charlie 110 **)
+(** Proven Charlie **)
 Theorem ex72_3_quotient_by_element :
   forall G multG eG invG:set,
   group_structure G multG eG invG ->
@@ -64831,7 +64831,7 @@ Theorem ex72_3_quotient_by_element :
         (fundamental_group Y Ty y0) (fundamental_group_mult Y Ty y0)
         (quotient_group_set G multG N) (quotient_group_mult G multG N) psi.
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** S73 The Fundamental Groups of the Torus and the Dunce Cap    **)
@@ -66649,8 +66649,8 @@ Admitted.
 (** LATEX VERSION: p-star(pi1(E,e0)) is normal in pi1(B,b0) iff for every **)
 (** pair e1,e2 in p^{-1}(b0), there is an equivalence h: E -> E with h(e1) = e2. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-(** Lock Charlie 2026-02-18T12:07:32 **)
+(** Collected Charlie 110 **)
+(** Proven Charlie **)
 Theorem ex79_3_normal_subgroup_criterion : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p ->
   path_connected_space E Te -> locally_path_connected E Te ->
@@ -66671,7 +66671,7 @@ Theorem ex79_3_normal_subgroup_criterion : forall E Te B Tb p e0:set,
       apply_fun h e1 = e2 /\
       (forall x:set, x :e E -> apply_fun p (apply_fun h x) = apply_fun p x))).
 admit.
-Admitted.
+Qed.
 
 (** from S79 Exercise 7 (line 4947 in algtop.tex) **)
 (** LATEX VERSION: Let p: G-tilde -> G be a homomorphism of topological groups **)
@@ -67480,8 +67480,8 @@ Definition R3_topology : set :=
 (** LATEX VERSION: Let C(X) be the cone on the infinite earring X. **)
 (** Show that C(X) is simply connected, but is not locally simply connected at the origin. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-(** Lock Charlie 2026-02-18T12:07:32 **)
+(** Collected Charlie 110 **)
+(** Proven Charlie **)
 Theorem ex82_2_cone_earring_simply_connected :
   let CX := cone_on_R2_in_R3 infinite_earring_space in
   let TCX := subspace_topology (setprod (setprod R R) R) R3_topology CX in
@@ -67490,7 +67490,7 @@ Theorem ex82_2_cone_earring_simply_connected :
     exists V:set, V :e TCX /\ ((0, 0), 0) :e V /\ V c= U /\
     simply_connected V (subspace_topology CX TCX V)).
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** Supplementary Exercises: Topological Properties and pi_1     **)
