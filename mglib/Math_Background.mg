@@ -73734,6 +73734,24 @@ claim HtopU : topology_on U (subspace_topology (Sn n) (Sn_topology n) U).
     HtopSn
     HUsub).
 }
+claim HscU_from_data :
+  path_connected_space U (subspace_topology (Sn n) (Sn_topology n) U) ->
+  fundamental_group U (subspace_topology (Sn n) (Sn_topology n) U) x0 =
+    {fundamental_group_id U (subspace_topology (Sn n) (Sn_topology n) U) x0} ->
+  simply_connected U (subspace_topology (Sn n) (Sn_topology n) U).
+{
+  assume HpcU Hpi1U.
+  prove path_connected_space U (subspace_topology (Sn n) (Sn_topology n) U) /\
+    exists x0':set, x0' :e U /\
+      fundamental_group U (subspace_topology (Sn n) (Sn_topology n) U) x0' =
+        {fundamental_group_id U (subspace_topology (Sn n) (Sn_topology n) U) x0'}.
+  apply andI.
+  - exact HpcU.
+  - witness x0.
+    apply andI.
+    + exact Hx0U.
+    + exact Hpi1U.
+}
 admit. (** remaining: stereographic/homeomorphic-to-disk argument for U, based at x0 **)
 Admitted.
 
@@ -73806,6 +73824,24 @@ claim HtopV : topology_on V (subspace_topology (Sn n) (Sn_topology n) V).
     V
     HtopSn
     HVsub).
+}
+claim HscV_from_data :
+  path_connected_space V (subspace_topology (Sn n) (Sn_topology n) V) ->
+  fundamental_group V (subspace_topology (Sn n) (Sn_topology n) V) x0 =
+    {fundamental_group_id V (subspace_topology (Sn n) (Sn_topology n) V) x0} ->
+  simply_connected V (subspace_topology (Sn n) (Sn_topology n) V).
+{
+  assume HpcV Hpi1V.
+  prove path_connected_space V (subspace_topology (Sn n) (Sn_topology n) V) /\
+    exists x0':set, x0' :e V /\
+      fundamental_group V (subspace_topology (Sn n) (Sn_topology n) V) x0' =
+        {fundamental_group_id V (subspace_topology (Sn n) (Sn_topology n) V) x0'}.
+  apply andI.
+  - exact HpcV.
+  - witness x0.
+    apply andI.
+    + exact Hx0V.
+    + exact Hpi1V.
 }
 admit. (** remaining: stereographic/homeomorphic-to-disk argument for V, based at x0 **)
 Admitted.
