@@ -1,6 +1,6 @@
 (** Balance Alice 2634 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 41499 **)
+(** Balance Charlie 41484 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -64110,7 +64110,8 @@ Admitted.
 (** LATEX VERSION: If N is the least normal subgroup of G1 free-prod G2 containing G1, **)
 (** then (G1 free-prod G2)/N is isomorphic to G2. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:25:00 **)
 Theorem cor68_8_quotient_by_factor :
   forall G multG eG invG G1 G2:set,
   free_product_of_subgroups G multG eG invG (UPair 0 1)
@@ -64146,7 +64147,8 @@ Admitted.
 (** from S68 Exercise 2(a) (line 3025 in algtop.tex) **)
 (** LATEX VERSION: Let G = G1 free-product G2 where G1, G2 nontrivial. Then G is not abelian. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:25:00 **)
 Theorem ex68_2a_free_product_not_abelian :
   forall G mult e inv G1 G2:set,
   free_product_of_subgroups G mult e inv 2
@@ -64248,7 +64250,8 @@ Admitted.
 (** and a_alpha_K respectively, and J,K disjoint, then G is free with generators **)
 (** a_alpha for J union K. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:25:00 **)
 Theorem thm69_2_free_product_of_free_groups :
   forall G mult e inv G1 G2 J K gens:set,
   group_structure G mult e inv ->
@@ -64330,7 +64333,8 @@ Admitted.
 (** LATEX VERSION: If G is a free group with n free generators, then any system of **)
 (** free generators for G has n elements. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:25:00 **)
 Theorem cor69_5_free_generators_well_defined :
   forall G mult e inv n1 n2 gens1 gens2:set,
   free_group_with_generators G mult e inv n1 gens1 ->
@@ -64609,7 +64613,8 @@ Admitted.
 (** LATEX VERSION: If U cap V is simply connected, then pi1(X,x0) is isomorphic to **)
 (** pi1(U,x0) free-prod pi1(V,x0). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:25:00 **)
 Theorem cor70_3_simply_connected_intersection :
   forall X Tx U V x0:set,
   topology_on X Tx ->
