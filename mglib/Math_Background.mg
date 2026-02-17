@@ -70109,6 +70109,50 @@ apply andI.
   + exact Hpi1.
 Qed.
 
+(** Helper: generation via i-star + trivial i-star + path connected implies simply connected. **)
+Theorem lemma59_4a_simply_connected_from_generation_and_i_trivial :
+  forall X Tx U x0:set,
+  topology_on X Tx ->
+  U :e Tx ->
+  x0 :e U ->
+  path_connected_space X Tx ->
+  (forall cls:set, cls :e fundamental_group X Tx x0 ->
+    exists ucls:set,
+      ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+      cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+        (graph U (fun x:set => x))) ucls) ->
+  (forall cls:set,
+    cls :e fundamental_group U (subspace_topology X Tx U) x0 ->
+    apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+      (graph U (fun x:set => x))) cls = fundamental_group_id X Tx x0) ->
+  simply_connected X Tx.
+let X Tx U x0.
+assume Htop : topology_on X Tx.
+assume HU : U :e Tx.
+assume Hx0U : x0 :e U.
+assume HpcX : path_connected_space X Tx.
+assume Hgen : forall cls:set, cls :e fundamental_group X Tx x0 ->
+  exists ucls:set,
+    ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+    cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+      (graph U (fun x:set => x))) ucls.
+assume Hi_triv : forall cls:set,
+  cls :e fundamental_group U (subspace_topology X Tx U) x0 ->
+  apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+    (graph U (fun x:set => x))) cls = fundamental_group_id X Tx x0.
+claim Hx0X : x0 :e X.
+{ exact (topology_elem_subset X Tx U Htop HU x0 Hx0U). }
+claim Hpi1 : fundamental_group X Tx x0 = {fundamental_group_id X Tx x0}.
+{
+  exact (lemma59_4a_pi1_trivial_from_i_generation
+    X Tx U x0
+    Htop HU Hx0U
+    Hgen Hi_triv).
+}
+exact (lemma59_4a_simply_connected_from_pi1_trivial_at_point
+  X Tx x0 HpcX Hx0X Hpi1).
+Qed.
+
 (** from S59 Exercise 4(a) continued: both i-star and j-star trivial **)
 (** LATEX VERSION: If both i-star and j-star are trivial, then pi1(X,x0) is trivial. **)
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 25 **)
@@ -70155,19 +70199,14 @@ claim Hgen : forall cls:set, cls :e fundamental_group X Tx x0 ->
     cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
       (graph U (fun x:set => x))) ucls.
 { exact (ex59_4a_trivial_j_star X Tx U V x0 Htop HU HV Hcover Hx0UV HpcUV Hj_triv). }
-claim Hpi1_trivial : fundamental_group X Tx x0 = {fundamental_group_id X Tx x0}.
-{
-  exact (lemma59_4a_pi1_trivial_from_i_generation
-    X Tx U x0
-    Htop HU Hx0U
-    Hgen Hi_triv).
-}
 claim HpcX : path_connected_space X Tx.
 {
   admit. (** path_connected_space X Tx -- requires additional infrastructure **)
 }
-exact (lemma59_4a_simply_connected_from_pi1_trivial_at_point
-  X Tx x0 HpcX Hx0X Hpi1_trivial).
+exact (lemma59_4a_simply_connected_from_generation_and_i_trivial
+  X Tx U x0
+  Htop HU Hx0U HpcX
+  Hgen Hi_triv).
 Admitted.
 
 (** ============================================================ **)
