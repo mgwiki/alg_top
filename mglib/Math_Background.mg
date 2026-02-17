@@ -30964,7 +30964,7 @@ exact (andI
     Halpha1)).
 Qed.
 
-(** from S52 Corollary 52.2 (line 418 in algtop.tex) **)
+(** from S52 Cor 52.2 (line 418 in algtop.tex) **)
 (** LATEX VERSION: If X is path connected and x0, x1 are two points of X, then pi1(X,x0) is isomorphic to pi1(X,x1). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 20 **)
 (** Collected Bob 25 **)
@@ -33505,7 +33505,7 @@ rewrite HclassComposeEps.
 exact HclassEpsF.
 Qed.
 
-(** from S52 Corollary 52.5 (line 488 in algtop.tex) **)
+(** from S52 Cor 52.5 (line 488 in algtop.tex) **)
 (** LATEX VERSION: If h: (X,x0)->(Y,y0) is a homeomorphism, then h-star is an isomorphism. **)
 (** EFFORT: 4 lines textbook, difficulty 2/10, USD 30 **)
 (** Collected Bob 30 **)
@@ -55648,7 +55648,7 @@ Theorem lemma55_3_trivial_implies_nulhomotopic : forall X Tx h b0:set,
 admit.
 Admitted.
 
-(** from S55 Corollary 55.4 part (a) (line 947 in algtop.tex) **)
+(** from S55 Cor 55.4 part (a) (line 947 in algtop.tex) **)
 (** LATEX VERSION: The inclusion map j: S^1 -> R^2 - 0 is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
 (** Bounty 33 **)
@@ -55658,7 +55658,7 @@ Theorem cor55_4a_inclusion_S1_R2_not_nulhomotopic :
 admit.
 Admitted.
 
-(** from S55 Corollary 55.4 part (b) (line 947 in algtop.tex) **)
+(** from S55 Cor 55.4 part (b) (line 947 in algtop.tex) **)
 (** LATEX VERSION: The identity map i: S^1 -> S^1 is not nulhomotopic. **)
 (** EFFORT: 2 lines textbook, difficulty 1/10, USD 20 **)
 (** Bounty 22 **)
@@ -55960,7 +55960,7 @@ Theorem thm55_6_brouwer_fixed_point_disc : forall f:set,
 admit.
 Admitted.
 
-(** Infrastructure for starred Corollary 55.7: finite sum of real-valued terms **)
+(** Infrastructure for starred Cor 55.7: finite sum of real-valued terms **)
 (** finite_real_sum f n = f(0) + f(1) + ... + f(n-1) **)
 Definition finite_real_sum : (set -> set) -> set -> set := fun f n =>
   nat_primrec 0 (fun j r => add_SNo r (f j)) n.
@@ -55981,7 +55981,7 @@ Definition eigenvalue_of_matrix : set -> set -> set -> prop := fun n A lam =>
       finite_real_sum (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) n =
       mul_SNo lam (apply_fun v i)).
 
-(** from S55 starred Corollary 55.7 (line 994 in algtop.tex) **)
+(** from S55 starred Cor 55.7 (line 994 in algtop.tex) **)
 (** LATEX VERSION: Let A be a 3 by 3 matrix of positive real numbers. Then A has a positive real eigenvalue. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 165 **)
@@ -59664,10 +59664,10 @@ apply andI.
 
 Qed.
 
-(** from S58 Corollary 58.5 (line 1423 in algtop.tex) **)
+(** from S58 Cor 58.5 (line 1423 in algtop.tex) **)
 (** LATEX VERSION: Let h, k: X -> Y be homotopic. If h-star is injective (or surjective, or trivial), so is k-star. **)
 
-(** helper sub-bounty for Corollary 58.5: alpha-hat sends identity to identity **)
+(** helper sub-bounty for Cor 58.5: alpha-hat sends identity to identity **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
 (** Bounty 9 **)
 Theorem lemma58_sub_basepoint_change_id : forall X Tx x0 x1 alpha:set,
@@ -59707,7 +59707,7 @@ claim Halpha1 : apply_fun alpha 1 = x1.
 admit.
 Admitted.
 
-(** helper sub-bounty for Corollary 58.5: alpha-hat is injective **)
+(** helper sub-bounty for Cor 58.5: alpha-hat is injective **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
 (** Bounty 9 **)
 Theorem lemma58_sub_basepoint_change_injective : forall X Tx x0 x1 alpha a b:set,
@@ -59749,7 +59749,7 @@ claim Halpha1 : apply_fun alpha 1 = x1.
 admit.
 Admitted.
 
-(** helper sub-bounty for Corollary 58.5: alpha-hat is surjective **)
+(** helper sub-bounty for Cor 58.5: alpha-hat is surjective **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
 (** Bounty 9 **)
 Theorem lemma58_sub_basepoint_change_surjective : forall X Tx x0 x1 alpha c:set,
@@ -60045,7 +60045,7 @@ claim HhEq :
 exact (HhInj cls1 cls2 Hcls1 Hcls2 HhEq).
 Qed.
  
-(** from S58 Corollary 58.5 surjective case (line 1423 in algtop.tex) **)
+(** from S58 Cor 58.5 surjective case (line 1423 in algtop.tex) **)
 (** LATEX VERSION: Let h, k: X -> Y be homotopic. If h-star is surjective, so is k-star. **)
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 30 **)
 (** Collected Bob 30 **)
@@ -60534,7 +60534,7 @@ rewrite <- Hlinv.
 exact Hstep5.
 Qed.
 
-(** from S58 Corollary 58.5 trivial case (line 1423 in algtop.tex) **)
+(** from S58 Cor 58.5 trivial case (line 1423 in algtop.tex) **)
 (** LATEX VERSION: Let h, k: X -> Y be homotopic. If h-star is trivial, so is k-star. **)
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 30 **)
 (** Collected Bob 33 **)
@@ -60871,7 +60871,7 @@ rewrite HcompConst.
 reflexivity.
 Qed.
 
-(** from S58 Corollary 58.6 (line 1425 in algtop.tex) **)
+(** from S58 Cor 58.6 (line 1425 in algtop.tex) **)
 (** LATEX VERSION: If h: X -> Y is nulhomotopic, then h-star is the trivial homomorphism. **)
 (** EFFORT: 2 lines textbook, difficulty 1/10, USD 20 **)
 (** Collected Bob 22 **)
@@ -66082,7 +66082,7 @@ rewrite HcompConstEq.
 reflexivity.
 Qed.
 
-(** from S59 Corollary 59.2 (line 1585 in algtop.tex) **)
+(** from S59 Cor 59.2 (line 1585 in algtop.tex) **)
 (** LATEX VERSION: If X = U union V, U and V open and simply connected, U intersect V nonempty and path connected, then X is simply connected. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
 (** Bounty 33 **)
@@ -66226,7 +66226,7 @@ claim HscU_ex : exists x0:set, x0 :e U /\
       fundamental_group U (subspace_topology X Tx U) x0 =
         {fundamental_group_id U (subspace_topology X Tx U) x0})
     HscU). }
-(** Use Corollary 52.2 to get pi1(U,z0) trivial from any basepoint **)
+(** Use Cor 52.2 to get pi1(U,z0) trivial from any basepoint **)
 claim Hpi1U_trivial :
   fundamental_group U (subspace_topology X Tx U) z0 =
     {fundamental_group_id U (subspace_topology X Tx U) z0}.
@@ -67663,7 +67663,7 @@ Theorem thm60_1_pi1_product : forall X Tx x0 Y Ty y0:set,
 admit.
 Admitted.
 
-(** from S60 Corollary 60.2 (line 1683 in algtop.tex) **)
+(** from S60 Cor 60.2 (line 1683 in algtop.tex) **)
 (** LATEX VERSION: pi_1(torus) isomorphic to Z x Z. **)
 (** Already stated as ex54_7_pi1_torus above. **)
 
@@ -67701,7 +67701,7 @@ Theorem thm60_3_projective_plane_surface_covering :
 admit.
 Admitted.
 
-(** from S60 Corollary 60.4 (line 1725 in algtop.tex) **)
+(** from S60 Cor 60.4 (line 1725 in algtop.tex) **)
 (** LATEX VERSION: pi_1(P^2, y) is a group of order 2. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 55 **)
@@ -67846,7 +67846,7 @@ Theorem thm60_6_double_torus_nonabelian : forall x0:set,
 admit.
 Admitted.
 
-(** from S60 Corollary 60.7 (line 1774 in algtop.tex) **)
+(** from S60 Cor 60.7 (line 1774 in algtop.tex) **)
 (** LATEX VERSION: The 2-sphere, torus, projective plane, and double torus **)
 (** are topologically distinct. **)
 (** EFFORT: 8 lines textbook, difficulty 3/10, USD 50 **)
@@ -69476,7 +69476,7 @@ Theorem lemma67_1_converse :
 admit.
 Admitted.
 
-(** from S67 Corollary 67.2 (line 2629 in algtop.tex): associativity of direct sums **)
+(** from S67 Cor 67.2 (line 2629 in algtop.tex): associativity of direct sums **)
 (** LATEX VERSION: Let G = G1 + G2. If G1 = direct sum H_alpha (alpha in J) and **)
 (** G2 = direct sum H_beta (beta in K) with J,K disjoint, then G = direct sum H_gamma **)
 (** for gamma in J union K. **)
@@ -69498,7 +69498,7 @@ Theorem cor67_2_associativity_direct_sum :
 admit.
 Admitted.
 
-(** from S67 Corollary 67.3 (line 2639 in algtop.tex): quotient by direct summand **)
+(** from S67 Cor 67.3 (line 2639 in algtop.tex): quotient by direct summand **)
 (** LATEX VERSION: If G = G1 + G2, then G/G2 is isomorphic to G1. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 55 **)
@@ -70372,7 +70372,7 @@ Theorem lemma68_5_extension_characterizes_free_product :
 admit.
 Admitted.
 
-(** from S68 Corollary 68.6 (line 2958 in algtop.tex): associativity of free products **)
+(** from S68 Cor 68.6 (line 2958 in algtop.tex): associativity of free products **)
 (** LATEX VERSION: If G = G1 free-prod G2, G1 = free product of H_alpha for alpha in J, **)
 (** G2 = free product of H_beta for beta in K, with J,K disjoint, **)
 (** then G = free product of H_gamma for gamma in J union K. **)
@@ -70426,7 +70426,7 @@ Theorem thm68_7_quotient_free_product :
 admit.
 Admitted.
 
-(** from S68 Corollary 68.8 (line 3006 in algtop.tex): quotient by factor **)
+(** from S68 Cor 68.8 (line 3006 in algtop.tex): quotient by factor **)
 (** LATEX VERSION: If N is the least normal subgroup of G1 free-prod G2 containing G1, **)
 (** then (G1 free-prod G2)/N is isomorphic to G2. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
@@ -70640,7 +70640,7 @@ Theorem thm69_4_abelianization_free_group :
 admit.
 Admitted.
 
-(** from S69 Corollary 69.5 (line 3129 in algtop.tex): number of free generators is well-defined **)
+(** from S69 Cor 69.5 (line 3129 in algtop.tex): number of free generators is well-defined **)
 (** LATEX VERSION: If G is a free group with n free generators, then any system of **)
 (** free generators for G has n elements. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
@@ -70913,7 +70913,7 @@ Theorem thm70_2_classical_van_kampen :
 admit.
 Admitted.
 
-(** from S70 Corollary 70.3 (line 3439 in algtop.tex): simply connected intersection **)
+(** from S70 Cor 70.3 (line 3439 in algtop.tex): simply connected intersection **)
 (** LATEX VERSION: If U cap V is simply connected, then pi1(X,x0) is isomorphic to **)
 (** pi1(U,x0) free-prod pi1(V,x0). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
@@ -70941,7 +70941,7 @@ Theorem cor70_3_simply_connected_intersection :
 admit.
 Admitted.
 
-(** from S70 Corollary 70.4 (line 3445 in algtop.tex): one factor simply connected **)
+(** from S70 Cor 70.4 (line 3445 in algtop.tex): one factor simply connected **)
 (** LATEX VERSION: If V is simply connected, then pi1(X,x0) iso pi1(U,x0)/N **)
 (** where N is the least normal subgroup containing image of i1. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
@@ -71708,7 +71708,7 @@ Theorem thm73_1_torus_presentation :
 admit.
 Admitted.
 
-(** from S73 Corollary 73.2 (line 3724 in algtop.tex): torus pi1 is Z x Z **)
+(** from S73 Cor 73.2 (line 3724 in algtop.tex): torus pi1 is Z x Z **)
 (** LATEX VERSION: The fundamental group of the torus is a free abelian group of rank 2. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 88 **)
@@ -72406,7 +72406,7 @@ Theorem thm75_1_abelianize_quotient_commute :
 admit.
 Admitted.
 
-(** from S75 Corollary 75.2 (line 4083 in algtop.tex): for free groups **)
+(** from S75 Cor 75.2 (line 4083 in algtop.tex): for free groups **)
 (** LATEX VERSION: Let F be free with generators alpha1,...,alphan; **)
 (** N least normal subgroup containing x; G = F/N. Then G/[G,G] iso **)
 (** F/[F,F] mod subgroup generated by p(x). **)
@@ -72817,7 +72817,7 @@ Theorem lemma77_1_projective_reduction :
 admit.
 Admitted.
 
-(** from S77 Corollary 77.2 (line 4338 in algtop.tex): projective type structure **)
+(** from S77 Cor 77.2 (line 4338 in algtop.tex): projective type structure **)
 (** LATEX VERSION: If w is of projective type, then w is equivalent **)
 (** to a scheme of the form (a1 a1)(a2 a2)...(ak ak) w1 where **)
 (** k >= 1 and w1 is either empty or of torus type. **)
@@ -73912,7 +73912,7 @@ Definition regular_covering_map : set -> set -> set -> set -> set -> set -> prop
       (fundamental_group_id B Tb (apply_fun p e0))
       (fundamental_group_inv B Tb (apply_fun p e0)).
 
-(** from S81 Corollary 81.3 (line 5091 in algtop.tex) **)
+(** from S81 Cor 81.3 (line 5091 in algtop.tex) **)
 (** LATEX VERSION: H0 is normal in pi1(B,b0) iff for every pair e1,e2 in p^{-1}(b0) **)
 (** there is a covering transformation h with h(e1)=e2. In this case, **)
 (** C(E,p,B) is isomorphic to pi1(B,b0)/H0. **)
@@ -73931,7 +73931,7 @@ Theorem cor81_3_normal_iff_transitive :
 admit.
 Admitted.
 
-(** from S81 Corollary 81.4 (line 5097 in algtop.tex) **)
+(** from S81 Cor 81.4 (line 5097 in algtop.tex) **)
 (** LATEX VERSION: If E is simply connected, then C(E,p,B) is isomorphic to pi1(B,b0). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
 (** Bounty 33 **)
@@ -74228,7 +74228,7 @@ Theorem thm82_1_existence_of_covering :
 admit.
 Admitted.
 
-(** from S82 Corollary 82.2 (line 5380 in algtop.tex): universal covering existence **)
+(** from S82 Cor 82.2 (line 5380 in algtop.tex): universal covering existence **)
 (** LATEX VERSION: The space B has a universal covering space iff B is path connected, **)
 (** locally path connected, and semilocally simply connected. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
