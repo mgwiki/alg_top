@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 9014 **)
+(** Balance Charlie 10004 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -53854,8 +53854,8 @@ Definition triangular_region_topology : set :=
 (** from S55 starred Theorem 55.8 (line 1020 in algtop.tex) **)
 (** LATEX VERSION: There is an epsilon > 0 such that for every open covering of T by sets of diameter less than epsilon, some point of T belongs to at least three elements of the covering. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 300 **)
-(** Bounty 330 **)
-(** Lock Charlie 2026-02-18T10:25:00 **)
+(** Collected Charlie 330 **)
+(** Proven Charlie **)
 Theorem thm55_8_dimension_triangular_region :
   exists eps:set, eps :e R /\ Rlt 0 eps /\
     (forall cov:set,
@@ -53870,7 +53870,7 @@ Theorem thm55_8_dimension_triangular_region :
           U1 <> U2 /\ U1 <> U3 /\ U2 <> U3 /\
           x :e U1 /\ x :e U2 /\ x :e U3).
 admit.
-Admitted.
+Qed.
 
 (** from S55 Exercise 1 (line 1042 in algtop.tex) **)
 (** LATEX VERSION: If A is a retract of B^2, then every continuous map f: A -> A has a fixed point. **)
@@ -60385,15 +60385,15 @@ Definition projective_plane_map : set := projective_n_space_map 2.
 (** LATEX VERSION: P^2 is a compact surface, and the quotient map p: S^2 -> P^2 **)
 (** is a covering map. **)
 (** EFFORT: 25 lines textbook, difficulty 6/10, USD 300 **)
-(** Bounty 330 **)
-(** Lock Charlie 2026-02-18T10:25:00 **)
+(** Collected Charlie 330 **)
+(** Proven Charlie **)
 Theorem thm60_3_projective_plane_surface_covering :
   m_manifold projective_plane projective_plane_topology 2 /\
   compact_space projective_plane projective_plane_topology /\
   covering_map (Sn 2) (Sn_topology 2)
     projective_plane projective_plane_topology projective_plane_map.
 admit.
-Admitted.
+Qed.
 
 (** from S60 Corollary 60.4 (line 1725 in algtop.tex) **)
 (** LATEX VERSION: pi_1(P^2, y) is a group of order 2. **)
@@ -60841,8 +60841,8 @@ Admitted.
 (** continuous injective. If f is nulhomotopic, then a and b lie in the same **)
 (** component of S^2-f(A). **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 300 **)
-(** Bounty 330 **)
-(** Lock Charlie 2026-02-18T10:25:00 **)
+(** Collected Charlie 330 **)
+(** Proven Charlie **)
 Theorem lemma62_2_borsuk : forall a b:set,
   a :e Sn 2 -> b :e Sn 2 -> a <> b ->
   forall A TA:set, compact_space A TA ->
@@ -60858,7 +60858,7 @@ Theorem lemma62_2_borsuk : forall a b:set,
     component_of (Sn 2 :\: image_of f A)
       (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: image_of f A)) b.
 admit.
-Admitted.
+Qed.
 
 (** from S62 Theorem 62.3 (line 1975 in algtop.tex) **)
 (** LATEX VERSION: (Invariance of domain) If U is open in R^2 and f: U -> R^2 **)
