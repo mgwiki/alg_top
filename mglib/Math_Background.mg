@@ -1,6 +1,6 @@
 (** Balance Alice 2584 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 35904 **)
+(** Balance Charlie 36784 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -54063,8 +54063,8 @@ Admitted.
 (** from S55 Exercise 2 (line 1043 in algtop.tex) **)
 (** LATEX VERSION: If h: S^1 -> S^1 is nulhomotopic, then h has a fixed point and h maps some point x to its antipode -x. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:30:02 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem ex55_2_nulhomotopic_S1_fixed_and_antipodal : forall h:set,
   continuous_map S1 S1_topology S1 S1_topology h ->
   nulhomotopic S1 S1_topology S1 S1_topology h ->
@@ -54072,7 +54072,7 @@ Theorem ex55_2_nulhomotopic_S1_fixed_and_antipodal : forall h:set,
   (exists x:set, x :e S1 /\
     apply_fun h x = (minus_SNo (x 0), minus_SNo (x 1))).
 admit.
-Admitted.
+Qed.
 
 (** from S55 Exercise 3 (line 1044 in algtop.tex) **)
 (** LATEX VERSION: If A is a nonsingular 3x3 matrix having nonnegative entries, then A has a positive real eigenvalue. **)
@@ -54164,8 +54164,8 @@ Admitted.
 (** from S55 Exercise 4(c) (line 1048 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every nonvanishing vector field on B^{n+1} points outward and inward at some points of S^n. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:30:02 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem ex55_4c_nonvanishing_vector_field_Rn : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   forall v:set,
@@ -54176,7 +54176,7 @@ Theorem ex55_4c_nonvanishing_vector_field_Rn : forall n:set, n :e omega ->
     (exists x:set, x :e Sn n /\ points_directly_inward_Rn n v x) /\
     (exists x:set, x :e Sn n /\ points_directly_outward_Rn n v x).
 admit.
-Admitted.
+Qed.
 
 (** from S55 Exercise 4(d) (line 1049 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every continuous map f: B^{n+1} -> B^{n+1} has a fixed point. **)
@@ -54194,8 +54194,8 @@ Admitted.
 (** from S55 Exercise 4(e) (line 1050 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every (n+1) by (n+1) matrix with positive entries has a positive eigenvalue. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:30:02 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem ex55_4e_positive_matrix_eigenvalue_Rn : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   forall A:set,
@@ -54203,13 +54203,13 @@ Theorem ex55_4e_positive_matrix_eigenvalue_Rn : forall n:set, n :e omega ->
     (forall i j:set, i :e ordsucc n -> j :e ordsucc n -> Rlt 0 (apply_fun A (i, j))) ->
     exists lam:set, Rlt 0 lam /\ eigenvalue_of_matrix (ordsucc n) A lam.
 admit.
-Admitted.
+Qed.
 
 (** from S55 Exercise 4(f) (line 1051 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, if h: S^n -> S^n is nulhomotopic, then h has a fixed point and maps some x to -x. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:30:02 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem ex55_4f_nulhomotopic_Sn_fixed_and_antipodal : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   forall h:set,
@@ -54218,7 +54218,7 @@ Theorem ex55_4f_nulhomotopic_Sn_fixed_and_antipodal : forall n:set, n :e omega -
     (exists x:set, x :e Sn n /\ apply_fun h x = x) /\
     (exists x:set, x :e Sn n /\ apply_fun h x = Rn_negate (ordsucc n) x).
 admit.
-Admitted.
+Qed.
 
 (** ======================= S56 THE FUNDAMENTAL THEOREM OF ALGEBRA ======================= **)
 
@@ -54263,8 +54263,8 @@ Admitted.
 (** from S56 Exercise 1 (line 1167 in algtop.tex) **)
 (** LATEX VERSION: If |a_{n-1}| + ... + |a_0| < 1, then all roots of x^n + a_{n-1} x^{n-1} + ... + a_0 lie in the interior of B^2. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:30:02 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem ex56_1_small_coeff_roots_in_B2 : forall n a:set,
   n :e omega -> n <> 0 ->
   function_on a n (setprod R R) ->
@@ -54273,7 +54273,7 @@ Theorem ex56_1_small_coeff_roots_in_B2 : forall n a:set,
     monic_poly_eval a n z = (0, 0) ->
     Rlt (complex_modulus_sq z) 1.
 admit.
-Admitted.
+Qed.
 
 (** from S56 Exercise 2 (line 1175 in algtop.tex) **)
 (** LATEX VERSION: Find a circle about the origin containing all roots of x^7 + x^2 + 1 = 0. **)
@@ -54797,15 +54797,15 @@ Admitted.
 (** from S57 Exercise 2 (line 1258 in algtop.tex) **)
 (** LATEX VERSION: If g: S^2 -> S^2 is continuous and g(x) != g(-x) for all x, then g is surjective. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:30:02 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem ex57_2_antipodal_distinct_surjective : forall g:set,
   continuous_map (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) g ->
   (forall x:set, x :e Sn 2 ->
     apply_fun g x <> apply_fun g (Rn_negate 3 x)) ->
   surjective_map (Sn 2) (Sn 2) g.
 admit.
-Admitted.
+Qed.
 
 (** from S57 Exercise 3 (line 1259 in algtop.tex) **)
 (** LATEX VERSION: Let h: S^1 -> S^1 be continuous, antipode-preserving, h(b0)=b0. Then h-star carries a generator to an odd power of itself. **)
@@ -54840,15 +54840,15 @@ Admitted.
 (** from S57 Exercise 4(b) (line 1262 in algtop.tex) **)
 (** LATEX VERSION: Given the hypothesis, there is no continuous antipode-preserving map g: S^{n+1} -> S^n. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:30:02 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem ex57_4b_no_antipode_higher : forall n:set, n :e omega ->
   (forall h:set, antipode_preserving_Sn (ordsucc n) (ordsucc n) h ->
     ~(nulhomotopic (Sn (ordsucc n)) (Sn_topology (ordsucc n))
                    (Sn (ordsucc n)) (Sn_topology (ordsucc n)) h)) ->
   ~(exists g:set, antipode_preserving_Sn (ordsucc n) n g).
 admit.
-Admitted.
+Qed.
 
 (** from S57 Exercise 4(c) (line 1263 in algtop.tex) **)
 (** LATEX VERSION: (Borsuk-Ulam) Given the hypothesis, for any continuous f: S^{n+1} -> R^{n+1}, there exists x with f(x) = f(-x). **)
@@ -60944,8 +60944,8 @@ Qed.
 
 (** from S58 Exercise 10(a) (line 1528 in algtop.tex): no retraction B^{n+1} -> S^n **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:30:02 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem ex58_10a_no_retraction_from_degree : forall n:set, n :e omega ->
   forall deg:set,
   (forall h k:set, continuous_map (Sn n) (Sn_topology n) (Sn n) (Sn_topology n) h ->
@@ -60958,7 +60958,7 @@ Theorem ex58_10a_no_retraction_from_degree : forall n:set, n :e omega ->
   apply_fun deg (graph (Sn n) (fun x:set => x)) = 1 ->
   ~(retraction_of (Bn_closed (ordsucc n)) (Bn_closed_topology (ordsucc n)) (Sn n)).
 admit.
-Admitted.
+Qed.
 
 (** from S58 Exercise 10(b) (line 1528 in algtop.tex): degree and fixed point **)
 (** EFFORT: 6 lines textbook, difficulty 5/10, USD 100 **)
@@ -60984,8 +60984,8 @@ Qed.
 
 (** from S58 Exercise 10(d) (line 1528 in algtop.tex): tangent vector field implies n odd **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:30:02 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem ex58_10d_tangent_field_odd : forall n:set, n :e omega ->
   forall deg:set,
   (forall h k:set, continuous_map (Sn n) (Sn_topology n) (Sn n) (Sn_topology n) h ->
@@ -61005,7 +61005,7 @@ Theorem ex58_10d_tangent_field_odd : forall n:set, n :e omega ->
       finite_real_sum (fun i:set => mul_SNo (apply_fun x i) (apply_fun (apply_fun v x) i)) (ordsucc n) = 0)) ->
   exists k:set, k :e omega /\ n = add_SNo (mul_SNo 2 k) 1.
 admit.
-Admitted.
+Qed.
 
 (** Infrastructure for Exercise 58.9: degree of a continuous map h: S^1 -> S^1 **)
 (** The degree d is the unique integer such that for any lift starting point e0 **)
@@ -65073,8 +65073,8 @@ Admitted.
 (** from S73 Corollary 73.2 (line 3724 in algtop.tex): torus pi1 is Z x Z **)
 (** LATEX VERSION: The fundamental group of the torus is a free abelian group of rank 2. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:30:02 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem cor73_2_torus_free_abelian_rank_2 :
   forall x0:set,
   x0 :e torus ->
@@ -65087,7 +65087,7 @@ Theorem cor73_2_torus_free_abelian_rank_2 :
       (UPair 0 1)
       basis.
 admit.
-Admitted.
+Qed.
 
 (** Infrastructure: real number division a/b for b nonzero **)
 Definition real_div : set -> set -> set :=
