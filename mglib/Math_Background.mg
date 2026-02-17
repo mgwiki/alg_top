@@ -36742,7 +36742,56 @@ claim HconjEqIdOnB :
 {
   exact (HuniqAtx0 b Hb).
 }
-(** TODO Charlie: turn HconjEqIdOnB into ab=ba via explicit conjugation on pi1(X,x0). **)
+set epsb := Eps_i (fun f:set => f :e b).
+claim HepsbLoop : epsb :e loop_space X Tx x0.
+{
+  exact (eps_of_fundamental_group_member_in_loop_space_s52
+    X
+    Tx
+    x0
+    b
+    Hb).
+}
+claim HconjEqExpanded :
+  path_homotopy_class_loop
+    X
+    Tx
+    x0
+    (path_concat
+      (reverse_path alpha_loop)
+      (path_concat
+        epsb
+        alpha_loop))
+  =
+  path_homotopy_class_loop
+    X
+    Tx
+    x0
+    (path_concat
+      (reverse_path (constant_path x0))
+      (path_concat
+        epsb
+        (constant_path x0))).
+{
+  rewrite <- (basepoint_change_map_apply
+    X
+    Tx
+    x0
+    x0
+    alpha_loop
+    b
+    Hb).
+  rewrite <- (basepoint_change_map_apply
+    X
+    Tx
+    x0
+    x0
+    (constant_path x0)
+    b
+    Hb).
+  exact HconjEqIdOnB.
+}
+(** TODO Charlie: reduce HconjEqExpanded to a^{-1}ba = b, then derive ab=ba in pi1(X,x0). **)
 admit.
 Admitted.
 
