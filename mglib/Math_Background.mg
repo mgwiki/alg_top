@@ -55064,7 +55064,64 @@ claim Halpha1 : apply_fun alpha 1 = y1.
 { rewrite (HalphaApply 1 one_in_unit_interval). exact (HHat1 x0 Hx0). }
 (** Alpha continuity: alpha = H restricted to {x0} x I, which is continuous **)
 claim HalphaCont : continuous_map unit_interval unit_interval_topology Y Ty alpha.
-{ admit. (** alpha = H o (const x0, id), composition of continuous maps **) }
+{
+  (** alpha(t) = H(x0, t) = H o (const x0, id)(t) **)
+  (** Build phi = pair_map I (const x0) (id_I), then compose with H **)
+  claim HtopXLocal : topology_on X Tx.
+  { exact (continuous_map_topology_dom X Tx Y Ty h Hh). }
+  set idI := graph unit_interval (fun t:set => t).
+  set constx0 := const_fun unit_interval x0.
+  set phi := pair_map unit_interval constx0 idI.
+  set comp := compose_fun unit_interval phi H.
+  claim HidICont : continuous_map unit_interval unit_interval_topology
+    unit_interval unit_interval_topology idI.
+  { exact (identity_continuous unit_interval unit_interval_topology
+      unit_interval_topology_on). }
+  claim Hconstx0Cont : continuous_map unit_interval unit_interval_topology X Tx constx0.
+  { exact (const_fun_continuous unit_interval unit_interval_topology X Tx x0
+      unit_interval_topology_on HtopXLocal Hx0). }
+  claim HphiCont : continuous_map unit_interval unit_interval_topology
+    (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology) phi.
+  { exact (maps_into_products unit_interval unit_interval_topology
+      X Tx unit_interval unit_interval_topology constx0 idI
+      Hconstx0Cont HidICont). }
+  claim HcompCont : continuous_map unit_interval unit_interval_topology Y Ty comp.
+  { exact (composition_continuous unit_interval unit_interval_topology
+      (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      Y Ty phi H HphiCont HHcont). }
+  (** Show comp = alpha via extensionality **)
+  claim HHfn : function_on H (setprod X unit_interval) Y.
+  { exact (continuous_map_function_on (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      Y Ty H HHcont). }
+  claim HphiFn : function_on phi unit_interval (setprod X unit_interval).
+  { exact (continuous_map_function_on unit_interval unit_interval_topology
+      (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      phi HphiCont). }
+  claim HcompTFS : comp :e total_function_space unit_interval Y.
+  { exact (compose_fun_in_total_function_space unit_interval
+      (setprod X unit_interval) Y phi H HphiFn HHfn). }
+  claim HalphaTFS : alpha :e total_function_space unit_interval Y.
+  { apply (graph_in_total_function_space unit_interval Y
+      (fun t:set => apply_fun H (x0, t))).
+    let t. assume Ht.
+    exact (HHfn (x0, t) (tuple_2_setprod_by_pair_Sigma X unit_interval x0 t Hx0 Ht)). }
+  claim HcompEqAlpha : comp = alpha.
+  { apply (total_function_space_extensional unit_interval Y comp alpha
+      HcompTFS HalphaTFS).
+    let t. assume Ht.
+    rewrite (compose_fun_apply unit_interval phi H t Ht).
+    rewrite (pair_map_apply unit_interval X unit_interval constx0 idI t Ht).
+    rewrite (const_fun_apply unit_interval x0 t Ht).
+    rewrite (apply_fun_graph unit_interval (fun t0:set => t0) t Ht).
+    rewrite (apply_fun_graph unit_interval (fun t0:set => apply_fun H (x0, t0)) t Ht).
+    reflexivity. }
+  rewrite <- HcompEqAlpha.
+  exact HcompCont.
+}
 claim HalphaFn : function_on alpha unit_interval Y.
 { exact (continuous_map_function_on unit_interval unit_interval_topology Y Ty alpha HalphaCont). }
 claim HalphaPath : path_between Y y0 y1 alpha.
@@ -55098,14 +55155,175 @@ apply andI.
   claim Hkey : path_homotopic Y Ty y0 y1
     (path_concat hf alpha) (path_concat alpha kf).
   { admit. (** The core homotopy: straight-line in I-squared, then F, then H **) }
-  (** From Hkey: [hf concat alpha] = [alpha concat kf] **)
-  (** We need: [kf] = [alpha_bar concat hf concat alpha] **)
-  (** Equivalently: [alpha concat kf] = [hf concat alpha] **)
-  (** Which is exactly Hkey. **)
-  (** Now derive k_star(cls) = alpha_hat(h_star(cls)) **)
-  (** Strategy: rewrite both sides using induced_homomorphism_apply and **)
-  (** basepoint_change_map_apply, then use Hkey to show equality **)
-  admit. (** Algebraic manipulation using Hkey, induced_homomorphism_apply, basepoint_change_map_apply **)
+  (** Algebraic manipulation: show k_star(cls) = alpha_hat(h_star(cls)) **)
+  (** Step 1: Establish eps is in loop_space **)
+  claim HepsLS : eps :e loop_space X Tx x0.
+  { exact (eps_in_loop_space_early X Tx x0 cls HtopX Hcls). }
+  (** Step 2: hf and kf are in loop_space Y **)
+  claim Hhy0 : apply_fun h x0 = y0. { reflexivity. }
+  claim Hky1 : apply_fun k x0 = y1. { reflexivity. }
+  claim HhfLS : hf :e loop_space Y Ty y0.
+  { exact (loop_space_postcompose X Tx x0 Y Ty y0 eps h HepsLS Hh Hhy0). }
+  claim HkfLS : kf :e loop_space Y Ty y1.
+  { exact (loop_space_postcompose X Tx x0 Y Ty y1 eps k HepsLS Hk Hky1). }
+  (** Step 3: Continuity facts for hf, kf, alpha, reverse alpha **)
+  claim HhfCont : continuous_map unit_interval unit_interval_topology Y Ty hf.
+  { exact (composition_continuous unit_interval unit_interval_topology X Tx Y Ty eps h HepsCont Hh). }
+  claim HkfCont : continuous_map unit_interval unit_interval_topology Y Ty kf.
+  { exact (composition_continuous unit_interval unit_interval_topology X Tx Y Ty eps k HepsCont Hk). }
+  claim HalphaBarCont : continuous_map unit_interval unit_interval_topology Y Ty (reverse_path alpha).
+  { exact (reverse_path_continuous Y Ty alpha HalphaCont). }
+  (** Step 4: Endpoints of hf, kf **)
+  claim Hhf0 : apply_fun hf 0 = y0.
+  { rewrite (compose_fun_apply unit_interval eps h 0 zero_in_unit_interval).
+    rewrite Heps0. exact Hhy0. }
+  claim Hhf1 : apply_fun hf 1 = y0.
+  { rewrite (compose_fun_apply unit_interval eps h 1 one_in_unit_interval).
+    rewrite Heps1. exact Hhy0. }
+  claim Hkf0 : apply_fun kf 0 = y1.
+  { rewrite (compose_fun_apply unit_interval eps k 0 zero_in_unit_interval).
+    rewrite Heps0. exact Hky1. }
+  claim Hkf1 : apply_fun kf 1 = y1.
+  { rewrite (compose_fun_apply unit_interval eps k 1 one_in_unit_interval).
+    rewrite Heps1. exact Hky1. }
+  (** Step 5: Endpoints of reverse alpha **)
+  claim HalphaBar0 : apply_fun (reverse_path alpha) 0 = y1.
+  { rewrite (reverse_path_at_zero alpha). exact Halpha1. }
+  claim HalphaBar1 : apply_fun (reverse_path alpha) 1 = y0.
+  { rewrite (reverse_path_at_one alpha). exact Halpha0. }
+  (** Step 6: Rewrite LHS using induced_homomorphism_apply **)
+  rewrite (induced_homomorphism_apply X Tx x0 Y Ty y1 k cls Hcls).
+  (** Step 7: For the RHS, we need h_star_cls in fundamental_group Y Ty y0 **)
+  claim Hhstar_mem : apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls
+    :e fundamental_group Y Ty y0.
+  { rewrite (induced_homomorphism_apply X Tx x0 Y Ty y0 h cls Hcls).
+    exact (path_homotopy_class_in_fundamental_group Y Ty y0 hf HhfLS). }
+  rewrite (basepoint_change_map_apply Y Ty y0 y1 alpha
+    (apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls) Hhstar_mem).
+  rewrite (induced_homomorphism_apply X Tx x0 Y Ty y0 h cls Hcls).
+  (** Now goal is: **)
+  (** path_homotopy_class_loop Y Ty y1 kf **)
+  (** = path_homotopy_class_loop Y Ty y1 **)
+  (**     (path_concat (reverse_path alpha) **)
+  (**       (path_concat (Eps_i (fun g => g :e path_homotopy_class_loop Y Ty y0 hf)) alpha)) **)
+  (** Step 8: The Eps_i representative rep is in [hf], so rep ~ hf **)
+  set rep := Eps_i (fun g:set => g :e path_homotopy_class_loop Y Ty y0 hf).
+  claim HhfInOwnClass : hf :e path_homotopy_class_loop Y Ty y0 hf.
+  { exact (loop_in_own_class_early Y Ty y0 hf HtopY HhfLS). }
+  claim HrepInClass : rep :e path_homotopy_class_loop Y Ty y0 hf.
+  { exact (Eps_i_ax (fun g:set => g :e path_homotopy_class_loop Y Ty y0 hf) hf HhfInOwnClass). }
+  claim HrepHomotopicFwd : path_homotopic Y Ty y0 y0 hf rep.
+  { exact (path_homotopy_class_loop_has_homotopy Y Ty y0 hf rep HrepInClass). }
+  claim HrepHomotopic : path_homotopic Y Ty y0 y0 rep hf.
+  { exact (Lemma_51_1_path_homotopy_sym Y Ty y0 y0 hf rep HrepHomotopicFwd). }
+  claim HrepLS : rep :e loop_space Y Ty y0.
+  { exact (path_homotopy_class_loop_in_loop_space Y Ty y0 hf rep HrepInClass). }
+  claim HrepLoopAt : loop_at Y Ty y0 rep.
+  { exact (loop_space_has_loop_at Y Ty y0 rep HrepLS). }
+  claim HrepCont : continuous_map unit_interval unit_interval_topology Y Ty rep.
+  { exact (loop_at_continuous Y Ty y0 rep HrepLoopAt). }
+  claim Hrep0 : apply_fun rep 0 = y0.
+  { exact (loop_at_at_zero Y Ty y0 rep HrepLoopAt). }
+  claim Hrep1 : apply_fun rep 1 = y0.
+  { exact (loop_at_at_one Y Ty y0 rep HrepLoopAt). }
+  (** Step 9: Build the chain of homotopies **)
+  (** alpha_bar_rep_alpha := path_concat (reverse_path alpha) (path_concat rep alpha) **)
+  (** We show: alpha_bar_rep_alpha ~ alpha_bar_hf_alpha ~ kf **)
+  (** 9a: rep ~ hf implies alpha_bar_rep_alpha ~ alpha_bar_hf_alpha **)
+  claim Hstep9a : path_homotopic Y Ty y1 y1
+    (path_concat (reverse_path alpha) (path_concat rep alpha))
+    (path_concat (reverse_path alpha) (path_concat hf alpha)).
+  { apply (path_concat_well_defined_on_classes Y Ty y1 y0 y1
+      (reverse_path alpha) (reverse_path alpha)
+      (path_concat rep alpha) (path_concat hf alpha)).
+    - exact (Lemma_51_1_path_homotopy_refl Y Ty y1 y0 (reverse_path alpha)
+        HalphaBarCont HalphaBar0 HalphaBar1).
+    - apply (path_concat_well_defined_on_classes Y Ty y0 y0 y1 rep hf alpha alpha
+        HrepHomotopic).
+      exact (Lemma_51_1_path_homotopy_refl Y Ty y0 y1 alpha HalphaCont Halpha0 Halpha1). }
+  (** 9b: alpha_bar (hf alpha) ~ alpha_bar (alpha kf) by Hkey **)
+  claim Hstep9b : path_homotopic Y Ty y1 y1
+    (path_concat (reverse_path alpha) (path_concat hf alpha))
+    (path_concat (reverse_path alpha) (path_concat alpha kf)).
+  { apply (path_concat_well_defined_on_classes Y Ty y1 y0 y1
+      (reverse_path alpha) (reverse_path alpha)
+      (path_concat hf alpha) (path_concat alpha kf)).
+    - exact (Lemma_51_1_path_homotopy_refl Y Ty y1 y0 (reverse_path alpha)
+        HalphaBarCont HalphaBar0 HalphaBar1).
+    - exact Hkey. }
+  (** 9c: alpha_bar (alpha kf) ~ (alpha_bar alpha) kf by associativity **)
+  claim Hstep9c : path_homotopic Y Ty y1 y1
+    (path_concat (reverse_path alpha) (path_concat alpha kf))
+    (path_concat (path_concat (reverse_path alpha) alpha) kf).
+  { exact (Theorem_51_2_associativity Y Ty y1 y0 y1 y1
+      (reverse_path alpha) alpha kf
+      HalphaBarCont HalphaCont HkfCont
+      HalphaBar0 HalphaBar1 Halpha0 Halpha1 Hkf0 Hkf1). }
+  (** 9d: (alpha_bar alpha) ~ const_y1 by left inverse **)
+  claim HalphaBarAlpha : path_homotopic Y Ty y1 y1
+    (path_concat (reverse_path alpha) alpha) (constant_path y1).
+  { exact (Theorem_51_2_left_inverse Y Ty y0 y1 alpha HalphaCont Halpha0 Halpha1). }
+  (** 9e: (alpha_bar alpha) kf ~ const_y1 kf by well-definedness **)
+  claim Hstep9e : path_homotopic Y Ty y1 y1
+    (path_concat (path_concat (reverse_path alpha) alpha) kf)
+    (path_concat (constant_path y1) kf).
+  { apply (path_concat_well_defined_on_classes Y Ty y1 y1 y1
+      (path_concat (reverse_path alpha) alpha) (constant_path y1)
+      kf kf HalphaBarAlpha).
+    exact (Lemma_51_1_path_homotopy_refl Y Ty y1 y1 kf HkfCont Hkf0 Hkf1). }
+  (** 9f: const_y1 kf ~ kf by left identity **)
+  claim HkFnOn : function_on k X Y.
+  { exact (continuous_map_function_on X Tx Y Ty k Hk). }
+  claim Hy1inY : y1 :e Y. { exact (HkFnOn x0 Hx0). }
+  claim Hstep9f : path_homotopic Y Ty y1 y1 (path_concat (constant_path y1) kf) kf.
+  { exact (Theorem_51_2_left_identity Y Ty y1 y1 kf HkfCont Hkf0 Hkf1 Hy1inY). }
+  (** Step 10: Chain all homotopies with transitivity **)
+  (** alpha_bar_rep_alpha ~ alpha_bar_hf_alpha (9a) **)
+  (** ~ alpha_bar_(alpha_kf) (9b) **)
+  (** ~ (alpha_bar_alpha)_kf (9c) **)
+  (** ~ const_kf (9e) **)
+  (** ~ kf (9f) **)
+  claim Hchain1 : path_homotopic Y Ty y1 y1
+    (path_concat (reverse_path alpha) (path_concat rep alpha))
+    (path_concat (reverse_path alpha) (path_concat alpha kf)).
+  { exact (Lemma_51_1_path_homotopy_trans Y Ty y1 y1
+      (path_concat (reverse_path alpha) (path_concat rep alpha))
+      (path_concat (reverse_path alpha) (path_concat hf alpha))
+      (path_concat (reverse_path alpha) (path_concat alpha kf))
+      Hstep9a Hstep9b). }
+  claim Hchain2 : path_homotopic Y Ty y1 y1
+    (path_concat (reverse_path alpha) (path_concat rep alpha))
+    (path_concat (path_concat (reverse_path alpha) alpha) kf).
+  { exact (Lemma_51_1_path_homotopy_trans Y Ty y1 y1
+      (path_concat (reverse_path alpha) (path_concat rep alpha))
+      (path_concat (reverse_path alpha) (path_concat alpha kf))
+      (path_concat (path_concat (reverse_path alpha) alpha) kf)
+      Hchain1 Hstep9c). }
+  claim Hchain3 : path_homotopic Y Ty y1 y1
+    (path_concat (reverse_path alpha) (path_concat rep alpha))
+    (path_concat (constant_path y1) kf).
+  { exact (Lemma_51_1_path_homotopy_trans Y Ty y1 y1
+      (path_concat (reverse_path alpha) (path_concat rep alpha))
+      (path_concat (path_concat (reverse_path alpha) alpha) kf)
+      (path_concat (constant_path y1) kf)
+      Hchain2 Hstep9e). }
+  claim Hchain4 : path_homotopic Y Ty y1 y1
+    (path_concat (reverse_path alpha) (path_concat rep alpha)) kf.
+  { exact (Lemma_51_1_path_homotopy_trans Y Ty y1 y1
+      (path_concat (reverse_path alpha) (path_concat rep alpha))
+      (path_concat (constant_path y1) kf)
+      kf
+      Hchain3 Hstep9f). }
+  (** Step 11: Convert path homotopy to class equality **)
+  claim HclassEq : path_homotopy_class_loop Y Ty y1
+      (path_concat (reverse_path alpha) (path_concat rep alpha))
+    = path_homotopy_class_loop Y Ty y1 kf.
+  { exact (path_homotopy_class_loop_eq_of_path_homotopic Y Ty y1
+      (path_concat (reverse_path alpha) (path_concat rep alpha)) kf
+      Hchain4). }
+  (** Step 12: Conclude with symmetry of equality **)
+  symmetry. exact HclassEq.
+
 Admitted.
 
 (** from S58 Corollary 58.5 (line 1423 in algtop.tex) **)
