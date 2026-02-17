@@ -27589,6 +27589,24 @@ apply andI.
   + exact Hpi1Trivial.
 Admitted.
 
+(** S52 helper: reverse of a concatenation is homotopic to concatenation of reverses in opposite order **)
+Theorem reverse_path_concat_homotopy_s52 : forall X Tx x0 x1 x2 alpha beta:set,
+  continuous_map unit_interval unit_interval_topology X Tx alpha ->
+  continuous_map unit_interval unit_interval_topology X Tx beta ->
+  apply_fun alpha 0 = x0 -> apply_fun alpha 1 = x1 ->
+  apply_fun beta 0 = x1 -> apply_fun beta 1 = x2 ->
+  path_homotopic
+    X
+    Tx
+    x2
+    x0
+    (reverse_path (path_concat alpha beta))
+    (path_concat (reverse_path beta) (reverse_path alpha)).
+let X Tx x0 x1 x2 alpha beta.
+assume HalphaCont HbetaCont Halpha0 Halpha1 Hbeta0 Hbeta1.
+admit.
+Admitted.
+
 (** from S52 Exercise 2 (line 497 in algtop.tex) **)
 (** LATEX VERSION: If gamma = alpha . beta, then gamma-hat = beta-hat o alpha-hat. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
@@ -28310,8 +28328,20 @@ claim HrevConcat :
     (reverse_path (path_concat alpha beta))
     (path_concat (reverse_path beta) (reverse_path alpha)).
 {
-  (** TODO Bob: prove reverse of a concatenation is homotopic to concatenation of reverses in opposite order. **)
-  admit.
+  exact (reverse_path_concat_homotopy_s52
+    X
+    Tx
+    x0
+    x1
+    x2
+    alpha
+    beta
+    HalphaCont
+    HbetaCont
+    Halpha0
+    Halpha1
+    Hbeta0
+    Hbeta1).
 }
 claim Hstep1 :
   path_homotopic
@@ -28739,7 +28769,6 @@ apply iffI.
   assume Hx1 HalphaCont HbetaCont Halpha0 Halpha1 Hbeta0 Hbeta1.
   let cls.
   assume Hcls.
-  set delta := path_concat alpha (reverse_path beta).
   set delta_cls := cls.
   claim HrevBetaCont :
     continuous_map unit_interval unit_interval_topology X Tx (reverse_path beta).
