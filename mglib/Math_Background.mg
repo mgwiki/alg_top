@@ -1,5 +1,5 @@
 (** Balance Alice 2010 **)
-(** Balance Bob 1591 **)
+(** Balance Bob 1613 **)
 (** Balance Charlie 1223 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -28117,28 +28117,64 @@ Qed.
 (** from S54 Lemma 54.1 (temporary sub-bounty A) **)
 (** LATEX VERSION: Any point of the base has an evenly covered neighborhood under a covering map. **)
 (** EFFORT: 1 line, difficulty 1/10, USD 10 **)
-(** Bounty 11 **)
-(** Lock Bob 2026-02-18T01:00:00 **)
+(** Collected Bob 11 **)
+(** Proven Bob **)
 Theorem lemma54_1_path_lifting_sub_bounty_A : forall E Te B Tb p b:set,
   covering_map E Te B Tb p ->
   b :e B ->
   exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U.
-admit.
-Admitted.
+let E Te B Tb p b.
+assume Hcov Hb.
+exact (andER
+  (continuous_map E Te B Tb p /\ surjective_map E B p)
+  (forall b0:set, b0 :e B ->
+    exists U:set, U :e Tb /\ b0 :e U /\ evenly_covered E Te B Tb p U)
+  Hcov
+  b
+  Hb).
+Qed.
 
 (** from S54 Lemma 54.1 (temporary sub-bounty B) **)
 (** LATEX VERSION: Small continuity witness for pulling back neighborhoods along a path. **)
 (** EFFORT: 1 line, difficulty 1/10, USD 10 **)
-(** Bounty 11 **)
-(** Lock Bob 2026-02-18T01:00:00 **)
+(** Collected Bob 11 **)
+(** Proven Bob **)
 Theorem lemma54_1_path_lifting_sub_bounty_B : forall f B Tb p t:set,
   continuous_map unit_interval unit_interval_topology B Tb f ->
   t :e unit_interval ->
   forall U:set, U :e Tb -> apply_fun f t :e U ->
   exists N:set, N :e unit_interval_topology /\ t :e N /\
     forall u:set, u :e N -> apply_fun f u :e U.
-admit.
-Admitted.
+let f B Tb p t.
+assume Hfcont Ht.
+let U.
+assume HU HftU.
+witness preimage_of unit_interval f U.
+apply andI.
+- apply andI.
+  + exact (continuous_map_preimage
+    unit_interval
+    unit_interval_topology
+    B
+    Tb
+    f
+    Hfcont
+    U
+    HU).
+  + exact (SepI
+    unit_interval
+    (fun x:set => apply_fun f x :e U)
+    t
+    Ht
+    HftU).
+- let u.
+  assume HuN.
+  exact (SepE2
+    unit_interval
+    (fun x:set => apply_fun f x :e U)
+    u
+    HuN).
+Qed.
 
 Theorem lemma54_1_path_lifting : forall E Te B Tb p e0 f:set,
   covering_map E Te B Tb p ->
