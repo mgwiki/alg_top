@@ -1,5 +1,5 @@
 (** Balance Alice 2410 **)
-(** Balance Bob 2763 **)
+(** Balance Bob 2758 **)
 (** Balance Charlie 1202 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -48497,7 +48497,8 @@ Qed.
 (** from S58 Exercise 5 (line 1494 in algtop.tex) **)
 (** LATEX VERSION: X is contractible if and only if X has the homotopy type of a one-point space. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Bob 2026-02-18T07:50:00 **)
 Theorem ex58_5_contractible_iff_point_type : forall X Tx:set,
   topology_on X Tx -> X <> Empty ->
   (contractible_space X Tx <->
