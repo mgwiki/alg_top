@@ -1,5 +1,5 @@
 (** Balance Alice 2410 **)
-(** Balance Bob 2713 **)
+(** Balance Bob 2708 **)
 (** Balance Charlie 1202 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -47773,7 +47773,8 @@ Admitted.
 (** from S58 Exercise 3 (line 1492 in algtop.tex) **)
 (** LATEX VERSION: Homotopy equivalence is an equivalence relation. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Bob 2026-02-18T07:30:00 **)
 Theorem ex58_3_homotopy_equiv_transitive : forall X Tx Y Ty Z Tz:set,
   same_homotopy_type X Tx Y Ty ->
   same_homotopy_type Y Ty Z Tz ->
