@@ -1,6 +1,6 @@
 (** Balance Alice 2584 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 32494 **)
+(** Balance Charlie 32394 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -61821,7 +61821,8 @@ Admitted.
 (** LATEX VERSION: Let C be a simple closed curve in R^2 - 0. The inclusion-induced **)
 (** homomorphism is trivial if 0 lies in unbounded component of R^2-C. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:15:14 **)
 Theorem ex62_4a_winding_trivial : forall C:set,
   C c= setprod R R -> ~((0, 0) :e C) ->
   is_simple_closed_curve C (subspace_topology (setprod R R) R2_topology C) ->
@@ -61844,7 +61845,8 @@ Admitted.
 (** LATEX VERSION: If 0 lies in bounded component of R^2-C, the inclusion-induced **)
 (** homomorphism is nontrivial. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:15:14 **)
 Theorem ex62_4b_winding_nontrivial : forall C:set,
   C c= setprod R R -> ~((0, 0) :e C) ->
   is_simple_closed_curve C (subspace_topology (setprod R R) R2_topology C) ->
@@ -61867,7 +61869,8 @@ Admitted.
 (** LATEX VERSION: Let U be simply connected open in R^2. If C is a simple closed curve **)
 (** in U, then each bounded component of R^2 - C lies in U. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:15:14 **)
 Theorem ex62_5_simply_connected_bounded_components : forall U:set,
   U :e R2_topology ->
   simply_connected U (subspace_topology (setprod R R) R2_topology U) ->
@@ -62151,7 +62154,8 @@ Admitted.
 (** from S63 Exercise 1(b) (line 2241 in algtop.tex) **)
 (** LATEX VERSION: The three components have boundaries C1, C2, and C1 union C2. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:15:14 **)
 Theorem ex63_1b_disjoint_curves_boundaries : forall C1 C2:set,
   C1 c= Sn 2 -> C2 c= Sn 2 -> C1 :/\: C2 = Empty ->
   is_simple_closed_curve C1 (subspace_topology (Sn 2) (Sn_topology 2) C1) ->
@@ -62228,7 +62232,8 @@ Admitted.
 (** LATEX VERSION: If C is a simple closed curve intersecting D in a single point, **)
 (** then D union C separates S^2 into n+1 components. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:15:14 **)
 Theorem ex63_2c_curve_one_point : forall D:set,
   D c= Sn 2 -> Sn 2 :\: D :e Sn_topology 2 ->
   connected_space D (subspace_topology (Sn 2) (Sn_topology 2) D) ->
@@ -63054,7 +63059,8 @@ Admitted.
 (** LATEX VERSION: If the groups G_alpha generate G and the extension condition holds, **)
 (** then G is the direct sum of the G_alpha. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:15:14 **)
 Theorem lemma67_1_converse :
   forall G multG eG invG J Gfam:set,
   subgroups_generate_abelian G multG eG invG J Gfam ->
@@ -63161,7 +63167,8 @@ Admitted.
 (** homomorphism h: G -> H such that h o i_alpha = h_alpha. Conversely, if the extension condition **)
 (** holds, then each i_alpha is a monomorphism and G is the direct sum. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:15:14 **)
 Theorem lemma67_5_extension_external :
   forall G multG eG invG J Gfam multfam ifam:set,
   abelian_group G multG eG invG ->
@@ -63195,7 +63202,8 @@ Admitted.
 (** LATEX VERSION: If the groups i_alpha(G_alpha) generate G and the extension condition holds, **)
 (** then each i_alpha is a monomorphism and G is the direct sum of the groups i_alpha(G_alpha). **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:15:14 **)
 Theorem lemma67_5_extension_converse :
   forall G multG eG invG J Gfam multfam efam invfam ifam:set,
   abelian_group G multG eG invG ->
@@ -63786,7 +63794,8 @@ Admitted.
 (** LATEX VERSION: The only elements of G that have finite order are elements **)
 (** of G1 and G2 that have finite order, and their conjugates. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:15:14 **)
 Theorem ex68_2c_finite_order_elements :
   forall G mult e inv G1 G2:set,
   free_product_of_subgroups G mult e inv 2
@@ -64023,7 +64032,8 @@ Admitted.
 (** LATEX VERSION: If G = G1 free-product G2, then G/[G,G] is isomorphic to **)
 (** (G1/[G1,G1]) direct-sum (G2/[G2,G2]). **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:15:14 **)
 Theorem ex69_1_abelianization_free_product :
   forall G multG eG invG G1 G2:set,
   free_product_of_subgroups G multG eG invG 2
