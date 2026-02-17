@@ -75387,6 +75387,13 @@ claim Hx0U : x0 :e U.
 { exact (binintersectE1 U V x0 Hx0UV). }
 claim Hx0X : x0 :e X.
 { exact (topology_elem_subset X Tx U Htop HU x0 Hx0U). }
+claim HneUV : (U :/\: V) <> Empty.
+{
+  exact (elem_implies_nonempty
+    (U :/\: V)
+    x0
+    Hx0UV).
+}
 (** Every element of pi1(X,x0) is in the image of i-star, by ex59_4a_trivial_j_star **)
 claim Hgen : forall cls:set, cls :e fundamental_group X Tx x0 ->
   exists ucls:set,
@@ -75394,9 +75401,28 @@ claim Hgen : forall cls:set, cls :e fundamental_group X Tx x0 ->
     cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
       (graph U (fun x:set => x))) ucls.
 { exact (ex59_4a_trivial_j_star X Tx U V x0 Htop HU HV Hcover Hx0UV HpcUV Hj_triv). }
+claim HpcX_if_parts :
+  path_connected_space U (subspace_topology X Tx U) ->
+  path_connected_space V (subspace_topology X Tx V) ->
+  path_connected_space X Tx.
+{
+  assume HpcU HpcV.
+  exact (lemma59_2_path_connected_union_of_path_connected_open_subspaces
+    X
+    Tx
+    U
+    V
+    Htop
+    HU
+    HV
+    Hcover
+    HpcU
+    HpcV
+    HneUV).
+}
 claim HpcX : path_connected_space X Tx.
 {
-  admit. (** path_connected_space X Tx -- requires additional infrastructure **)
+  admit. (** remaining gap: derive path_connectedness of U and V from current assumptions **)
 }
 exact (lemma59_4a_simply_connected_from_generation_and_i_trivial
   X Tx U x0
