@@ -1,5 +1,5 @@
 (** Balance Alice 2160 **)
-(** Balance Bob 1607 **)
+(** Balance Bob 1757 **)
 (** Balance Charlie 1223 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -13157,13 +13157,248 @@ Qed.
 
 (** from S51 Theorem 51.2 part (3) (line 232 in algtop.tex): left inverse **)
 (** EFFORT: 8 lines textbook, difficulty 6/10, USD 150 **)
-(** Bounty 150 **)
+(** Infrastructure: reversing a path twice gives pointwise the original path **)
+(** Proven Bob **)
+Theorem reverse_path_involutive_pointwise : forall f t:set,
+  t :e unit_interval ->
+  apply_fun (reverse_path (reverse_path f)) t = apply_fun f t.
+let f t.
+assume Ht.
+rewrite (reverse_path_apply (reverse_path f) t Ht).
+claim HflipT : apply_fun flip_unit_interval t :e unit_interval.
+{
+  exact (flip_unit_interval_function_on t Ht).
+}
+rewrite (reverse_path_apply f (apply_fun flip_unit_interval t) HflipT).
+rewrite (flip_unit_interval_involutive t Ht).
+exact (fun P H => H).
+Qed.
+
+(** Infrastructure: reverse(reverse f) is path-homotopic to f **)
+(** Proven Bob **)
+Theorem reverse_path_involutive_homotopy : forall X Tx x0 x1 f:set,
+  continuous_map unit_interval unit_interval_topology X Tx f ->
+  apply_fun f 0 = x0 -> apply_fun f 1 = x1 ->
+  path_homotopic X Tx x0 x1 (reverse_path (reverse_path f)) f.
+let X Tx x0 x1 f.
+assume Hf Hf0 Hf1.
+claim Hrrf_cont :
+  continuous_map unit_interval unit_interval_topology X Tx (reverse_path (reverse_path f)).
+{
+  exact (reverse_path_continuous X Tx (reverse_path f)
+    (reverse_path_continuous X Tx f Hf)).
+}
+claim Hrrf0 : apply_fun (reverse_path (reverse_path f)) 0 = x0.
+{
+  rewrite (reverse_path_at_zero (reverse_path f)).
+  rewrite (reverse_path_at_one f).
+  exact Hf0.
+}
+claim Hrrf1 : apply_fun (reverse_path (reverse_path f)) 1 = x1.
+{
+  rewrite (reverse_path_at_one (reverse_path f)).
+  rewrite (reverse_path_at_zero f).
+  exact Hf1.
+}
+prove continuous_map unit_interval unit_interval_topology X Tx (reverse_path (reverse_path f)) /\
+  continuous_map unit_interval unit_interval_topology X Tx f /\
+  apply_fun (reverse_path (reverse_path f)) 0 = x0 /\ apply_fun (reverse_path (reverse_path f)) 1 = x1 /\
+  apply_fun f 0 = x0 /\ apply_fun f 1 = x1 /\
+  exists F:set,
+    continuous_map unit_square unit_square_topology X Tx F /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 0) = apply_fun (reverse_path (reverse_path f)) s) /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 1) = apply_fun f s) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (0, t) = x0) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (1, t) = x1).
+apply andI.
+- exact (and6I
+    (continuous_map unit_interval unit_interval_topology X Tx (reverse_path (reverse_path f)))
+    (continuous_map unit_interval unit_interval_topology X Tx f)
+    (apply_fun (reverse_path (reverse_path f)) 0 = x0)
+    (apply_fun (reverse_path (reverse_path f)) 1 = x1)
+    (apply_fun f 0 = x0)
+    (apply_fun f 1 = x1)
+    Hrrf_cont
+    Hf
+    Hrrf0
+    Hrrf1
+    Hf0
+    Hf1).
+- witness (compose_fun unit_square (projection_map1 unit_interval unit_interval) f).
+  claim Hconst_cont :
+    continuous_map unit_square unit_square_topology X Tx
+      (compose_fun unit_square (projection_map1 unit_interval unit_interval) f).
+  {
+    exact (composition_continuous
+      unit_square unit_square_topology
+      unit_interval unit_interval_topology
+      X Tx
+      (projection_map1 unit_interval unit_interval)
+      f
+      (andEL
+        (continuous_map
+          (setprod unit_interval unit_interval)
+          (product_topology unit_interval unit_interval_topology unit_interval unit_interval_topology)
+          unit_interval unit_interval_topology
+          (projection_map1 unit_interval unit_interval))
+        (continuous_map
+          (setprod unit_interval unit_interval)
+          (product_topology unit_interval unit_interval_topology unit_interval unit_interval_topology)
+          unit_interval unit_interval_topology
+          (projection_map2 unit_interval unit_interval))
+        (projection_maps_continuous
+          unit_interval unit_interval_topology
+          unit_interval unit_interval_topology
+          unit_interval_topology_on
+          unit_interval_topology_on))
+      Hf).
+  }
+  apply and5I.
+  + exact Hconst_cont.
+  + let s.
+    assume Hs.
+    rewrite (compose_fun_apply
+      unit_square
+      (projection_map1 unit_interval unit_interval)
+      f
+      (s, 0)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 0 Hs zero_in_unit_interval)).
+    rewrite (projection1_apply
+      unit_interval unit_interval
+      (s, 0)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 0 Hs zero_in_unit_interval)).
+    rewrite tuple_2_0_eq.
+    rewrite <- (reverse_path_involutive_pointwise f s Hs).
+    exact (fun P H => H).
+  + let s.
+    assume Hs.
+    rewrite (compose_fun_apply
+      unit_square
+      (projection_map1 unit_interval unit_interval)
+      f
+      (s, 1)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 1 Hs one_in_unit_interval)).
+    rewrite (projection1_apply
+      unit_interval unit_interval
+      (s, 1)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 1 Hs one_in_unit_interval)).
+    rewrite tuple_2_0_eq.
+    exact (fun P H => H).
+  + let t.
+    assume Ht.
+    rewrite (compose_fun_apply
+      unit_square
+      (projection_map1 unit_interval unit_interval)
+      f
+      (0, t)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 0 t zero_in_unit_interval Ht)).
+    rewrite (projection1_apply
+      unit_interval unit_interval
+      (0, t)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 0 t zero_in_unit_interval Ht)).
+    rewrite tuple_2_0_eq.
+    exact Hf0.
+  + let t.
+    assume Ht.
+    rewrite (compose_fun_apply
+      unit_square
+      (projection_map1 unit_interval unit_interval)
+      f
+      (1, t)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 1 t one_in_unit_interval Ht)).
+    rewrite (projection1_apply
+      unit_interval unit_interval
+      (1, t)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 1 t one_in_unit_interval Ht)).
+    rewrite tuple_2_0_eq.
+    exact Hf1.
+Qed.
+
+(** Collected Bob 165 **)
+(** Proven Bob **)
 Theorem Theorem_51_2_left_inverse : forall X Tx x0 x1 f:set,
   continuous_map unit_interval unit_interval_topology X Tx f ->
   apply_fun f 0 = x0 -> apply_fun f 1 = x1 ->
   path_homotopic X Tx x1 x1 (path_concat (reverse_path f) f) (constant_path x1).
-admit.
-Admitted.
+let X Tx x0 x1 f.
+assume Hf Hf0 Hf1.
+claim Hrf :
+  continuous_map unit_interval unit_interval_topology X Tx (reverse_path f).
+{
+  exact (reverse_path_continuous X Tx f Hf).
+}
+claim Hrf0 : apply_fun (reverse_path f) 0 = x1.
+{
+  rewrite (reverse_path_at_zero f).
+  exact Hf1.
+}
+claim Hrf1 : apply_fun (reverse_path f) 1 = x0.
+{
+  rewrite (reverse_path_at_one f).
+  exact Hf0.
+}
+claim Hright_on_rev :
+  path_homotopic X Tx x1 x1
+    (path_concat (reverse_path f) (reverse_path (reverse_path f)))
+    (constant_path x1).
+{
+  exact (Theorem_51_2_right_inverse
+    X Tx x1 x0 (reverse_path f)
+    Hrf
+    Hrf0
+    Hrf1).
+}
+claim Hrrf :
+  path_homotopic X Tx x0 x1 (reverse_path (reverse_path f)) f.
+{
+  exact (reverse_path_involutive_homotopy X Tx x0 x1 f Hf Hf0 Hf1).
+}
+claim Hrefl_rev :
+  path_homotopic X Tx x1 x0 (reverse_path f) (reverse_path f).
+{
+  exact (Lemma_51_1_path_homotopy_refl
+    X Tx x1 x0 (reverse_path f)
+    Hrf
+    Hrf0
+    Hrf1).
+}
+claim Hconcat_replace :
+  path_homotopic X Tx x1 x1
+    (path_concat (reverse_path f) (reverse_path (reverse_path f)))
+    (path_concat (reverse_path f) f).
+{
+  exact (path_concat_well_defined_on_classes
+    X Tx x1 x0 x1
+    (reverse_path f)
+    (reverse_path f)
+    (reverse_path (reverse_path f))
+    f
+    Hrefl_rev
+    Hrrf).
+}
+claim Hconcat_replace_sym :
+  path_homotopic X Tx x1 x1
+    (path_concat (reverse_path f) f)
+    (path_concat (reverse_path f) (reverse_path (reverse_path f))).
+{
+  exact (Lemma_51_1_path_homotopy_sym
+    X Tx x1 x1
+    (path_concat (reverse_path f) (reverse_path (reverse_path f)))
+    (path_concat (reverse_path f) f)
+    Hconcat_replace).
+}
+exact (Lemma_51_1_path_homotopy_trans
+  X Tx x1 x1
+  (path_concat (reverse_path f) f)
+  (path_concat (reverse_path f) (reverse_path (reverse_path f)))
+  (constant_path x1)
+  Hconcat_replace_sym
+  Hright_on_rev).
+Qed.
 
 (** from S51 Theorem 51.3 (line 321 in algtop.tex): reparametrization **)
 (** LATEX VERSION: Let f be a path in X, and let a0,...,an with 0=a0<a1<...<an=1. Let fi be the path that equals the positive linear map of I onto [ai-1,ai] followed by f. Then [f]=[f1] times ... times [fn]. **)
