@@ -1,4 +1,4 @@
-(** Balance Alice 1710 **)
+(** Balance Alice 2010 **)
 (** Balance Bob 1552 **)
 (** Balance Charlie 1223 **)
 
@@ -11995,16 +11995,669 @@ apply and7I.
     exact Hf1.
 Qed.
 
+(** Helper: (2s-1) + (1-s) = s for s in RH **)
+(** Proven Alice **)
+Theorem left_identity_arith_2sminus1_plus_1minuss : forall s:set, s :e unit_interval_right_half ->
+  add_SNo (add_SNo (mul_SNo 2 s) (minus_SNo 1)) (add_SNo 1 (minus_SNo s)) = s.
+let s. assume HsRH : s :e unit_interval_right_half.
+claim HSNo_s : SNo s.
+{ exact (real_SNo s (unit_interval_sub_R s (unit_interval_right_half_sub s HsRH))). }
+claim HSNo_ms : SNo (minus_SNo s).
+{ exact (SNo_minus_SNo s HSNo_s). }
+claim HSNo_2s : SNo (mul_SNo 2 s).
+{ exact (SNo_mul_SNo 2 s SNo_2 HSNo_s). }
+claim HSNo_m1 : SNo (minus_SNo 1).
+{ exact (SNo_minus_SNo 1 SNo_1). }
+rewrite (add_SNo_com 1 (minus_SNo s) SNo_1 HSNo_ms).
+rewrite (add_SNo_com_4_inner_mid (mul_SNo 2 s) (minus_SNo 1) (minus_SNo s) 1 HSNo_2s HSNo_m1 HSNo_ms SNo_1).
+rewrite (add_SNo_minus_SNo_linv 1 SNo_1).
+rewrite (add_SNo_0R (add_SNo (mul_SNo 2 s) (minus_SNo s)) (SNo_add_SNo (mul_SNo 2 s) (minus_SNo s) HSNo_2s HSNo_ms)).
+rewrite (mul_SNo_2_eq_add s HSNo_s).
+exact (add_SNo_minus_R2 s s HSNo_s HSNo_s).
+Qed.
+
 (** from S51 Theorem 51.2 part (2) (line 232 in algtop.tex): left identity **)
 (** EFFORT: 8 lines textbook, difficulty 6/10, USD 150 **)
-(** Bounty 150 **)
+(** Collected Alice 150 **)
+(** Proven Alice **)
 Theorem Theorem_51_2_left_identity : forall X Tx x0 x1 f:set,
   continuous_map unit_interval unit_interval_topology X Tx f ->
   apply_fun f 0 = x0 -> apply_fun f 1 = x1 ->
   x0 :e X ->
   path_homotopic X Tx x0 x1 (path_concat (constant_path x0) f) f.
-admit.
-Admitted.
+let X Tx x0 x1 f.
+assume Hcont : continuous_map unit_interval unit_interval_topology X Tx f.
+assume Hf0 : apply_fun f 0 = x0.
+assume Hf1 : apply_fun f 1 = x1.
+assume Hx0X : x0 :e X.
+claim HtopX : topology_on X Tx.
+{ exact (continuous_map_topology_cod unit_interval unit_interval_topology X Tx f Hcont). }
+claim Hfon : function_on f unit_interval X.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology X Tx f Hcont). }
+(** Constant path continuous **)
+claim Hce : continuous_map unit_interval unit_interval_topology X Tx (constant_path x0).
+{ exact (constant_path_continuous X Tx x0 HtopX Hx0X). }
+(** Endpoint compatibility **)
+claim Hfg : apply_fun (constant_path x0) 1 = apply_fun f 0.
+{ rewrite Hf0. rewrite (constant_path_at_one x0). exact (fun Q H => H). }
+(** path_concat continuous **)
+claim Hconcat_cont : continuous_map unit_interval unit_interval_topology X Tx (path_concat (constant_path x0) f).
+{ exact (path_concat_continuous X Tx x0 x0 x1 (constant_path x0) f Hce Hcont
+    (constant_path_at_zero x0) (constant_path_at_one x0) Hf0 Hf1). }
+(** Endpoint of path_concat at 0 **)
+claim Hconcat_0 : apply_fun (path_concat (constant_path x0) f) 0 = x0.
+{ rewrite (path_concat_apply_left (constant_path x0) f 0 Hfg zero_in_unit_interval_left_half).
+  rewrite (mul_SNo_zeroR 2 SNo_2). exact (constant_path_at_zero x0). }
+(** Endpoint of path_concat at 1 **)
+claim H2m1 : add_SNo (mul_SNo 2 1) (minus_SNo 1) = 1.
+{ exact (double_minus_one_map_apply 1 one_in_unit_interval_right_half
+    (fun a b:set => a = 1) double_minus_one_map_at_1). }
+claim Hconcat_1 : apply_fun (path_concat (constant_path x0) f) 1 = x1.
+{ rewrite (path_concat_apply_right (constant_path x0) f 1 Hfg one_in_unit_interval_right_half).
+  rewrite H2m1. exact Hf1. }
+(** Main construction via pasting lemma **)
+prove continuous_map unit_interval unit_interval_topology X Tx (path_concat (constant_path x0) f) /\
+  continuous_map unit_interval unit_interval_topology X Tx f /\
+  apply_fun (path_concat (constant_path x0) f) 0 = x0 /\ apply_fun (path_concat (constant_path x0) f) 1 = x1 /\
+  apply_fun f 0 = x0 /\ apply_fun f 1 = x1 /\
+  exists F:set,
+    continuous_map unit_square unit_square_topology X Tx F /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 0) = apply_fun (path_concat (constant_path x0) f) s) /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 1) = apply_fun f s) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (0, t) = x0) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (1, t) = x1).
+apply and7I.
+- exact Hconcat_cont.
+- exact Hcont.
+- exact Hconcat_0.
+- exact Hconcat_1.
+- exact Hf0.
+- exact Hf1.
+- set A : set := setprod unit_interval_left_half unit_interval.
+  set B : set := setprod unit_interval_right_half unit_interval.
+  set TALH : set := subspace_topology unit_interval unit_interval_topology unit_interval_left_half.
+  set TARH : set := subspace_topology unit_interval unit_interval_topology unit_interval_right_half.
+  claim HtopLH : topology_on unit_interval_left_half TALH.
+  { exact (subspace_topology_is_topology unit_interval unit_interval_topology unit_interval_left_half
+      unit_interval_topology_on unit_interval_left_half_sub). }
+  claim HtopRH : topology_on unit_interval_right_half TARH.
+  { exact (subspace_topology_is_topology unit_interval unit_interval_topology unit_interval_right_half
+      unit_interval_topology_on unit_interval_right_half_sub). }
+  set TA : set := product_topology unit_interval_left_half TALH unit_interval unit_interval_topology.
+  set TB : set := product_topology unit_interval_right_half TARH unit_interval unit_interval_topology.
+  claim HtopA : topology_on A TA.
+  { exact (product_topology_is_topology unit_interval_left_half TALH unit_interval unit_interval_topology HtopLH unit_interval_topology_on). }
+  claim HtopB : topology_on B TB.
+  { exact (product_topology_is_topology unit_interval_right_half TARH unit_interval unit_interval_topology HtopRH unit_interval_topology_on). }
+  (** Topology equalities **)
+  claim Htop_eqA : TA = subspace_topology unit_square unit_square_topology A.
+  { exact ((subspace_topology_whole unit_interval unit_interval_topology unit_interval_topology_on)
+      (fun a b:set => product_topology unit_interval_left_half TALH unit_interval a = subspace_topology unit_square unit_square_topology A)
+      (product_subspace_topology unit_interval unit_interval_topology unit_interval unit_interval_topology unit_interval_left_half unit_interval
+        unit_interval_topology_on unit_interval_topology_on unit_interval_left_half_sub (Subq_ref unit_interval))). }
+  claim Htop_eqA_sym : subspace_topology unit_square unit_square_topology A = TA.
+  { exact (fun Q => Htop_eqA (fun x y:set => Q y x)). }
+  claim Htop_eqB : TB = subspace_topology unit_square unit_square_topology B.
+  { exact ((subspace_topology_whole unit_interval unit_interval_topology unit_interval_topology_on)
+      (fun a b:set => product_topology unit_interval_right_half TARH unit_interval a = subspace_topology unit_square unit_square_topology B)
+      (product_subspace_topology unit_interval unit_interval_topology unit_interval unit_interval_topology unit_interval_right_half unit_interval
+        unit_interval_topology_on unit_interval_topology_on unit_interval_right_half_sub (Subq_ref unit_interval))). }
+  claim Htop_eqB_sym : subspace_topology unit_square unit_square_topology B = TB.
+  { exact (fun Q => Htop_eqB (fun x y:set => Q y x)). }
+  (** A and B are closed and cover unit_square **)
+  claim HclosedA : closed_in unit_square unit_square_topology A.
+  { exact (ex17_3_product_of_closed_sets_closed unit_interval unit_interval_topology unit_interval unit_interval_topology
+      unit_interval_left_half unit_interval
+      (andEL (closed_in unit_interval unit_interval_topology unit_interval_left_half) (closed_in unit_interval unit_interval_topology unit_interval_right_half) unit_interval_halves_closed)
+      (X_is_closed unit_interval unit_interval_topology unit_interval_topology_on)). }
+  claim HclosedB : closed_in unit_square unit_square_topology B.
+  { exact (ex17_3_product_of_closed_sets_closed unit_interval unit_interval_topology unit_interval unit_interval_topology
+      unit_interval_right_half unit_interval
+      (andER (closed_in unit_interval unit_interval_topology unit_interval_left_half) (closed_in unit_interval unit_interval_topology unit_interval_right_half) unit_interval_halves_closed)
+      (X_is_closed unit_interval unit_interval_topology unit_interval_topology_on)). }
+  claim Hcover : A :\/: B = unit_square.
+  { apply set_ext.
+    - exact (binunion_Subq_min A B unit_square
+        (setprod_Subq unit_interval_left_half unit_interval unit_interval unit_interval unit_interval_left_half_sub (Subq_ref unit_interval))
+        (setprod_Subq unit_interval_right_half unit_interval unit_interval unit_interval unit_interval_right_half_sub (Subq_ref unit_interval))).
+    - let p. assume Hp.
+      claim Hp0I : (p 0) :e unit_interval.
+      { exact (ap0_Sigma unit_interval (fun _ : set => unit_interval) p Hp). }
+      claim Hp1I : (p 1) :e unit_interval.
+      { exact (ap1_Sigma unit_interval (fun _ : set => unit_interval) p Hp). }
+      claim Hp0LHRH : (p 0) :e unit_interval_left_half :\/: unit_interval_right_half.
+      { exact (unit_interval_halves_cover (fun a b:set => (p 0) :e a -> (p 0) :e b)
+          (binunion_Subq_min unit_interval_left_half unit_interval_right_half unit_interval
+            unit_interval_left_half_sub unit_interval_right_half_sub (p 0))
+          Hp0I). }
+      apply (setprod_eta unit_interval unit_interval p Hp (fun a b:set => b :e A :\/: B)).
+      apply (binunionE unit_interval_left_half unit_interval_right_half (p 0) Hp0LHRH).
+      + assume Hp0LH.
+        exact (binunionI1 A B (p 0, p 1)
+          (tuple_2_setprod_by_pair_Sigma unit_interval_left_half unit_interval (p 0) (p 1) Hp0LH Hp1I)).
+      + assume Hp0RH.
+        exact (binunionI2 A B (p 0, p 1)
+          (tuple_2_setprod_by_pair_Sigma unit_interval_right_half unit_interval (p 0) (p 1) Hp0RH Hp1I)). }
+  (** Build projections on A **)
+  claim Hproj1A : continuous_map A TA unit_interval_left_half TALH (projection_map1 unit_interval_left_half unit_interval).
+  { exact (andEL
+      (continuous_map A TA unit_interval_left_half TALH (projection_map1 unit_interval_left_half unit_interval))
+      (continuous_map A TA unit_interval unit_interval_topology (projection_map2 unit_interval_left_half unit_interval))
+      (projections_are_continuous unit_interval_left_half TALH unit_interval unit_interval_topology HtopLH unit_interval_topology_on)). }
+  claim Hproj2A : continuous_map A TA unit_interval unit_interval_topology (projection_map2 unit_interval_left_half unit_interval).
+  { exact (andER
+      (continuous_map A TA unit_interval_left_half TALH (projection_map1 unit_interval_left_half unit_interval))
+      (continuous_map A TA unit_interval unit_interval_topology (projection_map2 unit_interval_left_half unit_interval))
+      (projections_are_continuous unit_interval_left_half TALH unit_interval unit_interval_topology HtopLH unit_interval_topology_on)). }
+  (** proj1 expanded to I **)
+  claim Hproj1A_I : continuous_map A TA unit_interval unit_interval_topology (projection_map1 unit_interval_left_half unit_interval).
+  { exact (continuous_map_range_expand A TA unit_interval_left_half TALH unit_interval unit_interval_topology
+      (projection_map1 unit_interval_left_half unit_interval) Hproj1A unit_interval_left_half_sub unit_interval_topology_on
+      (fun Q H => H)). }
+  (** psi_A: A -> I, maps (s,t) -> s times t **)
+  set psi_A : set := compose_fun A (pair_map A (projection_map1 unit_interval_left_half unit_interval) (projection_map2 unit_interval_left_half unit_interval)) mul_fun_R.
+  claim Hpsi_A : continuous_map A TA unit_interval unit_interval_topology psi_A.
+  { exact (mul_two_continuous_unit_interval A TA
+      (projection_map1 unit_interval_left_half unit_interval) (projection_map2 unit_interval_left_half unit_interval)
+      HtopA Hproj1A_I Hproj2A). }
+  (** F_A = f o psi_A: A -> X **)
+  set fA : set := compose_fun A psi_A f.
+  claim HcontfA : continuous_map A (subspace_topology unit_square unit_square_topology A) X Tx fA.
+  { rewrite Htop_eqA_sym.
+    exact (composition_continuous A TA unit_interval unit_interval_topology X Tx psi_A f Hpsi_A Hcont). }
+  (** Build projections on B **)
+  claim Hproj1B : continuous_map B TB unit_interval_right_half TARH (projection_map1 unit_interval_right_half unit_interval).
+  { exact (andEL
+      (continuous_map B TB unit_interval_right_half TARH (projection_map1 unit_interval_right_half unit_interval))
+      (continuous_map B TB unit_interval unit_interval_topology (projection_map2 unit_interval_right_half unit_interval))
+      (projections_are_continuous unit_interval_right_half TARH unit_interval unit_interval_topology HtopRH unit_interval_topology_on)). }
+  claim Hproj2B : continuous_map B TB unit_interval unit_interval_topology (projection_map2 unit_interval_right_half unit_interval).
+  { exact (andER
+      (continuous_map B TB unit_interval_right_half TARH (projection_map1 unit_interval_right_half unit_interval))
+      (continuous_map B TB unit_interval unit_interval_topology (projection_map2 unit_interval_right_half unit_interval))
+      (projections_are_continuous unit_interval_right_half TARH unit_interval unit_interval_topology HtopRH unit_interval_topology_on)). }
+  (** proj1_I_B: B -> I, expand codomain from RH to I **)
+  claim Hproj1B_I : continuous_map B TB unit_interval unit_interval_topology (projection_map1 unit_interval_right_half unit_interval).
+  { exact (continuous_map_range_expand B TB unit_interval_right_half TARH unit_interval unit_interval_topology
+      (projection_map1 unit_interval_right_half unit_interval) Hproj1B unit_interval_right_half_sub unit_interval_topology_on
+      (fun Q H => H)). }
+  (** double_minus_one_s: B -> I, maps (s,t) -> 2s-1 **)
+  claim Hdouble_minus_one_s : continuous_map B TB unit_interval unit_interval_topology
+    (compose_fun B (projection_map1 unit_interval_right_half unit_interval) double_minus_one_map_right_half).
+  { exact (composition_continuous B TB unit_interval_right_half TARH unit_interval unit_interval_topology
+      (projection_map1 unit_interval_right_half unit_interval) double_minus_one_map_right_half Hproj1B double_minus_one_map_continuous). }
+  (** flip_s_B: B -> I, maps (s,t) -> 1-s **)
+  set flip_s_B : set := compose_fun B (projection_map1 unit_interval_right_half unit_interval) flip_unit_interval.
+  claim Hflip_s_B : continuous_map B TB unit_interval unit_interval_topology flip_s_B.
+  { exact (composition_continuous B TB unit_interval unit_interval_topology unit_interval unit_interval_topology
+      (projection_map1 unit_interval_right_half unit_interval) flip_unit_interval Hproj1B_I flip_unit_interval_continuous). }
+  (** t_flip_s: B -> I, maps (s,t) -> t(1-s) **)
+  set t_flip_s_B : set := compose_fun B (pair_map B (projection_map2 unit_interval_right_half unit_interval) flip_s_B) mul_fun_R.
+  claim Ht_flip_s_B : continuous_map B TB unit_interval unit_interval_topology t_flip_s_B.
+  { exact (mul_two_continuous_unit_interval B TB (projection_map2 unit_interval_right_half unit_interval) flip_s_B
+      HtopB Hproj2B Hflip_s_B). }
+  (** Expand both to R for addition **)
+  set dms_B : set := compose_fun B (projection_map1 unit_interval_right_half unit_interval) double_minus_one_map_right_half.
+  claim Hdms_R : continuous_map B TB R R_standard_topology dms_B.
+  { exact (continuous_map_range_expand B TB unit_interval unit_interval_topology R R_standard_topology
+      dms_B Hdouble_minus_one_s unit_interval_sub_R R_standard_topology_is_topology (fun Q H => H)). }
+  claim Htfs_R : continuous_map B TB R R_standard_topology t_flip_s_B.
+  { exact (continuous_map_range_expand B TB unit_interval unit_interval_topology R R_standard_topology
+      t_flip_s_B Ht_flip_s_B unit_interval_sub_R R_standard_topology_is_topology (fun Q H => H)). }
+  (** psi_B_R: B -> R, maps (s,t) -> (2s-1) + t(1-s) **)
+  set psi_B_R : set := compose_fun B (pair_map B dms_B t_flip_s_B) add_fun_R.
+  claim Hpsi_B_R : continuous_map B TB R R_standard_topology psi_B_R.
+  { exact (add_two_continuous_R B TB dms_B t_flip_s_B HtopB Hdms_R Htfs_R). }
+  (** Prove psi_B_R range is in unit_interval **)
+  claim Hpsi_B_range : forall p:set, p :e B -> apply_fun psi_B_R p :e unit_interval.
+  { let p. assume HpB : p :e B.
+    claim Hp0RH : (p 0) :e unit_interval_right_half.
+    { exact (ap0_Sigma unit_interval_right_half (fun _ : set => unit_interval) p HpB). }
+    claim Hp1I : (p 1) :e unit_interval.
+    { exact (ap1_Sigma unit_interval_right_half (fun _ : set => unit_interval) p HpB). }
+    claim Hp0I : (p 0) :e unit_interval.
+    { exact (unit_interval_right_half_sub (p 0) Hp0RH). }
+    claim Hdms_p_I : apply_fun dms_B p :e unit_interval.
+    { exact (continuous_map_function_on B TB unit_interval unit_interval_topology dms_B Hdouble_minus_one_s p HpB). }
+    claim Htfs_p_I : apply_fun t_flip_s_B p :e unit_interval.
+    { exact (continuous_map_function_on B TB unit_interval unit_interval_topology t_flip_s_B Ht_flip_s_B p HpB). }
+    claim Hdms_p_R : apply_fun dms_B p :e R.
+    { exact (unit_interval_sub_R (apply_fun dms_B p) Hdms_p_I). }
+    claim Htfs_p_R : apply_fun t_flip_s_B p :e R.
+    { exact (unit_interval_sub_R (apply_fun t_flip_s_B p) Htfs_p_I). }
+    (** Evaluate psi_B_R(p) = dms_B(p) + t_flip_s_B(p) **)
+    claim Heval : apply_fun psi_B_R p = add_SNo (apply_fun dms_B p) (apply_fun t_flip_s_B p).
+    { exact (add_of_pair_map_apply B dms_B t_flip_s_B p HpB Hdms_p_R Htfs_p_R). }
+    (** Value is in R **)
+    claim Hsum_R : apply_fun psi_B_R p :e R.
+    { rewrite Heval. exact (real_add_SNo (apply_fun dms_B p) Hdms_p_R (apply_fun t_flip_s_B p) Htfs_p_R). }
+    (** Lower bound: sum >= 0 **)
+    claim HSNo_dms : SNo (apply_fun dms_B p). { exact (real_SNo (apply_fun dms_B p) Hdms_p_R). }
+    claim HSNo_tfs : SNo (apply_fun t_flip_s_B p). { exact (real_SNo (apply_fun t_flip_s_B p) Htfs_p_R). }
+    claim Hle0_dms : SNoLe 0 (apply_fun dms_B p).
+    { exact (SNoLe_of_Rle 0 (apply_fun dms_B p) (unit_interval_Rle0 (apply_fun dms_B p) Hdms_p_I)). }
+    claim Hle0_tfs : SNoLe 0 (apply_fun t_flip_s_B p).
+    { exact (SNoLe_of_Rle 0 (apply_fun t_flip_s_B p) (unit_interval_Rle0 (apply_fun t_flip_s_B p) Htfs_p_I)). }
+    claim Hle0_sum : SNoLe 0 (add_SNo (apply_fun dms_B p) (apply_fun t_flip_s_B p)).
+    { exact (add_SNo_0R 0 SNo_0 (fun a b:set =>
+        SNoLe a (add_SNo (apply_fun dms_B p) (apply_fun t_flip_s_B p)))
+        (add_SNo_Le3 0 0 (apply_fun dms_B p) (apply_fun t_flip_s_B p) SNo_0 SNo_0 HSNo_dms HSNo_tfs Hle0_dms Hle0_tfs)). }
+    claim Hnonneg : Rle 0 (apply_fun psi_B_R p).
+    { rewrite Heval. exact (Rle_of_SNoLe 0 (add_SNo (apply_fun dms_B p) (apply_fun t_flip_s_B p))
+        real_0 (real_add_SNo (apply_fun dms_B p) Hdms_p_R (apply_fun t_flip_s_B p) Htfs_p_R)
+        Hle0_sum). }
+    (** Upper bound: sum <= 1 **)
+    claim Hfs_p_I : apply_fun flip_s_B p :e unit_interval.
+    { exact (continuous_map_function_on B TB unit_interval unit_interval_topology flip_s_B Hflip_s_B p HpB). }
+    claim Hfs_p_R : apply_fun flip_s_B p :e R.
+    { exact (unit_interval_sub_R (apply_fun flip_s_B p) Hfs_p_I). }
+    claim HSNo_fs : SNo (apply_fun flip_s_B p). { exact (real_SNo (apply_fun flip_s_B p) Hfs_p_R). }
+    (** Evaluate t_flip_s_B(p) = proj2(p) times flip_s_B(p) **)
+    claim Hp2B_R : apply_fun (projection_map2 unit_interval_right_half unit_interval) p :e R.
+    { exact (unit_interval_sub_R (apply_fun (projection_map2 unit_interval_right_half unit_interval) p)
+        (continuous_map_function_on B TB unit_interval unit_interval_topology
+          (projection_map2 unit_interval_right_half unit_interval) Hproj2B p HpB)). }
+    claim Htfs_eval : apply_fun t_flip_s_B p = mul_SNo (apply_fun (projection_map2 unit_interval_right_half unit_interval) p) (apply_fun flip_s_B p).
+    { exact (mul_of_pair_map_apply B
+        (projection_map2 unit_interval_right_half unit_interval) flip_s_B
+        p HpB Hp2B_R (unit_interval_sub_R (apply_fun flip_s_B p) Hfs_p_I)). }
+    claim Hproj2_eq : apply_fun (projection_map2 unit_interval_right_half unit_interval) p = p 1.
+    { exact (projection2_apply unit_interval_right_half unit_interval p HpB). }
+    claim Htfs_eval2 : apply_fun t_flip_s_B p = mul_SNo (p 1) (apply_fun flip_s_B p).
+    { rewrite Htfs_eval. rewrite Hproj2_eq. exact (fun Q H => H). }
+    (** t_flip_s_B(p) <= flip_s_B(p) since (p 1) <= 1 and flip_s_B(p) >= 0 **)
+    claim HSNo_p1 : SNo (p 1). { exact (real_SNo (p 1) (unit_interval_sub_R (p 1) Hp1I)). }
+    claim Hle_p1_1 : SNoLe (p 1) 1.
+    { exact (SNoLe_of_Rle (p 1) 1 (unit_interval_Rle1 (p 1) Hp1I)). }
+    claim Hle0_fs : SNoLe 0 (apply_fun flip_s_B p).
+    { exact (SNoLe_of_Rle 0 (apply_fun flip_s_B p) (unit_interval_Rle0 (apply_fun flip_s_B p) Hfs_p_I)). }
+    claim Htfs_le_fs : SNoLe (apply_fun t_flip_s_B p) (apply_fun flip_s_B p).
+    { rewrite Htfs_eval2.
+      exact (mul_SNo_Le1_nonneg_Le (p 1) (apply_fun flip_s_B p) HSNo_p1 HSNo_fs Hle_p1_1 Hle0_fs). }
+    (** dms_B(p) + t_flip_s_B(p) <= dms_B(p) + flip_s_B(p) **)
+    claim Hsum_le_dfs : SNoLe (add_SNo (apply_fun dms_B p) (apply_fun t_flip_s_B p))
+                               (add_SNo (apply_fun dms_B p) (apply_fun flip_s_B p)).
+    { exact (add_SNo_Le2 (apply_fun dms_B p) (apply_fun t_flip_s_B p) (apply_fun flip_s_B p)
+        HSNo_dms HSNo_tfs HSNo_fs Htfs_le_fs). }
+    (** Evaluate dms_B(p) = 2(p 0) - 1 **)
+    claim Hdms_eval : apply_fun dms_B p = add_SNo (mul_SNo 2 (p 0)) (minus_SNo 1).
+    { rewrite (compose_fun_apply B (projection_map1 unit_interval_right_half unit_interval) double_minus_one_map_right_half p HpB).
+      rewrite (projection1_apply unit_interval_right_half unit_interval p HpB).
+      exact (double_minus_one_map_apply (p 0) Hp0RH). }
+    (** Evaluate flip_s_B(p) = 1 - (p 0) **)
+    claim Hfs_eval : apply_fun flip_s_B p = add_SNo 1 (minus_SNo (p 0)).
+    { rewrite (compose_fun_apply B (projection_map1 unit_interval_right_half unit_interval) flip_unit_interval p HpB).
+      rewrite (projection1_apply unit_interval_right_half unit_interval p HpB).
+      exact (flip_unit_interval_apply (p 0) Hp0I). }
+    (** dms_B(p) + flip_s_B(p) = (p 0) **)
+    claim Hdfs_eq_s : add_SNo (apply_fun dms_B p) (apply_fun flip_s_B p) = p 0.
+    { rewrite Hdms_eval. rewrite Hfs_eval.
+      exact (left_identity_arith_2sminus1_plus_1minuss (p 0) Hp0RH). }
+    (** sum <= (p 0) <= 1 **)
+    claim HSNo_p0 : SNo (p 0). { exact (real_SNo (p 0) (unit_interval_sub_R (p 0) Hp0I)). }
+    claim HSNo_sum : SNo (add_SNo (apply_fun dms_B p) (apply_fun t_flip_s_B p)).
+    { exact (SNo_add_SNo (apply_fun dms_B p) (apply_fun t_flip_s_B p) HSNo_dms HSNo_tfs). }
+    claim HSNo_dfs : SNo (add_SNo (apply_fun dms_B p) (apply_fun flip_s_B p)).
+    { exact (SNo_add_SNo (apply_fun dms_B p) (apply_fun flip_s_B p) HSNo_dms HSNo_fs). }
+    claim Hle_s_1 : SNoLe (p 0) 1.
+    { exact (SNoLe_of_Rle (p 0) 1 (unit_interval_Rle1 (p 0) Hp0I)). }
+    claim Hle_sum_1 : SNoLe (add_SNo (apply_fun dms_B p) (apply_fun t_flip_s_B p)) 1.
+    { exact (SNoLe_tra (add_SNo (apply_fun dms_B p) (apply_fun t_flip_s_B p))
+        (add_SNo (apply_fun dms_B p) (apply_fun flip_s_B p)) 1
+        HSNo_sum HSNo_dfs SNo_1
+        Hsum_le_dfs
+        (Hdfs_eq_s (fun a b:set => SNoLe b 1) Hle_s_1)). }
+    claim Hle1 : Rle (apply_fun psi_B_R p) 1.
+    { rewrite Heval. exact (Rle_of_SNoLe (add_SNo (apply_fun dms_B p) (apply_fun t_flip_s_B p)) 1
+        (real_add_SNo (apply_fun dms_B p) Hdms_p_R (apply_fun t_flip_s_B p) Htfs_p_R) real_1
+        Hle_sum_1). }
+    (** Construct unit_interval membership **)
+    exact (SepI R (fun x:set => ~ (Rlt x 0) /\ ~ (Rlt 1 x)) (apply_fun psi_B_R p)
+      Hsum_R (andI (~ (Rlt (apply_fun psi_B_R p) 0)) (~ (Rlt 1 (apply_fun psi_B_R p)))
+        (RleE_nlt 0 (apply_fun psi_B_R p) Hnonneg)
+        (RleE_nlt (apply_fun psi_B_R p) 1 Hle1))). }
+  (** psi_B: B -> I via range restriction **)
+  claim Hpsi_B : continuous_map B TB unit_interval unit_interval_topology psi_B_R.
+  { exact (continuous_map_range_restrict B TB R R_standard_topology psi_B_R unit_interval
+      Hpsi_B_R unit_interval_sub_R Hpsi_B_range). }
+  (** F_B = f o psi_B: B -> X **)
+  set gB : set := compose_fun B psi_B_R f.
+  claim HcontgB : continuous_map B (subspace_topology unit_square unit_square_topology B) X Tx gB.
+  { rewrite Htop_eqB_sym.
+    exact (composition_continuous B TB unit_interval unit_interval_topology X Tx psi_B_R f Hpsi_B Hcont). }
+  (** Helper: 1 - eps_1 = eps_1 **)
+  claim Hflip_eps1 : add_SNo 1 (minus_SNo (eps_ 1)) = eps_ 1.
+  { exact (fun Q H =>
+      eps_1_half_eq1 (fun a b => Q (eps_ 1) (add_SNo a (minus_SNo (eps_ 1))))
+        (add_SNo_minus_R2 (eps_ 1) (eps_ 1) SNo_eps_1 SNo_eps_1 Q
+          (eps_1_half_eq1 (fun a b => Q (add_SNo b (minus_SNo (eps_ 1))) (eps_ 1)) H))). }
+  claim Htop : topology_on unit_square unit_square_topology.
+  { exact (product_topology_is_topology unit_interval unit_interval_topology unit_interval unit_interval_topology
+      unit_interval_topology_on unit_interval_topology_on). }
+  (** Agreement on intersection A :/\: B **)
+  claim Hagree : forall p:set, p :e A :/\: B -> apply_fun fA p = apply_fun gB p.
+  { let p. assume HpAB : p :e A :/\: B.
+    claim HpA : p :e A. { exact (binintersectE1 A B p HpAB). }
+    claim HpB : p :e B. { exact (binintersectE2 A B p HpAB). }
+    claim Hp0LH : (p 0) :e unit_interval_left_half. { exact (ap0_Sigma unit_interval_left_half (fun _ : set => unit_interval) p HpA). }
+    claim Hp0RH : (p 0) :e unit_interval_right_half. { exact (ap0_Sigma unit_interval_right_half (fun _ : set => unit_interval) p HpB). }
+    claim Hp1I : (p 1) :e unit_interval. { exact (ap1_Sigma unit_interval_left_half (fun _ : set => unit_interval) p HpA). }
+    claim Hp0LHRH : (p 0) :e unit_interval_left_half :/\: unit_interval_right_half.
+    { exact (binintersectI unit_interval_left_half unit_interval_right_half (p 0) Hp0LH Hp0RH). }
+    claim Hp0_in_sing : (p 0) :e {eps_ 1}.
+    { exact (unit_interval_halves_intersection (fun a b:set => (p 0) :e b -> (p 0) :e a)
+        (fun H:(p 0) :e {eps_ 1} =>
+          (singleton_elem (p 0) (eps_ 1) H) (fun a b:set => b :e unit_interval_left_half :/\: unit_interval_right_half)
+            (binintersectI unit_interval_left_half unit_interval_right_half (eps_ 1)
+              eps_1_in_unit_interval_left_half eps_1_in_unit_interval_right_half))
+        Hp0LHRH). }
+    claim Hp0_eq : (p 0) = eps_ 1.
+    { exact (singleton_elem (p 0) (eps_ 1) Hp0_in_sing). }
+    claim Hp0I : (p 0) :e unit_interval.
+    { exact (unit_interval_left_half_sub (p 0) Hp0LH). }
+    claim HSNo_p1 : SNo (p 1). { exact (real_SNo (p 1) (unit_interval_sub_R (p 1) Hp1I)). }
+    (** Evaluate fA(p) = f(psi_A(p)) **)
+    rewrite (compose_fun_apply A psi_A f p HpA).
+    (** Evaluate gB(p) = f(psi_B_R(p)) **)
+    rewrite (compose_fun_apply B psi_B_R f p HpB).
+    (** It suffices to show psi_A(p) = psi_B_R(p) **)
+    (** Evaluate psi_A(p) = proj1(p) times proj2(p) **)
+    claim Hproj1A_R : apply_fun (projection_map1 unit_interval_left_half unit_interval) p :e R.
+    { exact (unit_interval_sub_R (apply_fun (projection_map1 unit_interval_left_half unit_interval) p)
+        (continuous_map_function_on A TA unit_interval unit_interval_topology
+          (projection_map1 unit_interval_left_half unit_interval) Hproj1A_I p HpA)). }
+    claim Hproj2A_R : apply_fun (projection_map2 unit_interval_left_half unit_interval) p :e R.
+    { exact (unit_interval_sub_R (apply_fun (projection_map2 unit_interval_left_half unit_interval) p)
+        (continuous_map_function_on A TA unit_interval unit_interval_topology
+          (projection_map2 unit_interval_left_half unit_interval) Hproj2A p HpA)). }
+    claim HpsiA_eval : apply_fun psi_A p = mul_SNo (p 0) (p 1).
+    { rewrite (mul_of_pair_map_apply A
+        (projection_map1 unit_interval_left_half unit_interval) (projection_map2 unit_interval_left_half unit_interval)
+        p HpA Hproj1A_R Hproj2A_R).
+      rewrite (projection1_apply unit_interval_left_half unit_interval p HpA).
+      rewrite (projection2_apply unit_interval_left_half unit_interval p HpA).
+      exact (fun Q H => H). }
+    (** Evaluate psi_B_R(p) = dms_B(p) + t_flip_s_B(p) **)
+    claim Hdms_p_R : apply_fun dms_B p :e R.
+    { exact (unit_interval_sub_R (apply_fun dms_B p)
+        (continuous_map_function_on B TB unit_interval unit_interval_topology dms_B Hdouble_minus_one_s p HpB)). }
+    claim Htfs_p_R : apply_fun t_flip_s_B p :e R.
+    { exact (unit_interval_sub_R (apply_fun t_flip_s_B p)
+        (continuous_map_function_on B TB unit_interval unit_interval_topology t_flip_s_B Ht_flip_s_B p HpB)). }
+    claim HpsiB_eval : apply_fun psi_B_R p = add_SNo (apply_fun dms_B p) (apply_fun t_flip_s_B p).
+    { exact (add_of_pair_map_apply B dms_B t_flip_s_B p HpB Hdms_p_R Htfs_p_R). }
+    (** Evaluate dms_B(p) = 2(p 0) - 1 **)
+    claim Hdms_eval : apply_fun dms_B p = add_SNo (mul_SNo 2 (p 0)) (minus_SNo 1).
+    { rewrite (compose_fun_apply B (projection_map1 unit_interval_right_half unit_interval) double_minus_one_map_right_half p HpB).
+      rewrite (projection1_apply unit_interval_right_half unit_interval p HpB).
+      exact (double_minus_one_map_apply (p 0) Hp0RH). }
+    (** Evaluate t_flip_s_B(p) = (p 1) times flip(p 0) **)
+    claim Hp2B_R : apply_fun (projection_map2 unit_interval_right_half unit_interval) p :e R.
+    { exact (unit_interval_sub_R (apply_fun (projection_map2 unit_interval_right_half unit_interval) p)
+        (continuous_map_function_on B TB unit_interval unit_interval_topology
+          (projection_map2 unit_interval_right_half unit_interval) Hproj2B p HpB)). }
+    claim Hfs_p_R : apply_fun flip_s_B p :e R.
+    { exact (unit_interval_sub_R (apply_fun flip_s_B p)
+        (continuous_map_function_on B TB unit_interval unit_interval_topology flip_s_B Hflip_s_B p HpB)). }
+    claim Htfs_eval : apply_fun t_flip_s_B p = mul_SNo (p 1) (apply_fun flip_s_B p).
+    { rewrite (mul_of_pair_map_apply B
+        (projection_map2 unit_interval_right_half unit_interval) flip_s_B
+        p HpB Hp2B_R Hfs_p_R).
+      rewrite (projection2_apply unit_interval_right_half unit_interval p HpB).
+      exact (fun Q H => H). }
+    claim Hfs_eval : apply_fun flip_s_B p = add_SNo 1 (minus_SNo (p 0)).
+    { rewrite (compose_fun_apply B (projection_map1 unit_interval_right_half unit_interval) flip_unit_interval p HpB).
+      rewrite (projection1_apply unit_interval_right_half unit_interval p HpB).
+      exact (flip_unit_interval_apply (p 0) Hp0I). }
+    (** Now rewrite psi_A(p) and psi_B_R(p) with p 0 = eps_1 **)
+    rewrite HpsiA_eval.
+    rewrite HpsiB_eval.
+    rewrite Hdms_eval.
+    rewrite Htfs_eval.
+    rewrite Hfs_eval.
+    rewrite Hp0_eq.
+    (** 2 times eps_1 = 1, so (2 eps_1) + (-1) = 1 + (-1) = 0 **)
+    rewrite eps_1_half_eq2.
+    rewrite (add_SNo_minus_SNo_rinv 1 SNo_1).
+    (** 1 - eps_1 = eps_1 **)
+    rewrite Hflip_eps1.
+    (** Goal: f(eps_1 times (p 1)) = f(0 + (p 1) times eps_1) **)
+    rewrite (add_SNo_0L (mul_SNo (p 1) (eps_ 1)) (SNo_mul_SNo (p 1) (eps_ 1) HSNo_p1 SNo_eps_1)).
+    rewrite (mul_SNo_com (eps_ 1) (p 1) SNo_eps_1 HSNo_p1).
+    exact (fun Q H => H). }
+  (** Apply pasting lemma **)
+  claim Hpaste : exists h:set, continuous_map unit_square unit_square_topology X Tx h /\
+    ((forall p:set, p :e A -> apply_fun h p = apply_fun fA p) /\
+     (forall p:set, p :e B -> apply_fun h p = apply_fun gB p)).
+  { exact (pasting_lemma unit_square A B X unit_square_topology Tx fA gB Htop HclosedA HclosedB Hcover HcontfA HcontgB Hagree). }
+  apply Hpaste.
+  let HH. assume HHspec.
+  apply HHspec. assume HcHH HHAB.
+  apply HHAB. assume HHA HHB.
+  witness HH.
+  apply and5I.
+  + exact HcHH.
+  + (** F(s,0) = path_concat(e, f)(s) **)
+    let s. assume Hs : s :e unit_interval.
+    claim HsLHRH : s :e unit_interval_left_half :\/: unit_interval_right_half.
+    { exact (unit_interval_halves_cover (fun a b:set => s :e a -> s :e b)
+        (binunion_Subq_min unit_interval_left_half unit_interval_right_half unit_interval
+          unit_interval_left_half_sub unit_interval_right_half_sub s) Hs). }
+    apply (binunionE unit_interval_left_half unit_interval_right_half s HsLHRH).
+    - assume HsLH : s :e unit_interval_left_half.
+      claim Hs0A : (s, 0) :e A.
+      { exact (tuple_2_setprod_by_pair_Sigma unit_interval_left_half unit_interval s 0 HsLH zero_in_unit_interval). }
+      rewrite (HHA (s, 0) Hs0A).
+      rewrite (compose_fun_apply A psi_A f (s, 0) Hs0A).
+      claim HpsiA_s0 : apply_fun psi_A (s, 0) = 0.
+      { claim Hp1_s0 : apply_fun (projection_map1 unit_interval_left_half unit_interval) (s, 0) :e unit_interval.
+        { exact (continuous_map_function_on A TA unit_interval unit_interval_topology
+            (projection_map1 unit_interval_left_half unit_interval) Hproj1A_I (s, 0) Hs0A). }
+        claim Hp2_s0 : apply_fun (projection_map2 unit_interval_left_half unit_interval) (s, 0) :e unit_interval.
+        { exact (continuous_map_function_on A TA unit_interval unit_interval_topology
+            (projection_map2 unit_interval_left_half unit_interval) Hproj2A (s, 0) Hs0A). }
+        rewrite (mul_of_pair_map_apply A
+          (projection_map1 unit_interval_left_half unit_interval) (projection_map2 unit_interval_left_half unit_interval)
+          (s, 0) Hs0A
+          (unit_interval_sub_R (apply_fun (projection_map1 unit_interval_left_half unit_interval) (s, 0)) Hp1_s0)
+          (unit_interval_sub_R (apply_fun (projection_map2 unit_interval_left_half unit_interval) (s, 0)) Hp2_s0)).
+        rewrite (projection2_apply unit_interval_left_half unit_interval (s, 0) Hs0A).
+        rewrite (tuple_2_1_eq s 0).
+        exact (mul_SNo_zeroR (apply_fun (projection_map1 unit_interval_left_half unit_interval) (s, 0))
+          (real_SNo (apply_fun (projection_map1 unit_interval_left_half unit_interval) (s, 0))
+            (unit_interval_sub_R (apply_fun (projection_map1 unit_interval_left_half unit_interval) (s, 0)) Hp1_s0))). }
+      rewrite HpsiA_s0.
+      rewrite Hf0.
+      rewrite (path_concat_apply_left (constant_path x0) f s Hfg HsLH).
+      exact (fun Q H => (constant_path_apply x0 (mul_SNo 2 s)
+        (double_map_apply s HsLH (fun a b:set => a :e unit_interval) (double_map_function_on s HsLH)))
+        (fun a b:set => Q b a) H).
+    - assume HsRH : s :e unit_interval_right_half.
+      claim Hs0B : (s, 0) :e B.
+      { exact (tuple_2_setprod_by_pair_Sigma unit_interval_right_half unit_interval s 0 HsRH zero_in_unit_interval). }
+      rewrite (HHB (s, 0) Hs0B).
+      rewrite (compose_fun_apply B psi_B_R f (s, 0) Hs0B).
+      claim HpsiB_s0 : apply_fun psi_B_R (s, 0) = add_SNo (mul_SNo 2 s) (minus_SNo 1).
+      { claim Hdms_s0_R : apply_fun dms_B (s, 0) :e R.
+        { exact (unit_interval_sub_R (apply_fun dms_B (s, 0))
+            (continuous_map_function_on B TB unit_interval unit_interval_topology dms_B Hdouble_minus_one_s (s, 0) Hs0B)). }
+        claim Htfs_s0_R : apply_fun t_flip_s_B (s, 0) :e R.
+        { exact (unit_interval_sub_R (apply_fun t_flip_s_B (s, 0))
+            (continuous_map_function_on B TB unit_interval unit_interval_topology t_flip_s_B Ht_flip_s_B (s, 0) Hs0B)). }
+        rewrite (add_of_pair_map_apply B dms_B t_flip_s_B (s, 0) Hs0B Hdms_s0_R Htfs_s0_R).
+        (** dms_B(s,0) = 2s-1 **)
+        rewrite (compose_fun_apply B (projection_map1 unit_interval_right_half unit_interval) double_minus_one_map_right_half (s, 0) Hs0B).
+        rewrite (projection1_apply unit_interval_right_half unit_interval (s, 0) Hs0B).
+        rewrite (tuple_2_0_eq s 0).
+        rewrite (double_minus_one_map_apply s HsRH).
+        (** t_flip_s_B(s,0) = 0 (1-s) = 0 **)
+        claim Hp2_s0B : apply_fun (projection_map2 unit_interval_right_half unit_interval) (s, 0) :e unit_interval.
+        { exact (continuous_map_function_on B TB unit_interval unit_interval_topology
+            (projection_map2 unit_interval_right_half unit_interval) Hproj2B (s, 0) Hs0B). }
+        claim Hfs_s0 : apply_fun flip_s_B (s, 0) :e unit_interval.
+        { exact (continuous_map_function_on B TB unit_interval unit_interval_topology
+            flip_s_B Hflip_s_B (s, 0) Hs0B). }
+        rewrite (mul_of_pair_map_apply B
+          (projection_map2 unit_interval_right_half unit_interval) flip_s_B
+          (s, 0) Hs0B
+          (unit_interval_sub_R (apply_fun (projection_map2 unit_interval_right_half unit_interval) (s, 0)) Hp2_s0B)
+          (unit_interval_sub_R (apply_fun flip_s_B (s, 0)) Hfs_s0)).
+        rewrite (projection2_apply unit_interval_right_half unit_interval (s, 0) Hs0B).
+        rewrite (tuple_2_1_eq s 0).
+        rewrite (mul_SNo_zeroL (apply_fun flip_s_B (s, 0))
+          (real_SNo (apply_fun flip_s_B (s, 0)) (unit_interval_sub_R (apply_fun flip_s_B (s, 0)) Hfs_s0))).
+        exact (add_SNo_0R (add_SNo (mul_SNo 2 s) (minus_SNo 1))
+          (SNo_add_SNo (mul_SNo 2 s) (minus_SNo 1) (SNo_mul_SNo 2 s SNo_2 (real_SNo s (unit_interval_sub_R s (unit_interval_right_half_sub s HsRH)))) (SNo_minus_SNo 1 SNo_1))). }
+      rewrite HpsiB_s0.
+      rewrite (path_concat_apply_right (constant_path x0) f s Hfg HsRH).
+      exact (fun Q H => H).
+  + (** F(s,1) = f(s) **)
+    let s. assume Hs : s :e unit_interval.
+    claim HsLHRH : s :e unit_interval_left_half :\/: unit_interval_right_half.
+    { exact (unit_interval_halves_cover (fun a b:set => s :e a -> s :e b)
+        (binunion_Subq_min unit_interval_left_half unit_interval_right_half unit_interval
+          unit_interval_left_half_sub unit_interval_right_half_sub s) Hs). }
+    apply (binunionE unit_interval_left_half unit_interval_right_half s HsLHRH).
+    - assume HsLH : s :e unit_interval_left_half.
+      claim Hs1A : (s, 1) :e A.
+      { exact (tuple_2_setprod_by_pair_Sigma unit_interval_left_half unit_interval s 1 HsLH one_in_unit_interval). }
+      rewrite (HHA (s, 1) Hs1A).
+      rewrite (compose_fun_apply A psi_A f (s, 1) Hs1A).
+      claim HpsiA_s1 : apply_fun psi_A (s, 1) = s.
+      { claim Hp1_s1 : apply_fun (projection_map1 unit_interval_left_half unit_interval) (s, 1) :e unit_interval.
+        { exact (continuous_map_function_on A TA unit_interval unit_interval_topology
+            (projection_map1 unit_interval_left_half unit_interval) Hproj1A_I (s, 1) Hs1A). }
+        claim Hp2_s1 : apply_fun (projection_map2 unit_interval_left_half unit_interval) (s, 1) :e unit_interval.
+        { exact (continuous_map_function_on A TA unit_interval unit_interval_topology
+            (projection_map2 unit_interval_left_half unit_interval) Hproj2A (s, 1) Hs1A). }
+        rewrite (mul_of_pair_map_apply A
+          (projection_map1 unit_interval_left_half unit_interval) (projection_map2 unit_interval_left_half unit_interval)
+          (s, 1) Hs1A
+          (unit_interval_sub_R (apply_fun (projection_map1 unit_interval_left_half unit_interval) (s, 1)) Hp1_s1)
+          (unit_interval_sub_R (apply_fun (projection_map2 unit_interval_left_half unit_interval) (s, 1)) Hp2_s1)).
+        rewrite (projection1_apply unit_interval_left_half unit_interval (s, 1) Hs1A).
+        rewrite (tuple_2_0_eq s 1).
+        rewrite (projection2_apply unit_interval_left_half unit_interval (s, 1) Hs1A).
+        rewrite (tuple_2_1_eq s 1).
+        exact (mul_SNo_oneR s (real_SNo s (unit_interval_sub_R s (unit_interval_left_half_sub s HsLH)))). }
+      rewrite HpsiA_s1.
+      exact (fun Q H => H).
+    - assume HsRH : s :e unit_interval_right_half.
+      claim Hs1B : (s, 1) :e B.
+      { exact (tuple_2_setprod_by_pair_Sigma unit_interval_right_half unit_interval s 1 HsRH one_in_unit_interval). }
+      rewrite (HHB (s, 1) Hs1B).
+      rewrite (compose_fun_apply B psi_B_R f (s, 1) Hs1B).
+      claim HpsiB_s1 : apply_fun psi_B_R (s, 1) = s.
+      { claim Hdms_s1_R : apply_fun dms_B (s, 1) :e R.
+        { exact (unit_interval_sub_R (apply_fun dms_B (s, 1))
+            (continuous_map_function_on B TB unit_interval unit_interval_topology dms_B Hdouble_minus_one_s (s, 1) Hs1B)). }
+        claim Htfs_s1_R : apply_fun t_flip_s_B (s, 1) :e R.
+        { exact (unit_interval_sub_R (apply_fun t_flip_s_B (s, 1))
+            (continuous_map_function_on B TB unit_interval unit_interval_topology t_flip_s_B Ht_flip_s_B (s, 1) Hs1B)). }
+        rewrite (add_of_pair_map_apply B dms_B t_flip_s_B (s, 1) Hs1B Hdms_s1_R Htfs_s1_R).
+        (** dms_B(s,1) = 2s-1 **)
+        rewrite (compose_fun_apply B (projection_map1 unit_interval_right_half unit_interval) double_minus_one_map_right_half (s, 1) Hs1B).
+        rewrite (projection1_apply unit_interval_right_half unit_interval (s, 1) Hs1B).
+        rewrite (tuple_2_0_eq s 1).
+        rewrite (double_minus_one_map_apply s HsRH).
+        (** t_flip_s_B(s,1) = 1(1-s) = 1-s **)
+        claim Hp2_s1B : apply_fun (projection_map2 unit_interval_right_half unit_interval) (s, 1) :e unit_interval.
+        { exact (continuous_map_function_on B TB unit_interval unit_interval_topology
+            (projection_map2 unit_interval_right_half unit_interval) Hproj2B (s, 1) Hs1B). }
+        claim Hfs_s1 : apply_fun flip_s_B (s, 1) :e unit_interval.
+        { exact (continuous_map_function_on B TB unit_interval unit_interval_topology
+            flip_s_B Hflip_s_B (s, 1) Hs1B). }
+        rewrite (mul_of_pair_map_apply B
+          (projection_map2 unit_interval_right_half unit_interval) flip_s_B
+          (s, 1) Hs1B
+          (unit_interval_sub_R (apply_fun (projection_map2 unit_interval_right_half unit_interval) (s, 1)) Hp2_s1B)
+          (unit_interval_sub_R (apply_fun flip_s_B (s, 1)) Hfs_s1)).
+        rewrite (projection2_apply unit_interval_right_half unit_interval (s, 1) Hs1B).
+        rewrite (tuple_2_1_eq s 1).
+        rewrite (mul_SNo_oneL (apply_fun flip_s_B (s, 1))
+          (real_SNo (apply_fun flip_s_B (s, 1)) (unit_interval_sub_R (apply_fun flip_s_B (s, 1)) Hfs_s1))).
+        (** Now: (2s-1) + flip_s_B(s,1) = s **)
+        (** flip_s_B(s,1) = flip(proj1(s,1)) = flip(s) = 1-s **)
+        rewrite (compose_fun_apply B (projection_map1 unit_interval_right_half unit_interval) flip_unit_interval (s, 1) Hs1B).
+        rewrite (projection1_apply unit_interval_right_half unit_interval (s, 1) Hs1B).
+        rewrite (tuple_2_0_eq s 1).
+        rewrite (flip_unit_interval_apply s (unit_interval_right_half_sub s HsRH)).
+        (** (2s-1) + (1-s) = s **)
+        exact (left_identity_arith_2sminus1_plus_1minuss s HsRH). }
+      rewrite HpsiB_s1.
+      exact (fun Q H => H).
+  + (** F(0,t) = x0 **)
+    let t. assume Ht : t :e unit_interval.
+    claim H0tA : (0, t) :e A.
+    { exact (tuple_2_setprod_by_pair_Sigma unit_interval_left_half unit_interval 0 t zero_in_unit_interval_left_half Ht). }
+    rewrite (HHA (0, t) H0tA).
+    rewrite (compose_fun_apply A psi_A f (0, t) H0tA).
+    claim HpsiA_0t : apply_fun psi_A (0, t) = 0.
+    { claim Hproj1_0t : apply_fun (projection_map1 unit_interval_left_half unit_interval) (0, t) :e unit_interval.
+      { exact (continuous_map_function_on A TA unit_interval unit_interval_topology
+          (projection_map1 unit_interval_left_half unit_interval) Hproj1A_I (0, t) H0tA). }
+      claim Hproj2_0t : apply_fun (projection_map2 unit_interval_left_half unit_interval) (0, t) :e unit_interval.
+      { exact (continuous_map_function_on A TA unit_interval unit_interval_topology
+          (projection_map2 unit_interval_left_half unit_interval) Hproj2A (0, t) H0tA). }
+      rewrite (mul_of_pair_map_apply A
+        (projection_map1 unit_interval_left_half unit_interval) (projection_map2 unit_interval_left_half unit_interval)
+        (0, t) H0tA
+        (unit_interval_sub_R (apply_fun (projection_map1 unit_interval_left_half unit_interval) (0, t)) Hproj1_0t)
+        (unit_interval_sub_R (apply_fun (projection_map2 unit_interval_left_half unit_interval) (0, t)) Hproj2_0t)).
+      rewrite (projection1_apply unit_interval_left_half unit_interval (0, t) H0tA).
+      rewrite (tuple_2_0_eq 0 t).
+      exact (mul_SNo_zeroL (apply_fun (projection_map2 unit_interval_left_half unit_interval) (0, t))
+        (real_SNo (apply_fun (projection_map2 unit_interval_left_half unit_interval) (0, t))
+          (unit_interval_sub_R (apply_fun (projection_map2 unit_interval_left_half unit_interval) (0, t)) Hproj2_0t))). }
+    rewrite HpsiA_0t.
+    exact Hf0.
+  + (** F(1,t) = x1 **)
+    let t. assume Ht : t :e unit_interval.
+    claim H1tB : (1, t) :e B.
+    { exact (tuple_2_setprod_by_pair_Sigma unit_interval_right_half unit_interval 1 t one_in_unit_interval_right_half Ht). }
+    rewrite (HHB (1, t) H1tB).
+    rewrite (compose_fun_apply B psi_B_R f (1, t) H1tB).
+    claim HpsiB_1t : apply_fun psi_B_R (1, t) = 1.
+    { claim Hdms_1t_R : apply_fun dms_B (1, t) :e R.
+      { exact (unit_interval_sub_R (apply_fun dms_B (1, t))
+          (continuous_map_function_on B TB unit_interval unit_interval_topology dms_B Hdouble_minus_one_s (1, t) H1tB)). }
+      claim Htfs_1t_R : apply_fun t_flip_s_B (1, t) :e R.
+      { exact (unit_interval_sub_R (apply_fun t_flip_s_B (1, t))
+          (continuous_map_function_on B TB unit_interval unit_interval_topology t_flip_s_B Ht_flip_s_B (1, t) H1tB)). }
+      rewrite (add_of_pair_map_apply B dms_B t_flip_s_B (1, t) H1tB Hdms_1t_R Htfs_1t_R).
+      (** dms_B(1,t) = 2(1)-1 = 1 **)
+      rewrite (compose_fun_apply B (projection_map1 unit_interval_right_half unit_interval) double_minus_one_map_right_half (1, t) H1tB).
+      rewrite (projection1_apply unit_interval_right_half unit_interval (1, t) H1tB).
+      rewrite (tuple_2_0_eq 1 t).
+      rewrite double_minus_one_map_at_1.
+      (** t_flip_s_B(1,t) = t flip(1) = t 0 = 0 **)
+      claim Hproj2_1tB : apply_fun (projection_map2 unit_interval_right_half unit_interval) (1, t) :e unit_interval.
+      { exact (continuous_map_function_on B TB unit_interval unit_interval_topology
+          (projection_map2 unit_interval_right_half unit_interval) Hproj2B (1, t) H1tB). }
+      claim Hflip_s_1t : apply_fun flip_s_B (1, t) :e unit_interval.
+      { exact (continuous_map_function_on B TB unit_interval unit_interval_topology
+          flip_s_B Hflip_s_B (1, t) H1tB). }
+      rewrite (mul_of_pair_map_apply B
+        (projection_map2 unit_interval_right_half unit_interval) flip_s_B
+        (1, t) H1tB
+        (unit_interval_sub_R (apply_fun (projection_map2 unit_interval_right_half unit_interval) (1, t)) Hproj2_1tB)
+        (unit_interval_sub_R (apply_fun flip_s_B (1, t)) Hflip_s_1t)).
+      rewrite (compose_fun_apply B (projection_map1 unit_interval_right_half unit_interval) flip_unit_interval (1, t) H1tB).
+      rewrite (projection1_apply unit_interval_right_half unit_interval (1, t) H1tB).
+      rewrite (tuple_2_0_eq 1 t).
+      rewrite (flip_unit_interval_apply 1 one_in_unit_interval).
+      rewrite (add_SNo_minus_SNo_rinv 1 SNo_1).
+      rewrite (projection2_apply unit_interval_right_half unit_interval (1, t) H1tB).
+      rewrite (tuple_2_1_eq 1 t).
+      rewrite (mul_SNo_zeroR t (real_SNo t (unit_interval_sub_R t Ht))).
+      exact (add_SNo_0R 1 SNo_1). }
+    rewrite HpsiB_1t.
+    exact Hf1.
+Qed.
 
 (** from S51 Theorem 51.2 part (3) (line 232 in algtop.tex): right inverse **)
 (** EFFORT: 8 lines textbook, difficulty 6/10, USD 150 **)
