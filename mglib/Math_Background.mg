@@ -68382,6 +68382,57 @@ claim Hcore :
         + exact HW0case.
       - exact HW1case.
     }
+    claim HpreCoverByCases :
+      forall t:set, t :e unit_interval ->
+        t :e preimage_of unit_interval fcls U \/
+        t :e preimage_of unit_interval fcls V.
+    {
+      let t.
+      assume HtI : t :e unit_interval.
+      claim HtUnion :
+        t :e (preimage_of unit_interval fcls U) :\/: (preimage_of unit_interval fcls V).
+      {
+        exact (mem_eqL
+          t
+          ((preimage_of unit_interval fcls U) :\/: (preimage_of unit_interval fcls V))
+          unit_interval
+          HpreCover
+          HtI).
+      }
+      exact (binunionE
+        (preimage_of unit_interval fcls U)
+        (preimage_of unit_interval fcls V)
+        t
+        HtUnion).
+    }
+    claim HoverlapPathToLoopPoint :
+      forall t:set, t :e preimage_of unit_interval fcls (U :/\: V) ->
+        exists q:set,
+          path_between (U :/\: V) x0 (apply_fun fcls t) q /\
+          continuous_map unit_interval unit_interval_topology
+            (U :/\: V)
+            (subspace_topology X Tx (U :/\: V))
+            q.
+    {
+      let t.
+      assume HtPreUV : t :e preimage_of unit_interval fcls (U :/\: V).
+      claim HtInUV : apply_fun fcls t :e U :/\: V.
+      {
+        exact (SepE2
+          unit_interval
+          (fun s:set => apply_fun fcls s :e U :/\: V)
+          t
+          HtPreUV).
+      }
+      exact (path_connected_space_paths
+        (U :/\: V)
+        (subspace_topology X Tx (U :/\: V))
+        x0
+        (apply_fun fcls t)
+        HpcUV
+        Hx0UV
+        HtInUV).
+    }
     claim HpreUVne : preimage_of unit_interval fcls (U :/\: V) <> Empty.
     {
       exact (elem_implies_nonempty
