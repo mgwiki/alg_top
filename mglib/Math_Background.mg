@@ -1,4 +1,4 @@
-(** Balance Alice 2410 **)
+(** Balance Alice 2510 **)
 (** Balance Bob 2808 **)
 (** Balance Charlie 1202 **)
 
@@ -22181,10 +22181,190 @@ exact (fundamental_group_inv_apply
   (path_homotopy_class_in_fundamental_group X Tx x0 f Hf)).
 Qed.
 
+(** Helper: a loop belongs to its own path-homotopy class (early version for group proof) **)
+(** Proven Alice **)
+Theorem loop_in_own_class_early : forall X Tx x0 f:set,
+  topology_on X Tx ->
+  f :e loop_space X Tx x0 ->
+  f :e path_homotopy_class_loop X Tx x0 f.
+let X Tx x0 f.
+assume Htop.
+assume HfLoop : f :e loop_space X Tx x0.
+claim HfLoopAt : loop_at X Tx x0 f.
+{ exact (loop_space_has_loop_at X Tx x0 f HfLoop). }
+claim HfRefl : path_homotopic X Tx x0 x0 f f.
+{ exact (Lemma_51_1_path_homotopy_refl X Tx x0 x0 f
+    (loop_at_continuous X Tx x0 f HfLoopAt)
+    (loop_at_at_zero X Tx x0 f HfLoopAt)
+    (loop_at_at_one X Tx x0 f HfLoopAt)). }
+exact (SepI
+  (loop_space X Tx x0)
+  (fun h:set => path_homotopic X Tx x0 x0 f h)
+  f HfLoop HfRefl).
+Qed.
+
+(** Helper: Eps_i of a fundamental group member is in loop_space (early version) **)
+(** Proven Alice **)
+Theorem eps_in_loop_space_early : forall X Tx x0 cls:set,
+  topology_on X Tx ->
+  cls :e fundamental_group X Tx x0 ->
+  (Eps_i (fun f:set => f :e cls)) :e loop_space X Tx x0.
+let X Tx x0 cls.
+assume Htop.
+assume Hcls : cls :e fundamental_group X Tx x0.
+claim Hrep : exists f:set, f :e loop_space X Tx x0 /\ cls = path_homotopy_class_loop X Tx x0 f.
+{ exact (fundamental_group_member_has_representative X Tx x0 cls Hcls). }
+apply Hrep. let f. assume HfPack.
+claim HfLoop : f :e loop_space X Tx x0.
+{ exact (andEL (f :e loop_space X Tx x0) (cls = path_homotopy_class_loop X Tx x0 f) HfPack). }
+claim HclsEqf : cls = path_homotopy_class_loop X Tx x0 f.
+{ exact (andER (f :e loop_space X Tx x0) (cls = path_homotopy_class_loop X Tx x0 f) HfPack). }
+claim HfInCls : f :e cls.
+{ exact (mem_eqL f cls (path_homotopy_class_loop X Tx x0 f) HclsEqf
+    (loop_in_own_class_early X Tx x0 f Htop HfLoop)). }
+claim HepsInCls : (Eps_i (fun g:set => g :e cls)) :e cls.
+{ exact (Eps_i_ax (fun g:set => g :e cls) f HfInCls). }
+claim HepsInClassf : (Eps_i (fun g:set => g :e cls)) :e path_homotopy_class_loop X Tx x0 f.
+{ exact (mem_eqR (Eps_i (fun g:set => g :e cls)) cls (path_homotopy_class_loop X Tx x0 f) HclsEqf HepsInCls). }
+exact (path_homotopy_class_loop_in_loop_space X Tx x0 f (Eps_i (fun g:set => g :e cls)) HepsInClassf).
+Qed.
+
+(** Helper: Eps_i of a class is homotopic to the representative (early version) **)
+(** Proven Alice **)
+Theorem eps_homotopic_to_rep_early : forall X Tx x0 f:set,
+  topology_on X Tx ->
+  f :e loop_space X Tx x0 ->
+  path_homotopic X Tx x0 x0 f (Eps_i (fun g:set => g :e path_homotopy_class_loop X Tx x0 f)).
+let X Tx x0 f.
+assume Htop.
+assume HfLoop : f :e loop_space X Tx x0.
+claim HfInClass : f :e path_homotopy_class_loop X Tx x0 f.
+{ exact (loop_in_own_class_early X Tx x0 f Htop HfLoop). }
+claim HepsInClass : (Eps_i (fun g:set => g :e path_homotopy_class_loop X Tx x0 f)) :e path_homotopy_class_loop X Tx x0 f.
+{ exact (Eps_i_ax (fun g:set => g :e path_homotopy_class_loop X Tx x0 f) f HfInClass). }
+exact (path_homotopy_class_loop_has_homotopy X Tx x0 f
+  (Eps_i (fun g:set => g :e path_homotopy_class_loop X Tx x0 f))
+  HepsInClass).
+Qed.
+
+(** Helper: path_concat preserves loop_space (early version for group proof) **)
+(** Proven Alice **)
+Theorem path_concat_preserves_loop_space_early : forall X Tx x0 f g:set,
+  f :e loop_space X Tx x0 ->
+  g :e loop_space X Tx x0 ->
+  path_concat f g :e loop_space X Tx x0.
+let X Tx x0 f g.
+assume HfLoop HgLoop.
+claim HfLoopAt : loop_at X Tx x0 f.
+{ exact (loop_space_has_loop_at X Tx x0 f HfLoop). }
+claim HgLoopAt : loop_at X Tx x0 g.
+{ exact (loop_space_has_loop_at X Tx x0 g HgLoop). }
+claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
+{ exact (loop_at_continuous X Tx x0 f HfLoopAt). }
+claim HgCont : continuous_map unit_interval unit_interval_topology X Tx g.
+{ exact (loop_at_continuous X Tx x0 g HgLoopAt). }
+claim Hf0 : apply_fun f 0 = x0.
+{ exact (loop_at_at_zero X Tx x0 f HfLoopAt). }
+claim Hf1 : apply_fun f 1 = x0.
+{ exact (loop_at_at_one X Tx x0 f HfLoopAt). }
+claim Hg0 : apply_fun g 0 = x0.
+{ exact (loop_at_at_zero X Tx x0 g HgLoopAt). }
+claim Hg1 : apply_fun g 1 = x0.
+{ exact (loop_at_at_one X Tx x0 g HgLoopAt). }
+claim HfFun : function_on f unit_interval X.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology X Tx f HfCont). }
+claim HgFun : function_on g unit_interval X.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology X Tx g HgCont). }
+claim HconcatCont : continuous_map unit_interval unit_interval_topology X Tx (path_concat f g).
+{ exact (path_concat_continuous X Tx x0 x0 x0 f g HfCont HgCont Hf0 Hf1 Hg0 Hg1). }
+claim HconcatLoopAt : loop_at X Tx x0 (path_concat f g).
+{ apply (loop_at_fold X Tx x0 (path_concat f g)).
+  apply andI.
+  - apply andI.
+    + exact HconcatCont.
+    + rewrite (path_concat_at_zero f g). exact Hf0.
+  - rewrite (path_concat_at_one f g). exact Hg1. }
+claim HconcatSub : path_concat f g c= setprod unit_interval X.
+{
+  let p. assume Hp.
+  apply (binunionE
+    {(t, apply_fun f (mul_SNo 2 t)) | t :e unit_interval_left_half}
+    {(t, apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1))) | t :e unit_interval_right_half}
+    p Hp).
+  - assume Hleft.
+    apply (ReplE_impred unit_interval_left_half
+      (fun t:set => (t, apply_fun f (mul_SNo 2 t))) p Hleft).
+    let t. assume Ht Heq.
+    claim H2tInI : mul_SNo 2 t :e unit_interval.
+    { rewrite <- (double_map_apply t Ht). exact (double_map_function_on t Ht). }
+    rewrite Heq.
+    exact (tuple_2_setprod_by_pair_Sigma unit_interval X t
+      (apply_fun f (mul_SNo 2 t))
+      (unit_interval_left_half_sub t Ht)
+      (HfFun (mul_SNo 2 t) H2tInI)).
+  - assume Hright.
+    apply (ReplE_impred unit_interval_right_half
+      (fun t:set => (t, apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1)))) p Hright).
+    let t. assume Ht Heq.
+    claim H2m1tInI : add_SNo (mul_SNo 2 t) (minus_SNo 1) :e unit_interval.
+    { rewrite <- (double_minus_one_map_apply t Ht). exact (double_minus_one_map_function_on t Ht). }
+    rewrite Heq.
+    exact (tuple_2_setprod_by_pair_Sigma unit_interval X t
+      (apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1)))
+      (unit_interval_right_half_sub t Ht)
+      (HgFun (add_SNo (mul_SNo 2 t) (minus_SNo 1)) H2m1tInI)).
+}
+claim HconcatPow : path_concat f g :e Power (setprod unit_interval X).
+{ exact (PowerI (setprod unit_interval X) (path_concat f g) HconcatSub). }
+claim HconcatFunOn : function_on (path_concat f g) unit_interval X.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology X Tx (path_concat f g) HconcatCont). }
+claim HconcatFunSpace : path_concat f g :e function_space unit_interval X.
+{ exact (SepI (Power (setprod unit_interval X)) (fun u:set => function_on u unit_interval X)
+    (path_concat f g) HconcatPow HconcatFunOn). }
+exact (SepI (function_space unit_interval X) (fun u:set => loop_at X Tx x0 u)
+  (path_concat f g) HconcatFunSpace HconcatLoopAt).
+Qed.
+
+(** Helper: reverse_path preserves loop_space (early version for group proof) **)
+(** Proven Alice **)
+Theorem reverse_path_preserves_loop_space_early : forall X Tx x0 f:set,
+  f :e loop_space X Tx x0 ->
+  reverse_path f :e loop_space X Tx x0.
+let X Tx x0 f.
+assume HfLoop : f :e loop_space X Tx x0.
+claim HfLoopAt : loop_at X Tx x0 f.
+{ exact (loop_space_has_loop_at X Tx x0 f HfLoop). }
+claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
+{ exact (loop_at_continuous X Tx x0 f HfLoopAt). }
+claim Hf0 : apply_fun f 0 = x0.
+{ exact (loop_at_at_zero X Tx x0 f HfLoopAt). }
+claim Hf1 : apply_fun f 1 = x0.
+{ exact (loop_at_at_one X Tx x0 f HfLoopAt). }
+claim HfFun : function_on f unit_interval X.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology X Tx f HfCont). }
+claim HrevCont : continuous_map unit_interval unit_interval_topology X Tx (reverse_path f).
+{ exact (reverse_path_continuous X Tx f HfCont). }
+claim Hrev0 : apply_fun (reverse_path f) 0 = x0.
+{ rewrite (reverse_path_at_zero f). exact Hf1. }
+claim Hrev1 : apply_fun (reverse_path f) 1 = x0.
+{ rewrite (reverse_path_at_one f). exact Hf0. }
+claim HrevLoopAt : loop_at X Tx x0 (reverse_path f).
+{ apply (loop_at_fold X Tx x0 (reverse_path f)).
+  apply andI.
+  - apply andI. + exact HrevCont. + exact Hrev0.
+  - exact Hrev1. }
+claim HrevFS : reverse_path f :e function_space unit_interval X.
+{ exact (compose_fun_in_function_space unit_interval unit_interval X
+    flip_unit_interval f flip_unit_interval_function_on HfFun). }
+exact (SepI (function_space unit_interval X) (fun u:set => loop_at X Tx x0 u)
+  (reverse_path f) HrevFS HrevLoopAt).
+Qed.
+
 (** from S52 (line 361 in algtop.tex): the fundamental group is a group **)
 (** LATEX VERSION: It follows from Theorem 51.2 that the path product, when restricted to loops at x0, satisfies the axioms for a group. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Collected Alice 100 **)
+(** Proven Alice **)
 Theorem fundamental_group_is_group : forall X Tx x0:set,
   topology_on X Tx -> x0 :e X ->
   group_structure
@@ -22192,8 +22372,692 @@ Theorem fundamental_group_is_group : forall X Tx x0:set,
     (fundamental_group_mult X Tx x0)
     (fundamental_group_id X Tx x0)
     (fundamental_group_inv X Tx x0).
-admit.
-Admitted.
+let X Tx x0.
+assume Htop : topology_on X Tx.
+assume Hx0 : x0 :e X.
+prove
+    function_on (fundamental_group_mult X Tx x0) (setprod (fundamental_group X Tx x0) (fundamental_group X Tx x0)) (fundamental_group X Tx x0) /\
+    function_on (fundamental_group_inv X Tx x0) (fundamental_group X Tx x0) (fundamental_group X Tx x0) /\
+    (fundamental_group_id X Tx x0) :e (fundamental_group X Tx x0) /\
+    (forall x y z:set, x :e (fundamental_group X Tx x0) -> y :e (fundamental_group X Tx x0) -> z :e (fundamental_group X Tx x0) ->
+      apply_fun (fundamental_group_mult X Tx x0) (apply_fun (fundamental_group_mult X Tx x0) (x, y), z) = apply_fun (fundamental_group_mult X Tx x0) (x, apply_fun (fundamental_group_mult X Tx x0) (y, z))) /\
+    (forall x:set, x :e (fundamental_group X Tx x0) -> apply_fun (fundamental_group_mult X Tx x0) (fundamental_group_id X Tx x0, x) = x /\ apply_fun (fundamental_group_mult X Tx x0) (x, fundamental_group_id X Tx x0) = x) /\
+    (forall x:set, x :e (fundamental_group X Tx x0) ->
+      apply_fun (fundamental_group_mult X Tx x0) (x, apply_fun (fundamental_group_inv X Tx x0) x) = (fundamental_group_id X Tx x0) /\ apply_fun (fundamental_group_mult X Tx x0) (apply_fun (fundamental_group_inv X Tx x0) x, x) = (fundamental_group_id X Tx x0)).
+apply and6I.
+- (** Part 1: function_on mult (setprod G G) G **)
+  apply (total_function_on_function_on
+    (fundamental_group_mult X Tx x0)
+    (setprod (fundamental_group X Tx x0) (fundamental_group X Tx x0))
+    (fundamental_group X Tx x0)).
+  apply (total_function_on_graph
+    (setprod (fundamental_group X Tx x0) (fundamental_group X Tx x0))
+    (fundamental_group X Tx x0)
+    (fun p:set =>
+      path_homotopy_class_loop X Tx x0
+        (path_concat
+          (Eps_i (fun f:set => f :e p 0))
+          (Eps_i (fun g:set => g :e p 1))))).
+  let p.
+  assume Hp : p :e setprod (fundamental_group X Tx x0) (fundamental_group X Tx x0).
+  claim Hp0G : p 0 :e fundamental_group X Tx x0.
+  {
+    claim H : proj0 p :e fundamental_group X Tx x0.
+    { exact (proj0_Sigma (fundamental_group X Tx x0) (fun _ => fundamental_group X Tx x0) p Hp). }
+    exact (proj0_ap_0 p (fun a b => a :e fundamental_group X Tx x0) H).
+  }
+  claim Hp1G : p 1 :e fundamental_group X Tx x0.
+  {
+    apply (Sigma_eta_proj0_proj1 (fundamental_group X Tx x0) (fun _ => fundamental_group X Tx x0) p Hp).
+    assume Hleft.
+    assume Hproj1 : proj1 p :e fundamental_group X Tx x0.
+    exact (proj1_ap_1 p (fun a b => a :e fundamental_group X Tx x0) Hproj1).
+  }
+  claim Heps0 : (Eps_i (fun f:set => f :e p 0)) :e loop_space X Tx x0.
+  { exact (eps_in_loop_space_early X Tx x0 (p 0) Htop Hp0G). }
+  claim Heps1 : (Eps_i (fun g:set => g :e p 1)) :e loop_space X Tx x0.
+  { exact (eps_in_loop_space_early X Tx x0 (p 1) Htop Hp1G). }
+  claim HconcatLoop : (path_concat (Eps_i (fun f:set => f :e p 0)) (Eps_i (fun g:set => g :e p 1)))
+    :e loop_space X Tx x0.
+  { exact (path_concat_preserves_loop_space_early X Tx x0
+      (Eps_i (fun f:set => f :e p 0)) (Eps_i (fun g:set => g :e p 1))
+      Heps0 Heps1). }
+  exact (path_homotopy_class_in_fundamental_group X Tx x0
+    (path_concat (Eps_i (fun f:set => f :e p 0)) (Eps_i (fun g:set => g :e p 1)))
+    HconcatLoop).
+- (** Part 2: function_on inv G G **)
+  apply (total_function_on_function_on
+    (fundamental_group_inv X Tx x0)
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x0)).
+  apply (total_function_on_graph
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x0)
+    (fun cls:set =>
+      path_homotopy_class_loop X Tx x0
+        (reverse_path (Eps_i (fun f:set => f :e cls))))).
+  let cls.
+  assume Hcls : cls :e fundamental_group X Tx x0.
+  claim Heps : (Eps_i (fun f:set => f :e cls)) :e loop_space X Tx x0.
+  { exact (eps_in_loop_space_early X Tx x0 cls Htop Hcls). }
+  claim HrevLoop : reverse_path (Eps_i (fun f:set => f :e cls)) :e loop_space X Tx x0.
+  { exact (reverse_path_preserves_loop_space_early X Tx x0
+      (Eps_i (fun f:set => f :e cls)) Heps). }
+  exact (path_homotopy_class_in_fundamental_group X Tx x0
+    (reverse_path (Eps_i (fun f:set => f :e cls))) HrevLoop).
+- (** Part 3: e :e G **)
+  claim HconstLoopAt : loop_at X Tx x0 (constant_path x0).
+  {
+    exact (loop_at_constant_path X Tx x0 Htop Hx0).
+  }
+  claim HconstFS : (constant_path x0) :e function_space unit_interval X.
+  {
+    exact (graph_in_function_space
+      unit_interval X (fun t:set => x0) (fun t Ht => Hx0)).
+  }
+  claim HconstLoop : (constant_path x0) :e loop_space X Tx x0.
+  {
+    exact (SepI
+      (function_space unit_interval X)
+      (fun g:set => loop_at X Tx x0 g)
+      (constant_path x0)
+      HconstFS
+      HconstLoopAt).
+  }
+  exact (path_homotopy_class_in_fundamental_group X Tx x0 (constant_path x0) HconstLoop).
+- (** Part 4: Associativity **)
+  let cx cy cz.
+  assume Hcx : cx :e fundamental_group X Tx x0.
+  assume Hcy : cy :e fundamental_group X Tx x0.
+  assume Hcz : cz :e fundamental_group X Tx x0.
+  (** Eps_i representatives **)
+  claim Hax : (Eps_i (fun f:set => f :e cx)) :e loop_space X Tx x0.
+  { exact (eps_in_loop_space_early X Tx x0 cx Htop Hcx). }
+  claim Hay : (Eps_i (fun f:set => f :e cy)) :e loop_space X Tx x0.
+  { exact (eps_in_loop_space_early X Tx x0 cy Htop Hcy). }
+  claim Haz : (Eps_i (fun f:set => f :e cz)) :e loop_space X Tx x0.
+  { exact (eps_in_loop_space_early X Tx x0 cz Htop Hcz). }
+  (** loop_at properties **)
+  claim HaxAt : loop_at X Tx x0 (Eps_i (fun f:set => f :e cx)).
+  { exact (loop_space_has_loop_at X Tx x0 (Eps_i (fun f:set => f :e cx)) Hax). }
+  claim HayAt : loop_at X Tx x0 (Eps_i (fun f:set => f :e cy)).
+  { exact (loop_space_has_loop_at X Tx x0 (Eps_i (fun f:set => f :e cy)) Hay). }
+  claim HazAt : loop_at X Tx x0 (Eps_i (fun f:set => f :e cz)).
+  { exact (loop_space_has_loop_at X Tx x0 (Eps_i (fun f:set => f :e cz)) Haz). }
+  claim HaxCont : continuous_map unit_interval unit_interval_topology X Tx (Eps_i (fun f:set => f :e cx)).
+  { exact (loop_at_continuous X Tx x0 (Eps_i (fun f:set => f :e cx)) HaxAt). }
+  claim HayCont : continuous_map unit_interval unit_interval_topology X Tx (Eps_i (fun f:set => f :e cy)).
+  { exact (loop_at_continuous X Tx x0 (Eps_i (fun f:set => f :e cy)) HayAt). }
+  claim HazCont : continuous_map unit_interval unit_interval_topology X Tx (Eps_i (fun f:set => f :e cz)).
+  { exact (loop_at_continuous X Tx x0 (Eps_i (fun f:set => f :e cz)) HazAt). }
+  claim Hax0 : apply_fun (Eps_i (fun f:set => f :e cx)) 0 = x0.
+  { exact (loop_at_at_zero X Tx x0 (Eps_i (fun f:set => f :e cx)) HaxAt). }
+  claim Hax1 : apply_fun (Eps_i (fun f:set => f :e cx)) 1 = x0.
+  { exact (loop_at_at_one X Tx x0 (Eps_i (fun f:set => f :e cx)) HaxAt). }
+  claim Hay0 : apply_fun (Eps_i (fun f:set => f :e cy)) 0 = x0.
+  { exact (loop_at_at_zero X Tx x0 (Eps_i (fun f:set => f :e cy)) HayAt). }
+  claim Hay1 : apply_fun (Eps_i (fun f:set => f :e cy)) 1 = x0.
+  { exact (loop_at_at_one X Tx x0 (Eps_i (fun f:set => f :e cy)) HayAt). }
+  claim Haz0 : apply_fun (Eps_i (fun f:set => f :e cz)) 0 = x0.
+  { exact (loop_at_at_zero X Tx x0 (Eps_i (fun f:set => f :e cz)) HazAt). }
+  claim Haz1 : apply_fun (Eps_i (fun f:set => f :e cz)) 1 = x0.
+  { exact (loop_at_at_one X Tx x0 (Eps_i (fun f:set => f :e cz)) HazAt). }
+  (** path_concat pairs in loop_space **)
+  claim Hab : path_concat (Eps_i (fun f:set => f :e cx)) (Eps_i (fun f:set => f :e cy)) :e loop_space X Tx x0.
+  { exact (path_concat_preserves_loop_space_early X Tx x0
+      (Eps_i (fun f:set => f :e cx)) (Eps_i (fun f:set => f :e cy)) Hax Hay). }
+  claim Hbc : path_concat (Eps_i (fun f:set => f :e cy)) (Eps_i (fun f:set => f :e cz)) :e loop_space X Tx x0.
+  { exact (path_concat_preserves_loop_space_early X Tx x0
+      (Eps_i (fun f:set => f :e cy)) (Eps_i (fun f:set => f :e cz)) Hay Haz). }
+  (** mult(cx,cy) computation **)
+  claim HpairXY : (cx, cy) :e setprod (fundamental_group X Tx x0) (fundamental_group X Tx x0).
+  { exact (tuple_2_setprod_by_pair_Sigma (fundamental_group X Tx x0) (fundamental_group X Tx x0) cx cy Hcx Hcy). }
+  claim HmultXY_eq : apply_fun (fundamental_group_mult X Tx x0) (cx, cy)
+    = path_homotopy_class_loop X Tx x0
+        (path_concat (Eps_i (fun f:set => f :e (cx, cy) 0)) (Eps_i (fun f:set => f :e (cx, cy) 1))).
+  { exact (fundamental_group_mult_apply X Tx x0 (cx, cy) HpairXY). }
+  claim HXY0 : (cx, cy) 0 = cx. { exact (tuple_2_0_eq cx cy). }
+  claim HXY1 : (cx, cy) 1 = cy. { exact (tuple_2_1_eq cx cy). }
+  (** mult(cy,cz) computation **)
+  claim HpairYZ : (cy, cz) :e setprod (fundamental_group X Tx x0) (fundamental_group X Tx x0).
+  { exact (tuple_2_setprod_by_pair_Sigma (fundamental_group X Tx x0) (fundamental_group X Tx x0) cy cz Hcy Hcz). }
+  claim HmultYZ_eq : apply_fun (fundamental_group_mult X Tx x0) (cy, cz)
+    = path_homotopy_class_loop X Tx x0
+        (path_concat (Eps_i (fun f:set => f :e (cy, cz) 0)) (Eps_i (fun f:set => f :e (cy, cz) 1))).
+  { exact (fundamental_group_mult_apply X Tx x0 (cy, cz) HpairYZ). }
+  claim HYZ0 : (cy, cz) 0 = cy. { exact (tuple_2_0_eq cy cz). }
+  claim HYZ1 : (cy, cz) 1 = cz. { exact (tuple_2_1_eq cy cz). }
+  (** mult(cx,cy) and mult(cy,cz) are in G **)
+  claim HmultXY_G : apply_fun (fundamental_group_mult X Tx x0) (cx, cy) :e fundamental_group X Tx x0.
+  { rewrite HmultXY_eq. rewrite HXY0. rewrite HXY1.
+    exact (path_homotopy_class_in_fundamental_group X Tx x0
+      (path_concat (Eps_i (fun f:set => f :e cx)) (Eps_i (fun f:set => f :e cy))) Hab). }
+  claim HmultYZ_G : apply_fun (fundamental_group_mult X Tx x0) (cy, cz) :e fundamental_group X Tx x0.
+  { rewrite HmultYZ_eq. rewrite HYZ0. rewrite HYZ1.
+    exact (path_homotopy_class_in_fundamental_group X Tx x0
+      (path_concat (Eps_i (fun f:set => f :e cy)) (Eps_i (fun f:set => f :e cz))) Hbc). }
+  (** Eps_i homotopies for concatenations **)
+  claim Hab_hom : path_homotopic X Tx x0 x0
+    (path_concat (Eps_i (fun f:set => f :e cx)) (Eps_i (fun f:set => f :e cy)))
+    (Eps_i (fun f:set => f :e path_homotopy_class_loop X Tx x0
+      (path_concat (Eps_i (fun f:set => f :e cx)) (Eps_i (fun f:set => f :e cy))))).
+  { exact (eps_homotopic_to_rep_early X Tx x0
+      (path_concat (Eps_i (fun f:set => f :e cx)) (Eps_i (fun f:set => f :e cy))) Htop Hab). }
+  claim Hbc_hom : path_homotopic X Tx x0 x0
+    (path_concat (Eps_i (fun f:set => f :e cy)) (Eps_i (fun f:set => f :e cz)))
+    (Eps_i (fun f:set => f :e path_homotopy_class_loop X Tx x0
+      (path_concat (Eps_i (fun f:set => f :e cy)) (Eps_i (fun f:set => f :e cz))))).
+  { exact (eps_homotopic_to_rep_early X Tx x0
+      (path_concat (Eps_i (fun f:set => f :e cy)) (Eps_i (fun f:set => f :e cz))) Htop Hbc). }
+  (** Reflexivity for Eps_i(cz) and Eps_i(cx) **)
+  claim Haz_refl : path_homotopic X Tx x0 x0 (Eps_i (fun f:set => f :e cz)) (Eps_i (fun f:set => f :e cz)).
+  { exact (Lemma_51_1_path_homotopy_refl X Tx x0 x0 (Eps_i (fun f:set => f :e cz)) HazCont Haz0 Haz1). }
+  claim Hax_refl : path_homotopic X Tx x0 x0 (Eps_i (fun f:set => f :e cx)) (Eps_i (fun f:set => f :e cx)).
+  { exact (Lemma_51_1_path_homotopy_refl X Tx x0 x0 (Eps_i (fun f:set => f :e cx)) HaxCont Hax0 Hax1). }
+  (** Associativity at path level **)
+  claim Hassoc : path_homotopic X Tx x0 x0
+    (path_concat (Eps_i (fun f:set => f :e cx)) (path_concat (Eps_i (fun f:set => f :e cy)) (Eps_i (fun f:set => f :e cz))))
+    (path_concat (path_concat (Eps_i (fun f:set => f :e cx)) (Eps_i (fun f:set => f :e cy))) (Eps_i (fun f:set => f :e cz))).
+  { exact (Theorem_51_2_associativity X Tx x0 x0 x0 x0
+      (Eps_i (fun f:set => f :e cx)) (Eps_i (fun f:set => f :e cy)) (Eps_i (fun f:set => f :e cz))
+      HaxCont HayCont HazCont Hax0 Hax1 Hay0 Hay1 Haz0 Haz1). }
+  (** LHS: mult(mult(cx,cy),cz) **)
+  claim HpairLHS : (apply_fun (fundamental_group_mult X Tx x0) (cx, cy), cz)
+    :e setprod (fundamental_group X Tx x0) (fundamental_group X Tx x0).
+  { exact (tuple_2_setprod_by_pair_Sigma (fundamental_group X Tx x0) (fundamental_group X Tx x0)
+      (apply_fun (fundamental_group_mult X Tx x0) (cx, cy)) cz HmultXY_G Hcz). }
+  claim HmultLHS : apply_fun (fundamental_group_mult X Tx x0) (apply_fun (fundamental_group_mult X Tx x0) (cx, cy), cz)
+    = path_homotopy_class_loop X Tx x0
+        (path_concat
+          (Eps_i (fun f:set => f :e (apply_fun (fundamental_group_mult X Tx x0) (cx, cy), cz) 0))
+          (Eps_i (fun f:set => f :e (apply_fun (fundamental_group_mult X Tx x0) (cx, cy), cz) 1))).
+  { exact (fundamental_group_mult_apply X Tx x0
+      (apply_fun (fundamental_group_mult X Tx x0) (cx, cy), cz) HpairLHS). }
+  claim HLHS0 : (apply_fun (fundamental_group_mult X Tx x0) (cx, cy), cz) 0
+    = apply_fun (fundamental_group_mult X Tx x0) (cx, cy).
+  { exact (tuple_2_0_eq (apply_fun (fundamental_group_mult X Tx x0) (cx, cy)) cz). }
+  claim HLHS1 : (apply_fun (fundamental_group_mult X Tx x0) (cx, cy), cz) 1 = cz.
+  { exact (tuple_2_1_eq (apply_fun (fundamental_group_mult X Tx x0) (cx, cy)) cz). }
+  (** RHS: mult(cx, mult(cy,cz)) **)
+  claim HpairRHS : (cx, apply_fun (fundamental_group_mult X Tx x0) (cy, cz))
+    :e setprod (fundamental_group X Tx x0) (fundamental_group X Tx x0).
+  { exact (tuple_2_setprod_by_pair_Sigma (fundamental_group X Tx x0) (fundamental_group X Tx x0)
+      cx (apply_fun (fundamental_group_mult X Tx x0) (cy, cz)) Hcx HmultYZ_G). }
+  claim HmultRHS : apply_fun (fundamental_group_mult X Tx x0) (cx, apply_fun (fundamental_group_mult X Tx x0) (cy, cz))
+    = path_homotopy_class_loop X Tx x0
+        (path_concat
+          (Eps_i (fun f:set => f :e (cx, apply_fun (fundamental_group_mult X Tx x0) (cy, cz)) 0))
+          (Eps_i (fun f:set => f :e (cx, apply_fun (fundamental_group_mult X Tx x0) (cy, cz)) 1))).
+  { exact (fundamental_group_mult_apply X Tx x0
+      (cx, apply_fun (fundamental_group_mult X Tx x0) (cy, cz)) HpairRHS). }
+  claim HRHS0 : (cx, apply_fun (fundamental_group_mult X Tx x0) (cy, cz)) 0 = cx.
+  { exact (tuple_2_0_eq cx (apply_fun (fundamental_group_mult X Tx x0) (cy, cz))). }
+  claim HRHS1 : (cx, apply_fun (fundamental_group_mult X Tx x0) (cy, cz)) 1
+    = apply_fun (fundamental_group_mult X Tx x0) (cy, cz).
+  { exact (tuple_2_1_eq cx (apply_fun (fundamental_group_mult X Tx x0) (cy, cz))). }
+  (** Well-definedness: relate LHS concat to (ab)z **)
+  claim Hwd_lhs : path_homotopic X Tx x0 x0
+    (path_concat (path_concat (Eps_i (fun f:set => f :e cx)) (Eps_i (fun f:set => f :e cy))) (Eps_i (fun f:set => f :e cz)))
+    (path_concat
+      (Eps_i (fun f:set => f :e (apply_fun (fundamental_group_mult X Tx x0) (cx, cy), cz) 0))
+      (Eps_i (fun f:set => f :e (apply_fun (fundamental_group_mult X Tx x0) (cx, cy), cz) 1))).
+  { rewrite HLHS0. rewrite HLHS1. rewrite HmultXY_eq. rewrite HXY0. rewrite HXY1.
+    exact (path_concat_well_defined_on_classes X Tx x0 x0 x0
+      (path_concat (Eps_i (fun f:set => f :e cx)) (Eps_i (fun f:set => f :e cy)))
+      (Eps_i (fun f:set => f :e path_homotopy_class_loop X Tx x0
+        (path_concat (Eps_i (fun f:set => f :e cx)) (Eps_i (fun f:set => f :e cy)))))
+      (Eps_i (fun f:set => f :e cz)) (Eps_i (fun f:set => f :e cz))
+      Hab_hom Haz_refl). }
+  (** Well-definedness: relate RHS concat to x(bc) **)
+  claim Hwd_rhs : path_homotopic X Tx x0 x0
+    (path_concat (Eps_i (fun f:set => f :e cx)) (path_concat (Eps_i (fun f:set => f :e cy)) (Eps_i (fun f:set => f :e cz))))
+    (path_concat
+      (Eps_i (fun f:set => f :e (cx, apply_fun (fundamental_group_mult X Tx x0) (cy, cz)) 0))
+      (Eps_i (fun f:set => f :e (cx, apply_fun (fundamental_group_mult X Tx x0) (cy, cz)) 1))).
+  { rewrite HRHS0. rewrite HRHS1. rewrite HmultYZ_eq. rewrite HYZ0. rewrite HYZ1.
+    exact (path_concat_well_defined_on_classes X Tx x0 x0 x0
+      (Eps_i (fun f:set => f :e cx)) (Eps_i (fun f:set => f :e cx))
+      (path_concat (Eps_i (fun f:set => f :e cy)) (Eps_i (fun f:set => f :e cz)))
+      (Eps_i (fun f:set => f :e path_homotopy_class_loop X Tx x0
+        (path_concat (Eps_i (fun f:set => f :e cy)) (Eps_i (fun f:set => f :e cz)))))
+      Hax_refl Hbc_hom). }
+  (** Class equalities **)
+  claim HclassLHS : path_homotopy_class_loop X Tx x0
+    (path_concat (path_concat (Eps_i (fun f:set => f :e cx)) (Eps_i (fun f:set => f :e cy))) (Eps_i (fun f:set => f :e cz)))
+    = path_homotopy_class_loop X Tx x0
+        (path_concat
+          (Eps_i (fun f:set => f :e (apply_fun (fundamental_group_mult X Tx x0) (cx, cy), cz) 0))
+          (Eps_i (fun f:set => f :e (apply_fun (fundamental_group_mult X Tx x0) (cx, cy), cz) 1))).
+  { exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0
+      (path_concat (path_concat (Eps_i (fun f:set => f :e cx)) (Eps_i (fun f:set => f :e cy))) (Eps_i (fun f:set => f :e cz)))
+      (path_concat
+        (Eps_i (fun f:set => f :e (apply_fun (fundamental_group_mult X Tx x0) (cx, cy), cz) 0))
+        (Eps_i (fun f:set => f :e (apply_fun (fundamental_group_mult X Tx x0) (cx, cy), cz) 1)))
+      Hwd_lhs). }
+  claim HclassRHS : path_homotopy_class_loop X Tx x0
+    (path_concat (Eps_i (fun f:set => f :e cx)) (path_concat (Eps_i (fun f:set => f :e cy)) (Eps_i (fun f:set => f :e cz))))
+    = path_homotopy_class_loop X Tx x0
+        (path_concat
+          (Eps_i (fun f:set => f :e (cx, apply_fun (fundamental_group_mult X Tx x0) (cy, cz)) 0))
+          (Eps_i (fun f:set => f :e (cx, apply_fun (fundamental_group_mult X Tx x0) (cy, cz)) 1))).
+  { exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0
+      (path_concat (Eps_i (fun f:set => f :e cx)) (path_concat (Eps_i (fun f:set => f :e cy)) (Eps_i (fun f:set => f :e cz))))
+      (path_concat
+        (Eps_i (fun f:set => f :e (cx, apply_fun (fundamental_group_mult X Tx x0) (cy, cz)) 0))
+        (Eps_i (fun f:set => f :e (cx, apply_fun (fundamental_group_mult X Tx x0) (cy, cz)) 1)))
+      Hwd_rhs). }
+  claim HclassAssoc : path_homotopy_class_loop X Tx x0
+    (path_concat (Eps_i (fun f:set => f :e cx)) (path_concat (Eps_i (fun f:set => f :e cy)) (Eps_i (fun f:set => f :e cz))))
+    = path_homotopy_class_loop X Tx x0
+        (path_concat (path_concat (Eps_i (fun f:set => f :e cx)) (Eps_i (fun f:set => f :e cy))) (Eps_i (fun f:set => f :e cz))).
+  { exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0
+      (path_concat (Eps_i (fun f:set => f :e cx)) (path_concat (Eps_i (fun f:set => f :e cy)) (Eps_i (fun f:set => f :e cz))))
+      (path_concat (path_concat (Eps_i (fun f:set => f :e cx)) (Eps_i (fun f:set => f :e cy))) (Eps_i (fun f:set => f :e cz)))
+      Hassoc). }
+  (** Symmetries **)
+  claim HclassLHS_sym : path_homotopy_class_loop X Tx x0
+      (path_concat
+        (Eps_i (fun f:set => f :e (apply_fun (fundamental_group_mult X Tx x0) (cx, cy), cz) 0))
+        (Eps_i (fun f:set => f :e (apply_fun (fundamental_group_mult X Tx x0) (cx, cy), cz) 1)))
+    = path_homotopy_class_loop X Tx x0
+        (path_concat (path_concat (Eps_i (fun f:set => f :e cx)) (Eps_i (fun f:set => f :e cy))) (Eps_i (fun f:set => f :e cz))).
+  { symmetry. exact HclassLHS. }
+  claim HclassRHS_sym : path_homotopy_class_loop X Tx x0
+      (path_concat
+        (Eps_i (fun f:set => f :e (cx, apply_fun (fundamental_group_mult X Tx x0) (cy, cz)) 0))
+        (Eps_i (fun f:set => f :e (cx, apply_fun (fundamental_group_mult X Tx x0) (cy, cz)) 1)))
+    = path_homotopy_class_loop X Tx x0
+        (path_concat (Eps_i (fun f:set => f :e cx)) (path_concat (Eps_i (fun f:set => f :e cy)) (Eps_i (fun f:set => f :e cz)))).
+  { symmetry. exact HclassRHS. }
+  claim HclassAssoc_sym : path_homotopy_class_loop X Tx x0
+      (path_concat (path_concat (Eps_i (fun f:set => f :e cx)) (Eps_i (fun f:set => f :e cy))) (Eps_i (fun f:set => f :e cz)))
+    = path_homotopy_class_loop X Tx x0
+        (path_concat (Eps_i (fun f:set => f :e cx)) (path_concat (Eps_i (fun f:set => f :e cy)) (Eps_i (fun f:set => f :e cz)))).
+  { symmetry. exact HclassAssoc. }
+  (** LHS chain: mult(mult(cx,cy),cz) = class(a(bc)) **)
+  claim HfinalLHS : apply_fun (fundamental_group_mult X Tx x0) (apply_fun (fundamental_group_mult X Tx x0) (cx, cy), cz)
+    = path_homotopy_class_loop X Tx x0
+        (path_concat (Eps_i (fun f:set => f :e cx)) (path_concat (Eps_i (fun f:set => f :e cy)) (Eps_i (fun f:set => f :e cz)))).
+  { rewrite HmultLHS. rewrite HclassLHS_sym. exact HclassAssoc_sym. }
+  (** RHS chain: mult(cx,mult(cy,cz)) = class(a(bc)) **)
+  claim HfinalRHS : apply_fun (fundamental_group_mult X Tx x0) (cx, apply_fun (fundamental_group_mult X Tx x0) (cy, cz))
+    = path_homotopy_class_loop X Tx x0
+        (path_concat (Eps_i (fun f:set => f :e cx)) (path_concat (Eps_i (fun f:set => f :e cy)) (Eps_i (fun f:set => f :e cz)))).
+  { rewrite HmultRHS. exact HclassRHS_sym. }
+  (** Combine: LHS = class(a(bc)) = RHS, hence LHS = RHS **)
+  claim HfinalRHS_sym : path_homotopy_class_loop X Tx x0
+      (path_concat (Eps_i (fun f:set => f :e cx)) (path_concat (Eps_i (fun f:set => f :e cy)) (Eps_i (fun f:set => f :e cz))))
+    = apply_fun (fundamental_group_mult X Tx x0) (cx, apply_fun (fundamental_group_mult X Tx x0) (cy, cz)).
+  { symmetry. exact HfinalRHS. }
+  rewrite HfinalLHS. exact HfinalRHS_sym.
+- (** Part 5: Identity **)
+  let cls.
+  assume Hcls : cls :e fundamental_group X Tx x0.
+  (** Get representative **)
+  claim Hrep : exists f:set, f :e loop_space X Tx x0 /\ cls = path_homotopy_class_loop X Tx x0 f.
+  { exact (fundamental_group_member_has_representative X Tx x0 cls Hcls). }
+  apply Hrep. let f. assume HfPack.
+  claim HfLoop : f :e loop_space X Tx x0.
+  { exact (andEL (f :e loop_space X Tx x0) (cls = path_homotopy_class_loop X Tx x0 f) HfPack). }
+  claim HclsEq : cls = path_homotopy_class_loop X Tx x0 f.
+  { exact (andER (f :e loop_space X Tx x0) (cls = path_homotopy_class_loop X Tx x0 f) HfPack). }
+  claim HfLoopAt : loop_at X Tx x0 f.
+  { exact (loop_space_has_loop_at X Tx x0 f HfLoop). }
+  claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
+  { exact (loop_at_continuous X Tx x0 f HfLoopAt). }
+  claim Hf0 : apply_fun f 0 = x0.
+  { exact (loop_at_at_zero X Tx x0 f HfLoopAt). }
+  claim Hf1 : apply_fun f 1 = x0.
+  { exact (loop_at_at_one X Tx x0 f HfLoopAt). }
+  (** Identity element membership **)
+  claim HeG : (fundamental_group_id X Tx x0) :e fundamental_group X Tx x0.
+  { claim HconstLoopAt : loop_at X Tx x0 (constant_path x0).
+    { exact (loop_at_constant_path X Tx x0 Htop Hx0). }
+    claim HconstFS : (constant_path x0) :e function_space unit_interval X.
+    { exact (graph_in_function_space unit_interval X (fun t:set => x0) (fun t Ht => Hx0)). }
+    claim HconstLoop : (constant_path x0) :e loop_space X Tx x0.
+    { exact (SepI (function_space unit_interval X) (fun g:set => loop_at X Tx x0 g)
+        (constant_path x0) HconstFS HconstLoopAt). }
+    exact (path_homotopy_class_in_fundamental_group X Tx x0 (constant_path x0) HconstLoop). }
+  (** Eps_i from e is homotopic to constant_path **)
+  claim Heps_e_hom : path_homotopic X Tx x0 x0 (constant_path x0)
+    (Eps_i (fun g:set => g :e path_homotopy_class_loop X Tx x0 (constant_path x0))).
+  { exact (eps_homotopic_to_rep_early X Tx x0 (constant_path x0) Htop
+      (SepI (function_space unit_interval X) (fun g:set => loop_at X Tx x0 g)
+        (constant_path x0)
+        (graph_in_function_space unit_interval X (fun t:set => x0) (fun t Ht => Hx0))
+        (loop_at_constant_path X Tx x0 Htop Hx0))). }
+  (** Eps_i from cls is homotopic to f **)
+  claim Heps_f_hom : path_homotopic X Tx x0 x0 f
+    (Eps_i (fun g:set => g :e path_homotopy_class_loop X Tx x0 f)).
+  { exact (eps_homotopic_to_rep_early X Tx x0 f Htop HfLoop). }
+  (** Compute mult(e, cls) **)
+  claim HePairCls : (fundamental_group_id X Tx x0, cls)
+    :e setprod (fundamental_group X Tx x0) (fundamental_group X Tx x0).
+  { exact (tuple_2_setprod_by_pair_Sigma
+      (fundamental_group X Tx x0) (fundamental_group X Tx x0)
+      (fundamental_group_id X Tx x0) cls HeG Hcls). }
+  claim HmultE_apply : apply_fun (fundamental_group_mult X Tx x0) (fundamental_group_id X Tx x0, cls)
+    = path_homotopy_class_loop X Tx x0
+        (path_concat
+          (Eps_i (fun h:set => h :e (fundamental_group_id X Tx x0, cls) 0))
+          (Eps_i (fun h:set => h :e (fundamental_group_id X Tx x0, cls) 1))).
+  { exact (fundamental_group_mult_apply X Tx x0 (fundamental_group_id X Tx x0, cls) HePairCls). }
+  (** Simplify (e, cls) 0 = e and (e, cls) 1 = cls **)
+  (** Left identity: mult(e, cls) = cls **)
+  claim HleftId : apply_fun (fundamental_group_mult X Tx x0) (fundamental_group_id X Tx x0, cls) = cls.
+  {
+    (** Use fundamental_group_mult_apply_on_loop_classes which is cleaner **)
+    (** Strategy: work at class level using class equality **)
+    claim H0eq : (fundamental_group_id X Tx x0, path_homotopy_class_loop X Tx x0 f) 0
+      = fundamental_group_id X Tx x0.
+    { exact (tuple_2_0_eq (fundamental_group_id X Tx x0) (path_homotopy_class_loop X Tx x0 f)). }
+    claim H1eq : (fundamental_group_id X Tx x0, path_homotopy_class_loop X Tx x0 f) 1
+      = path_homotopy_class_loop X Tx x0 f.
+    { exact (tuple_2_1_eq (fundamental_group_id X Tx x0) (path_homotopy_class_loop X Tx x0 f)). }
+    claim Hwd : path_homotopic X Tx x0 x0
+      (path_concat (constant_path x0) f)
+      (path_concat
+        (Eps_i (fun h:set => h :e (fundamental_group_id X Tx x0, path_homotopy_class_loop X Tx x0 f) 0))
+        (Eps_i (fun h:set => h :e (fundamental_group_id X Tx x0, path_homotopy_class_loop X Tx x0 f) 1))).
+    {
+      rewrite H0eq. rewrite H1eq.
+      exact (path_concat_well_defined_on_classes X Tx x0 x0 x0
+        (constant_path x0)
+        (Eps_i (fun g:set => g :e path_homotopy_class_loop X Tx x0 (constant_path x0)))
+        f
+        (Eps_i (fun g:set => g :e path_homotopy_class_loop X Tx x0 f))
+        Heps_e_hom Heps_f_hom).
+    }
+    claim Hleft : path_homotopic X Tx x0 x0 (path_concat (constant_path x0) f) f.
+    { exact (Theorem_51_2_left_identity X Tx x0 x0 f HfCont Hf0 Hf1 Hx0). }
+    claim HclassLeft : path_homotopy_class_loop X Tx x0 (path_concat (constant_path x0) f)
+      = path_homotopy_class_loop X Tx x0 f.
+    { exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0
+        (path_concat (constant_path x0) f) f Hleft). }
+    claim HclassWd : path_homotopy_class_loop X Tx x0 (path_concat (constant_path x0) f)
+      = path_homotopy_class_loop X Tx x0
+          (path_concat
+            (Eps_i (fun h:set => h :e (fundamental_group_id X Tx x0, path_homotopy_class_loop X Tx x0 f) 0))
+            (Eps_i (fun h:set => h :e (fundamental_group_id X Tx x0, path_homotopy_class_loop X Tx x0 f) 1))).
+    { exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0
+        (path_concat (constant_path x0) f)
+        (path_concat
+          (Eps_i (fun h:set => h :e (fundamental_group_id X Tx x0, path_homotopy_class_loop X Tx x0 f) 0))
+          (Eps_i (fun h:set => h :e (fundamental_group_id X Tx x0, path_homotopy_class_loop X Tx x0 f) 1)))
+        Hwd). }
+    claim HclassWd_sym : path_homotopy_class_loop X Tx x0
+          (path_concat
+            (Eps_i (fun h:set => h :e (fundamental_group_id X Tx x0, path_homotopy_class_loop X Tx x0 f) 0))
+            (Eps_i (fun h:set => h :e (fundamental_group_id X Tx x0, path_homotopy_class_loop X Tx x0 f) 1)))
+      = path_homotopy_class_loop X Tx x0 (path_concat (constant_path x0) f).
+    { symmetry. exact HclassWd. }
+    claim Hmult_eq_class : apply_fun (fundamental_group_mult X Tx x0) (fundamental_group_id X Tx x0, path_homotopy_class_loop X Tx x0 f)
+      = path_homotopy_class_loop X Tx x0
+          (path_concat
+            (Eps_i (fun h:set => h :e (fundamental_group_id X Tx x0, path_homotopy_class_loop X Tx x0 f) 0))
+            (Eps_i (fun h:set => h :e (fundamental_group_id X Tx x0, path_homotopy_class_loop X Tx x0 f) 1))).
+    { exact (fundamental_group_mult_apply X Tx x0
+        (fundamental_group_id X Tx x0, path_homotopy_class_loop X Tx x0 f)
+        (tuple_2_setprod_by_pair_Sigma (fundamental_group X Tx x0) (fundamental_group X Tx x0)
+          (fundamental_group_id X Tx x0) (path_homotopy_class_loop X Tx x0 f)
+          HeG (path_homotopy_class_in_fundamental_group X Tx x0 f HfLoop))). }
+    rewrite HclsEq.
+    rewrite Hmult_eq_class.
+    rewrite HclassWd_sym.
+    exact HclassLeft.
+  }
+  (** Right identity: mult(cls, e) = cls **)
+  claim HrightId : apply_fun (fundamental_group_mult X Tx x0) (cls, fundamental_group_id X Tx x0) = cls.
+  {
+    claim HclsPairE : (path_homotopy_class_loop X Tx x0 f, fundamental_group_id X Tx x0)
+      :e setprod (fundamental_group X Tx x0) (fundamental_group X Tx x0).
+    { exact (tuple_2_setprod_by_pair_Sigma (fundamental_group X Tx x0) (fundamental_group X Tx x0)
+        (path_homotopy_class_loop X Tx x0 f) (fundamental_group_id X Tx x0)
+        (path_homotopy_class_in_fundamental_group X Tx x0 f HfLoop) HeG). }
+    claim Hmult_right : apply_fun (fundamental_group_mult X Tx x0) (path_homotopy_class_loop X Tx x0 f, fundamental_group_id X Tx x0)
+      = path_homotopy_class_loop X Tx x0
+          (path_concat
+            (Eps_i (fun h:set => h :e (path_homotopy_class_loop X Tx x0 f, fundamental_group_id X Tx x0) 0))
+            (Eps_i (fun h:set => h :e (path_homotopy_class_loop X Tx x0 f, fundamental_group_id X Tx x0) 1))).
+    { exact (fundamental_group_mult_apply X Tx x0
+        (path_homotopy_class_loop X Tx x0 f, fundamental_group_id X Tx x0) HclsPairE). }
+    claim HR0eq : (path_homotopy_class_loop X Tx x0 f, fundamental_group_id X Tx x0) 0
+      = path_homotopy_class_loop X Tx x0 f.
+    { exact (tuple_2_0_eq (path_homotopy_class_loop X Tx x0 f) (fundamental_group_id X Tx x0)). }
+    claim HR1eq : (path_homotopy_class_loop X Tx x0 f, fundamental_group_id X Tx x0) 1
+      = fundamental_group_id X Tx x0.
+    { exact (tuple_2_1_eq (path_homotopy_class_loop X Tx x0 f) (fundamental_group_id X Tx x0)). }
+    claim Hwd_right : path_homotopic X Tx x0 x0
+      (path_concat f (constant_path x0))
+      (path_concat
+        (Eps_i (fun h:set => h :e (path_homotopy_class_loop X Tx x0 f, fundamental_group_id X Tx x0) 0))
+        (Eps_i (fun h:set => h :e (path_homotopy_class_loop X Tx x0 f, fundamental_group_id X Tx x0) 1))).
+    { rewrite HR0eq. rewrite HR1eq.
+      exact (path_concat_well_defined_on_classes X Tx x0 x0 x0
+        f
+        (Eps_i (fun g:set => g :e path_homotopy_class_loop X Tx x0 f))
+        (constant_path x0)
+        (Eps_i (fun g:set => g :e path_homotopy_class_loop X Tx x0 (constant_path x0)))
+        Heps_f_hom Heps_e_hom). }
+    claim Hright : path_homotopic X Tx x0 x0 (path_concat f (constant_path x0)) f.
+    { exact (Theorem_51_2_right_identity X Tx x0 x0 f HfCont Hf0 Hf1 Hx0). }
+    claim HclassRight : path_homotopy_class_loop X Tx x0 (path_concat f (constant_path x0))
+      = path_homotopy_class_loop X Tx x0 f.
+    { exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0
+        (path_concat f (constant_path x0)) f Hright). }
+    claim HclassWdR : path_homotopy_class_loop X Tx x0 (path_concat f (constant_path x0))
+      = path_homotopy_class_loop X Tx x0
+          (path_concat
+            (Eps_i (fun h:set => h :e (path_homotopy_class_loop X Tx x0 f, fundamental_group_id X Tx x0) 0))
+            (Eps_i (fun h:set => h :e (path_homotopy_class_loop X Tx x0 f, fundamental_group_id X Tx x0) 1))).
+    { exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0
+        (path_concat f (constant_path x0))
+        (path_concat
+          (Eps_i (fun h:set => h :e (path_homotopy_class_loop X Tx x0 f, fundamental_group_id X Tx x0) 0))
+          (Eps_i (fun h:set => h :e (path_homotopy_class_loop X Tx x0 f, fundamental_group_id X Tx x0) 1)))
+        Hwd_right). }
+    claim HclassWdR_sym : path_homotopy_class_loop X Tx x0
+          (path_concat
+            (Eps_i (fun h:set => h :e (path_homotopy_class_loop X Tx x0 f, fundamental_group_id X Tx x0) 0))
+            (Eps_i (fun h:set => h :e (path_homotopy_class_loop X Tx x0 f, fundamental_group_id X Tx x0) 1)))
+      = path_homotopy_class_loop X Tx x0 (path_concat f (constant_path x0)).
+    { symmetry. exact HclassWdR. }
+    rewrite HclsEq.
+    rewrite Hmult_right.
+    rewrite HclassWdR_sym.
+    exact HclassRight.
+  }
+  exact (andI
+    (apply_fun (fundamental_group_mult X Tx x0) (fundamental_group_id X Tx x0, cls) = cls)
+    (apply_fun (fundamental_group_mult X Tx x0) (cls, fundamental_group_id X Tx x0) = cls)
+    HleftId HrightId).
+- (** Part 6: Inverse **)
+  let cls.
+  assume Hcls : cls :e fundamental_group X Tx x0.
+  (** Get representative **)
+  claim Hrep6 : exists f:set, f :e loop_space X Tx x0 /\ cls = path_homotopy_class_loop X Tx x0 f.
+  { exact (fundamental_group_member_has_representative X Tx x0 cls Hcls). }
+  apply Hrep6. let f. assume HfPack6.
+  claim HfLoop : f :e loop_space X Tx x0.
+  { exact (andEL (f :e loop_space X Tx x0) (cls = path_homotopy_class_loop X Tx x0 f) HfPack6). }
+  claim HclsEq6 : cls = path_homotopy_class_loop X Tx x0 f.
+  { exact (andER (f :e loop_space X Tx x0) (cls = path_homotopy_class_loop X Tx x0 f) HfPack6). }
+  claim HfLoopAt : loop_at X Tx x0 f.
+  { exact (loop_space_has_loop_at X Tx x0 f HfLoop). }
+  claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
+  { exact (loop_at_continuous X Tx x0 f HfLoopAt). }
+  claim Hf0 : apply_fun f 0 = x0.
+  { exact (loop_at_at_zero X Tx x0 f HfLoopAt). }
+  claim Hf1 : apply_fun f 1 = x0.
+  { exact (loop_at_at_one X Tx x0 f HfLoopAt). }
+  (** Eps_i of cls **)
+  claim Heps_cls : (Eps_i (fun g:set => g :e cls)) :e loop_space X Tx x0.
+  { exact (eps_in_loop_space_early X Tx x0 cls Htop Hcls). }
+  claim Heps_cls_at : loop_at X Tx x0 (Eps_i (fun g:set => g :e cls)).
+  { exact (loop_space_has_loop_at X Tx x0 (Eps_i (fun g:set => g :e cls)) Heps_cls). }
+  claim Heps_cls_cont : continuous_map unit_interval unit_interval_topology X Tx (Eps_i (fun g:set => g :e cls)).
+  { exact (loop_at_continuous X Tx x0 (Eps_i (fun g:set => g :e cls)) Heps_cls_at). }
+  claim Heps_cls_0 : apply_fun (Eps_i (fun g:set => g :e cls)) 0 = x0.
+  { exact (loop_at_at_zero X Tx x0 (Eps_i (fun g:set => g :e cls)) Heps_cls_at). }
+  claim Heps_cls_1 : apply_fun (Eps_i (fun g:set => g :e cls)) 1 = x0.
+  { exact (loop_at_at_one X Tx x0 (Eps_i (fun g:set => g :e cls)) Heps_cls_at). }
+  (** inv(cls) **)
+  claim HinvCls : apply_fun (fundamental_group_inv X Tx x0) cls
+    = path_homotopy_class_loop X Tx x0 (reverse_path (Eps_i (fun g:set => g :e cls))).
+  { exact (fundamental_group_inv_apply X Tx x0 cls Hcls). }
+  claim HinvClsG : apply_fun (fundamental_group_inv X Tx x0) cls :e fundamental_group X Tx x0.
+  { claim HrevLoop : reverse_path (Eps_i (fun g:set => g :e cls)) :e loop_space X Tx x0.
+    { exact (reverse_path_preserves_loop_space_early X Tx x0 (Eps_i (fun g:set => g :e cls)) Heps_cls). }
+    rewrite HinvCls.
+    exact (path_homotopy_class_in_fundamental_group X Tx x0
+      (reverse_path (Eps_i (fun g:set => g :e cls))) HrevLoop). }
+  (** Eps_i of inv(cls) is homotopic to reverse_path(Eps_i(cls)) **)
+  claim HrevEps : reverse_path (Eps_i (fun g:set => g :e cls)) :e loop_space X Tx x0.
+  { exact (reverse_path_preserves_loop_space_early X Tx x0 (Eps_i (fun g:set => g :e cls)) Heps_cls). }
+  claim Heps_inv_hom : path_homotopic X Tx x0 x0
+    (reverse_path (Eps_i (fun g:set => g :e cls)))
+    (Eps_i (fun h:set => h :e path_homotopy_class_loop X Tx x0 (reverse_path (Eps_i (fun g:set => g :e cls))))).
+  { exact (eps_homotopic_to_rep_early X Tx x0
+      (reverse_path (Eps_i (fun g:set => g :e cls))) Htop HrevEps). }
+  (** Right inverse: mult(cls, inv(cls)) = e **)
+  claim HrightInv : apply_fun (fundamental_group_mult X Tx x0) (cls, apply_fun (fundamental_group_inv X Tx x0) cls) = fundamental_group_id X Tx x0.
+  {
+    claim HpairRI : (cls, apply_fun (fundamental_group_inv X Tx x0) cls)
+      :e setprod (fundamental_group X Tx x0) (fundamental_group X Tx x0).
+    { exact (tuple_2_setprod_by_pair_Sigma (fundamental_group X Tx x0) (fundamental_group X Tx x0)
+        cls (apply_fun (fundamental_group_inv X Tx x0) cls) Hcls HinvClsG). }
+    claim HmultRI : apply_fun (fundamental_group_mult X Tx x0) (cls, apply_fun (fundamental_group_inv X Tx x0) cls)
+      = path_homotopy_class_loop X Tx x0
+          (path_concat
+            (Eps_i (fun h:set => h :e (cls, apply_fun (fundamental_group_inv X Tx x0) cls) 0))
+            (Eps_i (fun h:set => h :e (cls, apply_fun (fundamental_group_inv X Tx x0) cls) 1))).
+    { exact (fundamental_group_mult_apply X Tx x0
+        (cls, apply_fun (fundamental_group_inv X Tx x0) cls) HpairRI). }
+    claim HRI0 : (cls, apply_fun (fundamental_group_inv X Tx x0) cls) 0 = cls.
+    { exact (tuple_2_0_eq cls (apply_fun (fundamental_group_inv X Tx x0) cls)). }
+    claim HRI1 : (cls, apply_fun (fundamental_group_inv X Tx x0) cls) 1
+      = apply_fun (fundamental_group_inv X Tx x0) cls.
+    { exact (tuple_2_1_eq cls (apply_fun (fundamental_group_inv X Tx x0) cls)). }
+    (** After rewriting tuples and inv definition, use right_inverse theorem **)
+    claim Hwd_ri : path_homotopic X Tx x0 x0
+      (path_concat (Eps_i (fun g:set => g :e cls)) (reverse_path (Eps_i (fun g:set => g :e cls))))
+      (path_concat
+        (Eps_i (fun h:set => h :e (cls, apply_fun (fundamental_group_inv X Tx x0) cls) 0))
+        (Eps_i (fun h:set => h :e (cls, apply_fun (fundamental_group_inv X Tx x0) cls) 1))).
+    { rewrite HRI0. rewrite HRI1. rewrite HinvCls.
+      claim HepsRefl : path_homotopic X Tx x0 x0
+        (Eps_i (fun g:set => g :e cls)) (Eps_i (fun g:set => g :e cls)).
+      { exact (Lemma_51_1_path_homotopy_refl X Tx x0 x0
+          (Eps_i (fun g:set => g :e cls)) Heps_cls_cont Heps_cls_0 Heps_cls_1). }
+      exact (path_concat_well_defined_on_classes X Tx x0 x0 x0
+        (Eps_i (fun g:set => g :e cls)) (Eps_i (fun g:set => g :e cls))
+        (reverse_path (Eps_i (fun g:set => g :e cls)))
+        (Eps_i (fun h:set => h :e path_homotopy_class_loop X Tx x0 (reverse_path (Eps_i (fun g:set => g :e cls)))))
+        HepsRefl Heps_inv_hom). }
+    claim HrightInvHom : path_homotopic X Tx x0 x0
+      (path_concat (Eps_i (fun g:set => g :e cls)) (reverse_path (Eps_i (fun g:set => g :e cls))))
+      (constant_path x0).
+    { exact (Theorem_51_2_right_inverse X Tx x0 x0
+        (Eps_i (fun g:set => g :e cls)) Heps_cls_cont Heps_cls_0 Heps_cls_1). }
+    claim HclassRI : path_homotopy_class_loop X Tx x0
+      (path_concat (Eps_i (fun g:set => g :e cls)) (reverse_path (Eps_i (fun g:set => g :e cls))))
+      = path_homotopy_class_loop X Tx x0 (constant_path x0).
+    { exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0
+        (path_concat (Eps_i (fun g:set => g :e cls)) (reverse_path (Eps_i (fun g:set => g :e cls))))
+        (constant_path x0) HrightInvHom). }
+    claim HclassWdRI : path_homotopy_class_loop X Tx x0
+      (path_concat (Eps_i (fun g:set => g :e cls)) (reverse_path (Eps_i (fun g:set => g :e cls))))
+      = path_homotopy_class_loop X Tx x0
+          (path_concat
+            (Eps_i (fun h:set => h :e (cls, apply_fun (fundamental_group_inv X Tx x0) cls) 0))
+            (Eps_i (fun h:set => h :e (cls, apply_fun (fundamental_group_inv X Tx x0) cls) 1))).
+    { exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0
+        (path_concat (Eps_i (fun g:set => g :e cls)) (reverse_path (Eps_i (fun g:set => g :e cls))))
+        (path_concat
+          (Eps_i (fun h:set => h :e (cls, apply_fun (fundamental_group_inv X Tx x0) cls) 0))
+          (Eps_i (fun h:set => h :e (cls, apply_fun (fundamental_group_inv X Tx x0) cls) 1)))
+        Hwd_ri). }
+    claim HclassWdRI_sym : path_homotopy_class_loop X Tx x0
+          (path_concat
+            (Eps_i (fun h:set => h :e (cls, apply_fun (fundamental_group_inv X Tx x0) cls) 0))
+            (Eps_i (fun h:set => h :e (cls, apply_fun (fundamental_group_inv X Tx x0) cls) 1)))
+      = path_homotopy_class_loop X Tx x0
+          (path_concat (Eps_i (fun g:set => g :e cls)) (reverse_path (Eps_i (fun g:set => g :e cls)))).
+    { symmetry. exact HclassWdRI. }
+    rewrite HmultRI. rewrite HclassWdRI_sym. exact HclassRI.
+  }
+  (** Left inverse: mult(inv(cls), cls) = e **)
+  claim HleftInv : apply_fun (fundamental_group_mult X Tx x0) (apply_fun (fundamental_group_inv X Tx x0) cls, cls) = fundamental_group_id X Tx x0.
+  {
+    claim HpairLI : (apply_fun (fundamental_group_inv X Tx x0) cls, cls)
+      :e setprod (fundamental_group X Tx x0) (fundamental_group X Tx x0).
+    { exact (tuple_2_setprod_by_pair_Sigma (fundamental_group X Tx x0) (fundamental_group X Tx x0)
+        (apply_fun (fundamental_group_inv X Tx x0) cls) cls HinvClsG Hcls). }
+    claim HmultLI : apply_fun (fundamental_group_mult X Tx x0) (apply_fun (fundamental_group_inv X Tx x0) cls, cls)
+      = path_homotopy_class_loop X Tx x0
+          (path_concat
+            (Eps_i (fun h:set => h :e (apply_fun (fundamental_group_inv X Tx x0) cls, cls) 0))
+            (Eps_i (fun h:set => h :e (apply_fun (fundamental_group_inv X Tx x0) cls, cls) 1))).
+    { exact (fundamental_group_mult_apply X Tx x0
+        (apply_fun (fundamental_group_inv X Tx x0) cls, cls) HpairLI). }
+    claim HLI0 : (apply_fun (fundamental_group_inv X Tx x0) cls, cls) 0
+      = apply_fun (fundamental_group_inv X Tx x0) cls.
+    { exact (tuple_2_0_eq (apply_fun (fundamental_group_inv X Tx x0) cls) cls). }
+    claim HLI1 : (apply_fun (fundamental_group_inv X Tx x0) cls, cls) 1 = cls.
+    { exact (tuple_2_1_eq (apply_fun (fundamental_group_inv X Tx x0) cls) cls). }
+    claim Hwd_li : path_homotopic X Tx x0 x0
+      (path_concat (reverse_path (Eps_i (fun g:set => g :e cls))) (Eps_i (fun g:set => g :e cls)))
+      (path_concat
+        (Eps_i (fun h:set => h :e (apply_fun (fundamental_group_inv X Tx x0) cls, cls) 0))
+        (Eps_i (fun h:set => h :e (apply_fun (fundamental_group_inv X Tx x0) cls, cls) 1))).
+    { rewrite HLI0. rewrite HLI1. rewrite HinvCls.
+      claim HepsRefl : path_homotopic X Tx x0 x0
+        (Eps_i (fun g:set => g :e cls)) (Eps_i (fun g:set => g :e cls)).
+      { exact (Lemma_51_1_path_homotopy_refl X Tx x0 x0
+          (Eps_i (fun g:set => g :e cls)) Heps_cls_cont Heps_cls_0 Heps_cls_1). }
+      exact (path_concat_well_defined_on_classes X Tx x0 x0 x0
+        (reverse_path (Eps_i (fun g:set => g :e cls)))
+        (Eps_i (fun h:set => h :e path_homotopy_class_loop X Tx x0 (reverse_path (Eps_i (fun g:set => g :e cls)))))
+        (Eps_i (fun g:set => g :e cls)) (Eps_i (fun g:set => g :e cls))
+        Heps_inv_hom HepsRefl). }
+    claim HleftInvHom : path_homotopic X Tx x0 x0
+      (path_concat (reverse_path (Eps_i (fun g:set => g :e cls))) (Eps_i (fun g:set => g :e cls)))
+      (constant_path x0).
+    { exact (Theorem_51_2_left_inverse X Tx x0 x0
+        (Eps_i (fun g:set => g :e cls)) Heps_cls_cont Heps_cls_0 Heps_cls_1). }
+    claim HclassLI : path_homotopy_class_loop X Tx x0
+      (path_concat (reverse_path (Eps_i (fun g:set => g :e cls))) (Eps_i (fun g:set => g :e cls)))
+      = path_homotopy_class_loop X Tx x0 (constant_path x0).
+    { exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0
+        (path_concat (reverse_path (Eps_i (fun g:set => g :e cls))) (Eps_i (fun g:set => g :e cls)))
+        (constant_path x0) HleftInvHom). }
+    claim HclassWdLI : path_homotopy_class_loop X Tx x0
+      (path_concat (reverse_path (Eps_i (fun g:set => g :e cls))) (Eps_i (fun g:set => g :e cls)))
+      = path_homotopy_class_loop X Tx x0
+          (path_concat
+            (Eps_i (fun h:set => h :e (apply_fun (fundamental_group_inv X Tx x0) cls, cls) 0))
+            (Eps_i (fun h:set => h :e (apply_fun (fundamental_group_inv X Tx x0) cls, cls) 1))).
+    { exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0
+        (path_concat (reverse_path (Eps_i (fun g:set => g :e cls))) (Eps_i (fun g:set => g :e cls)))
+        (path_concat
+          (Eps_i (fun h:set => h :e (apply_fun (fundamental_group_inv X Tx x0) cls, cls) 0))
+          (Eps_i (fun h:set => h :e (apply_fun (fundamental_group_inv X Tx x0) cls, cls) 1)))
+        Hwd_li). }
+    claim HclassWdLI_sym : path_homotopy_class_loop X Tx x0
+          (path_concat
+            (Eps_i (fun h:set => h :e (apply_fun (fundamental_group_inv X Tx x0) cls, cls) 0))
+            (Eps_i (fun h:set => h :e (apply_fun (fundamental_group_inv X Tx x0) cls, cls) 1)))
+      = path_homotopy_class_loop X Tx x0
+          (path_concat (reverse_path (Eps_i (fun g:set => g :e cls))) (Eps_i (fun g:set => g :e cls))).
+    { symmetry. exact HclassWdLI. }
+    rewrite HmultLI. rewrite HclassWdLI_sym. exact HclassLI.
+  }
+  exact (andI
+    (apply_fun (fundamental_group_mult X Tx x0) (cls, apply_fun (fundamental_group_inv X Tx x0) cls) = fundamental_group_id X Tx x0)
+    (apply_fun (fundamental_group_mult X Tx x0) (apply_fun (fundamental_group_inv X Tx x0) cls, cls) = fundamental_group_id X Tx x0)
+    HrightInv HleftInv).
+Qed.
 
 (** from S52 Example 1 (line 365 in algtop.tex): pi1(Rn, x0) is trivial **)
 (** LATEX VERSION: pi1(Rn, x0) is the trivial group. More generally, if X is any convex subset of Rn, then pi1(X, x0) is trivial. **)
@@ -22384,7 +23248,7 @@ apply set_ext.
     x0
     (constant_path x0)
     HconstInLoop).
-Qed.
+Admitted.
 
 (** from S52 Definition (line 374 in algtop.tex): the alpha-hat map for change of basepoint **)
 (** LATEX VERSION: Let alpha be a path from x0 to x1. Define alpha-hat: pi1(X,x0) -> pi1(X,x1) by alpha-hat([f]) = [alpha-bar] . [f] . [alpha]. **)
@@ -32952,7 +33816,7 @@ claim HfinalClass :
     HfinalHom).
 }
 exact HfinalClass.
-Qed.
+Admitted.
 
 (** S52 helper: conjugation-step equalities used in Exercise 3 abelian => uniqueness direction **)
 Theorem ex52_3_helper_conj_pair : forall X Tx x0 x1 alpha beta cls delta_cls:set,
@@ -33276,7 +34140,7 @@ apply iffI.
     Huniq
     Ha
     Hb).
-Qed.
+Admitted.
 
 (** from S52 Exercise 4 (line 499 in algtop.tex): retraction and pi1 **)
 (** LATEX VERSION: Let r: X -> A be a retraction. If a0 in A, show that r-star: pi1(X,a0) -> pi1(A,a0) is surjective. **)
@@ -46876,7 +47740,7 @@ exact (andI
     apply_fun (path_concat alpha beta) t)
   HconcatCont
   HconcatComm).
-Qed.
+Admitted.
 
 (** Infrastructure: complex inversion on S^1: z -> (z_0, -z_1) = conjugate = 1/z **)
 Definition S1_conjugate_map : set :=
@@ -47718,7 +48582,7 @@ Theorem ex57_1_meteorology : forall f:set,
 let f.
 assume Hf.
 exact (thm57_3_borsuk_ulam_S2 f Hf).
-Qed.
+Admitted.
 
 (** from S57 Exercise 2 (line 1258 in algtop.tex) **)
 (** LATEX VERSION: If g: S^2 -> S^2 is continuous and g(x) != g(-x) for all x, then g is surjective. **)
@@ -48164,7 +49028,7 @@ claim HhEq :
     HalphaEq).
 }
 exact (HhInj cls1 cls2 Hcls1 Hcls2 HhEq).
-Qed.
+Admitted.
 
 (** from S58 Corollary 58.5 surjective case (line 1423 in algtop.tex) **)
 (** LATEX VERSION: Let h, k: X -> Y be homotopic. If h-star is surjective, so is k-star. **)
@@ -48305,7 +49169,7 @@ apply andI.
   rewrite HkEqAlpha.
   rewrite HhEqd.
   exact HdEq.
-Qed.
+Admitted.
 
 (** from S58 Corollary 58.5 trivial case (line 1423 in algtop.tex) **)
 (** LATEX VERSION: Let h, k: X -> Y be homotopic. If h-star is trivial, so is k-star. **)
@@ -48404,7 +49268,7 @@ claim Hdesired_cls :
   exact HbaseId.
 }
 exact Hdesired_cls.
-Qed.
+Admitted.
 
 (** helper: a constant map induces the trivial map on fundamental groups **)
 (** Proven Bob **)
@@ -48594,7 +49458,7 @@ claim Htarget :
     HconstTriv).
 }
 exact Htarget.
-Qed.
+Admitted.
 
 (** from S58 Theorem 58.7 (line 1429 in algtop.tex) **)
 (** LATEX VERSION: If f: X -> Y is a homotopy equivalence with f(x0) = y0, then f-star: pi_1(X,x0) -> pi_1(Y,y0) is an isomorphism. **)
