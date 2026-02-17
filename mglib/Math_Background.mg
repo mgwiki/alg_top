@@ -1,5 +1,5 @@
 (** Balance Alice 2135 **)
-(** Balance Bob 2029 **)
+(** Balance Bob 2007 **)
 (** Balance Charlie 1223 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -16845,6 +16845,34 @@ Qed.
 (** from S52 Theorem 52.1 (line 396 in algtop.tex): alpha-hat is a group isomorphism **)
 (** LATEX VERSION: The map alpha-hat is a group isomorphism from pi1(X,x0) to pi1(X,x1). **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
+(** from S52 Theorem 52.1 sub-bounty A: homomorphism part of alpha-hat **)
+(** EFFORT: 2 lines, difficulty 2/10, USD 10 **)
+(** Bounty 10 **)
+Theorem lemma52_1_basepoint_change_homomorphism : forall X Tx x0 x1 alpha:set,
+  topology_on X Tx ->
+  continuous_map unit_interval unit_interval_topology X Tx alpha ->
+  apply_fun alpha 0 = x0 -> apply_fun alpha 1 = x1 ->
+  group_homomorphism
+    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+    (fundamental_group X Tx x1) (fundamental_group_mult X Tx x1)
+    (basepoint_change_map X Tx x0 x1 alpha).
+admit.
+Admitted.
+
+(** from S52 Theorem 52.1 sub-bounty B: bijection part of alpha-hat **)
+(** EFFORT: 3 lines, difficulty 3/10, USD 12 **)
+(** Bounty 12 **)
+Theorem lemma52_1_basepoint_change_bijection : forall X Tx x0 x1 alpha:set,
+  topology_on X Tx ->
+  continuous_map unit_interval unit_interval_topology X Tx alpha ->
+  apply_fun alpha 0 = x0 -> apply_fun alpha 1 = x1 ->
+  bijection
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x1)
+    (basepoint_change_map X Tx x0 x1 alpha).
+admit.
+Admitted.
+
 (** Bounty 110 **)
 (** Lock Bob 2026-02-18T02:30:00 **)
 Theorem Theorem_52_1_basepoint_isomorphism : forall X Tx x0 x1 alpha:set,
@@ -16855,7 +16883,53 @@ Theorem Theorem_52_1_basepoint_isomorphism : forall X Tx x0 x1 alpha:set,
     (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
     (fundamental_group X Tx x1) (fundamental_group_mult X Tx x1)
     (basepoint_change_map X Tx x0 x1 alpha).
-admit.
+let X Tx x0 x1 alpha.
+assume HtopX HalphaCont Halpha0 Halpha1.
+claim Hhom :
+  group_homomorphism
+    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+    (fundamental_group X Tx x1) (fundamental_group_mult X Tx x1)
+    (basepoint_change_map X Tx x0 x1 alpha).
+{
+  exact (lemma52_1_basepoint_change_homomorphism
+    X
+    Tx
+    x0
+    x1
+    alpha
+    HtopX
+    HalphaCont
+    Halpha0
+    Halpha1).
+}
+claim Hbij :
+  bijection
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x1)
+    (basepoint_change_map X Tx x0 x1 alpha).
+{
+  exact (lemma52_1_basepoint_change_bijection
+    X
+    Tx
+    x0
+    x1
+    alpha
+    HtopX
+    HalphaCont
+    Halpha0
+    Halpha1).
+}
+exact (andI
+  (group_homomorphism
+    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+    (fundamental_group X Tx x1) (fundamental_group_mult X Tx x1)
+    (basepoint_change_map X Tx x0 x1 alpha))
+  (bijection
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x1)
+    (basepoint_change_map X Tx x0 x1 alpha))
+  Hhom
+  Hbij).
 Admitted.
 
 (** from S52 Corollary 52.2 (line 418 in algtop.tex) **)
