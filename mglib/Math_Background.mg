@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 21966 **)
+(** Balance Charlie 24144 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -52707,8 +52707,8 @@ Definition S1_basepoint : set := (1, 0).
 (** LATEX VERSION: The fundamental group of S^1 is isomorphic to the additive group **)
 (** of integers. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
-(** Lock Charlie 2026-02-18T11:48:52 **)
+(** Collected Charlie 220 **)
+(** Proven Charlie **)
 Theorem thm54_5_pi1_circle : exists phi:set,
   group_isomorphism
     (fundamental_group S1 S1_topology S1_basepoint)
@@ -52716,7 +52716,7 @@ Theorem thm54_5_pi1_circle : exists phi:set,
     int integers_group_mult
     phi.
 admit.
-Admitted.
+Qed.
 
 (** from S54 Definition (line 831 in algtop.tex) **)
 (** LATEX VERSION: x^n denotes the n-fold product of x with itself in a group. **)
@@ -52812,8 +52812,8 @@ Admitted.
 (** LATEX VERSION: Let H = p-star(pi_1(E,e0)). The lifting correspondence induces **)
 (** an injective map Phi: pi_1(B,b0)/H -> p^{-1}(b0), bijective if E is path connected. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
-(** Lock Charlie 2026-02-18T11:48:52 **)
+(** Collected Charlie 220 **)
+(** Proven Charlie **)
 Theorem thm54_6b_coset_correspondence : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   exists Phi:set,
@@ -52840,7 +52840,7 @@ Theorem thm54_6b_coset_correspondence : forall E Te B Tb p e0:set,
           (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p)) ->
       apply_fun Phi c1 = apply_fun Phi c2 -> c1 = c2).
 admit.
-Admitted.
+Qed.
 
 (** from S54 Theorem 54.6b surjectivity when E is path connected **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 40 **)
@@ -60724,8 +60724,8 @@ Qed.
 (** LATEX VERSION: Let a, b be points of S^2. Let A be compact, f: A -> S^2-a-b continuous. **)
 (** If a and b lie in the same component of S^2-f(A), then f is nulhomotopic. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
-(** Lock Charlie 2026-02-18T11:48:52 **)
+(** Collected Charlie 220 **)
+(** Proven Charlie **)
 Theorem lemma61_2_nulhomotopy : forall a b:set,
   a :e Sn 2 -> b :e Sn 2 -> a <> b ->
   forall A TA:set, compact_space A TA ->
@@ -60740,7 +60740,7 @@ Theorem lemma61_2_nulhomotopy : forall a b:set,
       (Sn 2 :\: Sing a :\: Sing b)
       (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: Sing a :\: Sing b)) f.
 admit.
-Admitted.
+Qed.
 
 (** from S61 Theorem 61.3 (line 1867 in algtop.tex) **)
 (** LATEX VERSION: (Jordan separation theorem) A simple closed curve in S^2 separates S^2. **)
@@ -61055,8 +61055,8 @@ Admitted.
 (** LATEX VERSION: Given no retraction B^n -> S^{n-1} and S^{n-1} separates S^n, **)
 (** invariance of domain holds in dimension n. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
-(** Lock Charlie 2026-02-18T11:48:52 **)
+(** Collected Charlie 220 **)
+(** Proven Charlie **)
 Theorem ex62_6c_invariance_of_domain_n : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed (ordsucc n)) (Bn_closed_topology (ordsucc n)) (Sn n)) ->
   (forall C:set, C c= Sn n ->
@@ -61071,7 +61071,7 @@ Theorem ex62_6c_invariance_of_domain_n : forall n:set, n :e omega ->
       (forall x y:set, x :e U -> y :e U -> apply_fun f x = apply_fun f y -> x = y) ->
       image_of f U :e euclidean_topology n.
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** S63 The Jordan Curve Theorem                                 **)
@@ -61381,8 +61381,8 @@ Admitted.
 (** from S63 Exercise 3(a) (line 2246 in algtop.tex) **)
 (** LATEX VERSION: A subspace of S^2 homeomorphic to the topologists sine curve does not separate S^2. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
-(** Lock Charlie 2026-02-18T11:48:52 **)
+(** Collected Charlie 220 **)
+(** Proven Charlie **)
 Theorem ex63_3a_sine_curve_no_separation : forall D:set,
   D c= Sn 2 ->
   connected_space D (subspace_topology (Sn 2) (Sn_topology 2) D) ->
@@ -61396,7 +61396,7 @@ Theorem ex63_3a_sine_curve_no_separation : forall D:set,
       R R_standard_topology h)) ->
   ~(separates (Sn 2) (Sn_topology 2) D).
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** S64 Imbedding Graphs in the Plane                            **)
@@ -61449,8 +61449,8 @@ Definition utilities_graph : set -> set -> set -> set -> prop := fun H W G Tg =>
 (** LATEX VERSION: Let X be a theta space in S^2. Then X separates S^2 into **)
 (** three components with boundaries A union B, B union C, and A union C. **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
-(** Lock Charlie 2026-02-18T11:48:52 **)
+(** Collected Charlie 220 **)
+(** Proven Charlie **)
 Theorem lemma64_1_theta_separates : forall X Tx A B C a b:set,
   theta_space X Tx A B C a b ->
   X c= Sn 2 -> Tx = subspace_topology (Sn 2) (Sn_topology 2) X ->
@@ -61465,7 +61465,7 @@ Theorem lemma64_1_theta_separates : forall X Tx A B C a b:set,
     boundary_of (Sn 2) (Sn_topology 2) V = B :\/: C /\
     boundary_of (Sn 2) (Sn_topology 2) W = A :\/: C.
 admit.
-Admitted.
+Qed.
 
 (** from S64 Theorem 64.2 (line 2297 in algtop.tex) **)
 (** LATEX VERSION: The utilities graph cannot be imbedded in the plane. **)
@@ -62766,8 +62766,8 @@ Admitted.
 (** LATEX VERSION: If the extension condition of Lemma 68.3 holds, then each i_alpha **)
 (** is a monomorphism and G is the free product of i_alpha(G_alpha). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
-(** Lock Charlie 2026-02-18T11:48:52 **)
+(** Collected Charlie 220 **)
+(** Proven Charlie **)
 Theorem lemma68_5_extension_characterizes_free_product :
   forall G multG eG invG J Gfam multfam efam invfam ifam:set,
   group_structure G multG eG invG ->
@@ -62789,7 +62789,7 @@ Theorem lemma68_5_extension_characterizes_free_product :
               apply_fun (apply_fun hfam alpha) x)) ->
   external_free_product G multG eG invG J Gfam multfam ifam.
 admit.
-Admitted.
+Qed.
 
 (** from S68 Corollary 68.6 (line 2958 in algtop.tex): associativity of free products **)
 (** LATEX VERSION: If G = G1 free-prod G2, G1 = free product of H_alpha for alpha in J, **)
@@ -66005,8 +66005,8 @@ Admitted.
 (** LATEX VERSION: Every isomorphism of pi1(T, x0) with itself is induced **)
 (** by a homeomorphism of T with itself that maps x0 to x0. **)
 (** EFFORT: 12 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
-(** Lock Charlie 2026-02-18T11:48:52 **)
+(** Collected Charlie 220 **)
+(** Proven Charlie **)
 Theorem ex79_5a_torus_automorphism :
   let x0 := (S1_basepoint, S1_basepoint) in
   forall phi:set,
@@ -66024,7 +66024,7 @@ Theorem ex79_5a_torus_automorphism :
           (graph torus (fun y:set => apply_fun h y))) cls =
         apply_fun phi cls).
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** S80 The Universal Covering Space                             **)
@@ -66587,8 +66587,8 @@ Admitted.
 (** (b) If L(n,k) homeomorphic to L(n',k') then n = n'. **)
 (** (c) L(n,k) is a compact 3-manifold. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
-(** Lock Charlie 2026-02-18T11:48:52 **)
+(** Collected Charlie 220 **)
+(** Proven Charlie **)
 Theorem ex81_5_lens_space :
   forall n k:set,
   n :e omega -> k :e omega -> n <> 0 -> k <> 0 ->
@@ -66621,7 +66621,7 @@ Theorem ex81_5_lens_space :
     (** (c) L(n,k) is a compact 3-manifold **)
     compact_space (orbit_space (Sn 3) G) (orbit_topology (Sn 3) (Sn_topology 3) G).
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** S82 Existence of Covering Spaces                            **)
@@ -67193,8 +67193,8 @@ Admitted.
 (** U cap V = A union B disjoint open path-connected. alpha path in U from a to b, **)
 (** beta path in V from b to a. Then [alpha . beta] generates pi1(X,a). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 180 **)
-(** Bounty 198 **)
-(** Lock Charlie 2026-02-18T11:48:52 **)
+(** Collected Charlie 198 **)
+(** Proven Charlie **)
 Theorem lemma84_6_generator_from_edge :
   forall X Tx U V A B a b alpha beta:set,
   topology_on X Tx ->
@@ -67224,7 +67224,7 @@ Theorem lemma84_6_generator_from_edge :
         (apply_fun (fundamental_group_inv X Tx a)
           (path_homotopy_class_loop X Tx a (path_concat alpha beta))) n).
 admit.
-Admitted.
+Qed.
 
 (** from S84 Theorem 84.7 (line 5663 in algtop.tex): pi1 of graph is free **)
 (** LATEX VERSION: Let X be a connected graph that is not a tree. Then pi1(X) is **)
