@@ -76431,7 +76431,124 @@ Theorem ex81_3a_covering_trans_properly_discontinuous :
   let G := covering_transformation_group X Tx B Tb p in
   let idG := graph X (fun x:set => x) in
   properly_discontinuous X Tx G idG.
-admit.
+let X Tx B Tb p.
+assume Hcov.
+set G := covering_transformation_group X Tx B Tb p.
+set idG := graph X (fun x:set => x).
+claim Hproper :
+  forall x:set, x :e X ->
+  exists U:set, U :e Tx /\ x :e U /\
+    (forall g:set, g :e G -> g <> idG ->
+      apply_fun g x :e X /\
+      (forall y:set, y :e U -> apply_fun g y /:e U)).
+{
+  let x.
+  assume Hx.
+  claim Hslice :
+    exists Ue slices Ux:set,
+      (Ux :e Tx /\ x :e Ux /\ Ue :e Tb /\
+        homeomorphism Ux (subspace_topology X Tx Ux) Ue (subspace_topology B Tb Ue)
+          (graph Ux (fun z:set => apply_fun p z))) /\
+      (slices c= Tx /\ pairwise_disjoint slices /\
+        Union slices = preimage_of X p Ue /\ Ux :e slices /\
+        (forall V:set, V :e slices ->
+          homeomorphism V (subspace_topology X Tx V) Ue (subspace_topology B Tb Ue)
+            (graph V (fun z:set => apply_fun p z)))).
+  {
+    exact (covering_map_local_homeomorphism_with_slices
+      X
+      Tx
+      B
+      Tb
+      p
+      x
+      Hcov
+      Hx).
+  }
+  apply Hslice.
+  let Ue.
+  assume HUePack.
+  apply HUePack.
+  let slices.
+  assume HsPack.
+  apply HsPack.
+  let Ux.
+  assume Hpack.
+  claim Hmain :
+    Ux :e Tx /\ x :e Ux /\ Ue :e Tb /\
+      homeomorphism Ux (subspace_topology X Tx Ux) Ue (subspace_topology B Tb Ue)
+        (graph Ux (fun z:set => apply_fun p z)).
+  {
+    exact (andEL
+      (Ux :e Tx /\ x :e Ux /\ Ue :e Tb /\
+        homeomorphism Ux (subspace_topology X Tx Ux) Ue (subspace_topology B Tb Ue)
+          (graph Ux (fun z:set => apply_fun p z)))
+      (slices c= Tx /\ pairwise_disjoint slices /\
+        Union slices = preimage_of X p Ue /\ Ux :e slices /\
+        (forall V:set, V :e slices ->
+          homeomorphism V (subspace_topology X Tx V) Ue (subspace_topology B Tb Ue)
+            (graph V (fun z:set => apply_fun p z))))
+      Hpack).
+  }
+  claim HUxOpen : Ux :e Tx.
+  {
+    apply (and4E
+      (Ux :e Tx)
+      (x :e Ux)
+      (Ue :e Tb)
+      (homeomorphism Ux (subspace_topology X Tx Ux) Ue (subspace_topology B Tb Ue)
+        (graph Ux (fun z:set => apply_fun p z)))
+      Hmain).
+    assume HUxOpen0 HxUx0 HUeOpen0 Hhome0.
+    exact HUxOpen0.
+  }
+  claim HxUx : x :e Ux.
+  {
+    apply (and4E
+      (Ux :e Tx)
+      (x :e Ux)
+      (Ue :e Tb)
+      (homeomorphism Ux (subspace_topology X Tx Ux) Ue (subspace_topology B Tb Ue)
+        (graph Ux (fun z:set => apply_fun p z)))
+      Hmain).
+    assume HUxOpen0 HxUx0 HUeOpen0 Hhome0.
+    exact HxUx0.
+  }
+  witness Ux.
+  apply andI.
+  - apply andI.
+    + exact HUxOpen.
+    + exact HxUx.
+  - let g.
+    assume HgG HgNe.
+    claim HgPack :
+      g :e function_space X X /\
+      covering_transformation X Tx B Tb p g.
+    {
+      exact (SepE
+        (function_space X X)
+        (fun h:set => covering_transformation X Tx B Tb p h)
+        g
+        HgG).
+    }
+    claim HgFS : g :e function_space X X.
+    {
+      exact (andEL
+        (g :e function_space X X)
+        (covering_transformation X Tx B Tb p g)
+        HgPack).
+    }
+    claim HgFun : function_on g X X.
+    {
+      exact (function_on_of_function_space g X X HgFS).
+    }
+    apply andI.
+    + exact (HgFun x Hx).
+    + let y.
+      assume HyUx.
+      admit. (** TODO Charlie: finish deck-action disjointness on local sheet Ux for non-identity g. **)
+}
+exact Hproper.
 Admitted.
 
 (** from S81 Exercise 3(b) (line 5200 in algtop.tex) **)
