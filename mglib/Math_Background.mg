@@ -1,5 +1,5 @@
 (** Balance Alice 2410 **)
-(** Balance Bob 2758 **)
+(** Balance Bob 2813 **)
 (** Balance Charlie 1202 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -48497,15 +48497,452 @@ Qed.
 (** from S58 Exercise 5 (line 1494 in algtop.tex) **)
 (** LATEX VERSION: X is contractible if and only if X has the homotopy type of a one-point space. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Bob 2026-02-18T07:50:00 **)
+(** Collected Bob 55 **)
+(** Proven Bob **)
 Theorem ex58_5_contractible_iff_point_type : forall X Tx:set,
   topology_on X Tx -> X <> Empty ->
   (contractible_space X Tx <->
    exists x0:set, x0 :e X /\
      same_homotopy_type X Tx (Sing x0) (Power (Sing x0))).
-admit.
-Admitted.
+let X Tx.
+assume HtopX HXne.
+apply iffI.
+- assume HcX.
+  claim HnulX : nulhomotopic X Tx X Tx (graph X (fun x:set => x)).
+  {
+    exact (andER
+      (topology_on X Tx)
+      (nulhomotopic X Tx X Tx (graph X (fun x:set => x)))
+      HcX).
+  }
+  apply HnulX.
+  let x0.
+  assume Hx0Pack.
+  claim Hx0X : x0 :e X.
+  {
+    exact (andEL
+      (x0 :e X)
+      (homotopic_maps X Tx X Tx (graph X (fun x:set => x)) (const_fun X x0))
+      Hx0Pack).
+  }
+  claim HidConst :
+    homotopic_maps X Tx X Tx (graph X (fun x:set => x)) (const_fun X x0).
+  {
+    exact (andER
+      (x0 :e X)
+      (homotopic_maps X Tx X Tx (graph X (fun x:set => x)) (const_fun X x0))
+      Hx0Pack).
+  }
+  set f := const_fun X x0.
+  set g := const_fun (Sing x0) x0.
+  claim HtopSingPow : topology_on (Sing x0) (Power (Sing x0)).
+  {
+    exact (discrete_topology_on (Sing x0)).
+  }
+  claim Hx0Sing : x0 :e Sing x0.
+  {
+    exact (SingI x0).
+  }
+  claim HfCont : continuous_map X Tx (Sing x0) (Power (Sing x0)) f.
+  {
+    exact (const_fun_continuous
+      X
+      Tx
+      (Sing x0)
+      (Power (Sing x0))
+      x0
+      HtopX
+      HtopSingPow
+      Hx0Sing).
+  }
+  claim HgCont : continuous_map (Sing x0) (Power (Sing x0)) X Tx g.
+  {
+    exact (const_fun_continuous
+      (Sing x0)
+      (Power (Sing x0))
+      X
+      Tx
+      x0
+      HtopSingPow
+      HtopX
+      Hx0X).
+  }
+  claim HfFun : function_on f X (Sing x0).
+  {
+    exact (continuous_map_function_on
+      X
+      Tx
+      (Sing x0)
+      (Power (Sing x0))
+      f
+      HfCont).
+  }
+  claim HgFun : function_on g (Sing x0) X.
+  {
+    exact (continuous_map_function_on
+      (Sing x0)
+      (Power (Sing x0))
+      X
+      Tx
+      g
+      HgCont).
+  }
+  claim Hcomp1Eq :
+    compose_fun X f g = const_fun X x0.
+  {
+    apply (total_function_space_extensional
+      X
+      X
+      (compose_fun X f g)
+      (const_fun X x0)).
+    - exact (compose_fun_in_total_function_space
+        X
+        (Sing x0)
+        X
+        f
+        g
+        HfFun
+        HgFun).
+    - exact (graph_in_total_function_space
+        X
+        X
+        (fun x:set => x0)
+        (fun x Hx => Hx0X)).
+    - let x.
+      assume Hx.
+      rewrite (compose_fun_apply
+        X
+        f
+        g
+        x
+        Hx).
+      rewrite (const_fun_apply
+        (Sing x0)
+        x0
+        (apply_fun f x)
+        (HfFun x Hx)).
+      rewrite (const_fun_apply
+        X
+        x0
+        x
+        Hx).
+      reflexivity.
+  }
+  claim Hcomp2Eq :
+    compose_fun (Sing x0) g f = graph (Sing x0) (fun z:set => z).
+  {
+    apply (total_function_space_extensional
+      (Sing x0)
+      (Sing x0)
+      (compose_fun (Sing x0) g f)
+      (graph (Sing x0) (fun z:set => z))).
+    - exact (compose_fun_in_total_function_space
+        (Sing x0)
+        X
+        (Sing x0)
+        g
+        f
+        HgFun
+        HfFun).
+    - exact (graph_in_total_function_space
+        (Sing x0)
+        (Sing x0)
+        (fun z:set => z)
+        (fun z Hz => Hz)).
+    - let z.
+      assume Hz.
+      rewrite (compose_fun_apply
+        (Sing x0)
+        g
+        f
+        z
+        Hz).
+      rewrite (const_fun_apply
+        X
+        x0
+        (apply_fun g z)
+        (HgFun z Hz)).
+      rewrite (apply_fun_graph
+        (Sing x0)
+        (fun z0:set => z0)
+        z
+        Hz).
+      rewrite (SingE x0 z Hz).
+      reflexivity.
+  }
+  claim Hcomp1Hom :
+    homotopic_maps X Tx X Tx (compose_fun X f g) (graph X (fun x:set => x)).
+  {
+    rewrite Hcomp1Eq.
+    exact (Lemma_51_1_homotopy_sym
+      X
+      Tx
+      X
+      Tx
+      (graph X (fun x:set => x))
+      (const_fun X x0)
+      HidConst).
+  }
+  claim HidSingCont :
+    continuous_map
+      (Sing x0)
+      (Power (Sing x0))
+      (Sing x0)
+      (Power (Sing x0))
+      (graph (Sing x0) (fun z:set => z)).
+  {
+    exact (identity_continuous
+      (Sing x0)
+      (Power (Sing x0))
+      HtopSingPow).
+  }
+  claim Hcomp2Hom :
+    homotopic_maps
+      (Sing x0)
+      (Power (Sing x0))
+      (Sing x0)
+      (Power (Sing x0))
+      (compose_fun (Sing x0) g f)
+      (graph (Sing x0) (fun z:set => z)).
+  {
+    rewrite Hcomp2Eq.
+    exact (Lemma_51_1_homotopy_refl
+      (Sing x0)
+      (Power (Sing x0))
+      (Sing x0)
+      (Power (Sing x0))
+      (graph (Sing x0) (fun z:set => z))
+      HidSingCont).
+  }
+  witness x0.
+  apply andI.
+  {
+    exact Hx0X.
+  }
+  {
+    claim HsameWitness :
+      exists f0:set, homotopy_equivalence X Tx (Sing x0) (Power (Sing x0)) f0.
+    {
+      claim HheqCore :
+        continuous_map X Tx (Sing x0) (Power (Sing x0)) f /\
+        exists g0:set,
+          continuous_map (Sing x0) (Power (Sing x0)) X Tx g0 /\
+          homotopic_maps X Tx X Tx
+            (compose_fun X f g0) (graph X (fun x:set => x)) /\
+          homotopic_maps (Sing x0) (Power (Sing x0)) (Sing x0) (Power (Sing x0))
+            (compose_fun (Sing x0) g0 f) (graph (Sing x0) (fun z:set => z)).
+      {
+        apply andI.
+        {
+          exact HfCont.
+        }
+        {
+          witness g.
+          apply andI.
+          {
+            apply andI.
+            - exact HgCont.
+            - exact Hcomp1Hom.
+          }
+          {
+            exact Hcomp2Hom.
+          }
+        }
+      }
+      witness f.
+      exact HheqCore.
+    }
+    exact HsameWitness.
+  }
+- assume HptType.
+  apply HptType.
+  let x0.
+  assume Hx0Pack.
+  claim Hx0X : x0 :e X.
+  {
+    exact (andEL
+      (x0 :e X)
+      (same_homotopy_type X Tx (Sing x0) (Power (Sing x0)))
+      Hx0Pack).
+  }
+  claim Hsame : same_homotopy_type X Tx (Sing x0) (Power (Sing x0)).
+  {
+    exact (andER
+      (x0 :e X)
+      (same_homotopy_type X Tx (Sing x0) (Power (Sing x0)))
+      Hx0Pack).
+  }
+  apply Hsame.
+  let f.
+  assume HfEquiv.
+  claim HfCont : continuous_map X Tx (Sing x0) (Power (Sing x0)) f.
+  {
+    exact (andEL
+      (continuous_map X Tx (Sing x0) (Power (Sing x0)) f)
+      (exists g:set,
+        continuous_map (Sing x0) (Power (Sing x0)) X Tx g /\
+        homotopic_maps X Tx X Tx
+          (compose_fun X f g) (graph X (fun x:set => x)) /\
+        homotopic_maps (Sing x0) (Power (Sing x0)) (Sing x0) (Power (Sing x0))
+          (compose_fun (Sing x0) g f) (graph (Sing x0) (fun z:set => z)))
+      HfEquiv).
+  }
+  claim HgWit :
+    exists g:set,
+      continuous_map (Sing x0) (Power (Sing x0)) X Tx g /\
+      homotopic_maps X Tx X Tx
+        (compose_fun X f g) (graph X (fun x:set => x)) /\
+      homotopic_maps (Sing x0) (Power (Sing x0)) (Sing x0) (Power (Sing x0))
+        (compose_fun (Sing x0) g f) (graph (Sing x0) (fun z:set => z)).
+  {
+    exact (andER
+      (continuous_map X Tx (Sing x0) (Power (Sing x0)) f)
+      (exists g:set,
+        continuous_map (Sing x0) (Power (Sing x0)) X Tx g /\
+        homotopic_maps X Tx X Tx
+          (compose_fun X f g) (graph X (fun x:set => x)) /\
+        homotopic_maps (Sing x0) (Power (Sing x0)) (Sing x0) (Power (Sing x0))
+          (compose_fun (Sing x0) g f) (graph (Sing x0) (fun z:set => z)))
+      HfEquiv).
+  }
+  apply HgWit.
+  let g.
+  assume HgPack.
+  claim HgPair :
+    continuous_map (Sing x0) (Power (Sing x0)) X Tx g /\
+    homotopic_maps X Tx X Tx
+      (compose_fun X f g) (graph X (fun x:set => x)).
+  {
+    exact (andEL
+      (continuous_map (Sing x0) (Power (Sing x0)) X Tx g /\
+        homotopic_maps X Tx X Tx
+          (compose_fun X f g) (graph X (fun x:set => x)))
+      (homotopic_maps (Sing x0) (Power (Sing x0)) (Sing x0) (Power (Sing x0))
+        (compose_fun (Sing x0) g f) (graph (Sing x0) (fun z:set => z)))
+      HgPack).
+  }
+  claim HgCont : continuous_map (Sing x0) (Power (Sing x0)) X Tx g.
+  {
+    exact (andEL
+      (continuous_map (Sing x0) (Power (Sing x0)) X Tx g)
+      (homotopic_maps X Tx X Tx
+        (compose_fun X f g) (graph X (fun x:set => x)))
+      HgPair).
+  }
+  claim HcompId :
+    homotopic_maps X Tx X Tx
+      (compose_fun X f g) (graph X (fun x:set => x)).
+  {
+    exact (andER
+      (continuous_map (Sing x0) (Power (Sing x0)) X Tx g)
+      (homotopic_maps X Tx X Tx
+        (compose_fun X f g) (graph X (fun x:set => x)))
+      HgPair).
+  }
+  claim HfFun : function_on f X (Sing x0).
+  {
+    exact (continuous_map_function_on
+      X
+      Tx
+      (Sing x0)
+      (Power (Sing x0))
+      f
+      HfCont).
+  }
+  claim HgFun : function_on g (Sing x0) X.
+  {
+    exact (continuous_map_function_on
+      (Sing x0)
+      (Power (Sing x0))
+      X
+      Tx
+      g
+      HgCont).
+  }
+  set y0 := apply_fun g x0.
+  claim Hy0X : y0 :e X.
+  {
+    exact (HgFun x0 (SingI x0)).
+  }
+  claim HcompConst :
+    compose_fun X f g = const_fun X y0.
+  {
+    apply (total_function_space_extensional
+      X
+      X
+      (compose_fun X f g)
+      (const_fun X y0)).
+    - exact (compose_fun_in_total_function_space
+        X
+        (Sing x0)
+        X
+        f
+        g
+        HfFun
+        HgFun).
+    - exact (graph_in_total_function_space
+        X
+        X
+        (fun x:set => y0)
+        (fun x Hx => Hy0X)).
+    - let x.
+      assume Hx.
+      rewrite (compose_fun_apply
+        X
+        f
+        g
+        x
+        Hx).
+      claim HfxSing : apply_fun f x :e Sing x0.
+      {
+        exact (HfFun x Hx).
+      }
+      rewrite (SingE x0 (apply_fun f x) HfxSing).
+      rewrite (const_fun_apply
+        X
+        y0
+        x
+        Hx).
+      reflexivity.
+  }
+  claim HconstId :
+    homotopic_maps X Tx X Tx (const_fun X y0) (graph X (fun x:set => x)).
+  {
+    rewrite <- HcompConst.
+    exact HcompId.
+  }
+  claim HidConst :
+    homotopic_maps X Tx X Tx (graph X (fun x:set => x)) (const_fun X y0).
+  {
+    exact (Lemma_51_1_homotopy_sym
+      X
+      Tx
+      X
+      Tx
+      (const_fun X y0)
+      (graph X (fun x:set => x))
+      HconstId).
+  }
+  claim Hnul :
+    nulhomotopic X Tx X Tx (graph X (fun x:set => x)).
+  {
+    claim HnulRaw :
+      exists z:set, z :e X /\
+        homotopic_maps X Tx X Tx (graph X (fun x:set => x)) (const_fun X z).
+    {
+      witness y0.
+      apply andI.
+      - exact Hy0X.
+      - exact HidConst.
+    }
+    exact HnulRaw.
+  }
+  exact (andI
+    (topology_on X Tx)
+    (nulhomotopic X Tx X Tx (graph X (fun x:set => x)))
+    HtopX
+    Hnul).
+Qed.
 
 (** from S58 Exercise 6 (line 1495 in algtop.tex) **)
 (** LATEX VERSION: A retract of a contractible space is contractible. **)
