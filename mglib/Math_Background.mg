@@ -61219,7 +61219,227 @@ Theorem cor59_2_simply_connected_union : forall X Tx U V:set,
   (U :/\: V) <> Empty ->
   path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
   simply_connected X Tx.
-admit.
+let X Tx U V.
+assume Htop : topology_on X Tx.
+assume HU : U :e Tx.
+assume HV : V :e Tx.
+assume Hcover : X = U :\/: V.
+assume HscU : simply_connected U (subspace_topology X Tx U).
+assume HscV : simply_connected V (subspace_topology X Tx V).
+assume Hne : (U :/\: V) <> Empty.
+assume HpcUV : path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)).
+(** Extract path connected from simply connected **)
+claim HpcU : path_connected_space U (subspace_topology X Tx U).
+{ exact (andEL
+    (path_connected_space U (subspace_topology X Tx U))
+    (exists x0:set, x0 :e U /\
+      fundamental_group U (subspace_topology X Tx U) x0 =
+        {fundamental_group_id U (subspace_topology X Tx U) x0})
+    HscU). }
+claim HpcV : path_connected_space V (subspace_topology X Tx V).
+{ exact (andEL
+    (path_connected_space V (subspace_topology X Tx V))
+    (exists x0:set, x0 :e V /\
+      fundamental_group V (subspace_topology X Tx V) x0 =
+        {fundamental_group_id V (subspace_topology X Tx V) x0})
+    HscV). }
+claim HUsub : U c= X.
+{ exact (topology_elem_subset X Tx U Htop HU). }
+claim HVsub : V c= X.
+{ exact (topology_elem_subset X Tx V Htop HV). }
+(** Pick z0 in U cap V **)
+claim Hex_z0 : exists z0:set, z0 :e U :/\: V.
+{ exact (nonempty_has_element (U :/\: V) Hne). }
+apply Hex_z0.
+let z0.
+assume Hz0UV : z0 :e U :/\: V.
+claim Hz0U : z0 :e U.
+{ exact (binintersectE1 U V z0 Hz0UV). }
+claim Hz0V : z0 :e V.
+{ exact (binintersectE2 U V z0 Hz0UV). }
+claim Hz0X : z0 :e X.
+{ exact (HUsub z0 Hz0U). }
+(** Path connected X: for any x,y in X, find path via z0 **)
+claim HpcX : path_connected_space X Tx.
+{ prove topology_on X Tx /\
+    forall x y:set, x :e X -> y :e X ->
+      exists p:set, path_between X x y p /\
+        continuous_map unit_interval unit_interval_topology X Tx p.
+  apply andI.
+  - exact Htop.
+  - let x y. assume Hx : x :e X.
+    assume Hy : y :e X.
+    (** x is in U or V **)
+    claim HxUV : x :e U :\/: V.
+    { exact (mem_eqR x X (U :\/: V) Hcover Hx). }
+    (** z0 is in path_component of x in X **)
+    claim Hz0_pc_x : z0 :e path_component_of X Tx x.
+    { apply (binunionE U V x HxUV).
+      - assume HxU : x :e U.
+        exact (subspace_path_connected_implies_in_path_component
+          X Tx U x z0 Htop HUsub HpcU HxU Hz0U).
+      - assume HxV : x :e V.
+        exact (subspace_path_connected_implies_in_path_component
+          X Tx V x z0 Htop HVsub HpcV HxV Hz0V). }
+    (** y is in U or V **)
+    claim HyUV : y :e U :\/: V.
+    { exact (mem_eqR y X (U :\/: V) Hcover Hy). }
+    (** y is in path_component of z0 in X **)
+    claim Hy_pc_z0 : y :e path_component_of X Tx z0.
+    { apply (binunionE U V y HyUV).
+      - assume HyU : y :e U.
+        exact (subspace_path_connected_implies_in_path_component
+          X Tx U z0 y Htop HUsub HpcU Hz0U HyU).
+      - assume HyV : y :e V.
+        exact (subspace_path_connected_implies_in_path_component
+          X Tx V z0 y Htop HVsub HpcV Hz0V HyV). }
+    (** By transitivity: y in path_component of x **)
+    claim Hy_pc_x : y :e path_component_of X Tx x.
+    { exact (path_component_transitive_axiom X Tx x z0 y Htop Hx Hz0X Hy
+        Hz0_pc_x Hy_pc_z0). }
+    (** Extract path from path_component_of **)
+    claim Hpc_data : exists p:set, function_on p unit_interval X /\
+      continuous_map unit_interval unit_interval_topology X Tx p /\
+      apply_fun p 0 = x /\ apply_fun p 1 = y.
+    { exact (SepE2 X
+        (fun w:set => exists p:set, function_on p unit_interval X /\
+          continuous_map unit_interval unit_interval_topology X Tx p /\
+          apply_fun p 0 = x /\ apply_fun p 1 = w)
+        y Hy_pc_x). }
+    apply Hpc_data.
+    let p.
+    assume Hp_pack : function_on p unit_interval X /\
+      continuous_map unit_interval unit_interval_topology X Tx p /\
+      apply_fun p 0 = x /\ apply_fun p 1 = y.
+    witness p.
+    (** Repackage: path_between X x y p /\ continuous **)
+    apply andI.
+    + (** path_between X x y p = function_on /\ p(0)=x /\ p(1)=y **)
+      prove function_on p unit_interval X /\ apply_fun p 0 = x /\ apply_fun p 1 = y.
+      apply (and4E
+        (function_on p unit_interval X)
+        (continuous_map unit_interval unit_interval_topology X Tx p)
+        (apply_fun p 0 = x)
+        (apply_fun p 1 = y)
+        Hp_pack).
+      assume Hfn Hcont Hp0 Hp1.
+      apply and3I.
+      * exact Hfn.
+      * exact Hp0.
+      * exact Hp1.
+    + (** continuous_map **)
+      apply (and4E
+        (function_on p unit_interval X)
+        (continuous_map unit_interval unit_interval_topology X Tx p)
+        (apply_fun p 0 = x)
+        (apply_fun p 1 = y)
+        Hp_pack).
+      assume Hfn2 Hcont2 Hp02 Hp12.
+      exact Hcont2. }
+(** Now prove pi1 trivial **)
+(** Get x0 in U cap V **)
+claim Hx0UV : z0 :e U :/\: V.
+{ exact Hz0UV. }
+(** Extract pi1(U,z0) = {id} from simply_connected U **)
+claim HscU_ex : exists x0:set, x0 :e U /\
+  fundamental_group U (subspace_topology X Tx U) x0 =
+    {fundamental_group_id U (subspace_topology X Tx U) x0}.
+{ exact (andER
+    (path_connected_space U (subspace_topology X Tx U))
+    (exists x0:set, x0 :e U /\
+      fundamental_group U (subspace_topology X Tx U) x0 =
+        {fundamental_group_id U (subspace_topology X Tx U) x0})
+    HscU). }
+(** Use Corollary 52.2 to get pi1(U,z0) trivial from any basepoint **)
+claim Hpi1U_trivial :
+  fundamental_group U (subspace_topology X Tx U) z0 =
+    {fundamental_group_id U (subspace_topology X Tx U) z0}.
+{ apply HscU_ex.
+  let x0_U.
+  assume Hx0U_pack : x0_U :e U /\
+    fundamental_group U (subspace_topology X Tx U) x0_U =
+      {fundamental_group_id U (subspace_topology X Tx U) x0_U}.
+  claim Hx0U_mem : x0_U :e U.
+  { exact (andEL
+      (x0_U :e U)
+      (fundamental_group U (subspace_topology X Tx U) x0_U =
+        {fundamental_group_id U (subspace_topology X Tx U) x0_U})
+      Hx0U_pack). }
+  claim Hpi1U_x0 :
+    fundamental_group U (subspace_topology X Tx U) x0_U =
+      {fundamental_group_id U (subspace_topology X Tx U) x0_U}.
+  { exact (andER
+      (x0_U :e U)
+      (fundamental_group U (subspace_topology X Tx U) x0_U =
+        {fundamental_group_id U (subspace_topology X Tx U) x0_U})
+      Hx0U_pack). }
+  admit. (** needs Corollary_52_2 + isomorphism between singleton groups **) }
+(** i-star is trivial **)
+claim Hi_triv : forall cls:set,
+  cls :e fundamental_group U (subspace_topology X Tx U) z0 ->
+  apply_fun (induced_homomorphism U (subspace_topology X Tx U) z0 X Tx z0
+    (graph U (fun x:set => x))) cls = fundamental_group_id X Tx z0.
+{ let cls. assume Hcls.
+  claim HclsSing : cls :e {fundamental_group_id U (subspace_topology X Tx U) z0}.
+  { exact (mem_eqR cls
+      (fundamental_group U (subspace_topology X Tx U) z0)
+      {fundamental_group_id U (subspace_topology X Tx U) z0}
+      Hpi1U_trivial Hcls). }
+  claim HclsEq : cls = fundamental_group_id U (subspace_topology X Tx U) z0.
+  { exact (singleton_elem cls (fundamental_group_id U (subspace_topology X Tx U) z0)
+      HclsSing). }
+  admit. (** needs: i-star maps id_U to id_X **) }
+(** Similarly j-star is trivial **)
+claim Hj_triv : forall cls:set,
+  cls :e fundamental_group V (subspace_topology X Tx V) z0 ->
+  apply_fun (induced_homomorphism V (subspace_topology X Tx V) z0 X Tx z0
+    (graph V (fun x:set => x))) cls = fundamental_group_id X Tx z0.
+{ admit. (** symmetric to Hi_triv **) }
+(** Conclude simply_connected: path_connected /\ exists x0, pi1 = {id} **)
+prove path_connected_space X Tx /\
+  exists x0':set, x0' :e X /\
+    fundamental_group X Tx x0' = {fundamental_group_id X Tx x0'}.
+apply andI.
+- exact HpcX.
+- witness z0. apply andI.
+  + exact Hz0X.
+  + claim Hgen : forall cls:set, cls :e fundamental_group X Tx z0 ->
+      exists ucls:set,
+        ucls :e fundamental_group U (subspace_topology X Tx U) z0 /\
+        cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) z0 X Tx z0
+          (graph U (fun x:set => x))) ucls.
+    { admit. (** needs SVK / ex59_4a_trivial_j_star **) }
+    (** id is in pi1(X,z0) **)
+    claim HeG : (fundamental_group_id X Tx z0) :e fundamental_group X Tx z0.
+    { admit. (** needs loop_at_constant_path + path_homotopy_class_in_fundamental_group **) }
+    apply set_ext.
+    * let cls. assume Hcls : cls :e fundamental_group X Tx z0.
+      apply (Hgen cls Hcls).
+      let ucls.
+      assume Huc : ucls :e fundamental_group U (subspace_topology X Tx U) z0 /\
+        cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) z0 X Tx z0
+          (graph U (fun x:set => x))) ucls.
+      claim HuclsMem : ucls :e fundamental_group U (subspace_topology X Tx U) z0.
+      { exact (andEL
+          (ucls :e fundamental_group U (subspace_topology X Tx U) z0)
+          (cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) z0 X Tx z0
+            (graph U (fun x:set => x))) ucls)
+          Huc). }
+      claim HclsEq : cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) z0 X Tx z0
+        (graph U (fun x:set => x))) ucls.
+      { exact (andER
+          (ucls :e fundamental_group U (subspace_topology X Tx U) z0)
+          (cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) z0 X Tx z0
+            (graph U (fun x:set => x))) ucls)
+          Huc). }
+      claim HclsId : cls = fundamental_group_id X Tx z0.
+      { rewrite HclsEq. exact (Hi_triv ucls HuclsMem). }
+      rewrite HclsId.
+      exact (SingI (fundamental_group_id X Tx z0)).
+    * let cls. assume Hcls : cls :e {fundamental_group_id X Tx z0}.
+      claim HclsId : cls = fundamental_group_id X Tx z0.
+      { exact (singleton_elem cls (fundamental_group_id X Tx z0) Hcls). }
+      rewrite HclsId. exact HeG.
 Admitted.
 
 (** from S59 Theorem 59.3 (line 1587 in algtop.tex) **)
