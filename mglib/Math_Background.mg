@@ -1,6 +1,6 @@
 (** Balance Alice 2634 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 41349 **)
+(** Balance Charlie 41334 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -66951,7 +66951,8 @@ Qed.
 (** from S78 Exercise 3 (line 4752 in algtop.tex) **)
 (** LATEX VERSION: Show that the closed unit ball in R^2 is a 2-manifold with boundary. **)
 (** EFFORT: 4 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:20:00 **)
 Theorem ex78_3_closed_ball_two_manifold_with_boundary :
   two_manifold_with_boundary (Bn_closed 2) (Bn_closed_topology 2) /\
   manifold_boundary (Bn_closed 2) (Bn_closed_topology 2) = Sn (ordsucc 0).
@@ -67226,7 +67227,8 @@ Qed.
 (** from S79 Exercise 2(b) (line 4913 in algtop.tex) **)
 (** LATEX VERSION: There exists a continuous map of the torus into S^1 that is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:20:00 **)
 Theorem ex79_2b_torus_to_S1_not_nulhomotopic :
   exists f:set,
     continuous_map torus torus_topology S1 S1_topology f /\
@@ -67305,7 +67307,8 @@ Qed.
 (** LATEX VERSION: Find a covering space of T corresponding to the trivial subgroup. **)
 (** Answer: R x R = R^2 is the universal covering of T. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:20:00 **)
 Theorem ex79_4b_torus_universal_covering :
   exists E Te p:set,
     covering_map E Te torus torus_topology p /\
@@ -67712,7 +67715,8 @@ Qed.
 (** from S81 Corollary 81.4 (line 5097 in algtop.tex) **)
 (** LATEX VERSION: If E is simply connected, then C(E,p,B) is isomorphic to pi1(B,b0). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:20:00 **)
 Theorem cor81_4_simply_connected_covering_trans :
   forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
@@ -68033,7 +68037,8 @@ Qed.
 (** from S82 Exercises Exercise 1 (line 5384 in algtop.tex): simply connected implies semilocally simply connected **)
 (** LATEX VERSION: Show that a simply connected space is semilocally simply connected. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:20:00 **)
 Theorem ex82_1_simply_connected_semilocally :
   forall X Tx:set,
   simply_connected X Tx ->
