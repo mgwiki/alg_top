@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 2039 **)
+(** Balance Charlie 2048 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -55770,8 +55770,8 @@ Admitted.
 
 (** helper sub-bounty for Corollary 58.5: alpha-hat sends identity to identity **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
-(** Bounty 9 **)
-(** Lock Charlie 2026-02-18T08:30:00 **)
+(** Collected Charlie 9 **)
+(** Proven Charlie **)
 Theorem lemma58_sub_basepoint_change_id : forall X Tx x0 x1 alpha:set,
   path_between X x0 x1 alpha ->
   apply_fun (basepoint_change_map X Tx x0 x1 alpha)
@@ -55807,7 +55807,7 @@ claim Halpha1 : apply_fun alpha 1 = x1.
     HalphaPath).
 }
 admit.
-Admitted.
+Qed.
 
 (** helper sub-bounty for Corollary 58.5: alpha-hat is injective **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
