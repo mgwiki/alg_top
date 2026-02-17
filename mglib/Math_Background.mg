@@ -33801,6 +33801,35 @@ Theorem lemma58_sub_basepoint_change_id : forall X Tx x0 x1 alpha:set,
   apply_fun (basepoint_change_map X Tx x0 x1 alpha)
     (fundamental_group_id X Tx x0)
   = fundamental_group_id X Tx x1.
+let X Tx x0 x1 alpha.
+assume HalphaPath.
+claim HalphaFun : function_on alpha unit_interval X.
+{
+  exact (path_between_function_on
+    X
+    x0
+    x1
+    alpha
+    HalphaPath).
+}
+claim Halpha0 : apply_fun alpha 0 = x0.
+{
+  exact (path_between_at_zero
+    X
+    x0
+    x1
+    alpha
+    HalphaPath).
+}
+claim Halpha1 : apply_fun alpha 1 = x1.
+{
+  exact (path_between_at_one
+    X
+    x0
+    x1
+    alpha
+    HalphaPath).
+}
 admit.
 Admitted.
 
@@ -33814,6 +33843,35 @@ Theorem lemma58_sub_basepoint_change_injective : forall X Tx x0 x1 alpha a b:set
   apply_fun (basepoint_change_map X Tx x0 x1 alpha) a =
   apply_fun (basepoint_change_map X Tx x0 x1 alpha) b ->
   a = b.
+let X Tx x0 x1 alpha a b.
+assume HalphaPath Ha Hb Hab.
+claim HalphaFun : function_on alpha unit_interval X.
+{
+  exact (path_between_function_on
+    X
+    x0
+    x1
+    alpha
+    HalphaPath).
+}
+claim Halpha0 : apply_fun alpha 0 = x0.
+{
+  exact (path_between_at_zero
+    X
+    x0
+    x1
+    alpha
+    HalphaPath).
+}
+claim Halpha1 : apply_fun alpha 1 = x1.
+{
+  exact (path_between_at_one
+    X
+    x0
+    x1
+    alpha
+    HalphaPath).
+}
 admit.
 Admitted.
 
@@ -33825,6 +33883,35 @@ Theorem lemma58_sub_basepoint_change_surjective : forall X Tx x0 x1 alpha c:set,
   c :e fundamental_group X Tx x1 ->
   exists a:set, a :e fundamental_group X Tx x0 /\
     apply_fun (basepoint_change_map X Tx x0 x1 alpha) a = c.
+let X Tx x0 x1 alpha c.
+assume HalphaPath Hc.
+claim HalphaFun : function_on alpha unit_interval X.
+{
+  exact (path_between_function_on
+    X
+    x0
+    x1
+    alpha
+    HalphaPath).
+}
+claim Halpha0 : apply_fun alpha 0 = x0.
+{
+  exact (path_between_at_zero
+    X
+    x0
+    x1
+    alpha
+    HalphaPath).
+}
+claim Halpha1 : apply_fun alpha 1 = x1.
+{
+  exact (path_between_at_one
+    X
+    x0
+    x1
+    alpha
+    HalphaPath).
+}
 admit.
 Admitted.
 
