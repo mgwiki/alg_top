@@ -1,5 +1,5 @@
 (** Balance Alice 3231 **)
-(** Balance Bob 3000 **)
+(** Balance Bob 3037 **)
 (** Balance Charlie 1000 **)
 (** Balance Dave 1000 **)
 
@@ -69372,8 +69372,8 @@ Qed.
 
 (** Helper subproblem for S59.3: choose two simply connected open pieces covering S^n **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 30 **)
-(** Bounty 37 **)
-(** Lock Bob 1771439500 **)
+(** Collected Bob 37 **)
+(** Proven Bob **)
 Theorem lemma59_3_overlap_characterization : forall n:set,
   ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
    {x :e Sn n | Rlt (apply_fun x 0) 1})
