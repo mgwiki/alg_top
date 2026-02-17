@@ -1,6 +1,6 @@
 (** Balance Alice 2634 **)
 (** Balance Bob 2560 **)
-(** Balance Charlie 73 **)
+(** Balance Charlie 18 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -18266,8 +18266,7 @@ Qed.
 (** from S51 Example 1 (line 150 in algtop.tex): straight-line homotopy **)
 (** LATEX VERSION: In any convex subspace A of Rn, any two paths f,g from x0 to x1 are path homotopic via F(x,t)=(1-t)f(x)+tg(x). **)
 (** EFFORT: 5 lines textbook, difficulty 5/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem Example_51_1_convex_paths_homotopic : forall A Ta x0 x1 f g:set,
   A c= R -> convex_in R A ->
   topology_on A Ta ->
@@ -69474,13 +69473,283 @@ Admitted.
 (** from S82 Exercises Exercise 1 (line 5384 in algtop.tex): simply connected implies semilocally simply connected **)
 (** LATEX VERSION: Show that a simply connected space is semilocally simply connected. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex82_1_simply_connected_semilocally :
   forall X Tx:set,
   simply_connected X Tx ->
   semilocally_simply_connected X Tx.
-admit.
-Admitted.
+let X Tx.
+assume Hsimp.
+claim HpcX : path_connected_space X Tx.
+{
+  exact (andEL
+    (path_connected_space X Tx)
+    (exists x0:set, x0 :e X /\
+      fundamental_group X Tx x0 = {fundamental_group_id X Tx x0})
+    Hsimp).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (path_connected_space_topology X Tx HpcX).
+}
+claim HbaseEx :
+  exists x0:set, x0 :e X /\
+    fundamental_group X Tx x0 = {fundamental_group_id X Tx x0}.
+{
+  exact (andER
+    (path_connected_space X Tx)
+    (exists x0:set, x0 :e X /\
+      fundamental_group X Tx x0 = {fundamental_group_id X Tx x0})
+    Hsimp).
+}
+apply HbaseEx.
+let x0.
+assume Hx0Pack.
+claim Hx0X : x0 :e X.
+{
+  exact (andEL
+    (x0 :e X)
+    (fundamental_group X Tx x0 = {fundamental_group_id X Tx x0})
+    Hx0Pack).
+}
+claim Htriv0 : fundamental_group X Tx x0 = {fundamental_group_id X Tx x0}.
+{
+  exact (andER
+    (x0 :e X)
+    (fundamental_group X Tx x0 = {fundamental_group_id X Tx x0})
+    Hx0Pack).
+}
+prove topology_on X Tx /\
+  (forall b:set, b :e X ->
+    exists U:set, U :e Tx /\ b :e U /\
+      (forall cls:set,
+        cls :e fundamental_group U (subspace_topology X Tx U) b ->
+        apply_fun
+          (induced_homomorphism U (subspace_topology X Tx U) b X Tx b
+            (graph U (fun x:set => x)))
+          cls =
+        fundamental_group_id X Tx b)).
+apply andI.
+- exact HtopX.
+- let b.
+  assume HbX.
+  witness X.
+  apply andI.
+  + apply andI.
+    * claim HXopen : open_in X Tx X.
+      {
+        exact (X_is_open X Tx HtopX).
+      }
+      exact (andER
+        (topology_on X Tx)
+        (X :e Tx)
+        HXopen).
+    * exact HbX.
+  + let cls.
+      assume Hcls.
+      claim HsubWhole : subspace_topology X Tx X = Tx.
+      {
+        exact (subspace_topology_whole X Tx HtopX).
+      }
+      claim HclsX : cls :e fundamental_group X Tx b.
+      {
+        rewrite <- HsubWhole.
+        exact Hcls.
+      }
+      claim HidMap :
+        apply_fun (induced_homomorphism X Tx b X Tx b (graph X (fun x:set => x))) cls = cls.
+      {
+        exact (Theorem_52_4_functorial_identity
+          X
+          Tx
+          b
+          HtopX
+          HbX
+          cls
+          HclsX).
+      }
+      rewrite HsubWhole.
+      rewrite HidMap.
+      claim HisoEx :
+        exists phi:set,
+          group_isomorphism
+            (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+            (fundamental_group X Tx b) (fundamental_group_mult X Tx b)
+            phi.
+      {
+        exact (Corollary_52_2_path_connected_pi1_isomorphic
+          X
+          Tx
+          x0
+          b
+          HpcX
+          Hx0X
+          HbX).
+      }
+      apply HisoEx.
+      let phi.
+      assume HphiIso.
+      claim HphiBij :
+        bijection
+          (fundamental_group X Tx x0)
+          (fundamental_group X Tx b)
+          phi.
+      {
+        exact (group_isomorphism_bijection
+          (fundamental_group X Tx x0)
+          (fundamental_group_mult X Tx x0)
+          (fundamental_group X Tx b)
+          (fundamental_group_mult X Tx b)
+          phi
+          HphiIso).
+      }
+      claim HidbIn :
+        (fundamental_group_id X Tx b) :e (fundamental_group X Tx b).
+      {
+        claim Hgroupb :
+          group_structure
+            (fundamental_group X Tx b)
+            (fundamental_group_mult X Tx b)
+            (fundamental_group_id X Tx b)
+            (fundamental_group_inv X Tx b).
+        {
+          exact (fundamental_group_is_group
+            X
+            Tx
+            b
+            HtopX
+            HbX).
+        }
+        apply (and6E
+          (function_on
+            (fundamental_group_mult X Tx b)
+            (setprod (fundamental_group X Tx b) (fundamental_group X Tx b))
+            (fundamental_group X Tx b))
+          (function_on
+            (fundamental_group_inv X Tx b)
+            (fundamental_group X Tx b)
+            (fundamental_group X Tx b))
+          ((fundamental_group_id X Tx b) :e (fundamental_group X Tx b))
+          (forall x y z:set, x :e (fundamental_group X Tx b) ->
+            y :e (fundamental_group X Tx b) ->
+            z :e (fundamental_group X Tx b) ->
+            apply_fun (fundamental_group_mult X Tx b)
+              (apply_fun (fundamental_group_mult X Tx b) (x, y), z) =
+            apply_fun (fundamental_group_mult X Tx b)
+              (x, apply_fun (fundamental_group_mult X Tx b) (y, z)))
+          (forall x:set, x :e (fundamental_group X Tx b) ->
+            apply_fun (fundamental_group_mult X Tx b)
+              (fundamental_group_id X Tx b, x) = x /\
+            apply_fun (fundamental_group_mult X Tx b)
+              (x, fundamental_group_id X Tx b) = x)
+          (forall x:set, x :e (fundamental_group X Tx b) ->
+            apply_fun (fundamental_group_mult X Tx b)
+              (x, apply_fun (fundamental_group_inv X Tx b) x) =
+              (fundamental_group_id X Tx b) /\
+            apply_fun (fundamental_group_mult X Tx b)
+              (apply_fun (fundamental_group_inv X Tx b) x, x) =
+              (fundamental_group_id X Tx b))
+          Hgroupb).
+        assume Hm Hinv Hid Hassoc Hidlaw Hinvlaw.
+        exact Hid.
+      }
+      claim HpreCls :
+        exists a_cls:set, a_cls :e fundamental_group X Tx x0 /\
+          apply_fun phi a_cls = cls.
+      {
+        exact (bijection_surj
+          (fundamental_group X Tx x0)
+          (fundamental_group X Tx b)
+          phi
+          cls
+          HphiBij
+          HclsX).
+      }
+      claim HpreId :
+        exists a_id:set, a_id :e fundamental_group X Tx x0 /\
+          apply_fun phi a_id = fundamental_group_id X Tx b.
+      {
+        exact (bijection_surj
+          (fundamental_group X Tx x0)
+          (fundamental_group X Tx b)
+          phi
+          (fundamental_group_id X Tx b)
+          HphiBij
+          HidbIn).
+      }
+      apply HpreCls.
+      let a_cls.
+      assume HaClsPack.
+      claim HaClsIn : a_cls :e fundamental_group X Tx x0.
+      {
+        exact (andEL
+          (a_cls :e fundamental_group X Tx x0)
+          (apply_fun phi a_cls = cls)
+          HaClsPack).
+      }
+      claim HphiCls : apply_fun phi a_cls = cls.
+      {
+        exact (andER
+          (a_cls :e fundamental_group X Tx x0)
+          (apply_fun phi a_cls = cls)
+          HaClsPack).
+      }
+      apply HpreId.
+      let a_id.
+      assume HaIdPack.
+      claim HaIdIn : a_id :e fundamental_group X Tx x0.
+      {
+        exact (andEL
+          (a_id :e fundamental_group X Tx x0)
+          (apply_fun phi a_id = fundamental_group_id X Tx b)
+          HaIdPack).
+      }
+      claim HphiId : apply_fun phi a_id = fundamental_group_id X Tx b.
+      {
+        exact (andER
+          (a_id :e fundamental_group X Tx x0)
+          (apply_fun phi a_id = fundamental_group_id X Tx b)
+          HaIdPack).
+      }
+      claim HaClsSing : a_cls :e {fundamental_group_id X Tx x0}.
+      {
+        exact (mem_eqR
+          a_cls
+          (fundamental_group X Tx x0)
+          {fundamental_group_id X Tx x0}
+          Htriv0
+          HaClsIn).
+      }
+      claim HaIdSing : a_id :e {fundamental_group_id X Tx x0}.
+      {
+        exact (mem_eqR
+          a_id
+          (fundamental_group X Tx x0)
+          {fundamental_group_id X Tx x0}
+          Htriv0
+          HaIdIn).
+      }
+      claim HaClsEq : a_cls = fundamental_group_id X Tx x0.
+      {
+        exact (singleton_elem
+          a_cls
+          (fundamental_group_id X Tx x0)
+          HaClsSing).
+      }
+      claim HaIdEq : a_id = fundamental_group_id X Tx x0.
+      {
+        exact (singleton_elem
+          a_id
+          (fundamental_group_id X Tx x0)
+          HaIdSing).
+      }
+      rewrite <- HphiCls.
+      rewrite <- HphiId.
+      rewrite HaClsEq.
+      rewrite HaIdEq.
+      reflexivity.
+Qed.
 
 (** Infrastructure: infinite earring in R^2 **)
 (** from S80 Example 1 (line 5005 in algtop.tex): C_n is circle of radius 1/n centered at (1/n, 0) **)
