@@ -47261,7 +47261,187 @@ Theorem ex53_4_composition_covering : forall X Tx Y Ty Z Tz q r:set,
   covering_map X Tx Y Ty q -> covering_map Y Ty Z Tz r ->
   (forall z:set, z :e Z -> finite {y :e Y | apply_fun r y = z}) ->
   covering_map X Tx Z Tz (compose_fun X q r).
-admit.
+let X Tx Y Ty Z Tz q r.
+assume Hcovq Hcovr Hfiber.
+(** Extract q covering components **)
+claim Hqpair :
+  continuous_map X Tx Y Ty q /\ surjective_map X Y q.
+{
+  exact (andEL
+    (continuous_map X Tx Y Ty q /\ surjective_map X Y q)
+    (forall y:set, y :e Y ->
+      exists Uq:set, Uq :e Ty /\ y :e Uq /\ evenly_covered X Tx Y Ty q Uq)
+    Hcovq).
+}
+claim Hcontq : continuous_map X Tx Y Ty q.
+{
+  exact (andEL
+    (continuous_map X Tx Y Ty q)
+    (surjective_map X Y q)
+    Hqpair).
+}
+claim Hsurjq : surjective_map X Y q.
+{
+  exact (andER
+    (continuous_map X Tx Y Ty q)
+    (surjective_map X Y q)
+    Hqpair).
+}
+claim Hqlocal :
+  forall y:set, y :e Y ->
+    exists Uq:set, Uq :e Ty /\ y :e Uq /\ evenly_covered X Tx Y Ty q Uq.
+{
+  exact (andER
+    (continuous_map X Tx Y Ty q /\ surjective_map X Y q)
+    (forall y:set, y :e Y ->
+      exists Uq:set, Uq :e Ty /\ y :e Uq /\ evenly_covered X Tx Y Ty q Uq)
+    Hcovq).
+}
+(** Extract r covering components **)
+claim Hrpair :
+  continuous_map Y Ty Z Tz r /\ surjective_map Y Z r.
+{
+  exact (andEL
+    (continuous_map Y Ty Z Tz r /\ surjective_map Y Z r)
+    (forall z:set, z :e Z ->
+      exists Ur:set, Ur :e Tz /\ z :e Ur /\ evenly_covered Y Ty Z Tz r Ur)
+    Hcovr).
+}
+claim Hcontr : continuous_map Y Ty Z Tz r.
+{
+  exact (andEL
+    (continuous_map Y Ty Z Tz r)
+    (surjective_map Y Z r)
+    Hrpair).
+}
+claim Hsurjr : surjective_map Y Z r.
+{
+  exact (andER
+    (continuous_map Y Ty Z Tz r)
+    (surjective_map Y Z r)
+    Hrpair).
+}
+claim Hrlocal :
+  forall z:set, z :e Z ->
+    exists Ur:set, Ur :e Tz /\ z :e Ur /\ evenly_covered Y Ty Z Tz r Ur.
+{
+  exact (andER
+    (continuous_map Y Ty Z Tz r /\ surjective_map Y Z r)
+    (forall z:set, z :e Z ->
+      exists Ur:set, Ur :e Tz /\ z :e Ur /\ evenly_covered Y Ty Z Tz r Ur)
+    Hcovr).
+}
+(** Basic infrastructure **)
+claim Hfunq : function_on q X Y.
+{
+  exact (continuous_map_function_on X Tx Y Ty q Hcontq).
+}
+claim Hfunr : function_on r Y Z.
+{
+  exact (continuous_map_function_on Y Ty Z Tz r Hcontr).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (continuous_map_topology_dom X Tx Y Ty q Hcontq).
+}
+claim HtopY : topology_on Y Ty.
+{
+  exact (continuous_map_topology_cod X Tx Y Ty q Hcontq).
+}
+claim HtopZ : topology_on Z Tz.
+{
+  exact (continuous_map_topology_cod Y Ty Z Tz r Hcontr).
+}
+claim Hfuncomp : function_on (compose_fun X q r) X Z.
+{
+  exact (function_on_compose_fun X Y Z q r Hfunq Hfunr).
+}
+(** Part 1: Continuity of r o q **)
+claim Hcont_comp : continuous_map X Tx Z Tz (compose_fun X q r).
+{
+  exact (composition_continuous X Tx Y Ty Z Tz q r Hcontq Hcontr).
+}
+(** Surjectivity helper claims **)
+claim Hsurjq_ex :
+  forall y:set, y :e Y -> exists x:set, x :e X /\ apply_fun q x = y.
+{
+  exact (andER
+    (function_on q X Y)
+    (forall y:set, y :e Y -> exists x:set, x :e X /\ apply_fun q x = y)
+    Hsurjq).
+}
+claim Hsurjr_ex :
+  forall z:set, z :e Z -> exists y:set, y :e Y /\ apply_fun r y = z.
+{
+  exact (andER
+    (function_on r Y Z)
+    (forall z:set, z :e Z -> exists y:set, y :e Y /\ apply_fun r y = z)
+    Hsurjr).
+}
+(** Part 2: Surjectivity of r o q **)
+claim Hsurj_comp : surjective_map X Z (compose_fun X q r).
+{
+  prove
+    function_on (compose_fun X q r) X Z /\
+    forall z:set, z :e Z ->
+      exists x:set, x :e X /\ apply_fun (compose_fun X q r) x = z.
+  apply andI.
+  - exact Hfuncomp.
+  - let z.
+    assume HzZ.
+    apply (Hsurjr_ex z HzZ).
+    let y.
+    assume HyPack.
+    claim HyY : y :e Y.
+    {
+      exact (andEL (y :e Y) (apply_fun r y = z) HyPack).
+    }
+    claim HryZ : apply_fun r y = z.
+    {
+      exact (andER (y :e Y) (apply_fun r y = z) HyPack).
+    }
+    apply (Hsurjq_ex y HyY).
+    let x.
+    assume HxPack.
+    claim HxX : x :e X.
+    {
+      exact (andEL (x :e X) (apply_fun q x = y) HxPack).
+    }
+    claim HqxY : apply_fun q x = y.
+    {
+      exact (andER (x :e X) (apply_fun q x = y) HxPack).
+    }
+    witness x.
+    apply andI.
+    + exact HxX.
+    + rewrite (compose_fun_apply X q r x HxX).
+      rewrite HqxY.
+      exact HryZ.
+}
+(** Part 3: Evenly covered condition **)
+(** Strategy: For z in Z, get U_z evenly covered by r with finite slices V_i, **)
+(** For each V_i, get unique y_i in V_i with r(y_i)=z, **)
+(** get W_i evenly covered by q, y_i in W_i subset V_i, **)
+(** U' = finite intersection of r(W_i) is open, z in U', **)
+(** slices for r o q over U' are slices of q over W_i' = V_i cap r^{-1}(U'). **)
+claim Hlocal_comp :
+  forall z:set, z :e Z ->
+    exists U:set, U :e Tz /\ z :e U /\ evenly_covered X Tx Z Tz (compose_fun X q r) U.
+{
+  admit.
+}
+(** Conclude r o q is a covering map **)
+prove covering_map X Tx Z Tz (compose_fun X q r).
+prove
+  (continuous_map X Tx Z Tz (compose_fun X q r) /\
+   surjective_map X Z (compose_fun X q r)) /\
+  (forall z:set, z :e Z ->
+    exists U:set, U :e Tz /\ z :e U /\ evenly_covered X Tx Z Tz (compose_fun X q r) U).
+apply andI.
+- apply andI.
+  + exact Hcont_comp.
+  + exact Hsurj_comp.
+- exact Hlocal_comp.
 Admitted.
 
 (** from S53 Exercise 5 (line 691 in algtop.tex) **)
