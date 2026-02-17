@@ -51935,6 +51935,96 @@ claim HedgeConst :
     HFh0T
     HFh1T).
 }
+claim HliftSquareLeft :
+  continuous_map unit_square unit_square_topology E Te (homotopy_lift E Te B Tb p e0 Fh) /\
+  apply_fun (homotopy_lift E Te B Tb p e0 Fh) (0, 0) = e0.
+{
+  exact (andEL
+    (continuous_map unit_square unit_square_topology E Te (homotopy_lift E Te B Tb p e0 Fh) /\
+      apply_fun (homotopy_lift E Te B Tb p e0 Fh) (0, 0) = e0)
+    (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+      apply_fun p (apply_fun (homotopy_lift E Te B Tb p e0 Fh) (s, t)) = apply_fun Fh (s, t))
+    HliftSquare).
+}
+claim HliftSquareCont :
+  continuous_map unit_square unit_square_topology E Te (homotopy_lift E Te B Tb p e0 Fh).
+{
+  exact (andEL
+    (continuous_map unit_square unit_square_topology E Te (homotopy_lift E Te B Tb p e0 Fh))
+    (apply_fun (homotopy_lift E Te B Tb p e0 Fh) (0, 0) = e0)
+    HliftSquareLeft).
+}
+claim HliftSquare00 :
+  apply_fun (homotopy_lift E Te B Tb p e0 Fh) (0, 0) = e0.
+{
+  exact (andER
+    (continuous_map unit_square unit_square_topology E Te (homotopy_lift E Te B Tb p e0 Fh))
+    (apply_fun (homotopy_lift E Te B Tb p e0 Fh) (0, 0) = e0)
+    HliftSquareLeft).
+}
+claim HliftSquareComm :
+  forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun (homotopy_lift E Te B Tb p e0 Fh) (s, t)) = apply_fun Fh (s, t).
+{
+  exact (andER
+    (continuous_map unit_square unit_square_topology E Te (homotopy_lift E Te B Tb p e0 Fh) /\
+      apply_fun (homotopy_lift E Te B Tb p e0 Fh) (0, 0) = e0)
+    (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+      apply_fun p (apply_fun (homotopy_lift E Te B Tb p e0 Fh) (s, t)) = apply_fun Fh (s, t))
+    HliftSquare).
+}
+apply HedgeConst.
+let e0h.
+assume He0hPack.
+apply He0hPack.
+let e1h.
+assume HedgePack.
+claim Hedge0 :
+  forall t:set, t :e unit_interval ->
+    apply_fun (homotopy_lift E Te B Tb p e0 Fh) (0, t) = e0h.
+{
+  exact (andEL
+    (forall t:set, t :e unit_interval ->
+      apply_fun (homotopy_lift E Te B Tb p e0 Fh) (0, t) = e0h)
+    (forall t:set, t :e unit_interval ->
+      apply_fun (homotopy_lift E Te B Tb p e0 Fh) (1, t) = e1h)
+    HedgePack).
+}
+claim Hedge1 :
+  forall t:set, t :e unit_interval ->
+    apply_fun (homotopy_lift E Te B Tb p e0 Fh) (1, t) = e1h.
+{
+  exact (andER
+    (forall t:set, t :e unit_interval ->
+      apply_fun (homotopy_lift E Te B Tb p e0 Fh) (0, t) = e0h)
+    (forall t:set, t :e unit_interval ->
+      apply_fun (homotopy_lift E Te B Tb p e0 Fh) (1, t) = e1h)
+    HedgePack).
+}
+claim He0hEq : e0h = e0.
+{
+  rewrite <- HliftSquare00.
+  rewrite <- (Hedge0 0 zero_in_unit_interval).
+  reflexivity.
+}
+claim Hedge10 :
+  apply_fun (homotopy_lift E Te B Tb p e0 Fh) (1, 0) = e1h.
+{
+  exact (Hedge1 0 zero_in_unit_interval).
+}
+claim Hedge11 :
+  apply_fun (homotopy_lift E Te B Tb p e0 Fh) (1, 1) = e1h.
+{
+  exact (Hedge1 1 one_in_unit_interval).
+}
+claim Hedge1Eq :
+  apply_fun (homotopy_lift E Te B Tb p e0 Fh) (1, 0) =
+  apply_fun (homotopy_lift E Te B Tb p e0 Fh) (1, 1).
+{
+  rewrite Hedge10.
+  rewrite Hedge11.
+  reflexivity.
+}
 (** TODO Bob: finish via lifting the path-homotopy square and comparing its boundary lifts. **)
 admit.
 Admitted.
