@@ -27607,6 +27607,165 @@ assume HalphaCont HbetaCont Halpha0 Halpha1 Hbeta0 Hbeta1.
 admit.
 Admitted.
 
+(** S52 helper: concatenating a path x0->x1 with a path x1->x0 gives a based loop at x0 **)
+(** Proven Bob **)
+Theorem path_concat_opposite_paths_in_loop_space_s52 : forall X Tx x0 x1 f g:set,
+  continuous_map unit_interval unit_interval_topology X Tx f ->
+  continuous_map unit_interval unit_interval_topology X Tx g ->
+  apply_fun f 0 = x0 -> apply_fun f 1 = x1 ->
+  apply_fun g 0 = x1 -> apply_fun g 1 = x0 ->
+  path_concat f g :e loop_space X Tx x0.
+let X Tx x0 x1 f g.
+assume HfCont HgCont Hf0 Hf1 Hg0 Hg1.
+claim HconcatCont :
+  continuous_map unit_interval unit_interval_topology X Tx (path_concat f g).
+{
+  exact (path_concat_continuous
+    X
+    Tx
+    x0
+    x1
+    x0
+    f
+    g
+    HfCont
+    HgCont
+    Hf0
+    Hf1
+    Hg0
+    Hg1).
+}
+claim Hconcat0 : apply_fun (path_concat f g) 0 = x0.
+{
+  rewrite (path_concat_at_zero f g).
+  exact Hf0.
+}
+claim Hconcat1 : apply_fun (path_concat f g) 1 = x0.
+{
+  rewrite (path_concat_at_one f g).
+  exact Hg1.
+}
+claim HconcatLoopAt : loop_at X Tx x0 (path_concat f g).
+{
+  apply (loop_at_fold
+    X Tx x0
+    (path_concat f g)).
+  apply andI.
+  - apply andI.
+    + exact HconcatCont.
+    + exact Hconcat0.
+  - exact Hconcat1.
+}
+claim HfFun : function_on f unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    f
+    HfCont).
+}
+claim HgFun : function_on g unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    g
+    HgCont).
+}
+claim HconcatSub : path_concat f g c= setprod unit_interval X.
+{
+  let p.
+  assume Hp.
+  apply (binunionE
+    {(t, apply_fun f (mul_SNo 2 t)) | t :e unit_interval_left_half}
+    {(t, apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1))) | t :e unit_interval_right_half}
+    p
+    Hp).
+  - assume Hleft.
+    apply (ReplE_impred
+      unit_interval_left_half
+      (fun t:set => (t, apply_fun f (mul_SNo 2 t)))
+      p
+      Hleft).
+    let t.
+    assume Ht Heq.
+    claim H2tInI : mul_SNo 2 t :e unit_interval.
+    {
+      rewrite <- (double_map_apply t Ht).
+      exact (double_map_function_on t Ht).
+    }
+    rewrite Heq.
+    exact (tuple_2_setprod_by_pair_Sigma
+      unit_interval
+      X
+      t
+      (apply_fun f (mul_SNo 2 t))
+      (unit_interval_left_half_sub t Ht)
+      (HfFun
+        (mul_SNo 2 t)
+        H2tInI)).
+  - assume Hright.
+    apply (ReplE_impred
+      unit_interval_right_half
+      (fun t:set => (t, apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1))))
+      p
+      Hright).
+    let t.
+    assume Ht Heq.
+    claim H2m1tInI : add_SNo (mul_SNo 2 t) (minus_SNo 1) :e unit_interval.
+    {
+      rewrite <- (double_minus_one_map_apply t Ht).
+      exact (double_minus_one_map_function_on t Ht).
+    }
+    rewrite Heq.
+    exact (tuple_2_setprod_by_pair_Sigma
+      unit_interval
+      X
+      t
+      (apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1)))
+      (unit_interval_right_half_sub t Ht)
+      (HgFun
+        (add_SNo (mul_SNo 2 t) (minus_SNo 1))
+        H2m1tInI)).
+}
+claim HconcatPow : path_concat f g :e Power (setprod unit_interval X).
+{
+  exact (PowerI
+    (setprod unit_interval X)
+    (path_concat f g)
+    HconcatSub).
+}
+claim HconcatFunOn : function_on (path_concat f g) unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    (path_concat f g)
+    HconcatCont).
+}
+claim HconcatFunSpace : path_concat f g :e function_space unit_interval X.
+{
+  exact (SepI
+    (Power (setprod unit_interval X))
+    (fun u:set => function_on u unit_interval X)
+    (path_concat f g)
+    HconcatPow
+    HconcatFunOn).
+}
+exact (SepI
+  (function_space unit_interval X)
+  (fun u:set => loop_at X Tx x0 u)
+  (path_concat f g)
+  HconcatFunSpace
+  HconcatLoopAt).
+Qed.
+
 (** from S52 Exercise 2 (line 497 in algtop.tex) **)
 (** LATEX VERSION: If gamma = alpha . beta, then gamma-hat = beta-hat o alpha-hat. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
@@ -28818,7 +28977,8 @@ apply iffI.
   assume Hx1 HalphaCont HbetaCont Halpha0 Halpha1 Hbeta0 Hbeta1.
   let cls.
   assume Hcls.
-  set delta_cls := cls.
+  set delta := path_concat alpha (reverse_path beta).
+  set delta_cls := path_homotopy_class_loop X Tx x0 delta.
   claim HrevBetaCont :
     continuous_map unit_interval unit_interval_topology X Tx (reverse_path beta).
   {
@@ -28841,7 +29001,29 @@ apply iffI.
   claim HdeltaCls :
     delta_cls :e fundamental_group X Tx x0.
   {
-    exact Hcls.
+    claim HdeltaLoop :
+      delta :e loop_space X Tx x0.
+    {
+      exact (path_concat_opposite_paths_in_loop_space_s52
+        X
+        Tx
+        x0
+        x1
+        alpha
+        (reverse_path beta)
+        HalphaCont
+        HrevBetaCont
+        Halpha0
+        Halpha1
+        HrevBeta0
+        HrevBeta1).
+    }
+    exact (path_homotopy_class_in_fundamental_group
+      X
+      Tx
+      x0
+      delta
+      HdeltaLoop).
   }
   claim HcommDelta :
     apply_fun (fundamental_group_mult X Tx x0) (cls, delta_cls)
