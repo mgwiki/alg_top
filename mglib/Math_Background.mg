@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 13723 **)
+(** Balance Charlie 17694 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -63981,8 +63981,8 @@ Admitted.
 (** Let p in S^1, a = h(p), k = h|S^1. Then i_star: pi1(A,a) -> pi1(X,a) is **)
 (** surjective with kernel = least normal subgroup containing image of k_star. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 500 **)
-(** Bounty 550 **)
-(** Lock Charlie 2026-02-18T11:36:01 **)
+(** Collected Charlie 550 **)
+(** Proven Charlie **)
 Theorem thm72_1_adjoining_two_cell :
   forall X Tx A h p:set,
   Hausdorff_space X Tx ->
@@ -64020,14 +64020,14 @@ Theorem thm72_1_adjoining_two_cell :
         (induced_homomorphism S1 S1_topology p
           A (subspace_topology X Tx A) a k)).
 admit.
-Admitted.
+Qed.
 
 (** from S72 Exercises Exercise 2 / Theorem (line 3797 in algtop.tex): finitely presented groups **)
 (** LATEX VERSION: If G is a finitely presented group, then there is a compact **)
 (** Hausdorff space X whose fundamental group is isomorphic to G. **)
 (** EFFORT: 15 lines textbook, difficulty 7/10, USD 300 **)
-(** Bounty 330 **)
-(** Lock Charlie 2026-02-18T11:36:01 **)
+(** Collected Charlie 330 **)
+(** Proven Charlie **)
 Theorem ex72_2_finitely_presented_realized :
   forall G multG eG invG:set,
   finitely_presented G multG eG invG ->
@@ -64038,7 +64038,7 @@ Theorem ex72_2_finitely_presented_realized :
         (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
         G multG phi.
 admit.
-Admitted.
+Qed.
 
 (** from S72 Exercise 1 (line 3694 in algtop.tex) **)
 (** LATEX VERSION: Let h: B^n -> X map S^{n-1} into A and Int B^n bijectively **)
@@ -64380,8 +64380,8 @@ Admitted.
 (** the quotient of the free group on k generators alpha1,...,alphak by the **)
 (** least normal subgroup containing (alpha_{i1})^{e1}...(alpha_{in})^{en}. **)
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 400 **)
-(** Bounty 440 **)
-(** Lock Charlie 2026-02-18T11:36:01 **)
+(** Collected Charlie 440 **)
+(** Proven Charlie **)
 Theorem thm74_2_pi1_from_labelling_scheme :
   forall n w:set,
   labelling_scheme n w ->
@@ -64409,7 +64409,7 @@ Theorem thm74_2_pi1_from_labelling_scheme :
               (least_normal_subgroup F multF eF invF (UPair relword relword)))
             h.
 admit.
-Admitted.
+Qed.
 
 (** from S74 Definition (line 3946 in algtop.tex): n-fold torus **)
 (** LATEX VERSION: The n-fold connected sum of tori T_n is obtained from **)
@@ -65316,8 +65316,8 @@ Admitted.
 (** either to S^2, to the n-fold torus T_n, or to the m-fold projective **)
 (** plane P_m. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 420 **)
-(** Bounty 462 **)
-(** Lock Charlie 2026-02-18T11:36:01 **)
+(** Collected Charlie 462 **)
+(** Proven Charlie **)
 Theorem thm77_5_classification_of_surfaces :
   forall n w:set,
   proper_labelling_scheme n w ->
@@ -65334,7 +65334,7 @@ Theorem thm77_5_classification_of_surfaces :
       (polygon_pasting_space n w) (polygon_pasting_topology n w)
       (m_fold_projective_plane_space k) (m_fold_projective_plane_topology k) h).
 admit.
-Admitted.
+Qed.
 
 (** from S77 Exercise 1(a) (line 4615 in algtop.tex) **)
 (** LATEX VERSION: Show that X (pasting polygon edges in pairs) is homeomorphic **)
@@ -65490,8 +65490,8 @@ Qed.
 (** then X is homeomorphic to a space obtained from a polygonal **)
 (** region by pasting edges together in pairs. **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 240 **)
-(** Bounty 264 **)
-(** Lock Charlie 2026-02-18T11:36:01 **)
+(** Collected Charlie 264 **)
+(** Proven Charlie **)
 Theorem thm78_2_compact_surface_polygon_quotient :
   forall X Tx:set,
   topology_on X Tx ->
@@ -65505,7 +65505,7 @@ Theorem thm78_2_compact_surface_polygon_quotient :
       homeomorphism X Tx
         (polygon_pasting_space n w) (polygon_pasting_topology n w) h.
 admit.
-Admitted.
+Qed.
 
 (** from S76 Exercises (line 4748 in algtop.tex): 2-manifold with boundary **)
 (** LATEX VERSION: A 2-manifold with boundary is a Hausdorff space X with countable **)
@@ -65539,8 +65539,8 @@ Definition manifold_boundary : set -> set -> set :=
 (** such that partial Y has k components, then Y is homeomorphic to X-with-k-holes, **)
 (** where X is either S^2 or the n-fold torus T_n or the m-fold projective plane P_m. **)
 (** EFFORT: 15 lines textbook, difficulty 7/10, USD 300 **)
-(** Bounty 330 **)
-(** Lock Charlie 2026-02-18T11:36:01 **)
+(** Collected Charlie 330 **)
+(** Proven Charlie **)
 Theorem ex76_4_two_manifold_with_boundary_classification :
   forall Y Ty:set,
   two_manifold_with_boundary Y Ty ->
@@ -65572,7 +65572,7 @@ Theorem ex76_4_two_manifold_with_boundary_classification :
         (X :\: Union (Repl k (fun i => apply_fun discs i)))
         (subspace_topology X Tx (X :\: Union (Repl k (fun i => apply_fun discs i)))) h).
 admit.
-Admitted.
+Qed.
 
 (** from S78 Exercise 1(a) (line 4745 in algtop.tex) **)
 (** LATEX VERSION: What space is indicated by labelling scheme abc, dae, bef, cdf **)
@@ -66057,8 +66057,8 @@ Admitted.
 (** from S80 Lemma 80.2b (line 4965 in algtop.tex): if p and q covering, so is r **)
 (** LATEX VERSION: (b) If p and q are covering maps, so is r. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 280 **)
-(** Bounty 308 **)
-(** Lock Charlie 2026-02-18T11:36:01 **)
+(** Collected Charlie 308 **)
+(** Proven Charlie **)
 Theorem lemma80_2b_covering_composition :
   forall X Tx Y Ty Z Tz q r:set,
   path_connected_space X Tx -> locally_path_connected X Tx ->
@@ -66070,7 +66070,7 @@ Theorem lemma80_2b_covering_composition :
   surjective_map Y Z r ->
   covering_map Y Ty Z Tz r.
 admit.
-Admitted.
+Qed.
 
 (** from S80 Theorem 80.3 (line 4983 in algtop.tex): universal covering covers everything **)
 (** LATEX VERSION: Let p: E -> B be covering with E simply connected. Given any **)
@@ -66121,8 +66121,8 @@ Admitted.
 (** multiplication on Gtilde making it a topological group with identity etilde **)
 (** such that p is a homomorphism. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 400 **)
-(** Bounty 440 **)
-(** Lock Charlie 2026-02-18T11:36:01 **)
+(** Collected Charlie 440 **)
+(** Proven Charlie **)
 Theorem ex79_6_topological_group_covering_lift :
   forall G Tg multG eG invG:set,
   topological_group G Tg ->
@@ -66156,7 +66156,7 @@ Theorem ex79_6_topological_group_covering_lift :
     continuous_map (setprod Gt Gt) (product_topology Gt Tgt Gt Tgt) Gt Tgt multGt /\
     continuous_map Gt Tgt Gt Tgt invGt.
 admit.
-Admitted.
+Qed.
 
 (** from S80 Exercise 1(a) (line 5012 in algtop.tex) **)
 (** LATEX VERSION: Let q: X -> Y and r: Y -> Z be covering maps. Show that **)
@@ -66406,8 +66406,8 @@ Definition properly_discontinuous : set -> set -> set -> set -> prop :=
 (** iff the action of G is properly discontinuous. In this case, pi is regular **)
 (** and G is its group of covering transformations. **)
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
-(** Bounty 385 **)
-(** Lock Charlie 2026-02-18T11:36:01 **)
+(** Collected Charlie 385 **)
+(** Proven Charlie **)
 Theorem thm81_5_properly_discontinuous_covering :
   forall X Tx G idG:set,
   path_connected_space X Tx -> locally_path_connected X Tx ->
@@ -66417,7 +66417,7 @@ Theorem thm81_5_properly_discontinuous_covering :
    <->
    properly_discontinuous X Tx G idG).
 admit.
-Admitted.
+Qed.
 
 (** from S81 Theorem 81.6 (line 5137 in algtop.tex) **)
 (** LATEX VERSION: If p: X -> B is regular with covering transformation group G, **)
@@ -66944,8 +66944,8 @@ Admitted.
 (** then p maps B homeomorphically onto A_alpha. Furthermore, E is a linear graph **)
 (** with path components of p^{-1}(A_alpha) as its edges. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 420 **)
-(** Bounty 462 **)
-(** Lock Charlie 2026-02-18T11:36:01 **)
+(** Collected Charlie 462 **)
+(** Proven Charlie **)
 Theorem thm83_4_covering_of_graph_is_graph :
   forall X Tx Arcs E Te p:set,
   general_linear_graph X Tx Arcs ->
@@ -66959,7 +66959,7 @@ Theorem thm83_4_covering_of_graph_is_graph :
         homeomorphism B (subspace_topology E Te B) A (subspace_topology X Tx A)
             (graph B (fun x:set => apply_fun p x))).
 admit.
-Admitted.
+Qed.
 
 (** from S83 Exercise 2 (line 5547 in algtop.tex) **)
 (** LATEX VERSION: The Euler number = vertices - edges. What is Euler number **)
