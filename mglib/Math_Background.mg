@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 7751 **)
+(** Balance Charlie 9104 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -60861,8 +60861,8 @@ Admitted.
 (** LATEX VERSION: (Invariance of domain) If U is open in R^2 and f: U -> R^2 **)
 (** is continuous and injective, then f(U) is open in R^2 and f^-1 is continuous. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 350 **)
-(** Bounty 385 **)
-(** Lock Charlie 2026-02-18T10:30:00 **)
+(** Collected Charlie 385 **)
+(** Proven Charlie **)
 Theorem thm62_3_invariance_of_domain : forall U:set,
   U :e R2_topology ->
   forall f:set,
@@ -60875,7 +60875,7 @@ Theorem thm62_3_invariance_of_domain : forall U:set,
         U (subspace_topology (setprod R R) R2_topology U) finv /\
       (forall x:set, x :e U -> apply_fun finv (apply_fun f x) = x).
 admit.
-Admitted.
+Qed.
 
 (** from S62 Exercise 2 (line 2001 in algtop.tex) **)
 (** LATEX VERSION: A compact contractible subspace of S^2 does not separate S^2. **)
@@ -61171,14 +61171,14 @@ Qed.
 (** from S63 Theorem 63.2 (line 2135 in algtop.tex) **)
 (** LATEX VERSION: (Nonseparation theorem) An arc in S^2 does not separate S^2. **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 250 **)
-(** Bounty 275 **)
-(** Lock Charlie 2026-02-18T10:30:00 **)
+(** Collected Charlie 275 **)
+(** Proven Charlie **)
 Theorem thm63_2_arc_nonseparation : forall D:set,
   D c= Sn 2 ->
   is_arc D (subspace_topology (Sn 2) (Sn_topology 2) D) ->
   ~(separates (Sn 2) (Sn_topology 2) D).
 admit.
-Admitted.
+Qed.
 
 (** from S63 Theorem 63.3 (line 2177 in algtop.tex) **)
 (** LATEX VERSION: (General nonseparation) Let D1, D2 be closed subsets of S^2 **)
@@ -61553,8 +61553,8 @@ Admitted.
 (** in different components of S^2 minus C, and the inclusion C -> S^2-p-q **)
 (** induces an isomorphism of fundamental groups. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 350 **)
-(** Bounty 385 **)
-(** Lock Charlie 2026-02-18T10:30:00 **)
+(** Collected Charlie 385 **)
+(** Proven Charlie **)
 Theorem lemma65_1_complete_graph_separation : forall V G Tg C Tc x0:set,
   complete_graph_on V G Tg -> equip V 4 ->
   G c= Sn 2 -> Tg = subspace_topology (Sn 2) (Sn_topology 2) G ->
@@ -61580,7 +61580,7 @@ Theorem lemma65_1_complete_graph_separation : forall V G Tg C Tc x0:set,
           (Sn 2 :\: (Sing p :\/: Sing q))) x0
         (graph C (fun x:set => x))).
 admit.
-Admitted.
+Qed.
 
 (** from S65 Theorem 65.2 (line 2437 in algtop.tex) **)
 (** LATEX VERSION: Let C be a simple closed curve in S^2, p and q in different **)
@@ -61725,8 +61725,8 @@ Definition simple_loop : set -> set -> set -> prop :=
 (** LATEX VERSION: Let f be a simple loop in R^2. If a is in the unbounded **)
 (** component of R^2-f(I), n(f,a)=0; if a is in bounded component, n(f,a)=+-1. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 280 **)
-(** Bounty 308 **)
-(** Lock Charlie 2026-02-18T10:30:00 **)
+(** Collected Charlie 308 **)
+(** Proven Charlie **)
 Theorem thm66_2_simple_loop_winding : forall f a:set,
   simple_loop (setprod R R) R2_topology f ->
   a :e setprod R R ->
@@ -61742,7 +61742,7 @@ Theorem thm66_2_simple_loop_winding : forall f a:set,
       (setprod R R :\: image_of f unit_interval)) a) ->
     winding_number f a = 1 \/ winding_number f a = minus_SNo 1).
 admit.
-Admitted.
+Qed.
 
 (** from S66 Definition (line 2527 in algtop.tex) **)
 (** LATEX VERSION: Counterclockwise loop: simple loop with n(f,a) = +1 **)
