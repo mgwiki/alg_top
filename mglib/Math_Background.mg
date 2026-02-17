@@ -12125,6 +12125,89 @@ exact (SepE2
   Hg).
 Qed.
 
+(** Infrastructure: path-homotopic loops define the same path-homotopy class **)
+(** Proven Bob **)
+Theorem path_homotopy_class_loop_eq_of_path_homotopic :
+  forall X Tx x0 f g:set,
+  path_homotopic X Tx x0 x0 f g ->
+  path_homotopy_class_loop X Tx x0 f = path_homotopy_class_loop X Tx x0 g.
+let X Tx x0 f g.
+assume Hfg.
+apply set_ext.
+- let h.
+  assume Hhf.
+  claim HhLoop : h :e loop_space X Tx x0.
+  {
+    exact (SepE1
+      (loop_space X Tx x0)
+      (fun z:set => path_homotopic X Tx x0 x0 f z)
+      h
+      Hhf).
+  }
+  claim Hfh : path_homotopic X Tx x0 x0 f h.
+  {
+    exact (SepE2
+      (loop_space X Tx x0)
+      (fun z:set => path_homotopic X Tx x0 x0 f z)
+      h
+      Hhf).
+  }
+  claim Hgf : path_homotopic X Tx x0 x0 g f.
+  {
+    exact (Lemma_51_1_path_homotopy_sym X Tx x0 x0 f g Hfg).
+  }
+  claim Hgh : path_homotopic X Tx x0 x0 g h.
+  {
+    exact (Lemma_51_1_path_homotopy_trans
+      X Tx x0 x0
+      g f h
+      Hgf
+      Hfh).
+  }
+  exact (SepI
+    (loop_space X Tx x0)
+    (fun z:set => path_homotopic X Tx x0 x0 g z)
+    h
+    HhLoop
+    Hgh).
+- let h.
+  assume Hhg.
+  claim HhLoop : h :e loop_space X Tx x0.
+  {
+    exact (SepE1
+      (loop_space X Tx x0)
+      (fun z:set => path_homotopic X Tx x0 x0 g z)
+      h
+      Hhg).
+  }
+  claim Hgh : path_homotopic X Tx x0 x0 g h.
+  {
+    exact (SepE2
+      (loop_space X Tx x0)
+      (fun z:set => path_homotopic X Tx x0 x0 g z)
+      h
+      Hhg).
+  }
+  claim HfgSym : path_homotopic X Tx x0 x0 f g.
+  {
+    exact Hfg.
+  }
+  claim Hfh : path_homotopic X Tx x0 x0 f h.
+  {
+    exact (Lemma_51_1_path_homotopy_trans
+      X Tx x0 x0
+      f g h
+      HfgSym
+      Hgh).
+  }
+  exact (SepI
+    (loop_space X Tx x0)
+    (fun z:set => path_homotopic X Tx x0 x0 f z)
+    h
+    HhLoop
+    Hfh).
+Qed.
+
 (** from S52 Definition (line 358 in algtop.tex): the fundamental group **)
 (** LATEX VERSION: The set of path homotopy classes of loops based at x0, with the path product operation, is called the fundamental group of X relative to x0, denoted pi1(X, x0). **)
 Definition fundamental_group : set -> set -> set -> set :=
@@ -24321,7 +24404,19 @@ Theorem lemma54_1_path_lifting : forall E Te B Tb p e0 f:set,
   apply_fun (path_lift E Te B Tb p e0 f) 0 = e0 /\
   (forall t:set, t :e unit_interval ->
     apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t).
-admit.
+let E Te B Tb p e0 f.
+assume Hcov He0 Hstart Hfcont.
+claim Hex :
+  exists ft:set,
+    continuous_map unit_interval unit_interval_topology E Te ft /\
+    apply_fun ft 0 = e0 /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun ft t) = apply_fun f t).
+{
+  (** TODO Bob: complete explicit path-lifting existence construction in S54.1 **)
+  admit.
+}
+exact (path_lift_from_exists_witness E Te B Tb p e0 f Hex).
 Admitted.
 
 (** from S54 Lemma 54.1 uniqueness (line 728 in algtop.tex) **)
