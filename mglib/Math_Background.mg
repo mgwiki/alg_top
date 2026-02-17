@@ -11535,7 +11535,170 @@ apply and7I.
 + exact Hfg_h_0.
 + exact Hfg_h_1.
 + (** Homotopy construction **)
-  admit.
+  (** Strategy: partition unit_square by level function L(s,t) = 4s+t into 3 regions **)
+  (** Region I (f region): {L <= 2}, F_I = f(4s/(2-t)) **)
+  (** Region II (g region): {2 <= L <= 3}, F_II = g(4s+t-2) **)
+  (** Region III (h region): {L >= 3}, F_III = h((4s+t-3)/(1+t)) **)
+  (** Build L as continuous map from unit_square to R **)
+  claim Htop_sq : topology_on unit_square unit_square_topology.
+  { exact (product_topology_is_topology unit_interval unit_interval_topology unit_interval unit_interval_topology
+      unit_interval_topology_on unit_interval_topology_on). }
+  (** Projections from unit_square to R **)
+  set incl_I : set := {(t,t)|t :e unit_interval}.
+  claim Hincl : continuous_map unit_interval unit_interval_topology R R_standard_topology incl_I.
+  { exact unit_interval_inclusion_continuous. }
+  set proj1_sq : set := projection_map1 unit_interval unit_interval.
+  set proj2_sq : set := projection_map2 unit_interval unit_interval.
+  claim Hproj1 : continuous_map unit_square unit_square_topology unit_interval unit_interval_topology proj1_sq.
+  { exact (andEL
+      (continuous_map unit_square unit_square_topology unit_interval unit_interval_topology proj1_sq)
+      (continuous_map unit_square unit_square_topology unit_interval unit_interval_topology proj2_sq)
+      (projections_are_continuous unit_interval unit_interval_topology unit_interval unit_interval_topology
+        unit_interval_topology_on unit_interval_topology_on)). }
+  claim Hproj2 : continuous_map unit_square unit_square_topology unit_interval unit_interval_topology proj2_sq.
+  { exact (andER
+      (continuous_map unit_square unit_square_topology unit_interval unit_interval_topology proj1_sq)
+      (continuous_map unit_square unit_square_topology unit_interval unit_interval_topology proj2_sq)
+      (projections_are_continuous unit_interval unit_interval_topology unit_interval unit_interval_topology
+        unit_interval_topology_on unit_interval_topology_on)). }
+  (** s as R-valued function: s_R = incl o proj1 **)
+  set s_R : set := compose_fun unit_square proj1_sq incl_I.
+  claim Hs_R : continuous_map unit_square unit_square_topology R R_standard_topology s_R.
+  { exact (composition_continuous unit_square unit_square_topology unit_interval unit_interval_topology R R_standard_topology
+      proj1_sq incl_I Hproj1 Hincl). }
+  (** t as R-valued function: t_R = incl o proj2 **)
+  set t_R : set := compose_fun unit_square proj2_sq incl_I.
+  claim Ht_R : continuous_map unit_square unit_square_topology R R_standard_topology t_R.
+  { exact (composition_continuous unit_square unit_square_topology unit_interval unit_interval_topology R R_standard_topology
+      proj2_sq incl_I Hproj2 Hincl). }
+  (** 4s as R-valued function **)
+  set four_s : set := compose_fun unit_square s_R (mul_const_fun 4).
+  claim Hfour_s : continuous_map unit_square unit_square_topology R R_standard_topology four_s.
+  { claim H4R : 4 :e R.
+    { exact (SNoS_omega_real 4 (omega_SNoS_omega 4 (nat_p_omega 4 (nat_ordsucc 3 (nat_ordsucc 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0))))))). }
+    exact (composition_continuous unit_square unit_square_topology R R_standard_topology R R_standard_topology
+      s_R (mul_const_fun 4) Hs_R (mul_const_fun_continuous 4 H4R)). }
+  (** L = 4s + t as R-valued function **)
+  set L_fun : set := compose_fun unit_square (pair_map unit_square four_s t_R) add_fun_R.
+  claim HL_fun : continuous_map unit_square unit_square_topology R R_standard_topology L_fun.
+  { exact (add_two_continuous_R unit_square unit_square_topology four_s t_R Htop_sq Hfour_s Ht_R). }
+  (** Evaluate L at specific points **)
+  claim HL_apply : forall p:set, p :e unit_square ->
+    apply_fun L_fun p = add_SNo (mul_SNo (p 0) 4) (p 1).
+  { admit. }
+  (** Define closed regions using L **)
+  (** A_12 = {p : L(p) <= 2} (Region I, f-region) **)
+  set const2 : set := const_fun unit_square 2.
+  claim H2R : 2 :e R.
+  { exact (SNoS_omega_real 2 (omega_SNoS_omega 2 (nat_p_omega 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0))))). }
+  claim H3R : 3 :e R.
+  { exact (SNoS_omega_real 3 (omega_SNoS_omega 3 (nat_p_omega 3 (nat_ordsucc 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0)))))). }
+  claim Hconst2 : continuous_map unit_square unit_square_topology R R_standard_topology const2.
+  { exact (const_fun_continuous unit_square unit_square_topology R R_standard_topology 2 Htop_sq R_standard_topology_is_topology H2R). }
+  set A_I : set := {p :e unit_square | Rle (apply_fun L_fun p) (apply_fun const2 p)}.
+  claim HclosedA_I : closed_in unit_square unit_square_topology A_I.
+  { exact (continuous_Rle_preimage_closed unit_square unit_square_topology L_fun const2 HL_fun Hconst2). }
+  (** A_23 = {p : L(p) >= 2} **)
+  set A_23 : set := {p :e unit_square | Rle (apply_fun const2 p) (apply_fun L_fun p)}.
+  claim HclosedA_23 : closed_in unit_square unit_square_topology A_23.
+  { exact (continuous_Rle_preimage_closed unit_square unit_square_topology const2 L_fun Hconst2 HL_fun). }
+  (** A_II = {p : 2 <= L(p) <= 3} **)
+  set const3 : set := const_fun unit_square 3.
+  claim Hconst3 : continuous_map unit_square unit_square_topology R R_standard_topology const3.
+  { exact (const_fun_continuous unit_square unit_square_topology R R_standard_topology 3 Htop_sq R_standard_topology_is_topology H3R). }
+  set A_II : set := {p :e unit_square | Rle (apply_fun const2 p) (apply_fun L_fun p)} :/\:
+    {p :e unit_square | Rle (apply_fun L_fun p) (apply_fun const3 p)}.
+  claim HclosedA_II : closed_in unit_square unit_square_topology A_II.
+  { exact (closed_binintersect unit_square unit_square_topology
+      {p :e unit_square | Rle (apply_fun const2 p) (apply_fun L_fun p)}
+      {p :e unit_square | Rle (apply_fun L_fun p) (apply_fun const3 p)}
+      HclosedA_23
+      (continuous_Rle_preimage_closed unit_square unit_square_topology L_fun const3 HL_fun Hconst3)). }
+  (** A_III = {p : L(p) >= 3} **)
+  set A_III : set := {p :e unit_square | Rle (apply_fun const3 p) (apply_fun L_fun p)}.
+  claim HclosedA_III : closed_in unit_square unit_square_topology A_III.
+  { exact (continuous_Rle_preimage_closed unit_square unit_square_topology const3 L_fun Hconst3 HL_fun). }
+  (** Cover: A_I ∪ A_23 = unit_square, A_23 = A_II ∪ A_III **)
+  claim Hcover_I_23 : A_I :\/: A_23 = unit_square.
+  { admit. }
+  claim Hcover_II_III : A_II :\/: A_III = A_23.
+  { admit. }
+  (** Define F_II on A_II: g(L-2) = g(4s+t-2) **)
+  (** This is the simplest region - just g composed with (L-2) restricted to [0,1] **)
+  claim HF_II_exists : exists F_II:set,
+    continuous_map A_II (subspace_topology unit_square unit_square_topology A_II) X Tx F_II /\
+    (forall p:set, p :e A_II -> apply_fun F_II p = apply_fun g (add_SNo (add_SNo (mul_SNo (p 0) 4) (p 1)) (minus_SNo 2))).
+  { admit. }
+  (** Define F_I on A_I: f(4s/(2-t)) **)
+  claim HF_I_exists : exists F_I:set,
+    continuous_map A_I (subspace_topology unit_square unit_square_topology A_I) X Tx F_I /\
+    (forall p:set, p :e A_I -> apply_fun F_I p = apply_fun f (div_SNo (mul_SNo (p 0) 4) (add_SNo 2 (minus_SNo (p 1))))).
+  { admit. }
+  (** Define F_III on A_III: h((4s+t-3)/(1+t)) **)
+  claim HF_III_exists : exists F_III:set,
+    continuous_map A_III (subspace_topology unit_square unit_square_topology A_III) X Tx F_III /\
+    (forall p:set, p :e A_III -> apply_fun F_III p = apply_fun h (div_SNo (add_SNo (add_SNo (mul_SNo (p 0) 4) (p 1)) (minus_SNo 3)) (add_SNo 1 (p 1)))).
+  { admit. }
+  (** Unpack existentials **)
+  apply HF_I_exists. let F_I. assume HF_I_spec.
+  apply HF_I_spec. assume HcontF_I HapplyF_I.
+  apply HF_II_exists. let F_II. assume HF_II_spec.
+  apply HF_II_spec. assume HcontF_II HapplyF_II.
+  apply HF_III_exists. let F_III. assume HF_III_spec.
+  apply HF_III_spec. assume HcontF_III HapplyF_III.
+  (** Agreement on boundaries **)
+  claim Hagree_I_II : forall p:set, p :e A_I :/\: A_23 -> apply_fun F_I p = apply_fun F_II p.
+  { admit. }
+  (** First pasting: paste F_I with a function on A_23 **)
+  (** We need F on A_23 = A_II ∪ A_III by pasting F_II and F_III **)
+  claim Hagree_II_III : forall p:set, p :e A_II :/\: A_III -> apply_fun F_II p = apply_fun F_III p.
+  { admit. }
+  (** Need: A_II subspace topology = subspace of A_23 subspace topology of unit_square **)
+  claim HcontF_II_in_23 : continuous_map A_II (subspace_topology A_23 (subspace_topology unit_square unit_square_topology A_23) A_II) X Tx F_II.
+  { admit. }
+  claim HcontF_III_in_23 : continuous_map A_III (subspace_topology A_23 (subspace_topology unit_square unit_square_topology A_23) A_III) X Tx F_III.
+  { admit. }
+  claim HclosedA_II_in_23 : closed_in A_23 (subspace_topology unit_square unit_square_topology A_23) A_II.
+  { admit. }
+  claim HclosedA_III_in_23 : closed_in A_23 (subspace_topology unit_square unit_square_topology A_23) A_III.
+  { admit. }
+  claim Htop_23 : topology_on A_23 (subspace_topology unit_square unit_square_topology A_23).
+  { exact (subspace_topology_is_topology unit_square unit_square_topology A_23 Htop_sq
+      (Sep_Subq unit_square (fun p:set => Rle (apply_fun const2 p) (apply_fun L_fun p)))). }
+  claim Hpaste_23 : exists F_23:set,
+    continuous_map A_23 (subspace_topology unit_square unit_square_topology A_23) X Tx F_23 /\
+    ((forall p:set, p :e A_II -> apply_fun F_23 p = apply_fun F_II p) /\
+    (forall p:set, p :e A_III -> apply_fun F_23 p = apply_fun F_III p)).
+  { exact (pasting_lemma A_23 A_II A_III X (subspace_topology unit_square unit_square_topology A_23) Tx
+      F_II F_III Htop_23 HclosedA_II_in_23 HclosedA_III_in_23 Hcover_II_III HcontF_II_in_23 HcontF_III_in_23 Hagree_II_III). }
+  apply Hpaste_23. let F_23. assume HF_23_spec.
+  apply HF_23_spec. assume HcontF_23 HF_23_spec2.
+  apply HF_23_spec2. assume HF_23_II HF_23_III.
+  (** Now paste F_I with F_23 **)
+  claim HcontF_23_sq : continuous_map A_23 (subspace_topology unit_square unit_square_topology A_23) X Tx F_23.
+  { exact HcontF_23. }
+  claim Hagree_I_23 : forall p:set, p :e A_I :/\: A_23 -> apply_fun F_I p = apply_fun F_23 p.
+  { admit. }
+  claim Hpaste_full : exists F:set,
+    continuous_map unit_square unit_square_topology X Tx F /\
+    ((forall p:set, p :e A_I -> apply_fun F p = apply_fun F_I p) /\
+    (forall p:set, p :e A_23 -> apply_fun F p = apply_fun F_23 p)).
+  { exact (pasting_lemma unit_square A_I A_23 X unit_square_topology Tx
+      F_I F_23 Htop_sq HclosedA_I HclosedA_23 Hcover_I_23 HcontF_I HcontF_23_sq Hagree_I_23). }
+  apply Hpaste_full. let F. assume HF_spec.
+  apply HF_spec. assume HcontF HF_spec2.
+  apply HF_spec2. assume HF_I_eq HF_23_eq.
+  witness F.
+  apply and5I.
+  - exact HcontF.
+  - (** F(s,0) = path_concat(f, path_concat(g,h))(s) **)
+    admit.
+  - (** F(s,1) = path_concat(path_concat(f,g), h)(s) **)
+    admit.
+  - (** F(0,t) = x0 **)
+    admit.
+  - (** F(1,t) = x3 **)
+    admit.
 Admitted.
 
 (** from S51 Theorem 51.2 part (2) (line 232 in algtop.tex): right identity **)
