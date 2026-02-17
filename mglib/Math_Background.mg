@@ -34137,7 +34137,7 @@ claim Hdesired_cls :
   rewrite (HhTriv cls Hcls).
   exact HbaseId.
 }
-admit.
+exact Hdesired_cls.
 Admitted.
 
 (** helper: a constant map induces the trivial map on fundamental groups **)
@@ -34326,7 +34326,7 @@ claim Htarget :
     HconstH
     HconstTriv).
 }
-admit.
+exact Htarget.
 Admitted.
 
 (** from S58 Theorem 58.7 (line 1429 in algtop.tex) **)
