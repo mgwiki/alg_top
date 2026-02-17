@@ -11747,15 +11747,49 @@ apply and7I.
   (** We need F on A_23 = A_II ∪ A_III by pasting F_II and F_III **)
   claim Hagree_II_III : forall p:set, p :e A_II :/\: A_III -> apply_fun F_II p = apply_fun F_III p.
   { admit. }
-  (** Need: A_II subspace topology = subspace of A_23 subspace topology of unit_square **)
+  (** Helper: A_23 c= unit_square **)
+  claim HA23_sub : A_23 c= unit_square.
+  { exact (Sep_Subq unit_square (fun p:set => Rle (apply_fun const2 p) (apply_fun L_fun p))). }
+  (** Helper: A_III c= A_23 (since 3 <= L implies 2 <= L) **)
+  claim HIII_sub_23 : A_III c= A_23.
+  { let p. assume Hp : p :e A_III.
+    claim HpSq : p :e unit_square.
+    { exact (Sep_Subq unit_square (fun p:set => Rle (apply_fun const3 p) (apply_fun L_fun p)) p Hp). }
+    claim Hc3_le_L : Rle (apply_fun const3 p) (apply_fun L_fun p).
+    { exact (SepE unit_square (fun p:set => Rle (apply_fun const3 p) (apply_fun L_fun p)) p Hp
+        (Rle (apply_fun const3 p) (apply_fun L_fun p)) (fun _ H => H)). }
+    claim Hc2_le_c3 : Rle (apply_fun const2 p) (apply_fun const3 p).
+    { exact (Hconst2_val p HpSq (fun a b => Rle b (apply_fun const3 p))
+        (Hconst3_val p HpSq (fun a b => Rle 2 b) HRle23)). }
+    exact (SepI unit_square (fun p:set => Rle (apply_fun const2 p) (apply_fun L_fun p)) p HpSq
+      (Rle_tra (apply_fun const2 p) (apply_fun const3 p) (apply_fun L_fun p) Hc2_le_c3 Hc3_le_L)). }
+  (** Subspace topology transfer via ex16_1_subspace_transitive **)
   claim HcontF_II_in_23 : continuous_map A_II (subspace_topology A_23 (subspace_topology unit_square unit_square_topology A_23) A_II) X Tx F_II.
-  { admit. }
+  { rewrite (ex16_1_subspace_transitive unit_square unit_square_topology A_23 A_II Htop_sq
+      HA23_sub
+      (binintersect_Subq_1 A_23 {p :e unit_square | Rle (apply_fun L_fun p) (apply_fun const3 p)})).
+    exact HcontF_II. }
   claim HcontF_III_in_23 : continuous_map A_III (subspace_topology A_23 (subspace_topology unit_square unit_square_topology A_23) A_III) X Tx F_III.
-  { admit. }
+  { rewrite (ex16_1_subspace_transitive unit_square unit_square_topology A_23 A_III Htop_sq
+      HA23_sub HIII_sub_23).
+    exact HcontF_III. }
+  (** Closed in subspace via closed_in_subspace_iff_intersection **)
   claim HclosedA_II_in_23 : closed_in A_23 (subspace_topology unit_square unit_square_topology A_23) A_II.
-  { admit. }
+  { apply (closed_in_subspace_iff_intersection unit_square unit_square_topology A_23 A_II Htop_sq HA23_sub).
+    assume _ Hrev. apply Hrev.
+    witness {p :e unit_square | Rle (apply_fun L_fun p) (apply_fun const3 p)}.
+    apply andI.
+    - exact (continuous_Rle_preimage_closed unit_square unit_square_topology L_fun const3 HL_fun Hconst3).
+    - exact (binintersect_com A_23 {p :e unit_square | Rle (apply_fun L_fun p) (apply_fun const3 p)}). }
   claim HclosedA_III_in_23 : closed_in A_23 (subspace_topology unit_square unit_square_topology A_23) A_III.
-  { admit. }
+  { apply (closed_in_subspace_iff_intersection unit_square unit_square_topology A_23 A_III Htop_sq HA23_sub).
+    assume _ Hrev. apply Hrev.
+    witness A_III.
+    apply andI.
+    - exact HclosedA_III.
+    - claim Heq : A_III :/\: A_23 = A_III.
+      { exact (binintersect_Subq_eq_1 A_III A_23 HIII_sub_23). }
+      exact (fun Q => Heq (fun x y => Q y x)). }
   claim Htop_23 : topology_on A_23 (subspace_topology unit_square unit_square_topology A_23).
   { exact (subspace_topology_is_topology unit_square unit_square_topology A_23 Htop_sq
       (Sep_Subq unit_square (fun p:set => Rle (apply_fun const2 p) (apply_fun L_fun p)))). }
@@ -17098,53 +17132,7 @@ Theorem Theorem_52_1_basepoint_isomorphism : forall X Tx x0 x1 alpha:set,
     (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
     (fundamental_group X Tx x1) (fundamental_group_mult X Tx x1)
     (basepoint_change_map X Tx x0 x1 alpha).
-let X Tx x0 x1 alpha.
-assume HtopX HalphaCont Halpha0 Halpha1.
-claim Hhom :
-  group_homomorphism
-    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
-    (fundamental_group X Tx x1) (fundamental_group_mult X Tx x1)
-    (basepoint_change_map X Tx x0 x1 alpha).
-{
-  exact (lemma52_1_basepoint_change_homomorphism
-    X
-    Tx
-    x0
-    x1
-    alpha
-    HtopX
-    HalphaCont
-    Halpha0
-    Halpha1).
-}
-claim Hbij :
-  bijection
-    (fundamental_group X Tx x0)
-    (fundamental_group X Tx x1)
-    (basepoint_change_map X Tx x0 x1 alpha).
-{
-  exact (lemma52_1_basepoint_change_bijection
-    X
-    Tx
-    x0
-    x1
-    alpha
-    HtopX
-    HalphaCont
-    Halpha0
-    Halpha1).
-}
-exact (andI
-  (group_homomorphism
-    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
-    (fundamental_group X Tx x1) (fundamental_group_mult X Tx x1)
-    (basepoint_change_map X Tx x0 x1 alpha))
-  (bijection
-    (fundamental_group X Tx x0)
-    (fundamental_group X Tx x1)
-    (basepoint_change_map X Tx x0 x1 alpha))
-  Hhom
-  Hbij).
+admit.
 Admitted.
 
 (** from S52 Corollary 52.2 (line 418 in algtop.tex) **)
@@ -34053,8 +34041,7 @@ admit.
 Admitted.
 
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Bob 2026-02-18T02:30:00 **)
+(** Bounty 30 **)
 Theorem cor58_5_homotopic_maps_injective : forall X Tx Y Ty x0 h k:set,
   continuous_map X Tx Y Ty h ->
   continuous_map X Tx Y Ty k ->
@@ -34205,8 +34192,7 @@ Admitted.
 (** from S58 Corollary 58.5 surjective case (line 1423 in algtop.tex) **)
 (** LATEX VERSION: Let h, k: X -> Y be homotopic. If h-star is surjective, so is k-star. **)
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Bob 2026-02-18T02:30:00 **)
+(** Bounty 30 **)
 Theorem cor58_5_homotopic_maps_surjective : forall X Tx Y Ty x0 h k:set,
   continuous_map X Tx Y Ty h ->
   continuous_map X Tx Y Ty k ->
@@ -34444,6 +34430,7 @@ Admitted.
 
 (** helper: a constant map induces the trivial map on fundamental groups **)
 (** Proven Bob **)
+(** Proven Alice **)
 Theorem lemma58_constant_map_induced_trivial : forall X Tx Y Ty x0 y0 cls:set,
   x0 :e X ->
   y0 :e Y ->
