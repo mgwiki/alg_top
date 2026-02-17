@@ -1,6 +1,6 @@
 (** Balance Alice 2584 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 39144 **)
+(** Balance Charlie 39694 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -62621,8 +62621,8 @@ Admitted.
 (** LATEX VERSION: If f is freely homotopic to f' through loops in R^2-a, **)
 (** then n(f,a) = n(f',a). **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Charlie 2026-02-18T13:10:00 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem lemma66_1b_free_homotopy_winding : forall f f' a F:set,
   loop_at (setprod R R) R2_topology (apply_fun f 0) f ->
   loop_at (setprod R R) R2_topology (apply_fun f' 0) f' ->
@@ -62635,14 +62635,14 @@ Theorem lemma66_1b_free_homotopy_winding : forall f f' a F:set,
     f f' F ->
   winding_number f a = winding_number f' a.
 admit.
-Admitted.
+Qed.
 
 (** from S66 Lemma 66.1(c) (line 2503 in algtop.tex) **)
 (** LATEX VERSION: If a, b lie in the same component of R^2 minus f(I), **)
 (** then n(f,a) = n(f,b). **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Charlie 2026-02-18T13:10:00 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem lemma66_1c_same_component_winding : forall f a b:set,
   loop_at (setprod R R) R2_topology (apply_fun f 0) f ->
   a :e setprod R R -> b :e setprod R R ->
@@ -62660,7 +62660,7 @@ Theorem lemma66_1c_same_component_winding : forall f a b:set,
     b ->
   winding_number f a = winding_number f b.
 admit.
-Admitted.
+Qed.
 
 (** from S66 Definition (line 2515 in algtop.tex) **)
 (** LATEX VERSION: A simple loop f satisfies f(s) = f(s') only if s = s' **)
@@ -63139,8 +63139,8 @@ Qed.
 (** G2 = direct sum H_beta (beta in K) with J,K disjoint, then G = direct sum H_gamma **)
 (** for gamma in J union K. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Charlie 2026-02-18T13:10:00 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem cor67_2_associativity_direct_sum :
   forall G multG eG invG G1 G2 J K Hfam:set,
   abelian_group G multG eG invG ->
@@ -63155,13 +63155,13 @@ Theorem cor67_2_associativity_direct_sum :
     (graph K (fun beta:set => apply_fun Hfam beta)) ->
   direct_sum_of_subgroups G multG eG invG (J :\/: K) Hfam.
 admit.
-Admitted.
+Qed.
 
 (** from S67 Corollary 67.3 (line 2639 in algtop.tex): quotient by direct summand **)
 (** LATEX VERSION: If G = G1 + G2, then G/G2 is isomorphic to G1. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Charlie 2026-02-18T13:10:00 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem cor67_3_quotient_by_summand :
   forall G multG eG invG G1 G2:set,
   abelian_group G multG eG invG ->
@@ -63175,7 +63175,7 @@ Theorem cor67_3_quotient_by_summand :
       (quotient_group_set G multG G2) (quotient_group_mult G multG G2)
       G1 multG phi.
 admit.
-Admitted.
+Qed.
 
 (** from S67 Definition (line 2644 in algtop.tex): external direct sum **)
 (** LATEX VERSION: G is the external direct sum of groups G_alpha relative to **)
@@ -63428,8 +63428,8 @@ Admitted.
 (** from S67 Exercise 1 (line 2697 in algtop.tex) **)
 (** LATEX VERSION: Sum is direct iff x_{a1} + ... + x_{an} = 0 implies each x_{ai} = 0. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Charlie 2026-02-18T13:10:00 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem ex67_1_direct_sum_characterization :
   forall G mult e inv J Gfam:set,
   subgroups_generate_abelian G mult e inv J Gfam ->
@@ -63442,13 +63442,13 @@ Theorem ex67_1_direct_sum_characterization :
     nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n = e ->
     (forall i:set, i :e n -> apply_fun xs i = e))).
 admit.
-Admitted.
+Qed.
 
 (** from S67 Exercise 3 (line 2706 in algtop.tex) **)
 (** LATEX VERSION: If G is free abelian with basis {x, y}, then {2x+3y, x-y} is also a basis. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Charlie 2026-02-18T13:10:00 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem ex67_3_change_of_basis :
   forall G mult e inv x y:set,
   free_abelian_group_with_basis G mult e inv 2 (graph 2 (fun i =>
@@ -63458,13 +63458,13 @@ Theorem ex67_3_change_of_basis :
     then apply_fun mult (group_power_nat mult e x 2, group_power_nat mult e y 3)
     else apply_fun mult (x, apply_fun inv y))).
 admit.
-Admitted.
+Qed.
 
 (** from S67 Exercise 4(a) (line 2708 in algtop.tex) **)
 (** LATEX VERSION: The elements of finite order in an abelian group G form a subgroup (torsion subgroup). **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Charlie 2026-02-18T13:10:00 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem ex67_4a_torsion_subgroup :
   forall G mult e inv:set,
   abelian_group G mult e inv ->
@@ -63472,7 +63472,7 @@ Theorem ex67_4a_torsion_subgroup :
     {a :e G | exists m:set, m :e omega /\ m <> 0 /\ group_power_nat mult e a m = e}
     G mult e inv.
 admit.
-Admitted.
+Qed.
 
 (** from S67 Exercise 4(b) (line 2709 in algtop.tex) **)
 (** LATEX VERSION: If G is free abelian, it has no elements of finite order. **)
@@ -63668,8 +63668,8 @@ Admitted.
 (** i_alpha(G_alpha), then given any group H and homomorphisms h_alpha: G_alpha -> H, **)
 (** there exists a unique h: G -> H with h o i_alpha = h_alpha. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Charlie 2026-02-18T13:10:00 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem lemma68_3_extension_external_free_product :
   forall G multG eG invG J Gfam multfam ifam:set,
   external_free_product G multG eG invG J Gfam multfam ifam ->
@@ -63691,7 +63691,7 @@ Theorem lemma68_3_extension_external_free_product :
                 apply_fun (apply_fun hfam alpha) x) ->
           forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
 admit.
-Admitted.
+Qed.
 
 (** from S68 Theorem 68.4 (line 2946 in algtop.tex): uniqueness of free products **)
 (** LATEX VERSION: If G and G' are both external free products of {G_alpha} via **)
@@ -63753,8 +63753,8 @@ Admitted.
 (** G2 = free product of H_beta for beta in K, with J,K disjoint, **)
 (** then G = free product of H_gamma for gamma in J union K. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Charlie 2026-02-18T13:10:00 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem cor68_6_associativity_free_product :
   forall G multG eG invG G1 G2 J K Hfam efamH:set,
   group_structure G multG eG invG ->
@@ -63772,7 +63772,7 @@ Theorem cor68_6_associativity_free_product :
     (graph K (fun beta:set => apply_fun efamH beta)) ->
   free_product_of_subgroups G multG eG invG (J :\/: K) Hfam efamH.
 admit.
-Admitted.
+Qed.
 
 (** from S68 Theorem 68.7 (line 2972 in algtop.tex): quotient of free product **)
 (** LATEX VERSION: Let G = G1 free-prod G2. Let N_i be normal in G_i. If N is the least **)
@@ -64159,8 +64159,8 @@ Qed.
 (** LATEX VERSION: If G = G1 direct-sum G2 where G1, G2 cyclic of orders m, n **)
 (** with gcd(m,n)=1, then G is cyclic of order mn, so m and n are not unique. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Charlie 2026-02-18T13:10:00 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem ex69_4_direct_sum_not_unique :
   exists G multG eG invG m n:set,
     abelian_group G multG eG invG /\
@@ -64169,7 +64169,7 @@ Theorem ex69_4_direct_sum_not_unique :
       ~(exists q r:set, m = mul_nat d q /\ n = mul_nat d r)) /\
     cyclic_group G multG eG invG /\ equip G (mul_nat m n).
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** S70 The Seifert-van Kampen Theorem                           **)
