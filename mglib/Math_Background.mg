@@ -20855,6 +20855,33 @@ Definition path_lift : set -> set -> set -> set -> set -> set -> set -> set :=
       (forall t:set, t :e unit_interval ->
         apply_fun p (apply_fun ft t) = apply_fun f t)).
 
+(** Infrastructure: Eps-selected path_lift satisfies the lifting package once a witness exists **)
+(** Proven Bob **)
+Theorem path_lift_from_exists_witness : forall E Te B Tb p e0 f:set,
+  (exists ft:set,
+    continuous_map unit_interval unit_interval_topology E Te ft /\
+    apply_fun ft 0 = e0 /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun ft t) = apply_fun f t)) ->
+  continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 f) /\
+  apply_fun (path_lift E Te B Tb p e0 f) 0 = e0 /\
+  (forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t).
+let E Te B Tb p e0 f.
+assume Hex.
+apply Hex.
+let ft.
+assume Hft.
+exact (Eps_i_ax
+  (fun g:set =>
+    continuous_map unit_interval unit_interval_topology E Te g /\
+    apply_fun g 0 = e0 /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun g t) = apply_fun f t))
+  ft
+  Hft).
+Qed.
+
 (** from S54 Lemma 54.1 (line 715 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map, p(e0) = b0. Any path f:[0,1] -> B **)
 (** beginning at b0 has a unique lifting to a path in E beginning at e0. **)
