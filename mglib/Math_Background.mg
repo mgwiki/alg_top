@@ -1,5 +1,5 @@
 (** Balance Alice 2634 **)
-(** Balance Bob 2802 **)
+(** Balance Bob 2857 **)
 (** Balance Charlie 18 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -58819,10 +58819,253 @@ apply andI.
   exact HdEq.
 Qed.
 
+(** helper: basepoint-change homomorphism sends identity class to identity **)
+(** Proven Bob **)
+Theorem lemma58_basepoint_change_hom_maps_id : forall Y Ty y0 y1 alpha:set,
+  topology_on Y Ty ->
+  y0 :e Y ->
+  y1 :e Y ->
+  group_homomorphism
+    (fundamental_group Y Ty y0)
+    (fundamental_group_mult Y Ty y0)
+    (fundamental_group Y Ty y1)
+    (fundamental_group_mult Y Ty y1)
+    (basepoint_change_map Y Ty y0 y1 alpha) ->
+  apply_fun (basepoint_change_map Y Ty y0 y1 alpha)
+    (fundamental_group_id Y Ty y0)
+  = fundamental_group_id Y Ty y1.
+let Y Ty y0 y1 alpha.
+assume HtopY Hy0Y Hy1Y Hhom.
+set G0 := fundamental_group Y Ty y0.
+set m0 := fundamental_group_mult Y Ty y0.
+set e0 := fundamental_group_id Y Ty y0.
+set inv0 := fundamental_group_inv Y Ty y0.
+set G1 := fundamental_group Y Ty y1.
+set m1 := fundamental_group_mult Y Ty y1.
+set e1 := fundamental_group_id Y Ty y1.
+set inv1 := fundamental_group_inv Y Ty y1.
+set phi := basepoint_change_map Y Ty y0 y1 alpha.
+claim Hgrp0 : group_structure G0 m0 e0 inv0.
+{
+  exact (fundamental_group_is_group Y Ty y0 HtopY Hy0Y).
+}
+claim Hgrp1 : group_structure G1 m1 e1 inv1.
+{
+  exact (fundamental_group_is_group Y Ty y1 HtopY Hy1Y).
+}
+claim He0G0 : e0 :e G0.
+{
+  apply (and6E
+    (function_on m0 (setprod G0 G0) G0)
+    (function_on inv0 G0 G0)
+    (e0 :e G0)
+    (forall x y z:set, x :e G0 -> y :e G0 -> z :e G0 ->
+      apply_fun m0 (apply_fun m0 (x, y), z) = apply_fun m0 (x, apply_fun m0 (y, z)))
+    (forall x:set, x :e G0 -> apply_fun m0 (e0, x) = x /\ apply_fun m0 (x, e0) = x)
+    (forall x:set, x :e G0 ->
+      apply_fun m0 (x, apply_fun inv0 x) = e0 /\ apply_fun m0 (apply_fun inv0 x, x) = e0)
+    Hgrp0).
+  assume Hm0 Hinv0 He0 Hass0 Hid0 HinvAx0.
+  exact He0.
+}
+claim He0sq : apply_fun m0 (e0, e0) = e0.
+{
+  apply (and6E
+    (function_on m0 (setprod G0 G0) G0)
+    (function_on inv0 G0 G0)
+    (e0 :e G0)
+    (forall x y z:set, x :e G0 -> y :e G0 -> z :e G0 ->
+      apply_fun m0 (apply_fun m0 (x, y), z) = apply_fun m0 (x, apply_fun m0 (y, z)))
+    (forall x:set, x :e G0 -> apply_fun m0 (e0, x) = x /\ apply_fun m0 (x, e0) = x)
+    (forall x:set, x :e G0 ->
+      apply_fun m0 (x, apply_fun inv0 x) = e0 /\ apply_fun m0 (apply_fun inv0 x, x) = e0)
+    Hgrp0).
+  assume Hm0 Hinv0 He0 Hass0 Hid0 HinvAx0.
+  exact (andEL
+    (apply_fun m0 (e0, e0) = e0)
+    (apply_fun m0 (e0, e0) = e0)
+    (Hid0 e0 He0)).
+}
+claim HphiE_mem : apply_fun phi e0 :e G1.
+{
+  exact (group_homomorphism_function_on
+    G0
+    m0
+    G1
+    m1
+    phi
+    Hhom
+    e0
+    He0G0).
+}
+claim Hprod : apply_fun phi (apply_fun m0 (e0, e0)) =
+  apply_fun m1 (apply_fun phi e0, apply_fun phi e0).
+{
+  exact (group_homomorphism_mult_rule
+    G0
+    m0
+    G1
+    m1
+    phi
+    e0
+    e0
+    Hhom
+    He0G0
+    He0G0).
+}
+claim H1 : apply_fun phi e0 = apply_fun phi (apply_fun m0 (e0, e0)).
+{
+  rewrite He0sq.
+  reflexivity.
+}
+claim Hstep3 : apply_fun phi e0 = apply_fun m1 (apply_fun phi e0, apply_fun phi e0).
+{
+  exact (eq_i_tra
+    (apply_fun phi e0)
+    (apply_fun phi (apply_fun m0 (e0, e0)))
+    (apply_fun m1 (apply_fun phi e0, apply_fun phi e0))
+    H1
+    Hprod).
+}
+claim Hinv1Fn : function_on inv1 G1 G1.
+{
+  apply (and6E
+    (function_on m1 (setprod G1 G1) G1)
+    (function_on inv1 G1 G1)
+    (e1 :e G1)
+    (forall x y z:set, x :e G1 -> y :e G1 -> z :e G1 ->
+      apply_fun m1 (apply_fun m1 (x, y), z) = apply_fun m1 (x, apply_fun m1 (y, z)))
+    (forall x:set, x :e G1 -> apply_fun m1 (e1, x) = x /\ apply_fun m1 (x, e1) = x)
+    (forall x:set, x :e G1 ->
+      apply_fun m1 (x, apply_fun inv1 x) = e1 /\ apply_fun m1 (apply_fun inv1 x, x) = e1)
+    Hgrp1).
+  assume Hm1 Hinv1 He1 Hass1 Hid1 HinvAx1.
+  exact Hinv1.
+}
+claim HinvPhiE_mem : apply_fun inv1 (apply_fun phi e0) :e G1.
+{
+  exact (Hinv1Fn
+    (apply_fun phi e0)
+    HphiE_mem).
+}
+claim Hlinv : apply_fun m1 (apply_fun inv1 (apply_fun phi e0), apply_fun phi e0) = e1.
+{
+  apply (and6E
+    (function_on m1 (setprod G1 G1) G1)
+    (function_on inv1 G1 G1)
+    (e1 :e G1)
+    (forall x y z:set, x :e G1 -> y :e G1 -> z :e G1 ->
+      apply_fun m1 (apply_fun m1 (x, y), z) = apply_fun m1 (x, apply_fun m1 (y, z)))
+    (forall x:set, x :e G1 -> apply_fun m1 (e1, x) = x /\ apply_fun m1 (x, e1) = x)
+    (forall x:set, x :e G1 ->
+      apply_fun m1 (x, apply_fun inv1 x) = e1 /\ apply_fun m1 (apply_fun inv1 x, x) = e1)
+    Hgrp1).
+  assume Hm1 Hinv1 He1 Hass1 Hid1 HinvAx1.
+  exact (andER
+    (apply_fun m1 (apply_fun phi e0, apply_fun inv1 (apply_fun phi e0)) = e1)
+    (apply_fun m1 (apply_fun inv1 (apply_fun phi e0), apply_fun phi e0) = e1)
+    (HinvAx1 (apply_fun phi e0) HphiE_mem)).
+}
+claim Hlid : apply_fun m1 (e1, apply_fun phi e0) = apply_fun phi e0.
+{
+  apply (and6E
+    (function_on m1 (setprod G1 G1) G1)
+    (function_on inv1 G1 G1)
+    (e1 :e G1)
+    (forall x y z:set, x :e G1 -> y :e G1 -> z :e G1 ->
+      apply_fun m1 (apply_fun m1 (x, y), z) = apply_fun m1 (x, apply_fun m1 (y, z)))
+    (forall x:set, x :e G1 -> apply_fun m1 (e1, x) = x /\ apply_fun m1 (x, e1) = x)
+    (forall x:set, x :e G1 ->
+      apply_fun m1 (x, apply_fun inv1 x) = e1 /\ apply_fun m1 (apply_fun inv1 x, x) = e1)
+    Hgrp1).
+  assume Hm1 Hinv1 He1 Hass1 Hid1 HinvAx1.
+  exact (andEL
+    (apply_fun m1 (e1, apply_fun phi e0) = apply_fun phi e0)
+    (apply_fun m1 (apply_fun phi e0, e1) = apply_fun phi e0)
+    (Hid1 (apply_fun phi e0) HphiE_mem)).
+}
+claim Hassoc :
+  apply_fun m1 (apply_fun m1 (apply_fun inv1 (apply_fun phi e0), apply_fun phi e0), apply_fun phi e0)
+  =
+  apply_fun m1 (apply_fun inv1 (apply_fun phi e0), apply_fun m1 (apply_fun phi e0, apply_fun phi e0)).
+{
+  apply (and6E
+    (function_on m1 (setprod G1 G1) G1)
+    (function_on inv1 G1 G1)
+    (e1 :e G1)
+    (forall x y z:set, x :e G1 -> y :e G1 -> z :e G1 ->
+      apply_fun m1 (apply_fun m1 (x, y), z) = apply_fun m1 (x, apply_fun m1 (y, z)))
+    (forall x:set, x :e G1 -> apply_fun m1 (e1, x) = x /\ apply_fun m1 (x, e1) = x)
+    (forall x:set, x :e G1 ->
+      apply_fun m1 (x, apply_fun inv1 x) = e1 /\ apply_fun m1 (apply_fun inv1 x, x) = e1)
+    Hgrp1).
+  assume Hm1 Hinv1 He1 Hass1 Hid1 HinvAx1.
+  exact (Hass1
+    (apply_fun inv1 (apply_fun phi e0))
+    (apply_fun phi e0)
+    (apply_fun phi e0)
+    HinvPhiE_mem
+    HphiE_mem
+    HphiE_mem).
+}
+claim HchainA :
+  apply_fun m1 (apply_fun m1 (apply_fun inv1 (apply_fun phi e0), apply_fun phi e0), apply_fun phi e0)
+  =
+  apply_fun m1 (e1, apply_fun phi e0).
+{
+  rewrite Hlinv.
+  reflexivity.
+}
+claim HchainB :
+  apply_fun m1 (apply_fun m1 (apply_fun inv1 (apply_fun phi e0), apply_fun phi e0), apply_fun phi e0)
+  =
+  apply_fun phi e0.
+{
+  exact (eq_i_tra
+    (apply_fun m1 (apply_fun m1 (apply_fun inv1 (apply_fun phi e0), apply_fun phi e0), apply_fun phi e0))
+    (apply_fun m1 (e1, apply_fun phi e0))
+    (apply_fun phi e0)
+    HchainA
+    Hlid).
+}
+claim HchainC :
+  apply_fun m1 (apply_fun inv1 (apply_fun phi e0), apply_fun m1 (apply_fun phi e0, apply_fun phi e0))
+  =
+  apply_fun phi e0.
+{
+  rewrite <- Hassoc.
+  exact HchainB.
+}
+claim Hstep4 :
+  apply_fun m1 (apply_fun inv1 (apply_fun phi e0), apply_fun phi e0)
+  =
+  apply_fun m1 (apply_fun inv1 (apply_fun phi e0), apply_fun m1 (apply_fun phi e0, apply_fun phi e0)).
+{
+  rewrite <- Hstep3.
+  reflexivity.
+}
+claim Hstep5 :
+  apply_fun m1 (apply_fun inv1 (apply_fun phi e0), apply_fun phi e0)
+  =
+  apply_fun phi e0.
+{
+  exact (eq_i_tra
+    (apply_fun m1 (apply_fun inv1 (apply_fun phi e0), apply_fun phi e0))
+    (apply_fun m1 (apply_fun inv1 (apply_fun phi e0), apply_fun m1 (apply_fun phi e0, apply_fun phi e0)))
+    (apply_fun phi e0)
+    Hstep4
+    HchainC).
+}
+symmetry.
+rewrite <- Hlinv.
+exact Hstep5.
+Qed.
+
 (** from S58 Corollary 58.5 trivial case (line 1423 in algtop.tex) **)
 (** LATEX VERSION: Let h, k: X -> Y be homotopic. If h-star is trivial, so is k-star. **)
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
+(** Collected Bob 33 **)
+(** Proven Bob **)
 Theorem cor58_5_homotopic_maps_trivial : forall X Tx Y Ty x0 h k:set,
   continuous_map X Tx Y Ty h ->
   continuous_map X Tx Y Ty k ->
@@ -58836,15 +59079,18 @@ Theorem cor58_5_homotopic_maps_trivial : forall X Tx Y Ty x0 h k:set,
     fundamental_group_id Y Ty (apply_fun k x0)).
 let X Tx Y Ty x0 h k.
 assume Hh Hk Hx0 Hhom HhTriv.
+set y0 := apply_fun h x0.
+set y1 := apply_fun k x0.
 claim Halpha :
   exists alpha:set,
-    path_between Y (apply_fun h x0) (apply_fun k x0) alpha /\
+    path_between Y y0 y1 alpha /\
+    continuous_map unit_interval unit_interval_topology Y Ty alpha /\
     (forall cls:set, cls :e fundamental_group X Tx x0 ->
-      apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun k x0) k) cls =
-      apply_fun (basepoint_change_map Y Ty (apply_fun h x0) (apply_fun k x0) alpha)
-        (apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls)).
+      apply_fun (induced_homomorphism X Tx x0 Y Ty y1 k) cls =
+      apply_fun (basepoint_change_map Y Ty y0 y1 alpha)
+        (apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls)).
 {
-  exact (lemma58_4_homotopy_path
+  exact (lemma58_4_homotopy_path_continuous
     X
     Tx
     Y
@@ -58860,62 +59106,206 @@ claim Halpha :
 apply Halpha.
 let alpha.
 assume HalphaPack.
-claim HalphaPath : path_between Y (apply_fun h x0) (apply_fun k x0) alpha.
+claim HalphaMain :
+  path_between Y y0 y1 alpha /\
+  continuous_map unit_interval unit_interval_topology Y Ty alpha.
 {
   exact (andEL
-    (path_between Y (apply_fun h x0) (apply_fun k x0) alpha)
+    (path_between Y y0 y1 alpha /\
+      continuous_map unit_interval unit_interval_topology Y Ty alpha)
     (forall cls:set, cls :e fundamental_group X Tx x0 ->
-      apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun k x0) k) cls =
-      apply_fun (basepoint_change_map Y Ty (apply_fun h x0) (apply_fun k x0) alpha)
-        (apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls))
+      apply_fun (induced_homomorphism X Tx x0 Y Ty y1 k) cls =
+      apply_fun (basepoint_change_map Y Ty y0 y1 alpha)
+        (apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls))
     HalphaPack).
+}
+claim HalphaPath : path_between Y y0 y1 alpha.
+{
+  exact (andEL
+    (path_between Y y0 y1 alpha)
+    (continuous_map unit_interval unit_interval_topology Y Ty alpha)
+    HalphaMain).
+}
+claim HalphaCont : continuous_map unit_interval unit_interval_topology Y Ty alpha.
+{
+  exact (andER
+    (path_between Y y0 y1 alpha)
+    (continuous_map unit_interval unit_interval_topology Y Ty alpha)
+    HalphaMain).
 }
 claim Htransport :
   forall cls:set, cls :e fundamental_group X Tx x0 ->
-    apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun k x0) k) cls =
-    apply_fun (basepoint_change_map Y Ty (apply_fun h x0) (apply_fun k x0) alpha)
-      (apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls).
+    apply_fun (induced_homomorphism X Tx x0 Y Ty y1 k) cls =
+    apply_fun (basepoint_change_map Y Ty y0 y1 alpha)
+      (apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls).
 {
   exact (andER
-    (path_between Y (apply_fun h x0) (apply_fun k x0) alpha)
+    (path_between Y y0 y1 alpha /\
+      continuous_map unit_interval unit_interval_topology Y Ty alpha)
     (forall cls:set, cls :e fundamental_group X Tx x0 ->
-      apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun k x0) k) cls =
-      apply_fun (basepoint_change_map Y Ty (apply_fun h x0) (apply_fun k x0) alpha)
-        (apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls))
+      apply_fun (induced_homomorphism X Tx x0 Y Ty y1 k) cls =
+      apply_fun (basepoint_change_map Y Ty y0 y1 alpha)
+        (apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls))
     HalphaPack).
+}
+claim HtopY : topology_on Y Ty.
+{
+  exact (continuous_map_topology_cod
+    X
+    Tx
+    Y
+    Ty
+    h
+    Hh).
+}
+claim Halpha0 : apply_fun alpha 0 = y0.
+{
+  exact (path_between_at_zero
+    Y
+    y0
+    y1
+    alpha
+    HalphaPath).
+}
+claim Halpha1 : apply_fun alpha 1 = y1.
+{
+  exact (path_between_at_one
+    Y
+    y0
+    y1
+    alpha
+    HalphaPath).
+}
+claim HyEnds : y0 :e Y /\ y1 :e Y.
+{
+  exact (path_between_endpoints_in_space
+    Y
+    y0
+    y1
+    alpha
+    HalphaPath).
+}
+claim Hy0Y : y0 :e Y.
+{
+  exact (andEL
+    (y0 :e Y)
+    (y1 :e Y)
+    HyEnds).
+}
+claim Hy1Y : y1 :e Y.
+{
+  exact (andER
+    (y0 :e Y)
+    (y1 :e Y)
+    HyEnds).
+}
+claim HalphaIso :
+  group_isomorphism
+    (fundamental_group Y Ty y0)
+    (fundamental_group_mult Y Ty y0)
+    (fundamental_group Y Ty y1)
+    (fundamental_group_mult Y Ty y1)
+    (basepoint_change_map Y Ty y0 y1 alpha).
+{
+  exact (Theorem_52_1_basepoint_isomorphism
+    Y
+    Ty
+    y0
+    y1
+    alpha
+    HtopY
+    HalphaCont
+    Halpha0
+    Halpha1).
+}
+claim HalphaHom :
+  group_homomorphism
+    (fundamental_group Y Ty y0)
+    (fundamental_group_mult Y Ty y0)
+    (fundamental_group Y Ty y1)
+    (fundamental_group_mult Y Ty y1)
+    (basepoint_change_map Y Ty y0 y1 alpha).
+{
+  exact (group_isomorphism_homomorphism
+    (fundamental_group Y Ty y0)
+    (fundamental_group_mult Y Ty y0)
+    (fundamental_group Y Ty y1)
+    (fundamental_group_mult Y Ty y1)
+    (basepoint_change_map Y Ty y0 y1 alpha)
+    HalphaIso).
+}
+claim Hgrp0 :
+  group_structure
+    (fundamental_group Y Ty y0)
+    (fundamental_group_mult Y Ty y0)
+    (fundamental_group_id Y Ty y0)
+    (fundamental_group_inv Y Ty y0).
+{
+  exact (fundamental_group_is_group
+    Y
+    Ty
+    y0
+    HtopY
+    Hy0Y).
+}
+claim Hgrp1 :
+  group_structure
+    (fundamental_group Y Ty y1)
+    (fundamental_group_mult Y Ty y1)
+    (fundamental_group_id Y Ty y1)
+    (fundamental_group_inv Y Ty y1).
+{
+  exact (fundamental_group_is_group
+    Y
+    Ty
+    y1
+    HtopY
+    Hy1Y).
 }
 let cls.
 assume Hcls.
 claim HkTransport :
-  apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun k x0) k) cls =
-  apply_fun (basepoint_change_map Y Ty (apply_fun h x0) (apply_fun k x0) alpha)
-    (apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls).
+  apply_fun (induced_homomorphism X Tx x0 Y Ty y1 k) cls =
+  apply_fun (basepoint_change_map Y Ty y0 y1 alpha)
+    (apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls).
 {
   exact (Htransport cls Hcls).
 }
 claim HbaseId :
-  apply_fun (basepoint_change_map Y Ty (apply_fun h x0) (apply_fun k x0) alpha)
-    (fundamental_group_id Y Ty (apply_fun h x0))
-  = fundamental_group_id Y Ty (apply_fun k x0).
+  apply_fun (basepoint_change_map Y Ty y0 y1 alpha)
+    (fundamental_group_id Y Ty y0)
+  = fundamental_group_id Y Ty y1.
 {
-  exact (lemma58_sub_basepoint_change_id
+  exact (lemma58_basepoint_change_hom_maps_id
     Y
     Ty
-    (apply_fun h x0)
-    (apply_fun k x0)
+    y0
+    y1
     alpha
-    HalphaPath).
+    HtopY
+    Hy0Y
+    Hy1Y
+    HalphaHom).
+}
+claim HhCls :
+  apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls
+  =
+  fundamental_group_id Y Ty y0.
+{
+  exact (HhTriv
+    cls
+    Hcls).
 }
 claim Hdesired_cls :
-  apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun k x0) k) cls =
-  fundamental_group_id Y Ty (apply_fun k x0).
+  apply_fun (induced_homomorphism X Tx x0 Y Ty y1 k) cls =
+  fundamental_group_id Y Ty y1.
 {
   rewrite HkTransport.
-  rewrite (HhTriv cls Hcls).
+  rewrite HhCls.
   exact HbaseId.
 }
 exact Hdesired_cls.
-Admitted.
+Qed.
 
 (** helper: a constant map induces the trivial map on fundamental groups **)
 (** Proven Bob **)
@@ -59011,7 +59401,8 @@ Qed.
 (** from S58 Corollary 58.6 (line 1425 in algtop.tex) **)
 (** LATEX VERSION: If h: X -> Y is nulhomotopic, then h-star is the trivial homomorphism. **)
 (** EFFORT: 2 lines textbook, difficulty 1/10, USD 20 **)
-(** Bounty 22 **)
+(** Collected Bob 22 **)
+(** Proven Bob **)
 Theorem cor58_6_nulhomotopic_trivial : forall X Tx Y Ty h x0:set,
   continuous_map X Tx Y Ty h ->
   x0 :e X ->
@@ -59104,7 +59495,7 @@ claim Htarget :
     HconstTriv).
 }
 exact Htarget.
-Admitted.
+Qed.
 
 (** from S58 Theorem 58.7 (line 1429 in algtop.tex) **)
 (** LATEX VERSION: If f: X -> Y is a homotopy equivalence with f(x0) = y0, then f-star: pi_1(X,x0) -> pi_1(Y,y0) is an isomorphism. **)
