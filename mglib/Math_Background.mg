@@ -29142,6 +29142,79 @@ claim Hex :
       + exact Hg0f0e0.
     - exact Hg0CommN.
   }
+  claim HtopE : topology_on E Te.
+  {
+    exact (continuous_map_topology_dom E Te B Tb p Hcontp).
+  }
+  claim HV0open : V0 :e Te.
+  {
+    exact (HslicesSub V0 HV0Slice).
+  }
+  claim HV0subE : V0 c= E.
+  {
+    exact (topology_elem_subset
+      E
+      Te
+      V0
+      HtopE
+      HV0open).
+  }
+  claim Hfng0 : function_on g0 U V0.
+  {
+    exact (continuous_map_function_on
+      U
+      (subspace_topology B Tb U)
+      V0
+      (subspace_topology E Te V0)
+      g0
+      Hg0cont).
+  }
+  set local_lift_N := graph N (fun u:set => apply_fun g0 (apply_fun f u)).
+  claim HlocalLiftN_fun : function_on local_lift_N N E.
+  {
+    claim HlocalLiftN_total : total_function_on local_lift_N N E.
+    {
+      apply (total_function_on_graph N E (fun u:set => apply_fun g0 (apply_fun f u))).
+      let u.
+      assume HuN.
+      claim HfuU : apply_fun f u :e U.
+      {
+        exact (HNmap u HuN).
+      }
+      claim HgfuV0 : apply_fun g0 (apply_fun f u) :e V0.
+      {
+        exact (Hfng0 (apply_fun f u) HfuU).
+      }
+      exact (HV0subE (apply_fun g0 (apply_fun f u)) HgfuV0).
+    }
+    exact (total_function_on_function_on local_lift_N N E HlocalLiftN_total).
+  }
+  claim HlocalLiftN0 : apply_fun local_lift_N 0 = e0.
+  {
+    rewrite (apply_fun_graph N (fun u:set => apply_fun g0 (apply_fun f u)) 0 H0N).
+    exact Hg0f0e0.
+  }
+  claim HlocalLiftN_comm :
+    forall u:set, u :e N ->
+      apply_fun p (apply_fun local_lift_N u) = apply_fun f u.
+  {
+    let u.
+    assume HuN.
+    rewrite (apply_fun_graph N (fun v:set => apply_fun g0 (apply_fun f v)) u HuN).
+    exact (Hg0CommN u HuN).
+  }
+  claim HlocalLiftN_data :
+    function_on local_lift_N N E /\
+    apply_fun local_lift_N 0 = e0 /\
+    (forall u:set, u :e N ->
+      apply_fun p (apply_fun local_lift_N u) = apply_fun f u).
+  {
+    apply andI.
+    - apply andI.
+      + exact HlocalLiftN_fun.
+      + exact HlocalLiftN0.
+    - exact HlocalLiftN_comm.
+  }
   (** TODO Bob: construct and extend the local lift through N using HinvV0 and covering data. **)
   admit.
 }
