@@ -1,5 +1,5 @@
 (** Balance Alice 2160 **)
-(** Balance Bob 1971 **)
+(** Balance Bob 2037 **)
 (** Balance Charlie 1223 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -14959,16 +14959,459 @@ Qed.
 (** from S51 Exercise 3d (line 337 in algtop.tex) **)
 (** LATEX VERSION: If X is contractible and Y is path connected, then [X,Y] has a single element. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 66 **)
-(** Lock Bob 2026-02-18T01:50:00 **)
+(** Collected Bob 66 **)
+(** Proven Bob **)
 Theorem ex51_3d_contractible_domain : forall X Tx Y Ty f g:set,
   contractible_space X Tx ->
   path_connected_space Y Ty ->
   continuous_map X Tx Y Ty f ->
   continuous_map X Tx Y Ty g ->
   homotopic_maps X Tx Y Ty f g.
-admit.
-Admitted.
+let X Tx Y Ty f g.
+assume HcX HpcY Hf Hg.
+claim HtopX : topology_on X Tx.
+{
+  exact (andEL
+    (topology_on X Tx)
+    (nulhomotopic X Tx X Tx (graph X (fun x:set => x)))
+    HcX).
+}
+claim HtopY : topology_on Y Ty.
+{
+  exact (path_connected_space_topology Y Ty HpcY).
+}
+claim HnulX : nulhomotopic X Tx X Tx (graph X (fun x:set => x)).
+{
+  exact (andER
+    (topology_on X Tx)
+    (nulhomotopic X Tx X Tx (graph X (fun x:set => x)))
+    HcX).
+}
+claim HfOn : function_on f X Y.
+{
+  exact (continuous_map_function_on X Tx Y Ty f Hf).
+}
+claim HgOn : function_on g X Y.
+{
+  exact (continuous_map_function_on X Tx Y Ty g Hg).
+}
+apply HnulX.
+let x0.
+assume Hx0pack.
+claim Hx0X : x0 :e X.
+{
+  exact (andEL
+    (x0 :e X)
+    (homotopic_maps X Tx X Tx (graph X (fun x:set => x)) (const_fun X x0))
+    Hx0pack).
+}
+claim HidXConst : homotopic_maps X Tx X Tx (graph X (fun x:set => x)) (const_fun X x0).
+{
+  exact (andER
+    (x0 :e X)
+    (homotopic_maps X Tx X Tx (graph X (fun x:set => x)) (const_fun X x0))
+    Hx0pack).
+}
+claim Hwx :
+  exists Hx:set,
+    continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      X Tx Hx /\
+    (forall x:set, x :e X ->
+      apply_fun Hx (x, 0) = apply_fun (graph X (fun x0:set => x0)) x) /\
+    (forall x:set, x :e X ->
+      apply_fun Hx (x, 1) = apply_fun (const_fun X x0) x).
+{
+  exact (homotopic_maps_has_witness
+    X
+    Tx
+    X
+    Tx
+    (graph X (fun x:set => x))
+    (const_fun X x0)
+    HidXConst).
+}
+apply Hwx.
+let Hx.
+assume Hxpack.
+claim Hxpair :
+  continuous_map (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    X Tx Hx /\
+  (forall x:set, x :e X ->
+    apply_fun Hx (x, 0) = apply_fun (graph X (fun x0:set => x0)) x).
+{
+  exact (andEL
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      X Tx Hx /\
+     (forall x:set, x :e X ->
+       apply_fun Hx (x, 0) = apply_fun (graph X (fun x0:set => x0)) x))
+    (forall x:set, x :e X ->
+      apply_fun Hx (x, 1) = apply_fun (const_fun X x0) x)
+    Hxpack).
+}
+claim HxCont :
+  continuous_map (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    X Tx Hx.
+{
+  exact (andEL
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      X Tx Hx)
+    (forall x:set, x :e X ->
+      apply_fun Hx (x, 0) = apply_fun (graph X (fun x0:set => x0)) x)
+    Hxpair).
+}
+claim Hx0Eq :
+  forall x:set, x :e X ->
+    apply_fun Hx (x, 0) = apply_fun (graph X (fun x0:set => x0)) x.
+{
+  exact (andER
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      X Tx Hx)
+    (forall x:set, x :e X ->
+      apply_fun Hx (x, 0) = apply_fun (graph X (fun x0:set => x0)) x)
+    Hxpair).
+}
+claim Hx1Eq :
+  forall x:set, x :e X ->
+    apply_fun Hx (x, 1) = apply_fun (const_fun X x0) x.
+{
+  exact (andER
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      X Tx Hx /\
+     (forall x:set, x :e X ->
+       apply_fun Hx (x, 0) = apply_fun (graph X (fun x0:set => x0)) x))
+    (forall x:set, x :e X ->
+      apply_fun Hx (x, 1) = apply_fun (const_fun X x0) x)
+    Hxpack).
+}
+claim HtoConstAt : forall h:set,
+  continuous_map X Tx Y Ty h ->
+  homotopic_maps X Tx Y Ty h (const_fun X (apply_fun h x0)).
+{
+  let h.
+  assume Hh.
+  claim HhOn : function_on h X Y.
+  {
+    exact (continuous_map_function_on X Tx Y Ty h Hh).
+  }
+  claim HconstHX0 :
+    continuous_map X Tx Y Ty (const_fun X (apply_fun h x0)).
+  {
+    exact (const_fun_continuous
+      X
+      Tx
+      Y
+      Ty
+      (apply_fun h x0)
+      HtopX
+      HtopY
+      (HhOn x0 Hx0X)).
+  }
+  set K := compose_fun (setprod X unit_interval) Hx h.
+  claim HKCont :
+    continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      Y Ty K.
+  {
+    exact (composition_continuous
+      (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      X
+      Tx
+      Y
+      Ty
+      Hx
+      h
+      HxCont
+      Hh).
+  }
+  claim HK0 :
+    forall x:set, x :e X ->
+      apply_fun K (x, 0) = apply_fun h x.
+  {
+    let x.
+    assume HxX.
+    rewrite (compose_fun_apply
+      (setprod X unit_interval)
+      Hx
+      h
+      (x, 0)
+      (tuple_2_setprod_by_pair_Sigma X unit_interval x 0 HxX zero_in_unit_interval)).
+    rewrite (Hx0Eq x HxX).
+    rewrite (apply_fun_graph X (fun z:set => z) x HxX).
+    reflexivity.
+  }
+  claim HK1 :
+    forall x:set, x :e X ->
+      apply_fun K (x, 1) = apply_fun (const_fun X (apply_fun h x0)) x.
+  {
+    let x.
+    assume HxX.
+    rewrite (compose_fun_apply
+      (setprod X unit_interval)
+      Hx
+      h
+      (x, 1)
+      (tuple_2_setprod_by_pair_Sigma X unit_interval x 1 HxX one_in_unit_interval)).
+    rewrite (Hx1Eq x HxX).
+    rewrite (const_fun_apply X x0 x HxX).
+    rewrite (const_fun_apply X (apply_fun h x0) x HxX).
+    reflexivity.
+  }
+  prove continuous_map X Tx Y Ty h /\
+    continuous_map X Tx Y Ty (const_fun X (apply_fun h x0)) /\
+    exists G:set,
+      continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        Y Ty G /\
+      (forall x:set, x :e X ->
+        apply_fun G (x, 0) = apply_fun h x) /\
+      (forall x:set, x :e X ->
+        apply_fun G (x, 1) = apply_fun (const_fun X (apply_fun h x0)) x).
+  apply andI.
+  - apply andI.
+    + exact Hh.
+    + exact HconstHX0.
+  - witness K.
+    apply andI.
+    + apply andI.
+      * exact HKCont.
+      * exact HK0.
+    + exact HK1.
+}
+claim HfConst : homotopic_maps X Tx Y Ty f (const_fun X (apply_fun f x0)).
+{
+  exact (HtoConstAt f Hf).
+}
+claim HgConst : homotopic_maps X Tx Y Ty g (const_fun X (apply_fun g x0)).
+{
+  exact (HtoConstAt g Hg).
+}
+claim HalphaEx :
+  exists alpha:set,
+    path_between Y (apply_fun f x0) (apply_fun g x0) alpha /\
+    continuous_map unit_interval unit_interval_topology Y Ty alpha.
+{
+  exact (path_connected_space_paths
+    Y
+    Ty
+    (apply_fun f x0)
+    (apply_fun g x0)
+    HpcY
+    (HfOn x0 Hx0X)
+    (HgOn x0 Hx0X)).
+}
+apply HalphaEx.
+let alpha.
+assume HalphaPack.
+claim HalphaPB :
+  path_between Y (apply_fun f x0) (apply_fun g x0) alpha.
+{
+  exact (path_witness_between
+    Y
+    Ty
+    (apply_fun f x0)
+    (apply_fun g x0)
+    alpha
+    HalphaPack).
+}
+claim HalphaCont :
+  continuous_map unit_interval unit_interval_topology Y Ty alpha.
+{
+  exact (path_witness_continuous
+    Y
+    Ty
+    (apply_fun f x0)
+    (apply_fun g x0)
+    alpha
+    HalphaPack).
+}
+claim HconstF :
+  continuous_map X Tx Y Ty (const_fun X (apply_fun f x0)).
+{
+  exact (const_fun_continuous
+    X
+    Tx
+    Y
+    Ty
+    (apply_fun f x0)
+    HtopX
+    HtopY
+    (HfOn x0 Hx0X)).
+}
+claim HconstG :
+  continuous_map X Tx Y Ty (const_fun X (apply_fun g x0)).
+{
+  exact (const_fun_continuous
+    X
+    Tx
+    Y
+    Ty
+    (apply_fun g x0)
+    HtopX
+    HtopY
+    (HgOn x0 Hx0X)).
+}
+set C := compose_fun (setprod X unit_interval)
+  (projection_map2 X unit_interval)
+  alpha.
+claim HCCont :
+  continuous_map (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    Y Ty C.
+{
+  exact (composition_continuous
+    (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    unit_interval
+    unit_interval_topology
+    Y
+    Ty
+    (projection_map2 X unit_interval)
+    alpha
+    (andER
+      (continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        X
+        Tx
+        (projection_map1 X unit_interval))
+      (continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        unit_interval
+        unit_interval_topology
+        (projection_map2 X unit_interval))
+      (projection_maps_continuous
+        X
+        Tx
+        unit_interval
+        unit_interval_topology
+        HtopX
+        unit_interval_topology_on))
+    HalphaCont).
+}
+claim HC0 :
+  forall x:set, x :e X ->
+    apply_fun C (x, 0) = apply_fun (const_fun X (apply_fun f x0)) x.
+{
+  let x.
+  assume HxX.
+  rewrite (compose_fun_apply
+    (setprod X unit_interval)
+    (projection_map2 X unit_interval)
+    alpha
+    (x, 0)
+    (tuple_2_setprod_by_pair_Sigma X unit_interval x 0 HxX zero_in_unit_interval)).
+  rewrite (projection2_apply
+    X
+    unit_interval
+    (x, 0)
+    (tuple_2_setprod_by_pair_Sigma X unit_interval x 0 HxX zero_in_unit_interval)).
+  rewrite tuple_2_1_eq.
+  rewrite (path_between_at_zero
+    Y
+    (apply_fun f x0)
+    (apply_fun g x0)
+    alpha
+    HalphaPB).
+  rewrite (const_fun_apply X (apply_fun f x0) x HxX).
+  reflexivity.
+}
+claim HC1 :
+  forall x:set, x :e X ->
+    apply_fun C (x, 1) = apply_fun (const_fun X (apply_fun g x0)) x.
+{
+  let x.
+  assume HxX.
+  rewrite (compose_fun_apply
+    (setprod X unit_interval)
+    (projection_map2 X unit_interval)
+    alpha
+    (x, 1)
+    (tuple_2_setprod_by_pair_Sigma X unit_interval x 1 HxX one_in_unit_interval)).
+  rewrite (projection2_apply
+    X
+    unit_interval
+    (x, 1)
+    (tuple_2_setprod_by_pair_Sigma X unit_interval x 1 HxX one_in_unit_interval)).
+  rewrite tuple_2_1_eq.
+  rewrite (path_between_at_one
+    Y
+    (apply_fun f x0)
+    (apply_fun g x0)
+    alpha
+    HalphaPB).
+  rewrite (const_fun_apply X (apply_fun g x0) x HxX).
+  reflexivity.
+}
+claim HconstFG :
+  homotopic_maps X Tx Y Ty
+    (const_fun X (apply_fun f x0))
+    (const_fun X (apply_fun g x0)).
+{
+  prove continuous_map X Tx Y Ty (const_fun X (apply_fun f x0)) /\
+    continuous_map X Tx Y Ty (const_fun X (apply_fun g x0)) /\
+    exists G:set,
+      continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        Y Ty G /\
+      (forall x:set, x :e X ->
+        apply_fun G (x, 0) = apply_fun (const_fun X (apply_fun f x0)) x) /\
+      (forall x:set, x :e X ->
+        apply_fun G (x, 1) = apply_fun (const_fun X (apply_fun g x0)) x).
+  apply andI.
+  - apply andI.
+    + exact HconstF.
+    + exact HconstG.
+  - witness C.
+    apply andI.
+    + apply andI.
+      * exact HCCont.
+      * exact HC0.
+    + exact HC1.
+}
+claim HconstGtoG :
+  homotopic_maps X Tx Y Ty (const_fun X (apply_fun g x0)) g.
+{
+  exact (Lemma_51_1_homotopy_sym
+    X
+    Tx
+    Y
+    Ty
+    g
+    (const_fun X (apply_fun g x0))
+    HgConst).
+}
+claim HfToConstG :
+  homotopic_maps X Tx Y Ty f (const_fun X (apply_fun g x0)).
+{
+  exact (Lemma_51_1_homotopy_trans
+    X
+    Tx
+    Y
+    Ty
+    f
+    (const_fun X (apply_fun f x0))
+    (const_fun X (apply_fun g x0))
+    HfConst
+    HconstFG).
+}
+exact (Lemma_51_1_homotopy_trans
+  X
+  Tx
+  Y
+  Ty
+  f
+  (const_fun X (apply_fun g x0))
+  g
+  HfToConstG
+  HconstGtoG).
+Qed.
 
 (** ============================================================ **)
 (** S52 The Fundamental Group                                    **)
