@@ -1,5 +1,5 @@
 (** Balance Alice 2410 **)
-(** Balance Bob 2483 **)
+(** Balance Bob 2543 **)
 (** Balance Charlie 1188 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -46712,7 +46712,8 @@ admit.
 Admitted.
 
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Bob 30 **)
+(** Proven Bob **)
 Theorem cor58_5_homotopic_maps_injective : forall X Tx Y Ty x0 h k:set,
   continuous_map X Tx Y Ty h ->
   continuous_map X Tx Y Ty k ->
@@ -46858,12 +46859,13 @@ claim HhEq :
     HalphaEq).
 }
 exact (HhInj cls1 cls2 Hcls1 Hcls2 HhEq).
-Admitted.
+Qed.
 
 (** from S58 Corollary 58.5 surjective case (line 1423 in algtop.tex) **)
 (** LATEX VERSION: Let h, k: X -> Y be homotopic. If h-star is surjective, so is k-star. **)
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Bob 30 **)
+(** Proven Bob **)
 Theorem cor58_5_homotopic_maps_surjective : forall X Tx Y Ty x0 h k:set,
   continuous_map X Tx Y Ty h ->
   continuous_map X Tx Y Ty k ->
@@ -46998,7 +47000,7 @@ apply andI.
   rewrite HkEqAlpha.
   rewrite HhEqd.
   exact HdEq.
-Admitted.
+Qed.
 
 (** from S58 Corollary 58.5 trivial case (line 1423 in algtop.tex) **)
 (** LATEX VERSION: Let h, k: X -> Y be homotopic. If h-star is trivial, so is k-star. **)
