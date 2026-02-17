@@ -52951,6 +52951,48 @@ claim HFt_54_comm :
   rewrite (Hvs_choice_54_lift_comm s t Hs Ht).
   exact (Hvs_choice_54_eval s t Hs Ht).
 }
+claim HFt_54_bottom :
+  forall s:set, s :e unit_interval ->
+    apply_fun Ft_54 (s, 0) = apply_fun (path_lift E Te B Tb p e0 g0_54) s.
+{
+  let s.
+  assume Hs.
+  claim Hs0Sq : (s, 0) :e unit_square.
+  {
+    exact (tuple_2_setprod_by_pair_Sigma
+      unit_interval
+      unit_interval
+      s
+      0
+      Hs
+      zero_in_unit_interval).
+  }
+  rewrite (apply_fun_graph
+    unit_square
+    (fun z:set =>
+      apply_fun
+        (path_lift E Te B Tb p
+          (apply_fun (path_lift E Te B Tb p e0 g0_54)
+            (apply_fun (projection_map1 unit_interval unit_interval) z))
+          (apply_fun vs_choice_54
+            (apply_fun (projection_map1 unit_interval unit_interval) z)))
+        (apply_fun (projection_map2 unit_interval unit_interval) z))
+    (s, 0)
+    Hs0Sq).
+  rewrite (projection1_apply unit_interval unit_interval (s, 0) Hs0Sq).
+  rewrite (projection2_apply unit_interval unit_interval (s, 0) Hs0Sq).
+  rewrite (tuple_2_0_eq s 0).
+  rewrite (tuple_2_1_eq s 0).
+  exact (Hvs_choice_54_lift0 s Hs).
+}
+claim HFt_54_bottom_comm :
+  forall s:set, s :e unit_interval ->
+    apply_fun p (apply_fun Ft_54 (s, 0)) = apply_fun F (s, 0).
+{
+  let s.
+  assume Hs.
+  exact (HFt_54_comm s 0 Hs zero_in_unit_interval).
+}
 claim HFt_54_cont :
   continuous_map unit_square unit_square_topology E Te Ft_54.
 {
