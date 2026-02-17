@@ -27758,7 +27758,200 @@ Theorem ex54_3_lift_of_product : forall E Te B Tb p e0 alpha beta:set,
     (path_concat
       (path_lift E Te B Tb p e0 alpha)
       (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 alpha) 1) beta)).
-admit.
+let E Te B Tb p e0 alpha beta.
+assume Hcov He0 Halpha Hbeta Halpha1beta0 Hp0.
+set alpha_lift := path_lift E Te B Tb p e0 alpha.
+set e1 := apply_fun alpha_lift 1.
+set beta_lift := path_lift E Te B Tb p e1 beta.
+claim HalphaPack :
+  (continuous_map unit_interval unit_interval_topology E Te alpha_lift /\
+   apply_fun alpha_lift 0 = e0) /\
+  (forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun alpha_lift t) = apply_fun alpha t).
+{
+  exact (lemma54_1_path_lifting
+    E Te B Tb p e0 alpha
+    Hcov
+    He0
+    Hp0
+    Halpha).
+}
+claim HalphaLeft :
+  continuous_map unit_interval unit_interval_topology E Te alpha_lift /\
+  apply_fun alpha_lift 0 = e0.
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te alpha_lift /\
+     apply_fun alpha_lift 0 = e0)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun alpha_lift t) = apply_fun alpha t)
+    HalphaPack).
+}
+claim HalphaCont :
+  continuous_map unit_interval unit_interval_topology E Te alpha_lift.
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te alpha_lift)
+    (apply_fun alpha_lift 0 = e0)
+    HalphaLeft).
+}
+claim Halpha0 : apply_fun alpha_lift 0 = e0.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te alpha_lift)
+    (apply_fun alpha_lift 0 = e0)
+    HalphaLeft).
+}
+claim HalphaComm :
+  forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun alpha_lift t) = apply_fun alpha t.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te alpha_lift /\
+     apply_fun alpha_lift 0 = e0)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun alpha_lift t) = apply_fun alpha t)
+    HalphaPack).
+}
+claim HalphaFun : function_on alpha_lift unit_interval E.
+{
+  exact (continuous_map_function_on
+    unit_interval unit_interval_topology E Te alpha_lift HalphaCont).
+}
+claim He1E : e1 :e E.
+{
+  exact (HalphaFun 1 one_in_unit_interval).
+}
+claim Hpe1beta0 : apply_fun p e1 = apply_fun beta 0.
+{
+  claim Hpe1alpha1 : apply_fun p e1 = apply_fun alpha 1.
+  {
+    exact (HalphaComm 1 one_in_unit_interval).
+  }
+  rewrite Hpe1alpha1.
+  exact Halpha1beta0.
+}
+claim HbetaPack :
+  (continuous_map unit_interval unit_interval_topology E Te beta_lift /\
+   apply_fun beta_lift 0 = e1) /\
+  (forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun beta_lift t) = apply_fun beta t).
+{
+  exact (lemma54_1_path_lifting
+    E Te B Tb p e1 beta
+    Hcov
+    He1E
+    Hpe1beta0
+    Hbeta).
+}
+claim HbetaLeft :
+  continuous_map unit_interval unit_interval_topology E Te beta_lift /\
+  apply_fun beta_lift 0 = e1.
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te beta_lift /\
+     apply_fun beta_lift 0 = e1)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun beta_lift t) = apply_fun beta t)
+    HbetaPack).
+}
+claim HbetaCont :
+  continuous_map unit_interval unit_interval_topology E Te beta_lift.
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te beta_lift)
+    (apply_fun beta_lift 0 = e1)
+    HbetaLeft).
+}
+claim Hbeta0 : apply_fun beta_lift 0 = e1.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te beta_lift)
+    (apply_fun beta_lift 0 = e1)
+    HbetaLeft).
+}
+claim HbetaComm :
+  forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun beta_lift t) = apply_fun beta t.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te beta_lift /\
+     apply_fun beta_lift 0 = e1)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun beta_lift t) = apply_fun beta t)
+    HbetaPack).
+}
+claim Hjoin : apply_fun alpha_lift 1 = apply_fun beta_lift 0.
+{
+  rewrite Hbeta0.
+  reflexivity.
+}
+claim HconcatCont :
+  continuous_map unit_interval unit_interval_topology E Te
+    (path_concat alpha_lift beta_lift).
+{
+  apply (path_concat_continuous
+    E Te e0 e1 (apply_fun beta_lift 1)
+    alpha_lift beta_lift).
+  - exact HalphaCont.
+  - exact HbetaCont.
+  - exact Halpha0.
+  - reflexivity.
+  - exact Hbeta0.
+  - reflexivity.
+}
+claim HconcatComm :
+  forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_concat alpha_lift beta_lift) t) =
+    apply_fun (path_concat alpha beta) t.
+{
+  let t.
+  assume Ht.
+  claim Hcases : t :e unit_interval_left_half :\/: unit_interval_right_half.
+  {
+    exact (unit_interval_halves_cover
+      (fun a b:set => t :e a -> t :e b)
+      (binunion_Subq_min
+        unit_interval_left_half
+        unit_interval_right_half
+        unit_interval
+        unit_interval_left_half_sub
+        unit_interval_right_half_sub
+        t)
+      Ht).
+  }
+  apply (binunionE
+    unit_interval_left_half
+    unit_interval_right_half
+    t
+    Hcases).
+  - assume HtL.
+    claim H2tInI : mul_SNo 2 t :e unit_interval.
+    {
+      rewrite <- (double_map_apply t HtL).
+      exact (double_map_function_on t HtL).
+    }
+    rewrite (path_concat_apply_left alpha_lift beta_lift t Hjoin HtL).
+    rewrite (path_concat_apply_left alpha beta t Halpha1beta0 HtL).
+    exact (HalphaComm (mul_SNo 2 t) H2tInI).
+  - assume HtR.
+    claim H2m1tInI : add_SNo (mul_SNo 2 t) (minus_SNo 1) :e unit_interval.
+    {
+      rewrite <- (double_minus_one_map_apply t HtR).
+      exact (double_minus_one_map_function_on t HtR).
+    }
+    rewrite (path_concat_apply_right alpha_lift beta_lift t Hjoin HtR).
+    rewrite (path_concat_apply_right alpha beta t Halpha1beta0 HtR).
+    exact (HbetaComm (add_SNo (mul_SNo 2 t) (minus_SNo 1)) H2m1tInI).
+}
+exact (andI
+  (continuous_map unit_interval unit_interval_topology E Te
+    (path_concat alpha_lift beta_lift))
+  (forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_concat alpha_lift beta_lift) t) =
+    apply_fun (path_concat alpha beta) t)
+  HconcatCont
+  HconcatComm).
 Admitted.
 
 (** Infrastructure: complex inversion on S^1: z -> (z_0, -z_1) = conjugate = 1/z **)
