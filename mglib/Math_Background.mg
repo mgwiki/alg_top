@@ -53854,8 +53854,15 @@ claim HFt_54_cont :
       claim HFtEqOnN :
         forall z:set, z :e N -> apply_fun Ft_local_N z = apply_fun Ft_54 z.
       {
-        (** TODO Charlie: prove local equality on N using sheet uniqueness around q. **)
-        admit.
+        let z.
+        assume HzN.
+        apply xm (z = q).
+        - assume Hzq.
+          rewrite Hzq.
+          exact HFtLocalAtQ.
+        - assume Hznq.
+          (** TODO Charlie: prove local equality on N for z <> q using sheet uniqueness around q. **)
+          admit.
       }
       exact (continuous_map_congr_on
         N
