@@ -1,6 +1,6 @@
 (** Balance Alice 2634 **)
 (** Balance Bob 2577 **)
-(** Balance Charlie 40365 **)
+(** Balance Charlie 1 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -36279,8 +36279,7 @@ Qed.
 (** from S52 Exercise 5 (line 507 in algtop.tex) **)
 (** LATEX VERSION: If h: (A,a0)->(Y,y0) is extendable to Rn, then h-star is the trivial homomorphism. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex52_5_extendable_trivial : forall A Ta a0 Y Ty y0 h:set,
   A c= R ->
   topology_on A Ta -> topology_on Y Ty ->
@@ -36296,8 +36295,7 @@ Admitted.
 (** from S52 Exercise 6 (line 508 in algtop.tex) **)
 (** LATEX VERSION: If X path connected, h: X->Y continuous, alpha path from x0 to x1, beta=h o alpha, then beta-hat o (h_x0)-star = (h_x1)-star o alpha-hat. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 60 **)
-(** Collected Charlie 66 **)
-(** Proven Charlie **)
+(** Bounty 66 **)
 Theorem ex52_6_naturality : forall X Tx x0 x1 Y Ty y0 y1 h alpha:set,
   path_connected_space X Tx ->
   continuous_map X Tx Y Ty h ->
@@ -36515,8 +36513,7 @@ Qed.
 
 (** from S52 Exercise 7(b) (line 516 in algtop.tex): tensor induces operation on pi1 **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex52_7b_tensor_induces_operation : forall G Tg:set,
   topological_group G Tg ->
   forall e mult:set,
@@ -36536,8 +36533,7 @@ Admitted.
 
 (** from S52 Exercise 7(c) (line 516 in algtop.tex): star and tensor agree on pi1 **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 120 **)
-(** Collected Charlie 132 **)
-(** Proven Charlie **)
+(** Bounty 132 **)
 Theorem ex52_7c_star_equals_tensor : forall G Tg:set,
   topological_group G Tg ->
   forall e mult:set,
@@ -36555,8 +36551,7 @@ Admitted.
 
 (** from S52 Exercise 7(d) (line 516 in algtop.tex): pi1 of a topological group is abelian **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Collected Charlie 33 **)
-(** Proven Charlie **)
+(** Bounty 33 **)
 Theorem ex52_7d_topological_group_pi1_abelian : forall G Tg:set,
   topological_group G Tg ->
   forall e:set, e :e G ->
@@ -36782,8 +36777,7 @@ Qed.
 (** LATEX VERSION: If U is evenly covered by p and W is an open subset of U, **)
 (** then W is also evenly covered by p. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem evenly_covered_open_subset : forall E Te B Tb p U W:set,
   evenly_covered E Te B Tb p U -> W :e Tb -> W c= U ->
   evenly_covered E Te B Tb p W.
@@ -38604,8 +38598,7 @@ Definition covering_map_R_S1 : set :=
 (** LATEX VERSION: The map p: R -> S^1 given by p(x) = (cos 2pi x, sin 2pi x) **)
 (** is a covering map. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Collected Charlie 165 **)
-(** Proven Charlie **)
+(** Bounty 165 **)
 Theorem thm53_1_R_covers_S1 :
   covering_map R R_standard_topology S1 S1_topology covering_map_R_S1.
 admit.
@@ -43137,8 +43130,7 @@ Qed.
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
 (** then the partition of p^{-1}(U) into slices is unique. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex53_2_unique_partition : forall E Te B Tb p U:set,
   topology_on E Te -> topology_on B Tb ->
   connected_space U (subspace_topology B Tb U) ->
@@ -43346,8 +43338,7 @@ Admitted.
 (** LATEX VERSION: Let p: E -> B be a covering map; B connected. If p^{-1}(b0) **)
 (** has k elements for some b0 in B, then p^{-1}(b) has k elements for every b in B. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 60 **)
-(** Collected Charlie 66 **)
-(** Proven Charlie **)
+(** Bounty 66 **)
 Theorem ex53_3_uniform_fiber_size : forall E Te B Tb p b0 k:set,
   covering_map E Te B Tb p ->
   connected_space B Tb ->
@@ -43362,8 +43353,7 @@ Admitted.
 (** LATEX VERSION: Let q: X -> Y and r: Y -> Z be covering maps; **)
 (** if r^{-1}(z) is finite for each z in Z, then r o q is a covering map. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex53_4_composition_covering : forall X Tx Y Ty Z Tz q r:set,
   covering_map X Tx Y Ty q -> covering_map Y Ty Z Tz r ->
   (forall z:set, z :e Z -> finite {y :e Y | apply_fun r y = z}) ->
@@ -43375,8 +43365,7 @@ Admitted.
 (** LATEX VERSION: The map p(z) = z^n is a covering map S^1 -> S^1. **)
 (** Generalized to all natural n >= 1. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex53_5_power_map_covering : forall n:set,
   n :e omega -> 0 :e n ->
   covering_map S1 S1_topology S1 S1_topology (S1_power_map n).
@@ -45349,8 +45338,7 @@ Qed.
 (** LATEX VERSION: If p: E -> B is a covering map and B is completely regular, **)
 (** then E is completely regular. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex53_6a_completely_regular : forall E Te B Tb p:set,
   covering_map E Te B Tb p -> completely_regular_space B Tb ->
   completely_regular_space E Te.
@@ -52846,8 +52834,7 @@ Admitted.
 
 (** from S54 Theorem 54.4 (line 799 in algtop.tex): lifting correspondence bijective **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 60 **)
-(** Collected Charlie 66 **)
-(** Proven Charlie **)
+(** Bounty 66 **)
 Theorem thm54_4_lifting_correspondence_bijective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   simply_connected E Te ->
@@ -52874,8 +52861,7 @@ Definition S1_basepoint : set := (1, 0).
 (** LATEX VERSION: The fundamental group of S^1 is isomorphic to the additive group **)
 (** of integers. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Collected Charlie 220 **)
-(** Proven Charlie **)
+(** Bounty 220 **)
 Theorem thm54_5_pi1_circle : exists phi:set,
   group_isomorphism
     (fundamental_group S1 S1_topology S1_basepoint)
@@ -52963,8 +52949,7 @@ Definition homomorphism_image : set -> set -> set :=
 (** from S54 Theorem 54.6a (line 838 in algtop.tex) **)
 (** LATEX VERSION: The homomorphism p-star: pi_1(E,e0) -> pi_1(B,b0) is a monomorphism. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Collected Charlie 66 **)
-(** Proven Charlie **)
+(** Bounty 66 **)
 Theorem thm54_6a_p_star_injective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   forall cls1 cls2:set,
@@ -52980,8 +52965,7 @@ Admitted.
 (** LATEX VERSION: Let H = p-star(pi_1(E,e0)). The lifting correspondence induces **)
 (** an injective map Phi: pi_1(B,b0)/H -> p^{-1}(b0), bijective if E is path connected. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Collected Charlie 220 **)
-(** Proven Charlie **)
+(** Bounty 220 **)
 Theorem thm54_6b_coset_correspondence : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   exists Phi:set,
@@ -53032,8 +53016,7 @@ Admitted.
 (** from S54 Theorem 54.6c (line 847 in algtop.tex) **)
 (** LATEX VERSION: [f] in H iff f lifts to a loop in E based at e0. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
   covering_map E Te B Tb p -> e0 :e E ->
   loop_at B Tb (apply_fun p e0) f ->
@@ -53271,8 +53254,7 @@ Definition S1_inv_power_map : set -> set := fun n =>
 (** LATEX VERSION: For g(z) = z^n: the induced homomorphism g-star on pi_1(S^1,b0) **)
 (** is multiplication by n. For h(z) = 1/z^n: h-star is multiplication by -n. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Collected Charlie 66 **)
-(** Proven Charlie **)
+(** Bounty 66 **)
 Theorem ex54_6_power_map_induced : forall n:set,
   n :e omega -> 0 :e n ->
   forall cls:set, cls :e fundamental_group S1 S1_topology S1_basepoint ->
@@ -53291,8 +53273,7 @@ Admitted.
 (** LATEX VERSION: For h(z) = 1/z^n: the induced homomorphism h-star on pi_1(S^1,b0) **)
 (** is multiplication by -n. **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 40 **)
-(** Collected Charlie 44 **)
-(** Proven Charlie **)
+(** Bounty 44 **)
 Theorem ex54_6b_inv_power_map_induced : forall n:set,
   n :e omega -> 0 :e n ->
   forall cls:set, cls :e fundamental_group S1 S1_topology S1_basepoint ->
@@ -53324,8 +53305,7 @@ Definition product_group_mult : set -> set -> set -> set -> set :=
 (** from S54 Exercise 7 (line 892 in algtop.tex) **)
 (** LATEX VERSION: The fundamental group of the torus is isomorphic to Z x Z. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex54_7_pi1_torus : exists phi:set,
   group_isomorphism
     (fundamental_group torus torus_topology (S1_basepoint, S1_basepoint))
@@ -53340,8 +53320,7 @@ Admitted.
 (** LATEX VERSION: Let p: E -> B be a covering map with E path connected. **)
 (** If B is simply connected, then p is a homeomorphism. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex54_8_simply_connected_base_homeomorphism : forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
   path_connected_space E Te ->
@@ -53618,8 +53597,7 @@ Qed.
 (** from S55 Theorem 55.2 (line 904 in algtop.tex): No-retraction theorem **)
 (** LATEX VERSION: There is no retraction of B^2 onto S^1. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem thm55_2_no_retraction_B2_S1 : ~(retraction_of B2 B2_topology S1).
 admit.
 Admitted.
@@ -53627,8 +53605,7 @@ Admitted.
 (** from S55 Lemma 55.3 direction (1) implies (2) (line 907 in algtop.tex) **)
 (** LATEX VERSION: Let h: S^1 -> X be continuous. If h is nulhomotopic, then h extends to a continuous map k: B^2 -> X. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 120 **)
-(** Collected Charlie 132 **)
-(** Proven Charlie **)
+(** Bounty 132 **)
 Theorem lemma55_3_nulhomotopic_extends_to_B2 : forall X Tx h:set,
   continuous_map S1 S1_topology X Tx h ->
   nulhomotopic S1 S1_topology X Tx h ->
@@ -53640,8 +53617,7 @@ Admitted.
 (** from S55 Lemma 55.3 direction (2) implies (3) (line 907 in algtop.tex) **)
 (** LATEX VERSION: If h extends to k: B^2 -> X, then h-star is the trivial homomorphism. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem lemma55_3_extends_implies_trivial : forall X Tx h b0:set,
   continuous_map S1 S1_topology X Tx h ->
   b0 :e S1 ->
@@ -53962,8 +53938,7 @@ Admitted. (** was Qed but depends on unproved cor55_4a - changed to Admitted **)
 (** from S55 Theorem 55.5 (line 950 in algtop.tex) **)
 (** LATEX VERSION: Given a nonvanishing vector field on B^2, there exists a point of S^1 where the vector field points directly inward and a point of S^1 where it points directly outward. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 150 **)
-(** Collected Charlie 165 **)
-(** Proven Charlie **)
+(** Bounty 165 **)
 Theorem thm55_5_nonvanishing_vector_field : forall v:set,
   continuous_map B2 B2_topology (setprod R R) R2_topology v ->
   (forall x:set, x :e B2 -> ~(apply_fun v x 0 = 0 /\ apply_fun v x 1 = 0)) ->
@@ -53975,8 +53950,7 @@ Admitted.
 (** from S55 Theorem 55.6 (line 983 in algtop.tex): Brouwer fixed-point theorem for the disc **)
 (** LATEX VERSION: If f: B^2 -> B^2 is continuous, then there exists a point x in B^2 such that f(x) = x. **)
 (** EFFORT: 6 lines textbook, difficulty 3/10, USD 60 **)
-(** Collected Charlie 66 **)
-(** Proven Charlie **)
+(** Bounty 66 **)
 Theorem thm55_6_brouwer_fixed_point_disc : forall f:set,
   continuous_map B2 B2_topology B2 B2_topology f ->
   exists x:set, x :e B2 /\ apply_fun f x = x.
@@ -54007,8 +53981,7 @@ Definition eigenvalue_of_matrix : set -> set -> set -> prop := fun n A lam =>
 (** from S55 starred Corollary 55.7 (line 994 in algtop.tex) **)
 (** LATEX VERSION: Let A be a 3 by 3 matrix of positive real numbers. Then A has a positive real eigenvalue. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
-(** Collected Charlie 165 **)
-(** Proven Charlie **)
+(** Bounty 165 **)
 Theorem cor55_7_positive_matrix_eigenvalue : forall A:set,
   function_on A (setprod 3 3) R ->
   (forall i j:set, i :e 3 -> j :e 3 -> Rlt 0 (apply_fun A (i, j))) ->
@@ -54035,8 +54008,7 @@ Definition triangular_region_topology : set :=
 (** from S55 starred Theorem 55.8 (line 1020 in algtop.tex) **)
 (** LATEX VERSION: There is an epsilon > 0 such that for every open covering of T by sets of diameter less than epsilon, some point of T belongs to at least three elements of the covering. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 300 **)
-(** Collected Charlie 330 **)
-(** Proven Charlie **)
+(** Bounty 330 **)
 Theorem thm55_8_dimension_triangular_region :
   exists eps:set, eps :e R /\ Rlt 0 eps /\
     (forall cov:set,
@@ -54070,8 +54042,7 @@ Admitted.
 (** from S55 Exercise 2 (line 1043 in algtop.tex) **)
 (** LATEX VERSION: If h: S^1 -> S^1 is nulhomotopic, then h has a fixed point and h maps some point x to its antipode -x. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex55_2_nulhomotopic_S1_fixed_and_antipodal : forall h:set,
   continuous_map S1 S1_topology S1 S1_topology h ->
   nulhomotopic S1 S1_topology S1 S1_topology h ->
@@ -54084,8 +54055,7 @@ Admitted.
 (** from S55 Exercise 3 (line 1044 in algtop.tex) **)
 (** LATEX VERSION: If A is a nonsingular 3x3 matrix having nonnegative entries, then A has a positive real eigenvalue. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex55_3_nonneg_nonsingular_matrix_eigenvalue : forall A:set,
   function_on A (setprod 3 3) R ->
   (forall i j:set, i :e 3 -> j :e 3 -> ~(Rlt (apply_fun A (i, j)) 0)) ->
@@ -54172,8 +54142,7 @@ Admitted.
 (** from S55 Exercise 4(c) (line 1048 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every nonvanishing vector field on B^{n+1} points outward and inward at some points of S^n. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex55_4c_nonvanishing_vector_field_Rn : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   forall v:set,
@@ -54189,8 +54158,7 @@ Admitted.
 (** from S55 Exercise 4(d) (line 1049 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every continuous map f: B^{n+1} -> B^{n+1} has a fixed point. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex55_4d_brouwer_fixed_point_Rn : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   forall f:set,
@@ -54203,8 +54171,7 @@ Admitted.
 (** from S55 Exercise 4(e) (line 1050 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every (n+1) by (n+1) matrix with positive entries has a positive eigenvalue. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex55_4e_positive_matrix_eigenvalue_Rn : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   forall A:set,
@@ -54217,8 +54184,7 @@ Admitted.
 (** from S55 Exercise 4(f) (line 1051 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, if h: S^n -> S^n is nulhomotopic, then h has a fixed point and maps some x to -x. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex55_4f_nulhomotopic_Sn_fixed_and_antipodal : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   forall h:set,
@@ -54259,8 +54225,7 @@ Definition monic_poly_eval : set -> set -> set -> set := fun a n z =>
 (** from S56 Theorem 56.1 (line 1066 in algtop.tex): Fundamental theorem of algebra **)
 (** LATEX VERSION: A polynomial equation x^n + a_{n-1} x^{n-1} + ... + a_0 = 0 of degree n > 0 with real or complex coefficients has at least one root. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 400 **)
-(** Collected Charlie 440 **)
-(** Proven Charlie **)
+(** Bounty 440 **)
 Theorem thm56_1_fundamental_theorem_of_algebra : forall n a:set,
   n :e omega -> n <> 0 ->
   function_on a n (setprod R R) ->
@@ -54272,8 +54237,7 @@ Admitted.
 (** from S56 Exercise 1 (line 1167 in algtop.tex) **)
 (** LATEX VERSION: If |a_{n-1}| + ... + |a_0| < 1, then all roots of x^n + a_{n-1} x^{n-1} + ... + a_0 lie in the interior of B^2. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex56_1_small_coeff_roots_in_B2 : forall n a:set,
   n :e omega -> n <> 0 ->
   function_on a n (setprod R R) ->
@@ -54326,8 +54290,7 @@ Admitted.
 (** from S57 Theorem 57.2 (line 1214 in algtop.tex) **)
 (** LATEX VERSION: There is no continuous antipode-preserving map g: S^2 -> S^1. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem thm57_2_no_antipode_preserving_S2_S1 :
   ~(exists g:set, antipode_preserving_Sn 2 1 g).
 admit.
@@ -54806,8 +54769,7 @@ Admitted.
 (** from S57 Exercise 2 (line 1258 in algtop.tex) **)
 (** LATEX VERSION: If g: S^2 -> S^2 is continuous and g(x) != g(-x) for all x, then g is surjective. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex57_2_antipodal_distinct_surjective : forall g:set,
   continuous_map (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) g ->
   (forall x:set, x :e Sn 2 ->
@@ -54819,8 +54781,7 @@ Admitted.
 (** from S57 Exercise 3 (line 1259 in algtop.tex) **)
 (** LATEX VERSION: Let h: S^1 -> S^1 be continuous, antipode-preserving, h(b0)=b0. Then h-star carries a generator to an odd power of itself. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 120 **)
-(** Collected Charlie 132 **)
-(** Proven Charlie **)
+(** Bounty 132 **)
 Theorem ex57_3_antipode_preserving_odd_power : forall h:set,
   antipode_preserving_S1 h ->
   apply_fun h S1_basepoint = S1_basepoint ->
@@ -54838,8 +54799,7 @@ Admitted.
 (** from S57 Exercise 4(a) (line 1261 in algtop.tex) **)
 (** LATEX VERSION: Given no continuous antipode-preserving map h: S^n -> S^n is nulhomotopic, there is no retraction r: B^{n+1} -> S^n. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex57_4a_no_retraction_from_borsuk : forall n:set, n :e omega ->
   (forall h:set, antipode_preserving_Sn n n h ->
     ~(nulhomotopic (Sn n) (Sn_topology n) (Sn n) (Sn_topology n) h)) ->
@@ -54850,8 +54810,7 @@ Admitted.
 (** from S57 Exercise 4(b) (line 1262 in algtop.tex) **)
 (** LATEX VERSION: Given the hypothesis, there is no continuous antipode-preserving map g: S^{n+1} -> S^n. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex57_4b_no_antipode_higher : forall n:set, n :e omega ->
   (forall h:set, antipode_preserving_Sn (ordsucc n) (ordsucc n) h ->
     ~(nulhomotopic (Sn (ordsucc n)) (Sn_topology (ordsucc n))
@@ -54863,8 +54822,7 @@ Admitted.
 (** from S57 Exercise 4(c) (line 1263 in algtop.tex) **)
 (** LATEX VERSION: (Borsuk-Ulam) Given the hypothesis, for any continuous f: S^{n+1} -> R^{n+1}, there exists x with f(x) = f(-x). **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex57_4c_borsuk_ulam_general : forall n:set, n :e omega ->
   (forall h:set, antipode_preserving_Sn (ordsucc n) (ordsucc n) h ->
     ~(nulhomotopic (Sn (ordsucc n)) (Sn_topology (ordsucc n))
@@ -55182,8 +55140,7 @@ Qed.
 (** from S58 Theorem 58.2 (line 1284 in algtop.tex) **)
 (** LATEX VERSION: The inclusion map j: S^n -> R^{n+1}-0 induces an isomorphism of fundamental groups. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem thm58_2_inclusion_Sn_isomorphism : forall n:set, n :e omega ->
   forall b0:set, b0 :e Sn n ->
   group_isomorphism
@@ -56664,8 +56621,7 @@ Qed.
 
 (** helper sub-bounty for Corollary 58.5: alpha-hat sends identity to identity **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
-(** Collected Charlie 9 **)
-(** Proven Charlie **)
+(** Bounty 9 **)
 Theorem lemma58_sub_basepoint_change_id : forall X Tx x0 x1 alpha:set,
   path_between X x0 x1 alpha ->
   apply_fun (basepoint_change_map X Tx x0 x1 alpha)
@@ -56705,8 +56661,7 @@ Admitted.
 
 (** helper sub-bounty for Corollary 58.5: alpha-hat is injective **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
-(** Collected Charlie 9 **)
-(** Proven Charlie **)
+(** Bounty 9 **)
 Theorem lemma58_sub_basepoint_change_injective : forall X Tx x0 x1 alpha a b:set,
   path_between X x0 x1 alpha ->
   a :e fundamental_group X Tx x0 ->
@@ -56748,8 +56703,7 @@ Admitted.
 
 (** helper sub-bounty for Corollary 58.5: alpha-hat is surjective **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
-(** Collected Charlie 9 **)
-(** Proven Charlie **)
+(** Bounty 9 **)
 Theorem lemma58_sub_basepoint_change_surjective : forall X Tx x0 x1 alpha c:set,
   path_between X x0 x1 alpha ->
   c :e fundamental_group X Tx x1 ->
@@ -57366,8 +57320,7 @@ Admitted.
 (** from S58 Theorem 58.7 (line 1429 in algtop.tex) **)
 (** LATEX VERSION: If f: X -> Y is a homotopy equivalence with f(x0) = y0, then f-star: pi_1(X,x0) -> pi_1(Y,y0) is an isomorphism. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
-(** Collected Charlie 165 **)
-(** Proven Charlie **)
+(** Bounty 165 **)
 Theorem thm58_7_homotopy_equiv_isomorphism : forall X Tx Y Ty f x0:set,
   homotopy_equivalence X Tx Y Ty f ->
   x0 :e X ->
@@ -60687,8 +60640,7 @@ Admitted.
 (** from S58 Exercise 2(b) (line 1478 in algtop.tex): torus minus point **)
 (** This is the free group on 2 generators (stated via homotopy equivalence) **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex58_2b_torus_minus_point_pi1 : forall p:set,
   p :e torus ->
   forall x0:set,
@@ -60739,8 +60691,7 @@ Admitted.
 
 (** from S58 Exercise 2(e) (line 1481 in algtop.tex): R^3 with nonneg axes deleted pi1 **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex58_2e_R3_axes_deleted_pi1 :
   let R3 := setprod (setprod R R) R in
   let R3T := product_topology (setprod R R) R2_topology R R_standard_topology in
@@ -60870,8 +60821,7 @@ Admitted.
 (** LATEX VERSION: Let X be the figure eight and Y be the theta space. **)
 (** Describe maps f: X -> Y and g: Y -> X that are homotopy inverse to each other. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex58_4_figure_eight_theta_homotopy_equiv :
   forall X Tx Y Ty:set,
   (** X is a figure-eight: union of two arcs sharing exactly two endpoints **)
@@ -60903,8 +60853,7 @@ Admitted.
 
 (** from S58 Exercise 7(a) (line 1496 in algtop.tex): retraction implies isomorphism **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex58_7a_retraction_homotopy_isomorphism : forall X Tx A a0 f:set,
   A c= X ->
   a0 :e A ->
@@ -60925,8 +60874,7 @@ Admitted.
 
 (** from S58 Exercise 7(b) (line 1496 in algtop.tex): A-preserving homotopy implies isomorphism **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex58_7b_A_preserved_homotopy_isomorphism : forall X Tx A a0 f H:set,
   A c= X ->
   a0 :e A ->
@@ -60953,8 +60901,7 @@ Admitted.
 
 (** from S58 Exercise 10(a) (line 1528 in algtop.tex): no retraction B^{n+1} -> S^n **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex58_10a_no_retraction_from_degree : forall n:set, n :e omega ->
   forall deg:set,
   (forall h k:set, continuous_map (Sn n) (Sn_topology n) (Sn n) (Sn_topology n) h ->
@@ -60971,8 +60918,7 @@ Admitted.
 
 (** from S58 Exercise 10(b) (line 1528 in algtop.tex): degree and fixed point **)
 (** EFFORT: 6 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex58_10b_degree_fixed_point : forall n:set, n :e omega ->
   forall deg:set,
   (forall h k:set, continuous_map (Sn n) (Sn_topology n) (Sn n) (Sn_topology n) h ->
@@ -60993,8 +60939,7 @@ Admitted.
 
 (** from S58 Exercise 10(d) (line 1528 in algtop.tex): tangent vector field implies n odd **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex58_10d_tangent_field_odd : forall n:set, n :e omega ->
   forall deg:set,
   (forall h k:set, continuous_map (Sn n) (Sn_topology n) (Sn n) (Sn_topology n) h ->
@@ -61033,8 +60978,7 @@ Definition degree_of_map_S1 : set -> set := fun h =>
 (** from S58 Exercise 9(a) (line 1523 in algtop.tex) **)
 (** LATEX VERSION: The degree d is independent of the choice of x0. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex58_9a_degree_well_defined : forall h:set,
   continuous_map S1 S1_topology S1 S1_topology h ->
   degree_of_map_S1 h :e int.
@@ -61044,8 +60988,7 @@ Admitted.
 (** from S58 Exercise 9(b) (line 1524 in algtop.tex) **)
 (** LATEX VERSION: If h, k: S^1 -> S^1 are homotopic, they have the same degree. **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex58_9b_homotopic_same_degree : forall h k:set,
   continuous_map S1 S1_topology S1 S1_topology h ->
   continuous_map S1 S1_topology S1 S1_topology k ->
@@ -61057,8 +61000,7 @@ Admitted.
 (** from S58 Exercise 9(c) (line 1525 in algtop.tex) **)
 (** LATEX VERSION: deg(h o k) = (deg h) times (deg k). **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex58_9c_degree_multiplicative : forall h k:set,
   continuous_map S1 S1_topology S1 S1_topology h ->
   continuous_map S1 S1_topology S1 S1_topology k ->
@@ -61070,8 +61012,7 @@ Admitted.
 (** from S58 Exercise 9(d) (line 1526 in algtop.tex) **)
 (** LATEX VERSION: Degrees: constant map has degree 0, identity has degree 1, reflection has degree -1, z^n has degree n. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex58_9d_degree_computations :
   (forall c:set, c :e S1 ->
     degree_of_map_S1 (const_fun S1 c) = 0) /\
@@ -61087,8 +61028,7 @@ Admitted.
 (** from S59 Theorem 59.1 (line 1541 in algtop.tex) **)
 (** LATEX VERSION: Suppose X = U union V where U, V are open in X. If U intersect V is path connected and x0 in U intersect V, then the images of i-star and j-star generate pi_1(X, x0). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Collected Charlie 220 **)
-(** Proven Charlie **)
+(** Bounty 220 **)
 Theorem thm59_1_open_cover_generates_pi1 : forall X Tx U V x0:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -61131,8 +61071,7 @@ Admitted.
 (** from S59 Theorem 59.3 (line 1587 in algtop.tex) **)
 (** LATEX VERSION: If n >= 2, the n-sphere S^n is simply connected. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
-(** Collected Charlie 165 **)
-(** Proven Charlie **)
+(** Bounty 165 **)
 Theorem thm59_3_Sn_simply_connected : forall n:set,
   n :e omega -> 2 c= n ->
   simply_connected (Sn n) (Sn_topology n).
@@ -61142,8 +61081,7 @@ Admitted.
 (** from S59 Exercise 1 (line 1615 in algtop.tex) **)
 (** LATEX VERSION: Let X be the union of two copies of S^2 having a single point in common. The fundamental group of X is trivial. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex59_1_wedge_S2_trivial_pi1 : forall X Tx x0 A B fA fB:set,
   topology_on X Tx ->
   X = A :\/: B ->
@@ -61157,8 +61095,7 @@ Admitted.
 (** from S59 Exercise 3(a) (line 1617 in algtop.tex) **)
 (** LATEX VERSION: R^1 and R^n are not homeomorphic if n > 1. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex59_3a_R1_not_homeo_Rn : forall n:set,
   n :e omega -> 2 c= n ->
   ~(exists f:set, homeomorphism R R_standard_topology
@@ -61169,8 +61106,7 @@ Admitted.
 (** from S59 Exercise 3(b) (line 1618 in algtop.tex) **)
 (** LATEX VERSION: R^2 and R^n are not homeomorphic if n > 2. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex59_3b_R2_not_homeo_Rn : forall n:set,
   n :e omega -> 3 c= n ->
   ~(exists f:set, homeomorphism (setprod R R) R2_topology
@@ -61182,8 +61118,7 @@ Admitted.
 (** LATEX VERSION: Assume hypotheses of Thm 59.1. What if j-star is trivial? **)
 (** Then pi1(X,x0) is generated by the image of i-star alone. **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex59_4a_trivial_j_star : forall X Tx U V x0:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -61239,8 +61174,7 @@ Definition abelian_group : set -> set -> set -> set -> prop :=
 (** from S60 Theorem 60.1 (line 1639 in algtop.tex) **)
 (** LATEX VERSION: pi_1(X x Y, x0 x y0) is isomorphic with pi_1(X, x0) x pi_1(Y, y0). **)
 (** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
-(** Collected Charlie 220 **)
-(** Proven Charlie **)
+(** Bounty 220 **)
 Theorem thm60_1_pi1_product : forall X Tx x0 Y Ty y0:set,
   topology_on X Tx -> topology_on Y Ty -> x0 :e X -> y0 :e Y ->
   exists phi:set,
@@ -61286,8 +61220,7 @@ Definition projective_plane_map : set := projective_n_space_map 2.
 (** LATEX VERSION: P^2 is a compact surface, and the quotient map p: S^2 -> P^2 **)
 (** is a covering map. **)
 (** EFFORT: 25 lines textbook, difficulty 6/10, USD 300 **)
-(** Collected Charlie 330 **)
-(** Proven Charlie **)
+(** Bounty 330 **)
 Theorem thm60_3_projective_plane_surface_covering :
   m_manifold projective_plane projective_plane_topology 2 /\
   compact_space projective_plane projective_plane_topology /\
@@ -61299,8 +61232,7 @@ Admitted.
 (** from S60 Corollary 60.4 (line 1725 in algtop.tex) **)
 (** LATEX VERSION: pi_1(P^2, y) is a group of order 2. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem cor60_4_pi1_projective_plane : forall y:set,
   y :e projective_plane ->
   exists a:set,
@@ -61316,8 +61248,7 @@ Admitted.
 (** LATEX VERSION: pi_1(P^n, y) is a two-element group for n >= 2, **)
 (** because S^n is simply connected and p: S^n -> P^n is a covering map. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem pi1_projective_n_space_order_2 : forall n:set,
   n :e omega -> 2 c= n ->
   forall y:set, y :e projective_n_space n ->
@@ -61349,8 +61280,7 @@ Definition figure_eight_basepoint : set := (0, 0).
 (** from S60 Lemma 60.5 (line 1734 in algtop.tex) **)
 (** LATEX VERSION: The fundamental group of the figure eight is not abelian. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Collected Charlie 165 **)
-(** Proven Charlie **)
+(** Bounty 165 **)
 Theorem lemma60_5_figure_eight_nonabelian :
   ~(abelian_group
     (fundamental_group figure_eight figure_eight_topology figure_eight_basepoint)
@@ -61433,8 +61363,7 @@ Definition double_torus_topology : set :=
 (** from S60 Theorem 60.6 (line 1759 in algtop.tex) **)
 (** LATEX VERSION: The fundamental group of the double torus is not abelian. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
-(** Collected Charlie 165 **)
-(** Proven Charlie **)
+(** Bounty 165 **)
 Theorem thm60_6_double_torus_nonabelian : forall x0:set,
   x0 :e double_torus ->
   ~(abelian_group
@@ -61449,8 +61378,7 @@ Admitted.
 (** LATEX VERSION: The 2-sphere, torus, projective plane, and double torus **)
 (** are topologically distinct. **)
 (** EFFORT: 8 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem cor60_7_surfaces_distinct :
   ~(exists f:set, homeomorphism
     (Sn 2) (Sn_topology 2) torus torus_topology f) /\
@@ -61470,8 +61398,7 @@ Admitted.
 (** from S60 Exercise 1 (line 1778 in algtop.tex) **)
 (** LATEX VERSION: Compute pi_1 of the solid torus S^1 x B^2 and of S^1 x S^2. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex60_1a_pi1_solid_torus : forall x0:set, x0 :e S1 ->
   forall b0:set, b0 :e B2 ->
   exists phi:set,
@@ -61486,8 +61413,7 @@ Admitted.
 
 (** from S60 Exercise 1(b) (line 1776 in algtop.tex): pi1 of S^1 x S^2 **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex60_1b_pi1_S1_cross_S2 : forall x0:set, x0 :e S1 ->
   forall s0:set, s0 :e Sn 2 ->
   exists phi:set,
@@ -61503,8 +61429,7 @@ Admitted.
 (** from S60 Exercise 2 (line 1779 in algtop.tex) **)
 (** LATEX VERSION: B^2 with antipodal identification on S^1 is homeomorphic to P^2. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex60_2_quotient_B2_is_P2 :
   exists X TX q:set,
     quotient_map B2 B2_topology X q /\
@@ -61522,8 +61447,7 @@ Admitted.
 (** from S60 Exercise 4 (line 1781 in algtop.tex) **)
 (** LATEX VERSION: P^1 and the covering map S^1 -> P^1 are familiar: P^1 is S^1. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex60_4_P1_is_S1 :
   exists f:set, homeomorphism
     (projective_n_space 1) (projective_n_space_topology 1)
@@ -61535,8 +61459,7 @@ Admitted.
 (** LATEX VERSION: Let p: E -> X be the map from Lemma 60.5 proof, E' the **)
 (** union of x-axis and y-axis in E. Show p|E' is not a covering map. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex60_3_restriction_not_covering : forall E Te X Tx p:set,
   covering_map E Te X Tx p ->
   forall E':set, E' c= E ->
@@ -61557,8 +61480,7 @@ Admitted.
 (** p wraps A1 around A twice and B1 around B twice. **)
 (** Use this covering space to show pi1(figure eight) is not abelian. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex60_5_covering_figure_eight_not_abelian : forall X Tx x0 E Te e0 p:set,
   (** X is a figure eight **)
   (exists A B:set,
@@ -61608,8 +61530,7 @@ Definition bounded_subset_R2 : set -> prop := fun A =>
 (** If U is a component of S^2-C not containing b, then h(U) is bounded. **)
 (** If U contains b, then h(U-b) is the unbounded component of R^2-h(C). **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 250 **)
-(** Collected Charlie 275 **)
-(** Proven Charlie **)
+(** Bounty 275 **)
 Theorem lemma61_1_components_stereographic : forall C:set,
   C c= Sn 2 ->
   compact_space C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
@@ -61632,8 +61553,7 @@ Admitted.
 (** LATEX VERSION: Let a, b be points of S^2. Let A be compact, f: A -> S^2-a-b continuous. **)
 (** If a and b lie in the same component of S^2-f(A), then f is nulhomotopic. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Collected Charlie 220 **)
-(** Proven Charlie **)
+(** Bounty 220 **)
 Theorem lemma61_2_nulhomotopy : forall a b:set,
   a :e Sn 2 -> b :e Sn 2 -> a <> b ->
   forall A TA:set, compact_space A TA ->
@@ -61653,8 +61573,7 @@ Admitted.
 (** from S61 Theorem 61.3 (line 1867 in algtop.tex) **)
 (** LATEX VERSION: (Jordan separation theorem) A simple closed curve in S^2 separates S^2. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 350 **)
-(** Collected Charlie 385 **)
-(** Proven Charlie **)
+(** Bounty 385 **)
 Theorem thm61_3_jordan_separation : forall C:set,
   C c= Sn 2 ->
   is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
@@ -61667,8 +61586,7 @@ Admitted.
 (** of S^2 whose intersection consists of exactly two points a and b. **)
 (** Then C = A1 union A2 separates S^2. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem thm61_4_general_separation : forall A1 A2 a b:set,
   A1 c= Sn 2 -> A2 c= Sn 2 ->
   Sn 2 :\: A1 :e Sn_topology 2 ->
@@ -61684,8 +61602,7 @@ Admitted.
 (** from S61 Exercise 2 (line 1916 in algtop.tex) **)
 (** LATEX VERSION: If C is homeomorphic to the closed topologists sine curve, C separates S^2. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex61_2_closed_sin_curve_separates : forall C:set,
   C c= Sn 2 ->
   compact_space C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
@@ -61702,8 +61619,7 @@ Admitted.
 (** from S61 Exercise 1 (line 1915 in algtop.tex) **)
 (** LATEX VERSION: A simple closed curve in the torus may or may not separate the torus. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex61_1a_torus_separating_curve : exists C:set,
   C c= torus /\
   is_simple_closed_curve C (subspace_topology torus torus_topology C) /\
@@ -61714,8 +61630,7 @@ Admitted.
 (** from S61 Exercise 1 (line 1915 in algtop.tex) **)
 (** LATEX VERSION: A simple closed curve in the torus may not separate the torus. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex61_1b_torus_non_separating_curve : exists C:set,
   C c= torus /\
   is_simple_closed_curve C (subspace_topology torus torus_topology C) /\
@@ -61733,8 +61648,7 @@ Admitted.
 (** f: A -> Y continuous with Y open in R^n. If f is nulhomotopic, **)
 (** then f extends to g: X -> Y that is also nulhomotopic. **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 250 **)
-(** Collected Charlie 275 **)
-(** Proven Charlie **)
+(** Bounty 275 **)
 Theorem lemma62_1_homotopy_extension : forall X Tx A Y n:set,
   normal_space (setprod X unit_interval)
     (product_topology X Tx unit_interval unit_interval_topology) ->
@@ -61760,8 +61674,7 @@ Admitted.
 (** continuous injective. If f is nulhomotopic, then a and b lie in the same **)
 (** component of S^2-f(A). **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 300 **)
-(** Collected Charlie 330 **)
-(** Proven Charlie **)
+(** Bounty 330 **)
 Theorem lemma62_2_borsuk : forall a b:set,
   a :e Sn 2 -> b :e Sn 2 -> a <> b ->
   forall A TA:set, compact_space A TA ->
@@ -61783,8 +61696,7 @@ Admitted.
 (** LATEX VERSION: (Invariance of domain) If U is open in R^2 and f: U -> R^2 **)
 (** is continuous and injective, then f(U) is open in R^2 and f^-1 is continuous. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 350 **)
-(** Collected Charlie 385 **)
-(** Proven Charlie **)
+(** Bounty 385 **)
 Theorem thm62_3_invariance_of_domain : forall U:set,
   U :e R2_topology ->
   forall f:set,
@@ -61802,8 +61714,7 @@ Admitted.
 (** from S62 Exercise 2 (line 2001 in algtop.tex) **)
 (** LATEX VERSION: A compact contractible subspace of S^2 does not separate S^2. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex62_2_contractible_no_separation : forall A:set,
   A c= Sn 2 ->
   compact_space A (subspace_topology (Sn 2) (Sn_topology 2) A) ->
@@ -61815,8 +61726,7 @@ Admitted.
 (** from S62 Exercise 1 (line 2000 in algtop.tex) **)
 (** LATEX VERSION: The conclusion of the Borsuk lemma need not hold if f is not injective. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex62_1_borsuk_fails_without_injectivity :
   exists A TA a b:set, exists f:set,
     a :e Sn 2 /\ b :e Sn 2 /\ a <> b /\
@@ -61838,8 +61748,7 @@ Admitted.
 (** Y open in R^n. If f is homotopic to a map extendable to h: X -> Y, **)
 (** then f itself extends to g: X -> Y with g homotopic to h. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 120 **)
-(** Collected Charlie 132 **)
-(** Proven Charlie **)
+(** Bounty 132 **)
 Theorem ex62_3_homotopy_extension_general : forall X Tx A Y n:set,
   normal_space (setprod X unit_interval)
     (product_topology X Tx unit_interval unit_interval_topology) ->
@@ -61867,8 +61776,7 @@ Admitted.
 (** LATEX VERSION: Let C be a simple closed curve in R^2 - 0. The inclusion-induced **)
 (** homomorphism is trivial if 0 lies in unbounded component of R^2-C. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex62_4a_winding_trivial : forall C:set,
   C c= setprod R R -> ~((0, 0) :e C) ->
   is_simple_closed_curve C (subspace_topology (setprod R R) R2_topology C) ->
@@ -61891,8 +61799,7 @@ Admitted.
 (** LATEX VERSION: If 0 lies in bounded component of R^2-C, the inclusion-induced **)
 (** homomorphism is nontrivial. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex62_4b_winding_nontrivial : forall C:set,
   C c= setprod R R -> ~((0, 0) :e C) ->
   is_simple_closed_curve C (subspace_topology (setprod R R) R2_topology C) ->
@@ -61915,8 +61822,7 @@ Admitted.
 (** LATEX VERSION: Let U be simply connected open in R^2. If C is a simple closed curve **)
 (** in U, then each bounded component of R^2 - C lies in U. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex62_5_simply_connected_bounded_components : forall U:set,
   U :e R2_topology ->
   simply_connected U (subspace_topology (setprod R R) R2_topology U) ->
@@ -61935,8 +61841,7 @@ Admitted.
 (** LATEX VERSION: Borsuk lemma for S^n: If no retraction B^n -> S^{n-1}, **)
 (** then f: A -> S^n-a-b injective nulhomotopic implies a, b same component. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 120 **)
-(** Collected Charlie 132 **)
-(** Proven Charlie **)
+(** Bounty 132 **)
 Theorem ex62_6a_borsuk_lemma_Sn : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed (ordsucc n)) (Bn_closed_topology (ordsucc n)) (Sn n)) ->
   forall a b:set,
@@ -61959,8 +61864,7 @@ Admitted.
 (** from S62 Exercise 6(b) (line 2009 in algtop.tex) **)
 (** LATEX VERSION: No compact contractible subspace of S^n separates S^n. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex62_6b_contractible_no_separation_Sn : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed (ordsucc n)) (Bn_closed_topology (ordsucc n)) (Sn n)) ->
   forall A:set,
@@ -61975,8 +61879,7 @@ Admitted.
 (** LATEX VERSION: Given no retraction B^n -> S^{n-1} and S^{n-1} separates S^n, **)
 (** invariance of domain holds in dimension n. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Collected Charlie 220 **)
-(** Proven Charlie **)
+(** Bounty 220 **)
 Theorem ex62_6c_invariance_of_domain_n : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed (ordsucc n)) (Bn_closed_topology (ordsucc n)) (Sn n)) ->
   (forall C:set, C c= Sn n ->
@@ -62003,8 +61906,7 @@ Admitted.
 (** If alpha in U from a in A to b in B, beta in V from b to a, **)
 (** then [alpha . beta] generates an infinite cyclic subgroup of pi_1(X, a). **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 400 **)
-(** Collected Charlie 440 **)
-(** Proven Charlie **)
+(** Bounty 440 **)
 Theorem thm63_1a_infinite_cyclic_subgroup : forall X Tx U V A B:set,
   topology_on X Tx -> U :e Tx -> V :e Tx -> X = U :\/: V ->
   A :e subspace_topology X Tx (U :/\: V) ->
@@ -62027,8 +61929,7 @@ Admitted.
 (** from S63 Theorem 63.1(b) (line 2018 in algtop.tex) **)
 (** LATEX VERSION: If pi_1(X,a) is itself infinite cyclic, it is generated by [f]. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 250 **)
-(** Collected Charlie 275 **)
-(** Proven Charlie **)
+(** Bounty 275 **)
 Theorem thm63_1b_infinite_cyclic_generator : forall X Tx U V A B:set,
   topology_on X Tx -> U :e Tx -> V :e Tx -> X = U :\/: V ->
   A :e subspace_topology X Tx (U :/\: V) ->
@@ -62058,8 +61959,7 @@ Admitted.
 (** LATEX VERSION: With additional paths gamma in U from a to a' in A, delta in V from a' to a, **)
 (** the subgroups generated by [alpha . beta] and [gamma . delta] intersect in the identity alone. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 350 **)
-(** Collected Charlie 385 **)
-(** Proven Charlie **)
+(** Bounty 385 **)
 Theorem thm63_1c_subgroups_trivial_intersection : forall X Tx U V A B:set,
   topology_on X Tx -> U :e Tx -> V :e Tx -> X = U :\/: V ->
   A :e subspace_topology X Tx (U :/\: V) ->
@@ -62103,8 +62003,7 @@ Admitted.
 (** from S63 Theorem 63.2 (line 2135 in algtop.tex) **)
 (** LATEX VERSION: (Nonseparation theorem) An arc in S^2 does not separate S^2. **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 250 **)
-(** Collected Charlie 275 **)
-(** Proven Charlie **)
+(** Bounty 275 **)
 Theorem thm63_2_arc_nonseparation : forall D:set,
   D c= Sn 2 ->
   is_arc D (subspace_topology (Sn 2) (Sn_topology 2) D) ->
@@ -62117,8 +62016,7 @@ Admitted.
 (** such that S^2 - D1 cap D2 is simply connected. **)
 (** If neither D1 nor D2 separates S^2, then D1 union D2 does not separate S^2. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem thm63_3_general_nonseparation : forall D1 D2:set,
   D1 c= Sn 2 -> D2 c= Sn 2 ->
   Sn 2 :\: D1 :e Sn_topology 2 ->
@@ -62135,8 +62033,7 @@ Admitted.
 (** LATEX VERSION: (Jordan curve theorem) A simple closed curve C in S^2 separates **)
 (** S^2 into precisely two components W1 and W2, and C is the common boundary. **)
 (** EFFORT: 30 lines textbook, difficulty 8/10, USD 500 **)
-(** Collected Charlie 550 **)
-(** Proven Charlie **)
+(** Bounty 550 **)
 Theorem thm63_4_jordan_curve_theorem : forall C:set,
   C c= Sn 2 ->
   is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
@@ -62157,8 +62054,7 @@ Admitted.
 (** consists of two points. If neither separates S^2, then C1 union C2 **)
 (** separates S^2 into precisely two components. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem thm63_5_general_jordan : forall C1 C2:set,
   C1 c= Sn 2 -> C2 c= Sn 2 ->
   Sn 2 :\: C1 :e Sn_topology 2 ->
@@ -62182,8 +62078,7 @@ Admitted.
 (** LATEX VERSION: Let C1 and C2 be disjoint simple closed curves in S^2. **)
 (** Then S^2 - C1 - C2 has precisely three components. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 120 **)
-(** Collected Charlie 132 **)
-(** Proven Charlie **)
+(** Bounty 132 **)
 Theorem ex63_1a_disjoint_curves_three_components : forall C1 C2:set,
   C1 c= Sn 2 -> C2 c= Sn 2 -> C1 :/\: C2 = Empty ->
   is_simple_closed_curve C1 (subspace_topology (Sn 2) (Sn_topology 2) C1) ->
@@ -62202,8 +62097,7 @@ Admitted.
 (** from S63 Exercise 1(b) (line 2241 in algtop.tex) **)
 (** LATEX VERSION: The three components have boundaries C1, C2, and C1 union C2. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex63_1b_disjoint_curves_boundaries : forall C1 C2:set,
   C1 c= Sn 2 -> C2 c= Sn 2 -> C1 :/\: C2 = Empty ->
   is_simple_closed_curve C1 (subspace_topology (Sn 2) (Sn_topology 2) C1) ->
@@ -62224,8 +62118,7 @@ Admitted.
 (** LATEX VERSION: If D is closed connected separating S^2 into n components, **)
 (** and A is an arc with only one endpoint in D, then D union A separates S^2 into n components. **)
 (** EFFORT: 10 lines textbook, difficulty 6/10, USD 150 **)
-(** Collected Charlie 165 **)
-(** Proven Charlie **)
+(** Bounty 165 **)
 Theorem ex63_2a_arc_one_endpoint : forall D:set,
   D c= Sn 2 -> Sn 2 :\: D :e Sn_topology 2 ->
   connected_space D (subspace_topology (Sn 2) (Sn_topology 2) D) ->
@@ -62252,8 +62145,7 @@ Admitted.
 (** LATEX VERSION: If A is an arc with both endpoints in D (otherwise disjoint), **)
 (** then D union A separates S^2 into n+1 components. **)
 (** EFFORT: 10 lines textbook, difficulty 6/10, USD 150 **)
-(** Collected Charlie 165 **)
-(** Proven Charlie **)
+(** Bounty 165 **)
 Theorem ex63_2b_arc_both_endpoints : forall D:set,
   D c= Sn 2 -> Sn 2 :\: D :e Sn_topology 2 ->
   connected_space D (subspace_topology (Sn 2) (Sn_topology 2) D) ->
@@ -62280,8 +62172,7 @@ Admitted.
 (** LATEX VERSION: If C is a simple closed curve intersecting D in a single point, **)
 (** then D union C separates S^2 into n+1 components. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex63_2c_curve_one_point : forall D:set,
   D c= Sn 2 -> Sn 2 :\: D :e Sn_topology 2 ->
   connected_space D (subspace_topology (Sn 2) (Sn_topology 2) D) ->
@@ -62308,8 +62199,7 @@ Admitted.
 (** from S63 Exercise 3(a) (line 2246 in algtop.tex) **)
 (** LATEX VERSION: A subspace of S^2 homeomorphic to the topologists sine curve does not separate S^2. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Collected Charlie 220 **)
-(** Proven Charlie **)
+(** Bounty 220 **)
 Theorem ex63_3a_sine_curve_no_separation : forall D:set,
   D c= Sn 2 ->
   connected_space D (subspace_topology (Sn 2) (Sn_topology 2) D) ->
@@ -62376,8 +62266,7 @@ Definition utilities_graph : set -> set -> set -> set -> prop := fun H W G Tg =>
 (** LATEX VERSION: Let X be a theta space in S^2. Then X separates S^2 into **)
 (** three components with boundaries A union B, B union C, and A union C. **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 200 **)
-(** Collected Charlie 220 **)
-(** Proven Charlie **)
+(** Bounty 220 **)
 Theorem lemma64_1_theta_separates : forall X Tx A B C a b:set,
   theta_space X Tx A B C a b ->
   X c= Sn 2 -> Tx = subspace_topology (Sn 2) (Sn_topology 2) X ->
@@ -62397,8 +62286,7 @@ Admitted.
 (** from S64 Theorem 64.2 (line 2297 in algtop.tex) **)
 (** LATEX VERSION: The utilities graph cannot be imbedded in the plane. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 120 **)
-(** Collected Charlie 132 **)
-(** Proven Charlie **)
+(** Bounty 132 **)
 Theorem thm64_2_utilities_not_planar : forall G Tg H W:set,
   utilities_graph H W G Tg ->
   ~(exists f:set, embedding_of G Tg (setprod R R) R2_topology f).
@@ -62410,8 +62298,7 @@ Admitted.
 (** vertices a1,a2,a3,a4. Then X separates S^2 into four components whose **)
 (** boundaries are X1,X2,X3,X4, where Xi = union of edges not having ai as vertex. **)
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 280 **)
-(** Collected Charlie 308 **)
-(** Proven Charlie **)
+(** Bounty 308 **)
 Theorem lemma64_3_K4_separates : forall V G Tg:set,
   complete_graph_on V G Tg ->
   equip V 4 ->
@@ -62443,8 +62330,7 @@ Admitted.
 (** LATEX VERSION: The complete graph on five vertices cannot be imbedded **)
 (** in the plane. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
-(** Collected Charlie 132 **)
-(** Proven Charlie **)
+(** Bounty 132 **)
 Theorem thm64_4_K5_not_planar : forall V G Tg:set,
   complete_graph_on V G Tg -> equip V 5 ->
   ~(exists f:set, embedding_of G Tg (setprod R R) R2_topology f).
@@ -62455,8 +62341,7 @@ Admitted.
 (** LATEX VERSION: X is the union of finitely many arcs, each pair meeting **)
 (** in at most a common endpoint. X is Hausdorff iff each arc is closed. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex64_1a_hausdorff_iff_arcs_closed : forall X Tx Arcs:set,
   topology_on X Tx ->
   finite Arcs ->
@@ -62498,8 +62383,7 @@ Admitted.
 (** in different components of S^2 minus C, and the inclusion C -> S^2-p-q **)
 (** induces an isomorphism of fundamental groups. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 350 **)
-(** Collected Charlie 385 **)
-(** Proven Charlie **)
+(** Bounty 385 **)
 Theorem lemma65_1_complete_graph_separation : forall V G Tg C Tc x0:set,
   complete_graph_on V G Tg -> equip V 4 ->
   G c= Sn 2 -> Tg = subspace_topology (Sn 2) (Sn_topology 2) G ->
@@ -62532,8 +62416,7 @@ Admitted.
 (** components of S^2 minus C. Then inclusion j: C -> S^2-p-q induces **)
 (** an isomorphism of fundamental groups. **)
 (** EFFORT: 40 lines textbook, difficulty 8/10, USD 500 **)
-(** Collected Charlie 550 **)
-(** Proven Charlie **)
+(** Bounty 550 **)
 Theorem thm65_2_inclusion_isomorphism : forall C Tc p q x0:set,
   C c= Sn 2 -> is_simple_closed_curve C Tc ->
   Tc = subspace_topology (Sn 2) (Sn_topology 2) C ->
@@ -62617,8 +62500,7 @@ Admitted.
 (** LATEX VERSION: If f is freely homotopic to f' through loops in R^2-a, **)
 (** then n(f,a) = n(f',a). **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem lemma66_1b_free_homotopy_winding : forall f f' a F:set,
   loop_at (setprod R R) R2_topology (apply_fun f 0) f ->
   loop_at (setprod R R) R2_topology (apply_fun f' 0) f' ->
@@ -62637,8 +62519,7 @@ Admitted.
 (** LATEX VERSION: If a, b lie in the same component of R^2 minus f(I), **)
 (** then n(f,a) = n(f,b). **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem lemma66_1c_same_component_winding : forall f a b:set,
   loop_at (setprod R R) R2_topology (apply_fun f 0) f ->
   a :e setprod R R -> b :e setprod R R ->
@@ -62672,8 +62553,7 @@ Definition simple_loop : set -> set -> set -> prop :=
 (** LATEX VERSION: Let f be a simple loop in R^2. If a is in the unbounded **)
 (** component of R^2-f(I), n(f,a)=0; if a is in bounded component, n(f,a)=+-1. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 280 **)
-(** Collected Charlie 308 **)
-(** Proven Charlie **)
+(** Bounty 308 **)
 Theorem thm66_2_simple_loop_winding : forall f a:set,
   simple_loop (setprod R R) R2_topology f ->
   a :e setprod R R ->
@@ -62843,8 +62723,7 @@ Definition holomorphic_on : set -> set -> prop := fun F Omega =>
 (** LATEX VERSION: For piecewise-differentiable loop f and a not in image: **)
 (** n(f,a) = (1/(2 pi i)) integral_f dz/(z-a). **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 120 **)
-(** Collected Charlie 132 **)
-(** Proven Charlie **)
+(** Bounty 132 **)
 Theorem lemma66_3_integral_winding : forall f a:set,
   piecewise_differentiable_loop f ->
   a :e setprod R R ->
@@ -62864,8 +62743,7 @@ Admitted.
 (** For piecewise-differentiable loop f in Omega, F analytic on Omega, **)
 (** n(f,b)=0 for b not in Omega: n(f,a) F(a) = (1/(2 pi i)) integral_f F(z)/(z-a) dz **)
 (** EFFORT: 12 lines textbook, difficulty 6/10, USD 150 **)
-(** Collected Charlie 165 **)
-(** Proven Charlie **)
+(** Bounty 165 **)
 Theorem thm66_4_cauchy_integral_formula : forall f a Omega F:set,
   piecewise_differentiable_loop f ->
   holomorphic_on F Omega ->
@@ -62889,8 +62767,7 @@ Admitted.
 (** from S66 Exercise 1 (line 2572 in algtop.tex) **)
 (** LATEX VERSION: n(f,a) equals the degree of the induced map h: S^1 -> S^1. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex66_1_winding_equals_degree : forall f a h:set,
   loop_at (setprod R R) R2_topology (apply_fun f 0) f ->
   a :e setprod R R -> ~(a :e image_of f unit_interval) ->
@@ -62960,8 +62837,7 @@ Definition smooth_parameterization : set -> set -> prop := fun f C =>
 (** submanifold of R^2; let f: I -> C be a simple loop smoothly parameterizing C. **)
 (** If 0 is a point of the bounded component of R^2 - C, then n(f, 0) = +-1. **)
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
-(** Collected Charlie 385 **)
-(** Proven Charlie **)
+(** Bounty 385 **)
 Theorem ex66_2_smooth_curve_winding : forall C f:set,
   C c= setprod R R ->
   is_simple_closed_curve C (subspace_topology (setprod R R) R2_topology C) ->
@@ -63084,8 +62960,7 @@ Definition quotient_projection : set -> set -> set -> set :=
 (** Conversely, if the groups G_alpha generate G and the extension condition holds, **)
 (** then G is the direct sum of the G_alpha. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Collected Charlie 165 **)
-(** Proven Charlie **)
+(** Bounty 165 **)
 Theorem lemma67_1_extension_condition_direct_sum :
   forall G multG eG invG J Gfam:set,
   direct_sum_of_subgroups G multG eG invG J Gfam ->
@@ -63111,8 +62986,7 @@ Admitted.
 (** LATEX VERSION: If the groups G_alpha generate G and the extension condition holds, **)
 (** then G is the direct sum of the G_alpha. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem lemma67_1_converse :
   forall G multG eG invG J Gfam:set,
   subgroups_generate_abelian G multG eG invG J Gfam ->
@@ -63135,8 +63009,7 @@ Admitted.
 (** G2 = direct sum H_beta (beta in K) with J,K disjoint, then G = direct sum H_gamma **)
 (** for gamma in J union K. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem cor67_2_associativity_direct_sum :
   forall G multG eG invG G1 G2 J K Hfam:set,
   abelian_group G multG eG invG ->
@@ -63156,8 +63029,7 @@ Admitted.
 (** from S67 Corollary 67.3 (line 2639 in algtop.tex): quotient by direct summand **)
 (** LATEX VERSION: If G = G1 + G2, then G/G2 is isomorphic to G1. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem cor67_3_quotient_by_summand :
   forall G multG eG invG G1 G2:set,
   abelian_group G multG eG invG ->
@@ -63194,8 +63066,7 @@ Definition external_direct_sum : set -> set -> set -> set -> set -> set -> set -
 (** group G and monomorphisms i_alpha: G_alpha -> G such that G is the direct sum **)
 (** of the images i_alpha(G_alpha). **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Collected Charlie 165 **)
-(** Proven Charlie **)
+(** Bounty 165 **)
 Theorem thm67_4_existence_external_direct_sum :
   forall J Gfam multfam efam invfam:set,
   (forall alpha:set, alpha :e J ->
@@ -63221,8 +63092,7 @@ Admitted.
 (** homomorphism h: G -> H such that h o i_alpha = h_alpha. Conversely, if the extension condition **)
 (** holds, then each i_alpha is a monomorphism and G is the direct sum. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem lemma67_5_extension_external :
   forall G multG eG invG J Gfam multfam ifam:set,
   abelian_group G multG eG invG ->
@@ -63256,8 +63126,7 @@ Admitted.
 (** LATEX VERSION: If the groups i_alpha(G_alpha) generate G and the extension condition holds, **)
 (** then each i_alpha is a monomorphism and G is the direct sum of the groups i_alpha(G_alpha). **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem lemma67_5_extension_converse :
   forall G multG eG invG J Gfam multfam efam invfam ifam:set,
   abelian_group G multG eG invG ->
@@ -63291,8 +63160,7 @@ Admitted.
 (** i_alpha and i'_alpha respectively, then there is a unique isomorphism **)
 (** phi: G -> G' such that phi o i_alpha = i'_alpha. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem thm67_6_uniqueness_direct_sum :
   forall J Gfam multfam G multG eG invG ifam G' multG' eG' invG' ifam':set,
   abelian_group G multG eG invG ->
@@ -63354,8 +63222,7 @@ Definition free_abelian_group_with_basis : set -> set -> set -> set -> set -> se
 (** group H and any family {y_alpha} of elements of H, there is a unique homomorphism **)
 (** h: G -> H with h(a_alpha) = y_alpha. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem lemma67_7_extension_free_abelian :
   forall G mult e inv J basis:set,
   abelian_group G mult e inv ->
@@ -63381,8 +63248,7 @@ Admitted.
 (** LATEX VERSION: If G is a free abelian group with basis {a_1,...,a_n}, **)
 (** then n is uniquely determined by G. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem thm67_8_rank_well_defined :
   forall G mult e inv n1 n2 basis1 basis2:set,
   free_abelian_group_with_basis G mult e inv n1 basis1 ->
@@ -63406,8 +63272,7 @@ Definition rank_free_abelian : set -> set -> set -> set -> set :=
 (** LATEX VERSION: If A is a free abelian group of rank n, then any subgroup B **)
 (** of A is a free abelian group of rank at most n. **)
 (** EFFORT: 12 lines textbook, difficulty 6/10, USD 150 **)
-(** Collected Charlie 165 **)
-(** Proven Charlie **)
+(** Bounty 165 **)
 Theorem ex67_6_free_abelian_subgroup_rank :
   forall A multA eA invA:set,
   group_structure A multA eA invA ->
@@ -63424,8 +63289,7 @@ Admitted.
 (** from S67 Exercise 1 (line 2697 in algtop.tex) **)
 (** LATEX VERSION: Sum is direct iff x_{a1} + ... + x_{an} = 0 implies each x_{ai} = 0. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex67_1_direct_sum_characterization :
   forall G mult e inv J Gfam:set,
   subgroups_generate_abelian G mult e inv J Gfam ->
@@ -63443,8 +63307,7 @@ Admitted.
 (** from S67 Exercise 3 (line 2706 in algtop.tex) **)
 (** LATEX VERSION: If G is free abelian with basis {x, y}, then {2x+3y, x-y} is also a basis. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex67_3_change_of_basis :
   forall G mult e inv x y:set,
   free_abelian_group_with_basis G mult e inv 2 (graph 2 (fun i =>
@@ -63784,8 +63647,7 @@ Admitted.
 (** from S67 Exercise 4(c) (line 2710 in algtop.tex) **)
 (** LATEX VERSION: The rationals have no elements of finite order but are not free abelian. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Collected Charlie 66 **)
-(** Proven Charlie **)
+(** Bounty 66 **)
 Theorem ex67_4c_rationals_not_free_abelian :
   (forall q:set, q :e rational -> q <> 0 ->
     ~(exists m:set, m :e omega /\ m <> 0 /\
@@ -63895,8 +63757,7 @@ Definition least_normal_subgroup : set -> set -> set -> set -> set -> set :=
 (** homomorphisms h_alpha: G_alpha -> H, there exists a unique h: G -> H whose restriction **)
 (** to G_alpha equals h_alpha. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Collected Charlie 165 **)
-(** Proven Charlie **)
+(** Bounty 165 **)
 Theorem lemma68_1_extension_condition_free_product :
   forall G multG eG invG J Gfam efam:set,
   free_product_of_subgroups G multG eG invG J Gfam efam ->
@@ -63937,8 +63798,7 @@ Definition external_free_product : set -> set -> set -> set -> set -> set -> set
 (** LATEX VERSION: Given a family {G_alpha} of groups, there exists a group G and **)
 (** monomorphisms i_alpha: G_alpha -> G such that G is the free product of i_alpha(G_alpha). **)
 (** EFFORT: 50 lines textbook, difficulty 8/10, USD 800 **)
-(** Collected Charlie 880 **)
-(** Proven Charlie **)
+(** Bounty 880 **)
 Theorem thm68_2_existence_free_product :
   forall J Gfam multfam efam invfam:set,
   (forall alpha:set, alpha :e J ->
@@ -63963,8 +63823,7 @@ Admitted.
 (** i_alpha(G_alpha), then given any group H and homomorphisms h_alpha: G_alpha -> H, **)
 (** there exists a unique h: G -> H with h o i_alpha = h_alpha. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem lemma68_3_extension_external_free_product :
   forall G multG eG invG J Gfam multfam ifam:set,
   external_free_product G multG eG invG J Gfam multfam ifam ->
@@ -63993,8 +63852,7 @@ Admitted.
 (** i_alpha and i'_alpha, then there is a unique isomorphism phi: G -> G' **)
 (** with phi o i_alpha = i'_alpha. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem thm68_4_uniqueness_free_product :
   forall J Gfam multfam G multG eG invG ifam G' multG' eG' invG' ifam':set,
   external_free_product G multG eG invG J Gfam multfam ifam ->
@@ -64018,8 +63876,7 @@ Admitted.
 (** LATEX VERSION: If the extension condition of Lemma 68.3 holds, then each i_alpha **)
 (** is a monomorphism and G is the free product of i_alpha(G_alpha). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Collected Charlie 220 **)
-(** Proven Charlie **)
+(** Bounty 220 **)
 Theorem lemma68_5_extension_characterizes_free_product :
   forall G multG eG invG J Gfam multfam efam invfam ifam:set,
   group_structure G multG eG invG ->
@@ -64048,8 +63905,7 @@ Admitted.
 (** G2 = free product of H_beta for beta in K, with J,K disjoint, **)
 (** then G = free product of H_gamma for gamma in J union K. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem cor68_6_associativity_free_product :
   forall G multG eG invG G1 G2 J K Hfam efamH:set,
   group_structure G multG eG invG ->
@@ -64073,8 +63929,7 @@ Admitted.
 (** LATEX VERSION: Let G = G1 free-prod G2. Let N_i be normal in G_i. If N is the least **)
 (** normal subgroup of G containing N1 and N2, then G/N iso (G1/N1) free-prod (G2/N2). **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 250 **)
-(** Collected Charlie 275 **)
-(** Proven Charlie **)
+(** Bounty 275 **)
 Theorem thm68_7_quotient_free_product :
   forall G multG eG invG G1 G2 N1 N2:set,
   free_product_of_subgroups G multG eG invG (UPair 0 1)
@@ -64121,8 +63976,7 @@ Admitted.
 (** LATEX VERSION: If N is the least normal subgroup of G containing S, then N is **)
 (** generated by all conjugates of elements of S. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem lemma68_9_least_normal_generated_by_conjugates :
   forall G mult e inv S:set,
   group_structure G mult e inv ->
@@ -64155,8 +64009,7 @@ Admitted.
 (** LATEX VERSION: The only elements of G that have finite order are elements **)
 (** of G1 and G2 that have finite order, and their conjugates. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex68_2c_finite_order_elements :
   forall G mult e inv G1 G2:set,
   free_product_of_subgroups G mult e inv 2
@@ -64173,8 +64026,7 @@ Admitted.
 (** from S68 Exercise 3 (line 3029 in algtop.tex) **)
 (** LATEX VERSION: Let G = G1 free-product G2. Given c in G, cG1c^{-1} cap G2 = {1}. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Collected Charlie 66 **)
-(** Proven Charlie **)
+(** Bounty 66 **)
 Theorem ex68_3_conjugate_intersection_trivial :
   forall G mult e inv G1 G2:set,
   free_product_of_subgroups G mult e inv 2
@@ -64215,8 +64067,7 @@ Definition free_group_with_generators : set -> set -> set -> set -> set -> set -
 (** and any family {y_alpha} of elements of H, there is a unique homomorphism **)
 (** h: G -> H with h(a_alpha) = y_alpha. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem lemma69_1_extension_free_group :
   forall G mult e inv J gens:set,
   group_structure G mult e inv ->
@@ -64281,8 +64132,7 @@ Definition commutator_subgroup : set -> set -> set -> set -> set :=
 (** LATEX VERSION: [G,G] is normal in G, G/[G,G] is abelian, and any homomorphism **)
 (** from G to an abelian group H has kernel containing [G,G]. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Collected Charlie 165 **)
-(** Proven Charlie **)
+(** Bounty 165 **)
 Theorem lemma69_3_commutator_subgroup :
   forall G mult e inv:set,
   group_structure G mult e inv ->
@@ -64303,8 +64153,7 @@ Admitted.
 (** LATEX VERSION: If G is free with generators {a_alpha}, then G/[G,G] is a free **)
 (** abelian group with basis {[a_alpha]}. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Collected Charlie 66 **)
-(** Proven Charlie **)
+(** Bounty 66 **)
 Theorem thm69_4_abelianization_free_group :
   forall G mult e inv J gens:set,
   free_group_with_generators G mult e inv J gens ->
@@ -64362,8 +64211,7 @@ Definition finitely_presented : set -> set -> set -> set -> prop :=
 (** LATEX VERSION: Let G = G_1 free-product G_2 where G_1 and G_2 are cyclic of orders m and n **)
 (** respectively. Then m and n are uniquely determined by G (up to reordering). **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex69_3_free_product_uniqueness_cyclic :
   forall G multG eG invG:set,
   group_structure G multG eG invG ->
@@ -64396,8 +64244,7 @@ Admitted.
 (** LATEX VERSION: If G = G1 free-product G2, then G/[G,G] is isomorphic to **)
 (** (G1/[G1,G1]) direct-sum (G2/[G2,G2]). **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex69_1_abelianization_free_product :
   forall G multG eG invG G1 G2:set,
   free_product_of_subgroups G multG eG invG 2
@@ -64426,8 +64273,7 @@ Admitted.
 (** That is, if G = free product of G_alpha, then G/[G,G] is isomorphic to **)
 (** the direct sum of G_alpha/[G_alpha,G_alpha]. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Collected Charlie 66 **)
-(** Proven Charlie **)
+(** Bounty 66 **)
 Theorem ex69_2_abelianization_general_free_product :
   forall G multG eG invG J Gfam multfam efam invfam ifam:set,
   (forall alpha:set, alpha :e J ->
@@ -64454,8 +64300,7 @@ Admitted.
 (** LATEX VERSION: If G = G1 direct-sum G2 where G1, G2 cyclic of orders m, n **)
 (** with gcd(m,n)=1, then G is cyclic of order mn, so m and n are not unique. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex69_4_direct_sum_not_unique :
   exists G multG eG invG m n:set,
     abelian_group G multG eG invG /\
@@ -64556,8 +64401,7 @@ Admitted.
 (** is surjective, and its kernel is the least normal subgroup N of the free product **)
 (** containing all elements i1(g)^{-1} i2(g) for g in pi1(U cap V, x0). **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 500 **)
-(** Collected Charlie 550 **)
-(** Proven Charlie **)
+(** Bounty 550 **)
 Theorem thm70_2_classical_van_kampen :
   forall X Tx U V x0:set,
   topology_on X Tx ->
@@ -64630,8 +64474,7 @@ Admitted.
 (** LATEX VERSION: If V is simply connected, then pi1(X,x0) iso pi1(U,x0)/N **)
 (** where N is the least normal subgroup containing image of i1. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem cor70_4_one_factor_simply_connected :
   forall X Tx U V x0:set,
   topology_on X Tx ->
@@ -64669,8 +64512,7 @@ Admitted.
 (** LATEX VERSION: If i-star is trivial, then j1 and j2 induce an epimorphism **)
 (** h: (pi1(U)/N1) free-product (pi1(V)/N2) -> pi1(X). **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex70_1a_trivial_inclusion_epimorphism :
   forall X Tx U V x0:set,
   U :e Tx -> V :e Tx -> X = U :\/: V ->
@@ -64736,8 +64578,7 @@ Admitted.
 (** LATEX VERSION: Under the hypotheses of Ex 1(a) (i-star trivial), **)
 (** h: (pi1(U)/N1) free-product (pi1(V)/N2) -> pi1(X) is an isomorphism. **)
 (** EFFORT: 10 lines textbook, difficulty 6/10, USD 120 **)
-(** Collected Charlie 132 **)
-(** Proven Charlie **)
+(** Bounty 132 **)
 Theorem ex70_1b_trivial_inclusion_isomorphism :
   forall X Tx U V x0:set,
   U :e Tx -> V :e Tx -> X = U :\/: V ->
@@ -64803,8 +64644,7 @@ Admitted.
 (** h: pi1(U)/M -> pi1(X), where M is the least normal subgroup **)
 (** of pi1(U) containing i1(ker i2). **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex70_2a_surjective_i2_epimorphism :
   forall X Tx U V x0:set,
   U :e Tx -> V :e Tx -> X = U :\/: V ->
@@ -64854,8 +64694,7 @@ Admitted.
 (** LATEX VERSION: Under the hypotheses of Ex 2(a) (i2 surjective), **)
 (** h: pi1(U)/M -> pi1(X) is an isomorphism. **)
 (** EFFORT: 12 lines textbook, difficulty 6/10, USD 150 **)
-(** Collected Charlie 165 **)
-(** Proven Charlie **)
+(** Bounty 165 **)
 Theorem ex70_2b_surjective_i2_isomorphism :
   forall X Tx U V x0:set,
   U :e Tx -> V :e Tx -> X = U :\/: V ->
@@ -64899,8 +64738,7 @@ Admitted.
 (** from S70 Exercise 3(a) (line 3492 in algtop.tex) **)
 (** LATEX VERSION: If G1 and G2 have finite presentations, so does G1 free-product G2. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex70_3a_free_product_finitely_presented :
   forall G1 mult1 e1 inv1 G2 mult2 e2 inv2:set,
   finitely_presented G1 mult1 e1 inv1 ->
@@ -64918,8 +64756,7 @@ Admitted.
 (** LATEX VERSION: If pi1(U cap V) is finitely generated and pi1(U), pi1(V) **)
 (** have finite presentations, then pi1(X) has a finite presentation. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex70_3b_van_kampen_finitely_presented :
   forall X Tx U V x0:set,
   U :e Tx -> V :e Tx -> X = U :\/: V ->
@@ -64986,8 +64823,7 @@ Definition wedge_of_circles_finite : set -> set -> set -> set -> set -> prop :=
 (** If f_i represents a generator of pi1(S_i,p), then f_1,...,f_n represent **)
 (** a system of free generators for pi1(X,p). **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 200 **)
-(** Collected Charlie 220 **)
-(** Proven Charlie **)
+(** Bounty 220 **)
 Theorem thm71_1_pi1_wedge_finite :
   forall X Tx n Sfam p:set,
   wedge_of_circles_finite X Tx n Sfam p ->
@@ -65035,8 +64871,7 @@ Definition wedge_of_circles : set -> set -> set -> set -> set -> prop :=
 (** LATEX VERSION: Let X be wedge of circles S_alpha. Then X is normal. **)
 (** Any compact subspace of X is contained in finitely many S_alpha. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem lemma71_2_wedge_normal :
   forall X Tx J Sfam p:set,
   wedge_of_circles X Tx J Sfam p ->
@@ -65052,8 +64887,7 @@ Admitted.
 (** LATEX VERSION: pi1(X,p) is a free group with system of free generators **)
 (** {f_alpha}, where f_alpha represents a generator of pi1(S_alpha, p). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Collected Charlie 220 **)
-(** Proven Charlie **)
+(** Bounty 220 **)
 Theorem thm71_3_pi1_wedge_general :
   forall X Tx J Sfam p:set,
   wedge_of_circles X Tx J Sfam p ->
@@ -65072,8 +64906,7 @@ Admitted.
 (** LATEX VERSION: Given an index set J, there exists a space X that is a wedge of **)
 (** circles S_alpha for alpha in J. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem lemma71_4_existence_wedge :
   forall J:set,
   exists X Tx Sfam p:set,
@@ -65085,8 +64918,7 @@ Admitted.
 (** LATEX VERSION: Let X be the union of subspaces S1,...,Sn, each homeomorphic to S^1, **)
 (** with Si cap Sj = {p} for i <> j. X is Hausdorff iff each Si is closed in X. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex71_1a_circle_union_hausdorff_iff_closed :
   forall X Tx n Sfam p:set,
   topology_on X Tx ->
@@ -65107,8 +64939,7 @@ Admitted.
 (** LATEX VERSION: X (union of circles meeting at p) is Hausdorff iff **)
 (** the topology of X is coherent with the subspaces Si. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex71_1b_circle_union_hausdorff_iff_coherent :
   forall X Tx n Sfam p:set,
   topology_on X Tx ->
@@ -65152,8 +64983,7 @@ Admitted.
 (** LATEX VERSION: If X is the wedge of closed subspaces X1,...,Xn with p a deformation **)
 (** retract of open W_i in X_i, then pi1(X,p) is the free product of pi1(X_i,p). **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex71_2_wedge_general :
   forall X Tx n Xfam p:set,
   Hausdorff_space X Tx ->
@@ -65207,8 +65037,7 @@ Admitted.
 (** LATEX VERSION: If X is an infinite wedge of circles, then X does not **)
 (** satisfy the first countability axiom. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex71_4_infinite_wedge_not_first_countable :
   forall X Tx J Sfam p:set,
   wedge_of_circles X Tx J Sfam p ->
@@ -65222,8 +65051,7 @@ Admitted.
 (** Let Y = union of Sn, p = common point. Y is not homeomorphic to a **)
 (** countably infinite wedge X of circles. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex71_5a_tangent_circles_not_wedge :
   forall Y Ty p:set,
   Y c= EuclidPlane ->
@@ -65247,8 +65075,7 @@ Admitted.
 (** with {[fn]} as a system of free generators, where fn is a loop **)
 (** representing a generator of pi1(Sn,p). **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex71_5b_tangent_circles_free_pi1 :
   forall Y Ty p:set,
   Y c= EuclidPlane ->
@@ -65276,8 +65103,7 @@ Admitted.
 (** Let p in S^1, a = h(p), k = h|S^1. Then i_star: pi1(A,a) -> pi1(X,a) is **)
 (** surjective with kernel = least normal subgroup containing image of k_star. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 500 **)
-(** Collected Charlie 550 **)
-(** Proven Charlie **)
+(** Bounty 550 **)
 Theorem thm72_1_adjoining_two_cell :
   forall X Tx A h p:set,
   Hausdorff_space X Tx ->
@@ -65321,8 +65147,7 @@ Admitted.
 (** LATEX VERSION: If G is a finitely presented group, then there is a compact **)
 (** Hausdorff space X whose fundamental group is isomorphic to G. **)
 (** EFFORT: 15 lines textbook, difficulty 7/10, USD 300 **)
-(** Collected Charlie 330 **)
-(** Proven Charlie **)
+(** Bounty 330 **)
 Theorem ex72_2_finitely_presented_realized :
   forall G multG eG invG:set,
   finitely_presented G multG eG invG ->
@@ -65340,8 +65165,7 @@ Admitted.
 (** onto X-A. If n > 2, what about i-star: pi1(A,a) -> pi1(X,a)? **)
 (** Answer: it is an isomorphism (adding an n-cell with n>2 does not change pi1). **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Collected Charlie 66 **)
-(** Proven Charlie **)
+(** Bounty 66 **)
 Theorem ex72_1_high_dimensional_cell :
   forall X Tx A h n:set,
   Hausdorff_space X Tx ->
@@ -65368,8 +65192,7 @@ Admitted.
 (** and x is in G, then G/N (where N is least normal subgroup containing x) **)
 (** also has such a space. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex72_3_quotient_by_element :
   forall G multG eG invG:set,
   group_structure G multG eG invG ->
@@ -65395,8 +65218,7 @@ Admitted.
 (** LATEX VERSION: The fundamental group of the torus has a presentation **)
 (** with two generators alpha, beta and a single relation alpha beta alpha^{-1} beta^{-1}. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem thm73_1_torus_presentation :
   forall x0:set,
   x0 :e torus ->
@@ -65418,8 +65240,7 @@ Admitted.
 (** from S73 Corollary 73.2 (line 3724 in algtop.tex): torus pi1 is Z x Z **)
 (** LATEX VERSION: The fundamental group of the torus is a free abelian group of rank 2. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem cor73_2_torus_free_abelian_rank_2 :
   forall x0:set,
   x0 :e torus ->
@@ -65468,8 +65289,7 @@ Definition dunce_cap_topology : set -> set :=
 (** from S73 Lemma 73.3 (line 3736 in algtop.tex): closed quotient map preserves normality **)
 (** LATEX VERSION: If pi: E -> X is a closed quotient map and E is normal, then X is normal. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem lemma73_3_closed_quotient_normal :
   forall E Te X Tx pi:set,
   topology_on E Te -> topology_on X Tx ->
@@ -65485,8 +65305,7 @@ Admitted.
 (** LATEX VERSION: The fundamental group of the n-fold dunce cap is a cyclic group **)
 (** of order n. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem thm73_4_dunce_cap_pi1 :
   forall n:set,
   n :e omega -> n <> 0 -> ordsucc 0 :e n ->
@@ -65551,8 +65370,7 @@ Admitted.
 (** from S73 Exercise 4 (line 3805 in algtop.tex) **)
 (** LATEX VERSION: The space constructed in Exercise 2 is metrizable. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Collected Charlie 66 **)
-(** Proven Charlie **)
+(** Bounty 66 **)
 Theorem ex73_4_two_complex_metrizable :
   forall G multG eG invG:set,
   finitely_presented G multG eG invG ->
@@ -65666,8 +65484,7 @@ Definition polygon_pasting_topology : set -> set -> set :=
 (** of polygonal regions by pasting edges according to some labelling **)
 (** scheme. Then X is a compact Hausdorff space. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Collected Charlie 165 **)
-(** Proven Charlie **)
+(** Bounty 165 **)
 Theorem thm74_1_polygon_pasting_compact_hausdorff :
   forall n w:set,
   labelling_scheme n w ->
@@ -65683,8 +65500,7 @@ Admitted.
 (** the quotient of the free group on k generators alpha1,...,alphak by the **)
 (** least normal subgroup containing (alpha_{i1})^{e1}...(alpha_{in})^{en}. **)
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 400 **)
-(** Collected Charlie 440 **)
-(** Proven Charlie **)
+(** Bounty 440 **)
 Theorem thm74_2_pi1_from_labelling_scheme :
   forall n w:set,
   labelling_scheme n w ->
@@ -65743,8 +65559,7 @@ Definition n_fold_torus_topology : set -> set :=
 (** on 2n generators alpha1,beta1,...,alphan,betan by the least normal subgroup **)
 (** containing [alpha1,beta1]...[alphan,betan]. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem thm74_3_pi1_n_fold_torus :
   forall n:set,
   n :e omega -> n <> 0 ->
@@ -65793,8 +65608,7 @@ Definition m_fold_projective_plane_topology : set -> set :=
 (** on m generators alpha1,...,alpham by the least normal subgroup **)
 (** containing (alpha1)^2 (alpha2)^2 ... (alpham)^2. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem thm74_4_pi1_m_fold_projective_plane :
   forall m:set,
   m :e omega -> ordsucc 0 :e m ->
@@ -65821,8 +65635,7 @@ Admitted.
 (** from S74 Exercise 1 (line 4012 in algtop.tex) **)
 (** LATEX VERSION: Find a presentation for the fundamental group of P^2 # T. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex74_1_P2_sharp_T_presentation :
   (** P^2 # T = P_3 by classification; the labelling scheme is aabcb^-1c^-1 **)
   forall x0:set,
@@ -65854,8 +65667,7 @@ Admitted.
 (** by the labelling scheme abaaab^{-1}a^{-1}. Show that pi1(X) is a free product **)
 (** of two cyclic groups. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex74_2_seven_sided_free_product_cyclic :
   forall X Tx:set,
   X = polygon_pasting_space 7
@@ -65895,8 +65707,7 @@ Admitted.
 (** LATEX VERSION: The Klein bottle K has fundamental group with presentation **)
 (** generators a, b and relation aba^{-1}b. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex74_3a_klein_bottle_presentation :
   forall x0:set,
   x0 :e m_fold_projective_plane_space 2 ->
@@ -65923,8 +65734,7 @@ Admitted.
 (** LATEX VERSION: Find a double covering map p: T -> K, where T is the torus **)
 (** and K is the Klein bottle. Describe the induced homomorphism of pi1. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex74_3b_torus_double_covering_klein :
   exists p:set,
     covering_map torus torus_topology
@@ -65947,8 +65757,7 @@ Admitted.
 (** Note: We define Klein bottle as m_fold_projective_plane_space 2 = P^2 # P^2, **)
 (** so this states the aba^{-1}b labelling scheme gives P^2 # P^2. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex74_4a_klein_bottle_is_P2_sharp_P2 :
   exists h:set,
     homeomorphism
@@ -65974,8 +65783,7 @@ Admitted.
 (** by deleting an open disc from P^2. **)
 (** Note: Mobius band described as quotient of I x I with (0,y) identified with (1,1-y). **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex74_5_mobius_band_is_P2_minus_disc :
   exists D:set,
     D c= m_fold_projective_plane_space 1 /\
@@ -66000,8 +65808,7 @@ Admitted.
 (** from S74 Exercise 6 (line 4032 in algtop.tex) **)
 (** LATEX VERSION: If n > 1, the fundamental group of the n-fold torus is not abelian. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Collected Charlie 66 **)
-(** Proven Charlie **)
+(** Bounty 66 **)
 Theorem ex74_6_n_fold_torus_not_abelian :
   forall n:set, n :e omega -> 1 :e n ->
   forall x0:set, x0 :e n_fold_torus_space n ->
@@ -66016,8 +65823,7 @@ Admitted.
 (** from S74 Exercise 7 (line 4033 in algtop.tex) **)
 (** LATEX VERSION: If m > 1, the fundamental group of the m-fold projective plane is not abelian. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Collected Charlie 66 **)
-(** Proven Charlie **)
+(** Bounty 66 **)
 Theorem ex74_7_m_fold_projective_not_abelian :
   forall m:set, m :e omega -> 1 :e m ->
   forall x0:set, x0 :e m_fold_projective_plane_space m ->
@@ -66092,8 +65898,7 @@ Definition first_homology_inv : set -> set -> set -> set :=
 (** LATEX VERSION: Let F be a group, N normal subgroup, q: F -> F/N projection. **)
 (** p: F -> F/[F,F] induces iso phi: q(F)/[q(F),q(F)] -> p(F)/p(N). **)
 (** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
-(** Collected Charlie 220 **)
-(** Proven Charlie **)
+(** Bounty 220 **)
 Theorem thm75_1_abelianize_quotient_commute :
   forall F multF eF invF N:set,
   group_structure F multF eF invF ->
@@ -66135,8 +65940,7 @@ Admitted.
 (** N least normal subgroup containing x; G = F/N. Then G/[G,G] iso **)
 (** F/[F,F] mod subgroup generated by p(x). **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem cor75_2_free_group_abelianization :
   forall F multF eF invF n gens x:set,
   free_group_with_generators F multF eF invF n gens ->
@@ -66175,8 +65979,7 @@ Admitted.
 (** from S75 Theorem 75.3 (line 4087 in algtop.tex): H1 of n-fold torus **)
 (** LATEX VERSION: If X is the n-fold torus, H1(X) is free abelian of rank 2n. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem thm75_3_H1_n_fold_torus :
   forall n:set,
   n :e omega -> n <> 0 ->
@@ -66196,8 +65999,7 @@ Admitted.
 (** LATEX VERSION: Torsion subgroup T(X) of H1(X) has order 2, **)
 (** and H1(X)/T(X) is free abelian of rank m-1. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Collected Charlie 165 **)
-(** Proven Charlie **)
+(** Bounty 165 **)
 Theorem thm75_4_H1_m_fold_projective_plane :
   forall m:set,
   m :e omega -> ordsucc 0 :e m ->
@@ -66251,8 +66053,7 @@ Admitted.
 (** from S75 Theorem 75.5 (line 4096 in algtop.tex): all surfaces distinct **)
 (** LATEX VERSION: S^2; T1, T2, ...; P1, P2, ... are all topologically distinct. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem thm75_5_surfaces_topologically_distinct :
   (forall n m:set, n :e omega -> n <> 0 -> m :e omega -> m <> 0 -> n <> m ->
     ~(exists h:set, homeomorphism
@@ -66281,8 +66082,7 @@ Admitted.
 (** from S75 Exercise 1 (line 4100 in algtop.tex) **)
 (** LATEX VERSION: Calculate H1(P^2 # T). P^2 # T is homeomorphic to P_3. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex75_1_P2_sharp_T_is_P3 :
   forall D1 D2 h:set,
   (** D1 is a closed disc in P_1 homeomorphic to B2 **)
@@ -66338,8 +66138,7 @@ Admitted.
 (** LATEX VERSION: If K is the Klein bottle, calculate H1(K) directly. **)
 (** Note: K = P_2 = m_fold_projective_plane with m=2. H1(K) = Z + Z/2. **)
 (** EFFORT: 6 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex75_2_klein_bottle_homology :
   forall x0:set, x0 :e m_fold_projective_plane_space (ordsucc (ordsucc 0)) ->
   let H1G := first_homology_group
@@ -66375,8 +66174,7 @@ Admitted.
 (** scheme acadbcb^{-1}d. (a) All vertices map to same point. **)
 (** (b) Calculate H1(X). (c) Identify which surface it is. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex75_3_eight_sided_polygon :
   forall n w:set,
   (** n = 8-sided polygon with scheme acadbcb^{-1}d **)
@@ -66399,8 +66197,7 @@ Admitted.
 (** scheme abcdad^{-1}cb^{-1}. (a) pi does not map all vertices to same point. **)
 (** (c) Calculate pi1(X) and H1(X). (d) Identify the surface. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
-(** Collected Charlie 132 **)
-(** Proven Charlie **)
+(** Bounty 132 **)
 Theorem ex75_4_eight_sided_polygon_2 :
   forall n w:set,
   labelling_scheme n w ->
@@ -66444,8 +66241,7 @@ Definition equivalent_labelling_schemes : set -> set -> set -> set -> prop :=
 (** length >= 2, then X also comes from m+1 regions via scheme **)
 (** y0 c^{-1}, c y1, w2, ..., wm. And conversely. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem thm76_1_cutting_and_pasting :
   forall n w:set,
   labelling_scheme n w ->
@@ -66468,8 +66264,7 @@ Admitted.
 (** shows X homeomorphic to P^2 (abab). Which argument is correct? **)
 (** Answer: The second is correct; the first incorrectly permutes before pasting. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex76_2_dunce_cap_vs_P2 :
   (** The space X obtained from two regions with schemes abcc and c^{-1}c^{-1}ab **)
   (** is homeomorphic to P^2 (the 1-fold projective plane), not the four-fold dunce cap. **)
@@ -66531,8 +66326,7 @@ Definition projective_type_scheme : set -> set -> prop :=
 (** LATEX VERSION: If w = [y0] a [y1] a [y2] is a proper scheme, then **)
 (** w is equivalent to a a [y0 y1^{-1} y2]. **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 240 **)
-(** Collected Charlie 264 **)
-(** Proven Charlie **)
+(** Bounty 264 **)
 Theorem lemma77_1_projective_reduction :
   forall n w:set,
   proper_labelling_scheme n w ->
@@ -66557,8 +66351,7 @@ Admitted.
 (** to a scheme of the form (a1 a1)(a2 a2)...(ak ak) w1 where **)
 (** k >= 1 and w1 is either empty or of torus type. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem cor77_2_projective_type_structure :
   forall n w:set,
   projective_type_scheme n w ->
@@ -66585,8 +66378,7 @@ Admitted.
 (** adjacent same-label terms. Then w is equivalent to **)
 (** w0 a b a^{-1} b^{-1} w3 where w3 is torus type or empty. **)
 (** EFFORT: 40 lines textbook, difficulty 7/10, USD 560 **)
-(** Collected Charlie 616 **)
-(** Proven Charlie **)
+(** Bounty 616 **)
 Theorem lemma77_3_extract_commutator :
   forall n w:set,
   proper_labelling_scheme n w ->
@@ -66610,8 +66402,7 @@ Admitted.
 (** LATEX VERSION: If w = w0 (cc)(ab a^{-1} b^{-1}) w1, then **)
 (** w is equivalent to w0 (aa bb cc) w1. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 180 **)
-(** Collected Charlie 198 **)
-(** Proven Charlie **)
+(** Bounty 198 **)
 Theorem lemma77_4_projective_absorbs_torus :
   forall n w:set,
   proper_labelling_scheme n w ->
@@ -66643,8 +66434,7 @@ Admitted.
 (** either to S^2, to the n-fold torus T_n, or to the m-fold projective **)
 (** plane P_m. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 420 **)
-(** Collected Charlie 462 **)
-(** Proven Charlie **)
+(** Bounty 462 **)
 Theorem thm77_5_classification_of_surfaces :
   forall n w:set,
   proper_labelling_scheme n w ->
@@ -66670,8 +66460,7 @@ Admitted.
 (** Note: This is a refinement of Theorem 77.5 that adds two more surface types. **)
 (** The Klein bottle K = P_2 and T_n # P^2, T_n # K reduce to P_m forms by Lemma 77.4. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex77_1a_classification_extended_list :
   forall n w:set,
   proper_labelling_scheme n w ->
@@ -66790,8 +66579,7 @@ Definition triangulable : set -> set -> prop :=
 (** homeomorphic to the quotient space obtained from a collection of **)
 (** disjoint triangular regions by pasting their edges together in pairs. **)
 (** EFFORT: 50 lines textbook, difficulty 8/10, USD 800 **)
-(** Collected Charlie 880 **)
-(** Proven Charlie **)
+(** Bounty 880 **)
 Theorem thm78_1_triangulable_surface_quotient :
   forall X Tx:set,
   topology_on X Tx ->
@@ -66818,8 +66606,7 @@ Admitted.
 (** then X is homeomorphic to a space obtained from a polygonal **)
 (** region by pasting edges together in pairs. **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 240 **)
-(** Collected Charlie 264 **)
-(** Proven Charlie **)
+(** Bounty 264 **)
 Theorem thm78_2_compact_surface_polygon_quotient :
   forall X Tx:set,
   topology_on X Tx ->
@@ -66867,8 +66654,7 @@ Definition manifold_boundary : set -> set -> set :=
 (** such that partial Y has k components, then Y is homeomorphic to X-with-k-holes, **)
 (** where X is either S^2 or the n-fold torus T_n or the m-fold projective plane P_m. **)
 (** EFFORT: 15 lines textbook, difficulty 7/10, USD 300 **)
-(** Collected Charlie 330 **)
-(** Proven Charlie **)
+(** Bounty 330 **)
 Theorem ex76_4_two_manifold_with_boundary_classification :
   forall Y Ty:set,
   two_manifold_with_boundary Y Ty ->
@@ -66953,8 +66739,7 @@ Admitted.
 (** each homeomorphic to B^2 via h_i. Then Y = X - union of h_i(B_epsilon) **)
 (** is a 2-manifold with boundary, and partial Y has k components. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex78_4_manifold_with_holes :
   forall X Tx:set,
   Hausdorff_space X Tx -> second_countable_space X Tx ->
@@ -67013,8 +66798,7 @@ Definition equivalent_covering_maps : set -> set -> set -> set -> set -> set -> 
 (** to f_tilde: Y -> E with f_tilde(y0)=e0 iff f_star(pi1(Y,y0)) subset p_star(pi1(E,e0)). **)
 (** Furthermore, if such a lifting exists, it is unique. **)
 (** EFFORT: 40 lines textbook, difficulty 7/10, USD 560 **)
-(** Collected Charlie 616 **)
-(** Proven Charlie **)
+(** Bounty 616 **)
 Theorem lemma79_1_general_lifting :
   forall E Te B Tb p e0 Y Ty y0 f:set,
   covering_map E Te B Tb p ->
@@ -67050,8 +66834,7 @@ Admitted.
 (** iff H0 = H0', where H0 = p_star(pi1(E,e0)), H0' = p'_star(pi1(E',e0')). **)
 (** If h exists, it is unique. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Collected Charlie 220 **)
-(** Proven Charlie **)
+(** Bounty 220 **)
 Theorem thm79_2_equivalence_iff_same_subgroup :
   forall E Te E' Te' B Tb p p' e0 e0':set,
   covering_map E Te B Tb p ->
@@ -67091,8 +66874,7 @@ Definition conjugate_subgroups : set -> set -> set -> set -> set -> set -> prop 
 (** then [alpha] H1 [alpha]^{-1} = H0, so H0 and H1 are conjugate. **)
 (** (b) Given e0 and H conjugate to H0, exists e1 in p^{-1}(b0) with H1 = H. **)
 (** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
-(** Collected Charlie 220 **)
-(** Proven Charlie **)
+(** Bounty 220 **)
 Theorem lemma79_3a_conjugacy_of_subgroups :
   forall E Te B Tb p e0 e1:set,
   covering_map E Te B Tb p ->
@@ -67115,8 +66897,7 @@ Admitted.
 
 (** from S79 Lemma 79.3(b) (line 4862 in algtop.tex): conjugacy converse **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Collected Charlie 165 **)
-(** Proven Charlie **)
+(** Bounty 165 **)
 Theorem lemma79_3b_conjugacy_converse :
   forall E Te B Tb p e0:set,
   covering_map E Te B Tb p ->
@@ -67143,8 +66924,7 @@ Admitted.
 (** LATEX VERSION: The covering maps p and p' are equivalent iff the subgroups **)
 (** H0 = p_star(pi1(E,e0)) and H0' = p'_star(pi1(E',e0')) are conjugate in pi1(B,b0). **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem thm79_4_equivalence_iff_conjugate :
   forall E Te E' Te' B Tb p p' e0 e0':set,
   covering_map E Te B Tb p ->
@@ -67173,8 +66953,7 @@ Admitted.
 (** LATEX VERSION: If E is a covering space of the torus T, then E is homeomorphic **)
 (** either to R^2, or to S^1 x R, or to T. **)
 (** EFFORT: 10 lines textbook, difficulty 6/10, USD 150 **)
-(** Collected Charlie 165 **)
-(** Proven Charlie **)
+(** Bounty 165 **)
 Theorem ex79_5b_torus_covering_classification :
   forall E Te p:set,
   covering_map E Te torus torus_topology p ->
@@ -67226,8 +67005,7 @@ Admitted.
 (** LATEX VERSION: p-star(pi1(E,e0)) is normal in pi1(B,b0) iff for every **)
 (** pair e1,e2 in p^{-1}(b0), there is an equivalence h: E -> E with h(e1) = e2. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex79_3_normal_subgroup_criterion : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p ->
   path_connected_space E Te -> locally_path_connected E Te ->
@@ -67319,8 +67097,7 @@ Admitted.
 (** LATEX VERSION: Every isomorphism of pi1(T, x0) with itself is induced **)
 (** by a homeomorphism of T with itself that maps x0 to x0. **)
 (** EFFORT: 12 lines textbook, difficulty 6/10, USD 200 **)
-(** Collected Charlie 220 **)
-(** Proven Charlie **)
+(** Bounty 220 **)
 Theorem ex79_5a_torus_automorphism :
   let x0 := (S1_basepoint, S1_basepoint) in
   forall phi:set,
@@ -67355,8 +67132,7 @@ Admitted.
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
 (** then the restriction p0: E0 -> B is a covering map. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Collected Charlie 165 **)
-(** Proven Charlie **)
+(** Bounty 165 **)
 Theorem lemma80_1_path_component_covering :
   forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
@@ -67378,8 +67154,7 @@ Admitted.
 (** LATEX VERSION: Let p = r o q with p: X -> Z, q: X -> Y, r: Y -> Z. **)
 (** (a) If p and r are covering maps, so is q. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Collected Charlie 220 **)
-(** Proven Charlie **)
+(** Bounty 220 **)
 Theorem lemma80_2a_covering_composition :
   forall X Tx Y Ty Z Tz q r:set,
   path_connected_space X Tx -> locally_path_connected X Tx ->
@@ -67395,8 +67170,7 @@ Admitted.
 (** from S80 Lemma 80.2b (line 4965 in algtop.tex): if p and q covering, so is r **)
 (** LATEX VERSION: (b) If p and q are covering maps, so is r. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 280 **)
-(** Collected Charlie 308 **)
-(** Proven Charlie **)
+(** Bounty 308 **)
 Theorem lemma80_2b_covering_composition :
   forall X Tx Y Ty Z Tz q r:set,
   path_connected_space X Tx -> locally_path_connected X Tx ->
@@ -67414,8 +67188,7 @@ Admitted.
 (** LATEX VERSION: Let p: E -> B be covering with E simply connected. Given any **)
 (** covering map r: Y -> B, there is a covering map q: E -> Y such that r o q = p. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem thm80_3_universal_covers_everything :
   forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
@@ -67436,8 +67209,7 @@ Admitted.
 (** neighborhood U such that inclusion i: U -> B induces the trivial homomorphism **)
 (** i_star: pi1(U,b0) -> pi1(B,b0). **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem lemma80_4_universal_cover_semilocal :
   forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
@@ -67461,8 +67233,7 @@ Admitted.
 (** multiplication on Gtilde making it a topological group with identity etilde **)
 (** such that p is a homomorphism. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 400 **)
-(** Collected Charlie 440 **)
-(** Proven Charlie **)
+(** Bounty 440 **)
 Theorem ex79_6_topological_group_covering_lift :
   forall G Tg multG eG invG:set,
   topological_group G Tg ->
@@ -67502,8 +67273,7 @@ Admitted.
 (** LATEX VERSION: Let q: X -> Y and r: Y -> Z be covering maps. Show that **)
 (** if Z has a universal covering space, then p = r o q is a covering map. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem ex80_1a_composition_of_coverings :
   forall X Tx Y Ty Z Tz q r:set,
   covering_map X Tx Y Ty q ->
@@ -67518,8 +67288,7 @@ Admitted.
 (** from S80 Exercise 1(b) (line 5013 in algtop.tex) **)
 (** LATEX VERSION: Give an example where q and r are covering maps but p = r o q is not. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Collected Charlie 66 **)
-(** Proven Charlie **)
+(** Bounty 66 **)
 Theorem ex80_1b_composition_not_covering :
   exists X Tx Y Ty Z Tz q r:set,
     covering_map X Tx Y Ty q /\
@@ -67589,8 +67358,7 @@ Definition covering_trans_evaluation : set -> set -> set -> set -> set -> set ->
 (** LATEX VERSION: The image of Psi equals the image under Phi of the **)
 (** subgroup N(H0)/H0 of pi1(B,b0)/H0. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem lemma81_1_image_of_psi :
   forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
@@ -67619,8 +67387,7 @@ Admitted.
 (** LATEX VERSION: The bijection Phi^{-1} o Psi : C(E,p,B) -> N(H0)/H0 **)
 (** is an isomorphism of groups. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Collected Charlie 220 **)
-(** Proven Charlie **)
+(** Bounty 220 **)
 Theorem thm81_2_covering_trans_isomorphism :
   forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
@@ -67750,8 +67517,7 @@ Definition properly_discontinuous : set -> set -> set -> set -> prop :=
 (** iff the action of G is properly discontinuous. In this case, pi is regular **)
 (** and G is its group of covering transformations. **)
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
-(** Collected Charlie 385 **)
-(** Proven Charlie **)
+(** Bounty 385 **)
 Theorem thm81_5_properly_discontinuous_covering :
   forall X Tx G idG:set,
   path_connected_space X Tx -> locally_path_connected X Tx ->
@@ -67767,8 +67533,7 @@ Admitted.
 (** LATEX VERSION: If p: X -> B is regular with covering transformation group G, **)
 (** then there is a homeomorphism k: X/G -> B such that p = k o pi. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem thm81_6_regular_orbit_homeomorphism :
   forall X Tx B Tb p e0:set,
   regular_covering_map X Tx B Tb p e0 ->
@@ -67797,8 +67562,7 @@ Definition fixed_point_free_action : set -> set -> set -> prop :=
 (** have C cap g(C) nonempty, then the action is properly discontinuous and X/G **)
 (** is locally compact Hausdorff. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Collected Charlie 220 **)
-(** Proven Charlie **)
+(** Bounty 220 **)
 Theorem ex81_6_properly_discontinuous_criterion :
   forall X Tx G idG:set,
   locally_compact X Tx -> Hausdorff_space X Tx ->
@@ -67870,8 +67634,7 @@ Admitted.
 (** from S81 Exercise 3(b) (line 5200 in algtop.tex) **)
 (** LATEX VERSION: Show there exists a covering map k: X/G -> B with k o pi = p. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Collected Charlie 66 **)
-(** Proven Charlie **)
+(** Bounty 66 **)
 Theorem ex81_3b_quotient_covering :
   forall X Tx B Tb p:set,
   covering_map X Tx B Tb p ->
@@ -67911,8 +67674,7 @@ Admitted.
 (** (b) If L(n,k) homeomorphic to L(n',k') then n = n'. **)
 (** (c) L(n,k) is a compact 3-manifold. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Collected Charlie 220 **)
-(** Proven Charlie **)
+(** Bounty 220 **)
 Theorem ex81_5_lens_space :
   forall n k:set,
   n :e omega -> k :e omega -> n <> 0 -> k <> 0 ->
@@ -67974,8 +67736,7 @@ Definition semilocally_simply_connected : set -> set -> prop :=
 (** simply connected. Given a subgroup H of pi1(B,b0), there exists a covering map **)
 (** p: E -> B and a point e0 in p^{-1}(b0) such that p_star(pi1(E,e0)) = H. **)
 (** EFFORT: 60 lines textbook, difficulty 9/10, USD 1200 **)
-(** Collected Charlie 1320 **)
-(** Proven Charlie **)
+(** Bounty 1320 **)
 Theorem thm82_1_existence_of_covering :
   forall B Tb b0:set,
   path_connected_space B Tb -> locally_path_connected B Tb ->
@@ -68064,8 +67825,7 @@ Definition R3_topology : set :=
 (** LATEX VERSION: Let C(X) be the cone on the infinite earring X. **)
 (** Show that C(X) is simply connected, but is not locally simply connected at the origin. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex82_2_cone_earring_simply_connected :
   let CX := cone_on_R2_in_R3 infinite_earring_space in
   let TCX := subspace_topology (setprod (setprod R R) R) R3_topology CX in
@@ -68097,8 +67857,7 @@ Definition star_refinement_cover : set -> set -> set -> set -> prop :=
 (** open covering B refining A such that for each pair B, B' in B with nonempty **)
 (** intersection, B union B' lies in an element of A. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem supp_ex_1a_metrizable_star_refinement :
   forall X Tx:set,
   metrizable X Tx ->
@@ -68111,8 +67870,7 @@ Admitted.
 (** LATEX VERSION: If X is compact Hausdorff, then for any open covering A, there exists **)
 (** a finite open covering B refining A with the star property. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem supp_ex_1b_compact_Hausdorff_star_refinement :
   forall X Tx:set,
   compact_space X Tx -> Hausdorff_space X Tx ->
@@ -68126,8 +67884,7 @@ Admitted.
 (** and semilocally simply connected. If X is regular with a countable basis, **)
 (** then pi_1(X, x_0) is countable. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Collected Charlie 220 **)
-(** Proven Charlie **)
+(** Bounty 220 **)
 Theorem supp_ex_2_pi1_countable_regular_second_countable :
   forall X Tx x0:set,
   path_connected_space X Tx ->
@@ -68144,8 +67901,7 @@ Admitted.
 (** LATEX VERSION: Let p: E -> X be a covering map such that pi_1(X, x_0) is countable. **)
 (** If X is regular with a countable basis, so is E. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem supp_ex_3_covering_inherits_regular_second_countable :
   forall E Te X Tx p x0:set,
   covering_map E Te X Tx p ->
@@ -68177,8 +67933,7 @@ Definition finitely_generated_group : set -> set -> set -> set -> prop :=
 (** and semilocally simply connected. If X is compact Hausdorff, then **)
 (** pi_1(X, x_0) is finitely generated, and hence countable. **)
 (** EFFORT: 12 lines textbook, difficulty 6/10, USD 200 **)
-(** Collected Charlie 220 **)
-(** Proven Charlie **)
+(** Bounty 220 **)
 Theorem supp_ex_4_pi1_finitely_generated_compact_Hausdorff :
   forall X Tx x0:set,
   path_connected_space X Tx ->
@@ -68199,8 +67954,7 @@ Admitted.
 (** LATEX VERSION: Let X be the infinite earring. Show that X is a compact Hausdorff **)
 (** space with a countable basis whose fundamental group is uncountable. **)
 (** EFFORT: 10 lines textbook, difficulty 6/10, USD 150 **)
-(** Collected Charlie 165 **)
-(** Proven Charlie **)
+(** Bounty 165 **)
 Theorem supp_ex_5_infinite_earring_uncountable_pi1 :
   let X := infinite_earring_space in
   let Tx := infinite_earring_topology in
@@ -68262,8 +68016,7 @@ Definition graph_vertices : set -> set -> set -> set :=
 (** from S83 Lemma 83.1 (line 5470 in algtop.tex): linear graphs are normal **)
 (** LATEX VERSION: Every linear graph X is Hausdorff; in fact, it is normal. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem lemma83_1_linear_graph_normal :
   forall X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -68275,8 +68028,7 @@ Admitted.
 (** LATEX VERSION: If C is a compact subspace of a linear graph X, there is a finite **)
 (** subgraph Y containing C. If C is connected, Y can be chosen connected. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
-(** Collected Charlie 132 **)
-(** Proven Charlie **)
+(** Bounty 132 **)
 Theorem lemma83_2_compact_finite_subgraph :
   forall X Tx Arcs C:set,
   general_linear_graph X Tx Arcs ->
@@ -68290,8 +68042,7 @@ Admitted.
 (** LATEX VERSION: If X is a linear graph, then X is locally path connected **)
 (** and semilocally simply connected. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Collected Charlie 165 **)
-(** Proven Charlie **)
+(** Bounty 165 **)
 Theorem lemma83_3_graph_locally_path_connected :
   forall X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -68305,8 +68056,7 @@ Admitted.
 (** then p maps B homeomorphically onto A_alpha. Furthermore, E is a linear graph **)
 (** with path components of p^{-1}(A_alpha) as its edges. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 420 **)
-(** Collected Charlie 462 **)
-(** Proven Charlie **)
+(** Bounty 462 **)
 Theorem thm83_4_covering_of_graph_is_graph :
   forall X Tx Arcs E Te p:set,
   general_linear_graph X Tx Arcs ->
@@ -68436,8 +68186,7 @@ Definition maximal_tree : set -> set -> set -> set -> set -> prop :=
 (** LATEX VERSION: A graph X is connected iff every pair of vertices can be **)
 (** joined by an edge path. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem lemma84_1_connected_iff_edge_paths :
   forall X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -68455,8 +68204,7 @@ Admitted.
 (** then T union A is a tree. Conversely, if T is a finite tree with more than one **)
 (** edge, then T = T0 union A where T0 is a tree and A intersects T0 in one vertex. **)
 (** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
-(** Collected Charlie 220 **)
-(** Proven Charlie **)
+(** Bounty 220 **)
 Theorem lemma84_2_tree_extension :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -68470,8 +68218,7 @@ Admitted.
 (** LATEX VERSION: If T is a finite tree with more than one edge, then T = T0 union A **)
 (** where T0 is a tree and A intersects T0 in a single vertex. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem lemma84_2_tree_decomposition :
   forall T ArcsT X Tx Arcs:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -68487,8 +68234,7 @@ Admitted.
 (** from S84 Theorem 84.3 (line 5617 in algtop.tex): tree is simply connected **)
 (** LATEX VERSION: Any tree T is simply connected. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem thm84_3_tree_simply_connected :
   forall T ArcsT X Tx Arcs:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -68500,8 +68246,7 @@ Admitted.
 (** LATEX VERSION: Let X be a connected graph. A tree T in X is maximal iff it **)
 (** contains all the vertices of X. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
-(** Collected Charlie 132 **)
-(** Proven Charlie **)
+(** Bounty 132 **)
 Theorem thm84_4_maximal_tree_all_vertices :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -68516,8 +68261,7 @@ Admitted.
 (** LATEX VERSION: If X is a linear graph, every tree T0 in X is contained **)
 (** in a maximal tree in X. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem thm84_5_tree_in_maximal :
   forall T0 ArcsT0 X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -68532,8 +68276,7 @@ Admitted.
 (** U cap V = A union B disjoint open path-connected. alpha path in U from a to b, **)
 (** beta path in V from b to a. Then [alpha . beta] generates pi1(X,a). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 180 **)
-(** Collected Charlie 198 **)
-(** Proven Charlie **)
+(** Bounty 198 **)
 Theorem lemma84_6_generator_from_edge :
   forall X Tx U V A B a b alpha beta:set,
   topology_on X Tx ->
@@ -68570,8 +68313,7 @@ Admitted.
 (** a nontrivial free group. If T is a maximal tree in X, the fundamental group **)
 (** has free generators in bijection with edges of X not in T. **)
 (** EFFORT: 35 lines textbook, difficulty 8/10, USD 560 **)
-(** Collected Charlie 616 **)
-(** Proven Charlie **)
+(** Bounty 616 **)
 Theorem thm84_7_pi1_graph_is_free :
   forall X Tx Arcs T ArcsT x0:set,
   general_linear_graph X Tx Arcs ->
@@ -68594,8 +68336,7 @@ Admitted.
 (** need not hold if T is infinite. (Lemma 84.2 says that for a finite **)
 (** subgraph T, alpha reduces to an edge path in T.) **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex84_1_infinite_tree_counterexample :
   (** There exists an infinite graph X with a maximal tree T of X **)
   (** such that the conclusion of Lemma 84.2 (every closed edge path **)
@@ -68623,8 +68364,7 @@ Admitted.
 (** Answer: By Euler number formula, it is 1 - chi = 1 - (n - n(n-1)/2) **)
 (** = 1 - n + n(n-1)/2 = (n-1)(n-2)/2 for n >= 2. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 40 **)
-(** Collected Charlie 44 **)
-(** Proven Charlie **)
+(** Bounty 44 **)
 Theorem ex84_2_complete_graph_generators :
   forall n:set, n :e omega -> ordsucc (ordsucc 0) c= n ->
   forall V G Tg ArcsG x0:set,
@@ -68654,8 +68394,7 @@ Admitted.
 (** from S85 Theorem 85.1 (line 5752 in algtop.tex): subgroup of free group is free **)
 (** LATEX VERSION: If H is a subgroup of a free group F, then H is free. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem thm85_1_subgroup_of_free_is_free :
   forall F multF eF invF J gens:set,
   free_group_with_generators F multF eF invF J gens ->
@@ -68679,8 +68418,7 @@ Definition euler_number : set -> set -> set -> set :=
 (** LATEX VERSION: If X is a finite, connected linear graph, then the cardinality **)
 (** of a system of free generators for pi1(X) is 1 - chi(X). **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Charlie 88 **)
-(** Proven Charlie **)
+(** Bounty 88 **)
 Theorem lemma85_2_free_gen_euler :
   forall X Tx Arcs x0:set,
   general_linear_graph X Tx Arcs ->
@@ -68710,8 +68448,7 @@ Definition subgroup_index : set -> set -> set -> set -> set -> set :=
 (** LATEX VERSION: Let F be a free group with n+1 free generators; let H be a **)
 (** subgroup of F. If H has index k in F, then H has kn+1 free generators. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem thm85_3_free_gen_index_formula :
   forall F multF eF invF J gens:set,
   free_group_with_generators F multF eF invF J gens ->
@@ -68730,8 +68467,7 @@ Admitted.
 (** LATEX VERSION: Show that the Euler number of a finite linear graph X **)
 (** is a topological invariant of X. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Bounty 55 **)
 Theorem ex85_1_euler_number_topological_invariant :
   forall X Tx ArcsX Y Ty ArcsY:set,
   general_linear_graph X Tx ArcsX -> finite ArcsX ->
@@ -68745,8 +68481,7 @@ Admitted.
 (** LATEX VERSION: Let F be a free group on two free generators alpha and beta. **)
 (** Let H be the subgroup generated by alpha. Show H has infinite index in F. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 40 **)
-(** Collected Charlie 44 **)
-(** Proven Charlie **)
+(** Bounty 44 **)
 Theorem ex85_2_infinite_index_subgroup :
   forall F multF eF invF J gens:set,
   free_group_with_generators F multF eF invF J gens ->
@@ -68768,8 +68503,7 @@ Admitted.
 (** E = (p x p)^{-1}(X), q = restriction. Find free generators for **)
 (** q-push(pi1(E, e0)). **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Charlie 110 **)
-(** Proven Charlie **)
+(** Bounty 110 **)
 Theorem ex85_3_covering_of_wedge_in_torus :
   let b0 := S1_basepoint in
   let X := ({b0} :*: S1) :\/: (S1 :*: {b0}) in
