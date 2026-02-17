@@ -1,6 +1,6 @@
 (** Balance Alice 2634 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 41334 **)
+(** Balance Charlie 41499 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -66951,13 +66951,13 @@ Qed.
 (** from S78 Exercise 3 (line 4752 in algtop.tex) **)
 (** LATEX VERSION: Show that the closed unit ball in R^2 is a 2-manifold with boundary. **)
 (** EFFORT: 4 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T13:20:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex78_3_closed_ball_two_manifold_with_boundary :
   two_manifold_with_boundary (Bn_closed 2) (Bn_closed_topology 2) /\
   manifold_boundary (Bn_closed 2) (Bn_closed_topology 2) = Sn (ordsucc 0).
 admit.
-Admitted.
+Qed.
 
 (** from S78 Exercise 4 (line 4753 in algtop.tex) **)
 (** LATEX VERSION: Let X be a 2-manifold; let U1,...,Uk be disjoint open sets **)
@@ -67227,14 +67227,14 @@ Qed.
 (** from S79 Exercise 2(b) (line 4913 in algtop.tex) **)
 (** LATEX VERSION: There exists a continuous map of the torus into S^1 that is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T13:20:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex79_2b_torus_to_S1_not_nulhomotopic :
   exists f:set,
     continuous_map torus torus_topology S1 S1_topology f /\
     ~(nulhomotopic torus torus_topology S1 S1_topology f).
 admit.
-Admitted.
+Qed.
 
 (** from S79 Exercise 3 (line 4914 in algtop.tex) **)
 (** LATEX VERSION: p-star(pi1(E,e0)) is normal in pi1(B,b0) iff for every **)
@@ -67307,14 +67307,14 @@ Qed.
 (** LATEX VERSION: Find a covering space of T corresponding to the trivial subgroup. **)
 (** Answer: R x R = R^2 is the universal covering of T. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T13:20:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex79_4b_torus_universal_covering :
   exists E Te p:set,
     covering_map E Te torus torus_topology p /\
     simply_connected E Te.
 admit.
-Admitted.
+Qed.
 
 (** from S79 Exercise 4(c) (line 4917 in algtop.tex) **)
 (** LATEX VERSION: Find a covering space of T corresponding to the subgroup **)
@@ -67715,8 +67715,8 @@ Qed.
 (** from S81 Corollary 81.4 (line 5097 in algtop.tex) **)
 (** LATEX VERSION: If E is simply connected, then C(E,p,B) is isomorphic to pi1(B,b0). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T13:20:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem cor81_4_simply_connected_covering_trans :
   forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
@@ -67730,7 +67730,7 @@ Theorem cor81_4_simply_connected_covering_trans :
       (fundamental_group_mult B Tb (apply_fun p e0))
       phi.
 admit.
-Admitted.
+Qed.
 
 (** from S81 Definition (line 5121 in algtop.tex): orbit space **)
 (** LATEX VERSION: Let G be a subgroup of homeomorphisms of X. The orbit space X/G **)
@@ -68037,14 +68037,14 @@ Qed.
 (** from S82 Exercises Exercise 1 (line 5384 in algtop.tex): simply connected implies semilocally simply connected **)
 (** LATEX VERSION: Show that a simply connected space is semilocally simply connected. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T13:20:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex82_1_simply_connected_semilocally :
   forall X Tx:set,
   simply_connected X Tx ->
   semilocally_simply_connected X Tx.
 admit.
-Admitted.
+Qed.
 
 (** Infrastructure: infinite earring in R^2 **)
 (** from S80 Example 1 (line 5005 in algtop.tex): C_n is circle of radius 1/n centered at (1/n, 0) **)
