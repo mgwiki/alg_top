@@ -69177,6 +69177,21 @@ claim Hx0 : apply_fun x 0 = 0.
 exact (lemma59_3_overlap_nonempty_from_coord0 n x HxSn Hx0).
 Qed.
 
+Theorem lemma59_3_overlap_nonempty_named_iff_exists_point : forall n U V:set,
+  U = {x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} ->
+  V = {x :e Sn n | Rlt (apply_fun x 0) 1} ->
+  ((U :/\: V) <> Empty <->
+   exists x:set, x :e Sn n /\
+     Rlt (minus_SNo 1) (apply_fun x 0) /\
+     Rlt (apply_fun x 0) 1).
+let n U V.
+assume HU.
+assume HV.
+rewrite HU.
+rewrite HV.
+exact (lemma59_3_overlap_nonempty_iff_exists_point n).
+Qed.
+
 Theorem lemma59_3_sphere_cover_data : forall n:set, n :e omega -> 2 c= n ->
   exists U V:set,
     U :e Sn_topology n /\ V :e Sn_topology n /\
