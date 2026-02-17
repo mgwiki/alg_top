@@ -65396,7 +65396,7 @@ Admitted.
 
 (** from S58 Exercise 7(a) (line 1496 in algtop.tex): retraction implies isomorphism **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Alice 55 **)
+(** Collected Bob 55 **)
 (** Proven Alice **)
 Theorem ex58_7a_retraction_homotopy_isomorphism : forall X Tx A a0 f:set,
   A c= X ->
@@ -65515,7 +65515,7 @@ Qed.
 
 (** from S58 Exercise 7(b) (line 1496 in algtop.tex): A-preserving homotopy implies isomorphism **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Alice 88 **)
+(** Collected Bob 88 **)
 (** Proven Alice **)
 Theorem ex58_7b_A_preserved_homotopy_isomorphism : forall X Tx A a0 f H:set,
   A c= X ->
@@ -67126,15 +67126,123 @@ Qed.
 
 (** Helper subproblem for S59.3 openness: continuity of first coordinate on Euclidean ambient **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 20 **)
-(** Bounty 22 **)
+(** Collected Bob 22 **)
+(** Proven Bob **)
 Theorem lemma59_3_coord0_continuous : forall n:set, n :e omega ->
   continuous_map (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n))
     R R_standard_topology
     (graph (euclidean_space (ordsucc n)) (fun x:set => apply_fun x 0)).
 let n.
 assume Hn : n :e omega.
-admit.
-Admitted.
+claim H0in : 0 :e ordsucc n.
+{
+  exact (nat_0_in_ordsucc n (omega_nat_p n Hn)).
+}
+claim HfamTop :
+  forall j:set, j :e ordsucc n ->
+    topology_on
+      (space_family_set (const_space_family (ordsucc n) R R_standard_topology) j)
+      (space_family_topology (const_space_family (ordsucc n) R R_standard_topology) j).
+{
+  let j.
+  assume Hj : j :e ordsucc n.
+  rewrite (space_family_set_const_space_family
+    (ordsucc n)
+    R
+    R_standard_topology
+    j
+    Hj).
+  rewrite (space_family_topology_const_space_family
+    (ordsucc n)
+    R
+    R_standard_topology
+    j
+    Hj).
+  exact R_standard_topology_is_topology.
+}
+claim HevalCont :
+  continuous_map
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    (space_family_set (const_space_family (ordsucc n) R R_standard_topology) 0)
+    (space_family_topology (const_space_family (ordsucc n) R R_standard_topology) 0)
+    (product_eval_map (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology) 0).
+{
+  exact (product_eval_map_continuous
+    (ordsucc n)
+    (const_space_family (ordsucc n) R R_standard_topology)
+    0
+    HfamTop
+    H0in).
+}
+claim HYsub :
+  space_family_set (const_space_family (ordsucc n) R R_standard_topology) 0 c= R.
+{
+  let y.
+  assume Hy : y :e space_family_set (const_space_family (ordsucc n) R R_standard_topology) 0.
+  rewrite <- (space_family_set_const_space_family
+    (ordsucc n)
+    R
+    R_standard_topology
+    0
+    H0in).
+  exact Hy.
+}
+claim HTyEq :
+  space_family_topology (const_space_family (ordsucc n) R R_standard_topology) 0 =
+  subspace_topology
+    R
+    R_standard_topology
+    (space_family_set (const_space_family (ordsucc n) R R_standard_topology) 0).
+{
+  rewrite (space_family_set_const_space_family
+    (ordsucc n)
+    R
+    R_standard_topology
+    0
+    H0in).
+  rewrite (space_family_topology_const_space_family
+    (ordsucc n)
+    R
+    R_standard_topology
+    0
+    H0in).
+  rewrite (subspace_topology_whole
+    R
+    R_standard_topology
+    R_standard_topology_is_topology).
+  reflexivity.
+}
+claim HevalContR :
+  continuous_map
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    R
+    R_standard_topology
+    (product_eval_map (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology) 0).
+{
+  exact (continuous_map_range_expand
+    (euclidean_space (ordsucc n))
+    (euclidean_topology (ordsucc n))
+    (space_family_set (const_space_family (ordsucc n) R R_standard_topology) 0)
+    (space_family_topology (const_space_family (ordsucc n) R R_standard_topology) 0)
+    R
+    R_standard_topology
+    (product_eval_map (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology) 0)
+    HevalCont
+    HYsub
+    R_standard_topology_is_topology
+    HTyEq).
+}
+claim HmapEq :
+  product_eval_map (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology) 0 =
+  graph (euclidean_space (ordsucc n)) (fun x:set => apply_fun x 0).
+{
+  reflexivity.
+}
+rewrite <- HmapEq.
+exact HevalContR.
+Qed.
 
 (** Helper subproblem for S59.3: choose two simply connected open pieces covering S^n **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 30 **)
