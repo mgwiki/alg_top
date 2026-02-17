@@ -72452,7 +72452,52 @@ let n U.
 assume Hn : n :e omega.
 assume Hge2 : 2 c= n.
 assume HU.
-admit. (** stereographic/homeomorphic-to-disk argument for U **)
+claim HexCoord0 : exists x:set, x :e Sn n /\ apply_fun x 0 = 0.
+{
+  exact (lemma59_3_exists_sn_coord0_zero_point n Hn Hge2).
+}
+apply HexCoord0.
+let x0.
+assume Hx0pack : x0 :e Sn n /\ apply_fun x0 0 = 0.
+claim Hx0Sn : x0 :e Sn n.
+{
+  exact (andEL
+    (x0 :e Sn n)
+    (apply_fun x0 0 = 0)
+    Hx0pack).
+}
+claim Hx00 : apply_fun x0 0 = 0.
+{
+  exact (andER
+    (x0 :e Sn n)
+    (apply_fun x0 0 = 0)
+    Hx0pack).
+}
+claim Hm1lt0 : Rlt (minus_SNo 1) 0.
+{
+  claim Hm1R : minus_SNo 1 :e R.
+  {
+    exact (real_minus_SNo 1 real_1).
+  }
+  exact (RltI
+    (minus_SNo 1)
+    0
+    Hm1R
+    real_0
+    minus_1_lt_0).
+}
+claim Hx0U : x0 :e U.
+{
+  rewrite HU.
+  apply (SepI
+    (Sn n)
+    (fun x:set => Rlt (minus_SNo 1) (apply_fun x 0))
+    x0
+    Hx0Sn).
+  rewrite Hx00.
+  exact Hm1lt0.
+}
+admit. (** remaining: stereographic/homeomorphic-to-disk argument for U, based at x0 **)
 Admitted.
 
 (** Core S59.3 subgoal: northern-cap type open set is simply connected for n>=2. **)
@@ -72464,7 +72509,39 @@ let n V.
 assume Hn : n :e omega.
 assume Hge2 : 2 c= n.
 assume HV.
-admit. (** stereographic/homeomorphic-to-disk argument for V **)
+claim HexCoord0 : exists x:set, x :e Sn n /\ apply_fun x 0 = 0.
+{
+  exact (lemma59_3_exists_sn_coord0_zero_point n Hn Hge2).
+}
+apply HexCoord0.
+let x0.
+assume Hx0pack : x0 :e Sn n /\ apply_fun x0 0 = 0.
+claim Hx0Sn : x0 :e Sn n.
+{
+  exact (andEL
+    (x0 :e Sn n)
+    (apply_fun x0 0 = 0)
+    Hx0pack).
+}
+claim Hx00 : apply_fun x0 0 = 0.
+{
+  exact (andER
+    (x0 :e Sn n)
+    (apply_fun x0 0 = 0)
+    Hx0pack).
+}
+claim Hx0V : x0 :e V.
+{
+  rewrite HV.
+  apply (SepI
+    (Sn n)
+    (fun x:set => Rlt (apply_fun x 0) 1)
+    x0
+    Hx0Sn).
+  rewrite Hx00.
+  exact Rlt_0_1.
+}
+admit. (** remaining: stereographic/homeomorphic-to-disk argument for V, based at x0 **)
 Admitted.
 
 (** Core S59.3 subgoal: overlap U∩V is path connected for n>=2. **)
