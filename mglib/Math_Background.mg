@@ -1,6 +1,6 @@
 (** Balance Alice 2584 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 39944 **)
+(** Balance Charlie 39919 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -64793,7 +64793,8 @@ Admitted.
 (** LATEX VERSION: Let X be the union of subspaces S1,...,Sn, each homeomorphic to S^1, **)
 (** with Si cap Sj = {p} for i <> j. X is Hausdorff iff each Si is closed in X. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T12:30:00 **)
 Theorem ex71_1a_circle_union_hausdorff_iff_closed :
   forall X Tx n Sfam p:set,
   topology_on X Tx ->
@@ -64814,7 +64815,8 @@ Admitted.
 (** LATEX VERSION: X (union of circles meeting at p) is Hausdorff iff **)
 (** the topology of X is coherent with the subspaces Si. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T12:30:00 **)
 Theorem ex71_1b_circle_union_hausdorff_iff_coherent :
   forall X Tx n Sfam p:set,
   topology_on X Tx ->
@@ -64913,7 +64915,8 @@ Admitted.
 (** LATEX VERSION: If X is an infinite wedge of circles, then X does not **)
 (** satisfy the first countability axiom. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T12:30:00 **)
 Theorem ex71_4_infinite_wedge_not_first_countable :
   forall X Tx J Sfam p:set,
   wedge_of_circles X Tx J Sfam p ->
@@ -65448,7 +65451,8 @@ Definition n_fold_torus_topology : set -> set :=
 (** on 2n generators alpha1,beta1,...,alphan,betan by the least normal subgroup **)
 (** containing [alpha1,beta1]...[alphan,betan]. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T12:30:00 **)
 Theorem thm74_3_pi1_n_fold_torus :
   forall n:set,
   n :e omega -> n <> 0 ->
@@ -65497,7 +65501,8 @@ Definition m_fold_projective_plane_topology : set -> set :=
 (** on m generators alpha1,...,alpham by the least normal subgroup **)
 (** containing (alpha1)^2 (alpha2)^2 ... (alpham)^2. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T12:30:00 **)
 Theorem thm74_4_pi1_m_fold_projective_plane :
   forall m:set,
   m :e omega -> ordsucc 0 :e m ->
