@@ -28766,6 +28766,28 @@ assume Hcls HdeltaCls Habel.
 admit.
 Admitted.
 
+(** S52 helper: uniqueness of basepoint-change maps implies commutativity at the basepoint **)
+Theorem ex52_3_helper_unique_to_abelian_step : forall X Tx x0 a b:set,
+  path_connected_space X Tx ->
+  x0 :e X ->
+  (forall x1 alpha beta:set, x1 :e X ->
+    continuous_map unit_interval unit_interval_topology X Tx alpha ->
+    continuous_map unit_interval unit_interval_topology X Tx beta ->
+    apply_fun alpha 0 = x0 -> apply_fun alpha 1 = x1 ->
+    apply_fun beta 0 = x0 -> apply_fun beta 1 = x1 ->
+    forall cls:set, cls :e fundamental_group X Tx x0 ->
+      apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls
+      = apply_fun (basepoint_change_map X Tx x0 x1 beta) cls) ->
+  a :e fundamental_group X Tx x0 ->
+  b :e fundamental_group X Tx x0 ->
+  apply_fun (fundamental_group_mult X Tx x0) (a, b)
+  =
+  apply_fun (fundamental_group_mult X Tx x0) (b, a).
+let X Tx x0 a b.
+assume Hpc Hx0 Huniq Ha Hb.
+admit.
+Admitted.
+
 (** from S52 Exercise 3 (line 498 in algtop.tex) **)
 (** LATEX VERSION: pi1(X,x0) is abelian iff for every pair alpha, beta of paths from x0 to x1, alpha-hat = beta-hat. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
@@ -29004,8 +29026,17 @@ apply iffI.
   {
     exact (HuniqAtx0 b Hb).
   }
-  (** TODO Bob: unfold both sides of HconjEqIdOnB and derive commutativity in pi1(X,x0). **)
-  admit.
+  exact (ex52_3_helper_unique_to_abelian_step
+    X
+    Tx
+    x0
+    a
+    b
+    Hpc
+    Hx0
+    Huniq
+    Ha
+    Hb).
 Admitted.
 
 (** from S52 Exercise 4 (line 499 in algtop.tex): retraction and pi1 **)
