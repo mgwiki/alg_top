@@ -1,8 +1,77 @@
-<div class="admit">The rest of this subproof is missing.</div><div class="proof-comment" style="color:#666; font-style:italic; margin:0.25em 0 0.45em 2.2em;">(*** from S53 Exercise 2 (line 688 in algtop.tex) ***)</div>
+<div class="proof-comment" style="color:#666; font-style:italic; margin:0.25em 0 0.45em 2.2em;">(*** from S53 Exercise 2 (line 688 in algtop.tex) ***)</div>
 <div class="proof-comment" style="color:#666; font-style:italic; margin:0.25em 0 0.45em 2.2em;">(*** LATEX VERSION: If U is connected and evenly covered by p, ***)</div>
 <div class="proof-comment" style="color:#666; font-style:italic; margin:0.25em 0 0.45em 2.2em;">(*** then the partition of p^{-1}(U) into slices is unique. ***)</div>
 <div class="proof-comment" style="color:#666; font-style:italic; margin:0.25em 0 0.45em 2.2em;">(*** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 ***)</div>
 <div class="proof-comment" style="color:#666; font-style:italic; margin:0.25em 0 0.45em 2.2em;">(*** Bounty 55 ***)</div>
 <div class="proof-comment" style="color:#666; font-style:italic; margin:0.25em 0 0.45em 2.2em;">(*** Lock Charlie 2026-02-18T10:40:00 ***)</div>
-<div class="pftacwrap"><span class="srcline" data-line="42989">L42989</span><div class="admitted">The rest of the proof is missing.</div>
+<div class="pftacwrap"><span class="srcline" data-line="42988">L42988</span><div class="lettac"><span class="pftackeyword">Let</span> <span class="ltree">E, Te, B, Tb, p and U</span> be given.</div>
 </div>
+<div class="pftacwrap"><span class="srcline" data-line="42989">L42989</span><div class="assumetac"><span class="pftackeyword">Assume</span> <span class="ltree">HtopE HtopB HconnU HUopen</span>.</div>
+</div>
+<div class="pftacwrap"><span class="srcline" data-line="42990">L42990</span><div class="lettac"><span class="pftackeyword">Let</span> <span class="ltree">slices1 and slices2</span> be given.</div>
+</div>
+<div class="pftacwrap"><span class="srcline" data-line="42991">L42991</span><div class="assumetac"><span class="pftackeyword">Assume</span> <span class="ltree">Hsub1 Hpd1 Hunion1 Hhome1 Hsub2 Hpd2 Hunion2 Hhome2</span>.</div>
+</div>
+<div class="pftacwrap"><span class="srcline" data-line="42992">L42992</span><div class="applytac"><span class="pftackeyword">Apply</span> <span class="ltree"><span class="ltree"><a href="#set_ext" class="anamelink">set_ext</a></span></span> to the current goal.</div>
+</div>
+<div class="subproof"><div class="pftacwrap"><span class="srcline" data-line="42994">L42994</span><div class="lettac"><span class="pftackeyword">Let</span> <span class="ltree">V</span> be given.</div>
+</div>
+<div class="pftacwrap"><span class="srcline" data-line="42994">L42994</span><div class="assumetac"><span class="pftackeyword">Assume</span> <span class="ltree">HV1</span>.</div>
+</div>
+<div class="pftacwrap"><span class="srcline" data-line="42995">L42995</span><div class="claimtac">We prove the intermediate <span class="pftackeyword">claim</span> <span class="ltree">HVsubPreU</span>: <span class="ltree"><span class="ltree"><span class="ltree">V</span>  <a href="#Subq_notation">⊆</a>  <span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><a href="#preimage_of" class="anamelink">preimage_of</a></span> <span class="ltree">E</span></span> <span class="ltree">p</span></span> <span class="ltree">U</span></span></span></span>.</div>
+</div>
+<div class="subproof"><div class="pftacwrap"><span class="srcline" data-line="42997">L42997</span><div class="lettac"><span class="pftackeyword">Let</span> <span class="ltree">x</span> be given.</div>
+</div>
+<div class="pftacwrap"><span class="srcline" data-line="42998">L42998</span><div class="assumetac"><span class="pftackeyword">Assume</span> <span class="ltree">HxV</span>.</div>
+</div>
+<div class="pftacwrap"><span class="srcline" data-line="42999">L42999</span><div class="claimtac">We prove the intermediate <span class="pftackeyword">claim</span> <span class="ltree">HxUnion1</span>: <span class="ltree"><span class="ltree"><span class="ltree">x</span>  <a href="#In_notation">∈</a>  <span class="ltree"><span class="ltree"><a href="#Union" class="anamelink">⋃</a></span> <span class="ltree">slices1</span></span></span></span>.</div>
+</div>
+<div class="subproof"><div class="pftacwrap"><span class="srcline" data-line="43001">L43001</span><div class="exact">An <span class="pftackeyword">exact</span> proof term for the current goal is <span class="ltree"><span class="ltree">(<span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><a href="#UnionI" class="anamelink">UnionI</a></span> <span class="ltree">slices1</span></span> <span class="ltree">x</span></span> <span class="ltree">V</span></span> <span class="ltree">HxV</span></span> <span class="ltree">HV1</span></span>)</span></span>.</div>
+</div>
+</div><div class="pftacwrap"><span class="srcline" data-line="43003">L43003</span><div class="exact">An <span class="pftackeyword">exact</span> proof term for the current goal is <span class="ltree"><span class="ltree">(<span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><a href="#mem_eqR" class="anamelink">mem_eqR</a></span> <span class="ltree">x</span></span> <span class="ltree">(<span class="ltree"><span class="ltree"><a href="#Union" class="anamelink">⋃</a></span> <span class="ltree">slices1</span></span>)</span></span> <span class="ltree">(<span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><a href="#preimage_of" class="anamelink">preimage_of</a></span> <span class="ltree">E</span></span> <span class="ltree">p</span></span> <span class="ltree">U</span></span>)</span></span> <span class="ltree">Hunion1</span></span> <span class="ltree">HxUnion1</span></span>)</span></span>.</div>
+</div>
+</div><div class="pftacwrap"><span class="srcline" data-line="43010">L43010</span><div class="claimtac">We prove the intermediate <span class="pftackeyword">claim</span> <span class="ltree">HVsubUnion2</span>: <span class="ltree"><span class="ltree"><span class="ltree">V</span>  <a href="#Subq_notation">⊆</a>  <span class="ltree"><span class="ltree"><a href="#Union" class="anamelink">⋃</a></span> <span class="ltree">slices2</span></span></span></span>.</div>
+</div>
+<div class="subproof"><div class="pftacwrap"><span class="srcline" data-line="43012">L43012</span><div class="lettac"><span class="pftackeyword">Let</span> <span class="ltree">x</span> be given.</div>
+</div>
+<div class="pftacwrap"><span class="srcline" data-line="43013">L43013</span><div class="assumetac"><span class="pftackeyword">Assume</span> <span class="ltree">HxV</span>.</div>
+</div>
+<div class="pftacwrap"><span class="srcline" data-line="43014">L43014</span><div class="claimtac">We prove the intermediate <span class="pftackeyword">claim</span> <span class="ltree">HxPreU</span>: <span class="ltree"><span class="ltree"><span class="ltree">x</span>  <a href="#In_notation">∈</a>  <span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><a href="#preimage_of" class="anamelink">preimage_of</a></span> <span class="ltree">E</span></span> <span class="ltree">p</span></span> <span class="ltree">U</span></span></span></span>.</div>
+</div>
+<div class="subproof"><div class="pftacwrap"><span class="srcline" data-line="43016">L43016</span><div class="exact">An <span class="pftackeyword">exact</span> proof term for the current goal is <span class="ltree"><span class="ltree">(<span class="ltree"><span class="ltree"><span class="ltree">HVsubPreU</span> <span class="ltree">x</span></span> <span class="ltree">HxV</span></span>)</span></span>.</div>
+</div>
+</div><div class="pftacwrap"><span class="srcline" data-line="43018">L43018</span><div class="exact">An <span class="pftackeyword">exact</span> proof term for the current goal is <span class="ltree"><span class="ltree">(<span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><a href="#mem_eqL" class="anamelink">mem_eqL</a></span> <span class="ltree">x</span></span> <span class="ltree">(<span class="ltree"><span class="ltree"><a href="#Union" class="anamelink">⋃</a></span> <span class="ltree">slices2</span></span>)</span></span> <span class="ltree">(<span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><a href="#preimage_of" class="anamelink">preimage_of</a></span> <span class="ltree">E</span></span> <span class="ltree">p</span></span> <span class="ltree">U</span></span>)</span></span> <span class="ltree">Hunion2</span></span> <span class="ltree">HxPreU</span></span>)</span></span>.</div>
+</div>
+</div><div class="admit">The rest of this subproof is missing.</div></div>
+<div class="subproof"><div class="proof-comment" style="color:#666; font-style:italic; margin:0.25em 0 0.45em 2.2em;">(*** TODO Charlie: derive V :e slices2 from connectedness of V and pairwise-disjoint covering by slices2. ***)</div>
+<div class="pftacwrap"><span class="srcline" data-line="43028">L43028</span><div class="lettac"><span class="pftackeyword">Let</span> <span class="ltree">V</span> be given.</div>
+</div>
+<div class="pftacwrap"><span class="srcline" data-line="43028">L43028</span><div class="assumetac"><span class="pftackeyword">Assume</span> <span class="ltree">HV2</span>.</div>
+</div>
+<div class="pftacwrap"><span class="srcline" data-line="43029">L43029</span><div class="claimtac">We prove the intermediate <span class="pftackeyword">claim</span> <span class="ltree">HVsubPreU</span>: <span class="ltree"><span class="ltree"><span class="ltree">V</span>  <a href="#Subq_notation">⊆</a>  <span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><a href="#preimage_of" class="anamelink">preimage_of</a></span> <span class="ltree">E</span></span> <span class="ltree">p</span></span> <span class="ltree">U</span></span></span></span>.</div>
+</div>
+<div class="subproof"><div class="pftacwrap"><span class="srcline" data-line="43031">L43031</span><div class="lettac"><span class="pftackeyword">Let</span> <span class="ltree">x</span> be given.</div>
+</div>
+<div class="pftacwrap"><span class="srcline" data-line="43032">L43032</span><div class="assumetac"><span class="pftackeyword">Assume</span> <span class="ltree">HxV</span>.</div>
+</div>
+<div class="pftacwrap"><span class="srcline" data-line="43033">L43033</span><div class="claimtac">We prove the intermediate <span class="pftackeyword">claim</span> <span class="ltree">HxUnion2</span>: <span class="ltree"><span class="ltree"><span class="ltree">x</span>  <a href="#In_notation">∈</a>  <span class="ltree"><span class="ltree"><a href="#Union" class="anamelink">⋃</a></span> <span class="ltree">slices2</span></span></span></span>.</div>
+</div>
+<div class="subproof"><div class="pftacwrap"><span class="srcline" data-line="43035">L43035</span><div class="exact">An <span class="pftackeyword">exact</span> proof term for the current goal is <span class="ltree"><span class="ltree">(<span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><a href="#UnionI" class="anamelink">UnionI</a></span> <span class="ltree">slices2</span></span> <span class="ltree">x</span></span> <span class="ltree">V</span></span> <span class="ltree">HxV</span></span> <span class="ltree">HV2</span></span>)</span></span>.</div>
+</div>
+</div><div class="pftacwrap"><span class="srcline" data-line="43037">L43037</span><div class="exact">An <span class="pftackeyword">exact</span> proof term for the current goal is <span class="ltree"><span class="ltree">(<span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><a href="#mem_eqR" class="anamelink">mem_eqR</a></span> <span class="ltree">x</span></span> <span class="ltree">(<span class="ltree"><span class="ltree"><a href="#Union" class="anamelink">⋃</a></span> <span class="ltree">slices2</span></span>)</span></span> <span class="ltree">(<span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><a href="#preimage_of" class="anamelink">preimage_of</a></span> <span class="ltree">E</span></span> <span class="ltree">p</span></span> <span class="ltree">U</span></span>)</span></span> <span class="ltree">Hunion2</span></span> <span class="ltree">HxUnion2</span></span>)</span></span>.</div>
+</div>
+</div><div class="pftacwrap"><span class="srcline" data-line="43044">L43044</span><div class="claimtac">We prove the intermediate <span class="pftackeyword">claim</span> <span class="ltree">HVsubUnion1</span>: <span class="ltree"><span class="ltree"><span class="ltree">V</span>  <a href="#Subq_notation">⊆</a>  <span class="ltree"><span class="ltree"><a href="#Union" class="anamelink">⋃</a></span> <span class="ltree">slices1</span></span></span></span>.</div>
+</div>
+<div class="subproof"><div class="pftacwrap"><span class="srcline" data-line="43046">L43046</span><div class="lettac"><span class="pftackeyword">Let</span> <span class="ltree">x</span> be given.</div>
+</div>
+<div class="pftacwrap"><span class="srcline" data-line="43047">L43047</span><div class="assumetac"><span class="pftackeyword">Assume</span> <span class="ltree">HxV</span>.</div>
+</div>
+<div class="pftacwrap"><span class="srcline" data-line="43048">L43048</span><div class="claimtac">We prove the intermediate <span class="pftackeyword">claim</span> <span class="ltree">HxPreU</span>: <span class="ltree"><span class="ltree"><span class="ltree">x</span>  <a href="#In_notation">∈</a>  <span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><a href="#preimage_of" class="anamelink">preimage_of</a></span> <span class="ltree">E</span></span> <span class="ltree">p</span></span> <span class="ltree">U</span></span></span></span>.</div>
+</div>
+<div class="subproof"><div class="pftacwrap"><span class="srcline" data-line="43050">L43050</span><div class="exact">An <span class="pftackeyword">exact</span> proof term for the current goal is <span class="ltree"><span class="ltree">(<span class="ltree"><span class="ltree"><span class="ltree">HVsubPreU</span> <span class="ltree">x</span></span> <span class="ltree">HxV</span></span>)</span></span>.</div>
+</div>
+</div><div class="pftacwrap"><span class="srcline" data-line="43052">L43052</span><div class="exact">An <span class="pftackeyword">exact</span> proof term for the current goal is <span class="ltree"><span class="ltree">(<span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><a href="#mem_eqL" class="anamelink">mem_eqL</a></span> <span class="ltree">x</span></span> <span class="ltree">(<span class="ltree"><span class="ltree"><a href="#Union" class="anamelink">⋃</a></span> <span class="ltree">slices1</span></span>)</span></span> <span class="ltree">(<span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><a href="#preimage_of" class="anamelink">preimage_of</a></span> <span class="ltree">E</span></span> <span class="ltree">p</span></span> <span class="ltree">U</span></span>)</span></span> <span class="ltree">Hunion1</span></span> <span class="ltree">HxPreU</span></span>)</span></span>.</div>
+</div>
+</div><div class="admit">The rest of this subproof is missing.</div></div>
+<div class="pftacwrap"><span class="srcline" data-line="43061">L43061</span><div class="admitted">The rest of the proof is missing.</div>
+</div><div class="proof-comment" style="color:#666; font-style:italic; margin:0.25em 0 0.45em 2.2em;">(*** TODO Charlie: symmetric inclusion, same uniqueness step against slices1. ***)</div>
