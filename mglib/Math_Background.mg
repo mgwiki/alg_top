@@ -19072,8 +19072,381 @@ claim Hmult :
       HouterReplace).
   }
   rewrite HleftClassEq.
-  (** TODO Bob: reduce the left side and finish class-level concatenation compatibility. **)
-  admit.
+  set lu := path_concat
+    (reverse_path alpha)
+    (path_concat
+      (Eps_i (fun f:set => f :e u))
+      alpha).
+  set lv := path_concat
+    (reverse_path alpha)
+    (path_concat
+      (Eps_i (fun g:set => g :e v))
+      alpha).
+  set epsLu := Eps_i
+    (fun f:set =>
+      f :e apply_fun (basepoint_change_map X Tx x0 x1 alpha) u).
+  set epsLv := Eps_i
+    (fun f:set =>
+      f :e apply_fun (basepoint_change_map X Tx x0 x1 alpha) v).
+  claim HuMapEq :
+    apply_fun (basepoint_change_map X Tx x0 x1 alpha) u
+    = path_homotopy_class_loop X Tx x1 lu.
+  {
+    rewrite (basepoint_change_map_apply
+      X
+      Tx
+      x0
+      x1
+      alpha
+      u
+      Hu).
+    reflexivity.
+  }
+  claim HvMapEq :
+    apply_fun (basepoint_change_map X Tx x0 x1 alpha) v
+    = path_homotopy_class_loop X Tx x1 lv.
+  {
+    rewrite (basepoint_change_map_apply
+      X
+      Tx
+      x0
+      x1
+      alpha
+      v
+      Hv).
+    reflexivity.
+  }
+  claim HuImgRep :
+    exists fu1:set, fu1 :e loop_space X Tx x1 /\
+      apply_fun (basepoint_change_map X Tx x0 x1 alpha) u
+      = path_homotopy_class_loop X Tx x1 fu1.
+  {
+    exact (fundamental_group_member_has_representative
+      X
+      Tx
+      x1
+      (apply_fun (basepoint_change_map X Tx x0 x1 alpha) u)
+      HuImg).
+  }
+  apply HuImgRep.
+  let fu1.
+  assume Hu1Pack.
+  claim Hfu1Loop : fu1 :e loop_space X Tx x1.
+  {
+    exact (andEL
+      (fu1 :e loop_space X Tx x1)
+      (apply_fun (basepoint_change_map X Tx x0 x1 alpha) u
+        = path_homotopy_class_loop X Tx x1 fu1)
+      Hu1Pack).
+  }
+  claim Hu1Eq :
+    apply_fun (basepoint_change_map X Tx x0 x1 alpha) u
+    = path_homotopy_class_loop X Tx x1 fu1.
+  {
+    exact (andER
+      (fu1 :e loop_space X Tx x1)
+      (apply_fun (basepoint_change_map X Tx x0 x1 alpha) u
+        = path_homotopy_class_loop X Tx x1 fu1)
+      Hu1Pack).
+  }
+  claim Hfu1InClass : fu1 :e path_homotopy_class_loop X Tx x1 fu1.
+  {
+    claim Hfu1LoopAt : loop_at X Tx x1 fu1.
+    {
+      exact (loop_space_has_loop_at
+        X
+        Tx
+        x1
+        fu1
+        Hfu1Loop).
+    }
+    claim Hfu1Cont :
+      continuous_map unit_interval unit_interval_topology X Tx fu1.
+    {
+      exact (loop_at_continuous
+        X
+        Tx
+        x1
+        fu1
+        Hfu1LoopAt).
+    }
+    claim Hfu10 : apply_fun fu1 0 = x1.
+    {
+      exact (loop_at_at_zero
+        X
+        Tx
+        x1
+        fu1
+        Hfu1LoopAt).
+    }
+    claim Hfu11 : apply_fun fu1 1 = x1.
+    {
+      exact (loop_at_at_one
+        X
+        Tx
+        x1
+        fu1
+        Hfu1LoopAt).
+    }
+    claim Hfu1Refl : path_homotopic X Tx x1 x1 fu1 fu1.
+    {
+      exact (Lemma_51_1_path_homotopy_refl
+        X
+        Tx
+        x1
+        x1
+        fu1
+        Hfu1Cont
+        Hfu10
+        Hfu11).
+    }
+    exact (SepI
+      (loop_space X Tx x1)
+      (fun h:set => path_homotopic X Tx x1 x1 fu1 h)
+      fu1
+      Hfu1Loop
+      Hfu1Refl).
+  }
+  claim Hfu1InImg :
+    fu1 :e apply_fun (basepoint_change_map X Tx x0 x1 alpha) u.
+  {
+    exact (mem_eqL
+      fu1
+      (apply_fun (basepoint_change_map X Tx x0 x1 alpha) u)
+      (path_homotopy_class_loop X Tx x1 fu1)
+      Hu1Eq
+      Hfu1InClass).
+  }
+  claim HepsLuInImg :
+    epsLu :e apply_fun (basepoint_change_map X Tx x0 x1 alpha) u.
+  {
+    exact (Eps_i_ax
+      (fun f:set =>
+        f :e apply_fun (basepoint_change_map X Tx x0 x1 alpha) u)
+      fu1
+      Hfu1InImg).
+  }
+  claim HvImgRep :
+    exists fv1:set, fv1 :e loop_space X Tx x1 /\
+      apply_fun (basepoint_change_map X Tx x0 x1 alpha) v
+      = path_homotopy_class_loop X Tx x1 fv1.
+  {
+    exact (fundamental_group_member_has_representative
+      X
+      Tx
+      x1
+      (apply_fun (basepoint_change_map X Tx x0 x1 alpha) v)
+      HvImg).
+  }
+  apply HvImgRep.
+  let fv1.
+  assume Hv1Pack.
+  claim Hfv1Loop : fv1 :e loop_space X Tx x1.
+  {
+    exact (andEL
+      (fv1 :e loop_space X Tx x1)
+      (apply_fun (basepoint_change_map X Tx x0 x1 alpha) v
+        = path_homotopy_class_loop X Tx x1 fv1)
+      Hv1Pack).
+  }
+  claim Hv1Eq :
+    apply_fun (basepoint_change_map X Tx x0 x1 alpha) v
+    = path_homotopy_class_loop X Tx x1 fv1.
+  {
+    exact (andER
+      (fv1 :e loop_space X Tx x1)
+      (apply_fun (basepoint_change_map X Tx x0 x1 alpha) v
+        = path_homotopy_class_loop X Tx x1 fv1)
+      Hv1Pack).
+  }
+  claim Hfv1InClass : fv1 :e path_homotopy_class_loop X Tx x1 fv1.
+  {
+    claim Hfv1LoopAt : loop_at X Tx x1 fv1.
+    {
+      exact (loop_space_has_loop_at
+        X
+        Tx
+        x1
+        fv1
+        Hfv1Loop).
+    }
+    claim Hfv1Cont :
+      continuous_map unit_interval unit_interval_topology X Tx fv1.
+    {
+      exact (loop_at_continuous
+        X
+        Tx
+        x1
+        fv1
+        Hfv1LoopAt).
+    }
+    claim Hfv10 : apply_fun fv1 0 = x1.
+    {
+      exact (loop_at_at_zero
+        X
+        Tx
+        x1
+        fv1
+        Hfv1LoopAt).
+    }
+    claim Hfv11 : apply_fun fv1 1 = x1.
+    {
+      exact (loop_at_at_one
+        X
+        Tx
+        x1
+        fv1
+        Hfv1LoopAt).
+    }
+    claim Hfv1Refl : path_homotopic X Tx x1 x1 fv1 fv1.
+    {
+      exact (Lemma_51_1_path_homotopy_refl
+        X
+        Tx
+        x1
+        x1
+        fv1
+        Hfv1Cont
+        Hfv10
+        Hfv11).
+    }
+    exact (SepI
+      (loop_space X Tx x1)
+      (fun h:set => path_homotopic X Tx x1 x1 fv1 h)
+      fv1
+      Hfv1Loop
+      Hfv1Refl).
+  }
+  claim Hfv1InImg :
+    fv1 :e apply_fun (basepoint_change_map X Tx x0 x1 alpha) v.
+  {
+    exact (mem_eqL
+      fv1
+      (apply_fun (basepoint_change_map X Tx x0 x1 alpha) v)
+      (path_homotopy_class_loop X Tx x1 fv1)
+      Hv1Eq
+      Hfv1InClass).
+  }
+  claim HepsLvInImg :
+    epsLv :e apply_fun (basepoint_change_map X Tx x0 x1 alpha) v.
+  {
+    exact (Eps_i_ax
+      (fun f:set =>
+        f :e apply_fun (basepoint_change_map X Tx x0 x1 alpha) v)
+      fv1
+      Hfv1InImg).
+  }
+  claim HepsLuInClassLu :
+    epsLu :e path_homotopy_class_loop X Tx x1 lu.
+  {
+    exact (mem_eqR
+      epsLu
+      (apply_fun (basepoint_change_map X Tx x0 x1 alpha) u)
+      (path_homotopy_class_loop X Tx x1 lu)
+      HuMapEq
+      HepsLuInImg).
+  }
+  claim HepsLvInClassLv :
+    epsLv :e path_homotopy_class_loop X Tx x1 lv.
+  {
+    exact (mem_eqR
+      epsLv
+      (apply_fun (basepoint_change_map X Tx x0 x1 alpha) v)
+      (path_homotopy_class_loop X Tx x1 lv)
+      HvMapEq
+      HepsLvInImg).
+  }
+  claim HluHom :
+    path_homotopic X Tx x1 x1 lu epsLu.
+  {
+    exact (path_homotopy_class_loop_has_homotopy
+      X
+      Tx
+      x1
+      lu
+      epsLu
+      HepsLuInClassLu).
+  }
+  claim HlvHom :
+    path_homotopic X Tx x1 x1 lv epsLv.
+  {
+    exact (path_homotopy_class_loop_has_homotopy
+      X
+      Tx
+      x1
+      lv
+      epsLv
+      HepsLvInClassLv).
+  }
+  claim HrightReplace :
+    path_homotopic
+      X
+      Tx
+      x1
+      x1
+      (path_concat lu lv)
+      (path_concat epsLu epsLv).
+  {
+    exact (path_concat_well_defined_on_classes
+      X
+      Tx
+      x1
+      x1
+      x1
+      lu
+      epsLu
+      lv
+      epsLv
+      HluHom
+      HlvHom).
+  }
+  claim HrightClassEq :
+    path_homotopy_class_loop
+      X
+      Tx
+      x1
+      (path_concat lu lv)
+    =
+    path_homotopy_class_loop
+      X
+      Tx
+      x1
+      (path_concat epsLu epsLv).
+  {
+    exact (path_homotopy_class_loop_eq_of_path_homotopic
+      X
+      Tx
+      x1
+      (path_concat lu lv)
+      (path_concat epsLu epsLv)
+      HrightReplace).
+  }
+  claim HtargetToConjProd :
+    path_homotopy_class_loop
+      X
+      Tx
+      x1
+      (path_concat
+        (reverse_path alpha)
+        (path_concat
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            (Eps_i (fun g:set => g :e v)))
+          alpha))
+    =
+    path_homotopy_class_loop
+      X
+      Tx
+      x1
+      (path_concat lu lv).
+  {
+    (** TODO Bob: establish conjugation product compatibility for basepoint change. **)
+    admit.
+  }
+  rewrite HtargetToConjProd.
+  rewrite <- HuMapEq.
+  rewrite <- HvMapEq.
+  exact HrightClassEq.
 }
 exact (andI
   (function_on
