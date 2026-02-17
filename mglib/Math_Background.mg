@@ -1,6 +1,6 @@
 (** Balance Alice 2410 **)
 (** Balance Bob 2139 **)
-(** Balance Charlie 1213 **)
+(** Balance Charlie 1188 **)
 
 (** Sum of Balences and Bounties 48150 **)
 
@@ -15254,7 +15254,8 @@ Qed.
 (** from S51 Theorem 51.3 (line 321 in algtop.tex): reparametrization **)
 (** LATEX VERSION: Let f be a path in X, and let a0,...,an with 0=a0<a1<...<an=1. Let fi be the path that equals the positive linear map of I onto [ai-1,ai] followed by f. Then [f]=[f1] times ... times [fn]. **)
 (** EFFORT: 12 lines textbook, difficulty 7/10, USD 250 **)
-(** Bounty 250 **)
+(** Bounty 275 **)
+(** Lock Charlie 2026-02-18T06:30:00 **)
 Theorem Theorem_51_3_reparametrization : forall X Tx x0 x1 f a:set,
   continuous_map unit_interval unit_interval_topology X Tx f ->
   apply_fun f 0 = x0 -> apply_fun f 1 = x1 ->
