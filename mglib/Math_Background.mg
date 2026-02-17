@@ -15273,34 +15273,478 @@ set f2 := compose_fun unit_interval (affine_fun_I a (add_SNo 1 (minus_SNo a))) f
 claim Hf1cont :
   continuous_map unit_interval unit_interval_topology X Tx f1.
 {
-  (** TODO Charlie: continuity of left reparameterized segment t maps to f(a times t). **)
-  admit.
+  claim HaR : a :e R.
+  {
+    exact (unit_interval_sub_R a HaI).
+  }
+  claim Haffine_in_C :
+    affine_fun_I 0 a :e C_I_R.
+  {
+    exact (affine_fun_I_in_C_I_R_pos 0 a real_0 HaR (RltE_lt 0 a Ha0)).
+  }
+  claim Haffine_contR :
+    continuous_map unit_interval unit_interval_topology R R_standard_topology
+      (affine_fun_I 0 a).
+  {
+    exact (C_I_R_continuous_real_on_I (affine_fun_I 0 a) Haffine_in_C).
+  }
+  claim Haffine_into_I :
+    forall t:set, t :e unit_interval -> apply_fun (affine_fun_I 0 a) t :e unit_interval.
+  {
+    let t.
+    assume Ht.
+    claim HtR : t :e R.
+    {
+      exact (unit_interval_sub_R t Ht).
+    }
+    claim HSNot : SNo t.
+    {
+      exact (real_SNo t HtR).
+    }
+    claim HSNoa : SNo a.
+    {
+      exact (real_SNo a HaR).
+    }
+    rewrite (affine_fun_I_apply
+      0
+      a
+      t
+      real_0
+      HaR
+      (RltE_lt 0 a Ha0)
+      Ht).
+    rewrite (add_SNo_0R (mul_SNo t a) (SNo_mul_SNo t a HSNot HSNoa)).
+    exact (unit_interval_mul_closed t a Ht HaI).
+  }
+  claim Haffine_contI :
+    continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology
+      (affine_fun_I 0 a).
+  {
+    exact (continuous_map_range_restrict
+      unit_interval
+      unit_interval_topology
+      R
+      R_standard_topology
+      (affine_fun_I 0 a)
+      unit_interval
+      Haffine_contR
+      unit_interval_sub_R
+      Haffine_into_I).
+  }
+  exact (composition_continuous
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    (affine_fun_I 0 a)
+    f
+    Haffine_contI
+    Hfcont).
 }
 claim Hf2cont :
   continuous_map unit_interval unit_interval_topology X Tx f2.
 {
-  (** TODO Charlie: continuity of right reparameterized segment t maps to f(a plus (1-a) times t). **)
-  admit.
+  claim HaR : a :e R.
+  {
+    exact (unit_interval_sub_R a HaI).
+  }
+  claim HSNoa : SNo a.
+  {
+    exact (real_SNo a HaR).
+  }
+  claim HcR : add_SNo 1 (minus_SNo a) :e R.
+  {
+    exact (real_add_SNo
+      1
+      real_1
+      (minus_SNo a)
+      (real_minus_SNo a HaR)).
+  }
+  claim HcPos : 0 < add_SNo 1 (minus_SNo a).
+  {
+    exact (RltE_lt 0 (add_SNo 1 (minus_SNo a))
+      (Rlt_0_diff_of_lt a 1 Ha1)).
+  }
+  claim Haffine_in_C :
+    affine_fun_I a (add_SNo 1 (minus_SNo a)) :e C_I_R.
+  {
+    exact (affine_fun_I_in_C_I_R_pos
+      a
+      (add_SNo 1 (minus_SNo a))
+      HaR
+      HcR
+      HcPos).
+  }
+  claim Haffine_contR :
+    continuous_map unit_interval unit_interval_topology R R_standard_topology
+      (affine_fun_I a (add_SNo 1 (minus_SNo a))).
+  {
+    exact (C_I_R_continuous_real_on_I
+      (affine_fun_I a (add_SNo 1 (minus_SNo a)))
+      Haffine_in_C).
+  }
+  claim Haffine_into_I :
+    forall t:set, t :e unit_interval ->
+      apply_fun (affine_fun_I a (add_SNo 1 (minus_SNo a))) t :e unit_interval.
+  {
+    let t.
+    assume Ht.
+    claim HtR : t :e R.
+    {
+      exact (unit_interval_sub_R t Ht).
+    }
+    claim HmR : mul_SNo t (add_SNo 1 (minus_SNo a)) :e R.
+    {
+      exact (real_mul_SNo t HtR (add_SNo 1 (minus_SNo a)) HcR).
+    }
+    claim HmSNo : SNo (mul_SNo t (add_SNo 1 (minus_SNo a))).
+    {
+      exact (real_SNo (mul_SNo t (add_SNo 1 (minus_SNo a))) HmR).
+    }
+    claim HcNonneg : Rle 0 (add_SNo 1 (minus_SNo a)).
+    {
+      exact (Rlt_implies_Rle
+        0
+        (add_SNo 1 (minus_SNo a))
+        (RltI 0 (add_SNo 1 (minus_SNo a)) real_0 HcR HcPos)).
+    }
+    claim HmBounds :
+      Rle 0 (mul_SNo t (add_SNo 1 (minus_SNo a))) /\
+      Rle (mul_SNo t (add_SNo 1 (minus_SNo a))) (add_SNo 1 (minus_SNo a)).
+    {
+      exact (unit_interval_mul_const_bounds
+        t
+        (add_SNo 1 (minus_SNo a))
+        Ht
+        HcR
+        HcNonneg).
+    }
+    claim HmNonneg : Rle 0 (mul_SNo t (add_SNo 1 (minus_SNo a))).
+    {
+      exact (andEL
+        (Rle 0 (mul_SNo t (add_SNo 1 (minus_SNo a))))
+        (Rle (mul_SNo t (add_SNo 1 (minus_SNo a))) (add_SNo 1 (minus_SNo a)))
+        HmBounds).
+    }
+    claim HmLeC :
+      Rle (mul_SNo t (add_SNo 1 (minus_SNo a))) (add_SNo 1 (minus_SNo a)).
+    {
+      exact (andER
+        (Rle 0 (mul_SNo t (add_SNo 1 (minus_SNo a))))
+        (Rle (mul_SNo t (add_SNo 1 (minus_SNo a))) (add_SNo 1 (minus_SNo a)))
+        HmBounds).
+    }
+    claim HaNonneg : Rle 0 a.
+    {
+      exact (Rlt_implies_Rle 0 a Ha0).
+    }
+    claim HmLeAm :
+      Rle (mul_SNo t (add_SNo 1 (minus_SNo a)))
+          (add_SNo a (mul_SNo t (add_SNo 1 (minus_SNo a)))).
+    {
+      exact (Rle_increase_by_nonneg_left
+        a
+        (mul_SNo t (add_SNo 1 (minus_SNo a)))
+        HaR
+        HmR
+        HaNonneg).
+    }
+    claim HoutNonnegA :
+      Rle 0 (add_SNo a (mul_SNo t (add_SNo 1 (minus_SNo a)))).
+    {
+      exact (Rle_tra
+        0
+        (mul_SNo t (add_SNo 1 (minus_SNo a)))
+        (add_SNo a (mul_SNo t (add_SNo 1 (minus_SNo a))))
+        HmNonneg
+        HmLeAm).
+    }
+    claim HoutNonneg :
+      Rle 0 (add_SNo (mul_SNo t (add_SNo 1 (minus_SNo a))) a).
+    {
+      rewrite <- (add_SNo_com
+        a
+        (mul_SNo t (add_SNo 1 (minus_SNo a)))
+        HSNoa
+        HmSNo).
+      exact HoutNonnegA.
+    }
+    claim HoutLeCa :
+      Rle
+        (add_SNo (mul_SNo t (add_SNo 1 (minus_SNo a))) a)
+        (add_SNo (add_SNo 1 (minus_SNo a)) a).
+    {
+      exact (Rle_add_SNo_1
+        (mul_SNo t (add_SNo 1 (minus_SNo a)))
+        (add_SNo 1 (minus_SNo a))
+        a
+        HmR
+        HcR
+        HaR
+        HmLeC).
+    }
+    claim HcSNo : SNo (add_SNo 1 (minus_SNo a)).
+    {
+      exact (real_SNo (add_SNo 1 (minus_SNo a)) HcR).
+    }
+    claim HcaEq1 : add_SNo (add_SNo 1 (minus_SNo a)) a = 1.
+    {
+      rewrite <- (add_SNo_assoc 1 (minus_SNo a) a SNo_1 (SNo_minus_SNo a HSNoa) HSNoa).
+      rewrite (add_SNo_minus_SNo_linv a HSNoa).
+      rewrite (add_SNo_0R 1 SNo_1).
+      reflexivity.
+    }
+    claim HoutLe1 :
+      Rle (add_SNo (mul_SNo t (add_SNo 1 (minus_SNo a))) a) 1.
+    {
+      claim HcaLe1 : Rle (add_SNo (add_SNo 1 (minus_SNo a)) a) 1.
+      {
+        rewrite HcaEq1.
+        exact (Rle_refl 1 real_1).
+      }
+      exact (Rle_tra
+        (add_SNo (mul_SNo t (add_SNo 1 (minus_SNo a))) a)
+        (add_SNo (add_SNo 1 (minus_SNo a)) a)
+        1
+        HoutLeCa
+        HcaLe1).
+    }
+    claim HoutR :
+      add_SNo (mul_SNo t (add_SNo 1 (minus_SNo a))) a :e R.
+    {
+      exact (real_add_SNo
+        (mul_SNo t (add_SNo 1 (minus_SNo a)))
+        HmR
+        a
+        HaR).
+    }
+    rewrite (affine_fun_I_apply
+      a
+      (add_SNo 1 (minus_SNo a))
+      t
+      HaR
+      HcR
+      HcPos
+      Ht).
+    exact (SepI
+      R
+      (fun x:set => ~ (Rlt x 0) /\ ~ (Rlt 1 x))
+      (add_SNo (mul_SNo t (add_SNo 1 (minus_SNo a))) a)
+      HoutR
+      (andI
+        (~ (Rlt (add_SNo (mul_SNo t (add_SNo 1 (minus_SNo a))) a) 0))
+        (~ (Rlt 1 (add_SNo (mul_SNo t (add_SNo 1 (minus_SNo a))) a)))
+        (RleE_nlt
+          0
+          (add_SNo (mul_SNo t (add_SNo 1 (minus_SNo a))) a)
+          HoutNonneg)
+        (RleE_nlt
+          (add_SNo (mul_SNo t (add_SNo 1 (minus_SNo a))) a)
+          1
+          HoutLe1))).
+  }
+  claim Haffine_contI :
+    continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology
+      (affine_fun_I a (add_SNo 1 (minus_SNo a))).
+  {
+    exact (continuous_map_range_restrict
+      unit_interval
+      unit_interval_topology
+      R
+      R_standard_topology
+      (affine_fun_I a (add_SNo 1 (minus_SNo a)))
+      unit_interval
+      Haffine_contR
+      unit_interval_sub_R
+      Haffine_into_I).
+  }
+  exact (composition_continuous
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    (affine_fun_I a (add_SNo 1 (minus_SNo a)))
+    f
+    Haffine_contI
+    Hfcont).
 }
 claim Hf1_0 : apply_fun f1 0 = x0.
 {
-  (** TODO Charlie: affine_fun_I 0 a maps 0 to 0, then use Hf0. **)
-  admit.
+  claim HaR : a :e R.
+  {
+    exact (unit_interval_sub_R a HaI).
+  }
+  claim HSNoa : SNo a.
+  {
+    exact (real_SNo a HaR).
+  }
+  claim Hphi0 : apply_fun (affine_fun_I 0 a) 0 = 0.
+  {
+    rewrite (affine_fun_I_apply
+      0
+      a
+      0
+      real_0
+      HaR
+      (RltE_lt 0 a Ha0)
+      zero_in_unit_interval).
+    rewrite (mul_SNo_zeroL a HSNoa).
+    rewrite (add_SNo_0R 0 SNo_0).
+    reflexivity.
+  }
+  rewrite (compose_fun_apply
+    unit_interval
+    (affine_fun_I 0 a)
+    f
+    0
+    zero_in_unit_interval).
+  rewrite Hphi0.
+  exact Hf0.
 }
 claim Hf1_1 : apply_fun f1 1 = apply_fun f a.
 {
-  (** TODO Charlie: affine_fun_I 0 a maps 1 to a. **)
-  admit.
+  claim HaR : a :e R.
+  {
+    exact (unit_interval_sub_R a HaI).
+  }
+  claim HSNoa : SNo a.
+  {
+    exact (real_SNo a HaR).
+  }
+  claim Hphi1 : apply_fun (affine_fun_I 0 a) 1 = a.
+  {
+    rewrite (affine_fun_I_apply
+      0
+      a
+      1
+      real_0
+      HaR
+      (RltE_lt 0 a Ha0)
+      one_in_unit_interval).
+    rewrite (mul_SNo_oneL a HSNoa).
+    rewrite (add_SNo_0R a HSNoa).
+    reflexivity.
+  }
+  rewrite (compose_fun_apply
+    unit_interval
+    (affine_fun_I 0 a)
+    f
+    1
+    one_in_unit_interval).
+  rewrite Hphi1.
+  reflexivity.
 }
 claim Hf2_0 : apply_fun f2 0 = apply_fun f a.
 {
-  (** TODO Charlie: affine_fun_I a (1-a) maps 0 to a. **)
-  admit.
+  claim HaR : a :e R.
+  {
+    exact (unit_interval_sub_R a HaI).
+  }
+  claim HSNoa : SNo a.
+  {
+    exact (real_SNo a HaR).
+  }
+  claim HcR : add_SNo 1 (minus_SNo a) :e R.
+  {
+    exact (real_add_SNo
+      1
+      real_1
+      (minus_SNo a)
+      (real_minus_SNo a HaR)).
+  }
+  claim HcPos : 0 < add_SNo 1 (minus_SNo a).
+  {
+    exact (RltE_lt 0 (add_SNo 1 (minus_SNo a))
+      (Rlt_0_diff_of_lt a 1 Ha1)).
+  }
+  claim HcSNo : SNo (add_SNo 1 (minus_SNo a)).
+  {
+    exact (real_SNo (add_SNo 1 (minus_SNo a)) HcR).
+  }
+  claim Hphi0 :
+    apply_fun (affine_fun_I a (add_SNo 1 (minus_SNo a))) 0 = a.
+  {
+    rewrite (affine_fun_I_apply
+      a
+      (add_SNo 1 (minus_SNo a))
+      0
+      HaR
+      HcR
+      HcPos
+      zero_in_unit_interval).
+    rewrite (mul_SNo_zeroL (add_SNo 1 (minus_SNo a)) HcSNo).
+    rewrite (add_SNo_0L a HSNoa).
+    reflexivity.
+  }
+  rewrite (compose_fun_apply
+    unit_interval
+    (affine_fun_I a (add_SNo 1 (minus_SNo a)))
+    f
+    0
+    zero_in_unit_interval).
+  rewrite Hphi0.
+  reflexivity.
 }
 claim Hf2_1 : apply_fun f2 1 = x1.
 {
-  (** TODO Charlie: affine_fun_I a (1-a) maps 1 to 1, then use Hf1. **)
-  admit.
+  claim HaR : a :e R.
+  {
+    exact (unit_interval_sub_R a HaI).
+  }
+  claim HSNoa : SNo a.
+  {
+    exact (real_SNo a HaR).
+  }
+  claim HmaR : minus_SNo a :e R.
+  {
+    exact (real_minus_SNo a HaR).
+  }
+  claim HSNoma : SNo (minus_SNo a).
+  {
+    exact (SNo_minus_SNo a HSNoa).
+  }
+  claim HcR : add_SNo 1 (minus_SNo a) :e R.
+  {
+    exact (real_add_SNo 1 real_1 (minus_SNo a) HmaR).
+  }
+  claim HcPos : 0 < add_SNo 1 (minus_SNo a).
+  {
+    exact (RltE_lt 0 (add_SNo 1 (minus_SNo a))
+      (Rlt_0_diff_of_lt a 1 Ha1)).
+  }
+  claim HcSNo : SNo (add_SNo 1 (minus_SNo a)).
+  {
+    exact (real_SNo (add_SNo 1 (minus_SNo a)) HcR).
+  }
+  claim Hphi1 :
+    apply_fun (affine_fun_I a (add_SNo 1 (minus_SNo a))) 1 = 1.
+  {
+    rewrite (affine_fun_I_apply
+      a
+      (add_SNo 1 (minus_SNo a))
+      1
+      HaR
+      HcR
+      HcPos
+      one_in_unit_interval).
+    rewrite (mul_SNo_oneL (add_SNo 1 (minus_SNo a)) HcSNo).
+    rewrite <- (add_SNo_assoc 1 (minus_SNo a) a SNo_1 HSNoma HSNoa).
+    rewrite (add_SNo_minus_SNo_linv a HSNoa).
+    rewrite (add_SNo_0R 1 SNo_1).
+    reflexivity.
+  }
+  rewrite (compose_fun_apply
+    unit_interval
+    (affine_fun_I a (add_SNo 1 (minus_SNo a)))
+    f
+    1
+    one_in_unit_interval).
+  rewrite Hphi1.
+  exact Hf1.
 }
 claim Hreparam_hom :
   path_homotopic X Tx x0 x1 f (path_concat f1 f2).
