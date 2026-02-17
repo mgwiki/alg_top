@@ -48454,7 +48454,307 @@ claim Hlocal_comp :
   forall z:set, z :e Z ->
     exists U:set, U :e Tz /\ z :e U /\ evenly_covered X Tx Z Tz (compose_fun X q r) U.
 {
-  admit.
+  let z.
+  assume HzZ.
+  set Fz := {y :e Y | apply_fun r y = z}.
+  claim HFzFin : finite Fz.
+  {
+    exact (Hfiber z HzZ).
+  }
+  claim HrLoc : exists Ur:set, Ur :e Tz /\ z :e Ur /\ evenly_covered Y Ty Z Tz r Ur.
+  {
+    exact (Hrlocal z HzZ).
+  }
+  apply HrLoc.
+  let Ur.
+  assume HUrPack.
+  claim HUrOpen : Ur :e Tz.
+  {
+    exact (andEL (Ur :e Tz) (z :e Ur)
+      (andEL (Ur :e Tz /\ z :e Ur)
+        (evenly_covered Y Ty Z Tz r Ur)
+        HUrPack)).
+  }
+  claim HzUr : z :e Ur.
+  {
+    exact (andER (Ur :e Tz) (z :e Ur)
+      (andEL (Ur :e Tz /\ z :e Ur)
+        (evenly_covered Y Ty Z Tz r Ur)
+        HUrPack)).
+  }
+  claim HevenUr : evenly_covered Y Ty Z Tz r Ur.
+  {
+    exact (andER (Ur :e Tz /\ z :e Ur)
+      (evenly_covered Y Ty Z Tz r Ur)
+      HUrPack).
+  }
+  claim HslicesrEx : exists slicesr:set,
+    slicesr c= Ty /\
+    pairwise_disjoint slicesr /\
+    Union slicesr = preimage_of Y r Ur /\
+    (forall V:set, V :e slicesr ->
+      homeomorphism V (subspace_topology Y Ty V) Ur (subspace_topology Z Tz Ur)
+        (graph V (apply_fun r))).
+  {
+    exact (andER
+      (Ur :e Tz)
+      (exists slicesr:set,
+        slicesr c= Ty /\
+        pairwise_disjoint slicesr /\
+        Union slicesr = preimage_of Y r Ur /\
+        (forall V:set, V :e slicesr ->
+          homeomorphism V (subspace_topology Y Ty V) Ur (subspace_topology Z Tz Ur)
+            (graph V (apply_fun r))))
+      HevenUr).
+  }
+  apply HslicesrEx.
+  let slicesr.
+  assume Hslicesr.
+  claim Hslicesr_abc :
+    (slicesr c= Ty /\ pairwise_disjoint slicesr) /\
+    Union slicesr = preimage_of Y r Ur.
+  {
+    exact (andEL
+      ((slicesr c= Ty /\ pairwise_disjoint slicesr) /\
+       Union slicesr = preimage_of Y r Ur)
+      (forall V:set, V :e slicesr ->
+        homeomorphism V (subspace_topology Y Ty V) Ur (subspace_topology Z Tz Ur)
+          (graph V (apply_fun r)))
+      Hslicesr).
+  }
+  claim Hslicesr_sub : slicesr c= Ty.
+  {
+    exact (andEL (slicesr c= Ty) (pairwise_disjoint slicesr)
+      (andEL (slicesr c= Ty /\ pairwise_disjoint slicesr)
+        (Union slicesr = preimage_of Y r Ur) Hslicesr_abc)).
+  }
+  claim Hslicesr_union : Union slicesr = preimage_of Y r Ur.
+  {
+    exact (andER (slicesr c= Ty /\ pairwise_disjoint slicesr)
+      (Union slicesr = preimage_of Y r Ur) Hslicesr_abc).
+  }
+  claim Hslicesr_home :
+    forall V:set, V :e slicesr ->
+      homeomorphism V (subspace_topology Y Ty V) Ur (subspace_topology Z Tz Ur)
+        (graph V (apply_fun r)).
+  {
+    exact (andER
+      ((slicesr c= Ty /\ pairwise_disjoint slicesr) /\
+       Union slicesr = preimage_of Y r Ur)
+      (forall V:set, V :e slicesr ->
+        homeomorphism V (subspace_topology Y Ty V) Ur (subspace_topology Z Tz Ur)
+          (graph V (apply_fun r)))
+      Hslicesr).
+  }
+  set Vy_sel := fun y:set => Eps_i (fun V:set => V :e slicesr /\ y :e V).
+  set Uqy_sel := fun y:set => Eps_i (fun Uq:set =>
+    Uq :e Ty /\ y :e Uq /\ evenly_covered X Tx Y Ty q Uq).
+  set Wy := fun y:set => Uqy_sel y :/\: Vy_sel y.
+  set imgy := fun y:set =>
+    image_of (graph (Vy_sel y) (apply_fun r)) (Wy y).
+  set img_fam := {imgy y | y :e Fz}.
+  claim HFzSubUnion : Fz c= Union slicesr.
+  {
+    let y.
+    assume HyFz.
+    claim HyY : y :e Y.
+    {
+      exact (SepE1 Y (fun y1:set => apply_fun r y1 = z) y HyFz).
+    }
+    claim HryZ : apply_fun r y = z.
+    {
+      exact (SepE2 Y (fun y1:set => apply_fun r y1 = z) y HyFz).
+    }
+    claim HyPreUr : y :e preimage_of Y r Ur.
+    {
+      claim HryUr : apply_fun r y :e Ur.
+      {
+        rewrite HryZ.
+        exact HzUr.
+      }
+      exact (SepI Y (fun y0:set => apply_fun r y0 :e Ur) y HyY HryUr).
+    }
+    rewrite Hslicesr_union.
+    exact HyPreUr.
+  }
+  claim HVyOk : forall y:set, y :e Fz ->
+    Vy_sel y :e slicesr /\ y :e Vy_sel y.
+  {
+    let y.
+    assume HyFz.
+    claim HyUnion : y :e Union slicesr.
+    {
+      exact (HFzSubUnion y HyFz).
+    }
+    apply (UnionE slicesr y HyUnion).
+    let V.
+    assume HVpack.
+    claim HyV : y :e V.
+    {
+      exact (andEL (y :e V) (V :e slicesr) HVpack).
+    }
+    claim HVslice : V :e slicesr.
+    {
+      exact (andER (y :e V) (V :e slicesr) HVpack).
+    }
+    exact (Eps_i_ax
+      (fun V0:set => V0 :e slicesr /\ y :e V0)
+      V
+      (andI (V :e slicesr) (y :e V) HVslice HyV)).
+  }
+  claim HUqyOk : forall y:set, y :e Fz ->
+    Uqy_sel y :e Ty /\ y :e Uqy_sel y /\ evenly_covered X Tx Y Ty q (Uqy_sel y).
+  {
+    let y.
+    assume HyFz.
+    claim HyY : y :e Y.
+    {
+      exact (SepE1 Y (fun y1:set => apply_fun r y1 = z) y HyFz).
+    }
+    apply (Hqlocal y HyY).
+    let Uq.
+    assume HUqPack.
+    claim HUqOpen : Uq :e Ty.
+    {
+      exact (andEL (Uq :e Ty) (y :e Uq)
+        (andEL (Uq :e Ty /\ y :e Uq) (evenly_covered X Tx Y Ty q Uq) HUqPack)).
+    }
+    claim HyUq : y :e Uq.
+    {
+      exact (andER (Uq :e Ty) (y :e Uq)
+        (andEL (Uq :e Ty /\ y :e Uq) (evenly_covered X Tx Y Ty q Uq) HUqPack)).
+    }
+    claim HevenUq : evenly_covered X Tx Y Ty q Uq.
+    {
+      exact (andER (Uq :e Ty /\ y :e Uq) (evenly_covered X Tx Y Ty q Uq) HUqPack).
+    }
+    exact (Eps_i_ax
+      (fun Uq0:set => Uq0 :e Ty /\ y :e Uq0 /\ evenly_covered X Tx Y Ty q Uq0)
+      Uq
+      (andI (Uq :e Ty /\ y :e Uq) (evenly_covered X Tx Y Ty q Uq)
+        (andI (Uq :e Ty) (y :e Uq) HUqOpen HyUq)
+        HevenUq)).
+  }
+  claim HimgyOpen : forall y:set, y :e Fz -> imgy y :e Tz.
+  {
+    let y.
+    assume HyFz.
+    claim HVySlice : Vy_sel y :e slicesr.
+    {
+      exact (andEL (Vy_sel y :e slicesr) (y :e Vy_sel y) (HVyOk y HyFz)).
+    }
+    claim HVyOpen : Vy_sel y :e Ty.
+    {
+      exact (Hslicesr_sub (Vy_sel y) HVySlice).
+    }
+    claim HhomeVy :
+      homeomorphism (Vy_sel y) (subspace_topology Y Ty (Vy_sel y)) Ur
+        (subspace_topology Z Tz Ur) (graph (Vy_sel y) (apply_fun r)).
+    {
+      exact (Hslicesr_home (Vy_sel y) HVySlice).
+    }
+    claim HUqyOpen : Uqy_sel y :e Ty.
+    {
+      exact (andEL (Uqy_sel y :e Ty) (y :e Uqy_sel y)
+        (andEL (Uqy_sel y :e Ty /\ y :e Uqy_sel y) (evenly_covered X Tx Y Ty q (Uqy_sel y))
+          (HUqyOk y HyFz))).
+    }
+    claim HWySubspace : Wy y :e subspace_topology Y Ty (Vy_sel y).
+    {
+      exact (subspace_topologyI Y Ty (Vy_sel y) (Uqy_sel y) HUqyOpen).
+    }
+    claim HimgySubspace : imgy y :e subspace_topology Z Tz Ur.
+    {
+      exact (homeomorphism_image_open
+        (Vy_sel y) (subspace_topology Y Ty (Vy_sel y))
+        Ur (subspace_topology Z Tz Ur)
+        (graph (Vy_sel y) (apply_fun r))
+        (Wy y)
+        HhomeVy
+        HWySubspace).
+    }
+    exact (open_in_subspace_if_ambient_open Z Tz Ur (imgy y)
+      HtopZ HUrOpen
+      (subspace_topology_subset Z Tz Ur (imgy y) HimgySubspace)
+      (open_inI Ur (subspace_topology Z Tz Ur) (imgy y)
+        (subspace_topology_is_topology Z Tz Ur HtopZ
+          (open_in_subset Z Tz Ur (open_inI Z Tz Ur HtopZ HUrOpen)))
+        HimgySubspace)).
+  }
+  claim HzImgy : forall y:set, y :e Fz -> z :e imgy y.
+  {
+    let y.
+    assume HyFz.
+    claim HyVy : y :e Vy_sel y.
+    {
+      exact (andER (Vy_sel y :e slicesr) (y :e Vy_sel y) (HVyOk y HyFz)).
+    }
+    claim HyUqy : y :e Uqy_sel y.
+    {
+      exact (andER (Uqy_sel y :e Ty) (y :e Uqy_sel y)
+        (andEL (Uqy_sel y :e Ty /\ y :e Uqy_sel y) (evenly_covered X Tx Y Ty q (Uqy_sel y))
+          (HUqyOk y HyFz))).
+    }
+    claim HyWy : y :e Wy y.
+    {
+      exact (binintersectI (Uqy_sel y) (Vy_sel y) y HyUqy HyVy).
+    }
+    claim HryZ : apply_fun r y = z.
+    {
+      exact (SepE2 Y (fun y1:set => apply_fun r y1 = z) y HyFz).
+    }
+    prove z :e image_of (graph (Vy_sel y) (apply_fun r)) (Wy y).
+    rewrite <- HryZ.
+    rewrite <- (apply_fun_graph (Vy_sel y) (apply_fun r) y HyVy).
+    exact (ReplI (Wy y)
+      (fun x:set => apply_fun (graph (Vy_sel y) (apply_fun r)) x) y HyWy).
+  }
+  claim HimgFamSubTz : img_fam c= Tz.
+  {
+    let S.
+    assume HS.
+    apply (ReplE_impred Fz imgy S HS).
+    let y.
+    assume HyFz HSeq.
+    rewrite HSeq.
+    exact (HimgyOpen y HyFz).
+  }
+  claim HimgFamFin : finite img_fam.
+  {
+    exact (Repl_finite imgy Fz HFzFin).
+  }
+  claim HimgFamPower : img_fam :e Power Tz.
+  {
+    exact (PowerI Tz img_fam HimgFamSubTz).
+  }
+  set U' := intersection_of_family Z img_fam.
+  claim HU'Open : U' :e Tz.
+  {
+    exact (finite_intersection_in_topology Z Tz img_fam HtopZ HimgFamPower HimgFamFin).
+  }
+  claim HzU' : z :e U'.
+  {
+    prove z :e intersection_of_family Z img_fam.
+    apply intersection_of_familyI.
+    - exact HzZ.
+    - let S.
+      assume HS.
+      apply (ReplE_impred Fz imgy S HS).
+      let y.
+      assume HyFz HSeq.
+      rewrite HSeq.
+      exact (HzImgy y HyFz).
+  }
+  claim Heven_comp : evenly_covered X Tx Z Tz (compose_fun X q r) U'.
+  {
+    admit.
+  }
+  witness U'.
+  apply andI.
+  - apply andI.
+    + exact HU'Open.
+    + exact HzU'.
+  - exact Heven_comp.
 }
 (** Conclude r o q is a covering map **)
 prove covering_map X Tx Z Tz (compose_fun X q r).
