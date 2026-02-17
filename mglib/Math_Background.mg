@@ -65342,12 +65342,61 @@ claim Halpha1 : apply_fun alpha 1 = x1.
     alpha
     HalphaPath).
 }
+claim HtopX_from_Ha : topology_on X Tx.
+{
+  claim HaRep :
+    exists f:set, f :e loop_space X Tx x0 /\
+      a = path_homotopy_class_loop X Tx x0 f.
+  {
+    exact (fundamental_group_member_has_representative
+      X
+      Tx
+      x0
+      a
+      Ha).
+  }
+  apply HaRep.
+  let f.
+  assume HfPack : f :e loop_space X Tx x0 /\
+    a = path_homotopy_class_loop X Tx x0 f.
+  claim HfLoop : f :e loop_space X Tx x0.
+  {
+    exact (andEL
+      (f :e loop_space X Tx x0)
+      (a = path_homotopy_class_loop X Tx x0 f)
+      HfPack).
+  }
+  claim HfLoopAt : loop_at X Tx x0 f.
+  {
+    exact (loop_space_has_loop_at
+      X
+      Tx
+      x0
+      f
+      HfLoop).
+  }
+  claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
+  {
+    exact (loop_at_continuous
+      X
+      Tx
+      x0
+      f
+      HfLoopAt).
+  }
+  exact (continuous_map_topology_cod
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    f
+    HfCont).
+}
 claim HinjIfCont :
-  topology_on X Tx ->
   continuous_map unit_interval unit_interval_topology X Tx alpha ->
   a = b.
 {
-  assume HtopX HalphaCont.
+  assume HalphaCont.
   claim Hbij :
     bijection
       (fundamental_group X Tx x0)
@@ -65360,7 +65409,7 @@ claim HinjIfCont :
       x0
       x1
       alpha
-      HtopX
+      HtopX_from_Ha
       HalphaCont
       Halpha0
       Halpha1).
@@ -65376,7 +65425,7 @@ claim HinjIfCont :
     Hb
     Hab).
 }
-admit. (** remaining gap: obtain topology/continuity assumptions from current hypotheses **)
+admit. (** remaining gap: obtain continuity of alpha from path_between hypothesis **)
 Admitted.
 
 (** helper sub-bounty for Cor 58.5: alpha-hat is surjective **)
@@ -65417,13 +65466,62 @@ claim Halpha1 : apply_fun alpha 1 = x1.
     alpha
     HalphaPath).
 }
+claim HtopX_from_Hc : topology_on X Tx.
+{
+  claim HcRep :
+    exists f:set, f :e loop_space X Tx x1 /\
+      c = path_homotopy_class_loop X Tx x1 f.
+  {
+    exact (fundamental_group_member_has_representative
+      X
+      Tx
+      x1
+      c
+      Hc).
+  }
+  apply HcRep.
+  let f.
+  assume HfPack : f :e loop_space X Tx x1 /\
+    c = path_homotopy_class_loop X Tx x1 f.
+  claim HfLoop : f :e loop_space X Tx x1.
+  {
+    exact (andEL
+      (f :e loop_space X Tx x1)
+      (c = path_homotopy_class_loop X Tx x1 f)
+      HfPack).
+  }
+  claim HfLoopAt : loop_at X Tx x1 f.
+  {
+    exact (loop_space_has_loop_at
+      X
+      Tx
+      x1
+      f
+      HfLoop).
+  }
+  claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
+  {
+    exact (loop_at_continuous
+      X
+      Tx
+      x1
+      f
+      HfLoopAt).
+  }
+  exact (continuous_map_topology_cod
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    f
+    HfCont).
+}
 claim HsurjIfCont :
-  topology_on X Tx ->
   continuous_map unit_interval unit_interval_topology X Tx alpha ->
   exists a:set, a :e fundamental_group X Tx x0 /\
     apply_fun (basepoint_change_map X Tx x0 x1 alpha) a = c.
 {
-  assume HtopX HalphaCont.
+  assume HalphaCont.
   claim Hbij :
     bijection
       (fundamental_group X Tx x0)
@@ -65436,7 +65534,7 @@ claim HsurjIfCont :
       x0
       x1
       alpha
-      HtopX
+      HtopX_from_Hc
       HalphaCont
       Halpha0
       Halpha1).
@@ -65449,7 +65547,7 @@ claim HsurjIfCont :
     Hbij
     Hc).
 }
-admit. (** remaining gap: obtain topology/continuity assumptions from current hypotheses **)
+admit. (** remaining gap: obtain continuity of alpha from path_between hypothesis **)
 Admitted.
 
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 30 **)
