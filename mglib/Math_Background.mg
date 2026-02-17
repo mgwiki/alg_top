@@ -1,5 +1,5 @@
 (** Balance Alice 2135 **)
-(** Balance Bob 2045 **)
+(** Balance Bob 2039 **)
 (** Balance Charlie 1223 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -33652,7 +33652,8 @@ admit.
 Admitted.
 
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Bob 2026-02-18T02:30:00 **)
 Theorem cor58_5_homotopic_maps_injective : forall X Tx Y Ty x0 h k:set,
   continuous_map X Tx Y Ty h ->
   continuous_map X Tx Y Ty k ->
@@ -33676,7 +33677,8 @@ Admitted.
 (** from S58 Corollary 58.5 surjective case (line 1423 in algtop.tex) **)
 (** LATEX VERSION: Let h, k: X -> Y be homotopic. If h-star is surjective, so is k-star. **)
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Bob 2026-02-18T02:30:00 **)
 Theorem cor58_5_homotopic_maps_surjective : forall X Tx Y Ty x0 h k:set,
   continuous_map X Tx Y Ty h ->
   continuous_map X Tx Y Ty k ->
