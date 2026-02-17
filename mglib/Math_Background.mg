@@ -18910,8 +18910,20 @@ claim HsurjUnique :
   apply andI.
   - apply andI.
     + exact Hx.
-    + admit.
-  - admit.
+    + rewrite (basepoint_change_map_apply
+        X
+        Tx
+        x0
+        x1
+        alpha
+        x
+        Hx).
+      (** TODO Bob: show alpha-hat o beta-hat is identity on classes. **)
+      admit.
+  - let x'.
+    assume Hx' Hx'eq.
+    (** TODO Bob: uniqueness from inverse-composition identity. **)
+    admit.
 }
 exact (andI
   (function_on
