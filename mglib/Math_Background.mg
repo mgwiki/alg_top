@@ -66615,7 +66615,8 @@ Admitted.
 (** from S59 Thm 59.1 (line 1541 in algtop.tex) **)
 (** LATEX VERSION: Suppose X = U union V where U, V are open in X. If U intersect V is path connected and x0 in U intersect V, then the images of i-star and j-star generate pi_1(X, x0). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
+(** Bounty 242 **)
+(** Lock Bob 1771439500 **)
 Theorem thm59_1_open_cover_generates_pi1 : forall X Tx U V x0:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -67014,7 +67015,8 @@ Qed.
 (** from S59 Cor 59.2 (line 1585 in algtop.tex) **)
 (** LATEX VERSION: If X = U union V, U and V open and simply connected, U intersect V nonempty and path connected, then X is simply connected. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
+(** Bounty 37 **)
+(** Lock Bob 1771439500 **)
 Theorem cor59_2_simply_connected_union : forall X Tx U V:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -68043,7 +68045,8 @@ Qed.
 
 (** Helper subproblem for S59.3: choose two simply connected open pieces covering S^n **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 30 **)
-(** Bounty 33 **)
+(** Bounty 37 **)
+(** Lock Bob 1771439500 **)
 Theorem lemma59_3_sphere_cover_data : forall n:set, n :e omega -> 2 c= n ->
   exists U V:set,
     U :e Sn_topology n /\ V :e Sn_topology n /\
@@ -68423,7 +68426,141 @@ claim HVopen : V :e Sn_topology n.
 }
 claim Hcover : Sn n = U :\/: V.
 {
-  admit. (** every sphere point has first coordinate in (-1,1) or at an endpoint covered by one cap condition **)
+  apply set_ext.
+  - let x.
+    assume HxSn : x :e Sn n.
+    claim HxE : x :e euclidean_space (ordsucc n).
+    {
+      exact (SepE1
+        (euclidean_space (ordsucc n))
+        (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+        x
+        HxSn).
+    }
+    claim Hx0R : apply_fun x 0 :e R.
+    {
+      exact (euclidean_space_coord_in_R
+        (ordsucc n)
+        x
+        0
+        HxE
+        H0in).
+    }
+    apply (order_rel_trichotomy_or_impred
+      R
+      (apply_fun x 0)
+      1
+      simply_ordered_set_R
+      Hx0R
+      real_1
+      (x :e U :\/: V)).
+    + assume Hx0lt1_ord : order_rel R (apply_fun x 0) 1.
+      claim Hx0lt1 : Rlt (apply_fun x 0) 1.
+      {
+        exact (order_rel_R_implies_Rlt
+          (apply_fun x 0)
+          1
+          Hx0lt1_ord).
+      }
+      apply binunionI2.
+      exact (SepI
+        (Sn n)
+        (fun x:set => Rlt (apply_fun x 0) 1)
+        x
+        HxSn
+        Hx0lt1).
+    + assume Hx0eq1 : apply_fun x 0 = 1.
+      claim Hm1R : minus_SNo 1 :e R.
+      {
+        exact (real_minus_SNo 1 real_1).
+      }
+      claim Hm1lt0 : Rlt (minus_SNo 1) 0.
+      {
+        exact (RltI
+          (minus_SNo 1)
+          0
+          Hm1R
+          real_0
+          minus_1_lt_0).
+      }
+      claim Hm1lt1 : Rlt (minus_SNo 1) 1.
+      {
+        exact (Rlt_tra
+          (minus_SNo 1)
+          0
+          1
+          Hm1lt0
+          Rlt_0_1).
+      }
+      apply binunionI1.
+      apply (SepI
+        (Sn n)
+        (fun x:set => Rlt (minus_SNo 1) (apply_fun x 0))
+        x
+        HxSn).
+      rewrite Hx0eq1.
+      exact Hm1lt1.
+    + assume H1ltx0_ord : order_rel R 1 (apply_fun x 0).
+      claim H1ltx0 : Rlt 1 (apply_fun x 0).
+      {
+        exact (order_rel_R_implies_Rlt
+          1
+          (apply_fun x 0)
+          H1ltx0_ord).
+      }
+      claim Hm1R : minus_SNo 1 :e R.
+      {
+        exact (real_minus_SNo 1 real_1).
+      }
+      claim Hm1lt0 : Rlt (minus_SNo 1) 0.
+      {
+        exact (RltI
+          (minus_SNo 1)
+          0
+          Hm1R
+          real_0
+          minus_1_lt_0).
+      }
+      claim Hm1lt1 : Rlt (minus_SNo 1) 1.
+      {
+        exact (Rlt_tra
+          (minus_SNo 1)
+          0
+          1
+          Hm1lt0
+          Rlt_0_1).
+      }
+      claim Hm1ltx0 : Rlt (minus_SNo 1) (apply_fun x 0).
+      {
+        exact (Rlt_tra
+          (minus_SNo 1)
+          1
+          (apply_fun x 0)
+          Hm1lt1
+          H1ltx0).
+      }
+      apply binunionI1.
+      exact (SepI
+        (Sn n)
+        (fun x:set => Rlt (minus_SNo 1) (apply_fun x 0))
+        x
+        HxSn
+        Hm1ltx0).
+  - let x.
+    assume HxUV : x :e U :\/: V.
+    apply (binunionE U V x HxUV).
+    + assume HxU : x :e U.
+      exact (SepE1
+        (Sn n)
+        (fun x:set => Rlt (minus_SNo 1) (apply_fun x 0))
+        x
+        HxU).
+    + assume HxV : x :e V.
+      exact (SepE1
+        (Sn n)
+        (fun x:set => Rlt (apply_fun x 0) 1)
+        x
+        HxV).
 }
 claim HscU : simply_connected U (subspace_topology (Sn n) (Sn_topology n) U).
 {
@@ -68516,7 +68653,8 @@ Admitted. (** depends on admitted cor59_2 and admitted lemma59_3_sphere_cover_da
 (** from S59 Exercise 1 (line 1615 in algtop.tex) **)
 (** LATEX VERSION: Let X be the union of two copies of S^2 having a single point in common. The fundamental group of X is trivial. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
+(** Bounty 61 **)
+(** Lock Bob 1771439500 **)
 Theorem ex59_1_wedge_S2_trivial_pi1 : forall X Tx x0 A B fA fB:set,
   topology_on X Tx ->
   X = A :\/: B ->
@@ -68575,7 +68713,8 @@ Admitted.
 (** from S59 Exercise 4(a) continued: both i-star and j-star trivial **)
 (** LATEX VERSION: If both i-star and j-star are trivial, then pi1(X,x0) is trivial. **)
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 25 **)
-(** Bounty 28 **)
+(** Bounty 31 **)
+(** Lock Bob 1771439500 **)
 Theorem ex59_4a_both_trivial : forall X Tx U V x0:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
