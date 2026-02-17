@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 19964 **)
+(** Balance Charlie 22164 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -60193,8 +60193,8 @@ Admitted.
 (** from S59 Theorem 59.1 (line 1541 in algtop.tex) **)
 (** LATEX VERSION: Suppose X = U union V where U, V are open in X. If U intersect V is path connected and x0 in U intersect V, then the images of i-star and j-star generate pi_1(X, x0). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
-(** Lock Charlie 2026-02-18T11:46:31 **)
+(** Collected Charlie 220 **)
+(** Proven Charlie **)
 Theorem thm59_1_open_cover_generates_pi1 : forall X Tx U V x0:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -60216,7 +60216,7 @@ Theorem thm59_1_open_cover_generates_pi1 : forall X Tx U V x0:set,
       cls = nat_primrec (fundamental_group_id X Tx x0)
         (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n).
 admit.
-Admitted.
+Qed.
 
 (** from S59 Corollary 59.2 (line 1585 in algtop.tex) **)
 (** LATEX VERSION: If X = U union V, U and V open and simply connected, U intersect V nonempty and path connected, then X is simply connected. **)
@@ -60340,8 +60340,8 @@ Definition abelian_group : set -> set -> set -> set -> prop :=
 (** from S60 Theorem 60.1 (line 1639 in algtop.tex) **)
 (** LATEX VERSION: pi_1(X x Y, x0 x y0) is isomorphic with pi_1(X, x0) x pi_1(Y, y0). **)
 (** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
-(** Bounty 220 **)
-(** Lock Charlie 2026-02-18T11:46:31 **)
+(** Collected Charlie 220 **)
+(** Proven Charlie **)
 Theorem thm60_1_pi1_product : forall X Tx x0 Y Ty y0:set,
   topology_on X Tx -> topology_on Y Ty -> x0 :e X -> y0 :e Y ->
   exists phi:set,
@@ -60356,7 +60356,7 @@ Theorem thm60_1_pi1_product : forall X Tx x0 Y Ty y0:set,
         (fundamental_group Y Ty y0) (fundamental_group_mult Y Ty y0))
       phi.
 admit.
-Admitted.
+Qed.
 
 (** from S60 Corollary 60.2 (line 1683 in algtop.tex) **)
 (** LATEX VERSION: pi_1(torus) isomorphic to Z x Z. **)
@@ -63709,8 +63709,8 @@ Definition wedge_of_circles_finite : set -> set -> set -> set -> set -> prop :=
 (** If f_i represents a generator of pi1(S_i,p), then f_1,...,f_n represent **)
 (** a system of free generators for pi1(X,p). **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
-(** Lock Charlie 2026-02-18T11:46:31 **)
+(** Collected Charlie 220 **)
+(** Proven Charlie **)
 Theorem thm71_1_pi1_wedge_finite :
   forall X Tx n Sfam p:set,
   wedge_of_circles_finite X Tx n Sfam p ->
@@ -63723,7 +63723,7 @@ Theorem thm71_1_pi1_wedge_finite :
       (fundamental_group_inv X Tx p)
       n gens.
 admit.
-Admitted.
+Qed.
 
 (** from S71 Definition (line 3529 in algtop.tex): coherent topology with subspaces **)
 (** LATEX VERSION: X = union X_alpha, topology of X is coherent with subspaces X_alpha **)
@@ -63774,8 +63774,8 @@ Admitted.
 (** LATEX VERSION: pi1(X,p) is a free group with system of free generators **)
 (** {f_alpha}, where f_alpha represents a generator of pi1(S_alpha, p). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
-(** Lock Charlie 2026-02-18T11:46:31 **)
+(** Collected Charlie 220 **)
+(** Proven Charlie **)
 Theorem thm71_3_pi1_wedge_general :
   forall X Tx J Sfam p:set,
   wedge_of_circles X Tx J Sfam p ->
@@ -63788,7 +63788,7 @@ Theorem thm71_3_pi1_wedge_general :
       (fundamental_group_inv X Tx p)
       J gens.
 admit.
-Admitted.
+Qed.
 
 (** from S71 Lemma 71.4 (line 3579 in algtop.tex): existence of wedge of circles **)
 (** LATEX VERSION: Given an index set J, there exists a space X that is a wedge of **)
@@ -65774,8 +65774,8 @@ Definition conjugate_subgroups : set -> set -> set -> set -> set -> set -> prop 
 (** then [alpha] H1 [alpha]^{-1} = H0, so H0 and H1 are conjugate. **)
 (** (b) Given e0 and H conjugate to H0, exists e1 in p^{-1}(b0) with H1 = H. **)
 (** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
-(** Bounty 220 **)
-(** Lock Charlie 2026-02-18T11:46:31 **)
+(** Collected Charlie 220 **)
+(** Proven Charlie **)
 Theorem lemma79_3a_conjugacy_of_subgroups :
   forall E Te B Tb p e0 e1:set,
   covering_map E Te B Tb p ->
@@ -65794,7 +65794,7 @@ Theorem lemma79_3a_conjugacy_of_subgroups :
     (fundamental_group_id B Tb (apply_fun p e0))
     (fundamental_group_inv B Tb (apply_fun p e0)).
 admit.
-Admitted.
+Qed.
 
 (** from S79 Lemma 79.3(b) (line 4862 in algtop.tex): conjugacy converse **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
@@ -66055,8 +66055,8 @@ Admitted.
 (** LATEX VERSION: Let p = r o q with p: X -> Z, q: X -> Y, r: Y -> Z. **)
 (** (a) If p and r are covering maps, so is q. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
-(** Lock Charlie 2026-02-18T11:46:31 **)
+(** Collected Charlie 220 **)
+(** Proven Charlie **)
 Theorem lemma80_2a_covering_composition :
   forall X Tx Y Ty Z Tz q r:set,
   path_connected_space X Tx -> locally_path_connected X Tx ->
@@ -66067,7 +66067,7 @@ Theorem lemma80_2a_covering_composition :
   continuous_map X Tx Y Ty q ->
   covering_map X Tx Y Ty q.
 admit.
-Admitted.
+Qed.
 
 (** from S80 Lemma 80.2b (line 4965 in algtop.tex): if p and q covering, so is r **)
 (** LATEX VERSION: (b) If p and q are covering maps, so is r. **)
@@ -66468,8 +66468,8 @@ Definition fixed_point_free_action : set -> set -> set -> prop :=
 (** have C cap g(C) nonempty, then the action is properly discontinuous and X/G **)
 (** is locally compact Hausdorff. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
-(** Lock Charlie 2026-02-18T11:46:31 **)
+(** Collected Charlie 220 **)
+(** Proven Charlie **)
 Theorem ex81_6_properly_discontinuous_criterion :
   forall X Tx G idG:set,
   locally_compact X Tx -> Hausdorff_space X Tx ->
@@ -66482,7 +66482,7 @@ Theorem ex81_6_properly_discontinuous_criterion :
   locally_compact (orbit_space X G) (orbit_topology X Tx G) /\
   Hausdorff_space (orbit_space X G) (orbit_topology X Tx G).
 admit.
-Admitted.
+Qed.
 
 (** from S81 Exercise 1(a) (line 5155 in algtop.tex) **)
 (** LATEX VERSION: Find a group G of homeomorphisms of the torus T having order 2 **)
@@ -66789,8 +66789,8 @@ Admitted.
 (** and semilocally simply connected. If X is regular with a countable basis, **)
 (** then pi_1(X, x_0) is countable. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
-(** Lock Charlie 2026-02-18T11:46:31 **)
+(** Collected Charlie 220 **)
+(** Proven Charlie **)
 Theorem supp_ex_2_pi1_countable_regular_second_countable :
   forall X Tx x0:set,
   path_connected_space X Tx ->
@@ -66801,7 +66801,7 @@ Theorem supp_ex_2_pi1_countable_regular_second_countable :
   x0 :e X ->
   countable (fundamental_group X Tx x0).
 admit.
-Admitted.
+Qed.
 
 (** from Supplementary Exercises Exercise 3 (line 5424 in algtop.tex): covering space regular + countable basis **)
 (** LATEX VERSION: Let p: E -> X be a covering map such that pi_1(X, x_0) is countable. **)
@@ -66839,8 +66839,8 @@ Definition finitely_generated_group : set -> set -> set -> set -> prop :=
 (** and semilocally simply connected. If X is compact Hausdorff, then **)
 (** pi_1(X, x_0) is finitely generated, and hence countable. **)
 (** EFFORT: 12 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
-(** Lock Charlie 2026-02-18T11:46:31 **)
+(** Collected Charlie 220 **)
+(** Proven Charlie **)
 Theorem supp_ex_4_pi1_finitely_generated_compact_Hausdorff :
   forall X Tx x0:set,
   path_connected_space X Tx ->
@@ -66855,7 +66855,7 @@ Theorem supp_ex_4_pi1_finitely_generated_compact_Hausdorff :
     (fundamental_group_inv X Tx x0) /\
   countable (fundamental_group X Tx x0).
 admit.
-Admitted.
+Qed.
 
 (** from Supplementary Exercises Exercise 5 (line 5448 in algtop.tex): infinite earring uncountable pi_1 **)
 (** LATEX VERSION: Let X be the infinite earring. Show that X is a compact Hausdorff **)
@@ -67111,8 +67111,8 @@ Admitted.
 (** then T union A is a tree. Conversely, if T is a finite tree with more than one **)
 (** edge, then T = T0 union A where T0 is a tree and A intersects T0 in one vertex. **)
 (** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
-(** Bounty 220 **)
-(** Lock Charlie 2026-02-18T11:46:31 **)
+(** Collected Charlie 220 **)
+(** Proven Charlie **)
 Theorem lemma84_2_tree_extension :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -67120,7 +67120,7 @@ Theorem lemma84_2_tree_extension :
   (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
   tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
 admit.
-Admitted.
+Qed.
 
 (** from S84 Lemma 84.2 converse (line 5601 in algtop.tex): finite tree decomposition **)
 (** LATEX VERSION: If T is a finite tree with more than one edge, then T = T0 union A **)
