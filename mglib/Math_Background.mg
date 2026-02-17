@@ -15266,7 +15266,65 @@ Theorem Theorem_51_3_reparametrization : forall X Tx x0 x1 f a:set,
     apply_fun f1 0 = x0 /\ apply_fun f1 1 = apply_fun f a /\
     apply_fun f2 0 = apply_fun f a /\ apply_fun f2 1 = x1 /\
     path_homotopic X Tx x0 x1 f (path_concat f1 f2).
-admit.
+let X Tx x0 x1 f a.
+assume Hfcont Hf0 Hf1 HaI Ha0 Ha1.
+set f1 := compose_fun unit_interval (affine_fun_I 0 a) f.
+set f2 := compose_fun unit_interval (affine_fun_I a (add_SNo 1 (minus_SNo a))) f.
+claim Hf1cont :
+  continuous_map unit_interval unit_interval_topology X Tx f1.
+{
+  (** TODO Charlie: continuity of left reparameterized segment t maps to f(a times t). **)
+  admit.
+}
+claim Hf2cont :
+  continuous_map unit_interval unit_interval_topology X Tx f2.
+{
+  (** TODO Charlie: continuity of right reparameterized segment t maps to f(a plus (1-a) times t). **)
+  admit.
+}
+claim Hf1_0 : apply_fun f1 0 = x0.
+{
+  (** TODO Charlie: affine_fun_I 0 a maps 0 to 0, then use Hf0. **)
+  admit.
+}
+claim Hf1_1 : apply_fun f1 1 = apply_fun f a.
+{
+  (** TODO Charlie: affine_fun_I 0 a maps 1 to a. **)
+  admit.
+}
+claim Hf2_0 : apply_fun f2 0 = apply_fun f a.
+{
+  (** TODO Charlie: affine_fun_I a (1-a) maps 0 to a. **)
+  admit.
+}
+claim Hf2_1 : apply_fun f2 1 = x1.
+{
+  (** TODO Charlie: affine_fun_I a (1-a) maps 1 to 1, then use Hf1. **)
+  admit.
+}
+claim Hreparam_hom :
+  path_homotopic X Tx x0 x1 f (path_concat f1 f2).
+{
+  (** TODO Charlie: build standard reparameterization homotopy from f to path_concat f1 f2. **)
+  admit.
+}
+witness f1.
+witness f2.
+exact (and7I
+  (continuous_map unit_interval unit_interval_topology X Tx f1)
+  (continuous_map unit_interval unit_interval_topology X Tx f2)
+  (apply_fun f1 0 = x0)
+  (apply_fun f1 1 = apply_fun f a)
+  (apply_fun f2 0 = apply_fun f a)
+  (apply_fun f2 1 = x1)
+  (path_homotopic X Tx x0 x1 f (path_concat f1 f2))
+  Hf1cont
+  Hf2cont
+  Hf1_0
+  Hf1_1
+  Hf2_0
+  Hf2_1
+  Hreparam_hom).
 Admitted.
 
 (** from S51 Example 1 (line 150 in algtop.tex): straight-line homotopy **)
