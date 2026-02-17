@@ -67998,6 +67998,28 @@ claim Hcore :
       rewrite <- Hcover.
       exact (preimage_of_whole unit_interval X fcls HfclsFun).
     }
+    claim HUVopen : (U :/\: V) :e Tx.
+    {
+      exact (topology_binintersect_closed X Tx U V Htop HU HV).
+    }
+    claim HpreUVopen : preimage_of unit_interval fcls (U :/\: V) :e unit_interval_topology.
+    {
+      exact (continuous_map_preimage
+        unit_interval
+        unit_interval_topology
+        X
+        Tx
+        fcls
+        HfclsCont
+        (U :/\: V)
+        HUVopen).
+    }
+    claim HpreUVeq :
+      preimage_of unit_interval fcls (U :/\: V) =
+      (preimage_of unit_interval fcls U) :/\: (preimage_of unit_interval fcls V).
+    {
+      exact (preimage_of_binintersect unit_interval fcls U V).
+    }
     claim H0preUV : 0 :e preimage_of unit_interval fcls (U :/\: V).
     {
       claim H0inUV : apply_fun fcls 0 :e U :/\: V.
@@ -68011,6 +68033,20 @@ claim Hcore :
         0
         zero_in_unit_interval
         H0inUV).
+    }
+    claim H1preUV : 1 :e preimage_of unit_interval fcls (U :/\: V).
+    {
+      claim H1inUV : apply_fun fcls 1 :e U :/\: V.
+      {
+        rewrite Hfcls1.
+        exact Hx0UV.
+      }
+      exact (SepI
+        unit_interval
+        (fun t:set => apply_fun fcls t :e (U :/\: V))
+        1
+        one_in_unit_interval
+        H1inUV).
     }
     claim HpreUVne : preimage_of unit_interval fcls (U :/\: V) <> Empty.
     {
