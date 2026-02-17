@@ -37894,6 +37894,121 @@ apply and7I.
   + exact HH1t.
 Qed.
 
+(** helper: ex52_7b with explicit identity law on mult **)
+(** Proven Charlie **)
+Theorem ex52_7b_tensor_induces_operation_with_identity : forall G Tg:set,
+  topological_group G Tg ->
+  forall e mult:set,
+  e :e G ->
+  function_on mult (setprod G G) G ->
+  (forall x:set, x :e G -> apply_fun mult (e,x) = x /\ apply_fun mult (x,e) = x) ->
+  continuous_map (setprod G G) (product_topology G Tg G Tg) G Tg mult ->
+  forall f fp g gp:set,
+    loop_at G Tg e f -> loop_at G Tg e g ->
+    loop_at G Tg e fp -> loop_at G Tg e gp ->
+    path_homotopic G Tg e e f fp ->
+    path_homotopic G Tg e e g gp ->
+    path_homotopic G Tg e e
+      (graph unit_interval (fun s:set => apply_fun mult (apply_fun f s, apply_fun g s)))
+      (graph unit_interval (fun s:set => apply_fun mult (apply_fun fp s, apply_fun gp s))).
+let G Tg.
+assume Htg.
+let e mult.
+assume He HmultFun Hident HmultCont.
+let f fp g gp.
+assume HfLoop HgLoop HfpLoop HgpLoop Hffp Hggp.
+set tensor_fg := graph unit_interval (fun s:set => apply_fun mult (apply_fun f s, apply_fun g s)).
+set tensor_fpgp := graph unit_interval (fun s:set => apply_fun mult (apply_fun fp s, apply_fun gp s)).
+claim Hconcat_to_tensor :
+  path_homotopic G Tg e e (path_concat f g) tensor_fg.
+{
+  exact (ex52_7c_star_equals_tensor
+    G
+    Tg
+    Htg
+    e
+    mult
+    He
+    HmultFun
+    Hident
+    HmultCont
+    f
+    g
+    HfLoop
+    HgLoop).
+}
+claim Hconcatp_to_tensorp :
+  path_homotopic G Tg e e (path_concat fp gp) tensor_fpgp.
+{
+  exact (ex52_7c_star_equals_tensor
+    G
+    Tg
+    Htg
+    e
+    mult
+    He
+    HmultFun
+    Hident
+    HmultCont
+    fp
+    gp
+    HfpLoop
+    HgpLoop).
+}
+claim Hconcat_wd :
+  path_homotopic G Tg e e (path_concat f g) (path_concat fp gp).
+{
+  exact (path_concat_well_defined_on_classes
+    G
+    Tg
+    e
+    e
+    e
+    f
+    fp
+    g
+    gp
+    Hffp
+    Hggp).
+}
+claim Htensor_to_concat :
+  path_homotopic G Tg e e tensor_fg (path_concat f g).
+{
+  exact (Lemma_51_1_path_homotopy_sym
+    G
+    Tg
+    e
+    e
+    (path_concat f g)
+    tensor_fg
+    Hconcat_to_tensor).
+}
+claim Htensor_to_concatp :
+  path_homotopic G Tg e e tensor_fg (path_concat fp gp).
+{
+  exact (Lemma_51_1_path_homotopy_trans
+    G
+    Tg
+    e
+    e
+    tensor_fg
+    (path_concat f g)
+    (path_concat fp gp)
+    Htensor_to_concat
+    Hconcat_wd).
+}
+exact (Lemma_51_1_path_homotopy_trans
+  G
+  Tg
+  e
+  e
+  tensor_fg
+  (path_concat fp gp)
+  tensor_fpgp
+  Htensor_to_concatp
+  Hconcatp_to_tensorp).
+Qed.
+
 (** helper for ex52_7d: reverse direction of ex52_7c **)
 (** path_concat g f ~ tensor(f,g) using the alternative decomposition **)
 (** Proven Alice **)
