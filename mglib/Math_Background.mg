@@ -72479,7 +72479,30 @@ assume Hn : n :e omega.
 assume Hge2 : 2 c= n.
 assume HU.
 assume HV.
-admit. (** overlap is path connected for n>=2 **)
+claim HtopSn : topology_on (Sn n) (Sn_topology n).
+{
+  exact (lemma59_3_Sn_topology_on n).
+}
+claim HoverlapEq :
+  U :/\: V
+  =
+  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
+   {x :e Sn n | Rlt (apply_fun x 0) 1}).
+{
+  rewrite HU.
+  rewrite HV.
+  reflexivity.
+}
+claim HexCoord0 : exists x:set, x :e Sn n /\ apply_fun x 0 = 0.
+{
+  exact (lemma59_3_exists_sn_coord0_zero_point n Hn Hge2).
+}
+claim HneOverlap : (U :/\: V) <> Empty.
+{
+  rewrite HoverlapEq.
+  exact (lemma59_3_overlap_nonempty_from_coord0_exists n HexCoord0).
+}
+admit. (** remaining: construct paths in the overlap subset using n>=2 geometry **)
 Admitted.
 
 Theorem lemma59_3_sphere_cover_data : forall n:set, n :e omega -> 2 c= n ->
