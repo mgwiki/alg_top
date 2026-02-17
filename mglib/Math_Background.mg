@@ -28739,6 +28739,33 @@ claim HfinalClass :
 exact HfinalClass.
 Admitted.
 
+(** S52 helper: conjugation-step equalities used in Exercise 3 abelian => uniqueness direction **)
+Theorem ex52_3_helper_conj_pair : forall X Tx x0 x1 alpha beta cls delta_cls:set,
+  topology_on X Tx ->
+  continuous_map unit_interval unit_interval_topology X Tx alpha ->
+  continuous_map unit_interval unit_interval_topology X Tx beta ->
+  apply_fun alpha 0 = x0 -> apply_fun alpha 1 = x1 ->
+  apply_fun beta 0 = x0 -> apply_fun beta 1 = x1 ->
+  cls :e fundamental_group X Tx x0 ->
+  delta_cls :e fundamental_group X Tx x0 ->
+  (forall a b:set, a :e fundamental_group X Tx x0 -> b :e fundamental_group X Tx x0 ->
+    apply_fun (fundamental_group_mult X Tx x0) (a, b)
+    = apply_fun (fundamental_group_mult X Tx x0) (b, a)) ->
+  (apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls
+    =
+   apply_fun (basepoint_change_map X Tx x0 x1 beta)
+      (apply_fun (fundamental_group_mult X Tx x0) (cls, delta_cls)))
+  /\
+  (apply_fun (basepoint_change_map X Tx x0 x1 beta) cls
+    =
+   apply_fun (basepoint_change_map X Tx x0 x1 beta)
+      (apply_fun (fundamental_group_mult X Tx x0) (delta_cls, cls))).
+let X Tx x0 x1 alpha beta cls delta_cls.
+assume HtopX HalphaCont HbetaCont Halpha0 Halpha1 Hbeta0 Hbeta1.
+assume Hcls HdeltaCls Habel.
+admit.
+Admitted.
+
 (** from S52 Exercise 3 (line 498 in algtop.tex) **)
 (** LATEX VERSION: pi1(X,x0) is abelian iff for every pair alpha, beta of paths from x0 to x1, alpha-hat = beta-hat. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
@@ -28804,14 +28831,53 @@ apply iffI.
       Hcls
       HdeltaCls).
   }
+  claim HconjPair :
+    (apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls
+      =
+     apply_fun (basepoint_change_map X Tx x0 x1 beta)
+       (apply_fun (fundamental_group_mult X Tx x0) (cls, delta_cls)))
+    /\
+    (apply_fun (basepoint_change_map X Tx x0 x1 beta) cls
+      =
+     apply_fun (basepoint_change_map X Tx x0 x1 beta)
+       (apply_fun (fundamental_group_mult X Tx x0) (delta_cls, cls))).
+  {
+    exact (ex52_3_helper_conj_pair
+      X
+      Tx
+      x0
+      x1
+      alpha
+      beta
+      cls
+      delta_cls
+      HtopX
+      HalphaCont
+      HbetaCont
+      Halpha0
+      Halpha1
+      Hbeta0
+      Hbeta1
+      Hcls
+      HdeltaCls
+      Habel).
+  }
   claim HalphaAsConj :
     apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls
     =
     apply_fun (basepoint_change_map X Tx x0 x1 beta)
       (apply_fun (fundamental_group_mult X Tx x0) (cls, delta_cls)).
   {
-    (** TODO Bob: identify alpha-hat as beta-hat composed with right multiplication by the loop class alpha then reverse beta. **)
-    admit.
+    exact (andEL
+      (apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls
+        =
+       apply_fun (basepoint_change_map X Tx x0 x1 beta)
+         (apply_fun (fundamental_group_mult X Tx x0) (cls, delta_cls)))
+      (apply_fun (basepoint_change_map X Tx x0 x1 beta) cls
+        =
+       apply_fun (basepoint_change_map X Tx x0 x1 beta)
+         (apply_fun (fundamental_group_mult X Tx x0) (delta_cls, cls)))
+      HconjPair).
   }
   claim HbetaAsConj :
     apply_fun (basepoint_change_map X Tx x0 x1 beta) cls
@@ -28819,8 +28885,16 @@ apply iffI.
     apply_fun (basepoint_change_map X Tx x0 x1 beta)
       (apply_fun (fundamental_group_mult X Tx x0) (delta_cls, cls)).
   {
-    (** TODO Bob: identify beta-hat followed by left multiplication by the same loop class alpha then reverse beta. **)
-    admit.
+    exact (andER
+      (apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls
+        =
+       apply_fun (basepoint_change_map X Tx x0 x1 beta)
+         (apply_fun (fundamental_group_mult X Tx x0) (cls, delta_cls)))
+      (apply_fun (basepoint_change_map X Tx x0 x1 beta) cls
+        =
+       apply_fun (basepoint_change_map X Tx x0 x1 beta)
+         (apply_fun (fundamental_group_mult X Tx x0) (delta_cls, cls)))
+      HconjPair).
   }
   claim HcommTransport :
     apply_fun (basepoint_change_map X Tx x0 x1 beta)
