@@ -67998,6 +67998,27 @@ claim Hcore :
       rewrite <- Hcover.
       exact (preimage_of_whole unit_interval X fcls HfclsFun).
     }
+    claim H0preUV : 0 :e preimage_of unit_interval fcls (U :/\: V).
+    {
+      claim H0inUV : apply_fun fcls 0 :e U :/\: V.
+      {
+        rewrite Hfcls0.
+        exact Hx0UV.
+      }
+      exact (SepI
+        unit_interval
+        (fun t:set => apply_fun fcls t :e (U :/\: V))
+        0
+        zero_in_unit_interval
+        H0inUV).
+    }
+    claim HpreUVne : preimage_of unit_interval fcls (U :/\: V) <> Empty.
+    {
+      exact (elem_implies_nonempty
+        (preimage_of unit_interval fcls (U :/\: V))
+        0
+        H0preUV).
+    }
     admit. (** van Kampen style generation argument pending for nontrivial classes **)
 }
 exact Hcore.
