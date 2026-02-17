@@ -38445,7 +38445,7 @@ Definition covering_map_R_S1 : set :=
 Theorem thm53_1_R_covers_S1 :
   covering_map R R_standard_topology S1 S1_topology covering_map_R_S1.
 admit.
-Qed.
+Admitted.
 
 (** from S53 Theorem 53.2 (line 608 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map. If B0 is a subspace of B, **)
@@ -53463,7 +53463,7 @@ Theorem lemma55_3_nulhomotopic_extends_to_B2 : forall X Tx h:set,
   exists k:set, continuous_map B2 B2_topology X Tx k /\
     (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x).
 admit.
-Qed.
+Admitted.
 
 (** from S55 Lemma 55.3 direction (2) implies (3) (line 907 in algtop.tex) **)
 (** LATEX VERSION: If h extends to k: B^2 -> X, then h-star is the trivial homomorphism. **)
@@ -61156,7 +61156,7 @@ Theorem lemma60_5_figure_eight_nonabelian :
     (fundamental_group_id figure_eight figure_eight_topology figure_eight_basepoint)
     (fundamental_group_inv figure_eight figure_eight_topology figure_eight_basepoint)).
 admit.
-Qed.
+Admitted.
 
 (** Infrastructure: disjoint union (coproduct) topology **)
 (** U is open in X :+: Y iff preimages under both injections are open **)
@@ -61735,7 +61735,7 @@ Theorem ex62_6a_borsuk_lemma_Sn : forall n:set, n :e omega ->
       component_of (Sn n :\: image_of f A)
         (subspace_topology (Sn n) (Sn_topology n) (Sn n :\: image_of f A)) b.
 admit.
-Qed.
+Admitted.
 
 (** from S62 Exercise 6(b) (line 2009 in algtop.tex) **)
 (** LATEX VERSION: No compact contractible subspace of S^n separates S^n. **)
@@ -61975,7 +61975,7 @@ Theorem ex63_1a_disjoint_curves_three_components : forall C1 C2:set,
     connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2) /\
     connected_space W3 (subspace_topology (Sn 2) (Sn_topology 2) W3).
 admit.
-Qed.
+Admitted.
 
 (** from S63 Exercise 1(b) (line 2241 in algtop.tex) **)
 (** LATEX VERSION: The three components have boundaries C1, C2, and C1 union C2. **)
@@ -62177,7 +62177,7 @@ Theorem thm64_2_utilities_not_planar : forall G Tg H W:set,
   utilities_graph H W G Tg ->
   ~(exists f:set, embedding_of G Tg (setprod R R) R2_topology f).
 admit.
-Qed.
+Admitted.
 
 (** from S64 Lemma 64.3 (line 2322 in algtop.tex) **)
 (** LATEX VERSION: Let X be a subspace of S^2 that is a complete graph on four **)
@@ -62223,7 +62223,7 @@ Theorem thm64_4_K5_not_planar : forall V G Tg:set,
   complete_graph_on V G Tg -> equip V 5 ->
   ~(exists f:set, embedding_of G Tg (setprod R R) R2_topology f).
 admit.
-Qed.
+Admitted.
 
 (** from S64 Exercise 1(a) (line 2365 in algtop.tex) **)
 (** LATEX VERSION: X is the union of finitely many arcs, each pair meeting **)
@@ -62628,7 +62628,7 @@ Theorem lemma66_3_integral_winding : forall f a:set,
         (fun z:set => complex_reciprocal (R2_sub z a)))
       f).
 admit.
-Qed.
+Admitted.
 
 (** from S66 Theorem 66.4 (line 2551 in algtop.tex) **)
 (** LATEX VERSION: Cauchy integral formula (Ahlfors version, used in proof of classical). **)
@@ -62875,7 +62875,7 @@ Theorem lemma67_1_extension_condition_direct_sum :
               apply_fun h' x = apply_fun (apply_fun hfam alpha) x) ->
           forall x:set, x :e G -> apply_fun h' x = apply_fun h x)).
 admit.
-Qed.
+Admitted.
 
 (** from S67 Lemma 67.1 converse (line 2613 in algtop.tex) **)
 (** LATEX VERSION: If the groups G_alpha generate G and the extension condition holds, **)
@@ -63374,7 +63374,7 @@ Theorem lemma68_1_extension_condition_free_product :
               apply_fun h' x = apply_fun (apply_fun hfam alpha) x) ->
           forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
 admit.
-Qed.
+Admitted.
 
 (** from S68 Definition (line 2827 in algtop.tex): external free product **)
 (** LATEX VERSION: G is the external free product of {G_alpha} relative to **)
@@ -63748,7 +63748,7 @@ Theorem lemma69_3_commutator_subgroup :
     group_homomorphism G mult H multH h ->
     commutator_subgroup G mult e inv c= kernel_of G eH h).
 admit.
-Qed.
+Admitted.
 
 (** from S69 Theorem 69.4 (line 3125 in algtop.tex): abelianization of free group **)
 (** LATEX VERSION: If G is free with generators {a_alpha}, then G/[G,G] is a free **)
@@ -64240,7 +64240,7 @@ Theorem ex70_1b_trivial_inclusion_isomorphism :
       group_isomorphism FP multFP
         (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0) h.
 admit.
-Qed.
+Admitted.
 
 (** from S70 Exercise 2(a) (line 3483 in algtop.tex) **)
 (** LATEX VERSION: If i2 is surjective, then j1 induces an epimorphism **)
@@ -65824,7 +65824,7 @@ Theorem ex75_4_eight_sided_polygon_2 :
     (m_fold_projective_plane_space (ordsucc (ordsucc (ordsucc (ordsucc 0)))))
     (m_fold_projective_plane_topology (ordsucc (ordsucc (ordsucc (ordsucc 0))))) h).
 admit.
-Qed.
+Admitted.
 
 (** ============================================================ **)
 (** S76 Cutting and Pasting                                      **)
@@ -66541,7 +66541,7 @@ Theorem lemma79_3b_conjugacy_converse :
         (fundamental_group E Te e1)
         (induced_homomorphism E Te e1 B Tb (apply_fun p e1) p) = H.
 admit.
-Qed.
+Admitted.
 
 (** from S79 Theorem 79.4 (line 4890 in algtop.tex): equivalence iff conjugate subgroups **)
 (** LATEX VERSION: The covering maps p and p' are equivalent iff the subgroups **)
@@ -66587,7 +66587,7 @@ Theorem ex79_5b_torus_covering_classification :
     (setprod S1 R) (product_topology S1 S1_topology R R_standard_topology) h) \/
   (exists h:set, homeomorphism E Te torus torus_topology h).
 admit.
-Qed.
+Admitted.
 
 (** from S79 Exercise 1 (line 4911 in algtop.tex) **)
 (** LATEX VERSION: If n > 1, every continuous map f: S^n -> S^1 is nulhomotopic. **)
@@ -66774,7 +66774,7 @@ Theorem lemma80_1_path_component_covering :
     covering_map E0 (subspace_topology E Te E0) B Tb
       (graph E0 (fun x:set => apply_fun p x)).
 admit.
-Qed.
+Admitted.
 
 (** from S80 Lemma 80.2a (line 4962 in algtop.tex): if p and r covering, so is q **)
 (** LATEX VERSION: Let p = r o q with p: X -> Z, q: X -> Y, r: Y -> Z. **)
@@ -67599,7 +67599,7 @@ Theorem supp_ex_5_infinite_earring_uncountable_pi1 :
   x0 :e X /\
   ~countable (fundamental_group X Tx x0).
 admit.
-Qed.
+Admitted.
 
 (** ============================================================ **)
 (** CHAPTER 14: Applications to Group Theory                     **)
@@ -67671,7 +67671,7 @@ Theorem lemma83_2_compact_finite_subgraph :
   exists Arcs':set,
     Arcs' c= Arcs /\ finite Arcs' /\ C c= Union Arcs'.
 admit.
-Qed.
+Admitted.
 
 (** from S83 Lemma 83.3 (line 5510 in algtop.tex): graph is loc path connected **)
 (** LATEX VERSION: If X is a linear graph, then X is locally path connected **)
@@ -67684,7 +67684,7 @@ Theorem lemma83_3_graph_locally_path_connected :
   general_linear_graph X Tx Arcs ->
   locally_path_connected X Tx /\ semilocally_simply_connected X Tx.
 admit.
-Qed.
+Admitted.
 
 (** from S83 Theorem 83.4 (line 5530 in algtop.tex): covering of graph is graph **)
 (** LATEX VERSION: Let p: E -> X be a covering map where X is a linear graph. **)
@@ -67893,7 +67893,7 @@ Theorem thm84_4_maximal_tree_all_vertices :
    (tree_in_graph T ArcsT X Tx Arcs /\
     graph_vertices X Tx Arcs c= T)).
 admit.
-Qed.
+Admitted.
 
 (** from S84 Theorem 84.5 (line 5631 in algtop.tex): every tree in maximal tree **)
 (** LATEX VERSION: If X is a linear graph, every tree T0 in X is contained **)
