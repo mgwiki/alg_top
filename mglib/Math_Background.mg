@@ -20810,7 +20810,143 @@ claim HsurjUnique :
       reflexivity.
     }
     rewrite HxExpand.
-    (** TODO Bob: reduce beta to reverse alpha and simplify conjugation to y. **)
+    claim HrevBetaHom :
+      path_homotopic
+        X
+        Tx
+        x0
+        x1
+        (reverse_path beta)
+        alpha.
+    {
+      exact (reverse_path_involutive_homotopy
+        X
+        Tx
+        x0
+        x1
+        alpha
+        HalphaCont
+        Halpha0
+        Halpha1).
+    }
+    claim HbetaAlphaInv :
+      path_homotopic
+        X
+        Tx
+        x1
+        x1
+        (path_concat beta alpha)
+        (constant_path x1).
+    {
+      claim HbetaRefl :
+        path_homotopic
+          X
+          Tx
+          x1
+          x0
+          beta
+          beta.
+      {
+        exact (Lemma_51_1_path_homotopy_refl
+          X
+          Tx
+          x1
+          x0
+          beta
+          HbetaCont
+          Hbeta0
+          Hbeta1).
+      }
+      claim HbetaRightInvRaw :
+        path_homotopic
+          X
+          Tx
+          x1
+          x1
+          (path_concat beta (reverse_path beta))
+          (constant_path x1).
+      {
+        exact (Theorem_51_2_right_inverse
+          X
+          Tx
+          x1
+          x0
+          beta
+          HbetaCont
+          Hbeta0
+          Hbeta1).
+      }
+      claim HbetaAlphaReplace :
+        path_homotopic
+          X
+          Tx
+          x1
+          x1
+          (path_concat beta (reverse_path beta))
+          (path_concat beta alpha).
+      {
+        exact (path_concat_well_defined_on_classes
+          X
+          Tx
+          x1
+          x0
+          x1
+          beta
+          beta
+          (reverse_path beta)
+          alpha
+          HbetaRefl
+          HrevBetaHom).
+      }
+      claim HbetaAlphaReplaceSym :
+        path_homotopic
+          X
+          Tx
+          x1
+          x1
+          (path_concat beta alpha)
+          (path_concat beta (reverse_path beta)).
+      {
+        exact (Lemma_51_1_path_homotopy_sym
+          X
+          Tx
+          x1
+          x1
+          (path_concat beta (reverse_path beta))
+          (path_concat beta alpha)
+          HbetaAlphaReplace).
+      }
+      exact (Lemma_51_1_path_homotopy_trans
+        X
+        Tx
+        x1
+        x1
+        (path_concat beta alpha)
+        (path_concat beta (reverse_path beta))
+        (constant_path x1)
+        HbetaAlphaReplaceSym
+        HbetaRightInvRaw).
+    }
+    claim HalphaBetaInv :
+      path_homotopic
+        X
+        Tx
+        x0
+        x0
+        (path_concat alpha beta)
+        (constant_path x0).
+    {
+      exact (Theorem_51_2_right_inverse
+        X
+        Tx
+        x0
+        x1
+        alpha
+        HalphaCont
+        Halpha0
+        Halpha1).
+    }
+    (** TODO Bob: finish class-level simplification to y using these cancellation homotopies. **)
     admit.
   }
   witness x.
@@ -20838,7 +20974,180 @@ claim HsurjUnique :
         (apply_fun (basepoint_change_map X Tx x0 x1 alpha) x')
       = x'.
     {
-      (** TODO Bob: show beta-hat o alpha-hat is identity on pi1(X,x0). **)
+      set y' := apply_fun (basepoint_change_map X Tx x0 x1 alpha) x'.
+      claim Hy' : y' :e fundamental_group X Tx x1.
+      {
+        exact (Hfun x' Hx').
+      }
+      rewrite (basepoint_change_map_apply
+        X
+        Tx
+        x1
+        x0
+        beta
+        y'
+        Hy').
+      claim Hy'Expand :
+        y'
+        =
+        path_homotopy_class_loop
+          X
+          Tx
+          x1
+          (path_concat
+            (reverse_path alpha)
+            (path_concat
+              (Eps_i (fun f:set => f :e x'))
+              alpha)).
+      {
+        rewrite <- (basepoint_change_map_apply
+          X
+          Tx
+          x0
+          x1
+          alpha
+          x'
+          Hx').
+        reflexivity.
+      }
+      rewrite Hy'Expand.
+      claim HrevBetaHom2 :
+        path_homotopic
+          X
+          Tx
+          x0
+          x1
+          (reverse_path beta)
+          alpha.
+      {
+        exact (reverse_path_involutive_homotopy
+          X
+          Tx
+          x0
+          x1
+          alpha
+          HalphaCont
+          Halpha0
+          Halpha1).
+      }
+      claim HbetaAlphaInv2 :
+        path_homotopic
+          X
+          Tx
+          x1
+          x1
+          (path_concat beta alpha)
+          (constant_path x1).
+      {
+        claim HbetaRefl2 :
+          path_homotopic
+            X
+            Tx
+            x1
+            x0
+            beta
+            beta.
+        {
+          exact (Lemma_51_1_path_homotopy_refl
+            X
+            Tx
+            x1
+            x0
+            beta
+            HbetaCont
+            Hbeta0
+            Hbeta1).
+        }
+        claim HbetaRightInvRaw2 :
+          path_homotopic
+            X
+            Tx
+            x1
+            x1
+            (path_concat beta (reverse_path beta))
+            (constant_path x1).
+        {
+          exact (Theorem_51_2_right_inverse
+            X
+            Tx
+            x1
+            x0
+            beta
+            HbetaCont
+            Hbeta0
+            Hbeta1).
+        }
+        claim HbetaAlphaReplace2 :
+          path_homotopic
+            X
+            Tx
+            x1
+            x1
+            (path_concat beta (reverse_path beta))
+            (path_concat beta alpha).
+        {
+          exact (path_concat_well_defined_on_classes
+            X
+            Tx
+            x1
+            x0
+            x1
+            beta
+            beta
+            (reverse_path beta)
+            alpha
+            HbetaRefl2
+            HrevBetaHom2).
+        }
+        claim HbetaAlphaReplaceSym2 :
+          path_homotopic
+            X
+            Tx
+            x1
+            x1
+            (path_concat beta alpha)
+            (path_concat beta (reverse_path beta)).
+        {
+          exact (Lemma_51_1_path_homotopy_sym
+            X
+            Tx
+            x1
+            x1
+            (path_concat beta (reverse_path beta))
+            (path_concat beta alpha)
+            HbetaAlphaReplace2).
+        }
+        exact (Lemma_51_1_path_homotopy_trans
+          X
+          Tx
+          x1
+          x1
+          (path_concat beta alpha)
+          (path_concat beta (reverse_path beta))
+          (constant_path x1)
+          HbetaAlphaReplaceSym2
+          HbetaRightInvRaw2).
+      }
+      claim HalphaBetaInv2 :
+        path_homotopic
+          X
+          Tx
+          x0
+          x0
+          (path_concat alpha beta)
+          (constant_path x0).
+      {
+        exact (Theorem_51_2_right_inverse
+          X
+          Tx
+          x0
+          x1
+          alpha
+          HalphaCont
+          Halpha0
+          Halpha1).
+      }
+      (** TODO Bob: finish class-level simplification to x' using these cancellation homotopies. **)
       admit.
     }
     claim HbetaYEqX :
