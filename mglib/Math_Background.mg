@@ -1,5 +1,5 @@
 (** Balance Alice 2135 **)
-(** Balance Bob 1991 **)
+(** Balance Bob 2051 **)
 (** Balance Charlie 1223 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -13807,7 +13807,8 @@ Admitted.
 (** from S51 Exercise 1 (line 329 in algtop.tex) **)
 (** LATEX VERSION: If h,h': X->Y are homotopic and k,k': Y->Z are homotopic, then k o h and k' o h' are homotopic. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 60 **)
+(** Collected Bob 60 **)
+(** Proven Bob **)
 Theorem ex51_1_composition_homotopic : forall X Tx Y Ty Z Tz h h' k k':set,
   homotopic_maps X Tx Y Ty h h' ->
   homotopic_maps Y Ty Z Tz k k' ->
@@ -14037,8 +14038,358 @@ claim Hpre :
     (compose_fun X h' k)
     (compose_fun X h' k').
 {
-  (** pre-compose the k~k' homotopy by h' **)
-  admit.
+  claim HGw :
+    exists G:set,
+      continuous_map (setprod Y unit_interval)
+        (product_topology Y Ty unit_interval unit_interval_topology)
+        Z Tz G /\
+      (forall y:set, y :e Y ->
+        apply_fun G (y, 0) = apply_fun k y) /\
+      (forall y:set, y :e Y ->
+        apply_fun G (y, 1) = apply_fun k' y).
+  {
+    exact (homotopic_maps_has_witness
+      Y
+      Ty
+      Z
+      Tz
+      k
+      k'
+      Hkk').
+  }
+  apply HGw.
+  let G.
+  assume HGpack.
+  claim HGpair :
+    continuous_map (setprod Y unit_interval)
+      (product_topology Y Ty unit_interval unit_interval_topology)
+      Z Tz G /\
+    (forall y:set, y :e Y ->
+      apply_fun G (y, 0) = apply_fun k y).
+  {
+    exact (andEL
+      (continuous_map (setprod Y unit_interval)
+        (product_topology Y Ty unit_interval unit_interval_topology)
+        Z Tz G /\
+       (forall y:set, y :e Y ->
+         apply_fun G (y, 0) = apply_fun k y))
+      (forall y:set, y :e Y ->
+        apply_fun G (y, 1) = apply_fun k' y)
+      HGpack).
+  }
+  claim HGcont :
+    continuous_map (setprod Y unit_interval)
+      (product_topology Y Ty unit_interval unit_interval_topology)
+      Z Tz G.
+  {
+    exact (andEL
+      (continuous_map (setprod Y unit_interval)
+        (product_topology Y Ty unit_interval unit_interval_topology)
+        Z Tz G)
+      (forall y:set, y :e Y ->
+        apply_fun G (y, 0) = apply_fun k y)
+      HGpair).
+  }
+  claim HG0 :
+    forall y:set, y :e Y ->
+      apply_fun G (y, 0) = apply_fun k y.
+  {
+    exact (andER
+      (continuous_map (setprod Y unit_interval)
+        (product_topology Y Ty unit_interval unit_interval_topology)
+        Z Tz G)
+      (forall y:set, y :e Y ->
+        apply_fun G (y, 0) = apply_fun k y)
+      HGpair).
+  }
+  claim HG1 :
+    forall y:set, y :e Y ->
+      apply_fun G (y, 1) = apply_fun k' y.
+  {
+    exact (andER
+      (continuous_map (setprod Y unit_interval)
+        (product_topology Y Ty unit_interval unit_interval_topology)
+        Z Tz G /\
+       (forall y:set, y :e Y ->
+         apply_fun G (y, 0) = apply_fun k y))
+      (forall y:set, y :e Y ->
+        apply_fun G (y, 1) = apply_fun k' y)
+      HGpack).
+  }
+  claim HtopX : topology_on X Tx.
+  {
+    exact (continuous_map_topology_dom
+      X
+      Tx
+      Y
+      Ty
+      h'
+      Hh').
+  }
+  claim HprojPack :
+    continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      X Tx
+      (projection_map1 X unit_interval) /\
+    continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      unit_interval unit_interval_topology
+      (projection_map2 X unit_interval).
+  {
+    exact (projection_maps_continuous
+      X
+      Tx
+      unit_interval
+      unit_interval_topology
+      HtopX
+      unit_interval_topology_on).
+  }
+  claim Hproj1 :
+    continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      X Tx
+      (projection_map1 X unit_interval).
+  {
+    exact (andEL
+      (continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        X Tx
+        (projection_map1 X unit_interval))
+      (continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        unit_interval unit_interval_topology
+        (projection_map2 X unit_interval))
+      HprojPack).
+  }
+  claim Hproj2 :
+    continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      unit_interval unit_interval_topology
+      (projection_map2 X unit_interval).
+  {
+    exact (andER
+      (continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        X Tx
+        (projection_map1 X unit_interval))
+      (continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        unit_interval unit_interval_topology
+        (projection_map2 X unit_interval))
+      HprojPack).
+  }
+  set p1 := compose_fun
+    (setprod X unit_interval)
+    (projection_map1 X unit_interval)
+    h'.
+  claim Hp1Cont :
+    continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      Y Ty
+      p1.
+  {
+    exact (composition_continuous
+      (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      X
+      Tx
+      Y
+      Ty
+      (projection_map1 X unit_interval)
+      h'
+      Hproj1
+      Hh').
+  }
+  set p2 := projection_map2 X unit_interval.
+  claim Hp2Cont :
+    continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      unit_interval unit_interval_topology
+      p2.
+  {
+    exact Hproj2.
+  }
+  set s := pair_map (setprod X unit_interval) p1 p2.
+  claim HsCont :
+    continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      (setprod Y unit_interval)
+      (product_topology Y Ty unit_interval unit_interval_topology)
+      s.
+  {
+    exact (maps_into_products
+      (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      Y
+      Ty
+      unit_interval
+      unit_interval_topology
+      p1
+      p2
+      Hp1Cont
+      Hp2Cont).
+  }
+  set Fpre := compose_fun (setprod X unit_interval) s G.
+  claim Hh'Fun : function_on h' X Y.
+  {
+    exact (continuous_map_function_on
+      X
+      Tx
+      Y
+      Ty
+      h'
+      Hh').
+  }
+  prove continuous_map X Tx Z Tz (compose_fun X h' k) /\
+    continuous_map X Tx Z Tz (compose_fun X h' k') /\
+    exists F0:set,
+      continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        Z Tz F0 /\
+      (forall x:set, x :e X ->
+        apply_fun F0 (x, 0) = apply_fun (compose_fun X h' k) x) /\
+      (forall x:set, x :e X ->
+        apply_fun F0 (x, 1) = apply_fun (compose_fun X h' k') x).
+  apply andI.
+  - apply andI.
+    + exact (composition_continuous
+        X
+        Tx
+        Y
+        Ty
+        Z
+        Tz
+        h'
+        k
+        Hh'
+        Hk).
+    + exact (composition_continuous
+        X
+        Tx
+        Y
+        Ty
+        Z
+        Tz
+        h'
+        k'
+        Hh'
+        Hk').
+  - witness Fpre.
+    apply andI.
+    + apply andI.
+      - exact (composition_continuous
+          (setprod X unit_interval)
+          (product_topology X Tx unit_interval unit_interval_topology)
+          (setprod Y unit_interval)
+          (product_topology Y Ty unit_interval unit_interval_topology)
+          Z
+          Tz
+          s
+          G
+          HsCont
+          HGcont).
+      - let x.
+        assume Hx.
+        claim Hx0 : (x, 0) :e setprod X unit_interval.
+        {
+          exact (tuple_2_setprod_by_pair_Sigma
+            X
+            unit_interval
+            x
+            0
+            Hx
+            zero_in_unit_interval).
+        }
+        claim HhxY : apply_fun h' x :e Y.
+        {
+          exact (Hh'Fun x Hx).
+        }
+        rewrite (compose_fun_apply
+          (setprod X unit_interval)
+          s
+          G
+          (x, 0)
+          Hx0).
+        rewrite (pair_map_apply
+          (setprod X unit_interval)
+          Y
+          unit_interval
+          p1
+          p2
+          (x, 0)
+          Hx0).
+        rewrite (compose_fun_apply
+          (setprod X unit_interval)
+          (projection_map1 X unit_interval)
+          h'
+          (x, 0)
+          Hx0).
+        rewrite (projection1_apply
+          X
+          unit_interval
+          (x, 0)
+          Hx0).
+        rewrite tuple_2_0_eq.
+        rewrite (projection2_apply
+          X
+          unit_interval
+          (x, 0)
+          Hx0).
+        rewrite tuple_2_1_eq.
+        rewrite (HG0 (apply_fun h' x) HhxY).
+        rewrite (compose_fun_apply X h' k x Hx).
+        reflexivity.
+    + let x.
+      assume Hx.
+      claim Hx1 : (x, 1) :e setprod X unit_interval.
+      {
+        exact (tuple_2_setprod_by_pair_Sigma
+          X
+          unit_interval
+          x
+          1
+          Hx
+          one_in_unit_interval).
+      }
+      claim HhxY : apply_fun h' x :e Y.
+      {
+        exact (Hh'Fun x Hx).
+      }
+      rewrite (compose_fun_apply
+        (setprod X unit_interval)
+        s
+        G
+        (x, 1)
+        Hx1).
+      rewrite (pair_map_apply
+        (setprod X unit_interval)
+        Y
+        unit_interval
+        p1
+        p2
+        (x, 1)
+        Hx1).
+      rewrite (compose_fun_apply
+        (setprod X unit_interval)
+        (projection_map1 X unit_interval)
+        h'
+        (x, 1)
+        Hx1).
+      rewrite (projection1_apply
+        X
+        unit_interval
+        (x, 1)
+        Hx1).
+      rewrite tuple_2_0_eq.
+      rewrite (projection2_apply
+        X
+        unit_interval
+        (x, 1)
+        Hx1).
+      rewrite tuple_2_1_eq.
+      rewrite (HG1 (apply_fun h' x) HhxY).
+      rewrite (compose_fun_apply X h' k' x Hx).
+      reflexivity.
 }
 exact (Lemma_51_1_homotopy_trans
   X
@@ -14050,7 +14401,7 @@ exact (Lemma_51_1_homotopy_trans
   (compose_fun X h' k')
   Hpost
   Hpre).
-Admitted.
+Qed.
 
 (** from S51 Exercise 2a (line 331 in algtop.tex) **)
 (** LATEX VERSION: For any X, the set [X, I] has a single element. **)
