@@ -69100,6 +69100,648 @@ claim Hcore :
         0
         H0preUV).
     }
+    claim HUVsubX : (U :/\: V) c= X.
+    {
+      exact (topology_elem_subset
+        X
+        Tx
+        (U :/\: V)
+        Htop
+        HUVopen).
+    }
+    claim HUVsubU : (U :/\: V) c= U.
+    {
+      let z.
+      assume HzUV : z :e U :/\: V.
+      exact (binintersectE1
+        U
+        V
+        z
+        HzUV).
+    }
+    claim HUVsubV : (U :/\: V) c= V.
+    {
+      let z.
+      assume HzUV : z :e U :/\: V.
+      exact (binintersectE2
+        U
+        V
+        z
+        HzUV).
+    }
+    claim HtopU : topology_on U (subspace_topology X Tx U).
+    {
+      exact (subspace_topology_is_topology
+        X
+        Tx
+        U
+        Htop
+        HUsub).
+    }
+    claim HtopV : topology_on V (subspace_topology X Tx V).
+    {
+      exact (subspace_topology_is_topology
+        X
+        Tx
+        V
+        Htop
+        HVsub).
+    }
+    claim HincUVUCont :
+      continuous_map
+        (U :/\: V)
+        (subspace_topology X Tx (U :/\: V))
+        U
+        (subspace_topology X Tx U)
+        (graph (U :/\: V) (fun x:set => x)).
+    {
+      claim HincUVUContRaw :
+        continuous_map
+          (U :/\: V)
+          (subspace_topology U (subspace_topology X Tx U) (U :/\: V))
+          U
+          (subspace_topology X Tx U)
+          (graph (U :/\: V) (fun x:set => x)).
+      {
+        exact (subspace_inclusion_continuous
+          U
+          (subspace_topology X Tx U)
+          (U :/\: V)
+          HtopU
+          HUVsubU).
+      }
+      claim HsubUVUeq :
+        subspace_topology U (subspace_topology X Tx U) (U :/\: V)
+        =
+        subspace_topology X Tx (U :/\: V).
+      {
+        exact (subspace_topology_transitive_weak
+          X
+          Tx
+          U
+          (U :/\: V)
+          HUVsubU).
+      }
+      rewrite <- HsubUVUeq.
+      exact HincUVUContRaw.
+    }
+    claim HincUVVCont :
+      continuous_map
+        (U :/\: V)
+        (subspace_topology X Tx (U :/\: V))
+        V
+        (subspace_topology X Tx V)
+        (graph (U :/\: V) (fun x:set => x)).
+    {
+      claim HincUVVContRaw :
+        continuous_map
+          (U :/\: V)
+          (subspace_topology V (subspace_topology X Tx V) (U :/\: V))
+          V
+          (subspace_topology X Tx V)
+          (graph (U :/\: V) (fun x:set => x)).
+      {
+        exact (subspace_inclusion_continuous
+          V
+          (subspace_topology X Tx V)
+          (U :/\: V)
+          HtopV
+          HUVsubV).
+      }
+      claim HsubUVVeq :
+        subspace_topology V (subspace_topology X Tx V) (U :/\: V)
+        =
+        subspace_topology X Tx (U :/\: V).
+      {
+        exact (subspace_topology_transitive_weak
+          X
+          Tx
+          V
+          (U :/\: V)
+          HUVsubV).
+      }
+      rewrite <- HsubUVVeq.
+      exact HincUVVContRaw.
+    }
+    claim HincUXCont :
+      continuous_map
+        U
+        (subspace_topology X Tx U)
+        X
+        Tx
+        (graph U (fun x:set => x)).
+    {
+      exact (subspace_inclusion_continuous
+        X
+        Tx
+        U
+        Htop
+        HUsub).
+    }
+    claim HincVXCont :
+      continuous_map
+        V
+        (subspace_topology X Tx V)
+        X
+        Tx
+        (graph V (fun x:set => x)).
+    {
+      exact (subspace_inclusion_continuous
+        X
+        Tx
+        V
+        Htop
+        HVsub).
+    }
+    claim HincUVUFun :
+      function_on
+        (graph (U :/\: V) (fun x:set => x))
+        (U :/\: V)
+        U.
+    {
+      exact (continuous_map_function_on
+        (U :/\: V)
+        (subspace_topology X Tx (U :/\: V))
+        U
+        (subspace_topology X Tx U)
+        (graph (U :/\: V) (fun x:set => x))
+        HincUVUCont).
+    }
+    claim HincUVVFun :
+      function_on
+        (graph (U :/\: V) (fun x:set => x))
+        (U :/\: V)
+        V.
+    {
+      exact (continuous_map_function_on
+        (U :/\: V)
+        (subspace_topology X Tx (U :/\: V))
+        V
+        (subspace_topology X Tx V)
+        (graph (U :/\: V) (fun x:set => x))
+        HincUVVCont).
+    }
+    claim HincUXFun :
+      function_on
+        (graph U (fun x:set => x))
+        U
+        X.
+    {
+      exact (continuous_map_function_on
+        U
+        (subspace_topology X Tx U)
+        X
+        Tx
+        (graph U (fun x:set => x))
+        HincUXCont).
+    }
+    claim HincVXFun :
+      function_on
+        (graph V (fun x:set => x))
+        V
+        X.
+    {
+      exact (continuous_map_function_on
+        V
+        (subspace_topology X Tx V)
+        X
+        Tx
+        (graph V (fun x:set => x))
+        HincVXCont).
+    }
+    claim HcompUVU_to_X_eq :
+      compose_fun
+        (U :/\: V)
+        (graph (U :/\: V) (fun x:set => x))
+        (graph U (fun x:set => x))
+      =
+      graph (U :/\: V) (fun x:set => x).
+    {
+      apply (total_function_space_extensional
+        (U :/\: V)
+        X
+        (compose_fun
+          (U :/\: V)
+          (graph (U :/\: V) (fun x:set => x))
+          (graph U (fun x:set => x)))
+        (graph (U :/\: V) (fun x:set => x))).
+      - exact (compose_fun_in_total_function_space
+          (U :/\: V)
+          U
+          X
+          (graph (U :/\: V) (fun x:set => x))
+          (graph U (fun x:set => x))
+          HincUVUFun
+          HincUXFun).
+      - exact (graph_in_total_function_space
+          (U :/\: V)
+          X
+          (fun x:set => x)
+          (fun x:set => fun Hx:x :e (U :/\: V) => HUVsubX x Hx)).
+      - let x.
+        assume HxUV : x :e U :/\: V.
+        rewrite (compose_fun_apply
+          (U :/\: V)
+          (graph (U :/\: V) (fun z:set => z))
+          (graph U (fun z:set => z))
+          x
+          HxUV).
+        rewrite (apply_fun_graph
+          (U :/\: V)
+          (fun z:set => z)
+          x
+          HxUV).
+        rewrite (apply_fun_graph
+          U
+          (fun z:set => z)
+          x
+          (HUVsubU x HxUV)).
+        reflexivity.
+    }
+    claim HcompUVV_to_X_eq :
+      compose_fun
+        (U :/\: V)
+        (graph (U :/\: V) (fun x:set => x))
+        (graph V (fun x:set => x))
+      =
+      graph (U :/\: V) (fun x:set => x).
+    {
+      apply (total_function_space_extensional
+        (U :/\: V)
+        X
+        (compose_fun
+          (U :/\: V)
+          (graph (U :/\: V) (fun x:set => x))
+          (graph V (fun x:set => x)))
+        (graph (U :/\: V) (fun x:set => x))).
+      - exact (compose_fun_in_total_function_space
+          (U :/\: V)
+          V
+          X
+          (graph (U :/\: V) (fun x:set => x))
+          (graph V (fun x:set => x))
+          HincUVVFun
+          HincVXFun).
+      - exact (graph_in_total_function_space
+          (U :/\: V)
+          X
+          (fun x:set => x)
+          (fun x:set => fun Hx:x :e (U :/\: V) => HUVsubX x Hx)).
+      - let x.
+        assume HxUV : x :e U :/\: V.
+        rewrite (compose_fun_apply
+          (U :/\: V)
+          (graph (U :/\: V) (fun z:set => z))
+          (graph V (fun z:set => z))
+          x
+          HxUV).
+        rewrite (apply_fun_graph
+          (U :/\: V)
+          (fun z:set => z)
+          x
+          HxUV).
+        rewrite (apply_fun_graph
+          V
+          (fun z:set => z)
+          x
+          (HUVsubV x HxUV)).
+        reflexivity.
+    }
+    claim HincUVU_x0 :
+      apply_fun
+        (graph (U :/\: V) (fun x:set => x))
+        x0
+      = x0.
+    {
+      exact (apply_fun_graph
+        (U :/\: V)
+        (fun x:set => x)
+        x0
+        Hx0UV).
+    }
+    claim HincUVV_x0 :
+      apply_fun
+        (graph (U :/\: V) (fun x:set => x))
+        x0
+      = x0.
+    {
+      exact (apply_fun_graph
+        (U :/\: V)
+        (fun x:set => x)
+        x0
+        Hx0UV).
+    }
+    claim HincUX_x0 :
+      apply_fun
+        (graph U (fun x:set => x))
+        x0
+      = x0.
+    {
+      exact (apply_fun_graph
+        U
+        (fun x:set => x)
+        x0
+        Hx0U).
+    }
+    claim HincVX_x0 :
+      apply_fun
+        (graph V (fun x:set => x))
+        x0
+      = x0.
+    {
+      exact (apply_fun_graph
+        V
+        (fun x:set => x)
+        x0
+        Hx0V).
+    }
+    claim HcomposeViaU_eq_direct :
+      forall g:set,
+        g :e fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0 ->
+        apply_fun
+          (compose_fun
+            (fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0)
+            (induced_homomorphism
+              (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+              U (subspace_topology X Tx U) x0
+              (graph (U :/\: V) (fun x:set => x)))
+            (induced_homomorphism
+              U (subspace_topology X Tx U) x0
+              X Tx x0
+              (graph U (fun x:set => x)))) g
+        =
+        apply_fun
+          (induced_homomorphism
+            (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+            X Tx x0
+            (graph (U :/\: V) (fun x:set => x))) g.
+    {
+      let g.
+      assume Hg : g :e fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0.
+      claim HfunctorU :
+        apply_fun
+          (induced_homomorphism
+            (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+            X Tx x0
+            (compose_fun
+              (U :/\: V)
+              (graph (U :/\: V) (fun x:set => x))
+              (graph U (fun x:set => x)))) g
+        =
+        apply_fun
+          (compose_fun
+            (fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0)
+            (induced_homomorphism
+              (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+              U (subspace_topology X Tx U) x0
+              (graph (U :/\: V) (fun x:set => x)))
+            (induced_homomorphism
+              U (subspace_topology X Tx U) x0
+              X Tx x0
+              (graph U (fun x:set => x)))) g.
+      {
+        exact (Theorem_52_4_functorial_composition
+          (U :/\: V)
+          (subspace_topology X Tx (U :/\: V))
+          x0
+          U
+          (subspace_topology X Tx U)
+          x0
+          X
+          Tx
+          x0
+          (graph (U :/\: V) (fun x:set => x))
+          (graph U (fun x:set => x))
+          HincUVUCont
+          HincUXCont
+          HincUVU_x0
+          HincUX_x0
+          Hx0UV
+          g
+          Hg).
+      }
+      claim HfunctorUdirect :
+        apply_fun
+          (induced_homomorphism
+            (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+            X Tx x0
+            (graph (U :/\: V) (fun x:set => x))) g
+        =
+        apply_fun
+          (compose_fun
+            (fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0)
+            (induced_homomorphism
+              (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+              U (subspace_topology X Tx U) x0
+              (graph (U :/\: V) (fun x:set => x)))
+            (induced_homomorphism
+              U (subspace_topology X Tx U) x0
+              X Tx x0
+              (graph U (fun x:set => x)))) g.
+      {
+        rewrite <- HcompUVU_to_X_eq at 1.
+        exact HfunctorU.
+      }
+      symmetry.
+      exact HfunctorUdirect.
+    }
+    claim HcomposeViaV_eq_direct :
+      forall g:set,
+        g :e fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0 ->
+        apply_fun
+          (compose_fun
+            (fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0)
+            (induced_homomorphism
+              (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+              V (subspace_topology X Tx V) x0
+              (graph (U :/\: V) (fun x:set => x)))
+            (induced_homomorphism
+              V (subspace_topology X Tx V) x0
+              X Tx x0
+              (graph V (fun x:set => x)))) g
+        =
+        apply_fun
+          (induced_homomorphism
+            (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+            X Tx x0
+            (graph (U :/\: V) (fun x:set => x))) g.
+    {
+      let g.
+      assume Hg : g :e fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0.
+      claim HfunctorV :
+        apply_fun
+          (induced_homomorphism
+            (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+            X Tx x0
+            (compose_fun
+              (U :/\: V)
+              (graph (U :/\: V) (fun x:set => x))
+              (graph V (fun x:set => x)))) g
+        =
+        apply_fun
+          (compose_fun
+            (fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0)
+            (induced_homomorphism
+              (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+              V (subspace_topology X Tx V) x0
+              (graph (U :/\: V) (fun x:set => x)))
+            (induced_homomorphism
+              V (subspace_topology X Tx V) x0
+              X Tx x0
+              (graph V (fun x:set => x)))) g.
+      {
+        exact (Theorem_52_4_functorial_composition
+          (U :/\: V)
+          (subspace_topology X Tx (U :/\: V))
+          x0
+          V
+          (subspace_topology X Tx V)
+          x0
+          X
+          Tx
+          x0
+          (graph (U :/\: V) (fun x:set => x))
+          (graph V (fun x:set => x))
+          HincUVVCont
+          HincVXCont
+          HincUVV_x0
+          HincVX_x0
+          Hx0UV
+          g
+          Hg).
+      }
+      claim HfunctorVdirect :
+        apply_fun
+          (induced_homomorphism
+            (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+            X Tx x0
+            (graph (U :/\: V) (fun x:set => x))) g
+        =
+        apply_fun
+          (compose_fun
+            (fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0)
+            (induced_homomorphism
+              (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+              V (subspace_topology X Tx V) x0
+              (graph (U :/\: V) (fun x:set => x)))
+            (induced_homomorphism
+              V (subspace_topology X Tx V) x0
+              X Tx x0
+              (graph V (fun x:set => x)))) g.
+      {
+        rewrite <- HcompUVV_to_X_eq at 1.
+        exact HfunctorV.
+      }
+      symmetry.
+      exact HfunctorVdirect.
+    }
+    claim HoverlapInclusionImagesAgree :
+      forall g:set,
+        g :e fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0 ->
+        apply_fun
+          (compose_fun
+            (fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0)
+            (induced_homomorphism
+              (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+              U (subspace_topology X Tx U) x0
+              (graph (U :/\: V) (fun x:set => x)))
+            (induced_homomorphism
+              U (subspace_topology X Tx U) x0
+              X Tx x0
+              (graph U (fun x:set => x)))) g
+        =
+        apply_fun
+          (compose_fun
+            (fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0)
+            (induced_homomorphism
+              (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+              V (subspace_topology X Tx V) x0
+              (graph (U :/\: V) (fun x:set => x)))
+            (induced_homomorphism
+              V (subspace_topology X Tx V) x0
+              X Tx x0
+              (graph V (fun x:set => x)))) g.
+    {
+      let g.
+      assume Hg : g :e fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0.
+      claim HUeq :
+        apply_fun
+          (compose_fun
+            (fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0)
+            (induced_homomorphism
+              (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+              U (subspace_topology X Tx U) x0
+              (graph (U :/\: V) (fun x:set => x)))
+            (induced_homomorphism
+              U (subspace_topology X Tx U) x0
+              X Tx x0
+              (graph U (fun x:set => x)))) g
+        =
+        apply_fun
+          (induced_homomorphism
+            (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+            X Tx x0
+            (graph (U :/\: V) (fun x:set => x))) g.
+      {
+        exact (HcomposeViaU_eq_direct
+          g
+          Hg).
+      }
+      claim HVeq :
+        apply_fun
+          (induced_homomorphism
+            (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+            X Tx x0
+            (graph (U :/\: V) (fun x:set => x))) g
+        =
+        apply_fun
+          (compose_fun
+            (fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0)
+            (induced_homomorphism
+              (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+              V (subspace_topology X Tx V) x0
+              (graph (U :/\: V) (fun x:set => x)))
+            (induced_homomorphism
+              V (subspace_topology X Tx V) x0
+              X Tx x0
+              (graph V (fun x:set => x)))) g.
+      {
+        symmetry.
+        exact (HcomposeViaV_eq_direct
+          g
+          Hg).
+      }
+      exact (eq_i_tra
+        (apply_fun
+          (compose_fun
+            (fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0)
+            (induced_homomorphism
+              (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+              U (subspace_topology X Tx U) x0
+              (graph (U :/\: V) (fun x:set => x)))
+            (induced_homomorphism
+              U (subspace_topology X Tx U) x0
+              X Tx x0
+              (graph U (fun x:set => x)))) g)
+        (apply_fun
+          (induced_homomorphism
+            (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+            X Tx x0
+            (graph (U :/\: V) (fun x:set => x))) g)
+        (apply_fun
+          (compose_fun
+            (fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0)
+            (induced_homomorphism
+              (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+              V (subspace_topology X Tx V) x0
+              (graph (U :/\: V) (fun x:set => x)))
+            (induced_homomorphism
+              V (subspace_topology X Tx V) x0
+              X Tx x0
+              (graph V (fun x:set => x)))) g)
+        HUeq
+        HVeq).
+    }
     admit. (** van Kampen style generation argument pending for nontrivial classes **)
 }
 exact Hcore.
