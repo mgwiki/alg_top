@@ -1,6 +1,6 @@
 (** Balance Alice 1545 **)
 (** Balance Bob 1388 **)
-(** Balance Charlie 1135 **)
+(** Balance Charlie 1223 **)
 
 (** Sum of Balences and Bounties 48150 **)
 
@@ -15659,16 +15659,2407 @@ Definition product_of_maps : set -> set -> set -> set -> set := fun X X' f g =>
 (** LATEX VERSION: If p: E -> B and p': E' -> B' are covering maps, then **)
 (** p x p': E x E' -> B x B' is a covering map. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-17T23:55:00 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem thm53_3_product_covering : forall E Te B Tb p E' Te' B' Tb' p':set,
   covering_map E Te B Tb p -> covering_map E' Te' B' Tb' p' ->
   covering_map
     (setprod E E') (product_topology E Te E' Te')
     (setprod B B') (product_topology B Tb B' Tb')
     (product_of_maps E E' p p').
-admit.
-Admitted.
+let E Te B Tb p E' Te' B' Tb' p'.
+assume Hcov Hcov'.
+claim Hpair :
+  continuous_map E Te B Tb p /\ surjective_map E B p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p /\ surjective_map E B p)
+    (forall b:set, b :e B ->
+      exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+    Hcov).
+}
+claim Hpair' :
+  continuous_map E' Te' B' Tb' p' /\ surjective_map E' B' p'.
+{
+  exact (andEL
+    (continuous_map E' Te' B' Tb' p' /\ surjective_map E' B' p')
+    (forall b':set, b' :e B' ->
+      exists U':set, U' :e Tb' /\ b' :e U' /\ evenly_covered E' Te' B' Tb' p' U')
+    Hcov').
+}
+claim Hcont : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    Hpair).
+}
+claim Hsurj : surjective_map E B p.
+{
+  exact (andER
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    Hpair).
+}
+claim Hcont' : continuous_map E' Te' B' Tb' p'.
+{
+  exact (andEL
+    (continuous_map E' Te' B' Tb' p')
+    (surjective_map E' B' p')
+    Hpair').
+}
+claim Hsurj' : surjective_map E' B' p'.
+{
+  exact (andER
+    (continuous_map E' Te' B' Tb' p')
+    (surjective_map E' B' p')
+    Hpair').
+}
+claim Hlocal :
+  forall b:set, b :e B ->
+    exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U.
+{
+  exact (andER
+    (continuous_map E Te B Tb p /\ surjective_map E B p)
+    (forall b:set, b :e B ->
+      exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+    Hcov).
+}
+claim Hlocal' :
+  forall b':set, b' :e B' ->
+    exists U':set, U' :e Tb' /\ b' :e U' /\ evenly_covered E' Te' B' Tb' p' U'.
+{
+  exact (andER
+    (continuous_map E' Te' B' Tb' p' /\ surjective_map E' B' p')
+    (forall b':set, b' :e B' ->
+      exists U':set, U' :e Tb' /\ b' :e U' /\ evenly_covered E' Te' B' Tb' p' U')
+    Hcov').
+}
+claim HtopE : topology_on E Te.
+{
+  exact (continuous_map_topology_dom E Te B Tb p Hcont).
+}
+claim HtopB : topology_on B Tb.
+{
+  exact (continuous_map_topology_cod E Te B Tb p Hcont).
+}
+claim Hfunp : function_on p E B.
+{
+  exact (continuous_map_function_on E Te B Tb p Hcont).
+}
+claim HtopE' : topology_on E' Te'.
+{
+  exact (continuous_map_topology_dom E' Te' B' Tb' p' Hcont').
+}
+claim HtopB' : topology_on B' Tb'.
+{
+  exact (continuous_map_topology_cod E' Te' B' Tb' p' Hcont').
+}
+claim Hfunp' : function_on p' E' B'.
+{
+  exact (continuous_map_function_on E' Te' B' Tb' p' Hcont').
+}
+claim HcontProd :
+  continuous_map
+    (setprod E E') (product_topology E Te E' Te')
+    (setprod B B') (product_topology B Tb B' Tb')
+    (product_of_maps E E' p p').
+{
+  set f1 := compose_fun (setprod E E') (projection_map1 E E') p.
+  set f2 := compose_fun (setprod E E') (projection_map2 E E') p'.
+  claim HprojPair :
+    continuous_map
+      (setprod E E') (product_topology E Te E' Te')
+      E Te
+      (projection_map1 E E') /\
+    continuous_map
+      (setprod E E') (product_topology E Te E' Te')
+      E' Te'
+      (projection_map2 E E').
+  {
+    exact (projection_maps_continuous E Te E' Te' HtopE HtopE').
+  }
+  claim Hproj1 :
+    continuous_map
+      (setprod E E') (product_topology E Te E' Te')
+      E Te
+      (projection_map1 E E').
+  {
+    exact (andEL
+      (continuous_map
+        (setprod E E') (product_topology E Te E' Te')
+        E Te
+        (projection_map1 E E'))
+      (continuous_map
+        (setprod E E') (product_topology E Te E' Te')
+        E' Te'
+        (projection_map2 E E'))
+      HprojPair).
+  }
+  claim Hproj2 :
+    continuous_map
+      (setprod E E') (product_topology E Te E' Te')
+      E' Te'
+      (projection_map2 E E').
+  {
+    exact (andER
+      (continuous_map
+        (setprod E E') (product_topology E Te E' Te')
+        E Te
+        (projection_map1 E E'))
+      (continuous_map
+        (setprod E E') (product_topology E Te E' Te')
+        E' Te'
+        (projection_map2 E E'))
+      HprojPair).
+  }
+  claim Hf1cont :
+    continuous_map
+      (setprod E E') (product_topology E Te E' Te')
+      B Tb
+      f1.
+  {
+    exact (composition_continuous
+      (setprod E E')
+      (product_topology E Te E' Te')
+      E Te
+      B Tb
+      (projection_map1 E E')
+      p
+      Hproj1
+      Hcont).
+  }
+  claim Hf2cont :
+    continuous_map
+      (setprod E E') (product_topology E Te E' Te')
+      B' Tb'
+      f2.
+  {
+    exact (composition_continuous
+      (setprod E E')
+      (product_topology E Te E' Te')
+      E' Te'
+      B' Tb'
+      (projection_map2 E E')
+      p'
+      Hproj2
+      Hcont').
+  }
+  claim HpairCont :
+    continuous_map
+      (setprod E E') (product_topology E Te E' Te')
+      (setprod B B') (product_topology B Tb B' Tb')
+      (pair_map (setprod E E') f1 f2).
+  {
+    exact (maps_into_products
+      (setprod E E')
+      (product_topology E Te E' Te')
+      B Tb
+      B' Tb'
+      f1
+      f2
+      Hf1cont
+      Hf2cont).
+  }
+  claim HpairEq :
+    forall q:set, q :e setprod E E' ->
+      apply_fun (pair_map (setprod E E') f1 f2) q =
+      apply_fun (product_of_maps E E' p p') q.
+  {
+    let q.
+    assume Hq.
+    rewrite (pair_map_apply (setprod E E') B B' f1 f2 q Hq).
+    rewrite (compose_fun_apply (setprod E E') (projection_map1 E E') p q Hq).
+    rewrite (compose_fun_apply (setprod E E') (projection_map2 E E') p' q Hq).
+    rewrite (projection1_apply E E' q Hq).
+    rewrite (projection2_apply E E' q Hq).
+    symmetry.
+    exact (apply_fun_graph
+      (setprod E E')
+      (fun t:set => (apply_fun p (t 0), apply_fun p' (t 1)))
+      q
+      Hq).
+  }
+  claim HpairFun :
+    function_on
+      (pair_map (setprod E E') f1 f2)
+      (setprod E E')
+      (setprod B B').
+  {
+    exact (continuous_map_function_on
+      (setprod E E')
+      (product_topology E Te E' Te')
+      (setprod B B')
+      (product_topology B Tb B' Tb')
+      (pair_map (setprod E E') f1 f2)
+      HpairCont).
+  }
+  claim HprodFun :
+    function_on
+      (product_of_maps E E' p p')
+      (setprod E E')
+      (setprod B B').
+  {
+    let q.
+    assume Hq.
+    claim HqPair :
+      apply_fun (pair_map (setprod E E') f1 f2) q :e setprod B B'.
+    {
+      exact (HpairFun q Hq).
+    }
+    claim Heq :
+      apply_fun (pair_map (setprod E E') f1 f2) q =
+      apply_fun (product_of_maps E E' p p') q.
+    {
+      exact (HpairEq q Hq).
+    }
+    exact (Heq
+      (fun a b:set => a :e setprod B B')
+      HqPair).
+  }
+  exact (continuous_map_congr_on
+    (setprod E E')
+    (product_topology E Te E' Te')
+    (setprod B B')
+    (product_topology B Tb B' Tb')
+    (pair_map (setprod E E') f1 f2)
+    (product_of_maps E E' p p')
+    HpairCont
+    HprodFun
+    HpairEq).
+}
+claim HsurjProd :
+  surjective_map
+    (setprod E E')
+    (setprod B B')
+    (product_of_maps E E' p p').
+{
+  claim HfunProd :
+    function_on
+      (product_of_maps E E' p p')
+      (setprod E E')
+      (setprod B B').
+  {
+    exact (continuous_map_function_on
+      (setprod E E')
+      (product_topology E Te E' Te')
+      (setprod B B')
+      (product_topology B Tb B' Tb')
+      (product_of_maps E E' p p')
+      HcontProd).
+  }
+  claim HsurjEx :
+    forall b:set, b :e B ->
+      exists x:set, x :e E /\ apply_fun p x = b.
+  {
+    exact (andER
+      (function_on p E B)
+      (forall b:set, b :e B ->
+        exists x:set, x :e E /\ apply_fun p x = b)
+      Hsurj).
+  }
+  claim HsurjEx' :
+    forall b':set, b' :e B' ->
+      exists x':set, x' :e E' /\ apply_fun p' x' = b'.
+  {
+    exact (andER
+      (function_on p' E' B')
+      (forall b':set, b' :e B' ->
+        exists x':set, x' :e E' /\ apply_fun p' x' = b')
+      Hsurj').
+  }
+  prove function_on
+      (product_of_maps E E' p p')
+      (setprod E E')
+      (setprod B B') /\
+    forall y:set, y :e setprod B B' ->
+      exists x:set, x :e setprod E E' /\
+        apply_fun (product_of_maps E E' p p') x = y.
+  apply andI.
+  - exact HfunProd.
+  - let y.
+    assume Hy.
+    claim Hy0B : (y 0) :e B.
+    {
+      exact (ap0_Sigma B (fun _ : set => B') y Hy).
+    }
+    claim Hy1B' : (y 1) :e B'.
+    {
+      exact (ap1_Sigma B (fun _ : set => B') y Hy).
+    }
+    apply (HsurjEx (y 0) Hy0B).
+    let x.
+    assume HxPack.
+    claim HxE : x :e E.
+    {
+      exact (andEL
+        (x :e E)
+        (apply_fun p x = y 0)
+        HxPack).
+    }
+    claim Hpx : apply_fun p x = y 0.
+    {
+      exact (andER
+        (x :e E)
+        (apply_fun p x = y 0)
+        HxPack).
+    }
+    apply (HsurjEx' (y 1) Hy1B').
+    let x'.
+    assume Hx'Pack.
+    claim Hx'E' : x' :e E'.
+    {
+      exact (andEL
+        (x' :e E')
+        (apply_fun p' x' = y 1)
+        Hx'Pack).
+    }
+    claim Hp'x' : apply_fun p' x' = y 1.
+    {
+      exact (andER
+        (x' :e E')
+        (apply_fun p' x' = y 1)
+        Hx'Pack).
+    }
+    witness (x,x').
+    apply andI.
+    + exact (tuple_2_setprod_by_pair_Sigma E E' x x' HxE Hx'E').
+    + claim Hxx' : (x,x') :e setprod E E'.
+      {
+        exact (tuple_2_setprod_by_pair_Sigma E E' x x' HxE Hx'E').
+      }
+      claim Hxx'0 : (x,x') 0 = x.
+      {
+        claim Hx0 : x = (x,x') 0.
+        {
+          exact (pair_eq_fst
+            x
+            x'
+            ((x,x') 0)
+            ((x,x') 1)
+            (setprod_eta E E' (x,x') Hxx')).
+        }
+        symmetry.
+        exact Hx0.
+      }
+      claim Hxx'1 : (x,x') 1 = x'.
+      {
+        claim Hx1 : x' = (x,x') 1.
+        {
+          exact (pair_eq_snd
+            x
+            x'
+            ((x,x') 0)
+            ((x,x') 1)
+            (setprod_eta E E' (x,x') Hxx')).
+        }
+        symmetry.
+        exact Hx1.
+      }
+      claim Happly :
+        apply_fun (product_of_maps E E' p p') (x,x') =
+        (apply_fun p ((x,x') 0), apply_fun p' ((x,x') 1)).
+      {
+        exact (apply_fun_graph
+          (setprod E E')
+          (fun t:set => (apply_fun p (t 0), apply_fun p' (t 1)))
+          (x,x')
+          Hxx').
+      }
+      rewrite Happly.
+      rewrite Hxx'0.
+      rewrite Hxx'1.
+      rewrite Hpx.
+      rewrite Hp'x'.
+      symmetry.
+      exact (setprod_eta B B' y Hy).
+}
+claim HlocalProd :
+  forall bb:set, bb :e setprod B B' ->
+    exists W:set, W :e (product_topology B Tb B' Tb') /\ bb :e W /\
+      evenly_covered
+        (setprod E E')
+        (product_topology E Te E' Te')
+        (setprod B B')
+        (product_topology B Tb B' Tb')
+        (product_of_maps E E' p p')
+        W.
+{
+  let bb.
+  assume Hbb.
+  claim Hb0B : (bb 0) :e B.
+  {
+    exact (ap0_Sigma B (fun _ : set => B') bb Hbb).
+  }
+  claim Hb1B' : (bb 1) :e B'.
+  {
+    exact (ap1_Sigma B (fun _ : set => B') bb Hbb).
+  }
+  apply (Hlocal (bb 0) Hb0B).
+  let U.
+  assume HUpack.
+  claim HUtb : U :e Tb.
+  {
+    exact (andEL
+      (U :e Tb)
+      ((bb 0) :e U)
+      (andEL
+        (U :e Tb /\ (bb 0) :e U)
+        (evenly_covered E Te B Tb p U)
+        HUpack)).
+  }
+  claim Hb0U : (bb 0) :e U.
+  {
+    exact (andER
+      (U :e Tb)
+      ((bb 0) :e U)
+      (andEL
+        (U :e Tb /\ (bb 0) :e U)
+        (evenly_covered E Te B Tb p U)
+        HUpack)).
+  }
+  claim HevenU : evenly_covered E Te B Tb p U.
+  {
+    exact (andER
+      (U :e Tb /\ (bb 0) :e U)
+      (evenly_covered E Te B Tb p U)
+      HUpack).
+  }
+  apply (Hlocal' (bb 1) Hb1B').
+  let U'.
+  assume HU'pack.
+  claim HU'tb : U' :e Tb'.
+  {
+    exact (andEL
+      (U' :e Tb')
+      ((bb 1) :e U')
+      (andEL
+        (U' :e Tb' /\ (bb 1) :e U')
+        (evenly_covered E' Te' B' Tb' p' U')
+        HU'pack)).
+  }
+  claim Hb1U' : (bb 1) :e U'.
+  {
+    exact (andER
+      (U' :e Tb')
+      ((bb 1) :e U')
+      (andEL
+        (U' :e Tb' /\ (bb 1) :e U')
+        (evenly_covered E' Te' B' Tb' p' U')
+        HU'pack)).
+  }
+  claim HevenU' : evenly_covered E' Te' B' Tb' p' U'.
+  {
+    exact (andER
+      (U' :e Tb' /\ (bb 1) :e U')
+      (evenly_covered E' Te' B' Tb' p' U')
+      HU'pack).
+  }
+  set W := setprod U U'.
+  witness W.
+  apply andI.
+  - apply andI.
+    + claim HbasisSub :
+        basis_on (setprod B B') (product_subbasis B Tb B' Tb').
+      {
+        exact (product_subbasis_is_basis B Tb B' Tb' HtopB HtopB').
+      }
+      claim HrectSub :
+        rectangle_set U U' :e product_subbasis B Tb B' Tb'.
+      {
+        exact (famunionI
+          Tb
+          (fun U0:set => {rectangle_set U0 V|V :e Tb'})
+          U
+          (rectangle_set U U')
+          HUtb
+          (ReplI Tb' (fun V:set => rectangle_set U V) U' HU'tb)).
+      }
+      claim HrectOpen :
+        rectangle_set U U' :e generated_topology
+          (setprod B B')
+          (product_subbasis B Tb B' Tb').
+      {
+        exact (basis_in_generated
+          (setprod B B')
+          (product_subbasis B Tb B' Tb')
+          (rectangle_set U U')
+          HbasisSub
+          HrectSub).
+      }
+      rewrite <- (rectangle_set_def U U').
+      exact HrectOpen.
+    + claim HbbEta : bb = (bb 0, bb 1).
+      {
+        exact (setprod_eta B B' bb Hbb).
+      }
+      claim HbbPair : (bb 0, bb 1) :e setprod U U'.
+      {
+        exact (tuple_2_setprod_by_pair_Sigma U U' (bb 0) (bb 1) Hb0U Hb1U').
+      }
+      rewrite HbbEta.
+      exact HbbPair.
+  - prove W :e product_topology B Tb B' Tb' /\
+      exists slices2:set,
+        slices2 c= product_topology E Te E' Te' /\
+        pairwise_disjoint slices2 /\
+        Union slices2 =
+          preimage_of (setprod E E') (product_of_maps E E' p p') W /\
+        (forall S:set, S :e slices2 ->
+          homeomorphism S
+            (subspace_topology (setprod E E') (product_topology E Te E' Te') S)
+            W
+            (subspace_topology (setprod B B') (product_topology B Tb B' Tb') W)
+            (graph S (fun x:set => apply_fun (product_of_maps E E' p p') x))).
+    apply andI.
+    + claim HbasisSub :
+        basis_on (setprod B B') (product_subbasis B Tb B' Tb').
+      {
+        exact (product_subbasis_is_basis B Tb B' Tb' HtopB HtopB').
+      }
+      claim HrectSub :
+        rectangle_set U U' :e product_subbasis B Tb B' Tb'.
+      {
+        exact (famunionI
+          Tb
+          (fun U0:set => {rectangle_set U0 V|V :e Tb'})
+          U
+          (rectangle_set U U')
+          HUtb
+          (ReplI Tb' (fun V:set => rectangle_set U V) U' HU'tb)).
+      }
+      claim HrectOpen :
+        rectangle_set U U' :e generated_topology
+          (setprod B B')
+          (product_subbasis B Tb B' Tb').
+      {
+        exact (basis_in_generated
+          (setprod B B')
+          (product_subbasis B Tb B' Tb')
+          (rectangle_set U U')
+          HbasisSub
+          HrectSub).
+      }
+      rewrite <- (rectangle_set_def U U').
+      exact HrectOpen.
+    + claim HslicesEx : exists slices:set,
+        slices c= Te /\
+        pairwise_disjoint slices /\
+        Union slices = preimage_of E p U /\
+        (forall V:set, V :e slices ->
+          homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+            (graph V (fun x:set => apply_fun p x))).
+      {
+        exact (andER
+          (U :e Tb)
+          (exists slices:set,
+            slices c= Te /\
+            pairwise_disjoint slices /\
+            Union slices = preimage_of E p U /\
+            (forall V:set, V :e slices ->
+              homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+                (graph V (fun x:set => apply_fun p x))))
+          HevenU).
+      }
+      apply HslicesEx.
+      let slices.
+      assume Hslices.
+      claim Htrip :
+        (slices c= Te /\ pairwise_disjoint slices) /\
+        Union slices = preimage_of E p U.
+      {
+        exact (andEL
+          ((slices c= Te /\ pairwise_disjoint slices) /\
+            Union slices = preimage_of E p U)
+          (forall V:set, V :e slices ->
+            homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+              (graph V (fun x:set => apply_fun p x)))
+          Hslices).
+      }
+      claim Hsub : slices c= Te.
+      {
+        exact (andEL
+          (slices c= Te)
+          (pairwise_disjoint slices)
+          (andEL
+            (slices c= Te /\ pairwise_disjoint slices)
+            (Union slices = preimage_of E p U)
+            Htrip)).
+      }
+      claim Hpd : pairwise_disjoint slices.
+      {
+        exact (andER
+          (slices c= Te)
+          (pairwise_disjoint slices)
+          (andEL
+            (slices c= Te /\ pairwise_disjoint slices)
+            (Union slices = preimage_of E p U)
+            Htrip)).
+      }
+      claim Hunion : Union slices = preimage_of E p U.
+      {
+        exact (andER
+          (slices c= Te /\ pairwise_disjoint slices)
+          (Union slices = preimage_of E p U)
+          Htrip).
+      }
+      claim Hhome :
+        forall V:set, V :e slices ->
+          homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+            (graph V (fun x:set => apply_fun p x)).
+      {
+        exact (andER
+          ((slices c= Te /\ pairwise_disjoint slices) /\
+            Union slices = preimage_of E p U)
+          (forall V:set, V :e slices ->
+            homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+              (graph V (fun x:set => apply_fun p x)))
+          Hslices).
+      }
+      claim HslicesEx' : exists slices':set,
+        slices' c= Te' /\
+        pairwise_disjoint slices' /\
+        Union slices' = preimage_of E' p' U' /\
+        (forall V':set, V' :e slices' ->
+          homeomorphism V' (subspace_topology E' Te' V') U' (subspace_topology B' Tb' U')
+            (graph V' (fun x:set => apply_fun p' x))).
+      {
+        exact (andER
+          (U' :e Tb')
+          (exists slices':set,
+            slices' c= Te' /\
+            pairwise_disjoint slices' /\
+            Union slices' = preimage_of E' p' U' /\
+            (forall V':set, V' :e slices' ->
+              homeomorphism V' (subspace_topology E' Te' V') U' (subspace_topology B' Tb' U')
+                (graph V' (fun x:set => apply_fun p' x))))
+          HevenU').
+      }
+      apply HslicesEx'.
+      let slices'.
+      assume Hslices'.
+      claim Htrip' :
+        (slices' c= Te' /\ pairwise_disjoint slices') /\
+        Union slices' = preimage_of E' p' U'.
+      {
+        exact (andEL
+          ((slices' c= Te' /\ pairwise_disjoint slices') /\
+            Union slices' = preimage_of E' p' U')
+          (forall V':set, V' :e slices' ->
+            homeomorphism V' (subspace_topology E' Te' V') U' (subspace_topology B' Tb' U')
+              (graph V' (fun x:set => apply_fun p' x)))
+          Hslices').
+      }
+      claim Hsub' : slices' c= Te'.
+      {
+        exact (andEL
+          (slices' c= Te')
+          (pairwise_disjoint slices')
+          (andEL
+            (slices' c= Te' /\ pairwise_disjoint slices')
+            (Union slices' = preimage_of E' p' U')
+            Htrip')).
+      }
+      claim Hpd' : pairwise_disjoint slices'.
+      {
+        exact (andER
+          (slices' c= Te')
+          (pairwise_disjoint slices')
+          (andEL
+            (slices' c= Te' /\ pairwise_disjoint slices')
+            (Union slices' = preimage_of E' p' U')
+            Htrip')).
+      }
+      claim Hunion' : Union slices' = preimage_of E' p' U'.
+      {
+        exact (andER
+          (slices' c= Te' /\ pairwise_disjoint slices')
+          (Union slices' = preimage_of E' p' U')
+          Htrip').
+      }
+      claim Hhome' :
+        forall V':set, V' :e slices' ->
+          homeomorphism V' (subspace_topology E' Te' V') U' (subspace_topology B' Tb' U')
+            (graph V' (fun x:set => apply_fun p' x)).
+      {
+        exact (andER
+          ((slices' c= Te' /\ pairwise_disjoint slices') /\
+            Union slices' = preimage_of E' p' U')
+          (forall V':set, V' :e slices' ->
+            homeomorphism V' (subspace_topology E' Te' V') U' (subspace_topology B' Tb' U')
+              (graph V' (fun x:set => apply_fun p' x)))
+          Hslices').
+      }
+      set slices2 := {setprod (w 0) (w 1)|w :e setprod slices slices'}.
+      claim HbasisSubE :
+        basis_on (setprod E E') (product_subbasis E Te E' Te').
+      {
+        exact (product_subbasis_is_basis E Te E' Te' HtopE HtopE').
+      }
+      claim Hsub2 : slices2 c= product_topology E Te E' Te'.
+      {
+        let S.
+        assume HS.
+        apply (ReplE (setprod slices slices') (fun w:set => setprod (w 0) (w 1)) S HS).
+        let w.
+        assume HwPack.
+        claim HwSS' : w :e setprod slices slices'.
+        {
+          exact (andEL
+            (w :e setprod slices slices')
+            (S = setprod (w 0) (w 1))
+            HwPack).
+        }
+        claim HSeq : S = setprod (w 0) (w 1).
+        {
+          exact (andER
+            (w :e setprod slices slices')
+            (S = setprod (w 0) (w 1))
+            HwPack).
+        }
+        claim Hw0 : (w 0) :e slices.
+        {
+          exact (ap0_Sigma slices (fun _ : set => slices') w HwSS').
+        }
+        claim Hw1 : (w 1) :e slices'.
+        {
+          exact (ap1_Sigma slices (fun _ : set => slices') w HwSS').
+        }
+        claim Hw0open : (w 0) :e Te.
+        {
+          exact (Hsub (w 0) Hw0).
+        }
+        claim Hw1open : (w 1) :e Te'.
+        {
+          exact (Hsub' (w 1) Hw1).
+        }
+        claim HrectSubE :
+          rectangle_set (w 0) (w 1) :e product_subbasis E Te E' Te'.
+        {
+          exact (famunionI
+            Te
+            (fun U0:set => {rectangle_set U0 V0|V0 :e Te'})
+            (w 0)
+            (rectangle_set (w 0) (w 1))
+            Hw0open
+            (ReplI Te' (fun V0:set => rectangle_set (w 0) V0) (w 1) Hw1open)).
+        }
+        claim HrectOpenE :
+          rectangle_set (w 0) (w 1) :e
+            generated_topology (setprod E E') (product_subbasis E Te E' Te').
+        {
+          exact (basis_in_generated
+            (setprod E E')
+            (product_subbasis E Te E' Te')
+            (rectangle_set (w 0) (w 1))
+            HbasisSubE
+            HrectSubE).
+        }
+        rewrite HSeq.
+        rewrite <- (rectangle_set_def (w 0) (w 1)).
+        exact HrectOpenE.
+      }
+      claim Hpd2 : pairwise_disjoint slices2.
+      {
+        let A B1.
+        assume HA HB Hneq.
+        apply (ReplE (setprod slices slices') (fun w:set => setprod (w 0) (w 1)) A HA).
+        let wa.
+        assume HwaPack.
+        claim HwaSS' : wa :e setprod slices slices'.
+        {
+          exact (andEL
+            (wa :e setprod slices slices')
+            (A = setprod (wa 0) (wa 1))
+            HwaPack).
+        }
+        claim HAeq : A = setprod (wa 0) (wa 1).
+        {
+          exact (andER
+            (wa :e setprod slices slices')
+            (A = setprod (wa 0) (wa 1))
+            HwaPack).
+        }
+        claim Hwa0 : (wa 0) :e slices.
+        {
+          exact (ap0_Sigma slices (fun _ : set => slices') wa HwaSS').
+        }
+        claim Hwa1 : (wa 1) :e slices'.
+        {
+          exact (ap1_Sigma slices (fun _ : set => slices') wa HwaSS').
+        }
+        apply (ReplE (setprod slices slices') (fun w:set => setprod (w 0) (w 1)) B1 HB).
+        let wb.
+        assume HwbPack.
+        claim HwbSS' : wb :e setprod slices slices'.
+        {
+          exact (andEL
+            (wb :e setprod slices slices')
+            (B1 = setprod (wb 0) (wb 1))
+            HwbPack).
+        }
+        claim HBeq : B1 = setprod (wb 0) (wb 1).
+        {
+          exact (andER
+            (wb :e setprod slices slices')
+            (B1 = setprod (wb 0) (wb 1))
+            HwbPack).
+        }
+        claim Hwb0 : (wb 0) :e slices.
+        {
+          exact (ap0_Sigma slices (fun _ : set => slices') wb HwbSS').
+        }
+        claim Hwb1 : (wb 1) :e slices'.
+        {
+          exact (ap1_Sigma slices (fun _ : set => slices') wb HwbSS').
+        }
+        apply set_ext.
+        - let z.
+          assume Hz.
+          claim HzA : z :e A.
+          {
+            exact (binintersectE1 A B1 z Hz).
+          }
+          claim HzB : z :e B1.
+          {
+            exact (binintersectE2 A B1 z Hz).
+          }
+          claim HzVA : z :e setprod (wa 0) (wa 1).
+          {
+            rewrite <- HAeq.
+            exact HzA.
+          }
+          claim HzVB : z :e setprod (wb 0) (wb 1).
+          {
+            rewrite <- HBeq.
+            exact HzB.
+          }
+          claim Hz0A : (z 0) :e (wa 0).
+          {
+            exact (ap0_Sigma (wa 0) (fun _ : set => (wa 1)) z HzVA).
+          }
+          claim Hz1A : (z 1) :e (wa 1).
+          {
+            exact (ap1_Sigma (wa 0) (fun _ : set => (wa 1)) z HzVA).
+          }
+          claim Hz0B : (z 0) :e (wb 0).
+          {
+            exact (ap0_Sigma (wb 0) (fun _ : set => (wb 1)) z HzVB).
+          }
+          claim Hz1B : (z 1) :e (wb 1).
+          {
+            exact (ap1_Sigma (wb 0) (fun _ : set => (wb 1)) z HzVB).
+          }
+          apply xm ((wa 0) = (wb 0)).
+          + assume H0eq.
+            apply xm ((wa 1) = (wb 1)).
+            * assume H1eq.
+              claim HABeq : A = B1.
+              {
+                rewrite HAeq.
+                rewrite HBeq.
+                rewrite H0eq.
+                rewrite H1eq.
+                reflexivity.
+              }
+              claim Hfalse : False.
+              {
+                exact (Hneq HABeq).
+              }
+              exact (FalseE Hfalse (z :e Empty)).
+            * assume H1neq.
+              claim Hdisj1 : (wa 1) :/\: (wb 1) = Empty.
+              {
+                exact (Hpd' (wa 1) (wb 1) Hwa1 Hwb1 H1neq).
+              }
+              claim Hz1Int : (z 1) :e (wa 1) :/\: (wb 1).
+              {
+                exact (binintersectI (wa 1) (wb 1) (z 1) Hz1A Hz1B).
+              }
+              claim Hz1E : (z 1) :e Empty.
+              {
+                exact (mem_eqR (z 1) ((wa 1) :/\: (wb 1)) Empty Hdisj1 Hz1Int).
+              }
+              exact (EmptyE (z 1) Hz1E (z :e Empty)).
+          + assume H0neq.
+            claim Hdisj0 : (wa 0) :/\: (wb 0) = Empty.
+            {
+              exact (Hpd (wa 0) (wb 0) Hwa0 Hwb0 H0neq).
+            }
+            claim Hz0Int : (z 0) :e (wa 0) :/\: (wb 0).
+            {
+              exact (binintersectI (wa 0) (wb 0) (z 0) Hz0A Hz0B).
+            }
+            claim Hz0E : (z 0) :e Empty.
+            {
+              exact (mem_eqR (z 0) ((wa 0) :/\: (wb 0)) Empty Hdisj0 Hz0Int).
+            }
+            exact (EmptyE (z 0) Hz0E (z :e Empty)).
+        - let z.
+          assume HzE.
+          exact (EmptyE z HzE (z :e A :/\: B1)).
+      }
+      claim Hunion2 :
+        Union slices2 =
+          preimage_of (setprod E E') (product_of_maps E E' p p') W.
+      {
+        apply set_ext.
+        - let z.
+          assume HzUnion.
+          apply (UnionE slices2 z HzUnion).
+          let S.
+          assume HzSPack.
+          claim HzS : z :e S.
+          {
+            exact (andEL
+              (z :e S)
+              (S :e slices2)
+              HzSPack).
+          }
+          claim HS2 : S :e slices2.
+          {
+            exact (andER
+              (z :e S)
+              (S :e slices2)
+              HzSPack).
+          }
+          apply (ReplE (setprod slices slices') (fun w:set => setprod (w 0) (w 1)) S HS2).
+          let w.
+          assume HwPack.
+          claim HwSS' : w :e setprod slices slices'.
+          {
+            exact (andEL
+              (w :e setprod slices slices')
+              (S = setprod (w 0) (w 1))
+              HwPack).
+          }
+          claim HSeq : S = setprod (w 0) (w 1).
+          {
+            exact (andER
+              (w :e setprod slices slices')
+              (S = setprod (w 0) (w 1))
+              HwPack).
+          }
+          claim Hw0 : (w 0) :e slices.
+          {
+            exact (ap0_Sigma slices (fun _ : set => slices') w HwSS').
+          }
+          claim Hw1 : (w 1) :e slices'.
+          {
+            exact (ap1_Sigma slices (fun _ : set => slices') w HwSS').
+          }
+          claim HzWV : z :e setprod (w 0) (w 1).
+          {
+            rewrite <- HSeq.
+            exact HzS.
+          }
+          claim Hz0W : (z 0) :e (w 0).
+          {
+            exact (ap0_Sigma (w 0) (fun _ : set => (w 1)) z HzWV).
+          }
+          claim Hz1W : (z 1) :e (w 1).
+          {
+            exact (ap1_Sigma (w 0) (fun _ : set => (w 1)) z HzWV).
+          }
+          claim Hz0Union : (z 0) :e Union slices.
+          {
+            exact (UnionI slices (z 0) (w 0) Hz0W Hw0).
+          }
+          claim Hz1Union : (z 1) :e Union slices'.
+          {
+            exact (UnionI slices' (z 1) (w 1) Hz1W Hw1).
+          }
+          claim Hz0Pre : (z 0) :e preimage_of E p U.
+          {
+            exact (mem_eqR (z 0) (Union slices) (preimage_of E p U) Hunion Hz0Union).
+          }
+          claim Hz1Pre : (z 1) :e preimage_of E' p' U'.
+          {
+            exact (mem_eqR (z 1) (Union slices') (preimage_of E' p' U') Hunion' Hz1Union).
+          }
+          claim Hz0E : (z 0) :e E.
+          {
+            exact (SepE1 E (fun t:set => apply_fun p t :e U) (z 0) Hz0Pre).
+          }
+          claim Hz0U : apply_fun p (z 0) :e U.
+          {
+            exact (SepE2 E (fun t:set => apply_fun p t :e U) (z 0) Hz0Pre).
+          }
+          claim Hz1E' : (z 1) :e E'.
+          {
+            exact (SepE1 E' (fun t:set => apply_fun p' t :e U') (z 1) Hz1Pre).
+          }
+          claim Hz1U' : apply_fun p' (z 1) :e U'.
+          {
+            exact (SepE2 E' (fun t:set => apply_fun p' t :e U') (z 1) Hz1Pre).
+          }
+          claim HzPairEE : (z 0, z 1) :e setprod E E'.
+          {
+            exact (tuple_2_setprod_by_pair_Sigma E E' (z 0) (z 1) Hz0E Hz1E').
+          }
+          claim HzEta : z = (z 0, z 1).
+          {
+            exact (setprod_eta (w 0) (w 1) z HzWV).
+          }
+          claim HzEE : z :e setprod E E'.
+          {
+            rewrite HzEta.
+            exact HzPairEE.
+          }
+          claim HpairW : (apply_fun p (z 0), apply_fun p' (z 1)) :e W.
+          {
+            exact (tuple_2_setprod_by_pair_Sigma U U' (apply_fun p (z 0)) (apply_fun p' (z 1)) Hz0U Hz1U').
+          }
+          claim Happly :
+            apply_fun (product_of_maps E E' p p') z =
+            (apply_fun p (z 0), apply_fun p' (z 1)).
+          {
+            exact (apply_fun_graph
+              (setprod E E')
+              (fun t:set => (apply_fun p (t 0), apply_fun p' (t 1)))
+              z
+              HzEE).
+          }
+          claim HimgW : apply_fun (product_of_maps E E' p p') z :e W.
+          {
+            exact (Happly
+              (fun a b:set => b :e W)
+              HpairW).
+          }
+          exact (SepI
+            (setprod E E')
+            (fun t:set => apply_fun (product_of_maps E E' p p') t :e W)
+            z
+            HzEE
+            HimgW).
+        - let z.
+          assume HzPre.
+          claim HzEE : z :e setprod E E'.
+          {
+            exact (SepE1
+              (setprod E E')
+              (fun t:set => apply_fun (product_of_maps E E' p p') t :e W)
+              z
+              HzPre).
+          }
+          claim HzImgW : apply_fun (product_of_maps E E' p p') z :e W.
+          {
+            exact (SepE2
+              (setprod E E')
+              (fun t:set => apply_fun (product_of_maps E E' p p') t :e W)
+              z
+              HzPre).
+          }
+          claim Hz0E : (z 0) :e E.
+          {
+            exact (ap0_Sigma E (fun _ : set => E') z HzEE).
+          }
+          claim Hz1E' : (z 1) :e E'.
+          {
+            exact (ap1_Sigma E (fun _ : set => E') z HzEE).
+          }
+          claim Happly :
+            apply_fun (product_of_maps E E' p p') z =
+            (apply_fun p (z 0), apply_fun p' (z 1)).
+          {
+            exact (apply_fun_graph
+              (setprod E E')
+              (fun t:set => (apply_fun p (t 0), apply_fun p' (t 1)))
+              z
+              HzEE).
+          }
+          claim HpairW : (apply_fun p (z 0), apply_fun p' (z 1)) :e W.
+          {
+            exact (Happly
+              (fun a b:set => a :e W)
+              HzImgW).
+          }
+          claim HpairSing :
+            (apply_fun p (z 0), apply_fun p' (z 1))
+              :e setprod {apply_fun p (z 0)} {apply_fun p' (z 1)}.
+          {
+            exact (tuple_2_setprod_by_pair_Sigma
+              {apply_fun p (z 0)}
+              {apply_fun p' (z 1)}
+              (apply_fun p (z 0))
+              (apply_fun p' (z 1))
+              (SingI (apply_fun p (z 0)))
+              (SingI (apply_fun p' (z 1)))).
+          }
+          claim Hcoords :
+            apply_fun p (z 0) :e U /\
+            apply_fun p' (z 1) :e U'.
+          {
+            exact (setprod_coords_in
+              (apply_fun p (z 0))
+              (apply_fun p' (z 1))
+              U
+              U'
+              (apply_fun p (z 0), apply_fun p' (z 1))
+              HpairSing
+              HpairW).
+          }
+          claim Hz0U : apply_fun p (z 0) :e U.
+          {
+            exact (andEL
+              (apply_fun p (z 0) :e U)
+              (apply_fun p' (z 1) :e U')
+              Hcoords).
+          }
+          claim Hz1U' : apply_fun p' (z 1) :e U'.
+          {
+            exact (andER
+              (apply_fun p (z 0) :e U)
+              (apply_fun p' (z 1) :e U')
+              Hcoords).
+          }
+          claim Hz0Pre : (z 0) :e preimage_of E p U.
+          {
+            exact (SepI E (fun t:set => apply_fun p t :e U) (z 0) Hz0E Hz0U).
+          }
+          claim Hz1Pre : (z 1) :e preimage_of E' p' U'.
+          {
+            exact (SepI E' (fun t:set => apply_fun p' t :e U') (z 1) Hz1E' Hz1U').
+          }
+          claim Hz0Union : (z 0) :e Union slices.
+          {
+            exact (mem_eqL (z 0) (Union slices) (preimage_of E p U) Hunion Hz0Pre).
+          }
+          claim Hz1Union : (z 1) :e Union slices'.
+          {
+            exact (mem_eqL (z 1) (Union slices') (preimage_of E' p' U') Hunion' Hz1Pre).
+          }
+          apply (UnionE slices (z 0) Hz0Union).
+          let V.
+          assume Hz0VPack.
+          claim Hz0V : (z 0) :e V.
+          {
+            exact (andEL
+              ((z 0) :e V)
+              (V :e slices)
+              Hz0VPack).
+          }
+          claim HVslice : V :e slices.
+          {
+            exact (andER
+              ((z 0) :e V)
+              (V :e slices)
+              Hz0VPack).
+          }
+          apply (UnionE slices' (z 1) Hz1Union).
+          let V'.
+          assume Hz1VPack.
+          claim Hz1V' : (z 1) :e V'.
+          {
+            exact (andEL
+              ((z 1) :e V')
+              (V' :e slices')
+              Hz1VPack).
+          }
+          claim HVslice' : V' :e slices'.
+          {
+            exact (andER
+              ((z 1) :e V')
+              (V' :e slices')
+              Hz1VPack).
+          }
+          claim HpairVV' : (z 0, z 1) :e setprod V V'.
+          {
+            exact (tuple_2_setprod_by_pair_Sigma V V' (z 0) (z 1) Hz0V Hz1V').
+          }
+          claim HzEta : z = (z 0, z 1).
+          {
+            exact (setprod_eta E E' z HzEE).
+          }
+          claim HzVV' : z :e setprod V V'.
+          {
+            rewrite HzEta.
+            exact HpairVV'.
+          }
+          claim HwVV' : (V, V') :e setprod slices slices'.
+          {
+            exact (tuple_2_setprod_by_pair_Sigma slices slices' V V' HVslice HVslice').
+          }
+          claim HSVV' : setprod V V' :e slices2.
+          {
+            claim HSVVraw : setprod ((V,V') 0) ((V,V') 1) :e slices2.
+            {
+              exact (ReplI (setprod slices slices') (fun w:set => setprod (w 0) (w 1)) (V, V') HwVV').
+            }
+            claim HVV0 : ((V,V') 0) = V.
+            {
+              claim HV0 : V = ((V,V') 0).
+              {
+                exact (pair_eq_fst
+                  V
+                  V'
+                  ((V,V') 0)
+                  ((V,V') 1)
+                  (setprod_eta slices slices' (V,V') HwVV')).
+              }
+              symmetry.
+              exact HV0.
+            }
+            claim HVV1 : ((V,V') 1) = V'.
+            {
+              claim HV1 : V' = ((V,V') 1).
+              {
+                exact (pair_eq_snd
+                  V
+                  V'
+                  ((V,V') 0)
+                  ((V,V') 1)
+                  (setprod_eta slices slices' (V,V') HwVV')).
+              }
+              symmetry.
+              exact HV1.
+            }
+            claim Heq0 :
+              setprod ((V,V') 0) ((V,V') 1) = setprod V ((V,V') 1).
+            {
+              rewrite HVV0.
+              reflexivity.
+            }
+            claim HSVVmid : setprod V ((V,V') 1) :e slices2.
+            {
+              exact (Heq0
+                (fun a b:set => a :e slices2)
+                HSVVraw).
+            }
+            claim Heq1 :
+              setprod V ((V,V') 1) = setprod V V'.
+            {
+              rewrite HVV1.
+              reflexivity.
+            }
+            exact (Heq1
+              (fun a b:set => a :e slices2)
+              HSVVmid).
+          }
+          exact (UnionI slices2 z (setprod V V') HzVV' HSVV').
+      }
+      witness slices2.
+      apply andI.
+      * apply andI.
+        - apply andI.
+          + exact Hsub2.
+          + exact Hpd2.
+        - exact Hunion2.
+      * let S.
+        assume HS2.
+        apply (ReplE (setprod slices slices') (fun w:set => setprod (w 0) (w 1)) S HS2).
+        let w.
+        assume HwPack.
+        claim HwSS' : w :e setprod slices slices'.
+        {
+          exact (andEL
+            (w :e setprod slices slices')
+            (S = setprod (w 0) (w 1))
+            HwPack).
+        }
+        claim HSeq : S = setprod (w 0) (w 1).
+        {
+          exact (andER
+            (w :e setprod slices slices')
+            (S = setprod (w 0) (w 1))
+            HwPack).
+        }
+        claim Hw0 : (w 0) :e slices.
+        {
+          exact (ap0_Sigma slices (fun _ : set => slices') w HwSS').
+        }
+        claim Hw1 : (w 1) :e slices'.
+        {
+          exact (ap1_Sigma slices (fun _ : set => slices') w HwSS').
+        }
+        claim Hw0open : (w 0) :e Te.
+        {
+          exact (Hsub (w 0) Hw0).
+        }
+        claim Hw1open : (w 1) :e Te'.
+        {
+          exact (Hsub' (w 1) Hw1).
+        }
+        claim Hw0subE : (w 0) c= E.
+        {
+          exact (topology_elem_subset E Te (w 0) HtopE Hw0open).
+        }
+        claim Hw1subE' : (w 1) c= E'.
+        {
+          exact (topology_elem_subset E' Te' (w 1) HtopE' Hw1open).
+        }
+        claim Hhome0 :
+          homeomorphism
+            (w 0)
+            (subspace_topology E Te (w 0))
+            U
+            (subspace_topology B Tb U)
+            (graph (w 0) (fun x:set => apply_fun p x)).
+        {
+          exact (Hhome (w 0) Hw0).
+        }
+        claim Hhome1 :
+          homeomorphism
+            (w 1)
+            (subspace_topology E' Te' (w 1))
+            U'
+            (subspace_topology B' Tb' U')
+            (graph (w 1) (fun x:set => apply_fun p' x)).
+        {
+          exact (Hhome' (w 1) Hw1).
+        }
+        claim Hcont0 :
+          continuous_map
+            (w 0)
+            (subspace_topology E Te (w 0))
+            U
+            (subspace_topology B Tb U)
+            (graph (w 0) (fun x:set => apply_fun p x)).
+        {
+          exact (homeomorphism_continuous
+            (w 0)
+            (subspace_topology E Te (w 0))
+            U
+            (subspace_topology B Tb U)
+            (graph (w 0) (fun x:set => apply_fun p x))
+            Hhome0).
+        }
+        claim Hcont1 :
+          continuous_map
+            (w 1)
+            (subspace_topology E' Te' (w 1))
+            U'
+            (subspace_topology B' Tb' U')
+            (graph (w 1) (fun x:set => apply_fun p' x)).
+        {
+          exact (homeomorphism_continuous
+            (w 1)
+            (subspace_topology E' Te' (w 1))
+            U'
+            (subspace_topology B' Tb' U')
+            (graph (w 1) (fun x:set => apply_fun p' x))
+            Hhome1).
+        }
+        claim Hfun0 :
+          function_on
+            (graph (w 0) (fun x:set => apply_fun p x))
+            (w 0)
+            U.
+        {
+          exact (continuous_map_function_on
+            (w 0)
+            (subspace_topology E Te (w 0))
+            U
+            (subspace_topology B Tb U)
+            (graph (w 0) (fun x:set => apply_fun p x))
+            Hcont0).
+        }
+        claim Hfun1 :
+          function_on
+            (graph (w 1) (fun x:set => apply_fun p' x))
+            (w 1)
+            U'.
+        {
+          exact (continuous_map_function_on
+            (w 1)
+            (subspace_topology E' Te' (w 1))
+            U'
+            (subspace_topology B' Tb' U')
+            (graph (w 1) (fun x:set => apply_fun p' x))
+            Hcont1).
+        }
+        claim HinvPack0 :
+          exists g:set,
+            continuous_map U (subspace_topology B Tb U) (w 0) (subspace_topology E Te (w 0)) g /\
+            (forall x:set, x :e (w 0) ->
+              apply_fun g (apply_fun (graph (w 0) (fun z:set => apply_fun p z)) x) = x) /\
+            (forall y:set, y :e U ->
+              apply_fun (graph (w 0) (fun z:set => apply_fun p z)) (apply_fun g y) = y).
+        {
+          exact (homeomorphism_inverse_package
+            (w 0)
+            (subspace_topology E Te (w 0))
+            U
+            (subspace_topology B Tb U)
+            (graph (w 0) (fun z:set => apply_fun p z))
+            Hhome0).
+        }
+        apply HinvPack0.
+        let g.
+        assume HgPack.
+        apply (and3E
+          (continuous_map U (subspace_topology B Tb U) (w 0) (subspace_topology E Te (w 0)) g)
+          (forall x:set, x :e (w 0) ->
+            apply_fun g (apply_fun (graph (w 0) (fun z:set => apply_fun p z)) x) = x)
+          (forall y:set, y :e U ->
+            apply_fun (graph (w 0) (fun z:set => apply_fun p z)) (apply_fun g y) = y)
+          HgPack).
+        assume HgCont Hleft0 Hright0.
+        claim HinvPack1 :
+          exists g':set,
+            continuous_map U' (subspace_topology B' Tb' U') (w 1) (subspace_topology E' Te' (w 1)) g' /\
+            (forall x':set, x' :e (w 1) ->
+              apply_fun g' (apply_fun (graph (w 1) (fun z':set => apply_fun p' z')) x') = x') /\
+            (forall y':set, y' :e U' ->
+              apply_fun (graph (w 1) (fun z':set => apply_fun p' z')) (apply_fun g' y') = y').
+        {
+          exact (homeomorphism_inverse_package
+            (w 1)
+            (subspace_topology E' Te' (w 1))
+            U'
+            (subspace_topology B' Tb' U')
+            (graph (w 1) (fun z':set => apply_fun p' z'))
+            Hhome1).
+        }
+        apply HinvPack1.
+        let g'.
+        assume Hg'Pack.
+        apply (and3E
+          (continuous_map U' (subspace_topology B' Tb' U') (w 1) (subspace_topology E' Te' (w 1)) g')
+          (forall x':set, x' :e (w 1) ->
+            apply_fun g' (apply_fun (graph (w 1) (fun z':set => apply_fun p' z')) x') = x')
+          (forall y':set, y' :e U' ->
+            apply_fun (graph (w 1) (fun z':set => apply_fun p' z')) (apply_fun g' y') = y')
+          Hg'Pack).
+        assume Hg'Cont Hleft1 Hright1.
+        rewrite HSeq.
+        claim Htopw0 : topology_on (w 0) (subspace_topology E Te (w 0)).
+        {
+          exact (continuous_map_topology_dom
+            (w 0)
+            (subspace_topology E Te (w 0))
+            U
+            (subspace_topology B Tb U)
+            (graph (w 0) (fun x:set => apply_fun p x))
+            Hcont0).
+        }
+        claim Htopw1 : topology_on (w 1) (subspace_topology E' Te' (w 1)).
+        {
+          exact (continuous_map_topology_dom
+            (w 1)
+            (subspace_topology E' Te' (w 1))
+            U'
+            (subspace_topology B' Tb' U')
+            (graph (w 1) (fun x:set => apply_fun p' x))
+            Hcont1).
+        }
+        claim HtopU : topology_on U (subspace_topology B Tb U).
+        {
+          exact (continuous_map_topology_dom
+            U
+            (subspace_topology B Tb U)
+            (w 0)
+            (subspace_topology E Te (w 0))
+            g
+            HgCont).
+        }
+        claim HtopU' : topology_on U' (subspace_topology B' Tb' U').
+        {
+          exact (continuous_map_topology_dom
+            U'
+            (subspace_topology B' Tb' U')
+            (w 1)
+            (subspace_topology E' Te' (w 1))
+            g'
+            Hg'Cont).
+        }
+        claim HUsubB : U c= B.
+        {
+          exact (topology_elem_subset B Tb U HtopB HUtb).
+        }
+        claim HU'subB' : U' c= B'.
+        {
+          exact (topology_elem_subset B' Tb' U' HtopB' HU'tb).
+        }
+        claim HdomEq :
+          product_topology
+            (w 0) (subspace_topology E Te (w 0))
+            (w 1) (subspace_topology E' Te' (w 1)) =
+          subspace_topology
+            (setprod E E')
+            (product_topology E Te E' Te')
+            (setprod (w 0) (w 1)).
+        {
+          exact (product_subspace_topology
+            E Te
+            E' Te'
+            (w 0) (w 1)
+            HtopE
+            HtopE'
+            Hw0subE
+            Hw1subE').
+        }
+        claim HcodEq :
+          product_topology
+            U (subspace_topology B Tb U)
+            U' (subspace_topology B' Tb' U') =
+          subspace_topology
+            (setprod B B')
+            (product_topology B Tb B' Tb')
+            W.
+        {
+          exact (product_subspace_topology
+            B Tb
+            B' Tb'
+            U U'
+            HtopB
+            HtopB'
+            HUsubB
+            HU'subB').
+        }
+        set fReq := graph (setprod (w 0) (w 1))
+          (fun x:set => apply_fun (product_of_maps E E' p p') x).
+        set f1 := compose_fun
+          (setprod (w 0) (w 1))
+          (projection_map1 (w 0) (w 1))
+          (graph (w 0) (fun x:set => apply_fun p x)).
+        set f2 := compose_fun
+          (setprod (w 0) (w 1))
+          (projection_map2 (w 0) (w 1))
+          (graph (w 1) (fun x:set => apply_fun p' x)).
+        claim HprojPair0 :
+          continuous_map
+            (setprod (w 0) (w 1))
+            (product_topology
+              (w 0) (subspace_topology E Te (w 0))
+              (w 1) (subspace_topology E' Te' (w 1)))
+            (w 0)
+            (subspace_topology E Te (w 0))
+            (projection_map1 (w 0) (w 1)) /\
+          continuous_map
+            (setprod (w 0) (w 1))
+            (product_topology
+              (w 0) (subspace_topology E Te (w 0))
+              (w 1) (subspace_topology E' Te' (w 1)))
+            (w 1)
+            (subspace_topology E' Te' (w 1))
+            (projection_map2 (w 0) (w 1)).
+        {
+          exact (projection_maps_continuous
+            (w 0)
+            (subspace_topology E Te (w 0))
+            (w 1)
+            (subspace_topology E' Te' (w 1))
+            Htopw0
+            Htopw1).
+        }
+        claim Hproj10 :
+          continuous_map
+            (setprod (w 0) (w 1))
+            (product_topology
+              (w 0) (subspace_topology E Te (w 0))
+              (w 1) (subspace_topology E' Te' (w 1)))
+            (w 0)
+            (subspace_topology E Te (w 0))
+            (projection_map1 (w 0) (w 1)).
+        {
+          exact (andEL
+            (continuous_map
+              (setprod (w 0) (w 1))
+              (product_topology
+                (w 0) (subspace_topology E Te (w 0))
+                (w 1) (subspace_topology E' Te' (w 1)))
+              (w 0)
+              (subspace_topology E Te (w 0))
+              (projection_map1 (w 0) (w 1)))
+            (continuous_map
+              (setprod (w 0) (w 1))
+              (product_topology
+                (w 0) (subspace_topology E Te (w 0))
+                (w 1) (subspace_topology E' Te' (w 1)))
+              (w 1)
+              (subspace_topology E' Te' (w 1))
+              (projection_map2 (w 0) (w 1)))
+            HprojPair0).
+        }
+        claim Hproj20 :
+          continuous_map
+            (setprod (w 0) (w 1))
+            (product_topology
+              (w 0) (subspace_topology E Te (w 0))
+              (w 1) (subspace_topology E' Te' (w 1)))
+            (w 1)
+            (subspace_topology E' Te' (w 1))
+            (projection_map2 (w 0) (w 1)).
+        {
+          exact (andER
+            (continuous_map
+              (setprod (w 0) (w 1))
+              (product_topology
+                (w 0) (subspace_topology E Te (w 0))
+                (w 1) (subspace_topology E' Te' (w 1)))
+              (w 0)
+              (subspace_topology E Te (w 0))
+              (projection_map1 (w 0) (w 1)))
+            (continuous_map
+              (setprod (w 0) (w 1))
+              (product_topology
+                (w 0) (subspace_topology E Te (w 0))
+                (w 1) (subspace_topology E' Te' (w 1)))
+              (w 1)
+              (subspace_topology E' Te' (w 1))
+              (projection_map2 (w 0) (w 1)))
+            HprojPair0).
+        }
+        claim Hf1cont :
+          continuous_map
+            (setprod (w 0) (w 1))
+            (product_topology
+              (w 0) (subspace_topology E Te (w 0))
+              (w 1) (subspace_topology E' Te' (w 1)))
+            U
+            (subspace_topology B Tb U)
+            f1.
+        {
+          exact (composition_continuous
+            (setprod (w 0) (w 1))
+            (product_topology
+              (w 0) (subspace_topology E Te (w 0))
+              (w 1) (subspace_topology E' Te' (w 1)))
+            (w 0)
+            (subspace_topology E Te (w 0))
+            U
+            (subspace_topology B Tb U)
+            (projection_map1 (w 0) (w 1))
+            (graph (w 0) (fun x:set => apply_fun p x))
+            Hproj10
+            Hcont0).
+        }
+        claim Hf2cont :
+          continuous_map
+            (setprod (w 0) (w 1))
+            (product_topology
+              (w 0) (subspace_topology E Te (w 0))
+              (w 1) (subspace_topology E' Te' (w 1)))
+            U'
+            (subspace_topology B' Tb' U')
+            f2.
+        {
+          exact (composition_continuous
+            (setprod (w 0) (w 1))
+            (product_topology
+              (w 0) (subspace_topology E Te (w 0))
+              (w 1) (subspace_topology E' Te' (w 1)))
+            (w 1)
+            (subspace_topology E' Te' (w 1))
+            U'
+            (subspace_topology B' Tb' U')
+            (projection_map2 (w 0) (w 1))
+            (graph (w 1) (fun x:set => apply_fun p' x))
+            Hproj20
+            Hcont1).
+        }
+        claim HpairContProd :
+          continuous_map
+            (setprod (w 0) (w 1))
+            (product_topology
+              (w 0) (subspace_topology E Te (w 0))
+              (w 1) (subspace_topology E' Te' (w 1)))
+            W
+            (product_topology U (subspace_topology B Tb U) U' (subspace_topology B' Tb' U'))
+            (pair_map (setprod (w 0) (w 1)) f1 f2).
+        {
+          exact (maps_into_products
+            (setprod (w 0) (w 1))
+            (product_topology
+              (w 0) (subspace_topology E Te (w 0))
+              (w 1) (subspace_topology E' Te' (w 1)))
+            U
+            (subspace_topology B Tb U)
+            U'
+            (subspace_topology B' Tb' U')
+            f1
+            f2
+            Hf1cont
+            Hf2cont).
+        }
+        claim HpairContSub :
+          continuous_map
+            (setprod (w 0) (w 1))
+            (subspace_topology (setprod E E') (product_topology E Te E' Te') (setprod (w 0) (w 1)))
+            W
+            (subspace_topology (setprod B B') (product_topology B Tb B' Tb') W)
+            (pair_map (setprod (w 0) (w 1)) f1 f2).
+        {
+          rewrite <- HdomEq.
+          rewrite <- HcodEq.
+          exact HpairContProd.
+        }
+        claim HfReqTotal :
+          total_function_on fReq (setprod (w 0) (w 1)) W.
+        {
+          apply total_function_on_graph.
+          let q.
+          assume Hq.
+          claim Hq0 : (q 0) :e (w 0).
+          {
+            exact (ap0_Sigma (w 0) (fun _ : set => (w 1)) q Hq).
+          }
+          claim Hq1 : (q 1) :e (w 1).
+          {
+            exact (ap1_Sigma (w 0) (fun _ : set => (w 1)) q Hq).
+          }
+          claim Hq0Ugraph : apply_fun (graph (w 0) (fun x:set => apply_fun p x)) (q 0) :e U.
+          {
+            exact (Hfun0 (q 0) Hq0).
+          }
+          claim Hq1Ugraph : apply_fun (graph (w 1) (fun x:set => apply_fun p' x)) (q 1) :e U'.
+          {
+            exact (Hfun1 (q 1) Hq1).
+          }
+          claim Hq0eq :
+            apply_fun (graph (w 0) (fun x:set => apply_fun p x)) (q 0) =
+            apply_fun p (q 0).
+          {
+            exact (apply_fun_graph (w 0) (fun x:set => apply_fun p x) (q 0) Hq0).
+          }
+          claim Hq1eq :
+            apply_fun (graph (w 1) (fun x:set => apply_fun p' x)) (q 1) =
+            apply_fun p' (q 1).
+          {
+            exact (apply_fun_graph (w 1) (fun x:set => apply_fun p' x) (q 1) Hq1).
+          }
+          claim Hq0U : apply_fun p (q 0) :e U.
+          {
+            exact (Hq0eq (fun a b:set => a :e U) Hq0Ugraph).
+          }
+          claim Hq1U' : apply_fun p' (q 1) :e U'.
+          {
+            exact (Hq1eq (fun a b:set => a :e U') Hq1Ugraph).
+          }
+          claim HqEE : q :e setprod E E'.
+          {
+            exact (setprod_Subq (w 0) (w 1) E E' Hw0subE Hw1subE' q Hq).
+          }
+          claim HpairW :
+            (apply_fun p (q 0), apply_fun p' (q 1)) :e W.
+          {
+            exact (tuple_2_setprod_by_pair_Sigma U U' (apply_fun p (q 0)) (apply_fun p' (q 1)) Hq0U Hq1U').
+          }
+          claim Happly :
+            apply_fun (product_of_maps E E' p p') q =
+            (apply_fun p (q 0), apply_fun p' (q 1)).
+          {
+            exact (apply_fun_graph
+              (setprod E E')
+              (fun t:set => (apply_fun p (t 0), apply_fun p' (t 1)))
+              q
+              HqEE).
+          }
+          exact (Happly
+            (fun a b:set => b :e W)
+            HpairW).
+        }
+        claim HfReqFun :
+          function_on fReq (setprod (w 0) (w 1)) W.
+        {
+          exact (total_function_on_function_on
+            fReq
+            (setprod (w 0) (w 1))
+            W
+            HfReqTotal).
+        }
+        claim HfEq :
+          forall q:set, q :e setprod (w 0) (w 1) ->
+            apply_fun (pair_map (setprod (w 0) (w 1)) f1 f2) q =
+            apply_fun fReq q.
+        {
+          let q.
+          assume Hq.
+          claim Hq0 : (q 0) :e (w 0).
+          {
+            exact (ap0_Sigma (w 0) (fun _ : set => (w 1)) q Hq).
+          }
+          claim Hq1 : (q 1) :e (w 1).
+          {
+            exact (ap1_Sigma (w 0) (fun _ : set => (w 1)) q Hq).
+          }
+          claim HqEE : q :e setprod E E'.
+          {
+            exact (setprod_Subq (w 0) (w 1) E E' Hw0subE Hw1subE' q Hq).
+          }
+          claim Happly :
+            apply_fun (product_of_maps E E' p p') q =
+            (apply_fun p (q 0), apply_fun p' (q 1)).
+          {
+            exact (apply_fun_graph
+              (setprod E E')
+              (fun t:set => (apply_fun p (t 0), apply_fun p' (t 1)))
+              q
+              HqEE).
+          }
+          rewrite (pair_map_apply (setprod (w 0) (w 1)) U U' f1 f2 q Hq).
+          rewrite (compose_fun_apply (setprod (w 0) (w 1)) (projection_map1 (w 0) (w 1)) (graph (w 0) (fun x:set => apply_fun p x)) q Hq).
+          rewrite (compose_fun_apply (setprod (w 0) (w 1)) (projection_map2 (w 0) (w 1)) (graph (w 1) (fun x:set => apply_fun p' x)) q Hq).
+          rewrite (projection1_apply (w 0) (w 1) q Hq).
+          rewrite (projection2_apply (w 0) (w 1) q Hq).
+          rewrite (apply_fun_graph (w 0) (fun x:set => apply_fun p x) (q 0) Hq0).
+          rewrite (apply_fun_graph (w 1) (fun x:set => apply_fun p' x) (q 1) Hq1).
+          rewrite (apply_fun_graph (setprod (w 0) (w 1)) (fun x:set => apply_fun (product_of_maps E E' p p') x) q Hq).
+          symmetry.
+          exact Happly.
+        }
+        claim HfCont :
+          continuous_map
+            (setprod (w 0) (w 1))
+            (subspace_topology (setprod E E') (product_topology E Te E' Te') (setprod (w 0) (w 1)))
+            W
+            (subspace_topology (setprod B B') (product_topology B Tb B' Tb') W)
+            fReq.
+        {
+          exact (continuous_map_congr_on
+            (setprod (w 0) (w 1))
+            (subspace_topology (setprod E E') (product_topology E Te E' Te') (setprod (w 0) (w 1)))
+            W
+            (subspace_topology (setprod B B') (product_topology B Tb B' Tb') W)
+            (pair_map (setprod (w 0) (w 1)) f1 f2)
+            fReq
+            HpairContSub
+            HfReqFun
+            HfEq).
+        }
+        claim HgFun : function_on g U (w 0).
+        {
+          exact (continuous_map_function_on
+            U
+            (subspace_topology B Tb U)
+            (w 0)
+            (subspace_topology E Te (w 0))
+            g
+            HgCont).
+        }
+        claim Hg'Fun : function_on g' U' (w 1).
+        {
+          exact (continuous_map_function_on
+            U'
+            (subspace_topology B' Tb' U')
+            (w 1)
+            (subspace_topology E' Te' (w 1))
+            g'
+            Hg'Cont).
+        }
+        set g1 := compose_fun W (projection_map1 U U') g.
+        set g2 := compose_fun W (projection_map2 U U') g'.
+        set gprod := pair_map W g1 g2.
+        claim HprojPairU :
+          continuous_map
+            W
+            (product_topology U (subspace_topology B Tb U) U' (subspace_topology B' Tb' U'))
+            U
+            (subspace_topology B Tb U)
+            (projection_map1 U U') /\
+          continuous_map
+            W
+            (product_topology U (subspace_topology B Tb U) U' (subspace_topology B' Tb' U'))
+            U'
+            (subspace_topology B' Tb' U')
+            (projection_map2 U U').
+        {
+          exact (projection_maps_continuous
+            U
+            (subspace_topology B Tb U)
+            U'
+            (subspace_topology B' Tb' U')
+            HtopU
+            HtopU').
+        }
+        claim Hproj1U :
+          continuous_map
+            W
+            (product_topology U (subspace_topology B Tb U) U' (subspace_topology B' Tb' U'))
+            U
+            (subspace_topology B Tb U)
+            (projection_map1 U U').
+        {
+          exact (andEL
+            (continuous_map
+              W
+              (product_topology U (subspace_topology B Tb U) U' (subspace_topology B' Tb' U'))
+              U
+              (subspace_topology B Tb U)
+              (projection_map1 U U'))
+            (continuous_map
+              W
+              (product_topology U (subspace_topology B Tb U) U' (subspace_topology B' Tb' U'))
+              U'
+              (subspace_topology B' Tb' U')
+              (projection_map2 U U'))
+            HprojPairU).
+        }
+        claim Hproj2U :
+          continuous_map
+            W
+            (product_topology U (subspace_topology B Tb U) U' (subspace_topology B' Tb' U'))
+            U'
+            (subspace_topology B' Tb' U')
+            (projection_map2 U U').
+        {
+          exact (andER
+            (continuous_map
+              W
+              (product_topology U (subspace_topology B Tb U) U' (subspace_topology B' Tb' U'))
+              U
+              (subspace_topology B Tb U)
+              (projection_map1 U U'))
+            (continuous_map
+              W
+              (product_topology U (subspace_topology B Tb U) U' (subspace_topology B' Tb' U'))
+              U'
+              (subspace_topology B' Tb' U')
+              (projection_map2 U U'))
+            HprojPairU).
+        }
+        claim Hg1Cont :
+          continuous_map
+            W
+            (product_topology U (subspace_topology B Tb U) U' (subspace_topology B' Tb' U'))
+            (w 0)
+            (subspace_topology E Te (w 0))
+            g1.
+        {
+          exact (composition_continuous
+            W
+            (product_topology U (subspace_topology B Tb U) U' (subspace_topology B' Tb' U'))
+            U
+            (subspace_topology B Tb U)
+            (w 0)
+            (subspace_topology E Te (w 0))
+            (projection_map1 U U')
+            g
+            Hproj1U
+            HgCont).
+        }
+        claim Hg2Cont :
+          continuous_map
+            W
+            (product_topology U (subspace_topology B Tb U) U' (subspace_topology B' Tb' U'))
+            (w 1)
+            (subspace_topology E' Te' (w 1))
+            g2.
+        {
+          exact (composition_continuous
+            W
+            (product_topology U (subspace_topology B Tb U) U' (subspace_topology B' Tb' U'))
+            U'
+            (subspace_topology B' Tb' U')
+            (w 1)
+            (subspace_topology E' Te' (w 1))
+            (projection_map2 U U')
+            g'
+            Hproj2U
+            Hg'Cont).
+        }
+        claim HgprodContProd :
+          continuous_map
+            W
+            (product_topology U (subspace_topology B Tb U) U' (subspace_topology B' Tb' U'))
+            (setprod (w 0) (w 1))
+            (product_topology
+              (w 0) (subspace_topology E Te (w 0))
+              (w 1) (subspace_topology E' Te' (w 1)))
+            gprod.
+        {
+          exact (maps_into_products
+            W
+            (product_topology U (subspace_topology B Tb U) U' (subspace_topology B' Tb' U'))
+            (w 0)
+            (subspace_topology E Te (w 0))
+            (w 1)
+            (subspace_topology E' Te' (w 1))
+            g1
+            g2
+            Hg1Cont
+            Hg2Cont).
+        }
+        claim HgprodCont :
+          continuous_map
+            W
+            (subspace_topology (setprod B B') (product_topology B Tb B' Tb') W)
+            (setprod (w 0) (w 1))
+            (subspace_topology (setprod E E') (product_topology E Te E' Te') (setprod (w 0) (w 1)))
+            gprod.
+        {
+          rewrite <- HcodEq.
+          rewrite <- HdomEq.
+          exact HgprodContProd.
+        }
+        claim HgprodFun :
+          function_on gprod W (setprod (w 0) (w 1)).
+        {
+          exact (continuous_map_function_on
+            W
+            (subspace_topology (setprod B B') (product_topology B Tb B' Tb') W)
+            (setprod (w 0) (w 1))
+            (subspace_topology (setprod E E') (product_topology E Te E' Te') (setprod (w 0) (w 1)))
+            gprod
+            HgprodCont).
+        }
+        prove continuous_map
+            (setprod (w 0) (w 1))
+            (subspace_topology (setprod E E') (product_topology E Te E' Te') (setprod (w 0) (w 1)))
+            W
+            (subspace_topology (setprod B B') (product_topology B Tb B' Tb') W)
+            fReq /\
+          exists h:set,
+            continuous_map
+              W
+              (subspace_topology (setprod B B') (product_topology B Tb B' Tb') W)
+              (setprod (w 0) (w 1))
+              (subspace_topology (setprod E E') (product_topology E Te E' Te') (setprod (w 0) (w 1)))
+              h /\
+            (forall x:set, x :e setprod (w 0) (w 1) ->
+              apply_fun h (apply_fun fReq x) = x) /\
+            (forall y:set, y :e W ->
+              apply_fun fReq (apply_fun h y) = y).
+        apply andI.
+        - exact HfCont.
+        - witness gprod.
+          apply andI.
+          + apply andI.
+            * exact HgprodCont.
+            * let x.
+              assume Hx.
+              claim Hx0 : (x 0) :e (w 0).
+              {
+                exact (ap0_Sigma (w 0) (fun _ : set => (w 1)) x Hx).
+              }
+              claim Hx1 : (x 1) :e (w 1).
+              {
+                exact (ap1_Sigma (w 0) (fun _ : set => (w 1)) x Hx).
+              }
+              claim HxEE : x :e setprod E E'.
+              {
+                exact (setprod_Subq (w 0) (w 1) E E' Hw0subE Hw1subE' x Hx).
+              }
+              claim HxFReq :
+                apply_fun fReq x = apply_fun (product_of_maps E E' p p') x.
+              {
+                exact (apply_fun_graph
+                  (setprod (w 0) (w 1))
+                  (fun z:set => apply_fun (product_of_maps E E' p p') z)
+                  x
+                  Hx).
+              }
+              claim HxProd :
+                apply_fun (product_of_maps E E' p p') x =
+                (apply_fun p (x 0), apply_fun p' (x 1)).
+              {
+                exact (apply_fun_graph
+                  (setprod E E')
+                  (fun t:set => (apply_fun p (t 0), apply_fun p' (t 1)))
+                  x
+                  HxEE).
+              }
+              claim HxArg :
+                apply_fun fReq x =
+                (apply_fun p (x 0), apply_fun p' (x 1)).
+              {
+                rewrite HxFReq.
+                exact HxProd.
+              }
+              claim Hx0Ugraph :
+                apply_fun (graph (w 0) (fun z:set => apply_fun p z)) (x 0) :e U.
+              {
+                exact (Hfun0 (x 0) Hx0).
+              }
+              claim Hx1Ugraph :
+                apply_fun (graph (w 1) (fun z:set => apply_fun p' z)) (x 1) :e U'.
+              {
+                exact (Hfun1 (x 1) Hx1).
+              }
+              claim Hx0eq :
+                apply_fun (graph (w 0) (fun z:set => apply_fun p z)) (x 0) =
+                apply_fun p (x 0).
+              {
+                exact (apply_fun_graph (w 0) (fun z:set => apply_fun p z) (x 0) Hx0).
+              }
+              claim Hx1eq :
+                apply_fun (graph (w 1) (fun z:set => apply_fun p' z)) (x 1) =
+                apply_fun p' (x 1).
+              {
+                exact (apply_fun_graph (w 1) (fun z:set => apply_fun p' z) (x 1) Hx1).
+              }
+              claim Hx0U : apply_fun p (x 0) :e U.
+              {
+                exact (Hx0eq (fun a b:set => a :e U) Hx0Ugraph).
+              }
+              claim Hx1U' : apply_fun p' (x 1) :e U'.
+              {
+                exact (Hx1eq (fun a b:set => a :e U') Hx1Ugraph).
+              }
+              claim HargW :
+                (apply_fun p (x 0), apply_fun p' (x 1)) :e W.
+              {
+                exact (tuple_2_setprod_by_pair_Sigma U U' (apply_fun p (x 0)) (apply_fun p' (x 1)) Hx0U Hx1U').
+              }
+              rewrite HxArg.
+              rewrite (pair_map_apply W (w 0) (w 1) g1 g2 (apply_fun p (x 0), apply_fun p' (x 1)) HargW).
+              rewrite (compose_fun_apply W (projection_map1 U U') g (apply_fun p (x 0), apply_fun p' (x 1)) HargW).
+              rewrite (compose_fun_apply W (projection_map2 U U') g' (apply_fun p (x 0), apply_fun p' (x 1)) HargW).
+              rewrite (projection1_apply U U' (apply_fun p (x 0), apply_fun p' (x 1)) HargW).
+              rewrite (projection2_apply U U' (apply_fun p (x 0), apply_fun p' (x 1)) HargW).
+              claim Harg0 :
+                (apply_fun p (x 0), apply_fun p' (x 1)) 0 = apply_fun p (x 0).
+              {
+                claim HargEta :
+                  (apply_fun p (x 0), apply_fun p' (x 1)) =
+                  (((apply_fun p (x 0), apply_fun p' (x 1)) 0),
+                   ((apply_fun p (x 0), apply_fun p' (x 1)) 1)).
+                {
+                  exact (setprod_eta
+                    U
+                    U'
+                    (apply_fun p (x 0), apply_fun p' (x 1))
+                    HargW).
+                }
+                claim Harg0' :
+                  apply_fun p (x 0) =
+                  ((apply_fun p (x 0), apply_fun p' (x 1)) 0).
+                {
+                  exact (pair_eq_fst
+                    (apply_fun p (x 0))
+                    (apply_fun p' (x 1))
+                    ((apply_fun p (x 0), apply_fun p' (x 1)) 0)
+                    ((apply_fun p (x 0), apply_fun p' (x 1)) 1)
+                    HargEta).
+                }
+                symmetry.
+                exact Harg0'.
+              }
+              claim Harg1 :
+                (apply_fun p (x 0), apply_fun p' (x 1)) 1 = apply_fun p' (x 1).
+              {
+                claim HargEta :
+                  (apply_fun p (x 0), apply_fun p' (x 1)) =
+                  (((apply_fun p (x 0), apply_fun p' (x 1)) 0),
+                   ((apply_fun p (x 0), apply_fun p' (x 1)) 1)).
+                {
+                  exact (setprod_eta
+                    U
+                    U'
+                    (apply_fun p (x 0), apply_fun p' (x 1))
+                    HargW).
+                }
+                claim Harg1' :
+                  apply_fun p' (x 1) =
+                  ((apply_fun p (x 0), apply_fun p' (x 1)) 1).
+                {
+                  exact (pair_eq_snd
+                    (apply_fun p (x 0))
+                    (apply_fun p' (x 1))
+                    ((apply_fun p (x 0), apply_fun p' (x 1)) 0)
+                    ((apply_fun p (x 0), apply_fun p' (x 1)) 1)
+                    HargEta).
+                }
+                symmetry.
+                exact Harg1'.
+              }
+              rewrite Harg0.
+              rewrite Harg1.
+              claim HleftEq0 : apply_fun g (apply_fun p (x 0)) = (x 0).
+              {
+                claim Hx0graph :
+                  apply_fun (graph (w 0) (fun z:set => apply_fun p z)) (x 0) =
+                  apply_fun p (x 0).
+                {
+                  exact (apply_fun_graph (w 0) (fun z:set => apply_fun p z) (x 0) Hx0).
+                }
+                claim Htmp0 :
+                  apply_fun g (apply_fun (graph (w 0) (fun z:set => apply_fun p z)) (x 0)) = (x 0).
+                {
+                  exact (Hleft0 (x 0) Hx0).
+                }
+                exact (Hx0graph
+                  (fun a b:set => apply_fun g a = (x 0))
+                  Htmp0).
+              }
+              claim HleftEq1 : apply_fun g' (apply_fun p' (x 1)) = (x 1).
+              {
+                claim Hx1graph :
+                  apply_fun (graph (w 1) (fun z:set => apply_fun p' z)) (x 1) =
+                  apply_fun p' (x 1).
+                {
+                  exact (apply_fun_graph (w 1) (fun z:set => apply_fun p' z) (x 1) Hx1).
+                }
+                claim Htmp1 :
+                  apply_fun g' (apply_fun (graph (w 1) (fun z:set => apply_fun p' z)) (x 1)) = (x 1).
+                {
+                  exact (Hleft1 (x 1) Hx1).
+                }
+                exact (Hx1graph
+                  (fun a b:set => apply_fun g' a = (x 1))
+                  Htmp1).
+              }
+              rewrite HleftEq0.
+              rewrite HleftEq1.
+              symmetry.
+              exact (setprod_eta (w 0) (w 1) x Hx).
+          + let y.
+            assume Hy.
+            claim Hy0 : (y 0) :e U.
+            {
+              exact (ap0_Sigma U (fun _ : set => U') y Hy).
+            }
+            claim Hy1 : (y 1) :e U'.
+            {
+              exact (ap1_Sigma U (fun _ : set => U') y Hy).
+            }
+            claim Hgy0w0 : apply_fun g (y 0) :e (w 0).
+            {
+              exact (HgFun (y 0) Hy0).
+            }
+            claim Hgy1w1 : apply_fun g' (y 1) :e (w 1).
+            {
+              exact (Hg'Fun (y 1) Hy1).
+            }
+            claim HgyPairWW : (apply_fun g (y 0), apply_fun g' (y 1)) :e setprod (w 0) (w 1).
+            {
+              exact (tuple_2_setprod_by_pair_Sigma (w 0) (w 1) (apply_fun g (y 0)) (apply_fun g' (y 1)) Hgy0w0 Hgy1w1).
+            }
+            claim HgyEq :
+              apply_fun gprod y = (apply_fun g (y 0), apply_fun g' (y 1)).
+            {
+              rewrite (pair_map_apply W (w 0) (w 1) g1 g2 y Hy).
+              rewrite (compose_fun_apply W (projection_map1 U U') g y Hy).
+              rewrite (compose_fun_apply W (projection_map2 U U') g' y Hy).
+              rewrite (projection1_apply U U' y Hy).
+              rewrite (projection2_apply U U' y Hy).
+              reflexivity.
+            }
+            claim HgyWW : apply_fun gprod y :e setprod (w 0) (w 1).
+            {
+              exact (HgyEq (fun a b:set => b :e setprod (w 0) (w 1)) HgyPairWW).
+            }
+            claim Hgy0E : apply_fun g (y 0) :e E.
+            {
+              exact (Hw0subE (apply_fun g (y 0)) Hgy0w0).
+            }
+            claim Hgy1E' : apply_fun g' (y 1) :e E'.
+            {
+              exact (Hw1subE' (apply_fun g' (y 1)) Hgy1w1).
+            }
+            claim HgyPairEE : (apply_fun g (y 0), apply_fun g' (y 1)) :e setprod E E'.
+            {
+              exact (tuple_2_setprod_by_pair_Sigma E E' (apply_fun g (y 0)) (apply_fun g' (y 1)) Hgy0E Hgy1E').
+            }
+            rewrite (apply_fun_graph
+              (setprod (w 0) (w 1))
+              (fun z:set => apply_fun (product_of_maps E E' p p') z)
+              (apply_fun gprod y)
+              HgyWW).
+            rewrite HgyEq.
+            claim HprodPairEq :
+              apply_fun
+                (product_of_maps E E' p p')
+                (apply_fun g (y 0), apply_fun g' (y 1)) =
+              (apply_fun p ((apply_fun g (y 0), apply_fun g' (y 1)) 0),
+               apply_fun p' ((apply_fun g (y 0), apply_fun g' (y 1)) 1)).
+            {
+              exact (apply_fun_graph
+                (setprod E E')
+                (fun t:set => (apply_fun p (t 0), apply_fun p' (t 1)))
+                (apply_fun g (y 0), apply_fun g' (y 1))
+                HgyPairEE).
+            }
+            rewrite HprodPairEq.
+            claim HgyArg0 :
+              ((apply_fun g (y 0), apply_fun g' (y 1)) 0) = apply_fun g (y 0).
+            {
+              claim HargEta :
+                (apply_fun g (y 0), apply_fun g' (y 1)) =
+                (((apply_fun g (y 0), apply_fun g' (y 1)) 0),
+                 ((apply_fun g (y 0), apply_fun g' (y 1)) 1)).
+              {
+                exact (setprod_eta
+                  E
+                  E'
+                  (apply_fun g (y 0), apply_fun g' (y 1))
+                  HgyPairEE).
+              }
+              claim Harg0 :
+                apply_fun g (y 0) =
+                ((apply_fun g (y 0), apply_fun g' (y 1)) 0).
+              {
+                exact (pair_eq_fst
+                  (apply_fun g (y 0))
+                  (apply_fun g' (y 1))
+                  ((apply_fun g (y 0), apply_fun g' (y 1)) 0)
+                  ((apply_fun g (y 0), apply_fun g' (y 1)) 1)
+                  HargEta).
+              }
+              symmetry.
+              exact Harg0.
+            }
+            claim HgyArg1 :
+              ((apply_fun g (y 0), apply_fun g' (y 1)) 1) = apply_fun g' (y 1).
+            {
+              claim HargEta :
+                (apply_fun g (y 0), apply_fun g' (y 1)) =
+                (((apply_fun g (y 0), apply_fun g' (y 1)) 0),
+                 ((apply_fun g (y 0), apply_fun g' (y 1)) 1)).
+              {
+                exact (setprod_eta
+                  E
+                  E'
+                  (apply_fun g (y 0), apply_fun g' (y 1))
+                  HgyPairEE).
+              }
+              claim Harg1 :
+                apply_fun g' (y 1) =
+                ((apply_fun g (y 0), apply_fun g' (y 1)) 1).
+              {
+                exact (pair_eq_snd
+                  (apply_fun g (y 0))
+                  (apply_fun g' (y 1))
+                  ((apply_fun g (y 0), apply_fun g' (y 1)) 0)
+                  ((apply_fun g (y 0), apply_fun g' (y 1)) 1)
+                  HargEta).
+              }
+              symmetry.
+              exact Harg1.
+            }
+            rewrite HgyArg0.
+            rewrite HgyArg1.
+            claim Hy0Eq : apply_fun p (apply_fun g (y 0)) = (y 0).
+            {
+              rewrite <- (apply_fun_graph (w 0) (fun z:set => apply_fun p z) (apply_fun g (y 0)) Hgy0w0).
+              exact (Hright0 (y 0) Hy0).
+            }
+            claim Hy1Eq : apply_fun p' (apply_fun g' (y 1)) = (y 1).
+            {
+              rewrite <- (apply_fun_graph (w 1) (fun z:set => apply_fun p' z) (apply_fun g' (y 1)) Hgy1w1).
+              exact (Hright1 (y 1) Hy1).
+            }
+            rewrite Hy0Eq.
+            rewrite Hy1Eq.
+            symmetry.
+            exact (setprod_eta U U' y Hy).
+}
+prove continuous_map
+    (setprod E E')
+    (product_topology E Te E' Te')
+    (setprod B B')
+    (product_topology B Tb B' Tb')
+    (product_of_maps E E' p p') /\
+  surjective_map
+    (setprod E E')
+    (setprod B B')
+    (product_of_maps E E' p p') /\
+  (forall bb:set, bb :e setprod B B' ->
+    exists W:set, W :e (product_topology B Tb B' Tb') /\ bb :e W /\
+      evenly_covered
+        (setprod E E')
+        (product_topology E Te E' Te')
+        (setprod B B')
+        (product_topology B Tb B' Tb')
+        (product_of_maps E E' p p')
+        W).
+apply andI.
+- apply andI.
+  + exact HcontProd.
+  + exact HsurjProd.
+- exact HlocalProd.
+Qed.
 
 (** Infrastructure: complex multiplication on R^2 (viewing R^2 as C) **)
 (** (a,b) times (c,d) = (ac - bd, ad + bc) **)
