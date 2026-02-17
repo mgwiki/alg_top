@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 22164 **)
+(** Balance Charlie 21966 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -52707,7 +52707,8 @@ Definition S1_basepoint : set := (1, 0).
 (** LATEX VERSION: The fundamental group of S^1 is isomorphic to the additive group **)
 (** of integers. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 200 **)
+(** Bounty 220 **)
+(** Lock Charlie 2026-02-18T11:48:52 **)
 Theorem thm54_5_pi1_circle : exists phi:set,
   group_isomorphism
     (fundamental_group S1 S1_topology S1_basepoint)
@@ -52811,7 +52812,8 @@ Admitted.
 (** LATEX VERSION: Let H = p-star(pi_1(E,e0)). The lifting correspondence induces **)
 (** an injective map Phi: pi_1(B,b0)/H -> p^{-1}(b0), bijective if E is path connected. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 200 **)
+(** Bounty 220 **)
+(** Lock Charlie 2026-02-18T11:48:52 **)
 Theorem thm54_6b_coset_correspondence : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   exists Phi:set,
@@ -60722,7 +60724,8 @@ Qed.
 (** LATEX VERSION: Let a, b be points of S^2. Let A be compact, f: A -> S^2-a-b continuous. **)
 (** If a and b lie in the same component of S^2-f(A), then f is nulhomotopic. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 200 **)
+(** Bounty 220 **)
+(** Lock Charlie 2026-02-18T11:48:52 **)
 Theorem lemma61_2_nulhomotopy : forall a b:set,
   a :e Sn 2 -> b :e Sn 2 -> a <> b ->
   forall A TA:set, compact_space A TA ->
@@ -61052,7 +61055,8 @@ Admitted.
 (** LATEX VERSION: Given no retraction B^n -> S^{n-1} and S^{n-1} separates S^n, **)
 (** invariance of domain holds in dimension n. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 200 **)
+(** Bounty 220 **)
+(** Lock Charlie 2026-02-18T11:48:52 **)
 Theorem ex62_6c_invariance_of_domain_n : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed (ordsucc n)) (Bn_closed_topology (ordsucc n)) (Sn n)) ->
   (forall C:set, C c= Sn n ->
@@ -61377,7 +61381,8 @@ Admitted.
 (** from S63 Exercise 3(a) (line 2246 in algtop.tex) **)
 (** LATEX VERSION: A subspace of S^2 homeomorphic to the topologists sine curve does not separate S^2. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 200 **)
+(** Bounty 220 **)
+(** Lock Charlie 2026-02-18T11:48:52 **)
 Theorem ex63_3a_sine_curve_no_separation : forall D:set,
   D c= Sn 2 ->
   connected_space D (subspace_topology (Sn 2) (Sn_topology 2) D) ->
@@ -61444,7 +61449,8 @@ Definition utilities_graph : set -> set -> set -> set -> prop := fun H W G Tg =>
 (** LATEX VERSION: Let X be a theta space in S^2. Then X separates S^2 into **)
 (** three components with boundaries A union B, B union C, and A union C. **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 200 **)
+(** Bounty 220 **)
+(** Lock Charlie 2026-02-18T11:48:52 **)
 Theorem lemma64_1_theta_separates : forall X Tx A B C a b:set,
   theta_space X Tx A B C a b ->
   X c= Sn 2 -> Tx = subspace_topology (Sn 2) (Sn_topology 2) X ->
@@ -62760,7 +62766,8 @@ Admitted.
 (** LATEX VERSION: If the extension condition of Lemma 68.3 holds, then each i_alpha **)
 (** is a monomorphism and G is the free product of i_alpha(G_alpha). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 200 **)
+(** Bounty 220 **)
+(** Lock Charlie 2026-02-18T11:48:52 **)
 Theorem lemma68_5_extension_characterizes_free_product :
   forall G multG eG invG J Gfam multfam efam invfam ifam:set,
   group_structure G multG eG invG ->
@@ -65998,7 +66005,8 @@ Admitted.
 (** LATEX VERSION: Every isomorphism of pi1(T, x0) with itself is induced **)
 (** by a homeomorphism of T with itself that maps x0 to x0. **)
 (** EFFORT: 12 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 200 **)
+(** Bounty 220 **)
+(** Lock Charlie 2026-02-18T11:48:52 **)
 Theorem ex79_5a_torus_automorphism :
   let x0 := (S1_basepoint, S1_basepoint) in
   forall phi:set,
@@ -66579,7 +66587,8 @@ Admitted.
 (** (b) If L(n,k) homeomorphic to L(n',k') then n = n'. **)
 (** (c) L(n,k) is a compact 3-manifold. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 200 **)
+(** Bounty 220 **)
+(** Lock Charlie 2026-02-18T11:48:52 **)
 Theorem ex81_5_lens_space :
   forall n k:set,
   n :e omega -> k :e omega -> n <> 0 -> k <> 0 ->
@@ -67184,7 +67193,8 @@ Admitted.
 (** U cap V = A union B disjoint open path-connected. alpha path in U from a to b, **)
 (** beta path in V from b to a. Then [alpha . beta] generates pi1(X,a). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 180 **)
-(** Bounty 180 **)
+(** Bounty 198 **)
+(** Lock Charlie 2026-02-18T11:48:52 **)
 Theorem lemma84_6_generator_from_edge :
   forall X Tx U V A B a b alpha beta:set,
   topology_on X Tx ->
