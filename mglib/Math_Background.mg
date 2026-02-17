@@ -53916,10 +53916,67 @@ claim HFt_54_cont :
           {
             exact (HFtLocalComm z HzN).
           }
+          claim HFt54zPreU : apply_fun Ft_54 z :e preimage_of E p U.
+          {
+            claim HFt54zE : apply_fun Ft_54 z :e E.
+            {
+              exact (HFt54FunN z HzN).
+            }
+            claim HpFt54zU : apply_fun p (apply_fun Ft_54 z) :e U.
+            {
+              rewrite HpFt54zEqFz.
+              exact HFzU.
+            }
+            exact (SepI
+              E
+              (fun z0:set => apply_fun p z0 :e U)
+              (apply_fun Ft_54 z)
+              HFt54zE
+              HpFt54zU).
+          }
+          claim HFt54zUnion : apply_fun Ft_54 z :e Union slices.
+          {
+            exact (mem_eqL
+              (apply_fun Ft_54 z)
+              (Union slices)
+              (preimage_of E p U)
+              HslicesUnion
+              HFt54zPreU).
+          }
+          claim Hslice_z :
+            exists Vz:set, apply_fun Ft_54 z :e Vz /\ Vz :e slices.
+          {
+            exact (UnionE
+              slices
+              (apply_fun Ft_54 z)
+              HFt54zUnion).
+          }
           claim HFt54zVq : apply_fun Ft_54 z :e Vq.
           {
-            (** TODO Charlie: show Ft_54 z lies in the chosen sheet Vq on this local neighborhood. **)
-            admit.
+            apply Hslice_z.
+            let Vz.
+            assume HVzPack.
+            claim HFt54zVz : apply_fun Ft_54 z :e Vz.
+            {
+              exact (andEL
+                (apply_fun Ft_54 z :e Vz)
+                (Vz :e slices)
+                HVzPack).
+            }
+            claim HVzSlice : Vz :e slices.
+            {
+              exact (andER
+                (apply_fun Ft_54 z :e Vz)
+                (Vz :e slices)
+                HVzPack).
+            }
+            claim HVzEqVq : Vz = Vq.
+            {
+              (** TODO Charlie: show the slice containing Ft_54 z is the same as the slice containing Ft_54 q. **)
+              admit.
+            }
+            rewrite <- HVzEqVq.
+            exact HFt54zVz.
           }
           claim HuniqFib :
             exists x:set, x :e Vq /\ apply_fun p x = apply_fun F z /\
