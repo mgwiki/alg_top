@@ -1,5 +1,5 @@
 (** Balance Alice 1710 **)
-(** Balance Bob 1553 **)
+(** Balance Bob 1552 **)
 (** Balance Charlie 1223 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -15321,7 +15321,8 @@ Definition star_convex : set -> set -> prop := fun A a0 =>
 (** LATEX VERSION: Find a star convex set that is not convex. **)
 (** Note: formulated in R2 since star convex but not convex requires dimension >= 2 **)
 (** EFFORT: 2 lines textbook, difficulty 1/10, USD 10 **)
-(** Bounty 10 **)
+(** Bounty 11 **)
+(** Lock Bob 2026-02-18T11:30:00 **)
 Theorem ex52_1a_star_convex_not_convex :
   exists A:set, exists a0:set,
     A c= EuclidPlane /\
