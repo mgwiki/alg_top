@@ -1,6 +1,6 @@
 (** Balance Alice 2510 **)
 (** Balance Bob 2808 **)
-(** Balance Charlie 1477 **)
+(** Balance Charlie 1476 **)
 
 (** Sum of Balences and Bounties 48150 **)
 
@@ -50410,7 +50410,8 @@ Admitted.
 
 (** helper sub-bounty for Corollary 58.5: alpha-hat sends identity to identity **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
-(** Bounty 8 **)
+(** Bounty 9 **)
+(** Lock Charlie 2026-02-18T08:30:00 **)
 Theorem lemma58_sub_basepoint_change_id : forall X Tx x0 x1 alpha:set,
   path_between X x0 x1 alpha ->
   apply_fun (basepoint_change_map X Tx x0 x1 alpha)
