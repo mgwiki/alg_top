@@ -20946,7 +20946,164 @@ claim HsurjUnique :
         Halpha0
         Halpha1).
     }
-    (** TODO Bob: finish class-level simplification to y using these cancellation homotopies. **)
+    set ey := Eps_i (fun f:set => f :e y).
+    claim HeyClass :
+      path_homotopy_class_loop X Tx x1 ey = y.
+    {
+      claim HyRep :
+        exists fy:set, fy :e loop_space X Tx x1 /\
+          y = path_homotopy_class_loop X Tx x1 fy.
+      {
+        exact (fundamental_group_member_has_representative
+          X
+          Tx
+          x1
+          y
+          Hy).
+      }
+      apply HyRep.
+      let fy.
+      assume HfyPack.
+      claim HfyLoop : fy :e loop_space X Tx x1.
+      {
+        exact (andEL
+          (fy :e loop_space X Tx x1)
+          (y = path_homotopy_class_loop X Tx x1 fy)
+          HfyPack).
+      }
+      claim HyEq :
+        y = path_homotopy_class_loop X Tx x1 fy.
+      {
+        exact (andER
+          (fy :e loop_space X Tx x1)
+          (y = path_homotopy_class_loop X Tx x1 fy)
+          HfyPack).
+      }
+      claim HfyLoopAt : loop_at X Tx x1 fy.
+      {
+        exact (loop_space_has_loop_at
+          X
+          Tx
+          x1
+          fy
+          HfyLoop).
+      }
+      claim HfyCont :
+        continuous_map unit_interval unit_interval_topology X Tx fy.
+      {
+        exact (loop_at_continuous
+          X
+          Tx
+          x1
+          fy
+          HfyLoopAt).
+      }
+      claim Hfy0 : apply_fun fy 0 = x1.
+      {
+        exact (loop_at_at_zero
+          X
+          Tx
+          x1
+          fy
+          HfyLoopAt).
+      }
+      claim Hfy1 : apply_fun fy 1 = x1.
+      {
+        exact (loop_at_at_one
+          X
+          Tx
+          x1
+          fy
+          HfyLoopAt).
+      }
+      claim HfyRefl : path_homotopic X Tx x1 x1 fy fy.
+      {
+        exact (Lemma_51_1_path_homotopy_refl
+          X
+          Tx
+          x1
+          x1
+          fy
+          HfyCont
+          Hfy0
+          Hfy1).
+      }
+      claim HfyInClass :
+        fy :e path_homotopy_class_loop X Tx x1 fy.
+      {
+        exact (SepI
+          (loop_space X Tx x1)
+          (fun h:set => path_homotopic X Tx x1 x1 fy h)
+          fy
+          HfyLoop
+          HfyRefl).
+      }
+      claim HfyInY : fy :e y.
+      {
+        exact (mem_eqL
+          fy
+          y
+          (path_homotopy_class_loop X Tx x1 fy)
+          HyEq
+          HfyInClass).
+      }
+      claim HeyInY : ey :e y.
+      {
+        exact (Eps_i_ax
+          (fun f:set => f :e y)
+          fy
+          HfyInY).
+      }
+      claim HeyInClassFy :
+        ey :e path_homotopy_class_loop X Tx x1 fy.
+      {
+        exact (mem_eqR
+          ey
+          y
+          (path_homotopy_class_loop X Tx x1 fy)
+          HyEq
+          HeyInY).
+      }
+      claim HfyEy :
+        path_homotopic X Tx x1 x1 fy ey.
+      {
+        exact (path_homotopy_class_loop_has_homotopy
+          X
+          Tx
+          x1
+          fy
+          ey
+          HeyInClassFy).
+      }
+      claim HclassFyEy :
+        path_homotopy_class_loop X Tx x1 fy
+        =
+        path_homotopy_class_loop X Tx x1 ey.
+      {
+        exact (path_homotopy_class_loop_eq_of_path_homotopic
+          X
+          Tx
+          x1
+          fy
+          ey
+          HfyEy).
+      }
+      claim HclassEyFy :
+        path_homotopy_class_loop X Tx x1 ey
+        =
+        path_homotopy_class_loop X Tx x1 fy.
+      {
+        exact (fun Q => HclassFyEy (fun x y:set => Q y x)).
+      }
+      claim HyEqSym :
+        path_homotopy_class_loop X Tx x1 fy = y.
+      {
+        exact (fun Q => HyEq (fun x y:set => Q y x)).
+      }
+      rewrite HclassEyFy.
+      exact HyEqSym.
+    }
+    (** TODO Bob: finish class-level simplification to canonical class of ey, then rewrite HeyClass. **)
     admit.
   }
   witness x.
