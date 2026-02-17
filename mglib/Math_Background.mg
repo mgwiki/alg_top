@@ -20807,6 +20807,145 @@ exact (andI
   Hmult).
 Admitted.
 
+(** S52 helper: any loop belongs to its own path-homotopy class **)
+(** Proven Bob **)
+Theorem loop_in_own_path_homotopy_class_s52 : forall X Tx x0 f:set,
+  f :e loop_space X Tx x0 ->
+  f :e path_homotopy_class_loop X Tx x0 f.
+let X Tx x0 f.
+assume HfLoop.
+claim HfLoopAt : loop_at X Tx x0 f.
+{
+  exact (loop_space_has_loop_at X Tx x0 f HfLoop).
+}
+claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
+{
+  exact (loop_at_continuous X Tx x0 f HfLoopAt).
+}
+claim Hf0 : apply_fun f 0 = x0.
+{
+  exact (loop_at_at_zero X Tx x0 f HfLoopAt).
+}
+claim Hf1 : apply_fun f 1 = x0.
+{
+  exact (loop_at_at_one X Tx x0 f HfLoopAt).
+}
+claim Hrefl : path_homotopic X Tx x0 x0 f f.
+{
+  exact (Lemma_51_1_path_homotopy_refl
+    X Tx x0 x0 f HfCont Hf0 Hf1).
+}
+exact (SepI
+  (loop_space X Tx x0)
+  (fun g:set => path_homotopic X Tx x0 x0 f g)
+  f
+  HfLoop
+  Hrefl).
+Qed.
+
+(** S52 helper: canonical Eps_i representative of a pi1 class is a loop **)
+(** Proven Bob **)
+Theorem eps_of_fundamental_group_member_in_loop_space_s52 : forall X Tx x0 cls:set,
+  cls :e fundamental_group X Tx x0 ->
+  (Eps_i (fun f:set => f :e cls)) :e loop_space X Tx x0.
+let X Tx x0 cls.
+assume Hcls.
+claim Hrep : exists f:set, f :e loop_space X Tx x0 /\
+  cls = path_homotopy_class_loop X Tx x0 f.
+{
+  exact (fundamental_group_member_has_representative
+    X Tx x0 cls Hcls).
+}
+apply Hrep.
+let f.
+assume HfPack.
+claim HfLoop : f :e loop_space X Tx x0.
+{
+  exact (andEL
+    (f :e loop_space X Tx x0)
+    (cls = path_homotopy_class_loop X Tx x0 f)
+    HfPack).
+}
+claim HclsEqf : cls = path_homotopy_class_loop X Tx x0 f.
+{
+  exact (andER
+    (f :e loop_space X Tx x0)
+    (cls = path_homotopy_class_loop X Tx x0 f)
+    HfPack).
+}
+claim HfInCls : f :e cls.
+{
+  exact (mem_eqL
+    f
+    cls
+    (path_homotopy_class_loop X Tx x0 f)
+    HclsEqf
+    (loop_in_own_path_homotopy_class_s52 X Tx x0 f HfLoop)).
+}
+claim HepsInCls : (Eps_i (fun g:set => g :e cls)) :e cls.
+{
+  exact (Eps_i_ax
+    (fun g:set => g :e cls)
+    f
+    HfInCls).
+}
+claim HepsInClassf :
+  (Eps_i (fun g:set => g :e cls))
+  :e path_homotopy_class_loop X Tx x0 f.
+{
+  exact (mem_eqR
+    (Eps_i (fun g:set => g :e cls))
+    cls
+    (path_homotopy_class_loop X Tx x0 f)
+    HclsEqf
+    HepsInCls).
+}
+exact (path_homotopy_class_loop_in_loop_space
+  X Tx x0 f
+  (Eps_i (fun g:set => g :e cls))
+  HepsInClassf).
+Qed.
+
+(** S52 helper: cancellation of alpha-hat and beta-hat on chosen representatives **)
+Theorem lemma52_1_cancel_double_basepoint_change_class : forall X Tx x0 x1 alpha beta y ey:set,
+  continuous_map unit_interval unit_interval_topology X Tx alpha ->
+  continuous_map unit_interval unit_interval_topology X Tx beta ->
+  apply_fun alpha 0 = x0 ->
+  apply_fun alpha 1 = x1 ->
+  apply_fun beta 0 = x1 ->
+  apply_fun beta 1 = x0 ->
+  path_homotopic X Tx x0 x1 (reverse_path beta) alpha ->
+  path_homotopic X Tx x1 x1 (path_concat beta alpha) (constant_path x1) ->
+  path_homotopic X Tx x0 x0 (path_concat alpha beta) (constant_path x0) ->
+  y :e fundamental_group X Tx x1 ->
+  path_homotopy_class_loop X Tx x1 ey = y ->
+  path_homotopy_class_loop
+    X
+    Tx
+    x1
+    (path_concat
+      (reverse_path alpha)
+      (path_concat
+        (Eps_i (fun f:set =>
+          f :e path_homotopy_class_loop
+            X
+            Tx
+            x0
+            (path_concat
+              (reverse_path beta)
+              (path_concat
+                (Eps_i (fun g:set => g :e y))
+                beta))))
+        alpha))
+  =
+  path_homotopy_class_loop X Tx x1 ey.
+let X Tx x0 x1 alpha beta y ey.
+assume HalphaCont HbetaCont Halpha0 Halpha1 Hbeta0 Hbeta1.
+assume HrevBetaHom HbetaAlphaInv HalphaBetaInv.
+assume Hy HeyClass.
+admit.
+Admitted.
+
 (** from S52 Theorem 52.1 sub-bounty B: bijection part of alpha-hat **)
 (** EFFORT: 3 lines, difficulty 3/10, USD 12 **)
 (** Bounty 12 **)
@@ -21267,8 +21406,32 @@ claim HsurjUnique :
       exact HyEqSym.
     }
     rewrite <- HeyClass.
-    (** TODO Bob: show the conjugation expression class equals path_homotopy_class_loop X Tx x1 ey. **)
-    admit.
+    claim HeyInFG :
+      path_homotopy_class_loop X Tx x1 ey :e fundamental_group X Tx x1.
+    {
+      rewrite HeyClass.
+      exact Hy.
+    }
+    exact (lemma52_1_cancel_double_basepoint_change_class
+      X
+      Tx
+      x0
+      x1
+      alpha
+      beta
+      (path_homotopy_class_loop X Tx x1 ey)
+      ey
+      HalphaCont
+      HbetaCont
+      Halpha0
+      Halpha1
+      Hbeta0
+      Hbeta1
+      HrevBetaHom
+      HbetaAlphaInv
+      HalphaBetaInv
+      HeyInFG
+      (fun Q H => H)).
   }
   witness x.
   apply andI.
@@ -21626,8 +21789,51 @@ claim HsurjUnique :
         exact Hx'EqSym.
       }
       rewrite <- Hex0Class.
-      (** TODO Bob: show the conjugation expression class equals path_homotopy_class_loop X Tx x0 ex0. **)
-      admit.
+      claim HrevAlphaBeta2 :
+        path_homotopic
+          X
+          Tx
+          x1
+          x0
+          (reverse_path alpha)
+          beta.
+      {
+        exact (Lemma_51_1_path_homotopy_refl
+          X
+          Tx
+          x1
+          x0
+          beta
+          HbetaCont
+          Hbeta0
+          Hbeta1).
+      }
+      claim Hex0InFG :
+        path_homotopy_class_loop X Tx x0 ex0 :e fundamental_group X Tx x0.
+      {
+        rewrite Hex0Class.
+        exact Hx'.
+      }
+      exact (lemma52_1_cancel_double_basepoint_change_class
+        X
+        Tx
+        x1
+        x0
+        beta
+        alpha
+        (path_homotopy_class_loop X Tx x0 ex0)
+        ex0
+        HbetaCont
+        HalphaCont
+        Hbeta0
+        Hbeta1
+        Halpha0
+        Halpha1
+        HrevAlphaBeta2
+        HalphaBetaInv2
+        HbetaAlphaInv2
+        Hex0InFG
+        (fun Q H => H)).
     }
     claim HbetaYEqX :
       apply_fun
