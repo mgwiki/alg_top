@@ -42986,7 +42986,79 @@ Theorem ex53_2_unique_partition : forall E Te B Tb p U:set,
       homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
         (graph V (fun x:set => apply_fun p x))) ->
     slices1 = slices2.
-admit.
+let E Te B Tb p U.
+assume HtopE HtopB HconnU HUopen.
+let slices1 slices2.
+assume Hsub1 Hpd1 Hunion1 Hhome1 Hsub2 Hpd2 Hunion2 Hhome2.
+apply set_ext.
+- let V.
+  assume HV1.
+  claim HVsubPreU : V c= preimage_of E p U.
+  {
+    let x.
+    assume HxV.
+    claim HxUnion1 : x :e Union slices1.
+    {
+      exact (UnionI slices1 x V HxV HV1).
+    }
+    exact (mem_eqR
+      x
+      (Union slices1)
+      (preimage_of E p U)
+      Hunion1
+      HxUnion1).
+  }
+  claim HVsubUnion2 : V c= Union slices2.
+  {
+    let x.
+    assume HxV.
+    claim HxPreU : x :e preimage_of E p U.
+    {
+      exact (HVsubPreU x HxV).
+    }
+    exact (mem_eqL
+      x
+      (Union slices2)
+      (preimage_of E p U)
+      Hunion2
+      HxPreU).
+  }
+  (** TODO Charlie: derive V :e slices2 from connectedness of V and pairwise-disjoint covering by slices2. **)
+  admit.
+- let V.
+  assume HV2.
+  claim HVsubPreU : V c= preimage_of E p U.
+  {
+    let x.
+    assume HxV.
+    claim HxUnion2 : x :e Union slices2.
+    {
+      exact (UnionI slices2 x V HxV HV2).
+    }
+    exact (mem_eqR
+      x
+      (Union slices2)
+      (preimage_of E p U)
+      Hunion2
+      HxUnion2).
+  }
+  claim HVsubUnion1 : V c= Union slices1.
+  {
+    let x.
+    assume HxV.
+    claim HxPreU : x :e preimage_of E p U.
+    {
+      exact (HVsubPreU x HxV).
+    }
+    exact (mem_eqL
+      x
+      (Union slices1)
+      (preimage_of E p U)
+      Hunion1
+      HxPreU).
+  }
+  (** TODO Charlie: symmetric inclusion, same uniqueness step against slices1. **)
+  admit.
 Admitted.
 
 (** from S53 Exercise 3 (line 689 in algtop.tex) **)
