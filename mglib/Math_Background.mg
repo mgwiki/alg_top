@@ -70169,6 +70169,315 @@ apply (Hterms i Hi).
   exact (Hj_triv vcls HvMem).
 Qed.
 
+Theorem lemma59_4a_word_reduces_to_i_star_image :
+  forall X Tx U x0 n gs:set,
+  topology_on X Tx ->
+  U :e Tx ->
+  x0 :e U ->
+  n :e omega ->
+  function_on gs n (fundamental_group X Tx x0) ->
+  (forall i:set, i :e n ->
+    (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+      apply_fun gs i =
+        apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+          (graph U (fun x:set => x))) ucls) \/
+    apply_fun gs i = fundamental_group_id X Tx x0) ->
+  exists uacc:set,
+    uacc :e fundamental_group U (subspace_topology X Tx U) x0 /\
+    nat_primrec (fundamental_group_id X Tx x0)
+      (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n
+    =
+    apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+      (graph U (fun x:set => x))) uacc.
+let X Tx U x0 n gs.
+assume Htop : topology_on X Tx.
+assume HU : U :e Tx.
+assume Hx0U : x0 :e U.
+assume HnO : n :e omega.
+assume HgsFun : function_on gs n (fundamental_group X Tx x0).
+assume Hterms : forall i:set, i :e n ->
+  (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+    apply_fun gs i =
+      apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+        (graph U (fun x:set => x))) ucls) \/
+  apply_fun gs i = fundamental_group_id X Tx x0.
+claim HUsub : U c= X.
+{
+  exact (topology_elem_subset X Tx U Htop HU).
+}
+claim HtopU : topology_on U (subspace_topology X Tx U).
+{
+  exact (subspace_topology_is_topology X Tx U Htop HUsub).
+}
+claim Hx0X : x0 :e X.
+{
+  exact (HUsub x0 Hx0U).
+}
+set FGX := fundamental_group X Tx x0.
+set FGU := fundamental_group U (subspace_topology X Tx U) x0.
+set multX := fundamental_group_mult X Tx x0.
+set multU := fundamental_group_mult U (subspace_topology X Tx U) x0.
+set invX := fundamental_group_inv X Tx x0.
+set invU := fundamental_group_inv U (subspace_topology X Tx U) x0.
+set idX := fundamental_group_id X Tx x0.
+set idU := fundamental_group_id U (subspace_topology X Tx U) x0.
+set iStar := induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+  (graph U (fun x:set => x)).
+claim HgrpU : group_structure FGU multU idU invU.
+{
+  exact (fundamental_group_is_group U (subspace_topology X Tx U) x0 HtopU Hx0U).
+}
+claim HgrpX : group_structure FGX multX idX invX.
+{
+  exact (fundamental_group_is_group X Tx x0 Htop Hx0X).
+}
+claim HhomI : group_homomorphism FGU multU FGX multX iStar.
+{
+  exact (induced_homomorphism_is_homomorphism
+    U (subspace_topology X Tx U) x0
+    X Tx x0
+    (graph U (fun x:set => x))
+    (subspace_inclusion_continuous X Tx U Htop HUsub)
+    (apply_fun_graph U (fun x:set => x) x0 Hx0U)
+    Hx0U).
+}
+claim HmultU_fun : function_on multU (setprod FGU FGU) FGU.
+{
+  apply (and6E
+    (function_on multU (setprod FGU FGU) FGU)
+    (function_on invU FGU FGU)
+    (idU :e FGU)
+    (forall x y z:set, x :e FGU -> y :e FGU -> z :e FGU ->
+      apply_fun multU (apply_fun multU (x, y), z) = apply_fun multU (x, apply_fun multU (y, z)))
+    (forall x:set, x :e FGU -> apply_fun multU (idU, x) = x /\ apply_fun multU (x, idU) = x)
+    (forall x:set, x :e FGU ->
+      apply_fun multU (x, apply_fun invU x) = idU /\ apply_fun multU (apply_fun invU x, x) = idU)
+    HgrpU).
+  assume HmU HiU HeU HassocU HidU HinvU.
+  exact HmU.
+}
+claim HidU_mem : idU :e FGU.
+{
+  apply (and6E
+    (function_on multU (setprod FGU FGU) FGU)
+    (function_on invU FGU FGU)
+    (idU :e FGU)
+    (forall x y z:set, x :e FGU -> y :e FGU -> z :e FGU ->
+      apply_fun multU (apply_fun multU (x, y), z) = apply_fun multU (x, apply_fun multU (y, z)))
+    (forall x:set, x :e FGU -> apply_fun multU (idU, x) = x /\ apply_fun multU (x, idU) = x)
+    (forall x:set, x :e FGU ->
+      apply_fun multU (x, apply_fun invU x) = idU /\ apply_fun multU (apply_fun invU x, x) = idU)
+    HgrpU).
+  assume HmU HiU HeU HassocU HidU HinvU.
+  exact HeU.
+}
+claim HrightIdX : forall a:set, a :e FGX -> apply_fun multX (a, idX) = a.
+{
+  apply (and6E
+    (function_on multX (setprod FGX FGX) FGX)
+    (function_on invX FGX FGX)
+    (idX :e FGX)
+    (forall x y z:set, x :e FGX -> y :e FGX -> z :e FGX ->
+      apply_fun multX (apply_fun multX (x, y), z) = apply_fun multX (x, apply_fun multX (y, z)))
+    (forall x:set, x :e FGX -> apply_fun multX (idX, x) = x /\ apply_fun multX (x, idX) = x)
+    (forall x:set, x :e FGX ->
+      apply_fun multX (x, apply_fun invX x) = idX /\ apply_fun multX (apply_fun invX x, x) = idX)
+    HgrpX).
+  assume HmX HiX HeX HassocX HidX HinvX.
+  let a.
+  assume HaG : a :e FGX.
+  exact (andER
+    (apply_fun multX (idX, a) = a)
+    (apply_fun multX (a, idX) = a)
+    (HidX a HaG)).
+}
+claim Hnat :
+  forall m:set, nat_p m ->
+    forall hs:set, function_on hs m FGX ->
+      (forall i:set, i :e m ->
+        (exists ucls:set, ucls :e FGU /\
+          apply_fun hs i = apply_fun iStar ucls) \/
+        apply_fun hs i = idX) ->
+      exists uacc:set, uacc :e FGU /\
+        nat_primrec idX
+          (fun k r => apply_fun multX (r, apply_fun hs k))
+          m
+        = apply_fun iStar uacc.
+{
+  apply nat_ind.
+  - let hs.
+    assume Hhs0 Hterms0.
+    witness idU.
+    apply andI.
+    + exact HidU_mem.
+    + rewrite (nat_primrec_0 idX (fun k r => apply_fun multX (r, apply_fun hs k))).
+      symmetry.
+      exact (lemma59_subspace_inclusion_id_preserved
+        X Tx U x0 Htop HUsub Hx0U).
+  - let m.
+    assume Hm : nat_p m.
+    assume IH : forall hs:set, function_on hs m FGX ->
+      (forall i:set, i :e m ->
+        (exists ucls:set, ucls :e FGU /\
+          apply_fun hs i = apply_fun iStar ucls) \/
+        apply_fun hs i = idX) ->
+      exists uacc:set, uacc :e FGU /\
+        nat_primrec idX
+          (fun k r => apply_fun multX (r, apply_fun hs k))
+          m
+        = apply_fun iStar uacc.
+    let hs.
+    assume HhsS : function_on hs (ordsucc m) FGX.
+    assume HtermsS : forall i:set, i :e ordsucc m ->
+      (exists ucls:set, ucls :e FGU /\
+        apply_fun hs i = apply_fun iStar ucls) \/
+      apply_fun hs i = idX.
+    claim HhsM : function_on hs m FGX.
+    {
+      exact (function_on_restrict_dom
+        hs
+        (ordsucc m)
+        m
+        FGX
+        HhsS
+        (ordsuccI1 m)).
+    }
+    claim HtermsM : forall i:set, i :e m ->
+      (exists ucls:set, ucls :e FGU /\
+        apply_fun hs i = apply_fun iStar ucls) \/
+      apply_fun hs i = idX.
+    {
+      let i.
+      assume Hi : i :e m.
+      exact (HtermsS i ((ordsuccI1 m) i Hi)).
+    }
+    apply (IH hs HhsM HtermsM).
+    let uprev.
+    assume Hprev : uprev :e FGU /\
+      nat_primrec idX
+        (fun k r => apply_fun multX (r, apply_fun hs k))
+        m
+      = apply_fun iStar uprev.
+    claim HuprevMem : uprev :e FGU.
+    {
+      exact (andEL
+        (uprev :e FGU)
+        (nat_primrec idX
+          (fun k r => apply_fun multX (r, apply_fun hs k))
+          m
+          = apply_fun iStar uprev)
+        Hprev).
+    }
+    claim HwordPrev :
+      nat_primrec idX
+        (fun k r => apply_fun multX (r, apply_fun hs k))
+        m
+      = apply_fun iStar uprev.
+    {
+      exact (andER
+        (uprev :e FGU)
+        (nat_primrec idX
+          (fun k r => apply_fun multX (r, apply_fun hs k))
+          m
+          = apply_fun iStar uprev)
+        Hprev).
+    }
+    claim HS :
+      nat_primrec idX
+        (fun k r => apply_fun multX (r, apply_fun hs k))
+        (ordsucc m)
+      =
+      apply_fun multX
+        (nat_primrec idX
+           (fun k r => apply_fun multX (r, apply_fun hs k))
+           m,
+         apply_fun hs m).
+    {
+      exact (nat_primrec_S
+        idX
+        (fun k r => apply_fun multX (r, apply_fun hs k))
+        m
+        Hm).
+    }
+    claim HtermAtM :
+      (exists ucls:set, ucls :e FGU /\
+        apply_fun hs m = apply_fun iStar ucls) \/
+      apply_fun hs m = idX.
+    {
+      exact (HtermsS m (ordsuccI2 m)).
+    }
+    apply HtermAtM.
+    + assume HuM : exists ucls:set, ucls :e FGU /\
+        apply_fun hs m = apply_fun iStar ucls.
+      apply HuM.
+      let ulast.
+      assume HuPack : ulast :e FGU /\ apply_fun hs m = apply_fun iStar ulast.
+      claim HulastMem : ulast :e FGU.
+      {
+        exact (andEL
+          (ulast :e FGU)
+          (apply_fun hs m = apply_fun iStar ulast)
+          HuPack).
+      }
+      claim HhsM_eq : apply_fun hs m = apply_fun iStar ulast.
+      {
+        exact (andER
+          (ulast :e FGU)
+          (apply_fun hs m = apply_fun iStar ulast)
+          HuPack).
+      }
+      set ustep := apply_fun multU (uprev, ulast).
+      claim HpairU : (uprev, ulast) :e setprod FGU FGU.
+      {
+        exact (tuple_2_setprod_by_pair_Sigma FGU FGU uprev ulast HuprevMem HulastMem).
+      }
+      claim HustepMem : ustep :e FGU.
+      {
+        exact (HmultU_fun (uprev, ulast) HpairU).
+      }
+      claim HhomMul :
+        apply_fun iStar ustep =
+        apply_fun multX (apply_fun iStar uprev, apply_fun iStar ulast).
+      {
+        exact (group_homomorphism_mult_rule
+          FGU multU FGX multX iStar
+          uprev ulast
+          HhomI
+          HuprevMem
+          HulastMem).
+      }
+      witness ustep.
+      apply andI.
+      * exact HustepMem.
+      * rewrite HS.
+        rewrite HwordPrev.
+        rewrite HhsM_eq.
+        symmetry.
+        exact HhomMul.
+    + assume HhsM_id : apply_fun hs m = idX.
+      witness uprev.
+      apply andI.
+      * exact HuprevMem.
+      * claim HimgPrev : apply_fun iStar uprev :e FGX.
+        {
+          exact (group_homomorphism_function_on
+            FGU
+            multU
+            FGX
+            multX
+            iStar
+            HhomI
+            uprev
+            HuprevMem).
+        }
+        rewrite HS.
+        rewrite HwordPrev.
+        rewrite HhsM_id.
+        exact (HrightIdX (apply_fun iStar uprev) HimgPrev).
+}
+exact (Hnat n (omega_nat_p n HnO) gs HgsFun Hterms).
+Qed.
+
 Theorem ex59_4a_trivial_j_star : forall X Tx U V x0:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -70190,6 +70499,10 @@ assume HU : U :e Tx.
 assume HV : V :e Tx.
 assume Hcover : X = U :\/: V.
 assume Hx0UV : x0 :e U :/\: V.
+claim Hx0U : x0 :e U.
+{
+  exact (binintersectE1 U V x0 Hx0UV).
+}
 assume HpcUV : path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)).
 assume Hj_triv : forall cls:set,
   cls :e fundamental_group V (subspace_topology X Tx V) x0 ->
@@ -70278,7 +70591,6 @@ assume Hgs_pack : function_on gs n (fundamental_group X Tx x0) /\
           (graph V (fun x:set => x))) vcls)) /\
   cls = nat_primrec (fundamental_group_id X Tx x0)
     (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n.
-claim HgsFun : function_on gs n (fundamental_group X Tx x0).
 claim HgsAB :
   (function_on gs n (fundamental_group X Tx x0)) /\
   (forall i:set, i :e n ->
@@ -70373,7 +70685,58 @@ claim Hterms_reduced : forall i:set, i :e n ->
     X Tx U V x0 n gs
     HgsTerms Hj_triv).
 }
-admit. (** combine reduced van-Kampen word to a single i-star image via homomorphism closure **)
+claim Hword_i :
+  exists uacc:set, uacc :e fundamental_group U (subspace_topology X Tx U) x0 /\
+    nat_primrec (fundamental_group_id X Tx x0)
+      (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n
+    =
+    apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+      (graph U (fun x:set => x))) uacc.
+{
+  exact (lemma59_4a_word_reduces_to_i_star_image
+    X Tx U x0 n gs
+    Htop HU Hx0U HnO HgsFun Hterms_reduced).
+}
+apply Hword_i.
+let uacc.
+assume Huacc_pack : uacc :e fundamental_group U (subspace_topology X Tx U) x0 /\
+  nat_primrec (fundamental_group_id X Tx x0)
+    (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n
+  =
+  apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+    (graph U (fun x:set => x))) uacc.
+prove exists ucls:set,
+  ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+  cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+    (graph U (fun x:set => x))) ucls.
+witness uacc.
+apply andI.
+- exact (andEL
+    (uacc :e fundamental_group U (subspace_topology X Tx U) x0)
+    (nat_primrec (fundamental_group_id X Tx x0)
+      (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n
+      =
+      apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+        (graph U (fun x:set => x))) uacc)
+    Huacc_pack).
+- claim HwordEq :
+    nat_primrec (fundamental_group_id X Tx x0)
+      (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n
+    =
+    apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+      (graph U (fun x:set => x))) uacc.
+  {
+    exact (andER
+      (uacc :e fundamental_group U (subspace_topology X Tx U) x0)
+      (nat_primrec (fundamental_group_id X Tx x0)
+        (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n
+        =
+        apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+          (graph U (fun x:set => x))) uacc)
+      Huacc_pack).
+  }
+  rewrite HclsWord.
+  exact HwordEq.
 Admitted.
 
 (** Helper: generation by i-star plus trivial i-star forces basepoint pi1 trivial. **)
