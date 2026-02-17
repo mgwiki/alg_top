@@ -21103,7 +21103,8 @@ claim HsurjUnique :
       rewrite HclassEyFy.
       exact HyEqSym.
     }
-    (** TODO Bob: finish class-level simplification to canonical class of ey, then rewrite HeyClass. **)
+    rewrite <- HeyClass.
+    (** TODO Bob: show the conjugation expression class equals path_homotopy_class_loop X Tx x1 ey. **)
     admit.
   }
   witness x.
@@ -21461,7 +21462,8 @@ claim HsurjUnique :
         rewrite HclassEx0Fx0.
         exact Hx'EqSym.
       }
-      (** TODO Bob: finish class-level simplification to canonical class of ex0, then rewrite Hex0Class. **)
+      rewrite <- Hex0Class.
+      (** TODO Bob: show the conjugation expression class equals path_homotopy_class_loop X Tx x0 ex0. **)
       admit.
     }
     claim HbetaYEqX :
