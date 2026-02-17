@@ -52085,6 +52085,71 @@ Theorem lemma54_2_homotopy_lifting_exists : forall E Te B Tb p e0 F:set,
     apply_fun Ft (0, 0) = e0 /\
     (forall s t:set, s :e unit_interval -> t :e unit_interval ->
       apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t)).
+let E Te B Tb p e0 F.
+assume Hcov He0 Hstart HFcont.
+claim Hcontp : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    (andEL
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+      Hcov)).
+}
+claim HtopE : topology_on E Te.
+{
+  exact (continuous_map_topology_dom
+    E
+    Te
+    B
+    Tb
+    p
+    Hcontp).
+}
+claim HtopB : topology_on B Tb.
+{
+  exact (continuous_map_topology_cod
+    unit_square
+    unit_square_topology
+    B
+    Tb
+    F
+    HFcont).
+}
+claim HfFun : function_on F unit_square B.
+{
+  exact (continuous_map_function_on
+    unit_square
+    unit_square_topology
+    B
+    Tb
+    F
+    HFcont).
+}
+claim H00Sq : (0, 0) :e unit_square.
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    unit_interval
+    unit_interval
+    0
+    0
+    zero_in_unit_interval
+    zero_in_unit_interval).
+}
+claim HF00B : apply_fun F (0, 0) :e B.
+{
+  exact (HfFun
+    (0, 0)
+    H00Sq).
+}
+claim Hpe0B : apply_fun p e0 :e B.
+{
+  rewrite Hstart.
+  exact HF00B.
+}
+(** TODO Charlie: construct Ft by lifting horizontal/vertical path families and gluing by uniqueness. **)
 admit.
 Admitted.
 
