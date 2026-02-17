@@ -1,5 +1,5 @@
 (** Balance Alice 2410 **)
-(** Balance Bob 2603 **)
+(** Balance Bob 2703 **)
 (** Balance Charlie 1188 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -32163,7 +32163,8 @@ Admitted.
 (** from S52 Exercise 3 (line 498 in algtop.tex) **)
 (** LATEX VERSION: pi1(X,x0) is abelian iff for every pair alpha, beta of paths from x0 to x1, alpha-hat = beta-hat. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Collected Bob 100 **)
+(** Proven Bob **)
 Theorem ex52_3_abelian_iff_unique_basepoint_change : forall X Tx x0:set,
   path_connected_space X Tx -> x0 :e X ->
   ((forall a b:set, a :e fundamental_group X Tx x0 -> b :e fundamental_group X Tx x0 ->
@@ -32432,7 +32433,7 @@ apply iffI.
     Huniq
     Ha
     Hb).
-Admitted.
+Qed.
 
 (** from S52 Exercise 4 (line 499 in algtop.tex): retraction and pi1 **)
 (** LATEX VERSION: Let r: X -> A be a retraction. If a0 in A, show that r-star: pi1(X,a0) -> pi1(A,a0) is surjective. **)
