@@ -19440,7 +19440,322 @@ claim Hmult :
       x1
       (path_concat lu lv).
   {
-    (** TODO Bob: establish conjugation product compatibility for basepoint change. **)
+    claim HepsuLoopAt :
+      loop_at X Tx x0 (Eps_i (fun f:set => f :e u)).
+    {
+      exact (loop_space_has_loop_at
+        X
+        Tx
+        x0
+        (Eps_i (fun f:set => f :e u))
+        HepsuLoop).
+    }
+    claim HepsvLoopAt :
+      loop_at X Tx x0 (Eps_i (fun g:set => g :e v)).
+    {
+      exact (loop_space_has_loop_at
+        X
+        Tx
+        x0
+        (Eps_i (fun g:set => g :e v))
+        HepsvLoop).
+    }
+    claim HepsuCont :
+      continuous_map unit_interval unit_interval_topology X Tx
+        (Eps_i (fun f:set => f :e u)).
+    {
+      exact (loop_at_continuous
+        X
+        Tx
+        x0
+        (Eps_i (fun f:set => f :e u))
+        HepsuLoopAt).
+    }
+    claim HepsvCont :
+      continuous_map unit_interval unit_interval_topology X Tx
+        (Eps_i (fun g:set => g :e v)).
+    {
+      exact (loop_at_continuous
+        X
+        Tx
+        x0
+        (Eps_i (fun g:set => g :e v))
+        HepsvLoopAt).
+    }
+    claim Hepsu0 : apply_fun (Eps_i (fun f:set => f :e u)) 0 = x0.
+    {
+      exact (loop_at_at_zero
+        X
+        Tx
+        x0
+        (Eps_i (fun f:set => f :e u))
+        HepsuLoopAt).
+    }
+    claim Hepsu1 : apply_fun (Eps_i (fun f:set => f :e u)) 1 = x0.
+    {
+      exact (loop_at_at_one
+        X
+        Tx
+        x0
+        (Eps_i (fun f:set => f :e u))
+        HepsuLoopAt).
+    }
+    claim Hepsv0 : apply_fun (Eps_i (fun g:set => g :e v)) 0 = x0.
+    {
+      exact (loop_at_at_zero
+        X
+        Tx
+        x0
+        (Eps_i (fun g:set => g :e v))
+        HepsvLoopAt).
+    }
+    claim Hepsv1 : apply_fun (Eps_i (fun g:set => g :e v)) 1 = x0.
+    {
+      exact (loop_at_at_one
+        X
+        Tx
+        x0
+        (Eps_i (fun g:set => g :e v))
+        HepsvLoopAt).
+    }
+    claim HuAlphaCont :
+      continuous_map unit_interval unit_interval_topology X Tx
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          alpha).
+    {
+      exact (path_concat_continuous
+        X
+        Tx
+        x0
+        x0
+        x1
+        (Eps_i (fun f:set => f :e u))
+        alpha
+        HepsuCont
+        HalphaCont
+        Hepsu0
+        Hepsu1
+        Halpha0
+        Halpha1).
+    }
+    claim HvAlphaCont :
+      continuous_map unit_interval unit_interval_topology X Tx
+        (path_concat
+          (Eps_i (fun g:set => g :e v))
+          alpha).
+    {
+      exact (path_concat_continuous
+        X
+        Tx
+        x0
+        x0
+        x1
+        (Eps_i (fun g:set => g :e v))
+        alpha
+        HepsvCont
+        HalphaCont
+        Hepsv0
+        Hepsv1
+        Halpha0
+        Halpha1).
+    }
+    claim HuAlpha0 :
+      apply_fun
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          alpha)
+        0
+      = x0.
+    {
+      rewrite (path_concat_at_zero
+        (Eps_i (fun f:set => f :e u))
+        alpha).
+      exact Hepsu0.
+    }
+    claim HuAlpha1 :
+      apply_fun
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          alpha)
+        1
+      = x1.
+    {
+      rewrite (path_concat_at_one
+        (Eps_i (fun f:set => f :e u))
+        alpha).
+      exact Halpha1.
+    }
+    claim HvAlpha0 :
+      apply_fun
+        (path_concat
+          (Eps_i (fun g:set => g :e v))
+          alpha)
+        0
+      = x0.
+    {
+      rewrite (path_concat_at_zero
+        (Eps_i (fun g:set => g :e v))
+        alpha).
+      exact Hepsv0.
+    }
+    claim HvAlpha1 :
+      apply_fun
+        (path_concat
+          (Eps_i (fun g:set => g :e v))
+          alpha)
+        1
+      = x1.
+    {
+      rewrite (path_concat_at_one
+        (Eps_i (fun g:set => g :e v))
+        alpha).
+      exact Halpha1.
+    }
+    claim HlvCont :
+      continuous_map unit_interval unit_interval_topology X Tx lv.
+    {
+      exact (path_concat_continuous
+        X
+        Tx
+        x1
+        x0
+        x1
+        (reverse_path alpha)
+        (path_concat
+          (Eps_i (fun g:set => g :e v))
+          alpha)
+        HrevCont
+        HvAlphaCont
+        Hrev0
+        Hrev1
+        HvAlpha0
+        HvAlpha1).
+    }
+    claim Hlv0 : apply_fun lv 0 = x1.
+    {
+      rewrite (path_concat_at_zero
+        (reverse_path alpha)
+        (path_concat
+          (Eps_i (fun g:set => g :e v))
+          alpha)).
+      exact Hrev0.
+    }
+    claim Hlv1 : apply_fun lv 1 = x1.
+    {
+      rewrite (path_concat_at_one
+        (reverse_path alpha)
+        (path_concat
+          (Eps_i (fun g:set => g :e v))
+          alpha)).
+      exact HvAlpha1.
+    }
+    claim HassocConjRaw :
+      path_homotopic
+        X
+        Tx
+        x1
+        x1
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            (path_concat
+              (Eps_i (fun f:set => f :e u))
+              alpha)
+            lv))
+        (path_concat
+          lu
+          lv).
+    {
+      exact (Theorem_51_2_associativity
+        X
+        Tx
+        x1
+        x0
+        x1
+        x1
+        (reverse_path alpha)
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          alpha)
+        lv
+        HrevCont
+        HuAlphaCont
+        HlvCont
+        Hrev0
+        Hrev1
+        HuAlpha0
+        HuAlpha1
+        Hlv0
+        Hlv1).
+    }
+    claim HassocConj :
+      path_homotopic
+        X
+        Tx
+        x1
+        x1
+        (path_concat
+          lu
+          lv)
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            (path_concat
+              (Eps_i (fun f:set => f :e u))
+              alpha)
+            lv)).
+    {
+      exact (Lemma_51_1_path_homotopy_sym
+        X
+        Tx
+        x1
+        x1
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            (path_concat
+              (Eps_i (fun f:set => f :e u))
+              alpha)
+            lv))
+        (path_concat lu lv)
+        HassocConjRaw).
+    }
+    claim HassocClass :
+      path_homotopy_class_loop
+        X
+        Tx
+        x1
+        (path_concat lu lv)
+      =
+      path_homotopy_class_loop
+        X
+        Tx
+        x1
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            (path_concat
+              (Eps_i (fun f:set => f :e u))
+              alpha)
+            lv)).
+    {
+      exact (path_homotopy_class_loop_eq_of_path_homotopic
+        X
+        Tx
+        x1
+        (path_concat lu lv)
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            (path_concat
+              (Eps_i (fun f:set => f :e u))
+              alpha)
+            lv))
+        HassocConj).
+    }
+    rewrite HassocClass.
+    (** TODO Bob: continue associativity plus inverse cancellation to reach target. **)
     admit.
   }
   rewrite HtargetToConjProd.
