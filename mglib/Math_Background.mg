@@ -18135,6 +18135,8 @@ claim Hmult :
     x0
     (u, v)
     HuvPair).
+  rewrite tuple_2_0_eq.
+  rewrite tuple_2_1_eq.
   claim HuImg :
     apply_fun (basepoint_change_map X Tx x0 x1 alpha) u
       :e fundamental_group X Tx x1.
