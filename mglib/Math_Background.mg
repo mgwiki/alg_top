@@ -18754,6 +18754,324 @@ claim Hmult :
     alpha
     v
     Hv).
+  set midcls := path_homotopy_class_loop
+    X
+    Tx
+    x0
+    (path_concat
+      (Eps_i (fun f:set => f :e u))
+      (Eps_i (fun g:set => g :e v))).
+  set emid := Eps_i (fun f:set => f :e midcls).
+  claim HuvInMidcls :
+    path_concat
+      (Eps_i (fun f:set => f :e u))
+      (Eps_i (fun g:set => g :e v))
+    :e midcls.
+  {
+    claim HuvLoopAt :
+      loop_at X Tx x0
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (Eps_i (fun g:set => g :e v))).
+    {
+      exact (loop_space_has_loop_at
+        X
+        Tx
+        x0
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (Eps_i (fun g:set => g :e v)))
+        HuvConcatLoop).
+    }
+    claim HuvCont :
+      continuous_map unit_interval unit_interval_topology X Tx
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (Eps_i (fun g:set => g :e v))).
+    {
+      exact (loop_at_continuous
+        X
+        Tx
+        x0
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (Eps_i (fun g:set => g :e v)))
+        HuvLoopAt).
+    }
+    claim Huv0 :
+      apply_fun
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (Eps_i (fun g:set => g :e v)))
+        0
+      = x0.
+    {
+      exact (loop_at_at_zero
+        X
+        Tx
+        x0
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (Eps_i (fun g:set => g :e v)))
+        HuvLoopAt).
+    }
+    claim Huv1 :
+      apply_fun
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (Eps_i (fun g:set => g :e v)))
+        1
+      = x0.
+    {
+      exact (loop_at_at_one
+        X
+        Tx
+        x0
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (Eps_i (fun g:set => g :e v)))
+        HuvLoopAt).
+    }
+    claim HuvRefl :
+      path_homotopic
+        X
+        Tx
+        x0
+        x0
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (Eps_i (fun g:set => g :e v)))
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (Eps_i (fun g:set => g :e v))).
+    {
+      exact (Lemma_51_1_path_homotopy_refl
+        X
+        Tx
+        x0
+        x0
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (Eps_i (fun g:set => g :e v)))
+        HuvCont
+        Huv0
+        Huv1).
+    }
+    exact (SepI
+      (loop_space X Tx x0)
+      (fun h:set =>
+        path_homotopic
+          X
+          Tx
+          x0
+          x0
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            (Eps_i (fun g:set => g :e v)))
+          h)
+      (path_concat
+        (Eps_i (fun f:set => f :e u))
+        (Eps_i (fun g:set => g :e v)))
+      HuvConcatLoop
+      HuvRefl).
+  }
+  claim HemidInMidcls : emid :e midcls.
+  {
+    exact (Eps_i_ax
+      (fun f:set => f :e midcls)
+      (path_concat
+        (Eps_i (fun f:set => f :e u))
+        (Eps_i (fun g:set => g :e v)))
+      HuvInMidcls).
+  }
+  claim HemidHom :
+    path_homotopic
+      X
+      Tx
+      x0
+      x0
+      (path_concat
+        (Eps_i (fun f:set => f :e u))
+        (Eps_i (fun g:set => g :e v)))
+      emid.
+  {
+    exact (path_homotopy_class_loop_has_homotopy
+      X
+      Tx
+      x0
+      (path_concat
+        (Eps_i (fun f:set => f :e u))
+        (Eps_i (fun g:set => g :e v)))
+      emid
+      HemidInMidcls).
+  }
+  claim HemidHomSym :
+    path_homotopic
+      X
+      Tx
+      x0
+      x0
+      emid
+      (path_concat
+        (Eps_i (fun f:set => f :e u))
+        (Eps_i (fun g:set => g :e v))).
+  {
+    exact (Lemma_51_1_path_homotopy_sym
+      X
+      Tx
+      x0
+      x0
+      (path_concat
+        (Eps_i (fun f:set => f :e u))
+        (Eps_i (fun g:set => g :e v)))
+      emid
+      HemidHom).
+  }
+  claim HalphaRefl :
+    path_homotopic X Tx x0 x1 alpha alpha.
+  {
+    exact (Lemma_51_1_path_homotopy_refl
+      X
+      Tx
+      x0
+      x1
+      alpha
+      HalphaCont
+      Halpha0
+      Halpha1).
+  }
+  claim HinnerReplace :
+    path_homotopic
+      X
+      Tx
+      x0
+      x1
+      (path_concat emid alpha)
+      (path_concat
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (Eps_i (fun g:set => g :e v)))
+        alpha).
+  {
+    exact (path_concat_well_defined_on_classes
+      X
+      Tx
+      x0
+      x0
+      x1
+      emid
+      (path_concat
+        (Eps_i (fun f:set => f :e u))
+        (Eps_i (fun g:set => g :e v)))
+      alpha
+      alpha
+      HemidHomSym
+      HalphaRefl).
+  }
+  claim HrevCont :
+    continuous_map unit_interval unit_interval_topology X Tx (reverse_path alpha).
+  {
+    exact (reverse_path_continuous
+      X
+      Tx
+      alpha
+      HalphaCont).
+  }
+  claim Hrev0 : apply_fun (reverse_path alpha) 0 = x1.
+  {
+    rewrite (reverse_path_at_zero alpha).
+    exact Halpha1.
+  }
+  claim Hrev1 : apply_fun (reverse_path alpha) 1 = x0.
+  {
+    rewrite (reverse_path_at_one alpha).
+    exact Halpha0.
+  }
+  claim HrevRefl :
+    path_homotopic X Tx x1 x0 (reverse_path alpha) (reverse_path alpha).
+  {
+    exact (Lemma_51_1_path_homotopy_refl
+      X
+      Tx
+      x1
+      x0
+      (reverse_path alpha)
+      HrevCont
+      Hrev0
+      Hrev1).
+  }
+  claim HouterReplace :
+    path_homotopic
+      X
+      Tx
+      x1
+      x1
+      (path_concat
+        (reverse_path alpha)
+        (path_concat emid alpha))
+      (path_concat
+        (reverse_path alpha)
+        (path_concat
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            (Eps_i (fun g:set => g :e v)))
+          alpha)).
+  {
+    exact (path_concat_well_defined_on_classes
+      X
+      Tx
+      x1
+      x0
+      x1
+      (reverse_path alpha)
+      (reverse_path alpha)
+      (path_concat emid alpha)
+      (path_concat
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (Eps_i (fun g:set => g :e v)))
+        alpha)
+      HrevRefl
+      HinnerReplace).
+  }
+  claim HleftClassEq :
+    path_homotopy_class_loop
+      X
+      Tx
+      x1
+      (path_concat
+        (reverse_path alpha)
+        (path_concat emid alpha))
+    =
+    path_homotopy_class_loop
+      X
+      Tx
+      x1
+      (path_concat
+        (reverse_path alpha)
+        (path_concat
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            (Eps_i (fun g:set => g :e v)))
+          alpha)).
+  {
+    exact (path_homotopy_class_loop_eq_of_path_homotopic
+      X
+      Tx
+      x1
+      (path_concat
+        (reverse_path alpha)
+        (path_concat emid alpha))
+      (path_concat
+        (reverse_path alpha)
+        (path_concat
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            (Eps_i (fun g:set => g :e v)))
+          alpha))
+      HouterReplace).
+  }
+  rewrite HleftClassEq.
   (** TODO Bob: reduce the left side and finish class-level concatenation compatibility. **)
   admit.
 }
