@@ -55136,8 +55136,49 @@ claim HFt_54_cont :
             }
             claim HVzEqVq : Vz = Vq.
             {
-              (** TODO Charlie: show the slice containing Ft_54 z is the same as the slice containing Ft_54 q. **)
-              admit.
+              claim HpdSlices : pairwise_disjoint slices.
+              {
+                exact (andER
+                  (slices c= Te)
+                  (pairwise_disjoint slices)
+                  (andEL
+                    (slices c= Te /\ pairwise_disjoint slices)
+                    (Union slices = preimage_of E p U)
+                    HslicesCore)).
+              }
+              claim Hoverlap :
+                exists w:set, w :e Vz /\ w :e Vq.
+              {
+                (** TODO Charlie: construct a common point of Vz and Vq over apply_fun F z. **)
+                admit.
+              }
+              apply Hoverlap.
+              let w.
+              assume HwPack.
+              claim HwVz : w :e Vz.
+              {
+                exact (andEL
+                  (w :e Vz)
+                  (w :e Vq)
+                  HwPack).
+              }
+              claim HwVq : w :e Vq.
+              {
+                exact (andER
+                  (w :e Vz)
+                  (w :e Vq)
+                  HwPack).
+              }
+              exact (pairwise_disjoint_point_unique_member
+                slices
+                Vz
+                Vq
+                w
+                HpdSlices
+                HVzSlice
+                HVqSlice
+                HwVz
+                HwVq).
             }
             rewrite <- HVzEqVq.
             exact HFt54zVz.
