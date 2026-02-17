@@ -58175,8 +58175,388 @@ claim HfBij :
       exists x:set, x :e fundamental_group X Tx x0 /\
         apply_fun ifstar x = y.
   {
-    (** TODO Bob: derive surjectivity via the homotopy inverse g and basepoint transport. **)
-    admit.
+    claim HgfHom :
+      homotopic_maps Y Ty Y Ty
+        (compose_fun Y g f) (graph Y (fun y:set => y)).
+    {
+      exact (andER
+        (continuous_map Y Ty X Tx g /\
+          homotopic_maps X Tx X Tx
+            (compose_fun X f g) (graph X (fun x:set => x)))
+        (homotopic_maps Y Ty Y Ty
+          (compose_fun Y g f) (graph Y (fun y:set => y)))
+        HgPack).
+    }
+    claim HcompfgAtx0 : apply_fun compfg x0 = x1.
+    {
+      rewrite (compose_fun_apply
+        X
+        f
+        g
+        x0
+        Hx0).
+      reflexivity.
+    }
+    claim HidSurj :
+      forall cls:set,
+        cls :e fundamental_group X Tx (apply_fun idX x0) ->
+        exists cls0:set, cls0 :e fundamental_group X Tx x0 /\
+          apply_fun (induced_homomorphism X Tx x0 X Tx (apply_fun idX x0) idX) cls0 = cls.
+    {
+      let cls.
+      assume Hcls.
+      claim HidCodEq :
+        fundamental_group X Tx (apply_fun idX x0)
+        =
+        fundamental_group X Tx x0.
+      {
+        rewrite (apply_fun_graph X (fun x:set => x) x0 Hx0).
+        reflexivity.
+      }
+      claim HclsX0 : cls :e fundamental_group X Tx x0.
+      {
+        exact (mem_eqR
+          cls
+          (fundamental_group X Tx (apply_fun idX x0))
+          (fundamental_group X Tx x0)
+          HidCodEq
+          Hcls).
+      }
+      witness cls.
+      apply andI.
+      - exact HclsX0.
+      - rewrite (apply_fun_graph X (fun x:set => x) x0 Hx0).
+        exact (Theorem_52_4_functorial_identity
+          X
+          Tx
+          x0
+          HtopX
+          Hx0
+          cls
+          HclsX0).
+    }
+    claim HcompfgSurjRaw :
+      forall cls:set,
+        cls :e fundamental_group X Tx (apply_fun compfg x0) ->
+        exists cls0:set, cls0 :e fundamental_group X Tx x0 /\
+          apply_fun (induced_homomorphism X Tx x0 X Tx (apply_fun compfg x0) compfg) cls0 = cls.
+    {
+      exact (cor58_5_homotopic_maps_surjective
+        X
+        Tx
+        X
+        Tx
+        x0
+        idX
+        compfg
+        HidXCont
+        HcompfgCont
+        Hx0
+        HhomIdComp
+        HidSurj).
+    }
+    claim HcompfgSurj :
+      forall cls:set, cls :e fundamental_group X Tx x1 ->
+        exists cls0:set, cls0 :e fundamental_group X Tx x0 /\
+          apply_fun (induced_homomorphism X Tx x0 X Tx x1 compfg) cls0 = cls.
+    {
+      let cls.
+      assume Hcls.
+      claim HcompfgCodEq :
+        fundamental_group X Tx (apply_fun compfg x0)
+        =
+        fundamental_group X Tx x1.
+      {
+        rewrite HcompfgAtx0.
+        reflexivity.
+      }
+      claim HclsComp : cls :e fundamental_group X Tx (apply_fun compfg x0).
+      {
+        exact (mem_eqL
+          cls
+          (fundamental_group X Tx (apply_fun compfg x0))
+          (fundamental_group X Tx x1)
+          HcompfgCodEq
+          Hcls).
+      }
+      apply (HcompfgSurjRaw cls HclsComp).
+      let cls0.
+      assume Hcls0Pack.
+      claim Hcls0X : cls0 :e fundamental_group X Tx x0.
+      {
+        exact (andEL
+          (cls0 :e fundamental_group X Tx x0)
+          (apply_fun (induced_homomorphism X Tx x0 X Tx (apply_fun compfg x0) compfg) cls0 = cls)
+          Hcls0Pack).
+      }
+      claim Hcls0Eq :
+        apply_fun (induced_homomorphism X Tx x0 X Tx (apply_fun compfg x0) compfg) cls0 = cls.
+      {
+        exact (andER
+          (cls0 :e fundamental_group X Tx x0)
+          (apply_fun (induced_homomorphism X Tx x0 X Tx (apply_fun compfg x0) compfg) cls0 = cls)
+          Hcls0Pack).
+      }
+      witness cls0.
+      apply andI.
+      - exact Hcls0X.
+      - rewrite <- HcompfgAtx0.
+        exact Hcls0Eq.
+    }
+    claim HtopY : topology_on Y Ty.
+    {
+      exact (continuous_map_topology_dom
+        Y Ty X Tx g HgCont).
+    }
+    set idY := graph Y (fun y:set => y).
+    set compgf := compose_fun Y g f.
+    set y1 := apply_fun f x1.
+    set fx1star := induced_homomorphism X Tx x1 Y Ty y1 f.
+    claim HidYCont : continuous_map Y Ty Y Ty idY.
+    {
+      exact (identity_continuous Y Ty HtopY).
+    }
+    claim HcompgfCont : continuous_map Y Ty Y Ty compgf.
+    {
+      exact (composition_continuous
+        Y Ty X Tx Y Ty
+        g f
+        HgCont
+        HfCont).
+    }
+    claim HhomIdCompY : homotopic_maps Y Ty Y Ty idY compgf.
+    {
+      exact (Lemma_51_1_homotopy_sym
+        Y Ty Y Ty
+        compgf
+        idY
+        HgfHom).
+    }
+    claim HidYInj :
+      forall cls1 cls2:set,
+        cls1 :e fundamental_group Y Ty (apply_fun f x0) ->
+        cls2 :e fundamental_group Y Ty (apply_fun f x0) ->
+        apply_fun (induced_homomorphism Y Ty (apply_fun f x0) Y Ty (apply_fun idY (apply_fun f x0)) idY) cls1 =
+        apply_fun (induced_homomorphism Y Ty (apply_fun f x0) Y Ty (apply_fun idY (apply_fun f x0)) idY) cls2 ->
+        cls1 = cls2.
+    {
+      let cls1 cls2.
+      assume Hcls1 Hcls2 Heq.
+      claim Hcls1Id :
+        apply_fun (induced_homomorphism Y Ty (apply_fun f x0) Y Ty (apply_fun idY (apply_fun f x0)) idY) cls1
+        = cls1.
+      {
+        rewrite (apply_fun_graph Y (fun y:set => y) (apply_fun f x0) Hy0).
+        exact (Theorem_52_4_functorial_identity
+          Y
+          Ty
+          (apply_fun f x0)
+          HtopY
+          Hy0
+          cls1
+          Hcls1).
+      }
+      claim Hcls2Id :
+        apply_fun (induced_homomorphism Y Ty (apply_fun f x0) Y Ty (apply_fun idY (apply_fun f x0)) idY) cls2
+        = cls2.
+      {
+        rewrite (apply_fun_graph Y (fun y:set => y) (apply_fun f x0) Hy0).
+        exact (Theorem_52_4_functorial_identity
+          Y
+          Ty
+          (apply_fun f x0)
+          HtopY
+          Hy0
+          cls2
+          Hcls2).
+      }
+      rewrite <- Hcls1Id.
+      rewrite <- Hcls2Id.
+      exact Heq.
+    }
+    claim HcompgfInj :
+      forall cls1 cls2:set,
+        cls1 :e fundamental_group Y Ty (apply_fun f x0) ->
+        cls2 :e fundamental_group Y Ty (apply_fun f x0) ->
+        apply_fun (induced_homomorphism Y Ty (apply_fun f x0) Y Ty (apply_fun compgf (apply_fun f x0)) compgf) cls1 =
+        apply_fun (induced_homomorphism Y Ty (apply_fun f x0) Y Ty (apply_fun compgf (apply_fun f x0)) compgf) cls2 ->
+        cls1 = cls2.
+    {
+      exact (cor58_5_homotopic_maps_injective
+        Y
+        Ty
+        Y
+        Ty
+        (apply_fun f x0)
+        idY
+        compgf
+        HidYCont
+        HcompgfCont
+        Hy0
+        HhomIdCompY
+        HidYInj).
+    }
+    claim HcompgfEq :
+      forall cls:set, cls :e fundamental_group Y Ty (apply_fun f x0) ->
+        apply_fun (induced_homomorphism Y Ty (apply_fun f x0) Y Ty y1 compgf) cls
+        =
+        apply_fun (compose_fun (fundamental_group Y Ty (apply_fun f x0)) igstar fx1star) cls.
+    {
+      let cls.
+      assume Hcls.
+      exact (Theorem_52_4_functorial_composition
+        Y
+        Ty
+        (apply_fun f x0)
+        X
+        Tx
+        x1
+        Y
+        Ty
+        y1
+        g
+        f
+        HgCont
+        HfCont
+        (fun P H => H)
+        (fun P H => H)
+        Hy0
+        cls
+        Hcls).
+    }
+    claim HigInj :
+      forall cls1 cls2:set,
+        cls1 :e fundamental_group Y Ty (apply_fun f x0) ->
+        cls2 :e fundamental_group Y Ty (apply_fun f x0) ->
+        apply_fun igstar cls1 = apply_fun igstar cls2 ->
+        cls1 = cls2.
+    {
+      let cls1 cls2.
+      assume Hcls1 Hcls2 HigEq.
+      claim HrhsEq :
+        apply_fun (compose_fun (fundamental_group Y Ty (apply_fun f x0)) igstar fx1star) cls1
+        =
+        apply_fun (compose_fun (fundamental_group Y Ty (apply_fun f x0)) igstar fx1star) cls2.
+      {
+        rewrite (compose_fun_apply
+          (fundamental_group Y Ty (apply_fun f x0))
+          igstar
+          fx1star
+          cls1
+          Hcls1).
+        rewrite (compose_fun_apply
+          (fundamental_group Y Ty (apply_fun f x0))
+          igstar
+          fx1star
+          cls2
+          Hcls2).
+        rewrite HigEq.
+        reflexivity.
+      }
+      claim HlhsEq :
+        apply_fun (induced_homomorphism Y Ty (apply_fun f x0) Y Ty y1 compgf) cls1
+        =
+        apply_fun (induced_homomorphism Y Ty (apply_fun f x0) Y Ty y1 compgf) cls2.
+      {
+        rewrite (HcompgfEq cls1 Hcls1).
+        rewrite (HcompgfEq cls2 Hcls2).
+        exact HrhsEq.
+      }
+      claim HcompgfAty0 : apply_fun compgf (apply_fun f x0) = y1.
+      {
+        rewrite (compose_fun_apply
+          Y
+          g
+          f
+          (apply_fun f x0)
+          Hy0).
+        reflexivity.
+      }
+      claim HlhsEqComp :
+        apply_fun (induced_homomorphism Y Ty (apply_fun f x0) Y Ty (apply_fun compgf (apply_fun f x0)) compgf) cls1
+        =
+        apply_fun (induced_homomorphism Y Ty (apply_fun f x0) Y Ty (apply_fun compgf (apply_fun f x0)) compgf) cls2.
+      {
+        rewrite HcompgfAty0.
+        exact HlhsEq.
+      }
+      exact (HcompgfInj cls1 cls2 Hcls1 Hcls2 HlhsEqComp).
+    }
+    let y.
+    assume Hy.
+    claim HigFun :
+      function_on
+        igstar
+        (fundamental_group Y Ty (apply_fun f x0))
+        (fundamental_group X Tx x1).
+    {
+      exact (group_homomorphism_function_on
+        (fundamental_group Y Ty (apply_fun f x0))
+        (fundamental_group_mult Y Ty (apply_fun f x0))
+        (fundamental_group X Tx x1)
+        (fundamental_group_mult X Tx x1)
+        igstar
+        HigHom).
+    }
+    set targetX := apply_fun igstar y.
+    claim HtargetXIn : targetX :e fundamental_group X Tx x1.
+    {
+      exact (HigFun y Hy).
+    }
+    apply (HcompfgSurj targetX HtargetXIn).
+    let x.
+    assume HxPack.
+    claim HxX : x :e fundamental_group X Tx x0.
+    {
+      exact (andEL
+        (x :e fundamental_group X Tx x0)
+        (apply_fun (induced_homomorphism X Tx x0 X Tx x1 compfg) x = targetX)
+        HxPack).
+    }
+    claim HcompEq :
+      apply_fun (induced_homomorphism X Tx x0 X Tx x1 compfg) x = targetX.
+    {
+      exact (andER
+        (x :e fundamental_group X Tx x0)
+        (apply_fun (induced_homomorphism X Tx x0 X Tx x1 compfg) x = targetX)
+        HxPack).
+    }
+    claim HifToTarget :
+      apply_fun igstar (apply_fun ifstar x) = targetX.
+    {
+      claim HcompByFunctor :
+        apply_fun (compose_fun (fundamental_group X Tx x0) ifstar igstar) x = targetX.
+      {
+        rewrite <- (HcompfgEq x HxX).
+        exact HcompEq.
+      }
+      rewrite <- (compose_fun_apply
+        (fundamental_group X Tx x0)
+        ifstar
+        igstar
+        x
+        HxX).
+      exact HcompByFunctor.
+    }
+    claim HifIgEq :
+      apply_fun igstar (apply_fun ifstar x) = apply_fun igstar y.
+    {
+      rewrite HifToTarget.
+      reflexivity.
+    }
+    claim HifEqY : apply_fun ifstar x = y.
+    {
+      exact (HigInj
+        (apply_fun ifstar x)
+        y
+        (HifFun x HxX)
+        Hy
+        HifIgEq).
+    }
+    witness x.
+    apply andI.
+    - exact HxX.
+    - exact HifEqY.
   }
   prove
     function_on
