@@ -67967,6 +67967,37 @@ claim Hcore :
         fcls
         HfclsCont).
     }
+    claim HpreUopen : preimage_of unit_interval fcls U :e unit_interval_topology.
+    {
+      exact (continuous_map_preimage
+        unit_interval
+        unit_interval_topology
+        X
+        Tx
+        fcls
+        HfclsCont
+        U
+        HU).
+    }
+    claim HpreVopen : preimage_of unit_interval fcls V :e unit_interval_topology.
+    {
+      exact (continuous_map_preimage
+        unit_interval
+        unit_interval_topology
+        X
+        Tx
+        fcls
+        HfclsCont
+        V
+        HV).
+    }
+    claim HpreCover :
+      (preimage_of unit_interval fcls U) :\/: (preimage_of unit_interval fcls V) = unit_interval.
+    {
+      rewrite <- (preimage_of_binunion unit_interval fcls U V).
+      rewrite <- Hcover.
+      exact (preimage_of_whole unit_interval X fcls HfclsFun).
+    }
     admit. (** van Kampen style generation argument pending for nontrivial classes **)
 }
 exact Hcore.
