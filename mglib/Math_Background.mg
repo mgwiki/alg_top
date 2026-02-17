@@ -52149,6 +52149,514 @@ claim Hpe0B : apply_fun p e0 :e B.
   rewrite Hstart.
   exact HF00B.
 }
+set idI54 := graph unit_interval (fun t:set => t).
+claim HidI54Cont :
+  continuous_map unit_interval unit_interval_topology
+    unit_interval unit_interval_topology
+    idI54.
+{
+  exact (identity_continuous
+    unit_interval
+    unit_interval_topology
+    unit_interval_topology_on).
+}
+claim Hconst0I54 :
+  continuous_map unit_interval unit_interval_topology
+    unit_interval unit_interval_topology
+    (const_fun unit_interval 0).
+{
+  exact (const_fun_continuous
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    0
+    unit_interval_topology_on
+    unit_interval_topology_on
+    zero_in_unit_interval).
+}
+set s0_54 := pair_map unit_interval (const_fun unit_interval 0) idI54.
+claim Hs0_54Cont :
+  continuous_map unit_interval unit_interval_topology
+    unit_square
+    unit_square_topology
+    s0_54.
+{
+  exact (maps_into_products
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    (const_fun unit_interval 0)
+    idI54
+    Hconst0I54
+    HidI54Cont).
+}
+set f0_54 := compose_fun unit_interval s0_54 F.
+claim Hf0_54Cont :
+  continuous_map unit_interval unit_interval_topology B Tb f0_54.
+{
+  exact (composition_continuous
+    unit_interval
+    unit_interval_topology
+    unit_square
+    unit_square_topology
+    B
+    Tb
+    s0_54
+    F
+    Hs0_54Cont
+    HFcont).
+}
+claim Hf0_54_at0 : apply_fun f0_54 0 = apply_fun F (0, 0).
+{
+  rewrite (compose_fun_apply
+    unit_interval
+    s0_54
+    F
+    0
+    zero_in_unit_interval).
+  rewrite (pair_map_apply
+    unit_interval
+    unit_interval
+    unit_interval
+    (const_fun unit_interval 0)
+    idI54
+    0
+    zero_in_unit_interval).
+  rewrite (const_fun_apply unit_interval 0 0 zero_in_unit_interval).
+  rewrite (apply_fun_graph unit_interval (fun t:set => t) 0 zero_in_unit_interval).
+  reflexivity.
+}
+claim Hstart_f0_54 : apply_fun p e0 = apply_fun f0_54 0.
+{
+  rewrite Hf0_54_at0.
+  exact Hstart.
+}
+claim Hlift0_54_pack :
+  continuous_map unit_interval unit_interval_topology E Te
+    (path_lift E Te B Tb p e0 f0_54) /\
+  apply_fun (path_lift E Te B Tb p e0 f0_54) 0 = e0 /\
+  (forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 f0_54) t) = apply_fun f0_54 t).
+{
+  exact (lemma54_1_path_lifting
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    f0_54
+    Hcov
+    He0
+    Hstart_f0_54
+    Hf0_54Cont).
+}
+set sbot_54 := pair_map unit_interval idI54 (const_fun unit_interval 0).
+claim Hsbot_54Cont :
+  continuous_map unit_interval unit_interval_topology
+    unit_square
+    unit_square_topology
+    sbot_54.
+{
+  exact (maps_into_products
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    idI54
+    (const_fun unit_interval 0)
+    HidI54Cont
+    Hconst0I54).
+}
+set g0_54 := compose_fun unit_interval sbot_54 F.
+claim Hg0_54Cont :
+  continuous_map unit_interval unit_interval_topology B Tb g0_54.
+{
+  exact (composition_continuous
+    unit_interval
+    unit_interval_topology
+    unit_square
+    unit_square_topology
+    B
+    Tb
+    sbot_54
+    F
+    Hsbot_54Cont
+    HFcont).
+}
+claim Hg0_54_at0 : apply_fun g0_54 0 = apply_fun F (0, 0).
+{
+  rewrite (compose_fun_apply
+    unit_interval
+    sbot_54
+    F
+    0
+    zero_in_unit_interval).
+  rewrite (pair_map_apply
+    unit_interval
+    unit_interval
+    unit_interval
+    idI54
+    (const_fun unit_interval 0)
+    0
+    zero_in_unit_interval).
+  rewrite (apply_fun_graph unit_interval (fun t:set => t) 0 zero_in_unit_interval).
+  rewrite (const_fun_apply unit_interval 0 0 zero_in_unit_interval).
+  reflexivity.
+}
+claim Hstart_g0_54 : apply_fun p e0 = apply_fun g0_54 0.
+{
+  rewrite Hg0_54_at0.
+  exact Hstart.
+}
+claim Hlift_bottom_54_pack :
+  continuous_map unit_interval unit_interval_topology E Te
+    (path_lift E Te B Tb p e0 g0_54) /\
+  apply_fun (path_lift E Te B Tb p e0 g0_54) 0 = e0 /\
+  (forall s:set, s :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) = apply_fun g0_54 s).
+{
+  exact (lemma54_1_path_lifting
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    g0_54
+    Hcov
+    He0
+    Hstart_g0_54
+    Hg0_54Cont).
+}
+claim Hbottom_lift_54_cont :
+  continuous_map unit_interval unit_interval_topology E Te
+    (path_lift E Te B Tb p e0 g0_54).
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 g0_54))
+    (apply_fun (path_lift E Te B Tb p e0 g0_54) 0 = e0)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 g0_54) /\
+       apply_fun (path_lift E Te B Tb p e0 g0_54) 0 = e0)
+      (forall s:set, s :e unit_interval ->
+        apply_fun p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) = apply_fun g0_54 s)
+      Hlift_bottom_54_pack)).
+}
+claim Hbottom_lift_54_at0 :
+  apply_fun (path_lift E Te B Tb p e0 g0_54) 0 = e0.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 g0_54))
+    (apply_fun (path_lift E Te B Tb p e0 g0_54) 0 = e0)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 g0_54) /\
+       apply_fun (path_lift E Te B Tb p e0 g0_54) 0 = e0)
+      (forall s:set, s :e unit_interval ->
+        apply_fun p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) = apply_fun g0_54 s)
+      Hlift_bottom_54_pack)).
+}
+claim Hbottom_lift_54_comm :
+  forall s:set, s :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) = apply_fun g0_54 s.
+{
+  let s.
+  assume Hs.
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 g0_54) /\
+      apply_fun (path_lift E Te B Tb p e0 g0_54) 0 = e0)
+    (forall u:set, u :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p e0 g0_54) u) = apply_fun g0_54 u)
+    Hlift_bottom_54_pack
+    s
+    Hs).
+}
+claim Hg0_54_eval :
+  forall s:set, s :e unit_interval ->
+    apply_fun g0_54 s = apply_fun F (s, 0).
+{
+  let s.
+  assume Hs.
+  rewrite (compose_fun_apply
+    unit_interval
+    sbot_54
+    F
+    s
+    Hs).
+  rewrite (pair_map_apply
+    unit_interval
+    unit_interval
+    unit_interval
+    idI54
+    (const_fun unit_interval 0)
+    s
+    Hs).
+  rewrite (apply_fun_graph unit_interval (fun t:set => t) s Hs).
+  rewrite (const_fun_apply unit_interval 0 s Hs).
+  reflexivity.
+}
+claim Hbottom_lift_over_square_bottom :
+  forall s:set, s :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) = apply_fun F (s, 0).
+{
+  let s.
+  assume Hs.
+  rewrite (Hbottom_lift_54_comm s Hs).
+  exact (Hg0_54_eval s Hs).
+}
+claim Hbottom_lift_54_fun :
+  function_on (path_lift E Te B Tb p e0 g0_54) unit_interval E.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    E
+    Te
+    (path_lift E Te B Tb p e0 g0_54)
+    Hbottom_lift_54_cont).
+}
+claim Hvertical_lift_seed_pack :
+  forall s:set, s :e unit_interval ->
+    exists vs:set,
+      continuous_map unit_interval unit_interval_topology B Tb vs /\
+      apply_fun vs 0 = apply_fun F (s, 0) /\
+      continuous_map unit_interval unit_interval_topology E Te
+        (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs) /\
+      apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs) 0
+        = apply_fun (path_lift E Te B Tb p e0 g0_54) s /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun p
+          (apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs) t)
+        = apply_fun vs t).
+{
+  let s.
+  assume Hs.
+  set vs := compose_fun unit_interval
+    (pair_map unit_interval (const_fun unit_interval s) idI54)
+    F.
+  claim HconstsI :
+    continuous_map unit_interval unit_interval_topology
+      unit_interval unit_interval_topology
+      (const_fun unit_interval s).
+  {
+    exact (const_fun_continuous
+      unit_interval
+      unit_interval_topology
+      unit_interval
+      unit_interval_topology
+      s
+      unit_interval_topology_on
+      unit_interval_topology_on
+      Hs).
+  }
+  claim HvsCont :
+    continuous_map unit_interval unit_interval_topology B Tb vs.
+  {
+    claim HpairsCont :
+      continuous_map unit_interval unit_interval_topology
+        unit_square
+        unit_square_topology
+        (pair_map unit_interval (const_fun unit_interval s) idI54).
+    {
+      exact (maps_into_products
+        unit_interval
+        unit_interval_topology
+        unit_interval
+        unit_interval_topology
+        unit_interval
+        unit_interval_topology
+        (const_fun unit_interval s)
+        idI54
+        HconstsI
+        HidI54Cont).
+    }
+    exact (composition_continuous
+      unit_interval
+      unit_interval_topology
+      unit_square
+      unit_square_topology
+      B
+      Tb
+      (pair_map unit_interval (const_fun unit_interval s) idI54)
+      F
+      HpairsCont
+      HFcont).
+  }
+  claim Hvs0 : apply_fun vs 0 = apply_fun F (s, 0).
+  {
+    rewrite (compose_fun_apply
+      unit_interval
+      (pair_map unit_interval (const_fun unit_interval s) idI54)
+      F
+      0
+      zero_in_unit_interval).
+    rewrite (pair_map_apply
+      unit_interval
+      unit_interval
+      unit_interval
+      (const_fun unit_interval s)
+      idI54
+      0
+      zero_in_unit_interval).
+    rewrite (const_fun_apply unit_interval s 0 zero_in_unit_interval).
+    rewrite (apply_fun_graph unit_interval (fun t:set => t) 0 zero_in_unit_interval).
+    reflexivity.
+  }
+  claim HvsEvalAll :
+    forall t:set, t :e unit_interval ->
+      apply_fun vs t = apply_fun F (s, t).
+  {
+    let t.
+    assume Ht.
+    rewrite (compose_fun_apply
+      unit_interval
+      (pair_map unit_interval (const_fun unit_interval s) idI54)
+      F
+      t
+      Ht).
+    rewrite (pair_map_apply
+      unit_interval
+      unit_interval
+      unit_interval
+      (const_fun unit_interval s)
+      idI54
+      t
+      Ht).
+    rewrite (const_fun_apply unit_interval s t Ht).
+    rewrite (apply_fun_graph unit_interval (fun u:set => u) t Ht).
+    reflexivity.
+  }
+  claim HesE : apply_fun (path_lift E Te B Tb p e0 g0_54) s :e E.
+  {
+    exact (Hbottom_lift_54_fun
+      s
+      Hs).
+  }
+  claim HstartVs :
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) = apply_fun vs 0.
+  {
+    rewrite Hvs0.
+    exact (Hbottom_lift_over_square_bottom s Hs).
+  }
+  claim HliftVsPack :
+    continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs) /\
+    apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs) 0
+      = apply_fun (path_lift E Te B Tb p e0 g0_54) s /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun p
+        (apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs) t)
+      = apply_fun vs t).
+  {
+    exact (lemma54_1_path_lifting
+      E
+      Te
+      B
+      Tb
+      p
+      (apply_fun (path_lift E Te B Tb p e0 g0_54) s)
+      vs
+      Hcov
+      HesE
+      HstartVs
+      HvsCont).
+  }
+  claim HvsLiftCont :
+    continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs).
+  {
+    exact (andEL
+      (continuous_map unit_interval unit_interval_topology E Te
+        (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs))
+      (apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs) 0
+        = apply_fun (path_lift E Te B Tb p e0 g0_54) s)
+      (andEL
+        (continuous_map unit_interval unit_interval_topology E Te
+          (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs) /\
+         apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs) 0
+           = apply_fun (path_lift E Te B Tb p e0 g0_54) s)
+        (forall t:set, t :e unit_interval ->
+          apply_fun p
+            (apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs) t)
+          = apply_fun vs t)
+        HliftVsPack)).
+  }
+  claim HvsLift0 :
+    apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs) 0
+      = apply_fun (path_lift E Te B Tb p e0 g0_54) s.
+  {
+    exact (andER
+      (continuous_map unit_interval unit_interval_topology E Te
+        (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs))
+      (apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs) 0
+        = apply_fun (path_lift E Te B Tb p e0 g0_54) s)
+      (andEL
+        (continuous_map unit_interval unit_interval_topology E Te
+          (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs) /\
+         apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs) 0
+           = apply_fun (path_lift E Te B Tb p e0 g0_54) s)
+        (forall t:set, t :e unit_interval ->
+          apply_fun p
+            (apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs) t)
+          = apply_fun vs t)
+        HliftVsPack)).
+  }
+  claim HvsLiftComm :
+    forall t:set, t :e unit_interval ->
+      apply_fun p
+        (apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs) t)
+      = apply_fun vs t.
+  {
+    exact (andER
+      (continuous_map unit_interval unit_interval_topology E Te
+        (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs) /\
+       apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs) 0
+         = apply_fun (path_lift E Te B Tb p e0 g0_54) s)
+      (forall t:set, t :e unit_interval ->
+        apply_fun p
+          (apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs) t)
+        = apply_fun vs t)
+      HliftVsPack).
+  }
+  witness vs.
+  exact (andI
+    (((continuous_map unit_interval unit_interval_topology B Tb vs /\
+      apply_fun vs 0 = apply_fun F (s, 0)) /\
+      continuous_map unit_interval unit_interval_topology E Te
+        (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs)) /\
+      apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs) 0
+        = apply_fun (path_lift E Te B Tb p e0 g0_54) s)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p
+        (apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs) t)
+      = apply_fun vs t)
+    (andI
+      ((continuous_map unit_interval unit_interval_topology B Tb vs /\
+        apply_fun vs 0 = apply_fun F (s, 0)) /\
+        continuous_map unit_interval unit_interval_topology E Te
+          (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs))
+      (apply_fun (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs) 0
+        = apply_fun (path_lift E Te B Tb p e0 g0_54) s)
+      (andI
+        (continuous_map unit_interval unit_interval_topology B Tb vs /\
+          apply_fun vs 0 = apply_fun F (s, 0))
+        (continuous_map unit_interval unit_interval_topology E Te
+          (path_lift E Te B Tb p (apply_fun (path_lift E Te B Tb p e0 g0_54) s) vs))
+        (andI
+          (continuous_map unit_interval unit_interval_topology B Tb vs)
+          (apply_fun vs 0 = apply_fun F (s, 0))
+          HvsCont
+          Hvs0)
+        HvsLiftCont)
+      HvsLift0)
+    HvsLiftComm).
+}
 (** TODO Charlie: construct Ft by lifting horizontal/vertical path families and gluing by uniqueness. **)
 admit.
 Admitted.
