@@ -1,4 +1,4 @@
-(** Balance Alice 3000 **)
+(** Balance Alice 3132 **)
 (** Balance Bob 3000 **)
 (** Balance Charlie 1000 **)
 (** Balance Dave 1000 **)
@@ -37298,7 +37298,8 @@ Admitted.
 
 (** from S52 Exercise 7(c) (line 516 in algtop.tex): star and tensor agree on pi1 **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 132 **)
+(** Collected Alice 132 **)
+(** Proven Alice **)
 Theorem ex52_7c_star_equals_tensor : forall G Tg:set,
   topological_group G Tg ->
   forall e mult:set,
@@ -37311,12 +37312,326 @@ Theorem ex52_7c_star_equals_tensor : forall G Tg:set,
     path_homotopic G Tg e e
       (path_concat f g)
       (graph unit_interval (fun s:set => apply_fun mult (apply_fun f s, apply_fun g s))).
-admit.
-Admitted.
+let G Tg.
+assume _.
+let e mult.
+assume He HmultFun Hident HmultCont.
+let f g.
+assume HfLoop HgLoop.
+set tensor_fg := graph unit_interval (fun s:set => apply_fun mult (apply_fun f s, apply_fun g s)).
+claim HfCont : continuous_map unit_interval unit_interval_topology G Tg f.
+{ exact (loop_at_continuous G Tg e f HfLoop). }
+claim HgCont : continuous_map unit_interval unit_interval_topology G Tg g.
+{ exact (loop_at_continuous G Tg e g HgLoop). }
+claim Hf0 : apply_fun f 0 = e.
+{ exact (loop_at_at_zero G Tg e f HfLoop). }
+claim Hg0 : apply_fun g 0 = e.
+{ exact (loop_at_at_zero G Tg e g HgLoop). }
+claim Hf1 : apply_fun f 1 = e.
+{ exact (loop_at_at_one G Tg e f HfLoop). }
+claim Hg1 : apply_fun g 1 = e.
+{ exact (loop_at_at_one G Tg e g HgLoop). }
+claim HmulEe : apply_fun mult (e, e) = e.
+{
+  exact (andEL
+    (apply_fun mult (e, e) = e)
+    (apply_fun mult (e, e) = e)
+    (Hident e He)).
+}
+claim HidentL : forall x:set, x :e G -> apply_fun mult (e, x) = x.
+{ let x. assume Hx. exact (andEL (apply_fun mult (e, x) = x) (apply_fun mult (x, e) = x) (Hident x Hx)). }
+claim HidentR : forall x:set, x :e G -> apply_fun mult (x, e) = x.
+{ let x. assume Hx. exact (andER (apply_fun mult (e, x) = x) (apply_fun mult (x, e) = x) (Hident x Hx)). }
+(** Continuity and endpoints of path_concat f g **)
+claim HconcatCont : continuous_map unit_interval unit_interval_topology G Tg (path_concat f g).
+{
+  exact (path_concat_continuous G Tg e e e f g HfCont HgCont Hf0 Hf1 Hg0 Hg1).
+}
+claim Hconcat0 : apply_fun (path_concat f g) 0 = e.
+{ rewrite (path_concat_at_zero f g). exact Hf0. }
+claim Hconcat1 : apply_fun (path_concat f g) 1 = e.
+{ rewrite (path_concat_at_one f g). exact Hg1. }
+(** Continuity and endpoints of tensor_fg (reuse ex52_7a pattern) **)
+claim HpairCont :
+  continuous_map unit_interval unit_interval_topology
+    (setprod G G) (product_topology G Tg G Tg)
+    (pair_map unit_interval f g).
+{
+  exact (maps_into_products
+    unit_interval unit_interval_topology G Tg G Tg f g HfCont HgCont).
+}
+claim HcompCont :
+  continuous_map unit_interval unit_interval_topology G Tg
+    (compose_fun unit_interval (pair_map unit_interval f g) mult).
+{
+  exact (composition_continuous
+    unit_interval unit_interval_topology
+    (setprod G G) (product_topology G Tg G Tg)
+    G Tg
+    (pair_map unit_interval f g) mult
+    HpairCont HmultCont).
+}
+claim HtensorFS : tensor_fg :e function_space unit_interval G.
+{
+  exact (graph_in_function_space
+    unit_interval G
+    (fun s:set => apply_fun mult (apply_fun f s, apply_fun g s))
+    (fun s Hs =>
+      HmultFun
+        (apply_fun f s, apply_fun g s)
+        (tuple_2_setprod_by_pair_Sigma G G
+          (apply_fun f s) (apply_fun g s)
+          (continuous_map_function_on
+            unit_interval unit_interval_topology G Tg f HfCont s Hs)
+          (continuous_map_function_on
+            unit_interval unit_interval_topology G Tg g HgCont s Hs)))).
+}
+claim HtensorFun : function_on tensor_fg unit_interval G.
+{ exact (function_on_of_function_space tensor_fg unit_interval G HtensorFS). }
+claim HcompEq :
+  forall s:set, s :e unit_interval ->
+    apply_fun (compose_fun unit_interval (pair_map unit_interval f g) mult) s
+    = apply_fun tensor_fg s.
+{
+  let s. assume Hs.
+  rewrite (compose_fun_apply unit_interval (pair_map unit_interval f g) mult s Hs).
+  rewrite (pair_map_apply unit_interval G G f g s Hs).
+  rewrite (apply_fun_graph
+    unit_interval
+    (fun t:set => apply_fun mult (apply_fun f t, apply_fun g t))
+    s Hs).
+  reflexivity.
+}
+claim HtensorCont : continuous_map unit_interval unit_interval_topology G Tg tensor_fg.
+{
+  exact (continuous_map_congr_on
+    unit_interval unit_interval_topology G Tg
+    (compose_fun unit_interval (pair_map unit_interval f g) mult)
+    tensor_fg
+    HcompCont HtensorFun HcompEq).
+}
+claim Htensor0 : apply_fun tensor_fg 0 = e.
+{
+  rewrite (apply_fun_graph
+    unit_interval
+    (fun s:set => apply_fun mult (apply_fun f s, apply_fun g s))
+    0 zero_in_unit_interval).
+  rewrite Hf0. rewrite Hg0. exact HmulEe.
+}
+claim Htensor1 : apply_fun tensor_fg 1 = e.
+{
+  rewrite (apply_fun_graph
+    unit_interval
+    (fun s:set => apply_fun mult (apply_fun f s, apply_fun g s))
+    1 one_in_unit_interval).
+  rewrite Hf1. rewrite Hg1. exact HmulEe.
+}
+(** Get homotopies from right/left identity theorems **)
+set f_star := path_concat f (constant_path e).
+set g_star := path_concat (constant_path e) g.
+claim HtopG : topology_on G Tg.
+{ exact (continuous_map_topology_cod unit_interval unit_interval_topology G Tg f HfCont). }
+claim HceCont : continuous_map unit_interval unit_interval_topology G Tg (constant_path e).
+{ exact (constant_path_continuous G Tg e HtopG He). }
+claim Hf_starCont : continuous_map unit_interval unit_interval_topology G Tg f_star.
+{ exact (path_concat_continuous G Tg e e e f (constant_path e) HfCont HceCont Hf0 Hf1 (constant_path_at_zero e) (constant_path_at_one e)). }
+claim Hg_starCont : continuous_map unit_interval unit_interval_topology G Tg g_star.
+{ exact (path_concat_continuous G Tg e e e (constant_path e) g HceCont HgCont (constant_path_at_zero e) (constant_path_at_one e) Hg0 Hg1). }
+claim Hright_id : path_homotopic G Tg e e f_star f.
+{ exact (Theorem_51_2_right_identity G Tg e e f HfCont Hf0 Hf1 He). }
+claim Hleft_id : path_homotopic G Tg e e g_star g.
+{ exact (Theorem_51_2_left_identity G Tg e e g HgCont Hg0 Hg1 He). }
+(** Extract homotopy witnesses **)
+claim HFf_exists : exists Ff:set,
+  continuous_map unit_square unit_square_topology G Tg Ff /\
+  (forall s:set, s :e unit_interval -> apply_fun Ff (s, 0) = apply_fun f_star s) /\
+  (forall s:set, s :e unit_interval -> apply_fun Ff (s, 1) = apply_fun f s) /\
+  (forall t:set, t :e unit_interval -> apply_fun Ff (0, t) = e) /\
+  (forall t:set, t :e unit_interval -> apply_fun Ff (1, t) = e).
+{ exact (path_homotopic_has_square_witness G Tg e e f_star f Hright_id). }
+apply HFf_exists.
+let Ff.
+assume HFfPack.
+apply (and5E
+  (continuous_map unit_square unit_square_topology G Tg Ff)
+  (forall s:set, s :e unit_interval -> apply_fun Ff (s, 0) = apply_fun f_star s)
+  (forall s:set, s :e unit_interval -> apply_fun Ff (s, 1) = apply_fun f s)
+  (forall t:set, t :e unit_interval -> apply_fun Ff (0, t) = e)
+  (forall t:set, t :e unit_interval -> apply_fun Ff (1, t) = e)
+  HFfPack).
+assume HFfCont HFfS0 HFfS1 HFf0t HFf1t.
+claim HFg_exists : exists Fg:set,
+  continuous_map unit_square unit_square_topology G Tg Fg /\
+  (forall s:set, s :e unit_interval -> apply_fun Fg (s, 0) = apply_fun g_star s) /\
+  (forall s:set, s :e unit_interval -> apply_fun Fg (s, 1) = apply_fun g s) /\
+  (forall t:set, t :e unit_interval -> apply_fun Fg (0, t) = e) /\
+  (forall t:set, t :e unit_interval -> apply_fun Fg (1, t) = e).
+{ exact (path_homotopic_has_square_witness G Tg e e g_star g Hleft_id). }
+apply HFg_exists.
+let Fg.
+assume HFgPack.
+apply (and5E
+  (continuous_map unit_square unit_square_topology G Tg Fg)
+  (forall s:set, s :e unit_interval -> apply_fun Fg (s, 0) = apply_fun g_star s)
+  (forall s:set, s :e unit_interval -> apply_fun Fg (s, 1) = apply_fun g s)
+  (forall t:set, t :e unit_interval -> apply_fun Fg (0, t) = e)
+  (forall t:set, t :e unit_interval -> apply_fun Fg (1, t) = e)
+  HFgPack).
+assume HFgCont HFgS0 HFgS1 HFg0t HFg1t.
+(** Construct H = compose_fun unit_square (pair_map unit_square Ff Fg) mult **)
+set H := compose_fun unit_square (pair_map unit_square Ff Fg) mult.
+claim HpairFfFgCont :
+  continuous_map unit_square unit_square_topology
+    (setprod G G) (product_topology G Tg G Tg)
+    (pair_map unit_square Ff Fg).
+{
+  exact (maps_into_products
+    unit_square unit_square_topology G Tg G Tg Ff Fg HFfCont HFgCont).
+}
+claim HHCont : continuous_map unit_square unit_square_topology G Tg H.
+{
+  exact (composition_continuous
+    unit_square unit_square_topology
+    (setprod G G) (product_topology G Tg G Tg)
+    G Tg
+    (pair_map unit_square Ff Fg) mult
+    HpairFfFgCont HmultCont).
+}
+(** Helper: evaluate H at a point **)
+claim HHeval : forall p:set, p :e unit_square ->
+  apply_fun H p = apply_fun mult (apply_fun Ff p, apply_fun Fg p).
+{
+  let p. assume Hp.
+  rewrite (compose_fun_apply unit_square (pair_map unit_square Ff Fg) mult p Hp).
+  rewrite (pair_map_apply unit_square G G Ff Fg p Hp).
+  reflexivity.
+}
+(** Boundary: H(s,1) = tensor_fg(s) **)
+claim HHs1 : forall s:set, s :e unit_interval ->
+  apply_fun H (s, 1) = apply_fun tensor_fg s.
+{
+  let s. assume Hs.
+  claim Hst1 : (s, 1) :e unit_square.
+  { exact (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 1 Hs one_in_unit_interval). }
+  rewrite (HHeval (s, 1) Hst1).
+  rewrite (HFfS1 s Hs).
+  rewrite (HFgS1 s Hs).
+  rewrite (apply_fun_graph
+    unit_interval
+    (fun t:set => apply_fun mult (apply_fun f t, apply_fun g t))
+    s Hs).
+  reflexivity.
+}
+(** Boundary: H(0,t) = e **)
+claim HH0t : forall t:set, t :e unit_interval ->
+  apply_fun H (0, t) = e.
+{
+  let t. assume Ht.
+  claim H0t : (0, t) :e unit_square.
+  { exact (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 0 t zero_in_unit_interval Ht). }
+  rewrite (HHeval (0, t) H0t).
+  rewrite (HFf0t t Ht).
+  rewrite (HFg0t t Ht).
+  exact HmulEe.
+}
+(** Boundary: H(1,t) = e **)
+claim HH1t : forall t:set, t :e unit_interval ->
+  apply_fun H (1, t) = e.
+{
+  let t. assume Ht.
+  claim H1t : (1, t) :e unit_square.
+  { exact (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 1 t one_in_unit_interval Ht). }
+  rewrite (HHeval (1, t) H1t).
+  rewrite (HFf1t t Ht).
+  rewrite (HFg1t t Ht).
+  exact HmulEe.
+}
+(** Boundary: H(s,0) = path_concat f g (s) - the hard one **)
+claim HHs0 : forall s:set, s :e unit_interval ->
+  apply_fun H (s, 0) = apply_fun (path_concat f g) s.
+{
+  let s. assume Hs.
+  claim Hst0 : (s, 0) :e unit_square.
+  { exact (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 0 Hs zero_in_unit_interval). }
+  rewrite (HHeval (s, 0) Hst0).
+  rewrite (HFfS0 s Hs).
+  rewrite (HFgS0 s Hs).
+  (** Now need: apply_fun mult (apply_fun f_star s, apply_fun g_star s) = apply_fun (path_concat f g) s **)
+  (** Case split on left_half vs right_half **)
+  claim Hfg_match : apply_fun f 1 = apply_fun g 0.
+  { rewrite Hf1. rewrite Hg0. reflexivity. }
+  claim Hfce_match : apply_fun f 1 = apply_fun (constant_path e) 0.
+  { rewrite Hf1. rewrite (constant_path_at_zero e). reflexivity. }
+  claim Hceg_match : apply_fun (constant_path e) 1 = apply_fun g 0.
+  { rewrite (constant_path_at_one e). rewrite Hg0. reflexivity. }
+  claim HsLHRH : s :e unit_interval_left_half :\/: unit_interval_right_half.
+  {
+    rewrite unit_interval_halves_cover.
+    exact Hs.
+  }
+  apply (binunionE unit_interval_left_half unit_interval_right_half s HsLHRH).
+  - assume HsLH : s :e unit_interval_left_half.
+    (** Left half: f_star(s) = f(2s), g_star(s) = e **)
+    rewrite (path_concat_apply_left f (constant_path e) s Hfce_match HsLH).
+    rewrite (path_concat_apply_left (constant_path e) g s Hceg_match HsLH).
+    rewrite (path_concat_apply_left f g s Hfg_match HsLH).
+    claim H2sUI : mul_SNo 2 s :e unit_interval.
+    { exact (double_map_apply s HsLH (fun a b:set => a :e unit_interval) (double_map_function_on s HsLH)). }
+    rewrite (constant_path_apply e (mul_SNo 2 s) H2sUI).
+    (** Now: apply_fun mult (apply_fun f (mul_SNo 2 s), e) = apply_fun f (mul_SNo 2 s) **)
+    claim HfsG : apply_fun f (mul_SNo 2 s) :e G.
+    { exact (continuous_map_function_on unit_interval unit_interval_topology G Tg f HfCont (mul_SNo 2 s) H2sUI). }
+    exact (HidentR (apply_fun f (mul_SNo 2 s)) HfsG).
+  - assume HsRH : s :e unit_interval_right_half.
+    (** Right half: f_star(s) = e, g_star(s) = g(2s-1) **)
+    rewrite (path_concat_apply_right f (constant_path e) s Hfce_match HsRH).
+    rewrite (path_concat_apply_right (constant_path e) g s Hceg_match HsRH).
+    rewrite (path_concat_apply_right f g s Hfg_match HsRH).
+    claim H2sm1UI : add_SNo (mul_SNo 2 s) (minus_SNo 1) :e unit_interval.
+    { exact (double_minus_one_map_apply s HsRH (fun a b:set => a :e unit_interval) (double_minus_one_map_function_on s HsRH)). }
+    rewrite (constant_path_apply e (add_SNo (mul_SNo 2 s) (minus_SNo 1)) H2sm1UI).
+    (** Now: apply_fun mult (e, apply_fun g (...)) = apply_fun g (...) **)
+    claim HgsG : apply_fun g (add_SNo (mul_SNo 2 s) (minus_SNo 1)) :e G.
+    { exact (continuous_map_function_on unit_interval unit_interval_topology G Tg g HgCont (add_SNo (mul_SNo 2 s) (minus_SNo 1)) H2sm1UI). }
+    exact (HidentL (apply_fun g (add_SNo (mul_SNo 2 s) (minus_SNo 1))) HgsG).
+}
+(** Package into path_homotopic **)
+prove path_homotopic G Tg e e (path_concat f g) tensor_fg.
+prove
+  continuous_map unit_interval unit_interval_topology G Tg (path_concat f g) /\
+  continuous_map unit_interval unit_interval_topology G Tg tensor_fg /\
+  apply_fun (path_concat f g) 0 = e /\ apply_fun (path_concat f g) 1 = e /\
+  apply_fun tensor_fg 0 = e /\ apply_fun tensor_fg 1 = e /\
+  exists F:set,
+    continuous_map unit_square unit_square_topology G Tg F /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 0) = apply_fun (path_concat f g) s) /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 1) = apply_fun tensor_fg s) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (0, t) = e) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (1, t) = e).
+apply and7I.
+- exact HconcatCont.
+- exact HtensorCont.
+- exact Hconcat0.
+- exact Hconcat1.
+- exact Htensor0.
+- exact Htensor1.
+- witness H.
+  apply and5I.
+  + exact HHCont.
+  + exact HHs0.
+  + exact HHs1.
+  + exact HH0t.
+  + exact HH1t.
+Qed.
 
 (** from S52 Exercise 7(d) (line 516 in algtop.tex): pi1 of a topological group is abelian **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
+(** Bounty 37 **)
+(** Lock Alice 1771439472 **)
 Theorem ex52_7d_topological_group_pi1_abelian : forall G Tg:set,
   topological_group G Tg ->
   forall e:set, e :e G ->
