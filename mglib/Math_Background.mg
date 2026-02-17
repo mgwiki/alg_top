@@ -68165,6 +68165,36 @@ apply set_ext.
       HxLt1).
 Qed.
 
+Theorem lemma59_3_overlap_nonempty_from_point : forall n x:set,
+  x :e Sn n ->
+  Rlt (minus_SNo 1) (apply_fun x 0) ->
+  Rlt (apply_fun x 0) 1 ->
+  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
+   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
+let n x.
+assume HxSn HxGtM1 HxLt1.
+exact (elem_implies_nonempty
+  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
+   {x :e Sn n | Rlt (apply_fun x 0) 1})
+  x
+  (binintersectI
+    {x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)}
+    {x :e Sn n | Rlt (apply_fun x 0) 1}
+    x
+    (SepI
+      (Sn n)
+      (fun x:set => Rlt (minus_SNo 1) (apply_fun x 0))
+      x
+      HxSn
+      HxGtM1)
+    (SepI
+      (Sn n)
+      (fun x:set => Rlt (apply_fun x 0) 1)
+      x
+      HxSn
+      HxLt1))).
+Qed.
+
 Theorem lemma59_3_sphere_cover_data : forall n:set, n :e omega -> 2 c= n ->
   exists U V:set,
     U :e Sn_topology n /\ V :e Sn_topology n /\
