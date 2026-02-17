@@ -68039,83 +68039,14 @@ claim Hz0V : z0 :e V.
 { exact (binintersectE2 U V z0 Hz0UV). }
 claim Hz0X : z0 :e X.
 { exact (HUsub z0 Hz0U). }
-(** Path connected X: for any x,y in X, find path via z0 **)
+(** Path connected X follows from the open cover and path connected pieces. **)
 claim HpcX : path_connected_space X Tx.
-{ prove topology_on X Tx /\
-    forall x y:set, x :e X -> y :e X ->
-      exists p:set, path_between X x y p /\
-        continuous_map unit_interval unit_interval_topology X Tx p.
-  apply andI.
-  - exact Htop.
-  - let x y. assume Hx : x :e X.
-    assume Hy : y :e X.
-    (** x is in U or V **)
-    claim HxUV : x :e U :\/: V.
-    { exact (mem_eqR x X (U :\/: V) Hcover Hx). }
-    (** z0 is in path_component of x in X **)
-    claim Hz0_pc_x : z0 :e path_component_of X Tx x.
-    { apply (binunionE U V x HxUV).
-      - assume HxU : x :e U.
-        exact (subspace_path_connected_implies_in_path_component
-          X Tx U x z0 Htop HUsub HpcU HxU Hz0U).
-      - assume HxV : x :e V.
-        exact (subspace_path_connected_implies_in_path_component
-          X Tx V x z0 Htop HVsub HpcV HxV Hz0V). }
-    (** y is in U or V **)
-    claim HyUV : y :e U :\/: V.
-    { exact (mem_eqR y X (U :\/: V) Hcover Hy). }
-    (** y is in path_component of z0 in X **)
-    claim Hy_pc_z0 : y :e path_component_of X Tx z0.
-    { apply (binunionE U V y HyUV).
-      - assume HyU : y :e U.
-        exact (subspace_path_connected_implies_in_path_component
-          X Tx U z0 y Htop HUsub HpcU Hz0U HyU).
-      - assume HyV : y :e V.
-        exact (subspace_path_connected_implies_in_path_component
-          X Tx V z0 y Htop HVsub HpcV Hz0V HyV). }
-    (** By transitivity: y in path_component of x **)
-    claim Hy_pc_x : y :e path_component_of X Tx x.
-    { exact (path_component_transitive_axiom X Tx x z0 y Htop Hx Hz0X Hy
-        Hz0_pc_x Hy_pc_z0). }
-    (** Extract path from path_component_of **)
-    claim Hpc_data : exists p:set, function_on p unit_interval X /\
-      continuous_map unit_interval unit_interval_topology X Tx p /\
-      apply_fun p 0 = x /\ apply_fun p 1 = y.
-    { exact (SepE2 X
-        (fun w:set => exists p:set, function_on p unit_interval X /\
-          continuous_map unit_interval unit_interval_topology X Tx p /\
-          apply_fun p 0 = x /\ apply_fun p 1 = w)
-        y Hy_pc_x). }
-    apply Hpc_data.
-    let p.
-    assume Hp_pack : function_on p unit_interval X /\
-      continuous_map unit_interval unit_interval_topology X Tx p /\
-      apply_fun p 0 = x /\ apply_fun p 1 = y.
-    witness p.
-    (** Repackage: path_between X x y p /\ continuous **)
-    apply andI.
-    + (** path_between X x y p = function_on /\ p(0)=x /\ p(1)=y **)
-      prove function_on p unit_interval X /\ apply_fun p 0 = x /\ apply_fun p 1 = y.
-      apply (and4E
-        (function_on p unit_interval X)
-        (continuous_map unit_interval unit_interval_topology X Tx p)
-        (apply_fun p 0 = x)
-        (apply_fun p 1 = y)
-        Hp_pack).
-      assume Hfn Hcont Hp0 Hp1.
-      apply and3I.
-      * exact Hfn.
-      * exact Hp0.
-      * exact Hp1.
-    + (** continuous_map **)
-      apply (and4E
-        (function_on p unit_interval X)
-        (continuous_map unit_interval unit_interval_topology X Tx p)
-        (apply_fun p 0 = x)
-        (apply_fun p 1 = y)
-        Hp_pack).
-      assume Hfn2 Hcont2 Hp02 Hp12.
-      exact Hcont2. }
+{
+  exact (lemma59_2_path_connected_union_of_path_connected_open_subspaces
+    X Tx U V
+    Htop HU HV Hcover
+    HpcU HpcV Hne).
+}
 (** Now prove pi1 trivial **)
 (** Get x0 in U cap V **)
 claim Hx0UV : z0 :e U :/\: V.
