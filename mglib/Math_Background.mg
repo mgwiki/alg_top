@@ -18264,7 +18264,7 @@ exact (and7I
   Hreparam_hom).
 Qed.
 
-(** from S51 Example 1 (line 150 in algtop.tex): straight-line homotopy **)
+(** from S51 Ex 1 (line 150 in algtop.tex): straight-line homotopy **)
 (** LATEX VERSION: In any convex subspace A of Rn, any two paths f,g from x0 to x1 are path homotopic via F(x,t)=(1-t)f(x)+tg(x). **)
 (** EFFORT: 5 lines textbook, difficulty 5/10, USD 80 **)
 (** Bounty 88 **)
@@ -24709,7 +24709,7 @@ apply and6I.
     HrightInv HleftInv).
 Qed.
 
-(** from S52 Example 1 (line 365 in algtop.tex): pi1(Rn, x0) is trivial **)
+(** from S52 Ex 1 (line 365 in algtop.tex): pi1(Rn, x0) is trivial **)
 (** LATEX VERSION: pi1(Rn, x0) is the trivial group. More generally, if X is any convex subset of Rn, then pi1(X, x0) is trivial. **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 50 **)
@@ -34145,7 +34145,7 @@ claim Hseg_range : forall t:set, t :e unit_interval ->
   assume Ht.
   exact (Hstar_cond a HaA t Ht).
 }
-(** Continuity into (A, Ta) - admitted following the same gap as Example_51_1 line 16696 **)
+(** Continuity into (A, Ta) - admitted following the same gap as Ex_51_1 line 16696 **)
 claim Hseg_cont_A : continuous_map unit_interval unit_interval_topology A Ta seg.
 {
   set one_minus_t := flip_unit_interval.
@@ -34551,7 +34551,7 @@ claim Hpi1Trivial :
         (mul_SNo (add_SNo 1 (minus_SNo (p 1))) (apply_fun f (p 0)))
         (mul_SNo (p 1) a0)).
     claim HFcont : continuous_map unit_square unit_square_topology A Ta F.
-    { (** Continuity of affine combination into Ta: same gap as Example 51.1 **)
+    { (** Continuity of affine combination into Ta: same gap as Ex 51.1 **)
       admit. }
     claim HFs0 : forall s:set, s :e unit_interval ->
       apply_fun F (s, 0) = apply_fun f s.
@@ -68710,7 +68710,7 @@ Definition theta_space : set -> set -> set -> set -> set -> set -> set -> prop :
     B :/\: C = UPair a b /\
     A :/\: C = UPair a b.
 
-(** from S64 Example 1 (line 2258 in algtop.tex) **)
+(** from S64 Ex 1 (line 2258 in algtop.tex) **)
 (** LATEX VERSION: Complete graph G_n on n vertices: every pair of distinct **)
 (** vertices is joined by an edge. **)
 Definition complete_graph_on : set -> set -> set -> prop := fun V G Tg =>
@@ -68721,7 +68721,7 @@ Definition complete_graph_on : set -> set -> set -> prop := fun V G Tg =>
       arc A (subspace_topology G Tg A) /\
       end_points_of_arc A (subspace_topology G Tg A) u v).
 
-(** from S64 Example 2 (line 2268 in algtop.tex) **)
+(** from S64 Ex 2 (line 2268 in algtop.tex) **)
 (** LATEX VERSION: The utilities graph K_{3,3}: bipartite complete graph with **)
 (** two groups H, W of 3 vertices, every vertex in H joined to every in W. **)
 Definition utilities_graph : set -> set -> set -> set -> prop := fun H W G Tg =>
@@ -74526,7 +74526,7 @@ apply andI.
 Qed.
 
 (** Infrastructure: infinite earring in R^2 **)
-(** from S80 Example 1 (line 5005 in algtop.tex): C_n is circle of radius 1/n centered at (1/n, 0) **)
+(** from S80 Ex 1 (line 5005 in algtop.tex): C_n is circle of radius 1/n centered at (1/n, 0) **)
 (** The infinite earring X is the union of all C_n, as a subspace of R^2. **)
 (** earring_circle n = circle of radius 1/n centered at (1/n, 0) in R^2 **)
 Definition earring_circle : set -> set :=
