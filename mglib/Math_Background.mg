@@ -53026,7 +53026,51 @@ claim Hr2Cont : continuous_map A (subspace_topology X Tx A) A (subspace_topology
     Hr2Fun
     Hr2CompEq).
 }
+claim Hr1ContA :
+  continuous_map X Tx A (subspace_topology X Tx A) r1.
+{
+  exact (continuous_map_range_restrict
+    X
+    Tx
+    X
+    Tx
+    r1
+    A
+    Hr1Cont
+    HAsubX
+    Hr1IntoA).
+}
 set r := compose_fun X r1 r2.
+claim HrContA :
+  continuous_map X Tx A (subspace_topology X Tx A) r.
+{
+  exact (composition_continuous
+    X
+    Tx
+    A
+    (subspace_topology X Tx A)
+    A
+    (subspace_topology X Tx A)
+    r1
+    r2
+    Hr1ContA
+    Hr2Cont).
+}
+claim HrContX : continuous_map X Tx X Tx r.
+{
+  exact (continuous_map_range_expand
+    X
+    Tx
+    A
+    (subspace_topology X Tx A)
+    X
+    Tx
+    r
+    HrContA
+    HAsubX
+    HtopX
+    (fun Q H => H)).
+}
 claim HrIntoB : forall x:set, x :e X -> apply_fun r x :e B.
 {
   let x.
