@@ -16842,6 +16842,47 @@ exact (basepoint_change_map_apply
   (path_homotopy_class_in_fundamental_group X Tx x0 f Hf)).
 Qed.
 
+(** helper: endpoints of a path_between lie in the ambient space **)
+(** Proven Bob **)
+Theorem path_between_endpoints_in_space : forall X x0 x1 alpha:set,
+  path_between X x0 x1 alpha ->
+  x0 :e X /\ x1 :e X.
+let X x0 x1 alpha.
+assume Hpath.
+claim Hfun : function_on alpha unit_interval X.
+{
+  exact (path_between_function_on
+    X
+    x0
+    x1
+    alpha
+    Hpath).
+}
+claim H0 : apply_fun alpha 0 = x0.
+{
+  exact (path_between_at_zero
+    X
+    x0
+    x1
+    alpha
+    Hpath).
+}
+claim H1 : apply_fun alpha 1 = x1.
+{
+  exact (path_between_at_one
+    X
+    x0
+    x1
+    alpha
+    Hpath).
+}
+apply andI.
+- rewrite <- H0.
+  exact (Hfun 0 zero_in_unit_interval).
+- rewrite <- H1.
+  exact (Hfun 1 one_in_unit_interval).
+Qed.
+
 (** from S52 Theorem 52.1 (line 396 in algtop.tex): alpha-hat is a group isomorphism **)
 (** LATEX VERSION: The map alpha-hat is a group isomorphism from pi1(X,x0) to pi1(X,x1). **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
@@ -16889,6 +16930,15 @@ claim HalphaPath : path_between X x0 x1 alpha.
       HalphaFun
       Halpha0)
     Halpha1).
+}
+claim Hends : x0 :e X /\ x1 :e X.
+{
+  exact (path_between_endpoints_in_space
+    X
+    x0
+    x1
+    alpha
+    HalphaPath).
 }
 claim Hfun :
   function_on
