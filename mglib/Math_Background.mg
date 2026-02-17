@@ -53861,8 +53861,110 @@ claim HFt_54_cont :
           rewrite Hzq.
           exact HFtLocalAtQ.
         - assume Hznq.
-          (** TODO Charlie: prove local equality on N for z <> q using sheet uniqueness around q. **)
-          admit.
+          claim HzSq : z :e unit_square.
+          {
+            exact (HNsubSq z HzN).
+          }
+          claim Hz0I : z 0 :e unit_interval.
+          {
+            exact (ap0_Sigma
+              unit_interval
+              (fun _ : set => unit_interval)
+              z
+              HzSq).
+          }
+          claim Hz1I : z 1 :e unit_interval.
+          {
+            exact (ap1_Sigma
+              unit_interval
+              (fun _ : set => unit_interval)
+              z
+              HzSq).
+          }
+          claim HpFt54zEqFz :
+            apply_fun p (apply_fun Ft_54 z) = apply_fun F z.
+          {
+            claim Hzeta : z = (z 0, z 1).
+            {
+              exact (setprod_eta unit_interval unit_interval z HzSq).
+            }
+            rewrite Hzeta.
+            exact (HFt_54_comm
+              (z 0)
+              (z 1)
+              Hz0I
+              Hz1I).
+          }
+          claim HFzU : apply_fun F z :e U.
+          {
+            exact (HN_into_U z HzN).
+          }
+          claim HFtLocalzVq : apply_fun Ft_local_N z :e Vq.
+          {
+            rewrite (compose_fun_apply
+              N
+              F
+              gq
+              z
+              HzN).
+            exact (Hgqfun
+              (apply_fun F z)
+              HFzU).
+          }
+          claim HFtLocalzEqFz :
+            apply_fun p (apply_fun Ft_local_N z) = apply_fun F z.
+          {
+            exact (HFtLocalComm z HzN).
+          }
+          claim HFt54zVq : apply_fun Ft_54 z :e Vq.
+          {
+            (** TODO Charlie: show Ft_54 z lies in the chosen sheet Vq on this local neighborhood. **)
+            admit.
+          }
+          claim HuniqFib :
+            exists x:set, x :e Vq /\ apply_fun p x = apply_fun F z /\
+              forall y:set, y :e Vq -> apply_fun p y = apply_fun F z -> y = x.
+          {
+            exact (homeomorphic_sheet_unique_fiber_point
+              E
+              Te
+              B
+              Tb
+              p
+              Vq
+              U
+              (apply_fun F z)
+              HhomeVq
+              HFzU).
+          }
+          apply HuniqFib.
+          let x.
+          assume HxPack.
+          claim Huniqx :
+            forall y:set, y :e Vq -> apply_fun p y = apply_fun F z -> y = x.
+          {
+            exact (andER
+              (x :e Vq /\ apply_fun p x = apply_fun F z)
+              (forall y:set, y :e Vq -> apply_fun p y = apply_fun F z -> y = x)
+              HxPack).
+          }
+          claim HlocalEqx : apply_fun Ft_local_N z = x.
+          {
+            exact (Huniqx
+              (apply_fun Ft_local_N z)
+              HFtLocalzVq
+              HFtLocalzEqFz).
+          }
+          claim Hft54Eqx : apply_fun Ft_54 z = x.
+          {
+            exact (Huniqx
+              (apply_fun Ft_54 z)
+              HFt54zVq
+              HpFt54zEqFz).
+          }
+          rewrite HlocalEqx.
+          rewrite Hft54Eqx.
+          reflexivity.
       }
       exact (continuous_map_congr_on
         N
