@@ -70523,6 +70523,7 @@ apply (Hterms i Hi).
   exact (Hj_triv vcls HvMem).
 Qed.
 
+(** Proven Bob **)
 Theorem lemma59_4a_word_reduces_to_i_star_image :
   forall X Tx U x0 n gs:set,
   topology_on X Tx ->
