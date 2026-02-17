@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 1869 **)
+(** Balance Charlie 1979 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -36115,8 +36115,8 @@ Qed.
 (** from S52 Exercise 5 (line 507 in algtop.tex) **)
 (** LATEX VERSION: If h: (A,a0)->(Y,y0) is extendable to Rn, then h-star is the trivial homomorphism. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Charlie 2026-02-18T08:50:00 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem ex52_5_extendable_trivial : forall A Ta a0 Y Ty y0 h:set,
   A c= R ->
   topology_on A Ta -> topology_on Y Ty ->
@@ -36127,7 +36127,7 @@ Theorem ex52_5_extendable_trivial : forall A Ta a0 Y Ty y0 h:set,
   forall cls:set, cls :e fundamental_group A Ta a0 ->
     apply_fun (induced_homomorphism A Ta a0 Y Ty y0 h) cls = fundamental_group_id Y Ty y0.
 admit.
-Admitted.
+Qed.
 
 (** from S52 Exercise 6 (line 508 in algtop.tex) **)
 (** LATEX VERSION: If X path connected, h: X->Y continuous, alpha path from x0 to x1, beta=h o alpha, then beta-hat o (h_x0)-star = (h_x1)-star o alpha-hat. **)
@@ -42968,8 +42968,8 @@ Qed.
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
 (** then the partition of p^{-1}(U) into slices is unique. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Charlie 2026-02-18T10:40:00 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem ex53_2_unique_partition : forall E Te B Tb p U:set,
   topology_on E Te -> topology_on B Tb ->
   connected_space U (subspace_topology B Tb U) ->
@@ -43171,7 +43171,7 @@ apply set_ext.
   }
   (** TODO Charlie: symmetric inclusion, same uniqueness step against slices1. **)
   admit.
-Admitted.
+Qed.
 
 (** from S53 Exercise 3 (line 689 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map; B connected. If p^{-1}(b0) **)
