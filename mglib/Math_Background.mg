@@ -1,6 +1,6 @@
 (** Balance Alice 2634 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 41739 **)
+(** Balance Charlie 41724 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -60712,7 +60712,8 @@ Admitted.
 
 (** from S58 Exercise 2(c) (line 1479 in algtop.tex): cylinder pi1 **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:35:00 **)
 Theorem ex58_2c_cylinder_pi1 : forall x0:set,
   x0 :e setprod S1 unit_interval ->
   exists phi:set,
@@ -60729,7 +60730,8 @@ Admitted.
 
 (** from S58 Exercise 2(d) (line 1480 in algtop.tex): infinite cylinder pi1 **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:35:00 **)
 Theorem ex58_2d_infinite_cylinder_pi1 : forall x0:set,
   x0 :e setprod S1 R ->
   exists phi:set,
@@ -60853,7 +60855,8 @@ Qed.
 (** (free group on 2 generators). The x-axis crosses the circle at two points, **)
 (** creating a theta-like space. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 40 **)
-(** Bounty 40 **)
+(** Bounty 44 **)
+(** Lock Charlie 2026-02-18T13:35:00 **)
 Theorem ex58_2k_circle_with_line_pi1 :
   let X := S1 :\/: {p :e EuclidPlane | R2_ycoord p = 0} in
   let TX := subspace_topology EuclidPlane R2_topology X in
@@ -60870,7 +60873,8 @@ Admitted.
 (** LATEX VERSION: R^2 minus (R+ x {0}) (plane minus positive x-axis) **)
 (** is simply connected. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 20 **)
-(** Bounty 20 **)
+(** Bounty 22 **)
+(** Lock Charlie 2026-02-18T13:35:00 **)
 Theorem ex58_2l_plane_minus_ray_simply_connected :
   let X := EuclidPlane :\: {p :e EuclidPlane | R2_ycoord p = 0 /\ Rle 0 (R2_xcoord p)} in
   let TX := subspace_topology EuclidPlane R2_topology X in
@@ -61127,7 +61131,8 @@ Admitted.
 (** from S59 Corollary 59.2 (line 1585 in algtop.tex) **)
 (** LATEX VERSION: If X = U union V, U and V open and simply connected, U intersect V nonempty and path connected, then X is simply connected. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:35:00 **)
 Theorem cor59_2_simply_connected_union : forall X Tx U V:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
