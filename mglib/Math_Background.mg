@@ -1,5 +1,5 @@
 (** Balance Alice 2160 **)
-(** Balance Bob 1757 **)
+(** Balance Bob 1807 **)
 (** Balance Charlie 1223 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -13477,10 +13477,344 @@ Definition contractible_space : set -> set -> prop := fun X Tx =>
 (** from S51 Exercise 3a (line 334 in algtop.tex) **)
 (** LATEX VERSION: I and R are contractible. **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Collected Bob 55 **)
+(** Proven Bob **)
 Theorem ex51_3a_I_contractible : contractible_space unit_interval unit_interval_topology.
-admit.
-Admitted.
+claim HidCont :
+  continuous_map unit_interval unit_interval_topology
+    unit_interval unit_interval_topology
+    (graph unit_interval (fun x:set => x)).
+{
+  exact (identity_continuous unit_interval unit_interval_topology unit_interval_topology_on).
+}
+claim Hconst0Cont :
+  continuous_map unit_interval unit_interval_topology
+    unit_interval unit_interval_topology
+    (const_fun unit_interval 0).
+{
+  exact (const_fun_continuous
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    0
+    unit_interval_topology_on
+    unit_interval_topology_on
+    zero_in_unit_interval).
+}
+set flip_t := compose_fun unit_square
+  (projection_map2 unit_interval unit_interval)
+  flip_unit_interval.
+claim Hproj1Cont :
+  continuous_map unit_square unit_square_topology
+    unit_interval unit_interval_topology
+    (projection_map1 unit_interval unit_interval).
+{
+  exact (andEL
+    (continuous_map unit_square unit_square_topology
+      unit_interval unit_interval_topology
+      (projection_map1 unit_interval unit_interval))
+    (continuous_map unit_square unit_square_topology
+      unit_interval unit_interval_topology
+      (projection_map2 unit_interval unit_interval))
+    (projection_maps_continuous
+      unit_interval unit_interval_topology
+      unit_interval unit_interval_topology
+      unit_interval_topology_on
+      unit_interval_topology_on)).
+}
+claim HflipTCont :
+  continuous_map unit_square unit_square_topology
+    unit_interval unit_interval_topology
+    flip_t.
+{
+  exact (composition_continuous
+    unit_square
+    unit_square_topology
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    (projection_map2 unit_interval unit_interval)
+    flip_unit_interval
+    (andER
+      (continuous_map unit_square unit_square_topology
+        unit_interval unit_interval_topology
+        (projection_map1 unit_interval unit_interval))
+      (continuous_map unit_square unit_square_topology
+        unit_interval unit_interval_topology
+        (projection_map2 unit_interval unit_interval))
+      (projection_maps_continuous
+        unit_interval unit_interval_topology
+        unit_interval unit_interval_topology
+        unit_interval_topology_on
+        unit_interval_topology_on))
+    flip_unit_interval_continuous).
+}
+set F := compose_fun unit_square
+  (pair_map unit_square
+    (projection_map1 unit_interval unit_interval)
+    flip_t)
+  mul_fun_R.
+claim HtopSq : topology_on unit_square unit_square_topology.
+{
+  exact (product_topology_is_topology
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    unit_interval_topology_on
+    unit_interval_topology_on).
+}
+claim HFCont :
+  continuous_map unit_square unit_square_topology
+    unit_interval unit_interval_topology
+    F.
+{
+  exact (mul_two_continuous_unit_interval
+    unit_square
+    unit_square_topology
+    (projection_map1 unit_interval unit_interval)
+    flip_t
+    HtopSq
+    Hproj1Cont
+    HflipTCont).
+}
+claim HFs0 :
+  forall x:set, x :e unit_interval ->
+    apply_fun F (x, 0)
+      = apply_fun (graph unit_interval (fun y:set => y)) x.
+{
+  let x.
+  assume Hx.
+  claim Hx0Sq : (x, 0) :e unit_square.
+  {
+    exact (tuple_2_setprod_by_pair_Sigma
+      unit_interval
+      unit_interval
+      x
+      0
+      Hx
+      zero_in_unit_interval).
+  }
+  claim HxR :
+    apply_fun (projection_map1 unit_interval unit_interval) (x, 0) :e R.
+  {
+    rewrite (projection1_apply
+      unit_interval
+      unit_interval
+      (x, 0)
+      Hx0Sq).
+    rewrite tuple_2_0_eq.
+    exact (unit_interval_sub_R x Hx).
+  }
+  claim Hflip0I : apply_fun flip_t (x, 0) :e unit_interval.
+  {
+    exact ((continuous_map_function_on
+      unit_square
+      unit_square_topology
+      unit_interval
+      unit_interval_topology
+      flip_t
+      HflipTCont)
+      (x, 0)
+      Hx0Sq).
+  }
+  claim Hflip0R : apply_fun flip_t (x, 0) :e R.
+  {
+    exact (unit_interval_sub_R (apply_fun flip_t (x, 0)) Hflip0I).
+  }
+  rewrite (mul_of_pair_map_apply
+    unit_square
+    (projection_map1 unit_interval unit_interval)
+    flip_t
+    (x, 0)
+    Hx0Sq
+    HxR
+    Hflip0R).
+  rewrite (projection1_apply
+    unit_interval
+    unit_interval
+    (x, 0)
+    Hx0Sq).
+  rewrite tuple_2_0_eq.
+  rewrite (compose_fun_apply
+    unit_square
+    (projection_map2 unit_interval unit_interval)
+    flip_unit_interval
+    (x, 0)
+    Hx0Sq).
+  rewrite (projection2_apply
+    unit_interval
+    unit_interval
+    (x, 0)
+    Hx0Sq).
+  rewrite tuple_2_1_eq.
+  rewrite flip_unit_interval_at_0.
+  claim HSNoX : SNo x.
+  {
+    exact (real_SNo x (unit_interval_sub_R x Hx)).
+  }
+  rewrite (mul_SNo_oneR x HSNoX).
+  rewrite (apply_fun_graph unit_interval (fun y:set => y) x Hx).
+  reflexivity.
+}
+claim HFs1 :
+  forall x:set, x :e unit_interval ->
+    apply_fun F (x, 1)
+      = apply_fun (const_fun unit_interval 0) x.
+{
+  let x.
+  assume Hx.
+  claim Hx1Sq : (x, 1) :e unit_square.
+  {
+    exact (tuple_2_setprod_by_pair_Sigma
+      unit_interval
+      unit_interval
+      x
+      1
+      Hx
+      one_in_unit_interval).
+  }
+  claim HxR :
+    apply_fun (projection_map1 unit_interval unit_interval) (x, 1) :e R.
+  {
+    rewrite (projection1_apply
+      unit_interval
+      unit_interval
+      (x, 1)
+      Hx1Sq).
+    rewrite tuple_2_0_eq.
+    exact (unit_interval_sub_R x Hx).
+  }
+  claim Hflip1I : apply_fun flip_t (x, 1) :e unit_interval.
+  {
+    exact ((continuous_map_function_on
+      unit_square
+      unit_square_topology
+      unit_interval
+      unit_interval_topology
+      flip_t
+      HflipTCont)
+      (x, 1)
+      Hx1Sq).
+  }
+  claim Hflip1R : apply_fun flip_t (x, 1) :e R.
+  {
+    exact (unit_interval_sub_R (apply_fun flip_t (x, 1)) Hflip1I).
+  }
+  rewrite (mul_of_pair_map_apply
+    unit_square
+    (projection_map1 unit_interval unit_interval)
+    flip_t
+    (x, 1)
+    Hx1Sq
+    HxR
+    Hflip1R).
+  rewrite (projection1_apply
+    unit_interval
+    unit_interval
+    (x, 1)
+    Hx1Sq).
+  rewrite tuple_2_0_eq.
+  rewrite (compose_fun_apply
+    unit_square
+    (projection_map2 unit_interval unit_interval)
+    flip_unit_interval
+    (x, 1)
+    Hx1Sq).
+  rewrite (projection2_apply
+    unit_interval
+    unit_interval
+    (x, 1)
+    Hx1Sq).
+  rewrite tuple_2_1_eq.
+  rewrite flip_unit_interval_at_1.
+  claim HSNoX : SNo x.
+  {
+    exact (real_SNo x (unit_interval_sub_R x Hx)).
+  }
+  rewrite (mul_SNo_zeroR x HSNoX).
+  rewrite (const_fun_apply unit_interval 0 x Hx).
+  reflexivity.
+}
+claim Hhom0 :
+  (continuous_map
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    (graph unit_interval (fun x:set => x)) /\
+   continuous_map
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    (const_fun unit_interval 0)) /\
+  exists G:set,
+    continuous_map unit_square unit_square_topology
+      unit_interval unit_interval_topology
+      G /\
+    (forall x:set, x :e unit_interval ->
+      apply_fun G (x, 0) =
+        apply_fun (graph unit_interval (fun x0:set => x0)) x) /\
+    (forall x:set, x :e unit_interval ->
+      apply_fun G (x, 1) =
+        apply_fun (const_fun unit_interval 0) x).
+{
+  apply andI.
+  - apply andI.
+    + exact HidCont.
+    + exact Hconst0Cont.
+  - witness F.
+    apply andI.
+    + apply andI.
+      * exact HFCont.
+      * exact HFs0.
+    + exact HFs1.
+}
+claim HnulI :
+  exists y0:set,
+    y0 :e unit_interval /\
+    ((continuous_map
+      unit_interval
+      unit_interval_topology
+      unit_interval
+      unit_interval_topology
+      (graph unit_interval (fun x:set => x)) /\
+     continuous_map
+      unit_interval
+      unit_interval_topology
+      unit_interval
+      unit_interval_topology
+      (const_fun unit_interval y0)) /\
+    exists G:set,
+      continuous_map unit_square unit_square_topology
+        unit_interval unit_interval_topology
+        G /\
+      (forall x:set, x :e unit_interval ->
+        apply_fun G (x, 0) =
+          apply_fun (graph unit_interval (fun x0:set => x0)) x) /\
+      (forall x:set, x :e unit_interval ->
+        apply_fun G (x, 1) =
+          apply_fun (const_fun unit_interval y0) x)).
+{
+  witness 0.
+  apply andI.
+  - exact zero_in_unit_interval.
+  - exact Hhom0.
+}
+exact (andI
+  (topology_on unit_interval unit_interval_topology)
+  (nulhomotopic
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    (graph unit_interval (fun x:set => x)))
+  unit_interval_topology_on
+  HnulI).
+Qed.
 
 (** from S51 Exercise 3(a) (line 327 in algtop.tex): R is contractible **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 50 **)
