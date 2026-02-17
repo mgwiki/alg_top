@@ -73210,7 +73210,102 @@ claim HneOverlap : (U :/\: V) <> Empty.
   rewrite HoverlapEq.
   exact (lemma59_3_overlap_nonempty_from_coord0_exists n HexCoord0).
 }
-admit. (** remaining: construct paths in the overlap subset using n>=2 geometry **)
+claim HoverlapSubSn : (U :/\: V) c= Sn n.
+{
+  let x.
+  assume HxUV : x :e U :/\: V.
+  claim HxStd :
+    x :e ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
+          {x :e Sn n | Rlt (apply_fun x 0) 1}).
+  {
+    rewrite <- HoverlapEq.
+    exact HxUV.
+  }
+  claim HxInLeft :
+    x :e {x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)}.
+  {
+    exact (binintersectE1
+      {x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)}
+      {x :e Sn n | Rlt (apply_fun x 0) 1}
+      x
+      HxStd).
+  }
+  exact (SepE1
+    (Sn n)
+    (fun x:set => Rlt (minus_SNo 1) (apply_fun x 0))
+    x
+    HxInLeft).
+}
+claim HtopOverlap :
+  topology_on (U :/\: V)
+    (subspace_topology (Sn n) (Sn_topology n) (U :/\: V)).
+{
+  exact (subspace_topology_is_topology
+    (Sn n)
+    (Sn_topology n)
+    (U :/\: V)
+    HtopSn
+    HoverlapSubSn).
+}
+apply HexCoord0.
+let x0.
+assume Hx0pack : x0 :e Sn n /\ apply_fun x0 0 = 0.
+claim Hx0Sn : x0 :e Sn n.
+{
+  exact (andEL
+    (x0 :e Sn n)
+    (apply_fun x0 0 = 0)
+    Hx0pack).
+}
+claim Hx00 : apply_fun x0 0 = 0.
+{
+  exact (andER
+    (x0 :e Sn n)
+    (apply_fun x0 0 = 0)
+    Hx0pack).
+}
+claim Hm1lt0 : Rlt (minus_SNo 1) 0.
+{
+  claim Hm1R : minus_SNo 1 :e R.
+  {
+    exact (real_minus_SNo 1 real_1).
+  }
+  exact (RltI
+    (minus_SNo 1)
+    0
+    Hm1R
+    real_0
+    minus_1_lt_0).
+}
+claim Hx0Std :
+  x0 :e ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
+         {x :e Sn n | Rlt (apply_fun x 0) 1}).
+{
+  apply (binintersectI
+    {x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)}
+    {x :e Sn n | Rlt (apply_fun x 0) 1}
+    x0).
+  - apply (SepI
+      (Sn n)
+      (fun x:set => Rlt (minus_SNo 1) (apply_fun x 0))
+      x0
+      Hx0Sn).
+    rewrite Hx00.
+    exact Hm1lt0.
+  - apply (SepI
+      (Sn n)
+      (fun x:set => Rlt (apply_fun x 0) 1)
+      x0
+      Hx0Sn).
+    rewrite Hx00.
+    exact Rlt_0_1.
+}
+claim Hx0Overlap : x0 :e U :/\: V.
+{
+  rewrite HoverlapEq.
+  exact Hx0Std.
+}
+admit. (** remaining: geometric path-connection from basepoint x0 inside overlap **)
 Admitted.
 
 Theorem lemma59_3_sphere_cover_data : forall n:set, n :e omega -> 2 c= n ->
