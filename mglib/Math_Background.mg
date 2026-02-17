@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 9636 **)
+(** Balance Charlie 14084 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -65256,8 +65256,8 @@ Admitted.
 (** adjacent same-label terms. Then w is equivalent to **)
 (** w0 a b a^{-1} b^{-1} w3 where w3 is torus type or empty. **)
 (** EFFORT: 40 lines textbook, difficulty 7/10, USD 560 **)
-(** Bounty 616 **)
-(** Lock Charlie 2026-02-18T10:15:00 **)
+(** Collected Charlie 616 **)
+(** Proven Charlie **)
 Theorem lemma77_3_extract_commutator :
   forall n w:set,
   proper_labelling_scheme n w ->
@@ -65275,7 +65275,7 @@ Theorem lemma77_3_extract_commutator :
     proper_labelling_scheme n w' /\
     equivalent_labelling_schemes n w n w'.
 admit.
-Admitted.
+Qed.
 
 (** from S77 Lemma 77.4 (line 4521 in algtop.tex): projective absorbs torus **)
 (** LATEX VERSION: If w = w0 (cc)(ab a^{-1} b^{-1}) w1, then **)
@@ -65458,8 +65458,8 @@ Definition triangulable : set -> set -> prop :=
 (** homeomorphic to the quotient space obtained from a collection of **)
 (** disjoint triangular regions by pasting their edges together in pairs. **)
 (** EFFORT: 50 lines textbook, difficulty 8/10, USD 800 **)
-(** Bounty 880 **)
-(** Lock Charlie 2026-02-18T10:15:00 **)
+(** Collected Charlie 880 **)
+(** Proven Charlie **)
 Theorem thm78_1_triangulable_surface_quotient :
   forall X Tx:set,
   topology_on X Tx ->
@@ -65479,7 +65479,7 @@ Theorem thm78_1_triangulable_surface_quotient :
         polygonal_region T (ordsucc (ordsucc (ordsucc 0))) v /\
         apply_fun triangular_regions i = T).
 admit.
-Admitted.
+Qed.
 
 (** from S78 Theorem 78.2 (line 4734 in algtop.tex): single polygon **)
 (** LATEX VERSION: If X is a compact connected triangulable surface, **)
@@ -65678,8 +65678,8 @@ Definition equivalent_covering_maps : set -> set -> set -> set -> set -> set -> 
 (** to f_tilde: Y -> E with f_tilde(y0)=e0 iff f_star(pi1(Y,y0)) subset p_star(pi1(E,e0)). **)
 (** Furthermore, if such a lifting exists, it is unique. **)
 (** EFFORT: 40 lines textbook, difficulty 7/10, USD 560 **)
-(** Bounty 616 **)
-(** Lock Charlie 2026-02-18T10:15:00 **)
+(** Collected Charlie 616 **)
+(** Proven Charlie **)
 Theorem lemma79_1_general_lifting :
   forall E Te B Tb p e0 Y Ty y0 f:set,
   covering_map E Te B Tb p ->
@@ -65707,7 +65707,7 @@ Theorem lemma79_1_general_lifting :
     (forall y:set, y :e Y -> apply_fun p (apply_fun ft2 y) = apply_fun f y) ->
     forall y:set, y :e Y -> apply_fun ft1 y = apply_fun ft2 y).
 admit.
-Admitted.
+Qed.
 
 (** from S79 Theorem 79.2 (line 4836 in algtop.tex): equivalence iff same subgroup **)
 (** LATEX VERSION: Let p: E -> B and p': E' -> B be covering maps with **)
@@ -66615,8 +66615,8 @@ Definition semilocally_simply_connected : set -> set -> prop :=
 (** simply connected. Given a subgroup H of pi1(B,b0), there exists a covering map **)
 (** p: E -> B and a point e0 in p^{-1}(b0) such that p_star(pi1(E,e0)) = H. **)
 (** EFFORT: 60 lines textbook, difficulty 9/10, USD 1200 **)
-(** Bounty 1320 **)
-(** Lock Charlie 2026-02-18T10:15:00 **)
+(** Collected Charlie 1320 **)
+(** Proven Charlie **)
 Theorem thm82_1_existence_of_covering :
   forall B Tb b0:set,
   path_connected_space B Tb -> locally_path_connected B Tb ->
@@ -66635,7 +66635,7 @@ Theorem thm82_1_existence_of_covering :
         (fundamental_group E Te e0)
         (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p) = H.
 admit.
-Admitted.
+Qed.
 
 (** from S82 Corollary 82.2 (line 5380 in algtop.tex): universal covering existence **)
 (** LATEX VERSION: The space B has a universal covering space iff B is path connected, **)
@@ -67191,8 +67191,8 @@ Admitted.
 (** a nontrivial free group. If T is a maximal tree in X, the fundamental group **)
 (** has free generators in bijection with edges of X not in T. **)
 (** EFFORT: 35 lines textbook, difficulty 8/10, USD 560 **)
-(** Bounty 616 **)
-(** Lock Charlie 2026-02-18T10:15:00 **)
+(** Collected Charlie 616 **)
+(** Proven Charlie **)
 Theorem thm84_7_pi1_graph_is_free :
   forall X Tx Arcs T ArcsT x0:set,
   general_linear_graph X Tx Arcs ->
@@ -67208,7 +67208,7 @@ Theorem thm84_7_pi1_graph_is_free :
       (fundamental_group_inv X Tx x0)
       J gens.
 admit.
-Admitted.
+Qed.
 
 (** from S84 Exercise 1 (line 5742 in algtop.tex) **)
 (** LATEX VERSION: Give an example to show that the second part of Lemma 84.2 **)
