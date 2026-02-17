@@ -1,6 +1,6 @@
 (** Balance Alice 2504 **)
 (** Balance Bob 2808 **)
-(** Balance Charlie 1533 **)
+(** Balance Charlie 1566 **)
 
 (** Sum of Balences and Bounties 48150 **)
 
@@ -41947,19 +41947,1021 @@ Definition k_fold_covering : set -> set -> set -> set -> set -> set -> prop :=
     k :e omega /\
     (forall b:set, b :e B -> equip {x :e E | apply_fun p x = b} k).
 
+Definition ex53_1_slice_family : set -> set -> set :=
+  fun X Y => Repl Y (fun y:set => setprod X (Sing y)).
+
 (** from S53 Exercise 1 (line 687 in algtop.tex) **)
 (** LATEX VERSION: Let Y have the discrete topology. If p: X x Y -> X is projection **)
 (** on the first coordinate, then p is a covering map. **)
 (** EFFORT: 4 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T08:50:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex53_1_discrete_projection_covering : forall X Tx Y:set,
   topology_on X Tx -> Y <> Empty ->
   covering_map
     (setprod X Y) (product_topology X Tx Y (discrete_topology Y))
     X Tx (projection1 X Y).
-admit.
-Admitted.
+let X Tx Y.
+assume HtopX HYne.
+claim HtopYd : topology_on Y (discrete_topology Y).
+{
+  exact (discrete_topology_on Y).
+}
+claim HtopProd : topology_on (setprod X Y) (product_topology X Tx Y (discrete_topology Y)).
+{
+  exact (product_topology_is_topology
+    X
+    Tx
+    Y
+    (discrete_topology Y)
+    HtopX
+    HtopYd).
+}
+claim Hcont :
+  continuous_map
+    (setprod X Y)
+    (product_topology X Tx Y (discrete_topology Y))
+    X
+    Tx
+    (projection1 X Y).
+{
+  exact (projection1_continuous_in_product
+    X
+    Tx
+    Y
+    (discrete_topology Y)
+    HtopX
+    HtopYd).
+}
+claim Hfun :
+  function_on
+    (projection1 X Y)
+    (setprod X Y)
+    X.
+{
+  exact (continuous_map_function_on
+    (setprod X Y)
+    (product_topology X Tx Y (discrete_topology Y))
+    X
+    Tx
+    (projection1 X Y)
+    Hcont).
+}
+claim Hsurj :
+  surjective_map
+    (setprod X Y)
+    X
+    (projection1 X Y).
+{
+  prove function_on
+    (projection1 X Y)
+    (setprod X Y)
+    X /\
+    forall y:set, y :e X ->
+      exists x0:set, x0 :e (setprod X Y) /\ apply_fun (projection1 X Y) x0 = y.
+  apply andI.
+  - exact Hfun.
+  - let x.
+    assume HxX.
+    claim HexY : exists y:set, y :e Y.
+    {
+      exact (nonempty_has_element
+        Y
+        HYne).
+    }
+    apply HexY.
+    let y.
+    assume HyY.
+    witness (x, y).
+    apply andI.
+    + exact (tuple_2_setprod_by_pair_Sigma
+        X
+        Y
+        x
+        y
+        HxX
+        HyY).
+    + rewrite (projection1_apply
+        X
+        Y
+        (x, y)
+        (tuple_2_setprod_by_pair_Sigma
+          X
+          Y
+          x
+          y
+          HxX
+          HyY)).
+      rewrite tuple_2_0_eq.
+      reflexivity.
+}
+claim Hlocal :
+  forall b:set, b :e X ->
+    exists U:set, U :e Tx /\ b :e U /\
+      evenly_covered
+        (setprod X Y)
+        (product_topology X Tx Y (discrete_topology Y))
+        X
+        Tx
+        (projection1 X Y)
+        U.
+{
+  let b.
+  assume HbX.
+  witness X.
+  apply andI.
+  - apply andI.
+    + exact (topology_has_X
+        X
+        Tx
+        HtopX).
+    + exact HbX.
+  - prove X :e Tx /\
+      exists slices:set,
+        slices c= (product_topology X Tx Y (discrete_topology Y)) /\
+        pairwise_disjoint slices /\
+        Union slices =
+          preimage_of (setprod X Y) (projection1 X Y) X /\
+        (forall V:set, V :e slices ->
+          homeomorphism
+            V
+            (subspace_topology (setprod X Y) (product_topology X Tx Y (discrete_topology Y)) V)
+            X
+            (subspace_topology X Tx X)
+            (graph V (fun x:set => apply_fun (projection1 X Y) x))).
+    apply andI.
+    + exact (topology_has_X
+        X
+        Tx
+        HtopX).
+    + set slices := ex53_1_slice_family X Y.
+      claim HslicesDef : slices = ex53_1_slice_family X Y.
+      {
+        reflexivity.
+      }
+      claim HslicesDefSym : ex53_1_slice_family X Y = slices.
+      {
+        symmetry.
+        exact HslicesDef.
+      }
+      claim HsliceMemFam :
+        forall V:set, V :e slices -> V :e ex53_1_slice_family X Y.
+      {
+        let V.
+        assume HV.
+        exact (mem_eqL
+          V
+          slices
+          (ex53_1_slice_family X Y)
+          HslicesDef
+          HV).
+      }
+      witness slices.
+      apply andI.
+      * apply andI.
+        - apply andI.
+          + let V.
+          assume HV.
+          claim HVfam : V :e ex53_1_slice_family X Y.
+          {
+            exact (HsliceMemFam V HV).
+          }
+          apply (ReplE
+            Y
+            (fun y:set => setprod X (Sing y))
+            V
+            HVfam).
+          let y.
+          assume HyPack.
+          claim HyY : y :e Y.
+          {
+            exact (andEL
+              (y :e Y)
+              (V = setprod X {y})
+              HyPack).
+          }
+          claim HVeq : V = setprod X {y}.
+          {
+            exact (andER
+              (y :e Y)
+              (V = setprod X {y})
+              HyPack).
+          }
+          claim HsingOpen : {y} :e (discrete_topology Y).
+          {
+            exact (PowerI
+              Y
+              {y}
+              (singleton_subset y Y HyY)).
+          }
+          claim HbasisSub :
+            basis_on
+              (setprod X Y)
+              (product_subbasis X Tx Y (discrete_topology Y)).
+          {
+            exact (product_subbasis_is_basis
+              X
+              Tx
+              Y
+              (discrete_topology Y)
+              HtopX
+              HtopYd).
+          }
+          claim HrectSub :
+            rectangle_set X {y}
+              :e product_subbasis X Tx Y (discrete_topology Y).
+          {
+            exact (famunionI
+              Tx
+              (fun U0:set => {rectangle_set U0 V0|V0 :e (discrete_topology Y)})
+              X
+              (rectangle_set X {y})
+              (topology_has_X X Tx HtopX)
+              (ReplI
+                (discrete_topology Y)
+                (fun V0:set => rectangle_set X V0)
+                {y}
+                HsingOpen)).
+          }
+          claim HrectOpen :
+            rectangle_set X {y}
+              :e generated_topology
+                  (setprod X Y)
+                  (product_subbasis X Tx Y (discrete_topology Y)).
+          {
+            exact (basis_in_generated
+              (setprod X Y)
+              (product_subbasis X Tx Y (discrete_topology Y))
+              (rectangle_set X {y})
+              HbasisSub
+              HrectSub).
+          }
+          rewrite HVeq.
+          rewrite <- (rectangle_set_def X {y}).
+          exact HrectOpen.
+          + let A B1.
+          assume HA HB Hneq.
+          apply set_ext.
+          - let z.
+             assume HzAB.
+             claim HzA : z :e A.
+             {
+               exact (binintersectE1 A B1 z HzAB).
+             }
+	             claim HzB : z :e B1.
+	             {
+	               exact (binintersectE2 A B1 z HzAB).
+	             }
+	             claim HAfam : A :e ex53_1_slice_family X Y.
+	             {
+	               exact (HsliceMemFam A HA).
+	             }
+	             apply (ReplE
+	               Y
+	               (fun y:set => setprod X (Sing y))
+	               A
+	               HAfam).
+             let ya.
+             assume HyaPack.
+             claim HyaY : ya :e Y.
+             {
+               exact (andEL
+                 (ya :e Y)
+                 (A = setprod X {ya})
+                 HyaPack).
+             }
+	             claim HAeq : A = setprod X {ya}.
+	             {
+	               exact (andER
+	                 (ya :e Y)
+	                 (A = setprod X {ya})
+	                 HyaPack).
+	             }
+	             claim HBfam : B1 :e ex53_1_slice_family X Y.
+	             {
+	               exact (HsliceMemFam B1 HB).
+	             }
+	             apply (ReplE
+	               Y
+	               (fun y:set => setprod X (Sing y))
+	               B1
+	               HBfam).
+             let yb.
+             assume HybPack.
+             claim HybY : yb :e Y.
+             {
+               exact (andEL
+                 (yb :e Y)
+                 (B1 = setprod X {yb})
+                 HybPack).
+             }
+             claim HBeq : B1 = setprod X {yb}.
+             {
+               exact (andER
+                 (yb :e Y)
+                 (B1 = setprod X {yb})
+                 HybPack).
+             }
+             claim HzVa : z :e setprod X {ya}.
+             {
+               rewrite <- HAeq.
+               exact HzA.
+             }
+             claim HzVb : z :e setprod X {yb}.
+             {
+               rewrite <- HBeq.
+               exact HzB.
+             }
+             claim Hz1ya : (z 1) = ya.
+             {
+               exact (SingE
+                 ya
+                 (z 1)
+                 (ap1_Sigma
+                   X
+                   (fun _ : set => {ya})
+                   z
+                   HzVa)).
+             }
+             claim Hz1yb : (z 1) = yb.
+             {
+               exact (SingE
+                 yb
+                 (z 1)
+                 (ap1_Sigma
+                   X
+                   (fun _ : set => {yb})
+                   z
+                   HzVb)).
+             }
+             claim HyEq : ya = yb.
+             {
+               rewrite <- Hz1ya.
+               exact Hz1yb.
+             }
+             claim HABeq : A = B1.
+             {
+               rewrite HAeq.
+               rewrite HBeq.
+               rewrite HyEq.
+               reflexivity.
+             }
+             exact (FalseE
+               (Hneq HABeq)
+               (z :e Empty)).
+          - let z.
+             assume HzE.
+             exact (FalseE
+               (EmptyE z HzE)
+               (z :e A :/\: B1)).
+        - claim HunionSlices :
+          Union slices = setprod X Y.
+        {
+          apply set_ext.
+          + let z.
+            assume HzUnion.
+            apply (UnionE
+              slices
+              z
+              HzUnion).
+            let V.
+            assume HVpack.
+            claim HzV : z :e V.
+            {
+              exact (andEL
+                (z :e V)
+                (V :e slices)
+                HVpack).
+            }
+	            claim HVslice : V :e slices.
+	            {
+	              exact (andER
+	                (z :e V)
+	                (V :e slices)
+	                HVpack).
+	            }
+	            claim HVsliceFam : V :e ex53_1_slice_family X Y.
+	            {
+	              exact (HsliceMemFam V HVslice).
+	            }
+	            apply (ReplE
+	              Y
+	              (fun y:set => setprod X (Sing y))
+	              V
+	              HVsliceFam).
+            let y.
+            assume HyPack.
+            claim HyY : y :e Y.
+            {
+              exact (andEL
+                (y :e Y)
+                (V = setprod X {y})
+                HyPack).
+            }
+            claim HVeq : V = setprod X {y}.
+            {
+              exact (andER
+                (y :e Y)
+                (V = setprod X {y})
+                HyPack).
+            }
+            claim HzSlice : z :e setprod X {y}.
+            {
+              rewrite <- HVeq.
+              exact HzV.
+            }
+            claim Hz0X : (z 0) :e X.
+            {
+              exact (ap0_Sigma
+                X
+                (fun _ : set => {y})
+                z
+                HzSlice).
+            }
+            claim Hz1y : (z 1) = y.
+            {
+              exact (SingE
+                y
+                (z 1)
+                (ap1_Sigma
+                  X
+                  (fun _ : set => {y})
+                  z
+                  HzSlice)).
+            }
+            claim HzPair : ((z 0), (z 1)) :e setprod X Y.
+            {
+              rewrite Hz1y.
+              exact (tuple_2_setprod_by_pair_Sigma
+                X
+                Y
+                (z 0)
+                y
+                Hz0X
+                HyY).
+            }
+            rewrite (setprod_eta
+              X
+              {y}
+              z
+              HzSlice).
+            exact HzPair.
+          + let z.
+            assume HzXY.
+            claim Hz0X : (z 0) :e X.
+            {
+              exact (ap0_Sigma
+                X
+                (fun _ : set => Y)
+                z
+                HzXY).
+            }
+            claim Hz1Y : (z 1) :e Y.
+            {
+              exact (ap1_Sigma
+                X
+                (fun _ : set => Y)
+                z
+                HzXY).
+            }
+	            claim HsliceMem : setprod X {z 1} :e slices.
+	            {
+	              claim HsliceMemFam : setprod X {z 1} :e ex53_1_slice_family X Y.
+	              {
+	                exact (ReplI
+	                  Y
+	                  (fun y:set => setprod X (Sing y))
+	                  (z 1)
+	                  Hz1Y).
+	              }
+	              exact (mem_eqR
+	                (setprod X {z 1})
+	                (ex53_1_slice_family X Y)
+	                slices
+	                HslicesDefSym
+	                HsliceMemFam).
+	            }
+	            claim HzInSlicePair : ((z 0), (z 1)) :e setprod X {z 1}.
+            {
+              exact (tuple_2_setprod_by_pair_Sigma
+                X
+                {z 1}
+                (z 0)
+                (z 1)
+                Hz0X
+                (SingI (z 1))).
+            }
+            rewrite (setprod_eta
+              X
+              Y
+              z
+              HzXY).
+            exact (UnionI
+              slices
+              ((z 0), (z 1))
+              (setprod X {z 1})
+              HzInSlicePair
+              HsliceMem).
+        }
+        rewrite HunionSlices.
+        rewrite (preimage_projection1_rectangle
+          X
+          Y
+          X
+          (Subq_ref X)).
+        rewrite <- (rectangle_set_def X Y).
+        reflexivity.
+	      * let V.
+	        assume HV.
+	        claim HVfam : V :e ex53_1_slice_family X Y.
+	        {
+	          exact (HsliceMemFam V HV).
+	        }
+	        apply (ReplE
+	          Y
+	          (fun y:set => setprod X (Sing y))
+	          V
+	          HVfam).
+        let y.
+        assume HyPack.
+        claim HyY : y :e Y.
+        {
+          exact (andEL
+            (y :e Y)
+            (V = setprod X {y})
+            HyPack).
+        }
+        claim HVeq : V = setprod X {y}.
+        {
+          exact (andER
+            (y :e Y)
+            (V = setprod X {y})
+            HyPack).
+        }
+        set f := graph V (fun z:set => apply_fun (projection1 X Y) z).
+        set idX := graph X (fun t:set => t).
+        set g := pair_map X idX (const_fun X y).
+        claim HVsub :
+          V c= setprod X Y.
+        {
+          let z.
+          assume HzV.
+          claim HzVslice : z :e setprod X {y}.
+          {
+            rewrite <- HVeq.
+            exact HzV.
+          }
+          claim Hz0X : (z 0) :e X.
+          {
+            exact (ap0_Sigma
+              X
+              (fun _ : set => {y})
+              z
+              HzVslice).
+          }
+          claim Hz1y : (z 1) = y.
+          {
+            exact (SingE
+              y
+              (z 1)
+              (ap1_Sigma
+                X
+                (fun _ : set => {y})
+                z
+                HzVslice)).
+          }
+          claim HzPair : ((z 0), (z 1)) :e setprod X Y.
+          {
+            rewrite Hz1y.
+            exact (tuple_2_setprod_by_pair_Sigma
+              X
+              Y
+              (z 0)
+              y
+              Hz0X
+              HyY).
+          }
+          rewrite (setprod_eta
+            X
+            {y}
+            z
+            HzVslice).
+          exact HzPair.
+        }
+        claim HidCont : continuous_map X Tx X Tx idX.
+        {
+          exact (identity_continuous
+            X
+            Tx
+            HtopX).
+        }
+        claim HconstCont :
+          continuous_map
+            X
+            Tx
+            Y
+            (discrete_topology Y)
+            (const_fun X y).
+        {
+          exact (const_fun_continuous
+            X
+            Tx
+            Y
+            (discrete_topology Y)
+            y
+            HtopX
+            HtopYd
+            HyY).
+        }
+        claim HgProdCont :
+          continuous_map
+            X
+            Tx
+            (setprod X Y)
+            (product_topology X Tx Y (discrete_topology Y))
+            g.
+        {
+          exact (maps_into_products
+            X
+            Tx
+            X
+            Tx
+            Y
+            (discrete_topology Y)
+            idX
+            (const_fun X y)
+            HidCont
+            HconstCont).
+        }
+        claim HgProdFun :
+          function_on
+            g
+            X
+            (setprod X Y).
+        {
+          exact (continuous_map_function_on
+            X
+            Tx
+            (setprod X Y)
+            (product_topology X Tx Y (discrete_topology Y))
+            g
+            HgProdCont).
+        }
+        claim HgIntoV :
+          forall x:set, x :e X ->
+            apply_fun g x :e V.
+        {
+          let x.
+          assume HxX.
+          rewrite (pair_map_apply
+            X
+            X
+            Y
+            idX
+            (const_fun X y)
+            x
+            HxX).
+          rewrite (apply_fun_graph
+            X
+            (fun t:set => t)
+            x
+            HxX).
+          rewrite (const_fun_apply
+            X
+            y
+            x
+            HxX).
+          rewrite HVeq.
+          exact (tuple_2_setprod_by_pair_Sigma
+            X
+            {y}
+            x
+            y
+            HxX
+            (SingI y)).
+        }
+        claim HgContV :
+          continuous_map
+            X
+            Tx
+            V
+            (subspace_topology
+              (setprod X Y)
+              (product_topology X Tx Y (discrete_topology Y))
+              V)
+            g.
+        {
+          exact (continuous_map_range_restrict
+            X
+            Tx
+            (setprod X Y)
+            (product_topology X Tx Y (discrete_topology Y))
+            g
+            V
+            HgProdCont
+            HVsub
+            HgIntoV).
+        }
+        claim HprojContOnV :
+          continuous_map
+            V
+            (subspace_topology
+              (setprod X Y)
+              (product_topology X Tx Y (discrete_topology Y))
+              V)
+            X
+            Tx
+            (projection1 X Y).
+        {
+          exact (continuous_on_subspace
+            (setprod X Y)
+            (product_topology X Tx Y (discrete_topology Y))
+            X
+            Tx
+            (projection1 X Y)
+            V
+            HtopProd
+            HVsub
+            Hcont).
+        }
+        claim HfFun :
+          function_on
+            f
+            V
+            X.
+        {
+          let z.
+          assume HzV.
+          rewrite (apply_fun_graph
+            V
+            (fun t:set => apply_fun (projection1 X Y) t)
+            z
+            HzV).
+          exact (continuous_map_function_on
+            V
+            (subspace_topology
+              (setprod X Y)
+              (product_topology X Tx Y (discrete_topology Y))
+              V)
+            X
+            Tx
+            (projection1 X Y)
+            HprojContOnV
+            z
+            HzV).
+        }
+        claim HprojEqf :
+          forall z:set, z :e V ->
+            apply_fun (projection1 X Y) z = apply_fun f z.
+        {
+          let z.
+          assume HzV.
+          rewrite (apply_fun_graph
+            V
+            (fun t:set => apply_fun (projection1 X Y) t)
+            z
+            HzV).
+          reflexivity.
+        }
+        claim HfCont :
+          continuous_map
+            V
+            (subspace_topology
+              (setprod X Y)
+              (product_topology X Tx Y (discrete_topology Y))
+              V)
+            X
+            Tx
+            f.
+        {
+          exact (continuous_map_congr_on
+            V
+            (subspace_topology
+              (setprod X Y)
+              (product_topology X Tx Y (discrete_topology Y))
+              V)
+            X
+            Tx
+            (projection1 X Y)
+            f
+            HprojContOnV
+            HfFun
+            HprojEqf).
+        }
+        claim HfContSub :
+          continuous_map
+            V
+            (subspace_topology
+              (setprod X Y)
+              (product_topology X Tx Y (discrete_topology Y))
+              V)
+            X
+            (subspace_topology X Tx X)
+            f.
+        {
+          rewrite (subspace_topology_whole
+            X
+            Tx
+            HtopX).
+          exact HfCont.
+        }
+        claim HgContSub :
+          continuous_map
+            X
+            (subspace_topology X Tx X)
+            V
+            (subspace_topology
+              (setprod X Y)
+              (product_topology X Tx Y (discrete_topology Y))
+              V)
+            g.
+        {
+          rewrite (subspace_topology_whole
+            X
+            Tx
+            HtopX).
+          exact HgContV.
+        }
+        claim HleftInv :
+          forall z:set, z :e V ->
+            apply_fun g (apply_fun f z) = z.
+        {
+          let z.
+          assume HzV.
+          claim HfzX : apply_fun f z :e X.
+          {
+            exact (HfFun z HzV).
+          }
+          claim HzSlice : z :e setprod X {y}.
+          {
+            rewrite <- HVeq.
+            exact HzV.
+          }
+          claim Hz1y : (z 1) = y.
+          {
+            exact (SingE
+              y
+              (z 1)
+              (ap1_Sigma
+                X
+                (fun _ : set => {y})
+                z
+                HzSlice)).
+          }
+          claim Hgz :
+            apply_fun g (apply_fun f z)
+            =
+            (apply_fun f z, y).
+          {
+            rewrite (pair_map_apply
+              X
+              X
+              Y
+              idX
+              (const_fun X y)
+              (apply_fun f z)
+              HfzX).
+            rewrite (apply_fun_graph
+              X
+              (fun t:set => t)
+              (apply_fun f z)
+              HfzX).
+            rewrite (const_fun_apply
+              X
+              y
+              (apply_fun f z)
+              HfzX).
+            reflexivity.
+          }
+          claim HfzProj : apply_fun f z = (z 0).
+          {
+            rewrite (apply_fun_graph
+              V
+              (fun t:set => apply_fun (projection1 X Y) t)
+              z
+              HzV).
+            rewrite (projection1_apply
+              X
+              Y
+              z
+              (HVsub z HzV)).
+            reflexivity.
+          }
+          rewrite Hgz.
+          rewrite HfzProj.
+          rewrite <- Hz1y.
+          symmetry.
+          exact (setprod_eta
+            X
+            {y}
+            z
+            HzSlice).
+        }
+        claim HrightInv :
+          forall x:set, x :e X ->
+            apply_fun f (apply_fun g x) = x.
+        {
+          let x.
+          assume HxX.
+          claim HgxV : apply_fun g x :e V.
+          {
+            exact (HgIntoV x HxX).
+          }
+          claim HgxXY : apply_fun g x :e setprod X Y.
+          {
+            exact (HgProdFun x HxX).
+          }
+          rewrite (apply_fun_graph
+            V
+            (fun t:set => apply_fun (projection1 X Y) t)
+            (apply_fun g x)
+            HgxV).
+          rewrite (projection1_apply
+            X
+            Y
+            (apply_fun g x)
+            HgxXY).
+          rewrite (pair_map_apply
+            X
+            X
+            Y
+            idX
+            (const_fun X y)
+            x
+            HxX).
+          rewrite (apply_fun_graph
+            X
+            (fun t:set => t)
+            x
+            HxX).
+          rewrite tuple_2_0_eq.
+          reflexivity.
+        }
+        prove continuous_map
+            V
+            (subspace_topology
+              (setprod X Y)
+              (product_topology X Tx Y (discrete_topology Y))
+              V)
+            X
+            (subspace_topology X Tx X)
+            f /\
+          exists g0:set,
+            continuous_map
+              X
+              (subspace_topology X Tx X)
+              V
+              (subspace_topology
+                (setprod X Y)
+                (product_topology X Tx Y (discrete_topology Y))
+                V)
+              g0 /\
+            (forall z:set, z :e V -> apply_fun g0 (apply_fun f z) = z) /\
+            (forall x:set, x :e X -> apply_fun f (apply_fun g0 x) = x).
+        apply andI.
+        - exact HfContSub.
+        - witness g.
+          apply andI.
+          + apply andI.
+            * exact HgContSub.
+            * exact HleftInv.
+          + exact HrightInv.
+}
+exact (andI
+  (continuous_map
+    (setprod X Y)
+    (product_topology X Tx Y (discrete_topology Y))
+    X
+    Tx
+    (projection1 X Y) /\
+   surjective_map
+    (setprod X Y)
+    X
+    (projection1 X Y))
+  (forall b:set, b :e X ->
+    exists U:set, U :e Tx /\ b :e U /\
+      evenly_covered
+        (setprod X Y)
+        (product_topology X Tx Y (discrete_topology Y))
+        X
+        Tx
+        (projection1 X Y)
+        U)
+  (andI
+    (continuous_map
+      (setprod X Y)
+      (product_topology X Tx Y (discrete_topology Y))
+      X
+      Tx
+      (projection1 X Y))
+    (surjective_map
+      (setprod X Y)
+      X
+      (projection1 X Y))
+    Hcont
+    Hsurj)
+  Hlocal).
+Qed.
 
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
