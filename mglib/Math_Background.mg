@@ -49915,6 +49915,93 @@ claim Hex :
       + exact HlocalLiftNc0.
     - exact HlocalLiftNc_comm.
   }
+  claim HlocalLiftNc_fun : function_on local_lift_Nc N E.
+  {
+    exact (continuous_map_function_on
+      N
+      (subspace_topology unit_interval unit_interval_topology N)
+      E
+      Te
+      local_lift_Nc
+      HlocalLiftNc_contE).
+  }
+  claim HlocalLiftEqOnN :
+    forall u:set, u :e N -> apply_fun local_lift_Nc u = apply_fun local_lift_N u.
+  {
+    let u.
+    assume HuN.
+    rewrite (compose_fun_apply N f g0 u HuN).
+    rewrite (apply_fun_graph
+      N
+      (fun v:set => apply_fun g0 (apply_fun f v))
+      u
+      HuN).
+    reflexivity.
+  }
+  claim HlocalLiftN_contE :
+    continuous_map N (subspace_topology unit_interval unit_interval_topology N) E Te local_lift_N.
+  {
+    exact (continuous_map_congr_on
+      N
+      (subspace_topology unit_interval unit_interval_topology N)
+      E
+      Te
+      local_lift_Nc
+      local_lift_N
+      HlocalLiftNc_contE
+      HlocalLiftN_fun
+      HlocalLiftEqOnN).
+  }
+  claim HlocalLiftN_lifting :
+    lifting_of
+      N
+      (subspace_topology unit_interval unit_interval_topology N)
+      E
+      Te
+      B
+      Tb
+      p
+      f
+      local_lift_N.
+  {
+    exact (andI
+      (continuous_map N (subspace_topology unit_interval unit_interval_topology N) E Te local_lift_N)
+      (forall x:set, x :e N ->
+        apply_fun p (apply_fun local_lift_N x) = apply_fun f x)
+      HlocalLiftN_contE
+      HlocalLiftN_comm).
+  }
+  claim HlocalLiftNc_lifting :
+    lifting_of
+      N
+      (subspace_topology unit_interval unit_interval_topology N)
+      E
+      Te
+      B
+      Tb
+      p
+      f
+      local_lift_Nc.
+  {
+    exact (andI
+      (continuous_map N (subspace_topology unit_interval unit_interval_topology N) E Te local_lift_Nc)
+      (forall x:set, x :e N ->
+        apply_fun p (apply_fun local_lift_Nc x) = apply_fun f x)
+      HlocalLiftNc_contE
+      HlocalLiftNc_comm).
+  }
+  claim HlocalLiftNc_data2 :
+    function_on local_lift_Nc N E /\
+    apply_fun local_lift_Nc 0 = e0 /\
+    (forall u:set, u :e N ->
+      apply_fun p (apply_fun local_lift_Nc u) = apply_fun f u).
+  {
+    apply andI.
+    - apply andI.
+      + exact HlocalLiftNc_fun.
+      + exact HlocalLiftNc0.
+    - exact HlocalLiftNc_comm.
+  }
   (** TODO Bob: construct and extend the local lift through N using HinvV0 and covering data. **)
   admit.
 }
