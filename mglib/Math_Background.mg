@@ -1,5 +1,5 @@
 (** Balance Alice 2384 **)
-(** Balance Bob 2849 **)
+(** Balance Bob 2808 **)
 (** Balance Charlie 1564 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -50028,6 +50028,251 @@ claim Hex :
       + exact HlocalLiftNc_lifting.
     - exact HlocalLiftNc0.
   }
+  set SeedTimes :=
+    {t :e unit_interval |
+      exists Nt lt:set,
+        Nt :e unit_interval_topology /\
+        0 :e Nt /\
+        t :e Nt /\
+        lifting_of
+          Nt
+          (subspace_topology unit_interval unit_interval_topology Nt)
+          E
+          Te
+          B
+          Tb
+          p
+          f
+          lt /\
+        apply_fun lt 0 = e0}.
+  claim HSeedTimesSub : SeedTimes c= unit_interval.
+  {
+    let t.
+    assume HtSeed.
+    exact (SepE1
+      unit_interval
+      (fun t0:set =>
+        exists Nt lt:set,
+          Nt :e unit_interval_topology /\
+          0 :e Nt /\
+          t0 :e Nt /\
+          lifting_of
+            Nt
+            (subspace_topology unit_interval unit_interval_topology Nt)
+            E
+            Te
+            B
+            Tb
+            p
+            f
+            lt /\
+          apply_fun lt 0 = e0)
+      t
+      HtSeed).
+  }
+  claim H0SeedTimes : 0 :e SeedTimes.
+  {
+    apply HlocalSeed0.
+    let Nt.
+    assume HNtPack.
+    apply HNtPack.
+    let lt.
+    assume HltPack.
+    claim Hleft :
+      (Nt :e unit_interval_topology /\ 0 :e Nt) /\
+      lifting_of
+        Nt
+        (subspace_topology unit_interval unit_interval_topology Nt)
+        E
+        Te
+        B
+        Tb
+        p
+        f
+        lt.
+    {
+      exact (andEL
+        ((Nt :e unit_interval_topology /\ 0 :e Nt) /\
+          lifting_of
+            Nt
+            (subspace_topology unit_interval unit_interval_topology Nt)
+            E
+            Te
+            B
+            Tb
+            p
+            f
+            lt)
+        (apply_fun lt 0 = e0)
+        HltPack).
+    }
+    claim HNt0 : Nt :e unit_interval_topology /\ 0 :e Nt.
+    {
+      exact (andEL
+        (Nt :e unit_interval_topology /\ 0 :e Nt)
+        (lifting_of
+          Nt
+          (subspace_topology unit_interval unit_interval_topology Nt)
+          E
+          Te
+          B
+          Tb
+          p
+          f
+          lt)
+        Hleft).
+    }
+    claim HNtOpen : Nt :e unit_interval_topology.
+    {
+      exact (andEL
+        (Nt :e unit_interval_topology)
+        (0 :e Nt)
+        HNt0).
+    }
+    claim H0Nt : 0 :e Nt.
+    {
+      exact (andER
+        (Nt :e unit_interval_topology)
+        (0 :e Nt)
+        HNt0).
+    }
+    claim HliftNt :
+      lifting_of
+        Nt
+        (subspace_topology unit_interval unit_interval_topology Nt)
+        E
+        Te
+        B
+        Tb
+        p
+        f
+        lt.
+    {
+      exact (andER
+        (Nt :e unit_interval_topology /\ 0 :e Nt)
+        (lifting_of
+          Nt
+          (subspace_topology unit_interval unit_interval_topology Nt)
+          E
+          Te
+          B
+          Tb
+          p
+          f
+          lt)
+        Hleft).
+    }
+    claim Hlt0 : apply_fun lt 0 = e0.
+    {
+      exact (andER
+        ((Nt :e unit_interval_topology /\ 0 :e Nt) /\
+          lifting_of
+            Nt
+            (subspace_topology unit_interval unit_interval_topology Nt)
+            E
+            Te
+            B
+            Tb
+            p
+            f
+            lt)
+        (apply_fun lt 0 = e0)
+        HltPack).
+    }
+    claim HNt0t :
+      (Nt :e unit_interval_topology /\ 0 :e Nt) /\ 0 :e Nt.
+    {
+      exact (andI
+        (Nt :e unit_interval_topology /\ 0 :e Nt)
+        (0 :e Nt)
+        HNt0
+        H0Nt).
+    }
+    claim HNt0tLift :
+      ((Nt :e unit_interval_topology /\ 0 :e Nt) /\ 0 :e Nt) /\
+      lifting_of
+        Nt
+        (subspace_topology unit_interval unit_interval_topology Nt)
+        E
+        Te
+        B
+        Tb
+        p
+        f
+        lt.
+    {
+      exact (andI
+        ((Nt :e unit_interval_topology /\ 0 :e Nt) /\ 0 :e Nt)
+        (lifting_of
+          Nt
+          (subspace_topology unit_interval unit_interval_topology Nt)
+          E
+          Te
+          B
+          Tb
+          p
+          f
+          lt)
+        HNt0t
+        HliftNt).
+    }
+    claim HSeed0Prop :
+      exists Nt0 lt0:set,
+        Nt0 :e unit_interval_topology /\
+        0 :e Nt0 /\
+        0 :e Nt0 /\
+        lifting_of
+          Nt0
+          (subspace_topology unit_interval unit_interval_topology Nt0)
+          E
+          Te
+          B
+          Tb
+          p
+          f
+          lt0 /\
+        apply_fun lt0 0 = e0.
+    {
+      witness Nt.
+      witness lt.
+      exact (andI
+        (((Nt :e unit_interval_topology /\ 0 :e Nt) /\ 0 :e Nt) /\
+          lifting_of
+            Nt
+            (subspace_topology unit_interval unit_interval_topology Nt)
+            E
+            Te
+            B
+            Tb
+            p
+            f
+            lt)
+        (apply_fun lt 0 = e0)
+        HNt0tLift
+        Hlt0).
+    }
+    exact (SepI
+      unit_interval
+      (fun t0:set =>
+        exists Nt0 lt0:set,
+          Nt0 :e unit_interval_topology /\
+          0 :e Nt0 /\
+          t0 :e Nt0 /\
+          lifting_of
+            Nt0
+            (subspace_topology unit_interval unit_interval_topology Nt0)
+            E
+            Te
+            B
+            Tb
+            p
+            f
+            lt0 /\
+          apply_fun lt0 0 = e0)
+      0
+      zero_in_unit_interval
+      HSeed0Prop).
+  }
   (** TODO Bob: construct and extend the local lift through N using HinvV0 and covering data. **)
   admit.
 }
@@ -50372,7 +50617,8 @@ Definition homotopy_lift : set -> set -> set -> set -> set -> set -> set -> set 
 (** continuous with F(0,0) = b0. There is a unique lifting F_tilde: I x I -> E with **)
 (** F_tilde(0,0) = e0. If F is a path homotopy, then F_tilde is a path homotopy. **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 200 **)
+(** Bounty 220 **)
+(** Lock Bob 2026-02-18T09:30:00 **)
 Theorem lemma54_2_homotopy_lifting : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun F (0, 0) ->
@@ -50387,7 +50633,8 @@ Admitted.
 (** from S54 Lemma 54.2 path homotopy preservation (line 783 in algtop.tex) **)
 (** LATEX VERSION: If F is a path homotopy, then the lift F_tilde is also a path homotopy. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Bob 2026-02-18T09:30:00 **)
 Theorem lemma54_2_path_homotopy_preserved : forall E Te B Tb p e0 F x0 x1:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun F (0, 0) ->
@@ -50409,7 +50656,8 @@ Admitted.
 (** If f and g are path homotopic, then f_tilde and g_tilde end at the same point **)
 (** and are path homotopic. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Bob 2026-02-18T09:30:00 **)
 Theorem thm54_3_homotopic_lifts : forall E Te B Tb p e0 b0 b1 f g:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = b0 ->
@@ -50435,7 +50683,8 @@ Definition lifting_correspondence : set -> set -> set -> set -> set -> set -> se
 (** then phi: pi_1(B,b0) -> p^{-1}(b0) is surjective. **)
 (** If E is simply connected, phi is bijective. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Bob 2026-02-18T09:30:00 **)
 Theorem thm54_4_lifting_correspondence_surjective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   path_connected_space E Te ->
