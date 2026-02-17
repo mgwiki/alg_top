@@ -70014,6 +70014,101 @@ Theorem ex59_4a_trivial_j_star : forall X Tx U V x0:set,
 admit.
 Admitted.
 
+(** Helper: generation by i-star plus trivial i-star forces basepoint pi1 trivial. **)
+Theorem lemma59_4a_pi1_trivial_from_i_generation : forall X Tx U x0:set,
+  topology_on X Tx ->
+  U :e Tx ->
+  x0 :e U ->
+  (forall cls:set, cls :e fundamental_group X Tx x0 ->
+    exists ucls:set,
+      ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+      cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+        (graph U (fun x:set => x))) ucls) ->
+  (forall cls:set,
+    cls :e fundamental_group U (subspace_topology X Tx U) x0 ->
+    apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+      (graph U (fun x:set => x))) cls = fundamental_group_id X Tx x0) ->
+  fundamental_group X Tx x0 = {fundamental_group_id X Tx x0}.
+let X Tx U x0.
+assume Htop : topology_on X Tx.
+assume HU : U :e Tx.
+assume Hx0U : x0 :e U.
+assume Hgen : forall cls:set, cls :e fundamental_group X Tx x0 ->
+  exists ucls:set,
+    ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+    cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+      (graph U (fun x:set => x))) ucls.
+assume Hi_triv : forall cls:set,
+  cls :e fundamental_group U (subspace_topology X Tx U) x0 ->
+  apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+    (graph U (fun x:set => x))) cls = fundamental_group_id X Tx x0.
+claim Hx0X : x0 :e X.
+{ exact (topology_elem_subset X Tx U Htop HU x0 Hx0U). }
+claim HeG : (fundamental_group_id X Tx x0) :e fundamental_group X Tx x0.
+{
+  claim HconstLoopAt : loop_at X Tx x0 (constant_path x0).
+  { exact (loop_at_constant_path X Tx x0 Htop Hx0X). }
+  claim HconstFS : (constant_path x0) :e function_space unit_interval X.
+  { exact (graph_in_function_space unit_interval X (fun t:set => x0) (fun t Ht => Hx0X)). }
+  claim HconstLoop : (constant_path x0) :e loop_space X Tx x0.
+  { exact (SepI (function_space unit_interval X) (fun g:set => loop_at X Tx x0 g)
+      (constant_path x0) HconstFS HconstLoopAt). }
+  exact (path_homotopy_class_in_fundamental_group X Tx x0 (constant_path x0) HconstLoop).
+}
+apply set_ext.
+- let cls.
+  assume Hcls : cls :e fundamental_group X Tx x0.
+  apply (Hgen cls Hcls).
+  let ucls.
+  assume Huc : ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+    cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+      (graph U (fun x:set => x))) ucls.
+  claim HuclsMem : ucls :e fundamental_group U (subspace_topology X Tx U) x0.
+  { exact (andEL
+      (ucls :e fundamental_group U (subspace_topology X Tx U) x0)
+      (cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+        (graph U (fun x:set => x))) ucls)
+      Huc). }
+  claim HclsEq : cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+    (graph U (fun x:set => x))) ucls.
+  { exact (andER
+      (ucls :e fundamental_group U (subspace_topology X Tx U) x0)
+      (cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+        (graph U (fun x:set => x))) ucls)
+      Huc). }
+  claim HclsId : cls = fundamental_group_id X Tx x0.
+  { rewrite HclsEq. exact (Hi_triv ucls HuclsMem). }
+  rewrite HclsId.
+  exact (SingI (fundamental_group_id X Tx x0)).
+- let cls.
+  assume Hcls : cls :e {fundamental_group_id X Tx x0}.
+  claim HclsId : cls = fundamental_group_id X Tx x0.
+  { exact (singleton_elem cls (fundamental_group_id X Tx x0) Hcls). }
+  rewrite HclsId.
+  exact HeG.
+Qed.
+
+(** Helper: path connected plus trivial pi1 at one point gives simple connectedness. **)
+Theorem lemma59_4a_simply_connected_from_pi1_trivial_at_point : forall X Tx x0:set,
+  path_connected_space X Tx ->
+  x0 :e X ->
+  fundamental_group X Tx x0 = {fundamental_group_id X Tx x0} ->
+  simply_connected X Tx.
+let X Tx x0.
+assume HpcX : path_connected_space X Tx.
+assume Hx0X : x0 :e X.
+assume Hpi1 : fundamental_group X Tx x0 = {fundamental_group_id X Tx x0}.
+prove path_connected_space X Tx /\
+  exists x0':set, x0' :e X /\
+    fundamental_group X Tx x0' = {fundamental_group_id X Tx x0'}.
+apply andI.
+- exact HpcX.
+- witness x0.
+  apply andI.
+  + exact Hx0X.
+  + exact Hpi1.
+Qed.
+
 (** from S59 Exercise 4(a) continued: both i-star and j-star trivial **)
 (** LATEX VERSION: If both i-star and j-star are trivial, then pi1(X,x0) is trivial. **)
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 25 **)
@@ -70060,55 +70155,19 @@ claim Hgen : forall cls:set, cls :e fundamental_group X Tx x0 ->
     cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
       (graph U (fun x:set => x))) ucls.
 { exact (ex59_4a_trivial_j_star X Tx U V x0 Htop HU HV Hcover Hx0UV HpcUV Hj_triv). }
-(** fundamental_group_id is in pi1 **)
-claim HeG : (fundamental_group_id X Tx x0) :e fundamental_group X Tx x0.
-{ claim HconstLoopAt : loop_at X Tx x0 (constant_path x0).
-  { exact (loop_at_constant_path X Tx x0 Htop Hx0X). }
-  claim HconstFS : (constant_path x0) :e function_space unit_interval X.
-  { exact (graph_in_function_space unit_interval X (fun t:set => x0) (fun t Ht => Hx0X)). }
-  claim HconstLoop : (constant_path x0) :e loop_space X Tx x0.
-  { exact (SepI (function_space unit_interval X) (fun g:set => loop_at X Tx x0 g)
-      (constant_path x0) HconstFS HconstLoopAt). }
-  exact (path_homotopy_class_in_fundamental_group X Tx x0 (constant_path x0) HconstLoop). }
-(** pi1(X,x0) = {id} **)
 claim Hpi1_trivial : fundamental_group X Tx x0 = {fundamental_group_id X Tx x0}.
-{ apply set_ext.
-  - let cls. assume Hcls : cls :e fundamental_group X Tx x0.
-    apply (Hgen cls Hcls).
-    let ucls.
-    assume Huc : ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
-      cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
-        (graph U (fun x:set => x))) ucls.
-    claim HuclsMem : ucls :e fundamental_group U (subspace_topology X Tx U) x0.
-    { exact (andEL
-        (ucls :e fundamental_group U (subspace_topology X Tx U) x0)
-        (cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
-          (graph U (fun x:set => x))) ucls)
-        Huc). }
-    claim HclsEq : cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
-      (graph U (fun x:set => x))) ucls.
-    { exact (andER
-        (ucls :e fundamental_group U (subspace_topology X Tx U) x0)
-        (cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
-          (graph U (fun x:set => x))) ucls)
-        Huc). }
-    claim HclsId : cls = fundamental_group_id X Tx x0.
-    { rewrite HclsEq. exact (Hi_triv ucls HuclsMem). }
-    rewrite HclsId.
-    exact (SingI (fundamental_group_id X Tx x0)).
-  - let cls. assume Hcls : cls :e {fundamental_group_id X Tx x0}.
-    claim HclsId : cls = fundamental_group_id X Tx x0.
-    { exact (singleton_elem cls (fundamental_group_id X Tx x0) Hcls). }
-    rewrite HclsId. exact HeG. }
-(** simply_connected = path_connected /\ exists x0, ... **)
-prove path_connected_space X Tx /\
-  exists x0':set, x0' :e X /\
-    fundamental_group X Tx x0' = {fundamental_group_id X Tx x0'}.
-apply andI.
-- admit. (** path_connected_space X Tx -- requires additional infrastructure **)
-- witness x0. apply andI.
-  + exact Hx0X.
-  + exact Hpi1_trivial.
+{
+  exact (lemma59_4a_pi1_trivial_from_i_generation
+    X Tx U x0
+    Htop HU Hx0U
+    Hgen Hi_triv).
+}
+claim HpcX : path_connected_space X Tx.
+{
+  admit. (** path_connected_space X Tx -- requires additional infrastructure **)
+}
+exact (lemma59_4a_simply_connected_from_pi1_trivial_at_point
+  X Tx x0 HpcX Hx0X Hpi1_trivial).
 Admitted.
 
 (** ============================================================ **)
