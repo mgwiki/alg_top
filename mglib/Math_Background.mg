@@ -1,6 +1,6 @@
-(** Balance Alice 2584 **)
+(** Balance Alice 2634 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 39944 **)
+(** Balance Charlie 39889 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -52857,7 +52857,7 @@ Theorem thm54_4_lifting_correspondence_bijective : forall E Te B Tb p e0:set,
     {x :e E | apply_fun p x = apply_fun p e0}
     (lifting_correspondence E Te B Tb p e0).
 admit.
-Qed.
+Admitted.
 
 (** Infrastructure: the additive group of integers **)
 (** Multiplication is addition of surreal numbers restricted to int **)
@@ -52975,7 +52975,7 @@ Theorem thm54_6a_p_star_injective : forall E Te B Tb p e0:set,
     apply_fun (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p) cls2 ->
     cls1 = cls2.
 admit.
-Qed.
+Admitted.
 
 (** from S54 Theorem 54.6b (line 840 in algtop.tex) **)
 (** LATEX VERSION: Let H = p-star(pi_1(E,e0)). The lifting correspondence induces **)
@@ -53045,7 +53045,7 @@ Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
   <->
   apply_fun (path_lift E Te B Tb p e0 f) 1 = e0.
 admit.
-Qed.
+Admitted.
 
 (** from S54 Exercise 3 (line 871 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be covering. If alpha and beta are paths in B with **)
@@ -53287,7 +53287,7 @@ Theorem ex54_6_power_map_induced : forall n:set,
           (fundamental_group_id S1 S1_topology S1_basepoint) c n))
       cls.
 admit.
-Qed.
+Admitted.
 
 (** from S54 Exercise 6 second part (line 891 in algtop.tex) **)
 (** LATEX VERSION: For h(z) = 1/z^n: the induced homomorphism h-star on pi_1(S^1,b0) **)
@@ -53308,7 +53308,7 @@ Theorem ex54_6b_inv_power_map_induced : forall n:set,
           (apply_fun (fundamental_group_inv S1 S1_topology S1_basepoint) c) n))
       cls.
 admit.
-Qed.
+Admitted.
 
 (** Infrastructure: the torus T = S^1 x S^1 and its topology **)
 Definition torus : set := setprod S1 S1.
@@ -53336,7 +53336,7 @@ Theorem ex54_7_pi1_torus : exists phi:set,
     (product_group_mult int integers_group_mult int integers_group_mult)
     phi.
 admit.
-Qed.
+Admitted.
 
 (** from S54 Exercise 8 (line 893 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map with E path connected. **)
@@ -53350,7 +53350,7 @@ Theorem ex54_8_simply_connected_base_homeomorphism : forall E Te B Tb p:set,
   simply_connected B Tb ->
   homeomorphism E Te B Tb p.
 admit.
-Qed.
+Admitted.
 
 (** ======================= S55 RETRACTIONS AND FIXED POINTS ======================= **)
 
@@ -53653,7 +53653,7 @@ Theorem lemma55_3_extends_implies_trivial : forall X Tx h b0:set,
     apply_fun (induced_homomorphism S1 S1_topology b0 X Tx (apply_fun h b0) h) cls =
     fundamental_group_id X Tx (apply_fun h b0)).
 admit.
-Qed.
+Admitted.
 
 (** from S55 Lemma 55.3 direction (3) implies (1) (line 907 in algtop.tex) **)
 (** LATEX VERSION: If h-star is the trivial homomorphism, then h is nulhomotopic. **)
@@ -53983,7 +53983,7 @@ Theorem thm55_6_brouwer_fixed_point_disc : forall f:set,
   continuous_map B2 B2_topology B2 B2_topology f ->
   exists x:set, x :e B2 /\ apply_fun f x = x.
 admit.
-Qed.
+Admitted.
 
 (** Infrastructure for starred Corollary 55.7: finite sum of real-valued terms **)
 (** finite_real_sum f n = f(0) + f(1) + ... + f(n-1) **)
@@ -54081,7 +54081,7 @@ Theorem ex55_2_nulhomotopic_S1_fixed_and_antipodal : forall h:set,
   (exists x:set, x :e S1 /\
     apply_fun h x = (minus_SNo (x 0), minus_SNo (x 1))).
 admit.
-Qed.
+Admitted.
 
 (** from S55 Exercise 3 (line 1044 in algtop.tex) **)
 (** LATEX VERSION: If A is a nonsingular 3x3 matrix having nonnegative entries, then A has a positive real eigenvalue. **)
@@ -54097,7 +54097,7 @@ Theorem ex55_3_nonneg_nonsingular_matrix_eigenvalue : forall A:set,
       finite_real_sum (fun j:set => mul_SNo (apply_fun A (i, j)) (apply_fun v j)) 3 = 0)) ->
   exists lam:set, Rlt 0 lam /\ eigenvalue_of_matrix 3 A lam.
 admit.
-Qed.
+Admitted.
 
 (** Infrastructure for Exercise 55.4: norm squared in Euclidean n-space **)
 (** euclidean_norm_sq n v = sum_{i<n} v(i)^2 **)
@@ -54186,7 +54186,7 @@ Theorem ex55_4c_nonvanishing_vector_field_Rn : forall n:set, n :e omega ->
     (exists x:set, x :e Sn n /\ points_directly_inward_Rn n v x) /\
     (exists x:set, x :e Sn n /\ points_directly_outward_Rn n v x).
 admit.
-Qed.
+Admitted.
 
 (** from S55 Exercise 4(d) (line 1049 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every continuous map f: B^{n+1} -> B^{n+1} has a fixed point. **)
@@ -54200,7 +54200,7 @@ Theorem ex55_4d_brouwer_fixed_point_Rn : forall n:set, n :e omega ->
                    (Bn_closed n) (Bn_closed_topology n) f ->
     exists x:set, x :e Bn_closed n /\ apply_fun f x = x.
 admit.
-Qed.
+Admitted.
 
 (** from S55 Exercise 4(e) (line 1050 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every (n+1) by (n+1) matrix with positive entries has a positive eigenvalue. **)
@@ -54214,7 +54214,7 @@ Theorem ex55_4e_positive_matrix_eigenvalue_Rn : forall n:set, n :e omega ->
     (forall i j:set, i :e ordsucc n -> j :e ordsucc n -> Rlt 0 (apply_fun A (i, j))) ->
     exists lam:set, Rlt 0 lam /\ eigenvalue_of_matrix (ordsucc n) A lam.
 admit.
-Qed.
+Admitted.
 
 (** from S55 Exercise 4(f) (line 1051 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, if h: S^n -> S^n is nulhomotopic, then h has a fixed point and maps some x to -x. **)
@@ -54229,7 +54229,7 @@ Theorem ex55_4f_nulhomotopic_Sn_fixed_and_antipodal : forall n:set, n :e omega -
     (exists x:set, x :e Sn n /\ apply_fun h x = x) /\
     (exists x:set, x :e Sn n /\ apply_fun h x = Rn_negate (ordsucc n) x).
 admit.
-Qed.
+Admitted.
 
 (** ======================= S56 THE FUNDAMENTAL THEOREM OF ALGEBRA ======================= **)
 
@@ -54284,7 +54284,7 @@ Theorem ex56_1_small_coeff_roots_in_B2 : forall n a:set,
     monic_poly_eval a n z = (0, 0) ->
     Rlt (complex_modulus_sq z) 1.
 admit.
-Qed.
+Admitted.
 
 (** from S56 Exercise 2 (line 1175 in algtop.tex) **)
 (** LATEX VERSION: Find a circle about the origin containing all roots of x^7 + x^2 + 1 = 0. **)
@@ -54333,7 +54333,7 @@ Admitted.
 Theorem thm57_2_no_antipode_preserving_S2_S1 :
   ~(exists g:set, antipode_preserving_Sn 2 1 g).
 admit.
-Qed.
+Admitted.
 
 (** from S57 Theorem 57.3 (line 1217 in algtop.tex): Borsuk-Ulam theorem for S^2 **)
 (** LATEX VERSION: Given a continuous map f: S^2 -> R^2, there is a point x of S^2 such that f(x) = f(-x). **)
@@ -54817,7 +54817,7 @@ Theorem ex57_2_antipodal_distinct_surjective : forall g:set,
     apply_fun g x <> apply_fun g (Rn_negate 3 x)) ->
   surjective_map (Sn 2) (Sn 2) g.
 admit.
-Qed.
+Admitted.
 
 (** from S57 Exercise 3 (line 1259 in algtop.tex) **)
 (** LATEX VERSION: Let h: S^1 -> S^1 be continuous, antipode-preserving, h(b0)=b0. Then h-star carries a generator to an odd power of itself. **)
@@ -54848,7 +54848,7 @@ Theorem ex57_4a_no_retraction_from_borsuk : forall n:set, n :e omega ->
     ~(nulhomotopic (Sn n) (Sn_topology n) (Sn n) (Sn_topology n) h)) ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)).
 admit.
-Qed.
+Admitted.
 
 (** from S57 Exercise 4(b) (line 1262 in algtop.tex) **)
 (** LATEX VERSION: Given the hypothesis, there is no continuous antipode-preserving map g: S^{n+1} -> S^n. **)
@@ -54861,7 +54861,7 @@ Theorem ex57_4b_no_antipode_higher : forall n:set, n :e omega ->
                    (Sn (ordsucc n)) (Sn_topology (ordsucc n)) h)) ->
   ~(exists g:set, antipode_preserving_Sn (ordsucc n) n g).
 admit.
-Qed.
+Admitted.
 
 (** from S57 Exercise 4(c) (line 1263 in algtop.tex) **)
 (** LATEX VERSION: (Borsuk-Ulam) Given the hypothesis, for any continuous f: S^{n+1} -> R^{n+1}, there exists x with f(x) = f(-x). **)
@@ -54878,7 +54878,7 @@ Theorem ex57_4c_borsuk_ulam_general : forall n:set, n :e omega ->
     exists x:set, x :e Sn (ordsucc n) /\
       apply_fun f x = apply_fun f (Rn_negate (ordsucc (ordsucc n)) x).
 admit.
-Qed.
+Admitted.
 
 (** ======================= S58 DEFORMATION RETRACTS AND HOMOTOPY TYPE ======================= **)
 
@@ -60708,7 +60708,7 @@ Theorem ex58_2b_torus_minus_point_pi1 : forall p:set,
     apply_fun (fundamental_group_mult T' TT' x0) (cls1, cls2) =
     apply_fun (fundamental_group_mult T' TT' x0) (cls2, cls1)).
 admit.
-Qed.
+Admitted.
 
 (** from S58 Exercise 2(c) (line 1479 in algtop.tex): cylinder pi1 **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
@@ -60764,7 +60764,7 @@ Theorem ex58_2e_R3_axes_deleted_pi1 :
     apply_fun (fundamental_group_mult X TX x0) (cls1, cls2) =
     apply_fun (fundamental_group_mult X TX x0) (cls2, cls1)).
 admit.
-Qed.
+Admitted.
 
 (** from S58 Exercise 2(f) (line 1485 in algtop.tex) **)
 (** LATEX VERSION: {x in R^2 : norm(x) > 1} has pi1 = Z (infinite cyclic). **)
@@ -60902,7 +60902,7 @@ Theorem ex58_4_figure_eight_theta_homotopy_equiv :
     A :/\: B = UPair a b /\ A :/\: C = UPair a b /\ B :/\: C = UPair a b) ->
   same_homotopy_type X Tx Y Ty.
 admit.
-Qed.
+Admitted.
 
 (** from S58 Exercise 7 (line 1496-1499 in algtop.tex) **)
 (** LATEX VERSION: Let A be a subspace of X with inclusion j. Let f: X -> A with **)
@@ -60928,7 +60928,7 @@ Theorem ex58_7a_retraction_homotopy_isomorphism : forall X Tx A a0 f:set,
     (induced_homomorphism A (subspace_topology X Tx A) a0 X Tx a0
       (graph A (fun x:set => x))).
 admit.
-Qed.
+Admitted.
 
 (** from S58 Exercise 7(b) (line 1496 in algtop.tex): A-preserving homotopy implies isomorphism **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
@@ -60951,7 +60951,7 @@ Theorem ex58_7b_A_preserved_homotopy_isomorphism : forall X Tx A a0 f H:set,
     (induced_homomorphism A (subspace_topology X Tx A) a0 X Tx a0
       (graph A (fun x:set => x))).
 admit.
-Qed.
+Admitted.
 
 (** from S58 Exercise 10 (line 1528-1536 in algtop.tex) **)
 (** LATEX VERSION: Suppose a degree function deg: (S^n -> S^n) -> Z exists with **)
@@ -60974,7 +60974,7 @@ Theorem ex58_10a_no_retraction_from_degree : forall n:set, n :e omega ->
   apply_fun deg (graph (Sn n) (fun x:set => x)) = 1 ->
   ~(retraction_of (Bn_closed (ordsucc n)) (Bn_closed_topology (ordsucc n)) (Sn n)).
 admit.
-Qed.
+Admitted.
 
 (** from S58 Exercise 10(b) (line 1528 in algtop.tex): degree and fixed point **)
 (** EFFORT: 6 lines textbook, difficulty 5/10, USD 100 **)
@@ -60996,7 +60996,7 @@ Theorem ex58_10b_degree_fixed_point : forall n:set, n :e omega ->
     apply_fun deg h <> nat_primrec 1 (fun _ r => mul_SNo (minus_SNo 1) r) (ordsucc n) ->
     exists x:set, x :e Sn n /\ apply_fun h x = x.
 admit.
-Qed.
+Admitted.
 
 (** from S58 Exercise 10(d) (line 1528 in algtop.tex): tangent vector field implies n odd **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
@@ -61021,7 +61021,7 @@ Theorem ex58_10d_tangent_field_odd : forall n:set, n :e omega ->
       finite_real_sum (fun i:set => mul_SNo (apply_fun x i) (apply_fun (apply_fun v x) i)) (ordsucc n) = 0)) ->
   exists k:set, k :e omega /\ n = add_SNo (mul_SNo 2 k) 1.
 admit.
-Qed.
+Admitted.
 
 (** Infrastructure for Exercise 58.9: degree of a continuous map h: S^1 -> S^1 **)
 (** The degree d is the unique integer such that for any lift starting point e0 **)
@@ -61046,7 +61046,7 @@ Theorem ex58_9a_degree_well_defined : forall h:set,
   continuous_map S1 S1_topology S1 S1_topology h ->
   degree_of_map_S1 h :e int.
 admit.
-Qed.
+Admitted.
 
 (** from S58 Exercise 9(b) (line 1524 in algtop.tex) **)
 (** LATEX VERSION: If h, k: S^1 -> S^1 are homotopic, they have the same degree. **)
@@ -61059,7 +61059,7 @@ Theorem ex58_9b_homotopic_same_degree : forall h k:set,
   homotopic_maps S1 S1_topology S1 S1_topology h k ->
   degree_of_map_S1 h = degree_of_map_S1 k.
 admit.
-Qed.
+Admitted.
 
 (** from S58 Exercise 9(c) (line 1525 in algtop.tex) **)
 (** LATEX VERSION: deg(h o k) = (deg h) times (deg k). **)
@@ -61072,7 +61072,7 @@ Theorem ex58_9c_degree_multiplicative : forall h k:set,
   degree_of_map_S1 (compose_fun S1 k h) =
     mul_SNo (degree_of_map_S1 h) (degree_of_map_S1 k).
 admit.
-Qed.
+Admitted.
 
 (** from S58 Exercise 9(d) (line 1526 in algtop.tex) **)
 (** LATEX VERSION: Degrees: constant map has degree 0, identity has degree 1, reflection has degree -1, z^n has degree n. **)
@@ -61087,7 +61087,7 @@ Theorem ex58_9d_degree_computations :
   (forall n:set, n :e omega -> n <> 0 ->
     degree_of_map_S1 (S1_power_map n) = n).
 admit.
-Qed.
+Admitted.
 
 (** ======================= S59 THE FUNDAMENTAL GROUP OF S^n ======================= **)
 
@@ -61159,7 +61159,7 @@ Theorem ex59_1_wedge_S2_trivial_pi1 : forall X Tx x0 A B fA fB:set,
   homeomorphism B (subspace_topology X Tx B) (Sn 2) (Sn_topology 2) fB ->
   simply_connected X Tx.
 admit.
-Qed.
+Admitted.
 
 (** from S59 Exercise 3(a) (line 1617 in algtop.tex) **)
 (** LATEX VERSION: R^1 and R^n are not homeomorphic if n > 1. **)
@@ -61171,7 +61171,7 @@ Theorem ex59_3a_R1_not_homeo_Rn : forall n:set,
   ~(exists f:set, homeomorphism R R_standard_topology
     (euclidean_space n) (euclidean_topology n) f).
 admit.
-Qed.
+Admitted.
 
 (** from S59 Exercise 3(b) (line 1618 in algtop.tex) **)
 (** LATEX VERSION: R^2 and R^n are not homeomorphic if n > 2. **)
@@ -61183,7 +61183,7 @@ Theorem ex59_3b_R2_not_homeo_Rn : forall n:set,
   ~(exists f:set, homeomorphism (setprod R R) R2_topology
     (euclidean_space n) (euclidean_topology n) f).
 admit.
-Qed.
+Admitted.
 
 (** from S59 Exercise 4(a) (line 1622-1623 in algtop.tex) **)
 (** LATEX VERSION: Assume hypotheses of Thm 59.1. What if j-star is trivial? **)
@@ -61207,7 +61207,7 @@ Theorem ex59_4a_trivial_j_star : forall X Tx U V x0:set,
       cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
         (graph U (fun x:set => x))) ucls.
 admit.
-Qed.
+Admitted.
 
 (** from S59 Exercise 4(a) continued: both i-star and j-star trivial **)
 (** LATEX VERSION: If both i-star and j-star are trivial, then pi1(X,x0) is trivial. **)
@@ -61317,7 +61317,7 @@ Theorem cor60_4_pi1_projective_plane : forall y:set,
       g :e fundamental_group projective_plane projective_plane_topology y ->
       g = fundamental_group_id projective_plane projective_plane_topology y \/ g = a).
 admit.
-Qed.
+Admitted.
 
 (** from S60 text (line 1730 in algtop.tex) **)
 (** LATEX VERSION: pi_1(P^n, y) is a two-element group for n >= 2, **)
@@ -61335,7 +61335,7 @@ Theorem pi1_projective_n_space_order_2 : forall n:set,
       g :e fundamental_group (projective_n_space n) (projective_n_space_topology n) y ->
       g = fundamental_group_id (projective_n_space n) (projective_n_space_topology n) y \/ g = a).
 admit.
-Qed.
+Admitted.
 
 (** Infrastructure: the figure eight (wedge of two circles in R^2) **)
 (** Circle A: centered at (-1, 0) with radius 1 **)
@@ -61472,7 +61472,7 @@ Theorem cor60_7_surfaces_distinct :
   ~(exists f:set, homeomorphism
     projective_plane projective_plane_topology double_torus double_torus_topology f).
 admit.
-Qed.
+Admitted.
 
 (** from S60 Exercise 1 (line 1778 in algtop.tex) **)
 (** LATEX VERSION: Compute pi_1 of the solid torus S^1 x B^2 and of S^1 x S^2. **)
@@ -61489,7 +61489,7 @@ Theorem ex60_1a_pi1_solid_torus : forall x0:set, x0 :e S1 ->
         (product_topology S1 S1_topology B2 B2_topology) (x0, b0))
       int integers_group_mult phi.
 admit.
-Qed.
+Admitted.
 
 (** from S60 Exercise 1(b) (line 1776 in algtop.tex): pi1 of S^1 x S^2 **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
@@ -61505,7 +61505,7 @@ Theorem ex60_1b_pi1_S1_cross_S2 : forall x0:set, x0 :e S1 ->
         (product_topology S1 S1_topology (Sn 2) (Sn_topology 2)) (x0, s0))
       int integers_group_mult phi.
 admit.
-Qed.
+Admitted.
 
 (** from S60 Exercise 2 (line 1779 in algtop.tex) **)
 (** LATEX VERSION: B^2 with antipodal identification on S^1 is homeomorphic to P^2. **)
@@ -61524,7 +61524,7 @@ Theorem ex60_2_quotient_B2_is_P2 :
     (exists f:set, homeomorphism X TX
       projective_plane projective_plane_topology f).
 admit.
-Qed.
+Admitted.
 
 (** from S60 Exercise 4 (line 1781 in algtop.tex) **)
 (** LATEX VERSION: P^1 and the covering map S^1 -> P^1 are familiar: P^1 is S^1. **)
@@ -61536,7 +61536,7 @@ Theorem ex60_4_P1_is_S1 :
     (projective_n_space 1) (projective_n_space_topology 1)
     (Sn 1) (Sn_topology 1) f.
 admit.
-Qed.
+Admitted.
 
 (** from S60 Exercise 3 (line 1780 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> X be the map from Lemma 60.5 proof, E' the **)
@@ -61557,7 +61557,7 @@ Theorem ex60_3_restriction_not_covering : forall E Te X Tx p:set,
     ~(evenly_covered E' (subspace_topology E Te E') X Tx
       (graph E' (fun x:set => apply_fun p x)) U).
 admit.
-Qed.
+Admitted.
 
 (** from S60 Exercise 5 (line 1782 in algtop.tex) **)
 (** LATEX VERSION: Consider the covering map indicated in Figure 60.3. **)
@@ -61580,7 +61580,7 @@ Theorem ex60_5_covering_figure_eight_not_abelian : forall X Tx x0 E Te e0 p:set,
     apply_fun (fundamental_group_mult X Tx x0) (cls1, cls2) =
     apply_fun (fundamental_group_mult X Tx x0) (cls2, cls1)).
 admit.
-Qed.
+Admitted.
 
 (** ============================================================ **)
 (** S61 The Jordan Separation Theorem                            **)
@@ -61686,7 +61686,7 @@ Theorem thm61_4_general_separation : forall A1 A2 a b:set,
   A1 :/\: A2 = UPair a b ->
   separates (Sn 2) (Sn_topology 2) (A1 :\/: A2).
 admit.
-Qed.
+Admitted.
 
 (** from S61 Exercise 2 (line 1916 in algtop.tex) **)
 (** LATEX VERSION: If C is homeomorphic to the closed topologists sine curve, C separates S^2. **)
@@ -61704,7 +61704,7 @@ Theorem ex61_2_closed_sin_curve_separates : forall C:set,
     exists a b:set, a <> b /\ A1 :/\: A2 = UPair a b) ->
   separates (Sn 2) (Sn_topology 2) C.
 admit.
-Qed.
+Admitted.
 
 (** from S61 Exercise 1 (line 1915 in algtop.tex) **)
 (** LATEX VERSION: A simple closed curve in the torus may or may not separate the torus. **)
@@ -61716,7 +61716,7 @@ Theorem ex61_1a_torus_separating_curve : exists C:set,
   is_simple_closed_curve C (subspace_topology torus torus_topology C) /\
   separates torus torus_topology C.
 admit.
-Qed.
+Admitted.
 
 (** from S61 Exercise 1 (line 1915 in algtop.tex) **)
 (** LATEX VERSION: A simple closed curve in the torus may not separate the torus. **)
@@ -61728,7 +61728,7 @@ Theorem ex61_1b_torus_non_separating_curve : exists C:set,
   is_simple_closed_curve C (subspace_topology torus torus_topology C) /\
   ~(separates torus torus_topology C).
 admit.
-Qed.
+Admitted.
 
 (** ============================================================ **)
 (** S62 Invariance of Domain                                     **)
@@ -61817,7 +61817,7 @@ Theorem ex62_2_contractible_no_separation : forall A:set,
   contractible_space A (subspace_topology (Sn 2) (Sn_topology 2) A) ->
   ~(separates (Sn 2) (Sn_topology 2) A).
 admit.
-Qed.
+Admitted.
 
 (** from S62 Exercise 1 (line 2000 in algtop.tex) **)
 (** LATEX VERSION: The conclusion of the Borsuk lemma need not hold if f is not injective. **)
@@ -61838,7 +61838,7 @@ Theorem ex62_1_borsuk_fails_without_injectivity :
     component_of (Sn 2 :\: image_of f A)
       (subspace_topology (Sn 2) (Sn_topology 2) (Sn 2 :\: image_of f A)) b.
 admit.
-Qed.
+Admitted.
 
 (** from S62 Exercise 3 (line 2002 in algtop.tex) **)
 (** LATEX VERSION: Let X x I be normal, A closed in X, f: A -> Y continuous, **)
@@ -61892,7 +61892,7 @@ Theorem ex62_4a_winding_trivial : forall C:set,
       fundamental_group_id (setprod R R :\: Sing (0, 0))
         (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing (0, 0))) x0.
 admit.
-Qed.
+Admitted.
 
 (** from S62 Exercise 4 (line 2003 in algtop.tex) **)
 (** LATEX VERSION: If 0 lies in bounded component of R^2-C, the inclusion-induced **)
@@ -61916,7 +61916,7 @@ Theorem ex62_4b_winding_nontrivial : forall C:set,
       fundamental_group_id (setprod R R :\: Sing (0, 0))
         (subspace_topology (setprod R R) R2_topology (setprod R R :\: Sing (0, 0))) x0.
 admit.
-Qed.
+Admitted.
 
 (** from S62 Exercise 5 (line 2004 in algtop.tex) **)
 (** LATEX VERSION: Let U be simply connected open in R^2. If C is a simple closed curve **)
@@ -61936,7 +61936,7 @@ Theorem ex62_5_simply_connected_bounded_components : forall U:set,
       component_of (setprod R R :\: C)
         (subspace_topology (setprod R R) R2_topology (setprod R R :\: C)) v c= U.
 admit.
-Qed.
+Admitted.
 
 (** from S62 Exercise 6(a) (line 2007 in algtop.tex) **)
 (** LATEX VERSION: Borsuk lemma for S^n: If no retraction B^n -> S^{n-1}, **)
@@ -61976,7 +61976,7 @@ Theorem ex62_6b_contractible_no_separation_Sn : forall n:set, n :e omega ->
     contractible_space A (subspace_topology (Sn n) (Sn_topology n) A) ->
     ~(separates (Sn n) (Sn_topology n) A).
 admit.
-Qed.
+Admitted.
 
 (** from S62 Exercise 6(c) (line 2010 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^n -> S^{n-1} and S^{n-1} separates S^n, **)
@@ -62183,7 +62183,7 @@ Theorem thm63_5_general_jordan : forall C1 C2:set,
     connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1) /\
     connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2).
 admit.
-Qed.
+Admitted.
 
 (** from S63 Exercise 1(a) (line 2239 in algtop.tex) **)
 (** LATEX VERSION: Let C1 and C2 be disjoint simple closed curves in S^2. **)
@@ -62225,7 +62225,7 @@ Theorem ex63_1b_disjoint_curves_boundaries : forall C1 C2:set,
     closure_of (Sn 2) (Sn_topology 2) W2 :\: W2 = C2 /\
     closure_of (Sn 2) (Sn_topology 2) W3 :\: W3 = C1 :\/: C2.
 admit.
-Qed.
+Admitted.
 
 (** from S63 Exercise 2(a) (line 2243 in algtop.tex) **)
 (** LATEX VERSION: If D is closed connected separating S^2 into n components, **)
@@ -62310,7 +62310,7 @@ Theorem ex63_2c_curve_one_point : forall D:set,
       (forall i j:set, i :e ordsucc n -> j :e ordsucc n -> i <> j -> apply_fun Ws' i :/\: apply_fun Ws' j = Empty) /\
       Sn 2 :\: (D :\/: C) = Union (image_of Ws' (ordsucc n)).
 admit.
-Qed.
+Admitted.
 
 (** from S63 Exercise 3(a) (line 2246 in algtop.tex) **)
 (** LATEX VERSION: A subspace of S^2 homeomorphic to the topologists sine curve does not separate S^2. **)
@@ -62474,7 +62474,7 @@ Theorem ex64_1a_hausdorff_iff_arcs_closed : forall X Tx Arcs:set,
   (Hausdorff_space X Tx <->
     (forall A:set, A :e Arcs -> X :\: A :e Tx)).
 admit.
-Qed.
+Admitted.
 
 (** from S64 Exercise 1(b) (line 2367 in algtop.tex) **)
 (** LATEX VERSION: Give an example to show that X (union of finitely many **)
@@ -62638,7 +62638,7 @@ Theorem lemma66_1b_free_homotopy_winding : forall f f' a F:set,
     f f' F ->
   winding_number f a = winding_number f' a.
 admit.
-Qed.
+Admitted.
 
 (** from S66 Lemma 66.1(c) (line 2503 in algtop.tex) **)
 (** LATEX VERSION: If a, b lie in the same component of R^2 minus f(I), **)
@@ -62663,7 +62663,7 @@ Theorem lemma66_1c_same_component_winding : forall f a b:set,
     b ->
   winding_number f a = winding_number f b.
 admit.
-Qed.
+Admitted.
 
 (** from S66 Definition (line 2515 in algtop.tex) **)
 (** LATEX VERSION: A simple loop f satisfies f(s) = f(s') only if s = s' **)
@@ -62907,7 +62907,7 @@ Theorem ex66_1_winding_equals_degree : forall f a h:set,
       R2_normalize (R2_sub (apply_fun f s) a)) ->
   winding_number f a = degree_of_map_S1 h.
 admit.
-Qed.
+Admitted.
 
 (** Infrastructure: C is a smooth 1-dimensional submanifold of R^2 **)
 (** For each point p in C, there is an open interval and a smooth injective **)
@@ -63135,7 +63135,7 @@ Theorem lemma67_1_converse :
             apply_fun h x = apply_fun (apply_fun hfam alpha) x)) ->
   direct_sum_of_subgroups G multG eG invG J Gfam.
 admit.
-Qed.
+Admitted.
 
 (** from S67 Corollary 67.2 (line 2629 in algtop.tex): associativity of direct sums **)
 (** LATEX VERSION: Let G = G1 + G2. If G1 = direct sum H_alpha (alpha in J) and **)
@@ -63158,7 +63158,7 @@ Theorem cor67_2_associativity_direct_sum :
     (graph K (fun beta:set => apply_fun Hfam beta)) ->
   direct_sum_of_subgroups G multG eG invG (J :\/: K) Hfam.
 admit.
-Qed.
+Admitted.
 
 (** from S67 Corollary 67.3 (line 2639 in algtop.tex): quotient by direct summand **)
 (** LATEX VERSION: If G = G1 + G2, then G/G2 is isomorphic to G1. **)
@@ -63178,7 +63178,7 @@ Theorem cor67_3_quotient_by_summand :
       (quotient_group_set G multG G2) (quotient_group_mult G multG G2)
       G1 multG phi.
 admit.
-Qed.
+Admitted.
 
 (** from S67 Definition (line 2644 in algtop.tex): external direct sum **)
 (** LATEX VERSION: G is the external direct sum of groups G_alpha relative to **)
@@ -63257,7 +63257,7 @@ Theorem lemma67_5_extension_external :
                 apply_fun (apply_fun hfam alpha) x) ->
           forall x:set, x :e G -> apply_fun h' x = apply_fun h x)).
 admit.
-Qed.
+Admitted.
 
 (** from S67 Lemma 67.5 converse (line 2665 in algtop.tex): extension condition implies direct sum **)
 (** LATEX VERSION: If the groups i_alpha(G_alpha) generate G and the extension condition holds, **)
@@ -63291,7 +63291,7 @@ Theorem lemma67_5_extension_converse :
   direct_sum_of_subgroups G multG eG invG J
     (graph J (fun alpha:set => homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))).
 admit.
-Qed.
+Admitted.
 
 (** from S67 Theorem 67.6 (line 2671 in algtop.tex): uniqueness of direct sums **)
 (** LATEX VERSION: If G and G' are both external direct sums of {G_alpha} via **)
@@ -63382,7 +63382,7 @@ Theorem lemma67_7_extension_free_abelian :
              apply_fun h' (apply_fun basis alpha) = apply_fun ys alpha) ->
            forall x:set, x :e G -> apply_fun h' x = apply_fun h x))).
 admit.
-Qed.
+Admitted.
 
 (** from S67 Theorem 67.8 (line 2689 in algtop.tex): rank is well-defined **)
 (** LATEX VERSION: If G is a free abelian group with basis {a_1,...,a_n}, **)
@@ -63445,7 +63445,7 @@ Theorem ex67_1_direct_sum_characterization :
     nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n = e ->
     (forall i:set, i :e n -> apply_fun xs i = e))).
 admit.
-Qed.
+Admitted.
 
 (** from S67 Exercise 3 (line 2706 in algtop.tex) **)
 (** LATEX VERSION: If G is free abelian with basis {x, y}, then {2x+3y, x-y} is also a basis. **)
@@ -63461,20 +63461,319 @@ Theorem ex67_3_change_of_basis :
     then apply_fun mult (group_power_nat mult e x 2, group_power_nat mult e y 3)
     else apply_fun mult (x, apply_fun inv y))).
 admit.
-Qed.
+Admitted.
 
 (** from S67 Exercise 4(a) (line 2708 in algtop.tex) **)
 (** LATEX VERSION: The elements of finite order in an abelian group G form a subgroup (torsion subgroup). **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 55 **)
-(** Proven Charlie **)
+(** Collected Alice 50 **)
+(** Proven Alice **)
 Theorem ex67_4a_torsion_subgroup :
   forall G mult e inv:set,
   abelian_group G mult e inv ->
   subgroup_of
     {a :e G | exists m:set, m :e omega /\ m <> 0 /\ group_power_nat mult e a m = e}
     G mult e inv.
-admit.
+let G mult e inv.
+assume Hab : abelian_group G mult e inv.
+claim Hcomm : forall x y:set, x :e G -> y :e G -> apply_fun mult (x, y) = apply_fun mult (y, x).
+{ exact (andER (group_structure G mult e inv) (forall x y:set, x :e G -> y :e G -> apply_fun mult (x, y) = apply_fun mult (y, x)) Hab). }
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  (andEL (group_structure G mult e inv)
+    (forall x y:set, x :e G -> y :e G -> apply_fun mult (x, y) = apply_fun mult (y, x)) Hab)).
+assume HmultF HinvG HeG Hassoc Hid Hinverse.
+claim HmG : forall x y:set, x :e G -> y :e G -> apply_fun mult (x, y) :e G.
+{ let x y. assume HxG HyG.
+  exact (HmultF (x, y) (tuple_2_setprod_by_pair_Sigma G G x y HxG HyG)). }
+claim HidL : forall x:set, x :e G -> apply_fun mult (e, x) = x.
+{ let x. assume HxG.
+  exact (andEL (apply_fun mult (e, x) = x) (apply_fun mult (x, e) = x) (Hid x HxG)). }
+claim HidR : forall x:set, x :e G -> apply_fun mult (x, e) = x.
+{ let x. assume HxG.
+  exact (andER (apply_fun mult (e, x) = x) (apply_fun mult (x, e) = x) (Hid x HxG)). }
+claim HinvR : forall x:set, x :e G -> apply_fun mult (x, apply_fun inv x) = e.
+{ let x. assume HxG.
+  exact (andEL
+    (apply_fun mult (x, apply_fun inv x) = e)
+    (apply_fun mult (apply_fun inv x, x) = e) (Hinverse x HxG)). }
+set T : set := {a :e G | exists m:set, m :e omega /\ m <> 0 /\ group_power_nat mult e a m = e}.
+set P : set -> prop := fun a => exists m:set, m :e omega /\ m <> 0 /\ group_power_nat mult e a m = e.
+(** Helper: a^n :e G **)
+claim HpowG : forall a:set, a :e G -> forall n:set, n :e omega ->
+  group_power_nat mult e a n :e G.
+{
+  let a. assume HaG : a :e G.
+  claim Hnat : forall n:set, nat_p n -> group_power_nat mult e a n :e G.
+  {
+    apply nat_ind.
+    - prove group_power_nat mult e a 0 :e G.
+      claim H0 : group_power_nat mult e a 0 = e.
+      { exact (nat_primrec_0 e (fun _ r => apply_fun mult (a, r))). }
+      rewrite H0. exact HeG.
+    - let n. assume Hn : nat_p n.
+      assume IH : group_power_nat mult e a n :e G.
+      prove group_power_nat mult e a (ordsucc n) :e G.
+      claim HS : group_power_nat mult e a (ordsucc n) =
+        apply_fun mult (a, group_power_nat mult e a n).
+      { exact (nat_primrec_S e (fun _ r => apply_fun mult (a, r)) n Hn). }
+      rewrite HS. exact (HmG a (group_power_nat mult e a n) HaG IH).
+  }
+  let n. assume HnO : n :e omega.
+  exact (Hnat n (omega_nat_p n HnO)).
+}
+(** Helper: if a^k = e then a^{k+p} = a^p **)
+claim Hshift : forall a:set, a :e G -> forall k:set, k :e omega ->
+  group_power_nat mult e a k = e ->
+  forall p:set, p :e omega ->
+    group_power_nat mult e a (add_nat k p) = group_power_nat mult e a p.
+{
+  let a. assume HaG. let k. assume HkO. assume Hak : group_power_nat mult e a k = e.
+  claim Hnat : forall p:set, nat_p p ->
+    group_power_nat mult e a (add_nat k p) = group_power_nat mult e a p.
+  {
+    apply nat_ind.
+    - prove group_power_nat mult e a (add_nat k 0) = group_power_nat mult e a 0.
+      rewrite (add_nat_0R k).
+      rewrite Hak.
+      claim H0 : group_power_nat mult e a 0 = e.
+      { exact (nat_primrec_0 e (fun _ r => apply_fun mult (a, r))). }
+      rewrite H0. reflexivity.
+    - let p. assume Hp : nat_p p.
+      assume IH : group_power_nat mult e a (add_nat k p) = group_power_nat mult e a p.
+      prove group_power_nat mult e a (add_nat k (ordsucc p)) = group_power_nat mult e a (ordsucc p).
+      claim HkpN : nat_p (add_nat k p).
+      { exact (add_nat_p k (omega_nat_p k HkO) p Hp). }
+      claim Hksp : add_nat k (ordsucc p) = ordsucc (add_nat k p).
+      { exact (add_nat_SR k p Hp). }
+      claim Hstep1 : group_power_nat mult e a (ordsucc (add_nat k p)) =
+        apply_fun mult (a, group_power_nat mult e a (add_nat k p)).
+      { exact (nat_primrec_S e (fun _ r => apply_fun mult (a, r)) (add_nat k p) HkpN). }
+      claim Hstep2 : group_power_nat mult e a (ordsucc p) =
+        apply_fun mult (a, group_power_nat mult e a p).
+      { exact (nat_primrec_S e (fun _ r => apply_fun mult (a, r)) p Hp). }
+      rewrite Hksp. rewrite Hstep1. rewrite Hstep2. rewrite IH. reflexivity.
+  }
+  let p. assume HpO. exact (Hnat p (omega_nat_p p HpO)).
+}
+(** Helper: if a^k = e then a^{k x n} = e **)
+claim Hmultzero : forall a:set, a :e G -> forall k:set, k :e omega ->
+  group_power_nat mult e a k = e ->
+  forall n:set, n :e omega -> group_power_nat mult e a (mul_nat k n) = e.
+{
+  let a. assume HaG. let k. assume HkO. assume Hak.
+  claim Hnat : forall n:set, nat_p n -> group_power_nat mult e a (mul_nat k n) = e.
+  {
+    apply nat_ind.
+    - prove group_power_nat mult e a (mul_nat k 0) = e.
+      rewrite (mul_nat_0R k).
+      exact (nat_primrec_0 e (fun _ r => apply_fun mult (a, r))).
+    - let n. assume Hn : nat_p n. assume IH : group_power_nat mult e a (mul_nat k n) = e.
+      prove group_power_nat mult e a (mul_nat k (ordsucc n)) = e.
+      claim HknO : mul_nat k n :e omega.
+      { exact (nat_p_omega (mul_nat k n) (mul_nat_p k (omega_nat_p k HkO) n Hn)). }
+      rewrite (mul_nat_SR k n Hn).
+      rewrite (Hshift a HaG k HkO Hak (mul_nat k n) HknO).
+      exact IH.
+  }
+  let n. assume HnO. exact (Hnat n (omega_nat_p n HnO)).
+}
+(** Helper: abelian power distribution **)
+claim Hdist : forall a b:set, a :e G -> b :e G -> forall n:set, n :e omega ->
+  group_power_nat mult e (apply_fun mult (a, b)) n =
+  apply_fun mult (group_power_nat mult e a n, group_power_nat mult e b n).
+{
+  let a b. assume HaG : a :e G. assume HbG : b :e G.
+  claim Hnat : forall n:set, nat_p n ->
+    group_power_nat mult e (apply_fun mult (a, b)) n =
+    apply_fun mult (group_power_nat mult e a n, group_power_nat mult e b n).
+  {
+    apply nat_ind.
+    - prove group_power_nat mult e (apply_fun mult (a, b)) 0 =
+        apply_fun mult (group_power_nat mult e a 0, group_power_nat mult e b 0).
+      claim H0ab : group_power_nat mult e (apply_fun mult (a, b)) 0 = e.
+      { exact (nat_primrec_0 e (fun _ r => apply_fun mult (apply_fun mult (a, b), r))). }
+      claim H0a : group_power_nat mult e a 0 = e.
+      { exact (nat_primrec_0 e (fun _ r => apply_fun mult (a, r))). }
+      claim H0b : group_power_nat mult e b 0 = e.
+      { exact (nat_primrec_0 e (fun _ r => apply_fun mult (b, r))). }
+      rewrite H0ab. rewrite H0a. rewrite H0b.
+      prove e = apply_fun mult (e, e).
+      symmetry. exact (HidL e HeG).
+    - let n. assume Hn : nat_p n.
+      assume IH : group_power_nat mult e (apply_fun mult (a, b)) n =
+        apply_fun mult (group_power_nat mult e a n, group_power_nat mult e b n).
+      prove group_power_nat mult e (apply_fun mult (a, b)) (ordsucc n) =
+        apply_fun mult (group_power_nat mult e a (ordsucc n), group_power_nat mult e b (ordsucc n)).
+      claim HnO : n :e omega. { exact (nat_p_omega n Hn). }
+      claim HanG : group_power_nat mult e a n :e G. { exact (HpowG a HaG n HnO). }
+      claim HbnG : group_power_nat mult e b n :e G. { exact (HpowG b HbG n HnO). }
+      claim HSab : group_power_nat mult e (apply_fun mult (a, b)) (ordsucc n) =
+        apply_fun mult (apply_fun mult (a, b), group_power_nat mult e (apply_fun mult (a, b)) n).
+      { exact (nat_primrec_S e (fun _ r => apply_fun mult (apply_fun mult (a, b), r)) n Hn). }
+      claim HSa : group_power_nat mult e a (ordsucc n) =
+        apply_fun mult (a, group_power_nat mult e a n).
+      { exact (nat_primrec_S e (fun _ r => apply_fun mult (a, r)) n Hn). }
+      claim HSb : group_power_nat mult e b (ordsucc n) =
+        apply_fun mult (b, group_power_nat mult e b n).
+      { exact (nat_primrec_S e (fun _ r => apply_fun mult (b, r)) n Hn). }
+      rewrite HSab. rewrite IH. rewrite HSa. rewrite HSb.
+      (** Goal: mult(ab, mult(an, bn)) = mult(mult(a, an), mult(b, bn)) **)
+      claim HanbnG : apply_fun mult (group_power_nat mult e a n, group_power_nat mult e b n) :e G.
+      { exact (HmG (group_power_nat mult e a n) (group_power_nat mult e b n) HanG HbnG). }
+      claim HbbnG : apply_fun mult (b, group_power_nat mult e b n) :e G.
+      { exact (HmG b (group_power_nat mult e b n) HbG HbnG). }
+      claim HabG : apply_fun mult (a, b) :e G. { exact (HmG a b HaG HbG). }
+      rewrite (Hassoc a b (apply_fun mult (group_power_nat mult e a n, group_power_nat mult e b n))
+        HaG HbG HanbnG).
+      rewrite <- (Hassoc b (group_power_nat mult e a n) (group_power_nat mult e b n)
+        HbG HanG HbnG).
+      rewrite (Hcomm b (group_power_nat mult e a n) HbG HanG).
+      rewrite (Hassoc (group_power_nat mult e a n) b (group_power_nat mult e b n)
+        HanG HbG HbnG).
+      rewrite <- (Hassoc a (group_power_nat mult e a n)
+        (apply_fun mult (b, group_power_nat mult e b n)) HaG HanG HbbnG).
+      reflexivity.
+  }
+  let n. assume HnO. exact (Hnat n (omega_nat_p n HnO)).
+}
+(** Helper: e^n = e **)
+claim Hpow_e : forall n:set, n :e omega -> group_power_nat mult e e n = e.
+{
+  claim Hnat : forall n:set, nat_p n -> group_power_nat mult e e n = e.
+  {
+    apply nat_ind.
+    - prove group_power_nat mult e e 0 = e.
+      exact (nat_primrec_0 e (fun _ r => apply_fun mult (e, r))).
+    - let n. assume Hn : nat_p n. assume IH : group_power_nat mult e e n = e.
+      prove group_power_nat mult e e (ordsucc n) = e.
+      claim HS : group_power_nat mult e e (ordsucc n) =
+        apply_fun mult (e, group_power_nat mult e e n).
+      { exact (nat_primrec_S e (fun _ r => apply_fun mult (e, r)) n Hn). }
+      rewrite HS. rewrite IH. exact (HidL e HeG).
+  }
+  let n. assume HnO. exact (Hnat n (omega_nat_p n HnO)).
+}
+(** Main proof: 4 parts of subgroup_of **)
+prove T c= G /\
+  e :e T /\
+  (forall x y:set, x :e T -> y :e T -> apply_fun mult (x, y) :e T) /\
+  (forall x:set, x :e T -> apply_fun inv x :e T).
+apply and4I.
+- prove T c= G.
+  let a. assume HaT : a :e T.
+  exact (SepE1 G P a HaT).
+- prove e :e T.
+  apply (SepI G P e).
+  + exact HeG.
+  + prove exists m:set, m :e omega /\ m <> 0 /\ group_power_nat mult e e m = e.
+    witness (ordsucc 0).
+    apply and3I.
+    * prove ordsucc 0 :e omega.
+      exact (nat_p_omega (ordsucc 0) (nat_ordsucc 0 nat_0)).
+    * prove ordsucc 0 <> 0.
+      exact (neq_ordsucc_0 0).
+    * prove group_power_nat mult e e (ordsucc 0) = e.
+      claim HS : group_power_nat mult e e (ordsucc 0) =
+        apply_fun mult (e, group_power_nat mult e e 0).
+      { exact (nat_primrec_S e (fun _ r => apply_fun mult (e, r)) 0 nat_0). }
+      claim H0 : group_power_nat mult e e 0 = e.
+      { exact (nat_primrec_0 e (fun _ r => apply_fun mult (e, r))). }
+      rewrite HS. rewrite H0. exact (HidL e HeG).
+- prove forall x y:set, x :e T -> y :e T -> apply_fun mult (x, y) :e T.
+  let x y. assume HxT : x :e T. assume HyT : y :e T.
+  claim HxG : x :e G. { exact (SepE1 G P x HxT). }
+  claim HyG : y :e G. { exact (SepE1 G P y HyT). }
+  claim HxP : P x. { exact (SepE2 G P x HxT). }
+  claim HyP : P y. { exact (SepE2 G P y HyT). }
+  apply (SepI G P (apply_fun mult (x, y))).
+  + exact (HmG x y HxG HyG).
+  + prove exists m:set, m :e omega /\ m <> 0 /\
+      group_power_nat mult e (apply_fun mult (x, y)) m = e.
+    apply HxP.
+    let mx. assume Hmx : mx :e omega /\ mx <> 0 /\ group_power_nat mult e x mx = e.
+    apply (and3E (mx :e omega) (mx <> 0) (group_power_nat mult e x mx = e) Hmx).
+    assume HmxO : mx :e omega. assume Hmx0 : mx <> 0. assume Hxmx : group_power_nat mult e x mx = e.
+    apply HyP.
+    let my. assume Hmy : my :e omega /\ my <> 0 /\ group_power_nat mult e y my = e.
+    apply (and3E (my :e omega) (my <> 0) (group_power_nat mult e y my = e) Hmy).
+    assume HmyO : my :e omega. assume Hmy0 : my <> 0. assume Hymy : group_power_nat mult e y my = e.
+    set k : set := mul_nat mx my.
+    claim HkO : k :e omega.
+    { exact (nat_p_omega k (mul_nat_p mx (omega_nat_p mx HmxO) my (omega_nat_p my HmyO))). }
+    claim Hk0 : k <> 0.
+    { assume Habs : k = 0.
+      apply (mul_nat_0_inv mx (omega_nat_p mx HmxO) my (omega_nat_p my HmyO) Habs).
+      assume H : mx = 0. exact (Hmx0 H).
+      assume H : my = 0. exact (Hmy0 H). }
+    witness k.
+    apply and3I.
+    * exact HkO.
+    * exact Hk0.
+    * prove group_power_nat mult e (apply_fun mult (x, y)) k = e.
+      rewrite (Hdist x y HxG HyG k HkO).
+      claim Hxk : group_power_nat mult e x k = e.
+      { exact (Hmultzero x HxG mx HmxO Hxmx my HmyO). }
+      claim Hyk : group_power_nat mult e y k = e.
+      { claim Hkmn : k = mul_nat my mx.
+        { exact (mul_nat_com mx (omega_nat_p mx HmxO) my (omega_nat_p my HmyO)). }
+        rewrite Hkmn. exact (Hmultzero y HyG my HmyO Hymy mx HmxO). }
+      rewrite Hxk. rewrite Hyk. exact (HidL e HeG).
+- prove forall x:set, x :e T -> apply_fun inv x :e T.
+  let x. assume HxT : x :e T.
+  claim HxG : x :e G. { exact (SepE1 G P x HxT). }
+  claim HxP : P x. { exact (SepE2 G P x HxT). }
+  claim HixG : apply_fun inv x :e G. { exact (HinvG x HxG). }
+  apply (SepI G P (apply_fun inv x)).
+  + exact HixG.
+  + prove exists m:set, m :e omega /\ m <> 0 /\
+      group_power_nat mult e (apply_fun inv x) m = e.
+    apply HxP.
+    let mx. assume Hmx : mx :e omega /\ mx <> 0 /\ group_power_nat mult e x mx = e.
+    apply (and3E (mx :e omega) (mx <> 0) (group_power_nat mult e x mx = e) Hmx).
+    assume HmxO : mx :e omega. assume Hmx0 : mx <> 0. assume Hxmx : group_power_nat mult e x mx = e.
+    witness mx.
+    apply and3I.
+    * exact HmxO.
+    * exact Hmx0.
+    * prove group_power_nat mult e (apply_fun inv x) mx = e.
+      (** Strategy: (x inv(x))^mx = x^mx (inv x)^mx = e (inv x)^mx **)
+      (** Also (x inv(x))^mx = e^mx = e **)
+      (** So e = e (inv x)^mx = (inv x)^mx **)
+      claim HixmxG : group_power_nat mult e (apply_fun inv x) mx :e G.
+      { exact (HpowG (apply_fun inv x) HixG mx HmxO). }
+      claim HxmxG : group_power_nat mult e x mx :e G.
+      { exact (HpowG x HxG mx HmxO). }
+      (** Chain: (x inv x)^mx = x^mx (inv x)^mx, but x inv x = e, so e^mx = x^mx (inv x)^mx **)
+      (** e^mx = e, x^mx = e, so e = e (inv x)^mx = (inv x)^mx **)
+      (** Prove mult(x^mx, (inv x)^mx) = e two ways, then extract (inv x)^mx = e **)
+      claim Hprod_eq : apply_fun mult (group_power_nat mult e x mx, group_power_nat mult e (apply_fun inv x) mx) = e.
+      { claim Hdist_xinv : group_power_nat mult e (apply_fun mult (x, apply_fun inv x)) mx =
+          apply_fun mult (group_power_nat mult e x mx, group_power_nat mult e (apply_fun inv x) mx).
+        { exact (Hdist x (apply_fun inv x) HxG HixG mx HmxO). }
+        claim Hxinv_e : apply_fun mult (x, apply_fun inv x) = e.
+        { exact (HinvR x HxG). }
+        claim Hemx : group_power_nat mult e e mx = e.
+        { exact (Hpow_e mx HmxO). }
+        claim Hstep1 : group_power_nat mult e (apply_fun mult (x, apply_fun inv x)) mx = e.
+        { rewrite Hxinv_e. exact Hemx. }
+        rewrite <- Hdist_xinv. exact Hstep1. }
+      claim Hprod_eq2 : apply_fun mult (group_power_nat mult e x mx, group_power_nat mult e (apply_fun inv x) mx) =
+        apply_fun mult (e, group_power_nat mult e (apply_fun inv x) mx).
+      { rewrite Hxmx. reflexivity. }
+      claim Hprod_eq3 : apply_fun mult (e, group_power_nat mult e (apply_fun inv x) mx) = e.
+      { rewrite <- Hprod_eq2. exact Hprod_eq. }
+      claim Hid_applied : apply_fun mult (e, group_power_nat mult e (apply_fun inv x) mx) =
+        group_power_nat mult e (apply_fun inv x) mx.
+      { exact (HidL (group_power_nat mult e (apply_fun inv x) mx) HixmxG). }
+      rewrite <- Hid_applied. exact Hprod_eq3.
 Qed.
 
 (** from S67 Exercise 4(b) (line 2709 in algtop.tex) **)
@@ -63503,7 +63802,7 @@ Theorem ex67_4c_rationals_not_free_abelian :
       (graph (setprod rational rational) (fun p:set => add_SNo (p 0) (p 1)))
       0 (graph rational (fun q:set => minus_SNo q)) J basis).
 admit.
-Qed.
+Admitted.
 
 (** from S67 Exercise 5 (line 2711 in algtop.tex) **)
 (** LATEX VERSION: Give an example of a free abelian group G of rank n having **)
@@ -63694,7 +63993,7 @@ Theorem lemma68_3_extension_external_free_product :
                 apply_fun (apply_fun hfam alpha) x) ->
           forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
 admit.
-Qed.
+Admitted.
 
 (** from S68 Theorem 68.4 (line 2946 in algtop.tex): uniqueness of free products **)
 (** LATEX VERSION: If G and G' are both external free products of {G_alpha} via **)
@@ -63775,7 +64074,7 @@ Theorem cor68_6_associativity_free_product :
     (graph K (fun beta:set => apply_fun efamH beta)) ->
   free_product_of_subgroups G multG eG invG (J :\/: K) Hfam efamH.
 admit.
-Qed.
+Admitted.
 
 (** from S68 Theorem 68.7 (line 2972 in algtop.tex): quotient of free product **)
 (** LATEX VERSION: Let G = G1 free-prod G2. Let N_i be normal in G_i. If N is the least **)
@@ -63842,7 +64141,7 @@ Theorem lemma68_9_least_normal_generated_by_conjugates :
     (Sing conjugates)
     (graph (Sing conjugates) (fun q:set => conjugates)).
 admit.
-Qed.
+Admitted.
 
 (** from S68 Exercise 2(a) (line 3025 in algtop.tex) **)
 (** LATEX VERSION: Let G = G1 free-product G2 where G1, G2 nontrivial. Then G is not abelian. **)
@@ -63876,7 +64175,7 @@ Theorem ex68_2c_finite_order_elements :
       (exists m:set, m :e omega /\ m <> 0 /\ group_power_nat mult e y m = e) /\
       x = apply_fun mult (apply_fun mult (c, y), apply_fun inv c).
 admit.
-Qed.
+Admitted.
 
 (** from S68 Exercise 3 (line 3029 in algtop.tex) **)
 (** LATEX VERSION: Let G = G1 free-product G2. Given c in G, cG1c^{-1} cap G2 = {1}. **)
@@ -63893,7 +64192,7 @@ Theorem ex68_3_conjugate_intersection_trivial :
       apply_fun mult (apply_fun mult (c, x), apply_fun inv c) :e G2 ->
       apply_fun mult (apply_fun mult (c, x), apply_fun inv c) = e.
 admit.
-Qed.
+Admitted.
 
 (** ============================================================ **)
 (** S69 Free Groups                                              **)
@@ -63942,7 +64241,7 @@ Theorem lemma69_1_extension_free_group :
              apply_fun h' (apply_fun gens alpha) = apply_fun ys alpha) ->
            forall x:set, x :e G -> apply_fun h' x = apply_fun h x))).
 admit.
-Qed.
+Admitted.
 
 (** from S69 Theorem 69.2 (line 3057 in algtop.tex): free product of free groups is free **)
 (** LATEX VERSION: If G = G1 free-prod G2 where G1, G2 are free with generators a_alpha_J **)
@@ -64025,7 +64324,7 @@ Theorem thm69_4_abelianization_free_group :
     J
     (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)).
 admit.
-Qed.
+Admitted.
 
 (** from S69 Corollary 69.5 (line 3129 in algtop.tex): number of free generators is well-defined **)
 (** LATEX VERSION: If G is a free group with n free generators, then any system of **)
@@ -64127,7 +64426,7 @@ Theorem ex69_1_abelianization_free_product :
            apply_fun (quotient_group_mult G2 multG C2) ((p 0) 1, (p 1) 1))))
       phi.
 admit.
-Qed.
+Admitted.
 
 (** from S69 Exercise 2 (line 3159 in algtop.tex) **)
 (** LATEX VERSION: Generalize the result of Exercise 1 to arbitrary free products. **)
@@ -64156,7 +64455,7 @@ Theorem ex69_2_abelianization_general_free_product :
         (quotient_group_mult G multG CG)
         H multH phi.
 admit.
-Qed.
+Admitted.
 
 (** from S69 Exercise 4 (line 3181 in algtop.tex) **)
 (** LATEX VERSION: If G = G1 direct-sum G2 where G1, G2 cyclic of orders m, n **)
@@ -64172,7 +64471,7 @@ Theorem ex69_4_direct_sum_not_unique :
       ~(exists q r:set, m = mul_nat d q /\ n = mul_nat d r)) /\
     cyclic_group G multG eG invG /\ equip G (mul_nat m n).
 admit.
-Qed.
+Admitted.
 
 (** ============================================================ **)
 (** S70 The Seifert-van Kampen Theorem                           **)
@@ -64371,7 +64670,7 @@ Theorem cor70_4_one_factor_simply_connected :
       (fundamental_group_mult X Tx x0)
       phi.
 admit.
-Qed.
+Admitted.
 
 (** from S70 Exercise 1(a) (line 3473 in algtop.tex) **)
 (** LATEX VERSION: If i-star is trivial, then j1 and j2 induce an epimorphism **)
@@ -64620,7 +64919,7 @@ Theorem ex70_3a_free_product_finitely_presented :
       ifam ->
     finitely_presented FP multFP eFP invFP.
 admit.
-Qed.
+Admitted.
 
 (** from S70 Exercise 3(b) (line 3492 in algtop.tex) **)
 (** LATEX VERSION: If pi1(U cap V) is finitely generated and pi1(U), pi1(V) **)
@@ -65066,7 +65365,7 @@ Theorem ex72_1_high_dimensional_cell :
         (fundamental_group X Tx a)
         (fundamental_group_mult X Tx a) phi.
 admit.
-Qed.
+Admitted.
 
 (** from S72 Exercise 3 (line 3696 in algtop.tex) **)
 (** LATEX VERSION: If G has a normal, path-connected space with pi1 isomorphic to G, **)
@@ -65137,7 +65436,7 @@ Theorem cor73_2_torus_free_abelian_rank_2 :
       (UPair 0 1)
       basis.
 admit.
-Qed.
+Admitted.
 
 (** Infrastructure: real number division a/b for b nonzero **)
 Definition real_div : set -> set -> set :=
@@ -65184,7 +65483,7 @@ Theorem lemma73_3_closed_quotient_normal :
   (forall V:set, V :e Tx -> {x :e E | apply_fun pi x :e V} :e Te) ->
   normal_space X Tx.
 admit.
-Qed.
+Admitted.
 
 (** from S73 Theorem 73.4 (line 3761 in algtop.tex): pi1 of n-fold dunce cap **)
 (** LATEX VERSION: The fundamental group of the n-fold dunce cap is a cyclic group **)
@@ -65269,7 +65568,7 @@ Theorem ex73_4_two_complex_metrizable :
         (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
         G multG phi.
 admit.
-Qed.
+Admitted.
 
 (** ============================================================ **)
 (** CHAPTER 12: CLASSIFICATION OF SURFACES                       **)
@@ -65591,7 +65890,7 @@ Theorem ex74_2_seven_sided_free_product_cyclic :
         (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
         FP multFP h.
 admit.
-Qed.
+Admitted.
 
 (** from S74 Exercise 3(a) (line 4015 in algtop.tex) **)
 (** LATEX VERSION: The Klein bottle K has fundamental group with presentation **)
@@ -65641,7 +65940,7 @@ Theorem ex74_3b_torus_double_covering_klein :
         b :e fundamental_group torus torus_topology x0 ->
         apply_fun pstar a = apply_fun pstar b -> a = b.
 admit.
-Qed.
+Admitted.
 
 (** from S74 Exercise 4(a) (line 4029 in algtop.tex) **)
 (** LATEX VERSION: The Klein bottle is homeomorphic to P^2 # P^2. **)
@@ -65710,7 +66009,7 @@ Theorem ex74_6_n_fold_torus_not_abelian :
       (fundamental_group_id (n_fold_torus_space n) (n_fold_torus_topology n) x0)
       (fundamental_group_inv (n_fold_torus_space n) (n_fold_torus_topology n) x0)).
 admit.
-Qed.
+Admitted.
 
 (** from S74 Exercise 7 (line 4033 in algtop.tex) **)
 (** LATEX VERSION: If m > 1, the fundamental group of the m-fold projective plane is not abelian. **)
@@ -65730,7 +66029,7 @@ Theorem ex74_7_m_fold_projective_not_abelian :
       (fundamental_group_inv (m_fold_projective_plane_space m)
         (m_fold_projective_plane_topology m) x0)).
 admit.
-Qed.
+Admitted.
 
 (** ============================================================ **)
 (** S75 Homology of Surfaces                                     **)
@@ -66029,7 +66328,7 @@ Theorem ex75_1_P2_sharp_T_is_P3 :
       (m_fold_projective_plane_topology (ordsucc (ordsucc (ordsucc 0))))
       g.
 admit.
-Qed.
+Admitted.
 
 (** from S75 Exercise 2 (line 4101 in algtop.tex) **)
 (** LATEX VERSION: If K is the Klein bottle, calculate H1(K) directly. **)
@@ -66088,7 +66387,7 @@ Theorem ex75_3_eight_sided_polygon :
     (n_fold_torus_space (ordsucc (ordsucc 0)))
     (n_fold_torus_topology (ordsucc (ordsucc 0))) h.
 admit.
-Qed.
+Admitted.
 
 (** from S75 Exercise 4 (line 4106 in algtop.tex) **)
 (** LATEX VERSION: Let X be the quotient from 8-sided polygon with **)
@@ -66677,7 +66976,7 @@ Theorem ex78_4_manifold_with_holes :
       (forall i j:set, i :e k -> j :e k -> i <> j ->
         apply_fun comps i :/\: apply_fun comps j = Empty)).
 admit.
-Qed.
+Admitted.
 
 (** ============================================================ **)
 (** CHAPTER 13: Classification of Covering Spaces                **)
@@ -67145,7 +67444,7 @@ Theorem lemma80_4_universal_cover_semilocal :
           cls =
         fundamental_group_id B Tb b0).
 admit.
-Qed.
+Admitted.
 
 (** from S79 Exercises Exercise 6 / Theorem (line 4929 in algtop.tex): topological group lifting **)
 (** LATEX VERSION: Let G be a topological group with multiplication m and identity e. **)
@@ -67206,7 +67505,7 @@ Theorem ex80_1a_composition_of_coverings :
   covering_map X Tx Z Tz
     (graph X (fun x:set => apply_fun r (apply_fun q x))).
 admit.
-Qed.
+Admitted.
 
 (** from S80 Exercise 1(b) (line 5013 in algtop.tex) **)
 (** LATEX VERSION: Give an example where q and r are covering maps but p = r o q is not. **)
@@ -67220,7 +67519,7 @@ Theorem ex80_1b_composition_not_covering :
     ~(covering_map X Tx Z Tz
       (graph X (fun x:set => apply_fun r (apply_fun q x)))).
 admit.
-Qed.
+Admitted.
 
 (** ============================================================ **)
 (** S81 Covering Transformations                                 **)
@@ -67576,7 +67875,7 @@ Theorem ex81_3b_quotient_covering :
     (forall x:set, x :e X ->
       apply_fun k (apply_fun (orbit_map X G) x) = apply_fun p x).
 admit.
-Qed.
+Admitted.
 
 (** from S81 Exercise 4 (line 5203 in algtop.tex) **)
 (** LATEX VERSION: If X is Hausdorff and G is a finite group of homeomorphisms **)
@@ -67959,7 +68258,7 @@ Theorem lemma83_1_linear_graph_normal :
   general_linear_graph X Tx Arcs ->
   normal_space X Tx.
 admit.
-Qed.
+Admitted.
 
 (** from S83 Lemma 83.2 (line 5503 in algtop.tex): compact subspace in finite subgraph **)
 (** LATEX VERSION: If C is a compact subspace of a linear graph X, there is a finite **)
@@ -68137,7 +68436,7 @@ Theorem lemma84_1_connected_iff_edge_paths :
        (exists j:set, j :e n /\ ordsucc j /:e n /\
          (apply_fun path_seq j) 0 1 = y))).
 admit.
-Qed.
+Admitted.
 
 (** from S84 Lemma 84.2 (line 5601 in algtop.tex): tree extension **)
 (** LATEX VERSION: If T is a tree and A is an edge intersecting T in a single vertex, **)
@@ -68171,7 +68470,7 @@ Theorem lemma84_2_tree_decomposition :
     (exists v:set, v :e graph_vertices X Tx Arcs /\ T0 :/\: A = Sing v) /\
     tree_in_graph T0 B X Tx Arcs.
 admit.
-Qed.
+Admitted.
 
 (** from S84 Theorem 84.3 (line 5617 in algtop.tex): tree is simply connected **)
 (** LATEX VERSION: Any tree T is simply connected. **)
@@ -68303,7 +68602,7 @@ Theorem ex84_1_infinite_tree_counterexample :
       cls :e fundamental_group X Tx x0 /\
       cls <> fundamental_group_id X Tx x0.
 admit.
-Qed.
+Admitted.
 
 (** from S84 Exercise 2 (line 5743 in algtop.tex) **)
 (** LATEX VERSION: What is the cardinality of a system of free generators for **)
@@ -68333,7 +68632,7 @@ Theorem ex84_2_complete_graph_generators :
         (real_div (mul_SNo n (add_SNo n (minus_SNo 1))) (ordsucc (ordsucc 0)))
         (minus_SNo n))).
 admit.
-Qed.
+Admitted.
 
 (** ============================================================ **)
 (** S85 Subgroups of Free Groups                                 **)
@@ -68385,7 +68684,7 @@ Theorem lemma85_2_free_gen_euler :
       J gens /\
     equip J (add_SNo 1 (minus_SNo (euler_number X Tx Arcs))).
 admit.
-Qed.
+Admitted.
 
 (** from S85 Definition (line 5778 in algtop.tex): index of a subgroup **)
 (** LATEX VERSION: If the collection G/H of right cosets of H in G is finite, **)
@@ -68428,7 +68727,7 @@ Theorem ex85_1_euler_number_topological_invariant :
   (exists h:set, homeomorphism X Tx Y Ty h) ->
   euler_number X Tx ArcsX = euler_number Y Ty ArcsY.
 admit.
-Qed.
+Admitted.
 
 (** from S85 Exercise 2 (line 5800 in algtop.tex) **)
 (** LATEX VERSION: Let F be a free group on two free generators alpha and beta. **)
@@ -68448,7 +68747,7 @@ Theorem ex85_2_infinite_index_subgroup :
   subgroup_of H F multF eF invF /\
   ~finite (right_coset_set F multF H).
 admit.
-Qed.
+Admitted.
 
 (** from S85 Exercise 3 (line 5801 in algtop.tex) **)
 (** LATEX VERSION: Let p: R -> S^1 be the standard covering. Consider **)
@@ -68493,7 +68792,7 @@ Theorem ex85_3_covering_of_wedge_in_torus :
           JE gensE /\
         ~finite JE.
 admit.
-Qed.
+Admitted.
 
 (** Sandbox Begin Alice **)
 (** Sandbox End Alice **)
