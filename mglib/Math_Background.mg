@@ -1,5 +1,5 @@
 (** Balance Alice 2634 **)
-(** Balance Bob 2697 **)
+(** Balance Bob 2664 **)
 (** Balance Charlie 18 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -65471,6 +65471,52 @@ apply andI.
       rewrite HclsId. exact HeG.
 Admitted. (** depends on admitted thm59_1_open_cover_generates_pi1 **)
 
+(** Helper infrastructure for S59.3: Euclidean and sphere topologies are bona fide topologies **)
+(** Proven Bob **)
+Theorem lemma59_3_euclidean_topology_on : forall n:set,
+  topology_on (euclidean_space n) (euclidean_topology n).
+let n.
+apply (product_topology_full_is_topology n (const_space_family n R R_standard_topology)).
+let i.
+assume Hi : i :e n.
+rewrite (space_family_set_const_space_family n R R_standard_topology i Hi).
+rewrite (space_family_topology_const_space_family n R R_standard_topology i Hi).
+exact R_standard_topology_is_topology.
+Qed.
+
+(** Proven Bob **)
+Theorem lemma59_3_Sn_topology_on : forall n:set,
+  topology_on (Sn n) (Sn_topology n).
+let n.
+claim HSnSub : Sn n c= euclidean_space (ordsucc n).
+{
+  exact (Sep_Subq
+    (euclidean_space (ordsucc n))
+    (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)).
+}
+exact (subspace_topology_is_topology
+  (euclidean_space (ordsucc n))
+  (euclidean_topology (ordsucc n))
+  (Sn n)
+  (lemma59_3_euclidean_topology_on (ordsucc n))
+  HSnSub).
+Qed.
+
+(** Helper subproblem for S59.3: choose two simply connected open pieces covering S^n **)
+(** EFFORT: 8 lines textbook, difficulty 5/10, USD 30 **)
+(** Bounty 33 **)
+Theorem lemma59_3_sphere_cover_data : forall n:set, n :e omega -> 2 c= n ->
+  exists U V:set,
+    U :e Sn_topology n /\ V :e Sn_topology n /\
+    Sn n = U :\/: V /\
+    simply_connected U (subspace_topology (Sn n) (Sn_topology n) U) /\
+    simply_connected V (subspace_topology (Sn n) (Sn_topology n) V) /\
+    (U :/\: V) <> Empty /\
+    path_connected_space (U :/\: V)
+      (subspace_topology (Sn n) (Sn_topology n) (U :/\: V)).
+admit.
+Admitted.
+
 (** from S59 Theorem 59.3 (line 1587 in algtop.tex) **)
 (** LATEX VERSION: If n >= 2, the n-sphere S^n is simply connected. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
@@ -65482,54 +65528,45 @@ Theorem thm59_3_Sn_simply_connected : forall n:set,
 let n.
 assume Hn : n :e omega.
 assume Hge2 : 2 c= n.
-set X := Sn n.
-set Tx := Sn_topology n.
-claim Hsphere_cover_data :
-  topology_on X Tx /\
-  exists U V:set,
-    U :e Tx /\ V :e Tx /\
-    X = U :\/: V /\
-    simply_connected U (subspace_topology X Tx U) /\
-    simply_connected V (subspace_topology X Tx V) /\
-    (U :/\: V) <> Empty /\
-    path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)).
+claim HtopX : topology_on (Sn n) (Sn_topology n).
 {
-  admit. (** decomposition of S^n into two simply connected open pieces with path-connected overlap **)
+  exact (lemma59_3_Sn_topology_on n).
 }
-apply Hsphere_cover_data.
-assume HtopX Huv.
-apply Huv.
+apply (lemma59_3_sphere_cover_data n Hn Hge2).
 let U.
 assume HwithV : exists V:set,
-  U :e Tx /\ V :e Tx /\
-  X = U :\/: V /\
-  simply_connected U (subspace_topology X Tx U) /\
-  simply_connected V (subspace_topology X Tx V) /\
+  U :e Sn_topology n /\ V :e Sn_topology n /\
+  Sn n = U :\/: V /\
+  simply_connected U (subspace_topology (Sn n) (Sn_topology n) U) /\
+  simply_connected V (subspace_topology (Sn n) (Sn_topology n) V) /\
   (U :/\: V) <> Empty /\
-  path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)).
+  path_connected_space (U :/\: V)
+    (subspace_topology (Sn n) (Sn_topology n) (U :/\: V)).
 apply HwithV.
 let V.
 assume Hpack :
-  U :e Tx /\ V :e Tx /\
-  X = U :\/: V /\
-  simply_connected U (subspace_topology X Tx U) /\
-  simply_connected V (subspace_topology X Tx V) /\
+  U :e Sn_topology n /\ V :e Sn_topology n /\
+  Sn n = U :\/: V /\
+  simply_connected U (subspace_topology (Sn n) (Sn_topology n) U) /\
+  simply_connected V (subspace_topology (Sn n) (Sn_topology n) V) /\
   (U :/\: V) <> Empty /\
-  path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)).
+  path_connected_space (U :/\: V)
+    (subspace_topology (Sn n) (Sn_topology n) (U :/\: V)).
 apply (and7E
-  (U :e Tx)
-  (V :e Tx)
-  (X = U :\/: V)
-  (simply_connected U (subspace_topology X Tx U))
-  (simply_connected V (subspace_topology X Tx V))
+  (U :e Sn_topology n)
+  (V :e Sn_topology n)
+  (Sn n = U :\/: V)
+  (simply_connected U (subspace_topology (Sn n) (Sn_topology n) U))
+  (simply_connected V (subspace_topology (Sn n) (Sn_topology n) V))
   ((U :/\: V) <> Empty)
-  (path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)))
+  (path_connected_space (U :/\: V)
+    (subspace_topology (Sn n) (Sn_topology n) (U :/\: V)))
   Hpack).
 assume HU HV Hcover HscU HscV HneUV HpcUV.
 exact (cor59_2_simply_connected_union
-  X Tx U V
+  (Sn n) (Sn_topology n) U V
   HtopX HU HV Hcover HscU HscV HneUV HpcUV).
-Admitted. (** depends on admitted cor59_2 and pending sphere-cover decomposition lemmas **)
+Admitted. (** depends on admitted cor59_2 and admitted lemma59_3_sphere_cover_data **)
 
 (** from S59 Exercise 1 (line 1615 in algtop.tex) **)
 (** LATEX VERSION: Let X be the union of two copies of S^2 having a single point in common. The fundamental group of X is trivial. **)
