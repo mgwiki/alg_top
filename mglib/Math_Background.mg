@@ -62338,6 +62338,238 @@ Theorem thm59_1_open_cover_generates_pi1 : forall X Tx U V x0:set,
 admit.
 Admitted.
 
+(** helper: inclusion-induced map sends the identity class to identity **)
+(** Proven Bob **)
+Theorem lemma59_subspace_inclusion_id_preserved : forall X Tx A x0:set,
+  topology_on X Tx ->
+  A c= X ->
+  x0 :e A ->
+  apply_fun (induced_homomorphism A (subspace_topology X Tx A) x0 X Tx x0
+    (graph A (fun x:set => x)))
+    (fundamental_group_id A (subspace_topology X Tx A) x0)
+  = fundamental_group_id X Tx x0.
+let X Tx A x0.
+assume Htop HAsub Hx0A.
+claim HtopA : topology_on A (subspace_topology X Tx A).
+{
+  exact (subspace_topology_is_topology
+    X
+    Tx
+    A
+    Htop
+    HAsub).
+}
+claim Hx0X : x0 :e X.
+{
+  exact (HAsub x0 Hx0A).
+}
+set iA := graph A (fun x:set => x).
+claim HiCont : continuous_map A (subspace_topology X Tx A) X Tx iA.
+{
+  exact (subspace_inclusion_continuous
+    X
+    Tx
+    A
+    Htop
+    HAsub).
+}
+claim Hix0 : apply_fun iA x0 = x0.
+{
+  exact (apply_fun_graph
+    A
+    (fun x:set => x)
+    x0
+    Hx0A).
+}
+claim HconstLoopAtA : loop_at A (subspace_topology X Tx A) x0 (constant_path x0).
+{
+  exact (loop_at_constant_path
+    A
+    (subspace_topology X Tx A)
+    x0
+    HtopA
+    Hx0A).
+}
+claim HconstFSA : (constant_path x0) :e function_space unit_interval A.
+{
+  exact (graph_in_function_space
+    unit_interval
+    A
+    (fun t:set => x0)
+    (fun t Ht => Hx0A)).
+}
+claim HconstLoopA : (constant_path x0) :e loop_space A (subspace_topology X Tx A) x0.
+{
+  exact (SepI
+    (function_space unit_interval A)
+    (fun g:set => loop_at A (subspace_topology X Tx A) x0 g)
+    (constant_path x0)
+    HconstFSA
+    HconstLoopAtA).
+}
+claim HconstToEpsA :
+  path_homotopic
+    A
+    (subspace_topology X Tx A)
+    x0
+    x0
+    (constant_path x0)
+    (Eps_i
+      (fun g:set =>
+        g :e fundamental_group_id
+          A
+          (subspace_topology X Tx A)
+          x0)).
+{
+  exact (eps_homotopic_to_rep_early
+    A
+    (subspace_topology X Tx A)
+    x0
+    (constant_path x0)
+    HtopA
+    HconstLoopA).
+}
+claim Hpost :
+  path_homotopic
+    X
+    Tx
+    x0
+    x0
+    (compose_fun unit_interval (constant_path x0) iA)
+    (compose_fun
+      unit_interval
+      (Eps_i
+        (fun g:set =>
+          g :e fundamental_group_id
+            A
+            (subspace_topology X Tx A)
+            x0))
+      iA).
+{
+  exact (path_homotopic_postcompose
+    A
+    (subspace_topology X Tx A)
+    X
+    Tx
+    x0
+    x0
+    x0
+    x0
+    (constant_path x0)
+    (Eps_i
+      (fun g:set =>
+        g :e fundamental_group_id
+          A
+          (subspace_topology X Tx A)
+          x0))
+    iA
+    HconstToEpsA
+    HiCont
+    Hix0
+    Hix0).
+}
+claim HclassEq :
+  path_homotopy_class_loop X Tx x0
+    (compose_fun unit_interval (constant_path x0) iA)
+  =
+  path_homotopy_class_loop X Tx x0
+    (compose_fun
+      unit_interval
+      (Eps_i
+        (fun g:set =>
+          g :e fundamental_group_id
+            A
+            (subspace_topology X Tx A)
+            x0))
+      iA).
+{
+  exact (path_homotopy_class_loop_eq_of_path_homotopic
+    X
+    Tx
+    x0
+    (compose_fun unit_interval (constant_path x0) iA)
+    (compose_fun
+      unit_interval
+      (Eps_i
+        (fun g:set =>
+          g :e fundamental_group_id
+            A
+            (subspace_topology X Tx A)
+            x0))
+      iA)
+    Hpost).
+}
+claim HiFun : function_on iA A X.
+{
+  exact (continuous_map_function_on
+    A
+    (subspace_topology X Tx A)
+    X
+    Tx
+    iA
+    HiCont).
+}
+claim HconstFunA : function_on (constant_path x0) unit_interval A.
+{
+  exact (function_on_of_function_space
+    (constant_path x0)
+    unit_interval
+    A
+    HconstFSA).
+}
+claim HcompConstEq :
+  compose_fun unit_interval (constant_path x0) iA = constant_path x0.
+{
+  apply (total_function_space_extensional
+    unit_interval
+    X
+    (compose_fun unit_interval (constant_path x0) iA)
+    (constant_path x0)).
+  - exact (compose_fun_in_total_function_space
+      unit_interval
+      A
+      X
+      (constant_path x0)
+      iA
+      HconstFunA
+      HiFun).
+  - exact (graph_in_total_function_space
+      unit_interval
+      X
+      (fun t:set => x0)
+      (fun t:set => fun Ht:t :e unit_interval => Hx0X)).
+  - let t.
+    assume Ht.
+    rewrite (compose_fun_apply
+      unit_interval
+      (constant_path x0)
+      iA
+      t
+      Ht).
+    rewrite (constant_path_apply x0 t Ht).
+    rewrite Hix0.
+    reflexivity.
+}
+rewrite (induced_homomorphism_apply
+  A
+  (subspace_topology X Tx A)
+  x0
+  X
+  Tx
+  x0
+  iA
+  (fundamental_group_id A (subspace_topology X Tx A) x0)
+  (path_homotopy_class_in_fundamental_group
+    A
+    (subspace_topology X Tx A)
+    x0
+    (constant_path x0)
+    HconstLoopA)).
+rewrite <- HclassEq.
+rewrite HcompConstEq.
+reflexivity.
+Qed.
+
 (** from S59 Corollary 59.2 (line 1585 in algtop.tex) **)
 (** LATEX VERSION: If X = U union V, U and V open and simply connected, U intersect V nonempty and path connected, then X is simply connected. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
@@ -62631,7 +62863,15 @@ claim Hi_triv : forall cls:set,
   claim HclsEq : cls = fundamental_group_id U (subspace_topology X Tx U) z0.
   { exact (singleton_elem cls (fundamental_group_id U (subspace_topology X Tx U) z0)
       HclsSing). }
-  admit. (** needs: i-star maps id_U to id_X **) }
+  rewrite HclsEq.
+  exact (lemma59_subspace_inclusion_id_preserved
+    X
+    Tx
+    U
+    z0
+    Htop
+    HUsub
+    Hz0U). }
 (** Similarly j-star is trivial **)
 claim Hj_triv : forall cls:set,
   cls :e fundamental_group V (subspace_topology X Tx V) z0 ->
