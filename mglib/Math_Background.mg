@@ -65247,8 +65247,57 @@ Admitted. (** depends on admitted thm59_1_open_cover_generates_pi1 **)
 Theorem thm59_3_Sn_simply_connected : forall n:set,
   n :e omega -> 2 c= n ->
   simply_connected (Sn n) (Sn_topology n).
-admit.
-Admitted.
+let n.
+assume Hn : n :e omega.
+assume Hge2 : 2 c= n.
+set X := Sn n.
+set Tx := Sn_topology n.
+claim Hsphere_cover_data :
+  topology_on X Tx /\
+  exists U V:set,
+    U :e Tx /\ V :e Tx /\
+    X = U :\/: V /\
+    simply_connected U (subspace_topology X Tx U) /\
+    simply_connected V (subspace_topology X Tx V) /\
+    (U :/\: V) <> Empty /\
+    path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)).
+{
+  admit. (** decomposition of S^n into two simply connected open pieces with path-connected overlap **)
+}
+apply Hsphere_cover_data.
+assume HtopX Huv.
+apply Huv.
+let U.
+assume HwithV : exists V:set,
+  U :e Tx /\ V :e Tx /\
+  X = U :\/: V /\
+  simply_connected U (subspace_topology X Tx U) /\
+  simply_connected V (subspace_topology X Tx V) /\
+  (U :/\: V) <> Empty /\
+  path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)).
+apply HwithV.
+let V.
+assume Hpack :
+  U :e Tx /\ V :e Tx /\
+  X = U :\/: V /\
+  simply_connected U (subspace_topology X Tx U) /\
+  simply_connected V (subspace_topology X Tx V) /\
+  (U :/\: V) <> Empty /\
+  path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)).
+apply (and7E
+  (U :e Tx)
+  (V :e Tx)
+  (X = U :\/: V)
+  (simply_connected U (subspace_topology X Tx U))
+  (simply_connected V (subspace_topology X Tx V))
+  ((U :/\: V) <> Empty)
+  (path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)))
+  Hpack).
+assume HU HV Hcover HscU HscV HneUV HpcUV.
+exact (cor59_2_simply_connected_union
+  X Tx U V
+  HtopX HU HV Hcover HscU HscV HneUV HpcUV).
+Admitted. (** depends on admitted cor59_2 and pending sphere-cover decomposition lemmas **)
 
 (** from S59 Exercise 1 (line 1615 in algtop.tex) **)
 (** LATEX VERSION: Let X be the union of two copies of S^2 having a single point in common. The fundamental group of X is trivial. **)
