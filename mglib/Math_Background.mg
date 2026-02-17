@@ -16856,6 +16856,40 @@ Theorem lemma52_1_basepoint_change_homomorphism : forall X Tx x0 x1 alpha:set,
     (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
     (fundamental_group X Tx x1) (fundamental_group_mult X Tx x1)
     (basepoint_change_map X Tx x0 x1 alpha).
+let X Tx x0 x1 alpha.
+assume HtopX HalphaCont Halpha0 Halpha1.
+claim HalphaFun : function_on alpha unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    alpha
+    HalphaCont).
+}
+claim Hx0X : x0 :e X.
+{
+  rewrite <- Halpha0.
+  exact (HalphaFun 0 zero_in_unit_interval).
+}
+claim Hx1X : x1 :e X.
+{
+  rewrite <- Halpha1.
+  exact (HalphaFun 1 one_in_unit_interval).
+}
+claim HalphaPath : path_between X x0 x1 alpha.
+{
+  exact (andI
+    (function_on alpha unit_interval X /\ apply_fun alpha 0 = x0)
+    (apply_fun alpha 1 = x1)
+    (andI
+      (function_on alpha unit_interval X)
+      (apply_fun alpha 0 = x0)
+      HalphaFun
+      Halpha0)
+    Halpha1).
+}
 admit.
 Admitted.
 
@@ -16870,6 +16904,50 @@ Theorem lemma52_1_basepoint_change_bijection : forall X Tx x0 x1 alpha:set,
     (fundamental_group X Tx x0)
     (fundamental_group X Tx x1)
     (basepoint_change_map X Tx x0 x1 alpha).
+let X Tx x0 x1 alpha.
+assume HtopX HalphaCont Halpha0 Halpha1.
+set beta := reverse_path alpha.
+claim HbetaCont :
+  continuous_map unit_interval unit_interval_topology X Tx beta.
+{
+  exact (reverse_path_continuous
+    X
+    Tx
+    alpha
+    HalphaCont).
+}
+claim Hbeta0 : apply_fun beta 0 = x1.
+{
+  rewrite (reverse_path_at_zero alpha).
+  exact Halpha1.
+}
+claim Hbeta1 : apply_fun beta 1 = x0.
+{
+  rewrite (reverse_path_at_one alpha).
+  exact Halpha0.
+}
+claim HbetaFun : function_on beta unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    beta
+    HbetaCont).
+}
+claim HbetaPath : path_between X x1 x0 beta.
+{
+  exact (andI
+    (function_on beta unit_interval X /\ apply_fun beta 0 = x1)
+    (apply_fun beta 1 = x0)
+    (andI
+      (function_on beta unit_interval X)
+      (apply_fun beta 0 = x1)
+      HbetaFun
+      Hbeta0)
+    Hbeta1).
+}
 admit.
 Admitted.
 
