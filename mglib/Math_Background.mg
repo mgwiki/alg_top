@@ -76101,6 +76101,564 @@ exact (cor59_2_simply_connected_union
   HtopX HU HV Hcover HscU HscV HneUV HpcUV).
 Admitted. (** depends on admitted cor59_2 and admitted lemma59_3_sphere_cover_data **)
 
+(** Helper: singleton subspace is path connected (via constant paths). **)
+Theorem singleton_subspace_path_connected : forall X Tx x0:set,
+  topology_on X Tx ->
+  x0 :e X ->
+  path_connected_space (Sing x0) (subspace_topology X Tx (Sing x0)).
+let X Tx x0.
+assume Htop : topology_on X Tx.
+assume Hx0X : x0 :e X.
+claim Hsub : Sing x0 c= X.
+{
+  let z.
+  assume Hz : z :e Sing x0.
+  claim HzEq : z = x0.
+  {
+    exact (singleton_elem z x0 Hz).
+  }
+  rewrite HzEq.
+  exact Hx0X.
+}
+claim HtopSing : topology_on (Sing x0) (subspace_topology X Tx (Sing x0)).
+{
+  exact (subspace_topology_is_topology
+    X
+    Tx
+    (Sing x0)
+    Htop
+    Hsub).
+}
+prove topology_on (Sing x0) (subspace_topology X Tx (Sing x0)) /\
+  forall x y:set, x :e Sing x0 -> y :e Sing x0 ->
+    exists p:set, path_between (Sing x0) x y p /\
+      continuous_map unit_interval unit_interval_topology (Sing x0)
+        (subspace_topology X Tx (Sing x0)) p.
+apply andI.
+- exact HtopSing.
+- let x y.
+  assume Hx : x :e Sing x0.
+  assume Hy : y :e Sing x0.
+  claim HxEq : x = x0.
+  {
+    exact (singleton_elem x x0 Hx).
+  }
+  claim HyEq : y = x0.
+  {
+    exact (singleton_elem y x0 Hy).
+  }
+  witness (constant_path x0).
+  apply andI.
+  + prove function_on (constant_path x0) unit_interval (Sing x0) /\
+      apply_fun (constant_path x0) 0 = x /\
+      apply_fun (constant_path x0) 1 = y.
+    apply and3I.
+    * claim HconstFS : (constant_path x0) :e function_space unit_interval (Sing x0).
+      {
+        exact (graph_in_function_space
+          unit_interval
+          (Sing x0)
+          (fun t:set => x0)
+          (fun t Ht => SingI x0)).
+      }
+      exact (function_on_of_function_space
+        (constant_path x0)
+        unit_interval
+        (Sing x0)
+        HconstFS).
+    * rewrite HxEq.
+      exact (constant_path_at_zero x0).
+    * rewrite HyEq.
+      exact (constant_path_at_one x0).
+  + exact (constant_path_continuous
+      (Sing x0)
+      (subspace_topology X Tx (Sing x0))
+      x0
+      HtopSing
+      (SingI x0)).
+Qed.
+
+(** Helper: inverse data of a homeomorphism gives a homeomorphism in reverse direction. **)
+Theorem homeomorphism_inverse_is_homeomorphism : forall X Tx Y Ty f g:set,
+  homeomorphism X Tx Y Ty f ->
+  continuous_map Y Ty X Tx g ->
+  (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x) ->
+  (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y) ->
+  homeomorphism Y Ty X Tx g.
+let X Tx Y Ty f g.
+assume Hhome : homeomorphism X Tx Y Ty f.
+assume HgCont : continuous_map Y Ty X Tx g.
+assume HleftInv : forall x:set, x :e X -> apply_fun g (apply_fun f x) = x.
+assume HrightInv : forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y.
+prove continuous_map Y Ty X Tx g /\
+  exists h:set, continuous_map X Tx Y Ty h /\
+    (forall y:set, y :e Y -> apply_fun h (apply_fun g y) = y) /\
+    (forall x:set, x :e X -> apply_fun g (apply_fun h x) = x).
+apply andI.
+- exact HgCont.
+- witness f.
+  apply and3I.
+  + exact (homeomorphism_continuous X Tx Y Ty f Hhome).
+  + exact HrightInv.
+  + exact HleftInv.
+Qed.
+
+(** Helper: simple connectedness transfers along homeomorphisms (forward). **)
+Theorem homeomorphism_preserves_simply_connected : forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  simply_connected X Tx ->
+  simply_connected Y Ty.
+let X Tx Y Ty f.
+assume Hhome : homeomorphism X Tx Y Ty f.
+assume HscX : simply_connected X Tx.
+claim HpcX : path_connected_space X Tx.
+{
+  exact (simply_connected_path_connected
+    X
+    Tx
+    HscX).
+}
+claim HscXwit : exists x0:set, x0 :e X /\
+  fundamental_group X Tx x0 = {fundamental_group_id X Tx x0}.
+{
+  exact (simply_connected_trivial_pi1_witness
+    X
+    Tx
+    HscX).
+}
+claim HfCont : continuous_map X Tx Y Ty f.
+{
+  exact (homeomorphism_continuous
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (homeomorphism_topology_left
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+claim HtopY : topology_on Y Ty.
+{
+  exact (homeomorphism_topology_right
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+claim HinvPack : exists g:set,
+  continuous_map Y Ty X Tx g /\
+  (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x) /\
+  (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y).
+{
+  exact (homeomorphism_inverse_package
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+apply HinvPack.
+let g.
+assume HgPack.
+claim HgAB :
+  continuous_map Y Ty X Tx g /\
+  (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x).
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+    HgPack).
+}
+claim HgCont : continuous_map Y Ty X Tx g.
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g)
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+    HgAB).
+}
+claim HrightInv : forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y.
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+    HgPack).
+}
+claim HgFun : function_on g Y X.
+{
+  exact (continuous_map_function_on
+    Y
+    Ty
+    X
+    Tx
+    g
+    HgCont).
+}
+claim HsurjY : forall y:set, y :e Y -> exists x:set, x :e X /\ apply_fun f x = y.
+{
+  let y.
+  assume Hy : y :e Y.
+  witness (apply_fun g y).
+  apply andI.
+  - exact (HgFun y Hy).
+  - exact (HrightInv y Hy).
+}
+claim HpcY : path_connected_space Y Ty.
+{
+  exact (continuous_image_path_connected
+    X
+    Tx
+    Y
+    Ty
+    f
+    HpcX
+    HfCont
+    HsurjY).
+}
+apply HscXwit.
+let x0.
+assume Hx0Pack.
+claim Hx0X : x0 :e X.
+{
+  exact (andEL
+    (x0 :e X)
+    (fundamental_group X Tx x0 = {fundamental_group_id X Tx x0})
+    Hx0Pack).
+}
+claim Hpi1X :
+  fundamental_group X Tx x0 = {fundamental_group_id X Tx x0}.
+{
+  exact (andER
+    (x0 :e X)
+    (fundamental_group X Tx x0 = {fundamental_group_id X Tx x0})
+    Hx0Pack).
+}
+set y0 := apply_fun f x0.
+claim HfFun : function_on f X Y.
+{
+  exact (continuous_map_function_on
+    X
+    Tx
+    Y
+    Ty
+    f
+    HfCont).
+}
+claim Hy0Y : y0 :e Y.
+{
+  exact (HfFun x0 Hx0X).
+}
+claim Hy0Def : apply_fun f x0 = y0.
+{
+  reflexivity.
+}
+claim Hiso :
+  group_isomorphism
+    (fundamental_group X Tx x0)
+    (fundamental_group_mult X Tx x0)
+    (fundamental_group Y Ty y0)
+    (fundamental_group_mult Y Ty y0)
+    (induced_homomorphism X Tx x0 Y Ty y0 f).
+{
+  exact (Corollary_52_5_homeomorphism_isomorphism
+    X
+    Tx
+    x0
+    Y
+    Ty
+    y0
+    f
+    Hhome
+    Hy0Def
+    Hx0X).
+}
+claim Hbij :
+  bijection
+    (fundamental_group X Tx x0)
+    (fundamental_group Y Ty y0)
+    (induced_homomorphism X Tx x0 Y Ty y0 f).
+{
+  exact (group_isomorphism_bijection
+    (fundamental_group X Tx x0)
+    (fundamental_group_mult X Tx x0)
+    (fundamental_group Y Ty y0)
+    (fundamental_group_mult Y Ty y0)
+    (induced_homomorphism X Tx x0 Y Ty y0 f)
+    Hiso).
+}
+claim Hhom :
+  group_homomorphism
+    (fundamental_group X Tx x0)
+    (fundamental_group_mult X Tx x0)
+    (fundamental_group Y Ty y0)
+    (fundamental_group_mult Y Ty y0)
+    (induced_homomorphism X Tx x0 Y Ty y0 f).
+{
+  exact (group_isomorphism_homomorphism
+    (fundamental_group X Tx x0)
+    (fundamental_group_mult X Tx x0)
+    (fundamental_group Y Ty y0)
+    (fundamental_group_mult Y Ty y0)
+    (induced_homomorphism X Tx x0 Y Ty y0 f)
+    Hiso).
+}
+claim HgrpX :
+  group_structure
+    (fundamental_group X Tx x0)
+    (fundamental_group_mult X Tx x0)
+    (fundamental_group_id X Tx x0)
+    (fundamental_group_inv X Tx x0).
+{
+  exact (fundamental_group_is_group
+    X
+    Tx
+    x0
+    HtopX
+    Hx0X).
+}
+claim HgrpY :
+  group_structure
+    (fundamental_group Y Ty y0)
+    (fundamental_group_mult Y Ty y0)
+    (fundamental_group_id Y Ty y0)
+    (fundamental_group_inv Y Ty y0).
+{
+  exact (fundamental_group_is_group
+    Y
+    Ty
+    y0
+    HtopY
+    Hy0Y).
+}
+claim HidTransport :
+  apply_fun (induced_homomorphism X Tx x0 Y Ty y0 f)
+    (fundamental_group_id X Tx x0)
+  = fundamental_group_id Y Ty y0.
+{
+  exact (group_hom_maps_id_to_id
+    (fundamental_group X Tx x0)
+    (fundamental_group_mult X Tx x0)
+    (fundamental_group_id X Tx x0)
+    (fundamental_group_inv X Tx x0)
+    (fundamental_group Y Ty y0)
+    (fundamental_group_mult Y Ty y0)
+    (fundamental_group_id Y Ty y0)
+    (fundamental_group_inv Y Ty y0)
+    (induced_homomorphism X Tx x0 Y Ty y0 f)
+    HgrpX
+    HgrpY
+    Hhom).
+}
+claim HeY : (fundamental_group_id Y Ty y0) :e fundamental_group Y Ty y0.
+{
+  claim HconstLoopAt : loop_at Y Ty y0 (constant_path y0).
+  {
+    exact (loop_at_constant_path
+      Y
+      Ty
+      y0
+      HtopY
+      Hy0Y).
+  }
+  claim HconstFS : (constant_path y0) :e function_space unit_interval Y.
+  {
+    exact (graph_in_function_space
+      unit_interval
+      Y
+      (fun t:set => y0)
+      (fun t Ht => Hy0Y)).
+  }
+  claim HconstLS : (constant_path y0) :e loop_space Y Ty y0.
+  {
+    exact (SepI
+      (function_space unit_interval Y)
+      (fun g:set => loop_at Y Ty y0 g)
+      (constant_path y0)
+      HconstFS
+      HconstLoopAt).
+  }
+  exact (path_homotopy_class_in_fundamental_group
+    Y
+    Ty
+    y0
+    (constant_path y0)
+    HconstLS).
+}
+claim Hpi1Y :
+  fundamental_group Y Ty y0 = {fundamental_group_id Y Ty y0}.
+{
+  apply set_ext.
+  - let cls.
+    assume Hcls : cls :e fundamental_group Y Ty y0.
+    claim Hpre : exists u:set, u :e fundamental_group X Tx x0 /\
+      apply_fun (induced_homomorphism X Tx x0 Y Ty y0 f) u = cls.
+    {
+      exact (bijection_surj
+        (fundamental_group X Tx x0)
+        (fundamental_group Y Ty y0)
+        (induced_homomorphism X Tx x0 Y Ty y0 f)
+        cls
+        Hbij
+        Hcls).
+    }
+    apply Hpre.
+    let u.
+    assume HuPack.
+    claim Hu : u :e fundamental_group X Tx x0.
+    {
+      exact (andEL
+        (u :e fundamental_group X Tx x0)
+        (apply_fun (induced_homomorphism X Tx x0 Y Ty y0 f) u = cls)
+        HuPack).
+    }
+    claim HuEq :
+      apply_fun (induced_homomorphism X Tx x0 Y Ty y0 f) u = cls.
+    {
+      exact (andER
+        (u :e fundamental_group X Tx x0)
+        (apply_fun (induced_homomorphism X Tx x0 Y Ty y0 f) u = cls)
+        HuPack).
+    }
+    claim HuSing : u :e {fundamental_group_id X Tx x0}.
+    {
+      exact (mem_eqR
+        u
+        (fundamental_group X Tx x0)
+        {fundamental_group_id X Tx x0}
+        Hpi1X
+        Hu).
+    }
+    claim HuId : u = fundamental_group_id X Tx x0.
+    {
+      exact (singleton_elem
+        u
+        (fundamental_group_id X Tx x0)
+        HuSing).
+    }
+    claim HclsId : cls = fundamental_group_id Y Ty y0.
+    {
+      rewrite <- HuEq.
+      rewrite HuId.
+      exact HidTransport.
+    }
+    rewrite HclsId.
+    exact (SingI (fundamental_group_id Y Ty y0)).
+  - let cls.
+    assume Hcls : cls :e {fundamental_group_id Y Ty y0}.
+    claim HclsId : cls = fundamental_group_id Y Ty y0.
+    {
+      exact (singleton_elem
+        cls
+        (fundamental_group_id Y Ty y0)
+        Hcls).
+    }
+    rewrite HclsId.
+    exact HeY.
+}
+prove path_connected_space Y Ty /\
+  exists x0':set, x0' :e Y /\
+    fundamental_group Y Ty x0' = {fundamental_group_id Y Ty x0'}.
+apply andI.
+- exact HpcY.
+- witness y0.
+  apply andI.
+  + exact Hy0Y.
+  + exact Hpi1Y.
+Qed.
+
+(** Helper: simple connectedness transfers along homeomorphisms (reverse). **)
+Theorem homeomorphism_reflects_simply_connected : forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  simply_connected Y Ty ->
+  simply_connected X Tx.
+let X Tx Y Ty f.
+assume Hhome : homeomorphism X Tx Y Ty f.
+assume HscY : simply_connected Y Ty.
+claim HinvPack : exists g:set,
+  continuous_map Y Ty X Tx g /\
+  (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x) /\
+  (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y).
+{
+  exact (homeomorphism_inverse_package
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+apply HinvPack.
+let g.
+assume HgPack.
+claim HgAB :
+  continuous_map Y Ty X Tx g /\
+  (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x).
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+    HgPack).
+}
+claim HgCont : continuous_map Y Ty X Tx g.
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g)
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+    HgAB).
+}
+claim HleftInv : forall x:set, x :e X -> apply_fun g (apply_fun f x) = x.
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g)
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+    HgAB).
+}
+claim HrightInv : forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y.
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+    HgPack).
+}
+claim HhomeInv : homeomorphism Y Ty X Tx g.
+{
+  exact (homeomorphism_inverse_is_homeomorphism
+    X
+    Tx
+    Y
+    Ty
+    f
+    g
+    Hhome
+    HgCont
+    HleftInv
+    HrightInv).
+}
+exact (homeomorphism_preserves_simply_connected
+  Y
+  Ty
+  X
+  Tx
+  g
+  HhomeInv
+  HscY).
+Qed.
+
 (** from S59 Exercise 1 (line 1615 in algtop.tex) **)
 (** LATEX VERSION: Let X be the union of two copies of S^2 having a single point in common. The fundamental group of X is trivial. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
@@ -76113,7 +76671,111 @@ Theorem ex59_1_wedge_S2_trivial_pi1 : forall X Tx x0 A B fA fB:set,
   homeomorphism A (subspace_topology X Tx A) (Sn 2) (Sn_topology 2) fA ->
   homeomorphism B (subspace_topology X Tx B) (Sn 2) (Sn_topology 2) fB ->
   simply_connected X Tx.
-admit.
+let X Tx x0 A B fA fB.
+assume Htop : topology_on X Tx.
+assume Hcover : X = A :\/: B.
+assume Hinter : A :/\: B = Sing x0.
+assume HhomeA : homeomorphism A (subspace_topology X Tx A) (Sn 2) (Sn_topology 2) fA.
+assume HhomeB : homeomorphism B (subspace_topology X Tx B) (Sn 2) (Sn_topology 2) fB.
+claim HscS2 : simply_connected (Sn 2) (Sn_topology 2).
+{
+  exact (thm59_3_Sn_simply_connected
+    2
+    (nat_p_omega 2 nat_2)
+    (Subq_ref 2)).
+}
+claim HscA : simply_connected A (subspace_topology X Tx A).
+{
+  exact (homeomorphism_reflects_simply_connected
+    A
+    (subspace_topology X Tx A)
+    (Sn 2)
+    (Sn_topology 2)
+    fA
+    HhomeA
+    HscS2).
+}
+claim HscB : simply_connected B (subspace_topology X Tx B).
+{
+  exact (homeomorphism_reflects_simply_connected
+    B
+    (subspace_topology X Tx B)
+    (Sn 2)
+    (Sn_topology 2)
+    fB
+    HhomeB
+    HscS2).
+}
+claim Hx0AB : x0 :e A :/\: B.
+{
+  rewrite Hinter.
+  exact (SingI x0).
+}
+claim Hx0A : x0 :e A.
+{
+  exact (binintersectE1
+    A
+    B
+    x0
+    Hx0AB).
+}
+claim Hx0Union : x0 :e A :\/: B.
+{
+  exact (binunionI1
+    A
+    B
+    x0
+    Hx0A).
+}
+claim Hx0X : x0 :e X.
+{
+  exact (mem_eqL
+    x0
+    X
+    (A :\/: B)
+    Hcover
+    Hx0Union).
+}
+claim HneAB : (A :/\: B) <> Empty.
+{
+  rewrite Hinter.
+  exact (elem_implies_nonempty
+    (Sing x0)
+    x0
+    (SingI x0)).
+}
+claim HpcAB : path_connected_space (A :/\: B) (subspace_topology X Tx (A :/\: B)).
+{
+  rewrite Hinter.
+  exact (singleton_subspace_path_connected
+    X
+    Tx
+    x0
+    Htop
+    Hx0X).
+}
+claim HscX_if_open :
+  A :e Tx ->
+  B :e Tx ->
+  simply_connected X Tx.
+{
+  assume HAopen : A :e Tx.
+  assume HBopen : B :e Tx.
+  exact (cor59_2_simply_connected_union
+    X
+    Tx
+    A
+    B
+    Htop
+    HAopen
+    HBopen
+    Hcover
+    HscA
+    HscB
+    HneAB
+    HpcAB).
+}
+admit. (** remaining gap: derive A :e Tx and B :e Tx from current hypotheses **)
 Admitted.
 
 (** from S59 Exercise 3(a) (line 1617 in algtop.tex) **)
