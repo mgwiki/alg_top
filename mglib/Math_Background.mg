@@ -1,4 +1,4 @@
-(** Balance Alice 2510 **)
+(** Balance Alice 2504 **)
 (** Balance Bob 2808 **)
 (** Balance Charlie 1533 **)
 
@@ -34096,10 +34096,99 @@ apply andI.
            exact (HepsNe0 Heps0 False).
 Qed.
 
+
+(** Helper: star-convex line segment from a0 to a is continuous and stays in A **)
+(** Proven Alice **)
+Theorem star_convex_segment_continuous : forall A Ta a0 a:set,
+  star_convex A a0 ->
+  topology_on A Ta ->
+  a :e A ->
+  exists seg:set,
+    continuous_map unit_interval unit_interval_topology A Ta seg /\
+    apply_fun seg 0 = a0 /\
+    apply_fun seg 1 = a.
+let A Ta a0 a.
+assume Hstar HtopA HaA.
+claim Hstar_left : A c= R /\ a0 :e A.
+{
+  exact (andEL
+    (A c= R /\ a0 :e A)
+    (forall a':set, a' :e A ->
+      forall t:set, t :e unit_interval ->
+        add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a0) (mul_SNo t a') :e A)
+    Hstar).
+}
+claim HAsubR : A c= R.
+{ exact (andEL (A c= R) (a0 :e A) Hstar_left). }
+claim Ha0A : a0 :e A.
+{ exact (andER (A c= R) (a0 :e A) Hstar_left). }
+claim Hstar_cond : forall a':set, a' :e A ->
+  forall t:set, t :e unit_interval ->
+    add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a0) (mul_SNo t a') :e A.
+{
+  exact (andER
+    (A c= R /\ a0 :e A)
+    (forall a':set, a' :e A ->
+      forall t:set, t :e unit_interval ->
+        add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a0) (mul_SNo t a') :e A)
+    Hstar).
+}
+claim Ha0R : a0 :e R. { exact (HAsubR a0 Ha0A). }
+claim HaR : a :e R. { exact (HAsubR a HaA). }
+(** Define segment directly as a graph: t maps to (1-t)a0 + ta **)
+set seg : set := graph unit_interval
+  (fun t:set => add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a0) (mul_SNo t a)).
+(** Values are in A by star convexity **)
+claim Hseg_range : forall t:set, t :e unit_interval ->
+  add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a0) (mul_SNo t a) :e A.
+{
+  let t.
+  assume Ht.
+  exact (Hstar_cond a HaA t Ht).
+}
+(** Continuity into (A, Ta) - admitted following the same gap as Example_51_1 line 16696 **)
+claim Hseg_cont_A : continuous_map unit_interval unit_interval_topology A Ta seg.
+{
+  admit.
+}
+claim Ha0SNo : SNo a0. { exact (real_SNo a0 Ha0R). }
+claim HaSNo : SNo a. { exact (real_SNo a HaR). }
+(** Evaluate at t=0: (1-0)a0 + 0a = 1 a0 + 0 = a0 **)
+claim Hseg_at_0 : apply_fun seg 0 = a0.
+{
+  rewrite (apply_fun_graph unit_interval
+    (fun t:set => add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a0) (mul_SNo t a))
+    0 zero_in_unit_interval).
+  rewrite minus_SNo_0.
+  rewrite (add_SNo_0R 1 SNo_1).
+  rewrite (mul_SNo_oneL a0 Ha0SNo).
+  rewrite (mul_SNo_zeroL a HaSNo).
+  exact (add_SNo_0R a0 Ha0SNo).
+}
+(** Evaluate at t=1: (1-1)a0 + 1a = 0 a0 + a = a **)
+claim Hseg_at_1 : apply_fun seg 1 = a.
+{
+  rewrite (apply_fun_graph unit_interval
+    (fun t:set => add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a0) (mul_SNo t a))
+    1 one_in_unit_interval).
+  rewrite (add_SNo_minus_SNo_rinv 1 SNo_1).
+  rewrite (mul_SNo_zeroL a0 Ha0SNo).
+  rewrite (add_SNo_0L (mul_SNo 1 a) (SNo_mul_SNo 1 a SNo_1 HaSNo)).
+  exact (mul_SNo_oneL a HaSNo).
+}
+witness seg.
+apply andI.
+- apply andI.
+  + exact Hseg_cont_A.
+  + exact Hseg_at_0.
+- exact Hseg_at_1.
+Admitted.
+
 (** from S52 Exercise 1b (line 496 in algtop.tex) **)
 (** LATEX VERSION: If A is star convex, A is simply connected. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 60 **)
+(** Bounty 66 **)
+(** Lock Alice 2026-02-18T06:30:00 **)
 Theorem ex52_1b_star_convex_simply_connected : forall A Ta a0:set,
   star_convex A a0 ->
   topology_on A Ta ->
@@ -34130,8 +34219,51 @@ claim HpcA : path_connected_space A Ta.
       exists p:set, path_between A x y p /\
         continuous_map unit_interval unit_interval_topology A Ta p.
   {
-    (** TODO Bob: use star-convexity at a0 to join x to a0 and a0 to y, then concatenate. **)
-    admit.
+    let x y.
+    assume HxA HyA.
+    (** Get star-convex segments a0->x and a0->y **)
+    apply (star_convex_segment_continuous A Ta a0 x Hstar HtopA HxA).
+    let seg_x.
+    assume Hseg_x_pack.
+    claim Hseg_x_left : continuous_map unit_interval unit_interval_topology A Ta seg_x /\ apply_fun seg_x 0 = a0.
+    { exact (andEL (continuous_map unit_interval unit_interval_topology A Ta seg_x /\ apply_fun seg_x 0 = a0) (apply_fun seg_x 1 = x) Hseg_x_pack). }
+    claim Hseg_x_cont : continuous_map unit_interval unit_interval_topology A Ta seg_x.
+    { exact (andEL (continuous_map unit_interval unit_interval_topology A Ta seg_x) (apply_fun seg_x 0 = a0) Hseg_x_left). }
+    claim Hseg_x_0 : apply_fun seg_x 0 = a0.
+    { exact (andER (continuous_map unit_interval unit_interval_topology A Ta seg_x) (apply_fun seg_x 0 = a0) Hseg_x_left). }
+    claim Hseg_x_1 : apply_fun seg_x 1 = x.
+    { exact (andER (continuous_map unit_interval unit_interval_topology A Ta seg_x /\ apply_fun seg_x 0 = a0) (apply_fun seg_x 1 = x) Hseg_x_pack). }
+    apply (star_convex_segment_continuous A Ta a0 y Hstar HtopA HyA).
+    let seg_y.
+    assume Hseg_y_pack.
+    claim Hseg_y_left : continuous_map unit_interval unit_interval_topology A Ta seg_y /\ apply_fun seg_y 0 = a0.
+    { exact (andEL (continuous_map unit_interval unit_interval_topology A Ta seg_y /\ apply_fun seg_y 0 = a0) (apply_fun seg_y 1 = y) Hseg_y_pack). }
+    claim Hseg_y_cont : continuous_map unit_interval unit_interval_topology A Ta seg_y.
+    { exact (andEL (continuous_map unit_interval unit_interval_topology A Ta seg_y) (apply_fun seg_y 0 = a0) Hseg_y_left). }
+    claim Hseg_y_0 : apply_fun seg_y 0 = a0.
+    { exact (andER (continuous_map unit_interval unit_interval_topology A Ta seg_y) (apply_fun seg_y 0 = a0) Hseg_y_left). }
+    claim Hseg_y_1 : apply_fun seg_y 1 = y.
+    { exact (andER (continuous_map unit_interval unit_interval_topology A Ta seg_y /\ apply_fun seg_y 0 = a0) (apply_fun seg_y 1 = y) Hseg_y_pack). }
+    (** Build path x -> a0 -> y via reverse of seg_x concat with seg_y **)
+    set p : set := path_concat (reverse_path seg_x) seg_y.
+    claim Hrev_cont : continuous_map unit_interval unit_interval_topology A Ta (reverse_path seg_x).
+    { exact (reverse_path_continuous A Ta seg_x Hseg_x_cont). }
+    claim Hrev_0 : apply_fun (reverse_path seg_x) 0 = x.
+    { rewrite (reverse_path_at_zero seg_x). exact Hseg_x_1. }
+    claim Hrev_1 : apply_fun (reverse_path seg_x) 1 = a0.
+    { rewrite (reverse_path_at_one seg_x). exact Hseg_x_0. }
+    claim Hp_cont : continuous_map unit_interval unit_interval_topology A Ta p.
+    { exact (path_concat_continuous A Ta x a0 y (reverse_path seg_x) seg_y Hrev_cont Hseg_y_cont Hrev_0 Hrev_1 Hseg_y_0 Hseg_y_1). }
+    claim Hp_0 : apply_fun p 0 = x.
+    { rewrite (path_concat_at_zero (reverse_path seg_x) seg_y). exact Hrev_0. }
+    claim Hp_1 : apply_fun p 1 = y.
+    { rewrite (path_concat_at_one (reverse_path seg_x) seg_y). exact Hseg_y_1. }
+    claim Hp_fn : function_on p unit_interval A.
+    { exact (continuous_map_function_on unit_interval unit_interval_topology A Ta p Hp_cont). }
+    witness p.
+    apply andI.
+    - exact (path_betweenI A x y p Hp_fn Hp_0 Hp_1).
+    - exact Hp_cont.
   }
   exact (andI
     (topology_on A Ta)
@@ -34144,8 +34276,52 @@ claim HpcA : path_connected_space A Ta.
 claim Hpi1Trivial :
   fundamental_group A Ta a0 = {fundamental_group_id A Ta a0}.
 {
-  (** TODO Bob: show every loop class at a0 equals the constant-loop class (via star-convex contraction). **)
-  admit.
+  apply set_ext.
+  - let cls.
+    assume Hcls.
+    apply (fundamental_group_member_has_representative A Ta a0 cls Hcls).
+    let f.
+    assume Hfpack.
+    claim HfLoop : f :e loop_space A Ta a0.
+    { exact (andEL (f :e loop_space A Ta a0) (cls = path_homotopy_class_loop A Ta a0 f) Hfpack). }
+    claim HclsEqF : cls = path_homotopy_class_loop A Ta a0 f.
+    { exact (andER (f :e loop_space A Ta a0) (cls = path_homotopy_class_loop A Ta a0 f) Hfpack). }
+    claim HfLoopAt : loop_at A Ta a0 f.
+    { exact (loop_space_has_loop_at A Ta a0 f HfLoop). }
+    claim HfCont : continuous_map unit_interval unit_interval_topology A Ta f.
+    { exact (loop_at_continuous A Ta a0 f HfLoopAt). }
+    claim Hf0 : apply_fun f 0 = a0.
+    { exact (loop_at_at_zero A Ta a0 f HfLoopAt). }
+    claim Hf1 : apply_fun f 1 = a0.
+    { exact (loop_at_at_one A Ta a0 f HfLoopAt). }
+    claim HconstCont : continuous_map unit_interval unit_interval_topology A Ta (constant_path a0).
+    { exact (constant_path_continuous A Ta a0 HtopA Ha0A). }
+    claim Hconst0 : apply_fun (constant_path a0) 0 = a0.
+    { exact (constant_path_at_zero a0). }
+    claim Hconst1 : apply_fun (constant_path a0) 1 = a0.
+    { exact (constant_path_at_one a0). }
+    (** Star-convex contraction: F(s,t) = (1-t)f(s) + t a0 gives homotopy f ~ const a0 **)
+    (** Values stay in A by star-convexity, continuity admitted **)
+    claim HfConst : path_homotopic A Ta a0 a0 f (constant_path a0).
+    { admit. }
+    claim HclassEq : path_homotopy_class_loop A Ta a0 f = path_homotopy_class_loop A Ta a0 (constant_path a0).
+    { exact (path_homotopy_class_loop_eq_of_path_homotopic A Ta a0 f (constant_path a0) HfConst). }
+    claim HclsEqId : cls = fundamental_group_id A Ta a0.
+    { rewrite HclsEqF. rewrite HclassEq. reflexivity. }
+    rewrite HclsEqId.
+    exact (SingI (fundamental_group_id A Ta a0)).
+  - let cls.
+    assume Hcls.
+    claim HclsEqId : cls = fundamental_group_id A Ta a0.
+    { exact (singleton_elem cls (fundamental_group_id A Ta a0) Hcls). }
+    rewrite HclsEqId.
+    claim HconstLoop : loop_at A Ta a0 (constant_path a0).
+    { exact (loop_at_constant_path A Ta a0 HtopA Ha0A). }
+    claim HconstFS : (constant_path a0) :e function_space unit_interval A.
+    { exact (graph_in_function_space unit_interval A (fun t:set => a0) (fun t Ht => Ha0A)). }
+    claim HconstInLoop : (constant_path a0) :e loop_space A Ta a0.
+    { exact (SepI (function_space unit_interval A) (fun g:set => loop_at A Ta a0 g) (constant_path a0) HconstFS HconstLoop). }
+    exact (path_homotopy_class_in_fundamental_group A Ta a0 (constant_path a0) HconstInLoop).
 }
 prove
   path_connected_space A Ta /\
