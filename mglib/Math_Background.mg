@@ -1,5 +1,5 @@
 (** Balance Alice 2135 **)
-(** Balance Bob 2039 **)
+(** Balance Bob 2029 **)
 (** Balance Charlie 1223 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -16845,7 +16845,8 @@ Qed.
 (** from S52 Theorem 52.1 (line 396 in algtop.tex): alpha-hat is a group isomorphism **)
 (** LATEX VERSION: The map alpha-hat is a group isomorphism from pi1(X,x0) to pi1(X,x1). **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Bob 2026-02-18T02:30:00 **)
 Theorem Theorem_52_1_basepoint_isomorphism : forall X Tx x0 x1 alpha:set,
   topology_on X Tx ->
   continuous_map unit_interval unit_interval_topology X Tx alpha ->
