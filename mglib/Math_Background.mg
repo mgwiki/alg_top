@@ -28511,7 +28511,7 @@ claim Hex :
   }
   claim HhomeV0 :
     homeomorphism V0 (subspace_topology E Te V0) U (subspace_topology B Tb U)
-      (graph V0 (fun z:set => apply_fun p z)).
+      (graph V0 (apply_fun p)).
   {
     exact (Hhome V0 HV0Slice).
   }
@@ -28519,17 +28519,142 @@ claim Hex :
     exists g0:set,
       continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0 /\
       (forall x:set, x :e V0 ->
-        apply_fun g0 (apply_fun (graph V0 (fun z:set => apply_fun p z)) x) = x) /\
+        apply_fun g0 (apply_fun (graph V0 (apply_fun p)) x) = x) /\
       (forall y:set, y :e U ->
-        apply_fun (graph V0 (fun z:set => apply_fun p z)) (apply_fun g0 y) = y).
+        apply_fun (graph V0 (apply_fun p)) (apply_fun g0 y) = y).
   {
     exact (homeomorphism_inverse_package
       V0
       (subspace_topology E Te V0)
       U
       (subspace_topology B Tb U)
-      (graph V0 (fun z:set => apply_fun p z))
+      (graph V0 (apply_fun p))
       HhomeV0).
+  }
+  apply HinvV0.
+  let g0.
+  assume Hg0.
+  claim Hg0pair :
+    continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0 /\
+    (forall x:set, x :e V0 ->
+      apply_fun g0 (apply_fun (graph V0 (apply_fun p)) x) = x).
+  {
+    exact (andEL
+      (continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0 /\
+       (forall x:set, x :e V0 ->
+         apply_fun g0 (apply_fun (graph V0 (apply_fun p)) x) = x))
+      (forall y:set, y :e U ->
+        apply_fun (graph V0 (apply_fun p)) (apply_fun g0 y) = y)
+      Hg0).
+  }
+  claim Hg0cont :
+    continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0.
+  {
+    exact (andEL
+      (continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0)
+      (forall x:set, x :e V0 ->
+        apply_fun g0 (apply_fun (graph V0 (apply_fun p)) x) = x)
+      Hg0pair).
+  }
+  claim Hleft :
+    forall x:set, x :e V0 ->
+      apply_fun g0 (apply_fun (graph V0 (apply_fun p)) x) = x.
+  {
+    exact (andER
+      (continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0)
+      (forall x:set, x :e V0 ->
+        apply_fun g0 (apply_fun (graph V0 (apply_fun p)) x) = x)
+      Hg0pair).
+  }
+  claim Hright :
+    forall y:set, y :e U ->
+      apply_fun (graph V0 (apply_fun p)) (apply_fun g0 y) = y.
+  {
+    exact (andER
+      (continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0 /\
+       (forall x:set, x :e V0 ->
+         apply_fun g0 (apply_fun (graph V0 (apply_fun p)) x) = x))
+      (forall y:set, y :e U ->
+        apply_fun (graph V0 (apply_fun p)) (apply_fun g0 y) = y)
+      Hg0).
+  }
+  claim Hg0f0e0 : apply_fun g0 (apply_fun f 0) = e0.
+  {
+    claim HgraphE0 :
+      apply_fun (graph V0 (apply_fun p)) e0 = apply_fun p e0.
+    {
+      exact (apply_fun_graph V0 (apply_fun p) e0 He0V0).
+    }
+    claim HleftE0 :
+      apply_fun g0 (apply_fun (graph V0 (apply_fun p)) e0) = e0.
+    {
+      exact (Hleft e0 He0V0).
+    }
+    claim Hg0pe0 : apply_fun g0 (apply_fun p e0) = e0.
+    {
+      rewrite <- HgraphE0.
+      exact HleftE0.
+    }
+    rewrite <- Hstart.
+    exact Hg0pe0.
+  }
+  claim Hg0CommN :
+    forall u:set, u :e N ->
+      apply_fun p (apply_fun g0 (apply_fun f u)) = apply_fun f u.
+  {
+    let u.
+    assume HuN.
+    claim HfuU : apply_fun f u :e U.
+    {
+      exact (HNmap u HuN).
+    }
+    claim HfnpG0 : function_on g0 U V0.
+    {
+      exact (continuous_map_function_on
+        U
+        (subspace_topology B Tb U)
+        V0
+        (subspace_topology E Te V0)
+        g0
+        Hg0cont).
+    }
+    claim Hg0fuV0 : apply_fun g0 (apply_fun f u) :e V0.
+    {
+      exact (HfnpG0 (apply_fun f u) HfuU).
+    }
+    claim HrightU :
+      apply_fun (graph V0 (apply_fun p))
+        (apply_fun g0 (apply_fun f u)) = apply_fun f u.
+    {
+      exact (Hright (apply_fun f u) HfuU).
+    }
+    claim HgraphU :
+      apply_fun (graph V0 (apply_fun p))
+        (apply_fun g0 (apply_fun f u)) =
+      apply_fun p (apply_fun g0 (apply_fun f u)).
+    {
+      exact (apply_fun_graph
+        V0
+        (apply_fun p)
+        (apply_fun g0 (apply_fun f u))
+        Hg0fuV0).
+    }
+    rewrite <- HgraphU.
+    exact HrightU.
+  }
+  claim HlocalLiftSeed :
+    exists g0:set,
+      continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0 /\
+      apply_fun g0 (apply_fun f 0) = e0 /\
+      (forall u:set, u :e N ->
+        apply_fun p (apply_fun g0 (apply_fun f u)) = apply_fun f u).
+  {
+    witness g0.
+    apply andI.
+    - apply andI.
+      + exact Hg0cont.
+      + exact Hg0f0e0.
+    - exact Hg0CommN.
   }
   (** TODO Bob: construct and extend the local lift through N using HinvV0 and covering data. **)
   admit.
