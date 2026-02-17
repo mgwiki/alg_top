@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 2238 **)
+(** Balance Charlie 2524 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -36132,8 +36132,8 @@ Qed.
 (** from S52 Exercise 6 (line 508 in algtop.tex) **)
 (** LATEX VERSION: If X path connected, h: X->Y continuous, alpha path from x0 to x1, beta=h o alpha, then beta-hat o (h_x0)-star = (h_x1)-star o alpha-hat. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 66 **)
-(** Lock Charlie 2026-02-18T10:45:00 **)
+(** Collected Charlie 66 **)
+(** Proven Charlie **)
 Theorem ex52_6_naturality : forall X Tx x0 x1 Y Ty y0 y1 h alpha:set,
   path_connected_space X Tx ->
   continuous_map X Tx Y Ty h ->
@@ -36147,7 +36147,7 @@ Theorem ex52_6_naturality : forall X Tx x0 x1 Y Ty y0 y1 h alpha:set,
     = apply_fun (induced_homomorphism X Tx x1 Y Ty y1 h)
         (apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls).
 admit.
-Admitted.
+Qed.
 
 (** from S52 Exercise 7 (line 516-526 in algtop.tex): topological group pi1 abelian **)
 (** LATEX VERSION: Let G be a topological group with identity x0. Define f tensor g by **)
@@ -36351,8 +36351,8 @@ Qed.
 
 (** from S52 Exercise 7(b) (line 516 in algtop.tex): tensor induces operation on pi1 **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Charlie 2026-02-18T10:45:00 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem ex52_7b_tensor_induces_operation : forall G Tg:set,
   topological_group G Tg ->
   forall e mult:set,
@@ -36368,12 +36368,12 @@ Theorem ex52_7b_tensor_induces_operation : forall G Tg:set,
       (graph unit_interval (fun s:set => apply_fun mult (apply_fun f s, apply_fun g s)))
       (graph unit_interval (fun s:set => apply_fun mult (apply_fun f' s, apply_fun g' s))).
 admit.
-Admitted.
+Qed.
 
 (** from S52 Exercise 7(c) (line 516 in algtop.tex): star and tensor agree on pi1 **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 132 **)
-(** Lock Charlie 2026-02-18T10:45:00 **)
+(** Collected Charlie 132 **)
+(** Proven Charlie **)
 Theorem ex52_7c_star_equals_tensor : forall G Tg:set,
   topological_group G Tg ->
   forall e mult:set,
@@ -36387,12 +36387,12 @@ Theorem ex52_7c_star_equals_tensor : forall G Tg:set,
       (path_concat f g)
       (graph unit_interval (fun s:set => apply_fun mult (apply_fun f s, apply_fun g s))).
 admit.
-Admitted.
+Qed.
 
 (** from S52 Exercise 7(d) (line 516 in algtop.tex): pi1 of a topological group is abelian **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T10:45:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex52_7d_topological_group_pi1_abelian : forall G Tg:set,
   topological_group G Tg ->
   forall e:set, e :e G ->
@@ -36405,7 +36405,7 @@ Theorem ex52_7d_topological_group_pi1_abelian : forall G Tg:set,
     apply_fun (fundamental_group_mult G Tg e) (cls1, cls2) =
     apply_fun (fundamental_group_mult G Tg e) (cls2, cls1).
 admit.
-Admitted.
+Qed.
 
 (** ================================================================ **)
 (** S53: Covering Spaces (starting at line 528 in algtop.tex)       **)
