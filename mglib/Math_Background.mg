@@ -18578,7 +18578,186 @@ Theorem Example_52_1_convex_trivial_pi1 : forall A Ta x0:set,
   A c= R -> convex_in R A ->
   topology_on A Ta -> x0 :e A ->
   fundamental_group A Ta x0 = {fundamental_group_id A Ta x0}.
-admit.
+let A Ta x0.
+assume HAsubR Hconv HtopA Hx0.
+apply set_ext.
+- let cls.
+  assume Hcls.
+  claim Hrep :
+    exists f:set, f :e loop_space A Ta x0 /\
+      cls = path_homotopy_class_loop A Ta x0 f.
+  {
+    exact (fundamental_group_member_has_representative
+      A
+      Ta
+      x0
+      cls
+      Hcls).
+  }
+  apply Hrep.
+  let f.
+  assume Hfpack.
+  claim HfLoop : f :e loop_space A Ta x0.
+  {
+    exact (andEL
+      (f :e loop_space A Ta x0)
+      (cls = path_homotopy_class_loop A Ta x0 f)
+      Hfpack).
+  }
+  claim HclsEqF : cls = path_homotopy_class_loop A Ta x0 f.
+  {
+    exact (andER
+      (f :e loop_space A Ta x0)
+      (cls = path_homotopy_class_loop A Ta x0 f)
+      Hfpack).
+  }
+  claim HfLoopAt : loop_at A Ta x0 f.
+  {
+    exact (loop_space_has_loop_at
+      A
+      Ta
+      x0
+      f
+      HfLoop).
+  }
+  claim HfCont :
+    continuous_map unit_interval unit_interval_topology A Ta f.
+  {
+    exact (loop_at_continuous
+      A
+      Ta
+      x0
+      f
+      HfLoopAt).
+  }
+  claim Hf0 : apply_fun f 0 = x0.
+  {
+    exact (loop_at_at_zero
+      A
+      Ta
+      x0
+      f
+      HfLoopAt).
+  }
+  claim Hf1 : apply_fun f 1 = x0.
+  {
+    exact (loop_at_at_one
+      A
+      Ta
+      x0
+      f
+      HfLoopAt).
+  }
+  claim HconstCont :
+    continuous_map unit_interval unit_interval_topology A Ta (constant_path x0).
+  {
+    exact (constant_path_continuous
+      A
+      Ta
+      x0
+      HtopA
+      Hx0).
+  }
+  claim Hconst0 : apply_fun (constant_path x0) 0 = x0.
+  {
+    exact (constant_path_at_zero x0).
+  }
+  claim Hconst1 : apply_fun (constant_path x0) 1 = x0.
+  {
+    exact (constant_path_at_one x0).
+  }
+  claim HfConst :
+    path_homotopic A Ta x0 x0 f (constant_path x0).
+  {
+    exact (Example_51_1_convex_paths_homotopic
+      A
+      Ta
+      x0
+      x0
+      f
+      (constant_path x0)
+      HAsubR
+      Hconv
+      HtopA
+      HfCont
+      HconstCont
+      Hf0
+      Hf1
+      Hconst0
+      Hconst1).
+  }
+  claim HclassEq :
+    path_homotopy_class_loop A Ta x0 f
+    =
+    path_homotopy_class_loop A Ta x0 (constant_path x0).
+  {
+    exact (path_homotopy_class_loop_eq_of_path_homotopic
+      A
+      Ta
+      x0
+      f
+      (constant_path x0)
+      HfConst).
+  }
+  claim HidDef :
+    fundamental_group_id A Ta x0
+    =
+    path_homotopy_class_loop A Ta x0 (constant_path x0).
+  {
+    reflexivity.
+  }
+  claim HclsEqId :
+    cls = fundamental_group_id A Ta x0.
+  {
+    rewrite HclsEqF.
+    rewrite HclassEq.
+    rewrite <- HidDef.
+    reflexivity.
+  }
+  rewrite HclsEqId.
+  exact (SingI (fundamental_group_id A Ta x0)).
+- let cls.
+  assume Hcls.
+  claim HclsEqId : cls = fundamental_group_id A Ta x0.
+  {
+    exact (singleton_elem
+      cls
+      (fundamental_group_id A Ta x0)
+      Hcls).
+  }
+  rewrite HclsEqId.
+  claim HconstLoop : loop_at A Ta x0 (constant_path x0).
+  {
+    exact (loop_at_constant_path
+      A
+      Ta
+      x0
+      HtopA
+      Hx0).
+  }
+  claim HconstFS : (constant_path x0) :e function_space unit_interval A.
+  {
+    exact (graph_in_function_space
+      unit_interval
+      A
+      (fun t:set => x0)
+      (fun t Ht => Hx0)).
+  }
+  claim HconstInLoop : (constant_path x0) :e loop_space A Ta x0.
+  {
+    exact (SepI
+      (function_space unit_interval A)
+      (fun g:set => loop_at A Ta x0 g)
+      (constant_path x0)
+      HconstFS
+      HconstLoop).
+  }
+  exact (path_homotopy_class_in_fundamental_group
+    A
+    Ta
+    x0
+    (constant_path x0)
+    HconstInLoop).
 Admitted.
 
 (** from S52 Definition (line 374 in algtop.tex): the alpha-hat map for change of basepoint **)
