@@ -2,7 +2,7 @@
 (** Balance Bob 2863 **)
 (** Balance Charlie 1581 **)
 
-(** Sum of Balences and Bounties 48150 **)
+(** Sum of Balances and Bounties 48150 **)
 
 (* Parameter Eps_i "174b78e53fc239e8c2aab4ab5a996a27e3e5741e88070dad186e05fb13f275e5" *)
 Parameter Eps_i : (set->prop)->set.
