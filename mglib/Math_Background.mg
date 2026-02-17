@@ -1,5 +1,5 @@
 (** Balance Alice 2410 **)
-(** Balance Bob 2395 **)
+(** Balance Bob 2450 **)
 (** Balance Charlie 1188 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -47003,8 +47003,8 @@ Admitted.
 (** from S58 Corollary 58.5 trivial case (line 1423 in algtop.tex) **)
 (** LATEX VERSION: Let h, k: X -> Y be homotopic. If h-star is trivial, so is k-star. **)
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Bob 2026-02-18T02:30:00 **)
+(** Collected Bob 33 **)
+(** Proven Bob **)
 Theorem cor58_5_homotopic_maps_trivial : forall X Tx Y Ty x0 h k:set,
   continuous_map X Tx Y Ty h ->
   continuous_map X Tx Y Ty k ->
@@ -47097,7 +47097,7 @@ claim Hdesired_cls :
   exact HbaseId.
 }
 exact Hdesired_cls.
-Admitted.
+Qed.
 
 (** helper: a constant map induces the trivial map on fundamental groups **)
 (** Proven Bob **)
@@ -47193,8 +47193,8 @@ Qed.
 (** from S58 Corollary 58.6 (line 1425 in algtop.tex) **)
 (** LATEX VERSION: If h: X -> Y is nulhomotopic, then h-star is the trivial homomorphism. **)
 (** EFFORT: 2 lines textbook, difficulty 1/10, USD 20 **)
-(** Bounty 22 **)
-(** Lock Bob 2026-02-18T02:30:00 **)
+(** Collected Bob 22 **)
+(** Proven Bob **)
 Theorem cor58_6_nulhomotopic_trivial : forall X Tx Y Ty h x0:set,
   continuous_map X Tx Y Ty h ->
   x0 :e X ->
@@ -47287,7 +47287,7 @@ claim Htarget :
     HconstTriv).
 }
 exact Htarget.
-Admitted.
+Qed.
 
 (** from S58 Theorem 58.7 (line 1429 in algtop.tex) **)
 (** LATEX VERSION: If f: X -> Y is a homotopy equivalence with f(x0) = y0, then f-star: pi_1(X,x0) -> pi_1(Y,y0) is an isomorphism. **)
