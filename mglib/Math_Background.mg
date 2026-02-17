@@ -18137,6 +18137,573 @@ claim Hmult :
     HuvPair).
   rewrite tuple_2_0_eq.
   rewrite tuple_2_1_eq.
+  claim HepsuLoop :
+    (Eps_i (fun f:set => f :e u)) :e loop_space X Tx x0.
+  {
+    claim HuRep :
+      exists fu:set, fu :e loop_space X Tx x0 /\
+        u = path_homotopy_class_loop X Tx x0 fu.
+    {
+      exact (fundamental_group_member_has_representative
+        X
+        Tx
+        x0
+        u
+        Hu).
+    }
+    apply HuRep.
+    let fu.
+    assume HuPack.
+    claim HfuLoop : fu :e loop_space X Tx x0.
+    {
+      exact (andEL
+        (fu :e loop_space X Tx x0)
+        (u = path_homotopy_class_loop X Tx x0 fu)
+        HuPack).
+    }
+    claim HuEq : u = path_homotopy_class_loop X Tx x0 fu.
+    {
+      exact (andER
+        (fu :e loop_space X Tx x0)
+        (u = path_homotopy_class_loop X Tx x0 fu)
+        HuPack).
+    }
+    claim HfuLoopAt : loop_at X Tx x0 fu.
+    {
+      exact (loop_space_has_loop_at
+        X
+        Tx
+        x0
+        fu
+        HfuLoop).
+    }
+    claim HfuCont :
+      continuous_map unit_interval unit_interval_topology X Tx fu.
+    {
+      exact (loop_at_continuous
+        X
+        Tx
+        x0
+        fu
+        HfuLoopAt).
+    }
+    claim Hfu0 : apply_fun fu 0 = x0.
+    {
+      exact (loop_at_at_zero
+        X
+        Tx
+        x0
+        fu
+        HfuLoopAt).
+    }
+    claim Hfu1 : apply_fun fu 1 = x0.
+    {
+      exact (loop_at_at_one
+        X
+        Tx
+        x0
+        fu
+        HfuLoopAt).
+    }
+    claim HfuRefl : path_homotopic X Tx x0 x0 fu fu.
+    {
+      exact (Lemma_51_1_path_homotopy_refl
+        X
+        Tx
+        x0
+        x0
+        fu
+        HfuCont
+        Hfu0
+        Hfu1).
+    }
+    claim HfuInClass : fu :e path_homotopy_class_loop X Tx x0 fu.
+    {
+      exact (SepI
+        (loop_space X Tx x0)
+        (fun h:set => path_homotopic X Tx x0 x0 fu h)
+        fu
+        HfuLoop
+        HfuRefl).
+    }
+    claim HfuInU : fu :e u.
+    {
+      exact (mem_eqL
+        fu
+        u
+        (path_homotopy_class_loop X Tx x0 fu)
+        HuEq
+        HfuInClass).
+    }
+    claim HepsInU : (Eps_i (fun f:set => f :e u)) :e u.
+    {
+      exact (Eps_i_ax
+        (fun f:set => f :e u)
+        fu
+        HfuInU).
+    }
+    claim HepsInClass :
+      (Eps_i (fun f:set => f :e u)) :e path_homotopy_class_loop X Tx x0 fu.
+    {
+      exact (mem_eqR
+        (Eps_i (fun f:set => f :e u))
+        u
+        (path_homotopy_class_loop X Tx x0 fu)
+        HuEq
+        HepsInU).
+    }
+    exact (path_homotopy_class_loop_in_loop_space
+      X
+      Tx
+      x0
+      fu
+      (Eps_i (fun f:set => f :e u))
+      HepsInClass).
+  }
+  claim HepsvLoop :
+    (Eps_i (fun g:set => g :e v)) :e loop_space X Tx x0.
+  {
+    claim HvRep :
+      exists gv:set, gv :e loop_space X Tx x0 /\
+        v = path_homotopy_class_loop X Tx x0 gv.
+    {
+      exact (fundamental_group_member_has_representative
+        X
+        Tx
+        x0
+        v
+        Hv).
+    }
+    apply HvRep.
+    let gv.
+    assume HvPack.
+    claim HgvLoop : gv :e loop_space X Tx x0.
+    {
+      exact (andEL
+        (gv :e loop_space X Tx x0)
+        (v = path_homotopy_class_loop X Tx x0 gv)
+        HvPack).
+    }
+    claim HvEq : v = path_homotopy_class_loop X Tx x0 gv.
+    {
+      exact (andER
+        (gv :e loop_space X Tx x0)
+        (v = path_homotopy_class_loop X Tx x0 gv)
+        HvPack).
+    }
+    claim HgvLoopAt : loop_at X Tx x0 gv.
+    {
+      exact (loop_space_has_loop_at
+        X
+        Tx
+        x0
+        gv
+        HgvLoop).
+    }
+    claim HgvCont :
+      continuous_map unit_interval unit_interval_topology X Tx gv.
+    {
+      exact (loop_at_continuous
+        X
+        Tx
+        x0
+        gv
+        HgvLoopAt).
+    }
+    claim Hgv0 : apply_fun gv 0 = x0.
+    {
+      exact (loop_at_at_zero
+        X
+        Tx
+        x0
+        gv
+        HgvLoopAt).
+    }
+    claim Hgv1 : apply_fun gv 1 = x0.
+    {
+      exact (loop_at_at_one
+        X
+        Tx
+        x0
+        gv
+        HgvLoopAt).
+    }
+    claim HgvRefl : path_homotopic X Tx x0 x0 gv gv.
+    {
+      exact (Lemma_51_1_path_homotopy_refl
+        X
+        Tx
+        x0
+        x0
+        gv
+        HgvCont
+        Hgv0
+        Hgv1).
+    }
+    claim HgvInClass : gv :e path_homotopy_class_loop X Tx x0 gv.
+    {
+      exact (SepI
+        (loop_space X Tx x0)
+        (fun h:set => path_homotopic X Tx x0 x0 gv h)
+        gv
+        HgvLoop
+        HgvRefl).
+    }
+    claim HgvInV : gv :e v.
+    {
+      exact (mem_eqL
+        gv
+        v
+        (path_homotopy_class_loop X Tx x0 gv)
+        HvEq
+        HgvInClass).
+    }
+    claim HepsInV : (Eps_i (fun g:set => g :e v)) :e v.
+    {
+      exact (Eps_i_ax
+        (fun g:set => g :e v)
+        gv
+        HgvInV).
+    }
+    claim HepsInClass :
+      (Eps_i (fun g:set => g :e v)) :e path_homotopy_class_loop X Tx x0 gv.
+    {
+      exact (mem_eqR
+        (Eps_i (fun g:set => g :e v))
+        v
+        (path_homotopy_class_loop X Tx x0 gv)
+        HvEq
+        HepsInV).
+    }
+    exact (path_homotopy_class_loop_in_loop_space
+      X
+      Tx
+      x0
+      gv
+      (Eps_i (fun g:set => g :e v))
+      HepsInClass).
+  }
+  claim HuvConcatLoop :
+    path_concat
+      (Eps_i (fun f:set => f :e u))
+      (Eps_i (fun g:set => g :e v))
+      :e loop_space X Tx x0.
+  {
+    claim HepsuLoopAt :
+      loop_at X Tx x0 (Eps_i (fun f:set => f :e u)).
+    {
+      exact (loop_space_has_loop_at
+        X
+        Tx
+        x0
+        (Eps_i (fun f:set => f :e u))
+        HepsuLoop).
+    }
+    claim HepsvLoopAt :
+      loop_at X Tx x0 (Eps_i (fun g:set => g :e v)).
+    {
+      exact (loop_space_has_loop_at
+        X
+        Tx
+        x0
+        (Eps_i (fun g:set => g :e v))
+        HepsvLoop).
+    }
+    claim HepsuCont :
+      continuous_map unit_interval unit_interval_topology X Tx
+        (Eps_i (fun f:set => f :e u)).
+    {
+      exact (loop_at_continuous
+        X
+        Tx
+        x0
+        (Eps_i (fun f:set => f :e u))
+        HepsuLoopAt).
+    }
+    claim HepsvCont :
+      continuous_map unit_interval unit_interval_topology X Tx
+        (Eps_i (fun g:set => g :e v)).
+    {
+      exact (loop_at_continuous
+        X
+        Tx
+        x0
+        (Eps_i (fun g:set => g :e v))
+        HepsvLoopAt).
+    }
+    claim Hepsu0 : apply_fun (Eps_i (fun f:set => f :e u)) 0 = x0.
+    {
+      exact (loop_at_at_zero
+        X
+        Tx
+        x0
+        (Eps_i (fun f:set => f :e u))
+        HepsuLoopAt).
+    }
+    claim Hepsu1 : apply_fun (Eps_i (fun f:set => f :e u)) 1 = x0.
+    {
+      exact (loop_at_at_one
+        X
+        Tx
+        x0
+        (Eps_i (fun f:set => f :e u))
+        HepsuLoopAt).
+    }
+    claim Hepsv0 : apply_fun (Eps_i (fun g:set => g :e v)) 0 = x0.
+    {
+      exact (loop_at_at_zero
+        X
+        Tx
+        x0
+        (Eps_i (fun g:set => g :e v))
+        HepsvLoopAt).
+    }
+    claim Hepsv1 : apply_fun (Eps_i (fun g:set => g :e v)) 1 = x0.
+    {
+      exact (loop_at_at_one
+        X
+        Tx
+        x0
+        (Eps_i (fun g:set => g :e v))
+        HepsvLoopAt).
+    }
+    claim HconcatCont :
+      continuous_map unit_interval unit_interval_topology X Tx
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (Eps_i (fun g:set => g :e v))).
+    {
+      exact (path_concat_continuous
+        X
+        Tx
+        x0
+        x0
+        x0
+        (Eps_i (fun f:set => f :e u))
+        (Eps_i (fun g:set => g :e v))
+        HepsuCont
+        HepsvCont
+        Hepsu0
+        Hepsu1
+        Hepsv0
+        Hepsv1).
+    }
+    claim Hconcat0 :
+      apply_fun
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (Eps_i (fun g:set => g :e v)))
+        0
+      = x0.
+    {
+      rewrite (path_concat_at_zero
+        (Eps_i (fun f:set => f :e u))
+        (Eps_i (fun g:set => g :e v))).
+      exact Hepsu0.
+    }
+    claim Hconcat1 :
+      apply_fun
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (Eps_i (fun g:set => g :e v)))
+        1
+      = x0.
+    {
+      rewrite (path_concat_at_one
+        (Eps_i (fun f:set => f :e u))
+        (Eps_i (fun g:set => g :e v))).
+      exact Hepsv1.
+    }
+    claim HconcatLoopAt :
+      loop_at X Tx x0
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (Eps_i (fun g:set => g :e v))).
+    {
+      apply (loop_at_fold
+        X
+        Tx
+        x0
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (Eps_i (fun g:set => g :e v)))).
+      apply andI.
+      - apply andI.
+        + exact HconcatCont.
+        + exact Hconcat0.
+      - exact Hconcat1.
+    }
+    claim HconcatFunSpace :
+      path_concat
+        (Eps_i (fun f:set => f :e u))
+        (Eps_i (fun g:set => g :e v))
+      :e function_space unit_interval X.
+    {
+      claim HepsuFun :
+        function_on (Eps_i (fun f:set => f :e u)) unit_interval X.
+      {
+        exact (continuous_map_function_on
+          unit_interval
+          unit_interval_topology
+          X
+          Tx
+          (Eps_i (fun f:set => f :e u))
+          HepsuCont).
+      }
+      claim HepsvFun :
+        function_on (Eps_i (fun g:set => g :e v)) unit_interval X.
+      {
+        exact (continuous_map_function_on
+          unit_interval
+          unit_interval_topology
+          X
+          Tx
+          (Eps_i (fun g:set => g :e v))
+          HepsvCont).
+      }
+      claim HconcatSub :
+        path_concat
+          (Eps_i (fun f:set => f :e u))
+          (Eps_i (fun g:set => g :e v))
+        c= setprod unit_interval X.
+      {
+        let p.
+        assume Hp.
+        apply (binunionE
+          {(t, apply_fun (Eps_i (fun f:set => f :e u)) (mul_SNo 2 t)) | t :e unit_interval_left_half}
+          {(t, apply_fun (Eps_i (fun g:set => g :e v)) (add_SNo (mul_SNo 2 t) (minus_SNo 1))) | t :e unit_interval_right_half}
+          p
+          Hp).
+        - assume Hleft.
+          apply (ReplE_impred
+            unit_interval_left_half
+            (fun t:set => (t, apply_fun (Eps_i (fun f:set => f :e u)) (mul_SNo 2 t)))
+            p
+            Hleft).
+          let t.
+          assume Ht Heq.
+          claim H2tInI : mul_SNo 2 t :e unit_interval.
+          {
+            rewrite <- (double_map_apply t Ht).
+            exact (double_map_function_on t Ht).
+          }
+          rewrite Heq.
+          exact (tuple_2_setprod_by_pair_Sigma
+            unit_interval
+            X
+            t
+            (apply_fun (Eps_i (fun f:set => f :e u)) (mul_SNo 2 t))
+            (unit_interval_left_half_sub t Ht)
+            (HepsuFun
+              (mul_SNo 2 t)
+              H2tInI)).
+        - assume Hright.
+          apply (ReplE_impred
+            unit_interval_right_half
+            (fun t:set => (t, apply_fun (Eps_i (fun g:set => g :e v)) (add_SNo (mul_SNo 2 t) (minus_SNo 1))))
+            p
+            Hright).
+          let t.
+          assume Ht Heq.
+          claim H2m1tInI : add_SNo (mul_SNo 2 t) (minus_SNo 1) :e unit_interval.
+          {
+            rewrite <- (double_minus_one_map_apply t Ht).
+            exact (double_minus_one_map_function_on t Ht).
+          }
+          rewrite Heq.
+          exact (tuple_2_setprod_by_pair_Sigma
+            unit_interval
+            X
+            t
+            (apply_fun (Eps_i (fun g:set => g :e v)) (add_SNo (mul_SNo 2 t) (minus_SNo 1)))
+            (unit_interval_right_half_sub t Ht)
+            (HepsvFun
+              (add_SNo (mul_SNo 2 t) (minus_SNo 1))
+              H2m1tInI)).
+      }
+      claim HconcatPow :
+        path_concat
+          (Eps_i (fun f:set => f :e u))
+          (Eps_i (fun g:set => g :e v))
+        :e Power (setprod unit_interval X).
+      {
+        exact (PowerI
+          (setprod unit_interval X)
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            (Eps_i (fun g:set => g :e v)))
+          HconcatSub).
+      }
+      claim HconcatFunOn :
+        function_on
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            (Eps_i (fun g:set => g :e v)))
+          unit_interval
+          X.
+      {
+        exact (continuous_map_function_on
+          unit_interval
+          unit_interval_topology
+          X
+          Tx
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            (Eps_i (fun g:set => g :e v)))
+          HconcatCont).
+      }
+      exact (SepI
+        (Power (setprod unit_interval X))
+        (fun h:set => function_on h unit_interval X)
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (Eps_i (fun g:set => g :e v)))
+        HconcatPow
+        HconcatFunOn).
+    }
+    exact (SepI
+      (function_space unit_interval X)
+      (fun h:set => loop_at X Tx x0 h)
+      (path_concat
+        (Eps_i (fun f:set => f :e u))
+        (Eps_i (fun g:set => g :e v)))
+      HconcatFunSpace
+      HconcatLoopAt).
+  }
+  claim HuvMultIn :
+    path_homotopy_class_loop
+      X
+      Tx
+      x0
+      (path_concat
+        (Eps_i (fun f:set => f :e u))
+        (Eps_i (fun g:set => g :e v)))
+      :e fundamental_group X Tx x0.
+  {
+    exact (path_homotopy_class_in_fundamental_group
+      X
+      Tx
+      x0
+      (path_concat
+        (Eps_i (fun f:set => f :e u))
+        (Eps_i (fun g:set => g :e v)))
+      HuvConcatLoop).
+  }
+  rewrite (basepoint_change_map_apply
+    X
+    Tx
+    x0
+    x1
+    alpha
+    (path_homotopy_class_loop
+      X
+      Tx
+      x0
+      (path_concat
+        (Eps_i (fun f:set => f :e u))
+        (Eps_i (fun g:set => g :e v)))
+    )
+    HuvMultIn).
   claim HuImg :
     apply_fun (basepoint_change_map X Tx x0 x1 alpha) u
       :e fundamental_group X Tx x1.
