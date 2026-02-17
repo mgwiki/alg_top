@@ -78115,6 +78115,15 @@ Admitted.
 (** Sandbox Begin Alice **)
 (** Sandbox End Alice **)
 (** Sandbox Begin Bob **)
+Theorem bob_sandbox_overlap_alias_22222291 : forall n:set,
+  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
+  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
+   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
+let n.
+assume Hex.
+exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
+Qed.
+
 (** Sandbox End Bob **)
 (** Sandbox Begin Charlie **)
 (** Sandbox End Charlie **)
