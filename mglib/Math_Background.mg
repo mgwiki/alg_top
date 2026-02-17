@@ -1,5 +1,5 @@
 (** Balance Alice 2135 **)
-(** Balance Bob 2053 **)
+(** Balance Bob 2045 **)
 (** Balance Charlie 1223 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -33545,6 +33545,18 @@ Admitted.
 
 (** from S58 Corollary 58.5 (line 1423 in algtop.tex) **)
 (** LATEX VERSION: Let h, k: X -> Y be homotopic. If h-star is injective (or surjective, or trivial), so is k-star. **)
+
+(** helper sub-bounty for Corollary 58.5: alpha-hat sends identity to identity **)
+(** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
+(** Bounty 8 **)
+Theorem lemma58_sub_basepoint_change_id : forall X Tx x0 x1 alpha:set,
+  path_between X x0 x1 alpha ->
+  apply_fun (basepoint_change_map X Tx x0 x1 alpha)
+    (fundamental_group_id X Tx x0)
+  = fundamental_group_id X Tx x1.
+admit.
+Admitted.
+
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 30 **)
 (** Bounty 30 **)
 Theorem cor58_5_homotopic_maps_injective : forall X Tx Y Ty x0 h k:set,
