@@ -3646,7 +3646,7 @@ Axiom mul_SNo_Subq_lem : forall x y X Y Z W,
    -> (forall w0 :e Z, forall w1 :e W, w0 * y + x * w1 + - w0 * w1 :e U')
    -> U c= U'.
 
-(** Part of Conway Chapter 2 Theorem 7 **)
+(** Part of Conway Chapter 2 Thm 7 **)
 Axiom mul_SNo_zeroR : forall x, SNo x -> x * 0 = 0.
 
 Axiom mul_SNo_oneR : forall x, SNo x -> x * 1 = x.
@@ -11443,8 +11443,8 @@ apply andI.
     HcHH HHs0 HHs1 HH0t HH1t).
 Qed.
 
-(** from S51 Theorem 51.2 (line 232 in algtop.tex): groupoid properties of the path product **)
-(** LATEX VERSION: Theorem 51.2: The path product operation has: (1) Associativity, (2) Right and left identities, (3) Inverse. **)
+(** from S51 Thm 51.2 (line 232 in algtop.tex): groupoid properties of the path product **)
+(** LATEX VERSION: Thm 51.2: The path product operation has: (1) Associativity, (2) Right and left identities, (3) Inverse. **)
 
 (** part (1): Associativity **)
 (** EFFORT: 15 lines textbook, difficulty 7/10, USD 250 **)
@@ -13312,7 +13312,7 @@ apply and7I.
     exact Hh1.
 Qed.
 
-(** from S51 Theorem 51.2 part (2) (line 232 in algtop.tex): right identity **)
+(** from S51 Thm 51.2 part (2) (line 232 in algtop.tex): right identity **)
 (** EFFORT: 8 lines textbook, difficulty 6/10, USD 150 **)
 (** Collected Alice 165 **)
 (** Proven Alice **)
@@ -13868,7 +13868,7 @@ rewrite (mul_SNo_2_eq_add s HSNo_s).
 exact (add_SNo_minus_R2 s s HSNo_s HSNo_s).
 Qed.
 
-(** from S51 Theorem 51.2 part (2) (line 232 in algtop.tex): left identity **)
+(** from S51 Thm 51.2 part (2) (line 232 in algtop.tex): left identity **)
 (** EFFORT: 8 lines textbook, difficulty 6/10, USD 150 **)
 (** Collected Alice 150 **)
 (** Proven Alice **)
@@ -14532,7 +14532,7 @@ rewrite (mul_SNo_minus_distrR 2 s SNo_2 HSNo_s).
 exact (fun Q H => H).
 Qed.
 
-(** from S51 Theorem 51.2 part (3) (line 232 in algtop.tex): right inverse **)
+(** from S51 Thm 51.2 part (3) (line 232 in algtop.tex): right inverse **)
 (** EFFORT: 8 lines textbook, difficulty 6/10, USD 150 **)
 (** Collected Alice 150 **)
 (** Proven Alice **)
@@ -15007,7 +15007,7 @@ apply and7I.
     exact Hf0.
 Qed.
 
-(** from S51 Theorem 51.2 part (3) (line 232 in algtop.tex): left inverse **)
+(** from S51 Thm 51.2 part (3) (line 232 in algtop.tex): left inverse **)
 (** EFFORT: 8 lines textbook, difficulty 6/10, USD 150 **)
 (** Infrastructure: reversing a path twice gives pointwise the original path **)
 (** Proven Bob **)
@@ -15252,7 +15252,7 @@ exact (Lemma_51_1_path_homotopy_trans
   Hright_on_rev).
 Qed.
 
-(** from S51 Theorem 51.3 (line 321 in algtop.tex): reparametrization **)
+(** from S51 Thm 51.3 (line 321 in algtop.tex): reparametrization **)
 (** LATEX VERSION: Let f be a path in X, and let a0,...,an with 0=a0<a1<...<an=1. Let fi be the path that equals the positive linear map of I onto [ai-1,ai] followed by f. Then [f]=[f1] times ... times [fn]. **)
 (** EFFORT: 12 lines textbook, difficulty 7/10, USD 250 **)
 (** Collected Charlie 275 **)
@@ -24011,7 +24011,7 @@ exact (SepI (function_space unit_interval X) (fun u:set => loop_at X Tx x0 u)
 Qed.
 
 (** from S52 (line 361 in algtop.tex): the fundamental group is a group **)
-(** LATEX VERSION: It follows from Theorem 51.2 that the path product, when restricted to loops at x0, satisfies the axioms for a group. **)
+(** LATEX VERSION: It follows from Thm 51.2 that the path product, when restricted to loops at x0, satisfies the axioms for a group. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
 (** Collected Alice 100 **)
 (** Proven Alice **)
@@ -24987,10 +24987,10 @@ apply andI.
   exact (Hfun 1 one_in_unit_interval).
 Qed.
 
-(** from S52 Theorem 52.1 (line 396 in algtop.tex): alpha-hat is a group isomorphism **)
+(** from S52 Thm 52.1 (line 396 in algtop.tex): alpha-hat is a group isomorphism **)
 (** LATEX VERSION: The map alpha-hat is a group isomorphism from pi1(X,x0) to pi1(X,x1). **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** from S52 Theorem 52.1 sub-bounty A: homomorphism part of alpha-hat **)
+(** from S52 Thm 52.1 sub-bounty A: homomorphism part of alpha-hat **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 10 **)
 (** Collected Bob 10 **)
 (** Proven Bob **)
@@ -30005,7 +30005,7 @@ claim HcomplexClass :
 exact HcomplexClass.
 Qed.
 
-(** from S52 Theorem 52.1 sub-bounty B: bijection part of alpha-hat **)
+(** from S52 Thm 52.1 sub-bounty B: bijection part of alpha-hat **)
 (** EFFORT: 3 lines, difficulty 3/10, USD 12 **)
 (** Collected Charlie 14 **)
 (** Proven Bob **)
@@ -32841,7 +32841,7 @@ apply andI.
   exact Hstep3.
 Qed.
 
-(** from S52 Theorem 52.4 (line 475 in algtop.tex): functorial properties **)
+(** from S52 Thm 52.4 (line 475 in algtop.tex): functorial properties **)
 (** LATEX VERSION: If h: (X,x0)->(Y,y0) and k: (Y,y0)->(Z,z0) are continuous, then (k o h)-star = k-star o h-star. If i is the identity, then i-star is the identity. **)
 
 (** EFFORT: 4 lines textbook, difficulty 2/10, USD 30 **)
@@ -33138,7 +33138,7 @@ exact (path_homotopy_class_loop_eq_of_path_homotopic
   Hpost).
 Qed.
 
-(** from S52 Theorem 52.4 (line 475 in algtop.tex): identity induces identity **)
+(** from S52 Thm 52.4 (line 475 in algtop.tex): identity induces identity **)
 (** EFFORT: 2 lines textbook, difficulty 1/10, USD 15 **)
 (** Collected Bob 15 **)
 (** Proven Bob **)
@@ -39359,7 +39359,7 @@ Definition covering_map_R_S1 : set :=
     (apply_fun cos_real (mul_SNo two_pi x),
      apply_fun sin_real (mul_SNo two_pi x))).
 
-(** from S53 Theorem 53.1 (line 553 in algtop.tex) **)
+(** from S53 Thm 53.1 (line 553 in algtop.tex) **)
 (** LATEX VERSION: The map p: R -> S^1 given by p(x) = (cos 2pi x, sin 2pi x) **)
 (** is a covering map. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
@@ -39369,7 +39369,7 @@ Theorem thm53_1_R_covers_S1 :
 admit.
 Admitted.
 
-(** from S53 Theorem 53.2 (line 608 in algtop.tex) **)
+(** from S53 Thm 53.2 (line 608 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map. If B0 is a subspace of B, **)
 (** and E0 = p^{-1}(B0), then the restriction p0: E0 -> B0 is a covering map. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
@@ -40447,7 +40447,7 @@ Definition product_of_maps : set -> set -> set -> set -> set := fun X X' f g =>
   graph (setprod X X') (fun p:set =>
     (apply_fun f (p 0), apply_fun g (p 1))).
 
-(** from S53 Theorem 53.3 (line 612 in algtop.tex) **)
+(** from S53 Thm 53.3 (line 612 in algtop.tex) **)
 (** LATEX VERSION: If p: E -> B and p': E' -> B' are covering maps, then **)
 (** p x p': E x E' -> B x B' is a covering map. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
@@ -53861,10 +53861,10 @@ exact (andI
   HrightConst).
 Admitted. (** was Qed but depends on unproved lemma54_2_homotopy_lifting - changed to Admitted **)
 
-(** from S54 Theorem 54.3 (line 785 in algtop.tex) **)
+(** from S54 Thm 54.3 (line 785 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be covering, p(e0) = b0. Let f and g be paths in B **)
 (** from b0 to b1; let f_tilde and g_tilde be their liftings beginning at e0. **)
-(** from S54 Theorem 54.3 (line 785 in algtop.tex): homotopic lifts **)
+(** from S54 Thm 54.3 (line 785 in algtop.tex): homotopic lifts **)
 (** If f and g are path homotopic, then f_tilde and g_tilde end at the same point **)
 (** and are path homotopic. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
@@ -54820,7 +54820,7 @@ Definition lifting_correspondence : set -> set -> set -> set -> set -> set -> se
       (fun cls:set =>
         apply_fun (path_lift E Te B Tb p e0 (Eps_i (fun f:set => f :e cls))) 1).
 
-(** from S54 Theorem 54.4 (line 799 in algtop.tex) **)
+(** from S54 Thm 54.4 (line 799 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be covering, p(e0) = b0. If E is path connected, **)
 (** then phi: pi_1(B,b0) -> p^{-1}(b0) is surjective. **)
 (** If E is simply connected, phi is bijective. **)
@@ -54837,7 +54837,7 @@ Theorem thm54_4_lifting_correspondence_surjective : forall E Te B Tb p e0:set,
 admit.
 Admitted.
 
-(** from S54 Theorem 54.4 (line 799 in algtop.tex): lifting correspondence bijective **)
+(** from S54 Thm 54.4 (line 799 in algtop.tex): lifting correspondence bijective **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 60 **)
 (** Bounty 66 **)
 Theorem thm54_4_lifting_correspondence_bijective : forall E Te B Tb p e0:set,
@@ -54862,7 +54862,7 @@ Definition integers_group_inv : set :=
 (** The basepoint (1,0) on S^1 **)
 Definition S1_basepoint : set := (1, 0).
 
-(** from S54 Theorem 54.5 (line 810 in algtop.tex) **)
+(** from S54 Thm 54.5 (line 810 in algtop.tex) **)
 (** LATEX VERSION: The fundamental group of S^1 is isomorphic to the additive group **)
 (** of integers. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
@@ -54951,7 +54951,7 @@ Definition right_coset_set : set -> set -> set -> set :=
 Definition homomorphism_image : set -> set -> set :=
   fun G phi => {apply_fun phi x | x :e G}.
 
-(** from S54 Theorem 54.6a (line 838 in algtop.tex) **)
+(** from S54 Thm 54.6a (line 838 in algtop.tex) **)
 (** LATEX VERSION: The homomorphism p-star: pi_1(E,e0) -> pi_1(B,b0) is a monomorphism. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
 (** Bounty 66 **)
@@ -54966,7 +54966,7 @@ Theorem thm54_6a_p_star_injective : forall E Te B Tb p e0:set,
 admit.
 Admitted.
 
-(** from S54 Theorem 54.6b (line 840 in algtop.tex) **)
+(** from S54 Thm 54.6b (line 840 in algtop.tex) **)
 (** LATEX VERSION: Let H = p-star(pi_1(E,e0)). The lifting correspondence induces **)
 (** an injective map Phi: pi_1(B,b0)/H -> p^{-1}(b0), bijective if E is path connected. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
@@ -54999,7 +54999,7 @@ Theorem thm54_6b_coset_correspondence : forall E Te B Tb p e0:set,
 admit.
 Admitted.
 
-(** from S54 Theorem 54.6b surjectivity when E is path connected **)
+(** from S54 Thm 54.6b surjectivity when E is path connected **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 40 **)
 (** Bounty 44 **)
 Theorem thm54_6b_coset_correspondence_surjective : forall E Te B Tb p e0:set,
@@ -55018,7 +55018,7 @@ Theorem thm54_6b_coset_correspondence_surjective : forall E Te B Tb p e0:set,
 admit.
 Admitted.
 
-(** from S54 Theorem 54.6c (line 847 in algtop.tex) **)
+(** from S54 Thm 54.6c (line 847 in algtop.tex) **)
 (** LATEX VERSION: [f] in H iff f lifts to a loop in E based at e0. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 55 **)
@@ -55599,7 +55599,7 @@ rewrite HihEq.
 reflexivity.
 Qed.
 
-(** from S55 Theorem 55.2 (line 904 in algtop.tex): No-retraction theorem **)
+(** from S55 Thm 55.2 (line 904 in algtop.tex): No-retraction theorem **)
 (** LATEX VERSION: There is no retraction of B^2 onto S^1. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 88 **)
@@ -55938,7 +55938,7 @@ claim HnulIncl :
 exact (cor55_4a_inclusion_S1_R2_not_nulhomotopic HnulIncl).
 Admitted. (** was Qed but depends on unproved cor55_4a - changed to Admitted **)
 
-(** from S55 Theorem 55.5 (line 950 in algtop.tex) **)
+(** from S55 Thm 55.5 (line 950 in algtop.tex) **)
 (** LATEX VERSION: Given a nonvanishing vector field on B^2, there exists a point of S^1 where the vector field points directly inward and a point of S^1 where it points directly outward. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 165 **)
@@ -55950,7 +55950,7 @@ Theorem thm55_5_nonvanishing_vector_field : forall v:set,
 admit.
 Admitted.
 
-(** from S55 Theorem 55.6 (line 983 in algtop.tex): Brouwer fixed-point theorem for the disc **)
+(** from S55 Thm 55.6 (line 983 in algtop.tex): Brouwer fixed-point theorem for the disc **)
 (** LATEX VERSION: If f: B^2 -> B^2 is continuous, then there exists a point x in B^2 such that f(x) = x. **)
 (** EFFORT: 6 lines textbook, difficulty 3/10, USD 60 **)
 (** Bounty 66 **)
@@ -56008,7 +56008,7 @@ Definition triangular_region : set :=
 Definition triangular_region_topology : set :=
   subspace_topology (setprod R R) R2_topology triangular_region.
 
-(** from S55 starred Theorem 55.8 (line 1020 in algtop.tex) **)
+(** from S55 starred Thm 55.8 (line 1020 in algtop.tex) **)
 (** LATEX VERSION: There is an epsilon > 0 such that for every open covering of T by sets of diameter less than epsilon, some point of T belongs to at least three elements of the covering. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 300 **)
 (** Bounty 330 **)
@@ -56225,7 +56225,7 @@ Definition monic_poly_eval : set -> set -> set -> set := fun a n z =>
     (complex_power_R2 z n)
     (finite_complex_sum (fun k:set => complex_mult_R2 (apply_fun a k) (complex_power_R2 z k)) n).
 
-(** from S56 Theorem 56.1 (line 1066 in algtop.tex): Fundamental theorem of algebra **)
+(** from S56 Thm 56.1 (line 1066 in algtop.tex): Fundamental theorem of algebra **)
 (** LATEX VERSION: A polynomial equation x^n + a_{n-1} x^{n-1} + ... + a_0 = 0 of degree n > 0 with real or complex coefficients has at least one root. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 400 **)
 (** Bounty 440 **)
@@ -56279,7 +56279,7 @@ Definition antipode_preserving_Sn : set -> set -> set -> prop := fun n m h =>
   (forall x:set, x :e Sn n ->
     apply_fun h (Rn_negate (ordsucc n) x) = Rn_negate (ordsucc m) (apply_fun h x)).
 
-(** from S57 Theorem 57.1 (line 1186 in algtop.tex) **)
+(** from S57 Thm 57.1 (line 1186 in algtop.tex) **)
 (** LATEX VERSION: If h: S^1 -> S^1 is continuous and antipode-preserving, then h is not nulhomotopic. **)
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
 (** Bounty 385 **)
@@ -56289,7 +56289,7 @@ Theorem thm57_1_antipode_preserving_not_nulhomotopic : forall h:set,
 admit.
 Admitted.
 
-(** from S57 Theorem 57.2 (line 1214 in algtop.tex) **)
+(** from S57 Thm 57.2 (line 1214 in algtop.tex) **)
 (** LATEX VERSION: There is no continuous antipode-preserving map g: S^2 -> S^1. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 55 **)
@@ -56298,7 +56298,7 @@ Theorem thm57_2_no_antipode_preserving_S2_S1 :
 admit.
 Admitted.
 
-(** from S57 Theorem 57.3 (line 1217 in algtop.tex): Borsuk-Ulam theorem for S^2 **)
+(** from S57 Thm 57.3 (line 1217 in algtop.tex): Borsuk-Ulam theorem for S^2 **)
 (** LATEX VERSION: Given a continuous map f: S^2 -> R^2, there is a point x of S^2 such that f(x) = f(-x). **)
 (** EFFORT: 4 lines textbook, difficulty 2/10, USD 30 **)
 (** Bounty 33 **)
@@ -56320,12 +56320,12 @@ Definition bounded_measurable_R2 : set -> prop := fun A =>
 (** For the bisection theorem, we need: a line bisects A if the area on each side is equal **)
 (** We abstract this as: exists a line such that the area measure on each side is half **)
 
-(** from S57 Theorem 57.4 (line 1227 in algtop.tex): The bisection theorem **)
+(** from S57 Thm 57.4 (line 1227 in algtop.tex): The bisection theorem **)
 (** LATEX VERSION: Given two bounded polygonal regions in R^2, there exists a line in R^2 that bisects each of them. **)
 (** We state this using the Borsuk-Ulam theorem abstractly **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 165 **)
-(** from S57 Theorem 57.4 (line 1227 in algtop.tex): bisection theorem **)
+(** from S57 Thm 57.4 (line 1227 in algtop.tex): bisection theorem **)
 (** NOTE: The full statement requires an area measure; we state it using an abstract **)
 (** continuous area function f_i: S^2 -> R measuring the area of A_i on one side of the **)
 (** plane normal to u, with the antipodal property f_i(u) + f_i(-u) = area(A_i). **)
@@ -57138,7 +57138,7 @@ exact (path_homotopy_class_loop_eq_of_path_homotopic Y Ty y0
   Hhomotopic_heps_keps).
 Qed.
 
-(** from S58 Theorem 58.2 (line 1284 in algtop.tex) **)
+(** from S58 Thm 58.2 (line 1284 in algtop.tex) **)
 (** LATEX VERSION: The inclusion map j: S^n -> R^{n+1}-0 induces an isomorphism of fundamental groups. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 88 **)
@@ -57166,7 +57166,7 @@ Definition deformation_retract : set -> set -> set -> prop := fun X Tx A =>
     (forall x:set, x :e X -> apply_fun H (x, 1) :e A) /\
     (forall a t:set, a :e A -> t :e unit_interval -> apply_fun H (a, t) = a).
 
-(** from S58 Theorem 58.3 (line 1319 in algtop.tex) **)
+(** from S58 Thm 58.3 (line 1319 in algtop.tex) **)
 (** LATEX VERSION: Let A be a deformation retract of X; let x0 in A. Then inclusion j: (A,x0) -> (X,x0) induces an isomorphism of fundamental groups. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** Collected Alice 50 **)
@@ -57472,7 +57472,7 @@ claim HrstarFun :
     (fundamental_group A Ta x0) (fundamental_group_mult A Ta x0)
     rstar HrstarHom).
 }
-(** jr_star = jstar o rstar (by Theorem 52.4) **)
+(** jr_star = jstar o rstar (by Thm 52.4) **)
 claim HjrComp : forall cls:set, cls :e fundamental_group X Tx x0 ->
   apply_fun (induced_homomorphism X Tx x0 X Tx x0 jr) cls
   = apply_fun jstar (apply_fun rstar cls).
@@ -60970,7 +60970,7 @@ claim Htarget :
 exact Htarget.
 Qed.
 
-(** from S58 Theorem 58.7 (line 1429 in algtop.tex) **)
+(** from S58 Thm 58.7 (line 1429 in algtop.tex) **)
 (** LATEX VERSION: If f: X -> Y is a homotopy equivalence with f(x0) = y0, then f-star: pi_1(X,x0) -> pi_1(Y,y0) is an isomorphism. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
 (** Collected Bob 182 **)
@@ -65683,7 +65683,7 @@ Admitted.
 
 (** ======================= S59 THE FUNDAMENTAL GROUP OF S^n ======================= **)
 
-(** from S59 Theorem 59.1 (line 1541 in algtop.tex) **)
+(** from S59 Thm 59.1 (line 1541 in algtop.tex) **)
 (** LATEX VERSION: Suppose X = U union V where U, V are open in X. If U intersect V is path connected and x0 in U intersect V, then the images of i-star and j-star generate pi_1(X, x0). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
 (** Bounty 220 **)
@@ -67425,7 +67425,7 @@ apply (and7I
 - exact HpcUV.
 Admitted.
 
-(** from S59 Theorem 59.3 (line 1587 in algtop.tex) **)
+(** from S59 Thm 59.3 (line 1587 in algtop.tex) **)
 (** LATEX VERSION: If n >= 2, the n-sphere S^n is simply connected. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 182 **)
@@ -67643,7 +67643,7 @@ Definition abelian_group : set -> set -> set -> set -> prop :=
     (forall x y:set, x :e G -> y :e G ->
       apply_fun mult (x, y) = apply_fun mult (y, x)).
 
-(** from S60 Theorem 60.1 (line 1639 in algtop.tex) **)
+(** from S60 Thm 60.1 (line 1639 in algtop.tex) **)
 (** LATEX VERSION: pi_1(X x Y, x0 x y0) is isomorphic with pi_1(X, x0) x pi_1(Y, y0). **)
 (** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
 (** Bounty 220 **)
@@ -67688,7 +67688,7 @@ Definition projective_plane : set := projective_n_space 2.
 Definition projective_plane_topology : set := projective_n_space_topology 2.
 Definition projective_plane_map : set := projective_n_space_map 2.
 
-(** from S60 Theorem 60.3 (line 1691 in algtop.tex) **)
+(** from S60 Thm 60.3 (line 1691 in algtop.tex) **)
 (** LATEX VERSION: P^2 is a compact surface, and the quotient map p: S^2 -> P^2 **)
 (** is a covering map. **)
 (** EFFORT: 25 lines textbook, difficulty 6/10, USD 300 **)
@@ -67832,7 +67832,7 @@ Definition double_torus_topology : set :=
                          torus torus_topology double_torus_disk
                          double_torus_gluing.
 
-(** from S60 Theorem 60.6 (line 1759 in algtop.tex) **)
+(** from S60 Thm 60.6 (line 1759 in algtop.tex) **)
 (** LATEX VERSION: The fundamental group of the double torus is not abelian. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 165 **)
@@ -67970,7 +67970,7 @@ admit.
 Admitted.
 
 (** ============================================================ **)
-(** S61 The Jordan Separation Theorem                            **)
+(** S61 The Jordan Separation Thm                            **)
 (** (lines 1797-1925 in algtop.tex)                              **)
 (** ============================================================ **)
 
@@ -68042,7 +68042,7 @@ Theorem lemma61_2_nulhomotopy : forall a b:set,
 admit.
 Admitted.
 
-(** from S61 Theorem 61.3 (line 1867 in algtop.tex) **)
+(** from S61 Thm 61.3 (line 1867 in algtop.tex) **)
 (** LATEX VERSION: (Jordan separation theorem) A simple closed curve in S^2 separates S^2. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 350 **)
 (** Bounty 385 **)
@@ -68053,7 +68053,7 @@ Theorem thm61_3_jordan_separation : forall C:set,
 admit.
 Admitted.
 
-(** from S61 Theorem 61.4 (line 1908 in algtop.tex) **)
+(** from S61 Thm 61.4 (line 1908 in algtop.tex) **)
 (** LATEX VERSION: (General separation theorem) Let A1, A2 be closed connected subsets **)
 (** of S^2 whose intersection consists of exactly two points a and b. **)
 (** Then C = A1 union A2 separates S^2. **)
@@ -68164,7 +68164,7 @@ Theorem lemma62_2_borsuk : forall a b:set,
 admit.
 Admitted.
 
-(** from S62 Theorem 62.3 (line 1975 in algtop.tex) **)
+(** from S62 Thm 62.3 (line 1975 in algtop.tex) **)
 (** LATEX VERSION: (Invariance of domain) If U is open in R^2 and f: U -> R^2 **)
 (** is continuous and injective, then f(U) is open in R^2 and f^-1 is continuous. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 350 **)
@@ -68369,11 +68369,11 @@ admit.
 Admitted.
 
 (** ============================================================ **)
-(** S63 The Jordan Curve Theorem                                 **)
+(** S63 The Jordan Curve Thm                                 **)
 (** (lines 2013-2249 in algtop.tex)                              **)
 (** ============================================================ **)
 
-(** from S63 Theorem 63.1(a) (line 2016 in algtop.tex) **)
+(** from S63 Thm 63.1(a) (line 2016 in algtop.tex) **)
 (** LATEX VERSION: Let X = U union V open, U cap V = A disjoint-union B open. **)
 (** If alpha in U from a in A to b in B, beta in V from b to a, **)
 (** then [alpha . beta] generates an infinite cyclic subgroup of pi_1(X, a). **)
@@ -68398,7 +68398,7 @@ Theorem thm63_1a_infinite_cyclic_subgroup : forall X Tx U V A B:set,
 admit.
 Admitted.
 
-(** from S63 Theorem 63.1(b) (line 2018 in algtop.tex) **)
+(** from S63 Thm 63.1(b) (line 2018 in algtop.tex) **)
 (** LATEX VERSION: If pi_1(X,a) is itself infinite cyclic, it is generated by [f]. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 250 **)
 (** Bounty 275 **)
@@ -68427,7 +68427,7 @@ Theorem thm63_1b_infinite_cyclic_generator : forall X Tx U V A B:set,
 admit.
 Admitted.
 
-(** from S63 Theorem 63.1(c) (line 2019 in algtop.tex) **)
+(** from S63 Thm 63.1(c) (line 2019 in algtop.tex) **)
 (** LATEX VERSION: With additional paths gamma in U from a to a' in A, delta in V from a' to a, **)
 (** the subgroups generated by [alpha . beta] and [gamma . delta] intersect in the identity alone. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 350 **)
@@ -68472,7 +68472,7 @@ Theorem thm63_1c_subgroups_trivial_intersection : forall X Tx U V A B:set,
 admit.
 Admitted.
 
-(** from S63 Theorem 63.2 (line 2135 in algtop.tex) **)
+(** from S63 Thm 63.2 (line 2135 in algtop.tex) **)
 (** LATEX VERSION: (Nonseparation theorem) An arc in S^2 does not separate S^2. **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 250 **)
 (** Bounty 275 **)
@@ -68483,7 +68483,7 @@ Theorem thm63_2_arc_nonseparation : forall D:set,
 admit.
 Admitted.
 
-(** from S63 Theorem 63.3 (line 2177 in algtop.tex) **)
+(** from S63 Thm 63.3 (line 2177 in algtop.tex) **)
 (** LATEX VERSION: (General nonseparation) Let D1, D2 be closed subsets of S^2 **)
 (** such that S^2 - D1 cap D2 is simply connected. **)
 (** If neither D1 nor D2 separates S^2, then D1 union D2 does not separate S^2. **)
@@ -68501,7 +68501,7 @@ Theorem thm63_3_general_nonseparation : forall D1 D2:set,
 admit.
 Admitted.
 
-(** from S63 Theorem 63.4 (line 2180 in algtop.tex) **)
+(** from S63 Thm 63.4 (line 2180 in algtop.tex) **)
 (** LATEX VERSION: (Jordan curve theorem) A simple closed curve C in S^2 separates **)
 (** S^2 into precisely two components W1 and W2, and C is the common boundary. **)
 (** EFFORT: 30 lines textbook, difficulty 8/10, USD 500 **)
@@ -68521,7 +68521,7 @@ Theorem thm63_4_jordan_curve_theorem : forall C:set,
 admit.
 Admitted.
 
-(** from S63 Theorem 63.5 (line 2211 in algtop.tex) **)
+(** from S63 Thm 63.5 (line 2211 in algtop.tex) **)
 (** LATEX VERSION: Let C1, C2 be closed connected subsets of S^2 whose intersection **)
 (** consists of two points. If neither separates S^2, then C1 union C2 **)
 (** separates S^2 into precisely two components. **)
@@ -68755,7 +68755,7 @@ Theorem lemma64_1_theta_separates : forall X Tx A B C a b:set,
 admit.
 Admitted.
 
-(** from S64 Theorem 64.2 (line 2297 in algtop.tex) **)
+(** from S64 Thm 64.2 (line 2297 in algtop.tex) **)
 (** LATEX VERSION: The utilities graph cannot be imbedded in the plane. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 120 **)
 (** Bounty 132 **)
@@ -68798,7 +68798,7 @@ Theorem lemma64_3_K4_separates : forall V G Tg:set,
 admit.
 Admitted.
 
-(** from S64 Theorem 64.4 (line 2350 in algtop.tex) **)
+(** from S64 Thm 64.4 (line 2350 in algtop.tex) **)
 (** LATEX VERSION: The complete graph on five vertices cannot be imbedded **)
 (** in the plane. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
@@ -68883,7 +68883,7 @@ Theorem lemma65_1_complete_graph_separation : forall V G Tg C Tc x0:set,
 admit.
 Admitted.
 
-(** from S65 Theorem 65.2 (line 2437 in algtop.tex) **)
+(** from S65 Thm 65.2 (line 2437 in algtop.tex) **)
 (** LATEX VERSION: Let C be a simple closed curve in S^2, p and q in different **)
 (** components of S^2 minus C. Then inclusion j: C -> S^2-p-q induces **)
 (** an isomorphism of fundamental groups. **)
@@ -69021,7 +69021,7 @@ Definition simple_loop : set -> set -> set -> prop :=
       apply_fun f s = apply_fun f s' ->
       s = s' \/ (s = 0 /\ s' = 1) \/ (s = 1 /\ s' = 0)).
 
-(** from S66 Theorem 66.2 (line 2517 in algtop.tex) **)
+(** from S66 Thm 66.2 (line 2517 in algtop.tex) **)
 (** LATEX VERSION: Let f be a simple loop in R^2. If a is in the unbounded **)
 (** component of R^2-f(I), n(f,a)=0; if a is in bounded component, n(f,a)=+-1. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 280 **)
@@ -69210,7 +69210,7 @@ Theorem lemma66_3_integral_winding : forall f a:set,
 admit.
 Admitted.
 
-(** from S66 Theorem 66.4 (line 2551 in algtop.tex) **)
+(** from S66 Thm 66.4 (line 2551 in algtop.tex) **)
 (** LATEX VERSION: Cauchy integral formula (Ahlfors version, used in proof of classical). **)
 (** For piecewise-differentiable loop f in Omega, F analytic on Omega, **)
 (** n(f,b)=0 for b not in Omega: n(f,a) F(a) = (1/(2 pi i)) integral_f F(z)/(z-a) dz **)
@@ -69304,7 +69304,7 @@ Definition smooth_parameterization : set -> set -> prop := fun f C =>
                                                   (minus_SNo ((apply_fun f t) 1))) h)
                               (minus_SNo Dy))) eps).
 
-(** from S66 Exercise 2 Theorem (line 2576 in algtop.tex) **)
+(** from S66 Exercise 2 Thm (line 2576 in algtop.tex) **)
 (** LATEX VERSION: Let C be a simple closed curve in R^2 that is a smooth **)
 (** submanifold of R^2; let f: I -> C be a simple loop smoothly parameterizing C. **)
 (** If 0 is a point of the bounded component of R^2 - C, then n(f, 0) = +-1. **)
@@ -69323,7 +69323,7 @@ admit.
 Admitted.
 
 (** ============================================================ **)
-(** Chapter 11: The Seifert-van Kampen Theorem                   **)
+(** Chapter 11: The Seifert-van Kampen Thm                   **)
 (** ============================================================ **)
 
 (** ============================================================ **)
@@ -69533,7 +69533,7 @@ Definition external_direct_sum : set -> set -> set -> set -> set -> set -> set -
     direct_sum_of_subgroups G multG eG invG J
       (graph J (fun alpha:set => homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))).
 
-(** from S67 Theorem 67.4 (line 2648 in algtop.tex): existence of external direct sum **)
+(** from S67 Thm 67.4 (line 2648 in algtop.tex): existence of external direct sum **)
 (** LATEX VERSION: Given a family of abelian groups {G_alpha}, there exists an abelian **)
 (** group G and monomorphisms i_alpha: G_alpha -> G such that G is the direct sum **)
 (** of the images i_alpha(G_alpha). **)
@@ -69627,7 +69627,7 @@ Theorem lemma67_5_extension_converse :
 admit.
 Admitted.
 
-(** from S67 Theorem 67.6 (line 2671 in algtop.tex): uniqueness of direct sums **)
+(** from S67 Thm 67.6 (line 2671 in algtop.tex): uniqueness of direct sums **)
 (** LATEX VERSION: If G and G' are both external direct sums of {G_alpha} via **)
 (** i_alpha and i'_alpha respectively, then there is a unique isomorphism **)
 (** phi: G -> G' such that phi o i_alpha = i'_alpha. **)
@@ -69716,7 +69716,7 @@ Theorem lemma67_7_extension_free_abelian :
 admit.
 Admitted.
 
-(** from S67 Theorem 67.8 (line 2689 in algtop.tex): rank is well-defined **)
+(** from S67 Thm 67.8 (line 2689 in algtop.tex): rank is well-defined **)
 (** LATEX VERSION: If G is a free abelian group with basis {a_1,...,a_n}, **)
 (** then n is uniquely determined by G. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
@@ -69740,7 +69740,7 @@ Definition rank_free_abelian : set -> set -> set -> set -> set :=
         equip J n /\
         free_abelian_group_with_basis G mult e inv J basis).
 
-(** from S67 Exercises Exercise 6 / Theorem (line 2712 in algtop.tex): free abelian subgroup rank **)
+(** from S67 Exercises Exercise 6 / Thm (line 2712 in algtop.tex): free abelian subgroup rank **)
 (** LATEX VERSION: If A is a free abelian group of rank n, then any subgroup B **)
 (** of A is a free abelian group of rank at most n. **)
 (** EFFORT: 12 lines textbook, difficulty 6/10, USD 150 **)
@@ -70266,7 +70266,7 @@ Definition external_free_product : set -> set -> set -> set -> set -> set -> set
       (graph J (fun alpha:set => apply_fun (apply_fun ifam alpha) (Eps_i (fun ea:set =>
         exists ma ia:set, group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) ea ia)))).
 
-(** from S68 Theorem 68.2 (line 2831 in algtop.tex): existence of free products **)
+(** from S68 Thm 68.2 (line 2831 in algtop.tex): existence of free products **)
 (** LATEX VERSION: Given a family {G_alpha} of groups, there exists a group G and **)
 (** monomorphisms i_alpha: G_alpha -> G such that G is the free product of i_alpha(G_alpha). **)
 (** EFFORT: 50 lines textbook, difficulty 8/10, USD 800 **)
@@ -70319,7 +70319,7 @@ Theorem lemma68_3_extension_external_free_product :
 admit.
 Admitted.
 
-(** from S68 Theorem 68.4 (line 2946 in algtop.tex): uniqueness of free products **)
+(** from S68 Thm 68.4 (line 2946 in algtop.tex): uniqueness of free products **)
 (** LATEX VERSION: If G and G' are both external free products of {G_alpha} via **)
 (** i_alpha and i'_alpha, then there is a unique isomorphism phi: G -> G' **)
 (** with phi o i_alpha = i'_alpha. **)
@@ -70397,7 +70397,7 @@ Theorem cor68_6_associativity_free_product :
 admit.
 Admitted.
 
-(** from S68 Theorem 68.7 (line 2972 in algtop.tex): quotient of free product **)
+(** from S68 Thm 68.7 (line 2972 in algtop.tex): quotient of free product **)
 (** LATEX VERSION: Let G = G1 free-prod G2. Let N_i be normal in G_i. If N is the least **)
 (** normal subgroup of G containing N1 and N2, then G/N iso (G1/N1) free-prod (G2/N2). **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 250 **)
@@ -70559,7 +70559,7 @@ Theorem lemma69_1_extension_free_group :
 admit.
 Admitted.
 
-(** from S69 Theorem 69.2 (line 3057 in algtop.tex): free product of free groups is free **)
+(** from S69 Thm 69.2 (line 3057 in algtop.tex): free product of free groups is free **)
 (** LATEX VERSION: If G = G1 free-prod G2 where G1, G2 are free with generators a_alpha_J **)
 (** and a_alpha_K respectively, and J,K disjoint, then G is free with generators **)
 (** a_alpha for J union K. **)
@@ -70621,7 +70621,7 @@ Theorem lemma69_3_commutator_subgroup :
 admit.
 Admitted.
 
-(** from S69 Theorem 69.4 (line 3125 in algtop.tex): abelianization of free group **)
+(** from S69 Thm 69.4 (line 3125 in algtop.tex): abelianization of free group **)
 (** LATEX VERSION: If G is free with generators {a_alpha}, then G/[G,G] is a free **)
 (** abelian group with basis {[a_alpha]}. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
@@ -70679,7 +70679,7 @@ Definition finitely_presented : set -> set -> set -> set -> prop :=
       finite J /\ finite K /\
       group_presentation G mult e inv J gens K rels F multF eF invF.
 
-(** from S69 Exercises Exercise 3 / Theorem (line 3174 in algtop.tex): free product uniqueness **)
+(** from S69 Exercises Exercise 3 / Thm (line 3174 in algtop.tex): free product uniqueness **)
 (** LATEX VERSION: Let G = G_1 free-product G_2 where G_1 and G_2 are cyclic of orders m and n **)
 (** respectively. Then m and n are uniquely determined by G (up to reordering). **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
@@ -70784,11 +70784,11 @@ admit.
 Admitted.
 
 (** ============================================================ **)
-(** S70 The Seifert-van Kampen Theorem                           **)
+(** S70 The Seifert-van Kampen Thm                           **)
 (** (lines 3183-3494 in algtop.tex)                              **)
 (** ============================================================ **)
 
-(** from S70 Theorem 70.1 (line 3186 in algtop.tex): Seifert-van Kampen theorem **)
+(** from S70 Thm 70.1 (line 3186 in algtop.tex): Seifert-van Kampen theorem **)
 (** LATEX VERSION: Let X = U union V where U,V open, U,V,U cap V path connected. **)
 (** Let x0 in U cap V. If phi1: pi1(U,x0) -> H and phi2: pi1(V,x0) -> H are **)
 (** homomorphisms with phi1 o i1 = phi2 o i2 (where i1,i2 induced by inclusion of **)
@@ -70867,7 +70867,7 @@ Theorem thm70_1_seifert_van_kampen :
 admit.
 Admitted.
 
-(** from S70 Theorem 70.2 (line 3389 in algtop.tex): classical Seifert-van Kampen **)
+(** from S70 Thm 70.2 (line 3389 in algtop.tex): classical Seifert-van Kampen **)
 (** LATEX VERSION: j: pi1(U,x0) free-prod pi1(V,x0) -> pi1(X,x0) extending j1,j2 **)
 (** is surjective, and its kernel is the least normal subgroup N of the free product **)
 (** containing all elements i1(g)^{-1} i2(g) for g in pi1(U cap V, x0). **)
@@ -71289,7 +71289,7 @@ Definition wedge_of_circles_finite : set -> set -> set -> set -> set -> prop :=
     (forall i j:set, i :e n -> j :e n -> i <> j ->
       apply_fun Sfam i :/\: apply_fun Sfam j = Sing p).
 
-(** from S71 Theorem 71.1 (line 3502 in algtop.tex): pi1 of finite wedge **)
+(** from S71 Thm 71.1 (line 3502 in algtop.tex): pi1 of finite wedge **)
 (** LATEX VERSION: If X is wedge of S_1,...,S_n, then pi1(X,p) is a free group. **)
 (** If f_i represents a generator of pi1(S_i,p), then f_1,...,f_n represent **)
 (** a system of free generators for pi1(X,p). **)
@@ -71354,7 +71354,7 @@ Theorem lemma71_2_wedge_normal :
 admit.
 Admitted.
 
-(** from S71 Theorem 71.3 (line 3544 in algtop.tex): pi1 of general wedge **)
+(** from S71 Thm 71.3 (line 3544 in algtop.tex): pi1 of general wedge **)
 (** LATEX VERSION: pi1(X,p) is a free group with system of free generators **)
 (** {f_alpha}, where f_alpha represents a generator of pi1(S_alpha, p). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
@@ -71567,10 +71567,10 @@ Admitted.
 (** (lines 3609-3697 in algtop.tex)                              **)
 (** ============================================================ **)
 
-(** from S72 Theorem 72.1 (line 3616 in algtop.tex): adjoining a 2-cell **)
+(** from S72 Thm 72.1 (line 3616 in algtop.tex): adjoining a 2-cell **)
 (** LATEX VERSION: Let X be Hausdorff, A closed path-connected subspace. **)
 (** Suppose h: B^2 -> X maps Int B^2 bijectively onto X-A and S^1 into A. **)
-(** from S72 Theorem 72.1 (line 3616 in algtop.tex): adjoining a two-cell **)
+(** from S72 Thm 72.1 (line 3616 in algtop.tex): adjoining a two-cell **)
 (** Let p in S^1, a = h(p), k = h|S^1. Then i_star: pi1(A,a) -> pi1(X,a) is **)
 (** surjective with kernel = least normal subgroup containing image of k_star. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 500 **)
@@ -71614,7 +71614,7 @@ Theorem thm72_1_adjoining_two_cell :
 admit.
 Admitted.
 
-(** from S72 Exercises Exercise 2 / Theorem (line 3797 in algtop.tex): finitely presented groups **)
+(** from S72 Exercises Exercise 2 / Thm (line 3797 in algtop.tex): finitely presented groups **)
 (** LATEX VERSION: If G is a finitely presented group, then there is a compact **)
 (** Hausdorff space X whose fundamental group is isomorphic to G. **)
 (** EFFORT: 15 lines textbook, difficulty 7/10, USD 300 **)
@@ -71685,7 +71685,7 @@ Admitted.
 (** (lines 3699-3806 in algtop.tex)                              **)
 (** ============================================================ **)
 
-(** from S73 Theorem 73.1 (line 3702 in algtop.tex): torus presentation **)
+(** from S73 Thm 73.1 (line 3702 in algtop.tex): torus presentation **)
 (** LATEX VERSION: The fundamental group of the torus has a presentation **)
 (** with two generators alpha, beta and a single relation alpha beta alpha^{-1} beta^{-1}. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
@@ -71772,7 +71772,7 @@ Theorem lemma73_3_closed_quotient_normal :
 admit.
 Admitted.
 
-(** from S73 Theorem 73.4 (line 3761 in algtop.tex): pi1 of n-fold dunce cap **)
+(** from S73 Thm 73.4 (line 3761 in algtop.tex): pi1 of n-fold dunce cap **)
 (** LATEX VERSION: The fundamental group of the n-fold dunce cap is a cyclic group **)
 (** of order n. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
@@ -71950,7 +71950,7 @@ Definition polygon_pasting_topology : set -> set -> set :=
   fun n w =>
     quotient_topology B2 B2_topology (polygon_pasting_space n w) (polygon_pasting_map n w).
 
-(** from S74 Theorem 74.1 (line 3916 in algtop.tex): compact Hausdorff **)
+(** from S74 Thm 74.1 (line 3916 in algtop.tex): compact Hausdorff **)
 (** LATEX VERSION: Let X be the space obtained from a finite collection **)
 (** of polygonal regions by pasting edges according to some labelling **)
 (** scheme. Then X is a compact Hausdorff space. **)
@@ -71964,10 +71964,10 @@ Theorem thm74_1_polygon_pasting_compact_hausdorff :
 admit.
 Admitted.
 
-(** from S74 Theorem 74.2 (line 3927 in algtop.tex): fundamental group from scheme **)
+(** from S74 Thm 74.2 (line 3927 in algtop.tex): fundamental group from scheme **)
 (** LATEX VERSION: If pi maps all vertices of P to a single point x0 of X, **)
 (** and a1,...,ak are the distinct labels, then pi1(X,x0) is isomorphic to **)
-(** from S74 Theorem 74.2 (line 3927 in algtop.tex): pi1 from labelling scheme **)
+(** from S74 Thm 74.2 (line 3927 in algtop.tex): pi1 from labelling scheme **)
 (** the quotient of the free group on k generators alpha1,...,alphak by the **)
 (** least normal subgroup containing (alpha_{i1})^{e1}...(alpha_{in})^{en}. **)
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 400 **)
@@ -72025,7 +72025,7 @@ Definition n_fold_torus_space : set -> set :=
 Definition n_fold_torus_topology : set -> set :=
   fun n => polygon_pasting_topology (mul_SNo 4 n) (n_fold_torus_labelling n).
 
-(** from S74 Theorem 74.3 (line 3972 in algtop.tex): pi1 of n-fold torus **)
+(** from S74 Thm 74.3 (line 3972 in algtop.tex): pi1 of n-fold torus **)
 (** LATEX VERSION: pi1(T_n, x0) is isomorphic to the quotient of the free group **)
 (** on 2n generators alpha1,beta1,...,alphan,betan by the least normal subgroup **)
 (** containing [alpha1,beta1]...[alphan,betan]. **)
@@ -72074,7 +72074,7 @@ Definition m_fold_projective_plane_space : set -> set :=
 Definition m_fold_projective_plane_topology : set -> set :=
   fun m => polygon_pasting_topology (mul_SNo 2 m) (m_fold_projective_plane_labelling m).
 
-(** from S74 Theorem 74.4 (line 4000 in algtop.tex): pi1 of m-fold projective plane **)
+(** from S74 Thm 74.4 (line 4000 in algtop.tex): pi1 of m-fold projective plane **)
 (** LATEX VERSION: pi1(P_m, x0) is isomorphic to the quotient of the free group **)
 (** on m generators alpha1,...,alpham by the least normal subgroup **)
 (** containing (alpha1)^2 (alpha2)^2 ... (alpham)^2. **)
@@ -72365,7 +72365,7 @@ Definition first_homology_inv : set -> set -> set -> set :=
         (fundamental_group_id X Tx x0)
         (fundamental_group_inv X Tx x0)).
 
-(** from S75 Theorem 75.1 (line 4062 in algtop.tex): abelianize then quotient **)
+(** from S75 Thm 75.1 (line 4062 in algtop.tex): abelianize then quotient **)
 (** LATEX VERSION: Let F be a group, N normal subgroup, q: F -> F/N projection. **)
 (** p: F -> F/[F,F] induces iso phi: q(F)/[q(F),q(F)] -> p(F)/p(N). **)
 (** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
@@ -72447,7 +72447,7 @@ Theorem cor75_2_free_group_abelianization :
 admit.
 Admitted.
 
-(** from S75 Theorem 75.3 (line 4087 in algtop.tex): H1 of n-fold torus **)
+(** from S75 Thm 75.3 (line 4087 in algtop.tex): H1 of n-fold torus **)
 (** LATEX VERSION: If X is the n-fold torus, H1(X) is free abelian of rank 2n. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 88 **)
@@ -72466,7 +72466,7 @@ Theorem thm75_3_H1_n_fold_torus :
 admit.
 Admitted.
 
-(** from S75 Theorem 75.4 (line 4091 in algtop.tex): H1 of m-fold projective plane **)
+(** from S75 Thm 75.4 (line 4091 in algtop.tex): H1 of m-fold projective plane **)
 (** LATEX VERSION: Torsion subgroup T(X) of H1(X) has order 2, **)
 (** and H1(X)/T(X) is free abelian of rank m-1. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
@@ -72521,7 +72521,7 @@ Theorem thm75_4_H1_m_fold_projective_plane :
 admit.
 Admitted.
 
-(** from S75 Theorem 75.5 (line 4096 in algtop.tex): all surfaces distinct **)
+(** from S75 Thm 75.5 (line 4096 in algtop.tex): all surfaces distinct **)
 (** LATEX VERSION: S^2; T1, T2, ...; P1, P2, ... are all topologically distinct. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 55 **)
@@ -72706,7 +72706,7 @@ Definition equivalent_labelling_schemes : set -> set -> set -> set -> prop :=
         (polygon_pasting_space n2 w2) (polygon_pasting_topology n2 w2)
         h.
 
-(** from S76 Theorem 76.1 (line 4153 in algtop.tex): cutting and pasting **)
+(** from S76 Thm 76.1 (line 4153 in algtop.tex): cutting and pasting **)
 (** LATEX VERSION: If X comes from m polygonal regions via scheme **)
 (** y0 y1, w2, ..., wm and c is a new label, and both y0, y1 have **)
 (** length >= 2, then X also comes from m+1 regions via scheme **)
@@ -72761,7 +72761,7 @@ admit.
 Admitted.
 
 (** ============================================================ **)
-(** S77 The Classification Theorem                               **)
+(** S77 The Classification Thm                               **)
 (** (lines 4250-4624 in algtop.tex)                              **)
 (** ============================================================ **)
 
@@ -72898,10 +72898,10 @@ Theorem lemma77_4_projective_absorbs_torus :
 admit.
 Admitted.
 
-(** from S77 Theorem 77.5 (line 4555 in algtop.tex): classification theorem **)
+(** from S77 Thm 77.5 (line 4555 in algtop.tex): classification theorem **)
 (** LATEX VERSION: Let X be the quotient space obtained from a polygonal **)
 (** region by pasting its edges together in pairs. Then X is homeomorphic **)
-(** from S77 Theorem 77.5 (line 4555 in algtop.tex): classification of surfaces **)
+(** from S77 Thm 77.5 (line 4555 in algtop.tex): classification of surfaces **)
 (** either to S^2, to the n-fold torus T_n, or to the m-fold projective **)
 (** plane P_m. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 420 **)
@@ -72928,7 +72928,7 @@ Admitted.
 (** LATEX VERSION: Show that X (pasting polygon edges in pairs) is homeomorphic **)
 (** to exactly one of: S^2, P^2, K, T_n, T_n # P^2, T_n # K, where K = Klein bottle. **)
 (** from S77 Exercise 1(a) (line 4613 in algtop.tex): extended classification list **)
-(** Note: This is a refinement of Theorem 77.5 that adds two more surface types. **)
+(** Note: This is a refinement of Thm 77.5 that adds two more surface types. **)
 (** The Klein bottle K = P_2 and T_n # P^2, T_n # K reduce to P_m forms by Lemma 77.4. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 55 **)
@@ -72937,7 +72937,7 @@ Theorem ex77_1a_classification_extended_list :
   proper_labelling_scheme n w ->
   (** X is homeomorphic to exactly one in the extended list **)
   (** Since K = P_2 and T_n # P^2 = P_{2n+1}, T_n # K = P_{2n+2}, **)
-  (** this is just a restatement of Theorem 77.5 **)
+  (** this is just a restatement of Thm 77.5 **)
   (exists h:set, homeomorphism
     (polygon_pasting_space n w) (polygon_pasting_topology n w)
     (Sn 2) (Sn_topology 2) h) \/
@@ -73045,7 +73045,7 @@ Definition triangulable : set -> set -> prop :=
     exists n triangles:set,
       triangulation_of X Tx n triangles.
 
-(** from S78 Theorem 78.1 (line 4645 in algtop.tex): triangulable surface **)
+(** from S78 Thm 78.1 (line 4645 in algtop.tex): triangulable surface **)
 (** LATEX VERSION: If X is a compact triangulable surface, then X is **)
 (** homeomorphic to the quotient space obtained from a collection of **)
 (** disjoint triangular regions by pasting their edges together in pairs. **)
@@ -73072,7 +73072,7 @@ Theorem thm78_1_triangulable_surface_quotient :
 admit.
 Admitted.
 
-(** from S78 Theorem 78.2 (line 4734 in algtop.tex): single polygon **)
+(** from S78 Thm 78.2 (line 4734 in algtop.tex): single polygon **)
 (** LATEX VERSION: If X is a compact connected triangulable surface, **)
 (** then X is homeomorphic to a space obtained from a polygonal **)
 (** region by pasting edges together in pairs. **)
@@ -73120,7 +73120,7 @@ Definition manifold_boundary : set -> set -> set :=
         exists V:set, V :e R2_topology /\
         exists h:set, homeomorphism U (subspace_topology X Tx U) V (subspace_topology (setprod R R) R2_topology V) h)}.
 
-(** from S76 Exercises Exercise 4 / Theorem (line 4757 in algtop.tex): 2-manifolds with boundary **)
+(** from S76 Exercises Exercise 4 / Thm (line 4757 in algtop.tex): 2-manifolds with boundary **)
 (** LATEX VERSION: Given a compact connected triangulable 2-manifold Y with boundary, **)
 (** such that partial Y has k components, then Y is homeomorphic to X-with-k-holes, **)
 (** where X is either S^2 or the n-fold torus T_n or the m-fold projective plane P_m. **)
@@ -73299,7 +73299,7 @@ Theorem lemma79_1_general_lifting :
 admit.
 Admitted.
 
-(** from S79 Theorem 79.2 (line 4836 in algtop.tex): equivalence iff same subgroup **)
+(** from S79 Thm 79.2 (line 4836 in algtop.tex): equivalence iff same subgroup **)
 (** LATEX VERSION: Let p: E -> B and p': E' -> B be covering maps with **)
 (** p(e0) = p'(e0') = b0. There is an equivalence h: E -> E' with h(e0)=e0' **)
 (** iff H0 = H0', where H0 = p_star(pi1(E,e0)), H0' = p'_star(pi1(E',e0')). **)
@@ -73391,7 +73391,7 @@ Theorem lemma79_3b_conjugacy_converse :
 admit.
 Admitted.
 
-(** from S79 Theorem 79.4 (line 4890 in algtop.tex): equivalence iff conjugate subgroups **)
+(** from S79 Thm 79.4 (line 4890 in algtop.tex): equivalence iff conjugate subgroups **)
 (** LATEX VERSION: The covering maps p and p' are equivalent iff the subgroups **)
 (** H0 = p_star(pi1(E,e0)) and H0' = p'_star(pi1(E',e0')) are conjugate in pi1(B,b0). **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 100 **)
@@ -73420,7 +73420,7 @@ Theorem thm79_4_equivalence_iff_conjugate :
 admit.
 Admitted.
 
-(** from S79 Exercises Exercise 5b / Theorem (line 4925 in algtop.tex): torus covering spaces **)
+(** from S79 Exercises Exercise 5b / Thm (line 4925 in algtop.tex): torus covering spaces **)
 (** LATEX VERSION: If E is a covering space of the torus T, then E is homeomorphic **)
 (** either to R^2, or to S^1 x R, or to T. **)
 (** EFFORT: 10 lines textbook, difficulty 6/10, USD 150 **)
@@ -73564,7 +73564,7 @@ Theorem ex79_4c_torus_covering_finite : forall m n:set,
 admit.
 Admitted.
 
-(** from S79 Exercise 5(a) / Theorem (line 4920 in algtop.tex) **)
+(** from S79 Exercise 5(a) / Thm (line 4920 in algtop.tex) **)
 (** LATEX VERSION: Every isomorphism of pi1(T, x0) with itself is induced **)
 (** by a homeomorphism of T with itself that maps x0 to x0. **)
 (** EFFORT: 12 lines textbook, difficulty 6/10, USD 200 **)
@@ -73655,7 +73655,7 @@ Theorem lemma80_2b_covering_composition :
 admit.
 Admitted.
 
-(** from S80 Theorem 80.3 (line 4983 in algtop.tex): universal covering covers everything **)
+(** from S80 Thm 80.3 (line 4983 in algtop.tex): universal covering covers everything **)
 (** LATEX VERSION: Let p: E -> B be covering with E simply connected. Given any **)
 (** covering map r: Y -> B, there is a covering map q: E -> Y such that r o q = p. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
@@ -73697,7 +73697,7 @@ Theorem lemma80_4_universal_cover_semilocal :
 admit.
 Admitted.
 
-(** from S79 Exercises Exercise 6 / Theorem (line 4929 in algtop.tex): topological group lifting **)
+(** from S79 Exercises Exercise 6 / Thm (line 4929 in algtop.tex): topological group lifting **)
 (** LATEX VERSION: Let G be a topological group with multiplication m and identity e. **)
 (** If p: Gtilde -> G is a covering map with p(etilde) = e, there is a unique **)
 (** from S79 Exercise 6 (line 4909 in algtop.tex): topological group covering lift **)
@@ -73854,7 +73854,7 @@ Theorem lemma81_1_image_of_psi :
 admit.
 Admitted.
 
-(** from S81 Theorem 81.2 (line 5055 in algtop.tex) **)
+(** from S81 Thm 81.2 (line 5055 in algtop.tex) **)
 (** LATEX VERSION: The bijection Phi^{-1} o Psi : C(E,p,B) -> N(H0)/H0 **)
 (** is an isomorphism of groups. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
@@ -73981,10 +73981,10 @@ Definition properly_discontinuous : set -> set -> set -> set -> prop :=
           apply_fun g x :e X /\
           (forall y:set, y :e U -> apply_fun g y /:e U))).
 
-(** from S81 Theorem 81.5 (line 5125 in algtop.tex) **)
+(** from S81 Thm 81.5 (line 5125 in algtop.tex) **)
 (** LATEX VERSION: Let X be path connected and locally path connected; let G be a **)
 (** group of homeomorphisms of X. The quotient map pi: X -> X/G is a covering map **)
-(** from S81 Theorem 81.5 (line 5125 in algtop.tex): properly discontinuous covering **)
+(** from S81 Thm 81.5 (line 5125 in algtop.tex): properly discontinuous covering **)
 (** iff the action of G is properly discontinuous. In this case, pi is regular **)
 (** and G is its group of covering transformations. **)
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
@@ -74000,7 +74000,7 @@ Theorem thm81_5_properly_discontinuous_covering :
 admit.
 Admitted.
 
-(** from S81 Theorem 81.6 (line 5137 in algtop.tex) **)
+(** from S81 Thm 81.6 (line 5137 in algtop.tex) **)
 (** LATEX VERSION: If p: X -> B is regular with covering transformation group G, **)
 (** then there is a homeomorphism k: X/G -> B such that p = k o pi. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
@@ -74027,7 +74027,7 @@ Definition fixed_point_free_action : set -> set -> set -> prop :=
     (forall g:set, g :e G -> g <> idG ->
       forall x:set, x :e X -> apply_fun g x <> x).
 
-(** from S81 Exercises Exercise 6 / Theorem (line 5214 in algtop.tex): properly discontinuous actions **)
+(** from S81 Exercises Exercise 6 / Thm (line 5214 in algtop.tex): properly discontinuous actions **)
 (** LATEX VERSION: Let X be locally compact Hausdorff, G a group of homeomorphisms **)
 (** with fixed-point free action. If for each compact C, only finitely many g in G **)
 (** have C cap g(C) nonempty, then the action is properly discontinuous and X/G **)
@@ -74202,7 +74202,7 @@ Definition semilocally_simply_connected : set -> set -> prop :=
             cls =
           fundamental_group_id B Tb b)).
 
-(** from S82 Theorem 82.1 (line 5240 in algtop.tex): existence of covering spaces **)
+(** from S82 Thm 82.1 (line 5240 in algtop.tex): existence of covering spaces **)
 (** LATEX VERSION: Let B be path connected, locally path connected, and semilocally **)
 (** simply connected. Given a subgroup H of pi1(B,b0), there exists a covering map **)
 (** p: E -> B and a point e0 in p^{-1}(b0) such that p_star(pi1(E,e0)) = H. **)
@@ -74620,7 +74620,7 @@ Theorem supp_ex_1b_compact_Hausdorff_star_refinement :
 admit.
 Admitted.
 
-(** from Supplementary Exercises Exercise 2 / Theorem (line 5406 in algtop.tex): pi_1 countable **)
+(** from Supplementary Exercises Exercise 2 / Thm (line 5406 in algtop.tex): pi_1 countable **)
 (** LATEX VERSION: Let X be a space that is path connected, locally path connected, **)
 (** and semilocally simply connected. If X is regular with a countable basis, **)
 (** then pi_1(X, x_0) is countable. **)
@@ -74669,7 +74669,7 @@ Definition finitely_generated_group : set -> set -> set -> set -> prop :=
             (exists s:set, s :e S /\ apply_fun xs i = apply_fun inv s)) /\
           g = nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n).
 
-(** from Supplementary Exercises Exercise 4 / Theorem (line 5427 in algtop.tex): pi_1 finitely generated **)
+(** from Supplementary Exercises Exercise 4 / Thm (line 5427 in algtop.tex): pi_1 finitely generated **)
 (** LATEX VERSION: Let X be a space that is path connected, locally path connected, **)
 (** and semilocally simply connected. If X is compact Hausdorff, then **)
 (** pi_1(X, x_0) is finitely generated, and hence countable. **)
@@ -74791,7 +74791,7 @@ Theorem lemma83_3_graph_locally_path_connected :
 admit.
 Admitted.
 
-(** from S83 Theorem 83.4 (line 5530 in algtop.tex): covering of graph is graph **)
+(** from S83 Thm 83.4 (line 5530 in algtop.tex): covering of graph is graph **)
 (** LATEX VERSION: Let p: E -> X be a covering map where X is a linear graph. **)
 (** If A_alpha is an edge of X and B is a path component of p^{-1}(A_alpha), **)
 (** then p maps B homeomorphically onto A_alpha. Furthermore, E is a linear graph **)
@@ -74972,7 +74972,7 @@ Theorem lemma84_2_tree_decomposition :
 admit.
 Admitted.
 
-(** from S84 Theorem 84.3 (line 5617 in algtop.tex): tree is simply connected **)
+(** from S84 Thm 84.3 (line 5617 in algtop.tex): tree is simply connected **)
 (** LATEX VERSION: Any tree T is simply connected. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
 (** Bounty 110 **)
@@ -74983,7 +74983,7 @@ Theorem thm84_3_tree_simply_connected :
 admit.
 Admitted.
 
-(** from S84 Theorem 84.4 (line 5625 in algtop.tex): maximal tree contains all vertices **)
+(** from S84 Thm 84.4 (line 5625 in algtop.tex): maximal tree contains all vertices **)
 (** LATEX VERSION: Let X be a connected graph. A tree T in X is maximal iff it **)
 (** contains all the vertices of X. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
@@ -74998,7 +74998,7 @@ Theorem thm84_4_maximal_tree_all_vertices :
 admit.
 Admitted.
 
-(** from S84 Theorem 84.5 (line 5631 in algtop.tex): every tree in maximal tree **)
+(** from S84 Thm 84.5 (line 5631 in algtop.tex): every tree in maximal tree **)
 (** LATEX VERSION: If X is a linear graph, every tree T0 in X is contained **)
 (** in a maximal tree in X. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
@@ -75049,7 +75049,7 @@ Theorem lemma84_6_generator_from_edge :
 admit.
 Admitted.
 
-(** from S84 Theorem 84.7 (line 5663 in algtop.tex): pi1 of graph is free **)
+(** from S84 Thm 84.7 (line 5663 in algtop.tex): pi1 of graph is free **)
 (** LATEX VERSION: Let X be a connected graph that is not a tree. Then pi1(X) is **)
 (** a nontrivial free group. If T is a maximal tree in X, the fundamental group **)
 (** has free generators in bijection with edges of X not in T. **)
@@ -75132,7 +75132,7 @@ Admitted.
 (** (lines 5749-5795 in algtop.tex)                              **)
 (** ============================================================ **)
 
-(** from S85 Theorem 85.1 (line 5752 in algtop.tex): subgroup of free group is free **)
+(** from S85 Thm 85.1 (line 5752 in algtop.tex): subgroup of free group is free **)
 (** LATEX VERSION: If H is a subgroup of a free group F, then H is free. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
 (** Bounty 110 **)
@@ -75185,7 +75185,7 @@ Definition subgroup_index : set -> set -> set -> set -> set -> set :=
     Eps_i (fun k:set => k :e omega /\
       equip (right_coset_set G mult H) k).
 
-(** from S85 Theorem 85.3 (line 5780 in algtop.tex): free generators formula **)
+(** from S85 Thm 85.3 (line 5780 in algtop.tex): free generators formula **)
 (** LATEX VERSION: Let F be a free group with n+1 free generators; let H be a **)
 (** subgroup of F. If H has index k in F, then H has kn+1 free generators. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
