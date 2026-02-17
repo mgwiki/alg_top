@@ -37527,6 +37527,471 @@ rewrite <- HleftChainToAB.
 exact HleftChainToBa.
 Qed.
 
+(** S52 helper: in an abelian pi1(X,x0), basepoint-change along an Eps-loop fixes classes **)
+Theorem ex52_3_helper_abelian_eps_loop_fixed : forall X Tx x0 a b:set,
+  topology_on X Tx ->
+  x0 :e X ->
+  a :e fundamental_group X Tx x0 ->
+  b :e fundamental_group X Tx x0 ->
+  (forall u v:set, u :e fundamental_group X Tx x0 -> v :e fundamental_group X Tx x0 ->
+    apply_fun (fundamental_group_mult X Tx x0) (u, v)
+    = apply_fun (fundamental_group_mult X Tx x0) (v, u)) ->
+  apply_fun
+    (basepoint_change_map X Tx x0 x0 (Eps_i (fun f:set => f :e a)))
+    b
+  = b.
+let X Tx x0 a b.
+assume HtopX Hx0 Ha Hb Habel.
+set alpha_loop := Eps_i (fun f:set => f :e a).
+set epsb := Eps_i (fun f:set => f :e b).
+claim HalphaLoop : alpha_loop :e loop_space X Tx x0.
+{
+  exact (eps_of_fundamental_group_member_in_loop_space_s52
+    X
+    Tx
+    x0
+    a
+    Ha).
+}
+claim HepsbLoop : epsb :e loop_space X Tx x0.
+{
+  exact (eps_of_fundamental_group_member_in_loop_space_s52
+    X
+    Tx
+    x0
+    b
+    Hb).
+}
+claim Hgrp :
+  group_structure
+    (fundamental_group X Tx x0)
+    (fundamental_group_mult X Tx x0)
+    (fundamental_group_id X Tx x0)
+    (fundamental_group_inv X Tx x0).
+{
+  exact (fundamental_group_is_group
+    X
+    Tx
+    x0
+    HtopX
+    Hx0).
+}
+apply (and6E
+  (function_on
+    (fundamental_group_mult X Tx x0)
+    (setprod
+      (fundamental_group X Tx x0)
+      (fundamental_group X Tx x0))
+    (fundamental_group X Tx x0))
+  (function_on
+    (fundamental_group_inv X Tx x0)
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x0))
+  ((fundamental_group_id X Tx x0)
+    :e (fundamental_group X Tx x0))
+  (forall x y z:set,
+    x :e (fundamental_group X Tx x0) ->
+    y :e (fundamental_group X Tx x0) ->
+    z :e (fundamental_group X Tx x0) ->
+    apply_fun
+      (fundamental_group_mult X Tx x0)
+      (apply_fun
+        (fundamental_group_mult X Tx x0)
+        (x, y), z)
+    =
+    apply_fun
+      (fundamental_group_mult X Tx x0)
+      (x,
+        apply_fun
+          (fundamental_group_mult X Tx x0)
+          (y, z)))
+  (forall x:set,
+    x :e (fundamental_group X Tx x0) ->
+    apply_fun
+      (fundamental_group_mult X Tx x0)
+      (fundamental_group_id X Tx x0, x)
+    = x /\
+    apply_fun
+      (fundamental_group_mult X Tx x0)
+      (x, fundamental_group_id X Tx x0)
+    = x)
+  (forall x:set,
+    x :e (fundamental_group X Tx x0) ->
+    apply_fun
+      (fundamental_group_mult X Tx x0)
+      (x, apply_fun (fundamental_group_inv X Tx x0) x)
+    = fundamental_group_id X Tx x0 /\
+    apply_fun
+      (fundamental_group_mult X Tx x0)
+      (apply_fun (fundamental_group_inv X Tx x0) x, x)
+    = fundamental_group_id X Tx x0)
+  Hgrp).
+assume HmultFun HinvFun HidFG Hassoc Hid Hinv.
+claim HinvAG :
+  apply_fun
+    (fundamental_group_inv X Tx x0)
+    a
+  :e fundamental_group X Tx x0.
+{
+  exact (HinvFun
+    a
+    Ha).
+}
+claim HpairBA :
+  (b, a)
+  :e setprod
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x0).
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x0)
+    b
+    a
+    Hb
+    Ha).
+}
+claim HbaG :
+  apply_fun
+    (fundamental_group_mult X Tx x0)
+    (b, a)
+  :e fundamental_group X Tx x0.
+{
+  exact (HmultFun
+    (b, a)
+    HpairBA).
+}
+claim HpairInvABA :
+  (apply_fun (fundamental_group_inv X Tx x0) a,
+   apply_fun (fundamental_group_mult X Tx x0) (b, a))
+  :e setprod
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x0).
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x0)
+    (apply_fun (fundamental_group_inv X Tx x0) a)
+    (apply_fun (fundamental_group_mult X Tx x0) (b, a))
+    HinvAG
+    HbaG).
+}
+claim HmultInvABAAsClassRaw :
+  apply_fun
+    (fundamental_group_mult X Tx x0)
+    (apply_fun (fundamental_group_inv X Tx x0) a,
+     apply_fun (fundamental_group_mult X Tx x0) (b, a))
+  =
+  path_homotopy_class_loop
+    X
+    Tx
+    x0
+    (path_concat
+      (Eps_i (fun h:set =>
+        h :e
+          (apply_fun (fundamental_group_inv X Tx x0) a,
+           apply_fun (fundamental_group_mult X Tx x0) (b, a)) 0))
+      (Eps_i (fun h:set =>
+        h :e
+          (apply_fun (fundamental_group_inv X Tx x0) a,
+           apply_fun (fundamental_group_mult X Tx x0) (b, a)) 1))).
+{
+  exact (fundamental_group_mult_apply
+    X
+    Tx
+    x0
+    (apply_fun (fundamental_group_inv X Tx x0) a,
+     apply_fun (fundamental_group_mult X Tx x0) (b, a))
+    HpairInvABA).
+}
+claim HmultInvABAAsClass :
+  apply_fun
+    (fundamental_group_mult X Tx x0)
+    (apply_fun (fundamental_group_inv X Tx x0) a,
+     apply_fun (fundamental_group_mult X Tx x0) (b, a))
+  =
+  path_homotopy_class_loop
+    X
+    Tx
+    x0
+    (path_concat
+      (Eps_i (fun h:set =>
+        h :e apply_fun (fundamental_group_inv X Tx x0) a))
+      (Eps_i (fun h:set =>
+        h :e apply_fun (fundamental_group_mult X Tx x0) (b, a)))).
+{
+  rewrite HmultInvABAAsClassRaw.
+  rewrite (tuple_2_0_eq
+    (apply_fun (fundamental_group_inv X Tx x0) a)
+    (apply_fun (fundamental_group_mult X Tx x0) (b, a))).
+  rewrite (tuple_2_1_eq
+    (apply_fun (fundamental_group_inv X Tx x0) a)
+    (apply_fun (fundamental_group_mult X Tx x0) (b, a))).
+  reflexivity.
+}
+claim HbaAsClass :
+  apply_fun
+    (fundamental_group_mult X Tx x0)
+    (b, a)
+  =
+  path_homotopy_class_loop
+    X
+    Tx
+    x0
+    (path_concat
+      epsb
+      alpha_loop).
+{
+  rewrite (fundamental_group_mult_apply
+    X
+    Tx
+    x0
+    (b, a)
+    HpairBA).
+  rewrite (tuple_2_0_eq b a).
+  rewrite (tuple_2_1_eq b a).
+  reflexivity.
+}
+claim HrevAlphaLoop :
+  reverse_path alpha_loop :e loop_space X Tx x0.
+{
+  exact (reverse_path_preserves_loop_space_early
+    X
+    Tx
+    x0
+    alpha_loop
+    HalphaLoop).
+}
+claim HinvAAsClass :
+  apply_fun
+    (fundamental_group_inv X Tx x0)
+    a
+  =
+  path_homotopy_class_loop
+    X
+    Tx
+    x0
+    (reverse_path alpha_loop).
+{
+  rewrite (fundamental_group_inv_apply
+    X
+    Tx
+    x0
+    a
+    Ha).
+  reflexivity.
+}
+claim HepsInvAHom :
+  path_homotopic
+    X
+    Tx
+    x0
+    x0
+    (reverse_path alpha_loop)
+    (Eps_i (fun f:set =>
+      f :e apply_fun (fundamental_group_inv X Tx x0) a)).
+{
+  rewrite HinvAAsClass.
+  exact (eps_homotopic_to_rep_early
+    X
+    Tx
+    x0
+    (reverse_path alpha_loop)
+    HtopX
+    HrevAlphaLoop).
+}
+claim HbaLoop :
+  path_concat
+    epsb
+    alpha_loop
+  :e loop_space X Tx x0.
+{
+  exact (path_concat_preserves_loop_space_early
+    X
+    Tx
+    x0
+    epsb
+    alpha_loop
+    HepsbLoop
+    HalphaLoop).
+}
+claim HepsBaHom :
+  path_homotopic
+    X
+    Tx
+    x0
+    x0
+    (path_concat
+      epsb
+      alpha_loop)
+    (Eps_i (fun f:set =>
+      f :e apply_fun (fundamental_group_mult X Tx x0) (b, a))).
+{
+  rewrite HbaAsClass.
+  exact (eps_homotopic_to_rep_early
+    X
+    Tx
+    x0
+    (path_concat
+      epsb
+      alpha_loop)
+    HtopX
+    HbaLoop).
+}
+claim HconjToNestedHom :
+  path_homotopic
+    X
+    Tx
+    x0
+    x0
+    (path_concat
+      (reverse_path alpha_loop)
+      (path_concat
+        epsb
+        alpha_loop))
+    (path_concat
+      (Eps_i (fun f:set =>
+        f :e apply_fun (fundamental_group_inv X Tx x0) a))
+      (Eps_i (fun f:set =>
+        f :e apply_fun (fundamental_group_mult X Tx x0) (b, a)))).
+{
+  exact (path_concat_well_defined_on_classes
+    X
+    Tx
+    x0
+    x0
+    x0
+    (reverse_path alpha_loop)
+    (Eps_i (fun f:set =>
+      f :e apply_fun (fundamental_group_inv X Tx x0) a))
+    (path_concat
+      epsb
+      alpha_loop)
+    (Eps_i (fun f:set =>
+      f :e apply_fun (fundamental_group_mult X Tx x0) (b, a)))
+    HepsInvAHom
+    HepsBaHom).
+}
+claim HconjToNestedClass :
+  path_homotopy_class_loop
+    X
+    Tx
+    x0
+    (path_concat
+      (reverse_path alpha_loop)
+      (path_concat
+        epsb
+        alpha_loop))
+  =
+  path_homotopy_class_loop
+    X
+    Tx
+    x0
+    (path_concat
+      (Eps_i (fun f:set =>
+        f :e apply_fun (fundamental_group_inv X Tx x0) a))
+      (Eps_i (fun f:set =>
+        f :e apply_fun (fundamental_group_mult X Tx x0) (b, a)))).
+{
+  exact (path_homotopy_class_loop_eq_of_path_homotopic
+    X
+    Tx
+    x0
+    (path_concat
+      (reverse_path alpha_loop)
+      (path_concat
+        epsb
+        alpha_loop))
+    (path_concat
+      (Eps_i (fun f:set =>
+        f :e apply_fun (fundamental_group_inv X Tx x0) a))
+      (Eps_i (fun f:set =>
+        f :e apply_fun (fundamental_group_mult X Tx x0) (b, a))))
+    HconjToNestedHom).
+}
+claim HcommBA :
+  apply_fun
+    (fundamental_group_mult X Tx x0)
+    (b, a)
+  =
+  apply_fun
+    (fundamental_group_mult X Tx x0)
+    (a, b).
+{
+  exact (Habel
+    b
+    a
+    Hb
+    Ha).
+}
+claim HinvLeftA :
+  apply_fun
+    (fundamental_group_mult X Tx x0)
+    (apply_fun (fundamental_group_inv X Tx x0) a, a)
+  =
+  fundamental_group_id X Tx x0.
+{
+  exact (andER
+    (apply_fun
+      (fundamental_group_mult X Tx x0)
+      (a, apply_fun (fundamental_group_inv X Tx x0) a)
+      =
+      fundamental_group_id X Tx x0)
+    (apply_fun
+      (fundamental_group_mult X Tx x0)
+      (apply_fun (fundamental_group_inv X Tx x0) a, a)
+      =
+      fundamental_group_id X Tx x0)
+    (Hinv a Ha)).
+}
+claim HleftIdOnB :
+  apply_fun
+    (fundamental_group_mult X Tx x0)
+    (fundamental_group_id X Tx x0, b)
+  = b.
+{
+  exact (andEL
+    (apply_fun
+      (fundamental_group_mult X Tx x0)
+      (fundamental_group_id X Tx x0, b)
+      = b)
+    (apply_fun
+      (fundamental_group_mult X Tx x0)
+      (b, fundamental_group_id X Tx x0)
+      = b)
+    (Hid b Hb)).
+}
+claim HinvABAEqB :
+  apply_fun
+    (fundamental_group_mult X Tx x0)
+    (apply_fun (fundamental_group_inv X Tx x0) a,
+     apply_fun (fundamental_group_mult X Tx x0) (b, a))
+  = b.
+{
+  rewrite HcommBA.
+  rewrite <- (Hassoc
+    (apply_fun (fundamental_group_inv X Tx x0) a)
+    a
+    b
+    HinvAG
+    Ha
+    Hb).
+  rewrite HinvLeftA.
+  exact HleftIdOnB.
+}
+rewrite (basepoint_change_map_apply
+  X
+  Tx
+  x0
+  x0
+  alpha_loop
+  b
+  Hb).
+rewrite HconjToNestedClass.
+rewrite <- HmultInvABAAsClass.
+exact HinvABAEqB.
+Qed.
+
 (** from S52 Exercise 3 (line 498 in algtop.tex) **)
 (** LATEX VERSION: pi1(X,x0) is abelian iff for every pair alpha, beta of paths from x0 to x1, alpha-hat = beta-hat. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
