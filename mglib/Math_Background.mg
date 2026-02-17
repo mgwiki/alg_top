@@ -76778,6 +76778,116 @@ claim HscX_if_open :
 admit. (** remaining gap: derive A :e Tx and B :e Tx from current hypotheses **)
 Admitted.
 
+(** Helper: ex59_1 conclusion under explicit openness of the two pieces. **)
+Theorem ex59_1_wedge_S2_trivial_pi1_if_open : forall X Tx x0 A B fA fB:set,
+  topology_on X Tx ->
+  A :e Tx ->
+  B :e Tx ->
+  X = A :\/: B ->
+  A :/\: B = Sing x0 ->
+  homeomorphism A (subspace_topology X Tx A) (Sn 2) (Sn_topology 2) fA ->
+  homeomorphism B (subspace_topology X Tx B) (Sn 2) (Sn_topology 2) fB ->
+  simply_connected X Tx.
+let X Tx x0 A B fA fB.
+assume Htop : topology_on X Tx.
+assume HAopen : A :e Tx.
+assume HBopen : B :e Tx.
+assume Hcover : X = A :\/: B.
+assume Hinter : A :/\: B = Sing x0.
+assume HhomeA : homeomorphism A (subspace_topology X Tx A) (Sn 2) (Sn_topology 2) fA.
+assume HhomeB : homeomorphism B (subspace_topology X Tx B) (Sn 2) (Sn_topology 2) fB.
+claim HscS2 : simply_connected (Sn 2) (Sn_topology 2).
+{
+  exact (thm59_3_Sn_simply_connected
+    2
+    (nat_p_omega 2 nat_2)
+    (Subq_ref 2)).
+}
+claim HscA : simply_connected A (subspace_topology X Tx A).
+{
+  exact (homeomorphism_reflects_simply_connected
+    A
+    (subspace_topology X Tx A)
+    (Sn 2)
+    (Sn_topology 2)
+    fA
+    HhomeA
+    HscS2).
+}
+claim HscB : simply_connected B (subspace_topology X Tx B).
+{
+  exact (homeomorphism_reflects_simply_connected
+    B
+    (subspace_topology X Tx B)
+    (Sn 2)
+    (Sn_topology 2)
+    fB
+    HhomeB
+    HscS2).
+}
+claim Hx0AB : x0 :e A :/\: B.
+{
+  rewrite Hinter.
+  exact (SingI x0).
+}
+claim Hx0A : x0 :e A.
+{
+  exact (binintersectE1
+    A
+    B
+    x0
+    Hx0AB).
+}
+claim Hx0Union : x0 :e A :\/: B.
+{
+  exact (binunionI1
+    A
+    B
+    x0
+    Hx0A).
+}
+claim Hx0X : x0 :e X.
+{
+  exact (mem_eqL
+    x0
+    X
+    (A :\/: B)
+    Hcover
+    Hx0Union).
+}
+claim HneAB : (A :/\: B) <> Empty.
+{
+  rewrite Hinter.
+  exact (elem_implies_nonempty
+    (Sing x0)
+    x0
+    (SingI x0)).
+}
+claim HpcAB : path_connected_space (A :/\: B) (subspace_topology X Tx (A :/\: B)).
+{
+  rewrite Hinter.
+  exact (singleton_subspace_path_connected
+    X
+    Tx
+    x0
+    Htop
+    Hx0X).
+}
+exact (cor59_2_simply_connected_union
+  X
+  Tx
+  A
+  B
+  Htop
+  HAopen
+  HBopen
+  Hcover
+  HscA
+  HscB
+  HneAB
+  HpcAB).
+Admitted. (** depends on admitted cor59_2_simply_connected_union **)
+
 (** from S59 Exercise 3(a) (line 1617 in algtop.tex) **)
 (** LATEX VERSION: R^1 and R^n are not homeomorphic if n > 1. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
