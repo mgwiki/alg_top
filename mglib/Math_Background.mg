@@ -1,6 +1,6 @@
 (** Balance Alice 2584 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 29694 **)
+(** Balance Charlie 29594 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -64482,7 +64482,8 @@ Definition wedge_of_circles : set -> set -> set -> set -> set -> prop :=
 (** LATEX VERSION: Let X be wedge of circles S_alpha. Then X is normal. **)
 (** Any compact subspace of X is contained in finitely many S_alpha. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:05:14 **)
 Theorem lemma71_2_wedge_normal :
   forall X Tx J Sfam p:set,
   wedge_of_circles X Tx J Sfam p ->
@@ -64518,7 +64519,8 @@ Admitted.
 (** LATEX VERSION: Given an index set J, there exists a space X that is a wedge of **)
 (** circles S_alpha for alpha in J. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:05:14 **)
 Theorem lemma71_4_existence_wedge :
   forall J:set,
   exists X Tx Sfam p:set,
@@ -64832,7 +64834,8 @@ Admitted.
 (** LATEX VERSION: The fundamental group of the torus has a presentation **)
 (** with two generators alpha, beta and a single relation alpha beta alpha^{-1} beta^{-1}. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:05:14 **)
 Theorem thm73_1_torus_presentation :
   forall x0:set,
   x0 :e torus ->
@@ -64919,7 +64922,8 @@ Admitted.
 (** LATEX VERSION: The fundamental group of the n-fold dunce cap is a cyclic group **)
 (** of order n. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:05:14 **)
 Theorem thm73_4_dunce_cap_pi1 :
   forall n:set,
   n :e omega -> n <> 0 -> ordsucc 0 :e n ->
@@ -66554,7 +66558,8 @@ Admitted.
 (** LATEX VERSION: The covering maps p and p' are equivalent iff the subgroups **)
 (** H0 = p_star(pi1(E,e0)) and H0' = p'_star(pi1(E',e0')) are conjugate in pi1(B,b0). **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:05:14 **)
 Theorem thm79_4_equivalence_iff_conjugate :
   forall E Te E' Te' B Tb p p' e0 e0':set,
   covering_map E Te B Tb p ->
@@ -66823,7 +66828,8 @@ Admitted.
 (** LATEX VERSION: Let p: E -> B be covering with E simply connected. Given any **)
 (** covering map r: Y -> B, there is a covering map q: E -> Y such that r o q = p. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:05:14 **)
 Theorem thm80_3_universal_covers_everything :
   forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
@@ -66994,7 +67000,8 @@ Definition covering_trans_evaluation : set -> set -> set -> set -> set -> set ->
 (** LATEX VERSION: The image of Psi equals the image under Phi of the **)
 (** subgroup N(H0)/H0 of pi1(B,b0)/H0. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:05:14 **)
 Theorem lemma81_1_image_of_psi :
   forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
@@ -67171,7 +67178,8 @@ Admitted.
 (** LATEX VERSION: If p: X -> B is regular with covering transformation group G, **)
 (** then there is a homeomorphism k: X/G -> B such that p = k o pi. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:05:14 **)
 Theorem thm81_6_regular_orbit_homeomorphism :
   forall X Tx B Tb p e0:set,
   regular_covering_map X Tx B Tb p e0 ->
@@ -67508,7 +67516,8 @@ Admitted.
 (** LATEX VERSION: If X is compact Hausdorff, then for any open covering A, there exists **)
 (** a finite open covering B refining A with the star property. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:05:14 **)
 Theorem supp_ex_1b_compact_Hausdorff_star_refinement :
   forall X Tx:set,
   compact_space X Tx -> Hausdorff_space X Tx ->
@@ -67540,7 +67549,8 @@ Admitted.
 (** LATEX VERSION: Let p: E -> X be a covering map such that pi_1(X, x_0) is countable. **)
 (** If X is regular with a countable basis, so is E. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:05:14 **)
 Theorem supp_ex_3_covering_inherits_regular_second_countable :
   forall E Te X Tx p x0:set,
   covering_map E Te X Tx p ->
