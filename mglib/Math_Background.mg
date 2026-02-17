@@ -36736,11 +36736,275 @@ claim HuniqAtx0 :
     cls
     Hcls).
 }
+set bc0 := basepoint_change_map X Tx x0 x0 (constant_path x0).
+claim HconstConcatCont :
+  continuous_map unit_interval unit_interval_topology X Tx
+    (path_concat (constant_path x0) (constant_path x0)).
+{
+  exact (path_concat_continuous
+    X
+    Tx
+    x0
+    x0
+    x0
+    (constant_path x0)
+    (constant_path x0)
+    HconstCont
+    HconstCont
+    Hconst0
+    Hconst1
+    Hconst0
+    Hconst1).
+}
+claim HconstConcat0 :
+  apply_fun (path_concat (constant_path x0) (constant_path x0)) 0 = x0.
+{
+  rewrite (path_concat_at_zero
+    (constant_path x0)
+    (constant_path x0)).
+  exact Hconst0.
+}
+claim HconstConcat1 :
+  apply_fun (path_concat (constant_path x0) (constant_path x0)) 1 = x0.
+{
+  rewrite (path_concat_at_one
+    (constant_path x0)
+    (constant_path x0)).
+  exact Hconst1.
+}
+claim Hbc0Idem :
+  forall cls:set, cls :e fundamental_group X Tx x0 ->
+    apply_fun bc0 cls
+    = apply_fun
+        (compose_fun
+          (fundamental_group X Tx x0)
+          bc0
+          bc0)
+        cls.
+{
+  let cls.
+  assume Hcls.
+  claim HuniqConst :
+    apply_fun
+      (basepoint_change_map
+        X
+        Tx
+        x0
+        x0
+        (path_concat (constant_path x0) (constant_path x0)))
+      cls
+    =
+    apply_fun bc0 cls.
+  {
+    exact (Huniq
+      x0
+      (path_concat (constant_path x0) (constant_path x0))
+      (constant_path x0)
+      Hx0
+      HconstConcatCont
+      HconstCont
+      HconstConcat0
+      HconstConcat1
+      Hconst0
+      Hconst1
+      cls
+      Hcls).
+  }
+  claim HcompConst :
+    apply_fun
+      (basepoint_change_map
+        X
+        Tx
+        x0
+        x0
+        (path_concat (constant_path x0) (constant_path x0)))
+      cls
+    =
+    apply_fun
+      (compose_fun
+        (fundamental_group X Tx x0)
+        bc0
+        bc0)
+      cls.
+  {
+    exact (ex52_2_basepoint_composition
+      X
+      Tx
+      x0
+      x0
+      x0
+      (constant_path x0)
+      (constant_path x0)
+      HtopX
+      HconstCont
+      HconstCont
+      Hconst0
+      Hconst1
+      Hconst0
+      Hconst1
+      cls
+      Hcls).
+  }
+  rewrite <- HuniqConst.
+  exact HcompConst.
+}
+claim Hbc0Bij :
+  bijection
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x0)
+    bc0.
+{
+  exact (lemma52_1_basepoint_change_bijection
+    X
+    Tx
+    x0
+    x0
+    (constant_path x0)
+    HtopX
+    HconstCont
+    Hconst0
+    Hconst1).
+}
+claim Hbc0SurjUnique :
+  forall y:set, y :e fundamental_group X Tx x0 ->
+    exists x:set, x :e fundamental_group X Tx x0 /\
+      apply_fun bc0 x = y /\
+      (forall x':set, x' :e fundamental_group X Tx x0 ->
+        apply_fun bc0 x' = y -> x' = x).
+{
+  exact (andER
+    (function_on
+      bc0
+      (fundamental_group X Tx x0)
+      (fundamental_group X Tx x0))
+    (forall y:set, y :e fundamental_group X Tx x0 ->
+      exists x:set, x :e fundamental_group X Tx x0 /\
+        apply_fun bc0 x = y /\
+        (forall x':set, x' :e fundamental_group X Tx x0 ->
+          apply_fun bc0 x' = y -> x' = x))
+    Hbc0Bij).
+}
+claim Hbc0IsId :
+  forall cls:set, cls :e fundamental_group X Tx x0 ->
+    apply_fun bc0 cls = cls.
+{
+  let cls.
+  assume Hcls.
+  apply (Hbc0SurjUnique cls Hcls).
+  let x.
+  assume HxPack.
+  claim HxFG : x :e fundamental_group X Tx x0.
+  {
+    exact (andEL
+      (x :e fundamental_group X Tx x0)
+      (apply_fun bc0 x = cls)
+      (andEL
+        (x :e fundamental_group X Tx x0 /\
+          apply_fun bc0 x = cls)
+        (forall x':set, x' :e fundamental_group X Tx x0 ->
+          apply_fun bc0 x' = cls -> x' = x)
+        HxPack)).
+  }
+  claim Hbc0xEqCls : apply_fun bc0 x = cls.
+  {
+    exact (andER
+      (x :e fundamental_group X Tx x0)
+      (apply_fun bc0 x = cls)
+      (andEL
+        (x :e fundamental_group X Tx x0 /\
+          apply_fun bc0 x = cls)
+        (forall x':set, x' :e fundamental_group X Tx x0 ->
+          apply_fun bc0 x' = cls -> x' = x)
+        HxPack)).
+  }
+  claim Hbc0xIdem :
+    apply_fun bc0 x
+    = apply_fun
+        (compose_fun
+          (fundamental_group X Tx x0)
+          bc0
+          bc0)
+        x.
+  {
+    exact (Hbc0Idem x HxFG).
+  }
+  claim HcomposeAtx :
+    apply_fun
+      (compose_fun
+        (fundamental_group X Tx x0)
+        bc0
+        bc0)
+      x
+    =
+    apply_fun bc0 (apply_fun bc0 x).
+  {
+    exact (compose_fun_apply
+      (fundamental_group X Tx x0)
+      bc0
+      bc0
+      x
+      HxFG).
+  }
+  claim HclsEqbc0bc0x : cls = apply_fun bc0 (apply_fun bc0 x).
+  {
+    claim HclsEqCompose :
+      cls
+      =
+      apply_fun
+        (compose_fun
+          (fundamental_group X Tx x0)
+          bc0
+          bc0)
+        x.
+    {
+      rewrite <- Hbc0xEqCls.
+      exact Hbc0xIdem.
+    }
+    exact (eq_i_tra
+      cls
+      (apply_fun
+        (compose_fun
+          (fundamental_group X Tx x0)
+          bc0
+          bc0)
+        x)
+      (apply_fun bc0 (apply_fun bc0 x))
+      HclsEqCompose
+      HcomposeAtx).
+  }
+  claim HclsEqbc0cls : cls = apply_fun bc0 cls.
+  {
+    claim Hbc0bc0xEqbc0cls :
+      apply_fun bc0 (apply_fun bc0 x) = apply_fun bc0 cls.
+    {
+      rewrite Hbc0xEqCls.
+      reflexivity.
+    }
+    exact (eq_i_tra
+      cls
+      (apply_fun bc0 (apply_fun bc0 x))
+      (apply_fun bc0 cls)
+      HclsEqbc0bc0x
+      Hbc0bc0xEqbc0cls).
+  }
+  symmetry.
+  exact HclsEqbc0cls.
+}
 claim HconjEqIdOnB :
   apply_fun (basepoint_change_map X Tx x0 x0 alpha_loop) b
   = apply_fun (basepoint_change_map X Tx x0 x0 (constant_path x0)) b.
 {
   exact (HuniqAtx0 b Hb).
+}
+claim Hbc0b : apply_fun bc0 b = b.
+{
+  exact (Hbc0IsId b Hb).
+}
+claim HconjEqB :
+  apply_fun (basepoint_change_map X Tx x0 x0 alpha_loop) b = b.
+{
+  rewrite HconjEqIdOnB.
+  exact Hbc0b.
 }
 set epsb := Eps_i (fun f:set => f :e b).
 claim HepsbLoop : epsb :e loop_space X Tx x0.
