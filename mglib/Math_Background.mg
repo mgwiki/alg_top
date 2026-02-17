@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 1979 **)
+(** Balance Charlie 1973 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -43177,7 +43177,8 @@ Qed.
 (** LATEX VERSION: Let p: E -> B be a covering map; B connected. If p^{-1}(b0) **)
 (** has k elements for some b0 in B, then p^{-1}(b) has k elements for every b in B. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 60 **)
+(** Bounty 66 **)
+(** Lock Charlie 2026-02-18T10:55:00 **)
 Theorem ex53_3_uniform_fiber_size : forall E Te B Tb p b0 k:set,
   covering_map E Te B Tb p ->
   connected_space B Tb ->
