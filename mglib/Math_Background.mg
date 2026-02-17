@@ -1,5 +1,5 @@
 (** Balance Alice 1545 **)
-(** Balance Bob 1433 **)
+(** Balance Bob 1428 **)
 (** Balance Charlie 1223 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -11463,7 +11463,6 @@ Admitted.
 (** from S51 Theorem 51.2 part (2) (line 232 in algtop.tex): right identity **)
 (** EFFORT: 8 lines textbook, difficulty 6/10, USD 150 **)
 (** Bounty 165 **)
-(** Lock Alice 2026-02-17 00:00 UTC **)
 Theorem Theorem_51_2_right_identity : forall X Tx x0 x1 f:set,
   continuous_map unit_interval unit_interval_topology X Tx f ->
   apply_fun f 0 = x0 -> apply_fun f 1 = x1 ->
@@ -13048,7 +13047,8 @@ Qed.
 (** from S52 (line 458 in algtop.tex): h-star is a homomorphism **)
 (** LATEX VERSION: The map h-star is a well-defined group homomorphism. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Bob 2026-02-18T00:35:00 **)
 Theorem induced_homomorphism_is_homomorphism : forall X Tx x0 Y Ty y0 h:set,
   continuous_map X Tx Y Ty h ->
   apply_fun h x0 = y0 -> x0 :e X ->
