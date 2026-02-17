@@ -68099,6 +68099,22 @@ claim Hcore :
           rewrite HWV.
           exact HpreVopen.
     }
+    claim HfinSubCoverPrePair :
+      has_finite_subcover unit_interval unit_interval_topology
+        (UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V)).
+    {
+      exact (unit_interval_has_finite_subcover
+        (UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V))
+        HcoverPrePair).
+    }
+    claim HexGPair :
+      exists G:set,
+        G c= UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V) /\
+        finite G /\
+        unit_interval c= Union G.
+    {
+      exact HfinSubCoverPrePair.
+    }
     claim HUVopen : (U :/\: V) :e Tx.
     {
       exact (topology_binintersect_closed X Tx U V Htop HU HV).
@@ -68148,6 +68164,50 @@ claim Hcore :
         1
         one_in_unit_interval
         H1inUV).
+    }
+    claim H0prePair :
+      0 :e (preimage_of unit_interval fcls U) :/\: (preimage_of unit_interval fcls V).
+    {
+      rewrite <- HpreUVeq.
+      exact H0preUV.
+    }
+    claim H1prePair :
+      1 :e (preimage_of unit_interval fcls U) :/\: (preimage_of unit_interval fcls V).
+    {
+      rewrite <- HpreUVeq.
+      exact H1preUV.
+    }
+    claim H0preU : 0 :e preimage_of unit_interval fcls U.
+    {
+      exact (binintersectE1
+        (preimage_of unit_interval fcls U)
+        (preimage_of unit_interval fcls V)
+        0
+        H0prePair).
+    }
+    claim H0preV : 0 :e preimage_of unit_interval fcls V.
+    {
+      exact (binintersectE2
+        (preimage_of unit_interval fcls U)
+        (preimage_of unit_interval fcls V)
+        0
+        H0prePair).
+    }
+    claim H1preU : 1 :e preimage_of unit_interval fcls U.
+    {
+      exact (binintersectE1
+        (preimage_of unit_interval fcls U)
+        (preimage_of unit_interval fcls V)
+        1
+        H1prePair).
+    }
+    claim H1preV : 1 :e preimage_of unit_interval fcls V.
+    {
+      exact (binintersectE2
+        (preimage_of unit_interval fcls U)
+        (preimage_of unit_interval fcls V)
+        1
+        H1prePair).
     }
     claim HpreUVne : preimage_of unit_interval fcls (U :/\: V) <> Empty.
     {
