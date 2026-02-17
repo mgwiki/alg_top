@@ -21037,8 +21037,50 @@ claim HlhsAsApply :
 }
 rewrite HlhsAsApply.
 rewrite <- HbetaMapEq.
-rewrite HeyClass.
-(** TODO Bob: prove that alpha-hat o beta-hat acts as identity on y under the inverse-path homotopy assumptions. **)
+set x := apply_fun (basepoint_change_map X Tx x1 x0 beta) y.
+claim HxDef :
+  x = apply_fun (basepoint_change_map X Tx x1 x0 beta) y.
+{
+  reflexivity.
+}
+claim Hx : x :e fundamental_group X Tx x0.
+{
+  rewrite HxDef.
+  exact (HbetaFun y Hy).
+}
+rewrite <- HxDef.
+claim HcompExpand :
+  apply_fun (basepoint_change_map X Tx x0 x1 alpha) x
+  =
+  path_homotopy_class_loop
+    X
+    Tx
+    x1
+    (path_concat
+      (reverse_path alpha)
+      (path_concat
+        (Eps_i (fun f:set => f :e x))
+        alpha)).
+{
+  rewrite (basepoint_change_map_apply
+    X
+    Tx
+    x0
+    x1
+    alpha
+    x
+    Hx).
+  reflexivity.
+}
+rewrite HcompExpand.
+claim HxExpand : x = cls_beta.
+{
+  rewrite HxDef.
+  exact HbetaMapEq.
+}
+rewrite HxExpand.
+rewrite <- HeyClass.
+(** TODO Bob: prove this remaining conjugation class equals path_homotopy_class_loop X Tx x1 ey. **)
 admit.
 Admitted.
 
