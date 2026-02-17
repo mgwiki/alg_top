@@ -1,4 +1,4 @@
-(** Balance Alice 2135 **)
+(** Balance Alice 2410 **)
 (** Balance Bob 2139 **)
 (** Balance Charlie 1213 **)
 
@@ -11447,8 +11447,8 @@ Qed.
 
 (** part (1): Associativity **)
 (** EFFORT: 15 lines textbook, difficulty 7/10, USD 250 **)
-(** Bounty 275 **)
-(** Lock Alice 2026-02-17T23:30:00 **)
+(** Collected Alice 275 **)
+(** Proven Alice **)
 Theorem Theorem_51_2_associativity : forall X Tx x0 x1 x2 x3 f g h:set,
   continuous_map unit_interval unit_interval_topology X Tx f ->
   continuous_map unit_interval unit_interval_topology X Tx g ->
@@ -12859,7 +12859,325 @@ apply and7I.
         rewrite Heq_goal.
         exact (fun Q H => H).
   - (** F(s,1) = path_concat(path_concat(f,g), h)(s) **)
-    admit.
+    let s. assume Hs : s :e unit_interval.
+    claim HsR : s :e R. { exact (unit_interval_sub_R s Hs). }
+    claim HsSNo : SNo s. { exact (real_SNo s HsR). }
+    claim HSNo4 : SNo 4. { exact (real_SNo 4 H4R). }
+    claim HSNo3 : SNo 3. { exact (real_SNo 3 H3R). }
+    claim HSNo_m2 : SNo (minus_SNo 2). { exact (SNo_minus_SNo 2 SNo_2). }
+    claim HSNo_m3 : SNo (minus_SNo 3). { exact (SNo_minus_SNo 3 HSNo3). }
+    claim HSNo_m1 : SNo (minus_SNo 1). { exact (SNo_minus_SNo 1 SNo_1). }
+    claim HSNo_4s : SNo (mul_SNo s 4). { exact (SNo_mul_SNo s 4 HsSNo HSNo4). }
+    claim HSNo_2s : SNo (mul_SNo 2 s). { exact (SNo_mul_SNo 2 s SNo_2 HsSNo). }
+    claim HSNo_4s1 : SNo (add_SNo (mul_SNo s 4) 1). { exact (SNo_add_SNo (mul_SNo s 4) 1 HSNo_4s SNo_1). }
+    claim Hs1_sq : (s, 1) :e unit_square.
+    { exact (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 1 Hs one_in_unit_interval). }
+    (** L(s,1) = s times 4 + 1 **)
+    claim HLval : apply_fun L_fun (s, 1) = add_SNo (mul_SNo s 4) 1.
+    { rewrite (HL_apply (s, 1) Hs1_sq).
+      rewrite (tuple_2_0_eq s 1).
+      rewrite (tuple_2_1_eq s 1).
+      exact (fun Q H => H). }
+    claim Hcval2 : apply_fun const2 (s, 1) = 2. { exact (Hconst2_val (s, 1) Hs1_sq). }
+    claim Hcval3 : apply_fun const3 (s, 1) = 3. { exact (Hconst3_val (s, 1) Hs1_sq). }
+    (** 0 < 4 and 0 <= 4 **)
+    claim H0lt4 : SNoLt 0 4.
+    { claim H3omega : 3 :e omega. { exact (nat_p_omega 3 (nat_ordsucc 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0)))). }
+      claim H31eq4 : add_SNo 3 1 = 4. { exact (add_SNo_1_ordsucc 3 H3omega). }
+      exact (SNoLt_tra 0 1 4 SNo_0 SNo_1 HSNo4
+        SNoLt_0_1 (SNoLt_tra 1 2 4 SNo_1 SNo_2 HSNo4 SNoLt_1_2
+          (SNoLt_tra 2 3 4 SNo_2 HSNo3 HSNo4 H2Lt3
+            (H31eq4 (fun a b => 3 < a)
+              (add_SNo_0R 3 HSNo3 (fun a b => a < add_SNo 3 1)
+                (add_SNo_Lt2 3 0 1 HSNo3 SNo_0 SNo_1 SNoLt_0_1)))))). }
+    claim HSNoLe_0_4 : 0 <= 4.
+    { exact (SNoLe_of_Rle 0 4 (Rlt_implies_Rle 0 4 (RltI 0 4 real_0 H4R H0lt4))). }
+    (** eps_1 times 4 = 2 **)
+    claim H4half_eq_2 : mul_SNo (eps_ 1) 4 = 2.
+    { claim Hstep1 : mul_SNo (eps_ 1) 4 = mul_SNo (eps_ 1) (mul_SNo 2 2).
+      { exact (mul_SNo_2_2_eq_4 (fun a b => mul_SNo (eps_ 1) 4 = mul_SNo (eps_ 1) b) (fun Q H => H)). }
+      claim Hstep2 : mul_SNo (eps_ 1) (mul_SNo 2 2) = mul_SNo (mul_SNo (eps_ 1) 2) 2.
+      { exact (mul_SNo_assoc (eps_ 1) 2 2 SNo_eps_1 SNo_2 SNo_2). }
+      claim Hstep3 : mul_SNo (eps_ 1) 2 = 1.
+      { exact (mul_SNo_com (eps_ 1) 2 SNo_eps_1 SNo_2 (fun x y => y = 1) eps_1_half_eq2). }
+      claim Hstep4 : mul_SNo (mul_SNo (eps_ 1) 2) 2 = mul_SNo 1 2.
+      { exact (Hstep3 (fun x y => mul_SNo y 2 = mul_SNo 1 2) (fun Q H => H)). }
+      rewrite Hstep1. rewrite Hstep2. rewrite Hstep4. exact (mul_SNo_oneL 2 SNo_2). }
+    (** 2 + (-1) = 1 **)
+    claim H2m1_eq_1 : add_SNo 2 (minus_SNo 1) = 1.
+    { exact (add_SNo_1_1_2 (fun x y => add_SNo x (minus_SNo 1) = 1) (add_SNo_minus_R2 1 1 SNo_1 SNo_1)). }
+    (** 1 + 1 = 2 **)
+    claim H11_eq_2 : add_SNo 1 1 = 2.
+    { exact add_SNo_1_1_2. }
+    (** Key fact: 4s = mul_SNo 2 (mul_SNo 2 s) **)
+    claim H4s_eq_2_2s : mul_SNo s 4 = mul_SNo 2 (mul_SNo 2 s).
+    { claim Hcomm : mul_SNo s 4 = mul_SNo 4 s. { exact (mul_SNo_com s 4 HsSNo HSNo4). }
+      claim H4_eq_22 : mul_SNo 4 s = mul_SNo (mul_SNo 2 2) s.
+      { exact (mul_SNo_2_2_eq_4 (fun a b => mul_SNo 4 s = mul_SNo b s) (fun Q H => H)). }
+      claim Hassoc : mul_SNo (mul_SNo 2 2) s = mul_SNo 2 (mul_SNo 2 s).
+      { exact (mul_SNo_assoc 2 2 s SNo_2 SNo_2 HsSNo (fun a b => mul_SNo (mul_SNo 2 2) s = b) (fun Q H => H)). }
+      rewrite Hcomm. rewrite H4_eq_22. exact Hassoc. }
+    (** Key fact: 2(2s-1) = s times 4 + (-2) **)
+    claim H2_2sm1_eq_4sm2 : mul_SNo 2 (add_SNo (mul_SNo 2 s) (minus_SNo 1)) = add_SNo (mul_SNo s 4) (minus_SNo 2).
+    { claim Hdistr : mul_SNo 2 (add_SNo (mul_SNo 2 s) (minus_SNo 1)) = add_SNo (mul_SNo 2 (mul_SNo 2 s)) (mul_SNo 2 (minus_SNo 1)).
+      { exact (mul_SNo_distrL 2 (mul_SNo 2 s) (minus_SNo 1) SNo_2 HSNo_2s HSNo_m1). }
+      claim H22s_eq_4s : mul_SNo 2 (mul_SNo 2 s) = mul_SNo s 4.
+      { claim H22s_eq_22s : mul_SNo 2 (mul_SNo 2 s) = mul_SNo (mul_SNo 2 2) s.
+        { exact (mul_SNo_assoc 2 2 s SNo_2 SNo_2 HsSNo). }
+        claim H22_eq_4 : mul_SNo (mul_SNo 2 2) s = mul_SNo 4 s.
+        { exact (mul_SNo_2_2_eq_4 (fun a b => mul_SNo (mul_SNo 2 2) s = mul_SNo a s) (fun Q H => H)). }
+        claim H4s_comm : mul_SNo 4 s = mul_SNo s 4.
+        { exact (mul_SNo_com 4 s HSNo4 HsSNo). }
+        rewrite H22s_eq_22s. rewrite H22_eq_4. exact H4s_comm. }
+      claim H2m1_eq_m2 : mul_SNo 2 (minus_SNo 1) = minus_SNo 2.
+      { claim Hmul_neg : mul_SNo 2 (minus_SNo 1) = minus_SNo (mul_SNo 2 1).
+        { exact (mul_SNo_minus_distrR 2 1 SNo_2 SNo_1). }
+        rewrite Hmul_neg. rewrite (mul_SNo_oneR 2 SNo_2). exact (fun Q H => H). }
+      rewrite Hdistr. rewrite H22s_eq_4s. rewrite H2m1_eq_m2. exact (fun Q H => H). }
+    (** Helper: (s times 4 + (-2)) + 2 = s times 4 **)
+    claim HSNo_4sm2 : SNo (add_SNo (mul_SNo s 4) (minus_SNo 2)).
+    { exact (SNo_add_SNo (mul_SNo s 4) (minus_SNo 2) HSNo_4s HSNo_m2). }
+    claim H4sm2_plus_2 : add_SNo (add_SNo (mul_SNo s 4) (minus_SNo 2)) 2 = mul_SNo s 4.
+    { claim Hassoc : add_SNo (add_SNo (mul_SNo s 4) (minus_SNo 2)) 2 = add_SNo (mul_SNo s 4) (add_SNo (minus_SNo 2) 2).
+      { exact (fun Q => add_SNo_assoc (mul_SNo s 4) (minus_SNo 2) 2 HSNo_4s HSNo_m2 SNo_2 (fun x y => Q y x)). }
+      claim Hm22 : add_SNo (minus_SNo 2) 2 = 0.
+      { exact (add_SNo_com (minus_SNo 2) 2 HSNo_m2 SNo_2 (fun x y => y = 0) (add_SNo_minus_SNo_rinv 2 SNo_2)). }
+      rewrite Hassoc. rewrite Hm22. exact (add_SNo_0R (mul_SNo s 4) HSNo_4s). }
+    claim H12_eq_3 : add_SNo 1 2 = 3.
+    { exact (add_SNo_com 1 2 SNo_1 SNo_2 (fun x y => y = 3) add_SNo_2_1_eq_3). }
+    (** Case split s into left/right half **)
+    claim HsLHRH : s :e unit_interval_left_half :\/: unit_interval_right_half.
+    { exact (unit_interval_halves_cover (fun a b:set => s :e a -> s :e b)
+        (binunion_Subq_min unit_interval_left_half unit_interval_right_half unit_interval
+          unit_interval_left_half_sub unit_interval_right_half_sub s) Hs). }
+    apply (binunionE unit_interval_left_half unit_interval_right_half s HsLHRH).
+    - assume HsLH : s :e unit_interval_left_half.
+      (** Left half: s <= eps_1, so s times 4 <= 2 **)
+      claim HRle_s_half : Rle s (eps_ 1).
+      { exact (RleI s (eps_ 1) HsR eps_1_in_R
+          (SepE2 unit_interval (fun t:set => ~ (Rlt (eps_ 1) t)) s HsLH)). }
+      claim HSNoLe_s_half : s <= eps_ 1. { exact (SNoLe_of_Rle s (eps_ 1) HRle_s_half). }
+      claim HSNoLe_4s_4half : mul_SNo s 4 <= mul_SNo (eps_ 1) 4.
+      { exact (nonneg_mul_SNo_Le' s (eps_ 1) 4 HsSNo SNo_eps_1 HSNo4 HSNoLe_0_4 HSNoLe_s_half). }
+      claim HSNoLe_4s_2 : mul_SNo s 4 <= 2.
+      { exact (H4half_eq_2 (fun a b => mul_SNo s 4 <= a) HSNoLe_4s_4half). }
+      (** s times 4 + 1 <= 2 + 1 = 3 **)
+      claim HSNoLe_4s1_3 : add_SNo (mul_SNo s 4) 1 <= 3.
+      { exact (add_SNo_2_1_eq_3 (fun a b => add_SNo (mul_SNo s 4) 1 <= a)
+          (add_SNo_Le1 (mul_SNo s 4) 1 2 HSNo_4s SNo_1 SNo_2 HSNoLe_4s_2)). }
+      claim HRle_4s1_3 : Rle (add_SNo (mul_SNo s 4) 1) 3.
+      { exact (Rle_of_SNoLe (add_SNo (mul_SNo s 4) 1) 3 (real_add_SNo (mul_SNo s 4) (real_mul_SNo s HsR 4 H4R) 1 real_1) H3R HSNoLe_4s1_3). }
+      (** Now need to determine which inner region: need inner case split on v = 2s (double_map) **)
+      (** v = mul_SNo 2 s, v :e unit_interval **)
+      claim HvI : apply_fun double_map_left_half s :e unit_interval.
+      { exact (double_map_function_on s HsLH). }
+      set v : set := apply_fun double_map_left_half s.
+      claim Hv_val : v = mul_SNo 2 s.
+      { exact (double_map_apply s HsLH). }
+      claim HvR : v :e R. { exact (unit_interval_sub_R v HvI). }
+      claim HvSNo : SNo v. { exact (real_SNo v HvR). }
+      claim HSNo_2v : SNo (mul_SNo 2 v). { exact (SNo_mul_SNo 2 v SNo_2 HvSNo). }
+      (** 2v = s times 4 **)
+      claim H2v_eq : mul_SNo 2 v = mul_SNo s 4.
+      { rewrite Hv_val. symmetry. exact H4s_eq_2_2s. }
+      claim HSNoLe_0_2 : 0 <= 2. { exact (SNoLtLe 0 2 (SNoLt_tra 0 1 2 SNo_0 SNo_1 SNo_2 SNoLt_0_1 SNoLt_1_2)). }
+      (** Inner case split: v in left half or right half **)
+      claim HvLHRH : v :e unit_interval_left_half :\/: unit_interval_right_half.
+      { exact (unit_interval_halves_cover (fun a b:set => v :e a -> v :e b)
+          (binunion_Subq_min unit_interval_left_half unit_interval_right_half unit_interval
+            unit_interval_left_half_sub unit_interval_right_half_sub v) HvI). }
+      apply (binunionE unit_interval_left_half unit_interval_right_half v HvLHRH).
+      + assume HvLH : v :e unit_interval_left_half.
+        (** v <= eps_1, so 2v <= 1, so 4s <= 1, so 4s+1 <= 2 **)
+        claim HRle_v_half : Rle v (eps_ 1).
+        { exact (RleI v (eps_ 1) HvR eps_1_in_R
+            (SepE2 unit_interval (fun t:set => ~ (Rlt (eps_ 1) t)) v HvLH)). }
+        claim HSNoLe_v_half : v <= eps_ 1. { exact (SNoLe_of_Rle v (eps_ 1) HRle_v_half). }
+        claim HSNoLe_2v_2half : mul_SNo 2 v <= mul_SNo 2 (eps_ 1).
+        { exact (nonneg_mul_SNo_Le 2 v (eps_ 1) SNo_2 HSNoLe_0_2 HvSNo SNo_eps_1 HSNoLe_v_half). }
+        claim HSNoLe_2v_1 : mul_SNo 2 v <= 1.
+        { exact (eps_1_half_eq2 (fun a b => mul_SNo 2 v <= a) HSNoLe_2v_2half). }
+        claim HSNoLe_4s_1 : mul_SNo s 4 <= 1.
+        { exact (H2v_eq (fun a b => a <= 1) HSNoLe_2v_1). }
+        (** 4s + 1 <= 1 + 1 = 2 **)
+        claim HSNoLe_4s1_2 : add_SNo (mul_SNo s 4) 1 <= 2.
+        { exact (H11_eq_2 (fun a b => add_SNo (mul_SNo s 4) 1 <= a)
+            (add_SNo_Le1 (mul_SNo s 4) 1 1 HSNo_4s SNo_1 SNo_1 HSNoLe_4s_1)). }
+        claim HRle_4s1_2 : Rle (add_SNo (mul_SNo s 4) 1) 2.
+        { exact (Rle_of_SNoLe (add_SNo (mul_SNo s 4) 1) 2 (real_add_SNo (mul_SNo s 4) (real_mul_SNo s HsR 4 H4R) 1 real_1) H2R HSNoLe_4s1_2). }
+        claim HRle_L_c2 : Rle (apply_fun L_fun (s, 1)) (apply_fun const2 (s, 1)).
+        { rewrite HLval. rewrite Hcval2. exact HRle_4s1_2. }
+        claim Hs1_AI : (s, 1) :e A_I.
+        { exact (SepI unit_square (fun p:set => Rle (apply_fun L_fun p) (apply_fun const2 p)) (s, 1) Hs1_sq HRle_L_c2). }
+        rewrite (HF_I_eq (s, 1) Hs1_AI).
+        rewrite (HapplyF_I (s, 1) Hs1_AI).
+        rewrite (tuple_2_0_eq s 1).
+        rewrite (tuple_2_1_eq s 1).
+        (** div_SNo (mul_SNo s 4) (add_SNo 2 (minus_SNo 1)) = div_SNo (mul_SNo s 4) 1 = mul_SNo s 4 **)
+        rewrite H2m1_eq_1.
+        claim Hdiv1 : div_SNo (mul_SNo s 4) 1 = mul_SNo s 4.
+        { exact (mul_div_SNo_nonzero_eq (mul_SNo s 4) 1 (mul_SNo s 4) HSNo_4s SNo_1 HSNo_4s neq_1_0
+            (fun Q => mul_SNo_oneL (mul_SNo s 4) HSNo_4s (fun x y => Q y x))). }
+        rewrite Hdiv1.
+        (** RHS: path_concat(path_concat(f,g), h)(s) with s in left half **)
+        rewrite (path_concat_apply_left (path_concat f g) h s Hfg_h_compat HsLH).
+        (** Now need: apply_fun f (mul_SNo s 4) = apply_fun (path_concat f g) (mul_SNo 2 s) **)
+        (** Since v = 2s and v is in the left half, path_concat(f,g)(v) = f(2v) = f(4s) **)
+        claim Hv_val_sym : mul_SNo 2 s = v.
+        { symmetry. exact Hv_val. }
+        rewrite Hv_val_sym.
+        rewrite (path_concat_apply_left f g v Hfg_compat HvLH).
+        (** mul_SNo s 4 = mul_SNo 2 v **)
+        claim H4s_eq_2v : mul_SNo s 4 = mul_SNo 2 v.
+        { symmetry. exact H2v_eq. }
+        rewrite H4s_eq_2v.
+        exact (fun Q H => H).
+      + assume HvRH : v :e unit_interval_right_half.
+        (** v >= eps_1, so 2v >= 1, so 4s >= 1, so 4s+1 >= 2 **)
+        claim HRle_half_v : Rle (eps_ 1) v.
+        { exact (RleI (eps_ 1) v eps_1_in_R HvR
+            (SepE2 unit_interval (fun t:set => ~ (Rlt t (eps_ 1))) v HvRH)). }
+        claim HSNoLe_half_v : eps_ 1 <= v. { exact (SNoLe_of_Rle (eps_ 1) v HRle_half_v). }
+        claim HSNoLe_2half_2v : mul_SNo 2 (eps_ 1) <= mul_SNo 2 v.
+        { exact (nonneg_mul_SNo_Le 2 (eps_ 1) v SNo_2 HSNoLe_0_2 SNo_eps_1 HvSNo HSNoLe_half_v). }
+        claim HSNoLe_1_2v : 1 <= mul_SNo 2 v.
+        { exact (eps_1_half_eq2 (fun a b => a <= mul_SNo 2 v) HSNoLe_2half_2v). }
+        claim HSNoLe_1_4s : 1 <= mul_SNo s 4.
+        { exact (H2v_eq (fun a b => 1 <= a) HSNoLe_1_2v). }
+        (** 1 + 1 <= 4s + 1, so 2 <= 4s+1 **)
+        claim HSNoLe_2_4s1 : 2 <= add_SNo (mul_SNo s 4) 1.
+        { exact (H11_eq_2 (fun a b => a <= add_SNo (mul_SNo s 4) 1)
+            (add_SNo_Le1 1 1 (mul_SNo s 4) SNo_1 SNo_1 HSNo_4s HSNoLe_1_4s)). }
+        claim HRle_2_4s1 : Rle 2 (add_SNo (mul_SNo s 4) 1).
+        { exact (Rle_of_SNoLe 2 (add_SNo (mul_SNo s 4) 1) H2R (real_add_SNo (mul_SNo s 4) (real_mul_SNo s HsR 4 H4R) 1 real_1) HSNoLe_2_4s1). }
+        claim HRle_c2_L : Rle (apply_fun const2 (s, 1)) (apply_fun L_fun (s, 1)).
+        { rewrite HLval. rewrite Hcval2. exact HRle_2_4s1. }
+        claim Hs1_A23 : (s, 1) :e A_23.
+        { exact (SepI unit_square (fun p:set => Rle (apply_fun const2 p) (apply_fun L_fun p)) (s, 1) Hs1_sq HRle_c2_L). }
+        (** Also 4s+1 <= 3 from left-half parent **)
+        claim HRle_L_c3 : Rle (apply_fun L_fun (s, 1)) (apply_fun const3 (s, 1)).
+        { rewrite HLval. rewrite Hcval3. exact HRle_4s1_3. }
+        claim Hs1_AII : (s, 1) :e A_II.
+        { exact (binintersectI
+            {p :e unit_square | Rle (apply_fun const2 p) (apply_fun L_fun p)}
+            {p :e unit_square | Rle (apply_fun L_fun p) (apply_fun const3 p)}
+            (s, 1)
+            (SepI unit_square (fun p:set => Rle (apply_fun const2 p) (apply_fun L_fun p)) (s, 1) Hs1_sq HRle_c2_L)
+            (SepI unit_square (fun p:set => Rle (apply_fun L_fun p) (apply_fun const3 p)) (s, 1) Hs1_sq HRle_L_c3)). }
+        rewrite (HF_23_eq (s, 1) Hs1_A23).
+        rewrite (HF_23_II (s, 1) Hs1_AII).
+        rewrite (HapplyF_II (s, 1) Hs1_AII).
+        rewrite (tuple_2_0_eq s 1).
+        rewrite (tuple_2_1_eq s 1).
+        (** g(add_SNo (add_SNo (mul_SNo s 4) 1) (minus_SNo 2)) = g(4s + 1 - 2) = g(4s - 1) **)
+        (** RHS: path_concat(path_concat(f,g), h)(s) with s in left half **)
+        rewrite (path_concat_apply_left (path_concat f g) h s Hfg_h_compat HsLH).
+        (** path_concat(f,g)(2s) with 2s = v in right half: g(2v - 1) = g(2(2s)-1) = g(4s-1) **)
+        claim Hv_val_sym : mul_SNo 2 s = v.
+        { symmetry. exact Hv_val. }
+        rewrite Hv_val_sym.
+        rewrite (path_concat_apply_right f g v Hfg_compat HvRH).
+        (** Need: add_SNo (add_SNo (mul_SNo s 4) 1) (minus_SNo 2) = add_SNo (mul_SNo 2 v) (minus_SNo 1) **)
+        (** LHS: (4s + 1) + (-2) = 4s + (1 + (-2)) = 4s + (-1) **)
+        claim HSNo_1m2 : SNo (add_SNo 1 (minus_SNo 2)). { exact (SNo_add_SNo 1 (minus_SNo 2) SNo_1 HSNo_m2). }
+        claim H1m2_eq_m1 : add_SNo 1 (minus_SNo 2) = minus_SNo 1.
+        { (** (1 + (-2)) + 2 = 1 + ((-2) + 2) = 1 + 0 = 1, and (-1) + 2 = 1, so cancel **)
+          claim Hassoc_1m2 : add_SNo (add_SNo 1 (minus_SNo 2)) 2 = add_SNo 1 (add_SNo (minus_SNo 2) 2).
+          { exact (fun Q => add_SNo_assoc 1 (minus_SNo 2) 2 SNo_1 HSNo_m2 SNo_2 (fun x y => Q y x)). }
+          claim Hm22 : add_SNo (minus_SNo 2) 2 = 0.
+          { exact (add_SNo_com (minus_SNo 2) 2 HSNo_m2 SNo_2 (fun x y => y = 0) (add_SNo_minus_SNo_rinv 2 SNo_2)). }
+          claim H1m2_plus_2 : add_SNo (add_SNo 1 (minus_SNo 2)) 2 = 1.
+          { rewrite Hassoc_1m2. rewrite Hm22. exact (add_SNo_0R 1 SNo_1). }
+          claim Hm1_plus_2 : add_SNo (minus_SNo 1) 2 = 1.
+          { exact (add_SNo_com (minus_SNo 1) 2 HSNo_m1 SNo_2 (fun x y => y = 1) H2m1_eq_1). }
+          claim Hboth : add_SNo (add_SNo 1 (minus_SNo 2)) 2 = add_SNo (minus_SNo 1) 2.
+          { rewrite H1m2_plus_2. symmetry. exact Hm1_plus_2. }
+          exact (add_SNo_cancel_R (add_SNo 1 (minus_SNo 2)) 2 (minus_SNo 1) HSNo_1m2 SNo_2 HSNo_m1 Hboth). }
+        claim Hassoc_4s1m2 : add_SNo (add_SNo (mul_SNo s 4) 1) (minus_SNo 2) = add_SNo (mul_SNo s 4) (add_SNo 1 (minus_SNo 2)).
+        { exact (fun Q => add_SNo_assoc (mul_SNo s 4) 1 (minus_SNo 2) HSNo_4s SNo_1 HSNo_m2 (fun x y => Q y x)). }
+        claim H4s1m2_eq_4sm1 : add_SNo (add_SNo (mul_SNo s 4) 1) (minus_SNo 2) = add_SNo (mul_SNo s 4) (minus_SNo 1).
+        { rewrite Hassoc_4s1m2. rewrite H1m2_eq_m1. exact (fun Q H => H). }
+        (** RHS: add_SNo (mul_SNo 2 v) (minus_SNo 1) = add_SNo (mul_SNo s 4) (minus_SNo 1) **)
+        claim H4s_eq_2v : mul_SNo s 4 = mul_SNo 2 v.
+        { symmetry. exact H2v_eq. }
+        claim Heq_goal : add_SNo (add_SNo (mul_SNo s 4) 1) (minus_SNo 2) = add_SNo (mul_SNo 2 v) (minus_SNo 1).
+        { rewrite H4s1m2_eq_4sm1.
+          rewrite H4s_eq_2v.
+          exact (fun Q H => H). }
+        rewrite Heq_goal.
+        exact (fun Q H => H).
+    - assume HsRH : s :e unit_interval_right_half.
+      (** Right half: s >= eps_1, so 4s >= 2, so 4s+1 >= 3 **)
+      claim HRle_half_s : Rle (eps_ 1) s.
+      { exact (RleI (eps_ 1) s eps_1_in_R HsR
+          (SepE2 unit_interval (fun t:set => ~ (Rlt t (eps_ 1))) s HsRH)). }
+      claim HSNoLe_half_s : eps_ 1 <= s. { exact (SNoLe_of_Rle (eps_ 1) s HRle_half_s). }
+      claim HSNoLe_4half_4s : mul_SNo (eps_ 1) 4 <= mul_SNo s 4.
+      { exact (nonneg_mul_SNo_Le' (eps_ 1) s 4 SNo_eps_1 HsSNo HSNo4 HSNoLe_0_4 HSNoLe_half_s). }
+      claim HSNoLe_2_4s : 2 <= mul_SNo s 4.
+      { exact (H4half_eq_2 (fun a b => a <= mul_SNo s 4) HSNoLe_4half_4s). }
+      (** 2 + 1 = 3, so 4s + 1 >= 3 **)
+      claim HSNoLe_3_4s1 : 3 <= add_SNo (mul_SNo s 4) 1.
+      { exact (add_SNo_2_1_eq_3 (fun a b => a <= add_SNo (mul_SNo s 4) 1)
+          (add_SNo_Le1 2 1 (mul_SNo s 4) SNo_2 SNo_1 HSNo_4s HSNoLe_2_4s)). }
+      claim HRle_3_4s1 : Rle 3 (add_SNo (mul_SNo s 4) 1).
+      { exact (Rle_of_SNoLe 3 (add_SNo (mul_SNo s 4) 1) H3R (real_add_SNo (mul_SNo s 4) (real_mul_SNo s HsR 4 H4R) 1 real_1) HSNoLe_3_4s1). }
+      claim HRle_c3_L : Rle (apply_fun const3 (s, 1)) (apply_fun L_fun (s, 1)).
+      { rewrite HLval. rewrite Hcval3. exact HRle_3_4s1. }
+      claim Hs1_AIII : (s, 1) :e A_III.
+      { exact (SepI unit_square (fun p:set => Rle (apply_fun const3 p) (apply_fun L_fun p)) (s, 1) Hs1_sq HRle_c3_L). }
+      (** Also need (s,1) :e A_23 for HF_23_eq **)
+      claim HSNoLe_2_4s1 : 2 <= add_SNo (mul_SNo s 4) 1.
+      { exact (SNoLe_tra 2 3 (add_SNo (mul_SNo s 4) 1) SNo_2 HSNo3 HSNo_4s1
+          (SNoLe_of_Rle 2 3 HRle23) HSNoLe_3_4s1). }
+      claim HRle_2_4s1 : Rle 2 (add_SNo (mul_SNo s 4) 1).
+      { exact (Rle_of_SNoLe 2 (add_SNo (mul_SNo s 4) 1) H2R (real_add_SNo (mul_SNo s 4) (real_mul_SNo s HsR 4 H4R) 1 real_1) HSNoLe_2_4s1). }
+      claim HRle_c2_L : Rle (apply_fun const2 (s, 1)) (apply_fun L_fun (s, 1)).
+      { rewrite HLval. rewrite Hcval2. exact HRle_2_4s1. }
+      claim Hs1_A23 : (s, 1) :e A_23.
+      { exact (SepI unit_square (fun p:set => Rle (apply_fun const2 p) (apply_fun L_fun p)) (s, 1) Hs1_sq HRle_c2_L). }
+      rewrite (HF_23_eq (s, 1) Hs1_A23).
+      rewrite (HF_23_III (s, 1) Hs1_AIII).
+      rewrite (HapplyF_III (s, 1) Hs1_AIII).
+      rewrite (tuple_2_0_eq s 1).
+      rewrite (tuple_2_1_eq s 1).
+      rewrite H11_eq_2.
+      (** RHS: path_concat(path_concat(f,g), h)(s) with s in right half **)
+      rewrite (path_concat_apply_right (path_concat f g) h s Hfg_h_compat HsRH).
+      (** Goal: h(div_SNo (add_SNo (add_SNo (mul_SNo s 4) 1) (minus_SNo 3)) 2)
+              = h(add_SNo (mul_SNo 2 s) (minus_SNo 1)) **)
+      (** LHS numerator: (4s + 1) + (-3) = 4s + (1 + (-3)) = 4s + (-2) **)
+      claim HSNo_1m3 : SNo (add_SNo 1 (minus_SNo 3)). { exact (SNo_add_SNo 1 (minus_SNo 3) SNo_1 HSNo_m3). }
+      claim H1m3_eq_m2 : add_SNo 1 (minus_SNo 3) = minus_SNo 2.
+      { (** (1+(-3))+3 = 1+((-3)+3) = 1+0 = 1, and (-2)+3 = 1, so cancel **)
+        claim Hassoc_1m3 : add_SNo (add_SNo 1 (minus_SNo 3)) 3 = add_SNo 1 (add_SNo (minus_SNo 3) 3).
+        { exact (fun Q => add_SNo_assoc 1 (minus_SNo 3) 3 SNo_1 HSNo_m3 HSNo3 (fun x y => Q y x)). }
+        claim Hm33 : add_SNo (minus_SNo 3) 3 = 0.
+        { exact (add_SNo_com (minus_SNo 3) 3 HSNo_m3 HSNo3 (fun x y => y = 0) (add_SNo_minus_SNo_rinv 3 HSNo3)). }
+        claim H1m3_plus_3 : add_SNo (add_SNo 1 (minus_SNo 3)) 3 = 1.
+        { rewrite Hassoc_1m3. rewrite Hm33. exact (add_SNo_0R 1 SNo_1). }
+        claim Hm2_plus_3 : add_SNo (minus_SNo 2) 3 = 1.
+        { exact (add_SNo_com (minus_SNo 2) 3 HSNo_m2 HSNo3 (fun x y => y = 1)
+            (H12_eq_3 (fun x y => add_SNo x (minus_SNo 2) = 1) (add_SNo_minus_R2 1 2 SNo_1 SNo_2))). }
+        claim Hboth : add_SNo (add_SNo 1 (minus_SNo 3)) 3 = add_SNo (minus_SNo 2) 3.
+        { rewrite H1m3_plus_3. symmetry. exact Hm2_plus_3. }
+        exact (add_SNo_cancel_R (add_SNo 1 (minus_SNo 3)) 3 (minus_SNo 2) HSNo_1m3 HSNo3 HSNo_m2 Hboth). }
+      claim Hassoc_4s1m3 : add_SNo (add_SNo (mul_SNo s 4) 1) (minus_SNo 3) = add_SNo (mul_SNo s 4) (add_SNo 1 (minus_SNo 3)).
+      { exact (fun Q => add_SNo_assoc (mul_SNo s 4) 1 (minus_SNo 3) HSNo_4s SNo_1 HSNo_m3 (fun x y => Q y x)). }
+      claim H4s1m3_eq_4sm2 : add_SNo (add_SNo (mul_SNo s 4) 1) (minus_SNo 3) = add_SNo (mul_SNo s 4) (minus_SNo 2).
+      { rewrite Hassoc_4s1m3. rewrite H1m3_eq_m2. exact (fun Q H => H). }
+      (** div_SNo (4s + (-2)) 2 = 2s - 1, since 4s + (-2) = 2(2s-1) **)
+      claim H4sm2_eq_2_2sm1 : add_SNo (mul_SNo s 4) (minus_SNo 2) = mul_SNo 2 (add_SNo (mul_SNo 2 s) (minus_SNo 1)).
+      { symmetry. exact H2_2sm1_eq_4sm2. }
+      claim Hdiv_eq : div_SNo (add_SNo (mul_SNo s 4) (minus_SNo 2)) 2 = add_SNo (mul_SNo 2 s) (minus_SNo 1).
+      { exact (mul_div_SNo_nonzero_eq (add_SNo (mul_SNo s 4) (minus_SNo 2)) 2 (add_SNo (mul_SNo 2 s) (minus_SNo 1)) HSNo_4sm2 SNo_2
+          (SNo_add_SNo (mul_SNo 2 s) (minus_SNo 1) HSNo_2s HSNo_m1) neq_2_0
+          H4sm2_eq_2_2sm1). }
+      (** Rewrite the numerator **)
+      claim Hnum_rewrite : div_SNo (add_SNo (add_SNo (mul_SNo s 4) 1) (minus_SNo 3)) 2 = add_SNo (mul_SNo 2 s) (minus_SNo 1).
+      { rewrite H4s1m3_eq_4sm2. exact Hdiv_eq. }
+      rewrite Hnum_rewrite.
+      exact (fun Q H => H).
   - (** F(0,t) = x0 **)
     let t. assume Ht : t :e unit_interval.
     claim HtR : t :e R. { exact (unit_interval_sub_R t Ht). }
@@ -12991,7 +13309,7 @@ apply and7I.
     { exact (recip_SNo_invR (add_SNo 1 t) HSNo_1t H1t_ne_0). }
     rewrite Hdiv_eq.
     exact Hh1.
-Admitted.
+Qed.
 
 (** from S51 Theorem 51.2 part (2) (line 232 in algtop.tex): right identity **)
 (** EFFORT: 8 lines textbook, difficulty 6/10, USD 150 **)
