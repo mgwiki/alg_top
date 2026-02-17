@@ -1,4 +1,4 @@
-(** Balance Alice 2434 **)
+(** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
 (** Balance Charlie 1561 **)
 
@@ -51508,7 +51508,7 @@ exact (andI
   (forall t:set, t :e unit_interval -> apply_fun Ft (1, t) = e1)
   HleftConst
   HrightConst).
-Qed.
+Admitted. (** was Qed but depends on unproved lemma54_2_homotopy_lifting - changed to Admitted **)
 
 (** from S54 Theorem 54.3 (line 785 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be covering, p(e0) = b0. Let f and g be paths in B **)
@@ -52459,7 +52459,7 @@ apply andI.
       reflexivity.
     * exact HleftEdgeE0.
     * exact HrightEdgeFF1.
-Qed.
+Admitted. (** was Qed but depends on Admitted lemma54_2_path_homotopy_preserved **)
 
 (** from S54 Definition (line 791 in algtop.tex) **)
 (** LATEX VERSION: The lifting correspondence phi: pi_1(B,b0) -> p^{-1}(b0) maps **)
@@ -54904,7 +54904,8 @@ Definition same_homotopy_type : set -> set -> set -> set -> prop :=
 (** from S58 Lemma 58.4 (line 1365 in algtop.tex) **)
 (** LATEX VERSION: Let h, k: X -> Y be homotopic with h(x0)=y0, k(x0)=y1. There is a path alpha in Y from y0 to y1 such that k-star = alpha-hat o h-star. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Alice 2026-02-18T09:45:00 **)
 Theorem lemma58_4_homotopy_path : forall X Tx Y Ty x0 h k:set,
   continuous_map X Tx Y Ty h ->
   continuous_map X Tx Y Ty k ->
@@ -54916,7 +54917,123 @@ Theorem lemma58_4_homotopy_path : forall X Tx Y Ty x0 h k:set,
       apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun k x0) k) cls =
       apply_fun (basepoint_change_map Y Ty (apply_fun h x0) (apply_fun k x0) alpha)
         (apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls)).
-admit.
+let X Tx Y Ty x0 h k.
+assume Hh Hk Hx0 Hhomotopic.
+set y0 := apply_fun h x0.
+set y1 := apply_fun k x0.
+(** Extract homotopy H from homotopic_maps hypothesis **)
+(** homotopic_maps gives: h cont, k cont, exists H with H cont, H(x,0)=h(x), H(x,1)=k(x) **)
+(** homotopic_maps is left-assoc: ((h cont /\ k cont) /\ exists F ...) **)
+claim HexF : exists F:set,
+  continuous_map (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology) Y Ty F /\
+  (forall x:set, x :e X -> apply_fun F (x, 0) = apply_fun h x) /\
+  (forall x:set, x :e X -> apply_fun F (x, 1) = apply_fun k x).
+{
+  exact (andER
+    (continuous_map X Tx Y Ty h /\ continuous_map X Tx Y Ty k)
+    (exists F:set,
+      continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology) Y Ty F /\
+      (forall x:set, x :e X -> apply_fun F (x, 0) = apply_fun h x) /\
+      (forall x:set, x :e X -> apply_fun F (x, 1) = apply_fun k x))
+    Hhomotopic).
+}
+apply HexF. let H. assume HHpack.
+claim HHleft :
+  continuous_map (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology) Y Ty H /\
+  (forall x:set, x :e X -> apply_fun H (x, 0) = apply_fun h x).
+{
+  exact (andEL
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) Y Ty H /\
+    (forall x:set, x :e X -> apply_fun H (x, 0) = apply_fun h x))
+    (forall x:set, x :e X -> apply_fun H (x, 1) = apply_fun k x)
+    HHpack).
+}
+claim HHcont : continuous_map (setprod X unit_interval)
+  (product_topology X Tx unit_interval unit_interval_topology) Y Ty H.
+{
+  exact (andEL
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) Y Ty H)
+    (forall x:set, x :e X -> apply_fun H (x, 0) = apply_fun h x)
+    HHleft).
+}
+claim HHat0 : forall x:set, x :e X -> apply_fun H (x, 0) = apply_fun h x.
+{
+  exact (andER
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) Y Ty H)
+    (forall x:set, x :e X -> apply_fun H (x, 0) = apply_fun h x)
+    HHleft).
+}
+claim HHat1 : forall x:set, x :e X -> apply_fun H (x, 1) = apply_fun k x.
+{
+  exact (andER
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) Y Ty H /\
+    (forall x:set, x :e X -> apply_fun H (x, 0) = apply_fun h x))
+    (forall x:set, x :e X -> apply_fun H (x, 1) = apply_fun k x)
+    HHpack).
+}
+(** Define alpha(t) = H(x0, t): path from y0 to y1 **)
+set alpha := graph unit_interval (fun t:set => apply_fun H (x0, t)).
+claim HalphaApply : forall t:set, t :e unit_interval ->
+  apply_fun alpha t = apply_fun H (x0, t).
+{
+  let t. assume Ht.
+  exact (apply_fun_graph unit_interval (fun t0:set => apply_fun H (x0, t0)) t Ht).
+}
+claim Halpha0 : apply_fun alpha 0 = y0.
+{ rewrite (HalphaApply 0 zero_in_unit_interval). exact (HHat0 x0 Hx0). }
+claim Halpha1 : apply_fun alpha 1 = y1.
+{ rewrite (HalphaApply 1 one_in_unit_interval). exact (HHat1 x0 Hx0). }
+(** Alpha continuity: alpha = H restricted to {x0} x I, which is continuous **)
+claim HalphaCont : continuous_map unit_interval unit_interval_topology Y Ty alpha.
+{ admit. (** alpha = H o (const x0, id), composition of continuous maps **) }
+claim HalphaFn : function_on alpha unit_interval Y.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology Y Ty alpha HalphaCont). }
+claim HalphaPath : path_between Y y0 y1 alpha.
+{ exact (path_betweenI Y y0 y1 alpha HalphaFn Halpha0 Halpha1). }
+witness alpha.
+apply andI.
+- exact HalphaPath.
+- let cls. assume Hcls.
+  set eps := Eps_i (fun f:set => f :e cls).
+  set hf := compose_fun unit_interval eps h.
+  set kf := compose_fun unit_interval eps k.
+  (** hf is a loop at y0, kf is a loop at y1 **)
+  claim HtopX : topology_on X Tx.
+  { exact (continuous_map_topology_dom X Tx Y Ty h Hh). }
+  claim HtopY : topology_on Y Ty.
+  { exact (continuous_map_topology_cod X Tx Y Ty h Hh). }
+  claim HepsLoop : loop_at X Tx x0 eps.
+  { exact (loop_space_has_loop_at X Tx x0 eps
+      (eps_in_loop_space_early X Tx x0 cls HtopX Hcls)). }
+  claim HepsCont : continuous_map unit_interval unit_interval_topology X Tx eps.
+  { exact (loop_at_continuous X Tx x0 eps HepsLoop). }
+  claim Heps0 : apply_fun eps 0 = x0.
+  { exact (loop_at_at_zero X Tx x0 eps HepsLoop). }
+  claim Heps1 : apply_fun eps 1 = x0.
+  { exact (loop_at_at_one X Tx x0 eps HepsLoop). }
+  (** Key claim: (hf concat alpha) is path homotopic to (alpha concat kf) **)
+  (** This follows from Munkres straight-line homotopy in I-squared argument **)
+  (** F(s,t) = (eps(s), t) maps I-squared to X x I **)
+  (** The broken-line paths beta0 concat gamma1 and gamma0 concat beta1 in I-squared are **)
+  (** path homotopic (convexity). Composing with F then H gives the result. **)
+  claim Hkey : path_homotopic Y Ty y0 y1
+    (path_concat hf alpha) (path_concat alpha kf).
+  { admit. (** The core homotopy: straight-line in I-squared, then F, then H **) }
+  (** From Hkey: [hf concat alpha] = [alpha concat kf] **)
+  (** We need: [kf] = [alpha_bar concat hf concat alpha] **)
+  (** Equivalently: [alpha concat kf] = [hf concat alpha] **)
+  (** Which is exactly Hkey. **)
+  (** Now derive k_star(cls) = alpha_hat(h_star(cls)) **)
+  (** Strategy: rewrite both sides using induced_homomorphism_apply and **)
+  (** basepoint_change_map_apply, then use Hkey to show equality **)
+  admit. (** Algebraic manipulation using Hkey, induced_homomorphism_apply, basepoint_change_map_apply **)
 Admitted.
 
 (** from S58 Corollary 58.5 (line 1423 in algtop.tex) **)
