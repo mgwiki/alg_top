@@ -50002,6 +50002,32 @@ claim Hex :
       + exact HlocalLiftNc0.
     - exact HlocalLiftNc_comm.
   }
+  claim HlocalSeed0 :
+    exists Nt lt:set,
+      Nt :e unit_interval_topology /\
+      0 :e Nt /\
+      lifting_of
+        Nt
+        (subspace_topology unit_interval unit_interval_topology Nt)
+        E
+        Te
+        B
+        Tb
+        p
+        f
+        lt /\
+      apply_fun lt 0 = e0.
+  {
+    witness N.
+    witness local_lift_Nc.
+    apply andI.
+    - apply andI.
+      + apply andI.
+        * exact HNopen.
+        * exact H0N.
+      + exact HlocalLiftNc_lifting.
+    - exact HlocalLiftNc0.
+  }
   (** TODO Bob: construct and extend the local lift through N using HinvV0 and covering data. **)
   admit.
 }
