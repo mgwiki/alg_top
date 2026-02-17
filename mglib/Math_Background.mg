@@ -29694,7 +29694,180 @@ apply andI.
   apply andI.
   - apply andI.
     + apply andI.
-      * admit.
+      * let Aw.
+        assume HAw.
+        apply (ReplE slices (fun V:set => V :/\: preW) Aw HAw).
+        let V.
+        assume HVpack.
+        claim HVslice : V :e slices.
+        {
+          exact (andEL
+            (V :e slices)
+            (Aw = V :/\: preW)
+            HVpack).
+        }
+        claim HAweq : Aw = V :/\: preW.
+        {
+          exact (andER
+            (V :e slices)
+            (Aw = V :/\: preW)
+            HVpack).
+        }
+        claim HVopen : V :e Te.
+        {
+          exact (Hsub V HVslice).
+        }
+        claim HVhomeVU :
+          homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+            (graph V (apply_fun p)).
+        {
+          exact (Hhome V HVslice).
+        }
+        claim HfcontV :
+          continuous_map V (subspace_topology E Te V) U (subspace_topology B Tb U)
+            (graph V (apply_fun p)).
+        {
+          exact (homeomorphism_continuous
+            V
+            (subspace_topology E Te V)
+            U
+            (subspace_topology B Tb U)
+            (graph V (apply_fun p))
+            HVhomeVU).
+        }
+        claim HWIntEq : W :/\: U = W.
+        {
+          exact (binintersect_Subq_eq_1 W U HWsub).
+        }
+        claim HWsubOpenU : W :e subspace_topology B Tb U.
+        {
+          claim HWinU : W :/\: U :e subspace_topology B Tb U.
+          {
+            exact (subspace_topologyI B Tb U W HW).
+          }
+          rewrite <- HWIntEq.
+          exact HWinU.
+        }
+        claim HpreVOpen :
+          preimage_of V (graph V (apply_fun p)) W :e subspace_topology E Te V.
+        {
+          exact (continuous_map_preimage
+            V
+            (subspace_topology E Te V)
+            U
+            (subspace_topology B Tb U)
+            (graph V (apply_fun p))
+            HfcontV
+            W
+            HWsubOpenU).
+        }
+        claim HpreEq :
+          preimage_of V (graph V (apply_fun p)) W = V :/\: preW.
+        {
+          apply set_ext.
+          - let x.
+            assume HxPre.
+            claim HxV : x :e V.
+            {
+              exact (SepE1
+                V
+                (fun t:set => apply_fun (graph V (apply_fun p)) t :e W)
+                x
+                HxPre).
+            }
+            claim HxGraphW : apply_fun (graph V (apply_fun p)) x :e W.
+            {
+              exact (SepE2
+                V
+                (fun t:set => apply_fun (graph V (apply_fun p)) t :e W)
+                x
+                HxPre).
+            }
+            claim HxW : apply_fun p x :e W.
+            {
+              rewrite <- (apply_fun_graph V (apply_fun p) x HxV).
+              exact HxGraphW.
+            }
+            claim HxUnion : x :e Union slices.
+            {
+              exact (UnionI slices x V HxV HVslice).
+            }
+            claim HxPreU : x :e preimage_of E p U.
+            {
+              exact (mem_eqR
+                x
+                (Union slices)
+                (preimage_of E p U)
+                Hunion
+                HxUnion).
+            }
+            claim HxE : x :e E.
+            {
+              exact (SepE1 E (fun t:set => apply_fun p t :e U) x HxPreU).
+            }
+            claim HxPreW : x :e preW.
+            {
+              exact (SepI E (fun t:set => apply_fun p t :e W) x HxE HxW).
+            }
+            exact (binintersectI V preW x HxV HxPreW).
+          - let x.
+            assume HxInt.
+            claim HxV : x :e V.
+            {
+              exact (binintersectE1 V preW x HxInt).
+            }
+            claim HxPreW : x :e preW.
+            {
+              exact (binintersectE2 V preW x HxInt).
+            }
+            claim HxW : apply_fun p x :e W.
+            {
+              exact (SepE2 E (fun t:set => apply_fun p t :e W) x HxPreW).
+            }
+            claim HxGraphW : apply_fun (graph V (apply_fun p)) x :e W.
+            {
+              rewrite (apply_fun_graph V (apply_fun p) x HxV).
+              exact HxW.
+            }
+            exact (SepI
+              V
+              (fun t:set => apply_fun (graph V (apply_fun p)) t :e W)
+              x
+              HxV
+              HxGraphW).
+        }
+        claim HAwInSub : Aw :e subspace_topology E Te V.
+        {
+          rewrite HAweq.
+          rewrite <- HpreEq.
+          exact HpreVOpen.
+        }
+        claim HtopVsub : topology_on V (subspace_topology E Te V).
+        {
+          exact (homeomorphism_topology_left
+            V
+            (subspace_topology E Te V)
+            U
+            (subspace_topology B Tb U)
+            (graph V (apply_fun p))
+            HVhomeVU).
+        }
+        claim HAwSubV : Aw c= V.
+        {
+          rewrite HAweq.
+          exact (binintersect_Subq_1 V preW).
+        }
+        claim HAwOpenInV : open_in V (subspace_topology E Te V) Aw.
+        {
+          exact (open_inI
+            V
+            (subspace_topology E Te V)
+            Aw
+            HtopVsub
+            HAwInSub).
+        }
+        (** Remaining local gap: show Aw :e Te from openness in subspace V and V :e Te. **)
+        admit.
       * exact HpdW.
     + exact HunionW.
   - let Vw.
