@@ -28315,7 +28315,223 @@ claim Hex :
       + exact H0N.
     - exact HNmap.
   }
-  (** TODO Bob: use HlocalData and covering slices to build a global lift ft on I. **)
+  apply HlocalData.
+  let U.
+  assume HU.
+  apply HU.
+  let N.
+  assume HUN.
+  claim Hpack5 :
+    ((((U :e Tb /\ apply_fun f 0 :e U) /\ evenly_covered E Te B Tb p U) /\
+      N :e unit_interval_topology) /\ 0 :e N).
+  {
+    exact (andEL
+      ((((U :e Tb /\ apply_fun f 0 :e U) /\ evenly_covered E Te B Tb p U) /\
+        N :e unit_interval_topology) /\ 0 :e N)
+      (forall u:set, u :e N -> apply_fun f u :e U)
+      HUN).
+  }
+  claim HNmap : forall u:set, u :e N -> apply_fun f u :e U.
+  {
+    exact (andER
+      ((((U :e Tb /\ apply_fun f 0 :e U) /\ evenly_covered E Te B Tb p U) /\
+        N :e unit_interval_topology) /\ 0 :e N)
+      (forall u:set, u :e N -> apply_fun f u :e U)
+      HUN).
+  }
+  claim Hpack4 :
+    (((U :e Tb /\ apply_fun f 0 :e U) /\ evenly_covered E Te B Tb p U) /\
+      N :e unit_interval_topology).
+  {
+    exact (andEL
+      (((U :e Tb /\ apply_fun f 0 :e U) /\ evenly_covered E Te B Tb p U) /\
+        N :e unit_interval_topology)
+      (0 :e N)
+      Hpack5).
+  }
+  claim H0N : 0 :e N.
+  {
+    exact (andER
+      (((U :e Tb /\ apply_fun f 0 :e U) /\ evenly_covered E Te B Tb p U) /\
+        N :e unit_interval_topology)
+      (0 :e N)
+      Hpack5).
+  }
+  claim Hpack3 :
+    (U :e Tb /\ apply_fun f 0 :e U) /\ evenly_covered E Te B Tb p U.
+  {
+    exact (andEL
+      ((U :e Tb /\ apply_fun f 0 :e U) /\ evenly_covered E Te B Tb p U)
+      (N :e unit_interval_topology)
+      Hpack4).
+  }
+  claim HNopen : N :e unit_interval_topology.
+  {
+    exact (andER
+      ((U :e Tb /\ apply_fun f 0 :e U) /\ evenly_covered E Te B Tb p U)
+      (N :e unit_interval_topology)
+      Hpack4).
+  }
+  claim HUpair : U :e Tb /\ apply_fun f 0 :e U.
+  {
+    exact (andEL
+      (U :e Tb /\ apply_fun f 0 :e U)
+      (evenly_covered E Te B Tb p U)
+      Hpack3).
+  }
+  claim HevenU : evenly_covered E Te B Tb p U.
+  {
+    exact (andER
+      (U :e Tb /\ apply_fun f 0 :e U)
+      (evenly_covered E Te B Tb p U)
+      Hpack3).
+  }
+  claim HUopen : U :e Tb.
+  {
+    exact (andEL
+      (U :e Tb)
+      (apply_fun f 0 :e U)
+      HUpair).
+  }
+  claim Hf0U : apply_fun f 0 :e U.
+  {
+    exact (andER
+      (U :e Tb)
+      (apply_fun f 0 :e U)
+      HUpair).
+  }
+  claim HslicesEx :
+    exists slices:set,
+      slices c= Te /\
+      pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (fun z:set => apply_fun p z))).
+  {
+    exact (andER
+      (U :e Tb)
+      (exists slices:set,
+        slices c= Te /\
+        pairwise_disjoint slices /\
+        Union slices = preimage_of E p U /\
+        (forall V:set, V :e slices ->
+          homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+            (graph V (fun z:set => apply_fun p z))))
+      HevenU).
+  }
+  apply HslicesEx.
+  let slices.
+  assume Hslices.
+  claim HsliceTrip :
+    (slices c= Te /\ pairwise_disjoint slices) /\
+    Union slices = preimage_of E p U.
+  {
+    exact (andEL
+      ((slices c= Te /\ pairwise_disjoint slices) /\
+       Union slices = preimage_of E p U)
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (fun z:set => apply_fun p z)))
+      Hslices).
+  }
+  claim HslicesSub : slices c= Te.
+  {
+    exact (andEL
+      (slices c= Te)
+      (pairwise_disjoint slices)
+      (andEL
+        (slices c= Te /\ pairwise_disjoint slices)
+        (Union slices = preimage_of E p U)
+        HsliceTrip)).
+  }
+  claim Hunion : Union slices = preimage_of E p U.
+  {
+    exact (andER
+      (slices c= Te /\ pairwise_disjoint slices)
+      (Union slices = preimage_of E p U)
+      HsliceTrip).
+  }
+  claim Hhome :
+    forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun z:set => apply_fun p z)).
+  {
+    exact (andER
+      ((slices c= Te /\ pairwise_disjoint slices) /\
+       Union slices = preimage_of E p U)
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (fun z:set => apply_fun p z)))
+      Hslices).
+  }
+  claim Hp0U : apply_fun p e0 :e U.
+  {
+    rewrite Hstart.
+    exact Hf0U.
+  }
+  claim He0Pre : e0 :e preimage_of E p U.
+  {
+    exact (SepI
+      E
+      (fun z:set => apply_fun p z :e U)
+      e0
+      He0
+      Hp0U).
+  }
+  claim He0Union : e0 :e Union slices.
+  {
+    exact (mem_eqL
+      e0
+      (Union slices)
+      (preimage_of E p U)
+      Hunion
+      He0Pre).
+  }
+  claim HsliceAtE0 : exists V0:set, e0 :e V0 /\ V0 :e slices.
+  {
+    exact (UnionE slices e0 He0Union).
+  }
+  apply HsliceAtE0.
+  let V0.
+  assume HV0pack.
+  claim He0V0 : e0 :e V0.
+  {
+    exact (andEL
+      (e0 :e V0)
+      (V0 :e slices)
+      HV0pack).
+  }
+  claim HV0Slice : V0 :e slices.
+  {
+    exact (andER
+      (e0 :e V0)
+      (V0 :e slices)
+      HV0pack).
+  }
+  claim HhomeV0 :
+    homeomorphism V0 (subspace_topology E Te V0) U (subspace_topology B Tb U)
+      (graph V0 (fun z:set => apply_fun p z)).
+  {
+    exact (Hhome V0 HV0Slice).
+  }
+  claim HinvV0 :
+    exists g0:set,
+      continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0 /\
+      (forall x:set, x :e V0 ->
+        apply_fun g0 (apply_fun (graph V0 (fun z:set => apply_fun p z)) x) = x) /\
+      (forall y:set, y :e U ->
+        apply_fun (graph V0 (fun z:set => apply_fun p z)) (apply_fun g0 y) = y).
+  {
+    exact (homeomorphism_inverse_package
+      V0
+      (subspace_topology E Te V0)
+      U
+      (subspace_topology B Tb U)
+      (graph V0 (fun z:set => apply_fun p z))
+      HhomeV0).
+  }
+  (** TODO Bob: construct and extend the local lift through N using HinvV0 and covering data. **)
   admit.
 }
 exact (path_lift_from_exists_witness E Te B Tb p e0 f Hex).
