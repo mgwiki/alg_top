@@ -55149,8 +55149,60 @@ claim HFt_54_cont :
               claim Hoverlap :
                 exists w:set, w :e Vz /\ w :e Vq.
               {
-                (** TODO Charlie: construct a common point of Vz and Vq over apply_fun F z. **)
-                admit.
+                claim HuniqVqLocal :
+                  exists xq:set, xq :e Vq /\ apply_fun p xq = apply_fun F z /\
+                    forall y:set, y :e Vq -> apply_fun p y = apply_fun F z -> y = xq.
+                {
+                  exact (homeomorphic_sheet_unique_fiber_point
+                    E
+                    Te
+                    B
+                    Tb
+                    p
+                    Vq
+                    U
+                    (apply_fun F z)
+                    HhomeVq
+                    HFzU).
+                }
+                apply HuniqVqLocal.
+                let xq.
+                assume HxqPack.
+                claim HxqVq : xq :e Vq.
+                {
+                  exact (andEL
+                    (xq :e Vq)
+                    (apply_fun p xq = apply_fun F z)
+                    (andEL
+                      (xq :e Vq /\ apply_fun p xq = apply_fun F z)
+                      (forall y:set, y :e Vq -> apply_fun p y = apply_fun F z -> y = xq)
+                      HxqPack)).
+                }
+                claim Huniqxq :
+                  forall y:set, y :e Vq -> apply_fun p y = apply_fun F z -> y = xq.
+                {
+                  exact (andER
+                    (xq :e Vq /\ apply_fun p xq = apply_fun F z)
+                    (forall y:set, y :e Vq -> apply_fun p y = apply_fun F z -> y = xq)
+                    HxqPack).
+                }
+                claim HlocalEqxq : apply_fun Ft_local_N z = xq.
+                {
+                  exact (Huniqxq
+                    (apply_fun Ft_local_N z)
+                    HFtLocalzVq
+                    HFtLocalzEqFz).
+                }
+                claim HlocalInVz : apply_fun Ft_local_N z :e Vz.
+                {
+                  (** TODO Charlie: prove the local inverse point stays in the same slice Vz. **)
+                  admit.
+                }
+                witness xq.
+                apply andI.
+                - rewrite <- HlocalEqxq.
+                  exact HlocalInVz.
+                - exact HxqVq.
               }
               apply Hoverlap.
               let w.
