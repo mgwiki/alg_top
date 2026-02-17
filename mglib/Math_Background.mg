@@ -11723,7 +11723,94 @@ apply and7I.
   claim HF_II_exists : exists F_II:set,
     continuous_map A_II (subspace_topology unit_square unit_square_topology A_II) X Tx F_II /\
     (forall p:set, p :e A_II -> apply_fun F_II p = apply_fun g (add_SNo (add_SNo (mul_SNo (p 0) 4) (p 1)) (minus_SNo 2))).
-  { admit. }
+  { (** F_II = g composed with (L - 2) restricted to A_II **)
+    claim Hm2R : minus_SNo 2 :e R. { exact (real_minus_SNo 2 H2R). }
+    set const_m2 : set := const_fun unit_square (minus_SNo 2).
+    claim Hconst_m2 : continuous_map unit_square unit_square_topology R R_standard_topology const_m2.
+    { exact (const_fun_continuous unit_square unit_square_topology R R_standard_topology (minus_SNo 2) Htop_sq R_standard_topology_is_topology Hm2R). }
+    set L_minus_2 : set := compose_fun unit_square (pair_map unit_square L_fun const_m2) add_fun_R.
+    claim HLm2_cont : continuous_map unit_square unit_square_topology R R_standard_topology L_minus_2.
+    { exact (add_two_continuous_R unit_square unit_square_topology L_fun const_m2 Htop_sq HL_fun Hconst_m2). }
+    claim HA_II_sub : A_II c= unit_square.
+    { let p. assume Hp : p :e A_II.
+      exact (Sep_Subq unit_square (fun p:set => Rle (apply_fun const2 p) (apply_fun L_fun p)) p
+        (binintersectE1
+          {p :e unit_square | Rle (apply_fun const2 p) (apply_fun L_fun p)}
+          {p :e unit_square | Rle (apply_fun L_fun p) (apply_fun const3 p)}
+          p Hp)). }
+    claim HLm2_cont_AII : continuous_map A_II (subspace_topology unit_square unit_square_topology A_II) R R_standard_topology L_minus_2.
+    { exact (continuous_on_subspace unit_square unit_square_topology R R_standard_topology L_minus_2 A_II Htop_sq HA_II_sub HLm2_cont). }
+    (** Evaluation: L_minus_2(p) = L(p) + (-2) **)
+    claim HLm2_val : forall p:set, p :e unit_square ->
+      apply_fun L_minus_2 p = add_SNo (apply_fun L_fun p) (minus_SNo 2).
+    { let p. assume Hp : p :e unit_square.
+      rewrite (add_of_pair_map_apply unit_square L_fun const_m2 p Hp (HL_in_R p Hp)
+        ((const_fun_apply unit_square (minus_SNo 2) p Hp) (fun x y => y :e R) Hm2R)).
+      rewrite (const_fun_apply unit_square (minus_SNo 2) p Hp).
+      exact (fun Q H => H). }
+    (** Range in unit_interval on A_II **)
+    claim HLm2_range : forall p:set, p :e A_II -> apply_fun L_minus_2 p :e unit_interval.
+    { let p. assume Hp : p :e A_II.
+      claim HpSq : p :e unit_square. { exact (HA_II_sub p Hp). }
+      claim Hge2 : Rle 2 (apply_fun L_fun p).
+      { exact (Hconst2_val p HpSq (fun a b => Rle a (apply_fun L_fun p))
+          (SepE unit_square (fun p:set => Rle (apply_fun const2 p) (apply_fun L_fun p)) p
+            (binintersectE1
+              {p :e unit_square | Rle (apply_fun const2 p) (apply_fun L_fun p)}
+              {p :e unit_square | Rle (apply_fun L_fun p) (apply_fun const3 p)}
+              p Hp)
+            (Rle (apply_fun const2 p) (apply_fun L_fun p)) (fun _ H => H))). }
+      claim Hle3 : Rle (apply_fun L_fun p) 3.
+      { exact (Hconst3_val p HpSq (fun a b => Rle (apply_fun L_fun p) a)
+          (SepE unit_square (fun p:set => Rle (apply_fun L_fun p) (apply_fun const3 p)) p
+            (binintersectE2
+              {p :e unit_square | Rle (apply_fun const2 p) (apply_fun L_fun p)}
+              {p :e unit_square | Rle (apply_fun L_fun p) (apply_fun const3 p)}
+              p Hp)
+            (Rle (apply_fun L_fun p) (apply_fun const3 p)) (fun _ H => H))). }
+      claim HLpR : apply_fun L_fun p :e R. { exact (HL_in_R p HpSq). }
+      claim HSNo_Lp : SNo (apply_fun L_fun p). { exact (real_SNo (apply_fun L_fun p) HLpR). }
+      claim HSNo_m2 : SNo (minus_SNo 2). { exact (SNo_minus_SNo 2 SNo_2). }
+      claim HSNo3 : SNo 3. { exact (real_SNo 3 H3R). }
+      claim HLm2R : add_SNo (apply_fun L_fun p) (minus_SNo 2) :e R.
+      { exact (real_add_SNo (apply_fun L_fun p) HLpR (minus_SNo 2) Hm2R). }
+      (** 0 <= L(p) - 2 via: 2 + (-2) = 0 and 2 <= L, so 0 <= L + (-2) **)
+      claim HRle_0 : Rle 0 (add_SNo (apply_fun L_fun p) (minus_SNo 2)).
+      { exact (Rle_of_SNoLe 0 (add_SNo (apply_fun L_fun p) (minus_SNo 2)) real_0 HLm2R
+          ((add_SNo_minus_SNo_rinv 2 SNo_2) (fun a b => a <= add_SNo (apply_fun L_fun p) (minus_SNo 2))
+            (add_SNo_Le1 2 (minus_SNo 2) (apply_fun L_fun p) SNo_2 HSNo_m2 HSNo_Lp
+              (SNoLe_of_Rle 2 (apply_fun L_fun p) Hge2)))). }
+      (** L(p) - 2 <= 1 via: L <= 3 so L+(-2) <= 3+(-2) = 1 **)
+      claim H12_eq_3 : add_SNo 1 2 = 3.
+      { exact (add_SNo_com 1 2 SNo_1 SNo_2 (fun x y => y = 3) add_SNo_2_1_eq_3). }
+      claim H3m2_1 : add_SNo 3 (minus_SNo 2) = 1.
+      { exact (H12_eq_3 (fun x y => add_SNo x (minus_SNo 2) = 1) (add_SNo_minus_R2 1 2 SNo_1 SNo_2)). }
+      claim HRle_1 : Rle (add_SNo (apply_fun L_fun p) (minus_SNo 2)) 1.
+      { exact (Rle_of_SNoLe (add_SNo (apply_fun L_fun p) (minus_SNo 2)) 1 HLm2R real_1
+          (H3m2_1 (fun a b => add_SNo (apply_fun L_fun p) (minus_SNo 2) <= a)
+            (add_SNo_Le1 (apply_fun L_fun p) (minus_SNo 2) 3 HSNo_Lp HSNo_m2 HSNo3
+              (SNoLe_of_Rle (apply_fun L_fun p) 3 Hle3)))). }
+      (** Transport to actual function value and construct unit_interval membership **)
+      claim HLm2_val_p : apply_fun L_minus_2 p = add_SNo (apply_fun L_fun p) (minus_SNo 2).
+      { exact (HLm2_val p HpSq). }
+      exact (SepI R (fun x:set => ~ (Rlt x 0) /\ ~ (Rlt 1 x)) (apply_fun L_minus_2 p)
+        (HLm2_val_p (fun x y => y :e R) HLm2R)
+        (andI (~ (Rlt (apply_fun L_minus_2 p) 0)) (~ (Rlt 1 (apply_fun L_minus_2 p)))
+          (RleE_nlt 0 (apply_fun L_minus_2 p) (HLm2_val_p (fun x y => Rle 0 y) HRle_0))
+          (RleE_nlt (apply_fun L_minus_2 p) 1 (HLm2_val_p (fun x y => Rle y 1) HRle_1)))). }
+    (** Restrict range to unit_interval **)
+    claim HLm2_I : continuous_map A_II (subspace_topology unit_square unit_square_topology A_II) unit_interval unit_interval_topology L_minus_2.
+    { exact (continuous_map_range_restrict A_II (subspace_topology unit_square unit_square_topology A_II) R R_standard_topology L_minus_2 unit_interval HLm2_cont_AII unit_interval_sub_R HLm2_range). }
+    (** Compose with g **)
+    witness (compose_fun A_II L_minus_2 g).
+    apply andI.
+    - exact (composition_continuous A_II (subspace_topology unit_square unit_square_topology A_II) unit_interval unit_interval_topology X Tx L_minus_2 g HLm2_I Hg).
+    - let p. assume Hp : p :e A_II.
+      claim HpSq : p :e unit_square. { exact (HA_II_sub p Hp). }
+      rewrite (compose_fun_apply A_II L_minus_2 g p Hp).
+      rewrite (HLm2_val p HpSq).
+      rewrite (HL_apply p HpSq).
+      exact (fun Q H => H). }
   (** Define F_I on A_I: f(4s/(2-t)) **)
   claim HF_I_exists : exists F_I:set,
     continuous_map A_I (subspace_topology unit_square unit_square_topology A_I) X Tx F_I /\
