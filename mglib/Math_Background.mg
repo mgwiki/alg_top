@@ -20943,6 +20943,102 @@ let X Tx x0 x1 alpha beta y ey.
 assume HalphaCont HbetaCont Halpha0 Halpha1 Hbeta0 Hbeta1.
 assume HrevBetaHom HbetaAlphaInv HalphaBetaInv.
 assume Hy HeyClass.
+claim HtopX : topology_on X Tx.
+{
+  exact (continuous_map_topology_cod
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    alpha
+    HalphaCont).
+}
+claim HbetaHom :
+  group_homomorphism
+    (fundamental_group X Tx x1) (fundamental_group_mult X Tx x1)
+    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+    (basepoint_change_map X Tx x1 x0 beta).
+{
+  exact (lemma52_1_basepoint_change_homomorphism
+    X
+    Tx
+    x1
+    x0
+    beta
+    HtopX
+    HbetaCont
+    Hbeta0
+    Hbeta1).
+}
+claim HbetaFun :
+  function_on
+    (basepoint_change_map X Tx x1 x0 beta)
+    (fundamental_group X Tx x1)
+    (fundamental_group X Tx x0).
+{
+  exact (group_homomorphism_function_on
+    (fundamental_group X Tx x1)
+    (fundamental_group_mult X Tx x1)
+    (fundamental_group X Tx x0)
+    (fundamental_group_mult X Tx x0)
+    (basepoint_change_map X Tx x1 x0 beta)
+    HbetaHom).
+}
+set cls_beta :=
+  path_homotopy_class_loop
+    X
+    Tx
+    x0
+    (path_concat
+      (reverse_path beta)
+      (path_concat
+        (Eps_i (fun g:set => g :e y))
+        beta)).
+claim HbetaMapEq :
+  apply_fun (basepoint_change_map X Tx x1 x0 beta) y = cls_beta.
+{
+  rewrite (basepoint_change_map_apply
+    X
+    Tx
+    x1
+    x0
+    beta
+    y
+    Hy).
+  reflexivity.
+}
+claim HclsBeta : cls_beta :e fundamental_group X Tx x0.
+{
+  rewrite <- HbetaMapEq.
+  exact (HbetaFun y Hy).
+}
+claim HlhsAsApply :
+  path_homotopy_class_loop
+    X
+    Tx
+    x1
+    (path_concat
+      (reverse_path alpha)
+      (path_concat
+        (Eps_i (fun f:set => f :e cls_beta))
+        alpha))
+  =
+  apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls_beta.
+{
+  rewrite (basepoint_change_map_apply
+    X
+    Tx
+    x0
+    x1
+    alpha
+    cls_beta
+    HclsBeta).
+  reflexivity.
+}
+rewrite HlhsAsApply.
+rewrite <- HbetaMapEq.
+rewrite HeyClass.
+(** TODO Bob: prove that alpha-hat o beta-hat acts as identity on y under the inverse-path homotopy assumptions. **)
 admit.
 Admitted.
 
