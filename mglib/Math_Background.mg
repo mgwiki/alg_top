@@ -1,5 +1,5 @@
 (** Balance Alice 2410 **)
-(** Balance Bob 2813 **)
+(** Balance Bob 2808 **)
 (** Balance Charlie 1202 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -47823,7 +47823,8 @@ Admitted.
 (** from S58 Exercise 1 (line 1475 in algtop.tex) **)
 (** LATEX VERSION: If A is a deformation retract of X, and B is a deformation retract of A, then B is a deformation retract of X. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Bob 2026-02-18T07:55:00 **)
 Theorem ex58_1_transitive_deformation_retract : forall X Tx A B:set,
   topology_on X Tx ->
   deformation_retract X Tx A ->
