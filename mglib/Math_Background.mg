@@ -1,5 +1,6 @@
 (** Balance Alice 2135 **)
 (** Balance Bob 2037 **)
+(** Balance Bob 2028 **)
 (** Balance Charlie 1223 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -13526,7 +13527,8 @@ Admitted.
 (** from S51 Exercise 2a (line 331 in algtop.tex) **)
 (** LATEX VERSION: For any X, the set [X, I] has a single element. **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 40 **)
-(** Bounty 40 **)
+(** Bounty 44 **)
+(** Lock Bob 2026-02-18T02:45:00 **)
 Theorem ex51_2a_maps_to_I : forall X Tx f g:set,
   continuous_map X Tx unit_interval unit_interval_topology f ->
   continuous_map X Tx unit_interval unit_interval_topology g ->
@@ -13537,7 +13539,8 @@ Admitted.
 (** from S51 Exercise 2b (line 332 in algtop.tex) **)
 (** LATEX VERSION: If Y is path connected, the set [I, Y] has a single element. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Bob 2026-02-18T02:45:00 **)
 Theorem ex51_2b_maps_from_I_path_connected : forall Y Ty f g:set,
   path_connected_space Y Ty ->
   continuous_map unit_interval unit_interval_topology Y Ty f ->
