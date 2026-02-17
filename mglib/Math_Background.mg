@@ -1,5 +1,5 @@
 (** Balance Alice 2160 **)
-(** Balance Bob 1851 **)
+(** Balance Bob 1917 **)
 (** Balance Charlie 1223 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -14204,12 +14204,364 @@ Qed.
 (** from S51 Exercise 3b (line 335 in algtop.tex) **)
 (** LATEX VERSION: A contractible space is path connected. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 66 **)
-(** Lock Bob 2026-02-18T01:30:00 **)
+(** Collected Bob 66 **)
+(** Proven Bob **)
 Theorem ex51_3b_contractible_path_connected : forall X Tx:set,
   contractible_space X Tx -> path_connected_space X Tx.
-admit.
-Admitted.
+let X Tx.
+assume Hc.
+claim Htop : topology_on X Tx.
+{
+  exact (andEL
+    (topology_on X Tx)
+    (nulhomotopic X Tx X Tx (graph X (fun x:set => x)))
+    Hc).
+}
+claim Hnul : nulhomotopic X Tx X Tx (graph X (fun x:set => x)).
+{
+  exact (andER
+    (topology_on X Tx)
+    (nulhomotopic X Tx X Tx (graph X (fun x:set => x)))
+    Hc).
+}
+apply Hnul.
+let y0.
+assume Hy0pack.
+claim Hy0X : y0 :e X.
+{
+  exact (andEL
+    (y0 :e X)
+    (homotopic_maps X Tx X Tx (graph X (fun x:set => x)) (const_fun X y0))
+    Hy0pack).
+}
+claim Hhom : homotopic_maps X Tx X Tx (graph X (fun x:set => x)) (const_fun X y0).
+{
+  exact (andER
+    (y0 :e X)
+    (homotopic_maps X Tx X Tx (graph X (fun x:set => x)) (const_fun X y0))
+    Hy0pack).
+}
+claim Hw :
+  exists F:set,
+    continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      X Tx F /\
+    (forall x:set, x :e X ->
+      apply_fun F (x, 0) = apply_fun (graph X (fun x0:set => x0)) x) /\
+    (forall x:set, x :e X ->
+      apply_fun F (x, 1) = apply_fun (const_fun X y0) x).
+{
+  exact (homotopic_maps_has_witness
+    X
+    Tx
+    X
+    Tx
+    (graph X (fun x:set => x))
+    (const_fun X y0)
+    Hhom).
+}
+apply Hw.
+let F.
+assume HFpack.
+claim HFpair :
+  continuous_map (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    X Tx F /\
+  (forall x:set, x :e X ->
+    apply_fun F (x, 0) = apply_fun (graph X (fun x0:set => x0)) x).
+{
+  exact (andEL
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      X Tx F /\
+     (forall x:set, x :e X ->
+       apply_fun F (x, 0) = apply_fun (graph X (fun x0:set => x0)) x))
+    (forall x:set, x :e X ->
+      apply_fun F (x, 1) = apply_fun (const_fun X y0) x)
+    HFpack).
+}
+claim HFcont :
+  continuous_map (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    X Tx F.
+{
+  exact (andEL
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      X Tx F)
+    (forall x:set, x :e X ->
+      apply_fun F (x, 0) = apply_fun (graph X (fun x0:set => x0)) x)
+    HFpair).
+}
+claim HF0 :
+  forall x:set, x :e X ->
+    apply_fun F (x, 0) = apply_fun (graph X (fun x0:set => x0)) x.
+{
+  exact (andER
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      X Tx F)
+    (forall x:set, x :e X ->
+      apply_fun F (x, 0) = apply_fun (graph X (fun x0:set => x0)) x)
+    HFpair).
+}
+claim HF1 :
+  forall x:set, x :e X ->
+    apply_fun F (x, 1) = apply_fun (const_fun X y0) x.
+{
+  exact (andER
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      X Tx F /\
+     (forall x:set, x :e X ->
+       apply_fun F (x, 0) = apply_fun (graph X (fun x0:set => x0)) x))
+    (forall x:set, x :e X ->
+      apply_fun F (x, 1) = apply_fun (const_fun X y0) x)
+    HFpack).
+}
+claim Hpaths :
+  forall x y:set, x :e X -> y :e X ->
+    exists p:set,
+      path_between X x y p /\
+      continuous_map unit_interval unit_interval_topology X Tx p.
+{
+  let x y.
+  assume Hx Hy.
+  set idI := graph unit_interval (fun t:set => t).
+  claim HidICont :
+    continuous_map unit_interval unit_interval_topology
+      unit_interval unit_interval_topology
+      idI.
+  {
+    exact (identity_continuous
+      unit_interval
+      unit_interval_topology
+      unit_interval_topology_on).
+  }
+  claim Hconstx :
+    continuous_map unit_interval unit_interval_topology
+      X Tx
+      (const_fun unit_interval x).
+  {
+    exact (const_fun_continuous
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      x
+      unit_interval_topology_on
+      Htop
+      Hx).
+  }
+  set sx := pair_map unit_interval
+    (const_fun unit_interval x)
+    idI.
+  claim HsxCont :
+    continuous_map unit_interval unit_interval_topology
+      (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      sx.
+  {
+    exact (maps_into_products
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      unit_interval
+      unit_interval_topology
+      (const_fun unit_interval x)
+      idI
+      Hconstx
+      HidICont).
+  }
+  set px := compose_fun unit_interval sx F.
+  claim HpxCont :
+    continuous_map unit_interval unit_interval_topology
+      X Tx
+      px.
+  {
+    exact (composition_continuous
+      unit_interval
+      unit_interval_topology
+      (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      X
+      Tx
+      sx
+      F
+      HsxCont
+      HFcont).
+  }
+  claim Hpx0 : apply_fun px 0 = x.
+  {
+    rewrite (compose_fun_apply unit_interval sx F 0 zero_in_unit_interval).
+    rewrite (pair_map_apply unit_interval X unit_interval
+      (const_fun unit_interval x) idI 0 zero_in_unit_interval).
+    rewrite (const_fun_apply unit_interval x 0 zero_in_unit_interval).
+    rewrite (apply_fun_graph unit_interval (fun t:set => t) 0 zero_in_unit_interval).
+    rewrite (HF0 x Hx).
+    rewrite (apply_fun_graph X (fun z:set => z) x Hx).
+    reflexivity.
+  }
+  claim Hpx1 : apply_fun px 1 = y0.
+  {
+    rewrite (compose_fun_apply unit_interval sx F 1 one_in_unit_interval).
+    rewrite (pair_map_apply unit_interval X unit_interval
+      (const_fun unit_interval x) idI 1 one_in_unit_interval).
+    rewrite (const_fun_apply unit_interval x 1 one_in_unit_interval).
+    rewrite (apply_fun_graph unit_interval (fun t:set => t) 1 one_in_unit_interval).
+    rewrite (HF1 x Hx).
+    rewrite (const_fun_apply X y0 x Hx).
+    reflexivity.
+  }
+  claim Hconsty :
+    continuous_map unit_interval unit_interval_topology
+      X Tx
+      (const_fun unit_interval y).
+  {
+    exact (const_fun_continuous
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      y
+      unit_interval_topology_on
+      Htop
+      Hy).
+  }
+  set sy := pair_map unit_interval
+    (const_fun unit_interval y)
+    idI.
+  claim HsyCont :
+    continuous_map unit_interval unit_interval_topology
+      (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      sy.
+  {
+    exact (maps_into_products
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      unit_interval
+      unit_interval_topology
+      (const_fun unit_interval y)
+      idI
+      Hconsty
+      HidICont).
+  }
+  set py := compose_fun unit_interval sy F.
+  claim HpyCont :
+    continuous_map unit_interval unit_interval_topology
+      X Tx
+      py.
+  {
+    exact (composition_continuous
+      unit_interval
+      unit_interval_topology
+      (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      X
+      Tx
+      sy
+      F
+      HsyCont
+      HFcont).
+  }
+  claim Hpy0 : apply_fun py 0 = y.
+  {
+    rewrite (compose_fun_apply unit_interval sy F 0 zero_in_unit_interval).
+    rewrite (pair_map_apply unit_interval X unit_interval
+      (const_fun unit_interval y) idI 0 zero_in_unit_interval).
+    rewrite (const_fun_apply unit_interval y 0 zero_in_unit_interval).
+    rewrite (apply_fun_graph unit_interval (fun t:set => t) 0 zero_in_unit_interval).
+    rewrite (HF0 y Hy).
+    rewrite (apply_fun_graph X (fun z:set => z) y Hy).
+    reflexivity.
+  }
+  claim Hpy1 : apply_fun py 1 = y0.
+  {
+    rewrite (compose_fun_apply unit_interval sy F 1 one_in_unit_interval).
+    rewrite (pair_map_apply unit_interval X unit_interval
+      (const_fun unit_interval y) idI 1 one_in_unit_interval).
+    rewrite (const_fun_apply unit_interval y 1 one_in_unit_interval).
+    rewrite (apply_fun_graph unit_interval (fun t:set => t) 1 one_in_unit_interval).
+    rewrite (HF1 y Hy).
+    rewrite (const_fun_apply X y0 y Hy).
+    reflexivity.
+  }
+  claim HryCont :
+    continuous_map unit_interval unit_interval_topology
+      X Tx
+      (reverse_path py).
+  {
+    exact (reverse_path_continuous X Tx py HpyCont).
+  }
+  claim Hry0 : apply_fun (reverse_path py) 0 = y0.
+  {
+    rewrite (reverse_path_at_zero py).
+    exact Hpy1.
+  }
+  claim Hry1 : apply_fun (reverse_path py) 1 = y.
+  {
+    rewrite (reverse_path_at_one py).
+    exact Hpy0.
+  }
+  set p := path_concat px (reverse_path py).
+  claim HpCont :
+    continuous_map unit_interval unit_interval_topology
+      X Tx
+      p.
+  {
+    exact (path_concat_continuous
+      X
+      Tx
+      x
+      y0
+      y
+      px
+      (reverse_path py)
+      HpxCont
+      HryCont
+      Hpx0
+      Hpx1
+      Hry0
+      Hry1).
+  }
+  claim Hp0 : apply_fun p 0 = x.
+  {
+    rewrite (path_concat_at_zero px (reverse_path py)).
+    exact Hpx0.
+  }
+  claim Hp1 : apply_fun p 1 = y.
+  {
+    rewrite (path_concat_at_one px (reverse_path py)).
+    exact Hry1.
+  }
+  claim HpOn : function_on p unit_interval X.
+  {
+    exact (continuous_map_function_on
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      p
+      HpCont).
+  }
+  witness p.
+  apply andI.
+  - exact (path_betweenI X x y p HpOn Hp0 Hp1).
+  - exact HpCont.
+}
+exact (andI
+  (topology_on X Tx)
+  (forall x y:set, x :e X -> y :e X ->
+    exists p:set,
+      path_between X x y p /\
+      continuous_map unit_interval unit_interval_topology X Tx p)
+  Htop
+  Hpaths).
+Qed.
 
 (** from S51 Exercise 3c (line 336 in algtop.tex) **)
 (** LATEX VERSION: If Y is contractible, then for any X, the set [X,Y] has a single element. **)
