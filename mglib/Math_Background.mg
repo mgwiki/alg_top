@@ -1,4 +1,4 @@
-(** Balance Alice 2160 **)
+(** Balance Alice 2135 **)
 (** Balance Bob 1807 **)
 (** Balance Charlie 1223 **)
 
@@ -11446,7 +11446,8 @@ Qed.
 
 (** part (1): Associativity **)
 (** EFFORT: 15 lines textbook, difficulty 7/10, USD 250 **)
-(** Bounty 250 **)
+(** Bounty 275 **)
+(** Lock Alice 2026-02-17T23:30:00 **)
 Theorem Theorem_51_2_associativity : forall X Tx x0 x1 x2 x3 f g h:set,
   continuous_map unit_interval unit_interval_topology X Tx f ->
   continuous_map unit_interval unit_interval_topology X Tx g ->
@@ -11457,7 +11458,84 @@ Theorem Theorem_51_2_associativity : forall X Tx x0 x1 x2 x3 f g h:set,
   path_homotopic X Tx x0 x3
     (path_concat f (path_concat g h))
     (path_concat (path_concat f g) h).
-admit.
+let X Tx x0 x1 x2 x3 f g h.
+assume Hf : continuous_map unit_interval unit_interval_topology X Tx f.
+assume Hg : continuous_map unit_interval unit_interval_topology X Tx g.
+assume Hh : continuous_map unit_interval unit_interval_topology X Tx h.
+assume Hf0 : apply_fun f 0 = x0. assume Hf1 : apply_fun f 1 = x1.
+assume Hg0 : apply_fun g 0 = x1. assume Hg1 : apply_fun g 1 = x2.
+assume Hh0 : apply_fun h 0 = x2. assume Hh1 : apply_fun h 1 = x3.
+claim HtopX : topology_on X Tx.
+{ exact (continuous_map_topology_cod unit_interval unit_interval_topology X Tx f Hf). }
+(** Endpoint compatibility claims **)
+claim Hfg_compat : apply_fun f 1 = apply_fun g 0.
+{ rewrite Hf1. rewrite Hg0. exact (fun Q H => H). }
+claim Hgh_compat : apply_fun g 1 = apply_fun h 0.
+{ rewrite Hg1. rewrite Hh0. exact (fun Q H => H). }
+(** Continuity of inner compositions **)
+claim Hgh : continuous_map unit_interval unit_interval_topology X Tx (path_concat g h).
+{ exact (path_concat_continuous X Tx x1 x2 x3 g h Hg Hh Hg0 Hg1 Hh0 Hh1). }
+claim Hfg : continuous_map unit_interval unit_interval_topology X Tx (path_concat f g).
+{ exact (path_concat_continuous X Tx x0 x1 x2 f g Hf Hg Hf0 Hf1 Hg0 Hg1). }
+(** Endpoint values of inner compositions **)
+claim Hgh0 : apply_fun (path_concat g h) 0 = x1.
+{ rewrite (path_concat_at_zero g h). exact Hg0. }
+claim Hgh1 : apply_fun (path_concat g h) 1 = x3.
+{ rewrite (path_concat_at_one g h). exact Hh1. }
+claim Hfg0 : apply_fun (path_concat f g) 0 = x0.
+{ rewrite (path_concat_at_zero f g). exact Hf0. }
+claim Hfg1 : apply_fun (path_concat f g) 1 = x2.
+{ rewrite (path_concat_at_one f g). exact Hg1. }
+(** Endpoint compat for outer compositions **)
+claim Hf_gh_compat : apply_fun f 1 = apply_fun (path_concat g h) 0.
+{ rewrite Hf1. rewrite Hgh0. exact (fun Q H => H). }
+claim Hfg_h_compat : apply_fun (path_concat f g) 1 = apply_fun h 0.
+{ rewrite Hfg1. rewrite Hh0. exact (fun Q H => H). }
+(** Continuity of outer compositions **)
+claim Hfgh : continuous_map unit_interval unit_interval_topology X Tx (path_concat f (path_concat g h)).
+{ exact (path_concat_continuous X Tx x0 x1 x3 f (path_concat g h) Hf Hgh Hf0 Hf1 Hgh0 Hgh1). }
+claim Hfg_h : continuous_map unit_interval unit_interval_topology X Tx (path_concat (path_concat f g) h).
+{ exact (path_concat_continuous X Tx x0 x2 x3 (path_concat f g) h Hfg Hh Hfg0 Hfg1 Hh0 Hh1). }
+(** Endpoint values of outer compositions **)
+claim Hfgh_0 : apply_fun (path_concat f (path_concat g h)) 0 = x0.
+{ rewrite (path_concat_at_zero f (path_concat g h)). exact Hf0. }
+claim Hfgh_1 : apply_fun (path_concat f (path_concat g h)) 1 = x3.
+{ rewrite (path_concat_at_one f (path_concat g h)). exact Hgh1. }
+claim Hfg_h_0 : apply_fun (path_concat (path_concat f g) h) 0 = x0.
+{ rewrite (path_concat_at_zero (path_concat f g) h). exact Hfg0. }
+claim Hfg_h_1 : apply_fun (path_concat (path_concat f g) h) 1 = x3.
+{ rewrite (path_concat_at_one (path_concat f g) h). exact Hh1. }
+(** Main construction: homotopy F on I x I **)
+(** The homotopy uses three regions defined by L(s,t) = 4s + t: **)
+(** Region I (f region): L <= 2, i.e., 4s+t <= 2 **)
+(** Region II (g region): 2 <= L <= 3, i.e., 2 <= 4s+t <= 3 **)
+(** Region III (h region): L >= 3, i.e., 4s+t >= 3 **)
+(** F(s,t) = f(4s/(2-t)) in Region I **)
+(** F(s,t) = g(4s+t-2) in Region II **)
+(** F(s,t) = h((4s+t-3)/(1+t)) in Region III **)
+prove continuous_map unit_interval unit_interval_topology X Tx (path_concat f (path_concat g h)) /\
+  continuous_map unit_interval unit_interval_topology X Tx (path_concat (path_concat f g) h) /\
+  apply_fun (path_concat f (path_concat g h)) 0 = x0 /\ apply_fun (path_concat f (path_concat g h)) 1 = x3 /\
+  apply_fun (path_concat (path_concat f g) h) 0 = x0 /\ apply_fun (path_concat (path_concat f g) h) 1 = x3 /\
+  exists F:set,
+    continuous_map unit_square unit_square_topology X Tx F /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 0) = apply_fun (path_concat f (path_concat g h)) s) /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 1) = apply_fun (path_concat (path_concat f g) h) s) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (0, t) = x0) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (1, t) = x3).
+apply and7I.
++ exact Hfgh.
++ exact Hfg_h.
++ exact Hfgh_0.
++ exact Hfgh_1.
++ exact Hfg_h_0.
++ exact Hfg_h_1.
++ (** Homotopy construction **)
+  admit.
 Admitted.
 
 (** from S51 Theorem 51.2 part (2) (line 232 in algtop.tex): right identity **)
