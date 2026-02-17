@@ -51523,9 +51523,419 @@ Theorem thm54_3_homotopic_lifts : forall E Te B Tb p e0 b0 b1 f g:set,
   e0 :e E -> apply_fun p e0 = b0 ->
   path_homotopic B Tb b0 b1 f g ->
   apply_fun (path_lift E Te B Tb p e0 f) 1 =
-    apply_fun (path_lift E Te B Tb p e0 g) 1 /\
+  apply_fun (path_lift E Te B Tb p e0 g) 1 /\
   path_homotopic E Te e0 (apply_fun (path_lift E Te B Tb p e0 f) 1)
     (path_lift E Te B Tb p e0 f) (path_lift E Te B Tb p e0 g).
+let E Te B Tb p e0 b0 b1 f g.
+assume Hcov He0 Hstart Hph.
+set ff := path_lift E Te B Tb p e0 f.
+set gg := path_lift E Te B Tb p e0 g.
+claim Hunfold :
+  (continuous_map unit_interval unit_interval_topology B Tb f /\
+   continuous_map unit_interval unit_interval_topology B Tb g) /\
+  (apply_fun f 0 = b0 /\ apply_fun f 1 = b1 /\
+   apply_fun g 0 = b0 /\ apply_fun g 1 = b1 /\
+   exists F:set,
+     continuous_map unit_square unit_square_topology B Tb F /\
+     (forall s:set, s :e unit_interval ->
+       apply_fun F (s, 0) = apply_fun f s) /\
+     (forall s:set, s :e unit_interval ->
+       apply_fun F (s, 1) = apply_fun g s) /\
+     (forall t:set, t :e unit_interval ->
+       apply_fun F (0, t) = b0) /\
+     (forall t:set, t :e unit_interval ->
+       apply_fun F (1, t) = b1)).
+{
+  exact (path_homotopic_unfold
+    B Tb b0 b1 f g Hph).
+}
+claim HfgCont :
+  continuous_map unit_interval unit_interval_topology B Tb f /\
+  continuous_map unit_interval unit_interval_topology B Tb g.
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology B Tb f /\
+     continuous_map unit_interval unit_interval_topology B Tb g)
+    (apply_fun f 0 = b0 /\ apply_fun f 1 = b1 /\
+     apply_fun g 0 = b0 /\ apply_fun g 1 = b1 /\
+     exists F:set,
+       continuous_map unit_square unit_square_topology B Tb F /\
+       (forall s:set, s :e unit_interval ->
+         apply_fun F (s, 0) = apply_fun f s) /\
+       (forall s:set, s :e unit_interval ->
+         apply_fun F (s, 1) = apply_fun g s) /\
+       (forall t:set, t :e unit_interval ->
+         apply_fun F (0, t) = b0) /\
+       (forall t:set, t :e unit_interval ->
+         apply_fun F (1, t) = b1))
+    Hunfold).
+}
+claim Hfcont : continuous_map unit_interval unit_interval_topology B Tb f.
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology B Tb f)
+    (continuous_map unit_interval unit_interval_topology B Tb g)
+    HfgCont).
+}
+claim Hgcont : continuous_map unit_interval unit_interval_topology B Tb g.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology B Tb f)
+    (continuous_map unit_interval unit_interval_topology B Tb g)
+    HfgCont).
+}
+claim Htail :
+  apply_fun f 0 = b0 /\ apply_fun f 1 = b1 /\
+  apply_fun g 0 = b0 /\ apply_fun g 1 = b1 /\
+  exists F:set,
+    continuous_map unit_square unit_square_topology B Tb F /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 0) = apply_fun f s) /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 1) = apply_fun g s) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (0, t) = b0) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (1, t) = b1).
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology B Tb f /\
+     continuous_map unit_interval unit_interval_topology B Tb g)
+    (apply_fun f 0 = b0 /\ apply_fun f 1 = b1 /\
+     apply_fun g 0 = b0 /\ apply_fun g 1 = b1 /\
+     exists F:set,
+       continuous_map unit_square unit_square_topology B Tb F /\
+       (forall s:set, s :e unit_interval ->
+         apply_fun F (s, 0) = apply_fun f s) /\
+       (forall s:set, s :e unit_interval ->
+         apply_fun F (s, 1) = apply_fun g s) /\
+       (forall t:set, t :e unit_interval ->
+         apply_fun F (0, t) = b0) /\
+       (forall t:set, t :e unit_interval ->
+         apply_fun F (1, t) = b1))
+    Hunfold).
+}
+claim Hfour :
+  ((apply_fun f 0 = b0 /\ apply_fun f 1 = b1) /\ apply_fun g 0 = b0) /\
+  apply_fun g 1 = b1.
+{
+  exact (andEL
+    (((apply_fun f 0 = b0 /\ apply_fun f 1 = b1) /\ apply_fun g 0 = b0) /\
+      apply_fun g 1 = b1)
+    (exists F:set,
+      continuous_map unit_square unit_square_topology B Tb F /\
+      (forall s:set, s :e unit_interval ->
+        apply_fun F (s, 0) = apply_fun f s) /\
+      (forall s:set, s :e unit_interval ->
+        apply_fun F (s, 1) = apply_fun g s) /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun F (0, t) = b0) /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun F (1, t) = b1))
+    Htail).
+}
+claim Hthree :
+  (apply_fun f 0 = b0 /\ apply_fun f 1 = b1) /\ apply_fun g 0 = b0.
+{
+  exact (andEL
+    ((apply_fun f 0 = b0 /\ apply_fun f 1 = b1) /\ apply_fun g 0 = b0)
+    (apply_fun g 1 = b1)
+    Hfour).
+}
+claim Hfpair : apply_fun f 0 = b0 /\ apply_fun f 1 = b1.
+{
+  exact (andEL
+    (apply_fun f 0 = b0 /\ apply_fun f 1 = b1)
+    (apply_fun g 0 = b0)
+    Hthree).
+}
+claim Hf0 : apply_fun f 0 = b0.
+{
+  exact (andEL
+    (apply_fun f 0 = b0)
+    (apply_fun f 1 = b1)
+    Hfpair).
+}
+claim Hf1 : apply_fun f 1 = b1.
+{
+  exact (andER
+    (apply_fun f 0 = b0)
+    (apply_fun f 1 = b1)
+    Hfpair).
+}
+claim Hg0 : apply_fun g 0 = b0.
+{
+  exact (andER
+    (apply_fun f 0 = b0 /\ apply_fun f 1 = b1)
+    (apply_fun g 0 = b0)
+    Hthree).
+}
+claim Hg1 : apply_fun g 1 = b1.
+{
+  exact (andER
+    ((apply_fun f 0 = b0 /\ apply_fun f 1 = b1) /\ apply_fun g 0 = b0)
+    (apply_fun g 1 = b1)
+    Hfour).
+}
+claim Hstartf : apply_fun p e0 = apply_fun f 0.
+{
+  rewrite Hf0.
+  exact Hstart.
+}
+claim Hstartg : apply_fun p e0 = apply_fun g 0.
+{
+  rewrite Hg0.
+  exact Hstart.
+}
+claim HffPack :
+  continuous_map unit_interval unit_interval_topology E Te ff /\
+  apply_fun ff 0 = e0 /\
+  (forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun ff t) = apply_fun f t).
+{
+  exact (lemma54_1_path_lifting
+    E Te B Tb p e0 f
+    Hcov
+    He0
+    Hstartf
+    Hfcont).
+}
+claim HggPack :
+  continuous_map unit_interval unit_interval_topology E Te gg /\
+  apply_fun gg 0 = e0 /\
+  (forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun gg t) = apply_fun g t).
+{
+  exact (lemma54_1_path_lifting
+    E Te B Tb p e0 g
+    Hcov
+    He0
+    Hstartg
+    Hgcont).
+}
+claim HffCont : continuous_map unit_interval unit_interval_topology E Te ff.
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te ff)
+    (apply_fun ff 0 = e0)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology E Te ff /\
+       apply_fun ff 0 = e0)
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun ff t) = apply_fun f t)
+      HffPack)).
+}
+claim HggCont : continuous_map unit_interval unit_interval_topology E Te gg.
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te gg)
+    (apply_fun gg 0 = e0)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology E Te gg /\
+       apply_fun gg 0 = e0)
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun gg t) = apply_fun g t)
+      HggPack)).
+}
+claim Hff0 : apply_fun ff 0 = e0.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te ff)
+    (apply_fun ff 0 = e0)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology E Te ff /\
+       apply_fun ff 0 = e0)
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun ff t) = apply_fun f t)
+      HffPack)).
+}
+claim Hgg0 : apply_fun gg 0 = e0.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te gg)
+    (apply_fun gg 0 = e0)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology E Te gg /\
+       apply_fun gg 0 = e0)
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun gg t) = apply_fun g t)
+      HggPack)).
+}
+claim HsquareWitness :
+  exists Fh:set,
+    continuous_map unit_square unit_square_topology B Tb Fh /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun Fh (s, 0) = apply_fun f s) /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun Fh (s, 1) = apply_fun g s) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun Fh (0, t) = b0) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun Fh (1, t) = b1).
+{
+  exact (path_homotopic_has_square_witness
+    B
+    Tb
+    b0
+    b1
+    f
+    g
+    Hph).
+}
+apply HsquareWitness.
+let Fh.
+assume HFhPack.
+claim HFh3 :
+  ((continuous_map unit_square unit_square_topology B Tb Fh /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun Fh (s, 0) = apply_fun f s)) /\
+   (forall s:set, s :e unit_interval ->
+      apply_fun Fh (s, 1) = apply_fun g s)) /\
+  (forall t:set, t :e unit_interval ->
+    apply_fun Fh (0, t) = b0).
+{
+  exact (andEL
+    (((continuous_map unit_square unit_square_topology B Tb Fh /\
+      (forall s:set, s :e unit_interval ->
+        apply_fun Fh (s, 0) = apply_fun f s)) /\
+     (forall s:set, s :e unit_interval ->
+        apply_fun Fh (s, 1) = apply_fun g s)) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun Fh (0, t) = b0))
+    (forall t:set, t :e unit_interval ->
+      apply_fun Fh (1, t) = b1)
+    HFhPack).
+}
+claim HFh2 :
+  (continuous_map unit_square unit_square_topology B Tb Fh /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun Fh (s, 0) = apply_fun f s)) /\
+  (forall s:set, s :e unit_interval ->
+    apply_fun Fh (s, 1) = apply_fun g s).
+{
+  exact (andEL
+    ((continuous_map unit_square unit_square_topology B Tb Fh /\
+      (forall s:set, s :e unit_interval ->
+        apply_fun Fh (s, 0) = apply_fun f s)) /\
+     (forall s:set, s :e unit_interval ->
+       apply_fun Fh (s, 1) = apply_fun g s))
+    (forall t:set, t :e unit_interval ->
+      apply_fun Fh (0, t) = b0)
+    HFh3).
+}
+claim HFhCont0 :
+  continuous_map unit_square unit_square_topology B Tb Fh /\
+  (forall s:set, s :e unit_interval ->
+    apply_fun Fh (s, 0) = apply_fun f s).
+{
+  exact (andEL
+    (continuous_map unit_square unit_square_topology B Tb Fh /\
+      (forall s:set, s :e unit_interval ->
+        apply_fun Fh (s, 0) = apply_fun f s))
+    (forall s:set, s :e unit_interval ->
+      apply_fun Fh (s, 1) = apply_fun g s)
+    HFh2).
+}
+claim HFhCont : continuous_map unit_square unit_square_topology B Tb Fh.
+{
+  exact (andEL
+    (continuous_map unit_square unit_square_topology B Tb Fh)
+    (forall s:set, s :e unit_interval ->
+      apply_fun Fh (s, 0) = apply_fun f s)
+    HFhCont0).
+}
+claim HFhS0 :
+  forall s:set, s :e unit_interval ->
+    apply_fun Fh (s, 0) = apply_fun f s.
+{
+  exact (andER
+    (continuous_map unit_square unit_square_topology B Tb Fh)
+    (forall s:set, s :e unit_interval ->
+      apply_fun Fh (s, 0) = apply_fun f s)
+    HFhCont0).
+}
+claim HFhS1 :
+  forall s:set, s :e unit_interval ->
+    apply_fun Fh (s, 1) = apply_fun g s.
+{
+  exact (andER
+    (continuous_map unit_square unit_square_topology B Tb Fh /\
+      (forall s:set, s :e unit_interval ->
+        apply_fun Fh (s, 0) = apply_fun f s))
+    (forall s:set, s :e unit_interval ->
+      apply_fun Fh (s, 1) = apply_fun g s)
+    HFh2).
+}
+claim HFh0T :
+  forall t:set, t :e unit_interval ->
+    apply_fun Fh (0, t) = b0.
+{
+  exact (andER
+    ((continuous_map unit_square unit_square_topology B Tb Fh /\
+      (forall s:set, s :e unit_interval ->
+        apply_fun Fh (s, 0) = apply_fun f s)) /\
+     (forall s:set, s :e unit_interval ->
+       apply_fun Fh (s, 1) = apply_fun g s))
+    (forall t:set, t :e unit_interval ->
+      apply_fun Fh (0, t) = b0)
+    HFh3).
+}
+claim HFh1T :
+  forall t:set, t :e unit_interval ->
+    apply_fun Fh (1, t) = b1.
+{
+  exact (andER
+    (((continuous_map unit_square unit_square_topology B Tb Fh /\
+      (forall s:set, s :e unit_interval ->
+        apply_fun Fh (s, 0) = apply_fun f s)) /\
+     (forall s:set, s :e unit_interval ->
+       apply_fun Fh (s, 1) = apply_fun g s)) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun Fh (0, t) = b0))
+    (forall t:set, t :e unit_interval ->
+      apply_fun Fh (1, t) = b1)
+    HFhPack).
+}
+claim HFh00 : apply_fun Fh (0, 0) = b0.
+{
+  exact (HFh0T 0 zero_in_unit_interval).
+}
+claim HstartFh : apply_fun p e0 = apply_fun Fh (0, 0).
+{
+  rewrite Hstart.
+  rewrite <- HFh00.
+  reflexivity.
+}
+claim HliftSquare :
+  continuous_map unit_square unit_square_topology E Te (homotopy_lift E Te B Tb p e0 Fh) /\
+  apply_fun (homotopy_lift E Te B Tb p e0 Fh) (0, 0) = e0 /\
+  (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun (homotopy_lift E Te B Tb p e0 Fh) (s, t)) = apply_fun Fh (s, t)).
+{
+  exact (lemma54_2_homotopy_lifting
+    E Te B Tb p e0 Fh
+    Hcov
+    He0
+    HstartFh
+    HFhCont).
+}
+claim HedgeConst :
+  exists e0' e1':set,
+    (forall t:set, t :e unit_interval ->
+      apply_fun (homotopy_lift E Te B Tb p e0 Fh) (0, t) = e0') /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun (homotopy_lift E Te B Tb p e0 Fh) (1, t) = e1').
+{
+  exact (lemma54_2_path_homotopy_preserved
+    E Te B Tb p e0 Fh b0 b1
+    Hcov
+    He0
+    HstartFh
+    HFhCont
+    HFh0T
+    HFh1T).
+}
+(** TODO Bob: finish via lifting the path-homotopy square and comparing its boundary lifts. **)
 admit.
 Admitted.
 
