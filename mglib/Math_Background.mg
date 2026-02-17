@@ -1,6 +1,6 @@
 (** Balance Alice 2584 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 31694 **)
+(** Balance Charlie 31614 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -53447,7 +53447,8 @@ Qed.
 (** from S55 Theorem 55.2 (line 904 in algtop.tex): No-retraction theorem **)
 (** LATEX VERSION: There is no retraction of B^2 onto S^1. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:09:57 **)
 Theorem thm55_2_no_retraction_B2_S1 : ~(retraction_of B2 B2_topology S1).
 admit.
 Admitted.
@@ -54997,7 +54998,8 @@ Qed.
 (** from S58 Theorem 58.2 (line 1284 in algtop.tex) **)
 (** LATEX VERSION: The inclusion map j: S^n -> R^{n+1}-0 induces an isomorphism of fundamental groups. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:09:57 **)
 Theorem thm58_2_inclusion_Sn_isomorphism : forall n:set, n :e omega ->
   forall b0:set, b0 :e Sn n ->
   group_isomorphism
@@ -61900,7 +61902,8 @@ Admitted.
 (** such that S^2 - D1 cap D2 is simply connected. **)
 (** If neither D1 nor D2 separates S^2, then D1 union D2 does not separate S^2. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:09:57 **)
 Theorem thm63_3_general_nonseparation : forall D1 D2:set,
   D1 c= Sn 2 -> D2 c= Sn 2 ->
   Sn 2 :\: D1 :e Sn_topology 2 ->
@@ -63061,7 +63064,8 @@ Admitted.
 (** i_alpha and i'_alpha respectively, then there is a unique isomorphism **)
 (** phi: G -> G' such that phi o i_alpha = i'_alpha. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:09:57 **)
 Theorem thm67_6_uniqueness_direct_sum :
   forall J Gfam multfam G multG eG invG ifam G' multG' eG' invG' ifam':set,
   abelian_group G multG eG invG ->
@@ -63149,7 +63153,8 @@ Admitted.
 (** LATEX VERSION: If G is a free abelian group with basis {a_1,...,a_n}, **)
 (** then n is uniquely determined by G. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:09:57 **)
 Theorem thm67_8_rank_well_defined :
   forall G mult e inv n1 n2 basis1 basis2:set,
   free_abelian_group_with_basis G mult e inv n1 basis1 ->
@@ -63456,7 +63461,8 @@ Admitted.
 (** i_alpha and i'_alpha, then there is a unique isomorphism phi: G -> G' **)
 (** with phi o i_alpha = i'_alpha. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:09:57 **)
 Theorem thm68_4_uniqueness_free_product :
   forall J Gfam multfam G multG eG invG ifam G' multG' eG' invG' ifam':set,
   external_free_product G multG eG invG J Gfam multfam ifam ->
@@ -65608,7 +65614,8 @@ Admitted.
 (** from S75 Theorem 75.3 (line 4087 in algtop.tex): H1 of n-fold torus **)
 (** LATEX VERSION: If X is the n-fold torus, H1(X) is free abelian of rank 2n. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:09:57 **)
 Theorem thm75_3_H1_n_fold_torus :
   forall n:set,
   n :e omega -> n <> 0 ->
@@ -65872,7 +65879,8 @@ Definition equivalent_labelling_schemes : set -> set -> set -> set -> prop :=
 (** length >= 2, then X also comes from m+1 regions via scheme **)
 (** y0 c^{-1}, c y1, w2, ..., wm. And conversely. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:09:57 **)
 Theorem thm76_1_cutting_and_pasting :
   forall n w:set,
   labelling_scheme n w ->
@@ -67513,7 +67521,8 @@ Definition star_refinement_cover : set -> set -> set -> set -> prop :=
 (** open covering B refining A such that for each pair B, B' in B with nonempty **)
 (** intersection, B union B' lies in an element of A. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:09:57 **)
 Theorem supp_ex_1a_metrizable_star_refinement :
   forall X Tx:set,
   metrizable X Tx ->
@@ -67927,7 +67936,8 @@ Admitted.
 (** LATEX VERSION: If X is a linear graph, every tree T0 in X is contained **)
 (** in a maximal tree in X. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:09:57 **)
 Theorem thm84_5_tree_in_maximal :
   forall T0 ArcsT0 X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
