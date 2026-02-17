@@ -56354,7 +56354,58 @@ claim Hex :
       SeedTimes
       HSeedTimesOpenIn).
   }
-  (** TODO Bob: show closedness/propagation to conclude SeedTimes = unit_interval via connectedness. **)
+  claim HSeedTimesEqIfClosed :
+    closed_in unit_interval unit_interval_topology SeedTimes ->
+    SeedTimes = unit_interval.
+  {
+    assume HSeedTimesClosed.
+    apply xm (SeedTimes = unit_interval).
+    - assume HSeedAll.
+      exact HSeedAll.
+    - assume HSeedNotAll.
+      claim Hsep :
+        exists U0 V0:set,
+          U0 :e unit_interval_topology /\
+          V0 :e unit_interval_topology /\
+          separation_of unit_interval U0 V0.
+      {
+        exact (clopen_gives_separation
+          unit_interval
+          unit_interval_topology
+          SeedTimes
+          unit_interval_topology_on
+          HSeedTimesNe
+          HSeedNotAll
+          HSeedTimesOpenIn
+          HSeedTimesClosed).
+      }
+      claim HnoSep :
+        ~ (exists U0 V0:set,
+            U0 :e unit_interval_topology /\
+            V0 :e unit_interval_topology /\
+            separation_of unit_interval U0 V0).
+      {
+        exact (connected_space_no_separation
+          unit_interval
+          unit_interval_topology
+          unit_interval_connected).
+      }
+      claim Hfalse : False.
+      {
+        exact (HnoSep Hsep).
+      }
+      exact (FalseE Hfalse (SeedTimes = unit_interval)).
+  }
+  claim HSeedTimesClosed : closed_in unit_interval unit_interval_topology SeedTimes.
+  {
+    (** TODO Bob: show local propagation from SeedTimes membership/non-membership to close SeedTimes. **)
+    admit.
+  }
+  claim HSeedTimesAll : SeedTimes = unit_interval.
+  {
+    exact (HSeedTimesEqIfClosed HSeedTimesClosed).
+  }
+  (** TODO Bob: use HSeedTimesAll to extract a global lift witness on unit_interval. **)
   admit.
 }
 exact (path_lift_from_exists_witness E Te B Tb p e0 f Hex).
