@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 20164 **)
+(** Balance Charlie 19964 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -60193,7 +60193,8 @@ Admitted.
 (** from S59 Theorem 59.1 (line 1541 in algtop.tex) **)
 (** LATEX VERSION: Suppose X = U union V where U, V are open in X. If U intersect V is path connected and x0 in U intersect V, then the images of i-star and j-star generate pi_1(X, x0). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 200 **)
+(** Bounty 220 **)
+(** Lock Charlie 2026-02-18T11:46:31 **)
 Theorem thm59_1_open_cover_generates_pi1 : forall X Tx U V x0:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -60339,7 +60340,8 @@ Definition abelian_group : set -> set -> set -> set -> prop :=
 (** from S60 Theorem 60.1 (line 1639 in algtop.tex) **)
 (** LATEX VERSION: pi_1(X x Y, x0 x y0) is isomorphic with pi_1(X, x0) x pi_1(Y, y0). **)
 (** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
-(** Bounty 200 **)
+(** Bounty 220 **)
+(** Lock Charlie 2026-02-18T11:46:31 **)
 Theorem thm60_1_pi1_product : forall X Tx x0 Y Ty y0:set,
   topology_on X Tx -> topology_on Y Ty -> x0 :e X -> y0 :e Y ->
   exists phi:set,
@@ -63707,7 +63709,8 @@ Definition wedge_of_circles_finite : set -> set -> set -> set -> set -> prop :=
 (** If f_i represents a generator of pi1(S_i,p), then f_1,...,f_n represent **)
 (** a system of free generators for pi1(X,p). **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 200 **)
+(** Bounty 220 **)
+(** Lock Charlie 2026-02-18T11:46:31 **)
 Theorem thm71_1_pi1_wedge_finite :
   forall X Tx n Sfam p:set,
   wedge_of_circles_finite X Tx n Sfam p ->
@@ -63771,7 +63774,8 @@ Admitted.
 (** LATEX VERSION: pi1(X,p) is a free group with system of free generators **)
 (** {f_alpha}, where f_alpha represents a generator of pi1(S_alpha, p). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 200 **)
+(** Bounty 220 **)
+(** Lock Charlie 2026-02-18T11:46:31 **)
 Theorem thm71_3_pi1_wedge_general :
   forall X Tx J Sfam p:set,
   wedge_of_circles X Tx J Sfam p ->
@@ -65770,7 +65774,8 @@ Definition conjugate_subgroups : set -> set -> set -> set -> set -> set -> prop 
 (** then [alpha] H1 [alpha]^{-1} = H0, so H0 and H1 are conjugate. **)
 (** (b) Given e0 and H conjugate to H0, exists e1 in p^{-1}(b0) with H1 = H. **)
 (** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
-(** Bounty 200 **)
+(** Bounty 220 **)
+(** Lock Charlie 2026-02-18T11:46:31 **)
 Theorem lemma79_3a_conjugacy_of_subgroups :
   forall E Te B Tb p e0 e1:set,
   covering_map E Te B Tb p ->
@@ -66050,7 +66055,8 @@ Admitted.
 (** LATEX VERSION: Let p = r o q with p: X -> Z, q: X -> Y, r: Y -> Z. **)
 (** (a) If p and r are covering maps, so is q. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 200 **)
+(** Bounty 220 **)
+(** Lock Charlie 2026-02-18T11:46:31 **)
 Theorem lemma80_2a_covering_composition :
   forall X Tx Y Ty Z Tz q r:set,
   path_connected_space X Tx -> locally_path_connected X Tx ->
@@ -66462,7 +66468,8 @@ Definition fixed_point_free_action : set -> set -> set -> prop :=
 (** have C cap g(C) nonempty, then the action is properly discontinuous and X/G **)
 (** is locally compact Hausdorff. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 200 **)
+(** Bounty 220 **)
+(** Lock Charlie 2026-02-18T11:46:31 **)
 Theorem ex81_6_properly_discontinuous_criterion :
   forall X Tx G idG:set,
   locally_compact X Tx -> Hausdorff_space X Tx ->
@@ -66782,7 +66789,8 @@ Admitted.
 (** and semilocally simply connected. If X is regular with a countable basis, **)
 (** then pi_1(X, x_0) is countable. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 200 **)
+(** Bounty 220 **)
+(** Lock Charlie 2026-02-18T11:46:31 **)
 Theorem supp_ex_2_pi1_countable_regular_second_countable :
   forall X Tx x0:set,
   path_connected_space X Tx ->
@@ -66831,7 +66839,8 @@ Definition finitely_generated_group : set -> set -> set -> set -> prop :=
 (** and semilocally simply connected. If X is compact Hausdorff, then **)
 (** pi_1(X, x_0) is finitely generated, and hence countable. **)
 (** EFFORT: 12 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 200 **)
+(** Bounty 220 **)
+(** Lock Charlie 2026-02-18T11:46:31 **)
 Theorem supp_ex_4_pi1_finitely_generated_compact_Hausdorff :
   forall X Tx x0:set,
   path_connected_space X Tx ->
@@ -67102,7 +67111,8 @@ Admitted.
 (** then T union A is a tree. Conversely, if T is a finite tree with more than one **)
 (** edge, then T = T0 union A where T0 is a tree and A intersects T0 in one vertex. **)
 (** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
-(** Bounty 200 **)
+(** Bounty 220 **)
+(** Lock Charlie 2026-02-18T11:46:31 **)
 Theorem lemma84_2_tree_extension :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
