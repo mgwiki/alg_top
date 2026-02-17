@@ -68050,6 +68050,121 @@ Qed.
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 30 **)
 (** Bounty 37 **)
 (** Lock Bob 1771439500 **)
+Theorem lemma59_3_overlap_characterization : forall n:set,
+  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
+   {x :e Sn n | Rlt (apply_fun x 0) 1})
+  =
+  {x :e Sn n |
+    Rlt (minus_SNo 1) (apply_fun x 0) /\ Rlt (apply_fun x 0) 1}.
+let n.
+apply set_ext.
+- let x.
+  assume HxUV : x :e
+    ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
+     {x :e Sn n | Rlt (apply_fun x 0) 1}).
+  claim HxU : x :e {x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)}.
+  {
+    exact (binintersectE1
+      {x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)}
+      {x :e Sn n | Rlt (apply_fun x 0) 1}
+      x
+      HxUV).
+  }
+  claim HxV : x :e {x :e Sn n | Rlt (apply_fun x 0) 1}.
+  {
+    exact (binintersectE2
+      {x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)}
+      {x :e Sn n | Rlt (apply_fun x 0) 1}
+      x
+      HxUV).
+  }
+  claim HxSn : x :e Sn n.
+  {
+    exact (SepE1
+      (Sn n)
+      (fun x:set => Rlt (minus_SNo 1) (apply_fun x 0))
+      x
+      HxU).
+  }
+  claim HxGtM1 : Rlt (minus_SNo 1) (apply_fun x 0).
+  {
+    exact (SepE2
+      (Sn n)
+      (fun x:set => Rlt (minus_SNo 1) (apply_fun x 0))
+      x
+      HxU).
+  }
+  claim HxLt1 : Rlt (apply_fun x 0) 1.
+  {
+    exact (SepE2
+      (Sn n)
+      (fun x:set => Rlt (apply_fun x 0) 1)
+      x
+      HxV).
+  }
+  apply (SepI
+    (Sn n)
+    (fun x:set => Rlt (minus_SNo 1) (apply_fun x 0) /\ Rlt (apply_fun x 0) 1)
+    x
+    HxSn).
+  exact (andI
+    (Rlt (minus_SNo 1) (apply_fun x 0))
+    (Rlt (apply_fun x 0) 1)
+    HxGtM1
+    HxLt1).
+- let x.
+  assume HxCut : x :e
+    {x :e Sn n |
+      Rlt (minus_SNo 1) (apply_fun x 0) /\ Rlt (apply_fun x 0) 1}.
+  claim HxSn : x :e Sn n.
+  {
+    exact (SepE1
+      (Sn n)
+      (fun x:set => Rlt (minus_SNo 1) (apply_fun x 0) /\ Rlt (apply_fun x 0) 1)
+      x
+      HxCut).
+  }
+  claim HxBoth :
+    Rlt (minus_SNo 1) (apply_fun x 0) /\ Rlt (apply_fun x 0) 1.
+  {
+    exact (SepE2
+      (Sn n)
+      (fun x:set => Rlt (minus_SNo 1) (apply_fun x 0) /\ Rlt (apply_fun x 0) 1)
+      x
+      HxCut).
+  }
+  claim HxGtM1 : Rlt (minus_SNo 1) (apply_fun x 0).
+  {
+    exact (andEL
+      (Rlt (minus_SNo 1) (apply_fun x 0))
+      (Rlt (apply_fun x 0) 1)
+      HxBoth).
+  }
+  claim HxLt1 : Rlt (apply_fun x 0) 1.
+  {
+    exact (andER
+      (Rlt (minus_SNo 1) (apply_fun x 0))
+      (Rlt (apply_fun x 0) 1)
+      HxBoth).
+  }
+  apply (binintersectI
+    {x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)}
+    {x :e Sn n | Rlt (apply_fun x 0) 1}
+    x).
+  + exact (SepI
+      (Sn n)
+      (fun x:set => Rlt (minus_SNo 1) (apply_fun x 0))
+      x
+      HxSn
+      HxGtM1).
+  + exact (SepI
+      (Sn n)
+      (fun x:set => Rlt (apply_fun x 0) 1)
+      x
+      HxSn
+      HxLt1).
+Qed.
+
 Theorem lemma59_3_sphere_cover_data : forall n:set, n :e omega -> 2 c= n ->
   exists U V:set,
     U :e Sn_topology n /\ V :e Sn_topology n /\
