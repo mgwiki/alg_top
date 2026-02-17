@@ -67400,6 +67400,81 @@ Admitted.
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
 (** Bounty 242 **)
 (** Lock Bob 1771439500 **)
+Theorem lemma59_1_open_cover_generates_pi1_core : forall X Tx U V x0 cls:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx ->
+  X = U :\/: V ->
+  x0 :e U :/\: V ->
+  path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
+  cls :e fundamental_group X Tx x0 ->
+  exists n:set, n :e omega /\
+  exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls)) /\
+    cls = nat_primrec (fundamental_group_id X Tx x0)
+      (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n.
+let X Tx U V x0 cls.
+assume Htop : topology_on X Tx.
+assume HU : U :e Tx.
+assume HV : V :e Tx.
+assume Hcover : X = U :\/: V.
+assume Hx0UV : x0 :e U :/\: V.
+assume HpcUV : path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)).
+assume Hcls : cls :e fundamental_group X Tx x0.
+claim Hx0U : x0 :e U.
+{
+  exact (binintersectE1 U V x0 Hx0UV).
+}
+claim Hx0V : x0 :e V.
+{
+  exact (binintersectE2 U V x0 Hx0UV).
+}
+claim HUsub : U c= X.
+{
+  exact (topology_elem_subset X Tx U Htop HU).
+}
+claim HVsub : V c= X.
+{
+  exact (topology_elem_subset X Tx V Htop HV).
+}
+claim Hx0X : x0 :e X.
+{
+  exact (HUsub x0 Hx0U).
+}
+claim HtopUV : topology_on (U :/\: V) (subspace_topology X Tx (U :/\: V)).
+{
+  exact (path_connected_space_topology
+    (U :/\: V)
+    (subspace_topology X Tx (U :/\: V))
+    HpcUV).
+}
+claim Hcore :
+  exists n:set, n :e omega /\
+  exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls)) /\
+    cls = nat_primrec (fundamental_group_id X Tx x0)
+      (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n.
+{
+  admit. (** van Kampen style generation argument pending **)
+}
+exact Hcore.
+Admitted.
+
 Theorem thm59_1_open_cover_generates_pi1 : forall X Tx U V x0:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -67429,51 +67504,9 @@ assume Hx0UV : x0 :e U :/\: V.
 assume HpcUV : path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)).
 let cls.
 assume Hcls : cls :e fundamental_group X Tx x0.
-claim Hx0U : x0 :e U.
-{
-  exact (binintersectE1 U V x0 Hx0UV).
-}
-claim Hx0V : x0 :e V.
-{
-  exact (binintersectE2 U V x0 Hx0UV).
-}
-claim HUsub : U c= X.
-{
-  exact (topology_elem_subset X Tx U Htop HU).
-}
-claim HVsub : V c= X.
-{
-  exact (topology_elem_subset X Tx V Htop HV).
-}
-claim Hx0X : x0 :e X.
-{
-  exact (HUsub x0 Hx0U).
-}
-claim HtopUV : topology_on (U :/\: V) (subspace_topology X Tx (U :/\: V)).
-{
-  exact (path_connected_space_topology
-    (U :/\: V)
-    (subspace_topology X Tx (U :/\: V))
-    HpcUV).
-}
-claim Hgen :
-  exists n:set, n :e omega /\
-  exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
-    (forall i:set, i :e n ->
-      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
-        apply_fun gs i =
-          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
-            (graph U (fun x:set => x))) ucls) \/
-      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
-        apply_fun gs i =
-          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
-            (graph V (fun x:set => x))) vcls)) /\
-    cls = nat_primrec (fundamental_group_id X Tx x0)
-      (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n.
-{
-  admit. (** van Kampen style generation argument pending **)
-}
-exact Hgen.
+exact (lemma59_1_open_cover_generates_pi1_core
+  X Tx U V x0 cls
+  Htop HU HV Hcover Hx0UV HpcUV Hcls).
 Admitted.
 
 (** Helper: group homomorphism maps identity to identity **)
@@ -69252,6 +69285,45 @@ Theorem lemma59_3_exists_sn_coord0_zero_point : forall n:set,
 admit.
 Admitted.
 
+(** Core S59.3 subgoal: southern-cap type open set is simply connected for n>=2. **)
+Theorem lemma59_3_U_simply_connected_ge2 : forall n U:set,
+  n :e omega -> 2 c= n ->
+  U = {x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} ->
+  simply_connected U (subspace_topology (Sn n) (Sn_topology n) U).
+let n U.
+assume Hn : n :e omega.
+assume Hge2 : 2 c= n.
+assume HU.
+admit. (** stereographic/homeomorphic-to-disk argument for U **)
+Admitted.
+
+(** Core S59.3 subgoal: northern-cap type open set is simply connected for n>=2. **)
+Theorem lemma59_3_V_simply_connected_ge2 : forall n V:set,
+  n :e omega -> 2 c= n ->
+  V = {x :e Sn n | Rlt (apply_fun x 0) 1} ->
+  simply_connected V (subspace_topology (Sn n) (Sn_topology n) V).
+let n V.
+assume Hn : n :e omega.
+assume Hge2 : 2 c= n.
+assume HV.
+admit. (** stereographic/homeomorphic-to-disk argument for V **)
+Admitted.
+
+(** Core S59.3 subgoal: overlap U∩V is path connected for n>=2. **)
+Theorem lemma59_3_overlap_path_connected_ge2 : forall n U V:set,
+  n :e omega -> 2 c= n ->
+  U = {x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} ->
+  V = {x :e Sn n | Rlt (apply_fun x 0) 1} ->
+  path_connected_space (U :/\: V)
+    (subspace_topology (Sn n) (Sn_topology n) (U :/\: V)).
+let n U V.
+assume Hn : n :e omega.
+assume Hge2 : 2 c= n.
+assume HU.
+assume HV.
+admit. (** overlap is path connected for n>=2 **)
+Admitted.
+
 Theorem lemma59_3_sphere_cover_data : forall n:set, n :e omega -> 2 c= n ->
   exists U V:set,
     U :e Sn_topology n /\ V :e Sn_topology n /\
@@ -69769,11 +69841,19 @@ claim Hcover : Sn n = U :\/: V.
 }
 claim HscU : simply_connected U (subspace_topology (Sn n) (Sn_topology n) U).
 {
-  admit. (** stereographic/homeomorphic-to-disk argument for U **)
+  claim HUdef : U = {x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)}.
+  {
+    reflexivity.
+  }
+  exact (lemma59_3_U_simply_connected_ge2 n U Hn Hge2 HUdef).
 }
 claim HscV : simply_connected V (subspace_topology (Sn n) (Sn_topology n) V).
 {
-  admit. (** stereographic/homeomorphic-to-disk argument for V **)
+  claim HVdef : V = {x :e Sn n | Rlt (apply_fun x 0) 1}.
+  {
+    reflexivity.
+  }
+  exact (lemma59_3_V_simply_connected_ge2 n V Hn Hge2 HVdef).
 }
 claim HneUV : (U :/\: V) <> Empty.
 {
@@ -69793,7 +69873,15 @@ claim HneUV : (U :/\: V) <> Empty.
 claim HpcUV : path_connected_space (U :/\: V)
   (subspace_topology (Sn n) (Sn_topology n) (U :/\: V)).
 {
-  admit. (** overlap is path connected for n>=2 **)
+  claim HUdef : U = {x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)}.
+  {
+    reflexivity.
+  }
+  claim HVdef : V = {x :e Sn n | Rlt (apply_fun x 0) 1}.
+  {
+    reflexivity.
+  }
+  exact (lemma59_3_overlap_path_connected_ge2 n U V Hn Hge2 HUdef HVdef).
 }
 witness U.
 witness V.
