@@ -27715,8 +27715,998 @@ claim HrhsExpand2 :
 rewrite HlhsExpand.
 rewrite HrhsExpand.
 rewrite HrhsExpand2.
-(** TODO Bob: reconcile the two class representatives via Lemma 52.1 cancellation machinery. **)
-admit.
+set eps_cls := Eps_i (fun f:set => f :e cls).
+set rep_mid :=
+  path_concat
+    (reverse_path alpha)
+    (path_concat
+      eps_cls
+      alpha).
+set eps_mid := Eps_i (fun f:set => f :e mid).
+claim HmidExpand :
+  mid
+  =
+  path_homotopy_class_loop
+    X
+    Tx
+    x1
+    rep_mid.
+{
+  rewrite HmidDef.
+  rewrite (basepoint_change_map_apply
+    X
+    Tx
+    x0
+    x1
+    alpha
+    cls
+    Hcls).
+  reflexivity.
+}
+claim HmidRepEx :
+  exists fmid:set, fmid :e loop_space X Tx x1 /\
+    mid = path_homotopy_class_loop X Tx x1 fmid.
+{
+  exact (fundamental_group_member_has_representative
+    X
+    Tx
+    x1
+    mid
+    HmidInFG).
+}
+apply HmidRepEx.
+let fmid.
+assume HfmidPack.
+claim HfmidLoop : fmid :e loop_space X Tx x1.
+{
+  exact (andEL
+    (fmid :e loop_space X Tx x1)
+    (mid = path_homotopy_class_loop X Tx x1 fmid)
+    HfmidPack).
+}
+claim HfmidEq :
+  mid = path_homotopy_class_loop X Tx x1 fmid.
+{
+  exact (andER
+    (fmid :e loop_space X Tx x1)
+    (mid = path_homotopy_class_loop X Tx x1 fmid)
+    HfmidPack).
+}
+claim HfmidInMid : fmid :e mid.
+{
+  exact (mem_eqL
+    fmid
+    mid
+    (path_homotopy_class_loop X Tx x1 fmid)
+    HfmidEq
+    (loop_in_own_path_homotopy_class_s52
+      X
+      Tx
+      x1
+      fmid
+      HfmidLoop)).
+}
+claim HepsMidInMid : eps_mid :e mid.
+{
+  exact (Eps_i_ax
+    (fun f:set => f :e mid)
+    fmid
+    HfmidInMid).
+}
+claim HepsMidInRepClass :
+  eps_mid :e path_homotopy_class_loop X Tx x1 rep_mid.
+{
+  exact (mem_eqR
+    eps_mid
+    mid
+    (path_homotopy_class_loop X Tx x1 rep_mid)
+    HmidExpand
+    HepsMidInMid).
+}
+claim HrepMidToEpsMid :
+  path_homotopic
+    X
+    Tx
+    x1
+    x1
+    rep_mid
+    eps_mid.
+{
+  exact (path_homotopy_class_loop_has_homotopy
+    X
+    Tx
+    x1
+    rep_mid
+    eps_mid
+    HepsMidInRepClass).
+}
+claim HepsMidToRepMid :
+  path_homotopic
+    X
+    Tx
+    x1
+    x1
+    eps_mid
+    rep_mid.
+{
+  exact (Lemma_51_1_path_homotopy_sym
+    X
+    Tx
+    x1
+    x1
+    rep_mid
+    eps_mid
+    HrepMidToEpsMid).
+}
+claim HbetaRefl :
+  path_homotopic
+    X
+    Tx
+    x1
+    x2
+    beta
+    beta.
+{
+  exact (Lemma_51_1_path_homotopy_refl
+    X
+    Tx
+    x1
+    x2
+    beta
+    HbetaCont
+    Hbeta0
+    Hbeta1).
+}
+claim HinnerReplace :
+  path_homotopic
+    X
+    Tx
+    x1
+    x2
+    (path_concat
+      eps_mid
+      beta)
+    (path_concat
+      rep_mid
+      beta).
+{
+  exact (path_concat_well_defined_on_classes
+    X
+    Tx
+    x1
+    x1
+    x2
+    eps_mid
+    rep_mid
+    beta
+    beta
+    HepsMidToRepMid
+    HbetaRefl).
+}
+claim HrevBetaCont :
+  continuous_map
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    (reverse_path beta).
+{
+  exact (reverse_path_continuous
+    X
+    Tx
+    beta
+    HbetaCont).
+}
+claim HrevBeta0 : apply_fun (reverse_path beta) 0 = x2.
+{
+  rewrite (reverse_path_at_zero beta).
+  exact Hbeta1.
+}
+claim HrevBeta1 : apply_fun (reverse_path beta) 1 = x1.
+{
+  rewrite (reverse_path_at_one beta).
+  exact Hbeta0.
+}
+claim HrevBetaRefl :
+  path_homotopic
+    X
+    Tx
+    x2
+    x1
+    (reverse_path beta)
+    (reverse_path beta).
+{
+  exact (Lemma_51_1_path_homotopy_refl
+    X
+    Tx
+    x2
+    x1
+    (reverse_path beta)
+    HrevBetaCont
+    HrevBeta0
+    HrevBeta1).
+}
+claim HouterReplace :
+  path_homotopic
+    X
+    Tx
+    x2
+    x2
+    (path_concat
+      (reverse_path beta)
+      (path_concat
+        eps_mid
+        beta))
+    (path_concat
+      (reverse_path beta)
+      (path_concat
+        rep_mid
+        beta)).
+{
+  exact (path_concat_well_defined_on_classes
+    X
+    Tx
+    x2
+    x1
+    x2
+    (reverse_path beta)
+    (reverse_path beta)
+    (path_concat
+      eps_mid
+      beta)
+    (path_concat
+      rep_mid
+      beta)
+    HrevBetaRefl
+    HinnerReplace).
+}
+claim HrhsReplaceClass :
+  path_homotopy_class_loop
+    X
+    Tx
+    x2
+    (path_concat
+      (reverse_path beta)
+      (path_concat
+        eps_mid
+        beta))
+  =
+  path_homotopy_class_loop
+    X
+    Tx
+    x2
+    (path_concat
+      (reverse_path beta)
+      (path_concat
+        rep_mid
+        beta)).
+{
+  exact (path_homotopy_class_loop_eq_of_path_homotopic
+    X
+    Tx
+    x2
+    (path_concat
+      (reverse_path beta)
+      (path_concat
+        eps_mid
+        beta))
+    (path_concat
+      (reverse_path beta)
+      (path_concat
+        rep_mid
+        beta))
+    HouterReplace).
+}
+claim HrhsAsEpsMid :
+  path_homotopy_class_loop
+    X
+    Tx
+    x2
+    (path_concat
+      (reverse_path beta)
+      (path_concat
+        (Eps_i (fun f:set => f :e mid))
+        beta))
+  =
+  path_homotopy_class_loop
+    X
+    Tx
+    x2
+    (path_concat
+      (reverse_path beta)
+      (path_concat
+        eps_mid
+        beta)).
+{
+  reflexivity.
+}
+rewrite HrhsAsEpsMid.
+rewrite HrhsReplaceClass.
+claim HepsClsLoop :
+  eps_cls :e loop_space X Tx x0.
+{
+  exact (eps_of_fundamental_group_member_in_loop_space_s52
+    X
+    Tx
+    x0
+    cls
+    Hcls).
+}
+claim HepsClsLoopAt :
+  loop_at X Tx x0 eps_cls.
+{
+  exact (loop_space_has_loop_at
+    X
+    Tx
+    x0
+    eps_cls
+    HepsClsLoop).
+}
+claim HepsClsCont :
+  continuous_map unit_interval unit_interval_topology X Tx eps_cls.
+{
+  exact (loop_at_continuous
+    X
+    Tx
+    x0
+    eps_cls
+    HepsClsLoopAt).
+}
+claim HepsCls0 : apply_fun eps_cls 0 = x0.
+{
+  exact (loop_at_at_zero
+    X
+    Tx
+    x0
+    eps_cls
+    HepsClsLoopAt).
+}
+claim HepsCls1 : apply_fun eps_cls 1 = x0.
+{
+  exact (loop_at_at_one
+    X
+    Tx
+    x0
+    eps_cls
+    HepsClsLoopAt).
+}
+claim HalphaBetaCont :
+  continuous_map
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    (path_concat alpha beta).
+{
+  exact (path_concat_continuous
+    X
+    Tx
+    x0
+    x1
+    x2
+    alpha
+    beta
+    HalphaCont
+    HbetaCont
+    Halpha0
+    Halpha1
+    Hbeta0
+    Hbeta1).
+}
+claim HalphaBeta0 : apply_fun (path_concat alpha beta) 0 = x0.
+{
+  rewrite (path_concat_at_zero alpha beta).
+  exact Halpha0.
+}
+claim HalphaBeta1 : apply_fun (path_concat alpha beta) 1 = x2.
+{
+  rewrite (path_concat_at_one alpha beta).
+  exact Hbeta1.
+}
+claim HrevAlphaCont :
+  continuous_map
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    (reverse_path alpha).
+{
+  exact (reverse_path_continuous
+    X
+    Tx
+    alpha
+    HalphaCont).
+}
+claim HrevAlpha0 : apply_fun (reverse_path alpha) 0 = x1.
+{
+  rewrite (reverse_path_at_zero alpha).
+  exact Halpha1.
+}
+claim HrevAlpha1 : apply_fun (reverse_path alpha) 1 = x0.
+{
+  rewrite (reverse_path_at_one alpha).
+  exact Halpha0.
+}
+set second :=
+  path_concat
+    eps_cls
+    (path_concat alpha beta).
+set second' :=
+  path_concat
+    (path_concat eps_cls alpha)
+    beta.
+claim HsecondDef :
+  second
+  =
+  path_concat
+    eps_cls
+    (path_concat alpha beta).
+{
+  reflexivity.
+}
+claim HsecondPrimeDef :
+  second'
+  =
+  path_concat
+    (path_concat eps_cls alpha)
+    beta.
+{
+  reflexivity.
+}
+claim HrepMidDef :
+  rep_mid
+  =
+  path_concat
+    (reverse_path alpha)
+    (path_concat eps_cls alpha).
+{
+  reflexivity.
+}
+claim HepsAlphaCont :
+  continuous_map
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    (path_concat eps_cls alpha).
+{
+  exact (path_concat_continuous
+    X
+    Tx
+    x0
+    x0
+    x1
+    eps_cls
+    alpha
+    HepsClsCont
+    HalphaCont
+    HepsCls0
+    HepsCls1
+    Halpha0
+    Halpha1).
+}
+claim HepsAlpha0 : apply_fun (path_concat eps_cls alpha) 0 = x0.
+{
+  rewrite (path_concat_at_zero eps_cls alpha).
+  exact HepsCls0.
+}
+claim HepsAlpha1 : apply_fun (path_concat eps_cls alpha) 1 = x1.
+{
+  rewrite (path_concat_at_one eps_cls alpha).
+  exact Halpha1.
+}
+claim HsecondCont :
+  continuous_map unit_interval unit_interval_topology X Tx second.
+{
+  exact (path_concat_continuous
+    X
+    Tx
+    x0
+    x0
+    x2
+    eps_cls
+    (path_concat alpha beta)
+    HepsClsCont
+    HalphaBetaCont
+    HepsCls0
+    HepsCls1
+    HalphaBeta0
+    HalphaBeta1).
+}
+claim Hsecond0 : apply_fun second 0 = x0.
+{
+  rewrite HsecondDef.
+  rewrite (path_concat_at_zero eps_cls (path_concat alpha beta)).
+  exact HepsCls0.
+}
+claim Hsecond1 : apply_fun second 1 = x2.
+{
+  rewrite HsecondDef.
+  rewrite (path_concat_at_one eps_cls (path_concat alpha beta)).
+  exact HalphaBeta1.
+}
+claim HsecondRefl :
+  path_homotopic X Tx x0 x2 second second.
+{
+  exact (Lemma_51_1_path_homotopy_refl
+    X
+    Tx
+    x0
+    x2
+    second
+    HsecondCont
+    Hsecond0
+    Hsecond1).
+}
+claim HepsAssoc :
+  path_homotopic
+    X
+    Tx
+    x0
+    x2
+    second
+    second'.
+{
+  rewrite HsecondDef.
+  rewrite HsecondPrimeDef.
+  exact (Theorem_51_2_associativity
+    X
+    Tx
+    x0
+    x0
+    x1
+    x2
+    eps_cls
+    alpha
+    beta
+    HepsClsCont
+    HalphaCont
+    HbetaCont
+    HepsCls0
+    HepsCls1
+    Halpha0
+    Halpha1
+    Hbeta0
+    Hbeta1).
+}
+claim Hsecond'Cont :
+  continuous_map unit_interval unit_interval_topology X Tx second'.
+{
+  rewrite HsecondPrimeDef.
+  exact (path_concat_continuous
+    X
+    Tx
+    x0
+    x1
+    x2
+    (path_concat eps_cls alpha)
+    beta
+    HepsAlphaCont
+    HbetaCont
+    HepsAlpha0
+    HepsAlpha1
+    Hbeta0
+    Hbeta1).
+}
+claim Hsecond'0 : apply_fun second' 0 = x0.
+{
+  rewrite HsecondPrimeDef.
+  rewrite (path_concat_at_zero (path_concat eps_cls alpha) beta).
+  rewrite (path_concat_at_zero eps_cls alpha).
+  exact HepsCls0.
+}
+claim Hsecond'1 : apply_fun second' 1 = x2.
+{
+  rewrite HsecondPrimeDef.
+  rewrite (path_concat_at_one (path_concat eps_cls alpha) beta).
+  exact Hbeta1.
+}
+claim HrevConcat :
+  path_homotopic
+    X
+    Tx
+    x2
+    x0
+    (reverse_path (path_concat alpha beta))
+    (path_concat (reverse_path beta) (reverse_path alpha)).
+{
+  (** TODO Bob: prove reverse of a concatenation is homotopic to concatenation of reverses in opposite order. **)
+  admit.
+}
+claim Hstep1 :
+  path_homotopic
+    X
+    Tx
+    x2
+    x2
+    (path_concat
+      (reverse_path (path_concat alpha beta))
+      second)
+    (path_concat
+      (path_concat (reverse_path beta) (reverse_path alpha))
+      second).
+{
+  exact (path_concat_well_defined_on_classes
+    X
+    Tx
+    x2
+    x0
+    x2
+    (reverse_path (path_concat alpha beta))
+    (path_concat (reverse_path beta) (reverse_path alpha))
+    second
+    second
+    HrevConcat
+    HsecondRefl).
+}
+claim HassocOuterRaw :
+  path_homotopic
+    X
+    Tx
+    x2
+    x2
+    (path_concat
+      (reverse_path beta)
+      (path_concat
+        (reverse_path alpha)
+        second))
+    (path_concat
+      (path_concat (reverse_path beta) (reverse_path alpha))
+      second).
+{
+  exact (Theorem_51_2_associativity
+    X
+    Tx
+    x2
+    x1
+    x0
+    x2
+    (reverse_path beta)
+    (reverse_path alpha)
+    second
+    HrevBetaCont
+    HrevAlphaCont
+    HsecondCont
+    HrevBeta0
+    HrevBeta1
+    HrevAlpha0
+    HrevAlpha1
+    Hsecond0
+    Hsecond1).
+}
+claim HassocOuterSym :
+  path_homotopic
+    X
+    Tx
+    x2
+    x2
+    (path_concat
+      (path_concat (reverse_path beta) (reverse_path alpha))
+      second)
+    (path_concat
+      (reverse_path beta)
+      (path_concat
+        (reverse_path alpha)
+        second)).
+{
+  exact (Lemma_51_1_path_homotopy_sym
+    X
+    Tx
+    x2
+    x2
+    (path_concat
+      (reverse_path beta)
+      (path_concat
+        (reverse_path alpha)
+        second))
+    (path_concat
+      (path_concat (reverse_path beta) (reverse_path alpha))
+      second)
+    HassocOuterRaw).
+}
+claim HrevAlphaRefl :
+  path_homotopic
+    X
+    Tx
+    x1
+    x0
+    (reverse_path alpha)
+    (reverse_path alpha).
+{
+  exact (Lemma_51_1_path_homotopy_refl
+    X
+    Tx
+    x1
+    x0
+    (reverse_path alpha)
+    HrevAlphaCont
+    HrevAlpha0
+    HrevAlpha1).
+}
+claim HreplaceSecondUnderRevAlpha :
+  path_homotopic
+    X
+    Tx
+    x1
+    x2
+    (path_concat
+      (reverse_path alpha)
+      second)
+    (path_concat
+      (reverse_path alpha)
+      second').
+{
+  exact (path_concat_well_defined_on_classes
+    X
+    Tx
+    x1
+    x0
+    x2
+    (reverse_path alpha)
+    (reverse_path alpha)
+    second
+    second'
+    HrevAlphaRefl
+    HepsAssoc).
+}
+claim HreplaceUnderRevBeta :
+  path_homotopic
+    X
+    Tx
+    x2
+    x2
+    (path_concat
+      (reverse_path beta)
+      (path_concat
+        (reverse_path alpha)
+        second))
+    (path_concat
+      (reverse_path beta)
+      (path_concat
+        (reverse_path alpha)
+        second')).
+{
+  exact (path_concat_well_defined_on_classes
+    X
+    Tx
+    x2
+    x1
+    x2
+    (reverse_path beta)
+    (reverse_path beta)
+    (path_concat
+      (reverse_path alpha)
+      second)
+    (path_concat
+      (reverse_path alpha)
+      second')
+    HrevBetaRefl
+    HreplaceSecondUnderRevAlpha).
+}
+claim HinnerAssocToRepRaw :
+  path_homotopic
+    X
+    Tx
+    x1
+    x2
+    (path_concat
+      (reverse_path alpha)
+      second')
+    (path_concat
+      rep_mid
+      beta).
+{
+  rewrite HsecondPrimeDef.
+  rewrite HrepMidDef.
+  exact (Theorem_51_2_associativity
+    X
+    Tx
+    x1
+    x0
+    x1
+    x2
+    (reverse_path alpha)
+    (path_concat eps_cls alpha)
+    beta
+    HrevAlphaCont
+    HepsAlphaCont
+    HbetaCont
+    HrevAlpha0
+    HrevAlpha1
+    HepsAlpha0
+    HepsAlpha1
+    Hbeta0
+    Hbeta1).
+}
+claim HouterToTarget :
+  path_homotopic
+    X
+    Tx
+    x2
+    x2
+    (path_concat
+      (reverse_path beta)
+      (path_concat
+        (reverse_path alpha)
+        second'))
+    (path_concat
+      (reverse_path beta)
+      (path_concat
+        rep_mid
+        beta)).
+{
+  exact (path_concat_well_defined_on_classes
+    X
+    Tx
+    x2
+    x1
+    x2
+    (reverse_path beta)
+    (reverse_path beta)
+    (path_concat
+      (reverse_path alpha)
+      second')
+    (path_concat
+      rep_mid
+      beta)
+    HrevBetaRefl
+    HinnerAssocToRepRaw).
+}
+claim HfinalHom :
+  path_homotopic
+    X
+    Tx
+    x2
+    x2
+    (path_concat
+      (reverse_path (path_concat alpha beta))
+      second)
+    (path_concat
+      (reverse_path beta)
+      (path_concat
+        rep_mid
+        beta)).
+{
+  claim Htmp1 :
+    path_homotopic
+      X
+      Tx
+      x2
+      x2
+      (path_concat
+        (reverse_path (path_concat alpha beta))
+        second)
+      (path_concat
+        (path_concat (reverse_path beta) (reverse_path alpha))
+        second).
+  {
+    exact Hstep1.
+  }
+  claim Htmp2 :
+    path_homotopic
+      X
+      Tx
+      x2
+      x2
+      (path_concat
+        (reverse_path (path_concat alpha beta))
+        second)
+      (path_concat
+        (reverse_path beta)
+        (path_concat
+          (reverse_path alpha)
+          second)).
+  {
+    exact (Lemma_51_1_path_homotopy_trans
+      X
+      Tx
+      x2
+      x2
+      (path_concat
+        (reverse_path (path_concat alpha beta))
+        second)
+      (path_concat
+        (path_concat (reverse_path beta) (reverse_path alpha))
+        second)
+      (path_concat
+        (reverse_path beta)
+        (path_concat
+          (reverse_path alpha)
+          second))
+      Htmp1
+      HassocOuterSym).
+  }
+  claim Htmp3 :
+    path_homotopic
+      X
+      Tx
+      x2
+      x2
+      (path_concat
+        (reverse_path (path_concat alpha beta))
+        second)
+      (path_concat
+        (reverse_path beta)
+        (path_concat
+          (reverse_path alpha)
+          second')).
+  {
+    exact (Lemma_51_1_path_homotopy_trans
+      X
+      Tx
+      x2
+      x2
+      (path_concat
+        (reverse_path (path_concat alpha beta))
+        second)
+      (path_concat
+        (reverse_path beta)
+        (path_concat
+          (reverse_path alpha)
+          second))
+      (path_concat
+        (reverse_path beta)
+        (path_concat
+          (reverse_path alpha)
+          second'))
+      Htmp2
+      HreplaceUnderRevBeta).
+  }
+  exact (Lemma_51_1_path_homotopy_trans
+    X
+    Tx
+    x2
+    x2
+    (path_concat
+      (reverse_path (path_concat alpha beta))
+      second)
+    (path_concat
+      (reverse_path beta)
+      (path_concat
+        (reverse_path alpha)
+        second'))
+    (path_concat
+      (reverse_path beta)
+      (path_concat
+        rep_mid
+        beta))
+    Htmp3
+    HouterToTarget).
+}
+claim HfinalClass :
+  path_homotopy_class_loop
+    X
+    Tx
+    x2
+    (path_concat
+      (reverse_path (path_concat alpha beta))
+      second)
+  =
+  path_homotopy_class_loop
+    X
+    Tx
+    x2
+    (path_concat
+      (reverse_path beta)
+      (path_concat
+        rep_mid
+        beta)).
+{
+  exact (path_homotopy_class_loop_eq_of_path_homotopic
+    X
+    Tx
+    x2
+    (path_concat
+      (reverse_path (path_concat alpha beta))
+      second)
+    (path_concat
+      (reverse_path beta)
+      (path_concat
+        rep_mid
+        beta))
+    HfinalHom).
+}
+exact HfinalClass.
 Admitted.
 
 (** from S52 Exercise 3 (line 498 in algtop.tex) **)
@@ -27739,18 +28729,180 @@ Theorem ex52_3_abelian_iff_unique_basepoint_change : forall X Tx x0:set,
         = apply_fun (basepoint_change_map X Tx x0 x1 beta) cls)).
 let X Tx x0.
 assume Hpc Hx0.
+claim HtopX : topology_on X Tx.
+{
+  exact (path_connected_space_topology X Tx Hpc).
+}
 apply iffI.
 - assume Habel.
   let x1 alpha beta.
   assume Hx1 HalphaCont HbetaCont Halpha0 Halpha1 Hbeta0 Hbeta1.
   let cls.
   assume Hcls.
-  (** TODO Bob: derive equality of alpha-hat and beta-hat from commutativity of pi1(X,x0). **)
-  admit.
+  set delta := path_concat alpha (reverse_path beta).
+  set delta_cls := path_homotopy_class_loop X Tx x0 delta.
+  claim HrevBetaCont :
+    continuous_map unit_interval unit_interval_topology X Tx (reverse_path beta).
+  {
+    exact (reverse_path_continuous
+      X
+      Tx
+      beta
+      HbetaCont).
+  }
+  claim HrevBeta0 : apply_fun (reverse_path beta) 0 = x1.
+  {
+    rewrite (reverse_path_at_zero beta).
+    exact Hbeta1.
+  }
+  claim HrevBeta1 : apply_fun (reverse_path beta) 1 = x0.
+  {
+    rewrite (reverse_path_at_one beta).
+    exact Hbeta0.
+  }
+  claim HdeltaCls :
+    delta_cls :e fundamental_group X Tx x0.
+  {
+    (** TODO Bob: show delta is a loop at x0, then delta_cls is in pi1(X,x0). **)
+    admit.
+  }
+  claim HcommDelta :
+    apply_fun (fundamental_group_mult X Tx x0) (cls, delta_cls)
+    = apply_fun (fundamental_group_mult X Tx x0) (delta_cls, cls).
+  {
+    exact (Habel
+      cls
+      delta_cls
+      Hcls
+      HdeltaCls).
+  }
+  claim HalphaAsConj :
+    apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls
+    =
+    apply_fun (basepoint_change_map X Tx x0 x1 beta)
+      (apply_fun (fundamental_group_mult X Tx x0) (cls, delta_cls)).
+  {
+    (** TODO Bob: identify alpha-hat as beta-hat composed with right multiplication by the loop class alpha then reverse beta. **)
+    admit.
+  }
+  claim HbetaAsConj :
+    apply_fun (basepoint_change_map X Tx x0 x1 beta) cls
+    =
+    apply_fun (basepoint_change_map X Tx x0 x1 beta)
+      (apply_fun (fundamental_group_mult X Tx x0) (delta_cls, cls)).
+  {
+    (** TODO Bob: identify beta-hat followed by left multiplication by the same loop class alpha then reverse beta. **)
+    admit.
+  }
+  claim HcommTransport :
+    apply_fun (basepoint_change_map X Tx x0 x1 beta)
+      (apply_fun (fundamental_group_mult X Tx x0) (cls, delta_cls))
+    =
+    apply_fun (basepoint_change_map X Tx x0 x1 beta)
+      (apply_fun (fundamental_group_mult X Tx x0) (delta_cls, cls)).
+  {
+    rewrite HcommDelta.
+    reflexivity.
+  }
+  rewrite HalphaAsConj.
+  rewrite HbetaAsConj.
+  exact HcommTransport.
 - assume Huniq.
   let a b.
   assume Ha Hb.
-  (** TODO Bob: deduce commutativity of pi1(X,x0) by applying uniqueness of basepoint-change to suitable paths/classes. **)
+  set alpha_loop := Eps_i (fun f:set => f :e a).
+  claim HalphaLoop : alpha_loop :e loop_space X Tx x0.
+  {
+    exact (eps_of_fundamental_group_member_in_loop_space_s52
+      X
+      Tx
+      x0
+      a
+      Ha).
+  }
+  claim HalphaLoopAt : loop_at X Tx x0 alpha_loop.
+  {
+    exact (loop_space_has_loop_at
+      X
+      Tx
+      x0
+      alpha_loop
+      HalphaLoop).
+  }
+  claim HalphaCont :
+    continuous_map unit_interval unit_interval_topology X Tx alpha_loop.
+  {
+    exact (loop_at_continuous
+      X
+      Tx
+      x0
+      alpha_loop
+      HalphaLoopAt).
+  }
+  claim Halpha0 : apply_fun alpha_loop 0 = x0.
+  {
+    exact (loop_at_at_zero
+      X
+      Tx
+      x0
+      alpha_loop
+      HalphaLoopAt).
+  }
+  claim Halpha1 : apply_fun alpha_loop 1 = x0.
+  {
+    exact (loop_at_at_one
+      X
+      Tx
+      x0
+      alpha_loop
+      HalphaLoopAt).
+  }
+  claim HconstCont :
+    continuous_map unit_interval unit_interval_topology X Tx (constant_path x0).
+  {
+    exact (constant_path_continuous
+      X
+      Tx
+      x0
+      HtopX
+      Hx0).
+  }
+  claim Hconst0 : apply_fun (constant_path x0) 0 = x0.
+  {
+    exact (constant_path_at_zero x0).
+  }
+  claim Hconst1 : apply_fun (constant_path x0) 1 = x0.
+  {
+    exact (constant_path_at_one x0).
+  }
+  claim HuniqAtx0 :
+    forall cls:set, cls :e fundamental_group X Tx x0 ->
+      apply_fun (basepoint_change_map X Tx x0 x0 alpha_loop) cls
+      = apply_fun (basepoint_change_map X Tx x0 x0 (constant_path x0)) cls.
+  {
+    let cls.
+    assume Hcls.
+    exact (Huniq
+      x0
+      alpha_loop
+      (constant_path x0)
+      Hx0
+      HalphaCont
+      HconstCont
+      Halpha0
+      Halpha1
+      Hconst0
+      Hconst1
+      cls
+      Hcls).
+  }
+  claim HconjEqIdOnB :
+    apply_fun (basepoint_change_map X Tx x0 x0 alpha_loop) b
+    = apply_fun (basepoint_change_map X Tx x0 x0 (constant_path x0)) b.
+  {
+    exact (HuniqAtx0 b Hb).
+  }
+  (** TODO Bob: unfold both sides of HconjEqIdOnB and derive commutativity in pi1(X,x0). **)
   admit.
 Admitted.
 
