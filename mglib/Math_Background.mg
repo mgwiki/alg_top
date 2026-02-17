@@ -1,5 +1,5 @@
 (** Balance Alice 2135 **)
-(** Balance Bob 2051 **)
+(** Balance Bob 2046 **)
 (** Balance Charlie 1221 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -24430,7 +24430,8 @@ Definition simply_connected : set -> set -> prop := fun X Tx =>
 (** from S52 Lemma 52.3 (line 428 in algtop.tex) **)
 (** LATEX VERSION: In a simply connected space X, any two paths having the same initial and final points are path homotopic. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Bob 2026-02-18T05:50:00 **)
 Theorem Lemma_52_3_simply_connected_unique_homotopy : forall X Tx x0 x1 f g:set,
   simply_connected X Tx ->
   continuous_map unit_interval unit_interval_topology X Tx f ->
