@@ -28193,7 +28193,129 @@ claim Hex :
     (forall t:set, t :e unit_interval ->
       apply_fun p (apply_fun ft t) = apply_fun f t).
 {
-  (** TODO Bob: complete explicit path-lifting existence construction in S54.1 **)
+  claim Hcontp : continuous_map E Te B Tb p.
+  {
+    exact (andEL
+      (continuous_map E Te B Tb p)
+      (surjective_map E B p)
+      (andEL
+        (continuous_map E Te B Tb p /\ surjective_map E B p)
+        (forall b:set, b :e B ->
+          exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+        Hcov)).
+  }
+  claim Hfnp : function_on p E B.
+  {
+    exact (continuous_map_function_on E Te B Tb p Hcontp).
+  }
+  claim Hf0B : apply_fun f 0 :e B.
+  {
+    rewrite <- Hstart.
+    exact (Hfnp e0 He0).
+  }
+  claim HlocalData :
+    exists U N:set,
+      U :e Tb /\
+      apply_fun f 0 :e U /\
+      evenly_covered E Te B Tb p U /\
+      N :e unit_interval_topology /\
+      0 :e N /\
+      (forall u:set, u :e N -> apply_fun f u :e U).
+  {
+    claim HlocU :
+      exists U:set, U :e Tb /\ apply_fun f 0 :e U /\ evenly_covered E Te B Tb p U.
+    {
+      exact (lemma54_1_path_lifting_sub_bounty_A
+        E Te B Tb p (apply_fun f 0) Hcov Hf0B).
+    }
+    apply HlocU.
+    let U.
+    assume HU.
+    claim HUopen : U :e Tb.
+    {
+      exact (andEL
+        (U :e Tb)
+        (apply_fun f 0 :e U)
+        (andEL
+          (U :e Tb /\ apply_fun f 0 :e U)
+          (evenly_covered E Te B Tb p U)
+          HU)).
+    }
+    claim Hf0U : apply_fun f 0 :e U.
+    {
+      exact (andER
+        (U :e Tb)
+        (apply_fun f 0 :e U)
+        (andEL
+          (U :e Tb /\ apply_fun f 0 :e U)
+          (evenly_covered E Te B Tb p U)
+          HU)).
+    }
+    claim HevenU : evenly_covered E Te B Tb p U.
+    {
+      exact (andER
+        (U :e Tb /\ apply_fun f 0 :e U)
+        (evenly_covered E Te B Tb p U)
+        HU).
+    }
+    claim Hnear0 :
+      exists N:set, N :e unit_interval_topology /\ 0 :e N /\
+        (forall u:set, u :e N -> apply_fun f u :e U).
+    {
+      exact (lemma54_1_path_lifting_sub_bounty_B
+        f B Tb p 0
+        Hfcont
+        zero_in_unit_interval
+        U
+        HUopen
+        Hf0U).
+    }
+    apply Hnear0.
+    let N.
+    assume HN.
+    claim HNpair : N :e unit_interval_topology /\ 0 :e N.
+    {
+      exact (andEL
+        (N :e unit_interval_topology /\ 0 :e N)
+        (forall u:set, u :e N -> apply_fun f u :e U)
+        HN).
+    }
+    claim HNopen : N :e unit_interval_topology.
+    {
+      exact (andEL
+        (N :e unit_interval_topology)
+        (0 :e N)
+        HNpair).
+    }
+    claim H0N : 0 :e N.
+    {
+      exact (andER
+        (N :e unit_interval_topology)
+        (0 :e N)
+        HNpair).
+    }
+    claim HNmap : forall u:set, u :e N -> apply_fun f u :e U.
+    {
+      exact (andER
+        (N :e unit_interval_topology /\ 0 :e N)
+        (forall u:set, u :e N -> apply_fun f u :e U)
+        HN).
+    }
+    witness U.
+    witness N.
+    apply andI.
+    - apply andI.
+      + apply andI.
+        * apply andI.
+          - apply andI.
+            + exact HUopen.
+            + exact Hf0U.
+          - exact HevenU.
+        * exact HNopen.
+      + exact H0N.
+    - exact HNmap.
+  }
+  (** TODO Bob: use HlocalData and covering slices to build a global lift ft on I. **)
   admit.
 }
 exact (path_lift_from_exists_witness E Te B Tb p e0 f Hex).
