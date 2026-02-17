@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 27204 **)
+(** Balance Charlie 27084 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -53455,7 +53455,8 @@ Admitted.
 (** from S55 Lemma 55.3 direction (1) implies (2) (line 907 in algtop.tex) **)
 (** LATEX VERSION: Let h: S^1 -> X be continuous. If h is nulhomotopic, then h extends to a continuous map k: B^2 -> X. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 120 **)
+(** Bounty 132 **)
+(** Lock Charlie 2026-02-18T11:56:02 **)
 Theorem lemma55_3_nulhomotopic_extends_to_B2 : forall X Tx h:set,
   continuous_map S1 S1_topology X Tx h ->
   nulhomotopic S1 S1_topology X Tx h ->
@@ -61024,7 +61025,8 @@ Admitted.
 (** LATEX VERSION: Borsuk lemma for S^n: If no retraction B^n -> S^{n-1}, **)
 (** then f: A -> S^n-a-b injective nulhomotopic implies a, b same component. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 120 **)
+(** Bounty 132 **)
+(** Lock Charlie 2026-02-18T11:56:02 **)
 Theorem ex62_6a_borsuk_lemma_Sn : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed (ordsucc n)) (Bn_closed_topology (ordsucc n)) (Sn n)) ->
   forall a b:set,
@@ -61267,7 +61269,8 @@ Admitted.
 (** LATEX VERSION: Let C1 and C2 be disjoint simple closed curves in S^2. **)
 (** Then S^2 - C1 - C2 has precisely three components. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 120 **)
+(** Bounty 132 **)
+(** Lock Charlie 2026-02-18T11:56:02 **)
 Theorem ex63_1a_disjoint_curves_three_components : forall C1 C2:set,
   C1 c= Sn 2 -> C2 c= Sn 2 -> C1 :/\: C2 = Empty ->
   is_simple_closed_curve C1 (subspace_topology (Sn 2) (Sn_topology 2) C1) ->
@@ -61477,7 +61480,8 @@ Qed.
 (** from S64 Theorem 64.2 (line 2297 in algtop.tex) **)
 (** LATEX VERSION: The utilities graph cannot be imbedded in the plane. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 120 **)
+(** Bounty 132 **)
+(** Lock Charlie 2026-02-18T11:56:02 **)
 Theorem thm64_2_utilities_not_planar : forall G Tg H W:set,
   utilities_graph H W G Tg ->
   ~(exists f:set, embedding_of G Tg (setprod R R) R2_topology f).
@@ -61522,7 +61526,8 @@ Qed.
 (** LATEX VERSION: The complete graph on five vertices cannot be imbedded **)
 (** in the plane. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 120 **)
+(** Bounty 132 **)
+(** Lock Charlie 2026-02-18T11:56:02 **)
 Theorem thm64_4_K5_not_planar : forall V G Tg:set,
   complete_graph_on V G Tg -> equip V 5 ->
   ~(exists f:set, embedding_of G Tg (setprod R R) R2_topology f).
@@ -61918,7 +61923,8 @@ Definition holomorphic_on : set -> set -> prop := fun F Omega =>
 (** LATEX VERSION: For piecewise-differentiable loop f and a not in image: **)
 (** n(f,a) = (1/(2 pi i)) integral_f dz/(z-a). **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 120 **)
+(** Bounty 132 **)
+(** Lock Charlie 2026-02-18T11:56:02 **)
 Theorem lemma66_3_integral_winding : forall f a:set,
   piecewise_differentiable_loop f ->
   a :e setprod R R ->
@@ -63483,7 +63489,8 @@ Admitted.
 (** LATEX VERSION: Under the hypotheses of Ex 1(a) (i-star trivial), **)
 (** h: (pi1(U)/N1) free-product (pi1(V)/N2) -> pi1(X) is an isomorphism. **)
 (** EFFORT: 10 lines textbook, difficulty 6/10, USD 120 **)
-(** Bounty 120 **)
+(** Bounty 132 **)
+(** Lock Charlie 2026-02-18T11:56:02 **)
 Theorem ex70_1b_trivial_inclusion_isomorphism :
   forall X Tx U V x0:set,
   U :e Tx -> V :e Tx -> X = U :\/: V ->
@@ -65110,7 +65117,8 @@ Admitted.
 (** scheme abcdad^{-1}cb^{-1}. (a) pi does not map all vertices to same point. **)
 (** (c) Calculate pi1(X) and H1(X). (d) Identify the surface. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 120 **)
+(** Bounty 132 **)
+(** Lock Charlie 2026-02-18T11:56:02 **)
 Theorem ex75_4_eight_sided_polygon_2 :
   forall n w:set,
   labelling_scheme n w ->
@@ -66963,7 +66971,8 @@ Admitted.
 (** LATEX VERSION: If C is a compact subspace of a linear graph X, there is a finite **)
 (** subgraph Y containing C. If C is connected, Y can be chosen connected. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 120 **)
+(** Bounty 132 **)
+(** Lock Charlie 2026-02-18T11:56:02 **)
 Theorem lemma83_2_compact_finite_subgraph :
   forall X Tx Arcs C:set,
   general_linear_graph X Tx Arcs ->
@@ -67183,7 +67192,8 @@ Admitted.
 (** LATEX VERSION: Let X be a connected graph. A tree T in X is maximal iff it **)
 (** contains all the vertices of X. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 120 **)
+(** Bounty 132 **)
+(** Lock Charlie 2026-02-18T11:56:02 **)
 Theorem thm84_4_maximal_tree_all_vertices :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
