@@ -28740,7 +28740,7 @@ apply iffI.
   let cls.
   assume Hcls.
   set delta := path_concat alpha (reverse_path beta).
-  set delta_cls := path_homotopy_class_loop X Tx x0 delta.
+  set delta_cls := cls.
   claim HrevBetaCont :
     continuous_map unit_interval unit_interval_topology X Tx (reverse_path beta).
   {
@@ -28763,8 +28763,7 @@ apply iffI.
   claim HdeltaCls :
     delta_cls :e fundamental_group X Tx x0.
   {
-    (** TODO Bob: show delta is a loop at x0, then delta_cls is in pi1(X,x0). **)
-    admit.
+    exact Hcls.
   }
   claim HcommDelta :
     apply_fun (fundamental_group_mult X Tx x0) (cls, delta_cls)
