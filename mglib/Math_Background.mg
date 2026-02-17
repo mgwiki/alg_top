@@ -1,5 +1,5 @@
 (** Balance Alice 2160 **)
-(** Balance Bob 1917 **)
+(** Balance Bob 1905 **)
 (** Balance Charlie 1223 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -14566,7 +14566,8 @@ Qed.
 (** from S51 Exercise 3c (line 336 in algtop.tex) **)
 (** LATEX VERSION: If Y is contractible, then for any X, the set [X,Y] has a single element. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 60 **)
+(** Bounty 66 **)
+(** Lock Bob 2026-02-18T01:50:00 **)
 Theorem ex51_3c_contractible_codomain : forall X Tx Y Ty f g:set,
   contractible_space Y Ty ->
   continuous_map X Tx Y Ty f ->
@@ -14578,7 +14579,8 @@ Admitted.
 (** from S51 Exercise 3d (line 337 in algtop.tex) **)
 (** LATEX VERSION: If X is contractible and Y is path connected, then [X,Y] has a single element. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 60 **)
+(** Bounty 66 **)
+(** Lock Bob 2026-02-18T01:50:00 **)
 Theorem ex51_3d_contractible_domain : forall X Tx Y Ty f g:set,
   contractible_space X Tx ->
   path_connected_space Y Ty ->
