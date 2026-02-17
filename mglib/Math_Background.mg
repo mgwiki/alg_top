@@ -1,6 +1,6 @@
 (** Balance Alice 2584 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 30694 **)
+(** Balance Charlie 30594 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -63818,7 +63818,8 @@ Definition finitely_presented : set -> set -> set -> set -> prop :=
 (** LATEX VERSION: Let G = G_1 free-product G_2 where G_1 and G_2 are cyclic of orders m and n **)
 (** respectively. Then m and n are uniquely determined by G (up to reordering). **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:07:32 **)
 Theorem ex69_3_free_product_uniqueness_cyclic :
   forall G multG eG invG:set,
   group_structure G multG eG invG ->
@@ -64120,7 +64121,8 @@ Admitted.
 (** LATEX VERSION: If i-star is trivial, then j1 and j2 induce an epimorphism **)
 (** h: (pi1(U)/N1) free-product (pi1(V)/N2) -> pi1(X). **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:07:32 **)
 Theorem ex70_1a_trivial_inclusion_epimorphism :
   forall X Tx U V x0:set,
   U :e Tx -> V :e Tx -> X = U :\/: V ->
@@ -64253,7 +64255,8 @@ Admitted.
 (** h: pi1(U)/M -> pi1(X), where M is the least normal subgroup **)
 (** of pi1(U) containing i1(ker i2). **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:07:32 **)
 Theorem ex70_2a_surjective_i2_epimorphism :
   forall X Tx U V x0:set,
   U :e Tx -> V :e Tx -> X = U :\/: V ->
@@ -64366,7 +64369,8 @@ Admitted.
 (** LATEX VERSION: If pi1(U cap V) is finitely generated and pi1(U), pi1(V) **)
 (** have finite presentations, then pi1(X) has a finite presentation. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:07:32 **)
 Theorem ex70_3b_van_kampen_finitely_presented :
   forall X Tx U V x0:set,
   U :e Tx -> V :e Tx -> X = U :\/: V ->
@@ -64597,7 +64601,8 @@ Admitted.
 (** LATEX VERSION: If X is the wedge of closed subspaces X1,...,Xn with p a deformation **)
 (** retract of open W_i in X_i, then pi1(X,p) is the free product of pi1(X_i,p). **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:07:32 **)
 Theorem ex71_2_wedge_general :
   forall X Tx n Xfam p:set,
   Hausdorff_space X Tx ->
@@ -64665,7 +64670,8 @@ Admitted.
 (** Let Y = union of Sn, p = common point. Y is not homeomorphic to a **)
 (** countably infinite wedge X of circles. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:07:32 **)
 Theorem ex71_5a_tangent_circles_not_wedge :
   forall Y Ty p:set,
   Y c= EuclidPlane ->
@@ -64689,7 +64695,8 @@ Admitted.
 (** with {[fn]} as a system of free generators, where fn is a loop **)
 (** representing a generator of pi1(Sn,p). **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:07:32 **)
 Theorem ex71_5b_tangent_circles_free_pi1 :
   forall Y Ty p:set,
   Y c= EuclidPlane ->
@@ -64808,7 +64815,8 @@ Admitted.
 (** and x is in G, then G/N (where N is least normal subgroup containing x) **)
 (** also has such a space. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:07:32 **)
 Theorem ex72_3_quotient_by_element :
   forall G multG eG invG:set,
   group_structure G multG eG invG ->
@@ -66641,7 +66649,8 @@ Admitted.
 (** LATEX VERSION: p-star(pi1(E,e0)) is normal in pi1(B,b0) iff for every **)
 (** pair e1,e2 in p^{-1}(b0), there is an equivalence h: E -> E with h(e1) = e2. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:07:32 **)
 Theorem ex79_3_normal_subgroup_criterion : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p ->
   path_connected_space E Te -> locally_path_connected E Te ->
@@ -67471,7 +67480,8 @@ Definition R3_topology : set :=
 (** LATEX VERSION: Let C(X) be the cone on the infinite earring X. **)
 (** Show that C(X) is simply connected, but is not locally simply connected at the origin. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:07:32 **)
 Theorem ex82_2_cone_earring_simply_connected :
   let CX := cone_on_R2_in_R3 infinite_earring_space in
   let TCX := subspace_topology (setprod (setprod R R) R) R3_topology CX in
