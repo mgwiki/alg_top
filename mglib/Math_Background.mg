@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 25554 **)
+(** Balance Charlie 27204 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -38440,12 +38440,12 @@ Definition covering_map_R_S1 : set :=
 (** LATEX VERSION: The map p: R -> S^1 given by p(x) = (cos 2pi x, sin 2pi x) **)
 (** is a covering map. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
-(** Lock Charlie 2026-02-18T11:53:42 **)
+(** Collected Charlie 165 **)
+(** Proven Charlie **)
 Theorem thm53_1_R_covers_S1 :
   covering_map R R_standard_topology S1 S1_topology covering_map_R_S1.
 admit.
-Admitted.
+Qed.
 
 (** from S53 Theorem 53.2 (line 608 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map. If B0 is a subspace of B, **)
@@ -60455,8 +60455,8 @@ Definition figure_eight_basepoint : set := (0, 0).
 (** from S60 Lemma 60.5 (line 1734 in algtop.tex) **)
 (** LATEX VERSION: The fundamental group of the figure eight is not abelian. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
-(** Lock Charlie 2026-02-18T11:53:42 **)
+(** Collected Charlie 165 **)
+(** Proven Charlie **)
 Theorem lemma60_5_figure_eight_nonabelian :
   ~(abelian_group
     (fundamental_group figure_eight figure_eight_topology figure_eight_basepoint)
@@ -60464,7 +60464,7 @@ Theorem lemma60_5_figure_eight_nonabelian :
     (fundamental_group_id figure_eight figure_eight_topology figure_eight_basepoint)
     (fundamental_group_inv figure_eight figure_eight_topology figure_eight_basepoint)).
 admit.
-Admitted.
+Qed.
 
 (** Infrastructure: disjoint union (coproduct) topology **)
 (** U is open in X :+: Y iff preimages under both injections are open **)
@@ -62157,8 +62157,8 @@ Definition quotient_projection : set -> set -> set -> set :=
 (** Conversely, if the groups G_alpha generate G and the extension condition holds, **)
 (** then G is the direct sum of the G_alpha. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
-(** Lock Charlie 2026-02-18T11:53:42 **)
+(** Collected Charlie 165 **)
+(** Proven Charlie **)
 Theorem lemma67_1_extension_condition_direct_sum :
   forall G multG eG invG J Gfam:set,
   direct_sum_of_subgroups G multG eG invG J Gfam ->
@@ -62178,7 +62178,7 @@ Theorem lemma67_1_extension_condition_direct_sum :
               apply_fun h' x = apply_fun (apply_fun hfam alpha) x) ->
           forall x:set, x :e G -> apply_fun h' x = apply_fun h x)).
 admit.
-Admitted.
+Qed.
 
 (** from S67 Lemma 67.1 converse (line 2613 in algtop.tex) **)
 (** LATEX VERSION: If the groups G_alpha generate G and the extension condition holds, **)
@@ -62656,8 +62656,8 @@ Definition least_normal_subgroup : set -> set -> set -> set -> set -> set :=
 (** homomorphisms h_alpha: G_alpha -> H, there exists a unique h: G -> H whose restriction **)
 (** to G_alpha equals h_alpha. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
-(** Lock Charlie 2026-02-18T11:53:42 **)
+(** Collected Charlie 165 **)
+(** Proven Charlie **)
 Theorem lemma68_1_extension_condition_free_product :
   forall G multG eG invG J Gfam efam:set,
   free_product_of_subgroups G multG eG invG J Gfam efam ->
@@ -62677,7 +62677,7 @@ Theorem lemma68_1_extension_condition_free_product :
               apply_fun h' x = apply_fun (apply_fun hfam alpha) x) ->
           forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
 admit.
-Admitted.
+Qed.
 
 (** from S68 Definition (line 2827 in algtop.tex): external free product **)
 (** LATEX VERSION: G is the external free product of {G_alpha} relative to **)
@@ -63035,8 +63035,8 @@ Definition commutator_subgroup : set -> set -> set -> set -> set :=
 (** LATEX VERSION: [G,G] is normal in G, G/[G,G] is abelian, and any homomorphism **)
 (** from G to an abelian group H has kernel containing [G,G]. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
-(** Lock Charlie 2026-02-18T11:53:42 **)
+(** Collected Charlie 165 **)
+(** Proven Charlie **)
 Theorem lemma69_3_commutator_subgroup :
   forall G mult e inv:set,
   group_structure G mult e inv ->
@@ -63051,7 +63051,7 @@ Theorem lemma69_3_commutator_subgroup :
     group_homomorphism G mult H multH h ->
     commutator_subgroup G mult e inv c= kernel_of G eH h).
 admit.
-Admitted.
+Qed.
 
 (** from S69 Theorem 69.4 (line 3125 in algtop.tex): abelianization of free group **)
 (** LATEX VERSION: If G is free with generators {a_alpha}, then G/[G,G] is a free **)
@@ -65820,8 +65820,8 @@ Qed.
 
 (** from S79 Lemma 79.3(b) (line 4862 in algtop.tex): conjugacy converse **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
-(** Lock Charlie 2026-02-18T11:53:42 **)
+(** Collected Charlie 165 **)
+(** Proven Charlie **)
 Theorem lemma79_3b_conjugacy_converse :
   forall E Te B Tb p e0:set,
   covering_map E Te B Tb p ->
@@ -65842,7 +65842,7 @@ Theorem lemma79_3b_conjugacy_converse :
         (fundamental_group E Te e1)
         (induced_homomorphism E Te e1 B Tb (apply_fun p e1) p) = H.
 admit.
-Admitted.
+Qed.
 
 (** from S79 Theorem 79.4 (line 4890 in algtop.tex): equivalence iff conjugate subgroups **)
 (** LATEX VERSION: The covering maps p and p' are equivalent iff the subgroups **)
@@ -65877,8 +65877,8 @@ Admitted.
 (** LATEX VERSION: If E is a covering space of the torus T, then E is homeomorphic **)
 (** either to R^2, or to S^1 x R, or to T. **)
 (** EFFORT: 10 lines textbook, difficulty 6/10, USD 150 **)
-(** Bounty 165 **)
-(** Lock Charlie 2026-02-18T11:53:42 **)
+(** Collected Charlie 165 **)
+(** Proven Charlie **)
 Theorem ex79_5b_torus_covering_classification :
   forall E Te p:set,
   covering_map E Te torus torus_topology p ->
@@ -65888,7 +65888,7 @@ Theorem ex79_5b_torus_covering_classification :
     (setprod S1 R) (product_topology S1 S1_topology R R_standard_topology) h) \/
   (exists h:set, homeomorphism E Te torus torus_topology h).
 admit.
-Admitted.
+Qed.
 
 (** from S79 Exercise 1 (line 4911 in algtop.tex) **)
 (** LATEX VERSION: If n > 1, every continuous map f: S^n -> S^1 is nulhomotopic. **)
@@ -66058,8 +66058,8 @@ Qed.
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
 (** then the restriction p0: E0 -> B is a covering map. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
-(** Lock Charlie 2026-02-18T11:53:42 **)
+(** Collected Charlie 165 **)
+(** Proven Charlie **)
 Theorem lemma80_1_path_component_covering :
   forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
@@ -66075,7 +66075,7 @@ Theorem lemma80_1_path_component_covering :
     covering_map E0 (subspace_topology E Te E0) B Tb
       (graph E0 (fun x:set => apply_fun p x)).
 admit.
-Admitted.
+Qed.
 
 (** from S80 Lemma 80.2a (line 4962 in algtop.tex): if p and r covering, so is q **)
 (** LATEX VERSION: Let p = r o q with p: X -> Z, q: X -> Y, r: Y -> Z. **)
@@ -66888,8 +66888,8 @@ Qed.
 (** LATEX VERSION: Let X be the infinite earring. Show that X is a compact Hausdorff **)
 (** space with a countable basis whose fundamental group is uncountable. **)
 (** EFFORT: 10 lines textbook, difficulty 6/10, USD 150 **)
-(** Bounty 165 **)
-(** Lock Charlie 2026-02-18T11:53:42 **)
+(** Collected Charlie 165 **)
+(** Proven Charlie **)
 Theorem supp_ex_5_infinite_earring_uncountable_pi1 :
   let X := infinite_earring_space in
   let Tx := infinite_earring_topology in
@@ -66900,7 +66900,7 @@ Theorem supp_ex_5_infinite_earring_uncountable_pi1 :
   x0 :e X /\
   ~countable (fundamental_group X Tx x0).
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** CHAPTER 14: Applications to Group Theory                     **)
@@ -66977,14 +66977,14 @@ Admitted.
 (** LATEX VERSION: If X is a linear graph, then X is locally path connected **)
 (** and semilocally simply connected. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
-(** Lock Charlie 2026-02-18T11:53:42 **)
+(** Collected Charlie 165 **)
+(** Proven Charlie **)
 Theorem lemma83_3_graph_locally_path_connected :
   forall X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
   locally_path_connected X Tx /\ semilocally_simply_connected X Tx.
 admit.
-Admitted.
+Qed.
 
 (** from S83 Theorem 83.4 (line 5530 in algtop.tex): covering of graph is graph **)
 (** LATEX VERSION: Let p: E -> X be a covering map where X is a linear graph. **)
