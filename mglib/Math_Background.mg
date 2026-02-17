@@ -1,6 +1,6 @@
 (** Balance Alice 2584 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 38694 **)
+(** Balance Charlie 38644 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -61453,7 +61453,8 @@ Admitted.
 (** LATEX VERSION: The 2-sphere, torus, projective plane, and double torus **)
 (** are topologically distinct. **)
 (** EFFORT: 8 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T13:00:00 **)
 Theorem cor60_7_surfaces_distinct :
   ~(exists f:set, homeomorphism
     (Sn 2) (Sn_topology 2) torus torus_topology f) /\
@@ -61473,7 +61474,8 @@ Admitted.
 (** from S60 Exercise 1 (line 1778 in algtop.tex) **)
 (** LATEX VERSION: Compute pi_1 of the solid torus S^1 x B^2 and of S^1 x S^2. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T13:00:00 **)
 Theorem ex60_1a_pi1_solid_torus : forall x0:set, x0 :e S1 ->
   forall b0:set, b0 :e B2 ->
   exists phi:set,
@@ -61488,7 +61490,8 @@ Admitted.
 
 (** from S60 Exercise 1(b) (line 1776 in algtop.tex): pi1 of S^1 x S^2 **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T13:00:00 **)
 Theorem ex60_1b_pi1_S1_cross_S2 : forall x0:set, x0 :e S1 ->
   forall s0:set, s0 :e Sn 2 ->
   exists phi:set,
@@ -61523,7 +61526,8 @@ Qed.
 (** from S60 Exercise 4 (line 1781 in algtop.tex) **)
 (** LATEX VERSION: P^1 and the covering map S^1 -> P^1 are familiar: P^1 is S^1. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T13:00:00 **)
 Theorem ex60_4_P1_is_S1 :
   exists f:set, homeomorphism
     (projective_n_space 1) (projective_n_space_topology 1)
@@ -61667,7 +61671,8 @@ Admitted.
 (** of S^2 whose intersection consists of exactly two points a and b. **)
 (** Then C = A1 union A2 separates S^2. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T13:00:00 **)
 Theorem thm61_4_general_separation : forall A1 A2 a b:set,
   A1 c= Sn 2 -> A2 c= Sn 2 ->
   Sn 2 :\: A1 :e Sn_topology 2 ->
@@ -61701,7 +61706,8 @@ Qed.
 (** from S61 Exercise 1 (line 1915 in algtop.tex) **)
 (** LATEX VERSION: A simple closed curve in the torus may or may not separate the torus. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T13:00:00 **)
 Theorem ex61_1a_torus_separating_curve : exists C:set,
   C c= torus /\
   is_simple_closed_curve C (subspace_topology torus torus_topology C) /\
@@ -61712,7 +61718,8 @@ Admitted.
 (** from S61 Exercise 1 (line 1915 in algtop.tex) **)
 (** LATEX VERSION: A simple closed curve in the torus may not separate the torus. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T13:00:00 **)
 Theorem ex61_1b_torus_non_separating_curve : exists C:set,
   C c= torus /\
   is_simple_closed_curve C (subspace_topology torus torus_topology C) /\
@@ -61812,7 +61819,8 @@ Qed.
 (** from S62 Exercise 1 (line 2000 in algtop.tex) **)
 (** LATEX VERSION: The conclusion of the Borsuk lemma need not hold if f is not injective. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T13:00:00 **)
 Theorem ex62_1_borsuk_fails_without_injectivity :
   exists A TA a b:set, exists f:set,
     a :e Sn 2 /\ b :e Sn 2 /\ a <> b /\
@@ -62153,7 +62161,8 @@ Admitted.
 (** consists of two points. If neither separates S^2, then C1 union C2 **)
 (** separates S^2 into precisely two components. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T13:00:00 **)
 Theorem thm63_5_general_jordan : forall C1 C2:set,
   C1 c= Sn 2 -> C2 c= Sn 2 ->
   Sn 2 :\: C1 :e Sn_topology 2 ->
@@ -62882,7 +62891,8 @@ Admitted.
 (** from S66 Exercise 1 (line 2572 in algtop.tex) **)
 (** LATEX VERSION: n(f,a) equals the degree of the induced map h: S^1 -> S^1. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T13:00:00 **)
 Theorem ex66_1_winding_equals_degree : forall f a h:set,
   loop_at (setprod R R) R2_topology (apply_fun f 0) f ->
   a :e setprod R R -> ~(a :e image_of f unit_interval) ->
