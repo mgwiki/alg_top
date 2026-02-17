@@ -52508,6 +52508,30 @@ claim Hvertical_lift_seed_pack :
     rewrite (apply_fun_graph unit_interval (fun t:set => t) 0 zero_in_unit_interval).
     reflexivity.
   }
+  claim HvsEvalAll :
+    forall t:set, t :e unit_interval ->
+      apply_fun vs t = apply_fun F (s, t).
+  {
+    let t.
+    assume Ht.
+    rewrite (compose_fun_apply
+      unit_interval
+      (pair_map unit_interval (const_fun unit_interval s) idI54)
+      F
+      t
+      Ht).
+    rewrite (pair_map_apply
+      unit_interval
+      unit_interval
+      unit_interval
+      (const_fun unit_interval s)
+      idI54
+      t
+      Ht).
+    rewrite (const_fun_apply unit_interval s t Ht).
+    rewrite (apply_fun_graph unit_interval (fun u:set => u) t Ht).
+    reflexivity.
+  }
   claim HesE : apply_fun (path_lift E Te B Tb p e0 g0_54) s :e E.
   {
     exact (Hbottom_lift_54_fun
