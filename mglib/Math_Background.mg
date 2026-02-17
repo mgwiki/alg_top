@@ -68039,6 +68039,66 @@ claim Hcore :
       rewrite <- Hcover.
       exact (preimage_of_whole unit_interval X fcls HfclsFun).
     }
+    claim HcoverPrePair :
+      open_cover_of unit_interval unit_interval_topology
+        (UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V)).
+    {
+      apply (open_cover_ofI
+        unit_interval
+        unit_interval_topology
+        (UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V))).
+      - exact unit_interval_topology_on.
+      - let W.
+        assume HW : W :e UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V).
+        apply (UPairE
+          W
+          (preimage_of unit_interval fcls U)
+          (preimage_of unit_interval fcls V)
+          HW).
+        + assume HWU : W = preimage_of unit_interval fcls U.
+          rewrite HWU.
+          apply (PowerI unit_interval (preimage_of unit_interval fcls U)).
+          exact (topology_elem_subset
+            unit_interval
+            unit_interval_topology
+            (preimage_of unit_interval fcls U)
+            unit_interval_topology_on
+            HpreUopen).
+        + assume HWV : W = preimage_of unit_interval fcls V.
+          rewrite HWV.
+          apply (PowerI unit_interval (preimage_of unit_interval fcls V)).
+          exact (topology_elem_subset
+            unit_interval
+            unit_interval_topology
+            (preimage_of unit_interval fcls V)
+            unit_interval_topology_on
+            HpreVopen).
+      - rewrite (Union_UPair_eq_binunion
+          (preimage_of unit_interval fcls U)
+          (preimage_of unit_interval fcls V)).
+        claim HpreCoverSym :
+          unit_interval =
+          (preimage_of unit_interval fcls U) :\/: (preimage_of unit_interval fcls V).
+        {
+          exact (fun Q => HpreCover (fun x y:set => Q y x)).
+        }
+        rewrite HpreCoverSym at 1.
+        exact (Subq_ref
+          ((preimage_of unit_interval fcls U) :\/: (preimage_of unit_interval fcls V))).
+      - let W.
+        assume HW : W :e UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V).
+        apply (UPairE
+          W
+          (preimage_of unit_interval fcls U)
+          (preimage_of unit_interval fcls V)
+          HW).
+        + assume HWU : W = preimage_of unit_interval fcls U.
+          rewrite HWU.
+          exact HpreUopen.
+        + assume HWV : W = preimage_of unit_interval fcls V.
+          rewrite HWV.
+          exact HpreVopen.
+    }
     claim HUVopen : (U :/\: V) :e Tx.
     {
       exact (topology_binintersect_closed X Tx U V Htop HU HV).
