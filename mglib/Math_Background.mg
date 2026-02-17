@@ -52996,8 +52996,35 @@ claim HFt_54_bottom_comm :
 claim HFt_54_cont :
   continuous_map unit_square unit_square_topology E Te Ft_54.
 {
-  (** TODO Charlie: prove continuity of the slice-wise chosen lift family by local gluing/uniqueness. **)
-  admit.
+  claim HtopSq54 : topology_on unit_square unit_square_topology.
+  {
+    exact (product_topology_is_topology
+      unit_interval
+      unit_interval_topology
+      unit_interval
+      unit_interval_topology
+      unit_interval_topology_on
+      unit_interval_topology_on).
+  }
+  claim Hlocal_cover_cont :
+    exists UFam:set,
+      UFam c= unit_square_topology /\ Union UFam = unit_square /\
+      (forall U:set, U :e UFam ->
+        continuous_map U (subspace_topology unit_square unit_square_topology U) E Te Ft_54).
+  {
+    (** TODO Charlie: build a cover by evenly covered neighborhoods pulled back along F,
+        then use uniqueness of path lifts to identify Ft_54 locally with explicit sheet maps. **)
+    admit.
+  }
+  exact (continuous_map_local_cover
+    unit_square
+    unit_square_topology
+    E
+    Te
+    Ft_54
+    HtopSq54
+    HtopE
+    Hlocal_cover_cont).
 }
 witness Ft_54.
 exact (andI
