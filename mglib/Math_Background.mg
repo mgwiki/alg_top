@@ -1,6 +1,6 @@
 (** Balance Alice 3264 **)
 (** Balance Bob 3037 **)
-(** Balance Charlie 1061 **)
+(** Balance Charlie 1171 **)
 (** Balance Dave 1073 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -37992,11 +37992,853 @@ rewrite <- HmultInvABAAsClass.
 exact HinvABAEqB.
 Qed.
 
+(** S52 helper: in an abelian pi1(X,x0), basepoint-change along any loop at x0 fixes classes **)
+Theorem ex52_3_helper_abelian_loop_fixed : forall X Tx x0 delta b:set,
+  topology_on X Tx ->
+  x0 :e X ->
+  delta :e loop_space X Tx x0 ->
+  b :e fundamental_group X Tx x0 ->
+  (forall u v:set, u :e fundamental_group X Tx x0 -> v :e fundamental_group X Tx x0 ->
+    apply_fun (fundamental_group_mult X Tx x0) (u, v)
+    = apply_fun (fundamental_group_mult X Tx x0) (v, u)) ->
+  apply_fun (basepoint_change_map X Tx x0 x0 delta) b = b.
+let X Tx x0 delta b.
+assume HtopX Hx0 HdeltaLoop Hb Habel.
+set a := path_homotopy_class_loop X Tx x0 delta.
+set a_rev := path_homotopy_class_loop X Tx x0 (reverse_path delta).
+set epsb := Eps_i (fun f:set => f :e b).
+set ba := path_homotopy_class_loop X Tx x0 (path_concat epsb delta).
+claim Ha : a :e fundamental_group X Tx x0.
+{
+  exact (path_homotopy_class_in_fundamental_group
+    X
+    Tx
+    x0
+    delta
+    HdeltaLoop).
+}
+claim HrevDeltaLoop :
+  reverse_path delta :e loop_space X Tx x0.
+{
+  exact (reverse_path_preserves_loop_space_early
+    X
+    Tx
+    x0
+    delta
+    HdeltaLoop).
+}
+claim HaRev : a_rev :e fundamental_group X Tx x0.
+{
+  exact (path_homotopy_class_in_fundamental_group
+    X
+    Tx
+    x0
+    (reverse_path delta)
+    HrevDeltaLoop).
+}
+claim HepsbLoop :
+  epsb :e loop_space X Tx x0.
+{
+  exact (eps_of_fundamental_group_member_in_loop_space_s52
+    X
+    Tx
+    x0
+    b
+    Hb).
+}
+claim HdeltaLoopAt : loop_at X Tx x0 delta.
+{
+  exact (loop_space_has_loop_at
+    X
+    Tx
+    x0
+    delta
+    HdeltaLoop).
+}
+claim HdeltaCont :
+  continuous_map unit_interval unit_interval_topology X Tx delta.
+{
+  exact (loop_at_continuous
+    X
+    Tx
+    x0
+    delta
+    HdeltaLoopAt).
+}
+claim Hdelta0 : apply_fun delta 0 = x0.
+{
+  exact (loop_at_at_zero
+    X
+    Tx
+    x0
+    delta
+    HdeltaLoopAt).
+}
+claim Hdelta1 : apply_fun delta 1 = x0.
+{
+  exact (loop_at_at_one
+    X
+    Tx
+    x0
+    delta
+    HdeltaLoopAt).
+}
+claim HepsbLoopAt :
+  loop_at X Tx x0 epsb.
+{
+  exact (loop_space_has_loop_at
+    X
+    Tx
+    x0
+    epsb
+    HepsbLoop).
+}
+claim HepsbCont :
+  continuous_map unit_interval unit_interval_topology X Tx epsb.
+{
+  exact (loop_at_continuous
+    X
+    Tx
+    x0
+    epsb
+    HepsbLoopAt).
+}
+claim Hepsb0 : apply_fun epsb 0 = x0.
+{
+  exact (loop_at_at_zero
+    X
+    Tx
+    x0
+    epsb
+    HepsbLoopAt).
+}
+claim Hepsb1 : apply_fun epsb 1 = x0.
+{
+  exact (loop_at_at_one
+    X
+    Tx
+    x0
+    epsb
+    HepsbLoopAt).
+}
+claim HbaLoop :
+  (path_concat epsb delta) :e loop_space X Tx x0.
+{
+  exact (path_concat_preserves_loop_space_early
+    X
+    Tx
+    x0
+    epsb
+    delta
+    HepsbLoop
+    HdeltaLoop).
+}
+claim Hba : ba :e fundamental_group X Tx x0.
+{
+  exact (path_homotopy_class_in_fundamental_group
+    X
+    Tx
+    x0
+    (path_concat epsb delta)
+    HbaLoop).
+}
+claim HdeltaToEpsA :
+  path_homotopic
+    X
+    Tx
+    x0
+    x0
+    delta
+    (Eps_i (fun f:set => f :e a)).
+{
+  exact (eps_homotopic_to_rep_early
+    X
+    Tx
+    x0
+    delta
+    HtopX
+    HdeltaLoop).
+}
+claim HEpsAToDelta :
+  path_homotopic
+    X
+    Tx
+    x0
+    x0
+    (Eps_i (fun f:set => f :e a))
+    delta.
+{
+  exact (Lemma_51_1_path_homotopy_sym
+    X
+    Tx
+    x0
+    x0
+    delta
+    (Eps_i (fun f:set => f :e a))
+    HdeltaToEpsA).
+}
+claim HrevDeltaToEpsARev :
+  path_homotopic
+    X
+    Tx
+    x0
+    x0
+    (reverse_path delta)
+    (Eps_i (fun f:set => f :e a_rev)).
+{
+  exact (eps_homotopic_to_rep_early
+    X
+    Tx
+    x0
+    (reverse_path delta)
+    HtopX
+    HrevDeltaLoop).
+}
+claim HEpsARevToRevDelta :
+  path_homotopic
+    X
+    Tx
+    x0
+    x0
+    (Eps_i (fun f:set => f :e a_rev))
+    (reverse_path delta).
+{
+  exact (Lemma_51_1_path_homotopy_sym
+    X
+    Tx
+    x0
+    x0
+    (reverse_path delta)
+    (Eps_i (fun f:set => f :e a_rev))
+    HrevDeltaToEpsARev).
+}
+claim HbaToEps :
+  path_homotopic
+    X
+    Tx
+    x0
+    x0
+    (path_concat epsb delta)
+    (Eps_i (fun f:set => f :e ba)).
+{
+  exact (eps_homotopic_to_rep_early
+    X
+    Tx
+    x0
+    (path_concat epsb delta)
+    HtopX
+    HbaLoop).
+}
+claim HEpsBaToLoop :
+  path_homotopic
+    X
+    Tx
+    x0
+    x0
+    (Eps_i (fun f:set => f :e ba))
+    (path_concat epsb delta).
+{
+  exact (Lemma_51_1_path_homotopy_sym
+    X
+    Tx
+    x0
+    x0
+    (path_concat epsb delta)
+    (Eps_i (fun f:set => f :e ba))
+    HbaToEps).
+}
+claim Hgrp :
+  group_structure
+    (fundamental_group X Tx x0)
+    (fundamental_group_mult X Tx x0)
+    (fundamental_group_id X Tx x0)
+    (fundamental_group_inv X Tx x0).
+{
+  exact (fundamental_group_is_group
+    X
+    Tx
+    x0
+    HtopX
+    Hx0).
+}
+apply (and6E
+  (function_on
+    (fundamental_group_mult X Tx x0)
+    (setprod
+      (fundamental_group X Tx x0)
+      (fundamental_group X Tx x0))
+    (fundamental_group X Tx x0))
+  (function_on
+    (fundamental_group_inv X Tx x0)
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x0))
+  ((fundamental_group_id X Tx x0)
+    :e (fundamental_group X Tx x0))
+  (forall x y z:set,
+    x :e (fundamental_group X Tx x0) ->
+    y :e (fundamental_group X Tx x0) ->
+    z :e (fundamental_group X Tx x0) ->
+    apply_fun
+      (fundamental_group_mult X Tx x0)
+      (apply_fun
+        (fundamental_group_mult X Tx x0)
+        (x, y), z)
+    =
+    apply_fun
+      (fundamental_group_mult X Tx x0)
+      (x,
+        apply_fun
+          (fundamental_group_mult X Tx x0)
+          (y, z)))
+  (forall x:set,
+    x :e (fundamental_group X Tx x0) ->
+    apply_fun
+      (fundamental_group_mult X Tx x0)
+      (fundamental_group_id X Tx x0, x)
+    = x /\
+    apply_fun
+      (fundamental_group_mult X Tx x0)
+      (x, fundamental_group_id X Tx x0)
+    = x)
+  (forall x:set,
+    x :e (fundamental_group X Tx x0) ->
+    apply_fun
+      (fundamental_group_mult X Tx x0)
+      (x, apply_fun (fundamental_group_inv X Tx x0) x)
+    = fundamental_group_id X Tx x0 /\
+    apply_fun
+      (fundamental_group_mult X Tx x0)
+      (apply_fun (fundamental_group_inv X Tx x0) x, x)
+    = fundamental_group_id X Tx x0)
+  Hgrp).
+assume HmultFun HinvFun HidFG Hassoc Hid Hinv.
+claim HpairBA :
+  (b, a)
+  :e setprod
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x0).
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x0)
+    b
+    a
+    Hb
+    Ha).
+}
+claim HmultBAAsClassRaw :
+  apply_fun
+    (fundamental_group_mult X Tx x0)
+    (b, a)
+  =
+  path_homotopy_class_loop
+    X
+    Tx
+    x0
+    (path_concat
+      (Eps_i (fun h:set =>
+        h :e
+          (b, a) 0))
+      (Eps_i (fun h:set =>
+        h :e
+          (b, a) 1))).
+{
+  exact (fundamental_group_mult_apply
+    X
+    Tx
+    x0
+    (b, a)
+    HpairBA).
+}
+claim HmultBAAsClass :
+  apply_fun
+    (fundamental_group_mult X Tx x0)
+    (b, a)
+  =
+  path_homotopy_class_loop
+    X
+    Tx
+    x0
+    (path_concat
+      epsb
+      (Eps_i (fun h:set =>
+        h :e a))).
+{
+  rewrite HmultBAAsClassRaw.
+  rewrite (tuple_2_0_eq b a).
+  rewrite (tuple_2_1_eq b a).
+  reflexivity.
+}
+claim HepsbRefl :
+  path_homotopic
+    X
+    Tx
+    x0
+    x0
+    epsb
+    epsb.
+{
+  exact (Lemma_51_1_path_homotopy_refl
+    X
+    Tx
+    x0
+    x0
+    epsb
+    HepsbCont
+    Hepsb0
+    Hepsb1).
+}
+claim HbaReplaceHom :
+  path_homotopic
+    X
+    Tx
+    x0
+    x0
+    (path_concat
+      epsb
+      (Eps_i (fun h:set => h :e a)))
+    (path_concat
+      epsb
+      delta).
+{
+  exact (path_concat_well_defined_on_classes
+    X
+    Tx
+    x0
+    x0
+    x0
+    epsb
+    epsb
+    (Eps_i (fun h:set => h :e a))
+    delta
+    HepsbRefl
+    HEpsAToDelta).
+}
+claim HbaReplaceClass :
+  path_homotopy_class_loop
+    X
+    Tx
+    x0
+    (path_concat
+      epsb
+      (Eps_i (fun h:set => h :e a)))
+  =
+  path_homotopy_class_loop
+    X
+    Tx
+    x0
+    (path_concat
+      epsb
+      delta).
+{
+  exact (path_homotopy_class_loop_eq_of_path_homotopic
+    X
+    Tx
+    x0
+    (path_concat
+      epsb
+      (Eps_i (fun h:set => h :e a)))
+    (path_concat
+      epsb
+      delta)
+    HbaReplaceHom).
+}
+claim HbaEqMultBA :
+  ba
+  =
+  apply_fun
+    (fundamental_group_mult X Tx x0)
+    (b, a).
+{
+  rewrite HmultBAAsClass.
+  symmetry.
+  exact HbaReplaceClass.
+}
+claim HpairARevBA :
+  (a_rev, ba)
+  :e setprod
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x0).
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x0)
+    a_rev
+    ba
+    HaRev
+    Hba).
+}
+claim HmultARevBAAsClassRaw :
+  apply_fun
+    (fundamental_group_mult X Tx x0)
+    (a_rev, ba)
+  =
+  path_homotopy_class_loop
+    X
+    Tx
+    x0
+    (path_concat
+      (Eps_i (fun h:set =>
+        h :e
+          (a_rev, ba) 0))
+      (Eps_i (fun h:set =>
+        h :e
+          (a_rev, ba) 1))).
+{
+  exact (fundamental_group_mult_apply
+    X
+    Tx
+    x0
+    (a_rev, ba)
+    HpairARevBA).
+}
+claim HmultARevBAAsClass :
+  apply_fun
+    (fundamental_group_mult X Tx x0)
+    (a_rev, ba)
+  =
+  path_homotopy_class_loop
+    X
+    Tx
+    x0
+    (path_concat
+      (Eps_i (fun h:set => h :e a_rev))
+      (Eps_i (fun h:set => h :e ba))).
+{
+  rewrite HmultARevBAAsClassRaw.
+  rewrite (tuple_2_0_eq a_rev ba).
+  rewrite (tuple_2_1_eq a_rev ba).
+  reflexivity.
+}
+claim HconjReplaceHom :
+  path_homotopic
+    X
+    Tx
+    x0
+    x0
+    (path_concat
+      (Eps_i (fun h:set => h :e a_rev))
+      (Eps_i (fun h:set => h :e ba)))
+    (path_concat
+      (reverse_path delta)
+      (path_concat
+        epsb
+        delta)).
+{
+  exact (path_concat_well_defined_on_classes
+    X
+    Tx
+    x0
+    x0
+    x0
+    (Eps_i (fun h:set => h :e a_rev))
+    (reverse_path delta)
+    (Eps_i (fun h:set => h :e ba))
+    (path_concat
+      epsb
+      delta)
+    HEpsARevToRevDelta
+    HEpsBaToLoop).
+}
+claim HconjReplaceClass :
+  path_homotopy_class_loop
+    X
+    Tx
+    x0
+    (path_concat
+      (Eps_i (fun h:set => h :e a_rev))
+      (Eps_i (fun h:set => h :e ba)))
+  =
+  path_homotopy_class_loop
+    X
+    Tx
+    x0
+    (path_concat
+      (reverse_path delta)
+      (path_concat
+        epsb
+        delta)).
+{
+  exact (path_homotopy_class_loop_eq_of_path_homotopic
+    X
+    Tx
+    x0
+    (path_concat
+      (Eps_i (fun h:set => h :e a_rev))
+      (Eps_i (fun h:set => h :e ba)))
+    (path_concat
+      (reverse_path delta)
+      (path_concat
+        epsb
+        delta))
+    HconjReplaceHom).
+}
+claim HconjAsMult :
+  apply_fun
+    (basepoint_change_map X Tx x0 x0 delta)
+    b
+  =
+  apply_fun
+    (fundamental_group_mult X Tx x0)
+    (a_rev, ba).
+{
+  rewrite (basepoint_change_map_apply
+    X
+    Tx
+    x0
+    x0
+    delta
+    b
+    Hb).
+  rewrite <- HconjReplaceClass.
+  rewrite <- HmultARevBAAsClass.
+  reflexivity.
+}
+claim HpairARevA :
+  (a_rev, a)
+  :e setprod
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x0).
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x0)
+    a_rev
+    a
+    HaRev
+    Ha).
+}
+claim HmultARevAAsClassRaw :
+  apply_fun
+    (fundamental_group_mult X Tx x0)
+    (a_rev, a)
+  =
+  path_homotopy_class_loop
+    X
+    Tx
+    x0
+    (path_concat
+      (Eps_i (fun h:set =>
+        h :e
+          (a_rev, a) 0))
+      (Eps_i (fun h:set =>
+        h :e
+          (a_rev, a) 1))).
+{
+  exact (fundamental_group_mult_apply
+    X
+    Tx
+    x0
+    (a_rev, a)
+    HpairARevA).
+}
+claim HmultARevAAsClass :
+  apply_fun
+    (fundamental_group_mult X Tx x0)
+    (a_rev, a)
+  =
+  path_homotopy_class_loop
+    X
+    Tx
+    x0
+    (path_concat
+      (Eps_i (fun h:set => h :e a_rev))
+      (Eps_i (fun h:set => h :e a))).
+{
+  rewrite HmultARevAAsClassRaw.
+  rewrite (tuple_2_0_eq a_rev a).
+  rewrite (tuple_2_1_eq a_rev a).
+  reflexivity.
+}
+claim HrevAReplaceHom :
+  path_homotopic
+    X
+    Tx
+    x0
+    x0
+    (path_concat
+      (Eps_i (fun h:set => h :e a_rev))
+      (Eps_i (fun h:set => h :e a)))
+    (path_concat
+      (reverse_path delta)
+      delta).
+{
+  exact (path_concat_well_defined_on_classes
+    X
+    Tx
+    x0
+    x0
+    x0
+    (Eps_i (fun h:set => h :e a_rev))
+    (reverse_path delta)
+    (Eps_i (fun h:set => h :e a))
+    delta
+    HEpsARevToRevDelta
+    HEpsAToDelta).
+}
+claim HrevAReplaceClass :
+  path_homotopy_class_loop
+    X
+    Tx
+    x0
+    (path_concat
+      (Eps_i (fun h:set => h :e a_rev))
+      (Eps_i (fun h:set => h :e a)))
+  =
+  path_homotopy_class_loop
+    X
+    Tx
+    x0
+    (path_concat
+      (reverse_path delta)
+      delta).
+{
+  exact (path_homotopy_class_loop_eq_of_path_homotopic
+    X
+    Tx
+    x0
+    (path_concat
+      (Eps_i (fun h:set => h :e a_rev))
+      (Eps_i (fun h:set => h :e a)))
+    (path_concat
+      (reverse_path delta)
+      delta)
+    HrevAReplaceHom).
+}
+claim HrevDeltaDeltaConst :
+  path_homotopic
+    X
+    Tx
+    x0
+    x0
+    (path_concat
+      (reverse_path delta)
+      delta)
+    (constant_path x0).
+{
+  exact (Theorem_51_2_left_inverse
+    X
+    Tx
+    x0
+    x0
+    delta
+    HdeltaCont
+    Hdelta0
+    Hdelta1).
+}
+claim HrevDeltaDeltaClass :
+  path_homotopy_class_loop
+    X
+    Tx
+    x0
+    (path_concat
+      (reverse_path delta)
+      delta)
+  =
+  path_homotopy_class_loop
+    X
+    Tx
+    x0
+    (constant_path x0).
+{
+  exact (path_homotopy_class_loop_eq_of_path_homotopic
+    X
+    Tx
+    x0
+    (path_concat
+      (reverse_path delta)
+      delta)
+    (constant_path x0)
+    HrevDeltaDeltaConst).
+}
+claim HrevAId :
+  apply_fun
+    (fundamental_group_mult X Tx x0)
+    (a_rev, a)
+  =
+  fundamental_group_id X Tx x0.
+{
+  rewrite HmultARevAAsClass.
+  rewrite HrevAReplaceClass.
+  rewrite HrevDeltaDeltaClass.
+  reflexivity.
+}
+claim HcommARevBA :
+  apply_fun
+    (fundamental_group_mult X Tx x0)
+    (a_rev, ba)
+  =
+  apply_fun
+    (fundamental_group_mult X Tx x0)
+    (ba, a_rev).
+{
+  exact (Habel
+    a_rev
+    ba
+    HaRev
+    Hba).
+}
+claim HaaRev :
+  apply_fun
+    (fundamental_group_mult X Tx x0)
+    (a, a_rev)
+  =
+  apply_fun
+    (fundamental_group_mult X Tx x0)
+    (a_rev, a).
+{
+  exact (Habel
+    a
+    a_rev
+    Ha
+    HaRev).
+}
+claim HrightIdOnB :
+  apply_fun
+    (fundamental_group_mult X Tx x0)
+    (b, fundamental_group_id X Tx x0)
+  = b.
+{
+  exact (andER
+    (apply_fun
+      (fundamental_group_mult X Tx x0)
+      (fundamental_group_id X Tx x0, b)
+      = b)
+    (apply_fun
+      (fundamental_group_mult X Tx x0)
+      (b, fundamental_group_id X Tx x0)
+      = b)
+    (Hid b Hb)).
+}
+claim HbaARevEqB :
+  apply_fun
+    (fundamental_group_mult X Tx x0)
+    (ba, a_rev)
+  =
+  b.
+{
+  rewrite HbaEqMultBA.
+  rewrite (Hassoc
+    b
+    a
+    a_rev
+    Hb
+    Ha
+    HaRev).
+  rewrite HaaRev.
+  rewrite HrevAId.
+  exact HrightIdOnB.
+}
+rewrite HconjAsMult.
+rewrite HcommARevBA.
+exact HbaARevEqB.
+Qed.
+
 (** from S52 Exercise 3 (line 498 in algtop.tex) **)
 (** LATEX VERSION: pi1(X,x0) is abelian iff for every pair alpha, beta of paths from x0 to x1, alpha-hat = beta-hat. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-(** Lock Charlie 1771382700 **)
+(** Collected Charlie 110 **)
+(** Proven Charlie **)
 Theorem ex52_3_abelian_iff_unique_basepoint_change : forall X Tx x0:set,
   path_connected_space X Tx -> x0 :e X ->
   ((forall a b:set, a :e fundamental_group X Tx x0 -> b :e fundamental_group X Tx x0 ->
@@ -38024,7 +38866,10 @@ apply iffI.
   let cls.
   assume Hcls.
   set delta := path_concat alpha (reverse_path beta).
-  set delta_cls := path_homotopy_class_loop X Tx x0 delta.
+  set loop_beta := path_concat beta (reverse_path beta).
+  set alpha_hat := basepoint_change_map X Tx x0 x1 alpha.
+  set beta_hat := basepoint_change_map X Tx x0 x1 beta.
+  set rev_beta_hat := basepoint_change_map X Tx x1 x0 (reverse_path beta).
   claim HrevBetaCont :
     continuous_map unit_interval unit_interval_topology X Tx (reverse_path beta).
   {
@@ -38044,121 +38889,302 @@ apply iffI.
     rewrite (reverse_path_at_one beta).
     exact Hbeta0.
   }
-  claim HdeltaCls :
-    delta_cls :e fundamental_group X Tx x0.
+  claim HdeltaLoop :
+    delta :e loop_space X Tx x0.
   {
-    claim HdeltaLoop :
-      delta :e loop_space X Tx x0.
-    {
-      exact (path_concat_opposite_paths_in_loop_space_s52
-        X
-        Tx
-        x0
-        x1
-        alpha
-        (reverse_path beta)
-        HalphaCont
-        HrevBetaCont
-        Halpha0
-        Halpha1
-        HrevBeta0
-        HrevBeta1).
-    }
-    exact (path_homotopy_class_in_fundamental_group
-      X
-      Tx
-      x0
-      delta
-      HdeltaLoop).
-  }
-  claim HcommDelta :
-    apply_fun (fundamental_group_mult X Tx x0) (cls, delta_cls)
-    = apply_fun (fundamental_group_mult X Tx x0) (delta_cls, cls).
-  {
-    exact (Habel
-      cls
-      delta_cls
-      Hcls
-      HdeltaCls).
-  }
-  claim HconjPair :
-    (apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls
-      =
-     apply_fun (basepoint_change_map X Tx x0 x1 beta)
-       (apply_fun (fundamental_group_mult X Tx x0) (cls, delta_cls)))
-    /\
-    (apply_fun (basepoint_change_map X Tx x0 x1 beta) cls
-      =
-     apply_fun (basepoint_change_map X Tx x0 x1 beta)
-       (apply_fun (fundamental_group_mult X Tx x0) (delta_cls, cls))).
-  {
-    exact (ex52_3_helper_conj_pair
+    exact (path_concat_opposite_paths_in_loop_space_s52
       X
       Tx
       x0
       x1
       alpha
-      beta
-      cls
-      delta_cls
-      HtopX
+      (reverse_path beta)
       HalphaCont
-      HbetaCont
+      HrevBetaCont
       Halpha0
       Halpha1
-      Hbeta0
-      Hbeta1
+      HrevBeta0
+      HrevBeta1).
+  }
+  claim HdeltaFixed :
+    apply_fun (basepoint_change_map X Tx x0 x0 delta) cls = cls.
+  {
+    exact (ex52_3_helper_abelian_loop_fixed
+      X
+      Tx
+      x0
+      delta
+      cls
+      HtopX
+      Hx0
+      HdeltaLoop
       Hcls
-      HdeltaCls
       Habel).
   }
-  claim HalphaAsConj :
-    apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls
-    =
-    apply_fun (basepoint_change_map X Tx x0 x1 beta)
-      (apply_fun (fundamental_group_mult X Tx x0) (cls, delta_cls)).
+  claim HloopBetaLoop :
+    loop_beta :e loop_space X Tx x0.
   {
-    exact (andEL
-      (apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls
-        =
-       apply_fun (basepoint_change_map X Tx x0 x1 beta)
-         (apply_fun (fundamental_group_mult X Tx x0) (cls, delta_cls)))
-      (apply_fun (basepoint_change_map X Tx x0 x1 beta) cls
-        =
-       apply_fun (basepoint_change_map X Tx x0 x1 beta)
-         (apply_fun (fundamental_group_mult X Tx x0) (delta_cls, cls)))
-      HconjPair).
+    exact (path_concat_opposite_paths_in_loop_space_s52
+      X
+      Tx
+      x0
+      x1
+      beta
+      (reverse_path beta)
+      HbetaCont
+      HrevBetaCont
+      Hbeta0
+      Hbeta1
+      HrevBeta0
+      HrevBeta1).
   }
-  claim HbetaAsConj :
-    apply_fun (basepoint_change_map X Tx x0 x1 beta) cls
-    =
-    apply_fun (basepoint_change_map X Tx x0 x1 beta)
-      (apply_fun (fundamental_group_mult X Tx x0) (delta_cls, cls)).
+  claim HloopBetaFixed :
+    apply_fun (basepoint_change_map X Tx x0 x0 loop_beta) cls = cls.
   {
-    exact (andER
-      (apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls
-        =
-       apply_fun (basepoint_change_map X Tx x0 x1 beta)
-         (apply_fun (fundamental_group_mult X Tx x0) (cls, delta_cls)))
-      (apply_fun (basepoint_change_map X Tx x0 x1 beta) cls
-        =
-       apply_fun (basepoint_change_map X Tx x0 x1 beta)
-         (apply_fun (fundamental_group_mult X Tx x0) (delta_cls, cls)))
-      HconjPair).
+    exact (ex52_3_helper_abelian_loop_fixed
+      X
+      Tx
+      x0
+      loop_beta
+      cls
+      HtopX
+      Hx0
+      HloopBetaLoop
+      Hcls
+      Habel).
   }
-  claim HcommTransport :
-    apply_fun (basepoint_change_map X Tx x0 x1 beta)
-      (apply_fun (fundamental_group_mult X Tx x0) (cls, delta_cls))
+  claim HrevBetaAlphaEqDelta :
+    apply_fun rev_beta_hat (apply_fun alpha_hat cls)
     =
-    apply_fun (basepoint_change_map X Tx x0 x1 beta)
-      (apply_fun (fundamental_group_mult X Tx x0) (delta_cls, cls)).
+    apply_fun (basepoint_change_map X Tx x0 x0 delta) cls.
   {
-    rewrite HcommDelta.
+    claim HdeltaComp :
+      apply_fun (basepoint_change_map X Tx x0 x0 delta) cls
+      =
+      apply_fun
+        (compose_fun
+          (fundamental_group X Tx x0)
+          alpha_hat
+          rev_beta_hat)
+        cls.
+    {
+      exact (ex52_2_basepoint_composition
+        X
+        Tx
+        x0
+        x1
+        x0
+        alpha
+        (reverse_path beta)
+        HtopX
+        HalphaCont
+        HrevBetaCont
+        Halpha0
+        Halpha1
+        HrevBeta0
+        HrevBeta1
+        cls
+        Hcls).
+    }
+    claim HcomposeApply :
+      apply_fun
+        (compose_fun
+          (fundamental_group X Tx x0)
+          alpha_hat
+          rev_beta_hat)
+        cls
+      =
+      apply_fun rev_beta_hat (apply_fun alpha_hat cls).
+    {
+      exact (compose_fun_apply
+        (fundamental_group X Tx x0)
+        alpha_hat
+        rev_beta_hat
+        cls
+        Hcls).
+    }
+    rewrite <- HcomposeApply.
+    symmetry.
+    exact HdeltaComp.
+  }
+  claim HrevBetaAlphaEqCls :
+    apply_fun rev_beta_hat (apply_fun alpha_hat cls) = cls.
+  {
+    rewrite HrevBetaAlphaEqDelta.
+    exact HdeltaFixed.
+  }
+  claim HrevBetaBetaEqLoop :
+    apply_fun rev_beta_hat (apply_fun beta_hat cls)
+    =
+    apply_fun (basepoint_change_map X Tx x0 x0 loop_beta) cls.
+  {
+    claim HloopComp :
+      apply_fun (basepoint_change_map X Tx x0 x0 loop_beta) cls
+      =
+      apply_fun
+        (compose_fun
+          (fundamental_group X Tx x0)
+          beta_hat
+          rev_beta_hat)
+        cls.
+    {
+      exact (ex52_2_basepoint_composition
+        X
+        Tx
+        x0
+        x1
+        x0
+        beta
+        (reverse_path beta)
+        HtopX
+        HbetaCont
+        HrevBetaCont
+        Hbeta0
+        Hbeta1
+        HrevBeta0
+        HrevBeta1
+        cls
+        Hcls).
+    }
+    claim HcomposeApply :
+      apply_fun
+        (compose_fun
+          (fundamental_group X Tx x0)
+          beta_hat
+          rev_beta_hat)
+        cls
+      =
+      apply_fun rev_beta_hat (apply_fun beta_hat cls).
+    {
+      exact (compose_fun_apply
+        (fundamental_group X Tx x0)
+        beta_hat
+        rev_beta_hat
+        cls
+        Hcls).
+    }
+    rewrite <- HcomposeApply.
+    symmetry.
+    exact HloopComp.
+  }
+  claim HrevBetaBetaEqCls :
+    apply_fun rev_beta_hat (apply_fun beta_hat cls) = cls.
+  {
+    rewrite HrevBetaBetaEqLoop.
+    exact HloopBetaFixed.
+  }
+  claim HalphaHom :
+    group_homomorphism
+      (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+      (fundamental_group X Tx x1) (fundamental_group_mult X Tx x1)
+      alpha_hat.
+  {
+    exact (lemma52_1_basepoint_change_homomorphism
+      X
+      Tx
+      x0
+      x1
+      alpha
+      HtopX
+      HalphaCont
+      Halpha0
+      Halpha1).
+  }
+  claim HalphaFun :
+    function_on
+      alpha_hat
+      (fundamental_group X Tx x0)
+      (fundamental_group X Tx x1).
+  {
+    exact (group_homomorphism_function_on
+      (fundamental_group X Tx x0)
+      (fundamental_group_mult X Tx x0)
+      (fundamental_group X Tx x1)
+      (fundamental_group_mult X Tx x1)
+      alpha_hat
+      HalphaHom).
+  }
+  claim HbetaHom :
+    group_homomorphism
+      (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+      (fundamental_group X Tx x1) (fundamental_group_mult X Tx x1)
+      beta_hat.
+  {
+    exact (lemma52_1_basepoint_change_homomorphism
+      X
+      Tx
+      x0
+      x1
+      beta
+      HtopX
+      HbetaCont
+      Hbeta0
+      Hbeta1).
+  }
+  claim HbetaFun :
+    function_on
+      beta_hat
+      (fundamental_group X Tx x0)
+      (fundamental_group X Tx x1).
+  {
+    exact (group_homomorphism_function_on
+      (fundamental_group X Tx x0)
+      (fundamental_group_mult X Tx x0)
+      (fundamental_group X Tx x1)
+      (fundamental_group_mult X Tx x1)
+      beta_hat
+      HbetaHom).
+  }
+  claim HalphaClsFG :
+    apply_fun alpha_hat cls :e fundamental_group X Tx x1.
+  {
+    exact (HalphaFun
+      cls
+      Hcls).
+  }
+  claim HbetaClsFG :
+    apply_fun beta_hat cls :e fundamental_group X Tx x1.
+  {
+    exact (HbetaFun
+      cls
+      Hcls).
+  }
+  claim HrevBetaBij :
+    bijection
+      (fundamental_group X Tx x1)
+      (fundamental_group X Tx x0)
+      rev_beta_hat.
+  {
+    exact (lemma52_1_basepoint_change_bijection
+      X
+      Tx
+      x1
+      x0
+      (reverse_path beta)
+      HtopX
+      HrevBetaCont
+      HrevBeta0
+      HrevBeta1).
+  }
+  claim HimagesEq :
+    apply_fun rev_beta_hat (apply_fun alpha_hat cls)
+    =
+    apply_fun rev_beta_hat (apply_fun beta_hat cls).
+  {
+    rewrite HrevBetaAlphaEqCls.
+    rewrite HrevBetaBetaEqCls.
     reflexivity.
   }
-  rewrite HalphaAsConj.
-  rewrite HbetaAsConj.
-  exact HcommTransport.
+  exact (bijection_inj
+    (fundamental_group X Tx x1)
+    (fundamental_group X Tx x0)
+    rev_beta_hat
+    (apply_fun alpha_hat cls)
+    (apply_fun beta_hat cls)
+    HrevBetaBij
+    HalphaClsFG
+    HbetaClsFG
+    HimagesEq).
 - assume Huniq.
   let a b.
   assume Ha Hb.
@@ -38265,7 +39291,7 @@ apply iffI.
     Huniq
     Ha
     Hb).
-Admitted.
+Qed.
 
 (** from S52 Exercise 4 (line 499 in algtop.tex): retraction and pi1 **)
 (** LATEX VERSION: Let r: X -> A be a retraction. If a0 in A, show that r-star: pi1(X,a0) -> pi1(A,a0) is surjective. **)
