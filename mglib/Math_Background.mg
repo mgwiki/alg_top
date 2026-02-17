@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 2264 **)
+(** Balance Charlie 2238 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -36132,7 +36132,8 @@ Qed.
 (** from S52 Exercise 6 (line 508 in algtop.tex) **)
 (** LATEX VERSION: If X path connected, h: X->Y continuous, alpha path from x0 to x1, beta=h o alpha, then beta-hat o (h_x0)-star = (h_x1)-star o alpha-hat. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 60 **)
+(** Bounty 66 **)
+(** Lock Charlie 2026-02-18T10:45:00 **)
 Theorem ex52_6_naturality : forall X Tx x0 x1 Y Ty y0 y1 h alpha:set,
   path_connected_space X Tx ->
   continuous_map X Tx Y Ty h ->
@@ -36350,7 +36351,8 @@ Qed.
 
 (** from S52 Exercise 7(b) (line 516 in algtop.tex): tensor induces operation on pi1 **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T10:45:00 **)
 Theorem ex52_7b_tensor_induces_operation : forall G Tg:set,
   topological_group G Tg ->
   forall e mult:set,
@@ -36370,7 +36372,8 @@ Admitted.
 
 (** from S52 Exercise 7(c) (line 516 in algtop.tex): star and tensor agree on pi1 **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 120 **)
+(** Bounty 132 **)
+(** Lock Charlie 2026-02-18T10:45:00 **)
 Theorem ex52_7c_star_equals_tensor : forall G Tg:set,
   topological_group G Tg ->
   forall e mult:set,
@@ -36388,7 +36391,8 @@ Admitted.
 
 (** from S52 Exercise 7(d) (line 516 in algtop.tex): pi1 of a topological group is abelian **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T10:45:00 **)
 Theorem ex52_7d_topological_group_pi1_abelian : forall G Tg:set,
   topological_group G Tg ->
   forall e:set, e :e G ->
