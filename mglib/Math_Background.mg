@@ -15749,8 +15749,58 @@ claim Hf2_1 : apply_fun f2 1 = x1.
 claim Hreparam_hom :
   path_homotopic X Tx x0 x1 f (path_concat f1 f2).
 {
-  (** TODO Charlie: build standard reparameterization homotopy from f to path_concat f1 f2. **)
-  admit.
+  claim Hconcat_cont :
+    continuous_map unit_interval unit_interval_topology X Tx (path_concat f1 f2).
+  {
+    exact (path_concat_continuous
+      X
+      Tx
+      x0
+      (apply_fun f a)
+      x1
+      f1
+      f2
+      Hf1cont
+      Hf2cont
+      Hf1_0
+      Hf1_1
+      Hf2_0
+      Hf2_1).
+  }
+  claim Hconcat_0 : apply_fun (path_concat f1 f2) 0 = x0.
+  {
+    rewrite (path_concat_at_zero f1 f2).
+    exact Hf1_0.
+  }
+  claim Hconcat_1 : apply_fun (path_concat f1 f2) 1 = x1.
+  {
+    rewrite (path_concat_at_one f1 f2).
+    exact Hf2_1.
+  }
+  prove continuous_map unit_interval unit_interval_topology X Tx f /\
+    continuous_map unit_interval unit_interval_topology X Tx (path_concat f1 f2) /\
+    apply_fun f 0 = x0 /\ apply_fun f 1 = x1 /\
+    apply_fun (path_concat f1 f2) 0 = x0 /\
+    apply_fun (path_concat f1 f2) 1 = x1 /\
+    exists F:set,
+      continuous_map unit_square unit_square_topology X Tx F /\
+      (forall s:set, s :e unit_interval ->
+        apply_fun F (s, 0) = apply_fun f s) /\
+      (forall s:set, s :e unit_interval ->
+        apply_fun F (s, 1) = apply_fun (path_concat f1 f2) s) /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun F (0, t) = x0) /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun F (1, t) = x1).
+  apply and7I.
+  - exact Hfcont.
+  - exact Hconcat_cont.
+  - exact Hf0.
+  - exact Hf1.
+  - exact Hconcat_0.
+  - exact Hconcat_1.
+  - (** TODO Charlie: explicit reparameterization homotopy witness F. **)
+    admit.
 }
 witness f1.
 witness f2.
