@@ -1,6 +1,6 @@
 (** Balance Alice 2584 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 36784 **)
+(** Balance Charlie 36724 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -52846,7 +52846,8 @@ Admitted.
 
 (** from S54 Theorem 54.4 (line 799 in algtop.tex): lifting correspondence bijective **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 60 **)
+(** Bounty 66 **)
+(** Lock Charlie 2026-02-18T12:33:05 **)
 Theorem thm54_4_lifting_correspondence_bijective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   simply_connected E Te ->
@@ -52962,7 +52963,8 @@ Definition homomorphism_image : set -> set -> set :=
 (** from S54 Theorem 54.6a (line 838 in algtop.tex) **)
 (** LATEX VERSION: The homomorphism p-star: pi_1(E,e0) -> pi_1(B,b0) is a monomorphism. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 60 **)
+(** Bounty 66 **)
+(** Lock Charlie 2026-02-18T12:33:05 **)
 Theorem thm54_6a_p_star_injective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   forall cls1 cls2:set,
@@ -53969,7 +53971,8 @@ Admitted.
 (** from S55 Theorem 55.6 (line 983 in algtop.tex): Brouwer fixed-point theorem for the disc **)
 (** LATEX VERSION: If f: B^2 -> B^2 is continuous, then there exists a point x in B^2 such that f(x) = x. **)
 (** EFFORT: 6 lines textbook, difficulty 3/10, USD 60 **)
-(** Bounty 60 **)
+(** Bounty 66 **)
+(** Lock Charlie 2026-02-18T12:33:05 **)
 Theorem thm55_6_brouwer_fixed_point_disc : forall f:set,
   continuous_map B2 B2_topology B2 B2_topology f ->
   exists x:set, x :e B2 /\ apply_fun f x = x.
@@ -63967,7 +63970,8 @@ Admitted.
 (** LATEX VERSION: If G is free with generators {a_alpha}, then G/[G,G] is a free **)
 (** abelian group with basis {[a_alpha]}. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 60 **)
+(** Bounty 66 **)
+(** Lock Charlie 2026-02-18T12:33:05 **)
 Theorem thm69_4_abelianization_free_group :
   forall G mult e inv J gens:set,
   free_group_with_generators G mult e inv J gens ->
@@ -64996,7 +65000,8 @@ Admitted.
 (** onto X-A. If n > 2, what about i-star: pi1(A,a) -> pi1(X,a)? **)
 (** Answer: it is an isomorphism (adding an n-cell with n>2 does not change pi1). **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 60 **)
+(** Bounty 66 **)
+(** Lock Charlie 2026-02-18T12:33:05 **)
 Theorem ex72_1_high_dimensional_cell :
   forall X Tx A h n:set,
   Hausdorff_space X Tx ->
@@ -65206,7 +65211,8 @@ Admitted.
 (** from S73 Exercise 4 (line 3805 in algtop.tex) **)
 (** LATEX VERSION: The space constructed in Exercise 2 is metrizable. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 60 **)
+(** Bounty 66 **)
+(** Lock Charlie 2026-02-18T12:33:05 **)
 Theorem ex73_4_two_complex_metrizable :
   forall G multG eG invG:set,
   finitely_presented G multG eG invG ->
@@ -65648,7 +65654,8 @@ Admitted.
 (** from S74 Exercise 6 (line 4032 in algtop.tex) **)
 (** LATEX VERSION: If n > 1, the fundamental group of the n-fold torus is not abelian. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 60 **)
+(** Bounty 66 **)
+(** Lock Charlie 2026-02-18T12:33:05 **)
 Theorem ex74_6_n_fold_torus_not_abelian :
   forall n:set, n :e omega -> 1 :e n ->
   forall x0:set, x0 :e n_fold_torus_space n ->
@@ -65663,7 +65670,8 @@ Admitted.
 (** from S74 Exercise 7 (line 4033 in algtop.tex) **)
 (** LATEX VERSION: If m > 1, the fundamental group of the m-fold projective plane is not abelian. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 60 **)
+(** Bounty 66 **)
+(** Lock Charlie 2026-02-18T12:33:05 **)
 Theorem ex74_7_m_fold_projective_not_abelian :
   forall m:set, m :e omega -> 1 :e m ->
   forall x0:set, x0 :e m_fold_projective_plane_space m ->
@@ -67158,7 +67166,8 @@ Qed.
 (** from S80 Exercise 1(b) (line 5013 in algtop.tex) **)
 (** LATEX VERSION: Give an example where q and r are covering maps but p = r o q is not. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 60 **)
+(** Bounty 66 **)
+(** Lock Charlie 2026-02-18T12:33:05 **)
 Theorem ex80_1b_composition_not_covering :
   exists X Tx Y Ty Z Tz q r:set,
     covering_map X Tx Y Ty q /\
@@ -67508,7 +67517,8 @@ Admitted.
 (** from S81 Exercise 3(b) (line 5200 in algtop.tex) **)
 (** LATEX VERSION: Show there exists a covering map k: X/G -> B with k o pi = p. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 60 **)
+(** Bounty 66 **)
+(** Lock Charlie 2026-02-18T12:33:05 **)
 Theorem ex81_3b_quotient_covering :
   forall X Tx B Tb p:set,
   covering_map X Tx B Tb p ->
