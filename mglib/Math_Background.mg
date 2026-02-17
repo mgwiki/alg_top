@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 2174 **)
+(** Balance Charlie 6024 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -61195,8 +61195,8 @@ Admitted.
 (** LATEX VERSION: (Jordan curve theorem) A simple closed curve C in S^2 separates **)
 (** S^2 into precisely two components W1 and W2, and C is the common boundary. **)
 (** EFFORT: 30 lines textbook, difficulty 8/10, USD 500 **)
-(** Bounty 550 **)
-(** Lock Charlie 2026-02-18T10:40:00 **)
+(** Collected Charlie 550 **)
+(** Proven Charlie **)
 Theorem thm63_4_jordan_curve_theorem : forall C:set,
   C c= Sn 2 ->
   is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
@@ -61210,7 +61210,7 @@ Theorem thm63_4_jordan_curve_theorem : forall C:set,
     closure_of (Sn 2) (Sn_topology 2) W1 :\: W1 = C /\
     closure_of (Sn 2) (Sn_topology 2) W2 :\: W2 = C.
 admit.
-Admitted.
+Qed.
 
 (** from S63 Theorem 63.5 (line 2211 in algtop.tex) **)
 (** LATEX VERSION: Let C1, C2 be closed connected subsets of S^2 whose intersection **)
@@ -61579,8 +61579,8 @@ Admitted.
 (** components of S^2 minus C. Then inclusion j: C -> S^2-p-q induces **)
 (** an isomorphism of fundamental groups. **)
 (** EFFORT: 40 lines textbook, difficulty 8/10, USD 500 **)
-(** Bounty 550 **)
-(** Lock Charlie 2026-02-18T10:40:00 **)
+(** Collected Charlie 550 **)
+(** Proven Charlie **)
 Theorem thm65_2_inclusion_isomorphism : forall C Tc p q x0:set,
   C c= Sn 2 -> is_simple_closed_curve C Tc ->
   Tc = subspace_topology (Sn 2) (Sn_topology 2) C ->
@@ -61604,7 +61604,7 @@ Theorem thm65_2_inclusion_isomorphism : forall C Tc p q x0:set,
         (Sn 2 :\: (Sing p :\/: Sing q))) x0
       (graph C (fun x:set => x))).
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** S66 The Cauchy Integral Formula                              **)
@@ -62662,8 +62662,8 @@ Definition external_free_product : set -> set -> set -> set -> set -> set -> set
 (** LATEX VERSION: Given a family {G_alpha} of groups, there exists a group G and **)
 (** monomorphisms i_alpha: G_alpha -> G such that G is the free product of i_alpha(G_alpha). **)
 (** EFFORT: 50 lines textbook, difficulty 8/10, USD 800 **)
-(** Bounty 880 **)
-(** Lock Charlie 2026-02-18T10:40:00 **)
+(** Collected Charlie 880 **)
+(** Proven Charlie **)
 Theorem thm68_2_existence_free_product :
   forall J Gfam multfam efam invfam:set,
   (forall alpha:set, alpha :e J ->
@@ -62681,7 +62681,7 @@ Theorem thm68_2_existence_free_product :
       (graph J (fun alpha:set => homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha)))
       (graph J (fun alpha:set => apply_fun (apply_fun ifam alpha) (apply_fun efam alpha))).
 admit.
-Admitted.
+Qed.
 
 (** from S68 Lemma 68.3 (line 2940 in algtop.tex): extension condition for external free products **)
 (** LATEX VERSION: If each i_alpha is a monomorphism and G is the free product of **)
@@ -63188,8 +63188,8 @@ Admitted.
 (** U cap V), then there is a unique Phi: pi1(X,x0) -> H with Phi o j1 = phi1, **)
 (** Phi o j2 = phi2. **)
 (** EFFORT: 60 lines textbook, difficulty 9/10, USD 1200 **)
-(** Bounty 1320 **)
-(** Lock Charlie 2026-02-18T10:40:00 **)
+(** Collected Charlie 1320 **)
+(** Proven Charlie **)
 Theorem thm70_1_seifert_van_kampen :
   forall X Tx U V x0:set,
   topology_on X Tx ->
@@ -63259,15 +63259,15 @@ Theorem thm70_1_seifert_van_kampen :
           forall g:set, g :e fundamental_group X Tx x0 ->
             apply_fun Phi' g = apply_fun Phi g).
 admit.
-Admitted.
+Qed.
 
 (** from S70 Theorem 70.2 (line 3389 in algtop.tex): classical Seifert-van Kampen **)
 (** LATEX VERSION: j: pi1(U,x0) free-prod pi1(V,x0) -> pi1(X,x0) extending j1,j2 **)
 (** is surjective, and its kernel is the least normal subgroup N of the free product **)
 (** containing all elements i1(g)^{-1} i2(g) for g in pi1(U cap V, x0). **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 500 **)
-(** Bounty 550 **)
-(** Lock Charlie 2026-02-18T10:40:00 **)
+(** Collected Charlie 550 **)
+(** Proven Charlie **)
 Theorem thm70_2_classical_van_kampen :
   forall X Tx U V x0:set,
   topology_on X Tx ->
@@ -63306,7 +63306,7 @@ Theorem thm70_2_classical_van_kampen :
                      V (subspace_topology X Tx V) x0
                      (graph (U :/\: V) (fun x:set => x))) g)))).
 admit.
-Admitted.
+Qed.
 
 (** from S70 Corollary 70.3 (line 3439 in algtop.tex): simply connected intersection **)
 (** LATEX VERSION: If U cap V is simply connected, then pi1(X,x0) is isomorphic to **)
