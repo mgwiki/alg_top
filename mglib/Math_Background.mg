@@ -18280,7 +18280,50 @@ claim HsurjUnique :
       (forall x':set, x' :e fundamental_group X Tx x0 ->
         apply_fun (basepoint_change_map X Tx x0 x1 alpha) x' = y -> x' = x).
 {
-  admit.
+  let y.
+  assume Hy.
+  claim HbetaHom :
+    group_homomorphism
+      (fundamental_group X Tx x1) (fundamental_group_mult X Tx x1)
+      (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+      (basepoint_change_map X Tx x1 x0 beta).
+  {
+    exact (lemma52_1_basepoint_change_homomorphism
+      X
+      Tx
+      x1
+      x0
+      beta
+      HtopX
+      HbetaCont
+      Hbeta0
+      Hbeta1).
+  }
+  claim HbetaFun :
+    function_on
+      (basepoint_change_map X Tx x1 x0 beta)
+      (fundamental_group X Tx x1)
+      (fundamental_group X Tx x0).
+  {
+    exact (group_homomorphism_function_on
+      (fundamental_group X Tx x1)
+      (fundamental_group_mult X Tx x1)
+      (fundamental_group X Tx x0)
+      (fundamental_group_mult X Tx x0)
+      (basepoint_change_map X Tx x1 x0 beta)
+      HbetaHom).
+  }
+  set x := apply_fun (basepoint_change_map X Tx x1 x0 beta) y.
+  claim Hx : x :e fundamental_group X Tx x0.
+  {
+    exact (HbetaFun y Hy).
+  }
+  witness x.
+  apply andI.
+  - apply andI.
+    + exact Hx.
+    + admit.
+  - admit.
 }
 exact (andI
   (function_on
