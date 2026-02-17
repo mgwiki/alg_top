@@ -1,6 +1,6 @@
 (** Balance Alice 2510 **)
 (** Balance Bob 2808 **)
-(** Balance Charlie 1476 **)
+(** Balance Charlie 1536 **)
 
 (** Sum of Balences and Bounties 48150 **)
 
@@ -35979,7 +35979,8 @@ Admitted.
 
 (** from S52 Exercise 7(a) (line 516 in algtop.tex): tensor operation on loops is a group operation **)
 (** EFFORT: 8 lines textbook, difficulty 3/10, USD 60 **)
-(** Bounty 60 **)
+(** Collected Charlie 60 **)
+(** Proven Charlie **)
 Theorem ex52_7a_tensor_loop_group : forall G Tg:set,
   topological_group G Tg ->
   forall e mult inv:set,
@@ -35994,8 +35995,181 @@ Theorem ex52_7a_tensor_loop_group : forall G Tg:set,
     loop_at G Tg e f -> loop_at G Tg e g ->
     loop_at G Tg e
       (graph unit_interval (fun s:set => apply_fun mult (apply_fun f s, apply_fun g s))).
-admit.
-Admitted.
+let G Tg.
+assume _.
+let e mult inv.
+assume He HmultFun _ Hident _ HmultCont.
+let f g.
+assume HfLoop HgLoop.
+set tensor_loop := graph unit_interval (fun s:set => apply_fun mult (apply_fun f s, apply_fun g s)).
+claim HfCont : continuous_map unit_interval unit_interval_topology G Tg f.
+{
+  exact (loop_at_continuous G Tg e f HfLoop).
+}
+claim HgCont : continuous_map unit_interval unit_interval_topology G Tg g.
+{
+  exact (loop_at_continuous G Tg e g HgLoop).
+}
+claim HpairCont :
+  continuous_map unit_interval unit_interval_topology
+    (setprod G G) (product_topology G Tg G Tg)
+    (pair_map unit_interval f g).
+{
+  exact (maps_into_products
+    unit_interval
+    unit_interval_topology
+    G
+    Tg
+    G
+    Tg
+    f
+    g
+    HfCont
+    HgCont).
+}
+claim HcompCont :
+  continuous_map unit_interval unit_interval_topology G Tg
+    (compose_fun unit_interval (pair_map unit_interval f g) mult).
+{
+  exact (composition_continuous
+    unit_interval
+    unit_interval_topology
+    (setprod G G)
+    (product_topology G Tg G Tg)
+    G
+    Tg
+    (pair_map unit_interval f g)
+    mult
+    HpairCont
+    HmultCont).
+}
+claim HtensorFS : tensor_loop :e function_space unit_interval G.
+{
+  exact (graph_in_function_space
+    unit_interval
+    G
+    (fun s:set => apply_fun mult (apply_fun f s, apply_fun g s))
+    (fun s Hs =>
+      HmultFun
+        (apply_fun f s, apply_fun g s)
+        (tuple_2_setprod_by_pair_Sigma
+          G
+          G
+          (apply_fun f s)
+          (apply_fun g s)
+          (continuous_map_function_on
+            unit_interval
+            unit_interval_topology
+            G
+            Tg
+            f
+            HfCont
+            s
+            Hs)
+          (continuous_map_function_on
+            unit_interval
+            unit_interval_topology
+            G
+            Tg
+            g
+            HgCont
+            s
+            Hs)))).
+}
+claim HtensorFun : function_on tensor_loop unit_interval G.
+{
+  exact (function_on_of_function_space
+    tensor_loop
+    unit_interval
+    G
+    HtensorFS).
+}
+claim HcompEq :
+  forall s:set, s :e unit_interval ->
+    apply_fun (compose_fun unit_interval (pair_map unit_interval f g) mult) s
+    = apply_fun tensor_loop s.
+{
+  let s.
+  assume Hs.
+  rewrite (compose_fun_apply
+    unit_interval
+    (pair_map unit_interval f g)
+    mult
+    s
+    Hs).
+  rewrite (pair_map_apply unit_interval G G f g s Hs).
+  rewrite (apply_fun_graph
+    unit_interval
+    (fun t:set => apply_fun mult (apply_fun f t, apply_fun g t))
+    s
+    Hs).
+  reflexivity.
+}
+claim HtensorCont : continuous_map unit_interval unit_interval_topology G Tg tensor_loop.
+{
+  exact (continuous_map_congr_on
+    unit_interval
+    unit_interval_topology
+    G
+    Tg
+    (compose_fun unit_interval (pair_map unit_interval f g) mult)
+    tensor_loop
+    HcompCont
+    HtensorFun
+    HcompEq).
+}
+claim Hf0 : apply_fun f 0 = e.
+{
+  exact (loop_at_at_zero G Tg e f HfLoop).
+}
+claim Hg0 : apply_fun g 0 = e.
+{
+  exact (loop_at_at_zero G Tg e g HgLoop).
+}
+claim Hf1 : apply_fun f 1 = e.
+{
+  exact (loop_at_at_one G Tg e f HfLoop).
+}
+claim Hg1 : apply_fun g 1 = e.
+{
+  exact (loop_at_at_one G Tg e g HgLoop).
+}
+claim HmulEe : apply_fun mult (e, e) = e.
+{
+  exact (andEL
+    (apply_fun mult (e, e) = e)
+    (apply_fun mult (e, e) = e)
+    (Hident e He)).
+}
+claim Htensor0 : apply_fun tensor_loop 0 = e.
+{
+  rewrite (apply_fun_graph
+    unit_interval
+    (fun s:set => apply_fun mult (apply_fun f s, apply_fun g s))
+    0
+    zero_in_unit_interval).
+  rewrite Hf0.
+  rewrite Hg0.
+  exact HmulEe.
+}
+claim Htensor1 : apply_fun tensor_loop 1 = e.
+{
+  rewrite (apply_fun_graph
+    unit_interval
+    (fun s:set => apply_fun mult (apply_fun f s, apply_fun g s))
+    1
+    one_in_unit_interval).
+  rewrite Hf1.
+  rewrite Hg1.
+  exact HmulEe.
+}
+apply (loop_at_fold G Tg e tensor_loop).
+apply andI.
+- apply andI.
+  + exact HtensorCont.
+  + exact Htensor0.
+- exact Htensor1.
+Qed.
 
 (** from S52 Exercise 7(b) (line 516 in algtop.tex): tensor induces operation on pi1 **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
