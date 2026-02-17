@@ -33687,6 +33687,14 @@ claim HbaseId :
     alpha
     HalphaPath).
 }
+claim Hdesired_cls :
+  apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun k x0) k) cls =
+  fundamental_group_id Y Ty (apply_fun k x0).
+{
+  rewrite HkTransport.
+  rewrite (HhTriv cls Hcls).
+  exact HbaseId.
+}
 admit.
 Admitted.
 
