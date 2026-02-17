@@ -53662,8 +53662,211 @@ claim HFt_54_cont :
         rewrite <- HpFtqEqFq.
         exact HgqFtq.
       }
-      (** TODO Charlie: show Ft_54 and Ft_local_N agree on a neighborhood of q in N; then use continuous_map_congr_on with HFtLocalContE. **)
-      admit.
+      claim HFt54FunN : function_on Ft_54 N E.
+      {
+        claim HFt54FunSq : function_on Ft_54 unit_square E.
+        {
+          apply (total_function_on_function_on Ft_54 unit_square E).
+          apply (total_function_on_graph
+            unit_square
+            E
+            (fun z:set =>
+              apply_fun
+                (path_lift E Te B Tb p
+                  (apply_fun (path_lift E Te B Tb p e0 g0_54)
+                    (apply_fun (projection_map1 unit_interval unit_interval) z))
+                  (apply_fun vs_choice_54
+                    (apply_fun (projection_map1 unit_interval unit_interval) z)))
+                (apply_fun (projection_map2 unit_interval unit_interval) z))).
+          let z.
+          assume HzSq.
+          claim Hz0I : z 0 :e unit_interval.
+          {
+            exact (ap0_Sigma
+              unit_interval
+              (fun _ : set => unit_interval)
+              z
+              HzSq).
+          }
+          claim Hz1I : z 1 :e unit_interval.
+          {
+            exact (ap1_Sigma
+              unit_interval
+              (fun _ : set => unit_interval)
+              z
+              HzSq).
+          }
+          claim HpathCont_z0 :
+            continuous_map unit_interval unit_interval_topology E Te
+              (path_lift E Te B Tb p
+                (apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0))
+                (apply_fun vs_choice_54 (z 0))).
+          {
+            claim Hpack_noF :
+              ((((continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice_54 (z 0)) /\
+                apply_fun (apply_fun vs_choice_54 (z 0)) 0 = apply_fun F (z 0, 0)) /\
+                continuous_map unit_interval unit_interval_topology E Te
+                  (path_lift E Te B Tb p
+                    (apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0))
+                    (apply_fun vs_choice_54 (z 0)))) /\
+                apply_fun (path_lift E Te B Tb p
+                  (apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0))
+                  (apply_fun vs_choice_54 (z 0))) 0
+                  = apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0)) /\
+                (forall t:set, t :e unit_interval ->
+                  apply_fun p
+                    (apply_fun (path_lift E Te B Tb p
+                      (apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0))
+                      (apply_fun vs_choice_54 (z 0))) t)
+                  = apply_fun (apply_fun vs_choice_54 (z 0)) t)).
+            {
+              exact (andEL
+                ((((continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice_54 (z 0)) /\
+                  apply_fun (apply_fun vs_choice_54 (z 0)) 0 = apply_fun F (z 0, 0)) /\
+                  continuous_map unit_interval unit_interval_topology E Te
+                    (path_lift E Te B Tb p
+                      (apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0))
+                      (apply_fun vs_choice_54 (z 0)))) /\
+                  apply_fun (path_lift E Te B Tb p
+                    (apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0))
+                    (apply_fun vs_choice_54 (z 0))) 0
+                    = apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0)) /\
+                  (forall t:set, t :e unit_interval ->
+                    apply_fun p
+                      (apply_fun (path_lift E Te B Tb p
+                        (apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0))
+                        (apply_fun vs_choice_54 (z 0))) t)
+                    = apply_fun (apply_fun vs_choice_54 (z 0)) t))
+                (forall t:set, t :e unit_interval ->
+                  apply_fun (apply_fun vs_choice_54 (z 0)) t = apply_fun F (z 0, t))
+                (Hvs_choice_54_pack (z 0) Hz0I)).
+            }
+            claim Hpack_noE :
+              (((continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice_54 (z 0)) /\
+                apply_fun (apply_fun vs_choice_54 (z 0)) 0 = apply_fun F (z 0, 0)) /\
+                continuous_map unit_interval unit_interval_topology E Te
+                  (path_lift E Te B Tb p
+                    (apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0))
+                    (apply_fun vs_choice_54 (z 0)))) /\
+                apply_fun (path_lift E Te B Tb p
+                  (apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0))
+                  (apply_fun vs_choice_54 (z 0))) 0
+                  = apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0)).
+            {
+              exact (andEL
+                (((continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice_54 (z 0)) /\
+                  apply_fun (apply_fun vs_choice_54 (z 0)) 0 = apply_fun F (z 0, 0)) /\
+                  continuous_map unit_interval unit_interval_topology E Te
+                    (path_lift E Te B Tb p
+                      (apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0))
+                      (apply_fun vs_choice_54 (z 0)))) /\
+                  apply_fun (path_lift E Te B Tb p
+                    (apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0))
+                    (apply_fun vs_choice_54 (z 0))) 0
+                    = apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0))
+                (forall t:set, t :e unit_interval ->
+                  apply_fun p
+                    (apply_fun (path_lift E Te B Tb p
+                      (apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0))
+                      (apply_fun vs_choice_54 (z 0))) t)
+                    = apply_fun (apply_fun vs_choice_54 (z 0)) t)
+                Hpack_noF).
+            }
+            claim Hpack_noD :
+              ((continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice_54 (z 0)) /\
+                apply_fun (apply_fun vs_choice_54 (z 0)) 0 = apply_fun F (z 0, 0)) /\
+                continuous_map unit_interval unit_interval_topology E Te
+                  (path_lift E Te B Tb p
+                    (apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0))
+                    (apply_fun vs_choice_54 (z 0)))).
+            {
+              exact (andEL
+                ((continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice_54 (z 0)) /\
+                  apply_fun (apply_fun vs_choice_54 (z 0)) 0 = apply_fun F (z 0, 0)) /\
+                  continuous_map unit_interval unit_interval_topology E Te
+                    (path_lift E Te B Tb p
+                      (apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0))
+                      (apply_fun vs_choice_54 (z 0))))
+                (apply_fun (path_lift E Te B Tb p
+                  (apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0))
+                  (apply_fun vs_choice_54 (z 0))) 0
+                  = apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0))
+                Hpack_noE).
+            }
+            exact (andER
+              (continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice_54 (z 0)) /\
+                apply_fun (apply_fun vs_choice_54 (z 0)) 0 = apply_fun F (z 0, 0))
+              (continuous_map unit_interval unit_interval_topology E Te
+                (path_lift E Te B Tb p
+                  (apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0))
+                  (apply_fun vs_choice_54 (z 0))))
+              Hpack_noD).
+          }
+          claim HpathFun_z0 :
+            function_on
+              (path_lift E Te B Tb p
+                (apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0))
+                (apply_fun vs_choice_54 (z 0)))
+              unit_interval
+              E.
+          {
+            exact (continuous_map_function_on
+              unit_interval
+              unit_interval_topology
+              E
+              Te
+              (path_lift E Te B Tb p
+                (apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0))
+                (apply_fun vs_choice_54 (z 0)))
+              HpathCont_z0).
+          }
+          claim HtargetE :
+            apply_fun
+              (path_lift E Te B Tb p
+                (apply_fun (path_lift E Te B Tb p e0 g0_54)
+                  (apply_fun (projection_map1 unit_interval unit_interval) z))
+                (apply_fun vs_choice_54
+                  (apply_fun (projection_map1 unit_interval unit_interval) z)))
+              (apply_fun (projection_map2 unit_interval unit_interval) z) :e E.
+          {
+            rewrite (projection1_apply
+              unit_interval
+              unit_interval
+              z
+              HzSq).
+            rewrite (projection2_apply
+              unit_interval
+              unit_interval
+              z
+              HzSq).
+            exact (HpathFun_z0 (z 1) Hz1I).
+          }
+          exact HtargetE.
+        }
+        exact (function_on_subdomain
+          Ft_54
+          unit_square
+          E
+          N
+          HFt54FunSq
+          HNsubSq).
+      }
+      claim HFtEqOnN :
+        forall z:set, z :e N -> apply_fun Ft_local_N z = apply_fun Ft_54 z.
+      {
+        (** TODO Charlie: prove local equality on N using sheet uniqueness around q. **)
+        admit.
+      }
+      exact (continuous_map_congr_on
+        N
+        (subspace_topology unit_square unit_square_topology N)
+        E
+        Te
+        Ft_local_N
+        Ft_54
+        HFtLocalContE
+        HFt54FunN
+        HFtEqOnN).
     }
     witness N.
     exact (andI
