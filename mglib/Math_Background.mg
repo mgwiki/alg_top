@@ -1,5 +1,5 @@
 (** Balance Alice 2160 **)
-(** Balance Bob 1807 **)
+(** Balance Bob 1796 **)
 (** Balance Charlie 1223 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -13818,7 +13818,8 @@ Qed.
 
 (** from S51 Exercise 3(a) (line 327 in algtop.tex): R is contractible **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Bob 2026-02-18T01:30:00 **)
 Theorem ex51_3a_R_contractible : contractible_space R R_standard_topology.
 admit.
 Admitted.
@@ -13826,7 +13827,8 @@ Admitted.
 (** from S51 Exercise 3b (line 335 in algtop.tex) **)
 (** LATEX VERSION: A contractible space is path connected. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 60 **)
+(** Bounty 66 **)
+(** Lock Bob 2026-02-18T01:30:00 **)
 Theorem ex51_3b_contractible_path_connected : forall X Tx:set,
   contractible_space X Tx -> path_connected_space X Tx.
 admit.
