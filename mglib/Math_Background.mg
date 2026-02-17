@@ -1,6 +1,6 @@
 (** Balance Alice 2434 **)
 (** Balance Bob 2808 **)
-(** Balance Charlie 1586 **)
+(** Balance Charlie 1581 **)
 
 (** Sum of Balences and Bounties 48150 **)
 
@@ -36115,7 +36115,8 @@ Qed.
 (** from S52 Exercise 5 (line 507 in algtop.tex) **)
 (** LATEX VERSION: If h: (A,a0)->(Y,y0) is extendable to Rn, then h-star is the trivial homomorphism. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T08:50:00 **)
 Theorem ex52_5_extendable_trivial : forall A Ta a0 Y Ty y0 h:set,
   A c= R ->
   topology_on A Ta -> topology_on Y Ty ->
