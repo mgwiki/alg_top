@@ -49174,13 +49174,6 @@ apply andI.
   exact (EmptyE (apply_fun ft2 t) Hft2Empty False).
 Qed.
 
-(** from S54 Lemma 54.1 (line 715 in algtop.tex) **)
-(** LATEX VERSION: Let p: E -> B be a covering map, p(e0) = b0. Any path f:[0,1] -> B **)
-(** beginning at b0 has a unique lifting to a path in E beginning at e0. **)
-(** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 132 **)
-(** Lock Bob 2026-02-18T10:30:00 **)
-
 (** from S54 Lemma 54.1 (temporary sub-bounty A) **)
 (** LATEX VERSION: Any point of the base has an evenly covered neighborhood under a covering map. **)
 (** EFFORT: 1 line, difficulty 1/10, USD 10 **)
@@ -49243,6 +49236,12 @@ apply andI.
     HuN).
 Qed.
 
+(** from S54 Lemma 54.1 (line 715 in algtop.tex) **)
+(** LATEX VERSION: Let p: E -> B be a covering map, p(e0) = b0. Any path f:[0,1] -> B **)
+(** beginning at b0 has a unique lifting to a path in E beginning at e0. **)
+(** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
+(** Bounty 132 **)
+(** Lock Bob 2026-02-18T10:30:00 **)
 Theorem lemma54_1_path_lifting : forall E Te B Tb p e0 f:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun f 0 ->
