@@ -68124,12 +68124,12 @@ claim Hx0UV : z0 :e U :/\: V.
 claim HscU_ex : exists x0:set, x0 :e U /\
   fundamental_group U (subspace_topology X Tx U) x0 =
     {fundamental_group_id U (subspace_topology X Tx U) x0}.
-{ exact (andER
-    (path_connected_space U (subspace_topology X Tx U))
-    (exists x0:set, x0 :e U /\
-      fundamental_group U (subspace_topology X Tx U) x0 =
-        {fundamental_group_id U (subspace_topology X Tx U) x0})
-    HscU). }
+{
+  exact (simply_connected_trivial_pi1_witness
+    U
+    (subspace_topology X Tx U)
+    HscU).
+}
 (** Use Cor 52.2 to get pi1(U,z0) trivial from any basepoint **)
 claim Hpi1U_trivial :
   fundamental_group U (subspace_topology X Tx U) z0 =
@@ -68310,12 +68310,12 @@ claim Hj_triv : forall cls:set,
   { claim HscV_ex : exists x0:set, x0 :e V /\
       fundamental_group V (subspace_topology X Tx V) x0 =
         {fundamental_group_id V (subspace_topology X Tx V) x0}.
-    { exact (andER
-        (path_connected_space V (subspace_topology X Tx V))
-        (exists x0:set, x0 :e V /\
-          fundamental_group V (subspace_topology X Tx V) x0 =
-            {fundamental_group_id V (subspace_topology X Tx V) x0})
-        HscV). }
+    {
+      exact (simply_connected_trivial_pi1_witness
+        V
+        (subspace_topology X Tx V)
+        HscV).
+    }
     apply HscV_ex.
     let x0_V.
     assume Hx0V_pack : x0_V :e V /\
