@@ -33606,6 +33606,96 @@ Theorem cor58_5_homotopic_maps_trivial : forall X Tx Y Ty x0 h k:set,
 admit.
 Admitted.
 
+(** helper: a constant map induces the trivial map on fundamental groups **)
+(** Proven Bob **)
+Theorem lemma58_constant_map_induced_trivial : forall X Tx Y Ty x0 y0 cls:set,
+  x0 :e X ->
+  y0 :e Y ->
+  cls :e fundamental_group X Tx x0 ->
+  apply_fun (induced_homomorphism X Tx x0 Y Ty y0 (const_fun X y0)) cls =
+  fundamental_group_id Y Ty y0.
+let X Tx Y Ty x0 y0 cls.
+assume Hx0 Hy0 Hcls.
+set eps := Eps_i (fun f:set => f :e cls).
+claim HepsLoop : eps :e loop_space X Tx x0.
+{
+  exact (eps_of_fundamental_group_member_in_loop_space
+    X Tx x0 cls Hcls).
+}
+claim HepsAt : loop_at X Tx x0 eps.
+{
+  exact (loop_space_has_loop_at
+    X Tx x0 eps HepsLoop).
+}
+claim HepsCont : continuous_map unit_interval unit_interval_topology X Tx eps.
+{
+  exact (loop_at_continuous
+    X Tx x0 eps HepsAt).
+}
+claim HepsFun : function_on eps unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval unit_interval_topology X Tx eps HepsCont).
+}
+claim HconstFun : function_on (const_fun X y0) X Y.
+{
+  exact (total_function_on_function_on
+    (const_fun X y0)
+    X
+    Y
+    (const_fun_total_function_on X Y y0 Hy0)).
+}
+claim HcompConst :
+  compose_fun unit_interval eps (const_fun X y0) = constant_path y0.
+{
+  apply (total_function_space_extensional
+    unit_interval
+    Y
+    (compose_fun unit_interval eps (const_fun X y0))
+    (constant_path y0)).
+  - exact (compose_fun_in_total_function_space
+      unit_interval
+      X
+      Y
+      eps
+      (const_fun X y0)
+      HepsFun
+      HconstFun).
+  - exact (graph_in_total_function_space
+      unit_interval
+      Y
+      (fun t:set => y0)
+      (fun t:set => fun Ht:t :e unit_interval => Hy0)).
+  - let t.
+    assume Ht.
+    rewrite (compose_fun_apply
+      unit_interval
+      eps
+      (const_fun X y0)
+      t
+      Ht).
+    rewrite (const_fun_apply
+      X
+      y0
+      (apply_fun eps t)
+      (HepsFun t Ht)).
+    rewrite (constant_path_apply y0 t Ht).
+    reflexivity.
+}
+rewrite (induced_homomorphism_apply
+  X
+  Tx
+  x0
+  Y
+  Ty
+  y0
+  (const_fun X y0)
+  cls
+  Hcls).
+rewrite HcompConst.
+reflexivity.
+Qed.
+
 (** from S58 Corollary 58.6 (line 1425 in algtop.tex) **)
 (** LATEX VERSION: If h: X -> Y is nulhomotopic, then h-star is the trivial homomorphism. **)
 (** EFFORT: 2 lines textbook, difficulty 1/10, USD 20 **)
@@ -33618,6 +33708,71 @@ Theorem cor58_6_nulhomotopic_trivial : forall X Tx Y Ty h x0:set,
   (forall cls:set, cls :e fundamental_group X Tx x0 ->
     apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls =
     fundamental_group_id Y Ty (apply_fun h x0)).
+let X Tx Y Ty h x0.
+assume Hh Hx0 Hnul.
+claim HtopX : topology_on X Tx.
+{
+  exact (continuous_map_topology_dom
+    X Tx Y Ty h Hh).
+}
+claim HtopY : topology_on Y Ty.
+{
+  exact (continuous_map_topology_cod
+    X Tx Y Ty h Hh).
+}
+apply Hnul.
+let y0.
+assume Hy0Pack.
+claim Hy0Y : y0 :e Y.
+{
+  exact (andEL
+    (y0 :e Y)
+    (homotopic_maps X Tx Y Ty h (const_fun X y0))
+    Hy0Pack).
+}
+claim HhConst : homotopic_maps X Tx Y Ty h (const_fun X y0).
+{
+  exact (andER
+    (y0 :e Y)
+    (homotopic_maps X Tx Y Ty h (const_fun X y0))
+    Hy0Pack).
+}
+claim HconstH : homotopic_maps X Tx Y Ty (const_fun X y0) h.
+{
+  exact (Lemma_51_1_homotopy_sym
+    X Tx Y Ty h (const_fun X y0) HhConst).
+}
+claim HconstCont : continuous_map X Tx Y Ty (const_fun X y0).
+{
+  exact (const_fun_continuous
+    X
+    Tx
+    Y
+    Ty
+    y0
+    HtopX
+    HtopY
+    Hy0Y).
+}
+claim HconstTriv :
+  forall cls:set, cls :e fundamental_group X Tx x0 ->
+    apply_fun
+      (induced_homomorphism X Tx x0 Y Ty (apply_fun (const_fun X y0) x0) (const_fun X y0))
+      cls
+    = fundamental_group_id Y Ty (apply_fun (const_fun X y0) x0).
+{
+  let cls.
+  assume Hcls.
+  claim HconstRaw :
+    apply_fun (induced_homomorphism X Tx x0 Y Ty y0 (const_fun X y0)) cls
+    = fundamental_group_id Y Ty y0.
+  {
+    exact (lemma58_constant_map_induced_trivial
+      X Tx Y Ty x0 y0 cls Hx0 Hy0Y Hcls).
+  }
+  rewrite (const_fun_apply X y0 x0 Hx0).
+  exact HconstRaw.
+}
 admit.
 Admitted.
 
