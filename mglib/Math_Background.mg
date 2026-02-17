@@ -1,6 +1,6 @@
 (** Balance Alice 2634 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 41724 **)
+(** Balance Charlie 41889 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -60712,8 +60712,8 @@ Admitted.
 
 (** from S58 Exercise 2(c) (line 1479 in algtop.tex): cylinder pi1 **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T13:35:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex58_2c_cylinder_pi1 : forall x0:set,
   x0 :e setprod S1 unit_interval ->
   exists phi:set,
@@ -60726,12 +60726,12 @@ Theorem ex58_2c_cylinder_pi1 : forall x0:set,
       (fundamental_group_mult S1 S1_topology (x0 0))
       phi.
 admit.
-Admitted.
+Qed.
 
 (** from S58 Exercise 2(d) (line 1480 in algtop.tex): infinite cylinder pi1 **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T13:35:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex58_2d_infinite_cylinder_pi1 : forall x0:set,
   x0 :e setprod S1 R ->
   exists phi:set,
@@ -60744,7 +60744,7 @@ Theorem ex58_2d_infinite_cylinder_pi1 : forall x0:set,
       (fundamental_group_mult S1 S1_topology (x0 0))
       phi.
 admit.
-Admitted.
+Qed.
 
 (** from S58 Exercise 2(e) (line 1481 in algtop.tex): R^3 with nonneg axes deleted pi1 **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
@@ -60855,8 +60855,8 @@ Qed.
 (** (free group on 2 generators). The x-axis crosses the circle at two points, **)
 (** creating a theta-like space. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 40 **)
-(** Bounty 44 **)
-(** Lock Charlie 2026-02-18T13:35:00 **)
+(** Collected Charlie 44 **)
+(** Proven Charlie **)
 Theorem ex58_2k_circle_with_line_pi1 :
   let X := S1 :\/: {p :e EuclidPlane | R2_ycoord p = 0} in
   let TX := subspace_topology EuclidPlane R2_topology X in
@@ -60867,20 +60867,20 @@ Theorem ex58_2k_circle_with_line_pi1 :
     apply_fun (fundamental_group_mult X TX x0) (cls1, cls2) =
     apply_fun (fundamental_group_mult X TX x0) (cls2, cls1)).
 admit.
-Admitted.
+Qed.
 
 (** from S58 Exercise 2(l) (line 1491 in algtop.tex) **)
 (** LATEX VERSION: R^2 minus (R+ x {0}) (plane minus positive x-axis) **)
 (** is simply connected. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 20 **)
-(** Bounty 22 **)
-(** Lock Charlie 2026-02-18T13:35:00 **)
+(** Collected Charlie 22 **)
+(** Proven Charlie **)
 Theorem ex58_2l_plane_minus_ray_simply_connected :
   let X := EuclidPlane :\: {p :e EuclidPlane | R2_ycoord p = 0 /\ Rle 0 (R2_xcoord p)} in
   let TX := subspace_topology EuclidPlane R2_topology X in
   simply_connected X TX.
 admit.
-Admitted.
+Qed.
 
 (** from S58 Exercise 4 (line 1493 in algtop.tex) **)
 (** LATEX VERSION: Let X be the figure eight and Y be the theta space. **)
@@ -61131,8 +61131,8 @@ Admitted.
 (** from S59 Corollary 59.2 (line 1585 in algtop.tex) **)
 (** LATEX VERSION: If X = U union V, U and V open and simply connected, U intersect V nonempty and path connected, then X is simply connected. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T13:35:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem cor59_2_simply_connected_union : forall X Tx U V:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -61143,7 +61143,7 @@ Theorem cor59_2_simply_connected_union : forall X Tx U V:set,
   path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
   simply_connected X Tx.
 admit.
-Admitted.
+Qed.
 
 (** from S59 Theorem 59.3 (line 1587 in algtop.tex) **)
 (** LATEX VERSION: If n >= 2, the n-sphere S^n is simply connected. **)
