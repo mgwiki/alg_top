@@ -53102,7 +53102,139 @@ claim HFt_54_cont :
     claim HNcontFt :
       continuous_map N (subspace_topology unit_square unit_square_topology N) E Te Ft_54.
     {
-      (** TODO Charlie: use HUopen/HevenU and HN_into_U to identify Ft_54 on N with a local sheet inverse of p composed with F. **)
+      claim HevenU : evenly_covered E Te B Tb p U.
+      {
+        exact (andER
+          (U :e Tb /\ apply_fun F q :e U)
+          (evenly_covered E Te B Tb p U)
+          HUPack).
+      }
+      claim HslicesEx :
+        exists slices:set,
+          slices c= Te /\
+          pairwise_disjoint slices /\
+          Union slices = preimage_of E p U /\
+          (forall V:set, V :e slices ->
+            homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+              (graph V (fun z:set => apply_fun p z))).
+      {
+        exact (andER
+          (U :e Tb)
+          (exists slices:set,
+            slices c= Te /\
+            pairwise_disjoint slices /\
+            Union slices = preimage_of E p U /\
+            (forall V:set, V :e slices ->
+              homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+                (graph V (fun z:set => apply_fun p z))))
+          HevenU).
+      }
+      apply HslicesEx.
+      let slices.
+      assume Hslices.
+      claim HslicesCore :
+        (slices c= Te /\ pairwise_disjoint slices) /\
+        Union slices = preimage_of E p U.
+      {
+        exact (andEL
+          ((slices c= Te /\ pairwise_disjoint slices) /\
+            Union slices = preimage_of E p U)
+          (forall V:set, V :e slices ->
+            homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+              (graph V (fun z:set => apply_fun p z)))
+          Hslices).
+      }
+      claim HslicesUnion : Union slices = preimage_of E p U.
+      {
+        exact (andER
+          (slices c= Te /\ pairwise_disjoint slices)
+          (Union slices = preimage_of E p U)
+          HslicesCore).
+      }
+      claim HqN : q :e N.
+      {
+        exact (andER
+          (N :e unit_square_topology)
+          (q :e N)
+          HNpair).
+      }
+      claim HFqU_local : apply_fun F q :e U.
+      {
+        exact (HN_into_U q HqN).
+      }
+      claim Hq0I : q 0 :e unit_interval.
+      {
+        exact (ap0_Sigma
+          unit_interval
+          (fun _ : set => unit_interval)
+          q
+          Hq).
+      }
+      claim Hq1I : q 1 :e unit_interval.
+      {
+        exact (ap1_Sigma
+          unit_interval
+          (fun _ : set => unit_interval)
+          q
+          Hq).
+      }
+      claim HpFtqEqFq :
+        apply_fun p (apply_fun Ft_54 q) = apply_fun F q.
+      {
+        (** TODO Charlie: bridge q with (q0,q1) in HFt_54_comm without triggering dependent rewrite mismatch. **)
+        admit.
+      }
+      claim HpFtqU : apply_fun p (apply_fun Ft_54 q) :e U.
+      {
+        rewrite HpFtqEqFq.
+        exact HFqU_local.
+      }
+      claim HFtqPreU : apply_fun Ft_54 q :e preimage_of E p U.
+      {
+        claim HFtqE : apply_fun Ft_54 q :e E.
+        {
+          (** TODO Charlie: prove Ft_54 maps unit_square points into E from the explicit lift formula. **)
+          admit.
+        }
+        exact (SepI
+          E
+          (fun z:set => apply_fun p z :e U)
+          (apply_fun Ft_54 q)
+          HFtqE
+          HpFtqU).
+      }
+      claim HFtqUnion : apply_fun Ft_54 q :e Union slices.
+      {
+        exact (mem_eqL
+          (apply_fun Ft_54 q)
+          (Union slices)
+          (preimage_of E p U)
+          HslicesUnion
+          HFtqPreU).
+      }
+      claim Hslice_q :
+        exists Vq:set, apply_fun Ft_54 q :e Vq /\ Vq :e slices.
+      {
+        exact (UnionE slices (apply_fun Ft_54 q) HFtqUnion).
+      }
+      apply Hslice_q.
+      let Vq.
+      assume HVqPack.
+      claim HFtqVq : apply_fun Ft_54 q :e Vq.
+      {
+        exact (andEL
+          (apply_fun Ft_54 q :e Vq)
+          (Vq :e slices)
+          HVqPack).
+      }
+      claim HVqSlice : Vq :e slices.
+      {
+        exact (andER
+          (apply_fun Ft_54 q :e Vq)
+          (Vq :e slices)
+          HVqPack).
+      }
+      (** TODO Charlie: identify Ft_54 on a neighborhood in N with the local inverse on sheet Vq to get continuity. **)
       admit.
     }
     witness N.
