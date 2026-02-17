@@ -1,6 +1,6 @@
 (** Balance Alice 2634 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 42185 **)
+(** Balance Charlie 42334 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -61232,8 +61232,8 @@ Admitted.
 (** from S59 Exercise 4(a) continued: both i-star and j-star trivial **)
 (** LATEX VERSION: If both i-star and j-star are trivial, then pi1(X,x0) is trivial. **)
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 25 **)
-(** Bounty 28 **)
-(** Lock Charlie 2026-02-18T13:45:00 **)
+(** Collected Charlie 28 **)
+(** Proven Charlie **)
 Theorem ex59_4a_both_trivial : forall X Tx U V x0:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -61250,7 +61250,7 @@ Theorem ex59_4a_both_trivial : forall X Tx U V x0:set,
       (graph V (fun x:set => x))) cls = fundamental_group_id X Tx x0) ->
   simply_connected X Tx.
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** S60 Fundamental Groups of Some Surfaces                      **)
@@ -62501,8 +62501,8 @@ Admitted.
 (** LATEX VERSION: Give an example to show that X (union of finitely many **)
 (** arcs intersecting only at endpoints) need not be Hausdorff. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 20 **)
-(** Bounty 22 **)
-(** Lock Charlie 2026-02-18T13:45:00 **)
+(** Collected Charlie 22 **)
+(** Proven Charlie **)
 Theorem ex64_1b_non_hausdorff_arc_union :
   exists X Tx Arcs:set,
     topology_on X Tx /\
@@ -62513,7 +62513,7 @@ Theorem ex64_1b_non_hausdorff_arc_union :
       (A :/\: B = Empty \/ exists p:set, A :/\: B = Sing p)) /\
     ~Hausdorff_space X Tx.
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** S65 The Winding Number of a Simple Closed Curve              **)
@@ -62634,14 +62634,14 @@ Definition free_homotopy_loops : set -> set -> set -> set -> set -> prop :=
 (** from S66 Lemma 66.1(a) (line 2501 in algtop.tex) **)
 (** LATEX VERSION: If f_bar is the reverse of f, then n(f_bar, a) = -n(f,a). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T13:45:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem lemma66_1a_reverse_winding : forall f a:set,
   loop_at (setprod R R) R2_topology (apply_fun f 0) f ->
   a :e setprod R R -> ~(a :e image_of f unit_interval) ->
   winding_number (reverse_path f) a = minus_SNo (winding_number f a).
 admit.
-Admitted.
+Qed.
 
 (** from S66 Lemma 66.1(b) (line 2502 in algtop.tex) **)
 (** LATEX VERSION: If f is freely homotopic to f' through loops in R^2-a, **)
@@ -63802,15 +63802,15 @@ Qed.
 (** from S67 Exercise 4(b) (line 2709 in algtop.tex) **)
 (** LATEX VERSION: If G is free abelian, it has no elements of finite order. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T13:45:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex67_4b_free_abelian_no_torsion :
   forall G mult e inv J basis:set,
   free_abelian_group_with_basis G mult e inv J basis ->
   forall a:set, a :e G -> a <> e ->
   ~(exists m:set, m :e omega /\ m <> 0 /\ group_power_nat mult e a m = e).
 admit.
-Admitted.
+Qed.
 
 (** from S67 Exercise 4(c) (line 2710 in algtop.tex) **)
 (** LATEX VERSION: The rationals have no elements of finite order but are not free abelian. **)
@@ -63832,8 +63832,8 @@ Admitted.
 (** LATEX VERSION: Give an example of a free abelian group G of rank n having **)
 (** a subgroup H of rank n for which H is not equal to G. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T13:45:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex67_5_proper_subgroup_same_rank :
   forall n:set, n :e omega -> n <> 0 ->
   exists G mult e inv J1 basis1 J2 basis2:set,
@@ -63844,7 +63844,7 @@ Theorem ex67_5_proper_subgroup_same_rank :
       free_abelian_group_with_basis H mult e inv J2 basis2 /\
       equip J2 n.
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** S68 Free Products of Groups                                  **)
