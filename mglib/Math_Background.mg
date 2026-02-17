@@ -1,5 +1,5 @@
 (** Balance Alice 1710 **)
-(** Balance Bob 1513 **)
+(** Balance Bob 1553 **)
 (** Balance Charlie 1223 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -15390,7 +15390,8 @@ Admitted.
 (** from S52 Exercise 4 (line 499 in algtop.tex): retraction and pi1 **)
 (** LATEX VERSION: Let r: X -> A be a retraction. If a0 in A, show that r-star: pi1(X,a0) -> pi1(A,a0) is surjective. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 40 **)
-(** Bounty 40 **)
+(** Collected Bob 40 **)
+(** Proven Bob **)
 Theorem ex52_4_retraction_surjective_pi1 : forall X Tx A Ta a0 r:set,
   topology_on X Tx -> A c= X ->
   Ta = subspace_topology X Tx A ->
@@ -15400,8 +15401,135 @@ Theorem ex52_4_retraction_surjective_pi1 : forall X Tx A Ta a0 r:set,
   forall cls:set, cls :e fundamental_group A Ta a0 ->
     exists cls':set, cls' :e fundamental_group X Tx a0 /\
       apply_fun (induced_homomorphism X Tx a0 A Ta a0 r) cls' = cls.
-admit.
-Admitted.
+let X Tx A Ta a0 r.
+assume HtopX HAsub Hta Hrcont Hrfix Ha0.
+set i := graph A (fun x:set => x).
+claim HtopA : topology_on A Ta.
+{
+  rewrite Hta.
+  exact (subspace_topology_is_topology X Tx A HtopX HAsub).
+}
+claim HiSub : continuous_map A (subspace_topology X Tx A) X Tx i.
+{
+  exact (subspace_inclusion_continuous X Tx A HtopX HAsub).
+}
+claim HiCont : continuous_map A Ta X Tx i.
+{
+  rewrite Hta.
+  exact HiSub.
+}
+claim Hi0 : apply_fun i a0 = a0.
+{
+  exact (apply_fun_graph A (fun x:set => x) a0 Ha0).
+}
+claim Hr0 : apply_fun r a0 = a0.
+{
+  exact (Hrfix a0 Ha0).
+}
+claim HiFun : function_on i A X.
+{
+  exact (continuous_map_function_on A Ta X Tx i HiCont).
+}
+claim HrFun : function_on r X A.
+{
+  exact (continuous_map_function_on X Tx A Ta r Hrcont).
+}
+claim HcompId : compose_fun A i r = graph A (fun x:set => x).
+{
+  apply (total_function_space_extensional
+    A A
+    (compose_fun A i r)
+    (graph A (fun x:set => x))).
+  - exact (compose_fun_in_total_function_space
+      A X A
+      i r
+      HiFun
+      HrFun).
+  - exact (graph_in_total_function_space
+      A A
+      (fun x:set => x)
+      (fun x:set => fun Hx:x :e A => Hx)).
+  - let x.
+    assume Hx.
+    rewrite (compose_fun_apply A i r x Hx).
+    rewrite (apply_fun_graph A (fun y:set => y) x Hx).
+    exact (Hrfix x Hx).
+}
+set ih := induced_homomorphism A Ta a0 X Tx a0 i.
+set ir := induced_homomorphism X Tx a0 A Ta a0 r.
+claim HihHom :
+  group_homomorphism
+    (fundamental_group A Ta a0) (fundamental_group_mult A Ta a0)
+    (fundamental_group X Tx a0) (fundamental_group_mult X Tx a0)
+    ih.
+{
+  exact (induced_homomorphism_is_homomorphism
+    A Ta a0 X Tx a0 i
+    HiCont
+    Hi0
+    Ha0).
+}
+claim HihFun :
+  function_on ih (fundamental_group A Ta a0) (fundamental_group X Tx a0).
+{
+  exact (group_homomorphism_function_on
+    (fundamental_group A Ta a0)
+    (fundamental_group_mult A Ta a0)
+    (fundamental_group X Tx a0)
+    (fundamental_group_mult X Tx a0)
+    ih
+    HihHom).
+}
+claim Hcomp :
+  forall cls0:set, cls0 :e fundamental_group A Ta a0 ->
+    apply_fun (induced_homomorphism A Ta a0 A Ta a0 (compose_fun A i r)) cls0
+    = apply_fun (compose_fun (fundamental_group A Ta a0) ih ir) cls0.
+{
+  let cls0.
+  assume Hcls0.
+  exact (Theorem_52_4_functorial_composition
+    A Ta a0 X Tx a0 A Ta a0
+    i r
+    HiCont
+    Hrcont
+    Hi0
+    Hr0
+    Ha0
+    cls0
+    Hcls0).
+}
+let cls.
+assume Hcls.
+witness (apply_fun ih cls).
+apply andI.
+- exact (HihFun cls Hcls).
+- claim HlhsId :
+    apply_fun (induced_homomorphism A Ta a0 A Ta a0 (compose_fun A i r)) cls = cls.
+  {
+    rewrite HcompId.
+    exact (Theorem_52_4_functorial_identity
+      A Ta a0
+      HtopA
+      Ha0
+      cls
+      Hcls).
+  }
+  claim HrhsComp :
+    apply_fun (compose_fun (fundamental_group A Ta a0) ih ir) cls
+    = apply_fun ir (apply_fun ih cls).
+  {
+    exact (compose_fun_apply
+      (fundamental_group A Ta a0)
+      ih
+      ir
+      cls
+      Hcls).
+  }
+  prove apply_fun ir (apply_fun ih cls) = cls.
+  rewrite <- HrhsComp.
+  rewrite <- (Hcomp cls Hcls).
+  exact HlhsId.
+Qed.
 
 (** from S52 Exercise 5 (line 507 in algtop.tex) **)
 (** LATEX VERSION: If h: (A,a0)->(Y,y0) is extendable to Rn, then h-star is the trivial homomorphism. **)
