@@ -68480,6 +68480,19 @@ apply set_ext.
       HxLt1).
 Qed.
 
+Theorem lemma59_3_overlap_characterization_named : forall n U V:set,
+  U = {x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} ->
+  V = {x :e Sn n | Rlt (apply_fun x 0) 1} ->
+  U :/\: V =
+  {x :e Sn n |
+    Rlt (minus_SNo 1) (apply_fun x 0) /\ Rlt (apply_fun x 0) 1}.
+let n U V.
+assume HU HV.
+rewrite HU.
+rewrite HV.
+exact (lemma59_3_overlap_characterization n).
+Qed.
+
 Theorem lemma59_3_overlap_nonempty_from_point : forall n x:set,
   x :e Sn n ->
   Rlt (minus_SNo 1) (apply_fun x 0) ->
