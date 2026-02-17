@@ -68209,6 +68209,63 @@ apply (lemma59_3_overlap_nonempty_from_point n x HxSn).
   exact Rlt_0_1.
 Qed.
 
+Theorem lemma59_3_overlap_member_unpack : forall n x:set,
+  x :e ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
+        {x :e Sn n | Rlt (apply_fun x 0) 1}) ->
+  x :e Sn n /\
+  Rlt (minus_SNo 1) (apply_fun x 0) /\
+  Rlt (apply_fun x 0) 1.
+let n x.
+assume HxUV.
+claim HxU : x :e {x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)}.
+{
+  exact (binintersectE1
+    {x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)}
+    {x :e Sn n | Rlt (apply_fun x 0) 1}
+    x
+    HxUV).
+}
+claim HxV : x :e {x :e Sn n | Rlt (apply_fun x 0) 1}.
+{
+  exact (binintersectE2
+    {x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)}
+    {x :e Sn n | Rlt (apply_fun x 0) 1}
+    x
+    HxUV).
+}
+claim HxSn : x :e Sn n.
+{
+  exact (SepE1
+    (Sn n)
+    (fun x:set => Rlt (minus_SNo 1) (apply_fun x 0))
+    x
+    HxU).
+}
+claim HxGtM1 : Rlt (minus_SNo 1) (apply_fun x 0).
+{
+  exact (SepE2
+    (Sn n)
+    (fun x:set => Rlt (minus_SNo 1) (apply_fun x 0))
+    x
+    HxU).
+}
+claim HxLt1 : Rlt (apply_fun x 0) 1.
+{
+  exact (SepE2
+    (Sn n)
+    (fun x:set => Rlt (apply_fun x 0) 1)
+    x
+    HxV).
+}
+exact (and3I
+  (x :e Sn n)
+  (Rlt (minus_SNo 1) (apply_fun x 0))
+  (Rlt (apply_fun x 0) 1)
+  HxSn
+  HxGtM1
+  HxLt1).
+Qed.
+
 Theorem lemma59_3_sphere_cover_data : forall n:set, n :e omega -> 2 c= n ->
   exists U V:set,
     U :e Sn_topology n /\ V :e Sn_topology n /\
