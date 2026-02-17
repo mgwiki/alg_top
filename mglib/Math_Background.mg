@@ -18118,6 +18118,23 @@ claim Hmult :
 {
   let u v.
   assume Hu Hv.
+  claim HuvPair :
+    (u, v) :e setprod (fundamental_group X Tx x0) (fundamental_group X Tx x0).
+  {
+    exact (tuple_2_setprod_by_pair_Sigma
+      (fundamental_group X Tx x0)
+      (fundamental_group X Tx x0)
+      u
+      v
+      Hu
+      Hv).
+  }
+  rewrite (fundamental_group_mult_apply
+    X
+    Tx
+    x0
+    (u, v)
+    HuvPair).
   claim HuImg :
     apply_fun (basepoint_change_map X Tx x0 x1 alpha) u
       :e fundamental_group X Tx x1.
