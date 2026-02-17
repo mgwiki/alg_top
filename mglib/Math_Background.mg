@@ -8856,8 +8856,8 @@ exact (andER
       apply_fun F (1, t) = x1))
   Htail).
 Qed.
-(** from S51 Lemma 51.1 (line 125 in algtop.tex): homotopy and path homotopy are equivalence relations **)
-(** LATEX VERSION: Lemma 51.1: The relations ~ and ~p are equivalence relations. **)
+(** from S51 Lem 51.1 (line 125 in algtop.tex): homotopy and path homotopy are equivalence relations **)
+(** LATEX VERSION: Lem 51.1: The relations ~ and ~p are equivalence relations. **)
 
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 30 **)
 (** Collected Bob 30 **)
@@ -8933,7 +8933,7 @@ apply andI.
     exact (fun P H => H).
 Qed.
 
-(** from S51 Lemma 51.1 (line 125 in algtop.tex): homotopy symmetry **)
+(** from S51 Lem 51.1 (line 125 in algtop.tex): homotopy symmetry **)
 (** EFFORT: 2 lines textbook, difficulty 3/10, USD 40 **)
 (** Collected Bob 40 **)
 (** Proven Bob **)
@@ -9193,7 +9193,7 @@ apply andI.
     exact (H0 x Hx).
 Qed.
 
-(** from S51 Lemma 51.1 (line 125 in algtop.tex): homotopy transitivity **)
+(** from S51 Lem 51.1 (line 125 in algtop.tex): homotopy transitivity **)
 (** EFFORT: 5 lines textbook, difficulty 5/10, USD 100 **)
 (** Collected Alice 110 **)
 (** Proven Alice **)
@@ -9431,7 +9431,7 @@ apply and3I.
     exact (HG1 x Hx).
 Qed.
 
-(** from S51 Lemma 51.1 (line 125 in algtop.tex): path homotopy reflexivity **)
+(** from S51 Lem 51.1 (line 125 in algtop.tex): path homotopy reflexivity **)
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 30 **)
 (** Collected Bob 30 **)
 (** Proven Bob **)
@@ -9586,7 +9586,7 @@ apply andI.
     Lcont Ls0 Ls1 Lt0 Lt1).
 Qed.
 
-(** from S51 Lemma 51.1 (line 125 in algtop.tex): path homotopy symmetry **)
+(** from S51 Lem 51.1 (line 125 in algtop.tex): path homotopy symmetry **)
 (** EFFORT: 2 lines textbook, difficulty 3/10, USD 40 **)
 (** Collected Alice 44 **)
 (** Proven Alice **)
@@ -9842,7 +9842,7 @@ apply and7I.
     exact (HF1t (apply_fun flip_unit_interval t) (flip_unit_interval_function_on t Ht)).
 Qed.
 
-(** from S51 Lemma 51.1 (line 125 in algtop.tex): path homotopy transitivity **)
+(** from S51 Lem 51.1 (line 125 in algtop.tex): path homotopy transitivity **)
 (** EFFORT: 6 lines textbook, difficulty 5/10, USD 100 **)
 (** Collected Alice 110 **)
 (** Proven Alice **)
@@ -30996,7 +30996,7 @@ Definition simply_connected : set -> set -> prop := fun X Tx =>
   exists x0:set, x0 :e X /\
     fundamental_group X Tx x0 = {fundamental_group_id X Tx x0}.
 
-(** from S52 Lemma 52.3 (line 428 in algtop.tex) **)
+(** from S52 Lem 52.3 (line 428 in algtop.tex) **)
 (** LATEX VERSION: In a simply connected space X, any two paths having the same initial and final points are path homotopic. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** Collected Bob 55 **)
@@ -49216,7 +49216,7 @@ Definition lifting_of : set -> set -> set -> set -> set -> set -> set -> set -> 
     (forall x:set, x :e X -> apply_fun p (apply_fun f_tilde x) = apply_fun f x).
 
 (** Infrastructure: the unique lift of a path in B starting at e0 in E **)
-(** Uses Eps_i to select the lift guaranteed by Lemma 54.1 **)
+(** Uses Eps_i to select the lift guaranteed by Lem 54.1 **)
 Definition path_lift : set -> set -> set -> set -> set -> set -> set -> set :=
   fun E Te B Tb p e0 f =>
     Eps_i (fun ft:set =>
@@ -50286,7 +50286,7 @@ apply andI.
   exact (EmptyE (apply_fun ft2 t) Hft2Empty False).
 Qed.
 
-(** from S54 Lemma 54.1 (temporary sub-bounty A) **)
+(** from S54 Lem 54.1 (temporary sub-bounty A) **)
 (** LATEX VERSION: Any point of the base has an evenly covered neighborhood under a covering map. **)
 (** EFFORT: 1 line, difficulty 1/10, USD 10 **)
 (** Collected Bob 11 **)
@@ -50306,7 +50306,7 @@ exact (andER
   Hb).
 Qed.
 
-(** from S54 Lemma 54.1 (temporary sub-bounty B) **)
+(** from S54 Lem 54.1 (temporary sub-bounty B) **)
 (** LATEX VERSION: Small continuity witness for pulling back neighborhoods along a path. **)
 (** EFFORT: 1 line, difficulty 1/10, USD 10 **)
 (** Collected Bob 11 **)
@@ -50348,7 +50348,7 @@ apply andI.
     HuN).
 Qed.
 
-(** from S54 Lemma 54.1 (line 715 in algtop.tex) **)
+(** from S54 Lem 54.1 (line 715 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map, p(e0) = b0. Any path f:[0,1] -> B **)
 (** beginning at b0 has a unique lifting to a path in E beginning at e0. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
@@ -51716,7 +51716,7 @@ claim Hex :
 exact (path_lift_from_exists_witness E Te B Tb p e0 f Hex).
 Admitted.
 
-(** from S54 Lemma 54.1 uniqueness (line 728 in algtop.tex) **)
+(** from S54 Lem 54.1 uniqueness (line 728 in algtop.tex) **)
 (** LATEX VERSION: The lifting of a path is unique. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
 (** Collected Bob 80 **)
@@ -52076,7 +52076,7 @@ exact (Eps_i_ax
   HFt).
 Qed.
 
-(** Infrastructure: existence package for homotopy lifting in Lemma 54.2 **)
+(** Infrastructure: existence package for homotopy lifting in Lem 54.2 **)
 Theorem lemma54_2_homotopy_lifting_exists : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun F (0, 0) ->
@@ -53259,7 +53259,7 @@ exact (andI
   HFt_54_comm).
 Admitted.
 
-(** from S54 Lemma 54.2 (line 730 in algtop.tex) **)
+(** from S54 Lem 54.2 (line 730 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map; p(e0) = b0. Let F: I x I -> B be **)
 (** continuous with F(0,0) = b0. There is a unique lifting F_tilde: I x I -> E with **)
 (** F_tilde(0,0) = e0. If F is a path homotopy, then F_tilde is a path homotopy. **)
@@ -53284,7 +53284,7 @@ claim Hex :
       apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t)).
 {
   (** TODO Charlie: prove full homotopy lifting existence/compatibility package. **)
-  (** This is the remaining hard part of Lemma 54.2 and should reuse Lemma 54.1 lifts plus uniqueness gluing. **)
+  (** This is the remaining hard part of Lemma 54.2 and should reuse Lem 54.1 lifts plus uniqueness gluing. **)
   exact (lemma54_2_homotopy_lifting_exists
     E
     Te
@@ -53309,7 +53309,7 @@ exact (homotopy_lift_from_exists_witness
   Hex).
 Admitted.
 
-(** from S54 Lemma 54.2 path homotopy preservation (line 783 in algtop.tex) **)
+(** from S54 Lem 54.2 path homotopy preservation (line 783 in algtop.tex) **)
 (** LATEX VERSION: If F is a path homotopy, then the lift F_tilde is also a path homotopy. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 55 **)
@@ -55375,7 +55375,7 @@ Definition points_directly_outward : set -> set -> prop := fun v x =>
 (** LATEX VERSION: A retraction of X onto A is a continuous map r: X -> A with r|A = id_A. **)
 (** NOTE: Already defined as retraction_of at line 27749. **)
 
-(** from S55 Lemma 55.1 (line 900 in algtop.tex) **)
+(** from S55 Lem 55.1 (line 900 in algtop.tex) **)
 (** LATEX VERSION: If A is a retract of X, then the homomorphism of fundamental groups induced by inclusion j: A -> X is injective. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
 (** Collected Bob 30 **)
@@ -55607,7 +55607,7 @@ Theorem thm55_2_no_retraction_B2_S1 : ~(retraction_of B2 B2_topology S1).
 admit.
 Admitted.
 
-(** from S55 Lemma 55.3 direction (1) implies (2) (line 907 in algtop.tex) **)
+(** from S55 Lem 55.3 direction (1) implies (2) (line 907 in algtop.tex) **)
 (** LATEX VERSION: Let h: S^1 -> X be continuous. If h is nulhomotopic, then h extends to a continuous map k: B^2 -> X. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 120 **)
 (** Bounty 132 **)
@@ -55619,7 +55619,7 @@ Theorem lemma55_3_nulhomotopic_extends_to_B2 : forall X Tx h:set,
 admit.
 Admitted.
 
-(** from S55 Lemma 55.3 direction (2) implies (3) (line 907 in algtop.tex) **)
+(** from S55 Lem 55.3 direction (2) implies (3) (line 907 in algtop.tex) **)
 (** LATEX VERSION: If h extends to k: B^2 -> X, then h-star is the trivial homomorphism. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 55 **)
@@ -55634,7 +55634,7 @@ Theorem lemma55_3_extends_implies_trivial : forall X Tx h b0:set,
 admit.
 Admitted.
 
-(** from S55 Lemma 55.3 direction (3) implies (1) (line 907 in algtop.tex) **)
+(** from S55 Lem 55.3 direction (3) implies (1) (line 907 in algtop.tex) **)
 (** LATEX VERSION: If h-star is the trivial homomorphism, then h is nulhomotopic. **)
 (** EFFORT: 10 lines textbook, difficulty 6/10, USD 180 **)
 (** Bounty 198 **)
@@ -56838,7 +56838,7 @@ Admitted.
 
 (** ======================= S58 DEFORMATION RETRACTS AND HOMOTOPY TYPE ======================= **)
 
-(** from S58 Lemma 58.1 (line 1272 in algtop.tex) **)
+(** from S58 Lem 58.1 (line 1272 in algtop.tex) **)
 (** LATEX VERSION: Let h, k: (X,x0) -> (Y,y0) be continuous. If h and k are homotopic and the basepoint x0 remains fixed at y0 during the homotopy, then h-star = k-star. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
 (** Collected Alice 30 **)
@@ -57573,7 +57573,7 @@ Definition same_homotopy_type : set -> set -> set -> set -> prop :=
   fun X Tx Y Ty =>
     exists f:set, homotopy_equivalence X Tx Y Ty f.
 
-(** from S58 Lemma 58.4 (line 1365 in algtop.tex) **)
+(** from S58 Lem 58.4 (line 1365 in algtop.tex) **)
 (** LATEX VERSION: Let h, k: X -> Y be homotopic with h(x0)=y0, k(x0)=y1. There is a path alpha in Y from y0 to y1 such that k-star = alpha-hat o h-star. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 150 **)
 (** Collected Alice 165 **)
@@ -58617,7 +58617,7 @@ apply andI.
 
 Qed.
 
-(** from S58 Lemma 58.4 (line 1365 in algtop.tex) **)
+(** from S58 Lem 58.4 (line 1365 in algtop.tex) **)
 (** LATEX VERSION: Let h, k: X -> Y be homotopic with h(x0)=y0, k(x0)=y1. There is a path alpha in Y from y0 to y1 such that k-star = alpha-hat o h-star. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 150 **)
 (** Collected Alice 165 **)
@@ -67749,7 +67749,7 @@ Definition figure_eight_topology : set :=
 
 Definition figure_eight_basepoint : set := (0, 0).
 
-(** from S60 Lemma 60.5 (line 1734 in algtop.tex) **)
+(** from S60 Lem 60.5 (line 1734 in algtop.tex) **)
 (** LATEX VERSION: The fundamental group of the figure eight is not abelian. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 165 **)
@@ -67928,7 +67928,7 @@ admit.
 Admitted.
 
 (** from S60 Exercise 3 (line 1780 in algtop.tex) **)
-(** LATEX VERSION: Let p: E -> X be the map from Lemma 60.5 proof, E' the **)
+(** LATEX VERSION: Let p: E -> X be the map from Lem 60.5 proof, E' the **)
 (** union of x-axis and y-axis in E. Show p|E' is not a covering map. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 88 **)
@@ -67997,7 +67997,7 @@ Definition bounded_subset_R2 : set -> prop := fun A =>
     (forall p:set, p :e A ->
       ~(Rlt M (add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1))))).
 
-(** from S61 Lemma 61.1 (line 1806 in algtop.tex) **)
+(** from S61 Lem 61.1 (line 1806 in algtop.tex) **)
 (** LATEX VERSION: Let C be compact in S^2, b in S^2-C, h: S^2-b -> R^2 homeomorphism. **)
 (** If U is a component of S^2-C not containing b, then h(U) is bounded. **)
 (** If U contains b, then h(U-b) is the unbounded component of R^2-h(C). **)
@@ -68021,7 +68021,7 @@ Theorem lemma61_1_components_stereographic : forall C:set,
 admit.
 Admitted.
 
-(** from S61 Lemma 61.2 (line 1815 in algtop.tex) **)
+(** from S61 Lem 61.2 (line 1815 in algtop.tex) **)
 (** LATEX VERSION: Let a, b be points of S^2. Let A be compact, f: A -> S^2-a-b continuous. **)
 (** If a and b lie in the same component of S^2-f(A), then f is nulhomotopic. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
@@ -68115,7 +68115,7 @@ Admitted.
 (** (lines 1927-2011 in algtop.tex)                              **)
 (** ============================================================ **)
 
-(** from S62 Lemma 62.1 (line 1930 in algtop.tex) **)
+(** from S62 Lem 62.1 (line 1930 in algtop.tex) **)
 (** LATEX VERSION: (Homotopy extension lemma) Let X x I be normal, A closed in X, **)
 (** f: A -> Y continuous with Y open in R^n. If f is nulhomotopic, **)
 (** then f extends to g: X -> Y that is also nulhomotopic. **)
@@ -68141,7 +68141,7 @@ Theorem lemma62_1_homotopy_extension : forall X Tx A Y n:set,
 admit.
 Admitted.
 
-(** from S62 Lemma 62.2 (line 1953 in algtop.tex) **)
+(** from S62 Lem 62.2 (line 1953 in algtop.tex) **)
 (** LATEX VERSION: (Borsuk lemma) Let a, b in S^2, A compact, f: A -> S^2-a-b **)
 (** continuous injective. If f is nulhomotopic, then a and b lie in the same **)
 (** component of S^2-f(A). **)
@@ -68734,7 +68734,7 @@ Definition utilities_graph : set -> set -> set -> set -> prop := fun H W G Tg =>
       arc A (subspace_topology G Tg A) /\
       end_points_of_arc A (subspace_topology G Tg A) h w).
 
-(** from S64 Lemma 64.1 (line 2282 in algtop.tex) **)
+(** from S64 Lem 64.1 (line 2282 in algtop.tex) **)
 (** LATEX VERSION: Let X be a theta space in S^2. Then X separates S^2 into **)
 (** three components with boundaries A union B, B union C, and A union C. **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 200 **)
@@ -68765,7 +68765,7 @@ Theorem thm64_2_utilities_not_planar : forall G Tg H W:set,
 admit.
 Admitted.
 
-(** from S64 Lemma 64.3 (line 2322 in algtop.tex) **)
+(** from S64 Lem 64.3 (line 2322 in algtop.tex) **)
 (** LATEX VERSION: Let X be a subspace of S^2 that is a complete graph on four **)
 (** vertices a1,a2,a3,a4. Then X separates S^2 into four components whose **)
 (** boundaries are X1,X2,X3,X4, where Xi = union of edges not having ai as vertex. **)
@@ -68848,10 +68848,10 @@ Admitted.
 (** (lines 2370-2481 in algtop.tex)                              **)
 (** ============================================================ **)
 
-(** from S65 Lemma 65.1 (line 2397 in algtop.tex) **)
+(** from S65 Lem 65.1 (line 2397 in algtop.tex) **)
 (** LATEX VERSION: Let G be a subspace of S^2, a complete graph on 4 vertices. **)
 (** Let C be a simple closed curve subgraph. Then there exist p, q in G minus C **)
-(** from S65 Lemma 65.1 (line 2397 in algtop.tex): complete graph separation **)
+(** from S65 Lem 65.1 (line 2397 in algtop.tex): complete graph separation **)
 (** in different components of S^2 minus C, and the inclusion C -> S^2-p-q **)
 (** induces an isomorphism of fundamental groups. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 350 **)
@@ -68957,7 +68957,7 @@ Definition free_homotopy_loops : set -> set -> set -> set -> set -> prop :=
     (forall t:set, t :e unit_interval ->
       apply_fun F (0, t) = apply_fun F (1, t)).
 
-(** from S66 Lemma 66.1(a) (line 2501 in algtop.tex) **)
+(** from S66 Lem 66.1(a) (line 2501 in algtop.tex) **)
 (** LATEX VERSION: If f_bar is the reverse of f, then n(f_bar, a) = -n(f,a). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
 (** Bounty 33 **)
@@ -68968,7 +68968,7 @@ Theorem lemma66_1a_reverse_winding : forall f a:set,
 admit.
 Admitted.
 
-(** from S66 Lemma 66.1(b) (line 2502 in algtop.tex) **)
+(** from S66 Lem 66.1(b) (line 2502 in algtop.tex) **)
 (** LATEX VERSION: If f is freely homotopic to f' through loops in R^2-a, **)
 (** then n(f,a) = n(f',a). **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
@@ -68987,7 +68987,7 @@ Theorem lemma66_1b_free_homotopy_winding : forall f f' a F:set,
 admit.
 Admitted.
 
-(** from S66 Lemma 66.1(c) (line 2503 in algtop.tex) **)
+(** from S66 Lem 66.1(c) (line 2503 in algtop.tex) **)
 (** LATEX VERSION: If a, b lie in the same component of R^2 minus f(I), **)
 (** then n(f,a) = n(f,b). **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
@@ -69191,7 +69191,7 @@ Definition holomorphic_on : set -> set -> prop := fun F Omega =>
   (forall z:set, z :e Omega ->
     exists L:set, complex_derivative_at F z L).
 
-(** from S66 Lemma 66.3 (line 2533 in algtop.tex) **)
+(** from S66 Lem 66.3 (line 2533 in algtop.tex) **)
 (** LATEX VERSION: For piecewise-differentiable loop f and a not in image: **)
 (** n(f,a) = (1/(2 pi i)) integral_f dz/(z-a). **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 120 **)
@@ -69424,11 +69424,11 @@ Definition quotient_projection : set -> set -> set -> set :=
   fun G mult N =>
     graph G (fun g:set => left_coset mult g N).
 
-(** from S67 Lemma 67.1 (line 2609 in algtop.tex): extension condition for direct sums **)
+(** from S67 Lem 67.1 (line 2609 in algtop.tex): extension condition for direct sums **)
 (** LATEX VERSION: If G is the direct sum of the groups G_alpha, then given any abelian **)
 (** group H and any family of homomorphisms h_alpha: G_alpha -> H, there exists a unique **)
 (** homomorphism h: G -> H whose restriction to G_alpha equals h_alpha. **)
-(** from S67 Lemma 67.1 (line 2609 in algtop.tex): extension condition for direct sum **)
+(** from S67 Lem 67.1 (line 2609 in algtop.tex): extension condition for direct sum **)
 (** Conversely, if the groups G_alpha generate G and the extension condition holds, **)
 (** then G is the direct sum of the G_alpha. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
@@ -69454,7 +69454,7 @@ Theorem lemma67_1_extension_condition_direct_sum :
 admit.
 Admitted.
 
-(** from S67 Lemma 67.1 converse (line 2613 in algtop.tex) **)
+(** from S67 Lem 67.1 converse (line 2613 in algtop.tex) **)
 (** LATEX VERSION: If the groups G_alpha generate G and the extension condition holds, **)
 (** then G is the direct sum of the G_alpha. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
@@ -69557,10 +69557,10 @@ Theorem thm67_4_existence_external_direct_sum :
 admit.
 Admitted.
 
-(** from S67 Lemma 67.5 (line 2660 in algtop.tex): extension condition for external direct sums **)
+(** from S67 Lem 67.5 (line 2660 in algtop.tex): extension condition for external direct sums **)
 (** LATEX VERSION: If each i_alpha is a monomorphism and G is the direct sum of i_alpha(G_alpha), **)
 (** then given any abelian group H and homomorphisms h_alpha: G_alpha -> H, there exists a unique **)
-(** from S67 Lemma 67.5 (line 2660 in algtop.tex): external extension condition **)
+(** from S67 Lem 67.5 (line 2660 in algtop.tex): external extension condition **)
 (** homomorphism h: G -> H such that h o i_alpha = h_alpha. Conversely, if the extension condition **)
 (** holds, then each i_alpha is a monomorphism and G is the direct sum. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
@@ -69594,7 +69594,7 @@ Theorem lemma67_5_extension_external :
 admit.
 Admitted.
 
-(** from S67 Lemma 67.5 converse (line 2665 in algtop.tex): extension condition implies direct sum **)
+(** from S67 Lem 67.5 converse (line 2665 in algtop.tex): extension condition implies direct sum **)
 (** LATEX VERSION: If the groups i_alpha(G_alpha) generate G and the extension condition holds, **)
 (** then each i_alpha is a monomorphism and G is the direct sum of the groups i_alpha(G_alpha). **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
@@ -69689,7 +69689,7 @@ Definition free_abelian_group_with_basis : set -> set -> set -> set -> set -> se
            (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
             g = group_power_nat mult e (apply_fun inv (apply_fun basis alpha)) (ordsucc m)))})).
 
-(** from S67 Lemma 67.7 (line 2683 in algtop.tex): extension condition for free abelian groups **)
+(** from S67 Lem 67.7 (line 2683 in algtop.tex): extension condition for free abelian groups **)
 (** LATEX VERSION: G is a free abelian group with basis {a_alpha} iff for any abelian **)
 (** group H and any family {y_alpha} of elements of H, there is a unique homomorphism **)
 (** h: G -> H with h(a_alpha) = y_alpha. **)
@@ -70224,7 +70224,7 @@ Definition least_normal_subgroup : set -> set -> set -> set -> set -> set :=
       S c= N /\
       (forall N':set, normal_subgroup N' G mult e inv -> S c= N' -> N c= N')).
 
-(** from S68 Lemma 68.1 (line 2781 in algtop.tex): extension condition for free products **)
+(** from S68 Lem 68.1 (line 2781 in algtop.tex): extension condition for free products **)
 (** LATEX VERSION: If G is the free product of {G_alpha}, then given any group H and **)
 (** homomorphisms h_alpha: G_alpha -> H, there exists a unique h: G -> H whose restriction **)
 (** to G_alpha equals h_alpha. **)
@@ -70290,7 +70290,7 @@ Theorem thm68_2_existence_free_product :
 admit.
 Admitted.
 
-(** from S68 Lemma 68.3 (line 2940 in algtop.tex): extension condition for external free products **)
+(** from S68 Lem 68.3 (line 2940 in algtop.tex): extension condition for external free products **)
 (** LATEX VERSION: If each i_alpha is a monomorphism and G is the free product of **)
 (** i_alpha(G_alpha), then given any group H and homomorphisms h_alpha: G_alpha -> H, **)
 (** there exists a unique h: G -> H with h o i_alpha = h_alpha. **)
@@ -70344,8 +70344,8 @@ Theorem thm68_4_uniqueness_free_product :
 admit.
 Admitted.
 
-(** from S68 Lemma 68.5 (line 2950 in algtop.tex): extension condition characterizes free products **)
-(** LATEX VERSION: If the extension condition of Lemma 68.3 holds, then each i_alpha **)
+(** from S68 Lem 68.5 (line 2950 in algtop.tex): extension condition characterizes free products **)
+(** LATEX VERSION: If the extension condition of Lem 68.3 holds, then each i_alpha **)
 (** is a monomorphism and G is the free product of i_alpha(G_alpha). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
 (** Bounty 220 **)
@@ -70444,7 +70444,7 @@ Theorem cor68_8_quotient_by_factor :
 admit.
 Admitted.
 
-(** from S68 Lemma 68.9 (line 3010 in algtop.tex): generators of least normal subgroup **)
+(** from S68 Lem 68.9 (line 3010 in algtop.tex): generators of least normal subgroup **)
 (** LATEX VERSION: If N is the least normal subgroup of G containing S, then N is **)
 (** generated by all conjugates of elements of S. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
@@ -70534,7 +70534,7 @@ Definition free_group_with_generators : set -> set -> set -> set -> set -> set -
             g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}))
       (graph J (fun alpha:set => e)).
 
-(** from S69 Lemma 69.1 (line 3047 in algtop.tex): extension condition for free groups **)
+(** from S69 Lem 69.1 (line 3047 in algtop.tex): extension condition for free groups **)
 (** LATEX VERSION: G is a free group with generators {a_alpha} iff for any group H **)
 (** and any family {y_alpha} of elements of H, there is a unique homomorphism **)
 (** h: G -> H with h(a_alpha) = y_alpha. **)
@@ -70600,7 +70600,7 @@ Definition commutator_subgroup : set -> set -> set -> set -> set :=
         (forall x y:set, x :e G -> y :e G -> commutator mult inv x y :e C') ->
         C c= C')).
 
-(** from S69 Lemma 69.3 (line 3081 in algtop.tex): commutator subgroup properties **)
+(** from S69 Lem 69.3 (line 3081 in algtop.tex): commutator subgroup properties **)
 (** LATEX VERSION: [G,G] is normal in G, G/[G,G] is abelian, and any homomorphism **)
 (** from G to an abelian group H has kernel containing [G,G]. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
@@ -71338,7 +71338,7 @@ Definition wedge_of_circles : set -> set -> set -> set -> set -> prop :=
       apply_fun Sfam alpha :/\: apply_fun Sfam beta = Sing p) /\
     coherent_with_subspaces X Tx J Sfam.
 
-(** from S71 Lemma 71.2 (line 3537 in algtop.tex): wedge of circles is normal **)
+(** from S71 Lem 71.2 (line 3537 in algtop.tex): wedge of circles is normal **)
 (** LATEX VERSION: Let X be wedge of circles S_alpha. Then X is normal. **)
 (** Any compact subspace of X is contained in finitely many S_alpha. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
@@ -71373,7 +71373,7 @@ Theorem thm71_3_pi1_wedge_general :
 admit.
 Admitted.
 
-(** from S71 Lemma 71.4 (line 3579 in algtop.tex): existence of wedge of circles **)
+(** from S71 Lem 71.4 (line 3579 in algtop.tex): existence of wedge of circles **)
 (** LATEX VERSION: Given an index set J, there exists a space X that is a wedge of **)
 (** circles S_alpha for alpha in J. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
@@ -71757,7 +71757,7 @@ Definition dunce_cap_topology : set -> set :=
       Hausdorff_space (dunce_cap n) Tx /\
       compact_space (dunce_cap n) Tx).
 
-(** from S73 Lemma 73.3 (line 3736 in algtop.tex): closed quotient map preserves normality **)
+(** from S73 Lem 73.3 (line 3736 in algtop.tex): closed quotient map preserves normality **)
 (** LATEX VERSION: If pi: E -> X is a closed quotient map and E is normal, then X is normal. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 88 **)
@@ -72793,7 +72793,7 @@ Definition projective_type_scheme : set -> set -> prop :=
     proper_labelling_scheme n w /\
     ~(torus_type_scheme n w).
 
-(** from S77 Lemma 77.1 (line 4281 in algtop.tex): key projective equivalence **)
+(** from S77 Lem 77.1 (line 4281 in algtop.tex): key projective equivalence **)
 (** LATEX VERSION: If w = [y0] a [y1] a [y2] is a proper scheme, then **)
 (** w is equivalent to a a [y0 y1^{-1} y2]. **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 240 **)
@@ -72844,7 +72844,7 @@ Theorem cor77_2_projective_type_structure :
 admit.
 Admitted.
 
-(** from S77 Lemma 77.3 (line 4381 in algtop.tex): extracting commutator **)
+(** from S77 Lem 77.3 (line 4381 in algtop.tex): extracting commutator **)
 (** LATEX VERSION: Let w = w0 w1 where w1 is torus type with no **)
 (** adjacent same-label terms. Then w is equivalent to **)
 (** w0 a b a^{-1} b^{-1} w3 where w3 is torus type or empty. **)
@@ -72869,7 +72869,7 @@ Theorem lemma77_3_extract_commutator :
 admit.
 Admitted.
 
-(** from S77 Lemma 77.4 (line 4521 in algtop.tex): projective absorbs torus **)
+(** from S77 Lem 77.4 (line 4521 in algtop.tex): projective absorbs torus **)
 (** LATEX VERSION: If w = w0 (cc)(ab a^{-1} b^{-1}) w1, then **)
 (** w is equivalent to w0 (aa bb cc) w1. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 180 **)
@@ -72929,7 +72929,7 @@ Admitted.
 (** to exactly one of: S^2, P^2, K, T_n, T_n # P^2, T_n # K, where K = Klein bottle. **)
 (** from S77 Exercise 1(a) (line 4613 in algtop.tex): extended classification list **)
 (** Note: This is a refinement of Thm 77.5 that adds two more surface types. **)
-(** The Klein bottle K = P_2 and T_n # P^2, T_n # K reduce to P_m forms by Lemma 77.4. **)
+(** The Klein bottle K = P_2 and T_n # P^2, T_n # K reduce to P_m forms by Lem 77.4. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 55 **)
 Theorem ex77_1a_classification_extended_list :
@@ -73262,10 +73262,10 @@ Definition equivalent_covering_maps : set -> set -> set -> set -> set -> set -> 
       homeomorphism E Te E' Te' h /\
       (forall x:set, x :e E -> apply_fun p x = apply_fun p' (apply_fun h x)).
 
-(** from S79 Lemma 79.1 (line 4792 in algtop.tex): the general lifting lemma **)
+(** from S79 Lem 79.1 (line 4792 in algtop.tex): the general lifting lemma **)
 (** LATEX VERSION: Let p: E -> B be covering, p(e0)=b0. Let f: Y -> B continuous **)
 (** with f(y0)=b0. If Y is path connected and locally path connected, then f lifts **)
-(** from S79 Lemma 79.1 (line 4792 in algtop.tex): general lifting lemma **)
+(** from S79 Lem 79.1 (line 4792 in algtop.tex): general lifting lemma **)
 (** to f_tilde: Y -> E with f_tilde(y0)=e0 iff f_star(pi1(Y,y0)) subset p_star(pi1(E,e0)). **)
 (** Furthermore, if such a lifting exists, it is unique. **)
 (** EFFORT: 40 lines textbook, difficulty 7/10, USD 560 **)
@@ -73337,11 +73337,11 @@ Definition conjugate_subgroups : set -> set -> set -> set -> set -> set -> prop 
     exists alpha:set, alpha :e G /\
       H2 = {apply_fun mult (apply_fun mult (alpha, h), apply_fun inv alpha) | h :e H1}.
 
-(** from S79 Lemma 79.3 (line 4862 in algtop.tex): conjugacy of subgroups **)
+(** from S79 Lem 79.3 (line 4862 in algtop.tex): conjugacy of subgroups **)
 (** LATEX VERSION: Let p: E -> B be covering. Let e0, e1 in p^{-1}(b0), **)
 (** Hi = p_star(pi1(E,ei)). **)
 (** (a) If gamma is a path in E from e0 to e1, and alpha = p o gamma, **)
-(** from S79 Lemma 79.3(a) (line 4862 in algtop.tex): conjugacy of subgroups **)
+(** from S79 Lem 79.3(a) (line 4862 in algtop.tex): conjugacy of subgroups **)
 (** then [alpha] H1 [alpha]^{-1} = H0, so H0 and H1 are conjugate. **)
 (** (b) Given e0 and H conjugate to H0, exists e1 in p^{-1}(b0) with H1 = H. **)
 (** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
@@ -73366,7 +73366,7 @@ Theorem lemma79_3a_conjugacy_of_subgroups :
 admit.
 Admitted.
 
-(** from S79 Lemma 79.3(b) (line 4862 in algtop.tex): conjugacy converse **)
+(** from S79 Lem 79.3(b) (line 4862 in algtop.tex): conjugacy converse **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 165 **)
 Theorem lemma79_3b_conjugacy_converse :
@@ -73598,7 +73598,7 @@ Admitted.
 (** is called a universal covering space of B. **)
 (** Note: this is implicitly defined in the text, not a separate formal definition **)
 
-(** from S80 Lemma 80.1 (line 4954 in algtop.tex): path component restriction **)
+(** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
 (** then the restriction p0: E0 -> B is a covering map. **)
@@ -73621,7 +73621,7 @@ Theorem lemma80_1_path_component_covering :
 admit.
 Admitted.
 
-(** from S80 Lemma 80.2a (line 4962 in algtop.tex): if p and r covering, so is q **)
+(** from S80 Lem 80.2a (line 4962 in algtop.tex): if p and r covering, so is q **)
 (** LATEX VERSION: Let p = r o q with p: X -> Z, q: X -> Y, r: Y -> Z. **)
 (** (a) If p and r are covering maps, so is q. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
@@ -73638,7 +73638,7 @@ Theorem lemma80_2a_covering_composition :
 admit.
 Admitted.
 
-(** from S80 Lemma 80.2b (line 4965 in algtop.tex): if p and q covering, so is r **)
+(** from S80 Lem 80.2b (line 4965 in algtop.tex): if p and q covering, so is r **)
 (** LATEX VERSION: (b) If p and q are covering maps, so is r. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 280 **)
 (** Bounty 308 **)
@@ -73675,7 +73675,7 @@ Theorem thm80_3_universal_covers_everything :
 admit.
 Admitted.
 
-(** from S80 Lemma 80.4 (line 4997 in algtop.tex): necessary condition for universal cover **)
+(** from S80 Lem 80.4 (line 4997 in algtop.tex): necessary condition for universal cover **)
 (** LATEX VERSION: Let p: E -> B covering with E simply connected. Then b0 has a **)
 (** neighborhood U such that inclusion i: U -> B induces the trivial homomorphism **)
 (** i_star: pi1(U,b0) -> pi1(B,b0). **)
@@ -73825,7 +73825,7 @@ Definition covering_trans_evaluation : set -> set -> set -> set -> set -> set ->
     graph (covering_transformation_group E Te B Tb p)
       (fun h:set => apply_fun h e0).
 
-(** from S81 Lemma 81.1 (line 5049 in algtop.tex) **)
+(** from S81 Lem 81.1 (line 5049 in algtop.tex) **)
 (** LATEX VERSION: The image of Psi equals the image under Phi of the **)
 (** subgroup N(H0)/H0 of pi1(B,b0)/H0. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
@@ -74754,7 +74754,7 @@ Definition graph_vertices : set -> set -> set -> set :=
       exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
         (x = p \/ x = q)}.
 
-(** from S83 Lemma 83.1 (line 5470 in algtop.tex): linear graphs are normal **)
+(** from S83 Lem 83.1 (line 5470 in algtop.tex): linear graphs are normal **)
 (** LATEX VERSION: Every linear graph X is Hausdorff; in fact, it is normal. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 88 **)
@@ -74765,7 +74765,7 @@ Theorem lemma83_1_linear_graph_normal :
 admit.
 Admitted.
 
-(** from S83 Lemma 83.2 (line 5503 in algtop.tex): compact subspace in finite subgraph **)
+(** from S83 Lem 83.2 (line 5503 in algtop.tex): compact subspace in finite subgraph **)
 (** LATEX VERSION: If C is a compact subspace of a linear graph X, there is a finite **)
 (** subgraph Y containing C. If C is connected, Y can be chosen connected. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
@@ -74779,7 +74779,7 @@ Theorem lemma83_2_compact_finite_subgraph :
 admit.
 Admitted.
 
-(** from S83 Lemma 83.3 (line 5510 in algtop.tex): graph is loc path connected **)
+(** from S83 Lem 83.3 (line 5510 in algtop.tex): graph is loc path connected **)
 (** LATEX VERSION: If X is a linear graph, then X is locally path connected **)
 (** and semilocally simply connected. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
@@ -74923,7 +74923,7 @@ Definition maximal_tree : set -> set -> set -> set -> set -> prop :=
       tree_in_graph T' ArcsT' X Tx Arcs ->
       T c= T' -> T' = T).
 
-(** from S84 Lemma 84.1 (line 5563 in algtop.tex): connected iff edge paths **)
+(** from S84 Lem 84.1 (line 5563 in algtop.tex): connected iff edge paths **)
 (** LATEX VERSION: A graph X is connected iff every pair of vertices can be **)
 (** joined by an edge path. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
@@ -74940,7 +74940,7 @@ Theorem lemma84_1_connected_iff_edge_paths :
 admit.
 Admitted.
 
-(** from S84 Lemma 84.2 (line 5601 in algtop.tex): tree extension **)
+(** from S84 Lem 84.2 (line 5601 in algtop.tex): tree extension **)
 (** LATEX VERSION: If T is a tree and A is an edge intersecting T in a single vertex, **)
 (** then T union A is a tree. Conversely, if T is a finite tree with more than one **)
 (** edge, then T = T0 union A where T0 is a tree and A intersects T0 in one vertex. **)
@@ -74955,7 +74955,7 @@ Theorem lemma84_2_tree_extension :
 admit.
 Admitted.
 
-(** from S84 Lemma 84.2 converse (line 5601 in algtop.tex): finite tree decomposition **)
+(** from S84 Lem 84.2 converse (line 5601 in algtop.tex): finite tree decomposition **)
 (** LATEX VERSION: If T is a finite tree with more than one edge, then T = T0 union A **)
 (** where T0 is a tree and A intersects T0 in a single vertex. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
@@ -75012,7 +75012,7 @@ Theorem thm84_5_tree_in_maximal :
 admit.
 Admitted.
 
-(** from S84 Lemma 84.6 (line 5643 in algtop.tex): generator from edge **)
+(** from S84 Lem 84.6 (line 5643 in algtop.tex): generator from edge **)
 (** LATEX VERSION: Suppose X = U union V, U, V open, simply connected. **)
 (** U cap V = A union B disjoint open path-connected. alpha path in U from a to b, **)
 (** beta path in V from b to a. Then [alpha . beta] generates pi1(X,a). **)
@@ -75073,14 +75073,14 @@ admit.
 Admitted.
 
 (** from S84 Exercise 1 (line 5742 in algtop.tex) **)
-(** LATEX VERSION: Give an example to show that the second part of Lemma 84.2 **)
-(** need not hold if T is infinite. (Lemma 84.2 says that for a finite **)
+(** LATEX VERSION: Give an example to show that the second part of Lem 84.2 **)
+(** need not hold if T is infinite. (Lem 84.2 says that for a finite **)
 (** subgraph T, alpha reduces to an edge path in T.) **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 55 **)
 Theorem ex84_1_infinite_tree_counterexample :
   (** There exists an infinite graph X with a maximal tree T of X **)
-  (** such that the conclusion of Lemma 84.2 (every closed edge path **)
+  (** such that the conclusion of Lem 84.2 (every closed edge path **)
   (** reduces to one lying in T) fails for infinite T. **)
   (** Specifically: there is a loop not homotopic to a loop in any **)
   (** finite subgraph containing all its edge-crossings outside T. **)
@@ -75155,7 +75155,7 @@ Definition euler_number : set -> set -> set -> set :=
       (Eps_i (fun n:set => n :e omega /\ equip (graph_vertices X Tx Arcs) n))
       (minus_SNo (Eps_i (fun n:set => n :e omega /\ equip Arcs n))).
 
-(** from S85 Lemma 85.2 (line 5766 in algtop.tex): free generators = 1 - chi **)
+(** from S85 Lem 85.2 (line 5766 in algtop.tex): free generators = 1 - chi **)
 (** LATEX VERSION: If X is a finite, connected linear graph, then the cardinality **)
 (** of a system of free generators for pi1(X) is 1 - chi(X). **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
