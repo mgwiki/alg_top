@@ -53011,8 +53011,105 @@ claim HFt_54_cont :
       exists N:set, N :e unit_square_topology /\ q :e N /\
         continuous_map N (subspace_topology unit_square unit_square_topology N) E Te Ft_54.
   {
-    (** TODO Charlie: derive local continuity from evenly covered neighborhoods and local uniqueness of lifts. **)
-    admit.
+    let q.
+    assume Hq.
+    claim HFqB : apply_fun F q :e B.
+    {
+      exact (HfFun q Hq).
+    }
+    claim HlocU :
+      exists U:set, U :e Tb /\ apply_fun F q :e U /\ evenly_covered E Te B Tb p U.
+    {
+      exact (lemma54_1_path_lifting_sub_bounty_A
+        E
+        Te
+        B
+        Tb
+        p
+        (apply_fun F q)
+        Hcov
+        HFqB).
+    }
+    apply HlocU.
+    let U.
+    assume HUPack.
+    claim HUopen : U :e Tb.
+    {
+      exact (andEL
+        (U :e Tb)
+        (apply_fun F q :e U)
+        (andEL
+          (U :e Tb /\ apply_fun F q :e U)
+          (evenly_covered E Te B Tb p U)
+          HUPack)).
+    }
+    claim HFqU : apply_fun F q :e U.
+    {
+      exact (andER
+        (U :e Tb)
+        (apply_fun F q :e U)
+        (andEL
+          (U :e Tb /\ apply_fun F q :e U)
+          (evenly_covered E Te B Tb p U)
+          HUPack)).
+    }
+    claim Hnear_q :
+      exists N:set, N :e unit_square_topology /\ q :e N /\
+        (forall z:set, z :e N -> apply_fun F z :e U).
+    {
+      exact (continuous_local_neighborhood
+        unit_square
+        unit_square_topology
+        B
+        Tb
+        F
+        HtopSq54
+        HtopB
+        HfFun
+        (fun V:set =>
+          continuous_map_preimage
+            unit_square
+            unit_square_topology
+            B
+            Tb
+            F
+            HFcont
+            V)
+        q
+        Hq
+        U
+        HUopen
+        HFqU).
+    }
+    apply Hnear_q.
+    let N.
+    assume HNPack.
+    claim HNpair : N :e unit_square_topology /\ q :e N.
+    {
+      exact (andEL
+        (N :e unit_square_topology /\ q :e N)
+        (forall z:set, z :e N -> apply_fun F z :e U)
+        HNPack).
+    }
+    claim HN_into_U : forall z:set, z :e N -> apply_fun F z :e U.
+    {
+      exact (andER
+        (N :e unit_square_topology /\ q :e N)
+        (forall z:set, z :e N -> apply_fun F z :e U)
+        HNPack).
+    }
+    claim HNcontFt :
+      continuous_map N (subspace_topology unit_square unit_square_topology N) E Te Ft_54.
+    {
+      (** TODO Charlie: use HUopen/HevenU and HN_into_U to identify Ft_54 on N with a local sheet inverse of p composed with F. **)
+      admit.
+    }
+    witness N.
+    exact (andI
+      (N :e unit_square_topology /\ q :e N)
+      (continuous_map N (subspace_topology unit_square unit_square_topology N) E Te Ft_54)
+      HNpair
+      HNcontFt).
   }
   set UFam_54 := {U :e unit_square_topology |
     continuous_map U (subspace_topology unit_square unit_square_topology U) E Te Ft_54}.
