@@ -1,6 +1,6 @@
 (** Balance Alice 2584 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 28404 **)
+(** Balance Charlie 28275 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -53833,7 +53833,8 @@ Definition eigenvalue_of_matrix : set -> set -> set -> prop := fun n A lam =>
 (** from S55 starred Corollary 55.7 (line 994 in algtop.tex) **)
 (** LATEX VERSION: Let A be a 3 by 3 matrix of positive real numbers. Then A has a positive real eigenvalue. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 2026-02-18T12:01:32 **)
 Theorem cor55_7_positive_matrix_eigenvalue : forall A:set,
   function_on A (setprod 3 3) R ->
   (forall i j:set, i :e 3 -> j :e 3 -> Rlt 0 (apply_fun A (i, j))) ->
@@ -54636,7 +54637,8 @@ Admitted.
 (** from S57 Exercise 3 (line 1259 in algtop.tex) **)
 (** LATEX VERSION: Let h: S^1 -> S^1 be continuous, antipode-preserving, h(b0)=b0. Then h-star carries a generator to an odd power of itself. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 120 **)
+(** Bounty 132 **)
+(** Lock Charlie 2026-02-18T12:01:32 **)
 Theorem ex57_3_antipode_preserving_odd_power : forall h:set,
   antipode_preserving_S1 h ->
   apply_fun h S1_basepoint = S1_basepoint ->
@@ -61623,7 +61625,8 @@ Admitted.
 (** Y open in R^n. If f is homotopic to a map extendable to h: X -> Y, **)
 (** then f itself extends to g: X -> Y with g homotopic to h. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 120 **)
+(** Bounty 132 **)
+(** Lock Charlie 2026-02-18T12:01:32 **)
 Theorem ex62_3_homotopy_extension_general : forall X Tx A Y n:set,
   normal_space (setprod X unit_interval)
     (product_topology X Tx unit_interval unit_interval_topology) ->
@@ -62001,7 +62004,8 @@ Admitted.
 (** LATEX VERSION: If D is closed connected separating S^2 into n components, **)
 (** and A is an arc with only one endpoint in D, then D union A separates S^2 into n components. **)
 (** EFFORT: 10 lines textbook, difficulty 6/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 2026-02-18T12:01:32 **)
 Theorem ex63_2a_arc_one_endpoint : forall D:set,
   D c= Sn 2 -> Sn 2 :\: D :e Sn_topology 2 ->
   connected_space D (subspace_topology (Sn 2) (Sn_topology 2) D) ->
@@ -62028,7 +62032,8 @@ Admitted.
 (** LATEX VERSION: If A is an arc with both endpoints in D (otherwise disjoint), **)
 (** then D union A separates S^2 into n+1 components. **)
 (** EFFORT: 10 lines textbook, difficulty 6/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 2026-02-18T12:01:32 **)
 Theorem ex63_2b_arc_both_endpoints : forall D:set,
   D c= Sn 2 -> Sn 2 :\: D :e Sn_topology 2 ->
   connected_space D (subspace_topology (Sn 2) (Sn_topology 2) D) ->
@@ -63168,7 +63173,8 @@ Definition rank_free_abelian : set -> set -> set -> set -> set :=
 (** LATEX VERSION: If A is a free abelian group of rank n, then any subgroup B **)
 (** of A is a free abelian group of rank at most n. **)
 (** EFFORT: 12 lines textbook, difficulty 6/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 2026-02-18T12:01:32 **)
 Theorem ex67_6_free_abelian_subgroup_rank :
   forall A multA eA invA:set,
   group_structure A multA eA invA ->
@@ -64297,7 +64303,8 @@ Admitted.
 (** LATEX VERSION: Under the hypotheses of Ex 2(a) (i2 surjective), **)
 (** h: pi1(U)/M -> pi1(X) is an isomorphism. **)
 (** EFFORT: 12 lines textbook, difficulty 6/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 2026-02-18T12:01:32 **)
 Theorem ex70_2b_surjective_i2_isomorphism :
   forall X Tx U V x0:set,
   U :e Tx -> V :e Tx -> X = U :\/: V ->
@@ -67871,7 +67878,8 @@ Admitted.
 (** from S84 Theorem 84.3 (line 5617 in algtop.tex): tree is simply connected **)
 (** LATEX VERSION: Any tree T is simply connected. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:01:32 **)
 Theorem thm84_3_tree_simply_connected :
   forall T ArcsT X Tx Arcs:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -68034,7 +68042,8 @@ Admitted.
 (** from S85 Theorem 85.1 (line 5752 in algtop.tex): subgroup of free group is free **)
 (** LATEX VERSION: If H is a subgroup of a free group F, then H is free. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:01:32 **)
 Theorem thm85_1_subgroup_of_free_is_free :
   forall F multF eF invF J gens:set,
   free_group_with_generators F multF eF invF J gens ->
@@ -68088,7 +68097,8 @@ Definition subgroup_index : set -> set -> set -> set -> set -> set :=
 (** LATEX VERSION: Let F be a free group with n+1 free generators; let H be a **)
 (** subgroup of F. If H has index k in F, then H has kn+1 free generators. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:01:32 **)
 Theorem thm85_3_free_gen_index_formula :
   forall F multF eF invF J gens:set,
   free_group_with_generators F multF eF invF J gens ->
