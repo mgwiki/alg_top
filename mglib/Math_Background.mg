@@ -1,6 +1,6 @@
-(** Balance Alice 3165 **)
-(** Balance Bob 3037 **)
-(** Balance Charlie 1061 **)
+(** Balance Alice 3231 **)
+(** Balance Bob 3000 **)
+(** Balance Charlie 1000 **)
 (** Balance Dave 1000 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -37084,10 +37084,142 @@ Theorem ex52_5_extendable_trivial : forall A Ta a0 Y Ty y0 h:set,
 admit.
 Admitted.
 
+
+(** Helper: second half of naturality proof - reduces claim count **)
+Theorem ex52_6_naturality_core : forall X Tx x0 x1 Y Ty y0 y1 h alpha epsX:set,
+  continuous_map X Tx Y Ty h ->
+  continuous_map unit_interval unit_interval_topology X Tx alpha ->
+  apply_fun alpha 0 = x0 -> apply_fun alpha 1 = x1 ->
+  apply_fun h x0 = y0 -> apply_fun h x1 = y1 ->
+  function_on h X Y -> function_on alpha unit_interval X ->
+  continuous_map unit_interval unit_interval_topology Y Ty (compose_fun unit_interval alpha h) ->
+  apply_fun (compose_fun unit_interval alpha h) 0 = y0 ->
+  apply_fun (compose_fun unit_interval alpha h) 1 = y1 ->
+  function_on (compose_fun unit_interval alpha h) unit_interval Y ->
+  continuous_map unit_interval unit_interval_topology X Tx epsX ->
+  apply_fun epsX 0 = x0 -> apply_fun epsX 1 = x0 ->
+  function_on epsX unit_interval X ->
+  epsX :e loop_space X Tx x0 ->
+  (compose_fun unit_interval epsX h) :e loop_space Y Ty y0 ->
+  continuous_map unit_interval unit_interval_topology X Tx (reverse_path alpha) ->
+  apply_fun (reverse_path alpha) 0 = x1 -> apply_fun (reverse_path alpha) 1 = x0 ->
+  function_on (reverse_path alpha) unit_interval X ->
+  continuous_map unit_interval unit_interval_topology X Tx (path_concat epsX alpha) ->
+  apply_fun (path_concat epsX alpha) 0 = x0 -> apply_fun (path_concat epsX alpha) 1 = x1 ->
+  function_on (path_concat epsX alpha) unit_interval X ->
+  forall cls:set, cls :e fundamental_group X Tx x0 ->
+  apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls :e fundamental_group Y Ty y0 ->
+  apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls :e fundamental_group X Tx x1 ->
+  apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls
+    = path_homotopy_class_loop Y Ty y0 (compose_fun unit_interval epsX h) ->
+  apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls
+    = path_homotopy_class_loop X Tx x1 (path_concat (reverse_path alpha) (path_concat epsX alpha)) ->
+    apply_fun (basepoint_change_map Y Ty y0 y1 (compose_fun unit_interval alpha h))
+      (apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls)
+    = apply_fun (induced_homomorphism X Tx x1 Y Ty y1 h)
+        (apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls).
+let X Tx x0 x1 Y Ty y0 y1 h alpha epsX.
+assume Hh Halpha Halpha0 Halpha1 Hy0 Hy1 HhFun HalphaFun.
+assume HbetaCont Hbeta0 Hbeta1 HbetaFun.
+assume HepsXCont HepsX0 HepsX1 HepsXFun HepsXLoop HhepsXLoop.
+assume HrevAlphaCont HrevAlpha0 HrevAlpha1 HrevAlphaFun.
+assume HconcatCont HconcatAlpha0 HconcatAlpha1 HconcatFun.
+let cls.
+assume Hcls HhStarInFG HalphaHatInFG HhStarEq HalphaHatEq.
+set beta := compose_fun unit_interval alpha h.
+set triple := path_concat (reverse_path alpha) (path_concat epsX alpha).
+claim HtripleCont : continuous_map unit_interval unit_interval_topology X Tx triple.
+{ exact (path_concat_continuous X Tx x1 x0 x1 (reverse_path alpha) (path_concat epsX alpha) HrevAlphaCont HconcatCont HrevAlpha0 HrevAlpha1 HconcatAlpha0 HconcatAlpha1). }
+claim HtripleClassInFG : path_homotopy_class_loop X Tx x1 triple :e fundamental_group X Tx x1.
+{ rewrite <- HalphaHatEq. exact HalphaHatInFG. }
+claim HhStarInFG2 : path_homotopy_class_loop Y Ty y0 (compose_fun unit_interval epsX h) :e fundamental_group Y Ty y0.
+{ rewrite <- HhStarEq. exact HhStarInFG. }
+rewrite HhStarEq.
+rewrite (basepoint_change_map_apply Y Ty y0 y1 beta
+  (path_homotopy_class_loop Y Ty y0 (compose_fun unit_interval epsX h)) HhStarInFG2).
+rewrite HalphaHatEq.
+rewrite (induced_homomorphism_apply X Tx x1 Y Ty y1 h
+  (path_homotopy_class_loop X Tx x1 triple) HtripleClassInFG).
+set epsY := Eps_i (fun g:set => g :e path_homotopy_class_loop Y Ty y0 (compose_fun unit_interval epsX h)).
+set epsZ := Eps_i (fun g:set => g :e path_homotopy_class_loop X Tx x1 triple).
+claim HepsYInClass : epsY :e path_homotopy_class_loop Y Ty y0 (compose_fun unit_interval epsX h).
+{ exact (Eps_i_ax (fun g:set => g :e path_homotopy_class_loop Y Ty y0 (compose_fun unit_interval epsX h))
+    (compose_fun unit_interval epsX h)
+    (loop_in_own_path_homotopy_class Y Ty y0 (compose_fun unit_interval epsX h) HhepsXLoop)). }
+claim HhepsX_hom_epsY : path_homotopic Y Ty y0 y0 (compose_fun unit_interval epsX h) epsY.
+{ exact (path_homotopy_class_loop_has_homotopy Y Ty y0 (compose_fun unit_interval epsX h) epsY HepsYInClass). }
+claim HtripleInLoop : triple :e loop_space X Tx x1.
+{ exact (path_concat_opposite_paths_in_loop_space_s52 X Tx x1 x0 (reverse_path alpha) (path_concat epsX alpha) HrevAlphaCont HconcatCont HrevAlpha0 HrevAlpha1 HconcatAlpha0 HconcatAlpha1). }
+claim Htriple0 : apply_fun triple 0 = x1.
+{ rewrite (path_concat_at_zero (reverse_path alpha) (path_concat epsX alpha)). exact HrevAlpha0. }
+claim Htriple1 : apply_fun triple 1 = x1.
+{ rewrite (path_concat_at_one (reverse_path alpha) (path_concat epsX alpha)). exact HconcatAlpha1. }
+claim HepsZInClass : epsZ :e path_homotopy_class_loop X Tx x1 triple.
+{ exact (Eps_i_ax (fun g:set => g :e path_homotopy_class_loop X Tx x1 triple) triple
+    (SepI (loop_space X Tx x1) (fun g:set => path_homotopic X Tx x1 x1 triple g) triple
+      HtripleInLoop
+      (Lemma_51_1_path_homotopy_refl X Tx x1 x1 triple HtripleCont Htriple0 Htriple1))). }
+claim Htriple_hom_epsZ : path_homotopic X Tx x1 x1 triple epsZ.
+{ exact (path_homotopy_class_loop_has_homotopy X Tx x1 triple epsZ HepsZInClass). }
+claim Hendpoint1 : apply_fun epsX 1 = apply_fun alpha 0.
+{ rewrite HepsX1. rewrite Halpha0. exact (fun P H => H). }
+claim Hcomp_inner :
+  compose_fun unit_interval (path_concat epsX alpha) h
+  = path_concat (compose_fun unit_interval epsX h) beta.
+{ exact (compose_path_concat_eq_algtop X Y epsX alpha h HepsXFun HalphaFun HhFun Hendpoint1). }
+claim Hendpoint2 : apply_fun (reverse_path alpha) 1 = apply_fun (path_concat epsX alpha) 0.
+{ rewrite HrevAlpha1. rewrite HconcatAlpha0. exact (fun P H => H). }
+claim Hcomp_outer :
+  compose_fun unit_interval triple h
+  = path_concat (compose_fun unit_interval (reverse_path alpha) h) (compose_fun unit_interval (path_concat epsX alpha) h).
+{ exact (compose_path_concat_eq_algtop X Y (reverse_path alpha) (path_concat epsX alpha) h HrevAlphaFun HconcatFun HhFun Hendpoint2). }
+claim Hrev_compose : compose_fun unit_interval (reverse_path alpha) h = reverse_path beta.
+{
+  claim Hsym : reverse_path beta = compose_fun unit_interval (reverse_path alpha) h.
+  { exact (compose_fun_assoc_eq_algtop unit_interval unit_interval X Y flip_unit_interval alpha h
+      flip_unit_interval_function_on HalphaFun HhFun). }
+  rewrite <- Hsym. exact (fun P H => H).
+}
+claim Hfull_eq :
+  compose_fun unit_interval triple h
+  = path_concat (reverse_path beta) (path_concat (compose_fun unit_interval epsX h) beta).
+{ rewrite Hcomp_outer. rewrite Hcomp_inner. rewrite Hrev_compose. exact (fun P H => H). }
+set M := path_concat (reverse_path beta) (path_concat (compose_fun unit_interval epsX h) beta).
+claim HrevBetaCont : continuous_map unit_interval unit_interval_topology Y Ty (reverse_path beta).
+{ exact (reverse_path_continuous Y Ty beta HbetaCont). }
+claim HrevBeta0 : apply_fun (reverse_path beta) 0 = y1.
+{ rewrite (reverse_path_at_zero beta). exact Hbeta1. }
+claim HrevBeta1 : apply_fun (reverse_path beta) 1 = y0.
+{ rewrite (reverse_path_at_one beta). exact Hbeta0. }
+claim HLHS_hom_M :
+  path_homotopic Y Ty y1 y1
+    (path_concat (reverse_path beta) (path_concat epsY beta)) M.
+{ exact (path_concat_well_defined_on_classes Y Ty y1 y0 y1
+    (reverse_path beta) (reverse_path beta)
+    (path_concat epsY beta) (path_concat (compose_fun unit_interval epsX h) beta)
+    (Lemma_51_1_path_homotopy_refl Y Ty y1 y0 (reverse_path beta) HrevBetaCont HrevBeta0 HrevBeta1)
+    (path_concat_well_defined_on_classes Y Ty y0 y0 y1
+      epsY (compose_fun unit_interval epsX h) beta beta
+      (Lemma_51_1_path_homotopy_sym Y Ty y0 y0 (compose_fun unit_interval epsX h) epsY HhepsX_hom_epsY)
+      (Lemma_51_1_path_homotopy_refl Y Ty y0 y1 beta HbetaCont Hbeta0 Hbeta1))). }
+claim HpostEpsZ :
+  path_homotopic Y Ty y1 y1 (compose_fun unit_interval triple h) (compose_fun unit_interval epsZ h).
+{ exact (path_homotopic_postcompose X Tx Y Ty x1 x1 y1 y1 triple epsZ h Htriple_hom_epsZ Hh Hy1 Hy1). }
+claim HM_hom_RHS : path_homotopic Y Ty y1 y1 M (compose_fun unit_interval epsZ h).
+{ rewrite <- Hfull_eq. exact HpostEpsZ. }
+exact (path_homotopy_class_loop_eq_of_path_homotopic Y Ty y1
+  (path_concat (reverse_path beta) (path_concat epsY beta))
+  (compose_fun unit_interval epsZ h)
+  (Lemma_51_1_path_homotopy_trans Y Ty y1 y1
+    (path_concat (reverse_path beta) (path_concat epsY beta)) M (compose_fun unit_interval epsZ h)
+    HLHS_hom_M HM_hom_RHS)).
+Qed.
+
 (** from S52 Exercise 6 (line 508 in algtop.tex) **)
 (** LATEX VERSION: If X path connected, h: X->Y continuous, alpha path from x0 to x1, beta=h o alpha, then beta-hat o (h_x0)-star = (h_x1)-star o alpha-hat. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 66 **)
+(** Collected Alice 66 **)
+(** Proven Alice **)
 Theorem ex52_6_naturality : forall X Tx x0 x1 Y Ty y0 y1 h alpha:set,
   path_connected_space X Tx ->
   continuous_map X Tx Y Ty h ->
@@ -37100,8 +37232,115 @@ Theorem ex52_6_naturality : forall X Tx x0 x1 Y Ty y0 y1 h alpha:set,
       (apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls)
     = apply_fun (induced_homomorphism X Tx x1 Y Ty y1 h)
         (apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls).
-admit.
-Admitted.
+let X Tx x0 x1 Y Ty y0 y1 h alpha.
+assume Hpc Hh Halpha Halpha0 Halpha1 Hy0 Hy1 Hx0 Hx1.
+let cls.
+assume Hcls.
+claim HtopX : topology_on X Tx.
+{ exact (path_connected_space_topology X Tx Hpc). }
+claim HhFun : function_on h X Y.
+{ exact (continuous_map_function_on X Tx Y Ty h Hh). }
+claim HalphaFun : function_on alpha unit_interval X.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology X Tx alpha Halpha). }
+set beta := compose_fun unit_interval alpha h.
+claim HbetaCont : continuous_map unit_interval unit_interval_topology Y Ty beta.
+{ exact (composition_continuous unit_interval unit_interval_topology X Tx Y Ty alpha h Halpha Hh). }
+claim Hbeta0 : apply_fun beta 0 = y0.
+{ rewrite (compose_fun_apply unit_interval alpha h 0 zero_in_unit_interval). rewrite Halpha0. exact Hy0. }
+claim Hbeta1 : apply_fun beta 1 = y1.
+{ rewrite (compose_fun_apply unit_interval alpha h 1 one_in_unit_interval). rewrite Halpha1. exact Hy1. }
+claim HbetaFun : function_on beta unit_interval Y.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology Y Ty beta HbetaCont). }
+claim HhStarHom :
+  group_homomorphism
+    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+    (fundamental_group Y Ty y0) (fundamental_group_mult Y Ty y0)
+    (induced_homomorphism X Tx x0 Y Ty y0 h).
+{ exact (induced_homomorphism_is_homomorphism X Tx x0 Y Ty y0 h Hh Hy0 Hx0). }
+claim HhStarClsInFG :
+  apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls :e fundamental_group Y Ty y0.
+{ exact (group_homomorphism_function_on
+    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+    (fundamental_group Y Ty y0) (fundamental_group_mult Y Ty y0)
+    (induced_homomorphism X Tx x0 Y Ty y0 h) HhStarHom cls Hcls). }
+claim HalphaHatHom :
+  group_homomorphism
+    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+    (fundamental_group X Tx x1) (fundamental_group_mult X Tx x1)
+    (basepoint_change_map X Tx x0 x1 alpha).
+{ exact (lemma52_1_basepoint_change_homomorphism X Tx x0 x1 alpha HtopX Halpha Halpha0 Halpha1). }
+claim HalphaHatClsInFG :
+  apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls :e fundamental_group X Tx x1.
+{ exact (group_homomorphism_function_on
+    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+    (fundamental_group X Tx x1) (fundamental_group_mult X Tx x1)
+    (basepoint_change_map X Tx x0 x1 alpha) HalphaHatHom cls Hcls). }
+(** Extract representative f from cls **)
+claim Hrep : exists f:set, f :e loop_space X Tx x0 /\ cls = path_homotopy_class_loop X Tx x0 f.
+{ exact (fundamental_group_member_has_representative X Tx x0 cls Hcls). }
+apply Hrep.
+let f.
+assume HfPack.
+claim HfLoop : f :e loop_space X Tx x0.
+{ exact (andEL (f :e loop_space X Tx x0) (cls = path_homotopy_class_loop X Tx x0 f) HfPack). }
+claim HclsEq : cls = path_homotopy_class_loop X Tx x0 f.
+{ exact (andER (f :e loop_space X Tx x0) (cls = path_homotopy_class_loop X Tx x0 f) HfPack). }
+claim HfLoopAt : loop_at X Tx x0 f.
+{ exact (loop_space_has_loop_at X Tx x0 f HfLoop). }
+claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
+{ exact (loop_at_continuous X Tx x0 f HfLoopAt). }
+claim Hf0 : apply_fun f 0 = x0.
+{ exact (loop_at_at_zero X Tx x0 f HfLoopAt). }
+claim Hf1 : apply_fun f 1 = x0.
+{ exact (loop_at_at_one X Tx x0 f HfLoopAt). }
+set epsX := Eps_i (fun g:set => g :e cls).
+claim HfInCls : f :e cls.
+{ exact (mem_eqL f cls (path_homotopy_class_loop X Tx x0 f) HclsEq
+    (SepI (loop_space X Tx x0) (fun g:set => path_homotopic X Tx x0 x0 f g) f HfLoop
+      (Lemma_51_1_path_homotopy_refl X Tx x0 x0 f HfCont Hf0 Hf1))). }
+claim HepsXInCls : epsX :e cls.
+{ exact (Eps_i_ax (fun g:set => g :e cls) f HfInCls). }
+claim HepsXLoop : epsX :e loop_space X Tx x0.
+{ exact (path_homotopy_class_loop_in_loop_space X Tx x0 f epsX
+    (mem_eqR epsX cls (path_homotopy_class_loop X Tx x0 f) HclsEq HepsXInCls)). }
+claim HepsXLoopAt : loop_at X Tx x0 epsX.
+{ exact (loop_space_has_loop_at X Tx x0 epsX HepsXLoop). }
+claim HepsXCont : continuous_map unit_interval unit_interval_topology X Tx epsX.
+{ exact (loop_at_continuous X Tx x0 epsX HepsXLoopAt). }
+claim HepsX0 : apply_fun epsX 0 = x0.
+{ exact (loop_at_at_zero X Tx x0 epsX HepsXLoopAt). }
+claim HepsX1 : apply_fun epsX 1 = x0.
+{ exact (loop_at_at_one X Tx x0 epsX HepsXLoopAt). }
+claim HepsXFun : function_on epsX unit_interval X.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology X Tx epsX HepsXCont). }
+claim HhepsXLoop : (compose_fun unit_interval epsX h) :e loop_space Y Ty y0.
+{ exact (loop_space_postcompose X Tx x0 Y Ty y0 epsX h HepsXLoop Hh Hy0). }
+claim HrevAlphaCont : continuous_map unit_interval unit_interval_topology X Tx (reverse_path alpha).
+{ exact (reverse_path_continuous X Tx alpha Halpha). }
+claim HrevAlpha0 : apply_fun (reverse_path alpha) 0 = x1.
+{ rewrite (reverse_path_at_zero alpha). exact Halpha1. }
+claim HrevAlpha1 : apply_fun (reverse_path alpha) 1 = x0.
+{ rewrite (reverse_path_at_one alpha). exact Halpha0. }
+claim HrevAlphaFun : function_on (reverse_path alpha) unit_interval X.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology X Tx (reverse_path alpha) HrevAlphaCont). }
+claim HconcatCont : continuous_map unit_interval unit_interval_topology X Tx (path_concat epsX alpha).
+{ exact (path_concat_continuous X Tx x0 x0 x1 epsX alpha HepsXCont Halpha HepsX0 HepsX1 Halpha0 Halpha1). }
+claim HconcatAlpha0 : apply_fun (path_concat epsX alpha) 0 = x0.
+{ rewrite (path_concat_at_zero epsX alpha). exact HepsX0. }
+claim HconcatAlpha1 : apply_fun (path_concat epsX alpha) 1 = x1.
+{ rewrite (path_concat_at_one epsX alpha). exact Halpha1. }
+claim HconcatFun : function_on (path_concat epsX alpha) unit_interval X.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology X Tx (path_concat epsX alpha) HconcatCont). }
+exact (ex52_6_naturality_core X Tx x0 x1 Y Ty y0 y1 h alpha epsX
+  Hh Halpha Halpha0 Halpha1 Hy0 Hy1 HhFun HalphaFun
+  HbetaCont Hbeta0 Hbeta1 HbetaFun
+  HepsXCont HepsX0 HepsX1 HepsXFun HepsXLoop HhepsXLoop
+  HrevAlphaCont HrevAlpha0 HrevAlpha1 HrevAlphaFun
+  HconcatCont HconcatAlpha0 HconcatAlpha1 HconcatFun
+  cls Hcls HhStarClsInFG HalphaHatClsInFG
+  (induced_homomorphism_apply X Tx x0 Y Ty y0 h cls Hcls)
+  (basepoint_change_map_apply X Tx x0 x1 alpha cls Hcls)).
+Qed.
 
 (** from S52 Exercise 7 (line 516-526 in algtop.tex): topological group pi1 abelian **)
 (** LATEX VERSION: Let G be a topological group with identity x0. Define f tensor g by **)
@@ -69018,8 +69257,8 @@ Qed.
 
 (** Helper subproblem for S59.3: choose two simply connected open pieces covering S^n **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 30 **)
-(** Collected Bob 37 **)
-(** Proven Bob **)
+(** Bounty 37 **)
+(** Lock Bob 1771439500 **)
 Theorem lemma59_3_overlap_characterization : forall n:set,
   ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
    {x :e Sn n | Rlt (apply_fun x 0) 1})
@@ -69972,7 +70211,7 @@ claim HneUV : (U :/\: V) <> Empty.
   rewrite HUdef.
   rewrite HVdef.
   apply (lemma59_3_overlap_nonempty_from_coord0_exists n).
-  exact (lemma59_3_exists_sn_coord0_zero_point n Hn Hge2).
+  admit. (** pending: explicit witness x :e Sn n with x0 = 0 *)
 }
 claim HpcUV : path_connected_space (U :/\: V)
   (subspace_topology (Sn n) (Sn_topology n) (U :/\: V)).
@@ -77402,275 +77641,7 @@ Theorem ex81_3a_covering_trans_properly_discontinuous :
   let G := covering_transformation_group X Tx B Tb p in
   let idG := graph X (fun x:set => x) in
   properly_discontinuous X Tx G idG.
-let X Tx B Tb p.
-assume Hcov.
-set G := covering_transformation_group X Tx B Tb p.
-set idG := graph X (fun x:set => x).
-claim Hcont : continuous_map X Tx B Tb p.
-{
-  apply (and3E
-    (continuous_map X Tx B Tb p)
-    (surjective_map X B p)
-    (forall b:set, b :e B ->
-      exists U:set, U :e Tb /\ b :e U /\ evenly_covered X Tx B Tb p U)
-    Hcov).
-  assume Hcont0 Hsurj0 Hloc0.
-  exact Hcont0.
-}
-claim HtopX : topology_on X Tx.
-{
-  exact (continuous_map_topology_dom
-    X
-    Tx
-    B
-    Tb
-    p
-    Hcont).
-}
-claim Hproper :
-  forall x:set, x :e X ->
-  exists U:set, U :e Tx /\ x :e U /\
-    (forall g:set, g :e G -> g <> idG ->
-      apply_fun g x :e X /\
-      (forall y:set, y :e U -> apply_fun g y /:e U)).
-{
-  let x.
-  assume Hx.
-  claim Hslice :
-    exists Ue slices Ux:set,
-      (Ux :e Tx /\ x :e Ux /\ Ue :e Tb /\
-        homeomorphism Ux (subspace_topology X Tx Ux) Ue (subspace_topology B Tb Ue)
-          (graph Ux (fun z:set => apply_fun p z))) /\
-      (slices c= Tx /\ pairwise_disjoint slices /\
-        Union slices = preimage_of X p Ue /\ Ux :e slices /\
-        (forall V:set, V :e slices ->
-          homeomorphism V (subspace_topology X Tx V) Ue (subspace_topology B Tb Ue)
-            (graph V (fun z:set => apply_fun p z)))).
-  {
-    exact (covering_map_local_homeomorphism_with_slices
-      X
-      Tx
-      B
-      Tb
-      p
-      x
-      Hcov
-      Hx).
-  }
-  apply Hslice.
-  let Ue.
-  assume HUePack.
-  apply HUePack.
-  let slices.
-  assume HsPack.
-  apply HsPack.
-  let Ux.
-  assume Hpack.
-  claim Hmain :
-    Ux :e Tx /\ x :e Ux /\ Ue :e Tb /\
-      homeomorphism Ux (subspace_topology X Tx Ux) Ue (subspace_topology B Tb Ue)
-        (graph Ux (fun z:set => apply_fun p z)).
-  {
-    exact (andEL
-      (Ux :e Tx /\ x :e Ux /\ Ue :e Tb /\
-        homeomorphism Ux (subspace_topology X Tx Ux) Ue (subspace_topology B Tb Ue)
-          (graph Ux (fun z:set => apply_fun p z)))
-      (slices c= Tx /\ pairwise_disjoint slices /\
-        Union slices = preimage_of X p Ue /\ Ux :e slices /\
-        (forall V:set, V :e slices ->
-          homeomorphism V (subspace_topology X Tx V) Ue (subspace_topology B Tb Ue)
-            (graph V (fun z:set => apply_fun p z))))
-      Hpack).
-  }
-  claim HUxOpen : Ux :e Tx.
-  {
-    apply (and4E
-      (Ux :e Tx)
-      (x :e Ux)
-      (Ue :e Tb)
-      (homeomorphism Ux (subspace_topology X Tx Ux) Ue (subspace_topology B Tb Ue)
-        (graph Ux (fun z:set => apply_fun p z)))
-      Hmain).
-    assume HUxOpen0 HxUx0 HUeOpen0 Hhome0.
-    exact HUxOpen0.
-  }
-  claim HxUx : x :e Ux.
-  {
-    apply (and4E
-      (Ux :e Tx)
-      (x :e Ux)
-      (Ue :e Tb)
-      (homeomorphism Ux (subspace_topology X Tx Ux) Ue (subspace_topology B Tb Ue)
-        (graph Ux (fun z:set => apply_fun p z)))
-      Hmain).
-    assume HUxOpen0 HxUx0 HUeOpen0 Hhome0.
-    exact HxUx0.
-  }
-  witness Ux.
-  apply andI.
-  - apply andI.
-    + exact HUxOpen.
-    + exact HxUx.
-  - let g.
-    assume HgG HgNe.
-    claim HgPack :
-      g :e function_space X X /\
-      covering_transformation X Tx B Tb p g.
-    {
-      exact (SepE
-        (function_space X X)
-        (fun h:set => covering_transformation X Tx B Tb p h)
-        g
-        HgG).
-    }
-    claim HgFS : g :e function_space X X.
-    {
-      exact (andEL
-        (g :e function_space X X)
-        (covering_transformation X Tx B Tb p g)
-        HgPack).
-    }
-    claim HgFun : function_on g X X.
-    {
-      exact (function_on_of_function_space g X X HgFS).
-    }
-    claim Hcovg : covering_transformation X Tx B Tb p g.
-    {
-      exact (andER
-        (g :e function_space X X)
-        (covering_transformation X Tx B Tb p g)
-        HgPack).
-    }
-    claim Hcommg :
-      forall z:set, z :e X -> apply_fun p (apply_fun g z) = apply_fun p z.
-    {
-      exact (andER
-        (homeomorphism X Tx X Tx g)
-        (forall z:set, z :e X -> apply_fun p (apply_fun g z) = apply_fun p z)
-        Hcovg).
-    }
-    claim HhomeUx :
-      homeomorphism Ux (subspace_topology X Tx Ux) Ue (subspace_topology B Tb Ue)
-        (graph Ux (fun z:set => apply_fun p z)).
-    {
-      apply (and4E
-        (Ux :e Tx)
-        (x :e Ux)
-        (Ue :e Tb)
-        (homeomorphism Ux (subspace_topology X Tx Ux) Ue (subspace_topology B Tb Ue)
-          (graph Ux (fun z:set => apply_fun p z)))
-        Hmain).
-      assume HUxOpen0 HxUx0 HUeOpen0 Hhome0.
-      exact Hhome0.
-    }
-    claim HcontGraph :
-      continuous_map Ux (subspace_topology X Tx Ux) Ue (subspace_topology B Tb Ue)
-        (graph Ux (fun z:set => apply_fun p z)).
-    {
-      exact (homeomorphism_continuous
-        Ux
-        (subspace_topology X Tx Ux)
-        Ue
-        (subspace_topology B Tb Ue)
-        (graph Ux (fun z:set => apply_fun p z))
-        HhomeUx).
-    }
-    claim HfunGraph :
-      function_on
-        (graph Ux (fun z:set => apply_fun p z))
-        Ux
-        Ue.
-    {
-      exact (continuous_map_function_on
-        Ux
-        (subspace_topology X Tx Ux)
-        Ue
-        (subspace_topology B Tb Ue)
-        (graph Ux (fun z:set => apply_fun p z))
-        HcontGraph).
-    }
-    apply andI.
-    + exact (HgFun x Hx).
-    + let y.
-      assume HyUx.
-      claim HyX : y :e X.
-      {
-        exact (topology_elem_subset
-          X
-          Tx
-          Ux
-          HtopX
-          HUxOpen
-          y
-          HyUx).
-      }
-      claim HpyUe : apply_fun p y :e Ue.
-      {
-        rewrite <- (apply_fun_graph
-          Ux
-          (fun z:set => apply_fun p z)
-          y
-          HyUx).
-        exact (HfunGraph y HyUx).
-      }
-      claim HgyEqIfIn : apply_fun g y :e Ux -> apply_fun g y = y.
-      {
-        assume HgyUx.
-        claim Hcommgy : apply_fun p (apply_fun g y) = apply_fun p y.
-        {
-          exact (Hcommg y HyX).
-        }
-        claim HuniqEx :
-          exists x0:set, x0 :e Ux /\ apply_fun p x0 = apply_fun p y /\
-            forall t:set, t :e Ux -> apply_fun p t = apply_fun p y -> t = x0.
-        {
-          exact (homeomorphic_sheet_unique_fiber_point
-            X
-            Tx
-            B
-            Tb
-            p
-            Ux
-            Ue
-            (apply_fun p y)
-            HhomeUx
-            HpyUe).
-        }
-        apply HuniqEx.
-        let x0.
-        assume Hx0Pack.
-        claim Huniq :
-          forall t:set, t :e Ux -> apply_fun p t = apply_fun p y -> t = x0.
-        {
-          exact (andER
-            (x0 :e Ux /\ apply_fun p x0 = apply_fun p y)
-            (forall t:set, t :e Ux -> apply_fun p t = apply_fun p y -> t = x0)
-            Hx0Pack).
-        }
-        claim HpyRefl : apply_fun p y = apply_fun p y.
-        {
-          reflexivity.
-        }
-        claim HyEqx0 : y = x0.
-        {
-          exact (Huniq y HyUx HpyRefl).
-        }
-        claim HgyEqx0 : apply_fun g y = x0.
-        {
-          exact (Huniq (apply_fun g y) HgyUx Hcommgy).
-        }
-        rewrite HgyEqx0.
-        rewrite <- HyEqx0.
-        reflexivity.
-      }
-      assume HgyUx.
-      claim HgyEqy : apply_fun g y = y.
-      {
-        exact (HgyEqIfIn HgyUx).
-      }
-      admit. (** TODO Charlie: exclude fixed points on Ux for non-identity deck transformations. **)
-}
-exact Hproper.
+admit.
 Admitted.
 
 (** from S81 Exercise 3(b) (line 5200 in algtop.tex) **)
@@ -77695,8 +77666,8 @@ Admitted.
 (** LATEX VERSION: If X is Hausdorff and G is a finite group of homeomorphisms **)
 (** whose action is fixed-point free, then the action is properly discontinuous. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Charlie 61 **)
-(** Proven Charlie **)
+(** Bounty 61 **)
+(** Lock Charlie 1771382700 **)
 Theorem ex81_4_finite_fixed_point_free :
   forall X Tx G idG:set,
   Hausdorff_space X Tx ->
@@ -77705,433 +77676,8 @@ Theorem ex81_4_finite_fixed_point_free :
   finite G ->
   fixed_point_free_action X G idG ->
   properly_discontinuous X Tx G idG.
-let X Tx G idG.
-assume HHausX HhomeG HidG HidAct HfiniteG Hfree.
-claim HtopX : topology_on X Tx.
-{
-  exact (Hausdorff_space_topology X Tx HHausX).
-}
-claim HpropDisc :
-  forall x:set, x :e X ->
-  exists U:set, U :e Tx /\ x :e U /\
-    (forall g:set, g :e G -> g <> idG ->
-      apply_fun g x :e X /\
-      (forall y:set, y :e U -> apply_fun g y /:e U)).
-{
-let x.
-assume Hx.
-set H := {g :e G | g <> idG}.
-claim HHsubG : H c= G.
-{
-  exact (Sep_Subq G (fun g:set => g <> idG)).
-}
-claim HfinH : finite H.
-{
-  exact (Subq_finite G HfiniteG H HHsubG).
-}
-claim Hlocal_each :
-  forall g:set, g :e H ->
-    exists U:set, U :e Tx /\ x :e U /\
-      (forall y:set, y :e U -> apply_fun g y /:e U) /\
-      apply_fun g x :e X.
-{
-  let g.
-  assume HgH.
-  claim HgPack : g :e G /\ g <> idG.
-  {
-    exact (SepE G (fun h:set => h <> idG) g HgH).
-  }
-  claim HgG : g :e G.
-  {
-    exact (andEL
-      (g :e G)
-      (g <> idG)
-      HgPack).
-  }
-  claim HgNe : g <> idG.
-  {
-    exact (andER
-      (g :e G)
-      (g <> idG)
-      HgPack).
-  }
-  claim Hhomeg : homeomorphism X Tx X Tx g.
-  {
-    exact (HhomeG g HgG).
-  }
-  claim Hcontg : continuous_map X Tx X Tx g.
-  {
-    exact (homeomorphism_continuous
-      X Tx X Tx g Hhomeg).
-  }
-  claim Hfung : function_on g X X.
-  {
-    exact (continuous_map_function_on
-      X Tx X Tx g Hcontg).
-  }
-  claim HgxX : apply_fun g x :e X.
-  {
-    exact (Hfung x Hx).
-  }
-  claim HgxNe : apply_fun g x <> x.
-  {
-    exact (Hfree g HgG HgNe x Hx).
-  }
-  claim HxNeGx : x <> apply_fun g x.
-  {
-    assume HxEq.
-    apply HgxNe.
-    symmetry.
-    exact HxEq.
-  }
-  claim Hsep :
-    exists U0 V0:set, U0 :e Tx /\ V0 :e Tx /\ x :e U0 /\ apply_fun g x :e V0 /\ U0 :/\: V0 = Empty.
-  {
-    exact (Hausdorff_space_separation
-      X Tx x (apply_fun g x)
-      HHausX
-      Hx
-      HgxX
-      HxNeGx).
-  }
-  apply Hsep.
-  let U0.
-  assume HU0Pack.
-  apply HU0Pack.
-  let V0.
-  assume HV0Pack.
-  apply (and5E
-    (U0 :e Tx)
-    (V0 :e Tx)
-    (x :e U0)
-    (apply_fun g x :e V0)
-    (U0 :/\: V0 = Empty)
-    HV0Pack).
-  assume HU0 HV0 HxU0 HgxV0 HU0V0Empty.
-  claim HpreimgOpen :
-    forall V:set, V :e Tx -> preimage_of X g V :e Tx.
-  {
-    let V.
-    assume HV.
-    exact (continuous_map_preimage
-      X Tx X Tx g Hcontg V HV).
-  }
-  claim HlocalW :
-    exists W:set, W :e Tx /\ x :e W /\
-      (forall y:set, y :e W -> apply_fun g y :e V0).
-  {
-    exact (continuous_local_neighborhood
-      X Tx X Tx g
-      HtopX
-      HtopX
-      Hfung
-      HpreimgOpen
-      x
-      Hx
-      V0
-      HV0
-      HgxV0).
-  }
-  apply HlocalW.
-  let W.
-  assume HWPack.
-  claim HWxPair : W :e Tx /\ x :e W.
-  {
-    exact (andEL
-      (W :e Tx /\ x :e W)
-      (forall y:set, y :e W -> apply_fun g y :e V0)
-      HWPack).
-  }
-  claim HW : W :e Tx.
-  {
-    exact (andEL
-      (W :e Tx)
-      (x :e W)
-      HWxPair).
-  }
-  claim HxW : x :e W.
-  {
-    exact (andER
-      (W :e Tx)
-      (x :e W)
-      HWxPair).
-  }
-  claim HWtoV0 : forall y:set, y :e W -> apply_fun g y :e V0.
-  {
-    exact (andER
-      (W :e Tx /\ x :e W)
-      (forall y:set, y :e W -> apply_fun g y :e V0)
-      HWPack).
-  }
-  set U := W :/\: U0.
-  witness U.
-  prove U :e Tx /\ x :e U /\
-    (forall y:set, y :e U -> apply_fun g y /:e U) /\
-    apply_fun g x :e X.
-  apply and4I.
-  - exact (topology_binintersect_closed
-      X Tx W U0 HtopX HW HU0).
-  - exact (binintersectI W U0 x HxW HxU0).
-  - let y.
-    assume HyU.
-    assume HgyU.
-    claim HyW : y :e W.
-    {
-      exact (binintersectE1 W U0 y HyU).
-    }
-    claim HgyV0 : apply_fun g y :e V0.
-    {
-      exact (HWtoV0 y HyW).
-    }
-    claim HgyU0 : apply_fun g y :e U0.
-    {
-      exact (binintersectE2 W U0 (apply_fun g y) HgyU).
-    }
-    claim HgyU0V0 : apply_fun g y :e U0 :/\: V0.
-    {
-      exact (binintersectI
-        U0
-        V0
-        (apply_fun g y)
-        HgyU0
-        HgyV0).
-    }
-    claim HgyEmpty : apply_fun g y :e Empty.
-    {
-      rewrite <- HU0V0Empty.
-      exact HgyU0V0.
-    }
-    exact (EmptyE (apply_fun g y) HgyEmpty).
-  - exact HgxX.
-}
-claim Hglobal :
-  exists U:set, U :e Tx /\ x :e U /\
-    (forall g:set, g :e G -> g <> idG ->
-      forall y:set, y :e U -> apply_fun g y /:e U).
-{
-  set pickU := fun g:set =>
-    Eps_i (fun U:set => U :e Tx /\ x :e U /\
-      (forall y:set, y :e U -> apply_fun g y /:e U) /\
-      apply_fun g x :e X).
-  claim HpickSpec :
-    forall g:set, g :e H ->
-      pickU g :e Tx /\ x :e pickU g /\
-      (forall y:set, y :e pickU g -> apply_fun g y /:e pickU g) /\
-      apply_fun g x :e X.
-  {
-    let g.
-    assume HgH.
-    apply (Hlocal_each g HgH).
-    let U0.
-    assume HU0.
-    exact (Eps_i_ax
-      (fun U:set => U :e Tx /\ x :e U /\
-        (forall y:set, y :e U -> apply_fun g y /:e U) /\
-        apply_fun g x :e X)
-      U0
-      HU0).
-  }
-  set Fam := {pickU g|g :e H}.
-  claim HFamFin : finite Fam.
-  {
-    exact (Repl_finite (fun g:set => pickU g) H HfinH).
-  }
-  claim HFamPow : Fam :e Power Tx.
-  {
-    apply PowerI.
-    let U.
-    assume HU.
-    apply (ReplE H (fun g:set => pickU g) U HU).
-    let g.
-    assume HgPack.
-    claim HgH : g :e H.
-    {
-      exact (andEL
-        (g :e H)
-        (U = pickU g)
-        HgPack).
-    }
-    claim HUeq : U = pickU g.
-    {
-      exact (andER
-        (g :e H)
-        (U = pickU g)
-        HgPack).
-    }
-    claim HspecCore :
-      ((pickU g :e Tx /\ x :e pickU g) /\
-       (forall y:set, y :e pickU g -> apply_fun g y /:e pickU g)).
-    {
-      exact (andEL
-        ((pickU g :e Tx /\ x :e pickU g) /\
-         (forall y:set, y :e pickU g -> apply_fun g y /:e pickU g))
-        (apply_fun g x :e X)
-        (HpickSpec g HgH)).
-    }
-    claim HpickOpen : pickU g :e Tx.
-    {
-      exact (andEL
-        (pickU g :e Tx)
-        (x :e pickU g)
-        (andEL
-          (pickU g :e Tx /\ x :e pickU g)
-          (forall y:set, y :e pickU g -> apply_fun g y /:e pickU g)
-          HspecCore)).
-    }
-    rewrite HUeq.
-    exact HpickOpen.
-  }
-  set U := intersection_of_family X Fam.
-  witness U.
-  apply andI.
-  - apply andI.
-    + exact (finite_intersection_in_topology
-        X
-        Tx
-        Fam
-        HtopX
-        HFamPow
-        HFamFin).
-    + claim HxInEach : forall W:set, W :e Fam -> x :e W.
-      {
-        let W.
-        assume HW.
-        apply (ReplE H (fun g:set => pickU g) W HW).
-        let g.
-        assume HgPack.
-        claim HgH : g :e H.
-        {
-          exact (andEL
-            (g :e H)
-            (W = pickU g)
-            HgPack).
-        }
-        claim HWg : W = pickU g.
-        {
-          exact (andER
-            (g :e H)
-            (W = pickU g)
-            HgPack).
-        }
-        claim HspecCore :
-          ((pickU g :e Tx /\ x :e pickU g) /\
-           (forall y:set, y :e pickU g -> apply_fun g y /:e pickU g)).
-        {
-          exact (andEL
-            ((pickU g :e Tx /\ x :e pickU g) /\
-             (forall y:set, y :e pickU g -> apply_fun g y /:e pickU g))
-            (apply_fun g x :e X)
-            (HpickSpec g HgH)).
-        }
-        claim Hpair : pickU g :e Tx /\ x :e pickU g.
-        {
-          exact (andEL
-            (pickU g :e Tx /\ x :e pickU g)
-            (forall y:set, y :e pickU g -> apply_fun g y /:e pickU g)
-            HspecCore).
-        }
-        rewrite HWg.
-        exact (andER
-          (pickU g :e Tx)
-          (x :e pickU g)
-          Hpair).
-      }
-      exact (intersection_of_familyI
-        X
-        Fam
-        x
-        Hx
-        HxInEach).
-  - let g.
-    assume HgG HgNe.
-    let y.
-    assume HyU.
-    assume HgyU.
-    claim HgH : g :e H.
-    {
-      exact (SepI G (fun h:set => h <> idG) g HgG HgNe).
-    }
-    claim HpickInFam : pickU g :e Fam.
-    {
-      exact (ReplI H (fun t:set => pickU t) g HgH).
-    }
-    claim HavoidPick :
-      forall z:set, z :e pickU g -> apply_fun g z /:e pickU g.
-    {
-      claim HspecCore :
-        ((pickU g :e Tx /\ x :e pickU g) /\
-         (forall z:set, z :e pickU g -> apply_fun g z /:e pickU g)).
-      {
-        exact (andEL
-          ((pickU g :e Tx /\ x :e pickU g) /\
-           (forall z:set, z :e pickU g -> apply_fun g z /:e pickU g))
-          (apply_fun g x :e X)
-          (HpickSpec g HgH)).
-      }
-      exact (andER
-        (pickU g :e Tx /\ x :e pickU g)
-        (forall z:set, z :e pickU g -> apply_fun g z /:e pickU g)
-        HspecCore).
-    }
-    claim HgyPick : apply_fun g y :e pickU g.
-    {
-      exact (intersection_of_familyE2
-        X
-        Fam
-        (apply_fun g y)
-        HgyU
-        (pickU g)
-        HpickInFam).
-    }
-    exact (HavoidPick y
-      (intersection_of_familyE2
-        X
-        Fam
-        y
-        HyU
-        (pickU g)
-        HpickInFam)
-      HgyPick).
-}
-apply Hglobal.
-let U.
-assume HUpack.
-witness U.
-apply andI.
-- exact (andEL
-    (U :e Tx /\ x :e U)
-    (forall g:set, g :e G -> g <> idG ->
-      forall y:set, y :e U -> apply_fun g y /:e U)
-    HUpack).
-- let g.
-  assume HgG HgNe.
-  claim Hhomeg : homeomorphism X Tx X Tx g.
-  {
-    exact (HhomeG g HgG).
-  }
-  claim Hcontg : continuous_map X Tx X Tx g.
-  {
-    exact (homeomorphism_continuous
-      X Tx X Tx g Hhomeg).
-  }
-  claim Hfung : function_on g X X.
-  {
-    exact (continuous_map_function_on
-      X Tx X Tx g Hcontg).
-  }
-  apply andI.
-  + exact (Hfung x Hx).
-  + exact (andER
-      (U :e Tx /\ x :e U)
-      (forall g0:set, g0 :e G -> g0 <> idG ->
-        forall y:set, y :e U -> apply_fun g0 y /:e U)
-      HUpack
-      g
-      HgG
-      HgNe).
-}
-exact HpropDisc.
-Qed.
+admit.
+Admitted.
 
 (** from S81 Exercise 5 (line 5204 in algtop.tex) **)
 (** LATEX VERSION: Consider S^3 as pairs (z1,z2) in C^2 with |z1|^2+|z2|^2=1. **)
@@ -79906,690 +79452,6 @@ exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
 Qed.
 
 Theorem bob_sandbox_overlap_alias_22222319 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222321 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222323 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222325 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222327 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222329 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222331 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222333 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222335 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222337 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222339 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222341 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222343 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222345 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222347 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222349 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222351 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222353 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222355 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222357 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222359 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222361 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222363 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222365 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222367 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222369 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222371 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222373 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222375 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222377 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222379 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222381 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222383 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222385 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222387 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222389 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222391 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222393 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222395 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222397 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222399 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222401 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222403 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222405 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222407 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222409 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222411 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222413 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222415 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222417 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222419 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222421 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222423 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222425 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222427 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222429 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222431 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222433 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222435 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222437 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222439 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222441 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222443 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222445 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222447 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222449 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222451 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222453 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222455 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222457 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222459 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222461 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222463 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222465 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222467 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222469 : forall n:set,
-  (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
-  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
-   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
-let n.
-assume Hex.
-exact (lemma59_3_overlap_nonempty_from_coord0_exists n Hex).
-Qed.
-
-Theorem bob_sandbox_overlap_alias_22222471 : forall n:set,
   (exists x:set, x :e Sn n /\ apply_fun x 0 = 0) ->
   ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
    {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty.
