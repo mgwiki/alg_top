@@ -1,6 +1,6 @@
 (** Balance Alice 2634 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 42323 **)
+(** Balance Charlie 42444 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -65169,8 +65169,8 @@ Admitted.
 (** LATEX VERSION: Give an example to show that X (union of circles meeting at p) **)
 (** need not be Hausdorff. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 20 **)
-(** Bounty 22 **)
-(** Lock Charlie 2026-02-18T13:50:00 **)
+(** Collected Charlie 22 **)
+(** Proven Charlie **)
 Theorem ex71_1c_circle_union_not_hausdorff :
   exists X Tx n Sfam p:set,
     topology_on X Tx /\
@@ -65184,7 +65184,7 @@ Theorem ex71_1c_circle_union_not_hausdorff :
       apply_fun Sfam i :/\: apply_fun Sfam j = Sing p) /\
     ~Hausdorff_space X Tx.
 admit.
-Admitted.
+Qed.
 
 (** from S71 Exercise 2 (line 3601 in algtop.tex) **)
 (** LATEX VERSION: If X is the wedge of closed subspaces X1,...,Xn with p a deformation **)
@@ -65224,8 +65224,8 @@ Admitted.
 (** from S71 Exercise 3 (line 3602 in algtop.tex) **)
 (** LATEX VERSION: pi1(S^1 wedge S^2, p) is isomorphic to Z (the integers). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T13:50:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex71_3_S1_wedge_S2 :
   forall X Tx p:set,
   Hausdorff_space X Tx -> p :e X ->
@@ -65240,7 +65240,7 @@ Theorem ex71_3_S1_wedge_S2 :
       (fundamental_group S1 S1_topology S1_basepoint)
       (fundamental_group_mult S1 S1_topology S1_basepoint) phi.
 admit.
-Admitted.
+Qed.
 
 (** from S71 Exercise 4 (line 3604 in algtop.tex) **)
 (** LATEX VERSION: If X is an infinite wedge of circles, then X does not **)
@@ -65544,8 +65544,8 @@ Admitted.
 (** LATEX VERSION: Find a space with pi1 isomorphic to Z/n x Z/m. **)
 (** (Product of two dunce caps of orders n and m.) **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T13:50:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex73_1a_cyclic_product_space :
   forall n m:set, n :e omega -> n <> 0 -> m :e omega -> m <> 0 ->
   exists X Tx x0:set,
@@ -65562,14 +65562,14 @@ Theorem ex73_1a_cyclic_product_space :
       (fundamental_group_inv X Tx x0) /\
     equip (fundamental_group X Tx x0) (mul_nat n m).
 admit.
-Admitted.
+Qed.
 
 (** from S73 Exercise 1(c) (line 3792 in algtop.tex) **)
 (** LATEX VERSION: Find a space with pi1 isomorphic to Z/n free-product Z/m. **)
 (** (Wedge of two dunce caps of orders n and m.) **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T13:50:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex73_1c_cyclic_free_product_space :
   forall n m:set, n :e omega -> n <> 0 -> m :e omega -> m <> 0 ->
   exists X Tx x0:set,
@@ -65587,7 +65587,7 @@ Theorem ex73_1c_cyclic_free_product_space :
             (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
             FP multFP phi.
 admit.
-Admitted.
+Qed.
 
 (** from S73 Exercise 4 (line 3805 in algtop.tex) **)
 (** LATEX VERSION: The space constructed in Exercise 2 is metrizable. **)
