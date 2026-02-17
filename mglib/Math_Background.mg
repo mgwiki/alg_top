@@ -1,4 +1,4 @@
-(** Balance Alice 2504 **)
+(** Balance Alice 2534 **)
 (** Balance Bob 2863 **)
 (** Balance Charlie 1566 **)
 
@@ -51747,7 +51747,8 @@ Admitted.
 (** from S58 Lemma 58.1 (line 1272 in algtop.tex) **)
 (** LATEX VERSION: Let h, k: (X,x0) -> (Y,y0) be continuous. If h and k are homotopic and the basepoint x0 remains fixed at y0 during the homotopy, then h-star = k-star. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Alice 30 **)
+(** Proven Alice **)
 Theorem lemma58_1_basepoint_fixed_homotopy : forall X Tx Y Ty x0 y0 h k:set,
   continuous_map X Tx Y Ty h ->
   continuous_map X Tx Y Ty k ->
@@ -51761,8 +51762,287 @@ Theorem lemma58_1_basepoint_fixed_homotopy : forall X Tx Y Ty x0 y0 h k:set,
   (forall cls:set, cls :e fundamental_group X Tx x0 ->
     apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls =
     apply_fun (induced_homomorphism X Tx x0 Y Ty y0 k) cls).
-admit.
-Admitted.
+let X Tx Y Ty x0 y0 h k.
+assume Hh Hk Hh0 Hk0 Hx0X.
+assume Hhomotopy.
+let cls.
+assume Hcls.
+(** Expand induced homomorphisms **)
+rewrite (induced_homomorphism_apply X Tx x0 Y Ty y0 h cls Hcls).
+rewrite (induced_homomorphism_apply X Tx x0 Y Ty y0 k cls Hcls).
+(** Get representative from cls **)
+claim Hrep : exists f:set, f :e loop_space X Tx x0 /\
+  cls = path_homotopy_class_loop X Tx x0 f.
+{
+  exact (fundamental_group_member_has_representative X Tx x0 cls Hcls).
+}
+apply Hrep.
+let f.
+assume HfPack.
+claim HfLoop : f :e loop_space X Tx x0.
+{ exact (andEL (f :e loop_space X Tx x0) (cls = path_homotopy_class_loop X Tx x0 f) HfPack). }
+claim HclsEq : cls = path_homotopy_class_loop X Tx x0 f.
+{ exact (andER (f :e loop_space X Tx x0) (cls = path_homotopy_class_loop X Tx x0 f) HfPack). }
+rewrite HclsEq.
+set eps := Eps_i (fun g:set => g :e path_homotopy_class_loop X Tx x0 f).
+claim HfLoopAt : loop_at X Tx x0 f.
+{ exact (loop_space_has_loop_at X Tx x0 f HfLoop). }
+claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
+{ exact (loop_at_continuous X Tx x0 f HfLoopAt). }
+claim Hf0 : apply_fun f 0 = x0.
+{ exact (loop_at_at_zero X Tx x0 f HfLoopAt). }
+claim Hf1 : apply_fun f 1 = x0.
+{ exact (loop_at_at_one X Tx x0 f HfLoopAt). }
+claim HfHomSelf : path_homotopic X Tx x0 x0 f f.
+{ exact (Lemma_51_1_path_homotopy_refl X Tx x0 x0 f HfCont Hf0 Hf1). }
+claim HfInClass : f :e path_homotopy_class_loop X Tx x0 f.
+{ exact (SepI (loop_space X Tx x0) (fun z:set => path_homotopic X Tx x0 x0 f z) f HfLoop HfHomSelf). }
+claim HepsInClassF : eps :e path_homotopy_class_loop X Tx x0 f.
+{ exact (Eps_i_ax (fun g:set => g :e path_homotopy_class_loop X Tx x0 f) f HfInClass). }
+claim HepsLoop : eps :e loop_space X Tx x0.
+{ exact (path_homotopy_class_loop_in_loop_space X Tx x0 f eps HepsInClassF). }
+claim HepsLoopAt : loop_at X Tx x0 eps.
+{ exact (loop_space_has_loop_at X Tx x0 eps HepsLoop). }
+claim HepsCont : continuous_map unit_interval unit_interval_topology X Tx eps.
+{ exact (loop_at_continuous X Tx x0 eps HepsLoopAt). }
+claim Heps0 : apply_fun eps 0 = x0.
+{ exact (loop_at_at_zero X Tx x0 eps HepsLoopAt). }
+claim Heps1 : apply_fun eps 1 = x0.
+{ exact (loop_at_at_one X Tx x0 eps HepsLoopAt). }
+(** h o eps and k o eps are continuous loops at y0 **)
+claim HhepsCont : continuous_map unit_interval unit_interval_topology Y Ty
+  (compose_fun unit_interval eps h).
+{ exact (composition_continuous unit_interval unit_interval_topology X Tx Y Ty eps h HepsCont Hh). }
+claim Hheps0 : apply_fun (compose_fun unit_interval eps h) 0 = y0.
+{ rewrite (compose_fun_apply unit_interval eps h 0 zero_in_unit_interval). rewrite Heps0. exact Hh0. }
+claim Hheps1 : apply_fun (compose_fun unit_interval eps h) 1 = y0.
+{ rewrite (compose_fun_apply unit_interval eps h 1 one_in_unit_interval). rewrite Heps1. exact Hh0. }
+claim HkepsCont : continuous_map unit_interval unit_interval_topology Y Ty
+  (compose_fun unit_interval eps k).
+{ exact (composition_continuous unit_interval unit_interval_topology X Tx Y Ty eps k HepsCont Hk). }
+claim Hkeps0 : apply_fun (compose_fun unit_interval eps k) 0 = y0.
+{ rewrite (compose_fun_apply unit_interval eps k 0 zero_in_unit_interval). rewrite Heps0. exact Hk0. }
+claim Hkeps1 : apply_fun (compose_fun unit_interval eps k) 1 = y0.
+{ rewrite (compose_fun_apply unit_interval eps k 1 one_in_unit_interval). rewrite Heps1. exact Hk0. }
+(** Extract the homotopy H **)
+apply Hhomotopy.
+let HH.
+assume HHpack.
+(** HHpack: ((cont /\ at0) /\ at1) /\ base (left-assoc) **)
+claim HHleft12 :
+  (continuous_map (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology) Y Ty HH /\
+   (forall x:set, x :e X -> apply_fun HH (x, 0) = apply_fun h x)) /\
+  (forall x:set, x :e X -> apply_fun HH (x, 1) = apply_fun k x).
+{ exact (andEL
+    ((continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) Y Ty HH /\
+     (forall x:set, x :e X -> apply_fun HH (x, 0) = apply_fun h x)) /\
+     (forall x:set, x :e X -> apply_fun HH (x, 1) = apply_fun k x))
+    (forall t:set, t :e unit_interval -> apply_fun HH (x0, t) = y0)
+    HHpack). }
+claim HH_base : forall t:set, t :e unit_interval -> apply_fun HH (x0, t) = y0.
+{ exact (andER
+    ((continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) Y Ty HH /\
+     (forall x:set, x :e X -> apply_fun HH (x, 0) = apply_fun h x)) /\
+     (forall x:set, x :e X -> apply_fun HH (x, 1) = apply_fun k x))
+    (forall t:set, t :e unit_interval -> apply_fun HH (x0, t) = y0)
+    HHpack). }
+claim HHcont_at0 :
+  continuous_map (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology) Y Ty HH /\
+  (forall x:set, x :e X -> apply_fun HH (x, 0) = apply_fun h x).
+{ exact (andEL
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) Y Ty HH /\
+     (forall x:set, x :e X -> apply_fun HH (x, 0) = apply_fun h x))
+    (forall x:set, x :e X -> apply_fun HH (x, 1) = apply_fun k x)
+    HHleft12). }
+claim HH_at_1 : forall x:set, x :e X -> apply_fun HH (x, 1) = apply_fun k x.
+{ exact (andER
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) Y Ty HH /\
+     (forall x:set, x :e X -> apply_fun HH (x, 0) = apply_fun h x))
+    (forall x:set, x :e X -> apply_fun HH (x, 1) = apply_fun k x)
+    HHleft12). }
+claim HHcont : continuous_map (setprod X unit_interval)
+  (product_topology X Tx unit_interval unit_interval_topology) Y Ty HH.
+{ exact (andEL
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) Y Ty HH)
+    (forall x:set, x :e X -> apply_fun HH (x, 0) = apply_fun h x)
+    HHcont_at0). }
+claim HH_at_0 : forall x:set, x :e X -> apply_fun HH (x, 0) = apply_fun h x.
+{ exact (andER
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) Y Ty HH)
+    (forall x:set, x :e X -> apply_fun HH (x, 0) = apply_fun h x)
+    HHcont_at0). }
+(** eps maps I to X **)
+claim HepsFun : function_on eps unit_interval X.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology X Tx eps HepsCont). }
+claim HtopX : topology_on X Tx.
+{ exact (continuous_map_topology_dom X Tx Y Ty h Hh). }
+claim HtopY : topology_on Y Ty.
+{ exact (continuous_map_topology_cod X Tx Y Ty h Hh). }
+(** Build phi: I x I -> X x I via (s,t) -> (eps(s), t) **)
+set proj1_II := projection_map1 unit_interval unit_interval.
+set proj2_II := projection_map2 unit_interval unit_interval.
+claim Hproj1Cont : continuous_map unit_square unit_square_topology
+  unit_interval unit_interval_topology proj1_II.
+{ exact (andEL
+    (continuous_map unit_square unit_square_topology unit_interval unit_interval_topology proj1_II)
+    (continuous_map unit_square unit_square_topology unit_interval unit_interval_topology proj2_II)
+    (projections_are_continuous unit_interval unit_interval_topology
+      unit_interval unit_interval_topology
+      unit_interval_topology_on unit_interval_topology_on)). }
+claim Hproj2Cont : continuous_map unit_square unit_square_topology
+  unit_interval unit_interval_topology proj2_II.
+{ exact (andER
+    (continuous_map unit_square unit_square_topology unit_interval unit_interval_topology proj1_II)
+    (continuous_map unit_square unit_square_topology unit_interval unit_interval_topology proj2_II)
+    (projections_are_continuous unit_interval unit_interval_topology
+      unit_interval unit_interval_topology
+      unit_interval_topology_on unit_interval_topology_on)). }
+claim Heps_proj1_cont : continuous_map unit_square unit_square_topology X Tx
+  (compose_fun unit_square proj1_II eps).
+{ exact (composition_continuous unit_square unit_square_topology
+    unit_interval unit_interval_topology X Tx
+    proj1_II eps Hproj1Cont HepsCont). }
+set phi := pair_map unit_square (compose_fun unit_square proj1_II eps) proj2_II.
+claim HphiCont : continuous_map unit_square unit_square_topology
+  (setprod X unit_interval) (product_topology X Tx unit_interval unit_interval_topology) phi.
+{ exact (maps_into_products unit_square unit_square_topology
+    X Tx unit_interval unit_interval_topology
+    (compose_fun unit_square proj1_II eps) proj2_II
+    Heps_proj1_cont Hproj2Cont). }
+(** Build F = H o phi: I x I -> Y **)
+set F := compose_fun unit_square phi HH.
+claim HFcont : continuous_map unit_square unit_square_topology Y Ty F.
+{ exact (composition_continuous unit_square unit_square_topology
+    (setprod X unit_interval) (product_topology X Tx unit_interval unit_interval_topology)
+    Y Ty phi HH HphiCont HHcont). }
+(** Verify F boundary conditions **)
+(** F(s,0) = H(eps(s), 0) = h(eps(s)) **)
+claim HF_s0 : forall s:set, s :e unit_interval ->
+  apply_fun F (s, 0) = apply_fun (compose_fun unit_interval eps h) s.
+{
+  let s. assume Hs.
+  claim Hs0Sq : (s, 0) :e unit_square.
+  { exact (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 0 Hs zero_in_unit_interval). }
+  rewrite (compose_fun_apply unit_square phi HH (s, 0) Hs0Sq).
+  rewrite (pair_map_apply unit_square X unit_interval (compose_fun unit_square proj1_II eps) proj2_II (s, 0) Hs0Sq).
+  rewrite (compose_fun_apply unit_square proj1_II eps (s, 0) Hs0Sq).
+  rewrite (projection1_apply unit_interval unit_interval (s, 0) Hs0Sq).
+  rewrite tuple_2_0_eq.
+  rewrite (projection2_apply unit_interval unit_interval (s, 0) Hs0Sq).
+  rewrite tuple_2_1_eq.
+  claim HepsS_X : apply_fun eps s :e X.
+  { exact (HepsFun s Hs). }
+  rewrite (HH_at_0 (apply_fun eps s) HepsS_X).
+  rewrite (compose_fun_apply unit_interval eps h s Hs).
+  reflexivity.
+}
+(** F(s,1) = H(eps(s), 1) = k(eps(s)) **)
+claim HF_s1 : forall s:set, s :e unit_interval ->
+  apply_fun F (s, 1) = apply_fun (compose_fun unit_interval eps k) s.
+{
+  let s. assume Hs.
+  claim Hs1Sq : (s, 1) :e unit_square.
+  { exact (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 1 Hs one_in_unit_interval). }
+  rewrite (compose_fun_apply unit_square phi HH (s, 1) Hs1Sq).
+  rewrite (pair_map_apply unit_square X unit_interval (compose_fun unit_square proj1_II eps) proj2_II (s, 1) Hs1Sq).
+  rewrite (compose_fun_apply unit_square proj1_II eps (s, 1) Hs1Sq).
+  rewrite (projection1_apply unit_interval unit_interval (s, 1) Hs1Sq).
+  rewrite tuple_2_0_eq.
+  rewrite (projection2_apply unit_interval unit_interval (s, 1) Hs1Sq).
+  rewrite tuple_2_1_eq.
+  claim HepsS_X : apply_fun eps s :e X.
+  { exact (HepsFun s Hs). }
+  rewrite (HH_at_1 (apply_fun eps s) HepsS_X).
+  rewrite (compose_fun_apply unit_interval eps k s Hs).
+  reflexivity.
+}
+(** F(0,t) = H(eps(0), t) = H(x0, t) = y0 **)
+claim HF_0t : forall t:set, t :e unit_interval -> apply_fun F (0, t) = y0.
+{
+  let t. assume Ht.
+  claim H0tSq : (0, t) :e unit_square.
+  { exact (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 0 t zero_in_unit_interval Ht). }
+  rewrite (compose_fun_apply unit_square phi HH (0, t) H0tSq).
+  rewrite (pair_map_apply unit_square X unit_interval (compose_fun unit_square proj1_II eps) proj2_II (0, t) H0tSq).
+  rewrite (compose_fun_apply unit_square proj1_II eps (0, t) H0tSq).
+  rewrite (projection1_apply unit_interval unit_interval (0, t) H0tSq).
+  rewrite tuple_2_0_eq.
+  rewrite Heps0.
+  rewrite (projection2_apply unit_interval unit_interval (0, t) H0tSq).
+  rewrite tuple_2_1_eq.
+  exact (HH_base t Ht).
+}
+(** F(1,t) = H(eps(1), t) = H(x0, t) = y0 **)
+claim HF_1t : forall t:set, t :e unit_interval -> apply_fun F (1, t) = y0.
+{
+  let t. assume Ht.
+  claim H1tSq : (1, t) :e unit_square.
+  { exact (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 1 t one_in_unit_interval Ht). }
+  rewrite (compose_fun_apply unit_square phi HH (1, t) H1tSq).
+  rewrite (pair_map_apply unit_square X unit_interval (compose_fun unit_square proj1_II eps) proj2_II (1, t) H1tSq).
+  rewrite (compose_fun_apply unit_square proj1_II eps (1, t) H1tSq).
+  rewrite (projection1_apply unit_interval unit_interval (1, t) H1tSq).
+  rewrite tuple_2_0_eq.
+  rewrite Heps1.
+  rewrite (projection2_apply unit_interval unit_interval (1, t) H1tSq).
+  rewrite tuple_2_1_eq.
+  exact (HH_base t Ht).
+}
+(** Build the path homotopy between h o eps and k o eps **)
+claim Hhomotopic_heps_keps :
+  path_homotopic Y Ty y0 y0 (compose_fun unit_interval eps h) (compose_fun unit_interval eps k).
+{
+  prove continuous_map unit_interval unit_interval_topology Y Ty (compose_fun unit_interval eps h) /\
+    continuous_map unit_interval unit_interval_topology Y Ty (compose_fun unit_interval eps k) /\
+    apply_fun (compose_fun unit_interval eps h) 0 = y0 /\
+    apply_fun (compose_fun unit_interval eps h) 1 = y0 /\
+    apply_fun (compose_fun unit_interval eps k) 0 = y0 /\
+    apply_fun (compose_fun unit_interval eps k) 1 = y0 /\
+    exists G:set,
+      continuous_map unit_square unit_square_topology Y Ty G /\
+      (forall s:set, s :e unit_interval ->
+        apply_fun G (s, 0) = apply_fun (compose_fun unit_interval eps h) s) /\
+      (forall s:set, s :e unit_interval ->
+        apply_fun G (s, 1) = apply_fun (compose_fun unit_interval eps k) s) /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun G (0, t) = y0) /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun G (1, t) = y0).
+  apply andI.
+  - exact (and6I
+      (continuous_map unit_interval unit_interval_topology Y Ty (compose_fun unit_interval eps h))
+      (continuous_map unit_interval unit_interval_topology Y Ty (compose_fun unit_interval eps k))
+      (apply_fun (compose_fun unit_interval eps h) 0 = y0)
+      (apply_fun (compose_fun unit_interval eps h) 1 = y0)
+      (apply_fun (compose_fun unit_interval eps k) 0 = y0)
+      (apply_fun (compose_fun unit_interval eps k) 1 = y0)
+      HhepsCont HkepsCont Hheps0 Hheps1 Hkeps0 Hkeps1).
+  - witness F.
+    exact (and5I
+      (continuous_map unit_square unit_square_topology Y Ty F)
+      (forall s:set, s :e unit_interval ->
+        apply_fun F (s, 0) = apply_fun (compose_fun unit_interval eps h) s)
+      (forall s:set, s :e unit_interval ->
+        apply_fun F (s, 1) = apply_fun (compose_fun unit_interval eps k) s)
+      (forall t:set, t :e unit_interval ->
+        apply_fun F (0, t) = y0)
+      (forall t:set, t :e unit_interval ->
+        apply_fun F (1, t) = y0)
+      HFcont HF_s0 HF_s1 HF_0t HF_1t).
+}
+(** Conclude: [h o eps] = [k o eps] **)
+exact (path_homotopy_class_loop_eq_of_path_homotopic Y Ty y0
+  (compose_fun unit_interval eps h) (compose_fun unit_interval eps k)
+  Hhomotopic_heps_keps).
+Qed.
 
 (** from S58 Theorem 58.2 (line 1284 in algtop.tex) **)
 (** LATEX VERSION: The inclusion map j: S^n -> R^{n+1}-0 induces an isomorphism of fundamental groups. **)
