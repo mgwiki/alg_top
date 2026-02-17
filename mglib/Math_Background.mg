@@ -1,6 +1,6 @@
 (** Balance Alice 2434 **)
 (** Balance Bob 2863 **)
-(** Balance Charlie 1576 **)
+(** Balance Charlie 1561 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -53545,7 +53545,8 @@ Definition bounded_measurable_R2 : set -> prop := fun A =>
 (** LATEX VERSION: Given two bounded polygonal regions in R^2, there exists a line in R^2 that bisects each of them. **)
 (** We state this using the Borsuk-Ulam theorem abstractly **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 2026-02-18T10:55:00 **)
 (** from S57 Theorem 57.4 (line 1227 in algtop.tex): bisection theorem **)
 (** NOTE: The full statement requires an area measure; we state it using an abstract **)
 (** continuous area function f_i: S^2 -> R measuring the area of A_i on one side of the **)
