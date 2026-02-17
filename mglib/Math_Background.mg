@@ -1300,6 +1300,7 @@ claim L2: forall n, nat_p n /\ p n -> nat_p (ordsucc n) /\ p (ordsucc n).
   apply H3.
   assume H4: nat_p n.
   assume H5: p n.
+  prove nat_p (ordsucc n) /\ p (ordsucc n).
   apply andI.
   - prove nat_p (ordsucc n).
     exact (nat_ordsucc n H4).
@@ -13862,8 +13863,174 @@ claim Hpost :
     (compose_fun X h k)
     (compose_fun X h' k).
 {
-  (** post-compose the h~h' homotopy by k **)
-  admit.
+  claim Hw :
+    exists F:set,
+      continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        Y Ty F /\
+      (forall x:set, x :e X ->
+        apply_fun F (x, 0) = apply_fun h x) /\
+      (forall x:set, x :e X ->
+        apply_fun F (x, 1) = apply_fun h' x).
+  {
+    exact (homotopic_maps_has_witness
+      X
+      Tx
+      Y
+      Ty
+      h
+      h'
+      Hhh').
+  }
+  apply Hw.
+  let F.
+  assume HFpack.
+  claim HFpair :
+    continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      Y Ty F /\
+    (forall x:set, x :e X ->
+      apply_fun F (x, 0) = apply_fun h x).
+  {
+    exact (andEL
+      (continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        Y Ty F /\
+       (forall x:set, x :e X ->
+         apply_fun F (x, 0) = apply_fun h x))
+      (forall x:set, x :e X ->
+        apply_fun F (x, 1) = apply_fun h' x)
+      HFpack).
+  }
+  claim HFcont :
+    continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      Y Ty F.
+  {
+    exact (andEL
+      (continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        Y Ty F)
+      (forall x:set, x :e X ->
+        apply_fun F (x, 0) = apply_fun h x)
+      HFpair).
+  }
+  claim HF0 :
+    forall x:set, x :e X ->
+      apply_fun F (x, 0) = apply_fun h x.
+  {
+    exact (andER
+      (continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        Y Ty F)
+      (forall x:set, x :e X ->
+        apply_fun F (x, 0) = apply_fun h x)
+      HFpair).
+  }
+  claim HF1 :
+    forall x:set, x :e X ->
+      apply_fun F (x, 1) = apply_fun h' x.
+  {
+    exact (andER
+      (continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        Y Ty F /\
+       (forall x:set, x :e X ->
+         apply_fun F (x, 0) = apply_fun h x))
+      (forall x:set, x :e X ->
+        apply_fun F (x, 1) = apply_fun h' x)
+      HFpack).
+  }
+  prove continuous_map X Tx Z Tz (compose_fun X h k) /\
+    continuous_map X Tx Z Tz (compose_fun X h' k) /\
+    exists F0:set,
+      continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        Z Tz F0 /\
+      (forall x:set, x :e X ->
+        apply_fun F0 (x, 0) = apply_fun (compose_fun X h k) x) /\
+      (forall x:set, x :e X ->
+        apply_fun F0 (x, 1) = apply_fun (compose_fun X h' k) x).
+  apply andI.
+  - apply andI.
+    + exact (composition_continuous
+        X
+        Tx
+        Y
+        Ty
+        Z
+        Tz
+        h
+        k
+        Hh
+        Hk).
+    + exact (composition_continuous
+        X
+        Tx
+        Y
+        Ty
+        Z
+        Tz
+        h'
+        k
+        Hh'
+        Hk).
+  - witness (compose_fun (setprod X unit_interval) F k).
+    apply andI.
+    + apply andI.
+      - exact (composition_continuous
+          (setprod X unit_interval)
+          (product_topology X Tx unit_interval unit_interval_topology)
+          Y
+          Ty
+          Z
+          Tz
+          F
+          k
+          HFcont
+          Hk).
+      - let x.
+        assume Hx.
+        claim Hx0 : (x, 0) :e setprod X unit_interval.
+        {
+          exact (tuple_2_setprod_by_pair_Sigma
+            X
+            unit_interval
+            x
+            0
+            Hx
+            zero_in_unit_interval).
+        }
+        rewrite (compose_fun_apply
+          (setprod X unit_interval)
+          F
+          k
+          (x, 0)
+          Hx0).
+        rewrite (HF0 x Hx).
+        rewrite (compose_fun_apply X h k x Hx).
+        reflexivity.
+    + let x.
+      assume Hx.
+      claim Hx1 : (x, 1) :e setprod X unit_interval.
+      {
+        exact (tuple_2_setprod_by_pair_Sigma
+          X
+          unit_interval
+          x
+          1
+          Hx
+          one_in_unit_interval).
+      }
+      rewrite (compose_fun_apply
+        (setprod X unit_interval)
+        F
+        k
+        (x, 1)
+        Hx1).
+      rewrite (HF1 x Hx).
+      rewrite (compose_fun_apply X h' k x Hx).
+      reflexivity.
 }
 claim Hpre :
   homotopic_maps X Tx Z Tz
