@@ -1,5 +1,5 @@
 (** Balance Alice 2434 **)
-(** Balance Bob 2863 **)
+(** Balance Bob 2951 **)
 (** Balance Charlie 1561 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -51517,8 +51517,8 @@ Qed.
 (** If f and g are path homotopic, then f_tilde and g_tilde end at the same point **)
 (** and are path homotopic. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Bob 2026-02-18T09:30:00 **)
+(** Collected Bob 88 **)
+(** Proven Bob **)
 Theorem thm54_3_homotopic_lifts : forall E Te B Tb p e0 b0 b1 f g:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = b0 ->
@@ -52026,9 +52026,440 @@ claim Hedge1Eq :
   rewrite Hedge11.
   reflexivity.
 }
-(** TODO Bob: finish via lifting the path-homotopy square and comparing its boundary lifts. **)
-admit.
-Admitted.
+claim HffComm :
+  forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun ff t) = apply_fun f t.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te ff /\
+      apply_fun ff 0 = e0)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun ff t) = apply_fun f t)
+    HffPack).
+}
+claim HggComm :
+  forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun gg t) = apply_fun g t.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te gg /\
+      apply_fun gg 0 = e0)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun gg t) = apply_fun g t)
+    HggPack).
+}
+set idI := graph unit_interval (fun t:set => t).
+claim HidICont :
+  continuous_map unit_interval unit_interval_topology
+    unit_interval unit_interval_topology
+    idI.
+{
+  exact (identity_continuous
+    unit_interval
+    unit_interval_topology
+    unit_interval_topology_on).
+}
+claim Hconst0I :
+  continuous_map unit_interval unit_interval_topology
+    unit_interval unit_interval_topology
+    (const_fun unit_interval 0).
+{
+  exact (const_fun_continuous
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    0
+    unit_interval_topology_on
+    unit_interval_topology_on
+    zero_in_unit_interval).
+}
+claim Hconst1I :
+  continuous_map unit_interval unit_interval_topology
+    unit_interval unit_interval_topology
+    (const_fun unit_interval 1).
+{
+  exact (const_fun_continuous
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    1
+    unit_interval_topology_on
+    unit_interval_topology_on
+    one_in_unit_interval).
+}
+set sbot := pair_map unit_interval idI (const_fun unit_interval 0).
+claim HsbotCont :
+  continuous_map unit_interval unit_interval_topology
+    unit_square
+    unit_square_topology
+    sbot.
+{
+  exact (maps_into_products
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    idI
+    (const_fun unit_interval 0)
+    HidICont
+    Hconst0I).
+}
+set stop := pair_map unit_interval idI (const_fun unit_interval 1).
+claim HstopCont :
+  continuous_map unit_interval unit_interval_topology
+    unit_square
+    unit_square_topology
+    stop.
+{
+  exact (maps_into_products
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    idI
+    (const_fun unit_interval 1)
+    HidICont
+    Hconst1I).
+}
+set lift_bottom := compose_fun unit_interval sbot (homotopy_lift E Te B Tb p e0 Fh).
+claim HliftBottomCont :
+  continuous_map unit_interval unit_interval_topology E Te lift_bottom.
+{
+  exact (composition_continuous
+    unit_interval
+    unit_interval_topology
+    unit_square
+    unit_square_topology
+    E
+    Te
+    sbot
+    (homotopy_lift E Te B Tb p e0 Fh)
+    HsbotCont
+    HliftSquareCont).
+}
+claim HliftBottom0 : apply_fun lift_bottom 0 = e0.
+{
+  rewrite (compose_fun_apply unit_interval sbot (homotopy_lift E Te B Tb p e0 Fh) 0 zero_in_unit_interval).
+  rewrite (pair_map_apply
+    unit_interval
+    unit_interval
+    unit_interval
+    idI
+    (const_fun unit_interval 0)
+    0
+    zero_in_unit_interval).
+  rewrite (apply_fun_graph unit_interval (fun t:set => t) 0 zero_in_unit_interval).
+  rewrite (const_fun_apply unit_interval 0 0 zero_in_unit_interval).
+  exact HliftSquare00.
+}
+claim HliftBottomComm :
+  forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun lift_bottom t) = apply_fun f t.
+{
+  let t.
+  assume Ht.
+  rewrite (compose_fun_apply unit_interval sbot (homotopy_lift E Te B Tb p e0 Fh) t Ht).
+  rewrite (pair_map_apply
+    unit_interval
+    unit_interval
+    unit_interval
+    idI
+    (const_fun unit_interval 0)
+    t
+    Ht).
+  rewrite (apply_fun_graph unit_interval (fun u:set => u) t Ht).
+  rewrite (const_fun_apply unit_interval 0 t Ht).
+  rewrite (HliftSquareComm t 0 Ht zero_in_unit_interval).
+  rewrite (HFhS0 t Ht).
+  reflexivity.
+}
+claim HliftBottomLifting :
+  lifting_of unit_interval unit_interval_topology E Te B Tb p f lift_bottom.
+{
+  exact (andI
+    (continuous_map unit_interval unit_interval_topology E Te lift_bottom)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun lift_bottom t) = apply_fun f t)
+    HliftBottomCont
+    HliftBottomComm).
+}
+claim HffLifting :
+  lifting_of unit_interval unit_interval_topology E Te B Tb p f ff.
+{
+  exact (andI
+    (continuous_map unit_interval unit_interval_topology E Te ff)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun ff t) = apply_fun f t)
+    HffCont
+    HffComm).
+}
+claim HbottomUniq :
+  forall t:set, t :e unit_interval ->
+    apply_fun lift_bottom t = apply_fun ff t.
+{
+  exact (lemma54_1_path_lifting_unique
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    f
+    lift_bottom
+    ff
+    Hcov
+    He0
+    Hfcont
+    HliftBottomLifting
+    HliftBottom0
+    HffLifting
+    Hff0).
+}
+set lift_top := compose_fun unit_interval stop (homotopy_lift E Te B Tb p e0 Fh).
+claim HliftTopCont :
+  continuous_map unit_interval unit_interval_topology E Te lift_top.
+{
+  exact (composition_continuous
+    unit_interval
+    unit_interval_topology
+    unit_square
+    unit_square_topology
+    E
+    Te
+    stop
+    (homotopy_lift E Te B Tb p e0 Fh)
+    HstopCont
+    HliftSquareCont).
+}
+claim HliftTop0 : apply_fun lift_top 0 = e0.
+{
+  rewrite (compose_fun_apply unit_interval stop (homotopy_lift E Te B Tb p e0 Fh) 0 zero_in_unit_interval).
+  rewrite (pair_map_apply
+    unit_interval
+    unit_interval
+    unit_interval
+    idI
+    (const_fun unit_interval 1)
+    0
+    zero_in_unit_interval).
+  rewrite (apply_fun_graph unit_interval (fun t:set => t) 0 zero_in_unit_interval).
+  rewrite (const_fun_apply unit_interval 1 0 zero_in_unit_interval).
+  rewrite (Hedge0 1 one_in_unit_interval).
+  rewrite He0hEq.
+  reflexivity.
+}
+claim HliftTopComm :
+  forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun lift_top t) = apply_fun g t.
+{
+  let t.
+  assume Ht.
+  rewrite (compose_fun_apply unit_interval stop (homotopy_lift E Te B Tb p e0 Fh) t Ht).
+  rewrite (pair_map_apply
+    unit_interval
+    unit_interval
+    unit_interval
+    idI
+    (const_fun unit_interval 1)
+    t
+    Ht).
+  rewrite (apply_fun_graph unit_interval (fun u:set => u) t Ht).
+  rewrite (const_fun_apply unit_interval 1 t Ht).
+  rewrite (HliftSquareComm t 1 Ht one_in_unit_interval).
+  rewrite (HFhS1 t Ht).
+  reflexivity.
+}
+claim HliftTopLifting :
+  lifting_of unit_interval unit_interval_topology E Te B Tb p g lift_top.
+{
+  exact (andI
+    (continuous_map unit_interval unit_interval_topology E Te lift_top)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun lift_top t) = apply_fun g t)
+    HliftTopCont
+    HliftTopComm).
+}
+claim HggLifting :
+  lifting_of unit_interval unit_interval_topology E Te B Tb p g gg.
+{
+  exact (andI
+    (continuous_map unit_interval unit_interval_topology E Te gg)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun gg t) = apply_fun g t)
+    HggCont
+    HggComm).
+}
+claim HtopUniq :
+  forall t:set, t :e unit_interval ->
+    apply_fun lift_top t = apply_fun gg t.
+{
+  exact (lemma54_1_path_lifting_unique
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    g
+    lift_top
+    gg
+    Hcov
+    He0
+    Hgcont
+    HliftTopLifting
+    HliftTop0
+    HggLifting
+    Hgg0).
+}
+claim HbottomEval :
+  forall t:set, t :e unit_interval ->
+    apply_fun lift_bottom t = apply_fun (homotopy_lift E Te B Tb p e0 Fh) (t, 0).
+{
+  let t.
+  assume Ht.
+  rewrite (compose_fun_apply unit_interval sbot (homotopy_lift E Te B Tb p e0 Fh) t Ht).
+  rewrite (pair_map_apply
+    unit_interval
+    unit_interval
+    unit_interval
+    idI
+    (const_fun unit_interval 0)
+    t
+    Ht).
+  rewrite (apply_fun_graph unit_interval (fun u:set => u) t Ht).
+  rewrite (const_fun_apply unit_interval 0 t Ht).
+  reflexivity.
+}
+claim HtopEval :
+  forall t:set, t :e unit_interval ->
+    apply_fun lift_top t = apply_fun (homotopy_lift E Te B Tb p e0 Fh) (t, 1).
+{
+  let t.
+  assume Ht.
+  rewrite (compose_fun_apply unit_interval stop (homotopy_lift E Te B Tb p e0 Fh) t Ht).
+  rewrite (pair_map_apply
+    unit_interval
+    unit_interval
+    unit_interval
+    idI
+    (const_fun unit_interval 1)
+    t
+    Ht).
+  rewrite (apply_fun_graph unit_interval (fun u:set => u) t Ht).
+  rewrite (const_fun_apply unit_interval 1 t Ht).
+  reflexivity.
+}
+claim HffEqFt0 :
+  forall t:set, t :e unit_interval ->
+    apply_fun ff t = apply_fun (homotopy_lift E Te B Tb p e0 Fh) (t, 0).
+{
+  let t.
+  assume Ht.
+  rewrite <- (HbottomUniq t Ht).
+  exact (HbottomEval t Ht).
+}
+claim HggEqFt1 :
+  forall t:set, t :e unit_interval ->
+    apply_fun gg t = apply_fun (homotopy_lift E Te B Tb p e0 Fh) (t, 1).
+{
+  let t.
+  assume Ht.
+  rewrite <- (HtopUniq t Ht).
+  exact (HtopEval t Ht).
+}
+claim Hff1Eqe1h : apply_fun ff 1 = e1h.
+{
+  rewrite (HffEqFt0 1 one_in_unit_interval).
+  exact Hedge10.
+}
+claim Hgg1Eqe1h : apply_fun gg 1 = e1h.
+{
+  rewrite (HggEqFt1 1 one_in_unit_interval).
+  exact Hedge11.
+}
+claim Hff1EqHgg1 :
+  apply_fun ff 1 = apply_fun gg 1.
+{
+  rewrite Hff1Eqe1h.
+  rewrite Hgg1Eqe1h.
+  reflexivity.
+}
+claim Hgg1EqHff1 :
+  apply_fun gg 1 = apply_fun ff 1.
+{
+  rewrite <- Hff1EqHgg1.
+  reflexivity.
+}
+claim HleftEdgeE0 :
+  forall t:set, t :e unit_interval ->
+    apply_fun (homotopy_lift E Te B Tb p e0 Fh) (0, t) = e0.
+{
+  let t.
+  assume Ht.
+  rewrite (Hedge0 t Ht).
+  rewrite He0hEq.
+  reflexivity.
+}
+claim HrightEdgeFF1 :
+  forall t:set, t :e unit_interval ->
+    apply_fun (homotopy_lift E Te B Tb p e0 Fh) (1, t) = apply_fun ff 1.
+{
+  let t.
+  assume Ht.
+  rewrite (Hedge1 t Ht).
+  rewrite <- Hff1Eqe1h.
+  reflexivity.
+}
+apply andI.
+- exact Hff1EqHgg1.
+- prove continuous_map unit_interval unit_interval_topology E Te ff /\
+    continuous_map unit_interval unit_interval_topology E Te gg /\
+    apply_fun ff 0 = e0 /\ apply_fun ff 1 = apply_fun ff 1 /\
+    apply_fun gg 0 = e0 /\ apply_fun gg 1 = apply_fun ff 1 /\
+    exists F:set,
+      continuous_map unit_square unit_square_topology E Te F /\
+      (forall s:set, s :e unit_interval ->
+        apply_fun F (s, 0) = apply_fun ff s) /\
+      (forall s:set, s :e unit_interval ->
+        apply_fun F (s, 1) = apply_fun gg s) /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun F (0, t) = e0) /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun F (1, t) = apply_fun ff 1).
+  apply andI.
+  + exact (and6I
+      (continuous_map unit_interval unit_interval_topology E Te ff)
+      (continuous_map unit_interval unit_interval_topology E Te gg)
+      (apply_fun ff 0 = e0)
+      (apply_fun ff 1 = apply_fun ff 1)
+      (apply_fun gg 0 = e0)
+      (apply_fun gg 1 = apply_fun ff 1)
+      HffCont
+      HggCont
+      Hff0
+      (fun P H => H)
+      Hgg0
+      Hgg1EqHff1).
+  + witness (homotopy_lift E Te B Tb p e0 Fh).
+    apply and5I.
+    * exact HliftSquareCont.
+    * let s.
+      assume Hs.
+      rewrite <- (HffEqFt0 s Hs).
+      reflexivity.
+    * let s.
+      assume Hs.
+      rewrite <- (HggEqFt1 s Hs).
+      reflexivity.
+    * exact HleftEdgeE0.
+    * exact HrightEdgeFF1.
+Qed.
 
 (** from S54 Definition (line 791 in algtop.tex) **)
 (** LATEX VERSION: The lifting correspondence phi: pi_1(B,b0) -> p^{-1}(b0) maps **)
