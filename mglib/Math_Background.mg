@@ -76435,6 +76435,27 @@ let X Tx B Tb p.
 assume Hcov.
 set G := covering_transformation_group X Tx B Tb p.
 set idG := graph X (fun x:set => x).
+claim Hcont : continuous_map X Tx B Tb p.
+{
+  apply (and3E
+    (continuous_map X Tx B Tb p)
+    (surjective_map X B p)
+    (forall b:set, b :e B ->
+      exists U:set, U :e Tb /\ b :e U /\ evenly_covered X Tx B Tb p U)
+    Hcov).
+  assume Hcont0 Hsurj0 Hloc0.
+  exact Hcont0.
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (continuous_map_topology_dom
+    X
+    Tx
+    B
+    Tb
+    p
+    Hcont).
+}
 claim Hproper :
   forall x:set, x :e X ->
   exists U:set, U :e Tx /\ x :e U /\
@@ -76542,11 +76563,141 @@ claim Hproper :
     {
       exact (function_on_of_function_space g X X HgFS).
     }
+    claim Hcovg : covering_transformation X Tx B Tb p g.
+    {
+      exact (andER
+        (g :e function_space X X)
+        (covering_transformation X Tx B Tb p g)
+        HgPack).
+    }
+    claim Hcommg :
+      forall z:set, z :e X -> apply_fun p (apply_fun g z) = apply_fun p z.
+    {
+      exact (andER
+        (homeomorphism X Tx X Tx g)
+        (forall z:set, z :e X -> apply_fun p (apply_fun g z) = apply_fun p z)
+        Hcovg).
+    }
+    claim HhomeUx :
+      homeomorphism Ux (subspace_topology X Tx Ux) Ue (subspace_topology B Tb Ue)
+        (graph Ux (fun z:set => apply_fun p z)).
+    {
+      apply (and4E
+        (Ux :e Tx)
+        (x :e Ux)
+        (Ue :e Tb)
+        (homeomorphism Ux (subspace_topology X Tx Ux) Ue (subspace_topology B Tb Ue)
+          (graph Ux (fun z:set => apply_fun p z)))
+        Hmain).
+      assume HUxOpen0 HxUx0 HUeOpen0 Hhome0.
+      exact Hhome0.
+    }
+    claim HcontGraph :
+      continuous_map Ux (subspace_topology X Tx Ux) Ue (subspace_topology B Tb Ue)
+        (graph Ux (fun z:set => apply_fun p z)).
+    {
+      exact (homeomorphism_continuous
+        Ux
+        (subspace_topology X Tx Ux)
+        Ue
+        (subspace_topology B Tb Ue)
+        (graph Ux (fun z:set => apply_fun p z))
+        HhomeUx).
+    }
+    claim HfunGraph :
+      function_on
+        (graph Ux (fun z:set => apply_fun p z))
+        Ux
+        Ue.
+    {
+      exact (continuous_map_function_on
+        Ux
+        (subspace_topology X Tx Ux)
+        Ue
+        (subspace_topology B Tb Ue)
+        (graph Ux (fun z:set => apply_fun p z))
+        HcontGraph).
+    }
     apply andI.
     + exact (HgFun x Hx).
     + let y.
       assume HyUx.
-      admit. (** TODO Charlie: finish deck-action disjointness on local sheet Ux for non-identity g. **)
+      claim HyX : y :e X.
+      {
+        exact (topology_elem_subset
+          X
+          Tx
+          Ux
+          HtopX
+          HUxOpen
+          y
+          HyUx).
+      }
+      claim HpyUe : apply_fun p y :e Ue.
+      {
+        rewrite <- (apply_fun_graph
+          Ux
+          (fun z:set => apply_fun p z)
+          y
+          HyUx).
+        exact (HfunGraph y HyUx).
+      }
+      claim HgyEqIfIn : apply_fun g y :e Ux -> apply_fun g y = y.
+      {
+        assume HgyUx.
+        claim Hcommgy : apply_fun p (apply_fun g y) = apply_fun p y.
+        {
+          exact (Hcommg y HyX).
+        }
+        claim HuniqEx :
+          exists x0:set, x0 :e Ux /\ apply_fun p x0 = apply_fun p y /\
+            forall t:set, t :e Ux -> apply_fun p t = apply_fun p y -> t = x0.
+        {
+          exact (homeomorphic_sheet_unique_fiber_point
+            X
+            Tx
+            B
+            Tb
+            p
+            Ux
+            Ue
+            (apply_fun p y)
+            HhomeUx
+            HpyUe).
+        }
+        apply HuniqEx.
+        let x0.
+        assume Hx0Pack.
+        claim Huniq :
+          forall t:set, t :e Ux -> apply_fun p t = apply_fun p y -> t = x0.
+        {
+          exact (andER
+            (x0 :e Ux /\ apply_fun p x0 = apply_fun p y)
+            (forall t:set, t :e Ux -> apply_fun p t = apply_fun p y -> t = x0)
+            Hx0Pack).
+        }
+        claim HpyRefl : apply_fun p y = apply_fun p y.
+        {
+          reflexivity.
+        }
+        claim HyEqx0 : y = x0.
+        {
+          exact (Huniq y HyUx HpyRefl).
+        }
+        claim HgyEqx0 : apply_fun g y = x0.
+        {
+          exact (Huniq (apply_fun g y) HgyUx Hcommgy).
+        }
+        rewrite HgyEqx0.
+        rewrite <- HyEqx0.
+        reflexivity.
+      }
+      assume HgyUx.
+      claim HgyEqy : apply_fun g y = y.
+      {
+        exact (HgyEqIfIn HgyUx).
+      }
+      admit. (** TODO Charlie: exclude fixed points on Ux for non-identity deck transformations. **)
 }
 exact Hproper.
 Admitted.
