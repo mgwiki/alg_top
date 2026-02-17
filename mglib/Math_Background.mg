@@ -1,5 +1,5 @@
 (** Balance Alice 2160 **)
-(** Balance Bob 1613 **)
+(** Balance Bob 1607 **)
 (** Balance Charlie 1223 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -14398,7 +14398,8 @@ Admitted.
 (** from S52 Corollary 52.2 (line 418 in algtop.tex) **)
 (** LATEX VERSION: If X is path connected and x0, x1 are two points of X, then pi1(X,x0) is isomorphic to pi1(X,x1). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 20 **)
-(** Bounty 22 **)
+(** Bounty 25 **)
+(** Lock Bob 2026-02-18T01:09:18 **)
 Theorem Corollary_52_2_path_connected_pi1_isomorphic : forall X Tx x0 x1:set,
   path_connected_space X Tx -> x0 :e X -> x1 :e X ->
   exists phi:set,
@@ -29835,7 +29836,8 @@ Admitted.
 (** alpha(1) = beta(0), and their lifts satisfy alpha_tilde(1) = beta_tilde(0), **)
 (** then alpha_tilde . beta_tilde is a lifting of alpha . beta. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Bob 2026-02-18T01:09:18 **)
 Theorem ex54_3_lift_of_product : forall E Te B Tb p e0 alpha beta:set,
   covering_map E Te B Tb p -> e0 :e E ->
   continuous_map unit_interval unit_interval_topology B Tb alpha ->
