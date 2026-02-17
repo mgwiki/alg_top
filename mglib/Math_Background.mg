@@ -27723,7 +27723,21 @@ Theorem ex52_3_abelian_iff_unique_basepoint_change : forall X Tx x0:set,
       forall cls:set, cls :e fundamental_group X Tx x0 ->
         apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls
         = apply_fun (basepoint_change_map X Tx x0 x1 beta) cls)).
-admit.
+let X Tx x0.
+assume Hpc Hx0.
+apply iffI.
+- assume Habel.
+  let x1 alpha beta.
+  assume Hx1 HalphaCont HbetaCont Halpha0 Halpha1 Hbeta0 Hbeta1.
+  let cls.
+  assume Hcls.
+  (** TODO Bob: derive equality of alpha-hat and beta-hat from commutativity of pi1(X,x0). **)
+  admit.
+- assume Huniq.
+  let a b.
+  assume Ha Hb.
+  (** TODO Bob: deduce commutativity of pi1(X,x0) by applying uniqueness of basepoint-change to suitable paths/classes. **)
+  admit.
 Admitted.
 
 (** from S52 Exercise 4 (line 499 in algtop.tex): retraction and pi1 **)
