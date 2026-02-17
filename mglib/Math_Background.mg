@@ -11835,7 +11835,83 @@ apply and7I.
   (** First pasting: paste F_I with a function on A_23 **)
   (** We need F on A_23 = A_II ∪ A_III by pasting F_II and F_III **)
   claim Hagree_II_III : forall p:set, p :e A_II :/\: A_III -> apply_fun F_II p = apply_fun F_III p.
-  { admit. }
+  { let p. assume Hp : p :e A_II :/\: A_III.
+    claim HpII : p :e A_II. { exact (binintersectE1 A_II A_III p Hp). }
+    claim HpIII : p :e A_III. { exact (binintersectE2 A_II A_III p Hp). }
+    claim Hp23 : p :e A_23.
+    { exact (binintersectE1
+        {p :e unit_square | Rle (apply_fun const2 p) (apply_fun L_fun p)}
+        {p :e unit_square | Rle (apply_fun L_fun p) (apply_fun const3 p)}
+        p HpII). }
+    claim HpSq : p :e unit_square.
+    { exact (Sep_Subq unit_square (fun p:set => Rle (apply_fun const2 p) (apply_fun L_fun p)) p Hp23). }
+    claim Hp0I : p 0 :e unit_interval. { exact (ap0_Sigma unit_interval (fun _:set => unit_interval) p HpSq). }
+    claim Hp1I : p 1 :e unit_interval. { exact (ap1_Sigma unit_interval (fun _:set => unit_interval) p HpSq). }
+    claim Hp0R : p 0 :e R. { exact (unit_interval_sub_R (p 0) Hp0I). }
+    claim Hp1R : p 1 :e R. { exact (unit_interval_sub_R (p 1) Hp1I). }
+    claim Hp0SNo : SNo (p 0). { exact (real_SNo (p 0) Hp0R). }
+    claim Hp1SNo : SNo (p 1). { exact (real_SNo (p 1) Hp1R). }
+    claim HSNo4_loc : SNo 4. { exact (real_SNo 4 H4R). }
+    claim HSNo_4p0 : SNo (mul_SNo (p 0) 4). { exact (SNo_mul_SNo (p 0) 4 Hp0SNo HSNo4_loc). }
+    claim HSNo3 : SNo 3. { exact (real_SNo 3 H3R). }
+    claim HSNo_m3 : SNo (minus_SNo 3). { exact (SNo_minus_SNo 3 HSNo3). }
+    claim HSNo_m2 : SNo (minus_SNo 2). { exact (SNo_minus_SNo 2 SNo_2). }
+    (** L(p) = 3 via antisymmetry **)
+    claim HL_val : apply_fun L_fun p = add_SNo (mul_SNo (p 0) 4) (p 1). { exact (HL_apply p HpSq). }
+    claim Hc3eq : apply_fun const3 p = 3. { exact (Hconst3_val p HpSq). }
+    claim HL_le_c3 : Rle (apply_fun L_fun p) (apply_fun const3 p).
+    { exact (SepE unit_square (fun p:set => Rle (apply_fun L_fun p) (apply_fun const3 p)) p
+        (binintersectE2
+          {p :e unit_square | Rle (apply_fun const2 p) (apply_fun L_fun p)}
+          {p :e unit_square | Rle (apply_fun L_fun p) (apply_fun const3 p)}
+          p HpII)
+        (Rle (apply_fun L_fun p) (apply_fun const3 p)) (fun _ H => H)). }
+    claim Hc3_le_L : Rle (apply_fun const3 p) (apply_fun L_fun p).
+    { exact (SepE unit_square (fun p:set => Rle (apply_fun const3 p) (apply_fun L_fun p)) p HpIII
+        (Rle (apply_fun const3 p) (apply_fun L_fun p)) (fun _ H => H)). }
+    claim HLp_le_3 : Rle (apply_fun L_fun p) 3.
+    { exact (Hc3eq (fun a b => Rle (apply_fun L_fun p) a) HL_le_c3). }
+    claim H3_le_Lp : Rle 3 (apply_fun L_fun p).
+    { exact (Hc3eq (fun a b => Rle a (apply_fun L_fun p)) Hc3_le_L). }
+    claim HL_le_3n : Rle (add_SNo (mul_SNo (p 0) 4) (p 1)) 3.
+    { exact (HL_val (fun a b => Rle a 3) HLp_le_3). }
+    claim H3_le_Ln : Rle 3 (add_SNo (mul_SNo (p 0) 4) (p 1)).
+    { exact (HL_val (fun a b => Rle 3 a) H3_le_Lp). }
+    claim H4p0_p1_eq_3 : add_SNo (mul_SNo (p 0) 4) (p 1) = 3.
+    { exact (Rle_antisym (add_SNo (mul_SNo (p 0) 4) (p 1)) 3 HL_le_3n H3_le_Ln). }
+    (** Rewrite using HapplyF_II and HapplyF_III **)
+    rewrite (HapplyF_II p HpII).
+    rewrite (HapplyF_III p HpIII).
+    (** F_III numerator = 0: (4p0+p1) - 3 = 3 - 3 = 0 **)
+    claim HF_III_num_eq_0 : add_SNo (add_SNo (mul_SNo (p 0) 4) (p 1)) (minus_SNo 3) = 0.
+    { exact (H4p0_p1_eq_3 (fun x y => add_SNo y (minus_SNo 3) = 0) (add_SNo_minus_SNo_rinv 3 HSNo3)). }
+    claim HSNo_1p1 : SNo (add_SNo 1 (p 1)). { exact (SNo_add_SNo 1 (p 1) SNo_1 Hp1SNo). }
+    claim HF_III_arg_eq_0 : div_SNo (add_SNo (add_SNo (mul_SNo (p 0) 4) (p 1)) (minus_SNo 3)) (add_SNo 1 (p 1)) = 0.
+    { exact (HF_III_num_eq_0 (fun x y => div_SNo y (add_SNo 1 (p 1)) = 0) (div_SNo_0_num (add_SNo 1 (p 1)) HSNo_1p1)). }
+    rewrite HF_III_arg_eq_0.
+    (** F_II arg = 1: (4p0+p1) - 2 = 3 - 2 = 1 **)
+    claim HF_II_arg_eq_1 : add_SNo (add_SNo (mul_SNo (p 0) 4) (p 1)) (minus_SNo 2) = 1.
+    { (** First reduce to 3 + (-2) = 1 via H4p0_p1_eq_3 **)
+      claim HSNo_3m2 : SNo (add_SNo 3 (minus_SNo 2)). { exact (SNo_add_SNo 3 (minus_SNo 2) HSNo3 HSNo_m2). }
+      claim H3m2_eq_1 : add_SNo 3 (minus_SNo 2) = 1.
+      { (** Prove via cancel_R: (3+(-2))+2 = 1+2 = 3 **)
+        claim H_LHS : add_SNo (add_SNo 3 (minus_SNo 2)) 2 = 3.
+        { claim Hassoc : add_SNo 3 (add_SNo (minus_SNo 2) 2) = add_SNo (add_SNo 3 (minus_SNo 2)) 2.
+          { exact (add_SNo_assoc 3 (minus_SNo 2) 2 HSNo3 HSNo_m2 SNo_2). }
+          claim Hm22 : add_SNo (minus_SNo 2) 2 = 0.
+          { exact (add_SNo_com (minus_SNo 2) 2 HSNo_m2 SNo_2 (fun x y => y = 0) (add_SNo_minus_SNo_rinv 2 SNo_2)). }
+          claim Hstep1 : add_SNo 3 0 = add_SNo (add_SNo 3 (minus_SNo 2)) 2.
+          { exact (Hm22 (fun a b => add_SNo 3 a = add_SNo (add_SNo 3 (minus_SNo 2)) 2) Hassoc). }
+          claim Hstep2 : add_SNo 3 0 = 3. { exact (add_SNo_0R 3 HSNo3). }
+          exact (Hstep1 (fun a b => a = 3) Hstep2). }
+        claim H_RHS : add_SNo 1 2 = 3.
+        { exact (add_SNo_com 1 2 SNo_1 SNo_2 (fun x y => y = 3) add_SNo_2_1_eq_3). }
+        claim Hboth : add_SNo (add_SNo 3 (minus_SNo 2)) 2 = add_SNo 1 2.
+        { exact (H_RHS (fun a b => add_SNo (add_SNo 3 (minus_SNo 2)) 2 = b) H_LHS). }
+        exact (add_SNo_cancel_R (add_SNo 3 (minus_SNo 2)) 2 1 HSNo_3m2 SNo_2 SNo_1 Hboth). }
+      exact (H4p0_p1_eq_3 (fun x y => add_SNo y (minus_SNo 2) = 1) H3m2_eq_1). }
+    rewrite HF_II_arg_eq_1.
+    rewrite Hg1. rewrite Hh0. exact (fun Q H => H). }
   (** Helper: A_23 c= unit_square **)
   claim HA23_sub : A_23 c= unit_square.
   { exact (Sep_Subq unit_square (fun p:set => Rle (apply_fun const2 p) (apply_fun L_fun p))). }
