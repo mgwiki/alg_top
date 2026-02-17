@@ -34418,7 +34418,7 @@ Admitted.
 (** LATEX VERSION: If A is star convex, A is simply connected. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
 (** Bounty 73 **)
-(** Lock Charlie 2026-02-18T13:45:00 **)
+(** Lock Charlie 1771382700 **)
 Theorem ex52_1b_star_convex_simply_connected : forall A Ta a0:set,
   star_convex A a0 ->
   topology_on A Ta ->
@@ -36625,7 +36625,7 @@ Admitted.
 (** LATEX VERSION: pi1(X,x0) is abelian iff for every pair alpha, beta of paths from x0 to x1, alpha-hat = beta-hat. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
 (** Bounty 110 **)
-(** Lock Charlie 2026-02-18T13:45:00 **)
+(** Lock Charlie 1771382700 **)
 Theorem ex52_3_abelian_iff_unique_basepoint_change : forall X Tx x0:set,
   path_connected_space X Tx -> x0 :e X ->
   ((forall a b:set, a :e fundamental_group X Tx x0 -> b :e fundamental_group X Tx x0 ->
@@ -50352,7 +50352,7 @@ Qed.
 (** beginning at b0 has a unique lifting to a path in E beginning at e0. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
 (** Bounty 146 **)
-(** Lock Charlie 2026-02-18T13:45:00 **)
+(** Lock Charlie 1771382700 **)
 Theorem lemma54_1_path_lifting : forall E Te B Tb p e0 f:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun f 0 ->
@@ -53264,7 +53264,7 @@ Admitted.
 (** F_tilde(0,0) = e0. If F is a path homotopy, then F_tilde is a path homotopy. **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 200 **)
 (** Bounty 242 **)
-(** Lock Charlie 2026-02-18T13:45:00 **)
+(** Lock Charlie 1771382700 **)
 Theorem lemma54_2_homotopy_lifting : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun F (0, 0) ->
@@ -54825,7 +54825,7 @@ Definition lifting_correspondence : set -> set -> set -> set -> set -> set -> se
 (** If E is simply connected, phi is bijective. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 97 **)
-(** Lock Charlie 2026-02-18T13:45:00 **)
+(** Lock Charlie 1771382700 **)
 Theorem thm54_4_lifting_correspondence_surjective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   path_connected_space E Te ->
@@ -67428,7 +67428,7 @@ Admitted.
 (** LATEX VERSION: If n >= 2, the n-sphere S^n is simply connected. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 182 **)
-(** Lock Bob 2026-02-19T02:30:00 **)
+(** Lock Bob 1771428600 **)
 Theorem thm59_3_Sn_simply_connected : forall n:set,
   n :e omega -> 2 c= n ->
   simply_connected (Sn n) (Sn_topology n).
@@ -74091,7 +74091,7 @@ Admitted.
 (** is properly discontinuous. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 61 **)
-(** Lock Charlie 2026-02-18T13:45:00 **)
+(** Lock Charlie 1771382700 **)
 Theorem ex81_3a_covering_trans_properly_discontinuous :
   forall X Tx B Tb p:set,
   covering_map X Tx B Tb p ->
@@ -74124,7 +74124,7 @@ Admitted.
 (** whose action is fixed-point free, then the action is properly discontinuous. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 61 **)
-(** Lock Charlie 2026-02-18T13:45:00 **)
+(** Lock Charlie 1771382700 **)
 Theorem ex81_4_finite_fixed_point_free :
   forall X Tx G idG:set,
   Hausdorff_space X Tx ->
@@ -74232,7 +74232,7 @@ Admitted.
 (** locally path connected, and semilocally simply connected. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 61 **)
-(** Lock Charlie 2026-02-18T13:45:00 **)
+(** Lock Charlie 1771382700 **)
 Theorem cor82_2_universal_covering_existence :
   forall B Tb:set,
   (exists E Te p:set,
@@ -74818,7 +74818,7 @@ Admitted.
 (** If E is an n-fold covering of X, how are Euler numbers of E and X related? **)
 (** EFFORT: 6 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 61 **)
-(** Lock Charlie 2026-02-18T13:45:00 **)
+(** Lock Charlie 1771382700 **)
 Theorem ex83_2_euler_number_examples :
   (** (a) An arc has 2 vertices, 1 edge, so chi = 1 **)
   (forall X Tx Arcs:set,
