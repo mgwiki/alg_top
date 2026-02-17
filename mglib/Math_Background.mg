@@ -24382,18 +24382,11 @@ claim Hpi1x0AllEq :
 }
 claim HloopNullAtx0 :
   forall h:set,
-    continuous_map unit_interval unit_interval_topology X Tx h ->
-    apply_fun h 0 = x0 ->
-    apply_fun h 1 = x0 ->
+    h :e loop_space X Tx x0 ->
     path_homotopic X Tx x0 x0 h (constant_path x0).
 {
   let h.
-  assume HhCont Hh0 Hh1.
-  claim HhLoop : h :e loop_space X Tx x0.
-  {
-    (** TODO Bob: derive loop_space membership of an arbitrary closed continuous path. **)
-    admit.
-  }
+  assume HhLoop.
   claim HconstFS : (constant_path x0) :e function_space unit_interval X.
   {
     exact (graph_in_function_space
@@ -24508,6 +24501,16 @@ claim Hrg1 : apply_fun rg 1 = x0.
   rewrite (reverse_path_at_one g).
   exact Hg0.
 }
+claim HrgFun : function_on rg unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    rg
+    HrgCont).
+}
 set h := path_concat f rg.
 claim HhDef : h = path_concat f rg.
 {
@@ -24544,10 +24547,115 @@ claim Hh1 : apply_fun h 1 = x0.
   rewrite (path_concat_at_one f rg).
   exact Hrg1.
 }
+claim HhLoopAt : loop_at X Tx x0 h.
+{
+  apply (loop_at_fold
+    X
+    Tx
+    x0
+    h).
+  apply andI.
+  - apply andI.
+    + exact HhCont.
+    + exact Hh0.
+  - exact Hh1.
+}
+claim HhSub : h c= setprod unit_interval X.
+{
+  rewrite HhDef.
+  let p.
+  assume Hp.
+  apply (binunionE
+    {(t, apply_fun f (mul_SNo 2 t)) | t :e unit_interval_left_half}
+    {(t, apply_fun rg (add_SNo (mul_SNo 2 t) (minus_SNo 1))) | t :e unit_interval_right_half}
+    p
+    Hp).
+  - assume Hleft.
+    apply (ReplE_impred
+      unit_interval_left_half
+      (fun t:set => (t, apply_fun f (mul_SNo 2 t)))
+      p
+      Hleft).
+    let t.
+    assume Ht Heq.
+    claim H2tInI : mul_SNo 2 t :e unit_interval.
+    {
+      rewrite <- (double_map_apply t Ht).
+      exact (double_map_function_on t Ht).
+    }
+    rewrite Heq.
+    exact (tuple_2_setprod_by_pair_Sigma
+      unit_interval
+      X
+      t
+      (apply_fun f (mul_SNo 2 t))
+      (unit_interval_left_half_sub t Ht)
+      (HfFun
+        (mul_SNo 2 t)
+        H2tInI)).
+  - assume Hright.
+    apply (ReplE_impred
+      unit_interval_right_half
+      (fun t:set => (t, apply_fun rg (add_SNo (mul_SNo 2 t) (minus_SNo 1))))
+      p
+      Hright).
+    let t.
+    assume Ht Heq.
+    claim H2m1tInI : add_SNo (mul_SNo 2 t) (minus_SNo 1) :e unit_interval.
+    {
+      rewrite <- (double_minus_one_map_apply t Ht).
+      exact (double_minus_one_map_function_on t Ht).
+    }
+    rewrite Heq.
+    exact (tuple_2_setprod_by_pair_Sigma
+      unit_interval
+      X
+      t
+      (apply_fun rg (add_SNo (mul_SNo 2 t) (minus_SNo 1)))
+      (unit_interval_right_half_sub t Ht)
+      (HrgFun
+        (add_SNo (mul_SNo 2 t) (minus_SNo 1))
+        H2m1tInI)).
+}
+claim HhPow : h :e Power (setprod unit_interval X).
+{
+  exact (PowerI
+    (setprod unit_interval X)
+    h
+    HhSub).
+}
+claim HhFunOn : function_on h unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    h
+    HhCont).
+}
+claim HhFunSpace : h :e function_space unit_interval X.
+{
+  exact (SepI
+    (Power (setprod unit_interval X))
+    (fun u:set => function_on u unit_interval X)
+    h
+    HhPow
+    HhFunOn).
+}
+claim HhLoop : h :e loop_space X Tx x0.
+{
+  exact (SepI
+    (function_space unit_interval X)
+    (fun u:set => loop_at X Tx x0 u)
+    h
+    HhFunSpace
+    HhLoopAt).
+}
 claim HhConst :
   path_homotopic X Tx x0 x0 h (constant_path x0).
 {
-  exact (HloopNullAtx0 h HhCont Hh0 Hh1).
+  exact (HloopNullAtx0 h HhLoop).
 }
 claim HgRefl : path_homotopic X Tx x0 x1 g g.
 {
