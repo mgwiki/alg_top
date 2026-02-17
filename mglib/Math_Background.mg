@@ -22026,7 +22026,852 @@ claim HcomplexToEy :
               alpha))))
       ey.
   {
-    admit.
+    set epsy := Eps_i (fun g:set => g :e y).
+    claim HepsYRefl :
+      path_homotopic
+        X
+        Tx
+        x1
+        x1
+        epsy
+        epsy.
+    {
+      exact (Lemma_51_1_path_homotopy_refl
+        X
+        Tx
+        x1
+        x1
+        epsy
+        HepsYCont
+        HepsY0
+        HepsY1).
+    }
+    claim HreplaceBetaAlphaInEps :
+      path_homotopic
+        X
+        Tx
+        x1
+        x1
+        (path_concat
+          epsy
+          (path_concat
+            beta
+            alpha))
+        (path_concat
+          epsy
+          (constant_path x1)).
+    {
+      exact (path_concat_well_defined_on_classes
+        X
+        Tx
+        x1
+        x1
+        x1
+        epsy
+        epsy
+        (path_concat
+          beta
+          alpha)
+        (constant_path x1)
+        HepsYRefl
+        HbetaAlphaInv).
+    }
+    claim HreplaceUnderRevBeta2 :
+      path_homotopic
+        X
+        Tx
+        x0
+        x1
+        (path_concat
+          (reverse_path beta)
+          (path_concat
+            epsy
+            (path_concat
+              beta
+              alpha)))
+        (path_concat
+          (reverse_path beta)
+          (path_concat
+            epsy
+            (constant_path x1))).
+    {
+      exact (path_concat_well_defined_on_classes
+        X
+        Tx
+        x0
+        x1
+        x1
+        (reverse_path beta)
+        (reverse_path beta)
+        (path_concat
+          epsy
+          (path_concat
+            beta
+            alpha))
+        (path_concat
+          epsy
+          (constant_path x1))
+        HrevBetaRefl
+        HreplaceBetaAlphaInEps).
+    }
+    claim HreplaceUnderRevAlpha2 :
+      path_homotopic
+        X
+        Tx
+        x1
+        x1
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            (reverse_path beta)
+            (path_concat
+              epsy
+              (path_concat
+                beta
+                alpha))))
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            (reverse_path beta)
+            (path_concat
+              epsy
+              (constant_path x1)))).
+    {
+      exact (path_concat_well_defined_on_classes
+        X
+        Tx
+        x1
+        x0
+        x1
+        (reverse_path alpha)
+        (reverse_path alpha)
+        (path_concat
+          (reverse_path beta)
+          (path_concat
+            epsy
+            (path_concat
+              beta
+              alpha)))
+        (path_concat
+          (reverse_path beta)
+          (path_concat
+            epsy
+            (constant_path x1)))
+        HrevAlphaRefl
+        HreplaceUnderRevBeta2).
+    }
+    claim HepsYFun : function_on epsy unit_interval X.
+    {
+      exact (continuous_map_function_on
+        unit_interval
+        unit_interval_topology
+        X
+        Tx
+        epsy
+        HepsYCont).
+    }
+    claim Hx1X : x1 :e X.
+    {
+      rewrite <- HepsY0.
+      exact (HepsYFun 0 zero_in_unit_interval).
+    }
+    claim HrightIdEps :
+      path_homotopic
+        X
+        Tx
+        x1
+        x1
+        (path_concat
+          epsy
+          (constant_path x1))
+        epsy.
+    {
+      exact (Theorem_51_2_right_identity
+        X
+        Tx
+        x1
+        x1
+        epsy
+        HepsYCont
+        HepsY0
+        HepsY1
+        Hx1X).
+    }
+    claim HreplaceUnderRevBeta3 :
+      path_homotopic
+        X
+        Tx
+        x0
+        x1
+        (path_concat
+          (reverse_path beta)
+          (path_concat
+            epsy
+            (constant_path x1)))
+        (path_concat
+          (reverse_path beta)
+          epsy).
+    {
+      exact (path_concat_well_defined_on_classes
+        X
+        Tx
+        x0
+        x1
+        x1
+        (reverse_path beta)
+        (reverse_path beta)
+        (path_concat
+          epsy
+          (constant_path x1))
+        epsy
+        HrevBetaRefl
+        HrightIdEps).
+    }
+    claim HreplaceUnderRevAlpha3 :
+      path_homotopic
+        X
+        Tx
+        x1
+        x1
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            (reverse_path beta)
+            (path_concat
+              epsy
+              (constant_path x1))))
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            (reverse_path beta)
+            epsy)).
+    {
+      exact (path_concat_well_defined_on_classes
+        X
+        Tx
+        x1
+        x0
+        x1
+        (reverse_path alpha)
+        (reverse_path alpha)
+        (path_concat
+          (reverse_path beta)
+          (path_concat
+            epsy
+            (constant_path x1)))
+        (path_concat
+          (reverse_path beta)
+          epsy)
+        HrevAlphaRefl
+        HreplaceUnderRevBeta3).
+    }
+    claim HinnerRBtoA :
+      path_homotopic
+        X
+        Tx
+        x0
+        x1
+        (path_concat
+          (reverse_path beta)
+          epsy)
+        (path_concat
+          alpha
+          epsy).
+    {
+      exact (path_concat_well_defined_on_classes
+        X
+        Tx
+        x0
+        x1
+        x1
+        (reverse_path beta)
+        alpha
+        epsy
+        epsy
+        HrevBetaHom
+        HepsYRefl).
+    }
+    claim HouterRBtoA :
+      path_homotopic
+        X
+        Tx
+        x1
+        x1
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            (reverse_path beta)
+            epsy))
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            alpha
+            epsy)).
+    {
+      exact (path_concat_well_defined_on_classes
+        X
+        Tx
+        x1
+        x0
+        x1
+        (reverse_path alpha)
+        (reverse_path alpha)
+        (path_concat
+          (reverse_path beta)
+          epsy)
+        (path_concat
+          alpha
+          epsy)
+        HrevAlphaRefl
+        HinnerRBtoA).
+    }
+    claim HalphaEpsYCont :
+      continuous_map
+        unit_interval
+        unit_interval_topology
+        X
+        Tx
+        (path_concat
+          alpha
+          epsy).
+    {
+      exact (path_concat_continuous
+        X
+        Tx
+        x0
+        x1
+        x1
+        alpha
+        epsy
+        HalphaCont
+        HepsYCont
+        Halpha0
+        Halpha1
+        HepsY0
+        HepsY1).
+    }
+    claim HalphaEpsY0 :
+      apply_fun
+        (path_concat
+          alpha
+          epsy)
+        0
+      = x0.
+    {
+      rewrite (path_concat_at_zero alpha epsy).
+      exact Halpha0.
+    }
+    claim HalphaEpsY1 :
+      apply_fun
+        (path_concat
+          alpha
+          epsy)
+        1
+      = x1.
+    {
+      rewrite (path_concat_at_one alpha epsy).
+      exact HepsY1.
+    }
+    claim HassocRAAE :
+      path_homotopic
+        X
+        Tx
+        x1
+        x1
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            alpha
+            epsy))
+        (path_concat
+          (path_concat
+            (reverse_path alpha)
+            alpha)
+          epsy).
+    {
+      exact (Theorem_51_2_associativity
+        X
+        Tx
+        x1
+        x0
+        x1
+        x1
+        (reverse_path alpha)
+        alpha
+        epsy
+        HrevAlphaCont
+        HalphaCont
+        HepsYCont
+        HrevAlpha0
+        HrevAlpha1
+        Halpha0
+        Halpha1
+        HepsY0
+        HepsY1).
+    }
+    claim HleftInvAlpha :
+      path_homotopic
+        X
+        Tx
+        x1
+        x1
+        (path_concat
+          (reverse_path alpha)
+          alpha)
+        (constant_path x1).
+    {
+      exact (Theorem_51_2_left_inverse
+        X
+        Tx
+        x0
+        x1
+        alpha
+        HalphaCont
+        Halpha0
+        Halpha1).
+    }
+    claim HreplaceLeftInv :
+      path_homotopic
+        X
+        Tx
+        x1
+        x1
+        (path_concat
+          (path_concat
+            (reverse_path alpha)
+            alpha)
+          epsy)
+        (path_concat
+          (constant_path x1)
+          epsy).
+    {
+      exact (path_concat_well_defined_on_classes
+        X
+        Tx
+        x1
+        x1
+        x1
+        (path_concat
+          (reverse_path alpha)
+          alpha)
+        (constant_path x1)
+        epsy
+        epsy
+        HleftInvAlpha
+        HepsYRefl).
+    }
+    claim HleftIdEps :
+      path_homotopic
+        X
+        Tx
+        x1
+        x1
+        (path_concat
+          (constant_path x1)
+          epsy)
+        epsy.
+    {
+      exact (Theorem_51_2_left_identity
+        X
+        Tx
+        x1
+        x1
+        epsy
+        HepsYCont
+        HepsY0
+        HepsY1
+        Hx1X).
+    }
+    claim Hexpr2ToEpsy :
+      path_homotopic
+        X
+        Tx
+        x1
+        x1
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            (reverse_path beta)
+            (path_concat
+              epsy
+              (path_concat
+                beta
+                alpha))))
+        epsy.
+    {
+      claim Hstep12 :
+        path_homotopic
+          X
+          Tx
+          x1
+          x1
+          (path_concat
+            (reverse_path alpha)
+            (path_concat
+              (reverse_path beta)
+              (path_concat
+                epsy
+                (constant_path x1))))
+          (path_concat
+            (reverse_path alpha)
+            (path_concat
+              (reverse_path beta)
+              epsy)).
+      {
+        exact HreplaceUnderRevAlpha3.
+      }
+      claim Hstep23 :
+        path_homotopic
+          X
+          Tx
+          x1
+          x1
+          (path_concat
+            (reverse_path alpha)
+            (path_concat
+              (reverse_path beta)
+              epsy))
+          (path_concat
+            (reverse_path alpha)
+            (path_concat
+              alpha
+              epsy)).
+      {
+        exact HouterRBtoA.
+      }
+      claim Hstep34 :
+        path_homotopic
+          X
+          Tx
+          x1
+          x1
+          (path_concat
+            (reverse_path alpha)
+            (path_concat
+              alpha
+              epsy))
+          (path_concat
+            (path_concat
+              (reverse_path alpha)
+              alpha)
+            epsy).
+      {
+        exact HassocRAAE.
+      }
+      claim Hstep45 :
+        path_homotopic
+          X
+          Tx
+          x1
+          x1
+          (path_concat
+            (path_concat
+              (reverse_path alpha)
+              alpha)
+            epsy)
+          (path_concat
+            (constant_path x1)
+            epsy).
+      {
+        exact HreplaceLeftInv.
+      }
+      claim Hstep15 :
+        path_homotopic
+          X
+          Tx
+          x1
+          x1
+          (path_concat
+            (reverse_path alpha)
+            (path_concat
+              (reverse_path beta)
+              (path_concat
+                epsy
+                (constant_path x1))))
+          (path_concat
+            (constant_path x1)
+            epsy).
+      {
+        claim Hstep13 :
+          path_homotopic
+            X
+            Tx
+            x1
+            x1
+            (path_concat
+              (reverse_path alpha)
+              (path_concat
+                (reverse_path beta)
+                (path_concat
+                  epsy
+                  (constant_path x1))))
+            (path_concat
+              (reverse_path alpha)
+              (path_concat
+                alpha
+                epsy)).
+        {
+          exact (Lemma_51_1_path_homotopy_trans
+            X
+            Tx
+            x1
+            x1
+            (path_concat
+              (reverse_path alpha)
+              (path_concat
+                (reverse_path beta)
+                (path_concat
+                  epsy
+                  (constant_path x1))))
+            (path_concat
+              (reverse_path alpha)
+              (path_concat
+                (reverse_path beta)
+                epsy))
+            (path_concat
+              (reverse_path alpha)
+              (path_concat
+                alpha
+                epsy))
+            Hstep12
+            Hstep23).
+        }
+        claim Hstep14 :
+          path_homotopic
+            X
+            Tx
+            x1
+            x1
+            (path_concat
+              (reverse_path alpha)
+              (path_concat
+                (reverse_path beta)
+                (path_concat
+                  epsy
+                  (constant_path x1))))
+            (path_concat
+              (path_concat
+                (reverse_path alpha)
+                alpha)
+              epsy).
+        {
+          exact (Lemma_51_1_path_homotopy_trans
+            X
+            Tx
+            x1
+            x1
+            (path_concat
+              (reverse_path alpha)
+              (path_concat
+                (reverse_path beta)
+                (path_concat
+                  epsy
+                  (constant_path x1))))
+            (path_concat
+              (reverse_path alpha)
+              (path_concat
+                alpha
+                epsy))
+            (path_concat
+              (path_concat
+                (reverse_path alpha)
+                alpha)
+              epsy)
+            Hstep13
+            Hstep34).
+        }
+        exact (Lemma_51_1_path_homotopy_trans
+          X
+          Tx
+          x1
+          x1
+          (path_concat
+            (reverse_path alpha)
+            (path_concat
+              (reverse_path beta)
+              (path_concat
+                epsy
+                (constant_path x1))))
+          (path_concat
+            (path_concat
+              (reverse_path alpha)
+              alpha)
+            epsy)
+          (path_concat
+            (constant_path x1)
+            epsy)
+          Hstep14
+          Hstep45).
+      }
+      claim HstartToConst :
+        path_homotopic
+          X
+          Tx
+          x1
+          x1
+          (path_concat
+            (reverse_path alpha)
+            (path_concat
+              (reverse_path beta)
+              (path_concat
+                epsy
+                (path_concat
+                  beta
+                  alpha))))
+          (path_concat
+            (constant_path x1)
+            epsy).
+      {
+        exact (Lemma_51_1_path_homotopy_trans
+          X
+          Tx
+          x1
+          x1
+          (path_concat
+            (reverse_path alpha)
+            (path_concat
+              (reverse_path beta)
+              (path_concat
+                epsy
+                (path_concat
+                  beta
+                  alpha))))
+          (path_concat
+            (reverse_path alpha)
+            (path_concat
+              (reverse_path beta)
+              (path_concat
+                epsy
+                (constant_path x1))))
+          (path_concat
+            (constant_path x1)
+            epsy)
+          HreplaceUnderRevAlpha2
+          Hstep15).
+      }
+      exact (Lemma_51_1_path_homotopy_trans
+        X
+        Tx
+        x1
+        x1
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            (reverse_path beta)
+            (path_concat
+              epsy
+              (path_concat
+                beta
+                alpha))))
+        (path_concat
+          (constant_path x1)
+          epsy)
+        epsy
+        HstartToConst
+        HleftIdEps).
+    }
+    claim HfyRep :
+      exists fy:set, fy :e loop_space X Tx x1 /\
+        y = path_homotopy_class_loop X Tx x1 fy.
+    {
+      exact (fundamental_group_member_has_representative
+        X
+        Tx
+        x1
+        y
+        Hy).
+    }
+    apply HfyRep.
+    let fy.
+    assume HfyPack.
+    claim HfyLoop : fy :e loop_space X Tx x1.
+    {
+      exact (andEL
+        (fy :e loop_space X Tx x1)
+        (y = path_homotopy_class_loop X Tx x1 fy)
+        HfyPack).
+    }
+    claim HyEq :
+      y = path_homotopy_class_loop X Tx x1 fy.
+    {
+      exact (andER
+        (fy :e loop_space X Tx x1)
+        (y = path_homotopy_class_loop X Tx x1 fy)
+        HfyPack).
+    }
+    claim HfyInClass :
+      fy :e path_homotopy_class_loop X Tx x1 fy.
+    {
+      exact (loop_in_own_path_homotopy_class_s52
+        X
+        Tx
+        x1
+        fy
+        HfyLoop).
+    }
+    claim HfyInY : fy :e y.
+    {
+      exact (mem_eqL
+        fy
+        y
+        (path_homotopy_class_loop X Tx x1 fy)
+        HyEq
+        HfyInClass).
+    }
+    claim HepsyInY : epsy :e y.
+    {
+      exact (Eps_i_ax
+        (fun g:set => g :e y)
+        fy
+        HfyInY).
+    }
+    claim HepsyInClassEy :
+      epsy :e path_homotopy_class_loop X Tx x1 ey.
+    {
+      rewrite HeyClass.
+      exact HepsyInY.
+    }
+    claim HeyToEpsy :
+      path_homotopic X Tx x1 x1 ey epsy.
+    {
+      exact (path_homotopy_class_loop_has_homotopy
+        X
+        Tx
+        x1
+        ey
+        epsy
+        HepsyInClassEy).
+    }
+    claim HepsyToEy :
+      path_homotopic X Tx x1 x1 epsy ey.
+    {
+      exact (Lemma_51_1_path_homotopy_sym
+        X
+        Tx
+        x1
+        x1
+        ey
+        epsy
+        HeyToEpsy).
+    }
+    exact (Lemma_51_1_path_homotopy_trans
+      X
+      Tx
+      x1
+      x1
+      (path_concat
+        (reverse_path alpha)
+        (path_concat
+          (reverse_path beta)
+          (path_concat
+            epsy
+            (path_concat
+              beta
+              alpha))))
+      epsy
+      ey
+      Hexpr2ToEpsy
+      HepsyToEy).
   }
   exact (Lemma_51_1_path_homotopy_trans
     X
