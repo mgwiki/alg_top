@@ -1,6 +1,6 @@
 (** Balance Alice 2584 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 40444 **)
+(** Balance Charlie 40419 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -65959,7 +65959,8 @@ Admitted.
 (** from S75 Theorem 75.5 (line 4096 in algtop.tex): all surfaces distinct **)
 (** LATEX VERSION: S^2; T1, T2, ...; P1, P2, ... are all topologically distinct. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T12:40:00 **)
 Theorem thm75_5_surfaces_topologically_distinct :
   (forall n m:set, n :e omega -> n <> 0 -> m :e omega -> m <> 0 -> n <> m ->
     ~(exists h:set, homeomorphism
@@ -66045,7 +66046,8 @@ Qed.
 (** LATEX VERSION: If K is the Klein bottle, calculate H1(K) directly. **)
 (** Note: K = P_2 = m_fold_projective_plane with m=2. H1(K) = Z + Z/2. **)
 (** EFFORT: 6 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T12:40:00 **)
 Theorem ex75_2_klein_bottle_homology :
   forall x0:set, x0 :e m_fold_projective_plane_space (ordsucc (ordsucc 0)) ->
   let H1G := first_homology_group
@@ -66174,7 +66176,8 @@ Admitted.
 (** shows X homeomorphic to P^2 (abab). Which argument is correct? **)
 (** Answer: The second is correct; the first incorrectly permutes before pasting. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T12:40:00 **)
 Theorem ex76_2_dunce_cap_vs_P2 :
   (** The space X obtained from two regions with schemes abcc and c^{-1}c^{-1}ab **)
   (** is homeomorphic to P^2 (the 1-fold projective plane), not the four-fold dunce cap. **)
@@ -66262,7 +66265,8 @@ Admitted.
 (** to a scheme of the form (a1 a1)(a2 a2)...(ak ak) w1 where **)
 (** k >= 1 and w1 is either empty or of torus type. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T12:40:00 **)
 Theorem cor77_2_projective_type_structure :
   forall n w:set,
   projective_type_scheme n w ->
@@ -66374,7 +66378,8 @@ Admitted.
 (** Note: This is a refinement of Theorem 77.5 that adds two more surface types. **)
 (** The Klein bottle K = P_2 and T_n # P^2, T_n # K reduce to P_m forms by Lemma 77.4. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T12:40:00 **)
 Theorem ex77_1a_classification_extended_list :
   forall n w:set,
   proper_labelling_scheme n w ->
