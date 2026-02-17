@@ -50273,7 +50273,41 @@ claim Hex :
       zero_in_unit_interval
       HSeed0Prop).
   }
-  (** TODO Bob: construct and extend the local lift through N using HinvV0 and covering data. **)
+  claim HSeedTimesNe : SeedTimes <> Empty.
+  {
+    assume HSeedEmpty.
+    claim H0Empty : 0 :e Empty.
+    {
+      exact (mem_eqR
+        0
+        SeedTimes
+        Empty
+        HSeedEmpty
+        H0SeedTimes).
+    }
+    exact (EmptyE 0 H0Empty False).
+  }
+  claim HSeedTimesOpenIn : open_in unit_interval unit_interval_topology SeedTimes.
+  {
+    apply (ex13_1_local_open_subset
+      unit_interval
+      unit_interval_topology
+      SeedTimes
+      unit_interval_topology_on).
+    let t.
+    assume HtSeed.
+    (** TODO Bob: local continuation around t from a SeedTimes witness. **)
+    admit.
+  }
+  claim HSeedTimesOpen : SeedTimes :e unit_interval_topology.
+  {
+    exact (open_in_elem
+      unit_interval
+      unit_interval_topology
+      SeedTimes
+      HSeedTimesOpenIn).
+  }
+  (** TODO Bob: show closedness/propagation to conclude SeedTimes = unit_interval via connectedness. **)
   admit.
 }
 exact (path_lift_from_exists_witness E Te B Tb p e0 f Hex).
