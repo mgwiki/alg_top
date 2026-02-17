@@ -20984,16 +20984,18 @@ claim HbetaFun :
     (basepoint_change_map X Tx x1 x0 beta)
     HbetaHom).
 }
+set fb :=
+  path_concat
+    (reverse_path beta)
+    (path_concat
+      (Eps_i (fun g:set => g :e y))
+      beta).
 set cls_beta :=
   path_homotopy_class_loop
     X
     Tx
     x0
-    (path_concat
-      (reverse_path beta)
-      (path_concat
-        (Eps_i (fun g:set => g :e y))
-        beta)).
+    fb.
 claim HbetaMapEq :
   apply_fun (basepoint_change_map X Tx x1 x0 beta) y = cls_beta.
 {
@@ -21079,9 +21081,511 @@ claim HxExpand : x = cls_beta.
   exact HbetaMapEq.
 }
 rewrite HxExpand.
-rewrite <- HeyClass.
-(** TODO Bob: prove this remaining conjugation class equals path_homotopy_class_loop X Tx x1 ey. **)
-admit.
+set pby :=
+  path_concat
+    (Eps_i (fun g:set => g :e y))
+    beta.
+claim HepsYLoop :
+  (Eps_i (fun g:set => g :e y)) :e loop_space X Tx x1.
+{
+  exact (eps_of_fundamental_group_member_in_loop_space_s52
+    X
+    Tx
+    x1
+    y
+    Hy).
+}
+claim HepsYLoopAt :
+  loop_at X Tx x1 (Eps_i (fun g:set => g :e y)).
+{
+  exact (loop_space_has_loop_at
+    X
+    Tx
+    x1
+    (Eps_i (fun g:set => g :e y))
+    HepsYLoop).
+}
+claim HepsYCont :
+  continuous_map unit_interval unit_interval_topology X Tx
+    (Eps_i (fun g:set => g :e y)).
+{
+  exact (loop_at_continuous
+    X
+    Tx
+    x1
+    (Eps_i (fun g:set => g :e y))
+    HepsYLoopAt).
+}
+claim HepsY0 : apply_fun (Eps_i (fun g:set => g :e y)) 0 = x1.
+{
+  exact (loop_at_at_zero
+    X
+    Tx
+    x1
+    (Eps_i (fun g:set => g :e y))
+    HepsYLoopAt).
+}
+claim HepsY1 : apply_fun (Eps_i (fun g:set => g :e y)) 1 = x1.
+{
+  exact (loop_at_at_one
+    X
+    Tx
+    x1
+    (Eps_i (fun g:set => g :e y))
+    HepsYLoopAt).
+}
+claim HinnerCont :
+  continuous_map unit_interval unit_interval_topology X Tx pby.
+{
+  exact (path_concat_continuous
+    X
+    Tx
+    x1
+    x1
+    x0
+    (Eps_i (fun g:set => g :e y))
+    beta
+    HepsYCont
+    HbetaCont
+    HepsY0
+    HepsY1
+    Hbeta0
+    Hbeta1).
+}
+claim Hinner0 : apply_fun pby 0 = x1.
+{
+  rewrite (path_concat_at_zero
+    (Eps_i (fun g:set => g :e y))
+    beta).
+  exact HepsY0.
+}
+claim Hinner1 : apply_fun pby 1 = x0.
+{
+  rewrite (path_concat_at_one
+    (Eps_i (fun g:set => g :e y))
+    beta).
+  exact Hbeta1.
+}
+claim HrevBetaCont :
+  continuous_map unit_interval unit_interval_topology X Tx (reverse_path beta).
+{
+  exact (reverse_path_continuous
+    X
+    Tx
+    beta
+    HbetaCont).
+}
+claim HrevBeta0 : apply_fun (reverse_path beta) 0 = x0.
+{
+  rewrite (reverse_path_at_zero beta).
+  exact Hbeta1.
+}
+claim HrevBeta1 : apply_fun (reverse_path beta) 1 = x1.
+{
+  rewrite (reverse_path_at_one beta).
+  exact Hbeta0.
+}
+claim HfbCont :
+  continuous_map unit_interval unit_interval_topology X Tx fb.
+{
+  exact (path_concat_continuous
+    X
+    Tx
+    x0
+    x1
+    x0
+    (reverse_path beta)
+    pby
+    HrevBetaCont
+    HinnerCont
+    HrevBeta0
+    HrevBeta1
+    Hinner0
+    Hinner1).
+}
+claim Hfb0 : apply_fun fb 0 = x0.
+{
+  rewrite (path_concat_at_zero
+    (reverse_path beta)
+    pby).
+  exact HrevBeta0.
+}
+claim Hfb1 : apply_fun fb 1 = x0.
+{
+  rewrite (path_concat_at_one
+    (reverse_path beta)
+    pby).
+  exact Hinner1.
+}
+claim HfbLoopAt : loop_at X Tx x0 fb.
+{
+  apply (loop_at_fold X Tx x0 fb).
+  apply andI.
+  - apply andI.
+    + exact HfbCont.
+    + exact Hfb0.
+  - exact Hfb1.
+}
+claim HrevBetaFun : function_on (reverse_path beta) unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    (reverse_path beta)
+    HrevBetaCont).
+}
+claim HinnerFun : function_on pby unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    pby
+    HinnerCont).
+}
+claim HfbSub : fb c= setprod unit_interval X.
+{
+  let p.
+  assume Hp.
+  apply (binunionE
+    {(t, apply_fun (reverse_path beta) (mul_SNo 2 t)) | t :e unit_interval_left_half}
+    {(t, apply_fun pby (add_SNo (mul_SNo 2 t) (minus_SNo 1))) | t :e unit_interval_right_half}
+    p
+    Hp).
+  - assume Hleft.
+    apply (ReplE_impred
+      unit_interval_left_half
+      (fun t:set => (t, apply_fun (reverse_path beta) (mul_SNo 2 t)))
+      p
+      Hleft).
+    let t.
+    assume Ht Heq.
+    claim H2tInI : mul_SNo 2 t :e unit_interval.
+    {
+      rewrite <- (double_map_apply t Ht).
+      exact (double_map_function_on t Ht).
+    }
+    rewrite Heq.
+    exact (tuple_2_setprod_by_pair_Sigma
+      unit_interval
+      X
+      t
+      (apply_fun (reverse_path beta) (mul_SNo 2 t))
+      (unit_interval_left_half_sub t Ht)
+      (HrevBetaFun
+        (mul_SNo 2 t)
+        H2tInI)).
+  - assume Hright.
+    apply (ReplE_impred
+      unit_interval_right_half
+      (fun t:set => (t, apply_fun pby (add_SNo (mul_SNo 2 t) (minus_SNo 1))))
+      p
+      Hright).
+    let t.
+    assume Ht Heq.
+    claim H2m1tInI : add_SNo (mul_SNo 2 t) (minus_SNo 1) :e unit_interval.
+    {
+      rewrite <- (double_minus_one_map_apply t Ht).
+      exact (double_minus_one_map_function_on t Ht).
+    }
+    rewrite Heq.
+    exact (tuple_2_setprod_by_pair_Sigma
+      unit_interval
+      X
+      t
+      (apply_fun pby (add_SNo (mul_SNo 2 t) (minus_SNo 1)))
+      (unit_interval_right_half_sub t Ht)
+      (HinnerFun
+        (add_SNo (mul_SNo 2 t) (minus_SNo 1))
+        H2m1tInI)).
+}
+claim HfbPow : fb :e Power (setprod unit_interval X).
+{
+  exact (PowerI
+    (setprod unit_interval X)
+    fb
+    HfbSub).
+}
+claim HfbFunOn : function_on fb unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    fb
+    HfbCont).
+}
+claim HfbFunSpace : fb :e function_space unit_interval X.
+{
+  exact (SepI
+    (Power (setprod unit_interval X))
+    (fun u:set => function_on u unit_interval X)
+    fb
+    HfbPow
+    HfbFunOn).
+}
+claim HfbLoop : fb :e loop_space X Tx x0.
+{
+  exact (SepI
+    (function_space unit_interval X)
+    (fun u:set => loop_at X Tx x0 u)
+    fb
+    HfbFunSpace
+    HfbLoopAt).
+}
+claim HfbInClsBeta : fb :e cls_beta.
+{
+  exact (loop_in_own_path_homotopy_class_s52
+    X
+    Tx
+    x0
+    fb
+    HfbLoop).
+}
+claim HepsClsInClsBeta :
+  (Eps_i (fun f:set => f :e cls_beta)) :e cls_beta.
+{
+  exact (Eps_i_ax
+    (fun f:set => f :e cls_beta)
+    fb
+    HfbInClsBeta).
+}
+claim HfbToEpsCls :
+  path_homotopic
+    X
+    Tx
+    x0
+    x0
+    fb
+    (Eps_i (fun f:set => f :e cls_beta)).
+{
+  exact (path_homotopy_class_loop_has_homotopy
+    X
+    Tx
+    x0
+    fb
+    (Eps_i (fun f:set => f :e cls_beta))
+    HepsClsInClsBeta).
+}
+claim HepsClsToFb :
+  path_homotopic
+    X
+    Tx
+    x0
+    x0
+    (Eps_i (fun f:set => f :e cls_beta))
+    fb.
+{
+  exact (Lemma_51_1_path_homotopy_sym
+    X
+    Tx
+    x0
+    x0
+    fb
+    (Eps_i (fun f:set => f :e cls_beta))
+    HfbToEpsCls).
+}
+claim HalphaRefl :
+  path_homotopic
+    X
+    Tx
+    x0
+    x1
+    alpha
+    alpha.
+{
+  exact (Lemma_51_1_path_homotopy_refl
+    X
+    Tx
+    x0
+    x1
+    alpha
+    HalphaCont
+    Halpha0
+    Halpha1).
+}
+claim HinnerReplace :
+  path_homotopic
+    X
+    Tx
+    x0
+    x1
+    (path_concat
+      (Eps_i (fun f:set => f :e cls_beta))
+      alpha)
+    (path_concat
+      fb
+      alpha).
+{
+  exact (path_concat_well_defined_on_classes
+    X
+    Tx
+    x0
+    x0
+    x1
+    (Eps_i (fun f:set => f :e cls_beta))
+    fb
+    alpha
+    alpha
+    HepsClsToFb
+    HalphaRefl).
+}
+claim HrevAlphaCont :
+  continuous_map unit_interval unit_interval_topology X Tx (reverse_path alpha).
+{
+  exact (reverse_path_continuous
+    X
+    Tx
+    alpha
+    HalphaCont).
+}
+claim HrevAlpha0 : apply_fun (reverse_path alpha) 0 = x1.
+{
+  rewrite (reverse_path_at_zero alpha).
+  exact Halpha1.
+}
+claim HrevAlpha1 : apply_fun (reverse_path alpha) 1 = x0.
+{
+  rewrite (reverse_path_at_one alpha).
+  exact Halpha0.
+}
+claim HrevAlphaRefl :
+  path_homotopic
+    X
+    Tx
+    x1
+    x0
+    (reverse_path alpha)
+    (reverse_path alpha).
+{
+  exact (Lemma_51_1_path_homotopy_refl
+    X
+    Tx
+    x1
+    x0
+    (reverse_path alpha)
+    HrevAlphaCont
+    HrevAlpha0
+    HrevAlpha1).
+}
+claim HouterReplace :
+  path_homotopic
+    X
+    Tx
+    x1
+    x1
+    (path_concat
+      (reverse_path alpha)
+      (path_concat
+        (Eps_i (fun f:set => f :e cls_beta))
+        alpha))
+    (path_concat
+      (reverse_path alpha)
+      (path_concat
+        fb
+        alpha)).
+{
+  exact (path_concat_well_defined_on_classes
+    X
+    Tx
+    x1
+    x0
+    x1
+    (reverse_path alpha)
+    (reverse_path alpha)
+    (path_concat
+      (Eps_i (fun f:set => f :e cls_beta))
+      alpha)
+    (path_concat
+      fb
+      alpha)
+    HrevAlphaRefl
+    HinnerReplace).
+}
+claim HouterReplaceClass :
+  path_homotopy_class_loop
+    X
+    Tx
+    x1
+    (path_concat
+      (reverse_path alpha)
+      (path_concat
+        (Eps_i (fun f:set => f :e cls_beta))
+        alpha))
+  =
+  path_homotopy_class_loop
+    X
+    Tx
+    x1
+    (path_concat
+      (reverse_path alpha)
+      (path_concat
+        fb
+        alpha)).
+{
+  exact (path_homotopy_class_loop_eq_of_path_homotopic
+    X
+    Tx
+    x1
+    (path_concat
+      (reverse_path alpha)
+      (path_concat
+        (Eps_i (fun f:set => f :e cls_beta))
+        alpha))
+    (path_concat
+      (reverse_path alpha)
+      (path_concat
+        fb
+        alpha))
+    HouterReplace).
+}
+rewrite HouterReplaceClass.
+(** TODO Bob: prove this remaining explicit conjugation path is path-homotopic to ey. **)
+claim HcomplexToEy :
+  path_homotopic
+    X
+    Tx
+    x1
+    x1
+    (path_concat
+      (reverse_path alpha)
+      (path_concat
+        fb
+        alpha))
+    ey.
+{
+  admit.
+}
+claim HcomplexClass :
+  path_homotopy_class_loop
+    X
+    Tx
+    x1
+    (path_concat
+      (reverse_path alpha)
+      (path_concat
+        fb
+        alpha))
+  =
+  path_homotopy_class_loop X Tx x1 ey.
+{
+  exact (path_homotopy_class_loop_eq_of_path_homotopic
+    X
+    Tx
+    x1
+    (path_concat
+      (reverse_path alpha)
+      (path_concat
+        fb
+        alpha))
+    ey
+    HcomplexToEy).
+}
+exact HcomplexClass.
 Admitted.
 
 (** from S52 Theorem 52.1 sub-bounty B: bijection part of alpha-hat **)
