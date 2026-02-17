@@ -18116,6 +18116,57 @@ claim Hmult :
       (apply_fun (basepoint_change_map X Tx x0 x1 alpha) u,
        apply_fun (basepoint_change_map X Tx x0 x1 alpha) v).
 {
+  let u v.
+  assume Hu Hv.
+  claim HuImg :
+    apply_fun (basepoint_change_map X Tx x0 x1 alpha) u
+      :e fundamental_group X Tx x1.
+  {
+    exact (Hfun u Hu).
+  }
+  claim HvImg :
+    apply_fun (basepoint_change_map X Tx x0 x1 alpha) v
+      :e fundamental_group X Tx x1.
+  {
+    exact (Hfun v Hv).
+  }
+  claim HimgPair :
+    (apply_fun (basepoint_change_map X Tx x0 x1 alpha) u,
+     apply_fun (basepoint_change_map X Tx x0 x1 alpha) v)
+      :e setprod (fundamental_group X Tx x1) (fundamental_group X Tx x1).
+  {
+    exact (tuple_2_setprod_by_pair_Sigma
+      (fundamental_group X Tx x1)
+      (fundamental_group X Tx x1)
+      (apply_fun (basepoint_change_map X Tx x0 x1 alpha) u)
+      (apply_fun (basepoint_change_map X Tx x0 x1 alpha) v)
+      HuImg
+      HvImg).
+  }
+  rewrite (fundamental_group_mult_apply
+    X
+    Tx
+    x1
+    (apply_fun (basepoint_change_map X Tx x0 x1 alpha) u,
+     apply_fun (basepoint_change_map X Tx x0 x1 alpha) v)
+    HimgPair).
+  rewrite (basepoint_change_map_apply
+    X
+    Tx
+    x0
+    x1
+    alpha
+    u
+    Hu).
+  rewrite (basepoint_change_map_apply
+    X
+    Tx
+    x0
+    x1
+    alpha
+    v
+    Hv).
+  (** TODO Bob: reduce the left side and finish class-level concatenation compatibility. **)
   admit.
 }
 exact (andI
