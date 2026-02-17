@@ -1,6 +1,6 @@
 (** Balance Alice 2584 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 33494 **)
+(** Balance Charlie 33404 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -53320,7 +53320,8 @@ Definition product_group_mult : set -> set -> set -> set -> set :=
 (** from S54 Exercise 7 (line 892 in algtop.tex) **)
 (** LATEX VERSION: The fundamental group of the torus is isomorphic to Z x Z. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:18:19 **)
 Theorem ex54_7_pi1_torus : exists phi:set,
   group_isomorphism
     (fundamental_group torus torus_topology (S1_basepoint, S1_basepoint))
@@ -60723,7 +60724,8 @@ Admitted.
 
 (** from S58 Exercise 2(e) (line 1481 in algtop.tex): R^3 with nonneg axes deleted pi1 **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:18:19 **)
 Theorem ex58_2e_R3_axes_deleted_pi1 :
   let R3 := setprod (setprod R R) R in
   let R3T := product_topology (setprod R R) R2_topology R R_standard_topology in
@@ -60950,7 +60952,8 @@ Admitted.
 
 (** from S58 Exercise 10(b) (line 1528 in algtop.tex): degree and fixed point **)
 (** EFFORT: 6 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:18:19 **)
 Theorem ex58_10b_degree_fixed_point : forall n:set, n :e omega ->
   forall deg:set,
   (forall h k:set, continuous_map (Sn n) (Sn_topology n) (Sn n) (Sn_topology n) h ->
@@ -61467,7 +61470,8 @@ Admitted.
 (** from S60 Exercise 2 (line 1779 in algtop.tex) **)
 (** LATEX VERSION: B^2 with antipodal identification on S^1 is homeomorphic to P^2. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:18:19 **)
 Theorem ex60_2_quotient_B2_is_P2 :
   exists X TX q:set,
     quotient_map B2 B2_topology X q /\
@@ -61643,7 +61647,8 @@ Admitted.
 (** from S61 Exercise 2 (line 1916 in algtop.tex) **)
 (** LATEX VERSION: If C is homeomorphic to the closed topologists sine curve, C separates S^2. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 100 **)
+(** Bounty 110 **)
+(** Lock Charlie 2026-02-18T12:18:19 **)
 Theorem ex61_2_closed_sin_curve_separates : forall C:set,
   C c= Sn 2 ->
   compact_space C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
@@ -67042,7 +67047,8 @@ Admitted.
 (** neighborhood U such that inclusion i: U -> B induces the trivial homomorphism **)
 (** i_star: pi1(U,b0) -> pi1(B,b0). **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:18:19 **)
 Theorem lemma80_4_universal_cover_semilocal :
   forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
@@ -67861,7 +67867,8 @@ Definition graph_vertices : set -> set -> set -> set :=
 (** from S83 Lemma 83.1 (line 5470 in algtop.tex): linear graphs are normal **)
 (** LATEX VERSION: Every linear graph X is Hausdorff; in fact, it is normal. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:18:19 **)
 Theorem lemma83_1_linear_graph_normal :
   forall X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -68033,7 +68040,8 @@ Definition maximal_tree : set -> set -> set -> set -> set -> prop :=
 (** LATEX VERSION: A graph X is connected iff every pair of vertices can be **)
 (** joined by an edge path. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:18:19 **)
 Theorem lemma84_1_connected_iff_edge_paths :
   forall X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -68066,7 +68074,8 @@ Admitted.
 (** LATEX VERSION: If T is a finite tree with more than one edge, then T = T0 union A **)
 (** where T0 is a tree and A intersects T0 in a single vertex. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:18:19 **)
 Theorem lemma84_2_tree_decomposition :
   forall T ArcsT X Tx Arcs:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -68272,7 +68281,8 @@ Definition euler_number : set -> set -> set -> set :=
 (** LATEX VERSION: If X is a finite, connected linear graph, then the cardinality **)
 (** of a system of free generators for pi1(X) is 1 - chi(X). **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:18:19 **)
 Theorem lemma85_2_free_gen_euler :
   forall X Tx Arcs x0:set,
   general_linear_graph X Tx Arcs ->
