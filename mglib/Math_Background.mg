@@ -40524,7 +40524,8 @@ Definition covering_map_R_S1 : set :=
 (** LATEX VERSION: The map p: R -> S^1 given by p(x) = (cos 2pi x, sin 2pi x) **)
 (** is a covering map. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
+(** Bounty 182 **)
+(** Lock Dave 1771448181 **)
 Theorem thm53_1_R_covers_S1 :
   covering_map R R_standard_topology S1 S1_topology covering_map_R_S1.
 admit.
@@ -45264,7 +45265,8 @@ Admitted.
 (** LATEX VERSION: Let p: E -> B be a covering map; B connected. If p^{-1}(b0) **)
 (** has k elements for some b0 in B, then p^{-1}(b) has k elements for every b in B. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 66 **)
+(** Bounty 73 **)
+(** Lock Dave 1771448181 **)
 Theorem ex53_3_uniform_fiber_size : forall E Te B Tb p b0 k:set,
   covering_map E Te B Tb p ->
   connected_space B Tb ->
@@ -45279,7 +45281,8 @@ Admitted.
 (** LATEX VERSION: Let q: X -> Y and r: Y -> Z be covering maps; **)
 (** if r^{-1}(z) is finite for each z in Z, then r o q is a covering map. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
+(** Bounty 121 **)
+(** Lock Dave 1771448181 **)
 Theorem ex53_4_composition_covering : forall X Tx Y Ty Z Tz q r:set,
   covering_map X Tx Y Ty q -> covering_map Y Ty Z Tz r ->
   (forall z:set, z :e Z -> finite {y :e Y | apply_fun r y = z}) ->
@@ -56929,7 +56932,8 @@ Admitted.
 
 (** from S54 Thm 54.4 (line 799 in algtop.tex): lifting correspondence bijective **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 66 **)
+(** Bounty 73 **)
+(** Lock Dave 1771448181 **)
 Theorem thm54_4_lifting_correspondence_bijective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   simply_connected E Te ->
@@ -56956,7 +56960,8 @@ Definition S1_basepoint : set := (1, 0).
 (** LATEX VERSION: The fundamental group of S^1 is isomorphic to the additive group **)
 (** of integers. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
+(** Bounty 242 **)
+(** Lock Dave 1771448181 **)
 Theorem thm54_5_pi1_circle : exists phi:set,
   group_isomorphism
     (fundamental_group S1 S1_topology S1_basepoint)
@@ -57044,7 +57049,8 @@ Definition homomorphism_image : set -> set -> set :=
 (** from S54 Thm 54.6a (line 838 in algtop.tex) **)
 (** LATEX VERSION: The homomorphism p-star: pi_1(E,e0) -> pi_1(B,b0) is a monomorphism. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 66 **)
+(** Bounty 73 **)
+(** Lock Dave 1771448181 **)
 Theorem thm54_6a_p_star_injective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   forall cls1 cls2:set,
@@ -80195,3 +80201,5 @@ Qed.
 (** Sandbox End Bob **)
 (** Sandbox Begin Charlie **)
 (** Sandbox End Charlie **)
+(** Sandbox Begin Dave **)
+(** Sandbox End Dave **)
