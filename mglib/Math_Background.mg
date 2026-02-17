@@ -13811,7 +13811,78 @@ Theorem ex51_1_composition_homotopic : forall X Tx Y Ty Z Tz h h' k k':set,
   homotopic_maps X Tx Y Ty h h' ->
   homotopic_maps Y Ty Z Tz k k' ->
   homotopic_maps X Tx Z Tz (compose_fun X h k) (compose_fun X h' k').
-admit.
+let X Tx Y Ty Z Tz h h' k k'.
+assume Hhh' Hkk'.
+claim Hh : continuous_map X Tx Y Ty h.
+{
+  exact (homotopic_maps_left_continuous
+    X
+    Tx
+    Y
+    Ty
+    h
+    h'
+    Hhh').
+}
+claim Hh' : continuous_map X Tx Y Ty h'.
+{
+  exact (homotopic_maps_right_continuous
+    X
+    Tx
+    Y
+    Ty
+    h
+    h'
+    Hhh').
+}
+claim Hk : continuous_map Y Ty Z Tz k.
+{
+  exact (homotopic_maps_left_continuous
+    Y
+    Ty
+    Z
+    Tz
+    k
+    k'
+    Hkk').
+}
+claim Hk' : continuous_map Y Ty Z Tz k'.
+{
+  exact (homotopic_maps_right_continuous
+    Y
+    Ty
+    Z
+    Tz
+    k
+    k'
+    Hkk').
+}
+claim Hpost :
+  homotopic_maps X Tx Z Tz
+    (compose_fun X h k)
+    (compose_fun X h' k).
+{
+  (** post-compose the h~h' homotopy by k **)
+  admit.
+}
+claim Hpre :
+  homotopic_maps X Tx Z Tz
+    (compose_fun X h' k)
+    (compose_fun X h' k').
+{
+  (** pre-compose the k~k' homotopy by h' **)
+  admit.
+}
+exact (Lemma_51_1_homotopy_trans
+  X
+  Tx
+  Z
+  Tz
+  (compose_fun X h k)
+  (compose_fun X h' k)
+  (compose_fun X h' k')
+  Hpost
+  Hpre).
 Admitted.
 
 (** from S51 Exercise 2a (line 331 in algtop.tex) **)
