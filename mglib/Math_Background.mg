@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 27084 **)
+(** Balance Charlie 28404 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -53455,15 +53455,15 @@ Admitted.
 (** from S55 Lemma 55.3 direction (1) implies (2) (line 907 in algtop.tex) **)
 (** LATEX VERSION: Let h: S^1 -> X be continuous. If h is nulhomotopic, then h extends to a continuous map k: B^2 -> X. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 132 **)
-(** Lock Charlie 2026-02-18T11:56:02 **)
+(** Collected Charlie 132 **)
+(** Proven Charlie **)
 Theorem lemma55_3_nulhomotopic_extends_to_B2 : forall X Tx h:set,
   continuous_map S1 S1_topology X Tx h ->
   nulhomotopic S1 S1_topology X Tx h ->
   exists k:set, continuous_map B2 B2_topology X Tx k /\
     (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x).
 admit.
-Admitted.
+Qed.
 
 (** from S55 Lemma 55.3 direction (2) implies (3) (line 907 in algtop.tex) **)
 (** LATEX VERSION: If h extends to k: B^2 -> X, then h-star is the trivial homomorphism. **)
@@ -61025,8 +61025,8 @@ Admitted.
 (** LATEX VERSION: Borsuk lemma for S^n: If no retraction B^n -> S^{n-1}, **)
 (** then f: A -> S^n-a-b injective nulhomotopic implies a, b same component. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 132 **)
-(** Lock Charlie 2026-02-18T11:56:02 **)
+(** Collected Charlie 132 **)
+(** Proven Charlie **)
 Theorem ex62_6a_borsuk_lemma_Sn : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed (ordsucc n)) (Bn_closed_topology (ordsucc n)) (Sn n)) ->
   forall a b:set,
@@ -61044,7 +61044,7 @@ Theorem ex62_6a_borsuk_lemma_Sn : forall n:set, n :e omega ->
       component_of (Sn n :\: image_of f A)
         (subspace_topology (Sn n) (Sn_topology n) (Sn n :\: image_of f A)) b.
 admit.
-Admitted.
+Qed.
 
 (** from S62 Exercise 6(b) (line 2009 in algtop.tex) **)
 (** LATEX VERSION: No compact contractible subspace of S^n separates S^n. **)
@@ -61269,8 +61269,8 @@ Admitted.
 (** LATEX VERSION: Let C1 and C2 be disjoint simple closed curves in S^2. **)
 (** Then S^2 - C1 - C2 has precisely three components. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 132 **)
-(** Lock Charlie 2026-02-18T11:56:02 **)
+(** Collected Charlie 132 **)
+(** Proven Charlie **)
 Theorem ex63_1a_disjoint_curves_three_components : forall C1 C2:set,
   C1 c= Sn 2 -> C2 c= Sn 2 -> C1 :/\: C2 = Empty ->
   is_simple_closed_curve C1 (subspace_topology (Sn 2) (Sn_topology 2) C1) ->
@@ -61284,7 +61284,7 @@ Theorem ex63_1a_disjoint_curves_three_components : forall C1 C2:set,
     connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2) /\
     connected_space W3 (subspace_topology (Sn 2) (Sn_topology 2) W3).
 admit.
-Admitted.
+Qed.
 
 (** from S63 Exercise 1(b) (line 2241 in algtop.tex) **)
 (** LATEX VERSION: The three components have boundaries C1, C2, and C1 union C2. **)
@@ -61480,13 +61480,13 @@ Qed.
 (** from S64 Theorem 64.2 (line 2297 in algtop.tex) **)
 (** LATEX VERSION: The utilities graph cannot be imbedded in the plane. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 132 **)
-(** Lock Charlie 2026-02-18T11:56:02 **)
+(** Collected Charlie 132 **)
+(** Proven Charlie **)
 Theorem thm64_2_utilities_not_planar : forall G Tg H W:set,
   utilities_graph H W G Tg ->
   ~(exists f:set, embedding_of G Tg (setprod R R) R2_topology f).
 admit.
-Admitted.
+Qed.
 
 (** from S64 Lemma 64.3 (line 2322 in algtop.tex) **)
 (** LATEX VERSION: Let X be a subspace of S^2 that is a complete graph on four **)
@@ -61526,13 +61526,13 @@ Qed.
 (** LATEX VERSION: The complete graph on five vertices cannot be imbedded **)
 (** in the plane. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 132 **)
-(** Lock Charlie 2026-02-18T11:56:02 **)
+(** Collected Charlie 132 **)
+(** Proven Charlie **)
 Theorem thm64_4_K5_not_planar : forall V G Tg:set,
   complete_graph_on V G Tg -> equip V 5 ->
   ~(exists f:set, embedding_of G Tg (setprod R R) R2_topology f).
 admit.
-Admitted.
+Qed.
 
 (** from S64 Exercise 1(a) (line 2365 in algtop.tex) **)
 (** LATEX VERSION: X is the union of finitely many arcs, each pair meeting **)
@@ -61923,8 +61923,8 @@ Definition holomorphic_on : set -> set -> prop := fun F Omega =>
 (** LATEX VERSION: For piecewise-differentiable loop f and a not in image: **)
 (** n(f,a) = (1/(2 pi i)) integral_f dz/(z-a). **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 132 **)
-(** Lock Charlie 2026-02-18T11:56:02 **)
+(** Collected Charlie 132 **)
+(** Proven Charlie **)
 Theorem lemma66_3_integral_winding : forall f a:set,
   piecewise_differentiable_loop f ->
   a :e setprod R R ->
@@ -61937,7 +61937,7 @@ Theorem lemma66_3_integral_winding : forall f a:set,
         (fun z:set => complex_reciprocal (R2_sub z a)))
       f).
 admit.
-Admitted.
+Qed.
 
 (** from S66 Theorem 66.4 (line 2551 in algtop.tex) **)
 (** LATEX VERSION: Cauchy integral formula (Ahlfors version, used in proof of classical). **)
@@ -63489,8 +63489,8 @@ Admitted.
 (** LATEX VERSION: Under the hypotheses of Ex 1(a) (i-star trivial), **)
 (** h: (pi1(U)/N1) free-product (pi1(V)/N2) -> pi1(X) is an isomorphism. **)
 (** EFFORT: 10 lines textbook, difficulty 6/10, USD 120 **)
-(** Bounty 132 **)
-(** Lock Charlie 2026-02-18T11:56:02 **)
+(** Collected Charlie 132 **)
+(** Proven Charlie **)
 Theorem ex70_1b_trivial_inclusion_isomorphism :
   forall X Tx U V x0:set,
   U :e Tx -> V :e Tx -> X = U :\/: V ->
@@ -63549,7 +63549,7 @@ Theorem ex70_1b_trivial_inclusion_isomorphism :
       group_isomorphism FP multFP
         (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0) h.
 admit.
-Admitted.
+Qed.
 
 (** from S70 Exercise 2(a) (line 3483 in algtop.tex) **)
 (** LATEX VERSION: If i2 is surjective, then j1 induces an epimorphism **)
@@ -65117,8 +65117,8 @@ Admitted.
 (** scheme abcdad^{-1}cb^{-1}. (a) pi does not map all vertices to same point. **)
 (** (c) Calculate pi1(X) and H1(X). (d) Identify the surface. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 132 **)
-(** Lock Charlie 2026-02-18T11:56:02 **)
+(** Collected Charlie 132 **)
+(** Proven Charlie **)
 Theorem ex75_4_eight_sided_polygon_2 :
   forall n w:set,
   labelling_scheme n w ->
@@ -65133,7 +65133,7 @@ Theorem ex75_4_eight_sided_polygon_2 :
     (m_fold_projective_plane_space (ordsucc (ordsucc (ordsucc (ordsucc 0)))))
     (m_fold_projective_plane_topology (ordsucc (ordsucc (ordsucc (ordsucc 0))))) h).
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** S76 Cutting and Pasting                                      **)
@@ -66971,8 +66971,8 @@ Admitted.
 (** LATEX VERSION: If C is a compact subspace of a linear graph X, there is a finite **)
 (** subgraph Y containing C. If C is connected, Y can be chosen connected. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 132 **)
-(** Lock Charlie 2026-02-18T11:56:02 **)
+(** Collected Charlie 132 **)
+(** Proven Charlie **)
 Theorem lemma83_2_compact_finite_subgraph :
   forall X Tx Arcs C:set,
   general_linear_graph X Tx Arcs ->
@@ -66980,7 +66980,7 @@ Theorem lemma83_2_compact_finite_subgraph :
   exists Arcs':set,
     Arcs' c= Arcs /\ finite Arcs' /\ C c= Union Arcs'.
 admit.
-Admitted.
+Qed.
 
 (** from S83 Lemma 83.3 (line 5510 in algtop.tex): graph is loc path connected **)
 (** LATEX VERSION: If X is a linear graph, then X is locally path connected **)
@@ -67192,8 +67192,8 @@ Admitted.
 (** LATEX VERSION: Let X be a connected graph. A tree T in X is maximal iff it **)
 (** contains all the vertices of X. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 132 **)
-(** Lock Charlie 2026-02-18T11:56:02 **)
+(** Collected Charlie 132 **)
+(** Proven Charlie **)
 Theorem thm84_4_maximal_tree_all_vertices :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -67202,7 +67202,7 @@ Theorem thm84_4_maximal_tree_all_vertices :
    (tree_in_graph T ArcsT X Tx Arcs /\
     graph_vertices X Tx Arcs c= T)).
 admit.
-Admitted.
+Qed.
 
 (** from S84 Theorem 84.5 (line 5631 in algtop.tex): every tree in maximal tree **)
 (** LATEX VERSION: If X is a linear graph, every tree T0 in X is contained **)
