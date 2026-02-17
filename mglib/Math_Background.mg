@@ -78714,6 +78714,185 @@ exact (lemma59_4a_simply_connected_from_pi1_trivial_at_point
   X Tx x0 HpcX Hx0X Hpi1).
 Qed.
 
+(** Helper: if word-generation data is available and both i-star/j-star are trivial, then X is simply connected. **)
+Theorem lemma59_4a_simply_connected_from_word_data_and_both_trivial :
+  forall X Tx U V x0:set,
+  topology_on X Tx ->
+  U :e Tx ->
+  V :e Tx ->
+  x0 :e U :/\: V ->
+  path_connected_space X Tx ->
+  (forall cls:set, cls :e fundamental_group X Tx x0 ->
+    exists n:set, n :e omega /\
+      exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+        (forall i:set, i :e n ->
+          (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+            apply_fun gs i =
+              apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+                (graph U (fun x:set => x))) ucls) \/
+          (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+            apply_fun gs i =
+              apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+                (graph V (fun x:set => x))) vcls)) /\
+        cls = nat_primrec (fundamental_group_id X Tx x0)
+          (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n) ->
+  (forall cls:set,
+    cls :e fundamental_group U (subspace_topology X Tx U) x0 ->
+    apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+      (graph U (fun x:set => x))) cls = fundamental_group_id X Tx x0) ->
+  (forall cls:set,
+    cls :e fundamental_group V (subspace_topology X Tx V) x0 ->
+    apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+      (graph V (fun x:set => x))) cls = fundamental_group_id X Tx x0) ->
+  simply_connected X Tx.
+let X Tx U V x0.
+assume Htop : topology_on X Tx.
+assume HU : U :e Tx.
+assume HV : V :e Tx.
+assume Hx0UV : x0 :e U :/\: V.
+assume HpcX : path_connected_space X Tx.
+assume HwordData : forall cls:set, cls :e fundamental_group X Tx x0 ->
+  exists n:set, n :e omega /\
+    exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+      (forall i:set, i :e n ->
+        (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+          apply_fun gs i =
+            apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+              (graph U (fun x:set => x))) ucls) \/
+        (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+          apply_fun gs i =
+            apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+              (graph V (fun x:set => x))) vcls)) /\
+      cls = nat_primrec (fundamental_group_id X Tx x0)
+        (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n.
+assume Hi_triv : forall cls:set,
+  cls :e fundamental_group U (subspace_topology X Tx U) x0 ->
+  apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+    (graph U (fun x:set => x))) cls = fundamental_group_id X Tx x0.
+assume Hj_triv : forall cls:set,
+  cls :e fundamental_group V (subspace_topology X Tx V) x0 ->
+  apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+    (graph V (fun x:set => x))) cls = fundamental_group_id X Tx x0.
+claim Hx0U : x0 :e U.
+{
+  exact (binintersectE1 U V x0 Hx0UV).
+}
+claim Hgen : forall cls:set, cls :e fundamental_group X Tx x0 ->
+  exists ucls:set,
+    ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+    cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+      (graph U (fun x:set => x))) ucls.
+{
+  let cls.
+  assume Hcls : cls :e fundamental_group X Tx x0.
+  apply (HwordData cls Hcls).
+  let n.
+  assume Hn_pack : n :e omega /\
+    exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+      (forall i:set, i :e n ->
+        (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+          apply_fun gs i =
+            apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+              (graph U (fun x:set => x))) ucls) \/
+        (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+          apply_fun gs i =
+            apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+              (graph V (fun x:set => x))) vcls)) /\
+      cls = nat_primrec (fundamental_group_id X Tx x0)
+        (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n.
+  claim HnO : n :e omega.
+  {
+    exact (andEL
+      (n :e omega)
+      (exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+        (forall i:set, i :e n ->
+          (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+            apply_fun gs i =
+              apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+                (graph U (fun x:set => x))) ucls) \/
+          (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+            apply_fun gs i =
+              apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+                (graph V (fun x:set => x))) vcls)) /\
+        cls = nat_primrec (fundamental_group_id X Tx x0)
+          (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n)
+      Hn_pack).
+  }
+  apply (andER
+    (n :e omega)
+    (exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+      (forall i:set, i :e n ->
+        (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+          apply_fun gs i =
+            apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+              (graph U (fun x:set => x))) ucls) \/
+        (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+          apply_fun gs i =
+            apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+              (graph V (fun x:set => x))) vcls)) /\
+      cls = nat_primrec (fundamental_group_id X Tx x0)
+        (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n)
+    Hn_pack).
+  let gs.
+  assume Hgs_pack : function_on gs n (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls)) /\
+    cls = nat_primrec (fundamental_group_id X Tx x0)
+      (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n.
+  apply (and3E
+    (function_on gs n (fundamental_group X Tx x0))
+    (forall i:set, i :e n ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls))
+    (cls = nat_primrec (fundamental_group_id X Tx x0)
+      (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n)
+    Hgs_pack).
+  assume HgsFun HgsTerms HclsWord.
+  exact (lemma59_4a_word_data_trivial_j_implies_i_image
+    X
+    Tx
+    U
+    V
+    x0
+    cls
+    n
+    gs
+    Htop
+    HU
+    HV
+    Hx0UV
+    HnO
+    HgsFun
+    HgsTerms
+    HclsWord
+    Hj_triv).
+}
+exact (lemma59_4a_simply_connected_from_generation_and_i_trivial
+  X
+  Tx
+  U
+  x0
+  Htop
+  HU
+  Hx0U
+  HpcX
+  Hgen
+  Hi_triv).
+Qed.
+
 (** from S59 Exercise 4(a) continued: both i-star and j-star trivial **)
 (** LATEX VERSION: If both i-star and j-star are trivial, then pi1(X,x0) is trivial. **)
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 25 **)
