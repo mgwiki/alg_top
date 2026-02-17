@@ -30996,6 +30996,33 @@ Definition simply_connected : set -> set -> prop := fun X Tx =>
   exists x0:set, x0 :e X /\
     fundamental_group X Tx x0 = {fundamental_group_id X Tx x0}.
 
+(** Helper: projection of path connectedness from simple connectedness. **)
+Theorem simply_connected_path_connected : forall X Tx:set,
+  simply_connected X Tx ->
+  path_connected_space X Tx.
+let X Tx.
+assume Hsimp.
+exact (andEL
+  (path_connected_space X Tx)
+  (exists x0:set, x0 :e X /\
+    fundamental_group X Tx x0 = {fundamental_group_id X Tx x0})
+  Hsimp).
+Qed.
+
+(** Helper: projection of basepoint/witnessed trivial pi1 from simple connectedness. **)
+Theorem simply_connected_trivial_pi1_witness : forall X Tx:set,
+  simply_connected X Tx ->
+  exists x0:set, x0 :e X /\
+    fundamental_group X Tx x0 = {fundamental_group_id X Tx x0}.
+let X Tx.
+assume Hsimp.
+exact (andER
+  (path_connected_space X Tx)
+  (exists x0:set, x0 :e X /\
+    fundamental_group X Tx x0 = {fundamental_group_id X Tx x0})
+  Hsimp).
+Qed.
+
 (** from S52 Lem 52.3 (line 428 in algtop.tex) **)
 (** LATEX VERSION: In a simply connected space X, any two paths having the same initial and final points are path homotopic. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
@@ -68052,19 +68079,19 @@ assume Hne : (U :/\: V) <> Empty.
 assume HpcUV : path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)).
 (** Extract path connected from simply connected **)
 claim HpcU : path_connected_space U (subspace_topology X Tx U).
-{ exact (andEL
-    (path_connected_space U (subspace_topology X Tx U))
-    (exists x0:set, x0 :e U /\
-      fundamental_group U (subspace_topology X Tx U) x0 =
-        {fundamental_group_id U (subspace_topology X Tx U) x0})
-    HscU). }
+{
+  exact (simply_connected_path_connected
+    U
+    (subspace_topology X Tx U)
+    HscU).
+}
 claim HpcV : path_connected_space V (subspace_topology X Tx V).
-{ exact (andEL
-    (path_connected_space V (subspace_topology X Tx V))
-    (exists x0:set, x0 :e V /\
-      fundamental_group V (subspace_topology X Tx V) x0 =
-        {fundamental_group_id V (subspace_topology X Tx V) x0})
-    HscV). }
+{
+  exact (simply_connected_path_connected
+    V
+    (subspace_topology X Tx V)
+    HscV).
+}
 claim HUsub : U c= X.
 { exact (topology_elem_subset X Tx U Htop HU). }
 claim HVsub : V c= X.
