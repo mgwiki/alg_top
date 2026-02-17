@@ -73128,6 +73128,35 @@ claim Hx0U : x0 :e U.
   rewrite Hx00.
   exact Hm1lt0.
 }
+claim HtopSn : topology_on (Sn n) (Sn_topology n).
+{
+  exact (lemma59_3_Sn_topology_on n).
+}
+claim HUsub : U c= Sn n.
+{
+  let x.
+  assume HxU : x :e U.
+  claim HxRaw :
+    x :e {x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)}.
+  {
+    rewrite <- HU.
+    exact HxU.
+  }
+  exact (SepE1
+    (Sn n)
+    (fun x:set => Rlt (minus_SNo 1) (apply_fun x 0))
+    x
+    HxRaw).
+}
+claim HtopU : topology_on U (subspace_topology (Sn n) (Sn_topology n) U).
+{
+  exact (subspace_topology_is_topology
+    (Sn n)
+    (Sn_topology n)
+    U
+    HtopSn
+    HUsub).
+}
 admit. (** remaining: stereographic/homeomorphic-to-disk argument for U, based at x0 **)
 Admitted.
 
@@ -73171,6 +73200,35 @@ claim Hx0V : x0 :e V.
     Hx0Sn).
   rewrite Hx00.
   exact Rlt_0_1.
+}
+claim HtopSn : topology_on (Sn n) (Sn_topology n).
+{
+  exact (lemma59_3_Sn_topology_on n).
+}
+claim HVsub : V c= Sn n.
+{
+  let x.
+  assume HxV : x :e V.
+  claim HxRaw :
+    x :e {x :e Sn n | Rlt (apply_fun x 0) 1}.
+  {
+    rewrite <- HV.
+    exact HxV.
+  }
+  exact (SepE1
+    (Sn n)
+    (fun x:set => Rlt (apply_fun x 0) 1)
+    x
+    HxRaw).
+}
+claim HtopV : topology_on V (subspace_topology (Sn n) (Sn_topology n) V).
+{
+  exact (subspace_topology_is_topology
+    (Sn n)
+    (Sn_topology n)
+    V
+    HtopSn
+    HVsub).
 }
 admit. (** remaining: stereographic/homeomorphic-to-disk argument for V, based at x0 **)
 Admitted.
