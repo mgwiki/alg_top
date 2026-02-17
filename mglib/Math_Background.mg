@@ -18736,6 +18736,8 @@ claim Hmult :
     (apply_fun (basepoint_change_map X Tx x0 x1 alpha) u,
      apply_fun (basepoint_change_map X Tx x0 x1 alpha) v)
     HimgPair).
+  rewrite tuple_2_0_eq.
+  rewrite tuple_2_1_eq.
   rewrite (basepoint_change_map_apply
     X
     Tx
