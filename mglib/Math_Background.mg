@@ -14963,7 +14963,114 @@ Theorem Example_51_1_convex_paths_homotopic : forall A Ta x0 x1 f g:set,
   apply_fun f 0 = x0 -> apply_fun f 1 = x1 ->
   apply_fun g 0 = x0 -> apply_fun g 1 = x1 ->
   path_homotopic A Ta x0 x1 f g.
-admit.
+let A Ta x0 x1 f g.
+assume HAsubR Hconv HtopA Hfcont Hgcont Hf0 Hf1 Hg0 Hg1.
+claim HfOnA : forall s:set, s :e unit_interval -> apply_fun f s :e A.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    A
+    Ta
+    f
+    Hfcont).
+}
+claim HgOnA : forall s:set, s :e unit_interval -> apply_fun g s :e A.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    A
+    Ta
+    g
+    Hgcont).
+}
+claim Hx0A : x0 :e A.
+{
+  rewrite <- Hf0.
+  exact (HfOnA 0 zero_in_unit_interval).
+}
+claim Hx1A : x1 :e A.
+{
+  rewrite <- Hf1.
+  exact (HfOnA 1 one_in_unit_interval).
+}
+set s_coord := projection_map1 unit_interval unit_interval.
+set t_coord := projection_map2 unit_interval unit_interval.
+set one_minus_t := compose_fun unit_square t_coord flip_unit_interval.
+set f_sq := compose_fun unit_square s_coord f.
+set g_sq := compose_fun unit_square s_coord g.
+set left_term := compose_fun unit_square (pair_map unit_square f_sq one_minus_t) mul_fun_R.
+set right_term := compose_fun unit_square (pair_map unit_square g_sq t_coord) mul_fun_R.
+set Fraw := compose_fun unit_square (pair_map unit_square left_term right_term) add_fun_R.
+claim HFraw_spec :
+  continuous_map unit_square unit_square_topology A Ta Fraw /\
+  (forall s:set, s :e unit_interval ->
+    apply_fun Fraw (s, 0) = apply_fun f s) /\
+  (forall s:set, s :e unit_interval ->
+    apply_fun Fraw (s, 1) = apply_fun g s) /\
+  (forall t:set, t :e unit_interval ->
+    apply_fun Fraw (0, t) = x0) /\
+  (forall t:set, t :e unit_interval ->
+    apply_fun Fraw (1, t) = x1).
+{
+  (** TODO Charlie: prove the affine homotopy obligations for Fraw(s,t)=(1-t)f(s)+tg(s):
+      continuity into A (via R and convexity) and the four boundary equations. **)
+  admit.
+}
+claim HexistsF :
+  exists F:set,
+    continuous_map unit_square unit_square_topology A Ta F /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 0) = apply_fun f s) /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 1) = apply_fun g s) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (0, t) = x0) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (1, t) = x1).
+{
+  witness Fraw.
+  exact HFraw_spec.
+}
+prove continuous_map unit_interval unit_interval_topology A Ta f /\
+  continuous_map unit_interval unit_interval_topology A Ta g /\
+  apply_fun f 0 = x0 /\ apply_fun f 1 = x1 /\
+  apply_fun g 0 = x0 /\ apply_fun g 1 = x1 /\
+  exists F:set,
+    continuous_map unit_square unit_square_topology A Ta F /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 0) = apply_fun f s) /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 1) = apply_fun g s) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (0, t) = x0) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (1, t) = x1).
+exact (and7I
+  (continuous_map unit_interval unit_interval_topology A Ta f)
+  (continuous_map unit_interval unit_interval_topology A Ta g)
+  (apply_fun f 0 = x0)
+  (apply_fun f 1 = x1)
+  (apply_fun g 0 = x0)
+  (apply_fun g 1 = x1)
+  (exists F:set,
+    continuous_map unit_square unit_square_topology A Ta F /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 0) = apply_fun f s) /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 1) = apply_fun g s) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (0, t) = x0) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (1, t) = x1))
+  Hfcont
+  Hgcont
+  Hf0
+  Hf1
+  Hg0
+  Hg1
+  HexistsF).
 Admitted.
 
 (** S51 Exercises **)
