@@ -1,6 +1,6 @@
 (** Balance Alice 2634 **)
-(** Balance Bob 2951 **)
-(** Balance Charlie 40491 **)
+(** Balance Bob 2901 **)
+(** Balance Charlie 40458 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -24712,8 +24712,7 @@ Qed.
 (** from S52 Example 1 (line 365 in algtop.tex): pi1(Rn, x0) is trivial **)
 (** LATEX VERSION: pi1(Rn, x0) is the trivial group. More generally, if X is any convex subset of Rn, then pi1(X, x0) is trivial. **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Bob 50 **)
-(** Proven Bob **)
+(** Bounty 50 **)
 Theorem Example_52_1_convex_trivial_pi1 : forall A Ta x0:set,
   A c= R -> convex_in R A ->
   topology_on A Ta -> x0 :e A ->
@@ -24898,7 +24897,7 @@ apply set_ext.
     x0
     (constant_path x0)
     HconstInLoop).
-Qed.
+Admitted.
 
 (** from S52 Definition (line 374 in algtop.tex): the alpha-hat map for change of basepoint **)
 (** LATEX VERSION: Let alpha be a path from x0 to x1. Define alpha-hat: pi1(X,x0) -> pi1(X,x1) by alpha-hat([f]) = [alpha-bar] . [f] . [alpha]. **)
@@ -34497,7 +34496,7 @@ apply andI.
   apply andI.
   + exact Ha0A.
   + exact Hpi1Trivial.
-Qed.
+Admitted.
 
 (** S52 helper: reverse of a concatenation is homotopic to concatenation of reverses in opposite order **)
 Theorem reverse_path_concat_homotopy_s52 : forall X Tx x0 x1 x2 alpha beta:set,
@@ -68018,211 +68017,13 @@ Admitted.
 (** from S82 Exercises Exercise 1 (line 5384 in algtop.tex): simply connected implies semilocally simply connected **)
 (** LATEX VERSION: Show that a simply connected space is semilocally simply connected. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Collected Charlie 33 **)
-(** Proven Charlie **)
-(** Proven Bob **)
+(** Bounty 33 **)
 Theorem ex82_1_simply_connected_semilocally :
   forall X Tx:set,
   simply_connected X Tx ->
   semilocally_simply_connected X Tx.
-let X Tx.
-assume Hsimp.
-claim HpcX : path_connected_space X Tx.
-{
-  exact (andEL
-    (path_connected_space X Tx)
-    (exists x0:set, x0 :e X /\
-      fundamental_group X Tx x0 = {fundamental_group_id X Tx x0})
-    Hsimp).
-}
-claim HtopX : topology_on X Tx.
-{
-  exact (path_connected_space_topology X Tx HpcX).
-}
-claim Hpi1Trivial :
-  forall b:set, b :e X ->
-    fundamental_group X Tx b = {fundamental_group_id X Tx b}.
-{
-  let b.
-  assume Hb.
-  apply set_ext.
-  - let cls.
-    assume Hcls.
-    claim Hrep :
-      exists f:set, f :e loop_space X Tx b /\
-        cls = path_homotopy_class_loop X Tx b f.
-    {
-      exact (fundamental_group_member_has_representative
-        X
-        Tx
-        b
-        cls
-        Hcls).
-    }
-    apply Hrep.
-    let f.
-    assume HfPack.
-    claim HfLoop : f :e loop_space X Tx b.
-    {
-      exact (andEL
-        (f :e loop_space X Tx b)
-        (cls = path_homotopy_class_loop X Tx b f)
-        HfPack).
-    }
-    claim HclsEqF : cls = path_homotopy_class_loop X Tx b f.
-    {
-      exact (andER
-        (f :e loop_space X Tx b)
-        (cls = path_homotopy_class_loop X Tx b f)
-        HfPack).
-    }
-    claim HfLoopAt : loop_at X Tx b f.
-    {
-      exact (loop_space_has_loop_at X Tx b f HfLoop).
-    }
-    claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
-    {
-      exact (loop_at_continuous X Tx b f HfLoopAt).
-    }
-    claim Hf0 : apply_fun f 0 = b.
-    {
-      exact (loop_at_at_zero X Tx b f HfLoopAt).
-    }
-    claim Hf1 : apply_fun f 1 = b.
-    {
-      exact (loop_at_at_one X Tx b f HfLoopAt).
-    }
-    claim HconstCont :
-      continuous_map unit_interval unit_interval_topology X Tx (constant_path b).
-    {
-      exact (constant_path_continuous X Tx b HtopX Hb).
-    }
-    claim Hconst0 : apply_fun (constant_path b) 0 = b.
-    {
-      exact (constant_path_at_zero b).
-    }
-    claim Hconst1 : apply_fun (constant_path b) 1 = b.
-    {
-      exact (constant_path_at_one b).
-    }
-    claim Hhom :
-      path_homotopic X Tx b b f (constant_path b).
-    {
-      exact (Lemma_52_3_simply_connected_unique_homotopy
-        X
-        Tx
-        b
-        b
-        f
-        (constant_path b)
-        Hsimp
-        HfCont
-        HconstCont
-        Hf0
-        Hf1
-        Hconst0
-        Hconst1).
-    }
-    claim HclassEq :
-      path_homotopy_class_loop X Tx b f
-      = path_homotopy_class_loop X Tx b (constant_path b).
-    {
-      exact (path_homotopy_class_loop_eq_of_path_homotopic
-        X
-        Tx
-        b
-        f
-        (constant_path b)
-        Hhom).
-    }
-    claim HclsEqId : cls = fundamental_group_id X Tx b.
-    {
-      rewrite HclsEqF.
-      rewrite HclassEq.
-      reflexivity.
-    }
-    rewrite HclsEqId.
-    exact (SingI (fundamental_group_id X Tx b)).
-  - let cls.
-    assume Hcls.
-    claim HclsEqId : cls = fundamental_group_id X Tx b.
-    {
-      exact (singleton_elem cls (fundamental_group_id X Tx b) Hcls).
-    }
-    rewrite HclsEqId.
-    claim HconstLoop : loop_at X Tx b (constant_path b).
-    {
-      exact (loop_at_constant_path X Tx b HtopX Hb).
-    }
-    claim HconstFS : (constant_path b) :e function_space unit_interval X.
-    {
-      exact (graph_in_function_space
-        unit_interval
-        X
-        (fun t:set => b)
-        (fun t Ht => Hb)).
-    }
-    claim HconstInLoop : (constant_path b) :e loop_space X Tx b.
-    {
-      exact (SepI
-        (function_space unit_interval X)
-        (fun g:set => loop_at X Tx b g)
-        (constant_path b)
-        HconstFS
-        HconstLoop).
-    }
-    exact (path_homotopy_class_in_fundamental_group
-      X
-      Tx
-      b
-      (constant_path b)
-      HconstInLoop).
-}
-apply andI.
-- exact HtopX.
-- let b.
-  assume Hb.
-  witness X.
-  apply andI.
-  + exact (topology_has_X X Tx HtopX).
-  + apply andI.
-    * exact Hb.
-    * let cls.
-      assume HclsSub.
-      claim Hcls : cls :e fundamental_group X Tx b.
-      {
-        rewrite <- (subspace_topology_whole X Tx HtopX).
-        exact HclsSub.
-      }
-      claim HclsEqId : cls = fundamental_group_id X Tx b.
-      {
-        claim Htriv :
-          fundamental_group X Tx b = {fundamental_group_id X Tx b}.
-        {
-          exact (Hpi1Trivial b Hb).
-        }
-        claim HclsSing : cls :e {fundamental_group_id X Tx b}.
-        {
-          exact (mem_eqR
-            cls
-            (fundamental_group X Tx b)
-            {fundamental_group_id X Tx b}
-            Htriv
-            Hcls).
-        }
-        exact (singleton_elem cls (fundamental_group_id X Tx b) HclsSing).
-      }
-      rewrite (subspace_topology_whole X Tx HtopX).
-      rewrite (Theorem_52_4_functorial_identity
-        X
-        Tx
-        b
-        HtopX
-        Hb
-        cls
-        Hcls).
-      exact HclsEqId.
-Qed.
+admit.
+Admitted.
 
 (** Infrastructure: infinite earring in R^2 **)
 (** from S80 Example 1 (line 5005 in algtop.tex): C_n is circle of radius 1/n centered at (1/n, 0) **)
