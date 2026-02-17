@@ -1,0 +1,31 @@
+<div class="proof-comment" style="color:#666; font-style:italic; margin:0.25em 0 0.45em 2.2em;">(*** helper: endpoints of a path_between lie in the ambient space ***)</div>
+<div class="proof-comment" style="color:#666; font-style:italic; margin:0.25em 0 0.45em 2.2em;">(*** Proven Bob ***)</div>
+<div class="pftacwrap"><span class="srcline" data-line="16849">L16849</span><div class="lettac"><span class="pftackeyword">Let</span> <span class="ltree">X, x0, x1 and alpha</span> be given.</div>
+</div>
+<div class="pftacwrap"><span class="srcline" data-line="16850">L16850</span><div class="assumetac"><span class="pftackeyword">Assume</span> <span class="ltree">Hpath</span>.</div>
+</div>
+<div class="pftacwrap"><span class="srcline" data-line="16851">L16851</span><div class="claimtac">We prove the intermediate <span class="pftackeyword">claim</span> <span class="ltree">Hfun</span>: <span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><a href="#function_on" class="anamelink">function_on</a></span> <span class="ltree">alpha</span></span> <span class="ltree"><a href="#unit_interval" class="anamelink">unit_interval</a></span></span> <span class="ltree">X</span></span></span>.</div>
+</div>
+<div class="subproof"><div class="pftacwrap"><span class="srcline" data-line="16853">L16853</span><div class="exact">An <span class="pftackeyword">exact</span> proof term for the current goal is <span class="ltree"><span class="ltree">(<span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><a href="#path_between_function_on" class="anamelink">path_between_function_on</a></span> <span class="ltree">X</span></span> <span class="ltree">x0</span></span> <span class="ltree">x1</span></span> <span class="ltree">alpha</span></span> <span class="ltree">Hpath</span></span>)</span></span>.</div>
+</div>
+</div><div class="pftacwrap"><span class="srcline" data-line="16860">L16860</span><div class="claimtac">We prove the intermediate <span class="pftackeyword">claim</span> <span class="ltree">H0</span>: <span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><a href="#apply_fun" class="anamelink">apply_fun</a></span> <span class="ltree">alpha</span></span> <span class="ltree"><a href="#notation_21">0</a></span></span> <a href="#notation_5">=</a> <span class="ltree">x0</span></span></span>.</div>
+</div>
+<div class="subproof"><div class="pftacwrap"><span class="srcline" data-line="16862">L16862</span><div class="exact">An <span class="pftackeyword">exact</span> proof term for the current goal is <span class="ltree"><span class="ltree">(<span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><a href="#path_between_at_zero" class="anamelink">path_between_at_zero</a></span> <span class="ltree">X</span></span> <span class="ltree">x0</span></span> <span class="ltree">x1</span></span> <span class="ltree">alpha</span></span> <span class="ltree">Hpath</span></span>)</span></span>.</div>
+</div>
+</div><div class="pftacwrap"><span class="srcline" data-line="16869">L16869</span><div class="claimtac">We prove the intermediate <span class="pftackeyword">claim</span> <span class="ltree">H1</span>: <span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><a href="#apply_fun" class="anamelink">apply_fun</a></span> <span class="ltree">alpha</span></span> <span class="ltree"><a href="#notation_21">1</a></span></span> <a href="#notation_5">=</a> <span class="ltree">x1</span></span></span>.</div>
+</div>
+<div class="subproof"><div class="pftacwrap"><span class="srcline" data-line="16871">L16871</span><div class="exact">An <span class="pftackeyword">exact</span> proof term for the current goal is <span class="ltree"><span class="ltree">(<span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><span class="ltree"><a href="#path_between_at_one" class="anamelink">path_between_at_one</a></span> <span class="ltree">X</span></span> <span class="ltree">x0</span></span> <span class="ltree">x1</span></span> <span class="ltree">alpha</span></span> <span class="ltree">Hpath</span></span>)</span></span>.</div>
+</div>
+</div><div class="pftacwrap"><span class="srcline" data-line="16878">L16878</span><div class="applytac"><span class="pftackeyword">Apply</span> <span class="ltree"><span class="ltree"><a href="#andI" class="anamelink">andI</a></span></span> to the current goal.</div>
+</div>
+<div class="subproof"><div class="pftacwrap"><span class="srcline" data-line="16880">L16880</span><div class="rewritetac"><span class="pftackeyword">rewrite</span> the current goal using <span class="ltree"><span class="ltree">H0</span></span> (from right to left).</div>
+</div>
+<div class="pftacwrap"><span class="srcline" data-line="16880">L16880</span><div class="exact">An <span class="pftackeyword">exact</span> proof term for the current goal is <span class="ltree"><span class="ltree">(<span class="ltree"><span class="ltree"><span class="ltree">Hfun</span> <span class="ltree"><a href="#notation_21">0</a></span></span> <span class="ltree"><a href="#zero_in_unit_interval" class="anamelink">zero_in_unit_interval</a></span></span>)</span></span>.</div>
+</div>
+</div>
+<div class="subproof"><div class="pftacwrap"><span class="srcline" data-line="16882">L16882</span><div class="rewritetac"><span class="pftackeyword">rewrite</span> the current goal using <span class="ltree"><span class="ltree">H1</span></span> (from right to left).</div>
+</div>
+<div class="pftacwrap"><span class="srcline" data-line="16882">L16882</span><div class="exact">An <span class="pftackeyword">exact</span> proof term for the current goal is <span class="ltree"><span class="ltree">(<span class="ltree"><span class="ltree"><span class="ltree">Hfun</span> <span class="ltree"><a href="#notation_21">1</a></span></span> <span class="ltree"><a href="#one_in_unit_interval" class="anamelink">one_in_unit_interval</a></span></span>)</span></span>.</div>
+</div>
+</div>
+∎
