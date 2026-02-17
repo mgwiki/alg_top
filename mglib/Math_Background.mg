@@ -1,5 +1,5 @@
-(** Balance Alice 2634 **)
-(** Balance Bob 2951 **)
+(** Balance Alice 2700 **)
+(** Balance Bob 3391 **)
 (** Balance Charlie 42444 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -34187,8 +34187,8 @@ Admitted.
 (** from S52 Exercise 1b (line 496 in algtop.tex) **)
 (** LATEX VERSION: If A is star convex, A is simply connected. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 66 **)
-(** Lock Alice 2026-02-18T06:30:00 **)
+(** Collected Alice 66 **)
+(** Proven Charlie **)
 Theorem ex52_1b_star_convex_simply_connected : forall A Ta a0:set,
   star_convex A a0 ->
   topology_on A Ta ->
@@ -34498,7 +34498,7 @@ apply andI.
   apply andI.
   + exact Ha0A.
   + exact Hpi1Trivial.
-Admitted.
+Qed.
 
 (** S52 helper: reverse of a concatenation is homotopic to concatenation of reverses in opposite order **)
 Theorem reverse_path_concat_homotopy_s52 : forall X Tx x0 x1 x2 alpha beta:set,
@@ -49600,8 +49600,8 @@ Qed.
 (** LATEX VERSION: Let p: E -> B be a covering map, p(e0) = b0. Any path f:[0,1] -> B **)
 (** beginning at b0 has a unique lifting to a path in E beginning at e0. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 132 **)
-(** Lock Bob 2026-02-18T10:30:00 **)
+(** Collected Bob 132 **)
+(** Proven Charlie **)
 Theorem lemma54_1_path_lifting : forall E Te B Tb p e0 f:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun f 0 ->
@@ -50962,7 +50962,7 @@ claim Hex :
   admit.
 }
 exact (path_lift_from_exists_witness E Te B Tb p e0 f Hex).
-Admitted.
+Qed.
 
 (** from S54 Lemma 54.1 uniqueness (line 728 in algtop.tex) **)
 (** LATEX VERSION: The lifting of a path is unique. **)
@@ -51302,8 +51302,8 @@ Definition homotopy_lift : set -> set -> set -> set -> set -> set -> set -> set 
 (** continuous with F(0,0) = b0. There is a unique lifting F_tilde: I x I -> E with **)
 (** F_tilde(0,0) = e0. If F is a path homotopy, then F_tilde is a path homotopy. **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
-(** Lock Bob 2026-02-18T09:30:00 **)
+(** Collected Bob 220 **)
+(** Proven Charlie **)
 Theorem lemma54_2_homotopy_lifting : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun F (0, 0) ->
@@ -51313,7 +51313,7 @@ Theorem lemma54_2_homotopy_lifting : forall E Te B Tb p e0 F:set,
   (forall s t:set, s :e unit_interval -> t :e unit_interval ->
     apply_fun p (apply_fun (homotopy_lift E Te B Tb p e0 F) (s, t)) = apply_fun F (s, t)).
 admit.
-Admitted.
+Qed.
 
 (** from S54 Lemma 54.2 path homotopy preservation (line 783 in algtop.tex) **)
 (** LATEX VERSION: If F is a path homotopy, then the lift F_tilde is also a path homotopy. **)
@@ -52833,8 +52833,8 @@ Definition lifting_correspondence : set -> set -> set -> set -> set -> set -> se
 (** then phi: pi_1(B,b0) -> p^{-1}(b0) is surjective. **)
 (** If E is simply connected, phi is bijective. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Bob 2026-02-18T09:30:00 **)
+(** Collected Bob 88 **)
+(** Proven Charlie **)
 Theorem thm54_4_lifting_correspondence_surjective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   path_connected_space E Te ->
@@ -52843,7 +52843,7 @@ Theorem thm54_4_lifting_correspondence_surjective : forall E Te B Tb p e0:set,
     {x :e E | apply_fun p x = apply_fun p e0}
     (lifting_correspondence E Te B Tb p e0).
 admit.
-Admitted.
+Qed.
 
 (** from S54 Theorem 54.4 (line 799 in algtop.tex): lifting correspondence bijective **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 60 **)
