@@ -11572,11 +11572,11 @@ apply and7I.
   { exact (composition_continuous unit_square unit_square_topology unit_interval unit_interval_topology R R_standard_topology
       proj2_sq incl_I Hproj2 Hincl). }
   (** 4s as R-valued function **)
+  claim H4R : 4 :e R.
+  { exact (SNoS_omega_real 4 (omega_SNoS_omega 4 (nat_p_omega 4 (nat_ordsucc 3 (nat_ordsucc 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0))))))). }
   set four_s : set := compose_fun unit_square s_R (mul_const_fun 4).
   claim Hfour_s : continuous_map unit_square unit_square_topology R R_standard_topology four_s.
-  { claim H4R : 4 :e R.
-    { exact (SNoS_omega_real 4 (omega_SNoS_omega 4 (nat_p_omega 4 (nat_ordsucc 3 (nat_ordsucc 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0))))))). }
-    exact (composition_continuous unit_square unit_square_topology R R_standard_topology R R_standard_topology
+  { exact (composition_continuous unit_square unit_square_topology R R_standard_topology R R_standard_topology
       s_R (mul_const_fun 4) Hs_R (mul_const_fun_continuous 4 H4R)). }
   (** L = 4s + t as R-valued function **)
   set L_fun : set := compose_fun unit_square (pair_map unit_square four_s t_R) add_fun_R.
@@ -11585,7 +11585,37 @@ apply and7I.
   (** Evaluate L at specific points **)
   claim HL_apply : forall p:set, p :e unit_square ->
     apply_fun L_fun p = add_SNo (mul_SNo (p 0) 4) (p 1).
-  { admit. }
+  { let p. assume Hp : p :e unit_square.
+    claim Hp0I : p 0 :e unit_interval.
+    { exact (ap0_Sigma unit_interval (fun _:set => unit_interval) p Hp). }
+    claim Hp1I : p 1 :e unit_interval.
+    { exact (ap1_Sigma unit_interval (fun _:set => unit_interval) p Hp). }
+    claim Hp0R : p 0 :e R. { exact (unit_interval_sub_R (p 0) Hp0I). }
+    claim Hp1R : p 1 :e R. { exact (unit_interval_sub_R (p 1) Hp1I). }
+    (** s_R(p) = p 0 **)
+    claim Hs_R_apply : apply_fun s_R p = p 0.
+    { rewrite (compose_fun_apply unit_square proj1_sq incl_I p Hp).
+      rewrite (projection1_apply unit_interval unit_interval p Hp).
+      exact (identity_function_apply unit_interval (p 0) Hp0I). }
+    (** t_R(p) = p 1 **)
+    claim Ht_R_apply : apply_fun t_R p = p 1.
+    { rewrite (compose_fun_apply unit_square proj2_sq incl_I p Hp).
+      rewrite (projection2_apply unit_interval unit_interval p Hp).
+      exact (identity_function_apply unit_interval (p 1) Hp1I). }
+    (** four_s(p) = mul_SNo (p 0) 4 **)
+    claim Hs_R_in_R : apply_fun s_R p :e R.
+    { rewrite Hs_R_apply. exact Hp0R. }
+    claim Hfour_s_apply : apply_fun four_s p = mul_SNo (p 0) 4.
+    { rewrite (compose_fun_apply unit_square s_R (mul_const_fun 4) p Hp).
+      rewrite (mul_const_fun_apply 4 (apply_fun s_R p) H4R Hs_R_in_R).
+      rewrite Hs_R_apply. exact (fun Q H => H). }
+    (** L(p) = four_s(p) + t_R(p) **)
+    claim Hfour_s_in_R : apply_fun four_s p :e R.
+    { rewrite Hfour_s_apply. exact (real_mul_SNo (p 0) Hp0R 4 H4R). }
+    claim Ht_R_in_R : apply_fun t_R p :e R.
+    { rewrite Ht_R_apply. exact Hp1R. }
+    rewrite (add_of_pair_map_apply unit_square four_s t_R p Hp Hfour_s_in_R Ht_R_in_R).
+    rewrite Hfour_s_apply. rewrite Ht_R_apply. exact (fun Q H => H). }
   (** Define closed regions using L **)
   (** A_12 = {p : L(p) <= 2} (Region I, f-region) **)
   set const2 : set := const_fun unit_square 2.
@@ -11619,10 +11649,74 @@ apply and7I.
   claim HclosedA_III : closed_in unit_square unit_square_topology A_III.
   { exact (continuous_Rle_preimage_closed unit_square unit_square_topology const3 L_fun Hconst3 HL_fun). }
   (** Cover: A_I ∪ A_23 = unit_square, A_23 = A_II ∪ A_III **)
+  claim HL_in_R : forall p:set, p :e unit_square -> apply_fun L_fun p :e R.
+  { let p. assume Hp. exact (continuous_map_function_on unit_square unit_square_topology R R_standard_topology L_fun HL_fun p Hp). }
+  claim Hconst2_val : forall p:set, p :e unit_square -> apply_fun const2 p = 2.
+  { let p. assume Hp. exact (const_fun_apply unit_square 2 p Hp). }
+  claim Hconst3_val : forall p:set, p :e unit_square -> apply_fun const3 p = 3.
+  { let p. assume Hp. exact (const_fun_apply unit_square 3 p Hp). }
   claim Hcover_I_23 : A_I :\/: A_23 = unit_square.
-  { admit. }
+  { apply set_ext.
+    - exact (binunion_Subq_min A_I A_23 unit_square
+        (Sep_Subq unit_square (fun p:set => Rle (apply_fun L_fun p) (apply_fun const2 p)))
+        (Sep_Subq unit_square (fun p:set => Rle (apply_fun const2 p) (apply_fun L_fun p)))).
+    - let p. assume Hp : p :e unit_square.
+      claim HLpR : apply_fun L_fun p :e R. { exact (HL_in_R p Hp). }
+      claim HcpR : apply_fun const2 p :e R. { rewrite (Hconst2_val p Hp). exact H2R. }
+      apply (xm (Rlt (apply_fun const2 p) (apply_fun L_fun p))).
+      + assume Hlt : Rlt (apply_fun const2 p) (apply_fun L_fun p).
+        exact (binunionI2 A_I A_23 p (SepI unit_square (fun p:set => Rle (apply_fun const2 p) (apply_fun L_fun p)) p Hp (Rlt_implies_Rle (apply_fun const2 p) (apply_fun L_fun p) Hlt))).
+      + assume Hnlt : ~Rlt (apply_fun const2 p) (apply_fun L_fun p).
+        exact (binunionI1 A_I A_23 p (SepI unit_square (fun p:set => Rle (apply_fun L_fun p) (apply_fun const2 p)) p Hp (RleI (apply_fun L_fun p) (apply_fun const2 p) HLpR HcpR Hnlt))). }
+  claim H2Lt3 : 2 < 3.
+  { claim Hstep1 : add_SNo 2 0 < add_SNo 2 1.
+    { exact (add_SNo_Lt2 2 0 1 SNo_2 SNo_0 SNo_1 SNoLt_0_1). }
+    claim Hstep2 : 2 < add_SNo 2 1.
+    { exact (add_SNo_0R 2 SNo_2 (fun a b:set => a < add_SNo 2 1) Hstep1). }
+    exact (add_SNo_2_1_eq_3 (fun a b:set => 2 < a) Hstep2). }
+  claim HRle23 : Rle 2 3.
+  { exact (Rlt_implies_Rle 2 3 (RltI 2 3 H2R H3R H2Lt3)). }
   claim Hcover_II_III : A_II :\/: A_III = A_23.
-  { admit. }
+  { apply set_ext.
+    - let p. assume Hp : p :e A_II :\/: A_III.
+      apply (binunionE A_II A_III p Hp).
+      + assume HpII : p :e A_II.
+        exact (binintersectE
+          {p :e unit_square | Rle (apply_fun const2 p) (apply_fun L_fun p)}
+          {p :e unit_square | Rle (apply_fun L_fun p) (apply_fun const3 p)}
+          p HpII (p :e A_23) (fun H _ => H)).
+      + assume HpIII : p :e A_III.
+        claim HpSq : p :e unit_square.
+        { exact (Sep_Subq unit_square (fun p:set => Rle (apply_fun const3 p) (apply_fun L_fun p)) p HpIII). }
+        claim HpRle : Rle (apply_fun const3 p) (apply_fun L_fun p).
+        { exact (SepE unit_square (fun p:set => Rle (apply_fun const3 p) (apply_fun L_fun p)) p HpIII
+            (Rle (apply_fun const3 p) (apply_fun L_fun p)) (fun _ H => H)). }
+        claim HpRle2 : Rle 3 (apply_fun L_fun p).
+        { exact (Hconst3_val p HpSq (fun a b:set => Rle a (apply_fun L_fun p)) HpRle). }
+        claim Hc2Lep : Rle (apply_fun const2 p) (apply_fun L_fun p).
+        { rewrite (Hconst2_val p HpSq).
+          exact (Rle_tra 2 3 (apply_fun L_fun p) HRle23 HpRle2). }
+        exact (SepI unit_square (fun p:set => Rle (apply_fun const2 p) (apply_fun L_fun p)) p HpSq Hc2Lep).
+    - let p. assume Hp : p :e A_23.
+      claim HpSq : p :e unit_square.
+      { exact (Sep_Subq unit_square (fun p:set => Rle (apply_fun const2 p) (apply_fun L_fun p)) p Hp). }
+      claim HLpR : apply_fun L_fun p :e R. { exact (HL_in_R p HpSq). }
+      claim HcpR3 : apply_fun const3 p :e R. { rewrite (Hconst3_val p HpSq). exact H3R. }
+      apply (xm (Rlt (apply_fun const3 p) (apply_fun L_fun p))).
+      + assume Hlt : Rlt (apply_fun const3 p) (apply_fun L_fun p).
+        exact (binunionI2 A_II A_III p (SepI unit_square (fun p:set => Rle (apply_fun const3 p) (apply_fun L_fun p)) p HpSq (Rlt_implies_Rle (apply_fun const3 p) (apply_fun L_fun p) Hlt))).
+      + assume Hnlt : ~Rlt (apply_fun const3 p) (apply_fun L_fun p).
+        claim HLle3 : Rle (apply_fun L_fun p) (apply_fun const3 p).
+        { exact (RleI (apply_fun L_fun p) (apply_fun const3 p) HLpR HcpR3 Hnlt). }
+        claim Hge2 : Rle (apply_fun const2 p) (apply_fun L_fun p).
+        { exact (SepE unit_square (fun p:set => Rle (apply_fun const2 p) (apply_fun L_fun p)) p Hp
+            (Rle (apply_fun const2 p) (apply_fun L_fun p)) (fun _ H => H)). }
+        exact (binunionI1 A_II A_III p
+          (binintersectI
+            {p :e unit_square | Rle (apply_fun const2 p) (apply_fun L_fun p)}
+            {p :e unit_square | Rle (apply_fun L_fun p) (apply_fun const3 p)}
+            p (SepI unit_square (fun p:set => Rle (apply_fun const2 p) (apply_fun L_fun p)) p HpSq Hge2)
+            (SepI unit_square (fun p:set => Rle (apply_fun L_fun p) (apply_fun const3 p)) p HpSq HLle3))). }
   (** Define F_II on A_II: g(L-2) = g(4s+t-2) **)
   (** This is the simplest region - just g composed with (L-2) restricted to [0,1] **)
   claim HF_II_exists : exists F_II:set,
