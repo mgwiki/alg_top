@@ -1,5 +1,5 @@
 (** Balance Alice 2010 **)
-(** Balance Bob 1552 **)
+(** Balance Bob 1563 **)
 (** Balance Charlie 1223 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -15974,8 +15974,8 @@ Definition star_convex : set -> set -> prop := fun A a0 =>
 (** LATEX VERSION: Find a star convex set that is not convex. **)
 (** Note: formulated in R2 since star convex but not convex requires dimension >= 2 **)
 (** EFFORT: 2 lines textbook, difficulty 1/10, USD 10 **)
-(** Bounty 11 **)
-(** Lock Bob 2026-02-18T11:30:00 **)
+(** Collected Bob 11 **)
+(** Proven Bob **)
 Theorem ex52_1a_star_convex_not_convex :
   exists A:set, exists a0:set,
     A c= EuclidPlane /\
@@ -15988,8 +15988,230 @@ Theorem ex52_1a_star_convex_not_convex :
       exists t:set, t :e unit_interval /\
         ~(add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) (R2_xcoord x)) (mul_SNo t (R2_xcoord y)),
           add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) (R2_ycoord x)) (mul_SNo t (R2_ycoord y))) :e A).
-admit.
-Admitted.
+set A := {p :e EuclidPlane | R2_xcoord p = 0 \/ R2_ycoord p = 0}.
+witness A.
+witness (0, 0).
+apply andI.
+- apply andI.
+  + apply andI.
+    * let p.
+      assume HpA.
+      exact (SepE1
+        EuclidPlane
+        (fun q:set => R2_xcoord q = 0 \/ R2_ycoord q = 0)
+        p
+        HpA).
+    * apply (SepI
+        EuclidPlane
+        (fun q:set => R2_xcoord q = 0 \/ R2_ycoord q = 0)
+        (0, 0)).
+      - exact (tuple_2_setprod_by_pair_Sigma
+          R R 0 0
+          real_0
+          real_0).
+      - apply orIL.
+        rewrite (R2_xcoord_tuple 0 0).
+        reflexivity.
+  + let a.
+    assume HaA.
+    let t.
+    assume Ht.
+    claim HaPlane : a :e EuclidPlane.
+    {
+      exact (SepE1
+        EuclidPlane
+        (fun q:set => R2_xcoord q = 0 \/ R2_ycoord q = 0)
+        a
+        HaA).
+    }
+    claim Haxis : R2_xcoord a = 0 \/ R2_ycoord a = 0.
+    {
+      exact (SepE2
+        EuclidPlane
+        (fun q:set => R2_xcoord q = 0 \/ R2_ycoord q = 0)
+        a
+        HaA).
+    }
+    claim HtR : t :e R.
+    {
+      exact (unit_interval_sub_R t Ht).
+    }
+    claim HtS : SNo t.
+    {
+      exact (real_SNo t HtR).
+    }
+    claim HaxR : R2_xcoord a :e R.
+    {
+      exact (EuclidPlane_xcoord_in_R a HaPlane).
+    }
+    claim HayR : R2_ycoord a :e R.
+    {
+      exact (EuclidPlane_ycoord_in_R a HaPlane).
+    }
+    claim HaxS : SNo (R2_xcoord a).
+    {
+      exact (real_SNo (R2_xcoord a) HaxR).
+    }
+    claim HayS : SNo (R2_ycoord a).
+    {
+      exact (real_SNo (R2_ycoord a) HayR).
+    }
+    set q := (mul_SNo t (R2_xcoord a), mul_SNo t (R2_ycoord a)).
+    claim HqA : q :e A.
+    {
+      apply (SepI
+        EuclidPlane
+        (fun p:set => R2_xcoord p = 0 \/ R2_ycoord p = 0)
+        q).
+      - exact (tuple_2_setprod_by_pair_Sigma
+          R R
+          (mul_SNo t (R2_xcoord a))
+          (mul_SNo t (R2_ycoord a))
+          (real_mul_SNo t HtR (R2_xcoord a) HaxR)
+          (real_mul_SNo t HtR (R2_ycoord a) HayR)).
+      - apply Haxis.
+        + assume Hx0.
+          apply orIL.
+          rewrite (R2_xcoord_tuple
+            (mul_SNo t (R2_xcoord a))
+            (mul_SNo t (R2_ycoord a))).
+          rewrite Hx0.
+          rewrite (mul_SNo_zeroR t HtS).
+          reflexivity.
+        + assume Hy0.
+          apply orIR.
+          rewrite (R2_ycoord_tuple
+            (mul_SNo t (R2_xcoord a))
+            (mul_SNo t (R2_ycoord a))).
+          rewrite Hy0.
+          rewrite (mul_SNo_zeroR t HtS).
+          reflexivity.
+    }
+    claim HtargetEq :
+      (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) (R2_xcoord (0, 0))) (mul_SNo t (R2_xcoord a)),
+       add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) (R2_ycoord (0, 0))) (mul_SNo t (R2_ycoord a))) = q.
+    {
+      rewrite (R2_xcoord_tuple 0 0).
+      rewrite (R2_ycoord_tuple 0 0).
+      rewrite (mul_SNo_zeroR
+        (add_SNo 1 (minus_SNo t))
+        (SNo_add_SNo 1 (minus_SNo t) SNo_1 (SNo_minus_SNo t HtS))).
+      rewrite (add_SNo_0L
+        (mul_SNo t (R2_xcoord a))
+        (SNo_mul_SNo t (R2_xcoord a) HtS HaxS)).
+      rewrite (add_SNo_0L
+        (mul_SNo t (R2_ycoord a))
+        (SNo_mul_SNo t (R2_ycoord a) HtS HayS)).
+      reflexivity.
+    }
+    rewrite HtargetEq.
+    exact HqA.
+- claim HepsNe0 : eps_ 1 <> 0.
+  {
+    assume Heps0.
+    claim H00 : Rlt 0 0.
+    {
+      rewrite <- Heps0 at 2.
+      exact eps_1_pos_R.
+    }
+    exact (not_Rlt_refl 0 real_0 H00 False).
+  }
+  witness (1, 0).
+  witness (0, 1).
+  apply andI.
+  + apply andI.
+    * apply (SepI
+        EuclidPlane
+        (fun p:set => R2_xcoord p = 0 \/ R2_ycoord p = 0)
+        (1, 0)).
+      - exact (tuple_2_setprod_by_pair_Sigma
+          R R 1 0
+          real_1
+          real_0).
+      - apply orIR.
+        rewrite (R2_ycoord_tuple 1 0).
+        reflexivity.
+    * apply (SepI
+        EuclidPlane
+        (fun p:set => R2_xcoord p = 0 \/ R2_ycoord p = 0)
+        (0, 1)).
+      - exact (tuple_2_setprod_by_pair_Sigma
+          R R 0 1
+          real_0
+          real_1).
+      - apply orIL.
+        rewrite (R2_xcoord_tuple 0 1).
+        reflexivity.
+  + witness (eps_ 1).
+    apply andI.
+    - exact eps_1_in_unit_interval.
+    - set mid :=
+          (add_SNo
+             (mul_SNo (add_SNo 1 (minus_SNo (eps_ 1))) (R2_xcoord (1, 0)))
+             (mul_SNo (eps_ 1) (R2_xcoord (0, 1))),
+           add_SNo
+             (mul_SNo (add_SNo 1 (minus_SNo (eps_ 1))) (R2_ycoord (1, 0)))
+             (mul_SNo (eps_ 1) (R2_ycoord (0, 1)))).
+      assume HmidA.
+      claim HmidAxis : R2_xcoord mid = 0 \/ R2_ycoord mid = 0.
+      {
+        exact (SepE2
+          EuclidPlane
+          (fun p:set => R2_xcoord p = 0 \/ R2_ycoord p = 0)
+          mid
+          HmidA).
+      }
+      apply HmidAxis.
+      + assume HmidX0.
+           claim HmidXeps : R2_xcoord mid = eps_ 1.
+           {
+             rewrite (R2_xcoord_tuple
+               (add_SNo
+                 (mul_SNo (add_SNo 1 (minus_SNo (eps_ 1))) (R2_xcoord (1, 0)))
+                 (mul_SNo (eps_ 1) (R2_xcoord (0, 1))))
+               (add_SNo
+                 (mul_SNo (add_SNo 1 (minus_SNo (eps_ 1))) (R2_ycoord (1, 0)))
+                 (mul_SNo (eps_ 1) (R2_ycoord (0, 1))))).
+             rewrite (R2_xcoord_tuple 1 0).
+             rewrite (R2_xcoord_tuple 0 1).
+             rewrite one_minus_eps1_eq_eps1.
+             rewrite (mul_SNo_oneR (eps_ 1) SNo_eps_1).
+             rewrite (mul_SNo_zeroR (eps_ 1) SNo_eps_1).
+             rewrite (add_SNo_0R (eps_ 1) SNo_eps_1).
+             reflexivity.
+           }
+           claim Heps0 : eps_ 1 = 0.
+           {
+             rewrite <- HmidXeps.
+             exact HmidX0.
+           }
+           exact (HepsNe0 Heps0 False).
+      + assume HmidY0.
+           claim HmidYeps : R2_ycoord mid = eps_ 1.
+           {
+             rewrite (R2_ycoord_tuple
+               (add_SNo
+                 (mul_SNo (add_SNo 1 (minus_SNo (eps_ 1))) (R2_xcoord (1, 0)))
+                 (mul_SNo (eps_ 1) (R2_xcoord (0, 1))))
+               (add_SNo
+                 (mul_SNo (add_SNo 1 (minus_SNo (eps_ 1))) (R2_ycoord (1, 0)))
+                 (mul_SNo (eps_ 1) (R2_ycoord (0, 1))))).
+             rewrite (R2_ycoord_tuple 1 0).
+             rewrite (R2_ycoord_tuple 0 1).
+             rewrite (mul_SNo_zeroR
+               (add_SNo 1 (minus_SNo (eps_ 1)))
+               (SNo_add_SNo 1 (minus_SNo (eps_ 1)) SNo_1 (SNo_minus_SNo (eps_ 1) SNo_eps_1))).
+             rewrite (mul_SNo_oneR (eps_ 1) SNo_eps_1).
+             rewrite (add_SNo_0L (eps_ 1) SNo_eps_1).
+             reflexivity.
+           }
+           claim Heps0 : eps_ 1 = 0.
+           {
+             rewrite <- HmidYeps.
+             exact HmidY0.
+           }
+           exact (HepsNe0 Heps0 False).
+Qed.
 
 (** from S52 Exercise 1b (line 496 in algtop.tex) **)
 (** LATEX VERSION: If A is star convex, A is simply connected. **)
