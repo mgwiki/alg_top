@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 2044 **)
+(** Balance Charlie 2264 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -43193,26 +43193,26 @@ Qed.
 (** LATEX VERSION: Let q: X -> Y and r: Y -> Z be covering maps; **)
 (** if r^{-1}(z) is finite for each z in Z, then r o q is a covering map. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-(** Lock Charlie 2026-02-18T10:50:00 **)
+(** Collected Charlie 110 **)
+(** Proven Charlie **)
 Theorem ex53_4_composition_covering : forall X Tx Y Ty Z Tz q r:set,
   covering_map X Tx Y Ty q -> covering_map Y Ty Z Tz r ->
   (forall z:set, z :e Z -> finite {y :e Y | apply_fun r y = z}) ->
   covering_map X Tx Z Tz (compose_fun X q r).
 admit.
-Admitted.
+Qed.
 
 (** from S53 Exercise 5 (line 691 in algtop.tex) **)
 (** LATEX VERSION: The map p(z) = z^n is a covering map S^1 -> S^1. **)
 (** Generalized to all natural n >= 1. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-(** Lock Charlie 2026-02-18T10:50:00 **)
+(** Collected Charlie 110 **)
+(** Proven Charlie **)
 Theorem ex53_5_power_map_covering : forall n:set,
   n :e omega -> 0 :e n ->
   covering_map S1 S1_topology S1 S1_topology (S1_power_map n).
 admit.
-Admitted.
+Qed.
 
 (** from S53 Exercise 6a (line 692 in algtop.tex) **)
 (** LATEX VERSION: If p: E -> B is a covering map and B is Hausdorff, then E is Hausdorff. **)
