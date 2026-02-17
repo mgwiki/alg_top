@@ -20744,8 +20744,26 @@ claim HsurjUnique :
       rewrite Hx'eq.
       reflexivity.
     }
-    (** TODO Bob: use reverse composition identity to derive x' = x from HbetaLiftEq. **)
-    admit.
+    claim HbetaAlphaIdX' :
+      apply_fun
+        (basepoint_change_map X Tx x1 x0 beta)
+        (apply_fun (basepoint_change_map X Tx x0 x1 alpha) x')
+      = x'.
+    {
+      (** TODO Bob: show beta-hat o alpha-hat is identity on pi1(X,x0). **)
+      admit.
+    }
+    claim HbetaYEqX :
+      apply_fun
+        (basepoint_change_map X Tx x1 x0 beta)
+        y
+      = x.
+    {
+      reflexivity.
+    }
+    rewrite <- HbetaAlphaIdX'.
+    rewrite <- HbetaYEqX.
+    exact HbetaLiftEq.
 }
 exact (andI
   (function_on
