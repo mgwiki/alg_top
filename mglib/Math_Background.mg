@@ -1,4 +1,4 @@
-(** Balance Alice 2634 **)
+(** Balance Alice 2689 **)
 (** Balance Bob 2857 **)
 (** Balance Charlie 18 **)
 
@@ -63791,7 +63791,8 @@ Admitted.
 
 (** from S58 Exercise 7(a) (line 1496 in algtop.tex): retraction implies isomorphism **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
+(** Collected Alice 55 **)
+(** Proven Alice **)
 Theorem ex58_7a_retraction_homotopy_isomorphism : forall X Tx A a0 f:set,
   A c= X ->
   a0 :e A ->
@@ -63807,8 +63808,105 @@ Theorem ex58_7a_retraction_homotopy_isomorphism : forall X Tx A a0 f:set,
     (fundamental_group_mult X Tx a0)
     (induced_homomorphism A (subspace_topology X Tx A) a0 X Tx a0
       (graph A (fun x:set => x))).
-admit.
-Admitted.
+let X Tx A a0 f.
+assume HAsub Ha0A HfCont HfRet Hhomotopy.
+set TxA := subspace_topology X Tx A.
+set i := graph A (fun a:set => a).
+claim HtopX : topology_on X Tx.
+{
+  exact (continuous_map_topology_dom X Tx A TxA f HfCont).
+}
+claim HtopA : topology_on A TxA.
+{
+  exact (subspace_topology_is_topology X Tx A HtopX HAsub).
+}
+claim Ha0X : a0 :e X.
+{
+  exact (HAsub a0 Ha0A).
+}
+claim HiCont : continuous_map A TxA X Tx i.
+{
+  exact (subspace_inclusion_continuous X Tx A HtopX HAsub).
+}
+claim HiFun : function_on i A X.
+{
+  exact (continuous_map_function_on A TxA X Tx i HiCont).
+}
+claim Hia0 : apply_fun i a0 = a0.
+{
+  exact (apply_fun_graph A (fun a:set => a) a0 Ha0A).
+}
+claim HcompAFI : continuous_map A TxA A TxA (compose_fun A i f).
+{
+  exact (composition_continuous A TxA X Tx A TxA i f HiCont HfCont).
+}
+claim HidACont : continuous_map A TxA A TxA (graph A (fun a:set => a)).
+{
+  exact (identity_continuous A TxA HtopA).
+}
+claim HhomA : homotopic_maps A TxA A TxA (compose_fun A i f) (graph A (fun a:set => a)).
+{
+  prove continuous_map A TxA A TxA (compose_fun A i f) /\
+    continuous_map A TxA A TxA (graph A (fun a:set => a)) /\
+    exists F:set,
+      continuous_map (setprod A unit_interval)
+        (product_topology A TxA unit_interval unit_interval_topology)
+        A TxA F /\
+      (forall x:set, x :e A ->
+        apply_fun F (x, 0) = apply_fun (compose_fun A i f) x) /\
+      (forall x:set, x :e A ->
+        apply_fun F (x, 1) = apply_fun (graph A (fun a:set => a)) x).
+  apply and3I.
+  - exact HcompAFI.
+  - exact HidACont.
+  - witness (projection_map1 A unit_interval).
+    apply and3I.
+    + exact (andEL
+        (continuous_map (setprod A unit_interval) (product_topology A TxA unit_interval unit_interval_topology) A TxA (projection_map1 A unit_interval))
+        (continuous_map (setprod A unit_interval) (product_topology A TxA unit_interval unit_interval_topology) unit_interval unit_interval_topology (projection_map2 A unit_interval))
+        (projection_maps_continuous A TxA unit_interval unit_interval_topology HtopA unit_interval_topology_on)).
+    + let a.
+      assume HaA.
+      claim HaI : (a, 0) :e setprod A unit_interval.
+      {
+        exact (tuple_2_setprod_by_pair_Sigma A unit_interval a 0 HaA zero_in_unit_interval).
+      }
+      rewrite (projection1_apply A unit_interval (a, 0) HaI).
+      rewrite tuple_2_0_eq.
+      rewrite (compose_fun_apply A i f a HaA).
+      rewrite (apply_fun_graph A (fun a:set => a) a HaA).
+      symmetry.
+      exact (HfRet a HaA).
+    + let a.
+      assume HaA.
+      claim HaI1 : (a, 1) :e setprod A unit_interval.
+      {
+        exact (tuple_2_setprod_by_pair_Sigma A unit_interval a 1 HaA one_in_unit_interval).
+      }
+      rewrite (projection1_apply A unit_interval (a, 1) HaI1).
+      rewrite tuple_2_0_eq.
+      rewrite (apply_fun_graph A (fun a:set => a) a HaA).
+      reflexivity.
+}
+claim Hequiv : homotopy_equivalence A TxA X Tx i.
+{
+  prove continuous_map A TxA X Tx i /\
+    exists g:set, continuous_map X Tx A TxA g /\
+      homotopic_maps A TxA A TxA
+        (compose_fun A i g) (graph A (fun a:set => a)) /\
+      homotopic_maps X Tx X Tx
+        (compose_fun X g i) (graph X (fun x:set => x)).
+  apply andI.
+  - exact HiCont.
+  - witness f.
+    apply and3I.
+    + exact HfCont.
+    + exact HhomA.
+    + exact Hhomotopy.
+}
+rewrite <- Hia0 at 3 4 6.
+exact (thm58_7_homotopy_equiv_isomorphism A TxA X Tx i a0 Hequiv Ha0A).
+Qed.
 
 (** from S58 Exercise 7(b) (line 1496 in algtop.tex): A-preserving homotopy implies isomorphism **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
