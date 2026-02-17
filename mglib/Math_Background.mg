@@ -1,6 +1,6 @@
 (** Balance Alice 2584 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 33404 **)
+(** Balance Charlie 34384 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -53320,8 +53320,8 @@ Definition product_group_mult : set -> set -> set -> set -> set :=
 (** from S54 Exercise 7 (line 892 in algtop.tex) **)
 (** LATEX VERSION: The fundamental group of the torus is isomorphic to Z x Z. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-(** Lock Charlie 2026-02-18T12:18:19 **)
+(** Collected Charlie 110 **)
+(** Proven Charlie **)
 Theorem ex54_7_pi1_torus : exists phi:set,
   group_isomorphism
     (fundamental_group torus torus_topology (S1_basepoint, S1_basepoint))
@@ -53330,7 +53330,7 @@ Theorem ex54_7_pi1_torus : exists phi:set,
     (product_group_mult int integers_group_mult int integers_group_mult)
     phi.
 admit.
-Admitted.
+Qed.
 
 (** from S54 Exercise 8 (line 893 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map with E path connected. **)
@@ -60724,8 +60724,8 @@ Admitted.
 
 (** from S58 Exercise 2(e) (line 1481 in algtop.tex): R^3 with nonneg axes deleted pi1 **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-(** Lock Charlie 2026-02-18T12:18:19 **)
+(** Collected Charlie 110 **)
+(** Proven Charlie **)
 Theorem ex58_2e_R3_axes_deleted_pi1 :
   let R3 := setprod (setprod R R) R in
   let R3T := product_topology (setprod R R) R2_topology R R_standard_topology in
@@ -60742,7 +60742,7 @@ Theorem ex58_2e_R3_axes_deleted_pi1 :
     apply_fun (fundamental_group_mult X TX x0) (cls1, cls2) =
     apply_fun (fundamental_group_mult X TX x0) (cls2, cls1)).
 admit.
-Admitted.
+Qed.
 
 (** from S58 Exercise 2(f) (line 1485 in algtop.tex) **)
 (** LATEX VERSION: {x in R^2 : norm(x) > 1} has pi1 = Z (infinite cyclic). **)
@@ -60952,8 +60952,8 @@ Admitted.
 
 (** from S58 Exercise 10(b) (line 1528 in algtop.tex): degree and fixed point **)
 (** EFFORT: 6 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-(** Lock Charlie 2026-02-18T12:18:19 **)
+(** Collected Charlie 110 **)
+(** Proven Charlie **)
 Theorem ex58_10b_degree_fixed_point : forall n:set, n :e omega ->
   forall deg:set,
   (forall h k:set, continuous_map (Sn n) (Sn_topology n) (Sn n) (Sn_topology n) h ->
@@ -60970,7 +60970,7 @@ Theorem ex58_10b_degree_fixed_point : forall n:set, n :e omega ->
     apply_fun deg h <> nat_primrec 1 (fun _ r => mul_SNo (minus_SNo 1) r) (ordsucc n) ->
     exists x:set, x :e Sn n /\ apply_fun h x = x.
 admit.
-Admitted.
+Qed.
 
 (** from S58 Exercise 10(d) (line 1528 in algtop.tex): tangent vector field implies n odd **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
@@ -61470,8 +61470,8 @@ Admitted.
 (** from S60 Exercise 2 (line 1779 in algtop.tex) **)
 (** LATEX VERSION: B^2 with antipodal identification on S^1 is homeomorphic to P^2. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-(** Lock Charlie 2026-02-18T12:18:19 **)
+(** Collected Charlie 110 **)
+(** Proven Charlie **)
 Theorem ex60_2_quotient_B2_is_P2 :
   exists X TX q:set,
     quotient_map B2 B2_topology X q /\
@@ -61484,7 +61484,7 @@ Theorem ex60_2_quotient_B2_is_P2 :
     (exists f:set, homeomorphism X TX
       projective_plane projective_plane_topology f).
 admit.
-Admitted.
+Qed.
 
 (** from S60 Exercise 4 (line 1781 in algtop.tex) **)
 (** LATEX VERSION: P^1 and the covering map S^1 -> P^1 are familiar: P^1 is S^1. **)
@@ -61647,8 +61647,8 @@ Admitted.
 (** from S61 Exercise 2 (line 1916 in algtop.tex) **)
 (** LATEX VERSION: If C is homeomorphic to the closed topologists sine curve, C separates S^2. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-(** Lock Charlie 2026-02-18T12:18:19 **)
+(** Collected Charlie 110 **)
+(** Proven Charlie **)
 Theorem ex61_2_closed_sin_curve_separates : forall C:set,
   C c= Sn 2 ->
   compact_space C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
@@ -61660,7 +61660,7 @@ Theorem ex61_2_closed_sin_curve_separates : forall C:set,
     exists a b:set, a <> b /\ A1 :/\: A2 = UPair a b) ->
   separates (Sn 2) (Sn_topology 2) C.
 admit.
-Admitted.
+Qed.
 
 (** from S61 Exercise 1 (line 1915 in algtop.tex) **)
 (** LATEX VERSION: A simple closed curve in the torus may or may not separate the torus. **)
@@ -67047,8 +67047,8 @@ Admitted.
 (** neighborhood U such that inclusion i: U -> B induces the trivial homomorphism **)
 (** i_star: pi1(U,b0) -> pi1(B,b0). **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:18:19 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem lemma80_4_universal_cover_semilocal :
   forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
@@ -67063,7 +67063,7 @@ Theorem lemma80_4_universal_cover_semilocal :
           cls =
         fundamental_group_id B Tb b0).
 admit.
-Admitted.
+Qed.
 
 (** from S79 Exercises Exercise 6 / Theorem (line 4929 in algtop.tex): topological group lifting **)
 (** LATEX VERSION: Let G be a topological group with multiplication m and identity e. **)
@@ -67867,14 +67867,14 @@ Definition graph_vertices : set -> set -> set -> set :=
 (** from S83 Lemma 83.1 (line 5470 in algtop.tex): linear graphs are normal **)
 (** LATEX VERSION: Every linear graph X is Hausdorff; in fact, it is normal. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:18:19 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem lemma83_1_linear_graph_normal :
   forall X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
   normal_space X Tx.
 admit.
-Admitted.
+Qed.
 
 (** from S83 Lemma 83.2 (line 5503 in algtop.tex): compact subspace in finite subgraph **)
 (** LATEX VERSION: If C is a compact subspace of a linear graph X, there is a finite **)
@@ -68040,8 +68040,8 @@ Definition maximal_tree : set -> set -> set -> set -> set -> prop :=
 (** LATEX VERSION: A graph X is connected iff every pair of vertices can be **)
 (** joined by an edge path. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:18:19 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem lemma84_1_connected_iff_edge_paths :
   forall X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -68052,7 +68052,7 @@ Theorem lemma84_1_connected_iff_edge_paths :
        (exists j:set, j :e n /\ ordsucc j /:e n /\
          (apply_fun path_seq j) 0 1 = y))).
 admit.
-Admitted.
+Qed.
 
 (** from S84 Lemma 84.2 (line 5601 in algtop.tex): tree extension **)
 (** LATEX VERSION: If T is a tree and A is an edge intersecting T in a single vertex, **)
@@ -68074,8 +68074,8 @@ Admitted.
 (** LATEX VERSION: If T is a finite tree with more than one edge, then T = T0 union A **)
 (** where T0 is a tree and A intersects T0 in a single vertex. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:18:19 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem lemma84_2_tree_decomposition :
   forall T ArcsT X Tx Arcs:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -68086,7 +68086,7 @@ Theorem lemma84_2_tree_decomposition :
     (exists v:set, v :e graph_vertices X Tx Arcs /\ T0 :/\: A = Sing v) /\
     tree_in_graph T0 B X Tx Arcs.
 admit.
-Admitted.
+Qed.
 
 (** from S84 Theorem 84.3 (line 5617 in algtop.tex): tree is simply connected **)
 (** LATEX VERSION: Any tree T is simply connected. **)
@@ -68281,8 +68281,8 @@ Definition euler_number : set -> set -> set -> set :=
 (** LATEX VERSION: If X is a finite, connected linear graph, then the cardinality **)
 (** of a system of free generators for pi1(X) is 1 - chi(X). **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-(** Lock Charlie 2026-02-18T12:18:19 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem lemma85_2_free_gen_euler :
   forall X Tx Arcs x0:set,
   general_linear_graph X Tx Arcs ->
@@ -68298,7 +68298,7 @@ Theorem lemma85_2_free_gen_euler :
       J gens /\
     equip J (add_SNo 1 (minus_SNo (euler_number X Tx Arcs))).
 admit.
-Admitted.
+Qed.
 
 (** from S85 Definition (line 5778 in algtop.tex): index of a subgroup **)
 (** LATEX VERSION: If the collection G/H of right cosets of H in G is finite, **)
