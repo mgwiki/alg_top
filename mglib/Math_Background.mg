@@ -65214,13 +65214,22 @@ claim Halpha1 : apply_fun alpha 1 = x1.
     HalphaPath).
 }
 claim HidIfCont :
-  topology_on X Tx ->
   continuous_map unit_interval unit_interval_topology X Tx alpha ->
   apply_fun (basepoint_change_map X Tx x0 x1 alpha)
     (fundamental_group_id X Tx x0)
   = fundamental_group_id X Tx x1.
 {
-  assume HtopX HalphaCont.
+  assume HalphaCont.
+  claim HtopX : topology_on X Tx.
+  {
+    exact (continuous_map_topology_cod
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      alpha
+      HalphaCont).
+  }
   claim Hx0X : x0 :e X.
   {
     rewrite <- Halpha0.
@@ -65299,7 +65308,7 @@ claim HidIfCont :
   }
   exact HhomMapsId.
 }
-admit.
+admit. (** remaining gap: obtain continuity of alpha from path_between hypothesis **)
 Admitted.
 
 (** helper sub-bounty for Cor 58.5: alpha-hat is injective **)
