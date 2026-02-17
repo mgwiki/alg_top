@@ -69813,6 +69813,50 @@ claim HxCoord0 : apply_fun x 0 = 0.
     0
     neq_0_1).
 }
+claim H1inN : 1 :e n.
+{
+  exact (Hge2
+    1
+    In_1_2).
+}
+claim H1in : 1 :e ordsucc n.
+{
+  exact (ordsuccI1
+    n
+    1
+    H1inN).
+}
+claim HxCoord1 : apply_fun x 1 = 1.
+{
+  claim H11 : 1 = 1.
+  {
+    reflexivity.
+  }
+  rewrite (apply_fun_graph
+    (ordsucc n)
+    (fun i:set => If_i (i = 1) 1 0)
+    1
+    H1in).
+  exact (If_i_1
+    (1 = 1)
+    1
+    0
+    H11).
+}
+claim HxSqCoord0 : mul_SNo (apply_fun x 0) (apply_fun x 0) = 0.
+{
+  rewrite HxCoord0.
+  exact (mul_SNo_zeroL
+    0
+    SNo_0).
+}
+claim HxSqCoord1 : mul_SNo (apply_fun x 1) (apply_fun x 1) = 1.
+{
+  rewrite HxCoord1.
+  exact (mul_SNo_oneR
+    1
+    SNo_1).
+}
 claim HxNorm : euclidean_norm_sq (ordsucc n) x = 1.
 {
   admit. (** pending: finite_real_sum of one-hot vector squares equals 1 **)
