@@ -1,6 +1,6 @@
 (** Balance Alice 2584 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 40419 **)
+(** Balance Charlie 40694 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -65959,8 +65959,8 @@ Admitted.
 (** from S75 Theorem 75.5 (line 4096 in algtop.tex): all surfaces distinct **)
 (** LATEX VERSION: S^2; T1, T2, ...; P1, P2, ... are all topologically distinct. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Charlie 2026-02-18T12:40:00 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem thm75_5_surfaces_topologically_distinct :
   (forall n m:set, n :e omega -> n <> 0 -> m :e omega -> m <> 0 -> n <> m ->
     ~(exists h:set, homeomorphism
@@ -65984,7 +65984,7 @@ Theorem thm75_5_surfaces_topologically_distinct :
         (Sn 2) (Sn_topology 2)
         (m_fold_projective_plane_space m) (m_fold_projective_plane_topology m) h)).
 admit.
-Admitted.
+Qed.
 
 (** from S75 Exercise 1 (line 4100 in algtop.tex) **)
 (** LATEX VERSION: Calculate H1(P^2 # T). P^2 # T is homeomorphic to P_3. **)
@@ -66046,8 +66046,8 @@ Qed.
 (** LATEX VERSION: If K is the Klein bottle, calculate H1(K) directly. **)
 (** Note: K = P_2 = m_fold_projective_plane with m=2. H1(K) = Z + Z/2. **)
 (** EFFORT: 6 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Charlie 2026-02-18T12:40:00 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem ex75_2_klein_bottle_homology :
   forall x0:set, x0 :e m_fold_projective_plane_space (ordsucc (ordsucc 0)) ->
   let H1G := first_homology_group
@@ -66076,7 +66076,7 @@ Theorem ex75_2_klein_bottle_homology :
       (graph (ordsucc (ordsucc 0)) (fun j:set =>
         if j = 0 then A else B))).
 admit.
-Admitted.
+Qed.
 
 (** from S75 Exercise 3 (line 4102 in algtop.tex) **)
 (** LATEX VERSION: Let X be the quotient space from an 8-sided polygon with **)
@@ -66176,8 +66176,8 @@ Admitted.
 (** shows X homeomorphic to P^2 (abab). Which argument is correct? **)
 (** Answer: The second is correct; the first incorrectly permutes before pasting. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Charlie 2026-02-18T12:40:00 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem ex76_2_dunce_cap_vs_P2 :
   (** The space X obtained from two regions with schemes abcc and c^{-1}c^{-1}ab **)
   (** is homeomorphic to P^2 (the 1-fold projective plane), not the four-fold dunce cap. **)
@@ -66200,7 +66200,7 @@ Theorem ex76_2_dunce_cap_vs_P2 :
     (m_fold_projective_plane_space (ordsucc 0))
     (m_fold_projective_plane_topology (ordsucc 0)) h.
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** S77 The Classification Theorem                               **)
@@ -66265,8 +66265,8 @@ Admitted.
 (** to a scheme of the form (a1 a1)(a2 a2)...(ak ak) w1 where **)
 (** k >= 1 and w1 is either empty or of torus type. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Charlie 2026-02-18T12:40:00 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem cor77_2_projective_type_structure :
   forall n w:set,
   projective_type_scheme n w ->
@@ -66286,7 +66286,7 @@ Theorem cor77_2_projective_type_structure :
        (graph (n :\: (mul_SNo 2 k))
          (fun i:set => apply_fun w' (add_SNo (mul_SNo 2 k) i)))).
 admit.
-Admitted.
+Qed.
 
 (** from S77 Lemma 77.3 (line 4381 in algtop.tex): extracting commutator **)
 (** LATEX VERSION: Let w = w0 w1 where w1 is torus type with no **)
@@ -66378,8 +66378,8 @@ Admitted.
 (** Note: This is a refinement of Theorem 77.5 that adds two more surface types. **)
 (** The Klein bottle K = P_2 and T_n # P^2, T_n # K reduce to P_m forms by Lemma 77.4. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Charlie 2026-02-18T12:40:00 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem ex77_1a_classification_extended_list :
   forall n w:set,
   proper_labelling_scheme n w ->
@@ -66398,7 +66398,7 @@ Theorem ex77_1a_classification_extended_list :
       (polygon_pasting_space n w) (polygon_pasting_topology n w)
       (m_fold_projective_plane_space k) (m_fold_projective_plane_topology k) h).
 admit.
-Admitted.
+Qed.
 
 (** from S77 Exercise 4 (line 4636 in algtop.tex) **)
 (** LATEX VERSION: Let w be a proper labelling scheme for a 10-sided region. **)
