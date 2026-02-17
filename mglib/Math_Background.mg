@@ -53006,15 +53006,136 @@ claim HFt_54_cont :
       unit_interval_topology_on
       unit_interval_topology_on).
   }
+  claim Hlocal_cont_pt :
+    forall q:set, q :e unit_square ->
+      exists N:set, N :e unit_square_topology /\ q :e N /\
+        continuous_map N (subspace_topology unit_square unit_square_topology N) E Te Ft_54.
+  {
+    (** TODO Charlie: derive local continuity from evenly covered neighborhoods and local uniqueness of lifts. **)
+    admit.
+  }
+  set UFam_54 := {U :e unit_square_topology |
+    continuous_map U (subspace_topology unit_square unit_square_topology U) E Te Ft_54}.
+  claim HUFam_54_sub : UFam_54 c= unit_square_topology.
+  {
+    exact (Sep_Subq
+      unit_square_topology
+      (fun U:set =>
+        continuous_map U (subspace_topology unit_square unit_square_topology U) E Te Ft_54)).
+  }
+  claim HUFam_54_union_sub : Union UFam_54 c= unit_square.
+  {
+    let x.
+    assume HxUnion.
+    apply (UnionE UFam_54 x HxUnion).
+    let U.
+    assume HxUPack.
+    claim HxU : x :e U.
+    {
+      exact (andEL
+        (x :e U)
+        (U :e UFam_54)
+        HxUPack).
+    }
+    claim HUUFam : U :e UFam_54.
+    {
+      exact (andER
+        (x :e U)
+        (U :e UFam_54)
+        HxUPack).
+    }
+    claim HUopen : U :e unit_square_topology.
+    {
+      exact (SepE1
+        unit_square_topology
+        (fun V:set =>
+          continuous_map V (subspace_topology unit_square unit_square_topology V) E Te Ft_54)
+        U
+        HUUFam).
+    }
+    exact (topology_elem_subset
+      unit_square
+      unit_square_topology
+      U
+      HtopSq54
+      HUopen
+      x
+      HxU).
+  }
+  claim HUFam_54_union_sup : unit_square c= Union UFam_54.
+  {
+    let x.
+    assume HxSq.
+    apply (Hlocal_cont_pt x HxSq).
+    let N.
+    assume HNPack.
+    claim HNleft :
+      N :e unit_square_topology /\ x :e N.
+    {
+      exact (andEL
+        (N :e unit_square_topology /\ x :e N)
+        (continuous_map N (subspace_topology unit_square unit_square_topology N) E Te Ft_54)
+        HNPack).
+    }
+    claim HNopen : N :e unit_square_topology.
+    {
+      exact (andEL
+        (N :e unit_square_topology)
+        (x :e N)
+        HNleft).
+    }
+    claim HxN : x :e N.
+    {
+      exact (andER
+        (N :e unit_square_topology)
+        (x :e N)
+        HNleft).
+    }
+    claim HNcont :
+      continuous_map N (subspace_topology unit_square unit_square_topology N) E Te Ft_54.
+    {
+      exact (andER
+        (N :e unit_square_topology /\ x :e N)
+        (continuous_map N (subspace_topology unit_square unit_square_topology N) E Te Ft_54)
+        HNPack).
+    }
+    claim HNinFam : N :e UFam_54.
+    {
+      exact (SepI
+        unit_square_topology
+        (fun V:set =>
+          continuous_map V (subspace_topology unit_square unit_square_topology V) E Te Ft_54)
+        N
+        HNopen
+        HNcont).
+    }
+    exact (UnionI UFam_54 x N HxN HNinFam).
+  }
+  claim HUFam_54_union_eq : Union UFam_54 = unit_square.
+  {
+    apply set_ext.
+    - exact HUFam_54_union_sub.
+    - exact HUFam_54_union_sup.
+  }
   claim Hlocal_cover_cont :
     exists UFam:set,
       UFam c= unit_square_topology /\ Union UFam = unit_square /\
       (forall U:set, U :e UFam ->
         continuous_map U (subspace_topology unit_square unit_square_topology U) E Te Ft_54).
   {
-    (** TODO Charlie: build a cover by evenly covered neighborhoods pulled back along F,
-        then use uniqueness of path lifts to identify Ft_54 locally with explicit sheet maps. **)
-    admit.
+    witness UFam_54.
+    apply andI.
+    - apply andI.
+      + exact HUFam_54_sub.
+      + exact HUFam_54_union_eq.
+    - let U.
+      assume HUU.
+      exact (SepE2
+        unit_square_topology
+        (fun V:set =>
+          continuous_map V (subspace_topology unit_square unit_square_topology V) E Te Ft_54)
+        U
+        HUU).
   }
   exact (continuous_map_local_cover
     unit_square
