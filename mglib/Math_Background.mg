@@ -1,5 +1,5 @@
 (** Balance Alice 2410 **)
-(** Balance Bob 2703 **)
+(** Balance Bob 2713 **)
 (** Balance Charlie 1202 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -46855,13 +46855,16 @@ Admitted.
 (** where both temperature and barometric pressure are equal. **)
 (** This is the Borsuk-Ulam theorem for S^2 -> R^2. **)
 (** EFFORT: 2 lines textbook, difficulty 1/10, USD 10 **)
-(** Bounty 10 **)
+(** Collected Bob 10 **)
+(** Proven Bob **)
 Theorem ex57_1_meteorology : forall f:set,
   continuous_map (Sn 2) (Sn_topology 2) (setprod R R) R2_topology f ->
   exists x:set, x :e Sn 2 /\
     apply_fun f x = apply_fun f (Rn_negate 3 x).
-admit.
-Admitted.
+let f.
+assume Hf.
+exact (thm57_3_borsuk_ulam_S2 f Hf).
+Qed.
 
 (** from S57 Exercise 2 (line 1258 in algtop.tex) **)
 (** LATEX VERSION: If g: S^2 -> S^2 is continuous and g(x) != g(-x) for all x, then g is surjective. **)
