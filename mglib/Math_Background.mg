@@ -62338,6 +62338,146 @@ Theorem thm59_1_open_cover_generates_pi1 : forall X Tx U V x0:set,
 admit.
 Admitted.
 
+(** Helper: group homomorphism maps identity to identity **)
+(** Proven Alice **)
+Theorem group_hom_maps_id_to_id : forall G1 mult1 e1 inv1 G2 mult2 e2 inv2 phi:set,
+  group_structure G1 mult1 e1 inv1 ->
+  group_structure G2 mult2 e2 inv2 ->
+  group_homomorphism G1 mult1 G2 mult2 phi ->
+  apply_fun phi e1 = e2.
+let G1 mult1 e1 inv1 G2 mult2 e2 inv2 phi.
+assume Hgrp1 Hgrp2 Hhom.
+claim Hgrp1_exp : function_on mult1 (setprod G1 G1) G1 /\
+    function_on inv1 G1 G1 /\
+    e1 :e G1 /\
+    (forall x y z:set, x :e G1 -> y :e G1 -> z :e G1 ->
+      apply_fun mult1 (apply_fun mult1 (x, y), z) = apply_fun mult1 (x, apply_fun mult1 (y, z))) /\
+    (forall x:set, x :e G1 -> apply_fun mult1 (e1, x) = x /\ apply_fun mult1 (x, e1) = x) /\
+    (forall x:set, x :e G1 ->
+      apply_fun mult1 (x, apply_fun inv1 x) = e1 /\ apply_fun mult1 (apply_fun inv1 x, x) = e1).
+{ exact Hgrp1. }
+claim Hgrp2_exp : function_on mult2 (setprod G2 G2) G2 /\
+    function_on inv2 G2 G2 /\
+    e2 :e G2 /\
+    (forall x y z:set, x :e G2 -> y :e G2 -> z :e G2 ->
+      apply_fun mult2 (apply_fun mult2 (x, y), z) = apply_fun mult2 (x, apply_fun mult2 (y, z))) /\
+    (forall x:set, x :e G2 -> apply_fun mult2 (e2, x) = x /\ apply_fun mult2 (x, e2) = x) /\
+    (forall x:set, x :e G2 ->
+      apply_fun mult2 (x, apply_fun inv2 x) = e2 /\ apply_fun mult2 (apply_fun inv2 x, x) = e2).
+{ exact Hgrp2. }
+claim He1G1 : e1 :e G1.
+{ apply (and6E
+    (function_on mult1 (setprod G1 G1) G1) (function_on inv1 G1 G1) (e1 :e G1)
+    (forall x y z:set, x :e G1 -> y :e G1 -> z :e G1 ->
+      apply_fun mult1 (apply_fun mult1 (x, y), z) = apply_fun mult1 (x, apply_fun mult1 (y, z)))
+    (forall x:set, x :e G1 -> apply_fun mult1 (e1, x) = x /\ apply_fun mult1 (x, e1) = x)
+    (forall x:set, x :e G1 ->
+      apply_fun mult1 (x, apply_fun inv1 x) = e1 /\ apply_fun mult1 (apply_fun inv1 x, x) = e1)
+    Hgrp1_exp).
+  assume Hm1 Hi1 He1 Ha1 Hid1 Hinv1. exact He1. }
+claim He1sq : apply_fun mult1 (e1, e1) = e1.
+{ apply (and6E
+    (function_on mult1 (setprod G1 G1) G1) (function_on inv1 G1 G1) (e1 :e G1)
+    (forall x y z:set, x :e G1 -> y :e G1 -> z :e G1 ->
+      apply_fun mult1 (apply_fun mult1 (x, y), z) = apply_fun mult1 (x, apply_fun mult1 (y, z)))
+    (forall x:set, x :e G1 -> apply_fun mult1 (e1, x) = x /\ apply_fun mult1 (x, e1) = x)
+    (forall x:set, x :e G1 ->
+      apply_fun mult1 (x, apply_fun inv1 x) = e1 /\ apply_fun mult1 (apply_fun inv1 x, x) = e1)
+    Hgrp1_exp).
+  assume Hm1 Hi1 He1 Ha1 Hid1 Hinv1.
+  exact (andEL
+    (apply_fun mult1 (e1, e1) = e1) (apply_fun mult1 (e1, e1) = e1)
+    (Hid1 e1 He1)). }
+claim HphiE_mem : apply_fun phi e1 :e G2.
+{ exact (group_homomorphism_function_on G1 mult1 G2 mult2 phi Hhom e1 He1G1). }
+claim Hprod : apply_fun phi (apply_fun mult1 (e1, e1)) =
+  apply_fun mult2 (apply_fun phi e1, apply_fun phi e1).
+{ exact (group_homomorphism_mult_rule G1 mult1 G2 mult2 phi e1 e1 Hhom He1G1 He1G1). }
+claim H1 : apply_fun phi e1 = apply_fun phi (apply_fun mult1 (e1, e1)).
+{ rewrite He1sq. reflexivity. }
+claim Hstep3 : apply_fun phi e1 = apply_fun mult2 (apply_fun phi e1, apply_fun phi e1).
+{ exact (eq_i_tra (apply_fun phi e1) (apply_fun phi (apply_fun mult1 (e1, e1))) (apply_fun mult2 (apply_fun phi e1, apply_fun phi e1)) H1 Hprod). }
+claim Hinv2G2 : function_on inv2 G2 G2.
+{ apply (and6E
+    (function_on mult2 (setprod G2 G2) G2) (function_on inv2 G2 G2) (e2 :e G2)
+    (forall x y z:set, x :e G2 -> y :e G2 -> z :e G2 ->
+      apply_fun mult2 (apply_fun mult2 (x, y), z) = apply_fun mult2 (x, apply_fun mult2 (y, z)))
+    (forall x:set, x :e G2 -> apply_fun mult2 (e2, x) = x /\ apply_fun mult2 (x, e2) = x)
+    (forall x:set, x :e G2 ->
+      apply_fun mult2 (x, apply_fun inv2 x) = e2 /\ apply_fun mult2 (apply_fun inv2 x, x) = e2)
+    Hgrp2_exp).
+  assume Hm2 Hi2 He2 Ha2 Hid2 Hinv2. exact Hi2. }
+claim HinvPhiE_mem : apply_fun inv2 (apply_fun phi e1) :e G2.
+{ exact (Hinv2G2 (apply_fun phi e1) HphiE_mem). }
+claim Hlinv : apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun phi e1) = e2.
+{ apply (and6E
+    (function_on mult2 (setprod G2 G2) G2) (function_on inv2 G2 G2) (e2 :e G2)
+    (forall x y z:set, x :e G2 -> y :e G2 -> z :e G2 ->
+      apply_fun mult2 (apply_fun mult2 (x, y), z) = apply_fun mult2 (x, apply_fun mult2 (y, z)))
+    (forall x:set, x :e G2 -> apply_fun mult2 (e2, x) = x /\ apply_fun mult2 (x, e2) = x)
+    (forall x:set, x :e G2 ->
+      apply_fun mult2 (x, apply_fun inv2 x) = e2 /\ apply_fun mult2 (apply_fun inv2 x, x) = e2)
+    Hgrp2_exp).
+  assume Hm2 Hi2 He2 Ha2 Hid2 Hinv2.
+  exact (andER
+    (apply_fun mult2 (apply_fun phi e1, apply_fun inv2 (apply_fun phi e1)) = e2)
+    (apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun phi e1) = e2)
+    (Hinv2 (apply_fun phi e1) HphiE_mem)). }
+claim Hlid : apply_fun mult2 (e2, apply_fun phi e1) = apply_fun phi e1.
+{ apply (and6E
+    (function_on mult2 (setprod G2 G2) G2) (function_on inv2 G2 G2) (e2 :e G2)
+    (forall x y z:set, x :e G2 -> y :e G2 -> z :e G2 ->
+      apply_fun mult2 (apply_fun mult2 (x, y), z) = apply_fun mult2 (x, apply_fun mult2 (y, z)))
+    (forall x:set, x :e G2 -> apply_fun mult2 (e2, x) = x /\ apply_fun mult2 (x, e2) = x)
+    (forall x:set, x :e G2 ->
+      apply_fun mult2 (x, apply_fun inv2 x) = e2 /\ apply_fun mult2 (apply_fun inv2 x, x) = e2)
+    Hgrp2_exp).
+  assume Hm2 Hi2 He2 Ha2 Hid2 Hinv2.
+  exact (andEL
+    (apply_fun mult2 (e2, apply_fun phi e1) = apply_fun phi e1)
+    (apply_fun mult2 (apply_fun phi e1, e2) = apply_fun phi e1)
+    (Hid2 (apply_fun phi e1) HphiE_mem)). }
+claim Hassoc : apply_fun mult2 (apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun phi e1), apply_fun phi e1) =
+  apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun mult2 (apply_fun phi e1, apply_fun phi e1)).
+{ apply (and6E
+    (function_on mult2 (setprod G2 G2) G2) (function_on inv2 G2 G2) (e2 :e G2)
+    (forall x y z:set, x :e G2 -> y :e G2 -> z :e G2 ->
+      apply_fun mult2 (apply_fun mult2 (x, y), z) = apply_fun mult2 (x, apply_fun mult2 (y, z)))
+    (forall x:set, x :e G2 -> apply_fun mult2 (e2, x) = x /\ apply_fun mult2 (x, e2) = x)
+    (forall x:set, x :e G2 ->
+      apply_fun mult2 (x, apply_fun inv2 x) = e2 /\ apply_fun mult2 (apply_fun inv2 x, x) = e2)
+    Hgrp2_exp).
+  assume Hm2 Hi2 He2 Ha2 Hid2 Hinv2.
+  exact (Ha2 (apply_fun inv2 (apply_fun phi e1)) (apply_fun phi e1) (apply_fun phi e1)
+    HinvPhiE_mem HphiE_mem HphiE_mem). }
+claim Hchain_a : apply_fun mult2 (apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun phi e1), apply_fun phi e1) =
+  apply_fun mult2 (e2, apply_fun phi e1).
+{ rewrite Hlinv. reflexivity. }
+claim Hchain_b : apply_fun mult2 (apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun phi e1), apply_fun phi e1) =
+  apply_fun phi e1.
+{ exact (eq_i_tra
+    (apply_fun mult2 (apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun phi e1), apply_fun phi e1))
+    (apply_fun mult2 (e2, apply_fun phi e1))
+    (apply_fun phi e1)
+    Hchain_a Hlid). }
+claim Hchain_c : apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun mult2 (apply_fun phi e1, apply_fun phi e1)) =
+  apply_fun phi e1.
+{ rewrite <- Hassoc. exact Hchain_b. }
+claim Hstep4 : apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun phi e1) =
+  apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun mult2 (apply_fun phi e1, apply_fun phi e1)).
+{ rewrite <- Hstep3. reflexivity. }
+claim Hstep5 : apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun phi e1) =
+  apply_fun phi e1.
+{ exact (eq_i_tra
+    (apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun phi e1))
+    (apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun mult2 (apply_fun phi e1, apply_fun phi e1)))
+    (apply_fun phi e1)
+    Hstep4 Hchain_c). }
+symmetry.
+rewrite <- Hlinv.
+exact Hstep5.
+Qed.
+
 (** from S59 Corollary 59.2 (line 1585 in algtop.tex) **)
 (** LATEX VERSION: If X = U union V, U and V open and simply connected, U intersect V nonempty and path connected, then X is simply connected. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
@@ -62631,13 +62771,193 @@ claim Hi_triv : forall cls:set,
   claim HclsEq : cls = fundamental_group_id U (subspace_topology X Tx U) z0.
   { exact (singleton_elem cls (fundamental_group_id U (subspace_topology X Tx U) z0)
       HclsSing). }
-  admit. (** needs: i-star maps id_U to id_X **) }
+  rewrite HclsEq.
+  exact (group_hom_maps_id_to_id
+    (fundamental_group U (subspace_topology X Tx U) z0)
+    (fundamental_group_mult U (subspace_topology X Tx U) z0)
+    (fundamental_group_id U (subspace_topology X Tx U) z0)
+    (fundamental_group_inv U (subspace_topology X Tx U) z0)
+    (fundamental_group X Tx z0)
+    (fundamental_group_mult X Tx z0)
+    (fundamental_group_id X Tx z0)
+    (fundamental_group_inv X Tx z0)
+    (induced_homomorphism U (subspace_topology X Tx U) z0 X Tx z0
+      (graph U (fun x:set => x)))
+    (fundamental_group_is_group U (subspace_topology X Tx U) z0
+      (subspace_topology_is_topology X Tx U Htop HUsub) Hz0U)
+    (fundamental_group_is_group X Tx z0 Htop Hz0X)
+    (induced_homomorphism_is_homomorphism U (subspace_topology X Tx U) z0 X Tx z0
+      (graph U (fun x:set => x))
+      (subspace_inclusion_continuous X Tx U Htop HUsub)
+      (apply_fun_graph U (fun x:set => x) z0 Hz0U)
+      Hz0U)). }
 (** Similarly j-star is trivial **)
 claim Hj_triv : forall cls:set,
   cls :e fundamental_group V (subspace_topology X Tx V) z0 ->
   apply_fun (induced_homomorphism V (subspace_topology X Tx V) z0 X Tx z0
     (graph V (fun x:set => x))) cls = fundamental_group_id X Tx z0.
-{ admit. (** symmetric to Hi_triv **) }
+{ let cls. assume Hcls.
+  claim Hpi1V_trivial : fundamental_group V (subspace_topology X Tx V) z0 =
+    {fundamental_group_id V (subspace_topology X Tx V) z0}.
+  { claim HscV_ex : exists x0:set, x0 :e V /\
+      fundamental_group V (subspace_topology X Tx V) x0 =
+        {fundamental_group_id V (subspace_topology X Tx V) x0}.
+    { exact (andER
+        (path_connected_space V (subspace_topology X Tx V))
+        (exists x0:set, x0 :e V /\
+          fundamental_group V (subspace_topology X Tx V) x0 =
+            {fundamental_group_id V (subspace_topology X Tx V) x0})
+        HscV). }
+    apply HscV_ex.
+    let x0_V.
+    assume Hx0V_pack : x0_V :e V /\
+      fundamental_group V (subspace_topology X Tx V) x0_V =
+        {fundamental_group_id V (subspace_topology X Tx V) x0_V}.
+    claim Hx0V_mem : x0_V :e V.
+    { exact (andEL
+        (x0_V :e V)
+        (fundamental_group V (subspace_topology X Tx V) x0_V =
+          {fundamental_group_id V (subspace_topology X Tx V) x0_V})
+        Hx0V_pack). }
+    claim Hpi1V_x0 :
+      fundamental_group V (subspace_topology X Tx V) x0_V =
+        {fundamental_group_id V (subspace_topology X Tx V) x0_V}.
+    { exact (andER
+        (x0_V :e V)
+        (fundamental_group V (subspace_topology X Tx V) x0_V =
+          {fundamental_group_id V (subspace_topology X Tx V) x0_V})
+        Hx0V_pack). }
+    claim HtopV : topology_on V (subspace_topology X Tx V).
+    { exact (subspace_topology_is_topology X Tx V Htop HVsub). }
+    apply (Corollary_52_2_path_connected_pi1_isomorphic V (subspace_topology X Tx V) x0_V z0
+      HpcV Hx0V_mem Hz0V).
+    let phiV.
+    assume HisoV : group_isomorphism
+      (fundamental_group V (subspace_topology X Tx V) x0_V)
+      (fundamental_group_mult V (subspace_topology X Tx V) x0_V)
+      (fundamental_group V (subspace_topology X Tx V) z0)
+      (fundamental_group_mult V (subspace_topology X Tx V) z0)
+      phiV.
+    claim HbijV : bijection
+      (fundamental_group V (subspace_topology X Tx V) x0_V)
+      (fundamental_group V (subspace_topology X Tx V) z0) phiV.
+    { exact (group_isomorphism_bijection
+        (fundamental_group V (subspace_topology X Tx V) x0_V)
+        (fundamental_group_mult V (subspace_topology X Tx V) x0_V)
+        (fundamental_group V (subspace_topology X Tx V) z0)
+        (fundamental_group_mult V (subspace_topology X Tx V) z0)
+        phiV HisoV). }
+    claim HeV : (fundamental_group_id V (subspace_topology X Tx V) z0) :e
+      fundamental_group V (subspace_topology X Tx V) z0.
+    { claim HcLA : loop_at V (subspace_topology X Tx V) z0 (constant_path z0).
+      { exact (loop_at_constant_path V (subspace_topology X Tx V) z0 HtopV Hz0V). }
+      claim HcFS : (constant_path z0) :e function_space unit_interval V.
+      { exact (graph_in_function_space unit_interval V (fun t:set => z0) (fun t Ht => Hz0V)). }
+      claim HcLS : (constant_path z0) :e loop_space V (subspace_topology X Tx V) z0.
+      { exact (SepI (function_space unit_interval V) (fun g:set => loop_at V (subspace_topology X Tx V) z0 g)
+          (constant_path z0) HcFS HcLA). }
+      exact (path_homotopy_class_in_fundamental_group V (subspace_topology X Tx V) z0
+        (constant_path z0) HcLS). }
+    apply set_ext.
+    - let clsV. assume HclsV : clsV :e fundamental_group V (subspace_topology X Tx V) z0.
+      claim Hbij_surjV : exists ucls:set, ucls :e fundamental_group V (subspace_topology X Tx V) x0_V /\
+        apply_fun phiV ucls = clsV /\
+        (forall ucls':set, ucls' :e fundamental_group V (subspace_topology X Tx V) x0_V ->
+          apply_fun phiV ucls' = clsV -> ucls' = ucls).
+      { exact (andER
+          (function_on phiV (fundamental_group V (subspace_topology X Tx V) x0_V)
+            (fundamental_group V (subspace_topology X Tx V) z0))
+          (forall y:set, y :e fundamental_group V (subspace_topology X Tx V) z0 ->
+            exists x:set, x :e fundamental_group V (subspace_topology X Tx V) x0_V /\
+              apply_fun phiV x = y /\
+              (forall x':set, x' :e fundamental_group V (subspace_topology X Tx V) x0_V ->
+                apply_fun phiV x' = y -> x' = x))
+          HbijV clsV HclsV). }
+      apply Hbij_surjV.
+      let uclsV.
+      assume Huc_packV.
+      apply (and3E
+        (uclsV :e fundamental_group V (subspace_topology X Tx V) x0_V)
+        (apply_fun phiV uclsV = clsV)
+        (forall ucls':set, ucls' :e fundamental_group V (subspace_topology X Tx V) x0_V ->
+          apply_fun phiV ucls' = clsV -> ucls' = uclsV)
+        Huc_packV).
+      assume HuclsVMem Hphi_uclsV HuniqV.
+      claim HuclsVSing : uclsV :e {fundamental_group_id V (subspace_topology X Tx V) x0_V}.
+      { exact (mem_eqR uclsV
+          (fundamental_group V (subspace_topology X Tx V) x0_V)
+          {fundamental_group_id V (subspace_topology X Tx V) x0_V}
+          Hpi1V_x0 HuclsVMem). }
+      claim HuclsVEq : uclsV = fundamental_group_id V (subspace_topology X Tx V) x0_V.
+      { exact (singleton_elem uclsV (fundamental_group_id V (subspace_topology X Tx V) x0_V) HuclsVSing). }
+      claim Hbij_surj_eV : exists ucls2:set, ucls2 :e fundamental_group V (subspace_topology X Tx V) x0_V /\
+        apply_fun phiV ucls2 = fundamental_group_id V (subspace_topology X Tx V) z0 /\
+        (forall ucls2':set, ucls2' :e fundamental_group V (subspace_topology X Tx V) x0_V ->
+          apply_fun phiV ucls2' = fundamental_group_id V (subspace_topology X Tx V) z0 -> ucls2' = ucls2).
+      { exact (andER
+          (function_on phiV (fundamental_group V (subspace_topology X Tx V) x0_V)
+            (fundamental_group V (subspace_topology X Tx V) z0))
+          (forall y:set, y :e fundamental_group V (subspace_topology X Tx V) z0 ->
+            exists x:set, x :e fundamental_group V (subspace_topology X Tx V) x0_V /\
+              apply_fun phiV x = y /\
+              (forall x':set, x' :e fundamental_group V (subspace_topology X Tx V) x0_V ->
+                apply_fun phiV x' = y -> x' = x))
+          HbijV (fundamental_group_id V (subspace_topology X Tx V) z0) HeV). }
+      apply Hbij_surj_eV.
+      let ucls2V.
+      assume Huc2_packV.
+      apply (and3E
+        (ucls2V :e fundamental_group V (subspace_topology X Tx V) x0_V)
+        (apply_fun phiV ucls2V = fundamental_group_id V (subspace_topology X Tx V) z0)
+        (forall ucls2':set, ucls2' :e fundamental_group V (subspace_topology X Tx V) x0_V ->
+          apply_fun phiV ucls2' = fundamental_group_id V (subspace_topology X Tx V) z0 -> ucls2' = ucls2V)
+        Huc2_packV).
+      assume Hucls2VMem Hphi_ucls2V Huniq2V.
+      claim Hucls2VSing : ucls2V :e {fundamental_group_id V (subspace_topology X Tx V) x0_V}.
+      { exact (mem_eqR ucls2V
+          (fundamental_group V (subspace_topology X Tx V) x0_V)
+          {fundamental_group_id V (subspace_topology X Tx V) x0_V}
+          Hpi1V_x0 Hucls2VMem). }
+      claim Hucls2VEq : ucls2V = fundamental_group_id V (subspace_topology X Tx V) x0_V.
+      { exact (singleton_elem ucls2V (fundamental_group_id V (subspace_topology X Tx V) x0_V) Hucls2VSing). }
+      claim HuEqV : uclsV = ucls2V.
+      { rewrite HuclsVEq. rewrite Hucls2VEq. reflexivity. }
+      claim HclsVEqIdz0 : clsV = fundamental_group_id V (subspace_topology X Tx V) z0.
+      { rewrite <- Hphi_uclsV. rewrite HuEqV. exact Hphi_ucls2V. }
+      rewrite HclsVEqIdz0.
+      exact (SingI (fundamental_group_id V (subspace_topology X Tx V) z0)).
+    - let clsV. assume HclsV : clsV :e {fundamental_group_id V (subspace_topology X Tx V) z0}.
+      claim HclsVEq : clsV = fundamental_group_id V (subspace_topology X Tx V) z0.
+      { exact (singleton_elem clsV (fundamental_group_id V (subspace_topology X Tx V) z0) HclsV). }
+      rewrite HclsVEq. exact HeV. }
+  claim HclsSing : cls :e {fundamental_group_id V (subspace_topology X Tx V) z0}.
+  { exact (mem_eqR cls
+      (fundamental_group V (subspace_topology X Tx V) z0)
+      {fundamental_group_id V (subspace_topology X Tx V) z0}
+      Hpi1V_trivial Hcls). }
+  claim HclsEq : cls = fundamental_group_id V (subspace_topology X Tx V) z0.
+  { exact (singleton_elem cls (fundamental_group_id V (subspace_topology X Tx V) z0)
+      HclsSing). }
+  rewrite HclsEq.
+  exact (group_hom_maps_id_to_id
+    (fundamental_group V (subspace_topology X Tx V) z0)
+    (fundamental_group_mult V (subspace_topology X Tx V) z0)
+    (fundamental_group_id V (subspace_topology X Tx V) z0)
+    (fundamental_group_inv V (subspace_topology X Tx V) z0)
+    (fundamental_group X Tx z0)
+    (fundamental_group_mult X Tx z0)
+    (fundamental_group_id X Tx z0)
+    (fundamental_group_inv X Tx z0)
+    (induced_homomorphism V (subspace_topology X Tx V) z0 X Tx z0
+      (graph V (fun x:set => x)))
+    (fundamental_group_is_group V (subspace_topology X Tx V) z0
+      (subspace_topology_is_topology X Tx V Htop HVsub) Hz0V)
+    (fundamental_group_is_group X Tx z0 Htop Hz0X)
+    (induced_homomorphism_is_homomorphism V (subspace_topology X Tx V) z0 X Tx z0
+      (graph V (fun x:set => x))
+      (subspace_inclusion_continuous X Tx V Htop HVsub)
+      (apply_fun_graph V (fun x:set => x) z0 Hz0V)
+      Hz0V)). }
 (** Conclude simply_connected: path_connected /\ exists x0, pi1 = {id} **)
 prove path_connected_space X Tx /\
   exists x0':set, x0' :e X /\
