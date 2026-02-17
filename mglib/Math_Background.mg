@@ -65514,7 +65514,58 @@ Theorem lemma59_3_sphere_cover_data : forall n:set, n :e omega -> 2 c= n ->
     (U :/\: V) <> Empty /\
     path_connected_space (U :/\: V)
       (subspace_topology (Sn n) (Sn_topology n) (U :/\: V)).
-admit.
+let n.
+assume Hn : n :e omega.
+assume Hge2 : 2 c= n.
+set U := {x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)}.
+set V := {x :e Sn n | Rlt (apply_fun x 0) 1}.
+claim HUopen : U :e Sn_topology n.
+{
+  admit. (** upper cap is open in S^n **)
+}
+claim HVopen : V :e Sn_topology n.
+{
+  admit. (** lower cap is open in S^n **)
+}
+claim Hcover : Sn n = U :\/: V.
+{
+  admit. (** every sphere point has first coordinate in (-1,1) or at an endpoint covered by one cap condition **)
+}
+claim HscU : simply_connected U (subspace_topology (Sn n) (Sn_topology n) U).
+{
+  admit. (** stereographic/homeomorphic-to-disk argument for U **)
+}
+claim HscV : simply_connected V (subspace_topology (Sn n) (Sn_topology n) V).
+{
+  admit. (** stereographic/homeomorphic-to-disk argument for V **)
+}
+claim HneUV : (U :/\: V) <> Empty.
+{
+  admit. (** equatorial point witness **)
+}
+claim HpcUV : path_connected_space (U :/\: V)
+  (subspace_topology (Sn n) (Sn_topology n) (U :/\: V)).
+{
+  admit. (** overlap is path connected for n>=2 **)
+}
+witness U.
+witness V.
+apply (and7I
+  (U :e Sn_topology n)
+  (V :e Sn_topology n)
+  (Sn n = U :\/: V)
+  (simply_connected U (subspace_topology (Sn n) (Sn_topology n) U))
+  (simply_connected V (subspace_topology (Sn n) (Sn_topology n) V))
+  ((U :/\: V) <> Empty)
+  (path_connected_space (U :/\: V)
+    (subspace_topology (Sn n) (Sn_topology n) (U :/\: V)))).
+- exact HUopen.
+- exact HVopen.
+- exact Hcover.
+- exact HscU.
+- exact HscV.
+- exact HneUV.
+- exact HpcUV.
 Admitted.
 
 (** from S59 Theorem 59.3 (line 1587 in algtop.tex) **)
