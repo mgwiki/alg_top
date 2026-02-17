@@ -76466,7 +76466,432 @@ Theorem ex81_4_finite_fixed_point_free :
   finite G ->
   fixed_point_free_action X G idG ->
   properly_discontinuous X Tx G idG.
-admit.
+let X Tx G idG.
+assume HHausX HhomeG HidG HidAct HfiniteG Hfree.
+claim HtopX : topology_on X Tx.
+{
+  exact (Hausdorff_space_topology X Tx HHausX).
+}
+claim HpropDisc :
+  forall x:set, x :e X ->
+  exists U:set, U :e Tx /\ x :e U /\
+    (forall g:set, g :e G -> g <> idG ->
+      apply_fun g x :e X /\
+      (forall y:set, y :e U -> apply_fun g y /:e U)).
+{
+let x.
+assume Hx.
+set H := {g :e G | g <> idG}.
+claim HHsubG : H c= G.
+{
+  exact (Sep_Subq G (fun g:set => g <> idG)).
+}
+claim HfinH : finite H.
+{
+  exact (Subq_finite G HfiniteG H HHsubG).
+}
+claim Hlocal_each :
+  forall g:set, g :e H ->
+    exists U:set, U :e Tx /\ x :e U /\
+      (forall y:set, y :e U -> apply_fun g y /:e U) /\
+      apply_fun g x :e X.
+{
+  let g.
+  assume HgH.
+  claim HgPack : g :e G /\ g <> idG.
+  {
+    exact (SepE G (fun h:set => h <> idG) g HgH).
+  }
+  claim HgG : g :e G.
+  {
+    exact (andEL
+      (g :e G)
+      (g <> idG)
+      HgPack).
+  }
+  claim HgNe : g <> idG.
+  {
+    exact (andER
+      (g :e G)
+      (g <> idG)
+      HgPack).
+  }
+  claim Hhomeg : homeomorphism X Tx X Tx g.
+  {
+    exact (HhomeG g HgG).
+  }
+  claim Hcontg : continuous_map X Tx X Tx g.
+  {
+    exact (homeomorphism_continuous
+      X Tx X Tx g Hhomeg).
+  }
+  claim Hfung : function_on g X X.
+  {
+    exact (continuous_map_function_on
+      X Tx X Tx g Hcontg).
+  }
+  claim HgxX : apply_fun g x :e X.
+  {
+    exact (Hfung x Hx).
+  }
+  claim HgxNe : apply_fun g x <> x.
+  {
+    exact (Hfree g HgG HgNe x Hx).
+  }
+  claim HxNeGx : x <> apply_fun g x.
+  {
+    assume HxEq.
+    apply HgxNe.
+    symmetry.
+    exact HxEq.
+  }
+  claim Hsep :
+    exists U0 V0:set, U0 :e Tx /\ V0 :e Tx /\ x :e U0 /\ apply_fun g x :e V0 /\ U0 :/\: V0 = Empty.
+  {
+    exact (Hausdorff_space_separation
+      X Tx x (apply_fun g x)
+      HHausX
+      Hx
+      HgxX
+      HxNeGx).
+  }
+  apply Hsep.
+  let U0.
+  assume HU0Pack.
+  apply HU0Pack.
+  let V0.
+  assume HV0Pack.
+  apply (and5E
+    (U0 :e Tx)
+    (V0 :e Tx)
+    (x :e U0)
+    (apply_fun g x :e V0)
+    (U0 :/\: V0 = Empty)
+    HV0Pack).
+  assume HU0 HV0 HxU0 HgxV0 HU0V0Empty.
+  claim HpreimgOpen :
+    forall V:set, V :e Tx -> preimage_of X g V :e Tx.
+  {
+    let V.
+    assume HV.
+    exact (continuous_map_preimage
+      X Tx X Tx g Hcontg V HV).
+  }
+  claim HlocalW :
+    exists W:set, W :e Tx /\ x :e W /\
+      (forall y:set, y :e W -> apply_fun g y :e V0).
+  {
+    exact (continuous_local_neighborhood
+      X Tx X Tx g
+      HtopX
+      HtopX
+      Hfung
+      HpreimgOpen
+      x
+      Hx
+      V0
+      HV0
+      HgxV0).
+  }
+  apply HlocalW.
+  let W.
+  assume HWPack.
+  claim HWxPair : W :e Tx /\ x :e W.
+  {
+    exact (andEL
+      (W :e Tx /\ x :e W)
+      (forall y:set, y :e W -> apply_fun g y :e V0)
+      HWPack).
+  }
+  claim HW : W :e Tx.
+  {
+    exact (andEL
+      (W :e Tx)
+      (x :e W)
+      HWxPair).
+  }
+  claim HxW : x :e W.
+  {
+    exact (andER
+      (W :e Tx)
+      (x :e W)
+      HWxPair).
+  }
+  claim HWtoV0 : forall y:set, y :e W -> apply_fun g y :e V0.
+  {
+    exact (andER
+      (W :e Tx /\ x :e W)
+      (forall y:set, y :e W -> apply_fun g y :e V0)
+      HWPack).
+  }
+  set U := W :/\: U0.
+  witness U.
+  prove U :e Tx /\ x :e U /\
+    (forall y:set, y :e U -> apply_fun g y /:e U) /\
+    apply_fun g x :e X.
+  apply and4I.
+  - exact (topology_binintersect_closed
+      X Tx W U0 HtopX HW HU0).
+  - exact (binintersectI W U0 x HxW HxU0).
+  - let y.
+    assume HyU.
+    assume HgyU.
+    claim HyW : y :e W.
+    {
+      exact (binintersectE1 W U0 y HyU).
+    }
+    claim HgyV0 : apply_fun g y :e V0.
+    {
+      exact (HWtoV0 y HyW).
+    }
+    claim HgyU0 : apply_fun g y :e U0.
+    {
+      exact (binintersectE2 W U0 (apply_fun g y) HgyU).
+    }
+    claim HgyU0V0 : apply_fun g y :e U0 :/\: V0.
+    {
+      exact (binintersectI
+        U0
+        V0
+        (apply_fun g y)
+        HgyU0
+        HgyV0).
+    }
+    claim HgyEmpty : apply_fun g y :e Empty.
+    {
+      rewrite <- HU0V0Empty.
+      exact HgyU0V0.
+    }
+    exact (EmptyE (apply_fun g y) HgyEmpty).
+  - exact HgxX.
+}
+claim Hglobal :
+  exists U:set, U :e Tx /\ x :e U /\
+    (forall g:set, g :e G -> g <> idG ->
+      forall y:set, y :e U -> apply_fun g y /:e U).
+{
+  set pickU := fun g:set =>
+    Eps_i (fun U:set => U :e Tx /\ x :e U /\
+      (forall y:set, y :e U -> apply_fun g y /:e U) /\
+      apply_fun g x :e X).
+  claim HpickSpec :
+    forall g:set, g :e H ->
+      pickU g :e Tx /\ x :e pickU g /\
+      (forall y:set, y :e pickU g -> apply_fun g y /:e pickU g) /\
+      apply_fun g x :e X.
+  {
+    let g.
+    assume HgH.
+    apply (Hlocal_each g HgH).
+    let U0.
+    assume HU0.
+    exact (Eps_i_ax
+      (fun U:set => U :e Tx /\ x :e U /\
+        (forall y:set, y :e U -> apply_fun g y /:e U) /\
+        apply_fun g x :e X)
+      U0
+      HU0).
+  }
+  set Fam := {pickU g|g :e H}.
+  claim HFamFin : finite Fam.
+  {
+    exact (Repl_finite (fun g:set => pickU g) H HfinH).
+  }
+  claim HFamPow : Fam :e Power Tx.
+  {
+    apply PowerI.
+    let U.
+    assume HU.
+    apply (ReplE H (fun g:set => pickU g) U HU).
+    let g.
+    assume HgPack.
+    claim HgH : g :e H.
+    {
+      exact (andEL
+        (g :e H)
+        (U = pickU g)
+        HgPack).
+    }
+    claim HUeq : U = pickU g.
+    {
+      exact (andER
+        (g :e H)
+        (U = pickU g)
+        HgPack).
+    }
+    claim HspecCore :
+      ((pickU g :e Tx /\ x :e pickU g) /\
+       (forall y:set, y :e pickU g -> apply_fun g y /:e pickU g)).
+    {
+      exact (andEL
+        ((pickU g :e Tx /\ x :e pickU g) /\
+         (forall y:set, y :e pickU g -> apply_fun g y /:e pickU g))
+        (apply_fun g x :e X)
+        (HpickSpec g HgH)).
+    }
+    claim HpickOpen : pickU g :e Tx.
+    {
+      exact (andEL
+        (pickU g :e Tx)
+        (x :e pickU g)
+        (andEL
+          (pickU g :e Tx /\ x :e pickU g)
+          (forall y:set, y :e pickU g -> apply_fun g y /:e pickU g)
+          HspecCore)).
+    }
+    rewrite HUeq.
+    exact HpickOpen.
+  }
+  set U := intersection_of_family X Fam.
+  witness U.
+  apply andI.
+  - apply andI.
+    + exact (finite_intersection_in_topology
+        X
+        Tx
+        Fam
+        HtopX
+        HFamPow
+        HFamFin).
+    + claim HxInEach : forall W:set, W :e Fam -> x :e W.
+      {
+        let W.
+        assume HW.
+        apply (ReplE H (fun g:set => pickU g) W HW).
+        let g.
+        assume HgPack.
+        claim HgH : g :e H.
+        {
+          exact (andEL
+            (g :e H)
+            (W = pickU g)
+            HgPack).
+        }
+        claim HWg : W = pickU g.
+        {
+          exact (andER
+            (g :e H)
+            (W = pickU g)
+            HgPack).
+        }
+        claim HspecCore :
+          ((pickU g :e Tx /\ x :e pickU g) /\
+           (forall y:set, y :e pickU g -> apply_fun g y /:e pickU g)).
+        {
+          exact (andEL
+            ((pickU g :e Tx /\ x :e pickU g) /\
+             (forall y:set, y :e pickU g -> apply_fun g y /:e pickU g))
+            (apply_fun g x :e X)
+            (HpickSpec g HgH)).
+        }
+        claim Hpair : pickU g :e Tx /\ x :e pickU g.
+        {
+          exact (andEL
+            (pickU g :e Tx /\ x :e pickU g)
+            (forall y:set, y :e pickU g -> apply_fun g y /:e pickU g)
+            HspecCore).
+        }
+        rewrite HWg.
+        exact (andER
+          (pickU g :e Tx)
+          (x :e pickU g)
+          Hpair).
+      }
+      exact (intersection_of_familyI
+        X
+        Fam
+        x
+        Hx
+        HxInEach).
+  - let g.
+    assume HgG HgNe.
+    let y.
+    assume HyU.
+    assume HgyU.
+    claim HgH : g :e H.
+    {
+      exact (SepI G (fun h:set => h <> idG) g HgG HgNe).
+    }
+    claim HpickInFam : pickU g :e Fam.
+    {
+      exact (ReplI H (fun t:set => pickU t) g HgH).
+    }
+    claim HavoidPick :
+      forall z:set, z :e pickU g -> apply_fun g z /:e pickU g.
+    {
+      claim HspecCore :
+        ((pickU g :e Tx /\ x :e pickU g) /\
+         (forall z:set, z :e pickU g -> apply_fun g z /:e pickU g)).
+      {
+        exact (andEL
+          ((pickU g :e Tx /\ x :e pickU g) /\
+           (forall z:set, z :e pickU g -> apply_fun g z /:e pickU g))
+          (apply_fun g x :e X)
+          (HpickSpec g HgH)).
+      }
+      exact (andER
+        (pickU g :e Tx /\ x :e pickU g)
+        (forall z:set, z :e pickU g -> apply_fun g z /:e pickU g)
+        HspecCore).
+    }
+    claim HgyPick : apply_fun g y :e pickU g.
+    {
+      exact (intersection_of_familyE2
+        X
+        Fam
+        (apply_fun g y)
+        HgyU
+        (pickU g)
+        HpickInFam).
+    }
+    exact (HavoidPick y
+      (intersection_of_familyE2
+        X
+        Fam
+        y
+        HyU
+        (pickU g)
+        HpickInFam)
+      HgyPick).
+}
+apply Hglobal.
+let U.
+assume HUpack.
+witness U.
+apply andI.
+- exact (andEL
+    (U :e Tx /\ x :e U)
+    (forall g:set, g :e G -> g <> idG ->
+      forall y:set, y :e U -> apply_fun g y /:e U)
+    HUpack).
+- let g.
+  assume HgG HgNe.
+  claim Hhomeg : homeomorphism X Tx X Tx g.
+  {
+    exact (HhomeG g HgG).
+  }
+  claim Hcontg : continuous_map X Tx X Tx g.
+  {
+    exact (homeomorphism_continuous
+      X Tx X Tx g Hhomeg).
+  }
+  claim Hfung : function_on g X X.
+  {
+    exact (continuous_map_function_on
+      X Tx X Tx g Hcontg).
+  }
+  apply andI.
+  + exact (Hfung x Hx).
+  + exact (andER
+      (U :e Tx /\ x :e U)
+      (forall g0:set, g0 :e G -> g0 <> idG ->
+        forall y:set, y :e U -> apply_fun g0 y /:e U)
+      HUpack
+      g
+      HgG
+      HgNe).
+}
+exact HpropDisc.
 Admitted.
 
 (** from S81 Exercise 5 (line 5204 in algtop.tex) **)
