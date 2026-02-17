@@ -24898,7 +24898,7 @@ apply set_ext.
     x0
     (constant_path x0)
     HconstInLoop).
-Qed.
+Admitted. (** depends on unproved Example_51_1_convex_paths_homotopic **)
 
 (** from S52 Definition (line 374 in algtop.tex): the alpha-hat map for change of basepoint **)
 (** LATEX VERSION: Let alpha be a path from x0 to x1. Define alpha-hat: pi1(X,x0) -> pi1(X,x1) by alpha-hat([f]) = [alpha-bar] . [f] . [alpha]. **)
@@ -34188,6 +34188,7 @@ Admitted.
 (** LATEX VERSION: If A is star convex, A is simply connected. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
 (** Bounty 66 **)
+(** Lock Alice 2026-02-18T06:30:00 **)
 Theorem ex52_1b_star_convex_simply_connected : forall A Ta a0:set,
   star_convex A a0 ->
   topology_on A Ta ->
@@ -34497,7 +34498,7 @@ apply andI.
   apply andI.
   + exact Ha0A.
   + exact Hpi1Trivial.
-Qed.
+Admitted. (** has admits from homotopy continuity **)
 
 (** S52 helper: reverse of a concatenation is homotopic to concatenation of reverses in opposite order **)
 Theorem reverse_path_concat_homotopy_s52 : forall X Tx x0 x1 x2 alpha beta:set,
@@ -35806,7 +35807,7 @@ claim HfinalClass :
     HfinalHom).
 }
 exact HfinalClass.
-Qed.
+Admitted. (** depends on unproved reverse_path_concat_homotopy_s52 **)
 
 (** S52 helper: conjugation-step equalities used in Exercise 3 abelian => uniqueness direction **)
 Theorem ex52_3_helper_conj_pair : forall X Tx x0 x1 alpha beta cls delta_cls:set,
@@ -36131,7 +36132,7 @@ apply iffI.
     Huniq
     Ha
     Hb).
-Qed.
+Admitted. (** depends on unproved ex52_3_helper_conj_pair **)
 
 (** from S52 Exercise 4 (line 499 in algtop.tex): retraction and pi1 **)
 (** LATEX VERSION: Let r: X -> A be a retraction. If a0 in A, show that r-star: pi1(X,a0) -> pi1(A,a0) is surjective. **)
@@ -49601,6 +49602,7 @@ Qed.
 (** beginning at b0 has a unique lifting to a path in E beginning at e0. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
 (** Bounty 132 **)
+(** Lock Bob 2026-02-18T10:30:00 **)
 Theorem lemma54_1_path_lifting : forall E Te B Tb p e0 f:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun f 0 ->
@@ -51302,6 +51304,7 @@ Definition homotopy_lift : set -> set -> set -> set -> set -> set -> set -> set 
 (** F_tilde(0,0) = e0. If F is a path homotopy, then F_tilde is a path homotopy. **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 200 **)
 (** Bounty 220 **)
+(** Lock Bob 2026-02-18T09:30:00 **)
 Theorem lemma54_2_homotopy_lifting : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun F (0, 0) ->
@@ -52832,6 +52835,7 @@ Definition lifting_correspondence : set -> set -> set -> set -> set -> set -> se
 (** If E is simply connected, phi is bijective. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 88 **)
+(** Lock Bob 2026-02-18T09:30:00 **)
 Theorem thm54_4_lifting_correspondence_surjective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   path_connected_space E Te ->
@@ -53257,7 +53261,7 @@ exact (andI
     apply_fun (path_concat alpha beta) t)
   HconcatCont
   HconcatComm).
-Qed.
+Admitted. (** depends on unproved lemma54_1_path_lifting **)
 
 (** Infrastructure: complex inversion on S^1: z -> (z_0, -z_1) = conjugate = 1/z **)
 Definition S1_conjugate_map : set :=
@@ -54803,7 +54807,7 @@ Theorem ex57_1_meteorology : forall f:set,
 let f.
 assume Hf.
 exact (thm57_3_borsuk_ulam_S2 f Hf).
-Qed.
+Admitted. (** depends on unproved ex57_1_meteorology **)
 
 (** from S57 Exercise 2 (line 1258 in algtop.tex) **)
 (** LATEX VERSION: If g: S^2 -> S^2 is continuous and g(x) != g(-x) for all x, then g is surjective. **)
@@ -56937,7 +56941,7 @@ claim HhEq :
     HalphaEq).
 }
 exact (HhInj cls1 cls2 Hcls1 Hcls2 HhEq).
-Qed.
+Admitted. (** depends on unproved lemma58_sub_basepoint_change_injective **)
 
 (** from S58 Corollary 58.5 surjective case (line 1423 in algtop.tex) **)
 (** LATEX VERSION: Let h, k: X -> Y be homotopic. If h-star is surjective, so is k-star. **)
@@ -57078,7 +57082,7 @@ apply andI.
   rewrite HkEqAlpha.
   rewrite HhEqd.
   exact HdEq.
-Qed.
+Admitted. (** depends on unproved lemma58_sub_basepoint_change_surjective **)
 
 (** from S58 Corollary 58.5 trivial case (line 1423 in algtop.tex) **)
 (** LATEX VERSION: Let h, k: X -> Y be homotopic. If h-star is trivial, so is k-star. **)
@@ -57177,7 +57181,7 @@ claim Hdesired_cls :
   exact HbaseId.
 }
 exact Hdesired_cls.
-Qed.
+Admitted. (** depends on unproved lemma58_sub_basepoint_change_id **)
 
 (** helper: a constant map induces the trivial map on fundamental groups **)
 (** Proven Bob **)
@@ -57367,7 +57371,7 @@ claim Htarget :
     HconstTriv).
 }
 exact Htarget.
-Qed.
+Admitted. (** depends on unproved cor58_5_homotopic_maps_trivial **)
 
 (** from S58 Theorem 58.7 (line 1429 in algtop.tex) **)
 (** LATEX VERSION: If f: X -> Y is a homotopy equivalence with f(x0) = y0, then f-star: pi_1(X,x0) -> pi_1(Y,y0) is an isomorphism. **)
@@ -61227,7 +61231,81 @@ Theorem ex59_4a_both_trivial : forall X Tx U V x0:set,
     apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
       (graph V (fun x:set => x))) cls = fundamental_group_id X Tx x0) ->
   simply_connected X Tx.
-admit.
+let X Tx U V x0.
+assume Htop : topology_on X Tx.
+assume HU : U :e Tx.
+assume HV : V :e Tx.
+assume Hcover : X = U :\/: V.
+assume Hx0UV : x0 :e U :/\: V.
+assume HpcUV : path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)).
+assume Hi_triv : forall cls:set,
+  cls :e fundamental_group U (subspace_topology X Tx U) x0 ->
+  apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+    (graph U (fun x:set => x))) cls = fundamental_group_id X Tx x0.
+assume Hj_triv : forall cls:set,
+  cls :e fundamental_group V (subspace_topology X Tx V) x0 ->
+  apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+    (graph V (fun x:set => x))) cls = fundamental_group_id X Tx x0.
+claim Hx0U : x0 :e U.
+{ exact (binintersectE1 U V x0 Hx0UV). }
+claim Hx0X : x0 :e X.
+{ exact (topology_elem_subset X Tx U Htop HU x0 Hx0U). }
+(** Every element of pi1(X,x0) is in the image of i-star, by ex59_4a_trivial_j_star **)
+claim Hgen : forall cls:set, cls :e fundamental_group X Tx x0 ->
+  exists ucls:set,
+    ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+    cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+      (graph U (fun x:set => x))) ucls.
+{ exact (ex59_4a_trivial_j_star X Tx U V x0 Htop HU HV Hcover Hx0UV HpcUV Hj_triv). }
+(** fundamental_group_id is in pi1 **)
+claim HeG : (fundamental_group_id X Tx x0) :e fundamental_group X Tx x0.
+{ claim HconstLoopAt : loop_at X Tx x0 (constant_path x0).
+  { exact (loop_at_constant_path X Tx x0 Htop Hx0X). }
+  claim HconstFS : (constant_path x0) :e function_space unit_interval X.
+  { exact (graph_in_function_space unit_interval X (fun t:set => x0) (fun t Ht => Hx0X)). }
+  claim HconstLoop : (constant_path x0) :e loop_space X Tx x0.
+  { exact (SepI (function_space unit_interval X) (fun g:set => loop_at X Tx x0 g)
+      (constant_path x0) HconstFS HconstLoopAt). }
+  exact (path_homotopy_class_in_fundamental_group X Tx x0 (constant_path x0) HconstLoop). }
+(** pi1(X,x0) = {id} **)
+claim Hpi1_trivial : fundamental_group X Tx x0 = {fundamental_group_id X Tx x0}.
+{ apply set_ext.
+  - let cls. assume Hcls : cls :e fundamental_group X Tx x0.
+    apply (Hgen cls Hcls).
+    let ucls.
+    assume Huc : ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+      cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+        (graph U (fun x:set => x))) ucls.
+    claim HuclsMem : ucls :e fundamental_group U (subspace_topology X Tx U) x0.
+    { exact (andEL
+        (ucls :e fundamental_group U (subspace_topology X Tx U) x0)
+        (cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+          (graph U (fun x:set => x))) ucls)
+        Huc). }
+    claim HclsEq : cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+      (graph U (fun x:set => x))) ucls.
+    { exact (andER
+        (ucls :e fundamental_group U (subspace_topology X Tx U) x0)
+        (cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+          (graph U (fun x:set => x))) ucls)
+        Huc). }
+    claim HclsId : cls = fundamental_group_id X Tx x0.
+    { rewrite HclsEq. exact (Hi_triv ucls HuclsMem). }
+    rewrite HclsId.
+    exact (SingI (fundamental_group_id X Tx x0)).
+  - let cls. assume Hcls : cls :e {fundamental_group_id X Tx x0}.
+    claim HclsId : cls = fundamental_group_id X Tx x0.
+    { exact (singleton_elem cls (fundamental_group_id X Tx x0) Hcls). }
+    rewrite HclsId. exact HeG. }
+(** simply_connected = path_connected /\ exists x0, ... **)
+prove path_connected_space X Tx /\
+  exists x0':set, x0' :e X /\
+    fundamental_group X Tx x0' = {fundamental_group_id X Tx x0'}.
+apply andI.
+- admit. (** path_connected_space X Tx -- requires additional infrastructure **)
+- witness x0. apply andI.
+  + exact Hx0X.
+  + exact Hpi1_trivial.
 Admitted.
 
 (** ============================================================ **)
@@ -68178,16 +68256,25 @@ claim Hpi1Trivial :
       (constant_path b)
       HconstInLoop).
 }
+prove topology_on X Tx /\
+  (forall b:set, b :e X ->
+    exists U:set, U :e Tx /\ b :e U /\
+      (forall cls:set,
+        cls :e fundamental_group U (subspace_topology X Tx U) b ->
+        apply_fun
+          (induced_homomorphism U (subspace_topology X Tx U) b X Tx b
+            (graph U (fun x:set => x)))
+          cls =
+        fundamental_group_id X Tx b)).
 apply andI.
 - exact HtopX.
 - let b.
   assume Hb.
   witness X.
-  apply andI.
+  apply and3I.
   + exact (topology_has_X X Tx HtopX).
-  + apply andI.
-    * exact Hb.
-    * let cls.
+  + exact Hb.
+  + let cls.
       assume HclsSub.
       claim Hcls : cls :e fundamental_group X Tx b.
       {
