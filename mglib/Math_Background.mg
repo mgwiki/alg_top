@@ -69725,12 +69725,9 @@ claim HneUV : (U :/\: V) <> Empty.
   {
     reflexivity.
   }
-  apply (iffER
-    ((U :/\: V) <> Empty)
-    (exists x:set, x :e Sn n /\
-      Rlt (minus_SNo 1) (apply_fun x 0) /\
-      Rlt (apply_fun x 0) 1)
-    (lemma59_3_overlap_nonempty_named_iff_exists_point n U V HUdef HVdef)).
+  rewrite HUdef.
+  rewrite HVdef.
+  apply (lemma59_3_overlap_nonempty_from_coord0_exists n).
   admit. (** pending: explicit witness x :e Sn n with x0 = 0 *)
 }
 claim HpcUV : path_connected_space (U :/\: V)
