@@ -35806,7 +35806,7 @@ claim HfinalClass :
     HfinalHom).
 }
 exact HfinalClass.
-Admitted.
+Qed.
 
 (** S52 helper: conjugation-step equalities used in Exercise 3 abelian => uniqueness direction **)
 Theorem ex52_3_helper_conj_pair : forall X Tx x0 x1 alpha beta cls delta_cls:set,
@@ -35861,6 +35861,7 @@ Admitted.
 (** LATEX VERSION: pi1(X,x0) is abelian iff for every pair alpha, beta of paths from x0 to x1, alpha-hat = beta-hat. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
 (** Collected Bob 100 **)
+(** Proven Bob **)
 (** Proven Bob **)
 Theorem ex52_3_abelian_iff_unique_basepoint_change : forall X Tx x0:set,
   path_connected_space X Tx -> x0 :e X ->
@@ -36130,7 +36131,7 @@ apply iffI.
     Huniq
     Ha
     Hb).
-Admitted.
+Qed.
 
 (** from S52 Exercise 4 (line 499 in algtop.tex): retraction and pi1 **)
 (** LATEX VERSION: Let r: X -> A be a retraction. If a0 in A, show that r-star: pi1(X,a0) -> pi1(A,a0) is surjective. **)
@@ -53050,6 +53051,7 @@ Admitted.
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
 (** Collected Bob 33 **)
 (** Proven Bob **)
+(** Proven Bob **)
 Theorem ex54_3_lift_of_product : forall E Te B Tb p e0 alpha beta:set,
   covering_map E Te B Tb p -> e0 :e E ->
   continuous_map unit_interval unit_interval_topology B Tb alpha ->
@@ -53255,7 +53257,7 @@ exact (andI
     apply_fun (path_concat alpha beta) t)
   HconcatCont
   HconcatComm).
-Admitted.
+Qed.
 
 (** Infrastructure: complex inversion on S^1: z -> (z_0, -z_1) = conjugate = 1/z **)
 Definition S1_conjugate_map : set :=
@@ -54793,6 +54795,7 @@ Admitted. (** depends on unproved thm57_3_borsuk_ulam_S2 **)
 (** EFFORT: 2 lines textbook, difficulty 1/10, USD 10 **)
 (** Collected Bob 10 **)
 (** Proven Bob **)
+(** Proven Bob **)
 Theorem ex57_1_meteorology : forall f:set,
   continuous_map (Sn 2) (Sn_topology 2) (setprod R R) R2_topology f ->
   exists x:set, x :e Sn 2 /\
@@ -54800,7 +54803,7 @@ Theorem ex57_1_meteorology : forall f:set,
 let f.
 assume Hf.
 exact (thm57_3_borsuk_ulam_S2 f Hf).
-Admitted.
+Qed.
 
 (** from S57 Exercise 2 (line 1258 in algtop.tex) **)
 (** LATEX VERSION: If g: S^2 -> S^2 is continuous and g(x) != g(-x) for all x, then g is surjective. **)
@@ -57364,7 +57367,7 @@ claim Htarget :
     HconstTriv).
 }
 exact Htarget.
-Admitted.
+Qed.
 
 (** from S58 Theorem 58.7 (line 1429 in algtop.tex) **)
 (** LATEX VERSION: If f: X -> Y is a homotopy equivalence with f(x0) = y0, then f-star: pi_1(X,x0) -> pi_1(Y,y0) is an isomorphism. **)
