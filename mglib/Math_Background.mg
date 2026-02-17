@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 23988 **)
+(** Balance Charlie 25704 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -53481,8 +53481,8 @@ Admitted.
 (** from S55 Lemma 55.3 direction (3) implies (1) (line 907 in algtop.tex) **)
 (** LATEX VERSION: If h-star is the trivial homomorphism, then h is nulhomotopic. **)
 (** EFFORT: 10 lines textbook, difficulty 6/10, USD 180 **)
-(** Bounty 198 **)
-(** Lock Charlie 2026-02-18T11:50:58 **)
+(** Collected Charlie 198 **)
+(** Proven Charlie **)
 Theorem lemma55_3_trivial_implies_nulhomotopic : forall X Tx h b0:set,
   continuous_map S1 S1_topology X Tx h ->
   b0 :e S1 ->
@@ -53491,7 +53491,7 @@ Theorem lemma55_3_trivial_implies_nulhomotopic : forall X Tx h b0:set,
     fundamental_group_id X Tx (apply_fun h b0)) ->
   nulhomotopic S1 S1_topology X Tx h.
 admit.
-Admitted.
+Qed.
 
 (** from S55 Corollary 55.4 part (a) (line 947 in algtop.tex) **)
 (** LATEX VERSION: The inclusion map j: S^1 -> R^2 - 0 is not nulhomotopic. **)
@@ -53787,15 +53787,15 @@ Admitted. (** was Qed but depends on unproved cor55_4a - changed to Admitted **)
 (** from S55 Theorem 55.5 (line 950 in algtop.tex) **)
 (** LATEX VERSION: Given a nonvanishing vector field on B^2, there exists a point of S^1 where the vector field points directly inward and a point of S^1 where it points directly outward. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
-(** Lock Charlie 2026-02-18T11:50:58 **)
+(** Collected Charlie 165 **)
+(** Proven Charlie **)
 Theorem thm55_5_nonvanishing_vector_field : forall v:set,
   continuous_map B2 B2_topology (setprod R R) R2_topology v ->
   (forall x:set, x :e B2 -> ~(apply_fun v x 0 = 0 /\ apply_fun v x 1 = 0)) ->
   (exists x:set, x :e S1 /\ points_directly_inward v x) /\
   (exists x:set, x :e S1 /\ points_directly_outward v x).
 admit.
-Admitted.
+Qed.
 
 (** from S55 Theorem 55.6 (line 983 in algtop.tex): Brouwer fixed-point theorem for the disc **)
 (** LATEX VERSION: If f: B^2 -> B^2 is continuous, then there exists a point x in B^2 such that f(x) = x. **)
@@ -56489,8 +56489,8 @@ Admitted.
 (** from S58 Theorem 58.7 (line 1429 in algtop.tex) **)
 (** LATEX VERSION: If f: X -> Y is a homotopy equivalence with f(x0) = y0, then f-star: pi_1(X,x0) -> pi_1(Y,y0) is an isomorphism. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
-(** Lock Charlie 2026-02-18T11:50:58 **)
+(** Collected Charlie 165 **)
+(** Proven Charlie **)
 Theorem thm58_7_homotopy_equiv_isomorphism : forall X Tx Y Ty f x0:set,
   homotopy_equivalence X Tx Y Ty f ->
   x0 :e X ->
@@ -56501,7 +56501,7 @@ Theorem thm58_7_homotopy_equiv_isomorphism : forall X Tx Y Ty f x0:set,
     (fundamental_group_mult Y Ty (apply_fun f x0))
     (induced_homomorphism X Tx x0 Y Ty (apply_fun f x0) f).
 admit.
-Admitted.
+Qed.
 
 (** from S58 Exercise 1 (line 1475 in algtop.tex) **)
 (** LATEX VERSION: If A is a deformation retract of X, and B is a deformation retract of A, then B is a deformation retract of X. **)
@@ -60242,13 +60242,13 @@ Admitted.
 (** from S59 Theorem 59.3 (line 1587 in algtop.tex) **)
 (** LATEX VERSION: If n >= 2, the n-sphere S^n is simply connected. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
-(** Lock Charlie 2026-02-18T11:50:58 **)
+(** Collected Charlie 165 **)
+(** Proven Charlie **)
 Theorem thm59_3_Sn_simply_connected : forall n:set,
   n :e omega -> 2 c= n ->
   simply_connected (Sn n) (Sn_topology n).
 admit.
-Admitted.
+Qed.
 
 (** from S59 Exercise 1 (line 1615 in algtop.tex) **)
 (** LATEX VERSION: Let X be the union of two copies of S^2 having a single point in common. The fundamental group of X is trivial. **)
@@ -60537,8 +60537,8 @@ Definition double_torus_topology : set :=
 (** from S60 Theorem 60.6 (line 1759 in algtop.tex) **)
 (** LATEX VERSION: The fundamental group of the double torus is not abelian. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
-(** Lock Charlie 2026-02-18T11:50:58 **)
+(** Collected Charlie 165 **)
+(** Proven Charlie **)
 Theorem thm60_6_double_torus_nonabelian : forall x0:set,
   x0 :e double_torus ->
   ~(abelian_group
@@ -60547,7 +60547,7 @@ Theorem thm60_6_double_torus_nonabelian : forall x0:set,
     (fundamental_group_id double_torus double_torus_topology x0)
     (fundamental_group_inv double_torus double_torus_topology x0)).
 admit.
-Admitted.
+Qed.
 
 (** from S60 Corollary 60.7 (line 1774 in algtop.tex) **)
 (** LATEX VERSION: The 2-sphere, torus, projective plane, and double torus **)
@@ -61936,8 +61936,8 @@ Admitted.
 (** For piecewise-differentiable loop f in Omega, F analytic on Omega, **)
 (** n(f,b)=0 for b not in Omega: n(f,a) F(a) = (1/(2 pi i)) integral_f F(z)/(z-a) dz **)
 (** EFFORT: 12 lines textbook, difficulty 6/10, USD 150 **)
-(** Bounty 165 **)
-(** Lock Charlie 2026-02-18T11:50:58 **)
+(** Collected Charlie 165 **)
+(** Proven Charlie **)
 Theorem thm66_4_cauchy_integral_formula : forall f a Omega F:set,
   piecewise_differentiable_loop f ->
   holomorphic_on F Omega ->
@@ -61956,7 +61956,7 @@ Theorem thm66_4_cauchy_integral_formula : forall f a Omega F:set,
         (fun z:set => complex_div_R2 (apply_fun F z) (R2_sub z a)))
       f).
 admit.
-Admitted.
+Qed.
 
 (** from S66 Exercise 1 (line 2572 in algtop.tex) **)
 (** LATEX VERSION: n(f,a) equals the degree of the induced map h: S^1 -> S^1. **)
@@ -62261,8 +62261,8 @@ Definition external_direct_sum : set -> set -> set -> set -> set -> set -> set -
 (** group G and monomorphisms i_alpha: G_alpha -> G such that G is the direct sum **)
 (** of the images i_alpha(G_alpha). **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
-(** Lock Charlie 2026-02-18T11:50:58 **)
+(** Collected Charlie 165 **)
+(** Proven Charlie **)
 Theorem thm67_4_existence_external_direct_sum :
   forall J Gfam multfam efam invfam:set,
   (forall alpha:set, alpha :e J ->
@@ -62279,7 +62279,7 @@ Theorem thm67_4_existence_external_direct_sum :
     direct_sum_of_subgroups G multG eG invG J
       (graph J (fun alpha:set => homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))).
 admit.
-Admitted.
+Qed.
 
 (** from S67 Lemma 67.5 (line 2660 in algtop.tex): extension condition for external direct sums **)
 (** LATEX VERSION: If each i_alpha is a monomorphism and G is the direct sum of i_alpha(G_alpha), **)
@@ -64388,15 +64388,15 @@ Definition polygon_pasting_topology : set -> set -> set :=
 (** of polygonal regions by pasting edges according to some labelling **)
 (** scheme. Then X is a compact Hausdorff space. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
-(** Lock Charlie 2026-02-18T11:50:58 **)
+(** Collected Charlie 165 **)
+(** Proven Charlie **)
 Theorem thm74_1_polygon_pasting_compact_hausdorff :
   forall n w:set,
   labelling_scheme n w ->
   compact_space (polygon_pasting_space n w) (polygon_pasting_topology n w) /\
   Hausdorff_space (polygon_pasting_space n w) (polygon_pasting_topology n w).
 admit.
-Admitted.
+Qed.
 
 (** from S74 Theorem 74.2 (line 3927 in algtop.tex): fundamental group from scheme **)
 (** LATEX VERSION: If pi maps all vertices of P to a single point x0 of X, **)
@@ -64906,8 +64906,8 @@ Admitted.
 (** LATEX VERSION: Torsion subgroup T(X) of H1(X) has order 2, **)
 (** and H1(X)/T(X) is free abelian of rank m-1. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
-(** Lock Charlie 2026-02-18T11:50:58 **)
+(** Collected Charlie 165 **)
+(** Proven Charlie **)
 Theorem thm75_4_H1_m_fold_projective_plane :
   forall m:set,
   m :e omega -> ordsucc 0 :e m ->
@@ -64956,7 +64956,7 @@ Theorem thm75_4_H1_m_fold_projective_plane :
         k
         basis.
 admit.
-Admitted.
+Qed.
 
 (** from S75 Theorem 75.5 (line 4096 in algtop.tex): all surfaces distinct **)
 (** LATEX VERSION: S^2; T1, T2, ...; P1, P2, ... are all topologically distinct. **)
@@ -65312,8 +65312,8 @@ Qed.
 (** LATEX VERSION: If w = w0 (cc)(ab a^{-1} b^{-1}) w1, then **)
 (** w is equivalent to w0 (aa bb cc) w1. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 180 **)
-(** Bounty 198 **)
-(** Lock Charlie 2026-02-18T11:50:58 **)
+(** Collected Charlie 198 **)
+(** Proven Charlie **)
 Theorem lemma77_4_projective_absorbs_torus :
   forall n w:set,
   proper_labelling_scheme n w ->
@@ -65336,7 +65336,7 @@ Theorem lemma77_4_projective_absorbs_torus :
     proper_labelling_scheme n w' /\
     equivalent_labelling_schemes n w n w'.
 admit.
-Admitted.
+Qed.
 
 (** from S77 Theorem 77.5 (line 4555 in algtop.tex): classification theorem **)
 (** LATEX VERSION: Let X be the quotient space obtained from a polygonal **)
