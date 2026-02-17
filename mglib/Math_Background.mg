@@ -1,6 +1,6 @@
 (** Balance Alice 2634 **)
 (** Balance Bob 2577 **)
-(** Balance Charlie 1 **)
+(** Balance Charlie 0 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -53632,8 +53632,7 @@ Admitted.
 (** from S55 Lemma 55.3 direction (3) implies (1) (line 907 in algtop.tex) **)
 (** LATEX VERSION: If h-star is the trivial homomorphism, then h is nulhomotopic. **)
 (** EFFORT: 10 lines textbook, difficulty 6/10, USD 180 **)
-(** Collected Charlie 198 **)
-(** Proven Charlie **)
+(** Bounty 198 **)
 Theorem lemma55_3_trivial_implies_nulhomotopic : forall X Tx h b0:set,
   continuous_map S1 S1_topology X Tx h ->
   b0 :e S1 ->
@@ -53657,8 +53656,7 @@ Admitted.
 (** from S55 Corollary 55.4 part (b) (line 947 in algtop.tex) **)
 (** LATEX VERSION: The identity map i: S^1 -> S^1 is not nulhomotopic. **)
 (** EFFORT: 2 lines textbook, difficulty 1/10, USD 20 **)
-(** Collected Charlie 22 **)
-(** Proven Charlie **)
+(** Bounty 22 **)
 Theorem cor55_4b_identity_S1_not_nulhomotopic :
   ~(nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x))).
 assume Hnul.
@@ -54279,8 +54277,7 @@ Definition antipode_preserving_Sn : set -> set -> set -> prop := fun n m h =>
 (** from S57 Theorem 57.1 (line 1186 in algtop.tex) **)
 (** LATEX VERSION: If h: S^1 -> S^1 is continuous and antipode-preserving, then h is not nulhomotopic. **)
 (** EFFORT: 25 lines textbook, difficulty 7/10, USD 350 **)
-(** Collected Charlie 385 **)
-(** Proven Charlie **)
+(** Bounty 385 **)
 Theorem thm57_1_antipode_preserving_not_nulhomotopic : forall h:set,
   antipode_preserving_S1 h ->
   ~(nulhomotopic S1 S1_topology S1 S1_topology h).
@@ -54322,8 +54319,7 @@ Definition bounded_measurable_R2 : set -> prop := fun A =>
 (** LATEX VERSION: Given two bounded polygonal regions in R^2, there exists a line in R^2 that bisects each of them. **)
 (** We state this using the Borsuk-Ulam theorem abstractly **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
-(** Collected Charlie 165 **)
-(** Proven Charlie **)
+(** Bounty 165 **)
 (** from S57 Theorem 57.4 (line 1227 in algtop.tex): bisection theorem **)
 (** NOTE: The full statement requires an area measure; we state it using an abstract **)
 (** continuous area function f_i: S^2 -> R measuring the area of A_i on one side of the **)
@@ -64397,8 +64393,7 @@ Admitted.
 (** U cap V), then there is a unique Phi: pi1(X,x0) -> H with Phi o j1 = phi1, **)
 (** Phi o j2 = phi2. **)
 (** EFFORT: 60 lines textbook, difficulty 9/10, USD 1200 **)
-(** Collected Charlie 1320 **)
-(** Proven Charlie **)
+(** Bounty 1320 **)
 Theorem thm70_1_seifert_van_kampen :
   forall X Tx U V x0:set,
   topology_on X Tx ->
