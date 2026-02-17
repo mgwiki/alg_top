@@ -47830,6 +47830,223 @@ Theorem ex58_1_transitive_deformation_retract : forall X Tx A B:set,
   deformation_retract X Tx A ->
   deformation_retract A (subspace_topology X Tx A) B ->
   deformation_retract X Tx B.
+let X Tx A B.
+assume HtopX HdeformXA HdeformAB.
+claim HAsubX : A c= X.
+{
+  exact (andEL
+    (A c= X)
+    (exists H:set,
+      continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology) X Tx H /\
+      (forall x:set, x :e X -> apply_fun H (x, 0) = x) /\
+      (forall x:set, x :e X -> apply_fun H (x, 1) :e A) /\
+      (forall a t:set, a :e A -> t :e unit_interval -> apply_fun H (a, t) = a))
+    HdeformXA).
+}
+claim HBsubA : B c= A.
+{
+  exact (andEL
+    (B c= A)
+    (exists H:set,
+      continuous_map (setprod A unit_interval)
+        (product_topology A (subspace_topology X Tx A) unit_interval unit_interval_topology)
+        A
+        (subspace_topology X Tx A)
+        H /\
+      (forall a:set, a :e A -> apply_fun H (a, 0) = a) /\
+      (forall a:set, a :e A -> apply_fun H (a, 1) :e B) /\
+      (forall b t:set, b :e B -> t :e unit_interval -> apply_fun H (b, t) = b))
+    HdeformAB).
+}
+claim HBsubX : B c= X.
+{
+  exact (Subq_tra B A X HBsubA HAsubX).
+}
+claim HtopA : topology_on A (subspace_topology X Tx A).
+{
+  exact (subspace_topology_is_topology
+    X
+    Tx
+    A
+    HtopX
+    HAsubX).
+}
+claim HH1Wit :
+  exists H1:set,
+    continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) X Tx H1 /\
+    (forall x:set, x :e X -> apply_fun H1 (x, 0) = x) /\
+    (forall x:set, x :e X -> apply_fun H1 (x, 1) :e A) /\
+    (forall a t:set, a :e A -> t :e unit_interval -> apply_fun H1 (a, t) = a).
+{
+  exact (andER
+    (A c= X)
+    (exists H:set,
+      continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology) X Tx H /\
+      (forall x:set, x :e X -> apply_fun H (x, 0) = x) /\
+      (forall x:set, x :e X -> apply_fun H (x, 1) :e A) /\
+      (forall a t:set, a :e A -> t :e unit_interval -> apply_fun H (a, t) = a))
+    HdeformXA).
+}
+apply HH1Wit.
+let H1.
+assume H1Pack.
+claim H1Triple :
+  (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) X Tx H1 /\
+    (forall x:set, x :e X -> apply_fun H1 (x, 0) = x) /\
+    (forall x:set, x :e X -> apply_fun H1 (x, 1) :e A)) /\
+  (forall a t:set, a :e A -> t :e unit_interval -> apply_fun H1 (a, t) = a).
+{
+  exact H1Pack.
+}
+claim H1Main :
+  continuous_map (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology) X Tx H1 /\
+  (forall x:set, x :e X -> apply_fun H1 (x, 0) = x) /\
+  (forall x:set, x :e X -> apply_fun H1 (x, 1) :e A).
+{
+  exact (andEL
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) X Tx H1 /\
+      (forall x:set, x :e X -> apply_fun H1 (x, 0) = x) /\
+      (forall x:set, x :e X -> apply_fun H1 (x, 1) :e A))
+    (forall a t:set, a :e A -> t :e unit_interval -> apply_fun H1 (a, t) = a)
+    H1Triple).
+}
+claim H1Cont :
+  continuous_map (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology) X Tx H1.
+{
+  exact (andEL
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) X Tx H1)
+    (forall x:set, x :e X -> apply_fun H1 (x, 0) = x)
+    (andEL
+      (continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology) X Tx H1 /\
+        (forall x:set, x :e X -> apply_fun H1 (x, 0) = x))
+      (forall x:set, x :e X -> apply_fun H1 (x, 1) :e A)
+      H1Main)).
+}
+claim H1At0 : forall x:set, x :e X -> apply_fun H1 (x, 0) = x.
+{
+  exact (andER
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) X Tx H1)
+    (forall x:set, x :e X -> apply_fun H1 (x, 0) = x)
+    (andEL
+      (continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology) X Tx H1 /\
+        (forall x:set, x :e X -> apply_fun H1 (x, 0) = x))
+      (forall x:set, x :e X -> apply_fun H1 (x, 1) :e A)
+      H1Main)).
+}
+claim H1At1InA : forall x:set, x :e X -> apply_fun H1 (x, 1) :e A.
+{
+  exact (andER
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) X Tx H1 /\
+      (forall x:set, x :e X -> apply_fun H1 (x, 0) = x))
+    (forall x:set, x :e X -> apply_fun H1 (x, 1) :e A)
+    H1Main).
+}
+claim H1FixA : forall a t:set, a :e A -> t :e unit_interval -> apply_fun H1 (a, t) = a.
+{
+  exact (andER
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) X Tx H1 /\
+      (forall x:set, x :e X -> apply_fun H1 (x, 0) = x) /\
+      (forall x:set, x :e X -> apply_fun H1 (x, 1) :e A))
+    (forall a t:set, a :e A -> t :e unit_interval -> apply_fun H1 (a, t) = a)
+    H1Triple).
+}
+claim HH2Wit :
+  exists H2:set,
+    continuous_map (setprod A unit_interval)
+      (product_topology A (subspace_topology X Tx A) unit_interval unit_interval_topology)
+      A
+      (subspace_topology X Tx A)
+      H2 /\
+    (forall a:set, a :e A -> apply_fun H2 (a, 0) = a) /\
+    (forall a:set, a :e A -> apply_fun H2 (a, 1) :e B) /\
+    (forall b t:set, b :e B -> t :e unit_interval -> apply_fun H2 (b, t) = b).
+{
+  exact (andER
+    (B c= A)
+    (exists H:set,
+      continuous_map (setprod A unit_interval)
+        (product_topology A (subspace_topology X Tx A) unit_interval unit_interval_topology)
+        A
+        (subspace_topology X Tx A)
+        H /\
+      (forall a:set, a :e A -> apply_fun H (a, 0) = a) /\
+      (forall a:set, a :e A -> apply_fun H (a, 1) :e B) /\
+      (forall b t:set, b :e B -> t :e unit_interval -> apply_fun H (b, t) = b))
+    HdeformAB).
+}
+apply HH2Wit.
+let H2.
+assume H2Pack.
+set r1 := graph X (fun x:set => apply_fun H1 (x, 1)).
+set r2 := graph A (fun a:set => apply_fun H2 (a, 1)).
+claim Hr1IntoA : forall x:set, x :e X -> apply_fun r1 x :e A.
+{
+  let x.
+  assume Hx.
+  rewrite (apply_fun_graph
+    X
+    (fun x0:set => apply_fun H1 (x0, 1))
+    x
+    Hx).
+  exact (H1At1InA x Hx).
+}
+claim Hr2IntoB : forall a:set, a :e A -> apply_fun r2 a :e B.
+{
+  claim H2Main :
+    continuous_map (setprod A unit_interval)
+      (product_topology A (subspace_topology X Tx A) unit_interval unit_interval_topology)
+      A
+      (subspace_topology X Tx A)
+      H2 /\
+    (forall a0:set, a0 :e A -> apply_fun H2 (a0, 0) = a0) /\
+    (forall a0:set, a0 :e A -> apply_fun H2 (a0, 1) :e B).
+  {
+    exact (andEL
+      (continuous_map (setprod A unit_interval)
+        (product_topology A (subspace_topology X Tx A) unit_interval unit_interval_topology)
+        A
+        (subspace_topology X Tx A)
+        H2 /\
+        (forall a0:set, a0 :e A -> apply_fun H2 (a0, 0) = a0) /\
+        (forall a0:set, a0 :e A -> apply_fun H2 (a0, 1) :e B))
+      (forall b t:set, b :e B -> t :e unit_interval -> apply_fun H2 (b, t) = b)
+      H2Pack).
+  }
+  claim H2At1InB : forall a0:set, a0 :e A -> apply_fun H2 (a0, 1) :e B.
+  {
+    exact (andER
+      (continuous_map (setprod A unit_interval)
+        (product_topology A (subspace_topology X Tx A) unit_interval unit_interval_topology)
+        A
+        (subspace_topology X Tx A)
+        H2 /\
+        (forall a0:set, a0 :e A -> apply_fun H2 (a0, 0) = a0))
+      (forall a0:set, a0 :e A -> apply_fun H2 (a0, 1) :e B)
+      H2Main).
+  }
+  let a.
+  assume Ha.
+  rewrite (apply_fun_graph
+    A
+    (fun a0:set => apply_fun H2 (a0, 1))
+    a
+    Ha).
+  exact (H2At1InB a Ha).
+}
+(** Next step: build an explicit composite deformation homotopy X x I -> X using H1 and H2 via reparameterization/pasting. **)
 admit.
 Admitted.
 
