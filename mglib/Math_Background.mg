@@ -1,4 +1,4 @@
-(** Balance Alice 2384 **)
+(** Balance Alice 2434 **)
 (** Balance Bob 2808 **)
 (** Balance Charlie 1586 **)
 
@@ -51830,7 +51830,7 @@ claim HnulIncl :
   exact HnulInclRaw.
 }
 exact (cor55_4a_inclusion_S1_R2_not_nulhomotopic HnulIncl).
-Qed.
+Admitted. (** was Qed but depends on unproved cor55_4a - changed to Admitted **)
 
 (** from S55 Theorem 55.5 (line 950 in algtop.tex) **)
 (** LATEX VERSION: Given a nonvanishing vector field on B^2, there exists a point of S^1 where the vector field points directly inward and a point of S^1 where it points directly outward. **)
@@ -52656,7 +52656,8 @@ Definition deformation_retract : set -> set -> set -> prop := fun X Tx A =>
 (** from S58 Theorem 58.3 (line 1319 in algtop.tex) **)
 (** LATEX VERSION: Let A be a deformation retract of X; let x0 in A. Then inclusion j: (A,x0) -> (X,x0) induces an isomorphism of fundamental groups. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Collected Alice 50 **)
+(** Proven Alice **)
 Theorem thm58_3_deformation_retract_isomorphism : forall X Tx A x0:set,
   topology_on X Tx ->
   deformation_retract X Tx A ->
@@ -52668,8 +52669,380 @@ Theorem thm58_3_deformation_retract_isomorphism : forall X Tx A x0:set,
     (fundamental_group_mult X Tx x0)
     (induced_homomorphism A (subspace_topology X Tx A) x0 X Tx x0
       (graph A (fun x:set => x))).
-admit.
-Admitted.
+let X Tx A x0.
+assume HtopX Hdeform Hx0A.
+set Ta := subspace_topology X Tx A.
+set j := graph A (fun x:set => x).
+set jstar := induced_homomorphism A Ta x0 X Tx x0 j.
+(** Extract deformation retract components **)
+claim HAsubX : A c= X.
+{
+  exact (andEL
+    (A c= X)
+    (exists H:set,
+      continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology) X Tx H /\
+      (forall x:set, x :e X -> apply_fun H (x, 0) = x) /\
+      (forall x:set, x :e X -> apply_fun H (x, 1) :e A) /\
+      (forall a t:set, a :e A -> t :e unit_interval -> apply_fun H (a, t) = a))
+    Hdeform).
+}
+claim Hx0X : x0 :e X.
+{ exact (HAsubX x0 Hx0A). }
+claim HtopA : topology_on A Ta.
+{ exact (subspace_topology_is_topology X Tx A HtopX HAsubX). }
+claim HexH : exists H:set,
+  continuous_map (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology) X Tx H /\
+  (forall x:set, x :e X -> apply_fun H (x, 0) = x) /\
+  (forall x:set, x :e X -> apply_fun H (x, 1) :e A) /\
+  (forall a t:set, a :e A -> t :e unit_interval -> apply_fun H (a, t) = a).
+{
+  exact (andER
+    (A c= X)
+    (exists H:set,
+      continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology) X Tx H /\
+      (forall x:set, x :e X -> apply_fun H (x, 0) = x) /\
+      (forall x:set, x :e X -> apply_fun H (x, 1) :e A) /\
+      (forall a t:set, a :e A -> t :e unit_interval -> apply_fun H (a, t) = a))
+    Hdeform).
+}
+apply HexH.
+let H.
+assume HHpack.
+claim HHleft :
+  (continuous_map (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology) X Tx H /\
+  (forall x:set, x :e X -> apply_fun H (x, 0) = x)) /\
+  (forall x:set, x :e X -> apply_fun H (x, 1) :e A).
+{
+  exact (andEL
+    ((continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) X Tx H /\
+    (forall x:set, x :e X -> apply_fun H (x, 0) = x)) /\
+    (forall x:set, x :e X -> apply_fun H (x, 1) :e A))
+    (forall a t:set, a :e A -> t :e unit_interval -> apply_fun H (a, t) = a)
+    HHpack).
+}
+claim HHfix : forall a t:set, a :e A -> t :e unit_interval -> apply_fun H (a, t) = a.
+{
+  exact (andER
+    ((continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) X Tx H /\
+    (forall x:set, x :e X -> apply_fun H (x, 0) = x)) /\
+    (forall x:set, x :e X -> apply_fun H (x, 1) :e A))
+    (forall a t:set, a :e A -> t :e unit_interval -> apply_fun H (a, t) = a)
+    HHpack).
+}
+claim HHcont_at0 :
+  continuous_map (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology) X Tx H /\
+  (forall x:set, x :e X -> apply_fun H (x, 0) = x).
+{
+  exact (andEL
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) X Tx H /\
+    (forall x:set, x :e X -> apply_fun H (x, 0) = x))
+    (forall x:set, x :e X -> apply_fun H (x, 1) :e A)
+    HHleft).
+}
+claim HHat1inA : forall x:set, x :e X -> apply_fun H (x, 1) :e A.
+{
+  exact (andER
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) X Tx H /\
+    (forall x:set, x :e X -> apply_fun H (x, 0) = x))
+    (forall x:set, x :e X -> apply_fun H (x, 1) :e A)
+    HHleft).
+}
+claim HHcont : continuous_map (setprod X unit_interval)
+  (product_topology X Tx unit_interval unit_interval_topology) X Tx H.
+{
+  exact (andEL
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) X Tx H)
+    (forall x:set, x :e X -> apply_fun H (x, 0) = x)
+    HHcont_at0).
+}
+claim HHat0 : forall x:set, x :e X -> apply_fun H (x, 0) = x.
+{
+  exact (andER
+    (continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) X Tx H)
+    (forall x:set, x :e X -> apply_fun H (x, 0) = x)
+    HHcont_at0).
+}
+(** Define r: X -> X by r(x) = H(x,1) **)
+set rX := graph X (fun x:set => apply_fun H (x, 1)).
+(** r maps X into A **)
+claim HrXapply : forall x:set, x :e X -> apply_fun rX x = apply_fun H (x, 1).
+{
+  let x. assume Hx.
+  exact (apply_fun_graph X (fun x0:set => apply_fun H (x0, 1)) x Hx).
+}
+claim HrXintoA : forall x:set, x :e X -> apply_fun rX x :e A.
+{
+  let x. assume Hx.
+  rewrite (HrXapply x Hx).
+  exact (HHat1inA x Hx).
+}
+(** r is continuous X -> X (compose identity x -> (x,1) with H) **)
+claim HrXcont_XX : continuous_map X Tx X Tx rX.
+{
+  set embed1 := pair_map X (graph X (fun x:set => x)) (const_fun X 1).
+  claim HidContX : continuous_map X Tx X Tx (graph X (fun x:set => x)).
+  { exact (identity_continuous X Tx HtopX). }
+  claim HconstCont : continuous_map X Tx unit_interval unit_interval_topology (const_fun X 1).
+  { exact (const_fun_continuous X Tx unit_interval unit_interval_topology 1
+      HtopX unit_interval_topology_on one_in_unit_interval). }
+  claim HembedCont : continuous_map X Tx
+    (setprod X unit_interval) (product_topology X Tx unit_interval unit_interval_topology) embed1.
+  { exact (maps_into_products X Tx X Tx unit_interval unit_interval_topology
+      (graph X (fun x:set => x)) (const_fun X 1) HidContX HconstCont). }
+  claim HrXeq : rX = compose_fun X embed1 H.
+  {
+    apply (total_function_space_extensional X X rX (compose_fun X embed1 H)).
+    - exact (graph_in_total_function_space X X
+        (fun x:set => apply_fun H (x, 1))
+        (fun x:set => fun Hx:x :e X => HAsubX (apply_fun H (x, 1)) (HHat1inA x Hx))).
+    - exact (compose_fun_in_total_function_space X (setprod X unit_interval) X
+        embed1 H
+        (continuous_map_function_on X Tx (setprod X unit_interval)
+          (product_topology X Tx unit_interval unit_interval_topology) embed1 HembedCont)
+        (continuous_map_function_on (setprod X unit_interval)
+          (product_topology X Tx unit_interval unit_interval_topology) X Tx H HHcont)).
+    - let x. assume Hx.
+      rewrite (HrXapply x Hx).
+      rewrite (compose_fun_apply X embed1 H x Hx).
+      rewrite (pair_map_apply X X unit_interval
+        (graph X (fun x0:set => x0)) (const_fun X 1) x Hx).
+      rewrite (apply_fun_graph X (fun x0:set => x0) x Hx).
+      rewrite (const_fun_apply X 1 x Hx).
+      reflexivity.
+  }
+  rewrite HrXeq.
+  exact (composition_continuous X Tx
+    (setprod X unit_interval) (product_topology X Tx unit_interval unit_interval_topology)
+    X Tx embed1 H HembedCont HHcont).
+}
+(** r is continuous X -> A (subspace topology) **)
+claim HrXcont_XA : continuous_map X Tx A Ta rX.
+{ exact (continuous_map_range_restrict X Tx X Tx rX A HrXcont_XX HAsubX HrXintoA). }
+(** j is continuous A -> X **)
+claim HjCont : continuous_map A Ta X Tx j.
+{ exact (subspace_inclusion_continuous X Tx A HtopX HAsubX). }
+(** apply_fun j a = a for a in A **)
+claim Hjapply : forall a:set, a :e A -> apply_fun j a = a.
+{
+  let a. assume Ha.
+  exact (apply_fun_graph A (fun x:set => x) a Ha).
+}
+claim Hj0 : apply_fun j x0 = x0.
+{ exact (Hjapply x0 Hx0A). }
+(** r fixes A: r(a) = a for a in A **)
+claim HrFixA : forall a:set, a :e A -> apply_fun rX a = a.
+{
+  let a. assume Ha.
+  rewrite (HrXapply a (HAsubX a Ha)).
+  exact (HHfix a 1 Ha one_in_unit_interval).
+}
+claim Hr0 : apply_fun rX x0 = x0.
+{ exact (HrFixA x0 Hx0A). }
+(** compose_fun A j rX = graph A id (since r(j(a)) = r(a) = a) **)
+claim HcompJR : compose_fun A j rX = graph A (fun x:set => x).
+{
+  apply (total_function_space_extensional A A (compose_fun A j rX) (graph A (fun x:set => x))).
+  - exact (compose_fun_in_total_function_space A X A j rX
+      (continuous_map_function_on A Ta X Tx j HjCont)
+      (continuous_map_function_on X Tx A Ta rX HrXcont_XA)).
+  - exact (graph_in_total_function_space A A (fun x:set => x) (fun x Hx => Hx)).
+  - let a. assume Ha.
+    rewrite (compose_fun_apply A j rX a Ha).
+    rewrite (Hjapply a Ha).
+    rewrite (HrFixA a Ha).
+    reflexivity.
+}
+(** compose_fun X rX j maps x -> H(x,1). This is homotopic to id_X via H **)
+set idX := graph X (fun x:set => x).
+set jr := compose_fun X rX j.
+claim HjrApply : forall x:set, x :e X -> apply_fun jr x = apply_fun H (x, 1).
+{
+  let x. assume Hx.
+  rewrite (compose_fun_apply X rX j x Hx).
+  claim HrxA : apply_fun rX x :e A.
+  { exact (HrXintoA x Hx). }
+  rewrite (Hjapply (apply_fun rX x) HrxA).
+  exact (HrXapply x Hx).
+}
+claim HjrCont : continuous_map X Tx X Tx jr.
+{ exact (composition_continuous X Tx A Ta X Tx rX j HrXcont_XA HjCont). }
+claim HidXcont : continuous_map X Tx X Tx idX.
+{ exact (identity_continuous X Tx HtopX). }
+claim HidX0 : apply_fun idX x0 = x0.
+{ exact (apply_fun_graph X (fun x:set => x) x0 Hx0X). }
+claim Hjr0 : apply_fun jr x0 = x0.
+{ rewrite (HjrApply x0 Hx0X). exact (HHfix x0 1 Hx0A one_in_unit_interval). }
+(** H is a homotopy from idX to jr with basepoint x0 fixed **)
+claim HhomotopyH : exists HH:set, continuous_map (setprod X unit_interval)
+  (product_topology X Tx unit_interval unit_interval_topology) X Tx HH /\
+  (forall x:set, x :e X -> apply_fun HH (x, 0) = apply_fun idX x) /\
+  (forall x:set, x :e X -> apply_fun HH (x, 1) = apply_fun jr x) /\
+  (forall t:set, t :e unit_interval -> apply_fun HH (x0, t) = x0).
+{
+  witness H.
+  prove ((continuous_map (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology) X Tx H /\
+    (forall x:set, x :e X -> apply_fun H (x, 0) = apply_fun idX x)) /\
+    (forall x:set, x :e X -> apply_fun H (x, 1) = apply_fun jr x)) /\
+    (forall t:set, t :e unit_interval -> apply_fun H (x0, t) = x0).
+  apply andI.
+  - apply andI.
+    + apply andI.
+      * exact HHcont.
+      * let x. assume Hx.
+        rewrite (HHat0 x Hx).
+        symmetry. exact (apply_fun_graph X (fun x0:set => x0) x Hx).
+    + let x. assume Hx.
+      rewrite <- (HjrApply x Hx).
+      reflexivity.
+  - let t. assume Ht.
+    exact (HHfix x0 t Hx0A Ht).
+}
+(** By lemma58_1: idX_star = jr_star **)
+claim HstarEq : forall cls:set, cls :e fundamental_group X Tx x0 ->
+  apply_fun (induced_homomorphism X Tx x0 X Tx x0 idX) cls =
+  apply_fun (induced_homomorphism X Tx x0 X Tx x0 jr) cls.
+{
+  exact (lemma58_1_basepoint_fixed_homotopy X Tx X Tx x0 x0 idX jr
+    HidXcont HjrCont HidX0 Hjr0 Hx0X HhomotopyH).
+}
+(** idX_star(cls) = cls **)
+claim HidStar : forall cls:set, cls :e fundamental_group X Tx x0 ->
+  apply_fun (induced_homomorphism X Tx x0 X Tx x0 idX) cls = cls.
+{
+  let cls. assume Hcls.
+  exact (Theorem_52_4_functorial_identity X Tx x0 HtopX Hx0X cls Hcls).
+}
+(** Functorial composition for jr = compose_fun X rX j: **)
+(** jr_star(cls) = jstar(rstar(cls)) **)
+set rstar := induced_homomorphism X Tx x0 A Ta x0 rX.
+claim HjstarHom :
+  group_homomorphism
+    (fundamental_group A Ta x0) (fundamental_group_mult A Ta x0)
+    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+    jstar.
+{
+  exact (induced_homomorphism_is_homomorphism A Ta x0 X Tx x0 j HjCont Hj0 Hx0A).
+}
+claim HjstarFun :
+  function_on jstar (fundamental_group A Ta x0) (fundamental_group X Tx x0).
+{
+  exact (group_homomorphism_function_on
+    (fundamental_group A Ta x0) (fundamental_group_mult A Ta x0)
+    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+    jstar HjstarHom).
+}
+claim HrstarHom :
+  group_homomorphism
+    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+    (fundamental_group A Ta x0) (fundamental_group_mult A Ta x0)
+    rstar.
+{
+  exact (induced_homomorphism_is_homomorphism X Tx x0 A Ta x0 rX HrXcont_XA Hr0 Hx0X).
+}
+claim HrstarFun :
+  function_on rstar (fundamental_group X Tx x0) (fundamental_group A Ta x0).
+{
+  exact (group_homomorphism_function_on
+    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+    (fundamental_group A Ta x0) (fundamental_group_mult A Ta x0)
+    rstar HrstarHom).
+}
+(** jr_star = jstar o rstar (by Theorem 52.4) **)
+claim HjrComp : forall cls:set, cls :e fundamental_group X Tx x0 ->
+  apply_fun (induced_homomorphism X Tx x0 X Tx x0 jr) cls
+  = apply_fun jstar (apply_fun rstar cls).
+{
+  let cls. assume Hcls.
+  rewrite (Theorem_52_4_functorial_composition X Tx x0 A Ta x0 X Tx x0
+    rX j HrXcont_XA HjCont Hr0 Hj0 Hx0X cls Hcls).
+  exact (compose_fun_apply (fundamental_group X Tx x0) rstar jstar cls Hcls).
+}
+(** From HstarEq and HidStar: jstar(rstar(cls)) = cls for all cls in pi1(X) **)
+claim HjrId : forall cls:set, cls :e fundamental_group X Tx x0 ->
+  apply_fun jstar (apply_fun rstar cls) = cls.
+{
+  let cls. assume Hcls.
+  rewrite <- (HjrComp cls Hcls).
+  rewrite <- (HstarEq cls Hcls).
+  exact (HidStar cls Hcls).
+}
+(** For pi1(A): compose_fun A j rX = idA, so rstar(jstar(cls)) = cls **)
+claim HrjComp : forall cls:set, cls :e fundamental_group A Ta x0 ->
+  apply_fun (induced_homomorphism A Ta x0 A Ta x0 (compose_fun A j rX)) cls
+  = apply_fun (compose_fun (fundamental_group A Ta x0) jstar rstar) cls.
+{
+  let cls. assume Hcls.
+  exact (Theorem_52_4_functorial_composition A Ta x0 X Tx x0 A Ta x0
+    j rX HjCont HrXcont_XA Hj0 Hr0 Hx0A cls Hcls).
+}
+claim HrjId : forall cls:set, cls :e fundamental_group A Ta x0 ->
+  apply_fun rstar (apply_fun jstar cls) = cls.
+{
+  let cls. assume Hcls.
+  claim HlhsId :
+    apply_fun (induced_homomorphism A Ta x0 A Ta x0 (compose_fun A j rX)) cls = cls.
+  {
+    rewrite HcompJR.
+    exact (Theorem_52_4_functorial_identity A Ta x0 HtopA Hx0A cls Hcls).
+  }
+  claim HrhsComp :
+    apply_fun (compose_fun (fundamental_group A Ta x0) jstar rstar) cls
+    = apply_fun rstar (apply_fun jstar cls).
+  {
+    exact (compose_fun_apply (fundamental_group A Ta x0) jstar rstar cls Hcls).
+  }
+  rewrite <- HrhsComp.
+  rewrite <- (HrjComp cls Hcls).
+  exact HlhsId.
+}
+(** jstar is a bijection **)
+claim HjstarBij : bijection (fundamental_group A Ta x0) (fundamental_group X Tx x0) jstar.
+{
+  prove function_on jstar (fundamental_group A Ta x0) (fundamental_group X Tx x0) /\
+    (forall y:set, y :e (fundamental_group X Tx x0) ->
+      exists x:set, x :e (fundamental_group A Ta x0) /\
+        apply_fun jstar x = y /\
+        (forall x':set, x' :e (fundamental_group A Ta x0) -> apply_fun jstar x' = y -> x' = x)).
+  apply andI.
+  - exact HjstarFun.
+  - let y.
+    assume Hy.
+    witness (apply_fun rstar y).
+    apply andI.
+    + apply andI.
+      * exact (HrstarFun y Hy).
+      * exact (HjrId y Hy).
+    + let x'.
+        assume Hx' Heq.
+        claim HrjApply :
+          apply_fun rstar (apply_fun jstar x') = x'.
+        { exact (HrjId x' Hx'). }
+        rewrite <- HrjApply.
+        rewrite Heq.
+        reflexivity.
+}
+(** Conclude: group_isomorphism **)
+prove group_homomorphism
+    (fundamental_group A Ta x0) (fundamental_group_mult A Ta x0)
+    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+    jstar /\
+  bijection (fundamental_group A Ta x0) (fundamental_group X Tx x0) jstar.
+apply andI.
+- exact HjstarHom.
+- exact HjstarBij.
+Qed.
 
 (** from S58 Definition (line 1357 in algtop.tex): homotopy equivalence **)
 (** LATEX VERSION: f: X -> Y and g: Y -> X are homotopy equivalences if g o f ~ id_X and f o g ~ id_Y. **)
