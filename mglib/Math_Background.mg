@@ -1,4 +1,4 @@
-(** Balance Alice 2689 **)
+(** Balance Alice 2777 **)
 (** Balance Bob 2664 **)
 (** Balance Charlie 18 **)
 
@@ -64277,7 +64277,8 @@ Qed.
 
 (** from S58 Exercise 7(b) (line 1496 in algtop.tex): A-preserving homotopy implies isomorphism **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
+(** Collected Alice 88 **)
+(** Proven Alice **)
 Theorem ex58_7b_A_preserved_homotopy_isomorphism : forall X Tx A a0 f H:set,
   A c= X ->
   a0 :e A ->
@@ -64294,8 +64295,156 @@ Theorem ex58_7b_A_preserved_homotopy_isomorphism : forall X Tx A a0 f H:set,
     (fundamental_group_mult X Tx a0)
     (induced_homomorphism A (subspace_topology X Tx A) a0 X Tx a0
       (graph A (fun x:set => x))).
-admit.
-Admitted.
+let X Tx A a0 f Hom.
+assume HAsub Ha0A HfCont HHcont HH0 HH1 HHpres.
+set TxA := subspace_topology X Tx A.
+set i := graph A (fun a:set => a).
+claim HtopX : topology_on X Tx.
+{ exact (continuous_map_topology_dom X Tx A TxA f HfCont). }
+claim HtopA : topology_on A TxA.
+{ exact (subspace_topology_is_topology X Tx A HtopX HAsub). }
+claim Ha0X : a0 :e X.
+{ exact (HAsub a0 Ha0A). }
+claim HiCont : continuous_map A TxA X Tx i.
+{ exact (subspace_inclusion_continuous X Tx A HtopX HAsub). }
+claim Hia0 : apply_fun i a0 = a0.
+{ exact (apply_fun_graph A (fun a:set => a) a0 Ha0A). }
+claim HfFun : function_on f X A.
+{ exact (continuous_map_function_on X Tx A TxA f HfCont). }
+(** X-side homotopy: Hom is the homotopy from compose_fun X f i to id_X **)
+claim HcompXI_cont : continuous_map X Tx X Tx (compose_fun X f i).
+{ exact (composition_continuous X Tx A TxA X Tx f i HfCont HiCont). }
+claim HidX_cont : continuous_map X Tx X Tx (graph X (fun x:set => x)).
+{ exact (identity_continuous X Tx HtopX). }
+claim HhomX : homotopic_maps X Tx X Tx (compose_fun X f i) (graph X (fun x:set => x)).
+{
+  prove continuous_map X Tx X Tx (compose_fun X f i) /\
+    continuous_map X Tx X Tx (graph X (fun x:set => x)) /\
+    exists F:set,
+      continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        X Tx F /\
+      (forall x:set, x :e X ->
+        apply_fun F (x, 0) = apply_fun (compose_fun X f i) x) /\
+      (forall x:set, x :e X ->
+        apply_fun F (x, 1) = apply_fun (graph X (fun x:set => x)) x).
+  apply and3I.
+  - exact HcompXI_cont.
+  - exact HidX_cont.
+  - witness Hom.
+    apply and3I.
+    + exact HHcont.
+    + let x. assume Hx : x :e X.
+      rewrite (HH0 x Hx).
+      symmetry.
+      exact (compose_fun_apply X f i x Hx).
+    + let x. assume Hx : x :e X.
+      rewrite (HH1 x Hx).
+      symmetry.
+      exact (apply_fun_graph X (fun x:set => x) x Hx).
+}
+(** A-side homotopy: restrict Hom to A x I with codomain A **)
+claim HtopXI : topology_on (setprod X unit_interval) (product_topology X Tx unit_interval unit_interval_topology).
+{ exact (product_topology_is_topology X Tx unit_interval unit_interval_topology HtopX unit_interval_topology_on). }
+claim HAIsub : setprod A unit_interval c= setprod X unit_interval.
+{ exact (setprod_Subq A unit_interval X unit_interval HAsub (Subq_ref unit_interval)). }
+claim HHresdom : continuous_map (setprod A unit_interval)
+  (subspace_topology (setprod X unit_interval) (product_topology X Tx unit_interval unit_interval_topology) (setprod A unit_interval))
+  X Tx Hom.
+{ exact (continuous_on_subspace
+    (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    X Tx Hom (setprod A unit_interval)
+    HtopXI HAIsub HHcont). }
+claim Hsubtop_eq :
+  product_topology A TxA unit_interval unit_interval_topology =
+  subspace_topology (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    (setprod A unit_interval).
+{ claim HI_self : unit_interval_topology = subspace_topology unit_interval unit_interval_topology unit_interval.
+  { symmetry. exact (subspace_topology_whole unit_interval unit_interval_topology unit_interval_topology_on). }
+  rewrite HI_self at 1.
+  exact (product_subspace_topology X Tx unit_interval unit_interval_topology A unit_interval
+    HtopX unit_interval_topology_on HAsub (Subq_ref unit_interval)). }
+claim HHresdom2 : continuous_map (setprod A unit_interval)
+  (product_topology A TxA unit_interval unit_interval_topology)
+  X Tx Hom.
+{ rewrite Hsubtop_eq. exact HHresdom. }
+claim HHrange : forall q:set, q :e setprod A unit_interval -> apply_fun Hom q :e A.
+{ let q. assume Hq : q :e setprod A unit_interval.
+  claim Hq0A : (q 0) :e A.
+  { exact (ap0_Sigma A (fun _ : set => unit_interval) q Hq). }
+  claim Hq1I : (q 1) :e unit_interval.
+  { exact (ap1_Sigma A (fun _ : set => unit_interval) q Hq). }
+  claim Hqeta : q = (q 0, q 1).
+  { exact (setprod_eta A unit_interval q Hq). }
+  rewrite Hqeta.
+  exact (HHpres (q 0) (q 1) Hq0A Hq1I). }
+claim HHresA : continuous_map (setprod A unit_interval)
+  (product_topology A TxA unit_interval unit_interval_topology)
+  A TxA Hom.
+{ exact (continuous_map_range_restrict
+    (setprod A unit_interval)
+    (product_topology A TxA unit_interval unit_interval_topology)
+    X Tx Hom A
+    HHresdom2 HAsub HHrange). }
+(** Build compose_fun A i f continuous and identity A continuous **)
+claim HcompAIF_cont : continuous_map A TxA A TxA (compose_fun A i f).
+{ exact (composition_continuous A TxA X Tx A TxA i f HiCont HfCont). }
+claim HidA_cont : continuous_map A TxA A TxA (graph A (fun a:set => a)).
+{ exact (identity_continuous A TxA HtopA). }
+(** A-side boundary conditions **)
+claim HhomA : homotopic_maps A TxA A TxA (compose_fun A i f) (graph A (fun a:set => a)).
+{
+  prove continuous_map A TxA A TxA (compose_fun A i f) /\
+    continuous_map A TxA A TxA (graph A (fun a:set => a)) /\
+    exists F:set,
+      continuous_map (setprod A unit_interval)
+        (product_topology A TxA unit_interval unit_interval_topology)
+        A TxA F /\
+      (forall a:set, a :e A ->
+        apply_fun F (a, 0) = apply_fun (compose_fun A i f) a) /\
+      (forall a:set, a :e A ->
+        apply_fun F (a, 1) = apply_fun (graph A (fun a:set => a)) a).
+  apply and3I.
+  - exact HcompAIF_cont.
+  - exact HidA_cont.
+  - witness Hom.
+    apply and3I.
+    + exact HHresA.
+    + let a. assume Ha : a :e A.
+      claim HfaA : apply_fun f a :e A.
+      { exact (HfFun a (HAsub a Ha)). }
+      rewrite (HH0 a (HAsub a Ha)).
+      rewrite (apply_fun_graph A (fun a:set => a) (apply_fun f a) HfaA).
+      symmetry.
+      rewrite (compose_fun_apply A i f a Ha).
+      rewrite (apply_fun_graph A (fun a:set => a) a Ha).
+      reflexivity.
+    + let a. assume Ha : a :e A.
+      rewrite (HH1 a (HAsub a Ha)).
+      symmetry.
+      exact (apply_fun_graph A (fun a:set => a) a Ha).
+}
+(** Package as homotopy_equivalence **)
+claim Hequiv : homotopy_equivalence A TxA X Tx i.
+{
+  prove continuous_map A TxA X Tx i /\
+    exists g:set,
+      continuous_map X Tx A TxA g /\
+      homotopic_maps A TxA A TxA (compose_fun A i g) (graph A (fun a:set => a)) /\
+      homotopic_maps X Tx X Tx (compose_fun X g i) (graph X (fun a:set => a)).
+  apply andI.
+  - exact HiCont.
+  - witness f.
+    apply and3I.
+    + exact HfCont.
+    + exact HhomA.
+    + exact HhomX.
+}
+rewrite <- Hia0 at 3 4 6.
+exact (thm58_7_homotopy_equiv_isomorphism A TxA X Tx i a0 Hequiv Ha0A).
+Qed.
 
 (** from S58 Exercise 10 (line 1528-1536 in algtop.tex) **)
 (** LATEX VERSION: Suppose a degree function deg: (S^n -> S^n) -> Z exists with **)
