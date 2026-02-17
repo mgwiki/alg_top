@@ -1,5 +1,5 @@
 (** Balance Alice 2410 **)
-(** Balance Bob 2450 **)
+(** Balance Bob 2483 **)
 (** Balance Charlie 1188 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -45367,8 +45367,8 @@ Admitted.
 (** alpha(1) = beta(0), and their lifts satisfy alpha_tilde(1) = beta_tilde(0), **)
 (** then alpha_tilde . beta_tilde is a lifting of alpha . beta. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Bob 2026-02-18T01:09:18 **)
+(** Collected Bob 33 **)
+(** Proven Bob **)
 Theorem ex54_3_lift_of_product : forall E Te B Tb p e0 alpha beta:set,
   covering_map E Te B Tb p -> e0 :e E ->
   continuous_map unit_interval unit_interval_topology B Tb alpha ->
@@ -45574,7 +45574,7 @@ exact (andI
     apply_fun (path_concat alpha beta) t)
   HconcatCont
   HconcatComm).
-Admitted.
+Qed.
 
 (** Infrastructure: complex inversion on S^1: z -> (z_0, -z_1) = conjugate = 1/z **)
 Definition S1_conjugate_map : set :=
