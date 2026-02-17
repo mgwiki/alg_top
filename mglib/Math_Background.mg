@@ -1,5 +1,5 @@
 (** Balance Alice 2410 **)
-(** Balance Bob 2543 **)
+(** Balance Bob 2603 **)
 (** Balance Charlie 1188 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -20912,7 +20912,8 @@ Admitted.
 (** from S52 Example 1 (line 365 in algtop.tex): pi1(Rn, x0) is trivial **)
 (** LATEX VERSION: pi1(Rn, x0) is the trivial group. More generally, if X is any convex subset of Rn, then pi1(X, x0) is trivial. **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Collected Bob 50 **)
+(** Proven Bob **)
 Theorem Example_52_1_convex_trivial_pi1 : forall A Ta x0:set,
   A c= R -> convex_in R A ->
   topology_on A Ta -> x0 :e A ->
@@ -21097,7 +21098,7 @@ apply set_ext.
     x0
     (constant_path x0)
     HconstInLoop).
-Admitted.
+Qed.
 
 (** from S52 Definition (line 374 in algtop.tex): the alpha-hat map for change of basepoint **)
 (** LATEX VERSION: Let alpha be a path from x0 to x1. Define alpha-hat: pi1(X,x0) -> pi1(X,x1) by alpha-hat([f]) = [alpha-bar] . [f] . [alpha]. **)
@@ -21192,7 +21193,8 @@ Qed.
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
 (** from S52 Theorem 52.1 sub-bounty A: homomorphism part of alpha-hat **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 10 **)
-(** Bounty 10 **)
+(** Collected Bob 10 **)
+(** Proven Bob **)
 Theorem lemma52_1_basepoint_change_homomorphism : forall X Tx x0 x1 alpha:set,
   topology_on X Tx ->
   continuous_map unit_interval unit_interval_topology X Tx alpha ->
@@ -24084,7 +24086,7 @@ exact (andI
        apply_fun (basepoint_change_map X Tx x0 x1 alpha) v))
   Hfun
   Hmult).
-Admitted.
+Qed.
 
 (** S52 helper: any loop belongs to its own path-homotopy class **)
 (** Proven Bob **)
