@@ -1,6 +1,6 @@
 (** Balance Alice 2410 **)
 (** Balance Bob 2703 **)
-(** Balance Charlie 1188 **)
+(** Balance Charlie 1202 **)
 
 (** Sum of Balences and Bounties 48150 **)
 
@@ -24632,6 +24632,7 @@ exact (path_homotopy_class_loop_in_loop_space
 Qed.
 
 (** S52 helper: cancellation of alpha-hat and beta-hat on chosen representatives **)
+(** Proven Bob **)
 Theorem lemma52_1_cancel_double_basepoint_change_class : forall X Tx x0 x1 alpha beta y ey:set,
   continuous_map unit_interval unit_interval_topology X Tx alpha ->
   continuous_map unit_interval unit_interval_topology X Tx beta ->
@@ -26647,12 +26648,12 @@ claim HcomplexClass :
     HcomplexToEy).
 }
 exact HcomplexClass.
-Admitted.
+Qed.
 
 (** from S52 Theorem 52.1 sub-bounty B: bijection part of alpha-hat **)
 (** EFFORT: 3 lines, difficulty 3/10, USD 12 **)
-(** Bounty 14 **)
-(** Lock Charlie 2026-02-18T05:30:00 **)
+(** Collected Charlie 14 **)
+(** Proven Bob **)
 Theorem lemma52_1_basepoint_change_bijection : forall X Tx x0 x1 alpha:set,
   topology_on X Tx ->
   continuous_map unit_interval unit_interval_topology X Tx alpha ->
@@ -27563,7 +27564,7 @@ exact (andI
         apply_fun (basepoint_change_map X Tx x0 x1 alpha) x' = y -> x' = x))
   Hfun
   HsurjUnique).
-Admitted.
+Qed.
 
 (** Collected Bob 110 **)
 (** Proven Bob **)
