@@ -1,6 +1,6 @@
 (** Balance Alice 2634 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 41889 **)
+(** Balance Charlie 41873 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -52920,7 +52920,8 @@ Definition generator_of : set -> set -> set -> set -> set -> prop :=
 (** LATEX VERSION: A group is cyclic of infinite order iff it is isomorphic to Z; **)
 (** cyclic of order k iff isomorphic to Z/k. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:45:00 **)
 Theorem cyclic_infinite_order_iff_Z : forall G mult e inv:set,
   group_structure G mult e inv ->
   cyclic_group G mult e inv ->
@@ -52933,7 +52934,8 @@ Admitted.
 (** LATEX VERSION: If x generates the infinite cyclic group G, and y is in an arbitrary **)
 (** group H, then there is a unique homomorphism h: G -> H with h(x) = y. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:45:00 **)
 Theorem infinite_cyclic_universal_property : forall G multG eG invG x H multH eH invH y:set,
   group_structure G multG eG invG ->
   cyclic_group G multG eG invG ->
@@ -53013,7 +53015,8 @@ Admitted.
 
 (** from S54 Theorem 54.6b surjectivity when E is path connected **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 40 **)
-(** Bounty 40 **)
+(** Bounty 44 **)
+(** Lock Charlie 2026-02-18T13:45:00 **)
 Theorem thm54_6b_coset_correspondence_surjective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   path_connected_space E Te ->
@@ -53673,7 +53676,8 @@ Admitted.
 (** from S55 Corollary 55.4 part (a) (line 947 in algtop.tex) **)
 (** LATEX VERSION: The inclusion map j: S^1 -> R^2 - 0 is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:45:00 **)
 Theorem cor55_4a_inclusion_S1_R2_not_nulhomotopic :
   ~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
     (graph S1 (fun x:set => x))).
@@ -54058,7 +54062,8 @@ Admitted.
 (** from S55 Exercise 1 (line 1042 in algtop.tex) **)
 (** LATEX VERSION: If A is a retract of B^2, then every continuous map f: A -> A has a fixed point. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:45:00 **)
 Theorem ex55_1_retract_B2_fixed_point : forall A:set,
   A c= B2 ->
   retraction_of B2 B2_topology A ->
