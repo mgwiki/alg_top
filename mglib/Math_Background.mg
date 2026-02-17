@@ -1,6 +1,6 @@
 (** Balance Alice 2634 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 40889 **)
+(** Balance Charlie 40864 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -67848,7 +67848,8 @@ Qed.
 (** T/G is homeomorphic to the Klein bottle. **)
 (** (Answer: G = {id, h} where h(z,w) = (-z, conj(w)) on S^1 x S^1.) **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T12:50:00 **)
 Theorem ex81_1b_torus_quotient_klein_bottle :
   exists G idG:set,
     (forall g:set, g :e G -> homeomorphism torus torus_topology torus torus_topology g) /\
@@ -67868,7 +67869,8 @@ Admitted.
 (** let G be its group of covering transformations. Show the action of G on X **)
 (** is properly discontinuous. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T12:50:00 **)
 Theorem ex81_3a_covering_trans_properly_discontinuous :
   forall X Tx B Tb p:set,
   covering_map X Tx B Tb p ->
@@ -67901,7 +67903,8 @@ Admitted.
 (** LATEX VERSION: If X is Hausdorff and G is a finite group of homeomorphisms **)
 (** whose action is fixed-point free, then the action is properly discontinuous. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T12:50:00 **)
 Theorem ex81_4_finite_fixed_point_free :
   forall X Tx G idG:set,
   Hausdorff_space X Tx ->
@@ -68010,7 +68013,8 @@ Admitted.
 (** LATEX VERSION: The space B has a universal covering space iff B is path connected, **)
 (** locally path connected, and semilocally simply connected. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T12:50:00 **)
 Theorem cor82_2_universal_covering_existence :
   forall B Tb:set,
   (exists E Te p:set,
@@ -68336,7 +68340,8 @@ Admitted.
 (** of: (a) arc, (b) circle, (c) wedge of n circles, (d) complete graph on n vertices? **)
 (** If E is an n-fold covering of X, how are Euler numbers of E and X related? **)
 (** EFFORT: 6 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T12:50:00 **)
 Theorem ex83_2_euler_number_examples :
   (** (a) An arc has 2 vertices, 1 edge, so chi = 1 **)
   (forall X Tx Arcs:set,
