@@ -34514,7 +34514,165 @@ Theorem reverse_path_concat_homotopy_s52 : forall X Tx x0 x1 x2 alpha beta:set,
     (path_concat (reverse_path beta) (reverse_path alpha)).
 let X Tx x0 x1 x2 alpha beta.
 assume HalphaCont HbetaCont Halpha0 Halpha1 Hbeta0 Hbeta1.
-admit.
+claim HconcatCont :
+  continuous_map
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    (path_concat alpha beta).
+{
+  exact (path_concat_continuous
+    X
+    Tx
+    x0
+    x1
+    x2
+    alpha
+    beta
+    HalphaCont
+    HbetaCont
+    Halpha0
+    Halpha1
+    Hbeta0
+    Hbeta1).
+}
+claim Hconcat0 : apply_fun (path_concat alpha beta) 0 = x0.
+{
+  rewrite (path_concat_at_zero alpha beta).
+  exact Halpha0.
+}
+claim Hconcat1 : apply_fun (path_concat alpha beta) 1 = x2.
+{
+  rewrite (path_concat_at_one alpha beta).
+  exact Hbeta1.
+}
+claim HlhsCont :
+  continuous_map
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    (reverse_path (path_concat alpha beta)).
+{
+  exact (reverse_path_continuous
+    X
+    Tx
+    (path_concat alpha beta)
+    HconcatCont).
+}
+claim Hlhs0 :
+  apply_fun (reverse_path (path_concat alpha beta)) 0 = x2.
+{
+  rewrite (reverse_path_at_zero (path_concat alpha beta)).
+  exact Hconcat1.
+}
+claim Hlhs1 :
+  apply_fun (reverse_path (path_concat alpha beta)) 1 = x0.
+{
+  rewrite (reverse_path_at_one (path_concat alpha beta)).
+  exact Hconcat0.
+}
+claim HrevBetaCont :
+  continuous_map
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    (reverse_path beta).
+{
+  exact (reverse_path_continuous
+    X
+    Tx
+    beta
+    HbetaCont).
+}
+claim HrevAlphaCont :
+  continuous_map
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    (reverse_path alpha).
+{
+  exact (reverse_path_continuous
+    X
+    Tx
+    alpha
+    HalphaCont).
+}
+claim HrevBeta0 : apply_fun (reverse_path beta) 0 = x2.
+{
+  rewrite (reverse_path_at_zero beta).
+  exact Hbeta1.
+}
+claim HrevBeta1 : apply_fun (reverse_path beta) 1 = x1.
+{
+  rewrite (reverse_path_at_one beta).
+  exact Hbeta0.
+}
+claim HrevAlpha0 : apply_fun (reverse_path alpha) 0 = x1.
+{
+  rewrite (reverse_path_at_zero alpha).
+  exact Halpha1.
+}
+claim HrevAlpha1 : apply_fun (reverse_path alpha) 1 = x0.
+{
+  rewrite (reverse_path_at_one alpha).
+  exact Halpha0.
+}
+claim HrhsCont :
+  continuous_map
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    (path_concat (reverse_path beta) (reverse_path alpha)).
+{
+  exact (path_concat_continuous
+    X
+    Tx
+    x2
+    x1
+    x0
+    (reverse_path beta)
+    (reverse_path alpha)
+    HrevBetaCont
+    HrevAlphaCont
+    HrevBeta0
+    HrevBeta1
+    HrevAlpha0
+    HrevAlpha1).
+}
+claim Hrhs0 :
+  apply_fun (path_concat (reverse_path beta) (reverse_path alpha)) 0 = x2.
+{
+  rewrite (path_concat_at_zero (reverse_path beta) (reverse_path alpha)).
+  exact HrevBeta0.
+}
+claim Hrhs1 :
+  apply_fun (path_concat (reverse_path beta) (reverse_path alpha)) 1 = x0.
+{
+  rewrite (path_concat_at_one (reverse_path beta) (reverse_path alpha)).
+  exact HrevAlpha1.
+}
+claim HrhsAsLhs :
+  path_concat (reverse_path beta) (reverse_path alpha)
+  =
+  reverse_path (path_concat alpha beta).
+{
+  admit.
+}
+rewrite HrhsAsLhs.
+exact (Lemma_51_1_path_homotopy_refl
+  X
+  Tx
+  x2
+  x0
+  (reverse_path (path_concat alpha beta))
+  HlhsCont
+  Hlhs0
+  Hlhs1).
 Admitted.
 
 (** S52 helper: concatenating a path x0->x1 with a path x1->x0 gives a based loop at x0 **)
