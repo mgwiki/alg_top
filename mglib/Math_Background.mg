@@ -1,5 +1,5 @@
 (** Balance Alice 2410 **)
-(** Balance Bob 2708 **)
+(** Balance Bob 2763 **)
 (** Balance Charlie 1202 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -47835,14 +47835,664 @@ Admitted.
 (** from S58 Exercise 3 (line 1492 in algtop.tex) **)
 (** LATEX VERSION: Homotopy equivalence is an equivalence relation. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Bob 2026-02-18T07:30:00 **)
+(** Collected Bob 55 **)
+(** Proven Bob **)
 Theorem ex58_3_homotopy_equiv_transitive : forall X Tx Y Ty Z Tz:set,
   same_homotopy_type X Tx Y Ty ->
   same_homotopy_type Y Ty Z Tz ->
   same_homotopy_type X Tx Z Tz.
-admit.
-Admitted.
+let X Tx Y Ty Z Tz.
+assume Hxy Hyz.
+apply Hxy.
+let f.
+assume HfEquiv.
+apply Hyz.
+let p.
+assume HpEquiv.
+claim HfCont : continuous_map X Tx Y Ty f.
+{
+  exact (andEL
+    (continuous_map X Tx Y Ty f)
+    (exists g:set,
+      continuous_map Y Ty X Tx g /\
+      homotopic_maps X Tx X Tx
+        (compose_fun X f g) (graph X (fun x:set => x)) /\
+      homotopic_maps Y Ty Y Ty
+        (compose_fun Y g f) (graph Y (fun y:set => y)))
+    HfEquiv).
+}
+claim HgWit :
+  exists g:set,
+    continuous_map Y Ty X Tx g /\
+    homotopic_maps X Tx X Tx
+      (compose_fun X f g) (graph X (fun x:set => x)) /\
+    homotopic_maps Y Ty Y Ty
+      (compose_fun Y g f) (graph Y (fun y:set => y)).
+{
+  exact (andER
+    (continuous_map X Tx Y Ty f)
+    (exists g:set,
+      continuous_map Y Ty X Tx g /\
+      homotopic_maps X Tx X Tx
+        (compose_fun X f g) (graph X (fun x:set => x)) /\
+      homotopic_maps Y Ty Y Ty
+        (compose_fun Y g f) (graph Y (fun y:set => y)))
+    HfEquiv).
+}
+apply HgWit.
+let g.
+assume HgPack.
+claim HgPair :
+  continuous_map Y Ty X Tx g /\
+  homotopic_maps X Tx X Tx
+    (compose_fun X f g) (graph X (fun x:set => x)).
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g /\
+      homotopic_maps X Tx X Tx
+        (compose_fun X f g) (graph X (fun x:set => x)))
+    (homotopic_maps Y Ty Y Ty
+      (compose_fun Y g f) (graph Y (fun y:set => y)))
+    HgPack).
+}
+claim HgCont : continuous_map Y Ty X Tx g.
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g)
+    (homotopic_maps X Tx X Tx
+      (compose_fun X f g) (graph X (fun x:set => x)))
+    HgPair).
+}
+claim HgfHom :
+  homotopic_maps X Tx X Tx
+    (compose_fun X f g) (graph X (fun x:set => x)).
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g)
+    (homotopic_maps X Tx X Tx
+      (compose_fun X f g) (graph X (fun x:set => x)))
+    HgPair).
+}
+claim HfgHom :
+  homotopic_maps Y Ty Y Ty
+    (compose_fun Y g f) (graph Y (fun y:set => y)).
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g /\
+      homotopic_maps X Tx X Tx
+        (compose_fun X f g) (graph X (fun x:set => x)))
+    (homotopic_maps Y Ty Y Ty
+      (compose_fun Y g f) (graph Y (fun y:set => y)))
+    HgPack).
+}
+claim HpCont : continuous_map Y Ty Z Tz p.
+{
+  exact (andEL
+    (continuous_map Y Ty Z Tz p)
+    (exists q:set,
+      continuous_map Z Tz Y Ty q /\
+      homotopic_maps Y Ty Y Ty
+        (compose_fun Y p q) (graph Y (fun y:set => y)) /\
+      homotopic_maps Z Tz Z Tz
+        (compose_fun Z q p) (graph Z (fun z:set => z)))
+    HpEquiv).
+}
+claim HqWit :
+  exists q:set,
+    continuous_map Z Tz Y Ty q /\
+    homotopic_maps Y Ty Y Ty
+      (compose_fun Y p q) (graph Y (fun y:set => y)) /\
+    homotopic_maps Z Tz Z Tz
+      (compose_fun Z q p) (graph Z (fun z:set => z)).
+{
+  exact (andER
+    (continuous_map Y Ty Z Tz p)
+    (exists q:set,
+      continuous_map Z Tz Y Ty q /\
+      homotopic_maps Y Ty Y Ty
+        (compose_fun Y p q) (graph Y (fun y:set => y)) /\
+      homotopic_maps Z Tz Z Tz
+        (compose_fun Z q p) (graph Z (fun z:set => z)))
+    HpEquiv).
+}
+apply HqWit.
+let q.
+assume HqPack.
+claim HqPair :
+  continuous_map Z Tz Y Ty q /\
+  homotopic_maps Y Ty Y Ty
+    (compose_fun Y p q) (graph Y (fun y:set => y)).
+{
+  exact (andEL
+    (continuous_map Z Tz Y Ty q /\
+      homotopic_maps Y Ty Y Ty
+        (compose_fun Y p q) (graph Y (fun y:set => y)))
+    (homotopic_maps Z Tz Z Tz
+      (compose_fun Z q p) (graph Z (fun z:set => z)))
+    HqPack).
+}
+claim HqCont : continuous_map Z Tz Y Ty q.
+{
+  exact (andEL
+    (continuous_map Z Tz Y Ty q)
+    (homotopic_maps Y Ty Y Ty
+      (compose_fun Y p q) (graph Y (fun y:set => y)))
+    HqPair).
+}
+claim HpqHom :
+  homotopic_maps Y Ty Y Ty
+    (compose_fun Y p q) (graph Y (fun y:set => y)).
+{
+  exact (andER
+    (continuous_map Z Tz Y Ty q)
+    (homotopic_maps Y Ty Y Ty
+      (compose_fun Y p q) (graph Y (fun y:set => y)))
+    HqPair).
+}
+claim HqpHom :
+  homotopic_maps Z Tz Z Tz
+    (compose_fun Z q p) (graph Z (fun z:set => z)).
+{
+  exact (andER
+    (continuous_map Z Tz Y Ty q /\
+      homotopic_maps Y Ty Y Ty
+        (compose_fun Y p q) (graph Y (fun y:set => y)))
+    (homotopic_maps Z Tz Z Tz
+      (compose_fun Z q p) (graph Z (fun z:set => z)))
+    HqPack).
+}
+claim HfFun : function_on f X Y.
+{
+  exact (continuous_map_function_on X Tx Y Ty f HfCont).
+}
+claim HgFun : function_on g Y X.
+{
+  exact (continuous_map_function_on Y Ty X Tx g HgCont).
+}
+claim HpFun : function_on p Y Z.
+{
+  exact (continuous_map_function_on Y Ty Z Tz p HpCont).
+}
+claim HqFun : function_on q Z Y.
+{
+  exact (continuous_map_function_on Z Tz Y Ty q HqCont).
+}
+set h := compose_fun X f p.
+set r := compose_fun Z q g.
+claim HtargetCore :
+  continuous_map X Tx Z Tz h /\
+  exists gg:set,
+    continuous_map Z Tz X Tx gg /\
+    homotopic_maps X Tx X Tx
+      (compose_fun X h gg) (graph X (fun x:set => x)) /\
+    homotopic_maps Z Tz Z Tz
+      (compose_fun Z gg h) (graph Z (fun z:set => z)).
+{
+apply andI.
+{
+  exact (composition_continuous
+    X Tx Y Ty Z Tz
+    f p
+    HfCont HpCont).
+}
+{
+  witness r.
+  apply andI.
+  {
+    apply andI.
+    {
+      exact (composition_continuous
+        Z Tz Y Ty X Tx
+        q g
+        HqCont HgCont).
+    }
+    {
+      claim HpqToGf :
+        homotopic_maps Y Ty Y Ty
+          (compose_fun Y p q) (compose_fun Y g f).
+      {
+        claim HidToGf :
+          homotopic_maps Y Ty Y Ty
+            (graph Y (fun y:set => y)) (compose_fun Y g f).
+        {
+          exact (Lemma_51_1_homotopy_sym
+            Y Ty Y Ty
+            (compose_fun Y g f)
+            (graph Y (fun y:set => y))
+            HfgHom).
+        }
+        exact (Lemma_51_1_homotopy_trans
+          Y Ty Y Ty
+          (compose_fun Y p q)
+          (graph Y (fun y:set => y))
+          (compose_fun Y g f)
+          HpqHom
+          HidToGf).
+      }
+      claim HfRefl : homotopic_maps X Tx Y Ty f f.
+      {
+        exact (Lemma_51_1_homotopy_refl
+          X Tx Y Ty
+          f
+          HfCont).
+      }
+      claim HgRefl : homotopic_maps Y Ty X Tx g g.
+      {
+        exact (Lemma_51_1_homotopy_refl
+          Y Ty X Tx
+          g
+          HgCont).
+      }
+      claim Hmid1 :
+        homotopic_maps X Tx Y Ty
+          (compose_fun X f (compose_fun Y p q))
+          (compose_fun X f (compose_fun Y g f)).
+      {
+        exact (ex51_1_composition_homotopic
+          X Tx Y Ty Y Ty
+          f f
+          (compose_fun Y p q)
+          (compose_fun Y g f)
+          HfRefl
+          HpqToGf).
+      }
+      claim Hmid2 :
+        homotopic_maps X Tx X Tx
+          (compose_fun X (compose_fun X f (compose_fun Y p q)) g)
+          (compose_fun X (compose_fun X f (compose_fun Y g f)) g).
+      {
+        exact (ex51_1_composition_homotopic
+          X Tx Y Ty X Tx
+          (compose_fun X f (compose_fun Y p q))
+          (compose_fun X f (compose_fun Y g f))
+          g
+          g
+          Hmid1
+          HgRefl).
+      }
+      claim HcomposePqFun : function_on (compose_fun Y p q) Y Y.
+      {
+        exact (function_on_compose_fun
+          Y Z Y
+          p q
+          HpFun HqFun).
+      }
+      claim HcomposeQgFun : function_on (compose_fun Z q g) Z X.
+      {
+        exact (function_on_compose_fun
+          Z Y X
+          q g
+          HqFun HgFun).
+      }
+      claim HcomposeGfFun : function_on (compose_fun Y g f) Y Y.
+      {
+        exact (function_on_compose_fun
+          Y X Y
+          g f
+          HgFun HfFun).
+      }
+      claim HeqLeft :
+        compose_fun X h r =
+        compose_fun X (compose_fun X f (compose_fun Y p q)) g.
+      {
+        rewrite <- (compose_fun_assoc_eq_algtop
+          X
+          Y
+          Z
+          X
+          f
+          p
+          (compose_fun Z q g)
+          HfFun
+          HpFun
+          HcomposeQgFun).
+        rewrite (compose_fun_assoc_eq_algtop
+          Y
+          Z
+          Y
+          X
+          p
+          q
+          g
+          HpFun
+          HqFun
+          HgFun).
+        rewrite (compose_fun_assoc_eq_algtop
+          X
+          Y
+          Y
+          X
+          f
+          (compose_fun Y p q)
+          g
+          HfFun
+          HcomposePqFun
+          HgFun).
+        exact (fun P H => H).
+      }
+      claim HeqRight :
+        compose_fun X (compose_fun X f (compose_fun Y g f)) g =
+        compose_fun X (compose_fun X f g) (compose_fun X f g).
+      {
+        rewrite <- (compose_fun_assoc_eq_algtop
+          X
+          Y
+          Y
+          X
+          f
+          (compose_fun Y g f)
+          g
+          HfFun
+          HcomposeGfFun
+          HgFun).
+        rewrite <- (compose_fun_assoc_eq_algtop
+          Y
+          X
+          Y
+          X
+          g
+          f
+          g
+          HgFun
+          HfFun
+          HgFun).
+        rewrite (compose_fun_assoc_eq_algtop
+          X
+          Y
+          X
+          X
+          f
+          g
+          (compose_fun X f g)
+          HfFun
+          HgFun
+          (function_on_compose_fun X Y X f g HfFun HgFun)).
+        exact (fun P H => H).
+      }
+      claim HleftToSquare :
+        homotopic_maps X Tx X Tx
+          (compose_fun X h r)
+          (compose_fun X (compose_fun X f g) (compose_fun X f g)).
+      {
+        rewrite HeqLeft.
+        rewrite <- HeqRight.
+        exact Hmid2.
+      }
+      claim HsquareToIdId :
+        homotopic_maps X Tx X Tx
+          (compose_fun X (compose_fun X f g) (compose_fun X f g))
+          (compose_fun X (graph X (fun x:set => x)) (graph X (fun x:set => x))).
+      {
+        exact (ex51_1_composition_homotopic
+          X Tx X Tx X Tx
+          (compose_fun X f g)
+          (graph X (fun x:set => x))
+          (compose_fun X f g)
+          (graph X (fun x:set => x))
+          HgfHom
+          HgfHom).
+      }
+      claim HidCompX :
+        compose_fun X (graph X (fun x:set => x)) (graph X (fun x:set => x))
+        = graph X (fun x:set => x).
+      {
+        exact (compose_fun_identity_graph_eq_algtop
+          X
+          X
+          (graph X (fun x:set => x))
+          (graph_in_total_function_space
+            X
+            X
+            (fun x:set => x)
+            (fun x Hx => Hx))).
+      }
+      claim HsquareToId :
+        homotopic_maps X Tx X Tx
+          (compose_fun X (compose_fun X f g) (compose_fun X f g))
+          (graph X (fun x:set => x)).
+      {
+        rewrite <- HidCompX.
+        exact HsquareToIdId.
+      }
+      exact (Lemma_51_1_homotopy_trans
+        X Tx X Tx
+        (compose_fun X h r)
+        (compose_fun X (compose_fun X f g) (compose_fun X f g))
+        (graph X (fun x:set => x))
+        HleftToSquare
+        HsquareToId).
+    }
+  }
+  {
+    claim HgfToPq :
+      homotopic_maps Y Ty Y Ty
+        (compose_fun Y g f) (compose_fun Y p q).
+    {
+      claim HidToPq :
+        homotopic_maps Y Ty Y Ty
+          (graph Y (fun y:set => y)) (compose_fun Y p q).
+      {
+        exact (Lemma_51_1_homotopy_sym
+          Y Ty Y Ty
+          (compose_fun Y p q)
+          (graph Y (fun y:set => y))
+          HpqHom).
+      }
+      exact (Lemma_51_1_homotopy_trans
+        Y Ty Y Ty
+        (compose_fun Y g f)
+        (graph Y (fun y:set => y))
+        (compose_fun Y p q)
+        HfgHom
+        HidToPq).
+    }
+    claim HqRefl : homotopic_maps Z Tz Y Ty q q.
+    {
+      exact (Lemma_51_1_homotopy_refl
+        Z Tz Y Ty
+        q
+        HqCont).
+    }
+    claim HpRefl : homotopic_maps Y Ty Z Tz p p.
+    {
+      exact (Lemma_51_1_homotopy_refl
+        Y Ty Z Tz
+        p
+        HpCont).
+    }
+    claim Hmid1 :
+      homotopic_maps Z Tz Y Ty
+        (compose_fun Z q (compose_fun Y g f))
+        (compose_fun Z q (compose_fun Y p q)).
+    {
+      exact (ex51_1_composition_homotopic
+        Z Tz Y Ty Y Ty
+        q
+        q
+        (compose_fun Y g f)
+        (compose_fun Y p q)
+        HqRefl
+        HgfToPq).
+    }
+    claim Hmid2 :
+      homotopic_maps Z Tz Z Tz
+        (compose_fun Z (compose_fun Z q (compose_fun Y g f)) p)
+        (compose_fun Z (compose_fun Z q (compose_fun Y p q)) p).
+    {
+      exact (ex51_1_composition_homotopic
+        Z Tz Y Ty Z Tz
+        (compose_fun Z q (compose_fun Y g f))
+        (compose_fun Z q (compose_fun Y p q))
+        p
+        p
+        Hmid1
+        HpRefl).
+    }
+    claim HcomposeQpFun : function_on (compose_fun Z q p) Z Z.
+    {
+      exact (function_on_compose_fun
+        Z Y Z
+        q p
+        HqFun HpFun).
+    }
+    claim HcomposeFpFun : function_on (compose_fun X f p) X Z.
+    {
+      exact (function_on_compose_fun
+        X Y Z
+        f p
+        HfFun HpFun).
+    }
+    claim HcomposeGfFun : function_on (compose_fun Y g f) Y Y.
+    {
+      exact (function_on_compose_fun
+        Y X Y
+        g f
+        HgFun HfFun).
+    }
+    claim HcomposePqFun : function_on (compose_fun Y p q) Y Y.
+    {
+      exact (function_on_compose_fun
+        Y Z Y
+        p q
+        HpFun HqFun).
+    }
+    claim HeqLeft :
+      compose_fun Z r h =
+      compose_fun Z (compose_fun Z q (compose_fun Y g f)) p.
+    {
+      rewrite <- (compose_fun_assoc_eq_algtop
+        Z
+        Y
+        X
+        Z
+        q
+        g
+        (compose_fun X f p)
+        HqFun
+        HgFun
+        HcomposeFpFun).
+      rewrite (compose_fun_assoc_eq_algtop
+        Y
+        X
+        Y
+        Z
+        g
+        f
+        p
+        HgFun
+        HfFun
+        HpFun).
+      rewrite (compose_fun_assoc_eq_algtop
+        Z
+        Y
+        Y
+        Z
+        q
+        (compose_fun Y g f)
+        p
+        HqFun
+        HcomposeGfFun
+        HpFun).
+      exact (fun P H => H).
+    }
+    claim HeqRight :
+      compose_fun Z (compose_fun Z q (compose_fun Y p q)) p =
+      compose_fun Z (compose_fun Z q p) (compose_fun Z q p).
+    {
+      rewrite <- (compose_fun_assoc_eq_algtop
+        Z
+        Y
+        Y
+        Z
+        q
+        (compose_fun Y p q)
+        p
+        HqFun
+        HcomposePqFun
+        HpFun).
+      rewrite <- (compose_fun_assoc_eq_algtop
+        Y
+        Z
+        Y
+        Z
+        p
+        q
+        p
+        HpFun
+        HqFun
+        HpFun).
+      rewrite (compose_fun_assoc_eq_algtop
+        Z
+        Y
+        Z
+        Z
+        q
+        p
+        (compose_fun Z q p)
+        HqFun
+        HpFun
+        HcomposeQpFun).
+      exact (fun P H => H).
+    }
+    claim HleftToSquare :
+      homotopic_maps Z Tz Z Tz
+        (compose_fun Z r h)
+        (compose_fun Z (compose_fun Z q p) (compose_fun Z q p)).
+    {
+      rewrite HeqLeft.
+      rewrite <- HeqRight.
+      exact Hmid2.
+    }
+    claim HsquareToIdId :
+      homotopic_maps Z Tz Z Tz
+        (compose_fun Z (compose_fun Z q p) (compose_fun Z q p))
+        (compose_fun Z (graph Z (fun z:set => z)) (graph Z (fun z:set => z))).
+    {
+      exact (ex51_1_composition_homotopic
+        Z Tz Z Tz Z Tz
+        (compose_fun Z q p)
+        (graph Z (fun z:set => z))
+        (compose_fun Z q p)
+        (graph Z (fun z:set => z))
+        HqpHom
+        HqpHom).
+    }
+    claim HidCompZ :
+      compose_fun Z (graph Z (fun z:set => z)) (graph Z (fun z:set => z))
+      = graph Z (fun z:set => z).
+    {
+      exact (compose_fun_identity_graph_eq_algtop
+        Z
+        Z
+        (graph Z (fun z:set => z))
+        (graph_in_total_function_space
+          Z
+          Z
+          (fun z:set => z)
+          (fun z Hz => Hz))).
+    }
+    claim HsquareToId :
+      homotopic_maps Z Tz Z Tz
+        (compose_fun Z (compose_fun Z q p) (compose_fun Z q p))
+        (graph Z (fun z:set => z)).
+    {
+      rewrite <- HidCompZ.
+      exact HsquareToIdId.
+    }
+    exact (Lemma_51_1_homotopy_trans
+      Z Tz Z Tz
+      (compose_fun Z r h)
+      (compose_fun Z (compose_fun Z q p) (compose_fun Z q p))
+      (graph Z (fun z:set => z))
+      HleftToSquare
+      HsquareToId).
+}
+}
+}
+prove exists hh:set, homotopy_equivalence X Tx Z Tz hh.
+witness h.
+exact HtargetCore.
+Qed.
 
 (** from S58 Exercise 5 (line 1494 in algtop.tex) **)
 (** LATEX VERSION: X is contractible if and only if X has the homotopy type of a one-point space. **)
