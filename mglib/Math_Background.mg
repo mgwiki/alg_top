@@ -27534,7 +27534,46 @@ Theorem ex52_1b_star_convex_simply_connected : forall A Ta a0:set,
   star_convex A a0 ->
   topology_on A Ta ->
   simply_connected A Ta.
-admit.
+let A Ta a0.
+assume Hstar HtopA.
+claim Ha0A : a0 :e A.
+{
+  claim HstarPair :
+    A c= R /\ a0 :e A.
+  {
+    exact (andEL
+      (A c= R /\ a0 :e A)
+      (forall a:set, a :e A ->
+        forall t:set, t :e unit_interval ->
+          add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a0) (mul_SNo t a) :e A)
+      Hstar).
+  }
+  exact (andER
+    (A c= R)
+    (a0 :e A)
+    HstarPair).
+}
+claim HpcA : path_connected_space A Ta.
+{
+  (** TODO Bob: build explicit piecewise-linear path between arbitrary points of A using star-convexity at a0. **)
+  admit.
+}
+claim Hpi1Trivial :
+  fundamental_group A Ta a0 = {fundamental_group_id A Ta a0}.
+{
+  (** TODO Bob: show every loop class at a0 equals the constant-loop class (via star-convex contraction). **)
+  admit.
+}
+prove
+  path_connected_space A Ta /\
+  exists x0:set, x0 :e A /\
+    fundamental_group A Ta x0 = {fundamental_group_id A Ta x0}.
+apply andI.
+- exact HpcA.
+- witness a0.
+  apply andI.
+  + exact Ha0A.
+  + exact Hpi1Trivial.
 Admitted.
 
 (** from S52 Exercise 2 (line 497 in algtop.tex) **)
