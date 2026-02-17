@@ -67912,6 +67912,35 @@ claim Hcore :
               (r, apply_fun (graph 0 (fun _:set => fundamental_group_id X Tx x0)) k))).
         reflexivity.
   - assume HclsNe : ~(cls = fundamental_group_id X Tx x0).
+    claim Hrep :
+      exists fcls:set, fcls :e loop_space X Tx x0 /\
+        cls = path_homotopy_class_loop X Tx x0 fcls.
+    {
+      exact (fundamental_group_member_has_representative
+        X
+        Tx
+        x0
+        cls
+        Hcls).
+    }
+    apply Hrep.
+    let fcls.
+    assume HfclsPack : fcls :e loop_space X Tx x0 /\
+      cls = path_homotopy_class_loop X Tx x0 fcls.
+    claim HfclsLoop : fcls :e loop_space X Tx x0.
+    {
+      exact (andEL
+        (fcls :e loop_space X Tx x0)
+        (cls = path_homotopy_class_loop X Tx x0 fcls)
+        HfclsPack).
+    }
+    claim HclsEqf : cls = path_homotopy_class_loop X Tx x0 fcls.
+    {
+      exact (andER
+        (fcls :e loop_space X Tx x0)
+        (cls = path_homotopy_class_loop X Tx x0 fcls)
+        HfclsPack).
+    }
     admit. (** van Kampen style generation argument pending for nontrivial classes **)
 }
 exact Hcore.
