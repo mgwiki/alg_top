@@ -1,5 +1,5 @@
 (** Balance Alice 2634 **)
-(** Balance Bob 2857 **)
+(** Balance Bob 2714 **)
 (** Balance Charlie 18 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -51837,8 +51837,7 @@ Admitted.
 (** from S54 Lemma 54.2 path homotopy preservation (line 783 in algtop.tex) **)
 (** LATEX VERSION: If F is a path homotopy, then the lift F_tilde is also a path homotopy. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Bob 55 **)
-(** Proven Bob **)
+(** Bounty 55 **)
 Theorem lemma54_2_path_homotopy_preserved : forall E Te B Tb p e0 F x0 x1:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun F (0, 0) ->
@@ -52394,8 +52393,7 @@ Admitted. (** was Qed but depends on unproved lemma54_2_homotopy_lifting - chang
 (** If f and g are path homotopic, then f_tilde and g_tilde end at the same point **)
 (** and are path homotopic. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Bob 88 **)
-(** Proven Bob **)
+(** Bounty 88 **)
 Theorem thm54_3_homotopic_lifts : forall E Te B Tb p e0 b0 b1 f g:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = b0 ->
