@@ -67881,6 +67881,110 @@ rewrite HcompConstEq.
 reflexivity.
 Qed.
 
+(** Helper: path connectedness of a two-open-set union with nonempty overlap. **)
+Theorem lemma59_2_path_connected_union_of_path_connected_open_subspaces :
+  forall X Tx U V:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx ->
+  X = U :\/: V ->
+  path_connected_space U (subspace_topology X Tx U) ->
+  path_connected_space V (subspace_topology X Tx V) ->
+  (U :/\: V) <> Empty ->
+  path_connected_space X Tx.
+let X Tx U V.
+assume Htop : topology_on X Tx.
+assume HU : U :e Tx.
+assume HV : V :e Tx.
+assume Hcover : X = U :\/: V.
+assume HpcU : path_connected_space U (subspace_topology X Tx U).
+assume HpcV : path_connected_space V (subspace_topology X Tx V).
+assume Hne : (U :/\: V) <> Empty.
+claim HUsub : U c= X.
+{ exact (topology_elem_subset X Tx U Htop HU). }
+claim HVsub : V c= X.
+{ exact (topology_elem_subset X Tx V Htop HV). }
+claim Hex_z0 : exists z0:set, z0 :e U :/\: V.
+{ exact (nonempty_has_element (U :/\: V) Hne). }
+apply Hex_z0.
+let z0.
+assume Hz0UV : z0 :e U :/\: V.
+claim Hz0U : z0 :e U.
+{ exact (binintersectE1 U V z0 Hz0UV). }
+claim Hz0V : z0 :e V.
+{ exact (binintersectE2 U V z0 Hz0UV). }
+claim Hz0X : z0 :e X.
+{ exact (HUsub z0 Hz0U). }
+claim HpcX : path_connected_space X Tx.
+{ prove topology_on X Tx /\
+    forall x y:set, x :e X -> y :e X ->
+      exists p:set, path_between X x y p /\
+        continuous_map unit_interval unit_interval_topology X Tx p.
+  apply andI.
+  - exact Htop.
+  - let x y.
+    assume Hx : x :e X.
+    assume Hy : y :e X.
+    claim HxUV : x :e U :\/: V.
+    { exact (mem_eqR x X (U :\/: V) Hcover Hx). }
+    claim Hz0_pc_x : z0 :e path_component_of X Tx x.
+    { apply (binunionE U V x HxUV).
+      - assume HxU : x :e U.
+        exact (subspace_path_connected_implies_in_path_component
+          X Tx U x z0 Htop HUsub HpcU HxU Hz0U).
+      - assume HxV : x :e V.
+        exact (subspace_path_connected_implies_in_path_component
+          X Tx V x z0 Htop HVsub HpcV HxV Hz0V). }
+    claim HyUV : y :e U :\/: V.
+    { exact (mem_eqR y X (U :\/: V) Hcover Hy). }
+    claim Hy_pc_z0 : y :e path_component_of X Tx z0.
+    { apply (binunionE U V y HyUV).
+      - assume HyU : y :e U.
+        exact (subspace_path_connected_implies_in_path_component
+          X Tx U z0 y Htop HUsub HpcU Hz0U HyU).
+      - assume HyV : y :e V.
+        exact (subspace_path_connected_implies_in_path_component
+          X Tx V z0 y Htop HVsub HpcV Hz0V HyV). }
+    claim Hy_pc_x : y :e path_component_of X Tx x.
+    { exact (path_component_transitive_axiom X Tx x z0 y Htop Hx Hz0X Hy
+        Hz0_pc_x Hy_pc_z0). }
+    claim Hpc_data : exists p:set, function_on p unit_interval X /\
+      continuous_map unit_interval unit_interval_topology X Tx p /\
+      apply_fun p 0 = x /\ apply_fun p 1 = y.
+    { exact (SepE2 X
+        (fun w:set => exists p:set, function_on p unit_interval X /\
+          continuous_map unit_interval unit_interval_topology X Tx p /\
+          apply_fun p 0 = x /\ apply_fun p 1 = w)
+        y Hy_pc_x). }
+    apply Hpc_data.
+    let p.
+    assume Hp_pack : function_on p unit_interval X /\
+      continuous_map unit_interval unit_interval_topology X Tx p /\
+      apply_fun p 0 = x /\ apply_fun p 1 = y.
+    witness p.
+    apply andI.
+    + prove function_on p unit_interval X /\ apply_fun p 0 = x /\ apply_fun p 1 = y.
+      apply (and4E
+        (function_on p unit_interval X)
+        (continuous_map unit_interval unit_interval_topology X Tx p)
+        (apply_fun p 0 = x)
+        (apply_fun p 1 = y)
+        Hp_pack).
+      assume Hfn Hcont Hp0 Hp1.
+      apply and3I.
+      * exact Hfn.
+      * exact Hp0.
+      * exact Hp1.
+    + apply (and4E
+        (function_on p unit_interval X)
+        (continuous_map unit_interval unit_interval_topology X Tx p)
+        (apply_fun p 0 = x)
+        (apply_fun p 1 = y)
+        Hp_pack).
+      assume Hfn2 Hcont2 Hp02 Hp12.
+      exact Hcont2. }
+exact HpcX.
+Qed.
+
 (** from S59 Cor 59.2 (line 1585 in algtop.tex) **)
 (** LATEX VERSION: If X = U union V, U and V open and simply connected, U intersect V nonempty and path connected, then X is simply connected. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
