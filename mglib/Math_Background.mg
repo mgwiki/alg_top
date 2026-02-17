@@ -70326,7 +70326,7 @@ claim HneUV : (U :/\: V) <> Empty.
   rewrite HUdef.
   rewrite HVdef.
   apply (lemma59_3_overlap_nonempty_from_coord0_exists n).
-  admit. (** pending: explicit witness x :e Sn n with x0 = 0 *)
+  admit. (** pending: explicit witness x :e Sn n with x0 = 0 **)
 }
 claim HpcUV : path_connected_space (U :/\: V)
   (subspace_topology (Sn n) (Sn_topology n) (U :/\: V)).
