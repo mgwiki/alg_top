@@ -68084,10 +68084,10 @@ claim Hz0X : z0 :e X.
 (** Path connected X follows from the open cover and path connected pieces. **)
 claim HpcX : path_connected_space X Tx.
 {
-  exact (lemma59_2_path_connected_union_of_path_connected_open_subspaces
+  exact (lemma59_2_path_connected_union_from_simply_connected_open_subspaces
     X Tx U V
     Htop HU HV Hcover
-    HpcU HpcV Hne).
+    HscU HscV Hne).
 }
 (** Now prove pi1 trivial **)
 (** Get x0 in U cap V **)
