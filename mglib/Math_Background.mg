@@ -23925,7 +23925,635 @@ Theorem Lemma_52_3_simply_connected_unique_homotopy : forall X Tx x0 x1 f g:set,
   apply_fun f 0 = x0 -> apply_fun f 1 = x1 ->
   apply_fun g 0 = x0 -> apply_fun g 1 = x1 ->
   path_homotopic X Tx x0 x1 f g.
-admit.
+let X Tx x0 x1 f g.
+assume Hsimp HfCont HgCont Hf0 Hf1 Hg0 Hg1.
+claim HpcX : path_connected_space X Tx.
+{
+  exact (andEL
+    (path_connected_space X Tx)
+    (exists xb:set, xb :e X /\
+      fundamental_group X Tx xb = {fundamental_group_id X Tx xb})
+    Hsimp).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (path_connected_space_topology X Tx HpcX).
+}
+claim HbaseEx :
+  exists xb:set, xb :e X /\
+    fundamental_group X Tx xb = {fundamental_group_id X Tx xb}.
+{
+  exact (andER
+    (path_connected_space X Tx)
+    (exists xb:set, xb :e X /\
+      fundamental_group X Tx xb = {fundamental_group_id X Tx xb})
+    Hsimp).
+}
+apply HbaseEx.
+let xb.
+assume HxbPack.
+claim HxbX : xb :e X.
+{
+  exact (andEL
+    (xb :e X)
+    (fundamental_group X Tx xb = {fundamental_group_id X Tx xb})
+    HxbPack).
+}
+claim HtrivialBase :
+  fundamental_group X Tx xb = {fundamental_group_id X Tx xb}.
+{
+  exact (andER
+    (xb :e X)
+    (fundamental_group X Tx xb = {fundamental_group_id X Tx xb})
+    HxbPack).
+}
+claim HfFun : function_on f unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    f
+    HfCont).
+}
+claim Hx0X : x0 :e X.
+{
+  rewrite <- Hf0.
+  exact (HfFun 0 zero_in_unit_interval).
+}
+claim Hx1X : x1 :e X.
+{
+  rewrite <- Hf1.
+  exact (HfFun 1 one_in_unit_interval).
+}
+claim HisoEx :
+  exists phi:set,
+    group_isomorphism
+      (fundamental_group X Tx xb) (fundamental_group_mult X Tx xb)
+      (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+      phi.
+{
+  exact (Corollary_52_2_path_connected_pi1_isomorphic
+    X
+    Tx
+    xb
+    x0
+    HpcX
+    HxbX
+    Hx0X).
+}
+apply HisoEx.
+let phi.
+assume HphiIso.
+claim HphiBij :
+  bijection
+    (fundamental_group X Tx xb)
+    (fundamental_group X Tx x0)
+    phi.
+{
+  exact (group_isomorphism_bijection
+    (fundamental_group X Tx xb)
+    (fundamental_group_mult X Tx xb)
+    (fundamental_group X Tx x0)
+    (fundamental_group_mult X Tx x0)
+    phi
+    HphiIso).
+}
+claim Hpi1x0AllEq :
+  forall y1 y2:set,
+    y1 :e fundamental_group X Tx x0 ->
+    y2 :e fundamental_group X Tx x0 ->
+    y1 = y2.
+{
+  let y1.
+  let y2.
+  assume Hy1.
+  assume Hy2.
+  claim Hpre1 :
+    exists z1:set, z1 :e fundamental_group X Tx xb /\
+      apply_fun phi z1 = y1.
+  {
+    exact (bijection_surj
+      (fundamental_group X Tx xb)
+      (fundamental_group X Tx x0)
+      phi
+      y1
+      HphiBij
+      Hy1).
+  }
+  apply Hpre1.
+  let z1.
+  assume Hz1Pack.
+  claim Hz1In : z1 :e fundamental_group X Tx xb.
+  {
+    exact (andEL
+      (z1 :e fundamental_group X Tx xb)
+      (apply_fun phi z1 = y1)
+      Hz1Pack).
+  }
+  claim Hz1ToY1 : apply_fun phi z1 = y1.
+  {
+    exact (andER
+      (z1 :e fundamental_group X Tx xb)
+      (apply_fun phi z1 = y1)
+      Hz1Pack).
+  }
+  claim Hz1InSing : z1 :e {fundamental_group_id X Tx xb}.
+  {
+    exact (mem_eqR
+      z1
+      (fundamental_group X Tx xb)
+      {fundamental_group_id X Tx xb}
+      HtrivialBase
+      Hz1In).
+  }
+  claim Hz1EqId : z1 = fundamental_group_id X Tx xb.
+  {
+    exact (singleton_elem
+      z1
+      (fundamental_group_id X Tx xb)
+      Hz1InSing).
+  }
+  claim Hpre2 :
+    exists z2:set, z2 :e fundamental_group X Tx xb /\
+      apply_fun phi z2 = y2.
+  {
+    exact (bijection_surj
+      (fundamental_group X Tx xb)
+      (fundamental_group X Tx x0)
+      phi
+      y2
+      HphiBij
+      Hy2).
+  }
+  apply Hpre2.
+  let z2.
+  assume Hz2Pack.
+  claim Hz2In : z2 :e fundamental_group X Tx xb.
+  {
+    exact (andEL
+      (z2 :e fundamental_group X Tx xb)
+      (apply_fun phi z2 = y2)
+      Hz2Pack).
+  }
+  claim Hz2ToY2 : apply_fun phi z2 = y2.
+  {
+    exact (andER
+      (z2 :e fundamental_group X Tx xb)
+      (apply_fun phi z2 = y2)
+      Hz2Pack).
+  }
+  claim Hz2InSing : z2 :e {fundamental_group_id X Tx xb}.
+  {
+    exact (mem_eqR
+      z2
+      (fundamental_group X Tx xb)
+      {fundamental_group_id X Tx xb}
+      HtrivialBase
+      Hz2In).
+  }
+  claim Hz2EqId : z2 = fundamental_group_id X Tx xb.
+  {
+    exact (singleton_elem
+      z2
+      (fundamental_group_id X Tx xb)
+      Hz2InSing).
+  }
+  rewrite <- Hz1ToY1.
+  rewrite <- Hz2ToY2.
+  rewrite Hz1EqId.
+  rewrite Hz2EqId.
+  reflexivity.
+}
+claim HloopNullAtx0 :
+  forall h:set,
+    continuous_map unit_interval unit_interval_topology X Tx h ->
+    apply_fun h 0 = x0 ->
+    apply_fun h 1 = x0 ->
+    path_homotopic X Tx x0 x0 h (constant_path x0).
+{
+  let h.
+  assume HhCont Hh0 Hh1.
+  (** TODO Bob: use Hpi1x0AllEq to show [h] = [const_path x0], then extract homotopy. **)
+  admit.
+}
+set rg := reverse_path g.
+claim HrgDef : rg = reverse_path g.
+{
+  reflexivity.
+}
+claim HrgCont :
+  continuous_map unit_interval unit_interval_topology X Tx rg.
+{
+  rewrite HrgDef.
+  exact (reverse_path_continuous
+    X
+    Tx
+    g
+    HgCont).
+}
+claim Hrg0 : apply_fun rg 0 = x1.
+{
+  rewrite HrgDef.
+  rewrite (reverse_path_at_zero g).
+  exact Hg1.
+}
+claim Hrg1 : apply_fun rg 1 = x0.
+{
+  rewrite HrgDef.
+  rewrite (reverse_path_at_one g).
+  exact Hg0.
+}
+set h := path_concat f rg.
+claim HhDef : h = path_concat f rg.
+{
+  reflexivity.
+}
+claim HhCont :
+  continuous_map unit_interval unit_interval_topology X Tx h.
+{
+  rewrite HhDef.
+  exact (path_concat_continuous
+    X
+    Tx
+    x0
+    x1
+    x0
+    f
+    rg
+    HfCont
+    HrgCont
+    Hf0
+    Hf1
+    Hrg0
+    Hrg1).
+}
+claim Hh0 : apply_fun h 0 = x0.
+{
+  rewrite HhDef.
+  rewrite (path_concat_at_zero f rg).
+  exact Hf0.
+}
+claim Hh1 : apply_fun h 1 = x0.
+{
+  rewrite HhDef.
+  rewrite (path_concat_at_one f rg).
+  exact Hrg1.
+}
+claim HhConst :
+  path_homotopic X Tx x0 x0 h (constant_path x0).
+{
+  exact (HloopNullAtx0 h HhCont Hh0 Hh1).
+}
+claim HgRefl : path_homotopic X Tx x0 x1 g g.
+{
+  exact (Lemma_51_1_path_homotopy_refl
+    X
+    Tx
+    x0
+    x1
+    g
+    HgCont
+    Hg0
+    Hg1).
+}
+claim HconstCont :
+  continuous_map unit_interval unit_interval_topology X Tx (constant_path x0).
+{
+  exact (constant_path_continuous
+    X
+    Tx
+    x0
+    HtopX
+    Hx0X).
+}
+claim Hconst0 : apply_fun (constant_path x0) 0 = x0.
+{
+  exact (constant_path_at_zero x0).
+}
+claim Hconst1 : apply_fun (constant_path x0) 1 = x0.
+{
+  exact (constant_path_at_one x0).
+}
+claim HhTimesGToConstTimesG :
+  path_homotopic
+    X
+    Tx
+    x0
+    x1
+    (path_concat h g)
+    (path_concat
+      (constant_path x0)
+      g).
+{
+  exact (path_concat_well_defined_on_classes
+    X
+    Tx
+    x0
+    x0
+    x1
+    h
+    (constant_path x0)
+    g
+    g
+    HhConst
+    HgRefl).
+}
+claim HassocRaw :
+  path_homotopic
+    X
+    Tx
+    x0
+    x1
+    (path_concat
+      f
+      (path_concat
+        rg
+        g))
+    (path_concat
+      (path_concat
+        f
+        rg)
+      g).
+{
+  exact (Theorem_51_2_associativity
+    X
+    Tx
+    x0
+    x1
+    x0
+    x1
+    f
+    rg
+    g
+    HfCont
+    HrgCont
+    HgCont
+    Hf0
+    Hf1
+    Hrg0
+    Hrg1
+    Hg0
+    Hg1).
+}
+claim HassocSym :
+  path_homotopic
+    X
+    Tx
+    x0
+    x1
+    (path_concat
+      (path_concat
+        f
+        rg)
+      g)
+    (path_concat
+      f
+      (path_concat
+        rg
+        g)).
+{
+  exact (Lemma_51_1_path_homotopy_sym
+    X
+    Tx
+    x0
+    x1
+    (path_concat
+      f
+      (path_concat
+        rg
+        g))
+    (path_concat
+      (path_concat
+        f
+        rg)
+      g)
+    HassocRaw).
+}
+claim HrgGConst :
+  path_homotopic
+    X
+    Tx
+    x1
+    x1
+    (path_concat rg g)
+    (constant_path x1).
+{
+  rewrite HrgDef.
+  exact (Theorem_51_2_left_inverse
+    X
+    Tx
+    x0
+    x1
+    g
+    HgCont
+    Hg0
+    Hg1).
+}
+claim HfRefl :
+  path_homotopic X Tx x0 x1 f f.
+{
+  exact (Lemma_51_1_path_homotopy_refl
+    X
+    Tx
+    x0
+    x1
+    f
+    HfCont
+    Hf0
+    Hf1).
+}
+claim HreplaceInner :
+  path_homotopic
+    X
+    Tx
+    x0
+    x1
+    (path_concat
+      f
+      (path_concat
+        rg
+        g))
+    (path_concat
+      f
+      (constant_path x1)).
+{
+  exact (path_concat_well_defined_on_classes
+    X
+    Tx
+    x0
+    x1
+    x1
+    f
+    f
+    (path_concat
+      rg
+      g)
+    (constant_path x1)
+    HfRefl
+    HrgGConst).
+}
+claim HrightIdF :
+  path_homotopic
+    X
+    Tx
+    x0
+    x1
+    (path_concat
+      f
+      (constant_path x1))
+    f.
+{
+  exact (Theorem_51_2_right_identity
+    X
+    Tx
+    x0
+    x1
+    f
+    HfCont
+    Hf0
+    Hf1
+    Hx1X).
+}
+claim HleftIdG :
+  path_homotopic
+    X
+    Tx
+    x0
+    x1
+    (path_concat
+      (constant_path x0)
+      g)
+    g.
+{
+  exact (Theorem_51_2_left_identity
+    X
+    Tx
+    x0
+    x1
+    g
+    HgCont
+    Hg0
+    Hg1
+    Hx0X).
+}
+claim HHgToF :
+  path_homotopic
+    X
+    Tx
+    x0
+    x1
+    (path_concat h g)
+    f.
+{
+  claim Htmp1 :
+    path_homotopic
+      X
+      Tx
+      x0
+      x1
+      (path_concat h g)
+      (path_concat
+        f
+        (path_concat
+          rg
+          g)).
+  {
+    rewrite HhDef.
+    exact HassocSym.
+  }
+  claim Htmp2 :
+    path_homotopic
+      X
+      Tx
+      x0
+      x1
+      (path_concat h g)
+      (path_concat
+        f
+        (constant_path x1)).
+  {
+    exact (Lemma_51_1_path_homotopy_trans
+      X
+      Tx
+      x0
+      x1
+      (path_concat h g)
+      (path_concat
+        f
+        (path_concat
+          rg
+          g))
+      (path_concat
+        f
+        (constant_path x1))
+      Htmp1
+      HreplaceInner).
+  }
+  exact (Lemma_51_1_path_homotopy_trans
+    X
+    Tx
+    x0
+    x1
+    (path_concat h g)
+    (path_concat
+      f
+      (constant_path x1))
+    f
+    Htmp2
+    HrightIdF).
+}
+claim HHgToG :
+  path_homotopic
+    X
+    Tx
+    x0
+    x1
+    (path_concat h g)
+    g.
+{
+  exact (Lemma_51_1_path_homotopy_trans
+    X
+    Tx
+    x0
+    x1
+    (path_concat h g)
+    (path_concat
+      (constant_path x0)
+      g)
+    g
+    HhTimesGToConstTimesG
+    HleftIdG).
+}
+claim HFToHg :
+  path_homotopic
+    X
+    Tx
+    x0
+    x1
+    f
+    (path_concat h g).
+{
+  exact (Lemma_51_1_path_homotopy_sym
+    X
+    Tx
+    x0
+    x1
+    (path_concat h g)
+    f
+    HHgToF).
+}
+exact (Lemma_51_1_path_homotopy_trans
+  X
+  Tx
+  x0
+  x1
+  f
+  (path_concat h g)
+  g
+  HFToHg
+  HHgToG).
 Admitted.
 
 (** from S52 Definition (line 446 in algtop.tex): the induced homomorphism **)
