@@ -53563,7 +53563,89 @@ Theorem thm57_4_bisection_theorem : forall f1 f2:set,
   exists u:set, u :e Sn 2 /\
     apply_fun f1 u = apply_fun f1 (Rn_negate 3 u) /\
     apply_fun f2 u = apply_fun f2 (Rn_negate 3 u).
-admit.
+let f1 f2.
+assume Hf1 Hf2 Harea1 Harea2.
+set f := pair_map (Sn 2) f1 f2.
+claim Hfcont :
+  continuous_map (Sn 2) (Sn_topology 2) (setprod R R) R2_topology f.
+{
+  exact (maps_into_products
+    (Sn 2)
+    (Sn_topology 2)
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    f1
+    f2
+    Hf1
+    Hf2).
+}
+claim Hex :
+  exists u:set, u :e Sn 2 /\
+    apply_fun f u = apply_fun f (Rn_negate 3 u).
+{
+  exact (thm57_3_borsuk_ulam_S2 f Hfcont).
+}
+apply Hex.
+let u.
+assume Hupack.
+claim Hu : u :e Sn 2.
+{
+  exact (andEL
+    (u :e Sn 2)
+    (apply_fun f u = apply_fun f (Rn_negate 3 u))
+    Hupack).
+}
+claim Hfeq :
+  apply_fun f u = apply_fun f (Rn_negate 3 u).
+{
+  exact (andER
+    (u :e Sn 2)
+    (apply_fun f u = apply_fun f (Rn_negate 3 u))
+    Hupack).
+}
+claim Hf1on : function_on f1 (Sn 2) R.
+{
+  exact (continuous_map_function_on
+    (Sn 2)
+    (Sn_topology 2)
+    R
+    R_standard_topology
+    f1
+    Hf1).
+}
+claim Hf2on : function_on f2 (Sn 2) R.
+{
+  exact (continuous_map_function_on
+    (Sn 2)
+    (Sn_topology 2)
+    R
+    R_standard_topology
+    f2
+    Hf2).
+}
+witness u.
+apply andI.
+- apply andI.
+  + exact Hu.
+  + claim HleftPair :
+    apply_fun f u = (apply_fun f1 u, apply_fun f2 u).
+    {
+      exact (pair_map_apply
+        (Sn 2)
+        R
+        R
+        f1
+        f2
+        u
+        Hu).
+    }
+    (** TODO Charlie: finish the first coordinate equality by expanding at Rn_negate 3 u
+        after adding/reusing a Sn-antipode membership lemma. **)
+    admit.
+- (** TODO Charlie: analogous second-coordinate equality; same blocker as above. **)
+  admit.
 Admitted.
 
 (** from S57 Exercise 1 (line 1257 in algtop.tex) **)
