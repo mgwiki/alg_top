@@ -17720,6 +17720,247 @@ claim Hfun :
     (fundamental_group X Tx x0)
     (fundamental_group X Tx x1).
 {
+  let cls.
+  assume Hcls.
+  claim HrepWit :
+    exists frep:set, frep :e loop_space X Tx x0 /\
+      cls = path_homotopy_class_loop X Tx x0 frep.
+  {
+    exact (fundamental_group_member_has_representative
+      X
+      Tx
+      x0
+      cls
+      Hcls).
+  }
+  apply HrepWit.
+  let frep.
+  assume HrepPack.
+  claim HfrepLoop : frep :e loop_space X Tx x0.
+  {
+    exact (andEL
+      (frep :e loop_space X Tx x0)
+      (cls = path_homotopy_class_loop X Tx x0 frep)
+      HrepPack).
+  }
+  claim HclsEq : cls = path_homotopy_class_loop X Tx x0 frep.
+  {
+    exact (andER
+      (frep :e loop_space X Tx x0)
+      (cls = path_homotopy_class_loop X Tx x0 frep)
+      HrepPack).
+  }
+  claim HfrepLoopAt : loop_at X Tx x0 frep.
+  {
+    exact (loop_space_has_loop_at
+      X
+      Tx
+      x0
+      frep
+      HfrepLoop).
+  }
+  claim HfrepCont :
+    continuous_map unit_interval unit_interval_topology X Tx frep.
+  {
+    exact (loop_at_continuous
+      X
+      Tx
+      x0
+      frep
+      HfrepLoopAt).
+  }
+  claim Hfrep0 : apply_fun frep 0 = x0.
+  {
+    exact (loop_at_at_zero
+      X
+      Tx
+      x0
+      frep
+      HfrepLoopAt).
+  }
+  claim Hfrep1 : apply_fun frep 1 = x0.
+  {
+    exact (loop_at_at_one
+      X
+      Tx
+      x0
+      frep
+      HfrepLoopAt).
+  }
+  claim HreflRep : path_homotopic X Tx x0 x0 frep frep.
+  {
+    exact (Lemma_51_1_path_homotopy_refl
+      X
+      Tx
+      x0
+      x0
+      frep
+      HfrepCont
+      Hfrep0
+      Hfrep1).
+  }
+  claim HfrepInClassRep : frep :e path_homotopy_class_loop X Tx x0 frep.
+  {
+    exact (SepI
+      (loop_space X Tx x0)
+      (fun g:set => path_homotopic X Tx x0 x0 frep g)
+      frep
+      HfrepLoop
+      HreflRep).
+  }
+  claim HfrepInCls : frep :e cls.
+  {
+    exact (mem_eqL
+      frep
+      cls
+      (path_homotopy_class_loop X Tx x0 frep)
+      HclsEq
+      HfrepInClassRep).
+  }
+  set eps := Eps_i (fun f0:set => f0 :e cls).
+  claim HepsInCls : eps :e cls.
+  {
+    exact (Eps_i_ax
+      (fun f0:set => f0 :e cls)
+      frep
+      HfrepInCls).
+  }
+  claim HepsInClassRep : eps :e path_homotopy_class_loop X Tx x0 frep.
+  {
+    exact (mem_eqR
+      eps
+      cls
+      (path_homotopy_class_loop X Tx x0 frep)
+      HclsEq
+      HepsInCls).
+  }
+  claim HepsLoop : eps :e loop_space X Tx x0.
+  {
+    exact (path_homotopy_class_loop_in_loop_space
+      X
+      Tx
+      x0
+      frep
+      eps
+      HepsInClassRep).
+  }
+  claim HepsLoopAt : loop_at X Tx x0 eps.
+  {
+    exact (loop_space_has_loop_at
+      X
+      Tx
+      x0
+      eps
+      HepsLoop).
+  }
+  claim HepsCont :
+    continuous_map unit_interval unit_interval_topology X Tx eps.
+  {
+    exact (loop_at_continuous
+      X
+      Tx
+      x0
+      eps
+      HepsLoopAt).
+  }
+  claim Heps0 : apply_fun eps 0 = x0.
+  {
+    exact (loop_at_at_zero
+      X
+      Tx
+      x0
+      eps
+      HepsLoopAt).
+  }
+  claim Heps1 : apply_fun eps 1 = x0.
+  {
+    exact (loop_at_at_one
+      X
+      Tx
+      x0
+      eps
+      HepsLoopAt).
+  }
+  claim HinnerCont :
+    continuous_map unit_interval unit_interval_topology X Tx
+      (path_concat eps alpha).
+  {
+    exact (path_concat_continuous
+      X
+      Tx
+      x0
+      x0
+      x1
+      eps
+      alpha
+      HepsCont
+      HalphaCont
+      Heps0
+      Heps1
+      Halpha0
+      Halpha1).
+  }
+  claim Hinner0 : apply_fun (path_concat eps alpha) 0 = x0.
+  {
+    rewrite (path_concat_at_zero eps alpha).
+    exact Heps0.
+  }
+  claim Hinner1 : apply_fun (path_concat eps alpha) 1 = x1.
+  {
+    rewrite (path_concat_at_one eps alpha).
+    exact Halpha1.
+  }
+  claim HrevCont :
+    continuous_map unit_interval unit_interval_topology X Tx (reverse_path alpha).
+  {
+    exact (reverse_path_continuous
+      X
+      Tx
+      alpha
+      HalphaCont).
+  }
+  claim Hrev0 : apply_fun (reverse_path alpha) 0 = x1.
+  {
+    rewrite (reverse_path_at_zero alpha).
+    exact Halpha1.
+  }
+  claim Hrev1 : apply_fun (reverse_path alpha) 1 = x0.
+  {
+    rewrite (reverse_path_at_one alpha).
+    exact Halpha0.
+  }
+  claim HouterCont :
+    continuous_map unit_interval unit_interval_topology X Tx
+      (path_concat (reverse_path alpha) (path_concat eps alpha)).
+  {
+    exact (path_concat_continuous
+      X
+      Tx
+      x1
+      x0
+      x1
+      (reverse_path alpha)
+      (path_concat eps alpha)
+      HrevCont
+      HinnerCont
+      Hrev0
+      Hrev1
+      Hinner0
+      Hinner1).
+  }
+  claim Houter0 :
+    apply_fun (path_concat (reverse_path alpha) (path_concat eps alpha)) 0 = x1.
+  {
+    rewrite (path_concat_at_zero (reverse_path alpha) (path_concat eps alpha)).
+    exact Hrev0.
+  }
+  claim Houter1 :
+    apply_fun (path_concat (reverse_path alpha) (path_concat eps alpha)) 1 = x1.
+  {
+    rewrite (path_concat_at_one (reverse_path alpha) (path_concat eps alpha)).
+    exact Hinner1.
+  }
+  (** TODO Bob: finish codomain membership by packaging outer path as a loop at x1. **)
   admit.
 }
 claim Hmult :
