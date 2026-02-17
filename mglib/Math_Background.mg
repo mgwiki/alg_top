@@ -1,5 +1,5 @@
 (** Balance Alice 2504 **)
-(** Balance Bob 2808 **)
+(** Balance Bob 2863 **)
 (** Balance Charlie 1566 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -52482,8 +52482,8 @@ Admitted.
 (** from S58 Exercise 1 (line 1475 in algtop.tex) **)
 (** LATEX VERSION: If A is a deformation retract of X, and B is a deformation retract of A, then B is a deformation retract of X. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Bob 2026-02-18T07:55:00 **)
+(** Collected Bob 55 **)
+(** Proven Bob **)
 Theorem ex58_1_transitive_deformation_retract : forall X Tx A B:set,
   topology_on X Tx ->
   deformation_retract X Tx A ->
@@ -52737,6 +52737,25 @@ claim H2FixB : forall b t:set, b :e B -> t :e unit_interval -> apply_fun H2 (b, 
       (forall a:set, a :e A -> apply_fun H2 (a, 1) :e B))
     (forall b t:set, b :e B -> t :e unit_interval -> apply_fun H2 (b, t) = b)
     H2Pack).
+}
+claim H2At0 : forall a:set, a :e A -> apply_fun H2 (a, 0) = a.
+{
+  exact (andER
+    (continuous_map (setprod A unit_interval)
+      (product_topology A (subspace_topology X Tx A) unit_interval unit_interval_topology)
+      A
+      (subspace_topology X Tx A)
+      H2)
+    (forall a:set, a :e A -> apply_fun H2 (a, 0) = a)
+    (andEL
+      (continuous_map (setprod A unit_interval)
+        (product_topology A (subspace_topology X Tx A) unit_interval unit_interval_topology)
+        A
+        (subspace_topology X Tx A)
+        H2 /\
+        (forall a:set, a :e A -> apply_fun H2 (a, 0) = a))
+      (forall a:set, a :e A -> apply_fun H2 (a, 1) :e B)
+      H2MainGlobal)).
 }
 claim Hr1FixA : forall a:set, a :e A -> apply_fun r1 a = a.
 {
@@ -53070,6 +53089,804 @@ claim HrContX : continuous_map X Tx X Tx r.
     HtopX
     (fun Q H => H)).
 }
+set XI := setprod X unit_interval.
+set TXI := product_topology X Tx unit_interval unit_interval_topology.
+claim HprojPackXI :
+  continuous_map XI TXI X Tx (projection_map1 X unit_interval) /\
+  continuous_map XI TXI unit_interval unit_interval_topology (projection_map2 X unit_interval).
+{
+  exact (projection_maps_continuous
+    X
+    Tx
+    unit_interval
+    unit_interval_topology
+    HtopX
+    unit_interval_topology_on).
+}
+claim Hproj1XI :
+  continuous_map XI TXI X Tx (projection_map1 X unit_interval).
+{
+  exact (andEL
+    (continuous_map XI TXI X Tx (projection_map1 X unit_interval))
+    (continuous_map XI TXI unit_interval unit_interval_topology (projection_map2 X unit_interval))
+    HprojPackXI).
+}
+claim Hproj2XI :
+  continuous_map XI TXI unit_interval unit_interval_topology (projection_map2 X unit_interval).
+{
+  exact (andER
+    (continuous_map XI TXI X Tx (projection_map1 X unit_interval))
+    (continuous_map XI TXI unit_interval unit_interval_topology (projection_map2 X unit_interval))
+    HprojPackXI).
+}
+claim Hproj1FunXI :
+  function_on (projection_map1 X unit_interval) XI X.
+{
+  exact (continuous_map_function_on
+    XI
+    TXI
+    X
+    Tx
+    (projection_map1 X unit_interval)
+    Hproj1XI).
+}
+set p1r1 := compose_fun XI (projection_map1 X unit_interval) r1.
+claim Hp1r1ContX : continuous_map XI TXI X Tx p1r1.
+{
+  exact (composition_continuous
+    XI
+    TXI
+    X
+    Tx
+    X
+    Tx
+    (projection_map1 X unit_interval)
+    r1
+    Hproj1XI
+    Hr1Cont).
+}
+claim Hp1r1IntoA : forall u:set, u :e XI -> apply_fun p1r1 u :e A.
+{
+  let u.
+  assume HuXI.
+  rewrite (compose_fun_apply
+    XI
+    (projection_map1 X unit_interval)
+    r1
+    u
+    HuXI).
+  exact (Hr1IntoA
+    (apply_fun (projection_map1 X unit_interval) u)
+    (Hproj1FunXI u HuXI)).
+}
+claim Hp1r1ContA :
+  continuous_map XI TXI A (subspace_topology X Tx A) p1r1.
+{
+  exact (continuous_map_range_restrict
+    XI
+    TXI
+    X
+    Tx
+    p1r1
+    A
+    Hp1r1ContX
+    HAsubX
+    Hp1r1IntoA).
+}
+set p2XI := projection_map2 X unit_interval.
+set sK := pair_map XI p1r1 p2XI.
+claim HsKCont :
+  continuous_map XI TXI
+    (setprod A unit_interval)
+    (product_topology A (subspace_topology X Tx A) unit_interval unit_interval_topology)
+    sK.
+{
+  exact (maps_into_products
+    XI
+    TXI
+    A
+    (subspace_topology X Tx A)
+    unit_interval
+    unit_interval_topology
+    p1r1
+    p2XI
+    Hp1r1ContA
+    Hproj2XI).
+}
+set K := compose_fun XI sK H2.
+claim HKContA :
+  continuous_map XI TXI A (subspace_topology X Tx A) K.
+{
+  exact (composition_continuous
+    XI
+    TXI
+    (setprod A unit_interval)
+    (product_topology A (subspace_topology X Tx A) unit_interval unit_interval_topology)
+    A
+    (subspace_topology X Tx A)
+    sK
+    H2
+    HsKCont
+    H2Cont).
+}
+claim HKContX :
+  continuous_map XI TXI X Tx K.
+{
+  exact (continuous_map_range_expand
+    XI
+    TXI
+    A
+    (subspace_topology X Tx A)
+    X
+    Tx
+    K
+    HKContA
+    HAsubX
+    HtopX
+    (fun Q H => H)).
+}
+claim HKAt0 : forall x:set, x :e X -> apply_fun K (x, 0) = apply_fun r1 x.
+{
+  let x.
+  assume HxX.
+  claim Hx0XI : (x, 0) :e XI.
+  {
+    exact (tuple_2_setprod_by_pair_Sigma
+      X
+      unit_interval
+      x
+      0
+      HxX
+      zero_in_unit_interval).
+  }
+  rewrite (compose_fun_apply
+    XI
+    sK
+    H2
+    (x, 0)
+    Hx0XI).
+  rewrite (pair_map_apply
+    XI
+    A
+    unit_interval
+    p1r1
+    p2XI
+    (x, 0)
+    Hx0XI).
+  rewrite (compose_fun_apply
+    XI
+    (projection_map1 X unit_interval)
+    r1
+    (x, 0)
+    Hx0XI).
+  rewrite (projection1_apply
+    X
+    unit_interval
+    (x, 0)
+    Hx0XI).
+  rewrite tuple_2_0_eq.
+  rewrite (projection2_apply
+    X
+    unit_interval
+    (x, 0)
+    Hx0XI).
+  rewrite tuple_2_1_eq.
+  exact (H2At0
+    (apply_fun r1 x)
+    (Hr1IntoA x HxX)).
+}
+claim HKAt1 : forall x:set, x :e X -> apply_fun K (x, 1) = apply_fun r x.
+{
+  let x.
+  assume HxX.
+  claim Hx1XI : (x, 1) :e XI.
+  {
+    exact (tuple_2_setprod_by_pair_Sigma
+      X
+      unit_interval
+      x
+      1
+      HxX
+      one_in_unit_interval).
+  }
+  rewrite (compose_fun_apply
+    XI
+    sK
+    H2
+    (x, 1)
+    Hx1XI).
+  rewrite (pair_map_apply
+    XI
+    A
+    unit_interval
+    p1r1
+    p2XI
+    (x, 1)
+    Hx1XI).
+  rewrite (compose_fun_apply
+    XI
+    (projection_map1 X unit_interval)
+    r1
+    (x, 1)
+    Hx1XI).
+  rewrite (projection1_apply
+    X
+    unit_interval
+    (x, 1)
+    Hx1XI).
+  rewrite tuple_2_0_eq.
+  rewrite (projection2_apply
+    X
+    unit_interval
+    (x, 1)
+    Hx1XI).
+  rewrite tuple_2_1_eq.
+  rewrite (compose_fun_apply
+    X
+    r1
+    r2
+    x
+    HxX).
+  rewrite (apply_fun_graph
+    A
+    (fun a0:set => apply_fun H2 (a0, 1))
+    (apply_fun r1 x)
+    (Hr1IntoA x HxX)).
+  reflexivity.
+}
+claim HKFixB :
+  forall b t:set, b :e B -> t :e unit_interval -> apply_fun K (b, t) = b.
+{
+  let b t.
+  assume HbB Ht.
+  claim HbtXI : (b, t) :e XI.
+  {
+    exact (tuple_2_setprod_by_pair_Sigma
+      X
+      unit_interval
+      b
+      t
+      (HBsubX b HbB)
+      Ht).
+  }
+  rewrite (compose_fun_apply
+    XI
+    sK
+    H2
+    (b, t)
+    HbtXI).
+  rewrite (pair_map_apply
+    XI
+    A
+    unit_interval
+    p1r1
+    p2XI
+    (b, t)
+    HbtXI).
+  rewrite (compose_fun_apply
+    XI
+    (projection_map1 X unit_interval)
+    r1
+    (b, t)
+    HbtXI).
+  rewrite (projection1_apply
+    X
+    unit_interval
+    (b, t)
+    HbtXI).
+  rewrite tuple_2_0_eq.
+  rewrite (Hr1FixA b (HBsubA b HbB)).
+  rewrite (projection2_apply
+    X
+    unit_interval
+    (b, t)
+    HbtXI).
+  rewrite tuple_2_1_eq.
+  exact (H2FixB b t HbB Ht).
+}
+set ALH := setprod X unit_interval_left_half.
+set BRH := setprod X unit_interval_right_half.
+set left_rescale := pair_map ALH
+  (projection_map1 X unit_interval_left_half)
+  (compose_fun ALH (projection_map2 X unit_interval_left_half) double_map_left_half).
+set right_rescale := pair_map BRH
+  (projection_map1 X unit_interval_right_half)
+  (compose_fun BRH (projection_map2 X unit_interval_right_half) double_minus_one_map_right_half).
+set fL := compose_fun ALH left_rescale H1.
+set gR := compose_fun BRH right_rescale K.
+claim HcontfL : continuous_map ALH (subspace_topology XI TXI ALH) X Tx fL.
+{
+  set TALH := subspace_topology unit_interval unit_interval_topology unit_interval_left_half.
+  claim HtopLH : topology_on unit_interval_left_half TALH.
+  {
+    exact (subspace_topology_is_topology
+      unit_interval
+      unit_interval_topology
+      unit_interval_left_half
+      unit_interval_topology_on
+      unit_interval_left_half_sub).
+  }
+  claim HtopEqL :
+    product_topology X Tx unit_interval_left_half TALH = subspace_topology XI TXI ALH.
+  {
+    exact ((subspace_topology_whole X Tx HtopX)
+      (fun a b:set =>
+        product_topology X a unit_interval_left_half TALH = subspace_topology XI TXI ALH)
+      (product_subspace_topology
+        X
+        Tx
+        unit_interval
+        unit_interval_topology
+        X
+        unit_interval_left_half
+        HtopX
+        unit_interval_topology_on
+        (Subq_ref X)
+        unit_interval_left_half_sub)).
+  }
+  claim HtopEqLSym :
+    subspace_topology XI TXI ALH = product_topology X Tx unit_interval_left_half TALH.
+  {
+    exact (fun Q => HtopEqL (fun x y:set => Q y x)).
+  }
+  rewrite HtopEqLSym.
+  claim Hproj1L :
+    continuous_map ALH
+      (product_topology X Tx unit_interval_left_half TALH)
+      X
+      Tx
+      (projection_map1 X unit_interval_left_half).
+  {
+    exact (andEL
+      (continuous_map ALH
+        (product_topology X Tx unit_interval_left_half TALH)
+        X
+        Tx
+        (projection_map1 X unit_interval_left_half))
+      (continuous_map ALH
+        (product_topology X Tx unit_interval_left_half TALH)
+        unit_interval_left_half
+        TALH
+        (projection_map2 X unit_interval_left_half))
+      (projections_are_continuous
+        X
+        Tx
+        unit_interval_left_half
+        TALH
+        HtopX
+        HtopLH)).
+  }
+  claim Hproj2L :
+    continuous_map ALH
+      (product_topology X Tx unit_interval_left_half TALH)
+      unit_interval_left_half
+      TALH
+      (projection_map2 X unit_interval_left_half).
+  {
+    exact (andER
+      (continuous_map ALH
+        (product_topology X Tx unit_interval_left_half TALH)
+        X
+        Tx
+        (projection_map1 X unit_interval_left_half))
+      (continuous_map ALH
+        (product_topology X Tx unit_interval_left_half TALH)
+        unit_interval_left_half
+        TALH
+        (projection_map2 X unit_interval_left_half))
+      (projections_are_continuous
+        X
+        Tx
+        unit_interval_left_half
+        TALH
+        HtopX
+        HtopLH)).
+  }
+  set tL := compose_fun ALH (projection_map2 X unit_interval_left_half) double_map_left_half.
+  claim HtLCont :
+    continuous_map ALH
+      (product_topology X Tx unit_interval_left_half TALH)
+      unit_interval
+      unit_interval_topology
+      tL.
+  {
+    exact (composition_continuous
+      ALH
+      (product_topology X Tx unit_interval_left_half TALH)
+      unit_interval_left_half
+      TALH
+      unit_interval
+      unit_interval_topology
+      (projection_map2 X unit_interval_left_half)
+      double_map_left_half
+      Hproj2L
+      double_map_continuous).
+  }
+  claim HleftRescaleCont :
+    continuous_map ALH
+      (product_topology X Tx unit_interval_left_half TALH)
+      XI
+      TXI
+      left_rescale.
+  {
+    exact (maps_into_products
+      ALH
+      (product_topology X Tx unit_interval_left_half TALH)
+      X
+      Tx
+      unit_interval
+      unit_interval_topology
+      (projection_map1 X unit_interval_left_half)
+      tL
+      Hproj1L
+      HtLCont).
+  }
+  exact (composition_continuous
+    ALH
+    (product_topology X Tx unit_interval_left_half TALH)
+    XI
+    TXI
+    X
+    Tx
+    left_rescale
+    H1
+    HleftRescaleCont
+    H1Cont).
+}
+claim HcontgR : continuous_map BRH (subspace_topology XI TXI BRH) X Tx gR.
+{
+  set TARH := subspace_topology unit_interval unit_interval_topology unit_interval_right_half.
+  claim HtopRH : topology_on unit_interval_right_half TARH.
+  {
+    exact (subspace_topology_is_topology
+      unit_interval
+      unit_interval_topology
+      unit_interval_right_half
+      unit_interval_topology_on
+      unit_interval_right_half_sub).
+  }
+  claim HtopEqR :
+    product_topology X Tx unit_interval_right_half TARH = subspace_topology XI TXI BRH.
+  {
+    exact ((subspace_topology_whole X Tx HtopX)
+      (fun a b:set =>
+        product_topology X a unit_interval_right_half TARH = subspace_topology XI TXI BRH)
+      (product_subspace_topology
+        X
+        Tx
+        unit_interval
+        unit_interval_topology
+        X
+        unit_interval_right_half
+        HtopX
+        unit_interval_topology_on
+        (Subq_ref X)
+        unit_interval_right_half_sub)).
+  }
+  claim HtopEqRSym :
+    subspace_topology XI TXI BRH = product_topology X Tx unit_interval_right_half TARH.
+  {
+    exact (fun Q => HtopEqR (fun x y:set => Q y x)).
+  }
+  rewrite HtopEqRSym.
+  claim Hproj1R :
+    continuous_map BRH
+      (product_topology X Tx unit_interval_right_half TARH)
+      X
+      Tx
+      (projection_map1 X unit_interval_right_half).
+  {
+    exact (andEL
+      (continuous_map BRH
+        (product_topology X Tx unit_interval_right_half TARH)
+        X
+        Tx
+        (projection_map1 X unit_interval_right_half))
+      (continuous_map BRH
+        (product_topology X Tx unit_interval_right_half TARH)
+        unit_interval_right_half
+        TARH
+        (projection_map2 X unit_interval_right_half))
+      (projections_are_continuous
+        X
+        Tx
+        unit_interval_right_half
+        TARH
+        HtopX
+        HtopRH)).
+  }
+  claim Hproj2R :
+    continuous_map BRH
+      (product_topology X Tx unit_interval_right_half TARH)
+      unit_interval_right_half
+      TARH
+      (projection_map2 X unit_interval_right_half).
+  {
+    exact (andER
+      (continuous_map BRH
+        (product_topology X Tx unit_interval_right_half TARH)
+        X
+        Tx
+        (projection_map1 X unit_interval_right_half))
+      (continuous_map BRH
+        (product_topology X Tx unit_interval_right_half TARH)
+        unit_interval_right_half
+        TARH
+        (projection_map2 X unit_interval_right_half))
+      (projections_are_continuous
+        X
+        Tx
+        unit_interval_right_half
+        TARH
+        HtopX
+        HtopRH)).
+  }
+  set tR := compose_fun BRH (projection_map2 X unit_interval_right_half) double_minus_one_map_right_half.
+  claim HtRCont :
+    continuous_map BRH
+      (product_topology X Tx unit_interval_right_half TARH)
+      unit_interval
+      unit_interval_topology
+      tR.
+  {
+    exact (composition_continuous
+      BRH
+      (product_topology X Tx unit_interval_right_half TARH)
+      unit_interval_right_half
+      TARH
+      unit_interval
+      unit_interval_topology
+      (projection_map2 X unit_interval_right_half)
+      double_minus_one_map_right_half
+      Hproj2R
+      double_minus_one_map_continuous).
+  }
+  claim HrightRescaleCont :
+    continuous_map BRH
+      (product_topology X Tx unit_interval_right_half TARH)
+      XI
+      TXI
+      right_rescale.
+  {
+    exact (maps_into_products
+      BRH
+      (product_topology X Tx unit_interval_right_half TARH)
+      X
+      Tx
+      unit_interval
+      unit_interval_topology
+      (projection_map1 X unit_interval_right_half)
+      tR
+      Hproj1R
+      HtRCont).
+  }
+  exact (composition_continuous
+    BRH
+    (product_topology X Tx unit_interval_right_half TARH)
+    XI
+    TXI
+    X
+    Tx
+    right_rescale
+    K
+    HrightRescaleCont
+    HKContX).
+}
+claim HtopXI : topology_on XI TXI.
+{
+  exact (product_topology_is_topology
+    X
+    Tx
+    unit_interval
+    unit_interval_topology
+    HtopX
+    unit_interval_topology_on).
+}
+claim HclosedALH : closed_in XI TXI ALH.
+{
+  exact (ex17_3_product_of_closed_sets_closed
+    X
+    Tx
+    unit_interval
+    unit_interval_topology
+    X
+    unit_interval_left_half
+    (X_is_closed X Tx HtopX)
+    (andEL
+      (closed_in unit_interval unit_interval_topology unit_interval_left_half)
+      (closed_in unit_interval unit_interval_topology unit_interval_right_half)
+      unit_interval_halves_closed)).
+}
+claim HclosedBRH : closed_in XI TXI BRH.
+{
+  exact (ex17_3_product_of_closed_sets_closed
+    X
+    Tx
+    unit_interval
+    unit_interval_topology
+    X
+    unit_interval_right_half
+    (X_is_closed X Tx HtopX)
+    (andER
+      (closed_in unit_interval unit_interval_topology unit_interval_left_half)
+      (closed_in unit_interval unit_interval_topology unit_interval_right_half)
+      unit_interval_halves_closed)).
+}
+claim HcoverHalves : ALH :\/: BRH = XI.
+{
+  apply set_ext.
+  - exact (binunion_Subq_min
+      ALH
+      BRH
+      XI
+      (setprod_Subq
+        X
+        unit_interval_left_half
+        X
+        unit_interval
+        (Subq_ref X)
+        unit_interval_left_half_sub)
+      (setprod_Subq
+        X
+        unit_interval_right_half
+        X
+        unit_interval
+        (Subq_ref X)
+        unit_interval_right_half_sub)).
+  - let p.
+    assume HpXI.
+    claim Hp0X : (p 0) :e X.
+    {
+      exact (ap0_Sigma X (fun _ : set => unit_interval) p HpXI).
+    }
+    claim Hp1LHRH : (p 1) :e unit_interval_left_half :\/: unit_interval_right_half.
+    {
+      exact (unit_interval_halves_cover
+        (fun a b:set => (p 1) :e a -> (p 1) :e b)
+        (binunion_Subq_min
+          unit_interval_left_half
+          unit_interval_right_half
+          unit_interval
+          unit_interval_left_half_sub
+          unit_interval_right_half_sub
+          (p 1))
+        (ap1_Sigma X (fun _ : set => unit_interval) p HpXI)).
+    }
+    apply (setprod_eta X unit_interval p HpXI (fun a b:set => b :e ALH :\/: BRH)).
+    apply (binunionE unit_interval_left_half unit_interval_right_half (p 1) Hp1LHRH).
+    + assume Hp1LH.
+      exact (binunionI1
+        ALH
+        BRH
+        (p 0, p 1)
+        (tuple_2_setprod_by_pair_Sigma X unit_interval_left_half (p 0) (p 1) Hp0X Hp1LH)).
+    + assume Hp1RH.
+      exact (binunionI2
+        ALH
+        BRH
+        (p 0, p 1)
+        (tuple_2_setprod_by_pair_Sigma X unit_interval_right_half (p 0) (p 1) Hp0X Hp1RH)).
+}
+claim HagreeHalves : forall p:set, p :e (ALH :/\: BRH) -> apply_fun fL p = apply_fun gR p.
+{
+  let p.
+  assume Hp.
+  claim HpALH : p :e ALH.
+  {
+    exact (binintersectE1 ALH BRH p Hp).
+  }
+  claim HpBRH : p :e BRH.
+  {
+    exact (binintersectE2 ALH BRH p Hp).
+  }
+  claim Hp0X : (p 0) :e X.
+  {
+    exact (ap0_Sigma X (fun _ : set => unit_interval_left_half) p HpALH).
+  }
+  claim Hp1LH : (p 1) :e unit_interval_left_half.
+  {
+    exact (ap1_Sigma X (fun _ : set => unit_interval_left_half) p HpALH).
+  }
+  claim Hp1RH : (p 1) :e unit_interval_right_half.
+  {
+    exact (ap1_Sigma X (fun _ : set => unit_interval_right_half) p HpBRH).
+  }
+  claim Hp1Int : (p 1) :e unit_interval_left_half :/\: unit_interval_right_half.
+  {
+    exact (binintersectI
+      unit_interval_left_half
+      unit_interval_right_half
+      (p 1)
+      Hp1LH
+      Hp1RH).
+  }
+  claim Hp1Sing : (p 1) :e {eps_ 1}.
+  {
+    exact (unit_interval_halves_intersection
+      (fun a b:set => (p 1) :e b -> (p 1) :e a)
+      (fun H:(p 1) :e {eps_ 1} =>
+        (singleton_elem (p 1) (eps_ 1) H)
+          (fun a b:set => b :e unit_interval_left_half :/\: unit_interval_right_half)
+          (binintersectI
+            unit_interval_left_half
+            unit_interval_right_half
+            (eps_ 1)
+            eps_1_in_unit_interval_left_half
+            eps_1_in_unit_interval_right_half))
+      Hp1Int).
+  }
+  claim Hp1Eq : (p 1) = eps_ 1.
+  {
+    exact (singleton_elem (p 1) (eps_ 1) Hp1Sing).
+  }
+  rewrite (compose_fun_apply ALH left_rescale H1 p HpALH).
+  rewrite (pair_map_apply
+    ALH
+    X
+    unit_interval
+    (projection_map1 X unit_interval_left_half)
+    (compose_fun ALH (projection_map2 X unit_interval_left_half) double_map_left_half)
+    p
+    HpALH).
+  rewrite (projection1_apply X unit_interval_left_half p HpALH).
+  rewrite (compose_fun_apply
+    ALH
+    (projection_map2 X unit_interval_left_half)
+    double_map_left_half
+    p
+    HpALH).
+  rewrite (projection2_apply X unit_interval_left_half p HpALH).
+  rewrite (compose_fun_apply BRH right_rescale K p HpBRH).
+  rewrite (pair_map_apply
+    BRH
+    X
+    unit_interval
+    (projection_map1 X unit_interval_right_half)
+    (compose_fun BRH (projection_map2 X unit_interval_right_half) double_minus_one_map_right_half)
+    p
+    HpBRH).
+  rewrite (projection1_apply X unit_interval_right_half p HpBRH).
+  rewrite (compose_fun_apply
+    BRH
+    (projection_map2 X unit_interval_right_half)
+    double_minus_one_map_right_half
+    p
+    HpBRH).
+  rewrite (projection2_apply X unit_interval_right_half p HpBRH).
+  rewrite Hp1Eq.
+  rewrite double_map_at_eps1.
+  rewrite double_minus_one_map_at_eps1.
+  rewrite <- (apply_fun_graph
+    X
+    (fun x0:set => apply_fun H1 (x0, 1))
+    (p 0)
+    Hp0X).
+  rewrite (HKAt0 (p 0) Hp0X).
+  reflexivity.
+}
+claim HpasteHalves :
+  exists h:set,
+    continuous_map XI TXI X Tx h /\
+    ((forall p:set, p :e ALH -> apply_fun h p = apply_fun fL p) /\
+     (forall p:set, p :e BRH -> apply_fun h p = apply_fun gR p)).
+{
+  exact (pasting_lemma
+    XI
+    ALH
+    BRH
+    X
+    TXI
+    Tx
+    fL
+    gR
+    HtopXI
+    HclosedALH
+    HclosedBRH
+    HcoverHalves
+    HcontfL
+    HcontgR
+    HagreeHalves).
+}
 claim HrIntoB : forall x:set, x :e X -> apply_fun r x :e B.
 {
   let x.
@@ -53097,9 +53914,241 @@ claim HrFixB : forall b:set, b :e B -> apply_fun r b = b.
   rewrite (Hr1FixA b (HBsubA b HbB)).
   exact (Hr2FixB b HbB).
 }
-(** Next step: build an explicit composite deformation homotopy X x I -> X using H1 and H2 via reparameterization/pasting. **)
-admit.
-Admitted.
+apply HpasteHalves.
+let Hfinal.
+assume HfinalPack.
+claim HfinalCont : continuous_map XI TXI X Tx Hfinal.
+{
+  exact (andEL
+    (continuous_map XI TXI X Tx Hfinal)
+    ((forall p:set, p :e ALH -> apply_fun Hfinal p = apply_fun fL p) /\
+     (forall p:set, p :e BRH -> apply_fun Hfinal p = apply_fun gR p))
+    HfinalPack).
+}
+claim HfinalHalves :
+  (forall p:set, p :e ALH -> apply_fun Hfinal p = apply_fun fL p) /\
+  (forall p:set, p :e BRH -> apply_fun Hfinal p = apply_fun gR p).
+{
+  exact (andER
+    (continuous_map XI TXI X Tx Hfinal)
+    ((forall p:set, p :e ALH -> apply_fun Hfinal p = apply_fun fL p) /\
+     (forall p:set, p :e BRH -> apply_fun Hfinal p = apply_fun gR p))
+    HfinalPack).
+}
+claim HfinalOnL : forall p:set, p :e ALH -> apply_fun Hfinal p = apply_fun fL p.
+{
+  exact (andEL
+    (forall p:set, p :e ALH -> apply_fun Hfinal p = apply_fun fL p)
+    (forall p:set, p :e BRH -> apply_fun Hfinal p = apply_fun gR p)
+    HfinalHalves).
+}
+claim HfinalOnR : forall p:set, p :e BRH -> apply_fun Hfinal p = apply_fun gR p.
+{
+  exact (andER
+    (forall p:set, p :e ALH -> apply_fun Hfinal p = apply_fun fL p)
+    (forall p:set, p :e BRH -> apply_fun Hfinal p = apply_fun gR p)
+    HfinalHalves).
+}
+prove
+  B c= X /\
+  exists H:set,
+    continuous_map XI
+      TXI
+      X
+      Tx
+      H /\
+    (forall x:set, x :e X -> apply_fun H (x, 0) = x) /\
+    (forall x:set, x :e X -> apply_fun H (x, 1) :e B) /\
+    (forall b t:set, b :e B -> t :e unit_interval -> apply_fun H (b, t) = b).
+apply andI.
+{
+  exact HBsubX.
+}
+{
+  witness Hfinal.
+  apply andI.
+  {
+    apply andI.
+    {
+      apply andI.
+      {
+        exact HfinalCont.
+      }
+      {
+        let x.
+        assume HxX.
+        claim HxALH : (x, 0) :e ALH.
+        {
+          exact (tuple_2_setprod_by_pair_Sigma
+            X
+            unit_interval_left_half
+            x
+            0
+            HxX
+            zero_in_unit_interval_left_half).
+        }
+        rewrite (HfinalOnL (x, 0) HxALH).
+        rewrite (compose_fun_apply ALH left_rescale H1 (x, 0) HxALH).
+        rewrite (pair_map_apply
+          ALH
+          X
+          unit_interval
+          (projection_map1 X unit_interval_left_half)
+          (compose_fun ALH (projection_map2 X unit_interval_left_half) double_map_left_half)
+          (x, 0)
+          HxALH).
+        rewrite (projection1_apply X unit_interval_left_half (x, 0) HxALH).
+        rewrite (tuple_2_0_eq x 0).
+        rewrite (compose_fun_apply
+          ALH
+          (projection_map2 X unit_interval_left_half)
+          double_map_left_half
+          (x, 0)
+          HxALH).
+        rewrite (projection2_apply X unit_interval_left_half (x, 0) HxALH).
+        rewrite (tuple_2_1_eq x 0).
+        rewrite double_map_at_0.
+        exact (H1At0 x HxX).
+      }
+    }
+    {
+      let x.
+      assume HxX.
+      claim HxBRH : (x, 1) :e BRH.
+      {
+        exact (tuple_2_setprod_by_pair_Sigma
+          X
+          unit_interval_right_half
+          x
+          1
+          HxX
+          one_in_unit_interval_right_half).
+      }
+      rewrite (HfinalOnR (x, 1) HxBRH).
+      rewrite (compose_fun_apply BRH right_rescale K (x, 1) HxBRH).
+      rewrite (pair_map_apply
+        BRH
+        X
+        unit_interval
+        (projection_map1 X unit_interval_right_half)
+        (compose_fun BRH (projection_map2 X unit_interval_right_half) double_minus_one_map_right_half)
+        (x, 1)
+        HxBRH).
+      rewrite (projection1_apply X unit_interval_right_half (x, 1) HxBRH).
+      rewrite (tuple_2_0_eq x 1).
+      rewrite (compose_fun_apply
+        BRH
+        (projection_map2 X unit_interval_right_half)
+        double_minus_one_map_right_half
+        (x, 1)
+        HxBRH).
+      rewrite (projection2_apply X unit_interval_right_half (x, 1) HxBRH).
+      rewrite (tuple_2_1_eq x 1).
+      rewrite double_minus_one_map_at_1.
+      rewrite (HKAt1 x HxX).
+      exact (HrIntoB x HxX).
+    }
+  }
+  {
+    let b t.
+    assume HbB Ht.
+    claim HtHalves : t :e unit_interval_left_half :\/: unit_interval_right_half.
+    {
+      exact (unit_interval_halves_cover
+        (fun a b0:set => t :e a -> t :e b0)
+        (binunion_Subq_min
+          unit_interval_left_half
+          unit_interval_right_half
+          unit_interval
+          unit_interval_left_half_sub
+          unit_interval_right_half_sub
+          t)
+        Ht).
+    }
+    apply (binunionE unit_interval_left_half unit_interval_right_half t HtHalves).
+    - assume HtLH.
+      claim HbALH : (b, t) :e ALH.
+      {
+        exact (tuple_2_setprod_by_pair_Sigma
+          X
+          unit_interval_left_half
+          b
+          t
+          (HBsubX b HbB)
+          HtLH).
+      }
+      rewrite (HfinalOnL (b, t) HbALH).
+      rewrite (compose_fun_apply ALH left_rescale H1 (b, t) HbALH).
+      rewrite (pair_map_apply
+        ALH
+        X
+        unit_interval
+        (projection_map1 X unit_interval_left_half)
+        (compose_fun ALH (projection_map2 X unit_interval_left_half) double_map_left_half)
+        (b, t)
+        HbALH).
+      rewrite (projection1_apply X unit_interval_left_half (b, t) HbALH).
+      rewrite tuple_2_0_eq.
+      rewrite (compose_fun_apply
+        ALH
+        (projection_map2 X unit_interval_left_half)
+        double_map_left_half
+        (b, t)
+        HbALH).
+      rewrite (projection2_apply X unit_interval_left_half (b, t) HbALH).
+      rewrite tuple_2_1_eq.
+      claim HdoubleInI : apply_fun double_map_left_half t :e unit_interval.
+      {
+        exact (double_map_function_on t HtLH).
+      }
+      exact (H1FixA
+        b
+        (apply_fun double_map_left_half t)
+        (HBsubA b HbB)
+        HdoubleInI).
+    - assume HtRH.
+      claim HbBRH : (b, t) :e BRH.
+      {
+        exact (tuple_2_setprod_by_pair_Sigma
+          X
+          unit_interval_right_half
+          b
+          t
+          (HBsubX b HbB)
+          HtRH).
+      }
+      rewrite (HfinalOnR (b, t) HbBRH).
+      rewrite (compose_fun_apply BRH right_rescale K (b, t) HbBRH).
+      rewrite (pair_map_apply
+        BRH
+        X
+        unit_interval
+        (projection_map1 X unit_interval_right_half)
+        (compose_fun BRH (projection_map2 X unit_interval_right_half) double_minus_one_map_right_half)
+        (b, t)
+        HbBRH).
+      rewrite (projection1_apply X unit_interval_right_half (b, t) HbBRH).
+      rewrite tuple_2_0_eq.
+      rewrite (compose_fun_apply
+        BRH
+        (projection_map2 X unit_interval_right_half)
+        double_minus_one_map_right_half
+        (b, t)
+        HbBRH).
+      rewrite (projection2_apply X unit_interval_right_half (b, t) HbBRH).
+      rewrite tuple_2_1_eq.
+      claim HminusOneInI : apply_fun double_minus_one_map_right_half t :e unit_interval.
+      {
+        exact (double_minus_one_map_function_on t HtRH).
+      }
+      exact (HKFixB
+        b
+        (apply_fun double_minus_one_map_right_half t)
+        HbB
+        HminusOneInI).
+  }
+}
+Qed.
 
 (** from S58 Exercise 3 (line 1492 in algtop.tex) **)
 (** LATEX VERSION: Homotopy equivalence is an equivalence relation. **)
