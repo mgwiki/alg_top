@@ -1,5 +1,5 @@
 (** Balance Alice 1710 **)
-(** Balance Bob 1428 **)
+(** Balance Bob 1483 **)
 (** Balance Charlie 1223 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -13344,11 +13344,531 @@ exact (induced_homomorphism_apply
   (path_homotopy_class_in_fundamental_group X Tx x0 f Hf)).
 Qed.
 
+(** Infrastructure: any loop belongs to its own path-homotopy class **)
+(** Proven Bob **)
+Theorem loop_in_own_path_homotopy_class : forall X Tx x0 f:set,
+  f :e loop_space X Tx x0 ->
+  f :e path_homotopy_class_loop X Tx x0 f.
+let X Tx x0 f.
+assume HfLoop.
+claim HfLoopAt : loop_at X Tx x0 f.
+{
+  exact (loop_space_has_loop_at X Tx x0 f HfLoop).
+}
+claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
+{
+  exact (loop_at_continuous X Tx x0 f HfLoopAt).
+}
+claim Hf0 : apply_fun f 0 = x0.
+{
+  exact (loop_at_at_zero X Tx x0 f HfLoopAt).
+}
+claim Hf1 : apply_fun f 1 = x0.
+{
+  exact (loop_at_at_one X Tx x0 f HfLoopAt).
+}
+claim Hrefl : path_homotopic X Tx x0 x0 f f.
+{
+  exact (Lemma_51_1_path_homotopy_refl
+    X Tx x0 x0 f HfCont Hf0 Hf1).
+}
+exact (SepI
+  (loop_space X Tx x0)
+  (fun g:set => path_homotopic X Tx x0 x0 f g)
+  f
+  HfLoop
+  Hrefl).
+Qed.
+
+(** Infrastructure: canonical Eps_i representative of a pi1 class is a loop **)
+(** Proven Bob **)
+Theorem eps_of_fundamental_group_member_in_loop_space : forall X Tx x0 cls:set,
+  cls :e fundamental_group X Tx x0 ->
+  (Eps_i (fun f:set => f :e cls)) :e loop_space X Tx x0.
+let X Tx x0 cls.
+assume Hcls.
+claim Hrep : exists f:set, f :e loop_space X Tx x0 /\
+  cls = path_homotopy_class_loop X Tx x0 f.
+{
+  exact (fundamental_group_member_has_representative
+    X Tx x0 cls Hcls).
+}
+apply Hrep.
+let f.
+assume HfPack.
+claim HfLoop : f :e loop_space X Tx x0.
+{
+  exact (andEL
+    (f :e loop_space X Tx x0)
+    (cls = path_homotopy_class_loop X Tx x0 f)
+    HfPack).
+}
+claim HclsEqf : cls = path_homotopy_class_loop X Tx x0 f.
+{
+  exact (andER
+    (f :e loop_space X Tx x0)
+    (cls = path_homotopy_class_loop X Tx x0 f)
+    HfPack).
+}
+claim HfInCls : f :e cls.
+{
+  exact (mem_eqL
+    f
+    cls
+    (path_homotopy_class_loop X Tx x0 f)
+    HclsEqf
+    (loop_in_own_path_homotopy_class X Tx x0 f HfLoop)).
+}
+claim HepsInCls : (Eps_i (fun g:set => g :e cls)) :e cls.
+{
+  exact (Eps_i_ax
+    (fun g:set => g :e cls)
+    f
+    HfInCls).
+}
+claim HepsInClassf :
+  (Eps_i (fun g:set => g :e cls))
+  :e path_homotopy_class_loop X Tx x0 f.
+{
+  exact (mem_eqR
+    (Eps_i (fun g:set => g :e cls))
+    cls
+    (path_homotopy_class_loop X Tx x0 f)
+    HclsEqf
+    HepsInCls).
+}
+exact (path_homotopy_class_loop_in_loop_space
+  X Tx x0 f
+  (Eps_i (fun g:set => g :e cls))
+  HepsInClassf).
+Qed.
+
+(** Infrastructure: postcomposition carries loops to loops at image basepoint **)
+(** Proven Bob **)
+Theorem loop_space_postcompose : forall X Tx x0 Y Ty y0 f h:set,
+  f :e loop_space X Tx x0 ->
+  continuous_map X Tx Y Ty h ->
+  apply_fun h x0 = y0 ->
+  (compose_fun unit_interval f h) :e loop_space Y Ty y0.
+let X Tx x0 Y Ty y0 f h.
+assume HfLoop Hh Hbase.
+claim HfLoopAt : loop_at X Tx x0 f.
+{
+  exact (loop_space_has_loop_at X Tx x0 f HfLoop).
+}
+claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
+{
+  exact (loop_at_continuous X Tx x0 f HfLoopAt).
+}
+claim Hf0 : apply_fun f 0 = x0.
+{
+  exact (loop_at_at_zero X Tx x0 f HfLoopAt).
+}
+claim Hf1 : apply_fun f 1 = x0.
+{
+  exact (loop_at_at_one X Tx x0 f HfLoopAt).
+}
+claim HfFun : function_on f unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval unit_interval_topology X Tx f HfCont).
+}
+claim HhFun : function_on h X Y.
+{
+  exact (continuous_map_function_on
+    X Tx Y Ty h Hh).
+}
+claim HcompCont :
+  continuous_map unit_interval unit_interval_topology Y Ty
+    (compose_fun unit_interval f h).
+{
+  exact (composition_continuous
+    unit_interval unit_interval_topology
+    X Tx
+    Y Ty
+    f
+    h
+    HfCont
+    Hh).
+}
+claim Hcomp0 :
+  apply_fun (compose_fun unit_interval f h) 0 = y0.
+{
+  rewrite (compose_fun_apply
+    unit_interval f h 0 zero_in_unit_interval).
+  rewrite Hf0.
+  exact Hbase.
+}
+claim Hcomp1 :
+  apply_fun (compose_fun unit_interval f h) 1 = y0.
+{
+  rewrite (compose_fun_apply
+    unit_interval f h 1 one_in_unit_interval).
+  rewrite Hf1.
+  exact Hbase.
+}
+claim HcompLoopAt : loop_at Y Ty y0 (compose_fun unit_interval f h).
+{
+  apply (loop_at_fold
+    Y Ty y0
+    (compose_fun unit_interval f h)).
+  apply andI.
+  - apply andI.
+    + exact HcompCont.
+    + exact Hcomp0.
+  - exact Hcomp1.
+}
+exact (SepI
+  (function_space unit_interval Y)
+  (fun g:set => loop_at Y Ty y0 g)
+  (compose_fun unit_interval f h)
+  (compose_fun_in_function_space
+    unit_interval X Y
+    f h
+    HfFun
+    HhFun)
+  HcompLoopAt).
+Qed.
+
+(** Infrastructure: concatenation of based loops is a based loop **)
+(** Proven Bob **)
+Theorem path_concat_preserves_loop_space : forall X Tx x0 f g:set,
+  f :e loop_space X Tx x0 ->
+  g :e loop_space X Tx x0 ->
+  path_concat f g :e loop_space X Tx x0.
+let X Tx x0 f g.
+assume HfLoop HgLoop.
+claim HfLoopAt : loop_at X Tx x0 f.
+{
+  exact (loop_space_has_loop_at X Tx x0 f HfLoop).
+}
+claim HgLoopAt : loop_at X Tx x0 g.
+{
+  exact (loop_space_has_loop_at X Tx x0 g HgLoop).
+}
+claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
+{
+  exact (loop_at_continuous X Tx x0 f HfLoopAt).
+}
+claim HgCont : continuous_map unit_interval unit_interval_topology X Tx g.
+{
+  exact (loop_at_continuous X Tx x0 g HgLoopAt).
+}
+claim Hf0 : apply_fun f 0 = x0.
+{
+  exact (loop_at_at_zero X Tx x0 f HfLoopAt).
+}
+claim Hf1 : apply_fun f 1 = x0.
+{
+  exact (loop_at_at_one X Tx x0 f HfLoopAt).
+}
+claim Hg0 : apply_fun g 0 = x0.
+{
+  exact (loop_at_at_zero X Tx x0 g HgLoopAt).
+}
+claim Hg1 : apply_fun g 1 = x0.
+{
+  exact (loop_at_at_one X Tx x0 g HgLoopAt).
+}
+claim HfFun : function_on f unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval unit_interval_topology X Tx f HfCont).
+}
+claim HgFun : function_on g unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval unit_interval_topology X Tx g HgCont).
+}
+claim HconcatCont :
+  continuous_map unit_interval unit_interval_topology X Tx (path_concat f g).
+{
+  exact (path_concat_continuous
+    X Tx x0 x0 x0
+    f g
+    HfCont HgCont
+    Hf0 Hf1
+    Hg0 Hg1).
+}
+claim Hconcat0 : apply_fun (path_concat f g) 0 = x0.
+{
+  rewrite (path_concat_at_zero f g).
+  exact Hf0.
+}
+claim Hconcat1 : apply_fun (path_concat f g) 1 = x0.
+{
+  rewrite (path_concat_at_one f g).
+  exact Hg1.
+}
+claim HconcatLoopAt : loop_at X Tx x0 (path_concat f g).
+{
+  apply (loop_at_fold
+    X Tx x0
+    (path_concat f g)).
+  apply andI.
+  - apply andI.
+    + exact HconcatCont.
+    + exact Hconcat0.
+  - exact Hconcat1.
+}
+claim HconcatSub : path_concat f g c= setprod unit_interval X.
+{
+  let p.
+  assume Hp.
+  apply (binunionE
+    {(t, apply_fun f (mul_SNo 2 t)) | t :e unit_interval_left_half}
+    {(t, apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1))) | t :e unit_interval_right_half}
+    p
+    Hp).
+  - assume Hleft.
+    apply (ReplE_impred
+      unit_interval_left_half
+      (fun t:set => (t, apply_fun f (mul_SNo 2 t)))
+      p
+      Hleft).
+    let t.
+    assume Ht Heq.
+    claim H2tInI : mul_SNo 2 t :e unit_interval.
+    {
+      rewrite <- (double_map_apply t Ht).
+      exact (double_map_function_on t Ht).
+    }
+    rewrite Heq.
+    exact (tuple_2_setprod_by_pair_Sigma
+      unit_interval
+      X
+      t
+      (apply_fun f (mul_SNo 2 t))
+      (unit_interval_left_half_sub t Ht)
+      (HfFun
+        (mul_SNo 2 t)
+        H2tInI)).
+  - assume Hright.
+    apply (ReplE_impred
+      unit_interval_right_half
+      (fun t:set => (t, apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1))))
+      p
+      Hright).
+    let t.
+    assume Ht Heq.
+    claim H2m1tInI : add_SNo (mul_SNo 2 t) (minus_SNo 1) :e unit_interval.
+    {
+      rewrite <- (double_minus_one_map_apply t Ht).
+      exact (double_minus_one_map_function_on t Ht).
+    }
+    rewrite Heq.
+    exact (tuple_2_setprod_by_pair_Sigma
+      unit_interval
+      X
+      t
+      (apply_fun g (add_SNo (mul_SNo 2 t) (minus_SNo 1)))
+      (unit_interval_right_half_sub t Ht)
+      (HgFun
+        (add_SNo (mul_SNo 2 t) (minus_SNo 1))
+        H2m1tInI)).
+}
+claim HconcatPow : path_concat f g :e Power (setprod unit_interval X).
+{
+  exact (PowerI
+    (setprod unit_interval X)
+    (path_concat f g)
+    HconcatSub).
+}
+claim HconcatFunOn : function_on (path_concat f g) unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval unit_interval_topology X Tx
+    (path_concat f g)
+    HconcatCont).
+}
+claim HconcatFunSpace : path_concat f g :e function_space unit_interval X.
+{
+  exact (SepI
+    (Power (setprod unit_interval X))
+    (fun u:set => function_on u unit_interval X)
+    (path_concat f g)
+    HconcatPow
+    HconcatFunOn).
+}
+exact (SepI
+  (function_space unit_interval X)
+  (fun u:set => loop_at X Tx x0 u)
+  (path_concat f g)
+  HconcatFunSpace
+  HconcatLoopAt).
+Qed.
+
+(** Infrastructure: postcomposition distributes over path_concat **)
+(** Proven Bob **)
+Theorem compose_path_concat_eq_algtop : forall X Y f g h:set,
+  function_on f unit_interval X ->
+  function_on g unit_interval X ->
+  function_on h X Y ->
+  apply_fun f 1 = apply_fun g 0 ->
+  compose_fun unit_interval (path_concat f g) h
+  = path_concat
+      (compose_fun unit_interval f h)
+      (compose_fun unit_interval g h).
+let X Y f g h.
+assume Hf Hg Hh Hfg.
+apply set_ext.
+- let p.
+  assume Hp.
+  apply (ReplE_impred
+    unit_interval
+    (fun t:set => (t, apply_fun h (apply_fun (path_concat f g) t)))
+    p
+    Hp).
+  let t.
+  assume Ht Heq.
+  claim Hcases : t :e unit_interval_left_half :\/: unit_interval_right_half.
+  {
+    exact (unit_interval_halves_cover
+      (fun a b:set => t :e a -> t :e b)
+      (binunion_Subq_min
+        unit_interval_left_half
+        unit_interval_right_half
+        unit_interval
+        unit_interval_left_half_sub
+        unit_interval_right_half_sub
+        t)
+      Ht).
+  }
+  apply (binunionE
+    unit_interval_left_half
+    unit_interval_right_half
+    t
+    Hcases).
+  + assume HtL.
+    claim H2tInI : mul_SNo 2 t :e unit_interval.
+    {
+      rewrite <- (double_map_apply t HtL).
+      exact (double_map_function_on t HtL).
+    }
+    rewrite Heq.
+    rewrite (path_concat_apply_left f g t Hfg HtL).
+    rewrite <- (compose_fun_apply
+      unit_interval
+      f
+      h
+      (mul_SNo 2 t)
+      H2tInI).
+    exact (binunionI1
+      {(s, apply_fun (compose_fun unit_interval f h) (mul_SNo 2 s))
+        | s :e unit_interval_left_half}
+      {(s, apply_fun (compose_fun unit_interval g h) (add_SNo (mul_SNo 2 s) (minus_SNo 1)))
+        | s :e unit_interval_right_half}
+      (t, apply_fun (compose_fun unit_interval f h) (mul_SNo 2 t))
+      (ReplI
+        unit_interval_left_half
+        (fun s:set =>
+          (s, apply_fun (compose_fun unit_interval f h) (mul_SNo 2 s)))
+        t
+        HtL)).
+  + assume HtR.
+    claim H2m1tInI : add_SNo (mul_SNo 2 t) (minus_SNo 1) :e unit_interval.
+    {
+      rewrite <- (double_minus_one_map_apply t HtR).
+      exact (double_minus_one_map_function_on t HtR).
+    }
+    rewrite Heq.
+    rewrite (path_concat_apply_right f g t Hfg HtR).
+    rewrite <- (compose_fun_apply
+      unit_interval
+      g
+      h
+      (add_SNo (mul_SNo 2 t) (minus_SNo 1))
+      H2m1tInI).
+    exact (binunionI2
+      {(s, apply_fun (compose_fun unit_interval f h) (mul_SNo 2 s))
+        | s :e unit_interval_left_half}
+      {(s, apply_fun (compose_fun unit_interval g h) (add_SNo (mul_SNo 2 s) (minus_SNo 1)))
+        | s :e unit_interval_right_half}
+      (t, apply_fun (compose_fun unit_interval g h) (add_SNo (mul_SNo 2 t) (minus_SNo 1)))
+      (ReplI
+        unit_interval_right_half
+        (fun s:set =>
+          (s, apply_fun (compose_fun unit_interval g h) (add_SNo (mul_SNo 2 s) (minus_SNo 1))))
+        t
+        HtR)).
+- let p.
+  assume Hp.
+  apply (binunionE
+    {(t, apply_fun (compose_fun unit_interval f h) (mul_SNo 2 t))
+      | t :e unit_interval_left_half}
+    {(t, apply_fun (compose_fun unit_interval g h) (add_SNo (mul_SNo 2 t) (minus_SNo 1)))
+      | t :e unit_interval_right_half}
+    p
+    Hp).
+  + assume Hleft.
+    apply (ReplE_impred
+      unit_interval_left_half
+      (fun t:set =>
+        (t, apply_fun (compose_fun unit_interval f h) (mul_SNo 2 t)))
+      p
+      Hleft).
+    let t.
+    assume Ht Heq.
+    claim HtI : t :e unit_interval.
+    {
+      exact (unit_interval_left_half_sub t Ht).
+    }
+    claim H2tInI : mul_SNo 2 t :e unit_interval.
+    {
+      rewrite <- (double_map_apply t Ht).
+      exact (double_map_function_on t Ht).
+    }
+    rewrite Heq.
+    rewrite (compose_fun_apply
+      unit_interval
+      f
+      h
+      (mul_SNo 2 t)
+      H2tInI).
+    rewrite <- (path_concat_apply_left f g t Hfg Ht).
+    exact (ReplI
+      unit_interval
+      (fun s:set => (s, apply_fun h (apply_fun (path_concat f g) s)))
+      t
+      HtI).
+  + assume Hright.
+    apply (ReplE_impred
+      unit_interval_right_half
+      (fun t:set =>
+        (t, apply_fun (compose_fun unit_interval g h) (add_SNo (mul_SNo 2 t) (minus_SNo 1))))
+      p
+      Hright).
+    let t.
+    assume Ht Heq.
+    claim HtI : t :e unit_interval.
+    {
+      exact (unit_interval_right_half_sub t Ht).
+    }
+    claim H2m1tInI : add_SNo (mul_SNo 2 t) (minus_SNo 1) :e unit_interval.
+    {
+      rewrite <- (double_minus_one_map_apply t Ht).
+      exact (double_minus_one_map_function_on t Ht).
+    }
+    rewrite Heq.
+    rewrite (compose_fun_apply
+      unit_interval
+      g
+      h
+      (add_SNo (mul_SNo 2 t) (minus_SNo 1))
+      H2m1tInI).
+    rewrite <- (path_concat_apply_right f g t Hfg Ht).
+    exact (ReplI
+      unit_interval
+      (fun s:set => (s, apply_fun h (apply_fun (path_concat f g) s)))
+      t
+      HtI).
+Qed.
+
 (** from S52 (line 458 in algtop.tex): h-star is a homomorphism **)
 (** LATEX VERSION: The map h-star is a well-defined group homomorphism. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Bob 2026-02-18T00:35:00 **)
+(** Collected Bob 55 **)
+(** Proven Bob **)
 Theorem induced_homomorphism_is_homomorphism : forall X Tx x0 Y Ty y0 h:set,
   continuous_map X Tx Y Ty h ->
   apply_fun h x0 = y0 -> x0 :e X ->
@@ -13358,8 +13878,433 @@ Theorem induced_homomorphism_is_homomorphism : forall X Tx x0 Y Ty y0 h:set,
     (induced_homomorphism X Tx x0 Y Ty y0 h).
 let X Tx x0 Y Ty y0 h.
 assume Hh Hbase Hx0.
-admit.
-Admitted.
+claim HhFun : function_on h X Y.
+{
+  exact (continuous_map_function_on
+    X Tx Y Ty h Hh).
+}
+prove
+  function_on
+    (induced_homomorphism X Tx x0 Y Ty y0 h)
+    (fundamental_group X Tx x0)
+    (fundamental_group Y Ty y0) /\
+  (forall x y:set,
+    x :e fundamental_group X Tx x0 ->
+    y :e fundamental_group X Tx x0 ->
+    apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h)
+      (apply_fun (fundamental_group_mult X Tx x0) (x, y))
+    = apply_fun (fundamental_group_mult Y Ty y0)
+        (apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) x,
+         apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) y)).
+apply andI.
+- let cls.
+  assume Hcls.
+  set eps := Eps_i (fun f:set => f :e cls).
+  rewrite (induced_homomorphism_apply
+    X Tx x0 Y Ty y0 h cls Hcls).
+  claim HepsLoop : eps :e loop_space X Tx x0.
+  {
+    exact (eps_of_fundamental_group_member_in_loop_space
+      X Tx x0 cls Hcls).
+  }
+  claim HcompLoop :
+    (compose_fun unit_interval eps h) :e loop_space Y Ty y0.
+  {
+    exact (loop_space_postcompose
+      X Tx x0 Y Ty y0
+      eps h
+      HepsLoop
+      Hh
+      Hbase).
+  }
+  exact (path_homotopy_class_in_fundamental_group
+    Y Ty y0
+    (compose_fun unit_interval eps h)
+    HcompLoop).
+- let cls1 cls2.
+  assume Hcls1 Hcls2.
+  set eps1 := Eps_i (fun f:set => f :e cls1).
+  set eps2 := Eps_i (fun f:set => f :e cls2).
+  claim Heps1Loop : eps1 :e loop_space X Tx x0.
+  {
+    exact (eps_of_fundamental_group_member_in_loop_space
+      X Tx x0 cls1 Hcls1).
+  }
+  claim Heps2Loop : eps2 :e loop_space X Tx x0.
+  {
+    exact (eps_of_fundamental_group_member_in_loop_space
+      X Tx x0 cls2 Hcls2).
+  }
+  claim Heps1LoopAt : loop_at X Tx x0 eps1.
+  {
+    exact (loop_space_has_loop_at X Tx x0 eps1 Heps1Loop).
+  }
+  claim Heps2LoopAt : loop_at X Tx x0 eps2.
+  {
+    exact (loop_space_has_loop_at X Tx x0 eps2 Heps2Loop).
+  }
+  claim Heps1Fun : function_on eps1 unit_interval X.
+  {
+    exact (function_on_of_function_space
+      eps1
+      unit_interval
+      X
+      (loop_space_in_function_space X Tx x0 eps1 Heps1Loop)).
+  }
+  claim Heps2Fun : function_on eps2 unit_interval X.
+  {
+    exact (function_on_of_function_space
+      eps2
+      unit_interval
+      X
+      (loop_space_in_function_space X Tx x0 eps2 Heps2Loop)).
+  }
+  claim Heps1_1 : apply_fun eps1 1 = x0.
+  {
+    exact (loop_at_at_one X Tx x0 eps1 Heps1LoopAt).
+  }
+  claim Heps2_0 : apply_fun eps2 0 = x0.
+  {
+    exact (loop_at_at_zero X Tx x0 eps2 Heps2LoopAt).
+  }
+  claim HepsJoin : apply_fun eps1 1 = apply_fun eps2 0.
+  {
+    rewrite Heps1_1.
+    rewrite Heps2_0.
+    exact (fun Q H => H).
+  }
+  claim HpairX :
+    (cls1, cls2)
+    :e setprod (fundamental_group X Tx x0) (fundamental_group X Tx x0).
+  {
+    exact (tuple_2_setprod_by_pair_Sigma
+      (fundamental_group X Tx x0)
+      (fundamental_group X Tx x0)
+      cls1
+      cls2
+      Hcls1
+      Hcls2).
+  }
+  rewrite (fundamental_group_mult_apply
+    X Tx x0
+    (cls1, cls2)
+    HpairX).
+  rewrite (tuple_2_0_eq cls1 cls2).
+  rewrite (tuple_2_1_eq cls1 cls2).
+  set cls12 := path_homotopy_class_loop X Tx x0 (path_concat eps1 eps2).
+  claim HconcatLoopX : path_concat eps1 eps2 :e loop_space X Tx x0.
+  {
+    exact (path_concat_preserves_loop_space
+      X Tx x0
+      eps1 eps2
+      Heps1Loop
+      Heps2Loop).
+  }
+  claim Hcls12In : cls12 :e fundamental_group X Tx x0.
+  {
+    exact (path_homotopy_class_in_fundamental_group
+      X Tx x0
+      (path_concat eps1 eps2)
+      HconcatLoopX).
+  }
+  rewrite (induced_homomorphism_apply
+    X Tx x0 Y Ty y0 h
+    cls12
+    Hcls12In).
+  set eps12 := Eps_i (fun f:set => f :e cls12).
+  claim Him1Eq :
+    apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls1
+    = path_homotopy_class_loop Y Ty y0 (compose_fun unit_interval eps1 h).
+  {
+    exact (induced_homomorphism_apply
+      X Tx x0 Y Ty y0 h
+      cls1
+      Hcls1).
+  }
+  claim Him2Eq :
+    apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls2
+    = path_homotopy_class_loop Y Ty y0 (compose_fun unit_interval eps2 h).
+  {
+    exact (induced_homomorphism_apply
+      X Tx x0 Y Ty y0 h
+      cls2
+      Hcls2).
+  }
+  claim Hcomp1Loop :
+    (compose_fun unit_interval eps1 h) :e loop_space Y Ty y0.
+  {
+    exact (loop_space_postcompose
+      X Tx x0 Y Ty y0
+      eps1 h
+      Heps1Loop
+      Hh
+      Hbase).
+  }
+  claim Hcomp2Loop :
+    (compose_fun unit_interval eps2 h) :e loop_space Y Ty y0.
+  {
+    exact (loop_space_postcompose
+      X Tx x0 Y Ty y0
+      eps2 h
+      Heps2Loop
+      Hh
+      Hbase).
+  }
+  claim Him1In :
+    apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls1
+    :e fundamental_group Y Ty y0.
+  {
+    rewrite Him1Eq.
+    exact (path_homotopy_class_in_fundamental_group
+      Y Ty y0
+      (compose_fun unit_interval eps1 h)
+      Hcomp1Loop).
+  }
+  claim Him2In :
+    apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls2
+    :e fundamental_group Y Ty y0.
+  {
+    rewrite Him2Eq.
+    exact (path_homotopy_class_in_fundamental_group
+      Y Ty y0
+      (compose_fun unit_interval eps2 h)
+      Hcomp2Loop).
+  }
+  claim HpairY :
+    (apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls1,
+     apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls2)
+    :e setprod (fundamental_group Y Ty y0) (fundamental_group Y Ty y0).
+  {
+    exact (tuple_2_setprod_by_pair_Sigma
+      (fundamental_group Y Ty y0)
+      (fundamental_group Y Ty y0)
+      (apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls1)
+      (apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls2)
+      Him1In
+      Him2In).
+  }
+  rewrite (fundamental_group_mult_apply
+    Y Ty y0
+    (apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls1,
+     apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls2)
+    HpairY).
+  rewrite (tuple_2_0_eq
+    (apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls1)
+    (apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls2)).
+  rewrite (tuple_2_1_eq
+    (apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls1)
+    (apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls2)).
+  set epsY1 := Eps_i
+    (fun f:set =>
+      f :e apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls1).
+  set epsY2 := Eps_i
+    (fun f:set =>
+      f :e apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls2).
+  claim HpathConcatInCls12 :
+    path_concat eps1 eps2 :e cls12.
+  {
+    exact (loop_in_own_path_homotopy_class
+      X Tx x0
+      (path_concat eps1 eps2)
+      HconcatLoopX).
+  }
+  claim Heps12InCls12 : eps12 :e cls12.
+  {
+    exact (Eps_i_ax
+      (fun f:set => f :e cls12)
+      (path_concat eps1 eps2)
+      HpathConcatInCls12).
+  }
+  claim Heps12HomX :
+    path_homotopic X Tx x0 x0
+      (path_concat eps1 eps2)
+      eps12.
+  {
+    exact (path_homotopy_class_loop_has_homotopy
+      X Tx x0
+      (path_concat eps1 eps2)
+      eps12
+      Heps12InCls12).
+  }
+  claim Hpost12 :
+    path_homotopic Y Ty y0 y0
+      (compose_fun unit_interval (path_concat eps1 eps2) h)
+      (compose_fun unit_interval eps12 h).
+  {
+    exact (path_homotopic_postcompose
+      X Tx Y Ty x0 x0 y0 y0
+      (path_concat eps1 eps2)
+      eps12
+      h
+      Heps12HomX
+      Hh
+      Hbase
+      Hbase).
+  }
+  claim Hpost12Sym :
+    path_homotopic Y Ty y0 y0
+      (compose_fun unit_interval eps12 h)
+      (compose_fun unit_interval (path_concat eps1 eps2) h).
+  {
+    exact (Lemma_51_1_path_homotopy_sym
+      Y Ty y0 y0
+      (compose_fun unit_interval (path_concat eps1 eps2) h)
+      (compose_fun unit_interval eps12 h)
+      Hpost12).
+  }
+  claim Hstep1 :
+    path_homotopy_class_loop Y Ty y0
+      (compose_fun unit_interval eps12 h)
+    = path_homotopy_class_loop Y Ty y0
+      (compose_fun unit_interval (path_concat eps1 eps2) h).
+  {
+    exact (path_homotopy_class_loop_eq_of_path_homotopic
+      Y Ty y0
+      (compose_fun unit_interval eps12 h)
+      (compose_fun unit_interval (path_concat eps1 eps2) h)
+      Hpost12Sym).
+  }
+  claim Hstep2 :
+    path_homotopy_class_loop Y Ty y0
+      (compose_fun unit_interval (path_concat eps1 eps2) h)
+    = path_homotopy_class_loop Y Ty y0
+      (path_concat
+        (compose_fun unit_interval eps1 h)
+        (compose_fun unit_interval eps2 h)).
+  {
+    rewrite (compose_path_concat_eq_algtop
+      X Y
+      eps1 eps2 h
+      Heps1Fun
+      Heps2Fun
+      HhFun
+      HepsJoin).
+    reflexivity.
+  }
+  claim Hcomp1InCls1 :
+    (compose_fun unit_interval eps1 h)
+    :e apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls1.
+  {
+    exact (mem_eqL
+      (compose_fun unit_interval eps1 h)
+      (apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls1)
+      (path_homotopy_class_loop Y Ty y0 (compose_fun unit_interval eps1 h))
+      Him1Eq
+      (loop_in_own_path_homotopy_class
+        Y Ty y0
+        (compose_fun unit_interval eps1 h)
+        Hcomp1Loop)).
+  }
+  claim Hcomp2InCls2 :
+    (compose_fun unit_interval eps2 h)
+    :e apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls2.
+  {
+    exact (mem_eqL
+      (compose_fun unit_interval eps2 h)
+      (apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls2)
+      (path_homotopy_class_loop Y Ty y0 (compose_fun unit_interval eps2 h))
+      Him2Eq
+      (loop_in_own_path_homotopy_class
+        Y Ty y0
+        (compose_fun unit_interval eps2 h)
+        Hcomp2Loop)).
+  }
+  claim HepsY1InCls1 :
+    epsY1 :e apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls1.
+  {
+    exact (Eps_i_ax
+      (fun f:set =>
+        f :e apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls1)
+      (compose_fun unit_interval eps1 h)
+      Hcomp1InCls1).
+  }
+  claim HepsY2InCls2 :
+    epsY2 :e apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls2.
+  {
+    exact (Eps_i_ax
+      (fun f:set =>
+        f :e apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls2)
+      (compose_fun unit_interval eps2 h)
+      Hcomp2InCls2).
+  }
+  claim HepsY1InClass :
+    epsY1 :e path_homotopy_class_loop Y Ty y0 (compose_fun unit_interval eps1 h).
+  {
+    exact (mem_eqR
+      epsY1
+      (apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls1)
+      (path_homotopy_class_loop Y Ty y0 (compose_fun unit_interval eps1 h))
+      Him1Eq
+      HepsY1InCls1).
+  }
+  claim HepsY2InClass :
+    epsY2 :e path_homotopy_class_loop Y Ty y0 (compose_fun unit_interval eps2 h).
+  {
+    exact (mem_eqR
+      epsY2
+      (apply_fun (induced_homomorphism X Tx x0 Y Ty y0 h) cls2)
+      (path_homotopy_class_loop Y Ty y0 (compose_fun unit_interval eps2 h))
+      Him2Eq
+      HepsY2InCls2).
+  }
+  claim Hhom1 :
+    path_homotopic Y Ty y0 y0
+      (compose_fun unit_interval eps1 h)
+      epsY1.
+  {
+    exact (path_homotopy_class_loop_has_homotopy
+      Y Ty y0
+      (compose_fun unit_interval eps1 h)
+      epsY1
+      HepsY1InClass).
+  }
+  claim Hhom2 :
+    path_homotopic Y Ty y0 y0
+      (compose_fun unit_interval eps2 h)
+      epsY2.
+  {
+    exact (path_homotopy_class_loop_has_homotopy
+      Y Ty y0
+      (compose_fun unit_interval eps2 h)
+      epsY2
+      HepsY2InClass).
+  }
+  claim HconcatHom :
+    path_homotopic Y Ty y0 y0
+      (path_concat
+        (compose_fun unit_interval eps1 h)
+        (compose_fun unit_interval eps2 h))
+      (path_concat epsY1 epsY2).
+  {
+    exact (path_concat_well_defined_on_classes
+      Y Ty y0 y0 y0
+      (compose_fun unit_interval eps1 h)
+      epsY1
+      (compose_fun unit_interval eps2 h)
+      epsY2
+      Hhom1
+      Hhom2).
+  }
+  claim Hstep3 :
+    path_homotopy_class_loop Y Ty y0
+      (path_concat
+        (compose_fun unit_interval eps1 h)
+        (compose_fun unit_interval eps2 h))
+    = path_homotopy_class_loop Y Ty y0
+      (path_concat epsY1 epsY2).
+  {
+    exact (path_homotopy_class_loop_eq_of_path_homotopic
+      Y Ty y0
+      (path_concat
+        (compose_fun unit_interval eps1 h)
+        (compose_fun unit_interval eps2 h))
+      (path_concat epsY1 epsY2)
+      HconcatHom).
+  }
+  rewrite Hstep1.
+  rewrite Hstep2.
+  exact Hstep3.
+Qed.
 
 (** from S52 Theorem 52.4 (line 475 in algtop.tex): functorial properties **)
 (** LATEX VERSION: If h: (X,x0)->(Y,y0) and k: (Y,y0)->(Z,z0) are continuous, then (k o h)-star = k-star o h-star. If i is the identity, then i-star is the identity. **)
