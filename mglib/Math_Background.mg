@@ -17960,8 +17960,150 @@ claim Hfun :
     rewrite (path_concat_at_one (reverse_path alpha) (path_concat eps alpha)).
     exact Hinner1.
   }
-  (** TODO Bob: finish codomain membership by packaging outer path as a loop at x1. **)
-  admit.
+  claim HrevFun : function_on (reverse_path alpha) unit_interval X.
+  {
+    exact (continuous_map_function_on
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      (reverse_path alpha)
+      HrevCont).
+  }
+  claim HinnerFun : function_on (path_concat eps alpha) unit_interval X.
+  {
+    exact (continuous_map_function_on
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      (path_concat eps alpha)
+      HinnerCont).
+  }
+  claim HouterSub :
+    path_concat (reverse_path alpha) (path_concat eps alpha) c= setprod unit_interval X.
+  {
+    let p.
+    assume Hp.
+    apply (binunionE
+      {(t, apply_fun (reverse_path alpha) (mul_SNo 2 t)) | t :e unit_interval_left_half}
+      {(t, apply_fun (path_concat eps alpha) (add_SNo (mul_SNo 2 t) (minus_SNo 1))) | t :e unit_interval_right_half}
+      p
+      Hp).
+    - assume Hleft.
+      apply (ReplE_impred
+        unit_interval_left_half
+        (fun t:set => (t, apply_fun (reverse_path alpha) (mul_SNo 2 t)))
+        p
+        Hleft).
+      let t.
+      assume Ht Heq.
+      claim H2tInI : mul_SNo 2 t :e unit_interval.
+      {
+        rewrite <- (double_map_apply t Ht).
+        exact (double_map_function_on t Ht).
+      }
+      rewrite Heq.
+      exact (tuple_2_setprod_by_pair_Sigma
+        unit_interval
+        X
+        t
+        (apply_fun (reverse_path alpha) (mul_SNo 2 t))
+        (unit_interval_left_half_sub t Ht)
+        (HrevFun
+          (mul_SNo 2 t)
+          H2tInI)).
+    - assume Hright.
+      apply (ReplE_impred
+        unit_interval_right_half
+        (fun t:set => (t, apply_fun (path_concat eps alpha) (add_SNo (mul_SNo 2 t) (minus_SNo 1))))
+        p
+        Hright).
+      let t.
+      assume Ht Heq.
+      claim H2m1tInI : add_SNo (mul_SNo 2 t) (minus_SNo 1) :e unit_interval.
+      {
+        rewrite <- (double_minus_one_map_apply t Ht).
+        exact (double_minus_one_map_function_on t Ht).
+      }
+      rewrite Heq.
+      exact (tuple_2_setprod_by_pair_Sigma
+        unit_interval
+        X
+        t
+        (apply_fun (path_concat eps alpha) (add_SNo (mul_SNo 2 t) (minus_SNo 1)))
+        (unit_interval_right_half_sub t Ht)
+        (HinnerFun
+          (add_SNo (mul_SNo 2 t) (minus_SNo 1))
+          H2m1tInI)).
+  }
+  claim HouterPow :
+    path_concat (reverse_path alpha) (path_concat eps alpha) :e Power (setprod unit_interval X).
+  {
+    exact (PowerI
+      (setprod unit_interval X)
+      (path_concat (reverse_path alpha) (path_concat eps alpha))
+      HouterSub).
+  }
+  claim HouterFunOn :
+    function_on (path_concat (reverse_path alpha) (path_concat eps alpha)) unit_interval X.
+  {
+    exact (continuous_map_function_on
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      (path_concat (reverse_path alpha) (path_concat eps alpha))
+      HouterCont).
+  }
+  claim HouterFunSpace :
+    path_concat (reverse_path alpha) (path_concat eps alpha) :e function_space unit_interval X.
+  {
+    exact (SepI
+      (Power (setprod unit_interval X))
+      (fun u:set => function_on u unit_interval X)
+      (path_concat (reverse_path alpha) (path_concat eps alpha))
+      HouterPow
+      HouterFunOn).
+  }
+  claim HouterLoopAt :
+    loop_at X Tx x1 (path_concat (reverse_path alpha) (path_concat eps alpha)).
+  {
+    apply (loop_at_fold
+      X
+      Tx
+      x1
+      (path_concat (reverse_path alpha) (path_concat eps alpha))).
+    apply andI.
+    - apply andI.
+      + exact HouterCont.
+      + exact Houter0.
+    - exact Houter1.
+  }
+  claim HouterLoop :
+    path_concat (reverse_path alpha) (path_concat eps alpha) :e loop_space X Tx x1.
+  {
+    exact (SepI
+      (function_space unit_interval X)
+      (fun u:set => loop_at X Tx x1 u)
+      (path_concat (reverse_path alpha) (path_concat eps alpha))
+      HouterFunSpace
+      HouterLoopAt).
+  }
+  rewrite (basepoint_change_map_apply
+    X
+    Tx
+    x0
+    x1
+    alpha
+    cls
+    Hcls).
+  exact (path_homotopy_class_in_fundamental_group
+    X
+    Tx
+    x1
+    (path_concat (reverse_path alpha) (path_concat eps alpha))
+    HouterLoop).
 }
 claim Hmult :
   forall u v:set, u :e fundamental_group X Tx x0 -> v :e fundamental_group X Tx x0 ->
