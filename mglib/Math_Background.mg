@@ -15777,30 +15777,822 @@ claim Hreparam_hom :
     rewrite (path_concat_at_one f1 f2).
     exact Hf2_1.
   }
-  prove continuous_map unit_interval unit_interval_topology X Tx f /\
-    continuous_map unit_interval unit_interval_topology X Tx (path_concat f1 f2) /\
-    apply_fun f 0 = x0 /\ apply_fun f 1 = x1 /\
-    apply_fun (path_concat f1 f2) 0 = x0 /\
-    apply_fun (path_concat f1 f2) 1 = x1 /\
-    exists F:set,
-      continuous_map unit_square unit_square_topology X Tx F /\
-      (forall s:set, s :e unit_interval ->
-        apply_fun F (s, 0) = apply_fun f s) /\
-      (forall s:set, s :e unit_interval ->
-        apply_fun F (s, 1) = apply_fun (path_concat f1 f2) s) /\
-      (forall t:set, t :e unit_interval ->
-        apply_fun F (0, t) = x0) /\
-      (forall t:set, t :e unit_interval ->
-        apply_fun F (1, t) = x1).
-  apply and7I.
-  - exact Hfcont.
-  - exact Hconcat_cont.
-  - exact Hf0.
-  - exact Hf1.
-  - exact Hconcat_0.
-  - exact Hconcat_1.
-  - (** TODO Charlie: explicit reparameterization homotopy witness F. **)
+  set idI := graph unit_interval (fun s:set => s).
+  set phi1 := affine_fun_I 0 a.
+  set phi2 := affine_fun_I a (add_SNo 1 (minus_SNo a)).
+  set phi := path_concat phi1 phi2.
+  set fid := compose_fun unit_interval idI f.
+  set fphi := compose_fun unit_interval phi f.
+  claim HidICont :
+    continuous_map unit_interval unit_interval_topology
+      unit_interval unit_interval_topology idI.
+  {
+    exact (identity_continuous
+      unit_interval
+      unit_interval_topology
+      unit_interval_topology_on).
+  }
+  claim HfidCont :
+    continuous_map unit_interval unit_interval_topology X Tx fid.
+  {
+    exact (composition_continuous
+      unit_interval
+      unit_interval_topology
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      idI
+      f
+      HidICont
+      Hfcont).
+  }
+  claim Hfid0 : apply_fun fid 0 = x0.
+  {
+    rewrite (compose_fun_apply unit_interval idI f 0 zero_in_unit_interval).
+    rewrite (apply_fun_graph unit_interval (fun s:set => s) 0 zero_in_unit_interval).
+    exact Hf0.
+  }
+  claim Hfid1 : apply_fun fid 1 = x1.
+  {
+    rewrite (compose_fun_apply unit_interval idI f 1 one_in_unit_interval).
+    rewrite (apply_fun_graph unit_interval (fun s:set => s) 1 one_in_unit_interval).
+    exact Hf1.
+  }
+  claim HfToFid :
+    path_homotopic X Tx x0 x1 f fid.
+  {
+    set Fconst := compose_fun unit_square
+      (projection_map1 unit_interval unit_interval)
+      f.
+    claim HFconstCont :
+      continuous_map unit_square unit_square_topology X Tx Fconst.
+    {
+      exact (composition_continuous
+        unit_square
+        unit_square_topology
+        unit_interval
+        unit_interval_topology
+        X
+        Tx
+        (projection_map1 unit_interval unit_interval)
+        f
+        (andEL
+          (continuous_map unit_square unit_square_topology
+            unit_interval unit_interval_topology
+            (projection_map1 unit_interval unit_interval))
+          (continuous_map unit_square unit_square_topology
+            unit_interval unit_interval_topology
+            (projection_map2 unit_interval unit_interval))
+          (projection_maps_continuous
+            unit_interval
+            unit_interval_topology
+            unit_interval
+            unit_interval_topology
+            unit_interval_topology_on
+            unit_interval_topology_on))
+        Hfcont).
+    }
+    prove continuous_map unit_interval unit_interval_topology X Tx f /\
+      continuous_map unit_interval unit_interval_topology X Tx fid /\
+      apply_fun f 0 = x0 /\ apply_fun f 1 = x1 /\
+      apply_fun fid 0 = x0 /\ apply_fun fid 1 = x1 /\
+      exists F:set,
+        continuous_map unit_square unit_square_topology X Tx F /\
+        (forall s:set, s :e unit_interval ->
+          apply_fun F (s, 0) = apply_fun f s) /\
+        (forall s:set, s :e unit_interval ->
+          apply_fun F (s, 1) = apply_fun fid s) /\
+        (forall t:set, t :e unit_interval ->
+          apply_fun F (0, t) = x0) /\
+        (forall t:set, t :e unit_interval ->
+          apply_fun F (1, t) = x1).
+    apply and7I.
+    - exact Hfcont.
+    - exact HfidCont.
+    - exact Hf0.
+    - exact Hf1.
+    - exact Hfid0.
+    - exact Hfid1.
+    - witness Fconst.
+      apply and5I.
+      + exact HFconstCont.
+      + let s.
+        assume Hs.
+        rewrite (compose_fun_apply
+          unit_square
+          (projection_map1 unit_interval unit_interval)
+          f
+          (s, 0)
+          (tuple_2_setprod_by_pair_Sigma
+            unit_interval
+            unit_interval
+            s
+            0
+            Hs
+            zero_in_unit_interval)).
+        rewrite (projection1_apply
+          unit_interval
+          unit_interval
+          (s, 0)
+          (tuple_2_setprod_by_pair_Sigma
+            unit_interval
+            unit_interval
+            s
+            0
+            Hs
+            zero_in_unit_interval)).
+        rewrite tuple_2_0_eq.
+        reflexivity.
+      + let s.
+        assume Hs.
+        rewrite (compose_fun_apply
+          unit_square
+          (projection_map1 unit_interval unit_interval)
+          f
+          (s, 1)
+          (tuple_2_setprod_by_pair_Sigma
+            unit_interval
+            unit_interval
+            s
+            1
+            Hs
+            one_in_unit_interval)).
+        rewrite (projection1_apply
+          unit_interval
+          unit_interval
+          (s, 1)
+          (tuple_2_setprod_by_pair_Sigma
+            unit_interval
+            unit_interval
+            s
+            1
+            Hs
+            one_in_unit_interval)).
+        rewrite tuple_2_0_eq.
+        rewrite (compose_fun_apply unit_interval idI f s Hs).
+        rewrite (apply_fun_graph unit_interval (fun t:set => t) s Hs).
+        reflexivity.
+      + let t.
+        assume Ht.
+        rewrite (compose_fun_apply
+          unit_square
+          (projection_map1 unit_interval unit_interval)
+          f
+          (0, t)
+          (tuple_2_setprod_by_pair_Sigma
+            unit_interval
+            unit_interval
+            0
+            t
+            zero_in_unit_interval
+            Ht)).
+        rewrite (projection1_apply
+          unit_interval
+          unit_interval
+          (0, t)
+          (tuple_2_setprod_by_pair_Sigma
+            unit_interval
+            unit_interval
+            0
+            t
+            zero_in_unit_interval
+            Ht)).
+        rewrite tuple_2_0_eq.
+        exact Hf0.
+      + let t.
+        assume Ht.
+        rewrite (compose_fun_apply
+          unit_square
+          (projection_map1 unit_interval unit_interval)
+          f
+          (1, t)
+          (tuple_2_setprod_by_pair_Sigma
+            unit_interval
+            unit_interval
+            1
+            t
+            one_in_unit_interval
+            Ht)).
+        rewrite (projection1_apply
+          unit_interval
+          unit_interval
+          (1, t)
+          (tuple_2_setprod_by_pair_Sigma
+            unit_interval
+            unit_interval
+            1
+            t
+            one_in_unit_interval
+            Ht)).
+        rewrite tuple_2_0_eq.
+        exact Hf1.
+  }
+  claim HdomainReparam :
+    path_homotopic
+      unit_interval
+      unit_interval_topology
+      0
+      1
+      idI
+      phi.
+  {
+    (** TODO Charlie: explicit domain homotopy between idI and split-affine reparametrization phi. **)
     admit.
+  }
+  claim HphiCont :
+    continuous_map unit_interval unit_interval_topology
+      unit_interval unit_interval_topology phi.
+  {
+    exact (path_homotopic_right_continuous
+      unit_interval
+      unit_interval_topology
+      0
+      1
+      idI
+      phi
+      HdomainReparam).
+  }
+  claim HdomainSym :
+    path_homotopic
+      unit_interval
+      unit_interval_topology
+      0
+      1
+      phi
+      idI.
+  {
+    exact (Lemma_51_1_path_homotopy_sym
+      unit_interval
+      unit_interval_topology
+      0
+      1
+      idI
+      phi
+      HdomainReparam).
+  }
+  claim Hphi0Dom : apply_fun phi 0 = 0.
+  {
+    exact (path_homotopic_left_start
+      unit_interval
+      unit_interval_topology
+      0
+      1
+      phi
+      idI
+      HdomainSym).
+  }
+  claim Hphi1Dom : apply_fun phi 1 = 1.
+  {
+    exact (path_homotopic_right_end
+      unit_interval
+      unit_interval_topology
+      0
+      1
+      idI
+      phi
+      HdomainReparam).
+  }
+  claim HfIdToFphi :
+    path_homotopic X Tx x0 x1 fid fphi.
+  {
+    claim HdomWitness :
+      exists Fdom:set,
+        continuous_map unit_square unit_square_topology
+          unit_interval unit_interval_topology Fdom /\
+        (forall s:set, s :e unit_interval ->
+          apply_fun Fdom (s, 0) = apply_fun idI s) /\
+        (forall s:set, s :e unit_interval ->
+          apply_fun Fdom (s, 1) = apply_fun phi s) /\
+        (forall t:set, t :e unit_interval ->
+          apply_fun Fdom (0, t) = 0) /\
+        (forall t:set, t :e unit_interval ->
+          apply_fun Fdom (1, t) = 1).
+    {
+      exact (path_homotopic_has_square_witness
+        unit_interval
+        unit_interval_topology
+        0
+        1
+        idI
+        phi
+        HdomainReparam).
+    }
+    apply HdomWitness.
+    let Fdom.
+    assume HFdomPack.
+    apply (and5E
+      (continuous_map unit_square unit_square_topology
+        unit_interval unit_interval_topology Fdom)
+      (forall s:set, s :e unit_interval ->
+        apply_fun Fdom (s, 0) = apply_fun idI s)
+      (forall s:set, s :e unit_interval ->
+        apply_fun Fdom (s, 1) = apply_fun phi s)
+      (forall t:set, t :e unit_interval ->
+        apply_fun Fdom (0, t) = 0)
+      (forall t:set, t :e unit_interval ->
+        apply_fun Fdom (1, t) = 1)
+      HFdomPack).
+    assume HFdomCont HFdomS0 HFdomS1 HFdom0t HFdom1t.
+    set Flift := compose_fun unit_square Fdom f.
+    claim HFliftCont :
+      continuous_map unit_square unit_square_topology X Tx Flift.
+    {
+      exact (composition_continuous
+        unit_square
+        unit_square_topology
+        unit_interval
+        unit_interval_topology
+        X
+        Tx
+        Fdom
+        f
+        HFdomCont
+        Hfcont).
+    }
+    claim HfphiContLocal :
+      continuous_map unit_interval unit_interval_topology X Tx fphi.
+    {
+      exact (composition_continuous
+        unit_interval
+        unit_interval_topology
+        unit_interval
+        unit_interval_topology
+        X
+        Tx
+        phi
+        f
+        HphiCont
+        Hfcont).
+    }
+    claim Hfphi0Local : apply_fun fphi 0 = x0.
+    {
+      rewrite (compose_fun_apply
+        unit_interval
+        phi
+        f
+        0
+        zero_in_unit_interval).
+      rewrite Hphi0Dom.
+      exact Hf0.
+    }
+    claim Hfphi1Local : apply_fun fphi 1 = x1.
+    {
+      rewrite (compose_fun_apply
+        unit_interval
+        phi
+        f
+        1
+        one_in_unit_interval).
+      rewrite Hphi1Dom.
+      exact Hf1.
+    }
+    prove continuous_map unit_interval unit_interval_topology X Tx fid /\
+      continuous_map unit_interval unit_interval_topology X Tx fphi /\
+      apply_fun fid 0 = x0 /\ apply_fun fid 1 = x1 /\
+      apply_fun fphi 0 = x0 /\ apply_fun fphi 1 = x1 /\
+      exists F:set,
+        continuous_map unit_square unit_square_topology X Tx F /\
+        (forall s:set, s :e unit_interval ->
+          apply_fun F (s, 0) = apply_fun fid s) /\
+        (forall s:set, s :e unit_interval ->
+          apply_fun F (s, 1) = apply_fun fphi s) /\
+        (forall t:set, t :e unit_interval ->
+          apply_fun F (0, t) = x0) /\
+        (forall t:set, t :e unit_interval ->
+          apply_fun F (1, t) = x1).
+    apply and7I.
+    - exact HfidCont.
+    - exact HfphiContLocal.
+    - exact Hfid0.
+    - exact Hfid1.
+    - exact Hfphi0Local.
+    - exact Hfphi1Local.
+    - witness Flift.
+      apply and5I.
+      + exact HFliftCont.
+      + let s.
+        assume Hs.
+        rewrite (compose_fun_apply
+          unit_square
+          Fdom
+          f
+          (s, 0)
+          (tuple_2_setprod_by_pair_Sigma
+            unit_interval
+            unit_interval
+            s
+            0
+            Hs
+            zero_in_unit_interval)).
+        rewrite (HFdomS0 s Hs).
+        rewrite <- (compose_fun_apply unit_interval idI f s Hs).
+        reflexivity.
+      + let s.
+        assume Hs.
+        rewrite (compose_fun_apply
+          unit_square
+          Fdom
+          f
+          (s, 1)
+          (tuple_2_setprod_by_pair_Sigma
+            unit_interval
+            unit_interval
+            s
+            1
+            Hs
+            one_in_unit_interval)).
+        rewrite (HFdomS1 s Hs).
+        rewrite <- (compose_fun_apply unit_interval phi f s Hs).
+        reflexivity.
+      + let t.
+        assume Ht.
+        rewrite (compose_fun_apply
+          unit_square
+          Fdom
+          f
+          (0, t)
+          (tuple_2_setprod_by_pair_Sigma
+            unit_interval
+            unit_interval
+            0
+            t
+            zero_in_unit_interval
+            Ht)).
+        rewrite (HFdom0t t Ht).
+        exact Hf0.
+      + let t.
+        assume Ht.
+        rewrite (compose_fun_apply
+          unit_square
+          Fdom
+          f
+          (1, t)
+          (tuple_2_setprod_by_pair_Sigma
+            unit_interval
+            unit_interval
+            1
+            t
+            one_in_unit_interval
+            Ht)).
+        rewrite (HFdom1t t Ht).
+        exact Hf1.
+  }
+  claim Hphi1_at_1 : apply_fun phi1 1 = a.
+  {
+    claim HaR : a :e R.
+    {
+      exact (unit_interval_sub_R a HaI).
+    }
+    claim HSNoa : SNo a.
+    {
+      exact (real_SNo a HaR).
+    }
+    rewrite (affine_fun_I_apply
+      0
+      a
+      1
+      real_0
+      HaR
+      (RltE_lt 0 a Ha0)
+      one_in_unit_interval).
+    rewrite (mul_SNo_oneL a HSNoa).
+    rewrite (add_SNo_0R a HSNoa).
+    reflexivity.
+  }
+  claim Hphi2_at_0 : apply_fun phi2 0 = a.
+  {
+    claim HaR : a :e R.
+    {
+      exact (unit_interval_sub_R a HaI).
+    }
+    claim HSNoa : SNo a.
+    {
+      exact (real_SNo a HaR).
+    }
+    claim HcR : add_SNo 1 (minus_SNo a) :e R.
+    {
+      exact (real_add_SNo
+        1
+        real_1
+        (minus_SNo a)
+        (real_minus_SNo a HaR)).
+    }
+    claim HcPos : 0 < add_SNo 1 (minus_SNo a).
+    {
+      exact (RltE_lt 0 (add_SNo 1 (minus_SNo a))
+        (Rlt_0_diff_of_lt a 1 Ha1)).
+    }
+    claim HcSNo : SNo (add_SNo 1 (minus_SNo a)).
+    {
+      exact (real_SNo (add_SNo 1 (minus_SNo a)) HcR).
+    }
+    rewrite (affine_fun_I_apply
+      a
+      (add_SNo 1 (minus_SNo a))
+      0
+      HaR
+      HcR
+      HcPos
+      zero_in_unit_interval).
+    rewrite (mul_SNo_zeroL (add_SNo 1 (minus_SNo a)) HcSNo).
+    rewrite (add_SNo_0L a HSNoa).
+    reflexivity.
+  }
+  claim HphiJoin : apply_fun phi1 1 = apply_fun phi2 0.
+  {
+    rewrite Hphi1_at_1.
+    rewrite Hphi2_at_0.
+    reflexivity.
+  }
+  claim Hf12Join : apply_fun f1 1 = apply_fun f2 0.
+  {
+    rewrite Hf1_1.
+    rewrite Hf2_0.
+    reflexivity.
+  }
+  claim HfphiEqConcat :
+    forall s:set, s :e unit_interval ->
+      apply_fun fphi s = apply_fun (path_concat f1 f2) s.
+  {
+    let s.
+    assume Hs.
+    claim Hcases : s :e unit_interval_left_half :\/: unit_interval_right_half.
+    {
+      exact (unit_interval_halves_cover
+        (fun U V:set => s :e U -> s :e V)
+        (binunion_Subq_min
+          unit_interval_left_half
+          unit_interval_right_half
+          unit_interval
+          unit_interval_left_half_sub
+          unit_interval_right_half_sub
+          s)
+        Hs).
+    }
+    apply (binunionE
+      unit_interval_left_half
+      unit_interval_right_half
+      s
+      Hcases).
+    - assume HsL.
+      claim H2sI : mul_SNo 2 s :e unit_interval.
+      {
+        rewrite <- (double_map_apply s HsL).
+        exact (double_map_function_on s HsL).
+      }
+      rewrite (compose_fun_apply unit_interval phi f s Hs).
+      rewrite (path_concat_apply_left phi1 phi2 s HphiJoin HsL).
+      rewrite (path_concat_apply_left f1 f2 s Hf12Join HsL).
+      rewrite (compose_fun_apply unit_interval phi1 f (mul_SNo 2 s) H2sI).
+      reflexivity.
+    - assume HsR.
+      claim H2m1sI : add_SNo (mul_SNo 2 s) (minus_SNo 1) :e unit_interval.
+      {
+        rewrite <- (double_minus_one_map_apply s HsR).
+        exact (double_minus_one_map_function_on s HsR).
+      }
+      rewrite (compose_fun_apply unit_interval phi f s Hs).
+      rewrite (path_concat_apply_right phi1 phi2 s HphiJoin HsR).
+      rewrite (path_concat_apply_right f1 f2 s Hf12Join HsR).
+      rewrite (compose_fun_apply unit_interval phi2 f (add_SNo (mul_SNo 2 s) (minus_SNo 1)) H2m1sI).
+      reflexivity.
+  }
+  claim Hfphi0 : apply_fun fphi 0 = x0.
+  {
+    rewrite (compose_fun_apply
+      unit_interval
+      phi
+      f
+      0
+      zero_in_unit_interval).
+    rewrite Hphi0Dom.
+    exact Hf0.
+  }
+  claim Hfphi1 : apply_fun fphi 1 = x1.
+  {
+    rewrite (compose_fun_apply
+      unit_interval
+      phi
+      f
+      1
+      one_in_unit_interval).
+    rewrite Hphi1Dom.
+    exact Hf1.
+  }
+  claim HfphiToConcat :
+    path_homotopic X Tx x0 x1 fphi (path_concat f1 f2).
+  {
+    set FphiConst := compose_fun unit_square
+      (projection_map1 unit_interval unit_interval)
+      fphi.
+    claim HFphiConstCont :
+      continuous_map unit_square unit_square_topology X Tx FphiConst.
+    {
+      exact (composition_continuous
+        unit_square
+        unit_square_topology
+        unit_interval
+        unit_interval_topology
+        X
+        Tx
+        (projection_map1 unit_interval unit_interval)
+        fphi
+        (andEL
+          (continuous_map unit_square unit_square_topology
+            unit_interval unit_interval_topology
+            (projection_map1 unit_interval unit_interval))
+          (continuous_map unit_square unit_square_topology
+            unit_interval unit_interval_topology
+            (projection_map2 unit_interval unit_interval))
+          (projection_maps_continuous
+            unit_interval
+            unit_interval_topology
+            unit_interval
+            unit_interval_topology
+            unit_interval_topology_on
+            unit_interval_topology_on))
+        (composition_continuous
+          unit_interval
+          unit_interval_topology
+          unit_interval
+          unit_interval_topology
+          X
+          Tx
+          phi
+          f
+          HphiCont
+          Hfcont)).
+    }
+    prove continuous_map unit_interval unit_interval_topology X Tx fphi /\
+      continuous_map unit_interval unit_interval_topology X Tx (path_concat f1 f2) /\
+      apply_fun fphi 0 = x0 /\ apply_fun fphi 1 = x1 /\
+      apply_fun (path_concat f1 f2) 0 = x0 /\
+      apply_fun (path_concat f1 f2) 1 = x1 /\
+      exists F:set,
+        continuous_map unit_square unit_square_topology X Tx F /\
+        (forall s:set, s :e unit_interval ->
+          apply_fun F (s, 0) = apply_fun fphi s) /\
+        (forall s:set, s :e unit_interval ->
+          apply_fun F (s, 1) = apply_fun (path_concat f1 f2) s) /\
+        (forall t:set, t :e unit_interval ->
+          apply_fun F (0, t) = x0) /\
+        (forall t:set, t :e unit_interval ->
+          apply_fun F (1, t) = x1).
+    apply and7I.
+    - exact (composition_continuous
+        unit_interval
+        unit_interval_topology
+        unit_interval
+        unit_interval_topology
+        X
+        Tx
+        phi
+        f
+        HphiCont
+        Hfcont).
+    - exact Hconcat_cont.
+    - exact Hfphi0.
+    - exact Hfphi1.
+    - exact Hconcat_0.
+    - exact Hconcat_1.
+    - witness FphiConst.
+      apply and5I.
+      + exact HFphiConstCont.
+      + let s.
+        assume Hs.
+        rewrite (compose_fun_apply
+          unit_square
+          (projection_map1 unit_interval unit_interval)
+          fphi
+          (s, 0)
+          (tuple_2_setprod_by_pair_Sigma
+            unit_interval
+            unit_interval
+            s
+            0
+            Hs
+            zero_in_unit_interval)).
+        rewrite (projection1_apply
+          unit_interval
+          unit_interval
+          (s, 0)
+          (tuple_2_setprod_by_pair_Sigma
+            unit_interval
+            unit_interval
+            s
+            0
+            Hs
+            zero_in_unit_interval)).
+        rewrite tuple_2_0_eq.
+        reflexivity.
+      + let s.
+        assume Hs.
+        rewrite (compose_fun_apply
+          unit_square
+          (projection_map1 unit_interval unit_interval)
+          fphi
+          (s, 1)
+          (tuple_2_setprod_by_pair_Sigma
+            unit_interval
+            unit_interval
+            s
+            1
+            Hs
+            one_in_unit_interval)).
+        rewrite (projection1_apply
+          unit_interval
+          unit_interval
+          (s, 1)
+          (tuple_2_setprod_by_pair_Sigma
+            unit_interval
+            unit_interval
+            s
+            1
+            Hs
+            one_in_unit_interval)).
+        rewrite tuple_2_0_eq.
+        rewrite (HfphiEqConcat s Hs).
+        reflexivity.
+      + let t.
+        assume Ht.
+        rewrite (compose_fun_apply
+          unit_square
+          (projection_map1 unit_interval unit_interval)
+          fphi
+          (0, t)
+          (tuple_2_setprod_by_pair_Sigma
+            unit_interval
+            unit_interval
+            0
+            t
+            zero_in_unit_interval
+            Ht)).
+        rewrite (projection1_apply
+          unit_interval
+          unit_interval
+          (0, t)
+          (tuple_2_setprod_by_pair_Sigma
+            unit_interval
+            unit_interval
+            0
+            t
+            zero_in_unit_interval
+            Ht)).
+        rewrite tuple_2_0_eq.
+        exact Hfphi0.
+      + let t.
+        assume Ht.
+        rewrite (compose_fun_apply
+          unit_square
+          (projection_map1 unit_interval unit_interval)
+          fphi
+          (1, t)
+          (tuple_2_setprod_by_pair_Sigma
+            unit_interval
+            unit_interval
+            1
+            t
+            one_in_unit_interval
+            Ht)).
+        rewrite (projection1_apply
+          unit_interval
+          unit_interval
+          (1, t)
+          (tuple_2_setprod_by_pair_Sigma
+            unit_interval
+            unit_interval
+            1
+            t
+            one_in_unit_interval
+            Ht)).
+        rewrite tuple_2_0_eq.
+        exact Hfphi1.
+  }
+  claim HfidToConcat :
+    path_homotopic X Tx x0 x1 fid (path_concat f1 f2).
+  {
+    exact (Lemma_51_1_path_homotopy_trans
+      X
+      Tx
+      x0
+      x1
+      fid
+      fphi
+      (path_concat f1 f2)
+      HfIdToFphi
+      HfphiToConcat).
+  }
+  exact (Lemma_51_1_path_homotopy_trans
+    X
+    Tx
+    x0
+    x1
+    f
+    fid
+    (path_concat f1 f2)
+    HfToFid
+    HfidToConcat).
 }
 witness f1.
 witness f2.
