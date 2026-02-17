@@ -53396,7 +53396,273 @@ claim HFt_54_cont :
           (Vq :e slices)
           HVqPack).
       }
-      (** TODO Charlie: identify Ft_54 on a neighborhood in N with the local inverse on sheet Vq to get continuity. **)
+      claim HNopen_local : N :e unit_square_topology.
+      {
+        exact (andEL
+          (N :e unit_square_topology)
+          (q :e N)
+          HNpair).
+      }
+      claim HNsubSq : N c= unit_square.
+      {
+        exact (topology_elem_subset
+          unit_square
+          unit_square_topology
+          N
+          HtopSq54
+          HNopen_local).
+      }
+      claim HslicesSub : slices c= Te.
+      {
+        exact (andEL
+          (slices c= Te)
+          (pairwise_disjoint slices)
+          (andEL
+            (slices c= Te /\ pairwise_disjoint slices)
+            (Union slices = preimage_of E p U)
+            HslicesCore)).
+      }
+      claim HVqOpen : Vq :e Te.
+      {
+        exact (HslicesSub Vq HVqSlice).
+      }
+      claim HhomeSlices :
+        forall V:set, V :e slices ->
+          homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+            (graph V (fun z:set => apply_fun p z)).
+      {
+        exact (andER
+          ((slices c= Te /\ pairwise_disjoint slices) /\
+            Union slices = preimage_of E p U)
+          (forall V:set, V :e slices ->
+            homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+              (graph V (fun z:set => apply_fun p z)))
+          Hslices).
+      }
+      claim HhomeVq :
+        homeomorphism Vq (subspace_topology E Te Vq) U (subspace_topology B Tb U)
+          (graph Vq (fun z:set => apply_fun p z)).
+      {
+        exact (HhomeSlices Vq HVqSlice).
+      }
+      claim HinvVq :
+        exists gq:set,
+          continuous_map U (subspace_topology B Tb U) Vq (subspace_topology E Te Vq) gq /\
+          (forall x:set, x :e Vq ->
+            apply_fun gq (apply_fun (graph Vq (fun z:set => apply_fun p z)) x) = x) /\
+          (forall y:set, y :e U ->
+            apply_fun (graph Vq (fun z:set => apply_fun p z)) (apply_fun gq y) = y).
+      {
+        exact (homeomorphism_inverse_package
+          Vq
+          (subspace_topology E Te Vq)
+          U
+          (subspace_topology B Tb U)
+          (graph Vq (fun z:set => apply_fun p z))
+          HhomeVq).
+      }
+      apply HinvVq.
+      let gq.
+      assume HgqPack.
+      claim Hgqcont :
+        continuous_map U (subspace_topology B Tb U) Vq (subspace_topology E Te Vq) gq.
+      {
+        exact (andEL
+          (continuous_map U (subspace_topology B Tb U) Vq (subspace_topology E Te Vq) gq)
+          (forall x:set, x :e Vq ->
+            apply_fun gq (apply_fun (graph Vq (fun z:set => apply_fun p z)) x) = x)
+          (andEL
+            (continuous_map U (subspace_topology B Tb U) Vq (subspace_topology E Te Vq) gq /\
+              (forall x:set, x :e Vq ->
+                apply_fun gq (apply_fun (graph Vq (fun z:set => apply_fun p z)) x) = x))
+            (forall y:set, y :e U ->
+              apply_fun (graph Vq (fun z:set => apply_fun p z)) (apply_fun gq y) = y)
+            HgqPack)).
+      }
+      claim Hgqright :
+        forall y:set, y :e U ->
+          apply_fun (graph Vq (fun z:set => apply_fun p z)) (apply_fun gq y) = y.
+      {
+        exact (andER
+          (continuous_map U (subspace_topology B Tb U) Vq (subspace_topology E Te Vq) gq /\
+            (forall x:set, x :e Vq ->
+              apply_fun gq (apply_fun (graph Vq (fun z:set => apply_fun p z)) x) = x))
+          (forall y:set, y :e U ->
+            apply_fun (graph Vq (fun z:set => apply_fun p z)) (apply_fun gq y) = y)
+          HgqPack).
+      }
+      claim Hgqfun : function_on gq U Vq.
+      {
+        exact (continuous_map_function_on
+          U
+          (subspace_topology B Tb U)
+          Vq
+          (subspace_topology E Te Vq)
+          gq
+          Hgqcont).
+      }
+      claim HFcontN_B :
+        continuous_map N (subspace_topology unit_square unit_square_topology N) B Tb F.
+      {
+        exact (continuous_on_subspace
+          unit_square
+          unit_square_topology
+          B
+          Tb
+          F
+          N
+          HtopSq54
+          HNsubSq
+          HFcont).
+      }
+      claim HUsubB : U c= B.
+      {
+        exact (topology_elem_subset
+          B
+          Tb
+          U
+          HtopB
+          HUopen).
+      }
+      claim HFcontN_U :
+        continuous_map N (subspace_topology unit_square unit_square_topology N)
+          U (subspace_topology B Tb U) F.
+      {
+        exact (continuous_map_range_restrict
+          N
+          (subspace_topology unit_square unit_square_topology N)
+          B
+          Tb
+          F
+          U
+          HFcontN_B
+          HUsubB
+          HN_into_U).
+      }
+      set Ft_local_N := compose_fun N F gq.
+      claim HFtLocalContVq :
+        continuous_map N (subspace_topology unit_square unit_square_topology N)
+          Vq (subspace_topology E Te Vq) Ft_local_N.
+      {
+        exact (composition_continuous
+          N
+          (subspace_topology unit_square unit_square_topology N)
+          U
+          (subspace_topology B Tb U)
+          Vq
+          (subspace_topology E Te Vq)
+          F
+          gq
+          HFcontN_U
+          Hgqcont).
+      }
+      claim HVqsubE : Vq c= E.
+      {
+        exact (topology_elem_subset
+          E
+          Te
+          Vq
+          HtopE
+          HVqOpen).
+      }
+      claim HFtLocalContE :
+        continuous_map N (subspace_topology unit_square unit_square_topology N)
+          E Te Ft_local_N.
+      {
+        claim HVqTyEq : subspace_topology E Te Vq = subspace_topology E Te Vq.
+        {
+          reflexivity.
+        }
+        exact (continuous_map_range_expand
+          N
+          (subspace_topology unit_square unit_square_topology N)
+          Vq
+          (subspace_topology E Te Vq)
+          E
+          Te
+          Ft_local_N
+          HFtLocalContVq
+          HVqsubE
+          HtopE
+          HVqTyEq).
+      }
+      claim HFtLocalComm :
+        forall z:set, z :e N ->
+          apply_fun p (apply_fun Ft_local_N z) = apply_fun F z.
+      {
+        let z.
+        assume HzN.
+        claim HFzU : apply_fun F z :e U.
+        {
+          exact (HN_into_U z HzN).
+        }
+        claim HgqFzVq : apply_fun gq (apply_fun F z) :e Vq.
+        {
+          exact (Hgqfun
+            (apply_fun F z)
+            HFzU).
+        }
+        rewrite (compose_fun_apply N F gq z HzN).
+        rewrite <- (apply_fun_graph
+          Vq
+          (fun z0:set => apply_fun p z0)
+          (apply_fun gq (apply_fun F z))
+          HgqFzVq).
+        exact (Hgqright
+          (apply_fun F z)
+          HFzU).
+      }
+      claim HFtLocalAtQ :
+        apply_fun Ft_local_N q = apply_fun Ft_54 q.
+      {
+        claim HFqU_here : apply_fun F q :e U.
+        {
+          exact HFqU_local.
+        }
+        rewrite (compose_fun_apply
+          N
+          F
+          gq
+          q
+          HqN).
+        claim Hgqleft :
+          forall x:set, x :e Vq ->
+            apply_fun gq (apply_fun (graph Vq (fun z:set => apply_fun p z)) x) = x.
+        {
+          exact (andER
+            (continuous_map U (subspace_topology B Tb U) Vq (subspace_topology E Te Vq) gq)
+            (forall x:set, x :e Vq ->
+              apply_fun gq (apply_fun (graph Vq (fun z:set => apply_fun p z)) x) = x)
+            (andEL
+              (continuous_map U (subspace_topology B Tb U) Vq (subspace_topology E Te Vq) gq /\
+                (forall x:set, x :e Vq ->
+                  apply_fun gq (apply_fun (graph Vq (fun z:set => apply_fun p z)) x) = x))
+              (forall y:set, y :e U ->
+                apply_fun (graph Vq (fun z:set => apply_fun p z)) (apply_fun gq y) = y)
+              HgqPack)).
+        }
+        claim HgraphFtq :
+          apply_fun (graph Vq (fun z:set => apply_fun p z)) (apply_fun Ft_54 q)
+            = apply_fun p (apply_fun Ft_54 q).
+        {
+          exact (apply_fun_graph
+            Vq
+            (fun z:set => apply_fun p z)
+            (apply_fun Ft_54 q)
+            HFtqVq).
+        }
+        claim HgqFtq :
+          apply_fun gq (apply_fun p (apply_fun Ft_54 q)) = apply_fun Ft_54 q.
+        {
+          rewrite <- HgraphFtq.
+          exact (Hgqleft
+            (apply_fun Ft_54 q)
+            HFtqVq).
+        }
+        rewrite <- HpFtqEqFq.
+        exact HgqFtq.
+      }
+      (** TODO Charlie: show Ft_54 and Ft_local_N agree on a neighborhood of q in N; then use continuous_map_congr_on with HFtLocalContE. **)
       admit.
     }
     witness N.
