@@ -70343,7 +70343,7 @@ claim HpcUV : path_connected_space (U :/\: V)
 }
 witness U.
 witness V.
-apply (and7I
+exact (and7I
   (U :e Sn_topology n)
   (V :e Sn_topology n)
   (Sn n = U :\/: V)
@@ -70351,14 +70351,14 @@ apply (and7I
   (simply_connected V (subspace_topology (Sn n) (Sn_topology n) V))
   ((U :/\: V) <> Empty)
   (path_connected_space (U :/\: V)
-    (subspace_topology (Sn n) (Sn_topology n) (U :/\: V)))).
-- exact HUopen.
-- exact HVopen.
-- exact Hcover.
-- exact HscU.
-- exact HscV.
-- exact HneUV.
-- exact HpcUV.
+    (subspace_topology (Sn n) (Sn_topology n) (U :/\: V)))
+  HUopen
+  HVopen
+  Hcover
+  HscU
+  HscV
+  HneUV
+  HpcUV).
 Admitted.
 
 (** from S59 Thm 59.3 (line 1587 in algtop.tex) **)
