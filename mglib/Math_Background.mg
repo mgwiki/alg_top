@@ -51648,6 +51648,26 @@ claim HH2Wit :
 apply HH2Wit.
 let H2.
 assume H2Pack.
+claim H2MainGlobal :
+  continuous_map (setprod A unit_interval)
+    (product_topology A (subspace_topology X Tx A) unit_interval unit_interval_topology)
+    A
+    (subspace_topology X Tx A)
+    H2 /\
+  (forall a:set, a :e A -> apply_fun H2 (a, 0) = a) /\
+  (forall a:set, a :e A -> apply_fun H2 (a, 1) :e B).
+{
+  exact (andEL
+    (continuous_map (setprod A unit_interval)
+      (product_topology A (subspace_topology X Tx A) unit_interval unit_interval_topology)
+      A
+      (subspace_topology X Tx A)
+      H2 /\
+      (forall a:set, a :e A -> apply_fun H2 (a, 0) = a) /\
+      (forall a:set, a :e A -> apply_fun H2 (a, 1) :e B))
+    (forall b t:set, b :e B -> t :e unit_interval -> apply_fun H2 (b, t) = b)
+    H2Pack).
+}
 set r1 := graph X (fun x:set => apply_fun H1 (x, 1)).
 set r2 := graph A (fun a:set => apply_fun H2 (a, 1)).
 claim Hr1IntoA : forall x:set, x :e X -> apply_fun r1 x :e A.
@@ -51738,6 +51758,271 @@ claim Hr2FixB : forall b:set, b :e B -> apply_fun r2 b = b.
     b
     (HBsubA b HbB)).
   exact (H2FixB b 1 HbB one_in_unit_interval).
+}
+claim H1Fun : function_on H1 (setprod X unit_interval) X.
+{
+  exact (continuous_map_function_on
+    (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    X
+    Tx
+    H1
+    H1Cont).
+}
+claim H2Cont :
+  continuous_map (setprod A unit_interval)
+    (product_topology A (subspace_topology X Tx A) unit_interval unit_interval_topology)
+    A
+    (subspace_topology X Tx A)
+    H2.
+{
+  exact (andEL
+    (continuous_map (setprod A unit_interval)
+      (product_topology A (subspace_topology X Tx A) unit_interval unit_interval_topology)
+      A
+      (subspace_topology X Tx A)
+      H2)
+    (forall a:set, a :e A -> apply_fun H2 (a, 0) = a)
+    (andEL
+      (continuous_map (setprod A unit_interval)
+        (product_topology A (subspace_topology X Tx A) unit_interval unit_interval_topology)
+        A
+        (subspace_topology X Tx A)
+        H2 /\
+        (forall a:set, a :e A -> apply_fun H2 (a, 0) = a))
+      (forall a:set, a :e A -> apply_fun H2 (a, 1) :e B)
+      H2MainGlobal)).
+}
+claim H2Fun : function_on H2 (setprod A unit_interval) A.
+{
+  exact (continuous_map_function_on
+    (setprod A unit_interval)
+    (product_topology A (subspace_topology X Tx A) unit_interval unit_interval_topology)
+    A
+    (subspace_topology X Tx A)
+    H2
+    H2Cont).
+}
+claim Hr1Fun : function_on r1 X X.
+{
+  exact (total_function_on_function_on
+    r1
+    X
+    X
+    (total_function_on_graph
+      X
+      X
+      (fun x:set => apply_fun H1 (x, 1))
+      (fun x Hx =>
+        H1Fun
+          (x, 1)
+          (tuple_2_setprod_by_pair_Sigma
+            X
+            unit_interval
+            x
+            1
+            Hx
+            one_in_unit_interval)))).
+}
+claim Hr2Fun : function_on r2 A A.
+{
+  exact (total_function_on_function_on
+    r2
+    A
+    A
+    (total_function_on_graph
+      A
+      A
+      (fun a:set => apply_fun H2 (a, 1))
+      (fun a Ha =>
+        H2Fun
+          (a, 1)
+          (tuple_2_setprod_by_pair_Sigma
+            A
+            unit_interval
+            a
+            1
+            Ha
+            one_in_unit_interval)))).
+}
+set s1 := pair_map X (graph X (fun x:set => x)) (const_fun X 1).
+set r1Comp := compose_fun X s1 H1.
+claim Hs1Cont :
+  continuous_map X Tx (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    s1.
+{
+  exact (maps_into_products
+    X
+    Tx
+    X
+    Tx
+    unit_interval
+    unit_interval_topology
+    (graph X (fun x:set => x))
+    (const_fun X 1)
+    (identity_continuous X Tx HtopX)
+    (const_fun_continuous
+      X
+      Tx
+      unit_interval
+      unit_interval_topology
+      1
+      HtopX
+      unit_interval_topology_on
+      one_in_unit_interval)).
+}
+claim Hr1CompCont : continuous_map X Tx X Tx r1Comp.
+{
+  exact (composition_continuous
+    X
+    Tx
+    (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    X
+    Tx
+    s1
+    H1
+    Hs1Cont
+    H1Cont).
+}
+claim Hr1CompEq : forall x:set, x :e X -> apply_fun r1Comp x = apply_fun r1 x.
+{
+  let x.
+  assume Hx.
+  rewrite (compose_fun_apply
+    X
+    s1
+    H1
+    x
+    Hx).
+  rewrite (pair_map_apply
+    X
+    X
+    unit_interval
+    (graph X (fun x0:set => x0))
+    (const_fun X 1)
+    x
+    Hx).
+  rewrite (apply_fun_graph
+    X
+    (fun x0:set => x0)
+    x
+    Hx).
+  rewrite (const_fun_apply
+    X
+    1
+    x
+    Hx).
+  rewrite (apply_fun_graph
+    X
+    (fun x0:set => apply_fun H1 (x0, 1))
+    x
+    Hx).
+  reflexivity.
+}
+claim Hr1Cont : continuous_map X Tx X Tx r1.
+{
+  exact (continuous_map_congr_on
+    X
+    Tx
+    X
+    Tx
+    r1Comp
+    r1
+    Hr1CompCont
+    Hr1Fun
+    Hr1CompEq).
+}
+set s2 := pair_map A (graph A (fun a:set => a)) (const_fun A 1).
+set r2Comp := compose_fun A s2 H2.
+claim Hs2Cont :
+  continuous_map A (subspace_topology X Tx A)
+    (setprod A unit_interval)
+    (product_topology A (subspace_topology X Tx A) unit_interval unit_interval_topology)
+    s2.
+{
+  exact (maps_into_products
+    A
+    (subspace_topology X Tx A)
+    A
+    (subspace_topology X Tx A)
+    unit_interval
+    unit_interval_topology
+    (graph A (fun a:set => a))
+    (const_fun A 1)
+    (identity_continuous A (subspace_topology X Tx A) HtopA)
+    (const_fun_continuous
+      A
+      (subspace_topology X Tx A)
+      unit_interval
+      unit_interval_topology
+      1
+      HtopA
+      unit_interval_topology_on
+      one_in_unit_interval)).
+}
+claim Hr2CompCont : continuous_map A (subspace_topology X Tx A) A (subspace_topology X Tx A) r2Comp.
+{
+  exact (composition_continuous
+    A
+    (subspace_topology X Tx A)
+    (setprod A unit_interval)
+    (product_topology A (subspace_topology X Tx A) unit_interval unit_interval_topology)
+    A
+    (subspace_topology X Tx A)
+    s2
+    H2
+    Hs2Cont
+    H2Cont).
+}
+claim Hr2CompEq : forall a:set, a :e A -> apply_fun r2Comp a = apply_fun r2 a.
+{
+  let a.
+  assume Ha.
+  rewrite (compose_fun_apply
+    A
+    s2
+    H2
+    a
+    Ha).
+  rewrite (pair_map_apply
+    A
+    A
+    unit_interval
+    (graph A (fun a0:set => a0))
+    (const_fun A 1)
+    a
+    Ha).
+  rewrite (apply_fun_graph
+    A
+    (fun a0:set => a0)
+    a
+    Ha).
+  rewrite (const_fun_apply
+    A
+    1
+    a
+    Ha).
+  rewrite (apply_fun_graph
+    A
+    (fun a0:set => apply_fun H2 (a0, 1))
+    a
+    Ha).
+  reflexivity.
+}
+claim Hr2Cont : continuous_map A (subspace_topology X Tx A) A (subspace_topology X Tx A) r2.
+{
+  exact (continuous_map_congr_on
+    A
+    (subspace_topology X Tx A)
+    A
+    (subspace_topology X Tx A)
+    r2Comp
+    r2
+    Hr2CompCont
+    Hr2Fun
+    Hr2CompEq).
 }
 set r := compose_fun X r1 r2.
 claim HrIntoB : forall x:set, x :e X -> apply_fun r x :e B.
