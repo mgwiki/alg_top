@@ -1,6 +1,6 @@
 (** Balance Alice 2135 **)
 (** Balance Bob 2051 **)
-(** Balance Charlie 1223 **)
+(** Balance Charlie 1221 **)
 
 (** Sum of Balences and Bounties 48150 **)
 
@@ -23179,7 +23179,8 @@ Admitted.
 
 (** from S52 Theorem 52.1 sub-bounty B: bijection part of alpha-hat **)
 (** EFFORT: 3 lines, difficulty 3/10, USD 12 **)
-(** Bounty 12 **)
+(** Bounty 14 **)
+(** Lock Charlie 2026-02-18T05:30:00 **)
 Theorem lemma52_1_basepoint_change_bijection : forall X Tx x0 x1 alpha:set,
   topology_on X Tx ->
   continuous_map unit_interval unit_interval_topology X Tx alpha ->
