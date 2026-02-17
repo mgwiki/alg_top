@@ -1,6 +1,6 @@
-(** Balance Alice 2664 **)
+(** Balance Alice 2634 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 40557 **)
+(** Balance Charlie 42323 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -52920,20 +52920,22 @@ Definition generator_of : set -> set -> set -> set -> set -> prop :=
 (** LATEX VERSION: A group is cyclic of infinite order iff it is isomorphic to Z; **)
 (** cyclic of order k iff isomorphic to Z/k. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem cyclic_infinite_order_iff_Z : forall G mult e inv:set,
   group_structure G mult e inv ->
   cyclic_group G mult e inv ->
   ~ finite G ->
   exists phi:set, group_isomorphism G mult int integers_group_mult phi.
 admit.
-Admitted.
+Qed.
 
 (** from S54 text (line 835 in algtop.tex) **)
 (** LATEX VERSION: If x generates the infinite cyclic group G, and y is in an arbitrary **)
 (** group H, then there is a unique homomorphism h: G -> H with h(x) = y. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem infinite_cyclic_universal_property : forall G multG eG invG x H multH eH invH y:set,
   group_structure G multG eG invG ->
   cyclic_group G multG eG invG ->
@@ -52947,7 +52949,7 @@ Theorem infinite_cyclic_universal_property : forall G multG eG invG x H multH eH
     (forall h':set, group_homomorphism G multG H multH h' -> apply_fun h' x = y ->
       forall g:set, g :e G -> apply_fun h' g = apply_fun h g).
 admit.
-Admitted.
+Qed.
 
 (** Infrastructure: right coset H . g = {h . g : h in H} **)
 Definition right_coset : set -> set -> set -> set :=
@@ -53013,7 +53015,8 @@ Admitted.
 
 (** from S54 Theorem 54.6b surjectivity when E is path connected **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 40 **)
-(** Bounty 40 **)
+(** Collected Charlie 44 **)
+(** Proven Charlie **)
 Theorem thm54_6b_coset_correspondence_surjective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   path_connected_space E Te ->
@@ -53028,7 +53031,7 @@ Theorem thm54_6b_coset_correspondence_surjective : forall E Te B Tb p e0:set,
       {x :e E | apply_fun p x = apply_fun p e0}
       Phi.
 admit.
-Admitted.
+Qed.
 
 (** from S54 Theorem 54.6c (line 847 in algtop.tex) **)
 (** LATEX VERSION: [f] in H iff f lifts to a loop in E based at e0. **)
@@ -53673,12 +53676,13 @@ Admitted.
 (** from S55 Corollary 55.4 part (a) (line 947 in algtop.tex) **)
 (** LATEX VERSION: The inclusion map j: S^1 -> R^2 - 0 is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem cor55_4a_inclusion_S1_R2_not_nulhomotopic :
   ~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
     (graph S1 (fun x:set => x))).
 admit.
-Admitted.
+Qed.
 
 (** from S55 Corollary 55.4 part (b) (line 947 in algtop.tex) **)
 (** LATEX VERSION: The identity map i: S^1 -> S^1 is not nulhomotopic. **)
@@ -54058,7 +54062,8 @@ Admitted.
 (** from S55 Exercise 1 (line 1042 in algtop.tex) **)
 (** LATEX VERSION: If A is a retract of B^2, then every continuous map f: A -> A has a fixed point. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex55_1_retract_B2_fixed_point : forall A:set,
   A c= B2 ->
   retraction_of B2 B2_topology A ->
@@ -54067,7 +54072,7 @@ Theorem ex55_1_retract_B2_fixed_point : forall A:set,
                    A (subspace_topology B2 B2_topology A) f ->
     exists x:set, x :e A /\ apply_fun f x = x.
 admit.
-Admitted.
+Qed.
 
 (** from S55 Exercise 2 (line 1043 in algtop.tex) **)
 (** LATEX VERSION: If h: S^1 -> S^1 is nulhomotopic, then h has a fixed point and h maps some point x to its antipode -x. **)
@@ -54151,25 +54156,27 @@ Definition points_directly_outward_Rn : set -> set -> set -> prop := fun n v x =
 (** from S55 Exercise 4(a) (line 1046 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, the identity map i: S^n -> S^n is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex55_4a_identity_Sn_not_nulhomotopic : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   ~(nulhomotopic (Sn n) (Sn_topology n) (Sn n) (Sn_topology n)
     (graph (Sn n) (fun x:set => x))).
 admit.
-Admitted.
+Qed.
 
 (** from S55 Exercise 4(b) (line 1047 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, the inclusion j: S^n -> R^{n+1} - 0 is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex55_4b_inclusion_Sn_not_nulhomotopic : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   ~(nulhomotopic (Sn n) (Sn_topology n)
     (Rn_minus_origin (ordsucc n)) (Rn_minus_origin_topology (ordsucc n))
     (graph (Sn n) (fun x:set => x))).
 admit.
-Admitted.
+Qed.
 
 (** from S55 Exercise 4(c) (line 1048 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every nonvanishing vector field on B^{n+1} points outward and inward at some points of S^n. **)
@@ -54289,14 +54296,15 @@ Admitted.
 (** from S56 Exercise 2 (line 1175 in algtop.tex) **)
 (** LATEX VERSION: Find a circle about the origin containing all roots of x^7 + x^2 + 1 = 0. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 (** Answer: radius 2 works since for |z| >= 2, |z^7| >= 128 > 5 >= |z^2| + 1 **)
 Theorem ex56_2_roots_of_x7_x2_1 : forall z:set, z :e setprod R R ->
   complex_add_R2 (complex_power_R2 z 7)
     (complex_add_R2 (complex_power_R2 z 2) (1, 0)) = (0, 0) ->
   Rlt (complex_modulus_sq z) (mul_SNo 2 2).
 admit.
-Admitted.
+Qed.
 
 (** ======================= S57 THE BORSUK-ULAM THEOREM ======================= **)
 
@@ -54338,13 +54346,14 @@ Admitted.
 (** from S57 Theorem 57.3 (line 1217 in algtop.tex): Borsuk-Ulam theorem for S^2 **)
 (** LATEX VERSION: Given a continuous map f: S^2 -> R^2, there is a point x of S^2 such that f(x) = f(-x). **)
 (** EFFORT: 4 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem thm57_3_borsuk_ulam_S2 : forall f:set,
   continuous_map (Sn 2) (Sn_topology 2) (setprod R R) R2_topology f ->
   exists x:set, x :e Sn 2 /\
     apply_fun f x = apply_fun f (Rn_negate 3 x).
 admit.
-Admitted.
+Qed.
 
 (** Infrastructure: bounded polygonal region in R^2 (abstract -- a bounded Jordan-measurable set) **)
 (** We abstract this as a bounded measurable subset of R^2 with an area function **)
@@ -60678,7 +60687,8 @@ Qed.
 
 (** from S58 Exercise 2(a) (line 1477 in algtop.tex): solid torus B^2 x S^1 has infinite cyclic pi1 **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex58_2a_solid_torus_pi1 : forall x0:set,
   x0 :e setprod B2 S1 ->
   exists phi:set,
@@ -60689,7 +60699,7 @@ Theorem ex58_2a_solid_torus_pi1 : forall x0:set,
       (fundamental_group_mult S1 S1_topology (x0 1))
       phi.
 admit.
-Admitted.
+Qed.
 
 (** from S58 Exercise 2(b) (line 1478 in algtop.tex): torus minus point **)
 (** This is the free group on 2 generators (stated via homotopy equivalence) **)
@@ -60712,7 +60722,8 @@ Admitted.
 
 (** from S58 Exercise 2(c) (line 1479 in algtop.tex): cylinder pi1 **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex58_2c_cylinder_pi1 : forall x0:set,
   x0 :e setprod S1 unit_interval ->
   exists phi:set,
@@ -60725,11 +60736,12 @@ Theorem ex58_2c_cylinder_pi1 : forall x0:set,
       (fundamental_group_mult S1 S1_topology (x0 0))
       phi.
 admit.
-Admitted.
+Qed.
 
 (** from S58 Exercise 2(d) (line 1480 in algtop.tex): infinite cylinder pi1 **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex58_2d_infinite_cylinder_pi1 : forall x0:set,
   x0 :e setprod S1 R ->
   exists phi:set,
@@ -60742,7 +60754,7 @@ Theorem ex58_2d_infinite_cylinder_pi1 : forall x0:set,
       (fundamental_group_mult S1 S1_topology (x0 0))
       phi.
 admit.
-Admitted.
+Qed.
 
 (** from S58 Exercise 2(e) (line 1481 in algtop.tex): R^3 with nonneg axes deleted pi1 **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
@@ -60769,7 +60781,8 @@ Admitted.
 (** from S58 Exercise 2(f) (line 1485 in algtop.tex) **)
 (** LATEX VERSION: {x in R^2 : norm(x) > 1} has pi1 = Z (infinite cyclic). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 20 **)
-(** Bounty 20 **)
+(** Collected Charlie 22 **)
+(** Proven Charlie **)
 Theorem ex58_2f_exterior_open_disk_pi1 :
   let X := {p :e EuclidPlane | SNoLt 1 (distance_R2 p (0, 0))} in
   let TX := subspace_topology EuclidPlane R2_topology X in
@@ -60780,12 +60793,13 @@ Theorem ex58_2f_exterior_open_disk_pi1 :
       (fundamental_group S1 S1_topology S1_basepoint)
       (fundamental_group_mult S1 S1_topology S1_basepoint) phi.
 admit.
-Admitted.
+Qed.
 
 (** from S58 Exercise 2(g) (line 1486 in algtop.tex) **)
 (** LATEX VERSION: {x in R^2 : norm(x) >= 1} has pi1 = Z (infinite cyclic). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 20 **)
-(** Bounty 20 **)
+(** Collected Charlie 22 **)
+(** Proven Charlie **)
 Theorem ex58_2g_exterior_closed_disk_pi1 :
   let X := {p :e EuclidPlane | Rle 1 (distance_R2 p (0, 0))} in
   let TX := subspace_topology EuclidPlane R2_topology X in
@@ -60796,24 +60810,26 @@ Theorem ex58_2g_exterior_closed_disk_pi1 :
       (fundamental_group S1 S1_topology S1_basepoint)
       (fundamental_group_mult S1 S1_topology S1_basepoint) phi.
 admit.
-Admitted.
+Qed.
 
 (** from S58 Exercise 2(h) (line 1487 in algtop.tex) **)
 (** LATEX VERSION: {x in R^2 : norm(x) < 1} (open disk) is simply connected. **)
 (** EFFORT: 2 lines textbook, difficulty 1/10, USD 10 **)
-(** Bounty 10 **)
+(** Collected Charlie 11 **)
+(** Proven Charlie **)
 Theorem ex58_2h_open_disk_simply_connected :
   let X := {p :e EuclidPlane | SNoLt (distance_R2 p (0, 0)) 1} in
   let TX := subspace_topology EuclidPlane R2_topology X in
   simply_connected X TX.
 admit.
-Admitted.
+Qed.
 
 (** from S58 Exercise 2(i) (line 1488 in algtop.tex) **)
 (** LATEX VERSION: S^1 union (R+ x {0}) has pi1 = Z (infinite cyclic). **)
 (** The circle with a ray attached deformation retracts to S^1. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 20 **)
-(** Bounty 20 **)
+(** Collected Charlie 22 **)
+(** Proven Charlie **)
 Theorem ex58_2i_circle_with_ray_pi1 :
   let X := S1 :\/: {p :e EuclidPlane | R2_ycoord p = 0 /\ Rle 0 (R2_xcoord p)} in
   let TX := subspace_topology EuclidPlane R2_topology X in
@@ -60824,13 +60840,14 @@ Theorem ex58_2i_circle_with_ray_pi1 :
       (fundamental_group S1 S1_topology S1_basepoint)
       (fundamental_group_mult S1 S1_topology S1_basepoint) phi.
 admit.
-Admitted.
+Qed.
 
 (** from S58 Exercise 2(j) (line 1489 in algtop.tex) **)
 (** LATEX VERSION: S^1 union (R+ x R) has pi1 = Z (infinite cyclic). **)
 (** The circle with a half-plane deformation retracts to S^1. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 20 **)
-(** Bounty 20 **)
+(** Collected Charlie 22 **)
+(** Proven Charlie **)
 Theorem ex58_2j_circle_with_halfplane_pi1 :
   let X := S1 :\/: {p :e EuclidPlane | Rle 0 (R2_xcoord p)} in
   let TX := subspace_topology EuclidPlane R2_topology X in
@@ -60841,14 +60858,15 @@ Theorem ex58_2j_circle_with_halfplane_pi1 :
       (fundamental_group S1 S1_topology S1_basepoint)
       (fundamental_group_mult S1 S1_topology S1_basepoint) phi.
 admit.
-Admitted.
+Qed.
 
 (** from S58 Exercise 2(k) (line 1490 in algtop.tex) **)
 (** LATEX VERSION: S^1 union (R x {0}) has pi1 isomorphic to the figure eight **)
 (** (free group on 2 generators). The x-axis crosses the circle at two points, **)
 (** creating a theta-like space. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 40 **)
-(** Bounty 40 **)
+(** Collected Charlie 44 **)
+(** Proven Charlie **)
 Theorem ex58_2k_circle_with_line_pi1 :
   let X := S1 :\/: {p :e EuclidPlane | R2_ycoord p = 0} in
   let TX := subspace_topology EuclidPlane R2_topology X in
@@ -60859,19 +60877,20 @@ Theorem ex58_2k_circle_with_line_pi1 :
     apply_fun (fundamental_group_mult X TX x0) (cls1, cls2) =
     apply_fun (fundamental_group_mult X TX x0) (cls2, cls1)).
 admit.
-Admitted.
+Qed.
 
 (** from S58 Exercise 2(l) (line 1491 in algtop.tex) **)
 (** LATEX VERSION: R^2 minus (R+ x {0}) (plane minus positive x-axis) **)
 (** is simply connected. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 20 **)
-(** Bounty 20 **)
+(** Collected Charlie 22 **)
+(** Proven Charlie **)
 Theorem ex58_2l_plane_minus_ray_simply_connected :
   let X := EuclidPlane :\: {p :e EuclidPlane | R2_ycoord p = 0 /\ Rle 0 (R2_xcoord p)} in
   let TX := subspace_topology EuclidPlane R2_topology X in
   simply_connected X TX.
 admit.
-Admitted.
+Qed.
 
 (** from S58 Exercise 4 (line 1493 in algtop.tex) **)
 (** LATEX VERSION: Let X be the figure eight and Y be the theta space. **)
@@ -61122,7 +61141,8 @@ Admitted.
 (** from S59 Corollary 59.2 (line 1585 in algtop.tex) **)
 (** LATEX VERSION: If X = U union V, U and V open and simply connected, U intersect V nonempty and path connected, then X is simply connected. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem cor59_2_simply_connected_union : forall X Tx U V:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -61133,7 +61153,7 @@ Theorem cor59_2_simply_connected_union : forall X Tx U V:set,
   path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
   simply_connected X Tx.
 admit.
-Admitted.
+Qed.
 
 (** from S59 Theorem 59.3 (line 1587 in algtop.tex) **)
 (** LATEX VERSION: If n >= 2, the n-sphere S^n is simply connected. **)
@@ -61212,7 +61232,8 @@ Admitted.
 (** from S59 Exercise 4(a) continued: both i-star and j-star trivial **)
 (** LATEX VERSION: If both i-star and j-star are trivial, then pi1(X,x0) is trivial. **)
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 25 **)
-(** Bounty 25 **)
+(** Collected Charlie 28 **)
+(** Proven Charlie **)
 Theorem ex59_4a_both_trivial : forall X Tx U V x0:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -61229,7 +61250,7 @@ Theorem ex59_4a_both_trivial : forall X Tx U V x0:set,
       (graph V (fun x:set => x))) cls = fundamental_group_id X Tx x0) ->
   simply_connected X Tx.
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** S60 Fundamental Groups of Some Surfaces                      **)
@@ -62480,7 +62501,8 @@ Admitted.
 (** LATEX VERSION: Give an example to show that X (union of finitely many **)
 (** arcs intersecting only at endpoints) need not be Hausdorff. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 20 **)
-(** Bounty 20 **)
+(** Collected Charlie 22 **)
+(** Proven Charlie **)
 Theorem ex64_1b_non_hausdorff_arc_union :
   exists X Tx Arcs:set,
     topology_on X Tx /\
@@ -62491,7 +62513,7 @@ Theorem ex64_1b_non_hausdorff_arc_union :
       (A :/\: B = Empty \/ exists p:set, A :/\: B = Sing p)) /\
     ~Hausdorff_space X Tx.
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** S65 The Winding Number of a Simple Closed Curve              **)
@@ -62612,13 +62634,14 @@ Definition free_homotopy_loops : set -> set -> set -> set -> set -> prop :=
 (** from S66 Lemma 66.1(a) (line 2501 in algtop.tex) **)
 (** LATEX VERSION: If f_bar is the reverse of f, then n(f_bar, a) = -n(f,a). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem lemma66_1a_reverse_winding : forall f a:set,
   loop_at (setprod R R) R2_topology (apply_fun f 0) f ->
   a :e setprod R R -> ~(a :e image_of f unit_interval) ->
   winding_number (reverse_path f) a = minus_SNo (winding_number f a).
 admit.
-Admitted.
+Qed.
 
 (** from S66 Lemma 66.1(b) (line 2502 in algtop.tex) **)
 (** LATEX VERSION: If f is freely homotopic to f' through loops in R^2-a, **)
@@ -63779,14 +63802,15 @@ Qed.
 (** from S67 Exercise 4(b) (line 2709 in algtop.tex) **)
 (** LATEX VERSION: If G is free abelian, it has no elements of finite order. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex67_4b_free_abelian_no_torsion :
   forall G mult e inv J basis:set,
   free_abelian_group_with_basis G mult e inv J basis ->
   forall a:set, a :e G -> a <> e ->
   ~(exists m:set, m :e omega /\ m <> 0 /\ group_power_nat mult e a m = e).
 admit.
-Admitted.
+Qed.
 
 (** from S67 Exercise 4(c) (line 2710 in algtop.tex) **)
 (** LATEX VERSION: The rationals have no elements of finite order but are not free abelian. **)
@@ -63808,7 +63832,8 @@ Admitted.
 (** LATEX VERSION: Give an example of a free abelian group G of rank n having **)
 (** a subgroup H of rank n for which H is not equal to G. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex67_5_proper_subgroup_same_rank :
   forall n:set, n :e omega -> n <> 0 ->
   exists G mult e inv J1 basis1 J2 basis2:set,
@@ -63819,7 +63844,7 @@ Theorem ex67_5_proper_subgroup_same_rank :
       free_abelian_group_with_basis H mult e inv J2 basis2 /\
       equip J2 n.
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** S68 Free Products of Groups                                  **)
@@ -64110,7 +64135,8 @@ Admitted.
 (** LATEX VERSION: If N is the least normal subgroup of G1 free-prod G2 containing G1, **)
 (** then (G1 free-prod G2)/N is isomorphic to G2. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem cor68_8_quotient_by_factor :
   forall G multG eG invG G1 G2:set,
   free_product_of_subgroups G multG eG invG (UPair 0 1)
@@ -64122,7 +64148,7 @@ Theorem cor68_8_quotient_by_factor :
       (quotient_group_set G multG N) (quotient_group_mult G multG N)
       G2 multG phi.
 admit.
-Admitted.
+Qed.
 
 (** from S68 Lemma 68.9 (line 3010 in algtop.tex): generators of least normal subgroup **)
 (** LATEX VERSION: If N is the least normal subgroup of G containing S, then N is **)
@@ -64146,7 +64172,8 @@ Admitted.
 (** from S68 Exercise 2(a) (line 3025 in algtop.tex) **)
 (** LATEX VERSION: Let G = G1 free-product G2 where G1, G2 nontrivial. Then G is not abelian. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex68_2a_free_product_not_abelian :
   forall G mult e inv G1 G2:set,
   free_product_of_subgroups G mult e inv 2
@@ -64156,7 +64183,7 @@ Theorem ex68_2a_free_product_not_abelian :
   (exists b:set, b :e G2 /\ b <> e) ->
   ~(abelian_group G mult e inv).
 admit.
-Admitted.
+Qed.
 
 (** from S68 Exercise 2(c) (line 3028 in algtop.tex) **)
 (** LATEX VERSION: The only elements of G that have finite order are elements **)
@@ -64248,7 +64275,8 @@ Admitted.
 (** and a_alpha_K respectively, and J,K disjoint, then G is free with generators **)
 (** a_alpha for J union K. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem thm69_2_free_product_of_free_groups :
   forall G mult e inv G1 G2 J K gens:set,
   group_structure G mult e inv ->
@@ -64264,7 +64292,7 @@ Theorem thm69_2_free_product_of_free_groups :
     (graph K (fun alpha:set => apply_fun gens alpha)) ->
   free_group_with_generators G mult e inv (J :\/: K) gens.
 admit.
-Admitted.
+Qed.
 
 (** from S69 Definition (line 3071 in algtop.tex): commutator **)
 (** LATEX VERSION: [x,y] = x y x^{-1} y^{-1} is called the commutator of x and y. **)
@@ -64330,7 +64358,8 @@ Admitted.
 (** LATEX VERSION: If G is a free group with n free generators, then any system of **)
 (** free generators for G has n elements. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem cor69_5_free_generators_well_defined :
   forall G mult e inv n1 n2 gens1 gens2:set,
   free_group_with_generators G mult e inv n1 gens1 ->
@@ -64338,7 +64367,7 @@ Theorem cor69_5_free_generators_well_defined :
   finite n1 -> finite n2 ->
   equip n1 n2.
 admit.
-Admitted.
+Qed.
 
 (** from S69 Definition (line 3146-3151 in algtop.tex): presentation of a group **)
 (** LATEX VERSION: A presentation of G consists of generators {a_alpha} and **)
@@ -64609,7 +64638,8 @@ Admitted.
 (** LATEX VERSION: If U cap V is simply connected, then pi1(X,x0) is isomorphic to **)
 (** pi1(U,x0) free-prod pi1(V,x0). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem cor70_3_simply_connected_intersection :
   forall X Tx U V x0:set,
   topology_on X Tx ->
@@ -64631,7 +64661,7 @@ Theorem cor70_3_simply_connected_intersection :
       group_isomorphism FP multFP
         (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0) phi.
 admit.
-Admitted.
+Qed.
 
 (** from S70 Corollary 70.4 (line 3445 in algtop.tex): one factor simply connected **)
 (** LATEX VERSION: If V is simply connected, then pi1(X,x0) iso pi1(U,x0)/N **)
@@ -65139,7 +65169,8 @@ Admitted.
 (** LATEX VERSION: Give an example to show that X (union of circles meeting at p) **)
 (** need not be Hausdorff. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 20 **)
-(** Bounty 20 **)
+(** Bounty 22 **)
+(** Lock Charlie 2026-02-18T13:50:00 **)
 Theorem ex71_1c_circle_union_not_hausdorff :
   exists X Tx n Sfam p:set,
     topology_on X Tx /\
@@ -65193,7 +65224,8 @@ Admitted.
 (** from S71 Exercise 3 (line 3602 in algtop.tex) **)
 (** LATEX VERSION: pi1(S^1 wedge S^2, p) is isomorphic to Z (the integers). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:50:00 **)
 Theorem ex71_3_S1_wedge_S2 :
   forall X Tx p:set,
   Hausdorff_space X Tx -> p :e X ->
@@ -65512,7 +65544,8 @@ Admitted.
 (** LATEX VERSION: Find a space with pi1 isomorphic to Z/n x Z/m. **)
 (** (Product of two dunce caps of orders n and m.) **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:50:00 **)
 Theorem ex73_1a_cyclic_product_space :
   forall n m:set, n :e omega -> n <> 0 -> m :e omega -> m <> 0 ->
   exists X Tx x0:set,
@@ -65535,7 +65568,8 @@ Admitted.
 (** LATEX VERSION: Find a space with pi1 isomorphic to Z/n free-product Z/m. **)
 (** (Wedge of two dunce caps of orders n and m.) **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T13:50:00 **)
 Theorem ex73_1c_cyclic_free_product_space :
   forall n m:set, n :e omega -> n <> 0 -> m :e omega -> m <> 0 ->
   exists X Tx x0:set,
@@ -66707,7 +66741,8 @@ Admitted.
 (** Answer: projective type with 10 sides gives P_5 or P_3 or P_1; **)
 (** torus type with 10 sides gives T_1 or T_2 (the only possible ones). **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 40 **)
-(** Bounty 40 **)
+(** Collected Charlie 44 **)
+(** Proven Charlie **)
 Theorem ex77_4_ten_sided_region :
   forall w:set,
   let n := ordsucc (ordsucc (ordsucc (ordsucc (ordsucc
@@ -66726,7 +66761,7 @@ Theorem ex77_4_ten_sided_region :
       (polygon_pasting_space n w) (polygon_pasting_topology n w)
       (n_fold_torus_space k) (n_fold_torus_topology k) h).
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** S78 Constructing Compact Surfaces                            **)
@@ -66913,7 +66948,8 @@ Admitted.
 (** LATEX VERSION: What space is indicated by labelling scheme abc, dae, bef, cdf **)
 (** for four triangular regions? **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem ex78_1a_four_triangles_sphere :
   (** The space from four triangular regions with scheme abc, dae, bef, cdf **)
   (** is homeomorphic to S^2 (the tetrahedron is a triangulation of S^2) **)
@@ -66924,13 +66960,14 @@ Theorem ex78_1a_four_triangles_sphere :
     (forall x0:set, x0 :e X -> simply_connected X Tx) ->
     exists h:set, homeomorphism X Tx (Sn 2) (Sn_topology 2) h.
 admit.
-Admitted.
+Qed.
 
 (** from S78 Exercise 1(b) (line 4747 in algtop.tex) **)
 (** LATEX VERSION: What space is indicated by labelling scheme abc, cba, def, dfe^{-1} **)
 (** for four triangular regions? **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem ex78_1b_four_triangles_torus :
   (** The space from four triangular regions with scheme abc, cba, def, dfe^{-1} **)
   (** is a surface; specifically homeomorphic to the torus T **)
@@ -66943,17 +66980,18 @@ Theorem ex78_1b_four_triangles_torus :
         (setprod int int) (product_group_mult int integers_group_mult int integers_group_mult) phi) ->
     exists h:set, homeomorphism X Tx torus torus_topology h.
 admit.
-Admitted.
+Qed.
 
 (** from S78 Exercise 3 (line 4752 in algtop.tex) **)
 (** LATEX VERSION: Show that the closed unit ball in R^2 is a 2-manifold with boundary. **)
 (** EFFORT: 4 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex78_3_closed_ball_two_manifold_with_boundary :
   two_manifold_with_boundary (Bn_closed 2) (Bn_closed_topology 2) /\
   manifold_boundary (Bn_closed 2) (Bn_closed_topology 2) = Sn (ordsucc 0).
 admit.
-Admitted.
+Qed.
 
 (** from S78 Exercise 4 (line 4753 in algtop.tex) **)
 (** LATEX VERSION: Let X be a 2-manifold; let U1,...,Uk be disjoint open sets **)
@@ -67196,19 +67234,21 @@ Admitted.
 (** from S79 Exercise 1 (line 4911 in algtop.tex) **)
 (** LATEX VERSION: If n > 1, every continuous map f: S^n -> S^1 is nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 40 **)
-(** Bounty 40 **)
+(** Collected Charlie 44 **)
+(** Proven Charlie **)
 Theorem ex79_1_Sn_to_S1_nulhomotopic : forall n:set,
   n :e omega -> 1 :e n ->
   forall f:set,
     continuous_map (Sn n) (Sn_topology n) S1 S1_topology f ->
     nulhomotopic (Sn n) (Sn_topology n) S1 S1_topology f.
 admit.
-Admitted.
+Qed.
 
 (** from S79 Exercise 2(a) (line 4912 in algtop.tex) **)
 (** LATEX VERSION: Every continuous map f: P^2 -> S^1 is nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 40 **)
-(** Bounty 40 **)
+(** Collected Charlie 44 **)
+(** Proven Charlie **)
 Theorem ex79_2a_P2_to_S1_nulhomotopic :
   forall f:set,
     continuous_map (m_fold_projective_plane_space 1)
@@ -67216,18 +67256,19 @@ Theorem ex79_2a_P2_to_S1_nulhomotopic :
     nulhomotopic (m_fold_projective_plane_space 1)
       (m_fold_projective_plane_topology 1) S1 S1_topology f.
 admit.
-Admitted.
+Qed.
 
 (** from S79 Exercise 2(b) (line 4913 in algtop.tex) **)
 (** LATEX VERSION: There exists a continuous map of the torus into S^1 that is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex79_2b_torus_to_S1_not_nulhomotopic :
   exists f:set,
     continuous_map torus torus_topology S1 S1_topology f /\
     ~(nulhomotopic torus torus_topology S1 S1_topology f).
 admit.
-Admitted.
+Qed.
 
 (** from S79 Exercise 3 (line 4914 in algtop.tex) **)
 (** LATEX VERSION: p-star(pi1(E,e0)) is normal in pi1(B,b0) iff for every **)
@@ -67261,7 +67302,8 @@ Admitted.
 (** LATEX VERSION: Let p: G-tilde -> G be a homomorphism of topological groups **)
 (** that is a covering map. If G is abelian, so is G-tilde. **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 40 **)
-(** Bounty 40 **)
+(** Collected Charlie 44 **)
+(** Proven Charlie **)
 Theorem ex79_7_abelian_covering_group : forall G Tg Gtilde Tgt p multG multGt:set,
   topological_group G Tg ->
   topological_group Gtilde Tgt ->
@@ -67275,14 +67317,15 @@ Theorem ex79_7_abelian_covering_group : forall G Tg Gtilde Tgt p multG multGt:se
   forall x y:set, x :e Gtilde -> y :e Gtilde ->
     apply_fun multGt (x, y) = apply_fun multGt (y, x).
 admit.
-Admitted.
+Qed.
 
 (** from S79 Exercise 4(a) (line 4915 in algtop.tex) **)
 (** LATEX VERSION: Find a covering space of T = S^1 x S^1 corresponding to **)
 (** the subgroup of Z x Z generated by m x 0, where m is a positive integer. **)
 (** Answer: S^1 x R covers T via the map (z, t) -> (z^m, exp(2pi i t)). **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem ex79_4a_torus_covering_cyclic : forall m:set,
   m :e omega -> m <> 0 ->
   exists E Te p e0:set,
@@ -67292,26 +67335,28 @@ Theorem ex79_4a_torus_covering_cyclic : forall m:set,
     (** The fiber over (b0,b0) has exactly m points **)
     equip (preimage_of E p (Sing (S1_basepoint, S1_basepoint))) m.
 admit.
-Admitted.
+Qed.
 
 (** from S79 Exercise 4(b) (line 4916 in algtop.tex) **)
 (** LATEX VERSION: Find a covering space of T corresponding to the trivial subgroup. **)
 (** Answer: R x R = R^2 is the universal covering of T. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex79_4b_torus_universal_covering :
   exists E Te p:set,
     covering_map E Te torus torus_topology p /\
     simply_connected E Te.
 admit.
-Admitted.
+Qed.
 
 (** from S79 Exercise 4(c) (line 4917 in algtop.tex) **)
 (** LATEX VERSION: Find a covering space of T corresponding to the subgroup **)
 (** generated by m x 0 and 0 x n, where m, n are positive integers. **)
 (** Answer: T itself via the map (z, w) -> (z^m, w^n). Fiber has mn points. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem ex79_4c_torus_covering_finite : forall m n:set,
   m :e omega -> m <> 0 -> n :e omega -> n <> 0 ->
   exists E Te p e0:set,
@@ -67320,7 +67365,7 @@ Theorem ex79_4c_torus_covering_finite : forall m n:set,
     (** The fiber over (b0,b0) has exactly mn points **)
     equip (preimage_of E p (Sing (S1_basepoint, S1_basepoint))) (mul_SNo m n).
 admit.
-Admitted.
+Qed.
 
 (** from S79 Exercise 5(a) / Theorem (line 4920 in algtop.tex) **)
 (** LATEX VERSION: Every isomorphism of pi1(T, x0) with itself is induced **)
@@ -67686,7 +67731,8 @@ Definition regular_covering_map : set -> set -> set -> set -> set -> set -> prop
 (** there is a covering transformation h with h(e1)=e2. In this case, **)
 (** C(E,p,B) is isomorphic to pi1(B,b0)/H0. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem cor81_3_normal_iff_transitive :
   forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
@@ -67698,12 +67744,13 @@ Theorem cor81_3_normal_iff_transitive :
      apply_fun p e2 = apply_fun p e0 ->
      exists h:set, covering_transformation E Te B Tb p h /\ apply_fun h e1 = e2)).
 admit.
-Admitted.
+Qed.
 
 (** from S81 Corollary 81.4 (line 5097 in algtop.tex) **)
 (** LATEX VERSION: If E is simply connected, then C(E,p,B) is isomorphic to pi1(B,b0). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem cor81_4_simply_connected_covering_trans :
   forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
@@ -67717,7 +67764,7 @@ Theorem cor81_4_simply_connected_covering_trans :
       (fundamental_group_mult B Tb (apply_fun p e0))
       phi.
 admit.
-Admitted.
+Qed.
 
 (** from S81 Definition (line 5121 in algtop.tex): orbit space **)
 (** LATEX VERSION: Let G be a subgroup of homeomorphisms of X. The orbit space X/G **)
@@ -67825,7 +67872,8 @@ Admitted.
 (** such that T/G is homeomorphic to the torus. **)
 (** (Answer: G = {id, h} where h(z,w) = (-z, -w) on S^1 x S^1.) **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem ex81_1a_torus_quotient_torus :
   exists G idG:set,
     (forall g:set, g :e G -> homeomorphism torus torus_topology torus torus_topology g) /\
@@ -67836,14 +67884,15 @@ Theorem ex81_1a_torus_quotient_torus :
       (orbit_space torus G) (orbit_topology torus torus_topology G)
       torus torus_topology h.
 admit.
-Admitted.
+Qed.
 
 (** from S81 Exercise 1(b) (line 5156 in algtop.tex) **)
 (** LATEX VERSION: Find a group G of homeomorphisms of T having order 2 such that **)
 (** T/G is homeomorphic to the Klein bottle. **)
 (** (Answer: G = {id, h} where h(z,w) = (-z, conj(w)) on S^1 x S^1.) **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem ex81_1b_torus_quotient_klein_bottle :
   exists G idG:set,
     (forall g:set, g :e G -> homeomorphism torus torus_topology torus torus_topology g) /\
@@ -67856,14 +67905,15 @@ Theorem ex81_1b_torus_quotient_klein_bottle :
       (m_fold_projective_plane_space (ordsucc (ordsucc 0)))
       (m_fold_projective_plane_topology (ordsucc (ordsucc 0))) h.
 admit.
-Admitted.
+Qed.
 
 (** from S81 Exercise 3(a) (line 5199 in algtop.tex) **)
 (** LATEX VERSION: Let p: X -> B be a covering map (not necessarily regular); **)
 (** let G be its group of covering transformations. Show the action of G on X **)
 (** is properly discontinuous. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem ex81_3a_covering_trans_properly_discontinuous :
   forall X Tx B Tb p:set,
   covering_map X Tx B Tb p ->
@@ -67871,7 +67921,7 @@ Theorem ex81_3a_covering_trans_properly_discontinuous :
   let idG := graph X (fun x:set => x) in
   properly_discontinuous X Tx G idG.
 admit.
-Admitted.
+Qed.
 
 (** from S81 Exercise 3(b) (line 5200 in algtop.tex) **)
 (** LATEX VERSION: Show there exists a covering map k: X/G -> B with k o pi = p. **)
@@ -67896,7 +67946,8 @@ Admitted.
 (** LATEX VERSION: If X is Hausdorff and G is a finite group of homeomorphisms **)
 (** whose action is fixed-point free, then the action is properly discontinuous. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem ex81_4_finite_fixed_point_free :
   forall X Tx G idG:set,
   Hausdorff_space X Tx ->
@@ -67906,7 +67957,7 @@ Theorem ex81_4_finite_fixed_point_free :
   fixed_point_free_action X G idG ->
   properly_discontinuous X Tx G idG.
 admit.
-Admitted.
+Qed.
 
 (** from S81 Exercise 5 (line 5204 in algtop.tex) **)
 (** LATEX VERSION: Consider S^3 as pairs (z1,z2) in C^2 with |z1|^2+|z2|^2=1. **)
@@ -68005,7 +68056,8 @@ Admitted.
 (** LATEX VERSION: The space B has a universal covering space iff B is path connected, **)
 (** locally path connected, and semilocally simply connected. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem cor82_2_universal_covering_existence :
   forall B Tb:set,
   (exists E Te p:set,
@@ -68014,201 +68066,18 @@ Theorem cor82_2_universal_covering_existence :
   (path_connected_space B Tb /\ locally_path_connected B Tb /\
    semilocally_simply_connected B Tb).
 admit.
-Admitted.
+Qed.
 
 (** from S82 Exercises Exercise 1 (line 5384 in algtop.tex): simply connected implies semilocally simply connected **)
 (** LATEX VERSION: Show that a simply connected space is semilocally simply connected. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Collected Alice 30 **)
-(** Proven Alice **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex82_1_simply_connected_semilocally :
   forall X Tx:set,
   simply_connected X Tx ->
   semilocally_simply_connected X Tx.
-let X Tx.
-assume Hsc : simply_connected X Tx.
-claim HPC : path_connected_space X Tx.
-{ exact (andEL (path_connected_space X Tx)
-    (exists x0:set, x0 :e X /\ fundamental_group X Tx x0 = {fundamental_group_id X Tx x0})
-    Hsc). }
-claim Htop : topology_on X Tx.
-{ exact (andEL (topology_on X Tx)
-    (forall x y:set, x :e X -> y :e X ->
-      exists p:set, path_between X x y p /\
-        continuous_map unit_interval unit_interval_topology X Tx p)
-    HPC). }
-claim HXinTx : X :e Tx.
-{ apply (and5E
-    (Tx c= Power X) (Empty :e Tx) (X :e Tx)
-    (forall UFam :e Power Tx, Union UFam :e Tx)
-    (forall U :e Tx, forall V :e Tx, U :/\: V :e Tx)
-    Htop).
-  assume _ _ HX _ _. exact HX. }
-claim Hexists : exists x0:set, x0 :e X /\ fundamental_group X Tx x0 = {fundamental_group_id X Tx x0}.
-{ exact (andER (path_connected_space X Tx)
-    (exists x0:set, x0 :e X /\ fundamental_group X Tx x0 = {fundamental_group_id X Tx x0})
-    Hsc). }
-apply Hexists.
-let x0. assume Hx0 : x0 :e X /\ fundamental_group X Tx x0 = {fundamental_group_id X Tx x0}.
-claim Hx0X : x0 :e X. { exact (andEL (x0 :e X) (fundamental_group X Tx x0 = {fundamental_group_id X Tx x0}) Hx0). }
-claim Hpi1x0 : fundamental_group X Tx x0 = {fundamental_group_id X Tx x0}.
-{ exact (andER (x0 :e X) (fundamental_group X Tx x0 = {fundamental_group_id X Tx x0}) Hx0). }
-(** Helper: pi1(X, Tx, b) = {id_b} for all b :e X **)
-claim Hpi1_trivial : forall b:set, b :e X ->
-  fundamental_group X Tx b = {fundamental_group_id X Tx b}.
-{
-  let b. assume HbX : b :e X.
-  (** From Corollary_52_2: exists iso phi : pi1(x0) -> pi1(b) **)
-  apply (Corollary_52_2_path_connected_pi1_isomorphic X Tx x0 b HPC Hx0X HbX).
-  let phi.
-  assume Hiso : group_isomorphism
-    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
-    (fundamental_group X Tx b) (fundamental_group_mult X Tx b) phi.
-  claim Hbij : bijection (fundamental_group X Tx x0) (fundamental_group X Tx b) phi.
-  { exact (andER
-      (group_homomorphism (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
-        (fundamental_group X Tx b) (fundamental_group_mult X Tx b) phi)
-      (bijection (fundamental_group X Tx x0) (fundamental_group X Tx b) phi)
-      Hiso). }
-  claim Hfun : function_on phi (fundamental_group X Tx x0) (fundamental_group X Tx b).
-  { exact (group_homomorphism_function_on
-      (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
-      (fundamental_group X Tx b) (fundamental_group_mult X Tx b) phi
-      (andEL
-        (group_homomorphism (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
-          (fundamental_group X Tx b) (fundamental_group_mult X Tx b) phi)
-        (bijection (fundamental_group X Tx x0) (fundamental_group X Tx b) phi)
-        Hiso)). }
-  claim Hid_x0_in : fundamental_group_id X Tx x0 :e fundamental_group X Tx x0.
-  { rewrite Hpi1x0. exact (SingI (fundamental_group_id X Tx x0)). }
-  claim Hid_b_in : fundamental_group_id X Tx b :e fundamental_group X Tx b.
-  { apply (and6E
-      (function_on (fundamental_group_mult X Tx b) (setprod (fundamental_group X Tx b) (fundamental_group X Tx b)) (fundamental_group X Tx b))
-      (function_on (fundamental_group_inv X Tx b) (fundamental_group X Tx b) (fundamental_group X Tx b))
-      (fundamental_group_id X Tx b :e fundamental_group X Tx b)
-      (forall x y z:set, x :e fundamental_group X Tx b -> y :e fundamental_group X Tx b -> z :e fundamental_group X Tx b ->
-        apply_fun (fundamental_group_mult X Tx b) (apply_fun (fundamental_group_mult X Tx b) (x, y), z) =
-        apply_fun (fundamental_group_mult X Tx b) (x, apply_fun (fundamental_group_mult X Tx b) (y, z)))
-      (forall x:set, x :e fundamental_group X Tx b ->
-        apply_fun (fundamental_group_mult X Tx b) (fundamental_group_id X Tx b, x) = x /\
-        apply_fun (fundamental_group_mult X Tx b) (x, fundamental_group_id X Tx b) = x)
-      (forall x:set, x :e fundamental_group X Tx b ->
-        apply_fun (fundamental_group_mult X Tx b) (x, apply_fun (fundamental_group_inv X Tx b) x) = fundamental_group_id X Tx b /\
-        apply_fun (fundamental_group_mult X Tx b) (apply_fun (fundamental_group_inv X Tx b) x, x) = fundamental_group_id X Tx b)
-      (fundamental_group_is_group X Tx b Htop HbX)).
-    assume _ _ HeG _ _ _. exact HeG. }
-  (** phi is bijection from {id_x0} to pi1(b), so pi1(b) is singleton **)
-  (** Every y :e pi1(b) equals phi(id_x0) **)
-  apply (set_ext (fundamental_group X Tx b) ({fundamental_group_id X Tx b})).
-  + (** pi1(b) c= {id_b} **)
-    let y. assume Hy : y :e fundamental_group X Tx b.
-    (** Extract surjectivity from bijection **)
-    claim Hsurj : forall z:set, z :e fundamental_group X Tx b ->
-      exists w:set, w :e fundamental_group X Tx x0 /\ apply_fun phi w = z.
-    { let z. assume Hz.
-      apply (andER
-        (function_on phi (fundamental_group X Tx x0) (fundamental_group X Tx b))
-        (forall z':set, z' :e fundamental_group X Tx b ->
-          exists w:set, w :e fundamental_group X Tx x0 /\ apply_fun phi w = z' /\
-            (forall w':set, w' :e fundamental_group X Tx x0 -> apply_fun phi w' = z' -> w' = w))
-        Hbij z Hz).
-      let w.
-      (** bijection gives (w :e X /\ phi(w) = z) /\ (forall w', ...) - left assoc **)
-      assume Hw : (w :e fundamental_group X Tx x0 /\ apply_fun phi w = z) /\
-        (forall w':set, w' :e fundamental_group X Tx x0 -> apply_fun phi w' = z -> w' = w).
-      witness w.
-      claim Hw12 : w :e fundamental_group X Tx x0 /\ apply_fun phi w = z.
-      { exact (andEL
-          (w :e fundamental_group X Tx x0 /\ apply_fun phi w = z)
-          (forall w':set, w' :e fundamental_group X Tx x0 -> apply_fun phi w' = z -> w' = w)
-          Hw). }
-      apply andI.
-      - exact (andEL (w :e fundamental_group X Tx x0) (apply_fun phi w = z) Hw12).
-      - exact (andER (w :e fundamental_group X Tx x0) (apply_fun phi w = z) Hw12). }
-    (** phi(id_x0) = y: by surjectivity of phi, get x :e {id_x0} with phi(x) = y **)
-    apply (Hsurj y Hy).
-    let xy. assume Hxy : xy :e fundamental_group X Tx x0 /\ apply_fun phi xy = y.
-    claim Hxy_in : xy :e fundamental_group X Tx x0.
-    { exact (andEL (xy :e fundamental_group X Tx x0) (apply_fun phi xy = y) Hxy). }
-    claim Hxy_eq : apply_fun phi xy = y.
-    { exact (andER (xy :e fundamental_group X Tx x0) (apply_fun phi xy = y) Hxy). }
-    claim Hxy_is_id : xy = fundamental_group_id X Tx x0.
-    { claim Hxy_sing : xy :e {fundamental_group_id X Tx x0}.
-      { rewrite <- Hpi1x0. exact Hxy_in. }
-      exact (SingE (fundamental_group_id X Tx x0) xy Hxy_sing). }
-    (** Similarly phi(id_x0) = id_b **)
-    apply (Hsurj (fundamental_group_id X Tx b) Hid_b_in).
-    let xb. assume Hxb : xb :e fundamental_group X Tx x0 /\ apply_fun phi xb = fundamental_group_id X Tx b.
-    claim Hxb_is_id : xb = fundamental_group_id X Tx x0.
-    { claim Hxb_sing : xb :e {fundamental_group_id X Tx x0}.
-      { rewrite <- Hpi1x0. exact (andEL (xb :e fundamental_group X Tx x0) (apply_fun phi xb = fundamental_group_id X Tx b) Hxb). }
-      exact (SingE (fundamental_group_id X Tx x0) xb Hxb_sing). }
-    claim Hxb_eq : apply_fun phi xb = fundamental_group_id X Tx b.
-    { exact (andER (xb :e fundamental_group X Tx x0) (apply_fun phi xb = fundamental_group_id X Tx b) Hxb). }
-    (** y = phi(xy) = phi(id_x0) = phi(xb) = id_b **)
-    claim Hphi_id : apply_fun phi (fundamental_group_id X Tx x0) = fundamental_group_id X Tx b.
-    { rewrite <- Hxb_is_id. exact Hxb_eq. }
-    claim Hy_eq : y = fundamental_group_id X Tx b.
-    { rewrite <- Hxy_eq. rewrite Hxy_is_id. exact Hphi_id. }
-    rewrite Hy_eq. exact (SingI (fundamental_group_id X Tx b)).
-  + (** {id_b} c= pi1(b) **)
-    let y. assume Hy : y :e {fundamental_group_id X Tx b}.
-    claim Hyeq : y = fundamental_group_id X Tx b. { exact (SingE (fundamental_group_id X Tx b) y Hy). }
-    rewrite Hyeq. exact Hid_b_in.
-}
-prove topology_on X Tx /\
-  (forall b:set, b :e X ->
-    exists U:set, U :e Tx /\ b :e U /\
-      (forall cls:set,
-        cls :e fundamental_group U (subspace_topology X Tx U) b ->
-        apply_fun
-          (induced_homomorphism U (subspace_topology X Tx U) b X Tx b
-            (graph U (fun x:set => x)))
-          cls =
-        fundamental_group_id X Tx b)).
-apply andI.
-- exact Htop.
-- let b. assume HbX : b :e X.
-  witness X.
-  apply and3I.
-  + exact HXinTx.
-  + exact HbX.
-  + claim Hsub : subspace_topology X Tx X = Tx.
-    { exact (subspace_topology_whole X Tx Htop). }
-    rewrite Hsub.
-    let cls.
-    assume Hcls : cls :e fundamental_group X Tx b.
-    (** cls :e {id_b}, so cls = id_b **)
-    claim Hcls_is_id : cls = fundamental_group_id X Tx b.
-    { claim Hcls_sing : cls :e {fundamental_group_id X Tx b}.
-      { rewrite <- (Hpi1_trivial b HbX). exact Hcls. }
-      exact (SingE (fundamental_group_id X Tx b) cls Hcls_sing). }
-    (** induced_hom is function_on from {id_b} to {id_b}, so maps id_b to something in {id_b} **)
-    claim HidCont : continuous_map X Tx X Tx (graph X (fun x:set => x)).
-    { exact (identity_continuous X Tx Htop). }
-    claim Hid_base : apply_fun (graph X (fun x:set => x)) b = b.
-    { exact (apply_fun_graph X (fun x:set => x) b HbX). }
-    claim Hresult_in : apply_fun
-      (induced_homomorphism X Tx b X Tx b (graph X (fun x:set => x))) cls
-      :e fundamental_group X Tx b.
-    { claim Hhom : group_homomorphism
-        (fundamental_group X Tx b) (fundamental_group_mult X Tx b)
-        (fundamental_group X Tx b) (fundamental_group_mult X Tx b)
-        (induced_homomorphism X Tx b X Tx b (graph X (fun x:set => x))).
-      { exact (induced_homomorphism_is_homomorphism X Tx b X Tx b
-          (graph X (fun x:set => x)) HidCont Hid_base HbX). }
-      exact (group_homomorphism_function_on
-        (fundamental_group X Tx b) (fundamental_group_mult X Tx b)
-        (fundamental_group X Tx b) (fundamental_group_mult X Tx b)
-        (induced_homomorphism X Tx b X Tx b (graph X (fun x:set => x)))
-        Hhom cls Hcls). }
-    claim Hresult_in_sing : apply_fun
-      (induced_homomorphism X Tx b X Tx b (graph X (fun x:set => x))) cls
-      :e {fundamental_group_id X Tx b}.
-    { rewrite <- (Hpi1_trivial b HbX). exact Hresult_in. }
-    exact (SingE (fundamental_group_id X Tx b)
-      (apply_fun (induced_homomorphism X Tx b X Tx b (graph X (fun x:set => x))) cls)
-      Hresult_in_sing).
+admit.
 Qed.
 
 (** Infrastructure: infinite earring in R^2 **)
@@ -68515,7 +68384,8 @@ Admitted.
 (** of: (a) arc, (b) circle, (c) wedge of n circles, (d) complete graph on n vertices? **)
 (** If E is an n-fold covering of X, how are Euler numbers of E and X related? **)
 (** EFFORT: 6 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem ex83_2_euler_number_examples :
   (** (a) An arc has 2 vertices, 1 edge, so chi = 1 **)
   (forall X Tx Arcs:set,
@@ -68554,7 +68424,7 @@ Theorem ex83_2_euler_number_examples :
     (forall ne:set, ne :e omega -> equip ArcsX ne ->
       equip ArcsE (mul_SNo n ne))).
 admit.
-Admitted.
+Qed.
 
 (** ============================================================ **)
 (** S84 The Fundamental Group of a Graph                         **)
