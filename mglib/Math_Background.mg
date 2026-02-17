@@ -69740,7 +69740,92 @@ Qed.
 Theorem lemma59_3_exists_sn_coord0_zero_point : forall n:set,
   n :e omega -> 2 c= n ->
   exists x:set, x :e Sn n /\ apply_fun x 0 = 0.
-admit.
+let n.
+assume Hn : n :e omega.
+assume Hge2 : 2 c= n.
+set x := graph (ordsucc n) (fun i:set => If_i (i = 1) 1 0).
+claim HxEuclid : x :e euclidean_space (ordsucc n).
+{
+  claim HeucDef :
+    euclidean_space (ordsucc n)
+    =
+    product_space
+      (ordsucc n)
+      (const_space_family (ordsucc n) R R_standard_topology).
+  {
+    reflexivity.
+  }
+  rewrite HeucDef.
+  apply (product_space_graphI
+    (ordsucc n)
+    (const_space_family (ordsucc n) R R_standard_topology)
+    (fun i:set => If_i (i = 1) 1 0)).
+  let i.
+  assume Hi : i :e ordsucc n.
+  rewrite (space_family_set_const_space_family
+    (ordsucc n)
+    R
+    R_standard_topology
+    i
+    Hi).
+  apply (If_i_correct (i = 1) 1 0).
+  - assume Hcase1 : (i = 1) /\ If_i (i = 1) 1 0 = 1.
+    claim HivalSym : 1 = If_i (i = 1) 1 0.
+    {
+      symmetry.
+      exact (andER
+        (i = 1)
+        (If_i (i = 1) 1 0 = 1)
+        Hcase1).
+    }
+    exact (HivalSym
+      (fun a b:set => a :e R)
+      real_1).
+  - assume Hcase0 : ~(i = 1) /\ If_i (i = 1) 1 0 = 0.
+    claim HivalSym : 0 = If_i (i = 1) 1 0.
+    {
+      symmetry.
+      exact (andER
+        (~(i = 1))
+        (If_i (i = 1) 1 0 = 0)
+        Hcase0).
+    }
+    exact (HivalSym
+      (fun a b:set => a :e R)
+      real_0).
+}
+claim HxCoord0 : apply_fun x 0 = 0.
+{
+  claim H0in : 0 :e ordsucc n.
+  {
+    exact (nat_0_in_ordsucc
+      n
+      (omega_nat_p n Hn)).
+  }
+  rewrite (apply_fun_graph
+    (ordsucc n)
+    (fun i:set => If_i (i = 1) 1 0)
+    0
+    H0in).
+  exact (If_i_0
+    (0 = 1)
+    1
+    0
+    neq_0_1).
+}
+claim HxNorm : euclidean_norm_sq (ordsucc n) x = 1.
+{
+  admit. (** pending: finite_real_sum of one-hot vector squares equals 1 **)
+}
+witness x.
+apply andI.
+- exact (SepI
+    (euclidean_space (ordsucc n))
+    (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+    x
+    HxEuclid
+    HxNorm).
+- exact HxCoord0.
 Admitted.
 
 (** Core S59.3 subgoal: southern-cap type open set is simply connected for n>=2. **)
