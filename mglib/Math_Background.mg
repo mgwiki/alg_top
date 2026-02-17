@@ -1,6 +1,6 @@
 (** Balance Alice 3231 **)
 (** Balance Bob 3037 **)
-(** Balance Charlie 1000 **)
+(** Balance Charlie 1061 **)
 (** Balance Dave 1000 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -77911,8 +77911,8 @@ Admitted.
 (** LATEX VERSION: If X is Hausdorff and G is a finite group of homeomorphisms **)
 (** whose action is fixed-point free, then the action is properly discontinuous. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 61 **)
-(** Lock Charlie 1771382700 **)
+(** Collected Charlie 61 **)
+(** Proven Charlie **)
 Theorem ex81_4_finite_fixed_point_free :
   forall X Tx G idG:set,
   Hausdorff_space X Tx ->
@@ -77921,8 +77921,495 @@ Theorem ex81_4_finite_fixed_point_free :
   finite G ->
   fixed_point_free_action X G idG ->
   properly_discontinuous X Tx G idG.
-admit.
-Admitted.
+let X Tx G idG.
+assume Hhaus Hhome HidG HidAct HfinG Hff.
+claim HtopX : topology_on X Tx.
+{
+  exact (Hausdorff_space_topology X Tx Hhaus).
+}
+let x.
+assume HxX.
+set Gnonid := {g :e G | g <> idG}.
+claim HGnonidSubG : Gnonid c= G.
+{
+  exact (Sep_Subq G (fun g:set => g <> idG)).
+}
+claim HfinGnonid : finite Gnonid.
+{
+  exact (Subq_finite G HfinG Gnonid HGnonidSubG).
+}
+claim HbuildOnFinite :
+  forall S:set, finite S ->
+    S c= Gnonid ->
+    exists U:set, U :e Tx /\ x :e U /\
+      (forall g:set, g :e S ->
+        forall y:set, y :e U -> apply_fun g y /:e U).
+{
+  claim Hbase :
+    Empty c= Gnonid ->
+    exists U:set, U :e Tx /\ x :e U /\
+      (forall g:set, g :e Empty ->
+        forall y:set, y :e U -> apply_fun g y /:e U).
+  {
+    assume HsubEmpty.
+    witness X.
+    apply andI.
+    - apply andI.
+      + exact (topology_has_X X Tx HtopX).
+      + exact HxX.
+    - let g.
+      assume HgEmpty.
+      exact (EmptyE
+        g
+        HgEmpty
+        (forall y:set, y :e X -> apply_fun g y /:e X)).
+  }
+  claim Hstep :
+    forall S y:set,
+      finite S -> y /:e S ->
+      (S c= Gnonid ->
+        exists U:set, U :e Tx /\ x :e U /\
+          (forall g:set, g :e S ->
+            forall z:set, z :e U -> apply_fun g z /:e U)) ->
+      ((S :\/: {y}) c= Gnonid ->
+        exists U:set, U :e Tx /\ x :e U /\
+          (forall g:set, g :e (S :\/: {y}) ->
+            forall z:set, z :e U -> apply_fun g z /:e U)).
+  {
+    let S y.
+    assume HfinS HyNotinS Hih HsubSY.
+    claim HsubS : S c= Gnonid.
+    {
+      let g.
+      assume HgS.
+      exact (HsubSY g (binunionI1 S {y} g HgS)).
+    }
+    claim HyNonid : y :e Gnonid.
+    {
+      exact (HsubSY y (binunionI2 S {y} y (SingI y))).
+    }
+    claim HyG : y :e G.
+    {
+      exact (SepE1 G (fun g:set => g <> idG) y HyNonid).
+    }
+    claim HyNeqId : y <> idG.
+    {
+      exact (SepE2 G (fun g:set => g <> idG) y HyNonid).
+    }
+    claim HhomeY : homeomorphism X Tx X Tx y.
+    {
+      exact (Hhome y HyG).
+    }
+    claim HcontY : continuous_map X Tx X Tx y.
+    {
+      exact (homeomorphism_continuous X Tx X Tx y HhomeY).
+    }
+    claim HfunY : function_on y X X.
+    {
+      exact (continuous_map_function_on X Tx X Tx y HcontY).
+    }
+    claim HyxX : apply_fun y x :e X.
+    {
+      exact (HfunY x HxX).
+    }
+    claim HxNeqYx : x <> apply_fun y x.
+    {
+      exact (neq_i_sym
+        (apply_fun y x)
+        x
+        (Hff y HyG HyNeqId x HxX)).
+    }
+    claim HlocalY :
+      exists Ny:set, Ny :e Tx /\ x :e Ny /\
+        (forall z:set, z :e Ny -> apply_fun y z /:e Ny).
+    {
+      claim Hsep :
+        exists Uy Vy:set,
+          Uy :e Tx /\ Vy :e Tx /\ x :e Uy /\ apply_fun y x :e Vy /\ Uy :/\: Vy = Empty.
+      {
+        exact (Hausdorff_space_separation
+          X
+          Tx
+          x
+          (apply_fun y x)
+          Hhaus
+          HxX
+          HyxX
+          HxNeqYx).
+      }
+      apply Hsep.
+      let Uy.
+      assume HUyPack.
+      apply HUyPack.
+      let Vy.
+      assume HVyPack.
+      claim HsepLeft4 :
+        (((Uy :e Tx /\ Vy :e Tx) /\ x :e Uy) /\ apply_fun y x :e Vy).
+      {
+        exact (andEL
+          (((Uy :e Tx /\ Vy :e Tx) /\ x :e Uy) /\ apply_fun y x :e Vy)
+          (Uy :/\: Vy = Empty)
+          HVyPack).
+      }
+      claim Hdisj : Uy :/\: Vy = Empty.
+      {
+        exact (andER
+          (((Uy :e Tx /\ Vy :e Tx) /\ x :e Uy) /\ apply_fun y x :e Vy)
+          (Uy :/\: Vy = Empty)
+          HVyPack).
+      }
+      claim HsepLeft3 : ((Uy :e Tx /\ Vy :e Tx) /\ x :e Uy).
+      {
+        exact (andEL
+          ((Uy :e Tx /\ Vy :e Tx) /\ x :e Uy)
+          (apply_fun y x :e Vy)
+          HsepLeft4).
+      }
+      claim HyxVy : apply_fun y x :e Vy.
+      {
+        exact (andER
+          ((Uy :e Tx /\ Vy :e Tx) /\ x :e Uy)
+          (apply_fun y x :e Vy)
+          HsepLeft4).
+      }
+      claim HsepLeft2 : Uy :e Tx /\ Vy :e Tx.
+      {
+        exact (andEL
+          (Uy :e Tx /\ Vy :e Tx)
+          (x :e Uy)
+          HsepLeft3).
+      }
+      claim HxUy : x :e Uy.
+      {
+        exact (andER
+          (Uy :e Tx /\ Vy :e Tx)
+          (x :e Uy)
+          HsepLeft3).
+      }
+      claim HUyOpen : Uy :e Tx.
+      {
+        exact (andEL
+          (Uy :e Tx)
+          (Vy :e Tx)
+          HsepLeft2).
+      }
+      claim HVyOpen : Vy :e Tx.
+      {
+        exact (andER
+          (Uy :e Tx)
+          (Vy :e Tx)
+          HsepLeft2).
+      }
+      set Wy := preimage_of X y Vy.
+      claim HWyOpen : Wy :e Tx.
+      {
+        exact (continuous_map_preimage
+          X
+          Tx
+          X
+          Tx
+          y
+          HcontY
+          Vy
+          HVyOpen).
+      }
+      claim HxWy : x :e Wy.
+      {
+        exact (SepI
+          X
+          (fun z:set => apply_fun y z :e Vy)
+          x
+          HxX
+          HyxVy).
+      }
+      set Ny := Uy :/\: Wy.
+      witness Ny.
+      apply andI.
+      - apply andI.
+        + exact (topology_binintersect_closed
+          X
+          Tx
+          Uy
+          Wy
+          HtopX
+          HUyOpen
+          HWyOpen).
+        + exact (binintersectI Uy Wy x HxUy HxWy).
+      - let z.
+        assume HzNy.
+        assume HyzNy.
+        claim HzWy : z :e Wy.
+        {
+          exact (binintersectE2 Uy Wy z HzNy).
+        }
+        claim HyzVy : apply_fun y z :e Vy.
+        {
+          exact (SepE2
+            X
+            (fun z0:set => apply_fun y z0 :e Vy)
+            z
+            HzWy).
+        }
+        claim HyzUy : apply_fun y z :e Uy.
+        {
+          exact (binintersectE1
+            Uy
+            Wy
+            (apply_fun y z)
+            HyzNy).
+        }
+        claim HyzInt : apply_fun y z :e Uy :/\: Vy.
+        {
+          exact (binintersectI
+            Uy
+            Vy
+            (apply_fun y z)
+            HyzUy
+            HyzVy).
+        }
+        claim HyzEmpty : apply_fun y z :e Empty.
+        {
+          exact (mem_eqR
+            (apply_fun y z)
+            (Uy :/\: Vy)
+            Empty
+            Hdisj
+            HyzInt).
+        }
+        exact (EmptyE (apply_fun y z) HyzEmpty False).
+    }
+    claim HSData :
+      exists US:set, US :e Tx /\ x :e US /\
+        (forall g:set, g :e S ->
+          forall z:set, z :e US -> apply_fun g z /:e US).
+    {
+      exact (Hih HsubS).
+    }
+    apply HSData.
+    let US.
+    assume HUSPack.
+    claim HUSOpen : US :e Tx.
+    {
+      exact (andEL
+        (US :e Tx)
+        (x :e US)
+        (andEL
+          (US :e Tx /\ x :e US)
+          (forall g:set, g :e S ->
+            forall z:set, z :e US -> apply_fun g z /:e US)
+          HUSPack)).
+    }
+    claim HxUS : x :e US.
+    {
+      exact (andER
+        (US :e Tx)
+        (x :e US)
+        (andEL
+          (US :e Tx /\ x :e US)
+          (forall g:set, g :e S ->
+            forall z:set, z :e US -> apply_fun g z /:e US)
+          HUSPack)).
+    }
+    claim HUSProp :
+      forall g:set, g :e S ->
+        forall z:set, z :e US -> apply_fun g z /:e US.
+    {
+      exact (andER
+        (US :e Tx /\ x :e US)
+        (forall g:set, g :e S ->
+          forall z:set, z :e US -> apply_fun g z /:e US)
+        HUSPack).
+    }
+    apply HlocalY.
+    let Ny.
+    assume HNyPack.
+    claim HNyOpen : Ny :e Tx.
+    {
+      exact (andEL
+        (Ny :e Tx)
+        (x :e Ny)
+        (andEL
+          (Ny :e Tx /\ x :e Ny)
+          (forall z:set, z :e Ny -> apply_fun y z /:e Ny)
+          HNyPack)).
+    }
+    claim HxNy : x :e Ny.
+    {
+      exact (andER
+        (Ny :e Tx)
+        (x :e Ny)
+        (andEL
+          (Ny :e Tx /\ x :e Ny)
+          (forall z:set, z :e Ny -> apply_fun y z /:e Ny)
+          HNyPack)).
+    }
+    claim HNyProp :
+      forall z:set, z :e Ny -> apply_fun y z /:e Ny.
+    {
+      exact (andER
+        (Ny :e Tx /\ x :e Ny)
+        (forall z:set, z :e Ny -> apply_fun y z /:e Ny)
+        HNyPack).
+    }
+    set U := US :/\: Ny.
+    witness U.
+    apply andI.
+    - apply andI.
+      + exact (topology_binintersect_closed
+        X
+        Tx
+        US
+        Ny
+        HtopX
+        HUSOpen
+        HNyOpen).
+      + exact (binintersectI US Ny x HxUS HxNy).
+    - let g.
+      assume HgSY.
+      apply (binunionE S {y} g HgSY).
+      + assume HgS.
+        let z.
+        assume HzU.
+        claim HzUS : z :e US.
+        {
+          exact (binintersectE1 US Ny z HzU).
+        }
+        claim HgNotUS : apply_fun g z /:e US.
+        {
+          exact (HUSProp g HgS z HzUS).
+        }
+        assume HgzU.
+        claim HgzUS : apply_fun g z :e US.
+        {
+          exact (binintersectE1 US Ny (apply_fun g z) HgzU).
+        }
+        exact (HgNotUS HgzUS).
+      + assume HgSing.
+        claim Hgy : g = y.
+        {
+          exact (SingE y g HgSing).
+        }
+        rewrite Hgy.
+        let z.
+        assume HzU.
+        claim HzNy : z :e Ny.
+        {
+          exact (binintersectE2 US Ny z HzU).
+        }
+        claim HyNotNy : apply_fun y z /:e Ny.
+        {
+          exact (HNyProp z HzNy).
+        }
+        assume HyzU.
+        claim HyzNy : apply_fun y z :e Ny.
+        {
+          exact (binintersectE2 US Ny (apply_fun y z) HyzU).
+        }
+        exact (HyNotNy HyzNy).
+  }
+  claim Hraw :
+    forall S:set, finite S ->
+      (S c= Gnonid ->
+        exists U:set, U :e Tx /\ x :e U /\
+          (forall g:set, g :e S ->
+            forall z:set, z :e U -> apply_fun g z /:e U)).
+  {
+    exact (finite_ind
+      (fun S:set =>
+        S c= Gnonid ->
+        exists U:set, U :e Tx /\ x :e U /\
+          (forall g:set, g :e S ->
+            forall z:set, z :e U -> apply_fun g z /:e U))
+      Hbase
+      Hstep).
+  }
+  exact Hraw.
+}
+claim HglobalU :
+  exists U:set, U :e Tx /\ x :e U /\
+    (forall g:set, g :e Gnonid ->
+      forall z:set, z :e U -> apply_fun g z /:e U).
+{
+  exact (HbuildOnFinite Gnonid HfinGnonid (Subq_ref Gnonid)).
+}
+apply HglobalU.
+let U.
+assume HUPack.
+claim HUOpen : U :e Tx.
+{
+  exact (andEL
+    (U :e Tx)
+    (x :e U)
+    (andEL
+      (U :e Tx /\ x :e U)
+      (forall g:set, g :e Gnonid ->
+        forall z:set, z :e U -> apply_fun g z /:e U)
+      HUPack)).
+}
+claim HxU : x :e U.
+{
+  exact (andER
+    (U :e Tx)
+    (x :e U)
+    (andEL
+      (U :e Tx /\ x :e U)
+      (forall g:set, g :e Gnonid ->
+        forall z:set, z :e U -> apply_fun g z /:e U)
+      HUPack)).
+}
+claim HUProp :
+  forall g:set, g :e Gnonid ->
+    forall z:set, z :e U -> apply_fun g z /:e U.
+{
+  exact (andER
+    (U :e Tx /\ x :e U)
+    (forall g:set, g :e Gnonid ->
+      forall z:set, z :e U -> apply_fun g z /:e U)
+    HUPack).
+}
+witness U.
+apply andI.
+- apply andI.
+  + exact HUOpen.
+  + exact HxU.
+- let g.
+  assume HgG HgNeq.
+  claim HgNonid : g :e Gnonid.
+  {
+    exact (SepI
+      G
+      (fun g0:set => g0 <> idG)
+      g
+      HgG
+      HgNeq).
+  }
+  claim HhomeG : homeomorphism X Tx X Tx g.
+  {
+    exact (Hhome g HgG).
+  }
+  claim HcontG : continuous_map X Tx X Tx g.
+  {
+    exact (homeomorphism_continuous X Tx X Tx g HhomeG).
+  }
+  claim HfunG : function_on g X X.
+  {
+    exact (continuous_map_function_on X Tx X Tx g HcontG).
+  }
+  claim HgxX : apply_fun g x :e X.
+  {
+    exact (HfunG x HxX).
+  }
+  claim HnoReturn :
+    forall z:set, z :e U -> apply_fun g z /:e U.
+  {
+    exact (HUProp g HgNonid).
+  }
+  exact (andI
+    (apply_fun g x :e X)
+    (forall z:set, z :e U -> apply_fun g z /:e U)
+    HgxX
+    HnoReturn).
+Qed.
 
 (** from S81 Exercise 5 (line 5204 in algtop.tex) **)
 (** LATEX VERSION: Consider S^3 as pairs (z1,z2) in C^2 with |z1|^2+|z2|^2=1. **)
