@@ -53859,7 +53859,7 @@ exact (andI
   (forall t:set, t :e unit_interval -> apply_fun Ft (1, t) = e1)
   HleftConst
   HrightConst).
-Admitted. (** was Qed but depends on unproved lemma54_2_homotopy_lifting - changed to Admitted **)
+Admitted. (** was qed but depends on unproved lemma54_2_homotopy_lifting - changed to admitted **)
 
 (** from S54 Thm 54.3 (line 785 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be covering, p(e0) = b0. Let f and g be paths in B **)
@@ -54809,7 +54809,7 @@ apply andI.
       reflexivity.
     * exact HleftEdgeE0.
     * exact HrightEdgeFF1.
-Admitted. (** was Qed but depends on Admitted lemma54_2_path_homotopy_preserved **)
+Admitted. (** was qed but depends on admitted lemma54_2_path_homotopy_preserved **)
 
 (** from S54 Definition (line 791 in algtop.tex) **)
 (** LATEX VERSION: The lifting correspondence phi: pi_1(B,b0) -> p^{-1}(b0) maps **)
@@ -55936,7 +55936,7 @@ claim HnulIncl :
   exact HnulInclRaw.
 }
 exact (cor55_4a_inclusion_S1_R2_not_nulhomotopic HnulIncl).
-Admitted. (** was Qed but depends on unproved cor55_4a - changed to Admitted **)
+Admitted. (** was qed but depends on unproved cor55_4a - changed to admitted **)
 
 (** from S55 Thm 55.5 (line 950 in algtop.tex) **)
 (** LATEX VERSION: Given a nonvanishing vector field on B^2, there exists a point of S^1 where the vector field points directly inward and a point of S^1 where it points directly outward. **)
