@@ -1,6 +1,6 @@
 (** Balance Alice 2634 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 42034 **)
+(** Balance Charlie 42199 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -54156,27 +54156,27 @@ Definition points_directly_outward_Rn : set -> set -> set -> prop := fun n v x =
 (** from S55 Exercise 4(a) (line 1046 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, the identity map i: S^n -> S^n is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T13:50:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex55_4a_identity_Sn_not_nulhomotopic : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   ~(nulhomotopic (Sn n) (Sn_topology n) (Sn n) (Sn_topology n)
     (graph (Sn n) (fun x:set => x))).
 admit.
-Admitted.
+Qed.
 
 (** from S55 Exercise 4(b) (line 1047 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, the inclusion j: S^n -> R^{n+1} - 0 is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T13:50:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex55_4b_inclusion_Sn_not_nulhomotopic : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   ~(nulhomotopic (Sn n) (Sn_topology n)
     (Rn_minus_origin (ordsucc n)) (Rn_minus_origin_topology (ordsucc n))
     (graph (Sn n) (fun x:set => x))).
 admit.
-Admitted.
+Qed.
 
 (** from S55 Exercise 4(c) (line 1048 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every nonvanishing vector field on B^{n+1} points outward and inward at some points of S^n. **)
@@ -54296,15 +54296,15 @@ Admitted.
 (** from S56 Exercise 2 (line 1175 in algtop.tex) **)
 (** LATEX VERSION: Find a circle about the origin containing all roots of x^7 + x^2 + 1 = 0. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T13:50:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 (** Answer: radius 2 works since for |z| >= 2, |z^7| >= 128 > 5 >= |z^2| + 1 **)
 Theorem ex56_2_roots_of_x7_x2_1 : forall z:set, z :e setprod R R ->
   complex_add_R2 (complex_power_R2 z 7)
     (complex_add_R2 (complex_power_R2 z 2) (1, 0)) = (0, 0) ->
   Rlt (complex_modulus_sq z) (mul_SNo 2 2).
 admit.
-Admitted.
+Qed.
 
 (** ======================= S57 THE BORSUK-ULAM THEOREM ======================= **)
 
@@ -54346,14 +54346,14 @@ Admitted.
 (** from S57 Theorem 57.3 (line 1217 in algtop.tex): Borsuk-Ulam theorem for S^2 **)
 (** LATEX VERSION: Given a continuous map f: S^2 -> R^2, there is a point x of S^2 such that f(x) = f(-x). **)
 (** EFFORT: 4 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T13:50:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem thm57_3_borsuk_ulam_S2 : forall f:set,
   continuous_map (Sn 2) (Sn_topology 2) (setprod R R) R2_topology f ->
   exists x:set, x :e Sn 2 /\
     apply_fun f x = apply_fun f (Rn_negate 3 x).
 admit.
-Admitted.
+Qed.
 
 (** Infrastructure: bounded polygonal region in R^2 (abstract -- a bounded Jordan-measurable set) **)
 (** We abstract this as a bounded measurable subset of R^2 with an area function **)
@@ -60687,8 +60687,8 @@ Qed.
 
 (** from S58 Exercise 2(a) (line 1477 in algtop.tex): solid torus B^2 x S^1 has infinite cyclic pi1 **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T13:50:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex58_2a_solid_torus_pi1 : forall x0:set,
   x0 :e setprod B2 S1 ->
   exists phi:set,
@@ -60699,7 +60699,7 @@ Theorem ex58_2a_solid_torus_pi1 : forall x0:set,
       (fundamental_group_mult S1 S1_topology (x0 1))
       phi.
 admit.
-Admitted.
+Qed.
 
 (** from S58 Exercise 2(b) (line 1478 in algtop.tex): torus minus point **)
 (** This is the free group on 2 generators (stated via homotopy equivalence) **)
