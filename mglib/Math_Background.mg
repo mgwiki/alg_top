@@ -1,6 +1,6 @@
 (** Balance Alice 2584 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 35984 **)
+(** Balance Charlie 35904 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -54063,7 +54063,8 @@ Admitted.
 (** from S55 Exercise 2 (line 1043 in algtop.tex) **)
 (** LATEX VERSION: If h: S^1 -> S^1 is nulhomotopic, then h has a fixed point and h maps some point x to its antipode -x. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:30:02 **)
 Theorem ex55_2_nulhomotopic_S1_fixed_and_antipodal : forall h:set,
   continuous_map S1 S1_topology S1 S1_topology h ->
   nulhomotopic S1 S1_topology S1 S1_topology h ->
@@ -54163,7 +54164,8 @@ Admitted.
 (** from S55 Exercise 4(c) (line 1048 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every nonvanishing vector field on B^{n+1} points outward and inward at some points of S^n. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:30:02 **)
 Theorem ex55_4c_nonvanishing_vector_field_Rn : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   forall v:set,
@@ -54192,7 +54194,8 @@ Admitted.
 (** from S55 Exercise 4(e) (line 1050 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every (n+1) by (n+1) matrix with positive entries has a positive eigenvalue. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:30:02 **)
 Theorem ex55_4e_positive_matrix_eigenvalue_Rn : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   forall A:set,
@@ -54205,7 +54208,8 @@ Admitted.
 (** from S55 Exercise 4(f) (line 1051 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, if h: S^n -> S^n is nulhomotopic, then h has a fixed point and maps some x to -x. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:30:02 **)
 Theorem ex55_4f_nulhomotopic_Sn_fixed_and_antipodal : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   forall h:set,
@@ -54259,7 +54263,8 @@ Admitted.
 (** from S56 Exercise 1 (line 1167 in algtop.tex) **)
 (** LATEX VERSION: If |a_{n-1}| + ... + |a_0| < 1, then all roots of x^n + a_{n-1} x^{n-1} + ... + a_0 lie in the interior of B^2. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:30:02 **)
 Theorem ex56_1_small_coeff_roots_in_B2 : forall n a:set,
   n :e omega -> n <> 0 ->
   function_on a n (setprod R R) ->
@@ -54792,7 +54797,8 @@ Admitted.
 (** from S57 Exercise 2 (line 1258 in algtop.tex) **)
 (** LATEX VERSION: If g: S^2 -> S^2 is continuous and g(x) != g(-x) for all x, then g is surjective. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:30:02 **)
 Theorem ex57_2_antipodal_distinct_surjective : forall g:set,
   continuous_map (Sn 2) (Sn_topology 2) (Sn 2) (Sn_topology 2) g ->
   (forall x:set, x :e Sn 2 ->
@@ -54834,7 +54840,8 @@ Admitted.
 (** from S57 Exercise 4(b) (line 1262 in algtop.tex) **)
 (** LATEX VERSION: Given the hypothesis, there is no continuous antipode-preserving map g: S^{n+1} -> S^n. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:30:02 **)
 Theorem ex57_4b_no_antipode_higher : forall n:set, n :e omega ->
   (forall h:set, antipode_preserving_Sn (ordsucc n) (ordsucc n) h ->
     ~(nulhomotopic (Sn (ordsucc n)) (Sn_topology (ordsucc n))
@@ -60937,7 +60944,8 @@ Qed.
 
 (** from S58 Exercise 10(a) (line 1528 in algtop.tex): no retraction B^{n+1} -> S^n **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:30:02 **)
 Theorem ex58_10a_no_retraction_from_degree : forall n:set, n :e omega ->
   forall deg:set,
   (forall h k:set, continuous_map (Sn n) (Sn_topology n) (Sn n) (Sn_topology n) h ->
@@ -60976,7 +60984,8 @@ Qed.
 
 (** from S58 Exercise 10(d) (line 1528 in algtop.tex): tangent vector field implies n odd **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:30:02 **)
 Theorem ex58_10d_tangent_field_odd : forall n:set, n :e omega ->
   forall deg:set,
   (forall h k:set, continuous_map (Sn n) (Sn_topology n) (Sn n) (Sn_topology n) h ->
@@ -65064,7 +65073,8 @@ Admitted.
 (** from S73 Corollary 73.2 (line 3724 in algtop.tex): torus pi1 is Z x Z **)
 (** LATEX VERSION: The fundamental group of the torus is a free abelian group of rank 2. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 80 **)
+(** Bounty 88 **)
+(** Lock Charlie 2026-02-18T12:30:02 **)
 Theorem cor73_2_torus_free_abelian_rank_2 :
   forall x0:set,
   x0 :e torus ->
