@@ -67941,6 +67941,32 @@ claim Hcore :
         (cls = path_homotopy_class_loop X Tx x0 fcls)
         HfclsPack).
     }
+    claim HfclsLoopAt : loop_at X Tx x0 fcls.
+    {
+      exact (loop_space_has_loop_at X Tx x0 fcls HfclsLoop).
+    }
+    claim HfclsCont : continuous_map unit_interval unit_interval_topology X Tx fcls.
+    {
+      exact (loop_at_continuous X Tx x0 fcls HfclsLoopAt).
+    }
+    claim Hfcls0 : apply_fun fcls 0 = x0.
+    {
+      exact (loop_at_at_zero X Tx x0 fcls HfclsLoopAt).
+    }
+    claim Hfcls1 : apply_fun fcls 1 = x0.
+    {
+      exact (loop_at_at_one X Tx x0 fcls HfclsLoopAt).
+    }
+    claim HfclsFun : function_on fcls unit_interval X.
+    {
+      exact (continuous_map_function_on
+        unit_interval
+        unit_interval_topology
+        X
+        Tx
+        fcls
+        HfclsCont).
+    }
     admit. (** van Kampen style generation argument pending for nontrivial classes **)
 }
 exact Hcore.
