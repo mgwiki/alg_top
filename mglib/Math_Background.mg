@@ -11820,7 +11820,260 @@ apply and7I.
   claim HF_III_exists : exists F_III:set,
     continuous_map A_III (subspace_topology unit_square unit_square_topology A_III) X Tx F_III /\
     (forall p:set, p :e A_III -> apply_fun F_III p = apply_fun h (div_SNo (add_SNo (add_SNo (mul_SNo (p 0) 4) (p 1)) (minus_SNo 3)) (add_SNo 1 (p 1)))).
-  { admit. }
+  { (** F_III = h composed with (L-3)/(1+t) restricted to A_III **)
+    claim Hm3R : minus_SNo 3 :e R. { exact (real_minus_SNo 3 H3R). }
+    (** Build L_minus_3 = L + (-3) on unit_square **)
+    set const_m3 : set := const_fun unit_square (minus_SNo 3).
+    claim Hconst_m3 : continuous_map unit_square unit_square_topology R R_standard_topology const_m3.
+    { exact (const_fun_continuous unit_square unit_square_topology R R_standard_topology (minus_SNo 3) Htop_sq R_standard_topology_is_topology Hm3R). }
+    set L_minus_3 : set := compose_fun unit_square (pair_map unit_square L_fun const_m3) add_fun_R.
+    claim HLm3_cont : continuous_map unit_square unit_square_topology R R_standard_topology L_minus_3.
+    { exact (add_two_continuous_R unit_square unit_square_topology L_fun const_m3 Htop_sq HL_fun Hconst_m3). }
+    (** Build one_plus_t = 1 + t_R on unit_square **)
+    set const_1 : set := const_fun unit_square 1.
+    claim Hconst_1 : continuous_map unit_square unit_square_topology R R_standard_topology const_1.
+    { exact (const_fun_continuous unit_square unit_square_topology R R_standard_topology 1 Htop_sq R_standard_topology_is_topology real_1). }
+    set one_plus_t : set := compose_fun unit_square (pair_map unit_square const_1 t_R) add_fun_R.
+    claim H1t_cont : continuous_map unit_square unit_square_topology R R_standard_topology one_plus_t.
+    { exact (add_two_continuous_R unit_square unit_square_topology const_1 t_R Htop_sq Hconst_1 Ht_R). }
+    (** A_III subset of unit_square **)
+    claim HA_III_sub : A_III c= unit_square.
+    { let p. assume Hp : p :e A_III.
+      exact (Sep_Subq unit_square (fun p:set => Rle (apply_fun const3 p) (apply_fun L_fun p)) p Hp). }
+    (** Evaluation of L_minus_3 and one_plus_t **)
+    claim HLm3_val : forall p:set, p :e unit_square ->
+      apply_fun L_minus_3 p = add_SNo (apply_fun L_fun p) (minus_SNo 3).
+    { let p. assume Hp : p :e unit_square.
+      rewrite (add_of_pair_map_apply unit_square L_fun const_m3 p Hp (HL_in_R p Hp)
+        ((const_fun_apply unit_square (minus_SNo 3) p Hp) (fun x y => y :e R) Hm3R)).
+      rewrite (const_fun_apply unit_square (minus_SNo 3) p Hp).
+      exact (fun Q H => H). }
+    claim H1t_val : forall p:set, p :e unit_square ->
+      apply_fun one_plus_t p = add_SNo 1 (p 1).
+    { let p. assume Hp : p :e unit_square.
+      claim Hp1I : p 1 :e unit_interval. { exact (ap1_Sigma unit_interval (fun _:set => unit_interval) p Hp). }
+      claim Hp1R : p 1 :e R. { exact (unit_interval_sub_R (p 1) Hp1I). }
+      claim Hc1R : apply_fun const_1 p :e R.
+      { rewrite (const_fun_apply unit_square 1 p Hp). exact real_1. }
+      claim HtRR : apply_fun t_R p :e R.
+      { rewrite (compose_fun_apply unit_square proj2_sq incl_I p Hp).
+        rewrite (projection2_apply unit_interval unit_interval p Hp).
+        rewrite (identity_function_apply unit_interval (p 1) Hp1I).
+        exact Hp1R. }
+      rewrite (add_of_pair_map_apply unit_square const_1 t_R p Hp Hc1R HtRR).
+      rewrite (const_fun_apply unit_square 1 p Hp).
+      rewrite (compose_fun_apply unit_square proj2_sq incl_I p Hp).
+      rewrite (projection2_apply unit_interval unit_interval p Hp).
+      rewrite (identity_function_apply unit_interval (p 1) Hp1I).
+      exact (fun Q H => H). }
+    (** one_plus_t > 0 on A_III (in fact on all of unit_square, since t >= 0) **)
+    claim H1t_pos : forall p:set, p :e unit_square -> Rlt 0 (apply_fun one_plus_t p).
+    { let p. assume Hp : p :e unit_square.
+      claim Hp1I : p 1 :e unit_interval. { exact (ap1_Sigma unit_interval (fun _:set => unit_interval) p Hp). }
+      claim Hp1R : p 1 :e R. { exact (unit_interval_sub_R (p 1) Hp1I). }
+      claim Hp1SNo : SNo (p 1). { exact (real_SNo (p 1) Hp1R). }
+      claim H1p1R : add_SNo 1 (p 1) :e R. { exact (real_add_SNo 1 real_1 (p 1) Hp1R). }
+      claim Hle_0_p1 : Rle 0 (p 1). { exact (unit_interval_Rle0 (p 1) Hp1I). }
+      claim Hp1_lt_1p1 : SNoLt (p 1) (add_SNo 1 (p 1)).
+      { exact (add_SNo_0L (p 1) Hp1SNo (fun a b => SNoLt a (add_SNo 1 (p 1)))
+          (add_SNo_Lt1 0 (p 1) 1 SNo_0 Hp1SNo SNo_1 SNoLt_0_1)). }
+      claim HRlt_p1_1p1 : Rlt (p 1) (add_SNo 1 (p 1)).
+      { exact (RltI (p 1) (add_SNo 1 (p 1)) Hp1R H1p1R Hp1_lt_1p1). }
+      exact (H1t_val p Hp (fun x y => Rlt 0 y)
+        (Rle_Rlt_tra 0 (p 1) (add_SNo 1 (p 1)) Hle_0_p1 HRlt_p1_1p1)). }
+    (** Build reciprocal of one_plus_t on A_III subspace **)
+    claim H1t_cont_AIII : continuous_map A_III (subspace_topology unit_square unit_square_topology A_III) R R_standard_topology one_plus_t.
+    { exact (continuous_on_subspace unit_square unit_square_topology R R_standard_topology one_plus_t A_III Htop_sq HA_III_sub H1t_cont). }
+    claim HLm3_cont_AIII : continuous_map A_III (subspace_topology unit_square unit_square_topology A_III) R R_standard_topology L_minus_3.
+    { exact (continuous_on_subspace unit_square unit_square_topology R R_standard_topology L_minus_3 A_III Htop_sq HA_III_sub HLm3_cont). }
+    claim Htop_AIII : topology_on A_III (subspace_topology unit_square unit_square_topology A_III).
+    { exact (subspace_topology_is_topology unit_square unit_square_topology A_III Htop_sq HA_III_sub). }
+    claim H1t_pos_AIII : forall x:set, x :e A_III -> Rlt 0 (apply_fun one_plus_t x).
+    { let p. assume Hp : p :e A_III. exact (H1t_pos p (HA_III_sub p Hp)). }
+    set recip_1t : set := compose_fun A_III one_plus_t (compose_fun (open_ray_upper R 0) (compose_fun R bounded_transform_phi one_minus_fun) bounded_transform_psi).
+    claim Hrecip_1t_cont : continuous_map A_III (subspace_topology unit_square unit_square_topology A_III) R R_standard_topology recip_1t.
+    { exact (reciprocal_of_positive_continuous_map A_III (subspace_topology unit_square unit_square_topology A_III) one_plus_t Htop_AIII H1t_cont_AIII H1t_pos_AIII). }
+    (** Build product (L-3) times recip(1+t) on A_III **)
+    set quotient_fun : set := compose_fun A_III (pair_map A_III L_minus_3 recip_1t) mul_fun_R.
+    claim Hquot_cont : continuous_map A_III (subspace_topology unit_square unit_square_topology A_III) R R_standard_topology quotient_fun.
+    { exact (mul_two_continuous_R A_III (subspace_topology unit_square unit_square_topology A_III) L_minus_3 recip_1t Htop_AIII HLm3_cont_AIII Hrecip_1t_cont). }
+    (** Evaluation of recip_1t **)
+    claim Hrecip_eval : forall p:set, p :e A_III ->
+      apply_fun recip_1t p = recip_SNo_pos (apply_fun one_plus_t p).
+    { let p. assume Hp : p :e A_III.
+      claim HpSq : p :e unit_square. { exact (HA_III_sub p Hp). }
+      claim Hp1I : p 1 :e unit_interval. { exact (ap1_Sigma unit_interval (fun _:set => unit_interval) p HpSq). }
+      claim Hp1R : p 1 :e R. { exact (unit_interval_sub_R (p 1) Hp1I). }
+      claim H1p1R : apply_fun one_plus_t p :e R. { exact (H1t_val p HpSq (fun x y => y :e R) (real_add_SNo 1 real_1 (p 1) Hp1R)). }
+      claim H1p1_pos : Rlt 0 (apply_fun one_plus_t p). { exact (H1t_pos_AIII p Hp). }
+      claim H1p1_in_ray : apply_fun one_plus_t p :e open_ray_upper R 0.
+      { exact (SepI R (fun x => order_rel R 0 x) (apply_fun one_plus_t p) H1p1R (Rlt_implies_order_rel_R 0 (apply_fun one_plus_t p) H1p1_pos)). }
+      rewrite (compose_fun_apply A_III one_plus_t (compose_fun (open_ray_upper R 0) (compose_fun R bounded_transform_phi one_minus_fun) bounded_transform_psi) p Hp).
+      exact (recip_pos_value_eq_recip_SNo_pos (apply_fun one_plus_t p) H1p1_in_ray). }
+    (** Evaluation of quotient_fun **)
+    claim Hquot_eval : forall p:set, p :e A_III ->
+      apply_fun quotient_fun p = mul_SNo (apply_fun L_minus_3 p) (apply_fun recip_1t p).
+    { let p. assume Hp : p :e A_III.
+      claim HpSq : p :e unit_square. { exact (HA_III_sub p Hp). }
+      claim HLm3R : apply_fun L_minus_3 p :e R.
+      { exact (HLm3_val p HpSq (fun x y => y :e R) (real_add_SNo (apply_fun L_fun p) (HL_in_R p HpSq) (minus_SNo 3) Hm3R)). }
+      claim HrecipR : apply_fun recip_1t p :e R.
+      { claim Hp1I : p 1 :e unit_interval. { exact (ap1_Sigma unit_interval (fun _:set => unit_interval) p HpSq). }
+        claim Hp1R : p 1 :e R. { exact (unit_interval_sub_R (p 1) Hp1I). }
+        claim H1p1R : add_SNo 1 (p 1) :e R. { exact (real_add_SNo 1 real_1 (p 1) Hp1R). }
+        claim H1p1SNo : SNo (add_SNo 1 (p 1)). { exact (real_SNo (add_SNo 1 (p 1)) H1p1R). }
+        claim H1p1_Rlt : Rlt 0 (add_SNo 1 (p 1)).
+        { exact (H1t_val p HpSq (fun x y => Rlt 0 x) (H1t_pos p HpSq)). }
+        claim H1p1_pos : 0 < add_SNo 1 (p 1).
+        { exact (andER (0 :e R /\ add_SNo 1 (p 1) :e R) (0 < add_SNo 1 (p 1)) H1p1_Rlt). }
+        exact (Hrecip_eval p Hp (fun x y => y :e R)
+          (H1t_val p HpSq (fun x y => recip_SNo_pos y :e R)
+            (real_recip_SNo_pos (add_SNo 1 (p 1)) H1p1R H1p1_pos))). }
+      exact (mul_of_pair_map_apply A_III L_minus_3 recip_1t p Hp HLm3R HrecipR). }
+    (** Range of quotient_fun in unit_interval on A_III **)
+    claim Hquot_range : forall p:set, p :e A_III -> apply_fun quotient_fun p :e unit_interval.
+    { let p. assume Hp : p :e A_III.
+      claim HpSq : p :e unit_square. { exact (HA_III_sub p Hp). }
+      claim Hp0I : p 0 :e unit_interval. { exact (ap0_Sigma unit_interval (fun _:set => unit_interval) p HpSq). }
+      claim Hp1I : p 1 :e unit_interval. { exact (ap1_Sigma unit_interval (fun _:set => unit_interval) p HpSq). }
+      claim Hp0R : p 0 :e R. { exact (unit_interval_sub_R (p 0) Hp0I). }
+      claim Hp1R : p 1 :e R. { exact (unit_interval_sub_R (p 1) Hp1I). }
+      claim Hp0SNo : SNo (p 0). { exact (real_SNo (p 0) Hp0R). }
+      claim Hp1SNo : SNo (p 1). { exact (real_SNo (p 1) Hp1R). }
+      claim HSNo3 : SNo 3. { exact (real_SNo 3 H3R). }
+      claim HSNo_m3 : SNo (minus_SNo 3). { exact (SNo_minus_SNo 3 HSNo3). }
+      claim HSNo4 : SNo 4. { exact (real_SNo 4 H4R). }
+      claim HSNo_4p0 : SNo (mul_SNo (p 0) 4). { exact (SNo_mul_SNo (p 0) 4 Hp0SNo HSNo4). }
+      claim HSNo_Lp : SNo (apply_fun L_fun p). { exact (real_SNo (apply_fun L_fun p) (HL_in_R p HpSq)). }
+      claim HSNo_Lm3 : SNo (add_SNo (apply_fun L_fun p) (minus_SNo 3)). { exact (SNo_add_SNo (apply_fun L_fun p) (minus_SNo 3) HSNo_Lp HSNo_m3). }
+      claim HSNo_1p1 : SNo (add_SNo 1 (p 1)). { exact (SNo_add_SNo 1 (p 1) SNo_1 Hp1SNo). }
+      claim H1p1R : add_SNo 1 (p 1) :e R. { exact (real_add_SNo 1 real_1 (p 1) Hp1R). }
+      claim H1p1_Rlt : Rlt 0 (add_SNo 1 (p 1)).
+      { exact (H1t_val p HpSq (fun x y => Rlt 0 x) (H1t_pos p HpSq)). }
+      claim H1p1_pos : 0 < add_SNo 1 (p 1).
+      { exact (andER (0 :e R /\ add_SNo 1 (p 1) :e R) (0 < add_SNo 1 (p 1)) H1p1_Rlt). }
+      claim HSNo_recip : SNo (recip_SNo_pos (add_SNo 1 (p 1))).
+      { exact (SNo_recip_SNo_pos (add_SNo 1 (p 1)) HSNo_1p1 H1p1_pos). }
+      claim Hrecip_pos : 0 < recip_SNo_pos (add_SNo 1 (p 1)).
+      { exact (recip_SNo_pos_is_pos (add_SNo 1 (p 1)) HSNo_1p1 H1p1_pos). }
+      (** L >= 3 on A_III **)
+      claim Hge3 : Rle 3 (apply_fun L_fun p).
+      { exact (Hconst3_val p HpSq (fun a b => Rle a (apply_fun L_fun p))
+          (SepE unit_square (fun p:set => Rle (apply_fun const3 p) (apply_fun L_fun p)) p Hp
+            (Rle (apply_fun const3 p) (apply_fun L_fun p)) (fun _ H => H))). }
+      (** L-3 >= 0 **)
+      claim HLm3_ge0 : 0 <= add_SNo (apply_fun L_fun p) (minus_SNo 3).
+      { exact ((add_SNo_minus_SNo_rinv 3 HSNo3) (fun a b => a <= add_SNo (apply_fun L_fun p) (minus_SNo 3))
+          (add_SNo_Le1 3 (minus_SNo 3) (apply_fun L_fun p) HSNo3 HSNo_m3 HSNo_Lp
+            (SNoLe_of_Rle 3 (apply_fun L_fun p) Hge3))). }
+      (** L <= 4 + t (since L = 4s + t and s <= 1) **)
+      claim Hp0_le1 : (p 0) <= 1. { exact (SNoLe_of_Rle (p 0) 1 (unit_interval_Rle1 (p 0) Hp0I)). }
+      claim H3omega : 3 :e omega.
+      { exact (nat_p_omega 3 (nat_ordsucc 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0)))). }
+      claim H31eq4 : add_SNo 3 1 = 4. { exact (add_SNo_1_ordsucc 3 H3omega). }
+      claim H13eq4 : add_SNo 1 3 = 4.
+      { exact (add_SNo_com 1 3 SNo_1 HSNo3 (fun x y => y = 4) H31eq4). }
+      claim H0lt2 : SNoLt 0 2. { exact (SNoLt_tra 0 1 2 SNo_0 SNo_1 SNo_2 SNoLt_0_1 SNoLt_1_2). }
+      claim H0lt3 : SNoLt 0 3. { exact (SNoLt_tra 0 2 3 SNo_0 SNo_2 HSNo3 H0lt2 H2Lt3). }
+      claim H3lt4 : SNoLt 3 4.
+      { exact (H31eq4 (fun a b => 3 < a)
+          (add_SNo_0R 3 HSNo3 (fun a b => a < add_SNo 3 1)
+            (add_SNo_Lt2 3 0 1 HSNo3 SNo_0 SNo_1 SNoLt_0_1))). }
+      claim H0lt4 : SNoLt 0 4. { exact (SNoLt_tra 0 3 4 SNo_0 HSNo3 HSNo4 H0lt3 H3lt4). }
+      claim HSNoLe_0_4 : SNoLe 0 4.
+      { exact (SNoLe_of_Rle 0 4 (Rlt_implies_Rle 0 4 (RltI 0 4 real_0 H4R H0lt4))). }
+      claim H4p0_le4 : mul_SNo (p 0) 4 <= 4.
+      { claim H_eq : mul_SNo 1 4 = 4. { exact (mul_SNo_oneL 4 HSNo4). }
+        exact (H_eq (fun a b => mul_SNo (p 0) 4 <= a)
+          (nonneg_mul_SNo_Le' (p 0) 1 4 Hp0SNo SNo_1 HSNo4 HSNoLe_0_4 Hp0_le1)). }
+      claim HL_le_4t : apply_fun L_fun p <= add_SNo 4 (p 1).
+      { exact (HL_apply p HpSq (fun x y => y <= add_SNo 4 (p 1))
+          (add_SNo_Le1 (mul_SNo (p 0) 4) (p 1) 4 HSNo_4p0 Hp1SNo HSNo4 H4p0_le4)). }
+      (** L-3 <= 1+t via: L <= 4+t, so L+(-3) <= (4+t)+(-3) = 1+t **)
+      claim H4tm3_eq : add_SNo (add_SNo 4 (p 1)) (minus_SNo 3) = add_SNo 1 (p 1).
+      { claim H4m3_1 : add_SNo 4 (minus_SNo 3) = 1.
+        { exact (H13eq4 (fun x y => add_SNo x (minus_SNo 3) = 1) (add_SNo_minus_R2 1 3 SNo_1 HSNo3)). }
+        exact (add_SNo_assoc 4 (p 1) (minus_SNo 3) HSNo4 Hp1SNo HSNo_m3
+          (fun a b => a = add_SNo 1 (p 1))
+          (add_SNo_com (p 1) (minus_SNo 3) Hp1SNo HSNo_m3
+            (fun a b => add_SNo 4 b = add_SNo 1 (p 1))
+            (add_SNo_assoc 4 (minus_SNo 3) (p 1) HSNo4 HSNo_m3 Hp1SNo
+              (fun a b => b = add_SNo 1 (p 1))
+              (H4m3_1 (fun a b => add_SNo b (p 1) = add_SNo 1 (p 1)) (fun Q H => H))))). }
+      claim HLm3_le_1t : add_SNo (apply_fun L_fun p) (minus_SNo 3) <= add_SNo 1 (p 1).
+      { exact (H4tm3_eq (fun a b => add_SNo (apply_fun L_fun p) (minus_SNo 3) <= a)
+          (add_SNo_Le1 (apply_fun L_fun p) (minus_SNo 3) (add_SNo 4 (p 1)) HSNo_Lp HSNo_m3 (SNo_add_SNo 4 (p 1) HSNo4 Hp1SNo) HL_le_4t)). }
+      (** (L-3) times recip(1+t) >= 0 **)
+      claim Hrecip_ge0 : 0 <= recip_SNo_pos (add_SNo 1 (p 1)).
+      { exact (SNoLe_of_Rle 0 (recip_SNo_pos (add_SNo 1 (p 1)))
+          (Rlt_implies_Rle 0 (recip_SNo_pos (add_SNo 1 (p 1)))
+            (RltI 0 (recip_SNo_pos (add_SNo 1 (p 1))) real_0
+              (real_recip_SNo_pos (add_SNo 1 (p 1)) H1p1R H1p1_pos) Hrecip_pos))). }
+      claim Hprod_ge0 : 0 <= mul_SNo (add_SNo (apply_fun L_fun p) (minus_SNo 3)) (recip_SNo_pos (add_SNo 1 (p 1))).
+      { exact (mul_SNo_nonneg_nonneg (add_SNo (apply_fun L_fun p) (minus_SNo 3)) (recip_SNo_pos (add_SNo 1 (p 1))) HSNo_Lm3 HSNo_recip HLm3_ge0 Hrecip_ge0). }
+      (** (L-3) x recip(1+t) <= 1 via: L-3 <= 1+t so (L-3)recip(1+t) <= (1+t)recip(1+t) = 1 **)
+      claim Hprod_inv : mul_SNo (add_SNo 1 (p 1)) (recip_SNo_pos (add_SNo 1 (p 1))) = 1.
+      { exact (recip_SNo_pos_invR (add_SNo 1 (p 1)) HSNo_1p1 H1p1_pos). }
+      claim Hprod_le1 : mul_SNo (add_SNo (apply_fun L_fun p) (minus_SNo 3)) (recip_SNo_pos (add_SNo 1 (p 1))) <= 1.
+      { exact (Hprod_inv (fun a b => mul_SNo (add_SNo (apply_fun L_fun p) (minus_SNo 3)) (recip_SNo_pos (add_SNo 1 (p 1))) <= a)
+          (nonneg_mul_SNo_Le' (add_SNo (apply_fun L_fun p) (minus_SNo 3)) (add_SNo 1 (p 1)) (recip_SNo_pos (add_SNo 1 (p 1)))
+            HSNo_Lm3 HSNo_1p1 HSNo_recip Hrecip_ge0 HLm3_le_1t)). }
+      (** Transport through actual function values **)
+      claim Hquot_val_p : apply_fun quotient_fun p = mul_SNo (apply_fun L_minus_3 p) (apply_fun recip_1t p).
+      { exact (Hquot_eval p Hp). }
+      claim HLm3_val_p : apply_fun L_minus_3 p = add_SNo (apply_fun L_fun p) (minus_SNo 3).
+      { exact (HLm3_val p HpSq). }
+      claim Hrecip_val_p : apply_fun recip_1t p = recip_SNo_pos (apply_fun one_plus_t p).
+      { exact (Hrecip_eval p Hp). }
+      claim H1t_val_p : apply_fun one_plus_t p = add_SNo 1 (p 1).
+      { exact (H1t_val p HpSq). }
+      claim Hquot_eq : apply_fun quotient_fun p = mul_SNo (add_SNo (apply_fun L_fun p) (minus_SNo 3)) (recip_SNo_pos (add_SNo 1 (p 1))).
+      { rewrite Hquot_val_p. rewrite HLm3_val_p.
+        rewrite Hrecip_val_p. rewrite H1t_val_p.
+        exact (fun Q H => H). }
+      claim HquotR : apply_fun quotient_fun p :e R.
+      { exact (Hquot_eq (fun x y => y :e R) (real_mul_SNo (add_SNo (apply_fun L_fun p) (minus_SNo 3)) (real_add_SNo (apply_fun L_fun p) (HL_in_R p HpSq) (minus_SNo 3) Hm3R) (recip_SNo_pos (add_SNo 1 (p 1))) (real_recip_SNo_pos (add_SNo 1 (p 1)) H1p1R H1p1_pos))). }
+      claim HRle_0_q : Rle 0 (apply_fun quotient_fun p).
+      { exact (Rle_of_SNoLe 0 (apply_fun quotient_fun p) real_0 HquotR
+          (Hquot_eq (fun x y => 0 <= y) Hprod_ge0)). }
+      claim HRle_q_1 : Rle (apply_fun quotient_fun p) 1.
+      { exact (Rle_of_SNoLe (apply_fun quotient_fun p) 1 HquotR real_1
+          (Hquot_eq (fun x y => y <= 1) Hprod_le1)). }
+      exact (SepI R (fun x:set => ~ (Rlt x 0) /\ ~ (Rlt 1 x)) (apply_fun quotient_fun p)
+        HquotR
+        (andI (~ (Rlt (apply_fun quotient_fun p) 0)) (~ (Rlt 1 (apply_fun quotient_fun p)))
+          (RleE_nlt 0 (apply_fun quotient_fun p) HRle_0_q)
+          (RleE_nlt (apply_fun quotient_fun p) 1 HRle_q_1))). }
+    (** Restrict range to unit_interval **)
+    claim Hquot_I : continuous_map A_III (subspace_topology unit_square unit_square_topology A_III) unit_interval unit_interval_topology quotient_fun.
+    { exact (continuous_map_range_restrict A_III (subspace_topology unit_square unit_square_topology A_III) R R_standard_topology quotient_fun unit_interval Hquot_cont unit_interval_sub_R Hquot_range). }
+    (** Compose with h **)
+    witness (compose_fun A_III quotient_fun h).
+    apply andI.
+    - exact (composition_continuous A_III (subspace_topology unit_square unit_square_topology A_III) unit_interval unit_interval_topology X Tx quotient_fun h Hquot_I Hh).
+    - let p. assume Hp : p :e A_III.
+      claim HpSq : p :e unit_square. { exact (HA_III_sub p Hp). }
+      claim Hp1I : p 1 :e unit_interval. { exact (ap1_Sigma unit_interval (fun _:set => unit_interval) p HpSq). }
+      claim Hp1R : p 1 :e R. { exact (unit_interval_sub_R (p 1) Hp1I). }
+      claim Hp1SNo : SNo (p 1). { exact (real_SNo (p 1) Hp1R). }
+      claim HSNo_1p1 : SNo (add_SNo 1 (p 1)). { exact (SNo_add_SNo 1 (p 1) SNo_1 Hp1SNo). }
+      claim H1p1_Rlt : Rlt 0 (add_SNo 1 (p 1)).
+      { exact (H1t_val p HpSq (fun x y => Rlt 0 x) (H1t_pos p HpSq)). }
+      claim H1p1_pos : 0 < add_SNo 1 (p 1).
+      { exact (andER (0 :e R /\ add_SNo 1 (p 1) :e R) (0 < add_SNo 1 (p 1)) H1p1_Rlt). }
+      rewrite (compose_fun_apply A_III quotient_fun h p Hp).
+      rewrite (Hquot_eval p Hp).
+      rewrite (HLm3_val p HpSq).
+      rewrite (Hrecip_eval p Hp).
+      rewrite (H1t_val p HpSq).
+      rewrite (HL_apply p HpSq).
+      (** Now goal: h(mul_SNo (add_SNo (add_SNo (mul_SNo (p 0) 4) (p 1)) (minus_SNo 3)) (recip_SNo_pos (add_SNo 1 (p 1))))
+          = h(div_SNo (add_SNo (add_SNo (mul_SNo (p 0) 4) (p 1)) (minus_SNo 3)) (add_SNo 1 (p 1)))
+          Need: mul_SNo x (recip_SNo_pos y) = mul_SNo x (recip_SNo y) = div_SNo x y **)
+      claim Hrecip_eq : recip_SNo_pos (add_SNo 1 (p 1)) = recip_SNo (add_SNo 1 (p 1)).
+      { symmetry. exact (recip_SNo_poscase (add_SNo 1 (p 1)) H1p1_pos). }
+      rewrite Hrecip_eq.
+      exact (fun Q H => H). }
   (** Unpack existentials **)
   apply HF_I_exists. let F_I. assume HF_I_spec.
   apply HF_I_spec. assume HcontF_I HapplyF_I.
