@@ -61373,7 +61373,118 @@ claim Hpi1U_trivial :
       (fundamental_group U (subspace_topology X Tx U) x0_U =
         {fundamental_group_id U (subspace_topology X Tx U) x0_U})
       Hx0U_pack). }
-  admit. (** needs Corollary_52_2 + isomorphism between singleton groups **) }
+  (** Get topology_on U TxU **)
+  claim HtopU : topology_on U (subspace_topology X Tx U).
+  { exact (subspace_topology_is_topology X Tx U Htop HUsub). }
+  (** Get isomorphism phi : pi1(U,x0_U) -> pi1(U,z0) **)
+  apply (Corollary_52_2_path_connected_pi1_isomorphic U (subspace_topology X Tx U) x0_U z0
+    HpcU Hx0U_mem Hz0U).
+  let phi.
+  assume Hiso : group_isomorphism
+    (fundamental_group U (subspace_topology X Tx U) x0_U)
+    (fundamental_group_mult U (subspace_topology X Tx U) x0_U)
+    (fundamental_group U (subspace_topology X Tx U) z0)
+    (fundamental_group_mult U (subspace_topology X Tx U) z0)
+    phi.
+  claim Hbij : bijection
+    (fundamental_group U (subspace_topology X Tx U) x0_U)
+    (fundamental_group U (subspace_topology X Tx U) z0) phi.
+  { exact (group_isomorphism_bijection
+      (fundamental_group U (subspace_topology X Tx U) x0_U)
+      (fundamental_group_mult U (subspace_topology X Tx U) x0_U)
+      (fundamental_group U (subspace_topology X Tx U) z0)
+      (fundamental_group_mult U (subspace_topology X Tx U) z0)
+      phi Hiso). }
+  (** id_z0 :e pi1(U,z0) **)
+  claim HeU : (fundamental_group_id U (subspace_topology X Tx U) z0) :e
+    fundamental_group U (subspace_topology X Tx U) z0.
+  { claim HcLA : loop_at U (subspace_topology X Tx U) z0 (constant_path z0).
+    { exact (loop_at_constant_path U (subspace_topology X Tx U) z0 HtopU Hz0U). }
+    claim HcFS : (constant_path z0) :e function_space unit_interval U.
+    { exact (graph_in_function_space unit_interval U (fun t:set => z0) (fun t Ht => Hz0U)). }
+    claim HcLS : (constant_path z0) :e loop_space U (subspace_topology X Tx U) z0.
+    { exact (SepI (function_space unit_interval U) (fun g:set => loop_at U (subspace_topology X Tx U) z0 g)
+        (constant_path z0) HcFS HcLA). }
+    exact (path_homotopy_class_in_fundamental_group U (subspace_topology X Tx U) z0
+      (constant_path z0) HcLS). }
+  (** For any cls :e pi1(U,z0), show cls = id_z0 using surjectivity of phi **)
+  apply set_ext.
+  - let cls. assume Hcls : cls :e fundamental_group U (subspace_topology X Tx U) z0.
+    (** By surjectivity from bijection: exists ucls :e pi1(U,x0_U), phi(ucls) = cls **)
+    claim Hbij_surj : exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0_U /\
+      apply_fun phi ucls = cls /\
+      (forall ucls':set, ucls' :e fundamental_group U (subspace_topology X Tx U) x0_U ->
+        apply_fun phi ucls' = cls -> ucls' = ucls).
+    { exact (andER
+        (function_on phi (fundamental_group U (subspace_topology X Tx U) x0_U)
+          (fundamental_group U (subspace_topology X Tx U) z0))
+        (forall y:set, y :e fundamental_group U (subspace_topology X Tx U) z0 ->
+          exists x:set, x :e fundamental_group U (subspace_topology X Tx U) x0_U /\
+            apply_fun phi x = y /\
+            (forall x':set, x' :e fundamental_group U (subspace_topology X Tx U) x0_U ->
+              apply_fun phi x' = y -> x' = x))
+        Hbij cls Hcls). }
+    apply Hbij_surj.
+    let ucls.
+    assume Huc_pack.
+    apply (and3E
+      (ucls :e fundamental_group U (subspace_topology X Tx U) x0_U)
+      (apply_fun phi ucls = cls)
+      (forall ucls':set, ucls' :e fundamental_group U (subspace_topology X Tx U) x0_U ->
+        apply_fun phi ucls' = cls -> ucls' = ucls)
+      Huc_pack).
+    assume HuclsMem Hphi_ucls Huniq.
+    (** ucls :e pi1(U,x0_U) = {id_x0_U}, so ucls = id_x0_U **)
+    claim HuclsSing : ucls :e {fundamental_group_id U (subspace_topology X Tx U) x0_U}.
+    { exact (mem_eqR ucls
+        (fundamental_group U (subspace_topology X Tx U) x0_U)
+        {fundamental_group_id U (subspace_topology X Tx U) x0_U}
+        Hpi1U_x0 HuclsMem). }
+    claim HuclsEq : ucls = fundamental_group_id U (subspace_topology X Tx U) x0_U.
+    { exact (singleton_elem ucls (fundamental_group_id U (subspace_topology X Tx U) x0_U) HuclsSing). }
+    (** Similarly for id_z0: get ucls2 with phi(ucls2) = id_z0 **)
+    claim Hbij_surj_e : exists ucls2:set, ucls2 :e fundamental_group U (subspace_topology X Tx U) x0_U /\
+      apply_fun phi ucls2 = fundamental_group_id U (subspace_topology X Tx U) z0 /\
+      (forall ucls2':set, ucls2' :e fundamental_group U (subspace_topology X Tx U) x0_U ->
+        apply_fun phi ucls2' = fundamental_group_id U (subspace_topology X Tx U) z0 -> ucls2' = ucls2).
+    { exact (andER
+        (function_on phi (fundamental_group U (subspace_topology X Tx U) x0_U)
+          (fundamental_group U (subspace_topology X Tx U) z0))
+        (forall y:set, y :e fundamental_group U (subspace_topology X Tx U) z0 ->
+          exists x:set, x :e fundamental_group U (subspace_topology X Tx U) x0_U /\
+            apply_fun phi x = y /\
+            (forall x':set, x' :e fundamental_group U (subspace_topology X Tx U) x0_U ->
+              apply_fun phi x' = y -> x' = x))
+        Hbij (fundamental_group_id U (subspace_topology X Tx U) z0) HeU). }
+    apply Hbij_surj_e.
+    let ucls2.
+    assume Huc2_pack.
+    apply (and3E
+      (ucls2 :e fundamental_group U (subspace_topology X Tx U) x0_U)
+      (apply_fun phi ucls2 = fundamental_group_id U (subspace_topology X Tx U) z0)
+      (forall ucls2':set, ucls2' :e fundamental_group U (subspace_topology X Tx U) x0_U ->
+        apply_fun phi ucls2' = fundamental_group_id U (subspace_topology X Tx U) z0 -> ucls2' = ucls2)
+      Huc2_pack).
+    assume Hucls2Mem Hphi_ucls2 Huniq2.
+    (** ucls2 :e {id_x0_U}, so ucls2 = id_x0_U **)
+    claim Hucls2Sing : ucls2 :e {fundamental_group_id U (subspace_topology X Tx U) x0_U}.
+    { exact (mem_eqR ucls2
+        (fundamental_group U (subspace_topology X Tx U) x0_U)
+        {fundamental_group_id U (subspace_topology X Tx U) x0_U}
+        Hpi1U_x0 Hucls2Mem). }
+    claim Hucls2Eq : ucls2 = fundamental_group_id U (subspace_topology X Tx U) x0_U.
+    { exact (singleton_elem ucls2 (fundamental_group_id U (subspace_topology X Tx U) x0_U) Hucls2Sing). }
+    (** ucls = ucls2 = id_x0_U, so phi(ucls) = phi(ucls2) = id_z0, so cls = id_z0 **)
+    claim HuEq : ucls = ucls2.
+    { rewrite HuclsEq. rewrite Hucls2Eq. reflexivity. }
+    claim HclsEqIdz0 : cls = fundamental_group_id U (subspace_topology X Tx U) z0.
+    { rewrite <- Hphi_ucls. rewrite HuEq. exact Hphi_ucls2. }
+    rewrite HclsEqIdz0.
+    exact (SingI (fundamental_group_id U (subspace_topology X Tx U) z0)).
+  - let cls. assume Hcls : cls :e {fundamental_group_id U (subspace_topology X Tx U) z0}.
+    claim HclsEq : cls = fundamental_group_id U (subspace_topology X Tx U) z0.
+    { exact (singleton_elem cls (fundamental_group_id U (subspace_topology X Tx U) z0) Hcls). }
+    rewrite HclsEq. exact HeU. }
 (** i-star is trivial **)
 claim Hi_triv : forall cls:set,
   cls :e fundamental_group U (subspace_topology X Tx U) z0 ->
@@ -61411,7 +61522,14 @@ apply andI.
     { admit. (** needs SVK / ex59_4a_trivial_j_star **) }
     (** id is in pi1(X,z0) **)
     claim HeG : (fundamental_group_id X Tx z0) :e fundamental_group X Tx z0.
-    { admit. (** needs loop_at_constant_path + path_homotopy_class_in_fundamental_group **) }
+    { claim HconstLoopAt : loop_at X Tx z0 (constant_path z0).
+      { exact (loop_at_constant_path X Tx z0 Htop Hz0X). }
+      claim HconstFS : (constant_path z0) :e function_space unit_interval X.
+      { exact (graph_in_function_space unit_interval X (fun t:set => z0) (fun t Ht => Hz0X)). }
+      claim HconstLoop : (constant_path z0) :e loop_space X Tx z0.
+      { exact (SepI (function_space unit_interval X) (fun g:set => loop_at X Tx z0 g)
+          (constant_path z0) HconstFS HconstLoopAt). }
+      exact (path_homotopy_class_in_fundamental_group X Tx z0 (constant_path z0) HconstLoop). }
     apply set_ext.
     * let cls. assume Hcls : cls :e fundamental_group X Tx z0.
       apply (Hgen cls Hcls).
