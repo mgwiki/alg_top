@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 1726 **)
+(** Balance Charlie 1781 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -36614,8 +36614,8 @@ Qed.
 (** LATEX VERSION: If U is evenly covered by p and W is an open subset of U, **)
 (** then W is also evenly covered by p. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Charlie 2026-02-17T22:12:15 **)
+(** Collected Charlie 55 **)
+(** Proven Charlie **)
 Theorem evenly_covered_open_subset : forall E Te B Tb p U W:set,
   evenly_covered E Te B Tb p U -> W :e Tb -> W c= U ->
   evenly_covered E Te B Tb p W.
@@ -37505,7 +37505,7 @@ apply andI.
           exact HrightEq.
     }
     exact HhomePack.
-Admitted.
+Qed.
 
 (** from S53 text (line 545 in algtop.tex) **)
 (** LATEX VERSION: If p: E -> B is a covering map, then for each b in B **)
@@ -42990,6 +42990,118 @@ let E Te B Tb p U.
 assume HtopE HtopB HconnU HUopen.
 let slices1 slices2.
 assume Hsub1 Hpd1 Hunion1 Hhome1 Hsub2 Hpd2 Hunion2 Hhome2.
+claim Hslice1_connected :
+  forall V:set, V :e slices1 ->
+    connected_space V (subspace_topology E Te V).
+{
+  let V.
+  assume HV1.
+  claim HhomeV :
+    homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+      (graph V (fun x:set => apply_fun p x)).
+  {
+    exact (Hhome1 V HV1).
+  }
+  claim HinvPack :
+    exists g:set,
+      continuous_map U (subspace_topology B Tb U) V (subspace_topology E Te V) g /\
+      (forall x:set, x :e V ->
+        apply_fun g (apply_fun (graph V (fun z:set => apply_fun p z)) x) = x) /\
+      (forall y:set, y :e U ->
+        apply_fun (graph V (fun z:set => apply_fun p z)) (apply_fun g y) = y).
+  {
+    exact (homeomorphism_inverse_package
+      V
+      (subspace_topology E Te V)
+      U
+      (subspace_topology B Tb U)
+      (graph V (fun z:set => apply_fun p z))
+      HhomeV).
+  }
+  apply HinvPack.
+  let g.
+  assume HgPack.
+  claim Hcontg :
+    continuous_map U (subspace_topology B Tb U) V (subspace_topology E Te V) g.
+  {
+    exact (andEL
+      (continuous_map U (subspace_topology B Tb U) V (subspace_topology E Te V) g)
+      (forall x:set, x :e V ->
+        apply_fun g (apply_fun (graph V (fun z:set => apply_fun p z)) x) = x)
+      (andEL
+        (continuous_map U (subspace_topology B Tb U) V (subspace_topology E Te V) g /\
+         (forall x:set, x :e V ->
+           apply_fun g (apply_fun (graph V (fun z:set => apply_fun p z)) x) = x))
+        (forall y:set, y :e U ->
+          apply_fun (graph V (fun z:set => apply_fun p z)) (apply_fun g y) = y)
+        HgPack)).
+  }
+  claim Hleft :
+    forall x:set, x :e V ->
+      apply_fun g (apply_fun (graph V (fun z:set => apply_fun p z)) x) = x.
+  {
+    exact (andER
+      (continuous_map U (subspace_topology B Tb U) V (subspace_topology E Te V) g)
+      (forall x:set, x :e V ->
+        apply_fun g (apply_fun (graph V (fun z:set => apply_fun p z)) x) = x)
+      (andEL
+        (continuous_map U (subspace_topology B Tb U) V (subspace_topology E Te V) g /\
+         (forall x:set, x :e V ->
+           apply_fun g (apply_fun (graph V (fun z:set => apply_fun p z)) x) = x))
+        (forall y:set, y :e U ->
+          apply_fun (graph V (fun z:set => apply_fun p z)) (apply_fun g y) = y)
+        HgPack)).
+  }
+  claim Hright :
+    forall y:set, y :e U ->
+      apply_fun (graph V (fun z:set => apply_fun p z)) (apply_fun g y) = y.
+  {
+    exact (andER
+      (continuous_map U (subspace_topology B Tb U) V (subspace_topology E Te V) g /\
+       (forall x:set, x :e V ->
+         apply_fun g (apply_fun (graph V (fun z:set => apply_fun p z)) x) = x))
+      (forall y:set, y :e U ->
+        apply_fun (graph V (fun z:set => apply_fun p z)) (apply_fun g y) = y)
+      HgPack).
+  }
+  claim HhomeUV :
+    homeomorphism U (subspace_topology B Tb U) V (subspace_topology E Te V) g.
+  {
+    claim HhomeUVDef :
+      homeomorphism U (subspace_topology B Tb U) V (subspace_topology E Te V) g =
+      (continuous_map U (subspace_topology B Tb U) V (subspace_topology E Te V) g /\
+       exists h:set,
+         continuous_map V (subspace_topology E Te V) U (subspace_topology B Tb U) h /\
+         (forall x:set, x :e U -> apply_fun h (apply_fun g x) = x) /\
+         (forall y:set, y :e V -> apply_fun g (apply_fun h y) = y)).
+    {
+      reflexivity.
+    }
+    rewrite HhomeUVDef.
+    apply andI.
+    - exact Hcontg.
+    - witness (graph V (fun z:set => apply_fun p z)).
+      apply andI.
+      + apply andI.
+        * exact (homeomorphism_continuous
+            V
+            (subspace_topology E Te V)
+            U
+            (subspace_topology B Tb U)
+            (graph V (fun z:set => apply_fun p z))
+            HhomeV).
+        * exact Hright.
+      + exact Hleft.
+  }
+  exact (homeomorphism_preserves_connected
+    U
+    (subspace_topology B Tb U)
+    V
+    (subspace_topology E Te V)
+    g
+    HhomeUV
+    HconnU).
+}
 apply set_ext.
 - let V.
   assume HV1.
