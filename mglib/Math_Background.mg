@@ -33857,6 +33857,25 @@ claim HconstTriv :
   rewrite (const_fun_apply X y0 x0 Hx0).
   exact HconstRaw.
 }
+claim Htarget :
+  forall cls:set, cls :e fundamental_group X Tx x0 ->
+    apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls =
+    fundamental_group_id Y Ty (apply_fun h x0).
+{
+  exact (cor58_5_homotopic_maps_trivial
+    X
+    Tx
+    Y
+    Ty
+    x0
+    (const_fun X y0)
+    h
+    HconstCont
+    Hh
+    Hx0
+    HconstH
+    HconstTriv).
+}
 admit.
 Admitted.
 
