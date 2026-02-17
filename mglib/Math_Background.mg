@@ -68632,6 +68632,47 @@ apply (iffI
   exact (lemma59_3_overlap_member_pack n x HxSn HxGtM1 HxLt1).
 Qed.
 
+Theorem lemma59_3_overlap_nonempty_iff_exists_point : forall n:set,
+  ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
+   {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty <->
+  exists x:set, x :e Sn n /\
+    Rlt (minus_SNo 1) (apply_fun x 0) /\
+    Rlt (apply_fun x 0) 1.
+let n.
+apply (iffI
+  (({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
+    {x :e Sn n | Rlt (apply_fun x 0) 1}) <> Empty)
+  (exists x:set, x :e Sn n /\
+    Rlt (minus_SNo 1) (apply_fun x 0) /\
+    Rlt (apply_fun x 0) 1)).
+- assume Hne.
+  claim HexUV : exists x:set,
+    x :e ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
+          {x :e Sn n | Rlt (apply_fun x 0) 1}).
+  {
+    exact (nonempty_has_element
+      ({x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)} :/\:
+       {x :e Sn n | Rlt (apply_fun x 0) 1})
+      Hne).
+  }
+  apply HexUV.
+  let x.
+  assume HxUV.
+  witness x.
+  exact (lemma59_3_overlap_member_unpack n x HxUV).
+- assume Hex.
+  apply Hex.
+  let x.
+  assume HxPack.
+  apply (and3E
+    (x :e Sn n)
+    (Rlt (minus_SNo 1) (apply_fun x 0))
+    (Rlt (apply_fun x 0) 1)
+    HxPack).
+  assume HxSn HxGtM1 HxLt1.
+  exact (lemma59_3_overlap_nonempty_from_point n x HxSn HxGtM1 HxLt1).
+Qed.
+
 Theorem lemma59_3_sphere_cover_data : forall n:set, n :e omega -> 2 c= n ->
   exists U V:set,
     U :e Sn_topology n /\ V :e Sn_topology n /\
