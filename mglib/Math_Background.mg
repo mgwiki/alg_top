@@ -62849,6 +62849,141 @@ claim Hpi1U_trivial :
     claim HclsEq : cls = fundamental_group_id U (subspace_topology X Tx U) z0.
     { exact (singleton_elem cls (fundamental_group_id U (subspace_topology X Tx U) z0) Hcls). }
     rewrite HclsEq. exact HeU. }
+(** Extract pi1(V,z0) = {id} from simply_connected V **)
+claim HscV_ex : exists x0:set, x0 :e V /\
+  fundamental_group V (subspace_topology X Tx V) x0 =
+    {fundamental_group_id V (subspace_topology X Tx V) x0}.
+{ exact (andER
+    (path_connected_space V (subspace_topology X Tx V))
+    (exists x0:set, x0 :e V /\
+      fundamental_group V (subspace_topology X Tx V) x0 =
+        {fundamental_group_id V (subspace_topology X Tx V) x0})
+    HscV). }
+claim Hpi1V_trivial :
+  fundamental_group V (subspace_topology X Tx V) z0 =
+    {fundamental_group_id V (subspace_topology X Tx V) z0}.
+{ apply HscV_ex.
+  let x0_V.
+  assume Hx0V_pack : x0_V :e V /\
+    fundamental_group V (subspace_topology X Tx V) x0_V =
+      {fundamental_group_id V (subspace_topology X Tx V) x0_V}.
+  claim Hx0V_mem : x0_V :e V.
+  { exact (andEL
+      (x0_V :e V)
+      (fundamental_group V (subspace_topology X Tx V) x0_V =
+        {fundamental_group_id V (subspace_topology X Tx V) x0_V})
+      Hx0V_pack). }
+  claim Hpi1V_x0 :
+    fundamental_group V (subspace_topology X Tx V) x0_V =
+      {fundamental_group_id V (subspace_topology X Tx V) x0_V}.
+  { exact (andER
+      (x0_V :e V)
+      (fundamental_group V (subspace_topology X Tx V) x0_V =
+        {fundamental_group_id V (subspace_topology X Tx V) x0_V})
+      Hx0V_pack). }
+  claim HtopV : topology_on V (subspace_topology X Tx V).
+  { exact (subspace_topology_is_topology X Tx V Htop HVsub). }
+  apply (Corollary_52_2_path_connected_pi1_isomorphic V (subspace_topology X Tx V) x0_V z0
+    HpcV Hx0V_mem Hz0V).
+  let phi.
+  assume Hiso : group_isomorphism
+    (fundamental_group V (subspace_topology X Tx V) x0_V)
+    (fundamental_group_mult V (subspace_topology X Tx V) x0_V)
+    (fundamental_group V (subspace_topology X Tx V) z0)
+    (fundamental_group_mult V (subspace_topology X Tx V) z0)
+    phi.
+  claim Hbij : bijection
+    (fundamental_group V (subspace_topology X Tx V) x0_V)
+    (fundamental_group V (subspace_topology X Tx V) z0) phi.
+  { exact (group_isomorphism_bijection
+      (fundamental_group V (subspace_topology X Tx V) x0_V)
+      (fundamental_group_mult V (subspace_topology X Tx V) x0_V)
+      (fundamental_group V (subspace_topology X Tx V) z0)
+      (fundamental_group_mult V (subspace_topology X Tx V) z0)
+      phi Hiso). }
+  claim HeV : (fundamental_group_id V (subspace_topology X Tx V) z0) :e
+    fundamental_group V (subspace_topology X Tx V) z0.
+  { claim HcLA : loop_at V (subspace_topology X Tx V) z0 (constant_path z0).
+    { exact (loop_at_constant_path V (subspace_topology X Tx V) z0 HtopV Hz0V). }
+    claim HcFS : (constant_path z0) :e function_space unit_interval V.
+    { exact (graph_in_function_space unit_interval V (fun t:set => z0) (fun t Ht => Hz0V)). }
+    claim HcLS : (constant_path z0) :e loop_space V (subspace_topology X Tx V) z0.
+    { exact (SepI (function_space unit_interval V) (fun g:set => loop_at V (subspace_topology X Tx V) z0 g)
+        (constant_path z0) HcFS HcLA). }
+    exact (path_homotopy_class_in_fundamental_group V (subspace_topology X Tx V) z0
+      (constant_path z0) HcLS). }
+  apply set_ext.
+  - let cls. assume Hcls : cls :e fundamental_group V (subspace_topology X Tx V) z0.
+    claim Hbij_surj : exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0_V /\
+      apply_fun phi vcls = cls /\
+      (forall vcls':set, vcls' :e fundamental_group V (subspace_topology X Tx V) x0_V ->
+        apply_fun phi vcls' = cls -> vcls' = vcls).
+    { exact (andER
+        (function_on phi (fundamental_group V (subspace_topology X Tx V) x0_V)
+          (fundamental_group V (subspace_topology X Tx V) z0))
+        (forall y:set, y :e fundamental_group V (subspace_topology X Tx V) z0 ->
+          exists x:set, x :e fundamental_group V (subspace_topology X Tx V) x0_V /\
+            apply_fun phi x = y /\
+            (forall x':set, x' :e fundamental_group V (subspace_topology X Tx V) x0_V ->
+              apply_fun phi x' = y -> x' = x))
+        Hbij cls Hcls). }
+    apply Hbij_surj.
+    let vcls.
+    assume Hvc_pack.
+    apply (and3E
+      (vcls :e fundamental_group V (subspace_topology X Tx V) x0_V)
+      (apply_fun phi vcls = cls)
+      (forall vcls':set, vcls' :e fundamental_group V (subspace_topology X Tx V) x0_V ->
+        apply_fun phi vcls' = cls -> vcls' = vcls)
+      Hvc_pack).
+    assume HvclsMem Hphi_vcls Huniq.
+    claim HvclsSing : vcls :e {fundamental_group_id V (subspace_topology X Tx V) x0_V}.
+    { exact (mem_eqR vcls
+        (fundamental_group V (subspace_topology X Tx V) x0_V)
+        {fundamental_group_id V (subspace_topology X Tx V) x0_V}
+        Hpi1V_x0 HvclsMem). }
+    claim HvclsEq : vcls = fundamental_group_id V (subspace_topology X Tx V) x0_V.
+    { exact (singleton_elem vcls (fundamental_group_id V (subspace_topology X Tx V) x0_V) HvclsSing). }
+    claim Hbij_surj_e : exists vcls2:set, vcls2 :e fundamental_group V (subspace_topology X Tx V) x0_V /\
+      apply_fun phi vcls2 = fundamental_group_id V (subspace_topology X Tx V) z0 /\
+      (forall vcls2':set, vcls2' :e fundamental_group V (subspace_topology X Tx V) x0_V ->
+        apply_fun phi vcls2' = fundamental_group_id V (subspace_topology X Tx V) z0 -> vcls2' = vcls2).
+    { exact (andER
+        (function_on phi (fundamental_group V (subspace_topology X Tx V) x0_V)
+          (fundamental_group V (subspace_topology X Tx V) z0))
+        (forall y:set, y :e fundamental_group V (subspace_topology X Tx V) z0 ->
+          exists x:set, x :e fundamental_group V (subspace_topology X Tx V) x0_V /\
+            apply_fun phi x = y /\
+            (forall x':set, x' :e fundamental_group V (subspace_topology X Tx V) x0_V ->
+              apply_fun phi x' = y -> x' = x))
+        Hbij (fundamental_group_id V (subspace_topology X Tx V) z0) HeV). }
+    apply Hbij_surj_e.
+    let vcls2.
+    assume Hvc2_pack.
+    apply (and3E
+      (vcls2 :e fundamental_group V (subspace_topology X Tx V) x0_V)
+      (apply_fun phi vcls2 = fundamental_group_id V (subspace_topology X Tx V) z0)
+      (forall vcls2':set, vcls2' :e fundamental_group V (subspace_topology X Tx V) x0_V ->
+        apply_fun phi vcls2' = fundamental_group_id V (subspace_topology X Tx V) z0 -> vcls2' = vcls2)
+      Hvc2_pack).
+    assume Hvcls2Mem Hphi_vcls2 Huniq2.
+    claim Hvcls2Sing : vcls2 :e {fundamental_group_id V (subspace_topology X Tx V) x0_V}.
+    { exact (mem_eqR vcls2
+        (fundamental_group V (subspace_topology X Tx V) x0_V)
+        {fundamental_group_id V (subspace_topology X Tx V) x0_V}
+        Hpi1V_x0 Hvcls2Mem). }
+    claim Hvcls2Eq : vcls2 = fundamental_group_id V (subspace_topology X Tx V) x0_V.
+    { exact (singleton_elem vcls2 (fundamental_group_id V (subspace_topology X Tx V) x0_V) Hvcls2Sing). }
+    claim HvEq : vcls = vcls2.
+    { rewrite HvclsEq. rewrite Hvcls2Eq. reflexivity. }
+    claim HclsEqIdz0 : cls = fundamental_group_id V (subspace_topology X Tx V) z0.
+    { rewrite <- Hphi_vcls. rewrite HvEq. exact Hphi_vcls2. }
+    rewrite HclsEqIdz0.
+    exact (SingI (fundamental_group_id V (subspace_topology X Tx V) z0)).
+  - let cls. assume Hcls : cls :e {fundamental_group_id V (subspace_topology X Tx V) z0}.
+    claim HclsEq : cls = fundamental_group_id V (subspace_topology X Tx V) z0.
+    { exact (singleton_elem cls (fundamental_group_id V (subspace_topology X Tx V) z0) Hcls). }
+    rewrite HclsEq. exact HeV. }
 (** i-star is trivial **)
 claim Hi_triv : forall cls:set,
   cls :e fundamental_group U (subspace_topology X Tx U) z0 ->
@@ -62877,7 +63012,24 @@ claim Hj_triv : forall cls:set,
   cls :e fundamental_group V (subspace_topology X Tx V) z0 ->
   apply_fun (induced_homomorphism V (subspace_topology X Tx V) z0 X Tx z0
     (graph V (fun x:set => x))) cls = fundamental_group_id X Tx z0.
-{ admit. (** symmetric to Hi_triv **) }
+{ let cls. assume Hcls.
+  claim HclsSing : cls :e {fundamental_group_id V (subspace_topology X Tx V) z0}.
+  { exact (mem_eqR cls
+      (fundamental_group V (subspace_topology X Tx V) z0)
+      {fundamental_group_id V (subspace_topology X Tx V) z0}
+      Hpi1V_trivial Hcls). }
+  claim HclsEq : cls = fundamental_group_id V (subspace_topology X Tx V) z0.
+  { exact (singleton_elem cls (fundamental_group_id V (subspace_topology X Tx V) z0)
+      HclsSing). }
+  rewrite HclsEq.
+  exact (lemma59_subspace_inclusion_id_preserved
+    X
+    Tx
+    V
+    z0
+    Htop
+    HVsub
+    Hz0V). }
 (** Conclude simply_connected: path_connected /\ exists x0, pi1 = {id} **)
 prove path_connected_space X Tx /\
   exists x0':set, x0' :e X /\
