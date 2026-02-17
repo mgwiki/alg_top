@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 7874 **)
+(** Balance Charlie 7751 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -60861,7 +60861,8 @@ Admitted.
 (** LATEX VERSION: (Invariance of domain) If U is open in R^2 and f: U -> R^2 **)
 (** is continuous and injective, then f(U) is open in R^2 and f^-1 is continuous. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 350 **)
-(** Bounty 350 **)
+(** Bounty 385 **)
+(** Lock Charlie 2026-02-18T10:30:00 **)
 Theorem thm62_3_invariance_of_domain : forall U:set,
   U :e R2_topology ->
   forall f:set,
@@ -61170,7 +61171,8 @@ Qed.
 (** from S63 Theorem 63.2 (line 2135 in algtop.tex) **)
 (** LATEX VERSION: (Nonseparation theorem) An arc in S^2 does not separate S^2. **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 250 **)
-(** Bounty 250 **)
+(** Bounty 275 **)
+(** Lock Charlie 2026-02-18T10:30:00 **)
 Theorem thm63_2_arc_nonseparation : forall D:set,
   D c= Sn 2 ->
   is_arc D (subspace_topology (Sn 2) (Sn_topology 2) D) ->
@@ -61551,7 +61553,8 @@ Admitted.
 (** in different components of S^2 minus C, and the inclusion C -> S^2-p-q **)
 (** induces an isomorphism of fundamental groups. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 350 **)
-(** Bounty 350 **)
+(** Bounty 385 **)
+(** Lock Charlie 2026-02-18T10:30:00 **)
 Theorem lemma65_1_complete_graph_separation : forall V G Tg C Tc x0:set,
   complete_graph_on V G Tg -> equip V 4 ->
   G c= Sn 2 -> Tg = subspace_topology (Sn 2) (Sn_topology 2) G ->
@@ -61722,7 +61725,8 @@ Definition simple_loop : set -> set -> set -> prop :=
 (** LATEX VERSION: Let f be a simple loop in R^2. If a is in the unbounded **)
 (** component of R^2-f(I), n(f,a)=0; if a is in bounded component, n(f,a)=+-1. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 280 **)
-(** Bounty 280 **)
+(** Bounty 308 **)
+(** Lock Charlie 2026-02-18T10:30:00 **)
 Theorem thm66_2_simple_loop_winding : forall f a:set,
   simple_loop (setprod R R) R2_topology f ->
   a :e setprod R R ->
