@@ -24388,8 +24388,97 @@ claim HloopNullAtx0 :
 {
   let h.
   assume HhCont Hh0 Hh1.
-  (** TODO Bob: use Hpi1x0AllEq to show [h] = [const_path x0], then extract homotopy. **)
-  admit.
+  claim HhLoop : h :e loop_space X Tx x0.
+  {
+    (** TODO Bob: derive loop_space membership of an arbitrary closed continuous path. **)
+    admit.
+  }
+  claim HconstFS : (constant_path x0) :e function_space unit_interval X.
+  {
+    exact (graph_in_function_space
+      unit_interval
+      X
+      (fun t:set => x0)
+      (fun t Ht => Hx0X)).
+  }
+  claim HconstLoopAt : loop_at X Tx x0 (constant_path x0).
+  {
+    exact (loop_at_constant_path
+      X
+      Tx
+      x0
+      HtopX
+      Hx0X).
+  }
+  claim HconstLoop : (constant_path x0) :e loop_space X Tx x0.
+  {
+    exact (SepI
+      (function_space unit_interval X)
+      (fun u:set => loop_at X Tx x0 u)
+      (constant_path x0)
+      HconstFS
+      HconstLoopAt).
+  }
+  claim HhClassInFG :
+    path_homotopy_class_loop X Tx x0 h :e fundamental_group X Tx x0.
+  {
+    exact (path_homotopy_class_in_fundamental_group
+      X
+      Tx
+      x0
+      h
+      HhLoop).
+  }
+  claim HconstClassInFG :
+    path_homotopy_class_loop X Tx x0 (constant_path x0)
+      :e fundamental_group X Tx x0.
+  {
+    exact (path_homotopy_class_in_fundamental_group
+      X
+      Tx
+      x0
+      (constant_path x0)
+      HconstLoop).
+  }
+  claim HclassEq :
+    path_homotopy_class_loop X Tx x0 h
+    =
+    path_homotopy_class_loop X Tx x0 (constant_path x0).
+  {
+    exact (Hpi1x0AllEq
+      (path_homotopy_class_loop X Tx x0 h)
+      (path_homotopy_class_loop X Tx x0 (constant_path x0))
+      HhClassInFG
+      HconstClassInFG).
+  }
+  claim HconstInOwn :
+    (constant_path x0) :e
+      path_homotopy_class_loop X Tx x0 (constant_path x0).
+  {
+    exact (loop_in_own_path_homotopy_class_s52
+      X
+      Tx
+      x0
+      (constant_path x0)
+      HconstLoop).
+  }
+  claim HconstInHClass :
+    (constant_path x0) :e path_homotopy_class_loop X Tx x0 h.
+  {
+    exact (mem_eqL
+      (constant_path x0)
+      (path_homotopy_class_loop X Tx x0 h)
+      (path_homotopy_class_loop X Tx x0 (constant_path x0))
+      HclassEq
+      HconstInOwn).
+  }
+  exact (path_homotopy_class_loop_has_homotopy
+    X
+    Tx
+    x0
+    h
+    (constant_path x0)
+    HconstInHClass).
 }
 set rg := reverse_path g.
 claim HrgDef : rg = reverse_path g.
