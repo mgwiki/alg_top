@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 25704 **)
+(** Balance Charlie 25554 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -38440,7 +38440,8 @@ Definition covering_map_R_S1 : set :=
 (** LATEX VERSION: The map p: R -> S^1 given by p(x) = (cos 2pi x, sin 2pi x) **)
 (** is a covering map. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 2026-02-18T11:53:42 **)
 Theorem thm53_1_R_covers_S1 :
   covering_map R R_standard_topology S1 S1_topology covering_map_R_S1.
 admit.
@@ -60454,7 +60455,8 @@ Definition figure_eight_basepoint : set := (0, 0).
 (** from S60 Lemma 60.5 (line 1734 in algtop.tex) **)
 (** LATEX VERSION: The fundamental group of the figure eight is not abelian. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 2026-02-18T11:53:42 **)
 Theorem lemma60_5_figure_eight_nonabelian :
   ~(abelian_group
     (fundamental_group figure_eight figure_eight_topology figure_eight_basepoint)
@@ -62155,7 +62157,8 @@ Definition quotient_projection : set -> set -> set -> set :=
 (** Conversely, if the groups G_alpha generate G and the extension condition holds, **)
 (** then G is the direct sum of the G_alpha. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 2026-02-18T11:53:42 **)
 Theorem lemma67_1_extension_condition_direct_sum :
   forall G multG eG invG J Gfam:set,
   direct_sum_of_subgroups G multG eG invG J Gfam ->
@@ -62653,7 +62656,8 @@ Definition least_normal_subgroup : set -> set -> set -> set -> set -> set :=
 (** homomorphisms h_alpha: G_alpha -> H, there exists a unique h: G -> H whose restriction **)
 (** to G_alpha equals h_alpha. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 2026-02-18T11:53:42 **)
 Theorem lemma68_1_extension_condition_free_product :
   forall G multG eG invG J Gfam efam:set,
   free_product_of_subgroups G multG eG invG J Gfam efam ->
@@ -63031,7 +63035,8 @@ Definition commutator_subgroup : set -> set -> set -> set -> set :=
 (** LATEX VERSION: [G,G] is normal in G, G/[G,G] is abelian, and any homomorphism **)
 (** from G to an abelian group H has kernel containing [G,G]. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 2026-02-18T11:53:42 **)
 Theorem lemma69_3_commutator_subgroup :
   forall G mult e inv:set,
   group_structure G mult e inv ->
@@ -65815,7 +65820,8 @@ Qed.
 
 (** from S79 Lemma 79.3(b) (line 4862 in algtop.tex): conjugacy converse **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 2026-02-18T11:53:42 **)
 Theorem lemma79_3b_conjugacy_converse :
   forall E Te B Tb p e0:set,
   covering_map E Te B Tb p ->
@@ -65871,7 +65877,8 @@ Admitted.
 (** LATEX VERSION: If E is a covering space of the torus T, then E is homeomorphic **)
 (** either to R^2, or to S^1 x R, or to T. **)
 (** EFFORT: 10 lines textbook, difficulty 6/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 2026-02-18T11:53:42 **)
 Theorem ex79_5b_torus_covering_classification :
   forall E Te p:set,
   covering_map E Te torus torus_topology p ->
@@ -66051,7 +66058,8 @@ Qed.
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
 (** then the restriction p0: E0 -> B is a covering map. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 2026-02-18T11:53:42 **)
 Theorem lemma80_1_path_component_covering :
   forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
@@ -66880,7 +66888,8 @@ Qed.
 (** LATEX VERSION: Let X be the infinite earring. Show that X is a compact Hausdorff **)
 (** space with a countable basis whose fundamental group is uncountable. **)
 (** EFFORT: 10 lines textbook, difficulty 6/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 2026-02-18T11:53:42 **)
 Theorem supp_ex_5_infinite_earring_uncountable_pi1 :
   let X := infinite_earring_space in
   let Tx := infinite_earring_topology in
@@ -66968,7 +66977,8 @@ Admitted.
 (** LATEX VERSION: If X is a linear graph, then X is locally path connected **)
 (** and semilocally simply connected. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 150 **)
+(** Bounty 165 **)
+(** Lock Charlie 2026-02-18T11:53:42 **)
 Theorem lemma83_3_graph_locally_path_connected :
   forall X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
