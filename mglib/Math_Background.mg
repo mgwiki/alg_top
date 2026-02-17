@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 1561 **)
+(** Balance Charlie 1726 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -54048,8 +54048,8 @@ Definition bounded_measurable_R2 : set -> prop := fun A =>
 (** LATEX VERSION: Given two bounded polygonal regions in R^2, there exists a line in R^2 that bisects each of them. **)
 (** We state this using the Borsuk-Ulam theorem abstractly **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
-(** Lock Charlie 2026-02-18T10:55:00 **)
+(** Collected Charlie 165 **)
+(** Proven Charlie **)
 (** from S57 Theorem 57.4 (line 1227 in algtop.tex): bisection theorem **)
 (** NOTE: The full statement requires an area measure; we state it using an abstract **)
 (** continuous area function f_i: S^2 -> R measuring the area of A_i on one side of the **)
@@ -54128,28 +54128,354 @@ claim Hf2on : function_on f2 (Sn 2) R.
     f2
     Hf2).
 }
+claim Hrn :
+  Rn_negate 3 u = graph 3 (fun i:set => minus_SNo (apply_fun u i)).
+{
+  reflexivity.
+}
+claim HuE3 : u :e euclidean_space 3.
+{
+  exact (SepE1
+    (euclidean_space 3)
+    (fun v:set => euclidean_norm_sq 3 v = 1)
+    u
+    Hu).
+}
+claim HuNorm : euclidean_norm_sq 3 u = 1.
+{
+  exact (SepE2
+    (euclidean_space 3)
+    (fun v:set => euclidean_norm_sq 3 v = 1)
+    u
+    Hu).
+}
+claim H0in3 : 0 :e 3.
+{
+  exact (ordsuccI1 2 0 In_0_2).
+}
+claim H1in3 : 1 :e 3.
+{
+  exact (ordsuccI1 2 1 In_1_2).
+}
+claim H2in3 : 2 :e 3.
+{
+  exact (ordsuccI2 2).
+}
+claim Hu0R : apply_fun u 0 :e R.
+{
+  exact (euclidean_space_coord_in_R 3 u 0 HuE3 H0in3).
+}
+claim Hu1R : apply_fun u 1 :e R.
+{
+  exact (euclidean_space_coord_in_R 3 u 1 HuE3 H1in3).
+}
+claim Hu2R : apply_fun u 2 :e R.
+{
+  exact (euclidean_space_coord_in_R 3 u 2 HuE3 H2in3).
+}
+claim Hu0S : SNo (apply_fun u 0).
+{
+  exact (real_SNo (apply_fun u 0) Hu0R).
+}
+claim Hu1S : SNo (apply_fun u 1).
+{
+  exact (real_SNo (apply_fun u 1) Hu1R).
+}
+claim Hu2S : SNo (apply_fun u 2).
+{
+  exact (real_SNo (apply_fun u 2) Hu2R).
+}
+claim HnegE3 : Rn_negate 3 u :e euclidean_space 3.
+{
+  claim HnegGraph :
+    graph 3 (fun i:set => minus_SNo (apply_fun u i)) :e euclidean_space 3.
+  {
+    claim Heu3 :
+      euclidean_space 3 = product_space 3 (const_space_family 3 R R_standard_topology).
+    {
+      reflexivity.
+    }
+    rewrite Heu3.
+    apply (product_space_graphI
+      3
+      (const_space_family 3 R R_standard_topology)
+      (fun i:set => minus_SNo (apply_fun u i))).
+    let i.
+    assume Hi3.
+    rewrite (space_family_set_const_space_family 3 R R_standard_topology i Hi3).
+    claim HuiR : apply_fun u i :e R.
+    {
+      exact (euclidean_space_coord_in_R 3 u i HuE3 Hi3).
+    }
+    exact (real_minus_SNo (apply_fun u i) HuiR).
+  }
+  exact (Hrn
+    (fun a b => b :e euclidean_space 3)
+    HnegGraph).
+}
+claim Hneg0 :
+  mul_SNo (apply_fun (Rn_negate 3 u) 0) (apply_fun (Rn_negate 3 u) 0) =
+  mul_SNo (apply_fun u 0) (apply_fun u 0).
+{
+  rewrite Hrn.
+  rewrite (apply_fun_graph
+    3
+    (fun i:set => minus_SNo (apply_fun u i))
+    0
+    H0in3).
+  exact (mul_SNo_minus_minus
+    (apply_fun u 0)
+    (apply_fun u 0)
+    Hu0S
+    Hu0S).
+}
+claim Hneg1 :
+  mul_SNo (apply_fun (Rn_negate 3 u) 1) (apply_fun (Rn_negate 3 u) 1) =
+  mul_SNo (apply_fun u 1) (apply_fun u 1).
+{
+  rewrite Hrn.
+  rewrite (apply_fun_graph
+    3
+    (fun i:set => minus_SNo (apply_fun u i))
+    1
+    H1in3).
+  exact (mul_SNo_minus_minus
+    (apply_fun u 1)
+    (apply_fun u 1)
+    Hu1S
+    Hu1S).
+}
+claim Hneg2 :
+  mul_SNo (apply_fun (Rn_negate 3 u) 2) (apply_fun (Rn_negate 3 u) 2) =
+  mul_SNo (apply_fun u 2) (apply_fun u 2).
+{
+  rewrite Hrn.
+  rewrite (apply_fun_graph
+    3
+    (fun i:set => minus_SNo (apply_fun u i))
+    2
+    H2in3).
+  exact (mul_SNo_minus_minus
+    (apply_fun u 2)
+    (apply_fun u 2)
+    Hu2S
+    Hu2S).
+}
+claim HsumNeg :
+  finite_real_sum
+    (fun i:set =>
+      mul_SNo (apply_fun (Rn_negate 3 u) i) (apply_fun (Rn_negate 3 u) i))
+    3 =
+  add_SNo
+    (add_SNo
+      (add_SNo 0
+        (mul_SNo (apply_fun (Rn_negate 3 u) 0) (apply_fun (Rn_negate 3 u) 0)))
+      (mul_SNo (apply_fun (Rn_negate 3 u) 1) (apply_fun (Rn_negate 3 u) 1)))
+    (mul_SNo (apply_fun (Rn_negate 3 u) 2) (apply_fun (Rn_negate 3 u) 2)).
+{
+  claim HfinNegDef :
+    finite_real_sum
+      (fun i:set =>
+        mul_SNo (apply_fun (Rn_negate 3 u) i) (apply_fun (Rn_negate 3 u) i))
+      3 =
+    nat_primrec
+      0
+      (fun j r:set =>
+        add_SNo r
+          (mul_SNo
+            (apply_fun (Rn_negate 3 u) j)
+            (apply_fun (Rn_negate 3 u) j)))
+      3.
+  {
+    reflexivity.
+  }
+  rewrite HfinNegDef.
+  rewrite (nat_primrec_S
+    0
+    (fun j r:set => add_SNo r
+      (mul_SNo
+        (apply_fun (Rn_negate 3 u) j)
+        (apply_fun (Rn_negate 3 u) j)))
+    2
+    nat_2).
+  rewrite (nat_primrec_S
+    0
+    (fun j r:set => add_SNo r
+      (mul_SNo
+        (apply_fun (Rn_negate 3 u) j)
+        (apply_fun (Rn_negate 3 u) j)))
+    1
+    nat_1).
+  rewrite (nat_primrec_S
+    0
+    (fun j r:set => add_SNo r
+      (mul_SNo
+        (apply_fun (Rn_negate 3 u) j)
+        (apply_fun (Rn_negate 3 u) j)))
+    0
+    nat_0).
+  rewrite (nat_primrec_0
+    0
+    (fun j r:set => add_SNo r
+      (mul_SNo
+        (apply_fun (Rn_negate 3 u) j)
+        (apply_fun (Rn_negate 3 u) j)))).
+  reflexivity.
+}
+claim HsumPos :
+  finite_real_sum
+    (fun i:set => mul_SNo (apply_fun u i) (apply_fun u i))
+    3 =
+  add_SNo
+    (add_SNo
+      (add_SNo 0
+        (mul_SNo (apply_fun u 0) (apply_fun u 0)))
+      (mul_SNo (apply_fun u 1) (apply_fun u 1)))
+    (mul_SNo (apply_fun u 2) (apply_fun u 2)).
+{
+  claim HfinPosDef :
+    finite_real_sum
+      (fun i:set => mul_SNo (apply_fun u i) (apply_fun u i))
+      3 =
+    nat_primrec
+      0
+      (fun j r:set =>
+        add_SNo r
+          (mul_SNo
+            (apply_fun u j)
+            (apply_fun u j)))
+      3.
+  {
+    reflexivity.
+  }
+  rewrite HfinPosDef.
+  rewrite (nat_primrec_S
+    0
+    (fun j r:set => add_SNo r
+      (mul_SNo
+        (apply_fun u j)
+        (apply_fun u j)))
+    2
+    nat_2).
+  rewrite (nat_primrec_S
+    0
+    (fun j r:set => add_SNo r
+      (mul_SNo
+        (apply_fun u j)
+        (apply_fun u j)))
+    1
+    nat_1).
+  rewrite (nat_primrec_S
+    0
+    (fun j r:set => add_SNo r
+      (mul_SNo
+        (apply_fun u j)
+        (apply_fun u j)))
+    0
+    nat_0).
+  rewrite (nat_primrec_0
+    0
+    (fun j r:set => add_SNo r
+      (mul_SNo
+        (apply_fun u j)
+        (apply_fun u j)))).
+  reflexivity.
+}
+claim HeuNormEq :
+  euclidean_norm_sq 3 (Rn_negate 3 u) = euclidean_norm_sq 3 u.
+{
+  claim HnormNegDef :
+    euclidean_norm_sq 3 (Rn_negate 3 u) =
+    finite_real_sum
+      (fun i:set =>
+        mul_SNo (apply_fun (Rn_negate 3 u) i) (apply_fun (Rn_negate 3 u) i))
+      3.
+  {
+    reflexivity.
+  }
+  claim HnormPosDef :
+    euclidean_norm_sq 3 u =
+    finite_real_sum
+      (fun i:set => mul_SNo (apply_fun u i) (apply_fun u i))
+      3.
+  {
+    reflexivity.
+  }
+  rewrite HnormNegDef.
+  rewrite HnormPosDef.
+  rewrite HsumNeg.
+  rewrite HsumPos.
+  rewrite Hneg0.
+  rewrite Hneg1.
+  rewrite Hneg2.
+  reflexivity.
+}
+claim HuNeg : Rn_negate 3 u :e Sn 2.
+{
+  claim HSn2Def :
+    Sn 2 = {v :e euclidean_space 3 | euclidean_norm_sq 3 v = 1}.
+  {
+    reflexivity.
+  }
+  rewrite HSn2Def.
+  apply (SepI
+    (euclidean_space 3)
+    (fun v:set => euclidean_norm_sq 3 v = 1)
+    (Rn_negate 3 u)
+    HnegE3).
+  rewrite HeuNormEq.
+  exact HuNorm.
+}
+claim HleftPair :
+  apply_fun f u = (apply_fun f1 u, apply_fun f2 u).
+{
+  exact (pair_map_apply
+    (Sn 2)
+    R
+    R
+    f1
+    f2
+    u
+    Hu).
+}
+claim HrightPair :
+  apply_fun f (Rn_negate 3 u) =
+  (apply_fun f1 (Rn_negate 3 u), apply_fun f2 (Rn_negate 3 u)).
+{
+  exact (pair_map_apply
+    (Sn 2)
+    R
+    R
+    f1
+    f2
+    (Rn_negate 3 u)
+    HuNeg).
+}
+claim HpairEq :
+  (apply_fun f1 u, apply_fun f2 u) =
+  (apply_fun f1 (Rn_negate 3 u), apply_fun f2 (Rn_negate 3 u)).
+{
+  rewrite <- HleftPair.
+  rewrite Hfeq.
+  exact HrightPair.
+}
 witness u.
 apply andI.
 - apply andI.
   + exact Hu.
-  + claim HleftPair :
-    apply_fun f u = (apply_fun f1 u, apply_fun f2 u).
-    {
-      exact (pair_map_apply
-        (Sn 2)
-        R
-        R
-        f1
-        f2
-        u
-        Hu).
-    }
-    (** TODO Charlie: finish the first coordinate equality by expanding at Rn_negate 3 u
-        after adding/reusing a Sn-antipode membership lemma. **)
-    admit.
-- (** TODO Charlie: analogous second-coordinate equality; same blocker as above. **)
-  admit.
-Admitted.
+  + exact (pair_eq_fst
+      (apply_fun f1 u)
+      (apply_fun f2 u)
+      (apply_fun f1 (Rn_negate 3 u))
+      (apply_fun f2 (Rn_negate 3 u))
+      HpairEq).
+- exact (pair_eq_snd
+    (apply_fun f1 u)
+    (apply_fun f2 u)
+    (apply_fun f1 (Rn_negate 3 u))
+    (apply_fun f2 (Rn_negate 3 u))
+    HpairEq).
+Qed.
 
 (** from S57 Exercise 1 (line 1257 in algtop.tex) **)
 (** LATEX VERSION: At any given moment, there exist antipodal points on Earth **)
