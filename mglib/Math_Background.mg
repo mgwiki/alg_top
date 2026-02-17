@@ -16890,7 +16890,43 @@ claim HalphaPath : path_between X x0 x1 alpha.
       Halpha0)
     Halpha1).
 }
-admit.
+claim Hfun :
+  function_on
+    (basepoint_change_map X Tx x0 x1 alpha)
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x1).
+{
+  admit.
+}
+claim Hmult :
+  forall u v:set, u :e fundamental_group X Tx x0 -> v :e fundamental_group X Tx x0 ->
+    apply_fun
+      (basepoint_change_map X Tx x0 x1 alpha)
+      (apply_fun (fundamental_group_mult X Tx x0) (u, v))
+    =
+    apply_fun
+      (fundamental_group_mult X Tx x1)
+      (apply_fun (basepoint_change_map X Tx x0 x1 alpha) u,
+       apply_fun (basepoint_change_map X Tx x0 x1 alpha) v).
+{
+  admit.
+}
+exact (andI
+  (function_on
+    (basepoint_change_map X Tx x0 x1 alpha)
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x1))
+  (forall u v:set, u :e fundamental_group X Tx x0 -> v :e fundamental_group X Tx x0 ->
+    apply_fun
+      (basepoint_change_map X Tx x0 x1 alpha)
+      (apply_fun (fundamental_group_mult X Tx x0) (u, v))
+    =
+    apply_fun
+      (fundamental_group_mult X Tx x1)
+      (apply_fun (basepoint_change_map X Tx x0 x1 alpha) u,
+       apply_fun (basepoint_change_map X Tx x0 x1 alpha) v))
+  Hfun
+  Hmult).
 Admitted.
 
 (** from S52 Theorem 52.1 sub-bounty B: bijection part of alpha-hat **)
@@ -16948,7 +16984,58 @@ claim HbetaPath : path_between X x1 x0 beta.
       Hbeta0)
     Hbeta1).
 }
-admit.
+claim Hfun :
+  function_on
+    (basepoint_change_map X Tx x0 x1 alpha)
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x1).
+{
+  claim Hhom :
+    group_homomorphism
+      (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+      (fundamental_group X Tx x1) (fundamental_group_mult X Tx x1)
+      (basepoint_change_map X Tx x0 x1 alpha).
+  {
+    exact (lemma52_1_basepoint_change_homomorphism
+      X
+      Tx
+      x0
+      x1
+      alpha
+      HtopX
+      HalphaCont
+      Halpha0
+      Halpha1).
+  }
+  exact (group_homomorphism_function_on
+    (fundamental_group X Tx x0)
+    (fundamental_group_mult X Tx x0)
+    (fundamental_group X Tx x1)
+    (fundamental_group_mult X Tx x1)
+    (basepoint_change_map X Tx x0 x1 alpha)
+    Hhom).
+}
+claim HsurjUnique :
+  forall y:set, y :e fundamental_group X Tx x1 ->
+    exists x:set, x :e fundamental_group X Tx x0 /\
+      apply_fun (basepoint_change_map X Tx x0 x1 alpha) x = y /\
+      (forall x':set, x' :e fundamental_group X Tx x0 ->
+        apply_fun (basepoint_change_map X Tx x0 x1 alpha) x' = y -> x' = x).
+{
+  admit.
+}
+exact (andI
+  (function_on
+    (basepoint_change_map X Tx x0 x1 alpha)
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x1))
+  (forall y:set, y :e fundamental_group X Tx x1 ->
+    exists x:set, x :e fundamental_group X Tx x0 /\
+      apply_fun (basepoint_change_map X Tx x0 x1 alpha) x = y /\
+      (forall x':set, x' :e fundamental_group X Tx x0 ->
+        apply_fun (basepoint_change_map X Tx x0 x1 alpha) x' = y -> x' = x))
+  Hfun
+  HsurjUnique).
 Admitted.
 
 (** Bounty 110 **)
