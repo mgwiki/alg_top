@@ -69717,7 +69717,21 @@ claim HscV : simply_connected V (subspace_topology (Sn n) (Sn_topology n) V).
 }
 claim HneUV : (U :/\: V) <> Empty.
 {
-  admit. (** equatorial point witness **)
+  claim HUdef : U = {x :e Sn n | Rlt (minus_SNo 1) (apply_fun x 0)}.
+  {
+    reflexivity.
+  }
+  claim HVdef : V = {x :e Sn n | Rlt (apply_fun x 0) 1}.
+  {
+    reflexivity.
+  }
+  apply (iffER
+    ((U :/\: V) <> Empty)
+    (exists x:set, x :e Sn n /\
+      Rlt (minus_SNo 1) (apply_fun x 0) /\
+      Rlt (apply_fun x 0) 1)
+    (lemma59_3_overlap_nonempty_named_iff_exists_point n U V HUdef HVdef)).
+  admit. (** pending: explicit witness x :e Sn n with x0 = 0 *)
 }
 claim HpcUV : path_connected_space (U :/\: V)
   (subspace_topology (Sn n) (Sn_topology n) (U :/\: V)).
