@@ -1,5 +1,5 @@
 (** Balance Alice 2634 **)
-(** Balance Bob 2577 **)
+(** Balance Bob 2560 **)
 (** Balance Charlie 73 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -57849,7 +57849,8 @@ Admitted.
 (** from S58 Theorem 58.7 (line 1429 in algtop.tex) **)
 (** LATEX VERSION: If f: X -> Y is a homotopy equivalence with f(x0) = y0, then f-star: pi_1(X,x0) -> pi_1(Y,y0) is an isomorphism. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
+(** Bounty 182 **)
+(** Lock Bob 2026-02-18T14:40:00 **)
 Theorem thm58_7_homotopy_equiv_isomorphism : forall X Tx Y Ty f x0:set,
   homotopy_equivalence X Tx Y Ty f ->
   x0 :e X ->
