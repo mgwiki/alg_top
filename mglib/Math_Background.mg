@@ -27552,6 +27552,117 @@ Theorem ex52_2_basepoint_composition : forall X Tx x0 x1 x2 alpha beta:set,
     = apply_fun (compose_fun (fundamental_group X Tx x0)
         (basepoint_change_map X Tx x0 x1 alpha)
         (basepoint_change_map X Tx x1 x2 beta)) cls.
+let X Tx x0 x1 x2 alpha beta.
+assume HtopX HalphaCont HbetaCont Halpha0 Halpha1 Hbeta0 Hbeta1.
+let cls.
+assume Hcls.
+claim HalphaHom :
+  group_homomorphism
+    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+    (fundamental_group X Tx x1) (fundamental_group_mult X Tx x1)
+    (basepoint_change_map X Tx x0 x1 alpha).
+{
+  exact (lemma52_1_basepoint_change_homomorphism
+    X
+    Tx
+    x0
+    x1
+    alpha
+    HtopX
+    HalphaCont
+    Halpha0
+    Halpha1).
+}
+claim HalphaFun :
+  function_on
+    (basepoint_change_map X Tx x0 x1 alpha)
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x1).
+{
+  exact (group_homomorphism_function_on
+    (fundamental_group X Tx x0)
+    (fundamental_group_mult X Tx x0)
+    (fundamental_group X Tx x1)
+    (fundamental_group_mult X Tx x1)
+    (basepoint_change_map X Tx x0 x1 alpha)
+    HalphaHom).
+}
+set mid := apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls.
+claim HmidDef :
+  mid = apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls.
+{
+  reflexivity.
+}
+claim HmidInFG : mid :e fundamental_group X Tx x1.
+{
+  rewrite HmidDef.
+  exact (HalphaFun cls Hcls).
+}
+claim HlhsExpand :
+  apply_fun (basepoint_change_map X Tx x0 x2 (path_concat alpha beta)) cls
+  =
+  path_homotopy_class_loop
+    X
+    Tx
+    x2
+    (path_concat
+      (reverse_path (path_concat alpha beta))
+      (path_concat
+        (Eps_i (fun f:set => f :e cls))
+        (path_concat alpha beta))).
+{
+  exact (basepoint_change_map_apply
+    X
+    Tx
+    x0
+    x2
+    (path_concat alpha beta)
+    cls
+    Hcls).
+}
+claim HrhsExpand :
+  apply_fun
+    (compose_fun
+      (fundamental_group X Tx x0)
+      (basepoint_change_map X Tx x0 x1 alpha)
+      (basepoint_change_map X Tx x1 x2 beta))
+    cls
+  =
+  apply_fun (basepoint_change_map X Tx x1 x2 beta) mid.
+{
+  exact (compose_fun_apply
+    (fundamental_group X Tx x0)
+    (basepoint_change_map X Tx x0 x1 alpha)
+    (basepoint_change_map X Tx x1 x2 beta)
+    cls
+    Hcls).
+}
+claim HrhsExpand2 :
+  apply_fun (basepoint_change_map X Tx x1 x2 beta) mid
+  =
+  path_homotopy_class_loop
+    X
+    Tx
+    x2
+    (path_concat
+      (reverse_path beta)
+      (path_concat
+        (Eps_i (fun f:set => f :e mid))
+        beta)).
+{
+  exact (basepoint_change_map_apply
+    X
+    Tx
+    x1
+    x2
+    beta
+    mid
+    HmidInFG).
+}
+rewrite HlhsExpand.
+rewrite HrhsExpand.
+rewrite HrhsExpand2.
+(** TODO Bob: reconcile the two class representatives via Lemma 52.1 cancellation machinery. **)
 admit.
 Admitted.
 
