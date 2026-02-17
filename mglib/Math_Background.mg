@@ -1,6 +1,6 @@
 (** Balance Alice 2419 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 2524 **)
+(** Balance Charlie 2174 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -61195,7 +61195,8 @@ Admitted.
 (** LATEX VERSION: (Jordan curve theorem) A simple closed curve C in S^2 separates **)
 (** S^2 into precisely two components W1 and W2, and C is the common boundary. **)
 (** EFFORT: 30 lines textbook, difficulty 8/10, USD 500 **)
-(** Bounty 500 **)
+(** Bounty 550 **)
+(** Lock Charlie 2026-02-18T10:40:00 **)
 Theorem thm63_4_jordan_curve_theorem : forall C:set,
   C c= Sn 2 ->
   is_simple_closed_curve C (subspace_topology (Sn 2) (Sn_topology 2) C) ->
@@ -61578,7 +61579,8 @@ Admitted.
 (** components of S^2 minus C. Then inclusion j: C -> S^2-p-q induces **)
 (** an isomorphism of fundamental groups. **)
 (** EFFORT: 40 lines textbook, difficulty 8/10, USD 500 **)
-(** Bounty 500 **)
+(** Bounty 550 **)
+(** Lock Charlie 2026-02-18T10:40:00 **)
 Theorem thm65_2_inclusion_isomorphism : forall C Tc p q x0:set,
   C c= Sn 2 -> is_simple_closed_curve C Tc ->
   Tc = subspace_topology (Sn 2) (Sn_topology 2) C ->
@@ -62660,7 +62662,8 @@ Definition external_free_product : set -> set -> set -> set -> set -> set -> set
 (** LATEX VERSION: Given a family {G_alpha} of groups, there exists a group G and **)
 (** monomorphisms i_alpha: G_alpha -> G such that G is the free product of i_alpha(G_alpha). **)
 (** EFFORT: 50 lines textbook, difficulty 8/10, USD 800 **)
-(** Bounty 800 **)
+(** Bounty 880 **)
+(** Lock Charlie 2026-02-18T10:40:00 **)
 Theorem thm68_2_existence_free_product :
   forall J Gfam multfam efam invfam:set,
   (forall alpha:set, alpha :e J ->
@@ -63185,7 +63188,8 @@ Admitted.
 (** U cap V), then there is a unique Phi: pi1(X,x0) -> H with Phi o j1 = phi1, **)
 (** Phi o j2 = phi2. **)
 (** EFFORT: 60 lines textbook, difficulty 9/10, USD 1200 **)
-(** Bounty 1200 **)
+(** Bounty 1320 **)
+(** Lock Charlie 2026-02-18T10:40:00 **)
 Theorem thm70_1_seifert_van_kampen :
   forall X Tx U V x0:set,
   topology_on X Tx ->
@@ -63262,7 +63266,8 @@ Admitted.
 (** is surjective, and its kernel is the least normal subgroup N of the free product **)
 (** containing all elements i1(g)^{-1} i2(g) for g in pi1(U cap V, x0). **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 500 **)
-(** Bounty 500 **)
+(** Bounty 550 **)
+(** Lock Charlie 2026-02-18T10:40:00 **)
 Theorem thm70_2_classical_van_kampen :
   forall X Tx U V x0:set,
   topology_on X Tx ->
