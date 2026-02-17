@@ -1,5 +1,5 @@
 (** Balance Alice 2010 **)
-(** Balance Bob 1563 **)
+(** Balance Bob 1593 **)
 (** Balance Charlie 1223 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -29089,7 +29089,8 @@ Definition points_directly_outward : set -> set -> prop := fun v x =>
 (** from S55 Lemma 55.1 (line 900 in algtop.tex) **)
 (** LATEX VERSION: If A is a retract of X, then the homomorphism of fundamental groups induced by inclusion j: A -> X is injective. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Collected Bob 30 **)
+(** Proven Bob **)
 Theorem lemma55_1_retract_injective_pi1 : forall X Tx A a:set,
   topology_on X Tx ->
   A c= X ->
@@ -29103,8 +29104,211 @@ Theorem lemma55_1_retract_injective_pi1 : forall X Tx A a:set,
     apply_fun (induced_homomorphism A (subspace_topology X Tx A) a X Tx a
       (graph A (fun x:set => x))) cls2 ->
     cls1 = cls2).
-admit.
-Admitted.
+let X Tx A a.
+assume HtopX HAsub Hretr Ha.
+claim HretrPack :
+  A c= X /\
+  exists r:set,
+    function_on r X X /\
+    continuous_map X Tx X Tx r /\
+    (forall x:set, x :e X -> apply_fun r x :e A) /\
+    (forall x:set, x :e A -> apply_fun r x = x).
+{
+  exact Hretr.
+}
+claim HretrWit :
+  exists r:set,
+    function_on r X X /\
+    continuous_map X Tx X Tx r /\
+    (forall x:set, x :e X -> apply_fun r x :e A) /\
+    (forall x:set, x :e A -> apply_fun r x = x).
+{
+  exact (andER
+    (A c= X)
+    (exists r:set,
+      function_on r X X /\
+      continuous_map X Tx X Tx r /\
+      (forall x:set, x :e X -> apply_fun r x :e A) /\
+      (forall x:set, x :e A -> apply_fun r x = x))
+    HretrPack).
+}
+apply HretrWit.
+let r.
+assume HrPack.
+claim HrABC :
+  (function_on r X X /\ continuous_map X Tx X Tx r) /\
+  (forall x:set, x :e X -> apply_fun r x :e A).
+{
+  exact (andEL
+    ((function_on r X X /\ continuous_map X Tx X Tx r) /\
+     (forall x:set, x :e X -> apply_fun r x :e A))
+    (forall x:set, x :e A -> apply_fun r x = x)
+    HrPack).
+}
+claim HrFixA : forall x:set, x :e A -> apply_fun r x = x.
+{
+  exact (andER
+    ((function_on r X X /\ continuous_map X Tx X Tx r) /\
+     (forall x:set, x :e X -> apply_fun r x :e A))
+    (forall x:set, x :e A -> apply_fun r x = x)
+    HrPack).
+}
+claim HrAB : function_on r X X /\ continuous_map X Tx X Tx r.
+{
+  exact (andEL
+    (function_on r X X /\ continuous_map X Tx X Tx r)
+    (forall x:set, x :e X -> apply_fun r x :e A)
+    HrABC).
+}
+claim HrIntoA : forall x:set, x :e X -> apply_fun r x :e A.
+{
+  exact (andER
+    (function_on r X X /\ continuous_map X Tx X Tx r)
+    (forall x:set, x :e X -> apply_fun r x :e A)
+    HrABC).
+}
+claim HrContXX : continuous_map X Tx X Tx r.
+{
+  exact (andER
+    (function_on r X X)
+    (continuous_map X Tx X Tx r)
+    HrAB).
+}
+claim HtopA : topology_on A (subspace_topology X Tx A).
+{
+  exact (subspace_topology_is_topology X Tx A HtopX HAsub).
+}
+set i := graph A (fun x:set => x).
+claim HiCont : continuous_map A (subspace_topology X Tx A) X Tx i.
+{
+  exact (subspace_inclusion_continuous X Tx A HtopX HAsub).
+}
+claim HrContXA : continuous_map X Tx A (subspace_topology X Tx A) r.
+{
+  exact (continuous_map_range_restrict
+    X Tx X Tx r A
+    HrContXX
+    HAsub
+    HrIntoA).
+}
+claim Hi0 : apply_fun i a = a.
+{
+  exact (apply_fun_graph A (fun x:set => x) a Ha).
+}
+claim Hr0 : apply_fun r a = a.
+{
+  exact (HrFixA a Ha).
+}
+claim HiFun : function_on i A X.
+{
+  exact (continuous_map_function_on
+    A (subspace_topology X Tx A) X Tx i HiCont).
+}
+claim HrFun : function_on r X A.
+{
+  exact (continuous_map_function_on
+    X Tx A (subspace_topology X Tx A) r HrContXA).
+}
+claim HcompId : compose_fun A i r = graph A (fun x:set => x).
+{
+  apply (total_function_space_extensional
+    A A
+    (compose_fun A i r)
+    (graph A (fun x:set => x))).
+  - exact (compose_fun_in_total_function_space
+      A X A
+      i r
+      HiFun
+      HrFun).
+  - exact (graph_in_total_function_space
+      A A
+      (fun x:set => x)
+      (fun x:set => fun Hx:x :e A => Hx)).
+  - let x.
+    assume Hx.
+    rewrite (compose_fun_apply A i r x Hx).
+    rewrite (apply_fun_graph A (fun y:set => y) x Hx).
+    exact (HrFixA x Hx).
+}
+set ih := induced_homomorphism A (subspace_topology X Tx A) a X Tx a i.
+set ir := induced_homomorphism X Tx a A (subspace_topology X Tx A) a r.
+claim Hcomp :
+  forall cls:set, cls :e fundamental_group A (subspace_topology X Tx A) a ->
+    apply_fun
+      (induced_homomorphism
+        A (subspace_topology X Tx A) a
+        A (subspace_topology X Tx A) a
+        (compose_fun A i r))
+      cls
+    =
+    apply_fun
+      (compose_fun (fundamental_group A (subspace_topology X Tx A) a) ih ir)
+      cls.
+{
+  let cls.
+  assume Hcls.
+  exact (Theorem_52_4_functorial_composition
+    A (subspace_topology X Tx A) a
+    X Tx a
+    A (subspace_topology X Tx A) a
+    i r
+    HiCont
+    HrContXA
+    Hi0
+    Hr0
+    Ha
+    cls
+    Hcls).
+}
+claim Hrecover :
+  forall cls:set, cls :e fundamental_group A (subspace_topology X Tx A) a ->
+    apply_fun ir (apply_fun ih cls) = cls.
+{
+  let cls.
+  assume Hcls.
+  claim HlhsId :
+    apply_fun
+      (induced_homomorphism
+        A (subspace_topology X Tx A) a
+        A (subspace_topology X Tx A) a
+        (compose_fun A i r))
+      cls
+    = cls.
+  {
+    rewrite HcompId.
+    exact (Theorem_52_4_functorial_identity
+      A (subspace_topology X Tx A) a
+      HtopA
+      Ha
+      cls
+      Hcls).
+  }
+  claim HrhsComp :
+    apply_fun
+      (compose_fun (fundamental_group A (subspace_topology X Tx A) a) ih ir)
+      cls
+    = apply_fun ir (apply_fun ih cls).
+  {
+    exact (compose_fun_apply
+      (fundamental_group A (subspace_topology X Tx A) a)
+      ih
+      ir
+      cls
+      Hcls).
+  }
+  prove apply_fun ir (apply_fun ih cls) = cls.
+  rewrite <- HrhsComp.
+  rewrite <- (Hcomp cls Hcls).
+  exact HlhsId.
+}
+let cls1.
+let cls2.
+assume Hcls1 Hcls2 HihEq.
+rewrite <- (Hrecover cls1 Hcls1).
+rewrite <- (Hrecover cls2 Hcls2).
+rewrite HihEq.
+reflexivity.
+Qed.
 
 (** from S55 Theorem 55.2 (line 904 in algtop.tex): No-retraction theorem **)
 (** LATEX VERSION: There is no retraction of B^2 onto S^1. **)
