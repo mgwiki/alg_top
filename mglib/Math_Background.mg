@@ -1,6 +1,6 @@
 (** Balance Alice 2584 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 37664 **)
+(** Balance Charlie 37610 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -45350,7 +45350,8 @@ Qed.
 (** LATEX VERSION: If p: E -> B is a covering map and B is completely regular, **)
 (** then E is completely regular. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T12:30:00 **)
 Theorem ex53_6a_completely_regular : forall E Te B Tb p:set,
   covering_map E Te B Tb p -> completely_regular_space B Tb ->
   completely_regular_space E Te.
@@ -53032,7 +53033,8 @@ Admitted.
 (** from S54 Theorem 54.6c (line 847 in algtop.tex) **)
 (** LATEX VERSION: [f] in H iff f lifts to a loop in E based at e0. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T12:30:00 **)
 Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
   covering_map E Te B Tb p -> e0 :e E ->
   loop_at B Tb (apply_fun p e0) f ->
@@ -53271,7 +53273,8 @@ Definition S1_inv_power_map : set -> set := fun n =>
 (** LATEX VERSION: For g(z) = z^n: the induced homomorphism g-star on pi_1(S^1,b0) **)
 (** is multiplication by n. For h(z) = 1/z^n: h-star is multiplication by -n. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 60 **)
+(** Bounty 66 **)
+(** Lock Charlie 2026-02-18T12:30:00 **)
 Theorem ex54_6_power_map_induced : forall n:set,
   n :e omega -> 0 :e n ->
   forall cls:set, cls :e fundamental_group S1 S1_topology S1_basepoint ->
@@ -53338,7 +53341,8 @@ Qed.
 (** LATEX VERSION: Let p: E -> B be a covering map with E path connected. **)
 (** If B is simply connected, then p is a homeomorphism. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T12:30:00 **)
 Theorem ex54_8_simply_connected_base_homeomorphism : forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
   path_connected_space E Te ->
@@ -53637,7 +53641,8 @@ Admitted.
 (** from S55 Lemma 55.3 direction (2) implies (3) (line 907 in algtop.tex) **)
 (** LATEX VERSION: If h extends to k: B^2 -> X, then h-star is the trivial homomorphism. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T12:30:00 **)
 Theorem lemma55_3_extends_implies_trivial : forall X Tx h b0:set,
   continuous_map S1 S1_topology X Tx h ->
   b0 :e S1 ->
@@ -54080,7 +54085,8 @@ Qed.
 (** from S55 Exercise 3 (line 1044 in algtop.tex) **)
 (** LATEX VERSION: If A is a nonsingular 3x3 matrix having nonnegative entries, then A has a positive real eigenvalue. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T12:30:00 **)
 Theorem ex55_3_nonneg_nonsingular_matrix_eigenvalue : forall A:set,
   function_on A (setprod 3 3) R ->
   (forall i j:set, i :e 3 -> j :e 3 -> ~(Rlt (apply_fun A (i, j)) 0)) ->
@@ -54184,7 +54190,8 @@ Qed.
 (** from S55 Exercise 4(d) (line 1049 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every continuous map f: B^{n+1} -> B^{n+1} has a fixed point. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T12:30:00 **)
 Theorem ex55_4d_brouwer_fixed_point_Rn : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   forall f:set,
@@ -63455,7 +63462,8 @@ Admitted.
 (** from S67 Exercise 4(c) (line 2710 in algtop.tex) **)
 (** LATEX VERSION: The rationals have no elements of finite order but are not free abelian. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 60 **)
+(** Bounty 66 **)
+(** Lock Charlie 2026-02-18T12:30:00 **)
 Theorem ex67_4c_rationals_not_free_abelian :
   (forall q:set, q :e rational -> q <> 0 ->
     ~(exists m:set, m :e omega /\ m <> 0 /\
@@ -63841,7 +63849,8 @@ Qed.
 (** from S68 Exercise 3 (line 3029 in algtop.tex) **)
 (** LATEX VERSION: Let G = G1 free-product G2. Given c in G, cG1c^{-1} cap G2 = {1}. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 60 **)
+(** Bounty 66 **)
+(** Lock Charlie 2026-02-18T12:30:00 **)
 Theorem ex68_3_conjugate_intersection_trivial :
   forall G mult e inv G1 G2:set,
   free_product_of_subgroups G mult e inv 2
@@ -64093,7 +64102,8 @@ Qed.
 (** That is, if G = free product of G_alpha, then G/[G,G] is isomorphic to **)
 (** the direct sum of G_alpha/[G_alpha,G_alpha]. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 60 **)
+(** Bounty 66 **)
+(** Lock Charlie 2026-02-18T12:30:00 **)
 Theorem ex69_2_abelianization_general_free_product :
   forall G multG eG invG J Gfam multfam efam invfam ifam:set,
   (forall alpha:set, alpha :e J ->
