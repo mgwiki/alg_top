@@ -64010,6 +64010,145 @@ Qed.
 (** from S58 Cor 58.5 (line 1423 in algtop.tex) **)
 (** LATEX VERSION: Let h, k: X -> Y be homotopic. If h-star is injective (or surjective, or trivial), so is k-star. **)
 
+(** helper: group homomorphism maps identity to identity (local S58 copy) **)
+Theorem group_hom_maps_id_to_id_s58 : forall G1 mult1 e1 inv1 G2 mult2 e2 inv2 phi:set,
+  group_structure G1 mult1 e1 inv1 ->
+  group_structure G2 mult2 e2 inv2 ->
+  group_homomorphism G1 mult1 G2 mult2 phi ->
+  apply_fun phi e1 = e2.
+let G1 mult1 e1 inv1 G2 mult2 e2 inv2 phi.
+assume Hgrp1 Hgrp2 Hhom.
+claim Hgrp1_exp : function_on mult1 (setprod G1 G1) G1 /\
+    function_on inv1 G1 G1 /\
+    e1 :e G1 /\
+    (forall x y z:set, x :e G1 -> y :e G1 -> z :e G1 ->
+      apply_fun mult1 (apply_fun mult1 (x, y), z) = apply_fun mult1 (x, apply_fun mult1 (y, z))) /\
+    (forall x:set, x :e G1 -> apply_fun mult1 (e1, x) = x /\ apply_fun mult1 (x, e1) = x) /\
+    (forall x:set, x :e G1 ->
+      apply_fun mult1 (x, apply_fun inv1 x) = e1 /\ apply_fun mult1 (apply_fun inv1 x, x) = e1).
+{ exact Hgrp1. }
+claim Hgrp2_exp : function_on mult2 (setprod G2 G2) G2 /\
+    function_on inv2 G2 G2 /\
+    e2 :e G2 /\
+    (forall x y z:set, x :e G2 -> y :e G2 -> z :e G2 ->
+      apply_fun mult2 (apply_fun mult2 (x, y), z) = apply_fun mult2 (x, apply_fun mult2 (y, z))) /\
+    (forall x:set, x :e G2 -> apply_fun mult2 (e2, x) = x /\ apply_fun mult2 (x, e2) = x) /\
+    (forall x:set, x :e G2 ->
+      apply_fun mult2 (x, apply_fun inv2 x) = e2 /\ apply_fun mult2 (apply_fun inv2 x, x) = e2).
+{ exact Hgrp2. }
+claim He1G1 : e1 :e G1.
+{ apply (and6E
+    (function_on mult1 (setprod G1 G1) G1) (function_on inv1 G1 G1) (e1 :e G1)
+    (forall x y z:set, x :e G1 -> y :e G1 -> z :e G1 ->
+      apply_fun mult1 (apply_fun mult1 (x, y), z) = apply_fun mult1 (x, apply_fun mult1 (y, z)))
+    (forall x:set, x :e G1 -> apply_fun mult1 (e1, x) = x /\ apply_fun mult1 (x, e1) = x)
+    (forall x:set, x :e G1 ->
+      apply_fun mult1 (x, apply_fun inv1 x) = e1 /\ apply_fun mult1 (apply_fun inv1 x, x) = e1)
+    Hgrp1_exp).
+  assume Hm1 Hi1 He1 Ha1 Hid1 Hinv1. exact He1. }
+claim He1sq : apply_fun mult1 (e1, e1) = e1.
+{ apply (and6E
+    (function_on mult1 (setprod G1 G1) G1) (function_on inv1 G1 G1) (e1 :e G1)
+    (forall x y z:set, x :e G1 -> y :e G1 -> z :e G1 ->
+      apply_fun mult1 (apply_fun mult1 (x, y), z) = apply_fun mult1 (x, apply_fun mult1 (y, z)))
+    (forall x:set, x :e G1 -> apply_fun mult1 (e1, x) = x /\ apply_fun mult1 (x, e1) = x)
+    (forall x:set, x :e G1 ->
+      apply_fun mult1 (x, apply_fun inv1 x) = e1 /\ apply_fun mult1 (apply_fun inv1 x, x) = e1)
+    Hgrp1_exp).
+  assume Hm1 Hi1 He1 Ha1 Hid1 Hinv1.
+  exact (andEL
+    (apply_fun mult1 (e1, e1) = e1) (apply_fun mult1 (e1, e1) = e1)
+    (Hid1 e1 He1)). }
+claim HphiE_mem : apply_fun phi e1 :e G2.
+{ exact (group_homomorphism_function_on G1 mult1 G2 mult2 phi Hhom e1 He1G1). }
+claim Hprod : apply_fun phi (apply_fun mult1 (e1, e1)) =
+  apply_fun mult2 (apply_fun phi e1, apply_fun phi e1).
+{ exact (group_homomorphism_mult_rule G1 mult1 G2 mult2 phi e1 e1 Hhom He1G1 He1G1). }
+claim H1 : apply_fun phi e1 = apply_fun phi (apply_fun mult1 (e1, e1)).
+{ rewrite He1sq. reflexivity. }
+claim Hstep3 : apply_fun phi e1 = apply_fun mult2 (apply_fun phi e1, apply_fun phi e1).
+{ exact (eq_i_tra (apply_fun phi e1) (apply_fun phi (apply_fun mult1 (e1, e1))) (apply_fun mult2 (apply_fun phi e1, apply_fun phi e1)) H1 Hprod). }
+claim Hinv2G2 : function_on inv2 G2 G2.
+{ apply (and6E
+    (function_on mult2 (setprod G2 G2) G2) (function_on inv2 G2 G2) (e2 :e G2)
+    (forall x y z:set, x :e G2 -> y :e G2 -> z :e G2 ->
+      apply_fun mult2 (apply_fun mult2 (x, y), z) = apply_fun mult2 (x, apply_fun mult2 (y, z)))
+    (forall x:set, x :e G2 -> apply_fun mult2 (e2, x) = x /\ apply_fun mult2 (x, e2) = x)
+    (forall x:set, x :e G2 ->
+      apply_fun mult2 (x, apply_fun inv2 x) = e2 /\ apply_fun mult2 (apply_fun inv2 x, x) = e2)
+    Hgrp2_exp).
+  assume Hm2 Hi2 He2 Ha2 Hid2 Hinv2. exact Hi2. }
+claim HinvPhiE_mem : apply_fun inv2 (apply_fun phi e1) :e G2.
+{ exact (Hinv2G2 (apply_fun phi e1) HphiE_mem). }
+claim Hlinv : apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun phi e1) = e2.
+{ apply (and6E
+    (function_on mult2 (setprod G2 G2) G2) (function_on inv2 G2 G2) (e2 :e G2)
+    (forall x y z:set, x :e G2 -> y :e G2 -> z :e G2 ->
+      apply_fun mult2 (apply_fun mult2 (x, y), z) = apply_fun mult2 (x, apply_fun mult2 (y, z)))
+    (forall x:set, x :e G2 -> apply_fun mult2 (e2, x) = x /\ apply_fun mult2 (x, e2) = x)
+    (forall x:set, x :e G2 ->
+      apply_fun mult2 (x, apply_fun inv2 x) = e2 /\ apply_fun mult2 (apply_fun inv2 x, x) = e2)
+    Hgrp2_exp).
+  assume Hm2 Hi2 He2 Ha2 Hid2 Hinv2.
+  exact (andER
+    (apply_fun mult2 (apply_fun phi e1, apply_fun inv2 (apply_fun phi e1)) = e2)
+    (apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun phi e1) = e2)
+    (Hinv2 (apply_fun phi e1) HphiE_mem)). }
+claim Hlid : apply_fun mult2 (e2, apply_fun phi e1) = apply_fun phi e1.
+{ apply (and6E
+    (function_on mult2 (setprod G2 G2) G2) (function_on inv2 G2 G2) (e2 :e G2)
+    (forall x y z:set, x :e G2 -> y :e G2 -> z :e G2 ->
+      apply_fun mult2 (apply_fun mult2 (x, y), z) = apply_fun mult2 (x, apply_fun mult2 (y, z)))
+    (forall x:set, x :e G2 -> apply_fun mult2 (e2, x) = x /\ apply_fun mult2 (x, e2) = x)
+    (forall x:set, x :e G2 ->
+      apply_fun mult2 (x, apply_fun inv2 x) = e2 /\ apply_fun mult2 (apply_fun inv2 x, x) = e2)
+    Hgrp2_exp).
+  assume Hm2 Hi2 He2 Ha2 Hid2 Hinv2.
+  exact (andEL
+    (apply_fun mult2 (e2, apply_fun phi e1) = apply_fun phi e1)
+    (apply_fun mult2 (apply_fun phi e1, e2) = apply_fun phi e1)
+    (Hid2 (apply_fun phi e1) HphiE_mem)). }
+claim Hassoc : apply_fun mult2 (apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun phi e1), apply_fun phi e1) =
+  apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun mult2 (apply_fun phi e1, apply_fun phi e1)).
+{ apply (and6E
+    (function_on mult2 (setprod G2 G2) G2) (function_on inv2 G2 G2) (e2 :e G2)
+    (forall x y z:set, x :e G2 -> y :e G2 -> z :e G2 ->
+      apply_fun mult2 (apply_fun mult2 (x, y), z) = apply_fun mult2 (x, apply_fun mult2 (y, z)))
+    (forall x:set, x :e G2 -> apply_fun mult2 (e2, x) = x /\ apply_fun mult2 (x, e2) = x)
+    (forall x:set, x :e G2 ->
+      apply_fun mult2 (x, apply_fun inv2 x) = e2 /\ apply_fun mult2 (apply_fun inv2 x, x) = e2)
+    Hgrp2_exp).
+  assume Hm2 Hi2 He2 Ha2 Hid2 Hinv2.
+  exact (Ha2 (apply_fun inv2 (apply_fun phi e1)) (apply_fun phi e1) (apply_fun phi e1)
+    HinvPhiE_mem HphiE_mem HphiE_mem). }
+claim Hchain_a : apply_fun mult2 (apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun phi e1), apply_fun phi e1) =
+  apply_fun mult2 (e2, apply_fun phi e1).
+{ rewrite Hlinv. reflexivity. }
+claim Hchain_b : apply_fun mult2 (apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun phi e1), apply_fun phi e1) =
+  apply_fun phi e1.
+{ exact (eq_i_tra
+    (apply_fun mult2 (apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun phi e1), apply_fun phi e1))
+    (apply_fun mult2 (e2, apply_fun phi e1))
+    (apply_fun phi e1)
+    Hchain_a Hlid). }
+claim Hchain_c : apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun mult2 (apply_fun phi e1, apply_fun phi e1)) =
+  apply_fun phi e1.
+{ rewrite <- Hassoc. exact Hchain_b. }
+claim Hstep4 : apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun phi e1) =
+  apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun mult2 (apply_fun phi e1, apply_fun phi e1)).
+{ rewrite <- Hstep3. reflexivity. }
+claim Hstep5 : apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun phi e1) =
+  apply_fun phi e1.
+{ exact (eq_i_tra
+    (apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun phi e1))
+    (apply_fun mult2 (apply_fun inv2 (apply_fun phi e1), apply_fun mult2 (apply_fun phi e1, apply_fun phi e1)))
+    (apply_fun phi e1)
+    Hstep4 Hchain_c). }
+symmetry.
+rewrite <- Hlinv.
+exact Hstep5.
+Qed.
+
 (** helper sub-bounty for Cor 58.5: alpha-hat sends identity to identity **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
 (** Bounty 10 **)
@@ -64090,7 +64229,47 @@ claim HidIfCont :
       (fundamental_group_id X Tx x0)
     = fundamental_group_id X Tx x1.
   {
-    admit. (** group-hom identity preservation core for alpha-hat under top/cont **)
+    claim Hgrp0 :
+      group_structure
+        (fundamental_group X Tx x0)
+        (fundamental_group_mult X Tx x0)
+        (fundamental_group_id X Tx x0)
+        (fundamental_group_inv X Tx x0).
+    {
+      exact (fundamental_group_is_group
+        X
+        Tx
+        x0
+        HtopX
+        Hx0X).
+    }
+    claim Hgrp1 :
+      group_structure
+        (fundamental_group X Tx x1)
+        (fundamental_group_mult X Tx x1)
+        (fundamental_group_id X Tx x1)
+        (fundamental_group_inv X Tx x1).
+    {
+      exact (fundamental_group_is_group
+        X
+        Tx
+        x1
+        HtopX
+        Hx1X).
+    }
+    exact (group_hom_maps_id_to_id_s58
+      (fundamental_group X Tx x0)
+      (fundamental_group_mult X Tx x0)
+      (fundamental_group_id X Tx x0)
+      (fundamental_group_inv X Tx x0)
+      (fundamental_group X Tx x1)
+      (fundamental_group_mult X Tx x1)
+      (fundamental_group_id X Tx x1)
+      (fundamental_group_inv X Tx x1)
+      (basepoint_change_map X Tx x0 x1 alpha)
+      Hgrp0
+      Hgrp1
+      HalphaHom).
   }
   exact HhomMapsId.
 }
