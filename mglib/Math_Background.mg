@@ -48046,6 +48046,69 @@ claim Hr2IntoB : forall a:set, a :e A -> apply_fun r2 a :e B.
     Ha).
   exact (H2At1InB a Ha).
 }
+claim H2FixB : forall b t:set, b :e B -> t :e unit_interval -> apply_fun H2 (b, t) = b.
+{
+  exact (andER
+    (continuous_map (setprod A unit_interval)
+      (product_topology A (subspace_topology X Tx A) unit_interval unit_interval_topology)
+      A
+      (subspace_topology X Tx A)
+      H2 /\
+      (forall a:set, a :e A -> apply_fun H2 (a, 0) = a) /\
+      (forall a:set, a :e A -> apply_fun H2 (a, 1) :e B))
+    (forall b t:set, b :e B -> t :e unit_interval -> apply_fun H2 (b, t) = b)
+    H2Pack).
+}
+claim Hr1FixA : forall a:set, a :e A -> apply_fun r1 a = a.
+{
+  let a.
+  assume HaA.
+  rewrite (apply_fun_graph
+    X
+    (fun x0:set => apply_fun H1 (x0, 1))
+    a
+    (HAsubX a HaA)).
+  exact (H1FixA a 1 HaA one_in_unit_interval).
+}
+claim Hr2FixB : forall b:set, b :e B -> apply_fun r2 b = b.
+{
+  let b.
+  assume HbB.
+  rewrite (apply_fun_graph
+    A
+    (fun a0:set => apply_fun H2 (a0, 1))
+    b
+    (HBsubA b HbB)).
+  exact (H2FixB b 1 HbB one_in_unit_interval).
+}
+set r := compose_fun X r1 r2.
+claim HrIntoB : forall x:set, x :e X -> apply_fun r x :e B.
+{
+  let x.
+  assume HxX.
+  rewrite (compose_fun_apply
+    X
+    r1
+    r2
+    x
+    HxX).
+  exact (Hr2IntoB
+    (apply_fun r1 x)
+    (Hr1IntoA x HxX)).
+}
+claim HrFixB : forall b:set, b :e B -> apply_fun r b = b.
+{
+  let b.
+  assume HbB.
+  rewrite (compose_fun_apply
+    X
+    r1
+    r2
+    b
+    (HBsubX b HbB)).
+  rewrite (Hr1FixA b (HBsubA b HbB)).
+  exact (Hr2FixB b HbB).
+}
 (** Next step: build an explicit composite deformation homotopy X x I -> X using H1 and H2 via reparameterization/pasting. **)
 admit.
 Admitted.
