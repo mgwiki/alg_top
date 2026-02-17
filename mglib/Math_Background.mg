@@ -1,5 +1,5 @@
 (** Balance Alice 2135 **)
-(** Balance Bob 2040 **)
+(** Balance Bob 2139 **)
 (** Balance Charlie 1213 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -16292,30 +16292,1266 @@ exact (Lemma_51_1_homotopy_trans
   Hpre).
 Qed.
 
+(** S51 helper: every map X -> I is homotopic to the zero constant map **)
+(** Proven Bob **)
+Theorem s51_maps_to_I_homotopic_to_zero : forall X Tx u:set,
+  continuous_map X Tx unit_interval unit_interval_topology u ->
+  homotopic_maps X Tx unit_interval unit_interval_topology u (const_fun X 0).
+let X Tx u.
+assume Hu.
+claim HtopX : topology_on X Tx.
+{
+  exact (continuous_map_topology_dom
+    X
+    Tx
+    unit_interval
+    unit_interval_topology
+    u
+    Hu).
+}
+claim HprojPair :
+  continuous_map
+    (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    X
+    Tx
+    (projection_map1 X unit_interval)
+  /\
+  continuous_map
+    (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    unit_interval
+    unit_interval_topology
+    (projection_map2 X unit_interval).
+{
+  exact (projection_maps_continuous
+    X
+    Tx
+    unit_interval
+    unit_interval_topology
+    HtopX
+    unit_interval_topology_on).
+}
+claim Hproj1 :
+  continuous_map
+    (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    X
+    Tx
+    (projection_map1 X unit_interval).
+{
+  exact (andEL
+    (continuous_map
+      (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      X
+      Tx
+      (projection_map1 X unit_interval))
+    (continuous_map
+      (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      unit_interval
+      unit_interval_topology
+      (projection_map2 X unit_interval))
+    HprojPair).
+}
+claim Hproj2 :
+  continuous_map
+    (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    unit_interval
+    unit_interval_topology
+    (projection_map2 X unit_interval).
+{
+  exact (andER
+    (continuous_map
+      (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      X
+      Tx
+      (projection_map1 X unit_interval))
+    (continuous_map
+      (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      unit_interval
+      unit_interval_topology
+      (projection_map2 X unit_interval))
+    HprojPair).
+}
+set u_on_prod := compose_fun
+  (setprod X unit_interval)
+  (projection_map1 X unit_interval)
+  u.
+claim HuOnProdCont :
+  continuous_map
+    (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    unit_interval
+    unit_interval_topology
+    u_on_prod.
+{
+  exact (composition_continuous
+    (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    X
+    Tx
+    unit_interval
+    unit_interval_topology
+    (projection_map1 X unit_interval)
+    u
+    Hproj1
+    Hu).
+}
+set one_minus_t := compose_fun
+  (setprod X unit_interval)
+  (projection_map2 X unit_interval)
+  flip_unit_interval.
+claim HoneMinusTCont :
+  continuous_map
+    (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    unit_interval
+    unit_interval_topology
+    one_minus_t.
+{
+  exact (composition_continuous
+    (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    (projection_map2 X unit_interval)
+    flip_unit_interval
+    Hproj2
+    flip_unit_interval_continuous).
+}
+set F := compose_fun
+  (setprod X unit_interval)
+  (pair_map (setprod X unit_interval) u_on_prod one_minus_t)
+  mul_fun_R.
+claim HFCont :
+  continuous_map
+    (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    unit_interval
+    unit_interval_topology
+    F.
+{
+  exact (mul_two_continuous_unit_interval
+    (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    u_on_prod
+    one_minus_t
+    (product_topology_is_topology
+      X
+      Tx
+      unit_interval
+      unit_interval_topology
+      HtopX
+      unit_interval_topology_on)
+    HuOnProdCont
+    HoneMinusTCont).
+}
+claim Hconst0Cont :
+  continuous_map
+    X
+    Tx
+    unit_interval
+    unit_interval_topology
+    (const_fun X 0).
+{
+  exact (const_fun_continuous
+    X
+    Tx
+    unit_interval
+    unit_interval_topology
+    0
+    HtopX
+    unit_interval_topology_on
+    zero_in_unit_interval).
+}
+claim HuOnProdFun :
+  function_on u_on_prod (setprod X unit_interval) unit_interval.
+{
+  exact (continuous_map_function_on
+    (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    unit_interval
+    unit_interval_topology
+    u_on_prod
+    HuOnProdCont).
+}
+claim HoneMinusTFun :
+  function_on one_minus_t (setprod X unit_interval) unit_interval.
+{
+  exact (continuous_map_function_on
+    (setprod X unit_interval)
+    (product_topology X Tx unit_interval unit_interval_topology)
+    unit_interval
+    unit_interval_topology
+    one_minus_t
+    HoneMinusTCont).
+}
+prove continuous_map
+  X
+  Tx
+  unit_interval
+  unit_interval_topology
+  u
+  /\
+  continuous_map
+    X
+    Tx
+    unit_interval
+    unit_interval_topology
+    (const_fun X 0)
+  /\
+  exists F0:set,
+    continuous_map
+      (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      unit_interval
+      unit_interval_topology
+      F0
+    /\
+    (forall x:set, x :e X ->
+      apply_fun F0 (x, 0) = apply_fun u x)
+    /\
+    (forall x:set, x :e X ->
+      apply_fun F0 (x, 1) = apply_fun (const_fun X 0) x).
+apply andI.
+- apply andI.
+  + exact Hu.
+  + exact Hconst0Cont.
+- witness F.
+  apply andI.
+  * apply andI.
+    { exact HFCont. }
+    { let x.
+        assume Hx.
+        claim Hx0 :
+          (x, 0) :e setprod X unit_interval.
+        {
+          exact (tuple_2_setprod_by_pair_Sigma
+            X
+            unit_interval
+            x
+            0
+            Hx
+            zero_in_unit_interval).
+        }
+        claim HuValI :
+          apply_fun u_on_prod (x, 0) :e unit_interval.
+        {
+          exact (HuOnProdFun
+            (x, 0)
+            Hx0).
+        }
+        claim HOneValI :
+          apply_fun one_minus_t (x, 0) :e unit_interval.
+        {
+          exact (HoneMinusTFun
+            (x, 0)
+            Hx0).
+        }
+        claim HuValR :
+          apply_fun u_on_prod (x, 0) :e R.
+        {
+          exact (unit_interval_sub_R
+            (apply_fun u_on_prod (x, 0))
+            HuValI).
+        }
+        claim HOneValR :
+          apply_fun one_minus_t (x, 0) :e R.
+        {
+          exact (unit_interval_sub_R
+            (apply_fun one_minus_t (x, 0))
+            HOneValI).
+        }
+        rewrite (mul_of_pair_map_apply
+          (setprod X unit_interval)
+          u_on_prod
+          one_minus_t
+          (x, 0)
+          Hx0
+          HuValR
+          HOneValR).
+        rewrite (compose_fun_apply
+          (setprod X unit_interval)
+          (projection_map1 X unit_interval)
+          u
+          (x, 0)
+          Hx0).
+        rewrite (projection1_apply
+          X
+          unit_interval
+          (x, 0)
+          Hx0).
+        rewrite tuple_2_0_eq.
+        rewrite (compose_fun_apply
+          (setprod X unit_interval)
+          (projection_map2 X unit_interval)
+          flip_unit_interval
+          (x, 0)
+          Hx0).
+        rewrite (projection2_apply
+          X
+          unit_interval
+          (x, 0)
+          Hx0).
+        rewrite tuple_2_1_eq.
+        rewrite flip_unit_interval_at_0.
+        rewrite (mul_SNo_oneR
+          (apply_fun u x)
+          (real_SNo
+            (apply_fun u x)
+            (unit_interval_sub_R
+              (apply_fun u x)
+              (continuous_map_function_on
+                X
+                Tx
+                unit_interval
+                unit_interval_topology
+                u
+                Hu
+                x
+                Hx)))).
+        reflexivity.
+      }
+  * let x.
+    assume Hx.
+    claim Hx1 :
+      (x, 1) :e setprod X unit_interval.
+    {
+      exact (tuple_2_setprod_by_pair_Sigma
+        X
+        unit_interval
+        x
+        1
+        Hx
+        one_in_unit_interval).
+    }
+    claim HuValI :
+      apply_fun u_on_prod (x, 1) :e unit_interval.
+    {
+      exact (HuOnProdFun
+        (x, 1)
+        Hx1).
+    }
+    claim HOneValI :
+      apply_fun one_minus_t (x, 1) :e unit_interval.
+    {
+      exact (HoneMinusTFun
+        (x, 1)
+        Hx1).
+    }
+    claim HuValR :
+      apply_fun u_on_prod (x, 1) :e R.
+    {
+      exact (unit_interval_sub_R
+        (apply_fun u_on_prod (x, 1))
+        HuValI).
+    }
+    claim HOneValR :
+      apply_fun one_minus_t (x, 1) :e R.
+    {
+      exact (unit_interval_sub_R
+        (apply_fun one_minus_t (x, 1))
+        HOneValI).
+    }
+    rewrite (mul_of_pair_map_apply
+      (setprod X unit_interval)
+      u_on_prod
+      one_minus_t
+      (x, 1)
+      Hx1
+      HuValR
+      HOneValR).
+    rewrite (compose_fun_apply
+      (setprod X unit_interval)
+      (projection_map2 X unit_interval)
+      flip_unit_interval
+      (x, 1)
+      Hx1).
+    rewrite (projection2_apply
+      X
+      unit_interval
+      (x, 1)
+      Hx1).
+    rewrite tuple_2_1_eq.
+    rewrite flip_unit_interval_at_1.
+    rewrite (mul_SNo_zeroR
+      (apply_fun u_on_prod (x, 1))
+      (real_SNo
+        (apply_fun u_on_prod (x, 1))
+        HuValR)).
+    rewrite (const_fun_apply
+      X
+      0
+      x
+      Hx).
+    reflexivity.
+Qed.
+
 (** from S51 Exercise 2a (line 331 in algtop.tex) **)
 (** LATEX VERSION: For any X, the set [X, I] has a single element. **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 40 **)
-(** Bounty 44 **)
-(** Lock Bob 2026-02-18T02:45:00 **)
+(** Collected Bob 44 **)
+(** Proven Bob **)
 Theorem ex51_2a_maps_to_I : forall X Tx f g:set,
   continuous_map X Tx unit_interval unit_interval_topology f ->
   continuous_map X Tx unit_interval unit_interval_topology g ->
   homotopic_maps X Tx unit_interval unit_interval_topology f g.
-admit.
-Admitted.
+let X Tx f g.
+assume Hf Hg.
+claim HfToZero :
+  homotopic_maps
+    X
+    Tx
+    unit_interval
+    unit_interval_topology
+    f
+    (const_fun X 0).
+{
+  exact (s51_maps_to_I_homotopic_to_zero
+    X
+    Tx
+    f
+    Hf).
+}
+claim HgToZero :
+  homotopic_maps
+    X
+    Tx
+    unit_interval
+    unit_interval_topology
+    g
+    (const_fun X 0).
+{
+  exact (s51_maps_to_I_homotopic_to_zero
+    X
+    Tx
+    g
+    Hg).
+}
+claim HzeroToG :
+  homotopic_maps
+    X
+    Tx
+    unit_interval
+    unit_interval_topology
+    (const_fun X 0)
+    g.
+{
+  exact (Lemma_51_1_homotopy_sym
+    X
+    Tx
+    unit_interval
+    unit_interval_topology
+    g
+    (const_fun X 0)
+    HgToZero).
+}
+exact (Lemma_51_1_homotopy_trans
+  X
+  Tx
+  unit_interval
+  unit_interval_topology
+  f
+  (const_fun X 0)
+  g
+  HfToZero
+  HzeroToG).
+Qed.
+
+(** S51 helper: any map I -> Y is homotopic to the constant map at its initial value **)
+(** Proven Bob **)
+Theorem s51_maps_from_I_homotopic_to_start : forall Y Ty u:set,
+  continuous_map unit_interval unit_interval_topology Y Ty u ->
+  homotopic_maps
+    unit_interval
+    unit_interval_topology
+    Y
+    Ty
+    u
+    (const_fun unit_interval (apply_fun u 0)).
+let Y Ty u.
+assume Hu.
+claim HtopY : topology_on Y Ty.
+{
+  exact (continuous_map_topology_cod
+    unit_interval
+    unit_interval_topology
+    Y
+    Ty
+    u
+    Hu).
+}
+claim HuFun : function_on u unit_interval Y.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    Y
+    Ty
+    u
+    Hu).
+}
+claim Hu0Y : apply_fun u 0 :e Y.
+{
+  exact (HuFun
+    0
+    zero_in_unit_interval).
+}
+claim HprojPair :
+  continuous_map
+    unit_square
+    unit_square_topology
+    unit_interval
+    unit_interval_topology
+    (projection_map1 unit_interval unit_interval)
+  /\
+  continuous_map
+    unit_square
+    unit_square_topology
+    unit_interval
+    unit_interval_topology
+    (projection_map2 unit_interval unit_interval).
+{
+  exact (projection_maps_continuous
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    unit_interval_topology_on
+    unit_interval_topology_on).
+}
+claim Hproj1 :
+  continuous_map
+    unit_square
+    unit_square_topology
+    unit_interval
+    unit_interval_topology
+    (projection_map1 unit_interval unit_interval).
+{
+  exact (andEL
+    (continuous_map
+      unit_square
+      unit_square_topology
+      unit_interval
+      unit_interval_topology
+      (projection_map1 unit_interval unit_interval))
+    (continuous_map
+      unit_square
+      unit_square_topology
+      unit_interval
+      unit_interval_topology
+      (projection_map2 unit_interval unit_interval))
+    HprojPair).
+}
+claim Hproj2 :
+  continuous_map
+    unit_square
+    unit_square_topology
+    unit_interval
+    unit_interval_topology
+    (projection_map2 unit_interval unit_interval).
+{
+  exact (andER
+    (continuous_map
+      unit_square
+      unit_square_topology
+      unit_interval
+      unit_interval_topology
+      (projection_map1 unit_interval unit_interval))
+    (continuous_map
+      unit_square
+      unit_square_topology
+      unit_interval
+      unit_interval_topology
+      (projection_map2 unit_interval unit_interval))
+    HprojPair).
+}
+set one_minus_t := compose_fun
+  unit_square
+  (projection_map2 unit_interval unit_interval)
+  flip_unit_interval.
+claim HoneMinusTCont :
+  continuous_map
+    unit_square
+    unit_square_topology
+    unit_interval
+    unit_interval_topology
+    one_minus_t.
+{
+  exact (composition_continuous
+    unit_square
+    unit_square_topology
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    (projection_map2 unit_interval unit_interval)
+    flip_unit_interval
+    Hproj2
+    flip_unit_interval_continuous).
+}
+set arg := compose_fun
+  unit_square
+  (pair_map
+    unit_square
+    (projection_map1 unit_interval unit_interval)
+    one_minus_t)
+  mul_fun_R.
+claim HargCont :
+  continuous_map
+    unit_square
+    unit_square_topology
+    unit_interval
+    unit_interval_topology
+    arg.
+{
+  exact (mul_two_continuous_unit_interval
+    unit_square
+    unit_square_topology
+    (projection_map1 unit_interval unit_interval)
+    one_minus_t
+    (product_topology_is_topology
+      unit_interval
+      unit_interval_topology
+      unit_interval
+      unit_interval_topology
+      unit_interval_topology_on
+      unit_interval_topology_on)
+    Hproj1
+    HoneMinusTCont).
+}
+set F := compose_fun unit_square arg u.
+claim HFCont :
+  continuous_map
+    unit_square
+    unit_square_topology
+    Y
+    Ty
+    F.
+{
+  exact (composition_continuous
+    unit_square
+    unit_square_topology
+    unit_interval
+    unit_interval_topology
+    Y
+    Ty
+    arg
+    u
+    HargCont
+    Hu).
+}
+claim HconstCont :
+  continuous_map
+    unit_interval
+    unit_interval_topology
+    Y
+    Ty
+    (const_fun unit_interval (apply_fun u 0)).
+{
+  exact (const_fun_continuous
+    unit_interval
+    unit_interval_topology
+    Y
+    Ty
+    (apply_fun u 0)
+    unit_interval_topology_on
+    HtopY
+    Hu0Y).
+}
+claim HoneMinusTFun : function_on one_minus_t unit_square unit_interval.
+{
+  exact (continuous_map_function_on
+    unit_square
+    unit_square_topology
+    unit_interval
+    unit_interval_topology
+    one_minus_t
+    HoneMinusTCont).
+}
+prove continuous_map
+  unit_interval
+  unit_interval_topology
+  Y
+  Ty
+  u
+  /\
+  continuous_map
+    unit_interval
+    unit_interval_topology
+    Y
+    Ty
+    (const_fun unit_interval (apply_fun u 0))
+  /\
+  exists H:set,
+    continuous_map
+      unit_square
+      unit_square_topology
+      Y
+      Ty
+      H
+    /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun H (s, 0) = apply_fun u s)
+    /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun H (s, 1) = apply_fun (const_fun unit_interval (apply_fun u 0)) s).
+apply andI.
+- apply andI.
+  + exact Hu.
+  + exact HconstCont.
+- witness F.
+  apply andI.
+  * apply andI.
+    { exact HFCont. }
+    { let s.
+      assume Hs.
+      claim Hs0 : (s, 0) :e unit_square.
+      {
+        exact (tuple_2_setprod_by_pair_Sigma
+          unit_interval
+          unit_interval
+          s
+          0
+          Hs
+          zero_in_unit_interval).
+      }
+      claim Hproj1ValI :
+        apply_fun (projection_map1 unit_interval unit_interval) (s, 0) :e unit_interval.
+      {
+        exact (continuous_map_function_on
+          unit_square
+          unit_square_topology
+          unit_interval
+          unit_interval_topology
+          (projection_map1 unit_interval unit_interval)
+          Hproj1
+          (s, 0)
+          Hs0).
+      }
+      claim Hproj1ValR :
+        apply_fun (projection_map1 unit_interval unit_interval) (s, 0) :e R.
+      {
+        exact (unit_interval_sub_R
+          (apply_fun (projection_map1 unit_interval unit_interval) (s, 0))
+          Hproj1ValI).
+      }
+      claim HoneValI :
+        apply_fun one_minus_t (s, 0) :e unit_interval.
+      {
+        exact (HoneMinusTFun
+          (s, 0)
+          Hs0).
+      }
+      claim HoneValR :
+        apply_fun one_minus_t (s, 0) :e R.
+      {
+        exact (unit_interval_sub_R
+          (apply_fun one_minus_t (s, 0))
+          HoneValI).
+      }
+      rewrite (compose_fun_apply
+        unit_square
+        arg
+        u
+        (s, 0)
+        Hs0).
+      rewrite (mul_of_pair_map_apply
+        unit_square
+        (projection_map1 unit_interval unit_interval)
+        one_minus_t
+        (s, 0)
+        Hs0
+        Hproj1ValR
+        HoneValR).
+      rewrite (projection1_apply
+        unit_interval
+        unit_interval
+        (s, 0)
+        Hs0).
+      rewrite tuple_2_0_eq.
+      rewrite (compose_fun_apply
+        unit_square
+        (projection_map2 unit_interval unit_interval)
+        flip_unit_interval
+        (s, 0)
+        Hs0).
+      rewrite (projection2_apply
+        unit_interval
+        unit_interval
+        (s, 0)
+        Hs0).
+      rewrite tuple_2_1_eq.
+      rewrite flip_unit_interval_at_0.
+      rewrite (mul_SNo_oneR
+        s
+        (real_SNo s (unit_interval_sub_R s Hs))).
+      reflexivity.
+    }
+  * let s.
+    assume Hs.
+    claim Hs1 : (s, 1) :e unit_square.
+    {
+      exact (tuple_2_setprod_by_pair_Sigma
+        unit_interval
+        unit_interval
+        s
+        1
+        Hs
+        one_in_unit_interval).
+    }
+    claim Hproj1ValI :
+      apply_fun (projection_map1 unit_interval unit_interval) (s, 1) :e unit_interval.
+    {
+      exact (continuous_map_function_on
+        unit_square
+        unit_square_topology
+        unit_interval
+        unit_interval_topology
+        (projection_map1 unit_interval unit_interval)
+        Hproj1
+        (s, 1)
+        Hs1).
+    }
+    claim Hproj1ValR :
+      apply_fun (projection_map1 unit_interval unit_interval) (s, 1) :e R.
+    {
+      exact (unit_interval_sub_R
+        (apply_fun (projection_map1 unit_interval unit_interval) (s, 1))
+        Hproj1ValI).
+    }
+    claim HoneValI :
+      apply_fun one_minus_t (s, 1) :e unit_interval.
+    {
+      exact (HoneMinusTFun
+        (s, 1)
+        Hs1).
+    }
+    claim HoneValR :
+      apply_fun one_minus_t (s, 1) :e R.
+    {
+      exact (unit_interval_sub_R
+        (apply_fun one_minus_t (s, 1))
+        HoneValI).
+    }
+    rewrite (compose_fun_apply
+      unit_square
+      arg
+      u
+      (s, 1)
+      Hs1).
+    rewrite (mul_of_pair_map_apply
+      unit_square
+      (projection_map1 unit_interval unit_interval)
+      one_minus_t
+      (s, 1)
+      Hs1
+      Hproj1ValR
+      HoneValR).
+    rewrite (projection1_apply
+      unit_interval
+      unit_interval
+      (s, 1)
+      Hs1).
+    rewrite tuple_2_0_eq.
+    rewrite (compose_fun_apply
+      unit_square
+      (projection_map2 unit_interval unit_interval)
+      flip_unit_interval
+      (s, 1)
+      Hs1).
+    rewrite (projection2_apply
+      unit_interval
+      unit_interval
+      (s, 1)
+      Hs1).
+    rewrite tuple_2_1_eq.
+    rewrite flip_unit_interval_at_1.
+    rewrite (mul_SNo_zeroR
+      s
+      (real_SNo s (unit_interval_sub_R s Hs))).
+    rewrite (const_fun_apply
+      unit_interval
+      (apply_fun u 0)
+      s
+      Hs).
+    reflexivity.
+Qed.
 
 (** from S51 Exercise 2b (line 332 in algtop.tex) **)
 (** LATEX VERSION: If Y is path connected, the set [I, Y] has a single element. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-(** Lock Bob 2026-02-18T02:45:00 **)
+(** Collected Bob 55 **)
+(** Proven Bob **)
 Theorem ex51_2b_maps_from_I_path_connected : forall Y Ty f g:set,
   path_connected_space Y Ty ->
   continuous_map unit_interval unit_interval_topology Y Ty f ->
   continuous_map unit_interval unit_interval_topology Y Ty g ->
   homotopic_maps unit_interval unit_interval_topology Y Ty f g.
-admit.
-Admitted.
+let Y Ty f g.
+assume Hpc Hf Hg.
+claim HtopY : topology_on Y Ty.
+{
+  exact (path_connected_space_topology
+    Y
+    Ty
+    Hpc).
+}
+claim HfFun : function_on f unit_interval Y.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    Y
+    Ty
+    f
+    Hf).
+}
+claim HgFun : function_on g unit_interval Y.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    Y
+    Ty
+    g
+    Hg).
+}
+claim Hf0Y : apply_fun f 0 :e Y.
+{
+  exact (HfFun
+    0
+    zero_in_unit_interval).
+}
+claim Hg0Y : apply_fun g 0 :e Y.
+{
+  exact (HgFun
+    0
+    zero_in_unit_interval).
+}
+claim HfToConst :
+  homotopic_maps
+    unit_interval
+    unit_interval_topology
+    Y
+    Ty
+    f
+    (const_fun unit_interval (apply_fun f 0)).
+{
+  exact (s51_maps_from_I_homotopic_to_start
+    Y
+    Ty
+    f
+    Hf).
+}
+claim HgToConst :
+  homotopic_maps
+    unit_interval
+    unit_interval_topology
+    Y
+    Ty
+    g
+    (const_fun unit_interval (apply_fun g 0)).
+{
+  exact (s51_maps_from_I_homotopic_to_start
+    Y
+    Ty
+    g
+    Hg).
+}
+claim HpathPack :
+  exists p:set,
+    path_between Y (apply_fun f 0) (apply_fun g 0) p /\
+    continuous_map unit_interval unit_interval_topology Y Ty p.
+{
+  exact (path_connected_space_paths
+    Y
+    Ty
+    (apply_fun f 0)
+    (apply_fun g 0)
+    Hpc
+    Hf0Y
+    Hg0Y).
+}
+apply HpathPack.
+let p.
+assume HpPack.
+claim HpBetween : path_between Y (apply_fun f 0) (apply_fun g 0) p.
+{
+  exact (andEL
+    (path_between Y (apply_fun f 0) (apply_fun g 0) p)
+    (continuous_map unit_interval unit_interval_topology Y Ty p)
+    HpPack).
+}
+claim HpCont :
+  continuous_map unit_interval unit_interval_topology Y Ty p.
+{
+  exact (andER
+    (path_between Y (apply_fun f 0) (apply_fun g 0) p)
+    (continuous_map unit_interval unit_interval_topology Y Ty p)
+    HpPack).
+}
+claim Hp0 : apply_fun p 0 = apply_fun f 0.
+{
+  exact (path_between_at_zero
+    Y
+    (apply_fun f 0)
+    (apply_fun g 0)
+    p
+    HpBetween).
+}
+claim Hp1 : apply_fun p 1 = apply_fun g 0.
+{
+  exact (path_between_at_one
+    Y
+    (apply_fun f 0)
+    (apply_fun g 0)
+    p
+    HpBetween).
+}
+claim HconstBridge :
+  homotopic_maps
+    unit_interval
+    unit_interval_topology
+    Y
+    Ty
+    (const_fun unit_interval (apply_fun f 0))
+    (const_fun unit_interval (apply_fun g 0)).
+{
+  claim HconstFCont :
+    continuous_map
+      unit_interval
+      unit_interval_topology
+      Y
+      Ty
+      (const_fun unit_interval (apply_fun f 0)).
+  {
+    exact (const_fun_continuous
+      unit_interval
+      unit_interval_topology
+      Y
+      Ty
+      (apply_fun f 0)
+      unit_interval_topology_on
+      HtopY
+      Hf0Y).
+  }
+  claim HconstGCont :
+    continuous_map
+      unit_interval
+      unit_interval_topology
+      Y
+      Ty
+      (const_fun unit_interval (apply_fun g 0)).
+  {
+    exact (const_fun_continuous
+      unit_interval
+      unit_interval_topology
+      Y
+      Ty
+      (apply_fun g 0)
+      unit_interval_topology_on
+      HtopY
+      Hg0Y).
+  }
+  set Fconst := compose_fun
+    unit_square
+    (projection_map2 unit_interval unit_interval)
+    p.
+  claim Hproj2 :
+    continuous_map
+      unit_square
+      unit_square_topology
+      unit_interval
+      unit_interval_topology
+      (projection_map2 unit_interval unit_interval).
+  {
+    exact (andER
+      (continuous_map
+        unit_square
+        unit_square_topology
+        unit_interval
+        unit_interval_topology
+        (projection_map1 unit_interval unit_interval))
+      (continuous_map
+        unit_square
+        unit_square_topology
+        unit_interval
+        unit_interval_topology
+        (projection_map2 unit_interval unit_interval))
+      (projection_maps_continuous
+        unit_interval
+        unit_interval_topology
+        unit_interval
+        unit_interval_topology
+        unit_interval_topology_on
+        unit_interval_topology_on)).
+  }
+  claim HFconstCont :
+    continuous_map unit_square unit_square_topology Y Ty Fconst.
+  {
+    exact (composition_continuous
+      unit_square
+      unit_square_topology
+      unit_interval
+      unit_interval_topology
+      Y
+      Ty
+      (projection_map2 unit_interval unit_interval)
+      p
+      Hproj2
+      HpCont).
+  }
+  prove continuous_map
+    unit_interval
+    unit_interval_topology
+    Y
+    Ty
+    (const_fun unit_interval (apply_fun f 0))
+    /\
+    continuous_map
+      unit_interval
+      unit_interval_topology
+      Y
+      Ty
+      (const_fun unit_interval (apply_fun g 0))
+    /\
+    exists F0:set,
+      continuous_map unit_square unit_square_topology Y Ty F0
+      /\
+      (forall s:set, s :e unit_interval ->
+        apply_fun F0 (s, 0) = apply_fun (const_fun unit_interval (apply_fun f 0)) s)
+      /\
+      (forall s:set, s :e unit_interval ->
+        apply_fun F0 (s, 1) = apply_fun (const_fun unit_interval (apply_fun g 0)) s).
+  apply andI.
+  - apply andI.
+    + exact HconstFCont.
+    + exact HconstGCont.
+  - witness Fconst.
+    apply andI.
+    * apply andI.
+      { exact HFconstCont. }
+      { let s.
+        assume Hs.
+        claim Hs0 : (s, 0) :e unit_square.
+        {
+          exact (tuple_2_setprod_by_pair_Sigma
+            unit_interval
+            unit_interval
+            s
+            0
+            Hs
+            zero_in_unit_interval).
+        }
+        rewrite (compose_fun_apply
+          unit_square
+          (projection_map2 unit_interval unit_interval)
+          p
+          (s, 0)
+          Hs0).
+        rewrite (projection2_apply
+          unit_interval
+          unit_interval
+          (s, 0)
+          Hs0).
+        rewrite tuple_2_1_eq.
+        rewrite Hp0.
+        rewrite (const_fun_apply
+          unit_interval
+          (apply_fun f 0)
+          s
+          Hs).
+        reflexivity.
+      }
+    * let s.
+      assume Hs.
+      claim Hs1 : (s, 1) :e unit_square.
+      {
+        exact (tuple_2_setprod_by_pair_Sigma
+          unit_interval
+          unit_interval
+          s
+          1
+          Hs
+          one_in_unit_interval).
+      }
+      rewrite (compose_fun_apply
+        unit_square
+        (projection_map2 unit_interval unit_interval)
+        p
+        (s, 1)
+        Hs1).
+      rewrite (projection2_apply
+        unit_interval
+        unit_interval
+        (s, 1)
+        Hs1).
+      rewrite tuple_2_1_eq.
+      rewrite Hp1.
+      rewrite (const_fun_apply
+        unit_interval
+        (apply_fun g 0)
+        s
+        Hs).
+      reflexivity.
+}
+claim HconstToG :
+  homotopic_maps
+    unit_interval
+    unit_interval_topology
+    Y
+    Ty
+    (const_fun unit_interval (apply_fun g 0))
+    g.
+{
+  exact (Lemma_51_1_homotopy_sym
+    unit_interval
+    unit_interval_topology
+    Y
+    Ty
+    g
+    (const_fun unit_interval (apply_fun g 0))
+    HgToConst).
+}
+claim HfToConstG :
+  homotopic_maps
+    unit_interval
+    unit_interval_topology
+    Y
+    Ty
+    f
+    (const_fun unit_interval (apply_fun g 0)).
+{
+  exact (Lemma_51_1_homotopy_trans
+    unit_interval
+    unit_interval_topology
+    Y
+    Ty
+    f
+    (const_fun unit_interval (apply_fun f 0))
+    (const_fun unit_interval (apply_fun g 0))
+    HfToConst
+    HconstBridge).
+}
+exact (Lemma_51_1_homotopy_trans
+  unit_interval
+  unit_interval_topology
+  Y
+  Ty
+  f
+  (const_fun unit_interval (apply_fun g 0))
+  g
+  HfToConstG
+  HconstToG).
+Qed.
 
 (** from S51 Exercise 3 (line 333 in algtop.tex): contractible spaces **)
 (** LATEX VERSION: A space X is said to be contractible if the identity map iX: X->X is nulhomotopic. **)
