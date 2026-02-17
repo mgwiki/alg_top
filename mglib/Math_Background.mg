@@ -65737,6 +65737,18 @@ exact (subspace_topology_is_topology
   HSnSub).
 Qed.
 
+(** Helper subproblem for S59.3 openness: continuity of first coordinate on Euclidean ambient **)
+(** EFFORT: 4 lines textbook, difficulty 3/10, USD 20 **)
+(** Bounty 22 **)
+Theorem lemma59_3_coord0_continuous : forall n:set, n :e omega ->
+  continuous_map (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n))
+    R R_standard_topology
+    (graph (euclidean_space (ordsucc n)) (fun x:set => apply_fun x 0)).
+let n.
+assume Hn : n :e omega.
+admit.
+Admitted.
+
 (** Helper subproblem for S59.3: choose two simply connected open pieces covering S^n **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 30 **)
 (** Bounty 33 **)
@@ -65767,7 +65779,7 @@ claim Hcoord0Cont :
   continuous_map (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n))
     R R_standard_topology coord0.
 {
-  admit. (** coordinate projection continuity in finite product **)
+  exact (lemma59_3_coord0_continuous n Hn).
 }
 claim HUopen : U :e Sn_topology n.
 {
