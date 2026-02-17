@@ -1,7 +1,7 @@
 (** Balance Alice 3264 **)
 (** Balance Bob 3037 **)
 (** Balance Charlie 1061 **)
-(** Balance Dave 1000 **)
+(** Balance Dave 1073 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -46139,12 +46139,92 @@ apply set_ext.
   admit.
 Admitted.
 
+(** Helper: homeomorphic sheet has unique fiber point (proved early for ex53_3 use) **)
+Theorem ex53_3_helper_sheet_unique_fiber : forall E Te B Tb p V U b:set,
+  homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+    (graph V (fun z:set => apply_fun p z)) ->
+  b :e U ->
+  exists e:set, e :e V /\ apply_fun p e = b /\
+    forall e2:set, e2 :e V -> apply_fun p e2 = b -> e2 = e.
+let E Te B Tb p V U b.
+assume Hhome HbU.
+claim HinvPack :
+  exists g:set,
+    continuous_map U (subspace_topology B Tb U) V (subspace_topology E Te V) g /\
+    (forall x:set, x :e V ->
+      apply_fun g (apply_fun (graph V (fun z:set => apply_fun p z)) x) = x) /\
+    (forall y:set, y :e U ->
+      apply_fun (graph V (fun z:set => apply_fun p z)) (apply_fun g y) = y).
+{
+  exact (homeomorphism_inverse_package V (subspace_topology E Te V) U (subspace_topology B Tb U) (graph V (fun z:set => apply_fun p z)) Hhome).
+}
+apply HinvPack.
+let g.
+assume HgPack.
+claim Hgcont : continuous_map U (subspace_topology B Tb U) V (subspace_topology E Te V) g.
+{
+  exact (andEL (continuous_map U (subspace_topology B Tb U) V (subspace_topology E Te V) g) (forall x:set, x :e V -> apply_fun g (apply_fun (graph V (fun z:set => apply_fun p z)) x) = x) (andEL (continuous_map U (subspace_topology B Tb U) V (subspace_topology E Te V) g /\ (forall x:set, x :e V -> apply_fun g (apply_fun (graph V (fun z:set => apply_fun p z)) x) = x)) (forall y:set, y :e U -> apply_fun (graph V (fun z:set => apply_fun p z)) (apply_fun g y) = y) HgPack)).
+}
+claim HgFun : function_on g U V.
+{
+  exact (continuous_map_function_on U (subspace_topology B Tb U) V (subspace_topology E Te V) g Hgcont).
+}
+claim HleftInv : forall x:set, x :e V -> apply_fun g (apply_fun (graph V (fun z:set => apply_fun p z)) x) = x.
+{
+  exact (andER (continuous_map U (subspace_topology B Tb U) V (subspace_topology E Te V) g) (forall x:set, x :e V -> apply_fun g (apply_fun (graph V (fun z:set => apply_fun p z)) x) = x) (andEL (continuous_map U (subspace_topology B Tb U) V (subspace_topology E Te V) g /\ (forall x:set, x :e V -> apply_fun g (apply_fun (graph V (fun z:set => apply_fun p z)) x) = x)) (forall y:set, y :e U -> apply_fun (graph V (fun z:set => apply_fun p z)) (apply_fun g y) = y) HgPack)).
+}
+claim HrightInv : forall y:set, y :e U -> apply_fun (graph V (fun z:set => apply_fun p z)) (apply_fun g y) = y.
+{
+  exact (andER (continuous_map U (subspace_topology B Tb U) V (subspace_topology E Te V) g /\ (forall x:set, x :e V -> apply_fun g (apply_fun (graph V (fun z:set => apply_fun p z)) x) = x)) (forall y:set, y :e U -> apply_fun (graph V (fun z:set => apply_fun p z)) (apply_fun g y) = y) HgPack).
+}
+claim HgbV : apply_fun g b :e V.
+{
+  exact (HgFun b HbU).
+}
+claim HpgbEqB : apply_fun p (apply_fun g b) = b.
+{
+  claim HgraphEq : apply_fun (graph V (fun z:set => apply_fun p z)) (apply_fun g b) = apply_fun p (apply_fun g b).
+  {
+    exact (apply_fun_graph V (fun z:set => apply_fun p z) (apply_fun g b) HgbV).
+  }
+  rewrite <- HgraphEq.
+  exact (HrightInv b HbU).
+}
+witness (apply_fun g b).
+apply andI.
+- apply andI.
+  + exact HgbV.
+  + exact HpgbEqB.
+- let e2.
+  assume He2V He2peqB.
+  claim HleftE2 : apply_fun g (apply_fun (graph V (fun z:set => apply_fun p z)) e2) = e2.
+  {
+    exact (HleftInv e2 He2V).
+  }
+  claim HgraphE2 : apply_fun (graph V (fun z:set => apply_fun p z)) e2 = apply_fun p e2.
+  {
+    exact (apply_fun_graph V (fun z:set => apply_fun p z) e2 He2V).
+  }
+  claim He2eqGB : e2 = apply_fun g b.
+  {
+    claim H1 : apply_fun g (apply_fun p e2) = e2.
+    {
+      rewrite <- HgraphE2.
+      exact HleftE2.
+    }
+    rewrite <- H1.
+    rewrite He2peqB.
+    reflexivity.
+  }
+  exact He2eqGB.
+Qed.
+
 (** from S53 Exercise 3 (line 689 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map; B connected. If p^{-1}(b0) **)
 (** has k elements for some b0 in B, then p^{-1}(b) has k elements for every b in B. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 73 **)
-(** Lock Dave 1771448181 **)
+(** Collected Dave 73 **)
+(** Proven Dave **)
 Theorem ex53_3_uniform_fiber_size : forall E Te B Tb p b0 k:set,
   covering_map E Te B Tb p ->
   connected_space B Tb ->
@@ -46152,8 +46232,559 @@ Theorem ex53_3_uniform_fiber_size : forall E Te B Tb p b0 k:set,
   equip {x :e E | apply_fun p x = b0} k ->
   forall b:set, b :e B ->
     equip {x :e E | apply_fun p x = b} k.
-admit.
-Admitted.
+let E Te B Tb p b0 k.
+assume Hcov HconnB Hb0 Hkomega Hequip0.
+let b.
+assume HbB.
+claim Hcontp : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    (andEL
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b1:set, b1 :e B ->
+        exists U:set, U :e Tb /\ b1 :e U /\ evenly_covered E Te B Tb p U)
+      Hcov)).
+}
+claim HtopE : topology_on E Te.
+{
+  exact (continuous_map_topology_dom E Te B Tb p Hcontp).
+}
+claim HtopB : topology_on B Tb.
+{
+  exact (continuous_map_topology_cod E Te B Tb p Hcontp).
+}
+claim Hpfun : function_on p E B.
+{
+  exact (continuous_map_function_on E Te B Tb p Hcontp).
+}
+(** A = set of b in B where fiber has cardinality k **)
+set A := {b1 :e B | equip {x :e E | apply_fun p x = b1} k}.
+(** Key helper: for b1 in evenly covered U with slices,
+    equip slices {x :e E | p(x) = b1} via a bijection **)
+claim HslicesFiberEquip : forall b1 U slices:set,
+  b1 :e U ->
+  slices c= Te ->
+  pairwise_disjoint slices ->
+  Union slices = preimage_of E p U ->
+  (forall V:set, V :e slices ->
+    homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+      (graph V (apply_fun p))) ->
+  equip slices {x :e E | apply_fun p x = b1}.
+{
+  let b1 U slices.
+  assume Hb1U HslicesTe Hpd Hunion Hhome.
+  set fiber_b1 := {x :e E | apply_fun p x = b1}.
+  (** Define bijection phi: slices -> fiber_b1 by V |-> Eps_i (e in V, p(e) = b1) **)
+  set phi := graph slices (fun V:set => Eps_i (fun e:set => e :e V /\ apply_fun p e = b1)).
+  claim HphiBij : bijection slices fiber_b1 phi.
+  {
+    prove
+      function_on phi slices fiber_b1 /\
+      (forall y:set, y :e fiber_b1 ->
+        exists x:set, x :e slices /\
+          apply_fun phi x = y /\
+          (forall x':set, x' :e slices -> apply_fun phi x' = y -> x' = x)).
+    apply andI.
+    - (** phi is a function_on slices fiber_b1 **)
+      let V.
+      assume HVslice.
+      claim HVhome :
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (fun z:set => apply_fun p z)).
+      {
+        exact (Hhome V HVslice).
+      }
+      claim HuniqFib :
+        exists e:set, e :e V /\ apply_fun p e = b1 /\
+          forall e2:set, e2 :e V -> apply_fun p e2 = b1 -> e2 = e.
+      {
+        exact (ex53_3_helper_sheet_unique_fiber E Te B Tb p V U b1 HVhome Hb1U).
+      }
+      apply HuniqFib.
+      let e.
+      assume HeVpack.
+      claim HeV : e :e V.
+      {
+        exact (andEL (e :e V) (apply_fun p e = b1) (andEL (e :e V /\ apply_fun p e = b1) (forall e2:set, e2 :e V -> apply_fun p e2 = b1 -> e2 = e) HeVpack)).
+      }
+      claim HepeqB1 : apply_fun p e = b1.
+      {
+        exact (andER (e :e V) (apply_fun p e = b1) (andEL (e :e V /\ apply_fun p e = b1) (forall e2:set, e2 :e V -> apply_fun p e2 = b1 -> e2 = e) HeVpack)).
+      }
+      claim HeUniq :
+        forall e2:set, e2 :e V -> apply_fun p e2 = b1 -> e2 = e.
+      {
+        exact (andER (e :e V /\ apply_fun p e = b1) (forall e2:set, e2 :e V -> apply_fun p e2 = b1 -> e2 = e) HeVpack).
+      }
+      claim HphiVEps :
+        apply_fun phi V = Eps_i (fun e2:set => e2 :e V /\ apply_fun p e2 = b1).
+      {
+        exact (apply_fun_graph slices (fun W:set => Eps_i (fun e2:set => e2 :e W /\ apply_fun p e2 = b1)) V HVslice).
+      }
+      claim HEpsV : apply_fun phi V = e.
+      {
+        rewrite HphiVEps.
+        exact (Eps_i_unique (fun e2:set => e2 :e V /\ apply_fun p e2 = b1) e (andI (e :e V) (apply_fun p e = b1) HeV HepeqB1) (fun e2 He2 => HeUniq e2 (andEL (e2 :e V) (apply_fun p e2 = b1) He2) (andER (e2 :e V) (apply_fun p e2 = b1) He2))).
+      }
+      (** phi(V) = e ∈ fiber_b1 **)
+      rewrite HEpsV.
+      apply SepI.
+      + (** e :e E **)
+        claim HVsubE : V c= E.
+        {
+          exact (topology_elem_subset E Te V HtopE (HslicesTe V HVslice)).
+        }
+        exact (HVsubE e HeV).
+      + exact HepeqB1.
+    - (** bijection condition **)
+      let y.
+      assume Hyfiber.
+      claim HyE : y :e E.
+      {
+        exact (SepE1 E (fun x:set => apply_fun p x = b1) y Hyfiber).
+      }
+      claim HypeqB1 : apply_fun p y = b1.
+      {
+        exact (SepE2 E (fun x:set => apply_fun p x = b1) y Hyfiber).
+      }
+      (** y is in some slice **)
+      claim HypeqB1U : apply_fun p y :e U.
+      {
+        rewrite HypeqB1.
+        exact Hb1U.
+      }
+      claim HyPreU : y :e preimage_of E p U.
+      {
+        exact (SepI E (fun x:set => apply_fun p x :e U) y HyE HypeqB1U).
+      }
+      claim HyUnion : y :e Union slices.
+      {
+        rewrite Hunion.
+        exact HyPreU.
+      }
+      claim HySliceEx : exists Vy:set, y :e Vy /\ Vy :e slices.
+      {
+        exact (UnionE slices y HyUnion).
+      }
+      apply HySliceEx.
+      let Vy.
+      assume HVypack.
+      claim HyVy : y :e Vy.
+      {
+        exact (andEL (y :e Vy) (Vy :e slices) HVypack).
+      }
+      claim HVySlice : Vy :e slices.
+      {
+        exact (andER (y :e Vy) (Vy :e slices) HVypack).
+      }
+      claim HVyhome :
+        homeomorphism Vy (subspace_topology E Te Vy) U (subspace_topology B Tb U)
+          (graph Vy (fun z:set => apply_fun p z)).
+      {
+        exact (Hhome Vy HVySlice).
+      }
+      claim HuniqFibVy :
+        exists e:set, e :e Vy /\ apply_fun p e = b1 /\
+          forall e2:set, e2 :e Vy -> apply_fun p e2 = b1 -> e2 = e.
+      {
+        exact (ex53_3_helper_sheet_unique_fiber E Te B Tb p Vy U b1 HVyhome Hb1U).
+      }
+      apply HuniqFibVy.
+      let e.
+      assume HeVypack.
+      claim HeVy : e :e Vy.
+      {
+        exact (andEL (e :e Vy) (apply_fun p e = b1) (andEL (e :e Vy /\ apply_fun p e = b1) (forall e2:set, e2 :e Vy -> apply_fun p e2 = b1 -> e2 = e) HeVypack)).
+      }
+      claim HepeqB1 : apply_fun p e = b1.
+      {
+        exact (andER (e :e Vy) (apply_fun p e = b1) (andEL (e :e Vy /\ apply_fun p e = b1) (forall e2:set, e2 :e Vy -> apply_fun p e2 = b1 -> e2 = e) HeVypack)).
+      }
+      claim HeUniqVy :
+        forall e2:set, e2 :e Vy -> apply_fun p e2 = b1 -> e2 = e.
+      {
+        exact (andER (e :e Vy /\ apply_fun p e = b1) (forall e2:set, e2 :e Vy -> apply_fun p e2 = b1 -> e2 = e) HeVypack).
+      }
+      (** phi(Vy) = e = y **)
+      claim HphiVyEps :
+        apply_fun phi Vy = Eps_i (fun e2:set => e2 :e Vy /\ apply_fun p e2 = b1).
+      {
+        exact (apply_fun_graph slices (fun W:set => Eps_i (fun e2:set => e2 :e W /\ apply_fun p e2 = b1)) Vy HVySlice).
+      }
+      claim HeqY : e = y.
+      {
+        rewrite (HeUniqVy y HyVy HypeqB1).
+        reflexivity.
+      }
+      claim HphiVyEqY : apply_fun phi Vy = y.
+      {
+        rewrite HphiVyEps.
+        claim HEpsEqE : Eps_i (fun e2:set => e2 :e Vy /\ apply_fun p e2 = b1) = e.
+        {
+          exact (Eps_i_unique (fun e2:set => e2 :e Vy /\ apply_fun p e2 = b1) e (andI (e :e Vy) (apply_fun p e = b1) HeVy HepeqB1) (fun e2 He2 => HeUniqVy e2 (andEL (e2 :e Vy) (apply_fun p e2 = b1) He2) (andER (e2 :e Vy) (apply_fun p e2 = b1) He2))).
+        }
+        rewrite HEpsEqE.
+        exact HeqY.
+      }
+      witness Vy.
+      apply andI.
+      + apply andI.
+        * exact HVySlice.
+        * exact HphiVyEqY.
+      + (** uniqueness: if phi(W) = y, then W = Vy **)
+        let W.
+        assume HWslice.
+        assume HphiWeqY.
+          claim HphiWEps :
+            apply_fun phi W = Eps_i (fun e2:set => e2 :e W /\ apply_fun p e2 = b1).
+          {
+            exact (apply_fun_graph slices (fun W0:set => Eps_i (fun e2:set => e2 :e W0 /\ apply_fun p e2 = b1)) W HWslice).
+          }
+          claim HWhome :
+            homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+              (graph W (fun z:set => apply_fun p z)).
+          {
+            exact (Hhome W HWslice).
+          }
+          claim HuniqFibW :
+            exists e0:set, e0 :e W /\ apply_fun p e0 = b1 /\
+              forall e2:set, e2 :e W -> apply_fun p e2 = b1 -> e2 = e0.
+          {
+            exact (ex53_3_helper_sheet_unique_fiber E Te B Tb p W U b1 HWhome Hb1U).
+          }
+          apply HuniqFibW.
+          let ew.
+          assume HewWpack.
+          claim HewW : ew :e W.
+          {
+            exact (andEL (ew :e W) (apply_fun p ew = b1) (andEL (ew :e W /\ apply_fun p ew = b1) (forall e2:set, e2 :e W -> apply_fun p e2 = b1 -> e2 = ew) HewWpack)).
+          }
+          claim HewpeqB1 : apply_fun p ew = b1.
+          {
+            exact (andER (ew :e W) (apply_fun p ew = b1) (andEL (ew :e W /\ apply_fun p ew = b1) (forall e2:set, e2 :e W -> apply_fun p e2 = b1 -> e2 = ew) HewWpack)).
+          }
+          claim HewUniq :
+            forall e2:set, e2 :e W -> apply_fun p e2 = b1 -> e2 = ew.
+          {
+            exact (andER (ew :e W /\ apply_fun p ew = b1) (forall e2:set, e2 :e W -> apply_fun p e2 = b1 -> e2 = ew) HewWpack).
+          }
+          claim HphiWeqEw : apply_fun phi W = ew.
+          {
+            rewrite HphiWEps.
+            exact (Eps_i_unique (fun e2:set => e2 :e W /\ apply_fun p e2 = b1) ew (andI (ew :e W) (apply_fun p ew = b1) HewW HewpeqB1) (fun e2 He2 => HewUniq e2 (andEL (e2 :e W) (apply_fun p e2 = b1) He2) (andER (e2 :e W) (apply_fun p e2 = b1) He2))).
+          }
+          claim HewEqY : ew = y.
+          {
+            rewrite <- HphiWeqEw.
+            exact HphiWeqY.
+          }
+          (** ew = y is in both Vy and W; y ∈ W ∩ Vy contradicts pairwise disjointness unless W = Vy **)
+          apply xm (W = Vy).
+          - assume Heq. exact Heq.
+          - assume HWNeqVy.
+            claim HyW : y :e W.
+            {
+              rewrite <- HewEqY.
+              exact HewW.
+            }
+            claim Hdisj : W :/\: Vy = Empty.
+            {
+              exact (Hpd W Vy HWslice HVySlice HWNeqVy).
+            }
+            claim HyInt : y :e W :/\: Vy.
+            {
+              exact (binintersectI W Vy y HyW HyVy).
+            }
+            exact (EmptyE y (mem_eqR y (W :/\: Vy) Empty Hdisj HyInt) (W = Vy)).
+  }
+  exact (equip_of_bijection slices fiber_b1 phi HphiBij).
+}
+(** A is open **)
+claim HAopenIn : open_in B Tb A.
+{
+  apply (ex13_1_local_open_subset B Tb A (connected_space_topology B Tb HconnB)).
+  let b1.
+  assume Hb1A.
+  claim Hb1B : b1 :e B.
+  {
+    exact (SepE1 B (fun b2:set => equip {x :e E | apply_fun p x = b2} k) b1 Hb1A).
+  }
+  claim Hequib1 : equip {x :e E | apply_fun p x = b1} k.
+  {
+    exact (SepE2 B (fun b2:set => equip {x :e E | apply_fun p x = b2} k) b1 Hb1A).
+  }
+  claim HlocEven :
+    exists U:set, U :e Tb /\ b1 :e U /\ evenly_covered E Te B Tb p U.
+  {
+    exact (andER
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b2:set, b2 :e B ->
+        exists U:set, U :e Tb /\ b2 :e U /\ evenly_covered E Te B Tb p U)
+      Hcov b1 Hb1B).
+  }
+  apply HlocEven.
+  let U.
+  assume HUpack.
+  claim HUTb : U :e Tb.
+  {
+    exact (andEL (U :e Tb) (b1 :e U) (andEL (U :e Tb /\ b1 :e U) (evenly_covered E Te B Tb p U) HUpack)).
+  }
+  claim Hb1U : b1 :e U.
+  {
+    exact (andER (U :e Tb) (b1 :e U) (andEL (U :e Tb /\ b1 :e U) (evenly_covered E Te B Tb p U) HUpack)).
+  }
+  claim Heven : evenly_covered E Te B Tb p U.
+  {
+    exact (andER (U :e Tb /\ b1 :e U) (evenly_covered E Te B Tb p U) HUpack).
+  }
+  claim HslicesEx :
+    exists slices:set,
+      slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (apply_fun p))).
+  {
+    exact (andER (U :e Tb) (exists slices:set, slices c= Te /\ pairwise_disjoint slices /\ Union slices = preimage_of E p U /\ (forall V:set, V :e slices -> homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U) (graph V (apply_fun p)))) Heven).
+  }
+  apply HslicesEx.
+  let slices.
+  assume Hslices.
+  claim HslicesAbc : (slices c= Te /\ pairwise_disjoint slices) /\ Union slices = preimage_of E p U.
+  {
+    exact (andEL ((slices c= Te /\ pairwise_disjoint slices) /\ Union slices = preimage_of E p U) (forall V:set, V :e slices -> homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U) (graph V (apply_fun p))) Hslices).
+  }
+  claim HslicesTe : slices c= Te.
+  {
+    exact (andEL (slices c= Te) (pairwise_disjoint slices) (andEL (slices c= Te /\ pairwise_disjoint slices) (Union slices = preimage_of E p U) HslicesAbc)).
+  }
+  claim Hpd : pairwise_disjoint slices.
+  {
+    exact (andER (slices c= Te) (pairwise_disjoint slices) (andEL (slices c= Te /\ pairwise_disjoint slices) (Union slices = preimage_of E p U) HslicesAbc)).
+  }
+  claim Hunion : Union slices = preimage_of E p U.
+  {
+    exact (andER (slices c= Te /\ pairwise_disjoint slices) (Union slices = preimage_of E p U) HslicesAbc).
+  }
+  claim Hhome :
+    forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (apply_fun p)).
+  {
+    exact (andER ((slices c= Te /\ pairwise_disjoint slices) /\ Union slices = preimage_of E p U) (forall V:set, V :e slices -> homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U) (graph V (apply_fun p))) Hslices).
+  }
+  (** equip slices (fiber b1) **)
+  claim HequivSlicesFib1 : equip slices {x :e E | apply_fun p x = b1}.
+  {
+    exact (HslicesFiberEquip b1 U slices Hb1U HslicesTe Hpd Hunion Hhome).
+  }
+  (** equip slices k **)
+  claim HequivSlicesK : equip slices k.
+  {
+    exact (equip_tra slices {x :e E | apply_fun p x = b1} k HequivSlicesFib1 Hequib1).
+  }
+  (** U is the desired open neighborhood of b1 contained in A **)
+  witness U.
+  apply andI.
+  - exact HUTb.
+  - apply andI.
+    + exact Hb1U.
+    + (** U c= A **)
+      let b2.
+      assume Hb2U.
+      (** Need: equip {x :e E | p(x) = b2} k **)
+      claim HequivSlicesFib2 : equip slices {x :e E | apply_fun p x = b2}.
+      {
+        exact (HslicesFiberEquip b2 U slices Hb2U HslicesTe Hpd Hunion Hhome).
+      }
+      claim Hb2B : b2 :e B.
+      {
+        exact (topology_elem_subset B Tb U HtopB HUTb b2 Hb2U).
+      }
+      claim HequivFib2K : equip {x :e E | apply_fun p x = b2} k.
+      {
+        exact (equip_tra {x :e E | apply_fun p x = b2} slices k (equip_sym slices {x :e E | apply_fun p x = b2} HequivSlicesFib2) HequivSlicesK).
+      }
+      exact (SepI B (fun b3:set => equip {x :e E | apply_fun p x = b3} k) b2 Hb2B HequivFib2K).
+}
+(** b0 is in A **)
+claim Hb0A : b0 :e A.
+{
+  exact (SepI B (fun b1:set => equip {x :e E | apply_fun p x = b1} k) b0 Hb0 Hequip0).
+}
+(** A is nonempty **)
+claim HAne : A <> Empty.
+{
+  assume HAempty.
+  exact (EmptyE b0 (mem_eqR b0 A Empty HAempty Hb0A) False).
+}
+(** A is closed (complement is open) **)
+claim HcompAopenIn : open_in B Tb (B :\: A).
+{
+  apply (ex13_1_local_open_subset B Tb (B :\: A) (connected_space_topology B Tb HconnB)).
+  let b1.
+  assume Hb1compA.
+  claim Hb1B : b1 :e B.
+  {
+    exact (setminusE1 B A b1 Hb1compA).
+  }
+  claim Hb1notA : b1 /:e A.
+  {
+    exact (setminusE2 B A b1 Hb1compA).
+  }
+  claim Hnequib1 : ~ equip {x :e E | apply_fun p x = b1} k.
+  {
+    assume Hcontra.
+    exact (Hb1notA (SepI B (fun b2:set => equip {x :e E | apply_fun p x = b2} k) b1 Hb1B Hcontra)).
+  }
+  claim HlocEven :
+    exists U:set, U :e Tb /\ b1 :e U /\ evenly_covered E Te B Tb p U.
+  {
+    exact (andER
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b2:set, b2 :e B ->
+        exists U:set, U :e Tb /\ b2 :e U /\ evenly_covered E Te B Tb p U)
+      Hcov b1 Hb1B).
+  }
+  apply HlocEven.
+  let U.
+  assume HUpack.
+  claim HUTb : U :e Tb.
+  {
+    exact (andEL (U :e Tb) (b1 :e U) (andEL (U :e Tb /\ b1 :e U) (evenly_covered E Te B Tb p U) HUpack)).
+  }
+  claim Hb1U : b1 :e U.
+  {
+    exact (andER (U :e Tb) (b1 :e U) (andEL (U :e Tb /\ b1 :e U) (evenly_covered E Te B Tb p U) HUpack)).
+  }
+  claim Heven : evenly_covered E Te B Tb p U.
+  {
+    exact (andER (U :e Tb /\ b1 :e U) (evenly_covered E Te B Tb p U) HUpack).
+  }
+  claim HslicesEx :
+    exists slices:set,
+      slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (apply_fun p))).
+  {
+    exact (andER (U :e Tb) (exists slices:set, slices c= Te /\ pairwise_disjoint slices /\ Union slices = preimage_of E p U /\ (forall V:set, V :e slices -> homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U) (graph V (apply_fun p)))) Heven).
+  }
+  apply HslicesEx.
+  let slices.
+  assume Hslices.
+  claim HslicesAbc : (slices c= Te /\ pairwise_disjoint slices) /\ Union slices = preimage_of E p U.
+  {
+    exact (andEL ((slices c= Te /\ pairwise_disjoint slices) /\ Union slices = preimage_of E p U) (forall V:set, V :e slices -> homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U) (graph V (apply_fun p))) Hslices).
+  }
+  claim HslicesTe : slices c= Te.
+  {
+    exact (andEL (slices c= Te) (pairwise_disjoint slices) (andEL (slices c= Te /\ pairwise_disjoint slices) (Union slices = preimage_of E p U) HslicesAbc)).
+  }
+  claim Hpd : pairwise_disjoint slices.
+  {
+    exact (andER (slices c= Te) (pairwise_disjoint slices) (andEL (slices c= Te /\ pairwise_disjoint slices) (Union slices = preimage_of E p U) HslicesAbc)).
+  }
+  claim Hunion : Union slices = preimage_of E p U.
+  {
+    exact (andER (slices c= Te /\ pairwise_disjoint slices) (Union slices = preimage_of E p U) HslicesAbc).
+  }
+  claim Hhome :
+    forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (apply_fun p)).
+  {
+    exact (andER ((slices c= Te /\ pairwise_disjoint slices) /\ Union slices = preimage_of E p U) (forall V:set, V :e slices -> homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U) (graph V (apply_fun p))) Hslices).
+  }
+  (** equip slices (fiber b1) **)
+  claim HequivSlicesFib1 : equip slices {x :e E | apply_fun p x = b1}.
+  {
+    exact (HslicesFiberEquip b1 U slices Hb1U HslicesTe Hpd Hunion Hhome).
+  }
+  (** U is a neighborhood of b1 in B \ A **)
+  witness U.
+  apply andI.
+  - exact HUTb.
+  - apply andI.
+    + exact Hb1U.
+    + (** U c= B \ A **)
+      let b2.
+      assume Hb2U.
+      claim Hb2B : b2 :e B.
+      {
+        exact (topology_elem_subset B Tb U HtopB HUTb b2 Hb2U).
+      }
+      claim Hb2notA : b2 /:e A.
+      {
+        assume Hb2A.
+        claim Hequib2 : equip {x :e E | apply_fun p x = b2} k.
+        {
+          exact (SepE2 B (fun b3:set => equip {x :e E | apply_fun p x = b3} k) b2 Hb2A).
+        }
+        claim HequivSlicesFib2 : equip slices {x :e E | apply_fun p x = b2}.
+        {
+          exact (HslicesFiberEquip b2 U slices Hb2U HslicesTe Hpd Hunion Hhome).
+        }
+        claim HequivSlicesK : equip slices k.
+        {
+          exact (equip_tra slices {x :e E | apply_fun p x = b2} k HequivSlicesFib2 Hequib2).
+        }
+        claim HequivFib1K : equip {x :e E | apply_fun p x = b1} k.
+        {
+          exact (equip_tra {x :e E | apply_fun p x = b1} slices k (equip_sym slices {x :e E | apply_fun p x = b1} HequivSlicesFib1) HequivSlicesK).
+        }
+        exact (Hnequib1 HequivFib1K).
+      }
+      exact (setminusI B A b2 Hb2B Hb2notA).
+}
+claim HAclosedIn : closed_in B Tb A.
+{
+  claim HclosedCompComp :
+    closed_in B Tb (B :\: (B :\: A)).
+  {
+    exact (closed_of_open_complement B Tb (B :\: A) (connected_space_topology B Tb HconnB) (open_in_elem B Tb (B :\: A) HcompAopenIn)).
+  }
+  claim Htmp : B :\: (B :\: A) = A.
+  {
+    exact (setminus_setminus_eq B A (Sep_Subq B (fun b1:set => equip {x :e E | apply_fun p x = b1} k))).
+  }
+  rewrite <- Htmp.
+  exact HclosedCompComp.
+}
+(** A = B by connectedness **)
+claim HAeqB : A = B.
+{
+  apply xm (A = B).
+  - assume HAeq. exact HAeq.
+  - assume HAneqB.
+    claim Hsep :
+      exists U V:set, U :e Tb /\ V :e Tb /\ separation_of B U V.
+    {
+      exact (clopen_gives_separation B Tb A
+        (connected_space_topology B Tb HconnB)
+        HAne
+        HAneqB
+        HAopenIn
+        HAclosedIn).
+    }
+    claim HnoSep :
+      ~ (exists U V:set, U :e Tb /\ V :e Tb /\ separation_of B U V).
+    {
+      exact (connected_space_no_separation B Tb HconnB).
+    }
+    exact (FalseE (HnoSep Hsep) (A = B)).
+}
+(** b is in A **)
+claim HbA : b :e A.
+{
+  rewrite HAeqB.
+  exact HbB.
+}
+exact (SepE2 B (fun b1:set => equip {x :e E | apply_fun p x = b1} k) b HbA).
+Qed.
 
 (** from S53 Exercise 4 (line 690 in algtop.tex) **)
 (** LATEX VERSION: Let q: X -> Y and r: Y -> Z be covering maps; **)
