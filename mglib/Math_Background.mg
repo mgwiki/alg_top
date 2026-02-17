@@ -1,6 +1,6 @@
 (** Balance Alice 2510 **)
 (** Balance Bob 2808 **)
-(** Balance Charlie 1536 **)
+(** Balance Charlie 1533 **)
 
 (** Sum of Balences and Bounties 48150 **)
 
@@ -41775,7 +41775,8 @@ Definition k_fold_covering : set -> set -> set -> set -> set -> set -> prop :=
 (** LATEX VERSION: Let Y have the discrete topology. If p: X x Y -> X is projection **)
 (** on the first coordinate, then p is a covering map. **)
 (** EFFORT: 4 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 30 **)
+(** Bounty 33 **)
+(** Lock Charlie 2026-02-18T08:50:00 **)
 Theorem ex53_1_discrete_projection_covering : forall X Tx Y:set,
   topology_on X Tx -> Y <> Empty ->
   covering_map
