@@ -76887,14 +76887,38 @@ claim HpcX_if_parts :
     HpcV
     HneUV).
 }
+claim Hpi1X :
+  fundamental_group X Tx x0 = {fundamental_group_id X Tx x0}.
+{
+  exact (lemma59_4a_pi1_trivial_from_i_generation
+    X
+    Tx
+    U
+    x0
+    Htop
+    HU
+    Hx0U
+    Hgen
+    Hi_triv).
+}
+claim HscX_if_pcX :
+  path_connected_space X Tx ->
+  simply_connected X Tx.
+{
+  assume HpcX'.
+  exact (lemma59_4a_simply_connected_from_pi1_trivial_at_point
+    X
+    Tx
+    x0
+    HpcX'
+    Hx0X
+    Hpi1X).
+}
 claim HpcX : path_connected_space X Tx.
 {
   admit. (** remaining gap: derive path_connectedness of U and V from current assumptions **)
 }
-exact (lemma59_4a_simply_connected_from_generation_and_i_trivial
-  X Tx U x0
-  Htop HU Hx0U HpcX
-  Hgen Hi_triv).
+exact (HscX_if_pcX HpcX).
 Admitted.
 
 (** ============================================================ **)
