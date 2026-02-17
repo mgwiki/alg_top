@@ -69743,6 +69743,7 @@ exact (lemma59_3_overlap_nonempty_iff_exists_point n).
 Qed.
 
 (** Helper goal extraction for S59.3 overlap nonemptiness. **)
+(** Proven Bob **)
 Theorem lemma59_3_exists_sn_coord0_zero_point : forall n:set,
   n :e omega -> 2 c= n ->
   exists x:set, x :e Sn n /\ apply_fun x 0 = 0.
@@ -70087,7 +70088,7 @@ apply andI.
     HxEuclid
     HxNorm).
 - exact HxCoord0.
-Admitted.
+Qed.
 
 (** Core S59.3 subgoal: southern-cap type open set is simply connected for n>=2. **)
 Theorem lemma59_3_U_simply_connected_ge2 : forall n U:set,
