@@ -67985,6 +67985,48 @@ claim HpcX : path_connected_space X Tx.
 exact HpcX.
 Qed.
 
+(** Helper: simply connected pieces in an open cover imply path connected union. **)
+Theorem lemma59_2_path_connected_union_from_simply_connected_open_subspaces :
+  forall X Tx U V:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx ->
+  X = U :\/: V ->
+  simply_connected U (subspace_topology X Tx U) ->
+  simply_connected V (subspace_topology X Tx V) ->
+  (U :/\: V) <> Empty ->
+  path_connected_space X Tx.
+let X Tx U V.
+assume Htop : topology_on X Tx.
+assume HU : U :e Tx.
+assume HV : V :e Tx.
+assume Hcover : X = U :\/: V.
+assume HscU : simply_connected U (subspace_topology X Tx U).
+assume HscV : simply_connected V (subspace_topology X Tx V).
+assume Hne : (U :/\: V) <> Empty.
+claim HpcU : path_connected_space U (subspace_topology X Tx U).
+{
+  exact (andEL
+    (path_connected_space U (subspace_topology X Tx U))
+    (exists x0:set, x0 :e U /\
+      fundamental_group U (subspace_topology X Tx U) x0 =
+        {fundamental_group_id U (subspace_topology X Tx U) x0})
+    HscU).
+}
+claim HpcV : path_connected_space V (subspace_topology X Tx V).
+{
+  exact (andEL
+    (path_connected_space V (subspace_topology X Tx V))
+    (exists x0:set, x0 :e V /\
+      fundamental_group V (subspace_topology X Tx V) x0 =
+        {fundamental_group_id V (subspace_topology X Tx V) x0})
+    HscV).
+}
+exact (lemma59_2_path_connected_union_of_path_connected_open_subspaces
+  X Tx U V
+  Htop HU HV Hcover
+  HpcU HpcV Hne).
+Qed.
+
 (** from S59 Cor 59.2 (line 1585 in algtop.tex) **)
 (** LATEX VERSION: If X = U union V, U and V open and simply connected, U intersect V nonempty and path connected, then X is simply connected. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
