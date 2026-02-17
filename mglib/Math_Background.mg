@@ -63868,6 +63868,52 @@ claim Halpha1 : apply_fun alpha 1 = x1.
     alpha
     HalphaPath).
 }
+claim HidIfCont :
+  topology_on X Tx ->
+  continuous_map unit_interval unit_interval_topology X Tx alpha ->
+  apply_fun (basepoint_change_map X Tx x0 x1 alpha)
+    (fundamental_group_id X Tx x0)
+  = fundamental_group_id X Tx x1.
+{
+  assume HtopX HalphaCont.
+  claim Hx0X : x0 :e X.
+  {
+    rewrite <- Halpha0.
+    exact (HalphaFun 0 zero_in_unit_interval).
+  }
+  claim Hx1X : x1 :e X.
+  {
+    rewrite <- Halpha1.
+    exact (HalphaFun 1 one_in_unit_interval).
+  }
+  claim HalphaHom :
+    group_homomorphism
+      (fundamental_group X Tx x0)
+      (fundamental_group_mult X Tx x0)
+      (fundamental_group X Tx x1)
+      (fundamental_group_mult X Tx x1)
+      (basepoint_change_map X Tx x0 x1 alpha).
+  {
+    exact (lemma52_1_basepoint_change_homomorphism
+      X
+      Tx
+      x0
+      x1
+      alpha
+      HtopX
+      HalphaCont
+      Halpha0
+      Halpha1).
+  }
+  claim HhomMapsId :
+    apply_fun (basepoint_change_map X Tx x0 x1 alpha)
+      (fundamental_group_id X Tx x0)
+    = fundamental_group_id X Tx x1.
+  {
+    admit. (** group-hom identity preservation core for alpha-hat under top/cont **)
+  }
+  exact HhomMapsId.
+}
 admit.
 Admitted.
 
