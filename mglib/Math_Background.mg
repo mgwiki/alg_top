@@ -21578,7 +21578,37 @@ Theorem Theorem_52_1_basepoint_isomorphism : forall X Tx x0 x1 alpha:set,
     (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
     (fundamental_group X Tx x1) (fundamental_group_mult X Tx x1)
     (basepoint_change_map X Tx x0 x1 alpha).
-admit.
+let X Tx x0 x1 alpha.
+assume HtopX HalphaCont Halpha0 Halpha1.
+exact (andI
+  (group_homomorphism
+    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+    (fundamental_group X Tx x1) (fundamental_group_mult X Tx x1)
+    (basepoint_change_map X Tx x0 x1 alpha))
+  (bijection
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x1)
+    (basepoint_change_map X Tx x0 x1 alpha))
+  (lemma52_1_basepoint_change_homomorphism
+    X
+    Tx
+    x0
+    x1
+    alpha
+    HtopX
+    HalphaCont
+    Halpha0
+    Halpha1)
+  (lemma52_1_basepoint_change_bijection
+    X
+    Tx
+    x0
+    x1
+    alpha
+    HtopX
+    HalphaCont
+    Halpha0
+    Halpha1)).
 Admitted.
 
 (** from S52 Corollary 52.2 (line 418 in algtop.tex) **)
