@@ -1,5 +1,5 @@
 (** Balance Alice 2135 **)
-(** Balance Bob 2007 **)
+(** Balance Bob 1991 **)
 (** Balance Charlie 1223 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -33726,6 +33726,30 @@ Theorem lemma58_sub_basepoint_change_id : forall X Tx x0 x1 alpha:set,
 admit.
 Admitted.
 
+(** helper sub-bounty for Corollary 58.5: alpha-hat is injective **)
+(** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
+(** Bounty 8 **)
+Theorem lemma58_sub_basepoint_change_injective : forall X Tx x0 x1 alpha a b:set,
+  path_between X x0 x1 alpha ->
+  a :e fundamental_group X Tx x0 ->
+  b :e fundamental_group X Tx x0 ->
+  apply_fun (basepoint_change_map X Tx x0 x1 alpha) a =
+  apply_fun (basepoint_change_map X Tx x0 x1 alpha) b ->
+  a = b.
+admit.
+Admitted.
+
+(** helper sub-bounty for Corollary 58.5: alpha-hat is surjective **)
+(** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
+(** Bounty 8 **)
+Theorem lemma58_sub_basepoint_change_surjective : forall X Tx x0 x1 alpha c:set,
+  path_between X x0 x1 alpha ->
+  c :e fundamental_group X Tx x1 ->
+  exists a:set, a :e fundamental_group X Tx x0 /\
+    apply_fun (basepoint_change_map X Tx x0 x1 alpha) a = c.
+admit.
+Admitted.
+
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 30 **)
 (** Bounty 33 **)
 (** Lock Bob 2026-02-18T02:30:00 **)
@@ -33746,7 +33770,134 @@ Theorem cor58_5_homotopic_maps_injective : forall X Tx Y Ty x0 h k:set,
     apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun k x0) k) cls1 =
     apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun k x0) k) cls2 ->
     cls1 = cls2).
-admit.
+let X Tx Y Ty x0 h k.
+assume Hh Hk Hx0 Hhom HhInj.
+claim Halpha :
+  exists alpha:set,
+    path_between Y (apply_fun h x0) (apply_fun k x0) alpha /\
+    (forall cls:set, cls :e fundamental_group X Tx x0 ->
+      apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun k x0) k) cls =
+      apply_fun (basepoint_change_map Y Ty (apply_fun h x0) (apply_fun k x0) alpha)
+        (apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls)).
+{
+  exact (lemma58_4_homotopy_path
+    X
+    Tx
+    Y
+    Ty
+    x0
+    h
+    k
+    Hh
+    Hk
+    Hx0
+    Hhom).
+}
+apply Halpha.
+let alpha.
+assume HalphaPack.
+claim HalphaPath : path_between Y (apply_fun h x0) (apply_fun k x0) alpha.
+{
+  exact (andEL
+    (path_between Y (apply_fun h x0) (apply_fun k x0) alpha)
+    (forall cls:set, cls :e fundamental_group X Tx x0 ->
+      apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun k x0) k) cls =
+      apply_fun (basepoint_change_map Y Ty (apply_fun h x0) (apply_fun k x0) alpha)
+        (apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls))
+    HalphaPack).
+}
+claim Htransport :
+  forall cls:set, cls :e fundamental_group X Tx x0 ->
+    apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun k x0) k) cls =
+    apply_fun (basepoint_change_map Y Ty (apply_fun h x0) (apply_fun k x0) alpha)
+      (apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls).
+{
+  exact (andER
+    (path_between Y (apply_fun h x0) (apply_fun k x0) alpha)
+    (forall cls:set, cls :e fundamental_group X Tx x0 ->
+      apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun k x0) k) cls =
+      apply_fun (basepoint_change_map Y Ty (apply_fun h x0) (apply_fun k x0) alpha)
+        (apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls))
+    HalphaPack).
+}
+claim HhHom :
+  group_homomorphism
+    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+    (fundamental_group Y Ty (apply_fun h x0)) (fundamental_group_mult Y Ty (apply_fun h x0))
+    (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h).
+{
+  exact (induced_homomorphism_is_homomorphism
+    X
+    Tx
+    x0
+    Y
+    Ty
+    (apply_fun h x0)
+    h
+    Hh
+    (fun P H => H)
+    Hx0).
+}
+claim HhFun :
+  function_on
+    (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h)
+    (fundamental_group X Tx x0)
+    (fundamental_group Y Ty (apply_fun h x0)).
+{
+  exact (group_homomorphism_function_on
+    (fundamental_group X Tx x0)
+    (fundamental_group_mult X Tx x0)
+    (fundamental_group Y Ty (apply_fun h x0))
+    (fundamental_group_mult Y Ty (apply_fun h x0))
+    (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h)
+    HhHom).
+}
+let cls1 cls2.
+assume Hcls1 Hcls2 HkEq.
+claim Hk1 :
+  apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun k x0) k) cls1 =
+  apply_fun (basepoint_change_map Y Ty (apply_fun h x0) (apply_fun k x0) alpha)
+    (apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls1).
+{
+  exact (Htransport cls1 Hcls1).
+}
+claim Hk2 :
+  apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun k x0) k) cls2 =
+  apply_fun (basepoint_change_map Y Ty (apply_fun h x0) (apply_fun k x0) alpha)
+    (apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls2).
+{
+  exact (Htransport cls2 Hcls2).
+}
+claim HalphaEq :
+  apply_fun (basepoint_change_map Y Ty (apply_fun h x0) (apply_fun k x0) alpha)
+    (apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls1)
+  =
+  apply_fun (basepoint_change_map Y Ty (apply_fun h x0) (apply_fun k x0) alpha)
+    (apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls2).
+{
+  rewrite <- Hk1.
+  rewrite <- Hk2.
+  exact HkEq.
+}
+claim HhEq :
+  apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls1
+  =
+  apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls2.
+{
+  exact (lemma58_sub_basepoint_change_injective
+    Y
+    Ty
+    (apply_fun h x0)
+    (apply_fun k x0)
+    alpha
+    (apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls1)
+    (apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls2)
+    HalphaPath
+    (HhFun cls1 Hcls1)
+    (HhFun cls2 Hcls2)
+    HalphaEq).
+}
+exact (HhInj cls1 cls2 Hcls1 Hcls2 HhEq).
 Admitted.
 
 (** from S58 Corollary 58.5 surjective case (line 1423 in algtop.tex) **)
@@ -33767,7 +33918,127 @@ Theorem cor58_5_homotopic_maps_surjective : forall X Tx Y Ty x0 h k:set,
     cls :e fundamental_group Y Ty (apply_fun k x0) ->
     exists cls0:set, cls0 :e fundamental_group X Tx x0 /\
       apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun k x0) k) cls0 = cls).
-admit.
+let X Tx Y Ty x0 h k.
+assume Hh Hk Hx0 Hhom HhSurj.
+claim Halpha :
+  exists alpha:set,
+    path_between Y (apply_fun h x0) (apply_fun k x0) alpha /\
+    (forall cls0:set, cls0 :e fundamental_group X Tx x0 ->
+      apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun k x0) k) cls0 =
+      apply_fun (basepoint_change_map Y Ty (apply_fun h x0) (apply_fun k x0) alpha)
+        (apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls0)).
+{
+  exact (lemma58_4_homotopy_path
+    X
+    Tx
+    Y
+    Ty
+    x0
+    h
+    k
+    Hh
+    Hk
+    Hx0
+    Hhom).
+}
+apply Halpha.
+let alpha.
+assume HalphaPack.
+claim HalphaPath : path_between Y (apply_fun h x0) (apply_fun k x0) alpha.
+{
+  exact (andEL
+    (path_between Y (apply_fun h x0) (apply_fun k x0) alpha)
+    (forall cls0:set, cls0 :e fundamental_group X Tx x0 ->
+      apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun k x0) k) cls0 =
+      apply_fun (basepoint_change_map Y Ty (apply_fun h x0) (apply_fun k x0) alpha)
+        (apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls0))
+    HalphaPack).
+}
+claim Htransport :
+  forall cls0:set, cls0 :e fundamental_group X Tx x0 ->
+    apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun k x0) k) cls0 =
+    apply_fun (basepoint_change_map Y Ty (apply_fun h x0) (apply_fun k x0) alpha)
+      (apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls0).
+{
+  exact (andER
+    (path_between Y (apply_fun h x0) (apply_fun k x0) alpha)
+    (forall cls0:set, cls0 :e fundamental_group X Tx x0 ->
+      apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun k x0) k) cls0 =
+      apply_fun (basepoint_change_map Y Ty (apply_fun h x0) (apply_fun k x0) alpha)
+        (apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls0))
+    HalphaPack).
+}
+let cls.
+assume Hcls.
+claim HalphaPre :
+  exists d:set, d :e fundamental_group Y Ty (apply_fun h x0) /\
+    apply_fun (basepoint_change_map Y Ty (apply_fun h x0) (apply_fun k x0) alpha) d = cls.
+{
+  exact (lemma58_sub_basepoint_change_surjective
+    Y
+    Ty
+    (apply_fun h x0)
+    (apply_fun k x0)
+    alpha
+    cls
+    HalphaPath
+    Hcls).
+}
+apply HalphaPre.
+let d.
+assume HdPack.
+claim HdY : d :e fundamental_group Y Ty (apply_fun h x0).
+{
+  exact (andEL
+    (d :e fundamental_group Y Ty (apply_fun h x0))
+    (apply_fun (basepoint_change_map Y Ty (apply_fun h x0) (apply_fun k x0) alpha) d = cls)
+    HdPack).
+}
+claim HdEq :
+  apply_fun (basepoint_change_map Y Ty (apply_fun h x0) (apply_fun k x0) alpha) d = cls.
+{
+  exact (andER
+    (d :e fundamental_group Y Ty (apply_fun h x0))
+    (apply_fun (basepoint_change_map Y Ty (apply_fun h x0) (apply_fun k x0) alpha) d = cls)
+    HdPack).
+}
+claim HpreH :
+  exists cls0:set, cls0 :e fundamental_group X Tx x0 /\
+    apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls0 = d.
+{
+  exact (HhSurj d HdY).
+}
+apply HpreH.
+let cls0.
+assume Hcls0Pack.
+claim Hcls0X : cls0 :e fundamental_group X Tx x0.
+{
+  exact (andEL
+    (cls0 :e fundamental_group X Tx x0)
+    (apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls0 = d)
+    Hcls0Pack).
+}
+claim HhEqd :
+  apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls0 = d.
+{
+  exact (andER
+    (cls0 :e fundamental_group X Tx x0)
+    (apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls0 = d)
+    Hcls0Pack).
+}
+witness cls0.
+apply andI.
+- exact Hcls0X.
+- claim HkEqAlpha :
+    apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun k x0) k) cls0 =
+    apply_fun (basepoint_change_map Y Ty (apply_fun h x0) (apply_fun k x0) alpha)
+      (apply_fun (induced_homomorphism X Tx x0 Y Ty (apply_fun h x0) h) cls0).
+  {
+    exact (Htransport cls0 Hcls0X).
+  }
+  rewrite HkEqAlpha.
+  rewrite HhEqd.
+  exact HdEq.
 Admitted.
 
 (** from S58 Corollary 58.5 trivial case (line 1423 in algtop.tex) **)
