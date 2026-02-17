@@ -21304,7 +21304,164 @@ claim HsurjUnique :
           Halpha0
           Halpha1).
       }
-      (** TODO Bob: finish class-level simplification to x' using these cancellation homotopies. **)
+      set ex0 := Eps_i (fun f:set => f :e x').
+      claim Hex0Class :
+        path_homotopy_class_loop X Tx x0 ex0 = x'.
+      {
+        claim Hx'Rep :
+          exists fx0:set, fx0 :e loop_space X Tx x0 /\
+            x' = path_homotopy_class_loop X Tx x0 fx0.
+        {
+          exact (fundamental_group_member_has_representative
+            X
+            Tx
+            x0
+            x'
+            Hx').
+        }
+        apply Hx'Rep.
+        let fx0.
+        assume Hfx0Pack.
+        claim Hfx0Loop : fx0 :e loop_space X Tx x0.
+        {
+          exact (andEL
+            (fx0 :e loop_space X Tx x0)
+            (x' = path_homotopy_class_loop X Tx x0 fx0)
+            Hfx0Pack).
+        }
+        claim Hx'Eq :
+          x' = path_homotopy_class_loop X Tx x0 fx0.
+        {
+          exact (andER
+            (fx0 :e loop_space X Tx x0)
+            (x' = path_homotopy_class_loop X Tx x0 fx0)
+            Hfx0Pack).
+        }
+        claim Hfx0LoopAt : loop_at X Tx x0 fx0.
+        {
+          exact (loop_space_has_loop_at
+            X
+            Tx
+            x0
+            fx0
+            Hfx0Loop).
+        }
+        claim Hfx0Cont :
+          continuous_map unit_interval unit_interval_topology X Tx fx0.
+        {
+          exact (loop_at_continuous
+            X
+            Tx
+            x0
+            fx0
+            Hfx0LoopAt).
+        }
+        claim Hfx00 : apply_fun fx0 0 = x0.
+        {
+          exact (loop_at_at_zero
+            X
+            Tx
+            x0
+            fx0
+            Hfx0LoopAt).
+        }
+        claim Hfx01 : apply_fun fx0 1 = x0.
+        {
+          exact (loop_at_at_one
+            X
+            Tx
+            x0
+            fx0
+            Hfx0LoopAt).
+        }
+        claim Hfx0Refl : path_homotopic X Tx x0 x0 fx0 fx0.
+        {
+          exact (Lemma_51_1_path_homotopy_refl
+            X
+            Tx
+            x0
+            x0
+            fx0
+            Hfx0Cont
+            Hfx00
+            Hfx01).
+        }
+        claim Hfx0InClass :
+          fx0 :e path_homotopy_class_loop X Tx x0 fx0.
+        {
+          exact (SepI
+            (loop_space X Tx x0)
+            (fun h:set => path_homotopic X Tx x0 x0 fx0 h)
+            fx0
+            Hfx0Loop
+            Hfx0Refl).
+        }
+        claim Hfx0InX' : fx0 :e x'.
+        {
+          exact (mem_eqL
+            fx0
+            x'
+            (path_homotopy_class_loop X Tx x0 fx0)
+            Hx'Eq
+            Hfx0InClass).
+        }
+        claim Hex0InX' : ex0 :e x'.
+        {
+          exact (Eps_i_ax
+            (fun f:set => f :e x')
+            fx0
+            Hfx0InX').
+        }
+        claim Hex0InClassFx0 :
+          ex0 :e path_homotopy_class_loop X Tx x0 fx0.
+        {
+          exact (mem_eqR
+            ex0
+            x'
+            (path_homotopy_class_loop X Tx x0 fx0)
+            Hx'Eq
+            Hex0InX').
+        }
+        claim Hfx0Ex0 :
+          path_homotopic X Tx x0 x0 fx0 ex0.
+        {
+          exact (path_homotopy_class_loop_has_homotopy
+            X
+            Tx
+            x0
+            fx0
+            ex0
+            Hex0InClassFx0).
+        }
+        claim HclassFx0Ex0 :
+          path_homotopy_class_loop X Tx x0 fx0
+          =
+          path_homotopy_class_loop X Tx x0 ex0.
+        {
+          exact (path_homotopy_class_loop_eq_of_path_homotopic
+            X
+            Tx
+            x0
+            fx0
+            ex0
+            Hfx0Ex0).
+        }
+        claim HclassEx0Fx0 :
+          path_homotopy_class_loop X Tx x0 ex0
+          =
+          path_homotopy_class_loop X Tx x0 fx0.
+        {
+          exact (fun Q => HclassFx0Ex0 (fun x y:set => Q y x)).
+        }
+        claim Hx'EqSym :
+          path_homotopy_class_loop X Tx x0 fx0 = x'.
+        {
+          exact (fun Q => Hx'Eq (fun x y:set => Q y x)).
+        }
+        rewrite HclassEx0Fx0.
+        exact Hx'EqSym.
+      }
+      (** TODO Bob: finish class-level simplification to canonical class of ex0, then rewrite Hex0Class. **)
       admit.
     }
     claim HbetaYEqX :
