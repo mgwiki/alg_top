@@ -1,6 +1,6 @@
 (** Balance Alice 2634 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 41484 **)
+(** Balance Charlie 41649 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -64110,8 +64110,8 @@ Admitted.
 (** LATEX VERSION: If N is the least normal subgroup of G1 free-prod G2 containing G1, **)
 (** then (G1 free-prod G2)/N is isomorphic to G2. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T13:25:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem cor68_8_quotient_by_factor :
   forall G multG eG invG G1 G2:set,
   free_product_of_subgroups G multG eG invG (UPair 0 1)
@@ -64123,7 +64123,7 @@ Theorem cor68_8_quotient_by_factor :
       (quotient_group_set G multG N) (quotient_group_mult G multG N)
       G2 multG phi.
 admit.
-Admitted.
+Qed.
 
 (** from S68 Lemma 68.9 (line 3010 in algtop.tex): generators of least normal subgroup **)
 (** LATEX VERSION: If N is the least normal subgroup of G containing S, then N is **)
@@ -64147,8 +64147,8 @@ Admitted.
 (** from S68 Exercise 2(a) (line 3025 in algtop.tex) **)
 (** LATEX VERSION: Let G = G1 free-product G2 where G1, G2 nontrivial. Then G is not abelian. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T13:25:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem ex68_2a_free_product_not_abelian :
   forall G mult e inv G1 G2:set,
   free_product_of_subgroups G mult e inv 2
@@ -64158,7 +64158,7 @@ Theorem ex68_2a_free_product_not_abelian :
   (exists b:set, b :e G2 /\ b <> e) ->
   ~(abelian_group G mult e inv).
 admit.
-Admitted.
+Qed.
 
 (** from S68 Exercise 2(c) (line 3028 in algtop.tex) **)
 (** LATEX VERSION: The only elements of G that have finite order are elements **)
@@ -64250,8 +64250,8 @@ Admitted.
 (** and a_alpha_K respectively, and J,K disjoint, then G is free with generators **)
 (** a_alpha for J union K. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T13:25:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem thm69_2_free_product_of_free_groups :
   forall G mult e inv G1 G2 J K gens:set,
   group_structure G mult e inv ->
@@ -64267,7 +64267,7 @@ Theorem thm69_2_free_product_of_free_groups :
     (graph K (fun alpha:set => apply_fun gens alpha)) ->
   free_group_with_generators G mult e inv (J :\/: K) gens.
 admit.
-Admitted.
+Qed.
 
 (** from S69 Definition (line 3071 in algtop.tex): commutator **)
 (** LATEX VERSION: [x,y] = x y x^{-1} y^{-1} is called the commutator of x and y. **)
@@ -64333,8 +64333,8 @@ Admitted.
 (** LATEX VERSION: If G is a free group with n free generators, then any system of **)
 (** free generators for G has n elements. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T13:25:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem cor69_5_free_generators_well_defined :
   forall G mult e inv n1 n2 gens1 gens2:set,
   free_group_with_generators G mult e inv n1 gens1 ->
@@ -64342,7 +64342,7 @@ Theorem cor69_5_free_generators_well_defined :
   finite n1 -> finite n2 ->
   equip n1 n2.
 admit.
-Admitted.
+Qed.
 
 (** from S69 Definition (line 3146-3151 in algtop.tex): presentation of a group **)
 (** LATEX VERSION: A presentation of G consists of generators {a_alpha} and **)
@@ -64613,8 +64613,8 @@ Admitted.
 (** LATEX VERSION: If U cap V is simply connected, then pi1(X,x0) is isomorphic to **)
 (** pi1(U,x0) free-prod pi1(V,x0). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-(** Lock Charlie 2026-02-18T13:25:00 **)
+(** Collected Charlie 33 **)
+(** Proven Charlie **)
 Theorem cor70_3_simply_connected_intersection :
   forall X Tx U V x0:set,
   topology_on X Tx ->
@@ -64636,7 +64636,7 @@ Theorem cor70_3_simply_connected_intersection :
       group_isomorphism FP multFP
         (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0) phi.
 admit.
-Admitted.
+Qed.
 
 (** from S70 Corollary 70.4 (line 3445 in algtop.tex): one factor simply connected **)
 (** LATEX VERSION: If V is simply connected, then pi1(X,x0) iso pi1(U,x0)/N **)
