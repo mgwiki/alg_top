@@ -68521,6 +68521,84 @@ claim Hcore :
           Hfalse
           (t :e preimage_of unit_interval fcls U)).
     }
+    claim HpreUSubI : preimage_of unit_interval fcls U c= unit_interval.
+    {
+      exact (topology_elem_subset
+        unit_interval
+        unit_interval_topology
+        (preimage_of unit_interval fcls U)
+        unit_interval_topology_on
+        HpreUopen).
+    }
+    claim HpreVSubI : preimage_of unit_interval fcls V c= unit_interval.
+    {
+      exact (topology_elem_subset
+        unit_interval
+        unit_interval_topology
+        (preimage_of unit_interval fcls V)
+        unit_interval_topology_on
+        HpreVopen).
+    }
+    claim HpreUNe : preimage_of unit_interval fcls U <> Empty.
+    {
+      exact (elem_implies_nonempty
+        (preimage_of unit_interval fcls U)
+        0
+        H0preU).
+    }
+    claim HpreVNe : preimage_of unit_interval fcls V <> Empty.
+    {
+      exact (elem_implies_nonempty
+        (preimage_of unit_interval fcls V)
+        0
+        H0preV).
+    }
+    claim HcompPreU_sub_preV :
+      unit_interval :\: (preimage_of unit_interval fcls U) c= preimage_of unit_interval fcls V.
+    {
+      let t.
+      assume HtCompU : t :e unit_interval :\: (preimage_of unit_interval fcls U).
+      claim HtI : t :e unit_interval.
+      {
+        exact (setminusE1
+          unit_interval
+          (preimage_of unit_interval fcls U)
+          t
+          HtCompU).
+      }
+      claim HtNotPreU : ~(t :e preimage_of unit_interval fcls U).
+      {
+        exact (setminusE2
+          unit_interval
+          (preimage_of unit_interval fcls U)
+          t
+          HtCompU).
+      }
+      exact (HnotPreU_implies_preV t HtI HtNotPreU).
+    }
+    claim HcompPreV_sub_preU :
+      unit_interval :\: (preimage_of unit_interval fcls V) c= preimage_of unit_interval fcls U.
+    {
+      let t.
+      assume HtCompV : t :e unit_interval :\: (preimage_of unit_interval fcls V).
+      claim HtI : t :e unit_interval.
+      {
+        exact (setminusE1
+          unit_interval
+          (preimage_of unit_interval fcls V)
+          t
+          HtCompV).
+      }
+      claim HtNotPreV : ~(t :e preimage_of unit_interval fcls V).
+      {
+        exact (setminusE2
+          unit_interval
+          (preimage_of unit_interval fcls V)
+          t
+          HtCompV).
+      }
+      exact (HnotPreV_implies_preU t HtI HtNotPreV).
+    }
     claim HoverlapPathToLoopPoint :
       forall t:set, t :e preimage_of unit_interval fcls (U :/\: V) ->
         exists q:set,
