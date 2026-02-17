@@ -67857,7 +67857,62 @@ claim Hcore :
     cls = nat_primrec (fundamental_group_id X Tx x0)
       (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n.
 {
-  admit. (** van Kampen style generation argument pending **)
+  apply (xm (cls = fundamental_group_id X Tx x0)).
+  - assume HclsId : cls = fundamental_group_id X Tx x0.
+    witness 0.
+    apply andI.
+    + exact (nat_p_omega 0 nat_0).
+    + witness (graph 0 (fun _:set => fundamental_group_id X Tx x0)).
+      apply andI.
+      * apply andI.
+        - claim Htf0 :
+             total_function_on
+               (graph 0 (fun _:set => fundamental_group_id X Tx x0))
+               0
+               (fundamental_group X Tx x0).
+           {
+             apply (total_function_on_graph
+               0
+               (fundamental_group X Tx x0)
+               (fun _:set => fundamental_group_id X Tx x0)).
+             let i.
+             assume Hi0 : i :e 0.
+             claim Hfalse : False.
+             {
+               exact (EmptyE i Hi0).
+             }
+             exact (FalseE Hfalse
+               ((fundamental_group_id X Tx x0) :e fundamental_group X Tx x0)).
+           }
+           exact (total_function_on_function_on
+             (graph 0 (fun _:set => fundamental_group_id X Tx x0))
+             0
+             (fundamental_group X Tx x0)
+             Htf0).
+        - let i.
+           assume Hi0 : i :e 0.
+           claim Hfalse : False.
+           {
+             exact (EmptyE i Hi0).
+           }
+           exact (FalseE Hfalse
+             ((exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+                apply_fun (graph 0 (fun _:set => fundamental_group_id X Tx x0)) i =
+                  apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+                    (graph U (fun x:set => x))) ucls) \/
+              (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                apply_fun (graph 0 (fun _:set => fundamental_group_id X Tx x0)) i =
+                  apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+                    (graph V (fun x:set => x))) vcls))).
+      * rewrite HclsId.
+        rewrite (nat_primrec_0
+          (fundamental_group_id X Tx x0)
+          (fun k r =>
+            apply_fun (fundamental_group_mult X Tx x0)
+              (r, apply_fun (graph 0 (fun _:set => fundamental_group_id X Tx x0)) k))).
+        reflexivity.
+  - assume HclsNe : ~(cls = fundamental_group_id X Tx x0).
+    admit. (** van Kampen style generation argument pending for nontrivial classes **)
 }
 exact Hcore.
 Admitted.
