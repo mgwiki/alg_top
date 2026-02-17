@@ -1,5 +1,5 @@
 (** Balance Alice 2135 **)
-(** Balance Bob 2046 **)
+(** Balance Bob 2040 **)
 (** Balance Charlie 1221 **)
 
 (** Sum of Balences and Bounties 48150 **)
@@ -27592,7 +27592,8 @@ Admitted.
 (** from S52 Exercise 2 (line 497 in algtop.tex) **)
 (** LATEX VERSION: If gamma = alpha . beta, then gamma-hat = beta-hat o alpha-hat. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 60 **)
+(** Bounty 66 **)
+(** Lock Bob 2026-02-18T05:45:00 **)
 Theorem ex52_2_basepoint_composition : forall X Tx x0 x1 x2 alpha beta:set,
   topology_on X Tx ->
   continuous_map unit_interval unit_interval_topology X Tx alpha ->
