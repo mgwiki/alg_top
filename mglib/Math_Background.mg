@@ -19755,8 +19755,783 @@ claim Hmult :
         HassocConj).
     }
     rewrite HassocClass.
-    (** TODO Bob: continue associativity plus inverse cancellation to reach target. **)
-    admit.
+    claim HlvEq :
+      lv
+      =
+      path_concat
+        (reverse_path alpha)
+        (path_concat
+          (Eps_i (fun g:set => g :e v))
+          alpha).
+    {
+      reflexivity.
+    }
+    rewrite HlvEq.
+    claim HassocInnerRaw :
+      path_homotopic
+        X
+        Tx
+        x0
+        x1
+        (path_concat
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            alpha)
+          (path_concat
+            (reverse_path alpha)
+            (path_concat
+              (Eps_i (fun g:set => g :e v))
+              alpha)))
+        (path_concat
+          (path_concat
+            (path_concat
+              (Eps_i (fun f:set => f :e u))
+              alpha)
+            (reverse_path alpha))
+          (path_concat
+            (Eps_i (fun g:set => g :e v))
+            alpha)).
+    {
+      exact (Theorem_51_2_associativity
+        X
+        Tx
+        x0
+        x1
+        x0
+        x1
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          alpha)
+        (reverse_path alpha)
+        (path_concat
+          (Eps_i (fun g:set => g :e v))
+          alpha)
+        HuAlphaCont
+        HrevCont
+        HvAlphaCont
+        HuAlpha0
+        HuAlpha1
+        Hrev0
+        Hrev1
+        HvAlpha0
+        HvAlpha1).
+    }
+    claim HouterAssoc :
+      path_homotopic
+        X
+        Tx
+        x1
+        x1
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            (path_concat
+              (Eps_i (fun f:set => f :e u))
+              alpha)
+            (path_concat
+              (reverse_path alpha)
+              (path_concat
+                (Eps_i (fun g:set => g :e v))
+                alpha))))
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            (path_concat
+              (path_concat
+                (Eps_i (fun f:set => f :e u))
+                alpha)
+              (reverse_path alpha))
+            (path_concat
+              (Eps_i (fun g:set => g :e v))
+              alpha))).
+    {
+      exact (path_concat_well_defined_on_classes
+        X
+        Tx
+        x1
+        x0
+        x1
+        (reverse_path alpha)
+        (reverse_path alpha)
+        (path_concat
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            alpha)
+          (path_concat
+            (reverse_path alpha)
+            (path_concat
+              (Eps_i (fun g:set => g :e v))
+              alpha)))
+        (path_concat
+          (path_concat
+            (path_concat
+              (Eps_i (fun f:set => f :e u))
+              alpha)
+            (reverse_path alpha))
+          (path_concat
+            (Eps_i (fun g:set => g :e v))
+            alpha))
+        HrevRefl
+        HassocInnerRaw).
+    }
+    claim HouterAssocClass :
+      path_homotopy_class_loop
+        X
+        Tx
+        x1
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            (path_concat
+              (Eps_i (fun f:set => f :e u))
+              alpha)
+            (path_concat
+              (reverse_path alpha)
+              (path_concat
+                (Eps_i (fun g:set => g :e v))
+                alpha))))
+      =
+      path_homotopy_class_loop
+        X
+        Tx
+        x1
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            (path_concat
+              (path_concat
+                (Eps_i (fun f:set => f :e u))
+                alpha)
+              (reverse_path alpha))
+            (path_concat
+              (Eps_i (fun g:set => g :e v))
+              alpha))).
+    {
+      exact (path_homotopy_class_loop_eq_of_path_homotopic
+        X
+        Tx
+        x1
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            (path_concat
+              (Eps_i (fun f:set => f :e u))
+              alpha)
+            (path_concat
+              (reverse_path alpha)
+              (path_concat
+                (Eps_i (fun g:set => g :e v))
+                alpha))))
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            (path_concat
+              (path_concat
+                (Eps_i (fun f:set => f :e u))
+                alpha)
+              (reverse_path alpha))
+            (path_concat
+              (Eps_i (fun g:set => g :e v))
+              alpha)))
+        HouterAssoc).
+    }
+    rewrite HouterAssocClass.
+    claim HassocUAraw :
+      path_homotopic
+        X
+        Tx
+        x0
+        x0
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (path_concat alpha (reverse_path alpha)))
+        (path_concat
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            alpha)
+          (reverse_path alpha)).
+    {
+      exact (Theorem_51_2_associativity
+        X
+        Tx
+        x0
+        x0
+        x1
+        x0
+        (Eps_i (fun f:set => f :e u))
+        alpha
+        (reverse_path alpha)
+        HepsuCont
+        HalphaCont
+        HrevCont
+        Hepsu0
+        Hepsu1
+        Halpha0
+        Halpha1
+        Hrev0
+        Hrev1).
+    }
+    claim HassocUAsym :
+      path_homotopic
+        X
+        Tx
+        x0
+        x0
+        (path_concat
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            alpha)
+          (reverse_path alpha))
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (path_concat alpha (reverse_path alpha))).
+    {
+      exact (Lemma_51_1_path_homotopy_sym
+        X
+        Tx
+        x0
+        x0
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (path_concat alpha (reverse_path alpha)))
+        (path_concat
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            alpha)
+          (reverse_path alpha))
+        HassocUAraw).
+    }
+    claim HvAlphaRefl :
+      path_homotopic
+        X
+        Tx
+        x0
+        x1
+        (path_concat
+          (Eps_i (fun g:set => g :e v))
+          alpha)
+        (path_concat
+          (Eps_i (fun g:set => g :e v))
+          alpha).
+    {
+      exact (Lemma_51_1_path_homotopy_refl
+        X
+        Tx
+        x0
+        x1
+        (path_concat
+          (Eps_i (fun g:set => g :e v))
+          alpha)
+        HvAlphaCont
+        HvAlpha0
+        HvAlpha1).
+    }
+    claim HreplaceInner1 :
+      path_homotopic
+        X
+        Tx
+        x0
+        x1
+        (path_concat
+          (path_concat
+            (path_concat
+              (Eps_i (fun f:set => f :e u))
+              alpha)
+            (reverse_path alpha))
+          (path_concat
+            (Eps_i (fun g:set => g :e v))
+            alpha))
+        (path_concat
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            (path_concat alpha (reverse_path alpha)))
+          (path_concat
+            (Eps_i (fun g:set => g :e v))
+            alpha)).
+    {
+      exact (path_concat_well_defined_on_classes
+        X
+        Tx
+        x0
+        x0
+        x1
+        (path_concat
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            alpha)
+          (reverse_path alpha))
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (path_concat alpha (reverse_path alpha)))
+        (path_concat
+          (Eps_i (fun g:set => g :e v))
+          alpha)
+        (path_concat
+          (Eps_i (fun g:set => g :e v))
+          alpha)
+        HassocUAsym
+        HvAlphaRefl).
+    }
+    claim HalphaInv :
+      path_homotopic
+        X
+        Tx
+        x0
+        x0
+        (path_concat alpha (reverse_path alpha))
+        (constant_path x0).
+    {
+      exact (Theorem_51_2_right_inverse
+        X
+        Tx
+        x0
+        x1
+        alpha
+        HalphaCont
+        Halpha0
+        Halpha1).
+    }
+    claim HepsuRefl :
+      path_homotopic
+        X
+        Tx
+        x0
+        x0
+        (Eps_i (fun f:set => f :e u))
+        (Eps_i (fun f:set => f :e u)).
+    {
+      exact (Lemma_51_1_path_homotopy_refl
+        X
+        Tx
+        x0
+        x0
+        (Eps_i (fun f:set => f :e u))
+        HepsuCont
+        Hepsu0
+        Hepsu1).
+    }
+    claim HreplaceInner2a :
+      path_homotopic
+        X
+        Tx
+        x0
+        x0
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (path_concat alpha (reverse_path alpha)))
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (constant_path x0)).
+    {
+      exact (path_concat_well_defined_on_classes
+        X
+        Tx
+        x0
+        x0
+        x0
+        (Eps_i (fun f:set => f :e u))
+        (Eps_i (fun f:set => f :e u))
+        (path_concat alpha (reverse_path alpha))
+        (constant_path x0)
+        HepsuRefl
+        HalphaInv).
+    }
+    claim HreplaceInner2 :
+      path_homotopic
+        X
+        Tx
+        x0
+        x1
+        (path_concat
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            (path_concat alpha (reverse_path alpha)))
+          (path_concat
+            (Eps_i (fun g:set => g :e v))
+            alpha))
+        (path_concat
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            (constant_path x0))
+          (path_concat
+            (Eps_i (fun g:set => g :e v))
+            alpha)).
+    {
+      exact (path_concat_well_defined_on_classes
+        X
+        Tx
+        x0
+        x0
+        x1
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (path_concat alpha (reverse_path alpha)))
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (constant_path x0))
+        (path_concat
+          (Eps_i (fun g:set => g :e v))
+          alpha)
+        (path_concat
+          (Eps_i (fun g:set => g :e v))
+          alpha)
+        HreplaceInner2a
+        HvAlphaRefl).
+    }
+    claim HUrightId :
+      path_homotopic
+        X
+        Tx
+        x0
+        x0
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (constant_path x0))
+        (Eps_i (fun f:set => f :e u)).
+    {
+      exact (Theorem_51_2_right_identity
+        X
+        Tx
+        x0
+        x0
+        (Eps_i (fun f:set => f :e u))
+        HepsuCont
+        Hepsu0
+        Hepsu1
+        Hx0X).
+    }
+    claim HreplaceInner3 :
+      path_homotopic
+        X
+        Tx
+        x0
+        x1
+        (path_concat
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            (constant_path x0))
+          (path_concat
+            (Eps_i (fun g:set => g :e v))
+            alpha))
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (path_concat
+            (Eps_i (fun g:set => g :e v))
+            alpha)).
+    {
+      exact (path_concat_well_defined_on_classes
+        X
+        Tx
+        x0
+        x0
+        x1
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (constant_path x0))
+        (Eps_i (fun f:set => f :e u))
+        (path_concat
+          (Eps_i (fun g:set => g :e v))
+          alpha)
+        (path_concat
+          (Eps_i (fun g:set => g :e v))
+          alpha)
+        HUrightId
+        HvAlphaRefl).
+    }
+    claim HassocUV :
+      path_homotopic
+        X
+        Tx
+        x0
+        x1
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (path_concat
+            (Eps_i (fun g:set => g :e v))
+            alpha))
+        (path_concat
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            (Eps_i (fun g:set => g :e v)))
+          alpha).
+    {
+      exact (Theorem_51_2_associativity
+        X
+        Tx
+        x0
+        x0
+        x0
+        x1
+        (Eps_i (fun f:set => f :e u))
+        (Eps_i (fun g:set => g :e v))
+        alpha
+        HepsuCont
+        HepsvCont
+        HalphaCont
+        Hepsu0
+        Hepsu1
+        Hepsv0
+        Hepsv1
+        Halpha0
+        Halpha1).
+    }
+    claim Hinner12 :
+      path_homotopic
+        X
+        Tx
+        x0
+        x1
+        (path_concat
+          (path_concat
+            (path_concat
+              (Eps_i (fun f:set => f :e u))
+              alpha)
+            (reverse_path alpha))
+          (path_concat
+            (Eps_i (fun g:set => g :e v))
+            alpha))
+        (path_concat
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            (constant_path x0))
+          (path_concat
+            (Eps_i (fun g:set => g :e v))
+            alpha)).
+    {
+      exact (Lemma_51_1_path_homotopy_trans
+        X
+        Tx
+        x0
+        x1
+        (path_concat
+          (path_concat
+            (path_concat
+              (Eps_i (fun f:set => f :e u))
+              alpha)
+            (reverse_path alpha))
+          (path_concat
+            (Eps_i (fun g:set => g :e v))
+            alpha))
+        (path_concat
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            (path_concat alpha (reverse_path alpha)))
+          (path_concat
+            (Eps_i (fun g:set => g :e v))
+            alpha))
+        (path_concat
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            (constant_path x0))
+          (path_concat
+            (Eps_i (fun g:set => g :e v))
+            alpha))
+        HreplaceInner1
+        HreplaceInner2).
+    }
+    claim Hinner123 :
+      path_homotopic
+        X
+        Tx
+        x0
+        x1
+        (path_concat
+          (path_concat
+            (path_concat
+              (Eps_i (fun f:set => f :e u))
+              alpha)
+            (reverse_path alpha))
+          (path_concat
+            (Eps_i (fun g:set => g :e v))
+            alpha))
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (path_concat
+            (Eps_i (fun g:set => g :e v))
+            alpha)).
+    {
+      exact (Lemma_51_1_path_homotopy_trans
+        X
+        Tx
+        x0
+        x1
+        (path_concat
+          (path_concat
+            (path_concat
+              (Eps_i (fun f:set => f :e u))
+              alpha)
+            (reverse_path alpha))
+          (path_concat
+            (Eps_i (fun g:set => g :e v))
+            alpha))
+        (path_concat
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            (constant_path x0))
+          (path_concat
+            (Eps_i (fun g:set => g :e v))
+            alpha))
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (path_concat
+            (Eps_i (fun g:set => g :e v))
+            alpha))
+        Hinner12
+        HreplaceInner3).
+    }
+    claim HinnerFinal :
+      path_homotopic
+        X
+        Tx
+        x0
+        x1
+        (path_concat
+          (path_concat
+            (path_concat
+              (Eps_i (fun f:set => f :e u))
+              alpha)
+            (reverse_path alpha))
+          (path_concat
+            (Eps_i (fun g:set => g :e v))
+            alpha))
+        (path_concat
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            (Eps_i (fun g:set => g :e v)))
+          alpha).
+    {
+      exact (Lemma_51_1_path_homotopy_trans
+        X
+        Tx
+        x0
+        x1
+        (path_concat
+          (path_concat
+            (path_concat
+              (Eps_i (fun f:set => f :e u))
+              alpha)
+            (reverse_path alpha))
+          (path_concat
+            (Eps_i (fun g:set => g :e v))
+            alpha))
+        (path_concat
+          (Eps_i (fun f:set => f :e u))
+          (path_concat
+            (Eps_i (fun g:set => g :e v))
+            alpha))
+        (path_concat
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            (Eps_i (fun g:set => g :e v)))
+          alpha)
+        Hinner123
+        HassocUV).
+    }
+    claim HouterToTarget :
+      path_homotopic
+        X
+        Tx
+        x1
+        x1
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            (path_concat
+              (path_concat
+                (Eps_i (fun f:set => f :e u))
+                alpha)
+              (reverse_path alpha))
+            (path_concat
+              (Eps_i (fun g:set => g :e v))
+              alpha)))
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            (path_concat
+              (Eps_i (fun f:set => f :e u))
+              (Eps_i (fun g:set => g :e v)))
+            alpha)).
+    {
+      exact (path_concat_well_defined_on_classes
+        X
+        Tx
+        x1
+        x0
+        x1
+        (reverse_path alpha)
+        (reverse_path alpha)
+        (path_concat
+          (path_concat
+            (path_concat
+              (Eps_i (fun f:set => f :e u))
+              alpha)
+            (reverse_path alpha))
+          (path_concat
+            (Eps_i (fun g:set => g :e v))
+            alpha))
+        (path_concat
+          (path_concat
+            (Eps_i (fun f:set => f :e u))
+            (Eps_i (fun g:set => g :e v)))
+          alpha)
+        HrevRefl
+        HinnerFinal).
+    }
+    claim HouterToTargetClass :
+      path_homotopy_class_loop
+        X
+        Tx
+        x1
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            (path_concat
+              (path_concat
+                (Eps_i (fun f:set => f :e u))
+                alpha)
+              (reverse_path alpha))
+            (path_concat
+              (Eps_i (fun g:set => g :e v))
+              alpha)))
+      =
+      path_homotopy_class_loop
+        X
+        Tx
+        x1
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            (path_concat
+              (Eps_i (fun f:set => f :e u))
+              (Eps_i (fun g:set => g :e v)))
+            alpha)).
+    {
+      exact (path_homotopy_class_loop_eq_of_path_homotopic
+        X
+        Tx
+        x1
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            (path_concat
+              (path_concat
+                (Eps_i (fun f:set => f :e u))
+                alpha)
+              (reverse_path alpha))
+            (path_concat
+              (Eps_i (fun g:set => g :e v))
+              alpha)))
+        (path_concat
+          (reverse_path alpha)
+          (path_concat
+            (path_concat
+              (Eps_i (fun f:set => f :e u))
+              (Eps_i (fun g:set => g :e v)))
+            alpha))
+        HouterToTarget).
+    }
+    rewrite HouterToTargetClass.
+    reflexivity.
   }
   rewrite HtargetToConjProd.
   rewrite <- HuMapEq.
