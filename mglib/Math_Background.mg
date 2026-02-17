@@ -1,6 +1,6 @@
 (** Balance Alice 2634 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 41139 **)
+(** Balance Charlie 41118 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -66707,7 +66707,8 @@ Admitted.
 (** Answer: projective type with 10 sides gives P_5 or P_3 or P_1; **)
 (** torus type with 10 sides gives T_1 or T_2 (the only possible ones). **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 40 **)
-(** Bounty 40 **)
+(** Bounty 44 **)
+(** Lock Charlie 2026-02-18T12:55:00 **)
 Theorem ex77_4_ten_sided_region :
   forall w:set,
   let n := ordsucc (ordsucc (ordsucc (ordsucc (ordsucc
@@ -67198,7 +67199,8 @@ Admitted.
 (** from S79 Exercise 1 (line 4911 in algtop.tex) **)
 (** LATEX VERSION: If n > 1, every continuous map f: S^n -> S^1 is nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 40 **)
-(** Bounty 40 **)
+(** Bounty 44 **)
+(** Lock Charlie 2026-02-18T12:55:00 **)
 Theorem ex79_1_Sn_to_S1_nulhomotopic : forall n:set,
   n :e omega -> 1 :e n ->
   forall f:set,
@@ -67210,7 +67212,8 @@ Admitted.
 (** from S79 Exercise 2(a) (line 4912 in algtop.tex) **)
 (** LATEX VERSION: Every continuous map f: P^2 -> S^1 is nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 40 **)
-(** Bounty 40 **)
+(** Bounty 44 **)
+(** Lock Charlie 2026-02-18T12:55:00 **)
 Theorem ex79_2a_P2_to_S1_nulhomotopic :
   forall f:set,
     continuous_map (m_fold_projective_plane_space 1)
@@ -67263,7 +67266,8 @@ Admitted.
 (** LATEX VERSION: Let p: G-tilde -> G be a homomorphism of topological groups **)
 (** that is a covering map. If G is abelian, so is G-tilde. **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 40 **)
-(** Bounty 40 **)
+(** Bounty 44 **)
+(** Lock Charlie 2026-02-18T12:55:00 **)
 Theorem ex79_7_abelian_covering_group : forall G Tg Gtilde Tgt p multG multGt:set,
   topological_group G Tg ->
   topological_group Gtilde Tgt ->
@@ -67690,7 +67694,8 @@ Definition regular_covering_map : set -> set -> set -> set -> set -> set -> prop
 (** there is a covering transformation h with h(e1)=e2. In this case, **)
 (** C(E,p,B) is isomorphic to pi1(B,b0)/H0. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T12:55:00 **)
 Theorem cor81_3_normal_iff_transitive :
   forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
