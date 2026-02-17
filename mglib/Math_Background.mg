@@ -1,6 +1,6 @@
 (** Balance Alice 2584 **)
 (** Balance Bob 2951 **)
-(** Balance Charlie 39694 **)
+(** Balance Charlie 39669 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -54328,7 +54328,8 @@ Admitted.
 (** from S57 Theorem 57.2 (line 1214 in algtop.tex) **)
 (** LATEX VERSION: There is no continuous antipode-preserving map g: S^2 -> S^1. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T13:00:00 **)
 Theorem thm57_2_no_antipode_preserving_S2_S1 :
   ~(exists g:set, antipode_preserving_Sn 2 1 g).
 admit.
@@ -54840,7 +54841,8 @@ Admitted.
 (** from S57 Exercise 4(a) (line 1261 in algtop.tex) **)
 (** LATEX VERSION: Given no continuous antipode-preserving map h: S^n -> S^n is nulhomotopic, there is no retraction r: B^{n+1} -> S^n. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T13:00:00 **)
 Theorem ex57_4a_no_retraction_from_borsuk : forall n:set, n :e omega ->
   (forall h:set, antipode_preserving_Sn n n h ->
     ~(nulhomotopic (Sn n) (Sn_topology n) (Sn n) (Sn_topology n) h)) ->
@@ -54864,7 +54866,8 @@ Qed.
 (** from S57 Exercise 4(c) (line 1263 in algtop.tex) **)
 (** LATEX VERSION: (Borsuk-Ulam) Given the hypothesis, for any continuous f: S^{n+1} -> R^{n+1}, there exists x with f(x) = f(-x). **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T13:00:00 **)
 Theorem ex57_4c_borsuk_ulam_general : forall n:set, n :e omega ->
   (forall h:set, antipode_preserving_Sn (ordsucc n) (ordsucc n) h ->
     ~(nulhomotopic (Sn (ordsucc n)) (Sn_topology (ordsucc n))
@@ -64335,7 +64338,8 @@ Admitted.
 (** LATEX VERSION: If V is simply connected, then pi1(X,x0) iso pi1(U,x0)/N **)
 (** where N is the least normal subgroup containing image of i1. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T13:00:00 **)
 Theorem cor70_4_one_factor_simply_connected :
   forall X Tx U V x0:set,
   topology_on X Tx ->
@@ -64603,7 +64607,8 @@ Admitted.
 (** from S70 Exercise 3(a) (line 3492 in algtop.tex) **)
 (** LATEX VERSION: If G1 and G2 have finite presentations, so does G1 free-product G2. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 2026-02-18T13:00:00 **)
 Theorem ex70_3a_free_product_finitely_presented :
   forall G1 mult1 e1 inv1 G2 mult2 e2 inv2:set,
   finitely_presented G1 mult1 e1 inv1 ->
