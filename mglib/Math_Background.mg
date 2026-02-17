@@ -1,6 +1,6 @@
 (** Balance Alice 2384 **)
 (** Balance Bob 2849 **)
-(** Balance Charlie 1566 **)
+(** Balance Charlie 1564 **)
 
 (** Sum of Balences and Bounties 48150 **)
 
@@ -51271,7 +51271,8 @@ Admitted.
 (** from S55 Corollary 55.4 part (b) (line 947 in algtop.tex) **)
 (** LATEX VERSION: The identity map i: S^1 -> S^1 is not nulhomotopic. **)
 (** EFFORT: 2 lines textbook, difficulty 1/10, USD 20 **)
-(** Bounty 20 **)
+(** Bounty 22 **)
+(** Lock Charlie 2026-02-18T09:45:00 **)
 Theorem cor55_4b_identity_S1_not_nulhomotopic :
   ~(nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x))).
 admit.
