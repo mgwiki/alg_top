@@ -67420,7 +67420,60 @@ Theorem thm59_1_open_cover_generates_pi1 : forall X Tx U V x0:set,
               (graph V (fun x:set => x))) vcls)) /\
       cls = nat_primrec (fundamental_group_id X Tx x0)
         (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n).
-admit.
+let X Tx U V x0.
+assume Htop : topology_on X Tx.
+assume HU : U :e Tx.
+assume HV : V :e Tx.
+assume Hcover : X = U :\/: V.
+assume Hx0UV : x0 :e U :/\: V.
+assume HpcUV : path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)).
+let cls.
+assume Hcls : cls :e fundamental_group X Tx x0.
+claim Hx0U : x0 :e U.
+{
+  exact (binintersectE1 U V x0 Hx0UV).
+}
+claim Hx0V : x0 :e V.
+{
+  exact (binintersectE2 U V x0 Hx0UV).
+}
+claim HUsub : U c= X.
+{
+  exact (topology_elem_subset X Tx U Htop HU).
+}
+claim HVsub : V c= X.
+{
+  exact (topology_elem_subset X Tx V Htop HV).
+}
+claim Hx0X : x0 :e X.
+{
+  exact (HUsub x0 Hx0U).
+}
+claim HtopUV : topology_on (U :/\: V) (subspace_topology X Tx (U :/\: V)).
+{
+  exact (path_connected_space_topology
+    (U :/\: V)
+    (subspace_topology X Tx (U :/\: V))
+    HpcUV).
+}
+claim Hgen :
+  exists n:set, n :e omega /\
+  exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls)) /\
+    cls = nat_primrec (fundamental_group_id X Tx x0)
+      (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n.
+{
+  admit. (** van Kampen style generation argument pending **)
+}
+exact Hgen.
 Admitted.
 
 (** Helper: group homomorphism maps identity to identity **)
