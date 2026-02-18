@@ -77590,7 +77590,26 @@ claim HretrR2m0S1 :
       (forall x:set, x :e R2_minus_origin -> apply_fun r x :e S1) /\
       (forall x:set, x :e S1 -> apply_fun r x = x).
   {
-    admit.
+    set r := graph R2_minus_origin (fun p:set =>
+      (div_SNo (p 0)
+        (sqrt_SNo_nonneg
+          (add_SNo (mul_SNo (p 0) (p 0))
+            (mul_SNo (p 1) (p 1)))),
+       div_SNo (p 1)
+        (sqrt_SNo_nonneg
+          (add_SNo (mul_SNo (p 0) (p 0))
+            (mul_SNo (p 1) (p 1)))))).
+    claim HrPack :
+      function_on r R2_minus_origin R2_minus_origin /\
+      continuous_map R2_minus_origin R2_minus_origin_topology
+        R2_minus_origin R2_minus_origin_topology r /\
+      (forall x:set, x :e R2_minus_origin -> apply_fun r x :e S1) /\
+      (forall x:set, x :e S1 -> apply_fun r x = x).
+    {
+      admit.
+    }
+    witness r.
+    exact HrPack.
   }
   prove S1 c= R2_minus_origin /\
     exists r:set,
