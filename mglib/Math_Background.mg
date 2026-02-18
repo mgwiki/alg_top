@@ -56961,7 +56961,448 @@ claim Hex :
                   (apply_fun lu 0 = e0)
                   HluPack).
               }
-              (** TODO Bob: from HuNu, HuNt, HNtMap, and HluLift, glue/propagate a seed witness from u to t. **)
+              claim HluCont :
+                continuous_map
+                  Nu
+                  (subspace_topology unit_interval unit_interval_topology Nu)
+                  E
+                  Te
+                  lu.
+              {
+                exact (andEL
+                  (continuous_map
+                    Nu
+                    (subspace_topology unit_interval unit_interval_topology Nu)
+                    E
+                    Te
+                    lu)
+                  (forall x:set, x :e Nu ->
+                    apply_fun p (apply_fun lu x) = apply_fun f x)
+                  HluLift).
+              }
+              claim HluComm :
+                forall x:set, x :e Nu ->
+                  apply_fun p (apply_fun lu x) = apply_fun f x.
+              {
+                exact (andER
+                  (continuous_map
+                    Nu
+                    (subspace_topology unit_interval unit_interval_topology Nu)
+                    E
+                    Te
+                    lu)
+                  (forall x:set, x :e Nu ->
+                    apply_fun p (apply_fun lu x) = apply_fun f x)
+                  HluLift).
+              }
+              claim HluFun : function_on lu Nu E.
+              {
+                exact (continuous_map_function_on
+                  Nu
+                  (subspace_topology unit_interval unit_interval_topology Nu)
+                  E
+                  Te
+                  lu
+                  HluCont).
+              }
+              claim HfuUt : apply_fun f u :e Ut.
+              {
+                exact (HNtMap
+                  u
+                  HuNt).
+              }
+              claim HluuE : apply_fun lu u :e E.
+              {
+                exact (HluFun
+                  u
+                  HuNu).
+              }
+              claim HpluuEqfu : apply_fun p (apply_fun lu u) = apply_fun f u.
+              {
+                exact (HluComm
+                  u
+                  HuNu).
+              }
+              claim HpluuUt : apply_fun p (apply_fun lu u) :e Ut.
+              {
+                rewrite HpluuEqfu.
+                exact HfuUt.
+              }
+              claim HluuPreUt : apply_fun lu u :e preimage_of E p Ut.
+              {
+                exact (SepI
+                  E
+                  (fun z:set => apply_fun p z :e Ut)
+                  (apply_fun lu u)
+                  HluuE
+                  HpluuUt).
+              }
+              claim HevenUt : evenly_covered E Te B Tb p Ut.
+              {
+                exact (andER
+                  (Ut :e Tb /\ apply_fun f t :e Ut)
+                  (evenly_covered E Te B Tb p Ut)
+                  HUtPack).
+              }
+              claim HslicesUt :
+                exists slicesUt:set,
+                  slicesUt c= Te /\
+                  pairwise_disjoint slicesUt /\
+                  Union slicesUt = preimage_of E p Ut /\
+                  (forall V:set, V :e slicesUt ->
+                    homeomorphism V (subspace_topology E Te V) Ut (subspace_topology B Tb Ut)
+                      (graph V (fun z:set => apply_fun p z))).
+              {
+                exact (andER
+                  (Ut :e Tb)
+                  (exists slices:set,
+                    slices c= Te /\
+                    pairwise_disjoint slices /\
+                    Union slices = preimage_of E p Ut /\
+                    (forall V:set, V :e slices ->
+                      homeomorphism V (subspace_topology E Te V) Ut (subspace_topology B Tb Ut)
+                        (graph V (fun z:set => apply_fun p z))))
+                  HevenUt).
+              }
+              apply HslicesUt.
+              let slicesUt.
+              assume HslicesUtPack.
+              claim HslicesUtCore :
+                (slicesUt c= Te /\ pairwise_disjoint slicesUt) /\
+                Union slicesUt = preimage_of E p Ut.
+              {
+                exact (andEL
+                  ((slicesUt c= Te /\ pairwise_disjoint slicesUt) /\
+                    Union slicesUt = preimage_of E p Ut)
+                  (forall V:set, V :e slicesUt ->
+                    homeomorphism V (subspace_topology E Te V) Ut (subspace_topology B Tb Ut)
+                      (graph V (fun z:set => apply_fun p z)))
+                  HslicesUtPack).
+              }
+              claim HslicesUtSub : slicesUt c= Te.
+              {
+                exact (andEL
+                  (slicesUt c= Te)
+                  (pairwise_disjoint slicesUt)
+                  (andEL
+                    (slicesUt c= Te /\ pairwise_disjoint slicesUt)
+                    (Union slicesUt = preimage_of E p Ut)
+                    HslicesUtCore)).
+              }
+              claim HslicesUtUnion : Union slicesUt = preimage_of E p Ut.
+              {
+                exact (andER
+                  (slicesUt c= Te /\ pairwise_disjoint slicesUt)
+                  (Union slicesUt = preimage_of E p Ut)
+                  HslicesUtCore).
+              }
+              claim HhomeSlicesUt :
+                forall V:set, V :e slicesUt ->
+                  homeomorphism V (subspace_topology E Te V) Ut (subspace_topology B Tb Ut)
+                    (graph V (fun z:set => apply_fun p z)).
+              {
+                exact (andER
+                  ((slicesUt c= Te /\ pairwise_disjoint slicesUt) /\
+                    Union slicesUt = preimage_of E p Ut)
+                  (forall V:set, V :e slicesUt ->
+                    homeomorphism V (subspace_topology E Te V) Ut (subspace_topology B Tb Ut)
+                      (graph V (fun z:set => apply_fun p z)))
+                  HslicesUtPack).
+              }
+              claim HluuUnion : apply_fun lu u :e Union slicesUt.
+              {
+                exact (mem_eqL
+                  (apply_fun lu u)
+                  (Union slicesUt)
+                  (preimage_of E p Ut)
+                  HslicesUtUnion
+                  HluuPreUt).
+              }
+              claim HsliceAtLuu :
+                exists Vu:set, apply_fun lu u :e Vu /\ Vu :e slicesUt.
+              {
+                exact (UnionE
+                  slicesUt
+                  (apply_fun lu u)
+                  HluuUnion).
+              }
+              apply HsliceAtLuu.
+              let Vu.
+              assume HVuPack.
+              claim HluuVu : apply_fun lu u :e Vu.
+              {
+                exact (andEL
+                  (apply_fun lu u :e Vu)
+                  (Vu :e slicesUt)
+                  HVuPack).
+              }
+              claim HVuSlice : Vu :e slicesUt.
+              {
+                exact (andER
+                  (apply_fun lu u :e Vu)
+                  (Vu :e slicesUt)
+                  HVuPack).
+              }
+              claim HhomeVu :
+                homeomorphism Vu (subspace_topology E Te Vu) Ut (subspace_topology B Tb Ut)
+                  (graph Vu (fun z:set => apply_fun p z)).
+              {
+                exact (HhomeSlicesUt
+                  Vu
+                  HVuSlice).
+              }
+              claim HinvVu :
+                exists gu:set,
+                  continuous_map Ut (subspace_topology B Tb Ut) Vu (subspace_topology E Te Vu) gu /\
+                  (forall x:set, x :e Vu ->
+                    apply_fun gu (apply_fun (graph Vu (fun z:set => apply_fun p z)) x) = x) /\
+                  (forall y:set, y :e Ut ->
+                    apply_fun (graph Vu (fun z:set => apply_fun p z)) (apply_fun gu y) = y).
+              {
+                exact (homeomorphism_inverse_package
+                  Vu
+                  (subspace_topology E Te Vu)
+                  Ut
+                  (subspace_topology B Tb Ut)
+                  (graph Vu (fun z:set => apply_fun p z))
+                  HhomeVu).
+              }
+              apply HinvVu.
+              let gu.
+              assume HguPack.
+              claim HguCont :
+                continuous_map Ut (subspace_topology B Tb Ut) Vu (subspace_topology E Te Vu) gu.
+              {
+                exact (andEL
+                  (continuous_map Ut (subspace_topology B Tb Ut) Vu (subspace_topology E Te Vu) gu)
+                  (forall x:set, x :e Vu ->
+                    apply_fun gu (apply_fun (graph Vu (fun z:set => apply_fun p z)) x) = x)
+                  (andEL
+                    (continuous_map Ut (subspace_topology B Tb Ut) Vu (subspace_topology E Te Vu) gu /\
+                      (forall x:set, x :e Vu ->
+                        apply_fun gu (apply_fun (graph Vu (fun z:set => apply_fun p z)) x) = x))
+                    (forall y:set, y :e Ut ->
+                      apply_fun (graph Vu (fun z:set => apply_fun p z)) (apply_fun gu y) = y)
+                    HguPack)).
+              }
+              claim HguLeft :
+                forall x:set, x :e Vu ->
+                  apply_fun gu (apply_fun (graph Vu (fun z:set => apply_fun p z)) x) = x.
+              {
+                exact (andER
+                  (continuous_map Ut (subspace_topology B Tb Ut) Vu (subspace_topology E Te Vu) gu)
+                  (forall x:set, x :e Vu ->
+                    apply_fun gu (apply_fun (graph Vu (fun z:set => apply_fun p z)) x) = x)
+                  (andEL
+                    (continuous_map Ut (subspace_topology B Tb Ut) Vu (subspace_topology E Te Vu) gu /\
+                      (forall x:set, x :e Vu ->
+                        apply_fun gu (apply_fun (graph Vu (fun z:set => apply_fun p z)) x) = x))
+                    (forall y:set, y :e Ut ->
+                      apply_fun (graph Vu (fun z:set => apply_fun p z)) (apply_fun gu y) = y)
+                    HguPack)).
+              }
+              claim HguRight :
+                forall y:set, y :e Ut ->
+                  apply_fun (graph Vu (fun z:set => apply_fun p z)) (apply_fun gu y) = y.
+              {
+                exact (andER
+                  (continuous_map Ut (subspace_topology B Tb Ut) Vu (subspace_topology E Te Vu) gu /\
+                    (forall x:set, x :e Vu ->
+                      apply_fun gu (apply_fun (graph Vu (fun z:set => apply_fun p z)) x) = x))
+                  (forall y:set, y :e Ut ->
+                    apply_fun (graph Vu (fun z:set => apply_fun p z)) (apply_fun gu y) = y)
+                  HguPack).
+              }
+              claim HguFun : function_on gu Ut Vu.
+              {
+                exact (continuous_map_function_on
+                  Ut
+                  (subspace_topology B Tb Ut)
+                  Vu
+                  (subspace_topology E Te Vu)
+                  gu
+                  HguCont).
+              }
+              claim HNtsubI : Nt c= unit_interval.
+              {
+                exact (topology_elem_subset
+                  unit_interval
+                  unit_interval_topology
+                  Nt
+                  unit_interval_topology_on
+                  HNtOpen).
+              }
+              claim HfcontNt_B :
+                continuous_map
+                  Nt
+                  (subspace_topology unit_interval unit_interval_topology Nt)
+                  B
+                  Tb
+                  f.
+              {
+                exact (continuous_on_subspace
+                  unit_interval
+                  unit_interval_topology
+                  B
+                  Tb
+                  f
+                  Nt
+                  unit_interval_topology_on
+                  HNtsubI
+                  Hfcont).
+              }
+              claim HUsubB : Ut c= B.
+              {
+                exact (topology_elem_subset
+                  B
+                  Tb
+                  Ut
+                  HtopB
+                  HUtOpen).
+              }
+              claim HfcontNt_U :
+                continuous_map
+                  Nt
+                  (subspace_topology unit_interval unit_interval_topology Nt)
+                  Ut
+                  (subspace_topology B Tb Ut)
+                  f.
+              {
+                exact (continuous_map_range_restrict
+                  Nt
+                  (subspace_topology unit_interval unit_interval_topology Nt)
+                  B
+                  Tb
+                  f
+                  Ut
+                  HfcontNt_B
+                  HUsubB
+                  HNtMap).
+              }
+              set localNt := compose_fun Nt f gu.
+              claim HlocalNtContVu :
+                continuous_map
+                  Nt
+                  (subspace_topology unit_interval unit_interval_topology Nt)
+                  Vu
+                  (subspace_topology E Te Vu)
+                  localNt.
+              {
+                exact (composition_continuous
+                  Nt
+                  (subspace_topology unit_interval unit_interval_topology Nt)
+                  Ut
+                  (subspace_topology B Tb Ut)
+                  Vu
+                  (subspace_topology E Te Vu)
+                  f
+                  gu
+                  HfcontNt_U
+                  HguCont).
+              }
+              claim HVuOpen : Vu :e Te.
+              {
+                exact (HslicesUtSub
+                  Vu
+                  HVuSlice).
+              }
+              claim HVusubE : Vu c= E.
+              {
+                exact (topology_elem_subset
+                  E
+                  Te
+                  Vu
+                  HtopE
+                  HVuOpen).
+              }
+              claim HlocalNtContE :
+                continuous_map
+                  Nt
+                  (subspace_topology unit_interval unit_interval_topology Nt)
+                  E
+                  Te
+                  localNt.
+              {
+                claim HVuTyEq : subspace_topology E Te Vu = subspace_topology E Te Vu.
+                {
+                  reflexivity.
+                }
+                exact (continuous_map_range_expand
+                  Nt
+                  (subspace_topology unit_interval unit_interval_topology Nt)
+                  Vu
+                  (subspace_topology E Te Vu)
+                  E
+                  Te
+                  localNt
+                  HlocalNtContVu
+                  HVusubE
+                  HtopE
+                  HVuTyEq).
+              }
+              claim HlocalNtComm :
+                forall x:set, x :e Nt ->
+                  apply_fun p (apply_fun localNt x) = apply_fun f x.
+              {
+                let x.
+                assume HxNt.
+                claim HfxUt : apply_fun f x :e Ut.
+                {
+                  exact (HNtMap
+                    x
+                    HxNt).
+                }
+                claim HgfxVu : apply_fun gu (apply_fun f x) :e Vu.
+                {
+                  exact (HguFun
+                    (apply_fun f x)
+                    HfxUt).
+                }
+                rewrite (compose_fun_apply
+                  Nt
+                  f
+                  gu
+                  x
+                  HxNt).
+                rewrite <- (apply_fun_graph
+                  Vu
+                  (fun z:set => apply_fun p z)
+                  (apply_fun gu (apply_fun f x))
+                  HgfxVu).
+                exact (HguRight
+                  (apply_fun f x)
+                  HfxUt).
+              }
+              claim HlocalNtAtU : apply_fun localNt u = apply_fun lu u.
+              {
+                rewrite (compose_fun_apply
+                  Nt
+                  f
+                  gu
+                  u
+                  HuNt).
+                claim HgraphLuu :
+                  apply_fun (graph Vu (fun z:set => apply_fun p z)) (apply_fun lu u)
+                    = apply_fun p (apply_fun lu u).
+                {
+                  exact (apply_fun_graph
+                    Vu
+                    (fun z:set => apply_fun p z)
+                    (apply_fun lu u)
+                    HluuVu).
+                }
+                claim HguLuu :
+                  apply_fun gu (apply_fun p (apply_fun lu u)) = apply_fun lu u.
+                {
+                  rewrite <- HgraphLuu.
+                  exact (HguLeft
+                    (apply_fun lu u)
+                    HluuVu).
+                }
+                rewrite <- HpluuEqfu.
+                exact HguLuu.
+              }
+              (** TODO Bob: combine HluLift on Nu and localNt on Nt using HlocalNtAtU to obtain a seed witness at t. **)
               admit.
             }
             exact (HtNotSeed
