@@ -111084,10 +111084,15 @@ apply (iffI
            (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
             g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}))
       (graph J (fun alpha:set => e)))).
-  + let alpha.
-    assume Halpha : alpha :e J.
-    admit.
-  + admit.
+	+ let alpha.
+	  assume Halpha : alpha :e J.
+	  set galpha := apply_fun gens alpha.
+	  claim HgalphaG : galpha :e G.
+	  {
+	    exact (Hgens alpha Halpha).
+	  }
+	  admit.
+		+ admit.
 Admitted.
 
 (** from S69 Thm 69.2 (line 3057 in algtop.tex): free product of free groups is free **)
