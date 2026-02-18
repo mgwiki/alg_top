@@ -80480,6 +80480,81 @@ Qed.
 (** from S59 Exercise 1 (line 1615 in algtop.tex) **)
 (** LATEX VERSION: Let X be the union of two copies of S^2 having a single point in common. The fundamental group of X is trivial. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
+(** helper: isolate openness of wedge pieces under current S59.1 data **)
+Theorem lemma59_1_wedge_pieces_open_from_data : forall X Tx x0 A B fA fB:set,
+  topology_on X Tx ->
+  X = A :\/: B ->
+  A :/\: B = Sing x0 ->
+  homeomorphism A (subspace_topology X Tx A) (Sn 2) (Sn_topology 2) fA ->
+  homeomorphism B (subspace_topology X Tx B) (Sn 2) (Sn_topology 2) fB ->
+  A :e Tx /\ B :e Tx.
+let X Tx x0 A B fA fB.
+assume Htop : topology_on X Tx.
+assume Hcover : X = A :\/: B.
+assume Hinter : A :/\: B = Sing x0.
+assume HhomeA : homeomorphism A (subspace_topology X Tx A) (Sn 2) (Sn_topology 2) fA.
+assume HhomeB : homeomorphism B (subspace_topology X Tx B) (Sn 2) (Sn_topology 2) fB.
+claim HtopA : topology_on A (subspace_topology X Tx A).
+{
+  exact (homeomorphism_topology_left
+    A
+    (subspace_topology X Tx A)
+    (Sn 2)
+    (Sn_topology 2)
+    fA
+    HhomeA).
+}
+claim HtopB : topology_on B (subspace_topology X Tx B).
+{
+  exact (homeomorphism_topology_left
+    B
+    (subspace_topology X Tx B)
+    (Sn 2)
+    (Sn_topology 2)
+    fB
+    HhomeB).
+}
+claim Hx0AB : x0 :e A :/\: B.
+{
+  rewrite Hinter.
+  exact (SingI x0).
+}
+claim Hx0A : x0 :e A.
+{
+  exact (binintersectE1
+    A
+    B
+    x0
+    Hx0AB).
+}
+claim Hx0B : x0 :e B.
+{
+  exact (binintersectE2
+    A
+    B
+    x0
+    Hx0AB).
+}
+claim Hx0Union : x0 :e A :\/: B.
+{
+  exact (binunionI1
+    A
+    B
+    x0
+    Hx0A).
+}
+claim Hx0X : x0 :e X.
+{
+  exact (mem_eqL
+    x0
+    X
+    (A :\/: B)
+    Hcover
+    Hx0Union).
+}
+admit. (** remaining gap: derive A :e Tx and B :e Tx from current hypotheses **)
+Admitted.
+
 (** Bounty 61 **)
 (** Lock Bob 1771439500 **)
 Theorem ex59_1_wedge_S2_trivial_pi1 : forall X Tx x0 A B fA fB:set,
@@ -80593,7 +80668,37 @@ claim HscX_if_open :
     HneAB
     HpcAB).
 }
-admit. (** remaining gap: derive A :e Tx and B :e Tx from current hypotheses **)
+claim HopenAB : A :e Tx /\ B :e Tx.
+{
+  exact (lemma59_1_wedge_pieces_open_from_data
+    X
+    Tx
+    x0
+    A
+    B
+    fA
+    fB
+    Htop
+    Hcover
+    Hinter
+    HhomeA
+    HhomeB).
+}
+claim HAopen : A :e Tx.
+{
+  exact (andEL
+    (A :e Tx)
+    (B :e Tx)
+    HopenAB).
+}
+claim HBopen : B :e Tx.
+{
+  exact (andER
+    (A :e Tx)
+    (B :e Tx)
+    HopenAB).
+}
+exact (HscX_if_open HAopen HBopen).
 Admitted.
 
 (** Helper: ex59_1 conclusion under explicit openness of the two pieces. **)
