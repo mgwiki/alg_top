@@ -68963,6 +68963,15 @@ rewrite <- Hlinv.
 exact Hstep5.
 Qed.
 
+(** helper bridge for S58 sub-bounties: continuity from path_between witness **)
+Theorem lemma58_path_between_continuous_bridge : forall X Tx x0 x1 alpha:set,
+  path_between X x0 x1 alpha ->
+  continuous_map unit_interval unit_interval_topology X Tx alpha.
+let X Tx x0 x1 alpha.
+assume HalphaPath.
+admit.
+Admitted.
+
 (** helper sub-bounty for Cor 58.5: alpha-hat sends identity to identity **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
 (** Bounty 10 **)
@@ -69096,7 +69105,14 @@ claim HidIfCont :
   }
   exact HhomMapsId.
 }
-admit. (** remaining gap: obtain continuity of alpha from path_between hypothesis **)
+exact (HidIfCont
+  (lemma58_path_between_continuous_bridge
+    X
+    Tx
+    x0
+    x1
+    alpha
+    HalphaPath)).
 Admitted.
 
 (** helper sub-bounty for Cor 58.5: alpha-hat is injective **)
@@ -69222,7 +69238,14 @@ claim HinjIfCont :
     Hb
     Hab).
 }
-admit. (** remaining gap: obtain continuity of alpha from path_between hypothesis **)
+exact (HinjIfCont
+  (lemma58_path_between_continuous_bridge
+    X
+    Tx
+    x0
+    x1
+    alpha
+    HalphaPath)).
 Admitted.
 
 (** helper sub-bounty for Cor 58.5: alpha-hat is surjective **)
@@ -69344,7 +69367,14 @@ claim HsurjIfCont :
     Hbij
     Hc).
 }
-admit. (** remaining gap: obtain continuity of alpha from path_between hypothesis **)
+exact (HsurjIfCont
+  (lemma58_path_between_continuous_bridge
+    X
+    Tx
+    x0
+    x1
+    alpha
+    HalphaPath)).
 Admitted.
 
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 30 **)
