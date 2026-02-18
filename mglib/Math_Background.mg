@@ -111493,6 +111493,109 @@ apply (iffI
   assume HgrpH : group_structure H multH eH invH.
   let ys.
   assume Hys : function_on ys J H.
+  set Gfam0 := graph J (fun alpha:set =>
+    {g :e G | exists n:set, n :e int /\
+      ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+        g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}).
+  set efam0 := graph J (fun alpha:set => e).
+  claim HextFP :
+    forall hfam:set,
+      (forall alpha:set, alpha :e J ->
+        group_homomorphism (apply_fun Gfam0 alpha) mult H multH (apply_fun hfam alpha)) ->
+      exists h:set,
+        group_homomorphism G mult H multH h /\
+        (forall alpha:set, alpha :e J ->
+          forall x:set, x :e apply_fun Gfam0 alpha ->
+            apply_fun h x = apply_fun (apply_fun hfam alpha) x) /\
+        (forall h':set, group_homomorphism G mult H multH h' ->
+          (forall alpha:set, alpha :e J ->
+            forall x:set, x :e apply_fun Gfam0 alpha ->
+              apply_fun h' x = apply_fun (apply_fun hfam alpha) x) ->
+          forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+  {
+    exact (lemma68_1_extension_condition_free_product
+      G
+      mult
+      e
+      inv
+      J
+      Gfam0
+      efam0
+      Hfp
+      H
+      multH
+      eH
+      invH
+      HgrpH).
+  }
+  claim HgenInFam :
+    forall alpha:set, alpha :e J ->
+      apply_fun gens alpha :e apply_fun Gfam0 alpha.
+  {
+    let alpha.
+    assume Halpha : alpha :e J.
+    rewrite (apply_fun_graph
+      J
+      (fun alpha:set =>
+        {g :e G | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))})
+      alpha
+      Halpha).
+    apply (SepI
+      G
+      (fun g:set => exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))
+      (apply_fun gens alpha)
+      (Hgens alpha Halpha)).
+    witness (ordsucc 0).
+    apply andI.
+    - exact (Subq_omega_int
+        (ordsucc 0)
+        (nat_p_omega (ordsucc 0) (nat_ordsucc 0 nat_0))).
+    - apply orIL.
+      apply andI.
+      + exact (nat_p_omega
+          (ordsucc 0)
+          (nat_ordsucc 0 nat_0)).
+      + claim HS : group_power_nat mult e (apply_fun gens alpha) (ordsucc 0) =
+          apply_fun mult (apply_fun gens alpha, group_power_nat mult e (apply_fun gens alpha) 0).
+        {
+          exact (nat_primrec_S
+            e
+            (fun _ r => apply_fun mult (apply_fun gens alpha, r))
+            0
+            nat_0).
+        }
+        claim H0 : group_power_nat mult e (apply_fun gens alpha) 0 = e.
+        {
+          exact (nat_primrec_0
+            e
+            (fun _ r => apply_fun mult (apply_fun gens alpha, r))).
+        }
+        apply (and6E
+          (function_on mult (setprod G G) G)
+          (function_on inv G G)
+          (e :e G)
+          (forall x y z:set, x :e G -> y :e G -> z :e G ->
+            apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+          (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+          (forall x:set, x :e G ->
+            apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+          Hgrp_free).
+        assume HmultF HinvF HeG HassocG HidG HinvG.
+        rewrite HS.
+        rewrite H0.
+        symmetry.
+        exact (andER
+          (apply_fun mult (e, apply_fun gens alpha) = apply_fun gens alpha)
+          (apply_fun mult (apply_fun gens alpha, e) = apply_fun gens alpha)
+          (HidG (apply_fun gens alpha) (Hgens alpha Halpha))).
+  }
   admit.
 - assume Hext :
     forall H multH eH invH:set,
