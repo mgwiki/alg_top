@@ -71854,9 +71854,258 @@ apply andI.
       HgrpH
       Hh'Hom
       HhHom
-      HxAgree
-      g
-      HgG).
+	    HxAgree
+	    g
+	    HgG).
+Qed.
+
+(** Proven Bob **)
+(** Infrastructure helper: in any group, every natural power of the identity equals the identity. **)
+Theorem group_power_nat_identity_cyclic_helper :
+  forall G mult e inv n:set,
+  group_structure G mult e inv ->
+  n :e omega ->
+  group_power_nat mult e e n = e.
+let G mult e inv n.
+assume Hgrp HnO.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  Hgrp).
+assume HmultFn HinvFn HeG Hassoc Hid HinvLaw.
+claim Hnat :
+  forall k:set, nat_p k ->
+    group_power_nat mult e e k = e.
+{
+  apply nat_ind.
+  - exact (nat_primrec_0
+      e
+      (fun _ r => apply_fun mult (e, r))).
+  - let k.
+    assume Hk.
+    assume IH : group_power_nat mult e e k = e.
+    claim Hstep :
+      group_power_nat mult e e (ordsucc k) =
+      apply_fun mult (e, group_power_nat mult e e k).
+    {
+      exact (nat_primrec_S
+        e
+        (fun _ r => apply_fun mult (e, r))
+        k
+        Hk).
+    }
+    rewrite Hstep.
+    rewrite IH.
+    exact (andEL
+      (apply_fun mult (e, e) = e)
+      (apply_fun mult (e, e) = e)
+      (Hid e HeG)).
+}
+exact (Hnat n (omega_nat_p n HnO)).
+Qed.
+
+(** Proven Bob **)
+(** Infrastructure helper: if a generator equals the identity, every element is the identity. **)
+Theorem generator_identity_implies_singleton_cyclic_helper :
+  forall G mult e inv x g:set,
+  group_structure G mult e inv ->
+  generator_of G mult e inv x ->
+  x = e ->
+  g :e G ->
+  g = e.
+let G mult e inv x g.
+assume Hgrp HgenX Hxe HgG.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  Hgrp).
+assume HmultFn HinvFn HeG Hassoc Hid HinvLaw.
+claim HgenRep :
+  forall h:set, h :e G ->
+    exists n:set, n :e int /\
+      ((n :e omega /\ h = group_power_nat mult e x n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+        h = group_power_nat mult e (apply_fun inv x) (ordsucc m))).
+{
+  exact (andER
+    (x :e G)
+    (forall h:set, h :e G ->
+      exists n:set, n :e int /\
+        ((n :e omega /\ h = group_power_nat mult e x n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          h = group_power_nat mult e (apply_fun inv x) (ordsucc m))))
+    HgenX).
+}
+apply (HgenRep g HgG).
+let n.
+assume HnPack.
+claim Hrep :
+  (n :e omega /\ g = group_power_nat mult e x n) \/
+  (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+    g = group_power_nat mult e (apply_fun inv x) (ordsucc m)).
+{
+  exact (andER
+    (n :e int)
+    ((n :e omega /\ g = group_power_nat mult e x n) \/
+     (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+      g = group_power_nat mult e (apply_fun inv x) (ordsucc m)))
+    HnPack).
+}
+apply Hrep.
+- assume HnatCase.
+  claim HnO : n :e omega.
+  {
+    exact (andEL
+      (n :e omega)
+      (g = group_power_nat mult e x n)
+      HnatCase).
+  }
+  claim HgPow : g = group_power_nat mult e x n.
+  {
+    exact (andER
+      (n :e omega)
+      (g = group_power_nat mult e x n)
+      HnatCase).
+  }
+  rewrite HgPow.
+  rewrite Hxe.
+  exact (group_power_nat_identity_cyclic_helper
+    G
+    mult
+    e
+    inv
+    n
+    Hgrp
+    HnO).
+- assume HnegCase.
+  apply HnegCase.
+  let m.
+  assume HmPack.
+  claim HmO : m :e omega.
+  {
+    exact (andEL
+      (m :e omega)
+      (n = minus_SNo (ordsucc m))
+      (andEL
+        (m :e omega /\ n = minus_SNo (ordsucc m))
+        (g = group_power_nat mult e (apply_fun inv x) (ordsucc m))
+        HmPack)).
+  }
+  claim HgInvPow :
+    g = group_power_nat mult e (apply_fun inv x) (ordsucc m).
+  {
+    exact (andER
+      (m :e omega /\ n = minus_SNo (ordsucc m))
+      (g = group_power_nat mult e (apply_fun inv x) (ordsucc m))
+      HmPack).
+  }
+  claim HinvE : apply_fun inv e = e.
+  {
+    claim HleftInvE :
+      apply_fun mult (e, apply_fun inv e) = e.
+    {
+      exact (andEL
+        (apply_fun mult (e, apply_fun inv e) = e)
+        (apply_fun mult (apply_fun inv e, e) = e)
+        (HinvLaw e HeG)).
+    }
+    claim HinvEinG : apply_fun inv e :e G.
+    {
+      exact (HinvFn e HeG).
+    }
+    claim HleftIdInvE :
+      apply_fun mult (e, apply_fun inv e) = apply_fun inv e.
+    {
+      exact (andEL
+        (apply_fun mult (e, apply_fun inv e) = apply_fun inv e)
+        (apply_fun mult (apply_fun inv e, e) = apply_fun inv e)
+        (Hid (apply_fun inv e) HinvEinG)).
+    }
+    rewrite <- HleftIdInvE.
+    exact HleftInvE.
+  }
+  rewrite HgInvPow.
+  rewrite Hxe.
+  rewrite HinvE.
+  exact (group_power_nat_identity_cyclic_helper
+    G
+    mult
+    e
+    inv
+    (ordsucc m)
+    Hgrp
+    (omega_ordsucc m HmO)).
+Qed.
+
+(** Proven Bob **)
+(** Infrastructure helper: if the chosen generator equals identity, the carrier is finite. **)
+Theorem generator_identity_implies_finite_cyclic_helper :
+  forall G mult e inv x:set,
+  group_structure G mult e inv ->
+  generator_of G mult e inv x ->
+  x = e ->
+  finite G.
+let G mult e inv x.
+assume Hgrp HgenX Hxe.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  Hgrp).
+assume HmultFn HinvFn HeG Hassoc Hid HinvLaw.
+claim HGsubSing : G c= {e}.
+{
+  let g.
+  assume HgG.
+  rewrite (generator_identity_implies_singleton_cyclic_helper
+    G
+    mult
+    e
+    inv
+    x
+    g
+    Hgrp
+    HgenX
+    Hxe
+    HgG).
+  exact (SingI e).
+}
+claim HSingSubG : {e} c= G.
+{
+  let z.
+  assume HzSing.
+  claim Hze : z = e.
+  {
+    exact (SingE e z HzSing).
+  }
+  rewrite Hze.
+  exact HeG.
+}
+claim HGeqSing : G = {e}.
+{
+  apply set_ext.
+  - exact HGsubSing.
+  - exact HSingSubG.
+}
+rewrite HGeqSing.
+exact (Sing_finite e).
 Qed.
 
 (** from S54 text (line 833 in algtop.tex) **)
@@ -72071,12 +72320,30 @@ claim HphiXInt : apply_fun phi x :e int.
     x
     HxG).
 }
+claim HxNeE : x <> eG.
+{
+  assume Hxe.
+  claim HfinG : finite G.
+  {
+    exact (generator_identity_implies_finite_cyclic_helper
+      G
+      multG
+      eG
+      invG
+      x
+      HgrpG
+      HgenX
+      Hxe).
+  }
+  exact (HinfG HfinG).
+}
 claim HpsiEx :
   exists psi:set,
     group_homomorphism int integers_group_mult H multH psi /\
     apply_fun psi (apply_fun phi x) = y.
 {
   (** TODO Bob: build a homomorphism psi : int -> H hitting y at phi(x). **)
+  (** Note: we already know the generator is nontrivial via HxNeE. **)
   admit.
 }
 apply HpsiEx.
