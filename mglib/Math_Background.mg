@@ -104474,7 +104474,186 @@ apply (xm
     Hy_eq_e
     False).
 - assume Hk_ne0 : ~(k = 0).
-  admit. (** TODO Bob: remaining k<>0 case for last letter in G1 **)
+  apply (and3E
+    (m :e omega)
+    (forall i:set, i :e m ->
+      exists alpha:set, alpha :e 2 /\
+        apply_fun cs i :e apply_fun Gfam alpha /\
+        apply_fun cs i <> apply_fun efam alpha)
+    (forall i:set, i :e m -> ordsucc i :e m ->
+      forall alpha beta:set, alpha :e 2 -> beta :e 2 ->
+        apply_fun cs i :e apply_fun Gfam alpha ->
+        apply_fun cs (ordsucc i) :e apply_fun Gfam beta ->
+        alpha <> beta)
+    Hred).
+  assume Hm_omega Hcs_mem Hcs_adj.
+  claim Hm_nat : nat_p m.
+  {
+    exact (omega_nat_p
+      m
+      Hm_omega).
+  }
+  claim Hk_in_m : k :e m.
+  {
+    rewrite Hm_eq.
+    exact (ordsuccI2
+      k).
+  }
+  claim Hcsk_fam0 : apply_fun cs k :e apply_fun Gfam 0.
+  {
+    rewrite HGfam0.
+    exact Hcsk_G1.
+  }
+  apply (nat_inv
+    k
+    Hk_nat).
+  + assume Hk0_abs : k = 0.
+    exact (Hk_ne0
+      Hk0_abs
+      False).
+  + assume Hk_succ : exists j:set, nat_p j /\ k = ordsucc j.
+    apply Hk_succ.
+    let j.
+    assume Hj_pack : nat_p j /\ k = ordsucc j.
+    claim Hj_nat : nat_p j.
+    {
+      exact (andEL
+        (nat_p j)
+        (k = ordsucc j)
+        Hj_pack).
+    }
+    claim Hk_eq_sj : k = ordsucc j.
+    {
+      exact (andER
+        (nat_p j)
+        (k = ordsucc j)
+        Hj_pack).
+    }
+    claim Hj_in_k : j :e k.
+    {
+      rewrite Hk_eq_sj.
+      exact (ordsuccI2
+        j).
+    }
+    claim Hj_in_m : j :e m.
+    {
+      exact (nat_trans
+        m
+        Hm_nat
+        k
+        Hk_in_m
+        j
+        Hj_in_k).
+    }
+    claim Hsj_in_m : ordsucc j :e m.
+    {
+      rewrite <- Hk_eq_sj.
+      exact Hk_in_m.
+    }
+    claim Hcssj_fam0 : apply_fun cs (ordsucc j) :e apply_fun Gfam 0.
+    {
+      rewrite <- Hk_eq_sj.
+      exact Hcsk_fam0.
+    }
+    apply (exandE_i
+      (fun al:set => al :e 2 /\ apply_fun cs j :e apply_fun Gfam al)
+      (fun al:set => apply_fun cs j <> apply_fun efam al)
+      (Hcs_mem
+        j
+        Hj_in_m)).
+    let alpha_prev.
+    assume Hap_pack : alpha_prev :e 2 /\ apply_fun cs j :e apply_fun Gfam alpha_prev.
+    assume Hcsj_ne_efam : apply_fun cs j <> apply_fun efam alpha_prev.
+    claim Hap2 : alpha_prev :e 2.
+    {
+      exact (andEL
+        (alpha_prev :e 2)
+        (apply_fun cs j :e apply_fun Gfam alpha_prev)
+        Hap_pack).
+    }
+    claim Hcsj_fam : apply_fun cs j :e apply_fun Gfam alpha_prev.
+    {
+      exact (andER
+        (alpha_prev :e 2)
+        (apply_fun cs j :e apply_fun Gfam alpha_prev)
+        Hap_pack).
+    }
+    claim Hap_ne0 : alpha_prev <> 0.
+    {
+      assume Hap0 : alpha_prev = 0.
+      claim Haladj_ne : alpha_prev <> 0.
+      {
+        exact (Hcs_adj
+          j
+          Hj_in_m
+          Hsj_in_m
+          alpha_prev
+          0
+          Hap2
+          In_0_2
+          Hcsj_fam
+          Hcssj_fam0).
+      }
+      exact (Haladj_ne
+        Hap0
+        False).
+    }
+    claim Hap1 : alpha_prev = 1.
+    {
+      apply (ordsuccE
+        1
+        alpha_prev
+        Hap2).
+      - assume Hap_in1 : alpha_prev :e 1.
+        apply (ordsuccE
+          0
+          alpha_prev
+          Hap_in1).
+        + assume Hap_in0 : alpha_prev :e 0.
+          exact (EmptyE
+            alpha_prev
+            Hap_in0
+            (alpha_prev = 1)).
+        + assume Hap0 : alpha_prev = 0.
+          exact (Hap_ne0
+            Hap0
+            (alpha_prev = 1)).
+      - assume Hap_eq1 : alpha_prev = 1.
+        exact Hap_eq1.
+    }
+    claim Hcsj_G2 : apply_fun cs j :e G2.
+    {
+      claim Hfam_prev1 : apply_fun Gfam alpha_prev = G2.
+      {
+        rewrite Hap1.
+        exact HGfam1.
+      }
+      rewrite <- Hfam_prev1.
+      exact Hcsj_fam.
+    }
+    claim Hcsj_ne_e : apply_fun cs j <> e.
+    {
+      claim Hefam_prev : apply_fun efam alpha_prev = e.
+      {
+        rewrite (apply_fun_graph
+          2
+          (fun _:set => e)
+          alpha_prev
+          Hap2).
+        reflexivity.
+      }
+      assume Hcsj_eq_e : apply_fun cs j = e.
+      apply Hcsj_ne_efam.
+      rewrite Hefam_prev.
+      exact Hcsj_eq_e.
+    }
+    claim Hm_eq_ssj : m = ordsucc (ordsucc j).
+    {
+      rewrite Hm_eq.
+      rewrite Hk_eq_sj.
+      reflexivity.
+    }
+    admit. (** TODO Bob: use predecessor split (k = ordsucc j, cs(j):e G2) to finish contradiction in k<>0 branch **)
 Admitted.
 
 (** Core helper: given free product and reduced word of c, derive contradiction **)
