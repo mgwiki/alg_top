@@ -112543,6 +112543,15 @@ apply (andI
         rewrite <- HpowQ.
         exact HpowSetInQ.
       }
+      claim HCinQ : C :e quotient_group_set G mult C.
+      {
+        rewrite <- HleftCosetEqC at 1.
+        exact (ReplI
+          G
+          (fun g:set => left_coset mult g C)
+          e
+          (HCsub e HeC)).
+      }
       claim HCnonempty : C <> Empty.
       {
         exact (elem_implies_nonempty C e HeC).
