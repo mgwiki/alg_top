@@ -103616,7 +103616,178 @@ apply (xm (alpha_first = 0)).
   { claim Hfam_af0 : apply_fun Gfam alpha_first = G1.
     { rewrite Haf0. exact HGfam0. }
     rewrite <- Hfam_af0. exact Hcs0_fam. }
-  admit.
+  claim Hprepend_data :
+    exists ys:set,
+      reduced_word 2 Gfam efam (ordsucc m) ys /\
+      word_product mult e ys (ordsucc m) = apply_fun mult (y, c) /\
+      apply_fun ys 0 = y.
+  {
+    admit. (** TODO Bob: prepend y to the reduced word for c and show reducedness/product in this branch **)
+  }
+  apply Hprepend_data.
+  let ys.
+  assume Hys_pack :
+    reduced_word 2 Gfam efam (ordsucc m) ys /\
+    word_product mult e ys (ordsucc m) = apply_fun mult (y, c) /\
+    apply_fun ys 0 = y.
+  apply (and3E
+    (reduced_word 2 Gfam efam (ordsucc m) ys)
+    (word_product mult e ys (ordsucc m) = apply_fun mult (y, c))
+    (apply_fun ys 0 = y)
+    Hys_pack).
+  assume Hys_red Hys_prod Hys0.
+  claim Huniq_cx :
+    exists n0 xs0:set,
+      reduced_word 2 Gfam efam n0 xs0 /\ n0 <> 0 /\
+      word_product mult e xs0 n0 = apply_fun mult (c, x) /\
+      (forall n' xs':set,
+        reduced_word 2 Gfam efam n' xs' -> n' <> 0 ->
+        word_product mult e xs' n' = apply_fun mult (c, x) ->
+        n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)).
+  {
+    exact (Hunique
+      (apply_fun mult (c, x))
+      HcxG
+      Hcxne).
+  }
+  apply Huniq_cx.
+  let n0.
+  assume Hn0_pack :
+    exists xs0:set,
+      reduced_word 2 Gfam efam n0 xs0 /\ n0 <> 0 /\
+      word_product mult e xs0 n0 = apply_fun mult (c, x) /\
+      (forall n' xs':set,
+        reduced_word 2 Gfam efam n' xs' -> n' <> 0 ->
+        word_product mult e xs' n' = apply_fun mult (c, x) ->
+        n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)).
+  apply Hn0_pack.
+  let xs0.
+  assume Hxs0_pack :
+    reduced_word 2 Gfam efam n0 xs0 /\ n0 <> 0 /\
+    word_product mult e xs0 n0 = apply_fun mult (c, x) /\
+    (forall n' xs':set,
+      reduced_word 2 Gfam efam n' xs' -> n' <> 0 ->
+      word_product mult e xs' n' = apply_fun mult (c, x) ->
+      n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)).
+  apply (and4E
+    (reduced_word 2 Gfam efam n0 xs0)
+    (n0 <> 0)
+    (word_product mult e xs0 n0 = apply_fun mult (c, x))
+    (forall n' xs':set,
+      reduced_word 2 Gfam efam n' xs' -> n' <> 0 ->
+      word_product mult e xs' n' = apply_fun mult (c, x) ->
+      n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i))
+    Hxs0_pack).
+  assume Hxs0_red Hn0_ne0 Hxs0_prod Hxs0_unique.
+  claim Hn0_ws :
+    n0 = ordsucc m /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun ws i).
+  {
+    exact (Hxs0_unique
+      (ordsucc m)
+      ws
+      Hws_red
+      (neq_ordsucc_0 m)
+      Hwp_cx).
+  }
+  claim Hys_prod_cx :
+    word_product mult e ys (ordsucc m) = apply_fun mult (c, x).
+  {
+    rewrite Hcx_eq_yc.
+    exact Hys_prod.
+  }
+  claim Hn0_ys :
+    n0 = ordsucc m /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun ys i).
+  {
+    exact (Hxs0_unique
+      (ordsucc m)
+      ys
+      Hys_red
+      (neq_ordsucc_0 m)
+      Hys_prod_cx).
+  }
+  claim Hn0_eq_sm : n0 = ordsucc m.
+  {
+    exact (andEL
+      (n0 = ordsucc m)
+      (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun ws i)
+      Hn0_ws).
+  }
+  claim Hfun_ws :
+    forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun ws i.
+  {
+    exact (andER
+      (n0 = ordsucc m)
+      (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun ws i)
+      Hn0_ws).
+  }
+  claim Hfun_ys :
+    forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun ys i.
+  {
+    exact (andER
+      (n0 = ordsucc m)
+      (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun ys i)
+      Hn0_ys).
+  }
+  claim H0_in_n0 : 0 :e n0.
+  {
+    rewrite Hn0_eq_sm.
+    exact (nat_0_in_ordsucc
+      m
+      Hm_nat).
+  }
+  claim Hxs0_ws0 : apply_fun xs0 0 = apply_fun ws 0.
+  {
+    exact (Hfun_ws
+      0
+      H0_in_n0).
+  }
+  claim Hxs0_ys0 : apply_fun xs0 0 = apply_fun ys 0.
+  {
+    exact (Hfun_ys
+      0
+      H0_in_n0).
+  }
+  claim Hws0_xs0 : apply_fun ws 0 = apply_fun xs0 0.
+  {
+    symmetry.
+    exact Hxs0_ws0.
+  }
+  claim Hws0_ys0 : apply_fun ws 0 = apply_fun ys 0.
+  {
+    exact (eq_i_tra
+      (apply_fun ws 0)
+      (apply_fun xs0 0)
+      (apply_fun ys 0)
+      Hws0_xs0
+      Hxs0_ys0).
+  }
+  claim Hws0_cs0 : apply_fun ws 0 = apply_fun cs 0.
+  {
+    exact (Hws_agree
+      0
+      H0_in_m).
+  }
+  claim Hy_cs0 : y = apply_fun cs 0.
+  {
+    rewrite <- Hys0.
+    rewrite <- Hws0_ys0.
+    exact Hws0_cs0.
+  }
+  claim HyG1 : y :e G1.
+  {
+    rewrite Hy_cs0.
+    exact Hcs0_G1.
+  }
+  claim HyEqE : y = e.
+  {
+    exact (Hinter_simple
+      y
+      HyG1
+      HyG2).
+  }
+  exact (Hyne
+    HyEqE
+    False).
 - assume Haf_ne0 : alpha_first <> 0.
   (** cs(0) in G2 (same factor as y): use merge argument **)
   claim Haf1 : alpha_first = 1.
