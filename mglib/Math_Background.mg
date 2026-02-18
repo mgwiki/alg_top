@@ -70946,6 +70946,44 @@ Definition generator_of : set -> set -> set -> set -> set -> prop :=
          (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
           g = group_power_nat mult e (apply_fun inv x) (ordsucc m))).
 
+(** Proven Bob **)
+(** Infrastructure helper: extract ambient group structure from cyclic_group. **)
+Theorem cyclic_group_structure_helper :
+  forall G mult e inv:set,
+  cyclic_group G mult e inv ->
+  group_structure G mult e inv.
+let G mult e inv.
+assume Hcyc.
+exact (andEL
+  (group_structure G mult e inv)
+  (exists x:set, x :e G /\
+    forall g:set, g :e G ->
+      exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e x n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv x) (ordsucc m))))
+  Hcyc).
+Qed.
+
+(** Proven Bob **)
+(** Infrastructure helper: every cyclic_group has a generator witness in generator_of form. **)
+Theorem cyclic_group_has_generator_helper :
+  forall G mult e inv:set,
+  cyclic_group G mult e inv ->
+  exists x:set, generator_of G mult e inv x.
+let G mult e inv.
+assume Hcyc.
+exact (andER
+  (group_structure G mult e inv)
+  (exists x:set, x :e G /\
+    forall g:set, g :e G ->
+      exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e x n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv x) (ordsucc m))))
+  Hcyc).
+Qed.
+
 (** Infrastructure helper: group homomorphism sends identity to identity (local cyclic section copy). **)
 (** Proven Bob **)
 Theorem group_hom_sends_identity_cyclic_helper :
@@ -71649,27 +71687,18 @@ Theorem cyclic_infinite_order_iff_Z : forall G mult e inv:set,
   exists phi:set, group_isomorphism G mult int integers_group_mult phi.
 let G mult e inv.
 assume Hgrp Hcyc Hnfin.
-claim HcycGenEx :
-  exists x:set, x :e G /\
-    forall g:set, g :e G ->
-      exists n:set, n :e int /\
-        ((n :e omega /\ g = group_power_nat mult e x n) \/
-         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
-          g = group_power_nat mult e (apply_fun inv x) (ordsucc m))).
+claim HgenXEx : exists x:set, generator_of G mult e inv x.
 {
-  exact (andER
-    (group_structure G mult e inv)
-    (exists x:set, x :e G /\
-      forall g:set, g :e G ->
-        exists n:set, n :e int /\
-          ((n :e omega /\ g = group_power_nat mult e x n) \/
-           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
-            g = group_power_nat mult e (apply_fun inv x) (ordsucc m))))
+  exact (cyclic_group_has_generator_helper
+    G
+    mult
+    e
+    inv
     Hcyc).
 }
-apply HcycGenEx.
+apply HgenXEx.
 let x.
-assume HxPack.
+assume HgenX.
 claim HxG : x :e G.
 {
   exact (andEL
@@ -71679,7 +71708,7 @@ claim HxG : x :e G.
         ((n :e omega /\ g = group_power_nat mult e x n) \/
          (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
           g = group_power_nat mult e (apply_fun inv x) (ordsucc m))))
-    HxPack).
+    HgenX).
 }
 claim HgenRep :
   forall g:set, g :e G ->
@@ -71695,7 +71724,7 @@ claim HgenRep :
         ((n :e omega /\ g = group_power_nat mult e x n) \/
          (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
           g = group_power_nat mult e (apply_fun inv x) (ordsucc m))))
-    HxPack).
+    HgenX).
 }
 (** TODO Bob: build explicit isomorphism G ~= Z from generator x and nonfiniteness. **)
 admit.
