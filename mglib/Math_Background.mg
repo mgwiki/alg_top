@@ -1,5 +1,5 @@
 (** Balance Alice 3280 **)
-(** Balance Bob 2992 **)
+(** Balance Bob 2988 **)
 (** Balance Charlie 1260 **)
 (** Balance Dave 1601 **)
 
@@ -70950,7 +70950,8 @@ Definition generator_of : set -> set -> set -> set -> set -> prop :=
 (** LATEX VERSION: A group is cyclic of infinite order iff it is isomorphic to Z; **)
 (** cyclic of order k iff isomorphic to Z/k. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
+(** Bounty 37 **)
+(** Lock Bob 1771539000 **)
 Theorem cyclic_infinite_order_iff_Z : forall G mult e inv:set,
   group_structure G mult e inv ->
   cyclic_group G mult e inv ->
