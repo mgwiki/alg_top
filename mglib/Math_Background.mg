@@ -112334,6 +112334,58 @@ exact (and6I
   HinvH_law).
 Qed.
 
+(** Generic helper: group structure plus a chosen generator yields cyclic_group. **)
+(** Proven Bob **)
+Theorem group_structure_and_generator_of_implies_cyclic_group :
+  forall G mult e inv x:set,
+  group_structure G mult e inv ->
+  generator_of G mult e inv x ->
+  cyclic_group G mult e inv.
+let G mult e inv x.
+assume Hgrp : group_structure G mult e inv.
+assume Hgen : generator_of G mult e inv x.
+apply (andI
+  (group_structure G mult e inv)
+  (exists x0:set, x0 :e G /\
+    forall g:set, g :e G ->
+      exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e x0 n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+         g = group_power_nat mult e (apply_fun inv x0) (ordsucc m))))
+  Hgrp).
+claim HxG : x :e G.
+{
+  exact (andEL
+    (x :e G)
+    (forall g:set, g :e G ->
+      exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e x n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv x) (ordsucc m))))
+    Hgen).
+}
+claim HgenAll :
+  forall g:set, g :e G ->
+    exists n:set, n :e int /\
+      ((n :e omega /\ g = group_power_nat mult e x n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+        g = group_power_nat mult e (apply_fun inv x) (ordsucc m))).
+{
+  exact (andER
+    (x :e G)
+    (forall g:set, g :e G ->
+      exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e x n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv x) (ordsucc m))))
+    Hgen).
+}
+witness x.
+apply andI.
+- exact HxG.
+- exact HgenAll.
+Qed.
+
 (** Infrastructure helper for S69: an infinite cyclic subgroup cannot be finite. **)
 Theorem infinite_cyclic_subgroup_nonfinite :
   forall G mult e inv a:set,
@@ -113345,17 +113397,14 @@ apply (iffI
     }
     claim Hcyc_factor : cyclic_group Galpha mult e inv.
     {
-      apply (andI
-        (group_structure Galpha mult e inv)
-        (exists x:set, x :e Galpha /\
-          forall g:set, g :e Galpha ->
-            exists n:set, n :e int /\
-              ((n :e omega /\ g = group_power_nat mult e x n) \/
-               (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
-                 g = group_power_nat mult e (apply_fun inv x) (ordsucc m))))
-        Hgrp_factor).
-      witness (apply_fun gens alpha).
-      exact Hgen_of_factor.
+      exact (group_structure_and_generator_of_implies_cyclic_group
+        Galpha
+        mult
+        e
+        inv
+        (apply_fun gens alpha)
+        Hgrp_factor
+        Hgen_of_factor).
     }
     claim Hnonfinite_factor : ~ finite Galpha.
     {
