@@ -112209,6 +112209,72 @@ apply (andI
         assume HCsub HeC HmulC HinvC.
         exact HeC.
       }
+      claim HCsub : C c= G.
+      {
+        apply (and4E
+          (C c= G)
+          (e :e C)
+          (forall x y:set, x :e C -> y :e C -> apply_fun mult (x, y) :e C)
+          (forall x:set, x :e C -> apply_fun inv x :e C)
+          HsubC).
+        assume HCsub HeC HmulC HinvC.
+        exact HCsub.
+      }
+      claim HidG :
+        forall x:set, x :e G ->
+          apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x.
+      {
+        apply (and6E
+          (function_on mult (setprod G G) G)
+          (function_on inv G G)
+          (e :e G)
+          (forall x y z:set, x :e G -> y :e G -> z :e G ->
+            apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+          (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+          (forall x:set, x :e G ->
+            apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+          HgrpG).
+        assume HmultG HinvG HeG HassocG HidG HinvLawG.
+        exact HidG.
+      }
+      claim HeMulC : forall c:set, c :e C -> apply_fun mult (e, c) = c.
+      {
+        let c.
+        assume HcC : c :e C.
+        claim HcG : c :e G.
+        {
+          exact (HCsub c HcC).
+        }
+        exact (andEL
+          (apply_fun mult (e, c) = c)
+          (apply_fun mult (c, e) = c)
+          (HidG c HcG)).
+      }
+      claim HleftCosetEsubC : left_coset mult e C c= C.
+      {
+        let y.
+        assume HyE : y :e left_coset mult e C.
+        apply (ReplE C (fun n:set => apply_fun mult (e, n)) y HyE).
+        let c.
+        assume HcPack : c :e C /\ y = apply_fun mult (e, c).
+        claim HcC : c :e C.
+        {
+          exact (andEL
+            (c :e C)
+            (y = apply_fun mult (e, c))
+            HcPack).
+        }
+        claim HyDef : y = apply_fun mult (e, c).
+        {
+          exact (andER
+            (c :e C)
+            (y = apply_fun mult (e, c))
+            HcPack).
+        }
+        rewrite HyDef.
+        rewrite (HeMulC c HcC).
+        exact HcC.
+      }
       admit.
   admit.
 Admitted.
