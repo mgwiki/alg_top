@@ -114840,7 +114840,62 @@ assume Hfree1 : free_group_with_generators G mult e inv n1 gens1.
 assume Hfree2 : free_group_with_generators G mult e inv n2 gens2.
 assume Hfin1 : finite n1.
 assume Hfin2 : finite n2.
-admit.
+set C := commutator_subgroup G mult e inv.
+claim HCdef : C = commutator_subgroup G mult e inv.
+{
+  reflexivity.
+}
+claim Hfab1 :
+  free_abelian_group_with_basis
+    (quotient_group_set G mult C)
+    (quotient_group_mult G mult C)
+    (quotient_group_id G mult e C)
+    (quotient_group_inv G mult inv C)
+    n1
+    (graph n1 (fun alpha:set => left_coset mult (apply_fun gens1 alpha) C)).
+{
+  rewrite HCdef.
+  exact (thm69_4_abelianization_free_group
+    G
+    mult
+    e
+    inv
+    n1
+    gens1
+    Hfree1).
+}
+claim Hfab2 :
+  free_abelian_group_with_basis
+    (quotient_group_set G mult C)
+    (quotient_group_mult G mult C)
+    (quotient_group_id G mult e C)
+    (quotient_group_inv G mult inv C)
+    n2
+    (graph n2 (fun alpha:set => left_coset mult (apply_fun gens2 alpha) C)).
+{
+  rewrite HCdef.
+  exact (thm69_4_abelianization_free_group
+    G
+    mult
+    e
+    inv
+    n2
+    gens2
+    Hfree2).
+}
+exact (thm67_8_rank_well_defined
+  (quotient_group_set G mult C)
+  (quotient_group_mult G mult C)
+  (quotient_group_id G mult e C)
+  (quotient_group_inv G mult inv C)
+  n1
+  n2
+  (graph n1 (fun alpha:set => left_coset mult (apply_fun gens1 alpha) C))
+  (graph n2 (fun alpha:set => left_coset mult (apply_fun gens2 alpha) C))
+  Hfab1
+  Hfab2
+  Hfin1
+  Hfin2).
 Admitted.
 
 (** from S69 Cor 69.5 (line 3129 in algtop.tex): number of free generators is well-defined **)
