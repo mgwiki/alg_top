@@ -1,7 +1,7 @@
 (** Balance Alice 3264 **)
 (** Balance Bob 3037 **)
 (** Balance Charlie 1171 **)
-(** Balance Dave 1194 **)
+(** Balance Dave 1436 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -99762,8 +99762,8 @@ Definition abelian_group : set -> set -> set -> set -> prop :=
 (** from S60 Thm 60.1 (line 1639 in algtop.tex) **)
 (** LATEX VERSION: pi_1(X x Y, x0 x y0) is isomorphic with pi_1(X, x0) x pi_1(Y, y0). **)
 (** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
-(** Bounty 242 **)
-(** Lock Dave 1771466099 **)
+(** Collected Dave 242 **)
+(** Proven Dave **)
 Theorem thm60_1_pi1_product : forall X Tx x0 Y Ty y0:set,
   topology_on X Tx -> topology_on Y Ty -> x0 :e X -> y0 :e Y ->
   exists phi:set,
@@ -99910,7 +99910,28 @@ apply andI.
         ((apply_fun phi1 cls1, apply_fun phi2 cls1), (apply_fun phi1 cls2, apply_fun phi2 cls2))
       = (apply_fun mult_X (apply_fun phi1 cls1, apply_fun phi1 cls2),
          apply_fun mult_Y (apply_fun phi2 cls1, apply_fun phi2 cls2)).
-    { admit. }
+    {
+      prove apply_fun (graph (setprod (setprod pi_X pi_Y) (setprod pi_X pi_Y))
+        (fun p:set => (apply_fun mult_X ((p 0) 0, (p 1) 0),
+                       apply_fun mult_Y ((p 0) 1, (p 1) 1))))
+        ((apply_fun phi1 cls1, apply_fun phi2 cls1), (apply_fun phi1 cls2, apply_fun phi2 cls2))
+      = (apply_fun mult_X (apply_fun phi1 cls1, apply_fun phi1 cls2),
+         apply_fun mult_Y (apply_fun phi2 cls1, apply_fun phi2 cls2)).
+      rewrite (apply_fun_graph (setprod (setprod pi_X pi_Y) (setprod pi_X pi_Y))
+        (fun p:set => (apply_fun mult_X ((p 0) 0, (p 1) 0),
+                       apply_fun mult_Y ((p 0) 1, (p 1) 1)))
+        ((apply_fun phi1 cls1, apply_fun phi2 cls1), (apply_fun phi1 cls2, apply_fun phi2 cls2))
+        Hprod_pair).
+      rewrite (tuple_2_0_eq (apply_fun phi1 cls1, apply_fun phi2 cls1)
+        (apply_fun phi1 cls2, apply_fun phi2 cls2)).
+      rewrite (tuple_2_1_eq (apply_fun phi1 cls1, apply_fun phi2 cls1)
+        (apply_fun phi1 cls2, apply_fun phi2 cls2)).
+      rewrite (tuple_2_0_eq (apply_fun phi1 cls1) (apply_fun phi2 cls1)).
+      rewrite (tuple_2_0_eq (apply_fun phi1 cls2) (apply_fun phi2 cls2)).
+      rewrite (tuple_2_1_eq (apply_fun phi1 cls1) (apply_fun phi2 cls1)).
+      rewrite (tuple_2_1_eq (apply_fun phi1 cls2) (apply_fun phi2 cls2)).
+      exact (fun P H => H).
+    }
     symmetry. exact Hprod_compute.
 - (** bijection **)
   prove (function_on (pair_map pi_XY phi1 phi2) pi_XY (setprod pi_X pi_Y) /\
@@ -100661,8 +100682,750 @@ apply andI.
     - exact Hphi_cls_XY.
     - let cls' .
       assume Hcls'_in Hphi_cls'.
-      admit.
-Admitted.
+      (** Extract phi1(cls')=cls_X and phi2(cls')=cls_Y **)
+      claim Hphi1cls'eq : apply_fun phi1 cls' = cls_X.
+      {
+        apply (tuple_2_0_congr (apply_fun phi1 cls') (apply_fun phi2 cls') cls_X cls_Y).
+        rewrite <- (pair_map_apply pi_XY pi_X pi_Y phi1 phi2 cls' Hcls'_in).
+        rewrite Hphi_cls'.
+        exact (setprod_eta pi_X pi_Y y Hy).
+      }
+      claim Hphi2cls'eq : apply_fun phi2 cls' = cls_Y.
+      {
+        apply (tuple_2_1_congr (apply_fun phi1 cls') (apply_fun phi2 cls') cls_X cls_Y).
+        rewrite <- (pair_map_apply pi_XY pi_X pi_Y phi1 phi2 cls' Hcls'_in).
+        rewrite Hphi_cls'.
+        exact (setprod_eta pi_X pi_Y y Hy).
+      }
+      (** Define representative eps' of cls' **)
+      set eps' := Eps_i (fun f:set => f :e cls').
+      claim Heps'_loop : eps' :e loop_space (setprod X Y) Tprod (x0, y0).
+      { exact (eps_of_fundamental_group_member_in_loop_space
+          (setprod X Y) Tprod (x0,y0) cls' Hcls'_in). }
+      claim Heps'_fun : function_on eps' unit_interval (setprod X Y).
+      { exact (function_on_of_function_space eps' unit_interval (setprod X Y)
+          (loop_space_in_function_space (setprod X Y) Tprod (x0,y0) eps' Heps'_loop)). }
+      claim Heps'_cont : continuous_map unit_interval unit_interval_topology (setprod X Y) Tprod eps'.
+      { exact (loop_at_continuous (setprod X Y) Tprod (x0,y0) eps'
+          (loop_space_has_loop_at (setprod X Y) Tprod (x0,y0) eps' Heps'_loop)). }
+      claim Heps'_0 : apply_fun eps' 0 = (x0, y0).
+      { exact (loop_at_at_zero (setprod X Y) Tprod (x0,y0) eps'
+          (loop_space_has_loop_at (setprod X Y) Tprod (x0,y0) eps' Heps'_loop)). }
+      claim Heps'_1 : apply_fun eps' 1 = (x0, y0).
+      { exact (loop_at_at_one (setprod X Y) Tprod (x0,y0) eps'
+          (loop_space_has_loop_at (setprod X Y) Tprod (x0,y0) eps' Heps'_loop)). }
+      (** Show eps' :e cls' **)
+      claim Heps'_in_cls' : eps' :e cls'.
+      {
+        claim Hrep'A : exists f:set, f :e loop_space (setprod X Y) Tprod (x0,y0) /\
+          cls' = path_homotopy_class_loop (setprod X Y) Tprod (x0,y0) f.
+        { exact (fundamental_group_member_has_representative
+            (setprod X Y) Tprod (x0,y0) cls' Hcls'_in). }
+        apply Hrep'A. let f'A. assume Hf'APack.
+        claim Hf'ALoop : f'A :e loop_space (setprod X Y) Tprod (x0,y0).
+        { exact (andEL (f'A :e loop_space (setprod X Y) Tprod (x0,y0))
+            (cls' = path_homotopy_class_loop (setprod X Y) Tprod (x0,y0) f'A) Hf'APack). }
+        claim Hcls'_eq_f'A : cls' = path_homotopy_class_loop (setprod X Y) Tprod (x0,y0) f'A.
+        { exact (andER (f'A :e loop_space (setprod X Y) Tprod (x0,y0))
+            (cls' = path_homotopy_class_loop (setprod X Y) Tprod (x0,y0) f'A) Hf'APack). }
+        exact (Eps_i_ax (fun g:set => g :e cls') f'A
+          (mem_eqL f'A cls' (path_homotopy_class_loop (setprod X Y) Tprod (x0,y0) f'A)
+            Hcls'_eq_f'A
+            (loop_in_own_path_homotopy_class (setprod X Y) Tprod (x0,y0) f'A Hf'ALoop))).
+      }
+      (** Show cls' = [eps'] **)
+      claim Hcls'_eq_eps' : cls' = path_homotopy_class_loop (setprod X Y) Tprod (x0,y0) eps'.
+      {
+        claim Hrep'B : exists f:set, f :e loop_space (setprod X Y) Tprod (x0,y0) /\
+          cls' = path_homotopy_class_loop (setprod X Y) Tprod (x0,y0) f.
+        { exact (fundamental_group_member_has_representative
+            (setprod X Y) Tprod (x0,y0) cls' Hcls'_in). }
+        apply Hrep'B. let f'B. assume Hf'BPack.
+        claim Hf'BLoop : f'B :e loop_space (setprod X Y) Tprod (x0,y0).
+        { exact (andEL (f'B :e loop_space (setprod X Y) Tprod (x0,y0))
+            (cls' = path_homotopy_class_loop (setprod X Y) Tprod (x0,y0) f'B) Hf'BPack). }
+        claim Hcls'_eq_f'B : cls' = path_homotopy_class_loop (setprod X Y) Tprod (x0,y0) f'B.
+        { exact (andER (f'B :e loop_space (setprod X Y) Tprod (x0,y0))
+            (cls' = path_homotopy_class_loop (setprod X Y) Tprod (x0,y0) f'B) Hf'BPack). }
+        claim Heps'_in_f'B : eps' :e path_homotopy_class_loop (setprod X Y) Tprod (x0,y0) f'B.
+        { exact (mem_eqR eps' cls' (path_homotopy_class_loop (setprod X Y) Tprod (x0,y0) f'B)
+            Hcls'_eq_f'B Heps'_in_cls'). }
+        claim Hf'B_hom_eps' : path_homotopic (setprod X Y) Tprod (x0,y0) (x0,y0) f'B eps'.
+        { exact (path_homotopy_class_loop_has_homotopy
+            (setprod X Y) Tprod (x0,y0) f'B eps' Heps'_in_f'B). }
+        claim Hf'B_class_eq_eps'_class :
+          path_homotopy_class_loop (setprod X Y) Tprod (x0,y0) f'B
+          = path_homotopy_class_loop (setprod X Y) Tprod (x0,y0) eps'.
+        { exact (path_homotopy_class_loop_eq_of_path_homotopic
+            (setprod X Y) Tprod (x0,y0) f'B eps' Hf'B_hom_eps'). }
+        rewrite <- Hf'B_class_eq_eps'_class.
+        exact Hcls'_eq_f'B.
+      }
+      (** Define prX o eps' and prY o eps' **)
+      set prX_eps' := compose_fun unit_interval eps' (projection_map1 X Y).
+      set prY_eps' := compose_fun unit_interval eps' (projection_map2 X Y).
+      (** prX_eps' is a loop in X at x0 **)
+      claim HprX_eps'_cont :
+        continuous_map unit_interval unit_interval_topology X Tx prX_eps'.
+      { exact (composition_continuous unit_interval unit_interval_topology
+          (setprod X Y) Tprod X Tx eps' (projection_map1 X Y) Heps'_cont HprXCont). }
+      claim HprX_eps'_at0 : apply_fun prX_eps' 0 = x0.
+      {
+        rewrite (compose_fun_apply unit_interval eps' (projection_map1 X Y) 0
+          zero_in_unit_interval).
+        rewrite Heps'_0. exact HprXBase.
+      }
+      claim HprX_eps'_at1 : apply_fun prX_eps' 1 = x0.
+      {
+        rewrite (compose_fun_apply unit_interval eps' (projection_map1 X Y) 1
+          one_in_unit_interval).
+        rewrite Heps'_1. exact HprXBase.
+      }
+      claim HprX_eps'_loop : prX_eps' :e loop_space X Tx x0.
+      {
+        exact (SepI (function_space unit_interval X)
+          (fun f:set => loop_at X Tx x0 f) prX_eps'
+          (compose_fun_in_function_space unit_interval (setprod X Y) X
+            eps' (projection_map1 X Y)
+            Heps'_fun
+            (continuous_map_function_on (setprod X Y) Tprod X Tx
+              (projection_map1 X Y) HprXCont))
+          (andI
+            (continuous_map unit_interval unit_interval_topology X Tx prX_eps' /\
+             apply_fun prX_eps' 0 = x0)
+            (apply_fun prX_eps' 1 = x0)
+            (andI
+              (continuous_map unit_interval unit_interval_topology X Tx prX_eps')
+              (apply_fun prX_eps' 0 = x0)
+              HprX_eps'_cont HprX_eps'_at0)
+            HprX_eps'_at1)).
+      }
+      (** prY_eps' is a loop in Y at y0 **)
+      claim HprY_eps'_cont :
+        continuous_map unit_interval unit_interval_topology Y Ty prY_eps'.
+      { exact (composition_continuous unit_interval unit_interval_topology
+          (setprod X Y) Tprod Y Ty eps' (projection_map2 X Y) Heps'_cont HprYCont). }
+      claim HprY_eps'_at0 : apply_fun prY_eps' 0 = y0.
+      {
+        rewrite (compose_fun_apply unit_interval eps' (projection_map2 X Y) 0
+          zero_in_unit_interval).
+        rewrite Heps'_0. exact HprYBase.
+      }
+      claim HprY_eps'_at1 : apply_fun prY_eps' 1 = y0.
+      {
+        rewrite (compose_fun_apply unit_interval eps' (projection_map2 X Y) 1
+          one_in_unit_interval).
+        rewrite Heps'_1. exact HprYBase.
+      }
+      claim HprY_eps'_loop : prY_eps' :e loop_space Y Ty y0.
+      {
+        exact (SepI (function_space unit_interval Y)
+          (fun f:set => loop_at Y Ty y0 f) prY_eps'
+          (compose_fun_in_function_space unit_interval (setprod X Y) Y
+            eps' (projection_map2 X Y)
+            Heps'_fun
+            (continuous_map_function_on (setprod X Y) Tprod Y Ty
+              (projection_map2 X Y) HprYCont))
+          (andI
+            (continuous_map unit_interval unit_interval_topology Y Ty prY_eps' /\
+             apply_fun prY_eps' 0 = y0)
+            (apply_fun prY_eps' 1 = y0)
+            (andI
+              (continuous_map unit_interval unit_interval_topology Y Ty prY_eps')
+              (apply_fun prY_eps' 0 = y0)
+              HprY_eps'_cont HprY_eps'_at0)
+            HprY_eps'_at1)).
+      }
+      (** [prX_eps'] = cls_X = [alpha], so prX_eps' ~ alpha **)
+      claim Hclass_prX_eps'_eq_clsX :
+        path_homotopy_class_loop X Tx x0 prX_eps' = cls_X.
+      {
+        rewrite <- (induced_homomorphism_apply (setprod X Y) Tprod (x0,y0)
+          X Tx x0 (projection_map1 X Y) cls' Hcls'_in).
+        exact Hphi1cls'eq.
+      }
+      claim HclsX_eq_alpha_class_inj : cls_X = path_homotopy_class_loop X Tx x0 alpha.
+      {
+        claim Hrep_XI : exists f:set, f :e loop_space X Tx x0 /\
+          cls_X = path_homotopy_class_loop X Tx x0 f.
+        { exact (fundamental_group_member_has_representative X Tx x0 cls_X HclsX_in). }
+        apply Hrep_XI. let fXI. assume HfXIPack.
+        claim HfXILoop : fXI :e loop_space X Tx x0.
+        { exact (andEL (fXI :e loop_space X Tx x0)
+            (cls_X = path_homotopy_class_loop X Tx x0 fXI) HfXIPack). }
+        claim HclsXEqfXI : cls_X = path_homotopy_class_loop X Tx x0 fXI.
+        { exact (andER (fXI :e loop_space X Tx x0)
+            (cls_X = path_homotopy_class_loop X Tx x0 fXI) HfXIPack). }
+        claim HalphaInClsXI : alpha :e cls_X.
+        { exact (Eps_i_ax (fun g:set => g :e cls_X) fXI
+            (mem_eqL fXI cls_X (path_homotopy_class_loop X Tx x0 fXI)
+              HclsXEqfXI
+              (loop_in_own_path_homotopy_class X Tx x0 fXI HfXILoop))). }
+        claim HalphaInfXI : alpha :e path_homotopy_class_loop X Tx x0 fXI.
+        { exact (mem_eqR alpha cls_X (path_homotopy_class_loop X Tx x0 fXI)
+            HclsXEqfXI HalphaInClsXI). }
+        claim HfXI_hom_alpha : path_homotopic X Tx x0 x0 fXI alpha.
+        { exact (path_homotopy_class_loop_has_homotopy X Tx x0 fXI alpha HalphaInfXI). }
+        claim HfXI_class_eq_alpha : path_homotopy_class_loop X Tx x0 fXI =
+          path_homotopy_class_loop X Tx x0 alpha.
+        { exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0 fXI alpha HfXI_hom_alpha). }
+        rewrite <- HfXI_class_eq_alpha.
+        exact HclsXEqfXI.
+      }
+      claim HprX_eps'_hom_alpha : path_homotopic X Tx x0 x0 prX_eps' alpha.
+      {
+        claim Hprx_class_eq_alpha_class :
+          path_homotopy_class_loop X Tx x0 prX_eps' = path_homotopy_class_loop X Tx x0 alpha.
+        { rewrite Hclass_prX_eps'_eq_clsX. exact HclsX_eq_alpha_class_inj. }
+        exact (Lemma_51_1_path_homotopy_sym X Tx x0 x0 alpha prX_eps'
+          (path_homotopy_class_loop_has_homotopy X Tx x0 alpha prX_eps'
+            (mem_eqR prX_eps'
+              (path_homotopy_class_loop X Tx x0 prX_eps')
+              (path_homotopy_class_loop X Tx x0 alpha)
+              Hprx_class_eq_alpha_class
+              (loop_in_own_path_homotopy_class X Tx x0 prX_eps' HprX_eps'_loop)))).
+      }
+      (** [prY_eps'] = cls_Y = [beta], so prY_eps' ~ beta **)
+      claim Hclass_prY_eps'_eq_clsY :
+        path_homotopy_class_loop Y Ty y0 prY_eps' = cls_Y.
+      {
+        rewrite <- (induced_homomorphism_apply (setprod X Y) Tprod (x0,y0)
+          Y Ty y0 (projection_map2 X Y) cls' Hcls'_in).
+        exact Hphi2cls'eq.
+      }
+      claim HclsY_eq_beta_class_inj : cls_Y = path_homotopy_class_loop Y Ty y0 beta.
+      {
+        claim Hrep_YI : exists f:set, f :e loop_space Y Ty y0 /\
+          cls_Y = path_homotopy_class_loop Y Ty y0 f.
+        { exact (fundamental_group_member_has_representative Y Ty y0 cls_Y HclsY_in). }
+        apply Hrep_YI. let fYI. assume HfYIPack.
+        claim HfYILoop : fYI :e loop_space Y Ty y0.
+        { exact (andEL (fYI :e loop_space Y Ty y0)
+            (cls_Y = path_homotopy_class_loop Y Ty y0 fYI) HfYIPack). }
+        claim HclsYEqfYI : cls_Y = path_homotopy_class_loop Y Ty y0 fYI.
+        { exact (andER (fYI :e loop_space Y Ty y0)
+            (cls_Y = path_homotopy_class_loop Y Ty y0 fYI) HfYIPack). }
+        claim HbetaInClsYI : beta :e cls_Y.
+        { exact (Eps_i_ax (fun g:set => g :e cls_Y) fYI
+            (mem_eqL fYI cls_Y (path_homotopy_class_loop Y Ty y0 fYI)
+              HclsYEqfYI
+              (loop_in_own_path_homotopy_class Y Ty y0 fYI HfYILoop))). }
+        claim HbetaInfYI : beta :e path_homotopy_class_loop Y Ty y0 fYI.
+        { exact (mem_eqR beta cls_Y (path_homotopy_class_loop Y Ty y0 fYI)
+            HclsYEqfYI HbetaInClsYI). }
+        claim HfYI_hom_beta : path_homotopic Y Ty y0 y0 fYI beta.
+        { exact (path_homotopy_class_loop_has_homotopy Y Ty y0 fYI beta HbetaInfYI). }
+        claim HfYI_class_eq_beta : path_homotopy_class_loop Y Ty y0 fYI =
+          path_homotopy_class_loop Y Ty y0 beta.
+        { exact (path_homotopy_class_loop_eq_of_path_homotopic Y Ty y0 fYI beta HfYI_hom_beta). }
+        rewrite <- HfYI_class_eq_beta.
+        exact HclsYEqfYI.
+      }
+      claim HprY_eps'_hom_beta : path_homotopic Y Ty y0 y0 prY_eps' beta.
+      {
+        claim Hpry_class_eq_beta_class :
+          path_homotopy_class_loop Y Ty y0 prY_eps' = path_homotopy_class_loop Y Ty y0 beta.
+        { rewrite Hclass_prY_eps'_eq_clsY. exact HclsY_eq_beta_class_inj. }
+        exact (Lemma_51_1_path_homotopy_sym Y Ty y0 y0 beta prY_eps'
+          (path_homotopy_class_loop_has_homotopy Y Ty y0 beta prY_eps'
+            (mem_eqR prY_eps'
+              (path_homotopy_class_loop Y Ty y0 prY_eps')
+              (path_homotopy_class_loop Y Ty y0 beta)
+              Hpry_class_eq_beta_class
+              (loop_in_own_path_homotopy_class Y Ty y0 prY_eps' HprY_eps'_loop)))).
+      }
+      (** Get the square homotopies F_X and F_Y **)
+      claim HFX_exists : exists F_X:set,
+        continuous_map unit_square unit_square_topology X Tx F_X /\
+        (forall s:set, s :e unit_interval -> apply_fun F_X (s,0) = apply_fun prX_eps' s) /\
+        (forall s:set, s :e unit_interval -> apply_fun F_X (s,1) = apply_fun alpha s) /\
+        (forall t:set, t :e unit_interval -> apply_fun F_X (0,t) = x0) /\
+        (forall t:set, t :e unit_interval -> apply_fun F_X (1,t) = x0).
+      { exact (path_homotopic_has_square_witness X Tx x0 x0 prX_eps' alpha
+          HprX_eps'_hom_alpha). }
+      apply HFX_exists. let F_X. assume HF_X_pack.
+      claim HF_X_cont : continuous_map unit_square unit_square_topology X Tx F_X.
+      {
+        exact (andEL
+          (continuous_map unit_square unit_square_topology X Tx F_X)
+          (forall s:set, s :e unit_interval -> apply_fun F_X (s,0) = apply_fun prX_eps' s)
+          (andEL
+            (continuous_map unit_square unit_square_topology X Tx F_X /\
+             (forall s:set, s :e unit_interval -> apply_fun F_X (s,0) = apply_fun prX_eps' s))
+            (forall s:set, s :e unit_interval -> apply_fun F_X (s,1) = apply_fun alpha s)
+            (andEL
+              ((continuous_map unit_square unit_square_topology X Tx F_X /\
+                (forall s:set, s :e unit_interval -> apply_fun F_X (s,0) = apply_fun prX_eps' s)) /\
+               (forall s:set, s :e unit_interval -> apply_fun F_X (s,1) = apply_fun alpha s))
+              (forall t:set, t :e unit_interval -> apply_fun F_X (0,t) = x0)
+              (andEL
+                (((continuous_map unit_square unit_square_topology X Tx F_X /\
+                   (forall s:set, s :e unit_interval -> apply_fun F_X (s,0) = apply_fun prX_eps' s)) /\
+                  (forall s:set, s :e unit_interval -> apply_fun F_X (s,1) = apply_fun alpha s)) /\
+                 (forall t:set, t :e unit_interval -> apply_fun F_X (0,t) = x0))
+                (forall t:set, t :e unit_interval -> apply_fun F_X (1,t) = x0)
+                HF_X_pack)))).
+      }
+      claim HF_X_s0 : forall s:set, s :e unit_interval -> apply_fun F_X (s,0) = apply_fun prX_eps' s.
+      {
+        exact (andER
+          (continuous_map unit_square unit_square_topology X Tx F_X)
+          (forall s:set, s :e unit_interval -> apply_fun F_X (s,0) = apply_fun prX_eps' s)
+          (andEL
+            (continuous_map unit_square unit_square_topology X Tx F_X /\
+             (forall s:set, s :e unit_interval -> apply_fun F_X (s,0) = apply_fun prX_eps' s))
+            (forall s:set, s :e unit_interval -> apply_fun F_X (s,1) = apply_fun alpha s)
+            (andEL
+              ((continuous_map unit_square unit_square_topology X Tx F_X /\
+                (forall s:set, s :e unit_interval -> apply_fun F_X (s,0) = apply_fun prX_eps' s)) /\
+               (forall s:set, s :e unit_interval -> apply_fun F_X (s,1) = apply_fun alpha s))
+              (forall t:set, t :e unit_interval -> apply_fun F_X (0,t) = x0)
+              (andEL
+                (((continuous_map unit_square unit_square_topology X Tx F_X /\
+                   (forall s:set, s :e unit_interval -> apply_fun F_X (s,0) = apply_fun prX_eps' s)) /\
+                  (forall s:set, s :e unit_interval -> apply_fun F_X (s,1) = apply_fun alpha s)) /\
+                 (forall t:set, t :e unit_interval -> apply_fun F_X (0,t) = x0))
+                (forall t:set, t :e unit_interval -> apply_fun F_X (1,t) = x0)
+                HF_X_pack)))).
+      }
+      claim HF_X_s1 : forall s:set, s :e unit_interval -> apply_fun F_X (s,1) = apply_fun alpha s.
+      {
+        exact (andER
+          (continuous_map unit_square unit_square_topology X Tx F_X /\
+           (forall s:set, s :e unit_interval -> apply_fun F_X (s,0) = apply_fun prX_eps' s))
+          (forall s:set, s :e unit_interval -> apply_fun F_X (s,1) = apply_fun alpha s)
+          (andEL
+            ((continuous_map unit_square unit_square_topology X Tx F_X /\
+              (forall s:set, s :e unit_interval -> apply_fun F_X (s,0) = apply_fun prX_eps' s)) /\
+             (forall s:set, s :e unit_interval -> apply_fun F_X (s,1) = apply_fun alpha s))
+            (forall t:set, t :e unit_interval -> apply_fun F_X (0,t) = x0)
+            (andEL
+              (((continuous_map unit_square unit_square_topology X Tx F_X /\
+                 (forall s:set, s :e unit_interval -> apply_fun F_X (s,0) = apply_fun prX_eps' s)) /\
+                (forall s:set, s :e unit_interval -> apply_fun F_X (s,1) = apply_fun alpha s)) /\
+               (forall t:set, t :e unit_interval -> apply_fun F_X (0,t) = x0))
+              (forall t:set, t :e unit_interval -> apply_fun F_X (1,t) = x0)
+              HF_X_pack))).
+      }
+      claim HF_X_0t : forall t:set, t :e unit_interval -> apply_fun F_X (0,t) = x0.
+      {
+        exact (andER
+          ((continuous_map unit_square unit_square_topology X Tx F_X /\
+            (forall s:set, s :e unit_interval -> apply_fun F_X (s,0) = apply_fun prX_eps' s)) /\
+           (forall s:set, s :e unit_interval -> apply_fun F_X (s,1) = apply_fun alpha s))
+          (forall t:set, t :e unit_interval -> apply_fun F_X (0,t) = x0)
+          (andEL
+            (((continuous_map unit_square unit_square_topology X Tx F_X /\
+               (forall s:set, s :e unit_interval -> apply_fun F_X (s,0) = apply_fun prX_eps' s)) /\
+              (forall s:set, s :e unit_interval -> apply_fun F_X (s,1) = apply_fun alpha s)) /\
+             (forall t:set, t :e unit_interval -> apply_fun F_X (0,t) = x0))
+            (forall t:set, t :e unit_interval -> apply_fun F_X (1,t) = x0)
+            HF_X_pack)).
+      }
+      claim HF_X_1t : forall t:set, t :e unit_interval -> apply_fun F_X (1,t) = x0.
+      {
+        exact (andER
+          (((continuous_map unit_square unit_square_topology X Tx F_X /\
+             (forall s:set, s :e unit_interval -> apply_fun F_X (s,0) = apply_fun prX_eps' s)) /\
+            (forall s:set, s :e unit_interval -> apply_fun F_X (s,1) = apply_fun alpha s)) /\
+           (forall t:set, t :e unit_interval -> apply_fun F_X (0,t) = x0))
+          (forall t:set, t :e unit_interval -> apply_fun F_X (1,t) = x0)
+          HF_X_pack).
+      }
+      claim HFY_exists : exists F_Y:set,
+        continuous_map unit_square unit_square_topology Y Ty F_Y /\
+        (forall s:set, s :e unit_interval -> apply_fun F_Y (s,0) = apply_fun prY_eps' s) /\
+        (forall s:set, s :e unit_interval -> apply_fun F_Y (s,1) = apply_fun beta s) /\
+        (forall t:set, t :e unit_interval -> apply_fun F_Y (0,t) = y0) /\
+        (forall t:set, t :e unit_interval -> apply_fun F_Y (1,t) = y0).
+      { exact (path_homotopic_has_square_witness Y Ty y0 y0 prY_eps' beta
+          HprY_eps'_hom_beta). }
+      apply HFY_exists. let F_Y. assume HF_Y_pack.
+      claim HF_Y_cont : continuous_map unit_square unit_square_topology Y Ty F_Y.
+      {
+        exact (andEL
+          (continuous_map unit_square unit_square_topology Y Ty F_Y)
+          (forall s:set, s :e unit_interval -> apply_fun F_Y (s,0) = apply_fun prY_eps' s)
+          (andEL
+            (continuous_map unit_square unit_square_topology Y Ty F_Y /\
+             (forall s:set, s :e unit_interval -> apply_fun F_Y (s,0) = apply_fun prY_eps' s))
+            (forall s:set, s :e unit_interval -> apply_fun F_Y (s,1) = apply_fun beta s)
+            (andEL
+              ((continuous_map unit_square unit_square_topology Y Ty F_Y /\
+                (forall s:set, s :e unit_interval -> apply_fun F_Y (s,0) = apply_fun prY_eps' s)) /\
+               (forall s:set, s :e unit_interval -> apply_fun F_Y (s,1) = apply_fun beta s))
+              (forall t:set, t :e unit_interval -> apply_fun F_Y (0,t) = y0)
+              (andEL
+                (((continuous_map unit_square unit_square_topology Y Ty F_Y /\
+                   (forall s:set, s :e unit_interval -> apply_fun F_Y (s,0) = apply_fun prY_eps' s)) /\
+                  (forall s:set, s :e unit_interval -> apply_fun F_Y (s,1) = apply_fun beta s)) /\
+                 (forall t:set, t :e unit_interval -> apply_fun F_Y (0,t) = y0))
+                (forall t:set, t :e unit_interval -> apply_fun F_Y (1,t) = y0)
+                HF_Y_pack)))).
+      }
+      claim HF_Y_s0 : forall s:set, s :e unit_interval -> apply_fun F_Y (s,0) = apply_fun prY_eps' s.
+      {
+        exact (andER
+          (continuous_map unit_square unit_square_topology Y Ty F_Y)
+          (forall s:set, s :e unit_interval -> apply_fun F_Y (s,0) = apply_fun prY_eps' s)
+          (andEL
+            (continuous_map unit_square unit_square_topology Y Ty F_Y /\
+             (forall s:set, s :e unit_interval -> apply_fun F_Y (s,0) = apply_fun prY_eps' s))
+            (forall s:set, s :e unit_interval -> apply_fun F_Y (s,1) = apply_fun beta s)
+            (andEL
+              ((continuous_map unit_square unit_square_topology Y Ty F_Y /\
+                (forall s:set, s :e unit_interval -> apply_fun F_Y (s,0) = apply_fun prY_eps' s)) /\
+               (forall s:set, s :e unit_interval -> apply_fun F_Y (s,1) = apply_fun beta s))
+              (forall t:set, t :e unit_interval -> apply_fun F_Y (0,t) = y0)
+              (andEL
+                (((continuous_map unit_square unit_square_topology Y Ty F_Y /\
+                   (forall s:set, s :e unit_interval -> apply_fun F_Y (s,0) = apply_fun prY_eps' s)) /\
+                  (forall s:set, s :e unit_interval -> apply_fun F_Y (s,1) = apply_fun beta s)) /\
+                 (forall t:set, t :e unit_interval -> apply_fun F_Y (0,t) = y0))
+                (forall t:set, t :e unit_interval -> apply_fun F_Y (1,t) = y0)
+                HF_Y_pack)))).
+      }
+      claim HF_Y_s1 : forall s:set, s :e unit_interval -> apply_fun F_Y (s,1) = apply_fun beta s.
+      {
+        exact (andER
+          (continuous_map unit_square unit_square_topology Y Ty F_Y /\
+           (forall s:set, s :e unit_interval -> apply_fun F_Y (s,0) = apply_fun prY_eps' s))
+          (forall s:set, s :e unit_interval -> apply_fun F_Y (s,1) = apply_fun beta s)
+          (andEL
+            ((continuous_map unit_square unit_square_topology Y Ty F_Y /\
+              (forall s:set, s :e unit_interval -> apply_fun F_Y (s,0) = apply_fun prY_eps' s)) /\
+             (forall s:set, s :e unit_interval -> apply_fun F_Y (s,1) = apply_fun beta s))
+            (forall t:set, t :e unit_interval -> apply_fun F_Y (0,t) = y0)
+            (andEL
+              (((continuous_map unit_square unit_square_topology Y Ty F_Y /\
+                 (forall s:set, s :e unit_interval -> apply_fun F_Y (s,0) = apply_fun prY_eps' s)) /\
+                (forall s:set, s :e unit_interval -> apply_fun F_Y (s,1) = apply_fun beta s)) /\
+               (forall t:set, t :e unit_interval -> apply_fun F_Y (0,t) = y0))
+              (forall t:set, t :e unit_interval -> apply_fun F_Y (1,t) = y0)
+              HF_Y_pack))).
+      }
+      claim HF_Y_0t : forall t:set, t :e unit_interval -> apply_fun F_Y (0,t) = y0.
+      {
+        exact (andER
+          ((continuous_map unit_square unit_square_topology Y Ty F_Y /\
+            (forall s:set, s :e unit_interval -> apply_fun F_Y (s,0) = apply_fun prY_eps' s)) /\
+           (forall s:set, s :e unit_interval -> apply_fun F_Y (s,1) = apply_fun beta s))
+          (forall t:set, t :e unit_interval -> apply_fun F_Y (0,t) = y0)
+          (andEL
+            (((continuous_map unit_square unit_square_topology Y Ty F_Y /\
+               (forall s:set, s :e unit_interval -> apply_fun F_Y (s,0) = apply_fun prY_eps' s)) /\
+              (forall s:set, s :e unit_interval -> apply_fun F_Y (s,1) = apply_fun beta s)) /\
+             (forall t:set, t :e unit_interval -> apply_fun F_Y (0,t) = y0))
+            (forall t:set, t :e unit_interval -> apply_fun F_Y (1,t) = y0)
+            HF_Y_pack)).
+      }
+      claim HF_Y_1t : forall t:set, t :e unit_interval -> apply_fun F_Y (1,t) = y0.
+      {
+        exact (andER
+          (((continuous_map unit_square unit_square_topology Y Ty F_Y /\
+             (forall s:set, s :e unit_interval -> apply_fun F_Y (s,0) = apply_fun prY_eps' s)) /\
+            (forall s:set, s :e unit_interval -> apply_fun F_Y (s,1) = apply_fun beta s)) /\
+           (forall t:set, t :e unit_interval -> apply_fun F_Y (0,t) = y0))
+          (forall t:set, t :e unit_interval -> apply_fun F_Y (1,t) = y0)
+          HF_Y_pack).
+      }
+      (** Construct G = pair_map(I^2, F_X, F_Y): homotopy from pair_map(I,prX_eps',prY_eps') to gamma **)
+      set G := pair_map unit_square F_X F_Y.
+      claim HGcont : continuous_map unit_square unit_square_topology (setprod X Y) Tprod G.
+      { exact (maps_into_products_axiom unit_square unit_square_topology
+          X Tx Y Ty F_X F_Y HF_X_cont HF_Y_cont). }
+      claim pair_eps'_in_fs : pair_map unit_interval prX_eps' prY_eps' :e
+        function_space unit_interval (setprod X Y).
+      { exact (pair_map_in_function_space unit_interval X Y prX_eps' prY_eps'
+          (continuous_map_function_on unit_interval unit_interval_topology X Tx prX_eps'
+            HprX_eps'_cont)
+          (continuous_map_function_on unit_interval unit_interval_topology Y Ty prY_eps'
+            HprY_eps'_cont)). }
+      (** G(s,0) = apply_fun (pair_map I prX_eps' prY_eps') s **)
+      claim HG_s0 : forall s:set, s :e unit_interval ->
+        apply_fun G (s,0) = apply_fun (pair_map unit_interval prX_eps' prY_eps') s.
+      {
+        let s. assume Hs.
+        rewrite (pair_map_apply unit_square X Y F_X F_Y (s,0)
+          (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 0
+            Hs zero_in_unit_interval)).
+        rewrite (HF_X_s0 s Hs).
+        rewrite (HF_Y_s0 s Hs).
+        symmetry.
+        exact (pair_map_apply unit_interval X Y prX_eps' prY_eps' s Hs).
+      }
+      (** G(s,1) = apply_fun gamma s **)
+      claim HG_s1 : forall s:set, s :e unit_interval ->
+        apply_fun G (s,1) = apply_fun gamma s.
+      {
+        let s. assume Hs.
+        rewrite (pair_map_apply unit_square X Y F_X F_Y (s,1)
+          (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 1
+            Hs one_in_unit_interval)).
+        rewrite (HF_X_s1 s Hs).
+        rewrite (HF_Y_s1 s Hs).
+        symmetry.
+        exact (pair_map_apply unit_interval X Y alpha beta s Hs).
+      }
+      (** G(0,t) = (x0,y0) **)
+      claim HG_0t : forall t:set, t :e unit_interval -> apply_fun G (0,t) = (x0,y0).
+      {
+        let t. assume Ht.
+        rewrite (pair_map_apply unit_square X Y F_X F_Y (0,t)
+          (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 0 t
+            zero_in_unit_interval Ht)).
+        rewrite (HF_X_0t t Ht).
+        rewrite (HF_Y_0t t Ht).
+        exact (fun P H => H).
+      }
+      (** G(1,t) = (x0,y0) **)
+      claim HG_1t : forall t:set, t :e unit_interval -> apply_fun G (1,t) = (x0,y0).
+      {
+        let t. assume Ht.
+        rewrite (pair_map_apply unit_square X Y F_X F_Y (1,t)
+          (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 1 t
+            one_in_unit_interval Ht)).
+        rewrite (HF_X_1t t Ht).
+        rewrite (HF_Y_1t t Ht).
+        exact (fun P H => H).
+      }
+      (** pair_map I prX_eps' prY_eps' ~ gamma **)
+      claim Hpair_eps'_hom_gamma :
+        path_homotopic (setprod X Y) Tprod (x0,y0) (x0,y0)
+          (pair_map unit_interval prX_eps' prY_eps') gamma.
+      {
+        claim Hpair_cont :
+          continuous_map unit_interval unit_interval_topology (setprod X Y) Tprod
+            (pair_map unit_interval prX_eps' prY_eps').
+        { exact (maps_into_products_axiom unit_interval unit_interval_topology
+            X Tx Y Ty prX_eps' prY_eps' HprX_eps'_cont HprY_eps'_cont). }
+        claim Hpair0 :
+          apply_fun (pair_map unit_interval prX_eps' prY_eps') 0 = (x0,y0).
+        {
+          rewrite (pair_map_apply unit_interval X Y prX_eps' prY_eps' 0
+            zero_in_unit_interval).
+          rewrite HprX_eps'_at0. rewrite HprY_eps'_at0.
+          exact (fun P H => H).
+        }
+        claim Hpair1 :
+          apply_fun (pair_map unit_interval prX_eps' prY_eps') 1 = (x0,y0).
+        {
+          rewrite (pair_map_apply unit_interval X Y prX_eps' prY_eps' 1
+            one_in_unit_interval).
+          rewrite HprX_eps'_at1. rewrite HprY_eps'_at1.
+          exact (fun P H => H).
+        }
+        prove
+          continuous_map unit_interval unit_interval_topology (setprod X Y) Tprod
+            (pair_map unit_interval prX_eps' prY_eps') /\
+          continuous_map unit_interval unit_interval_topology (setprod X Y) Tprod gamma /\
+          apply_fun (pair_map unit_interval prX_eps' prY_eps') 0 = (x0,y0) /\
+          apply_fun (pair_map unit_interval prX_eps' prY_eps') 1 = (x0,y0) /\
+          apply_fun gamma 0 = (x0,y0) /\
+          apply_fun gamma 1 = (x0,y0) /\
+          exists F:set,
+            continuous_map unit_square unit_square_topology (setprod X Y) Tprod F /\
+            (forall s:set, s :e unit_interval ->
+              apply_fun F (s,0) = apply_fun (pair_map unit_interval prX_eps' prY_eps') s) /\
+            (forall s:set, s :e unit_interval ->
+              apply_fun F (s,1) = apply_fun gamma s) /\
+            (forall t:set, t :e unit_interval ->
+              apply_fun F (0,t) = (x0,y0)) /\
+            (forall t:set, t :e unit_interval ->
+              apply_fun F (1,t) = (x0,y0)).
+        apply andI.
+        - exact (and6I
+            (continuous_map unit_interval unit_interval_topology (setprod X Y) Tprod
+              (pair_map unit_interval prX_eps' prY_eps'))
+            (continuous_map unit_interval unit_interval_topology (setprod X Y) Tprod gamma)
+            (apply_fun (pair_map unit_interval prX_eps' prY_eps') 0 = (x0,y0))
+            (apply_fun (pair_map unit_interval prX_eps' prY_eps') 1 = (x0,y0))
+            (apply_fun gamma 0 = (x0,y0))
+            (apply_fun gamma 1 = (x0,y0))
+            Hpair_cont HgammaCont Hpair0 Hpair1 Hgamma0 Hgamma1).
+        - witness G.
+          exact (and5I
+            (continuous_map unit_square unit_square_topology (setprod X Y) Tprod G)
+            (forall s:set, s :e unit_interval ->
+              apply_fun G (s,0) = apply_fun (pair_map unit_interval prX_eps' prY_eps') s)
+            (forall s:set, s :e unit_interval ->
+              apply_fun G (s,1) = apply_fun gamma s)
+            (forall t:set, t :e unit_interval ->
+              apply_fun G (0,t) = (x0,y0))
+            (forall t:set, t :e unit_interval ->
+              apply_fun G (1,t) = (x0,y0))
+            HGcont HG_s0 HG_s1 HG_0t HG_1t).
+      }
+      (** Pointwise: eps'(s) = pair_map(I, prX_eps', prY_eps')(s) **)
+      claim Heps'_eq_pair_eps'_pw :
+        forall s:set, s :e unit_interval ->
+          apply_fun eps' s = apply_fun (pair_map unit_interval prX_eps' prY_eps') s.
+      {
+        let s. assume Hs.
+        claim Heps's_in : apply_fun eps' s :e setprod X Y.
+        { exact (Heps'_fun s Hs). }
+        rewrite (pair_map_apply unit_interval X Y prX_eps' prY_eps' s Hs).
+        rewrite (compose_fun_apply unit_interval eps' (projection_map1 X Y) s Hs).
+        rewrite (compose_fun_apply unit_interval eps' (projection_map2 X Y) s Hs).
+        rewrite (projection1_apply X Y (apply_fun eps' s) Heps's_in).
+        rewrite (projection2_apply X Y (apply_fun eps' s) Heps's_in).
+        exact (setprod_eta X Y (apply_fun eps' s) Heps's_in).
+      }
+      (** Construct constant homotopy C = compose(I^2, prI1, eps'): eps' ~ pair_map **)
+      set C := compose_fun unit_square (projection_map1 unit_interval unit_interval) eps'.
+      claim HCcont : continuous_map unit_square unit_square_topology (setprod X Y) Tprod C.
+      {
+        exact (composition_continuous unit_square unit_square_topology
+          unit_interval unit_interval_topology
+          (setprod X Y) Tprod
+          (projection_map1 unit_interval unit_interval) eps'
+          (andEL
+            (continuous_map
+              (setprod unit_interval unit_interval)
+              (product_topology unit_interval unit_interval_topology
+                unit_interval unit_interval_topology)
+              unit_interval unit_interval_topology
+              (projection_map1 unit_interval unit_interval))
+            (continuous_map
+              (setprod unit_interval unit_interval)
+              (product_topology unit_interval unit_interval_topology
+                unit_interval unit_interval_topology)
+              unit_interval unit_interval_topology
+              (projection_map2 unit_interval unit_interval))
+            (projection_maps_continuous
+              unit_interval unit_interval_topology
+              unit_interval unit_interval_topology
+              unit_interval_topology_on
+              unit_interval_topology_on))
+          Heps'_cont).
+      }
+      (** C(s,0) = eps'(s) **)
+      claim HC_s0 : forall s:set, s :e unit_interval -> apply_fun C (s,0) = apply_fun eps' s.
+      {
+        let s. assume Hs.
+        rewrite (compose_fun_apply unit_square (projection_map1 unit_interval unit_interval) eps'
+          (s,0) (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 0
+            Hs zero_in_unit_interval)).
+        rewrite (projection1_apply unit_interval unit_interval (s,0)
+          (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 0
+            Hs zero_in_unit_interval)).
+        rewrite tuple_2_0_eq.
+        exact (fun P H => H).
+      }
+      (** C(s,1) = apply_fun (pair_map I prX_eps' prY_eps') s **)
+      claim HC_s1 : forall s:set, s :e unit_interval ->
+        apply_fun C (s,1) = apply_fun (pair_map unit_interval prX_eps' prY_eps') s.
+      {
+        let s. assume Hs.
+        rewrite (compose_fun_apply unit_square (projection_map1 unit_interval unit_interval) eps'
+          (s,1) (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 1
+            Hs one_in_unit_interval)).
+        rewrite (projection1_apply unit_interval unit_interval (s,1)
+          (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 1
+            Hs one_in_unit_interval)).
+        rewrite tuple_2_0_eq.
+        exact (Heps'_eq_pair_eps'_pw s Hs).
+      }
+      (** C(0,t) = (x0,y0) **)
+      claim HC_0t : forall t:set, t :e unit_interval -> apply_fun C (0,t) = (x0,y0).
+      {
+        let t. assume Ht.
+        rewrite (compose_fun_apply unit_square (projection_map1 unit_interval unit_interval) eps'
+          (0,t) (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 0 t
+            zero_in_unit_interval Ht)).
+        rewrite (projection1_apply unit_interval unit_interval (0,t)
+          (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 0 t
+            zero_in_unit_interval Ht)).
+        rewrite tuple_2_0_eq.
+        exact Heps'_0.
+      }
+      (** C(1,t) = (x0,y0) **)
+      claim HC_1t : forall t:set, t :e unit_interval -> apply_fun C (1,t) = (x0,y0).
+      {
+        let t. assume Ht.
+        rewrite (compose_fun_apply unit_square (projection_map1 unit_interval unit_interval) eps'
+          (1,t) (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 1 t
+            one_in_unit_interval Ht)).
+        rewrite (projection1_apply unit_interval unit_interval (1,t)
+          (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 1 t
+            one_in_unit_interval Ht)).
+        rewrite tuple_2_0_eq.
+        exact Heps'_1.
+      }
+      (** eps' ~ pair_map I prX_eps' prY_eps' **)
+      claim Heps'_hom_pair_eps' :
+        path_homotopic (setprod X Y) Tprod (x0,y0) (x0,y0)
+          eps' (pair_map unit_interval prX_eps' prY_eps').
+      {
+        prove continuous_map unit_interval unit_interval_topology (setprod X Y) Tprod eps' /\
+          continuous_map unit_interval unit_interval_topology (setprod X Y) Tprod
+            (pair_map unit_interval prX_eps' prY_eps') /\
+          apply_fun eps' 0 = (x0,y0) /\
+          apply_fun eps' 1 = (x0,y0) /\
+          apply_fun (pair_map unit_interval prX_eps' prY_eps') 0 = (x0,y0) /\
+          apply_fun (pair_map unit_interval prX_eps' prY_eps') 1 = (x0,y0) /\
+          exists F:set,
+            continuous_map unit_square unit_square_topology (setprod X Y) Tprod F /\
+            (forall s:set, s :e unit_interval ->
+              apply_fun F (s,0) = apply_fun eps' s) /\
+            (forall s:set, s :e unit_interval ->
+              apply_fun F (s,1) = apply_fun (pair_map unit_interval prX_eps' prY_eps') s) /\
+            (forall t:set, t :e unit_interval ->
+              apply_fun F (0,t) = (x0,y0)) /\
+            (forall t:set, t :e unit_interval ->
+              apply_fun F (1,t) = (x0,y0)).
+        claim Hpair_eps'_at0 : apply_fun (pair_map unit_interval prX_eps' prY_eps') 0 = (x0,y0).
+        {
+          rewrite (pair_map_apply unit_interval X Y prX_eps' prY_eps' 0 zero_in_unit_interval).
+          rewrite HprX_eps'_at0. rewrite HprY_eps'_at0. exact (fun P H => H).
+        }
+        claim Hpair_eps'_at1 : apply_fun (pair_map unit_interval prX_eps' prY_eps') 1 = (x0,y0).
+        {
+          rewrite (pair_map_apply unit_interval X Y prX_eps' prY_eps' 1 one_in_unit_interval).
+          rewrite HprX_eps'_at1. rewrite HprY_eps'_at1. exact (fun P H => H).
+        }
+        apply andI.
+        - exact (and6I
+            (continuous_map unit_interval unit_interval_topology (setprod X Y) Tprod eps')
+            (continuous_map unit_interval unit_interval_topology (setprod X Y) Tprod
+              (pair_map unit_interval prX_eps' prY_eps'))
+            (apply_fun eps' 0 = (x0,y0))
+            (apply_fun eps' 1 = (x0,y0))
+            (apply_fun (pair_map unit_interval prX_eps' prY_eps') 0 = (x0,y0))
+            (apply_fun (pair_map unit_interval prX_eps' prY_eps') 1 = (x0,y0))
+            Heps'_cont
+            (maps_into_products_axiom unit_interval unit_interval_topology
+              X Tx Y Ty prX_eps' prY_eps' HprX_eps'_cont HprY_eps'_cont)
+            Heps'_0 Heps'_1
+            Hpair_eps'_at0
+            Hpair_eps'_at1).
+        - witness C.
+          exact (and5I
+            (continuous_map unit_square unit_square_topology (setprod X Y) Tprod C)
+            (forall s:set, s :e unit_interval -> apply_fun C (s,0) = apply_fun eps' s)
+            (forall s:set, s :e unit_interval ->
+              apply_fun C (s,1) = apply_fun (pair_map unit_interval prX_eps' prY_eps') s)
+            (forall t:set, t :e unit_interval -> apply_fun C (0,t) = (x0,y0))
+            (forall t:set, t :e unit_interval -> apply_fun C (1,t) = (x0,y0))
+            HCcont HC_s0 HC_s1 HC_0t HC_1t).
+      }
+      (** By transitivity: eps' ~ gamma **)
+      claim Heps'_hom_gamma :
+        path_homotopic (setprod X Y) Tprod (x0,y0) (x0,y0) eps' gamma.
+      { exact (Lemma_51_1_path_homotopy_trans (setprod X Y) Tprod (x0,y0) (x0,y0)
+          eps' (pair_map unit_interval prX_eps' prY_eps') gamma
+          Heps'_hom_pair_eps' Hpair_eps'_hom_gamma). }
+      (** [eps'] = [gamma] = cls_XY **)
+      claim Heps'_class_eq_gamma_class :
+        path_homotopy_class_loop (setprod X Y) Tprod (x0,y0) eps'
+        = path_homotopy_class_loop (setprod X Y) Tprod (x0,y0) gamma.
+      { exact (path_homotopy_class_loop_eq_of_path_homotopic
+          (setprod X Y) Tprod (x0,y0) eps' gamma Heps'_hom_gamma). }
+      (** cls' = [eps'] = [gamma] = cls_XY **)
+      rewrite Hcls'_eq_eps'.
+      rewrite Heps'_class_eq_gamma_class.
+      exact (fun P H => H).
+Qed.
 
 (** from S60 Cor 60.2 (line 1683 in algtop.tex) **)
 (** LATEX VERSION: pi_1(torus) isomorphic to Z x Z. **)
