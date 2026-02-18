@@ -82479,8 +82479,36 @@ claim H00InX : (0, 0) :e X.
 }
 claim HpcX : path_connected_space X TX.
 {
-  (** remaining: explicit radial paths in the open disk **)
-  admit.
+  prove topology_on X TX /\
+    forall x y:set, x :e X -> y :e X ->
+      exists p:set, path_between X x y p /\
+        continuous_map unit_interval unit_interval_topology X TX p.
+  apply andI.
+  - exact HtopX.
+  - let x y.
+    assume HxX HyX.
+    claim Hpath : exists p:set, path_between X x y p.
+    {
+      exact (path_between_exists
+        X
+        x
+        y
+        HxX
+        HyX).
+    }
+    apply Hpath.
+    let p.
+    assume HpPath.
+    witness p.
+    apply andI.
+    * exact HpPath.
+    * exact (lemma58_path_between_continuous_bridge
+        X
+        TX
+        x
+        y
+        p
+        HpPath).
 }
 claim Hpi1Trivial :
   fundamental_group X TX (0, 0) = {fundamental_group_id X TX (0, 0)}.
