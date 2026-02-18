@@ -63046,7 +63046,44 @@ claim Hex :
                 rewrite Hlt1Comm0.
                 reflexivity.
               }
-              (** TODO Charlie: compare lr with lt1 starting from Hlr0EqLt10 and Hplr0Eqplt10 using the local evenly-covered neighborhood Ur at f(r). **)
+              claim HN1Open : N1 :e unit_interval_topology.
+              {
+                exact (andEL
+                  (N1 :e unit_interval_topology)
+                  (0 :e N1)
+                  HN1open0).
+              }
+              claim HNrOpen : Nr :e unit_interval_topology.
+              {
+                exact (andEL
+                  (Nr :e unit_interval_topology)
+                  (0 :e Nr)
+                  (andEL
+                    (Nr :e unit_interval_topology /\ 0 :e Nr)
+                    (r :e Nr)
+                    HNrOpen0r)).
+              }
+              claim H0NrN1 : 0 :e Nr :/\: N1.
+              {
+                exact (binintersectI
+                  Nr
+                  N1
+                  0
+                  H0Nr
+                  H0N1).
+              }
+              claim HNrN1Open : Nr :/\: N1 :e unit_interval_topology.
+              {
+                exact (topology_binintersect_closed
+                  unit_interval
+                  unit_interval_topology
+                  Nr
+                  N1
+                  unit_interval_topology_on
+                  HNrOpen
+                  HN1Open).
+              }
+              (** TODO Charlie: compare lr with lt1 on Nr :/\: N1 from Hlr0EqLt10 and Hplr0Eqplt10, then propagate membership of r into N1 via the local evenly-covered neighborhood Ur at f(r). **)
               admit.
             }
             exact HrN1.
