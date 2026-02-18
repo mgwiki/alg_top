@@ -113240,8 +113240,103 @@ apply and3I.
                       + assume Hc_efam : c = apply_fun efam beta.
                         apply (xm (c = eG)).
                         * assume Hc_eG : c = eG.
-                          (** c = efam(beta) = eG: same proof structure as c = eG case below **)
-                          admit.
+                          (** c = efam(beta) = eG: same proof as c = eG case below **)
+                           claim Hgb_wpm : apply_fun multG (g, b) = word_product multG eG xsg m.
+                           { claim Hstep1 : apply_fun multG (g, b) =
+                               apply_fun multG (word_product multG eG xsg m, c).
+                             { exact Hgb_decomp. }
+                             claim Hstep2 : apply_fun multG (word_product multG eG xsg m, c) =
+                               apply_fun multG (word_product multG eG xsg m, eG).
+                             { rewrite Hc_eG. reflexivity. }
+                             claim Hstep3 : apply_fun multG (word_product multG eG xsg m, eG) =
+                               word_product multG eG xsg m.
+                             { exact (andER
+                                 (apply_fun multG (eG, word_product multG eG xsg m) = word_product multG eG xsg m)
+                                 (apply_fun multG (word_product multG eG xsg m, eG) = word_product multG eG xsg m)
+                                 (HidG (word_product multG eG xsg m) Hwpm_G)). }
+                             exact (eq_i_tra (apply_fun multG (g, b))
+                               (apply_fun multG (word_product multG eG xsg m, c))
+                               (word_product multG eG xsg m)
+                               Hstep1
+                               (eq_i_tra (apply_fun multG (word_product multG eG xsg m, c))
+                                 (apply_fun multG (word_product multG eG xsg m, eG))
+                                 (word_product multG eG xsg m) Hstep2 Hstep3)). }
+                           claim Hgb_ne_eG : word_product multG eG xsg m <> eG.
+                           { claim Hgb_rw : apply_fun multG (g, b) = word_product multG eG xsg m.
+                             { exact Hgb_wpm. }
+                             assume Hwpm_eG : word_product multG eG xsg m = eG.
+                             claim Hgb_eG2 : apply_fun multG (g, b) = eG.
+                             { exact (eq_i_tra (apply_fun multG (g, b))
+                                 (word_product multG eG xsg m) eG Hgb_wpm Hwpm_eG). }
+                             exact (Hgb_ne Hgb_eG2). }
+                           claim Hm_ne_0 : m <> 0.
+                           { assume Hm0 : m = 0.
+                             claim Hwp0 : word_product multG eG xsg 0 = eG.
+                             { exact (nat_primrec_0 eG (fun i:set => fun r:set => apply_fun multG (r, apply_fun xsg i))). }
+                             claim Hwpm0 : word_product multG eG xsg m = eG.
+                             { rewrite Hm0. exact Hwp0. }
+                             exact (Hgb_ne_eG Hwpm0). }
+                           claim Hred_trunc : reduced_word J Gfam efam m xsg.
+                           { prove m :e omega /\
+                               (forall i:set, i :e m ->
+                                 exists alpha:set, alpha :e J /\
+                                   apply_fun xsg i :e apply_fun Gfam alpha /\
+                                   apply_fun xsg i <> apply_fun efam alpha) /\
+                               (forall i:set, i :e m -> ordsucc i :e m ->
+                                 forall alpha0 beta0:set, alpha0 :e J -> beta0 :e J ->
+                                   apply_fun xsg i :e apply_fun Gfam alpha0 ->
+                                   apply_fun xsg (ordsucc i) :e apply_fun Gfam beta0 ->
+                                   alpha0 <> beta0).
+                             apply (and3E
+                               (ng :e omega)
+                               (forall i:set, i :e ng ->
+                                 exists alpha:set, alpha :e J /\
+                                   apply_fun xsg i :e apply_fun Gfam alpha /\
+                                   apply_fun xsg i <> apply_fun efam alpha)
+                               (forall i:set, i :e ng -> ordsucc i :e ng ->
+                                 forall alpha0 beta0:set, alpha0 :e J -> beta0 :e J ->
+                                   apply_fun xsg i :e apply_fun Gfam alpha0 ->
+                                   apply_fun xsg (ordsucc i) :e apply_fun Gfam beta0 ->
+                                   alpha0 <> beta0)
+                               Hredw).
+                             assume Hng_om Helem Hadj.
+                             apply and3I.
+                             - exact Hm_omega.
+                             - let i. assume Hi : i :e m.
+                               exact (Helem i (Hm_sub_ng i Hi)).
+                             - let i. assume Hi : i :e m. assume Hsi : ordsucc i :e m.
+                               exact (Hadj i (Hm_sub_ng i Hi) (Hm_sub_ng (ordsucc i) Hsi)). }
+                           claim Hwpm_G2 : word_product multG eG xsg m :e G.
+                           { exact (Hwp_in_G m Hm_omega xsg (fun i:set => fun Hi:i :e m => Hxsg_in_G i (Hm_sub_ng i Hi))). }
+                           claim Hhgb_P : apply_fun h (apply_fun multG (g, b)) = P.
+                           { rewrite Hgb_wpm.
+                             exact (Hh_val_any_rw (word_product multG eG xsg m)
+                               Hwpm_G2 Hgb_ne_eG m xsg Hred_trunc Hm_ne_0
+                               (fun q H => H)). }
+                           claim Hhfam_c_eH : apply_fun (apply_fun hfam beta) c = eH.
+                           { rewrite Hc_eG. exact (Hhfam_id beta Hbeta_J). }
+                           claim Hrhs_P : apply_fun multH (apply_fun h g, h_single b) = P.
+                           { claim Hchain : apply_fun multH (apply_fun h g, h_single b) =
+                               apply_fun multH (P, apply_fun (apply_fun hfam beta) c).
+                             { exact Hrhs_chain. }
+                             claim Hstep : apply_fun multH (P, apply_fun (apply_fun hfam beta) c) =
+                               apply_fun multH (P, eH).
+                             { rewrite Hhfam_c_eH. reflexivity. }
+                             claim HidH_P : apply_fun multH (P, eH) = P.
+                             { exact (andER
+                                 (apply_fun multH (eH, P) = P)
+                                 (apply_fun multH (P, eH) = P)
+                                 (HidH P HP_H)). }
+                             exact (eq_i_tra (apply_fun multH (apply_fun h g, h_single b))
+                               (apply_fun multH (P, apply_fun (apply_fun hfam beta) c))
+                               P Hchain
+                               (eq_i_tra (apply_fun multH (P, apply_fun (apply_fun hfam beta) c))
+                                 (apply_fun multH (P, eH)) P Hstep HidH_P)). }
+                           claim Hrhs_sym : P = apply_fun multH (apply_fun h g, h_single b).
+                           { symmetry. exact Hrhs_P. }
+                           exact (eq_i_tra (apply_fun h (apply_fun multG (g, b)))
+                             P (apply_fun multH (apply_fun h g, h_single b))
+                             Hhgb_P Hrhs_sym).
                         * assume Hc_ne_eG : c <> eG.
                           claim Hefam_ne : apply_fun efam beta <> eG.
                           { assume Habs : apply_fun efam beta = eG.
@@ -114221,7 +114316,7 @@ apply and3I.
           claim Hxs0_ne_eG : apply_fun xsw 0 <> eG.
           { rewrite Hxs0_x0. exact Hx0ne. }
           exact (Hxs0_ne_eG Hxs0_eG).
-      + (** m <> 0 so nw >= 2: pathological case, admit for now **)
+      + (** m <> 0 so nw >= 2: same hard case as Hefam_contra n>=2 **)
         assume Hm_ne0 : m <> 0.
         admit. }
   (** [x0] is a reduced word of length 1 **)
