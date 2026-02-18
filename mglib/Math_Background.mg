@@ -70957,6 +70957,57 @@ Theorem cyclic_infinite_order_iff_Z : forall G mult e inv:set,
   cyclic_group G mult e inv ->
   ~ finite G ->
   exists phi:set, group_isomorphism G mult int integers_group_mult phi.
+let G mult e inv.
+assume Hgrp Hcyc Hnfin.
+claim HcycGenEx :
+  exists x:set, x :e G /\
+    forall g:set, g :e G ->
+      exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e x n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv x) (ordsucc m))).
+{
+  exact (andER
+    (group_structure G mult e inv)
+    (exists x:set, x :e G /\
+      forall g:set, g :e G ->
+        exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e x n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv x) (ordsucc m))))
+    Hcyc).
+}
+apply HcycGenEx.
+let x.
+assume HxPack.
+claim HxG : x :e G.
+{
+  exact (andEL
+    (x :e G)
+    (forall g:set, g :e G ->
+      exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e x n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv x) (ordsucc m))))
+    HxPack).
+}
+claim HgenRep :
+  forall g:set, g :e G ->
+    exists n:set, n :e int /\
+      ((n :e omega /\ g = group_power_nat mult e x n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+        g = group_power_nat mult e (apply_fun inv x) (ordsucc m))).
+{
+  exact (andER
+    (x :e G)
+    (forall g:set, g :e G ->
+      exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e x n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv x) (ordsucc m))))
+    HxPack).
+}
+(** TODO Bob: build explicit isomorphism G ~= Z from generator x and nonfiniteness. **)
 admit.
 Admitted.
 
@@ -70978,6 +71029,43 @@ Theorem infinite_cyclic_universal_property : forall G multG eG invG x H multH eH
     apply_fun h x = y /\
     (forall h':set, group_homomorphism G multG H multH h' -> apply_fun h' x = y ->
       forall g:set, g :e G -> apply_fun h' g = apply_fun h g).
+let G multG eG invG x H multH eH invH y.
+assume HgrpG HcycG HinfG HgenX HgrpH Hy.
+claim HisoZ : exists phi:set, group_isomorphism G multG int integers_group_mult phi.
+{
+  exact (cyclic_infinite_order_iff_Z
+    G
+    multG
+    eG
+    invG
+    HgrpG
+    HcycG
+    HinfG).
+}
+apply HisoZ.
+let phi.
+assume HphiIso.
+claim HphiHom : group_homomorphism G multG int integers_group_mult phi.
+{
+  exact (group_isomorphism_homomorphism
+    G
+    multG
+    int
+    integers_group_mult
+    phi
+    HphiIso).
+}
+claim HphiBij : bijection G int phi.
+{
+  exact (group_isomorphism_bijection
+    G
+    multG
+    int
+    integers_group_mult
+    phi
+    HphiIso).
+}
+(** TODO Bob: transport the universal map from Z to H back along phi, using h(x)=y. **)
 admit.
 Admitted.
 
