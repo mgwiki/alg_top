@@ -85452,7 +85452,6 @@ Admitted.
 (** LATEX VERSION: Suppose X = U union V where U, V are open in X. If U intersect V is path connected and x0 in U intersect V, then the images of i-star and j-star generate pi_1(X, x0). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
 (** Bounty 242 **)
-(** Lock Bob 1771439500 **)
 Theorem lemma59_1_open_cover_generates_pi1_core : forall X Tx U V x0 cls:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -120810,6 +120809,25 @@ claim Hleft_cancel :
   rewrite <- HleftV.
   exact HmulInvEq.
 }
+claim Hpow_ne_e :
+  forall k:set, k :e omega -> k <> 0 -> group_power_nat mult e a k = e -> False.
+{
+  let k. assume Hk Hkne Hake.
+  apply Hnontriv.
+  witness k.
+  exact (and3I (k :e omega) (k <> 0) (group_power_nat mult e a k = e) Hk Hkne Hake).
+}
+claim HpowS :
+  forall k:set, nat_p k ->
+    group_power_nat mult e a (ordsucc k) = apply_fun mult (a, group_power_nat mult e a k).
+{
+  let k. assume Hk.
+  exact (nat_primrec_S e (fun _ r:set => apply_fun mult (a, r)) k Hk).
+}
+claim Hpow0 : group_power_nat mult e a 0 = e.
+{
+  exact (nat_primrec_0 e (fun _ r:set => apply_fun mult (a, r))).
+}
 claim Hpow_repeat_lt_false :
   forall m:set, nat_p m ->
     forall n:set, n :e omega ->
@@ -120817,22 +120835,207 @@ claim Hpow_repeat_lt_false :
       group_power_nat mult e a (ordsucc m) = group_power_nat mult e a n ->
       False.
 {
-  admit.
+  apply nat_ind.
+  - let n.
+    assume Hn : n :e omega.
+    assume Hlt : ordsucc 0 :e n.
+    assume Heq : group_power_nat mult e a (ordsucc 0) = group_power_nat mult e a n.
+    apply (nat_inv n (omega_nat_p n Hn)).
+    + assume Hn0 : n = 0.
+      exact (EmptyE (ordsucc 0) (mem_eqR (ordsucc 0) n 0 Hn0 Hlt)).
+    + assume HnS : exists n':set, nat_p n' /\ n = ordsucc n'.
+      apply HnS.
+      let n'.
+      assume Hn'pack : nat_p n' /\ n = ordsucc n'.
+      claim Hn'nat : nat_p n'.
+      { exact (andEL (nat_p n') (n = ordsucc n') Hn'pack). }
+      claim Hneq : n = ordsucc n'.
+      { exact (andER (nat_p n') (n = ordsucc n') Hn'pack). }
+      claim Heq2 : apply_fun mult (a, group_power_nat mult e a 0) =
+                    apply_fun mult (a, group_power_nat mult e a n').
+      {
+        rewrite <- (HpowS 0 nat_0).
+        rewrite <- (HpowS n' Hn'nat).
+        rewrite <- Hneq.
+        exact Heq.
+      }
+      claim Hen' : group_power_nat mult e a 0 = group_power_nat mult e a n'.
+      {
+        exact (Hleft_cancel
+          (group_power_nat mult e a 0)
+          (group_power_nat mult e a n')
+          (HpowInG 0 (nat_p_omega 0 nat_0))
+          (HpowInG n' (nat_p_omega n' Hn'nat))
+          Heq2).
+      }
+      apply (ordsuccE n' (ordsucc 0) (mem_eqR (ordsucc 0) n (ordsucc n') Hneq Hlt)).
+      * assume Hs0n' : ordsucc 0 :e n'.
+        claim Hn'ne0 : n' <> 0.
+        {
+          assume Hn'0 : n' = 0.
+          exact (EmptyE (ordsucc 0) (mem_eqR (ordsucc 0) n' 0 Hn'0 Hs0n')).
+        }
+        claim Han'e : group_power_nat mult e a n' = e.
+        {
+          rewrite <- Hen'.
+          exact Hpow0.
+        }
+        exact (Hpow_ne_e n' (nat_p_omega n' Hn'nat) Hn'ne0 Han'e).
+      * assume Hs0eqn' : ordsucc 0 = n'.
+        claim Han'e : group_power_nat mult e a n' = e.
+        {
+          rewrite <- Hen'.
+          exact Hpow0.
+        }
+        claim Hn'ne0 : n' <> 0.
+        {
+          rewrite <- Hs0eqn'. exact (neq_ordsucc_0 0).
+        }
+        exact (Hpow_ne_e n' (nat_p_omega n' Hn'nat) Hn'ne0 Han'e).
+  - let m'.
+    assume Hm'nat : nat_p m'.
+    assume IH : forall n:set, n :e omega ->
+      ordsucc m' :e n ->
+      group_power_nat mult e a (ordsucc m') = group_power_nat mult e a n ->
+      False.
+    let n.
+    assume Hn : n :e omega.
+    assume Hlt : ordsucc (ordsucc m') :e n.
+    assume Heq : group_power_nat mult e a (ordsucc (ordsucc m')) = group_power_nat mult e a n.
+    apply (nat_inv n (omega_nat_p n Hn)).
+    + assume Hn0 : n = 0.
+      exact (EmptyE (ordsucc (ordsucc m')) (mem_eqR (ordsucc (ordsucc m')) n 0 Hn0 Hlt)).
+    + assume HnS : exists n':set, nat_p n' /\ n = ordsucc n'.
+      apply HnS.
+      let n'.
+      assume Hn'pack : nat_p n' /\ n = ordsucc n'.
+      claim Hn'nat : nat_p n'.
+      { exact (andEL (nat_p n') (n = ordsucc n') Hn'pack). }
+      claim Hneq : n = ordsucc n'.
+      { exact (andER (nat_p n') (n = ordsucc n') Hn'pack). }
+      claim Hsm'nat : nat_p (ordsucc m').
+      { exact (nat_ordsucc m' Hm'nat). }
+      claim Heq2 : apply_fun mult (a, group_power_nat mult e a (ordsucc m')) =
+                    apply_fun mult (a, group_power_nat mult e a n').
+      {
+        rewrite <- (HpowS (ordsucc m') Hsm'nat).
+        rewrite <- (HpowS n' Hn'nat).
+        rewrite <- Hneq.
+        exact Heq.
+      }
+      claim Hcancel : group_power_nat mult e a (ordsucc m') = group_power_nat mult e a n'.
+      {
+        exact (Hleft_cancel
+          (group_power_nat mult e a (ordsucc m'))
+          (group_power_nat mult e a n')
+          (HpowInG (ordsucc m') (nat_p_omega (ordsucc m') Hsm'nat))
+          (HpowInG n' (nat_p_omega n' Hn'nat))
+          Heq2).
+      }
+      apply (ordsuccE n' (ordsucc (ordsucc m'))
+        (mem_eqR (ordsucc (ordsucc m')) n (ordsucc n') Hneq Hlt)).
+      * assume Hssm'n' : ordsucc (ordsucc m') :e n'.
+        claim Hsm'n' : ordsucc m' :e n'.
+        {
+          exact (ordinal_TransSet n' (nat_p_ordinal n' Hn'nat)
+            (ordsucc (ordsucc m')) Hssm'n' (ordsucc m') (ordsuccI2 (ordsucc m'))).
+        }
+        exact (IH n' (nat_p_omega n' Hn'nat) Hsm'n' Hcancel).
+      * assume Hssm'eqn' : ordsucc (ordsucc m') = n'.
+        claim Hsm'n' : ordsucc m' :e n'.
+        {
+          rewrite <- Hssm'eqn'.
+          exact (ordsuccI2 (ordsucc m')).
+        }
+        exact (IH n' (nat_p_omega n' Hn'nat) Hsm'n' Hcancel).
 }
 claim Hpow_inj :
   forall m n:set, m :e omega -> n :e omega ->
     group_power_nat mult e a m = group_power_nat mult e a n ->
     m = n.
 {
-  admit.
+  let m n.
+  assume Hm : m :e omega.
+  assume Hn : n :e omega.
+  assume Heq : group_power_nat mult e a m = group_power_nat mult e a n.
+  apply (ordinal_trichotomy_or_impred m n
+    (nat_p_ordinal m (omega_nat_p m Hm))
+    (nat_p_ordinal n (omega_nat_p n Hn))).
+  - assume Hmn : m :e n.
+    apply (nat_inv m (omega_nat_p m Hm)).
+    + assume Hm0 : m = 0.
+      claim Han0 : group_power_nat mult e a n = e.
+      {
+        rewrite <- Heq. rewrite Hm0. exact Hpow0.
+      }
+      apply (nat_inv n (omega_nat_p n Hn)).
+      * assume Hn0 : n = 0.
+        rewrite Hn0. exact Hm0.
+      * assume HnS : exists n':set, nat_p n' /\ n = ordsucc n'.
+        apply HnS. let n'. assume Hn'pack.
+        claim Hneq : n = ordsucc n'.
+        { exact (andER (nat_p n') (n = ordsucc n') Hn'pack). }
+        claim Hn'nat : nat_p n'.
+        { exact (andEL (nat_p n') (n = ordsucc n') Hn'pack). }
+        claim Hnne0 : n <> 0.
+        { rewrite Hneq. exact (neq_ordsucc_0 n'). }
+        exact (FalseE (Hpow_ne_e n Hn Hnne0 Han0) (m = n)).
+    + assume HmS : exists m':set, nat_p m' /\ m = ordsucc m'.
+      apply HmS. let m'. assume Hm'pack.
+      claim Hmeq : m = ordsucc m'.
+      { exact (andER (nat_p m') (m = ordsucc m') Hm'pack). }
+      claim Hm'nat : nat_p m'.
+      { exact (andEL (nat_p m') (m = ordsucc m') Hm'pack). }
+      claim Hlt : ordsucc m' :e n.
+      { rewrite <- Hmeq. exact Hmn. }
+      claim Heq2 : group_power_nat mult e a (ordsucc m') = group_power_nat mult e a n.
+      { rewrite <- Hmeq. exact Heq. }
+      exact (FalseE (Hpow_repeat_lt_false m' Hm'nat n Hn Hlt Heq2) (m = n)).
+  - assume Hmeqn : m = n.
+    exact Hmeqn.
+  - assume Hnm : n :e m.
+    apply (nat_inv n (omega_nat_p n Hn)).
+    + assume Hn0 : n = 0.
+      claim Ham0 : group_power_nat mult e a m = e.
+      {
+        rewrite Heq. rewrite Hn0. exact Hpow0.
+      }
+      apply (nat_inv m (omega_nat_p m Hm)).
+      * assume Hm0 : m = 0.
+        rewrite Hm0. symmetry. exact Hn0.
+      * assume HmS : exists m':set, nat_p m' /\ m = ordsucc m'.
+        apply HmS. let m'. assume Hm'pack.
+        claim Hmeq : m = ordsucc m'.
+        { exact (andER (nat_p m') (m = ordsucc m') Hm'pack). }
+        claim Hmne0 : m <> 0.
+        { rewrite Hmeq. exact (neq_ordsucc_0 m'). }
+        exact (FalseE (Hpow_ne_e m Hm Hmne0 Ham0) (m = n)).
+    + assume HnS : exists n':set, nat_p n' /\ n = ordsucc n'.
+      apply HnS. let n'. assume Hn'pack.
+      claim Hneq : n = ordsucc n'.
+      { exact (andER (nat_p n') (n = ordsucc n') Hn'pack). }
+      claim Hn'nat : nat_p n'.
+      { exact (andEL (nat_p n') (n = ordsucc n') Hn'pack). }
+      claim Hlt : ordsucc n' :e m.
+      { rewrite <- Hneq. exact Hnm. }
+      claim Heq2 : group_power_nat mult e a (ordsucc n') = group_power_nat mult e a m.
+      { rewrite <- Hneq. symmetry. exact Heq. }
+      exact (FalseE (Hpow_repeat_lt_false n' Hn'nat m Hm Hlt Heq2) (m = n)).
 }
 claim HinjPow : inj omega G (fun n:set => group_power_nat mult e a n).
 {
-  admit.
+  exact (andI
+    (forall u :e omega, group_power_nat mult e a u :e G)
+    (forall u v :e omega, group_power_nat mult e a u = group_power_nat mult e a v -> u = v)
+    HpowInG
+    (fun u:set => fun Hu:u :e omega => fun v:set => fun Hv:v :e omega =>
+     fun Heq:group_power_nat mult e a u = group_power_nat mult e a v =>
+     Hpow_inj u v Hu Hv Heq)).
 }
-claim Hatleast : atleastp omega G.
+claim Hatleast : exists f : set -> set, inj omega G f.
 {
-  admit.
+  witness (fun n:set => group_power_nat mult e a n).
+  exact HinjPow.
 }
 claim HinfG : infinite G.
 {
