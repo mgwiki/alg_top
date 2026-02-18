@@ -117128,6 +117128,69 @@ apply set_ext.
 - exact HCsubLeftCosetE.
 Qed.
 
+(** Proven Bob **)
+(** Helper: if a left coset equals the subgroup, its representative is in the subgroup. **)
+Theorem left_coset_eq_subgroup_implies_member :
+  forall G mult e inv C g:set,
+  group_structure G mult e inv ->
+  subgroup_of C G mult e inv ->
+  g :e G ->
+  left_coset mult g C = C ->
+  g :e C.
+let G mult e inv C g.
+assume Hgrp : group_structure G mult e inv.
+assume HsubC : subgroup_of C G mult e inv.
+assume HgG : g :e G.
+assume HcosEq : left_coset mult g C = C.
+apply (and4E
+  (C c= G)
+  (e :e C)
+  (forall x y:set, x :e C -> y :e C -> apply_fun mult (x, y) :e C)
+  (forall x:set, x :e C -> apply_fun inv x :e C)
+  HsubC).
+assume HCsub HeC HmulC HinvC.
+claim HidG :
+  forall x:set, x :e G ->
+    apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x.
+{
+  apply (and6E
+    (function_on mult (setprod G G) G)
+    (function_on inv G G)
+    (e :e G)
+    (forall x y z:set, x :e G -> y :e G -> z :e G ->
+      apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+    (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+    (forall x:set, x :e G ->
+      apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+    Hgrp).
+  assume HmultG HinvG HeG HassocG Hid HinvLawG.
+  exact Hid.
+}
+claim HgInLeft : g :e left_coset mult g C.
+{
+  claim HleftDef : left_coset mult g C = Repl C (fun n:set => apply_fun mult (g, n)).
+  {
+    reflexivity.
+  }
+  claim Hge : apply_fun mult (g, e) = g.
+  {
+    exact (andER
+      (apply_fun mult (e, g) = g)
+      (apply_fun mult (g, e) = g)
+      (HidG g HgG)).
+  }
+  rewrite HleftDef.
+  rewrite <- Hge at 1.
+  exact (ReplI
+    C
+    (fun n:set => apply_fun mult (g, n))
+    e
+    HeC).
+}
+rewrite <- HcosEq.
+exact HgInLeft.
+Qed.
+
 (** Infrastructure helper for S69 Thm 69.4:
     if a generator power is trivial in the commutator quotient, then the original power is trivial. **)
 Theorem quotient_power_identity_forces_generator_power_identity :
