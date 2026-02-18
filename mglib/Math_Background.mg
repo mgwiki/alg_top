@@ -118530,7 +118530,145 @@ apply xm (second_countable_space X Tx).
     forall U V:set, U :e V0 -> V :e V0 -> U :/\: V <> Empty ->
       exists W:set, W :e A /\ U :\/: V c= W.
   {
-    (** TODO Charlie: derive pairwise star property from finite normal shrinking data. **)
+    let U V.
+    assume HUV0 HVV0 Hnon.
+    claim HpEx : exists p:set, p :e U :/\: V.
+    {
+      exact (nonempty_has_element
+        (U :/\: V)
+        Hnon).
+    }
+    apply HpEx.
+    let p.
+    assume HpInt.
+    claim HpU : p :e U.
+    {
+      exact (binintersectE1
+        U
+        V
+        p
+        HpInt).
+    }
+    claim HpV : p :e V.
+    {
+      exact (binintersectE2
+        U
+        V
+        p
+        HpInt).
+    }
+    apply (HclV0A0 U HUV0).
+    let aU.
+    assume HaUPack.
+    claim HaUA0 : aU :e A0.
+    {
+      exact (andEL
+        (aU :e A0)
+        (closure_of X Tx U c= aU)
+        HaUPack).
+    }
+    claim HclUsubaU : closure_of X Tx U c= aU.
+    {
+      exact (andER
+        (aU :e A0)
+        (closure_of X Tx U c= aU)
+        HaUPack).
+    }
+    apply (HclV0A0 V HVV0).
+    let aV.
+    assume HaVPack.
+    claim HaVA0 : aV :e A0.
+    {
+      exact (andEL
+        (aV :e A0)
+        (closure_of X Tx V c= aV)
+        HaVPack).
+    }
+    claim HclVsubaV : closure_of X Tx V c= aV.
+    {
+      exact (andER
+        (aV :e A0)
+        (closure_of X Tx V c= aV)
+        HaVPack).
+    }
+    claim HV0subPowX : V0 c= Power X.
+    {
+      exact (open_cover_of_family_sub
+        X
+        Tx
+        V0
+        HopenV0).
+    }
+    claim HUsubX : U c= X.
+    {
+      exact (PowerE
+        X
+        U
+        (HV0subPowX U HUV0)).
+    }
+    claim HVsubX : V c= X.
+    {
+      exact (PowerE
+        X
+        V
+        (HV0subPowX V HVV0)).
+    }
+    claim HUsubaU : U c= aU.
+    {
+      exact (Subq_tra
+        U
+        (closure_of X Tx U)
+        aU
+        (closure_contains_set
+          X
+          Tx
+          U
+          HtopX
+          HUsubX)
+        HclUsubaU).
+    }
+    claim HVsubaV : V c= aV.
+    {
+      exact (Subq_tra
+        V
+        (closure_of X Tx V)
+        aV
+        (closure_contains_set
+          X
+          Tx
+          V
+          HtopX
+          HVsubX)
+        HclVsubaV).
+    }
+    claim HpaU : p :e aU.
+    {
+      exact (HUsubaU p HpU).
+    }
+    claim HpaV : p :e aV.
+    {
+      exact (HVsubaV p HpV).
+    }
+    claim HaUIntaV_nonempty : aU :/\: aV <> Empty.
+    {
+      assume HaUIntaVEmpty.
+      claim HpEmpty : p :e Empty.
+      {
+        exact (mem_eqR
+          p
+          (aU :/\: aV)
+          Empty
+          HaUIntaVEmpty
+          (binintersectI
+            aU
+            aV
+            p
+            HpaU
+            HpaV)).
+      }
+      exact (EmptyE p HpEmpty False).
+    }
+    (** TODO Charlie: extract a single A-member containing U :\/: V from this overlap data. **)
     admit.
   }
   witness V0.
