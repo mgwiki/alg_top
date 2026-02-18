@@ -80886,6 +80886,120 @@ claim HB_eq_compl_AminusSing : B = X :\: (A :\: Sing x0).
   rewrite HXminusB_eq_AminusSing.
   reflexivity.
 }
+claim Hdisj_A_BminusSing : A :/\: (B :\: Sing x0) = Empty.
+{
+  apply Empty_eq.
+  let z.
+  assume Hz : z :e A :/\: (B :\: Sing x0).
+  claim HzA : z :e A.
+  {
+    exact (binintersectE1
+      A
+      (B :\: Sing x0)
+      z
+      Hz).
+  }
+  claim HzBminus : z :e B :\: Sing x0.
+  {
+    exact (binintersectE2
+      A
+      (B :\: Sing x0)
+      z
+      Hz).
+  }
+  claim HzB : z :e B.
+  {
+    exact (setminusE1
+      B
+      (Sing x0)
+      z
+      HzBminus).
+  }
+  claim HzNotSing : z /:e Sing x0.
+  {
+    exact (setminusE2
+      B
+      (Sing x0)
+      z
+      HzBminus).
+  }
+  claim HzAB : z :e A :/\: B.
+  {
+    exact (binintersectI
+      A
+      B
+      z
+      HzA
+      HzB).
+  }
+  claim HzSing : z :e Sing x0.
+  {
+    exact (mem_eqR
+      z
+      (A :/\: B)
+      (Sing x0)
+      Hinter
+      HzAB).
+  }
+  exact (HzNotSing HzSing).
+}
+claim Hdisj_B_AminusSing : B :/\: (A :\: Sing x0) = Empty.
+{
+  apply Empty_eq.
+  let z.
+  assume Hz : z :e B :/\: (A :\: Sing x0).
+  claim HzB : z :e B.
+  {
+    exact (binintersectE1
+      B
+      (A :\: Sing x0)
+      z
+      Hz).
+  }
+  claim HzAminus : z :e A :\: Sing x0.
+  {
+    exact (binintersectE2
+      B
+      (A :\: Sing x0)
+      z
+      Hz).
+  }
+  claim HzA : z :e A.
+  {
+    exact (setminusE1
+      A
+      (Sing x0)
+      z
+      HzAminus).
+  }
+  claim HzNotSing : z /:e Sing x0.
+  {
+    exact (setminusE2
+      A
+      (Sing x0)
+      z
+      HzAminus).
+  }
+  claim HzAB : z :e A :/\: B.
+  {
+    exact (binintersectI
+      A
+      B
+      z
+      HzA
+      HzB).
+  }
+  claim HzSing : z :e Sing x0.
+  {
+    exact (mem_eqR
+      z
+      (A :/\: B)
+      (Sing x0)
+      Hinter
+      HzAB).
+  }
+  exact (HzNotSing HzSing).
+}
 admit. (** remaining gap: derive A :e Tx and B :e Tx from current hypotheses **)
 Admitted.
 
