@@ -61051,10 +61051,63 @@ claim Hex :
                               x
                               HxNt).
                           }
+                          claim HlocalNtInUnionSlices :
+                            apply_fun localNt x :e Union slicesUt.
+                          {
+                            exact (UnionI
+                              slicesUt
+                              (apply_fun localNt x)
+                              Vu
+                              HlocalNtVuX
+                              HVuSlice).
+                          }
+                          claim HlocalNtSlicePack :
+                            exists Vlocal:set, apply_fun localNt x :e Vlocal /\ Vlocal :e slicesUt.
+                          {
+                            exact (UnionE
+                              slicesUt
+                              (apply_fun localNt x)
+                              HlocalNtInUnionSlices).
+                          }
                           claim HlocalNtInVx : apply_fun localNt x :e Vx.
                           {
-                            (** TODO Bob: prove localNt(x) lies in the same slice Vx as lu(x). **)
-                            admit.
+                            apply HlocalNtSlicePack.
+                            let Vlocal.
+                            assume HVlocalPack.
+                            claim HlocalNtVlocal : apply_fun localNt x :e Vlocal.
+                            {
+                              exact (andEL
+                                (apply_fun localNt x :e Vlocal)
+                                (Vlocal :e slicesUt)
+                                HVlocalPack).
+                            }
+                            claim HVlocalSlice : Vlocal :e slicesUt.
+                            {
+                              exact (andER
+                                (apply_fun localNt x :e Vlocal)
+                                (Vlocal :e slicesUt)
+                                HVlocalPack).
+                            }
+                            claim HVlocalEqVu : Vlocal = Vu.
+                            {
+                              exact (pairwise_disjoint_point_unique_member
+                                slicesUt
+                                Vlocal
+                                Vu
+                                (apply_fun localNt x)
+                                HpdSlicesUt
+                                HVlocalSlice
+                                HVuSlice
+                                HlocalNtVlocal
+                                HlocalNtVuX).
+                            }
+                            claim HVlocalEqVx : Vlocal = Vx.
+                            {
+                              (** TODO Bob: identify the slice of localNt(x) with the slice Vx of lu(x) over f(x). **)
+                              admit.
+                            }
+                            rewrite <- HVlocalEqVx.
+                            exact HlocalNtVlocal.
                           }
                           claim HlocalEqxv : apply_fun localNt x = xv.
                           {
@@ -61867,8 +61920,28 @@ claim Hex :
   {
     claim HN1All : N1 = unit_interval.
     {
-      (** TODO Bob: prove N1 = unit_interval (N1 is an open seed-neighborhood containing 0 and 1). **)
-      admit.
+      apply set_ext.
+      - let t.
+        assume HtN1.
+        claim HN1Open : N1 :e unit_interval_topology.
+        {
+          exact (andEL
+            (N1 :e unit_interval_topology)
+            (0 :e N1)
+            HN1open0).
+        }
+        exact (topology_elem_subset
+          unit_interval
+          unit_interval_topology
+          N1
+          unit_interval_topology_on
+          HN1Open
+          t
+          HtN1).
+      - let t.
+        assume HtUnit.
+        (** TODO Bob: prove every t in unit_interval belongs to N1 using the seed-times globalization argument. **)
+        admit.
     }
     claim Hlt1ContSub :
       continuous_map
@@ -64262,8 +64335,61 @@ claim HFt_54_cont :
                 }
                 claim HlocalInVz : apply_fun Ft_local_N z :e Vz.
                 {
-                  (** TODO Charlie: prove the local inverse point stays in the same slice Vz. **)
-                  admit.
+                  claim HlocalInUnionSlices :
+                    apply_fun Ft_local_N z :e Union slices.
+                  {
+                    exact (UnionI
+                      slices
+                      (apply_fun Ft_local_N z)
+                      Vq
+                      HFtLocalzVq
+                      HVqSlice).
+                  }
+                  claim HlocalSlicePack :
+                    exists Vlocal:set, apply_fun Ft_local_N z :e Vlocal /\ Vlocal :e slices.
+                  {
+                    exact (UnionE
+                      slices
+                      (apply_fun Ft_local_N z)
+                      HlocalInUnionSlices).
+                  }
+                  apply HlocalSlicePack.
+                  let Vlocal.
+                  assume HVlocalPack.
+                  claim HlocalVlocal : apply_fun Ft_local_N z :e Vlocal.
+                  {
+                    exact (andEL
+                      (apply_fun Ft_local_N z :e Vlocal)
+                      (Vlocal :e slices)
+                      HVlocalPack).
+                  }
+                  claim HVlocalSlice : Vlocal :e slices.
+                  {
+                    exact (andER
+                      (apply_fun Ft_local_N z :e Vlocal)
+                      (Vlocal :e slices)
+                      HVlocalPack).
+                  }
+                  claim HVlocalEqVq : Vlocal = Vq.
+                  {
+                    exact (pairwise_disjoint_point_unique_member
+                      slices
+                      Vlocal
+                      Vq
+                      (apply_fun Ft_local_N z)
+                      HpdSlices
+                      HVlocalSlice
+                      HVqSlice
+                      HlocalVlocal
+                      HFtLocalzVq).
+                  }
+                  claim HVlocalEqVz : Vlocal = Vz.
+                  {
+                    (** TODO Charlie: identify the slice of Ft_local_N(z) with the slice Vz of Ft_54(z) over F(z). **)
+                    admit.
+                  }
+                  rewrite <- HVlocalEqVz.
+                  exact HlocalVlocal.
                 }
                 witness xq.
                 apply andI.
