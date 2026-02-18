@@ -119029,6 +119029,31 @@ exact (shrinking_lemma_41_6_twice
   HopenU).
 Qed.
 
+(** Infrastructure: compact spaces give locally finite refinements directly. **)
+(** Proven Charlie **)
+Theorem compact_space_open_cover_locally_finite_refinement_algtop :
+  forall X Tx U:set,
+  compact_space X Tx ->
+  open_cover X Tx U ->
+  exists V:set, open_cover X Tx V /\ locally_finite_family X Tx V /\ refine_of V U.
+let X Tx U.
+assume HcompX HopenU.
+claim HparX : paracompact_space X Tx.
+{
+  exact (compact_space_implies_paracompact_algtop
+    X
+    Tx
+    HcompX).
+}
+exact (andER
+  (topology_on X Tx)
+  (forall U0:set, open_cover X Tx U0 ->
+    exists V:set, open_cover X Tx V /\ locally_finite_family X Tx V /\ refine_of V U0)
+  HparX
+  U
+  HopenU).
+Qed.
+
 (** from Supplementary Exercises Exercise 1a (line 5393 in algtop.tex): metrizable star refinement **)
 (** LATEX VERSION: If X is metrizable, then for any open covering A, there exists an **)
 (** open covering B refining A such that for each pair B, B' in B with nonempty **)
