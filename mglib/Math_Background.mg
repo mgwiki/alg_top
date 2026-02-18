@@ -28625,7 +28625,7 @@ claim HouterReplaceClass :
     HouterReplace).
 }
 rewrite HouterReplaceClass.
-(** TODO Bob: prove this remaining explicit conjugation path is path-homotopic to ey. **)
+(** Remaining explicit conjugation path reduction to ey. **)
 claim HcomplexToEy :
   path_homotopic
     X
