@@ -80552,6 +80552,62 @@ claim Hx0X : x0 :e X.
     Hcover
     Hx0Union).
 }
+claim HAsubX : A c= X.
+{
+  let a.
+  assume HaA : a :e A.
+  claim HaAB : a :e A :\/: B.
+  {
+    exact (binunionI1
+      A
+      B
+      a
+      HaA).
+  }
+  exact (mem_eqL
+    a
+    X
+    (A :\/: B)
+    Hcover
+    HaAB).
+}
+claim HBsubX : B c= X.
+{
+  let b.
+  assume HbB : b :e B.
+  claim HbAB : b :e A :\/: B.
+  {
+    exact (binunionI2
+      A
+      B
+      b
+      HbB).
+  }
+  exact (mem_eqL
+    b
+    X
+    (A :\/: B)
+    Hcover
+    HbAB).
+}
+claim HtopA_subspace : topology_on A (subspace_topology X Tx A).
+{
+  exact (subspace_topology_is_topology
+    X
+    Tx
+    A
+    Htop
+    HAsubX).
+}
+claim HtopB_subspace : topology_on B (subspace_topology X Tx B).
+{
+  exact (subspace_topology_is_topology
+    X
+    Tx
+    B
+    Htop
+    HBsubX).
+}
 admit. (** remaining gap: derive A :e Tx and B :e Tx from current hypotheses **)
 Admitted.
 
