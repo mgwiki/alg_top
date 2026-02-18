@@ -1,5 +1,5 @@
 (** Balance Alice 3337 **)
-(** Balance Bob 3037 **)
+(** Balance Bob 3028 **)
 (** Balance Charlie 1171 **)
 (** Balance Dave 1436 **)
 
@@ -110012,7 +110012,8 @@ Definition free_group_with_generators : set -> set -> set -> set -> set -> set -
 (** and any family {y_alpha} of elements of H, there is a unique homomorphism **)
 (** h: G -> H with h(a_alpha) = y_alpha. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
+(** Bounty 97 **)
+(** Lock Bob 1771480439 **)
 Theorem lemma69_1_extension_free_group :
   forall G mult e inv J gens:set,
   group_structure G mult e inv ->
