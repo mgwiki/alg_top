@@ -126983,6 +126983,7 @@ apply andI.
 Qed.
 
 (** Infrastructure helper for S69: an infinite cyclic subgroup cannot be finite. **)
+(** Proven Bob **)
 Theorem infinite_cyclic_subgroup_nonfinite :
   forall G mult e inv a:set,
   group_structure G mult e inv ->
@@ -127364,7 +127365,7 @@ claim HinfG : infinite G.
     Hatleast).
 }
 exact (HinfG HfinG).
-Admitted.
+Qed.
 
 (** Infrastructure helper for S69 backward direction:
     extension property forces each generator to have no nontrivial positive power equal to e. **)
