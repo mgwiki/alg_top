@@ -62718,7 +62718,37 @@ claim Hex :
             }
             claim HrN1 : r :e N1.
             {
-              (** TODO Charlie: compare lr with lt1 starting from Hlr0EqLt10 and local data at f(r) from HlocFr. **)
+              apply HlocFr.
+              let Ur.
+              assume HUrPack.
+              claim HUrOpen : Ur :e Tb.
+              {
+                exact (andEL
+                  (Ur :e Tb)
+                  (apply_fun f r :e Ur)
+                  (andEL
+                    (Ur :e Tb /\ apply_fun f r :e Ur)
+                    (evenly_covered E Te B Tb p Ur)
+                    HUrPack)).
+              }
+              claim HfrUr : apply_fun f r :e Ur.
+              {
+                exact (andER
+                  (Ur :e Tb)
+                  (apply_fun f r :e Ur)
+                  (andEL
+                    (Ur :e Tb /\ apply_fun f r :e Ur)
+                    (evenly_covered E Te B Tb p Ur)
+                    HUrPack)).
+              }
+              claim HevenUr : evenly_covered E Te B Tb p Ur.
+              {
+                exact (andER
+                  (Ur :e Tb /\ apply_fun f r :e Ur)
+                  (evenly_covered E Te B Tb p Ur)
+                  HUrPack).
+              }
+              (** TODO Charlie: compare lr with lt1 starting from Hlr0EqLt10 and local evenly-covered neighborhood Ur at f(r). **)
               admit.
             }
             exact HrN1.
