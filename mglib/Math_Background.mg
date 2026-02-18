@@ -106854,8 +106854,73 @@ apply and3I.
               (h_single b)
               (apply_fun multH (apply_fun h g, h_single b))
               Hlhs_chain Hrhs_sym).
-          - (** g <> eG case: append b to reduced word of g **)
-            assume Hg_ne : g <> eG.
+          - assume Hg_ne : g <> eG.
+            set ng := n_of g.
+            set xsg := xs_of g.
+            apply (and4E
+                (reduced_word J Gfam efam ng xsg) (ng <> 0)
+                (word_product multG eG xsg ng = g)
+                (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+                  word_product multG eG xs' n' = g ->
+                  ng = n' /\ (forall i:set, i :e ng -> apply_fun xsg i = apply_fun xs' i))
+                (Hred_extract g HgG Hg_ne)).
+            assume Hredw : reduced_word J Gfam efam ng xsg.
+            assume Hng_ne : ng <> 0.
+            assume Hwpg : word_product multG eG xsg ng = g.
+            assume Huniq_g : forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+              word_product multG eG xs' n' = g ->
+              ng = n' /\ (forall i:set, i :e ng -> apply_fun xsg i = apply_fun xs' i).
+            claim Hng_omega : ng :e omega.
+            { apply (and3E (ng :e omega)
+                (forall i:set, i :e ng ->
+                  exists alpha:set, alpha :e J /\
+                    apply_fun xsg i :e apply_fun Gfam alpha /\ apply_fun xsg i <> apply_fun efam alpha)
+                (forall i:set, i :e ng -> ordsucc i :e ng ->
+                  forall alpha0 beta0:set, alpha0 :e J -> beta0 :e J ->
+                    apply_fun xsg i :e apply_fun Gfam alpha0 ->
+                    apply_fun xsg (ordsucc i) :e apply_fun Gfam beta0 ->
+                    alpha0 <> beta0)
+                Hredw).
+              assume Ho _ _. exact Ho. }
+            claim Hng_nat : nat_p ng. { exact (omega_nat_p ng Hng_omega). }
+            claim Hxsg_in_G : forall i:set, i :e ng -> apply_fun xsg i :e G.
+            { let i. assume Hi.
+              apply (and3E (ng :e omega)
+                (forall i0:set, i0 :e ng ->
+                  exists alpha:set, alpha :e J /\
+                    apply_fun xsg i0 :e apply_fun Gfam alpha /\ apply_fun xsg i0 <> apply_fun efam alpha)
+                (forall i0:set, i0 :e ng -> ordsucc i0 :e ng ->
+                  forall alpha0 beta0:set, alpha0 :e J -> beta0 :e J ->
+                    apply_fun xsg i0 :e apply_fun Gfam alpha0 ->
+                    apply_fun xsg (ordsucc i0) :e apply_fun Gfam beta0 ->
+                    alpha0 <> beta0)
+                Hredw).
+              assume _ Helem _. apply (Helem i Hi). let alpha. assume Hcomb.
+              apply (and3E (alpha :e J) (apply_fun xsg i :e apply_fun Gfam alpha)
+                (apply_fun xsg i <> apply_fun efam alpha) Hcomb).
+              assume Hal Hxi_Gal _.
+              exact (Hsub_in_G alpha Hal (apply_fun xsg i) Hxi_Gal). }
+            claim Hxsg_fam : forall i:set, i :e ng ->
+              exists alpha:set, alpha :e J /\ apply_fun xsg i :e apply_fun Gfam alpha.
+            { let i. assume Hi.
+              apply (and3E (ng :e omega)
+                (forall i0:set, i0 :e ng ->
+                  exists alpha:set, alpha :e J /\
+                    apply_fun xsg i0 :e apply_fun Gfam alpha /\ apply_fun xsg i0 <> apply_fun efam alpha)
+                (forall i0:set, i0 :e ng -> ordsucc i0 :e ng ->
+                  forall alpha0 beta0:set, alpha0 :e J -> beta0 :e J ->
+                    apply_fun xsg i0 :e apply_fun Gfam alpha0 ->
+                    apply_fun xsg (ordsucc i0) :e apply_fun Gfam beta0 ->
+                    alpha0 <> beta0)
+                Hredw).
+              assume _ Helem _. apply (Helem i Hi). let alpha. assume Hcomb.
+              apply (and3E (alpha :e J) (apply_fun xsg i :e apply_fun Gfam alpha)
+                (apply_fun xsg i <> apply_fun efam alpha) Hcomb).
+              assume Hal Hxi_Gal _.
+              witness alpha. apply andI. exact Hal. exact Hxi_Gal. }
+            claim HhgRW : apply_fun h g =
+              nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun xsg i))) ng.
+            { exact (Hh_val_any_rw g HgG Hg_ne ng xsg Hredw Hng_ne Hwpg). }
             admit. }
         (** Using Hh_right_mult, prove multiplicativity by induction on word length of y **)
         (** y has reduced word ys of length n_y, each ys(i) in some Gfam **)
