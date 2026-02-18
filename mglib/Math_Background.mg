@@ -114827,6 +114827,22 @@ apply (andI
         HpowQ).
 Admitted.
 
+(** Infrastructure helper for S69 Cor 69.5:
+    finite free-generator index sets for the same free group are equipotent. **)
+Theorem free_group_finite_generating_index_unique :
+  forall G mult e inv n1 n2 gens1 gens2:set,
+  free_group_with_generators G mult e inv n1 gens1 ->
+  free_group_with_generators G mult e inv n2 gens2 ->
+  finite n1 -> finite n2 ->
+  equip n1 n2.
+let G mult e inv n1 n2 gens1 gens2.
+assume Hfree1 : free_group_with_generators G mult e inv n1 gens1.
+assume Hfree2 : free_group_with_generators G mult e inv n2 gens2.
+assume Hfin1 : finite n1.
+assume Hfin2 : finite n2.
+admit.
+Admitted.
+
 (** from S69 Cor 69.5 (line 3129 in algtop.tex): number of free generators is well-defined **)
 (** LATEX VERSION: If G is a free group with n free generators, then any system of **)
 (** free generators for G has n elements. **)
@@ -114868,11 +114884,23 @@ apply (and4E
         ((n :e omega /\ g = group_power_nat mult e (apply_fun gens2 alpha) n) \/
          (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
           g = group_power_nat mult e (apply_fun inv (apply_fun gens2 alpha)) (ordsucc m)))}))
-    (graph n2 (fun alpha:set => e)))
-  Hfree2).
-assume Hgrp2 Hgens2 Hinf2 Hfp2.
-admit.
-Admitted.
+	    (graph n2 (fun alpha:set => e)))
+	  Hfree2).
+	assume Hgrp2 Hgens2 Hinf2 Hfp2.
+	exact (free_group_finite_generating_index_unique
+	  G
+	  mult
+	  e
+	  inv
+	  n1
+	  n2
+	  gens1
+	  gens2
+	  Hfree1
+	  Hfree2
+	  Hfin1
+	  Hfin2).
+	Admitted.
 
 (** from S69 Definition (line 3146-3151 in algtop.tex): presentation of a group **)
 (** LATEX VERSION: A presentation of G consists of generators {a_alpha} and **)
