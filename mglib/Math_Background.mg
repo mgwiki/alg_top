@@ -111894,6 +111894,46 @@ assume Hinf : infinite_cyclic_subgroup G mult e inv a.
 admit.
 Admitted.
 
+(** Infrastructure helper for S69 backward direction:
+    extension property forces each generator to have no nontrivial positive power equal to e. **)
+Theorem extension_property_forces_nontrivial_generator_powers :
+  forall G mult e inv J gens:set,
+  group_structure G mult e inv ->
+  function_on gens J G ->
+  (forall H multH eH invH:set,
+    group_structure H multH eH invH ->
+    forall ys:set, function_on ys J H ->
+      exists h:set,
+        group_homomorphism G mult H multH h /\
+        (forall alpha:set, alpha :e J ->
+          apply_fun h (apply_fun gens alpha) = apply_fun ys alpha) /\
+        (forall h':set, group_homomorphism G mult H multH h' ->
+          (forall alpha:set, alpha :e J ->
+            apply_fun h' (apply_fun gens alpha) = apply_fun ys alpha) ->
+          forall x:set, x :e G -> apply_fun h' x = apply_fun h x)) ->
+  forall alpha:set, alpha :e J ->
+    ~(exists n:set, n :e omega /\ n <> 0 /\
+      group_power_nat mult e (apply_fun gens alpha) n = e).
+let G mult e inv J gens.
+assume Hgrp : group_structure G mult e inv.
+assume Hgens : function_on gens J G.
+assume Hext :
+  forall H multH eH invH:set,
+    group_structure H multH eH invH ->
+    forall ys:set, function_on ys J H ->
+      exists h:set,
+        group_homomorphism G mult H multH h /\
+        (forall alpha:set, alpha :e J ->
+          apply_fun h (apply_fun gens alpha) = apply_fun ys alpha) /\
+        (forall h':set, group_homomorphism G mult H multH h' ->
+          (forall alpha:set, alpha :e J ->
+            apply_fun h' (apply_fun gens alpha) = apply_fun ys alpha) ->
+          forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+let alpha.
+assume Halpha : alpha :e J.
+admit.
+Admitted.
+
 (** from S69 Lem 69.1 (line 3047 in algtop.tex): extension condition for free groups **)
 (** LATEX VERSION: G is a free group with generators {a_alpha} iff for any group H **)
 (** and any family {y_alpha} of elements of H, there is a unique homomorphism **)
@@ -112861,7 +112901,18 @@ apply (iffI
     claim HnontrivGalpha :
       ~(exists n:set, n :e omega /\ n <> 0 /\ group_power_nat mult e galpha n = e).
     {
-      admit.
+      exact (extension_property_forces_nontrivial_generator_powers
+        G
+        mult
+        e
+        inv
+        J
+        gens
+        Hgrp
+        Hgens
+        Hext
+        alpha
+        Halpha).
     }
     claim HgalphaPow :
       galpha :e G /\ (forall n:set, n :e omega -> group_power_nat mult e galpha n :e G).
