@@ -116644,6 +116644,77 @@ Definition star_refinement_cover : set -> set -> set -> set -> prop :=
     (forall U V:set, U :e B -> V :e B -> U :/\: V <> Empty ->
       exists W:set, W :e A /\ U :\/: V c= W).
 
+(** Helper: compact spaces are locally compact. **)
+(** Proven Charlie **)
+Theorem compact_space_implies_locally_compact_algtop :
+  forall X Tx:set,
+  compact_space X Tx ->
+  locally_compact X Tx.
+let X Tx.
+assume HcompX.
+claim HtopX : topology_on X Tx.
+{
+  exact (compact_space_topology X Tx HcompX).
+}
+claim HXsubX : X c= X.
+{
+  let z.
+  assume HzX.
+  exact HzX.
+}
+prove topology_on X Tx /\
+  (forall x:set, x :e X ->
+    exists C:set, C c= X /\ compact_space C (subspace_topology X Tx C) /\
+      exists U:set, U :e Tx /\ x :e U /\ U c= C).
+apply andI.
+- exact HtopX.
+- let x.
+  assume HxX.
+  witness X.
+  claim HcompWhole : compact_space X (subspace_topology X Tx X).
+  {
+    rewrite (subspace_topology_whole X Tx HtopX).
+    exact HcompX.
+  }
+  claim HUx : exists U:set, U :e Tx /\ x :e U /\ U c= X.
+  {
+    witness X.
+    apply andI.
+    - apply andI.
+      + exact (topology_has_X X Tx HtopX).
+      + exact HxX.
+    - exact HXsubX.
+  }
+  apply andI.
+  - apply andI.
+    + exact HXsubX.
+    + exact HcompWhole.
+  - exact HUx.
+Qed.
+
+(** Helper: compact Hausdorff spaces are regular. **)
+(** Proven Charlie **)
+Theorem compact_Hausdorff_implies_regular_algtop :
+  forall X Tx:set,
+  compact_space X Tx ->
+  Hausdorff_space X Tx ->
+  regular_space X Tx.
+let X Tx.
+assume HcompX HHausX.
+claim HlocX : locally_compact X Tx.
+{
+  exact (compact_space_implies_locally_compact_algtop
+    X
+    Tx
+    HcompX).
+}
+exact (ex32_3_locally_compact_Hausdorff_regular
+  X
+  Tx
+  HlocX
+  HHausX).
+Qed.
+
 (** from Supplementary Exercises Exercise 1a (line 5393 in algtop.tex): metrizable star refinement **)
 (** LATEX VERSION: If X is metrizable, then for any open covering A, there exists an **)
 (** open covering B refining A such that for each pair B, B' in B with nonempty **)
