@@ -116639,11 +116639,9 @@ Theorem ex71_2_wedge_general :
 exact wedge_of_closed_subspaces_pi1_free_product_helper.
 Admitted.
 
-(** from S71 Exercise 3 (line 3602 in algtop.tex) **)
-(** LATEX VERSION: pi1(S^1 wedge S^2, p) is isomorphic to Z (the integers). **)
-(** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-Theorem ex71_3_S1_wedge_S2 :
+(** Infrastructure helper for S71 Exercise 3:
+    the wedge S1 \/ S2 has fundamental group isomorphic to Z. **)
+Theorem wedge_S1_S2_has_integer_pi1_helper :
   forall X Tx p:set,
   Hausdorff_space X Tx -> p :e X ->
   (exists A B:set,
@@ -116659,6 +116657,36 @@ Theorem ex71_3_S1_wedge_S2 :
 admit.
 Admitted.
 
+(** from S71 Exercise 3 (line 3602 in algtop.tex) **)
+(** LATEX VERSION: pi1(S^1 wedge S^2, p) is isomorphic to Z (the integers). **)
+(** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
+(** Bounty 33 **)
+Theorem ex71_3_S1_wedge_S2 :
+  forall X Tx p:set,
+  Hausdorff_space X Tx -> p :e X ->
+  (exists A B:set,
+    A c= X /\ B c= X /\
+    (exists h:set, homeomorphism A (subspace_topology X Tx A) S1 S1_topology h) /\
+    (exists h:set, homeomorphism B (subspace_topology X Tx B) (Sn 2) (Sn_topology 2) h) /\
+    A :/\: B = Sing p /\ X = A :\/: B) ->
+	  exists phi:set,
+	    group_isomorphism
+	      (fundamental_group X Tx p) (fundamental_group_mult X Tx p)
+	      (fundamental_group S1 S1_topology S1_basepoint)
+	      (fundamental_group_mult S1 S1_topology S1_basepoint) phi.
+exact wedge_S1_S2_has_integer_pi1_helper.
+Admitted.
+
+(** Infrastructure helper for S71 Exercise 4:
+    an infinite wedge of circles is not first countable. **)
+Theorem infinite_wedge_of_circles_not_first_countable_helper :
+  forall X Tx J Sfam p:set,
+  wedge_of_circles X Tx J Sfam p ->
+  ~finite J ->
+  ~first_countable_space X Tx.
+admit.
+Admitted.
+
 (** from S71 Exercise 4 (line 3604 in algtop.tex) **)
 (** LATEX VERSION: If X is an infinite wedge of circles, then X does not **)
 (** satisfy the first countability axiom. **)
@@ -116669,6 +116697,26 @@ Theorem ex71_4_infinite_wedge_not_first_countable :
   wedge_of_circles X Tx J Sfam p ->
   ~finite J ->
   ~first_countable_space X Tx.
+exact infinite_wedge_of_circles_not_first_countable_helper.
+Admitted.
+
+(** Infrastructure helper for S71 Exercise 5(a):
+    tangent-circle union is not homeomorphic to a countable wedge of circles. **)
+Theorem tangent_circles_not_homeomorphic_to_countable_wedge_helper :
+  forall Y Ty p:set,
+  Y c= EuclidPlane ->
+  topology_on Y Ty ->
+  p :e Y ->
+  (forall n:set, n :e omega -> n <> 0 ->
+    exists Cn:set, Cn c= Y /\
+      (exists h:set, homeomorphism S1 S1_topology Cn (subspace_topology Y Ty Cn) h) /\
+      p :e Cn) ->
+  Y = Union (Repl (omega :\: Sing 0) (fun n:set =>
+    {z :e EuclidPlane | distance_R2 z (n, 0) = n})) ->
+  forall X Tx J Sfam q:set,
+  wedge_of_circles X Tx J Sfam q ->
+  equip J omega ->
+  ~(exists h:set, homeomorphism Y Ty X Tx h).
 admit.
 Admitted.
 
@@ -116689,10 +116737,27 @@ Theorem ex71_5a_tangent_circles_not_wedge :
       p :e Cn) ->
   Y = Union (Repl (omega :\: Sing 0) (fun n:set =>
     {z :e EuclidPlane | distance_R2 z (n, 0) = n})) ->
-  forall X Tx J Sfam q:set,
-  wedge_of_circles X Tx J Sfam q ->
-  equip J omega ->
-  ~(exists h:set, homeomorphism Y Ty X Tx h).
+	  forall X Tx J Sfam q:set,
+	  wedge_of_circles X Tx J Sfam q ->
+	  equip J omega ->
+	  ~(exists h:set, homeomorphism Y Ty X Tx h).
+exact tangent_circles_not_homeomorphic_to_countable_wedge_helper.
+Admitted.
+
+(** Infrastructure helper for S71 Exercise 5(b):
+    tangent-circle union still has free fundamental group on countably many generators. **)
+Theorem tangent_circles_free_fundamental_group_helper :
+  forall Y Ty p:set,
+  Y c= EuclidPlane ->
+  topology_on Y Ty ->
+  p = (0, 0) -> p :e Y ->
+  Y = Union (Repl (omega :\: Sing 0) (fun n:set =>
+    {z :e EuclidPlane | distance_R2 z (n, 0) = n})) ->
+  exists gens:set,
+    free_group_with_generators
+      (fundamental_group Y Ty p) (fundamental_group_mult Y Ty p)
+      (fundamental_group_id Y Ty p) (fundamental_group_inv Y Ty p)
+      (omega :\: Sing 0) gens.
 admit.
 Admitted.
 
@@ -116709,12 +116774,12 @@ Theorem ex71_5b_tangent_circles_free_pi1 :
   p = (0, 0) -> p :e Y ->
   Y = Union (Repl (omega :\: Sing 0) (fun n:set =>
     {z :e EuclidPlane | distance_R2 z (n, 0) = n})) ->
-  exists gens:set,
-    free_group_with_generators
-      (fundamental_group Y Ty p) (fundamental_group_mult Y Ty p)
-      (fundamental_group_id Y Ty p) (fundamental_group_inv Y Ty p)
-      (omega :\: Sing 0) gens.
-admit.
+	  exists gens:set,
+	    free_group_with_generators
+	      (fundamental_group Y Ty p) (fundamental_group_mult Y Ty p)
+	      (fundamental_group_id Y Ty p) (fundamental_group_inv Y Ty p)
+	      (omega :\: Sing 0) gens.
+exact tangent_circles_free_fundamental_group_helper.
 Admitted.
 
 (** ============================================================ **)
