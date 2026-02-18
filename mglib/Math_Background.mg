@@ -112552,6 +112552,14 @@ apply (andI
           e
           (HCsub e HeC)).
       }
+      claim HCinQRep : exists g:set, g :e G /\ C = left_coset mult g C.
+      {
+        exact (ReplE
+          G
+          (fun g:set => left_coset mult g C)
+          C
+          HCinQ).
+      }
       claim HCnonempty : C <> Empty.
       {
         exact (elem_implies_nonempty C e HeC).
