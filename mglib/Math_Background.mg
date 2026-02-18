@@ -116164,11 +116164,9 @@ Theorem ex70_2b_surjective_i2_isomorphism :
 exact surjective_i2_induces_quotient_isomorphism_helper.
 Admitted.
 
-(** from S70 Exercise 3(a) (line 3492 in algtop.tex) **)
-(** LATEX VERSION: If G1 and G2 have finite presentations, so does G1 free-product G2. **)
-(** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-Theorem ex70_3a_free_product_finitely_presented :
+(** Infrastructure helper for S70 Exercise 3(a):
+    free product of finitely presented groups is finitely presented. **)
+Theorem free_product_of_finitely_presented_groups_helper :
   forall G1 mult1 e1 inv1 G2 mult2 e2 inv2:set,
   finitely_presented G1 mult1 e1 inv1 ->
   finitely_presented G2 mult2 e2 inv2 ->
@@ -116178,6 +116176,64 @@ Theorem ex70_3a_free_product_finitely_presented :
       (graph (UPair 0 1) (fun i:set => if i = 0 then mult1 else mult2))
       ifam ->
     finitely_presented FP multFP eFP invFP.
+admit.
+Admitted.
+
+(** from S70 Exercise 3(a) (line 3492 in algtop.tex) **)
+(** LATEX VERSION: If G1 and G2 have finite presentations, so does G1 free-product G2. **)
+(** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
+(** Bounty 55 **)
+Theorem ex70_3a_free_product_finitely_presented :
+  forall G1 mult1 e1 inv1 G2 mult2 e2 inv2:set,
+  finitely_presented G1 mult1 e1 inv1 ->
+  finitely_presented G2 mult2 e2 inv2 ->
+	  forall FP multFP eFP invFP ifam:set,
+	    external_free_product FP multFP eFP invFP (UPair 0 1)
+	      (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+	      (graph (UPair 0 1) (fun i:set => if i = 0 then mult1 else mult2))
+	      ifam ->
+	    finitely_presented FP multFP eFP invFP.
+exact free_product_of_finitely_presented_groups_helper.
+Admitted.
+
+(** Infrastructure helper for S70 Exercise 3(b):
+    van Kampen with finitely generated intersection preserves finite presentation of pi1(X). **)
+Theorem van_kampen_finitely_presented_pi1_helper :
+  forall X Tx U V x0:set,
+  U :e Tx -> V :e Tx -> X = U :\/: V ->
+  path_connected_space U (subspace_topology X Tx U) ->
+  path_connected_space V (subspace_topology X Tx V) ->
+  path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
+  x0 :e U :/\: V ->
+  (exists S:set, S c= fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0 /\
+    finite S /\
+    (forall g:set,
+      g :e fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0 ->
+      exists n xs:set, n :e omega /\
+        function_on xs n (fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0) /\
+        (forall i:set, i :e n ->
+          apply_fun xs i :e S \/
+          (exists s:set, s :e S /\
+            apply_fun xs i = apply_fun
+              (fundamental_group_inv (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0) s)) /\
+        g = nat_primrec
+          (fundamental_group_id (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0)
+          (fun i r => apply_fun
+            (fundamental_group_mult (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0)
+            (r, apply_fun xs i)) n)) ->
+  finitely_presented
+    (fundamental_group U (subspace_topology X Tx U) x0)
+    (fundamental_group_mult U (subspace_topology X Tx U) x0)
+    (fundamental_group_id U (subspace_topology X Tx U) x0)
+    (fundamental_group_inv U (subspace_topology X Tx U) x0) ->
+  finitely_presented
+    (fundamental_group V (subspace_topology X Tx V) x0)
+    (fundamental_group_mult V (subspace_topology X Tx V) x0)
+    (fundamental_group_id V (subspace_topology X Tx V) x0)
+    (fundamental_group_inv V (subspace_topology X Tx V) x0) ->
+  finitely_presented
+    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+    (fundamental_group_id X Tx x0) (fundamental_group_inv X Tx x0).
 admit.
 Admitted.
 
@@ -116219,10 +116275,10 @@ Theorem ex70_3b_van_kampen_finitely_presented :
     (fundamental_group_mult V (subspace_topology X Tx V) x0)
     (fundamental_group_id V (subspace_topology X Tx V) x0)
     (fundamental_group_inv V (subspace_topology X Tx V) x0) ->
-  finitely_presented
-    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
-    (fundamental_group_id X Tx x0) (fundamental_group_inv X Tx x0).
-admit.
+	  finitely_presented
+	    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+	    (fundamental_group_id X Tx x0) (fundamental_group_inv X Tx x0).
+exact van_kampen_finitely_presented_pi1_helper.
 Admitted.
 
 (** ============================================================ **)
