@@ -72337,13 +72337,155 @@ claim HxNeE : x <> eG.
   }
   exact (HinfG HfinG).
 }
+claim HphiXNe0 : apply_fun phi x <> 0.
+{
+  assume HphiX0.
+  claim HphiBij : bijection G int phi.
+  {
+    exact (group_isomorphism_bijection
+      G
+      multG
+      int
+      integers_group_mult
+      phi
+      HphiIso).
+  }
+  claim HeG : eG :e G.
+  {
+    apply (and6E
+      (function_on multG (setprod G G) G)
+      (function_on invG G G)
+      (eG :e G)
+      (forall a b c:set, a :e G -> b :e G -> c :e G ->
+        apply_fun multG (apply_fun multG (a, b), c) = apply_fun multG (a, apply_fun multG (b, c)))
+      (forall a:set, a :e G -> apply_fun multG (eG, a) = a /\ apply_fun multG (a, eG) = a)
+      (forall a:set, a :e G ->
+        apply_fun multG (a, apply_fun invG a) = eG /\ apply_fun multG (apply_fun invG a, a) = eG)
+      HgrpG).
+    assume HmultFn HinvFn HeG' Hassoc Hid Hinv.
+    exact HeG'.
+  }
+  claim HxRightId : apply_fun multG (x, eG) = x.
+  {
+    apply (and6E
+      (function_on multG (setprod G G) G)
+      (function_on invG G G)
+      (eG :e G)
+      (forall a b c:set, a :e G -> b :e G -> c :e G ->
+        apply_fun multG (apply_fun multG (a, b), c) = apply_fun multG (a, apply_fun multG (b, c)))
+      (forall a:set, a :e G -> apply_fun multG (eG, a) = a /\ apply_fun multG (a, eG) = a)
+      (forall a:set, a :e G ->
+        apply_fun multG (a, apply_fun invG a) = eG /\ apply_fun multG (apply_fun invG a, a) = eG)
+      HgrpG).
+    assume HmultFn HinvFn HeG' Hassoc Hid Hinv.
+    exact (andER
+      (apply_fun multG (eG, x) = x)
+      (apply_fun multG (x, eG) = x)
+      (Hid x HxG)).
+  }
+  claim HphiMulXE :
+    apply_fun phi (apply_fun multG (x, eG)) =
+    apply_fun integers_group_mult (apply_fun phi x, apply_fun phi eG).
+  {
+    exact (group_homomorphism_mult_rule
+      G
+      multG
+      int
+      integers_group_mult
+      phi
+      x
+      eG
+      HphiHom
+      HxG
+      HeG).
+  }
+  claim HphiEInt : apply_fun phi eG :e int.
+  {
+    exact (HphiFn eG HeG).
+  }
+  claim HphiESNo : SNo (apply_fun phi eG).
+  {
+    exact (int_SNo (apply_fun phi eG) HphiEInt).
+  }
+  claim H0Int : 0 :e int.
+  {
+    exact (Subq_omega_int 0 (nat_p_omega 0 nat_0)).
+  }
+  claim HmultIntDef :
+    integers_group_mult =
+    graph (setprod int int) (fun p:set => add_SNo (p 0) (p 1)).
+  {
+    reflexivity.
+  }
+  claim HzeroMulR :
+    apply_fun integers_group_mult (0, apply_fun phi eG) = apply_fun phi eG.
+  {
+    rewrite HmultIntDef.
+    rewrite (apply_fun_graph
+      (setprod int int)
+      (fun p:set => add_SNo (p 0) (p 1))
+      (0, apply_fun phi eG)
+      (tuple_2_setprod_by_pair_Sigma
+        int
+        int
+        0
+        (apply_fun phi eG)
+        H0Int
+        HphiEInt)).
+    rewrite (tuple_2_0_eq 0 (apply_fun phi eG)).
+    rewrite (tuple_2_1_eq 0 (apply_fun phi eG)).
+    exact (add_SNo_0L (apply_fun phi eG) HphiESNo).
+  }
+  claim HphiE0 : apply_fun phi eG = 0.
+  {
+    rewrite <- HphiX0.
+    claim HphiEqX :
+      apply_fun phi x =
+      apply_fun integers_group_mult (0, apply_fun phi eG).
+    {
+      claim HphiEqRaw :
+        apply_fun phi (apply_fun multG (x, eG)) =
+        apply_fun integers_group_mult (0, apply_fun phi eG).
+      {
+        rewrite HphiMulXE.
+        rewrite HphiX0.
+        reflexivity.
+      }
+      rewrite <- HxRightId.
+      exact HphiEqRaw.
+    }
+    rewrite HphiEqX.
+    rewrite HzeroMulR.
+    reflexivity.
+  }
+  claim HphiEq : apply_fun phi x = apply_fun phi eG.
+  {
+    rewrite HphiX0.
+    rewrite HphiE0.
+    reflexivity.
+  }
+  claim HxEqE : x = eG.
+  {
+    exact (bijection_inj
+      G
+      int
+      phi
+      x
+      eG
+      HphiBij
+      HxG
+      HeG
+      HphiEq).
+  }
+  exact (HxNeE HxEqE).
+}
 claim HpsiEx :
   exists psi:set,
     group_homomorphism int integers_group_mult H multH psi /\
     apply_fun psi (apply_fun phi x) = y.
 {
   (** TODO Bob: build a homomorphism psi : int -> H hitting y at phi(x). **)
-  (** Note: we already know the generator is nontrivial via HxNeE. **)
+  (** Note: we now have nontriviality in both domain and integer image: HxNeE and HphiXNe0. **)
   admit.
 }
 apply HpsiEx.
