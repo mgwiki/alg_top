@@ -110255,6 +110255,20 @@ claim HCdef : C = commutator_subgroup G mult e inv.
 {
   reflexivity.
 }
+apply (and4E
+  (group_structure G mult e inv)
+  (function_on gens J G)
+  (forall alpha:set, alpha :e J ->
+    infinite_cyclic_subgroup G mult e inv (apply_fun gens alpha))
+  (free_product_of_subgroups G mult e inv J
+    (graph J (fun alpha:set =>
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}))
+    (graph J (fun alpha:set => e)))
+  Hfree).
+assume HgrpG HgensG HinfG HfpG.
 admit.
 Admitted.
 
