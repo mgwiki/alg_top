@@ -116471,6 +116471,94 @@ apply and3I.
   exact (HC_min (kernel_of G eH h) HK_sub HK_comm).
 Admitted.
 
+(** Proven Bob **)
+(** Helper: identity left coset equals the subgroup itself. **)
+Theorem left_coset_identity_eq_subgroup :
+  forall G mult e inv C:set,
+  group_structure G mult e inv ->
+  subgroup_of C G mult e inv ->
+  left_coset mult e C = C.
+let G mult e inv C.
+assume Hgrp : group_structure G mult e inv.
+assume HsubC : subgroup_of C G mult e inv.
+apply (and4E
+  (C c= G)
+  (e :e C)
+  (forall x y:set, x :e C -> y :e C -> apply_fun mult (x, y) :e C)
+  (forall x:set, x :e C -> apply_fun inv x :e C)
+  HsubC).
+assume HCsub HeC HmulC HinvC.
+claim HidG :
+  forall x:set, x :e G ->
+    apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x.
+{
+  apply (and6E
+    (function_on mult (setprod G G) G)
+    (function_on inv G G)
+    (e :e G)
+    (forall x y z:set, x :e G -> y :e G -> z :e G ->
+      apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+    (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+    (forall x:set, x :e G ->
+      apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+    Hgrp).
+  assume HmultG HinvG HeG HassocG Hid HinvLawG.
+  exact Hid.
+}
+claim HeMulC : forall c:set, c :e C -> apply_fun mult (e, c) = c.
+{
+  let c.
+  assume HcC : c :e C.
+  claim HcG : c :e G.
+  {
+    exact (HCsub c HcC).
+  }
+  exact (andEL
+    (apply_fun mult (e, c) = c)
+    (apply_fun mult (c, e) = c)
+    (HidG c HcG)).
+}
+claim HleftCosetEsubC : left_coset mult e C c= C.
+{
+  let y.
+  assume HyE : y :e left_coset mult e C.
+  apply (ReplE C (fun n:set => apply_fun mult (e, n)) y HyE).
+  let c.
+  assume HcPack : c :e C /\ y = apply_fun mult (e, c).
+  claim HcC : c :e C.
+  {
+    exact (andEL
+      (c :e C)
+      (y = apply_fun mult (e, c))
+      HcPack).
+  }
+  claim HyDef : y = apply_fun mult (e, c).
+  {
+    exact (andER
+      (c :e C)
+      (y = apply_fun mult (e, c))
+      HcPack).
+  }
+  rewrite HyDef.
+  rewrite (HeMulC c HcC).
+  exact HcC.
+}
+claim HCsubLeftCosetE : C c= left_coset mult e C.
+{
+  let c.
+  assume HcC : c :e C.
+  rewrite <- (HeMulC c HcC).
+  exact (ReplI
+    C
+    (fun n:set => apply_fun mult (e, n))
+    c
+    HcC).
+}
+apply set_ext.
+- exact HleftCosetEsubC.
+- exact HCsubLeftCosetE.
+Qed.
+
 (** Infrastructure helper for S69 Thm 69.4:
     if a generator power is trivial in the commutator quotient, then the original power is trivial. **)
 Theorem quotient_power_identity_forces_generator_power_identity :
@@ -116568,6 +116656,83 @@ claim HnontrivOrig :
     HinfOrigAlpha).
   assume HgenAlphaG HpowPos HpowNeg Hnontriv.
   exact Hnontriv.
+}
+claim HcommProps :
+  normal_subgroup C G mult e inv /\
+  abelian_group
+    (quotient_group_set G mult C)
+    (quotient_group_mult G mult C)
+    (quotient_group_id G mult e C)
+    (quotient_group_inv G mult inv C) /\
+  (forall H multH eH invH h:set,
+    abelian_group H multH eH invH ->
+    group_homomorphism G mult H multH h ->
+    C c= kernel_of G eH h).
+{
+  rewrite HCdef.
+  exact (lemma69_3_commutator_subgroup G mult e inv HgrpG).
+}
+claim HnormalC : normal_subgroup C G mult e inv.
+{
+  claim HNA :
+    normal_subgroup C G mult e inv /\
+    abelian_group
+      (quotient_group_set G mult C)
+      (quotient_group_mult G mult C)
+      (quotient_group_id G mult e C)
+      (quotient_group_inv G mult inv C).
+  {
+    exact (andEL
+      (normal_subgroup C G mult e inv /\
+       abelian_group
+         (quotient_group_set G mult C)
+         (quotient_group_mult G mult C)
+         (quotient_group_id G mult e C)
+         (quotient_group_inv G mult inv C))
+      (forall H multH eH invH h:set,
+        abelian_group H multH eH invH ->
+        group_homomorphism G mult H multH h ->
+        C c= kernel_of G eH h)
+      HcommProps).
+  }
+  exact (andEL
+    (normal_subgroup C G mult e inv)
+    (abelian_group
+      (quotient_group_set G mult C)
+      (quotient_group_mult G mult C)
+      (quotient_group_id G mult e C)
+      (quotient_group_inv G mult inv C))
+    HNA).
+}
+claim HsubC : subgroup_of C G mult e inv.
+{
+  exact (andEL
+    (subgroup_of C G mult e inv)
+    (forall t g:set, t :e C -> g :e G ->
+      apply_fun mult (apply_fun mult (g, t), apply_fun inv g) :e C)
+    HnormalC).
+}
+claim HqidEqC : quotient_group_id G mult e C = C.
+{
+  rewrite (left_coset_identity_eq_subgroup
+    G
+    mult
+    e
+    inv
+    C
+    HgrpG
+    HsubC).
+  reflexivity.
+}
+claim HpowQeqC :
+  group_power_nat
+    (quotient_group_mult G mult C)
+    (quotient_group_id G mult e C)
+    (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+    n = C.
+{
+  rewrite HpowQ.
+  exact HqidEqC.
 }
 admit.
 Admitted.
