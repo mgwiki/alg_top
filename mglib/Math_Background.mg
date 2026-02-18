@@ -77854,7 +77854,48 @@ claim HretrR2m0S1 :
           R2_minus_origin R2_minus_origin_topology r /\
         (forall x:set, x :e R2_minus_origin -> apply_fun r x :e S1).
       {
-        admit.
+        claim HradialContInto :
+          continuous_map R2_minus_origin R2_minus_origin_topology
+            R2_minus_origin R2_minus_origin_topology r /\
+          (forall x:set, x :e R2_minus_origin -> apply_fun r x :e S1).
+        {
+          admit.
+        }
+        claim HrCont :
+          continuous_map R2_minus_origin R2_minus_origin_topology
+            R2_minus_origin R2_minus_origin_topology r.
+        {
+          exact (andEL
+            (continuous_map R2_minus_origin R2_minus_origin_topology
+              R2_minus_origin R2_minus_origin_topology r)
+            (forall x:set, x :e R2_minus_origin -> apply_fun r x :e S1)
+            HradialContInto).
+        }
+        claim HrIntoS1 :
+          forall x:set, x :e R2_minus_origin -> apply_fun r x :e S1.
+        {
+          exact (andER
+            (continuous_map R2_minus_origin R2_minus_origin_topology
+              R2_minus_origin R2_minus_origin_topology r)
+            (forall x:set, x :e R2_minus_origin -> apply_fun r x :e S1)
+            HradialContInto).
+        }
+        claim HrFun :
+          function_on r R2_minus_origin R2_minus_origin.
+        {
+          exact (continuous_map_function_on
+            R2_minus_origin
+            R2_minus_origin_topology
+            R2_minus_origin
+            R2_minus_origin_topology
+            r
+            HrCont).
+        }
+        apply andI.
+        - apply andI.
+          + exact HrFun.
+          + exact HrCont.
+        - exact HrIntoS1.
       }
       apply andI.
       - exact HrCore.
