@@ -39918,6 +39918,21 @@ claim HextTrivial :
   apply_fun (induced_homomorphism A Ta a0 Y Ty y0 (compose_fun A i H)) cls
   = fundamental_group_id Y Ty y0.
 {
+  claim HhFun52 : function_on h A Y.
+  {
+    exact (continuous_map_function_on
+      A
+      Ta
+      Y
+      Ty
+      h
+      Hhcont).
+  }
+  claim Hy0Y52 : y0 :e Y.
+  {
+    rewrite <- Hha0.
+    exact (HhFun52 a0 Ha0).
+  }
   claim HHFun52 : function_on H R Y.
   {
     exact (continuous_map_function_on
@@ -39927,6 +39942,11 @@ claim HextTrivial :
       Ty
       H
       HHcont).
+  }
+  claim HiCont52 : continuous_map A Ta R R_standard_topology i.
+  {
+    (** TODO Charlie: this should follow once Ta is tied to the subspace topology on A c= R. **)
+    admit.
   }
   claim HiTFS52 : i :e total_function_space A R.
   {
@@ -39972,13 +39992,271 @@ claim HextTrivial :
       HcompFun52
       HhEqComp).
   }
-  claim HcompNul52 : nulhomotopic A Ta Y Ty (compose_fun A i H).
+  set eps := Eps_i (fun f:set => f :e cls).
+  claim HepsLoop52 : eps :e loop_space A Ta a0.
   {
-    (** TODO Charlie: build a homotopy to const via the extension H on R (contractibility route). **)
-    admit.
+    exact (eps_of_fundamental_group_member_in_loop_space
+      A
+      Ta
+      a0
+      cls
+      Hcls).
   }
-  (** TODO Charlie: conclude induced-map triviality from HcompCont52 + HcompNul52 using pre-S58 infrastructure. **)
-  admit.
+  claim HepsLoopAt52 : loop_at A Ta a0 eps.
+  {
+    exact (loop_space_has_loop_at
+      A
+      Ta
+      a0
+      eps
+      HepsLoop52).
+  }
+  claim HepsCont52 : continuous_map unit_interval unit_interval_topology A Ta eps.
+  {
+    exact (loop_at_continuous
+      A
+      Ta
+      a0
+      eps
+      HepsLoopAt52).
+  }
+  claim HepsFun52 : function_on eps unit_interval A.
+  {
+    exact (continuous_map_function_on
+      unit_interval
+      unit_interval_topology
+      A
+      Ta
+      eps
+      HepsCont52).
+  }
+  claim Heps052 : apply_fun eps 0 = a0.
+  {
+    exact (loop_at_at_zero
+      A
+      Ta
+      a0
+      eps
+      HepsLoopAt52).
+  }
+  claim Heps152 : apply_fun eps 1 = a0.
+  {
+    exact (loop_at_at_one
+      A
+      Ta
+      a0
+      eps
+      HepsLoopAt52).
+  }
+  set epsR := compose_fun unit_interval eps i.
+  claim HepsRCont : continuous_map unit_interval unit_interval_topology R R_standard_topology epsR.
+  {
+    exact (composition_continuous
+      unit_interval
+      unit_interval_topology
+      A
+      Ta
+      R
+      R_standard_topology
+      eps
+      i
+      HepsCont52
+      HiCont52).
+  }
+  claim HepsR0 : apply_fun epsR 0 = a0.
+  {
+    rewrite (compose_fun_apply
+      unit_interval
+      eps
+      i
+      0
+      zero_in_unit_interval).
+    rewrite Heps052.
+    exact Hi0.
+  }
+  claim HepsR1 : apply_fun epsR 1 = a0.
+  {
+    rewrite (compose_fun_apply
+      unit_interval
+      eps
+      i
+      1
+      one_in_unit_interval).
+    rewrite Heps152.
+    exact Hi0.
+  }
+  claim HconstRCont : continuous_map unit_interval unit_interval_topology R R_standard_topology (constant_path a0).
+  {
+    exact (constant_path_continuous
+      R
+      R_standard_topology
+      a0
+      R_standard_topology_is_topology
+      Ha0R).
+  }
+  claim HconstR0 : apply_fun (constant_path a0) 0 = a0.
+  {
+    exact (constant_path_at_zero a0).
+  }
+  claim HconstR1 : apply_fun (constant_path a0) 1 = a0.
+  {
+    exact (constant_path_at_one a0).
+  }
+  claim HRconvex52 : convex_in R R.
+  {
+    exact (andI
+      (R c= R)
+      (forall a b:set, a :e R -> b :e R -> order_interval R a b c= R)
+      (Subq_ref R)
+      (fun a b HaR HbR => order_interval_subset R a b)).
+  }
+  claim HepsRConstHom :
+    path_homotopic R R_standard_topology a0 a0 epsR (constant_path a0).
+  {
+    exact (Example_51_1_convex_paths_homotopic
+      R
+      R_standard_topology
+      a0
+      a0
+      epsR
+      (constant_path a0)
+      (Subq_ref R)
+      HRconvex52
+      R_standard_topology_is_topology
+      HepsRCont
+      HconstRCont
+      HepsR0
+      HepsR1
+      HconstR0
+      HconstR1).
+  }
+  claim HpostHom :
+    path_homotopic Y Ty y0 y0
+      (compose_fun unit_interval epsR H)
+      (compose_fun unit_interval (constant_path a0) H).
+  {
+    exact (path_homotopic_postcompose
+      R
+      R_standard_topology
+      Y
+      Ty
+      a0
+      a0
+      y0
+      y0
+      epsR
+      (constant_path a0)
+      H
+      HepsRConstHom
+      HHcont
+      HHa0
+      HHa0).
+  }
+  claim HconstComposeEq :
+    compose_fun unit_interval (constant_path a0) H = constant_path y0.
+  {
+    claim HconstPathFSR :
+      (constant_path a0) :e function_space unit_interval R.
+    {
+      exact (graph_in_function_space
+        unit_interval
+        R
+        (fun t:set => a0)
+        (fun t Ht => Ha0R)).
+    }
+    claim HconstPathFunR : function_on (constant_path a0) unit_interval R.
+    {
+      exact (function_on_of_function_space
+        (constant_path a0)
+        unit_interval
+        R
+        HconstPathFSR).
+    }
+    apply (total_function_space_extensional
+      unit_interval
+      Y
+      (compose_fun unit_interval (constant_path a0) H)
+      (constant_path y0)).
+    - exact (compose_fun_in_total_function_space
+        unit_interval
+        R
+        Y
+        (constant_path a0)
+        H
+        HconstPathFunR
+        HHFun52).
+    - exact (graph_in_total_function_space
+        unit_interval
+        Y
+        (fun t:set => y0)
+        (fun t Ht => Hy0Y52)).
+    - let t.
+      assume Ht.
+      rewrite (compose_fun_apply
+        unit_interval
+        (constant_path a0)
+        H
+        t
+        Ht).
+      rewrite (constant_path_apply
+        a0
+        t
+        Ht).
+      rewrite (constant_path_apply
+        y0
+        t
+        Ht).
+      exact HHa0.
+  }
+  claim HpostHomConst :
+    path_homotopic Y Ty y0 y0
+      (compose_fun unit_interval epsR H)
+      (constant_path y0).
+  {
+    rewrite <- HconstComposeEq.
+    exact HpostHom.
+  }
+  claim HclassEqConst :
+    path_homotopy_class_loop Y Ty y0 (compose_fun unit_interval epsR H)
+    = path_homotopy_class_loop Y Ty y0 (constant_path y0).
+  {
+    exact (path_homotopy_class_loop_eq_of_path_homotopic
+      Y
+      Ty
+      y0
+      (compose_fun unit_interval epsR H)
+      (constant_path y0)
+      HpostHomConst).
+  }
+  claim Hassoc52 :
+    compose_fun unit_interval eps (compose_fun A i H)
+    = compose_fun unit_interval epsR H.
+  {
+    exact (compose_fun_assoc_eq_algtop
+      unit_interval
+      A
+      R
+      Y
+      eps
+      i
+      H
+      HepsFun52
+      HiFun52
+      HHFun52).
+  }
+  rewrite (induced_homomorphism_apply
+    A
+    Ta
+    a0
+    Y
+    Ty
+    y0
+    (compose_fun A i H)
+    cls
+    Hcls).
+  rewrite Hassoc52.
+  rewrite HclassEqConst.
+  reflexivity.
 }
 rewrite HinducedThroughExtension.
 exact HextTrivial.
