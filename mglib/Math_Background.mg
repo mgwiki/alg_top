@@ -81926,7 +81926,163 @@ claim HioCore :
 	         ~(exists x:set, x :e S1 /\ points_directly_outward v x))
 	        -> False.
 	      {
-	        admit.
+	        assume HnoInOrNoOut'.
+	        claim HvIntoR2m0B2 :
+	          forall x:set, x :e B2 -> apply_fun v x :e R2_minus_origin.
+	        {
+	          let x.
+	          assume HxB2.
+	          apply (SepI
+	            (setprod R R)
+	            (fun p:set => ~(p 0 = 0 /\ p 1 = 0))
+	            (apply_fun v x)).
+	          - exact (continuous_map_function_on
+	              B2
+	              B2_topology
+	              (setprod R R)
+	              R2_topology
+	              v
+	              HvCont
+	              x
+	              HxB2).
+	          - exact (HvNonzero x HxB2).
+	        }
+	        claim HvContR2m0 :
+	          continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology v.
+	        {
+	          exact (continuous_map_range_restrict
+	            B2
+	            B2_topology
+	            (setprod R R)
+	            R2_topology
+	            v
+	            R2_minus_origin
+	            HvCont
+	            (Sep_Subq
+	              (setprod R R)
+	              (fun p:set => ~(p 0 = 0 /\ p 1 = 0)))
+	            HvIntoR2m0B2).
+	        }
+	        claim HvS1Ext :
+	          exists k:set, continuous_map B2 B2_topology
+	            R2_minus_origin R2_minus_origin_topology k /\
+	            (forall x:set, x :e S1 -> apply_fun k x = apply_fun vS1 x).
+	        {
+	          witness v.
+	          apply andI.
+	          - exact HvContR2m0.
+	          - let x.
+	            assume HxS1.
+	            rewrite (apply_fun_graph
+	              S1
+	              (fun z:set => apply_fun v z)
+	              x
+	              HxS1).
+	            reflexivity.
+	        }
+	        claim HvS1Nul :
+	          nulhomotopic S1 S1_topology
+	            R2_minus_origin R2_minus_origin_topology vS1.
+	        {
+	          exact (s55_extends_to_B2_implies_nulhomotopic
+	            R2_minus_origin
+	            R2_minus_origin_topology
+	            vS1
+	            HvS1Cont
+	            HvS1Ext).
+	        }
+	        claim HinclNotNul :
+	          ~(nulhomotopic S1 S1_topology
+	            R2_minus_origin R2_minus_origin_topology
+	            (graph S1 (fun x:set => x))).
+	        {
+	          exact cor55_4a_inclusion_S1_R2_not_nulhomotopic.
+	        }
+	        claim HinclNul :
+	          nulhomotopic S1 S1_topology
+	            R2_minus_origin R2_minus_origin_topology
+	            (graph S1 (fun x:set => x)).
+	        {
+	          apply (HnoInOrNoOut').
+	          - assume HnoIn.
+	            claim HincHomV :
+	              homotopic_maps
+	                S1
+	                S1_topology
+	                R2_minus_origin
+	                R2_minus_origin_topology
+	                (graph S1 (fun x:set => x))
+	                vS1.
+	            {
+	              admit.
+	            }
+	            claim HincNulNoInRaw :
+	              exists y:set,
+	                y :e R2_minus_origin /\
+	                homotopic_maps
+	                  S1
+	                  S1_topology
+	                  R2_minus_origin
+	                  R2_minus_origin_topology
+	                  (graph S1 (fun x:set => x))
+	                  (const_fun S1 y).
+	            {
+	              apply HvS1Nul.
+	              let y0.
+	              assume Hy0Pack.
+	              claim Hy0R2m0 : y0 :e R2_minus_origin.
+	              {
+	                exact (andEL
+	                  (y0 :e R2_minus_origin)
+	                  (homotopic_maps
+	                    S1
+	                    S1_topology
+	                    R2_minus_origin
+	                    R2_minus_origin_topology
+	                    vS1
+	                    (const_fun S1 y0))
+	                  Hy0Pack).
+	              }
+	              claim HvS1Const :
+	                homotopic_maps
+	                  S1
+	                  S1_topology
+	                  R2_minus_origin
+	                  R2_minus_origin_topology
+	                  vS1
+	                  (const_fun S1 y0).
+	              {
+	                exact (andER
+	                  (y0 :e R2_minus_origin)
+	                  (homotopic_maps
+	                    S1
+	                    S1_topology
+	                    R2_minus_origin
+	                    R2_minus_origin_topology
+	                    vS1
+	                    (const_fun S1 y0))
+	                  Hy0Pack).
+	              }
+	              witness y0.
+	              apply andI.
+	              - exact Hy0R2m0.
+	              - exact (Lemma_51_1_homotopy_trans
+	                  S1
+	                  S1_topology
+	                  R2_minus_origin
+	                  R2_minus_origin_topology
+	                  (graph S1 (fun x:set => x))
+	                  vS1
+	                  (const_fun S1 y0)
+	                  HincHomV
+	                  HvS1Const).
+	            }
+	            exact HincNulNoInRaw.
+	          - assume HnoOut.
+	            admit.
+	        }
+	        exact (HinclNotNul
+	          HinclNul).
 	      }
 	      exact (HgeomContra
 	        HnoInOrNoOut).
