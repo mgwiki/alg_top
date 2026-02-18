@@ -83157,8 +83157,15 @@ claim Hpi1Trivial :
           claim HFintoX :
             forall p:set, p :e unit_square -> apply_fun F p :e X.
           {
-            (** remaining geometric gap: radial contraction stays inside the open unit disk **)
-            admit.
+            let p.
+            assume Hp.
+            apply (SepI
+              EuclidPlane
+              (fun q:set => SNoLt (distance_R2 q (0, 0)) 1)
+              (apply_fun F p)).
+            - exact (HFFunE p Hp).
+            - (** remaining geometric gap: radial contraction stays inside the open unit disk **)
+              admit.
           }
           exact (continuous_map_range_restrict
             unit_square
