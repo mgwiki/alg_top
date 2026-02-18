@@ -113808,6 +113808,68 @@ apply and3I.
   exact (HC_min (kernel_of G eH h) HK_sub HK_comm).
 Admitted.
 
+(** Infrastructure helper for S69 Thm 69.4:
+    if a generator power is trivial in the commutator quotient, then the original power is trivial. **)
+Theorem quotient_power_identity_forces_generator_power_identity :
+  forall G mult e inv J gens C alpha n:set,
+  free_group_with_generators G mult e inv J gens ->
+  C = commutator_subgroup G mult e inv ->
+  alpha :e J ->
+  n :e omega ->
+  n <> 0 ->
+  group_power_nat
+    (quotient_group_mult G mult C)
+    (quotient_group_id G mult e C)
+    (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+    n = quotient_group_id G mult e C ->
+  group_power_nat mult e (apply_fun gens alpha) n = e.
+let G mult e inv J gens C alpha n.
+assume Hfree : free_group_with_generators G mult e inv J gens.
+assume HCdef : C = commutator_subgroup G mult e inv.
+assume Halpha : alpha :e J.
+assume HnO : n :e omega.
+assume HnNZ : n <> 0.
+assume HpowQ :
+  group_power_nat
+    (quotient_group_mult G mult C)
+    (quotient_group_id G mult e C)
+    (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+    n = quotient_group_id G mult e C.
+admit.
+Admitted.
+
+(** Infrastructure helper for S69 Thm 69.4:
+    cyclic generator subgroups in the commutator quotient form the required direct sum. **)
+Theorem commutator_quotient_direct_sum_of_generator_subgroups :
+  forall G mult e inv J gens:set,
+  free_group_with_generators G mult e inv J gens ->
+  let C := commutator_subgroup G mult e inv in
+  direct_sum_of_subgroups
+    (quotient_group_set G mult C)
+    (quotient_group_mult G mult C)
+    (quotient_group_id G mult e C)
+    (quotient_group_inv G mult inv C)
+    J
+    (graph J (fun alpha:set =>
+      {g :e quotient_group_set G mult C | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (apply_fun
+              (quotient_group_inv G mult inv C)
+              (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha))
+            (ordsucc m)))})).
+let G mult e inv J gens.
+assume Hfree : free_group_with_generators G mult e inv J gens.
+admit.
+Admitted.
+
 (** from S69 Thm 69.4 (line 3125 in algtop.tex): abelianization of free group **)
 (** LATEX VERSION: If G is free with generators {a_alpha}, then G/[G,G] is a free **)
 (** abelian group with basis {[a_alpha]}. **)
@@ -114692,8 +114754,27 @@ apply (andI
           e
           HeInPowSet).
       }
-      admit.
-  admit.
+      exact (quotient_power_identity_forces_generator_power_identity
+        G
+        mult
+        e
+        inv
+        J
+        gens
+        C
+        alpha
+        (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+          group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+            n = quotient_group_id G mult e C))
+        Hfree
+        HCdef
+        Halpha
+        HnO
+        HnNZ
+        HpowQ).
 Admitted.
 
 (** from S69 Cor 69.5 (line 3129 in algtop.tex): number of free generators is well-defined **)
