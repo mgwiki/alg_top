@@ -111882,6 +111882,18 @@ Definition free_group_with_generators : set -> set -> set -> set -> set -> set -
             g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}))
       (graph J (fun alpha:set => e)).
 
+(** Infrastructure helper for S69: an infinite cyclic subgroup cannot be finite. **)
+Theorem infinite_cyclic_subgroup_nonfinite :
+  forall G mult e inv a:set,
+  group_structure G mult e inv ->
+  infinite_cyclic_subgroup G mult e inv a ->
+  ~ finite G.
+let G mult e inv a.
+assume Hgrp : group_structure G mult e inv.
+assume Hinf : infinite_cyclic_subgroup G mult e inv a.
+admit.
+Admitted.
+
 (** from S69 Lem 69.1 (line 3047 in algtop.tex): extension condition for free groups **)
 (** LATEX VERSION: G is a free group with generators {a_alpha} iff for any group H **)
 (** and any family {y_alpha} of elements of H, there is a unique homomorphism **)
@@ -112541,7 +112553,14 @@ apply (iffI
     }
     claim Hnonfinite_factor : ~ finite Galpha.
     {
-      admit.
+      exact (infinite_cyclic_subgroup_nonfinite
+        Galpha
+        mult
+        e
+        inv
+        (apply_fun gens alpha)
+        Hgrp_factor
+        Hinf_factor).
     }
     apply (infinite_cyclic_universal_property
       Galpha
