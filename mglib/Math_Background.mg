@@ -1,4 +1,4 @@
-(** Balance Alice 3320 **)
+(** Balance Alice 3305 **)
 (** Balance Bob 3021 **)
 (** Balance Charlie 1160 **)
 (** Balance Dave 1419 **)
@@ -106646,7 +106646,8 @@ Admitted.
 (** i_alpha(G_alpha), then given any group H and homomorphisms h_alpha: G_alpha -> H, **)
 (** there exists a unique h: G -> H with h o i_alpha = h_alpha. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
+(** Bounty 61 **)
+(** Lock Alice 1771485495 **)
 Theorem lemma68_3_extension_external_free_product :
   forall G multG eG invG J Gfam multfam ifam:set,
   external_free_product G multG eG invG J Gfam multfam ifam ->
@@ -106675,7 +106676,8 @@ Admitted.
 (** i_alpha and i'_alpha, then there is a unique isomorphism phi: G -> G' **)
 (** with phi o i_alpha = i'_alpha. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
+(** Bounty 97 **)
+(** Lock Alice 1771485495 **)
 Theorem thm68_4_uniqueness_free_product :
   forall J Gfam multfam G multG eG invG ifam G' multG' eG' invG' ifam':set,
   external_free_product G multG eG invG J Gfam multfam ifam ->
