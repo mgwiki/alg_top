@@ -88342,7 +88342,587 @@ claim Hcore :
                                                  X Tx x0
                                                  (graph U (fun x:set => x)))
                                                u3))).
-                              admit. (** remaining nontrivial loop decomposition into U/V factors pending (excluding simple overlap-left-U, U-right-overlap, overlap-left-V, V-right-overlap, U-U two-term, V-V two-term, overlap-overlap two-term, V-U two-term, V-with-right-nested-UU case, and U-with-right-nested-UU case) **)
+                              apply (xm
+                                (exists v1:set,
+                                  v1 :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                                  exists v2:set,
+                                    v2 :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                                    exists v3:set,
+                                      v3 :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                                      cls =
+                                        apply_fun
+                                          (fundamental_group_mult X Tx x0)
+                                          (apply_fun
+                                            (induced_homomorphism
+                                              V (subspace_topology X Tx V) x0
+                                              X Tx x0
+                                              (graph V (fun x:set => x)))
+                                            v1,
+                                           apply_fun
+                                             (fundamental_group_mult X Tx x0)
+                                             (apply_fun
+                                               (induced_homomorphism
+                                                 V (subspace_topology X Tx V) x0
+                                                 X Tx x0
+                                                 (graph V (fun x:set => x)))
+                                               v2,
+                                              apply_fun
+                                               (induced_homomorphism
+                                                 V (subspace_topology X Tx V) x0
+                                                 X Tx x0
+                                                 (graph V (fun x:set => x)))
+                                               v3)))).
+                              - assume HclsFromVVV :
+                                  exists v1:set,
+                                    v1 :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                                    exists v2:set,
+                                      v2 :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                                      exists v3:set,
+                                        v3 :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                                        cls =
+                                          apply_fun
+                                            (fundamental_group_mult X Tx x0)
+                                            (apply_fun
+                                              (induced_homomorphism
+                                                V (subspace_topology X Tx V) x0
+                                                X Tx x0
+                                                (graph V (fun x:set => x)))
+                                              v1,
+                                             apply_fun
+                                               (fundamental_group_mult X Tx x0)
+                                               (apply_fun
+                                                 (induced_homomorphism
+                                                   V (subspace_topology X Tx V) x0
+                                                   X Tx x0
+                                                   (graph V (fun x:set => x)))
+                                                 v2,
+                                                apply_fun
+                                                 (induced_homomorphism
+                                                   V (subspace_topology X Tx V) x0
+                                                   X Tx x0
+                                                   (graph V (fun x:set => x)))
+                                                 v3)).
+                                claim Hfalse : False.
+                                {
+                                  apply HclsFromVVV.
+                                  let v1.
+                                  assume Hv1Pack :
+                                    v1 :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                                    exists v2:set,
+                                      v2 :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                                      exists v3:set,
+                                        v3 :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                                        cls =
+                                          apply_fun
+                                            (fundamental_group_mult X Tx x0)
+                                            (apply_fun
+                                              (induced_homomorphism
+                                                V (subspace_topology X Tx V) x0
+                                                X Tx x0
+                                                (graph V (fun x:set => x)))
+                                              v1,
+                                             apply_fun
+                                               (fundamental_group_mult X Tx x0)
+                                               (apply_fun
+                                                 (induced_homomorphism
+                                                   V (subspace_topology X Tx V) x0
+                                                   X Tx x0
+                                                   (graph V (fun x:set => x)))
+                                                 v2,
+                                                apply_fun
+                                                 (induced_homomorphism
+                                                   V (subspace_topology X Tx V) x0
+                                                   X Tx x0
+                                                   (graph V (fun x:set => x)))
+                                                 v3)).
+                                  claim Hv1Mem : v1 :e fundamental_group V (subspace_topology X Tx V) x0.
+                                  {
+                                    exact (andEL
+                                      (v1 :e fundamental_group V (subspace_topology X Tx V) x0)
+                                      (exists v2:set,
+                                        v2 :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                                        exists v3:set,
+                                          v3 :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                                          cls =
+                                            apply_fun
+                                              (fundamental_group_mult X Tx x0)
+                                              (apply_fun
+                                                (induced_homomorphism
+                                                  V (subspace_topology X Tx V) x0
+                                                  X Tx x0
+                                                  (graph V (fun x:set => x)))
+                                                v1,
+                                               apply_fun
+                                                 (fundamental_group_mult X Tx x0)
+                                                 (apply_fun
+                                                   (induced_homomorphism
+                                                     V (subspace_topology X Tx V) x0
+                                                     X Tx x0
+                                                     (graph V (fun x:set => x)))
+                                                   v2,
+                                                  apply_fun
+                                                   (induced_homomorphism
+                                                     V (subspace_topology X Tx V) x0
+                                                     X Tx x0
+                                                     (graph V (fun x:set => x)))
+                                                   v3)))
+                                      Hv1Pack).
+                                  }
+                                  apply (andER
+                                    (v1 :e fundamental_group V (subspace_topology X Tx V) x0)
+                                    (exists v2:set,
+                                      v2 :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                                      exists v3:set,
+                                        v3 :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                                        cls =
+                                          apply_fun
+                                            (fundamental_group_mult X Tx x0)
+                                            (apply_fun
+                                              (induced_homomorphism
+                                                V (subspace_topology X Tx V) x0
+                                                X Tx x0
+                                                (graph V (fun x:set => x)))
+                                              v1,
+                                             apply_fun
+                                               (fundamental_group_mult X Tx x0)
+                                               (apply_fun
+                                                 (induced_homomorphism
+                                                   V (subspace_topology X Tx V) x0
+                                                   X Tx x0
+                                                   (graph V (fun x:set => x)))
+                                                 v2,
+                                                apply_fun
+                                                 (induced_homomorphism
+                                                   V (subspace_topology X Tx V) x0
+                                                   X Tx x0
+                                                   (graph V (fun x:set => x)))
+                                                 v3)))
+                                    Hv1Pack).
+                                  let v2.
+                                  assume Hv2Pack :
+                                    v2 :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                                    exists v3:set,
+                                      v3 :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                                      cls =
+                                        apply_fun
+                                          (fundamental_group_mult X Tx x0)
+                                          (apply_fun
+                                            (induced_homomorphism
+                                              V (subspace_topology X Tx V) x0
+                                              X Tx x0
+                                              (graph V (fun x:set => x)))
+                                            v1,
+                                           apply_fun
+                                             (fundamental_group_mult X Tx x0)
+                                             (apply_fun
+                                               (induced_homomorphism
+                                                 V (subspace_topology X Tx V) x0
+                                                 X Tx x0
+                                                 (graph V (fun x:set => x)))
+                                               v2,
+                                              apply_fun
+                                               (induced_homomorphism
+                                                 V (subspace_topology X Tx V) x0
+                                                 X Tx x0
+                                                 (graph V (fun x:set => x)))
+                                               v3)).
+                                  claim Hv2Mem : v2 :e fundamental_group V (subspace_topology X Tx V) x0.
+                                  {
+                                    exact (andEL
+                                      (v2 :e fundamental_group V (subspace_topology X Tx V) x0)
+                                      (exists v3:set,
+                                        v3 :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                                        cls =
+                                          apply_fun
+                                            (fundamental_group_mult X Tx x0)
+                                            (apply_fun
+                                              (induced_homomorphism
+                                                V (subspace_topology X Tx V) x0
+                                                X Tx x0
+                                                (graph V (fun x:set => x)))
+                                              v1,
+                                             apply_fun
+                                               (fundamental_group_mult X Tx x0)
+                                               (apply_fun
+                                                 (induced_homomorphism
+                                                   V (subspace_topology X Tx V) x0
+                                                   X Tx x0
+                                                   (graph V (fun x:set => x)))
+                                                 v2,
+                                                apply_fun
+                                                 (induced_homomorphism
+                                                   V (subspace_topology X Tx V) x0
+                                                   X Tx x0
+                                                   (graph V (fun x:set => x)))
+                                                 v3)))
+                                      Hv2Pack).
+                                  }
+                                  apply (andER
+                                    (v2 :e fundamental_group V (subspace_topology X Tx V) x0)
+                                    (exists v3:set,
+                                      v3 :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                                      cls =
+                                        apply_fun
+                                          (fundamental_group_mult X Tx x0)
+                                          (apply_fun
+                                            (induced_homomorphism
+                                              V (subspace_topology X Tx V) x0
+                                              X Tx x0
+                                              (graph V (fun x:set => x)))
+                                            v1,
+                                           apply_fun
+                                             (fundamental_group_mult X Tx x0)
+                                             (apply_fun
+                                               (induced_homomorphism
+                                                 V (subspace_topology X Tx V) x0
+                                                 X Tx x0
+                                                 (graph V (fun x:set => x)))
+                                               v2,
+                                              apply_fun
+                                               (induced_homomorphism
+                                                 V (subspace_topology X Tx V) x0
+                                                 X Tx x0
+                                                 (graph V (fun x:set => x)))
+                                               v3)))
+                                    Hv2Pack).
+                                  let v3.
+                                  assume Hv3Pack :
+                                    v3 :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                                    cls =
+                                      apply_fun
+                                        (fundamental_group_mult X Tx x0)
+                                        (apply_fun
+                                          (induced_homomorphism
+                                            V (subspace_topology X Tx V) x0
+                                            X Tx x0
+                                            (graph V (fun x:set => x)))
+                                          v1,
+                                         apply_fun
+                                           (fundamental_group_mult X Tx x0)
+                                           (apply_fun
+                                             (induced_homomorphism
+                                               V (subspace_topology X Tx V) x0
+                                               X Tx x0
+                                               (graph V (fun x:set => x)))
+                                             v2,
+                                            apply_fun
+                                             (induced_homomorphism
+                                               V (subspace_topology X Tx V) x0
+                                               X Tx x0
+                                               (graph V (fun x:set => x)))
+                                             v3)).
+                                  claim Hv3Mem : v3 :e fundamental_group V (subspace_topology X Tx V) x0.
+                                  {
+                                    exact (andEL
+                                      (v3 :e fundamental_group V (subspace_topology X Tx V) x0)
+                                      (cls =
+                                        apply_fun
+                                          (fundamental_group_mult X Tx x0)
+                                          (apply_fun
+                                            (induced_homomorphism
+                                              V (subspace_topology X Tx V) x0
+                                              X Tx x0
+                                              (graph V (fun x:set => x)))
+                                            v1,
+                                           apply_fun
+                                             (fundamental_group_mult X Tx x0)
+                                             (apply_fun
+                                               (induced_homomorphism
+                                                 V (subspace_topology X Tx V) x0
+                                                 X Tx x0
+                                                 (graph V (fun x:set => x)))
+                                               v2,
+                                              apply_fun
+                                               (induced_homomorphism
+                                                 V (subspace_topology X Tx V) x0
+                                                 X Tx x0
+                                                 (graph V (fun x:set => x)))
+                                               v3)))
+                                      Hv3Pack).
+                                  }
+                                  claim HclsEqVVV :
+                                    cls =
+                                      apply_fun
+                                        (fundamental_group_mult X Tx x0)
+                                        (apply_fun
+                                          (induced_homomorphism
+                                            V (subspace_topology X Tx V) x0
+                                            X Tx x0
+                                            (graph V (fun x:set => x)))
+                                          v1,
+                                         apply_fun
+                                           (fundamental_group_mult X Tx x0)
+                                           (apply_fun
+                                             (induced_homomorphism
+                                               V (subspace_topology X Tx V) x0
+                                               X Tx x0
+                                               (graph V (fun x:set => x)))
+                                             v2,
+                                            apply_fun
+                                             (induced_homomorphism
+                                               V (subspace_topology X Tx V) x0
+                                               X Tx x0
+                                               (graph V (fun x:set => x)))
+                                             v3)).
+                                  {
+                                    exact (andER
+                                      (v3 :e fundamental_group V (subspace_topology X Tx V) x0)
+                                      (cls =
+                                        apply_fun
+                                          (fundamental_group_mult X Tx x0)
+                                          (apply_fun
+                                            (induced_homomorphism
+                                              V (subspace_topology X Tx V) x0
+                                              X Tx x0
+                                              (graph V (fun x:set => x)))
+                                            v1,
+                                           apply_fun
+                                             (fundamental_group_mult X Tx x0)
+                                             (apply_fun
+                                               (induced_homomorphism
+                                                 V (subspace_topology X Tx V) x0
+                                                 X Tx x0
+                                                 (graph V (fun x:set => x)))
+                                               v2,
+                                              apply_fun
+                                               (induced_homomorphism
+                                                 V (subspace_topology X Tx V) x0
+                                                 X Tx x0
+                                                 (graph V (fun x:set => x)))
+                                               v3)))
+                                      Hv3Pack).
+                                  }
+                                  claim HjStar_hom :
+                                    group_homomorphism
+                                      (fundamental_group V (subspace_topology X Tx V) x0)
+                                      (fundamental_group_mult V (subspace_topology X Tx V) x0)
+                                      (fundamental_group X Tx x0)
+                                      (fundamental_group_mult X Tx x0)
+                                      (induced_homomorphism
+                                        V (subspace_topology X Tx V) x0
+                                        X Tx x0
+                                        (graph V (fun x:set => x))).
+                                  {
+                                    exact (induced_homomorphism_is_homomorphism
+                                      V
+                                      (subspace_topology X Tx V)
+                                      x0
+                                      X
+                                      Tx
+                                      x0
+                                      (graph V (fun x:set => x))
+                                      HincVXCont
+                                      HincVX_x0
+                                      Hx0V).
+                                  }
+                                  claim HgrpV :
+                                    group_structure
+                                      (fundamental_group V (subspace_topology X Tx V) x0)
+                                      (fundamental_group_mult V (subspace_topology X Tx V) x0)
+                                      (fundamental_group_id V (subspace_topology X Tx V) x0)
+                                      (fundamental_group_inv V (subspace_topology X Tx V) x0).
+                                  {
+                                    exact (fundamental_group_is_group
+                                      V
+                                      (subspace_topology X Tx V)
+                                      x0
+                                      HtopV
+                                      Hx0V).
+                                  }
+                                  claim Hv23Mem :
+                                    apply_fun
+                                      (fundamental_group_mult V (subspace_topology X Tx V) x0)
+                                      (v2, v3)
+                                    :e
+                                    fundamental_group V (subspace_topology X Tx V) x0.
+                                  {
+                                    apply (and6E
+                                      (function_on
+                                        (fundamental_group_mult V (subspace_topology X Tx V) x0)
+                                        (setprod
+                                          (fundamental_group V (subspace_topology X Tx V) x0)
+                                          (fundamental_group V (subspace_topology X Tx V) x0))
+                                        (fundamental_group V (subspace_topology X Tx V) x0))
+                                      (function_on
+                                        (fundamental_group_inv V (subspace_topology X Tx V) x0)
+                                        (fundamental_group V (subspace_topology X Tx V) x0)
+                                        (fundamental_group V (subspace_topology X Tx V) x0))
+                                      ((fundamental_group_id V (subspace_topology X Tx V) x0)
+                                        :e
+                                        (fundamental_group V (subspace_topology X Tx V) x0))
+                                      (forall x y z:set,
+                                        x :e (fundamental_group V (subspace_topology X Tx V) x0) ->
+                                        y :e (fundamental_group V (subspace_topology X Tx V) x0) ->
+                                        z :e (fundamental_group V (subspace_topology X Tx V) x0) ->
+                                        apply_fun
+                                          (fundamental_group_mult V (subspace_topology X Tx V) x0)
+                                          (apply_fun
+                                            (fundamental_group_mult V (subspace_topology X Tx V) x0)
+                                            (x, y), z)
+                                        =
+                                        apply_fun
+                                          (fundamental_group_mult V (subspace_topology X Tx V) x0)
+                                          (x, apply_fun
+                                            (fundamental_group_mult V (subspace_topology X Tx V) x0)
+                                            (y, z)))
+                                      (forall x:set,
+                                        x :e (fundamental_group V (subspace_topology X Tx V) x0) ->
+                                        apply_fun
+                                          (fundamental_group_mult V (subspace_topology X Tx V) x0)
+                                          ((fundamental_group_id V (subspace_topology X Tx V) x0), x)
+                                        = x /\
+                                        apply_fun
+                                          (fundamental_group_mult V (subspace_topology X Tx V) x0)
+                                          (x, (fundamental_group_id V (subspace_topology X Tx V) x0))
+                                        = x)
+                                      (forall x:set,
+                                        x :e (fundamental_group V (subspace_topology X Tx V) x0) ->
+                                        apply_fun
+                                          (fundamental_group_mult V (subspace_topology X Tx V) x0)
+                                          (x, apply_fun
+                                            (fundamental_group_inv V (subspace_topology X Tx V) x0)
+                                            x)
+                                        =
+                                        (fundamental_group_id V (subspace_topology X Tx V) x0) /\
+                                        apply_fun
+                                          (fundamental_group_mult V (subspace_topology X Tx V) x0)
+                                          (apply_fun
+                                            (fundamental_group_inv V (subspace_topology X Tx V) x0)
+                                            x, x)
+                                        =
+                                        (fundamental_group_id V (subspace_topology X Tx V) x0))
+                                      HgrpV).
+                                    assume HmV HiV HeV HassocV HidV HinvV.
+                                    exact (HmV
+                                      (v2, v3)
+                                      (tuple_2_setprod_by_pair_Sigma
+                                        (fundamental_group V (subspace_topology X Tx V) x0)
+                                        (fundamental_group V (subspace_topology X Tx V) x0)
+                                        v2
+                                        v3
+                                        Hv2Mem
+                                        Hv3Mem)).
+                                  }
+                                  claim HjStarMult23 :
+                                    apply_fun
+                                      (induced_homomorphism
+                                        V (subspace_topology X Tx V) x0
+                                        X Tx x0
+                                        (graph V (fun x:set => x)))
+                                      (apply_fun
+                                        (fundamental_group_mult V (subspace_topology X Tx V) x0)
+                                        (v2, v3))
+                                    =
+                                    apply_fun
+                                      (fundamental_group_mult X Tx x0)
+                                      (apply_fun
+                                        (induced_homomorphism
+                                          V (subspace_topology X Tx V) x0
+                                          X Tx x0
+                                          (graph V (fun x:set => x)))
+                                        v2,
+                                       apply_fun
+                                        (induced_homomorphism
+                                          V (subspace_topology X Tx V) x0
+                                          X Tx x0
+                                          (graph V (fun x:set => x)))
+                                        v3).
+                                  {
+                                    exact (group_homomorphism_mult_rule
+                                      (fundamental_group V (subspace_topology X Tx V) x0)
+                                      (fundamental_group_mult V (subspace_topology X Tx V) x0)
+                                      (fundamental_group X Tx x0)
+                                      (fundamental_group_mult X Tx x0)
+                                      (induced_homomorphism
+                                        V (subspace_topology X Tx V) x0
+                                        X Tx x0
+                                        (graph V (fun x:set => x)))
+                                      v2
+                                      v3
+                                      HjStar_hom
+                                      Hv2Mem
+                                      Hv3Mem).
+                                  }
+                                  claim HclsEqVTwo :
+                                    cls =
+                                      apply_fun
+                                        (fundamental_group_mult X Tx x0)
+                                        (apply_fun
+                                          (induced_homomorphism
+                                            V (subspace_topology X Tx V) x0
+                                            X Tx x0
+                                            (graph V (fun x:set => x)))
+                                          v1,
+                                         apply_fun
+                                          (induced_homomorphism
+                                            V (subspace_topology X Tx V) x0
+                                            X Tx x0
+                                            (graph V (fun x:set => x)))
+                                          (apply_fun
+                                            (fundamental_group_mult V (subspace_topology X Tx V) x0)
+                                            (v2, v3))).
+                                  {
+                                    rewrite HclsEqVVV.
+                                    rewrite <- HjStarMult23.
+                                    reflexivity.
+                                  }
+                                  apply HclsNotFromVTwoTerms.
+                                  witness v1.
+                                  apply andI.
+                                  - exact Hv1Mem.
+                                  - witness (apply_fun
+                                      (fundamental_group_mult V (subspace_topology X Tx V) x0)
+                                      (v2, v3)).
+                                    apply andI.
+                                    + exact Hv23Mem.
+                                    + exact HclsEqVTwo.
+                                }
+                                exact (FalseE
+                                  Hfalse
+                                  (exists n:set, n :e omega /\
+                                  exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+                                    (forall i:set, i :e n ->
+                                      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+                                        apply_fun gs i =
+                                          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+                                            (graph U (fun x:set => x))) ucls) \/
+                                      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                                        apply_fun gs i =
+                                          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+                                            (graph V (fun x:set => x))) vcls)) /\
+                                    cls = nat_primrec (fundamental_group_id X Tx x0)
+                                      (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n)).
+                              - assume HclsNotFromVVV :
+                                  ~(exists v1:set,
+                                    v1 :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                                    exists v2:set,
+                                      v2 :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                                      exists v3:set,
+                                        v3 :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                                        cls =
+                                          apply_fun
+                                            (fundamental_group_mult X Tx x0)
+                                            (apply_fun
+                                              (induced_homomorphism
+                                                V (subspace_topology X Tx V) x0
+                                                X Tx x0
+                                                (graph V (fun x:set => x)))
+                                              v1,
+                                             apply_fun
+                                               (fundamental_group_mult X Tx x0)
+                                               (apply_fun
+                                                 (induced_homomorphism
+                                                   V (subspace_topology X Tx V) x0
+                                                   X Tx x0
+                                                   (graph V (fun x:set => x)))
+                                                 v2,
+                                                apply_fun
+                                                 (induced_homomorphism
+                                                   V (subspace_topology X Tx V) x0
+                                                   X Tx x0
+                                                   (graph V (fun x:set => x)))
+                                                 v3))).
+                                admit. (** remaining nontrivial loop decomposition into U/V factors pending (excluding simple overlap-left-U, U-right-overlap, overlap-left-V, V-right-overlap, U-U two-term, V-V two-term, overlap-overlap two-term, V-U two-term, V-with-right-nested-UU case, U-with-right-nested-UU case, and V-with-right-nested-VV case) **)
 }
 exact Hcore.
 Admitted.
