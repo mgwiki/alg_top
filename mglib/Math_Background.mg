@@ -79486,7 +79486,847 @@ claim HretrR2m0S1 :
           continuous_map R2_minus_origin R2_minus_origin_topology
             R2_minus_origin R2_minus_origin_topology r.
         {
-          admit.
+          claim HR2m0subR2 : R2_minus_origin c= setprod R R.
+          {
+            exact (Sep_Subq
+              (setprod R R)
+              (fun p:set => ~(p 0 = 0 /\ p 1 = 0))).
+          }
+          claim HtopR2 : topology_on (setprod R R) R2_topology.
+          {
+            exact (product_topology_is_topology
+              R
+              R_standard_topology
+              R
+              R_standard_topology
+              R_standard_topology_is_topology
+              R_standard_topology_is_topology).
+          }
+          set i := {(y,y)|y :e R2_minus_origin}.
+          claim HiCont :
+            continuous_map R2_minus_origin R2_minus_origin_topology
+              (setprod R R) R2_topology i.
+          {
+            exact (subspace_inclusion_continuous
+              (setprod R R)
+              R2_topology
+              R2_minus_origin
+              HtopR2
+              HR2m0subR2).
+          }
+          claim HprojPack :
+            continuous_map (setprod R R) R2_topology R R_standard_topology
+              (projection_map1 R R)
+            /\
+            continuous_map (setprod R R) R2_topology R R_standard_topology
+              (projection_map2 R R).
+          {
+            exact (projection_maps_continuous
+              R
+              R_standard_topology
+              R
+              R_standard_topology
+              R_standard_topology_is_topology
+              R_standard_topology_is_topology).
+          }
+          claim Hproj1Cont :
+            continuous_map (setprod R R) R2_topology R R_standard_topology
+              (projection_map1 R R).
+          {
+            exact (andEL
+              (continuous_map (setprod R R) R2_topology R R_standard_topology
+                (projection_map1 R R))
+              (continuous_map (setprod R R) R2_topology R R_standard_topology
+                (projection_map2 R R))
+              HprojPack).
+          }
+          claim Hproj2Cont :
+            continuous_map (setprod R R) R2_topology R R_standard_topology
+              (projection_map2 R R).
+          {
+            exact (andER
+              (continuous_map (setprod R R) R2_topology R R_standard_topology
+                (projection_map1 R R))
+              (continuous_map (setprod R R) R2_topology R R_standard_topology
+                (projection_map2 R R))
+              HprojPack).
+          }
+          set x0 := compose_fun R2_minus_origin i (projection_map1 R R).
+          set x1 := compose_fun R2_minus_origin i (projection_map2 R R).
+          claim Hx0Cont :
+            continuous_map R2_minus_origin R2_minus_origin_topology
+              R R_standard_topology x0.
+          {
+            exact (composition_continuous
+              R2_minus_origin
+              R2_minus_origin_topology
+              (setprod R R)
+              R2_topology
+              R
+              R_standard_topology
+              i
+              (projection_map1 R R)
+              HiCont
+              Hproj1Cont).
+          }
+          claim Hx1Cont :
+            continuous_map R2_minus_origin R2_minus_origin_topology
+              R R_standard_topology x1.
+          {
+            exact (composition_continuous
+              R2_minus_origin
+              R2_minus_origin_topology
+              (setprod R R)
+              R2_topology
+              R
+              R_standard_topology
+              i
+              (projection_map2 R R)
+              HiCont
+              Hproj2Cont).
+          }
+          claim H00R2 : (0, 0) :e EuclidPlane.
+          {
+            exact (tuple_2_setprod_by_pair_Sigma
+              R
+              R
+              0
+              0
+              real_0
+              real_0).
+          }
+          set const0 := const_fun R2_minus_origin (0, 0).
+          claim Hconst0Cont :
+            continuous_map R2_minus_origin R2_minus_origin_topology
+              EuclidPlane R2_topology const0.
+          {
+            exact (const_fun_continuous
+              R2_minus_origin
+              R2_minus_origin_topology
+              EuclidPlane
+              R2_topology
+              (0, 0)
+              HtopR2m0
+              HtopR2
+              H00R2).
+          }
+          set pair_x0 := pair_map R2_minus_origin i const0.
+          claim Hpairx0Cont :
+            continuous_map
+              R2_minus_origin
+              R2_minus_origin_topology
+              (setprod EuclidPlane EuclidPlane)
+              (product_topology EuclidPlane R2_topology EuclidPlane R2_topology)
+              pair_x0.
+          {
+            exact (maps_into_products
+              R2_minus_origin
+              R2_minus_origin_topology
+              EuclidPlane
+              R2_topology
+              EuclidPlane
+              R2_topology
+              i
+              const0
+              HiCont
+              Hconst0Cont).
+          }
+          claim HmetricCont :
+            continuous_map
+              (setprod EuclidPlane EuclidPlane)
+              (product_topology EuclidPlane R2_topology EuclidPlane R2_topology)
+              R
+              R_standard_topology
+              EuclidPlane_metric.
+          {
+            claim HmetricRaw :
+              continuous_map
+                (setprod EuclidPlane EuclidPlane)
+                (product_topology
+                  EuclidPlane
+                  (metric_topology EuclidPlane EuclidPlane_metric)
+                  EuclidPlane
+                  (metric_topology EuclidPlane EuclidPlane_metric))
+                R
+                R_standard_topology
+                EuclidPlane_metric.
+            {
+              exact (metric_distance_continuous
+                EuclidPlane
+                EuclidPlane_metric
+                EuclidPlane_metric_is_metric_on_total).
+            }
+            claim HmetricRawStd :
+              continuous_map
+                (setprod EuclidPlane EuclidPlane)
+                (product_topology
+                  EuclidPlane
+                  R2_standard_topology
+                  EuclidPlane
+                  R2_standard_topology)
+                R
+                R_standard_topology
+                EuclidPlane_metric.
+            {
+              exact (metric_topology_EuclidPlane_metric_eq_R2_standard_topology
+                (fun a b:set =>
+                  continuous_map
+                    (setprod EuclidPlane EuclidPlane)
+                    (product_topology
+                      EuclidPlane
+                      a
+                      EuclidPlane
+                      a)
+                    R
+                    R_standard_topology
+                    EuclidPlane_metric)
+                HmetricRaw).
+            }
+            exact (R2_standard_equals_product
+              (fun a b:set =>
+                continuous_map
+                  (setprod EuclidPlane EuclidPlane)
+                  (product_topology
+                    EuclidPlane
+                    a
+                    EuclidPlane
+                    a)
+                  R
+                  R_standard_topology
+                  EuclidPlane_metric)
+              HmetricRawStd).
+          }
+          set dist0 := compose_fun R2_minus_origin pair_x0 EuclidPlane_metric.
+          claim Hdist0Cont :
+            continuous_map R2_minus_origin R2_minus_origin_topology
+              R R_standard_topology dist0.
+          {
+            exact (composition_continuous
+              R2_minus_origin
+              R2_minus_origin_topology
+              (setprod EuclidPlane EuclidPlane)
+              (product_topology EuclidPlane R2_topology EuclidPlane R2_topology)
+              R
+              R_standard_topology
+              pair_x0
+              EuclidPlane_metric
+              Hpairx0Cont
+              HmetricCont).
+          }
+          claim Hdist0Pos :
+            forall x:set, x :e R2_minus_origin -> Rlt 0 (apply_fun dist0 x).
+          {
+            let x.
+            assume HxR2m0.
+            claim HxR2 : x :e EuclidPlane.
+            {
+              exact (SepE1
+                (setprod R R)
+                (fun p:set => ~(p 0 = 0 /\ p 1 = 0))
+                x
+                HxR2m0).
+            }
+            claim HxNe00 : ~(x = (0, 0)).
+            {
+              assume Hx00.
+              claim HxEta : x = (x 0, x 1).
+              {
+                exact (setprod_eta
+                  R
+                  R
+                  x
+                  HxR2).
+              }
+              claim Hpair00 : (x 0, x 1) = (0, 0).
+              {
+                rewrite <- HxEta.
+                exact Hx00.
+              }
+              claim Hx00coords : x 0 = 0 /\ x 1 = 0.
+              {
+                exact (tuple_eq_coords
+                  (x 0)
+                  (x 1)
+                  0
+                  0
+                  Hpair00).
+              }
+              exact ((SepE2
+                (setprod R R)
+                (fun p:set => ~(p 0 = 0 /\ p 1 = 0))
+                x
+                HxR2m0)
+                Hx00coords).
+            }
+            claim HmetricPos :
+              Rlt 0 (apply_fun EuclidPlane_metric (x, (0, 0))).
+            {
+              exact (metric_on_pos_of_neq
+                EuclidPlane
+                EuclidPlane_metric
+                x
+                (0, 0)
+                EuclidPlane_metric_is_metric_on
+                HxR2
+                H00R2
+                HxNe00).
+            }
+            claim Hdist0Eq :
+              apply_fun dist0 x =
+              apply_fun EuclidPlane_metric (x, (0, 0)).
+            {
+              rewrite (compose_fun_apply
+                R2_minus_origin
+                pair_x0
+                EuclidPlane_metric
+                x
+                HxR2m0).
+              rewrite (pair_map_apply
+                R2_minus_origin
+                EuclidPlane
+                EuclidPlane
+                i
+                const0
+                x
+                HxR2m0).
+              rewrite (identity_function_apply
+                R2_minus_origin
+                x
+                HxR2m0).
+              rewrite (const_fun_apply
+                R2_minus_origin
+                (0, 0)
+                x
+                HxR2m0).
+              reflexivity.
+            }
+            rewrite Hdist0Eq.
+            exact HmetricPos.
+          }
+          set recip_dist0 := compose_fun R2_minus_origin dist0
+            (compose_fun (open_ray_upper R 0)
+              (compose_fun R bounded_transform_phi one_minus_fun)
+              bounded_transform_psi).
+          claim HrecipDistCont :
+            continuous_map R2_minus_origin R2_minus_origin_topology
+              R R_standard_topology recip_dist0.
+          {
+            exact (reciprocal_of_positive_continuous_map
+              R2_minus_origin
+              R2_minus_origin_topology
+              dist0
+              HtopR2m0
+              Hdist0Cont
+              Hdist0Pos).
+          }
+          set g0 := compose_fun R2_minus_origin
+            (pair_map R2_minus_origin x0 recip_dist0)
+            mul_fun_R.
+          set g1 := compose_fun R2_minus_origin
+            (pair_map R2_minus_origin x1 recip_dist0)
+            mul_fun_R.
+          claim Hg0Cont :
+            continuous_map R2_minus_origin R2_minus_origin_topology
+              R R_standard_topology g0.
+          {
+            exact (mul_two_continuous_R
+              R2_minus_origin
+              R2_minus_origin_topology
+              x0
+              recip_dist0
+              HtopR2m0
+              Hx0Cont
+              HrecipDistCont).
+          }
+          claim Hg1Cont :
+            continuous_map R2_minus_origin R2_minus_origin_topology
+              R R_standard_topology g1.
+          {
+            exact (mul_two_continuous_R
+              R2_minus_origin
+              R2_minus_origin_topology
+              x1
+              recip_dist0
+              HtopR2m0
+              Hx1Cont
+              HrecipDistCont).
+          }
+          set w := pair_map R2_minus_origin g0 g1.
+          claim HwCont :
+            continuous_map R2_minus_origin R2_minus_origin_topology
+              (setprod R R) R2_topology w.
+          {
+            exact (maps_into_products
+              R2_minus_origin
+              R2_minus_origin_topology
+              R
+              R_standard_topology
+              R
+              R_standard_topology
+              g0
+              g1
+              Hg0Cont
+              Hg1Cont).
+          }
+          claim HwEqR :
+            forall x:set, x :e R2_minus_origin -> apply_fun w x = apply_fun r x.
+          {
+            let x.
+            assume HxR2m0.
+            claim HxR2 : x :e setprod R R.
+            {
+              exact (SepE1
+                (setprod R R)
+                (fun p:set => ~(p 0 = 0 /\ p 1 = 0))
+                x
+                HxR2m0).
+            }
+            claim HxPairSing :
+              (x 0, x 1) :e setprod {x 0} {x 1}.
+            {
+              exact (tuple_2_setprod_by_pair_Sigma
+                {x 0}
+                {x 1}
+                (x 0)
+                (x 1)
+                (SingI (x 0))
+                (SingI (x 1))).
+            }
+            claim HxPairIn : (x 0, x 1) :e setprod R R.
+            {
+              claim HxEta : x = (x 0, x 1).
+              {
+                exact (setprod_eta
+                  R
+                  R
+                  x
+                  HxR2).
+              }
+              rewrite <- HxEta.
+              exact HxR2.
+            }
+            claim HxCoordsR : x 0 :e R /\ x 1 :e R.
+            {
+              exact (setprod_coords_in
+                (x 0)
+                (x 1)
+                R
+                R
+                (x 0, x 1)
+                HxPairSing
+                HxPairIn).
+            }
+            claim Hx0R : x 0 :e R.
+            {
+              exact (andEL
+                (x 0 :e R)
+                (x 1 :e R)
+                HxCoordsR).
+            }
+            claim Hx1R : x 1 :e R.
+            {
+              exact (andER
+                (x 0 :e R)
+                (x 1 :e R)
+                HxCoordsR).
+            }
+            claim Hx0S : SNo (x 0).
+            {
+              exact (real_SNo
+                (x 0)
+                Hx0R).
+            }
+            claim Hx1S : SNo (x 1).
+            {
+              exact (real_SNo
+                (x 1)
+                Hx1R).
+            }
+            claim Hx0Val : apply_fun x0 x = x 0.
+            {
+              rewrite (compose_fun_apply
+                R2_minus_origin
+                i
+                (projection_map1 R R)
+                x
+                HxR2m0).
+              rewrite (identity_function_apply
+                R2_minus_origin
+                x
+                HxR2m0).
+              rewrite (projection1_apply
+                R
+                R
+                x
+                HxR2).
+              reflexivity.
+            }
+            claim Hx1Val : apply_fun x1 x = x 1.
+            {
+              rewrite (compose_fun_apply
+                R2_minus_origin
+                i
+                (projection_map2 R R)
+                x
+                HxR2m0).
+              rewrite (identity_function_apply
+                R2_minus_origin
+                x
+                HxR2m0).
+              rewrite (projection2_apply
+                R
+                R
+                x
+                HxR2).
+              reflexivity.
+            }
+            claim Hdist0EqRad :
+              apply_fun dist0 x =
+              sqrt_SNo_nonneg
+                (add_SNo
+                  (mul_SNo (x 0) (x 0))
+                  (mul_SNo (x 1) (x 1))).
+            {
+              claim Hdist0EqMetric :
+                apply_fun dist0 x =
+                apply_fun EuclidPlane_metric (x, (0, 0)).
+              {
+                rewrite (compose_fun_apply
+                  R2_minus_origin
+                  pair_x0
+                  EuclidPlane_metric
+                  x
+                  HxR2m0).
+                rewrite (pair_map_apply
+                  R2_minus_origin
+                  EuclidPlane
+                  EuclidPlane
+                  i
+                  const0
+                  x
+                  HxR2m0).
+                rewrite (identity_function_apply
+                  R2_minus_origin
+                  x
+                  HxR2m0).
+                rewrite (const_fun_apply
+                  R2_minus_origin
+                  (0, 0)
+                  x
+                  HxR2m0).
+                reflexivity.
+              }
+              rewrite Hdist0EqMetric.
+              rewrite (EuclidPlane_metric_apply
+                x
+                (0, 0)
+                HxR2
+                H00R2).
+              claim HdistExpand :
+                distance_R2 x (0, 0)
+                =
+                sqrt_SNo_nonneg
+                  (add_SNo
+                    (mul_SNo
+                      (add_SNo (R2_xcoord x) (minus_SNo (R2_xcoord (0, 0))))
+                      (add_SNo (R2_xcoord x) (minus_SNo (R2_xcoord (0, 0)))))
+                    (mul_SNo
+                      (add_SNo (R2_ycoord x) (minus_SNo (R2_ycoord (0, 0))))
+                      (add_SNo (R2_ycoord x) (minus_SNo (R2_ycoord (0, 0)))))).
+              {
+                reflexivity.
+              }
+              rewrite HdistExpand.
+              rewrite (R2_xcoord_tuple
+                0
+                0).
+              rewrite (R2_ycoord_tuple
+                0
+                0).
+              claim HxcoordS : SNo (R2_xcoord x).
+              {
+                exact (real_SNo
+                  (R2_xcoord x)
+                  (EuclidPlane_xcoord_in_R
+                    x
+                    HxR2)).
+              }
+              claim HycoordS : SNo (R2_ycoord x).
+              {
+                exact (real_SNo
+                  (R2_ycoord x)
+                  (EuclidPlane_ycoord_in_R
+                    x
+                    HxR2)).
+              }
+              claim HxPlus0 :
+                add_SNo (R2_xcoord x) (minus_SNo 0) = R2_xcoord x.
+              {
+                rewrite minus_SNo_0.
+                exact (add_SNo_0R
+                  (R2_xcoord x)
+                  HxcoordS).
+              }
+              claim HyPlus0 :
+                add_SNo (R2_ycoord x) (minus_SNo 0) = R2_ycoord x.
+              {
+                rewrite minus_SNo_0.
+                exact (add_SNo_0R
+                  (R2_ycoord x)
+                  HycoordS).
+              }
+              rewrite HxPlus0 at 1.
+              rewrite HxPlus0 at 1.
+              rewrite HyPlus0 at 1.
+              rewrite HyPlus0 at 1.
+              reflexivity.
+            }
+            claim Hdist0R : apply_fun dist0 x :e R.
+            {
+              exact (continuous_map_function_on
+                R2_minus_origin
+                R2_minus_origin_topology
+                R
+                R_standard_topology
+                dist0
+                Hdist0Cont
+                x
+                HxR2m0).
+            }
+            claim Hdist0PosX : Rlt 0 (apply_fun dist0 x).
+            {
+              exact (Hdist0Pos
+                x
+                HxR2m0).
+            }
+            claim Hdist0InRay : apply_fun dist0 x :e open_ray_upper R 0.
+            {
+              exact (SepI
+                R
+                (fun y:set => order_rel R 0 y)
+                (apply_fun dist0 x)
+                Hdist0R
+                (Rlt_implies_order_rel_R
+                  0
+                  (apply_fun dist0 x)
+                  Hdist0PosX)).
+            }
+            claim HrecipEq :
+              apply_fun recip_dist0 x =
+              recip_SNo
+                (sqrt_SNo_nonneg
+                  (add_SNo
+                    (mul_SNo (x 0) (x 0))
+                    (mul_SNo (x 1) (x 1)))).
+            {
+              rewrite (compose_fun_apply
+                R2_minus_origin
+                dist0
+                (compose_fun (open_ray_upper R 0)
+                  (compose_fun R bounded_transform_phi one_minus_fun)
+                  bounded_transform_psi)
+                x
+                HxR2m0).
+              rewrite (recip_pos_value_eq_recip_SNo_pos
+                (apply_fun dist0 x)
+                Hdist0InRay).
+              rewrite Hdist0EqRad.
+              claim HdenPos :
+                0 <
+                sqrt_SNo_nonneg
+                  (add_SNo
+                    (mul_SNo (x 0) (x 0))
+                    (mul_SNo (x 1) (x 1))).
+              {
+                rewrite <- Hdist0EqRad.
+                exact (andER
+                  (0 :e R /\ apply_fun dist0 x :e R)
+                  (0 < apply_fun dist0 x)
+                  Hdist0PosX).
+              }
+              claim HrecipCase :
+                recip_SNo
+                  (sqrt_SNo_nonneg
+                    (add_SNo
+                      (mul_SNo (x 0) (x 0))
+                      (mul_SNo (x 1) (x 1))))
+                =
+                recip_SNo_pos
+                  (sqrt_SNo_nonneg
+                    (add_SNo
+                      (mul_SNo (x 0) (x 0))
+                      (mul_SNo (x 1) (x 1)))).
+              {
+                exact (recip_SNo_poscase
+                  (sqrt_SNo_nonneg
+                    (add_SNo
+                      (mul_SNo (x 0) (x 0))
+                      (mul_SNo (x 1) (x 1))))
+                  HdenPos).
+              }
+              rewrite <- HrecipCase.
+              reflexivity.
+            }
+            claim Hgx0Eq :
+              apply_fun g0 x =
+              div_SNo (x 0)
+                (sqrt_SNo_nonneg
+                  (add_SNo
+                    (mul_SNo (x 0) (x 0))
+                    (mul_SNo (x 1) (x 1)))).
+            {
+              claim Hx0Rx : apply_fun x0 x :e R.
+              {
+                exact (continuous_map_function_on
+                  R2_minus_origin
+                  R2_minus_origin_topology
+                  R
+                  R_standard_topology
+                  x0
+                  Hx0Cont
+                  x
+                  HxR2m0).
+              }
+              claim HrecipRx : apply_fun recip_dist0 x :e R.
+              {
+                exact (continuous_map_function_on
+                  R2_minus_origin
+                  R2_minus_origin_topology
+                  R
+                  R_standard_topology
+                  recip_dist0
+                  HrecipDistCont
+                  x
+                  HxR2m0).
+              }
+              rewrite (mul_of_pair_map_apply
+                R2_minus_origin
+                x0
+                recip_dist0
+                x
+                HxR2m0
+                Hx0Rx
+                HrecipRx).
+              rewrite Hx0Val.
+              rewrite HrecipEq.
+              reflexivity.
+            }
+            claim Hgx1Eq :
+              apply_fun g1 x =
+              div_SNo (x 1)
+                (sqrt_SNo_nonneg
+                  (add_SNo
+                    (mul_SNo (x 0) (x 0))
+                    (mul_SNo (x 1) (x 1)))).
+            {
+              claim Hx1Rx : apply_fun x1 x :e R.
+              {
+                exact (continuous_map_function_on
+                  R2_minus_origin
+                  R2_minus_origin_topology
+                  R
+                  R_standard_topology
+                  x1
+                  Hx1Cont
+                  x
+                  HxR2m0).
+              }
+              claim HrecipRx : apply_fun recip_dist0 x :e R.
+              {
+                exact (continuous_map_function_on
+                  R2_minus_origin
+                  R2_minus_origin_topology
+                  R
+                  R_standard_topology
+                  recip_dist0
+                  HrecipDistCont
+                  x
+                  HxR2m0).
+              }
+              rewrite (mul_of_pair_map_apply
+                R2_minus_origin
+                x1
+                recip_dist0
+                x
+                HxR2m0
+                Hx1Rx
+                HrecipRx).
+              rewrite Hx1Val.
+              rewrite HrecipEq.
+              reflexivity.
+            }
+            rewrite (pair_map_apply
+              R2_minus_origin
+              R
+              R
+              g0
+              g1
+              x
+              HxR2m0).
+            rewrite Hgx0Eq.
+            rewrite Hgx1Eq.
+            rewrite (apply_fun_graph
+              R2_minus_origin
+              (fun p:set =>
+                (div_SNo (p 0)
+                  (sqrt_SNo_nonneg
+                    (add_SNo (mul_SNo (p 0) (p 0))
+                      (mul_SNo (p 1) (p 1)))),
+                 div_SNo (p 1)
+                  (sqrt_SNo_nonneg
+                    (add_SNo (mul_SNo (p 0) (p 0))
+                      (mul_SNo (p 1) (p 1))))))
+              x
+              HxR2m0).
+            reflexivity.
+          }
+          claim HrFunR2 :
+            function_on r R2_minus_origin (setprod R R).
+          {
+            let x.
+            assume HxR2m0.
+            claim HrxS1 : apply_fun r x :e S1.
+            {
+              exact (HrIntoS1
+                x
+                HxR2m0).
+            }
+            exact (SepE1
+              (setprod R R)
+              (fun p:set =>
+                add_SNo (mul_SNo (p 0) (p 0))
+                  (mul_SNo (p 1) (p 1)) = 1)
+              (apply_fun r x)
+              HrxS1).
+          }
+          claim HradialContR2 :
+            continuous_map R2_minus_origin R2_minus_origin_topology
+              (setprod R R) R2_topology r.
+          {
+            exact (continuous_map_congr_on
+              R2_minus_origin
+              R2_minus_origin_topology
+              (setprod R R)
+              R2_topology
+              w
+              r
+              HwCont
+              HrFunR2
+              HwEqR).
+          }
+          exact (continuous_map_range_restrict
+            R2_minus_origin
+            R2_minus_origin_topology
+            (setprod R R)
+            R2_topology
+            r
+            R2_minus_origin
+            HradialContR2
+            HR2m0subR2
+            (fun x Hx =>
+              s55_S1_subset_R2_minus_origin
+                (apply_fun r x)
+                (HrIntoS1 x Hx))).
         }
         claim HrCont :
           continuous_map R2_minus_origin R2_minus_origin_topology
