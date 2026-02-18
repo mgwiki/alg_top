@@ -113085,27 +113085,6 @@ apply (iffI
         Hgens
         Halpha).
     }
-    claim HGalpha_eval : Galpha =
-      {g :e G | exists n:set, n :e int /\
-        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
-         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
-           g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}.
-    {
-      claim HGalpha_def : Galpha = apply_fun Gfam0 alpha.
-      {
-        reflexivity.
-      }
-      rewrite HGalpha_def.
-      exact (lemma69_1_factor_family_eval
-        G
-        mult
-        e
-        inv
-        J
-        gens
-        alpha
-        Halpha).
-    }
     claim Hinf_orig :
       infinite_cyclic_subgroup G mult e inv (apply_fun gens alpha).
     {
