@@ -59089,8 +59089,82 @@ claim Hex :
       (forall t:set, t :e unit_interval ->
         apply_fun p (apply_fun ft t) = apply_fun f t).
   {
-    (** TODO Bob: extend lt1 on N1 (with 0,1 :e N1) to a global lift on unit_interval. **)
-    admit.
+    claim HN1All : N1 = unit_interval.
+    {
+      (** TODO Bob: prove N1 = unit_interval (N1 is an open seed-neighborhood containing 0 and 1). **)
+      admit.
+    }
+    claim Hlt1ContSub :
+      continuous_map
+        N1
+        (subspace_topology unit_interval unit_interval_topology N1)
+        E
+        Te
+        lt1.
+    {
+      exact (andEL
+        (continuous_map
+          N1
+          (subspace_topology unit_interval unit_interval_topology N1)
+          E
+          Te
+          lt1)
+        (forall x:set, x :e N1 ->
+          apply_fun p (apply_fun lt1 x) = apply_fun f x)
+        HN1lift).
+    }
+    claim Hlt1CommSub :
+      forall x:set, x :e N1 ->
+        apply_fun p (apply_fun lt1 x) = apply_fun f x.
+    {
+      exact (andER
+        (continuous_map
+          N1
+          (subspace_topology unit_interval unit_interval_topology N1)
+          E
+          Te
+          lt1)
+        (forall x:set, x :e N1 ->
+          apply_fun p (apply_fun lt1 x) = apply_fun f x)
+        HN1lift).
+    }
+    claim Hlt1ContGlobal :
+      continuous_map unit_interval unit_interval_topology E Te lt1.
+    {
+      rewrite <- (subspace_topology_whole
+        unit_interval
+        unit_interval_topology
+        unit_interval_topology_on).
+      rewrite <- HN1All.
+      exact Hlt1ContSub.
+    }
+    claim Hlt1CommGlobal :
+      forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun lt1 t) = apply_fun f t.
+    {
+      let t.
+      assume HtUnit.
+      claim HtN1 : t :e N1.
+      {
+        rewrite HN1All.
+        exact HtUnit.
+      }
+      exact (Hlt1CommSub
+        t
+        HtN1).
+    }
+    witness lt1.
+    exact (andI
+      (continuous_map unit_interval unit_interval_topology E Te lt1 /\
+        apply_fun lt1 0 = e0)
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun lt1 t) = apply_fun f t)
+      (andI
+        (continuous_map unit_interval unit_interval_topology E Te lt1)
+        (apply_fun lt1 0 = e0)
+        Hlt1ContGlobal
+        HN1start)
+      Hlt1CommGlobal).
   }
   exact HglobalLiftFromN1.
 }
