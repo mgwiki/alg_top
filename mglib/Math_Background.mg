@@ -58287,21 +58287,106 @@ claim Hex :
                                 (Union slicesUt = preimage_of E p Ut)
                                 HslicesUtCore)).
                           }
-                          claim HluuVx : apply_fun lu u :e Vx.
+                          claim HhomeVx :
+                            homeomorphism Vx (subspace_topology E Te Vx) Ut (subspace_topology B Tb Ut)
+                              (graph Vx (fun z:set => apply_fun p z)).
                           {
-                            (** TODO Bob: prove lu(u) lies in the selected slice Vx for overlap points x. **)
+                            exact (HhomeSlicesUt
+                              Vx
+                              HVxSlice).
+                          }
+                          claim HuniqVx :
+                            exists xv:set, xv :e Vx /\ apply_fun p xv = apply_fun f x /\
+                              forall y:set, y :e Vx ->
+                                apply_fun p y = apply_fun f x -> y = xv.
+                          {
+                            exact (homeomorphic_sheet_unique_fiber_point
+                              E
+                              Te
+                              B
+                              Tb
+                              p
+                              Vx
+                              Ut
+                              (apply_fun f x)
+                              HhomeVx
+                              HfxUt).
+                          }
+                          apply HuniqVx.
+                          let xv.
+                          assume HxvPack.
+                          claim HxvLeft :
+                            (xv :e Vx /\ apply_fun p xv = apply_fun f x).
+                          {
+                            exact (andEL
+                              (xv :e Vx /\ apply_fun p xv = apply_fun f x)
+                              (forall y:set, y :e Vx ->
+                                apply_fun p y = apply_fun f x -> y = xv)
+                              HxvPack).
+                          }
+                          claim HxvVx : xv :e Vx.
+                          {
+                            exact (andEL
+                              (xv :e Vx)
+                              (apply_fun p xv = apply_fun f x)
+                              HxvLeft).
+                          }
+                          claim Huniqxv :
+                            forall y:set, y :e Vx ->
+                              apply_fun p y = apply_fun f x -> y = xv.
+                          {
+                            exact (andER
+                              (xv :e Vx /\ apply_fun p xv = apply_fun f x)
+                              (forall y:set, y :e Vx ->
+                                apply_fun p y = apply_fun f x -> y = xv)
+                              HxvPack).
+                          }
+                          claim HlocalNtVuX : apply_fun localNt x :e Vu.
+                          {
+                            rewrite (compose_fun_apply
+                              Nt
+                              f
+                              gu
+                              x
+                              HxNt).
+                            exact (HguFun
+                              (apply_fun f x)
+                              HfxUt).
+                          }
+                          claim HlocalNtEqfx :
+                            apply_fun p (apply_fun localNt x) = apply_fun f x.
+                          {
+                            exact (HlocalNtComm
+                              x
+                              HxNt).
+                          }
+                          claim HlocalNtInVx : apply_fun localNt x :e Vx.
+                          {
+                            (** TODO Bob: prove localNt(x) lies in the same slice Vx as lu(x). **)
                             admit.
+                          }
+                          claim HlocalEqxv : apply_fun localNt x = xv.
+                          {
+                            exact (Huniqxv
+                              (apply_fun localNt x)
+                              HlocalNtInVx
+                              HlocalNtEqfx).
+                          }
+                          claim HxvVu : xv :e Vu.
+                          {
+                            rewrite <- HlocalEqxv.
+                            exact HlocalNtVuX.
                           }
                           exact (pairwise_disjoint_point_unique_member
                             slicesUt
                             Vx
                             Vu
-                            (apply_fun lu u)
+                            xv
                             HpdSlicesUt
                             HVxSlice
                             HVuSlice
-                            HluuVx
-                            HluuVu).
+                            HxvVx
+                            HxvVu).
                         }
                         rewrite <- HVxEqVu.
                         exact HluVx.
