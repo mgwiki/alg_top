@@ -1,6 +1,6 @@
 (** Balance Alice 3305 **)
 (** Balance Bob 3021 **)
-(** Balance Charlie 1212 **)
+(** Balance Charlie 1205 **)
 (** Balance Dave 1419 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -73006,7 +73006,8 @@ Admitted.
 (** from S55 Thm 55.6 (line 983 in algtop.tex): Brouwer fixed-point theorem for the disc **)
 (** LATEX VERSION: If f: B^2 -> B^2 is continuous, then there exists a point x in B^2 such that f(x) = x. **)
 (** EFFORT: 6 lines textbook, difficulty 3/10, USD 60 **)
-(** Bounty 66 **)
+(** Bounty 73 **)
+(** Lock Charlie 1771519000 **)
 Theorem thm55_6_brouwer_fixed_point_disc : forall f:set,
   continuous_map B2 B2_topology B2 B2_topology f ->
   exists x:set, x :e B2 /\ apply_fun f x = x.
