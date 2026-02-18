@@ -56551,7 +56551,166 @@ claim Hex :
           {
             claim HtSeed : t :e SeedTimes.
             {
-              (** TODO Bob: from HuSeed and HuNt, propagate the seed lift through Ut to extend the seed witness from u to t. **)
+              claim HuSeedPack :
+                exists Nu lu:set,
+                  Nu :e unit_interval_topology /\
+                  0 :e Nu /\
+                  u :e Nu /\
+                  lifting_of
+                    Nu
+                    (subspace_topology unit_interval unit_interval_topology Nu)
+                    E
+                    Te
+                    B
+                    Tb
+                    p
+                    f
+                    lu /\
+                  apply_fun lu 0 = e0.
+              {
+                exact (SepE2
+                  unit_interval
+                  (fun t0:set =>
+                    exists Nt0 lt0:set,
+                      Nt0 :e unit_interval_topology /\
+                      0 :e Nt0 /\
+                      t0 :e Nt0 /\
+                      lifting_of
+                        Nt0
+                        (subspace_topology unit_interval unit_interval_topology Nt0)
+                        E
+                        Te
+                        B
+                        Tb
+                        p
+                        f
+                        lt0 /\
+                      apply_fun lt0 0 = e0)
+                  u
+                  HuSeed).
+              }
+              apply HuSeedPack.
+              let Nu.
+              assume HNuPack.
+              apply HNuPack.
+              let lu.
+              assume HluPack.
+              claim HNuLeft :
+                ((Nu :e unit_interval_topology /\ 0 :e Nu) /\ u :e Nu) /\
+                lifting_of
+                  Nu
+                  (subspace_topology unit_interval unit_interval_topology Nu)
+                  E
+                  Te
+                  B
+                  Tb
+                  p
+                  f
+                  lu.
+              {
+                exact (andEL
+                  (((Nu :e unit_interval_topology /\ 0 :e Nu) /\ u :e Nu) /\
+                    lifting_of
+                      Nu
+                      (subspace_topology unit_interval unit_interval_topology Nu)
+                      E
+                      Te
+                      B
+                      Tb
+                      p
+                      f
+                      lu)
+                  (apply_fun lu 0 = e0)
+                  HluPack).
+              }
+              claim HNu0u : (Nu :e unit_interval_topology /\ 0 :e Nu) /\ u :e Nu.
+              {
+                exact (andEL
+                  ((Nu :e unit_interval_topology /\ 0 :e Nu) /\ u :e Nu)
+                  (lifting_of
+                    Nu
+                    (subspace_topology unit_interval unit_interval_topology Nu)
+                    E
+                    Te
+                    B
+                    Tb
+                    p
+                    f
+                    lu)
+                  HNuLeft).
+              }
+              claim HNuPair : Nu :e unit_interval_topology /\ 0 :e Nu.
+              {
+                exact (andEL
+                  (Nu :e unit_interval_topology /\ 0 :e Nu)
+                  (u :e Nu)
+                  HNu0u).
+              }
+              claim HNuOpen : Nu :e unit_interval_topology.
+              {
+                exact (andEL
+                  (Nu :e unit_interval_topology)
+                  (0 :e Nu)
+                  HNuPair).
+              }
+              claim H0Nu : 0 :e Nu.
+              {
+                exact (andER
+                  (Nu :e unit_interval_topology)
+                  (0 :e Nu)
+                  HNuPair).
+              }
+              claim HuNu : u :e Nu.
+              {
+                exact (andER
+                  (Nu :e unit_interval_topology /\ 0 :e Nu)
+                  (u :e Nu)
+                  HNu0u).
+              }
+              claim HluLift :
+                lifting_of
+                  Nu
+                  (subspace_topology unit_interval unit_interval_topology Nu)
+                  E
+                  Te
+                  B
+                  Tb
+                  p
+                  f
+                  lu.
+              {
+                exact (andER
+                  ((Nu :e unit_interval_topology /\ 0 :e Nu) /\ u :e Nu)
+                  (lifting_of
+                    Nu
+                    (subspace_topology unit_interval unit_interval_topology Nu)
+                    E
+                    Te
+                    B
+                    Tb
+                    p
+                    f
+                    lu)
+                  HNuLeft).
+              }
+              claim Hlu0 : apply_fun lu 0 = e0.
+              {
+                exact (andER
+                  (((Nu :e unit_interval_topology /\ 0 :e Nu) /\ u :e Nu) /\
+                    lifting_of
+                      Nu
+                      (subspace_topology unit_interval unit_interval_topology Nu)
+                      E
+                      Te
+                      B
+                      Tb
+                      p
+                      f
+                      lu)
+                  (apply_fun lu 0 = e0)
+                  HluPack).
+              }
+              (** TODO Bob: from HuNu, HuNt, HNtMap, and HluLift, glue/propagate a seed witness from u to t. **)
               admit.
             }
             exact (HtNotSeed
