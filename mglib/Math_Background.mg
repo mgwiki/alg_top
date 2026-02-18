@@ -116303,13 +116303,9 @@ Definition wedge_of_circles_finite : set -> set -> set -> set -> set -> prop :=
     (forall i j:set, i :e n -> j :e n -> i <> j ->
       apply_fun Sfam i :/\: apply_fun Sfam j = Sing p).
 
-(** from S71 Thm 71.1 (line 3502 in algtop.tex): pi1 of finite wedge **)
-(** LATEX VERSION: If X is wedge of S_1,...,S_n, then pi1(X,p) is a free group. **)
-(** If f_i represents a generator of pi1(S_i,p), then f_1,...,f_n represent **)
-(** a system of free generators for pi1(X,p). **)
-(** EFFORT: 20 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
-Theorem thm71_1_pi1_wedge_finite :
+(** Infrastructure helper for S71 Thm 71.1:
+    fundamental group of a finite wedge of circles is free on n generators. **)
+Theorem pi1_finite_wedge_of_circles_free_helper :
   forall X Tx n Sfam p:set,
   wedge_of_circles_finite X Tx n Sfam p ->
   exists gens:set,
@@ -116321,6 +116317,26 @@ Theorem thm71_1_pi1_wedge_finite :
       (fundamental_group_inv X Tx p)
       n gens.
 admit.
+Admitted.
+
+(** from S71 Thm 71.1 (line 3502 in algtop.tex): pi1 of finite wedge **)
+(** LATEX VERSION: If X is wedge of S_1,...,S_n, then pi1(X,p) is a free group. **)
+(** If f_i represents a generator of pi1(S_i,p), then f_1,...,f_n represent **)
+(** a system of free generators for pi1(X,p). **)
+(** EFFORT: 20 lines textbook, difficulty 6/10, USD 200 **)
+(** Bounty 220 **)
+Theorem thm71_1_pi1_wedge_finite :
+  forall X Tx n Sfam p:set,
+  wedge_of_circles_finite X Tx n Sfam p ->
+  exists gens:set,
+    function_on gens n (fundamental_group X Tx p) /\
+	    free_group_with_generators
+	      (fundamental_group X Tx p)
+	      (fundamental_group_mult X Tx p)
+	      (fundamental_group_id X Tx p)
+	      (fundamental_group_inv X Tx p)
+	      n gens.
+exact pi1_finite_wedge_of_circles_free_helper.
 Admitted.
 
 (** from S71 Definition (line 3529 in algtop.tex): coherent topology with subspaces **)
@@ -116352,12 +116368,9 @@ Definition wedge_of_circles : set -> set -> set -> set -> set -> prop :=
       apply_fun Sfam alpha :/\: apply_fun Sfam beta = Sing p) /\
     coherent_with_subspaces X Tx J Sfam.
 
-(** from S71 Lem 71.2 (line 3537 in algtop.tex): wedge of circles is normal **)
-(** LATEX VERSION: Let X be wedge of circles S_alpha. Then X is normal. **)
-(** Any compact subspace of X is contained in finitely many S_alpha. **)
-(** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-Theorem lemma71_2_wedge_normal :
+(** Infrastructure helper for S71 Lem 71.2:
+    wedge-of-circles spaces are normal and compact subsets meet only finitely many circles. **)
+Theorem wedge_of_circles_normal_finite_support_helper :
   forall X Tx J Sfam p:set,
   wedge_of_circles X Tx J Sfam p ->
   normal_space X Tx /\
@@ -116368,12 +116381,25 @@ Theorem lemma71_2_wedge_normal :
 admit.
 Admitted.
 
-(** from S71 Thm 71.3 (line 3544 in algtop.tex): pi1 of general wedge **)
-(** LATEX VERSION: pi1(X,p) is a free group with system of free generators **)
-(** {f_alpha}, where f_alpha represents a generator of pi1(S_alpha, p). **)
-(** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
-Theorem thm71_3_pi1_wedge_general :
+(** from S71 Lem 71.2 (line 3537 in algtop.tex): wedge of circles is normal **)
+(** LATEX VERSION: Let X be wedge of circles S_alpha. Then X is normal. **)
+(** Any compact subspace of X is contained in finitely many S_alpha. **)
+(** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
+(** Bounty 110 **)
+Theorem lemma71_2_wedge_normal :
+  forall X Tx J Sfam p:set,
+  wedge_of_circles X Tx J Sfam p ->
+	normal_space X Tx /\
+	(forall C:set, C c= X ->
+	  compact_space C (subspace_topology X Tx C) ->
+	  exists F:set, F c= J /\ finite F /\
+	    C c= Union (Repl F (fun alpha:set => apply_fun Sfam alpha))).
+exact wedge_of_circles_normal_finite_support_helper.
+Admitted.
+
+(** Infrastructure helper for S71 Thm 71.3:
+    fundamental group of a general wedge of circles is free on J generators. **)
+Theorem pi1_general_wedge_of_circles_free_helper :
   forall X Tx J Sfam p:set,
   wedge_of_circles X Tx J Sfam p ->
   exists gens:set,
@@ -116387,6 +116413,34 @@ Theorem thm71_3_pi1_wedge_general :
 admit.
 Admitted.
 
+(** from S71 Thm 71.3 (line 3544 in algtop.tex): pi1 of general wedge **)
+(** LATEX VERSION: pi1(X,p) is a free group with system of free generators **)
+(** {f_alpha}, where f_alpha represents a generator of pi1(S_alpha, p). **)
+(** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
+(** Bounty 220 **)
+Theorem thm71_3_pi1_wedge_general :
+  forall X Tx J Sfam p:set,
+  wedge_of_circles X Tx J Sfam p ->
+  exists gens:set,
+    function_on gens J (fundamental_group X Tx p) /\
+	    free_group_with_generators
+	      (fundamental_group X Tx p)
+	      (fundamental_group_mult X Tx p)
+	      (fundamental_group_id X Tx p)
+	      (fundamental_group_inv X Tx p)
+	      J gens.
+exact pi1_general_wedge_of_circles_free_helper.
+Admitted.
+
+(** Infrastructure helper for S71 Lem 71.4:
+    every index set admits a wedge-of-circles realization. **)
+Theorem existence_of_wedge_of_circles_helper :
+  forall J:set,
+  exists X Tx Sfam p:set,
+    wedge_of_circles X Tx J Sfam p.
+admit.
+Admitted.
+
 (** from S71 Lem 71.4 (line 3579 in algtop.tex): existence of wedge of circles **)
 (** LATEX VERSION: Given an index set J, there exists a space X that is a wedge of **)
 (** circles S_alpha for alpha in J. **)
@@ -116396,7 +116450,7 @@ Theorem lemma71_4_existence_wedge :
   forall J:set,
   exists X Tx Sfam p:set,
     wedge_of_circles X Tx J Sfam p.
-admit.
+exact existence_of_wedge_of_circles_helper.
 Admitted.
 
 (** from S71 Exercise 1(a) (line 3597 in algtop.tex) **)
