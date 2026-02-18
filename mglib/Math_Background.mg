@@ -111708,6 +111708,25 @@ apply (andI
           (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
           n = quotient_group_id G mult e C))
       HpowPair).
+    claim HinfOrigAlpha :
+      infinite_cyclic_subgroup G mult e inv (apply_fun gens alpha).
+    {
+      exact (HinfG alpha Halpha).
+    }
+    claim HnontrivOrig :
+      ~(exists n:set, n :e omega /\ n <> 0 /\
+        group_power_nat mult e (apply_fun gens alpha) n = e).
+    {
+      exact (andER
+        (apply_fun gens alpha :e G /\
+         (forall n:set, n :e omega ->
+           group_power_nat mult e (apply_fun gens alpha) n :e G) /\
+         (forall m:set, m :e omega ->
+           group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) :e G))
+        (~(exists n:set, n :e omega /\ n <> 0 /\
+          group_power_nat mult e (apply_fun gens alpha) n = e))
+        HinfOrigAlpha).
+    }
     admit.
   admit.
 Admitted.
