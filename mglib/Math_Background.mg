@@ -1,5 +1,5 @@
 (** Balance Alice 3280 **)
-(** Balance Bob 3021 **)
+(** Balance Bob 2996 **)
 (** Balance Charlie 1260 **)
 (** Balance Dave 1601 **)
 
@@ -68710,7 +68710,8 @@ Admitted.
 (** continuous with F(0,0) = b0. There is a unique lifting F_tilde: I x I -> E with **)
 (** F_tilde(0,0) = e0. If F is a path homotopy, then F_tilde is a path homotopy. **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 242 **)
+(** Bounty 267 **)
+(** Lock Bob 1771536475 **)
 Theorem lemma54_2_homotopy_lifting : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun F (0, 0) ->
