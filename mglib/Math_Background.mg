@@ -109170,7 +109170,51 @@ Theorem lemma69_1_extension_free_group :
            (forall alpha:set, alpha :e J ->
              apply_fun h' (apply_fun gens alpha) = apply_fun ys alpha) ->
            forall x:set, x :e G -> apply_fun h' x = apply_fun h x))).
-admit.
+let G mult e inv J gens.
+assume Hgrp : group_structure G mult e inv.
+assume Hgens : function_on gens J G.
+apply (iffI
+  (free_group_with_generators G mult e inv J gens)
+  (forall H multH eH invH:set,
+    group_structure H multH eH invH ->
+    forall ys:set, function_on ys J H ->
+      exists h:set,
+        group_homomorphism G mult H multH h /\
+        (forall alpha:set, alpha :e J ->
+          apply_fun h (apply_fun gens alpha) = apply_fun ys alpha) /\
+        (forall h':set, group_homomorphism G mult H multH h' ->
+          (forall alpha:set, alpha :e J ->
+            apply_fun h' (apply_fun gens alpha) = apply_fun ys alpha) ->
+          forall x:set, x :e G -> apply_fun h' x = apply_fun h x))).
+- assume Hfree : free_group_with_generators G mult e inv J gens.
+  apply (and4E
+    (group_structure G mult e inv)
+    (function_on gens J G)
+    (forall alpha:set, alpha :e J ->
+      infinite_cyclic_subgroup G mult e inv (apply_fun gens alpha))
+    (free_product_of_subgroups G mult e inv J
+      (graph J (fun alpha:set =>
+        {g :e G | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}))
+      (graph J (fun alpha:set => e)))
+    Hfree).
+  assume Hgrp_free Hgens_free Hinfcyc Hfp.
+  admit.
+- assume Hext :
+    forall H multH eH invH:set,
+      group_structure H multH eH invH ->
+      forall ys:set, function_on ys J H ->
+        exists h:set,
+          group_homomorphism G mult H multH h /\
+          (forall alpha:set, alpha :e J ->
+            apply_fun h (apply_fun gens alpha) = apply_fun ys alpha) /\
+          (forall h':set, group_homomorphism G mult H multH h' ->
+            (forall alpha:set, alpha :e J ->
+              apply_fun h' (apply_fun gens alpha) = apply_fun ys alpha) ->
+            forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+  admit.
 Admitted.
 
 (** from S69 Thm 69.2 (line 3057 in algtop.tex): free product of free groups is free **)
