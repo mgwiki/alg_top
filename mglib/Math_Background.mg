@@ -106737,9 +106737,77 @@ apply and3I.
                 alpha <> beta)
             Hrw_y).
           assume Ho _ _. exact Ho. }
-        (** Key claim: the H-product of h_single over any word equals h when the word_product gives a non-identity element **)
-        (** We prove this by showing the H-product is invariant under the "free reduction" process **)
-        (** For now, we use a direct approach: induction on n_of(y) **)
+        (** nat_primrec extensionality: same base, agree on indices => same result **)
+        claim Hnpr_ext : forall k:set, nat_p k ->
+          forall f1 f2:set->set->set,
+            (forall i:set, i :e k -> forall r:set, f1 i r = f2 i r) ->
+            nat_primrec eH f1 k = nat_primrec eH f2 k.
+        { apply (nat_ind (fun k:set =>
+            forall f1 f2:set->set->set,
+              (forall i:set, i :e k -> forall r:set, f1 i r = f2 i r) ->
+              nat_primrec eH f1 k = nat_primrec eH f2 k)).
+          - let f1 f2. assume Heq.
+            rewrite (nat_primrec_0 eH f1). rewrite (nat_primrec_0 eH f2). reflexivity.
+          - let k. assume Hk : nat_p k. assume IH.
+            let f1 f2. assume Heq.
+            rewrite (nat_primrec_S eH f1 k Hk). rewrite (nat_primrec_S eH f2 k Hk).
+            claim Hprev : nat_primrec eH f1 k = nat_primrec eH f2 k.
+            { exact (IH f1 f2 (fun i:set => fun Hi:i :e k => fun r:set => Heq i (ordsuccI1 k i Hi) r)). }
+            rewrite Hprev.
+            exact (Heq k (ordsuccI2 k) (nat_primrec eH f2 k)). }
+        (** h evaluated from any reduced word representation **)
+        claim Hh_val_any_rw : forall g:set, g :e G -> g <> eG ->
+          forall n xs:set, reduced_word J Gfam efam n xs -> n <> 0 ->
+          word_product multG eG xs n = g ->
+          apply_fun h g = nat_primrec eH
+            (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun xs i))) n.
+        { let g. assume HgG. assume Hg_ne.
+          let n xs. assume Hrw. assume Hn_ne. assume Hwp.
+          claim Hh_g : apply_fun h g = nat_primrec eH
+            (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun (xs_of g) i))) (n_of g).
+          { exact (Hh_ne_shared g HgG Hg_ne). }
+          claim Huw : (n_of g) = n /\ (forall i:set, i :e (n_of g) -> apply_fun (xs_of g) i = apply_fun xs i).
+          { exact (Hh_word g HgG Hg_ne n xs Hrw Hn_ne Hwp). }
+          claim Hn_eq : n_of g = n.
+          { exact (andEL ((n_of g) = n) (forall i:set, i :e (n_of g) -> apply_fun (xs_of g) i = apply_fun xs i) Huw). }
+          claim Hxs_eq : forall i:set, i :e (n_of g) -> apply_fun (xs_of g) i = apply_fun xs i.
+          { exact (andER ((n_of g) = n) (forall i:set, i :e (n_of g) -> apply_fun (xs_of g) i = apply_fun xs i) Huw). }
+          claim Hn_omega : n :e omega.
+          { apply (and3E
+              (n :e omega)
+              (forall i:set, i :e n ->
+                exists alpha:set, alpha :e J /\
+                  apply_fun xs i :e apply_fun Gfam alpha /\
+                  apply_fun xs i <> apply_fun efam alpha)
+              (forall i:set, i :e n -> ordsucc i :e n ->
+                forall alpha beta:set, alpha :e J -> beta :e J ->
+                  apply_fun xs i :e apply_fun Gfam alpha ->
+                  apply_fun xs (ordsucc i) :e apply_fun Gfam beta ->
+                  alpha <> beta)
+              Hrw).
+            assume Ho _ _. exact Ho. }
+          claim Hfuns_agree : forall i:set, i :e n -> forall r:set,
+            (fun j:set => fun s:set => apply_fun multH (s, h_single (apply_fun (xs_of g) j))) i r =
+            (fun j:set => fun s:set => apply_fun multH (s, h_single (apply_fun xs j))) i r.
+          { let i. assume Hi : i :e n. let r.
+            prove apply_fun multH (r, h_single (apply_fun (xs_of g) i)) =
+              apply_fun multH (r, h_single (apply_fun xs i)).
+            claim Hi_nofg : i :e (n_of g).
+            { rewrite Hn_eq. exact Hi. }
+            claim Hieq : apply_fun (xs_of g) i = apply_fun xs i.
+            { exact (Hxs_eq i Hi_nofg). }
+            rewrite Hieq. reflexivity. }
+          claim Hext : nat_primrec eH
+            (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun (xs_of g) i))) n =
+            nat_primrec eH
+            (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun xs i))) n.
+          { exact (Hnpr_ext n (omega_nat_p n Hn_omega)
+              (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun (xs_of g) i)))
+              (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun xs i)))
+              Hfuns_agree). }
+          rewrite Hh_g. rewrite Hn_eq. exact Hext. }
+        (** The multiplicativity proof uses Hh_val_any_rw to compute h from any reduced word **)
+        (** For now, the full proof with free reduction invariance is admitted **)
         admit.
 (** Part 2: restriction - for alpha in J, x in G_alpha, h(x) = hfam(alpha)(x) **)
 - let alpha0. assume Hal0 : alpha0 :e J.
