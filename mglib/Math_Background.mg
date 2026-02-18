@@ -1,6 +1,6 @@
 (** Balance Alice 3264 **)
 (** Balance Bob 3037 **)
-(** Balance Charlie 1171 **)
+(** Balance Charlie 1165 **)
 (** Balance Dave 1436 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -49612,7 +49612,8 @@ Qed.
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
 (** then the partition of p^{-1}(U) into slices is unique. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
+(** Bounty 61 **)
+(** Lock Charlie 1771477442 **)
 Theorem ex53_2_unique_partition : forall E Te B Tb p U:set,
   topology_on E Te -> topology_on B Tb ->
   connected_space U (subspace_topology B Tb U) ->
