@@ -49668,6 +49668,56 @@ exact (elem_implies_nonempty
   HgyX).
 Qed.
 
+(** Helper: homeomorphism has nonempty codomain whenever domain is nonempty. **)
+(** Proven Charlie **)
+Theorem homeomorphism_codomain_nonempty_of_domain_nonempty :
+  forall X Tx Y Ty f:set,
+    homeomorphism X Tx Y Ty f ->
+    X <> Empty ->
+    Y <> Empty.
+let X Tx Y Ty f.
+assume Hhome HXne.
+claim Hcontf : continuous_map X Tx Y Ty f.
+{
+  exact (andEL
+    (continuous_map X Tx Y Ty f)
+    (exists g:set,
+      continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x) /\
+      (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y))
+    Hhome).
+}
+claim HfFun : function_on f X Y.
+{
+  exact (continuous_map_function_on
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hcontf).
+}
+claim HexX : exists x:set, x :e X.
+{
+  exact (nonempty_has_element
+    X
+    HXne).
+}
+apply HexX.
+let x.
+assume HxX.
+claim HfxY : apply_fun f x :e Y.
+{
+  exact (HfFun
+    x
+    HxX).
+}
+exact (elem_implies_nonempty
+  Y
+  (apply_fun f x)
+  HfxY).
+Qed.
+
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
 (** then the partition of p^{-1}(U) into slices is unique. **)
