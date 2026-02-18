@@ -72108,6 +72108,98 @@ rewrite HGeqSing.
 exact (Sing_finite e).
 Qed.
 
+(** Proven Bob **)
+(** Infrastructure helper: every nonzero integer is a positive successor or a negative successor. **)
+Theorem int_nonzero_cases_cyclic_helper :
+  forall n:set, n :e int -> n <> 0 ->
+    (exists m:set, m :e omega /\ n = ordsucc m) \/
+    (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m)).
+let n.
+assume HnInt HnNe0.
+apply (int_3_cases
+  n
+  HnInt
+  ((exists m:set, m :e omega /\ n = ordsucc m) \/
+   (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m)))).
+- let m.
+  assume HmO HnNeg.
+  apply orIR.
+  witness m.
+  apply andI.
+  + exact HmO.
+  + exact HnNeg.
+- assume Hn0.
+  exact (FalseE
+    (HnNe0 Hn0)
+    ((exists m:set, m :e omega /\ n = ordsucc m) \/
+     (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m)))).
+- let m.
+  assume HmO HnPos.
+  apply orIL.
+  witness m.
+  apply andI.
+  + exact HmO.
+  + exact HnPos.
+Qed.
+
+(** Proven Bob **)
+(** Infrastructure helper: divisibility is stable under negating the divisor. **)
+Theorem divides_int_neg_divisor_cyclic_helper :
+  forall d n:set, divides_int d n -> divides_int (minus_SNo d) n.
+let d n.
+assume HdDiv.
+apply (and3E
+  (d :e int)
+  (n :e int)
+  (exists k:set, k :e int /\ mul_SNo d k = n)
+  HdDiv).
+assume HdInt HnInt HkEx.
+apply HkEx.
+let k.
+assume HkPack.
+claim HkInt : k :e int.
+{
+  exact (andEL
+    (k :e int)
+    (mul_SNo d k = n)
+    HkPack).
+}
+claim Hmul : mul_SNo d k = n.
+{
+  exact (andER
+    (k :e int)
+    (mul_SNo d k = n)
+    HkPack).
+}
+claim HdS : SNo d.
+{
+  exact (int_SNo d HdInt).
+}
+claim HkS : SNo k.
+{
+  exact (int_SNo k HkInt).
+}
+claim HmdInt : minus_SNo d :e int.
+{
+  exact (int_minus_SNo d HdInt).
+}
+claim HmkInt : minus_SNo k :e int.
+{
+  exact (int_minus_SNo k HkInt).
+}
+apply (andI
+  (minus_SNo d :e int /\ n :e int)
+  (exists k0:set, k0 :e int /\ mul_SNo (minus_SNo d) k0 = n)).
+- apply andI.
+  + exact HmdInt.
+  + exact HnInt.
+- witness (minus_SNo k).
+  apply andI.
+  + exact HmkInt.
+  + rewrite (mul_SNo_minus_minus d k HdS HkS).
+    exact Hmul.
+Qed.
+
 (** from S54 text (line 833 in algtop.tex) **)
 (** LATEX VERSION: A group is cyclic of infinite order iff it is isomorphic to Z; **)
 (** cyclic of order k iff isomorphic to Z/k. **)
@@ -72479,13 +72571,22 @@ claim HphiXNe0 : apply_fun phi x <> 0.
   }
   exact (HxNeE HxEqE).
 }
+claim HphiXSignCase :
+  (exists m:set, m :e omega /\ apply_fun phi x = ordsucc m) \/
+  (exists m:set, m :e omega /\ apply_fun phi x = minus_SNo (ordsucc m)).
+{
+  exact (int_nonzero_cases_cyclic_helper
+    (apply_fun phi x)
+    HphiXInt
+    HphiXNe0).
+}
 claim HpsiEx :
   exists psi:set,
     group_homomorphism int integers_group_mult H multH psi /\
     apply_fun psi (apply_fun phi x) = y.
 {
   (** TODO Bob: build a homomorphism psi : int -> H hitting y at phi(x). **)
-  (** Note: we now have nontriviality in both domain and integer image: HxNeE and HphiXNe0. **)
+  (** Note: we now have nontriviality and sign split data: HxNeE, HphiXNe0, HphiXSignCase. **)
   admit.
 }
 apply HpsiEx.
