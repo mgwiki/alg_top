@@ -61330,7 +61330,15 @@ claim Hex :
                                 }
                                 claim HVxlocalEqVx : Vxlocal = Vx.
                                 {
-                                  (** TODO Charlie: show the slice containing xlocal equals Vx. **)
+                                  claim HVxlocalEqVlocal : Vxlocal = Vlocal.
+                                  {
+                                    exact (HxlocalSliceEqVlocal
+                                      Vxlocal
+                                      HxlocalVxlocal
+                                      HVxlocalSlice).
+                                  }
+                                  rewrite HVxlocalEqVlocal.
+                                  (** TODO Charlie: reduce to Vlocal = Vx using compatibility of the two lifts over f(x). **)
                                   admit.
                                 }
                                 rewrite <- HVxlocalEqVx.
@@ -63012,7 +63020,14 @@ claim Hex :
                   HyVr
                   Hypr).
               }
-              (** TODO Charlie: compare lr with lt1 starting from Hlr0EqLt10 and local evenly-covered neighborhood Ur at f(r). **)
+              claim Hplr0Eqplt10 :
+                apply_fun p (apply_fun lr 0) = apply_fun p (apply_fun lt1 0).
+              {
+                rewrite HlrComm0.
+                rewrite Hlt1Comm0.
+                reflexivity.
+              }
+              (** TODO Charlie: compare lr with lt1 starting from Hlr0EqLt10 and Hplr0Eqplt10 using the local evenly-covered neighborhood Ur at f(r). **)
               admit.
             }
             exact HrN1.
