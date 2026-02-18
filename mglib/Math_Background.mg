@@ -105789,6 +105789,130 @@ exact (quotient_universal_property
   Hsub).
 Qed.
 
+(** Proven Charlie **)
+Theorem projective_plane_map_function_on :
+  function_on projective_plane_map (Sn 2) projective_plane.
+exact (projective_n_space_map_function_on 2).
+Qed.
+
+(** Proven Charlie **)
+Theorem projective_plane_map_surjective : forall y:set,
+  y :e projective_plane ->
+  exists x:set, x :e Sn 2 /\ apply_fun projective_plane_map x = y.
+let y.
+assume Hy.
+exact (projective_n_space_map_surjective 2 y Hy).
+Qed.
+
+(** Proven Charlie **)
+Theorem projective_plane_map_surjective_map :
+  surjective_map (Sn 2) projective_plane projective_plane_map.
+exact (andI
+  (function_on projective_plane_map (Sn 2) projective_plane)
+  (forall y:set, y :e projective_plane ->
+    exists x:set, x :e Sn 2 /\ apply_fun projective_plane_map x = y)
+  projective_plane_map_function_on
+  (fun y:set => fun Hy:y :e projective_plane =>
+    projective_plane_map_surjective y Hy)).
+Qed.
+
+(** Proven Charlie **)
+Theorem projective_plane_map_quotient_map :
+  quotient_map (Sn 2) (Sn_topology 2) projective_plane projective_plane_map.
+exact (projective_n_space_map_quotient_map 2).
+Qed.
+
+(** Proven Charlie **)
+Theorem projective_plane_topology_on :
+  topology_on projective_plane projective_plane_topology.
+exact (projective_n_space_topology_on 2).
+Qed.
+
+(** Proven Charlie **)
+Theorem projective_plane_map_continuous :
+  continuous_map (Sn 2) (Sn_topology 2)
+    projective_plane projective_plane_topology
+    projective_plane_map.
+exact (projective_n_space_map_continuous 2).
+Qed.
+
+(** Proven Charlie **)
+Theorem projective_plane_map_image_eq :
+  image_of_fun projective_plane_map (Sn 2) = projective_plane.
+apply set_ext.
+- exact (image_of_sub_codomain
+    projective_plane_map
+    (Sn 2)
+    projective_plane
+    (Sn 2)
+    projective_plane_map_function_on
+    (fun x:set => fun Hx:x :e Sn 2 => Hx)).
+- let y.
+  assume Hy.
+  apply (projective_plane_map_surjective y Hy).
+  let x.
+  assume HxPack.
+  claim HxSn : x :e Sn 2.
+  {
+    exact (andEL
+      (x :e Sn 2)
+      (apply_fun projective_plane_map x = y)
+      HxPack).
+  }
+  claim HxEq : apply_fun projective_plane_map x = y.
+  {
+    exact (andER
+      (x :e Sn 2)
+      (apply_fun projective_plane_map x = y)
+      HxPack).
+  }
+  claim Himg : apply_fun projective_plane_map x :e image_of_fun projective_plane_map (Sn 2).
+  {
+    exact (ReplI
+      (Sn 2)
+      (fun t:set => apply_fun projective_plane_map t)
+      x
+      HxSn).
+  }
+  rewrite <- HxEq.
+  exact Himg.
+Qed.
+
+(** Proven Charlie **)
+Theorem projective_plane_compact_from_s2_compact :
+  compact_space (Sn 2) (Sn_topology 2) ->
+  compact_space projective_plane projective_plane_topology.
+assume HcompactS2.
+claim HimgCompact :
+  compact_space
+    (image_of_fun projective_plane_map (Sn 2))
+    (subspace_topology projective_plane projective_plane_topology
+      (image_of_fun projective_plane_map (Sn 2))).
+{
+  exact (continuous_image_compact
+    (Sn 2)
+    (Sn_topology 2)
+    projective_plane
+    projective_plane_topology
+    projective_plane_map
+    HcompactS2
+    projective_plane_map_continuous).
+}
+claim HimgCompactP :
+  compact_space
+    projective_plane
+    (subspace_topology projective_plane projective_plane_topology projective_plane).
+{
+  rewrite <- projective_plane_map_image_eq.
+  exact HimgCompact.
+}
+rewrite <- (subspace_topology_whole
+  projective_plane
+  projective_plane_topology
+  projective_plane_topology_on).
+exact HimgCompactP.
+Qed.
+
 (** from S60 Thm 60.3 (line 1691 in algtop.tex) **)
 (** LATEX VERSION: P^2 is a compact surface, and the quotient map p: S^2 -> P^2 **)
 (** is a covering map. **)
