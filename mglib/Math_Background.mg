@@ -111476,6 +111476,12 @@ apply (andI
               (ordsucc m)))})))).
   + let alpha.
     assume Halpha : alpha :e J.
+    claim HaQ :
+      apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha :e
+      quotient_group_set G mult C.
+    {
+      exact (HbasisFn alpha Halpha).
+    }
     apply (andI
       (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha :e
         quotient_group_set G mult C)
@@ -111499,8 +111505,154 @@ apply (andI
            (quotient_group_id G mult e C)
            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
            n = quotient_group_id G mult e C))
-      (HbasisFn alpha Halpha)).
-    admit.
+      HaQ).
+    claim HgrpQ :
+      group_structure
+        (quotient_group_set G mult C)
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        (quotient_group_inv G mult inv C).
+    {
+      exact (andEL
+        (group_structure
+          (quotient_group_set G mult C)
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (quotient_group_inv G mult inv C))
+        (forall x y:set, x :e quotient_group_set G mult C -> y :e quotient_group_set G mult C ->
+          apply_fun (quotient_group_mult G mult C) (x, y) =
+          apply_fun (quotient_group_mult G mult C) (y, x))
+        HquotAb).
+    }
+    apply (and6E
+      (function_on
+        (quotient_group_mult G mult C)
+        (setprod (quotient_group_set G mult C) (quotient_group_set G mult C))
+        (quotient_group_set G mult C))
+      (function_on
+        (quotient_group_inv G mult inv C)
+        (quotient_group_set G mult C)
+        (quotient_group_set G mult C))
+      (quotient_group_id G mult e C :e quotient_group_set G mult C)
+      (forall x y z:set,
+        x :e quotient_group_set G mult C ->
+        y :e quotient_group_set G mult C ->
+        z :e quotient_group_set G mult C ->
+        apply_fun (quotient_group_mult G mult C)
+          (apply_fun (quotient_group_mult G mult C) (x, y), z) =
+        apply_fun (quotient_group_mult G mult C)
+          (x, apply_fun (quotient_group_mult G mult C) (y, z)))
+      (forall x:set, x :e quotient_group_set G mult C ->
+        apply_fun (quotient_group_mult G mult C) (quotient_group_id G mult e C, x) = x /\
+        apply_fun (quotient_group_mult G mult C) (x, quotient_group_id G mult e C) = x)
+      (forall x:set, x :e quotient_group_set G mult C ->
+        apply_fun (quotient_group_mult G mult C)
+          (x, apply_fun (quotient_group_inv G mult inv C) x) = quotient_group_id G mult e C /\
+        apply_fun (quotient_group_mult G mult C)
+          (apply_fun (quotient_group_inv G mult inv C) x, x) = quotient_group_id G mult e C)
+      HgrpQ).
+    assume HmultQ HinvQ HeQ HassocQ HidQ HinvLawQ.
+    claim HpowClosed :
+      forall b:set, b :e quotient_group_set G mult C ->
+      forall n:set, n :e omega ->
+      group_power_nat
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        b
+        n :e quotient_group_set G mult C.
+    {
+      let b.
+      assume HbQ : b :e quotient_group_set G mult C.
+      claim HnatPow :
+        forall n:set, nat_p n ->
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          b
+          n :e quotient_group_set G mult C.
+      {
+        apply nat_ind.
+        - prove group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            b
+            0 :e quotient_group_set G mult C.
+          claim H0 : group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            b
+            0 = quotient_group_id G mult e C.
+          {
+            exact (nat_primrec_0
+              (quotient_group_id G mult e C)
+              (fun _ r => apply_fun (quotient_group_mult G mult C) (b, r))).
+          }
+          rewrite H0.
+          exact HeQ.
+        - let n.
+          assume Hn : nat_p n.
+          assume IH : group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            b
+            n :e quotient_group_set G mult C.
+          prove group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            b
+            (ordsucc n) :e quotient_group_set G mult C.
+          claim HS : group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            b
+            (ordsucc n) =
+            apply_fun (quotient_group_mult G mult C)
+              (b, group_power_nat
+                (quotient_group_mult G mult C)
+                (quotient_group_id G mult e C)
+                b
+                n).
+          {
+            exact (nat_primrec_S
+              (quotient_group_id G mult e C)
+              (fun _ r => apply_fun (quotient_group_mult G mult C) (b, r))
+              n
+              Hn).
+          }
+          rewrite HS.
+          exact (HmultQ
+            (b, group_power_nat
+              (quotient_group_mult G mult C)
+              (quotient_group_id G mult e C)
+              b
+              n)
+            (tuple_2_setprod_by_pair_Sigma
+              (quotient_group_set G mult C)
+              (quotient_group_set G mult C)
+              b
+              (group_power_nat
+                (quotient_group_mult G mult C)
+                (quotient_group_id G mult e C)
+                b
+                n)
+              HbQ
+              IH)).
+      }
+      let n.
+      assume HnO : n :e omega.
+      exact (HnatPow n (omega_nat_p n HnO)).
+    }
+    apply andI.
+    - apply andI.
+      + let n.
+        assume HnO : n :e omega.
+        exact (HpowClosed
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          HaQ
+          n
+          HnO).
+      + admit.
+    - admit.
   admit.
 Admitted.
 
