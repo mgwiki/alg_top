@@ -63083,6 +63083,211 @@ claim Hex :
                   HNrOpen
                   HN1Open).
               }
+              claim HNrN1SubNr : Nr :/\: N1 c= Nr.
+              {
+                exact (binintersect_Subq_1
+                  Nr
+                  N1).
+              }
+              claim HNrN1SubN1 : Nr :/\: N1 c= N1.
+              {
+                exact (binintersect_Subq_2
+                  Nr
+                  N1).
+              }
+              claim HtopNrSub :
+                topology_on Nr (subspace_topology unit_interval unit_interval_topology Nr).
+              {
+                exact (continuous_map_topology_dom
+                  Nr
+                  (subspace_topology unit_interval unit_interval_topology Nr)
+                  E
+                  Te
+                  lr
+                  HlrCont).
+              }
+              claim HtopN1Sub :
+                topology_on N1 (subspace_topology unit_interval unit_interval_topology N1).
+              {
+                exact (continuous_map_topology_dom
+                  N1
+                  (subspace_topology unit_interval unit_interval_topology N1)
+                  E
+                  Te
+                  lt1
+                  Hlt1ContSub0).
+              }
+              claim HlrContNrN1Nested :
+                continuous_map
+                  (Nr :/\: N1)
+                  (subspace_topology Nr (subspace_topology unit_interval unit_interval_topology Nr) (Nr :/\: N1))
+                  E
+                  Te
+                  lr.
+              {
+                exact (continuous_on_subspace_rule
+                  Nr
+                  (subspace_topology unit_interval unit_interval_topology Nr)
+                  E
+                  Te
+                  lr
+                  (Nr :/\: N1)
+                  HtopNrSub
+                  HtopE
+                  HNrN1SubNr
+                  HlrCont).
+              }
+              claim HlrContNrN1 :
+                continuous_map
+                  (Nr :/\: N1)
+                  (subspace_topology unit_interval unit_interval_topology (Nr :/\: N1))
+                  E
+                  Te
+                  lr.
+              {
+                rewrite <- (subspace_topology_transitive_weak
+                  unit_interval
+                  unit_interval_topology
+                  Nr
+                  (Nr :/\: N1)
+                  HNrN1SubNr).
+                exact HlrContNrN1Nested.
+              }
+              claim Hlt1ContNrN1Nested :
+                continuous_map
+                  (Nr :/\: N1)
+                  (subspace_topology N1 (subspace_topology unit_interval unit_interval_topology N1) (Nr :/\: N1))
+                  E
+                  Te
+                  lt1.
+              {
+                exact (continuous_on_subspace_rule
+                  N1
+                  (subspace_topology unit_interval unit_interval_topology N1)
+                  E
+                  Te
+                  lt1
+                  (Nr :/\: N1)
+                  HtopN1Sub
+                  HtopE
+                  HNrN1SubN1
+                  Hlt1ContSub0).
+              }
+              claim Hlt1ContNrN1 :
+                continuous_map
+                  (Nr :/\: N1)
+                  (subspace_topology unit_interval unit_interval_topology (Nr :/\: N1))
+                  E
+                  Te
+                  lt1.
+              {
+                rewrite <- (subspace_topology_transitive_weak
+                  unit_interval
+                  unit_interval_topology
+                  N1
+                  (Nr :/\: N1)
+                  HNrN1SubN1).
+                exact Hlt1ContNrN1Nested.
+              }
+              claim Hlt1CommSubNow :
+                forall x:set, x :e N1 ->
+                  apply_fun p (apply_fun lt1 x) = apply_fun f x.
+              {
+                exact (andER
+                  (continuous_map
+                    N1
+                    (subspace_topology unit_interval unit_interval_topology N1)
+                    E
+                    Te
+                    lt1)
+                  (forall x:set, x :e N1 ->
+                    apply_fun p (apply_fun lt1 x) = apply_fun f x)
+                  Hlt1LiftSub).
+              }
+              claim HlrCommNrN1 :
+                forall x:set, x :e Nr :/\: N1 ->
+                  apply_fun p (apply_fun lr x) = apply_fun f x.
+              {
+                let x.
+                assume HxNrN1.
+                claim HxNr : x :e Nr.
+                {
+                  exact (binintersectE1
+                    Nr
+                    N1
+                    x
+                    HxNrN1).
+                }
+                exact (HlrComm
+                  x
+                  HxNr).
+              }
+              claim Hlt1CommNrN1 :
+                forall x:set, x :e Nr :/\: N1 ->
+                  apply_fun p (apply_fun lt1 x) = apply_fun f x.
+              {
+                let x.
+                assume HxNrN1.
+                claim HxN1 : x :e N1.
+                {
+                  exact (binintersectE2
+                    Nr
+                    N1
+                    x
+                    HxNrN1).
+                }
+                exact (Hlt1CommSubNow
+                  x
+                  HxN1).
+              }
+              claim HlrLiftNrN1 :
+                lifting_of
+                  (Nr :/\: N1)
+                  (subspace_topology unit_interval unit_interval_topology (Nr :/\: N1))
+                  E
+                  Te
+                  B
+                  Tb
+                  p
+                  f
+                  lr.
+              {
+                exact (andI
+                  (continuous_map
+                    (Nr :/\: N1)
+                    (subspace_topology unit_interval unit_interval_topology (Nr :/\: N1))
+                    E
+                    Te
+                    lr)
+                  (forall x:set, x :e Nr :/\: N1 ->
+                    apply_fun p (apply_fun lr x) = apply_fun f x)
+                  HlrContNrN1
+                  HlrCommNrN1).
+              }
+              claim Hlt1LiftNrN1 :
+                lifting_of
+                  (Nr :/\: N1)
+                  (subspace_topology unit_interval unit_interval_topology (Nr :/\: N1))
+                  E
+                  Te
+                  B
+                  Tb
+                  p
+                  f
+                  lt1.
+              {
+                exact (andI
+                  (continuous_map
+                    (Nr :/\: N1)
+                    (subspace_topology unit_interval unit_interval_topology (Nr :/\: N1))
+                    E
+                    Te
+                    lt1)
+                  (forall x:set, x :e Nr :/\: N1 ->
+                    apply_fun p (apply_fun lt1 x) = apply_fun f x)
+                  Hlt1ContNrN1
+                  Hlt1CommNrN1).
+              }
               (** TODO Charlie: compare lr with lt1 on Nr :/\: N1 from Hlr0EqLt10 and Hplr0Eqplt10, then propagate membership of r into N1 via the local evenly-covered neighborhood Ur at f(r). **)
               admit.
             }
