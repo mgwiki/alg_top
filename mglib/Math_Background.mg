@@ -82513,83 +82513,964 @@ claim HioCore :
 	            R2_minus_origin R2_minus_origin_topology
 	            (graph S1 (fun x:set => x)).
 	        {
-	          apply (HnoInOrNoOut').
-	          - assume HnoIn.
-	            claim HincHomV :
+	          claim HnoInImplInclusionNul : forall w wS1:set,
+	            continuous_map B2 B2_topology
+	              (setprod R R) R2_topology w ->
+	            continuous_map S1 S1_topology
+	              R2_minus_origin R2_minus_origin_topology wS1 ->
+	            (forall x:set, x :e S1 -> apply_fun wS1 x = apply_fun w x) ->
+	            ~(exists x:set, x :e S1 /\ points_directly_inward w x) ->
+	            nulhomotopic S1 S1_topology
+	              R2_minus_origin R2_minus_origin_topology wS1 ->
+	            nulhomotopic S1 S1_topology
+	              R2_minus_origin R2_minus_origin_topology
+	              (graph S1 (fun x:set => x)).
+	          {
+	            let w wS1.
+	            assume HwCont HwS1Cont HwS1Eq HnoInW HwS1Nul.
+	            claim HincHomW :
 	              homotopic_maps
 	                S1
 	                S1_topology
 	                R2_minus_origin
 	                R2_minus_origin_topology
 	                (graph S1 (fun x:set => x))
-	                vS1.
+	                wS1.
 	            {
 	              admit.
 	            }
-	            claim HincNulNoInRaw :
-	              exists y:set,
-	                y :e R2_minus_origin /\
-	                homotopic_maps
+	            prove exists y0:set,
+	              y0 :e R2_minus_origin /\
+	              homotopic_maps
+	                S1
+	                S1_topology
+	                R2_minus_origin
+	                R2_minus_origin_topology
+	                (graph S1 (fun x:set => x))
+	                (const_fun S1 y0).
+	            apply HwS1Nul.
+	            let y0.
+	            assume Hy0Pack.
+	            claim Hy0R2m0 : y0 :e R2_minus_origin.
+	            {
+	              exact (andEL
+	                (y0 :e R2_minus_origin)
+	                (homotopic_maps
 	                  S1
 	                  S1_topology
 	                  R2_minus_origin
 	                  R2_minus_origin_topology
-	                  (graph S1 (fun x:set => x))
-	                  (const_fun S1 y).
+	                  wS1
+	                  (const_fun S1 y0))
+	                Hy0Pack).
+	            }
+	            claim HwS1Const :
+	              homotopic_maps
+	                S1
+	                S1_topology
+	                R2_minus_origin
+	                R2_minus_origin_topology
+	                wS1
+	                (const_fun S1 y0).
 	            {
-	              apply HvS1Nul.
-	              let y0.
-	              assume Hy0Pack.
-	              claim Hy0R2m0 : y0 :e R2_minus_origin.
+	              exact (andER
+	                (y0 :e R2_minus_origin)
+	                (homotopic_maps
+	                  S1
+	                  S1_topology
+	                  R2_minus_origin
+	                  R2_minus_origin_topology
+	                  wS1
+	                  (const_fun S1 y0))
+	                Hy0Pack).
+	            }
+	            witness y0.
+	            apply andI.
+	            - exact Hy0R2m0.
+	            - exact (Lemma_51_1_homotopy_trans
+	                S1
+	                S1_topology
+	                R2_minus_origin
+	                R2_minus_origin_topology
+	                (graph S1 (fun x:set => x))
+	                wS1
+	                (const_fun S1 y0)
+	                HincHomW
+	                HwS1Const).
+	          }
+	          apply (HnoInOrNoOut').
+	          - assume HnoIn.
+	            claim HvS1Eq :
+	              forall x:set, x :e S1 -> apply_fun vS1 x = apply_fun v x.
+	            {
+	              let x.
+	              assume HxS1.
+	              rewrite (apply_fun_graph
+	                S1
+	                (fun z:set => apply_fun v z)
+	                x
+	                HxS1).
+	              reflexivity.
+	            }
+	            exact (HnoInImplInclusionNul
+	              v
+	              vS1
+	              HvCont
+	              HvS1Cont
+	              HvS1Eq
+	              HnoIn
+	              HvS1Nul).
+	          - assume HnoOut.
+	            claim HtopB2 : topology_on B2 B2_topology.
+	            {
+	              exact (continuous_map_topology_dom
+	                B2
+	                B2_topology
+	                (setprod R R)
+	                R2_topology
+	                v
+	                HvCont).
+	            }
+	            claim HtopR2 : topology_on (setprod R R) R2_topology.
+	            {
+	              exact (product_topology_is_topology
+	                R
+	                R_standard_topology
+	                R
+	                R_standard_topology
+	                R_standard_topology_is_topology
+	                R_standard_topology_is_topology).
+	            }
+	            claim HprojPack :
+	              continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R) /\
+	              continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R).
+	            {
+	              exact (projection_maps_continuous
+	                R
+	                R_standard_topology
+	                R
+	                R_standard_topology
+	                R_standard_topology_is_topology
+	                R_standard_topology_is_topology).
+	            }
+	            claim Hproj1Cont :
+	              continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R).
+	            {
+	              exact (andEL
+	                (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R))
+	                (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R))
+	                HprojPack).
+	            }
+	            claim Hproj2Cont :
+	              continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R).
+	            {
+	              exact (andER
+	                (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R))
+	                (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R))
+	                HprojPack).
+	            }
+	            set v0 := compose_fun B2 v (projection_map1 R R).
+	            set v1 := compose_fun B2 v (projection_map2 R R).
+	            claim Hv0Cont :
+	              continuous_map B2 B2_topology R R_standard_topology v0.
+	            {
+	              exact (composition_continuous
+	                B2
+	                B2_topology
+	                (setprod R R)
+	                R2_topology
+	                R
+	                R_standard_topology
+	                v
+	                (projection_map1 R R)
+	                HvCont
+	                Hproj1Cont).
+	            }
+	            claim Hv1Cont :
+	              continuous_map B2 B2_topology R R_standard_topology v1.
+	            {
+	              exact (composition_continuous
+	                B2
+	                B2_topology
+	                (setprod R R)
+	                R2_topology
+	                R
+	                R_standard_topology
+	                v
+	                (projection_map2 R R)
+	                HvCont
+	                Hproj2Cont).
+	            }
+	            set w0 := compose_fun B2 v0 neg_fun.
+	            set w1 := compose_fun B2 v1 neg_fun.
+	            claim Hw0Cont :
+	              continuous_map B2 B2_topology R R_standard_topology w0.
+	            {
+	              exact (composition_continuous
+	                B2
+	                B2_topology
+	                R
+	                R_standard_topology
+	                R
+	                R_standard_topology
+	                v0
+	                neg_fun
+	                Hv0Cont
+	                neg_fun_continuous).
+	            }
+	            claim Hw1Cont :
+	              continuous_map B2 B2_topology R R_standard_topology w1.
+	            {
+	              exact (composition_continuous
+	                B2
+	                B2_topology
+	                R
+	                R_standard_topology
+	                R
+	                R_standard_topology
+	                v1
+	                neg_fun
+	                Hv1Cont
+	                neg_fun_continuous).
+	            }
+	            set w := pair_map B2 w0 w1.
+	            claim HwCont :
+	              continuous_map B2 B2_topology (setprod R R) R2_topology w.
+	            {
+	              exact (maps_into_products
+	                B2
+	                B2_topology
+	                R
+	                R_standard_topology
+	                R
+	                R_standard_topology
+	                w0
+	                w1
+	                Hw0Cont
+	                Hw1Cont).
+	            }
+	            claim HwFun : function_on w B2 (setprod R R).
+	            {
+	              exact (continuous_map_function_on
+	                B2
+	                B2_topology
+	                (setprod R R)
+	                R2_topology
+	                w
+	                HwCont).
+	            }
+	            claim HvFun : function_on v B2 (setprod R R).
+	            {
+	              exact (continuous_map_function_on
+	                B2
+	                B2_topology
+	                (setprod R R)
+	                R2_topology
+	                v
+	                HvCont).
+	            }
+	            claim Hv0Fun : function_on v0 B2 R.
+	            {
+	              exact (continuous_map_function_on
+	                B2
+	                B2_topology
+	                R
+	                R_standard_topology
+	                v0
+	                Hv0Cont).
+	            }
+	            claim Hv1Fun : function_on v1 B2 R.
+	            {
+	              exact (continuous_map_function_on
+	                B2
+	                B2_topology
+	                R
+	                R_standard_topology
+	                v1
+	                Hv1Cont).
+	            }
+	            claim HwNonzeroB2 :
+	              forall x:set, x :e B2 ->
+	                ~(apply_fun w x 0 = 0 /\ apply_fun w x 1 = 0).
+	            {
+	              let x.
+	              assume HxB2.
+	              assume HwxZero.
+	              claim HwxPair :
+	                apply_fun w x = (apply_fun w0 x, apply_fun w1 x).
+	              {
+	                exact (pair_map_apply
+	                  B2
+	                  R
+	                  R
+	                  w0
+	                  w1
+	                  x
+	                  HxB2).
+	              }
+	              claim Hwx0Eq0 : apply_fun w0 x = 0.
+	              {
+	                rewrite <- (tuple_2_0_eq
+	                  (apply_fun w0 x)
+	                  (apply_fun w1 x)).
+	                rewrite <- HwxPair.
+	                exact (andEL
+	                  (apply_fun w x 0 = 0)
+	                  (apply_fun w x 1 = 0)
+	                  HwxZero).
+	              }
+	              claim Hwx1Eq0 : apply_fun w1 x = 0.
+	              {
+	                rewrite <- (tuple_2_1_eq
+	                  (apply_fun w0 x)
+	                  (apply_fun w1 x)).
+	                rewrite <- HwxPair.
+	                exact (andER
+	                  (apply_fun w x 0 = 0)
+	                  (apply_fun w x 1 = 0)
+	                  HwxZero).
+	              }
+	              claim HvxR2 : apply_fun v x :e setprod R R.
+	              {
+	                exact (HvFun
+	                  x
+	                  HxB2).
+	              }
+	              claim Hv0R : apply_fun v x 0 :e R.
+	              {
+	                exact (EuclidPlane_xcoord_in_R
+	                  (apply_fun v x)
+	                  HvxR2).
+	              }
+	              claim Hv1R : apply_fun v x 1 :e R.
+	              {
+	                exact (EuclidPlane_ycoord_in_R
+	                  (apply_fun v x)
+	                  HvxR2).
+	              }
+	              claim Hw0Expand :
+	                apply_fun w0 x = minus_SNo (apply_fun v x 0).
+	              {
+	                rewrite (compose_fun_apply
+	                  B2
+	                  v0
+	                  neg_fun
+	                  x
+	                  HxB2).
+	                rewrite (neg_fun_apply
+	                  (apply_fun v0 x)
+	                  (Hv0Fun x HxB2)).
+	                rewrite (compose_fun_apply
+	                  B2
+	                  v
+	                  (projection_map1 R R)
+	                  x
+	                  HxB2).
+	                rewrite (projection1_apply
+	                  R
+	                  R
+	                  (apply_fun v x)
+	                  HvxR2).
+	                reflexivity.
+	              }
+	              claim Hw1Expand :
+	                apply_fun w1 x = minus_SNo (apply_fun v x 1).
+	              {
+	                rewrite (compose_fun_apply
+	                  B2
+	                  v1
+	                  neg_fun
+	                  x
+	                  HxB2).
+	                rewrite (neg_fun_apply
+	                  (apply_fun v1 x)
+	                  (Hv1Fun x HxB2)).
+	                rewrite (compose_fun_apply
+	                  B2
+	                  v
+	                  (projection_map2 R R)
+	                  x
+	                  HxB2).
+	                rewrite (projection2_apply
+	                  R
+	                  R
+	                  (apply_fun v x)
+	                  HvxR2).
+	                reflexivity.
+	              }
+	              claim Hvx0Eq0 : apply_fun v x 0 = 0.
+	              {
+	                rewrite <- (minus_SNo_minus_SNo_R
+	                  (apply_fun v x 0)
+	                  Hv0R).
+	                rewrite <- Hw0Expand.
+	                rewrite Hwx0Eq0.
+	                exact minus_SNo_0.
+	              }
+	              claim Hvx1Eq0 : apply_fun v x 1 = 0.
+	              {
+	                rewrite <- (minus_SNo_minus_SNo_R
+	                  (apply_fun v x 1)
+	                  Hv1R).
+	                rewrite <- Hw1Expand.
+	                rewrite Hwx1Eq0.
+	                exact minus_SNo_0.
+	              }
+	              apply (HvNonzero
+	                x
+	                HxB2).
+	              apply andI.
+	              - exact Hvx0Eq0.
+	              - exact Hvx1Eq0.
+	            }
+	            set wS1 := graph S1 (fun x:set => apply_fun w x).
+	            claim HwS1ContR2 :
+	              continuous_map S1 S1_topology (setprod R R) R2_topology wS1.
+	            {
+	              set i := graph S1 (fun x:set => x).
+	              claim HiCont :
+	                continuous_map S1 S1_topology B2 B2_topology i.
+	              {
+	                exact inclusion_S1_B2_continuous.
+	              }
+	              claim HwS1EqComp :
+	                wS1 = compose_fun S1 i w.
+	              {
+	                apply (total_function_space_extensional
+	                  S1
+	                  (setprod R R)
+	                  wS1
+	                  (compose_fun S1 i w)).
+	                - exact (graph_in_total_function_space
+	                    S1
+	                    (setprod R R)
+	                    (fun x:set => apply_fun w x)
+	                    (fun x Hx =>
+	                      continuous_map_function_on
+	                        B2
+	                        B2_topology
+	                        (setprod R R)
+	                        R2_topology
+	                        w
+	                        HwCont
+	                        x
+	                        (S1_subset_B2 x Hx))).
+	                - exact (compose_fun_in_total_function_space
+	                    S1
+	                    B2
+	                    (setprod R R)
+	                    i
+	                    w
+	                    (continuous_map_function_on
+	                      S1
+	                      S1_topology
+	                      B2
+	                      B2_topology
+	                      i
+	                      HiCont)
+	                    (continuous_map_function_on
+	                      B2
+	                      B2_topology
+	                      (setprod R R)
+	                      R2_topology
+	                      w
+	                      HwCont)).
+	                - let x.
+	                  assume HxS1.
+	                  rewrite (compose_fun_apply
+	                    S1
+	                    i
+	                    w
+	                    x
+	                    HxS1).
+	                  rewrite (apply_fun_graph
+	                    S1
+	                    (fun z:set => z)
+	                    x
+	                    HxS1).
+	                  rewrite (apply_fun_graph
+	                    S1
+	                    (fun z:set => apply_fun w z)
+	                    x
+	                    HxS1).
+	                  reflexivity.
+	              }
+	              rewrite HwS1EqComp.
+	              exact (composition_continuous
+	                S1
+	                S1_topology
+	                B2
+	                B2_topology
+	                (setprod R R)
+	                R2_topology
+	                i
+	                w
+	                HiCont
+	                HwCont).
+	            }
+	            claim HwS1Eq :
+	              forall x:set, x :e S1 -> apply_fun wS1 x = apply_fun w x.
+	            {
+	              let x.
+	              assume HxS1.
+	              rewrite (apply_fun_graph
+	                S1
+	                (fun z:set => apply_fun w z)
+	                x
+	                HxS1).
+	              reflexivity.
+	            }
+	            claim HwS1IntoR2m0 :
+	              forall x:set, x :e S1 -> apply_fun wS1 x :e R2_minus_origin.
+	            {
+	              let x.
+	              assume HxS1.
+	              claim HxB2 : x :e B2.
+	              {
+	                exact (S1_subset_B2 x HxS1).
+	              }
+	              apply (SepI
+	                (setprod R R)
+	                (fun p:set => ~(p 0 = 0 /\ p 1 = 0))
+	                (apply_fun wS1 x)).
+	              - exact (continuous_map_function_on
+	                  S1
+	                  S1_topology
+	                  (setprod R R)
+	                  R2_topology
+	                  wS1
+	                  HwS1ContR2
+	                  x
+	                  HxS1).
+	              - assume HwS1Zero.
+	                claim HwZero :
+	                  apply_fun w x 0 = 0 /\ apply_fun w x 1 = 0.
+	                {
+	                  apply andI.
+	                  + rewrite <- (HwS1Eq x HxS1) at 1.
+	                    exact (andEL
+	                      (apply_fun wS1 x 0 = 0)
+	                      (apply_fun wS1 x 1 = 0)
+	                      HwS1Zero).
+	                  + rewrite <- (HwS1Eq x HxS1) at 1.
+	                    exact (andER
+	                      (apply_fun wS1 x 0 = 0)
+	                      (apply_fun wS1 x 1 = 0)
+	                      HwS1Zero).
+	                }
+	                exact ((HwNonzeroB2 x HxB2) HwZero).
+	            }
+	            claim HwS1Cont :
+	              continuous_map S1 S1_topology R2_minus_origin R2_minus_origin_topology wS1.
+	            {
+	              exact (continuous_map_range_restrict
+	                S1
+	                S1_topology
+	                (setprod R R)
+	                R2_topology
+	                wS1
+	                R2_minus_origin
+	                HwS1ContR2
+	                (Sep_Subq
+	                  (setprod R R)
+	                  (fun p:set => ~(p 0 = 0 /\ p 1 = 0)))
+	                HwS1IntoR2m0).
+	            }
+	            claim HnoInW :
+	              ~(exists x:set, x :e S1 /\ points_directly_inward w x).
+	            {
+	              assume HinW.
+	              apply HnoOut.
+	              apply HinW.
+	              let x.
+	              assume HxInPack.
+	              claim HxS1 : x :e S1.
 	              {
 	                exact (andEL
-	                  (y0 :e R2_minus_origin)
-	                  (homotopic_maps
-	                    S1
-	                    S1_topology
-	                    R2_minus_origin
-	                    R2_minus_origin_topology
-	                    vS1
-	                    (const_fun S1 y0))
-	                  Hy0Pack).
+	                  (x :e S1)
+	                  (points_directly_inward w x)
+	                  HxInPack).
 	              }
-	              claim HvS1Const :
-	                homotopic_maps
-	                  S1
-	                  S1_topology
-	                  R2_minus_origin
-	                  R2_minus_origin_topology
-	                  vS1
-	                  (const_fun S1 y0).
+	              claim HxInW : points_directly_inward w x.
 	              {
 	                exact (andER
-	                  (y0 :e R2_minus_origin)
-	                  (homotopic_maps
-	                    S1
-	                    S1_topology
-	                    R2_minus_origin
-	                    R2_minus_origin_topology
-	                    vS1
-	                    (const_fun S1 y0))
-	                  Hy0Pack).
+	                  (x :e S1)
+	                  (points_directly_inward w x)
+	                  HxInPack).
 	              }
-	              witness y0.
+	              claim HaInW :
+	                exists a:set, a :e R /\ Rlt 0 a /\
+	                  apply_fun w x = R2_scalar_mult (minus_SNo a) x.
+	              {
+	                exact (andER
+	                  (x :e S1)
+	                  (exists a:set, a :e R /\ Rlt 0 a /\
+	                    apply_fun w x = R2_scalar_mult (minus_SNo a) x)
+	                  HxInW).
+	              }
+	              apply HaInW.
+	              let a.
+	              assume HaPack.
+	              claim HaRPack : a :e R /\ Rlt 0 a.
+	              {
+	                exact (andEL
+	                  (a :e R /\ Rlt 0 a)
+	                  (apply_fun w x = R2_scalar_mult (minus_SNo a) x)
+	                  HaPack).
+	              }
+	              claim HaR : a :e R.
+	              {
+	                exact (andEL
+	                  (a :e R)
+	                  (Rlt 0 a)
+	                  HaRPack).
+	              }
+	              claim HaPos : Rlt 0 a.
+	              {
+	                exact (andER
+	                  (a :e R)
+	                  (Rlt 0 a)
+	                  HaRPack).
+	              }
+	              claim HwxEq :
+	                apply_fun w x = R2_scalar_mult (minus_SNo a) x.
+	              {
+	                exact (andER
+	                  (a :e R /\ Rlt 0 a)
+	                  (apply_fun w x = R2_scalar_mult (minus_SNo a) x)
+	                  HaPack).
+	              }
+	              claim HxB2 : x :e B2.
+	              {
+	                exact (S1_subset_B2 x HxS1).
+	              }
+	              claim HwxR2 : apply_fun w x :e setprod R R.
+	              {
+	                exact (HwFun
+	                  x
+	                  HxB2).
+	              }
+	              claim HvxR2 : apply_fun v x :e setprod R R.
+	              {
+	                exact (HvFun
+	                  x
+	                  HxB2).
+	              }
+	              claim HxR2 : x :e setprod R R.
+	              {
+	                exact (SepE1
+	                  (setprod R R)
+	                  (fun p:set =>
+	                    add_SNo (mul_SNo (p 0) (p 0))
+	                      (mul_SNo (p 1) (p 1)) = 1)
+	                  x
+	                  HxS1).
+	              }
+	              claim Hx0R : x 0 :e R.
+	              {
+	                exact (EuclidPlane_xcoord_in_R
+	                  x
+	                  HxR2).
+	              }
+	              claim Hx1R : x 1 :e R.
+	              {
+	                exact (EuclidPlane_ycoord_in_R
+	                  x
+	                  HxR2).
+	              }
+	              claim Hx0S : SNo (x 0).
+	              {
+	                exact (real_SNo
+	                  (x 0)
+	                  Hx0R).
+	              }
+	              claim Hx1S : SNo (x 1).
+	              {
+	                exact (real_SNo
+	                  (x 1)
+	                  Hx1R).
+	              }
+	              claim HaS : SNo a.
+	              {
+	                exact (real_SNo
+	                  a
+	                  HaR).
+	              }
+	              claim HwxPair :
+	                apply_fun w x = (apply_fun w0 x, apply_fun w1 x).
+	              {
+	                exact (pair_map_apply
+	                  B2
+	                  R
+	                  R
+	                  w0
+	                  w1
+	                  x
+	                  HxB2).
+	              }
+	              claim Hw0Expand :
+	                apply_fun w0 x = minus_SNo (apply_fun v x 0).
+	              {
+	                rewrite (compose_fun_apply
+	                  B2
+	                  v0
+	                  neg_fun
+	                  x
+	                  HxB2).
+	                rewrite (neg_fun_apply
+	                  (apply_fun v0 x)
+	                  (Hv0Fun x HxB2)).
+	                rewrite (compose_fun_apply
+	                  B2
+	                  v
+	                  (projection_map1 R R)
+	                  x
+	                  HxB2).
+	                rewrite (projection1_apply
+	                  R
+	                  R
+	                  (apply_fun v x)
+	                  HvxR2).
+	                reflexivity.
+	              }
+	              claim Hw1Expand :
+	                apply_fun w1 x = minus_SNo (apply_fun v x 1).
+	              {
+	                rewrite (compose_fun_apply
+	                  B2
+	                  v1
+	                  neg_fun
+	                  x
+	                  HxB2).
+	                rewrite (neg_fun_apply
+	                  (apply_fun v1 x)
+	                  (Hv1Fun x HxB2)).
+	                rewrite (compose_fun_apply
+	                  B2
+	                  v
+	                  (projection_map2 R R)
+	                  x
+	                  HxB2).
+	                rewrite (projection2_apply
+	                  R
+	                  R
+	                  (apply_fun v x)
+	                  HvxR2).
+	                reflexivity.
+	              }
+	              claim Hcoord0Raw :
+	                minus_SNo (apply_fun v x 0) = mul_SNo (minus_SNo a) (x 0).
+	              {
+	                claim HwxPairEq :
+	                  (apply_fun w0 x, apply_fun w1 x)
+	                  = (mul_SNo (minus_SNo a) (x 0), mul_SNo (minus_SNo a) (x 1)).
+	                {
+	                  rewrite <- HwxPair.
+	                  rewrite HwxEq.
+	                  reflexivity.
+	                }
+	                rewrite <- Hw0Expand.
+	                exact (pair_eq_fst
+	                  (apply_fun w0 x)
+	                  (apply_fun w1 x)
+	                  (mul_SNo (minus_SNo a) (x 0))
+	                  (mul_SNo (minus_SNo a) (x 1))
+	                  HwxPairEq).
+	              }
+	              claim Hcoord1Raw :
+	                minus_SNo (apply_fun v x 1) = mul_SNo (minus_SNo a) (x 1).
+	              {
+	                claim HwxPairEq :
+	                  (apply_fun w0 x, apply_fun w1 x)
+	                  = (mul_SNo (minus_SNo a) (x 0), mul_SNo (minus_SNo a) (x 1)).
+	                {
+	                  rewrite <- HwxPair.
+	                  rewrite HwxEq.
+	                  reflexivity.
+	                }
+	                rewrite <- Hw1Expand.
+	                exact (pair_eq_snd
+	                  (apply_fun w0 x)
+	                  (apply_fun w1 x)
+	                  (mul_SNo (minus_SNo a) (x 0))
+	                  (mul_SNo (minus_SNo a) (x 1))
+	                  HwxPairEq).
+	              }
+	              claim Hv0R : apply_fun v x 0 :e R.
+	              {
+	                exact (EuclidPlane_xcoord_in_R
+	                  (apply_fun v x)
+	                  HvxR2).
+	              }
+	              claim Hv1R : apply_fun v x 1 :e R.
+	              {
+	                exact (EuclidPlane_ycoord_in_R
+	                  (apply_fun v x)
+	                  HvxR2).
+	              }
+	              claim Hax0R : mul_SNo a (x 0) :e R.
+	              {
+	                exact (real_mul_SNo
+	                  a
+	                  HaR
+	                  (x 0)
+	                  Hx0R).
+	              }
+	              claim Hax1R : mul_SNo a (x 1) :e R.
+	              {
+	                exact (real_mul_SNo
+	                  a
+	                  HaR
+	                  (x 1)
+	                  Hx1R).
+	              }
+	              claim Hv0Eq :
+	                apply_fun v x 0 = mul_SNo a (x 0).
+	              {
+	                rewrite <- (minus_SNo_minus_SNo_R
+	                  (apply_fun v x 0)
+	                  Hv0R).
+	                rewrite Hcoord0Raw.
+	                rewrite (mul_SNo_minus_distrL
+	                  a
+	                  (x 0)
+	                  HaS
+	                  Hx0S).
+	                rewrite (minus_SNo_minus_SNo_R
+	                  (mul_SNo a (x 0))
+	                  Hax0R).
+	                reflexivity.
+	              }
+	              claim Hv1Eq :
+	                apply_fun v x 1 = mul_SNo a (x 1).
+	              {
+	                rewrite <- (minus_SNo_minus_SNo_R
+	                  (apply_fun v x 1)
+	                  Hv1R).
+	                rewrite Hcoord1Raw.
+	                rewrite (mul_SNo_minus_distrL
+	                  a
+	                  (x 1)
+	                  HaS
+	                  Hx1S).
+	                rewrite (minus_SNo_minus_SNo_R
+	                  (mul_SNo a (x 1))
+	                  Hax1R).
+	                reflexivity.
+	              }
+	              claim HvxPairEq :
+	                (apply_fun v x 0, apply_fun v x 1)
+	                = (mul_SNo a (x 0), mul_SNo a (x 1)).
+	              {
+	                exact (tuple_2_ext
+	                  (apply_fun v x 0)
+	                  (apply_fun v x 1)
+	                  (mul_SNo a (x 0))
+	                  (mul_SNo a (x 1))
+	                  Hv0Eq
+	                  Hv1Eq).
+	              }
+	              claim HvxEq :
+	                apply_fun v x = R2_scalar_mult a x.
+	              {
+	                claim HscalarExpand :
+	                  R2_scalar_mult a x = (mul_SNo a (x 0), mul_SNo a (x 1)).
+	                {
+	                  reflexivity.
+	                }
+	                rewrite (setprod_eta
+	                  R
+	                  R
+	                  (apply_fun v x)
+	                  HvxR2).
+	                rewrite HscalarExpand.
+	                exact HvxPairEq.
+	              }
+	              witness x.
 	              apply andI.
-	              - exact Hy0R2m0.
-	              - exact (Lemma_51_1_homotopy_trans
-	                  S1
-	                  S1_topology
-	                  R2_minus_origin
-	                  R2_minus_origin_topology
-	                  (graph S1 (fun x:set => x))
-	                  vS1
-	                  (const_fun S1 y0)
-	                  HincHomV
-	                  HvS1Const).
+	              - exact HxS1.
+	              - claim HaOut :
+	                  exists a':set, a' :e R /\ Rlt 0 a' /\
+	                    apply_fun v x = R2_scalar_mult a' x.
+	                {
+	                  witness a.
+	                  apply andI.
+	                  + apply andI.
+	                    { exact HaR. }
+	                    { exact HaPos. }
+	                  + exact HvxEq.
+	                }
+	                exact (andI
+	                  (x :e S1)
+	                  (exists a':set, a' :e R /\ Rlt 0 a' /\
+	                    apply_fun v x = R2_scalar_mult a' x)
+	                  HxS1
+	                  HaOut).
 	            }
-	            exact HincNulNoInRaw.
-	          - assume HnoOut.
-	            admit.
+	            claim HwIntoR2m0B2 :
+	              forall x:set, x :e B2 -> apply_fun w x :e R2_minus_origin.
+	            {
+	              let x.
+	              assume HxB2.
+	              apply (SepI
+	                (setprod R R)
+	                (fun p:set => ~(p 0 = 0 /\ p 1 = 0))
+	                (apply_fun w x)).
+	              - exact (HwFun x HxB2).
+	              - exact (HwNonzeroB2 x HxB2).
+	            }
+	            claim HwContR2m0 :
+	              continuous_map B2 B2_topology R2_minus_origin R2_minus_origin_topology w.
+	            {
+	              exact (continuous_map_range_restrict
+	                B2
+	                B2_topology
+	                (setprod R R)
+	                R2_topology
+	                w
+	                R2_minus_origin
+	                HwCont
+	                (Sep_Subq
+	                  (setprod R R)
+	                  (fun p:set => ~(p 0 = 0 /\ p 1 = 0)))
+	                HwIntoR2m0B2).
+	            }
+	            claim HwS1Ext :
+	              exists k:set, continuous_map B2 B2_topology
+	                R2_minus_origin R2_minus_origin_topology k /\
+	                (forall x:set, x :e S1 -> apply_fun k x = apply_fun wS1 x).
+	            {
+	              witness w.
+	              apply andI.
+	              - exact HwContR2m0.
+	              - let x.
+	                assume HxS1.
+	                rewrite (apply_fun_graph
+	                  S1
+	                  (fun z:set => apply_fun w z)
+	                  x
+	                  HxS1).
+	                reflexivity.
+	            }
+	            claim HwS1Nul :
+	              nulhomotopic S1 S1_topology
+	                R2_minus_origin R2_minus_origin_topology wS1.
+	            {
+	              exact (s55_extends_to_B2_implies_nulhomotopic
+	                R2_minus_origin
+	                R2_minus_origin_topology
+	                wS1
+	                HwS1Cont
+	                HwS1Ext).
+	            }
+	            exact (HnoInImplInclusionNul
+	              w
+	              wS1
+	              HwCont
+	              HwS1Cont
+	              HwS1Eq
+	              HnoInW
+	              HwS1Nul).
 	        }
 	        exact (HinclNotNul
 	          HinclNul).
