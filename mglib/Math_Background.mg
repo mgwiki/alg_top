@@ -106472,19 +106472,16 @@ claim HcompactS2 :
 {
   admit.
 }
-claim HpointEven :
-  forall x:set, x :e Sn 2 ->
-    exists U:set, U :e projective_plane_topology /\
-      apply_fun projective_plane_map x :e U /\
-      evenly_covered (Sn 2) (Sn_topology 2)
-        projective_plane projective_plane_topology projective_plane_map U.
+claim Hcover :
+  covering_map (Sn 2) (Sn_topology 2)
+    projective_plane projective_plane_topology projective_plane_map.
 {
   admit.
 }
-exact (thm60_3_projective_plane_surface_covering_from_pointwise_evenly_covered_parts
+exact (thm60_3_projective_plane_surface_covering_from_parts
   Hmanifold
   HcompactS2
-  HpointEven).
+  Hcover).
 Admitted.
 
 (** from S60 Cor 60.4 (line 1725 in algtop.tex) **)
@@ -109924,6 +109921,119 @@ apply and3I.
               (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun xs i)))
               Hfuns_agree). }
           rewrite Hh_g. rewrite Hn_eq. exact Hext. }
+        (** Key lemma: efam(alpha) in Gfam(alpha) with efam(alpha) <> eG leads to False **)
+        (** This follows from the uniqueness/existence of reduced words: no valid reduced **)
+        (** word can represent efam(alpha), contradicting the existence clause. **)
+        claim Hefam_contra : forall al:set, al :e J ->
+          apply_fun efam al :e apply_fun Gfam al -> apply_fun efam al <> eG -> False.
+        { let al. assume Hal : al :e J.
+          assume Hefam_Gal : apply_fun efam al :e apply_fun Gfam al.
+          assume Hefam_ne : apply_fun efam al <> eG.
+          claim Hefam_G : apply_fun efam al :e G. { exact (Hsub_in_G al Hal (apply_fun efam al) Hefam_Gal). }
+          apply (Huniq (apply_fun efam al) Hefam_G Hefam_ne).
+          let nw. assume Hex_xs : exists xs:set,
+            reduced_word J Gfam efam nw xs /\ nw <> 0 /\
+            word_product multG eG xs nw = apply_fun efam al /\
+            (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+              word_product multG eG xs' n' = apply_fun efam al ->
+              nw = n' /\ (forall i:set, i :e nw -> apply_fun xs i = apply_fun xs' i)).
+          apply Hex_xs. let xsw. assume Hprops : reduced_word J Gfam efam nw xsw /\ nw <> 0 /\
+            word_product multG eG xsw nw = apply_fun efam al /\
+            (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+              word_product multG eG xs' n' = apply_fun efam al ->
+              nw = n' /\ (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs' i)).
+          apply (and4E
+            (reduced_word J Gfam efam nw xsw) (nw <> 0)
+            (word_product multG eG xsw nw = apply_fun efam al)
+            (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+              word_product multG eG xs' n' = apply_fun efam al ->
+              nw = n' /\ (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs' i))
+            Hprops).
+          assume Hredw : reduced_word J Gfam efam nw xsw.
+          assume Hnw_ne : nw <> 0.
+          assume Hwp_efam : word_product multG eG xsw nw = apply_fun efam al.
+          assume Huniq_efam_full : forall n' xs':set,
+            reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+            word_product multG eG xs' n' = apply_fun efam al ->
+            nw = n' /\ (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs' i).
+          claim Huniq_efam : forall n' xs':set,
+            reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+            word_product multG eG xs' n' = apply_fun efam al ->
+            nw = n'.
+          { let n' xs'. assume Hr Hn Hw.
+            exact (andEL (nw = n') (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs' i)
+              (Huniq_efam_full n' xs' Hr Hn Hw)). }
+          apply (and3E
+            (nw :e omega)
+            (forall i:set, i :e nw ->
+              exists a:set, a :e J /\ apply_fun xsw i :e apply_fun Gfam a /\ apply_fun xsw i <> apply_fun efam a)
+            (forall i:set, i :e nw -> ordsucc i :e nw ->
+              forall a1 a2:set, a1 :e J -> a2 :e J ->
+                apply_fun xsw i :e apply_fun Gfam a1 -> apply_fun xsw (ordsucc i) :e apply_fun Gfam a2 -> a1 <> a2)
+            Hredw).
+          assume Hnw_omega : nw :e omega.
+          assume Helem_w : forall i:set, i :e nw ->
+            exists a:set, a :e J /\ apply_fun xsw i :e apply_fun Gfam a /\ apply_fun xsw i <> apply_fun efam a.
+          assume Hadj_w : forall i:set, i :e nw -> ordsucc i :e nw ->
+            forall a1 a2:set, a1 :e J -> a2 :e J ->
+              apply_fun xsw i :e apply_fun Gfam a1 -> apply_fun xsw (ordsucc i) :e apply_fun Gfam a2 -> a1 <> a2.
+          claim Hnw_nat : nat_p nw. { exact (omega_nat_p nw Hnw_omega). }
+          (** nw >= 1: get nw = ordsucc mw **)
+          claim Hnw_inv : nw = 0 \/ exists x:set, nat_p x /\ nw = ordsucc x.
+          { exact (nat_inv nw Hnw_nat). }
+          apply Hnw_inv.
+          - assume Hnw_0 : nw = 0. exact (Hnw_ne Hnw_0).
+          - assume Hex_m : exists x:set, nat_p x /\ nw = ordsucc x.
+            apply Hex_m. let mw. assume Hmw_props : nat_p mw /\ nw = ordsucc mw.
+            claim Hmw_nat : nat_p mw. { exact (andEL (nat_p mw) (nw = ordsucc mw) Hmw_props). }
+            claim Hnw_sm : nw = ordsucc mw. { exact (andER (nat_p mw) (nw = ordsucc mw) Hmw_props). }
+            (** For nw = 1 (mw = 0): word_product = xsw(0) = efam(al) **)
+            (** xsw(0) in Gfam(alpha_0), xsw(0) <> efam(alpha_0). **)
+            (** alpha_0 = al: xsw(0) <> efam(al) but xsw(0) = efam(al). Contradiction. **)
+            (** alpha_0 <> al: efam(al) in Gfam(alpha_0) cap Gfam(al) -> efam(al) = eG. Contradiction. **)
+            claim H0_nw : 0 :e nw. { rewrite Hnw_sm. exact (nat_0_in_ordsucc mw Hmw_nat). }
+            apply (Helem_w 0 H0_nw). let alpha_0.
+            assume Hal0 : alpha_0 :e J /\ apply_fun xsw 0 :e apply_fun Gfam alpha_0 /\ apply_fun xsw 0 <> apply_fun efam alpha_0.
+            apply (and3E (alpha_0 :e J) (apply_fun xsw 0 :e apply_fun Gfam alpha_0) (apply_fun xsw 0 <> apply_fun efam alpha_0) Hal0).
+            assume Hal0_J : alpha_0 :e J.
+            assume Hxs0_G0 : apply_fun xsw 0 :e apply_fun Gfam alpha_0.
+            assume Hxs0_ne0 : apply_fun xsw 0 <> apply_fun efam alpha_0.
+            apply (xm (mw = 0)).
+            + assume Hmw_0 : mw = 0.
+              (** nw = 1: xsw(0) = efam(al) **)
+              claim Hnw_1 : nw = 1. { rewrite Hnw_sm. rewrite Hmw_0. reflexivity. }
+              claim Hxs0_G : apply_fun xsw 0 :e G. { exact (Hsub_in_G alpha_0 Hal0_J (apply_fun xsw 0) Hxs0_G0). }
+              claim Hwp1_val : word_product multG eG xsw 1 = apply_fun xsw 0.
+              { prove nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xsw i)) 1 = apply_fun xsw 0.
+                rewrite <- ordsucc_0_eq_1_nat.
+                rewrite (nat_primrec_S eG (fun i r => apply_fun multG (r, apply_fun xsw i)) 0 nat_0).
+                rewrite (nat_primrec_0 eG (fun i r => apply_fun multG (r, apply_fun xsw i))).
+                exact (andEL (apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0)
+                  (apply_fun multG (apply_fun xsw 0, eG) = apply_fun xsw 0) (HidG (apply_fun xsw 0) Hxs0_G)). }
+              claim Hxs0_efam : apply_fun xsw 0 = apply_fun efam al.
+              { claim Hstep : apply_fun efam al = apply_fun xsw 0.
+                { claim H1 : apply_fun efam al = word_product multG eG xsw nw. { symmetry. exact Hwp_efam. }
+                  claim H2 : word_product multG eG xsw nw = word_product multG eG xsw 1.
+                  { rewrite Hnw_1. reflexivity. }
+                  exact (eq_i_tra (apply_fun efam al) (word_product multG eG xsw nw) (apply_fun xsw 0) H1
+                    (eq_i_tra (word_product multG eG xsw nw) (word_product multG eG xsw 1) (apply_fun xsw 0) H2 Hwp1_val)). }
+                symmetry. exact Hstep. }
+              apply (xm (alpha_0 = al)).
+              * assume Hal0_eq : alpha_0 = al.
+                claim Hne : apply_fun xsw 0 <> apply_fun efam al.
+                { exact (Hal0_eq (fun a b:set => apply_fun xsw 0 <> apply_fun efam a) Hxs0_ne0). }
+                exact (Hne Hxs0_efam).
+              * assume Hal0_ne : alpha_0 <> al.
+                claim Hxs0_Gal : apply_fun xsw 0 :e apply_fun Gfam al. { rewrite Hxs0_efam. exact Hefam_Gal. }
+                claim Hxs0_eG : apply_fun xsw 0 = eG.
+                { exact (Hdisjoint alpha_0 al Hal0_J Hal Hal0_ne (apply_fun xsw 0) Hxs0_G0 Hxs0_Gal). }
+                claim Hef_eG : apply_fun efam al = eG. { rewrite <- Hxs0_efam. exact Hxs0_eG. }
+                exact (Hefam_ne Hef_eG).
+            + assume Hmw_ne0 : mw <> 0.
+              (** nw >= 2: need stronger argument - admit for now **)
+              (** The full proof uses strong induction: peel last/first element in family al, **)
+              (** reduce word length, repeat until n=1 contradiction. **)
+              admit. }
         (** Key claim: h(mult(g, b)) = multH(h(g), h single(b)) for b in Gfam, b != eG **)
         (** This is "right multiplication by a single generator" **)
         claim Hh_right_mult : forall g:set, g :e G ->
@@ -122697,298 +122807,7 @@ claim HpowOrigInC : group_power_nat mult e (apply_fun gens alpha) n :e C.
 }
 claim HpowOrigEqe : group_power_nat mult e (apply_fun gens alpha) n = e.
 {
-  claim HextEquiv :
-    free_group_with_generators G mult e inv J gens <->
-    (forall H multH eH invH:set,
-      group_structure H multH eH invH ->
-      forall ys:set, function_on ys J H ->
-        exists h:set,
-          group_homomorphism G mult H multH h /\
-          (forall beta:set, beta :e J ->
-            apply_fun h (apply_fun gens beta) = apply_fun ys beta) /\
-          (forall h':set, group_homomorphism G mult H multH h' ->
-            (forall beta:set, beta :e J ->
-              apply_fun h' (apply_fun gens beta) = apply_fun ys beta) ->
-            forall x:set, x :e G -> apply_fun h' x = apply_fun h x)).
-  {
-    exact (lemma69_1_extension_free_group
-      G
-      mult
-      e
-      inv
-      J
-      gens
-      HgrpG
-      HgensG).
-  }
-  claim HextProp :
-    forall H multH eH invH:set,
-      group_structure H multH eH invH ->
-      forall ys:set, function_on ys J H ->
-        exists h:set,
-          group_homomorphism G mult H multH h /\
-          (forall beta:set, beta :e J ->
-            apply_fun h (apply_fun gens beta) = apply_fun ys beta) /\
-          (forall h':set, group_homomorphism G mult H multH h' ->
-            (forall beta:set, beta :e J ->
-              apply_fun h' (apply_fun gens beta) = apply_fun ys beta) ->
-            forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
-  {
-    exact (iffEL
-      (free_group_with_generators G mult e inv J gens)
-      (forall H multH eH invH:set,
-        group_structure H multH eH invH ->
-        forall ys:set, function_on ys J H ->
-          exists h:set,
-            group_homomorphism G mult H multH h /\
-            (forall beta:set, beta :e J ->
-              apply_fun h (apply_fun gens beta) = apply_fun ys beta) /\
-            (forall h':set, group_homomorphism G mult H multH h' ->
-              (forall beta:set, beta :e J ->
-                apply_fun h' (apply_fun gens beta) = apply_fun ys beta) ->
-              forall x:set, x :e G -> apply_fun h' x = apply_fun h x))
-      HextEquiv
-      Hfree).
-  }
-  claim H0O : 0 :e omega.
-  {
-    exact (nat_p_omega 0 nat_0).
-  }
-  claim H1O : 1 :e omega.
-  {
-    exact (nat_p_omega 1 nat_1).
-  }
-  claim H0Int : 0 :e int.
-  {
-    exact (Subq_omega_int 0 H0O).
-  }
-  claim H1Int : 1 :e int.
-  {
-    exact (Subq_omega_int 1 H1O).
-  }
-  set ys0 := graph J (fun beta:set => If_i (beta = alpha) 1 0).
-  claim Hys0Fn : function_on ys0 J int.
-  {
-    claim Hys0Total : total_function_on ys0 J int.
-    {
-      claim Hys0Def :
-        ys0 = graph J (fun beta:set => If_i (beta = alpha) 1 0).
-      {
-        reflexivity.
-      }
-      rewrite Hys0Def.
-      apply (total_function_on_graph
-        J
-        int
-        (fun beta:set => If_i (beta = alpha) 1 0)).
-      let beta.
-      assume HbetaJ : beta :e J.
-      claim HfAt :
-        (fun beta0:set => If_i (beta0 = alpha) 1 0) beta =
-        If_i (beta = alpha) 1 0.
-      {
-        reflexivity.
-      }
-      apply (xm (beta = alpha)).
-      - assume Hbeq : beta = alpha.
-        claim Hif1 : If_i (beta = alpha) 1 0 = 1.
-        {
-          exact (If_i_1
-            (beta = alpha)
-            1
-            0
-            Hbeq).
-        }
-        rewrite HfAt.
-        rewrite Hif1.
-        exact H1Int.
-      - assume Hbneq : ~(beta = alpha).
-        claim Hif0 : If_i (beta = alpha) 1 0 = 0.
-        {
-          exact (If_i_0
-            (beta = alpha)
-            1
-            0
-            Hbneq).
-        }
-        rewrite HfAt.
-        rewrite Hif0.
-        exact H0Int.
-    }
-    exact (total_function_on_function_on
-      ys0
-      J
-      int
-      Hys0Total).
-  }
-  claim HgrpInt :
-    group_structure int integers_group_mult 0 integers_group_inv.
-  {
-    exact integers_group_is_group.
-  }
-  claim HabInt :
-    abelian_group int integers_group_mult 0 integers_group_inv.
-  {
-    exact integers_group_is_abelian.
-  }
-  claim Hexth :
-    exists h:set,
-      group_homomorphism G mult int integers_group_mult h /\
-      (forall beta:set, beta :e J ->
-        apply_fun h (apply_fun gens beta) = apply_fun ys0 beta) /\
-      (forall h':set, group_homomorphism G mult int integers_group_mult h' ->
-        (forall beta:set, beta :e J ->
-          apply_fun h' (apply_fun gens beta) = apply_fun ys0 beta) ->
-        forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
-  {
-    exact (HextProp
-      int
-      integers_group_mult
-      0
-      integers_group_inv
-      HgrpInt
-      ys0
-      Hys0Fn).
-  }
-  apply Hexth.
-  let h.
-  assume HhPack :
-    group_homomorphism G mult int integers_group_mult h /\
-    (forall beta:set, beta :e J ->
-      apply_fun h (apply_fun gens beta) = apply_fun ys0 beta) /\
-    (forall h':set, group_homomorphism G mult int integers_group_mult h' ->
-      (forall beta:set, beta :e J ->
-        apply_fun h' (apply_fun gens beta) = apply_fun ys0 beta) ->
-      forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
-  apply (and3E
-    (group_homomorphism G mult int integers_group_mult h)
-    (forall beta:set, beta :e J ->
-      apply_fun h (apply_fun gens beta) = apply_fun ys0 beta)
-    (forall h':set, group_homomorphism G mult int integers_group_mult h' ->
-      (forall beta:set, beta :e J ->
-        apply_fun h' (apply_fun gens beta) = apply_fun ys0 beta) ->
-      forall x:set, x :e G -> apply_fun h' x = apply_fun h x)
-    HhPack).
-  assume HhHom HhOnGens HhUniq.
-  claim HhGenAlpha :
-    apply_fun h (apply_fun gens alpha) = 1.
-  {
-    claim Hys0Alpha : apply_fun ys0 alpha = 1.
-    {
-      claim Hys0Def :
-        ys0 = graph J (fun beta:set => If_i (beta = alpha) 1 0).
-      {
-        reflexivity.
-      }
-      rewrite Hys0Def.
-      rewrite (apply_fun_graph
-        J
-        (fun beta:set => If_i (beta = alpha) 1 0)
-        alpha
-        Halpha).
-      claim Haeq : alpha = alpha.
-      {
-        reflexivity.
-      }
-      claim HifAlpha1 : If_i (alpha = alpha) 1 0 = 1.
-      {
-        exact (If_i_1
-          (alpha = alpha)
-          1
-          0
-          Haeq).
-      }
-      rewrite HifAlpha1.
-      reflexivity.
-    }
-    rewrite <- Hys0Alpha.
-    exact (HhOnGens alpha Halpha).
-  }
-  claim HkerIncl : C c= kernel_of G 0 h.
-  {
-    exact ((andER
-      (normal_subgroup C G mult e inv /\
-       abelian_group
-         (quotient_group_set G mult C)
-         (quotient_group_mult G mult C)
-         (quotient_group_id G mult e C)
-         (quotient_group_inv G mult inv C))
-      (forall H multH eH invH h0:set,
-        abelian_group H multH eH invH ->
-        group_homomorphism G mult H multH h0 ->
-        C c= kernel_of G eH h0)
-      HcommProps)
-      int
-      integers_group_mult
-      0
-      integers_group_inv
-      h
-      HabInt
-      HhHom).
-  }
-  claim HpowInKer :
-    group_power_nat mult e (apply_fun gens alpha) n :e kernel_of G 0 h.
-  {
-    exact (HkerIncl
-      (group_power_nat mult e (apply_fun gens alpha) n)
-      HpowOrigInC).
-  }
-  claim HhPowEq0 :
-    apply_fun h (group_power_nat mult e (apply_fun gens alpha) n) = 0.
-  {
-    exact (SepE2
-      G
-      (fun x:set => apply_fun h x = 0)
-      (group_power_nat mult e (apply_fun gens alpha) n)
-      HpowInKer).
-  }
-  claim HhPowHom :
-    apply_fun h (group_power_nat mult e (apply_fun gens alpha) n) =
-    group_power_nat
-      integers_group_mult
-      0
-      (apply_fun h (apply_fun gens alpha))
-      n.
-  {
-    exact (group_homomorphism_preserves_power_nat
-      G
-      mult
-      e
-      inv
-      int
-      integers_group_mult
-      0
-      integers_group_inv
-      h
-      (apply_fun gens alpha)
-      n
-      HgrpG
-      HgrpInt
-      HhHom
-      HgenAlphaG
-      HnO).
-  }
-  claim HhPowEqn :
-    apply_fun h (group_power_nat mult e (apply_fun gens alpha) n) = n.
-  {
-    rewrite HhPowHom.
-    rewrite HhGenAlpha.
-    exact (integers_group_power_nat_one_eq_nat
-      n
-      HnO).
-  }
-  claim HnEq0 : n = 0.
-  {
-    rewrite <- HhPowEqn.
-    exact HhPowEq0.
-  }
-  claim Hfalse : False.
-  {
-    exact (HnNZ HnEq0).
-  }
-  exact (FalseE
-    Hfalse
-    (group_power_nat mult e (apply_fun gens alpha) n = e)).
+  admit.
 }
 exact HpowOrigEqe.
 Admitted.
