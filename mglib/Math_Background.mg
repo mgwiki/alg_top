@@ -106584,7 +106584,86 @@ apply and3I.
         apply andI. exact HaJ. exact HxjG. }
       exact (Hnpr_H (n_of x) (omega_nat_p (n_of x) Hn_omega) (xs_of x) Helem_simp).
   (** Sub-part 1b: h preserves multiplication **)
-  + admit.
+  + let x y. assume HxG : x :e G. assume HyG : y :e G.
+    claim HxyG : apply_fun multG (x, y) :e G. { exact (HmultG_cl x y HxG HyG). }
+    (** Helper: evaluate h at any element of G via the graph definition **)
+    claim Hh_eval : forall z:set, z :e G ->
+      apply_fun h z = If_i (z = eG) eH
+        (nat_primrec eH
+          (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of z) i)))
+          (n_of z)).
+    { let z. assume Hz.
+      exact (apply_fun_graph G
+        (fun w:set =>
+          If_i (w = eG) eH
+            (nat_primrec eH
+              (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of w) i)))
+              (n_of w)))
+        z Hz). }
+    (** Helper: h(eG) = eH **)
+    claim Hh_eG : apply_fun h eG = eH.
+    { claim Hstep1 : apply_fun h eG =
+        If_i (eG = eG) eH
+          (nat_primrec eH
+            (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of eG) i)))
+            (n_of eG)).
+      { exact (Hh_eval eG HeGG). }
+      claim Hstep2 : If_i (eG = eG) eH
+        (nat_primrec eH
+          (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of eG) i)))
+          (n_of eG)) = eH.
+      { exact (If_i_1 (eG = eG) eH
+          (nat_primrec eH
+            (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of eG) i)))
+            (n_of eG))
+          (fun q H => H)). }
+      exact (eq_i_tra (apply_fun h eG)
+        (If_i (eG = eG) eH
+          (nat_primrec eH
+            (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of eG) i)))
+            (n_of eG)))
+        eH Hstep1 Hstep2). }
+    (** Helper: h(z) :e H for z :e G **)
+    claim Hh_in_H : forall z:set, z :e G -> apply_fun h z :e H.
+    { admit. (** Same argument as Sub-part 1a but re-derived locally **) }
+    (** Case x = eG **)
+    apply (xm (x = eG)).
+    - assume Hx_eG : x = eG.
+      (** h(mult(eG, y)) = h(y) since mult(eG, y) = y **)
+      claim HmultGxy_y : apply_fun multG (x, y) = y.
+      { rewrite Hx_eG.
+        exact (andEL (apply_fun multG (eG, y) = y) (apply_fun multG (y, eG) = y)
+          (HidG y HyG)). }
+      rewrite HmultGxy_y.
+      (** multH(h(eG), h(y)) = multH(eH, h(y)) = h(y) **)
+      claim HhxH : apply_fun h x :e H. { exact (Hh_in_H x HxG). }
+      claim HhyH : apply_fun h y :e H. { exact (Hh_in_H y HyG). }
+      rewrite Hx_eG. rewrite Hh_eG.
+      claim Hid_step : apply_fun multH (eH, apply_fun h y) = apply_fun h y.
+      { exact (andEL (apply_fun multH (eH, apply_fun h y) = apply_fun h y)
+          (apply_fun multH (apply_fun h y, eH) = apply_fun h y)
+          (HidH (apply_fun h y) HhyH)). }
+      symmetry. exact Hid_step.
+    - assume Hx_ne : x <> eG.
+      (** Case y = eG **)
+      apply (xm (y = eG)).
+      + assume Hy_eG : y = eG.
+        (** h(mult(x, eG)) = h(x) since mult(x, eG) = x **)
+        claim HmultGxy_x : apply_fun multG (x, y) = x.
+        { rewrite Hy_eG.
+          exact (andER (apply_fun multG (eG, x) = x) (apply_fun multG (x, eG) = x)
+            (HidG x HxG)). }
+        rewrite HmultGxy_x.
+        claim HhxH : apply_fun h x :e H. { exact (Hh_in_H x HxG). }
+        rewrite Hy_eG. rewrite Hh_eG.
+        claim Hid_step : apply_fun multH (apply_fun h x, eH) = apply_fun h x.
+        { exact (andER (apply_fun multH (eH, apply_fun h x) = apply_fun h x)
+            (apply_fun multH (apply_fun h x, eH) = apply_fun h x)
+            (HidH (apply_fun h x) HhxH)). }
+        symmetry. exact Hid_step.
+      + (** Both x, y <> eG: the hard case **)
+        assume Hy_ne : y <> eG.
+        admit.
 (** Part 2: restriction - for alpha in J, x in G_alpha, h(x) = hfam(alpha)(x) **)
 - let alpha0. assume Hal0 : alpha0 :e J.
   let x0. assume Hx0Gal : x0 :e apply_fun Gfam alpha0.
