@@ -1,6 +1,6 @@
 (** Balance Alice 3305 **)
 (** Balance Bob 3021 **)
-(** Balance Charlie 1243 **)
+(** Balance Charlie 1234 **)
 (** Balance Dave 1419 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -18267,7 +18267,8 @@ Qed.
 (** from S51 Ex 1 (line 150 in algtop.tex): straight-line homotopy **)
 (** LATEX VERSION: In any convex subspace A of Rn, any two paths f,g from x0 to x1 are path homotopic via F(x,t)=(1-t)f(x)+tg(x). **)
 (** EFFORT: 5 lines textbook, difficulty 5/10, USD 80 **)
-(** Bounty 88 **)
+(** Bounty 97 **)
+(** Lock Charlie 1771489351 **)
 Theorem Example_51_1_convex_paths_homotopic : forall A Ta x0 x1 f g:set,
   A c= R -> convex_in R A ->
   topology_on A Ta ->
