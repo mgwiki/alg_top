@@ -72045,6 +72045,32 @@ apply HfromCandidate.
 apply HisoZ.
 let phi.
 assume HphiIso.
+claim HphiHom : group_homomorphism G multG int integers_group_mult phi.
+{
+  exact (group_isomorphism_homomorphism
+    G
+    multG
+    int
+    integers_group_mult
+    phi
+    HphiIso).
+}
+claim HphiFn : function_on phi G int.
+{
+  exact (group_homomorphism_function_on
+    G
+    multG
+    int
+    integers_group_mult
+    phi
+    HphiHom).
+}
+claim HphiXInt : apply_fun phi x :e int.
+{
+  exact (HphiFn
+    x
+    HxG).
+}
 claim HpsiEx :
   exists psi:set,
     group_homomorphism int integers_group_mult H multH psi /\
