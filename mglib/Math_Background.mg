@@ -31023,6 +31023,257 @@ exact (andER
   Hsimp).
 Qed.
 
+(** Helper: bijection maps singleton domain to singleton codomain. **)
+Theorem bijection_singleton_domain_codomain_singleton :
+  forall X Y f x0:set,
+  bijection X Y f ->
+  X = {x0} ->
+  Y = {apply_fun f x0}.
+let X Y f x0.
+assume Hbij : bijection X Y f.
+assume HXsing : X = {x0}.
+claim Hfun : function_on f X Y.
+{
+  exact (andEL
+    (function_on f X Y)
+    (forall y:set, y :e Y -> exists x:set, x :e X /\
+      apply_fun f x = y /\ (forall x':set, x' :e X -> apply_fun f x' = y -> x' = x))
+    Hbij).
+}
+claim Hsurj : forall y:set, y :e Y -> exists x:set, x :e X /\
+  apply_fun f x = y /\ (forall x':set, x' :e X -> apply_fun f x' = y -> x' = x).
+{
+  exact (andER
+    (function_on f X Y)
+    (forall y:set, y :e Y -> exists x:set, x :e X /\
+      apply_fun f x = y /\ (forall x':set, x' :e X -> apply_fun f x' = y -> x' = x))
+    Hbij).
+}
+apply set_ext.
+- let y.
+  assume Hy : y :e Y.
+  apply (Hsurj y Hy).
+  let x.
+  assume Hxpack : x :e X /\
+    apply_fun f x = y /\ (forall x':set, x' :e X -> apply_fun f x' = y -> x' = x).
+  claim Hxpair : x :e X /\ apply_fun f x = y.
+  {
+    exact (andEL
+      (x :e X /\ apply_fun f x = y)
+      (forall x':set, x' :e X -> apply_fun f x' = y -> x' = x)
+      Hxpack).
+  }
+  claim HxX : x :e X.
+  {
+    exact (andEL
+      (x :e X)
+      (apply_fun f x = y)
+      Hxpair).
+  }
+  claim Hxy : apply_fun f x = y.
+  {
+    exact (andER
+      (x :e X)
+      (apply_fun f x = y)
+      Hxpair).
+  }
+  claim HxSing : x :e {x0}.
+  {
+    rewrite <- HXsing.
+    exact HxX.
+  }
+  claim HxEq : x = x0.
+  {
+    exact (singleton_elem x x0 HxSing).
+  }
+  rewrite <- Hxy.
+  rewrite HxEq.
+  exact (SingI (apply_fun f x0)).
+- let y.
+  assume Hy : y :e {apply_fun f x0}.
+  claim HyEq : y = apply_fun f x0.
+  {
+    exact (singleton_elem y (apply_fun f x0) Hy).
+  }
+  rewrite HyEq.
+  claim Hx0X : x0 :e X.
+  {
+    rewrite HXsing.
+    exact (SingI x0).
+  }
+  exact (Hfun x0 Hx0X).
+Qed.
+
+(** Helper: in a simply connected space, pi1 at any chosen point is trivial. **)
+Theorem simply_connected_trivial_pi1_at_point : forall X Tx x0:set,
+  simply_connected X Tx ->
+  x0 :e X ->
+  fundamental_group X Tx x0 = {fundamental_group_id X Tx x0}.
+let X Tx x0.
+assume Hsc : simply_connected X Tx.
+assume Hx0X : x0 :e X.
+claim HpcX : path_connected_space X Tx.
+{
+  exact (simply_connected_path_connected
+    X
+    Tx
+    Hsc).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (path_connected_space_topology
+    X
+    Tx
+    HpcX).
+}
+apply (simply_connected_trivial_pi1_witness X Tx Hsc).
+let xw.
+assume Hxwpack : xw :e X /\
+  fundamental_group X Tx xw = {fundamental_group_id X Tx xw}.
+claim HxwX : xw :e X.
+{
+  exact (andEL
+    (xw :e X)
+    (fundamental_group X Tx xw = {fundamental_group_id X Tx xw})
+    Hxwpack).
+}
+claim Hpi1w : fundamental_group X Tx xw = {fundamental_group_id X Tx xw}.
+{
+  exact (andER
+    (xw :e X)
+    (fundamental_group X Tx xw = {fundamental_group_id X Tx xw})
+    Hxwpack).
+}
+claim HisoExists :
+  exists phi:set,
+    group_isomorphism
+      (fundamental_group X Tx xw) (fundamental_group_mult X Tx xw)
+      (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+      phi.
+{
+  exact (Corollary_52_2_path_connected_pi1_isomorphic
+    X
+    Tx
+    xw
+    x0
+    HpcX
+    HxwX
+    Hx0X).
+}
+apply HisoExists.
+let phi.
+assume Hiso :
+  group_isomorphism
+    (fundamental_group X Tx xw) (fundamental_group_mult X Tx xw)
+    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+    phi.
+claim Hbij :
+  bijection
+    (fundamental_group X Tx xw)
+    (fundamental_group X Tx x0)
+    phi.
+{
+  exact (group_isomorphism_bijection
+    (fundamental_group X Tx xw)
+    (fundamental_group_mult X Tx xw)
+    (fundamental_group X Tx x0)
+    (fundamental_group_mult X Tx x0)
+    phi
+    Hiso).
+}
+claim Hpi1x0_phi :
+  fundamental_group X Tx x0 =
+  {apply_fun phi (fundamental_group_id X Tx xw)}.
+{
+  exact (bijection_singleton_domain_codomain_singleton
+    (fundamental_group X Tx xw)
+    (fundamental_group X Tx x0)
+    phi
+    (fundamental_group_id X Tx xw)
+    Hbij
+    Hpi1w).
+}
+claim Hgrp0 :
+  group_structure
+    (fundamental_group X Tx x0)
+    (fundamental_group_mult X Tx x0)
+    (fundamental_group_id X Tx x0)
+    (fundamental_group_inv X Tx x0).
+{
+  exact (fundamental_group_is_group
+    X
+    Tx
+    x0
+    HtopX
+    Hx0X).
+}
+claim HidMem0 : fundamental_group_id X Tx x0 :e fundamental_group X Tx x0.
+{
+  apply (and6E
+    (function_on (fundamental_group_mult X Tx x0)
+      (setprod (fundamental_group X Tx x0) (fundamental_group X Tx x0))
+      (fundamental_group X Tx x0))
+    (function_on (fundamental_group_inv X Tx x0)
+      (fundamental_group X Tx x0)
+      (fundamental_group X Tx x0))
+    (fundamental_group_id X Tx x0 :e fundamental_group X Tx x0)
+    (forall x y z:set,
+      x :e fundamental_group X Tx x0 ->
+      y :e fundamental_group X Tx x0 ->
+      z :e fundamental_group X Tx x0 ->
+      apply_fun (fundamental_group_mult X Tx x0)
+        (apply_fun (fundamental_group_mult X Tx x0) (x, y), z)
+      =
+      apply_fun (fundamental_group_mult X Tx x0)
+        (x, apply_fun (fundamental_group_mult X Tx x0) (y, z)))
+    (forall x:set, x :e fundamental_group X Tx x0 ->
+      apply_fun (fundamental_group_mult X Tx x0)
+        (fundamental_group_id X Tx x0, x) = x /\
+      apply_fun (fundamental_group_mult X Tx x0)
+        (x, fundamental_group_id X Tx x0) = x)
+    (forall x:set, x :e fundamental_group X Tx x0 ->
+      apply_fun (fundamental_group_mult X Tx x0)
+        (x, apply_fun (fundamental_group_inv X Tx x0) x)
+      = fundamental_group_id X Tx x0 /\
+      apply_fun (fundamental_group_mult X Tx x0)
+        (apply_fun (fundamental_group_inv X Tx x0) x, x)
+      = fundamental_group_id X Tx x0)
+    Hgrp0).
+  assume Hm Hinv He Hass Hid HinvAx.
+  exact He.
+}
+claim HidInSing :
+  fundamental_group_id X Tx x0 :e
+    {apply_fun phi (fundamental_group_id X Tx xw)}.
+{
+  rewrite <- Hpi1x0_phi.
+  exact HidMem0.
+}
+claim HidEqPhi :
+  fundamental_group_id X Tx x0 =
+  apply_fun phi (fundamental_group_id X Tx xw).
+{
+  exact (singleton_elem
+    (fundamental_group_id X Tx x0)
+    (apply_fun phi (fundamental_group_id X Tx xw))
+    HidInSing).
+}
+claim HphiEqId :
+  apply_fun phi (fundamental_group_id X Tx xw) =
+  fundamental_group_id X Tx x0.
+{
+  symmetry.
+  exact HidEqPhi.
+}
+claim Hpi1x0 :
+  fundamental_group X Tx x0 = {fundamental_group_id X Tx x0}.
+{
+  rewrite <- HphiEqId.
+  exact Hpi1x0_phi.
+}
+exact Hpi1x0.
+Qed.
+
 (** from S52 Lem 52.3 (line 428 in algtop.tex) **)
 (** LATEX VERSION: In a simply connected space X, any two paths having the same initial and final points are path homotopic. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
