@@ -87173,7 +87173,7 @@ exact (Hnat n (omega_nat_p n Hn)).
 Qed.
 
 (** Sub-helper: Case last entry of c's word in G2 **)
-Lemma ex68_3_case_last_G2 : forall G mult e inv G1 G2 c x m cs k alpha_last:set,
+Lemma ex68_3_case_last_G2 : forall G mult e inv G1 G2 c x m cs k:set,
   free_product_of_subgroups G mult e inv 2
     (graph 2 (fun i:set => If_i (i = 0) G1 G2))
     (graph 2 (fun _:set => e)) ->
@@ -87186,15 +87186,13 @@ Lemma ex68_3_case_last_G2 : forall G mult e inv G1 G2 c x m cs k alpha_last:set,
     (graph 2 (fun _:set => e)) m cs ->
   m <> 0 -> word_product mult e cs m = c ->
   m = ordsucc k -> nat_p k ->
-  alpha_last :e 2 ->
-  apply_fun cs k :e apply_fun (graph 2 (fun i:set => If_i (i = 0) G1 G2)) alpha_last ->
-  alpha_last = 1 ->
+  apply_fun cs k :e G2 ->
   False.
 admit.
 Admitted.
 
 (** Sub-helper: Case last entry of c's word in G1 **)
-Lemma ex68_3_case_last_G1 : forall G mult e inv G1 G2 c x m cs k alpha_last:set,
+Lemma ex68_3_case_last_G1 : forall G mult e inv G1 G2 c x m cs k:set,
   free_product_of_subgroups G mult e inv 2
     (graph 2 (fun i:set => If_i (i = 0) G1 G2))
     (graph 2 (fun _:set => e)) ->
@@ -87207,9 +87205,7 @@ Lemma ex68_3_case_last_G1 : forall G mult e inv G1 G2 c x m cs k alpha_last:set,
     (graph 2 (fun _:set => e)) m cs ->
   m <> 0 -> word_product mult e cs m = c ->
   m = ordsucc k -> nat_p k ->
-  alpha_last :e 2 ->
-  apply_fun cs k :e apply_fun (graph 2 (fun i:set => If_i (i = 0) G1 G2)) alpha_last ->
-  alpha_last = 0 ->
+  apply_fun cs k :e G1 ->
   False.
 admit.
 Admitted.
@@ -87332,8 +87328,12 @@ claim Hcsk_fam : apply_fun cs k :e apply_fun Gfam alpha_last.
 (** Case split on alpha_last using xm **)
 apply (xm (alpha_last = 0)).
 + assume Hal0 : alpha_last = 0.
-  exact (ex68_3_case_last_G1 G mult e inv G1 G2 c x m cs k alpha_last
-    Hfp HcG HxG1 HyG2 Hyne Hxne Hcxne Hred Hmne Hprod Hm_eq Hk_nat Hal2 Hcsk_fam Hal0).
+  claim Heval_al0 : apply_fun Gfam alpha_last = G1.
+  { rewrite Hal0. exact HGfam0. }
+  claim Hcsk_G1 : apply_fun cs k :e G1.
+  { rewrite <- Heval_al0. exact Hcsk_fam. }
+  exact (ex68_3_case_last_G1 G mult e inv G1 G2 c x m cs k
+    Hfp HcG HxG1 HyG2 Hyne Hxne Hcxne Hred Hmne Hprod Hm_eq Hk_nat Hcsk_G1).
 + assume Hal_ne0 : alpha_last <> 0.
   (** alpha_last in {0,1} and != 0, so alpha_last = 1 **)
   claim Hal1 : alpha_last = 1.
@@ -87343,8 +87343,12 @@ apply (xm (alpha_last = 0)).
       * assume Hal_in0 : alpha_last :e 0. exact (EmptyE alpha_last Hal_in0 (alpha_last = 1)).
       * assume Hal_eq0 : alpha_last = 0. exact (Hal_ne0 Hal_eq0 (alpha_last = 1)).
     + assume Hal_eq1 : alpha_last = 1. exact Hal_eq1. }
-  exact (ex68_3_case_last_G2 G mult e inv G1 G2 c x m cs k alpha_last
-    Hfp HcG HxG1 HyG2 Hyne Hxne Hcxne Hred Hmne Hprod Hm_eq Hk_nat Hal2 Hcsk_fam Hal1).
+  claim Heval_al1 : apply_fun Gfam alpha_last = G2.
+  { rewrite Hal1. exact HGfam1. }
+  claim Hcsk_G2 : apply_fun cs k :e G2.
+  { rewrite <- Heval_al1. exact Hcsk_fam. }
+  exact (ex68_3_case_last_G2 G mult e inv G1 G2 c x m cs k
+    Hfp HcG HxG1 HyG2 Hyne Hxne Hcxne Hred Hmne Hprod Hm_eq Hk_nat Hcsk_G2).
 Admitted.
 
 (** from S68 Exercise 3 (line 3029 in algtop.tex) **)
