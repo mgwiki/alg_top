@@ -61254,8 +61254,30 @@ claim Hex :
                               }
                               claim HxlocalVx : xlocal :e Vx.
                               {
-                                (** TODO Charlie: identify the slicesUt member of xlocal and show it must be Vx. **)
-                                admit.
+                                apply HxlocalSlicePack.
+                                let Vxlocal.
+                                assume HxlocalPack.
+                                claim HxlocalVxlocal : xlocal :e Vxlocal.
+                                {
+                                  exact (andEL
+                                    (xlocal :e Vxlocal)
+                                    (Vxlocal :e slicesUt)
+                                    HxlocalPack).
+                                }
+                                claim HVxlocalSlice : Vxlocal :e slicesUt.
+                                {
+                                  exact (andER
+                                    (xlocal :e Vxlocal)
+                                    (Vxlocal :e slicesUt)
+                                    HxlocalPack).
+                                }
+                                claim HVxlocalEqVx : Vxlocal = Vx.
+                                {
+                                  (** TODO Charlie: show the slice containing xlocal equals Vx. **)
+                                  admit.
+                                }
+                                rewrite <- HVxlocalEqVx.
+                                exact HxlocalVxlocal.
                               }
                               claim HxlocalEqxv : xlocal = xv.
                               {
@@ -65269,8 +65291,30 @@ claim HFt_54_cont :
                       }
                       claim HxzVq : xz :e Vq.
                       {
-                        (** TODO Charlie: identify the slices member of xz and show it must be Vq. **)
-                        admit.
+                        apply HxzSlicePack.
+                        let Vxz.
+                        assume HxzPack.
+                        claim HxzVxz : xz :e Vxz.
+                        {
+                          exact (andEL
+                            (xz :e Vxz)
+                            (Vxz :e slices)
+                            HxzPack).
+                        }
+                        claim HVxzSlice : Vxz :e slices.
+                        {
+                          exact (andER
+                            (xz :e Vxz)
+                            (Vxz :e slices)
+                            HxzPack).
+                        }
+                        claim HVxzEqVq : Vxz = Vq.
+                        {
+                          (** TODO Charlie: show the slice containing xz equals Vq. **)
+                          admit.
+                        }
+                        rewrite <- HVxzEqVq.
+                        exact HxzVxz.
                       }
                       claim HxzEqxq : xz = xq.
                       {
