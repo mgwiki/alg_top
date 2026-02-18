@@ -113484,23 +113484,6 @@ apply (iffI
         Hgens
         Halpha).
     }
-    claim Hinf_factor :
-      infinite_cyclic_subgroup Galpha mult e inv (apply_fun gens alpha).
-    {
-      rewrite HGalpha_def.
-      exact (lemma69_1_factor_family_infinite_cyclic
-        G
-        mult
-        e
-        inv
-        J
-        gens
-        alpha
-        Hgrp_free
-        Hgens
-        Hinfcyc
-        Halpha).
-    }
     claim Hsub_factor : subgroup_of Galpha G mult e inv.
     {
       rewrite HGalpha_def.
@@ -113546,7 +113529,18 @@ apply (iffI
         inv
         (apply_fun gens alpha)
         Hgrp_factor
-        Hinf_factor).
+        (lemma69_1_factor_family_infinite_cyclic
+          G
+          mult
+          e
+          inv
+          J
+          gens
+          alpha
+          Hgrp_free
+          Hgens
+          Hinfcyc
+          Halpha)).
     }
     apply (infinite_cyclic_universal_property
       Galpha
