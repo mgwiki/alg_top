@@ -107938,7 +107938,11 @@ apply and3I.
                 (apply_fun multH (h_single b, eH) = h_single b)
                 (HidH (h_single b) Hhs_H)). }
             claim Hb_hs : apply_fun h b = h_single b.
-            { admit. }
+            { apply (xm (b = apply_fun efam beta)).
+              + assume Hb_efam : b = apply_fun efam beta.
+                admit.
+              + assume Hb_ne_efam : b <> apply_fun efam beta.
+                exact (Hh_gen_elem beta Hbeta_J b Hb_Gbeta Hb_ne Hb_ne_efam). }
             claim Hlhs_chain : apply_fun h (apply_fun multG (g, b)) = h_single b.
             { exact (eq_i_tra
                 (apply_fun h (apply_fun multG (g, b)))
