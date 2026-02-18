@@ -62748,6 +62748,41 @@ claim Hex :
                   (evenly_covered E Te B Tb p Ur)
                   HUrPack).
               }
+              claim HslicesUr :
+                exists slicesUr:set,
+                  slicesUr c= Te /\
+                  pairwise_disjoint slicesUr /\
+                  Union slicesUr = preimage_of E p Ur /\
+                  (forall V:set, V :e slicesUr ->
+                    homeomorphism V (subspace_topology E Te V) Ur (subspace_topology B Tb Ur)
+                      (graph V (fun z:set => apply_fun p z))).
+              {
+                exact (andER
+                  (Ur :e Tb)
+                  (exists slices:set,
+                    slices c= Te /\
+                    pairwise_disjoint slices /\
+                    Union slices = preimage_of E p Ur /\
+                    (forall V:set, V :e slices ->
+                      homeomorphism V (subspace_topology E Te V) Ur (subspace_topology B Tb Ur)
+                        (graph V (fun z:set => apply_fun p z))))
+                  HevenUr).
+              }
+              apply HslicesUr.
+              let slicesUr.
+              assume HslicesUrPack.
+              claim HslicesUrCore :
+                (slicesUr c= Te /\ pairwise_disjoint slicesUr) /\
+                Union slicesUr = preimage_of E p Ur.
+              {
+                exact (andEL
+                  ((slicesUr c= Te /\ pairwise_disjoint slicesUr) /\
+                    Union slicesUr = preimage_of E p Ur)
+                  (forall V:set, V :e slicesUr ->
+                    homeomorphism V (subspace_topology E Te V) Ur (subspace_topology B Tb Ur)
+                      (graph V (fun z:set => apply_fun p z)))
+                  HslicesUrPack).
+              }
               (** TODO Charlie: compare lr with lt1 starting from Hlr0EqLt10 and local evenly-covered neighborhood Ur at f(r). **)
               admit.
             }
