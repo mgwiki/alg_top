@@ -61150,6 +61150,17 @@ claim Hex :
                                       apply_fun p y = apply_fun f x -> y = xlocal)
                                     HxlocalPack)).
                               }
+                              claim HpxlocalEqfx : apply_fun p xlocal = apply_fun f x.
+                              {
+                                exact (andER
+                                  (xlocal :e Vlocal)
+                                  (apply_fun p xlocal = apply_fun f x)
+                                  (andEL
+                                    (xlocal :e Vlocal /\ apply_fun p xlocal = apply_fun f x)
+                                    (forall y:set, y :e Vlocal ->
+                                      apply_fun p y = apply_fun f x -> y = xlocal)
+                                    HxlocalPack)).
+                              }
                               claim Huniqxlocal :
                                 forall y:set, y :e Vlocal ->
                                   apply_fun p y = apply_fun f x -> y = xlocal.
@@ -61167,10 +61178,17 @@ claim Hex :
                                   HlocalNtVlocal
                                   HlocalNtEqfx).
                               }
+                              claim HxlocalVx : xlocal :e Vx.
+                              {
+                                (** TODO Charlie: place xlocal in Vx (it lies over f(x) in the same slices family). **)
+                                admit.
+                              }
                               claim HxlocalEqxv : xlocal = xv.
                               {
-                                (** TODO Charlie: compare the unique Vlocal and Vx points above f(x). **)
-                                admit.
+                                exact (Huniqxv
+                                  xlocal
+                                  HxlocalVx
+                                  HpxlocalEqfx).
                               }
                               claim HxvVlocal : xv :e Vlocal.
                               {
@@ -64929,6 +64947,17 @@ claim HFt_54_cont :
                               apply_fun p y = apply_fun F z -> y = xz)
                             HxzPack)).
                       }
+                      claim HpxzEqFz : apply_fun p xz = apply_fun F z.
+                      {
+                        exact (andER
+                          (xz :e Vz)
+                          (apply_fun p xz = apply_fun F z)
+                          (andEL
+                            (xz :e Vz /\ apply_fun p xz = apply_fun F z)
+                            (forall y:set, y :e Vz ->
+                              apply_fun p y = apply_fun F z -> y = xz)
+                            HxzPack)).
+                      }
                       claim Huniqxz :
                         forall y:set, y :e Vz ->
                           apply_fun p y = apply_fun F z -> y = xz.
@@ -64946,10 +64975,17 @@ claim HFt_54_cont :
                           HFt54zVz
                           HpFt54zEqFz).
                       }
+                      claim HxzVq : xz :e Vq.
+                      {
+                        (** TODO Charlie: place xz in Vq (it lies over F(z) in the same slices family). **)
+                        admit.
+                      }
                       claim HxzEqxq : xz = xq.
                       {
-                        (** TODO Charlie: compare the unique Vz and Vq points above F(z). **)
-                        admit.
+                        exact (Huniqxq
+                          xz
+                          HxzVq
+                          HpxzEqFz).
                       }
                       rewrite <- HxzEqxq.
                       exact HxzVz.
