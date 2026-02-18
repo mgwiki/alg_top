@@ -80792,7 +80792,6 @@ exact (lemma59_4a_simply_connected_from_pi1_trivial_at_point
 Qed.
 
 (** Helper: if i-star and j-star are trivial and pieces are path connected, then X is simply connected. **)
-(** Proven Bob **)
 Theorem ex59_4a_both_trivial_if_pieces_path_connected : forall X Tx U V x0:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
