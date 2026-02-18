@@ -71847,8 +71847,20 @@ claim HfromCandidate :
     HhHom
     Hhx).
 }
+claim HisoZ : exists phi:set, group_isomorphism G multG int integers_group_mult phi.
+{
+  exact (cyclic_infinite_order_iff_Z
+    G
+    multG
+    eG
+    invG
+    HgrpG
+    HcycG
+    HinfG).
+}
 apply HfromCandidate.
-(** TODO Bob: construct a candidate h with group_homomorphism G multG H multH h and h(x)=y. **)
+(** TODO Bob: construct a candidate h with group_homomorphism G multG H multH h and h(x)=y.
+   Planned route: use HisoZ, build psi : int -> H with psi(1)=y, then set h := compose_fun G phi psi. **)
 admit.
 Admitted.
 
