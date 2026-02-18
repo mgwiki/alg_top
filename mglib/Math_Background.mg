@@ -74751,7 +74751,33 @@ Theorem lemma55_3_nulhomotopic_extends_to_B2 : forall X Tx h:set,
   nulhomotopic S1 S1_topology X Tx h ->
   exists k:set, continuous_map B2 B2_topology X Tx k /\
     (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x).
-admit.
+let X Tx h.
+assume Hh Hnul.
+apply Hnul.
+let y0.
+assume Hy0Pack.
+claim Hy0X : y0 :e X.
+{
+  exact (andEL
+    (y0 :e X)
+    (homotopic_maps S1 S1_topology X Tx h (const_fun S1 y0))
+    Hy0Pack).
+}
+claim Hhom :
+  homotopic_maps S1 S1_topology X Tx h (const_fun S1 y0).
+{
+  exact (andER
+    (y0 :e X)
+    (homotopic_maps S1 S1_topology X Tx h (const_fun S1 y0))
+    Hy0Pack).
+}
+claim HextFromHomotopy :
+  exists k:set, continuous_map B2 B2_topology X Tx k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x).
+{
+  admit.
+}
+exact HextFromHomotopy.
 Admitted.
 
 (** S55 helper backport: proved S58 tools for nulhomotopic => trivial induced pi1 map. **)
@@ -77413,7 +77439,20 @@ Theorem lemma55_3_trivial_implies_nulhomotopic : forall X Tx h b0:set,
     apply_fun (induced_homomorphism S1 S1_topology b0 X Tx (apply_fun h b0) h) cls =
     fundamental_group_id X Tx (apply_fun h b0)) ->
   nulhomotopic S1 S1_topology X Tx h.
-admit.
+let X Tx h b0.
+assume Hh Hb0 Htriv.
+claim Hext :
+  exists k:set, continuous_map B2 B2_topology X Tx k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x).
+{
+  admit.
+}
+exact (s55_extends_to_B2_implies_nulhomotopic
+  X
+  Tx
+  h
+  Hh
+  Hext).
 Admitted.
 
 (** from S55 Cor 55.4 part (a) (line 947 in algtop.tex) **)
@@ -78860,21 +78899,14 @@ claim HvS1Cont :
       (fun p:set => ~(p 0 = 0 /\ p 1 = 0)))
     HvS1IntoR2m0).
 }
-claim Hin :
-  exists x:set, x :e S1 /\ points_directly_inward v x.
-{
-  admit.
-}
-claim Hout :
-  exists x:set, x :e S1 /\ points_directly_outward v x.
-{
-  admit.
-}
-exact (andI
+claim HioCore :
   (exists x:set, x :e S1 /\ points_directly_inward v x)
-  (exists x:set, x :e S1 /\ points_directly_outward v x)
-  Hin
-  Hout).
+  /\
+  (exists x:set, x :e S1 /\ points_directly_outward v x).
+{
+  admit.
+}
+exact HioCore.
 Admitted.
 
 (** from S55 Thm 55.6 (line 983 in algtop.tex): Brouwer fixed-point theorem for the disc **)
