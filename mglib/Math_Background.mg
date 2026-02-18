@@ -45082,7 +45082,6 @@ Definition covering_map_R_S1 : set :=
 (** is a covering map. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 182 **)
-(** Lock Dave 1771448181 **)
 Theorem thm53_1_R_covers_S1 :
   covering_map R R_standard_topology S1 S1_topology covering_map_R_S1.
 admit.
@@ -70880,7 +70879,6 @@ Admitted.
 (** from S54 Thm 54.4 (line 799 in algtop.tex): lifting correspondence bijective **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 60 **)
 (** Bounty 73 **)
-(** Lock Dave 1771448181 **)
 Theorem thm54_4_lifting_correspondence_bijective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   simply_connected E Te ->
@@ -70908,7 +70906,6 @@ Definition S1_basepoint : set := (1, 0).
 (** of integers. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
 (** Bounty 242 **)
-(** Lock Dave 1771448181 **)
 Theorem thm54_5_pi1_circle : exists phi:set,
   group_isomorphism
     (fundamental_group S1 S1_topology S1_basepoint)
@@ -70997,7 +70994,6 @@ Definition homomorphism_image : set -> set -> set :=
 (** LATEX VERSION: The homomorphism p-star: pi_1(E,e0) -> pi_1(B,b0) is a monomorphism. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
 (** Bounty 73 **)
-(** Lock Dave 1771448181 **)
 Theorem thm54_6a_p_star_injective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   forall cls1 cls2:set,
@@ -74430,6 +74426,299 @@ apply andI.
 - exact HhomIdConstS1.
 Qed.
 
+(** S55 helper: S1 lies in R2 minus origin. **)
+(** Proven Charlie **)
+Theorem s55_S1_subset_R2_minus_origin :
+  S1 c= R2_minus_origin.
+let z.
+assume HzS1.
+claim HzR2 : z :e setprod R R.
+{
+  exact (SepE1
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)
+    z
+    HzS1).
+}
+claim HzEq1 :
+  add_SNo (mul_SNo (z 0) (z 0))
+    (mul_SNo (z 1) (z 1)) = 1.
+{
+  exact (SepE2
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)
+    z
+    HzS1).
+}
+apply (SepI
+  (setprod R R)
+  (fun p:set => ~(p 0 = 0 /\ p 1 = 0))
+  z
+  HzR2).
+assume HzZero.
+claim Hz0 : z 0 = 0.
+{
+  exact (andEL
+    (z 0 = 0)
+    (z 1 = 0)
+    HzZero).
+}
+claim Hz1 : z 1 = 0.
+{
+  exact (andER
+    (z 0 = 0)
+    (z 1 = 0)
+    HzZero).
+}
+claim Hsum0 :
+  add_SNo (mul_SNo (z 0) (z 0))
+    (mul_SNo (z 1) (z 1)) = 0.
+{
+  claim Hz0Sq0 : mul_SNo (z 0) (z 0) = 0.
+  {
+    rewrite Hz0 at 1.
+    rewrite Hz0 at 1.
+    exact (mul_SNo_zeroR 0 SNo_0).
+  }
+  claim Hz1Sq0 : mul_SNo (z 1) (z 1) = 0.
+  {
+    rewrite Hz1 at 1.
+    rewrite Hz1 at 1.
+    exact (mul_SNo_zeroR 0 SNo_0).
+  }
+  rewrite Hz0Sq0.
+  rewrite Hz1Sq0.
+  exact (add_SNo_0R 0 SNo_0).
+}
+claim H0eq1 : 0 = 1.
+{
+  rewrite <- Hsum0 at 1.
+  exact HzEq1.
+}
+exact (neq_0_1 H0eq1).
+Qed.
+
+(** Proven Charlie **)
+Theorem s55_inclusion_S1_R2_minus_origin_continuous :
+  continuous_map S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x)).
+claim HS1subR2 : S1 c= setprod R R.
+{
+  exact (Sep_Subq
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)).
+}
+claim HR2m0subR2 : R2_minus_origin c= setprod R R.
+{
+  exact (Sep_Subq
+    (setprod R R)
+    (fun p:set => ~(p 0 = 0 /\ p 1 = 0))).
+}
+claim HtopR2 : topology_on (setprod R R) R2_topology.
+{
+  exact (product_topology_is_topology
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    R_standard_topology_is_topology
+    R_standard_topology_is_topology).
+}
+claim HincToR2Cont :
+  continuous_map S1 S1_topology (setprod R R) R2_topology
+    (graph S1 (fun x:set => x)).
+{
+  exact (subspace_inclusion_continuous
+    (setprod R R)
+    R2_topology
+    S1
+    HtopR2
+    HS1subR2).
+}
+claim HpIntoR2m0 :
+  forall x:set, x :e S1 ->
+    apply_fun (graph S1 (fun z:set => z)) x :e R2_minus_origin.
+{
+  let x.
+  assume HxS1.
+  rewrite (apply_fun_graph S1 (fun z:set => z) x HxS1).
+  exact (s55_S1_subset_R2_minus_origin x HxS1).
+}
+exact (continuous_map_range_restrict
+  S1
+  S1_topology
+  (setprod R R)
+  R2_topology
+  (graph S1 (fun x:set => x))
+  R2_minus_origin
+  HincToR2Cont
+  HR2m0subR2
+  HpIntoR2m0).
+Qed.
+
+(** Proven Charlie **)
+Theorem s55_nulhomotopic_identity_implies_nulhomotopic_inclusion_R2_minus_origin :
+  nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x)) ->
+  nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x)).
+assume Hnul.
+apply Hnul.
+let y0.
+assume Hy0Pack.
+claim Hy0S1 : y0 :e S1.
+{
+  exact (andEL
+    (y0 :e S1)
+    (homotopic_maps S1 S1_topology S1 S1_topology
+      (graph S1 (fun x:set => x))
+      (const_fun S1 y0))
+    Hy0Pack).
+}
+claim HidConstS1 :
+  homotopic_maps S1 S1_topology S1 S1_topology
+    (graph S1 (fun x:set => x))
+    (const_fun S1 y0).
+{
+  exact (andER
+    (y0 :e S1)
+    (homotopic_maps S1 S1_topology S1 S1_topology
+      (graph S1 (fun x:set => x))
+      (const_fun S1 y0))
+    Hy0Pack).
+}
+claim Hy0R2m0 : y0 :e R2_minus_origin.
+{
+  exact (s55_S1_subset_R2_minus_origin y0 Hy0S1).
+}
+claim HincCont :
+  continuous_map S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x)).
+{
+  exact s55_inclusion_S1_R2_minus_origin_continuous.
+}
+claim HincRefl :
+  homotopic_maps S1 S1_topology
+    R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x))
+    (graph S1 (fun x:set => x)).
+{
+  exact (Lemma_51_1_homotopy_refl
+    S1
+    S1_topology
+    R2_minus_origin
+    R2_minus_origin_topology
+    (graph S1 (fun x:set => x))
+    HincCont).
+}
+claim HcompHom :
+  homotopic_maps S1 S1_topology
+    R2_minus_origin R2_minus_origin_topology
+    (compose_fun S1
+      (graph S1 (fun x:set => x))
+      (graph S1 (fun x:set => x)))
+    (compose_fun S1
+      (const_fun S1 y0)
+      (graph S1 (fun x:set => x))).
+{
+  exact (ex51_1_composition_homotopic
+    S1
+    S1_topology
+    S1
+    S1_topology
+    R2_minus_origin
+    R2_minus_origin_topology
+    (graph S1 (fun x:set => x))
+    (const_fun S1 y0)
+    (graph S1 (fun x:set => x))
+    (graph S1 (fun x:set => x))
+    HidConstS1
+    HincRefl).
+}
+claim HidTF : (graph S1 (fun x:set => x)) :e total_function_space S1 S1.
+{
+  exact (graph_in_total_function_space
+    S1
+    S1
+    (fun x:set => x)
+    (fun x:set => fun Hx:x :e S1 => Hx)).
+}
+claim HcompIdEq :
+  compose_fun S1
+    (graph S1 (fun x:set => x))
+    (graph S1 (fun x:set => x))
+  =
+  graph S1 (fun x:set => x).
+{
+  exact (compose_fun_identity_graph_eq_algtop
+    S1
+    S1
+    (graph S1 (fun x:set => x))
+    HidTF).
+}
+claim HconstTF : const_fun S1 y0 :e total_function_space S1 S1.
+{
+  exact (graph_in_total_function_space
+    S1
+    S1
+    (fun _:set => y0)
+    (fun x:set => fun Hx:x :e S1 => Hy0S1)).
+}
+claim HcompConstEq :
+  compose_fun S1
+    (const_fun S1 y0)
+    (graph S1 (fun x:set => x))
+  =
+  const_fun S1 y0.
+{
+  exact (compose_fun_identity_graph_eq_algtop
+    S1
+    S1
+    (const_fun S1 y0)
+    HconstTF).
+}
+claim HinclConstHom :
+  homotopic_maps S1 S1_topology
+    R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x))
+    (const_fun S1 y0).
+{
+  rewrite <- HcompIdEq.
+  rewrite <- HcompConstEq.
+  exact HcompHom.
+}
+claim HnulInclRaw :
+  exists y:set,
+    y :e R2_minus_origin /\
+    homotopic_maps S1 S1_topology
+      R2_minus_origin R2_minus_origin_topology
+      (graph S1 (fun x:set => x))
+      (const_fun S1 y).
+{
+  witness y0.
+  apply andI.
+  - exact Hy0R2m0.
+  - exact HinclConstHom.
+}
+exact HnulInclRaw.
+Qed.
+
+(** Proven Charlie **)
+Theorem s55_retraction_B2_S1_implies_inclusion_R2m0_nulhomotopic :
+  retraction_of B2 B2_topology S1 ->
+  nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x)).
+assume Hretr.
+exact (s55_nulhomotopic_identity_implies_nulhomotopic_inclusion_R2_minus_origin
+  (s55_retraction_B2_S1_implies_identity_nulhomotopic
+    Hretr)).
+Qed.
+
 (** from S55 Thm 55.2 (line 904 in algtop.tex): No-retraction theorem **)
 (** LATEX VERSION: There is no retraction of B^2 onto S^1. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
@@ -74440,6 +74729,13 @@ claim HnulId :
   nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x)).
 {
   exact (s55_retraction_B2_S1_implies_identity_nulhomotopic
+    Hretr).
+}
+claim HnulIncl :
+  nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x)).
+{
+  exact (s55_retraction_B2_S1_implies_inclusion_R2m0_nulhomotopic
     Hretr).
 }
 admit.
@@ -76762,6 +77058,65 @@ Admitted.
 Theorem cor55_4a_inclusion_S1_R2_not_nulhomotopic :
   ~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
     (graph S1 (fun x:set => x))).
+assume Hnul.
+claim Hb0S1 : (1, 0) :e S1.
+{
+  apply (SepI
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)
+    (1, 0)).
+  - exact (tuple_2_setprod_by_pair_Sigma
+      R
+      R
+      1
+      0
+      real_1
+      real_0).
+  - rewrite tuple_2_0_eq at 1.
+    rewrite tuple_2_0_eq at 1.
+    rewrite tuple_2_1_eq at 1.
+    rewrite tuple_2_1_eq at 1.
+    rewrite (mul_SNo_oneR 1 SNo_1) at 1.
+    rewrite (mul_SNo_zeroR 0 SNo_0) at 1.
+    exact (add_SNo_0R 1 SNo_1).
+}
+claim HincCont :
+  continuous_map S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x)).
+{
+  exact s55_inclusion_S1_R2_minus_origin_continuous.
+}
+claim Htriv :
+  forall cls:set, cls :e fundamental_group S1 S1_topology (1, 0) ->
+    apply_fun
+      (induced_homomorphism
+        S1
+        S1_topology
+        (1, 0)
+        R2_minus_origin
+        R2_minus_origin_topology
+        (apply_fun (graph S1 (fun x:set => x)) (1, 0))
+        (graph S1 (fun x:set => x)))
+      cls
+    =
+    fundamental_group_id
+      R2_minus_origin
+      R2_minus_origin_topology
+      (apply_fun (graph S1 (fun x:set => x)) (1, 0)).
+{
+  exact (s55_cor58_6_nulhomotopic_trivial
+    S1
+    S1_topology
+    R2_minus_origin
+    R2_minus_origin_topology
+    (graph S1 (fun x:set => x))
+    (1, 0)
+    HincCont
+    Hb0S1
+    Hnul).
+}
 admit.
 Admitted.
 
