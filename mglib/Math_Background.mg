@@ -111288,6 +111288,58 @@ apply (and4E
     (graph J (fun alpha:set => e)))
   Hfree).
 assume HgrpG HgensG HinfG HfpG.
+claim HcommProps :
+  normal_subgroup C G mult e inv /\
+  abelian_group
+    (quotient_group_set G mult C)
+    (quotient_group_mult G mult C)
+    (quotient_group_id G mult e C)
+    (quotient_group_inv G mult inv C) /\
+  (forall H multH eH invH h:set,
+    abelian_group H multH eH invH ->
+    group_homomorphism G mult H multH h ->
+    C c= kernel_of G eH h).
+{
+  rewrite HCdef.
+  exact (lemma69_3_commutator_subgroup G mult e inv HgrpG).
+}
+claim HquotAb :
+  abelian_group
+    (quotient_group_set G mult C)
+    (quotient_group_mult G mult C)
+    (quotient_group_id G mult e C)
+    (quotient_group_inv G mult inv C).
+{
+  claim HNA :
+    normal_subgroup C G mult e inv /\
+    abelian_group
+      (quotient_group_set G mult C)
+      (quotient_group_mult G mult C)
+      (quotient_group_id G mult e C)
+      (quotient_group_inv G mult inv C).
+  {
+    exact (andEL
+      (normal_subgroup C G mult e inv /\
+       abelian_group
+         (quotient_group_set G mult C)
+         (quotient_group_mult G mult C)
+         (quotient_group_id G mult e C)
+         (quotient_group_inv G mult inv C))
+      (forall H multH eH invH h:set,
+        abelian_group H multH eH invH ->
+        group_homomorphism G mult H multH h ->
+        C c= kernel_of G eH h)
+      HcommProps).
+  }
+  exact (andER
+    (normal_subgroup C G mult e inv)
+    (abelian_group
+      (quotient_group_set G mult C)
+      (quotient_group_mult G mult C)
+      (quotient_group_id G mult e C)
+      (quotient_group_inv G mult inv C))
+    HNA).
+}
 admit.
 Admitted.
 
