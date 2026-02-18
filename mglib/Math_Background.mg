@@ -82602,8 +82602,60 @@ claim Hpi1Trivial :
     claim HfConst :
       path_homotopic X TX (0, 0) (0, 0) f (constant_path (0, 0)).
     {
-      (** remaining geometric contraction of loops in the open disk to the center **)
-      admit.
+      prove continuous_map unit_interval unit_interval_topology X TX f /\
+        continuous_map unit_interval unit_interval_topology X TX (constant_path (0, 0)) /\
+        apply_fun f 0 = (0, 0) /\ apply_fun f 1 = (0, 0) /\
+        apply_fun (constant_path (0, 0)) 0 = (0, 0) /\
+        apply_fun (constant_path (0, 0)) 1 = (0, 0) /\
+        exists F:set,
+          continuous_map unit_square unit_square_topology X TX F /\
+          (forall s:set, s :e unit_interval ->
+            apply_fun F (s, 0) = apply_fun f s) /\
+          (forall s:set, s :e unit_interval ->
+            apply_fun F (s, 1) = apply_fun (constant_path (0, 0)) s) /\
+          (forall t:set, t :e unit_interval ->
+            apply_fun F (0, t) = (0, 0)) /\
+          (forall t:set, t :e unit_interval ->
+            apply_fun F (1, t) = (0, 0)).
+      claim HexistsF :
+        exists F:set,
+          continuous_map unit_square unit_square_topology X TX F /\
+          (forall s:set, s :e unit_interval ->
+            apply_fun F (s, 0) = apply_fun f s) /\
+          (forall s:set, s :e unit_interval ->
+            apply_fun F (s, 1) = apply_fun (constant_path (0, 0)) s) /\
+          (forall t:set, t :e unit_interval ->
+            apply_fun F (0, t) = (0, 0)) /\
+          (forall t:set, t :e unit_interval ->
+            apply_fun F (1, t) = (0, 0)).
+      {
+        (** remaining geometric contraction of loops in the open disk to the center **)
+        admit.
+      }
+      exact (and7I
+        (continuous_map unit_interval unit_interval_topology X TX f)
+        (continuous_map unit_interval unit_interval_topology X TX (constant_path (0, 0)))
+        (apply_fun f 0 = (0, 0))
+        (apply_fun f 1 = (0, 0))
+        (apply_fun (constant_path (0, 0)) 0 = (0, 0))
+        (apply_fun (constant_path (0, 0)) 1 = (0, 0))
+        (exists F:set,
+          continuous_map unit_square unit_square_topology X TX F /\
+          (forall s:set, s :e unit_interval ->
+            apply_fun F (s, 0) = apply_fun f s) /\
+          (forall s:set, s :e unit_interval ->
+            apply_fun F (s, 1) = apply_fun (constant_path (0, 0)) s) /\
+          (forall t:set, t :e unit_interval ->
+            apply_fun F (0, t) = (0, 0)) /\
+          (forall t:set, t :e unit_interval ->
+            apply_fun F (1, t) = (0, 0)))
+        HfCont
+        HconstCont
+        Hf0
+        Hf1
+        Hconst0
+        Hconst1
+        HexistsF).
     }
     claim HclassEq :
       path_homotopy_class_loop X TX (0, 0) f
