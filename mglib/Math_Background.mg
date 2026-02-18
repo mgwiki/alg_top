@@ -1,5 +1,5 @@
 (** Balance Alice 3280 **)
-(** Balance Bob 2996 **)
+(** Balance Bob 2992 **)
 (** Balance Charlie 1260 **)
 (** Balance Dave 1601 **)
 
@@ -70963,7 +70963,8 @@ Admitted.
 (** LATEX VERSION: If x generates the infinite cyclic group G, and y is in an arbitrary **)
 (** group H, then there is a unique homomorphism h: G -> H with h(x) = y. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
+(** Bounty 37 **)
+(** Lock Bob 1771536585 **)
 Theorem infinite_cyclic_universal_property : forall G multG eG invG x H multH eH invH y:set,
   group_structure G multG eG invG ->
   cyclic_group G multG eG invG ->
