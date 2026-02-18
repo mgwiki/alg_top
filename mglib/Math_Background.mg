@@ -61357,7 +61357,23 @@ claim Hex :
                                   }
                                   rewrite HVxlocalEqVlocal.
                                   rewrite HVlocalEqVu.
-                                  (** TODO Charlie: reduce to Vu = Vx using compatibility of the two lifts over f(x). **)
+                                  claim HVuEqVxIfHluVu :
+                                    apply_fun lu x :e Vu -> Vu = Vx.
+                                  {
+                                    assume HluVu.
+                                    exact (pairwise_disjoint_point_unique_member
+                                      slicesUt
+                                      Vu
+                                      Vx
+                                      (apply_fun lu x)
+                                      HpdSlicesUt
+                                      HVuSlice
+                                      HVxSlice
+                                      HluVu
+                                      HluVx).
+                                  }
+                                  apply HVuEqVxIfHluVu.
+                                  (** TODO Charlie: prove apply_fun lu x :e Vu from current overlap-lift data. **)
                                   admit.
                                 }
                                 rewrite <- HVxlocalEqVx.
