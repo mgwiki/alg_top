@@ -1,6 +1,6 @@
 (** Balance Alice 3305 **)
 (** Balance Bob 3021 **)
-(** Balance Charlie 1248 **)
+(** Balance Charlie 1243 **)
 (** Balance Dave 1419 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -24712,7 +24712,8 @@ Qed.
 (** from S52 Ex 1 (line 365 in algtop.tex): pi1(Rn, x0) is trivial **)
 (** LATEX VERSION: pi1(Rn, x0) is the trivial group. More generally, if X is any convex subset of Rn, then pi1(X, x0) is trivial. **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 50 **)
+(** Bounty 55 **)
+(** Lock Charlie 1771489042 **)
 Theorem Example_52_1_convex_trivial_pi1 : forall A Ta x0:set,
   A c= R -> convex_in R A ->
   topology_on A Ta -> x0 :e A ->
