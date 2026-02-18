@@ -109201,6 +109201,10 @@ apply (iffI
       (graph J (fun alpha:set => e)))
     Hfree).
   assume Hgrp_free Hgens_free Hinfcyc Hfp.
+  let H multH eH invH.
+  assume HgrpH : group_structure H multH eH invH.
+  let ys.
+  assume Hys : function_on ys J H.
   admit.
 - assume Hext :
     forall H multH eH invH:set,
