@@ -115430,13 +115430,9 @@ Theorem thm70_1_seifert_van_kampen :
 exact seifert_van_kampen_universal_pushout_helper.
 Admitted.
 
-(** from S70 Thm 70.2 (line 3389 in algtop.tex): classical Seifert-van Kampen **)
-(** LATEX VERSION: j: pi1(U,x0) free-prod pi1(V,x0) -> pi1(X,x0) extending j1,j2 **)
-(** is surjective, and its kernel is the least normal subgroup N of the free product **)
-(** containing all elements i1(g)^{-1} i2(g) for g in pi1(U cap V, x0). **)
-(** EFFORT: 30 lines textbook, difficulty 7/10, USD 500 **)
-(** Bounty 550 **)
-Theorem thm70_2_classical_van_kampen :
+(** Infrastructure helper for S70 Thm 70.2:
+    classical van Kampen description via free product and least normal subgroup. **)
+Theorem classical_van_kampen_free_product_kernel_helper :
   forall X Tx U V x0:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx -> X = U :\/: V ->
@@ -115474,6 +115470,52 @@ Theorem thm70_2_classical_van_kampen :
                      V (subspace_topology X Tx V) x0
                      (graph (U :/\: V) (fun x:set => x))) g)))).
 admit.
+Admitted.
+
+(** from S70 Thm 70.2 (line 3389 in algtop.tex): classical Seifert-van Kampen **)
+(** LATEX VERSION: j: pi1(U,x0) free-prod pi1(V,x0) -> pi1(X,x0) extending j1,j2 **)
+(** is surjective, and its kernel is the least normal subgroup N of the free product **)
+(** containing all elements i1(g)^{-1} i2(g) for g in pi1(U cap V, x0). **)
+(** EFFORT: 30 lines textbook, difficulty 7/10, USD 500 **)
+(** Bounty 550 **)
+Theorem thm70_2_classical_van_kampen :
+  forall X Tx U V x0:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx -> X = U :\/: V ->
+  path_connected_space U (subspace_topology X Tx U) ->
+  path_connected_space V (subspace_topology X Tx V) ->
+  path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
+  x0 :e U :/\: V ->
+  forall FP multFP eFP invFP ifam:set,
+    external_free_product FP multFP eFP invFP (UPair 0 1)
+      (graph (UPair 0 1) (fun i:set =>
+        if i = 0 then fundamental_group U (subspace_topology X Tx U) x0
+        else fundamental_group V (subspace_topology X Tx V) x0))
+      (graph (UPair 0 1) (fun i:set =>
+        if i = 0 then fundamental_group_mult U (subspace_topology X Tx U) x0
+        else fundamental_group_mult V (subspace_topology X Tx V) x0))
+      ifam ->
+    exists j:set,
+      group_homomorphism FP multFP
+        (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0) j /\
+      homomorphism_image FP j = fundamental_group X Tx x0 /\
+      kernel_of FP (fundamental_group_id X Tx x0) j =
+        least_normal_subgroup FP multFP eFP invFP
+	          (Repl (fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0)
+	            (fun g:set =>
+	              apply_fun multFP
+	                (apply_fun invFP
+	                  (apply_fun (apply_fun ifam 0)
+                    (apply_fun (induced_homomorphism
+                      (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+                      U (subspace_topology X Tx U) x0
+                      (graph (U :/\: V) (fun x:set => x))) g)),
+                 apply_fun (apply_fun ifam 1)
+	                   (apply_fun (induced_homomorphism
+	                     (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+	                     V (subspace_topology X Tx V) x0
+	                     (graph (U :/\: V) (fun x:set => x))) g)))).
+exact classical_van_kampen_free_product_kernel_helper.
 Admitted.
 
 (** from S70 Cor 70.3 (line 3439 in algtop.tex): simply connected intersection **)
