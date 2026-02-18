@@ -40163,6 +40163,7 @@ Qed.
 (** from S52 Exercise 7(b) (line 516 in algtop.tex): tensor induces operation on pi1 **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 55 **)
+(** Lock Charlie 1771463938 **)
 Theorem ex52_7b_tensor_induces_operation : forall G Tg:set,
   topological_group G Tg ->
   forall e mult:set,
