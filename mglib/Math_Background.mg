@@ -113909,6 +113909,30 @@ claim HnatPow :
 exact (HnatPow n (omega_nat_p n HnO)).
 Qed.
 
+(** Proven Bob **)
+(** Helper: inverses stay in the carrier of a group. **)
+Theorem group_inverse_closed_in_group :
+  forall G mult e inv x:set,
+  group_structure G mult e inv ->
+  x :e G ->
+  apply_fun inv x :e G.
+let G mult e inv x.
+assume Hgrp : group_structure G mult e inv.
+assume HxG : x :e G.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  Hgrp).
+assume HmultFun HinvFun HeG Hassoc Hid HinvLaw.
+exact (HinvFun x HxG).
+Qed.
+
 (** from S69 Lem 69.1 (line 3047 in algtop.tex): extension condition for free groups **)
 (** LATEX VERSION: G is a free group with generators {a_alpha} iff for any group H **)
 (** and any family {y_alpha} of elements of H, there is a unique homomorphism **)
@@ -114457,18 +114481,14 @@ apply (iffI
     }
     claim HinvGalphaG : apply_fun inv galpha :e G.
     {
-      apply (and6E
-        (function_on mult (setprod G G) G)
-        (function_on inv G G)
-        (e :e G)
-        (forall x y z:set, x :e G -> y :e G -> z :e G ->
-          apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
-        (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
-        (forall x:set, x :e G ->
-          apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
-        Hgrp).
-      assume HmultFun HinvFun HeG Hassoc Hid HinvLaw.
-      exact (HinvFun galpha HgalphaG).
+      exact (group_inverse_closed_in_group
+        G
+        mult
+        e
+        inv
+        galpha
+        Hgrp
+        HgalphaG).
     }
     claim HpowGalpha :
       forall n:set, n :e omega -> group_power_nat mult e galpha n :e G.
