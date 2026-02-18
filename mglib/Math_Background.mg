@@ -62850,6 +62850,16 @@ claim Hex :
                     (Union slicesUr = preimage_of E p Ur)
                     HslicesUrCore)).
               }
+              claim HpdSlicesUr : pairwise_disjoint slicesUr.
+              {
+                exact (andER
+                  (slicesUr c= Te)
+                  (pairwise_disjoint slicesUr)
+                  (andEL
+                    (slicesUr c= Te /\ pairwise_disjoint slicesUr)
+                    (Union slicesUr = preimage_of E p Ur)
+                    HslicesUrCore)).
+              }
               claim HslicesUrUnion : Union slicesUr = preimage_of E p Ur.
               {
                 exact (andER
@@ -62917,6 +62927,21 @@ claim Hex :
                   (apply_fun lr r :e Vr)
                   (Vr :e slicesUr)
                   HVrPack).
+              }
+              claim HVrOpen : Vr :e Te.
+              {
+                exact (HslicesUrSub
+                  Vr
+                  HVrSlice).
+              }
+              claim HVrSubE : Vr c= E.
+              {
+                exact (topology_elem_subset
+                  E
+                  Te
+                  Vr
+                  HtopE
+                  HVrOpen).
               }
               claim HhomeVr :
                 homeomorphism Vr (subspace_topology E Te Vr) Ur (subspace_topology B Tb Ur)
