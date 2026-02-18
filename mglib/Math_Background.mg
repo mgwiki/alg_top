@@ -58191,8 +58191,97 @@ claim Hex :
                         forall x:set, x :e Nu :/\: Nt ->
                           apply_fun lu x :e Vu.
                       {
-                        (** TODO Bob: show lu maps Nu cap Nt into the chosen slice Vu. **)
-                        admit.
+                        let x.
+                        assume HxNuNt.
+                        claim HxNu : x :e Nu.
+                        {
+                          exact (binintersectE1
+                            Nu
+                            Nt
+                            x
+                            HxNuNt).
+                        }
+                        claim HxNt : x :e Nt.
+                        {
+                          exact (binintersectE2
+                            Nu
+                            Nt
+                            x
+                            HxNuNt).
+                        }
+                        claim HluEx : apply_fun lu x :e E.
+                        {
+                          exact (HluFun
+                            x
+                            HxNu).
+                        }
+                        claim HfxUt : apply_fun f x :e Ut.
+                        {
+                          exact (HNtMap
+                            x
+                            HxNt).
+                        }
+                        claim HpluEqfx : apply_fun p (apply_fun lu x) = apply_fun f x.
+                        {
+                          exact (HluComm
+                            x
+                            HxNu).
+                        }
+                        claim HpluUt : apply_fun p (apply_fun lu x) :e Ut.
+                        {
+                          rewrite HpluEqfx.
+                          exact HfxUt.
+                        }
+                        claim HluPreUt : apply_fun lu x :e preimage_of E p Ut.
+                        {
+                          exact (SepI
+                            E
+                            (fun z:set => apply_fun p z :e Ut)
+                            (apply_fun lu x)
+                            HluEx
+                            HpluUt).
+                        }
+                        claim HluUnion : apply_fun lu x :e Union slicesUt.
+                        {
+                          exact (mem_eqL
+                            (apply_fun lu x)
+                            (Union slicesUt)
+                            (preimage_of E p Ut)
+                            HslicesUtUnion
+                            HluPreUt).
+                        }
+                        claim HsliceAtLux :
+                          exists Vx:set, apply_fun lu x :e Vx /\ Vx :e slicesUt.
+                        {
+                          exact (UnionE
+                            slicesUt
+                            (apply_fun lu x)
+                            HluUnion).
+                        }
+                        apply HsliceAtLux.
+                        let Vx.
+                        assume HVxPack.
+                        claim HluVx : apply_fun lu x :e Vx.
+                        {
+                          exact (andEL
+                            (apply_fun lu x :e Vx)
+                            (Vx :e slicesUt)
+                            HVxPack).
+                        }
+                        claim HVxSlice : Vx :e slicesUt.
+                        {
+                          exact (andER
+                            (apply_fun lu x :e Vx)
+                            (Vx :e slicesUt)
+                            HVxPack).
+                        }
+                        claim HVxEqVu : Vx = Vu.
+                        {
+                          (** TODO Bob: prove any slice Vx meeting lu(Nu /\\ Nt) equals Vu. **)
+                          admit.
+                        }
+                        rewrite <- HVxEqVu.
+                        exact HluVx.
                       }
                       let x.
                       assume HxNuNt.
