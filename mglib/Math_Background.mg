@@ -116894,6 +116894,38 @@ exact (ex32_3_locally_compact_Hausdorff_regular
   HHausX).
 Qed.
 
+(** Helper: compact Hausdorff spaces are normal. **)
+(** Proven Charlie **)
+Theorem compact_Hausdorff_implies_normal_algtop :
+  forall X Tx:set,
+  compact_space X Tx ->
+  Hausdorff_space X Tx ->
+  normal_space X Tx.
+let X Tx.
+assume HcompX HHausX.
+exact (compact_Hausdorff_normal
+  X
+  Tx
+  HcompX
+  HHausX).
+Qed.
+
+(** Helper: compact Hausdorff second-countable spaces are first countable. **)
+(** Proven Charlie **)
+Theorem compact_Hausdorff_second_countable_implies_first_countable_algtop :
+  forall X Tx:set,
+  compact_space X Tx ->
+  Hausdorff_space X Tx ->
+  second_countable_space X Tx ->
+  first_countable_space X Tx.
+let X Tx.
+assume HcompX HHausX HscX.
+exact (second_countable_implies_first_countable
+  X
+  Tx
+  HscX).
+Qed.
+
 (** Helper: compact Hausdorff second-countable spaces are metrizable. **)
 (** Proven Charlie **)
 Theorem compact_Hausdorff_second_countable_implies_metrizable_algtop :
