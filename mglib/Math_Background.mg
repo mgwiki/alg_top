@@ -106412,58 +106412,57 @@ apply and3I.
     (forall x y:set, x :e G -> y :e G ->
       apply_fun h (apply_fun multG (x, y)) =
         apply_fun multH (apply_fun h x, apply_fun h y)).
-  apply andI.
-  (** Sub-part 1a: function_on h G H **)
-  + claim Hh_single_H : forall xi:set,
+  (** Helpers used by both function_on and multiplicativity proofs **)
+  claim Hh_single_H : forall xi:set,
       (exists alpha:set, alpha :e J /\ xi :e apply_fun Gfam alpha) ->
       h_single xi :e H.
-    { let xi. assume Hex : exists alpha:set, alpha :e J /\ xi :e apply_fun Gfam alpha.
-      apply Hex.
-      let alpha_w. assume Haw : alpha_w :e J /\ xi :e apply_fun Gfam alpha_w.
-      claim Haw_J : alpha_w :e J.
-      { exact (andEL (alpha_w :e J) (xi :e apply_fun Gfam alpha_w) Haw). }
-      claim Hxi_Gaw : xi :e apply_fun Gfam alpha_w.
-      { exact (andER (alpha_w :e J) (xi :e apply_fun Gfam alpha_w) Haw). }
-      claim Haov : alpha_of xi :e J /\ xi :e apply_fun Gfam (alpha_of xi).
-      { exact (Halpha_of_valid alpha_w Haw_J xi Hxi_Gaw). }
-      claim Hao_J : alpha_of xi :e J.
-      { exact (andEL (alpha_of xi :e J) (xi :e apply_fun Gfam (alpha_of xi)) Haov). }
-      claim Hxi_Gao : xi :e apply_fun Gfam (alpha_of xi).
-      { exact (andER (alpha_of xi :e J) (xi :e apply_fun Gfam (alpha_of xi)) Haov). }
-      exact (Hhfam_in_H (alpha_of xi) Hao_J xi Hxi_Gao). }
-    (** Helper: nat_primrec of multH stays in H **)
-    claim Hnpr_H : forall m:set, nat_p m ->
+  { let xi. assume Hex : exists alpha:set, alpha :e J /\ xi :e apply_fun Gfam alpha.
+    apply Hex.
+    let alpha_w. assume Haw : alpha_w :e J /\ xi :e apply_fun Gfam alpha_w.
+    claim Haw_J : alpha_w :e J.
+    { exact (andEL (alpha_w :e J) (xi :e apply_fun Gfam alpha_w) Haw). }
+    claim Hxi_Gaw : xi :e apply_fun Gfam alpha_w.
+    { exact (andER (alpha_w :e J) (xi :e apply_fun Gfam alpha_w) Haw). }
+    claim Haov : alpha_of xi :e J /\ xi :e apply_fun Gfam (alpha_of xi).
+    { exact (Halpha_of_valid alpha_w Haw_J xi Hxi_Gaw). }
+    claim Hao_J : alpha_of xi :e J.
+    { exact (andEL (alpha_of xi :e J) (xi :e apply_fun Gfam (alpha_of xi)) Haov). }
+    claim Hxi_Gao : xi :e apply_fun Gfam (alpha_of xi).
+    { exact (andER (alpha_of xi :e J) (xi :e apply_fun Gfam (alpha_of xi)) Haov). }
+    exact (Hhfam_in_H (alpha_of xi) Hao_J xi Hxi_Gao). }
+  (** Helper: nat_primrec of multH stays in H **)
+  claim Hnpr_H : forall m:set, nat_p m ->
       forall ys:set, (forall j:set, j :e m ->
         exists alpha:set, alpha :e J /\ apply_fun ys j :e apply_fun Gfam alpha) ->
       nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ys i))) m :e H.
-    { apply nat_ind.
-      - let ys. assume Hys.
-        prove nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ys i))) 0 :e H.
-        claim H0eq : nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ys i))) 0 = eH.
-        { exact (nat_primrec_0 eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ys i)))). }
-        rewrite H0eq. exact HeHH.
-      - let k. assume Hk : nat_p k. assume IH.
-        let ys. assume Hys : forall j:set, j :e ordsucc k ->
-          exists alpha:set, alpha :e J /\ apply_fun ys j :e apply_fun Gfam alpha.
-        prove nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ys i))) (ordsucc k) :e H.
-        claim Hys_k : forall j:set, j :e k ->
-          exists alpha:set, alpha :e J /\ apply_fun ys j :e apply_fun Gfam alpha.
-        { let j. assume Hjk. exact (Hys j (ordsuccI1 k j Hjk)). }
-        claim HIH : nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ys i))) k :e H.
-        { exact (IH ys Hys_k). }
-        claim HkS : nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ys i))) (ordsucc k) =
-          apply_fun multH (nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ys i))) k, h_single (apply_fun ys k)).
-        { exact (nat_primrec_S eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ys i))) k Hk). }
-        rewrite HkS.
-        claim Hyk_Gal : exists alpha:set, alpha :e J /\ apply_fun ys k :e apply_fun Gfam alpha.
-        { exact (Hys k (ordsuccI2 k)). }
-        exact (HmultH_cl
-          (nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ys i))) k)
-          (h_single (apply_fun ys k))
-          HIH (Hh_single_H (apply_fun ys k) Hyk_Gal)). }
-    (** Now prove function_on h G H **)
-    prove forall x:set, x :e G -> apply_fun h x :e H.
-    let x. assume HxG : x :e G.
+  { apply nat_ind.
+    - let ys. assume Hys.
+      prove nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ys i))) 0 :e H.
+      claim H0eq : nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ys i))) 0 = eH.
+      { exact (nat_primrec_0 eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ys i)))). }
+      rewrite H0eq. exact HeHH.
+    - let k. assume Hk : nat_p k. assume IH.
+      let ys. assume Hys : forall j:set, j :e ordsucc k ->
+        exists alpha:set, alpha :e J /\ apply_fun ys j :e apply_fun Gfam alpha.
+      prove nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ys i))) (ordsucc k) :e H.
+      claim Hys_k : forall j:set, j :e k ->
+        exists alpha:set, alpha :e J /\ apply_fun ys j :e apply_fun Gfam alpha.
+      { let j. assume Hjk. exact (Hys j (ordsuccI1 k j Hjk)). }
+      claim HIH : nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ys i))) k :e H.
+      { exact (IH ys Hys_k). }
+      claim HkS : nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ys i))) (ordsucc k) =
+        apply_fun multH (nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ys i))) k, h_single (apply_fun ys k)).
+      { exact (nat_primrec_S eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ys i))) k Hk). }
+      rewrite HkS.
+      claim Hyk_Gal : exists alpha:set, alpha :e J /\ apply_fun ys k :e apply_fun Gfam alpha.
+      { exact (Hys k (ordsuccI2 k)). }
+      exact (HmultH_cl
+        (nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ys i))) k)
+        (h_single (apply_fun ys k))
+        HIH (Hh_single_H (apply_fun ys k) Hyk_Gal)). }
+  (** Helper: h(z) :e H for z :e G **)
+  claim Hh_in_H : forall z:set, z :e G -> apply_fun h z :e H.
+  { let x. assume HxG : x :e G.
     claim Heval : apply_fun h x =
       If_i (x = eG) eH
         (nat_primrec eH
@@ -106478,7 +106477,7 @@ apply and3I.
         x HxG). }
     rewrite Heval.
     apply (xm (x = eG)).
-    * assume Hxe : x = eG.
+    - assume Hxe : x = eG.
       claim Hif : If_i (x = eG) eH
         (nat_primrec eH
           (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun (xs_of x) i)))
@@ -106488,7 +106487,7 @@ apply and3I.
             (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun (xs_of x) i)))
             (n_of x)) Hxe). }
       rewrite Hif. exact HeHH.
-    * assume Hxne : x <> eG.
+    - assume Hxne : x <> eG.
       claim Hif : If_i (x = eG) eH
         (nat_primrec eH
           (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun (xs_of x) i)))
@@ -106582,7 +106581,11 @@ apply and3I.
           (apply_fun (xs_of x) j <> apply_fun efam alpha) Ha).
         assume HaJ HxjG HxjE.
         apply andI. exact HaJ. exact HxjG. }
-      exact (Hnpr_H (n_of x) (omega_nat_p (n_of x) Hn_omega) (xs_of x) Helem_simp).
+      exact (Hnpr_H (n_of x) (omega_nat_p (n_of x) Hn_omega) (xs_of x) Helem_simp). }
+  apply andI.
+  (** Sub-part 1a: function_on h G H **)
+  + prove forall x:set, x :e G -> apply_fun h x :e H.
+    let x. assume HxG. exact (Hh_in_H x HxG).
   (** Sub-part 1b: h preserves multiplication **)
   + let x y. assume HxG : x :e G. assume HyG : y :e G.
     claim HxyG : apply_fun multG (x, y) :e G. { exact (HmultG_cl x y HxG HyG). }
@@ -106623,9 +106626,6 @@ apply and3I.
             (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of eG) i)))
             (n_of eG)))
         eH Hstep1 Hstep2). }
-    (** Helper: h(z) :e H for z :e G **)
-    claim Hh_in_H : forall z:set, z :e G -> apply_fun h z :e H.
-    { admit. (** Same argument as Sub-part 1a but re-derived locally **) }
     (** Case x = eG **)
     apply (xm (x = eG)).
     - assume Hx_eG : x = eG.
