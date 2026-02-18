@@ -39918,8 +39918,66 @@ claim HextTrivial :
   apply_fun (induced_homomorphism A Ta a0 Y Ty y0 (compose_fun A i H)) cls
   = fundamental_group_id Y Ty y0.
 {
-  (** TODO Charlie: factor through R and use the triviality of loops after extension to ambient R. **)
-  (** Needed ingredients: continuity of inclusion i:A->R in Ta context and induced-map identity behavior. **)
+  claim HHFun52 : function_on H R Y.
+  {
+    exact (continuous_map_function_on
+      R
+      R_standard_topology
+      Y
+      Ty
+      H
+      HHcont).
+  }
+  claim HiTFS52 : i :e total_function_space A R.
+  {
+    exact (graph_in_total_function_space
+      A
+      R
+      (fun x:set => x)
+      (fun x Hx => HAsubR x Hx)).
+  }
+  claim HiFun52 : function_on i A R.
+  {
+    exact (total_function_space_function_on_algtop
+      A
+      R
+      i
+      HiTFS52).
+  }
+  claim HcompFun52 : function_on (compose_fun A i H) A Y.
+  {
+    exact (total_function_space_function_on_algtop
+      A
+      Y
+      (compose_fun A i H)
+      (compose_fun_in_total_function_space
+        A
+        R
+        Y
+        i
+        H
+        HiFun52
+        HHFun52)).
+  }
+  claim HcompCont52 : continuous_map A Ta Y Ty (compose_fun A i H).
+  {
+    exact (continuous_map_congr_on
+      A
+      Ta
+      Y
+      Ty
+      h
+      (compose_fun A i H)
+      Hhcont
+      HcompFun52
+      HhEqComp).
+  }
+  claim HcompNul52 : nulhomotopic A Ta Y Ty (compose_fun A i H).
+  {
+    (** TODO Charlie: build a homotopy to const via the extension H on R (contractibility route). **)
+    admit.
+  }
+  (** TODO Charlie: conclude induced-map triviality from HcompCont52 + HcompNul52 using pre-S58 infrastructure. **)
   admit.
 }
 rewrite HinducedThroughExtension.
