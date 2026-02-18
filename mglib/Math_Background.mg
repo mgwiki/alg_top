@@ -106317,7 +106317,61 @@ apply (xm
               rewrite Ht_eq_su.
               reflexivity.
             }
-            admit. (** TODO Bob: handle t<>0 branch after fourth predecessor split (u and cs(u):e G2) **)
+            apply (xm
+              (u = 0)).
+            - assume Hu0 : u = 0.
+              claim Ht_eq_s0 : t = ordsucc 0.
+              {
+                rewrite Ht_eq_su.
+                rewrite Hu0.
+                reflexivity.
+              }
+              claim Hj_eq_ss0 : j = ordsucc (ordsucc 0).
+              {
+                rewrite Hj_eq_st.
+                rewrite Ht_eq_s0.
+                reflexivity.
+              }
+              claim Hk_eq_sss0 : k = ordsucc (ordsucc (ordsucc 0)).
+              {
+                rewrite Hk_eq_sj.
+                rewrite Hj_eq_ss0.
+                reflexivity.
+              }
+              claim Hm_eq_ssss0 : m = ordsucc (ordsucc (ordsucc (ordsucc 0))).
+              {
+                rewrite Hm_eq_ssssu.
+                rewrite Hu0.
+                reflexivity.
+              }
+              claim Hcs0_G2 : apply_fun cs 0 :e G2.
+              {
+                rewrite <- Hu0.
+                exact Hcsu_G2.
+              }
+              claim Hcs0_ne_e : apply_fun cs 0 <> e.
+              {
+                rewrite <- Hu0.
+                exact Hcsu_ne_e.
+              }
+              claim Hcs1_G1 : apply_fun cs (ordsucc 0) :e G1.
+              {
+                rewrite <- Ht_eq_s0.
+                exact Hcst_G1.
+              }
+              claim Hcs2_G2 : apply_fun cs (ordsucc (ordsucc 0)) :e G2.
+              {
+                rewrite <- Hj_eq_ss0.
+                exact Hcsj_G2.
+              }
+              claim Hcs3_G1 : apply_fun cs (ordsucc (ordsucc (ordsucc 0))) :e G1.
+              {
+                rewrite <- Hk_eq_sss0.
+                exact Hcsk_G1.
+              }
+              admit. (** TODO Bob: handle u=0 branch in deep predecessor analysis **)
+            - assume Hu_ne0 : u <> 0.
+              admit. (** TODO Bob: handle u<>0 branch after fifth predecessor split **)
 Admitted.
 
 (** Core helper: given free product and reduced word of c, derive contradiction **)
