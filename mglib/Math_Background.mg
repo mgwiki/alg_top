@@ -78904,7 +78904,22 @@ claim HioCore :
   /\
   (exists x:set, x :e S1 /\ points_directly_outward v x).
 {
-  admit.
+  apply (xm
+    ((exists x:set, x :e S1 /\ points_directly_inward v x)
+      /\
+     (exists x:set, x :e S1 /\ points_directly_outward v x))).
+  - assume Hio.
+    exact Hio.
+  - assume HnoIO.
+    claim Hcontra : False.
+    {
+      admit.
+    }
+    exact (FalseE
+      Hcontra
+      ((exists x:set, x :e S1 /\ points_directly_inward v x)
+        /\
+       (exists x:set, x :e S1 /\ points_directly_outward v x))).
 }
 exact HioCore.
 Admitted.
