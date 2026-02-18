@@ -111642,7 +111642,39 @@ apply (iffI
         (ordsucc m)
         (omega_ordsucc m HmO)).
     }
-    admit.
+    claim HnontrivGalpha :
+      ~(exists n:set, n :e omega /\ n <> 0 /\ group_power_nat mult e galpha n = e).
+    {
+      admit.
+    }
+    claim HgalphaPow :
+      galpha :e G /\ (forall n:set, n :e omega -> group_power_nat mult e galpha n :e G).
+    {
+      exact (andI
+        (galpha :e G)
+        (forall n:set, n :e omega -> group_power_nat mult e galpha n :e G)
+        HgalphaG
+        HpowGalpha).
+    }
+    claim HgalphaPowInv :
+      (galpha :e G /\ (forall n:set, n :e omega -> group_power_nat mult e galpha n :e G)) /\
+      (forall m:set, m :e omega ->
+        group_power_nat mult e (apply_fun inv galpha) (ordsucc m) :e G).
+    {
+      exact (andI
+        (galpha :e G /\ (forall n:set, n :e omega -> group_power_nat mult e galpha n :e G))
+        (forall m:set, m :e omega ->
+          group_power_nat mult e (apply_fun inv galpha) (ordsucc m) :e G)
+        HgalphaPow
+        HpowInvGalpha).
+    }
+    exact (andI
+      ((galpha :e G /\ (forall n:set, n :e omega -> group_power_nat mult e galpha n :e G)) /\
+       (forall m:set, m :e omega ->
+         group_power_nat mult e (apply_fun inv galpha) (ordsucc m) :e G))
+      (~(exists n:set, n :e omega /\ n <> 0 /\ group_power_nat mult e galpha n = e))
+      HgalphaPowInv
+      HnontrivGalpha).
   + admit.
 Admitted.
 
