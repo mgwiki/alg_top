@@ -106813,7 +106813,50 @@ apply and3I.
           forall b:set, b :e G -> b <> eG ->
           (exists beta:set, beta :e J /\ b :e apply_fun Gfam beta) ->
           apply_fun h (apply_fun multG (g, b)) = apply_fun multH (apply_fun h g, h_single b).
-        { admit. }
+        { let g. assume HgG : g :e G.
+          let b. assume HbG : b :e G. assume Hb_ne : b <> eG.
+          assume Hb_fam : exists beta:set, beta :e J /\ b :e apply_fun Gfam beta.
+          apply Hb_fam. let beta. assume Hbeta_comb : beta :e J /\ b :e apply_fun Gfam beta.
+          claim Hbeta_J : beta :e J.
+          { exact (andEL (beta :e J) (b :e apply_fun Gfam beta) Hbeta_comb). }
+          claim Hb_Gbeta : b :e apply_fun Gfam beta.
+          { exact (andER (beta :e J) (b :e apply_fun Gfam beta) Hbeta_comb). }
+          claim Hgb_G : apply_fun multG (g, b) :e G. { exact (HmultG_cl g b HgG HbG). }
+          claim Hb_fam2 : exists a:set, a :e J /\ b :e apply_fun Gfam a.
+          { witness beta. exact Hbeta_comb. }
+          claim Hhs_H : h_single b :e H. { exact (Hh_single_H b Hb_fam2). }
+          apply (xm (g = eG)).
+          - (** g = eG case **)
+            assume HgeG : g = eG.
+            claim Hgb_eq : apply_fun multG (g, b) = b.
+            { rewrite HgeG.
+              exact (andEL (apply_fun multG (eG, b) = b) (apply_fun multG (b, eG) = b) (HidG b HbG)). }
+            claim HhgH : apply_fun h g :e H. { exact (Hh_in_H g HgG). }
+            claim Hlhs_eq : apply_fun h (apply_fun multG (g, b)) = apply_fun h b.
+            { rewrite Hgb_eq. reflexivity. }
+            claim Hrhs_eq : apply_fun multH (apply_fun h g, h_single b) = h_single b.
+            { rewrite HgeG. rewrite Hh_eG_shared.
+              exact (andEL (apply_fun multH (eH, h_single b) = h_single b)
+                (apply_fun multH (h_single b, eH) = h_single b)
+                (HidH (h_single b) Hhs_H)). }
+            claim Hb_hs : apply_fun h b = h_single b.
+            { admit. }
+            claim Hlhs_chain : apply_fun h (apply_fun multG (g, b)) = h_single b.
+            { exact (eq_i_tra
+                (apply_fun h (apply_fun multG (g, b)))
+                (apply_fun h b)
+                (h_single b)
+                Hlhs_eq Hb_hs). }
+            claim Hrhs_sym : h_single b = apply_fun multH (apply_fun h g, h_single b).
+            { symmetry. exact Hrhs_eq. }
+            exact (eq_i_tra
+              (apply_fun h (apply_fun multG (g, b)))
+              (h_single b)
+              (apply_fun multH (apply_fun h g, h_single b))
+              Hlhs_chain Hrhs_sym).
+          - (** g <> eG case: append b to reduced word of g **)
+            assume Hg_ne : g <> eG.
+            admit. }
         (** Using Hh_right_mult, prove multiplicativity by induction on word length of y **)
         (** y has reduced word ys of length n_y, each ys(i) in some Gfam **)
         (** y = mult(mult(...mult(eG, ys(0)), ys(1))..., ys(n_y - 1)) **)
