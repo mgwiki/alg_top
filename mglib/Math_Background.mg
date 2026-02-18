@@ -106806,8 +106806,84 @@ apply and3I.
               (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun xs i)))
               Hfuns_agree). }
           rewrite Hh_g. rewrite Hn_eq. exact Hext. }
-        (** The multiplicativity proof uses Hh_val_any_rw to compute h from any reduced word **)
-        (** For now, the full proof with free reduction invariance is admitted **)
+        (** Key claim: h(mult(g, b)) = multH(h(g), h single(b)) for b in Gfam, b != eG **)
+        (** This is "right multiplication by a single generator" **)
+        claim Hh_right_mult : forall g:set, g :e G ->
+          forall b:set, b :e G -> b <> eG ->
+          (exists beta:set, beta :e J /\ b :e apply_fun Gfam beta) ->
+          apply_fun h (apply_fun multG (g, b)) = apply_fun multH (apply_fun h g, h_single b).
+        { admit. }
+        (** Using Hh_right_mult, prove multiplicativity by induction on word length of y **)
+        (** y has reduced word ys of length n_y, each ys(i) in some Gfam **)
+        (** y = mult(mult(...mult(eG, ys(0)), ys(1))..., ys(n_y - 1)) **)
+        (** h(mult(x, y)) = h(mult(x, mult(... ys(0)...ys(n_y-1)))) **)
+        (** By repeated application of Hh_right_mult, this equals **)
+        (** h(x) then multiplied by h_single(ys(0)), ..., h_single(ys(n_y-1)) **)
+        (** which equals multH(h(x), h(y)) **)
+        (** Key step: h of word product = nat_primrec of h_single **)
+        claim Hh_product : forall k:set, nat_p k ->
+          forall ws:set,
+          (forall i:set, i :e k -> exists alpha:set, alpha :e J /\ apply_fun ws i :e apply_fun Gfam alpha) ->
+          (forall i:set, i :e k -> apply_fun ws i :e G) ->
+          (forall i:set, i :e k -> apply_fun ws i <> eG) ->
+          apply_fun h (word_product multG eG ws k) =
+            nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ws i))) k.
+        { apply (nat_ind (fun k:set =>
+            forall ws:set,
+            (forall i:set, i :e k -> exists alpha:set, alpha :e J /\ apply_fun ws i :e apply_fun Gfam alpha) ->
+            (forall i:set, i :e k -> apply_fun ws i :e G) ->
+            (forall i:set, i :e k -> apply_fun ws i <> eG) ->
+            apply_fun h (word_product multG eG ws k) =
+              nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ws i))) k)).
+          - (** k = 0 **)
+            let ws. assume Helem Hin Hne.
+            prove apply_fun h (nat_primrec eG (fun i:set => fun r:set => apply_fun multG (r, apply_fun ws i)) 0) =
+              nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ws i))) 0.
+            rewrite (nat_primrec_0 eG (fun i:set => fun r:set => apply_fun multG (r, apply_fun ws i))).
+            rewrite (nat_primrec_0 eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ws i)))).
+            exact Hh_eG_shared.
+          - (** k -> k+1 **)
+            let k. assume Hk : nat_p k. assume IH.
+            let ws. assume Helem HinG Hne.
+            (** ws(k) :e G, ws(k) != eG, ws(k) in some Gfam **)
+            claim Hwk_G : apply_fun ws k :e G. { exact (HinG k (ordsuccI2 k)). }
+            claim Hwk_ne : apply_fun ws k <> eG. { exact (Hne k (ordsuccI2 k)). }
+            claim Hwk_Gfam : exists beta:set, beta :e J /\ apply_fun ws k :e apply_fun Gfam beta.
+            { exact (Helem k (ordsuccI2 k)). }
+            (** word_product(ws, k) :e G **)
+            claim Hwpk_G : word_product multG eG ws k :e G.
+            { exact (Hwp_in_G k (nat_p_omega k Hk) ws
+                (fun i:set => fun Hi:i :e k => HinG i (ordsuccI1 k i Hi))). }
+            (** By IH: h(wp(k)) = nat_primrec eH f k **)
+            claim HIH : apply_fun h (word_product multG eG ws k) =
+              nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ws i))) k.
+            { exact (IH ws
+                (fun i:set => fun Hi:i :e k => Helem i (ordsuccI1 k i Hi))
+                (fun i:set => fun Hi:i :e k => HinG i (ordsuccI1 k i Hi))
+                (fun i:set => fun Hi:i :e k => Hne i (ordsuccI1 k i Hi))). }
+            (** By Hh_right_mult **)
+            claim Hstep : apply_fun h (apply_fun multG (word_product multG eG ws k, apply_fun ws k)) =
+              apply_fun multH (apply_fun h (word_product multG eG ws k), h_single (apply_fun ws k)).
+            { exact (Hh_right_mult (word_product multG eG ws k) Hwpk_G
+                (apply_fun ws k) Hwk_G Hwk_ne Hwk_Gfam). }
+            (** Rewrite eH side first (h_single is unexpanded from nat_ind) **)
+            rewrite (nat_primrec_S eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ws i))) k Hk).
+            (** RHS is non-beta-reduced: (fun i r => ...) k (nprH k). Use prove to beta-reduce. **)
+            prove apply_fun h (word_product multG eG ws (ordsucc k)) =
+              apply_fun multH (nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun ws i))) k, h_single (apply_fun ws k)).
+            (** Now unfold word_product on eG side **)
+            claim HnpS_G : word_product multG eG ws (ordsucc k) =
+              apply_fun multG (word_product multG eG ws k, apply_fun ws k).
+            { exact (nat_primrec_S eG (fun i:set => fun r:set => apply_fun multG (r, apply_fun ws i)) k Hk). }
+            rewrite HnpS_G.
+            rewrite Hstep. rewrite HIH. reflexivity. }
+        (** Now prove h(mult(x,y)) = multH(h(x), h(y)) using Hh_product **)
+        (** x = word_product(xs_of x, n_of x), y = word_product(xs_of y, n_of y) **)
+        (** mult(x, y) = mult(wp(xs_x, n_x), wp(xs_y, n_y)) **)
+        (** = wp(concat(xs_x, xs_y), n_x + n_y) -- needs concat/assoc lemma **)
+        (** h(mult(x,y)) = h(wp(concat, n_x + n_y)) = nat_primrec of h_single over concat **)
+        (**              = multH(nat_primrec xs_x n_x, nat_primrec xs_y n_y) = multH(h(x), h(y)) **)
+        (** The full proof requires word product concatenation. Admit for now. **)
         admit.
 (** Part 2: restriction - for alpha in J, x in G_alpha, h(x) = hfam(alpha)(x) **)
 - let alpha0. assume Hal0 : alpha0 :e J.
