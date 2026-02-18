@@ -109266,6 +109266,21 @@ Theorem thm69_2_free_product_of_free_groups :
   free_group_with_generators G2 mult e inv K
     (graph K (fun alpha:set => apply_fun gens alpha)) ->
   free_group_with_generators G mult e inv (J :\/: K) gens.
+let G mult e inv G1 G2 J K gens.
+assume Hgrp : group_structure G mult e inv.
+assume Hsub1 : subgroup_of G1 G mult e inv.
+assume Hsub2 : subgroup_of G2 G mult e inv.
+assume Hfp :
+  free_product_of_subgroups G mult e inv (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun i:set => e)).
+assume Hdisj : J :/\: K = Empty.
+assume Hfree1 :
+  free_group_with_generators G1 mult e inv J
+    (graph J (fun alpha:set => apply_fun gens alpha)).
+assume Hfree2 :
+  free_group_with_generators G2 mult e inv K
+    (graph K (fun alpha:set => apply_fun gens alpha)).
 admit.
 Admitted.
 
