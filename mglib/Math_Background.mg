@@ -62652,6 +62652,18 @@ claim Hex :
               rewrite HN1start.
               reflexivity.
             }
+            claim HlrR_E : apply_fun lr r :e E.
+            {
+              exact (HlrFunSub
+                r
+                HrNr).
+            }
+            claim HplrReqfr : apply_fun p (apply_fun lr r) = apply_fun f r.
+            {
+              exact (HlrComm
+                r
+                HrNr).
+            }
             claim HrN1 : r :e N1.
             {
               (** TODO Charlie: compare lr with lt1 starting from Hlr0EqLt10 and propagate on Nr to place r in N1. **)
