@@ -115518,12 +115518,9 @@ Theorem thm70_2_classical_van_kampen :
 exact classical_van_kampen_free_product_kernel_helper.
 Admitted.
 
-(** from S70 Cor 70.3 (line 3439 in algtop.tex): simply connected intersection **)
-(** LATEX VERSION: If U cap V is simply connected, then pi1(X,x0) is isomorphic to **)
-(** pi1(U,x0) free-prod pi1(V,x0). **)
-(** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-Theorem cor70_3_simply_connected_intersection :
+(** Infrastructure helper for S70 Cor 70.3:
+    simply connected intersection yields free-product description of pi1(X). **)
+Theorem simply_connected_intersection_free_product_pi1_helper :
   forall X Tx U V x0:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx -> X = U :\/: V ->
@@ -115546,12 +115543,37 @@ Theorem cor70_3_simply_connected_intersection :
 admit.
 Admitted.
 
-(** from S70 Cor 70.4 (line 3445 in algtop.tex): one factor simply connected **)
-(** LATEX VERSION: If V is simply connected, then pi1(X,x0) iso pi1(U,x0)/N **)
-(** where N is the least normal subgroup containing image of i1. **)
-(** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-Theorem cor70_4_one_factor_simply_connected :
+(** from S70 Cor 70.3 (line 3439 in algtop.tex): simply connected intersection **)
+(** LATEX VERSION: If U cap V is simply connected, then pi1(X,x0) is isomorphic to **)
+(** pi1(U,x0) free-prod pi1(V,x0). **)
+(** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
+(** Bounty 33 **)
+Theorem cor70_3_simply_connected_intersection :
+  forall X Tx U V x0:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx -> X = U :\/: V ->
+  path_connected_space U (subspace_topology X Tx U) ->
+  path_connected_space V (subspace_topology X Tx V) ->
+  simply_connected (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
+  x0 :e U :/\: V ->
+  forall FP multFP eFP invFP ifam:set,
+    external_free_product FP multFP eFP invFP (UPair 0 1)
+      (graph (UPair 0 1) (fun i:set =>
+        if i = 0 then fundamental_group U (subspace_topology X Tx U) x0
+        else fundamental_group V (subspace_topology X Tx V) x0))
+	      (graph (UPair 0 1) (fun i:set =>
+	        if i = 0 then fundamental_group_mult U (subspace_topology X Tx U) x0
+	        else fundamental_group_mult V (subspace_topology X Tx V) x0))
+	      ifam ->
+	    exists phi:set,
+	      group_isomorphism FP multFP
+	        (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0) phi.
+exact simply_connected_intersection_free_product_pi1_helper.
+Admitted.
+
+(** Infrastructure helper for S70 Cor 70.4:
+    when one factor is simply connected, pi1(X) is a quotient of pi1(U). **)
+Theorem one_factor_simply_connected_quotient_pi1_helper :
   forall X Tx U V x0:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx -> X = U :\/: V ->
@@ -115582,6 +115604,44 @@ Theorem cor70_4_one_factor_simply_connected :
       (fundamental_group_mult X Tx x0)
       phi.
 admit.
+Admitted.
+
+(** from S70 Cor 70.4 (line 3445 in algtop.tex): one factor simply connected **)
+(** LATEX VERSION: If V is simply connected, then pi1(X,x0) iso pi1(U,x0)/N **)
+(** where N is the least normal subgroup containing image of i1. **)
+(** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
+(** Bounty 55 **)
+Theorem cor70_4_one_factor_simply_connected :
+  forall X Tx U V x0:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx -> X = U :\/: V ->
+  path_connected_space U (subspace_topology X Tx U) ->
+  simply_connected V (subspace_topology X Tx V) ->
+  path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
+  x0 :e U :/\: V ->
+  let N := least_normal_subgroup
+    (fundamental_group U (subspace_topology X Tx U) x0)
+    (fundamental_group_mult U (subspace_topology X Tx U) x0)
+    (fundamental_group_id U (subspace_topology X Tx U) x0)
+    (fundamental_group_inv U (subspace_topology X Tx U) x0)
+    (homomorphism_image
+      (fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0)
+      (induced_homomorphism
+        (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+        U (subspace_topology X Tx U) x0
+        (graph (U :/\: V) (fun x:set => x)))) in
+	  exists phi:set,
+	    group_isomorphism
+	      (quotient_group_set
+	        (fundamental_group U (subspace_topology X Tx U) x0)
+	        (fundamental_group_mult U (subspace_topology X Tx U) x0) N)
+      (quotient_group_mult
+        (fundamental_group U (subspace_topology X Tx U) x0)
+        (fundamental_group_mult U (subspace_topology X Tx U) x0) N)
+	      (fundamental_group X Tx x0)
+	      (fundamental_group_mult X Tx x0)
+	      phi.
+exact one_factor_simply_connected_quotient_pi1_helper.
 Admitted.
 
 (** from S70 Exercise 1(a) (line 3473 in algtop.tex) **)
