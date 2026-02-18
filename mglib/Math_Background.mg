@@ -111727,6 +111727,14 @@ apply (andI
           group_power_nat mult e (apply_fun gens alpha) n = e))
         HinfOrigAlpha).
     }
+    assume Hbad :
+      exists n:set, n :e omega /\ n <> 0 /\
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n = quotient_group_id G mult e C.
+    apply HnontrivOrig.
     admit.
   admit.
 Admitted.
