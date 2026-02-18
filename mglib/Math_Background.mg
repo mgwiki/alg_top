@@ -61271,6 +61271,63 @@ claim Hex :
                                     (Vxlocal :e slicesUt)
                                     HxlocalPack).
                                 }
+                                claim HhomeVxlocal :
+                                  homeomorphism Vxlocal (subspace_topology E Te Vxlocal) Ut (subspace_topology B Tb Ut)
+                                    (graph Vxlocal (fun z:set => apply_fun p z)).
+                                {
+                                  exact (HhomeSlicesUt
+                                    Vxlocal
+                                    HVxlocalSlice).
+                                }
+                                claim HuniqVxlocal :
+                                  exists xvl:set, xvl :e Vxlocal /\ apply_fun p xvl = apply_fun f x /\
+                                    forall y:set, y :e Vxlocal ->
+                                      apply_fun p y = apply_fun f x -> y = xvl.
+                                {
+                                  exact (homeomorphic_sheet_unique_fiber_point
+                                    E
+                                    Te
+                                    B
+                                    Tb
+                                    p
+                                    Vxlocal
+                                    Ut
+                                    (apply_fun f x)
+                                    HhomeVxlocal
+                                    HfxUt).
+                                }
+                                claim HxlocalUniqInVxlocal :
+                                  forall y:set, y :e Vxlocal ->
+                                    apply_fun p y = apply_fun f x -> y = xlocal.
+                                {
+                                  apply HuniqVxlocal.
+                                  let xvl.
+                                  assume HxvlPack.
+                                  claim Huniqxvl :
+                                    forall y:set, y :e Vxlocal ->
+                                      apply_fun p y = apply_fun f x -> y = xvl.
+                                  {
+                                    exact (andER
+                                      (xvl :e Vxlocal /\ apply_fun p xvl = apply_fun f x)
+                                      (forall y:set, y :e Vxlocal ->
+                                        apply_fun p y = apply_fun f x -> y = xvl)
+                                      HxvlPack).
+                                  }
+                                  claim HxlocalEqxvl : xlocal = xvl.
+                                  {
+                                    exact (Huniqxvl
+                                      xlocal
+                                      HxlocalVxlocal
+                                      HpxlocalEqfx).
+                                  }
+                                  let y.
+                                  assume HyVxlocal Hypy.
+                                  rewrite HxlocalEqxvl.
+                                  exact (Huniqxvl
+                                    y
+                                    HyVxlocal
+                                    Hypy).
+                                }
                                 claim HVxlocalEqVx : Vxlocal = Vx.
                                 {
                                   (** TODO Charlie: show the slice containing xlocal equals Vx. **)
@@ -65549,6 +65606,62 @@ claim HFt_54_cont :
                             (xz :e Vxz)
                             (Vxz :e slices)
                             HxzPack).
+                        }
+                        claim HhomeVxz :
+                          homeomorphism Vxz (subspace_topology E Te Vxz) U (subspace_topology B Tb U)
+                            (graph Vxz (fun z:set => apply_fun p z)).
+                        {
+                          exact (HhomeSlices
+                            Vxz
+                            HVxzSlice).
+                        }
+                        claim HuniqVxz :
+                          exists xvz:set, xvz :e Vxz /\ apply_fun p xvz = apply_fun F z /\
+                            forall y:set, y :e Vxz -> apply_fun p y = apply_fun F z -> y = xvz.
+                        {
+                          exact (homeomorphic_sheet_unique_fiber_point
+                            E
+                            Te
+                            B
+                            Tb
+                            p
+                            Vxz
+                            U
+                            (apply_fun F z)
+                            HhomeVxz
+                            HFzU).
+                        }
+                        claim HxzUniqInVxz :
+                          forall y:set, y :e Vxz ->
+                            apply_fun p y = apply_fun F z -> y = xz.
+                        {
+                          apply HuniqVxz.
+                          let xvz.
+                          assume HxvzPack.
+                          claim Huniqxvz :
+                            forall y:set, y :e Vxz ->
+                              apply_fun p y = apply_fun F z -> y = xvz.
+                          {
+                            exact (andER
+                              (xvz :e Vxz /\ apply_fun p xvz = apply_fun F z)
+                              (forall y:set, y :e Vxz ->
+                                apply_fun p y = apply_fun F z -> y = xvz)
+                              HxvzPack).
+                          }
+                          claim HxzEqxvz : xz = xvz.
+                          {
+                            exact (Huniqxvz
+                              xz
+                              HxzVxz
+                              HpxzEqFz).
+                          }
+                          let y.
+                          assume HyVxz Hypy.
+                          rewrite HxzEqxvz.
+                          exact (Huniqxvz
+                            y
+                            HyVxz
+                            Hypy).
                         }
                         claim HVxzEqVq : Vxz = Vq.
                         {
