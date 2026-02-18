@@ -77037,6 +77037,370 @@ rewrite HinducedEq.
 exact HcompTriv.
 Qed.
 
+(** S55 helper: direct direction (2) => (1): extension to B2 gives nulhomotopy. **)
+(** Proven Charlie **)
+Theorem s55_extends_to_B2_implies_nulhomotopic : forall X Tx h:set,
+  continuous_map S1 S1_topology X Tx h ->
+  (exists k:set, continuous_map B2 B2_topology X Tx k /\
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x)) ->
+  nulhomotopic S1 S1_topology X Tx h.
+let X Tx h.
+assume Hh Hext.
+apply Hext.
+let k.
+assume HkPack.
+claim HkCont : continuous_map B2 B2_topology X Tx k.
+{
+  exact (andEL
+    (continuous_map B2 B2_topology X Tx k)
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x)
+    HkPack).
+}
+claim HkOnS1 :
+  forall x:set, x :e S1 -> apply_fun k x = apply_fun h x.
+{
+  exact (andER
+    (continuous_map B2 B2_topology X Tx k)
+    (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x)
+    HkPack).
+}
+set i := graph S1 (fun x:set => x).
+claim HiCont :
+  continuous_map S1 S1_topology B2 B2_topology i.
+{
+  exact inclusion_S1_B2_continuous.
+}
+set hcomp := compose_fun S1 i k.
+claim HcompEqH :
+  forall x:set, x :e S1 ->
+    apply_fun hcomp x = apply_fun h x.
+{
+  let x.
+  assume HxS1.
+  rewrite (compose_fun_apply
+    S1
+    i
+    k
+    x
+    HxS1).
+  rewrite (apply_fun_graph
+    S1
+    (fun z:set => z)
+    x
+    HxS1).
+  exact (HkOnS1 x HxS1).
+}
+claim HtopS1 : topology_on S1 S1_topology.
+{
+  exact (continuous_map_topology_dom
+    S1
+    S1_topology
+    B2
+    B2_topology
+    i
+    HiCont).
+}
+claim HtopB2 : topology_on B2 B2_topology.
+{
+  exact (andEL
+    (topology_on B2 B2_topology)
+    (nulhomotopic B2 B2_topology B2 B2_topology (graph B2 (fun x:set => x)))
+    B2_contractible).
+}
+claim H00B2 : (0, 0) :e B2.
+{
+  exact origin_in_B2.
+}
+claim Hconst0Cont :
+  continuous_map S1 S1_topology B2 B2_topology (const_fun S1 (0, 0)).
+{
+  exact (const_fun_continuous
+    S1
+    S1_topology
+    B2
+    B2_topology
+    (0, 0)
+    HtopS1
+    HtopB2
+    H00B2).
+}
+claim HiConstHom :
+  homotopic_maps
+    S1
+    S1_topology
+    B2
+    B2_topology
+    i
+    (const_fun S1 (0, 0)).
+{
+  exact (ex51_3c_contractible_codomain
+    S1
+    S1_topology
+    B2
+    B2_topology
+    i
+    (const_fun S1 (0, 0))
+    B2_contractible
+    HiCont
+    Hconst0Cont).
+}
+claim HkRefl :
+  homotopic_maps B2 B2_topology X Tx k k.
+{
+  exact (Lemma_51_1_homotopy_refl
+    B2
+    B2_topology
+    X
+    Tx
+    k
+    HkCont).
+}
+claim HcompHom :
+  homotopic_maps
+    S1
+    S1_topology
+    X
+    Tx
+    hcomp
+    (compose_fun S1 (const_fun S1 (0, 0)) k).
+{
+  exact (ex51_1_composition_homotopic
+    S1
+    S1_topology
+    B2
+    B2_topology
+    X
+    Tx
+    i
+    (const_fun S1 (0, 0))
+    k
+    k
+    HiConstHom
+    HkRefl).
+}
+claim HkFun : function_on k B2 X.
+{
+  exact (continuous_map_function_on
+    B2
+    B2_topology
+    X
+    Tx
+    k
+    HkCont).
+}
+claim Hk00X : apply_fun k (0, 0) :e X.
+{
+  exact (HkFun
+    (0, 0)
+    H00B2).
+}
+claim HconstCompEq :
+  compose_fun S1 (const_fun S1 (0, 0)) k =
+  const_fun S1 (apply_fun k (0, 0)).
+{
+  apply (total_function_space_extensional
+    S1
+    X
+    (compose_fun S1 (const_fun S1 (0, 0)) k)
+    (const_fun S1 (apply_fun k (0, 0)))).
+  - exact (compose_fun_in_total_function_space
+      S1
+      B2
+      X
+      (const_fun S1 (0, 0))
+      k
+      (continuous_map_function_on
+        S1
+        S1_topology
+        B2
+        B2_topology
+        (const_fun S1 (0, 0))
+        Hconst0Cont)
+      HkFun).
+  - exact (graph_in_total_function_space
+      S1
+      X
+      (fun _ : set => apply_fun k (0, 0))
+      (fun x Hx => Hk00X)).
+  - let x.
+    assume Hx.
+    rewrite (compose_fun_apply
+      S1
+      (const_fun S1 (0, 0))
+      k
+      x
+      Hx).
+    rewrite (const_fun_apply
+      S1
+      (0, 0)
+      x
+      Hx).
+    rewrite (const_fun_apply
+      S1
+      (apply_fun k (0, 0))
+      x
+      Hx).
+    reflexivity.
+}
+claim HhcompNul :
+  nulhomotopic S1 S1_topology X Tx hcomp.
+{
+  prove exists y0:set, y0 :e X /\
+    homotopic_maps
+      S1
+      S1_topology
+      X
+      Tx
+      hcomp
+      (const_fun S1 y0).
+  witness (apply_fun k (0, 0)).
+  apply andI.
+  - exact Hk00X.
+  - rewrite <- HconstCompEq.
+    exact HcompHom.
+}
+apply HhcompNul.
+let y0.
+assume Hy0Pack.
+claim Hy0X : y0 :e X.
+{
+  exact (andEL
+    (y0 :e X)
+    (homotopic_maps S1 S1_topology X Tx hcomp (const_fun S1 y0))
+    Hy0Pack).
+}
+claim HhomComp :
+  homotopic_maps S1 S1_topology X Tx hcomp (const_fun S1 y0).
+{
+  exact (andER
+    (y0 :e X)
+    (homotopic_maps S1 S1_topology X Tx hcomp (const_fun S1 y0))
+    Hy0Pack).
+}
+claim HconstCont :
+  continuous_map S1 S1_topology X Tx (const_fun S1 y0).
+{
+  exact (homotopic_maps_right_continuous
+    S1
+    S1_topology
+    X
+    Tx
+    hcomp
+    (const_fun S1 y0)
+    HhomComp).
+}
+claim HhomPack :
+  exists F:set,
+    continuous_map (setprod S1 unit_interval)
+      (product_topology S1 S1_topology unit_interval unit_interval_topology)
+      X Tx F /\
+    (forall x:set, x :e S1 ->
+      apply_fun F (x, 0) = apply_fun hcomp x) /\
+    (forall x:set, x :e S1 ->
+      apply_fun F (x, 1) = apply_fun (const_fun S1 y0) x).
+{
+  exact (andER
+    (continuous_map S1 S1_topology X Tx hcomp /\
+      continuous_map S1 S1_topology X Tx (const_fun S1 y0))
+    (exists F:set,
+      continuous_map (setprod S1 unit_interval)
+        (product_topology S1 S1_topology unit_interval unit_interval_topology)
+        X Tx F /\
+      (forall x:set, x :e S1 ->
+        apply_fun F (x, 0) = apply_fun hcomp x) /\
+      (forall x:set, x :e S1 ->
+        apply_fun F (x, 1) = apply_fun (const_fun S1 y0) x))
+    HhomComp).
+}
+prove exists y0':set, y0' :e X /\
+  homotopic_maps S1 S1_topology X Tx h (const_fun S1 y0').
+witness y0.
+apply andI.
+- exact Hy0X.
+- apply HhomPack.
+  let F.
+  assume HFPack.
+  claim HFCont :
+    continuous_map (setprod S1 unit_interval)
+      (product_topology S1 S1_topology unit_interval unit_interval_topology)
+      X Tx F.
+  {
+    exact (andEL
+      (continuous_map (setprod S1 unit_interval)
+        (product_topology S1 S1_topology unit_interval unit_interval_topology)
+        X Tx F)
+      (forall x:set, x :e S1 ->
+        apply_fun F (x, 0) = apply_fun hcomp x)
+      (andEL
+        (continuous_map (setprod S1 unit_interval)
+          (product_topology S1 S1_topology unit_interval unit_interval_topology)
+          X Tx F /\
+         (forall x:set, x :e S1 ->
+           apply_fun F (x, 0) = apply_fun hcomp x))
+        (forall x:set, x :e S1 ->
+          apply_fun F (x, 1) = apply_fun (const_fun S1 y0) x)
+        HFPack)).
+  }
+  claim HFs0Comp :
+    forall x:set, x :e S1 ->
+      apply_fun F (x, 0) = apply_fun hcomp x.
+  {
+    exact (andER
+      (continuous_map (setprod S1 unit_interval)
+        (product_topology S1 S1_topology unit_interval unit_interval_topology)
+        X Tx F)
+      (forall x:set, x :e S1 ->
+        apply_fun F (x, 0) = apply_fun hcomp x)
+      (andEL
+        (continuous_map (setprod S1 unit_interval)
+          (product_topology S1 S1_topology unit_interval unit_interval_topology)
+          X Tx F /\
+         (forall x:set, x :e S1 ->
+           apply_fun F (x, 0) = apply_fun hcomp x))
+        (forall x:set, x :e S1 ->
+          apply_fun F (x, 1) = apply_fun (const_fun S1 y0) x)
+        HFPack)).
+  }
+  claim HFs1 :
+    forall x:set, x :e S1 ->
+      apply_fun F (x, 1) = apply_fun (const_fun S1 y0) x.
+  {
+    exact (andER
+      (continuous_map (setprod S1 unit_interval)
+        (product_topology S1 S1_topology unit_interval unit_interval_topology)
+        X Tx F /\
+       (forall x:set, x :e S1 ->
+         apply_fun F (x, 0) = apply_fun hcomp x))
+      (forall x:set, x :e S1 ->
+        apply_fun F (x, 1) = apply_fun (const_fun S1 y0) x)
+      HFPack).
+  }
+  prove
+    continuous_map S1 S1_topology X Tx h /\
+    continuous_map S1 S1_topology X Tx (const_fun S1 y0) /\
+    exists F':set,
+      continuous_map (setprod S1 unit_interval)
+        (product_topology S1 S1_topology unit_interval unit_interval_topology)
+        X Tx F' /\
+      (forall x:set, x :e S1 ->
+        apply_fun F' (x, 0) = apply_fun h x) /\
+      (forall x:set, x :e S1 ->
+        apply_fun F' (x, 1) = apply_fun (const_fun S1 y0) x).
+  apply andI.
+  - apply andI.
+    + exact Hh.
+    + exact HconstCont.
+  - witness F.
+    apply andI.
+    + apply andI.
+      * exact HFCont.
+      * let x.
+        assume HxS1.
+        rewrite (HFs0Comp x HxS1).
+        exact (HcompEqH x HxS1).
+    + exact HFs1.
+Qed.
+
 (** from S55 Lem 55.3 direction (3) implies (1) (line 907 in algtop.tex) **)
 (** LATEX VERSION: If h-star is the trivial homomorphism, then h is nulhomotopic. **)
 (** EFFORT: 10 lines textbook, difficulty 6/10, USD 180 **)
@@ -77935,9 +78299,393 @@ Qed.
 Theorem cor55_4b_identity_S1_not_nulhomotopic :
   ~(nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x))).
 assume Hnul.
-exact (cor55_4a_inclusion_S1_R2_not_nulhomotopic
-  (nulhomotopic_identity_S1_implies_nulhomotopic_inclusion_R2_minus_origin Hnul)).
-Admitted. (** was qed but depends on unproved cor55_4a - changed to admitted **)
+claim Hb0S1 : (1, 0) :e S1.
+{
+  apply (SepI
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)
+    (1, 0)).
+  - exact (tuple_2_setprod_by_pair_Sigma
+      R
+      R
+      1
+      0
+      real_1
+      real_0).
+  - rewrite tuple_2_0_eq at 1.
+    rewrite tuple_2_0_eq at 1.
+    rewrite tuple_2_1_eq at 1.
+    rewrite tuple_2_1_eq at 1.
+    rewrite (mul_SNo_oneR 1 SNo_1) at 1.
+    rewrite (mul_SNo_zeroR 0 SNo_0) at 1.
+    exact (add_SNo_0R 1 SNo_1).
+}
+claim HtopS1 : topology_on S1 S1_topology.
+{
+  exact (continuous_map_topology_dom
+    S1
+    S1_topology
+    B2
+    B2_topology
+    (graph S1 (fun x:set => x))
+    inclusion_S1_B2_continuous).
+}
+set j := graph S1 (fun x:set => x).
+claim HjCont :
+  continuous_map S1 S1_topology S1 S1_topology j.
+{
+  exact (identity_continuous
+    S1
+    S1_topology
+    HtopS1).
+}
+claim Htriv :
+  forall cls:set, cls :e fundamental_group S1 S1_topology (1, 0) ->
+    apply_fun
+      (induced_homomorphism
+        S1
+        S1_topology
+        (1, 0)
+        S1
+        S1_topology
+        (apply_fun j (1, 0))
+        j)
+      cls
+    =
+    fundamental_group_id
+      S1
+      S1_topology
+      (apply_fun j (1, 0)).
+{
+  exact (s55_cor58_6_nulhomotopic_trivial
+    S1
+    S1_topology
+    S1
+    S1_topology
+    j
+    (1, 0)
+    HjCont
+    Hb0S1
+    Hnul).
+}
+claim HallTrivial :
+  forall cls:set, cls :e fundamental_group S1 S1_topology (1, 0) ->
+    cls = fundamental_group_id S1 S1_topology (1, 0).
+{
+  let cls.
+  assume Hcls.
+  claim HimgTriv :
+    apply_fun
+      (induced_homomorphism
+        S1
+        S1_topology
+        (1, 0)
+        S1
+        S1_topology
+        (apply_fun j (1, 0))
+        j)
+      cls
+    =
+    fundamental_group_id
+      S1
+      S1_topology
+      (apply_fun j (1, 0)).
+  {
+    exact (Htriv cls Hcls).
+  }
+  claim HjBase :
+    apply_fun j (1, 0) = (1, 0).
+  {
+    exact (apply_fun_graph
+      S1
+      (fun z:set => z)
+      (1, 0)
+      Hb0S1).
+  }
+  claim HimgTrivStd :
+    apply_fun
+      (induced_homomorphism
+        S1
+        S1_topology
+        (1, 0)
+        S1
+        S1_topology
+        (1, 0)
+        (graph S1 (fun x:set => x)))
+      cls
+    =
+    fundamental_group_id
+      S1
+      S1_topology
+      (1, 0).
+  {
+    claim HlhsEq :
+      apply_fun
+        (induced_homomorphism
+          S1
+          S1_topology
+          (1, 0)
+          S1
+          S1_topology
+          (1, 0)
+          (graph S1 (fun x:set => x)))
+        cls
+      =
+      apply_fun
+        (induced_homomorphism
+          S1
+          S1_topology
+          (1, 0)
+          S1
+          S1_topology
+          (apply_fun j (1, 0))
+          j)
+        cls.
+    {
+      rewrite <- HjBase at 2.
+      reflexivity.
+    }
+    claim HrhsEq :
+      fundamental_group_id
+        S1
+        S1_topology
+        (apply_fun j (1, 0))
+      =
+      fundamental_group_id
+        S1
+        S1_topology
+        (1, 0).
+    {
+      rewrite HjBase.
+      reflexivity.
+    }
+    claim HmidToTarget :
+      apply_fun
+        (induced_homomorphism
+          S1
+          S1_topology
+          (1, 0)
+          S1
+          S1_topology
+          (apply_fun j (1, 0))
+          j)
+        cls
+      =
+      fundamental_group_id
+        S1
+        S1_topology
+        (1, 0).
+    {
+      rewrite HimgTriv.
+      exact HrhsEq.
+    }
+    exact (eq_i_tra
+      (apply_fun
+        (induced_homomorphism
+          S1
+          S1_topology
+          (1, 0)
+          S1
+          S1_topology
+          (1, 0)
+          (graph S1 (fun x:set => x)))
+        cls)
+      (apply_fun
+        (induced_homomorphism
+          S1
+          S1_topology
+          (1, 0)
+          S1
+          S1_topology
+          (apply_fun j (1, 0))
+          j)
+        cls)
+      (fundamental_group_id
+        S1
+        S1_topology
+        (1, 0))
+      HlhsEq
+      HmidToTarget).
+  }
+  claim HidCls :
+    apply_fun
+      (induced_homomorphism
+        S1
+        S1_topology
+        (1, 0)
+        S1
+        S1_topology
+        (1, 0)
+        (graph S1 (fun x:set => x)))
+      cls
+    = cls.
+  {
+    exact (Theorem_52_4_functorial_identity
+      S1
+      S1_topology
+      (1, 0)
+      HtopS1
+      Hb0S1
+      cls
+      Hcls).
+  }
+  rewrite <- HidCls.
+  exact HimgTrivStd.
+}
+set G := fundamental_group S1 S1_topology (1, 0).
+claim HisoEx :
+  exists phi:set,
+    group_isomorphism
+      G
+      (fundamental_group_mult S1 S1_topology (1, 0))
+      int
+      integers_group_mult
+      phi.
+{
+  exact thm54_5_pi1_circle.
+}
+apply HisoEx.
+let phi.
+assume Hiso.
+claim Hbij :
+  bijection
+    G
+    int
+    phi.
+{
+  exact (group_isomorphism_bijection
+    G
+    (fundamental_group_mult S1 S1_topology (1, 0))
+    int
+    integers_group_mult
+    phi
+    Hiso).
+}
+claim Hsur :
+  forall y:set, y :e int ->
+    exists x:set,
+      x :e G /\
+      apply_fun phi x = y /\
+      (forall x':set, x' :e G -> apply_fun phi x' = y -> x' = x).
+{
+  exact (andER
+    (function_on phi G int)
+    (forall y:set, y :e int ->
+      exists x:set,
+        x :e G /\
+        apply_fun phi x = y /\
+        (forall x':set, x' :e G -> apply_fun phi x' = y -> x' = x))
+    Hbij).
+}
+claim H0int : 0 :e int.
+{
+  exact (Subq_omega_int
+    0
+    (nat_p_omega 0 nat_0)).
+}
+claim H1int : 1 :e int.
+{
+  exact (Subq_omega_int
+    1
+    (nat_p_omega 1 nat_1)).
+}
+claim H0EqPhiId :
+  0 = apply_fun phi (fundamental_group_id S1 S1_topology (1, 0)).
+{
+  apply (Hsur 0 H0int).
+  let x0.
+  assume Hx0Pack.
+  claim Hx0Pair :
+    x0 :e G /\ apply_fun phi x0 = 0.
+  {
+    exact (andEL
+      (x0 :e G /\ apply_fun phi x0 = 0)
+      (forall x':set, x' :e G -> apply_fun phi x' = 0 -> x' = x0)
+      Hx0Pack).
+  }
+  claim Hx0G : x0 :e G.
+  {
+    exact (andEL
+      (x0 :e G)
+      (apply_fun phi x0 = 0)
+      Hx0Pair).
+  }
+  claim Hx0Eq : apply_fun phi x0 = 0.
+  {
+    exact (andER
+      (x0 :e G)
+      (apply_fun phi x0 = 0)
+      Hx0Pair).
+  }
+  claim Hx0Id :
+    x0 = fundamental_group_id S1 S1_topology (1, 0).
+  {
+    exact (HallTrivial
+      x0
+      Hx0G).
+  }
+  rewrite <- Hx0Id.
+  rewrite Hx0Eq.
+  reflexivity.
+}
+claim H1EqPhiId :
+  1 = apply_fun phi (fundamental_group_id S1 S1_topology (1, 0)).
+{
+  apply (Hsur 1 H1int).
+  let x1.
+  assume Hx1Pack.
+  claim Hx1Pair :
+    x1 :e G /\ apply_fun phi x1 = 1.
+  {
+    exact (andEL
+      (x1 :e G /\ apply_fun phi x1 = 1)
+      (forall x':set, x' :e G -> apply_fun phi x' = 1 -> x' = x1)
+      Hx1Pack).
+  }
+  claim Hx1G : x1 :e G.
+  {
+    exact (andEL
+      (x1 :e G)
+      (apply_fun phi x1 = 1)
+      Hx1Pair).
+  }
+  claim Hx1Eq : apply_fun phi x1 = 1.
+  {
+    exact (andER
+      (x1 :e G)
+      (apply_fun phi x1 = 1)
+      Hx1Pair).
+  }
+  claim Hx1Id :
+    x1 = fundamental_group_id S1 S1_topology (1, 0).
+  {
+    exact (HallTrivial
+      x1
+      Hx1G).
+  }
+  rewrite <- Hx1Id.
+  rewrite Hx1Eq.
+  reflexivity.
+}
+claim H0eq1 : 0 = 1.
+{
+  claim HphiEq1 :
+    apply_fun phi (fundamental_group_id S1 S1_topology (1, 0)) = 1.
+  {
+    symmetry.
+    exact H1EqPhiId.
+  }
+  exact (eq_i_tra
+    0
+    (apply_fun phi (fundamental_group_id S1 S1_topology (1, 0)))
+    1
+    H0EqPhiId
+    HphiEq1).
+}
+exact (neq_0_1 H0eq1).
+Admitted. (** proof completed but depends on non-proved thm54_5_pi1_circle **)
 
 (** from S55 Thm 55.5 (line 950 in algtop.tex) **)
 (** LATEX VERSION: Given a nonvanishing vector field on B^2, there exists a point of S^1 where the vector field points directly inward and a point of S^1 where it points directly outward. **)
