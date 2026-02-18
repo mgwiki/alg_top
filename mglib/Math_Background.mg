@@ -56396,16 +56396,364 @@ claim Hex :
       }
       exact (FalseE Hfalse (SeedTimes = unit_interval)).
   }
+  claim HCompSeedOpenIn :
+    open_in unit_interval unit_interval_topology (unit_interval :\: SeedTimes).
+  {
+    apply (ex13_1_local_open_subset
+      unit_interval
+      unit_interval_topology
+      (unit_interval :\: SeedTimes)
+      unit_interval_topology_on).
+    let t.
+    assume HtComp.
+    claim HtUnit : t :e unit_interval.
+    {
+      exact (setminusE1
+        unit_interval
+        SeedTimes
+        t
+        HtComp).
+    }
+    claim HtNotSeed : t /:e SeedTimes.
+    {
+      exact (setminusE2
+        unit_interval
+        SeedTimes
+        t
+        HtComp).
+    }
+    claim Hffun : function_on f unit_interval B.
+    {
+      exact (continuous_map_function_on
+        unit_interval
+        unit_interval_topology
+        B
+        Tb
+        f
+        Hfcont).
+    }
+    claim HftB : apply_fun f t :e B.
+    {
+      exact (Hffun
+        t
+        HtUnit).
+    }
+    claim HlocUt :
+      exists Ut:set,
+        Ut :e Tb /\
+        apply_fun f t :e Ut /\
+        evenly_covered E Te B Tb p Ut.
+    {
+      exact (lemma54_1_path_lifting_sub_bounty_A
+        E
+        Te
+        B
+        Tb
+        p
+        (apply_fun f t)
+        Hcov
+        HftB).
+    }
+    apply HlocUt.
+    let Ut.
+    assume HUtPack.
+    claim HUtOpen : Ut :e Tb.
+    {
+      exact (andEL
+        (Ut :e Tb)
+        (apply_fun f t :e Ut)
+        (andEL
+          (Ut :e Tb /\ apply_fun f t :e Ut)
+          (evenly_covered E Te B Tb p Ut)
+          HUtPack)).
+    }
+    claim HftUt : apply_fun f t :e Ut.
+    {
+      exact (andER
+        (Ut :e Tb)
+        (apply_fun f t :e Ut)
+        (andEL
+          (Ut :e Tb /\ apply_fun f t :e Ut)
+          (evenly_covered E Te B Tb p Ut)
+          HUtPack)).
+    }
+    claim HnearT :
+      exists Nt:set,
+        Nt :e unit_interval_topology /\
+        t :e Nt /\
+        (forall u:set, u :e Nt -> apply_fun f u :e Ut).
+    {
+      exact (lemma54_1_path_lifting_sub_bounty_B
+        f
+        B
+        Tb
+        p
+        t
+        Hfcont
+        HtUnit
+        Ut
+        HUtOpen
+        HftUt).
+    }
+    apply HnearT.
+    let Nt.
+    assume HNtPack.
+    claim HNtPair : Nt :e unit_interval_topology /\ t :e Nt.
+    {
+      exact (andEL
+        (Nt :e unit_interval_topology /\ t :e Nt)
+        (forall u:set, u :e Nt -> apply_fun f u :e Ut)
+        HNtPack).
+    }
+    claim HNtOpen : Nt :e unit_interval_topology.
+    {
+      exact (andEL
+        (Nt :e unit_interval_topology)
+        (t :e Nt)
+        HNtPair).
+    }
+    claim HtNt : t :e Nt.
+    {
+      exact (andER
+        (Nt :e unit_interval_topology)
+        (t :e Nt)
+        HNtPair).
+    }
+    claim HNtMap : forall u:set, u :e Nt -> apply_fun f u :e Ut.
+    {
+      exact (andER
+        (Nt :e unit_interval_topology /\ t :e Nt)
+        (forall u:set, u :e Nt -> apply_fun f u :e Ut)
+        HNtPack).
+    }
+    witness Nt.
+    apply andI.
+    - exact HNtOpen.
+    - apply andI.
+      + exact HtNt.
+      + let u.
+        assume HuNt.
+        claim HuUnit : u :e unit_interval.
+        {
+          exact (topology_elem_subset
+            unit_interval
+            unit_interval_topology
+            Nt
+            unit_interval_topology_on
+            HNtOpen
+            u
+            HuNt).
+        }
+        claim HuNotSeed : u /:e SeedTimes.
+        {
+          assume HuSeed.
+          claim Hfalse : False.
+          {
+            claim HtSeed : t :e SeedTimes.
+            {
+              (** TODO Bob: from HuSeed and HuNt, propagate the seed lift through Ut to extend the seed witness from u to t. **)
+              admit.
+            }
+            exact (HtNotSeed
+              HtSeed).
+          }
+          exact Hfalse.
+        }
+        exact (setminusI
+          unit_interval
+          SeedTimes
+          u
+          HuUnit
+          HuNotSeed).
+  }
   claim HSeedTimesClosed : closed_in unit_interval unit_interval_topology SeedTimes.
   {
-    (** TODO Bob: show local propagation from SeedTimes membership/non-membership to close SeedTimes. **)
-    admit.
+    claim HclosedComp :
+      closed_in unit_interval unit_interval_topology
+        (unit_interval :\: (unit_interval :\: SeedTimes)).
+    {
+      exact (closed_of_open_complement
+        unit_interval
+        unit_interval_topology
+        (unit_interval :\: SeedTimes)
+        unit_interval_topology_on
+        (open_in_elem
+          unit_interval
+          unit_interval_topology
+          (unit_interval :\: SeedTimes)
+          HCompSeedOpenIn)).
+    }
+    claim HcompCompEq :
+      unit_interval :\: (unit_interval :\: SeedTimes) = SeedTimes.
+    {
+      exact (setminus_setminus_eq
+        unit_interval
+        SeedTimes
+        HSeedTimesSub).
+    }
+    rewrite <- HcompCompEq.
+    exact HclosedComp.
   }
   claim HSeedTimesAll : SeedTimes = unit_interval.
   {
     exact (HSeedTimesEqIfClosed HSeedTimesClosed).
   }
-  (** TODO Bob: use HSeedTimesAll to extract a global lift witness on unit_interval. **)
+  claim H1SeedTimes : 1 :e SeedTimes.
+  {
+    exact (mem_eqL
+      1
+      SeedTimes
+      unit_interval
+      HSeedTimesAll
+      one_in_unit_interval).
+  }
+  claim HSeedAt1Pack :
+    exists N1 lt1:set,
+      N1 :e unit_interval_topology /\
+      0 :e N1 /\
+      1 :e N1 /\
+      lifting_of
+        N1
+        (subspace_topology unit_interval unit_interval_topology N1)
+        E
+        Te
+        B
+        Tb
+        p
+        f
+        lt1 /\
+      apply_fun lt1 0 = e0.
+  {
+    exact (SepE2
+      unit_interval
+      (fun t0:set =>
+        exists Nt0 lt0:set,
+          Nt0 :e unit_interval_topology /\
+          0 :e Nt0 /\
+          t0 :e Nt0 /\
+          lifting_of
+            Nt0
+            (subspace_topology unit_interval unit_interval_topology Nt0)
+            E
+            Te
+            B
+            Tb
+            p
+            f
+            lt0 /\
+          apply_fun lt0 0 = e0)
+      1
+      H1SeedTimes).
+  }
+  apply HSeedAt1Pack.
+  let N1.
+  assume HN1Pack.
+  apply HN1Pack.
+  let lt1.
+  assume Hlt1Pack.
+  claim HN1left :
+    ((N1 :e unit_interval_topology /\ 0 :e N1) /\ 1 :e N1) /\
+    lifting_of
+      N1
+      (subspace_topology unit_interval unit_interval_topology N1)
+      E
+      Te
+      B
+      Tb
+      p
+      f
+      lt1.
+  {
+    exact (andEL
+      (((N1 :e unit_interval_topology /\ 0 :e N1) /\ 1 :e N1) /\
+        lifting_of
+          N1
+          (subspace_topology unit_interval unit_interval_topology N1)
+          E
+          Te
+          B
+          Tb
+          p
+          f
+          lt1)
+      (apply_fun lt1 0 = e0)
+      Hlt1Pack).
+  }
+  claim HN1start : apply_fun lt1 0 = e0.
+  {
+    exact (andER
+      (((N1 :e unit_interval_topology /\ 0 :e N1) /\ 1 :e N1) /\
+        lifting_of
+          N1
+          (subspace_topology unit_interval unit_interval_topology N1)
+          E
+          Te
+          B
+          Tb
+          p
+          f
+          lt1)
+      (apply_fun lt1 0 = e0)
+      Hlt1Pack).
+  }
+  claim HN1triple :
+    (N1 :e unit_interval_topology /\ 0 :e N1) /\ 1 :e N1.
+  {
+    exact (andEL
+      ((N1 :e unit_interval_topology /\ 0 :e N1) /\ 1 :e N1)
+      (lifting_of
+        N1
+        (subspace_topology unit_interval unit_interval_topology N1)
+        E
+        Te
+        B
+        Tb
+        p
+        f
+        lt1)
+      HN1left).
+  }
+  claim HN1open0 : N1 :e unit_interval_topology /\ 0 :e N1.
+  {
+    exact (andEL
+      (N1 :e unit_interval_topology /\ 0 :e N1)
+      (1 :e N1)
+      HN1triple).
+  }
+  claim H1N1 : 1 :e N1.
+  {
+    exact (andER
+      (N1 :e unit_interval_topology /\ 0 :e N1)
+      (1 :e N1)
+      HN1triple).
+  }
+  claim HN1lift :
+    lifting_of
+      N1
+      (subspace_topology unit_interval unit_interval_topology N1)
+      E
+      Te
+      B
+      Tb
+      p
+      f
+      lt1.
+  {
+    exact (andER
+      ((N1 :e unit_interval_topology /\ 0 :e N1) /\ 1 :e N1)
+      (lifting_of
+        N1
+        (subspace_topology unit_interval unit_interval_topology N1)
+        E
+        Te
+        B
+        Tb
+        p
+        f
+        lt1)
+      HN1left).
+  }
+  (** TODO Bob: globalize lt1 from N1 (which contains 0 and 1) to a lift on all of unit_interval. **)
   admit.
 }
 exact (path_lift_from_exists_witness E Te B Tb p e0 f Hex).
