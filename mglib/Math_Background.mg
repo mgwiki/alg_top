@@ -82629,8 +82629,277 @@ claim Hpi1Trivial :
           (forall t:set, t :e unit_interval ->
             apply_fun F (1, t) = (0, 0)).
       {
-        (** remaining geometric contraction of loops in the open disk to the center **)
-        admit.
+        claim HfOnX : forall s:set, s :e unit_interval -> apply_fun f s :e X.
+        {
+          exact (continuous_map_function_on
+            unit_interval
+            unit_interval_topology
+            X
+            TX
+            f
+            HfCont).
+        }
+        claim HfOnPlane : forall s:set, s :e unit_interval -> apply_fun f s :e EuclidPlane.
+        {
+          let s.
+          assume Hs.
+          exact (SepE1
+            EuclidPlane
+            (fun p:set => SNoLt (distance_R2 p (0, 0)) 1)
+            (apply_fun f s)
+            (HfOnX s Hs)).
+        }
+        set F := graph unit_square
+          (fun p:set =>
+            (mul_SNo (add_SNo 1 (minus_SNo (p 1))) (R2_xcoord (apply_fun f (p 0))),
+             mul_SNo (add_SNo 1 (minus_SNo (p 1))) (R2_ycoord (apply_fun f (p 0))))).
+        claim HFcont :
+          continuous_map unit_square unit_square_topology X TX F.
+        {
+          (** remaining gap: continuity and image-in-open-disk for radial contraction **)
+          admit.
+        }
+        claim HFs0 : forall s:set, s :e unit_interval ->
+          apply_fun F (s, 0) = apply_fun f s.
+        {
+          let s.
+          assume Hs.
+          claim Hs0Sq : (s, 0) :e unit_square.
+          {
+            exact (tuple_2_setprod_by_pair_Sigma
+              unit_interval
+              unit_interval
+              s
+              0
+              Hs
+              zero_in_unit_interval).
+          }
+          rewrite (apply_fun_graph
+            unit_square
+            (fun p:set =>
+              (mul_SNo (add_SNo 1 (minus_SNo (p 1))) (R2_xcoord (apply_fun f (p 0))),
+               mul_SNo (add_SNo 1 (minus_SNo (p 1))) (R2_ycoord (apply_fun f (p 0)))))
+            (s, 0)
+            Hs0Sq).
+          rewrite tuple_2_0_eq.
+          rewrite tuple_2_1_eq.
+          rewrite minus_SNo_0.
+          rewrite (add_SNo_0R 1 SNo_1).
+          claim HfsPlane : apply_fun f s :e EuclidPlane.
+          {
+            exact (HfOnPlane s Hs).
+          }
+          claim HxR : R2_xcoord (apply_fun f s) :e R.
+          {
+            exact (EuclidPlane_xcoord_in_R
+              (apply_fun f s)
+              HfsPlane).
+          }
+          claim HyR : R2_ycoord (apply_fun f s) :e R.
+          {
+            exact (EuclidPlane_ycoord_in_R
+              (apply_fun f s)
+              HfsPlane).
+          }
+          claim HxSNo : SNo (R2_xcoord (apply_fun f s)).
+          {
+            exact (real_SNo
+              (R2_xcoord (apply_fun f s))
+              HxR).
+          }
+          claim HySNo : SNo (R2_ycoord (apply_fun f s)).
+          {
+            exact (real_SNo
+              (R2_ycoord (apply_fun f s))
+              HyR).
+          }
+          rewrite (mul_SNo_oneL
+            (R2_xcoord (apply_fun f s))
+            HxSNo).
+          rewrite (mul_SNo_oneL
+            (R2_ycoord (apply_fun f s))
+            HySNo).
+          exact (EuclidPlane_eta
+            (apply_fun f s)
+            HfsPlane).
+        }
+        claim HFs1 : forall s:set, s :e unit_interval ->
+          apply_fun F (s, 1) = apply_fun (constant_path (0, 0)) s.
+        {
+          let s.
+          assume Hs.
+          claim Hs1Sq : (s, 1) :e unit_square.
+          {
+            exact (tuple_2_setprod_by_pair_Sigma
+              unit_interval
+              unit_interval
+              s
+              1
+              Hs
+              one_in_unit_interval).
+          }
+          rewrite (apply_fun_graph
+            unit_square
+            (fun p:set =>
+              (mul_SNo (add_SNo 1 (minus_SNo (p 1))) (R2_xcoord (apply_fun f (p 0))),
+               mul_SNo (add_SNo 1 (minus_SNo (p 1))) (R2_ycoord (apply_fun f (p 0)))))
+            (s, 1)
+            Hs1Sq).
+          rewrite tuple_2_0_eq.
+          rewrite tuple_2_1_eq.
+          rewrite (add_SNo_minus_SNo_rinv 1 SNo_1).
+          claim HfsPlane : apply_fun f s :e EuclidPlane.
+          {
+            exact (HfOnPlane s Hs).
+          }
+          claim HxR : R2_xcoord (apply_fun f s) :e R.
+          {
+            exact (EuclidPlane_xcoord_in_R
+              (apply_fun f s)
+              HfsPlane).
+          }
+          claim HyR : R2_ycoord (apply_fun f s) :e R.
+          {
+            exact (EuclidPlane_ycoord_in_R
+              (apply_fun f s)
+              HfsPlane).
+          }
+          claim HxSNo : SNo (R2_xcoord (apply_fun f s)).
+          {
+            exact (real_SNo
+              (R2_xcoord (apply_fun f s))
+              HxR).
+          }
+          claim HySNo : SNo (R2_ycoord (apply_fun f s)).
+          {
+            exact (real_SNo
+              (R2_ycoord (apply_fun f s))
+              HyR).
+          }
+          rewrite (mul_SNo_zeroL
+            (R2_xcoord (apply_fun f s))
+            HxSNo).
+          rewrite (mul_SNo_zeroL
+            (R2_ycoord (apply_fun f s))
+            HySNo).
+          symmetry.
+          exact (constant_path_apply
+            (0, 0)
+            s
+            Hs).
+        }
+        claim HF0t : forall t:set, t :e unit_interval ->
+          apply_fun F (0, t) = (0, 0).
+        {
+          let t.
+          assume Ht.
+          claim H0tSq : (0, t) :e unit_square.
+          {
+            exact (tuple_2_setprod_by_pair_Sigma
+              unit_interval
+              unit_interval
+              0
+              t
+              zero_in_unit_interval
+              Ht).
+          }
+          rewrite (apply_fun_graph
+            unit_square
+            (fun p:set =>
+              (mul_SNo (add_SNo 1 (minus_SNo (p 1))) (R2_xcoord (apply_fun f (p 0))),
+               mul_SNo (add_SNo 1 (minus_SNo (p 1))) (R2_ycoord (apply_fun f (p 0)))))
+            (0, t)
+            H0tSq).
+          rewrite tuple_2_0_eq.
+          rewrite tuple_2_1_eq.
+          rewrite Hf0.
+          rewrite (R2_xcoord_tuple 0 0).
+          rewrite (R2_ycoord_tuple 0 0).
+          claim HtR : t :e R.
+          {
+            exact (unit_interval_sub_R t Ht).
+          }
+          claim HSNot : SNo t.
+          {
+            exact (real_SNo t HtR).
+          }
+          claim HSNo1mt : SNo (add_SNo 1 (minus_SNo t)).
+          {
+            exact (SNo_add_SNo
+              1
+              (minus_SNo t)
+              SNo_1
+              (SNo_minus_SNo t HSNot)).
+          }
+          rewrite (mul_SNo_zeroR
+            (add_SNo 1 (minus_SNo t))
+            HSNo1mt).
+          reflexivity.
+        }
+        claim HF1t : forall t:set, t :e unit_interval ->
+          apply_fun F (1, t) = (0, 0).
+        {
+          let t.
+          assume Ht.
+          claim H1tSq : (1, t) :e unit_square.
+          {
+            exact (tuple_2_setprod_by_pair_Sigma
+              unit_interval
+              unit_interval
+              1
+              t
+              one_in_unit_interval
+              Ht).
+          }
+          rewrite (apply_fun_graph
+            unit_square
+            (fun p:set =>
+              (mul_SNo (add_SNo 1 (minus_SNo (p 1))) (R2_xcoord (apply_fun f (p 0))),
+               mul_SNo (add_SNo 1 (minus_SNo (p 1))) (R2_ycoord (apply_fun f (p 0)))))
+            (1, t)
+            H1tSq).
+          rewrite tuple_2_0_eq.
+          rewrite tuple_2_1_eq.
+          rewrite Hf1.
+          rewrite (R2_xcoord_tuple 0 0).
+          rewrite (R2_ycoord_tuple 0 0).
+          claim HtR : t :e R.
+          {
+            exact (unit_interval_sub_R t Ht).
+          }
+          claim HSNot : SNo t.
+          {
+            exact (real_SNo t HtR).
+          }
+          claim HSNo1mt : SNo (add_SNo 1 (minus_SNo t)).
+          {
+            exact (SNo_add_SNo
+              1
+              (minus_SNo t)
+              SNo_1
+              (SNo_minus_SNo t HSNot)).
+          }
+          rewrite (mul_SNo_zeroR
+            (add_SNo 1 (minus_SNo t))
+            HSNo1mt).
+          reflexivity.
+        }
+        witness F.
+        exact (and5I
+          (continuous_map unit_square unit_square_topology X TX F)
+          (forall s:set, s :e unit_interval ->
+            apply_fun F (s, 0) = apply_fun f s)
+          (forall s:set, s :e unit_interval ->
+            apply_fun F (s, 1) = apply_fun (constant_path (0, 0)) s)
+          (forall t:set, t :e unit_interval ->
+            apply_fun F (0, t) = (0, 0))
+          (forall t:set, t :e unit_interval ->
+            apply_fun F (1, t) = (0, 0))
+          HFcont
+          HFs0
+          HFs1
+          HF0t
+          HF1t).
       }
       exact (and7I
         (continuous_map unit_interval unit_interval_topology X TX f)
