@@ -109348,7 +109348,329 @@ apply and3I.
                 nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun (xs_of (apply_fun multG (g, b))) i)))
                   (n_of (apply_fun multG (g, b))).
               { exact (Hh_ne_shared (apply_fun multG (g, b)) Hgb_G Hgb_ne). }
-              admit. }
+              apply (xm (b = apply_fun efam beta)).
+              * assume Hb_efam : b = apply_fun efam beta. admit.
+              * assume Hb_ne_efam : b <> apply_fun efam beta.
+                (** Since ng <> 0 and nat_p ng, extract m with ng = ordsucc m **)
+                claim Hng_inv : ng = 0 \/ exists x:set, nat_p x /\ ng = ordsucc x.
+                { exact (nat_inv ng Hng_nat). }
+                apply Hng_inv.
+                - assume Hng_0 : ng = 0.
+                  exact (FalseE (Hng_ne Hng_0)
+                    (apply_fun h (apply_fun multG (g, b)) = apply_fun multH (apply_fun h g, h_single b))).
+                - assume Hex_m : exists x:set, nat_p x /\ ng = ordsucc x.
+                  apply Hex_m. let m. assume Hm_data : nat_p m /\ ng = ordsucc m.
+                  claim Hm_nat : nat_p m. { exact (andEL (nat_p m) (ng = ordsucc m) Hm_data). }
+                  claim Hng_sm : ng = ordsucc m. { exact (andER (nat_p m) (ng = ordsucc m) Hm_data). }
+                  claim Hm_in_ng : m :e ng. { rewrite Hng_sm. exact (ordsuccI2 m). }
+                  claim Hm_omega : m :e omega. { exact (nat_p_omega m Hm_nat). }
+                  (** xsg(m) = eG is pathological (efam issue); split **)
+                  apply (xm (apply_fun xsg m = eG)).
+                  + assume Hxm_eG : apply_fun xsg m = eG. admit.
+                  + assume Hxm_ne : apply_fun xsg m <> eG.
+                    (** nat_primrec extensionality for eG base **)
+                    claim Hnpr_ext_G : forall k:set, nat_p k ->
+                      forall f1 f2:set->set->set,
+                        (forall i:set, i :e k -> forall r:set, f1 i r = f2 i r) ->
+                        nat_primrec eG f1 k = nat_primrec eG f2 k.
+                    { apply (nat_ind (fun k:set =>
+                        forall f1 f2:set->set->set,
+                          (forall i:set, i :e k -> forall r:set, f1 i r = f2 i r) ->
+                          nat_primrec eG f1 k = nat_primrec eG f2 k)).
+                      - let f1 f2. assume Heq.
+                        rewrite (nat_primrec_0 eG f1). rewrite (nat_primrec_0 eG f2). reflexivity.
+                      - let k0. assume Hk0 : nat_p k0. assume IH0.
+                        let f1 f2. assume Heq.
+                        rewrite (nat_primrec_S eG f1 k0 Hk0). rewrite (nat_primrec_S eG f2 k0 Hk0).
+                        claim Hprev0 : nat_primrec eG f1 k0 = nat_primrec eG f2 k0.
+                        { exact (IH0 f1 f2 (fun i:set => fun Hi:i :e k0 => fun r:set => Heq i (ordsuccI1 k0 i Hi) r)). }
+                        rewrite Hprev0.
+                        exact (Heq k0 (ordsuccI2 k0) (nat_primrec eG f2 k0)). }
+                    (** Extract last letter's family from reduced word **)
+                    claim Hxsg_m_data : exists alpha:set, alpha :e J /\
+                      apply_fun xsg m :e apply_fun Gfam alpha /\ apply_fun xsg m <> apply_fun efam alpha.
+                    { apply (and3E
+                        (ng :e omega)
+                        (forall i:set, i :e ng ->
+                          exists alpha:set, alpha :e J /\
+                            apply_fun xsg i :e apply_fun Gfam alpha /\
+                            apply_fun xsg i <> apply_fun efam alpha)
+                        (forall i:set, i :e ng -> ordsucc i :e ng ->
+                          forall alpha0 beta0:set, alpha0 :e J -> beta0 :e J ->
+                            apply_fun xsg i :e apply_fun Gfam alpha0 ->
+                            apply_fun xsg (ordsucc i) :e apply_fun Gfam beta0 ->
+                            alpha0 <> beta0)
+                        Hredw).
+                      assume _ Helem _. exact (Helem m Hm_in_ng). }
+                    apply Hxsg_m_data. let alpha_last.
+                    assume Hal_data : alpha_last :e J /\
+                      apply_fun xsg m :e apply_fun Gfam alpha_last /\
+                      apply_fun xsg m <> apply_fun efam alpha_last.
+                    apply (and3E (alpha_last :e J)
+                      (apply_fun xsg m :e apply_fun Gfam alpha_last)
+                      (apply_fun xsg m <> apply_fun efam alpha_last) Hal_data).
+                    assume Hal_J : alpha_last :e J.
+                    assume Hxsg_m_Gal : apply_fun xsg m :e apply_fun Gfam alpha_last.
+                    assume Hxsg_m_ne_efam : apply_fun xsg m <> apply_fun efam alpha_last.
+                    (** Case split: alpha_last = beta vs alpha_last <> beta **)
+                    apply (xm (alpha_last = beta)).
+                    - assume Hal_eq : alpha_last = beta. admit.
+                    - assume Hal_ne : alpha_last <> beta.
+                      (** DIFFERENT FAMILY: append b to get extended reduced word of length ordsucc ng **)
+                      set xs_ext := graph (ordsucc ng)
+                        (fun i:set => if i :e ng then apply_fun xsg i else b).
+                      claim Hxse_ap : forall i:set, i :e ordsucc ng ->
+                        apply_fun xs_ext i = (if i :e ng then apply_fun xsg i else b).
+                      { let i. assume Hi.
+                        exact (apply_fun_graph (ordsucc ng)
+                          (fun j:set => if j :e ng then apply_fun xsg j else b) i Hi). }
+                      claim Hxse_ng : apply_fun xs_ext ng = b.
+                      { claim Hap : apply_fun xs_ext ng =
+                          (if ng :e ng then apply_fun xsg ng else b).
+                        { exact (Hxse_ap ng (ordsuccI2 ng)). }
+                        rewrite Hap.
+                        exact (If_i_0 (ng :e ng) (apply_fun xsg ng) b (In_irref ng)). }
+                      claim Hxse_eq : forall i:set, i :e ng ->
+                        apply_fun xs_ext i = apply_fun xsg i.
+                      { let i. assume Hi : i :e ng.
+                        claim Hap : apply_fun xs_ext i =
+                          (if i :e ng then apply_fun xsg i else b).
+                        { exact (Hxse_ap i (ordsuccI1 ng i Hi)). }
+                        rewrite Hap.
+                        exact (If_i_1 (i :e ng) (apply_fun xsg i) b Hi). }
+                      (** Prove reduced_word J Gfam efam (ordsucc ng) xs_ext **)
+                      claim Hred_ext : reduced_word J Gfam efam (ordsucc ng) xs_ext.
+                      { prove (ordsucc ng) :e omega /\
+                          (forall i:set, i :e ordsucc ng ->
+                            exists alpha:set, alpha :e J /\
+                              apply_fun xs_ext i :e apply_fun Gfam alpha /\
+                              apply_fun xs_ext i <> apply_fun efam alpha) /\
+                          (forall i:set, i :e ordsucc ng -> ordsucc i :e ordsucc ng ->
+                            forall alpha0 beta0:set, alpha0 :e J -> beta0 :e J ->
+                              apply_fun xs_ext i :e apply_fun Gfam alpha0 ->
+                              apply_fun xs_ext (ordsucc i) :e apply_fun Gfam beta0 ->
+                              alpha0 <> beta0).
+                        apply and3I.
+                        (** ordsucc ng :e omega **)
+                        - exact (nat_p_omega (ordsucc ng) (nat_ordsucc ng Hng_nat)).
+                        (** elements in families and not efam **)
+                        - let i. assume Hi : i :e ordsucc ng.
+                          apply (ordsuccE ng i Hi).
+                          + assume Hi_ng : i :e ng.
+                            claim Hxsg_i_data : exists alpha:set, alpha :e J /\
+                              apply_fun xsg i :e apply_fun Gfam alpha /\
+                              apply_fun xsg i <> apply_fun efam alpha.
+                            { apply (and3E (ng :e omega)
+                                (forall j:set, j :e ng ->
+                                  exists alpha:set, alpha :e J /\
+                                    apply_fun xsg j :e apply_fun Gfam alpha /\
+                                    apply_fun xsg j <> apply_fun efam alpha)
+                                (forall j:set, j :e ng -> ordsucc j :e ng ->
+                                  forall a1 a2:set, a1 :e J -> a2 :e J ->
+                                    apply_fun xsg j :e apply_fun Gfam a1 ->
+                                    apply_fun xsg (ordsucc j) :e apply_fun Gfam a2 ->
+                                    a1 <> a2)
+                                Hredw).
+                              assume _ Helem _. exact (Helem i Hi_ng). }
+                            apply Hxsg_i_data. let alpha_i.
+                            assume Hai_data : alpha_i :e J /\
+                              apply_fun xsg i :e apply_fun Gfam alpha_i /\
+                              apply_fun xsg i <> apply_fun efam alpha_i.
+                            apply (and3E (alpha_i :e J)
+                              (apply_fun xsg i :e apply_fun Gfam alpha_i)
+                              (apply_fun xsg i <> apply_fun efam alpha_i) Hai_data).
+                            assume Hai_J Hxsg_i_G Hxsg_i_ne.
+                            claim Hxse_i_eq : apply_fun xs_ext i = apply_fun xsg i.
+                            { exact (Hxse_eq i Hi_ng). }
+                            claim Hxsg_i_xse : apply_fun xsg i = apply_fun xs_ext i.
+                            { symmetry. exact Hxse_i_eq. }
+                            claim Hxse_i_Gal : apply_fun xs_ext i :e apply_fun Gfam alpha_i.
+                            { exact (eq_subst_mem_rev (apply_fun xsg i) (apply_fun xs_ext i)
+                                (apply_fun Gfam alpha_i) Hxsg_i_xse Hxsg_i_G). }
+                            witness alpha_i. apply and3I.
+                            * exact Hai_J.
+                            * exact Hxse_i_Gal.
+                            * assume Habs : apply_fun xs_ext i = apply_fun efam alpha_i.
+                              claim Hxsg_i_efam : apply_fun xsg i = apply_fun efam alpha_i.
+                              { exact (eq_i_tra (apply_fun xsg i) (apply_fun xs_ext i)
+                                  (apply_fun efam alpha_i) Hxsg_i_xse Habs). }
+                              exact (Hxsg_i_ne Hxsg_i_efam).
+                          + assume Hi_eq : i = ng.
+                            claim Hxse_i_b : apply_fun xs_ext i = b.
+                            { claim Hxse_i_ng : apply_fun xs_ext i = apply_fun xs_ext ng.
+                              { rewrite Hi_eq. reflexivity. }
+                              exact (eq_i_tra (apply_fun xs_ext i) (apply_fun xs_ext ng) b
+                                Hxse_i_ng Hxse_ng). }
+                            claim Hb_xse_i : b = apply_fun xs_ext i.
+                            { symmetry. exact Hxse_i_b. }
+                            claim Hxse_i_Gbeta : apply_fun xs_ext i :e apply_fun Gfam beta.
+                            { exact (eq_subst_mem_rev b (apply_fun xs_ext i)
+                                (apply_fun Gfam beta) Hb_xse_i Hb_Gbeta). }
+                            witness beta. apply and3I.
+                            * exact Hbeta_J.
+                            * exact Hxse_i_Gbeta.
+                            * assume Habs : apply_fun xs_ext i = apply_fun efam beta.
+                              claim Hb_efam2 : b = apply_fun efam beta.
+                              { exact (eq_i_tra b (apply_fun xs_ext i) (apply_fun efam beta)
+                                  Hb_xse_i Habs). }
+                              exact (Hb_ne_efam Hb_efam2).
+                        (** adjacency condition **)
+                        - let i. assume Hi : i :e ordsucc ng.
+                          assume Hsi : ordsucc i :e ordsucc ng.
+                          let alpha0 beta0. assume Ha0_J : alpha0 :e J.
+                          assume Hb0_J : beta0 :e J.
+                          assume Hxi_a0 : apply_fun xs_ext i :e apply_fun Gfam alpha0.
+                          assume Hxsi_b0 : apply_fun xs_ext (ordsucc i) :e apply_fun Gfam beta0.
+                          apply (ordsuccE ng i Hi).
+                          + assume Hi_ng : i :e ng.
+                            apply (ordsuccE ng (ordsucc i) Hsi).
+                            * assume Hsi_ng : ordsucc i :e ng.
+                              (** Both i, ordsucc i in ng: inherited from Hredw **)
+                              claim Hxi_xsg : apply_fun xsg i :e apply_fun Gfam alpha0.
+                              { exact (eq_subst_mem_rev (apply_fun xs_ext i) (apply_fun xsg i)
+                                  (apply_fun Gfam alpha0) (Hxse_eq i Hi_ng) Hxi_a0). }
+                              claim Hxsi_xsg : apply_fun xsg (ordsucc i) :e apply_fun Gfam beta0.
+                              { exact (eq_subst_mem_rev (apply_fun xs_ext (ordsucc i)) (apply_fun xsg (ordsucc i))
+                                  (apply_fun Gfam beta0) (Hxse_eq (ordsucc i) Hsi_ng) Hxsi_b0). }
+                              apply (and3E (ng :e omega)
+                                (forall j:set, j :e ng ->
+                                  exists alpha:set, alpha :e J /\
+                                    apply_fun xsg j :e apply_fun Gfam alpha /\
+                                    apply_fun xsg j <> apply_fun efam alpha)
+                                (forall j:set, j :e ng -> ordsucc j :e ng ->
+                                  forall a1 a2:set, a1 :e J -> a2 :e J ->
+                                    apply_fun xsg j :e apply_fun Gfam a1 ->
+                                    apply_fun xsg (ordsucc j) :e apply_fun Gfam a2 ->
+                                    a1 <> a2)
+                                Hredw).
+                              assume _ _ Hadj.
+                              exact (Hadj i Hi_ng Hsi_ng alpha0 beta0 Ha0_J Hb0_J Hxi_xsg Hxsi_xsg).
+                            * assume Hsi_eq : ordsucc i = ng.
+                              (** Boundary: i = m, ordsucc i = ng **)
+                              (** xs_ext(i) = xsg(i) = xsg(m), xs_ext(ng) = b **)
+                              claim Hsi_sm : ordsucc i = ordsucc m.
+                              { exact (eq_i_tra (ordsucc i) ng (ordsucc m) Hsi_eq Hng_sm). }
+                              claim Hi_m : i = m. { exact (ordsucc_inj i m Hsi_sm). }
+                              claim Hxm_a0 : apply_fun xsg m :e apply_fun Gfam alpha0.
+                              { claim Hxse_i_eq : apply_fun xs_ext i = apply_fun xsg i.
+                                { exact (Hxse_eq i Hi_ng). }
+                                claim Hxsg_i_eq : apply_fun xsg i = apply_fun xsg m.
+                                { rewrite Hi_m. reflexivity. }
+                                claim Hxse_i_m : apply_fun xs_ext i = apply_fun xsg m.
+                                { exact (eq_i_tra (apply_fun xs_ext i) (apply_fun xsg i) (apply_fun xsg m)
+                                    Hxse_i_eq Hxsg_i_eq). }
+                                exact (eq_subst_mem_rev (apply_fun xs_ext i) (apply_fun xsg m)
+                                  (apply_fun Gfam alpha0) Hxse_i_m Hxi_a0). }
+                              claim Hb_b0 : b :e apply_fun Gfam beta0.
+                              { claim Hxse_si_eq : apply_fun xs_ext (ordsucc i) = b.
+                                { claim Hsi_ng_eq : ordsucc i = ng. { exact Hsi_eq. }
+                                  claim Hxse_si_ng : apply_fun xs_ext ng = b. { exact Hxse_ng. }
+                                  claim Hxse_si : apply_fun xs_ext (ordsucc i) = apply_fun xs_ext ng.
+                                  { rewrite Hsi_ng_eq. reflexivity. }
+                                  exact (eq_i_tra (apply_fun xs_ext (ordsucc i)) (apply_fun xs_ext ng) b
+                                    Hxse_si Hxse_si_ng). }
+                                exact (eq_subst_mem_rev (apply_fun xs_ext (ordsucc i)) b
+                                  (apply_fun Gfam beta0) Hxse_si_eq Hxsi_b0). }
+                              (** Prove alpha0 <> beta0 by contradiction **)
+                              assume Ha0_eq_b0 : alpha0 = beta0.
+                              (** alpha0 = alpha_last **)
+                              claim Ha0_al : alpha0 = alpha_last.
+                              { apply (xm (alpha0 = alpha_last)).
+                                + assume H. exact H.
+                                + assume Hne_al.
+                                  claim Hxm_eG2 : apply_fun xsg m = eG.
+                                  { exact (Hdisjoint alpha0 alpha_last Ha0_J Hal_J Hne_al
+                                      (apply_fun xsg m) Hxm_a0 Hxsg_m_Gal). }
+                                  exact (FalseE (Hxm_ne Hxm_eG2) (alpha0 = alpha_last)). }
+                              (** beta0 = beta **)
+                              claim Hb0_beta : beta0 = beta.
+                              { apply (xm (beta0 = beta)).
+                                + assume H. exact H.
+                                + assume Hne_b.
+                                  claim Hb_eG2 : b = eG.
+                                  { exact (Hdisjoint beta0 beta Hb0_J Hbeta_J Hne_b b Hb_b0 Hb_Gbeta). }
+                                  exact (FalseE (Hb_ne Hb_eG2) (beta0 = beta)). }
+                              (** alpha_last = beta: contradiction **)
+                              claim Hal_beta : alpha_last = beta.
+                              { claim Ha0_sym : alpha_last = alpha0. { symmetry. exact Ha0_al. }
+                                claim Ha0_b0 : alpha0 = beta.
+                                { exact (eq_i_tra alpha0 beta0 beta Ha0_eq_b0 Hb0_beta). }
+                                exact (eq_i_tra alpha_last alpha0 beta Ha0_sym Ha0_b0). }
+                              exact (Hal_ne Hal_beta).
+                          + assume Hi_eq : i = ng.
+                            (** ordsucc ng :e ordsucc ng: impossible **)
+                            claim Hsng_eq : ordsucc i = ordsucc ng.
+                            { rewrite Hi_eq. reflexivity. }
+                            claim Hsng_in : ordsucc ng :e ordsucc ng.
+                            { exact (eq_subst_mem_rev (ordsucc i) (ordsucc ng) (ordsucc ng) Hsng_eq Hsi). }
+                            exact (FalseE (In_irref (ordsucc ng) Hsng_in) (alpha0 <> beta0)). }
+                      claim Hwp_ext_step : word_product multG eG xs_ext (ordsucc ng) =
+                        apply_fun multG (word_product multG eG xs_ext ng, apply_fun xs_ext ng).
+                      { exact (nat_primrec_S eG
+                          (fun i:set => fun r:set => apply_fun multG (r, apply_fun xs_ext i))
+                          ng Hng_nat). }
+                      claim Hfext_G_eq : forall i:set, i :e ng -> forall r:set,
+                        apply_fun multG (r, apply_fun xs_ext i) =
+                        apply_fun multG (r, apply_fun xsg i).
+                      { let i. assume Hi : i :e ng. let r.
+                        claim Hxse_i : apply_fun xs_ext i = apply_fun xsg i.
+                        { exact (Hxse_eq i Hi). }
+                        rewrite Hxse_i. reflexivity. }
+                      claim Hwp_ext_ng : word_product multG eG xs_ext ng = word_product multG eG xsg ng.
+                      { exact (Hnpr_ext_G ng Hng_nat
+                          (fun i:set => fun r:set => apply_fun multG (r, apply_fun xs_ext i))
+                          (fun i:set => fun r:set => apply_fun multG (r, apply_fun xsg i))
+                          Hfext_G_eq). }
+                      claim Hwp_ext : word_product multG eG xs_ext (ordsucc ng) =
+                        apply_fun multG (g, b).
+                      { rewrite Hwp_ext_step. rewrite Hxse_ng. rewrite Hwp_ext_ng. rewrite Hwpg.
+                        reflexivity. }
+                      claim Hsng_ne : ordsucc ng <> 0. { exact (neq_ordsucc_0 ng). }
+                      claim Hhgb_ext : apply_fun h (apply_fun multG (g, b)) =
+                        nat_primrec eH
+                          (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun xs_ext i)))
+                          (ordsucc ng).
+                      { exact (Hh_val_any_rw (apply_fun multG (g, b)) Hgb_G Hgb_ne
+                          (ordsucc ng) xs_ext Hred_ext Hsng_ne Hwp_ext). }
+                      set fH_ext := fun i:set => fun r:set =>
+                        apply_fun multH (r, h_single (apply_fun xs_ext i)).
+                      claim Hnpr_step : nat_primrec eH fH_ext (ordsucc ng) =
+                        fH_ext ng (nat_primrec eH fH_ext ng).
+                      { exact (nat_primrec_S eH fH_ext ng Hng_nat). }
+                      claim Hnpr_beta : fH_ext ng (nat_primrec eH fH_ext ng) =
+                        apply_fun multH (nat_primrec eH fH_ext ng, h_single (apply_fun xs_ext ng)).
+                      { prove apply_fun multH (nat_primrec eH fH_ext ng, h_single (apply_fun xs_ext ng)) =
+                          apply_fun multH (nat_primrec eH fH_ext ng, h_single (apply_fun xs_ext ng)).
+                        reflexivity. }
+                      set fH_orig := fun i:set => fun r:set =>
+                        apply_fun multH (r, h_single (apply_fun xsg i)).
+                      claim Hfext_H_eq : forall i:set, i :e ng -> forall r:set,
+                        fH_ext i r = fH_orig i r.
+                      { let i. assume Hi : i :e ng. let r.
+                        prove apply_fun multH (r, h_single (apply_fun xs_ext i)) =
+                          apply_fun multH (r, h_single (apply_fun xsg i)).
+                        claim Hxse_i : apply_fun xs_ext i = apply_fun xsg i.
+                        { exact (Hxse_eq i Hi). }
+                        rewrite Hxse_i. reflexivity. }
+                      claim Hnpr_ext_eq : nat_primrec eH fH_ext ng = nat_primrec eH fH_orig ng.
+                      { exact (Hnpr_ext ng Hng_nat fH_ext fH_orig Hfext_H_eq). }
+                      claim Hnpr_hg : nat_primrec eH fH_orig ng = apply_fun h g.
+                      { symmetry. exact HhgRW. }
+                      claim Hnpr_ext_hg : nat_primrec eH fH_ext ng = apply_fun h g.
+                      { exact (eq_i_tra (nat_primrec eH fH_ext ng)
+                          (nat_primrec eH fH_orig ng) (apply_fun h g) Hnpr_ext_eq Hnpr_hg). }
+                      claim Hhgb_step1 : apply_fun h (apply_fun multG (g, b)) =
+                        apply_fun multH (nat_primrec eH fH_ext ng, h_single (apply_fun xs_ext ng)).
+                      { exact (eq_i_tra
+                          (apply_fun h (apply_fun multG (g, b)))
+                          (nat_primrec eH fH_ext (ordsucc ng))
+                          (apply_fun multH (nat_primrec eH fH_ext ng, h_single (apply_fun xs_ext ng)))
+                          Hhgb_ext
+                          (eq_i_tra (nat_primrec eH fH_ext (ordsucc ng))
+                            (fH_ext ng (nat_primrec eH fH_ext ng))
+                            (apply_fun multH (nat_primrec eH fH_ext ng, h_single (apply_fun xs_ext ng)))
+                            Hnpr_step Hnpr_beta)). }
+                      rewrite Hhgb_step1. rewrite Hxse_ng. rewrite Hnpr_ext_hg. reflexivity. }
         (** Using Hh_right_mult, prove multiplicativity by induction on word length of y **)
         (** y has reduced word ys of length n_y, each ys(i) in some Gfam **)
         (** y = mult(mult(...mult(eG, ys(0)), ys(1))..., ys(n_y - 1)) **)
