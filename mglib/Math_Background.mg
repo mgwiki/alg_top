@@ -49608,6 +49608,66 @@ exact (andI
   Hlocal).
 Qed.
 
+(** Helper: homeomorphism has nonempty domain whenever codomain is nonempty. **)
+(** Proven Charlie **)
+Theorem homeomorphism_domain_nonempty_of_codomain_nonempty :
+  forall X Tx Y Ty f:set,
+    homeomorphism X Tx Y Ty f ->
+    Y <> Empty ->
+    X <> Empty.
+let X Tx Y Ty f.
+assume Hhome HYne.
+apply (homeomorphism_inverse_package
+  X
+  Tx
+  Y
+  Ty
+  f
+  Hhome).
+let g.
+assume HgPack.
+claim HgCont : continuous_map Y Ty X Tx g.
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g)
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+    (andEL
+      (continuous_map Y Ty X Tx g /\
+        (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+      (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+      HgPack)).
+}
+claim HgFun : function_on g Y X.
+{
+  exact (continuous_map_function_on
+    Y
+    Ty
+    X
+    Tx
+    g
+    HgCont).
+}
+claim HexY : exists y:set, y :e Y.
+{
+  exact (nonempty_has_element
+    Y
+    HYne).
+}
+apply HexY.
+let y.
+assume HyY.
+claim HgyX : apply_fun g y :e X.
+{
+  exact (HgFun
+    y
+    HyY).
+}
+exact (elem_implies_nonempty
+  X
+  (apply_fun g y)
+  HgyX).
+Qed.
+
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
 (** then the partition of p^{-1}(U) into slices is unique. **)
