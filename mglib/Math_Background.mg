@@ -112712,6 +112712,109 @@ apply (andI
 - exact Hnontriv.
 Qed.
 
+(** Helper for S69 Lem 69.1: each factor family is a subgroup via free-product structure. **)
+(** Proven Bob **)
+Theorem lemma69_1_factor_family_subgroup_from_free_product :
+  forall G mult e inv J gens alpha:set,
+  free_product_of_subgroups G mult e inv J
+    (graph J (fun beta:set =>
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens beta) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))}))
+    (graph J (fun beta:set => e)) ->
+  alpha :e J ->
+  subgroup_of
+    (apply_fun
+      (graph J (fun beta:set =>
+        {g :e G | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens beta) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))}))
+      alpha)
+    G
+    mult
+    e
+    inv.
+let G mult e inv J gens alpha.
+assume Hfp :
+  free_product_of_subgroups G mult e inv J
+    (graph J (fun beta:set =>
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens beta) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))}))
+    (graph J (fun beta:set => e)).
+assume Halpha : alpha :e J.
+apply (and5E
+  (group_structure G mult e inv)
+  (forall beta:set, beta :e J ->
+    subgroup_of
+      (apply_fun
+        (graph J (fun beta:set =>
+          {g :e G | exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens beta) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))}))
+        beta)
+      G
+      mult
+      e
+      inv)
+  (forall beta gamma:set, beta :e J -> gamma :e J -> beta <> gamma ->
+    forall x:set,
+      x :e apply_fun
+        (graph J (fun beta:set =>
+          {g :e G | exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens beta) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))}))
+        beta ->
+      x :e apply_fun
+        (graph J (fun beta:set =>
+          {g :e G | exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens beta) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))}))
+        gamma ->
+      x = e)
+  (subgroups_generate G mult e inv J
+    (graph J (fun beta:set =>
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens beta) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))})))
+  (forall x:set, x :e G -> x <> e ->
+    exists n xs:set,
+      reduced_word J
+        (graph J (fun beta:set =>
+          {g :e G | exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens beta) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))}))
+        (graph J (fun beta:set => e))
+        n
+        xs /\
+      n <> 0 /\
+      word_product mult e xs n = x /\
+      (forall n' xs':set,
+        reduced_word J
+          (graph J (fun beta:set =>
+            {g :e G | exists n:set, n :e int /\
+              ((n :e omega /\ g = group_power_nat mult e (apply_fun gens beta) n) \/
+               (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+                g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))}))
+          (graph J (fun beta:set => e))
+          n'
+          xs' ->
+        n' <> 0 ->
+        word_product mult e xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
+  Hfp).
+assume Hgrp_fp Hsub_fp Hdis_fp Hgen_fp Huniq_fp.
+exact (Hsub_fp alpha Halpha).
+Qed.
+
 (** Helper for S69 Lem 69.1: any homomorphism on G restricts to each cyclic factor family. **)
 (** Proven Bob **)
 Theorem lemma69_1_hom_restricts_to_factor_family :
@@ -113113,30 +113216,21 @@ apply (iffI
     }
     claim Hsub_factor : subgroup_of Galpha G mult e inv.
     {
-      apply (and5E
-        (group_structure G mult e inv)
-        (forall beta:set, beta :e J ->
-          subgroup_of (apply_fun Gfam0 beta) G mult e inv)
-        (forall beta gamma:set, beta :e J -> gamma :e J -> beta <> gamma ->
-          forall x:set, x :e apply_fun Gfam0 beta ->
-            x :e apply_fun Gfam0 gamma -> x = e)
-        (subgroups_generate G mult e inv J Gfam0)
-        (forall x:set, x :e G -> x <> e ->
-          exists n xs:set,
-            reduced_word J Gfam0 efam0 n xs /\ n <> 0 /\
-            word_product mult e xs n = x /\
-            (forall n' xs':set,
-              reduced_word J Gfam0 efam0 n' xs' -> n' <> 0 ->
-              word_product mult e xs' n' = x ->
-              n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
-        Hfp).
-      assume Hgrp_fp Hsub_fp Hdis_fp Hgen_fp Huniq_fp.
       claim HGalpha_def : Galpha = apply_fun Gfam0 alpha.
       {
         reflexivity.
       }
       rewrite HGalpha_def.
-      exact (Hsub_fp alpha Halpha).
+      exact (lemma69_1_factor_family_subgroup_from_free_product
+        G
+        mult
+        e
+        inv
+        J
+        gens
+        alpha
+        Hfp
+        Halpha).
     }
     apply (and4E
       (Galpha c= G)
