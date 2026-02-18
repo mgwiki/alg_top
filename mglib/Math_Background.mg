@@ -111735,7 +111735,99 @@ apply (andI
           (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
           n = quotient_group_id G mult e C.
     apply HnontrivOrig.
-    admit.
+    claim HbadEps :
+      (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n = quotient_group_id G mult e C)) :e omega /\
+      (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n = quotient_group_id G mult e C)) <> 0 /\
+      group_power_nat
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+        (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+          group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+            n = quotient_group_id G mult e C))
+        = quotient_group_id G mult e C.
+    {
+      exact (Eps_i_ex
+        (fun n:set => n :e omega /\ n <> 0 /\
+          group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+            n = quotient_group_id G mult e C)
+        Hbad).
+    }
+    witness (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+      group_power_nat
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+        n = quotient_group_id G mult e C)).
+    apply (and3E
+      ((Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n = quotient_group_id G mult e C)) :e omega)
+      ((Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n = quotient_group_id G mult e C)) <> 0)
+      (group_power_nat
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+        (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+          group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+            n = quotient_group_id G mult e C))
+        = quotient_group_id G mult e C)
+      HbadEps).
+    assume HnO : (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+      group_power_nat
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+        n = quotient_group_id G mult e C)) :e omega.
+    assume HnNZ : (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+      group_power_nat
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+        n = quotient_group_id G mult e C)) <> 0.
+    assume HpowQ : group_power_nat
+      (quotient_group_mult G mult C)
+      (quotient_group_id G mult e C)
+      (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+      (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n = quotient_group_id G mult e C))
+      = quotient_group_id G mult e C.
+    apply andI.
+    - apply andI.
+      + exact HnO.
+      + exact HnNZ.
+    - admit.
   admit.
 Admitted.
 
