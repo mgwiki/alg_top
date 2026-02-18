@@ -66717,7 +66717,7 @@ claim HFt_54_cont :
                         }
                         claim HVxzEqVq : Vxz = Vq.
                         {
-                          (** TODO Charlie: show the slice containing xz equals Vq. **)
+                          (** TODO Alice: show slice containing xz equals Vq - needs proof restructure **)
                           admit.
                         }
                         rewrite <- HVxzEqVq.
