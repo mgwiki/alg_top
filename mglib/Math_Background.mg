@@ -112120,6 +112120,115 @@ apply (iffI
         g
         HgSep).
     }
+    claim HGalpha_eval : Galpha =
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+           g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}.
+    {
+      claim HGalpha_def : Galpha = apply_fun Gfam0 alpha.
+      {
+        reflexivity.
+      }
+      rewrite HGalpha_def.
+      exact (apply_fun_graph
+        J
+        (fun alpha:set =>
+          {g :e G | exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+               g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))})
+        alpha
+        Halpha).
+    }
+    claim Hinf_orig :
+      infinite_cyclic_subgroup G mult e inv (apply_fun gens alpha).
+    {
+      exact (Hinfcyc alpha Halpha).
+    }
+    claim Hinf_factor :
+      infinite_cyclic_subgroup Galpha mult e inv (apply_fun gens alpha).
+    {
+      apply (and4E
+        (apply_fun gens alpha :e G)
+        (forall n:set, n :e omega -> group_power_nat mult e (apply_fun gens alpha) n :e G)
+        (forall m:set, m :e omega ->
+          group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) :e G)
+        (~(exists n:set, n :e omega /\ n <> 0 /\
+          group_power_nat mult e (apply_fun gens alpha) n = e))
+        Hinf_orig).
+      assume HgalphaG HpowG HpowInvG Hnontriv.
+      claim Hpow_factor :
+        forall n:set, n :e omega ->
+          group_power_nat mult e (apply_fun gens alpha) n :e Galpha.
+      {
+        let n.
+        assume Hn : n :e omega.
+        rewrite HGalpha_eval.
+        apply (SepI
+          G
+          (fun g:set => exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+               g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))
+          (group_power_nat mult e (apply_fun gens alpha) n)
+          (HpowG n Hn)).
+        witness n.
+        apply andI.
+        - exact (Subq_omega_int n Hn).
+        - apply orIL.
+          apply andI.
+          + exact Hn.
+          + reflexivity.
+      }
+      claim Hpow_inv_factor :
+        forall m:set, m :e omega ->
+          group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) :e Galpha.
+      {
+        let m.
+        assume Hm : m :e omega.
+        rewrite HGalpha_eval.
+        apply (SepI
+          G
+          (fun g:set => exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+               g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))
+          (group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))
+          (HpowInvG m Hm)).
+        witness (minus_SNo (ordsucc m)).
+        apply andI.
+        - exact (int_minus_SNo_omega (ordsucc m) (omega_ordsucc m Hm)).
+        - apply orIR.
+          witness m.
+          apply and3I.
+          + exact Hm.
+          + reflexivity.
+          + reflexivity.
+      }
+      apply (andI
+        ((apply_fun gens alpha :e Galpha /\
+          (forall n:set, n :e omega ->
+            group_power_nat mult e (apply_fun gens alpha) n :e Galpha)) /\
+         (forall m:set, m :e omega ->
+           group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) :e Galpha))
+        (~(exists n:set, n :e omega /\ n <> 0 /\
+          group_power_nat mult e (apply_fun gens alpha) n = e))).
+      - apply (andI
+          (apply_fun gens alpha :e Galpha /\
+            (forall n:set, n :e omega ->
+              group_power_nat mult e (apply_fun gens alpha) n :e Galpha))
+          (forall m:set, m :e omega ->
+            group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) :e Galpha)).
+        + apply (andI
+            (apply_fun gens alpha :e Galpha)
+            (forall n:set, n :e omega ->
+              group_power_nat mult e (apply_fun gens alpha) n :e Galpha)
+            Hgalpha_mem
+            Hpow_factor).
+        + exact Hpow_inv_factor.
+      - exact Hnontriv.
+    }
     admit.
   }
   set hfam0 := graph J (fun alpha:set =>
