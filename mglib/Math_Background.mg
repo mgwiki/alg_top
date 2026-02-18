@@ -58277,8 +58277,31 @@ claim Hex :
                         }
                         claim HVxEqVu : Vx = Vu.
                         {
-                          (** TODO Bob: prove any slice Vx meeting lu(Nu /\\ Nt) equals Vu. **)
-                          admit.
+                          claim HpdSlicesUt : pairwise_disjoint slicesUt.
+                          {
+                            exact (andER
+                              (slicesUt c= Te)
+                              (pairwise_disjoint slicesUt)
+                              (andEL
+                                (slicesUt c= Te /\ pairwise_disjoint slicesUt)
+                                (Union slicesUt = preimage_of E p Ut)
+                                HslicesUtCore)).
+                          }
+                          claim HluuVx : apply_fun lu u :e Vx.
+                          {
+                            (** TODO Bob: prove lu(u) lies in the selected slice Vx for overlap points x. **)
+                            admit.
+                          }
+                          exact (pairwise_disjoint_point_unique_member
+                            slicesUt
+                            Vx
+                            Vu
+                            (apply_fun lu u)
+                            HpdSlicesUt
+                            HVxSlice
+                            HVuSlice
+                            HluuVx
+                            HluuVu).
                         }
                         rewrite <- HVxEqVu.
                         exact HluVx.
