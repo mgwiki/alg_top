@@ -81000,6 +81000,142 @@ claim Hdisj_B_AminusSing : B :/\: (A :\: Sing x0) = Empty.
   }
   exact (HzNotSing HzSing).
 }
+claim HX_union_punctured_pieces_and_point :
+  X = (A :\: Sing x0) :\/: ((B :\: Sing x0) :\/: Sing x0).
+{
+  apply set_ext.
+  - let z.
+    assume HzX : z :e X.
+    claim HzAB : z :e A :\/: B.
+    {
+      exact (mem_eqR
+        z
+        X
+        (A :\/: B)
+        Hcover
+        HzX).
+    }
+    apply (binunionE
+      A
+      B
+      z
+      HzAB).
+    + assume HzA : z :e A.
+      apply xm (z :e Sing x0).
+      * assume HzSing : z :e Sing x0.
+        exact (binunionI2
+          (A :\: Sing x0)
+          ((B :\: Sing x0) :\/: Sing x0)
+          z
+          (binunionI2
+            (B :\: Sing x0)
+            (Sing x0)
+            z
+            HzSing)).
+      * assume HzNotSing : z /:e Sing x0.
+        exact (binunionI1
+          (A :\: Sing x0)
+          ((B :\: Sing x0) :\/: Sing x0)
+          z
+          (setminusI
+            A
+            (Sing x0)
+            z
+            HzA
+            HzNotSing)).
+    + assume HzB : z :e B.
+      apply xm (z :e Sing x0).
+      * assume HzSing : z :e Sing x0.
+        exact (binunionI2
+          (A :\: Sing x0)
+          ((B :\: Sing x0) :\/: Sing x0)
+          z
+          (binunionI2
+            (B :\: Sing x0)
+            (Sing x0)
+            z
+            HzSing)).
+      * assume HzNotSing : z /:e Sing x0.
+        exact (binunionI2
+          (A :\: Sing x0)
+          ((B :\: Sing x0) :\/: Sing x0)
+          z
+          (binunionI1
+            (B :\: Sing x0)
+            (Sing x0)
+            z
+            (setminusI
+              B
+              (Sing x0)
+              z
+              HzB
+              HzNotSing))).
+  - let z.
+    assume HzDec : z :e (A :\: Sing x0) :\/: ((B :\: Sing x0) :\/: Sing x0).
+    apply (binunionE
+      (A :\: Sing x0)
+      ((B :\: Sing x0) :\/: Sing x0)
+      z
+      HzDec).
+    + assume HzAminus : z :e A :\: Sing x0.
+      claim HzA : z :e A.
+      {
+        exact (setminusE1
+          A
+          (Sing x0)
+          z
+          HzAminus).
+      }
+      claim HzAB : z :e A :\/: B.
+      {
+        exact (binunionI1
+          A
+          B
+          z
+          HzA).
+      }
+      exact (mem_eqL
+        z
+        X
+        (A :\/: B)
+        Hcover
+        HzAB).
+    + assume HzR : z :e (B :\: Sing x0) :\/: Sing x0.
+      apply (binunionE
+        (B :\: Sing x0)
+        (Sing x0)
+        z
+        HzR).
+      * assume HzBminus : z :e B :\: Sing x0.
+        claim HzB : z :e B.
+        {
+          exact (setminusE1
+            B
+            (Sing x0)
+            z
+            HzBminus).
+        }
+        claim HzAB : z :e A :\/: B.
+        {
+          exact (binunionI2
+            A
+            B
+            z
+            HzB).
+        }
+        exact (mem_eqL
+          z
+          X
+          (A :\/: B)
+          Hcover
+          HzAB).
+      * assume HzSing : z :e Sing x0.
+        rewrite (SingE
+          x0
+          z
+          HzSing).
+        exact Hx0X.
+}
 admit. (** remaining gap: derive A :e Tx and B :e Tx from current hypotheses **)
 Admitted.
 
