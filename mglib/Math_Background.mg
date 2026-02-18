@@ -110069,7 +110069,10 @@ apply and3I.
             claim Hb_hs : apply_fun h b = h_single b.
             { apply (xm (b = apply_fun efam beta)).
               + assume Hb_efam : b = apply_fun efam beta.
-                admit.
+                exact (FalseE (Hefam_contra beta Hbeta_J
+                  (Hb_efam (fun a b0:set => a :e apply_fun Gfam beta) Hb_Gbeta)
+                  (Hb_efam (fun a b0:set => a <> eG) Hb_ne))
+                  (apply_fun h b = h_single b)).
               + assume Hb_ne_efam : b <> apply_fun efam beta.
                 exact (Hh_gen_elem beta Hbeta_J b Hb_Gbeta Hb_ne Hb_ne_efam). }
             claim Hlhs_chain : apply_fun h (apply_fun multG (g, b)) = h_single b.
@@ -110215,7 +110218,10 @@ apply and3I.
               { rewrite Hg_eq_invb. exact (Hinv_cl_beta b Hb_Gbeta). }
               apply (xm (g = apply_fun efam beta)).
               * assume Hg_efam : g = apply_fun efam beta.
-                admit.
+                exact (FalseE (Hefam_contra beta Hbeta_J
+                  (Hg_efam (fun a b0:set => a :e apply_fun Gfam beta) Hg_Gbeta)
+                  (Hg_efam (fun a b0:set => a <> eG) Hg_ne))
+                  (apply_fun h (apply_fun multG (g, b)) = apply_fun multH (apply_fun h g, h_single b))).
               * assume Hg_ne_efam : g <> apply_fun efam beta.
                 claim Hh_g_hs : apply_fun h g = h_single g.
                 { exact (Hh_gen_elem beta Hbeta_J g Hg_Gbeta Hg_ne Hg_ne_efam). }
@@ -110260,7 +110266,11 @@ apply and3I.
                   (n_of (apply_fun multG (g, b))).
               { exact (Hh_ne_shared (apply_fun multG (g, b)) Hgb_G Hgb_ne). }
               apply (xm (b = apply_fun efam beta)).
-              * assume Hb_efam : b = apply_fun efam beta. admit.
+              * assume Hb_efam : b = apply_fun efam beta.
+                exact (FalseE (Hefam_contra beta Hbeta_J
+                  (Hb_efam (fun a b0:set => a :e apply_fun Gfam beta) Hb_Gbeta)
+                  (Hb_efam (fun a b0:set => a <> eG) Hb_ne))
+                  (apply_fun h (apply_fun multG (g, b)) = apply_fun multH (apply_fun h g, h_single b))).
               * assume Hb_ne_efam : b <> apply_fun efam beta.
                 (** Since ng <> 0 and nat_p ng, extract m with ng = ordsucc m **)
                 claim Hng_inv : ng = 0 \/ exists x:set, nat_p x /\ ng = ordsucc x.
@@ -110530,7 +110540,19 @@ apply and3I.
                           (apply_fun multG (word_product multG eG xsg m, c))
                           Hstep1 Hassoc_g). }
                       apply (xm (c = apply_fun efam beta)).
-                      + assume Hc_efam : c = apply_fun efam beta. admit.
+                      + assume Hc_efam : c = apply_fun efam beta.
+                        apply (xm (c = eG)).
+                        * assume Hc_eG : c = eG.
+                          (** c = efam(beta) = eG: same proof structure as c = eG case below **)
+                          admit.
+                        * assume Hc_ne_eG : c <> eG.
+                          claim Hefam_ne : apply_fun efam beta <> eG.
+                          { assume Habs : apply_fun efam beta = eG.
+                            exact (Hc_ne_eG (eq_i_tra c (apply_fun efam beta) eG Hc_efam Habs)). }
+                          exact (FalseE (Hefam_contra beta Hbeta_J
+                            (Hc_efam (fun a b0:set => a :e apply_fun Gfam beta) Hc_Gbeta)
+                            Hefam_ne)
+                            (apply_fun h (apply_fun multG (g, b)) = apply_fun multH (apply_fun h g, h_single b))).
                       + assume Hc_ne_efam : c <> apply_fun efam beta.
                         apply (xm (c = eG)).
                         * assume Hc_eG : c = eG.
