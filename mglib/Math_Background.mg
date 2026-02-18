@@ -113464,6 +113464,10 @@ apply (iffI
     let alpha.
     assume Halpha : alpha :e J.
     set Galpha := apply_fun Gfam0 alpha.
+    claim HGalpha_def : Galpha = apply_fun Gfam0 alpha.
+    {
+      reflexivity.
+    }
     claim Hgalpha_mem : apply_fun gens alpha :e Galpha.
     {
       exact (HgenInFam alpha Halpha).
@@ -113471,10 +113475,6 @@ apply (iffI
     claim Hgen_of_factor :
       generator_of Galpha mult e inv (apply_fun gens alpha).
     {
-      claim HGalpha_def : Galpha = apply_fun Gfam0 alpha.
-      {
-        reflexivity.
-      }
       rewrite HGalpha_def.
       exact (lemma69_1_factor_family_generator_of
         G
@@ -113488,18 +113488,9 @@ apply (iffI
         Hgens
         Halpha).
     }
-    claim Hinf_orig :
-      infinite_cyclic_subgroup G mult e inv (apply_fun gens alpha).
-    {
-      exact (Hinfcyc alpha Halpha).
-    }
     claim Hinf_factor :
       infinite_cyclic_subgroup Galpha mult e inv (apply_fun gens alpha).
     {
-      claim HGalpha_def : Galpha = apply_fun Gfam0 alpha.
-      {
-        reflexivity.
-      }
       rewrite HGalpha_def.
       exact (lemma69_1_factor_family_infinite_cyclic
         G
@@ -113516,10 +113507,6 @@ apply (iffI
     }
     claim Hsub_factor : subgroup_of Galpha G mult e inv.
     {
-      claim HGalpha_def : Galpha = apply_fun Gfam0 alpha.
-      {
-        reflexivity.
-      }
       rewrite HGalpha_def.
       exact (lemma69_1_factor_family_subgroup_from_free_product
         G
