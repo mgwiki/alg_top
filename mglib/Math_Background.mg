@@ -85879,6 +85879,43 @@ let n. assume Hn : n :e omega.
 exact (Hnat n (omega_nat_p n Hn)).
 Qed.
 
+(** Helper: append syllable to reduced word (different factor at junction) **)
+Lemma ex68_3_append_reduced : forall G mult e inv G1 G2 m cs z:set,
+  group_structure G mult e inv ->
+  G1 c= G -> G2 c= G ->
+  (forall x1:set, x1 :e G1 -> x1 :e G2 -> x1 = e) ->
+  reduced_word 2 (graph 2 (fun i:set => If_i (i = 0) G1 G2))
+                   (graph 2 (fun _:set => e)) m cs ->
+  m <> 0 ->
+  z :e G1 -> z <> e ->
+  (exists alpha:set, alpha :e 2 /\ alpha <> 0 /\
+    apply_fun cs (Union m) :e apply_fun (graph 2 (fun i:set => If_i (i = 0) G1 G2)) alpha) ->
+  let new_cs := graph (ordsucc m) (fun i:set => If_i (i = m) z (apply_fun cs i)) in
+  let Gfam := graph 2 (fun i:set => If_i (i = 0) G1 G2) in
+  let efam := graph 2 (fun _:set => e) in
+  reduced_word 2 Gfam efam (ordsucc m) new_cs /\
+  word_product mult e new_cs (ordsucc m) = apply_fun mult (word_product mult e cs m, z).
+admit.
+Admitted.
+
+(** Helper: prepend syllable to reduced word (different factor at junction) **)
+Lemma ex68_3_prepend_reduced : forall G mult e inv G1 G2 m cs z:set,
+  group_structure G mult e inv ->
+  G1 c= G -> G2 c= G ->
+  (forall x1:set, x1 :e G1 -> x1 :e G2 -> x1 = e) ->
+  reduced_word 2 (graph 2 (fun i:set => If_i (i = 0) G1 G2))
+                   (graph 2 (fun _:set => e)) m cs ->
+  m <> 0 ->
+  z :e G2 -> z <> e ->
+  (exists alpha:set, alpha :e 2 /\ alpha <> 1 /\
+    apply_fun cs 0 :e apply_fun (graph 2 (fun i:set => If_i (i = 0) G1 G2)) alpha) ->
+  let new_cs := graph (ordsucc m) (fun i:set => If_i (i = 0) z (apply_fun cs (Union i))) in
+  let Gfam := graph 2 (fun i:set => If_i (i = 0) G1 G2) in
+  let efam := graph 2 (fun _:set => e) in
+  reduced_word 2 Gfam efam (ordsucc m) new_cs /\
+  word_product mult e new_cs (ordsucc m) = apply_fun mult (z, word_product mult e cs m).
+admit.
+Admitted.
 
 (** from S68 Exercise 3 (line 3029 in algtop.tex) **)
 (** LATEX VERSION: Let G = G1 free-product G2. Given c in G, cG1c^{-1} cap G2 = {1}. **)
@@ -86096,6 +86133,38 @@ apply (xm (y = e)).
                apply_fun cs (ordsucc i) :e apply_fun Gfam beta -> alpha <> beta)
            Hred_c).
          assume Hm_omega Hcs_mem Hcs_adj.
+         (** m is a successor: m = ordsucc k for some k **)
+         claim Hm_nat : nat_p m. { exact (omega_nat_p m Hm_omega). }
+         apply (nat_inv m Hm_nat).
+         { assume Hm0 : m = 0. exact (Hmne0 Hm0). }
+         assume Hm_succ : exists k:set, nat_p k /\ m = ordsucc k.
+         apply Hm_succ. let k. assume Hk_conj : nat_p k /\ m = ordsucc k.
+         claim Hk_nat : nat_p k. { exact (andEL (nat_p k) (m = ordsucc k) Hk_conj). }
+         claim Hm_eq : m = ordsucc k. { exact (andER (nat_p k) (m = ordsucc k) Hk_conj). }
+         claim Hk_omega : k :e omega. { exact (nat_p_omega k Hk_nat). }
+         claim Hk_in_m : k :e m. { rewrite Hm_eq. exact (ordsuccI2 k). }
+         (** Get factor of last entry cs(k) **)
+         apply (Hcs_mem k Hk_in_m).
+         let alpha_last. assume Halpha_last_conj : alpha_last :e 2 /\
+           apply_fun cs k :e apply_fun Gfam alpha_last /\
+           apply_fun cs k <> apply_fun efam alpha_last.
+         (** /\ is left-assoc: (A /\ B) /\ C **)
+         claim Hal_AB : alpha_last :e 2 /\ apply_fun cs k :e apply_fun Gfam alpha_last.
+         { exact (andEL
+             (alpha_last :e 2 /\ apply_fun cs k :e apply_fun Gfam alpha_last)
+             (apply_fun cs k <> apply_fun efam alpha_last)
+             Halpha_last_conj). }
+         claim Hal2 : alpha_last :e 2.
+         { exact (andEL (alpha_last :e 2)
+             (apply_fun cs k :e apply_fun Gfam alpha_last) Hal_AB). }
+         claim Hcsk_in_fam : apply_fun cs k :e apply_fun Gfam alpha_last.
+         { exact (andER (alpha_last :e 2)
+             (apply_fun cs k :e apply_fun Gfam alpha_last) Hal_AB). }
+         (** Case split on alpha_last: 0 or 1 **)
+         apply (cases_2 alpha_last Hal2 (fun _:set => False)).
+         (** Case alpha_last = 0: last entry in G1, same as x - use prepend side **)
+         admit.
+         (** Case alpha_last = 1: last entry in G2, different from x - use append side **)
          admit.
 Admitted.
 
