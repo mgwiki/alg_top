@@ -117669,122 +117669,249 @@ claim HmetX : metrizable X Tx.
     HHausX
     HscX).
 }
-claim HstarPack : exists B0:set, star_refinement_cover X Tx B0 A.
+apply HmetX.
+let d.
+assume Hdpack.
+claim Hmetric : metric_on X d.
 {
-  exact (supp_ex_1a_metrizable_star_refinement
+  exact (andEL
+    (metric_on X d)
+    (metric_topology X d = Tx)
+    Hdpack).
+}
+claim HtxEq : metric_topology X d = Tx.
+{
+  exact (andER
+    (metric_on X d)
+    (metric_topology X d = Tx)
+    Hdpack).
+}
+claim HcovA_metric : open_cover_of X (metric_topology X d) A.
+{
+  rewrite HtxEq.
+  exact HcovA.
+}
+claim HcompMetric : compact_space X (metric_topology X d).
+{
+  rewrite HtxEq.
+  exact HcompX.
+}
+claim HseqMetric : sequentially_compact X (metric_topology X d).
+{
+  exact (iffEL
+    (compact_space X (metric_topology X d))
+    (sequentially_compact X (metric_topology X d))
+    (compact_metric_equivalences X d Hmetric)
+    HcompMetric).
+}
+claim HlebEx : exists N:set, N :e omega /\ lebesgue_number_metric X d A (eps_ N).
+{
+  exact (sequentially_compact_metric_has_lebesgue_number_eps
     X
-    Tx
-    HmetX
+    d
     A
-    HcovA).
+    Hmetric
+    HseqMetric
+    HcovA_metric).
 }
-apply HstarPack.
-let B0.
-assume HstarB0.
-claim HopenB0 : open_cover_of X Tx B0.
+apply HlebEx.
+let N.
+assume HNpack.
+claim HNomega : N :e omega.
 {
   exact (andEL
-    (open_cover_of X Tx B0)
-    (open_cover_of X Tx A)
-    (andEL
-      (open_cover_of X Tx B0 /\ open_cover_of X Tx A)
-      (forall U:set, U :e B0 -> exists W:set, W :e A /\ U c= W)
-      (andEL
-        (open_cover_of X Tx B0 /\ open_cover_of X Tx A /\
-          (forall U:set, U :e B0 -> exists W:set, W :e A /\ U c= W))
-        (forall U V:set, U :e B0 -> V :e B0 -> U :/\: V <> Empty ->
-          exists W:set, W :e A /\ U :\/: V c= W)
-        HstarB0))).
+    (N :e omega)
+    (lebesgue_number_metric X d A (eps_ N))
+    HNpack).
 }
-claim HcovAagain : open_cover_of X Tx A.
+claim Hleb : lebesgue_number_metric X d A (eps_ N).
 {
   exact (andER
-    (open_cover_of X Tx B0)
-    (open_cover_of X Tx A)
-    (andEL
-      (open_cover_of X Tx B0 /\ open_cover_of X Tx A)
-      (forall U:set, U :e B0 -> exists W:set, W :e A /\ U c= W)
-      (andEL
-        (open_cover_of X Tx B0 /\ open_cover_of X Tx A /\
-          (forall U:set, U :e B0 -> exists W:set, W :e A /\ U c= W))
-        (forall U V:set, U :e B0 -> V :e B0 -> U :/\: V <> Empty ->
-          exists W:set, W :e A /\ U :\/: V c= W)
-        HstarB0))).
+    (N :e omega)
+    (lebesgue_number_metric X d A (eps_ N))
+    HNpack).
 }
-claim HrefineB0 :
-  forall U:set, U :e B0 -> exists W:set, W :e A /\ U c= W.
+claim HsNomega : ordsucc N :e omega.
 {
-  exact (andER
-    (open_cover_of X Tx B0 /\ open_cover_of X Tx A)
-    (forall U:set, U :e B0 -> exists W:set, W :e A /\ U c= W)
-    (andEL
-      (open_cover_of X Tx B0 /\ open_cover_of X Tx A /\
-        (forall U:set, U :e B0 -> exists W:set, W :e A /\ U c= W))
-      (forall U V:set, U :e B0 -> V :e B0 -> U :/\: V <> Empty ->
-        exists W:set, W :e A /\ U :\/: V c= W)
-      HstarB0)).
+  exact (omega_ordsucc N HNomega).
 }
-claim HstarPairB0 :
-  forall U V:set, U :e B0 -> V :e B0 -> U :/\: V <> Empty ->
-    exists W:set, W :e A /\ U :\/: V c= W.
+claim HballEx : exists F:set, finite_ball_cover_metric X d (eps_ (ordsucc N)) F.
 {
-  exact (andER
-    (open_cover_of X Tx B0 /\ open_cover_of X Tx A /\
-      (forall U:set, U :e B0 -> exists W:set, W :e A /\ U c= W))
-    (forall U V:set, U :e B0 -> V :e B0 -> U :/\: V <> Empty ->
-      exists W:set, W :e A /\ U :\/: V c= W)
-    HstarB0).
-}
-claim HfinSub : has_finite_subcover X Tx B0.
-{
-  exact (compact_space_subcover_property
+  exact (sequentially_compact_metric_has_finite_ball_cover_eps
     X
-    Tx
-    HcompX
-    B0
-    HopenB0).
+    d
+    (ordsucc N)
+    Hmetric
+    HseqMetric
+    HsNomega).
 }
-apply HfinSub.
-let B.
-assume HBpack.
-claim HBsubB0 : B c= B0.
+apply HballEx.
+let F.
+assume HFball.
+set B := {open_ball X d c (eps_ (ordsucc N))|c :e F}.
+claim HFfin : finite F.
 {
   exact (andEL
-    (B c= B0)
-    (finite B)
+    (finite F)
+    (F c= X)
     (andEL
-      (B c= B0 /\ finite B)
-      (X c= Union B)
-      HBpack)).
+      (finite F /\ F c= X)
+      (X c= (\/_ c :e F , open_ball X d c (eps_ (ordsucc N))))
+      HFball)).
 }
-claim HBfin : finite B.
+claim HFsubX : F c= X.
 {
   exact (andER
-    (B c= B0)
-    (finite B)
+    (finite F)
+    (F c= X)
     (andEL
-      (B c= B0 /\ finite B)
-      (X c= Union B)
-      HBpack)).
+      (finite F /\ F c= X)
+      (X c= (\/_ c :e F , open_ball X d c (eps_ (ordsucc N))))
+      HFball)).
 }
-claim HXsubUnionB : X c= Union B.
+claim HXsubBalls : X c= (\/_ c :e F, open_ball X d c (eps_ (ordsucc N))).
 {
   exact (andER
-    (B c= B0 /\ finite B)
-    (X c= Union B)
-    HBpack).
-}
-claim HB0subPowX : B0 c= Power X.
-{
-  exact (open_cover_of_family_sub X Tx B0 HopenB0).
-}
-claim HBsubPowX : B c= Power X.
-{
-  exact (Subq_tra B B0 (Power X) HBsubB0 HB0subPowX).
+    (finite F /\ F c= X)
+    (X c= (\/_ c :e F , open_ball X d c (eps_ (ordsucc N))))
+    HFball).
 }
 claim HtopX : topology_on X Tx.
 {
-  exact (open_cover_of_topology X Tx B0 HopenB0).
+  exact (open_cover_of_topology X Tx A HcovA).
+}
+claim HBsubPowX : B c= Power X.
+{
+  let U.
+  assume HUB.
+  apply (PowerI X U).
+  let z.
+  assume HzU.
+  apply (ReplE
+    F
+    (fun c:set => open_ball X d c (eps_ (ordsucc N)))
+    U
+    HUB).
+  let c.
+  assume HcPack.
+  claim HUeq : U = open_ball X d c (eps_ (ordsucc N)).
+  {
+    exact (andER
+      (c :e F)
+      (U = open_ball X d c (eps_ (ordsucc N)))
+      HcPack).
+  }
+  claim HzBall : z :e open_ball X d c (eps_ (ordsucc N)).
+  {
+    rewrite <- HUeq.
+    exact HzU.
+  }
+  exact (open_ballE1
+    X
+    d
+    c
+    (eps_ (ordsucc N))
+    z
+    HzBall).
+}
+claim HXsubUnionB : X c= Union B.
+{
+  let x.
+  assume HxX.
+  claim HxFam :
+    x :e (\/_ c :e F, open_ball X d c (eps_ (ordsucc N))).
+  {
+    exact (HXsubBalls x HxX).
+  }
+  apply (famunionE
+    F
+    (fun c:set => open_ball X d c (eps_ (ordsucc N)))
+    x
+    HxFam).
+  let c.
+  assume HcPack.
+  claim HcF : c :e F.
+  {
+    exact (andEL
+      (c :e F)
+      (x :e open_ball X d c (eps_ (ordsucc N)))
+      HcPack).
+  }
+  claim HxBall : x :e open_ball X d c (eps_ (ordsucc N)).
+  {
+    exact (andER
+      (c :e F)
+      (x :e open_ball X d c (eps_ (ordsucc N)))
+      HcPack).
+  }
+  exact (UnionI
+    B
+    x
+    (open_ball X d c (eps_ (ordsucc N)))
+    HxBall
+    (ReplI
+      F
+      (fun c0:set => open_ball X d c0 (eps_ (ordsucc N)))
+      c
+      HcF)).
+}
+claim HBmembersOpen : forall U:set, U :e B -> U :e Tx.
+{
+  let U.
+  assume HUB.
+  apply (ReplE
+    F
+    (fun c:set => open_ball X d c (eps_ (ordsucc N)))
+    U
+    HUB).
+  let c.
+  assume HcPack.
+  claim HcF : c :e F.
+  {
+    exact (andEL
+      (c :e F)
+      (U = open_ball X d c (eps_ (ordsucc N)))
+      HcPack).
+  }
+  claim HUeq : U = open_ball X d c (eps_ (ordsucc N)).
+  {
+    exact (andER
+      (c :e F)
+      (U = open_ball X d c (eps_ (ordsucc N)))
+      HcPack).
+  }
+  claim HcX : c :e X.
+  {
+    exact (HFsubX c HcF).
+  }
+  claim HepsPos : Rlt 0 (eps_ (ordsucc N)).
+  {
+    exact (RltI
+      0
+      (eps_ (ordsucc N))
+      real_0
+      (eps_in_R_omega (ordsucc N) HsNomega)
+      (SNo_eps_pos (ordsucc N) HsNomega)).
+  }
+  claim HballOpenMetric :
+    open_ball X d c (eps_ (ordsucc N)) :e metric_topology X d.
+  {
+    exact (open_ball_in_metric_topology
+      X
+      d
+      c
+      (eps_ (ordsucc N))
+      Hmetric
+      HcX
+      HepsPos).
+  }
+  claim HballOpenTx : open_ball X d c (eps_ (ordsucc N)) :e Tx.
+  {
+    rewrite <- HtxEq.
+    exact HballOpenMetric.
+  }
+  rewrite HUeq.
+  exact HballOpenTx.
 }
 claim HopenB : open_cover_of X Tx B.
 {
@@ -117795,34 +117922,307 @@ claim HopenB : open_cover_of X Tx B.
     HtopX
     HBsubPowX
     HXsubUnionB
-    (fun U HU => open_cover_of_members_open
+    HBmembersOpen).
+}
+claim HfinB : finite B.
+{
+  exact (finite_Repl
+    F
+    HFfin
+    (fun c:set => open_ball X d c (eps_ (ordsucc N)))).
+}
+claim HlebProp :
+  forall x:set, x :e X ->
+    exists U:set, U :e A /\ open_ball X d x (eps_ N) c= U.
+{
+  exact (andER
+    ((eps_ N :e R) /\ Rlt 0 (eps_ N))
+    (forall x:set, x :e X ->
+      exists U:set, U :e A /\ open_ball X d x (eps_ N) c= U)
+    Hleb).
+}
+claim HrefBA : refines_cover B A.
+{
+  let U.
+  assume HUB.
+  apply (ReplE
+    F
+    (fun c:set => open_ball X d c (eps_ (ordsucc N)))
+    U
+    HUB).
+  let c.
+  assume HcPack.
+  claim HcF : c :e F.
+  {
+    exact (andEL
+      (c :e F)
+      (U = open_ball X d c (eps_ (ordsucc N)))
+      HcPack).
+  }
+  claim HUeq : U = open_ball X d c (eps_ (ordsucc N)).
+  {
+    exact (andER
+      (c :e F)
+      (U = open_ball X d c (eps_ (ordsucc N)))
+      HcPack).
+  }
+  claim HcX : c :e X.
+  {
+    exact (HFsubX c HcF).
+  }
+  apply (HlebProp c HcX).
+  let W.
+  assume HWpack.
+  claim HWA : W :e A.
+  {
+    exact (andEL
+      (W :e A)
+      (open_ball X d c (eps_ N) c= W)
+      HWpack).
+  }
+  claim HbigSubW : open_ball X d c (eps_ N) c= W.
+  {
+    exact (andER
+      (W :e A)
+      (open_ball X d c (eps_ N) c= W)
+      HWpack).
+  }
+  witness W.
+  apply andI.
+  - exact HWA.
+  - rewrite HUeq.
+    exact (Subq_tra
+      (open_ball X d c (eps_ (ordsucc N)))
+      (open_ball X d c (eps_ N))
+      W
+      (open_ball_radius_mono
+        X
+        d
+        c
+        (eps_ (ordsucc N))
+        (eps_ N)
+        (eps_ordsucc_lt_eps N HNomega))
+      HbigSubW).
+}
+claim HstarPair :
+  forall U V:set, U :e B -> V :e B -> U :/\: V <> Empty ->
+    exists W:set, W :e A /\ U :\/: V c= W.
+{
+  let U V.
+  assume HUB HVB Hnon.
+  claim HpEx : exists p:set, p :e U :/\: V.
+  {
+    exact (nonempty_has_element (U :/\: V) Hnon).
+  }
+  apply HpEx.
+  let p.
+  assume HpInt.
+  claim HpU : p :e U.
+  {
+    exact (binintersectE1 U V p HpInt).
+  }
+  claim HpV : p :e V.
+  {
+    exact (binintersectE2 U V p HpInt).
+  }
+  apply (ReplE
+    F
+    (fun c:set => open_ball X d c (eps_ (ordsucc N)))
+    U
+    HUB).
+  let cU.
+  assume HcUPack.
+  claim HcUF : cU :e F.
+  {
+    exact (andEL
+      (cU :e F)
+      (U = open_ball X d cU (eps_ (ordsucc N)))
+      HcUPack).
+  }
+  claim HUeq : U = open_ball X d cU (eps_ (ordsucc N)).
+  {
+    exact (andER
+      (cU :e F)
+      (U = open_ball X d cU (eps_ (ordsucc N)))
+      HcUPack).
+  }
+  apply (ReplE
+    F
+    (fun c:set => open_ball X d c (eps_ (ordsucc N)))
+    V
+    HVB).
+  let cV.
+  assume HcVPack.
+  claim HcVF : cV :e F.
+  {
+    exact (andEL
+      (cV :e F)
+      (V = open_ball X d cV (eps_ (ordsucc N)))
+      HcVPack).
+  }
+  claim HVeq : V = open_ball X d cV (eps_ (ordsucc N)).
+  {
+    exact (andER
+      (cV :e F)
+      (V = open_ball X d cV (eps_ (ordsucc N)))
+      HcVPack).
+  }
+  claim HpBallU : p :e open_ball X d cU (eps_ (ordsucc N)).
+  {
+    rewrite <- HUeq.
+    exact HpU.
+  }
+  claim HpBallV : p :e open_ball X d cV (eps_ (ordsucc N)).
+  {
+    rewrite <- HVeq.
+    exact HpV.
+  }
+  claim HcUX : cU :e X.
+  {
+    exact (HFsubX cU HcUF).
+  }
+  claim HcVX : cV :e X.
+  {
+    exact (HFsubX cV HcVF).
+  }
+  claim HpX : p :e X.
+  {
+    exact (open_ballE1
       X
-      Tx
-      B0
-      U
-      HopenB0
-      (HBsubB0 U HU))).
+      d
+      cU
+      (eps_ (ordsucc N))
+      p
+      HpBallU).
+  }
+  apply (HlebProp p HpX).
+  let W.
+  assume HWpack.
+  claim HWA : W :e A.
+  {
+    exact (andEL
+      (W :e A)
+      (open_ball X d p (eps_ N) c= W)
+      HWpack).
+  }
+  claim HpBallSubW : open_ball X d p (eps_ N) c= W.
+  {
+    exact (andER
+      (W :e A)
+      (open_ball X d p (eps_ N) c= W)
+      HWpack).
+  }
+  witness W.
+  apply andI.
+  - exact HWA.
+  - let z.
+    assume HzUV.
+    apply (binunionE U V z HzUV).
+    + assume HzU.
+      claim HzBallU : z :e open_ball X d cU (eps_ (ordsucc N)).
+      {
+        rewrite <- HUeq.
+        exact HzU.
+      }
+      claim Hdistpz : Rlt (apply_fun d (p,z)) (eps_ N).
+      {
+        exact (open_ball_pair_dist_lt_eps_pred
+          X
+          d
+          cU
+          N
+          p
+          z
+          Hmetric
+          HcUX
+          HNomega
+          HpBallU
+          HzBallU).
+      }
+      claim HzX : z :e X.
+      {
+        exact (open_ballE1
+          X
+          d
+          cU
+          (eps_ (ordsucc N))
+          z
+          HzBallU).
+      }
+      claim HzBallp : z :e open_ball X d p (eps_ N).
+      {
+        exact (open_ballI
+          X
+          d
+          p
+          (eps_ N)
+          z
+          HzX
+          Hdistpz).
+      }
+      exact (HpBallSubW z HzBallp).
+    + assume HzV.
+      claim HzBallV : z :e open_ball X d cV (eps_ (ordsucc N)).
+      {
+        rewrite <- HVeq.
+        exact HzV.
+      }
+      claim Hdistpz : Rlt (apply_fun d (p,z)) (eps_ N).
+      {
+        exact (open_ball_pair_dist_lt_eps_pred
+          X
+          d
+          cV
+          N
+          p
+          z
+          Hmetric
+          HcVX
+          HNomega
+          HpBallV
+          HzBallV).
+      }
+      claim HzX : z :e X.
+      {
+        exact (open_ballE1
+          X
+          d
+          cV
+          (eps_ (ordsucc N))
+          z
+          HzBallV).
+      }
+      claim HzBallp : z :e open_ball X d p (eps_ N).
+      {
+        exact (open_ballI
+          X
+          d
+          p
+          (eps_ N)
+          z
+          HzX
+          Hdistpz).
+      }
+      exact (HpBallSubW z HzBallp).
 }
 witness B.
 apply andI.
-- prove open_cover_of X Tx B /\
-    open_cover_of X Tx A /\
-    (forall U:set, U :e B -> exists W:set, W :e A /\ U c= W) /\
+- exact (andI
+    ((open_cover_of X Tx B /\ open_cover_of X Tx A) /\ refines_cover B A)
     (forall U V:set, U :e B -> V :e B -> U :/\: V <> Empty ->
-      exists W:set, W :e A /\ U :\/: V c= W).
-  apply andI.
-  + apply andI.
-    * apply andI.
-      { exact HopenB. }
-      { exact HcovAagain. }
-    * let U.
-      assume HUB.
-      exact (HrefineB0 U (HBsubB0 U HUB)).
-  + let U V.
-    assume HUB HVB Hnon.
-    exact (HstarPairB0 U V (HBsubB0 U HUB) (HBsubB0 V HVB) Hnon).
-- exact HBfin.
-Admitted. (** depends on admitted supp_ex_1a_metrizable_star_refinement **)
+      exists W:set, W :e A /\ U :\/: V c= W)
+    (andI
+      (open_cover_of X Tx B /\ open_cover_of X Tx A)
+      (refines_cover B A)
+      (andI
+        (open_cover_of X Tx B)
+        (open_cover_of X Tx A)
+        HopenB
+        HcovA)
+      HrefBA)
+    HstarPair).
+- exact HfinB.
+Qed.
 
 (** from Supplementary Exercises Exercise 1b (line 5394 in algtop.tex): compact Hausdorff star refinement **)
 (** LATEX VERSION: If X is compact Hausdorff, then for any open covering A, there exists **)
