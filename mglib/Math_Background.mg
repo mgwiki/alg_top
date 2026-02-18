@@ -117366,6 +117366,193 @@ claim HpowQeqC :
   rewrite HpowQ.
   exact HqidEqC.
 }
+claim HeC : e :e C.
+{
+  apply (and4E
+    (C c= G)
+    (e :e C)
+    (forall x y:set, x :e C -> y :e C -> apply_fun mult (x, y) :e C)
+    (forall x:set, x :e C -> apply_fun inv x :e C)
+    HsubC).
+  assume HCsub0 HeC0 HmulC0 HinvC0.
+  exact HeC0.
+}
+claim HCsub : C c= G.
+{
+  apply (and4E
+    (C c= G)
+    (e :e C)
+    (forall x y:set, x :e C -> y :e C -> apply_fun mult (x, y) :e C)
+    (forall x:set, x :e C -> apply_fun inv x :e C)
+    HsubC).
+  assume HCsub0 HeC0 HmulC0 HinvC0.
+  exact HCsub0.
+}
+claim HeG : e :e G.
+{
+  exact (HCsub e HeC).
+}
+claim HqidInQ : quotient_group_id G mult e C :e quotient_group_set G mult C.
+{
+  claim HqidDef : quotient_group_id G mult e C = left_coset mult e C.
+  {
+    reflexivity.
+  }
+  claim HqsetDef : quotient_group_set G mult C = Repl G (fun g:set => left_coset mult g C).
+  {
+    reflexivity.
+  }
+  rewrite HqidDef.
+  rewrite HqsetDef.
+  exact (ReplI
+    G
+    (fun g:set => left_coset mult g C)
+    e
+    HeG).
+}
+claim HpowQInQ :
+  group_power_nat
+    (quotient_group_mult G mult C)
+    (quotient_group_id G mult e C)
+    (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+    n :e quotient_group_set G mult C.
+{
+  rewrite HpowQ.
+  exact HqidInQ.
+}
+claim HexPowRep :
+  exists g0:set, g0 :e G /\
+    group_power_nat
+      (quotient_group_mult G mult C)
+      (quotient_group_id G mult e C)
+      (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+      n = left_coset mult g0 C.
+{
+  exact (ReplE
+    G
+    (fun g:set => left_coset mult g C)
+    (group_power_nat
+      (quotient_group_mult G mult C)
+      (quotient_group_id G mult e C)
+      (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+      n)
+    HpowQInQ).
+}
+claim Hg0InC :
+  (Eps_i (fun g0:set => g0 :e G /\
+    group_power_nat
+      (quotient_group_mult G mult C)
+      (quotient_group_id G mult e C)
+      (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+      n = left_coset mult g0 C)) :e C.
+{
+  claim HEpsPack :
+    (Eps_i (fun g0:set => g0 :e G /\
+      group_power_nat
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+        n = left_coset mult g0 C)) :e G /\
+    group_power_nat
+      (quotient_group_mult G mult C)
+      (quotient_group_id G mult e C)
+      (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+      n = left_coset mult
+        (Eps_i (fun g0:set => g0 :e G /\
+          group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+            n = left_coset mult g0 C))
+        C.
+  {
+    exact (Eps_i_ex
+      (fun g0:set => g0 :e G /\
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n = left_coset mult g0 C)
+      HexPowRep).
+  }
+  claim HEpsG :
+    (Eps_i (fun g0:set => g0 :e G /\
+      group_power_nat
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+        n = left_coset mult g0 C)) :e G.
+  {
+    exact (andEL
+      ((Eps_i (fun g0:set => g0 :e G /\
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n = left_coset mult g0 C)) :e G)
+      (group_power_nat
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+        n = left_coset mult
+          (Eps_i (fun g0:set => g0 :e G /\
+            group_power_nat
+              (quotient_group_mult G mult C)
+              (quotient_group_id G mult e C)
+              (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+              n = left_coset mult g0 C))
+          C)
+      HEpsPack).
+  }
+  claim HEpsCosEqC :
+    left_coset mult
+      (Eps_i (fun g0:set => g0 :e G /\
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n = left_coset mult g0 C))
+      C = C.
+  {
+    rewrite <- (andER
+      ((Eps_i (fun g0:set => g0 :e G /\
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n = left_coset mult g0 C)) :e G)
+      (group_power_nat
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+        n = left_coset mult
+          (Eps_i (fun g0:set => g0 :e G /\
+            group_power_nat
+              (quotient_group_mult G mult C)
+              (quotient_group_id G mult e C)
+              (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+              n = left_coset mult g0 C))
+          C)
+      HEpsPack).
+    exact HpowQeqC.
+  }
+  exact (left_coset_eq_subgroup_implies_member
+    G
+    mult
+    e
+    inv
+    C
+    (Eps_i (fun g0:set => g0 :e G /\
+      group_power_nat
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+        n = left_coset mult g0 C))
+    HgrpG
+    HsubC
+    HEpsG
+    HEpsCosEqC).
+}
 admit.
 Admitted.
 
