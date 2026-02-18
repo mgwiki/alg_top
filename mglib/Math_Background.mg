@@ -115881,12 +115881,14 @@ apply (andI
           (omega_ordsucc m HmO)).
     }
     apply (andI
-      ((forall n:set, n :e omega ->
-        group_power_nat
-          (quotient_group_mult G mult C)
-          (quotient_group_id G mult e C)
-          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-          n :e quotient_group_set G mult C) /\
+      ((apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha :e
+        quotient_group_set G mult C) /\
+       (forall n:set, n :e omega ->
+         group_power_nat
+           (quotient_group_mult G mult C)
+           (quotient_group_id G mult e C)
+           (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+           n :e quotient_group_set G mult C) /\
        (forall m:set, m :e omega ->
          group_power_nat
            (quotient_group_mult G mult C)
@@ -115900,359 +115902,35 @@ apply (andI
           (quotient_group_mult G mult C)
           (quotient_group_id G mult e C)
           (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-          n = quotient_group_id G mult e C))
-      HpowPair).
-    claim HinfOrigAlpha :
-      infinite_cyclic_subgroup G mult e inv (apply_fun gens alpha).
-    {
-      exact (HinfG alpha Halpha).
-    }
-    claim HnontrivOrig :
-      ~(exists n:set, n :e omega /\ n <> 0 /\
-        group_power_nat mult e (apply_fun gens alpha) n = e).
-    {
-      exact (andER
-        (apply_fun gens alpha :e G /\
+          n = quotient_group_id G mult e C))).
+    - apply (andI
+        ((apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha :e
+          quotient_group_set G mult C) /\
          (forall n:set, n :e omega ->
-           group_power_nat mult e (apply_fun gens alpha) n :e G) /\
-         (forall m:set, m :e omega ->
-           group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) :e G))
-        (~(exists n:set, n :e omega /\ n <> 0 /\
-          group_power_nat mult e (apply_fun gens alpha) n = e))
-        HinfOrigAlpha).
-    }
-    assume Hbad :
-      exists n:set, n :e omega /\ n <> 0 /\
-        group_power_nat
-          (quotient_group_mult G mult C)
-          (quotient_group_id G mult e C)
-          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-          n = quotient_group_id G mult e C.
-    apply HnontrivOrig.
-    claim HbadEps :
-      (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
-        group_power_nat
-          (quotient_group_mult G mult C)
-          (quotient_group_id G mult e C)
-          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-          n = quotient_group_id G mult e C)) :e omega /\
-      (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
-        group_power_nat
-          (quotient_group_mult G mult C)
-          (quotient_group_id G mult e C)
-          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-          n = quotient_group_id G mult e C)) <> 0 /\
-      group_power_nat
-        (quotient_group_mult G mult C)
-        (quotient_group_id G mult e C)
-        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-        (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+           group_power_nat
+             (quotient_group_mult G mult C)
+             (quotient_group_id G mult e C)
+             (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+             n :e quotient_group_set G mult C))
+        (forall m:set, m :e omega ->
           group_power_nat
             (quotient_group_mult G mult C)
             (quotient_group_id G mult e C)
-            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-            n = quotient_group_id G mult e C))
-        = quotient_group_id G mult e C.
-    {
-      exact (Eps_i_ex
-        (fun n:set => n :e omega /\ n <> 0 /\
-          group_power_nat
-            (quotient_group_mult G mult C)
-            (quotient_group_id G mult e C)
-            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-            n = quotient_group_id G mult e C)
-        Hbad).
-    }
-    witness (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
-      group_power_nat
-        (quotient_group_mult G mult C)
-        (quotient_group_id G mult e C)
-        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-        n = quotient_group_id G mult e C)).
-    apply (and3E
-      ((Eps_i (fun n:set => n :e omega /\ n <> 0 /\
-        group_power_nat
-          (quotient_group_mult G mult C)
-          (quotient_group_id G mult e C)
-          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-          n = quotient_group_id G mult e C)) :e omega)
-      ((Eps_i (fun n:set => n :e omega /\ n <> 0 /\
-        group_power_nat
-          (quotient_group_mult G mult C)
-          (quotient_group_id G mult e C)
-          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-          n = quotient_group_id G mult e C)) <> 0)
-      (group_power_nat
-        (quotient_group_mult G mult C)
-        (quotient_group_id G mult e C)
-        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-        (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
-          group_power_nat
-            (quotient_group_mult G mult C)
-            (quotient_group_id G mult e C)
-            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-            n = quotient_group_id G mult e C))
-        = quotient_group_id G mult e C)
-      HbadEps).
-    assume HnO : (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
-      group_power_nat
-        (quotient_group_mult G mult C)
-        (quotient_group_id G mult e C)
-        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-        n = quotient_group_id G mult e C)) :e omega.
-    assume HnNZ : (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
-      group_power_nat
-        (quotient_group_mult G mult C)
-        (quotient_group_id G mult e C)
-        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-        n = quotient_group_id G mult e C)) <> 0.
-    assume HpowQ : group_power_nat
-      (quotient_group_mult G mult C)
-      (quotient_group_id G mult e C)
-      (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-      (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
-        group_power_nat
-          (quotient_group_mult G mult C)
-          (quotient_group_id G mult e C)
-          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-          n = quotient_group_id G mult e C))
-      = quotient_group_id G mult e C.
-    apply andI.
-    - apply andI.
-      + exact HnO.
-      + exact HnNZ.
-    - claim Hqid :
-        quotient_group_id G mult e C = left_coset mult e C.
-      {
-        reflexivity.
-      }
-      claim HpowQidEq :
-        group_power_nat
-          (quotient_group_mult G mult C)
-          (quotient_group_id G mult e C)
-          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-          (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+            (apply_fun
+              (quotient_group_inv G mult inv C)
+              (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha))
+            (ordsucc m) :e quotient_group_set G mult C)).
+      + apply (andI
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha :e
+            quotient_group_set G mult C)
+          (forall n:set, n :e omega ->
             group_power_nat
               (quotient_group_mult G mult C)
               (quotient_group_id G mult e C)
               (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-              n = quotient_group_id G mult e C))
-          = left_coset mult e C.
-      {
-        rewrite Hqid.
-        exact HpowQ.
-      }
-      claim HnormalC : normal_subgroup C G mult e inv.
-      {
-        claim HNA :
-          normal_subgroup C G mult e inv /\
-          abelian_group
-            (quotient_group_set G mult C)
-            (quotient_group_mult G mult C)
-            (quotient_group_id G mult e C)
-            (quotient_group_inv G mult inv C).
-        {
-          exact (andEL
-            (normal_subgroup C G mult e inv /\
-             abelian_group
-               (quotient_group_set G mult C)
-               (quotient_group_mult G mult C)
-               (quotient_group_id G mult e C)
-               (quotient_group_inv G mult inv C))
-            (forall H multH eH invH h:set,
-              abelian_group H multH eH invH ->
-              group_homomorphism G mult H multH h ->
-              C c= kernel_of G eH h)
-            HcommProps).
-        }
+              n :e quotient_group_set G mult C)
+          HaQ).
         exact (andEL
-          (normal_subgroup C G mult e inv)
-          (abelian_group
-            (quotient_group_set G mult C)
-            (quotient_group_mult G mult C)
-            (quotient_group_id G mult e C)
-            (quotient_group_inv G mult inv C))
-          HNA).
-      }
-      claim HsubC : subgroup_of C G mult e inv.
-      {
-        exact (andEL
-          (subgroup_of C G mult e inv)
-          (forall n g:set, n :e C -> g :e G ->
-            apply_fun mult (apply_fun mult (g, n), apply_fun inv g) :e C)
-          HnormalC).
-      }
-      claim HeC : e :e C.
-      {
-        apply (and4E
-          (C c= G)
-          (e :e C)
-          (forall x y:set, x :e C -> y :e C -> apply_fun mult (x, y) :e C)
-          (forall x:set, x :e C -> apply_fun inv x :e C)
-          HsubC).
-        assume HCsub HeC HmulC HinvC.
-        exact HeC.
-      }
-      claim HCsub : C c= G.
-      {
-        apply (and4E
-          (C c= G)
-          (e :e C)
-          (forall x y:set, x :e C -> y :e C -> apply_fun mult (x, y) :e C)
-          (forall x:set, x :e C -> apply_fun inv x :e C)
-          HsubC).
-        assume HCsub HeC HmulC HinvC.
-        exact HCsub.
-      }
-      claim HidG :
-        forall x:set, x :e G ->
-          apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x.
-      {
-        apply (and6E
-          (function_on mult (setprod G G) G)
-          (function_on inv G G)
-          (e :e G)
-          (forall x y z:set, x :e G -> y :e G -> z :e G ->
-            apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
-          (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
-          (forall x:set, x :e G ->
-            apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
-          HgrpG).
-        assume HmultG HinvG HeG HassocG HidG HinvLawG.
-        exact HidG.
-      }
-      claim HeMulC : forall c:set, c :e C -> apply_fun mult (e, c) = c.
-      {
-        let c.
-        assume HcC : c :e C.
-        claim HcG : c :e G.
-        {
-          exact (HCsub c HcC).
-        }
-        exact (andEL
-          (apply_fun mult (e, c) = c)
-          (apply_fun mult (c, e) = c)
-          (HidG c HcG)).
-      }
-      claim HleftCosetEsubC : left_coset mult e C c= C.
-      {
-        let y.
-        assume HyE : y :e left_coset mult e C.
-        apply (ReplE C (fun n:set => apply_fun mult (e, n)) y HyE).
-        let c.
-        assume HcPack : c :e C /\ y = apply_fun mult (e, c).
-        claim HcC : c :e C.
-        {
-          exact (andEL
-            (c :e C)
-            (y = apply_fun mult (e, c))
-            HcPack).
-        }
-        claim HyDef : y = apply_fun mult (e, c).
-        {
-          exact (andER
-            (c :e C)
-            (y = apply_fun mult (e, c))
-            HcPack).
-        }
-        rewrite HyDef.
-        rewrite (HeMulC c HcC).
-        exact HcC.
-      }
-      claim HCsubLeftCosetE : C c= left_coset mult e C.
-      {
-        let c.
-        assume HcC : c :e C.
-        rewrite <- (HeMulC c HcC).
-        exact (ReplI
-          C
-          (fun n:set => apply_fun mult (e, n))
-          c
-          HcC).
-      }
-      claim HleftCosetEqC : left_coset mult e C = C.
-      {
-        apply set_ext.
-        - exact HleftCosetEsubC.
-        - exact HCsubLeftCosetE.
-      }
-      claim HqidEqC : quotient_group_id G mult e C = C.
-      {
-        rewrite Hqid.
-        exact HleftCosetEqC.
-      }
-      claim HpowSetSubC :
-        (group_power_nat
-          (quotient_group_mult G mult C)
-          (quotient_group_id G mult e C)
-          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-          (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
-            group_power_nat
-              (quotient_group_mult G mult C)
-              (quotient_group_id G mult e C)
-              (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-              n = quotient_group_id G mult e C))) c= C.
-      {
-        let y.
-        assume HyPow : y :e group_power_nat
-          (quotient_group_mult G mult C)
-          (quotient_group_id G mult e C)
-          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-          (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
-            group_power_nat
-              (quotient_group_mult G mult C)
-              (quotient_group_id G mult e C)
-              (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-              n = quotient_group_id G mult e C)).
-        claim HyCoset : y :e left_coset mult e C.
-        {
-          rewrite <- HpowQidEq.
-          exact HyPow.
-        }
-        exact (HleftCosetEsubC y HyCoset).
-      }
-      claim HeInLeftCosetE : e :e left_coset mult e C.
-      {
-        rewrite <- (HeMulC e HeC) at 1.
-        exact (ReplI
-          C
-          (fun n:set => apply_fun mult (e, n))
-          e
-          HeC).
-      }
-      claim HeInPowSet :
-        e :e group_power_nat
-          (quotient_group_mult G mult C)
-          (quotient_group_id G mult e C)
-          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-          (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
-            group_power_nat
-              (quotient_group_mult G mult C)
-              (quotient_group_id G mult e C)
-              (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-              n = quotient_group_id G mult e C)).
-      {
-        rewrite HpowQidEq at 1.
-        exact HeInLeftCosetE.
-      }
-      claim HeFromPowSet : e :e C.
-      {
-        exact (HpowSetSubC e HeInPowSet).
-      }
-      claim HpowSetInQ :
-        group_power_nat
-          (quotient_group_mult G mult C)
-          (quotient_group_id G mult e C)
-          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-          (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
-            group_power_nat
-              (quotient_group_mult G mult C)
-              (quotient_group_id G mult e C)
-              (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-              n = quotient_group_id G mult e C))
-          :e quotient_group_set G mult C.
-      {
-        exact ((andEL
           (forall n:set, n :e omega ->
             group_power_nat
               (quotient_group_mult G mult C)
@@ -116267,42 +115945,63 @@ apply (andI
                 (quotient_group_inv G mult inv C)
                 (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha))
               (ordsucc m) :e quotient_group_set G mult C)
-          HpowPair)
-          (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+          HpowPair).
+      + exact (andER
+          (forall n:set, n :e omega ->
             group_power_nat
               (quotient_group_mult G mult C)
               (quotient_group_id G mult e C)
               (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-              n = quotient_group_id G mult e C))
-          HnO).
-      }
-      claim HqidInQ : quotient_group_id G mult e C :e quotient_group_set G mult C.
+              n :e quotient_group_set G mult C)
+          (forall m:set, m :e omega ->
+            group_power_nat
+              (quotient_group_mult G mult C)
+              (quotient_group_id G mult e C)
+              (apply_fun
+                (quotient_group_inv G mult inv C)
+                (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha))
+              (ordsucc m) :e quotient_group_set G mult C)
+          HpowPair).
+    - claim HinfOrigAlpha :
+        infinite_cyclic_subgroup G mult e inv (apply_fun gens alpha).
       {
-        rewrite <- HpowQ.
-        exact HpowSetInQ.
+        exact (HinfG alpha Halpha).
       }
-      claim HCinQ : C :e quotient_group_set G mult C.
+      claim HnontrivOrig :
+        ~(exists n:set, n :e omega /\ n <> 0 /\
+          group_power_nat mult e (apply_fun gens alpha) n = e).
       {
-        rewrite <- HleftCosetEqC at 1.
-        exact (ReplI
-          G
-          (fun g:set => left_coset mult g C)
-          e
-          (HCsub e HeC)).
+        exact (andER
+          (apply_fun gens alpha :e G /\
+           (forall n:set, n :e omega ->
+             group_power_nat mult e (apply_fun gens alpha) n :e G) /\
+           (forall m:set, m :e omega ->
+             group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) :e G))
+          (~(exists n:set, n :e omega /\ n <> 0 /\
+            group_power_nat mult e (apply_fun gens alpha) n = e))
+          HinfOrigAlpha).
       }
-      claim HCinQRep : exists g:set, g :e G /\ C = left_coset mult g C.
-      {
-        exact (ReplE
-          G
-          (fun g:set => left_coset mult g C)
-          C
-          HCinQ).
-      }
-      claim HCnonempty : C <> Empty.
-      {
-        exact (elem_implies_nonempty C e HeC).
-      }
-      claim HpowSetNonempty :
+      assume Hbad :
+        exists n:set, n :e omega /\ n <> 0 /\
+          group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+            n = quotient_group_id G mult e C.
+      apply HnontrivOrig.
+      claim HbadEps :
+        (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+          group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+            n = quotient_group_id G mult e C)) :e omega /\
+        (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+          group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+            n = quotient_group_id G mult e C)) <> 0 /\
         group_power_nat
           (quotient_group_mult G mult C)
           (quotient_group_id G mult e C)
@@ -116313,9 +116012,236 @@ apply (andI
               (quotient_group_id G mult e C)
               (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
               n = quotient_group_id G mult e C))
-          <> Empty.
+          = quotient_group_id G mult e C.
       {
-        exact (elem_implies_nonempty
+        exact (Eps_i_ex
+          (fun n:set => n :e omega /\ n <> 0 /\
+            group_power_nat
+              (quotient_group_mult G mult C)
+              (quotient_group_id G mult e C)
+              (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+              n = quotient_group_id G mult e C)
+          Hbad).
+      }
+      witness (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n = quotient_group_id G mult e C)).
+      apply (and3E
+        ((Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+          group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+            n = quotient_group_id G mult e C)) :e omega)
+        ((Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+          group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+            n = quotient_group_id G mult e C)) <> 0)
+        (group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+            group_power_nat
+              (quotient_group_mult G mult C)
+              (quotient_group_id G mult e C)
+              (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+              n = quotient_group_id G mult e C))
+          = quotient_group_id G mult e C)
+        HbadEps).
+      assume HnO : (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n = quotient_group_id G mult e C)) :e omega.
+      assume HnNZ : (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n = quotient_group_id G mult e C)) <> 0.
+      assume HpowQ : group_power_nat
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+        (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+          group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+            n = quotient_group_id G mult e C))
+        = quotient_group_id G mult e C.
+      apply andI.
+      - apply andI.
+        + exact HnO.
+        + exact HnNZ.
+      - claim Hqid :
+          quotient_group_id G mult e C = left_coset mult e C.
+        {
+          reflexivity.
+        }
+        claim HpowQidEq :
+          group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+            (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+              group_power_nat
+                (quotient_group_mult G mult C)
+                (quotient_group_id G mult e C)
+                (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+                n = quotient_group_id G mult e C))
+            = left_coset mult e C.
+        {
+          rewrite Hqid.
+          exact HpowQ.
+        }
+        claim HnormalC : normal_subgroup C G mult e inv.
+        {
+          claim HNA :
+            normal_subgroup C G mult e inv /\
+            abelian_group
+              (quotient_group_set G mult C)
+              (quotient_group_mult G mult C)
+              (quotient_group_id G mult e C)
+              (quotient_group_inv G mult inv C).
+          {
+            exact (andEL
+              (normal_subgroup C G mult e inv /\
+               abelian_group
+                 (quotient_group_set G mult C)
+                 (quotient_group_mult G mult C)
+                 (quotient_group_id G mult e C)
+                 (quotient_group_inv G mult inv C))
+              (forall H multH eH invH h:set,
+                abelian_group H multH eH invH ->
+                group_homomorphism G mult H multH h ->
+                C c= kernel_of G eH h)
+              HcommProps).
+          }
+          exact (andEL
+            (normal_subgroup C G mult e inv)
+            (abelian_group
+              (quotient_group_set G mult C)
+              (quotient_group_mult G mult C)
+              (quotient_group_id G mult e C)
+              (quotient_group_inv G mult inv C))
+            HNA).
+        }
+        claim HsubC : subgroup_of C G mult e inv.
+        {
+          exact (andEL
+            (subgroup_of C G mult e inv)
+            (forall n g:set, n :e C -> g :e G ->
+              apply_fun mult (apply_fun mult (g, n), apply_fun inv g) :e C)
+            HnormalC).
+        }
+        claim HeC : e :e C.
+        {
+          apply (and4E
+            (C c= G)
+            (e :e C)
+            (forall x y:set, x :e C -> y :e C -> apply_fun mult (x, y) :e C)
+            (forall x:set, x :e C -> apply_fun inv x :e C)
+            HsubC).
+          assume HCsub HeC HmulC HinvC.
+          exact HeC.
+        }
+        claim HCsub : C c= G.
+        {
+          apply (and4E
+            (C c= G)
+            (e :e C)
+            (forall x y:set, x :e C -> y :e C -> apply_fun mult (x, y) :e C)
+            (forall x:set, x :e C -> apply_fun inv x :e C)
+            HsubC).
+          assume HCsub HeC HmulC HinvC.
+          exact HCsub.
+        }
+        claim HidG :
+          forall x:set, x :e G ->
+            apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x.
+        {
+          apply (and6E
+            (function_on mult (setprod G G) G)
+            (function_on inv G G)
+            (e :e G)
+            (forall x y z:set, x :e G -> y :e G -> z :e G ->
+              apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+            (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+            (forall x:set, x :e G ->
+              apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+            HgrpG).
+          assume HmultG HinvG HeG HassocG HidG HinvLawG.
+          exact HidG.
+        }
+        claim HeMulC : forall c:set, c :e C -> apply_fun mult (e, c) = c.
+        {
+          let c.
+          assume HcC : c :e C.
+          claim HcG : c :e G.
+          {
+            exact (HCsub c HcC).
+          }
+          exact (andEL
+            (apply_fun mult (e, c) = c)
+            (apply_fun mult (c, e) = c)
+            (HidG c HcG)).
+        }
+        claim HleftCosetEsubC : left_coset mult e C c= C.
+        {
+          let y.
+          assume HyE : y :e left_coset mult e C.
+          apply (ReplE C (fun n:set => apply_fun mult (e, n)) y HyE).
+          let c.
+          assume HcPack : c :e C /\ y = apply_fun mult (e, c).
+          claim HcC : c :e C.
+          {
+            exact (andEL
+              (c :e C)
+              (y = apply_fun mult (e, c))
+              HcPack).
+          }
+          claim HyDef : y = apply_fun mult (e, c).
+          {
+            exact (andER
+              (c :e C)
+              (y = apply_fun mult (e, c))
+              HcPack).
+          }
+          rewrite HyDef.
+          rewrite (HeMulC c HcC).
+          exact HcC.
+        }
+        claim HCsubLeftCosetE : C c= left_coset mult e C.
+        {
+          let c.
+          assume HcC : c :e C.
+          rewrite <- (HeMulC c HcC).
+          exact (ReplI
+            C
+            (fun n:set => apply_fun mult (e, n))
+            c
+            HcC).
+        }
+        claim HleftCosetEqC : left_coset mult e C = C.
+        {
+          apply set_ext.
+          - exact HleftCosetEsubC.
+          - exact HCsubLeftCosetE.
+        }
+        claim HqidEqC : quotient_group_id G mult e C = C.
+        {
+          rewrite Hqid.
+          exact HleftCosetEqC.
+        }
+        claim HpowSetSubC :
           (group_power_nat
             (quotient_group_mult G mult C)
             (quotient_group_id G mult e C)
@@ -116325,31 +116251,165 @@ apply (andI
                 (quotient_group_mult G mult C)
                 (quotient_group_id G mult e C)
                 (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-                n = quotient_group_id G mult e C)))
-          e
-          HeInPowSet).
-      }
-      exact (quotient_power_identity_forces_generator_power_identity
-        G
-        mult
-        e
-        inv
-        J
-        gens
-        C
-        alpha
-        (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+                n = quotient_group_id G mult e C))) c= C.
+        {
+          let y.
+          assume HyPow : y :e group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+            (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+              group_power_nat
+                (quotient_group_mult G mult C)
+                (quotient_group_id G mult e C)
+                (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+                n = quotient_group_id G mult e C)).
+          claim HyCoset : y :e left_coset mult e C.
+          {
+            rewrite <- HpowQidEq.
+            exact HyPow.
+          }
+          exact (HleftCosetEsubC y HyCoset).
+        }
+        claim HeInLeftCosetE : e :e left_coset mult e C.
+        {
+          rewrite <- (HeMulC e HeC) at 1.
+          exact (ReplI
+            C
+            (fun n:set => apply_fun mult (e, n))
+            e
+            HeC).
+        }
+        claim HeInPowSet :
+          e :e group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+            (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+              group_power_nat
+                (quotient_group_mult G mult C)
+                (quotient_group_id G mult e C)
+                (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+                n = quotient_group_id G mult e C)).
+        {
+          rewrite HpowQidEq at 1.
+          exact HeInLeftCosetE.
+        }
+        claim HeFromPowSet : e :e C.
+        {
+          exact (HpowSetSubC e HeInPowSet).
+        }
+        claim HpowSetInQ :
           group_power_nat
             (quotient_group_mult G mult C)
             (quotient_group_id G mult e C)
             (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-            n = quotient_group_id G mult e C))
-        Hfree
-        HCdef
-        Halpha
-        HnO
-        HnNZ
-        HpowQ).
+            (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+              group_power_nat
+                (quotient_group_mult G mult C)
+                (quotient_group_id G mult e C)
+                (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+                n = quotient_group_id G mult e C))
+            :e quotient_group_set G mult C.
+        {
+          exact ((andEL
+            (forall n:set, n :e omega ->
+              group_power_nat
+                (quotient_group_mult G mult C)
+                (quotient_group_id G mult e C)
+                (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+                n :e quotient_group_set G mult C)
+            (forall m:set, m :e omega ->
+              group_power_nat
+                (quotient_group_mult G mult C)
+                (quotient_group_id G mult e C)
+                (apply_fun
+                  (quotient_group_inv G mult inv C)
+                  (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha))
+                (ordsucc m) :e quotient_group_set G mult C)
+            HpowPair)
+            (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+              group_power_nat
+                (quotient_group_mult G mult C)
+                (quotient_group_id G mult e C)
+                (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+                n = quotient_group_id G mult e C))
+            HnO).
+        }
+        claim HqidInQ : quotient_group_id G mult e C :e quotient_group_set G mult C.
+        {
+          rewrite <- HpowQ.
+          exact HpowSetInQ.
+        }
+        claim HCinQ : C :e quotient_group_set G mult C.
+        {
+          rewrite <- HleftCosetEqC at 1.
+          exact (ReplI
+            G
+            (fun g:set => left_coset mult g C)
+            e
+            (HCsub e HeC)).
+        }
+        claim HCinQRep : exists g:set, g :e G /\ C = left_coset mult g C.
+        {
+          exact (ReplE
+            G
+            (fun g:set => left_coset mult g C)
+            C
+            HCinQ).
+        }
+        claim HCnonempty : C <> Empty.
+        {
+          exact (elem_implies_nonempty C e HeC).
+        }
+        claim HpowSetNonempty :
+          group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+            (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+              group_power_nat
+                (quotient_group_mult G mult C)
+                (quotient_group_id G mult e C)
+                (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+                n = quotient_group_id G mult e C))
+            <> Empty.
+        {
+          exact (elem_implies_nonempty
+            (group_power_nat
+              (quotient_group_mult G mult C)
+              (quotient_group_id G mult e C)
+              (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+              (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+                group_power_nat
+                  (quotient_group_mult G mult C)
+                  (quotient_group_id G mult e C)
+                  (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+                  n = quotient_group_id G mult e C)))
+            e
+            HeInPowSet).
+        }
+        exact (quotient_power_identity_forces_generator_power_identity
+          G
+          mult
+          e
+          inv
+          J
+          gens
+          C
+          alpha
+          (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+            group_power_nat
+              (quotient_group_mult G mult C)
+              (quotient_group_id G mult e C)
+              (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+              n = quotient_group_id G mult e C))
+          Hfree
+          HCdef
+          Halpha
+          HnO
+          HnNZ
+          HpowQ).
 Admitted.
 
 (** Infrastructure helper for S69 Cor 69.5:
