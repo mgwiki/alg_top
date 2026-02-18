@@ -71674,6 +71674,59 @@ apply Hrep.
   reflexivity.
 Qed.
 
+(** Proven Bob **)
+(** Infrastructure helper: a candidate homomorphism on a generator yields the full universal package. **)
+Theorem universal_property_from_generator_candidate_helper :
+  forall G multG eG invG x H multH eH invH y h:set,
+  group_structure G multG eG invG ->
+  generator_of G multG eG invG x ->
+  group_structure H multH eH invH ->
+  group_homomorphism G multG H multH h ->
+  apply_fun h x = y ->
+  exists h0:set,
+    group_homomorphism G multG H multH h0 /\
+    apply_fun h0 x = y /\
+    (forall h':set, group_homomorphism G multG H multH h' -> apply_fun h' x = y ->
+      forall g:set, g :e G -> apply_fun h' g = apply_fun h0 g).
+let G multG eG invG x H multH eH invH y h.
+assume HgrpG HgenX HgrpH HhHom Hhx.
+witness h.
+apply andI.
+- apply andI.
+  + exact HhHom.
+  + exact Hhx.
+- let h'.
+    assume Hh'Hom Hh'x.
+    claim HxAgree : apply_fun h' x = apply_fun h x.
+    {
+      rewrite Hh'x.
+      rewrite Hhx.
+      reflexivity.
+    }
+    let g.
+    assume HgG.
+    exact (group_homomorphisms_equal_if_agree_on_generator_cyclic_helper
+      G
+      multG
+      eG
+      invG
+      x
+      H
+      multH
+      eH
+      invH
+      h'
+      h
+      HgrpG
+      HgenX
+      HgrpH
+      Hh'Hom
+      HhHom
+      HxAgree
+      g
+      HgG).
+Qed.
+
 (** from S54 text (line 833 in algtop.tex) **)
 (** LATEX VERSION: A group is cyclic of infinite order iff it is isomorphic to Z; **)
 (** cyclic of order k iff isomorphic to Z/k. **)
@@ -71750,25 +71803,33 @@ Theorem infinite_cyclic_universal_property : forall G multG eG invG x H multH eH
       forall g:set, g :e G -> apply_fun h' g = apply_fun h g).
 let G multG eG invG x H multH eH invH y.
 assume HgrpG HcycG HinfG HgenX HgrpH Hy.
-claim HuniqFromGenerator :
-  forall h h':set,
-    group_homomorphism G multG H multH h ->
-    group_homomorphism G multG H multH h' ->
-    apply_fun h x = y ->
-    apply_fun h' x = y ->
-    forall g:set, g :e G -> apply_fun h' g = apply_fun h g.
+claim HfromCandidate :
+  (exists h:set, group_homomorphism G multG H multH h /\ apply_fun h x = y) ->
+  exists h:set,
+    group_homomorphism G multG H multH h /\
+    apply_fun h x = y /\
+    (forall h':set, group_homomorphism G multG H multH h' -> apply_fun h' x = y ->
+      forall g:set, g :e G -> apply_fun h' g = apply_fun h g).
 {
-  let h h'.
-  assume HhHom Hh'Hom Hhx Hyx.
-  claim HxAgree : apply_fun h' x = apply_fun h x.
+  assume Hex.
+  apply Hex.
+  let h.
+  assume HhPack.
+  claim HhHom : group_homomorphism G multG H multH h.
   {
-    rewrite Hyx.
-    rewrite Hhx.
-    reflexivity.
+    exact (andEL
+      (group_homomorphism G multG H multH h)
+      (apply_fun h x = y)
+      HhPack).
   }
-  let g.
-  assume HgG.
-  exact (group_homomorphisms_equal_if_agree_on_generator_cyclic_helper
+  claim Hhx : apply_fun h x = y.
+  {
+    exact (andER
+      (group_homomorphism G multG H multH h)
+      (apply_fun h x = y)
+      HhPack).
+  }
+  exact (universal_property_from_generator_candidate_helper
     G
     multG
     eG
@@ -71778,18 +71839,16 @@ claim HuniqFromGenerator :
     multH
     eH
     invH
-    h'
+    y
     h
     HgrpG
     HgenX
     HgrpH
-    Hh'Hom
     HhHom
-    HxAgree
-    g
-    HgG).
+    Hhx).
 }
-(** TODO Bob: construct existence of h : G -> H with h(x)=y, then discharge uniqueness via HuniqFromGenerator. **)
+apply HfromCandidate.
+(** TODO Bob: construct a candidate h with group_homomorphism G multG H multH h and h(x)=y. **)
 admit.
 Admitted.
 
