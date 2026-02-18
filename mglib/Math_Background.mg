@@ -1,6 +1,6 @@
 (** Balance Alice 3305 **)
 (** Balance Bob 3021 **)
-(** Balance Charlie 1245 **)
+(** Balance Charlie 1212 **)
 (** Balance Dave 1419 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -100718,7 +100718,6 @@ Admitted.
 (** LATEX VERSION: If n >= 2, the n-sphere S^n is simply connected. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 182 **)
-(** Lock Bob 1771428600 **)
 Theorem thm59_3_Sn_simply_connected : forall n:set,
   n :e omega -> 2 c= n ->
   simply_connected (Sn n) (Sn_topology n).
@@ -105673,11 +105672,129 @@ Definition projective_plane : set := projective_n_space 2.
 Definition projective_plane_topology : set := projective_n_space_topology 2.
 Definition projective_plane_map : set := projective_n_space_map 2.
 
+(** Infrastructure: projective_n_space_map is a quotient map by definition of projective_n_space **)
+(** Proven Charlie **)
+Theorem projective_n_space_map_function_on : forall n:set,
+  function_on (projective_n_space_map n) (Sn n) (projective_n_space n).
+let n.
+apply (total_function_on_function_on
+  (projective_n_space_map n)
+  (Sn n)
+  (projective_n_space n)).
+apply (total_function_on_graph
+  (Sn n)
+  (projective_n_space n)
+  (fun x:set => UPair x (Rn_negate (ordsucc n) x))).
+let x.
+assume Hx.
+exact (ReplI
+  (Sn n)
+  (fun u:set => UPair u (Rn_negate (ordsucc n) u))
+  x
+  Hx).
+Qed.
+
+(** Proven Charlie **)
+Theorem projective_n_space_map_surjective : forall n y:set,
+  y :e projective_n_space n ->
+  exists x:set, x :e Sn n /\ apply_fun (projective_n_space_map n) x = y.
+let n y.
+assume Hy.
+apply (ReplE
+  (Sn n)
+  (fun u:set => UPair u (Rn_negate (ordsucc n) u))
+  y
+  Hy).
+let x.
+assume HxPack.
+claim HxSn : x :e Sn n.
+{
+  exact (andEL
+    (x :e Sn n)
+    (y = UPair x (Rn_negate (ordsucc n) x))
+    HxPack).
+}
+claim HyEq : y = UPair x (Rn_negate (ordsucc n) x).
+{
+  exact (andER
+    (x :e Sn n)
+    (y = UPair x (Rn_negate (ordsucc n) x))
+    HxPack).
+}
+witness x.
+apply andI.
+- exact HxSn.
+- rewrite HyEq.
+  exact (apply_fun_graph
+    (Sn n)
+    (fun u:set => UPair u (Rn_negate (ordsucc n) u))
+    x
+    HxSn).
+Qed.
+
+(** Proven Charlie **)
+Theorem projective_n_space_map_quotient_map : forall n:set,
+  quotient_map (Sn n) (Sn_topology n) (projective_n_space n) (projective_n_space_map n).
+let n.
+exact (andI
+  (topology_on (Sn n) (Sn_topology n) /\
+    function_on (projective_n_space_map n) (Sn n) (projective_n_space n))
+  (forall y:set, y :e projective_n_space n ->
+    exists x:set, x :e Sn n /\ apply_fun (projective_n_space_map n) x = y)
+  (andI
+    (topology_on (Sn n) (Sn_topology n))
+    (function_on (projective_n_space_map n) (Sn n) (projective_n_space n))
+    (lemma59_3_Sn_topology_on n)
+    (projective_n_space_map_function_on n))
+  (fun y:set => fun Hy:y :e projective_n_space n =>
+    projective_n_space_map_surjective n y Hy)).
+Qed.
+
+(** Proven Charlie **)
+Theorem projective_n_space_topology_on : forall n:set,
+  topology_on (projective_n_space n) (projective_n_space_topology n).
+let n.
+exact (quotient_topology_is_topology
+  (Sn n)
+  (Sn_topology n)
+  (projective_n_space n)
+  (projective_n_space_map n)
+  (lemma59_3_Sn_topology_on n)
+  (projective_n_space_map_quotient_map n)).
+Qed.
+
+(** Proven Charlie **)
+Theorem projective_n_space_map_continuous : forall n:set,
+  continuous_map (Sn n) (Sn_topology n)
+    (projective_n_space n) (projective_n_space_topology n)
+    (projective_n_space_map n).
+let n.
+claim Hsub :
+  projective_n_space_topology n c=
+    quotient_topology (Sn n) (Sn_topology n)
+      (projective_n_space n) (projective_n_space_map n).
+{
+  let V.
+  assume HV.
+  exact HV.
+}
+exact (quotient_universal_property
+  (Sn n)
+  (Sn_topology n)
+  (projective_n_space n)
+  (projective_n_space_topology n)
+  (projective_n_space_map n)
+  (projective_n_space_map_quotient_map n)
+  (projective_n_space_topology_on n)
+  Hsub).
+Qed.
+
 (** from S60 Thm 60.3 (line 1691 in algtop.tex) **)
 (** LATEX VERSION: P^2 is a compact surface, and the quotient map p: S^2 -> P^2 **)
 (** is a covering map. **)
 (** EFFORT: 25 lines textbook, difficulty 6/10, USD 300 **)
-(** Bounty 330 **)
+(** Bounty 363 **)
+(** Lock Charlie 1771512800 **)
 Theorem thm60_3_projective_plane_surface_covering :
   m_manifold projective_plane projective_plane_topology 2 /\
   compact_space projective_plane projective_plane_topology /\
