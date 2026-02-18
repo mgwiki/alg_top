@@ -58311,6 +58311,194 @@ apply andI.
     HuN).
 Qed.
 
+(** Infrastructure: refine prescribed neighborhoods at 0 and t to disjoint ones in I **)
+(** Proven Charlie **)
+Theorem unit_interval_disjoint_neighborhood_refinement :
+  forall t U0 Ut:set,
+  t :e unit_interval ->
+  t <> 0 ->
+  U0 :e unit_interval_topology ->
+  0 :e U0 ->
+  Ut :e unit_interval_topology ->
+  t :e Ut ->
+  exists N0 Nt:set,
+    N0 :e unit_interval_topology /\
+    Nt :e unit_interval_topology /\
+    0 :e N0 /\
+    t :e Nt /\
+    N0 c= U0 /\
+    Nt c= Ut /\
+    N0 :/\: Nt = Empty.
+let t U0 Ut.
+assume HtUnit HtNe0 HU0Open H0U0 HUtOpen HtUt.
+claim HUICompReg : completely_regular_space unit_interval unit_interval_topology.
+{
+  exact unit_interval_completely_regular.
+}
+claim HUIHaus : Hausdorff_space unit_interval unit_interval_topology.
+{
+  exact (completely_regular_space_implies_Hausdorff
+    unit_interval
+    unit_interval_topology
+    HUICompReg).
+}
+claim H0NeT : 0 <> t.
+{
+  exact (neq_i_sym
+    t
+    0
+    HtNe0).
+}
+claim Hsep :
+  exists A B:set,
+    A :e unit_interval_topology /\
+    B :e unit_interval_topology /\
+    0 :e A /\
+    t :e B /\
+    A :/\: B = Empty.
+{
+  exact (Hausdorff_space_separation
+    unit_interval
+    unit_interval_topology
+    0
+    t
+    HUIHaus
+    zero_in_unit_interval
+    HtUnit
+    H0NeT).
+}
+apply Hsep.
+let A.
+assume HAPack.
+apply HAPack.
+let B.
+assume HABPack.
+apply (and5E
+  (A :e unit_interval_topology)
+  (B :e unit_interval_topology)
+  (0 :e A)
+  (t :e B)
+  (A :/\: B = Empty)
+  HABPack).
+assume HAOpen HBOpen H0A HtB HABEmpty.
+witness (A :/\: U0).
+witness (B :/\: Ut).
+claim HN0Open : A :/\: U0 :e unit_interval_topology.
+{
+  exact (topology_binintersect_closed
+    unit_interval
+    unit_interval_topology
+    A
+    U0
+    unit_interval_topology_on
+    HAOpen
+    HU0Open).
+}
+claim HNtOpen : B :/\: Ut :e unit_interval_topology.
+{
+  exact (topology_binintersect_closed
+    unit_interval
+    unit_interval_topology
+    B
+    Ut
+    unit_interval_topology_on
+    HBOpen
+    HUtOpen).
+}
+claim H0N0 : 0 :e A :/\: U0.
+{
+  exact (binintersectI
+    A
+    U0
+    0
+    H0A
+    H0U0).
+}
+claim HtNt : t :e B :/\: Ut.
+{
+  exact (binintersectI
+    B
+    Ut
+    t
+    HtB
+    HtUt).
+}
+claim HN0NtDisj : (A :/\: U0) :/\: (B :/\: Ut) = Empty.
+{
+  apply set_ext.
+  - let z.
+    assume HzInt.
+    claim HzN0 : z :e A :/\: U0.
+    {
+      exact (binintersectE1
+        (A :/\: U0)
+        (B :/\: Ut)
+        z
+        HzInt).
+    }
+    claim HzNt : z :e B :/\: Ut.
+    {
+      exact (binintersectE2
+        (A :/\: U0)
+        (B :/\: Ut)
+        z
+        HzInt).
+    }
+    claim HzA : z :e A.
+    {
+      exact (binintersectE1
+        A
+        U0
+        z
+        HzN0).
+    }
+    claim HzB : z :e B.
+    {
+      exact (binintersectE1
+        B
+        Ut
+        z
+        HzNt).
+    }
+    claim HzAB : z :e A :/\: B.
+    {
+      exact (binintersectI
+        A
+        B
+        z
+        HzA
+        HzB).
+    }
+    exact (mem_eqR
+      z
+      (A :/\: B)
+      Empty
+      HABEmpty
+      HzAB).
+  - let z.
+    assume HzE.
+    exact (EmptyE
+      z
+      HzE
+      (z :e (A :/\: U0) :/\: (B :/\: Ut))).
+}
+exact (and7I
+  (A :/\: U0 :e unit_interval_topology)
+  (B :/\: Ut :e unit_interval_topology)
+  (0 :e A :/\: U0)
+  (t :e B :/\: Ut)
+  ((A :/\: U0) c= U0)
+  ((B :/\: Ut) c= Ut)
+  ((A :/\: U0) :/\: (B :/\: Ut) = Empty)
+  HN0Open
+  HNtOpen
+  H0N0
+  HtNt
+  (binintersect_Subq_2 A U0)
+  (binintersect_Subq_2 B Ut)
+  HN0NtDisj).
+Qed.
+
 (** from S54 Lem 54.1 (line 715 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map, p(e0) = b0. Any path f:[0,1] -> B **)
 (** beginning at b0 has a unique lifting to a path in E beginning at e0. **)
