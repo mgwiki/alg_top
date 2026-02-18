@@ -82513,8 +82513,170 @@ claim HpcX : path_connected_space X TX.
 claim Hpi1Trivial :
   fundamental_group X TX (0, 0) = {fundamental_group_id X TX (0, 0)}.
 {
-  (** remaining: every loop in the open disk contracts to the center **)
-  admit.
+  apply set_ext.
+  - let cls.
+    assume Hcls.
+    claim Hrep :
+      exists f:set, f :e loop_space X TX (0, 0) /\
+        cls = path_homotopy_class_loop X TX (0, 0) f.
+    {
+      exact (fundamental_group_member_has_representative
+        X
+        TX
+        (0, 0)
+        cls
+        Hcls).
+    }
+    apply Hrep.
+    let f.
+    assume HfPack.
+    claim HfLoop : f :e loop_space X TX (0, 0).
+    {
+      exact (andEL
+        (f :e loop_space X TX (0, 0))
+        (cls = path_homotopy_class_loop X TX (0, 0) f)
+        HfPack).
+    }
+    claim HclsEqF : cls = path_homotopy_class_loop X TX (0, 0) f.
+    {
+      exact (andER
+        (f :e loop_space X TX (0, 0))
+        (cls = path_homotopy_class_loop X TX (0, 0) f)
+        HfPack).
+    }
+    claim HfLoopAt : loop_at X TX (0, 0) f.
+    {
+      exact (loop_space_has_loop_at
+        X
+        TX
+        (0, 0)
+        f
+        HfLoop).
+    }
+    claim HfCont :
+      continuous_map unit_interval unit_interval_topology X TX f.
+    {
+      exact (loop_at_continuous
+        X
+        TX
+        (0, 0)
+        f
+        HfLoopAt).
+    }
+    claim Hf0 : apply_fun f 0 = (0, 0).
+    {
+      exact (loop_at_at_zero
+        X
+        TX
+        (0, 0)
+        f
+        HfLoopAt).
+    }
+    claim Hf1 : apply_fun f 1 = (0, 0).
+    {
+      exact (loop_at_at_one
+        X
+        TX
+        (0, 0)
+        f
+        HfLoopAt).
+    }
+    claim HconstCont :
+      continuous_map unit_interval unit_interval_topology X TX (constant_path (0, 0)).
+    {
+      exact (constant_path_continuous
+        X
+        TX
+        (0, 0)
+        HtopX
+        H00InX).
+    }
+    claim Hconst0 : apply_fun (constant_path (0, 0)) 0 = (0, 0).
+    {
+      exact (constant_path_at_zero (0, 0)).
+    }
+    claim Hconst1 : apply_fun (constant_path (0, 0)) 1 = (0, 0).
+    {
+      exact (constant_path_at_one (0, 0)).
+    }
+    claim HfConst :
+      path_homotopic X TX (0, 0) (0, 0) f (constant_path (0, 0)).
+    {
+      (** remaining geometric contraction of loops in the open disk to the center **)
+      admit.
+    }
+    claim HclassEq :
+      path_homotopy_class_loop X TX (0, 0) f
+      =
+      path_homotopy_class_loop X TX (0, 0) (constant_path (0, 0)).
+    {
+      exact (path_homotopy_class_loop_eq_of_path_homotopic
+        X
+        TX
+        (0, 0)
+        f
+        (constant_path (0, 0))
+        HfConst).
+    }
+    claim HidDef :
+      fundamental_group_id X TX (0, 0)
+      =
+      path_homotopy_class_loop X TX (0, 0) (constant_path (0, 0)).
+    {
+      reflexivity.
+    }
+    claim HclsEqId :
+      cls = fundamental_group_id X TX (0, 0).
+    {
+      rewrite HclsEqF.
+      rewrite HclassEq.
+      rewrite <- HidDef.
+      reflexivity.
+    }
+    rewrite HclsEqId.
+    exact (SingI (fundamental_group_id X TX (0, 0))).
+  - let cls.
+    assume Hcls.
+    claim HclsEqId : cls = fundamental_group_id X TX (0, 0).
+    {
+      exact (singleton_elem
+        cls
+        (fundamental_group_id X TX (0, 0))
+        Hcls).
+    }
+    rewrite HclsEqId.
+    claim HconstLoop : loop_at X TX (0, 0) (constant_path (0, 0)).
+    {
+      exact (loop_at_constant_path
+        X
+        TX
+        (0, 0)
+        HtopX
+        H00InX).
+    }
+    claim HconstFS : (constant_path (0, 0)) :e function_space unit_interval X.
+    {
+      exact (graph_in_function_space
+        unit_interval
+        X
+        (fun t:set => (0, 0))
+        (fun t Ht => H00InX)).
+    }
+    claim HconstInLoop : (constant_path (0, 0)) :e loop_space X TX (0, 0).
+    {
+      exact (SepI
+        (function_space unit_interval X)
+        (fun g:set => loop_at X TX (0, 0) g)
+        (constant_path (0, 0))
+        HconstFS
+        HconstLoop).
+    }
+    exact (path_homotopy_class_in_fundamental_group
+      X
+      TX
+      (0, 0)
+      (constant_path (0, 0))
+      HconstInLoop).
 }
 prove path_connected_space X TX /\
   exists x0:set, x0 :e X /\
