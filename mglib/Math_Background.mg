@@ -116772,6 +116772,129 @@ exact (HnatPow n (omega_nat_p n HnO)).
 Qed.
 
 (** Proven Bob **)
+(** Helper: group homomorphisms preserve natural powers. **)
+Theorem group_homomorphism_preserves_power_nat :
+  forall G mult e inv H multH eH invH h x n:set,
+  group_structure G mult e inv ->
+  group_structure H multH eH invH ->
+  group_homomorphism G mult H multH h ->
+  x :e G ->
+  n :e omega ->
+  apply_fun h (group_power_nat mult e x n) =
+  group_power_nat multH eH (apply_fun h x) n.
+let G mult e inv H multH eH invH h x n.
+assume HgrpG : group_structure G mult e inv.
+assume HgrpH : group_structure H multH eH invH.
+assume Hhom : group_homomorphism G mult H multH h.
+assume HxG : x :e G.
+assume HnO : n :e omega.
+claim HhFn : function_on h G H.
+{
+  exact (group_homomorphism_function_on
+    G
+    mult
+    H
+    multH
+    h
+    Hhom).
+}
+claim HhE : apply_fun h e = eH.
+{
+  exact (group_hom_maps_id_to_id
+    G
+    mult
+    e
+    inv
+    H
+    multH
+    eH
+    invH
+    h
+    HgrpG
+    HgrpH
+    Hhom).
+}
+claim Hnat :
+  forall k:set, nat_p k ->
+    apply_fun h (group_power_nat mult e x k) =
+    group_power_nat multH eH (apply_fun h x) k.
+{
+  apply nat_ind.
+  - claim Hpow0L : group_power_nat mult e x 0 = e.
+    {
+      exact (nat_primrec_0
+        e
+        (fun _ r => apply_fun mult (x, r))).
+    }
+    claim Hpow0R : group_power_nat multH eH (apply_fun h x) 0 = eH.
+    {
+      exact (nat_primrec_0
+        eH
+        (fun _ r => apply_fun multH (apply_fun h x, r))).
+    }
+    rewrite Hpow0L.
+    rewrite HhE.
+    rewrite Hpow0R.
+    reflexivity.
+  - let k.
+    assume Hk : nat_p k.
+    assume IH :
+      apply_fun h (group_power_nat mult e x k) =
+      group_power_nat multH eH (apply_fun h x) k.
+    claim HpowSkL :
+      group_power_nat mult e x (ordsucc k) =
+      apply_fun mult (x, group_power_nat mult e x k).
+    {
+      exact (nat_primrec_S
+        e
+        (fun _ r => apply_fun mult (x, r))
+        k
+        Hk).
+    }
+    claim HpowSkR :
+      group_power_nat multH eH (apply_fun h x) (ordsucc k) =
+      apply_fun multH
+        (apply_fun h x, group_power_nat multH eH (apply_fun h x) k).
+    {
+      exact (nat_primrec_S
+        eH
+        (fun _ r => apply_fun multH (apply_fun h x, r))
+        k
+        Hk).
+    }
+    claim HpowkG : group_power_nat mult e x k :e G.
+    {
+      exact (group_power_nat_closed_in_group
+        G
+        mult
+        e
+        inv
+        x
+        k
+        HgrpG
+        HxG
+        (nat_p_omega k Hk)).
+    }
+    rewrite HpowSkL.
+    rewrite (group_homomorphism_mult_rule
+      G
+      mult
+      H
+      multH
+      h
+      x
+      (group_power_nat mult e x k)
+      Hhom
+      HxG
+      HpowkG).
+    rewrite IH.
+    rewrite HpowSkR.
+    reflexivity.
+}
+exact (Hnat n (omega_nat_p n HnO)).
+Qed.
+
+(** Proven Bob **)
 (** Helper: inverses stay in the carrier of a group. **)
 Theorem group_inverse_closed_in_group :
   forall G mult e inv x:set,
