@@ -121313,7 +121313,298 @@ claim HpowOrigInC : group_power_nat mult e (apply_fun gens alpha) n :e C.
 }
 claim HpowOrigEqe : group_power_nat mult e (apply_fun gens alpha) n = e.
 {
-  admit.
+  claim HextEquiv :
+    free_group_with_generators G mult e inv J gens <->
+    (forall H multH eH invH:set,
+      group_structure H multH eH invH ->
+      forall ys:set, function_on ys J H ->
+        exists h:set,
+          group_homomorphism G mult H multH h /\
+          (forall beta:set, beta :e J ->
+            apply_fun h (apply_fun gens beta) = apply_fun ys beta) /\
+          (forall h':set, group_homomorphism G mult H multH h' ->
+            (forall beta:set, beta :e J ->
+              apply_fun h' (apply_fun gens beta) = apply_fun ys beta) ->
+            forall x:set, x :e G -> apply_fun h' x = apply_fun h x)).
+  {
+    exact (lemma69_1_extension_free_group
+      G
+      mult
+      e
+      inv
+      J
+      gens
+      HgrpG
+      HgensG).
+  }
+  claim HextProp :
+    forall H multH eH invH:set,
+      group_structure H multH eH invH ->
+      forall ys:set, function_on ys J H ->
+        exists h:set,
+          group_homomorphism G mult H multH h /\
+          (forall beta:set, beta :e J ->
+            apply_fun h (apply_fun gens beta) = apply_fun ys beta) /\
+          (forall h':set, group_homomorphism G mult H multH h' ->
+            (forall beta:set, beta :e J ->
+              apply_fun h' (apply_fun gens beta) = apply_fun ys beta) ->
+            forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+  {
+    exact (iffEL
+      (free_group_with_generators G mult e inv J gens)
+      (forall H multH eH invH:set,
+        group_structure H multH eH invH ->
+        forall ys:set, function_on ys J H ->
+          exists h:set,
+            group_homomorphism G mult H multH h /\
+            (forall beta:set, beta :e J ->
+              apply_fun h (apply_fun gens beta) = apply_fun ys beta) /\
+            (forall h':set, group_homomorphism G mult H multH h' ->
+              (forall beta:set, beta :e J ->
+                apply_fun h' (apply_fun gens beta) = apply_fun ys beta) ->
+              forall x:set, x :e G -> apply_fun h' x = apply_fun h x))
+      HextEquiv
+      Hfree).
+  }
+  claim H0O : 0 :e omega.
+  {
+    exact (nat_p_omega 0 nat_0).
+  }
+  claim H1O : 1 :e omega.
+  {
+    exact (nat_p_omega 1 nat_1).
+  }
+  claim H0Int : 0 :e int.
+  {
+    exact (Subq_omega_int 0 H0O).
+  }
+  claim H1Int : 1 :e int.
+  {
+    exact (Subq_omega_int 1 H1O).
+  }
+  set ys0 := graph J (fun beta:set => If_i (beta = alpha) 1 0).
+  claim Hys0Fn : function_on ys0 J int.
+  {
+    claim Hys0Total : total_function_on ys0 J int.
+    {
+      claim Hys0Def :
+        ys0 = graph J (fun beta:set => If_i (beta = alpha) 1 0).
+      {
+        reflexivity.
+      }
+      rewrite Hys0Def.
+      apply (total_function_on_graph
+        J
+        int
+        (fun beta:set => If_i (beta = alpha) 1 0)).
+      let beta.
+      assume HbetaJ : beta :e J.
+      claim HfAt :
+        (fun beta0:set => If_i (beta0 = alpha) 1 0) beta =
+        If_i (beta = alpha) 1 0.
+      {
+        reflexivity.
+      }
+      apply (xm (beta = alpha)).
+      - assume Hbeq : beta = alpha.
+        claim Hif1 : If_i (beta = alpha) 1 0 = 1.
+        {
+          exact (If_i_1
+            (beta = alpha)
+            1
+            0
+            Hbeq).
+        }
+        rewrite HfAt.
+        rewrite Hif1.
+        exact H1Int.
+      - assume Hbneq : ~(beta = alpha).
+        claim Hif0 : If_i (beta = alpha) 1 0 = 0.
+        {
+          exact (If_i_0
+            (beta = alpha)
+            1
+            0
+            Hbneq).
+        }
+        rewrite HfAt.
+        rewrite Hif0.
+        exact H0Int.
+    }
+    exact (total_function_on_function_on
+      ys0
+      J
+      int
+      Hys0Total).
+  }
+  claim HgrpInt :
+    group_structure int integers_group_mult 0 integers_group_inv.
+  {
+    exact integers_group_is_group.
+  }
+  claim HabInt :
+    abelian_group int integers_group_mult 0 integers_group_inv.
+  {
+    exact integers_group_is_abelian.
+  }
+  claim Hexth :
+    exists h:set,
+      group_homomorphism G mult int integers_group_mult h /\
+      (forall beta:set, beta :e J ->
+        apply_fun h (apply_fun gens beta) = apply_fun ys0 beta) /\
+      (forall h':set, group_homomorphism G mult int integers_group_mult h' ->
+        (forall beta:set, beta :e J ->
+          apply_fun h' (apply_fun gens beta) = apply_fun ys0 beta) ->
+        forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+  {
+    exact (HextProp
+      int
+      integers_group_mult
+      0
+      integers_group_inv
+      HgrpInt
+      ys0
+      Hys0Fn).
+  }
+  apply Hexth.
+  let h.
+  assume HhPack :
+    group_homomorphism G mult int integers_group_mult h /\
+    (forall beta:set, beta :e J ->
+      apply_fun h (apply_fun gens beta) = apply_fun ys0 beta) /\
+    (forall h':set, group_homomorphism G mult int integers_group_mult h' ->
+      (forall beta:set, beta :e J ->
+        apply_fun h' (apply_fun gens beta) = apply_fun ys0 beta) ->
+      forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+  apply (and3E
+    (group_homomorphism G mult int integers_group_mult h)
+    (forall beta:set, beta :e J ->
+      apply_fun h (apply_fun gens beta) = apply_fun ys0 beta)
+    (forall h':set, group_homomorphism G mult int integers_group_mult h' ->
+      (forall beta:set, beta :e J ->
+        apply_fun h' (apply_fun gens beta) = apply_fun ys0 beta) ->
+      forall x:set, x :e G -> apply_fun h' x = apply_fun h x)
+    HhPack).
+  assume HhHom HhOnGens HhUniq.
+  claim HhGenAlpha :
+    apply_fun h (apply_fun gens alpha) = 1.
+  {
+    claim Hys0Alpha : apply_fun ys0 alpha = 1.
+    {
+      claim Hys0Def :
+        ys0 = graph J (fun beta:set => If_i (beta = alpha) 1 0).
+      {
+        reflexivity.
+      }
+      rewrite Hys0Def.
+      rewrite (apply_fun_graph
+        J
+        (fun beta:set => If_i (beta = alpha) 1 0)
+        alpha
+        Halpha).
+      claim Haeq : alpha = alpha.
+      {
+        reflexivity.
+      }
+      claim HifAlpha1 : If_i (alpha = alpha) 1 0 = 1.
+      {
+        exact (If_i_1
+          (alpha = alpha)
+          1
+          0
+          Haeq).
+      }
+      rewrite HifAlpha1.
+      reflexivity.
+    }
+    rewrite <- Hys0Alpha.
+    exact (HhOnGens alpha Halpha).
+  }
+  claim HkerIncl : C c= kernel_of G 0 h.
+  {
+    exact ((andER
+      (normal_subgroup C G mult e inv /\
+       abelian_group
+         (quotient_group_set G mult C)
+         (quotient_group_mult G mult C)
+         (quotient_group_id G mult e C)
+         (quotient_group_inv G mult inv C))
+      (forall H multH eH invH h0:set,
+        abelian_group H multH eH invH ->
+        group_homomorphism G mult H multH h0 ->
+        C c= kernel_of G eH h0)
+      HcommProps)
+      int
+      integers_group_mult
+      0
+      integers_group_inv
+      h
+      HabInt
+      HhHom).
+  }
+  claim HpowInKer :
+    group_power_nat mult e (apply_fun gens alpha) n :e kernel_of G 0 h.
+  {
+    exact (HkerIncl
+      (group_power_nat mult e (apply_fun gens alpha) n)
+      HpowOrigInC).
+  }
+  claim HhPowEq0 :
+    apply_fun h (group_power_nat mult e (apply_fun gens alpha) n) = 0.
+  {
+    exact (SepE2
+      G
+      (fun x:set => apply_fun h x = 0)
+      (group_power_nat mult e (apply_fun gens alpha) n)
+      HpowInKer).
+  }
+  claim HhPowHom :
+    apply_fun h (group_power_nat mult e (apply_fun gens alpha) n) =
+    group_power_nat
+      integers_group_mult
+      0
+      (apply_fun h (apply_fun gens alpha))
+      n.
+  {
+    exact (group_homomorphism_preserves_power_nat
+      G
+      mult
+      e
+      inv
+      int
+      integers_group_mult
+      0
+      integers_group_inv
+      h
+      (apply_fun gens alpha)
+      n
+      HgrpG
+      HgrpInt
+      HhHom
+      HgenAlphaG
+      HnO).
+  }
+  claim HhPowEqn :
+    apply_fun h (group_power_nat mult e (apply_fun gens alpha) n) = n.
+  {
+    rewrite HhPowHom.
+    rewrite HhGenAlpha.
+    exact (integers_group_power_nat_one_eq_nat
+      n
+      HnO).
+  }
+  claim HnEq0 : n = 0.
+  {
+    rewrite <- HhPowEqn.
+    exact HhPowEq0.
+  }
+  claim Hfalse : False.
+  {
+    exact (HnNZ HnEq0).
+  }
+  exact (FalseE
+    Hfalse
+    (group_power_nat mult e (apply_fun gens alpha) n = e)).
 }
 exact HpowOrigEqe.
 Admitted.
