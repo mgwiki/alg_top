@@ -117821,6 +117821,131 @@ exact (Urysohn_metrization_theorem
   HscX).
 Qed.
 
+(** Infrastructure: compact spaces are paracompact. **)
+(** Proven Charlie **)
+Theorem compact_space_implies_paracompact_algtop :
+  forall X Tx:set,
+  compact_space X Tx ->
+  paracompact_space X Tx.
+let X Tx.
+assume HcompX.
+claim HtopX : topology_on X Tx.
+{
+  exact (compact_space_topology
+    X
+    Tx
+    HcompX).
+}
+claim HparRef :
+  forall U:set,
+    open_cover X Tx U ->
+    exists V:set, open_cover X Tx V /\ locally_finite_family X Tx V /\ refine_of V U.
+{
+  let U.
+  assume HopenU.
+  claim HopenUof : open_cover_of X Tx U.
+  {
+    exact (open_cover_implies_open_cover_of
+      X
+      Tx
+      U
+      HtopX
+      HopenU).
+  }
+  claim HfinSub : has_finite_subcover X Tx U.
+  {
+    exact (compact_space_subcover_property
+      X
+      Tx
+      HcompX
+      U
+      HopenUof).
+  }
+  apply HfinSub.
+  let V.
+  assume HVpack.
+  claim HVsubU : V c= U.
+  {
+    exact (andEL
+      (V c= U)
+      (finite V)
+      (andEL
+        (V c= U /\ finite V)
+        (X c= Union V)
+        HVpack)).
+  }
+  claim HVfin : finite V.
+  {
+    exact (andER
+      (V c= U)
+      (finite V)
+      (andEL
+        (V c= U /\ finite V)
+        (X c= Union V)
+        HVpack)).
+  }
+  claim HXsubUnionV : X c= Union V.
+  {
+    exact (andER
+      (V c= U /\ finite V)
+      (X c= Union V)
+      HVpack).
+  }
+  claim HmembersOpenV : forall v:set, v :e V -> v :e Tx.
+  {
+    let v.
+    assume HvV.
+    exact (andEL
+      (forall u:set, u :e U -> u :e Tx)
+      (covers X U)
+      HopenU
+      v
+      (HVsubU v HvV)).
+  }
+  claim HopenV : open_cover X Tx V.
+  {
+    exact (andI
+      (forall u:set, u :e V -> u :e Tx)
+      (covers X V)
+      HmembersOpenV
+      (Subq_Union_implies_covers
+        X
+        V
+        HXsubUnionV)).
+  }
+  claim HlfV : locally_finite_family X Tx V.
+  {
+    exact (finite_open_cover_locally_finite
+      X
+      Tx
+      V
+      HtopX
+      HopenV
+      HVfin).
+  }
+  witness V.
+  apply andI.
+  - exact (andI
+      (open_cover X Tx V)
+      (locally_finite_family X Tx V)
+      HopenV
+      HlfV).
+  - let v.
+    assume HvV.
+    witness v.
+    apply andI.
+    + exact (HVsubU v HvV).
+    + exact (Subq_ref v).
+}
+exact (andI
+  (topology_on X Tx)
+  (forall U:set,
+    open_cover X Tx U ->
+    exists V:set, open_cover X Tx V /\ locally_finite_family X Tx V /\ refine_of V U)
+  HtopX
+  HparRef).
+Qed.
+
 (** from Supplementary Exercises Exercise 1a (line 5393 in algtop.tex): metrizable star refinement **)
 (** LATEX VERSION: If X is metrizable, then for any open covering A, there exists an **)
 (** open covering B refining A such that for each pair B, B' in B with nonempty **)
