@@ -112407,7 +112407,159 @@ apply (iffI
         + exact Hpow_inv_factor.
       - exact Hnontriv.
     }
-    admit.
+    claim Hsub_factor : subgroup_of Galpha G mult e inv.
+    {
+      apply (and5E
+        (group_structure G mult e inv)
+        (forall beta:set, beta :e J ->
+          subgroup_of (apply_fun Gfam0 beta) G mult e inv)
+        (forall beta gamma:set, beta :e J -> gamma :e J -> beta <> gamma ->
+          forall x:set, x :e apply_fun Gfam0 beta ->
+            x :e apply_fun Gfam0 gamma -> x = e)
+        (subgroups_generate G mult e inv J Gfam0)
+        (forall x:set, x :e G -> x <> e ->
+          exists n xs:set,
+            reduced_word J Gfam0 efam0 n xs /\ n <> 0 /\
+            word_product mult e xs n = x /\
+            (forall n' xs':set,
+              reduced_word J Gfam0 efam0 n' xs' -> n' <> 0 ->
+              word_product mult e xs' n' = x ->
+              n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
+        Hfp).
+      assume Hgrp_fp Hsub_fp Hdis_fp Hgen_fp Huniq_fp.
+      claim HGalpha_def : Galpha = apply_fun Gfam0 alpha.
+      {
+        reflexivity.
+      }
+      rewrite HGalpha_def.
+      exact (Hsub_fp alpha Halpha).
+    }
+    apply (and4E
+      (Galpha c= G)
+      (e :e Galpha)
+      (forall x y:set, x :e Galpha -> y :e Galpha -> apply_fun mult (x, y) :e Galpha)
+      (forall x:set, x :e Galpha -> apply_fun inv x :e Galpha)
+      Hsub_factor).
+    assume HGalpha_subG HeA HmulA HinvA.
+    apply (and6E
+      (function_on mult (setprod G G) G)
+      (function_on inv G G)
+      (e :e G)
+      (forall x y z:set, x :e G -> y :e G -> z :e G ->
+        apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+      (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+      (forall x:set, x :e G ->
+        apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+      Hgrp_free).
+    assume HmultG HinvG HeG HassocG HidG HinvG_law.
+    claim Hgrp_factor : group_structure Galpha mult e inv.
+    {
+      claim HmultA_fn : function_on mult (setprod Galpha Galpha) Galpha.
+      {
+        let p.
+        assume Hp : p :e setprod Galpha Galpha.
+        claim Hp0 : p 0 :e Galpha.
+        {
+          exact (ap0_Sigma Galpha (fun _ : set => Galpha) p Hp).
+        }
+        claim Hp1 : p 1 :e Galpha.
+        {
+          exact (ap1_Sigma Galpha (fun _ : set => Galpha) p Hp).
+        }
+        rewrite (setprod_eta Galpha Galpha p Hp).
+        exact (HmulA (p 0) (p 1) Hp0 Hp1).
+      }
+      claim HinvA_fn : function_on inv Galpha Galpha.
+      {
+        let x.
+        assume Hx : x :e Galpha.
+        exact (HinvA x Hx).
+      }
+      claim HassocA :
+        forall x y z:set, x :e Galpha -> y :e Galpha -> z :e Galpha ->
+          apply_fun mult (apply_fun mult (x, y), z) =
+          apply_fun mult (x, apply_fun mult (y, z)).
+      {
+        let x y z.
+        assume Hx : x :e Galpha.
+        assume Hy : y :e Galpha.
+        assume Hz : z :e Galpha.
+        exact (HassocG
+          x
+          y
+          z
+          (HGalpha_subG x Hx)
+          (HGalpha_subG y Hy)
+          (HGalpha_subG z Hz)).
+      }
+      claim HidA :
+        forall x:set, x :e Galpha ->
+          apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x.
+      {
+        let x.
+        assume Hx : x :e Galpha.
+        exact (HidG x (HGalpha_subG x Hx)).
+      }
+      claim HinvA_law :
+        forall x:set, x :e Galpha ->
+          apply_fun mult (x, apply_fun inv x) = e /\
+          apply_fun mult (apply_fun inv x, x) = e.
+      {
+        let x.
+        assume Hx : x :e Galpha.
+        exact (HinvG_law x (HGalpha_subG x Hx)).
+      }
+      exact (and6I
+        (function_on mult (setprod Galpha Galpha) Galpha)
+        (function_on inv Galpha Galpha)
+        (e :e Galpha)
+        (forall x y z:set, x :e Galpha -> y :e Galpha -> z :e Galpha ->
+          apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+        (forall x:set, x :e Galpha -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+        (forall x:set, x :e Galpha ->
+          apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+        HmultA_fn
+        HinvA_fn
+        HeA
+        HassocA
+        HidA
+        HinvA_law).
+    }
+    claim Hcyc_factor : cyclic_group Galpha mult e inv.
+    {
+      apply (andI
+        (group_structure Galpha mult e inv)
+        (exists x:set, x :e Galpha /\
+          forall g:set, g :e Galpha ->
+            exists n:set, n :e int /\
+              ((n :e omega /\ g = group_power_nat mult e x n) \/
+               (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+                 g = group_power_nat mult e (apply_fun inv x) (ordsucc m))))
+        Hgrp_factor).
+      witness (apply_fun gens alpha).
+      exact Hgen_of_factor.
+    }
+    claim Hnonfinite_factor : ~ finite Galpha.
+    {
+      admit.
+    }
+    apply (infinite_cyclic_universal_property
+      Galpha
+      mult
+      e
+      inv
+      (apply_fun gens alpha)
+      H
+      multH
+      eH
+      invH
+      (apply_fun ys alpha)
+      Hgrp_factor
+      Hcyc_factor
+      Hnonfinite_factor
+      Hgen_of_factor
+      HgrpH
+      (Hys alpha Halpha)).
   }
   set hfam0 := graph J (fun alpha:set =>
     Eps_i (fun f:set =>
