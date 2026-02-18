@@ -118110,6 +118110,141 @@ exact (left_coset_right_mult_subgroup_preserves
 Qed.
 
 (** Proven Bob **)
+(** Helper: g.e is always in gC for a subgroup C. **)
+Theorem representative_mul_id_in_left_coset :
+  forall G mult e inv C g:set,
+  group_structure G mult e inv ->
+  subgroup_of C G mult e inv ->
+  g :e G ->
+  apply_fun mult (g, e) :e left_coset mult g C.
+let G mult e inv C g.
+assume Hgrp : group_structure G mult e inv.
+assume HsubC : subgroup_of C G mult e inv.
+assume HgG : g :e G.
+apply (and4E
+  (C c= G)
+  (e :e C)
+  (forall x y:set, x :e C -> y :e C -> apply_fun mult (x, y) :e C)
+  (forall x:set, x :e C -> apply_fun inv x :e C)
+  HsubC).
+assume HCsub HeC HmulC HinvC.
+exact (ReplI
+  C
+  (fun n:set => apply_fun mult (g, n))
+  e
+  HeC).
+Qed.
+
+(** Proven Bob **)
+(** Helper: every group element lies in its own left coset. **)
+Theorem representative_in_own_left_coset :
+  forall G mult e inv C g:set,
+  group_structure G mult e inv ->
+  subgroup_of C G mult e inv ->
+  g :e G ->
+  g :e left_coset mult g C.
+let G mult e inv C g.
+assume Hgrp : group_structure G mult e inv.
+assume HsubC : subgroup_of C G mult e inv.
+assume HgG : g :e G.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume HmultG HinvG HeG HassocG HidG HinvLawG.
+rewrite <- (andER
+  (apply_fun mult (e, g) = g)
+  (apply_fun mult (g, e) = g)
+  (HidG g HgG)) at 1.
+exact (representative_mul_id_in_left_coset
+  G
+  mult
+  e
+  inv
+  C
+  g
+  Hgrp
+  HsubC
+  HgG).
+Qed.
+
+(** Proven Bob **)
+(** Helper: with normal C, c.g belongs to gC for c in C. **)
+Theorem normal_left_mult_in_left_coset :
+  forall G mult e inv C g c:set,
+  group_structure G mult e inv ->
+  normal_subgroup C G mult e inv ->
+  g :e G ->
+  c :e C ->
+  apply_fun mult (c, g) :e left_coset mult g C.
+let G mult e inv C g c.
+assume Hgrp : group_structure G mult e inv.
+assume HnormalC : normal_subgroup C G mult e inv.
+assume HgG : g :e G.
+assume HcC : c :e C.
+claim HsubC : subgroup_of C G mult e inv.
+{
+  exact (andEL
+    (subgroup_of C G mult e inv)
+    (forall t g0:set, t :e C -> g0 :e G ->
+      apply_fun mult (apply_fun mult (g0, t), apply_fun inv g0) :e C)
+    HnormalC).
+}
+rewrite <- (left_coset_left_mult_normal_preserves
+  G
+  mult
+  e
+  inv
+  C
+  g
+  c
+  Hgrp
+  HnormalC
+  HgG
+  HcC).
+claim HcgG : apply_fun mult (c, g) :e G.
+{
+  apply (and6E
+    (function_on mult (setprod G G) G)
+    (function_on inv G G)
+    (e :e G)
+    (forall x y z:set, x :e G -> y :e G -> z :e G ->
+      apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+    (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+    (forall x:set, x :e G ->
+      apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+    Hgrp).
+  assume HmultG HinvG HeG HassocG HidG HinvLawG.
+  apply (and4E
+    (C c= G)
+    (e :e C)
+    (forall x y:set, x :e C -> y :e C -> apply_fun mult (x, y) :e C)
+    (forall x:set, x :e C -> apply_fun inv x :e C)
+    HsubC).
+  assume HCsub HeC HmulC HinvC.
+  exact (HmultG
+    (c, g)
+    (tuple_2_setprod_by_pair_Sigma G G c g (HCsub c HcC) HgG)).
+}
+exact (representative_in_own_left_coset
+  G
+  mult
+  e
+  inv
+  C
+  (apply_fun mult (c, g))
+  Hgrp
+  HsubC
+  HcgG).
+Qed.
+
+(** Proven Bob **)
 (** Helper: left coset equals subgroup exactly when representative lies in subgroup. **)
 Theorem left_coset_eq_subgroup_iff_member :
   forall G mult e inv C g:set,
