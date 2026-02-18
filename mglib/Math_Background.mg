@@ -104005,7 +104005,151 @@ apply (xm (alpha_first = 0)).
   { claim Hfam_af1 : apply_fun Gfam alpha_first = G2.
     { rewrite Haf1. exact HGfam1. }
     rewrite <- Hfam_af1. exact Hcs0_fam. }
-  admit.
+  claim Hmerge_data :
+    exists ys:set,
+      reduced_word 2 Gfam efam m ys /\
+      word_product mult e ys m = apply_fun mult (y, c).
+  {
+    admit. (** TODO Bob: merge leading G2 terms (y and cs(0)) into a reduced word of length m **)
+  }
+  apply Hmerge_data.
+  let ys.
+  assume Hys_pack :
+    reduced_word 2 Gfam efam m ys /\
+    word_product mult e ys m = apply_fun mult (y, c).
+  claim Hys_red : reduced_word 2 Gfam efam m ys.
+  {
+    exact (andEL
+      (reduced_word 2 Gfam efam m ys)
+      (word_product mult e ys m = apply_fun mult (y, c))
+      Hys_pack).
+  }
+  claim Hys_prod : word_product mult e ys m = apply_fun mult (y, c).
+  {
+    exact (andER
+      (reduced_word 2 Gfam efam m ys)
+      (word_product mult e ys m = apply_fun mult (y, c))
+      Hys_pack).
+  }
+  claim Huniq_cx :
+    exists n0 xs0:set,
+      reduced_word 2 Gfam efam n0 xs0 /\ n0 <> 0 /\
+      word_product mult e xs0 n0 = apply_fun mult (c, x) /\
+      (forall n' xs':set,
+        reduced_word 2 Gfam efam n' xs' -> n' <> 0 ->
+        word_product mult e xs' n' = apply_fun mult (c, x) ->
+        n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)).
+  {
+    exact (Hunique
+      (apply_fun mult (c, x))
+      HcxG
+      Hcxne).
+  }
+  apply Huniq_cx.
+  let n0.
+  assume Hn0_pack :
+    exists xs0:set,
+      reduced_word 2 Gfam efam n0 xs0 /\ n0 <> 0 /\
+      word_product mult e xs0 n0 = apply_fun mult (c, x) /\
+      (forall n' xs':set,
+        reduced_word 2 Gfam efam n' xs' -> n' <> 0 ->
+        word_product mult e xs' n' = apply_fun mult (c, x) ->
+        n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)).
+  apply Hn0_pack.
+  let xs0.
+  assume Hxs0_pack :
+    reduced_word 2 Gfam efam n0 xs0 /\ n0 <> 0 /\
+    word_product mult e xs0 n0 = apply_fun mult (c, x) /\
+    (forall n' xs':set,
+      reduced_word 2 Gfam efam n' xs' -> n' <> 0 ->
+      word_product mult e xs' n' = apply_fun mult (c, x) ->
+      n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)).
+  apply (and4E
+    (reduced_word 2 Gfam efam n0 xs0)
+    (n0 <> 0)
+    (word_product mult e xs0 n0 = apply_fun mult (c, x))
+    (forall n' xs':set,
+      reduced_word 2 Gfam efam n' xs' -> n' <> 0 ->
+      word_product mult e xs' n' = apply_fun mult (c, x) ->
+      n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i))
+    Hxs0_pack).
+  assume Hxs0_red Hn0_ne0 Hxs0_prod Hxs0_unique.
+  claim Hn0_ws :
+    n0 = ordsucc m /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun ws i).
+  {
+    exact (Hxs0_unique
+      (ordsucc m)
+      ws
+      Hws_red
+      (neq_ordsucc_0 m)
+      Hwp_cx).
+  }
+  claim Hys_prod_cx :
+    word_product mult e ys m = apply_fun mult (c, x).
+  {
+    rewrite Hcx_eq_yc.
+    exact Hys_prod.
+  }
+  claim Hn0_ys :
+    n0 = m /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun ys i).
+  {
+    exact (Hxs0_unique
+      m
+      ys
+      Hys_red
+      Hmne
+      Hys_prod_cx).
+  }
+  claim Hn0_eq_sm : n0 = ordsucc m.
+  {
+    exact (andEL
+      (n0 = ordsucc m)
+      (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun ws i)
+      Hn0_ws).
+  }
+  claim Hn0_eq_m : n0 = m.
+  {
+    exact (andEL
+      (n0 = m)
+      (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun ys i)
+      Hn0_ys).
+  }
+  claim Hm_eq_sm : m = ordsucc m.
+  {
+    claim Hm_eq_n0 : m = n0.
+    {
+      symmetry.
+      exact Hn0_eq_m.
+    }
+    exact (eq_i_tra
+      m
+      n0
+      (ordsucc m)
+      Hm_eq_n0
+      Hn0_eq_sm).
+  }
+  claim Hsm_eq_m : ordsucc m = m.
+  {
+    symmetry.
+    exact Hm_eq_sm.
+  }
+  claim Hm_in_sm : m :e ordsucc m.
+  {
+    exact (ordsuccI2
+      m).
+  }
+  claim Hm_in_m : m :e m.
+  {
+    exact (mem_eqR
+      m
+      (ordsucc m)
+      m
+      Hsm_eq_m
+      Hm_in_sm).
+  }
+  exact (Hm_notin_m
+    Hm_in_m
+    False).
 Admitted.
 
 (** Sub-helper: Case last entry of c's word in G1 **)
