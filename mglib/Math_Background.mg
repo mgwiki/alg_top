@@ -119197,6 +119197,135 @@ exact (representative_in_own_left_coset
 Qed.
 
 (** Proven Bob **)
+(** Helper: for normal C, inserting a C-factor in the middle of x.y preserves the left coset. **)
+Theorem left_coset_middle_subgroup_factor_normal_preserves :
+  forall G mult e inv C x y c:set,
+  group_structure G mult e inv ->
+  normal_subgroup C G mult e inv ->
+  x :e G ->
+  y :e G ->
+  c :e C ->
+  left_coset mult (apply_fun mult (apply_fun mult (x, c), y)) C =
+  left_coset mult (apply_fun mult (x, y)) C.
+let G mult e inv C x y c.
+assume Hgrp : group_structure G mult e inv.
+assume HnormalC : normal_subgroup C G mult e inv.
+assume HxG : x :e G.
+assume HyG : y :e G.
+assume HcC : c :e C.
+claim HsubC : subgroup_of C G mult e inv.
+{
+  exact (andEL
+    (subgroup_of C G mult e inv)
+    (forall t g0:set, t :e C -> g0 :e G ->
+      apply_fun mult (apply_fun mult (g0, t), apply_fun inv g0) :e C)
+    HnormalC).
+}
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall a b d:set, a :e G -> b :e G -> d :e G ->
+    apply_fun mult (apply_fun mult (a, b), d) = apply_fun mult (a, apply_fun mult (b, d)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  Hgrp).
+assume HmultG HinvG HeG HassocG HidG HinvLawG.
+apply (and4E
+  (C c= G)
+  (e :e C)
+  (forall u v:set, u :e C -> v :e C -> apply_fun mult (u, v) :e C)
+  (forall u:set, u :e C -> apply_fun inv u :e C)
+  HsubC).
+assume HCsub HeC HmulC HinvC.
+claim HcG : c :e G.
+{
+  exact (HCsub c HcC).
+}
+claim HxyG : apply_fun mult (x, y) :e G.
+{
+  exact (HmultG
+    (x, y)
+    (tuple_2_setprod_by_pair_Sigma G G x y HxG HyG)).
+}
+claim HcyInYCoset : apply_fun mult (c, y) :e left_coset mult y C.
+{
+  exact (normal_left_mult_in_left_coset
+    G
+    mult
+    e
+    inv
+    C
+    y
+    c
+    Hgrp
+    HnormalC
+    HyG
+    HcC).
+}
+apply (ReplE
+  C
+  (fun n:set => apply_fun mult (y, n))
+  (apply_fun mult (c, y))
+  HcyInYCoset).
+let n.
+assume HnPack : n :e C /\ apply_fun mult (c, y) = apply_fun mult (y, n).
+claim HnC : n :e C.
+{
+  exact (andEL
+    (n :e C)
+    (apply_fun mult (c, y) = apply_fun mult (y, n))
+    HnPack).
+}
+claim HcyEqYn : apply_fun mult (c, y) = apply_fun mult (y, n).
+{
+  exact (andER
+    (n :e C)
+    (apply_fun mult (c, y) = apply_fun mult (y, n))
+    HnPack).
+}
+claim HnG : n :e G.
+{
+  exact (HCsub n HnC).
+}
+claim HxcyEqXyn :
+  apply_fun mult (apply_fun mult (x, c), y) =
+  apply_fun mult (apply_fun mult (x, y), n).
+{
+  rewrite (HassocG
+    x
+    c
+    y
+    HxG
+    HcG
+    HyG).
+  rewrite HcyEqYn.
+  rewrite <- (HassocG
+    x
+    y
+    n
+    HxG
+    HyG
+    HnG).
+  reflexivity.
+}
+rewrite HxcyEqXyn.
+exact (left_coset_right_mult_subgroup_preserves
+  G
+  mult
+  e
+  inv
+  C
+  (apply_fun mult (x, y))
+  n
+  Hgrp
+  HsubC
+  HxyG
+  HnC).
+Qed.
+
+(** Proven Bob **)
 (** Helper: if a quotient element equals C, its chosen representative lies in C. **)
 Theorem quotient_element_eq_subgroup_implies_eps_rep_in_subgroup :
   forall G mult e inv C q:set,
