@@ -88248,7 +88248,132 @@ claim Hcsk_ne_e : apply_fun cs k <> e.
   { rewrite (apply_fun_graph 2 (fun _:set => e) al_k Halk2). reflexivity. }
   assume Habs : apply_fun cs k = e.
   apply Hne_efam. rewrite Hefam_al. exact Habs. }
-admit.
+(** Prove ws is a reduced word of length ordsucc m **)
+claim Hws_mem : forall i:set, i :e ordsucc m ->
+  exists alpha:set, alpha :e 2 /\
+    apply_fun ws i :e apply_fun Gfam alpha /\
+    apply_fun ws i <> apply_fun efam alpha.
+{ let i. assume Hi : i :e ordsucc m.
+  apply (ordsuccE m i Hi).
+  - assume Him : i :e m.
+    claim Hwsi_eq : apply_fun ws i = apply_fun cs i. { exact (Hws_agree i Him). }
+    rewrite Hwsi_eq. exact (Hcs_mem i Him).
+  - assume Hieqm : i = m.
+    rewrite Hieqm. rewrite Hws_m.
+    witness 0. apply and3I.
+    + exact In_0_2.
+    + rewrite HGfam0. exact HxG1.
+    + rewrite Hefam0. exact Hxne. }
+claim Hws_adj : forall i:set, i :e ordsucc m -> ordsucc i :e ordsucc m ->
+  forall alpha beta:set, alpha :e 2 -> beta :e 2 ->
+    apply_fun ws i :e apply_fun Gfam alpha ->
+    apply_fun ws (ordsucc i) :e apply_fun Gfam beta ->
+    alpha <> beta.
+{ let i. assume Hi : i :e ordsucc m. assume Hsi : ordsucc i :e ordsucc m.
+  let alpha beta. assume Hal2 : alpha :e 2. assume Hbe2 : beta :e 2.
+  assume Hwsi_al : apply_fun ws i :e apply_fun Gfam alpha.
+  assume Hwssi_be : apply_fun ws (ordsucc i) :e apply_fun Gfam beta.
+  (** ordsucc i :e ordsucc m means ordsucc i :e m or ordsucc i = m **)
+  apply (ordsuccE m (ordsucc i) Hsi).
+  - assume Hsim : ordsucc i :e m.
+    (** Both i and ordsucc i are in m, so use Hcs_adj **)
+    claim Him : i :e m. { exact (nat_trans m Hm_nat (ordsucc i) Hsim i (ordsuccI2 i)). }
+    claim Hwsi_cs : apply_fun ws i = apply_fun cs i. { exact (Hws_agree i Him). }
+    claim Hwssi_cs : apply_fun ws (ordsucc i) = apply_fun cs (ordsucc i).
+    { exact (Hws_agree (ordsucc i) Hsim). }
+    claim Hcsi_al : apply_fun cs i :e apply_fun Gfam alpha.
+    { rewrite <- Hwsi_cs. exact Hwsi_al. }
+    claim Hcssi_be : apply_fun cs (ordsucc i) :e apply_fun Gfam beta.
+    { rewrite <- Hwssi_cs. exact Hwssi_be. }
+    exact (Hcs_adj i Him Hsim alpha beta Hal2 Hbe2 Hcsi_al Hcssi_be).
+  - assume Hsieqm : ordsucc i = m.
+    (** ordsucc i = m means i = k (since m = ordsucc k) **)
+    claim Hsi_sk : ordsucc i = ordsucc k. { rewrite Hsieqm. exact Hm_eq. }
+    claim Hieqk : i = k. { exact (ordsucc_inj i k Hsi_sk). }
+    claim Hwsi_csk : apply_fun ws i = apply_fun cs k.
+    { rewrite Hieqk. exact (Hws_agree k Hk_in_m). }
+    claim Hwssi_x : apply_fun ws (ordsucc i) = x.
+    { rewrite Hsieqm. exact Hws_m. }
+    claim Hcsk_Gal : apply_fun cs k :e apply_fun Gfam alpha.
+    { rewrite <- Hwsi_csk. exact Hwsi_al. }
+    claim Hx_Gbe : x :e apply_fun Gfam beta.
+    { rewrite <- Hwssi_x. exact Hwssi_be. }
+    (** If alpha = beta, contradiction via intersection **)
+    assume Haleqbe : alpha = beta.
+    apply (xm (alpha = 0)).
+    + assume Hal0 : alpha = 0.
+      (** cs(k) in Gfam(alpha)=Gfam(0)=G1 AND Gfam(1)=G2 **)
+      claim Hal_ne1 : alpha <> 1. { rewrite Hal0. exact neq_0_1. }
+      claim Hcsk_eq_e : apply_fun cs k = e.
+      { claim Hcsk_G1fam : apply_fun cs k :e apply_fun Gfam 1.
+        { rewrite HGfam1. exact Hcsk_G2. }
+        exact (Hinter alpha 1 Hal2 In_1_2 Hal_ne1 (apply_fun cs k) Hcsk_Gal Hcsk_G1fam). }
+      exact (Hcsk_ne_e Hcsk_eq_e).
+    + assume Hal_ne0 : alpha <> 0.
+      (** alpha = 1, so beta = 1 too; x in Gfam(beta) = G2 and G1 **)
+      claim Hbe_ne0 : beta <> 0.
+      { assume Hbe0 : beta = 0. apply Hal_ne0. rewrite Haleqbe. exact Hbe0. }
+      claim Hx_G0fam : x :e apply_fun Gfam 0.
+      { rewrite HGfam0. exact HxG1. }
+      claim Hx_eq_e : x = e.
+      { exact (Hinter beta 0 Hbe2 In_0_2 Hbe_ne0 x Hx_Gbe Hx_G0fam). }
+      exact (Hxne Hx_eq_e). }
+claim Hws_red : reduced_word 2 Gfam efam (ordsucc m) ws.
+{ prove (ordsucc m :e omega /\
+    (forall i:set, i :e ordsucc m ->
+      exists alpha:set, alpha :e 2 /\
+        apply_fun ws i :e apply_fun Gfam alpha /\
+        apply_fun ws i <> apply_fun efam alpha)) /\
+    (forall i:set, i :e ordsucc m -> ordsucc i :e ordsucc m ->
+      forall alpha beta:set, alpha :e 2 -> beta :e 2 ->
+        apply_fun ws i :e apply_fun Gfam alpha ->
+        apply_fun ws (ordsucc i) :e apply_fun Gfam beta ->
+        alpha <> beta).
+  apply andI.
+  - apply andI.
+    + exact Hsm_omega.
+    + exact Hws_mem.
+  - exact Hws_adj. }
+(** Now apply uniqueness to get cx's canonical representation **)
+(** Delegate remaining case analysis to sub-sub-helpers **)
+(** Get first entry's factor **)
+apply (exandE_i
+  (fun al:set => al :e 2 /\ apply_fun cs 0 :e apply_fun Gfam al)
+  (fun al:set => apply_fun cs 0 <> apply_fun efam al)
+  (Hcs_mem 0 H0_in_m)).
+let alpha_first.
+assume Haf_conj : alpha_first :e 2 /\ apply_fun cs 0 :e apply_fun Gfam alpha_first.
+assume Hcs0_ne_efam : apply_fun cs 0 <> apply_fun efam alpha_first.
+claim Haf2 : alpha_first :e 2.
+{ exact (andEL (alpha_first :e 2) (apply_fun cs 0 :e apply_fun Gfam alpha_first) Haf_conj). }
+claim Hcs0_fam : apply_fun cs 0 :e apply_fun Gfam alpha_first.
+{ exact (andER (alpha_first :e 2) (apply_fun cs 0 :e apply_fun Gfam alpha_first) Haf_conj). }
+claim Hcs0_ne_e : apply_fun cs 0 <> e.
+{ claim Hefam_af : apply_fun efam alpha_first = e.
+  { rewrite (apply_fun_graph 2 (fun _:set => e) alpha_first Haf2). reflexivity. }
+  assume H : apply_fun cs 0 = e. apply Hcs0_ne_efam. rewrite Hefam_af. exact H. }
+(** Case split on alpha_first **)
+apply (xm (alpha_first = 0)).
+- assume Haf0 : alpha_first = 0.
+  (** cs(0) in G1 (same factor as x): use prepend argument **)
+  claim Hcs0_G1 : apply_fun cs 0 :e G1.
+  { claim Hfam_af0 : apply_fun Gfam alpha_first = G1.
+    { rewrite Haf0. exact HGfam0. }
+    rewrite <- Hfam_af0. exact Hcs0_fam. }
+  admit.
+- assume Haf_ne0 : alpha_first <> 0.
+  (** cs(0) in G2 (same factor as y): use merge argument **)
+  claim Haf1 : alpha_first = 1.
+  { apply (ordsuccE 1 alpha_first Haf2).
+    + assume H : alpha_first :e 1. apply (ordsuccE 0 alpha_first H).
+      * assume H2 : alpha_first :e 0. exact (EmptyE alpha_first H2 (alpha_first = 1)).
+      * assume H2 : alpha_first = 0. exact (Haf_ne0 H2 (alpha_first = 1)).
+    + assume H : alpha_first = 1. exact H. }
+  claim Hcs0_G2 : apply_fun cs 0 :e G2.
+  { claim Hfam_af1 : apply_fun Gfam alpha_first = G2.
+    { rewrite Haf1. exact HGfam1. }
+    rewrite <- Hfam_af1. exact Hcs0_fam. }
+  admit.
 Admitted.
 
 (** Sub-helper: Case last entry of c's word in G1 **)
