@@ -115979,13 +115979,9 @@ Theorem ex70_1b_trivial_inclusion_isomorphism :
 exact trivial_inclusion_induces_free_product_isomorphism_helper.
 Admitted.
 
-(** from S70 Exercise 2(a) (line 3483 in algtop.tex) **)
-(** LATEX VERSION: If i2 is surjective, then j1 induces an epimorphism **)
-(** h: pi1(U)/M -> pi1(X), where M is the least normal subgroup **)
-(** of pi1(U) containing i1(ker i2). **)
-(** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-Theorem ex70_2a_surjective_i2_epimorphism :
+(** Infrastructure helper for S70 Exercise 2(a):
+    surjective i2 yields an epimorphism from pi1(U)/M to pi1(X). **)
+Theorem surjective_i2_induces_quotient_epimorphism_helper :
   forall X Tx U V x0:set,
   U :e Tx -> V :e Tx -> X = U :\/: V ->
   path_connected_space U (subspace_topology X Tx U) ->
@@ -116028,6 +116024,57 @@ Theorem ex70_2a_surjective_i2_epimorphism :
         (fundamental_group_mult U (subspace_topology X Tx U) x0) M)
       (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0) h.
 admit.
+Admitted.
+
+(** from S70 Exercise 2(a) (line 3483 in algtop.tex) **)
+(** LATEX VERSION: If i2 is surjective, then j1 induces an epimorphism **)
+(** h: pi1(U)/M -> pi1(X), where M is the least normal subgroup **)
+(** of pi1(U) containing i1(ker i2). **)
+(** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
+(** Bounty 110 **)
+Theorem ex70_2a_surjective_i2_epimorphism :
+  forall X Tx U V x0:set,
+  U :e Tx -> V :e Tx -> X = U :\/: V ->
+  path_connected_space U (subspace_topology X Tx U) ->
+  path_connected_space V (subspace_topology X Tx V) ->
+  path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
+  x0 :e U :/\: V ->
+  let i2 := induced_homomorphism
+    (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+    V (subspace_topology X Tx V) x0
+    (graph (U :/\: V) (fun x => x)) in
+  surjective_map
+    (fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0)
+    (fundamental_group V (subspace_topology X Tx V) x0) i2 ->
+  let i1 := induced_homomorphism
+    (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+    U (subspace_topology X Tx U) x0
+    (graph (U :/\: V) (fun x => x)) in
+  let M := least_normal_subgroup
+    (fundamental_group U (subspace_topology X Tx U) x0)
+    (fundamental_group_mult U (subspace_topology X Tx U) x0)
+    (fundamental_group_id U (subspace_topology X Tx U) x0)
+    (fundamental_group_inv U (subspace_topology X Tx U) x0)
+    (homomorphism_image
+      (kernel_of
+        (fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0)
+        (fundamental_group_id V (subspace_topology X Tx V) x0) i2)
+      i1) in
+	  exists h:set,
+	    surjective_map
+      (quotient_group_set
+        (fundamental_group U (subspace_topology X Tx U) x0)
+        (fundamental_group_mult U (subspace_topology X Tx U) x0) M)
+      (fundamental_group X Tx x0) h /\
+	    group_homomorphism
+	      (quotient_group_set
+	        (fundamental_group U (subspace_topology X Tx U) x0)
+	        (fundamental_group_mult U (subspace_topology X Tx U) x0) M)
+	      (quotient_group_mult
+	        (fundamental_group U (subspace_topology X Tx U) x0)
+	        (fundamental_group_mult U (subspace_topology X Tx U) x0) M)
+	      (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0) h.
+exact surjective_i2_induces_quotient_epimorphism_helper.
 Admitted.
 
 (** from S70 Exercise 2(b) (line 3489 in algtop.tex) **)
