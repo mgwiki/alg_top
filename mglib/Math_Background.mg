@@ -117500,6 +117500,158 @@ rewrite <- HcosEq.
 exact HgInLeft.
 Qed.
 
+(** Proven Bob **)
+(** Helper: any subgroup element has left coset equal to the subgroup. **)
+Theorem subgroup_member_implies_left_coset_eq_subgroup :
+  forall G mult e inv C g:set,
+  group_structure G mult e inv ->
+  subgroup_of C G mult e inv ->
+  g :e C ->
+  left_coset mult g C = C.
+let G mult e inv C g.
+assume Hgrp : group_structure G mult e inv.
+assume HsubC : subgroup_of C G mult e inv.
+assume HgC : g :e C.
+apply (and4E
+  (C c= G)
+  (e :e C)
+  (forall x y:set, x :e C -> y :e C -> apply_fun mult (x, y) :e C)
+  (forall x:set, x :e C -> apply_fun inv x :e C)
+  HsubC).
+assume HCsub HeC HmulC HinvC.
+claim HgG : g :e G.
+{
+  exact (HCsub g HgC).
+}
+claim HleftCosetSubC : left_coset mult g C c= C.
+{
+  let y.
+  assume HyL : y :e left_coset mult g C.
+  apply (ReplE C (fun n:set => apply_fun mult (g, n)) y HyL).
+  let c.
+  assume HcPack : c :e C /\ y = apply_fun mult (g, c).
+  claim HcC : c :e C.
+  {
+    exact (andEL
+      (c :e C)
+      (y = apply_fun mult (g, c))
+      HcPack).
+  }
+  claim HyDef : y = apply_fun mult (g, c).
+  {
+    exact (andER
+      (c :e C)
+      (y = apply_fun mult (g, c))
+      HcPack).
+  }
+  rewrite HyDef.
+  exact (HmulC g c HgC HcC).
+}
+claim HCsubLeftCoset : C c= left_coset mult g C.
+{
+  let y.
+  assume HyC : y :e C.
+  claim HyG : y :e G.
+  {
+    exact (HCsub y HyC).
+  }
+  claim HinvGC : apply_fun inv g :e C.
+  {
+    exact (HinvC g HgC).
+  }
+  claim HinvGG : apply_fun inv g :e G.
+  {
+    exact (HCsub (apply_fun inv g) HinvGC).
+  }
+  claim HcandC : apply_fun mult (apply_fun inv g, y) :e C.
+  {
+    exact (HmulC
+      (apply_fun inv g)
+      y
+      HinvGC
+      HyC).
+  }
+  claim HmulRep : apply_fun mult (g, apply_fun mult (apply_fun inv g, y)) = y.
+  {
+    apply (and6E
+      (function_on mult (setprod G G) G)
+      (function_on inv G G)
+      (e :e G)
+      (forall x y z:set, x :e G -> y :e G -> z :e G ->
+        apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+      (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+      (forall x:set, x :e G ->
+        apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+      Hgrp).
+    assume HmultG HinvG HeG HassocG HidG HinvLawG.
+    rewrite <- (HassocG
+      g
+      (apply_fun inv g)
+      y
+      HgG
+      HinvGG
+      HyG).
+    rewrite (andEL
+      (apply_fun mult (g, apply_fun inv g) = e)
+      (apply_fun mult (apply_fun inv g, g) = e)
+      (HinvLawG g HgG)).
+    exact (andEL
+      (apply_fun mult (e, y) = y)
+      (apply_fun mult (y, e) = y)
+      (HidG y HyG)).
+  }
+  rewrite <- HmulRep.
+  exact (ReplI
+    C
+    (fun n:set => apply_fun mult (g, n))
+    (apply_fun mult (apply_fun inv g, y))
+    HcandC).
+}
+apply set_ext.
+- exact HleftCosetSubC.
+- exact HCsubLeftCoset.
+Qed.
+
+(** Proven Bob **)
+(** Helper: left coset equals subgroup exactly when representative lies in subgroup. **)
+Theorem left_coset_eq_subgroup_iff_member :
+  forall G mult e inv C g:set,
+  group_structure G mult e inv ->
+  subgroup_of C G mult e inv ->
+  g :e G ->
+  (left_coset mult g C = C <-> g :e C).
+let G mult e inv C g.
+assume Hgrp : group_structure G mult e inv.
+assume HsubC : subgroup_of C G mult e inv.
+assume HgG : g :e G.
+apply (iffI
+  (left_coset mult g C = C)
+  (g :e C)).
+- assume HcosEq : left_coset mult g C = C.
+  exact (left_coset_eq_subgroup_implies_member
+    G
+    mult
+    e
+    inv
+    C
+    g
+    Hgrp
+    HsubC
+    HgG
+    HcosEq).
+- assume HgC : g :e C.
+  exact (subgroup_member_implies_left_coset_eq_subgroup
+    G
+    mult
+    e
+    inv
+    C
+    g
+    Hgrp
+    HsubC
+    HgC).
+Qed.
+
 (** Infrastructure helper for S69 Thm 69.4:
     if a generator power is trivial in the commutator quotient, then the original power is trivial. **)
 Theorem quotient_power_identity_forces_generator_power_identity :
