@@ -62686,9 +62686,39 @@ claim Hex :
                 r
                 HrNr).
             }
+            claim HffunR : function_on f unit_interval B.
+            {
+              exact (continuous_map_function_on
+                unit_interval
+                unit_interval_topology
+                B
+                Tb
+                f
+                Hfcont).
+            }
+            claim HfrB : apply_fun f r :e B.
+            {
+              exact (HffunR
+                r
+                HrUnit).
+            }
+            claim HlocFr :
+              exists Ur:set,
+                Ur :e Tb /\ apply_fun f r :e Ur /\ evenly_covered E Te B Tb p Ur.
+            {
+              exact (lemma54_1_path_lifting_sub_bounty_A
+                E
+                Te
+                B
+                Tb
+                p
+                (apply_fun f r)
+                Hcov
+                HfrB).
+            }
             claim HrN1 : r :e N1.
             {
-              (** TODO Charlie: compare lr with lt1 starting from Hlr0EqLt10 and propagate on Nr to place r in N1. **)
+              (** TODO Charlie: compare lr with lt1 starting from Hlr0EqLt10 and local data at f(r) from HlocFr. **)
               admit.
             }
             exact HrN1.
