@@ -116498,6 +116498,77 @@ assume HpowQ :
     (quotient_group_id G mult e C)
     (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
     n = quotient_group_id G mult e C.
+apply (and4E
+  (group_structure G mult e inv)
+  (function_on gens J G)
+  (forall beta:set, beta :e J ->
+    infinite_cyclic_subgroup G mult e inv (apply_fun gens beta))
+  (free_product_of_subgroups G mult e inv J
+    (graph J (fun beta:set =>
+      {g :e G | exists k:set, k :e int /\
+        ((k :e omega /\ g = group_power_nat mult e (apply_fun gens beta) k) \/
+         (exists m:set, m :e omega /\ k = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))}))
+    (graph J (fun beta:set => e)))
+  Hfree).
+assume HgrpG HgensG HinfG HfpG.
+claim HinfOrigAlpha :
+  infinite_cyclic_subgroup G mult e inv (apply_fun gens alpha).
+{
+  exact (HinfG alpha Halpha).
+}
+claim HpowPairOrig :
+  (forall k:set, k :e omega ->
+    group_power_nat mult e (apply_fun gens alpha) k :e G) /\
+  (forall m:set, m :e omega ->
+    group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) :e G).
+{
+  apply (and4E
+    (apply_fun gens alpha :e G)
+    (forall k:set, k :e omega ->
+      group_power_nat mult e (apply_fun gens alpha) k :e G)
+    (forall m:set, m :e omega ->
+      group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) :e G)
+    (~(exists k:set, k :e omega /\ k <> 0 /\
+      group_power_nat mult e (apply_fun gens alpha) k = e))
+    HinfOrigAlpha).
+  assume HgenAlphaG HpowPos HpowNeg Hnontriv.
+  exact (andI
+    (forall k:set, k :e omega ->
+      group_power_nat mult e (apply_fun gens alpha) k :e G)
+    (forall m:set, m :e omega ->
+      group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) :e G)
+    HpowPos
+    HpowNeg).
+}
+claim HpowOrigInG :
+  group_power_nat mult e (apply_fun gens alpha) n :e G.
+{
+  exact ((andEL
+    (forall k:set, k :e omega ->
+      group_power_nat mult e (apply_fun gens alpha) k :e G)
+    (forall m:set, m :e omega ->
+      group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) :e G)
+    HpowPairOrig)
+    n
+    HnO).
+}
+claim HnontrivOrig :
+  ~(exists k:set, k :e omega /\ k <> 0 /\
+    group_power_nat mult e (apply_fun gens alpha) k = e).
+{
+  apply (and4E
+    (apply_fun gens alpha :e G)
+    (forall k:set, k :e omega ->
+      group_power_nat mult e (apply_fun gens alpha) k :e G)
+    (forall m:set, m :e omega ->
+      group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) :e G)
+    (~(exists k:set, k :e omega /\ k <> 0 /\
+      group_power_nat mult e (apply_fun gens alpha) k = e))
+    HinfOrigAlpha).
+  assume HgenAlphaG HpowPos HpowNeg Hnontriv.
+  exact Hnontriv.
+}
 admit.
 Admitted.
 
