@@ -111541,15 +111541,109 @@ apply (iffI
            (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
             g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}))
       (graph J (fun alpha:set => e)))).
-	+ let alpha.
-	  assume Halpha : alpha :e J.
-	  set galpha := apply_fun gens alpha.
-	  claim HgalphaG : galpha :e G.
-	  {
-	    exact (Hgens alpha Halpha).
-	  }
-	  admit.
-		+ admit.
+  + let alpha.
+    assume Halpha : alpha :e J.
+    set galpha := apply_fun gens alpha.
+    claim HgalphaG : galpha :e G.
+    {
+      exact (Hgens alpha Halpha).
+    }
+    claim HpowClosed :
+      forall a:set, a :e G ->
+      forall n:set, n :e omega ->
+        group_power_nat mult e a n :e G.
+    {
+      let a.
+      assume HaG : a :e G.
+      apply (and6E
+        (function_on mult (setprod G G) G)
+        (function_on inv G G)
+        (e :e G)
+        (forall x y z:set, x :e G -> y :e G -> z :e G ->
+          apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+        (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+        (forall x:set, x :e G ->
+          apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+        Hgrp).
+      assume HmultFun HinvFun HeG Hassoc Hid HinvLaw.
+      claim HnatPow :
+        forall n:set, nat_p n ->
+          group_power_nat mult e a n :e G.
+      {
+        apply nat_ind.
+        - prove group_power_nat mult e a 0 :e G.
+          claim H0 : group_power_nat mult e a 0 = e.
+          {
+            exact (nat_primrec_0
+              e
+              (fun _ r => apply_fun mult (a, r))).
+          }
+          rewrite H0.
+          exact HeG.
+        - let n.
+          assume Hn : nat_p n.
+          assume IH : group_power_nat mult e a n :e G.
+          prove group_power_nat mult e a (ordsucc n) :e G.
+          claim HS : group_power_nat mult e a (ordsucc n) =
+            apply_fun mult (a, group_power_nat mult e a n).
+          {
+            exact (nat_primrec_S
+              e
+              (fun _ r => apply_fun mult (a, r))
+              n
+              Hn).
+          }
+          rewrite HS.
+          exact (HmultFun
+            (a, group_power_nat mult e a n)
+            (tuple_2_setprod_by_pair_Sigma
+              G
+              G
+              a
+              (group_power_nat mult e a n)
+              HaG
+              IH)).
+      }
+      let n.
+      assume HnO : n :e omega.
+      exact (HnatPow n (omega_nat_p n HnO)).
+    }
+    claim HinvGalphaG : apply_fun inv galpha :e G.
+    {
+      apply (and6E
+        (function_on mult (setprod G G) G)
+        (function_on inv G G)
+        (e :e G)
+        (forall x y z:set, x :e G -> y :e G -> z :e G ->
+          apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+        (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+        (forall x:set, x :e G ->
+          apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+        Hgrp).
+      assume HmultFun HinvFun HeG Hassoc Hid HinvLaw.
+      exact (HinvFun galpha HgalphaG).
+    }
+    claim HpowGalpha :
+      forall n:set, n :e omega -> group_power_nat mult e galpha n :e G.
+    {
+      let n.
+      assume HnO : n :e omega.
+      exact (HpowClosed galpha HgalphaG n HnO).
+    }
+    claim HpowInvGalpha :
+      forall m:set, m :e omega ->
+        group_power_nat mult e (apply_fun inv galpha) (ordsucc m) :e G.
+    {
+      let m.
+      assume HmO : m :e omega.
+      exact (HpowClosed
+        (apply_fun inv galpha)
+        HinvGalphaG
+        (ordsucc m)
+        (omega_ordsucc m HmO)).
+    }
+    admit.
+  + admit.
 Admitted.
 
 (** from S69 Thm 69.2 (line 3057 in algtop.tex): free product of free groups is free **)
