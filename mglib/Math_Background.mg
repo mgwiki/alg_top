@@ -1,7 +1,7 @@
 (** Balance Alice 3320 **)
 (** Balance Bob 3021 **)
-(** Balance Charlie 1171 **)
-(** Balance Dave 1436 **)
+(** Balance Charlie 1160 **)
+(** Balance Dave 1419 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -111500,7 +111500,8 @@ Definition commutator_subgroup : set -> set -> set -> set -> set :=
 (** LATEX VERSION: [G,G] is normal in G, G/[G,G] is abelian, and any homomorphism **)
 (** from G to an abelian group H has kernel containing [G,G]. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
+(** Bounty 182 **)
+(** Lock Dave 1771481684 **)
 Theorem lemma69_3_commutator_subgroup :
   forall G mult e inv:set,
   group_structure G mult e inv ->
@@ -111785,6 +111786,12 @@ apply (andI
               (ordsucc m)))})))).
   + let alpha.
     assume Halpha : alpha :e J.
+    claim HaQ :
+      apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha :e
+      quotient_group_set G mult C.
+    {
+      exact (HbasisFn alpha Halpha).
+    }
     apply (andI
       (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha :e
         quotient_group_set G mult C)
@@ -111808,8 +111815,401 @@ apply (andI
            (quotient_group_id G mult e C)
            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
            n = quotient_group_id G mult e C))
-      (HbasisFn alpha Halpha)).
-    admit.
+      HaQ).
+    claim HgrpQ :
+      group_structure
+        (quotient_group_set G mult C)
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        (quotient_group_inv G mult inv C).
+    {
+      exact (andEL
+        (group_structure
+          (quotient_group_set G mult C)
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (quotient_group_inv G mult inv C))
+        (forall x y:set, x :e quotient_group_set G mult C -> y :e quotient_group_set G mult C ->
+          apply_fun (quotient_group_mult G mult C) (x, y) =
+          apply_fun (quotient_group_mult G mult C) (y, x))
+        HquotAb).
+    }
+    apply (and6E
+      (function_on
+        (quotient_group_mult G mult C)
+        (setprod (quotient_group_set G mult C) (quotient_group_set G mult C))
+        (quotient_group_set G mult C))
+      (function_on
+        (quotient_group_inv G mult inv C)
+        (quotient_group_set G mult C)
+        (quotient_group_set G mult C))
+      (quotient_group_id G mult e C :e quotient_group_set G mult C)
+      (forall x y z:set,
+        x :e quotient_group_set G mult C ->
+        y :e quotient_group_set G mult C ->
+        z :e quotient_group_set G mult C ->
+        apply_fun (quotient_group_mult G mult C)
+          (apply_fun (quotient_group_mult G mult C) (x, y), z) =
+        apply_fun (quotient_group_mult G mult C)
+          (x, apply_fun (quotient_group_mult G mult C) (y, z)))
+      (forall x:set, x :e quotient_group_set G mult C ->
+        apply_fun (quotient_group_mult G mult C) (quotient_group_id G mult e C, x) = x /\
+        apply_fun (quotient_group_mult G mult C) (x, quotient_group_id G mult e C) = x)
+      (forall x:set, x :e quotient_group_set G mult C ->
+        apply_fun (quotient_group_mult G mult C)
+          (x, apply_fun (quotient_group_inv G mult inv C) x) = quotient_group_id G mult e C /\
+        apply_fun (quotient_group_mult G mult C)
+          (apply_fun (quotient_group_inv G mult inv C) x, x) = quotient_group_id G mult e C)
+      HgrpQ).
+    assume HmultQ HinvQ HeQ HassocQ HidQ HinvLawQ.
+    claim HpowClosed :
+      forall b:set, b :e quotient_group_set G mult C ->
+      forall n:set, n :e omega ->
+      group_power_nat
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        b
+        n :e quotient_group_set G mult C.
+    {
+      let b.
+      assume HbQ : b :e quotient_group_set G mult C.
+      claim HnatPow :
+        forall n:set, nat_p n ->
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          b
+          n :e quotient_group_set G mult C.
+      {
+        apply nat_ind.
+        - prove group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            b
+            0 :e quotient_group_set G mult C.
+          claim H0 : group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            b
+            0 = quotient_group_id G mult e C.
+          {
+            exact (nat_primrec_0
+              (quotient_group_id G mult e C)
+              (fun _ r => apply_fun (quotient_group_mult G mult C) (b, r))).
+          }
+          rewrite H0.
+          exact HeQ.
+        - let n.
+          assume Hn : nat_p n.
+          assume IH : group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            b
+            n :e quotient_group_set G mult C.
+          prove group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            b
+            (ordsucc n) :e quotient_group_set G mult C.
+          claim HS : group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            b
+            (ordsucc n) =
+            apply_fun (quotient_group_mult G mult C)
+              (b, group_power_nat
+                (quotient_group_mult G mult C)
+                (quotient_group_id G mult e C)
+                b
+                n).
+          {
+            exact (nat_primrec_S
+              (quotient_group_id G mult e C)
+              (fun _ r => apply_fun (quotient_group_mult G mult C) (b, r))
+              n
+              Hn).
+          }
+          rewrite HS.
+          exact (HmultQ
+            (b, group_power_nat
+              (quotient_group_mult G mult C)
+              (quotient_group_id G mult e C)
+              b
+              n)
+            (tuple_2_setprod_by_pair_Sigma
+              (quotient_group_set G mult C)
+              (quotient_group_set G mult C)
+              b
+              (group_power_nat
+                (quotient_group_mult G mult C)
+                (quotient_group_id G mult e C)
+                b
+                n)
+              HbQ
+              IH)).
+      }
+      let n.
+      assume HnO : n :e omega.
+      exact (HnatPow n (omega_nat_p n HnO)).
+    }
+    claim HpowPair :
+      (forall n:set, n :e omega ->
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n :e quotient_group_set G mult C) /\
+      (forall m:set, m :e omega ->
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun
+            (quotient_group_inv G mult inv C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha))
+          (ordsucc m) :e quotient_group_set G mult C).
+    {
+      apply andI.
+      - let n.
+        assume HnO : n :e omega.
+        exact (HpowClosed
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          HaQ
+          n
+          HnO).
+      - let m.
+        assume HmO : m :e omega.
+        claim HinvAQ :
+          apply_fun
+            (quotient_group_inv G mult inv C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha) :e
+          quotient_group_set G mult C.
+        {
+          exact (HinvQ
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+            HaQ).
+        }
+        exact (HpowClosed
+          (apply_fun
+            (quotient_group_inv G mult inv C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha))
+          HinvAQ
+          (ordsucc m)
+          (omega_ordsucc m HmO)).
+    }
+    apply (andI
+      ((forall n:set, n :e omega ->
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n :e quotient_group_set G mult C) /\
+       (forall m:set, m :e omega ->
+         group_power_nat
+           (quotient_group_mult G mult C)
+           (quotient_group_id G mult e C)
+           (apply_fun
+             (quotient_group_inv G mult inv C)
+             (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha))
+           (ordsucc m) :e quotient_group_set G mult C))
+      (~(exists n:set, n :e omega /\ n <> 0 /\
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n = quotient_group_id G mult e C))
+      HpowPair).
+    claim HinfOrigAlpha :
+      infinite_cyclic_subgroup G mult e inv (apply_fun gens alpha).
+    {
+      exact (HinfG alpha Halpha).
+    }
+    claim HnontrivOrig :
+      ~(exists n:set, n :e omega /\ n <> 0 /\
+        group_power_nat mult e (apply_fun gens alpha) n = e).
+    {
+      exact (andER
+        (apply_fun gens alpha :e G /\
+         (forall n:set, n :e omega ->
+           group_power_nat mult e (apply_fun gens alpha) n :e G) /\
+         (forall m:set, m :e omega ->
+           group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) :e G))
+        (~(exists n:set, n :e omega /\ n <> 0 /\
+          group_power_nat mult e (apply_fun gens alpha) n = e))
+        HinfOrigAlpha).
+    }
+    assume Hbad :
+      exists n:set, n :e omega /\ n <> 0 /\
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n = quotient_group_id G mult e C.
+    apply HnontrivOrig.
+    claim HbadEps :
+      (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n = quotient_group_id G mult e C)) :e omega /\
+      (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n = quotient_group_id G mult e C)) <> 0 /\
+      group_power_nat
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+        (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+          group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+            n = quotient_group_id G mult e C))
+        = quotient_group_id G mult e C.
+    {
+      exact (Eps_i_ex
+        (fun n:set => n :e omega /\ n <> 0 /\
+          group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+            n = quotient_group_id G mult e C)
+        Hbad).
+    }
+    witness (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+      group_power_nat
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+        n = quotient_group_id G mult e C)).
+    apply (and3E
+      ((Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n = quotient_group_id G mult e C)) :e omega)
+      ((Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n = quotient_group_id G mult e C)) <> 0)
+      (group_power_nat
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+        (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+          group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+            n = quotient_group_id G mult e C))
+        = quotient_group_id G mult e C)
+      HbadEps).
+    assume HnO : (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+      group_power_nat
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+        n = quotient_group_id G mult e C)) :e omega.
+    assume HnNZ : (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+      group_power_nat
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+        n = quotient_group_id G mult e C)) <> 0.
+    assume HpowQ : group_power_nat
+      (quotient_group_mult G mult C)
+      (quotient_group_id G mult e C)
+      (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+      (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n = quotient_group_id G mult e C))
+      = quotient_group_id G mult e C.
+    apply andI.
+    - apply andI.
+      + exact HnO.
+      + exact HnNZ.
+    - claim Hqid :
+        quotient_group_id G mult e C = left_coset mult e C.
+      {
+        reflexivity.
+      }
+      claim HpowQidEq :
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+            group_power_nat
+              (quotient_group_mult G mult C)
+              (quotient_group_id G mult e C)
+              (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+              n = quotient_group_id G mult e C))
+          = left_coset mult e C.
+      {
+        rewrite Hqid.
+        exact HpowQ.
+      }
+      claim HnormalC : normal_subgroup C G mult e inv.
+      {
+        claim HNA :
+          normal_subgroup C G mult e inv /\
+          abelian_group
+            (quotient_group_set G mult C)
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (quotient_group_inv G mult inv C).
+        {
+          exact (andEL
+            (normal_subgroup C G mult e inv /\
+             abelian_group
+               (quotient_group_set G mult C)
+               (quotient_group_mult G mult C)
+               (quotient_group_id G mult e C)
+               (quotient_group_inv G mult inv C))
+            (forall H multH eH invH h:set,
+              abelian_group H multH eH invH ->
+              group_homomorphism G mult H multH h ->
+              C c= kernel_of G eH h)
+            HcommProps).
+        }
+        exact (andEL
+          (normal_subgroup C G mult e inv)
+          (abelian_group
+            (quotient_group_set G mult C)
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (quotient_group_inv G mult inv C))
+          HNA).
+      }
+      claim HsubC : subgroup_of C G mult e inv.
+      {
+        exact (andEL
+          (subgroup_of C G mult e inv)
+          (forall n g:set, n :e C -> g :e G ->
+            apply_fun mult (apply_fun mult (g, n), apply_fun inv g) :e C)
+          HnormalC).
+      }
+      claim HeC : e :e C.
+      {
+        apply (and4E
+          (C c= G)
+          (e :e C)
+          (forall x y:set, x :e C -> y :e C -> apply_fun mult (x, y) :e C)
+          (forall x:set, x :e C -> apply_fun inv x :e C)
+          HsubC).
+        assume HCsub HeC HmulC HinvC.
+        exact HeC.
+      }
+      admit.
   admit.
 Admitted.
 
@@ -116783,6 +117183,134 @@ Definition star_refinement_cover : set -> set -> set -> set -> prop :=
     (forall U V:set, U :e B -> V :e B -> U :/\: V <> Empty ->
       exists W:set, W :e A /\ U :\/: V c= W).
 
+(** Helper: compact spaces are locally compact. **)
+(** Proven Charlie **)
+Theorem compact_space_implies_locally_compact_algtop :
+  forall X Tx:set,
+  compact_space X Tx ->
+  locally_compact X Tx.
+let X Tx.
+assume HcompX.
+claim HtopX : topology_on X Tx.
+{
+  exact (compact_space_topology X Tx HcompX).
+}
+claim HXsubX : X c= X.
+{
+  let z.
+  assume HzX.
+  exact HzX.
+}
+prove topology_on X Tx /\
+  (forall x:set, x :e X ->
+    exists C:set, C c= X /\ compact_space C (subspace_topology X Tx C) /\
+      exists U:set, U :e Tx /\ x :e U /\ U c= C).
+apply andI.
+- exact HtopX.
+- let x.
+  assume HxX.
+  witness X.
+  claim HcompWhole : compact_space X (subspace_topology X Tx X).
+  {
+    rewrite (subspace_topology_whole X Tx HtopX).
+    exact HcompX.
+  }
+  claim HUx : exists U:set, U :e Tx /\ x :e U /\ U c= X.
+  {
+    witness X.
+    apply andI.
+    - apply andI.
+      + exact (topology_has_X X Tx HtopX).
+      + exact HxX.
+    - exact HXsubX.
+  }
+  apply andI.
+  - apply andI.
+    + exact HXsubX.
+    + exact HcompWhole.
+  - exact HUx.
+Qed.
+
+(** Helper: compact Hausdorff spaces are regular. **)
+(** Proven Charlie **)
+Theorem compact_Hausdorff_implies_regular_algtop :
+  forall X Tx:set,
+  compact_space X Tx ->
+  Hausdorff_space X Tx ->
+  regular_space X Tx.
+let X Tx.
+assume HcompX HHausX.
+claim HlocX : locally_compact X Tx.
+{
+  exact (compact_space_implies_locally_compact_algtop
+    X
+    Tx
+    HcompX).
+}
+exact (ex32_3_locally_compact_Hausdorff_regular
+  X
+  Tx
+  HlocX
+  HHausX).
+Qed.
+
+(** Helper: compact Hausdorff spaces are normal. **)
+(** Proven Charlie **)
+Theorem compact_Hausdorff_implies_normal_algtop :
+  forall X Tx:set,
+  compact_space X Tx ->
+  Hausdorff_space X Tx ->
+  normal_space X Tx.
+let X Tx.
+assume HcompX HHausX.
+exact (compact_Hausdorff_normal
+  X
+  Tx
+  HcompX
+  HHausX).
+Qed.
+
+(** Helper: compact Hausdorff second-countable spaces are first countable. **)
+(** Proven Charlie **)
+Theorem compact_Hausdorff_second_countable_implies_first_countable_algtop :
+  forall X Tx:set,
+  compact_space X Tx ->
+  Hausdorff_space X Tx ->
+  second_countable_space X Tx ->
+  first_countable_space X Tx.
+let X Tx.
+assume HcompX HHausX HscX.
+exact (second_countable_implies_first_countable
+  X
+  Tx
+  HscX).
+Qed.
+
+(** Helper: compact Hausdorff second-countable spaces are metrizable. **)
+(** Proven Charlie **)
+Theorem compact_Hausdorff_second_countable_implies_metrizable_algtop :
+  forall X Tx:set,
+  compact_space X Tx ->
+  Hausdorff_space X Tx ->
+  second_countable_space X Tx ->
+  metrizable X Tx.
+let X Tx.
+assume HcompX HHausX HscX.
+claim HregX : regular_space X Tx.
+{
+  exact (compact_Hausdorff_implies_regular_algtop
+    X
+    Tx
+    HcompX
+    HHausX).
+}
+exact (Urysohn_metrization_theorem
+  X
+  Tx
+  HregX
+  HscX).
+Qed.
+
 (** from Supplementary Exercises Exercise 1a (line 5393 in algtop.tex): metrizable star refinement **)
 (** LATEX VERSION: If X is metrizable, then for any open covering A, there exists an **)
 (** open covering B refining A such that for each pair B, B' in B with nonempty **)
@@ -116797,17 +117325,226 @@ Theorem supp_ex_1a_metrizable_star_refinement :
 admit.
 Admitted.
 
+(** Helper: finite star-refinement in the compact Hausdorff second-countable case. **)
+Theorem supp_ex_1b_compact_Hausdorff_star_refinement_with_second_countable :
+  forall X Tx:set,
+  compact_space X Tx ->
+  Hausdorff_space X Tx ->
+  second_countable_space X Tx ->
+  forall A:set, open_cover_of X Tx A ->
+  exists B:set, star_refinement_cover X Tx B A /\ finite B.
+let X Tx.
+assume HcompX HHausX HscX.
+let A.
+assume HcovA.
+claim HmetX : metrizable X Tx.
+{
+  exact (compact_Hausdorff_second_countable_implies_metrizable_algtop
+    X
+    Tx
+    HcompX
+    HHausX
+    HscX).
+}
+claim HstarPack : exists B0:set, star_refinement_cover X Tx B0 A.
+{
+  exact (supp_ex_1a_metrizable_star_refinement
+    X
+    Tx
+    HmetX
+    A
+    HcovA).
+}
+apply HstarPack.
+let B0.
+assume HstarB0.
+claim HopenB0 : open_cover_of X Tx B0.
+{
+  exact (andEL
+    (open_cover_of X Tx B0)
+    (open_cover_of X Tx A)
+    (andEL
+      (open_cover_of X Tx B0 /\ open_cover_of X Tx A)
+      (forall U:set, U :e B0 -> exists W:set, W :e A /\ U c= W)
+      (andEL
+        (open_cover_of X Tx B0 /\ open_cover_of X Tx A /\
+          (forall U:set, U :e B0 -> exists W:set, W :e A /\ U c= W))
+        (forall U V:set, U :e B0 -> V :e B0 -> U :/\: V <> Empty ->
+          exists W:set, W :e A /\ U :\/: V c= W)
+        HstarB0))).
+}
+claim HcovAagain : open_cover_of X Tx A.
+{
+  exact (andER
+    (open_cover_of X Tx B0)
+    (open_cover_of X Tx A)
+    (andEL
+      (open_cover_of X Tx B0 /\ open_cover_of X Tx A)
+      (forall U:set, U :e B0 -> exists W:set, W :e A /\ U c= W)
+      (andEL
+        (open_cover_of X Tx B0 /\ open_cover_of X Tx A /\
+          (forall U:set, U :e B0 -> exists W:set, W :e A /\ U c= W))
+        (forall U V:set, U :e B0 -> V :e B0 -> U :/\: V <> Empty ->
+          exists W:set, W :e A /\ U :\/: V c= W)
+        HstarB0))).
+}
+claim HrefineB0 :
+  forall U:set, U :e B0 -> exists W:set, W :e A /\ U c= W.
+{
+  exact (andER
+    (open_cover_of X Tx B0 /\ open_cover_of X Tx A)
+    (forall U:set, U :e B0 -> exists W:set, W :e A /\ U c= W)
+    (andEL
+      (open_cover_of X Tx B0 /\ open_cover_of X Tx A /\
+        (forall U:set, U :e B0 -> exists W:set, W :e A /\ U c= W))
+      (forall U V:set, U :e B0 -> V :e B0 -> U :/\: V <> Empty ->
+        exists W:set, W :e A /\ U :\/: V c= W)
+      HstarB0)).
+}
+claim HstarPairB0 :
+  forall U V:set, U :e B0 -> V :e B0 -> U :/\: V <> Empty ->
+    exists W:set, W :e A /\ U :\/: V c= W.
+{
+  exact (andER
+    (open_cover_of X Tx B0 /\ open_cover_of X Tx A /\
+      (forall U:set, U :e B0 -> exists W:set, W :e A /\ U c= W))
+    (forall U V:set, U :e B0 -> V :e B0 -> U :/\: V <> Empty ->
+      exists W:set, W :e A /\ U :\/: V c= W)
+    HstarB0).
+}
+claim HfinSub : has_finite_subcover X Tx B0.
+{
+  exact (compact_space_subcover_property
+    X
+    Tx
+    HcompX
+    B0
+    HopenB0).
+}
+apply HfinSub.
+let B.
+assume HBpack.
+claim HBsubB0 : B c= B0.
+{
+  exact (andEL
+    (B c= B0)
+    (finite B)
+    (andEL
+      (B c= B0 /\ finite B)
+      (X c= Union B)
+      HBpack)).
+}
+claim HBfin : finite B.
+{
+  exact (andER
+    (B c= B0)
+    (finite B)
+    (andEL
+      (B c= B0 /\ finite B)
+      (X c= Union B)
+      HBpack)).
+}
+claim HXsubUnionB : X c= Union B.
+{
+  exact (andER
+    (B c= B0 /\ finite B)
+    (X c= Union B)
+    HBpack).
+}
+claim HB0subPowX : B0 c= Power X.
+{
+  exact (open_cover_of_family_sub X Tx B0 HopenB0).
+}
+claim HBsubPowX : B c= Power X.
+{
+  exact (Subq_tra B B0 (Power X) HBsubB0 HB0subPowX).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (open_cover_of_topology X Tx B0 HopenB0).
+}
+claim HopenB : open_cover_of X Tx B.
+{
+  exact (open_cover_ofI
+    X
+    Tx
+    B
+    HtopX
+    HBsubPowX
+    HXsubUnionB
+    (fun U HU => open_cover_of_members_open
+      X
+      Tx
+      B0
+      U
+      HopenB0
+      (HBsubB0 U HU))).
+}
+witness B.
+apply andI.
+- prove open_cover_of X Tx B /\
+    open_cover_of X Tx A /\
+    (forall U:set, U :e B -> exists W:set, W :e A /\ U c= W) /\
+    (forall U V:set, U :e B -> V :e B -> U :/\: V <> Empty ->
+      exists W:set, W :e A /\ U :\/: V c= W).
+  apply andI.
+  + apply andI.
+    * apply andI.
+      { exact HopenB. }
+      { exact HcovAagain. }
+    * let U.
+      assume HUB.
+      exact (HrefineB0 U (HBsubB0 U HUB)).
+  + let U V.
+    assume HUB HVB Hnon.
+    exact (HstarPairB0 U V (HBsubB0 U HUB) (HBsubB0 V HVB) Hnon).
+- exact HBfin.
+Admitted. (** depends on admitted supp_ex_1a_metrizable_star_refinement **)
+
 (** from Supplementary Exercises Exercise 1b (line 5394 in algtop.tex): compact Hausdorff star refinement **)
 (** LATEX VERSION: If X is compact Hausdorff, then for any open covering A, there exists **)
 (** a finite open covering B refining A with the star property. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
+(** Bounty 121 **)
+(** Lock Charlie 1771483000 **)
 Theorem supp_ex_1b_compact_Hausdorff_star_refinement :
   forall X Tx:set,
   compact_space X Tx -> Hausdorff_space X Tx ->
   forall A:set, open_cover_of X Tx A ->
   exists B:set, star_refinement_cover X Tx B A /\ finite B.
-admit.
+let X Tx.
+assume HcompX HHausX.
+let A.
+assume HcovA.
+claim HnormalX : normal_space X Tx.
+{
+  exact (compact_Hausdorff_implies_normal_algtop
+    X
+    Tx
+    HcompX
+    HHausX).
+}
+claim HregX : regular_space X Tx.
+{
+  exact (compact_Hausdorff_implies_regular_algtop
+    X
+    Tx
+    HcompX
+    HHausX).
+}
+apply xm (second_countable_space X Tx).
+- assume HscX.
+  exact (supp_ex_1b_compact_Hausdorff_star_refinement_with_second_countable
+    X
+    Tx
+    HcompX
+    HHausX
+    HscX
+    A
+    HcovA).
+- assume HnscX.
+  (** TODO Charlie: finite star refinement from compact Hausdorff normality without second-countability. **)
+  admit.
 Admitted.
 
 (** from Supplementary Exercises Exercise 2 / Thm (line 5406 in algtop.tex): pi_1 countable **)
