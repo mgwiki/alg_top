@@ -112639,6 +112639,37 @@ apply andI.
       (HidG (apply_fun gens alpha) (Hgens alpha Halpha))).
 Qed.
 
+(** Helper for S69 Lem 69.1: each cyclic factor is a subset of the ambient group. **)
+(** Proven Bob **)
+Theorem lemma69_1_factor_family_subset_ambient :
+  forall G mult e inv J gens alpha:set,
+  alpha :e J ->
+  apply_fun
+    (graph J (fun beta:set =>
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens beta) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))}))
+    alpha c= G.
+let G mult e inv J gens alpha.
+assume Halpha : alpha :e J.
+rewrite (apply_fun_graph
+  J
+  (fun beta:set =>
+    {g :e G | exists n:set, n :e int /\
+      ((n :e omega /\ g = group_power_nat mult e (apply_fun gens beta) n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+        g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))})
+  alpha
+  Halpha).
+exact (Sep_Subq
+  G
+  (fun g:set => exists n:set, n :e int /\
+    ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+     (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+      g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))).
+Qed.
+
 (** from S69 Lem 69.1 (line 3047 in algtop.tex): extension condition for free groups **)
 (** LATEX VERSION: G is a free group with generators {a_alpha} iff for any group H **)
 (** and any family {y_alpha} of elements of H, there is a unique homomorphism **)
@@ -112855,35 +112886,17 @@ apply (iffI
   claim Hfactor_subG :
     forall alpha:set, alpha :e J -> apply_fun Gfam0 alpha c= G.
   {
-    apply (and5E
-      (group_structure G mult e inv)
-      (forall alpha:set, alpha :e J ->
-        subgroup_of (apply_fun Gfam0 alpha) G mult e inv)
-      (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
-        forall x:set, x :e apply_fun Gfam0 alpha ->
-          x :e apply_fun Gfam0 beta -> x = e)
-      (subgroups_generate G mult e inv J Gfam0)
-      (forall x:set, x :e G -> x <> e ->
-        exists n xs:set,
-          reduced_word J Gfam0 efam0 n xs /\ n <> 0 /\
-          word_product mult e xs n = x /\
-          (forall n' xs':set,
-            reduced_word J Gfam0 efam0 n' xs' -> n' <> 0 ->
-            word_product mult e xs' n' = x ->
-            n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
-      Hfp).
-    assume Hgrp_fp Hsub_fp Hdis_fp Hgen_fp Huniq_fp.
     let alpha.
     assume Halpha : alpha :e J.
-    apply (and4E
-      (apply_fun Gfam0 alpha c= G)
-      (e :e apply_fun Gfam0 alpha)
-      (forall x y:set, x :e apply_fun Gfam0 alpha -> y :e apply_fun Gfam0 alpha ->
-        apply_fun mult (x, y) :e apply_fun Gfam0 alpha)
-      (forall x:set, x :e apply_fun Gfam0 alpha -> apply_fun inv x :e apply_fun Gfam0 alpha)
-      (Hsub_fp alpha Halpha)).
-    assume HsubA HeA HmulA HinvA.
-    exact HsubA.
+    exact (lemma69_1_factor_family_subset_ambient
+      G
+      mult
+      e
+      inv
+      J
+      gens
+      alpha
+      Halpha).
   }
   claim Hhom_restrict_factor :
     forall h2:set, group_homomorphism G mult H multH h2 ->
