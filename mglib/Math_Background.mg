@@ -63288,6 +63288,109 @@ claim Hex :
                   Hlt1ContNrN1
                   Hlt1CommNrN1).
               }
+              claim HNrSubUnit : Nr c= unit_interval.
+              {
+                let z.
+                assume HzNr.
+                exact (topology_elem_subset
+                  unit_interval
+                  unit_interval_topology
+                  Nr
+                  unit_interval_topology_on
+                  HNrOpen
+                  z
+                  HzNr).
+              }
+              claim HN1SubUnit : N1 c= unit_interval.
+              {
+                let z.
+                assume HzN1.
+                exact (topology_elem_subset
+                  unit_interval
+                  unit_interval_topology
+                  N1
+                  unit_interval_topology_on
+                  HN1Open
+                  z
+                  HzN1).
+              }
+              claim HNrN1SubUnit : Nr :/\: N1 c= unit_interval.
+              {
+                exact (Subq_tra
+                  (Nr :/\: N1)
+                  Nr
+                  unit_interval
+                  (binintersect_Subq_1
+                    Nr
+                    N1)
+                  HNrSubUnit
+                  ).
+              }
+              claim HtopNrN1Sub :
+                topology_on
+                  (Nr :/\: N1)
+                  (subspace_topology unit_interval unit_interval_topology (Nr :/\: N1)).
+              {
+                exact (subspace_topology_is_topology
+                  unit_interval
+                  unit_interval_topology
+                  (Nr :/\: N1)
+                  unit_interval_topology_on
+                  HNrN1SubUnit).
+              }
+              claim HlrFunNrN1 : function_on lr (Nr :/\: N1) E.
+              {
+                exact (continuous_map_function_on
+                  (Nr :/\: N1)
+                  (subspace_topology unit_interval unit_interval_topology (Nr :/\: N1))
+                  E
+                  Te
+                  lr
+                  HlrContNrN1).
+              }
+              claim Hlt1FunNrN1 : function_on lt1 (Nr :/\: N1) E.
+              {
+                exact (continuous_map_function_on
+                  (Nr :/\: N1)
+                  (subspace_topology unit_interval unit_interval_topology (Nr :/\: N1))
+                  E
+                  Te
+                  lt1
+                  Hlt1ContNrN1).
+              }
+              claim Hlr0E : apply_fun lr 0 :e E.
+              {
+                exact (HlrFunNrN1
+                  0
+                  H0NrN1).
+              }
+              claim Hlt10E : apply_fun lt1 0 :e E.
+              {
+                exact (Hlt1FunNrN1
+                  0
+                  H0NrN1).
+              }
+              claim Hchart0 :
+                exists U0 slices0 V0:set,
+                  (V0 :e Te /\ apply_fun lr 0 :e V0 /\ U0 :e Tb /\
+                    homeomorphism V0 (subspace_topology E Te V0) U0 (subspace_topology B Tb U0)
+                      (graph V0 (fun z:set => apply_fun p z))) /\
+                  (slices0 c= Te /\ pairwise_disjoint slices0 /\
+                    Union slices0 = preimage_of E p U0 /\ V0 :e slices0 /\
+                    (forall W0:set, W0 :e slices0 ->
+                      homeomorphism W0 (subspace_topology E Te W0) U0 (subspace_topology B Tb U0)
+                        (graph W0 (fun z:set => apply_fun p z)))).
+              {
+                exact (covering_map_local_homeomorphism_with_slices
+                  E
+                  Te
+                  B
+                  Tb
+                  p
+                  (apply_fun lr 0)
+                  Hcov
+                  Hlr0E).
+              }
               (** TODO Charlie: compare lr with lt1 on Nr :/\: N1 from Hlr0EqLt10 and Hplr0Eqplt10, then propagate membership of r into N1 via the local evenly-covered neighborhood Ur at f(r). **)
               admit.
             }
