@@ -74822,6 +74822,46 @@ claim HextFromHomotopy :
         (forall x:set, x :e S1 -> apply_fun F (x, 1) = apply_fun (const_fun S1 y0) x)
         HFPack)).
   }
+  claim HFAt0 :
+    forall x:set, x :e S1 -> apply_fun F (x, 0) = apply_fun h x.
+  {
+    exact (andER
+      (continuous_map (setprod S1 unit_interval)
+        (product_topology S1 S1_topology unit_interval unit_interval_topology)
+        X Tx F)
+      (forall x:set, x :e S1 -> apply_fun F (x, 0) = apply_fun h x)
+      (andEL
+        (continuous_map (setprod S1 unit_interval)
+          (product_topology S1 S1_topology unit_interval unit_interval_topology)
+          X Tx F /\
+         (forall x:set, x :e S1 -> apply_fun F (x, 0) = apply_fun h x))
+        (forall x:set, x :e S1 -> apply_fun F (x, 1) = apply_fun (const_fun S1 y0) x)
+        HFPack)).
+  }
+  claim HFAt1Const :
+    forall x:set, x :e S1 ->
+      apply_fun F (x, 1) = apply_fun (const_fun S1 y0) x.
+  {
+    exact (andER
+      (continuous_map (setprod S1 unit_interval)
+        (product_topology S1 S1_topology unit_interval unit_interval_topology)
+        X Tx F /\
+       (forall x:set, x :e S1 -> apply_fun F (x, 0) = apply_fun h x))
+      (forall x:set, x :e S1 -> apply_fun F (x, 1) = apply_fun (const_fun S1 y0) x)
+      HFPack).
+  }
+  claim HFAt1 :
+    forall x:set, x :e S1 -> apply_fun F (x, 1) = y0.
+  {
+    let x.
+    assume HxS1.
+    rewrite (HFAt1Const x HxS1).
+    exact (const_fun_apply
+      S1
+      y0
+      x
+      HxS1).
+  }
   admit.
 }
 exact HextFromHomotopy.
@@ -77606,7 +77646,218 @@ claim HretrR2m0S1 :
       (forall x:set, x :e R2_minus_origin -> apply_fun r x :e S1) /\
       (forall x:set, x :e S1 -> apply_fun r x = x).
     {
-      admit.
+      claim HrFixS1 :
+        forall x:set, x :e S1 -> apply_fun r x = x.
+      {
+        let x.
+        assume HxS1.
+        claim HxR2m0 : x :e R2_minus_origin.
+        {
+          exact (s55_S1_subset_R2_minus_origin x HxS1).
+        }
+        claim HxR2 : x :e setprod R R.
+        {
+          exact (SepE1
+            (setprod R R)
+            (fun p:set =>
+              add_SNo (mul_SNo (p 0) (p 0))
+                (mul_SNo (p 1) (p 1)) = 1)
+            x
+            HxS1).
+        }
+        claim HxEta : x = (x 0, x 1).
+        {
+          exact (setprod_eta
+            R
+            R
+            x
+            HxR2).
+        }
+        claim HxEq1 :
+          add_SNo (mul_SNo (x 0) (x 0))
+            (mul_SNo (x 1) (x 1)) = 1.
+        {
+          exact (SepE2
+            (setprod R R)
+            (fun p:set =>
+              add_SNo (mul_SNo (p 0) (p 0))
+                (mul_SNo (p 1) (p 1)) = 1)
+            x
+            HxS1).
+        }
+        claim HxPairSing :
+          (x 0, x 1) :e setprod {x 0} {x 1}.
+        {
+          exact (tuple_2_setprod_by_pair_Sigma
+            {x 0}
+            {x 1}
+            (x 0)
+            (x 1)
+            (SingI (x 0))
+            (SingI (x 1))).
+        }
+        claim HxPairIn : (x 0, x 1) :e setprod R R.
+        {
+          rewrite <- HxEta.
+          exact HxR2.
+        }
+        claim HxCoordsR : x 0 :e R /\ x 1 :e R.
+        {
+          exact (setprod_coords_in
+            (x 0)
+            (x 1)
+            R
+            R
+            (x 0, x 1)
+            HxPairSing
+            HxPairIn).
+        }
+        claim Hx0R : x 0 :e R.
+        {
+          exact (andEL
+            (x 0 :e R)
+            (x 1 :e R)
+            HxCoordsR).
+        }
+        claim Hx1R : x 1 :e R.
+        {
+          exact (andER
+            (x 0 :e R)
+            (x 1 :e R)
+            HxCoordsR).
+        }
+        claim Hx0SNo : SNo (x 0).
+        {
+          exact (real_SNo
+            (x 0)
+            Hx0R).
+        }
+        claim Hx1SNo : SNo (x 1).
+        {
+          exact (real_SNo
+            (x 1)
+            Hx1R).
+        }
+        claim Hsqrt1 :
+          sqrt_SNo_nonneg
+            (add_SNo (mul_SNo (x 0) (x 0))
+              (mul_SNo (x 1) (x 1))) = 1.
+        {
+          rewrite HxEq1.
+          exact sqrt_SNo_nonneg_1.
+        }
+        claim Hdiv0 :
+          div_SNo (x 0)
+            (sqrt_SNo_nonneg
+              (add_SNo (mul_SNo (x 0) (x 0))
+                (mul_SNo (x 1) (x 1))))
+          = x 0.
+        {
+          rewrite Hsqrt1.
+          exact (mul_div_SNo_nonzero_eq
+            (x 0)
+            1
+            (x 0)
+            Hx0SNo
+            SNo_1
+            Hx0SNo
+            neq_1_0
+            (fun Q =>
+              mul_SNo_oneL
+                (x 0)
+                Hx0SNo
+                (fun a b => Q b a))).
+        }
+        claim Hdiv1 :
+          div_SNo (x 1)
+            (sqrt_SNo_nonneg
+              (add_SNo (mul_SNo (x 0) (x 0))
+                (mul_SNo (x 1) (x 1))))
+          = x 1.
+        {
+          rewrite Hsqrt1.
+          exact (mul_div_SNo_nonzero_eq
+            (x 1)
+            1
+            (x 1)
+            Hx1SNo
+            SNo_1
+            Hx1SNo
+            neq_1_0
+            (fun Q =>
+              mul_SNo_oneL
+                (x 1)
+                Hx1SNo
+                (fun a b => Q b a))).
+        }
+        claim HrPairEq :
+          (div_SNo (x 0)
+            (sqrt_SNo_nonneg
+              (add_SNo (mul_SNo (x 0) (x 0))
+                (mul_SNo (x 1) (x 1)))),
+           div_SNo (x 1)
+            (sqrt_SNo_nonneg
+              (add_SNo (mul_SNo (x 0) (x 0))
+                (mul_SNo (x 1) (x 1)))))
+          = (x 0, x 1).
+        {
+          exact (tuple_2_ext
+            (div_SNo (x 0)
+              (sqrt_SNo_nonneg
+                (add_SNo (mul_SNo (x 0) (x 0))
+                  (mul_SNo (x 1) (x 1)))))
+            (div_SNo (x 1)
+              (sqrt_SNo_nonneg
+                (add_SNo (mul_SNo (x 0) (x 0))
+                  (mul_SNo (x 1) (x 1)))))
+            (x 0)
+            (x 1)
+            Hdiv0
+            Hdiv1).
+        }
+        claim HxEtaSym : (x 0, x 1) = x.
+        {
+          symmetry.
+          exact HxEta.
+        }
+        rewrite (apply_fun_graph
+          R2_minus_origin
+          (fun p:set =>
+            (div_SNo (p 0)
+              (sqrt_SNo_nonneg
+                (add_SNo (mul_SNo (p 0) (p 0))
+                  (mul_SNo (p 1) (p 1)))),
+             div_SNo (p 1)
+              (sqrt_SNo_nonneg
+                (add_SNo (mul_SNo (p 0) (p 0))
+                  (mul_SNo (p 1) (p 1))))))
+          x
+          HxR2m0).
+        exact (eq_i_tra
+          (div_SNo (x 0)
+            (sqrt_SNo_nonneg
+              (add_SNo (mul_SNo (x 0) (x 0))
+                (mul_SNo (x 1) (x 1)))),
+           div_SNo (x 1)
+            (sqrt_SNo_nonneg
+              (add_SNo (mul_SNo (x 0) (x 0))
+                (mul_SNo (x 1) (x 1)))))
+          (x 0, x 1)
+          x
+          HrPairEq
+          HxEtaSym).
+      }
+      claim HrCore :
+        function_on r R2_minus_origin R2_minus_origin /\
+        continuous_map R2_minus_origin R2_minus_origin_topology
+          R2_minus_origin R2_minus_origin_topology r /\
+        (forall x:set, x :e R2_minus_origin -> apply_fun r x :e S1).
+      {
+        admit.
+      }
+      apply andI.
+      - exact HrCore.
+      - exact HrFixS1.
     }
     witness r.
     exact HrPack.
