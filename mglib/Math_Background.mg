@@ -108359,7 +108359,174 @@ apply (xm
                                                       rewrite Hefam_u.
                                                       exact Hcsu_eq_e.
                                                     }
-                                                    admit. (** TODO Bob: handle t<>0 branch after fifteenth predecessor split (u and cs(u):e G2) **)
+                                                    apply (xm
+                                                      (u = 0)).
+                                                    - assume Hu0 : u = 0.
+                                                      claim Hdeep_t_eq_s0 : t = ordsucc 0.
+                                                      {
+                                                        rewrite Ht_eq_su.
+                                                        rewrite Hu0.
+                                                        reflexivity.
+                                                      }
+                                                      claim Hdeep_cs0_G2 : apply_fun cs 0 :e G2.
+                                                      {
+                                                        rewrite <- Hu0.
+                                                        exact Hcsu_G2.
+                                                      }
+                                                      claim Hdeep_cs0_ne_e : apply_fun cs 0 <> e.
+                                                      {
+                                                        rewrite <- Hu0.
+                                                        exact Hcsu_ne_e.
+                                                      }
+                                                      claim Hdeep_cs1_G1 : apply_fun cs (ordsucc 0) :e G1.
+                                                      {
+                                                        rewrite <- Hdeep_t_eq_s0.
+                                                        exact Hcst_G1.
+                                                      }
+                                                      admit. (** TODO Bob: handle u=0 branch in deep predecessor analysis **)
+                                                    - assume Hu_ne0 : u <> 0.
+                                                      apply (nat_inv
+                                                        u
+                                                        Hu2_nat).
+                                                      + assume Hu0_abs : u = 0.
+                                                        exact (Hu_ne0
+                                                          Hu0_abs
+                                                          False).
+                                                      + assume Hu_succ : exists v:set, nat_p v /\ u = ordsucc v.
+                                                        apply Hu_succ.
+                                                        let v.
+                                                        assume Hv_pack : nat_p v /\ u = ordsucc v.
+                                                        claim Hv_nat : nat_p v.
+                                                        {
+                                                          exact (andEL
+                                                            (nat_p v)
+                                                            (u = ordsucc v)
+                                                            Hv_pack).
+                                                        }
+                                                        claim Hu_eq_sv : u = ordsucc v.
+                                                        {
+                                                          exact (andER
+                                                            (nat_p v)
+                                                            (u = ordsucc v)
+                                                            Hv_pack).
+                                                        }
+                                                        claim Hv_in_u : v :e u.
+                                                        {
+                                                          rewrite Hu_eq_sv.
+                                                          exact (ordsuccI2
+                                                            v).
+                                                        }
+                                                        claim Hv_in_m : v :e m.
+                                                        {
+                                                          exact (nat_trans
+                                                            m
+                                                            Hm_nat
+                                                            u
+                                                            Hu2_in_m
+                                                            v
+                                                            Hv_in_u).
+                                                        }
+                                                        claim Hsv_in_m : ordsucc v :e m.
+                                                        {
+                                                          rewrite <- Hu_eq_sv.
+                                                          exact Hu2_in_m.
+                                                        }
+                                                        claim Hdeep_csu_fam1 : apply_fun cs u :e apply_fun Gfam 1.
+                                                        {
+                                                          rewrite HGfam1.
+                                                          exact Hcsu_G2.
+                                                        }
+                                                        claim Hdeep_cssv_fam1 : apply_fun cs (ordsucc v) :e apply_fun Gfam 1.
+                                                        {
+                                                          rewrite <- Hu_eq_sv.
+                                                          exact Hdeep_csu_fam1.
+                                                        }
+                                                        apply (exandE_i
+                                                          (fun al:set => al :e 2 /\ apply_fun cs v :e apply_fun Gfam al)
+                                                          (fun al:set => apply_fun cs v <> apply_fun efam al)
+                                                          (Hcs_mem
+                                                            v
+                                                            Hv_in_m)).
+                                                        let alpha_prev14.
+                                                        assume Hap14_pack : alpha_prev14 :e 2 /\ apply_fun cs v :e apply_fun Gfam alpha_prev14.
+                                                        assume Hcsv_ne_efam : apply_fun cs v <> apply_fun efam alpha_prev14.
+                                                        claim Hap142 : alpha_prev14 :e 2.
+                                                        {
+                                                          exact (andEL
+                                                            (alpha_prev14 :e 2)
+                                                            (apply_fun cs v :e apply_fun Gfam alpha_prev14)
+                                                            Hap14_pack).
+                                                        }
+                                                        claim Hcsv_fam : apply_fun cs v :e apply_fun Gfam alpha_prev14.
+                                                        {
+                                                          exact (andER
+                                                            (alpha_prev14 :e 2)
+                                                            (apply_fun cs v :e apply_fun Gfam alpha_prev14)
+                                                            Hap14_pack).
+                                                        }
+                                                        claim Hap14_ne1 : alpha_prev14 <> 1.
+                                                        {
+                                                          exact (Hcs_adj
+                                                            v
+                                                            Hv_in_m
+                                                            Hsv_in_m
+                                                            alpha_prev14
+                                                            1
+                                                            Hap142
+                                                            In_1_2
+                                                            Hcsv_fam
+                                                            Hdeep_cssv_fam1).
+                                                        }
+                                                        claim Hap140 : alpha_prev14 = 0.
+                                                        {
+                                                          apply (ordsuccE
+                                                            1
+                                                            alpha_prev14
+                                                            Hap142).
+                                                          - assume Hap14_in1 : alpha_prev14 :e 1.
+                                                            apply (ordsuccE
+                                                              0
+                                                              alpha_prev14
+                                                              Hap14_in1).
+                                                            + assume Hap14_in0 : alpha_prev14 :e 0.
+                                                              exact (EmptyE
+                                                                alpha_prev14
+                                                                Hap14_in0
+                                                                (alpha_prev14 = 0)).
+                                                            + assume Hap14_eq0 : alpha_prev14 = 0.
+                                                              exact Hap14_eq0.
+                                                          - assume Hap14_eq1 : alpha_prev14 = 1.
+                                                            exact (Hap14_ne1
+                                                              Hap14_eq1
+                                                              (alpha_prev14 = 0)).
+                                                        }
+                                                        claim Hdeep_csv_G1 : apply_fun cs v :e G1.
+                                                        {
+                                                          claim Hdeep_fam_v0 : apply_fun Gfam alpha_prev14 = G1.
+                                                          {
+                                                            rewrite Hap140.
+                                                            exact HGfam0.
+                                                          }
+                                                          rewrite <- Hdeep_fam_v0.
+                                                          exact Hcsv_fam.
+                                                        }
+                                                        claim Hdeep_csv_ne_e : apply_fun cs v <> e.
+                                                        {
+                                                          claim Hdeep_efam_v : apply_fun efam alpha_prev14 = e.
+                                                          {
+                                                            rewrite (apply_fun_graph
+                                                              2
+                                                              (fun _:set => e)
+                                                              alpha_prev14
+                                                              Hap142).
+                                                            reflexivity.
+                                                          }
+                                                          assume Hcsv_eq_e : apply_fun cs v = e.
+                                                          apply Hcsv_ne_efam.
+                                                          rewrite Hdeep_efam_v.
+                                                          exact Hcsv_eq_e.
+                                                        }
+                                                        admit. (** TODO Bob: handle u<>0 branch after sixteenth predecessor split (v and cs(v):e G1) **)
 Admitted.
 
 (** Core helper: given free product and reduced word of c, derive contradiction **)
