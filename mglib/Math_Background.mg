@@ -119054,6 +119054,45 @@ exact (andER
   HopenU).
 Qed.
 
+(** Infrastructure: compact Hausdorff implies paracompact. **)
+(** Proven Charlie **)
+Theorem compact_Hausdorff_implies_paracompact_algtop :
+  forall X Tx:set,
+  compact_space X Tx ->
+  Hausdorff_space X Tx ->
+  paracompact_space X Tx.
+let X Tx.
+assume HcompX _.
+exact (compact_space_implies_paracompact_algtop
+  X
+  Tx
+  HcompX).
+Qed.
+
+(** Infrastructure: compact Hausdorff implies normal via paracompactness. **)
+(** Proven Charlie **)
+Theorem compact_Hausdorff_implies_normal_via_paracompact_algtop :
+  forall X Tx:set,
+  compact_space X Tx ->
+  Hausdorff_space X Tx ->
+  normal_space X Tx.
+let X Tx.
+assume HcompX HHausX.
+claim HparX : paracompact_space X Tx.
+{
+  exact (compact_Hausdorff_implies_paracompact_algtop
+    X
+    Tx
+    HcompX
+    HHausX).
+}
+exact (paracompact_Hausdorff_normal
+  X
+  Tx
+  HparX
+  HHausX).
+Qed.
+
 (** from Supplementary Exercises Exercise 1a (line 5393 in algtop.tex): metrizable star refinement **)
 (** LATEX VERSION: If X is metrizable, then for any open covering A, there exists an **)
 (** open covering B refining A such that for each pair B, B' in B with nonempty **)
