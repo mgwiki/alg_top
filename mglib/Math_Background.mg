@@ -67413,7 +67413,8 @@ Admitted. (** was qed but depends on unproved lemma54_2_homotopy_lifting - chang
 (** If f and g are path homotopic, then f_tilde and g_tilde end at the same point **)
 (** and are path homotopic. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
+(** Bounty 97 **)
+(** Lock Dave 1771476232 **)
 Theorem thm54_3_homotopic_lifts : forall E Te B Tb p e0 b0 b1 f g:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = b0 ->
@@ -68370,7 +68371,8 @@ Definition lifting_correspondence : set -> set -> set -> set -> set -> set -> se
 (** then phi: pi_1(B,b0) -> p^{-1}(b0) is surjective. **)
 (** If E is simply connected, phi is bijective. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 97 **)
+(** Bounty 107 **)
+(** Lock Dave 1771476232 **)
 Theorem thm54_4_lifting_correspondence_surjective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   path_connected_space E Te ->
@@ -69179,7 +69181,8 @@ Admitted.
 (** alpha(1) = beta(0), and their lifts satisfy alpha_tilde(1) = beta_tilde(0), **)
 (** then alpha_tilde . beta_tilde is a lifting of alpha . beta. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
+(** Bounty 37 **)
+(** Lock Dave 1771476232 **)
 Theorem ex54_3_lift_of_product : forall E Te B Tb p e0 alpha beta:set,
   covering_map E Te B Tb p -> e0 :e E ->
   continuous_map unit_interval unit_interval_topology B Tb alpha ->
