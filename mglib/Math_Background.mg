@@ -71935,6 +71935,17 @@ Theorem infinite_cyclic_universal_property : forall G multG eG invG x H multH eH
       forall g:set, g :e G -> apply_fun h' g = apply_fun h g).
 let G multG eG invG x H multH eH invH y.
 assume HgrpG HcycG HinfG HgenX HgrpH Hy.
+claim HxG : x :e G.
+{
+  exact (andEL
+    (x :e G)
+    (forall g:set, g :e G ->
+      exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat multG eG x n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat multG eG (apply_fun invG x) (ordsucc m))))
+    HgenX).
+}
 claim HfromCandidate :
   (exists h:set, group_homomorphism G multG H multH h /\ apply_fun h x = y) ->
   exists h:set,
@@ -71979,6 +71990,46 @@ claim HfromCandidate :
     HhHom
     Hhx).
 }
+claim HcandidateFromIsoPsi :
+  forall phi psi:set,
+    group_isomorphism G multG int integers_group_mult phi ->
+    group_homomorphism int integers_group_mult H multH psi ->
+    apply_fun psi (apply_fun phi x) = y ->
+    exists h:set, group_homomorphism G multG H multH h /\ apply_fun h x = y.
+{
+  let phi psi.
+  assume HphiIso HpsiHom HpsiAt.
+  set h := compose_fun G phi psi.
+  witness h.
+  apply andI.
+  - exact (group_homomorphism_compose_cyclic_helper
+      G
+      multG
+      eG
+      invG
+      int
+      integers_group_mult
+      H
+      multH
+      phi
+      psi
+      HgrpG
+      (group_isomorphism_homomorphism
+        G
+        multG
+        int
+        integers_group_mult
+        phi
+        HphiIso)
+      HpsiHom).
+  - rewrite (compose_fun_apply
+      G
+      phi
+      psi
+      x
+      HxG).
+    exact HpsiAt.
+}
 claim HisoZ : exists phi:set, group_isomorphism G multG int integers_group_mult phi.
 {
   exact (cyclic_infinite_order_iff_Z
@@ -71991,9 +72042,40 @@ claim HisoZ : exists phi:set, group_isomorphism G multG int integers_group_mult 
     HinfG).
 }
 apply HfromCandidate.
-(** TODO Bob: construct a candidate h with group_homomorphism G multG H multH h and h(x)=y.
-   Planned route: use HisoZ, build psi : int -> H with psi(1)=y, then set h := compose_fun G phi psi. **)
-admit.
+apply HisoZ.
+let phi.
+assume HphiIso.
+claim HpsiEx :
+  exists psi:set,
+    group_homomorphism int integers_group_mult H multH psi /\
+    apply_fun psi (apply_fun phi x) = y.
+{
+  (** TODO Bob: build a homomorphism psi : int -> H hitting y at phi(x). **)
+  admit.
+}
+apply HpsiEx.
+let psi.
+assume HpsiPack.
+claim HpsiHom : group_homomorphism int integers_group_mult H multH psi.
+{
+  exact (andEL
+    (group_homomorphism int integers_group_mult H multH psi)
+    (apply_fun psi (apply_fun phi x) = y)
+    HpsiPack).
+}
+claim HpsiAt : apply_fun psi (apply_fun phi x) = y.
+{
+  exact (andER
+    (group_homomorphism int integers_group_mult H multH psi)
+    (apply_fun psi (apply_fun phi x) = y)
+    HpsiPack).
+}
+exact (HcandidateFromIsoPsi
+  phi
+  psi
+  HphiIso
+  HpsiHom
+  HpsiAt).
 Admitted.
 
 (** Infrastructure: right coset H . g = {h . g : h in H} **)
