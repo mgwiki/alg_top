@@ -57557,8 +57557,539 @@ claim Hex :
                       Te
                       l0.
                   {
-                    (** TODO Bob: prove continuity of the glued candidate l0 on Ntu. **)
-                    admit.
+                    claim HlocalNtFun : function_on localNt Nt E.
+                    {
+                      exact (continuous_map_function_on
+                        Nt
+                        (subspace_topology unit_interval unit_interval_topology Nt)
+                        E
+                        Te
+                        localNt
+                        HlocalNtContE).
+                    }
+                    claim Hl0Total :
+                      total_function_on
+                        l0
+                        Ntu
+                        E.
+                    {
+                      apply (total_function_on_graph
+                        Ntu
+                        E
+                        (fun x:set => If_i (x :e Nu) (apply_fun lu x) (apply_fun localNt x))).
+                      let x.
+                      assume HxNtu.
+                      apply xm (x :e Nu).
+                      - assume HxNu.
+                        claim Hbeta :
+                          (fun y:set => If_i (y :e Nu) (apply_fun lu y) (apply_fun localNt y)) x =
+                          If_i (x :e Nu) (apply_fun lu x) (apply_fun localNt x).
+                        {
+                          reflexivity.
+                        }
+                        rewrite Hbeta.
+                        rewrite (If_i_1
+                          (x :e Nu)
+                          (apply_fun lu x)
+                          (apply_fun localNt x)
+                          HxNu).
+                        exact (HluFun
+                          x
+                          HxNu).
+                      - assume HxNotNu.
+                        claim HxNt : x :e Nt.
+                        {
+                          apply (binunionE
+                            Nu
+                            Nt
+                            x
+                            HxNtu).
+                          + assume HxNu.
+                            claim Hfalse : False.
+                            {
+                              exact (HxNotNu
+                                HxNu).
+                            }
+                            exact (FalseE
+                              Hfalse
+                              (x :e Nt)).
+                          + assume HxNt0.
+                            exact HxNt0.
+                        }
+                        claim Hbeta :
+                          (fun y:set => If_i (y :e Nu) (apply_fun lu y) (apply_fun localNt y)) x =
+                          If_i (x :e Nu) (apply_fun lu x) (apply_fun localNt x).
+                        {
+                          reflexivity.
+                        }
+                        rewrite Hbeta.
+                        rewrite (If_i_0
+                          (x :e Nu)
+                          (apply_fun lu x)
+                          (apply_fun localNt x)
+                          HxNotNu).
+                        exact (HlocalNtFun
+                          x
+                          HxNt).
+                    }
+                    claim Hl0FunNtu : function_on l0 Ntu E.
+                    {
+                      exact (total_function_on_function_on
+                        l0
+                        Ntu
+                        E
+                        Hl0Total).
+                    }
+                    claim HNtuSub :
+                      Ntu c= unit_interval.
+                    {
+                      exact (topology_elem_subset
+                        unit_interval
+                        unit_interval_topology
+                        Ntu
+                        unit_interval_topology_on
+                        HNtuOpen).
+                    }
+                    claim HtopNtu :
+                      topology_on
+                        Ntu
+                        (subspace_topology unit_interval unit_interval_topology Ntu).
+                    {
+                      exact (subspace_topology_is_topology
+                        unit_interval
+                        unit_interval_topology
+                        Ntu
+                        unit_interval_topology_on
+                        HNtuSub).
+                    }
+                    claim HNuSubNtu : Nu c= Ntu.
+                    {
+                      let x.
+                      assume HxNu.
+                      exact (binunionI1
+                        Nu
+                        Nt
+                        x
+                        HxNu).
+                    }
+                    claim HNtSubNtu : Nt c= Ntu.
+                    {
+                      let x.
+                      assume HxNt.
+                      exact (binunionI2
+                        Nu
+                        Nt
+                        x
+                        HxNt).
+                    }
+                    claim HNuTy :
+                      subspace_topology
+                        Ntu
+                        (subspace_topology unit_interval unit_interval_topology Ntu)
+                        Nu =
+                      subspace_topology
+                        unit_interval
+                        unit_interval_topology
+                        Nu.
+                    {
+                      exact (subspace_topology_transitive_weak
+                        unit_interval
+                        unit_interval_topology
+                        Ntu
+                        Nu
+                        HNuSubNtu).
+                    }
+                    claim HNuCont0 :
+                      continuous_map
+                        Nu
+                        (subspace_topology
+                          Ntu
+                          (subspace_topology unit_interval unit_interval_topology Ntu)
+                          Nu)
+                        E
+                        Te
+                        lu.
+                    {
+                      rewrite HNuTy.
+                      exact HluCont.
+                    }
+                    claim Hl0FunNu : function_on l0 Nu E.
+                    {
+                      exact (function_on_subdomain
+                        l0
+                        Ntu
+                        E
+                        Nu
+                        Hl0FunNtu
+                        HNuSubNtu).
+                    }
+                    claim Hl0EqNu :
+                      forall x:set, x :e Nu ->
+                        apply_fun lu x = apply_fun l0 x.
+                    {
+                      let x.
+                      assume HxNu.
+                      rewrite (apply_fun_graph
+                        Ntu
+                        (fun y:set => If_i (y :e Nu) (apply_fun lu y) (apply_fun localNt y))
+                        x
+                        (HNuSubNtu x HxNu)).
+                      rewrite (If_i_1
+                        (x :e Nu)
+                        (apply_fun lu x)
+                        (apply_fun localNt x)
+                        HxNu).
+                      reflexivity.
+                    }
+                    claim HNuCont :
+                      continuous_map
+                        Nu
+                        (subspace_topology
+                          Ntu
+                          (subspace_topology unit_interval unit_interval_topology Ntu)
+                          Nu)
+                        E
+                        Te
+                        l0.
+                    {
+                      exact (continuous_map_congr_on
+                        Nu
+                        (subspace_topology
+                          Ntu
+                          (subspace_topology unit_interval unit_interval_topology Ntu)
+                          Nu)
+                        E
+                        Te
+                        lu
+                        l0
+                        HNuCont0
+                        Hl0FunNu
+                        Hl0EqNu).
+                    }
+                    claim HNtTy :
+                      subspace_topology
+                        Ntu
+                        (subspace_topology unit_interval unit_interval_topology Ntu)
+                        Nt =
+                      subspace_topology
+                        unit_interval
+                        unit_interval_topology
+                        Nt.
+                    {
+                      exact (subspace_topology_transitive_weak
+                        unit_interval
+                        unit_interval_topology
+                        Ntu
+                        Nt
+                        HNtSubNtu).
+                    }
+                    claim HNtCont0 :
+                      continuous_map
+                        Nt
+                        (subspace_topology
+                          Ntu
+                          (subspace_topology unit_interval unit_interval_topology Ntu)
+                          Nt)
+                        E
+                        Te
+                        localNt.
+                    {
+                      rewrite HNtTy.
+                      exact HlocalNtContE.
+                    }
+                    claim Hl0FunNt : function_on l0 Nt E.
+                    {
+                      exact (function_on_subdomain
+                        l0
+                        Ntu
+                        E
+                        Nt
+                        Hl0FunNtu
+                        HNtSubNtu).
+                    }
+                    claim HagreeNuNt :
+                      forall x:set, x :e Nu :/\: Nt ->
+                        apply_fun lu x = apply_fun localNt x.
+                    {
+                      (** TODO Bob: prove lu and localNt agree on Nu cap Nt. **)
+                      admit.
+                    }
+                    claim Hl0EqNt :
+                      forall x:set, x :e Nt ->
+                        apply_fun localNt x = apply_fun l0 x.
+                    {
+                      let x.
+                      assume HxNt.
+                      rewrite (apply_fun_graph
+                        Ntu
+                        (fun y:set => If_i (y :e Nu) (apply_fun lu y) (apply_fun localNt y))
+                        x
+                        (HNtSubNtu x HxNt)).
+                      apply xm (x :e Nu).
+                      - assume HxNu.
+                        rewrite (If_i_1
+                          (x :e Nu)
+                          (apply_fun lu x)
+                          (apply_fun localNt x)
+                          HxNu).
+                        claim HxNuNt : x :e Nu :/\: Nt.
+                        {
+                          exact (binintersectI
+                            Nu
+                            Nt
+                            x
+                            HxNu
+                            HxNt).
+                        }
+                        rewrite <- (HagreeNuNt
+                          x
+                          HxNuNt).
+                        reflexivity.
+                      - assume HxNotNu.
+                        rewrite (If_i_0
+                          (x :e Nu)
+                          (apply_fun lu x)
+                          (apply_fun localNt x)
+                          HxNotNu).
+                        reflexivity.
+                    }
+                    claim HNtCont :
+                      continuous_map
+                        Nt
+                        (subspace_topology
+                          Ntu
+                          (subspace_topology unit_interval unit_interval_topology Ntu)
+                          Nt)
+                        E
+                        Te
+                        l0.
+                    {
+                      exact (continuous_map_congr_on
+                        Nt
+                        (subspace_topology
+                          Ntu
+                          (subspace_topology unit_interval unit_interval_topology Ntu)
+                          Nt)
+                        E
+                        Te
+                        localNt
+                        l0
+                        HNtCont0
+                        Hl0FunNt
+                        Hl0EqNt).
+                    }
+                    set UFam := (Sing (Nu :/\: Ntu)) :\/: (Sing (Nt :/\: Ntu)).
+                    claim HUFamSub :
+                      UFam c=
+                        subspace_topology unit_interval unit_interval_topology Ntu.
+                    {
+                      let U.
+                      assume HU.
+                      apply (binunionE
+                        (Sing (Nu :/\: Ntu))
+                        (Sing (Nt :/\: Ntu))
+                        U
+                        HU).
+                      - assume HUSNu.
+                        rewrite (SingE
+                          (Nu :/\: Ntu)
+                          U
+                          HUSNu).
+                        exact (subspace_topologyI
+                          unit_interval
+                          unit_interval_topology
+                          Ntu
+                          Nu
+                          HNuOpen).
+                      - assume HUSNt.
+                        rewrite (SingE
+                          (Nt :/\: Ntu)
+                          U
+                          HUSNt).
+                        exact (subspace_topologyI
+                          unit_interval
+                          unit_interval_topology
+                          Ntu
+                          Nt
+                          HNtOpen).
+                    }
+                    claim HUFamUnion :
+                      Union UFam = Ntu.
+                    {
+                      apply set_ext.
+                      - let x.
+                        assume HxUnion.
+                        apply (UnionE
+                          UFam
+                          x
+                          HxUnion).
+                        let U.
+                        assume HxUPack.
+                        claim HxU : x :e U.
+                        {
+                          exact (andEL
+                            (x :e U)
+                            (U :e UFam)
+                            HxUPack).
+                        }
+                        claim HUUFam : U :e UFam.
+                        {
+                          exact (andER
+                            (x :e U)
+                            (U :e UFam)
+                            HxUPack).
+                        }
+                        apply (binunionE
+                          (Sing (Nu :/\: Ntu))
+                          (Sing (Nt :/\: Ntu))
+                          U
+                          HUUFam).
+                        + assume HUSNu.
+                          claim HxNuInt : x :e Nu :/\: Ntu.
+                          {
+                            rewrite <- (SingE
+                              (Nu :/\: Ntu)
+                              U
+                              HUSNu).
+                            exact HxU.
+                          }
+                          exact (binintersectE2
+                            Nu
+                            Ntu
+                            x
+                            HxNuInt).
+                        + assume HUSNt.
+                          claim HxNtInt : x :e Nt :/\: Ntu.
+                          {
+                            rewrite <- (SingE
+                              (Nt :/\: Ntu)
+                              U
+                              HUSNt).
+                            exact HxU.
+                          }
+                          exact (binintersectE2
+                            Nt
+                            Ntu
+                            x
+                            HxNtInt).
+                      - let x.
+                        assume HxNtu.
+                        apply (binunionE
+                          Nu
+                          Nt
+                          x
+                          HxNtu).
+                        + assume HxNu.
+                          claim HxNuInt : x :e Nu :/\: Ntu.
+                          {
+                            exact (binintersectI
+                              Nu
+                              Ntu
+                              x
+                              HxNu
+                              HxNtu).
+                          }
+                          exact (UnionI
+                            UFam
+                            x
+                            (Nu :/\: Ntu)
+                            HxNuInt
+                            (binunionI1
+                              (Sing (Nu :/\: Ntu))
+                              (Sing (Nt :/\: Ntu))
+                              (Nu :/\: Ntu)
+                              (SingI (Nu :/\: Ntu)))).
+                        + assume HxNt.
+                          claim HxNtInt : x :e Nt :/\: Ntu.
+                          {
+                            exact (binintersectI
+                              Nt
+                              Ntu
+                              x
+                              HxNt
+                              HxNtu).
+                          }
+                          exact (UnionI
+                            UFam
+                            x
+                            (Nt :/\: Ntu)
+                            HxNtInt
+                            (binunionI2
+                              (Sing (Nu :/\: Ntu))
+                              (Sing (Nt :/\: Ntu))
+                              (Nt :/\: Ntu)
+                              (SingI (Nt :/\: Ntu)))).
+                    }
+                    claim HUFamCont :
+                      forall U:set, U :e UFam ->
+                        continuous_map
+                          U
+                          (subspace_topology
+                            Ntu
+                            (subspace_topology unit_interval unit_interval_topology Ntu)
+                            U)
+                          E
+                          Te
+                          l0.
+                    {
+                      let U.
+                      assume HU.
+                      apply (binunionE
+                        (Sing (Nu :/\: Ntu))
+                        (Sing (Nt :/\: Ntu))
+                        U
+                        HU).
+                      - assume HUSNu.
+                        rewrite (SingE
+                          (Nu :/\: Ntu)
+                          U
+                          HUSNu).
+                        rewrite (binintersect_Subq_eq_1
+                          Nu
+                          Ntu
+                          HNuSubNtu).
+                        exact HNuCont.
+                      - assume HUSNt.
+                        rewrite (SingE
+                          (Nt :/\: Ntu)
+                          U
+                          HUSNt).
+                        rewrite (binintersect_Subq_eq_1
+                          Nt
+                          Ntu
+                          HNtSubNtu).
+                        exact HNtCont.
+                    }
+                    apply (continuous_map_local_cover
+                      Ntu
+                      (subspace_topology unit_interval unit_interval_topology Ntu)
+                      E
+                      Te
+                      l0
+                      HtopNtu
+                      HtopE).
+                    witness UFam.
+                    exact (andI
+                      (UFam c=
+                        subspace_topology unit_interval unit_interval_topology Ntu /\
+                        Union UFam = Ntu)
+                      (forall U:set, U :e UFam ->
+                        continuous_map
+                          U
+                          (subspace_topology
+                            Ntu
+                            (subspace_topology unit_interval unit_interval_topology Ntu)
+                            U)
+                          E
+                          Te
+                          l0)
+                      (andI
+                        (UFam c=
+                          subspace_topology unit_interval unit_interval_topology Ntu)
+                        (Union UFam = Ntu)
+                        HUFamSub
+                        HUFamUnion)
+                      HUFamCont).
                   }
                   witness l0.
                   exact (andI
