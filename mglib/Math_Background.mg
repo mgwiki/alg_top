@@ -109048,7 +109048,175 @@ apply (xm
                                                               rewrite Hdeep_efam_z.
                                                               exact Hcsz_eq_e.
                                                             }
-                                                            admit. (** TODO Bob: handle w<>0 branch after eighteenth predecessor split (z and cs(z):e G1) **)
+                                                            apply (xm
+                                                              (z = 0)).
+                                                            - assume Hz0 : z = 0.
+                                                              claim Hdeep_w_eq_s0 : w = ordsucc 0.
+                                                              {
+                                                                rewrite Hw_eq_sz.
+                                                                rewrite Hz0.
+                                                                reflexivity.
+                                                              }
+                                                              claim Hdeep_cs0_G1 : apply_fun cs 0 :e G1.
+                                                              {
+                                                                rewrite <- Hz0.
+                                                                exact Hdeep_csz_G1.
+                                                              }
+                                                              claim Hdeep_cs0_ne_e : apply_fun cs 0 <> e.
+                                                              {
+                                                                rewrite <- Hz0.
+                                                                exact Hdeep_csz_ne_e.
+                                                              }
+                                                              claim Hdeep_cs1_G2 : apply_fun cs (ordsucc 0) :e G2.
+                                                              {
+                                                                rewrite <- Hz0.
+                                                                rewrite <- Hw_eq_sz.
+                                                                exact Hdeep_csw_G2.
+                                                              }
+                                                              admit. (** TODO Bob: handle z=0 branch in deep predecessor analysis **)
+                                                            - assume Hz_ne0 : z <> 0.
+                                                              apply (nat_inv
+                                                                z
+                                                                Hz_nat).
+                                                              + assume Hz0_abs : z = 0.
+                                                                exact (Hz_ne0
+                                                                  Hz0_abs
+                                                                  False).
+                                                              + assume Hz_succ : exists r:set, nat_p r /\ z = ordsucc r.
+                                                                apply Hz_succ.
+                                                                let r.
+                                                                assume Hr_pack : nat_p r /\ z = ordsucc r.
+                                                                claim Hr_nat : nat_p r.
+                                                                {
+                                                                  exact (andEL
+                                                                    (nat_p r)
+                                                                    (z = ordsucc r)
+                                                                    Hr_pack).
+                                                                }
+                                                                claim Hz_eq_sr : z = ordsucc r.
+                                                                {
+                                                                  exact (andER
+                                                                    (nat_p r)
+                                                                    (z = ordsucc r)
+                                                                    Hr_pack).
+                                                                }
+                                                                claim Hr_in_z : r :e z.
+                                                                {
+                                                                  rewrite Hz_eq_sr.
+                                                                  exact (ordsuccI2
+                                                                    r).
+                                                                }
+                                                                claim Hr_in_m : r :e m.
+                                                                {
+                                                                  exact (nat_trans
+                                                                    m
+                                                                    Hm_nat
+                                                                    z
+                                                                    Hz_in_m
+                                                                    r
+                                                                    Hr_in_z).
+                                                                }
+                                                                claim Hsr_in_m : ordsucc r :e m.
+                                                                {
+                                                                  rewrite <- Hz_eq_sr.
+                                                                  exact Hz_in_m.
+                                                                }
+                                                                claim Hdeep_csz_fam0 : apply_fun cs z :e apply_fun Gfam 0.
+                                                                {
+                                                                  rewrite HGfam0.
+                                                                  exact Hdeep_csz_G1.
+                                                                }
+                                                                claim Hdeep_cssr_fam0 : apply_fun cs (ordsucc r) :e apply_fun Gfam 0.
+                                                                {
+                                                                  rewrite <- Hz_eq_sr.
+                                                                  exact Hdeep_csz_fam0.
+                                                                }
+                                                                apply (exandE_i
+                                                                  (fun al:set => al :e 2 /\ apply_fun cs r :e apply_fun Gfam al)
+                                                                  (fun al:set => apply_fun cs r <> apply_fun efam al)
+                                                                  (Hcs_mem
+                                                                    r
+                                                                    Hr_in_m)).
+                                                                let alpha_prev17.
+                                                                assume Hap17_pack : alpha_prev17 :e 2 /\ apply_fun cs r :e apply_fun Gfam alpha_prev17.
+                                                                assume Hcsr_ne_efam : apply_fun cs r <> apply_fun efam alpha_prev17.
+                                                                claim Hap172 : alpha_prev17 :e 2.
+                                                                {
+                                                                  exact (andEL
+                                                                    (alpha_prev17 :e 2)
+                                                                    (apply_fun cs r :e apply_fun Gfam alpha_prev17)
+                                                                    Hap17_pack).
+                                                                }
+                                                                claim Hcsr_fam : apply_fun cs r :e apply_fun Gfam alpha_prev17.
+                                                                {
+                                                                  exact (andER
+                                                                    (alpha_prev17 :e 2)
+                                                                    (apply_fun cs r :e apply_fun Gfam alpha_prev17)
+                                                                    Hap17_pack).
+                                                                }
+                                                                claim Hap17_ne0 : alpha_prev17 <> 0.
+                                                                {
+                                                                  exact (Hcs_adj
+                                                                    r
+                                                                    Hr_in_m
+                                                                    Hsr_in_m
+                                                                    alpha_prev17
+                                                                    0
+                                                                    Hap172
+                                                                    In_0_2
+                                                                    Hcsr_fam
+                                                                    Hdeep_cssr_fam0).
+                                                                }
+                                                                claim Hap171 : alpha_prev17 = 1.
+                                                                {
+                                                                  apply (ordsuccE
+                                                                    1
+                                                                    alpha_prev17
+                                                                    Hap172).
+                                                                  - assume Hap17_in1 : alpha_prev17 :e 1.
+                                                                    apply (ordsuccE
+                                                                      0
+                                                                      alpha_prev17
+                                                                      Hap17_in1).
+                                                                    + assume Hap17_in0 : alpha_prev17 :e 0.
+                                                                      exact (EmptyE
+                                                                        alpha_prev17
+                                                                        Hap17_in0
+                                                                        (alpha_prev17 = 1)).
+                                                                    + assume Hap17_eq0 : alpha_prev17 = 0.
+                                                                      exact (Hap17_ne0
+                                                                        Hap17_eq0
+                                                                        (alpha_prev17 = 1)).
+                                                                  - assume Hap17_eq1 : alpha_prev17 = 1.
+                                                                    exact Hap17_eq1.
+                                                                }
+                                                                claim Hdeep_csr_G2 : apply_fun cs r :e G2.
+                                                                {
+                                                                  claim Hdeep_fam_r1 : apply_fun Gfam alpha_prev17 = G2.
+                                                                  {
+                                                                    rewrite Hap171.
+                                                                    exact HGfam1.
+                                                                  }
+                                                                  rewrite <- Hdeep_fam_r1.
+                                                                  exact Hcsr_fam.
+                                                                }
+                                                                claim Hdeep_csr_ne_e : apply_fun cs r <> e.
+                                                                {
+                                                                  claim Hdeep_efam_r : apply_fun efam alpha_prev17 = e.
+                                                                  {
+                                                                    rewrite (apply_fun_graph
+                                                                      2
+                                                                      (fun _:set => e)
+                                                                      alpha_prev17
+                                                                      Hap172).
+                                                                    reflexivity.
+                                                                  }
+                                                                  assume Hcsr_eq_e : apply_fun cs r = e.
+                                                                  apply Hcsr_ne_efam.
+                                                                  rewrite Hdeep_efam_r.
+                                                                  exact Hcsr_eq_e.
+                                                                }
+                                                                admit. (** TODO Bob: handle z<>0 branch after nineteenth predecessor split (r and cs(r):e G2) **)
 Admitted.
 
 (** Core helper: given free product and reduced word of c, derive contradiction **)
