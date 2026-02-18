@@ -114982,6 +114982,33 @@ Definition finitely_presented : set -> set -> set -> set -> prop :=
       finite J /\ finite K /\
       group_presentation G mult e inv J gens K rels F multF eF invF.
 
+(** Infrastructure helper for S69 Exercise 3:
+    cyclic free-product factors have uniquely determined orders up to permutation. **)
+Theorem free_product_uniqueness_cyclic_orders_helper :
+  forall G multG eG invG:set,
+  group_structure G multG eG invG ->
+  forall m n:set, m :e omega -> n :e omega -> m <> 0 -> n <> 0 ->
+  (exists G1 mult1 e1 inv1 G2 mult2 e2 inv2 FP multFP eFP invFP ifam:set,
+    group_structure G1 mult1 e1 inv1 /\ cyclic_group G1 mult1 e1 inv1 /\ equip G1 m /\
+    group_structure G2 mult2 e2 inv2 /\ cyclic_group G2 mult2 e2 inv2 /\ equip G2 n /\
+    external_free_product FP multFP eFP invFP (UPair 0 1)
+      (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+      (graph (UPair 0 1) (fun i:set => if i = 0 then mult1 else mult2))
+      ifam /\
+    exists phi:set, group_isomorphism G multG FP multFP phi) ->
+  forall m' n':set, m' :e omega -> n' :e omega -> m' <> 0 -> n' <> 0 ->
+  (exists G1' mult1' e1' inv1' G2' mult2' e2' inv2' FP' multFP' eFP' invFP' ifam':set,
+    group_structure G1' mult1' e1' inv1' /\ cyclic_group G1' mult1' e1' inv1' /\ equip G1' m' /\
+    group_structure G2' mult2' e2' inv2' /\ cyclic_group G2' mult2' e2' inv2' /\ equip G2' n' /\
+    external_free_product FP' multFP' eFP' invFP' (UPair 0 1)
+      (graph (UPair 0 1) (fun i:set => if i = 0 then G1' else G2'))
+      (graph (UPair 0 1) (fun i:set => if i = 0 then mult1' else mult2'))
+      ifam' /\
+    exists psi:set, group_isomorphism G multG FP' multFP' psi) ->
+  UPair m n = UPair m' n'.
+admit.
+Admitted.
+
 (** from S69 Exercises Exercise 3 / Thm (line 3174 in algtop.tex): free product uniqueness **)
 (** LATEX VERSION: Let G = G_1 free-product G_2 where G_1 and G_2 are cyclic of orders m and n **)
 (** respectively. Then m and n are uniquely determined by G (up to reordering). **)
@@ -115002,17 +115029,17 @@ Theorem ex69_3_free_product_uniqueness_cyclic :
     exists phi:set, group_isomorphism G multG FP multFP phi) ->
   (** Similarly for m2 and n2 **)
   forall m' n':set, m' :e omega -> n' :e omega -> m' <> 0 -> n' <> 0 ->
-  (exists G1' mult1' e1' inv1' G2' mult2' e2' inv2' FP' multFP' eFP' invFP' ifam':set,
-    group_structure G1' mult1' e1' inv1' /\ cyclic_group G1' mult1' e1' inv1' /\ equip G1' m' /\
-    group_structure G2' mult2' e2' inv2' /\ cyclic_group G2' mult2' e2' inv2' /\ equip G2' n' /\
-    external_free_product FP' multFP' eFP' invFP' (UPair 0 1)
+	  (exists G1' mult1' e1' inv1' G2' mult2' e2' inv2' FP' multFP' eFP' invFP' ifam':set,
+	    group_structure G1' mult1' e1' inv1' /\ cyclic_group G1' mult1' e1' inv1' /\ equip G1' m' /\
+	    group_structure G2' mult2' e2' inv2' /\ cyclic_group G2' mult2' e2' inv2' /\ equip G2' n' /\
+	    external_free_product FP' multFP' eFP' invFP' (UPair 0 1)
       (graph (UPair 0 1) (fun i:set => if i = 0 then G1' else G2'))
       (graph (UPair 0 1) (fun i:set => if i = 0 then mult1' else mult2'))
-      ifam' /\
-    exists psi:set, group_isomorphism G multG FP' multFP' psi) ->
-  (** Then {m,n} = {m',n'} **)
-  UPair m n = UPair m' n'.
-admit.
+	      ifam' /\
+	    exists psi:set, group_isomorphism G multG FP' multFP' psi) ->
+	  (** Then {m,n} = {m',n'} **)
+	  UPair m n = UPair m' n'.
+exact free_product_uniqueness_cyclic_orders_helper.
 Admitted.
 
 (** from S69 Exercise 1 (line 3159 in algtop.tex) **)
