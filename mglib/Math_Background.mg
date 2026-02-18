@@ -62480,9 +62480,53 @@ claim Hex :
                   apply_fun p (apply_fun lr x) = apply_fun f x)
                 HNrLift).
             }
+            claim H0Nr : 0 :e Nr.
+            {
+              exact (andER
+                (Nr :e unit_interval_topology)
+                (0 :e Nr)
+                (andEL
+                  (Nr :e unit_interval_topology /\ 0 :e Nr)
+                  (r :e Nr)
+                  HNrOpen0r)).
+            }
+            claim H0N1 : 0 :e N1.
+            {
+              exact (andER
+                (N1 :e unit_interval_topology)
+                (0 :e N1)
+                HN1open0).
+            }
+            claim Hlt1Comm0 : apply_fun p (apply_fun lt1 0) = apply_fun f 0.
+            {
+              exact ((andER
+                (continuous_map
+                  N1
+                  (subspace_topology unit_interval unit_interval_topology N1)
+                  E
+                  Te
+                  lt1)
+                (forall x:set, x :e N1 ->
+                  apply_fun p (apply_fun lt1 x) = apply_fun f x)
+                HN1lift)
+                0
+                H0N1).
+            }
+            claim HlrComm0 : apply_fun p (apply_fun lr 0) = apply_fun f 0.
+            {
+              exact (HlrComm
+                0
+                H0Nr).
+            }
+            claim Hlr0EqLt10 : apply_fun lr 0 = apply_fun lt1 0.
+            {
+              rewrite Hlr0.
+              rewrite HN1start.
+              reflexivity.
+            }
             claim HrN1 : r :e N1.
             {
-              (** TODO Charlie: compare lr with lt1 using start value e0 at 0 to place r in N1. **)
+              (** TODO Charlie: compare lr with lt1 starting from Hlr0EqLt10 and propagate on Nr to place r in N1. **)
               admit.
             }
             exact HrN1.
