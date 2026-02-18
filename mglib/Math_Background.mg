@@ -61228,6 +61228,30 @@ claim Hex :
                                   HslicesUtUnion
                                   HxlocalPreUt).
                               }
+                              claim HxlocalSlicePack :
+                                exists Vxlocal:set, xlocal :e Vxlocal /\ Vxlocal :e slicesUt.
+                              {
+                                exact (UnionE
+                                  slicesUt
+                                  xlocal
+                                  HxlocalUnion).
+                              }
+                              claim HxlocalSliceEqVlocal :
+                                forall Vxlocal:set, xlocal :e Vxlocal -> Vxlocal :e slicesUt -> Vxlocal = Vlocal.
+                              {
+                                let Vxlocal.
+                                assume HxlocalVxlocal HVxlocalSlice.
+                                exact (pairwise_disjoint_point_unique_member
+                                  slicesUt
+                                  Vxlocal
+                                  Vlocal
+                                  xlocal
+                                  HpdSlicesUt
+                                  HVxlocalSlice
+                                  HVlocalSlice
+                                  HxlocalVxlocal
+                                  HxlocalVlocal).
+                              }
                               claim HxlocalVx : xlocal :e Vx.
                               {
                                 (** TODO Charlie: identify the slicesUt member of xlocal and show it must be Vx. **)
@@ -65206,6 +65230,30 @@ claim HFt_54_cont :
                           (preimage_of E p U)
                           HslicesUnion
                           HxzPreU).
+                      }
+                      claim HxzSlicePack :
+                        exists Vxz:set, xz :e Vxz /\ Vxz :e slices.
+                      {
+                        exact (UnionE
+                          slices
+                          xz
+                          HxzUnion).
+                      }
+                      claim HxzSliceEqVz :
+                        forall Vxz:set, xz :e Vxz -> Vxz :e slices -> Vxz = Vz.
+                      {
+                        let Vxz.
+                        assume HxzVxz HVxzSlice.
+                        exact (pairwise_disjoint_point_unique_member
+                          slices
+                          Vxz
+                          Vz
+                          xz
+                          HpdSlices
+                          HVxzSlice
+                          HVzSlice
+                          HxzVxz
+                          HxzVz).
                       }
                       claim HxzVq : xz :e Vq.
                       {
