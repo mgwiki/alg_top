@@ -113468,10 +113468,6 @@ apply (iffI
     {
       reflexivity.
     }
-    claim Hgalpha_mem : apply_fun gens alpha :e Galpha.
-    {
-      exact (HgenInFam alpha Halpha).
-    }
     claim Hgen_of_factor :
       generator_of Galpha mult e inv (apply_fun gens alpha).
     {
