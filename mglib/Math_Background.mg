@@ -115818,84 +115818,18 @@ apply (andI
     {
       let b.
       assume HbQ : b :e quotient_group_set G mult C.
-      claim HnatPow :
-        forall n:set, nat_p n ->
-        group_power_nat
-          (quotient_group_mult G mult C)
-          (quotient_group_id G mult e C)
-          b
-          n :e quotient_group_set G mult C.
-      {
-        apply nat_ind.
-        - prove group_power_nat
-            (quotient_group_mult G mult C)
-            (quotient_group_id G mult e C)
-            b
-            0 :e quotient_group_set G mult C.
-          claim H0 : group_power_nat
-            (quotient_group_mult G mult C)
-            (quotient_group_id G mult e C)
-            b
-            0 = quotient_group_id G mult e C.
-          {
-            exact (nat_primrec_0
-              (quotient_group_id G mult e C)
-              (fun _ r => apply_fun (quotient_group_mult G mult C) (b, r))).
-          }
-          rewrite H0.
-          exact HeQ.
-        - let n.
-          assume Hn : nat_p n.
-          assume IH : group_power_nat
-            (quotient_group_mult G mult C)
-            (quotient_group_id G mult e C)
-            b
-            n :e quotient_group_set G mult C.
-          prove group_power_nat
-            (quotient_group_mult G mult C)
-            (quotient_group_id G mult e C)
-            b
-            (ordsucc n) :e quotient_group_set G mult C.
-          claim HS : group_power_nat
-            (quotient_group_mult G mult C)
-            (quotient_group_id G mult e C)
-            b
-            (ordsucc n) =
-            apply_fun (quotient_group_mult G mult C)
-              (b, group_power_nat
-                (quotient_group_mult G mult C)
-                (quotient_group_id G mult e C)
-                b
-                n).
-          {
-            exact (nat_primrec_S
-              (quotient_group_id G mult e C)
-              (fun _ r => apply_fun (quotient_group_mult G mult C) (b, r))
-              n
-              Hn).
-          }
-          rewrite HS.
-          exact (HmultQ
-            (b, group_power_nat
-              (quotient_group_mult G mult C)
-              (quotient_group_id G mult e C)
-              b
-              n)
-            (tuple_2_setprod_by_pair_Sigma
-              (quotient_group_set G mult C)
-              (quotient_group_set G mult C)
-              b
-              (group_power_nat
-                (quotient_group_mult G mult C)
-                (quotient_group_id G mult e C)
-                b
-                n)
-              HbQ
-              IH)).
-      }
       let n.
       assume HnO : n :e omega.
-      exact (HnatPow n (omega_nat_p n HnO)).
+      exact (group_power_nat_closed_in_group
+        (quotient_group_set G mult C)
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        (quotient_group_inv G mult inv C)
+        b
+        n
+        HgrpQ
+        HbQ
+        HnO).
     }
     claim HpowPair :
       (forall n:set, n :e omega ->
