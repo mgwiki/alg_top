@@ -115644,12 +115644,9 @@ Theorem cor70_4_one_factor_simply_connected :
 exact one_factor_simply_connected_quotient_pi1_helper.
 Admitted.
 
-(** from S70 Exercise 1(a) (line 3473 in algtop.tex) **)
-(** LATEX VERSION: If i-star is trivial, then j1 and j2 induce an epimorphism **)
-(** h: (pi1(U)/N1) free-product (pi1(V)/N2) -> pi1(X). **)
-(** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-Theorem ex70_1a_trivial_inclusion_epimorphism :
+(** Infrastructure helper for S70 Exercise 1(a):
+    trivial inclusion on pi1 induces an epimorphism from free product of quotients. **)
+Theorem trivial_inclusion_induces_free_product_epimorphism_helper :
   forall X Tx U V x0:set,
   U :e Tx -> V :e Tx -> X = U :\/: V ->
   path_connected_space U (subspace_topology X Tx U) ->
@@ -115708,6 +115705,72 @@ Theorem ex70_1a_trivial_inclusion_epimorphism :
         (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0) h /\
       surjective_map FP (fundamental_group X Tx x0) h.
 admit.
+Admitted.
+
+(** from S70 Exercise 1(a) (line 3473 in algtop.tex) **)
+(** LATEX VERSION: If i-star is trivial, then j1 and j2 induce an epimorphism **)
+(** h: (pi1(U)/N1) free-product (pi1(V)/N2) -> pi1(X). **)
+(** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
+(** Bounty 110 **)
+Theorem ex70_1a_trivial_inclusion_epimorphism :
+  forall X Tx U V x0:set,
+  U :e Tx -> V :e Tx -> X = U :\/: V ->
+  path_connected_space U (subspace_topology X Tx U) ->
+  path_connected_space V (subspace_topology X Tx V) ->
+  path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
+  x0 :e U :/\: V ->
+  (forall cls:set,
+    cls :e fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0 ->
+    apply_fun (induced_homomorphism
+      (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+      X Tx x0 (graph (U :/\: V) (fun x => x))) cls =
+    fundamental_group_id X Tx x0) ->
+  let N1 := least_normal_subgroup
+    (fundamental_group U (subspace_topology X Tx U) x0)
+    (fundamental_group_mult U (subspace_topology X Tx U) x0)
+    (fundamental_group_id U (subspace_topology X Tx U) x0)
+    (fundamental_group_inv U (subspace_topology X Tx U) x0)
+    (homomorphism_image
+      (fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0)
+      (induced_homomorphism
+        (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+        U (subspace_topology X Tx U) x0
+        (graph (U :/\: V) (fun x => x)))) in
+  let N2 := least_normal_subgroup
+    (fundamental_group V (subspace_topology X Tx V) x0)
+    (fundamental_group_mult V (subspace_topology X Tx V) x0)
+    (fundamental_group_id V (subspace_topology X Tx V) x0)
+    (fundamental_group_inv V (subspace_topology X Tx V) x0)
+    (homomorphism_image
+      (fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0)
+      (induced_homomorphism
+        (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+        V (subspace_topology X Tx V) x0
+        (graph (U :/\: V) (fun x => x)))) in
+	  exists FP multFP eFP invFP ifam:set,
+	    external_free_product FP multFP eFP invFP (UPair 0 1)
+      (graph (UPair 0 1) (fun i:set =>
+        if i = 0
+        then quotient_group_set
+          (fundamental_group U (subspace_topology X Tx U) x0)
+          (fundamental_group_mult U (subspace_topology X Tx U) x0) N1
+        else quotient_group_set
+          (fundamental_group V (subspace_topology X Tx V) x0)
+          (fundamental_group_mult V (subspace_topology X Tx V) x0) N2))
+      (graph (UPair 0 1) (fun i:set =>
+        if i = 0
+        then quotient_group_mult
+          (fundamental_group U (subspace_topology X Tx U) x0)
+          (fundamental_group_mult U (subspace_topology X Tx U) x0) N1
+        else quotient_group_mult
+          (fundamental_group V (subspace_topology X Tx V) x0)
+          (fundamental_group_mult V (subspace_topology X Tx V) x0) N2))
+      ifam /\
+	    exists h:set,
+	      group_homomorphism FP multFP
+	        (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0) h /\
+	      surjective_map FP (fundamental_group X Tx x0) h.
+exact trivial_inclusion_induces_free_product_epimorphism_helper.
 Admitted.
 
 (** from S70 Exercise 1(b) (line 3481 in algtop.tex) **)
