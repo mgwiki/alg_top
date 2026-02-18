@@ -115278,15 +115278,9 @@ Admitted.
 (** (lines 3183-3494 in algtop.tex)                              **)
 (** ============================================================ **)
 
-(** from S70 Thm 70.1 (line 3186 in algtop.tex): Seifert-van Kampen theorem **)
-(** LATEX VERSION: Let X = U union V where U,V open, U,V,U cap V path connected. **)
-(** Let x0 in U cap V. If phi1: pi1(U,x0) -> H and phi2: pi1(V,x0) -> H are **)
-(** homomorphisms with phi1 o i1 = phi2 o i2 (where i1,i2 induced by inclusion of **)
-(** U cap V), then there is a unique Phi: pi1(X,x0) -> H with Phi o j1 = phi1, **)
-(** Phi o j2 = phi2. **)
-(** EFFORT: 60 lines textbook, difficulty 9/10, USD 1200 **)
-(** Bounty 1320 **)
-Theorem thm70_1_seifert_van_kampen :
+(** Infrastructure helper for S70 Thm 70.1:
+    universal pushout property for fundamental groups of a two-set open cover. **)
+Theorem seifert_van_kampen_universal_pushout_helper :
   forall X Tx U V x0:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx -> X = U :\/: V ->
@@ -115355,6 +115349,85 @@ Theorem thm70_1_seifert_van_kampen :
           forall g:set, g :e fundamental_group X Tx x0 ->
             apply_fun Phi' g = apply_fun Phi g).
 admit.
+Admitted.
+
+(** from S70 Thm 70.1 (line 3186 in algtop.tex): Seifert-van Kampen theorem **)
+(** LATEX VERSION: Let X = U union V where U,V open, U,V,U cap V path connected. **)
+(** Let x0 in U cap V. If phi1: pi1(U,x0) -> H and phi2: pi1(V,x0) -> H are **)
+(** homomorphisms with phi1 o i1 = phi2 o i2 (where i1,i2 induced by inclusion of **)
+(** U cap V), then there is a unique Phi: pi1(X,x0) -> H with Phi o j1 = phi1, **)
+(** Phi o j2 = phi2. **)
+(** EFFORT: 60 lines textbook, difficulty 9/10, USD 1200 **)
+(** Bounty 1320 **)
+Theorem thm70_1_seifert_van_kampen :
+  forall X Tx U V x0:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx -> X = U :\/: V ->
+  path_connected_space U (subspace_topology X Tx U) ->
+  path_connected_space V (subspace_topology X Tx V) ->
+  path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
+  x0 :e U :/\: V ->
+  forall H multH eH invH:set,
+    group_structure H multH eH invH ->
+    forall phi1 phi2:set,
+      group_homomorphism
+        (fundamental_group U (subspace_topology X Tx U) x0)
+        (fundamental_group_mult U (subspace_topology X Tx U) x0)
+        H multH phi1 ->
+      group_homomorphism
+        (fundamental_group V (subspace_topology X Tx V) x0)
+        (fundamental_group_mult V (subspace_topology X Tx V) x0)
+        H multH phi2 ->
+      (forall g:set, g :e fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0 ->
+        apply_fun phi1
+          (apply_fun (induced_homomorphism
+            (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+            U (subspace_topology X Tx U) x0
+            (graph (U :/\: V) (fun x:set => x))) g) =
+        apply_fun phi2
+          (apply_fun (induced_homomorphism
+            (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+            V (subspace_topology X Tx V) x0
+            (graph (U :/\: V) (fun x:set => x))) g)) ->
+      exists Phi:set,
+        group_homomorphism
+          (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+          H multH Phi /\
+        (forall g:set,
+          g :e fundamental_group U (subspace_topology X Tx U) x0 ->
+          apply_fun Phi
+            (apply_fun (induced_homomorphism
+              U (subspace_topology X Tx U) x0 X Tx x0
+              (graph U (fun x:set => x))) g) =
+            apply_fun phi1 g) /\
+        (forall g:set,
+          g :e fundamental_group V (subspace_topology X Tx V) x0 ->
+          apply_fun Phi
+            (apply_fun (induced_homomorphism
+              V (subspace_topology X Tx V) x0 X Tx x0
+              (graph V (fun x:set => x))) g) =
+            apply_fun phi2 g) /\
+        (forall Phi':set,
+          group_homomorphism
+            (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+            H multH Phi' ->
+          (forall g:set,
+            g :e fundamental_group U (subspace_topology X Tx U) x0 ->
+            apply_fun Phi'
+              (apply_fun (induced_homomorphism
+                U (subspace_topology X Tx U) x0 X Tx x0
+                (graph U (fun x:set => x))) g) =
+              apply_fun phi1 g) ->
+	          (forall g:set,
+	            g :e fundamental_group V (subspace_topology X Tx V) x0 ->
+	            apply_fun Phi'
+	              (apply_fun (induced_homomorphism
+	                V (subspace_topology X Tx V) x0 X Tx x0
+	                (graph V (fun x:set => x))) g) =
+	              apply_fun phi2 g) ->
+	          forall g:set, g :e fundamental_group X Tx x0 ->
+	            apply_fun Phi' g = apply_fun Phi g).
+exact seifert_van_kampen_universal_pushout_helper.
 Admitted.
 
 (** from S70 Thm 70.2 (line 3389 in algtop.tex): classical Seifert-van Kampen **)
