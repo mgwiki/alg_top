@@ -1,7 +1,7 @@
 (** Balance Alice 3337 **)
 (** Balance Bob 3021 **)
 (** Balance Charlie 1171 **)
-(** Balance Dave 1436 **)
+(** Balance Dave 1419 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -111191,7 +111191,8 @@ Definition commutator_subgroup : set -> set -> set -> set -> set :=
 (** LATEX VERSION: [G,G] is normal in G, G/[G,G] is abelian, and any homomorphism **)
 (** from G to an abelian group H has kernel containing [G,G]. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
+(** Bounty 182 **)
+(** Lock Dave 1771481684 **)
 Theorem lemma69_3_commutator_subgroup :
   forall G mult e inv:set,
   group_structure G mult e inv ->
