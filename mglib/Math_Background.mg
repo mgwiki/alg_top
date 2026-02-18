@@ -106882,7 +106882,6 @@ apply and3I.
           forall ws:set,
           (forall i:set, i :e k -> exists alpha:set, alpha :e J /\ apply_fun ws i :e apply_fun Gfam alpha) ->
           (forall i:set, i :e k -> apply_fun ws i :e G) ->
-          (forall i:set, i :e k -> apply_fun ws i <> eG) ->
           forall g:set, g :e G ->
           apply_fun h (apply_fun multG (g, word_product multG eG ws k)) =
             apply_fun multH (apply_fun h g, apply_fun h (word_product multG eG ws k)).
@@ -106890,12 +106889,11 @@ apply and3I.
             forall ws:set,
             (forall i:set, i :e k -> exists alpha:set, alpha :e J /\ apply_fun ws i :e apply_fun Gfam alpha) ->
             (forall i:set, i :e k -> apply_fun ws i :e G) ->
-            (forall i:set, i :e k -> apply_fun ws i <> eG) ->
             forall g:set, g :e G ->
             apply_fun h (apply_fun multG (g, word_product multG eG ws k)) =
               apply_fun multH (apply_fun h g, apply_fun h (word_product multG eG ws k)))).
           - (** Base case k = 0 **)
-            let ws. assume Hfam_w Hin_w Hne_w. let g. assume HgG_w.
+            let ws. assume Hfam_w Hin_w. let g. assume HgG_w.
             claim Hwp0 : word_product multG eG ws 0 = eG.
             { exact (nat_primrec_0 eG (fun i:set => fun r:set => apply_fun multG (r, apply_fun ws i))). }
             (** Build each side as separate claims **)
@@ -106921,10 +106919,9 @@ apply and3I.
             - symmetry. exact Hrhs_0.
           - (** Inductive step k -> k+1 **)
             let k. assume Hk_w : nat_p k. assume IH_w.
-            let ws. assume Hfam_w Hin_w Hne_w. let g. assume HgG_w.
+            let ws. assume Hfam_w Hin_w. let g. assume HgG_w.
             (** ws(k) properties **)
             claim Hwsk_G : apply_fun ws k :e G. { exact (Hin_w k (ordsuccI2 k)). }
-            claim Hwsk_ne : apply_fun ws k <> eG. { exact (Hne_w k (ordsuccI2 k)). }
             claim Hwsk_fam : exists beta:set, beta :e J /\ apply_fun ws k :e apply_fun Gfam beta.
             { exact (Hfam_w k (ordsuccI2 k)). }
             (** word_product(ws, k) :e G **)
@@ -106938,63 +106935,78 @@ apply and3I.
             claim HwpS_w : word_product multG eG ws (ordsucc k) =
               apply_fun multG (word_product multG eG ws k, apply_fun ws k).
             { exact (nat_primrec_S eG (fun i:set => fun r:set => apply_fun multG (r, apply_fun ws i)) k Hk_w). }
-            rewrite HwpS_w.
-            (** Goal: h(mult(g, mult(wp(k), ws(k)))) = multH(h(g), h(mult(wp(k), ws(k)))) **)
-            (** Helper claims **)
-            claim Hassoc_w : apply_fun multG (g, apply_fun multG (word_product multG eG ws k, apply_fun ws k)) =
-              apply_fun multG (apply_fun multG (g, word_product multG eG ws k), apply_fun ws k).
-            { symmetry. exact (HassocG g (word_product multG eG ws k) (apply_fun ws k)
-                HgG_w Hwpk_G_w Hwsk_G). }
-            claim Hrm_w : apply_fun h (apply_fun multG (apply_fun multG (g, word_product multG eG ws k), apply_fun ws k)) =
-              apply_fun multH (apply_fun h (apply_fun multG (g, word_product multG eG ws k)), h_single (apply_fun ws k)).
-            { exact (Hh_right_mult (apply_fun multG (g, word_product multG eG ws k)) Hgwpk_G
-                (apply_fun ws k) Hwsk_G Hwsk_ne Hwsk_fam). }
-            claim HIH_w : apply_fun h (apply_fun multG (g, word_product multG eG ws k)) =
-              apply_fun multH (apply_fun h g, apply_fun h (word_product multG eG ws k)).
-            { exact (IH_w ws
+            (** Case split: ws(k) = eG (trivial) vs ws(k) <> eG (use Hh_right_mult) **)
+            apply (xm (apply_fun ws k = eG)).
+            + (** ws(k) = eG: wp(ordsucc k) = mult(wp(k), eG) = wp(k), reduce to IH **)
+              assume Hwsk_eG : apply_fun ws k = eG.
+              rewrite HwpS_w. rewrite Hwsk_eG.
+              claim Hid_wpk : apply_fun multG (word_product multG eG ws k, eG) = word_product multG eG ws k.
+              { exact (andER
+                  (apply_fun multG (eG, word_product multG eG ws k) = word_product multG eG ws k)
+                  (apply_fun multG (word_product multG eG ws k, eG) = word_product multG eG ws k)
+                  (HidG (word_product multG eG ws k) Hwpk_G_w)). }
+              rewrite Hid_wpk.
+              exact (IH_w ws
                 (fun i:set => fun Hi:i :e k => Hfam_w i (ordsuccI1 k i Hi))
                 (fun i:set => fun Hi:i :e k => Hin_w i (ordsuccI1 k i Hi))
-                (fun i:set => fun Hi:i :e k => Hne_w i (ordsuccI1 k i Hi))
-                g HgG_w). }
-            claim Hrm_wp_w : apply_fun h (apply_fun multG (word_product multG eG ws k, apply_fun ws k)) =
-              apply_fun multH (apply_fun h (word_product multG eG ws k), h_single (apply_fun ws k)).
-            { exact (Hh_right_mult (word_product multG eG ws k) Hwpk_G_w
-                (apply_fun ws k) Hwsk_G Hwsk_ne Hwsk_fam). }
-            (** Membership claims for HassocH **)
-            claim HhgH_step : apply_fun h g :e H. { exact (Hh_in_H g HgG_w). }
-            claim HhwpkH_step : apply_fun h (word_product multG eG ws k) :e H.
-            { exact (Hh_in_H (word_product multG eG ws k) Hwpk_G_w). }
-            claim HhskH_step : h_single (apply_fun ws k) :e H.
-            { exact (Hh_single_H (apply_fun ws k) Hwsk_fam). }
-            (** Step 1: h(mult(g, mult(wp(k), ws(k)))) = multH(h(mult(g, wp(k))), hs(ws(k))) **)
-            claim Hstep1 : apply_fun h (apply_fun multG (g, apply_fun multG (word_product multG eG ws k, apply_fun ws k))) =
-              apply_fun multH (apply_fun h (apply_fun multG (g, word_product multG eG ws k)), h_single (apply_fun ws k)).
-            { rewrite Hassoc_w. exact Hrm_w. }
-            (** Step 2: multH(h(mult(g, wp(k))), hs(ws(k))) = multH(multH(h(g), h(wp(k))), hs(ws(k))) **)
-            claim Hstep2 : apply_fun multH (apply_fun h (apply_fun multG (g, word_product multG eG ws k)), h_single (apply_fun ws k)) =
-              apply_fun multH (apply_fun multH (apply_fun h g, apply_fun h (word_product multG eG ws k)), h_single (apply_fun ws k)).
-            { rewrite HIH_w. reflexivity. }
-            (** Step 3: multH(multH(h(g), h(wp(k))), hs(ws(k))) = multH(h(g), h(mult(wp(k), ws(k)))) **)
-            claim Hstep3 : apply_fun multH (apply_fun multH (apply_fun h g, apply_fun h (word_product multG eG ws k)), h_single (apply_fun ws k)) =
-              apply_fun multH (apply_fun h g, apply_fun h (apply_fun multG (word_product multG eG ws k, apply_fun ws k))).
-            { rewrite Hrm_wp_w.
-              exact (HassocH (apply_fun h g)
-                (apply_fun h (word_product multG eG ws k))
-                (h_single (apply_fun ws k))
-                HhgH_step HhwpkH_step HhskH_step). }
-            (** Chain: A = B = C = D via eq_i_tra **)
-            claim Hstep12 : apply_fun h (apply_fun multG (g, apply_fun multG (word_product multG eG ws k, apply_fun ws k))) =
-              apply_fun multH (apply_fun multH (apply_fun h g, apply_fun h (word_product multG eG ws k)), h_single (apply_fun ws k)).
-            { exact (eq_i_tra
+                g HgG_w).
+            + (** ws(k) <> eG: use Hh_right_mult and the full chain **)
+              assume Hwsk_ne : apply_fun ws k <> eG.
+              rewrite HwpS_w.
+              (** Goal: h(mult(g, mult(wp(k), ws(k)))) = multH(h(g), h(mult(wp(k), ws(k)))) **)
+              claim Hassoc_w : apply_fun multG (g, apply_fun multG (word_product multG eG ws k, apply_fun ws k)) =
+                apply_fun multG (apply_fun multG (g, word_product multG eG ws k), apply_fun ws k).
+              { symmetry. exact (HassocG g (word_product multG eG ws k) (apply_fun ws k)
+                  HgG_w Hwpk_G_w Hwsk_G). }
+              claim Hrm_w : apply_fun h (apply_fun multG (apply_fun multG (g, word_product multG eG ws k), apply_fun ws k)) =
+                apply_fun multH (apply_fun h (apply_fun multG (g, word_product multG eG ws k)), h_single (apply_fun ws k)).
+              { exact (Hh_right_mult (apply_fun multG (g, word_product multG eG ws k)) Hgwpk_G
+                  (apply_fun ws k) Hwsk_G Hwsk_ne Hwsk_fam). }
+              claim HIH_w : apply_fun h (apply_fun multG (g, word_product multG eG ws k)) =
+                apply_fun multH (apply_fun h g, apply_fun h (word_product multG eG ws k)).
+              { exact (IH_w ws
+                  (fun i:set => fun Hi:i :e k => Hfam_w i (ordsuccI1 k i Hi))
+                  (fun i:set => fun Hi:i :e k => Hin_w i (ordsuccI1 k i Hi))
+                  g HgG_w). }
+              claim Hrm_wp_w : apply_fun h (apply_fun multG (word_product multG eG ws k, apply_fun ws k)) =
+                apply_fun multH (apply_fun h (word_product multG eG ws k), h_single (apply_fun ws k)).
+              { exact (Hh_right_mult (word_product multG eG ws k) Hwpk_G_w
+                  (apply_fun ws k) Hwsk_G Hwsk_ne Hwsk_fam). }
+              (** Membership claims for HassocH **)
+              claim HhgH_step : apply_fun h g :e H. { exact (Hh_in_H g HgG_w). }
+              claim HhwpkH_step : apply_fun h (word_product multG eG ws k) :e H.
+              { exact (Hh_in_H (word_product multG eG ws k) Hwpk_G_w). }
+              claim HhskH_step : h_single (apply_fun ws k) :e H.
+              { exact (Hh_single_H (apply_fun ws k) Hwsk_fam). }
+              (** Step 1: h(mult(g, mult(wp(k), ws(k)))) = multH(h(mult(g, wp(k))), hs(ws(k))) **)
+              claim Hstep1 : apply_fun h (apply_fun multG (g, apply_fun multG (word_product multG eG ws k, apply_fun ws k))) =
+                apply_fun multH (apply_fun h (apply_fun multG (g, word_product multG eG ws k)), h_single (apply_fun ws k)).
+              { rewrite Hassoc_w. exact Hrm_w. }
+              (** Step 2: multH(h(mult(g, wp(k))), hs(ws(k))) = multH(multH(h(g), h(wp(k))), hs(ws(k))) **)
+              claim Hstep2 : apply_fun multH (apply_fun h (apply_fun multG (g, word_product multG eG ws k)), h_single (apply_fun ws k)) =
+                apply_fun multH (apply_fun multH (apply_fun h g, apply_fun h (word_product multG eG ws k)), h_single (apply_fun ws k)).
+              { rewrite HIH_w. reflexivity. }
+              (** Step 3: multH(multH(h(g), h(wp(k))), hs(ws(k))) = multH(h(g), h(mult(wp(k), ws(k)))) **)
+              claim Hstep3 : apply_fun multH (apply_fun multH (apply_fun h g, apply_fun h (word_product multG eG ws k)), h_single (apply_fun ws k)) =
+                apply_fun multH (apply_fun h g, apply_fun h (apply_fun multG (word_product multG eG ws k, apply_fun ws k))).
+              { rewrite Hrm_wp_w.
+                exact (HassocH (apply_fun h g)
+                  (apply_fun h (word_product multG eG ws k))
+                  (h_single (apply_fun ws k))
+                  HhgH_step HhwpkH_step HhskH_step). }
+              (** Chain: A = B = C = D via eq_i_tra **)
+              claim Hstep12 : apply_fun h (apply_fun multG (g, apply_fun multG (word_product multG eG ws k, apply_fun ws k))) =
+                apply_fun multH (apply_fun multH (apply_fun h g, apply_fun h (word_product multG eG ws k)), h_single (apply_fun ws k)).
+              { exact (eq_i_tra
+                  (apply_fun h (apply_fun multG (g, apply_fun multG (word_product multG eG ws k, apply_fun ws k))))
+                  (apply_fun multH (apply_fun h (apply_fun multG (g, word_product multG eG ws k)), h_single (apply_fun ws k)))
+                  (apply_fun multH (apply_fun multH (apply_fun h g, apply_fun h (word_product multG eG ws k)), h_single (apply_fun ws k)))
+                  Hstep1 Hstep2). }
+              exact (eq_i_tra
                 (apply_fun h (apply_fun multG (g, apply_fun multG (word_product multG eG ws k, apply_fun ws k))))
-                (apply_fun multH (apply_fun h (apply_fun multG (g, word_product multG eG ws k)), h_single (apply_fun ws k)))
                 (apply_fun multH (apply_fun multH (apply_fun h g, apply_fun h (word_product multG eG ws k)), h_single (apply_fun ws k)))
-                Hstep1 Hstep2). }
-            exact (eq_i_tra
-              (apply_fun h (apply_fun multG (g, apply_fun multG (word_product multG eG ws k, apply_fun ws k))))
-              (apply_fun multH (apply_fun multH (apply_fun h g, apply_fun h (word_product multG eG ws k)), h_single (apply_fun ws k)))
-              (apply_fun multH (apply_fun h g, apply_fun h (apply_fun multG (word_product multG eG ws k, apply_fun ws k))))
-              Hstep12 Hstep3). }
+                (apply_fun multH (apply_fun h g, apply_fun h (apply_fun multG (word_product multG eG ws k, apply_fun ws k))))
+                Hstep12 Hstep3). }
         (** Apply Hh_mult_wp to the reduced word of y **)
         (** Need: xs_of(y)(i) in Gfam, in G, and != eG for i < n_of(y) **)
         claim Hys_fam : forall i:set, i :e (n_of y) ->
@@ -107033,13 +107045,11 @@ apply and3I.
             (andEL (alpha :e J) (apply_fun (xs_of y) i :e apply_fun Gfam alpha) Haw)
             (apply_fun (xs_of y) i)
             (andER (alpha :e J) (apply_fun (xs_of y) i :e apply_fun Gfam alpha) Haw)). }
-        claim Hys_ne : forall i:set, i :e (n_of y) -> apply_fun (xs_of y) i <> eG.
-        { admit. (** needs efam(alpha) = eG or direct argument **) }
         (** Apply Hh_mult_wp with g = x, ws = xs_of y, k = n_of y **)
         claim Hresult : apply_fun h (apply_fun multG (x, word_product multG eG (xs_of y) (n_of y))) =
           apply_fun multH (apply_fun h x, apply_fun h (word_product multG eG (xs_of y) (n_of y))).
         { exact (Hh_mult_wp (n_of y) (omega_nat_p (n_of y) Hn_y_omega)
-            (xs_of y) Hys_fam Hys_G Hys_ne x HxG). }
+            (xs_of y) Hys_fam Hys_G x HxG). }
         rewrite <- Hwp_y. exact Hresult.
 (** Part 2: restriction - for alpha in J, x in G_alpha, h(x) = hfam(alpha)(x) **)
 - let alpha0. assume Hal0 : alpha0 :e J.
