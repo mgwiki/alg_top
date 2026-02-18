@@ -120006,8 +120006,32 @@ apply xm (second_countable_space X Tx).
     - assume HneqUV.
       claim HcarrierEx : exists W:set, W :e A /\ aU :\/: aV c= W.
       {
-        (** TODO Charlie: derive a common carrier in A for intersecting shrunken parents. **)
-        admit.
+        apply xm (aU c= aV).
+        - assume HsubUV.
+          witness aV.
+          apply andI.
+          + exact HaVA.
+          + exact (binunion_Subq_min
+              aU
+              aV
+              aV
+              HsubUV
+              (Subq_ref aV)).
+        - assume HnsubUV.
+          apply xm (aV c= aU).
+          + assume HsubVU.
+            witness aU.
+            apply andI.
+            * exact HaUA.
+            * exact (binunion_Subq_min
+                aU
+                aV
+                aU
+                (Subq_ref aU)
+                HsubVU).
+          + assume HnsubVU.
+            (** TODO Charlie: incomparable carrier case remains. **)
+            admit.
       }
       apply HcarrierEx.
       let W.
