@@ -77943,10 +77943,621 @@ claim HretrR2m0S1 :
           R2_minus_origin R2_minus_origin_topology r /\
         (forall x:set, x :e R2_minus_origin -> apply_fun r x :e S1).
       {
-        claim HradialContInto :
+        claim HrIntoS1 :
+          forall x:set, x :e R2_minus_origin -> apply_fun r x :e S1.
+        {
+          let x.
+          assume HxR2m0.
+          claim HxR2 : x :e setprod R R.
+          {
+            exact (SepE1
+              (setprod R R)
+              (fun p:set => ~(p 0 = 0 /\ p 1 = 0))
+              x
+              HxR2m0).
+          }
+          claim HxNot00 : ~(x 0 = 0 /\ x 1 = 0).
+          {
+            exact (SepE2
+              (setprod R R)
+              (fun p:set => ~(p 0 = 0 /\ p 1 = 0))
+              x
+              HxR2m0).
+          }
+          claim HxEta : x = (x 0, x 1).
+          {
+            exact (setprod_eta
+              R
+              R
+              x
+              HxR2).
+          }
+          claim HxPairSing :
+            (x 0, x 1) :e setprod {x 0} {x 1}.
+          {
+            exact (tuple_2_setprod_by_pair_Sigma
+              {x 0}
+              {x 1}
+              (x 0)
+              (x 1)
+              (SingI (x 0))
+              (SingI (x 1))).
+          }
+          claim HxPairIn : (x 0, x 1) :e setprod R R.
+          {
+            rewrite <- HxEta.
+            exact HxR2.
+          }
+          claim HxCoordsR : x 0 :e R /\ x 1 :e R.
+          {
+            exact (setprod_coords_in
+              (x 0)
+              (x 1)
+              R
+              R
+              (x 0, x 1)
+              HxPairSing
+              HxPairIn).
+          }
+          claim Hx0R : x 0 :e R.
+          {
+            exact (andEL
+              (x 0 :e R)
+              (x 1 :e R)
+              HxCoordsR).
+          }
+          claim Hx1R : x 1 :e R.
+          {
+            exact (andER
+              (x 0 :e R)
+              (x 1 :e R)
+              HxCoordsR).
+          }
+          claim Hx0S : SNo (x 0).
+          {
+            exact (real_SNo
+              (x 0)
+              Hx0R).
+          }
+          claim Hx1S : SNo (x 1).
+          {
+            exact (real_SNo
+              (x 1)
+              Hx1R).
+          }
+          set x0sq := mul_SNo (x 0) (x 0).
+          set x1sq := mul_SNo (x 1) (x 1).
+          set s := add_SNo x0sq x1sq.
+          claim Hx0sqS : SNo x0sq.
+          {
+            exact (SNo_mul_SNo
+              (x 0)
+              (x 0)
+              Hx0S
+              Hx0S).
+          }
+          claim Hx1sqS : SNo x1sq.
+          {
+            exact (SNo_mul_SNo
+              (x 1)
+              (x 1)
+              Hx1S
+              Hx1S).
+          }
+          claim HsS : SNo s.
+          {
+            exact (SNo_add_SNo
+              x0sq
+              x1sq
+              Hx0sqS
+              Hx1sqS).
+          }
+          claim Hx0sqNonneg : 0 <= x0sq.
+          {
+            exact (SNo_sqr_nonneg
+              (x 0)
+              Hx0S).
+          }
+          claim Hx1sqNonneg : 0 <= x1sq.
+          {
+            exact (SNo_sqr_nonneg
+              (x 1)
+              Hx1S).
+          }
+          claim Hx0sqLeS : x0sq <= s.
+          {
+            exact (SNoLe_add_nonneg_right
+              x0sq
+              x1sq
+              Hx0sqS
+              Hx1sqS
+              Hx1sqNonneg).
+          }
+          claim HsNonneg : 0 <= s.
+          {
+            exact (SNoLe_tra
+              0
+              x0sq
+              s
+              SNo_0
+              Hx0sqS
+              HsS
+              Hx0sqNonneg
+              Hx0sqLeS).
+          }
+          claim Hx1sqLeS : x1sq <= s.
+          {
+            rewrite (add_SNo_com
+              x0sq
+              x1sq
+              Hx0sqS
+              Hx1sqS).
+            exact (SNoLe_add_nonneg_right
+              x1sq
+              x0sq
+              Hx1sqS
+              Hx0sqS
+              Hx0sqNonneg).
+          }
+          claim HsNe0 : s <> 0.
+          {
+            assume Hs0.
+            claim HsLe0 : s <= 0.
+            {
+              rewrite Hs0.
+              exact (SNoLe_ref
+                0).
+            }
+            claim Hx0sqLe0 : x0sq <= 0.
+            {
+              exact (SNoLe_tra
+                x0sq
+                s
+                0
+                Hx0sqS
+                HsS
+                SNo_0
+                Hx0sqLeS
+                HsLe0).
+            }
+            claim Hx1sqLe0 : x1sq <= 0.
+            {
+              exact (SNoLe_tra
+                x1sq
+                s
+                0
+                Hx1sqS
+                HsS
+                SNo_0
+                Hx1sqLeS
+                HsLe0).
+            }
+            claim Hx0Eq0 : x 0 = 0.
+            {
+              claim Hx0Cases : x 0 = 0 \/ 0 < mul_SNo (x 0) (x 0).
+              {
+                exact (SNo_zero_or_sqr_pos
+                  (x 0)
+                  Hx0S).
+              }
+              apply Hx0Cases.
+              - assume Hx0Eq0.
+                exact Hx0Eq0.
+              - assume Hx0sqPos.
+                claim Hx0sqPos0 : 0 < 0.
+                {
+                  exact (SNoLtLe_tra
+                    0
+                    x0sq
+                    0
+                    SNo_0
+                    Hx0sqS
+                    SNo_0
+                    Hx0sqPos
+                    Hx0sqLe0).
+                }
+                claim H00Rlt : Rlt 0 0.
+                {
+                  exact (RltI
+                    0
+                    0
+                    real_0
+                    real_0
+                    Hx0sqPos0).
+                }
+                exact (FalseE
+                  (not_Rlt_refl
+                    0
+                    real_0
+                    H00Rlt)
+                  (x 0 = 0)).
+            }
+            claim Hx1Eq0 : x 1 = 0.
+            {
+              claim Hx1Cases : x 1 = 0 \/ 0 < mul_SNo (x 1) (x 1).
+              {
+                exact (SNo_zero_or_sqr_pos
+                  (x 1)
+                  Hx1S).
+              }
+              apply Hx1Cases.
+              - assume Hx1Eq0.
+                exact Hx1Eq0.
+              - assume Hx1sqPos.
+                claim Hx1sqPos0 : 0 < 0.
+                {
+                  exact (SNoLtLe_tra
+                    0
+                    x1sq
+                    0
+                    SNo_0
+                    Hx1sqS
+                    SNo_0
+                    Hx1sqPos
+                    Hx1sqLe0).
+                }
+                claim H00Rlt : Rlt 0 0.
+                {
+                  exact (RltI
+                    0
+                    0
+                    real_0
+                    real_0
+                    Hx1sqPos0).
+                }
+                exact (FalseE
+                  (not_Rlt_refl
+                    0
+                    real_0
+                    H00Rlt)
+                  (x 1 = 0)).
+            }
+            claim Hx00 : x 0 = 0 /\ x 1 = 0.
+            {
+              apply andI.
+              - exact Hx0Eq0.
+              - exact Hx1Eq0.
+            }
+            exact (HxNot00
+              Hx00).
+          }
+          claim HsR : s :e R.
+          {
+            exact (real_add_SNo
+              x0sq
+              (real_mul_SNo
+                (x 0)
+                Hx0R
+                (x 0)
+                Hx0R)
+              x1sq
+              (real_mul_SNo
+                (x 1)
+                Hx1R
+                (x 1)
+                Hx1R)).
+          }
+          set d := sqrt_SNo_nonneg s.
+          claim HdS : SNo d.
+          {
+            exact (SNo_sqrt_SNo_nonneg
+              s
+              HsS
+              HsNonneg).
+          }
+          claim HdR : d :e R.
+          {
+            exact (sqrt_SNo_nonneg_real
+              s
+              HsR
+              HsNonneg).
+          }
+          claim HdSq : mul_SNo d d = s.
+          {
+            exact (sqrt_SNo_nonneg_sqr
+              s
+              HsS
+              HsNonneg).
+          }
+          claim Hd2S : SNo (mul_SNo d d).
+          {
+            exact (SNo_mul_SNo
+              d
+              d
+              HdS
+              HdS).
+          }
+          claim Hd2Ne0 : mul_SNo d d <> 0.
+          {
+            assume Hd20.
+            claim Hs0 : s = 0.
+            {
+              rewrite <- HdSq.
+              exact Hd20.
+            }
+            exact (HsNe0
+              Hs0).
+          }
+          claim Hdiv0R :
+            div_SNo (x 0) d :e R.
+          {
+            exact (real_div_SNo
+              (x 0)
+              Hx0R
+              d
+              HdR).
+          }
+          claim Hdiv1R :
+            div_SNo (x 1) d :e R.
+          {
+            exact (real_div_SNo
+              (x 1)
+              Hx1R
+              d
+              HdR).
+          }
+          claim Hdiv0S : SNo (div_SNo (x 0) d).
+          {
+            exact (real_SNo
+              (div_SNo (x 0) d)
+              Hdiv0R).
+          }
+          claim Hdiv1S : SNo (div_SNo (x 1) d).
+          {
+            exact (real_SNo
+              (div_SNo (x 1) d)
+              Hdiv1R).
+          }
+          claim HlhsTimesD2 :
+            mul_SNo
+              (add_SNo
+                (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+                (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d)))
+              (mul_SNo d d)
+            = s.
+          {
+            rewrite (mul_SNo_distrR
+              (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+              (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d))
+              (mul_SNo d d)
+              (SNo_mul_SNo
+                (div_SNo (x 0) d)
+                (div_SNo (x 0) d)
+                Hdiv0S
+                Hdiv0S)
+              (SNo_mul_SNo
+                (div_SNo (x 1) d)
+                (div_SNo (x 1) d)
+                Hdiv1S
+                Hdiv1S)
+              Hd2S).
+            rewrite (mul_div_SNo_both
+              (x 0)
+              d
+              (x 0)
+              d
+              Hx0S
+              HdS
+              Hx0S
+              HdS) at 1.
+            rewrite (mul_div_SNo_both
+              (x 1)
+              d
+              (x 1)
+              d
+              Hx1S
+              HdS
+              Hx1S
+              HdS) at 1.
+            rewrite (mul_div_SNo_invL
+              (mul_SNo (x 0) (x 0))
+              (mul_SNo d d)
+              (SNo_mul_SNo
+                (x 0)
+                (x 0)
+                Hx0S
+                Hx0S)
+              Hd2S
+              Hd2Ne0).
+            rewrite (mul_div_SNo_invL
+              (mul_SNo (x 1) (x 1))
+              (mul_SNo d d)
+              (SNo_mul_SNo
+                (x 1)
+                (x 1)
+                Hx1S
+                Hx1S)
+              Hd2S
+              Hd2Ne0).
+            reflexivity.
+          }
+          claim HrhsTimesD2 :
+            mul_SNo 1 (mul_SNo d d) = s.
+          {
+            rewrite (mul_SNo_oneL
+              (mul_SNo d d)
+              Hd2S).
+            exact HdSq.
+          }
+          claim HnormEq :
+            add_SNo
+              (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+              (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d))
+            = 1.
+          {
+            claim HAd2Eq1d2 :
+              mul_SNo
+                (add_SNo
+                  (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+                  (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d)))
+                (mul_SNo d d)
+              =
+              mul_SNo 1 (mul_SNo d d).
+            {
+              claim HsEq1d2 : s = mul_SNo 1 (mul_SNo d d).
+              {
+                symmetry.
+                exact HrhsTimesD2.
+              }
+              exact (eq_i_tra
+                (mul_SNo
+                  (add_SNo
+                    (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+                    (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d)))
+                  (mul_SNo d d))
+                s
+                (mul_SNo 1 (mul_SNo d d))
+                HlhsTimesD2
+                HsEq1d2).
+            }
+            claim HAS : SNo
+              (add_SNo
+                (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+                (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d))).
+            {
+              exact (SNo_add_SNo
+                (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+                (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d))
+                (SNo_mul_SNo
+                  (div_SNo (x 0) d)
+                  (div_SNo (x 0) d)
+                  Hdiv0S
+                  Hdiv0S)
+                (SNo_mul_SNo
+                  (div_SNo (x 1) d)
+                  (div_SNo (x 1) d)
+                  Hdiv1S
+                  Hdiv1S)).
+            }
+            claim Hd2AEqHd21 :
+              mul_SNo
+                (mul_SNo d d)
+                (add_SNo
+                  (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+                  (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d)))
+              =
+              mul_SNo
+                (mul_SNo d d)
+                1.
+            {
+              claim HcomL :
+                mul_SNo
+                  (mul_SNo d d)
+                  (add_SNo
+                    (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+                    (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d)))
+                =
+                mul_SNo
+                  (add_SNo
+                    (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+                    (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d)))
+                  (mul_SNo d d).
+              {
+                exact (mul_SNo_com
+                  (mul_SNo d d)
+                  (add_SNo
+                    (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+                    (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d)))
+                  Hd2S
+                  HAS).
+              }
+              claim HcomR :
+                mul_SNo 1 (mul_SNo d d) = mul_SNo (mul_SNo d d) 1.
+              {
+                exact (mul_SNo_com
+                  1
+                  (mul_SNo d d)
+                  SNo_1
+                  Hd2S).
+              }
+              exact (eq_i_tra
+                (mul_SNo
+                  (mul_SNo d d)
+                  (add_SNo
+                    (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+                    (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d))))
+                (mul_SNo
+                  (add_SNo
+                    (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+                    (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d)))
+                  (mul_SNo d d))
+                (mul_SNo
+                  (mul_SNo d d)
+                  1)
+                HcomL
+                (eq_i_tra
+                  (mul_SNo
+                    (add_SNo
+                      (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+                      (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d)))
+                    (mul_SNo d d))
+                  (mul_SNo 1 (mul_SNo d d))
+                  (mul_SNo
+                    (mul_SNo d d)
+                    1)
+                  HAd2Eq1d2
+                  HcomR)).
+            }
+            exact (mul_SNo_nonzero_cancel
+              (mul_SNo d d)
+              (add_SNo
+                (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+                (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d)))
+              1
+              Hd2S
+              Hd2Ne0
+              HAS
+              SNo_1
+              Hd2AEqHd21).
+          }
+          apply (SepI
+            (setprod R R)
+            (fun p:set =>
+              add_SNo (mul_SNo (p 0) (p 0))
+                (mul_SNo (p 1) (p 1)) = 1)
+            (apply_fun r x)).
+          - rewrite (apply_fun_graph
+              R2_minus_origin
+              (fun p:set =>
+                (div_SNo (p 0)
+                  (sqrt_SNo_nonneg
+                    (add_SNo (mul_SNo (p 0) (p 0))
+                      (mul_SNo (p 1) (p 1)))),
+                 div_SNo (p 1)
+                  (sqrt_SNo_nonneg
+                    (add_SNo (mul_SNo (p 0) (p 0))
+                      (mul_SNo (p 1) (p 1))))))
+              x
+              HxR2m0).
+            exact (tuple_2_setprod_by_pair_Sigma
+              R
+              R
+              (div_SNo (x 0) d)
+              (div_SNo (x 1) d)
+              Hdiv0R
+              Hdiv1R).
+          - rewrite (apply_fun_graph
+              R2_minus_origin
+              (fun p:set =>
+                (div_SNo (p 0)
+                  (sqrt_SNo_nonneg
+                    (add_SNo (mul_SNo (p 0) (p 0))
+                      (mul_SNo (p 1) (p 1)))),
+                 div_SNo (p 1)
+                  (sqrt_SNo_nonneg
+                    (add_SNo (mul_SNo (p 0) (p 0))
+                      (mul_SNo (p 1) (p 1))))))
+              x
+              HxR2m0).
+            rewrite tuple_2_0_eq at 1.
+            rewrite tuple_2_0_eq at 1.
+            rewrite tuple_2_1_eq at 1.
+            rewrite tuple_2_1_eq at 1.
+            exact HnormEq.
+        }
+        claim HradialCont :
           continuous_map R2_minus_origin R2_minus_origin_topology
-            R2_minus_origin R2_minus_origin_topology r /\
-          (forall x:set, x :e R2_minus_origin -> apply_fun r x :e S1).
+            R2_minus_origin R2_minus_origin_topology r.
         {
           admit.
         }
@@ -77954,20 +78565,7 @@ claim HretrR2m0S1 :
           continuous_map R2_minus_origin R2_minus_origin_topology
             R2_minus_origin R2_minus_origin_topology r.
         {
-          exact (andEL
-            (continuous_map R2_minus_origin R2_minus_origin_topology
-              R2_minus_origin R2_minus_origin_topology r)
-            (forall x:set, x :e R2_minus_origin -> apply_fun r x :e S1)
-            HradialContInto).
-        }
-        claim HrIntoS1 :
-          forall x:set, x :e R2_minus_origin -> apply_fun r x :e S1.
-        {
-          exact (andER
-            (continuous_map R2_minus_origin R2_minus_origin_topology
-              R2_minus_origin R2_minus_origin_topology r)
-            (forall x:set, x :e R2_minus_origin -> apply_fun r x :e S1)
-            HradialContInto).
+          exact HradialCont.
         }
         claim HrFun :
           function_on r R2_minus_origin R2_minus_origin.
