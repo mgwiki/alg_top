@@ -80348,7 +80348,772 @@ claim Hcore :
                     X Tx x0
                     (graph V (fun x:set => x)))
                   vcls)).
-        admit. (** remaining nontrivial loop decomposition into U/V factors pending **)
+        apply (xm
+          (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+            exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+              cls =
+                apply_fun
+                  (fundamental_group_mult X Tx x0)
+                  (apply_fun
+                    (induced_homomorphism
+                      U (subspace_topology X Tx U) x0
+                      X Tx x0
+                      (graph U (fun x:set => x)))
+                    ucls,
+                   apply_fun
+                    (induced_homomorphism
+                      V (subspace_topology X Tx V) x0
+                      X Tx x0
+                      (graph V (fun x:set => x)))
+                    vcls))).
+        - assume HclsFromTwoTerms :
+            exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+              exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                cls =
+                  apply_fun
+                    (fundamental_group_mult X Tx x0)
+                    (apply_fun
+                      (induced_homomorphism
+                        U (subspace_topology X Tx U) x0
+                        X Tx x0
+                        (graph U (fun x:set => x)))
+                      ucls,
+                     apply_fun
+                      (induced_homomorphism
+                        V (subspace_topology X Tx V) x0
+                        X Tx x0
+                        (graph V (fun x:set => x)))
+                      vcls).
+          apply HclsFromTwoTerms.
+          let ucls.
+          assume HuPack :
+            ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+            exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+              cls =
+                apply_fun
+                  (fundamental_group_mult X Tx x0)
+                  (apply_fun
+                    (induced_homomorphism
+                      U (subspace_topology X Tx U) x0
+                      X Tx x0
+                      (graph U (fun x:set => x)))
+                    ucls,
+                   apply_fun
+                    (induced_homomorphism
+                      V (subspace_topology X Tx V) x0
+                      X Tx x0
+                      (graph V (fun x:set => x)))
+                    vcls).
+          claim HuMem : ucls :e fundamental_group U (subspace_topology X Tx U) x0.
+          {
+            exact (andEL
+              (ucls :e fundamental_group U (subspace_topology X Tx U) x0)
+              (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                cls =
+                  apply_fun
+                    (fundamental_group_mult X Tx x0)
+                    (apply_fun
+                      (induced_homomorphism
+                        U (subspace_topology X Tx U) x0
+                        X Tx x0
+                        (graph U (fun x:set => x)))
+                      ucls,
+                     apply_fun
+                      (induced_homomorphism
+                        V (subspace_topology X Tx V) x0
+                        X Tx x0
+                        (graph V (fun x:set => x)))
+                      vcls))
+              HuPack).
+          }
+          apply (andER
+            (ucls :e fundamental_group U (subspace_topology X Tx U) x0)
+            (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+              cls =
+                apply_fun
+                  (fundamental_group_mult X Tx x0)
+                  (apply_fun
+                    (induced_homomorphism
+                      U (subspace_topology X Tx U) x0
+                      X Tx x0
+                      (graph U (fun x:set => x)))
+                    ucls,
+                   apply_fun
+                    (induced_homomorphism
+                      V (subspace_topology X Tx V) x0
+                      X Tx x0
+                      (graph V (fun x:set => x)))
+                    vcls))
+            HuPack).
+          let vcls.
+          assume HvPack :
+            vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+            cls =
+              apply_fun
+                (fundamental_group_mult X Tx x0)
+                (apply_fun
+                  (induced_homomorphism
+                    U (subspace_topology X Tx U) x0
+                    X Tx x0
+                    (graph U (fun x:set => x)))
+                  ucls,
+                 apply_fun
+                  (induced_homomorphism
+                    V (subspace_topology X Tx V) x0
+                    X Tx x0
+                    (graph V (fun x:set => x)))
+                  vcls).
+          claim HvMem : vcls :e fundamental_group V (subspace_topology X Tx V) x0.
+          {
+            exact (andEL
+              (vcls :e fundamental_group V (subspace_topology X Tx V) x0)
+              (cls =
+                apply_fun
+                  (fundamental_group_mult X Tx x0)
+                  (apply_fun
+                    (induced_homomorphism
+                      U (subspace_topology X Tx U) x0
+                      X Tx x0
+                      (graph U (fun x:set => x)))
+                    ucls,
+                   apply_fun
+                    (induced_homomorphism
+                      V (subspace_topology X Tx V) x0
+                      X Tx x0
+                      (graph V (fun x:set => x)))
+                    vcls))
+              HvPack).
+          }
+          claim HclsEqPair :
+            cls =
+              apply_fun
+                (fundamental_group_mult X Tx x0)
+                (apply_fun
+                  (induced_homomorphism
+                    U (subspace_topology X Tx U) x0
+                    X Tx x0
+                    (graph U (fun x:set => x)))
+                  ucls,
+                 apply_fun
+                  (induced_homomorphism
+                    V (subspace_topology X Tx V) x0
+                    X Tx x0
+                    (graph V (fun x:set => x)))
+                  vcls).
+          {
+            exact (andER
+              (vcls :e fundamental_group V (subspace_topology X Tx V) x0)
+              (cls =
+                apply_fun
+                  (fundamental_group_mult X Tx x0)
+                  (apply_fun
+                    (induced_homomorphism
+                      U (subspace_topology X Tx U) x0
+                      X Tx x0
+                      (graph U (fun x:set => x)))
+                    ucls,
+                   apply_fun
+                    (induced_homomorphism
+                      V (subspace_topology X Tx V) x0
+                      X Tx x0
+                      (graph V (fun x:set => x)))
+                    vcls))
+              HvPack).
+          }
+          claim HiStar_hom :
+            group_homomorphism
+              (fundamental_group U (subspace_topology X Tx U) x0)
+              (fundamental_group_mult U (subspace_topology X Tx U) x0)
+              (fundamental_group X Tx x0)
+              (fundamental_group_mult X Tx x0)
+              (induced_homomorphism
+                U (subspace_topology X Tx U) x0
+                X Tx x0
+                (graph U (fun x:set => x))).
+          {
+            exact (induced_homomorphism_is_homomorphism
+              U
+              (subspace_topology X Tx U)
+              x0
+              X
+              Tx
+              x0
+              (graph U (fun x:set => x))
+              HincUXCont
+              HincUX_x0
+              Hx0U).
+          }
+          claim HjStar_hom :
+            group_homomorphism
+              (fundamental_group V (subspace_topology X Tx V) x0)
+              (fundamental_group_mult V (subspace_topology X Tx V) x0)
+              (fundamental_group X Tx x0)
+              (fundamental_group_mult X Tx x0)
+              (induced_homomorphism
+                V (subspace_topology X Tx V) x0
+                X Tx x0
+                (graph V (fun x:set => x))).
+          {
+            exact (induced_homomorphism_is_homomorphism
+              V
+              (subspace_topology X Tx V)
+              x0
+              X
+              Tx
+              x0
+              (graph V (fun x:set => x))
+              HincVXCont
+              HincVX_x0
+              Hx0V).
+          }
+          claim HtermUMem :
+            apply_fun
+              (induced_homomorphism
+                U (subspace_topology X Tx U) x0
+                X Tx x0
+                (graph U (fun x:set => x)))
+              ucls
+            :e
+            fundamental_group X Tx x0.
+          {
+            exact (group_homomorphism_function_on
+              (fundamental_group U (subspace_topology X Tx U) x0)
+              (fundamental_group_mult U (subspace_topology X Tx U) x0)
+              (fundamental_group X Tx x0)
+              (fundamental_group_mult X Tx x0)
+              (induced_homomorphism
+                U (subspace_topology X Tx U) x0
+                X Tx x0
+                (graph U (fun x:set => x)))
+              HiStar_hom
+              ucls
+              HuMem).
+          }
+          claim HtermVMem :
+            apply_fun
+              (induced_homomorphism
+                V (subspace_topology X Tx V) x0
+                X Tx x0
+                (graph V (fun x:set => x)))
+              vcls
+            :e
+            fundamental_group X Tx x0.
+          {
+            exact (group_homomorphism_function_on
+              (fundamental_group V (subspace_topology X Tx V) x0)
+              (fundamental_group_mult V (subspace_topology X Tx V) x0)
+              (fundamental_group X Tx x0)
+              (fundamental_group_mult X Tx x0)
+              (induced_homomorphism
+                V (subspace_topology X Tx V) x0
+                X Tx x0
+                (graph V (fun x:set => x)))
+              HjStar_hom
+              vcls
+              HvMem).
+          }
+          claim H00 : 0 = 0.
+          {
+            reflexivity.
+          }
+          claim Hn10 : ~(1 = 0).
+          {
+            exact neq_1_0.
+          }
+          witness 2.
+          apply andI.
+          * exact (nat_p_omega 2 nat_2).
+          * witness (graph 2
+              (fun i:set =>
+                If_i (i = 0)
+                  (apply_fun
+                    (induced_homomorphism
+                      U (subspace_topology X Tx U) x0
+                      X Tx x0
+                      (graph U (fun x:set => x)))
+                    ucls)
+                  (apply_fun
+                    (induced_homomorphism
+                      V (subspace_topology X Tx V) x0
+                      X Tx x0
+                      (graph V (fun x:set => x)))
+                    vcls))).
+            apply andI.
+            + apply andI.
+              - claim HgsTot :
+                  total_function_on
+                    (graph 2
+                      (fun i:set =>
+                        If_i (i = 0)
+                          (apply_fun
+                            (induced_homomorphism
+                              U (subspace_topology X Tx U) x0
+                              X Tx x0
+                              (graph U (fun x:set => x)))
+                            ucls)
+                          (apply_fun
+                            (induced_homomorphism
+                              V (subspace_topology X Tx V) x0
+                              X Tx x0
+                              (graph V (fun x:set => x)))
+                            vcls)))
+                    2
+                    (fundamental_group X Tx x0).
+                {
+                  apply (total_function_on_graph
+                    2
+                    (fundamental_group X Tx x0)
+                    (fun i:set =>
+                      If_i (i = 0)
+                        (apply_fun
+                          (induced_homomorphism
+                            U (subspace_topology X Tx U) x0
+                            X Tx x0
+                            (graph U (fun x:set => x)))
+                          ucls)
+                        (apply_fun
+                          (induced_homomorphism
+                            V (subspace_topology X Tx V) x0
+                            X Tx x0
+                            (graph V (fun x:set => x)))
+                          vcls))).
+                  let i.
+                  assume Hi2 : i :e 2.
+                  claim Hbeta :
+                    (fun y:set =>
+                      If_i (y = 0)
+                        (apply_fun
+                          (induced_homomorphism
+                            U (subspace_topology X Tx U) x0
+                            X Tx x0
+                            (graph U (fun x:set => x)))
+                          ucls)
+                        (apply_fun
+                          (induced_homomorphism
+                            V (subspace_topology X Tx V) x0
+                            X Tx x0
+                            (graph V (fun x:set => x)))
+                          vcls)) i
+                    =
+                    If_i (i = 0)
+                      (apply_fun
+                        (induced_homomorphism
+                          U (subspace_topology X Tx U) x0
+                          X Tx x0
+                          (graph U (fun x:set => x)))
+                        ucls)
+                      (apply_fun
+                        (induced_homomorphism
+                          V (subspace_topology X Tx V) x0
+                          X Tx x0
+                          (graph V (fun x:set => x)))
+                        vcls).
+                  {
+                    reflexivity.
+                  }
+                  rewrite Hbeta.
+                  apply (xm (i = 0)).
+                  * assume Hi0 : i = 0.
+                    rewrite (If_i_1
+                      (i = 0)
+                      (apply_fun
+                        (induced_homomorphism
+                          U (subspace_topology X Tx U) x0
+                          X Tx x0
+                          (graph U (fun x:set => x)))
+                        ucls)
+                      (apply_fun
+                        (induced_homomorphism
+                          V (subspace_topology X Tx V) x0
+                          X Tx x0
+                          (graph V (fun x:set => x)))
+                        vcls)
+                      Hi0).
+                    exact HtermUMem.
+                  * assume Hni0 : ~(i = 0).
+                    rewrite (If_i_0
+                      (i = 0)
+                      (apply_fun
+                        (induced_homomorphism
+                          U (subspace_topology X Tx U) x0
+                          X Tx x0
+                          (graph U (fun x:set => x)))
+                        ucls)
+                      (apply_fun
+                        (induced_homomorphism
+                          V (subspace_topology X Tx V) x0
+                          X Tx x0
+                          (graph V (fun x:set => x)))
+                        vcls)
+                      Hni0).
+                    exact HtermVMem.
+                }
+                exact (total_function_on_function_on
+                  (graph 2
+                    (fun i:set =>
+                      If_i (i = 0)
+                        (apply_fun
+                          (induced_homomorphism
+                            U (subspace_topology X Tx U) x0
+                            X Tx x0
+                            (graph U (fun x:set => x)))
+                          ucls)
+                        (apply_fun
+                          (induced_homomorphism
+                            V (subspace_topology X Tx V) x0
+                            X Tx x0
+                            (graph V (fun x:set => x)))
+                          vcls)))
+                  2
+                  (fundamental_group X Tx x0)
+                  HgsTot).
+              - let i.
+                assume Hi2 : i :e 2.
+                claim Hi01 : i = 0 \/ i = 1.
+                {
+                  apply (cases_2 i Hi2 (fun j:set => j = 0 \/ j = 1)).
+                  + claim Hbeta0 :
+                      (fun j:set => j = 0 \/ j = 1) 0
+                      =
+                      (0 = 0 \/ 0 = 1).
+                    {
+                      reflexivity.
+                    }
+                    rewrite Hbeta0.
+                    apply orIL.
+                    reflexivity.
+                  + claim Hbeta1 :
+                      (fun j:set => j = 0 \/ j = 1) 1
+                      =
+                      (1 = 0 \/ 1 = 1).
+                    {
+                      reflexivity.
+                    }
+                    rewrite Hbeta1.
+                    apply orIR.
+                    reflexivity.
+                }
+                apply Hi01.
+                * assume Hi0 : i = 0.
+                  rewrite Hi0.
+                  apply orIL.
+                  witness ucls.
+                  apply andI.
+                  - exact HuMem.
+                  - rewrite (apply_fun_graph
+                       2
+                       (fun i0:set =>
+                         If_i (i0 = 0)
+                           (apply_fun
+                             (induced_homomorphism
+                               U (subspace_topology X Tx U) x0
+                               X Tx x0
+                               (graph U (fun x:set => x)))
+                             ucls)
+                           (apply_fun
+                             (induced_homomorphism
+                               V (subspace_topology X Tx V) x0
+                               X Tx x0
+                               (graph V (fun x:set => x)))
+                             vcls))
+                       0
+                       In_0_2).
+                    exact (If_i_1
+                      (0 = 0)
+                      (apply_fun
+                        (induced_homomorphism
+                          U (subspace_topology X Tx U) x0
+                          X Tx x0
+                          (graph U (fun x:set => x)))
+                        ucls)
+                      (apply_fun
+                        (induced_homomorphism
+                          V (subspace_topology X Tx V) x0
+                          X Tx x0
+                          (graph V (fun x:set => x)))
+                        vcls)
+                      H00).
+                * assume Hi1 : i = 1.
+                  rewrite Hi1.
+                  apply orIR.
+                  witness vcls.
+                  apply andI.
+                  - exact HvMem.
+                  - rewrite (apply_fun_graph
+                       2
+                       (fun i0:set =>
+                         If_i (i0 = 0)
+                           (apply_fun
+                             (induced_homomorphism
+                               U (subspace_topology X Tx U) x0
+                               X Tx x0
+                               (graph U (fun x:set => x)))
+                             ucls)
+                           (apply_fun
+                             (induced_homomorphism
+                               V (subspace_topology X Tx V) x0
+                               X Tx x0
+                               (graph V (fun x:set => x)))
+                             vcls))
+                       1
+                       In_1_2).
+                    exact (If_i_0
+                      (1 = 0)
+                      (apply_fun
+                        (induced_homomorphism
+                          U (subspace_topology X Tx U) x0
+                          X Tx x0
+                          (graph U (fun x:set => x)))
+                        ucls)
+                      (apply_fun
+                        (induced_homomorphism
+                          V (subspace_topology X Tx V) x0
+                          X Tx x0
+                          (graph V (fun x:set => x)))
+                        vcls)
+                      Hn10).
+            + rewrite (nat_primrec_S
+                (fundamental_group_id X Tx x0)
+                (fun k r => apply_fun (fundamental_group_mult X Tx x0)
+                  (r, apply_fun
+                    (graph 2
+                      (fun i:set =>
+                        If_i (i = 0)
+                          (apply_fun
+                            (induced_homomorphism
+                              U (subspace_topology X Tx U) x0
+                              X Tx x0
+                              (graph U (fun x:set => x)))
+                            ucls)
+                          (apply_fun
+                            (induced_homomorphism
+                              V (subspace_topology X Tx V) x0
+                              X Tx x0
+                              (graph V (fun x:set => x)))
+                            vcls))) k))
+                1
+                nat_1).
+              rewrite (nat_primrec_S
+                (fundamental_group_id X Tx x0)
+                (fun k r => apply_fun (fundamental_group_mult X Tx x0)
+                  (r, apply_fun
+                    (graph 2
+                      (fun i:set =>
+                        If_i (i = 0)
+                          (apply_fun
+                            (induced_homomorphism
+                              U (subspace_topology X Tx U) x0
+                              X Tx x0
+                              (graph U (fun x:set => x)))
+                            ucls)
+                          (apply_fun
+                            (induced_homomorphism
+                              V (subspace_topology X Tx V) x0
+                              X Tx x0
+                              (graph V (fun x:set => x)))
+                            vcls))) k))
+                0
+                nat_0).
+              rewrite (nat_primrec_0
+                (fundamental_group_id X Tx x0)
+                (fun k r => apply_fun (fundamental_group_mult X Tx x0)
+                  (r, apply_fun
+                    (graph 2
+                      (fun i:set =>
+                        If_i (i = 0)
+                          (apply_fun
+                            (induced_homomorphism
+                              U (subspace_topology X Tx U) x0
+                              X Tx x0
+                              (graph U (fun x:set => x)))
+                            ucls)
+                          (apply_fun
+                            (induced_homomorphism
+                              V (subspace_topology X Tx V) x0
+                              X Tx x0
+                              (graph V (fun x:set => x)))
+                            vcls))) k))).
+              rewrite (apply_fun_graph
+                2
+                (fun i:set =>
+                  If_i (i = 0)
+                    (apply_fun
+                      (induced_homomorphism
+                        U (subspace_topology X Tx U) x0
+                        X Tx x0
+                        (graph U (fun x:set => x)))
+                      ucls)
+                    (apply_fun
+                      (induced_homomorphism
+                        V (subspace_topology X Tx V) x0
+                        X Tx x0
+                        (graph V (fun x:set => x)))
+                      vcls))
+                0
+                In_0_2).
+              rewrite (apply_fun_graph
+                2
+                (fun i:set =>
+                  If_i (i = 0)
+                    (apply_fun
+                      (induced_homomorphism
+                        U (subspace_topology X Tx U) x0
+                        X Tx x0
+                        (graph U (fun x:set => x)))
+                      ucls)
+                    (apply_fun
+                      (induced_homomorphism
+                        V (subspace_topology X Tx V) x0
+                        X Tx x0
+                        (graph V (fun x:set => x)))
+                      vcls))
+                1
+                In_1_2).
+              rewrite (If_i_1
+                (0 = 0)
+                (apply_fun
+                  (induced_homomorphism
+                    U (subspace_topology X Tx U) x0
+                    X Tx x0
+                    (graph U (fun x:set => x)))
+                  ucls)
+                (apply_fun
+                  (induced_homomorphism
+                    V (subspace_topology X Tx V) x0
+                    X Tx x0
+                    (graph V (fun x:set => x)))
+                  vcls)
+                H00).
+              rewrite (If_i_0
+                (1 = 0)
+                (apply_fun
+                  (induced_homomorphism
+                    U (subspace_topology X Tx U) x0
+                    X Tx x0
+                    (graph U (fun x:set => x)))
+                  ucls)
+                (apply_fun
+                  (induced_homomorphism
+                    V (subspace_topology X Tx V) x0
+                    X Tx x0
+                    (graph V (fun x:set => x)))
+                  vcls)
+                Hn10).
+              claim HleftIdTermU :
+                apply_fun
+                  (fundamental_group_mult X Tx x0)
+                  (fundamental_group_id X Tx x0,
+                   apply_fun
+                     (induced_homomorphism
+                       U (subspace_topology X Tx U) x0
+                       X Tx x0
+                       (graph U (fun x:set => x)))
+                     ucls)
+                =
+                apply_fun
+                  (induced_homomorphism
+                    U (subspace_topology X Tx U) x0
+                    X Tx x0
+                    (graph U (fun x:set => x)))
+                  ucls.
+              {
+                apply (and6E
+                  (function_on (fundamental_group_mult X Tx x0)
+                    (setprod (fundamental_group X Tx x0) (fundamental_group X Tx x0))
+                    (fundamental_group X Tx x0))
+                  (function_on (fundamental_group_inv X Tx x0)
+                    (fundamental_group X Tx x0)
+                    (fundamental_group X Tx x0))
+                  ((fundamental_group_id X Tx x0) :e (fundamental_group X Tx x0))
+                  (forall x y z:set,
+                    x :e (fundamental_group X Tx x0) ->
+                    y :e (fundamental_group X Tx x0) ->
+                    z :e (fundamental_group X Tx x0) ->
+                    apply_fun (fundamental_group_mult X Tx x0)
+                      (apply_fun (fundamental_group_mult X Tx x0) (x, y), z)
+                    =
+                    apply_fun (fundamental_group_mult X Tx x0)
+                      (x, apply_fun (fundamental_group_mult X Tx x0) (y, z)))
+                  (forall x:set,
+                    x :e (fundamental_group X Tx x0) ->
+                    apply_fun (fundamental_group_mult X Tx x0)
+                      (fundamental_group_id X Tx x0, x) = x /\
+                    apply_fun (fundamental_group_mult X Tx x0)
+                      (x, fundamental_group_id X Tx x0) = x)
+                  (forall x:set,
+                    x :e (fundamental_group X Tx x0) ->
+                    apply_fun (fundamental_group_mult X Tx x0)
+                      (x, apply_fun (fundamental_group_inv X Tx x0) x)
+                    =
+                    (fundamental_group_id X Tx x0) /\
+                    apply_fun (fundamental_group_mult X Tx x0)
+                      (apply_fun (fundamental_group_inv X Tx x0) x, x)
+                    =
+                    (fundamental_group_id X Tx x0))
+                  HgrpX).
+                assume HmX HiX HeX HassocX HidX HinvX.
+                exact (andEL
+                  (apply_fun (fundamental_group_mult X Tx x0)
+                    (fundamental_group_id X Tx x0,
+                     apply_fun
+                       (induced_homomorphism
+                         U (subspace_topology X Tx U) x0
+                         X Tx x0
+                         (graph U (fun x:set => x)))
+                       ucls)
+                   =
+                   apply_fun
+                     (induced_homomorphism
+                       U (subspace_topology X Tx U) x0
+                       X Tx x0
+                       (graph U (fun x:set => x)))
+                     ucls)
+                  (apply_fun (fundamental_group_mult X Tx x0)
+                    (apply_fun
+                      (induced_homomorphism
+                        U (subspace_topology X Tx U) x0
+                        X Tx x0
+                        (graph U (fun x:set => x)))
+                      ucls,
+                     fundamental_group_id X Tx x0)
+                   =
+                   apply_fun
+                     (induced_homomorphism
+                       U (subspace_topology X Tx U) x0
+                       X Tx x0
+                       (graph U (fun x:set => x)))
+                     ucls)
+                  (HidX
+                    (apply_fun
+                      (induced_homomorphism
+                        U (subspace_topology X Tx U) x0
+                        X Tx x0
+                        (graph U (fun x:set => x)))
+                      ucls)
+                    HtermUMem)).
+              }
+              rewrite HleftIdTermU.
+              rewrite <- HclsEqPair.
+              reflexivity.
+        - assume HclsNotFromTwoTerms :
+            ~(exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+              exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+                cls =
+                  apply_fun
+                    (fundamental_group_mult X Tx x0)
+                    (apply_fun
+                      (induced_homomorphism
+                        U (subspace_topology X Tx U) x0
+                        X Tx x0
+                        (graph U (fun x:set => x)))
+                      ucls,
+                     apply_fun
+                      (induced_homomorphism
+                        V (subspace_topology X Tx V) x0
+                        X Tx x0
+                        (graph V (fun x:set => x)))
+                      vcls)).
+          admit. (** remaining nontrivial loop decomposition into U/V factors pending **)
 }
 exact Hcore.
 Admitted.
