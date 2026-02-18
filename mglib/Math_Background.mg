@@ -61022,6 +61022,13 @@ claim Hex :
                               (apply_fun p xv = apply_fun f x)
                               HxvLeft).
                           }
+                          claim HpxvEqfx : apply_fun p xv = apply_fun f x.
+                          {
+                            exact (andER
+                              (xv :e Vx)
+                              (apply_fun p xv = apply_fun f x)
+                              HxvLeft).
+                          }
                           claim Huniqxv :
                             forall y:set, y :e Vx ->
                               apply_fun p y = apply_fun f x -> y = xv.
@@ -61103,10 +61110,72 @@ claim Hex :
                             }
                             claim HVlocalEqVx : Vlocal = Vx.
                             {
+                              claim HhomeVlocal :
+                                homeomorphism Vlocal (subspace_topology E Te Vlocal) Ut (subspace_topology B Tb Ut)
+                                  (graph Vlocal (fun z:set => apply_fun p z)).
+                              {
+                                exact (HhomeSlicesUt
+                                  Vlocal
+                                  HVlocalSlice).
+                              }
+                              claim HuniqVlocal :
+                                exists xlocal:set,
+                                  xlocal :e Vlocal /\ apply_fun p xlocal = apply_fun f x /\
+                                  forall y:set, y :e Vlocal ->
+                                    apply_fun p y = apply_fun f x -> y = xlocal.
+                              {
+                                exact (homeomorphic_sheet_unique_fiber_point
+                                  E
+                                  Te
+                                  B
+                                  Tb
+                                  p
+                                  Vlocal
+                                  Ut
+                                  (apply_fun f x)
+                                  HhomeVlocal
+                                  HfxUt).
+                              }
+                              apply HuniqVlocal.
+                              let xlocal.
+                              assume HxlocalPack.
+                              claim HxlocalVlocal : xlocal :e Vlocal.
+                              {
+                                exact (andEL
+                                  (xlocal :e Vlocal)
+                                  (apply_fun p xlocal = apply_fun f x)
+                                  (andEL
+                                    (xlocal :e Vlocal /\ apply_fun p xlocal = apply_fun f x)
+                                    (forall y:set, y :e Vlocal ->
+                                      apply_fun p y = apply_fun f x -> y = xlocal)
+                                    HxlocalPack)).
+                              }
+                              claim Huniqxlocal :
+                                forall y:set, y :e Vlocal ->
+                                  apply_fun p y = apply_fun f x -> y = xlocal.
+                              {
+                                exact (andER
+                                  (xlocal :e Vlocal /\ apply_fun p xlocal = apply_fun f x)
+                                  (forall y:set, y :e Vlocal ->
+                                    apply_fun p y = apply_fun f x -> y = xlocal)
+                                  HxlocalPack).
+                              }
+                              claim HxlocalEqlocalNt : apply_fun localNt x = xlocal.
+                              {
+                                exact (Huniqxlocal
+                                  (apply_fun localNt x)
+                                  HlocalNtVlocal
+                                  HlocalNtEqfx).
+                              }
+                              claim HxlocalEqxv : xlocal = xv.
+                              {
+                                (** TODO Charlie: compare the unique Vlocal and Vx points above f(x). **)
+                                admit.
+                              }
                               claim HxvVlocal : xv :e Vlocal.
                               {
-                                (** TODO Bob: show xv (the unique point of Vx over f(x)) also lies in Vlocal. **)
-                                admit.
+                                rewrite <- HxlocalEqxv.
+                                exact HxlocalVlocal.
                               }
                               exact (pairwise_disjoint_point_unique_member
                                 slicesUt
@@ -62188,8 +62257,182 @@ claim Hex :
           }
           claim HNsSubN1 : Ns c= N1.
           {
-            (** TODO Bob: compare this local lift ls with lt1 at 0 and propagate equality to get Ns c= N1. **)
-            admit.
+            let r.
+            assume HrNs.
+            claim HNsOpen : Ns :e unit_interval_topology.
+            {
+              exact (andEL
+                (Ns :e unit_interval_topology)
+                (0 :e Ns)
+                (andEL
+                  (Ns :e unit_interval_topology /\ 0 :e Ns)
+                  (s :e Ns)
+                  HNsOpen0s)).
+            }
+            claim HrUnit : r :e unit_interval.
+            {
+              exact (topology_elem_subset
+                unit_interval
+                unit_interval_topology
+                Ns
+                unit_interval_topology_on
+                HNsOpen
+                r
+                HrNs).
+            }
+            claim HrSeed : r :e SeedTimes.
+            {
+              exact (mem_eqL
+                r
+                SeedTimes
+                unit_interval
+                HSeedTimesAll
+                HrUnit).
+            }
+            claim HrSeedPack :
+              exists Nr lr:set,
+                Nr :e unit_interval_topology /\
+                0 :e Nr /\
+                r :e Nr /\
+                lifting_of
+                  Nr
+                  (subspace_topology unit_interval unit_interval_topology Nr)
+                  E
+                  Te
+                  B
+                  Tb
+                  p
+                  f
+                  lr /\
+                apply_fun lr 0 = e0.
+            {
+              exact (SepE2
+                unit_interval
+                (fun t0:set =>
+                  exists Nt0 lt0:set,
+                    Nt0 :e unit_interval_topology /\
+                    0 :e Nt0 /\
+                    t0 :e Nt0 /\
+                    lifting_of
+                      Nt0
+                      (subspace_topology unit_interval unit_interval_topology Nt0)
+                      E
+                      Te
+                      B
+                      Tb
+                      p
+                      f
+                      lt0 /\
+                    apply_fun lt0 0 = e0)
+                r
+                HrSeed).
+            }
+            apply HrSeedPack.
+            let Nr.
+            assume HNrPack.
+            apply HNrPack.
+            let lr.
+            assume HlrPack.
+            claim HNrTrip :
+              ((Nr :e unit_interval_topology /\ 0 :e Nr) /\ r :e Nr) /\
+              lifting_of
+                Nr
+                (subspace_topology unit_interval unit_interval_topology Nr)
+                E
+                Te
+                B
+                Tb
+                p
+                f
+                lr.
+            {
+              exact (andEL
+                (((Nr :e unit_interval_topology /\ 0 :e Nr) /\ r :e Nr) /\
+                  lifting_of
+                    Nr
+                    (subspace_topology unit_interval unit_interval_topology Nr)
+                    E
+                    Te
+                    B
+                    Tb
+                    p
+                    f
+                    lr)
+                (apply_fun lr 0 = e0)
+                HlrPack).
+            }
+            claim HNrOpen0r : (Nr :e unit_interval_topology /\ 0 :e Nr) /\ r :e Nr.
+            {
+              exact (andEL
+                ((Nr :e unit_interval_topology /\ 0 :e Nr) /\ r :e Nr)
+                (lifting_of
+                  Nr
+                  (subspace_topology unit_interval unit_interval_topology Nr)
+                  E
+                  Te
+                  B
+                  Tb
+                  p
+                  f
+                  lr)
+                HNrTrip).
+            }
+            claim HrNr : r :e Nr.
+            {
+              exact (andER
+                (Nr :e unit_interval_topology /\ 0 :e Nr)
+                (r :e Nr)
+                HNrOpen0r).
+            }
+            claim HNrLift :
+              lifting_of
+                Nr
+                (subspace_topology unit_interval unit_interval_topology Nr)
+                E
+                Te
+                B
+                Tb
+                p
+                f
+                lr.
+            {
+              exact (andER
+                ((Nr :e unit_interval_topology /\ 0 :e Nr) /\ r :e Nr)
+                (lifting_of
+                  Nr
+                  (subspace_topology unit_interval unit_interval_topology Nr)
+                  E
+                  Te
+                  B
+                  Tb
+                  p
+                  f
+                  lr)
+                HNrTrip).
+            }
+            claim Hlr0 : apply_fun lr 0 = e0.
+            {
+              exact (andER
+                (((Nr :e unit_interval_topology /\ 0 :e Nr) /\ r :e Nr) /\
+                  lifting_of
+                    Nr
+                    (subspace_topology unit_interval unit_interval_topology Nr)
+                    E
+                    Te
+                    B
+                    Tb
+                    p
+                    f
+                    lr)
+                (apply_fun lr 0 = e0)
+                HlrPack).
+            }
+            claim HrN1 : r :e N1.
+            {
+              (** TODO Charlie: compare lr with lt1 using start value e0 at 0 to place r in N1. **)
+              admit.
+            }
+            exact HrN1.
           }
           exact (HNsSubN1
             s
@@ -64648,8 +64891,68 @@ claim HFt_54_cont :
                     }
                     claim HxqVz : xq :e Vz.
                     {
-                      (** TODO Charlie: show xq (the unique point of Vq over F(z)) also lies in Vz. **)
-                      admit.
+                      claim HhomeVz :
+                        homeomorphism Vz (subspace_topology E Te Vz) U (subspace_topology B Tb U)
+                          (graph Vz (fun z0:set => apply_fun p z0)).
+                      {
+                        exact (HhomeSlices
+                          Vz
+                          HVzSlice).
+                      }
+                      claim HuniqVz :
+                        exists xz:set, xz :e Vz /\ apply_fun p xz = apply_fun F z /\
+                          forall y:set, y :e Vz -> apply_fun p y = apply_fun F z -> y = xz.
+                      {
+                        exact (homeomorphic_sheet_unique_fiber_point
+                          E
+                          Te
+                          B
+                          Tb
+                          p
+                          Vz
+                          U
+                          (apply_fun F z)
+                          HhomeVz
+                          HFzU).
+                      }
+                      apply HuniqVz.
+                      let xz.
+                      assume HxzPack.
+                      claim HxzVz : xz :e Vz.
+                      {
+                        exact (andEL
+                          (xz :e Vz)
+                          (apply_fun p xz = apply_fun F z)
+                          (andEL
+                            (xz :e Vz /\ apply_fun p xz = apply_fun F z)
+                            (forall y:set, y :e Vz ->
+                              apply_fun p y = apply_fun F z -> y = xz)
+                            HxzPack)).
+                      }
+                      claim Huniqxz :
+                        forall y:set, y :e Vz ->
+                          apply_fun p y = apply_fun F z -> y = xz.
+                      {
+                        exact (andER
+                          (xz :e Vz /\ apply_fun p xz = apply_fun F z)
+                          (forall y:set, y :e Vz ->
+                            apply_fun p y = apply_fun F z -> y = xz)
+                          HxzPack).
+                      }
+                      claim Hft54zEqxz : apply_fun Ft_54 z = xz.
+                      {
+                        exact (Huniqxz
+                          (apply_fun Ft_54 z)
+                          HFt54zVz
+                          HpFt54zEqFz).
+                      }
+                      claim HxzEqxq : xz = xq.
+                      {
+                        (** TODO Charlie: compare the unique Vz and Vq points above F(z). **)
+                        admit.
+                      }
+                      rewrite <- HxzEqxq.
+                      exact HxzVz.
                     }
                     exact (pairwise_disjoint_point_unique_member
                       slices
