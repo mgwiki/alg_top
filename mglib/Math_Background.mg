@@ -111125,6 +111125,42 @@ assume Hfree1 :
 assume Hfree2 :
   free_group_with_generators G2 mult e inv K
     (graph K (fun alpha:set => apply_fun gens alpha)).
+apply (and4E
+  (group_structure G1 mult e inv)
+  (function_on (graph J (fun alpha:set => apply_fun gens alpha)) J G1)
+  (forall alpha:set, alpha :e J ->
+    infinite_cyclic_subgroup G1 mult e inv
+      (apply_fun (graph J (fun alpha:set => apply_fun gens alpha)) alpha))
+  (free_product_of_subgroups G1 mult e inv J
+    (graph J (fun alpha:set =>
+      {g :e G1 | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e
+          (apply_fun (graph J (fun alpha:set => apply_fun gens alpha)) alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e
+            (apply_fun inv (apply_fun (graph J (fun alpha:set => apply_fun gens alpha)) alpha))
+            (ordsucc m)))}))
+    (graph J (fun alpha:set => e)))
+  Hfree1).
+assume Hgrp1 Hgens1 Hinf1 Hfp1.
+apply (and4E
+  (group_structure G2 mult e inv)
+  (function_on (graph K (fun alpha:set => apply_fun gens alpha)) K G2)
+  (forall alpha:set, alpha :e K ->
+    infinite_cyclic_subgroup G2 mult e inv
+      (apply_fun (graph K (fun alpha:set => apply_fun gens alpha)) alpha))
+  (free_product_of_subgroups G2 mult e inv K
+    (graph K (fun alpha:set =>
+      {g :e G2 | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e
+          (apply_fun (graph K (fun alpha:set => apply_fun gens alpha)) alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e
+            (apply_fun inv (apply_fun (graph K (fun alpha:set => apply_fun gens alpha)) alpha))
+            (ordsucc m)))}))
+    (graph K (fun alpha:set => e)))
+  Hfree2).
+assume Hgrp2 Hgens2 Hinf2 Hfp2.
 admit.
 Admitted.
 
