@@ -92801,7 +92801,8 @@ Definition abelian_group : set -> set -> set -> set -> prop :=
 (** from S60 Thm 60.1 (line 1639 in algtop.tex) **)
 (** LATEX VERSION: pi_1(X x Y, x0 x y0) is isomorphic with pi_1(X, x0) x pi_1(Y, y0). **)
 (** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
-(** Bounty 220 **)
+(** Bounty 242 **)
+(** Lock Dave 1771466099 **)
 Theorem thm60_1_pi1_product : forall X Tx x0 Y Ty y0:set,
   topology_on X Tx -> topology_on Y Ty -> x0 :e X -> y0 :e Y ->
   exists phi:set,
