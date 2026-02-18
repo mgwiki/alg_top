@@ -111827,7 +111827,28 @@ apply (andI
     - apply andI.
       + exact HnO.
       + exact HnNZ.
-    - admit.
+    - claim Hqid :
+        quotient_group_id G mult e C = left_coset mult e C.
+      {
+        reflexivity.
+      }
+      claim HpowQidEq :
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+            group_power_nat
+              (quotient_group_mult G mult C)
+              (quotient_group_id G mult e C)
+              (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+              n = quotient_group_id G mult e C))
+          = left_coset mult e C.
+      {
+        rewrite Hqid.
+        exact HpowQ.
+      }
+      admit.
   admit.
 Admitted.
 
