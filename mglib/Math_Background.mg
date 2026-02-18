@@ -1,4 +1,4 @@
-(** Balance Alice 3305 **)
+(** Balance Alice 3280 **)
 (** Balance Bob 3021 **)
 (** Balance Charlie 1205 **)
 (** Balance Dave 1419 **)
@@ -85451,7 +85451,8 @@ Admitted.
 (** from S59 Thm 59.1 (line 1541 in algtop.tex) **)
 (** LATEX VERSION: Suppose X = U union V where U, V are open in X. If U intersect V is path connected and x0 in U intersect V, then the images of i-star and j-star generate pi_1(X, x0). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 242 **)
+(** Bounty 267 **)
+(** Lock Alice 1771525705 **)
 Theorem lemma59_1_open_cover_generates_pi1_core : forall X Tx U V x0 cls:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
