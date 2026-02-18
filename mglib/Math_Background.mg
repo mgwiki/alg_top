@@ -110246,6 +110246,13 @@ Theorem thm69_4_abelianization_free_group :
     (quotient_group_inv G mult inv C)
     J
     (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)).
+let G mult e inv J gens.
+assume Hfree : free_group_with_generators G mult e inv J gens.
+set C := commutator_subgroup G mult e inv.
+claim HCdef : C = commutator_subgroup G mult e inv.
+{
+  reflexivity.
+}
 admit.
 Admitted.
 
@@ -110260,6 +110267,11 @@ Theorem cor69_5_free_generators_well_defined :
   free_group_with_generators G mult e inv n2 gens2 ->
   finite n1 -> finite n2 ->
   equip n1 n2.
+let G mult e inv n1 n2 gens1 gens2.
+assume Hfree1 : free_group_with_generators G mult e inv n1 gens1.
+assume Hfree2 : free_group_with_generators G mult e inv n2 gens2.
+assume Hfin1 : finite n1.
+assume Hfin2 : finite n2.
 admit.
 Admitted.
 
