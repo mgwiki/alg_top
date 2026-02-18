@@ -112275,6 +112275,36 @@ apply (andI
         rewrite (HeMulC c HcC).
         exact HcC.
       }
+      claim HpowSetSubC :
+        (group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+            group_power_nat
+              (quotient_group_mult G mult C)
+              (quotient_group_id G mult e C)
+              (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+              n = quotient_group_id G mult e C))) c= C.
+      {
+        let y.
+        assume HyPow : y :e group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+            group_power_nat
+              (quotient_group_mult G mult C)
+              (quotient_group_id G mult e C)
+              (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+              n = quotient_group_id G mult e C)).
+        claim HyCoset : y :e left_coset mult e C.
+        {
+          rewrite <- HpowQidEq.
+          exact HyPow.
+        }
+        exact (HleftCosetEsubC y HyCoset).
+      }
       admit.
   admit.
 Admitted.
