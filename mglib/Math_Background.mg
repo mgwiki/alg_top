@@ -71559,7 +71559,24 @@ claim HplfPack :
   (forall t:set, t :e unit_interval ->
     apply_fun p (apply_fun (path_lift E Te B Tb p x1 f) t) = apply_fun f t).
 {
-  exact (lemma54_1_path_lifting
+  claim HplfWitness :
+    exists ft:set,
+      continuous_map unit_interval unit_interval_topology E Te ft /\
+      apply_fun ft 0 = x1 /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun ft t) = apply_fun f t).
+  {
+    witness alpha.
+    apply andI.
+    - apply andI.
+      + exact HalphaCont.
+      + exact Halpha0.
+    - let t.
+      assume Ht.
+      rewrite (compose_fun_apply unit_interval alpha p t Ht).
+      reflexivity.
+  }
+  exact (path_lift_from_exists_witness
     E
     Te
     B
@@ -71567,10 +71584,7 @@ claim HplfPack :
     p
     x1
     f
-    Hcov
-    Hx1E
-    Hstartf
-    HfCont).
+    HplfWitness).
 }
 claim HplfLeft :
   continuous_map unit_interval unit_interval_topology E Te
@@ -71685,7 +71699,30 @@ claim HplcPack :
   (forall t:set, t :e unit_interval ->
     apply_fun p (apply_fun (path_lift E Te B Tb p x1 c) t) = apply_fun c t).
 {
-  exact (lemma54_1_path_lifting
+  claim HplcWitness :
+    exists ft:set,
+      continuous_map unit_interval unit_interval_topology E Te ft /\
+      apply_fun ft 0 = x1 /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun ft t) = apply_fun c t).
+  {
+    witness (constant_path x1).
+    apply andI.
+    - apply andI.
+      + exact (constant_path_continuous
+          E
+          Te
+          x1
+          HtopE
+          Hx1E).
+      + exact (constant_path_at_zero x1).
+    - let t.
+      assume Ht.
+      rewrite (constant_path_apply x1 t Ht).
+      rewrite (constant_path_apply b t Ht).
+      reflexivity.
+  }
+  exact (path_lift_from_exists_witness
     E
     Te
     B
@@ -71693,10 +71730,7 @@ claim HplcPack :
     p
     x1
     c
-    Hcov
-    Hx1E
-    Hstartc
-    HcCont).
+    HplcWitness).
 }
 claim HplcLeft :
   continuous_map unit_interval unit_interval_topology E Te
