@@ -76872,7 +76872,6 @@ Admitted.
 (** helper sub-bounty for Cor 58.5: alpha-hat sends identity to identity **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
 (** Bounty 10 **)
-(** Lock Bob 1771439500 **)
 Theorem lemma58_sub_basepoint_change_id : forall X Tx x0 x1 alpha:set,
   path_between X x0 x1 alpha ->
   apply_fun (basepoint_change_map X Tx x0 x1 alpha)
@@ -77015,7 +77014,6 @@ Admitted.
 (** helper sub-bounty for Cor 58.5: alpha-hat is injective **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
 (** Bounty 10 **)
-(** Lock Bob 1771439500 **)
 Theorem lemma58_sub_basepoint_change_injective : forall X Tx x0 x1 alpha a b:set,
   path_between X x0 x1 alpha ->
   a :e fundamental_group X Tx x0 ->
@@ -77148,7 +77146,6 @@ Admitted.
 (** helper sub-bounty for Cor 58.5: alpha-hat is surjective **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
 (** Bounty 10 **)
-(** Lock Bob 1771439500 **)
 Theorem lemma58_sub_basepoint_change_surjective : forall X Tx x0 x1 alpha c:set,
   path_between X x0 x1 alpha ->
   c :e fundamental_group X Tx x1 ->
@@ -102170,7 +102167,6 @@ admit. (** remaining gap: derive A :e Tx and B :e Tx from current hypotheses **)
 Admitted.
 
 (** Bounty 61 **)
-(** Lock Bob 1771439500 **)
 Theorem ex59_1_wedge_S2_trivial_pi1 : forall X Tx x0 A B fA fB:set,
   topology_on X Tx ->
   X = A :\/: B ->
@@ -104010,7 +104006,6 @@ Admitted. (** depends on admitted ex59_4a_trivial_j_star **)
 (** LATEX VERSION: If both i-star and j-star are trivial, then pi1(X,x0) is trivial. **)
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 25 **)
 (** Bounty 31 **)
-(** Lock Bob 1771439500 **)
 Theorem ex59_4a_both_trivial : forall X Tx U V x0:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -117571,7 +117566,175 @@ Theorem infinite_cyclic_subgroup_nonfinite :
 let G mult e inv a.
 assume Hgrp : group_structure G mult e inv.
 assume Hinf : infinite_cyclic_subgroup G mult e inv a.
-admit.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume HmultFn HinvFn HeG HassocG HidG HinvG.
+apply (and4E
+  (a :e G)
+  (forall n:set, n :e omega -> group_power_nat mult e a n :e G)
+  (forall m:set, m :e omega -> group_power_nat mult e (apply_fun inv a) (ordsucc m) :e G)
+  (~(exists n:set, n :e omega /\ n <> 0 /\ group_power_nat mult e a n = e))
+  Hinf).
+assume HaG HpowInG HpowInvInG Hnontriv.
+assume HfinG : finite G.
+claim Hleft_cancel :
+  forall u v:set, u :e G -> v :e G ->
+    apply_fun mult (a, u) = apply_fun mult (a, v) ->
+    u = v.
+{
+  let u v.
+  assume HuG : u :e G.
+  assume HvG : v :e G.
+  assume Haeq : apply_fun mult (a, u) = apply_fun mult (a, v).
+  claim HaInvG : apply_fun inv a :e G.
+  {
+    exact (HinvFn a HaG).
+  }
+  claim HauG : apply_fun mult (a, u) :e G.
+  {
+    exact (HmultFn
+      (a, u)
+      (tuple_2_setprod_by_pair_Sigma G G a u HaG HuG)).
+  }
+  claim HavG : apply_fun mult (a, v) :e G.
+  {
+    exact (HmultFn
+      (a, v)
+      (tuple_2_setprod_by_pair_Sigma G G a v HaG HvG)).
+  }
+  claim HinvauG : apply_fun mult (apply_fun inv a, apply_fun mult (a, u)) :e G.
+  {
+    exact (HmultFn
+      (apply_fun inv a, apply_fun mult (a, u))
+      (tuple_2_setprod_by_pair_Sigma
+        G
+        G
+        (apply_fun inv a)
+        (apply_fun mult (a, u))
+        HaInvG
+        HauG)).
+  }
+  claim HinvavG : apply_fun mult (apply_fun inv a, apply_fun mult (a, v)) :e G.
+  {
+    exact (HmultFn
+      (apply_fun inv a, apply_fun mult (a, v))
+      (tuple_2_setprod_by_pair_Sigma
+        G
+        G
+        (apply_fun inv a)
+        (apply_fun mult (a, v))
+        HaInvG
+        HavG)).
+  }
+  claim Hlhs_u :
+    apply_fun mult (apply_fun inv a, apply_fun mult (a, u)) =
+    apply_fun mult (apply_fun mult (apply_fun inv a, a), u).
+  {
+    symmetry.
+    exact (HassocG
+      (apply_fun inv a)
+      a
+      u
+      HaInvG
+      HaG
+      HuG).
+  }
+  claim Hlhs_v :
+    apply_fun mult (apply_fun inv a, apply_fun mult (a, v)) =
+    apply_fun mult (apply_fun mult (apply_fun inv a, a), v).
+  {
+    symmetry.
+    exact (HassocG
+      (apply_fun inv a)
+      a
+      v
+      HaInvG
+      HaG
+      HvG).
+  }
+  claim HinvLeftA : apply_fun mult (apply_fun inv a, a) = e.
+  {
+    exact (andER
+      (apply_fun mult (a, apply_fun inv a) = e)
+      (apply_fun mult (apply_fun inv a, a) = e)
+      (HinvG a HaG)).
+  }
+  claim Heu : apply_fun mult (e, u) = u.
+  {
+    exact (andEL
+      (apply_fun mult (e, u) = u)
+      (apply_fun mult (u, e) = u)
+      (HidG u HuG)).
+  }
+  claim Hev : apply_fun mult (e, v) = v.
+  {
+    exact (andEL
+      (apply_fun mult (e, v) = v)
+      (apply_fun mult (v, e) = v)
+      (HidG v HvG)).
+  }
+  claim HleftU : apply_fun mult (apply_fun inv a, apply_fun mult (a, u)) = u.
+  {
+    rewrite Hlhs_u.
+    rewrite HinvLeftA.
+    exact Heu.
+  }
+  claim HleftV : apply_fun mult (apply_fun inv a, apply_fun mult (a, v)) = v.
+  {
+    rewrite Hlhs_v.
+    rewrite HinvLeftA.
+    exact Hev.
+  }
+  claim HmulInvEq :
+    apply_fun mult (apply_fun inv a, apply_fun mult (a, u)) =
+    apply_fun mult (apply_fun inv a, apply_fun mult (a, v)).
+  {
+    rewrite Haeq.
+    reflexivity.
+  }
+  rewrite <- HleftU.
+  rewrite <- HleftV.
+  exact HmulInvEq.
+}
+claim Hpow_repeat_lt_false :
+  forall m:set, nat_p m ->
+    forall n:set, n :e omega ->
+      ordsucc m :e n ->
+      group_power_nat mult e a (ordsucc m) = group_power_nat mult e a n ->
+      False.
+{
+  admit.
+}
+claim Hpow_inj :
+  forall m n:set, m :e omega -> n :e omega ->
+    group_power_nat mult e a m = group_power_nat mult e a n ->
+    m = n.
+{
+  admit.
+}
+claim HinjPow : inj omega G (fun n:set => group_power_nat mult e a n).
+{
+  admit.
+}
+claim Hatleast : atleastp omega G.
+{
+  admit.
+}
+claim HinfG : infinite G.
+{
+  exact (atleastp_omega_infinite
+    G
+    Hatleast).
+}
+exact (HinfG HfinG).
 Admitted.
 
 (** Infrastructure helper for S69 backward direction:
@@ -119063,7 +119226,6 @@ Qed.
 (** h: G -> H with h(a_alpha) = y_alpha. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 97 **)
-(** Lock Bob 1771480439 **)
 Theorem lemma69_1_extension_free_group :
   forall G mult e inv J gens:set,
   group_structure G mult e inv ->
@@ -122738,7 +122900,6 @@ Qed.
 (** abelian group with basis {[a_alpha]}. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
 (** Bounty 73 **)
-(** Lock Bob 1771481400 **)
 Theorem thm69_4_abelianization_free_group :
   forall G mult e inv J gens:set,
   free_group_with_generators G mult e inv J gens ->
