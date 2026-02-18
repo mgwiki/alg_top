@@ -114418,33 +114418,9 @@ apply (iffI
               apply_fun h' (apply_fun gens alpha) = apply_fun ys alpha) ->
             forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
   apply (andI
-    (group_structure G mult e inv)
-    (function_on gens J G /\
+    (group_structure G mult e inv /\ function_on gens J G /\
       (forall alpha:set, alpha :e J ->
-        infinite_cyclic_subgroup G mult e inv (apply_fun gens alpha)) /\
-      free_product_of_subgroups G mult e inv J
-        (graph J (fun alpha:set =>
-          {g :e G | exists n:set, n :e int /\
-            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
-             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
-              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}))
-        (graph J (fun alpha:set => e)))
-    Hgrp).
-  apply (andI
-    (function_on gens J G)
-    ((forall alpha:set, alpha :e J ->
-      infinite_cyclic_subgroup G mult e inv (apply_fun gens alpha)) /\
-    free_product_of_subgroups G mult e inv J
-      (graph J (fun alpha:set =>
-        {g :e G | exists n:set, n :e int /\
-          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
-           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
-            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}))
-      (graph J (fun alpha:set => e)))
-    Hgens).
-  apply (andI
-    (forall alpha:set, alpha :e J ->
-      infinite_cyclic_subgroup G mult e inv (apply_fun gens alpha))
+        infinite_cyclic_subgroup G mult e inv (apply_fun gens alpha)))
     (free_product_of_subgroups G mult e inv J
       (graph J (fun alpha:set =>
         {g :e G | exists n:set, n :e int /\
@@ -114452,7 +114428,16 @@ apply (iffI
            (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
             g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}))
       (graph J (fun alpha:set => e)))).
-  + let alpha.
+  + apply (andI
+      (group_structure G mult e inv /\ function_on gens J G)
+      (forall alpha:set, alpha :e J ->
+        infinite_cyclic_subgroup G mult e inv (apply_fun gens alpha))).
+    * exact (andI
+        (group_structure G mult e inv)
+        (function_on gens J G)
+        Hgrp
+        Hgens).
+    * let alpha.
     assume Halpha : alpha :e J.
     set galpha := apply_fun gens alpha.
     claim HgalphaG : galpha :e G.
