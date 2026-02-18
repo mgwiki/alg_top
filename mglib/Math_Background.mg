@@ -115770,30 +115770,6 @@ apply (andI
     {
       exact (HbasisFn alpha Halpha).
     }
-    apply (andI
-      (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha :e
-        quotient_group_set G mult C)
-      ((forall n:set, n :e omega ->
-        group_power_nat
-          (quotient_group_mult G mult C)
-          (quotient_group_id G mult e C)
-          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-          n :e quotient_group_set G mult C) /\
-       (forall m:set, m :e omega ->
-         group_power_nat
-           (quotient_group_mult G mult C)
-           (quotient_group_id G mult e C)
-           (apply_fun
-             (quotient_group_inv G mult inv C)
-             (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha))
-           (ordsucc m) :e quotient_group_set G mult C) /\
-       ~(exists n:set, n :e omega /\ n <> 0 /\
-         group_power_nat
-           (quotient_group_mult G mult C)
-           (quotient_group_id G mult e C)
-           (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-           n = quotient_group_id G mult e C))
-      HaQ).
     claim HgrpQ :
       group_structure
         (quotient_group_set G mult C)
