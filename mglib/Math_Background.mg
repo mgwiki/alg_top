@@ -59059,8 +59059,17 @@ claim Hex :
         lt1)
       HN1left).
   }
-  (** TODO Bob: globalize lt1 from N1 (which contains 0 and 1) to a lift on all of unit_interval. **)
-  admit.
+  claim HglobalLiftFromN1 :
+    exists ft:set,
+      continuous_map unit_interval unit_interval_topology E Te ft /\
+      apply_fun ft 0 = e0 /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun ft t) = apply_fun f t).
+  {
+    (** TODO Bob: extend lt1 on N1 (with 0,1 :e N1) to a global lift on unit_interval. **)
+    admit.
+  }
+  exact HglobalLiftFromN1.
 }
 exact (path_lift_from_exists_witness E Te B Tb p e0 f Hex).
 Admitted.
