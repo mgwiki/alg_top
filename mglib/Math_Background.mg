@@ -111351,36 +111351,60 @@ apply (andI
     (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C))
     J
     (quotient_group_set G mult C) /\
-   (forall alpha:set, alpha :e J ->
-     infinite_cyclic_subgroup
-       (quotient_group_set G mult C)
-       (quotient_group_mult G mult C)
-       (quotient_group_id G mult e C)
-       (quotient_group_inv G mult inv C)
-       (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)) /\
-   direct_sum_of_subgroups
-     (quotient_group_set G mult C)
-     (quotient_group_mult G mult C)
-     (quotient_group_id G mult e C)
-     (quotient_group_inv G mult inv C)
-     J
-     (graph J (fun alpha:set =>
-       {g :e quotient_group_set G mult C | exists n:set, n :e int /\
-         ((n :e omega /\ g = group_power_nat
-           (quotient_group_mult G mult C)
-           (quotient_group_id G mult e C)
-           (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-           n) \/
-          (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
-           g = group_power_nat
-             (quotient_group_mult G mult C)
-             (quotient_group_id G mult e C)
-             (apply_fun
-               (quotient_group_inv G mult inv C)
-               (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha))
-             (ordsucc m)))})))
+   ((forall alpha:set, alpha :e J ->
+      infinite_cyclic_subgroup
+        (quotient_group_set G mult C)
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        (quotient_group_inv G mult inv C)
+        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)) /\
+    direct_sum_of_subgroups
+      (quotient_group_set G mult C)
+      (quotient_group_mult G mult C)
+      (quotient_group_id G mult e C)
+      (quotient_group_inv G mult inv C)
+      J
+      (graph J (fun alpha:set =>
+        {g :e quotient_group_set G mult C | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+            n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat
+              (quotient_group_mult G mult C)
+              (quotient_group_id G mult e C)
+              (apply_fun
+                (quotient_group_inv G mult inv C)
+                (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha))
+              (ordsucc m)))}))))
   HquotAb).
-admit.
+apply andI.
+- claim HbasisTotal :
+    total_function_on
+      (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C))
+      J
+      (quotient_group_set G mult C).
+  {
+    apply (total_function_on_graph
+      J
+      (quotient_group_set G mult C)
+      (fun alpha:set => left_coset mult (apply_fun gens alpha) C)).
+    let alpha.
+    assume Halpha : alpha :e J.
+    exact (ReplI
+      G
+      (fun g:set => left_coset mult g C)
+      (apply_fun gens alpha)
+      (HgensG alpha Halpha)).
+  }
+  exact (total_function_on_function_on
+    (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C))
+    J
+    (quotient_group_set G mult C)
+    HbasisTotal).
+- admit.
 Admitted.
 
 (** from S69 Cor 69.5 (line 3129 in algtop.tex): number of free generators is well-defined **)
