@@ -83164,8 +83164,54 @@ claim Hpi1Trivial :
               (fun q:set => SNoLt (distance_R2 q (0, 0)) 1)
               (apply_fun F p)).
             - exact (HFFunE p Hp).
-            - (** remaining geometric gap: radial contraction stays inside the open unit disk **)
-              admit.
+            - claim Hp0I : p 0 :e unit_interval.
+              {
+                exact (ap0_Sigma
+                  unit_interval
+                  (fun _ : set => unit_interval)
+                  p
+                  Hp).
+              }
+              claim Hp1I : p 1 :e unit_interval.
+              {
+                exact (ap1_Sigma
+                  unit_interval
+                  (fun _ : set => unit_interval)
+                  p
+                  Hp).
+              }
+              claim HzX : apply_fun f (p 0) :e X.
+              {
+                exact (HfOnX
+                  (p 0)
+                  Hp0I).
+              }
+              claim Hradial_open_disk :
+                forall z t:set,
+                  z :e X ->
+                  t :e unit_interval ->
+                  SNoLt
+                    (distance_R2
+                      (mul_SNo (add_SNo 1 (minus_SNo t)) (R2_xcoord z),
+                       mul_SNo (add_SNo 1 (minus_SNo t)) (R2_ycoord z))
+                      (0, 0))
+                    1.
+              {
+                (** remaining geometric gap: radial contraction stays inside the open unit disk **)
+                admit.
+              }
+              rewrite (apply_fun_graph
+                unit_square
+                (fun p0:set =>
+                  (mul_SNo (add_SNo 1 (minus_SNo (p0 1))) (R2_xcoord (apply_fun f (p0 0))),
+                   mul_SNo (add_SNo 1 (minus_SNo (p0 1))) (R2_ycoord (apply_fun f (p0 0)))))
+                p
+                Hp).
+              exact (Hradial_open_disk
+                (apply_fun f (p 0))
+                (p 1)
+                HzX
+                Hp1I).
           }
           exact (continuous_map_range_restrict
             unit_square
