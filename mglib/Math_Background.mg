@@ -79120,6 +79120,125 @@ exact (lemma59_4a_pi1_trivial_from_i_generation
   Hi_triv).
 Qed.
 
+(** Helper: word-data + both trivial maps + path connected U,V imply simple connectedness of X. **)
+Theorem lemma59_4a_simply_connected_from_word_data_both_trivial_and_pc_parts :
+  forall X Tx U V x0:set,
+  topology_on X Tx ->
+  U :e Tx ->
+  V :e Tx ->
+  X = U :\/: V ->
+  x0 :e U :/\: V ->
+  (forall cls:set, cls :e fundamental_group X Tx x0 ->
+    exists n:set, n :e omega /\
+      exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+        (forall i:set, i :e n ->
+          (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+            apply_fun gs i =
+              apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+                (graph U (fun x:set => x))) ucls) \/
+          (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+            apply_fun gs i =
+              apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+                (graph V (fun x:set => x))) vcls)) /\
+        cls = nat_primrec (fundamental_group_id X Tx x0)
+          (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n) ->
+  (forall cls:set,
+    cls :e fundamental_group U (subspace_topology X Tx U) x0 ->
+    apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+      (graph U (fun x:set => x))) cls = fundamental_group_id X Tx x0) ->
+  (forall cls:set,
+    cls :e fundamental_group V (subspace_topology X Tx V) x0 ->
+    apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+      (graph V (fun x:set => x))) cls = fundamental_group_id X Tx x0) ->
+  path_connected_space U (subspace_topology X Tx U) ->
+  path_connected_space V (subspace_topology X Tx V) ->
+  simply_connected X Tx.
+let X Tx U V x0.
+assume Htop : topology_on X Tx.
+assume HU : U :e Tx.
+assume HV : V :e Tx.
+assume Hcover : X = U :\/: V.
+assume Hx0UV : x0 :e U :/\: V.
+assume HwordData : forall cls:set, cls :e fundamental_group X Tx x0 ->
+  exists n:set, n :e omega /\
+    exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+      (forall i:set, i :e n ->
+        (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+          apply_fun gs i =
+            apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+              (graph U (fun x:set => x))) ucls) \/
+        (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+          apply_fun gs i =
+            apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+              (graph V (fun x:set => x))) vcls)) /\
+      cls = nat_primrec (fundamental_group_id X Tx x0)
+        (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n.
+assume Hi_triv : forall cls:set,
+  cls :e fundamental_group U (subspace_topology X Tx U) x0 ->
+  apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+    (graph U (fun x:set => x))) cls = fundamental_group_id X Tx x0.
+assume Hj_triv : forall cls:set,
+  cls :e fundamental_group V (subspace_topology X Tx V) x0 ->
+  apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+    (graph V (fun x:set => x))) cls = fundamental_group_id X Tx x0.
+assume HpcU : path_connected_space U (subspace_topology X Tx U).
+assume HpcV : path_connected_space V (subspace_topology X Tx V).
+claim Hx0U : x0 :e U.
+{
+  exact (binintersectE1 U V x0 Hx0UV).
+}
+claim Hx0X : x0 :e X.
+{
+  exact (topology_elem_subset X Tx U Htop HU x0 Hx0U).
+}
+claim HneUV : (U :/\: V) <> Empty.
+{
+  exact (elem_implies_nonempty
+    (U :/\: V)
+    x0
+    Hx0UV).
+}
+claim Hpi1X :
+  fundamental_group X Tx x0 = {fundamental_group_id X Tx x0}.
+{
+  exact (lemma59_4a_pi1_trivial_from_word_data_and_both_trivial
+    X
+    Tx
+    U
+    V
+    x0
+    Htop
+    HU
+    HV
+    Hx0UV
+    HwordData
+    Hi_triv
+    Hj_triv).
+}
+claim HpcX : path_connected_space X Tx.
+{
+  exact (lemma59_2_path_connected_union_of_path_connected_open_subspaces
+    X
+    Tx
+    U
+    V
+    Htop
+    HU
+    HV
+    Hcover
+    HpcU
+    HpcV
+    HneUV).
+}
+exact (lemma59_4a_simply_connected_from_pi1_trivial_at_point
+  X
+  Tx
+  x0
+  HpcX
+  Hx0X
+  Hpi1X).
+Qed.
+
 (** from S59 Exercise 4(a) continued: both i-star and j-star trivial **)
 (** LATEX VERSION: If both i-star and j-star are trivial, then pi1(X,x0) is trivial. **)
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 25 **)
