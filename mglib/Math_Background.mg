@@ -63391,6 +63391,391 @@ claim Hex :
                   Hcov
                   Hlr0E).
               }
+              claim Hloc0InV0 :
+                exists V0 N0:set,
+                  (V0 :e Te /\ apply_fun lr 0 :e V0 /\ apply_fun lt1 0 :e V0) /\
+                  (N0 :e subspace_topology unit_interval unit_interval_topology (Nr :/\: N1) /\
+                    (0 :e N0 /\
+                      (forall u:set, u :e N0 ->
+                        apply_fun lr u = apply_fun lt1 u))).
+              {
+                apply Hchart0.
+                let U0.
+                assume HU0Pack.
+                apply HU0Pack.
+                let slices0.
+                assume Hs0Pack.
+                apply Hs0Pack.
+                let V0.
+                assume HV0Pack.
+                claim HV0Main :
+                  V0 :e Te /\ apply_fun lr 0 :e V0 /\ U0 :e Tb /\
+                    homeomorphism V0 (subspace_topology E Te V0) U0 (subspace_topology B Tb U0)
+                      (graph V0 (fun z:set => apply_fun p z)).
+                {
+                  exact (andEL
+                    (V0 :e Te /\ apply_fun lr 0 :e V0 /\ U0 :e Tb /\
+                      homeomorphism V0 (subspace_topology E Te V0) U0 (subspace_topology B Tb U0)
+                        (graph V0 (fun z:set => apply_fun p z)))
+                    (slices0 c= Te /\ pairwise_disjoint slices0 /\
+                      Union slices0 = preimage_of E p U0 /\ V0 :e slices0 /\
+                      (forall W0:set, W0 :e slices0 ->
+                        homeomorphism W0 (subspace_topology E Te W0) U0 (subspace_topology B Tb U0)
+                          (graph W0 (fun z:set => apply_fun p z))))
+                    HV0Pack).
+                }
+                claim HV0Pair : V0 :e Te /\ apply_fun lr 0 :e V0.
+                {
+                  exact (andEL
+                    (V0 :e Te /\ apply_fun lr 0 :e V0)
+                    (U0 :e Tb)
+                    (andEL
+                      ((V0 :e Te /\ apply_fun lr 0 :e V0) /\ U0 :e Tb)
+                      (homeomorphism V0 (subspace_topology E Te V0) U0 (subspace_topology B Tb U0)
+                        (graph V0 (fun z:set => apply_fun p z)))
+                      HV0Main)).
+                }
+                claim HV0Open : V0 :e Te.
+                {
+                  exact (andEL
+                    (V0 :e Te)
+                    (apply_fun lr 0 :e V0)
+                    HV0Pair).
+                }
+                claim Hlr0V0 : apply_fun lr 0 :e V0.
+                {
+                  exact (andER
+                    (V0 :e Te)
+                    (apply_fun lr 0 :e V0)
+                    HV0Pair).
+                }
+                claim Hlt10V0 : apply_fun lt1 0 :e V0.
+                {
+                  rewrite <- Hlr0EqLt10.
+                  exact Hlr0V0.
+                }
+                claim HlocLr0 :
+                  exists Nl:set,
+                    Nl :e subspace_topology unit_interval unit_interval_topology (Nr :/\: N1) /\
+                    0 :e Nl /\
+                    (forall u:set, u :e Nl -> apply_fun lr u :e V0).
+                {
+                  exact (continuous_local_neighborhood
+                    (Nr :/\: N1)
+                    (subspace_topology unit_interval unit_interval_topology (Nr :/\: N1))
+                    E
+                    Te
+                    lr
+                    HtopNrN1Sub
+                    HtopE
+                    HlrFunNrN1
+                    (fun W:set =>
+                      continuous_map_preimage
+                        (Nr :/\: N1)
+                        (subspace_topology unit_interval unit_interval_topology (Nr :/\: N1))
+                        E
+                        Te
+                        lr
+                        HlrContNrN1
+                        W)
+                    0
+                    H0NrN1
+                    V0
+                    HV0Open
+                    Hlr0V0).
+                }
+                claim HlocLt10 :
+                  exists Nt0:set,
+                    Nt0 :e subspace_topology unit_interval unit_interval_topology (Nr :/\: N1) /\
+                    0 :e Nt0 /\
+                    (forall u:set, u :e Nt0 -> apply_fun lt1 u :e V0).
+                {
+                  exact (continuous_local_neighborhood
+                    (Nr :/\: N1)
+                    (subspace_topology unit_interval unit_interval_topology (Nr :/\: N1))
+                    E
+                    Te
+                    lt1
+                    HtopNrN1Sub
+                    HtopE
+                    Hlt1FunNrN1
+                    (fun W:set =>
+                      continuous_map_preimage
+                        (Nr :/\: N1)
+                        (subspace_topology unit_interval unit_interval_topology (Nr :/\: N1))
+                        E
+                        Te
+                        lt1
+                        Hlt1ContNrN1
+                        W)
+                    0
+                    H0NrN1
+                    V0
+                    HV0Open
+                    Hlt10V0).
+                }
+                apply HlocLr0.
+                let Nl.
+                assume HNlPack.
+                apply HlocLt10.
+                let Nt0.
+                assume HNt0Pack.
+                claim HNlOpen : Nl :e subspace_topology unit_interval unit_interval_topology (Nr :/\: N1).
+                {
+                  exact (andEL
+                    (Nl :e subspace_topology unit_interval unit_interval_topology (Nr :/\: N1))
+                    (0 :e Nl)
+                    (andEL
+                      (Nl :e subspace_topology unit_interval unit_interval_topology (Nr :/\: N1) /\ 0 :e Nl)
+                      (forall u:set, u :e Nl -> apply_fun lr u :e V0)
+                      HNlPack)).
+                }
+                claim H0Nl : 0 :e Nl.
+                {
+                  exact (andER
+                    (Nl :e subspace_topology unit_interval unit_interval_topology (Nr :/\: N1))
+                    (0 :e Nl)
+                    (andEL
+                      (Nl :e subspace_topology unit_interval unit_interval_topology (Nr :/\: N1) /\ 0 :e Nl)
+                      (forall u:set, u :e Nl -> apply_fun lr u :e V0)
+                      HNlPack)).
+                }
+                claim HNlIntoV0 :
+                  forall u:set, u :e Nl -> apply_fun lr u :e V0.
+                {
+                  exact (andER
+                    (Nl :e subspace_topology unit_interval unit_interval_topology (Nr :/\: N1) /\ 0 :e Nl)
+                    (forall u:set, u :e Nl -> apply_fun lr u :e V0)
+                    HNlPack).
+                }
+                claim HNt0Open : Nt0 :e subspace_topology unit_interval unit_interval_topology (Nr :/\: N1).
+                {
+                  exact (andEL
+                    (Nt0 :e subspace_topology unit_interval unit_interval_topology (Nr :/\: N1))
+                    (0 :e Nt0)
+                    (andEL
+                      (Nt0 :e subspace_topology unit_interval unit_interval_topology (Nr :/\: N1) /\ 0 :e Nt0)
+                      (forall u:set, u :e Nt0 -> apply_fun lt1 u :e V0)
+                      HNt0Pack)).
+                }
+                claim H0Nt0 : 0 :e Nt0.
+                {
+                  exact (andER
+                    (Nt0 :e subspace_topology unit_interval unit_interval_topology (Nr :/\: N1))
+                    (0 :e Nt0)
+                    (andEL
+                      (Nt0 :e subspace_topology unit_interval unit_interval_topology (Nr :/\: N1) /\ 0 :e Nt0)
+                      (forall u:set, u :e Nt0 -> apply_fun lt1 u :e V0)
+                      HNt0Pack)).
+                }
+                claim HNt0IntoV0 :
+                  forall u:set, u :e Nt0 -> apply_fun lt1 u :e V0.
+                {
+                  exact (andER
+                    (Nt0 :e subspace_topology unit_interval unit_interval_topology (Nr :/\: N1) /\ 0 :e Nt0)
+                    (forall u:set, u :e Nt0 -> apply_fun lt1 u :e V0)
+                    HNt0Pack).
+                }
+                claim HhomeV0 :
+                  homeomorphism V0 (subspace_topology E Te V0) U0 (subspace_topology B Tb U0)
+                    (graph V0 (fun z:set => apply_fun p z)).
+                {
+                  exact (andER
+                    ((V0 :e Te /\ apply_fun lr 0 :e V0) /\ U0 :e Tb)
+                    (homeomorphism V0 (subspace_topology E Te V0) U0 (subspace_topology B Tb U0)
+                      (graph V0 (fun z:set => apply_fun p z)))
+                    HV0Main).
+                }
+                witness V0.
+                witness (Nl :/\: Nt0).
+                apply andI.
+                - exact (andI
+                    (V0 :e Te /\ apply_fun lr 0 :e V0)
+                    (apply_fun lt1 0 :e V0)
+                    (andI
+                      (V0 :e Te)
+                      (apply_fun lr 0 :e V0)
+                      HV0Open
+                      Hlr0V0)
+                    Hlt10V0).
+                - apply andI.
+                  + exact (topology_binintersect_closed
+                      (Nr :/\: N1)
+                      (subspace_topology unit_interval unit_interval_topology (Nr :/\: N1))
+                      Nl
+                      Nt0
+                      HtopNrN1Sub
+                      HNlOpen
+                      HNt0Open).
+                  + apply andI.
+                    * exact (binintersectI
+                        Nl
+                        Nt0
+                        0
+                        H0Nl
+                        H0Nt0).
+                    * let u.
+                      assume HuN0.
+                      claim HuNl : u :e Nl.
+                      {
+                        exact (binintersectE1
+                          Nl
+                          Nt0
+                          u
+                          HuN0).
+                      }
+                      claim HuNt0 : u :e Nt0.
+                      {
+                        exact (binintersectE2
+                          Nl
+                          Nt0
+                          u
+                          HuN0).
+                      }
+                      claim HlrV0 : apply_fun lr u :e V0.
+                      {
+                        exact (HNlIntoV0
+                          u
+                          HuNl).
+                      }
+                      claim Hlt1V0 : apply_fun lt1 u :e V0.
+                      {
+                        exact (HNt0IntoV0
+                          u
+                          HuNt0).
+                      }
+                      claim HNlSubNrN1 : Nl c= Nr :/\: N1.
+                      {
+                        exact (subspace_topology_subset
+                          unit_interval
+                          unit_interval_topology
+                          (Nr :/\: N1)
+                          Nl
+                          HNlOpen).
+                      }
+                      claim HuNrN1 : u :e Nr :/\: N1.
+                      {
+                        exact (HNlSubNrN1
+                          u
+                          HuNl).
+                      }
+                      claim HplrEqu : apply_fun p (apply_fun lr u) = apply_fun f u.
+                      {
+                        exact (HlrCommNrN1
+                          u
+                          HuNrN1).
+                      }
+                      claim Hplt1Equ : apply_fun p (apply_fun lt1 u) = apply_fun f u.
+                      {
+                        exact (Hlt1CommNrN1
+                          u
+                          HuNrN1).
+                      }
+                      claim HplrEqplt1u :
+                        apply_fun p (apply_fun lr u) = apply_fun p (apply_fun lt1 u).
+                      {
+                        rewrite HplrEqu.
+                        rewrite Hplt1Equ.
+                        reflexivity.
+                      }
+                      claim HcontGraph0 :
+                        continuous_map V0 (subspace_topology E Te V0) U0 (subspace_topology B Tb U0)
+                          (graph V0 (fun z:set => apply_fun p z)).
+                      {
+                        exact (homeomorphism_continuous
+                          V0
+                          (subspace_topology E Te V0)
+                          U0
+                          (subspace_topology B Tb U0)
+                          (graph V0 (fun z:set => apply_fun p z))
+                          HhomeV0).
+                      }
+                      claim HfunGraph0 :
+                        function_on
+                          (graph V0 (fun z:set => apply_fun p z))
+                          V0
+                          U0.
+                      {
+                        exact (continuous_map_function_on
+                          V0
+                          (subspace_topology E Te V0)
+                          U0
+                          (subspace_topology B Tb U0)
+                          (graph V0 (fun z:set => apply_fun p z))
+                          HcontGraph0).
+                      }
+                      claim HplrU0 : apply_fun p (apply_fun lr u) :e U0.
+                      {
+                        rewrite <- (apply_fun_graph
+                          V0
+                          (fun z:set => apply_fun p z)
+                          (apply_fun lr u)
+                          HlrV0).
+                        exact (HfunGraph0
+                          (apply_fun lr u)
+                          HlrV0).
+                      }
+                      claim HuniqFiberU :
+                        exists z0:set,
+                          z0 :e V0 /\
+                          apply_fun p z0 = apply_fun p (apply_fun lr u) /\
+                          forall y:set, y :e V0 ->
+                            apply_fun p y = apply_fun p (apply_fun lr u) -> y = z0.
+                      {
+                        exact (homeomorphic_sheet_unique_fiber_point
+                          E
+                          Te
+                          B
+                          Tb
+                          p
+                          V0
+                          U0
+                          (apply_fun p (apply_fun lr u))
+                          HhomeV0
+                          HplrU0).
+                      }
+                      apply HuniqFiberU.
+                      let z0.
+                      assume Hz0Pack.
+                      claim Huniqz0 :
+                        forall y:set, y :e V0 ->
+                          apply_fun p y = apply_fun p (apply_fun lr u) -> y = z0.
+                      {
+                        exact (andER
+                          (z0 :e V0 /\ apply_fun p z0 = apply_fun p (apply_fun lr u))
+                          (forall y:set, y :e V0 ->
+                            apply_fun p y = apply_fun p (apply_fun lr u) -> y = z0)
+                          Hz0Pack).
+                      }
+                      claim HlrEqz0 : apply_fun lr u = z0.
+                      {
+                        claim HplrSelf :
+                          apply_fun p (apply_fun lr u) = apply_fun p (apply_fun lr u).
+                        {
+                          reflexivity.
+                        }
+                        exact (Huniqz0
+                          (apply_fun lr u)
+                          HlrV0
+                          HplrSelf).
+                      }
+                      claim Hplt1Eqplr :
+                        apply_fun p (apply_fun lt1 u) = apply_fun p (apply_fun lr u).
+                      {
+                        rewrite HplrEqplt1u.
+                        reflexivity.
+                      }
+                      claim Hlt1Eqz0 : apply_fun lt1 u = z0.
+                      {
+                        exact (Huniqz0
+                          (apply_fun lt1 u)
+                          Hlt1V0
+                          Hplt1Eqplr).
+                      }
+                      rewrite HlrEqz0.
+                      rewrite Hlt1Eqz0.
+                      reflexivity.
+              }
               (** TODO Charlie: compare lr with lt1 on Nr :/\: N1 from Hlr0EqLt10 and Hplr0Eqplt10, then propagate membership of r into N1 via the local evenly-covered neighborhood Ur at f(r). **)
               admit.
             }
