@@ -67173,6 +67173,7 @@ Admitted.
 (** If B is simply connected, then p is a homeomorphism. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 55 **)
+(** Lock Charlie 1771466026 **)
 Theorem ex54_8_simply_connected_base_homeomorphism : forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
   path_connected_space E Te ->
