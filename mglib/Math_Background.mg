@@ -118668,8 +118668,42 @@ apply xm (second_countable_space X Tx).
       }
       exact (EmptyE p HpEmpty False).
     }
-    (** TODO Charlie: extract a single A-member containing U :\/: V from this overlap data. **)
-    admit.
+    claim HaUA : aU :e A.
+    {
+      exact (HA0subA
+        aU
+        HaUA0).
+    }
+    claim HaVA : aV :e A.
+    {
+      exact (HA0subA
+        aV
+        HaVA0).
+    }
+    apply xm (aU = aV).
+    - assume HeqUV.
+      witness aU.
+      apply andI.
+      + exact HaUA.
+      + let z.
+        assume HzUV.
+        apply (binunionE
+          U
+          V
+          z
+          HzUV).
+        * assume HzU.
+          exact (HUsubaU z HzU).
+        * assume HzV.
+          exact (mem_eqL
+            z
+            aU
+            aV
+            HeqUV
+            (HVsubaV z HzV)).
+    - assume HneqUV.
+      (** TODO Charlie: nontrivial overlap case aU <> aV with aU :/\: aV <> Empty. **)
+      admit.
   }
   witness V0.
   apply andI.
