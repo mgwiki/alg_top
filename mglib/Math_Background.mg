@@ -116894,6 +116894,29 @@ claim Hnat :
 exact (Hnat n (omega_nat_p n HnO)).
 Qed.
 
+(** Helper: integers under surreal addition form a group. **)
+Theorem integers_group_is_group :
+  group_structure int integers_group_mult 0 integers_group_inv.
+admit.
+Admitted.
+
+(** Helper: integers under surreal addition form an abelian group. **)
+Theorem integers_group_is_abelian :
+  abelian_group
+    int
+    integers_group_mult
+    0
+    integers_group_inv.
+admit.
+Admitted.
+
+(** Helper: in the integer additive group, the n-th power of 1 equals n. **)
+Theorem integers_group_power_nat_one_eq_nat :
+  forall n:set, n :e omega ->
+  group_power_nat integers_group_mult 0 1 n = n.
+admit.
+Admitted.
+
 (** Proven Bob **)
 (** Helper: inverses stay in the carrier of a group. **)
 Theorem group_inverse_closed_in_group :
@@ -120212,7 +120235,11 @@ claim HpowOrigInC : group_power_nat mult e (apply_fun gens alpha) n :e C.
     HpowOrigInG
     HpowOrigCosetEqC).
 }
-admit.
+claim HpowOrigEqe : group_power_nat mult e (apply_fun gens alpha) n = e.
+{
+  admit.
+}
+exact HpowOrigEqe.
 Admitted.
 
 (** Infrastructure helper for S69 Thm 69.4:
@@ -120742,14 +120769,14 @@ apply (andI
           HnO
           HnNZ
           HpowQ).
- - exact (commutator_quotient_direct_sum_of_generator_subgroups
-      G
-      mult
-      e
-      inv
-      J
-      gens
-      Hfree).
+	 - exact (commutator_quotient_direct_sum_of_generator_subgroups
+	      G
+	      mult
+	      e
+	      inv
+	      J
+	      gens
+	      Hfree).
 Admitted.
 
 (** Infrastructure helper for S69 Cor 69.5:
