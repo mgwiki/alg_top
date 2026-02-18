@@ -71675,6 +71675,138 @@ apply Hrep.
 Qed.
 
 (** Proven Bob **)
+(** Infrastructure helper: compose homomorphisms when the source multiplication is closed. **)
+Theorem group_homomorphism_compose_cyclic_helper :
+  forall G1 mult1 e1 inv1 G2 mult2 G3 mult3 f g:set,
+  group_structure G1 mult1 e1 inv1 ->
+  group_homomorphism G1 mult1 G2 mult2 f ->
+  group_homomorphism G2 mult2 G3 mult3 g ->
+  group_homomorphism G1 mult1 G3 mult3 (compose_fun G1 f g).
+let G1 mult1 e1 inv1 G2 mult2 G3 mult3 f g.
+assume Hgrp1 Hf Hg.
+claim HfFn : function_on f G1 G2.
+{
+  exact (group_homomorphism_function_on
+    G1
+    mult1
+    G2
+    mult2
+    f
+    Hf).
+}
+claim HgFn : function_on g G2 G3.
+{
+  exact (group_homomorphism_function_on
+    G2
+    mult2
+    G3
+    mult3
+    g
+    Hg).
+}
+claim Hmult1Fn : function_on mult1 (setprod G1 G1) G1.
+{
+  apply (and6E
+    (function_on mult1 (setprod G1 G1) G1)
+    (function_on inv1 G1 G1)
+    (e1 :e G1)
+    (forall a b c:set, a :e G1 -> b :e G1 -> c :e G1 ->
+      apply_fun mult1 (apply_fun mult1 (a, b), c) = apply_fun mult1 (a, apply_fun mult1 (b, c)))
+    (forall a:set, a :e G1 -> apply_fun mult1 (e1, a) = a /\ apply_fun mult1 (a, e1) = a)
+    (forall a:set, a :e G1 ->
+      apply_fun mult1 (a, apply_fun inv1 a) = e1 /\ apply_fun mult1 (apply_fun inv1 a, a) = e1)
+    Hgrp1).
+  assume Hmult1Fn Hinv1Fn He1 Hassoc1 Hid1 Hinv1.
+  exact Hmult1Fn.
+}
+claim HcompMult :
+  forall x y:set, x :e G1 -> y :e G1 ->
+    apply_fun (compose_fun G1 f g) (apply_fun mult1 (x, y)) =
+    apply_fun mult3
+      (apply_fun (compose_fun G1 f g) x, apply_fun (compose_fun G1 f g) y).
+{
+  let x y.
+  assume HxG1 HyG1.
+  claim HxyG1 : apply_fun mult1 (x, y) :e G1.
+  {
+    exact (Hmult1Fn
+      (x, y)
+      (tuple_2_setprod_by_pair_Sigma
+        G1
+        G1
+        x
+        y
+        HxG1
+        HyG1)).
+  }
+  claim HfxG2 : apply_fun f x :e G2.
+  {
+    exact (HfFn x HxG1).
+  }
+  claim HfyG2 : apply_fun f y :e G2.
+  {
+    exact (HfFn y HyG1).
+  }
+  rewrite (compose_fun_apply
+    G1
+    f
+    g
+    (apply_fun mult1 (x, y))
+    HxyG1).
+  rewrite (group_homomorphism_mult_rule
+    G1
+    mult1
+    G2
+    mult2
+    f
+    x
+    y
+    Hf
+    HxG1
+    HyG1).
+  rewrite (group_homomorphism_mult_rule
+    G2
+    mult2
+    G3
+    mult3
+    g
+    (apply_fun f x)
+    (apply_fun f y)
+    Hg
+    HfxG2
+    HfyG2).
+  rewrite (compose_fun_apply
+    G1
+    f
+    g
+    x
+    HxG1).
+  rewrite (compose_fun_apply
+    G1
+    f
+    g
+    y
+    HyG1).
+  reflexivity.
+}
+exact (andI
+  (function_on (compose_fun G1 f g) G1 G3)
+  (forall x y:set, x :e G1 -> y :e G1 ->
+    apply_fun (compose_fun G1 f g) (apply_fun mult1 (x, y)) =
+    apply_fun mult3
+      (apply_fun (compose_fun G1 f g) x, apply_fun (compose_fun G1 f g) y))
+  (function_on_compose_fun
+    G1
+    G2
+    G3
+    f
+    g
+    HfFn
+    HgFn)
+  HcompMult).
+Qed.
+
+(** Proven Bob **)
 (** Infrastructure helper: a candidate homomorphism on a generator yields the full universal package. **)
 Theorem universal_property_from_generator_candidate_helper :
   forall G multG eG invG x H multH eH invH y h:set,
