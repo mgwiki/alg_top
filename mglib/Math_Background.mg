@@ -67168,6 +67168,471 @@ Theorem ex54_7_pi1_torus : exists phi:set,
 admit.
 Admitted.
 
+(** Infrastructure: injectivity of covering map when total space is path connected and base is simply connected **)
+Theorem ex54_8_covering_injective : forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  path_connected_space E Te ->
+  simply_connected B Tb ->
+  forall x1 x2:set,
+    x1 :e E ->
+    x2 :e E ->
+    apply_fun p x1 = apply_fun p x2 ->
+    x1 = x2.
+let E Te B Tb p.
+assume Hcov HpcE HscB.
+let x1.
+let x2.
+assume Hx1E Hx2E Hpx.
+claim HcovPair : continuous_map E Te B Tb p /\ surjective_map E B p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p /\ surjective_map E B p)
+    (forall b:set, b :e B ->
+      exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+    Hcov).
+}
+claim Hcontp : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    HcovPair).
+}
+claim HtopE : topology_on E Te.
+{
+  exact (continuous_map_topology_dom E Te B Tb p Hcontp).
+}
+claim HtopB : topology_on B Tb.
+{
+  exact (continuous_map_topology_cod E Te B Tb p Hcontp).
+}
+claim Hfunp : function_on p E B.
+{
+  exact (continuous_map_function_on E Te B Tb p Hcontp).
+}
+set b := apply_fun p x1.
+claim HbB : b :e B.
+{
+  exact (Hfunp x1 Hx1E).
+}
+apply (path_connected_space_paths E Te x1 x2 HpcE Hx1E Hx2E).
+let alpha.
+assume Halpha.
+claim HalphaPath : path_between E x1 x2 alpha.
+{
+  exact (andEL
+    (path_between E x1 x2 alpha)
+    (continuous_map unit_interval unit_interval_topology E Te alpha)
+    Halpha).
+}
+claim HalphaCont : continuous_map unit_interval unit_interval_topology E Te alpha.
+{
+  exact (andER
+    (path_between E x1 x2 alpha)
+    (continuous_map unit_interval unit_interval_topology E Te alpha)
+    Halpha).
+}
+claim Halpha0 : apply_fun alpha 0 = x1.
+{
+  exact (path_between_at_zero
+    E
+    x1
+    x2
+    alpha
+    (path_witness_between E Te x1 x2 alpha Halpha)).
+}
+claim Halpha1 : apply_fun alpha 1 = x2.
+{
+  exact (path_between_at_one
+    E
+    x1
+    x2
+    alpha
+    (path_witness_between E Te x1 x2 alpha Halpha)).
+}
+set f := compose_fun unit_interval alpha p.
+set c := constant_path b.
+claim HfCont : continuous_map unit_interval unit_interval_topology B Tb f.
+{
+  exact (composition_continuous
+    unit_interval
+    unit_interval_topology
+    E
+    Te
+    B
+    Tb
+    alpha
+    p
+    HalphaCont
+    Hcontp).
+}
+claim Hf0 : apply_fun f 0 = b.
+{
+  rewrite (compose_fun_apply unit_interval alpha p 0 zero_in_unit_interval).
+  rewrite Halpha0.
+  reflexivity.
+}
+claim Hf1 : apply_fun f 1 = b.
+{
+  rewrite (compose_fun_apply unit_interval alpha p 1 one_in_unit_interval).
+  rewrite Halpha1.
+  rewrite <- Hpx.
+  reflexivity.
+}
+claim HcCont : continuous_map unit_interval unit_interval_topology B Tb c.
+{
+  exact (constant_path_continuous
+    B
+    Tb
+    b
+    HtopB
+    HbB).
+}
+claim Hc0 : apply_fun c 0 = b.
+{
+  rewrite (constant_path_at_zero b).
+  reflexivity.
+}
+claim Hc1 : apply_fun c 1 = b.
+{
+  rewrite (constant_path_at_one b).
+  reflexivity.
+}
+claim Hhomfc : path_homotopic B Tb b b f c.
+{
+  exact (Lemma_52_3_simply_connected_unique_homotopy
+    B
+    Tb
+    b
+    b
+    f
+    c
+    HscB
+    HfCont
+    HcCont
+    Hf0
+    Hf1
+    Hc0
+    Hc1).
+}
+claim HliftPack :
+  apply_fun (path_lift E Te B Tb p x1 f) 1 =
+  apply_fun (path_lift E Te B Tb p x1 c) 1 /\
+  path_homotopic E Te x1 (apply_fun (path_lift E Te B Tb p x1 f) 1)
+    (path_lift E Te B Tb p x1 f)
+    (path_lift E Te B Tb p x1 c).
+{
+  exact (thm54_3_homotopic_lifts
+    E
+    Te
+    B
+    Tb
+    p
+    x1
+    b
+    b
+    f
+    c
+    Hcov
+    Hx1E
+    (fun P H => H)
+    Hhomfc).
+}
+claim HendEq :
+  apply_fun (path_lift E Te B Tb p x1 f) 1 =
+  apply_fun (path_lift E Te B Tb p x1 c) 1.
+{
+  exact (andEL
+    (apply_fun (path_lift E Te B Tb p x1 f) 1 =
+      apply_fun (path_lift E Te B Tb p x1 c) 1)
+    (path_homotopic E Te x1 (apply_fun (path_lift E Te B Tb p x1 f) 1)
+      (path_lift E Te B Tb p x1 f)
+      (path_lift E Te B Tb p x1 c))
+    HliftPack).
+}
+claim Hstartf : apply_fun p x1 = apply_fun f 0.
+{
+  rewrite Hf0.
+  reflexivity.
+}
+claim HplfPack :
+  continuous_map unit_interval unit_interval_topology E Te
+    (path_lift E Te B Tb p x1 f) /\
+  apply_fun (path_lift E Te B Tb p x1 f) 0 = x1 /\
+  (forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p x1 f) t) = apply_fun f t).
+{
+  exact (lemma54_1_path_lifting
+    E
+    Te
+    B
+    Tb
+    p
+    x1
+    f
+    Hcov
+    Hx1E
+    Hstartf
+    HfCont).
+}
+claim HplfLeft :
+  continuous_map unit_interval unit_interval_topology E Te
+    (path_lift E Te B Tb p x1 f) /\
+  apply_fun (path_lift E Te B Tb p x1 f) 0 = x1.
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p x1 f) /\
+     apply_fun (path_lift E Te B Tb p x1 f) 0 = x1)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p x1 f) t) = apply_fun f t)
+    HplfPack).
+}
+claim HplfCont :
+  continuous_map unit_interval unit_interval_topology E Te
+    (path_lift E Te B Tb p x1 f).
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p x1 f))
+    (apply_fun (path_lift E Te B Tb p x1 f) 0 = x1)
+    HplfLeft).
+}
+claim Hplf0 : apply_fun (path_lift E Te B Tb p x1 f) 0 = x1.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p x1 f))
+    (apply_fun (path_lift E Te B Tb p x1 f) 0 = x1)
+    HplfLeft).
+}
+claim HplfComm :
+  forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p x1 f) t) = apply_fun f t.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p x1 f) /\
+     apply_fun (path_lift E Te B Tb p x1 f) 0 = x1)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p x1 f) t) = apply_fun f t)
+    HplfPack).
+}
+claim HplfLift :
+  lifting_of unit_interval unit_interval_topology E Te B Tb p f
+    (path_lift E Te B Tb p x1 f).
+{
+  exact (andI
+    (continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p x1 f))
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p x1 f) t) = apply_fun f t)
+    HplfCont
+    HplfComm).
+}
+claim HalphaComm :
+  forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun alpha t) = apply_fun f t.
+{
+  let t.
+  assume Ht.
+  rewrite (compose_fun_apply unit_interval alpha p t Ht).
+  reflexivity.
+}
+claim HalphaLift :
+  lifting_of unit_interval unit_interval_topology E Te B Tb p f alpha.
+{
+  exact (andI
+    (continuous_map unit_interval unit_interval_topology E Te alpha)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun alpha t) = apply_fun f t)
+    HalphaCont
+    HalphaComm).
+}
+claim HplfEqAlpha :
+  forall t:set, t :e unit_interval ->
+    apply_fun (path_lift E Te B Tb p x1 f) t = apply_fun alpha t.
+{
+  exact (lemma54_1_path_lifting_unique
+    E
+    Te
+    B
+    Tb
+    p
+    x1
+    f
+    (path_lift E Te B Tb p x1 f)
+    alpha
+    Hcov
+    Hx1E
+    HfCont
+    HplfLift
+    Hplf0
+    HalphaLift
+    Halpha0).
+}
+claim Hendf : apply_fun (path_lift E Te B Tb p x1 f) 1 = x2.
+{
+  rewrite (HplfEqAlpha 1 one_in_unit_interval).
+  exact Halpha1.
+}
+claim Hstartc : apply_fun p x1 = apply_fun c 0.
+{
+  rewrite (constant_path_at_zero b).
+  reflexivity.
+}
+claim HplcPack :
+  continuous_map unit_interval unit_interval_topology E Te
+    (path_lift E Te B Tb p x1 c) /\
+  apply_fun (path_lift E Te B Tb p x1 c) 0 = x1 /\
+  (forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p x1 c) t) = apply_fun c t).
+{
+  exact (lemma54_1_path_lifting
+    E
+    Te
+    B
+    Tb
+    p
+    x1
+    c
+    Hcov
+    Hx1E
+    Hstartc
+    HcCont).
+}
+claim HplcLeft :
+  continuous_map unit_interval unit_interval_topology E Te
+    (path_lift E Te B Tb p x1 c) /\
+  apply_fun (path_lift E Te B Tb p x1 c) 0 = x1.
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p x1 c) /\
+     apply_fun (path_lift E Te B Tb p x1 c) 0 = x1)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p x1 c) t) = apply_fun c t)
+    HplcPack).
+}
+claim HplcCont :
+  continuous_map unit_interval unit_interval_topology E Te
+    (path_lift E Te B Tb p x1 c).
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p x1 c))
+    (apply_fun (path_lift E Te B Tb p x1 c) 0 = x1)
+    HplcLeft).
+}
+claim Hplc0 : apply_fun (path_lift E Te B Tb p x1 c) 0 = x1.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p x1 c))
+    (apply_fun (path_lift E Te B Tb p x1 c) 0 = x1)
+    HplcLeft).
+}
+claim HplcComm :
+  forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p x1 c) t) = apply_fun c t.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p x1 c) /\
+     apply_fun (path_lift E Te B Tb p x1 c) 0 = x1)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p x1 c) t) = apply_fun c t)
+    HplcPack).
+}
+claim HplcLift :
+  lifting_of unit_interval unit_interval_topology E Te B Tb p c
+    (path_lift E Te B Tb p x1 c).
+{
+  exact (andI
+    (continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p x1 c))
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p x1 c) t) = apply_fun c t)
+    HplcCont
+    HplcComm).
+}
+claim Hconstx1Cont :
+  continuous_map unit_interval unit_interval_topology E Te (constant_path x1).
+{
+  exact (constant_path_continuous
+    E
+    Te
+    x1
+    HtopE
+    Hx1E).
+}
+claim Hconstx1Comm :
+  forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (constant_path x1) t) = apply_fun c t.
+{
+  let t.
+  assume Ht.
+  rewrite (constant_path_apply x1 t Ht).
+  rewrite (constant_path_apply b t Ht).
+  reflexivity.
+}
+claim Hconstx1Lift :
+  lifting_of unit_interval unit_interval_topology E Te B Tb p c
+    (constant_path x1).
+{
+  exact (andI
+    (continuous_map unit_interval unit_interval_topology E Te (constant_path x1))
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (constant_path x1) t) = apply_fun c t)
+    Hconstx1Cont
+    Hconstx1Comm).
+}
+claim Hconstx10 : apply_fun (constant_path x1) 0 = x1.
+{
+  exact (constant_path_at_zero x1).
+}
+claim HplcEqConst :
+  forall t:set, t :e unit_interval ->
+    apply_fun (path_lift E Te B Tb p x1 c) t =
+    apply_fun (constant_path x1) t.
+{
+  exact (lemma54_1_path_lifting_unique
+    E
+    Te
+    B
+    Tb
+    p
+    x1
+    c
+    (path_lift E Te B Tb p x1 c)
+    (constant_path x1)
+    Hcov
+    Hx1E
+    HcCont
+    HplcLift
+    Hplc0
+    Hconstx1Lift
+    Hconstx10).
+}
+claim Hendc : apply_fun (path_lift E Te B Tb p x1 c) 1 = x1.
+{
+  rewrite (HplcEqConst 1 one_in_unit_interval).
+  exact (constant_path_at_one x1).
+}
+claim Hx2x1 : x2 = x1.
+{
+  claim Hx2EqLiftC : x2 = apply_fun (path_lift E Te B Tb p x1 c) 1.
+  {
+    rewrite <- Hendf.
+    exact HendEq.
+  }
+  rewrite Hx2EqLiftC.
+  exact Hendc.
+}
+symmetry.
+exact Hx2x1.
+Admitted.
+
 (** from S54 Exercise 8 (line 893 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map with E path connected. **)
 (** If B is simply connected, then p is a homeomorphism. **)
@@ -67179,7 +67644,332 @@ Theorem ex54_8_simply_connected_base_homeomorphism : forall E Te B Tb p:set,
   path_connected_space E Te ->
   simply_connected B Tb ->
   homeomorphism E Te B Tb p.
-admit.
+let E Te B Tb p.
+assume Hcov HpcE HscB.
+claim HcovPair : continuous_map E Te B Tb p /\ surjective_map E B p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p /\ surjective_map E B p)
+    (forall b:set, b :e B ->
+      exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+    Hcov).
+}
+claim Hcontp : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    HcovPair).
+}
+claim Hsurj : surjective_map E B p.
+{
+  exact (andER
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    HcovPair).
+}
+claim HtopE : topology_on E Te.
+{
+  exact (continuous_map_topology_dom E Te B Tb p Hcontp).
+}
+claim HtopB : topology_on B Tb.
+{
+  exact (continuous_map_topology_cod E Te B Tb p Hcontp).
+}
+claim Hfunp : function_on p E B.
+{
+  exact (continuous_map_function_on E Te B Tb p Hcontp).
+}
+claim HsurjWit : forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y.
+{
+  exact (andER
+    (function_on p E B)
+    (forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y)
+    Hsurj).
+}
+claim Hinjp :
+  forall x1 x2:set,
+    x1 :e E ->
+    x2 :e E ->
+    apply_fun p x1 = apply_fun p x2 ->
+    x1 = x2.
+{
+  exact (ex54_8_covering_injective
+    E
+    Te
+    B
+    Tb
+    p
+    Hcov
+    HpcE
+    HscB).
+}
+claim Hbij : bijection E B p.
+{
+  prove function_on p E B /\
+    (forall y:set, y :e B ->
+      exists x:set, x :e E /\ apply_fun p x = y /\
+        (forall x':set, x' :e E -> apply_fun p x' = y -> x' = x)).
+  apply andI.
+  - exact Hfunp.
+  - let y.
+    assume HyB.
+    apply (HsurjWit y HyB).
+    let x.
+    assume HxPack.
+    claim HxE : x :e E.
+    {
+      exact (andEL
+        (x :e E)
+        (apply_fun p x = y)
+        HxPack).
+    }
+    claim Hxy : apply_fun p x = y.
+    {
+      exact (andER
+        (x :e E)
+        (apply_fun p x = y)
+        HxPack).
+    }
+    witness x.
+    apply andI.
+    + apply andI.
+      * exact HxE.
+      * exact Hxy.
+    + let x'.
+      assume Hx'E Hx'y.
+      claim Hpxeq : apply_fun p x' = apply_fun p x.
+      {
+        rewrite Hx'y.
+        rewrite Hxy.
+        reflexivity.
+      }
+      exact (Hinjp x' x Hx'E HxE Hpxeq).
+}
+set g := inv_fun_graph E p B.
+claim Hopenp : open_map E Te B Tb p.
+{
+  exact (covering_map_is_open E Te B Tb p Hcov).
+}
+claim HopenClause : forall U:set, U :e Te -> image_of p U :e Tb.
+{
+  apply (and4E
+    (topology_on E Te)
+    (topology_on B Tb)
+    (function_on p E B)
+    (forall U:set, U :e Te -> image_of p U :e Tb)
+    Hopenp).
+  assume _ _ _ Himg.
+  exact Himg.
+}
+claim HfunG : function_on g B E.
+{
+  let y.
+  assume HyB.
+  claim Hexy : exists x:set, x :e E /\ apply_fun p x = y.
+  {
+    exact (bijection_surj E B p y Hbij HyB).
+  }
+  apply Hexy.
+  let x.
+  assume HxPack.
+  claim HxE : x :e E.
+  {
+    exact (andEL
+      (x :e E)
+      (apply_fun p x = y)
+      HxPack).
+  }
+  claim Hxy : apply_fun p x = y.
+  {
+    exact (andER
+      (x :e E)
+      (apply_fun p x = y)
+      HxPack).
+  }
+  claim HinvPack :
+    inv E (fun z:set => apply_fun p z) y :e E /\
+    apply_fun p (inv E (fun z:set => apply_fun p z) y) = y.
+  {
+    exact (surj_rinv
+      E
+      B
+      (fun z:set => apply_fun p z)
+      HsurjWit
+      y
+      HyB).
+  }
+  rewrite (inv_fun_graph_apply E B p y HyB).
+  exact (andEL
+    (inv E (fun z:set => apply_fun p z) y :e E)
+    (apply_fun p (inv E (fun z:set => apply_fun p z) y) = y)
+    HinvPack).
+}
+claim HpreOpen : forall V:set, V :e Te -> preimage_of B g V :e Tb.
+{
+  let V.
+  assume HVTe.
+  claim HVsubE : V c= E.
+  {
+    exact (topology_elem_subset E Te V HtopE HVTe).
+  }
+  claim HpreEq :
+    preimage_of B g V = image_of_fun p V.
+  {
+    exact (inv_fun_graph_preimage_eq_image
+      E
+      B
+      p
+      V
+      Hbij
+      HVsubE).
+  }
+  rewrite HpreEq.
+  exact (HopenClause V HVTe).
+}
+claim HpreClosed :
+  forall C:set, closed_in E Te C -> closed_in B Tb (preimage_of B g C).
+{
+  let C.
+  assume Hclosed.
+  claim HCdata : C c= E /\ exists U:set, U :e Te /\ C = E :\: U.
+  {
+    exact (andER
+      (topology_on E Te)
+      (C c= E /\ exists U:set, U :e Te /\ C = E :\: U)
+      Hclosed).
+  }
+  claim HCsubE : C c= E.
+  {
+    exact (andEL
+      (C c= E)
+      (exists U:set, U :e Te /\ C = E :\: U)
+      HCdata).
+  }
+  claim HUex : exists U:set, U :e Te /\ C = E :\: U.
+  {
+    exact (andER
+      (C c= E)
+      (exists U:set, U :e Te /\ C = E :\: U)
+      HCdata).
+  }
+  apply HUex.
+  let U.
+  assume HUPack.
+  claim HUopen : U :e Te.
+  {
+    exact (andEL
+      (U :e Te)
+      (C = E :\: U)
+      HUPack).
+  }
+  claim HCEq : C = E :\: U.
+  {
+    exact (andER
+      (U :e Te)
+      (C = E :\: U)
+      HUPack).
+  }
+  claim HpreSubB : preimage_of B g C c= B.
+  {
+    exact (Sep_Subq B (fun z:set => apply_fun g z :e C)).
+  }
+  claim HWopen : preimage_of B g U :e Tb.
+  {
+    exact (HpreOpen U HUopen).
+  }
+  claim HpreEq : preimage_of B g C = B :\: preimage_of B g U.
+  {
+    rewrite HCEq.
+    exact (preimage_of_complement B E g U HfunG).
+  }
+  prove topology_on B Tb /\
+    (preimage_of B g C c= B /\
+     exists W:set, W :e Tb /\ preimage_of B g C = B :\: W).
+  apply andI.
+  - exact HtopB.
+  - apply andI.
+    + exact HpreSubB.
+    + witness (preimage_of B g U).
+      apply andI.
+      * exact HWopen.
+      * exact HpreEq.
+}
+claim HlocalG :
+  forall x:set, x :e B ->
+    forall V:set, V :e Te -> apply_fun g x :e V ->
+      exists U:set, U :e Tb /\ x :e U /\
+        forall u:set, u :e U -> apply_fun g u :e V.
+{
+  let x.
+  assume HxB.
+  let V.
+  assume HVTe HgxV.
+  exact (continuous_local_neighborhood
+    B
+    Tb
+    E
+    Te
+    g
+    HtopB
+    HtopE
+    HfunG
+    HpreOpen
+    x
+    HxB
+    V
+    HVTe
+    HgxV).
+}
+claim Hcontg : continuous_map B Tb E Te g.
+{
+  apply (iffER
+    (continuous_map B Tb E Te g)
+    (function_on g B E /\
+     (forall V:set, V :e Te -> preimage_of B g V :e Tb) /\
+     (forall C:set, closed_in E Te C -> closed_in B Tb (preimage_of B g C)) /\
+     (forall x:set, x :e B ->
+       forall V:set, V :e Te -> apply_fun g x :e V ->
+         exists U:set, U :e Tb /\ x :e U /\
+           forall u:set, u :e U -> apply_fun g u :e V))
+    (continuity_equiv_forms B Tb E Te g HtopB HtopE)).
+  apply andI.
+  - apply andI.
+    + apply andI.
+      * exact HfunG.
+      * exact HpreOpen.
+    + exact HpreClosed.
+  - exact HlocalG.
+}
+prove continuous_map E Te B Tb p /\
+  exists g0:set,
+    continuous_map B Tb E Te g0 /\
+    (forall x:set, x :e E -> apply_fun g0 (apply_fun p x) = x) /\
+    (forall y:set, y :e B -> apply_fun p (apply_fun g0 y) = y).
+apply andI.
+- exact Hcontp.
+- witness g.
+  apply andI.
+  + apply andI.
+    * exact Hcontg.
+    * let x.
+      assume HxE.
+      exact (inv_fun_graph_left_inverse
+        E
+        B
+        p
+        x
+        Hbij
+        HxE).
+  + let y.
+    assume HyB.
+    exact (inv_fun_graph_right_inverse
+      E
+      B
+      p
+      y
+      Hbij
+      HyB).
 Admitted.
 
 (** ======================= S55 RETRACTIONS AND FIXED POINTS ======================= **)
