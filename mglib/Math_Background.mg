@@ -1,6 +1,6 @@
 (** Balance Alice 3337 **)
 (** Balance Bob 3021 **)
-(** Balance Charlie 1171 **)
+(** Balance Charlie 1160 **)
 (** Balance Dave 1419 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -117145,7 +117145,8 @@ Admitted. (** depends on admitted supp_ex_1a_metrizable_star_refinement **)
 (** LATEX VERSION: If X is compact Hausdorff, then for any open covering A, there exists **)
 (** a finite open covering B refining A with the star property. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
+(** Bounty 121 **)
+(** Lock Charlie 1771483000 **)
 Theorem supp_ex_1b_compact_Hausdorff_star_refinement :
   forall X Tx:set,
   compact_space X Tx -> Hausdorff_space X Tx ->
