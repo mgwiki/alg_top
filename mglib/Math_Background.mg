@@ -1,7 +1,7 @@
 (** Balance Alice 3264 **)
 (** Balance Bob 3037 **)
 (** Balance Charlie 1171 **)
-(** Balance Dave 1073 **)
+(** Balance Dave 1194 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -42214,6 +42214,896 @@ apply andI.
     exact HhomePack.
 Admitted.
 
+(** Variant of evenly_covered_open_subset with topology_on E Te as explicit hypothesis **)
+Theorem evenly_covered_open_subset_top : forall E Te B Tb p U W:set,
+  topology_on E Te ->
+  evenly_covered E Te B Tb p U -> W :e Tb -> W c= U ->
+  evenly_covered E Te B Tb p W.
+let E Te B Tb p U W.
+assume HtopE Heven HW HWsub.
+claim HslicesEx : exists slices:set,
+  slices c= Te /\
+  pairwise_disjoint slices /\
+  Union slices = preimage_of E p U /\
+  (forall V:set, V :e slices ->
+    homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+      (graph V (apply_fun p))).
+{
+  exact (andER
+    (U :e Tb)
+    (exists slices:set,
+      slices c= Te /\
+      pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (apply_fun p))))
+    Heven).
+}
+prove W :e Tb /\
+  exists slices:set,
+    slices c= Te /\
+    pairwise_disjoint slices /\
+    Union slices = preimage_of E p W /\
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) W (subspace_topology B Tb W)
+        (graph V (apply_fun p))).
+apply andI.
+- exact HW.
+- claim HslicesPack : exists slices:set,
+    slices c= Te /\
+    pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (apply_fun p))).
+  { exact HslicesEx. }
+  apply HslicesPack.
+  let slices.
+  assume Hslices.
+  claim Htrip :
+    (slices c= Te /\ pairwise_disjoint slices) /\
+    Union slices = preimage_of E p U.
+  {
+    exact (andEL
+      ((slices c= Te /\ pairwise_disjoint slices) /\
+       Union slices = preimage_of E p U)
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (apply_fun p)))
+      Hslices).
+  }
+  claim Hsub : slices c= Te.
+  {
+    exact (andEL
+      (slices c= Te)
+      (pairwise_disjoint slices)
+      (andEL
+        (slices c= Te /\ pairwise_disjoint slices)
+        (Union slices = preimage_of E p U)
+        Htrip)).
+  }
+  claim Hpd : pairwise_disjoint slices.
+  {
+    exact (andER
+      (slices c= Te)
+      (pairwise_disjoint slices)
+      (andEL
+        (slices c= Te /\ pairwise_disjoint slices)
+        (Union slices = preimage_of E p U)
+        Htrip)).
+  }
+  claim Hunion : Union slices = preimage_of E p U.
+  {
+    exact (andER
+      (slices c= Te /\ pairwise_disjoint slices)
+      (Union slices = preimage_of E p U)
+      Htrip).
+  }
+  claim Hhome :
+    forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (apply_fun p)).
+  {
+    exact (andER
+      ((slices c= Te /\ pairwise_disjoint slices) /\
+       Union slices = preimage_of E p U)
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (apply_fun p)))
+      Hslices).
+  }
+  set preW := preimage_of E p W.
+  set slicesW := {V :/\: preW|V :e slices}.
+  claim HpdW : pairwise_disjoint slicesW.
+  {
+    let A B.
+    assume HAw HBw Hneq.
+    apply (ReplE slices (fun V:set => V :/\: preW) A HAw).
+    let VA.
+    assume HVApack.
+    claim HVA : VA :e slices.
+    {
+      exact (andEL
+        (VA :e slices)
+        (A = VA :/\: preW)
+        HVApack).
+    }
+    claim HAeq : A = VA :/\: preW.
+    {
+      exact (andER
+        (VA :e slices)
+        (A = VA :/\: preW)
+        HVApack).
+    }
+    apply (ReplE slices (fun V:set => V :/\: preW) B HBw).
+    let VB.
+    assume HVBpack.
+    claim HVB : VB :e slices.
+    {
+      exact (andEL
+        (VB :e slices)
+        (B = VB :/\: preW)
+        HVBpack).
+    }
+    claim HBeq : B = VB :/\: preW.
+    {
+      exact (andER
+        (VB :e slices)
+        (B = VB :/\: preW)
+        HVBpack).
+    }
+    claim HVneq : VA <> VB.
+    {
+      assume HVeq.
+      claim HABeq : A = B.
+      {
+        rewrite HAeq.
+        rewrite HBeq.
+        rewrite HVeq.
+        reflexivity.
+      }
+      exact (Hneq HABeq).
+    }
+    claim Hdisj : VA :/\: VB = Empty.
+    {
+      exact (Hpd VA VB HVA HVB HVneq).
+    }
+    apply set_ext.
+    - let z.
+      assume Hz.
+      claim HzA : z :e A.
+      {
+        exact (binintersectE1 A B z Hz).
+      }
+      claim HzB : z :e B.
+      {
+        exact (binintersectE2 A B z Hz).
+      }
+      claim HzVApre : z :e VA :/\: preW.
+      {
+        rewrite <- HAeq.
+        exact HzA.
+      }
+      claim HzVBpre : z :e VB :/\: preW.
+      {
+        rewrite <- HBeq.
+        exact HzB.
+      }
+      claim HzVA : z :e VA.
+      {
+        exact (binintersectE1 VA preW z HzVApre).
+      }
+      claim HzVB : z :e VB.
+      {
+        exact (binintersectE1 VB preW z HzVBpre).
+      }
+      claim HzInt : z :e VA :/\: VB.
+      {
+        exact (binintersectI VA VB z HzVA HzVB).
+      }
+      exact (mem_eqR z (VA :/\: VB) Empty Hdisj HzInt).
+    - let z.
+      assume HzE.
+      exact (EmptyE z HzE (z :e A :/\: B)).
+  }
+  claim HunionW : Union slicesW = preW.
+  {
+    apply set_ext.
+    - let z.
+      assume HzUnion.
+      apply (UnionE slicesW z HzUnion).
+      let V0.
+      assume HV0pack.
+      claim HzV0 : z :e V0.
+      {
+        exact (andEL
+          (z :e V0)
+          (V0 :e slicesW)
+          HV0pack).
+      }
+      claim HV0W : V0 :e slicesW.
+      {
+        exact (andER
+          (z :e V0)
+          (V0 :e slicesW)
+          HV0pack).
+      }
+      apply (ReplE slices (fun V:set => V :/\: preW) V0 HV0W).
+      let V.
+      assume HVpack.
+      claim HV0eq : V0 = V :/\: preW.
+      {
+        exact (andER
+          (V :e slices)
+          (V0 = V :/\: preW)
+          HVpack).
+      }
+      claim HzInt : z :e V :/\: preW.
+      {
+        rewrite <- HV0eq.
+        exact HzV0.
+      }
+      exact (binintersectE2 V preW z HzInt).
+    - let z.
+      assume HzPreW.
+      claim HzE : z :e E.
+      {
+        exact (SepE1 E (fun t:set => apply_fun p t :e W) z HzPreW).
+      }
+      claim HzW : apply_fun p z :e W.
+      {
+        exact (SepE2 E (fun t:set => apply_fun p t :e W) z HzPreW).
+      }
+      claim HzU : apply_fun p z :e U.
+      {
+        exact (HWsub (apply_fun p z) HzW).
+      }
+      claim HzPreU : z :e preimage_of E p U.
+      {
+        exact (SepI E (fun t:set => apply_fun p t :e U) z HzE HzU).
+      }
+      claim HzUnionSlices : z :e Union slices.
+      {
+        exact (mem_eqL
+          z
+          (Union slices)
+          (preimage_of E p U)
+          Hunion
+          HzPreU).
+      }
+      apply (UnionE slices z HzUnionSlices).
+      let V.
+      assume HVpack.
+      claim HzV : z :e V.
+      {
+        exact (andEL
+          (z :e V)
+          (V :e slices)
+          HVpack).
+      }
+      claim HVslice : V :e slices.
+      {
+        exact (andER
+          (z :e V)
+          (V :e slices)
+          HVpack).
+      }
+      claim HzInt : z :e V :/\: preW.
+      {
+        exact (binintersectI V preW z HzV HzPreW).
+      }
+      claim HVinW : V :/\: preW :e slicesW.
+      {
+        exact (ReplI slices (fun V0:set => V0 :/\: preW) V HVslice).
+      }
+      exact (UnionI slicesW z (V :/\: preW) HzInt HVinW).
+  }
+  witness slicesW.
+  apply andI.
+  - apply andI.
+    + apply andI.
+      * let Aw.
+        assume HAw.
+        apply (ReplE slices (fun V:set => V :/\: preW) Aw HAw).
+        let V.
+        assume HVpack.
+        claim HVslice : V :e slices.
+        {
+          exact (andEL
+            (V :e slices)
+            (Aw = V :/\: preW)
+            HVpack).
+        }
+        claim HAweq : Aw = V :/\: preW.
+        {
+          exact (andER
+            (V :e slices)
+            (Aw = V :/\: preW)
+            HVpack).
+        }
+        claim HVopen : V :e Te.
+        {
+          exact (Hsub V HVslice).
+        }
+        claim HVhomeVU :
+          homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+            (graph V (apply_fun p)).
+        {
+          exact (Hhome V HVslice).
+        }
+        claim HfcontV :
+          continuous_map V (subspace_topology E Te V) U (subspace_topology B Tb U)
+            (graph V (apply_fun p)).
+        {
+          exact (homeomorphism_continuous
+            V
+            (subspace_topology E Te V)
+            U
+            (subspace_topology B Tb U)
+            (graph V (apply_fun p))
+            HVhomeVU).
+        }
+        claim HWIntEq : W :/\: U = W.
+        {
+          exact (binintersect_Subq_eq_1 W U HWsub).
+        }
+        claim HWsubOpenU : W :e subspace_topology B Tb U.
+        {
+          claim HWinU : W :/\: U :e subspace_topology B Tb U.
+          {
+            exact (subspace_topologyI B Tb U W HW).
+          }
+          rewrite <- HWIntEq.
+          exact HWinU.
+        }
+        claim HpreVOpen :
+          preimage_of V (graph V (apply_fun p)) W :e subspace_topology E Te V.
+        {
+          exact (continuous_map_preimage
+            V
+            (subspace_topology E Te V)
+            U
+            (subspace_topology B Tb U)
+            (graph V (apply_fun p))
+            HfcontV
+            W
+            HWsubOpenU).
+        }
+        claim HpreEq :
+          preimage_of V (graph V (apply_fun p)) W = V :/\: preW.
+        {
+          apply set_ext.
+          - let x.
+            assume HxPre.
+            claim HxV : x :e V.
+            {
+              exact (SepE1
+                V
+                (fun t:set => apply_fun (graph V (apply_fun p)) t :e W)
+                x
+                HxPre).
+            }
+            claim HxGraphW : apply_fun (graph V (apply_fun p)) x :e W.
+            {
+              exact (SepE2
+                V
+                (fun t:set => apply_fun (graph V (apply_fun p)) t :e W)
+                x
+                HxPre).
+            }
+            claim HxW : apply_fun p x :e W.
+            {
+              rewrite <- (apply_fun_graph V (apply_fun p) x HxV).
+              exact HxGraphW.
+            }
+            claim HxUnion : x :e Union slices.
+            {
+              exact (UnionI slices x V HxV HVslice).
+            }
+            claim HxPreU : x :e preimage_of E p U.
+            {
+              exact (mem_eqR
+                x
+                (Union slices)
+                (preimage_of E p U)
+                Hunion
+                HxUnion).
+            }
+            claim HxE : x :e E.
+            {
+              exact (SepE1 E (fun t:set => apply_fun p t :e U) x HxPreU).
+            }
+            claim HxPreW : x :e preW.
+            {
+              exact (SepI E (fun t:set => apply_fun p t :e W) x HxE HxW).
+            }
+            exact (binintersectI V preW x HxV HxPreW).
+          - let x.
+            assume HxInt.
+            claim HxV : x :e V.
+            {
+              exact (binintersectE1 V preW x HxInt).
+            }
+            claim HxPreW : x :e preW.
+            {
+              exact (binintersectE2 V preW x HxInt).
+            }
+            claim HxW : apply_fun p x :e W.
+            {
+              exact (SepE2 E (fun t:set => apply_fun p t :e W) x HxPreW).
+            }
+            claim HxGraphW : apply_fun (graph V (apply_fun p)) x :e W.
+            {
+              rewrite (apply_fun_graph V (apply_fun p) x HxV).
+              exact HxW.
+            }
+            exact (SepI
+              V
+              (fun t:set => apply_fun (graph V (apply_fun p)) t :e W)
+              x
+              HxV
+              HxGraphW).
+        }
+        claim HAwInSub : Aw :e subspace_topology E Te V.
+        {
+          rewrite HAweq.
+          rewrite <- HpreEq.
+          exact HpreVOpen.
+        }
+        claim HtopVsub : topology_on V (subspace_topology E Te V).
+        {
+          exact (homeomorphism_topology_left
+            V
+            (subspace_topology E Te V)
+            U
+            (subspace_topology B Tb U)
+            (graph V (apply_fun p))
+            HVhomeVU).
+        }
+        claim HAwSubV : Aw c= V.
+        {
+          rewrite HAweq.
+          exact (binintersect_Subq_1 V preW).
+        }
+        claim HAwOpenInV : open_in V (subspace_topology E Te V) Aw.
+        {
+          exact (open_inI
+            V
+            (subspace_topology E Te V)
+            Aw
+            HtopVsub
+            HAwInSub).
+        }
+        exact (open_in_subspace_if_ambient_open
+          E
+          Te
+          V
+          Aw
+          HtopE
+          HVopen
+          HAwSubV
+          HAwOpenInV).
+      * exact HpdW.
+    + exact HunionW.
+  - let Vw.
+    assume HVw.
+    apply (ReplE slices (fun V:set => V :/\: preW) Vw HVw).
+    let V.
+    assume HVpack.
+    claim HVslice : V :e slices.
+    {
+      exact (andEL
+        (V :e slices)
+        (Vw = V :/\: preW)
+        HVpack).
+    }
+    claim HVweq : Vw = V :/\: preW.
+    {
+      exact (andER
+        (V :e slices)
+        (Vw = V :/\: preW)
+        HVpack).
+    }
+    claim HVhomeVU :
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (apply_fun p)).
+    {
+      exact (Hhome V HVslice).
+    }
+    claim HfcontV :
+      continuous_map V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (apply_fun p)).
+    {
+      exact (homeomorphism_continuous
+        V
+        (subspace_topology E Te V)
+        U
+        (subspace_topology B Tb U)
+        (graph V (apply_fun p))
+        HVhomeVU).
+    }
+    claim HtopV : topology_on V (subspace_topology E Te V).
+    {
+      exact (continuous_map_topology_dom
+        V
+        (subspace_topology E Te V)
+        U
+        (subspace_topology B Tb U)
+        (graph V (apply_fun p))
+        HfcontV).
+    }
+    claim HVwsubV : Vw c= V.
+    {
+      rewrite HVweq.
+      exact (binintersect_Subq_1 V preW).
+    }
+    claim HfcontVwU :
+      continuous_map Vw (subspace_topology V (subspace_topology E Te V) Vw)
+        U (subspace_topology B Tb U) (graph V (apply_fun p)).
+    {
+      exact (continuous_on_subspace
+        V
+        (subspace_topology E Te V)
+        U
+        (subspace_topology B Tb U)
+        (graph V (apply_fun p))
+        Vw
+        HtopV
+        HVwsubV
+        HfcontV).
+    }
+    claim HimgW : forall x:set, x :e Vw -> apply_fun (graph V (apply_fun p)) x :e W.
+    {
+      let x.
+      assume HxVw.
+      claim HxInt : x :e V :/\: preW.
+      {
+        rewrite <- HVweq.
+        exact HxVw.
+      }
+      claim HxV : x :e V.
+      {
+        exact (binintersectE1 V preW x HxInt).
+      }
+      claim HxPreW : x :e preW.
+      {
+        exact (binintersectE2 V preW x HxInt).
+      }
+      claim HxW : apply_fun p x :e W.
+      {
+        exact (SepE2 E (fun t:set => apply_fun p t :e W) x HxPreW).
+      }
+      rewrite (apply_fun_graph V (apply_fun p) x HxV).
+      exact HxW.
+    }
+    claim HfcontVwWnested :
+      continuous_map Vw (subspace_topology V (subspace_topology E Te V) Vw)
+        W (subspace_topology U (subspace_topology B Tb U) W)
+        (graph V (apply_fun p)).
+    {
+      exact (continuous_map_range_restrict
+        Vw
+        (subspace_topology V (subspace_topology E Te V) Vw)
+        U
+        (subspace_topology B Tb U)
+        (graph V (apply_fun p))
+        W
+        HfcontVwU
+        HWsub
+        HimgW).
+    }
+    claim HdomEq :
+      subspace_topology V (subspace_topology E Te V) Vw =
+      subspace_topology E Te Vw.
+    {
+      exact (subspace_topology_transitive_weak E Te V Vw HVwsubV).
+    }
+    claim HcodEq :
+      subspace_topology U (subspace_topology B Tb U) W =
+      subspace_topology B Tb W.
+    {
+      exact (subspace_topology_transitive_weak B Tb U W HWsub).
+    }
+    claim HfcontVwW :
+      continuous_map Vw (subspace_topology E Te Vw)
+        W (subspace_topology B Tb W)
+        (graph V (apply_fun p)).
+    {
+      rewrite <- HdomEq.
+      rewrite <- HcodEq.
+      exact HfcontVwWnested.
+    }
+    claim HfOnVw : function_on (graph Vw (apply_fun p)) Vw W.
+    {
+      let x.
+      assume HxVw.
+      claim HxInt : x :e V :/\: preW.
+      {
+        rewrite <- HVweq.
+        exact HxVw.
+      }
+      claim HxPreW : x :e preW.
+      {
+        exact (binintersectE2 V preW x HxInt).
+      }
+      claim HxW : apply_fun p x :e W.
+      {
+        exact (SepE2 E (fun t:set => apply_fun p t :e W) x HxPreW).
+      }
+      rewrite (apply_fun_graph Vw (apply_fun p) x HxVw).
+      exact HxW.
+    }
+    claim HfEqOn :
+      forall x:set, x :e Vw ->
+        apply_fun (graph V (apply_fun p)) x =
+        apply_fun (graph Vw (apply_fun p)) x.
+    {
+      let x.
+      assume HxVw.
+      claim HxInt : x :e V :/\: preW.
+      {
+        rewrite <- HVweq.
+        exact HxVw.
+      }
+      claim HxV : x :e V.
+      {
+        exact (binintersectE1 V preW x HxInt).
+      }
+      rewrite (apply_fun_graph V (apply_fun p) x HxV).
+      rewrite (apply_fun_graph Vw (apply_fun p) x HxVw).
+      reflexivity.
+    }
+    claim HfcontFinal :
+      continuous_map Vw (subspace_topology E Te Vw)
+        W (subspace_topology B Tb W)
+        (graph Vw (apply_fun p)).
+    {
+      exact (continuous_map_congr_on
+        Vw
+        (subspace_topology E Te Vw)
+        W
+        (subspace_topology B Tb W)
+        (graph V (apply_fun p))
+        (graph Vw (apply_fun p))
+        HfcontVwW
+        HfOnVw
+        HfEqOn).
+    }
+    claim HinvPack :
+      exists g:set,
+        continuous_map U (subspace_topology B Tb U) V (subspace_topology E Te V) g /\
+        (forall u:set, u :e V ->
+          apply_fun g (apply_fun (graph V (apply_fun p)) u) = u) /\
+        (forall y:set, y :e U ->
+          apply_fun (graph V (apply_fun p)) (apply_fun g y) = y).
+    {
+      exact (homeomorphism_inverse_package
+        V
+        (subspace_topology E Te V)
+        U
+        (subspace_topology B Tb U)
+        (graph V (apply_fun p))
+        HVhomeVU).
+    }
+    apply HinvPack.
+    let g.
+    assume HgPack.
+    apply (and3E
+      (continuous_map U (subspace_topology B Tb U) V (subspace_topology E Te V) g)
+      (forall u:set, u :e V ->
+        apply_fun g (apply_fun (graph V (apply_fun p)) u) = u)
+      (forall y:set, y :e U ->
+        apply_fun (graph V (apply_fun p)) (apply_fun g y) = y)
+      HgPack).
+    assume HgContU HleftV HrightU.
+    claim HtopU : topology_on U (subspace_topology B Tb U).
+    {
+      exact (continuous_map_topology_dom
+        U
+        (subspace_topology B Tb U)
+        V
+        (subspace_topology E Te V)
+        g
+        HgContU).
+    }
+    claim HgContWV :
+      continuous_map W (subspace_topology U (subspace_topology B Tb U) W)
+        V (subspace_topology E Te V) g.
+    {
+      exact (continuous_on_subspace
+        U
+        (subspace_topology B Tb U)
+        V
+        (subspace_topology E Te V)
+        g
+        W
+        HtopU
+        HWsub
+        HgContU).
+    }
+    claim HgFun : function_on g U V.
+    {
+      exact (continuous_map_function_on
+        U
+        (subspace_topology B Tb U)
+        V
+        (subspace_topology E Te V)
+        g
+        HgContU).
+    }
+    claim HimgVw : forall y:set, y :e W -> apply_fun g y :e Vw.
+    {
+      let y.
+      assume HyW.
+      claim HyU : y :e U.
+      {
+        exact (HWsub y HyW).
+      }
+      claim HgyV : apply_fun g y :e V.
+      {
+        exact (HgFun y HyU).
+      }
+      claim HgyUnion : apply_fun g y :e Union slices.
+      {
+        exact (UnionI slices (apply_fun g y) V HgyV HVslice).
+      }
+      claim HgyPreU : apply_fun g y :e preimage_of E p U.
+      {
+        exact (mem_eqR
+          (apply_fun g y)
+          (Union slices)
+          (preimage_of E p U)
+          Hunion
+          HgyUnion).
+      }
+      claim HgyE : apply_fun g y :e E.
+      {
+        exact (SepE1 E (fun t:set => apply_fun p t :e U) (apply_fun g y) HgyPreU).
+      }
+      claim HrightEq :
+        apply_fun (graph V (apply_fun p)) (apply_fun g y) = y.
+      {
+        exact (HrightU y HyU).
+      }
+      claim HgraphEq :
+        apply_fun (graph V (apply_fun p)) (apply_fun g y) =
+        apply_fun p (apply_fun g y).
+      {
+        exact (apply_fun_graph V (apply_fun p) (apply_fun g y) HgyV).
+      }
+      claim HpgyW : apply_fun p (apply_fun g y) :e W.
+      {
+        rewrite <- HgraphEq.
+        rewrite HrightEq.
+        exact HyW.
+      }
+      claim HgyPreW : apply_fun g y :e preW.
+      {
+        exact (SepI E (fun t:set => apply_fun p t :e W) (apply_fun g y) HgyE HpgyW).
+      }
+      claim HgyInt : apply_fun g y :e V :/\: preW.
+      {
+        exact (binintersectI V preW (apply_fun g y) HgyV HgyPreW).
+      }
+      rewrite HVweq.
+      exact HgyInt.
+    }
+    claim HgContWVwNested :
+      continuous_map W (subspace_topology U (subspace_topology B Tb U) W)
+        Vw (subspace_topology V (subspace_topology E Te V) Vw) g.
+    {
+      exact (continuous_map_range_restrict
+        W
+        (subspace_topology U (subspace_topology B Tb U) W)
+        V
+        (subspace_topology E Te V)
+        g
+        Vw
+        HgContWV
+        HVwsubV
+        HimgVw).
+    }
+    claim HgContFinal :
+      continuous_map W (subspace_topology B Tb W)
+        Vw (subspace_topology E Te Vw) g.
+    {
+      rewrite <- HcodEq.
+      rewrite <- HdomEq.
+      exact HgContWVwNested.
+    }
+    claim HhomePack :
+      continuous_map Vw (subspace_topology E Te Vw)
+        W (subspace_topology B Tb W)
+        (graph Vw (apply_fun p)) /\
+      exists g0:set,
+        continuous_map W (subspace_topology B Tb W)
+          Vw (subspace_topology E Te Vw) g0 /\
+        (forall x:set, x :e Vw ->
+          apply_fun g0 (apply_fun (graph Vw (apply_fun p)) x) = x) /\
+        (forall y:set, y :e W ->
+          apply_fun (graph Vw (apply_fun p)) (apply_fun g0 y) = y).
+    {
+      apply andI.
+      - exact HfcontFinal.
+      - witness g.
+        apply andI.
+        + apply andI.
+          * exact HgContFinal.
+          * let x.
+            assume HxVw.
+            claim HxInt : x :e V :/\: preW.
+            {
+              rewrite <- HVweq.
+              exact HxVw.
+            }
+            claim HxV : x :e V.
+            {
+              exact (binintersectE1 V preW x HxInt).
+            }
+            claim HgraphV :
+              apply_fun (graph V (apply_fun p)) x = apply_fun p x.
+            {
+              exact (apply_fun_graph V (apply_fun p) x HxV).
+            }
+            claim HgraphVw :
+              apply_fun (graph Vw (apply_fun p)) x = apply_fun p x.
+            {
+              exact (apply_fun_graph Vw (apply_fun p) x HxVw).
+            }
+            claim HleftEq :
+              apply_fun g (apply_fun (graph V (apply_fun p)) x) = x.
+            {
+              exact (HleftV x HxV).
+            }
+            rewrite HgraphVw.
+            rewrite <- HgraphV.
+            exact HleftEq.
+        + let y.
+          assume HyW.
+          claim HyU : y :e U.
+          {
+            exact (HWsub y HyW).
+          }
+          claim HgyVw : apply_fun g y :e Vw.
+          {
+            exact (HimgVw y HyW).
+          }
+          claim HgyInt : apply_fun g y :e V :/\: preW.
+          {
+            rewrite <- HVweq.
+            exact HgyVw.
+          }
+          claim HgyV : apply_fun g y :e V.
+          {
+            exact (binintersectE1 V preW (apply_fun g y) HgyInt).
+          }
+          claim HrightEq :
+            apply_fun (graph V (apply_fun p)) (apply_fun g y) = y.
+          {
+            exact (HrightU y HyU).
+          }
+          claim HgraphV :
+            apply_fun (graph V (apply_fun p)) (apply_fun g y) =
+            apply_fun p (apply_fun g y).
+          {
+            exact (apply_fun_graph V (apply_fun p) (apply_fun g y) HgyV).
+          }
+          claim HgraphVw :
+            apply_fun (graph Vw (apply_fun p)) (apply_fun g y) =
+            apply_fun p (apply_fun g y).
+          {
+            exact (apply_fun_graph Vw (apply_fun p) (apply_fun g y) HgyVw).
+          }
+          rewrite HgraphVw.
+          rewrite <- HgraphV.
+          exact HrightEq.
+    }
+    exact HhomePack.
+
+Qed.
+
+
 (** from S53 text (line 545 in algtop.tex) **)
 (** LATEX VERSION: If p: E -> B is a covering map, then for each b in B **)
 (** the subspace p^{-1}(b) of E has the discrete topology. **)
@@ -48639,8 +49529,8 @@ Qed.
 (** LATEX VERSION: Let q: X -> Y and r: Y -> Z be covering maps; **)
 (** if r^{-1}(z) is finite for each z in Z, then r o q is a covering map. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 121 **)
-(** Lock Dave 1771448181 **)
+(** Collected Dave 121 **)
+(** Proven Dave **)
 Theorem ex53_4_composition_covering : forall X Tx Y Ty Z Tz q r:set,
   covering_map X Tx Y Ty q -> covering_map Y Ty Z Tz r ->
   (forall z:set, z :e Z -> finite {y :e Y | apply_fun r y = z}) ->
@@ -49163,7 +50053,7 @@ claim Hlocal_comp :
     (** Restrict r-covering to U' **)
     claim HevenRU' : evenly_covered Y Ty Z Tz r U'.
     {
-      exact (evenly_covered_open_subset Y Ty Z Tz r Ur U' HevenUr HU'Open HU'SubUr).
+      exact (evenly_covered_open_subset_top Y Ty Z Tz r Ur U' HtopY HevenUr HU'Open HU'SubUr).
     }
     (** Set up Vy' y = Vy_sel y :/\: preY **)
     set Vy' := fun y:set => Vy_sel y :/\: preY.
@@ -49244,7 +50134,7 @@ claim Hlocal_comp :
     {
       let y.
       assume HyFz.
-      exact (evenly_covered_open_subset X Tx Y Ty q (Uqy_sel y) (Vy' y)
+      exact (evenly_covered_open_subset_top X Tx Y Ty q (Uqy_sel y) (Vy' y) HtopX
         (andER (Uqy_sel y :e Ty /\ y :e Uqy_sel y) (evenly_covered X Tx Y Ty q (Uqy_sel y))
           (HUqyOk y HyFz))
         (HVy'Open y HyFz)
@@ -49255,7 +50145,238 @@ claim Hlocal_comp :
       homeomorphism (Vy' y) (subspace_topology Y Ty (Vy' y)) U' (subspace_topology Z Tz U')
         (graph (Vy' y) (apply_fun r)).
     {
-      admit.
+      let y.
+      assume HyFz.
+      claim HVySlice : Vy_sel y :e slicesr.
+      { exact (andEL (Vy_sel y :e slicesr) (y :e Vy_sel y) (HVyOk y HyFz)). }
+      claim HVyOpen : Vy_sel y :e Ty.
+      { exact (Hslicesr_sub (Vy_sel y) HVySlice). }
+      claim HhomeVy :
+        homeomorphism (Vy_sel y) (subspace_topology Y Ty (Vy_sel y)) Ur
+          (subspace_topology Z Tz Ur) (graph (Vy_sel y) (apply_fun r)).
+      { exact (Hslicesr_home (Vy_sel y) HVySlice). }
+      claim HfcontVy :
+        continuous_map (Vy_sel y) (subspace_topology Y Ty (Vy_sel y)) Ur
+          (subspace_topology Z Tz Ur) (graph (Vy_sel y) (apply_fun r)).
+      { exact (homeomorphism_continuous (Vy_sel y) (subspace_topology Y Ty (Vy_sel y))
+          Ur (subspace_topology Z Tz Ur) (graph (Vy_sel y) (apply_fun r)) HhomeVy). }
+      claim HtopVy : topology_on (Vy_sel y) (subspace_topology Y Ty (Vy_sel y)).
+      { exact (continuous_map_topology_dom (Vy_sel y) (subspace_topology Y Ty (Vy_sel y))
+          Ur (subspace_topology Z Tz Ur) (graph (Vy_sel y) (apply_fun r)) HfcontVy). }
+      claim HVy'subVy : Vy' y c= Vy_sel y.
+      { exact (binintersect_Subq_1 (Vy_sel y) preY). }
+      claim HVySub : Vy_sel y c= Y.
+      { exact (PowerE Y (Vy_sel y) (topology_subset_axiom Y Ty HtopY (Vy_sel y) HVyOpen)). }
+      claim HfcontVy'U :
+        continuous_map (Vy' y)
+          (subspace_topology (Vy_sel y) (subspace_topology Y Ty (Vy_sel y)) (Vy' y))
+          Ur (subspace_topology Z Tz Ur) (graph (Vy_sel y) (apply_fun r)).
+      { exact (continuous_on_subspace (Vy_sel y) (subspace_topology Y Ty (Vy_sel y))
+          Ur (subspace_topology Z Tz Ur) (graph (Vy_sel y) (apply_fun r))
+          (Vy' y) HtopVy HVy'subVy HfcontVy). }
+      claim HimgU' : forall x:set, x :e Vy' y ->
+        apply_fun (graph (Vy_sel y) (apply_fun r)) x :e U'.
+      {
+        let x. assume HxVy'.
+        claim HxVy : x :e Vy_sel y.
+        { exact (binintersectE1 (Vy_sel y) preY x HxVy'). }
+        claim HxPreY : x :e preY.
+        { exact (binintersectE2 (Vy_sel y) preY x HxVy'). }
+        claim HrxU' : apply_fun r x :e U'.
+        { exact (SepE2 Y (fun y0:set => apply_fun r y0 :e U') x HxPreY). }
+        claim HgEq : apply_fun (graph (Vy_sel y) (apply_fun r)) x = apply_fun r x.
+        { exact (apply_fun_graph (Vy_sel y) (apply_fun r) x HxVy). }
+        rewrite HgEq. exact HrxU'.
+      }
+      claim HfcontVy'U'nested :
+        continuous_map (Vy' y)
+          (subspace_topology (Vy_sel y) (subspace_topology Y Ty (Vy_sel y)) (Vy' y))
+          U' (subspace_topology Ur (subspace_topology Z Tz Ur) U')
+          (graph (Vy_sel y) (apply_fun r)).
+      { exact (continuous_map_range_restrict (Vy' y)
+          (subspace_topology (Vy_sel y) (subspace_topology Y Ty (Vy_sel y)) (Vy' y))
+          Ur (subspace_topology Z Tz Ur) (graph (Vy_sel y) (apply_fun r))
+          U' HfcontVy'U HU'SubUr HimgU'). }
+      claim HdomEq :
+        subspace_topology (Vy_sel y) (subspace_topology Y Ty (Vy_sel y)) (Vy' y) =
+        subspace_topology Y Ty (Vy' y).
+      { exact (subspace_topology_transitive_weak Y Ty (Vy_sel y) (Vy' y) HVy'subVy). }
+      claim HcodEq :
+        subspace_topology Ur (subspace_topology Z Tz Ur) U' =
+        subspace_topology Z Tz U'.
+      { exact (subspace_topology_transitive_weak Z Tz Ur U' HU'SubUr). }
+      claim HfcontVy'U'final :
+        continuous_map (Vy' y) (subspace_topology Y Ty (Vy' y))
+          U' (subspace_topology Z Tz U') (graph (Vy_sel y) (apply_fun r)).
+      {
+        rewrite <- HdomEq. rewrite <- HcodEq.
+        exact HfcontVy'U'nested.
+      }
+      claim HfOnVy' : function_on (graph (Vy' y) (apply_fun r)) (Vy' y) U'.
+      {
+        let x. assume HxVy'.
+        claim HxPreY : x :e preY.
+        { exact (binintersectE2 (Vy_sel y) preY x HxVy'). }
+        claim HrxU' : apply_fun r x :e U'.
+        { exact (SepE2 Y (fun y0:set => apply_fun r y0 :e U') x HxPreY). }
+        exact (eq_subst_mem (apply_fun (graph (Vy' y) (apply_fun r)) x) (apply_fun r x) U'
+          (apply_fun_graph (Vy' y) (apply_fun r) x HxVy') HrxU').
+      }
+      claim HfEqOn :
+        forall x:set, x :e Vy' y ->
+          apply_fun (graph (Vy_sel y) (apply_fun r)) x =
+          apply_fun (graph (Vy' y) (apply_fun r)) x.
+      {
+        let x. assume HxVy'.
+        claim HxVy : x :e Vy_sel y.
+        { exact (binintersectE1 (Vy_sel y) preY x HxVy'). }
+        claim Heq1 : apply_fun (graph (Vy_sel y) (apply_fun r)) x = apply_fun r x.
+        { exact (apply_fun_graph (Vy_sel y) (apply_fun r) x HxVy). }
+        claim Heq2 : apply_fun (graph (Vy' y) (apply_fun r)) x = apply_fun r x.
+        { exact (apply_fun_graph (Vy' y) (apply_fun r) x HxVy'). }
+        claim Heq2sym : apply_fun r x = apply_fun (graph (Vy' y) (apply_fun r)) x.
+        { rewrite Heq2. reflexivity. }
+        exact (eq_i_tra (apply_fun (graph (Vy_sel y) (apply_fun r)) x)
+          (apply_fun r x) (apply_fun (graph (Vy' y) (apply_fun r)) x) Heq1 Heq2sym).
+      }
+      claim HfcontFinal :
+        continuous_map (Vy' y) (subspace_topology Y Ty (Vy' y))
+          U' (subspace_topology Z Tz U') (graph (Vy' y) (apply_fun r)).
+      { exact (continuous_map_congr_on (Vy' y) (subspace_topology Y Ty (Vy' y))
+          U' (subspace_topology Z Tz U') (graph (Vy_sel y) (apply_fun r))
+          (graph (Vy' y) (apply_fun r)) HfcontVy'U'final HfOnVy' HfEqOn). }
+      claim HinvPack :
+        exists g:set,
+          continuous_map Ur (subspace_topology Z Tz Ur)
+            (Vy_sel y) (subspace_topology Y Ty (Vy_sel y)) g /\
+          (forall u:set, u :e (Vy_sel y) ->
+            apply_fun g (apply_fun (graph (Vy_sel y) (apply_fun r)) u) = u) /\
+          (forall v:set, v :e Ur ->
+            apply_fun (graph (Vy_sel y) (apply_fun r)) (apply_fun g v) = v).
+      { exact (homeomorphism_inverse_package (Vy_sel y) (subspace_topology Y Ty (Vy_sel y))
+          Ur (subspace_topology Z Tz Ur) (graph (Vy_sel y) (apply_fun r)) HhomeVy). }
+      apply HinvPack.
+      let g.
+      assume HgPack.
+      apply (and3E
+        (continuous_map Ur (subspace_topology Z Tz Ur)
+          (Vy_sel y) (subspace_topology Y Ty (Vy_sel y)) g)
+        (forall u:set, u :e (Vy_sel y) ->
+          apply_fun g (apply_fun (graph (Vy_sel y) (apply_fun r)) u) = u)
+        (forall v:set, v :e Ur ->
+          apply_fun (graph (Vy_sel y) (apply_fun r)) (apply_fun g v) = v)
+        HgPack).
+      assume HgContUr HleftVy HrightUr.
+      claim HtopUr : topology_on Ur (subspace_topology Z Tz Ur).
+      { exact (continuous_map_topology_dom Ur (subspace_topology Z Tz Ur)
+          (Vy_sel y) (subspace_topology Y Ty (Vy_sel y)) g HgContUr). }
+      claim HgContU'Vy :
+        continuous_map U' (subspace_topology Ur (subspace_topology Z Tz Ur) U')
+          (Vy_sel y) (subspace_topology Y Ty (Vy_sel y)) g.
+      { exact (continuous_on_subspace Ur (subspace_topology Z Tz Ur)
+          (Vy_sel y) (subspace_topology Y Ty (Vy_sel y)) g
+          U' HtopUr HU'SubUr HgContUr). }
+      claim HgFun : function_on g Ur (Vy_sel y).
+      { exact (continuous_map_function_on Ur (subspace_topology Z Tz Ur)
+          (Vy_sel y) (subspace_topology Y Ty (Vy_sel y)) g HgContUr). }
+      claim HimgVy' : forall v:set, v :e U' -> apply_fun g v :e Vy' y.
+      {
+        let v. assume HvU'.
+        claim HvUr : v :e Ur. { exact (HU'SubUr v HvU'). }
+        claim HgvVy : apply_fun g v :e Vy_sel y. { exact (HgFun v HvUr). }
+        claim HgvY : apply_fun g v :e Y. { exact (HVySub (apply_fun g v) HgvVy). }
+        claim HrightEq :
+          apply_fun (graph (Vy_sel y) (apply_fun r)) (apply_fun g v) = v.
+        { exact (HrightUr v HvUr). }
+        claim HgraphEq :
+          apply_fun (graph (Vy_sel y) (apply_fun r)) (apply_fun g v) =
+          apply_fun r (apply_fun g v).
+        { exact (apply_fun_graph (Vy_sel y) (apply_fun r) (apply_fun g v) HgvVy). }
+        claim HrgvU' : apply_fun r (apply_fun g v) :e U'.
+        {
+          claim Hrv_eq : apply_fun r (apply_fun g v) = v.
+          { rewrite <- HgraphEq. exact HrightEq. }
+          rewrite Hrv_eq. exact HvU'.
+        }
+        claim HgvPreY : apply_fun g v :e preY.
+        { exact (SepI Y (fun y0:set => apply_fun r y0 :e U') (apply_fun g v) HgvY HrgvU'). }
+        exact (binintersectI (Vy_sel y) preY (apply_fun g v) HgvVy HgvPreY).
+      }
+      claim HgContU'Vy'nested :
+        continuous_map U' (subspace_topology Ur (subspace_topology Z Tz Ur) U')
+          (Vy' y) (subspace_topology (Vy_sel y) (subspace_topology Y Ty (Vy_sel y)) (Vy' y)) g.
+      { exact (continuous_map_range_restrict U'
+          (subspace_topology Ur (subspace_topology Z Tz Ur) U')
+          (Vy_sel y) (subspace_topology Y Ty (Vy_sel y)) g
+          (Vy' y) HgContU'Vy HVy'subVy HimgVy'). }
+      claim HgContFinal :
+        continuous_map U' (subspace_topology Z Tz U')
+          (Vy' y) (subspace_topology Y Ty (Vy' y)) g.
+      {
+        rewrite <- HcodEq. rewrite <- HdomEq.
+        exact HgContU'Vy'nested.
+      }
+      prove
+        continuous_map (Vy' y) (subspace_topology Y Ty (Vy' y))
+          U' (subspace_topology Z Tz U') (graph (Vy' y) (apply_fun r)) /\
+        exists g0:set,
+          continuous_map U' (subspace_topology Z Tz U')
+            (Vy' y) (subspace_topology Y Ty (Vy' y)) g0 /\
+          (forall x:set, x :e (Vy' y) ->
+            apply_fun g0 (apply_fun (graph (Vy' y) (apply_fun r)) x) = x) /\
+          (forall v:set, v :e U' ->
+            apply_fun (graph (Vy' y) (apply_fun r)) (apply_fun g0 v) = v).
+      apply andI.
+      - exact HfcontFinal.
+      - witness g.
+        apply andI.
+        + apply andI.
+          * exact HgContFinal.
+          * let x. assume HxVy'.
+            claim HxVy : x :e Vy_sel y.
+            { exact (binintersectE1 (Vy_sel y) preY x HxVy'). }
+            claim HgVy'eq : apply_fun (graph (Vy' y) (apply_fun r)) x =
+              apply_fun (graph (Vy_sel y) (apply_fun r)) x.
+            {
+              claim Hq1 : apply_fun (graph (Vy' y) (apply_fun r)) x = apply_fun r x.
+              { exact (apply_fun_graph (Vy' y) (apply_fun r) x HxVy'). }
+              claim Hq2 : apply_fun (graph (Vy_sel y) (apply_fun r)) x = apply_fun r x.
+              { exact (apply_fun_graph (Vy_sel y) (apply_fun r) x HxVy). }
+              claim Hq2sym : apply_fun r x = apply_fun (graph (Vy_sel y) (apply_fun r)) x.
+              { rewrite Hq2. reflexivity. }
+              exact (eq_i_tra (apply_fun (graph (Vy' y) (apply_fun r)) x)
+                (apply_fun r x) (apply_fun (graph (Vy_sel y) (apply_fun r)) x) Hq1 Hq2sym).
+            }
+            claim HleftEq :
+              apply_fun g (apply_fun (graph (Vy_sel y) (apply_fun r)) x) = x.
+            { exact (HleftVy x HxVy). }
+            rewrite HgVy'eq. exact HleftEq.
+        + let v. assume HvU'.
+          claim HvUr : v :e Ur. { exact (HU'SubUr v HvU'). }
+          claim HgvVy' : apply_fun g v :e Vy' y. { exact (HimgVy' v HvU'). }
+          claim HgvVy : apply_fun g v :e Vy_sel y.
+          { exact (binintersectE1 (Vy_sel y) preY (apply_fun g v) HgvVy'). }
+          claim HrightEq :
+            apply_fun (graph (Vy_sel y) (apply_fun r)) (apply_fun g v) = v.
+          { exact (HrightUr v HvUr). }
+          claim HgVy'eq2 :
+            apply_fun (graph (Vy' y) (apply_fun r)) (apply_fun g v) =
+            apply_fun (graph (Vy_sel y) (apply_fun r)) (apply_fun g v).
+          {
+            claim Hr1 : apply_fun (graph (Vy' y) (apply_fun r)) (apply_fun g v) =
+              apply_fun r (apply_fun g v).
+            { exact (apply_fun_graph (Vy' y) (apply_fun r) (apply_fun g v) HgvVy'). }
+            claim Hr2 : apply_fun (graph (Vy_sel y) (apply_fun r)) (apply_fun g v) =
+              apply_fun r (apply_fun g v).
+            { exact (apply_fun_graph (Vy_sel y) (apply_fun r) (apply_fun g v) HgvVy). }
+            claim Hr2sym : apply_fun r (apply_fun g v) =
+              apply_fun (graph (Vy_sel y) (apply_fun r)) (apply_fun g v).
+            { rewrite Hr2. reflexivity. }
+            exact (eq_i_tra (apply_fun (graph (Vy' y) (apply_fun r)) (apply_fun g v))
+              (apply_fun r (apply_fun g v))
+              (apply_fun (graph (Vy_sel y) (apply_fun r)) (apply_fun g v)) Hr1 Hr2sym).
+          }
+          rewrite HgVy'eq2. exact HrightEq.
     }
     (** Slices of q over each Vy' y **)
     set slicesq_y := fun y:set =>
@@ -49343,19 +50464,545 @@ claim Hlocal_comp :
     (** pairwise disjoint **)
     claim HtotPD : pairwise_disjoint total_slices.
     {
-      admit.
+      claim Hslicesr_pd : pairwise_disjoint slicesr.
+      {
+        exact (andER (slicesr c= Ty) (pairwise_disjoint slicesr)
+          (andEL (slicesr c= Ty /\ pairwise_disjoint slicesr)
+            (Union slicesr = preimage_of Y r Ur) Hslicesr_abc)).
+      }
+      let S1 S2.
+      assume HS1 HS2 Hneq.
+      apply (UnionE {slicesq_y y | y :e Fz} S1 HS1).
+      let Sy1.
+      assume HS1Sy1pack.
+      claim HS1inSy1 : S1 :e Sy1.
+      { exact (andEL (S1 :e Sy1) (Sy1 :e {slicesq_y y | y :e Fz}) HS1Sy1pack). }
+      claim HSy1fam : Sy1 :e {slicesq_y y | y :e Fz}.
+      { exact (andER (S1 :e Sy1) (Sy1 :e {slicesq_y y | y :e Fz}) HS1Sy1pack). }
+      apply (ReplE_impred Fz slicesq_y Sy1 HSy1fam).
+      let y1.
+      assume Hy1Fz HSy1eq.
+      claim HS1inY1 : S1 :e slicesq_y y1.
+      { exact (mem_eqR S1 Sy1 (slicesq_y y1) HSy1eq HS1inSy1). }
+      apply (UnionE {slicesq_y y | y :e Fz} S2 HS2).
+      let Sy2.
+      assume HS2Sy2pack.
+      claim HS2inSy2 : S2 :e Sy2.
+      { exact (andEL (S2 :e Sy2) (Sy2 :e {slicesq_y y | y :e Fz}) HS2Sy2pack). }
+      claim HSy2fam : Sy2 :e {slicesq_y y | y :e Fz}.
+      { exact (andER (S2 :e Sy2) (Sy2 :e {slicesq_y y | y :e Fz}) HS2Sy2pack). }
+      apply (ReplE_impred Fz slicesq_y Sy2 HSy2fam).
+      let y2.
+      assume Hy2Fz HSy2eq.
+      claim HS2inY2 : S2 :e slicesq_y y2.
+      { exact (mem_eqR S2 Sy2 (slicesq_y y2) HSy2eq HS2inSy2). }
+      apply xm (Vy_sel y1 = Vy_sel y2).
+      - assume HVseleq.
+        (** Key: y1 = y2 since r is injective on Vy_sel y1 and both map to z **)
+        claim Hy1VyOk : Vy_sel y1 :e slicesr /\ y1 :e Vy_sel y1.
+        { exact (HVyOk y1 Hy1Fz). }
+        claim Hy2VyOk : Vy_sel y2 :e slicesr /\ y2 :e Vy_sel y2.
+        { exact (HVyOk y2 Hy2Fz). }
+        claim Hy1Vy1 : y1 :e Vy_sel y1.
+        { exact (andER (Vy_sel y1 :e slicesr) (y1 :e Vy_sel y1) Hy1VyOk). }
+        claim Hy2Vy1 : y2 :e Vy_sel y1.
+        { exact (mem_eqL y2 (Vy_sel y1) (Vy_sel y2) HVseleq
+            (andER (Vy_sel y2 :e slicesr) (y2 :e Vy_sel y2) Hy2VyOk)). }
+        claim Hry1z : apply_fun r y1 = z.
+        { exact (SepE2 Y (fun y0:set => apply_fun r y0 = z) y1 Hy1Fz). }
+        claim Hry2z : apply_fun r y2 = z.
+        { exact (SepE2 Y (fun y0:set => apply_fun r y0 = z) y2 Hy2Fz). }
+        claim HhomeVy1 :
+          homeomorphism (Vy_sel y1) (subspace_topology Y Ty (Vy_sel y1)) Ur
+            (subspace_topology Z Tz Ur) (graph (Vy_sel y1) (apply_fun r)).
+        { exact (Hslicesr_home (Vy_sel y1)
+            (andEL (Vy_sel y1 :e slicesr) (y1 :e Vy_sel y1) Hy1VyOk)). }
+        claim Hry1eqry2 :
+          apply_fun (graph (Vy_sel y1) (apply_fun r)) y1 =
+          apply_fun (graph (Vy_sel y1) (apply_fun r)) y2.
+        {
+          claim H1 : apply_fun (graph (Vy_sel y1) (apply_fun r)) y1 = apply_fun r y1.
+          { exact (apply_fun_graph (Vy_sel y1) (apply_fun r) y1 Hy1Vy1). }
+          claim H2 : apply_fun (graph (Vy_sel y1) (apply_fun r)) y2 = apply_fun r y2.
+          { exact (apply_fun_graph (Vy_sel y1) (apply_fun r) y2 Hy2Vy1). }
+          claim Hz_ry2 : z = apply_fun r y2.
+          { rewrite Hry2z. reflexivity. }
+          claim H2sym : apply_fun r y2 = apply_fun (graph (Vy_sel y1) (apply_fun r)) y2.
+          { rewrite H2. reflexivity. }
+          exact (eq_i_tra
+            (apply_fun (graph (Vy_sel y1) (apply_fun r)) y1)
+            z
+            (apply_fun (graph (Vy_sel y1) (apply_fun r)) y2)
+            (eq_i_tra (apply_fun (graph (Vy_sel y1) (apply_fun r)) y1)
+              (apply_fun r y1) z H1 Hry1z)
+            (eq_i_tra z (apply_fun r y2)
+              (apply_fun (graph (Vy_sel y1) (apply_fun r)) y2) Hz_ry2 H2sym)).
+        }
+        claim Hy1eqy2 : y1 = y2.
+        { exact (homeomorphism_injective (Vy_sel y1) (subspace_topology Y Ty (Vy_sel y1))
+            Ur (subspace_topology Z Tz Ur) (graph (Vy_sel y1) (apply_fun r))
+            HhomeVy1 y1 y2 Hy1Vy1 Hy2Vy1 Hry1eqry2). }
+        claim HslicessEq : slicesq_y y1 = slicesq_y y2.
+        { rewrite Hy1eqy2. reflexivity. }
+        claim HpdY1 : pairwise_disjoint (slicesq_y y1).
+        {
+          apply (and4E
+            (slicesq_y y1 c= Tx)
+            (pairwise_disjoint (slicesq_y y1))
+            (Union (slicesq_y y1) = preimage_of X q (Vy' y1))
+            (forall V:set, V :e slicesq_y y1 ->
+              homeomorphism V (subspace_topology X Tx V) (Vy' y1) (subspace_topology Y Ty (Vy' y1))
+                (graph V (fun x:set => apply_fun q x)))
+            (HslicesqySat y1 Hy1Fz)).
+          assume _ HpdY1 _ _.
+          exact HpdY1.
+        }
+        claim HS2inY1 : S2 :e slicesq_y y1.
+        { exact (mem_eqL S2 (slicesq_y y1) (slicesq_y y2) HslicessEq HS2inY2). }
+        exact (HpdY1 S1 S2 HS1inY1 HS2inY1 Hneq).
+      - assume HVselneq.
+        claim HVy1sel : Vy_sel y1 :e slicesr.
+        { exact (andEL (Vy_sel y1 :e slicesr) (y1 :e Vy_sel y1) (HVyOk y1 Hy1Fz)). }
+        claim HVy2sel : Vy_sel y2 :e slicesr.
+        { exact (andEL (Vy_sel y2 :e slicesr) (y2 :e Vy_sel y2) (HVyOk y2 Hy2Fz)). }
+        claim HVselDisj : Vy_sel y1 :/\: Vy_sel y2 = Empty.
+        { exact (Hslicesr_pd (Vy_sel y1) (Vy_sel y2) HVy1sel HVy2sel HVselneq). }
+        claim HVy'Disj : Vy' y1 :/\: Vy' y2 = Empty.
+        {
+          apply set_ext.
+          - let x. assume Hx.
+            claim HxVy'1 : x :e Vy' y1. { exact (binintersectE1 (Vy' y1) (Vy' y2) x Hx). }
+            claim HxVy'2 : x :e Vy' y2. { exact (binintersectE2 (Vy' y1) (Vy' y2) x Hx). }
+            claim HxVy1 : x :e Vy_sel y1.
+            { exact (binintersectE1 (Vy_sel y1) preY x HxVy'1). }
+            claim HxVy2 : x :e Vy_sel y2.
+            { exact (binintersectE1 (Vy_sel y2) preY x HxVy'2). }
+            claim HxInt : x :e Vy_sel y1 :/\: Vy_sel y2.
+            { exact (binintersectI (Vy_sel y1) (Vy_sel y2) x HxVy1 HxVy2). }
+            exact (mem_eqR x (Vy_sel y1 :/\: Vy_sel y2) Empty HVselDisj HxInt).
+          - let x. assume HxE.
+            exact (EmptyE x HxE (x :e Vy' y1 :/\: Vy' y2)).
+        }
+        claim HS1TxS1 : S1 :e Tx.
+        {
+          apply (and4E
+            (slicesq_y y1 c= Tx)
+            (pairwise_disjoint (slicesq_y y1))
+            (Union (slicesq_y y1) = preimage_of X q (Vy' y1))
+            (forall V:set, V :e slicesq_y y1 ->
+              homeomorphism V (subspace_topology X Tx V) (Vy' y1) (subspace_topology Y Ty (Vy' y1))
+                (graph V (fun x:set => apply_fun q x)))
+            (HslicesqySat y1 Hy1Fz)).
+          assume HsubTx _ _ _.
+          exact (HsubTx S1 HS1inY1).
+        }
+        claim HS1SubX : S1 c= X.
+        { exact (PowerE X S1 (topology_subset_axiom X Tx HtopX S1 HS1TxS1)). }
+        claim HhomeS1 :
+          homeomorphism S1 (subspace_topology X Tx S1) (Vy' y1) (subspace_topology Y Ty (Vy' y1))
+            (graph S1 (fun x:set => apply_fun q x)).
+        {
+          apply (and4E
+            (slicesq_y y1 c= Tx)
+            (pairwise_disjoint (slicesq_y y1))
+            (Union (slicesq_y y1) = preimage_of X q (Vy' y1))
+            (forall V:set, V :e slicesq_y y1 ->
+              homeomorphism V (subspace_topology X Tx V) (Vy' y1) (subspace_topology Y Ty (Vy' y1))
+                (graph V (fun x:set => apply_fun q x)))
+            (HslicesqySat y1 Hy1Fz)).
+          assume _ _ _ HhomeAll.
+          exact (HhomeAll S1 HS1inY1).
+        }
+        claim HfunS1 : function_on (graph S1 (fun x:set => apply_fun q x)) S1 (Vy' y1).
+        {
+          exact (continuous_map_function_on S1 (subspace_topology X Tx S1) (Vy' y1)
+            (subspace_topology Y Ty (Vy' y1)) (graph S1 (fun x:set => apply_fun q x))
+            (homeomorphism_continuous S1 (subspace_topology X Tx S1) (Vy' y1)
+              (subspace_topology Y Ty (Vy' y1)) (graph S1 (fun x:set => apply_fun q x))
+              HhomeS1)).
+        }
+        claim HS1sub : S1 c= preimage_of X q (Vy' y1).
+        {
+          let x. assume HxS1.
+          claim HqxVy'1 : apply_fun q x :e Vy' y1.
+          {
+            rewrite <- (apply_fun_graph S1 (fun x:set => apply_fun q x) x HxS1).
+            exact (HfunS1 x HxS1).
+          }
+          exact (SepI X (fun t:set => apply_fun q t :e Vy' y1) x (HS1SubX x HxS1) HqxVy'1).
+        }
+        claim HS2TxS2 : S2 :e Tx.
+        {
+          apply (and4E
+            (slicesq_y y2 c= Tx)
+            (pairwise_disjoint (slicesq_y y2))
+            (Union (slicesq_y y2) = preimage_of X q (Vy' y2))
+            (forall V:set, V :e slicesq_y y2 ->
+              homeomorphism V (subspace_topology X Tx V) (Vy' y2) (subspace_topology Y Ty (Vy' y2))
+                (graph V (fun x:set => apply_fun q x)))
+            (HslicesqySat y2 Hy2Fz)).
+          assume HsubTx _ _ _.
+          exact (HsubTx S2 HS2inY2).
+        }
+        claim HS2SubX : S2 c= X.
+        { exact (PowerE X S2 (topology_subset_axiom X Tx HtopX S2 HS2TxS2)). }
+        claim HhomeS2 :
+          homeomorphism S2 (subspace_topology X Tx S2) (Vy' y2) (subspace_topology Y Ty (Vy' y2))
+            (graph S2 (fun x:set => apply_fun q x)).
+        {
+          apply (and4E
+            (slicesq_y y2 c= Tx)
+            (pairwise_disjoint (slicesq_y y2))
+            (Union (slicesq_y y2) = preimage_of X q (Vy' y2))
+            (forall V:set, V :e slicesq_y y2 ->
+              homeomorphism V (subspace_topology X Tx V) (Vy' y2) (subspace_topology Y Ty (Vy' y2))
+                (graph V (fun x:set => apply_fun q x)))
+            (HslicesqySat y2 Hy2Fz)).
+          assume _ _ _ HhomeAll.
+          exact (HhomeAll S2 HS2inY2).
+        }
+        claim HfunS2 : function_on (graph S2 (fun x:set => apply_fun q x)) S2 (Vy' y2).
+        {
+          exact (continuous_map_function_on S2 (subspace_topology X Tx S2) (Vy' y2)
+            (subspace_topology Y Ty (Vy' y2)) (graph S2 (fun x:set => apply_fun q x))
+            (homeomorphism_continuous S2 (subspace_topology X Tx S2) (Vy' y2)
+              (subspace_topology Y Ty (Vy' y2)) (graph S2 (fun x:set => apply_fun q x))
+              HhomeS2)).
+        }
+        claim HS2sub : S2 c= preimage_of X q (Vy' y2).
+        {
+          let x. assume HxS2.
+          claim HqxVy'2 : apply_fun q x :e Vy' y2.
+          {
+            rewrite <- (apply_fun_graph S2 (fun x:set => apply_fun q x) x HxS2).
+            exact (HfunS2 x HxS2).
+          }
+          exact (SepI X (fun t:set => apply_fun q t :e Vy' y2) x (HS2SubX x HxS2) HqxVy'2).
+        }
+        apply set_ext.
+        - let x. assume Hx.
+          claim HxS1 : x :e S1. { exact (binintersectE1 S1 S2 x Hx). }
+          claim HxS2b : x :e S2. { exact (binintersectE2 S1 S2 x Hx). }
+          claim HxPreY1 : x :e preimage_of X q (Vy' y1). { exact (HS1sub x HxS1). }
+          claim HxPreY2 : x :e preimage_of X q (Vy' y2). { exact (HS2sub x HxS2b). }
+          claim HqxVy'1 : apply_fun q x :e Vy' y1.
+          { exact (SepE2 X (fun t:set => apply_fun q t :e Vy' y1) x HxPreY1). }
+          claim HqxVy'2 : apply_fun q x :e Vy' y2.
+          { exact (SepE2 X (fun t:set => apply_fun q t :e Vy' y2) x HxPreY2). }
+          claim HqxInt : apply_fun q x :e Vy' y1 :/\: Vy' y2.
+          { exact (binintersectI (Vy' y1) (Vy' y2) (apply_fun q x) HqxVy'1 HqxVy'2). }
+          exact (EmptyE (apply_fun q x)
+            (mem_eqR (apply_fun q x) (Vy' y1 :/\: Vy' y2) Empty HVy'Disj HqxInt)
+            (x :e Empty)).
+        - let x. assume HxE.
+          exact (EmptyE x HxE (x :e S1 :/\: S2)).
     }
     (** Union total_slices = preimage_of X (compose_fun X q r) U' **)
     claim HtotUnion : Union total_slices = preimage_of X (compose_fun X q r) U'.
     {
-      admit.
+      apply set_ext.
+      - (** Forward: Union total_slices c= preimage_of X (compose_fun X q r) U' **)
+        let x.
+        assume HxUnionTot.
+        apply (UnionE total_slices x HxUnionTot).
+        let S.
+        assume HxSpack.
+        claim HxS : x :e S. { exact (andEL (x :e S) (S :e total_slices) HxSpack). }
+        claim HStot : S :e total_slices. { exact (andER (x :e S) (S :e total_slices) HxSpack). }
+        apply (UnionE {slicesq_y y | y :e Fz} S HStot).
+        let Sy.
+        assume HSypack2.
+        claim HSinSy : S :e Sy. { exact (andEL (S :e Sy) (Sy :e {slicesq_y y | y :e Fz}) HSypack2). }
+        claim HSyFam2 : Sy :e {slicesq_y y | y :e Fz}. { exact (andER (S :e Sy) (Sy :e {slicesq_y y | y :e Fz}) HSypack2). }
+        apply (ReplE_impred Fz slicesq_y Sy HSyFam2).
+        let y.
+        assume HyFzF HSyeqF.
+        claim HSinY : S :e slicesq_y y.
+        { exact (mem_eqR S Sy (slicesq_y y) HSyeqF HSinSy). }
+        claim HunionEq : Union (slicesq_y y) = preimage_of X q (Vy' y).
+        {
+          apply (and4E
+            (slicesq_y y c= Tx)
+            (pairwise_disjoint (slicesq_y y))
+            (Union (slicesq_y y) = preimage_of X q (Vy' y))
+            (forall V:set, V :e slicesq_y y ->
+              homeomorphism V (subspace_topology X Tx V) (Vy' y) (subspace_topology Y Ty (Vy' y))
+                (graph V (fun x:set => apply_fun q x)))
+            (HslicesqySat y HyFzF)).
+          assume _ _ HunEq _.
+          exact HunEq.
+        }
+        claim HxUnionY : x :e Union (slicesq_y y).
+        { exact (UnionI (slicesq_y y) x S HxS HSinY). }
+        claim HxPreVy' : x :e preimage_of X q (Vy' y).
+        { exact (mem_eqR x (Union (slicesq_y y)) (preimage_of X q (Vy' y)) HunionEq HxUnionY). }
+        claim HxX : x :e X.
+        { exact (SepE1 X (fun t:set => apply_fun q t :e Vy' y) x HxPreVy'). }
+        claim HqxVy' : apply_fun q x :e Vy' y.
+        { exact (SepE2 X (fun t:set => apply_fun q t :e Vy' y) x HxPreVy'). }
+        claim HqxPreY : apply_fun q x :e preY.
+        { exact (binintersectE2 (Vy_sel y) preY (apply_fun q x) HqxVy'). }
+        claim HrqxU' : apply_fun r (apply_fun q x) :e U'.
+        { exact (SepE2 Y (fun t:set => apply_fun r t :e U') (apply_fun q x) HqxPreY). }
+        claim HcompEq : apply_fun (compose_fun X q r) x = apply_fun r (apply_fun q x).
+        { exact (compose_fun_apply X q r x HxX). }
+        claim HcompU' : apply_fun (compose_fun X q r) x :e U'.
+        { rewrite HcompEq. exact HrqxU'. }
+        exact (SepI X (fun t:set => apply_fun (compose_fun X q r) t :e U') x HxX HcompU').
+      - (** Backward: preimage_of X (compose_fun X q r) U' c= Union total_slices **)
+        let x.
+        assume HxPreComp.
+        claim HxX : x :e X.
+        { exact (SepE1 X (fun t:set => apply_fun (compose_fun X q r) t :e U') x HxPreComp). }
+        claim HcompU' : apply_fun (compose_fun X q r) x :e U'.
+        { exact (SepE2 X (fun t:set => apply_fun (compose_fun X q r) t :e U') x HxPreComp). }
+        claim HrqxU' : apply_fun r (apply_fun q x) :e U'.
+        {
+          rewrite <- (compose_fun_apply X q r x HxX).
+          exact HcompU'.
+        }
+        claim HqxY : apply_fun q x :e Y. { exact (Hfunq x HxX). }
+        claim HrqxUr : apply_fun r (apply_fun q x) :e Ur.
+        { exact (HU'SubUr (apply_fun r (apply_fun q x)) HrqxU'). }
+        claim HqxPreUr : apply_fun q x :e preimage_of Y r Ur.
+        { exact (SepI Y (fun t:set => apply_fun r t :e Ur) (apply_fun q x) HqxY HrqxUr). }
+        claim HqxUnionSlicesr : apply_fun q x :e Union slicesr.
+        { exact (mem_eqL (apply_fun q x) (Union slicesr) (preimage_of Y r Ur) Hslicesr_union HqxPreUr). }
+        apply (UnionE slicesr (apply_fun q x) HqxUnionSlicesr).
+        let V.
+        assume HqxVpack.
+        claim HqxV : apply_fun q x :e V. { exact (andEL (apply_fun q x :e V) (V :e slicesr) HqxVpack). }
+        claim HVslice : V :e slicesr. { exact (andER (apply_fun q x :e V) (V :e slicesr) HqxVpack). }
+        (** Find v :e V with apply_fun r v = z using inverse of homeomorphism **)
+        claim HhomeV :
+          homeomorphism V (subspace_topology Y Ty V) Ur (subspace_topology Z Tz Ur)
+            (graph V (apply_fun r)).
+        { exact (Hslicesr_home V HVslice). }
+        apply (homeomorphism_inverse_package V (subspace_topology Y Ty V) Ur
+          (subspace_topology Z Tz Ur) (graph V (apply_fun r)) HhomeV).
+        let gV.
+        assume HgVPack.
+        apply (and3E
+          (continuous_map Ur (subspace_topology Z Tz Ur) V (subspace_topology Y Ty V) gV)
+          (forall x0:set, x0 :e V -> apply_fun gV (apply_fun (graph V (apply_fun r)) x0) = x0)
+          (forall u:set, u :e Ur -> apply_fun (graph V (apply_fun r)) (apply_fun gV u) = u)
+          HgVPack).
+        assume HgVCont HleftV HrightUr.
+        claim HgVFun : function_on gV Ur V.
+        { exact (continuous_map_function_on Ur (subspace_topology Z Tz Ur) V
+            (subspace_topology Y Ty V) gV HgVCont). }
+        set v := apply_fun gV z.
+        claim HvV : v :e V. { exact (HgVFun z HzUr). }
+        claim HVSubY : V c= Y.
+        { exact (PowerE Y V (topology_subset_axiom Y Ty HtopY V (Hslicesr_sub V HVslice))). }
+        claim HvY : v :e Y. { exact (HVSubY v HvV). }
+        claim HrightZ : apply_fun (graph V (apply_fun r)) (apply_fun gV z) = z.
+        { exact (HrightUr z HzUr). }
+        claim HrvZ : apply_fun r v = z.
+        {
+          rewrite <- (apply_fun_graph V (apply_fun r) v HvV).
+          exact HrightZ.
+        }
+        claim HvFz : v :e Fz.
+        { exact (SepI Y (fun t:set => apply_fun r t = z) v HvY HrvZ). }
+        (** Vy_sel v = V by pairwise disjointness **)
+        claim HVyVSlice : Vy_sel v :e slicesr.
+        { exact (andEL (Vy_sel v :e slicesr) (v :e Vy_sel v) (HVyOk v HvFz)). }
+        claim HvVyV : v :e Vy_sel v.
+        { exact (andER (Vy_sel v :e slicesr) (v :e Vy_sel v) (HVyOk v HvFz)). }
+        claim Hslicesr_pd2 : pairwise_disjoint slicesr.
+        {
+          exact (andER (slicesr c= Ty) (pairwise_disjoint slicesr)
+            (andEL (slicesr c= Ty /\ pairwise_disjoint slicesr)
+              (Union slicesr = preimage_of Y r Ur) Hslicesr_abc)).
+        }
+        claim HVselV : Vy_sel v = V.
+        {
+          apply xm (Vy_sel v = V).
+          - assume Heq. exact Heq.
+          - assume HVyNeqV.
+            claim HVyVDisj : Vy_sel v :/\: V = Empty.
+            { exact (Hslicesr_pd2 (Vy_sel v) V HVyVSlice HVslice HVyNeqV). }
+            claim HvInt : v :e Vy_sel v :/\: V.
+            { exact (binintersectI (Vy_sel v) V v HvVyV HvV). }
+            exact (EmptyE v (mem_eqR v (Vy_sel v :/\: V) Empty HVyVDisj HvInt) (Vy_sel v = V)).
+        }
+        (** apply_fun q x :e Vy' v **)
+        claim HqxVy'v : apply_fun q x :e Vy' v.
+        {
+          claim HqxVysV : apply_fun q x :e Vy_sel v.
+          { rewrite HVselV. exact HqxV. }
+          claim HqxPreY : apply_fun q x :e preY.
+          { exact (SepI Y (fun t:set => apply_fun r t :e U') (apply_fun q x) HqxY HrqxU'). }
+          exact (binintersectI (Vy_sel v) preY (apply_fun q x) HqxVysV HqxPreY).
+        }
+        claim HxPreVy'v : x :e preimage_of X q (Vy' v).
+        { exact (SepI X (fun t:set => apply_fun q t :e Vy' v) x HxX HqxVy'v). }
+        claim HunionVeq : Union (slicesq_y v) = preimage_of X q (Vy' v).
+        {
+          apply (and4E
+            (slicesq_y v c= Tx)
+            (pairwise_disjoint (slicesq_y v))
+            (Union (slicesq_y v) = preimage_of X q (Vy' v))
+            (forall V0:set, V0 :e slicesq_y v ->
+              homeomorphism V0 (subspace_topology X Tx V0) (Vy' v) (subspace_topology Y Ty (Vy' v))
+                (graph V0 (fun x0:set => apply_fun q x0)))
+            (HslicesqySat v HvFz)).
+          assume _ _ HunEqV _.
+          exact HunEqV.
+        }
+        claim HxUnionSlicesv : x :e Union (slicesq_y v).
+        { exact (mem_eqL x (Union (slicesq_y v)) (preimage_of X q (Vy' v)) HunionVeq HxPreVy'v). }
+        apply (UnionE (slicesq_y v) x HxUnionSlicesv).
+        let Sv.
+        assume HxSvpack.
+        claim HxSv : x :e Sv. { exact (andEL (x :e Sv) (Sv :e slicesq_y v) HxSvpack). }
+        claim HSvinY : Sv :e slicesq_y v. { exact (andER (x :e Sv) (Sv :e slicesq_y v) HxSvpack). }
+        claim HSvTot : Sv :e total_slices.
+        { exact (UnionI {slicesq_y y | y :e Fz} Sv (slicesq_y v)
+            HSvinY (ReplI Fz slicesq_y v HvFz)). }
+        exact (UnionI total_slices x Sv HxSv HSvTot).
     }
     (** homeomorphism for each slice **)
     claim HtotHome : forall S:set, S :e total_slices ->
       homeomorphism S (subspace_topology X Tx S) U' (subspace_topology Z Tz U')
         (graph S (fun x:set => apply_fun (compose_fun X q r) x)).
     {
-      admit.
+      let S.
+      assume HS.
+      apply (UnionE {slicesq_y y | y :e Fz} S HS).
+      let SyH.
+      assume HSySHpack.
+      claim HSinSyH : S :e SyH. { exact (andEL (S :e SyH) (SyH :e {slicesq_y y | y :e Fz}) HSySHpack). }
+      claim HSyHfam : SyH :e {slicesq_y y | y :e Fz}. { exact (andER (S :e SyH) (SyH :e {slicesq_y y | y :e Fz}) HSySHpack). }
+      apply (ReplE_impred Fz slicesq_y SyH HSyHfam).
+      let y.
+      assume HyFzH HSyHeq.
+      claim HSinY : S :e slicesq_y y.
+      { exact (mem_eqR S SyH (slicesq_y y) HSyHeq HSinSyH). }
+      claim HhomeSq :
+        homeomorphism S (subspace_topology X Tx S) (Vy' y) (subspace_topology Y Ty (Vy' y))
+          (graph S (fun x:set => apply_fun q x)).
+      {
+        apply (and4E
+          (slicesq_y y c= Tx)
+          (pairwise_disjoint (slicesq_y y))
+          (Union (slicesq_y y) = preimage_of X q (Vy' y))
+          (forall V:set, V :e slicesq_y y ->
+            homeomorphism V (subspace_topology X Tx V) (Vy' y) (subspace_topology Y Ty (Vy' y))
+              (graph V (fun x:set => apply_fun q x)))
+          (HslicesqySat y HyFzH)).
+        assume _ _ _ HhomeAll.
+        exact (HhomeAll S HSinY).
+      }
+      claim HhomeRy :
+        homeomorphism (Vy' y) (subspace_topology Y Ty (Vy' y)) U' (subspace_topology Z Tz U')
+          (graph (Vy' y) (apply_fun r)).
+      { exact (HrHomeVy' y HyFzH). }
+      claim HhomeComp :
+        homeomorphism S (subspace_topology X Tx S) U' (subspace_topology Z Tz U')
+          (compose_fun S (graph S (fun x:set => apply_fun q x)) (graph (Vy' y) (apply_fun r))).
+      {
+        exact (homeomorphism_compose S (subspace_topology X Tx S) (Vy' y)
+          (subspace_topology Y Ty (Vy' y)) U' (subspace_topology Z Tz U')
+          (graph S (fun x:set => apply_fun q x)) (graph (Vy' y) (apply_fun r))
+          HhomeSq HhomeRy).
+      }
+      claim HSTx : S :e Tx.
+      {
+        apply (and4E
+          (slicesq_y y c= Tx)
+          (pairwise_disjoint (slicesq_y y))
+          (Union (slicesq_y y) = preimage_of X q (Vy' y))
+          (forall V:set, V :e slicesq_y y ->
+            homeomorphism V (subspace_topology X Tx V) (Vy' y) (subspace_topology Y Ty (Vy' y))
+              (graph V (fun x:set => apply_fun q x)))
+          (HslicesqySat y HyFzH)).
+        assume HsubTx _ _ _.
+        exact (HsubTx S HSinY).
+      }
+      claim HSSubX : S c= X.
+      { exact (PowerE X S (topology_subset_axiom X Tx HtopX S HSTx)). }
+      claim HfunSq : function_on (graph S (fun x:set => apply_fun q x)) S (Vy' y).
+      {
+        exact (continuous_map_function_on S (subspace_topology X Tx S) (Vy' y)
+          (subspace_topology Y Ty (Vy' y)) (graph S (fun x:set => apply_fun q x))
+          (homeomorphism_continuous S (subspace_topology X Tx S) (Vy' y)
+            (subspace_topology Y Ty (Vy' y)) (graph S (fun x:set => apply_fun q x))
+            HhomeSq)).
+      }
+      claim HcompFunComp : function_on
+        (compose_fun S (graph S (fun x:set => apply_fun q x)) (graph (Vy' y) (apply_fun r))) S U'.
+      {
+        exact (continuous_map_function_on S (subspace_topology X Tx S) U'
+          (subspace_topology Z Tz U')
+          (compose_fun S (graph S (fun x:set => apply_fun q x)) (graph (Vy' y) (apply_fun r)))
+          (homeomorphism_continuous S (subspace_topology X Tx S) U' (subspace_topology Z Tz U')
+            (compose_fun S (graph S (fun x:set => apply_fun q x)) (graph (Vy' y) (apply_fun r)))
+            HhomeComp)).
+      }
+      claim HfunFinal : function_on (graph S (fun x:set => apply_fun (compose_fun X q r) x)) S U'.
+      {
+        let x0. assume Hx0S.
+        rewrite (apply_fun_graph S (fun x:set => apply_fun (compose_fun X q r) x) x0 Hx0S).
+        claim Hx0X : x0 :e X. { exact (HSSubX x0 Hx0S). }
+        claim HqxVy'0 : apply_fun q x0 :e Vy' y.
+        {
+          rewrite <- (apply_fun_graph S (fun x:set => apply_fun q x) x0 Hx0S).
+          exact (HfunSq x0 Hx0S).
+        }
+        claim HcompApply : apply_fun (compose_fun S (graph S (fun x:set => apply_fun q x)) (graph (Vy' y) (apply_fun r))) x0 :e U'.
+        { exact (HcompFunComp x0 Hx0S). }
+        claim HcompEq : apply_fun (compose_fun S (graph S (fun x:set => apply_fun q x)) (graph (Vy' y) (apply_fun r))) x0 = apply_fun (compose_fun X q r) x0.
+        {
+          claim HcA : apply_fun (compose_fun S (graph S (fun x:set => apply_fun q x)) (graph (Vy' y) (apply_fun r))) x0 =
+            apply_fun (graph (Vy' y) (apply_fun r)) (apply_fun (graph S (fun x:set => apply_fun q x)) x0).
+          { exact (compose_fun_apply S (graph S (fun x:set => apply_fun q x)) (graph (Vy' y) (apply_fun r)) x0 Hx0S). }
+          claim HcB : apply_fun (graph S (fun x:set => apply_fun q x)) x0 = apply_fun q x0.
+          { exact (apply_fun_graph S (fun x:set => apply_fun q x) x0 Hx0S). }
+          claim HcC : apply_fun (graph (Vy' y) (apply_fun r)) (apply_fun q x0) = apply_fun r (apply_fun q x0).
+          { exact (apply_fun_graph (Vy' y) (apply_fun r) (apply_fun q x0) HqxVy'0). }
+          claim HcD : apply_fun (compose_fun X q r) x0 = apply_fun r (apply_fun q x0).
+          { exact (compose_fun_apply X q r x0 Hx0X). }
+          claim HcDsym : apply_fun r (apply_fun q x0) = apply_fun (compose_fun X q r) x0.
+          { rewrite HcD. reflexivity. }
+          rewrite HcA. rewrite HcB. rewrite HcC. rewrite HcDsym. reflexivity.
+        }
+        rewrite <- HcompEq.
+        exact HcompApply.
+      }
+      claim HagreeOnS : forall x0:set, x0 :e S ->
+        apply_fun (compose_fun S (graph S (fun x:set => apply_fun q x)) (graph (Vy' y) (apply_fun r))) x0 =
+        apply_fun (graph S (fun x:set => apply_fun (compose_fun X q r) x)) x0.
+      {
+        let x0. assume Hx0S.
+        claim Hx0X : x0 :e X. { exact (HSSubX x0 Hx0S). }
+        claim HqxGSx0 : apply_fun (graph S (fun x:set => apply_fun q x)) x0 = apply_fun q x0.
+        { exact (apply_fun_graph S (fun x:set => apply_fun q x) x0 Hx0S). }
+        claim HqxVy'0 : apply_fun q x0 :e Vy' y.
+        {
+          claim HfSq : apply_fun (graph S (fun x:set => apply_fun q x)) x0 :e Vy' y.
+          { exact (HfunSq x0 Hx0S). }
+          rewrite <- HqxGSx0.
+          exact HfSq.
+        }
+        claim HaA : apply_fun (compose_fun S (graph S (fun x:set => apply_fun q x)) (graph (Vy' y) (apply_fun r))) x0 =
+          apply_fun (graph (Vy' y) (apply_fun r)) (apply_fun (graph S (fun x:set => apply_fun q x)) x0).
+        { exact (compose_fun_apply S (graph S (fun x:set => apply_fun q x)) (graph (Vy' y) (apply_fun r)) x0 Hx0S). }
+        claim HaB : apply_fun (graph (Vy' y) (apply_fun r)) (apply_fun q x0) = apply_fun r (apply_fun q x0).
+        { exact (apply_fun_graph (Vy' y) (apply_fun r) (apply_fun q x0) HqxVy'0). }
+        claim HaC : apply_fun (graph S (fun x:set => apply_fun (compose_fun X q r) x)) x0 = apply_fun (compose_fun X q r) x0.
+        { exact (apply_fun_graph S (fun x:set => apply_fun (compose_fun X q r) x) x0 Hx0S). }
+        claim HaD : apply_fun (compose_fun X q r) x0 = apply_fun r (apply_fun q x0).
+        { exact (compose_fun_apply X q r x0 Hx0X). }
+        claim HaCDsym : apply_fun r (apply_fun q x0) = apply_fun (graph S (fun x:set => apply_fun (compose_fun X q r) x)) x0.
+        { rewrite HaC. rewrite HaD. reflexivity. }
+        rewrite HaA. rewrite HqxGSx0. rewrite HaB. rewrite HaCDsym. reflexivity.
+      }
+      exact (homeomorphism_congr_on S (subspace_topology X Tx S) U' (subspace_topology Z Tz U')
+        (compose_fun S (graph S (fun x:set => apply_fun q x)) (graph (Vy' y) (apply_fun r)))
+        (graph S (fun x:set => apply_fun (compose_fun X q r) x))
+        HhomeComp HfunFinal HagreeOnS).
     }
     (** Conclude evenly_covered **)
     prove U' :e Tz /\
@@ -49394,7 +51041,7 @@ apply andI.
   + exact Hcont_comp.
   + exact Hsurj_comp.
 - exact Hlocal_comp.
-Admitted.
+Qed.
 
 (** from S53 Exercise 5 (line 691 in algtop.tex) **)
 (** LATEX VERSION: The map p(z) = z^n is a covering map S^1 -> S^1. **)
