@@ -106119,10 +106119,10 @@ claim HpointEven :
 {
   admit.
 }
-exact (thm60_3_projective_plane_surface_covering_from_evenly_covered_parts
+exact (thm60_3_projective_plane_surface_covering_from_pointwise_evenly_covered_parts
   Hmanifold
   HcompactS2
-  (projective_plane_local_evenly_covered_from_pointwise HpointEven)).
+  HpointEven).
 Admitted.
 
 (** from S60 Cor 60.4 (line 1725 in algtop.tex) **)
