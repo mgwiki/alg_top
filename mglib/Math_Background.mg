@@ -117946,6 +117946,63 @@ exact (andI
   HparRef).
 Qed.
 
+(** Infrastructure: compact Hausdorff spaces satisfy shrinking lemma. **)
+(** Proven Charlie **)
+Theorem compact_Hausdorff_shrinking_lemma_algtop :
+  forall X Tx U:set,
+  compact_space X Tx ->
+  Hausdorff_space X Tx ->
+  open_cover X Tx U ->
+  exists V:set, open_cover X Tx V /\ locally_finite_family X Tx V /\ refine_of V U /\
+    forall v:set, v :e V -> exists u:set, u :e U /\ closure_of X Tx v c= u.
+let X Tx U.
+assume HcompX HHausX HopenU.
+claim HparX : paracompact_space X Tx.
+{
+  exact (compact_space_implies_paracompact_algtop
+    X
+    Tx
+    HcompX).
+}
+exact (shrinking_lemma_41_6
+  X
+  Tx
+  U
+  HparX
+  HHausX
+  HopenU).
+Qed.
+
+(** Infrastructure: compact Hausdorff spaces satisfy double shrinking lemma. **)
+(** Proven Charlie **)
+Theorem compact_Hausdorff_shrinking_lemma_twice_algtop :
+  forall X Tx U:set,
+  compact_space X Tx ->
+  Hausdorff_space X Tx ->
+  open_cover X Tx U ->
+  exists V W:set,
+    open_cover X Tx V /\ locally_finite_family X Tx V /\ refine_of V U /\
+    (forall v:set, v :e V -> exists u:set, u :e U /\ closure_of X Tx v c= u) /\
+    open_cover X Tx W /\ locally_finite_family X Tx W /\ refine_of W V /\
+    (forall w:set, w :e W -> exists v:set, v :e V /\ closure_of X Tx w c= v).
+let X Tx U.
+assume HcompX HHausX HopenU.
+claim HparX : paracompact_space X Tx.
+{
+  exact (compact_space_implies_paracompact_algtop
+    X
+    Tx
+    HcompX).
+}
+exact (shrinking_lemma_41_6_twice
+  X
+  Tx
+  U
+  HparX
+  HHausX
+  HopenU).
+Qed.
+
 (** from Supplementary Exercises Exercise 1a (line 5393 in algtop.tex): metrizable star refinement **)
 (** LATEX VERSION: If X is metrizable, then for any open covering A, there exists an **)
 (** open covering B refining A such that for each pair B, B' in B with nonempty **)
