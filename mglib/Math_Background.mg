@@ -112538,6 +112538,11 @@ apply (andI
               n = quotient_group_id G mult e C))
           HnO).
       }
+      claim HqidInQ : quotient_group_id G mult e C :e quotient_group_set G mult C.
+      {
+        rewrite <- HpowQ.
+        exact HpowSetInQ.
+      }
       claim HCnonempty : C <> Empty.
       {
         exact (elem_implies_nonempty C e HeC).
