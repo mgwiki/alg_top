@@ -117391,43 +117391,6 @@ Admitted.
 
 (** Infrastructure helper for S69 backward direction:
     extension property forces each generator to have no nontrivial positive power equal to e. **)
-Theorem extension_property_forces_nontrivial_generator_powers :
-  forall G mult e inv J gens:set,
-  group_structure G mult e inv ->
-  function_on gens J G ->
-  (forall H multH eH invH:set,
-    group_structure H multH eH invH ->
-    forall ys:set, function_on ys J H ->
-      exists h:set,
-        group_homomorphism G mult H multH h /\
-        (forall alpha:set, alpha :e J ->
-          apply_fun h (apply_fun gens alpha) = apply_fun ys alpha) /\
-        (forall h':set, group_homomorphism G mult H multH h' ->
-          (forall alpha:set, alpha :e J ->
-            apply_fun h' (apply_fun gens alpha) = apply_fun ys alpha) ->
-          forall x:set, x :e G -> apply_fun h' x = apply_fun h x)) ->
-  forall alpha:set, alpha :e J ->
-    ~(exists n:set, n :e omega /\ n <> 0 /\
-      group_power_nat mult e (apply_fun gens alpha) n = e).
-let G mult e inv J gens.
-assume Hgrp : group_structure G mult e inv.
-assume Hgens : function_on gens J G.
-assume Hext :
-  forall H multH eH invH:set,
-    group_structure H multH eH invH ->
-    forall ys:set, function_on ys J H ->
-      exists h:set,
-        group_homomorphism G mult H multH h /\
-        (forall alpha:set, alpha :e J ->
-          apply_fun h (apply_fun gens alpha) = apply_fun ys alpha) /\
-        (forall h':set, group_homomorphism G mult H multH h' ->
-          (forall alpha:set, alpha :e J ->
-            apply_fun h' (apply_fun gens alpha) = apply_fun ys alpha) ->
-          forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
-let alpha.
-assume Halpha : alpha :e J.
-admit.
-Admitted.
 
 (** Infrastructure helper for S69 backward direction:
     extension property forces the free-product decomposition by cyclic generator subgroups. **)
@@ -118647,6 +118610,245 @@ exact (HpowNat n (omega_nat_p n HnO)).
 Qed.
 
 (** Proven Bob **)
+Theorem extension_property_forces_nontrivial_generator_powers :
+  forall G mult e inv J gens:set,
+  group_structure G mult e inv ->
+  function_on gens J G ->
+  (forall H multH eH invH:set,
+    group_structure H multH eH invH ->
+    forall ys:set, function_on ys J H ->
+      exists h:set,
+        group_homomorphism G mult H multH h /\
+        (forall alpha:set, alpha :e J ->
+          apply_fun h (apply_fun gens alpha) = apply_fun ys alpha) /\
+        (forall h':set, group_homomorphism G mult H multH h' ->
+          (forall alpha:set, alpha :e J ->
+            apply_fun h' (apply_fun gens alpha) = apply_fun ys alpha) ->
+          forall x:set, x :e G -> apply_fun h' x = apply_fun h x)) ->
+  forall alpha:set, alpha :e J ->
+    ~(exists n:set, n :e omega /\ n <> 0 /\
+      group_power_nat mult e (apply_fun gens alpha) n = e).
+let G mult e inv J gens.
+assume Hgrp : group_structure G mult e inv.
+assume Hgens : function_on gens J G.
+assume Hext :
+  forall H multH eH invH:set,
+    group_structure H multH eH invH ->
+    forall ys:set, function_on ys J H ->
+      exists h:set,
+        group_homomorphism G mult H multH h /\
+        (forall alpha:set, alpha :e J ->
+          apply_fun h (apply_fun gens alpha) = apply_fun ys alpha) /\
+        (forall h':set, group_homomorphism G mult H multH h' ->
+          (forall alpha:set, alpha :e J ->
+            apply_fun h' (apply_fun gens alpha) = apply_fun ys alpha) ->
+          forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+let alpha.
+assume Halpha : alpha :e J.
+assume Hbad :
+  exists n:set, n :e omega /\ n <> 0 /\
+    group_power_nat mult e (apply_fun gens alpha) n = e.
+apply Hbad.
+let n.
+assume HnPack :
+  n :e omega /\ n <> 0 /\
+    group_power_nat mult e (apply_fun gens alpha) n = e.
+apply (and3E
+  (n :e omega)
+  (n <> 0)
+  (group_power_nat mult e (apply_fun gens alpha) n = e)
+  HnPack).
+assume HnO HnNZ HpowEqE.
+claim H0O : 0 :e omega.
+{
+  exact (nat_p_omega 0 nat_0).
+}
+claim H1O : 1 :e omega.
+{
+  exact (nat_p_omega 1 nat_1).
+}
+claim H0Int : 0 :e int.
+{
+  exact (Subq_omega_int 0 H0O).
+}
+claim H1Int : 1 :e int.
+{
+  exact (Subq_omega_int 1 H1O).
+}
+set ys0 := graph J (fun beta:set => If_i (beta = alpha) 1 0).
+claim Hys0Fn : function_on ys0 J int.
+{
+  claim Hys0Total : total_function_on ys0 J int.
+  {
+    claim Hys0Def :
+      ys0 = graph J (fun beta:set => If_i (beta = alpha) 1 0).
+    {
+      reflexivity.
+    }
+    rewrite Hys0Def.
+    apply (total_function_on_graph
+      J
+      int
+      (fun beta:set => If_i (beta = alpha) 1 0)).
+    let beta.
+    assume HbetaJ : beta :e J.
+    claim HfAt :
+      (fun beta0:set => If_i (beta0 = alpha) 1 0) beta =
+      If_i (beta = alpha) 1 0.
+    {
+      reflexivity.
+    }
+    apply (xm (beta = alpha)).
+    - assume Hbeq : beta = alpha.
+      rewrite HfAt.
+      rewrite (If_i_1
+        (beta = alpha)
+        1
+        0
+        Hbeq).
+      exact H1Int.
+    - assume Hbneq : ~(beta = alpha).
+      rewrite HfAt.
+      rewrite (If_i_0
+        (beta = alpha)
+        1
+        0
+        Hbneq).
+      exact H0Int.
+  }
+  exact (total_function_on_function_on
+    ys0
+    J
+    int
+    Hys0Total).
+}
+claim Hexth :
+  exists h:set,
+    group_homomorphism G mult int integers_group_mult h /\
+    (forall beta:set, beta :e J ->
+      apply_fun h (apply_fun gens beta) = apply_fun ys0 beta) /\
+    (forall h':set, group_homomorphism G mult int integers_group_mult h' ->
+      (forall beta:set, beta :e J ->
+        apply_fun h' (apply_fun gens beta) = apply_fun ys0 beta) ->
+      forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+{
+  exact (Hext
+    int
+    integers_group_mult
+    0
+    integers_group_inv
+    integers_group_is_group
+    ys0
+    Hys0Fn).
+}
+apply Hexth.
+let h.
+assume HhPack :
+  group_homomorphism G mult int integers_group_mult h /\
+  (forall beta:set, beta :e J ->
+    apply_fun h (apply_fun gens beta) = apply_fun ys0 beta) /\
+  (forall h':set, group_homomorphism G mult int integers_group_mult h' ->
+    (forall beta:set, beta :e J ->
+      apply_fun h' (apply_fun gens beta) = apply_fun ys0 beta) ->
+    forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+apply (and3E
+  (group_homomorphism G mult int integers_group_mult h)
+  (forall beta:set, beta :e J ->
+    apply_fun h (apply_fun gens beta) = apply_fun ys0 beta)
+  (forall h':set, group_homomorphism G mult int integers_group_mult h' ->
+    (forall beta:set, beta :e J ->
+      apply_fun h' (apply_fun gens beta) = apply_fun ys0 beta) ->
+    forall x:set, x :e G -> apply_fun h' x = apply_fun h x)
+  HhPack).
+assume HhHom HhOnGens HhUniq.
+claim HgenAlphaG : apply_fun gens alpha :e G.
+{
+  exact (Hgens alpha Halpha).
+}
+claim HhGenAlpha :
+  apply_fun h (apply_fun gens alpha) = 1.
+{
+  claim Hys0Alpha : apply_fun ys0 alpha = 1.
+  {
+    rewrite (apply_fun_graph
+      J
+      (fun beta:set => If_i (beta = alpha) 1 0)
+      alpha
+      Halpha).
+    claim Haeq : alpha = alpha.
+    {
+      reflexivity.
+    }
+    rewrite (If_i_1
+      (alpha = alpha)
+      1
+      0
+      Haeq).
+    reflexivity.
+  }
+  rewrite <- Hys0Alpha.
+  exact (HhOnGens alpha Halpha).
+}
+claim HhE : apply_fun h e = 0.
+{
+  exact (group_hom_maps_id_to_id
+    G
+    mult
+    e
+    inv
+    int
+    integers_group_mult
+    0
+    integers_group_inv
+    h
+    Hgrp
+    integers_group_is_group
+    HhHom).
+}
+claim HhPow :
+  apply_fun h (group_power_nat mult e (apply_fun gens alpha) n) =
+  group_power_nat integers_group_mult 0 (apply_fun h (apply_fun gens alpha)) n.
+{
+  exact (group_homomorphism_preserves_power_nat
+    G
+    mult
+    e
+    inv
+    int
+    integers_group_mult
+    0
+    integers_group_inv
+    h
+    (apply_fun gens alpha)
+    n
+    Hgrp
+    integers_group_is_group
+    HhHom
+    HgenAlphaG
+    HnO).
+}
+claim HhPowEqn :
+  apply_fun h (group_power_nat mult e (apply_fun gens alpha) n) = n.
+{
+  rewrite HhPow.
+  rewrite HhGenAlpha.
+  exact (integers_group_power_nat_one_eq_nat
+    n
+    HnO).
+}
+claim HhPowEq0 :
+  apply_fun h (group_power_nat mult e (apply_fun gens alpha) n) = 0.
+{
+  rewrite HpowEqE.
+  exact HhE.
+}
+claim HnEq0 : n = 0.
+{
+  rewrite <- HhPowEqn.
+  exact HhPowEq0.
+}
+exact (HnNZ HnEq0).
+Qed.
 (** Helper: inverses stay in the carrier of a group. **)
 Theorem group_inverse_closed_in_group :
   forall G mult e inv x:set,
