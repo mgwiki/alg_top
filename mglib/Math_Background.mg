@@ -61103,39 +61103,21 @@ claim Hex :
                             }
                             claim HVlocalEqVx : Vlocal = Vx.
                             {
-                              claim HoverlapLocalX :
-                                exists w:set, w :e Vlocal /\ w :e Vx.
+                              claim HxvVlocal : xv :e Vlocal.
                               {
-                                (** TODO Bob: construct a common fiber point over f(x) lying in both Vlocal and Vx. **)
+                                (** TODO Bob: show xv (the unique point of Vx over f(x)) also lies in Vlocal. **)
                                 admit.
-                              }
-                              apply HoverlapLocalX.
-                              let w.
-                              assume HwPack.
-                              claim HwVlocal : w :e Vlocal.
-                              {
-                                exact (andEL
-                                  (w :e Vlocal)
-                                  (w :e Vx)
-                                  HwPack).
-                              }
-                              claim HwVx : w :e Vx.
-                              {
-                                exact (andER
-                                  (w :e Vlocal)
-                                  (w :e Vx)
-                                  HwPack).
                               }
                               exact (pairwise_disjoint_point_unique_member
                                 slicesUt
                                 Vlocal
                                 Vx
-                                w
+                                xv
                                 HpdSlicesUt
                                 HVlocalSlice
                                 HVxSlice
-                                HwVlocal
-                                HwVx).
+                                HxvVlocal
+                                HxvVx).
                             }
                             rewrite <- HVlocalEqVx.
                             exact HlocalNtVlocal.
@@ -62077,8 +62059,141 @@ claim Hex :
         }
         claim HNtSubN1 : Nt c= N1.
         {
-          (** TODO Bob: compare the Nt-lift and lt1-lift from 0 and show maximality/inclusion Nt c= N1. **)
-          admit.
+          let s.
+          assume HsNt.
+          claim HNtOpen : Nt :e unit_interval_topology.
+          {
+            exact (andEL
+              (Nt :e unit_interval_topology)
+              (0 :e Nt)
+              (andEL
+                (Nt :e unit_interval_topology /\ 0 :e Nt)
+                (t :e Nt)
+                HNtOpen0t)).
+          }
+          claim HsUnit : s :e unit_interval.
+          {
+            exact (topology_elem_subset
+              unit_interval
+              unit_interval_topology
+              Nt
+              unit_interval_topology_on
+              HNtOpen
+              s
+              HsNt).
+          }
+          claim HsSeed : s :e SeedTimes.
+          {
+            exact (mem_eqL
+              s
+              SeedTimes
+              unit_interval
+              HSeedTimesAll
+              HsUnit).
+          }
+          claim HsSeedPack :
+            exists Ns ls:set,
+              Ns :e unit_interval_topology /\
+              0 :e Ns /\
+              s :e Ns /\
+              lifting_of
+                Ns
+                (subspace_topology unit_interval unit_interval_topology Ns)
+                E
+                Te
+                B
+                Tb
+                p
+                f
+                ls /\
+              apply_fun ls 0 = e0.
+          {
+            exact (SepE2
+              unit_interval
+              (fun t0:set =>
+                exists Nt0 lt0:set,
+                  Nt0 :e unit_interval_topology /\
+                  0 :e Nt0 /\
+                  t0 :e Nt0 /\
+                  lifting_of
+                    Nt0
+                    (subspace_topology unit_interval unit_interval_topology Nt0)
+                    E
+                    Te
+                    B
+                    Tb
+                    p
+                    f
+                    lt0 /\
+                  apply_fun lt0 0 = e0)
+              s
+              HsSeed).
+          }
+          apply HsSeedPack.
+          let Ns.
+          assume HNsPack.
+          apply HNsPack.
+          let ls.
+          assume HlsPack.
+          claim HNsQuad :
+            ((Ns :e unit_interval_topology /\ 0 :e Ns) /\ s :e Ns) /\
+            lifting_of
+              Ns
+              (subspace_topology unit_interval unit_interval_topology Ns)
+              E
+              Te
+              B
+              Tb
+              p
+              f
+              ls.
+          {
+            exact (andEL
+              (((Ns :e unit_interval_topology /\ 0 :e Ns) /\ s :e Ns) /\
+                lifting_of
+                  Ns
+                  (subspace_topology unit_interval unit_interval_topology Ns)
+                  E
+                  Te
+                  B
+                  Tb
+                  p
+                  f
+                  ls)
+              (apply_fun ls 0 = e0)
+              HlsPack).
+          }
+          claim HNsOpen0s : (Ns :e unit_interval_topology /\ 0 :e Ns) /\ s :e Ns.
+          {
+            exact (andEL
+              ((Ns :e unit_interval_topology /\ 0 :e Ns) /\ s :e Ns)
+              (lifting_of
+                Ns
+                (subspace_topology unit_interval unit_interval_topology Ns)
+                E
+                Te
+                B
+                Tb
+                p
+                f
+                ls)
+              HNsQuad).
+          }
+          claim HsNs : s :e Ns.
+          {
+            exact (andER
+              (Ns :e unit_interval_topology /\ 0 :e Ns)
+              (s :e Ns)
+              HNsOpen0s).
+          }
+          claim HNsSubN1 : Ns c= N1.
+          {
+            (** TODO Bob: compare this local lift ls with lt1 at 0 and propagate equality to get Ns c= N1. **)
+            admit.
+          }
+          exact (HNsSubN1
+            s
+            HsNs).
         }
         exact (HNtSubN1
           t
@@ -64526,39 +64641,26 @@ claim HFt_54_cont :
                   }
                   claim HVlocalEqVz : Vlocal = Vz.
                   {
-                    claim HoverlapLocalZ :
-                      exists w:set, w :e Vlocal /\ w :e Vz.
+                    claim HxqVlocal : xq :e Vlocal.
                     {
-                      (** TODO Charlie: construct a common fiber point over F(z) lying in both Vlocal and Vz. **)
+                      rewrite <- HlocalEqxq.
+                      exact HlocalVlocal.
+                    }
+                    claim HxqVz : xq :e Vz.
+                    {
+                      (** TODO Charlie: show xq (the unique point of Vq over F(z)) also lies in Vz. **)
                       admit.
-                    }
-                    apply HoverlapLocalZ.
-                    let w.
-                    assume HwPack.
-                    claim HwVlocal : w :e Vlocal.
-                    {
-                      exact (andEL
-                        (w :e Vlocal)
-                        (w :e Vz)
-                        HwPack).
-                    }
-                    claim HwVz : w :e Vz.
-                    {
-                      exact (andER
-                        (w :e Vlocal)
-                        (w :e Vz)
-                        HwPack).
                     }
                     exact (pairwise_disjoint_point_unique_member
                       slices
                       Vlocal
                       Vz
-                      w
+                      xq
                       HpdSlices
                       HVlocalSlice
                       HVzSlice
-                      HwVlocal
-                      HwVz).
+                      HxqVlocal
+                      HxqVz).
                   }
                   rewrite <- HVlocalEqVz.
                   exact HlocalVlocal.
