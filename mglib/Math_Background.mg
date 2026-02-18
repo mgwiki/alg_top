@@ -111651,7 +111651,25 @@ apply (andI
           HaQ
           n
           HnO).
-      + admit.
+      + let m.
+        assume HmO : m :e omega.
+        claim HinvAQ :
+          apply_fun
+            (quotient_group_inv G mult inv C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha) :e
+          quotient_group_set G mult C.
+        {
+          exact (HinvQ
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+            HaQ).
+        }
+        exact (HpowClosed
+          (apply_fun
+            (quotient_group_inv G mult inv C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha))
+          HinvAQ
+          (ordsucc m)
+          (omega_ordsucc m HmO)).
     - admit.
   admit.
 Admitted.
