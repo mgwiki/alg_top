@@ -110103,7 +110103,18 @@ apply (iffI
             g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}))
       (graph J (fun alpha:set => e)))
     Hgens).
-  admit.
+  apply (andI
+    (forall alpha:set, alpha :e J ->
+      infinite_cyclic_subgroup G mult e inv (apply_fun gens alpha))
+    (free_product_of_subgroups G mult e inv J
+      (graph J (fun alpha:set =>
+        {g :e G | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}))
+      (graph J (fun alpha:set => e)))).
+  + admit.
+  + admit.
 Admitted.
 
 (** from S69 Thm 69.2 (line 3057 in algtop.tex): free product of free groups is free **)
@@ -110187,7 +110198,36 @@ claim HCdef : C = commutator_subgroup G mult e inv.
 {
   reflexivity.
 }
-admit.
+rewrite <- HCdef.
+rewrite <- HCdef.
+rewrite <- HCdef.
+rewrite <- HCdef.
+rewrite <- HCdef.
+rewrite <- HCdef.
+apply (andI
+  (normal_subgroup C G mult e inv)
+  (abelian_group
+    (quotient_group_set G mult C)
+    (quotient_group_mult G mult C)
+    (quotient_group_id G mult e C)
+    (quotient_group_inv G mult inv C) /\
+   (forall H multH eH invH h:set,
+     abelian_group H multH eH invH ->
+     group_homomorphism G mult H multH h ->
+     C c= kernel_of G eH h))).
+- admit.
+- apply (andI
+    (abelian_group
+      (quotient_group_set G mult C)
+      (quotient_group_mult G mult C)
+      (quotient_group_id G mult e C)
+      (quotient_group_inv G mult inv C))
+    (forall H multH eH invH h:set,
+      abelian_group H multH eH invH ->
+      group_homomorphism G mult H multH h ->
+      C c= kernel_of G eH h)).
+  + admit.
+  + admit.
 Admitted.
 
 (** from S69 Thm 69.4 (line 3125 in algtop.tex): abelianization of free group **)
