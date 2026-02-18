@@ -88086,6 +88086,8 @@ exact (Hnat n (omega_nat_p n Hn)).
 Qed.
 
 (** Sub-helper: Case last entry of c's word in G2 **)
+(** Strategy: cx = yc. Build reduced word for cx by appending x.
+    Case split on cs(0) factor. Contradiction via uniqueness. **)
 Lemma ex68_3_case_last_G2 : forall G mult e inv G1 G2 c x m cs k:set,
   free_product_of_subgroups G mult e inv 2
     (graph 2 (fun i:set => If_i (i = 0) G1 G2))
@@ -88101,6 +88103,151 @@ Lemma ex68_3_case_last_G2 : forall G mult e inv G1 G2 c x m cs k:set,
   m = ordsucc k -> nat_p k ->
   apply_fun cs k :e G2 ->
   False.
+let G mult e inv G1 G2 c x m cs k.
+set Gfam := graph 2 (fun i:set => If_i (i = 0) G1 G2).
+set efam := graph 2 (fun _:set => e).
+assume Hfp : free_product_of_subgroups G mult e inv 2 Gfam efam.
+assume HcG : c :e G. assume HxG1 : x :e G1.
+set y := apply_fun mult (apply_fun mult (c, x), apply_fun inv c).
+assume HyG2 : y :e G2.
+assume Hyne : y <> e.
+assume Hxne : x <> e.
+assume Hcxne : apply_fun mult (c, x) <> e.
+assume Hred : reduced_word 2 Gfam efam m cs.
+assume Hmne : m <> 0. assume Hprod : word_product mult e cs m = c.
+assume Hm_eq : m = ordsucc k. assume Hk_nat : nat_p k.
+assume Hcsk_G2 : apply_fun cs k :e G2.
+(** Extract free product components **)
+apply (and5E
+  (group_structure G mult e inv)
+  (forall alpha:set, alpha :e 2 -> subgroup_of (apply_fun Gfam alpha) G mult e inv)
+  (forall alpha beta:set, alpha :e 2 -> beta :e 2 -> alpha <> beta ->
+    forall z:set, z :e apply_fun Gfam alpha -> z :e apply_fun Gfam beta -> z = e)
+  (subgroups_generate G mult e inv 2 Gfam)
+  (forall z:set, z :e G -> z <> e ->
+    exists n xs:set,
+      reduced_word 2 Gfam efam n xs /\ n <> 0 /\
+      word_product mult e xs n = z /\
+      (forall n' xs':set,
+        reduced_word 2 Gfam efam n' xs' -> n' <> 0 ->
+        word_product mult e xs' n' = z ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
+  Hfp).
+assume Hgrp Hsub Hinter Hgen Hunique.
+claim H00 : 0 = 0. { reflexivity. }
+claim HGfam0 : apply_fun Gfam 0 = G1.
+{ rewrite (apply_fun_graph 2 (fun i:set => If_i (i = 0) G1 G2) 0 In_0_2).
+  exact (If_i_1 (0 = 0) G1 G2 H00). }
+claim HGfam1 : apply_fun Gfam 1 = G2.
+{ rewrite (apply_fun_graph 2 (fun i:set => If_i (i = 0) G1 G2) 1 In_1_2).
+  exact (If_i_0 (1 = 0) G1 G2 neq_1_0). }
+claim HsubG1 : subgroup_of G1 G mult e inv.
+{ rewrite <- HGfam0. exact (Hsub 0 In_0_2). }
+claim HsubG2 : subgroup_of G2 G mult e inv.
+{ rewrite <- HGfam1. exact (Hsub 1 In_1_2). }
+apply (and4E (G1 c= G) (e :e G1)
+  (forall x1 y1:set, x1 :e G1 -> y1 :e G1 -> apply_fun mult (x1, y1) :e G1)
+  (forall x1:set, x1 :e G1 -> apply_fun inv x1 :e G1) HsubG1).
+assume HG1sub HeG1 HG1mult HG1inv.
+apply (and4E (G2 c= G) (e :e G2)
+  (forall x1 y1:set, x1 :e G2 -> y1 :e G2 -> apply_fun mult (x1, y1) :e G2)
+  (forall x1:set, x1 :e G2 -> apply_fun inv x1 :e G2) HsubG2).
+assume HG2sub HeG2 HG2mult HG2inv.
+claim Hinter_simple : forall z:set, z :e G1 -> z :e G2 -> z = e.
+{ let z. assume HzG1 : z :e G1. assume HzG2 : z :e G2.
+  claim HzGfam0 : z :e apply_fun Gfam 0. { rewrite HGfam0. exact HzG1. }
+  claim HzGfam1 : z :e apply_fun Gfam 1. { rewrite HGfam1. exact HzG2. }
+  exact (Hinter 0 1 In_0_2 In_1_2 neq_0_1 z HzGfam0 HzGfam1). }
+apply (and6E
+  (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+  (forall x1 y1 z1:set, x1 :e G -> y1 :e G -> z1 :e G ->
+    apply_fun mult (apply_fun mult (x1, y1), z1) = apply_fun mult (x1, apply_fun mult (y1, z1)))
+  (forall x1:set, x1 :e G -> apply_fun mult (e, x1) = x1 /\ apply_fun mult (x1, e) = x1)
+  (forall x1:set, x1 :e G ->
+    apply_fun mult (x1, apply_fun inv x1) = e /\ apply_fun mult (apply_fun inv x1, x1) = e)
+  Hgrp).
+assume HmultF HinvF HeG Hassoc Hid Hinverse.
+(** Extract reduced word components **)
+apply (and3E
+  (m :e omega)
+  (forall i:set, i :e m ->
+    exists alpha:set, alpha :e 2 /\
+      apply_fun cs i :e apply_fun Gfam alpha /\
+      apply_fun cs i <> apply_fun efam alpha)
+  (forall i:set, i :e m -> ordsucc i :e m ->
+    forall alpha beta:set, alpha :e 2 -> beta :e 2 ->
+      apply_fun cs i :e apply_fun Gfam alpha ->
+      apply_fun cs (ordsucc i) :e apply_fun Gfam beta -> alpha <> beta)
+  Hred).
+assume Hm_omega Hcs_mem Hcs_adj.
+claim HxG : x :e G. { exact (HG1sub x HxG1). }
+claim HyG : y :e G. { exact (HG2sub y HyG2). }
+claim HinvcG : apply_fun inv c :e G. { exact (HinvF c HcG). }
+claim HcxG : apply_fun mult (c, x) :e G.
+{ exact (HmultF (c, x) (tuple_2_setprod_by_pair_Sigma G G c x HcG HxG)). }
+claim Hm_nat : nat_p m. { exact (omega_nat_p m Hm_omega). }
+claim Hk_in_m : k :e m. { rewrite Hm_eq. exact (ordsuccI2 k). }
+claim H0_in_m : 0 :e m. { rewrite Hm_eq. exact (nat_0_in_ordsucc k Hk_nat). }
+(** Derive cx = yc **)
+claim Hinvc_c : apply_fun mult (apply_fun inv c, c) = e.
+{ exact (andER
+    (apply_fun mult (c, apply_fun inv c) = e)
+    (apply_fun mult (apply_fun inv c, c) = e)
+    (Hinverse c HcG)). }
+claim Hcx_e : apply_fun mult (apply_fun mult (c, x), e) = apply_fun mult (c, x).
+{ exact (andER
+    (apply_fun mult (e, apply_fun mult (c, x)) = apply_fun mult (c, x))
+    (apply_fun mult (apply_fun mult (c, x), e) = apply_fun mult (c, x))
+    (Hid (apply_fun mult (c, x)) HcxG)). }
+claim Hassoc_yc : apply_fun mult (y, c) =
+  apply_fun mult (apply_fun mult (c, x), apply_fun mult (apply_fun inv c, c)).
+{ exact (Hassoc (apply_fun mult (c, x)) (apply_fun inv c) c HcxG HinvcG HcG). }
+claim Hcx_eq_yc : apply_fun mult (c, x) = apply_fun mult (y, c).
+{ rewrite Hassoc_yc. rewrite Hinvc_c. symmetry. exact Hcx_e. }
+(** Evaluate efam **)
+claim Hefam0 : apply_fun efam 0 = e.
+{ rewrite (apply_fun_graph 2 (fun _:set => e) 0 In_0_2). reflexivity. }
+claim Hefam1 : apply_fun efam 1 = e.
+{ rewrite (apply_fun_graph 2 (fun _:set => e) 1 In_1_2). reflexivity. }
+(** Construct reduced word ws for cx = [cs(0),...,cs(k),x] of length ordsucc m **)
+set ws := graph (ordsucc m) (fun i:set => If_i (i :e m) (apply_fun cs i) x).
+claim Hm_notin_m : ~(m :e m). { exact (In_irref m). }
+claim Hws_m : apply_fun ws m = x.
+{ rewrite (apply_fun_graph (ordsucc m) (fun i:set => If_i (i :e m) (apply_fun cs i) x)
+    m (ordsuccI2 m)).
+  exact (If_i_0 (m :e m) (apply_fun cs m) x Hm_notin_m). }
+claim Hws_agree : forall j:set, j :e m -> apply_fun ws j = apply_fun cs j.
+{ let j. assume Hjm : j :e m.
+  claim Hj_sm : j :e ordsucc m. { exact (ordsuccI1 m j Hjm). }
+  rewrite (apply_fun_graph (ordsucc m) (fun i:set => If_i (i :e m) (apply_fun cs i) x)
+    j Hj_sm).
+  exact (If_i_1 (j :e m) (apply_fun cs j) x Hjm). }
+(** Word product of ws at ordsucc m = mult(c, x) **)
+claim Hsm_omega : ordsucc m :e omega. { exact (omega_ordsucc m Hm_omega). }
+claim Hwp_m : word_product mult e ws m = c.
+{ claim Hagree : word_product mult e ws m = word_product mult e cs m.
+  { exact (word_product_agree mult e ws cs m Hm_omega Hws_agree). }
+  rewrite Hagree. exact Hprod. }
+claim Hwp_sm_step : word_product mult e ws (ordsucc m) =
+  apply_fun mult (word_product mult e ws m, apply_fun ws m).
+{ exact (nat_primrec_S e (fun i r => apply_fun mult (r, apply_fun ws i)) m Hm_nat). }
+claim Hwp_cx : word_product mult e ws (ordsucc m) = apply_fun mult (c, x).
+{ rewrite Hwp_sm_step. rewrite Hwp_m. rewrite Hws_m. reflexivity. }
+(** Show ws is reduced **)
+claim Hcsk_ne_e : apply_fun cs k <> e.
+{ apply (exandE_i
+    (fun al:set => al :e 2 /\ apply_fun cs k :e apply_fun Gfam al)
+    (fun al:set => apply_fun cs k <> apply_fun efam al)
+    (Hcs_mem k Hk_in_m)).
+  let al_k.
+  assume Halk_conj : al_k :e 2 /\ apply_fun cs k :e apply_fun Gfam al_k.
+  assume Hne_efam : apply_fun cs k <> apply_fun efam al_k.
+  claim Halk2 : al_k :e 2.
+  { exact (andEL (al_k :e 2) (apply_fun cs k :e apply_fun Gfam al_k) Halk_conj). }
+  claim Hefam_al : apply_fun efam al_k = e.
+  { rewrite (apply_fun_graph 2 (fun _:set => e) al_k Halk2). reflexivity. }
+  assume Habs : apply_fun cs k = e.
+  apply Hne_efam. rewrite Hefam_al. exact Habs. }
 admit.
 Admitted.
 
