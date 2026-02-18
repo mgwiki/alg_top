@@ -112438,6 +112438,11 @@ apply (andI
         - exact HleftCosetEsubC.
         - exact HCsubLeftCosetE.
       }
+      claim HqidEqC : quotient_group_id G mult e C = C.
+      {
+        rewrite Hqid.
+        exact HleftCosetEqC.
+      }
       claim HpowSetSubC :
         (group_power_nat
           (quotient_group_mult G mult C)
