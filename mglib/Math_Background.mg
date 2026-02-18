@@ -85669,10 +85669,55 @@ Theorem ex68_2c_finite_order_elements :
 admit.
 Admitted.
 
+(** Helper: word_product agrees when sequences agree on indices **)
+Theorem word_product_agree : forall mult e xs1 xs2 n:set,
+  n :e omega ->
+  (forall j:set, j :e n -> apply_fun xs1 j = apply_fun xs2 j) ->
+  word_product mult e xs1 n = word_product mult e xs2 n.
+let mult e xs1 xs2.
+claim Hnat : forall n:set, nat_p n ->
+  (forall j:set, j :e n -> apply_fun xs1 j = apply_fun xs2 j) ->
+  word_product mult e xs1 n = word_product mult e xs2 n.
+{
+  apply nat_ind.
+  - prove (forall j:set, j :e 0 -> apply_fun xs1 j = apply_fun xs2 j) ->
+      word_product mult e xs1 0 = word_product mult e xs2 0.
+    assume Hagree.
+    claim H1 : word_product mult e xs1 0 = e.
+    { exact (nat_primrec_0 e (fun j r => apply_fun mult (r, apply_fun xs1 j))). }
+    claim H2 : word_product mult e xs2 0 = e.
+    { exact (nat_primrec_0 e (fun j r => apply_fun mult (r, apply_fun xs2 j))). }
+    rewrite H1. rewrite H2. reflexivity.
+  - let k. assume Hk : nat_p k.
+    assume IH : (forall j:set, j :e k -> apply_fun xs1 j = apply_fun xs2 j) ->
+      word_product mult e xs1 k = word_product mult e xs2 k.
+    prove (forall j:set, j :e ordsucc k -> apply_fun xs1 j = apply_fun xs2 j) ->
+      word_product mult e xs1 (ordsucc k) = word_product mult e xs2 (ordsucc k).
+    assume Hagree : forall j:set, j :e ordsucc k -> apply_fun xs1 j = apply_fun xs2 j.
+    claim Hagree_k : forall j:set, j :e k -> apply_fun xs1 j = apply_fun xs2 j.
+    { let j. assume Hjk : j :e k. exact (Hagree j (ordsuccI1 k j Hjk)). }
+    claim Hwp_k : word_product mult e xs1 k = word_product mult e xs2 k.
+    { exact (IH Hagree_k). }
+    claim Hxs_k : apply_fun xs1 k = apply_fun xs2 k.
+    { exact (Hagree k (ordsuccI2 k)). }
+    claim HS1 : word_product mult e xs1 (ordsucc k) =
+      apply_fun mult (word_product mult e xs1 k, apply_fun xs1 k).
+    { exact (nat_primrec_S e (fun j r => apply_fun mult (r, apply_fun xs1 j)) k Hk). }
+    claim HS2 : word_product mult e xs2 (ordsucc k) =
+      apply_fun mult (word_product mult e xs2 k, apply_fun xs2 k).
+    { exact (nat_primrec_S e (fun j r => apply_fun mult (r, apply_fun xs2 j)) k Hk). }
+    rewrite HS1. rewrite HS2. rewrite Hwp_k. rewrite Hxs_k. reflexivity.
+}
+let n. assume Hn : n :e omega.
+exact (Hnat n (omega_nat_p n Hn)).
+Qed.
+
+
 (** from S68 Exercise 3 (line 3029 in algtop.tex) **)
 (** LATEX VERSION: Let G = G1 free-product G2. Given c in G, cG1c^{-1} cap G2 = {1}. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 66 **)
+(** Bounty 73 **)
+(** Lock Alice 1771461465 **)
 Theorem ex68_3_conjugate_intersection_trivial :
   forall G mult e inv G1 G2:set,
   free_product_of_subgroups G mult e inv 2
@@ -85682,7 +85727,37 @@ Theorem ex68_3_conjugate_intersection_trivial :
     forall x:set, x :e G1 ->
       apply_fun mult (apply_fun mult (c, x), apply_fun inv c) :e G2 ->
       apply_fun mult (apply_fun mult (c, x), apply_fun inv c) = e.
-admit.
+let G mult e inv G1 G2.
+set Gfam := graph 2 (fun i:set => If_i (i = 0) G1 G2).
+set efam := graph 2 (fun _:set => e).
+assume Hfp : free_product_of_subgroups G mult e inv 2 Gfam efam.
+let c. assume HcG : c :e G.
+let x. assume HxG1 : x :e G1.
+set y := apply_fun mult (apply_fun mult (c, x), apply_fun inv c).
+assume HyG2 : y :e G2.
+(** Use excluded middle: either y = e (done) or y <> e (derive contradiction) **)
+apply (xm (y = e)).
+- assume Hye : y = e. exact Hye.
+- assume Hyne : y <> e.
+  prove False.
+  (** Extract free product components **)
+  apply (and5E
+    (group_structure G mult e inv)
+    (forall alpha:set, alpha :e 2 -> subgroup_of (apply_fun Gfam alpha) G mult e inv)
+    (forall alpha beta:set, alpha :e 2 -> beta :e 2 -> alpha <> beta ->
+      forall z:set, z :e apply_fun Gfam alpha -> z :e apply_fun Gfam beta -> z = e)
+    (subgroups_generate G mult e inv 2 Gfam)
+    (forall z:set, z :e G -> z <> e ->
+      exists n xs:set,
+        reduced_word 2 Gfam efam n xs /\ n <> 0 /\
+        word_product mult e xs n = z /\
+        (forall n' xs':set,
+          reduced_word 2 Gfam efam n' xs' -> n' <> 0 ->
+          word_product mult e xs' n' = z ->
+          n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
+    Hfp).
+  assume Hgrp Hsub Hinter Hgen Hunique.
+  admit.
 Admitted.
 
 (** ============================================================ **)
