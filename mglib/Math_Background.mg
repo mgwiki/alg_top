@@ -80791,6 +80791,111 @@ exact (lemma59_4a_simply_connected_from_pi1_trivial_at_point
   Hpi1X).
 Qed.
 
+(** Helper: if i-star and j-star are trivial and pieces are path connected, then X is simply connected. **)
+(** Proven Bob **)
+Theorem ex59_4a_both_trivial_if_pieces_path_connected : forall X Tx U V x0:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx ->
+  X = U :\/: V ->
+  x0 :e U :/\: V ->
+  path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
+  path_connected_space U (subspace_topology X Tx U) ->
+  path_connected_space V (subspace_topology X Tx V) ->
+  (forall cls:set,
+    cls :e fundamental_group U (subspace_topology X Tx U) x0 ->
+    apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+      (graph U (fun x:set => x))) cls = fundamental_group_id X Tx x0) ->
+  (forall cls:set,
+    cls :e fundamental_group V (subspace_topology X Tx V) x0 ->
+    apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+      (graph V (fun x:set => x))) cls = fundamental_group_id X Tx x0) ->
+  simply_connected X Tx.
+let X Tx U V x0.
+assume Htop : topology_on X Tx.
+assume HU : U :e Tx.
+assume HV : V :e Tx.
+assume Hcover : X = U :\/: V.
+assume Hx0UV : x0 :e U :/\: V.
+assume HpcUV : path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)).
+assume HpcU : path_connected_space U (subspace_topology X Tx U).
+assume HpcV : path_connected_space V (subspace_topology X Tx V).
+assume Hi_triv : forall cls:set,
+  cls :e fundamental_group U (subspace_topology X Tx U) x0 ->
+  apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+    (graph U (fun x:set => x))) cls = fundamental_group_id X Tx x0.
+assume Hj_triv : forall cls:set,
+  cls :e fundamental_group V (subspace_topology X Tx V) x0 ->
+  apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+    (graph V (fun x:set => x))) cls = fundamental_group_id X Tx x0.
+claim Hx0U : x0 :e U.
+{ exact (binintersectE1 U V x0 Hx0UV). }
+claim Hx0X : x0 :e X.
+{ exact (topology_elem_subset X Tx U Htop HU x0 Hx0U). }
+claim HneUV : (U :/\: V) <> Empty.
+{
+  exact (elem_implies_nonempty
+    (U :/\: V)
+    x0
+    Hx0UV).
+}
+claim Hgen : forall cls:set, cls :e fundamental_group X Tx x0 ->
+  exists ucls:set,
+    ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+    cls = apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+      (graph U (fun x:set => x))) ucls.
+{
+  exact (ex59_4a_trivial_j_star
+    X
+    Tx
+    U
+    V
+    x0
+    Htop
+    HU
+    HV
+    Hcover
+    Hx0UV
+    HpcUV
+    Hj_triv).
+}
+claim Hpi1X :
+  fundamental_group X Tx x0 = {fundamental_group_id X Tx x0}.
+{
+  exact (lemma59_4a_pi1_trivial_from_i_generation
+    X
+    Tx
+    U
+    x0
+    Htop
+    HU
+    Hx0U
+    Hgen
+    Hi_triv).
+}
+claim HpcX : path_connected_space X Tx.
+{
+  exact (lemma59_2_path_connected_union_of_path_connected_open_subspaces
+    X
+    Tx
+    U
+    V
+    Htop
+    HU
+    HV
+    Hcover
+    HpcU
+    HpcV
+    HneUV).
+}
+exact (lemma59_4a_simply_connected_from_pi1_trivial_at_point
+  X
+  Tx
+  x0
+  HpcX
+  Hx0X
+  Hpi1X).
+Admitted. (** depends on admitted ex59_4a_trivial_j_star **)
+
 (** from S59 Exercise 4(a) continued: both i-star and j-star trivial **)
 (** LATEX VERSION: If both i-star and j-star are trivial, then pi1(X,x0) is trivial. **)
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 25 **)
@@ -80878,23 +80983,50 @@ claim Hpi1X :
     Hi_triv).
 }
 claim HscX_if_pcX :
-  path_connected_space X Tx ->
+  path_connected_space U (subspace_topology X Tx U) ->
+  path_connected_space V (subspace_topology X Tx V) ->
   simply_connected X Tx.
 {
-  assume HpcX'.
-  exact (lemma59_4a_simply_connected_from_pi1_trivial_at_point
+  assume HpcU.
+  assume HpcV.
+  exact (ex59_4a_both_trivial_if_pieces_path_connected
     X
     Tx
+    U
+    V
     x0
-    HpcX'
-    Hx0X
-    Hpi1X).
+    Htop
+    HU
+    HV
+    Hcover
+    Hx0UV
+    HpcUV
+    HpcU
+    HpcV
+    Hi_triv
+    Hj_triv).
 }
-claim HpcX : path_connected_space X Tx.
+claim HpcPieces :
+  path_connected_space U (subspace_topology X Tx U) /\
+  path_connected_space V (subspace_topology X Tx V).
 {
   admit. (** remaining gap: derive path_connectedness of U and V from current assumptions **)
 }
-exact (HscX_if_pcX HpcX).
+claim HpcU : path_connected_space U (subspace_topology X Tx U).
+{
+  exact (andEL
+    (path_connected_space U (subspace_topology X Tx U))
+    (path_connected_space V (subspace_topology X Tx V))
+    HpcPieces).
+}
+claim HpcV : path_connected_space V (subspace_topology X Tx V).
+{
+  exact (andER
+    (path_connected_space U (subspace_topology X Tx U))
+    (path_connected_space V (subspace_topology X Tx V))
+    HpcPieces).
+}
+exact (HscX_if_pcX HpcU HpcV).
 Admitted.
 
 (** ============================================================ **)
