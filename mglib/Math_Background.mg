@@ -120004,8 +120004,56 @@ apply xm (second_countable_space X Tx).
             HeqUV
             (HVsubaV z HzV)).
     - assume HneqUV.
-      (** TODO Charlie: nontrivial overlap case aU <> aV with aU :/\: aV <> Empty. **)
-      admit.
+      claim HcarrierEx : exists W:set, W :e A /\ aU :\/: aV c= W.
+      {
+        (** TODO Charlie: derive a common carrier in A for intersecting shrunken parents. **)
+        admit.
+      }
+      apply HcarrierEx.
+      let W.
+      assume HWpack.
+      claim HWA : W :e A.
+      {
+        exact (andEL
+          (W :e A)
+          (aU :\/: aV c= W)
+          HWpack).
+      }
+      claim HaUaVsubW : aU :\/: aV c= W.
+      {
+        exact (andER
+          (W :e A)
+          (aU :\/: aV c= W)
+          HWpack).
+      }
+      witness W.
+      apply andI.
+      + exact HWA.
+      + let z.
+        assume HzUV.
+        claim HzaUaV : z :e aU :\/: aV.
+        {
+          apply (binunionE
+            U
+            V
+            z
+            HzUV).
+          * assume HzU.
+            exact (binunionI1
+              aU
+              aV
+              z
+              (HUsubaU z HzU)).
+          * assume HzV.
+            exact (binunionI2
+              aU
+              aV
+              z
+              (HVsubaV z HzV)).
+        }
+        exact (HaUaVsubW
+          z
+          HzaUaV).
   }
   witness V0.
   apply andI.
