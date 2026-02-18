@@ -57483,8 +57483,105 @@ claim Hex :
                     (forall x:set, x :e Ntu ->
                       apply_fun p (apply_fun l0 x) = apply_fun f x).
                 {
-                  (** TODO Bob: glue lu on Nu with localNt on Nt using HlocalNtAtU (and overlap compatibility). **)
-                  admit.
+                  set l0 := graph Ntu
+                    (fun x:set => If_i (x :e Nu) (apply_fun lu x) (apply_fun localNt x)).
+                  claim Hl00 : apply_fun l0 0 = e0.
+                  {
+                    rewrite (apply_fun_graph
+                      Ntu
+                      (fun x:set => If_i (x :e Nu) (apply_fun lu x) (apply_fun localNt x))
+                      0
+                      H0Ntu).
+                    rewrite (If_i_1
+                      (0 :e Nu)
+                      (apply_fun lu 0)
+                      (apply_fun localNt 0)
+                      H0Nu).
+                    exact Hlu0.
+                  }
+                  claim Hl0Comm :
+                    forall x:set, x :e Ntu ->
+                      apply_fun p (apply_fun l0 x) = apply_fun f x.
+                  {
+                    let x.
+                    assume HxNtu.
+                    rewrite (apply_fun_graph
+                      Ntu
+                      (fun y:set => If_i (y :e Nu) (apply_fun lu y) (apply_fun localNt y))
+                      x
+                      HxNtu).
+                    apply xm (x :e Nu).
+                    - assume HxNu.
+                      rewrite (If_i_1
+                        (x :e Nu)
+                        (apply_fun lu x)
+                        (apply_fun localNt x)
+                        HxNu).
+                      exact (HluComm
+                        x
+                        HxNu).
+                    - assume HxNotNu.
+                      claim HxNt : x :e Nt.
+                      {
+                        apply (binunionE
+                          Nu
+                          Nt
+                          x
+                          HxNtu).
+                        + assume HxNu.
+                          claim Hfalse : False.
+                          {
+                            exact (HxNotNu
+                              HxNu).
+                          }
+                          exact (FalseE
+                            Hfalse
+                            (x :e Nt)).
+                        + assume HxNt0.
+                          exact HxNt0.
+                      }
+                      rewrite (If_i_0
+                        (x :e Nu)
+                        (apply_fun lu x)
+                        (apply_fun localNt x)
+                        HxNotNu).
+                      exact (HlocalNtComm
+                        x
+                        HxNt).
+                  }
+                  claim Hl0Cont :
+                    continuous_map
+                      Ntu
+                      (subspace_topology unit_interval unit_interval_topology Ntu)
+                      E
+                      Te
+                      l0.
+                  {
+                    (** TODO Bob: prove continuity of the glued candidate l0 on Ntu. **)
+                    admit.
+                  }
+                  witness l0.
+                  exact (andI
+                    (continuous_map
+                      Ntu
+                      (subspace_topology unit_interval unit_interval_topology Ntu)
+                      E
+                      Te
+                      l0 /\
+                      apply_fun l0 0 = e0)
+                    (forall x:set, x :e Ntu ->
+                      apply_fun p (apply_fun l0 x) = apply_fun f x)
+                    (andI
+                      (continuous_map
+                        Ntu
+                        (subspace_topology unit_interval unit_interval_topology Ntu)
+                        E
+                        Te
+                        l0)
+                      (apply_fun l0 0 = e0)
+                      Hl0Cont
+                      Hl00)
+                    Hl0Comm).
                 }
                 apply HexGlue.
                 let l0.
