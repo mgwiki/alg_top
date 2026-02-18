@@ -112670,6 +112670,36 @@ exact (Sep_Subq
       g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))).
 Qed.
 
+(** Helper for S69 Lem 69.1: explicit evaluation of the cyclic factor family at alpha. **)
+(** Proven Bob **)
+Theorem lemma69_1_factor_family_eval :
+  forall G mult e inv J gens alpha:set,
+  alpha :e J ->
+  apply_fun
+    (graph J (fun beta:set =>
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens beta) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))}))
+    alpha
+  =
+  {g :e G | exists n:set, n :e int /\
+    ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+     (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+      g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}.
+let G mult e inv J gens alpha.
+assume Halpha : alpha :e J.
+exact (apply_fun_graph
+  J
+  (fun beta:set =>
+    {g :e G | exists n:set, n :e int /\
+      ((n :e omega /\ g = group_power_nat mult e (apply_fun gens beta) n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+        g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))})
+  alpha
+  Halpha).
+Qed.
+
 (** Helper for S69 Lem 69.1: any homomorphism on G restricts to each cyclic factor family. **)
 (** Proven Bob **)
 Theorem lemma69_1_hom_restricts_to_factor_family :
@@ -113047,13 +113077,13 @@ apply (iffI
           reflexivity.
         }
         rewrite HGalpha_def.
-        exact (apply_fun_graph
+        exact (lemma69_1_factor_family_eval
+          G
+          mult
+          e
+          inv
           J
-          (fun alpha:set =>
-            {g :e G | exists n:set, n :e int /\
-              ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
-               (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
-                 g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))})
+          gens
           alpha
           Halpha).
       }
@@ -113086,13 +113116,13 @@ apply (iffI
         reflexivity.
       }
       rewrite HGalpha_def.
-      exact (apply_fun_graph
+      exact (lemma69_1_factor_family_eval
+        G
+        mult
+        e
+        inv
         J
-        (fun alpha:set =>
-          {g :e G | exists n:set, n :e int /\
-            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
-             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
-               g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))})
+        gens
         alpha
         Halpha).
     }
