@@ -105364,7 +105364,50 @@ apply (xm
           rewrite Hj_eq_st.
           reflexivity.
         }
-        admit. (** TODO Bob: handle j<>0 branch after second predecessor split (t and cs(t):e G1) **)
+        apply (xm
+          (t = 0)).
+        * assume Ht0 : t = 0.
+          claim Hj1 : j = 1.
+          {
+            rewrite Hj_eq_st.
+            rewrite Ht0.
+            exact ordsucc_0_eq_1_nat.
+          }
+          claim Hk2 : k = 2.
+          {
+            rewrite Hk_eq_sj.
+            rewrite Hj1.
+            exact ordsucc_1_eq_2_nat.
+          }
+          claim Hm_eq_sss0 : m = ordsucc (ordsucc (ordsucc 0)).
+          {
+            rewrite Hm_eq_ssst.
+            rewrite Ht0.
+            reflexivity.
+          }
+          claim Hcs0_G1 : apply_fun cs 0 :e G1.
+          {
+            rewrite <- Ht0.
+            exact Hcst_G1.
+          }
+          claim Hcs0_ne_e : apply_fun cs 0 <> e.
+          {
+            rewrite <- Ht0.
+            exact Hcst_ne_e.
+          }
+          claim Hcs1_G2 : apply_fun cs 1 :e G2.
+          {
+            rewrite <- Hj1.
+            exact Hcsj_G2.
+          }
+          claim Hcs2_G1 : apply_fun cs 2 :e G1.
+          {
+            rewrite <- Hk2.
+            exact Hcsk_G1.
+          }
+          admit. (** TODO Bob: handle t=0 branch (j=1,k=2,m=succ(succ(succ 0))) **)
+        * assume Ht_ne0 : t <> 0.
+          admit. (** TODO Bob: handle t<>0 branch after third predecessor split **)
 Admitted.
 
 (** Core helper: given free product and reduced word of c, derive contradiction **)
