@@ -108383,7 +108383,103 @@ apply and3I.
             claim HhgH : apply_fun h g :e H. { exact (Hh_in_H g HgG). }
             apply (xm (apply_fun multG (g, b) = eG)).
             + assume Hgb_eG : apply_fun multG (g, b) = eG.
-              admit.
+              claim Hlhs_eH : apply_fun h (apply_fun multG (g, b)) = eH.
+              { rewrite Hgb_eG. exact Hh_eG_shared. }
+              claim HinvG_b_G : apply_fun invG b :e G. { exact (HinvGF b HbG). }
+              claim Hb_invb : apply_fun multG (b, apply_fun invG b) = eG.
+              { exact (andEL
+                  (apply_fun multG (b, apply_fun invG b) = eG)
+                  (apply_fun multG (apply_fun invG b, b) = eG)
+                  (HinvG b HbG)). }
+              claim Hgb_assoc : apply_fun multG (apply_fun multG (g, b), apply_fun invG b) =
+                apply_fun multG (g, apply_fun multG (b, apply_fun invG b)).
+              { exact (HassocG g b (apply_fun invG b) HgG HbG HinvG_b_G). }
+              claim Hg_eq_invb : g = apply_fun invG b.
+              { claim Hstep1 : apply_fun multG (apply_fun multG (g, b), apply_fun invG b) =
+                  apply_fun multG (eG, apply_fun invG b).
+                { rewrite Hgb_eG. reflexivity. }
+                claim Hstep2 : apply_fun multG (eG, apply_fun invG b) = apply_fun invG b.
+                { exact (andEL
+                    (apply_fun multG (eG, apply_fun invG b) = apply_fun invG b)
+                    (apply_fun multG (apply_fun invG b, eG) = apply_fun invG b)
+                    (HidG (apply_fun invG b) HinvG_b_G)). }
+                claim Hstep3 : apply_fun multG (apply_fun multG (g, b), apply_fun invG b) = apply_fun invG b.
+                { exact (eq_i_tra
+                    (apply_fun multG (apply_fun multG (g, b), apply_fun invG b))
+                    (apply_fun multG (eG, apply_fun invG b))
+                    (apply_fun invG b) Hstep1 Hstep2). }
+                claim Hstep4 : apply_fun multG (g, apply_fun multG (b, apply_fun invG b)) = apply_fun invG b.
+                { claim Hassoc_sym : apply_fun multG (g, apply_fun multG (b, apply_fun invG b)) =
+                    apply_fun multG (apply_fun multG (g, b), apply_fun invG b).
+                  { symmetry. exact Hgb_assoc. }
+                  exact (eq_i_tra
+                    (apply_fun multG (g, apply_fun multG (b, apply_fun invG b)))
+                    (apply_fun multG (apply_fun multG (g, b), apply_fun invG b))
+                    (apply_fun invG b) Hassoc_sym Hstep3). }
+                claim Hstep5 : apply_fun multG (g, eG) = apply_fun invG b.
+                { rewrite <- Hb_invb at 1. exact Hstep4. }
+                claim Hstep6 : apply_fun multG (g, eG) = g.
+                { exact (andER
+                    (apply_fun multG (eG, g) = g)
+                    (apply_fun multG (g, eG) = g)
+                    (HidG g HgG)). }
+                claim Hstep6_sym : g = apply_fun multG (g, eG).
+                { symmetry. exact Hstep6. }
+                exact (eq_i_tra g (apply_fun multG (g, eG)) (apply_fun invG b)
+                  Hstep6_sym Hstep5). }
+              claim Hinv_cl_beta : forall x:set, x :e apply_fun Gfam beta ->
+                apply_fun invG x :e apply_fun Gfam beta.
+              { apply (and4E
+                  (apply_fun Gfam beta c= G)
+                  (eG :e apply_fun Gfam beta)
+                  (forall x0 y0:set, x0 :e apply_fun Gfam beta -> y0 :e apply_fun Gfam beta ->
+                    apply_fun multG (x0, y0) :e apply_fun Gfam beta)
+                  (forall x0:set, x0 :e apply_fun Gfam beta -> apply_fun invG x0 :e apply_fun Gfam beta)
+                  (Hsub beta Hbeta_J)).
+                assume _ _ _ Hinvcl. exact Hinvcl. }
+              claim Hg_Gbeta : g :e apply_fun Gfam beta.
+              { rewrite Hg_eq_invb. exact (Hinv_cl_beta b Hb_Gbeta). }
+              apply (xm (g = apply_fun efam beta)).
+              * assume Hg_efam : g = apply_fun efam beta.
+                admit.
+              * assume Hg_ne_efam : g <> apply_fun efam beta.
+                claim Hh_g_hs : apply_fun h g = h_single g.
+                { exact (Hh_gen_elem beta Hbeta_J g Hg_Gbeta Hg_ne Hg_ne_efam). }
+                claim Hhs_g_hfam : h_single g = apply_fun (apply_fun hfam beta) g.
+                { prove apply_fun (apply_fun hfam (alpha_of g)) g = apply_fun (apply_fun hfam beta) g.
+                  exact (Hhfam_alpha_of beta Hbeta_J g Hg_Gbeta). }
+                claim Hhs_b_hfam : h_single b = apply_fun (apply_fun hfam beta) b.
+                { prove apply_fun (apply_fun hfam (alpha_of b)) b = apply_fun (apply_fun hfam beta) b.
+                  exact (Hhfam_alpha_of beta Hbeta_J b Hb_Gbeta). }
+                claim Hhom_gb : apply_fun (apply_fun hfam beta) (apply_fun multG (g, b)) =
+                  apply_fun multH (apply_fun (apply_fun hfam beta) g, apply_fun (apply_fun hfam beta) b).
+                { exact (group_homomorphism_mult_rule (apply_fun Gfam beta) multG H multH
+                    (apply_fun hfam beta) g b (Hhfam beta Hbeta_J) Hg_Gbeta Hb_Gbeta). }
+                claim Hhfam_gb_eH : apply_fun (apply_fun hfam beta) (apply_fun multG (g, b)) = eH.
+                { rewrite Hgb_eG. exact (Hhfam_id beta Hbeta_J). }
+                claim Hprod_eH : apply_fun multH (apply_fun (apply_fun hfam beta) g, apply_fun (apply_fun hfam beta) b) = eH.
+                { claim Hhom_sym : apply_fun multH (apply_fun (apply_fun hfam beta) g, apply_fun (apply_fun hfam beta) b) =
+                    apply_fun (apply_fun hfam beta) (apply_fun multG (g, b)).
+                  { symmetry. exact Hhom_gb. }
+                  exact (eq_i_tra
+                    (apply_fun multH (apply_fun (apply_fun hfam beta) g, apply_fun (apply_fun hfam beta) b))
+                    (apply_fun (apply_fun hfam beta) (apply_fun multG (g, b)))
+                    eH Hhom_sym Hhfam_gb_eH). }
+                claim Hrhs_eq : apply_fun multH (apply_fun h g, h_single b) =
+                  apply_fun multH (apply_fun (apply_fun hfam beta) g, apply_fun (apply_fun hfam beta) b).
+                { rewrite Hh_g_hs. rewrite Hhs_g_hfam. rewrite Hhs_b_hfam. reflexivity. }
+                claim Hrhs_eH : apply_fun multH (apply_fun h g, h_single b) = eH.
+                { exact (eq_i_tra
+                    (apply_fun multH (apply_fun h g, h_single b))
+                    (apply_fun multH (apply_fun (apply_fun hfam beta) g, apply_fun (apply_fun hfam beta) b))
+                    eH Hrhs_eq Hprod_eH). }
+                claim Hrhs_eH_sym : eH = apply_fun multH (apply_fun h g, h_single b).
+                { symmetry. exact Hrhs_eH. }
+                exact (eq_i_tra
+                  (apply_fun h (apply_fun multG (g, b)))
+                  eH
+                  (apply_fun multH (apply_fun h g, h_single b))
+                  Hlhs_eH Hrhs_eH_sym).
             + assume Hgb_ne : apply_fun multG (g, b) <> eG.
               claim Hhgb : apply_fun h (apply_fun multG (g, b)) =
                 nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun (xs_of (apply_fun multG (g, b))) i)))
