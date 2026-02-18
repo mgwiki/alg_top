@@ -115773,12 +115773,9 @@ Theorem ex70_1a_trivial_inclusion_epimorphism :
 exact trivial_inclusion_induces_free_product_epimorphism_helper.
 Admitted.
 
-(** from S70 Exercise 1(b) (line 3481 in algtop.tex) **)
-(** LATEX VERSION: Under the hypotheses of Ex 1(a) (i-star trivial), **)
-(** h: (pi1(U)/N1) free-product (pi1(V)/N2) -> pi1(X) is an isomorphism. **)
-(** EFFORT: 10 lines textbook, difficulty 6/10, USD 120 **)
-(** Bounty 132 **)
-Theorem ex70_1b_trivial_inclusion_isomorphism :
+(** Infrastructure helper for S70 Exercise 1(b):
+    under trivial inclusion, the induced free-product map is an isomorphism. **)
+Theorem trivial_inclusion_induces_free_product_isomorphism_helper :
   forall X Tx U V x0:set,
   U :e Tx -> V :e Tx -> X = U :\/: V ->
   path_connected_space U (subspace_topology X Tx U) ->
@@ -115836,6 +115833,71 @@ Theorem ex70_1b_trivial_inclusion_isomorphism :
       group_isomorphism FP multFP
         (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0) h.
 admit.
+Admitted.
+
+(** from S70 Exercise 1(b) (line 3481 in algtop.tex) **)
+(** LATEX VERSION: Under the hypotheses of Ex 1(a) (i-star trivial), **)
+(** h: (pi1(U)/N1) free-product (pi1(V)/N2) -> pi1(X) is an isomorphism. **)
+(** EFFORT: 10 lines textbook, difficulty 6/10, USD 120 **)
+(** Bounty 132 **)
+Theorem ex70_1b_trivial_inclusion_isomorphism :
+  forall X Tx U V x0:set,
+  U :e Tx -> V :e Tx -> X = U :\/: V ->
+  path_connected_space U (subspace_topology X Tx U) ->
+  path_connected_space V (subspace_topology X Tx V) ->
+  path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
+  x0 :e U :/\: V ->
+  (forall cls:set,
+    cls :e fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0 ->
+    apply_fun (induced_homomorphism
+      (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+      X Tx x0 (graph (U :/\: V) (fun x => x))) cls =
+    fundamental_group_id X Tx x0) ->
+  let N1 := least_normal_subgroup
+    (fundamental_group U (subspace_topology X Tx U) x0)
+    (fundamental_group_mult U (subspace_topology X Tx U) x0)
+    (fundamental_group_id U (subspace_topology X Tx U) x0)
+    (fundamental_group_inv U (subspace_topology X Tx U) x0)
+    (homomorphism_image
+      (fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0)
+      (induced_homomorphism
+        (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+        U (subspace_topology X Tx U) x0
+        (graph (U :/\: V) (fun x => x)))) in
+  let N2 := least_normal_subgroup
+    (fundamental_group V (subspace_topology X Tx V) x0)
+    (fundamental_group_mult V (subspace_topology X Tx V) x0)
+    (fundamental_group_id V (subspace_topology X Tx V) x0)
+    (fundamental_group_inv V (subspace_topology X Tx V) x0)
+    (homomorphism_image
+      (fundamental_group (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0)
+      (induced_homomorphism
+        (U :/\: V) (subspace_topology X Tx (U :/\: V)) x0
+        V (subspace_topology X Tx V) x0
+        (graph (U :/\: V) (fun x => x)))) in
+	  exists FP multFP eFP invFP ifam:set,
+	    external_free_product FP multFP eFP invFP (UPair 0 1)
+      (graph (UPair 0 1) (fun i:set =>
+        if i = 0
+        then quotient_group_set
+          (fundamental_group U (subspace_topology X Tx U) x0)
+          (fundamental_group_mult U (subspace_topology X Tx U) x0) N1
+        else quotient_group_set
+          (fundamental_group V (subspace_topology X Tx V) x0)
+          (fundamental_group_mult V (subspace_topology X Tx V) x0) N2))
+      (graph (UPair 0 1) (fun i:set =>
+        if i = 0
+        then quotient_group_mult
+          (fundamental_group U (subspace_topology X Tx U) x0)
+          (fundamental_group_mult U (subspace_topology X Tx U) x0) N1
+        else quotient_group_mult
+          (fundamental_group V (subspace_topology X Tx V) x0)
+          (fundamental_group_mult V (subspace_topology X Tx V) x0) N2))
+      ifam /\
+	    exists h:set,
+	      group_isomorphism FP multFP
+	        (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0) h.
+exact trivial_inclusion_induces_free_product_isomorphism_helper.
 Admitted.
 
 (** from S70 Exercise 2(a) (line 3483 in algtop.tex) **)
