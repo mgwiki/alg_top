@@ -118406,8 +118406,150 @@ apply xm (second_countable_space X Tx).
         HcovA
         (HA0subA U HU))).
   }
-  (** TODO Charlie: use compact Hausdorff normality to construct a star-refinement of finite cover A0. **)
-  admit.
+  claim HopenA0_raw : open_cover X Tx A0.
+  {
+    exact (open_cover_of_implies_open_cover
+      X
+      Tx
+      A0
+      HopenA0).
+  }
+  claim HshrinkA0 :
+    exists V0:set,
+      open_cover X Tx V0 /\ finite V0 /\ refine_of V0 A0 /\
+      (forall v:set, v :e V0 ->
+        exists a0:set, a0 :e A0 /\ closure_of X Tx v c= a0).
+  {
+    exact (normal_space_finite_open_cover_shrinking
+      X
+      Tx
+      A0
+      HnormalX
+      HopenA0_raw
+      HA0fin).
+  }
+  apply HshrinkA0.
+  let V0.
+  assume HV0pack.
+  claim HV0main :
+    open_cover X Tx V0 /\ finite V0 /\ refine_of V0 A0.
+  {
+    exact (andEL
+      (open_cover X Tx V0 /\ finite V0 /\ refine_of V0 A0)
+      (forall v:set, v :e V0 ->
+        exists a0:set, a0 :e A0 /\ closure_of X Tx v c= a0)
+      HV0pack).
+  }
+  claim HopenV0_raw : open_cover X Tx V0.
+  {
+    claim HopenFin : open_cover X Tx V0 /\ finite V0.
+    {
+      exact (andEL
+        (open_cover X Tx V0 /\ finite V0)
+        (refine_of V0 A0)
+        HV0main).
+    }
+    exact (andEL
+      (open_cover X Tx V0)
+      (finite V0)
+      HopenFin).
+  }
+  claim HfinV0 : finite V0.
+  {
+    claim HopenFin : open_cover X Tx V0 /\ finite V0.
+    {
+      exact (andEL
+        (open_cover X Tx V0 /\ finite V0)
+        (refine_of V0 A0)
+        HV0main).
+    }
+    exact (andER
+      (open_cover X Tx V0)
+      (finite V0)
+      HopenFin).
+  }
+  claim HrefV0A0 : refine_of V0 A0.
+  {
+    exact (andER
+      (open_cover X Tx V0 /\ finite V0)
+      (refine_of V0 A0)
+      HV0main).
+  }
+  claim HclV0A0 :
+    forall v:set, v :e V0 ->
+      exists a0:set, a0 :e A0 /\ closure_of X Tx v c= a0.
+  {
+    exact (andER
+      (open_cover X Tx V0 /\ finite V0 /\ refine_of V0 A0)
+      (forall v:set, v :e V0 ->
+        exists a0:set, a0 :e A0 /\ closure_of X Tx v c= a0)
+      HV0pack).
+  }
+  claim HopenV0 : open_cover_of X Tx V0.
+  {
+    exact (open_cover_implies_open_cover_of
+      X
+      Tx
+      V0
+      HtopX
+      HopenV0_raw).
+  }
+  claim HrefCovV0A0 : refines_cover V0 A0.
+  {
+    let v.
+    assume HvV0.
+    exact (HrefV0A0 v HvV0).
+  }
+  claim HrefCovV0A : refines_cover V0 A.
+  {
+    let v.
+    assume HvV0.
+    apply (HrefCovV0A0 v HvV0).
+    let a0.
+    assume Ha0pack.
+    claim Ha0A0 : a0 :e A0.
+    {
+      exact (andEL
+        (a0 :e A0)
+        (v c= a0)
+        Ha0pack).
+    }
+    claim HvSuba0 : v c= a0.
+    {
+      exact (andER
+        (a0 :e A0)
+        (v c= a0)
+        Ha0pack).
+    }
+    witness a0.
+    apply andI.
+    - exact (HA0subA a0 Ha0A0).
+    - exact HvSuba0.
+  }
+  claim HstarPairV0 :
+    forall U V:set, U :e V0 -> V :e V0 -> U :/\: V <> Empty ->
+      exists W:set, W :e A /\ U :\/: V c= W.
+  {
+    (** TODO Charlie: derive pairwise star property from finite normal shrinking data. **)
+    admit.
+  }
+  witness V0.
+  apply andI.
+  - exact (andI
+      ((open_cover_of X Tx V0 /\ open_cover_of X Tx A) /\ refines_cover V0 A)
+      (forall U V:set, U :e V0 -> V :e V0 -> U :/\: V <> Empty ->
+        exists W:set, W :e A /\ U :\/: V c= W)
+      (andI
+        (open_cover_of X Tx V0 /\ open_cover_of X Tx A)
+        (refines_cover V0 A)
+        (andI
+          (open_cover_of X Tx V0)
+          (open_cover_of X Tx A)
+          HopenV0
+          HcovA)
+        HrefCovV0A)
+      HstarPairV0).
+  - exact HfinV0.
 Admitted.
 
 (** from Supplementary Exercises Exercise 2 / Thm (line 5406 in algtop.tex): pi_1 countable **)
