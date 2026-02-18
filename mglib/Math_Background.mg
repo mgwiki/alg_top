@@ -105407,7 +105407,154 @@ apply (xm
           }
           admit. (** TODO Bob: handle t=0 branch (j=1,k=2,m=succ(succ(succ 0))) **)
         * assume Ht_ne0 : t <> 0.
-          admit. (** TODO Bob: handle t<>0 branch after third predecessor split **)
+          apply (nat_inv
+            t
+            Ht_nat).
+          + assume Ht0_abs : t = 0.
+            exact (Ht_ne0
+              Ht0_abs
+              False).
+          + assume Ht_succ : exists u:set, nat_p u /\ t = ordsucc u.
+            apply Ht_succ.
+            let u.
+            assume Hu_pack : nat_p u /\ t = ordsucc u.
+            claim Hu_nat : nat_p u.
+            {
+              exact (andEL
+                (nat_p u)
+                (t = ordsucc u)
+                Hu_pack).
+            }
+            claim Ht_eq_su : t = ordsucc u.
+            {
+              exact (andER
+                (nat_p u)
+                (t = ordsucc u)
+                Hu_pack).
+            }
+            claim Hu_in_t : u :e t.
+            {
+              rewrite Ht_eq_su.
+              exact (ordsuccI2
+                u).
+            }
+            claim Hu_in_m : u :e m.
+            {
+              exact (nat_trans
+                m
+                Hm_nat
+                t
+                Ht_in_m
+                u
+                Hu_in_t).
+            }
+            claim Hsu_in_m : ordsucc u :e m.
+            {
+              rewrite <- Ht_eq_su.
+              exact Ht_in_m.
+            }
+            claim Hcst_fam0 : apply_fun cs t :e apply_fun Gfam 0.
+            {
+              rewrite HGfam0.
+              exact Hcst_G1.
+            }
+            claim Hcssu_fam0 : apply_fun cs (ordsucc u) :e apply_fun Gfam 0.
+            {
+              rewrite <- Ht_eq_su.
+              exact Hcst_fam0.
+            }
+            apply (exandE_i
+              (fun al:set => al :e 2 /\ apply_fun cs u :e apply_fun Gfam al)
+              (fun al:set => apply_fun cs u <> apply_fun efam al)
+              (Hcs_mem
+                u
+                Hu_in_m)).
+            let alpha_prev3.
+            assume Hap3_pack : alpha_prev3 :e 2 /\ apply_fun cs u :e apply_fun Gfam alpha_prev3.
+            assume Hcsu_ne_efam : apply_fun cs u <> apply_fun efam alpha_prev3.
+            claim Hap32 : alpha_prev3 :e 2.
+            {
+              exact (andEL
+                (alpha_prev3 :e 2)
+                (apply_fun cs u :e apply_fun Gfam alpha_prev3)
+                Hap3_pack).
+            }
+            claim Hcsu_fam : apply_fun cs u :e apply_fun Gfam alpha_prev3.
+            {
+              exact (andER
+                (alpha_prev3 :e 2)
+                (apply_fun cs u :e apply_fun Gfam alpha_prev3)
+                Hap3_pack).
+            }
+            claim Hap3_ne0 : alpha_prev3 <> 0.
+            {
+              exact (Hcs_adj
+                u
+                Hu_in_m
+                Hsu_in_m
+                alpha_prev3
+                0
+                Hap32
+                In_0_2
+                Hcsu_fam
+                Hcssu_fam0).
+            }
+            claim Hap31 : alpha_prev3 = 1.
+            {
+              apply (ordsuccE
+                1
+                alpha_prev3
+                Hap32).
+              - assume Hap3_in1 : alpha_prev3 :e 1.
+                apply (ordsuccE
+                  0
+                  alpha_prev3
+                  Hap3_in1).
+                + assume Hap3_in0 : alpha_prev3 :e 0.
+                  exact (EmptyE
+                    alpha_prev3
+                    Hap3_in0
+                    (alpha_prev3 = 1)).
+                + assume Hap3_eq0 : alpha_prev3 = 0.
+                  exact (Hap3_ne0
+                    Hap3_eq0
+                    (alpha_prev3 = 1)).
+              - assume Hap3_eq1 : alpha_prev3 = 1.
+                exact Hap3_eq1.
+            }
+            claim Hcsu_G2 : apply_fun cs u :e G2.
+            {
+              claim Hfam_u1 : apply_fun Gfam alpha_prev3 = G2.
+              {
+                rewrite Hap31.
+                exact HGfam1.
+              }
+              rewrite <- Hfam_u1.
+              exact Hcsu_fam.
+            }
+            claim Hcsu_ne_e : apply_fun cs u <> e.
+            {
+              claim Hefam_u : apply_fun efam alpha_prev3 = e.
+              {
+                rewrite (apply_fun_graph
+                  2
+                  (fun _:set => e)
+                  alpha_prev3
+                  Hap32).
+                reflexivity.
+              }
+              assume Hcsu_eq_e : apply_fun cs u = e.
+              apply Hcsu_ne_efam.
+              rewrite Hefam_u.
+              exact Hcsu_eq_e.
+            }
+            claim Hm_eq_ssssu : m = ordsucc (ordsucc (ordsucc (ordsucc u))).
+            {
+              rewrite Hm_eq_ssst.
+              rewrite Ht_eq_su.
+              reflexivity.
+            }
+            admit. (** TODO Bob: handle t<>0 branch after fourth predecessor split (u and cs(u):e G2) **)
 Admitted.
 
 (** Core helper: given free product and reduced word of c, derive contradiction **)
