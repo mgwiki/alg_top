@@ -111934,6 +111934,48 @@ assume Halpha : alpha :e J.
 admit.
 Admitted.
 
+(** Infrastructure helper for S69 backward direction:
+    extension property forces the free-product decomposition by cyclic generator subgroups. **)
+Theorem extension_property_forces_free_product_generated_subgroups :
+  forall G mult e inv J gens:set,
+  group_structure G mult e inv ->
+  function_on gens J G ->
+  (forall H multH eH invH:set,
+    group_structure H multH eH invH ->
+    forall ys:set, function_on ys J H ->
+      exists h:set,
+        group_homomorphism G mult H multH h /\
+        (forall alpha:set, alpha :e J ->
+          apply_fun h (apply_fun gens alpha) = apply_fun ys alpha) /\
+        (forall h':set, group_homomorphism G mult H multH h' ->
+          (forall alpha:set, alpha :e J ->
+            apply_fun h' (apply_fun gens alpha) = apply_fun ys alpha) ->
+          forall x:set, x :e G -> apply_fun h' x = apply_fun h x)) ->
+  free_product_of_subgroups G mult e inv J
+    (graph J (fun alpha:set =>
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}))
+    (graph J (fun alpha:set => e)).
+let G mult e inv J gens.
+assume Hgrp : group_structure G mult e inv.
+assume Hgens : function_on gens J G.
+assume Hext :
+  forall H multH eH invH:set,
+    group_structure H multH eH invH ->
+    forall ys:set, function_on ys J H ->
+      exists h:set,
+        group_homomorphism G mult H multH h /\
+        (forall alpha:set, alpha :e J ->
+          apply_fun h (apply_fun gens alpha) = apply_fun ys alpha) /\
+        (forall h':set, group_homomorphism G mult H multH h' ->
+          (forall alpha:set, alpha :e J ->
+            apply_fun h' (apply_fun gens alpha) = apply_fun ys alpha) ->
+          forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+admit.
+Admitted.
+
 (** from S69 Lem 69.1 (line 3047 in algtop.tex): extension condition for free groups **)
 (** LATEX VERSION: G is a free group with generators {a_alpha} iff for any group H **)
 (** and any family {y_alpha} of elements of H, there is a unique homomorphism **)
@@ -112942,7 +112984,16 @@ apply (iffI
       (~(exists n:set, n :e omega /\ n <> 0 /\ group_power_nat mult e galpha n = e))
       HgalphaPowInv
       HnontrivGalpha).
-  + admit.
+  + exact (extension_property_forces_free_product_generated_subgroups
+      G
+      mult
+      e
+      inv
+      J
+      gens
+      Hgrp
+      Hgens
+      Hext).
 Admitted.
 
 (** from S69 Thm 69.2 (line 3057 in algtop.tex): free product of free groups is free **)
