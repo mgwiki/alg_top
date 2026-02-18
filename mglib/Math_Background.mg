@@ -109320,6 +109320,13 @@ Theorem lemma69_3_commutator_subgroup :
     abelian_group H multH eH invH ->
     group_homomorphism G mult H multH h ->
     commutator_subgroup G mult e inv c= kernel_of G eH h).
+let G mult e inv.
+assume Hgrp : group_structure G mult e inv.
+set C := commutator_subgroup G mult e inv.
+claim HCdef : C = commutator_subgroup G mult e inv.
+{
+  reflexivity.
+}
 admit.
 Admitted.
 
