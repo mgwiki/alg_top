@@ -115246,6 +115246,18 @@ Theorem ex69_2_abelianization_general_free_product :
 exact abelianization_of_general_free_product_helper.
 Admitted.
 
+(** Infrastructure helper for S69 Exercise 4:
+    coprime-order cyclic direct-sum decomposition gives a cyclic group of order mn. **)
+Theorem direct_sum_coprime_cyclic_not_unique_helper :
+  exists G multG eG invG m n:set,
+    abelian_group G multG eG invG /\
+    m :e omega /\ n :e omega /\ m <> 0 /\ n <> 0 /\ m <> 1 /\ n <> 1 /\
+    (forall d:set, d :e omega -> d <> 0 -> d <> 1 ->
+      ~(exists q r:set, m = mul_nat d q /\ n = mul_nat d r)) /\
+    cyclic_group G multG eG invG /\ equip G (mul_nat m n).
+admit.
+Admitted.
+
 (** from S69 Exercise 4 (line 3181 in algtop.tex) **)
 (** LATEX VERSION: If G = G1 direct-sum G2 where G1, G2 cyclic of orders m, n **)
 (** with gcd(m,n)=1, then G is cyclic of order mn, so m and n are not unique. **)
@@ -115258,7 +115270,7 @@ Theorem ex69_4_direct_sum_not_unique :
     (forall d:set, d :e omega -> d <> 0 -> d <> 1 ->
       ~(exists q r:set, m = mul_nat d q /\ n = mul_nat d r)) /\
     cyclic_group G multG eG invG /\ equip G (mul_nat m n).
-admit.
+exact direct_sum_coprime_cyclic_not_unique_helper.
 Admitted.
 
 (** ============================================================ **)
