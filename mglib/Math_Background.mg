@@ -61179,9 +61179,58 @@ claim Hex :
                                   HlocalNtVlocal
                                   HlocalNtEqfx).
                               }
+                              claim HxlocalVu : xlocal :e Vu.
+                              {
+                                rewrite <- HxlocalEqlocalNt.
+                                exact HlocalNtVuX.
+                              }
+                              claim HpxlocalUt : apply_fun p xlocal :e Ut.
+                              {
+                                rewrite HpxlocalEqfx.
+                                exact HfxUt.
+                              }
+                              claim HVlocalOpen : Vlocal :e Te.
+                              {
+                                exact (HslicesUtSub
+                                  Vlocal
+                                  HVlocalSlice).
+                              }
+                              claim HVlocalSubE : Vlocal c= E.
+                              {
+                                exact (topology_elem_subset
+                                  E
+                                  Te
+                                  Vlocal
+                                  HtopE
+                                  HVlocalOpen).
+                              }
+                              claim HxlocalE : xlocal :e E.
+                              {
+                                exact (HVlocalSubE
+                                  xlocal
+                                  HxlocalVlocal).
+                              }
+                              claim HxlocalPreUt : xlocal :e preimage_of E p Ut.
+                              {
+                                exact (SepI
+                                  E
+                                  (fun z:set => apply_fun p z :e Ut)
+                                  xlocal
+                                  HxlocalE
+                                  HpxlocalUt).
+                              }
+                              claim HxlocalUnion : xlocal :e Union slicesUt.
+                              {
+                                exact (mem_eqL
+                                  xlocal
+                                  (Union slicesUt)
+                                  (preimage_of E p Ut)
+                                  HslicesUtUnion
+                                  HxlocalPreUt).
+                              }
                               claim HxlocalVx : xlocal :e Vx.
                               {
-                                (** TODO Charlie: place xlocal in Vx (it lies over f(x) in the same slices family). **)
+                                (** TODO Charlie: identify the slicesUt member of xlocal and show it must be Vx. **)
                                 admit.
                               }
                               claim HxlocalEqxv : xlocal = xv.
@@ -65109,9 +65158,58 @@ claim HFt_54_cont :
                           HFt54zVz
                           HpFt54zEqFz).
                       }
+                      claim HxzEqFt54z : xz = apply_fun Ft_54 z.
+                      {
+                        rewrite Hft54zEqxz.
+                        reflexivity.
+                      }
+                      claim HxzU : apply_fun p xz :e U.
+                      {
+                        rewrite HpxzEqFz.
+                        exact HFzU.
+                      }
+                      claim HVzOpen : Vz :e Te.
+                      {
+                        exact (HslicesSub
+                          Vz
+                          HVzSlice).
+                      }
+                      claim HVzSubE : Vz c= E.
+                      {
+                        exact (topology_elem_subset
+                          E
+                          Te
+                          Vz
+                          HtopE
+                          HVzOpen).
+                      }
+                      claim HxzE : xz :e E.
+                      {
+                        exact (HVzSubE
+                          xz
+                          HxzVz).
+                      }
+                      claim HxzPreU : xz :e preimage_of E p U.
+                      {
+                        exact (SepI
+                          E
+                          (fun z0:set => apply_fun p z0 :e U)
+                          xz
+                          HxzE
+                          HxzU).
+                      }
+                      claim HxzUnion : xz :e Union slices.
+                      {
+                        exact (mem_eqL
+                          xz
+                          (Union slices)
+                          (preimage_of E p U)
+                          HslicesUnion
+                          HxzPreU).
+                      }
                       claim HxzVq : xz :e Vq.
                       {
-                        (** TODO Charlie: place xz in Vq (it lies over F(z) in the same slices family). **)
+                        (** TODO Charlie: identify the slices member of xz and show it must be Vq. **)
                         admit.
                       }
                       claim HxzEqxq : xz = xq.
