@@ -106263,7 +106263,54 @@ claim Hhfam_in_H : forall alpha:set, alpha :e J ->
 claim Hhfam_id : forall alpha:set, alpha :e J ->
   apply_fun (apply_fun hfam alpha) eG = eH.
 { let alpha. assume Hal.
-  admit. }
+  claim HeG_al : eG :e apply_fun Gfam alpha. { exact (HeG_sub alpha Hal). }
+  claim HmultG_eG_eG : apply_fun multG (eG, eG) = eG.
+  { exact (andEL (apply_fun multG (eG, eG) = eG) (apply_fun multG (eG, eG) = eG)
+      (HidG eG HeGG)). }
+  set y := apply_fun (apply_fun hfam alpha) eG.
+  claim Hy_H : y :e H. { exact (Hhfam_in_H alpha Hal eG HeG_al). }
+  claim Hprod : apply_fun (apply_fun hfam alpha) (apply_fun multG (eG, eG)) =
+    apply_fun multH (y, y).
+  { exact (group_homomorphism_mult_rule (apply_fun Gfam alpha) multG H multH
+      (apply_fun hfam alpha) eG eG (Hhfam alpha Hal) HeG_al HeG_al). }
+  claim Hyy : y = apply_fun multH (y, y).
+  { claim H1 : y = apply_fun (apply_fun hfam alpha) (apply_fun multG (eG, eG)).
+    { rewrite HmultG_eG_eG. reflexivity. }
+    exact (eq_i_tra y
+      (apply_fun (apply_fun hfam alpha) (apply_fun multG (eG, eG)))
+      (apply_fun multH (y, y)) H1 Hprod). }
+  claim HinvHy_H : apply_fun invH y :e H. { exact (HinvHF y Hy_H). }
+  claim Hinv_y : apply_fun multH (apply_fun invH y, y) = eH.
+  { exact (andER
+      (apply_fun multH (y, apply_fun invH y) = eH)
+      (apply_fun multH (apply_fun invH y, y) = eH)
+      (HinvH y Hy_H)). }
+  claim HidH_y : apply_fun multH (eH, y) = y.
+  { exact (andEL
+      (apply_fun multH (eH, y) = y)
+      (apply_fun multH (y, eH) = y)
+      (HidH y Hy_H)). }
+  claim Hrhs : apply_fun multH (apply_fun invH y, apply_fun multH (y, y)) = y.
+  { claim Hassoc_raw : apply_fun multH (apply_fun multH (apply_fun invH y, y), y) =
+      apply_fun multH (apply_fun invH y, apply_fun multH (y, y)).
+    { exact (HassocH (apply_fun invH y) y y HinvHy_H Hy_H Hy_H). }
+    claim Hassoc_sym : apply_fun multH (apply_fun invH y, apply_fun multH (y, y)) =
+      apply_fun multH (apply_fun multH (apply_fun invH y, y), y).
+    { symmetry. exact Hassoc_raw. }
+    claim Hstep : apply_fun multH (apply_fun multH (apply_fun invH y, y), y) = y.
+    { rewrite Hinv_y. exact HidH_y. }
+    exact (eq_i_tra
+      (apply_fun multH (apply_fun invH y, apply_fun multH (y, y)))
+      (apply_fun multH (apply_fun multH (apply_fun invH y, y), y))
+      y Hassoc_sym Hstep). }
+  claim Hlhs : apply_fun multH (apply_fun invH y, apply_fun multH (y, y)) = eH.
+  { claim Hyy_sym : apply_fun multH (y, y) = y. { symmetry. exact Hyy. }
+    rewrite Hyy_sym. exact Hinv_y. }
+  claim Hy_eq : y = apply_fun multH (apply_fun invH y, apply_fun multH (y, y)).
+  { symmetry. exact Hrhs. }
+  exact (eq_i_tra y
+    (apply_fun multH (apply_fun invH y, apply_fun multH (y, y)))
+    eH Hy_eq Hlhs). }
 (** Helper: word_product stays in G **)
 claim Hwp_in_G_nat : forall n:set, nat_p n ->
   forall xs:set, (forall i:set, i :e n -> apply_fun xs i :e G) ->
@@ -106408,10 +106455,109 @@ claim Hh'_wp : forall k:set, nat_p k ->
     apply_fun h' (word_product multG eG ys k) =
       nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun ys i))) k)).
   (** Base: k = 0 **)
-  - let ys. assume Hys_G Hys_al. admit.
+  - let ys. assume Hys_G Hys_al.
+    claim Hlhs : apply_fun h' (word_product multG eG ys 0) = eH.
+    { claim Hwp0 : word_product multG eG ys 0 = eG.
+      { exact (nat_primrec_0 eG (fun i r => apply_fun multG (r, apply_fun ys i))). }
+      rewrite Hwp0. exact Hh'_id. }
+    claim Hrhs : eH = nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun ys i))) 0.
+    { claim Hnp0 : nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun ys i))) 0 = eH.
+      { exact (nat_primrec_0 eH (fun i r => apply_fun multH (r, h_single (apply_fun ys i)))). }
+      symmetry. exact Hnp0. }
+    exact (eq_i_tra
+      (apply_fun h' (word_product multG eG ys 0))
+      eH
+      (nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun ys i))) 0)
+      Hlhs Hrhs).
   (** Step: k = ordsucc j **)
   - let j. assume Hj : nat_p j. assume IH.
-    let ys. assume Hys_G Hys_al. admit. }
+    let ys. assume Hys_G Hys_al.
+    claim Hysj_al : exists alpha:set, alpha :e J /\ apply_fun ys j :e apply_fun Gfam alpha.
+    { exact (Hys_al j (ordsuccI2 j)). }
+    apply (exandE_i
+      (fun alpha:set => alpha :e J)
+      (fun alpha:set => apply_fun ys j :e apply_fun Gfam alpha)
+      Hysj_al).
+    let alpha_j. assume Hal_j_raw : alpha_j :e J. assume Hysj_Gal_raw : apply_fun ys j :e apply_fun Gfam alpha_j.
+    claim Hal_j : alpha_j :e J. { exact Hal_j_raw. }
+    claim Hysj_Gal : apply_fun ys j :e apply_fun Gfam alpha_j. { exact Hysj_Gal_raw. }
+    claim Hysj_G : apply_fun ys j :e G.
+    { exact (Hsub_in_G alpha_j Hal_j (apply_fun ys j) Hysj_Gal). }
+    claim Hwp_j_G : word_product multG eG ys j :e G.
+    { exact (Hwp_in_G j (nat_p_omega j Hj) ys
+        (fun i Hi => Hys_G i (ordsuccI1 j i Hi))). }
+    (** Compute LHS **)
+    claim Hlhs : apply_fun h' (word_product multG eG ys (ordsucc j)) =
+      apply_fun multH
+        (nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun ys i))) j,
+         h_single (apply_fun ys j)).
+    { claim HwpS : word_product multG eG ys (ordsucc j) =
+        apply_fun multG (word_product multG eG ys j, apply_fun ys j).
+      { exact (nat_primrec_S eG (fun i r => apply_fun multG (r, apply_fun ys i)) j Hj). }
+      claim Hh'_wp_S : apply_fun h' (word_product multG eG ys (ordsucc j)) =
+        apply_fun h' (apply_fun multG (word_product multG eG ys j, apply_fun ys j)).
+      { rewrite HwpS. reflexivity. }
+      claim Hh'_mult : apply_fun h' (apply_fun multG (word_product multG eG ys j, apply_fun ys j)) =
+        apply_fun multH (apply_fun h' (word_product multG eG ys j), apply_fun h' (apply_fun ys j)).
+      { exact (group_homomorphism_mult_rule G multG H multH h'
+          (word_product multG eG ys j) (apply_fun ys j) Hh'hom Hwp_j_G Hysj_G). }
+      claim Hih : apply_fun h' (word_product multG eG ys j) =
+        nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun ys i))) j.
+      { exact (IH ys (fun i Hi => Hys_G i (ordsuccI1 j i Hi))
+          (fun i Hi => Hys_al i (ordsuccI1 j i Hi))). }
+      claim Hh'_j : apply_fun h' (apply_fun ys j) = h_single (apply_fun ys j).
+      { claim Hh'_j_al : apply_fun h' (apply_fun ys j) =
+          apply_fun (apply_fun hfam alpha_j) (apply_fun ys j).
+        { exact (Hh'ext alpha_j Hal_j (apply_fun ys j) Hysj_Gal). }
+        claim Hao_eq : h_single (apply_fun ys j) =
+          apply_fun (apply_fun hfam alpha_j) (apply_fun ys j).
+        { exact (Hhfam_alpha_of alpha_j Hal_j (apply_fun ys j) Hysj_Gal). }
+        claim Hao_eq_sym : apply_fun (apply_fun hfam alpha_j) (apply_fun ys j) =
+          h_single (apply_fun ys j).
+        { symmetry. exact Hao_eq. }
+        exact (eq_i_tra
+          (apply_fun h' (apply_fun ys j))
+          (apply_fun (apply_fun hfam alpha_j) (apply_fun ys j))
+          (h_single (apply_fun ys j))
+          Hh'_j_al Hao_eq_sym). }
+      claim Hrew : apply_fun multH (apply_fun h' (word_product multG eG ys j), apply_fun h' (apply_fun ys j)) =
+        apply_fun multH
+          (nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun ys i))) j,
+           h_single (apply_fun ys j)).
+      { rewrite Hih. rewrite Hh'_j. reflexivity. }
+      exact (eq_i_tra
+        (apply_fun h' (word_product multG eG ys (ordsucc j)))
+        (apply_fun h' (apply_fun multG (word_product multG eG ys j, apply_fun ys j)))
+        (apply_fun multH
+          (nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun ys i))) j,
+           h_single (apply_fun ys j)))
+        Hh'_wp_S
+        (eq_i_tra
+          (apply_fun h' (apply_fun multG (word_product multG eG ys j, apply_fun ys j)))
+          (apply_fun multH (apply_fun h' (word_product multG eG ys j), apply_fun h' (apply_fun ys j)))
+          (apply_fun multH
+            (nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun ys i))) j,
+             h_single (apply_fun ys j)))
+          Hh'_mult Hrew)). }
+    (** Compute RHS **)
+    claim Hrhs : nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun ys i))) (ordsucc j) =
+      apply_fun multH
+        (nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun ys i))) j,
+         h_single (apply_fun ys j)).
+    { exact (nat_primrec_S eH (fun i r => apply_fun multH (r, h_single (apply_fun ys i))) j Hj). }
+    (** Combine **)
+    claim Hrhs_sym : apply_fun multH
+      (nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun ys i))) j,
+       h_single (apply_fun ys j)) =
+      nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun ys i))) (ordsucc j).
+    { symmetry. exact Hrhs. }
+    exact (eq_i_tra
+      (apply_fun h' (word_product multG eG ys (ordsucc j)))
+      (apply_fun multH
+        (nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun ys i))) j,
+         h_single (apply_fun ys j)))
+      (nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun ys i))) (ordsucc j))
+      Hlhs Hrhs_sym). }
 (** Now conclude: h'(x) = h(x) using decomposition of x **)
 claim Hgen_x : x = eG \/
   exists n:set, n :e omega /\ n <> 0 /\
