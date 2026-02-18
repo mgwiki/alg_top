@@ -77117,6 +77117,370 @@ claim Htriv :
     Hb0S1
     Hnul).
 }
+claim HtopR2m0 :
+  topology_on R2_minus_origin R2_minus_origin_topology.
+{
+  exact (continuous_map_topology_cod
+    S1
+    S1_topology
+    R2_minus_origin
+    R2_minus_origin_topology
+    (graph S1 (fun x:set => x))
+    HincCont).
+}
+claim HretrR2m0S1 :
+  retraction_of R2_minus_origin R2_minus_origin_topology S1.
+{
+  admit.
+}
+claim HinjRaw :
+  forall cls1 cls2:set,
+    cls1 :e fundamental_group
+      S1
+      (subspace_topology R2_minus_origin R2_minus_origin_topology S1)
+      (1, 0) ->
+    cls2 :e fundamental_group
+      S1
+      (subspace_topology R2_minus_origin R2_minus_origin_topology S1)
+      (1, 0) ->
+    apply_fun
+      (induced_homomorphism
+        S1
+        (subspace_topology R2_minus_origin R2_minus_origin_topology S1)
+        (1, 0)
+        R2_minus_origin
+        R2_minus_origin_topology
+        (1, 0)
+        (graph S1 (fun x:set => x)))
+      cls1
+    =
+    apply_fun
+      (induced_homomorphism
+        S1
+        (subspace_topology R2_minus_origin R2_minus_origin_topology S1)
+        (1, 0)
+        R2_minus_origin
+        R2_minus_origin_topology
+        (1, 0)
+        (graph S1 (fun x:set => x)))
+      cls2
+    ->
+    cls1 = cls2.
+{
+  exact (lemma55_1_retract_injective_pi1
+    R2_minus_origin
+    R2_minus_origin_topology
+    S1
+    (1, 0)
+    HtopR2m0
+    s55_S1_subset_R2_minus_origin
+    HretrR2m0S1
+    Hb0S1).
+}
+claim HsubEq :
+  subspace_topology R2_minus_origin R2_minus_origin_topology S1 = S1_topology.
+{
+  exact (subspace_topology_transitive_weak
+    (setprod R R)
+    R2_topology
+    R2_minus_origin
+    S1
+    s55_S1_subset_R2_minus_origin).
+}
+claim HsubEqSym :
+  S1_topology = subspace_topology R2_minus_origin R2_minus_origin_topology S1.
+{
+  symmetry.
+  exact HsubEq.
+}
+claim Hinj :
+  forall cls1 cls2:set,
+    cls1 :e fundamental_group S1 S1_topology (1, 0) ->
+    cls2 :e fundamental_group S1 S1_topology (1, 0) ->
+    apply_fun
+      (induced_homomorphism
+        S1
+        S1_topology
+        (1, 0)
+        R2_minus_origin
+        R2_minus_origin_topology
+        (1, 0)
+        (graph S1 (fun x:set => x)))
+      cls1
+    =
+    apply_fun
+      (induced_homomorphism
+        S1
+        S1_topology
+        (1, 0)
+        R2_minus_origin
+        R2_minus_origin_topology
+        (1, 0)
+        (graph S1 (fun x:set => x)))
+      cls2
+    ->
+    cls1 = cls2.
+{
+  let cls1.
+  let cls2.
+  assume Hcls1 Hcls2 Heq.
+  claim Hcls1Sub :
+    cls1 :e fundamental_group
+      S1
+      (subspace_topology R2_minus_origin R2_minus_origin_topology S1)
+      (1, 0).
+  {
+    rewrite HsubEq.
+    exact Hcls1.
+  }
+  claim Hcls2Sub :
+    cls2 :e fundamental_group
+      S1
+      (subspace_topology R2_minus_origin R2_minus_origin_topology S1)
+      (1, 0).
+  {
+    rewrite HsubEq.
+    exact Hcls2.
+  }
+  claim HeqSub :
+    apply_fun
+      (induced_homomorphism
+        S1
+        (subspace_topology R2_minus_origin R2_minus_origin_topology S1)
+        (1, 0)
+        R2_minus_origin
+        R2_minus_origin_topology
+        (1, 0)
+        (graph S1 (fun x:set => x)))
+      cls1
+    =
+    apply_fun
+      (induced_homomorphism
+        S1
+        (subspace_topology R2_minus_origin R2_minus_origin_topology S1)
+        (1, 0)
+        R2_minus_origin
+        R2_minus_origin_topology
+        (1, 0)
+        (graph S1 (fun x:set => x)))
+      cls2.
+  {
+    rewrite HsubEq.
+    exact Heq.
+  }
+  exact (HinjRaw
+    cls1
+    cls2
+    Hcls1Sub
+    Hcls2Sub
+    HeqSub).
+}
+set j := graph S1 (fun x:set => x).
+set jind := induced_homomorphism
+  S1
+  S1_topology
+  (1, 0)
+  R2_minus_origin
+  R2_minus_origin_topology
+  (apply_fun j (1, 0))
+  j.
+claim HtopS1 : topology_on S1 S1_topology.
+{
+  exact (continuous_map_topology_dom
+    S1
+    S1_topology
+    R2_minus_origin
+    R2_minus_origin_topology
+    (graph S1 (fun x:set => x))
+    HincCont).
+}
+claim HjCont :
+  continuous_map S1 S1_topology R2_minus_origin R2_minus_origin_topology j.
+{
+  exact HincCont.
+}
+claim Hj0 : apply_fun j (1, 0) :e R2_minus_origin.
+{
+  exact (continuous_map_function_on
+    S1
+    S1_topology
+    R2_minus_origin
+    R2_minus_origin_topology
+    j
+    HjCont
+    (1, 0)
+    Hb0S1).
+}
+claim HjHom :
+  group_homomorphism
+    (fundamental_group S1 S1_topology (1, 0))
+    (fundamental_group_mult S1 S1_topology (1, 0))
+    (fundamental_group R2_minus_origin R2_minus_origin_topology (apply_fun j (1, 0)))
+    (fundamental_group_mult R2_minus_origin R2_minus_origin_topology (apply_fun j (1, 0)))
+    jind.
+{
+  claim HjBase : apply_fun j (1, 0) = apply_fun j (1, 0).
+  {
+    reflexivity.
+  }
+  exact (induced_homomorphism_is_homomorphism
+    S1
+    S1_topology
+    (1, 0)
+    R2_minus_origin
+    R2_minus_origin_topology
+    (apply_fun j (1, 0))
+    j
+    HjCont
+    HjBase
+    Hb0S1).
+}
+claim HgrpDom :
+  group_structure
+    (fundamental_group S1 S1_topology (1, 0))
+    (fundamental_group_mult S1 S1_topology (1, 0))
+    (fundamental_group_id S1 S1_topology (1, 0))
+    (fundamental_group_inv S1 S1_topology (1, 0)).
+{
+  exact (fundamental_group_is_group
+    S1
+    S1_topology
+    (1, 0)
+    HtopS1
+    Hb0S1).
+}
+claim HgrpCod :
+  group_structure
+    (fundamental_group R2_minus_origin R2_minus_origin_topology (apply_fun j (1, 0)))
+    (fundamental_group_mult R2_minus_origin R2_minus_origin_topology (apply_fun j (1, 0)))
+    (fundamental_group_id R2_minus_origin R2_minus_origin_topology (apply_fun j (1, 0)))
+    (fundamental_group_inv R2_minus_origin R2_minus_origin_topology (apply_fun j (1, 0))).
+{
+  exact (fundamental_group_is_group
+    R2_minus_origin
+    R2_minus_origin_topology
+    (apply_fun j (1, 0))
+    HtopR2m0
+    Hj0).
+}
+claim HjId :
+  apply_fun jind (fundamental_group_id S1 S1_topology (1, 0))
+  =
+  fundamental_group_id R2_minus_origin R2_minus_origin_topology (apply_fun j (1, 0)).
+{
+  exact (s55_group_hom_maps_id_to_id_s58
+    (fundamental_group S1 S1_topology (1, 0))
+    (fundamental_group_mult S1 S1_topology (1, 0))
+    (fundamental_group_id S1 S1_topology (1, 0))
+    (fundamental_group_inv S1 S1_topology (1, 0))
+    (fundamental_group R2_minus_origin R2_minus_origin_topology (apply_fun j (1, 0)))
+    (fundamental_group_mult R2_minus_origin R2_minus_origin_topology (apply_fun j (1, 0)))
+    (fundamental_group_id R2_minus_origin R2_minus_origin_topology (apply_fun j (1, 0)))
+    (fundamental_group_inv R2_minus_origin R2_minus_origin_topology (apply_fun j (1, 0)))
+    jind
+    HgrpDom
+    HgrpCod
+    HjHom).
+}
+claim HallTrivial :
+  forall cls:set, cls :e fundamental_group S1 S1_topology (1, 0) ->
+    cls = fundamental_group_id S1 S1_topology (1, 0).
+{
+  let cls.
+  assume Hcls.
+  claim HidMem :
+    fundamental_group_id S1 S1_topology (1, 0) :e fundamental_group S1 S1_topology (1, 0).
+  {
+    apply (and6E
+      (function_on
+        (fundamental_group_mult S1 S1_topology (1, 0))
+        (setprod
+          (fundamental_group S1 S1_topology (1, 0))
+          (fundamental_group S1 S1_topology (1, 0)))
+        (fundamental_group S1 S1_topology (1, 0)))
+      (function_on
+        (fundamental_group_inv S1 S1_topology (1, 0))
+        (fundamental_group S1 S1_topology (1, 0))
+        (fundamental_group S1 S1_topology (1, 0)))
+      (fundamental_group_id S1 S1_topology (1, 0) :e fundamental_group S1 S1_topology (1, 0))
+      (forall x y z:set,
+        x :e fundamental_group S1 S1_topology (1, 0) ->
+        y :e fundamental_group S1 S1_topology (1, 0) ->
+        z :e fundamental_group S1 S1_topology (1, 0) ->
+        apply_fun (fundamental_group_mult S1 S1_topology (1, 0))
+          (apply_fun (fundamental_group_mult S1 S1_topology (1, 0)) (x, y), z)
+        =
+        apply_fun (fundamental_group_mult S1 S1_topology (1, 0))
+          (x, apply_fun (fundamental_group_mult S1 S1_topology (1, 0)) (y, z)))
+      (forall x:set, x :e fundamental_group S1 S1_topology (1, 0) ->
+        apply_fun (fundamental_group_mult S1 S1_topology (1, 0))
+          (fundamental_group_id S1 S1_topology (1, 0), x) = x /\
+        apply_fun (fundamental_group_mult S1 S1_topology (1, 0))
+          (x, fundamental_group_id S1 S1_topology (1, 0)) = x)
+      (forall x:set, x :e fundamental_group S1 S1_topology (1, 0) ->
+        apply_fun (fundamental_group_mult S1 S1_topology (1, 0))
+          (x, apply_fun (fundamental_group_inv S1 S1_topology (1, 0)) x)
+        = fundamental_group_id S1 S1_topology (1, 0) /\
+        apply_fun (fundamental_group_mult S1 S1_topology (1, 0))
+          (apply_fun (fundamental_group_inv S1 S1_topology (1, 0)) x, x)
+        = fundamental_group_id S1 S1_topology (1, 0))
+      HgrpDom).
+    assume Hm Hinv He Hass Hid Hinvax.
+    exact He.
+  }
+  claim HimgCls :
+    apply_fun jind cls =
+    fundamental_group_id R2_minus_origin R2_minus_origin_topology (apply_fun j (1, 0)).
+  {
+    exact (Htriv cls Hcls).
+  }
+  claim HimgId :
+    apply_fun jind (fundamental_group_id S1 S1_topology (1, 0))
+    =
+    fundamental_group_id R2_minus_origin R2_minus_origin_topology (apply_fun j (1, 0)).
+  {
+    exact HjId.
+  }
+  claim HeqImgs :
+    apply_fun jind cls =
+    apply_fun jind (fundamental_group_id S1 S1_topology (1, 0)).
+  {
+    rewrite HimgCls.
+    rewrite HimgId.
+    reflexivity.
+  }
+  claim HeqImgsStd :
+    apply_fun
+      (induced_homomorphism
+        S1
+        S1_topology
+        (1, 0)
+        R2_minus_origin
+        R2_minus_origin_topology
+        (1, 0)
+        (graph S1 (fun x:set => x)))
+      cls
+    =
+    apply_fun
+      (induced_homomorphism
+        S1
+        S1_topology
+        (1, 0)
+        R2_minus_origin
+        R2_minus_origin_topology
+        (1, 0)
+        (graph S1 (fun x:set => x)))
+      (fundamental_group_id S1 S1_topology (1, 0)).
+  {
+    admit.
+  }
+  exact (Hinj
+    cls
+    (fundamental_group_id S1 S1_topology (1, 0))
+    Hcls
+    HidMem
+    HeqImgsStd).
+}
 admit.
 Admitted.
 
@@ -77422,7 +77786,184 @@ Theorem thm55_5_nonvanishing_vector_field : forall v:set,
   (forall x:set, x :e B2 -> ~(apply_fun v x 0 = 0 /\ apply_fun v x 1 = 0)) ->
   (exists x:set, x :e S1 /\ points_directly_inward v x) /\
   (exists x:set, x :e S1 /\ points_directly_outward v x).
-admit.
+let v.
+assume HvCont HvNonzero.
+set vS1 := graph S1 (fun x:set => apply_fun v x).
+claim HvS1Nonzero :
+  forall x:set, x :e S1 ->
+    ~(apply_fun v x 0 = 0 /\ apply_fun v x 1 = 0).
+{
+  let x.
+  assume HxS1.
+  exact (HvNonzero
+    x
+    (S1_subset_B2 x HxS1)).
+}
+claim HvS1ContR2 :
+  continuous_map S1 S1_topology (setprod R R) R2_topology vS1.
+{
+  set i := graph S1 (fun x:set => x).
+  claim HiCont :
+    continuous_map S1 S1_topology B2 B2_topology i.
+  {
+    exact inclusion_S1_B2_continuous.
+  }
+  claim HvS1Eq :
+    vS1 = compose_fun S1 i v.
+  {
+    apply (total_function_space_extensional
+      S1
+      (setprod R R)
+      vS1
+      (compose_fun S1 i v)).
+    - exact (graph_in_total_function_space
+        S1
+        (setprod R R)
+        (fun x:set => apply_fun v x)
+        (fun x Hx =>
+          continuous_map_function_on
+            B2
+            B2_topology
+            (setprod R R)
+            R2_topology
+            v
+            HvCont
+            x
+            (S1_subset_B2 x Hx))).
+    - exact (compose_fun_in_total_function_space
+        S1
+        B2
+        (setprod R R)
+        i
+        v
+        (continuous_map_function_on
+          S1
+          S1_topology
+          B2
+          B2_topology
+          i
+          HiCont)
+        (continuous_map_function_on
+          B2
+          B2_topology
+          (setprod R R)
+          R2_topology
+          v
+          HvCont)).
+    - let x.
+      assume HxS1.
+      rewrite (compose_fun_apply
+        S1
+        i
+        v
+        x
+        HxS1).
+      rewrite (apply_fun_graph
+        S1
+        (fun z:set => z)
+        x
+        HxS1).
+      rewrite (apply_fun_graph
+        S1
+        (fun z:set => apply_fun v z)
+        x
+        HxS1).
+      reflexivity.
+  }
+  rewrite HvS1Eq.
+  exact (composition_continuous
+    S1
+    S1_topology
+    B2
+    B2_topology
+    (setprod R R)
+    R2_topology
+    i
+    v
+    HiCont
+    HvCont).
+}
+claim HvS1IntoR2m0 :
+  forall x:set, x :e S1 -> apply_fun vS1 x :e R2_minus_origin.
+{
+  let x.
+  assume HxS1.
+  apply (SepI
+    (setprod R R)
+    (fun p:set => ~(p 0 = 0 /\ p 1 = 0))
+    (apply_fun vS1 x)).
+  - exact (continuous_map_function_on
+      S1
+      S1_topology
+      (setprod R R)
+      R2_topology
+      vS1
+      HvS1ContR2
+      x
+      HxS1).
+  - assume HvxZero.
+    apply (HvS1Nonzero x HxS1).
+    apply andI.
+    + claim Hvx0V :
+        apply_fun v x 0 = 0.
+      {
+        rewrite <- (apply_fun_graph
+          S1
+          (fun z:set => apply_fun v z)
+          x
+          HxS1) at 1.
+        exact (andEL
+          (apply_fun vS1 x 0 = 0)
+          (apply_fun vS1 x 1 = 0)
+          HvxZero).
+      }
+      exact Hvx0V.
+    + claim Hvx1V :
+        apply_fun v x 1 = 0.
+      {
+        rewrite <- (apply_fun_graph
+          S1
+          (fun z:set => apply_fun v z)
+          x
+          HxS1) at 1.
+        exact (andER
+          (apply_fun vS1 x 0 = 0)
+          (apply_fun vS1 x 1 = 0)
+          HvxZero).
+      }
+      exact Hvx1V.
+}
+claim HvS1Cont :
+  continuous_map S1 S1_topology R2_minus_origin R2_minus_origin_topology vS1.
+{
+  exact (continuous_map_range_restrict
+    S1
+    S1_topology
+    (setprod R R)
+    R2_topology
+    vS1
+    R2_minus_origin
+    HvS1ContR2
+    (Sep_Subq
+      (setprod R R)
+      (fun p:set => ~(p 0 = 0 /\ p 1 = 0)))
+    HvS1IntoR2m0).
+}
+claim Hin :
+  exists x:set, x :e S1 /\ points_directly_inward v x.
+{
+  admit.
+}
+claim Hout :
+  exists x:set, x :e S1 /\ points_directly_outward v x.
+{
+  admit.
+}
+exact (andI
+  (exists x:set, x :e S1 /\ points_directly_inward v x)
+  (exists x:set, x :e S1 /\ points_directly_outward v x)
+  Hin
+  Hout).
 Admitted.
 
 (** from S55 Thm 55.6 (line 983 in algtop.tex): Brouwer fixed-point theorem for the disc **)
