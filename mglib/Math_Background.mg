@@ -111770,6 +111770,504 @@ Definition commutator_subgroup : set -> set -> set -> set -> set :=
         (forall x y:set, x :e G -> y :e G -> commutator mult inv x y :e C') ->
         C c= C')).
 
+(** Infrastructure: group homomorphism sends identity to identity **)
+(** Proven Dave **)
+Lemma group_hom_sends_identity :
+  forall G mult e inv H multH eH invH h:set,
+  group_structure G mult e inv ->
+  group_structure H multH eH invH ->
+  group_homomorphism G mult H multH h ->
+  apply_fun h e = eH.
+let G mult e inv H multH eH invH h.
+assume HgrpG HgrpH Hhom.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  HgrpG).
+assume HmultG_fn HinvG_fn HeG HassocG HidG HinvG.
+apply (and6E
+  (function_on multH (setprod H H) H)
+  (function_on invH H H)
+  (eH :e H)
+  (forall x y z:set, x :e H -> y :e H -> z :e H ->
+    apply_fun multH (apply_fun multH (x, y), z) = apply_fun multH (x, apply_fun multH (y, z)))
+  (forall x:set, x :e H -> apply_fun multH (eH, x) = x /\ apply_fun multH (x, eH) = x)
+  (forall x:set, x :e H ->
+    apply_fun multH (x, apply_fun invH x) = eH /\ apply_fun multH (apply_fun invH x, x) = eH)
+  HgrpH).
+assume HmultH_fn HinvH_fn HeH HassocH HidH HinvH.
+claim Hhfn : function_on h G H.
+{ exact (group_homomorphism_function_on G mult H multH h Hhom). }
+claim Hhe_in_H : apply_fun h e :e H.
+{ exact (Hhfn e HeG). }
+claim Hee_eq : apply_fun mult (e, e) = e.
+{ exact (andEL (apply_fun mult (e, e) = e) (apply_fun mult (e, e) = e) (HidG e HeG)). }
+claim Hhe_sq : apply_fun multH (apply_fun h e, apply_fun h e) = apply_fun h e.
+{
+  claim Hmr : apply_fun h (apply_fun mult (e, e)) = apply_fun multH (apply_fun h e, apply_fun h e).
+  { exact (group_homomorphism_mult_rule G mult H multH h e e Hhom HeG HeG). }
+  rewrite <- Hmr. rewrite Hee_eq. reflexivity.
+}
+claim HinvH_he_he : apply_fun multH (apply_fun invH (apply_fun h e), apply_fun h e) = eH.
+{
+  exact (andER
+    (apply_fun multH (apply_fun h e, apply_fun invH (apply_fun h e)) = eH)
+    (apply_fun multH (apply_fun invH (apply_fun h e), apply_fun h e) = eH)
+    (HinvH (apply_fun h e) Hhe_in_H)).
+}
+claim HinvH_he_in_H : apply_fun invH (apply_fun h e) :e H.
+{ exact (HinvH_fn (apply_fun h e) Hhe_in_H). }
+claim Hassoc_step :
+  apply_fun multH (apply_fun multH (apply_fun invH (apply_fun h e), apply_fun h e), apply_fun h e) =
+  apply_fun multH (apply_fun invH (apply_fun h e), apply_fun h e).
+{
+  rewrite (HassocH (apply_fun invH (apply_fun h e)) (apply_fun h e) (apply_fun h e)
+    HinvH_he_in_H Hhe_in_H Hhe_in_H).
+  rewrite Hhe_sq.
+  reflexivity.
+}
+claim HeH_he : apply_fun multH (eH, apply_fun h e) = eH.
+{
+  rewrite <- HinvH_he_he.
+  exact Hassoc_step.
+}
+claim H1 : apply_fun multH (eH, apply_fun h e) = apply_fun h e.
+{ exact (andEL (apply_fun multH (eH, apply_fun h e) = apply_fun h e) (apply_fun multH (apply_fun h e, eH) = apply_fun h e) (HidH (apply_fun h e) Hhe_in_H)). }
+rewrite <- H1. exact HeH_he.
+Qed.
+
+(** Infrastructure: group homomorphism sends inverse to inverse **)
+(** Proven Dave **)
+Lemma group_hom_sends_inverse :
+  forall G mult e inv H multH eH invH h:set,
+  group_structure G mult e inv ->
+  group_structure H multH eH invH ->
+  group_homomorphism G mult H multH h ->
+  forall x:set, x :e G ->
+  apply_fun h (apply_fun inv x) = apply_fun invH (apply_fun h x).
+let G mult e inv H multH eH invH h.
+assume HgrpG HgrpH Hhom.
+let x.
+assume HxG.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  HgrpG).
+assume HmultG_fn HinvG_fn HeG HassocG HidG HinvG.
+apply (and6E
+  (function_on multH (setprod H H) H)
+  (function_on invH H H)
+  (eH :e H)
+  (forall a b c:set, a :e H -> b :e H -> c :e H ->
+    apply_fun multH (apply_fun multH (a, b), c) = apply_fun multH (a, apply_fun multH (b, c)))
+  (forall a:set, a :e H -> apply_fun multH (eH, a) = a /\ apply_fun multH (a, eH) = a)
+  (forall a:set, a :e H ->
+    apply_fun multH (a, apply_fun invH a) = eH /\ apply_fun multH (apply_fun invH a, a) = eH)
+  HgrpH).
+assume HmultH_fn HinvH_fn HeH HassocH HidH HinvH.
+claim Hhfn : function_on h G H.
+{ exact (group_homomorphism_function_on G mult H multH h Hhom). }
+claim Hhx_in_H : apply_fun h x :e H.
+{ exact (Hhfn x HxG). }
+claim Hinvx_in_G : apply_fun inv x :e G.
+{ exact (HinvG_fn x HxG). }
+claim Hhinvx_in_H : apply_fun h (apply_fun inv x) :e H.
+{ exact (Hhfn (apply_fun inv x) Hinvx_in_G). }
+claim HinvH_hx_in_H : apply_fun invH (apply_fun h x) :e H.
+{ exact (HinvH_fn (apply_fun h x) Hhx_in_H). }
+claim Hhe_eq : apply_fun h e = eH.
+{ exact (group_hom_sends_identity G mult e inv H multH eH invH h HgrpG HgrpH Hhom). }
+claim Hx_xinv : apply_fun mult (x, apply_fun inv x) = e.
+{ exact (andEL (apply_fun mult (x, apply_fun inv x) = e) (apply_fun mult (apply_fun inv x, x) = e) (HinvG x HxG)). }
+claim Hmult_hx_hinvx : apply_fun multH (apply_fun h x, apply_fun h (apply_fun inv x)) = eH.
+{
+  claim Hmr : apply_fun h (apply_fun mult (x, apply_fun inv x)) = apply_fun multH (apply_fun h x, apply_fun h (apply_fun inv x)).
+  { exact (group_homomorphism_mult_rule G mult H multH h x (apply_fun inv x) Hhom HxG Hinvx_in_G). }
+  rewrite <- Hmr. rewrite Hx_xinv. exact Hhe_eq.
+}
+claim Hcond :
+  apply_fun multH (apply_fun invH (apply_fun invH (apply_fun h x)), apply_fun h (apply_fun inv x)) = eH.
+{
+  rewrite (group_inv_inv H multH invH eH (apply_fun h x) HmultH_fn HinvH_fn HeH HassocH HidH HinvH Hhx_in_H).
+  exact Hmult_hx_hinvx.
+}
+exact (group_left_inv_solve H multH invH eH (apply_fun invH (apply_fun h x)) (apply_fun h (apply_fun inv x))
+  HmultH_fn HinvH_fn HeH HassocH HidH HinvH HinvH_hx_in_H Hhinvx_in_H Hcond).
+Qed.
+
+(** Predicate: x is in every subgroup containing all commutators **)
+Definition comm_closure_pred : set -> set -> set -> set -> set -> prop :=
+  fun G mult e inv x =>
+    forall C':set,
+      subgroup_of C' G mult e inv ->
+      (forall a b:set, a :e G -> b :e G -> commutator mult inv a b :e C') ->
+      x :e C'.
+
+(** The commutator closure: smallest set containing all commutators, closed under subgroups **)
+Definition commutator_closure : set -> set -> set -> set -> set :=
+  fun G mult e inv => {x :e G | comm_closure_pred G mult e inv x}.
+
+(** Infrastructure: existence of minimal subgroup containing all commutators **)
+(** Proven Dave **)
+Lemma commutator_subgroup_exists_aux :
+  forall G mult e inv:set,
+  group_structure G mult e inv ->
+  exists C:set,
+    subgroup_of C G mult e inv /\
+    (forall x y:set, x :e G -> y :e G -> commutator mult inv x y :e C) /\
+    (forall C':set,
+      subgroup_of C' G mult e inv ->
+      (forall x y:set, x :e G -> y :e G -> commutator mult inv x y :e C') ->
+      C c= C').
+let G mult e inv.
+assume HgrpG.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  HgrpG).
+assume HmultFn HinvFn HeG HassocG HidG HinvG.
+witness (commutator_closure G mult e inv).
+apply and3I.
+- apply (and4I ((commutator_closure G mult e inv) c= G) (e :e (commutator_closure G mult e inv))
+    (forall x y:set, x :e (commutator_closure G mult e inv) -> y :e (commutator_closure G mult e inv) -> apply_fun mult (x, y) :e (commutator_closure G mult e inv))
+    (forall x:set, x :e (commutator_closure G mult e inv) -> apply_fun inv x :e (commutator_closure G mult e inv))).
+  + let z. assume HzK. exact (SepE1 G (comm_closure_pred G mult e inv) z HzK).
+  + claim Hpred_e : comm_closure_pred G mult e inv e.
+    { let C'. assume HsubC' _.
+      apply (and4E (C' c= G) (e :e C')
+        (forall x y:set, x :e C' -> y :e C' -> apply_fun mult (x, y) :e C')
+        (forall x:set, x :e C' -> apply_fun inv x :e C')
+        HsubC').
+      assume _ HeC' _ _. exact HeC'. }
+    exact (SepI G (comm_closure_pred G mult e inv) e HeG Hpred_e).
+  + let x y.
+    assume HxK HyK.
+    claim HxG : x :e G. { exact (SepE1 G (comm_closure_pred G mult e inv) x HxK). }
+    claim HyG : y :e G. { exact (SepE1 G (comm_closure_pred G mult e inv) y HyK). }
+    claim Hxy_in_G : apply_fun mult (x, y) :e G.
+    { exact (HmultFn (x, y) (tuple_2_setprod_by_pair_Sigma G G x y HxG HyG)). }
+    claim Hpred_xy : comm_closure_pred G mult e inv (apply_fun mult (x, y)).
+    { let C'. assume HsubC' HcommC'.
+      apply (and4E (C' c= G) (e :e C')
+        (forall a b:set, a :e C' -> b :e C' -> apply_fun mult (a, b) :e C')
+        (forall a:set, a :e C' -> apply_fun inv a :e C')
+        HsubC').
+      assume _ _ HmultC' _.
+      exact (HmultC' x y
+        (SepE2 G (comm_closure_pred G mult e inv) x HxK C' HsubC' HcommC')
+        (SepE2 G (comm_closure_pred G mult e inv) y HyK C' HsubC' HcommC')). }
+    exact (SepI G (comm_closure_pred G mult e inv) (apply_fun mult (x, y)) Hxy_in_G Hpred_xy).
+  + let x. assume HxK.
+    claim HxG : x :e G. { exact (SepE1 G (comm_closure_pred G mult e inv) x HxK). }
+    claim Hinvx_in_G : apply_fun inv x :e G.
+    { exact (HinvFn x HxG). }
+    claim Hpred_invx : comm_closure_pred G mult e inv (apply_fun inv x).
+    { let C'. assume HsubC' HcommC'.
+      apply (and4E (C' c= G) (e :e C')
+        (forall a b:set, a :e C' -> b :e C' -> apply_fun mult (a, b) :e C')
+        (forall a:set, a :e C' -> apply_fun inv a :e C')
+        HsubC').
+      assume _ _ _ HinvC'.
+      exact (HinvC' x (SepE2 G (comm_closure_pred G mult e inv) x HxK C' HsubC' HcommC')). }
+    exact (SepI G (comm_closure_pred G mult e inv) (apply_fun inv x) Hinvx_in_G Hpred_invx).
+- let x y. assume HxG HyG.
+  claim Hxy_G : apply_fun mult (x, y) :e G.
+  { exact (HmultFn (x,y) (tuple_2_setprod_by_pair_Sigma G G x y HxG HyG)). }
+  claim Hinvx_G : apply_fun inv x :e G.
+  { exact (HinvFn x HxG). }
+  claim Hinvy_G : apply_fun inv y :e G.
+  { exact (HinvFn y HyG). }
+  claim Hxy_invx_G : apply_fun mult (apply_fun mult (x, y), apply_fun inv x) :e G.
+  { exact (HmultFn (apply_fun mult (x, y), apply_fun inv x) (tuple_2_setprod_by_pair_Sigma G G (apply_fun mult (x, y)) (apply_fun inv x) Hxy_G Hinvx_G)). }
+  claim Hcomm_in_G : commutator mult inv x y :e G.
+  { exact (HmultFn (apply_fun mult (apply_fun mult (x, y), apply_fun inv x), apply_fun inv y) (tuple_2_setprod_by_pair_Sigma G G (apply_fun mult (apply_fun mult (x, y), apply_fun inv x)) (apply_fun inv y) Hxy_invx_G Hinvy_G)). }
+  claim Hpred_comm : comm_closure_pred G mult e inv (commutator mult inv x y).
+  { let C'. assume HsubC' HcommC'. exact (HcommC' x y HxG HyG). }
+  exact (SepI G (comm_closure_pred G mult e inv) (commutator mult inv x y) Hcomm_in_G Hpred_comm).
+- let C'. assume HsubC' HcommC'.
+  let z. assume HzK.
+  exact (SepE2 G (comm_closure_pred G mult e inv) z HzK C' HsubC' HcommC').
+Qed.
+
+(** Infrastructure: kernel of group hom is a subgroup **)
+(** Proven Dave **)
+Lemma kernel_is_subgroup_aux :
+  forall G mult e inv H multH eH invH h:set,
+  group_structure G mult e inv ->
+  group_structure H multH eH invH ->
+  group_homomorphism G mult H multH h ->
+  subgroup_of (kernel_of G eH h) G mult e inv.
+let G mult e inv H multH eH invH h.
+assume HgrpG HgrpH Hhom.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  HgrpG).
+assume HmultFn HinvFn HeG HassocG HidG HinvG.
+apply (and6E
+  (function_on multH (setprod H H) H)
+  (function_on invH H H)
+  (eH :e H)
+  (forall a b c:set, a :e H -> b :e H -> c :e H ->
+    apply_fun multH (apply_fun multH (a, b), c) = apply_fun multH (a, apply_fun multH (b, c)))
+  (forall a:set, a :e H -> apply_fun multH (eH, a) = a /\ apply_fun multH (a, eH) = a)
+  (forall a:set, a :e H ->
+    apply_fun multH (a, apply_fun invH a) = eH /\ apply_fun multH (apply_fun invH a, a) = eH)
+  HgrpH).
+assume HmultH_fn HinvH_fn HeH HassocH HidH HinvH.
+claim Hhfn : function_on h G H.
+{ exact (group_homomorphism_function_on G mult H multH h Hhom). }
+apply (and4I
+  (kernel_of G eH h c= G)
+  (e :e kernel_of G eH h)
+  (forall x y:set, x :e kernel_of G eH h -> y :e kernel_of G eH h -> apply_fun mult (x, y) :e kernel_of G eH h)
+  (forall x:set, x :e kernel_of G eH h -> apply_fun inv x :e kernel_of G eH h)).
+- let z. assume HzK. exact (SepE1 G (fun x => apply_fun h x = eH) z HzK).
+- claim Hpred_e : apply_fun h e = eH.
+  { exact (group_hom_sends_identity G mult e inv H multH eH invH h HgrpG HgrpH Hhom). }
+  exact (SepI G (fun x => apply_fun h x = eH) e HeG Hpred_e).
+- let x y. assume HxK HyK.
+  claim HxG : x :e G. { exact (SepE1 G (fun x => apply_fun h x = eH) x HxK). }
+  claim HyG : y :e G. { exact (SepE1 G (fun x => apply_fun h x = eH) y HyK). }
+  claim Hhx : apply_fun h x = eH. { exact (SepE2 G (fun x => apply_fun h x = eH) x HxK). }
+  claim Hhy : apply_fun h y = eH. { exact (SepE2 G (fun x => apply_fun h x = eH) y HyK). }
+  claim Hxy_in_G : apply_fun mult (x, y) :e G.
+  { exact (HmultFn (x, y) (tuple_2_setprod_by_pair_Sigma G G x y HxG HyG)). }
+  claim Hpred_xy : apply_fun h (apply_fun mult (x, y)) = eH.
+  { rewrite (group_homomorphism_mult_rule G mult H multH h x y Hhom HxG HyG).
+    rewrite Hhx. rewrite Hhy.
+    exact (andEL (apply_fun multH (eH, eH) = eH) (apply_fun multH (eH, eH) = eH) (HidH eH HeH)). }
+  exact (SepI G (fun x => apply_fun h x = eH) (apply_fun mult (x, y)) Hxy_in_G Hpred_xy).
+- let x. assume HxK.
+  claim HxG : x :e G. { exact (SepE1 G (fun x => apply_fun h x = eH) x HxK). }
+  claim Hhx : apply_fun h x = eH. { exact (SepE2 G (fun x => apply_fun h x = eH) x HxK). }
+  claim Hinvx_in_G : apply_fun inv x :e G.
+  { exact (HinvFn x HxG). }
+  claim Hpred_invx : apply_fun h (apply_fun inv x) = eH.
+  { rewrite (group_hom_sends_inverse G mult e inv H multH eH invH h HgrpG HgrpH Hhom x HxG).
+    rewrite Hhx.
+    claim HinvH_eH_in_H : apply_fun invH eH :e H.
+    { exact (HinvH_fn eH HeH). }
+    claim H1 : apply_fun multH (eH, apply_fun invH eH) = eH.
+    { exact (andEL (apply_fun multH (eH, apply_fun invH eH) = eH) (apply_fun multH (apply_fun invH eH, eH) = eH) (HinvH eH HeH)). }
+    claim H2 : apply_fun multH (eH, apply_fun invH eH) = apply_fun invH eH.
+    { exact (andEL (apply_fun multH (eH, apply_fun invH eH) = apply_fun invH eH) (apply_fun multH (apply_fun invH eH, eH) = apply_fun invH eH) (HidH (apply_fun invH eH) HinvH_eH_in_H)). }
+    rewrite <- H2. exact H1. }
+  exact (SepI G (fun x => apply_fun h x = eH) (apply_fun inv x) Hinvx_in_G Hpred_invx).
+Qed.
+
+(** Infrastructure: commutator subgroup satisfies its defining properties **)
+(** Proven Dave **)
+Lemma commutator_subgroup_props :
+  forall G mult e inv:set,
+  group_structure G mult e inv ->
+  subgroup_of (commutator_subgroup G mult e inv) G mult e inv /\
+  (forall x y:set, x :e G -> y :e G -> commutator mult inv x y :e (commutator_subgroup G mult e inv)) /\
+  (forall C':set,
+    subgroup_of C' G mult e inv ->
+    (forall x y:set, x :e G -> y :e G -> commutator mult inv x y :e C') ->
+    (commutator_subgroup G mult e inv) c= C').
+let G mult e inv. assume HgrpG.
+exact (Eps_i_ex
+  (fun C:set =>
+    subgroup_of C G mult e inv /\
+    (forall x y:set, x :e G -> y :e G -> commutator mult inv x y :e C) /\
+    (forall C':set,
+      subgroup_of C' G mult e inv ->
+      (forall x y:set, x :e G -> y :e G -> commutator mult inv x y :e C') ->
+      C c= C'))
+  (commutator_subgroup_exists_aux G mult e inv HgrpG)).
+Qed.
+
+(** Infrastructure: conjugation distributes over multiplication **)
+(** Proven Dave **)
+Lemma conj_distrib :
+  forall G mult e inv g x y:set,
+  group_structure G mult e inv ->
+  g :e G -> x :e G -> y :e G ->
+  apply_fun mult (apply_fun mult (g, apply_fun mult (x, y)), apply_fun inv g) =
+  apply_fun mult
+    (apply_fun mult (apply_fun mult (g, x), apply_fun inv g),
+     apply_fun mult (apply_fun mult (g, y), apply_fun inv g)).
+let G mult e inv g x y. assume Hgrp HgG HxG HyG.
+apply (and6E
+  (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+  (forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  Hgrp).
+assume HmultFn HinvFn HeG HassocG HidG HinvG.
+claim HinvgG : apply_fun inv g :e G. { exact (HinvFn g HgG). }
+claim HgxG : apply_fun mult (g, x) :e G.
+{ exact (HmultFn (g, x) (tuple_2_setprod_by_pair_Sigma G G g x HgG HxG)). }
+claim HgyG : apply_fun mult (g, y) :e G.
+{ exact (HmultFn (g, y) (tuple_2_setprod_by_pair_Sigma G G g y HgG HyG)). }
+claim HyinvgG : apply_fun mult (y, apply_fun inv g) :e G.
+{ exact (HmultFn (y, apply_fun inv g) (tuple_2_setprod_by_pair_Sigma G G y (apply_fun inv g) HyG HinvgG)). }
+claim HgyinvgG : apply_fun mult (apply_fun mult (g, y), apply_fun inv g) :e G.
+{ exact (HmultFn (apply_fun mult (g, y), apply_fun inv g) (tuple_2_setprod_by_pair_Sigma G G (apply_fun mult (g, y)) (apply_fun inv g) HgyG HinvgG)). }
+claim HLHS : apply_fun mult (apply_fun mult (g, apply_fun mult (x, y)), apply_fun inv g) =
+             apply_fun mult (apply_fun mult (g, x), apply_fun mult (y, apply_fun inv g)).
+{ rewrite <- (HassocG g x y HgG HxG HyG).
+  exact (HassocG (apply_fun mult (g, x)) y (apply_fun inv g) HgxG HyG HinvgG). }
+claim HRHS : apply_fun mult
+    (apply_fun mult (apply_fun mult (g, x), apply_fun inv g),
+     apply_fun mult (apply_fun mult (g, y), apply_fun inv g)) =
+  apply_fun mult (apply_fun mult (g, x), apply_fun mult (y, apply_fun inv g)).
+{ rewrite (HassocG (apply_fun mult (g, x)) (apply_fun inv g)
+    (apply_fun mult (apply_fun mult (g, y), apply_fun inv g)) HgxG HinvgG HgyinvgG).
+  rewrite (HassocG g y (apply_fun inv g) HgG HyG HinvgG).
+  rewrite <- (HassocG (apply_fun inv g) g (apply_fun mult (y, apply_fun inv g)) HinvgG HgG HyinvgG).
+  rewrite (andER (apply_fun mult (g, apply_fun inv g) = e)
+    (apply_fun mult (apply_fun inv g, g) = e) (HinvG g HgG)).
+  rewrite (andEL (apply_fun mult (e, apply_fun mult (y, apply_fun inv g)) =
+    apply_fun mult (y, apply_fun inv g))
+    (apply_fun mult (apply_fun mult (y, apply_fun inv g), e) =
+    apply_fun mult (y, apply_fun inv g))
+    (HidG (apply_fun mult (y, apply_fun inv g)) HyinvgG)).
+  reflexivity. }
+rewrite HLHS. rewrite HRHS. reflexivity.
+Qed.
+
+(** Infrastructure: conjugation sends inverse to inverse **)
+(** Proven Dave **)
+Lemma conj_inv :
+  forall G mult e inv g x:set,
+  group_structure G mult e inv ->
+  g :e G -> x :e G ->
+  apply_fun mult (apply_fun mult (g, apply_fun inv x), apply_fun inv g) =
+  apply_fun inv (apply_fun mult (apply_fun mult (g, x), apply_fun inv g)).
+let G mult e inv g x. assume Hgrp HgG HxG.
+apply (and6E
+  (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+  (forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  Hgrp).
+assume HmultFn HinvFn HeG HassocG HidG HinvG.
+claim HinvgG : apply_fun inv g :e G. { exact (HinvFn g HgG). }
+claim HinvxG : apply_fun inv x :e G. { exact (HinvFn x HxG). }
+claim HgxG : apply_fun mult (g, x) :e G.
+{ exact (HmultFn (g, x) (tuple_2_setprod_by_pair_Sigma G G g x HgG HxG)). }
+claim HgxinvgG : apply_fun mult (apply_fun mult (g, x), apply_fun inv g) :e G.
+{ exact (HmultFn (apply_fun mult (g, x), apply_fun inv g)
+    (tuple_2_setprod_by_pair_Sigma G G (apply_fun mult (g, x)) (apply_fun inv g) HgxG HinvgG)). }
+claim HginvxG : apply_fun mult (g, apply_fun inv x) :e G.
+{ exact (HmultFn (g, apply_fun inv x) (tuple_2_setprod_by_pair_Sigma G G g (apply_fun inv x) HgG HinvxG)). }
+claim HginvxinvgG : apply_fun mult (apply_fun mult (g, apply_fun inv x), apply_fun inv g) :e G.
+{ exact (HmultFn (apply_fun mult (g, apply_fun inv x), apply_fun inv g)
+    (tuple_2_setprod_by_pair_Sigma G G (apply_fun mult (g, apply_fun inv x)) (apply_fun inv g) HginvxG HinvgG)). }
+claim HinvgxinvgG : apply_fun inv (apply_fun mult (apply_fun mult (g, x), apply_fun inv g)) :e G.
+{ exact (HinvFn (apply_fun mult (apply_fun mult (g, x), apply_fun inv g)) HgxinvgG). }
+claim Hprod_e : apply_fun mult
+    (apply_fun mult (apply_fun mult (g, x), apply_fun inv g),
+     apply_fun mult (apply_fun mult (g, apply_fun inv x), apply_fun inv g)) = e.
+{ rewrite <- (conj_distrib G mult e inv g x (apply_fun inv x) Hgrp HgG HxG HinvxG).
+  rewrite (andEL (apply_fun mult (x, apply_fun inv x) = e)
+    (apply_fun mult (apply_fun inv x, x) = e) (HinvG x HxG)).
+  rewrite (andER (apply_fun mult (e, g) = g)
+    (apply_fun mult (g, e) = g) (HidG g HgG)).
+  exact (andEL (apply_fun mult (g, apply_fun inv g) = e)
+    (apply_fun mult (apply_fun inv g, g) = e) (HinvG g HgG)). }
+claim Hinv_inv_eq : apply_fun inv (apply_fun inv (apply_fun mult (apply_fun mult (g, x), apply_fun inv g))) =
+                    apply_fun mult (apply_fun mult (g, x), apply_fun inv g).
+{ exact (group_inv_inv G mult inv e (apply_fun mult (apply_fun mult (g, x), apply_fun inv g))
+    HmultFn HinvFn HeG HassocG HidG HinvG HgxinvgG). }
+claim Hinv_inv_prod_e : apply_fun mult
+    (apply_fun inv (apply_fun inv (apply_fun mult (apply_fun mult (g, x), apply_fun inv g))),
+     apply_fun mult (apply_fun mult (g, apply_fun inv x), apply_fun inv g)) = e.
+{ rewrite Hinv_inv_eq. exact Hprod_e. }
+exact (group_left_inv_solve G mult inv e
+  (apply_fun inv (apply_fun mult (apply_fun mult (g, x), apply_fun inv g)))
+  (apply_fun mult (apply_fun mult (g, apply_fun inv x), apply_fun inv g))
+  HmultFn HinvFn HeG HassocG HidG HinvG
+  HinvgxinvgG HginvxinvgG Hinv_inv_prod_e).
+Qed.
+
+(** Infrastructure: conjugation of commutator equals commutator of conjugates **)
+(** Proven Dave **)
+Lemma conj_comm :
+  forall G mult e inv g a b:set,
+  group_structure G mult e inv ->
+  g :e G -> a :e G -> b :e G ->
+  apply_fun mult (apply_fun mult (g, commutator mult inv a b), apply_fun inv g) =
+  commutator mult inv
+    (apply_fun mult (apply_fun mult (g, a), apply_fun inv g))
+    (apply_fun mult (apply_fun mult (g, b), apply_fun inv g)).
+let G mult e inv g a b. assume Hgrp HgG HaG HbG.
+apply (and6E
+  (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+  (forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  Hgrp).
+assume HmultFn HinvFn HeG HassocG HidG HinvG.
+claim HinvgG : apply_fun inv g :e G. { exact (HinvFn g HgG). }
+claim HinvaG : apply_fun inv a :e G. { exact (HinvFn a HaG). }
+claim HinvbG : apply_fun inv b :e G. { exact (HinvFn b HbG). }
+claim HabG : apply_fun mult (a, b) :e G.
+{ exact (HmultFn (a, b) (tuple_2_setprod_by_pair_Sigma G G a b HaG HbG)). }
+claim HabinvaG : apply_fun mult (apply_fun mult (a, b), apply_fun inv a) :e G.
+{ exact (HmultFn (apply_fun mult (a, b), apply_fun inv a)
+    (tuple_2_setprod_by_pair_Sigma G G (apply_fun mult (a, b)) (apply_fun inv a) HabG HinvaG)). }
+claim Hcomm_unfold : commutator mult inv a b =
+  apply_fun mult (apply_fun mult (apply_fun mult (a, b), apply_fun inv a), apply_fun inv b).
+{ reflexivity. }
+rewrite Hcomm_unfold.
+rewrite (conj_distrib G mult e inv g (apply_fun mult (apply_fun mult (a, b), apply_fun inv a))
+  (apply_fun inv b) Hgrp HgG HabinvaG HinvbG).
+rewrite (conj_distrib G mult e inv g (apply_fun mult (a, b)) (apply_fun inv a)
+  Hgrp HgG HabG HinvaG).
+rewrite (conj_distrib G mult e inv g a b Hgrp HgG HaG HbG).
+rewrite (conj_inv G mult e inv g a Hgrp HgG HaG).
+rewrite (conj_inv G mult e inv g b Hgrp HgG HbG).
+reflexivity.
+Qed.
+
+(** helper: G/N is abelian when N normal and contains all commutators **)
+Lemma quotient_group_is_abelian :
+  forall G mult e inv N:set,
+  group_structure G mult e inv ->
+  normal_subgroup N G mult e inv ->
+  (forall x y:set, x :e G -> y :e G -> commutator mult inv x y :e N) ->
+  abelian_group
+    (quotient_group_set G mult N)
+    (quotient_group_mult G mult N)
+    (quotient_group_id G mult e N)
+    (quotient_group_inv G mult inv N).
+admit.
+Admitted.
+
 (** from S69 Lem 69.3 (line 3081 in algtop.tex): commutator subgroup properties **)
 (** LATEX VERSION: [G,G] is normal in G, G/[G,G] is abelian, and any homomorphism **)
 (** from G to an abelian group H has kernel containing [G,G]. **)
@@ -111791,48 +112289,205 @@ Theorem lemma69_3_commutator_subgroup :
     commutator_subgroup G mult e inv c= kernel_of G eH h).
 let G mult e inv.
 assume Hgrp : group_structure G mult e inv.
-set C := commutator_subgroup G mult e inv.
-claim HCdef : C = commutator_subgroup G mult e inv.
-{
-  reflexivity.
-}
-rewrite <- HCdef.
-rewrite <- HCdef.
-rewrite <- HCdef.
-rewrite <- HCdef.
-rewrite <- HCdef.
-rewrite <- HCdef.
-apply (andI
-  (normal_subgroup C G mult e inv)
-  (abelian_group
-    (quotient_group_set G mult C)
-    (quotient_group_mult G mult C)
-    (quotient_group_id G mult e C)
-    (quotient_group_inv G mult inv C) /\
-   (forall H multH eH invH h:set,
-     abelian_group H multH eH invH ->
-     group_homomorphism G mult H multH h ->
-     C c= kernel_of G eH h))).
-- admit.
-- apply (andI
-    (abelian_group
-      (quotient_group_set G mult C)
-      (quotient_group_mult G mult C)
-      (quotient_group_id G mult e C)
-      (quotient_group_inv G mult inv C))
-    (forall H multH eH invH h:set,
-      abelian_group H multH eH invH ->
-      group_homomorphism G mult H multH h ->
-      C c= kernel_of G eH h)).
-	  + admit.
-	  + let H.
-	    let multH.
-	    let eH.
-	    let invH.
-	    let h.
-	    assume HabH : abelian_group H multH eH invH.
-	    assume Hhom : group_homomorphism G mult H multH h.
-	    admit.
+apply (and6E
+  (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+  (forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  Hgrp).
+assume HmultFn HinvFn HeG HassocG HidG HinvG.
+claim HC_props : subgroup_of (commutator_subgroup G mult e inv) G mult e inv /\
+  (forall x y:set, x :e G -> y :e G -> commutator mult inv x y :e (commutator_subgroup G mult e inv)) /\
+  (forall C':set,
+    subgroup_of C' G mult e inv ->
+    (forall x y:set, x :e G -> y :e G -> commutator mult inv x y :e C') ->
+    (commutator_subgroup G mult e inv) c= C').
+{ exact (commutator_subgroup_props G mult e inv Hgrp). }
+apply (and3E
+  (subgroup_of (commutator_subgroup G mult e inv) G mult e inv)
+  (forall x y:set, x :e G -> y :e G -> commutator mult inv x y :e (commutator_subgroup G mult e inv))
+  (forall C':set,
+    subgroup_of C' G mult e inv ->
+    (forall x y:set, x :e G -> y :e G -> commutator mult inv x y :e C') ->
+    (commutator_subgroup G mult e inv) c= C')
+  HC_props).
+assume HC_sub HC_comm HC_min.
+apply (and4E (commutator_subgroup G mult e inv c= G) (e :e commutator_subgroup G mult e inv)
+  (forall x y:set, x :e commutator_subgroup G mult e inv -> y :e commutator_subgroup G mult e inv ->
+    apply_fun mult (x, y) :e commutator_subgroup G mult e inv)
+  (forall x:set, x :e commutator_subgroup G mult e inv -> apply_fun inv x :e commutator_subgroup G mult e inv)
+  HC_sub).
+assume HC_subG HC_e HC_mult HC_inv.
+claim HC_norm : normal_subgroup (commutator_subgroup G mult e inv) G mult e inv.
+{ apply (andI (subgroup_of (commutator_subgroup G mult e inv) G mult e inv)
+    (forall n g:set, n :e commutator_subgroup G mult e inv -> g :e G ->
+      apply_fun mult (apply_fun mult (g, n), apply_fun inv g) :e commutator_subgroup G mult e inv)).
+  + exact HC_sub.
+  + let n g. assume HnC HgG.
+    claim HinvgG : apply_fun inv g :e G. { exact (HinvFn g HgG). }
+    claim HnG : n :e G. { exact (HC_subG n HnC). }
+    claim HD'_sub : subgroup_of
+      {z :e G | apply_fun mult (apply_fun mult (g, z), apply_fun inv g) :e commutator_subgroup G mult e inv}
+      G mult e inv.
+    { apply (and4I
+        ({z :e G | apply_fun mult (apply_fun mult (g, z), apply_fun inv g) :e commutator_subgroup G mult e inv} c= G)
+        (e :e {z :e G | apply_fun mult (apply_fun mult (g, z), apply_fun inv g) :e commutator_subgroup G mult e inv})
+        (forall x y:set, x :e {z :e G | apply_fun mult (apply_fun mult (g, z), apply_fun inv g) :e commutator_subgroup G mult e inv} ->
+          y :e {z :e G | apply_fun mult (apply_fun mult (g, z), apply_fun inv g) :e commutator_subgroup G mult e inv} ->
+          apply_fun mult (x, y) :e {z :e G | apply_fun mult (apply_fun mult (g, z), apply_fun inv g) :e commutator_subgroup G mult e inv})
+        (forall x:set, x :e {z :e G | apply_fun mult (apply_fun mult (g, z), apply_fun inv g) :e commutator_subgroup G mult e inv} ->
+          apply_fun inv x :e {z :e G | apply_fun mult (apply_fun mult (g, z), apply_fun inv g) :e commutator_subgroup G mult e inv})).
+      - let z. assume Hz. exact (SepE1 G (fun z => apply_fun mult (apply_fun mult (g, z), apply_fun inv g) :e commutator_subgroup G mult e inv) z Hz).
+      - claim Hconj_e : apply_fun mult (apply_fun mult (g, e), apply_fun inv g) = e.
+        { rewrite (andER (apply_fun mult (e, g) = g) (apply_fun mult (g, e) = g) (HidG g HgG)).
+          exact (andEL (apply_fun mult (g, apply_fun inv g) = e)
+            (apply_fun mult (apply_fun inv g, g) = e) (HinvG g HgG)). }
+        claim Hpred_e : apply_fun mult (apply_fun mult (g, e), apply_fun inv g) :e commutator_subgroup G mult e inv.
+        { rewrite Hconj_e. exact HC_e. }
+        exact (SepI G (fun z => apply_fun mult (apply_fun mult (g, z), apply_fun inv g) :e commutator_subgroup G mult e inv) e HeG Hpred_e).
+      - let x y. assume HxD' HyD'.
+        claim HxG : x :e G. { exact (SepE1 G (fun z => apply_fun mult (apply_fun mult (g, z), apply_fun inv g) :e commutator_subgroup G mult e inv) x HxD'). }
+        claim HyG : y :e G. { exact (SepE1 G (fun z => apply_fun mult (apply_fun mult (g, z), apply_fun inv g) :e commutator_subgroup G mult e inv) y HyD'). }
+        claim HxC : apply_fun mult (apply_fun mult (g, x), apply_fun inv g) :e commutator_subgroup G mult e inv.
+        { exact (SepE2 G (fun z => apply_fun mult (apply_fun mult (g, z), apply_fun inv g) :e commutator_subgroup G mult e inv) x HxD'). }
+        claim HyC : apply_fun mult (apply_fun mult (g, y), apply_fun inv g) :e commutator_subgroup G mult e inv.
+        { exact (SepE2 G (fun z => apply_fun mult (apply_fun mult (g, z), apply_fun inv g) :e commutator_subgroup G mult e inv) y HyD'). }
+        claim HxyG : apply_fun mult (x, y) :e G.
+        { exact (HmultFn (x, y) (tuple_2_setprod_by_pair_Sigma G G x y HxG HyG)). }
+        claim Hconj_xy : apply_fun mult (apply_fun mult (g, apply_fun mult (x, y)), apply_fun inv g) =
+          apply_fun mult (apply_fun mult (apply_fun mult (g, x), apply_fun inv g),
+                          apply_fun mult (apply_fun mult (g, y), apply_fun inv g)).
+        { exact (conj_distrib G mult e inv g x y Hgrp HgG HxG HyG). }
+        claim Hpred_xy : apply_fun mult (apply_fun mult (g, apply_fun mult (x, y)), apply_fun inv g) :e commutator_subgroup G mult e inv.
+        { rewrite Hconj_xy. exact (HC_mult (apply_fun mult (apply_fun mult (g, x), apply_fun inv g)) (apply_fun mult (apply_fun mult (g, y), apply_fun inv g)) HxC HyC). }
+        exact (SepI G (fun z => apply_fun mult (apply_fun mult (g, z), apply_fun inv g) :e commutator_subgroup G mult e inv) (apply_fun mult (x, y)) HxyG Hpred_xy).
+      - let x. assume HxD'.
+        claim HxG : x :e G. { exact (SepE1 G (fun z => apply_fun mult (apply_fun mult (g, z), apply_fun inv g) :e commutator_subgroup G mult e inv) x HxD'). }
+        claim HxC : apply_fun mult (apply_fun mult (g, x), apply_fun inv g) :e commutator_subgroup G mult e inv.
+        { exact (SepE2 G (fun z => apply_fun mult (apply_fun mult (g, z), apply_fun inv g) :e commutator_subgroup G mult e inv) x HxD'). }
+        claim HinvxG : apply_fun inv x :e G. { exact (HinvFn x HxG). }
+        claim Hconj_invx : apply_fun mult (apply_fun mult (g, apply_fun inv x), apply_fun inv g) =
+          apply_fun inv (apply_fun mult (apply_fun mult (g, x), apply_fun inv g)).
+        { exact (conj_inv G mult e inv g x Hgrp HgG HxG). }
+        claim Hpred_invx : apply_fun mult (apply_fun mult (g, apply_fun inv x), apply_fun inv g) :e commutator_subgroup G mult e inv.
+        { rewrite Hconj_invx. exact (HC_inv (apply_fun mult (apply_fun mult (g, x), apply_fun inv g)) HxC). }
+        exact (SepI G (fun z => apply_fun mult (apply_fun mult (g, z), apply_fun inv g) :e commutator_subgroup G mult e inv) (apply_fun inv x) HinvxG Hpred_invx). }
+    claim HD'_comm : forall a b:set, a :e G -> b :e G ->
+      commutator mult inv a b :e {z :e G | apply_fun mult (apply_fun mult (g, z), apply_fun inv g) :e commutator_subgroup G mult e inv}.
+    { let a b. assume HaG HbG.
+      claim HcommG : commutator mult inv a b :e G.
+      { claim HinvaG : apply_fun inv a :e G. { exact (HinvFn a HaG). }
+        claim HinvbG : apply_fun inv b :e G. { exact (HinvFn b HbG). }
+        claim HabG : apply_fun mult (a, b) :e G.
+        { exact (HmultFn (a, b) (tuple_2_setprod_by_pair_Sigma G G a b HaG HbG)). }
+        claim HabinvaG : apply_fun mult (apply_fun mult (a, b), apply_fun inv a) :e G.
+        { exact (HmultFn (apply_fun mult (a, b), apply_fun inv a)
+            (tuple_2_setprod_by_pair_Sigma G G (apply_fun mult (a, b)) (apply_fun inv a) HabG HinvaG)). }
+        exact (HmultFn (apply_fun mult (apply_fun mult (a, b), apply_fun inv a), apply_fun inv b)
+          (tuple_2_setprod_by_pair_Sigma G G (apply_fun mult (apply_fun mult (a, b), apply_fun inv a)) (apply_fun inv b) HabinvaG HinvbG)). }
+      claim HgagG : apply_fun mult (apply_fun mult (g, a), apply_fun inv g) :e G.
+      { claim HgaG : apply_fun mult (g, a) :e G. { exact (HmultFn (g, a) (tuple_2_setprod_by_pair_Sigma G G g a HgG HaG)). }
+        exact (HmultFn (apply_fun mult (g, a), apply_fun inv g) (tuple_2_setprod_by_pair_Sigma G G (apply_fun mult (g, a)) (apply_fun inv g) HgaG HinvgG)). }
+      claim HgbgG : apply_fun mult (apply_fun mult (g, b), apply_fun inv g) :e G.
+      { claim HgbG : apply_fun mult (g, b) :e G. { exact (HmultFn (g, b) (tuple_2_setprod_by_pair_Sigma G G g b HgG HbG)). }
+        exact (HmultFn (apply_fun mult (g, b), apply_fun inv g) (tuple_2_setprod_by_pair_Sigma G G (apply_fun mult (g, b)) (apply_fun inv g) HgbG HinvgG)). }
+      claim Hconj_comm_eq : apply_fun mult (apply_fun mult (g, commutator mult inv a b), apply_fun inv g) =
+        commutator mult inv (apply_fun mult (apply_fun mult (g, a), apply_fun inv g))
+                            (apply_fun mult (apply_fun mult (g, b), apply_fun inv g)).
+      { exact (conj_comm G mult e inv g a b Hgrp HgG HaG HbG). }
+      claim HconvertedC : commutator mult inv (apply_fun mult (apply_fun mult (g, a), apply_fun inv g))
+                                             (apply_fun mult (apply_fun mult (g, b), apply_fun inv g))
+        :e commutator_subgroup G mult e inv.
+      { exact (HC_comm (apply_fun mult (apply_fun mult (g, a), apply_fun inv g))
+          (apply_fun mult (apply_fun mult (g, b), apply_fun inv g)) HgagG HgbgG). }
+      claim Hpred_comm : apply_fun mult (apply_fun mult (g, commutator mult inv a b), apply_fun inv g)
+        :e commutator_subgroup G mult e inv.
+      { rewrite Hconj_comm_eq. exact HconvertedC. }
+      exact (SepI G (fun z => apply_fun mult (apply_fun mult (g, z), apply_fun inv g) :e commutator_subgroup G mult e inv) (commutator mult inv a b) HcommG Hpred_comm). }
+    claim HC_sub_D' : commutator_subgroup G mult e inv c=
+      {z :e G | apply_fun mult (apply_fun mult (g, z), apply_fun inv g) :e commutator_subgroup G mult e inv}.
+    { exact (HC_min {z :e G | apply_fun mult (apply_fun mult (g, z), apply_fun inv g) :e commutator_subgroup G mult e inv} HD'_sub HD'_comm). }
+    exact (SepE2 G (fun z => apply_fun mult (apply_fun mult (g, z), apply_fun inv g) :e commutator_subgroup G mult e inv) n (HC_sub_D' n HnC)). }
+apply and3I.
+- (** Part 1: normal subgroup **)
+  exact HC_norm.
+- (** Part 2: abelian quotient **)
+  admit.
+- (** Part 3: kernel containment **)
+  let H multH eH invH h.
+  assume HabH : abelian_group H multH eH invH.
+  assume Hhom : group_homomorphism G mult H multH h.
+  apply (and6E
+    (function_on multH (setprod H H) H) (function_on invH H H) (eH :e H)
+    (forall a b c:set, a :e H -> b :e H -> c :e H ->
+      apply_fun multH (apply_fun multH (a, b), c) = apply_fun multH (a, apply_fun multH (b, c)))
+    (forall a:set, a :e H -> apply_fun multH (eH, a) = a /\ apply_fun multH (a, eH) = a)
+    (forall a:set, a :e H ->
+      apply_fun multH (a, apply_fun invH a) = eH /\ apply_fun multH (apply_fun invH a, a) = eH)
+    (andEL (group_structure H multH eH invH)
+      (forall x y:set, x :e H -> y :e H -> apply_fun multH (x, y) = apply_fun multH (y, x))
+      HabH)).
+  assume HmultH_fn HinvH_fn HeH HassocH HidH HinvH.
+  claim HHgrp : group_structure H multH eH invH.
+  { exact (andEL (group_structure H multH eH invH)
+      (forall x y:set, x :e H -> y :e H -> apply_fun multH (x, y) = apply_fun multH (y, x))
+      HabH). }
+  claim HHab : forall x y:set, x :e H -> y :e H -> apply_fun multH (x, y) = apply_fun multH (y, x).
+  { exact (andER (group_structure H multH eH invH)
+      (forall x y:set, x :e H -> y :e H -> apply_fun multH (x, y) = apply_fun multH (y, x))
+      HabH). }
+  claim Hhhom_fn : function_on h G H.
+  { exact (group_homomorphism_function_on G mult H multH h Hhom). }
+  claim HK_sub : subgroup_of (kernel_of G eH h) G mult e inv.
+  { exact (kernel_is_subgroup_aux G mult e inv H multH eH invH h Hgrp HHgrp Hhom). }
+  claim HK_comm : forall a b:set, a :e G -> b :e G -> commutator mult inv a b :e kernel_of G eH h.
+  { let a b. assume HaG HbG.
+    claim HhaH : apply_fun h a :e H. { exact (Hhhom_fn a HaG). }
+    claim HhbH : apply_fun h b :e H. { exact (Hhhom_fn b HbG). }
+    claim HinvaG : apply_fun inv a :e G. { exact (HinvFn a HaG). }
+    claim HinvbG : apply_fun inv b :e G. { exact (HinvFn b HbG). }
+    claim HabG : apply_fun mult (a, b) :e G.
+    { exact (HmultFn (a, b) (tuple_2_setprod_by_pair_Sigma G G a b HaG HbG)). }
+    claim HabinvaG : apply_fun mult (apply_fun mult (a, b), apply_fun inv a) :e G.
+    { exact (HmultFn (apply_fun mult (a, b), apply_fun inv a)
+        (tuple_2_setprod_by_pair_Sigma G G (apply_fun mult (a, b)) (apply_fun inv a) HabG HinvaG)). }
+    claim HcommG : commutator mult inv a b :e G.
+    { exact (HmultFn (apply_fun mult (apply_fun mult (a, b), apply_fun inv a), apply_fun inv b)
+        (tuple_2_setprod_by_pair_Sigma G G (apply_fun mult (apply_fun mult (a, b), apply_fun inv a)) (apply_fun inv b) HabinvaG HinvbG)). }
+    claim Hh_comm : apply_fun h (commutator mult inv a b) =
+      apply_fun multH (apply_fun multH (apply_fun multH (apply_fun h a, apply_fun h b),
+        apply_fun invH (apply_fun h a)), apply_fun invH (apply_fun h b)).
+    { claim Hcomm_unfold2 : commutator mult inv a b =
+        apply_fun mult (apply_fun mult (apply_fun mult (a, b), apply_fun inv a), apply_fun inv b).
+      { reflexivity. }
+      rewrite Hcomm_unfold2.
+      rewrite (group_homomorphism_mult_rule G mult H multH h (apply_fun mult (apply_fun mult (a, b), apply_fun inv a)) (apply_fun inv b) Hhom HabinvaG HinvbG).
+      rewrite (group_homomorphism_mult_rule G mult H multH h (apply_fun mult (a, b)) (apply_fun inv a) Hhom HabG HinvaG).
+      rewrite (group_homomorphism_mult_rule G mult H multH h a b Hhom HaG HbG).
+      rewrite (group_hom_sends_inverse G mult e inv H multH eH invH h Hgrp HHgrp Hhom a HaG).
+      rewrite (group_hom_sends_inverse G mult e inv H multH eH invH h Hgrp HHgrp Hhom b HbG).
+      reflexivity. }
+    claim Hh_comm_eq_eH : apply_fun h (commutator mult inv a b) = eH.
+    { rewrite Hh_comm.
+      rewrite (HHab (apply_fun h a) (apply_fun h b) HhaH HhbH).
+      claim HinvhaH : apply_fun invH (apply_fun h a) :e H.
+      { exact (HinvH_fn (apply_fun h a) HhaH). }
+      claim HinvhbH : apply_fun invH (apply_fun h b) :e H.
+      { exact (HinvH_fn (apply_fun h b) HhbH). }
+      rewrite (HassocH (apply_fun h b) (apply_fun h a) (apply_fun invH (apply_fun h a)) HhbH HhaH HinvhaH).
+      rewrite (andEL (apply_fun multH (apply_fun h a, apply_fun invH (apply_fun h a)) = eH)
+        (apply_fun multH (apply_fun invH (apply_fun h a), apply_fun h a) = eH)
+        (HinvH (apply_fun h a) HhaH)).
+      rewrite (andER (apply_fun multH (eH, apply_fun h b) = apply_fun h b)
+        (apply_fun multH (apply_fun h b, eH) = apply_fun h b)
+        (HidH (apply_fun h b) HhbH)).
+      exact (andEL (apply_fun multH (apply_fun h b, apply_fun invH (apply_fun h b)) = eH)
+        (apply_fun multH (apply_fun invH (apply_fun h b), apply_fun h b) = eH)
+        (HinvH (apply_fun h b) HhbH)). }
+    exact (SepI G (fun x => apply_fun h x = eH) (commutator mult inv a b) HcommG Hh_comm_eq_eH). }
+  exact (HC_min (kernel_of G eH h) HK_sub HK_comm).
 Admitted.
 
 (** from S69 Thm 69.4 (line 3125 in algtop.tex): abelianization of free group **)
