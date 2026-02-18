@@ -107293,7 +107293,411 @@ Theorem lemma68_3_extension_external_free_product :
               apply_fun h' (apply_fun (apply_fun ifam alpha) x) =
                 apply_fun (apply_fun hfam alpha) x) ->
           forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
-admit.
+let G multG eG invG J Gfam multfam ifam.
+assume Hext : external_free_product G multG eG invG J Gfam multfam ifam.
+let H multH eH invH.
+assume HgrpH : group_structure H multH eH invH.
+let hfam.
+assume Hhfam : forall alpha:set, alpha :e J ->
+  group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) H multH (apply_fun hfam alpha).
+(** Unpack external_free_product: group_structure, monomorphisms, free_product **)
+apply (and3E
+  (group_structure G multG eG invG)
+  (forall alpha:set, alpha :e J ->
+    group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha) /\
+    (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+      apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) y -> x = y))
+  (free_product_of_subgroups G multG eG invG J
+    (graph J (fun alpha:set => homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha)))
+    (graph J (fun alpha:set => apply_fun (apply_fun ifam alpha) (Eps_i (fun ea:set =>
+      exists ma ia:set, group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) ea ia)))))
+  Hext).
+assume Hgrp : group_structure G multG eG invG.
+assume Hmono : forall alpha:set, alpha :e J ->
+  group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha) /\
+  (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+    apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) y -> x = y).
+assume Hfp : free_product_of_subgroups G multG eG invG J
+  (graph J (fun alpha:set => homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha)))
+  (graph J (fun alpha:set => apply_fun (apply_fun ifam alpha) (Eps_i (fun ea:set =>
+    exists ma ia:set, group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) ea ia)))).
+(** Short names for the internal families **)
+set ImageFam := graph J (fun alpha:set => homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha)).
+set efam_int := graph J (fun alpha:set => apply_fun (apply_fun ifam alpha) (Eps_i (fun ea:set =>
+  exists ma ia:set, group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) ea ia))).
+(** Helper: evaluate ImageFam at alpha **)
+claim HIF_eval : forall alpha:set, alpha :e J ->
+  apply_fun ImageFam alpha = homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha).
+{ let alpha. assume Hal.
+  exact (apply_fun_graph J
+    (fun a:set => homomorphism_image (apply_fun Gfam a) (apply_fun ifam a))
+    alpha Hal). }
+(** Helper: ifam(alpha) is a homomorphism **)
+claim Hifam_hom : forall alpha:set, alpha :e J ->
+  group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha).
+{ let alpha. assume Hal.
+  exact (andEL
+    (group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha))
+    (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+      apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) y -> x = y)
+    (Hmono alpha Hal)). }
+(** Helper: ifam(alpha) maps Gfam(alpha) to G **)
+claim Hifam_in_G : forall alpha:set, alpha :e J ->
+  forall x:set, x :e apply_fun Gfam alpha ->
+    apply_fun (apply_fun ifam alpha) x :e G.
+{ let alpha. assume Hal. let x. assume Hx.
+  exact (andEL
+    (function_on (apply_fun ifam alpha) (apply_fun Gfam alpha) G)
+    (forall u v:set, u :e apply_fun Gfam alpha -> v :e apply_fun Gfam alpha ->
+      apply_fun (apply_fun ifam alpha) (apply_fun (apply_fun multfam alpha) (u, v)) =
+        apply_fun multG (apply_fun (apply_fun ifam alpha) u, apply_fun (apply_fun ifam alpha) v))
+    (Hifam_hom alpha Hal) x Hx). }
+(** Helper: ifam(alpha) is injective **)
+claim Hifam_inj : forall alpha:set, alpha :e J ->
+  forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+    apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) y -> x = y.
+{ let alpha. assume Hal.
+  exact (andER
+    (group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha))
+    (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+      apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) y -> x = y)
+    (Hmono alpha Hal)). }
+(** Helper: ifam(alpha) multiplicativity **)
+claim Hifam_mult : forall alpha:set, alpha :e J ->
+  forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+    apply_fun (apply_fun ifam alpha) (apply_fun (apply_fun multfam alpha) (x, y)) =
+      apply_fun multG (apply_fun (apply_fun ifam alpha) x, apply_fun (apply_fun ifam alpha) y).
+{ let alpha. assume Hal. let x y. assume Hx Hy.
+  exact (group_homomorphism_mult_rule
+    (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha) x y
+    (Hifam_hom alpha Hal) Hx Hy). }
+(** Helper: ifam(alpha)(x) is in ImageFam(alpha) **)
+claim Hifam_in_Image : forall alpha:set, alpha :e J ->
+  forall x:set, x :e apply_fun Gfam alpha ->
+    apply_fun (apply_fun ifam alpha) x :e apply_fun ImageFam alpha.
+{ let alpha. assume Hal. let x. assume Hx.
+  rewrite (HIF_eval alpha Hal).
+  exact (ReplI (apply_fun Gfam alpha) (fun z:set => apply_fun (apply_fun ifam alpha) z) x Hx). }
+(** Helper: for y in ImageFam(alpha), there exists x in Gfam(alpha) with ifam(alpha)(x) = y **)
+claim HImage_preimage : forall alpha:set, alpha :e J ->
+  forall y:set, y :e apply_fun ImageFam alpha ->
+    exists x:set, x :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) x = y.
+{ let alpha. assume Hal. let y. assume Hy.
+  claim Hy2 : y :e homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha).
+  { rewrite <- (HIF_eval alpha Hal). exact Hy. }
+  apply (ReplE_impred (apply_fun Gfam alpha) (fun z:set => apply_fun (apply_fun ifam alpha) z) y Hy2).
+  let x. assume Hx : x :e apply_fun Gfam alpha. assume Heq : y = apply_fun (apply_fun ifam alpha) x.
+  witness x. apply andI. exact Hx. symmetry. exact Heq. }
+(** Define kfam: transfer homomorphisms on images **)
+set preimg := fun alpha y:set =>
+  Eps_i (fun x:set => x :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) x = y).
+set kfam := graph J (fun alpha:set =>
+  graph (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))
+    (fun y:set => apply_fun (apply_fun hfam alpha) (preimg alpha y))).
+(** Helper: kfam evaluation **)
+claim Hkfam_eval : forall alpha:set, alpha :e J ->
+  apply_fun kfam alpha =
+    graph (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))
+      (fun y:set => apply_fun (apply_fun hfam alpha) (preimg alpha y)).
+{ let alpha. assume Hal.
+  exact (apply_fun_graph J
+    (fun a:set => graph (homomorphism_image (apply_fun Gfam a) (apply_fun ifam a))
+      (fun y:set => apply_fun (apply_fun hfam a) (preimg a y)))
+    alpha Hal). }
+(** Helper: preimage properties for y in ImageFam(alpha) **)
+claim Hpreimg_props : forall alpha:set, alpha :e J ->
+  forall y:set, y :e apply_fun ImageFam alpha ->
+    preimg alpha y :e apply_fun Gfam alpha /\
+    apply_fun (apply_fun ifam alpha) (preimg alpha y) = y.
+{ let alpha. assume Hal. let y. assume Hy.
+  exact (Eps_i_ex (fun x:set => x :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) x = y)
+    (HImage_preimage alpha Hal y Hy)). }
+(** Helper: evaluate kfam(alpha)(y) **)
+claim Hkfam_val : forall alpha:set, alpha :e J ->
+  forall y:set, y :e apply_fun ImageFam alpha ->
+    apply_fun (apply_fun kfam alpha) y = apply_fun (apply_fun hfam alpha) (preimg alpha y).
+{ let alpha. assume Hal. let y. assume Hy.
+  claim Hy2 : y :e homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha).
+  { rewrite <- (HIF_eval alpha Hal). exact Hy. }
+  claim Hstep1 : apply_fun (apply_fun kfam alpha) y =
+    apply_fun (graph (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))
+      (fun z:set => apply_fun (apply_fun hfam alpha) (preimg alpha z))) y.
+  { claim Hkeq : apply_fun kfam alpha =
+      graph (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))
+        (fun z:set => apply_fun (apply_fun hfam alpha) (preimg alpha z)).
+    { exact (Hkfam_eval alpha Hal). }
+    rewrite Hkeq. reflexivity. }
+  claim Hstep2 : apply_fun (graph (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))
+    (fun z:set => apply_fun (apply_fun hfam alpha) (preimg alpha z))) y =
+    apply_fun (apply_fun hfam alpha) (preimg alpha y).
+  { exact (apply_fun_graph
+      (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))
+      (fun z:set => apply_fun (apply_fun hfam alpha) (preimg alpha z))
+      y Hy2). }
+  exact (eq_i_tra
+    (apply_fun (apply_fun kfam alpha) y)
+    (apply_fun (graph (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))
+      (fun z:set => apply_fun (apply_fun hfam alpha) (preimg alpha z))) y)
+    (apply_fun (apply_fun hfam alpha) (preimg alpha y))
+    Hstep1 Hstep2). }
+(** Helper: hfam(alpha) maps Gfam(alpha) to H **)
+claim Hhfam_in_H : forall alpha:set, alpha :e J ->
+  forall x:set, x :e apply_fun Gfam alpha ->
+    apply_fun (apply_fun hfam alpha) x :e H.
+{ let alpha. assume Hal. let x. assume Hx.
+  exact (andEL
+    (function_on (apply_fun hfam alpha) (apply_fun Gfam alpha) H)
+    (forall u v:set, u :e apply_fun Gfam alpha -> v :e apply_fun Gfam alpha ->
+      apply_fun (apply_fun hfam alpha) (apply_fun (apply_fun multfam alpha) (u, v)) =
+        apply_fun multH (apply_fun (apply_fun hfam alpha) u, apply_fun (apply_fun hfam alpha) v))
+    (Hhfam alpha Hal) x Hx). }
+(** Helper: hfam(alpha) multiplicativity **)
+claim Hhfam_mult : forall alpha:set, alpha :e J ->
+  forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+    apply_fun (apply_fun hfam alpha) (apply_fun (apply_fun multfam alpha) (x, y)) =
+      apply_fun multH (apply_fun (apply_fun hfam alpha) x, apply_fun (apply_fun hfam alpha) y).
+{ let alpha. assume Hal. let x y. assume Hx Hy.
+  exact (group_homomorphism_mult_rule
+    (apply_fun Gfam alpha) (apply_fun multfam alpha) H multH (apply_fun hfam alpha) x y
+    (Hhfam alpha Hal) Hx Hy). }
+(** Helper: Gfam(alpha) is closed under multfam(alpha) **)
+claim HGfam_mult_cl : forall alpha:set, alpha :e J ->
+  forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+    apply_fun (apply_fun multfam alpha) (x, y) :e apply_fun Gfam alpha.
+{ let alpha. assume Hal. let x y. assume Hx Hy.
+  admit. }
+(** Prove kfam(alpha) is a group_homomorphism from ImageFam(alpha) with multG to H with multH **)
+claim Hkfam_hom : forall alpha:set, alpha :e J ->
+  group_homomorphism (apply_fun ImageFam alpha) multG H multH (apply_fun kfam alpha).
+{ let alpha. assume Hal.
+  prove function_on (apply_fun kfam alpha) (apply_fun ImageFam alpha) H /\
+    (forall u v:set, u :e apply_fun ImageFam alpha -> v :e apply_fun ImageFam alpha ->
+      apply_fun (apply_fun kfam alpha) (apply_fun multG (u, v)) =
+        apply_fun multH (apply_fun (apply_fun kfam alpha) u, apply_fun (apply_fun kfam alpha) v)).
+  apply andI.
+  (** function_on **)
+  + prove forall y:set, y :e apply_fun ImageFam alpha -> apply_fun (apply_fun kfam alpha) y :e H.
+    let y. assume Hy.
+    claim Hpre_Gal : preimg alpha y :e apply_fun Gfam alpha.
+    { exact (andEL
+        (preimg alpha y :e apply_fun Gfam alpha)
+        (apply_fun (apply_fun ifam alpha) (preimg alpha y) = y)
+        (Hpreimg_props alpha Hal y Hy)). }
+    claim Hval : apply_fun (apply_fun kfam alpha) y = apply_fun (apply_fun hfam alpha) (preimg alpha y).
+    { exact (Hkfam_val alpha Hal y Hy). }
+    rewrite Hval.
+    exact (Hhfam_in_H alpha Hal (preimg alpha y) Hpre_Gal).
+  (** multiplicativity **)
+  + let u v. assume Hu : u :e apply_fun ImageFam alpha. assume Hv : v :e apply_fun ImageFam alpha.
+    set pu := preimg alpha u.
+    set pv := preimg alpha v.
+    claim Hpu_Gal : pu :e apply_fun Gfam alpha.
+    { exact (andEL (pu :e apply_fun Gfam alpha) (apply_fun (apply_fun ifam alpha) pu = u)
+        (Hpreimg_props alpha Hal u Hu)). }
+    claim Hpu_eq : apply_fun (apply_fun ifam alpha) pu = u.
+    { exact (andER (pu :e apply_fun Gfam alpha) (apply_fun (apply_fun ifam alpha) pu = u)
+        (Hpreimg_props alpha Hal u Hu)). }
+    claim Hpv_Gal : pv :e apply_fun Gfam alpha.
+    { exact (andEL (pv :e apply_fun Gfam alpha) (apply_fun (apply_fun ifam alpha) pv = v)
+        (Hpreimg_props alpha Hal v Hv)). }
+    claim Hpv_eq : apply_fun (apply_fun ifam alpha) pv = v.
+    { exact (andER (pv :e apply_fun Gfam alpha) (apply_fun (apply_fun ifam alpha) pv = v)
+        (Hpreimg_props alpha Hal v Hv)). }
+    claim Hmultfam_cl : apply_fun (apply_fun multfam alpha) (pu, pv) :e apply_fun Gfam alpha.
+    { exact (HGfam_mult_cl alpha Hal pu pv Hpu_Gal Hpv_Gal). }
+    claim HmultG_uv_eq : apply_fun multG (u, v) =
+      apply_fun (apply_fun ifam alpha) (apply_fun (apply_fun multfam alpha) (pu, pv)).
+    { claim Hstep1 : apply_fun (apply_fun ifam alpha) (apply_fun (apply_fun multfam alpha) (pu, pv)) =
+        apply_fun multG (apply_fun (apply_fun ifam alpha) pu, apply_fun (apply_fun ifam alpha) pv).
+      { exact (Hifam_mult alpha Hal pu pv Hpu_Gal Hpv_Gal). }
+      claim Hstep2 : apply_fun multG (apply_fun (apply_fun ifam alpha) pu, apply_fun (apply_fun ifam alpha) pv) =
+        apply_fun multG (u, v).
+      { rewrite Hpu_eq. rewrite Hpv_eq. reflexivity. }
+      symmetry. exact (eq_i_tra
+        (apply_fun (apply_fun ifam alpha) (apply_fun (apply_fun multfam alpha) (pu, pv)))
+        (apply_fun multG (apply_fun (apply_fun ifam alpha) pu, apply_fun (apply_fun ifam alpha) pv))
+        (apply_fun multG (u, v))
+        Hstep1 Hstep2). }
+    claim Huv_Image : apply_fun multG (u, v) :e apply_fun ImageFam alpha.
+    { rewrite HmultG_uv_eq. exact (Hifam_in_Image alpha Hal (apply_fun (apply_fun multfam alpha) (pu, pv)) Hmultfam_cl). }
+    (** LHS: kfam(alpha)(multG(u,v)) = hfam(alpha)(preimg(multG(u,v))) **)
+    claim Hlhs : apply_fun (apply_fun kfam alpha) (apply_fun multG (u, v)) =
+      apply_fun (apply_fun hfam alpha) (preimg alpha (apply_fun multG (u, v))).
+    { exact (Hkfam_val alpha Hal (apply_fun multG (u, v)) Huv_Image). }
+    (** RHS: multH(kfam(alpha)(u), kfam(alpha)(v)) = multH(hfam(alpha)(pu), hfam(alpha)(pv)) **)
+    claim Hku : apply_fun (apply_fun kfam alpha) u = apply_fun (apply_fun hfam alpha) pu.
+    { exact (Hkfam_val alpha Hal u Hu). }
+    claim Hkv : apply_fun (apply_fun kfam alpha) v = apply_fun (apply_fun hfam alpha) pv.
+    { exact (Hkfam_val alpha Hal v Hv). }
+    (** preimage(multG(u,v)) = multfam(pu, pv) by injectivity **)
+    claim Hpre_uv_Gal : preimg alpha (apply_fun multG (u, v)) :e apply_fun Gfam alpha.
+    { exact (andEL
+        (preimg alpha (apply_fun multG (u, v)) :e apply_fun Gfam alpha)
+        (apply_fun (apply_fun ifam alpha) (preimg alpha (apply_fun multG (u, v))) = apply_fun multG (u, v))
+        (Hpreimg_props alpha Hal (apply_fun multG (u, v)) Huv_Image)). }
+    claim Hpre_uv_eq : apply_fun (apply_fun ifam alpha) (preimg alpha (apply_fun multG (u, v))) = apply_fun multG (u, v).
+    { exact (andER
+        (preimg alpha (apply_fun multG (u, v)) :e apply_fun Gfam alpha)
+        (apply_fun (apply_fun ifam alpha) (preimg alpha (apply_fun multG (u, v))) = apply_fun multG (u, v))
+        (Hpreimg_props alpha Hal (apply_fun multG (u, v)) Huv_Image)). }
+    claim Hifam_eq : apply_fun (apply_fun ifam alpha) (preimg alpha (apply_fun multG (u, v))) =
+      apply_fun (apply_fun ifam alpha) (apply_fun (apply_fun multfam alpha) (pu, pv)).
+    { exact (eq_i_tra
+        (apply_fun (apply_fun ifam alpha) (preimg alpha (apply_fun multG (u, v))))
+        (apply_fun multG (u, v))
+        (apply_fun (apply_fun ifam alpha) (apply_fun (apply_fun multfam alpha) (pu, pv)))
+        Hpre_uv_eq HmultG_uv_eq). }
+    claim Hpre_eq_mult : preimg alpha (apply_fun multG (u, v)) = apply_fun (apply_fun multfam alpha) (pu, pv).
+    { exact (Hifam_inj alpha Hal
+        (preimg alpha (apply_fun multG (u, v)))
+        (apply_fun (apply_fun multfam alpha) (pu, pv))
+        Hpre_uv_Gal Hmultfam_cl Hifam_eq). }
+    (** hfam(alpha)(preimg(multG(u,v))) = hfam(alpha)(multfam(pu,pv)) **)
+    claim Hlhs2 : apply_fun (apply_fun hfam alpha) (preimg alpha (apply_fun multG (u, v))) =
+      apply_fun (apply_fun hfam alpha) (apply_fun (apply_fun multfam alpha) (pu, pv)).
+    { rewrite Hpre_eq_mult. reflexivity. }
+    (** hfam(alpha)(multfam(pu,pv)) = multH(hfam(alpha)(pu), hfam(alpha)(pv)) **)
+    claim Hhfam_eq : apply_fun (apply_fun hfam alpha) (apply_fun (apply_fun multfam alpha) (pu, pv)) =
+      apply_fun multH (apply_fun (apply_fun hfam alpha) pu, apply_fun (apply_fun hfam alpha) pv).
+    { exact (Hhfam_mult alpha Hal pu pv Hpu_Gal Hpv_Gal). }
+    (** Chain: kfam(multG(u,v)) = hfam(preimg) = hfam(multfam(pu,pv)) = multH(hfam(pu), hfam(pv)) **)
+    claim Hlhs3 : apply_fun (apply_fun kfam alpha) (apply_fun multG (u, v)) =
+      apply_fun multH (apply_fun (apply_fun hfam alpha) pu, apply_fun (apply_fun hfam alpha) pv).
+    { exact (eq_i_tra
+        (apply_fun (apply_fun kfam alpha) (apply_fun multG (u, v)))
+        (apply_fun (apply_fun hfam alpha) (preimg alpha (apply_fun multG (u, v))))
+        (apply_fun multH (apply_fun (apply_fun hfam alpha) pu, apply_fun (apply_fun hfam alpha) pv))
+        Hlhs (eq_i_tra
+          (apply_fun (apply_fun hfam alpha) (preimg alpha (apply_fun multG (u, v))))
+          (apply_fun (apply_fun hfam alpha) (apply_fun (apply_fun multfam alpha) (pu, pv)))
+          (apply_fun multH (apply_fun (apply_fun hfam alpha) pu, apply_fun (apply_fun hfam alpha) pv))
+          Hlhs2 Hhfam_eq)). }
+    (** multH(hfam(pu), hfam(pv)) = multH(kfam(u), kfam(v)) **)
+    claim Hku_sym : apply_fun (apply_fun hfam alpha) pu = apply_fun (apply_fun kfam alpha) u.
+    { symmetry. exact Hku. }
+    claim Hkv_sym : apply_fun (apply_fun hfam alpha) pv = apply_fun (apply_fun kfam alpha) v.
+    { symmetry. exact Hkv. }
+    claim Hrhs : apply_fun multH (apply_fun (apply_fun hfam alpha) pu, apply_fun (apply_fun hfam alpha) pv) =
+      apply_fun multH (apply_fun (apply_fun kfam alpha) u, apply_fun (apply_fun kfam alpha) v).
+    { rewrite Hku_sym. rewrite Hkv_sym. reflexivity. }
+    exact (eq_i_tra
+      (apply_fun (apply_fun kfam alpha) (apply_fun multG (u, v)))
+      (apply_fun multH (apply_fun (apply_fun hfam alpha) pu, apply_fun (apply_fun hfam alpha) pv))
+      (apply_fun multH (apply_fun (apply_fun kfam alpha) u, apply_fun (apply_fun kfam alpha) v))
+      Hlhs3 Hrhs). }
+(** Apply lemma68_1 **)
+claim Hlem68_1 : exists h:set,
+  group_homomorphism G multG H multH h /\
+  (forall alpha:set, alpha :e J ->
+    forall y:set, y :e apply_fun ImageFam alpha ->
+      apply_fun h y = apply_fun (apply_fun kfam alpha) y) /\
+  (forall h':set, group_homomorphism G multG H multH h' ->
+    (forall alpha:set, alpha :e J ->
+      forall y:set, y :e apply_fun ImageFam alpha ->
+        apply_fun h' y = apply_fun (apply_fun kfam alpha) y) ->
+    forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+{ exact (lemma68_1_extension_condition_free_product
+    G multG eG invG J ImageFam efam_int Hfp
+    H multH eH invH HgrpH kfam Hkfam_hom). }
+apply Hlem68_1. let h. assume Hh_all.
+apply (and3E
+  (group_homomorphism G multG H multH h)
+  (forall alpha:set, alpha :e J ->
+    forall y:set, y :e apply_fun ImageFam alpha ->
+      apply_fun h y = apply_fun (apply_fun kfam alpha) y)
+  (forall h':set, group_homomorphism G multG H multH h' ->
+    (forall alpha:set, alpha :e J ->
+      forall y:set, y :e apply_fun ImageFam alpha ->
+        apply_fun h' y = apply_fun (apply_fun kfam alpha) y) ->
+    forall x:set, x :e G -> apply_fun h' x = apply_fun h x)
+  Hh_all).
+assume Hh_hom : group_homomorphism G multG H multH h.
+assume Hh_restrict : forall alpha:set, alpha :e J ->
+  forall y:set, y :e apply_fun ImageFam alpha ->
+    apply_fun h y = apply_fun (apply_fun kfam alpha) y.
+assume Hh_unique : forall h':set, group_homomorphism G multG H multH h' ->
+  (forall alpha:set, alpha :e J ->
+    forall y:set, y :e apply_fun ImageFam alpha ->
+      apply_fun h' y = apply_fun (apply_fun kfam alpha) y) ->
+  forall x:set, x :e G -> apply_fun h' x = apply_fun h x.
+(** Helper: kfam(alpha)(ifam(alpha)(x)) = hfam(alpha)(x) **)
+claim Hkfam_ifam : forall alpha:set, alpha :e J ->
+  forall x:set, x :e apply_fun Gfam alpha ->
+    apply_fun (apply_fun kfam alpha) (apply_fun (apply_fun ifam alpha) x) =
+      apply_fun (apply_fun hfam alpha) x.
+{ let alpha. assume Hal. let x. assume Hx.
+  claim Hifx_Image : apply_fun (apply_fun ifam alpha) x :e apply_fun ImageFam alpha.
+  { exact (Hifam_in_Image alpha Hal x Hx). }
+  claim Hval : apply_fun (apply_fun kfam alpha) (apply_fun (apply_fun ifam alpha) x) =
+    apply_fun (apply_fun hfam alpha) (preimg alpha (apply_fun (apply_fun ifam alpha) x)).
+  { exact (Hkfam_val alpha Hal (apply_fun (apply_fun ifam alpha) x) Hifx_Image). }
+  claim Hpre_Gal : preimg alpha (apply_fun (apply_fun ifam alpha) x) :e apply_fun Gfam alpha.
+  { exact (andEL
+      (preimg alpha (apply_fun (apply_fun ifam alpha) x) :e apply_fun Gfam alpha)
+      (apply_fun (apply_fun ifam alpha) (preimg alpha (apply_fun (apply_fun ifam alpha) x)) = apply_fun (apply_fun ifam alpha) x)
+      (Hpreimg_props alpha Hal (apply_fun (apply_fun ifam alpha) x) Hifx_Image)). }
+  claim Hpre_eq_ifam : apply_fun (apply_fun ifam alpha) (preimg alpha (apply_fun (apply_fun ifam alpha) x)) =
+    apply_fun (apply_fun ifam alpha) x.
+  { exact (andER
+      (preimg alpha (apply_fun (apply_fun ifam alpha) x) :e apply_fun Gfam alpha)
+      (apply_fun (apply_fun ifam alpha) (preimg alpha (apply_fun (apply_fun ifam alpha) x)) = apply_fun (apply_fun ifam alpha) x)
+      (Hpreimg_props alpha Hal (apply_fun (apply_fun ifam alpha) x) Hifx_Image)). }
+  claim Hpre_eq_x : preimg alpha (apply_fun (apply_fun ifam alpha) x) = x.
+  { exact (Hifam_inj alpha Hal
+      (preimg alpha (apply_fun (apply_fun ifam alpha) x)) x
+      Hpre_Gal Hx Hpre_eq_ifam). }
+  rewrite Hval. rewrite Hpre_eq_x. reflexivity. }
+(** Witness h **)
+witness h. apply and3I.
+(** Part 1: h is a group homomorphism **)
+- exact Hh_hom.
+(** Part 2: h(ifam(alpha)(x)) = hfam(alpha)(x) **)
+- let alpha. assume Hal : alpha :e J.
+  let x. assume Hx : x :e apply_fun Gfam alpha.
+  claim Hifx_Image : apply_fun (apply_fun ifam alpha) x :e apply_fun ImageFam alpha.
+  { exact (Hifam_in_Image alpha Hal x Hx). }
+  claim Hstep1 : apply_fun h (apply_fun (apply_fun ifam alpha) x) =
+    apply_fun (apply_fun kfam alpha) (apply_fun (apply_fun ifam alpha) x).
+  { exact (Hh_restrict alpha Hal (apply_fun (apply_fun ifam alpha) x) Hifx_Image). }
+  claim Hstep2 : apply_fun (apply_fun kfam alpha) (apply_fun (apply_fun ifam alpha) x) =
+    apply_fun (apply_fun hfam alpha) x.
+  { exact (Hkfam_ifam alpha Hal x Hx). }
+  exact (eq_i_tra
+    (apply_fun h (apply_fun (apply_fun ifam alpha) x))
+    (apply_fun (apply_fun kfam alpha) (apply_fun (apply_fun ifam alpha) x))
+    (apply_fun (apply_fun hfam alpha) x)
+    Hstep1 Hstep2).
+(** Part 3: uniqueness **)
+- let h'. assume Hh'_hom : group_homomorphism G multG H multH h'.
+  assume Hh'_comp : forall alpha:set, alpha :e J ->
+    forall x:set, x :e apply_fun Gfam alpha ->
+      apply_fun h' (apply_fun (apply_fun ifam alpha) x) = apply_fun (apply_fun hfam alpha) x.
+  let x. assume HxG : x :e G.
+  claim Hh'_kfam : forall alpha:set, alpha :e J ->
+    forall y:set, y :e apply_fun ImageFam alpha ->
+      apply_fun h' y = apply_fun (apply_fun kfam alpha) y.
+  { let alpha. assume Hal. let y. assume Hy.
+    claim Hy2 : y :e homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha).
+    { claim Heq : apply_fun ImageFam alpha = homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha).
+      { exact (HIF_eval alpha Hal). }
+      rewrite <- Heq. exact Hy. }
+    apply (ReplE_impred (apply_fun Gfam alpha) (fun z:set => apply_fun (apply_fun ifam alpha) z) y Hy2).
+    let z. assume Hz : z :e apply_fun Gfam alpha. assume Heq : y = apply_fun (apply_fun ifam alpha) z.
+      rewrite Heq.
+      claim Hstep1 : apply_fun h' (apply_fun (apply_fun ifam alpha) z) = apply_fun (apply_fun hfam alpha) z.
+      { exact (Hh'_comp alpha Hal z Hz). }
+      claim Hstep2 : apply_fun (apply_fun kfam alpha) (apply_fun (apply_fun ifam alpha) z) =
+        apply_fun (apply_fun hfam alpha) z.
+      { exact (Hkfam_ifam alpha Hal z Hz). }
+      claim Hstep2_sym : apply_fun (apply_fun hfam alpha) z =
+        apply_fun (apply_fun kfam alpha) (apply_fun (apply_fun ifam alpha) z).
+      { symmetry. exact Hstep2. }
+      exact (eq_i_tra
+        (apply_fun h' (apply_fun (apply_fun ifam alpha) z))
+        (apply_fun (apply_fun hfam alpha) z)
+        (apply_fun (apply_fun kfam alpha) (apply_fun (apply_fun ifam alpha) z))
+        Hstep1 Hstep2_sym). }
+  exact (Hh_unique h' Hh'_hom Hh'_kfam x HxG).
 Admitted.
 
 (** from S68 Thm 68.4 (line 2946 in algtop.tex): uniqueness of free products **)
