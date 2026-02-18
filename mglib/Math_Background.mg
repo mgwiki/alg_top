@@ -106596,6 +106596,150 @@ apply and3I.
         symmetry. exact Hid_step.
       + (** Both x, y <> eG: the hard case **)
         assume Hy_ne : y <> eG.
+        (** Helper: h can be computed from any reduced word representation **)
+        claim Hh_word : forall g:set, g :e G -> g <> eG ->
+          forall n xs:set, reduced_word J Gfam efam n xs -> n <> 0 ->
+          word_product multG eG xs n = g ->
+          (n_of g) = n /\ (forall i:set, i :e (n_of g) -> apply_fun (xs_of g) i = apply_fun xs i).
+        { let g. assume HgG. assume Hg_ne.
+          let n xs. assume Hrw. assume Hn_ne. assume Hwp.
+          claim Hre_g : reduced_word J Gfam efam (n_of g) (xs_of g) /\ (n_of g) <> 0 /\
+            word_product multG eG (xs_of g) (n_of g) = g /\
+            (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+              word_product multG eG xs' n' = g ->
+              (n_of g) = n' /\ (forall i:set, i :e (n_of g) -> apply_fun (xs_of g) i = apply_fun xs' i)).
+          { exact (Hred_extract g HgG Hg_ne). }
+          apply (and4E
+            (reduced_word J Gfam efam (n_of g) (xs_of g))
+            ((n_of g) <> 0)
+            (word_product multG eG (xs_of g) (n_of g) = g)
+            (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+              word_product multG eG xs' n' = g ->
+              (n_of g) = n' /\ (forall i:set, i :e (n_of g) -> apply_fun (xs_of g) i = apply_fun xs' i))
+            Hre_g).
+          assume Hrw_g Hn_g Hwp_g Huniq_g.
+          exact (Huniq_g n xs Hrw Hn_ne Hwp). }
+        (** Helper: h_single respects multiplication within Gfam(alpha) **)
+        claim Hhs_mult : forall alpha:set, alpha :e J ->
+          forall a b:set, a :e apply_fun Gfam alpha -> b :e apply_fun Gfam alpha ->
+          apply_fun (apply_fun hfam alpha) (apply_fun multG (a, b)) =
+            apply_fun multH (apply_fun (apply_fun hfam alpha) a, apply_fun (apply_fun hfam alpha) b).
+        { let alpha. assume Hal. let a b. assume HaG HbG.
+          exact (group_homomorphism_mult_rule (apply_fun Gfam alpha) multG H multH
+            (apply_fun hfam alpha) a b (Hhfam alpha Hal) HaG HbG). }
+        (** Helper: Gfam(alpha) is closed under multG **)
+        claim HGfam_mult_cl : forall alpha:set, alpha :e J ->
+          forall a b:set, a :e apply_fun Gfam alpha -> b :e apply_fun Gfam alpha ->
+          apply_fun multG (a, b) :e apply_fun Gfam alpha.
+        { let alpha. assume Hal.
+          apply (and4E
+            (apply_fun Gfam alpha c= G)
+            (eG :e apply_fun Gfam alpha)
+            (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+               apply_fun multG (x, y) :e apply_fun Gfam alpha)
+            (forall x:set, x :e apply_fun Gfam alpha -> apply_fun invG x :e apply_fun Gfam alpha)
+            (Hsub alpha Hal)).
+          assume HA HB HC HD. exact HC. }
+        (** Extract reduced word info for x **)
+        claim Hre_x : reduced_word J Gfam efam (n_of x) (xs_of x) /\ (n_of x) <> 0 /\
+          word_product multG eG (xs_of x) (n_of x) = x /\
+          (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+            word_product multG eG xs' n' = x ->
+            (n_of x) = n' /\ (forall i:set, i :e (n_of x) -> apply_fun (xs_of x) i = apply_fun xs' i)).
+        { exact (Hred_extract x HxG Hx_ne). }
+        claim Hrw_x : reduced_word J Gfam efam (n_of x) (xs_of x).
+        { apply (and4E
+            (reduced_word J Gfam efam (n_of x) (xs_of x)) ((n_of x) <> 0)
+            (word_product multG eG (xs_of x) (n_of x) = x)
+            (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+              word_product multG eG xs' n' = x ->
+              (n_of x) = n' /\ (forall i:set, i :e (n_of x) -> apply_fun (xs_of x) i = apply_fun xs' i))
+            Hre_x).
+          assume Hr _ _ _. exact Hr. }
+        claim Hwp_x : word_product multG eG (xs_of x) (n_of x) = x.
+        { apply (and4E
+            (reduced_word J Gfam efam (n_of x) (xs_of x)) ((n_of x) <> 0)
+            (word_product multG eG (xs_of x) (n_of x) = x)
+            (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+              word_product multG eG xs' n' = x ->
+              (n_of x) = n' /\ (forall i:set, i :e (n_of x) -> apply_fun (xs_of x) i = apply_fun xs' i))
+            Hre_x).
+          assume _ _ Hw _. exact Hw. }
+        claim Hn_x_ne : (n_of x) <> 0.
+        { apply (and4E
+            (reduced_word J Gfam efam (n_of x) (xs_of x)) ((n_of x) <> 0)
+            (word_product multG eG (xs_of x) (n_of x) = x)
+            (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+              word_product multG eG xs' n' = x ->
+              (n_of x) = n' /\ (forall i:set, i :e (n_of x) -> apply_fun (xs_of x) i = apply_fun xs' i))
+            Hre_x).
+          assume _ Hn _ _. exact Hn. }
+        (** Extract reduced word info for y **)
+        claim Hre_y : reduced_word J Gfam efam (n_of y) (xs_of y) /\ (n_of y) <> 0 /\
+          word_product multG eG (xs_of y) (n_of y) = y /\
+          (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+            word_product multG eG xs' n' = y ->
+            (n_of y) = n' /\ (forall i:set, i :e (n_of y) -> apply_fun (xs_of y) i = apply_fun xs' i)).
+        { exact (Hred_extract y HyG Hy_ne). }
+        claim Hrw_y : reduced_word J Gfam efam (n_of y) (xs_of y).
+        { apply (and4E
+            (reduced_word J Gfam efam (n_of y) (xs_of y)) ((n_of y) <> 0)
+            (word_product multG eG (xs_of y) (n_of y) = y)
+            (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+              word_product multG eG xs' n' = y ->
+              (n_of y) = n' /\ (forall i:set, i :e (n_of y) -> apply_fun (xs_of y) i = apply_fun xs' i))
+            Hre_y).
+          assume Hr _ _ _. exact Hr. }
+        claim Hwp_y : word_product multG eG (xs_of y) (n_of y) = y.
+        { apply (and4E
+            (reduced_word J Gfam efam (n_of y) (xs_of y)) ((n_of y) <> 0)
+            (word_product multG eG (xs_of y) (n_of y) = y)
+            (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+              word_product multG eG xs' n' = y ->
+              (n_of y) = n' /\ (forall i:set, i :e (n_of y) -> apply_fun (xs_of y) i = apply_fun xs' i))
+            Hre_y).
+          assume _ _ Hw _. exact Hw. }
+        claim Hn_y_ne : (n_of y) <> 0.
+        { apply (and4E
+            (reduced_word J Gfam efam (n_of y) (xs_of y)) ((n_of y) <> 0)
+            (word_product multG eG (xs_of y) (n_of y) = y)
+            (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+              word_product multG eG xs' n' = y ->
+              (n_of y) = n' /\ (forall i:set, i :e (n_of y) -> apply_fun (xs_of y) i = apply_fun xs' i))
+            Hre_y).
+          assume _ Hn _ _. exact Hn. }
+        (** Get n_of x, n_of y :e omega from reduced_word **)
+        claim Hn_x_omega : (n_of x) :e omega.
+        { apply (and3E
+            ((n_of x) :e omega)
+            (forall i:set, i :e (n_of x) ->
+              exists alpha:set, alpha :e J /\
+                apply_fun (xs_of x) i :e apply_fun Gfam alpha /\
+                apply_fun (xs_of x) i <> apply_fun efam alpha)
+            (forall i:set, i :e (n_of x) -> ordsucc i :e (n_of x) ->
+              forall alpha beta:set, alpha :e J -> beta :e J ->
+                apply_fun (xs_of x) i :e apply_fun Gfam alpha ->
+                apply_fun (xs_of x) (ordsucc i) :e apply_fun Gfam beta ->
+                alpha <> beta)
+            Hrw_x).
+          assume Ho _ _. exact Ho. }
+        claim Hn_y_omega : (n_of y) :e omega.
+        { apply (and3E
+            ((n_of y) :e omega)
+            (forall i:set, i :e (n_of y) ->
+              exists alpha:set, alpha :e J /\
+                apply_fun (xs_of y) i :e apply_fun Gfam alpha /\
+                apply_fun (xs_of y) i <> apply_fun efam alpha)
+            (forall i:set, i :e (n_of y) -> ordsucc i :e (n_of y) ->
+              forall alpha beta:set, alpha :e J -> beta :e J ->
+                apply_fun (xs_of y) i :e apply_fun Gfam alpha ->
+                apply_fun (xs_of y) (ordsucc i) :e apply_fun Gfam beta ->
+                alpha <> beta)
+            Hrw_y).
+          assume Ho _ _. exact Ho. }
+        (** Key claim: the H-product of h_single over any word equals h when the word_product gives a non-identity element **)
+        (** We prove this by showing the H-product is invariant under the "free reduction" process **)
+        (** For now, we use a direct approach: induction on n_of(y) **)
         admit.
 (** Part 2: restriction - for alpha in J, x in G_alpha, h(x) = hfam(alpha)(x) **)
 - let alpha0. assume Hal0 : alpha0 :e J.
