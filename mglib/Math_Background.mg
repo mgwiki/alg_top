@@ -112060,6 +112060,65 @@ apply (iffI
           forall x:set, x :e apply_fun Gfam0 alpha ->
             apply_fun f' x = apply_fun f x).
   {
+    let alpha.
+    assume Halpha : alpha :e J.
+    set Galpha := apply_fun Gfam0 alpha.
+    claim Hgalpha_mem : apply_fun gens alpha :e Galpha.
+    {
+      exact (HgenInFam alpha Halpha).
+    }
+    claim Hgen_of_factor :
+      generator_of Galpha mult e inv (apply_fun gens alpha).
+    {
+      apply (andI
+        (apply_fun gens alpha :e Galpha)
+        (forall g:set, g :e Galpha ->
+          exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+               g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))
+        Hgalpha_mem).
+      let g.
+      assume HgA : g :e Galpha.
+      claim HGalpha_eval : Galpha =
+        {g :e G | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+             g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}.
+      {
+        claim HGalpha_def : Galpha = apply_fun Gfam0 alpha.
+        {
+          reflexivity.
+        }
+        rewrite HGalpha_def.
+        exact (apply_fun_graph
+          J
+          (fun alpha:set =>
+            {g :e G | exists n:set, n :e int /\
+              ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+               (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+                 g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))})
+          alpha
+          Halpha).
+      }
+      claim HgSep :
+        g :e {g :e G | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+             g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}.
+      {
+        rewrite <- HGalpha_eval.
+        exact HgA.
+      }
+      exact (SepE2
+        G
+        (fun g:set => exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+             g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))
+        g
+        HgSep).
+    }
     admit.
   }
   set hfam0 := graph J (fun alpha:set =>
