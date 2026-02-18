@@ -116453,6 +116453,24 @@ Theorem lemma71_4_existence_wedge :
 exact existence_of_wedge_of_circles_helper.
 Admitted.
 
+(** Infrastructure helper for S71 Exercise 1(a):
+    Hausdorff criterion for finite circle unions via closedness of each circle. **)
+Theorem circle_union_hausdorff_closed_components_helper :
+  forall X Tx n Sfam p:set,
+  topology_on X Tx ->
+  n :e omega -> n <> 0 -> p :e X ->
+  (forall i:set, i :e n -> apply_fun Sfam i c= X /\
+    exists h:set, continuous_map S1 S1_topology (apply_fun Sfam i)
+      (subspace_topology X Tx (apply_fun Sfam i)) h /\
+      bijection S1 (apply_fun Sfam i) h) ->
+  X = Union (Repl n (fun i:set => apply_fun Sfam i)) ->
+  (forall i j:set, i :e n -> j :e n -> i <> j ->
+    apply_fun Sfam i :/\: apply_fun Sfam j = Sing p) ->
+  (Hausdorff_space X Tx <->
+    (forall i:set, i :e n -> X :\: (apply_fun Sfam i) :e Tx)).
+admit.
+Admitted.
+
 (** from S71 Exercise 1(a) (line 3597 in algtop.tex) **)
 (** LATEX VERSION: Let X be the union of subspaces S1,...,Sn, each homeomorphic to S^1, **)
 (** with Si cap Sj = {p} for i <> j. X is Hausdorff iff each Si is closed in X. **)
@@ -116466,11 +116484,32 @@ Theorem ex71_1a_circle_union_hausdorff_iff_closed :
     exists h:set, continuous_map S1 S1_topology (apply_fun Sfam i)
       (subspace_topology X Tx (apply_fun Sfam i)) h /\
       bijection S1 (apply_fun Sfam i) h) ->
+	  X = Union (Repl n (fun i:set => apply_fun Sfam i)) ->
+	  (forall i j:set, i :e n -> j :e n -> i <> j ->
+	    apply_fun Sfam i :/\: apply_fun Sfam j = Sing p) ->
+	  (Hausdorff_space X Tx <->
+	    (forall i:set, i :e n -> X :\: (apply_fun Sfam i) :e Tx)).
+exact circle_union_hausdorff_closed_components_helper.
+Admitted.
+
+(** Infrastructure helper for S71 Exercise 1(b):
+    Hausdorff criterion for finite circle unions via coherent topology. **)
+Theorem circle_union_hausdorff_coherent_topology_helper :
+  forall X Tx n Sfam p:set,
+  topology_on X Tx ->
+  n :e omega -> n <> 0 -> p :e X ->
+  (forall i:set, i :e n -> apply_fun Sfam i c= X /\
+    exists h:set, continuous_map S1 S1_topology (apply_fun Sfam i)
+      (subspace_topology X Tx (apply_fun Sfam i)) h /\
+      bijection S1 (apply_fun Sfam i) h) ->
   X = Union (Repl n (fun i:set => apply_fun Sfam i)) ->
   (forall i j:set, i :e n -> j :e n -> i <> j ->
     apply_fun Sfam i :/\: apply_fun Sfam j = Sing p) ->
   (Hausdorff_space X Tx <->
-    (forall i:set, i :e n -> X :\: (apply_fun Sfam i) :e Tx)).
+    Tx = coherent_topology
+      (Repl n (fun i:set => apply_fun Sfam i))
+      (graph (Repl n (fun i:set => apply_fun Sfam i))
+        (fun S:set => subspace_topology X Tx S))).
 admit.
 Admitted.
 
@@ -116490,11 +116529,28 @@ Theorem ex71_1b_circle_union_hausdorff_iff_coherent :
   X = Union (Repl n (fun i:set => apply_fun Sfam i)) ->
   (forall i j:set, i :e n -> j :e n -> i <> j ->
     apply_fun Sfam i :/\: apply_fun Sfam j = Sing p) ->
-  (Hausdorff_space X Tx <->
-    Tx = coherent_topology
-      (Repl n (fun i:set => apply_fun Sfam i))
-      (graph (Repl n (fun i:set => apply_fun Sfam i))
-        (fun S:set => subspace_topology X Tx S))).
+	  (Hausdorff_space X Tx <->
+	    Tx = coherent_topology
+	      (Repl n (fun i:set => apply_fun Sfam i))
+	      (graph (Repl n (fun i:set => apply_fun Sfam i))
+	        (fun S:set => subspace_topology X Tx S))).
+exact circle_union_hausdorff_coherent_topology_helper.
+Admitted.
+
+(** Infrastructure helper for S71 Exercise 1(c):
+    witness of a non-Hausdorff finite union of circles meeting at one point. **)
+Theorem circle_union_not_hausdorff_example_helper :
+  exists X Tx n Sfam p:set,
+    topology_on X Tx /\
+    n :e omega /\ n <> 0 /\ p :e X /\
+    (forall i:set, i :e n -> apply_fun Sfam i c= X /\
+      exists h:set, continuous_map S1 S1_topology (apply_fun Sfam i)
+        (subspace_topology X Tx (apply_fun Sfam i)) h /\
+        bijection S1 (apply_fun Sfam i) h) /\
+    X = Union (Repl n (fun i:set => apply_fun Sfam i)) /\
+    (forall i j:set, i :e n -> j :e n -> i <> j ->
+      apply_fun Sfam i :/\: apply_fun Sfam j = Sing p) /\
+    ~Hausdorff_space X Tx.
 admit.
 Admitted.
 
@@ -116511,19 +116567,16 @@ Theorem ex71_1c_circle_union_not_hausdorff :
       exists h:set, continuous_map S1 S1_topology (apply_fun Sfam i)
         (subspace_topology X Tx (apply_fun Sfam i)) h /\
         bijection S1 (apply_fun Sfam i) h) /\
-    X = Union (Repl n (fun i:set => apply_fun Sfam i)) /\
-    (forall i j:set, i :e n -> j :e n -> i <> j ->
-      apply_fun Sfam i :/\: apply_fun Sfam j = Sing p) /\
-    ~Hausdorff_space X Tx.
-admit.
+	    X = Union (Repl n (fun i:set => apply_fun Sfam i)) /\
+	    (forall i j:set, i :e n -> j :e n -> i <> j ->
+	      apply_fun Sfam i :/\: apply_fun Sfam j = Sing p) /\
+	    ~Hausdorff_space X Tx.
+exact circle_union_not_hausdorff_example_helper.
 Admitted.
 
-(** from S71 Exercise 2 (line 3601 in algtop.tex) **)
-(** LATEX VERSION: If X is the wedge of closed subspaces X1,...,Xn with p a deformation **)
-(** retract of open W_i in X_i, then pi1(X,p) is the free product of pi1(X_i,p). **)
-(** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-Theorem ex71_2_wedge_general :
+(** Infrastructure helper for S71 Exercise 2:
+    free product description of pi1 for wedge of closed subspaces with deformation retract data. **)
+Theorem wedge_of_closed_subspaces_pi1_free_product_helper :
   forall X Tx n Xfam p:set,
   Hausdorff_space X Tx ->
   n :e omega -> n <> 0 -> p :e X ->
@@ -116550,6 +116603,40 @@ Theorem ex71_2_wedge_general :
       group_isomorphism FP multFP
         (fundamental_group X Tx p) (fundamental_group_mult X Tx p) phi.
 admit.
+Admitted.
+
+(** from S71 Exercise 2 (line 3601 in algtop.tex) **)
+(** LATEX VERSION: If X is the wedge of closed subspaces X1,...,Xn with p a deformation **)
+(** retract of open W_i in X_i, then pi1(X,p) is the free product of pi1(X_i,p). **)
+(** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
+(** Bounty 110 **)
+Theorem ex71_2_wedge_general :
+  forall X Tx n Xfam p:set,
+  Hausdorff_space X Tx ->
+  n :e omega -> n <> 0 -> p :e X ->
+  (forall i:set, i :e n -> apply_fun Xfam i c= X /\
+    X :\: (apply_fun Xfam i) :e Tx) ->
+  X = Union (Repl n (fun i:set => apply_fun Xfam i)) ->
+  (forall i j:set, i :e n -> j :e n -> i <> j ->
+    apply_fun Xfam i :/\: apply_fun Xfam j = Sing p) ->
+  (forall i:set, i :e n ->
+    exists Wi:set, Wi c= apply_fun Xfam i /\
+      Wi :e subspace_topology X Tx (apply_fun Xfam i) /\
+      deformation_retract (apply_fun Xfam i) (subspace_topology X Tx (apply_fun Xfam i))
+        (Sing p)) ->
+	  exists FP multFP eFP invFP ifam:set,
+	    external_free_product FP multFP eFP invFP n
+      (graph n (fun i:set =>
+        fundamental_group (apply_fun Xfam i)
+          (subspace_topology X Tx (apply_fun Xfam i)) p))
+      (graph n (fun i:set =>
+        fundamental_group_mult (apply_fun Xfam i)
+          (subspace_topology X Tx (apply_fun Xfam i)) p))
+      ifam /\
+	    exists phi:set,
+	      group_isomorphism FP multFP
+	        (fundamental_group X Tx p) (fundamental_group_mult X Tx p) phi.
+exact wedge_of_closed_subspaces_pi1_free_product_helper.
 Admitted.
 
 (** from S71 Exercise 3 (line 3602 in algtop.tex) **)
