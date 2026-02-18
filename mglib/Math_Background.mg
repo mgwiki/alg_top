@@ -78913,6 +78913,73 @@ claim HioCore :
   - assume HnoIO.
     claim Hcontra : False.
     {
+      claim HnoInOrNoOut :
+        ~(exists x:set, x :e S1 /\ points_directly_inward v x)
+        \/
+        ~(exists x:set, x :e S1 /\ points_directly_outward v x).
+      {
+        apply (xm
+          (~(exists x:set, x :e S1 /\ points_directly_inward v x)
+            \/
+           ~(exists x:set, x :e S1 /\ points_directly_outward v x))).
+        - assume Hdisj.
+          exact Hdisj.
+        - assume HnDisj.
+          claim HnotNoIn :
+            ~ ~(exists x:set, x :e S1 /\ points_directly_inward v x).
+          {
+            assume HnoIn.
+            apply HnDisj.
+            apply orIL.
+            exact HnoIn.
+          }
+          claim HnotNoOut :
+            ~ ~(exists x:set, x :e S1 /\ points_directly_outward v x).
+          {
+            assume HnoOut.
+            apply HnDisj.
+            apply orIR.
+            exact HnoOut.
+          }
+          claim Hin :
+            exists x:set, x :e S1 /\ points_directly_inward v x.
+          {
+            apply (xm
+              (exists x:set, x :e S1 /\ points_directly_inward v x)).
+            - assume Hin.
+              exact Hin.
+            - assume HnoIn.
+              exact (FalseE
+                (HnotNoIn HnoIn)
+                (exists x:set, x :e S1 /\ points_directly_inward v x)).
+          }
+          claim Hout :
+            exists x:set, x :e S1 /\ points_directly_outward v x.
+          {
+            apply (xm
+              (exists x:set, x :e S1 /\ points_directly_outward v x)).
+            - assume Hout.
+              exact Hout.
+            - assume HnoOut.
+              exact (FalseE
+                (HnotNoOut HnoOut)
+                (exists x:set, x :e S1 /\ points_directly_outward v x)).
+          }
+          claim HioWit :
+            (exists x:set, x :e S1 /\ points_directly_inward v x)
+            /\
+            (exists x:set, x :e S1 /\ points_directly_outward v x).
+          {
+            apply andI.
+            - exact Hin.
+            - exact Hout.
+          }
+          exact (FalseE
+            (HnoIO HioWit)
+            (~(exists x:set, x :e S1 /\ points_directly_inward v x)
+              \/
+             ~(exists x:set, x :e S1 /\ points_directly_outward v x))).
+      }
       admit.
     }
     exact (FalseE
