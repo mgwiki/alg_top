@@ -62844,6 +62844,92 @@ claim Hex :
                   (apply_fun lr r)
                   HlrRUnion).
               }
+              apply HsliceAtLrR.
+              let Vr.
+              assume HVrPack.
+              claim HlrRVr : apply_fun lr r :e Vr.
+              {
+                exact (andEL
+                  (apply_fun lr r :e Vr)
+                  (Vr :e slicesUr)
+                  HVrPack).
+              }
+              claim HVrSlice : Vr :e slicesUr.
+              {
+                exact (andER
+                  (apply_fun lr r :e Vr)
+                  (Vr :e slicesUr)
+                  HVrPack).
+              }
+              claim HhomeVr :
+                homeomorphism Vr (subspace_topology E Te Vr) Ur (subspace_topology B Tb Ur)
+                  (graph Vr (fun z:set => apply_fun p z)).
+              {
+                exact (HhomeUr
+                  Vr
+                  HVrSlice).
+              }
+              claim HuniqVr :
+                exists xr:set,
+                  xr :e Vr /\ apply_fun p xr = apply_fun f r /\
+                  forall y:set, y :e Vr ->
+                    apply_fun p y = apply_fun f r -> y = xr.
+              {
+                exact (homeomorphic_sheet_unique_fiber_point
+                  E
+                  Te
+                  B
+                  Tb
+                  p
+                  Vr
+                  Ur
+                  (apply_fun f r)
+                  HhomeVr
+                  HfrUr).
+              }
+              claim HlrRuniqInVr :
+                forall y:set, y :e Vr ->
+                  apply_fun p y = apply_fun f r -> y = apply_fun lr r.
+              {
+                apply HuniqVr.
+                let xr.
+                assume HxrPack.
+                claim HxrVr : xr :e Vr.
+                {
+                  exact (andEL
+                    (xr :e Vr)
+                    (apply_fun p xr = apply_fun f r)
+                    (andEL
+                      (xr :e Vr /\ apply_fun p xr = apply_fun f r)
+                      (forall y:set, y :e Vr ->
+                        apply_fun p y = apply_fun f r -> y = xr)
+                      HxrPack)).
+                }
+                claim Huniqxr :
+                  forall y:set, y :e Vr ->
+                    apply_fun p y = apply_fun f r -> y = xr.
+                {
+                  exact (andER
+                    (xr :e Vr /\ apply_fun p xr = apply_fun f r)
+                    (forall y:set, y :e Vr ->
+                      apply_fun p y = apply_fun f r -> y = xr)
+                    HxrPack).
+                }
+                claim HlrREqxr : apply_fun lr r = xr.
+                {
+                  exact (Huniqxr
+                    (apply_fun lr r)
+                    HlrRVr
+                    HplrReqfr).
+                }
+                let y.
+                assume HyVr Hypr.
+                rewrite HlrREqxr.
+                exact (Huniqxr
+                  y
+                  HyVr
+                  Hypr).
+              }
               (** TODO Charlie: compare lr with lt1 starting from Hlr0EqLt10 and local evenly-covered neighborhood Ur at f(r). **)
               admit.
             }
