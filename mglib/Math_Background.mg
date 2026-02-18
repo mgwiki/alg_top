@@ -117203,7 +117203,39 @@ Theorem supp_ex_1b_compact_Hausdorff_star_refinement :
   compact_space X Tx -> Hausdorff_space X Tx ->
   forall A:set, open_cover_of X Tx A ->
   exists B:set, star_refinement_cover X Tx B A /\ finite B.
-admit.
+let X Tx.
+assume HcompX HHausX.
+let A.
+assume HcovA.
+claim HnormalX : normal_space X Tx.
+{
+  exact (compact_Hausdorff_implies_normal_algtop
+    X
+    Tx
+    HcompX
+    HHausX).
+}
+claim HregX : regular_space X Tx.
+{
+  exact (compact_Hausdorff_implies_regular_algtop
+    X
+    Tx
+    HcompX
+    HHausX).
+}
+apply xm (second_countable_space X Tx).
+- assume HscX.
+  exact (supp_ex_1b_compact_Hausdorff_star_refinement_with_second_countable
+    X
+    Tx
+    HcompX
+    HHausX
+    HscX
+    A
+    HcovA).
+- assume HnscX.
+  (** TODO Charlie: finite star refinement from compact Hausdorff normality without second-countability. **)
+  admit.
 Admitted.
 
 (** from Supplementary Exercises Exercise 2 / Thm (line 5406 in algtop.tex): pi_1 countable **)
