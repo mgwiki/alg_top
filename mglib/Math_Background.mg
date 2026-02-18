@@ -116435,7 +116435,29 @@ Theorem supp_ex_3_covering_inherits_regular_second_countable :
   regular_space X Tx ->
   second_countable_space X Tx ->
   regular_space E Te /\ second_countable_space E Te.
-admit.
+let E Te X Tx p x0.
+assume Hcov Hx0 Hpi1count HregX HscX.
+claim HregE : regular_space E Te.
+{
+  exact (ex53_6a_regular
+    E
+    Te
+    X
+    Tx
+    p
+    Hcov
+    HregX).
+}
+claim HscE : second_countable_space E Te.
+{
+  (** TODO Charlie: derive a countable basis upstairs from base second countability plus countable fiber control. **)
+  admit.
+}
+exact (andI
+  (regular_space E Te)
+  (second_countable_space E Te)
+  HregE
+  HscE).
 Admitted.
 
 (** Infrastructure: finitely generated group **)
