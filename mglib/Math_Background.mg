@@ -116894,6 +116894,31 @@ exact (ex32_3_locally_compact_Hausdorff_regular
   HHausX).
 Qed.
 
+(** Helper: compact Hausdorff second-countable spaces are metrizable. **)
+(** Proven Charlie **)
+Theorem compact_Hausdorff_second_countable_implies_metrizable_algtop :
+  forall X Tx:set,
+  compact_space X Tx ->
+  Hausdorff_space X Tx ->
+  second_countable_space X Tx ->
+  metrizable X Tx.
+let X Tx.
+assume HcompX HHausX HscX.
+claim HregX : regular_space X Tx.
+{
+  exact (compact_Hausdorff_implies_regular_algtop
+    X
+    Tx
+    HcompX
+    HHausX).
+}
+exact (Urysohn_metrization_theorem
+  X
+  Tx
+  HregX
+  HscX).
+Qed.
+
 (** from Supplementary Exercises Exercise 1a (line 5393 in algtop.tex): metrizable star refinement **)
 (** LATEX VERSION: If X is metrizable, then for any open covering A, there exists an **)
 (** open covering B refining A such that for each pair B, B' in B with nonempty **)
@@ -116907,6 +116932,182 @@ Theorem supp_ex_1a_metrizable_star_refinement :
   exists B:set, star_refinement_cover X Tx B A.
 admit.
 Admitted.
+
+(** Helper: finite star-refinement in the compact Hausdorff second-countable case. **)
+Theorem supp_ex_1b_compact_Hausdorff_star_refinement_with_second_countable :
+  forall X Tx:set,
+  compact_space X Tx ->
+  Hausdorff_space X Tx ->
+  second_countable_space X Tx ->
+  forall A:set, open_cover_of X Tx A ->
+  exists B:set, star_refinement_cover X Tx B A /\ finite B.
+let X Tx.
+assume HcompX HHausX HscX.
+let A.
+assume HcovA.
+claim HmetX : metrizable X Tx.
+{
+  exact (compact_Hausdorff_second_countable_implies_metrizable_algtop
+    X
+    Tx
+    HcompX
+    HHausX
+    HscX).
+}
+claim HstarPack : exists B0:set, star_refinement_cover X Tx B0 A.
+{
+  exact (supp_ex_1a_metrizable_star_refinement
+    X
+    Tx
+    HmetX
+    A
+    HcovA).
+}
+apply HstarPack.
+let B0.
+assume HstarB0.
+claim HopenB0 : open_cover_of X Tx B0.
+{
+  exact (andEL
+    (open_cover_of X Tx B0)
+    (open_cover_of X Tx A)
+    (andEL
+      (open_cover_of X Tx B0 /\ open_cover_of X Tx A)
+      (forall U:set, U :e B0 -> exists W:set, W :e A /\ U c= W)
+      (andEL
+        (open_cover_of X Tx B0 /\ open_cover_of X Tx A /\
+          (forall U:set, U :e B0 -> exists W:set, W :e A /\ U c= W))
+        (forall U V:set, U :e B0 -> V :e B0 -> U :/\: V <> Empty ->
+          exists W:set, W :e A /\ U :\/: V c= W)
+        HstarB0))).
+}
+claim HcovAagain : open_cover_of X Tx A.
+{
+  exact (andER
+    (open_cover_of X Tx B0)
+    (open_cover_of X Tx A)
+    (andEL
+      (open_cover_of X Tx B0 /\ open_cover_of X Tx A)
+      (forall U:set, U :e B0 -> exists W:set, W :e A /\ U c= W)
+      (andEL
+        (open_cover_of X Tx B0 /\ open_cover_of X Tx A /\
+          (forall U:set, U :e B0 -> exists W:set, W :e A /\ U c= W))
+        (forall U V:set, U :e B0 -> V :e B0 -> U :/\: V <> Empty ->
+          exists W:set, W :e A /\ U :\/: V c= W)
+        HstarB0))).
+}
+claim HrefineB0 :
+  forall U:set, U :e B0 -> exists W:set, W :e A /\ U c= W.
+{
+  exact (andER
+    (open_cover_of X Tx B0 /\ open_cover_of X Tx A)
+    (forall U:set, U :e B0 -> exists W:set, W :e A /\ U c= W)
+    (andEL
+      (open_cover_of X Tx B0 /\ open_cover_of X Tx A /\
+        (forall U:set, U :e B0 -> exists W:set, W :e A /\ U c= W))
+      (forall U V:set, U :e B0 -> V :e B0 -> U :/\: V <> Empty ->
+        exists W:set, W :e A /\ U :\/: V c= W)
+      HstarB0)).
+}
+claim HstarPairB0 :
+  forall U V:set, U :e B0 -> V :e B0 -> U :/\: V <> Empty ->
+    exists W:set, W :e A /\ U :\/: V c= W.
+{
+  exact (andER
+    (open_cover_of X Tx B0 /\ open_cover_of X Tx A /\
+      (forall U:set, U :e B0 -> exists W:set, W :e A /\ U c= W))
+    (forall U V:set, U :e B0 -> V :e B0 -> U :/\: V <> Empty ->
+      exists W:set, W :e A /\ U :\/: V c= W)
+    HstarB0).
+}
+claim HfinSub : has_finite_subcover X Tx B0.
+{
+  exact (compact_space_subcover_property
+    X
+    Tx
+    HcompX
+    B0
+    HopenB0).
+}
+apply HfinSub.
+let B.
+assume HBpack.
+claim HBsubB0 : B c= B0.
+{
+  exact (andEL
+    (B c= B0)
+    (finite B)
+    (andEL
+      (B c= B0 /\ finite B)
+      (X c= Union B)
+      HBpack)).
+}
+claim HBfin : finite B.
+{
+  exact (andER
+    (B c= B0)
+    (finite B)
+    (andEL
+      (B c= B0 /\ finite B)
+      (X c= Union B)
+      HBpack)).
+}
+claim HXsubUnionB : X c= Union B.
+{
+  exact (andER
+    (B c= B0 /\ finite B)
+    (X c= Union B)
+    HBpack).
+}
+claim HB0subPowX : B0 c= Power X.
+{
+  exact (open_cover_of_family_sub X Tx B0 HopenB0).
+}
+claim HBsubPowX : B c= Power X.
+{
+  exact (Subq_tra B B0 (Power X) HBsubB0 HB0subPowX).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (open_cover_of_topology X Tx B0 HopenB0).
+}
+claim HopenB : open_cover_of X Tx B.
+{
+  exact (open_cover_ofI
+    X
+    Tx
+    B
+    HtopX
+    HBsubPowX
+    HXsubUnionB
+    (fun U HU => open_cover_of_members_open
+      X
+      Tx
+      B0
+      U
+      HopenB0
+      (HBsubB0 U HU))).
+}
+witness B.
+apply andI.
+- prove open_cover_of X Tx B /\
+    open_cover_of X Tx A /\
+    (forall U:set, U :e B -> exists W:set, W :e A /\ U c= W) /\
+    (forall U V:set, U :e B -> V :e B -> U :/\: V <> Empty ->
+      exists W:set, W :e A /\ U :\/: V c= W).
+  apply andI.
+  + apply andI.
+    * apply andI.
+      { exact HopenB. }
+      { exact HcovAagain. }
+    * let U.
+      assume HUB.
+      exact (HrefineB0 U (HBsubB0 U HUB)).
+  + let U V.
+    assume HUB HVB Hnon.
+    exact (HstarPairB0 U V (HBsubB0 U HUB) (HBsubB0 V HVB) Hnon).
+- exact HBfin.
+Admitted. (** depends on admitted supp_ex_1a_metrizable_star_refinement **)
 
 (** from Supplementary Exercises Exercise 1b (line 5394 in algtop.tex): compact Hausdorff star refinement **)
 (** LATEX VERSION: If X is compact Hausdorff, then for any open covering A, there exists **)
