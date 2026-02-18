@@ -105038,7 +105038,34 @@ apply (xm
       rewrite Hk_eq_sj.
       reflexivity.
     }
-    admit. (** TODO Bob: use predecessor split (k = ordsucc j, cs(j):e G2) to finish contradiction in k<>0 branch **)
+    apply (xm
+      (j = 0)).
+    * assume Hj0 : j = 0.
+      claim Hk1 : k = 1.
+      {
+        rewrite Hk_eq_sj.
+        rewrite Hj0.
+        exact ordsucc_0_eq_1_nat.
+      }
+      claim Hm2 : m = 2.
+      {
+        rewrite Hm_eq.
+        rewrite Hk1.
+        exact ordsucc_1_eq_2_nat.
+      }
+      claim Hcs0_G2 : apply_fun cs 0 :e G2.
+      {
+        rewrite <- Hj0.
+        exact Hcsj_G2.
+      }
+      claim Hcs0_ne_e : apply_fun cs 0 <> e.
+      {
+        rewrite <- Hj0.
+        exact Hcsj_ne_e.
+      }
+      admit. (** TODO Bob: handle j=0 case (k=1,m=2) via the leading G2 singleton reduction **)
+    * assume Hj_ne0 : j <> 0.
+      admit. (** TODO Bob: handle j<>0 case after predecessor split **)
 Admitted.
 
 (** Core helper: given free product and reduced word of c, derive contradiction **)
