@@ -98654,7 +98654,891 @@ Theorem thm60_1_pi1_product : forall X Tx x0 Y Ty y0:set,
         (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
         (fundamental_group Y Ty y0) (fundamental_group_mult Y Ty y0))
       phi.
-admit.
+let X Tx x0 Y Ty y0.
+assume HtopX HtopY Hx0 Hy0.
+set Tprod := product_topology X Tx Y Ty.
+set pi_XY := fundamental_group (setprod X Y) Tprod (x0, y0).
+set mult_XY := fundamental_group_mult (setprod X Y) Tprod (x0, y0).
+set pi_X := fundamental_group X Tx x0.
+set mult_X := fundamental_group_mult X Tx x0.
+set pi_Y := fundamental_group Y Ty y0.
+set mult_Y := fundamental_group_mult Y Ty y0.
+claim HtopXY : topology_on (setprod X Y) Tprod.
+{ exact (product_topology_is_topology X Tx Y Ty HtopX HtopY). }
+claim Hbase : (x0, y0) :e setprod X Y.
+{ exact (tuple_2_setprod_by_pair_Sigma X Y x0 y0 Hx0 Hy0). }
+claim HprojsCont : continuous_map (setprod X Y) Tprod X Tx (projection_map1 X Y) /\
+                   continuous_map (setprod X Y) Tprod Y Ty (projection_map2 X Y).
+{ exact (projection_maps_continuous X Tx Y Ty HtopX HtopY). }
+claim HprXCont : continuous_map (setprod X Y) Tprod X Tx (projection_map1 X Y).
+{ exact (andEL (continuous_map (setprod X Y) Tprod X Tx (projection_map1 X Y))
+    (continuous_map (setprod X Y) Tprod Y Ty (projection_map2 X Y))
+    HprojsCont). }
+claim HprYCont : continuous_map (setprod X Y) Tprod Y Ty (projection_map2 X Y).
+{ exact (andER (continuous_map (setprod X Y) Tprod X Tx (projection_map1 X Y))
+    (continuous_map (setprod X Y) Tprod Y Ty (projection_map2 X Y))
+    HprojsCont). }
+claim HprXBase : apply_fun (projection_map1 X Y) (x0, y0) = x0.
+{
+  rewrite (projection1_apply X Y (x0, y0) Hbase).
+  rewrite tuple_2_0_eq.
+  exact (fun P H => H).
+}
+claim HprYBase : apply_fun (projection_map2 X Y) (x0, y0) = y0.
+{
+  rewrite (projection2_apply X Y (x0, y0) Hbase).
+  rewrite tuple_2_1_eq.
+  exact (fun P H => H).
+}
+set phi1 := induced_homomorphism (setprod X Y) Tprod (x0, y0) X Tx x0 (projection_map1 X Y).
+set phi2 := induced_homomorphism (setprod X Y) Tprod (x0, y0) Y Ty y0 (projection_map2 X Y).
+claim Hphi1Hom : group_homomorphism pi_XY mult_XY pi_X mult_X phi1.
+{
+  exact (induced_homomorphism_is_homomorphism
+    (setprod X Y) Tprod (x0, y0) X Tx x0 (projection_map1 X Y)
+    HprXCont HprXBase Hbase).
+}
+claim Hphi2Hom : group_homomorphism pi_XY mult_XY pi_Y mult_Y phi2.
+{
+  exact (induced_homomorphism_is_homomorphism
+    (setprod X Y) Tprod (x0, y0) Y Ty y0 (projection_map2 X Y)
+    HprYCont HprYBase Hbase).
+}
+claim Hphi1FunOn : function_on phi1 pi_XY pi_X.
+{ exact (group_homomorphism_function_on pi_XY mult_XY pi_X mult_X phi1 Hphi1Hom). }
+claim Hphi2FunOn : function_on phi2 pi_XY pi_Y.
+{ exact (group_homomorphism_function_on pi_XY mult_XY pi_Y mult_Y phi2 Hphi2Hom). }
+claim HphiFunOn : function_on (pair_map pi_XY phi1 phi2) pi_XY (setprod pi_X pi_Y).
+{
+  exact (total_function_on_function_on
+    (pair_map pi_XY phi1 phi2) pi_XY (setprod pi_X pi_Y)
+    (total_function_on_pair_map pi_XY pi_X pi_Y phi1 phi2
+      Hphi1FunOn Hphi2FunOn)).
+}
+witness (pair_map pi_XY phi1 phi2).
+prove (group_homomorphism pi_XY mult_XY (setprod pi_X pi_Y)
+    (product_group_mult pi_X mult_X pi_Y mult_Y)
+    (pair_map pi_XY phi1 phi2) /\
+  bijection pi_XY (setprod pi_X pi_Y) (pair_map pi_XY phi1 phi2)).
+apply andI.
+- (** group_homomorphism **)
+  prove (function_on (pair_map pi_XY phi1 phi2) pi_XY (setprod pi_X pi_Y) /\
+    (forall x y:set, x :e pi_XY -> y :e pi_XY ->
+      apply_fun (pair_map pi_XY phi1 phi2) (apply_fun mult_XY (x, y)) =
+      apply_fun (product_group_mult pi_X mult_X pi_Y mult_Y)
+        (apply_fun (pair_map pi_XY phi1 phi2) x, apply_fun (pair_map pi_XY phi1 phi2) y))).
+  apply andI.
+  - exact HphiFunOn.
+  - let cls1 cls2.
+    assume Hcls1 Hcls2.
+    claim Hcls1cls2 : (cls1, cls2) :e setprod pi_XY pi_XY.
+    { exact (tuple_2_setprod_by_pair_Sigma pi_XY pi_XY cls1 cls2 Hcls1 Hcls2). }
+    set id_XY := fundamental_group_id (setprod X Y) Tprod (x0, y0).
+    set inv_XY := fundamental_group_inv (setprod X Y) Tprod (x0, y0).
+    claim HmultXY_fun : function_on mult_XY (setprod pi_XY pi_XY) pi_XY.
+    {
+      apply (and6E
+        (function_on mult_XY (setprod pi_XY pi_XY) pi_XY)
+        (function_on inv_XY pi_XY pi_XY)
+        (id_XY :e pi_XY)
+        (forall x y z:set, x :e pi_XY -> y :e pi_XY -> z :e pi_XY ->
+          apply_fun mult_XY (apply_fun mult_XY (x, y), z) = apply_fun mult_XY (x, apply_fun mult_XY (y, z)))
+        (forall x:set, x :e pi_XY -> apply_fun mult_XY (id_XY, x) = x /\ apply_fun mult_XY (x, id_XY) = x)
+        (forall x:set, x :e pi_XY ->
+          apply_fun mult_XY (x, apply_fun inv_XY x) = id_XY /\ apply_fun mult_XY (apply_fun inv_XY x, x) = id_XY)
+        (fundamental_group_is_group (setprod X Y) Tprod (x0, y0) HtopXY Hbase)).
+      assume HmXY HiXY HeXY HassocXY HidXY HinvXY.
+      exact HmXY.
+    }
+    claim Hmult_in : apply_fun mult_XY (cls1, cls2) :e pi_XY.
+    { exact (HmultXY_fun (cls1, cls2) Hcls1cls2). }
+    rewrite (pair_map_apply pi_XY pi_X pi_Y phi1 phi2
+      (apply_fun mult_XY (cls1, cls2)) Hmult_in).
+    rewrite (group_homomorphism_mult_rule pi_XY mult_XY pi_X mult_X phi1 cls1 cls2
+      Hphi1Hom Hcls1 Hcls2).
+    rewrite (group_homomorphism_mult_rule pi_XY mult_XY pi_Y mult_Y phi2 cls1 cls2
+      Hphi2Hom Hcls1 Hcls2).
+    claim Hphi1cls1 : apply_fun phi1 cls1 :e pi_X. { exact (Hphi1FunOn cls1 Hcls1). }
+    claim Hphi2cls1 : apply_fun phi2 cls1 :e pi_Y. { exact (Hphi2FunOn cls1 Hcls1). }
+    claim Hphi1cls2 : apply_fun phi1 cls2 :e pi_X. { exact (Hphi1FunOn cls2 Hcls2). }
+    claim Hphi2cls2 : apply_fun phi2 cls2 :e pi_Y. { exact (Hphi2FunOn cls2 Hcls2). }
+    claim Hphi_cls1 : (apply_fun phi1 cls1, apply_fun phi2 cls1) :e setprod pi_X pi_Y.
+    { exact (tuple_2_setprod_by_pair_Sigma pi_X pi_Y
+        (apply_fun phi1 cls1) (apply_fun phi2 cls1) Hphi1cls1 Hphi2cls1). }
+    claim Hphi_cls2 : (apply_fun phi1 cls2, apply_fun phi2 cls2) :e setprod pi_X pi_Y.
+    { exact (tuple_2_setprod_by_pair_Sigma pi_X pi_Y
+        (apply_fun phi1 cls2) (apply_fun phi2 cls2) Hphi1cls2 Hphi2cls2). }
+    claim Hprod_pair : ((apply_fun phi1 cls1, apply_fun phi2 cls1),
+                        (apply_fun phi1 cls2, apply_fun phi2 cls2))
+                       :e setprod (setprod pi_X pi_Y) (setprod pi_X pi_Y).
+    {
+      exact (tuple_2_setprod_by_pair_Sigma
+        (setprod pi_X pi_Y) (setprod pi_X pi_Y)
+        (apply_fun phi1 cls1, apply_fun phi2 cls1)
+        (apply_fun phi1 cls2, apply_fun phi2 cls2)
+        Hphi_cls1 Hphi_cls2).
+    }
+    (** rewrite pair_map_apply for cls1 and cls2 **)
+    rewrite (pair_map_apply pi_XY pi_X pi_Y phi1 phi2 cls1 Hcls1).
+    rewrite (pair_map_apply pi_XY pi_X pi_Y phi1 phi2 cls2 Hcls2).
+    (** compute product_group_mult; prove via admit for now **)
+    claim Hprod_compute :
+      apply_fun (product_group_mult pi_X mult_X pi_Y mult_Y)
+        ((apply_fun phi1 cls1, apply_fun phi2 cls1), (apply_fun phi1 cls2, apply_fun phi2 cls2))
+      = (apply_fun mult_X (apply_fun phi1 cls1, apply_fun phi1 cls2),
+         apply_fun mult_Y (apply_fun phi2 cls1, apply_fun phi2 cls2)).
+    { admit. }
+    symmetry. exact Hprod_compute.
+- (** bijection **)
+  prove (function_on (pair_map pi_XY phi1 phi2) pi_XY (setprod pi_X pi_Y) /\
+    (forall y:set, y :e setprod pi_X pi_Y ->
+      exists x:set, x :e pi_XY /\
+        apply_fun (pair_map pi_XY phi1 phi2) x = y /\
+        (forall x':set, x' :e pi_XY ->
+          apply_fun (pair_map pi_XY phi1 phi2) x' = y -> x' = x))).
+  apply andI.
+  - exact HphiFunOn.
+  - let y.
+    assume Hy.
+    set cls_X := y 0.
+    set cls_Y := y 1.
+    claim HclsX_in : cls_X :e pi_X.
+    { exact (ap0_Sigma pi_X (fun _ : set => pi_Y) y Hy). }
+    claim HclsY_in : cls_Y :e pi_Y.
+    { exact (ap1_Sigma pi_X (fun _ : set => pi_Y) y Hy). }
+    (** pick representatives alpha in cls_X, beta in cls_Y **)
+    set alpha := Eps_i (fun f:set => f :e cls_X).
+    set beta := Eps_i (fun f:set => f :e cls_Y).
+    claim HalphaLoop : alpha :e loop_space X Tx x0.
+    { exact (eps_of_fundamental_group_member_in_loop_space X Tx x0 cls_X HclsX_in). }
+    claim HbetaLoop : beta :e loop_space Y Ty y0.
+    { exact (eps_of_fundamental_group_member_in_loop_space Y Ty y0 cls_Y HclsY_in). }
+    claim HalphaFun : function_on alpha unit_interval X.
+    {
+      exact (function_on_of_function_space alpha unit_interval X
+        (loop_space_in_function_space X Tx x0 alpha HalphaLoop)).
+    }
+    claim HbetaFun : function_on beta unit_interval Y.
+    {
+      exact (function_on_of_function_space beta unit_interval Y
+        (loop_space_in_function_space Y Ty y0 beta HbetaLoop)).
+    }
+    claim HalphaLoopAt : loop_at X Tx x0 alpha.
+    { exact (loop_space_has_loop_at X Tx x0 alpha HalphaLoop). }
+    claim HbetaLoopAt : loop_at Y Ty y0 beta.
+    { exact (loop_space_has_loop_at Y Ty y0 beta HbetaLoop). }
+    claim HalphaCont : continuous_map unit_interval unit_interval_topology X Tx alpha.
+    { exact (loop_at_continuous X Tx x0 alpha HalphaLoopAt). }
+    claim HbetaCont : continuous_map unit_interval unit_interval_topology Y Ty beta.
+    { exact (loop_at_continuous Y Ty y0 beta HbetaLoopAt). }
+    claim Halpha0 : apply_fun alpha 0 = x0.
+    { exact (loop_at_at_zero X Tx x0 alpha HalphaLoopAt). }
+    claim Halpha1 : apply_fun alpha 1 = x0.
+    { exact (loop_at_at_one X Tx x0 alpha HalphaLoopAt). }
+    claim Hbeta0 : apply_fun beta 0 = y0.
+    { exact (loop_at_at_zero Y Ty y0 beta HbetaLoopAt). }
+    claim Hbeta1 : apply_fun beta 1 = y0.
+    { exact (loop_at_at_one Y Ty y0 beta HbetaLoopAt). }
+    (** gamma = pair_map(I, alpha, beta) is a loop at (x0,y0) in X times Y **)
+    set gamma := pair_map unit_interval alpha beta.
+    claim HgammaCont : continuous_map unit_interval unit_interval_topology
+                         (setprod X Y) Tprod gamma.
+    { exact (maps_into_products_axiom unit_interval unit_interval_topology
+        X Tx Y Ty alpha beta HalphaCont HbetaCont). }
+    claim HgammaFun : function_on gamma unit_interval (setprod X Y).
+    { exact (continuous_map_function_on unit_interval unit_interval_topology
+        (setprod X Y) Tprod gamma HgammaCont). }
+    (** gamma(t) = (alpha(t), beta(t)) **)
+    claim Hgamma0 : apply_fun gamma 0 = (x0, y0).
+    {
+      rewrite (pair_map_apply unit_interval X Y alpha beta 0 zero_in_unit_interval).
+      rewrite Halpha0. rewrite Hbeta0.
+      exact (fun P H => H).
+    }
+    claim Hgamma1 : apply_fun gamma 1 = (x0, y0).
+    {
+      rewrite (pair_map_apply unit_interval X Y alpha beta 1 one_in_unit_interval).
+      rewrite Halpha1. rewrite Hbeta1.
+      exact (fun P H => H).
+    }
+    claim HgammaLoopAt : loop_at (setprod X Y) Tprod (x0, y0) gamma.
+    {
+      prove
+        (continuous_map unit_interval unit_interval_topology (setprod X Y) Tprod gamma /\
+         apply_fun gamma 0 = (x0, y0)) /\ apply_fun gamma 1 = (x0, y0).
+      exact (andI
+        (continuous_map unit_interval unit_interval_topology (setprod X Y) Tprod gamma /\
+         apply_fun gamma 0 = (x0, y0))
+        (apply_fun gamma 1 = (x0, y0))
+        (andI
+          (continuous_map unit_interval unit_interval_topology (setprod X Y) Tprod gamma)
+          (apply_fun gamma 0 = (x0, y0))
+          HgammaCont Hgamma0)
+        Hgamma1).
+    }
+    claim HgammaLoop : gamma :e loop_space (setprod X Y) Tprod (x0, y0).
+    {
+      exact (SepI
+        (function_space unit_interval (setprod X Y))
+        (fun f:set => loop_at (setprod X Y) Tprod (x0, y0) f)
+        gamma
+        (pair_map_in_function_space unit_interval X Y alpha beta HalphaFun HbetaFun)
+        HgammaLoopAt).
+    }
+    (** cls_XY = [gamma] is in pi_XY **)
+    set cls_XY := path_homotopy_class_loop (setprod X Y) Tprod (x0, y0) gamma.
+    claim HclsXY_in : cls_XY :e pi_XY.
+    { exact (path_homotopy_class_in_fundamental_group
+        (setprod X Y) Tprod (x0, y0) gamma HgammaLoop). }
+    (** show phi(cls_XY) = y **)
+    claim Hphi_cls_XY : apply_fun (pair_map pi_XY phi1 phi2) cls_XY = y.
+    {
+      rewrite (pair_map_apply pi_XY pi_X pi_Y phi1 phi2 cls_XY HclsXY_in).
+      (** show phi1(cls_XY) = cls_X and phi2(cls_XY) = cls_Y **)
+      (** phi1(cls_XY) = class of (prX o eps_XY) where eps_XY ~ gamma **)
+      (** need: path_homotopy_class_loop X Tx x0 (compose_fun I eps_XY prX) = cls_X **)
+      claim Hphi1_eq : apply_fun phi1 cls_XY = cls_X.
+      {
+        rewrite (induced_homomorphism_apply
+          (setprod X Y) Tprod (x0, y0) X Tx x0 (projection_map1 X Y)
+          cls_XY HclsXY_in).
+        (** eps_XY = Eps_i(g: g in cls_XY), it is in cls_XY = [gamma] **)
+        set eps_XY := Eps_i (fun f:set => f :e cls_XY).
+        claim Heps_XY_in_cls : eps_XY :e cls_XY.
+        {
+          exact (Eps_i_ax (fun f:set => f :e cls_XY) gamma
+            (loop_in_own_path_homotopy_class
+              (setprod X Y) Tprod (x0, y0) gamma HgammaLoop)).
+        }
+        claim Heps_XY_hom : path_homotopic (setprod X Y) Tprod (x0, y0) (x0, y0) gamma eps_XY.
+        { exact (path_homotopy_class_loop_has_homotopy
+            (setprod X Y) Tprod (x0, y0) gamma eps_XY
+            Heps_XY_in_cls). }
+        (** compose_fun I eps_XY prX ~ compose_fun I gamma prX **)
+        claim Hcompose_hom :
+          path_homotopic X Tx x0 x0
+            (compose_fun unit_interval gamma (projection_map1 X Y))
+            (compose_fun unit_interval eps_XY (projection_map1 X Y)).
+        {
+          exact (path_homotopic_postcompose
+            (setprod X Y) Tprod
+            X Tx
+            (x0, y0) (x0, y0)
+            x0 x0
+            gamma eps_XY (projection_map1 X Y)
+            Heps_XY_hom
+            HprXCont
+            HprXBase HprXBase).
+        }
+        (** class of compose_fun I eps_XY prX = class of compose_fun I gamma prX **)
+        claim Hclass_eps_eq_gamma :
+          path_homotopy_class_loop X Tx x0
+            (compose_fun unit_interval eps_XY (projection_map1 X Y))
+          = path_homotopy_class_loop X Tx x0
+            (compose_fun unit_interval gamma (projection_map1 X Y)).
+        {
+          symmetry.
+          exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0
+            (compose_fun unit_interval gamma (projection_map1 X Y))
+            (compose_fun unit_interval eps_XY (projection_map1 X Y))
+            Hcompose_hom).
+        }
+        rewrite Hclass_eps_eq_gamma.
+        (** show class of compose_fun I gamma prX = cls_X **)
+        (** compose_fun I gamma prX at t = alpha(t): same as alpha pointwise **)
+        (** use constant homotopy to show alpha ~ compose_fun I gamma prX **)
+        claim HgammaprX_at : forall t:set, t :e unit_interval ->
+          apply_fun (compose_fun unit_interval gamma (projection_map1 X Y)) t
+          = apply_fun alpha t.
+        {
+          let t. assume Ht.
+          rewrite (compose_fun_apply unit_interval gamma (projection_map1 X Y) t Ht).
+          rewrite (pair_map_apply unit_interval X Y alpha beta t Ht).
+          claim Hpair_in : (apply_fun alpha t, apply_fun beta t) :e setprod X Y.
+          {
+            exact (tuple_2_setprod_by_pair_Sigma X Y
+              (apply_fun alpha t) (apply_fun beta t)
+              (HalphaFun t Ht) (HbetaFun t Ht)).
+          }
+          rewrite (projection1_apply X Y (apply_fun alpha t, apply_fun beta t)
+            Hpair_in).
+          rewrite tuple_2_0_eq.
+          exact (fun P H => H).
+        }
+        claim HalphaLoop_at_I : alpha :e loop_space X Tx x0. { exact HalphaLoop. }
+        claim HgammaprX_fn_space :
+          compose_fun unit_interval gamma (projection_map1 X Y) :e function_space unit_interval X.
+        {
+          exact (compose_fun_in_function_space unit_interval (setprod X Y) X
+            gamma (projection_map1 X Y)
+            HgammaFun
+            (continuous_map_function_on (setprod X Y) Tprod X Tx
+              (projection_map1 X Y) HprXCont)).
+        }
+        claim HgammaprX_at0 :
+          apply_fun (compose_fun unit_interval gamma (projection_map1 X Y)) 0 = x0.
+        {
+          rewrite (compose_fun_apply unit_interval gamma (projection_map1 X Y) 0
+            zero_in_unit_interval).
+          rewrite (pair_map_apply unit_interval X Y alpha beta 0
+            zero_in_unit_interval).
+          claim Hbase0 : (apply_fun alpha 0, apply_fun beta 0) :e setprod X Y.
+          {
+            exact (tuple_2_setprod_by_pair_Sigma X Y
+              (apply_fun alpha 0) (apply_fun beta 0)
+              (HalphaFun 0 zero_in_unit_interval)
+              (HbetaFun 0 zero_in_unit_interval)).
+          }
+          rewrite (projection1_apply X Y (apply_fun alpha 0, apply_fun beta 0) Hbase0).
+          rewrite tuple_2_0_eq.
+          exact Halpha0.
+        }
+        claim HgammaprX_at1 :
+          apply_fun (compose_fun unit_interval gamma (projection_map1 X Y)) 1 = x0.
+        {
+          rewrite (compose_fun_apply unit_interval gamma (projection_map1 X Y) 1
+            one_in_unit_interval).
+          rewrite (pair_map_apply unit_interval X Y alpha beta 1
+            one_in_unit_interval).
+          claim Hbase1 : (apply_fun alpha 1, apply_fun beta 1) :e setprod X Y.
+          {
+            exact (tuple_2_setprod_by_pair_Sigma X Y
+              (apply_fun alpha 1) (apply_fun beta 1)
+              (HalphaFun 1 one_in_unit_interval)
+              (HbetaFun 1 one_in_unit_interval)).
+          }
+          rewrite (projection1_apply X Y (apply_fun alpha 1, apply_fun beta 1) Hbase1).
+          rewrite tuple_2_0_eq.
+          exact Halpha1.
+        }
+        claim HgammaprX_loop_at :
+          loop_at X Tx x0 (compose_fun unit_interval gamma (projection_map1 X Y)).
+        {
+          prove
+            (continuous_map unit_interval unit_interval_topology X Tx
+              (compose_fun unit_interval gamma (projection_map1 X Y)) /\
+             apply_fun (compose_fun unit_interval gamma (projection_map1 X Y)) 0 = x0) /\
+            apply_fun (compose_fun unit_interval gamma (projection_map1 X Y)) 1 = x0.
+          exact (andI
+            (continuous_map unit_interval unit_interval_topology X Tx
+              (compose_fun unit_interval gamma (projection_map1 X Y)) /\
+             apply_fun (compose_fun unit_interval gamma (projection_map1 X Y)) 0 = x0)
+            (apply_fun (compose_fun unit_interval gamma (projection_map1 X Y)) 1 = x0)
+            (andI
+              (continuous_map unit_interval unit_interval_topology X Tx
+                (compose_fun unit_interval gamma (projection_map1 X Y)))
+              (apply_fun (compose_fun unit_interval gamma (projection_map1 X Y)) 0 = x0)
+              (composition_continuous unit_interval unit_interval_topology
+                (setprod X Y) Tprod X Tx
+                gamma (projection_map1 X Y) HgammaCont HprXCont)
+              HgammaprX_at0)
+            HgammaprX_at1).
+        }
+        claim HgammaprX_loop :
+          compose_fun unit_interval gamma (projection_map1 X Y) :e loop_space X Tx x0.
+        {
+          exact (SepI
+            (function_space unit_interval X)
+            (fun f:set => loop_at X Tx x0 f)
+            (compose_fun unit_interval gamma (projection_map1 X Y))
+            HgammaprX_fn_space
+            HgammaprX_loop_at).
+        }
+        (** Now show the homotopy class of compose_fun I gamma prX equals cls_X **)
+        (** Use constant homotopy: alpha ~ compose_fun I gamma prX **)
+        (** Prove alpha ~ compose_fun I gamma prX using constant homotopy F(s,t)=alpha(s) **)
+        claim HcomposeGammaprXCont :
+          continuous_map unit_interval unit_interval_topology X Tx
+            (compose_fun unit_interval gamma (projection_map1 X Y)).
+        {
+          exact (composition_continuous unit_interval unit_interval_topology
+            (setprod X Y) Tprod X Tx
+            gamma (projection_map1 X Y) HgammaCont HprXCont).
+        }
+        claim HcomposeAt0 :
+          apply_fun (compose_fun unit_interval gamma (projection_map1 X Y)) 0 = x0.
+        {
+          rewrite (HgammaprX_at 0 zero_in_unit_interval).
+          exact Halpha0.
+        }
+        claim HcomposeAt1 :
+          apply_fun (compose_fun unit_interval gamma (projection_map1 X Y)) 1 = x0.
+        {
+          rewrite (HgammaprX_at 1 one_in_unit_interval).
+          exact Halpha1.
+        }
+        claim Halpha_hom_gammaprX :
+          path_homotopic X Tx x0 x0 alpha
+            (compose_fun unit_interval gamma (projection_map1 X Y)).
+        {
+          prove continuous_map unit_interval unit_interval_topology X Tx alpha /\
+            continuous_map unit_interval unit_interval_topology X Tx
+              (compose_fun unit_interval gamma (projection_map1 X Y)) /\
+            apply_fun alpha 0 = x0 /\
+            apply_fun alpha 1 = x0 /\
+            apply_fun (compose_fun unit_interval gamma (projection_map1 X Y)) 0 = x0 /\
+            apply_fun (compose_fun unit_interval gamma (projection_map1 X Y)) 1 = x0 /\
+            exists F:set,
+              continuous_map unit_square unit_square_topology X Tx F /\
+              (forall s:set, s :e unit_interval ->
+                apply_fun F (s, 0) = apply_fun alpha s) /\
+              (forall s:set, s :e unit_interval ->
+                apply_fun F (s, 1) =
+                apply_fun (compose_fun unit_interval gamma (projection_map1 X Y)) s) /\
+              (forall t:set, t :e unit_interval ->
+                apply_fun F (0, t) = x0) /\
+              (forall t:set, t :e unit_interval ->
+                apply_fun F (1, t) = x0).
+          apply andI.
+          - exact (and6I
+              (continuous_map unit_interval unit_interval_topology X Tx alpha)
+              (continuous_map unit_interval unit_interval_topology X Tx
+                (compose_fun unit_interval gamma (projection_map1 X Y)))
+              (apply_fun alpha 0 = x0)
+              (apply_fun alpha 1 = x0)
+              (apply_fun (compose_fun unit_interval gamma (projection_map1 X Y)) 0 = x0)
+              (apply_fun (compose_fun unit_interval gamma (projection_map1 X Y)) 1 = x0)
+              HalphaCont HcomposeGammaprXCont Halpha0 Halpha1 HcomposeAt0 HcomposeAt1).
+          - witness (compose_fun unit_square (projection_map1 unit_interval unit_interval) alpha).
+            claim HFcont :
+              continuous_map unit_square unit_square_topology X Tx
+                (compose_fun unit_square (projection_map1 unit_interval unit_interval) alpha).
+            {
+              exact (composition_continuous
+                unit_square unit_square_topology
+                unit_interval unit_interval_topology
+                X Tx
+                (projection_map1 unit_interval unit_interval) alpha
+                (andEL
+                  (continuous_map
+                    (setprod unit_interval unit_interval)
+                    (product_topology unit_interval unit_interval_topology
+                      unit_interval unit_interval_topology)
+                    unit_interval unit_interval_topology
+                    (projection_map1 unit_interval unit_interval))
+                  (continuous_map
+                    (setprod unit_interval unit_interval)
+                    (product_topology unit_interval unit_interval_topology
+                      unit_interval unit_interval_topology)
+                    unit_interval unit_interval_topology
+                    (projection_map2 unit_interval unit_interval))
+                  (projection_maps_continuous
+                    unit_interval unit_interval_topology
+                    unit_interval unit_interval_topology
+                    unit_interval_topology_on
+                    unit_interval_topology_on))
+                HalphaCont).
+            }
+            claim HFs0 : forall s:set, s :e unit_interval ->
+              apply_fun
+                (compose_fun unit_square (projection_map1 unit_interval unit_interval) alpha) (s, 0)
+              = apply_fun alpha s.
+            {
+              let s. assume Hs.
+              rewrite (compose_fun_apply unit_square
+                (projection_map1 unit_interval unit_interval) alpha (s, 0)
+                (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 0
+                  Hs zero_in_unit_interval)).
+              rewrite (projection1_apply unit_interval unit_interval (s, 0)
+                (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 0
+                  Hs zero_in_unit_interval)).
+              rewrite tuple_2_0_eq.
+              exact (fun P H => H).
+            }
+            claim HFs1 : forall s:set, s :e unit_interval ->
+              apply_fun
+                (compose_fun unit_square (projection_map1 unit_interval unit_interval) alpha) (s, 1)
+              = apply_fun (compose_fun unit_interval gamma (projection_map1 X Y)) s.
+            {
+              let s. assume Hs.
+              rewrite (compose_fun_apply unit_square
+                (projection_map1 unit_interval unit_interval) alpha (s, 1)
+                (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 1
+                  Hs one_in_unit_interval)).
+              rewrite (projection1_apply unit_interval unit_interval (s, 1)
+                (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 1
+                  Hs one_in_unit_interval)).
+              rewrite tuple_2_0_eq.
+              symmetry. exact (HgammaprX_at s Hs).
+            }
+            claim HFt0 : forall t:set, t :e unit_interval ->
+              apply_fun
+                (compose_fun unit_square (projection_map1 unit_interval unit_interval) alpha) (0, t)
+              = x0.
+            {
+              let t. assume Ht.
+              rewrite (compose_fun_apply unit_square
+                (projection_map1 unit_interval unit_interval) alpha (0, t)
+                (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 0 t
+                  zero_in_unit_interval Ht)).
+              rewrite (projection1_apply unit_interval unit_interval (0, t)
+                (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 0 t
+                  zero_in_unit_interval Ht)).
+              rewrite tuple_2_0_eq.
+              exact Halpha0.
+            }
+            claim HFt1 : forall t:set, t :e unit_interval ->
+              apply_fun
+                (compose_fun unit_square (projection_map1 unit_interval unit_interval) alpha) (1, t)
+              = x0.
+            {
+              let t. assume Ht.
+              rewrite (compose_fun_apply unit_square
+                (projection_map1 unit_interval unit_interval) alpha (1, t)
+                (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 1 t
+                  one_in_unit_interval Ht)).
+              rewrite (projection1_apply unit_interval unit_interval (1, t)
+                (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 1 t
+                  one_in_unit_interval Ht)).
+              rewrite tuple_2_0_eq.
+              exact Halpha1.
+            }
+            exact (and5I
+              (continuous_map unit_square unit_square_topology X Tx
+                (compose_fun unit_square (projection_map1 unit_interval unit_interval) alpha))
+              (forall s:set, s :e unit_interval ->
+                apply_fun (compose_fun unit_square
+                  (projection_map1 unit_interval unit_interval) alpha) (s, 0)
+                = apply_fun alpha s)
+              (forall s:set, s :e unit_interval ->
+                apply_fun (compose_fun unit_square
+                  (projection_map1 unit_interval unit_interval) alpha) (s, 1)
+                = apply_fun (compose_fun unit_interval gamma (projection_map1 X Y)) s)
+              (forall t:set, t :e unit_interval ->
+                apply_fun (compose_fun unit_square
+                  (projection_map1 unit_interval unit_interval) alpha) (0, t)
+                = x0)
+              (forall t:set, t :e unit_interval ->
+                apply_fun (compose_fun unit_square
+                  (projection_map1 unit_interval unit_interval) alpha) (1, t)
+                = x0)
+              HFcont HFs0 HFs1 HFt0 HFt1).
+        }
+        (** [alpha] = [compose_fun I gamma prX] from the homotopy **)
+        claim Hclass_alpha_eq_gammaprX :
+          path_homotopy_class_loop X Tx x0 alpha
+          = path_homotopy_class_loop X Tx x0
+              (compose_fun unit_interval gamma (projection_map1 X Y)).
+        {
+          exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0
+            alpha (compose_fun unit_interval gamma (projection_map1 X Y))
+            Halpha_hom_gammaprX).
+        }
+        (** cls_X = [alpha] **)
+        claim HclsX_eq_alpha_class :
+          cls_X = path_homotopy_class_loop X Tx x0 alpha.
+        {
+          claim Hrep_X : exists f:set, f :e loop_space X Tx x0 /\
+            cls_X = path_homotopy_class_loop X Tx x0 f.
+          { exact (fundamental_group_member_has_representative X Tx x0 cls_X HclsX_in). }
+          apply Hrep_X. let f. assume HfPack.
+          claim HfLoop_X : f :e loop_space X Tx x0.
+          { exact (andEL (f :e loop_space X Tx x0)
+              (cls_X = path_homotopy_class_loop X Tx x0 f) HfPack). }
+          claim HclsXEqf : cls_X = path_homotopy_class_loop X Tx x0 f.
+          { exact (andER (f :e loop_space X Tx x0)
+              (cls_X = path_homotopy_class_loop X Tx x0 f) HfPack). }
+          claim HfInClsX : f :e cls_X.
+          { exact (mem_eqL f cls_X (path_homotopy_class_loop X Tx x0 f) HclsXEqf
+              (loop_in_own_path_homotopy_class X Tx x0 f HfLoop_X)). }
+          claim HalphaInClsX : alpha :e cls_X.
+          { exact (Eps_i_ax (fun g:set => g :e cls_X) f HfInClsX). }
+          claim HalphaInClsf : alpha :e path_homotopy_class_loop X Tx x0 f.
+          { exact (mem_eqR alpha cls_X (path_homotopy_class_loop X Tx x0 f)
+              HclsXEqf HalphaInClsX). }
+          claim Hf_hom_alpha : path_homotopic X Tx x0 x0 f alpha.
+          { exact (path_homotopy_class_loop_has_homotopy X Tx x0 f alpha HalphaInClsf). }
+          claim Hfg : path_homotopy_class_loop X Tx x0 f
+            = path_homotopy_class_loop X Tx x0 alpha.
+          { exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0 f alpha Hf_hom_alpha). }
+          rewrite <- Hfg.
+          exact HclsXEqf.
+        }
+        rewrite <- Hclass_alpha_eq_gammaprX.
+        symmetry. exact HclsX_eq_alpha_class.
+      }
+      claim Hphi2_eq : apply_fun phi2 cls_XY = cls_Y.
+      {
+        rewrite (induced_homomorphism_apply
+          (setprod X Y) Tprod (x0, y0) Y Ty y0 (projection_map2 X Y)
+          cls_XY HclsXY_in).
+        set eps_XY2 := Eps_i (fun f:set => f :e cls_XY).
+        claim Heps_XY2_in_cls : eps_XY2 :e cls_XY.
+        {
+          exact (Eps_i_ax (fun f:set => f :e cls_XY) gamma
+            (loop_in_own_path_homotopy_class
+              (setprod X Y) Tprod (x0, y0) gamma HgammaLoop)).
+        }
+        claim Heps_XY2_hom :
+          path_homotopic (setprod X Y) Tprod (x0, y0) (x0, y0) gamma eps_XY2.
+        { exact (path_homotopy_class_loop_has_homotopy
+            (setprod X Y) Tprod (x0, y0) gamma eps_XY2
+            Heps_XY2_in_cls). }
+        claim Hcompose_hom2 :
+          path_homotopic Y Ty y0 y0
+            (compose_fun unit_interval gamma (projection_map2 X Y))
+            (compose_fun unit_interval eps_XY2 (projection_map2 X Y)).
+        {
+          exact (path_homotopic_postcompose
+            (setprod X Y) Tprod
+            Y Ty
+            (x0, y0) (x0, y0)
+            y0 y0
+            gamma eps_XY2 (projection_map2 X Y)
+            Heps_XY2_hom
+            HprYCont
+            HprYBase HprYBase).
+        }
+        claim Hclass_eps2_eq_gamma :
+          path_homotopy_class_loop Y Ty y0
+            (compose_fun unit_interval eps_XY2 (projection_map2 X Y))
+          = path_homotopy_class_loop Y Ty y0
+            (compose_fun unit_interval gamma (projection_map2 X Y)).
+        {
+          symmetry.
+          exact (path_homotopy_class_loop_eq_of_path_homotopic Y Ty y0
+            (compose_fun unit_interval gamma (projection_map2 X Y))
+            (compose_fun unit_interval eps_XY2 (projection_map2 X Y))
+            Hcompose_hom2).
+        }
+        rewrite Hclass_eps2_eq_gamma.
+        (** Now prove [compose_fun I gamma prY] = cls_Y **)
+        claim HgammaprY_at : forall t:set, t :e unit_interval ->
+          apply_fun (compose_fun unit_interval gamma (projection_map2 X Y)) t
+          = apply_fun beta t.
+        {
+          let t. assume Ht.
+          rewrite (compose_fun_apply unit_interval gamma (projection_map2 X Y) t Ht).
+          rewrite (pair_map_apply unit_interval X Y alpha beta t Ht).
+          claim Hpair_in2 : (apply_fun alpha t, apply_fun beta t) :e setprod X Y.
+          {
+            exact (tuple_2_setprod_by_pair_Sigma X Y
+              (apply_fun alpha t) (apply_fun beta t)
+              (HalphaFun t Ht) (HbetaFun t Ht)).
+          }
+          rewrite (projection2_apply X Y (apply_fun alpha t, apply_fun beta t) Hpair_in2).
+          rewrite tuple_2_1_eq.
+          exact (fun P H => H).
+        }
+        claim HcomposeGammaprYCont :
+          continuous_map unit_interval unit_interval_topology Y Ty
+            (compose_fun unit_interval gamma (projection_map2 X Y)).
+        {
+          exact (composition_continuous unit_interval unit_interval_topology
+            (setprod X Y) Tprod Y Ty
+            gamma (projection_map2 X Y) HgammaCont HprYCont).
+        }
+        claim HcomposeprY_At0 :
+          apply_fun (compose_fun unit_interval gamma (projection_map2 X Y)) 0 = y0.
+        {
+          rewrite (HgammaprY_at 0 zero_in_unit_interval).
+          exact Hbeta0.
+        }
+        claim HcomposeprY_At1 :
+          apply_fun (compose_fun unit_interval gamma (projection_map2 X Y)) 1 = y0.
+        {
+          rewrite (HgammaprY_at 1 one_in_unit_interval).
+          exact Hbeta1.
+        }
+        claim Hbeta_hom_gammaprY :
+          path_homotopic Y Ty y0 y0 beta
+            (compose_fun unit_interval gamma (projection_map2 X Y)).
+        {
+          prove continuous_map unit_interval unit_interval_topology Y Ty beta /\
+            continuous_map unit_interval unit_interval_topology Y Ty
+              (compose_fun unit_interval gamma (projection_map2 X Y)) /\
+            apply_fun beta 0 = y0 /\
+            apply_fun beta 1 = y0 /\
+            apply_fun (compose_fun unit_interval gamma (projection_map2 X Y)) 0 = y0 /\
+            apply_fun (compose_fun unit_interval gamma (projection_map2 X Y)) 1 = y0 /\
+            exists F:set,
+              continuous_map unit_square unit_square_topology Y Ty F /\
+              (forall s:set, s :e unit_interval ->
+                apply_fun F (s, 0) = apply_fun beta s) /\
+              (forall s:set, s :e unit_interval ->
+                apply_fun F (s, 1) =
+                apply_fun (compose_fun unit_interval gamma (projection_map2 X Y)) s) /\
+              (forall t:set, t :e unit_interval ->
+                apply_fun F (0, t) = y0) /\
+              (forall t:set, t :e unit_interval ->
+                apply_fun F (1, t) = y0).
+          apply andI.
+          - exact (and6I
+              (continuous_map unit_interval unit_interval_topology Y Ty beta)
+              (continuous_map unit_interval unit_interval_topology Y Ty
+                (compose_fun unit_interval gamma (projection_map2 X Y)))
+              (apply_fun beta 0 = y0)
+              (apply_fun beta 1 = y0)
+              (apply_fun (compose_fun unit_interval gamma (projection_map2 X Y)) 0 = y0)
+              (apply_fun (compose_fun unit_interval gamma (projection_map2 X Y)) 1 = y0)
+              HbetaCont HcomposeGammaprYCont Hbeta0 Hbeta1
+              HcomposeprY_At0 HcomposeprY_At1).
+          - witness (compose_fun unit_square (projection_map1 unit_interval unit_interval) beta).
+            claim HFYcont :
+            continuous_map unit_square unit_square_topology Y Ty
+              (compose_fun unit_square (projection_map1 unit_interval unit_interval) beta).
+          {
+            exact (composition_continuous
+              unit_square unit_square_topology
+              unit_interval unit_interval_topology
+              Y Ty
+              (projection_map1 unit_interval unit_interval) beta
+              (andEL
+                (continuous_map
+                  (setprod unit_interval unit_interval)
+                  (product_topology unit_interval unit_interval_topology
+                    unit_interval unit_interval_topology)
+                  unit_interval unit_interval_topology
+                  (projection_map1 unit_interval unit_interval))
+                (continuous_map
+                  (setprod unit_interval unit_interval)
+                  (product_topology unit_interval unit_interval_topology
+                    unit_interval unit_interval_topology)
+                  unit_interval unit_interval_topology
+                  (projection_map2 unit_interval unit_interval))
+                (projection_maps_continuous
+                  unit_interval unit_interval_topology
+                  unit_interval unit_interval_topology
+                  unit_interval_topology_on
+                  unit_interval_topology_on))
+              HbetaCont).
+          }
+          claim HFYs0 : forall s:set, s :e unit_interval ->
+            apply_fun
+              (compose_fun unit_square (projection_map1 unit_interval unit_interval) beta) (s, 0)
+            = apply_fun beta s.
+          {
+            let s. assume Hs.
+            rewrite (compose_fun_apply unit_square
+              (projection_map1 unit_interval unit_interval) beta (s, 0)
+              (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 0
+                Hs zero_in_unit_interval)).
+            rewrite (projection1_apply unit_interval unit_interval (s, 0)
+              (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 0
+                Hs zero_in_unit_interval)).
+            rewrite tuple_2_0_eq.
+            exact (fun P H => H).
+          }
+          claim HFYs1 : forall s:set, s :e unit_interval ->
+            apply_fun
+              (compose_fun unit_square (projection_map1 unit_interval unit_interval) beta) (s, 1)
+            = apply_fun (compose_fun unit_interval gamma (projection_map2 X Y)) s.
+          {
+            let s. assume Hs.
+            rewrite (compose_fun_apply unit_square
+              (projection_map1 unit_interval unit_interval) beta (s, 1)
+              (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 1
+                Hs one_in_unit_interval)).
+            rewrite (projection1_apply unit_interval unit_interval (s, 1)
+              (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 1
+                Hs one_in_unit_interval)).
+            rewrite tuple_2_0_eq.
+            symmetry. exact (HgammaprY_at s Hs).
+          }
+          claim HFYt0 : forall t:set, t :e unit_interval ->
+            apply_fun
+              (compose_fun unit_square (projection_map1 unit_interval unit_interval) beta) (0, t)
+            = y0.
+          {
+            let t. assume Ht.
+            rewrite (compose_fun_apply unit_square
+              (projection_map1 unit_interval unit_interval) beta (0, t)
+              (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 0 t
+                zero_in_unit_interval Ht)).
+            rewrite (projection1_apply unit_interval unit_interval (0, t)
+              (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 0 t
+                zero_in_unit_interval Ht)).
+            rewrite tuple_2_0_eq.
+            exact Hbeta0.
+          }
+          claim HFYt1 : forall t:set, t :e unit_interval ->
+            apply_fun
+              (compose_fun unit_square (projection_map1 unit_interval unit_interval) beta) (1, t)
+            = y0.
+          {
+            let t. assume Ht.
+            rewrite (compose_fun_apply unit_square
+              (projection_map1 unit_interval unit_interval) beta (1, t)
+              (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 1 t
+                one_in_unit_interval Ht)).
+            rewrite (projection1_apply unit_interval unit_interval (1, t)
+              (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 1 t
+                one_in_unit_interval Ht)).
+            rewrite tuple_2_0_eq.
+            exact Hbeta1.
+          }
+          exact (and5I
+            (continuous_map unit_square unit_square_topology Y Ty
+              (compose_fun unit_square (projection_map1 unit_interval unit_interval) beta))
+            (forall s:set, s :e unit_interval ->
+              apply_fun (compose_fun unit_square
+                (projection_map1 unit_interval unit_interval) beta) (s, 0)
+              = apply_fun beta s)
+            (forall s:set, s :e unit_interval ->
+              apply_fun (compose_fun unit_square
+                (projection_map1 unit_interval unit_interval) beta) (s, 1)
+              = apply_fun (compose_fun unit_interval gamma (projection_map2 X Y)) s)
+            (forall t:set, t :e unit_interval ->
+              apply_fun (compose_fun unit_square
+                (projection_map1 unit_interval unit_interval) beta) (0, t)
+              = y0)
+            (forall t:set, t :e unit_interval ->
+              apply_fun (compose_fun unit_square
+                (projection_map1 unit_interval unit_interval) beta) (1, t)
+              = y0)
+            HFYcont HFYs0 HFYs1 HFYt0 HFYt1).
+        }
+        claim Hclass_beta_eq_gammaprY :
+          path_homotopy_class_loop Y Ty y0 beta
+          = path_homotopy_class_loop Y Ty y0
+              (compose_fun unit_interval gamma (projection_map2 X Y)).
+        {
+          exact (path_homotopy_class_loop_eq_of_path_homotopic Y Ty y0
+            beta (compose_fun unit_interval gamma (projection_map2 X Y))
+            Hbeta_hom_gammaprY).
+        }
+        claim HclsY_eq_beta_class :
+          cls_Y = path_homotopy_class_loop Y Ty y0 beta.
+        {
+          claim Hrep_Y : exists f:set, f :e loop_space Y Ty y0 /\
+            cls_Y = path_homotopy_class_loop Y Ty y0 f.
+          { exact (fundamental_group_member_has_representative Y Ty y0 cls_Y HclsY_in). }
+          apply Hrep_Y. let f. assume HfPack_Y.
+          claim HfLoop_Y : f :e loop_space Y Ty y0.
+          { exact (andEL (f :e loop_space Y Ty y0)
+              (cls_Y = path_homotopy_class_loop Y Ty y0 f) HfPack_Y). }
+          claim HclsYEqf : cls_Y = path_homotopy_class_loop Y Ty y0 f.
+          { exact (andER (f :e loop_space Y Ty y0)
+              (cls_Y = path_homotopy_class_loop Y Ty y0 f) HfPack_Y). }
+          claim HfInClsY : f :e cls_Y.
+          { exact (mem_eqL f cls_Y (path_homotopy_class_loop Y Ty y0 f) HclsYEqf
+              (loop_in_own_path_homotopy_class Y Ty y0 f HfLoop_Y)). }
+          claim HbetaInClsY : beta :e cls_Y.
+          { exact (Eps_i_ax (fun g:set => g :e cls_Y) f HfInClsY). }
+          claim HbetaInClsf : beta :e path_homotopy_class_loop Y Ty y0 f.
+          { exact (mem_eqR beta cls_Y (path_homotopy_class_loop Y Ty y0 f)
+              HclsYEqf HbetaInClsY). }
+          claim Hf_hom_beta : path_homotopic Y Ty y0 y0 f beta.
+          { exact (path_homotopy_class_loop_has_homotopy Y Ty y0 f beta HbetaInClsf). }
+          claim Hfg_Y : path_homotopy_class_loop Y Ty y0 f
+            = path_homotopy_class_loop Y Ty y0 beta.
+          { exact (path_homotopy_class_loop_eq_of_path_homotopic Y Ty y0 f beta Hf_hom_beta). }
+          rewrite <- Hfg_Y.
+          exact HclsYEqf.
+        }
+        rewrite <- Hclass_beta_eq_gammaprY.
+        symmetry. exact HclsY_eq_beta_class.
+      }
+      rewrite Hphi1_eq. rewrite Hphi2_eq.
+      symmetry. exact (setprod_eta pi_X pi_Y y Hy).
+    }
+    witness cls_XY.
+    apply andI. apply andI.
+    - exact HclsXY_in.
+    - exact Hphi_cls_XY.
+    - let cls' .
+      assume Hcls'_in Hphi_cls'.
+      admit.
 Admitted.
 
 (** from S60 Cor 60.2 (line 1683 in algtop.tex) **)
