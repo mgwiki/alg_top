@@ -106174,6 +106174,169 @@ set h := graph G (fun x:set =>
       (n_of x))).
 (** Witness h **)
 witness h.
+(** Shared helper: h(eG) = eH **)
+claim Hh_eG_shared : apply_fun h eG = eH.
+{ claim Heval : apply_fun h eG =
+    If_i (eG = eG) eH
+      (nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of eG) i))) (n_of eG)).
+  { exact (apply_fun_graph G
+      (fun z:set => If_i (z = eG) eH
+        (nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of z) i))) (n_of z)))
+      eG HeGG). }
+  rewrite Heval.
+  exact (If_i_1 (eG = eG) eH
+    (nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of eG) i))) (n_of eG))
+    (fun q H => H)). }
+(** Shared helper: for z :e G, z <> eG, h(z) = nat_primrec over reduced word **)
+claim Hh_ne_shared : forall z:set, z :e G -> z <> eG ->
+  apply_fun h z = nat_primrec eH
+    (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of z) i))) (n_of z).
+{ let z. assume Hz. assume Hz_ne.
+  claim Heval : apply_fun h z =
+    If_i (z = eG) eH
+      (nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of z) i))) (n_of z)).
+  { exact (apply_fun_graph G
+      (fun w:set => If_i (w = eG) eH
+        (nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of w) i))) (n_of w)))
+      z Hz). }
+  claim Hif : If_i (z = eG) eH
+    (nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of z) i))) (n_of z)) =
+    nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of z) i))) (n_of z).
+  { exact (If_i_0 (z = eG) eH
+      (nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of z) i))) (n_of z))
+      Hz_ne). }
+  exact (eq_i_tra (apply_fun h z)
+    (If_i (z = eG) eH
+      (nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of z) i))) (n_of z)))
+    (nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of z) i))) (n_of z))
+    Heval Hif). }
+(** Shared helper: extract reduced word properties for non-identity z **)
+claim Hred_extract : forall z:set, z :e G -> z <> eG ->
+  reduced_word J Gfam efam (n_of z) (xs_of z) /\ (n_of z) <> 0 /\
+  word_product multG eG (xs_of z) (n_of z) = z /\
+  (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+    word_product multG eG xs' n' = z ->
+    (n_of z) = n' /\ (forall i:set, i :e (n_of z) -> apply_fun (xs_of z) i = apply_fun xs' i)).
+{ let z. assume Hz Hz_ne.
+  claim Hn_ex : exists xs:set,
+    reduced_word J Gfam efam (n_of z) xs /\ (n_of z) <> 0 /\
+    word_product multG eG xs (n_of z) = z /\
+    (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+      word_product multG eG xs' n' = z ->
+      (n_of z) = n' /\ (forall i:set, i :e (n_of z) -> apply_fun xs i = apply_fun xs' i)).
+  { exact (Eps_i_ex
+      (fun n:set => exists xs:set,
+        reduced_word J Gfam efam n xs /\ n <> 0 /\
+        word_product multG eG xs n = z /\
+        (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+          word_product multG eG xs' n' = z ->
+          n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
+      (Huniq z Hz Hz_ne)). }
+  exact (Eps_i_ex
+    (fun xs:set =>
+      reduced_word J Gfam efam (n_of z) xs /\ (n_of z) <> 0 /\
+      word_product multG eG xs (n_of z) = z /\
+      (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+        word_product multG eG xs' n' = z ->
+        (n_of z) = n' /\ (forall i:set, i :e (n_of z) -> apply_fun xs i = apply_fun xs' i)))
+    Hn_ex). }
+(** Shared helper: for b :e Gfam(alpha), b <> eG, b <> efam(alpha), h(b) = h_single(b) **)
+claim Hh_gen_elem : forall alpha:set, alpha :e J ->
+  forall b:set, b :e apply_fun Gfam alpha -> b <> eG -> b <> apply_fun efam alpha ->
+  apply_fun h b = h_single b.
+{ let alpha. assume Hal. let b. assume Hb_Gal. assume Hb_ne. assume Hb_ne_efam.
+  claim Hb_G : b :e G. { exact (Hsub_in_G alpha Hal b Hb_Gal). }
+  (** h(b) = nat_primrec over reduced word **)
+  claim Hh_b : apply_fun h b = nat_primrec eH
+    (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of b) i))) (n_of b).
+  { exact (Hh_ne_shared b Hb_G Hb_ne). }
+  (** Construct reduced word [b] **)
+  set bs := graph 1 (fun _:set => b).
+  claim Hbs_0 : apply_fun bs 0 = b.
+  { exact (apply_fun_graph 1 (fun _:set => b) 0 (ordsuccI2 0)). }
+  claim Hred_bs : reduced_word J Gfam efam 1 bs.
+  { prove 1 :e omega /\
+      (forall i:set, i :e 1 -> exists a:set, a :e J /\
+        apply_fun bs i :e apply_fun Gfam a /\ apply_fun bs i <> apply_fun efam a) /\
+      (forall i:set, i :e 1 -> ordsucc i :e 1 ->
+        forall a1 a2:set, a1 :e J -> a2 :e J ->
+          apply_fun bs i :e apply_fun Gfam a1 -> apply_fun bs (ordsucc i) :e apply_fun Gfam a2 -> a1 <> a2).
+    apply and3I.
+    - exact (nat_p_omega 1 (nat_ordsucc 0 nat_0)).
+    - let i. assume Hi.
+      apply (cases_1 i Hi (fun j:set =>
+        exists a:set, a :e J /\ apply_fun bs j :e apply_fun Gfam a /\ apply_fun bs j <> apply_fun efam a)).
+      prove exists a:set, a :e J /\
+        apply_fun bs 0 :e apply_fun Gfam a /\ apply_fun bs 0 <> apply_fun efam a.
+      witness alpha. apply and3I.
+      + exact Hal.
+      + rewrite Hbs_0. exact Hb_Gal.
+      + rewrite Hbs_0. exact Hb_ne_efam.
+    - let i. assume Hi : i :e 1. assume Hsi : ordsucc i :e 1.
+      let a1 a2. assume Ha1J Ha2J Hia1 Hia2.
+      apply (ordsuccE 0 i Hi).
+      + assume H0 : i :e 0. exact (FalseE (EmptyE i H0) (a1 <> a2)).
+      + assume Hi0 : i = 0.
+        claim Heq : ordsucc i = 1. { rewrite Hi0. exact ordsucc_0_eq_1_nat. }
+        claim H1in1 : 1 :e 1. { exact (eq_subst_mem_rev (ordsucc i) 1 1 Heq Hsi). }
+        exact (FalseE (In_irref 1 H1in1) (a1 <> a2)). }
+  claim Hwp_bs : word_product multG eG bs 1 = b.
+  { prove nat_primrec eG (fun i r => apply_fun multG (r, apply_fun bs i)) 1 = b.
+    rewrite <- ordsucc_0_eq_1_nat.
+    rewrite (nat_primrec_S eG (fun i r => apply_fun multG (r, apply_fun bs i)) 0 nat_0).
+    rewrite (nat_primrec_0 eG (fun i r => apply_fun multG (r, apply_fun bs i))).
+    rewrite Hbs_0.
+    exact (andEL (apply_fun multG (eG, b) = b) (apply_fun multG (b, eG) = b)
+      (HidG b Hb_G)). }
+  (** By uniqueness: n_of(b) = 1, xs_of(b)(0) = b **)
+  claim Hre : reduced_word J Gfam efam (n_of b) (xs_of b) /\ (n_of b) <> 0 /\
+    word_product multG eG (xs_of b) (n_of b) = b /\
+    (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+      word_product multG eG xs' n' = b ->
+      (n_of b) = n' /\ (forall i:set, i :e (n_of b) -> apply_fun (xs_of b) i = apply_fun xs' i)).
+  { exact (Hred_extract b Hb_G Hb_ne). }
+  claim Huniq_fn : forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+    word_product multG eG xs' n' = b ->
+    (n_of b) = n' /\ (forall i:set, i :e (n_of b) -> apply_fun (xs_of b) i = apply_fun xs' i).
+  { apply (and4E
+      (reduced_word J Gfam efam (n_of b) (xs_of b))
+      ((n_of b) <> 0)
+      (word_product multG eG (xs_of b) (n_of b) = b)
+      (forall n' xs':set, reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+        word_product multG eG xs' n' = b ->
+        (n_of b) = n' /\ (forall i:set, i :e (n_of b) -> apply_fun (xs_of b) i = apply_fun xs' i))
+      Hre).
+    assume _ _ _ Hu. exact Hu. }
+  claim Huniq_b : (n_of b) = 1 /\ (forall i:set, i :e (n_of b) -> apply_fun (xs_of b) i = apply_fun bs i).
+  { exact (Huniq_fn 1 bs Hred_bs (neq_ordsucc_0 0) Hwp_bs). }
+  claim Hn_of_1 : n_of b = 1.
+  { exact (andEL ((n_of b) = 1) (forall i:set, i :e (n_of b) -> apply_fun (xs_of b) i = apply_fun bs i) Huniq_b). }
+  claim Hxs_eq : forall i:set, i :e (n_of b) -> apply_fun (xs_of b) i = apply_fun bs i.
+  { exact (andER ((n_of b) = 1) (forall i:set, i :e (n_of b) -> apply_fun (xs_of b) i = apply_fun bs i) Huniq_b). }
+  claim Hxs_of_0 : apply_fun (xs_of b) 0 = b.
+  { claim H0nof : 0 :e n_of b. { rewrite Hn_of_1. exact (ordsuccI2 0). }
+    exact (eq_i_tra (apply_fun (xs_of b) 0) (apply_fun bs 0) b
+      (Hxs_eq 0 H0nof) Hbs_0). }
+  (** h(b) = nat_primrec(eH, f, 1) = multH(eH, h_single(b)) = h_single(b) **)
+  claim Hao_b : alpha_of b :e J /\ b :e apply_fun Gfam (alpha_of b).
+  { exact (Halpha_of_valid alpha Hal b Hb_Gal). }
+  claim Hhs_b_H : h_single b :e H.
+  { exact (Hhfam_in_H (alpha_of b) (andEL (alpha_of b :e J) (b :e apply_fun Gfam (alpha_of b)) Hao_b) b (andER (alpha_of b :e J) (b :e apply_fun Gfam (alpha_of b)) Hao_b)). }
+  set fH := fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun (xs_of b) i)).
+  claim Hstep1 : nat_primrec eH fH (ordsucc 0) = fH 0 (nat_primrec eH fH 0).
+  { exact (nat_primrec_S eH fH 0 nat_0). }
+  claim Hstep0 : nat_primrec eH fH 0 = eH.
+  { exact (nat_primrec_0 eH fH). }
+  claim Hcalc : nat_primrec eH fH 1 = apply_fun multH (eH, h_single (apply_fun (xs_of b) 0)).
+  { rewrite <- ordsucc_0_eq_1_nat. rewrite Hstep1. rewrite Hstep0.
+    prove fH 0 eH = apply_fun multH (eH, h_single (apply_fun (xs_of b) 0)).
+    prove apply_fun multH (eH, h_single (apply_fun (xs_of b) 0)) = apply_fun multH (eH, h_single (apply_fun (xs_of b) 0)).
+    reflexivity. }
+  rewrite Hh_b. rewrite Hn_of_1. rewrite Hcalc.
+  rewrite Hxs_of_0.
+  exact (andEL (apply_fun multH (eH, h_single b) = h_single b)
+    (apply_fun multH (h_single b, eH) = h_single b)
+    (HidH (h_single b) Hhs_b_H)). }
 (** Prove the three-part conjunction **)
 apply and3I.
 (** Part 1: group_homomorphism G multG H multH h **)
