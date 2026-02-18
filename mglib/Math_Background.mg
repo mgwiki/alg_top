@@ -74739,7 +74739,14 @@ claim HnulIncl :
   exact (s55_retraction_B2_S1_implies_inclusion_R2m0_nulhomotopic
     Hretr).
 }
-admit.
+claim HinclNotNul :
+  ~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
+    (graph S1 (fun x:set => x))).
+{
+  admit.
+}
+exact (HinclNotNul
+  HnulIncl).
 Admitted.
 
 (** from S55 Lem 55.3 direction (1) implies (2) (line 907 in algtop.tex) **)
@@ -74771,10 +74778,50 @@ claim Hhom :
     (homotopic_maps S1 S1_topology X Tx h (const_fun S1 y0))
     Hy0Pack).
 }
+claim HhomPack :
+  exists F:set,
+    continuous_map (setprod S1 unit_interval)
+      (product_topology S1 S1_topology unit_interval unit_interval_topology)
+      X Tx F /\
+    (forall x:set, x :e S1 -> apply_fun F (x, 0) = apply_fun h x) /\
+    (forall x:set, x :e S1 -> apply_fun F (x, 1) = apply_fun (const_fun S1 y0) x).
+{
+  exact (andER
+    (continuous_map S1 S1_topology X Tx h /\
+      continuous_map S1 S1_topology X Tx (const_fun S1 y0))
+    (exists F:set,
+      continuous_map (setprod S1 unit_interval)
+        (product_topology S1 S1_topology unit_interval unit_interval_topology)
+        X Tx F /\
+      (forall x:set, x :e S1 -> apply_fun F (x, 0) = apply_fun h x) /\
+      (forall x:set, x :e S1 -> apply_fun F (x, 1) = apply_fun (const_fun S1 y0) x))
+    Hhom).
+}
 claim HextFromHomotopy :
   exists k:set, continuous_map B2 B2_topology X Tx k /\
     (forall x:set, x :e S1 -> apply_fun k x = apply_fun h x).
 {
+  apply HhomPack.
+  let F.
+  assume HFPack.
+  claim HFCont :
+    continuous_map (setprod S1 unit_interval)
+      (product_topology S1 S1_topology unit_interval unit_interval_topology)
+      X Tx F.
+  {
+    exact (andEL
+      (continuous_map (setprod S1 unit_interval)
+        (product_topology S1 S1_topology unit_interval unit_interval_topology)
+        X Tx F)
+      (forall x:set, x :e S1 -> apply_fun F (x, 0) = apply_fun h x)
+      (andEL
+        (continuous_map (setprod S1 unit_interval)
+          (product_topology S1 S1_topology unit_interval unit_interval_topology)
+          X Tx F /\
+         (forall x:set, x :e S1 -> apply_fun F (x, 0) = apply_fun h x))
+        (forall x:set, x :e S1 -> apply_fun F (x, 1) = apply_fun (const_fun S1 y0) x)
+        HFPack)).
+  }
   admit.
 }
 exact HextFromHomotopy.
@@ -77535,7 +77582,26 @@ claim HtopR2m0 :
 claim HretrR2m0S1 :
   retraction_of R2_minus_origin R2_minus_origin_topology S1.
 {
-  admit.
+  claim HradialRetrData :
+    exists r:set,
+      function_on r R2_minus_origin R2_minus_origin /\
+      continuous_map R2_minus_origin R2_minus_origin_topology
+        R2_minus_origin R2_minus_origin_topology r /\
+      (forall x:set, x :e R2_minus_origin -> apply_fun r x :e S1) /\
+      (forall x:set, x :e S1 -> apply_fun r x = x).
+  {
+    admit.
+  }
+  prove S1 c= R2_minus_origin /\
+    exists r:set,
+      function_on r R2_minus_origin R2_minus_origin /\
+      continuous_map R2_minus_origin R2_minus_origin_topology
+        R2_minus_origin R2_minus_origin_topology r /\
+      (forall x:set, x :e R2_minus_origin -> apply_fun r x :e S1) /\
+      (forall x:set, x :e S1 -> apply_fun r x = x).
+  apply andI.
+  - exact s55_S1_subset_R2_minus_origin.
+  - exact HradialRetrData.
 }
 claim HinjRaw :
   forall cls1 cls2:set,
