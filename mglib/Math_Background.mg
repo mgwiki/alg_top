@@ -82428,7 +82428,75 @@ Theorem ex58_2h_open_disk_simply_connected :
   let X := {p :e EuclidPlane | SNoLt (distance_R2 p (0, 0)) 1} in
   let TX := subspace_topology EuclidPlane R2_topology X in
   simply_connected X TX.
-admit.
+set X := {p :e EuclidPlane | SNoLt (distance_R2 p (0, 0)) 1}.
+set TX := subspace_topology EuclidPlane R2_topology X.
+claim HXsub : X c= EuclidPlane.
+{
+  exact (Sep_Subq
+    EuclidPlane
+    (fun p:set => SNoLt (distance_R2 p (0, 0)) 1)).
+}
+claim HtopR2 : topology_on EuclidPlane R2_topology.
+{
+  exact (product_topology_is_topology
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    R_standard_topology_is_topology
+    R_standard_topology_is_topology).
+}
+claim HtopX : topology_on X TX.
+{
+  exact (subspace_topology_is_topology
+    EuclidPlane
+    R2_topology
+    X
+    HtopR2
+    HXsub).
+}
+claim H00Plane : (0, 0) :e EuclidPlane.
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    R
+    R
+    0
+    0
+    real_0
+    real_0).
+}
+claim H00InX : (0, 0) :e X.
+{
+  apply (SepI
+    EuclidPlane
+    (fun p:set => SNoLt (distance_R2 p (0, 0)) 1)
+    (0, 0)).
+  - exact H00Plane.
+  - rewrite (distance_R2_refl_0
+      (0, 0)
+      H00Plane).
+    exact SNoLt_0_1.
+}
+claim HpcX : path_connected_space X TX.
+{
+  (** remaining: explicit radial paths in the open disk **)
+  admit.
+}
+claim Hpi1Trivial :
+  fundamental_group X TX (0, 0) = {fundamental_group_id X TX (0, 0)}.
+{
+  (** remaining: every loop in the open disk contracts to the center **)
+  admit.
+}
+prove path_connected_space X TX /\
+  exists x0:set, x0 :e X /\
+    fundamental_group X TX x0 = {fundamental_group_id X TX x0}.
+apply andI.
+- exact HpcX.
+- witness (0, 0).
+  apply andI.
+  * exact H00InX.
+  * exact Hpi1Trivial.
 Admitted.
 
 (** from S58 Exercise 2(i) (line 1488 in algtop.tex) **)
