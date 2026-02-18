@@ -1,5 +1,5 @@
 (** Balance Alice 3337 **)
-(** Balance Bob 3037 **)
+(** Balance Bob 3028 **)
 (** Balance Charlie 1171 **)
 (** Balance Dave 1436 **)
 
@@ -28625,7 +28625,7 @@ claim HouterReplaceClass :
     HouterReplace).
 }
 rewrite HouterReplaceClass.
-(** TODO Bob: prove this remaining explicit conjugation path is path-homotopic to ey. **)
+(** Remaining explicit conjugation path reduction to ey. **)
 claim HcomplexToEy :
   path_homotopic
     X
@@ -49608,6 +49608,116 @@ exact (andI
   Hlocal).
 Qed.
 
+(** Helper: homeomorphism has nonempty domain whenever codomain is nonempty. **)
+(** Proven Charlie **)
+Theorem homeomorphism_domain_nonempty_of_codomain_nonempty :
+  forall X Tx Y Ty f:set,
+    homeomorphism X Tx Y Ty f ->
+    Y <> Empty ->
+    X <> Empty.
+let X Tx Y Ty f.
+assume Hhome HYne.
+apply (homeomorphism_inverse_package
+  X
+  Tx
+  Y
+  Ty
+  f
+  Hhome).
+let g.
+assume HgPack.
+claim HgCont : continuous_map Y Ty X Tx g.
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g)
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+    (andEL
+      (continuous_map Y Ty X Tx g /\
+        (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+      (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+      HgPack)).
+}
+claim HgFun : function_on g Y X.
+{
+  exact (continuous_map_function_on
+    Y
+    Ty
+    X
+    Tx
+    g
+    HgCont).
+}
+claim HexY : exists y:set, y :e Y.
+{
+  exact (nonempty_has_element
+    Y
+    HYne).
+}
+apply HexY.
+let y.
+assume HyY.
+claim HgyX : apply_fun g y :e X.
+{
+  exact (HgFun
+    y
+    HyY).
+}
+exact (elem_implies_nonempty
+  X
+  (apply_fun g y)
+  HgyX).
+Qed.
+
+(** Helper: homeomorphism has nonempty codomain whenever domain is nonempty. **)
+(** Proven Charlie **)
+Theorem homeomorphism_codomain_nonempty_of_domain_nonempty :
+  forall X Tx Y Ty f:set,
+    homeomorphism X Tx Y Ty f ->
+    X <> Empty ->
+    Y <> Empty.
+let X Tx Y Ty f.
+assume Hhome HXne.
+claim Hcontf : continuous_map X Tx Y Ty f.
+{
+  exact (andEL
+    (continuous_map X Tx Y Ty f)
+    (exists g:set,
+      continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x) /\
+      (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y))
+    Hhome).
+}
+claim HfFun : function_on f X Y.
+{
+  exact (continuous_map_function_on
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hcontf).
+}
+claim HexX : exists x:set, x :e X.
+{
+  exact (nonempty_has_element
+    X
+    HXne).
+}
+apply HexX.
+let x.
+assume HxX.
+claim HfxY : apply_fun f x :e Y.
+{
+  exact (HfFun
+    x
+    HxX).
+}
+exact (elem_implies_nonempty
+  Y
+  (apply_fun f x)
+  HfxY).
+Qed.
+
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
 (** then the partition of p^{-1}(U) into slices is unique. **)
@@ -49779,8 +49889,867 @@ apply set_ext.
       Hunion2
       HxPreU).
   }
-  (** TODO Charlie: derive V :e slices2 from connectedness of V and pairwise-disjoint covering by slices2. **)
-  admit.
+  apply xm (V = Empty).
+  - assume HVE.
+    (** TODO Charlie: degenerate empty-slice case (U = Empty) still needs normalization to conclude Empty :e slices2. **)
+    admit.
+  - assume HVne.
+    claim HhomeV :
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun z:set => apply_fun p z)).
+    {
+      exact (Hhome1
+        V
+        HV1).
+    }
+    claim HUne : U <> Empty.
+    {
+      exact (homeomorphism_codomain_nonempty_of_domain_nonempty
+        V
+        (subspace_topology E Te V)
+        U
+        (subspace_topology B Tb U)
+        (graph V (fun z:set => apply_fun p z))
+        HhomeV
+        HVne).
+    }
+    claim Hexv0 : exists v0:set, v0 :e V.
+    {
+      exact (nonempty_has_element
+        V
+        HVne).
+    }
+    apply Hexv0.
+    let v0.
+    assume Hv0V.
+    claim Hv0Union2 : v0 :e Union slices2.
+    {
+      exact (HVsubUnion2
+        v0
+        Hv0V).
+    }
+    apply (UnionE
+      slices2
+      v0
+      Hv0Union2).
+    let S0.
+    assume HS0Pack.
+    claim Hv0S0 : v0 :e S0.
+    {
+      exact (andEL
+        (v0 :e S0)
+        (S0 :e slices2)
+        HS0Pack).
+    }
+    claim HS0Slice : S0 :e slices2.
+    {
+      exact (andER
+        (v0 :e S0)
+        (S0 :e slices2)
+        HS0Pack).
+    }
+    claim HS0Open : S0 :e Te.
+    {
+      exact (Hsub2
+        S0
+        HS0Slice).
+    }
+    claim HhomeS0 :
+      homeomorphism S0 (subspace_topology E Te S0) U (subspace_topology B Tb U)
+        (graph S0 (fun z:set => apply_fun p z)).
+    {
+      exact (Hhome2
+        S0
+        HS0Slice).
+    }
+    set D := Union (slices2 :\: {S0}).
+    claim HrestSubTe : slices2 :\: {S0} c= Te.
+    {
+      let W.
+      assume HWrest.
+      claim HWSlice : W :e slices2.
+      {
+        exact (setminusE1
+          slices2
+          {S0}
+          W
+          HWrest).
+      }
+      exact (Hsub2
+        W
+        HWSlice).
+    }
+    claim HDOpen : D :e Te.
+    {
+      exact (topology_union_closed
+        E
+        Te
+        (slices2 :\: {S0})
+        HtopE
+        HrestSubTe).
+    }
+    claim HS0DisjD : S0 :/\: D = Empty.
+    {
+      apply set_ext.
+      - let z.
+        assume HzInt.
+        claim HzS0 : z :e S0.
+        {
+          exact (binintersectE1
+            S0
+            D
+            z
+            HzInt).
+        }
+        claim HzD : z :e D.
+        {
+          exact (binintersectE2
+            S0
+            D
+            z
+            HzInt).
+        }
+        apply (UnionE
+          (slices2 :\: {S0})
+          z
+          HzD).
+        let W.
+        assume HzWPack.
+        claim HzW : z :e W.
+        {
+          exact (andEL
+            (z :e W)
+            (W :e slices2 :\: {S0})
+            HzWPack).
+        }
+        claim HWrest : W :e slices2 :\: {S0}.
+        {
+          exact (andER
+            (z :e W)
+            (W :e slices2 :\: {S0})
+            HzWPack).
+        }
+        claim HWSlice : W :e slices2.
+        {
+          exact (setminusE1
+            slices2
+            {S0}
+            W
+            HWrest).
+        }
+        claim HWneqS0 : W <> S0.
+        {
+          claim HWnotSing : W /:e {S0}.
+          {
+            exact (setminusE2
+              slices2
+              {S0}
+              W
+              HWrest).
+          }
+          assume HW0.
+          claim HWSing : W :e {S0}.
+          {
+            rewrite HW0.
+            exact (SingI
+              S0).
+          }
+          exact (HWnotSing
+            HWSing).
+        }
+        claim HS0WDisj : S0 :/\: W = Empty.
+        {
+          claim HS0neqW : S0 <> W.
+          {
+            assume HS0W.
+            claim HW0 : W = S0.
+            {
+              rewrite HS0W.
+              reflexivity.
+            }
+            exact (HWneqS0
+              HW0).
+          }
+          exact (Hpd2
+            S0
+            W
+            HS0Slice
+            HWSlice
+            HS0neqW).
+        }
+        claim HzS0W : z :e S0 :/\: W.
+        {
+          exact (binintersectI
+            S0
+            W
+            z
+            HzS0
+            HzW).
+        }
+        claim HzE : z :e Empty.
+        {
+          exact (mem_eqR
+            z
+            (S0 :/\: W)
+            Empty
+            HS0WDisj
+            HzS0W).
+        }
+        exact (EmptyE
+          z
+          HzE
+          (z :e Empty)).
+      - let z.
+        assume HzE.
+        exact (EmptyE
+          z
+          HzE
+          (z :e S0 :/\: D)).
+    }
+    claim HUnionDecomp : S0 :\/: D = Union slices2.
+    {
+      apply set_ext.
+      - let z.
+        assume HzSD.
+        apply (binunionE
+          S0
+          D
+          z
+          HzSD).
+        + assume HzS0.
+          exact (UnionI
+            slices2
+            z
+            S0
+            HzS0
+            HS0Slice).
+        + assume HzD.
+          apply (UnionE
+            (slices2 :\: {S0})
+            z
+            HzD).
+          let W.
+          assume HzWPack.
+          claim HzW : z :e W.
+          {
+            exact (andEL
+              (z :e W)
+              (W :e slices2 :\: {S0})
+              HzWPack).
+          }
+          claim HWrest : W :e slices2 :\: {S0}.
+          {
+            exact (andER
+              (z :e W)
+              (W :e slices2 :\: {S0})
+              HzWPack).
+          }
+          claim HWSlice : W :e slices2.
+          {
+            exact (setminusE1
+              slices2
+              {S0}
+              W
+              HWrest).
+          }
+          exact (UnionI
+            slices2
+            z
+            W
+            HzW
+            HWSlice).
+      - let z.
+        assume HzUnion.
+        apply (UnionE
+          slices2
+          z
+          HzUnion).
+        let W.
+        assume HzWPack.
+        claim HzW : z :e W.
+        {
+          exact (andEL
+            (z :e W)
+            (W :e slices2)
+            HzWPack).
+        }
+        claim HWSlice : W :e slices2.
+        {
+          exact (andER
+            (z :e W)
+            (W :e slices2)
+            HzWPack).
+        }
+        apply xm (W = S0).
+        + assume HW0.
+          claim HzS0 : z :e S0.
+          {
+            rewrite <- HW0.
+            exact HzW.
+          }
+          exact (binunionI1
+            S0
+            D
+            z
+            HzS0).
+        + assume HWneq.
+          claim HWrest : W :e slices2 :\: {S0}.
+          {
+            claim HWnotSing : W /:e {S0}.
+            {
+              assume HWSing.
+              claim HW0 : W = S0.
+              {
+                exact (SingE
+                  S0
+                  W
+                  HWSing).
+              }
+              exact (HWneq
+                HW0).
+            }
+            exact (setminusI
+              slices2
+              {S0}
+              W
+              HWSlice
+              HWnotSing).
+          }
+          claim HzD : z :e D.
+          {
+            exact (UnionI
+              (slices2 :\: {S0})
+              z
+              W
+              HzW
+              HWrest).
+          }
+          exact (binunionI2
+            S0
+            D
+            z
+            HzD).
+    }
+    claim HS0SubUnion2 : S0 c= Union slices2.
+    {
+      let z.
+      assume HzS0.
+      exact (UnionI
+        slices2
+        z
+        S0
+        HzS0
+        HS0Slice).
+    }
+    claim HDSubUnion2 : D c= Union slices2.
+    {
+      let z.
+      assume HzD.
+      apply (UnionE
+        (slices2 :\: {S0})
+        z
+        HzD).
+      let W.
+      assume HzWPack.
+      claim HzW : z :e W.
+      {
+        exact (andEL
+          (z :e W)
+          (W :e slices2 :\: {S0})
+          HzWPack).
+      }
+      claim HWSlice : W :e slices2.
+      {
+        exact (setminusE1
+          slices2
+          {S0}
+          W
+          (andER
+            (z :e W)
+            (W :e slices2 :\: {S0})
+            HzWPack)).
+      }
+      exact (UnionI
+        slices2
+        z
+        W
+        HzW
+        HWSlice).
+    }
+    claim HVsubS0 : V c= S0.
+    {
+      apply xm (D = Empty).
+      - assume HDE.
+        let x.
+        assume HxV.
+        claim HxUnion2 : x :e Union slices2.
+        {
+          exact (HVsubUnion2
+            x
+            HxV).
+        }
+        claim HxSD : x :e S0 :\/: D.
+        {
+          exact (mem_eqL
+            x
+            (S0 :\/: D)
+            (Union slices2)
+            HUnionDecomp
+            HxUnion2).
+        }
+        apply (binunionE
+          S0
+          D
+          x
+          HxSD).
+        + assume HxS0.
+          exact HxS0.
+        + assume HxD.
+          claim HxE : x :e Empty.
+          {
+            rewrite <- HDE.
+            exact HxD.
+          }
+          exact (EmptyE
+            x
+            HxE
+            (x :e S0)).
+      - assume HDne.
+        set X0 := Union slices2.
+        claim HX0SubE : X0 c= E.
+        {
+          let x.
+          assume HxX0.
+          claim HxPreU : x :e preimage_of E p U.
+          {
+            exact (mem_eqR
+              x
+              (Union slices2)
+              (preimage_of E p U)
+              Hunion2
+              HxX0).
+          }
+          exact (SepE1
+            E
+            (fun z:set => apply_fun p z :e U)
+            x
+            HxPreU).
+        }
+        claim HtopX0 :
+          topology_on X0 (subspace_topology E Te X0).
+        {
+          exact (subspace_topology_is_topology
+            E
+            Te
+            X0
+            HtopE
+            HX0SubE).
+        }
+        claim HS0SubX0 : S0 c= X0.
+        {
+          exact HS0SubUnion2.
+        }
+        claim HDSubX0 : D c= X0.
+        {
+          exact HDSubUnion2.
+        }
+        claim HS0OpenX0 : S0 :e subspace_topology E Te X0.
+        {
+          claim HS0IntEq : S0 :/\: X0 = S0.
+          {
+            apply set_ext.
+            - let z.
+              assume HzInt.
+              exact (binintersectE1
+                S0
+                X0
+                z
+                HzInt).
+            - let z.
+              assume HzS0.
+              exact (binintersectI
+                S0
+                X0
+                z
+                HzS0
+                (HS0SubX0 z HzS0)).
+          }
+          rewrite <- HS0IntEq.
+          exact (subspace_topologyI
+            E
+            Te
+            X0
+            S0
+            HS0Open).
+        }
+        claim HDOpenX0 : D :e subspace_topology E Te X0.
+        {
+          claim HDIntEq : D :/\: X0 = D.
+          {
+            apply set_ext.
+            - let z.
+              assume HzInt.
+              exact (binintersectE1
+                D
+                X0
+                z
+                HzInt).
+            - let z.
+              assume HzD.
+              exact (binintersectI
+                D
+                X0
+                z
+                HzD
+                (HDSubX0 z HzD)).
+          }
+          rewrite <- HDIntEq.
+          exact (subspace_topologyI
+            E
+            Te
+            X0
+            D
+            HDOpen).
+        }
+        claim HSepX0 : separation_of X0 S0 D.
+        {
+          exact (and6I
+            (S0 :e Power X0)
+            (D :e Power X0)
+            (S0 :/\: D = Empty)
+            (S0 <> Empty)
+            (D <> Empty)
+            (S0 :\/: D = X0)
+            (PowerI
+              X0
+              S0
+              HS0SubX0)
+            (PowerI
+              X0
+              D
+              HDSubX0)
+            HS0DisjD
+            (elem_implies_nonempty
+              S0
+              v0
+              Hv0S0)
+            HDne
+            HUnionDecomp).
+        }
+        claim HconnV : connected_space V (subspace_topology E Te V).
+        {
+          exact (Hslice1_connected
+            V
+            HV1).
+        }
+        claim HconnVX0 :
+          connected_space V (subspace_topology X0 (subspace_topology E Te X0) V).
+        {
+          rewrite (subspace_topology_transitive_weak
+            E
+            Te
+            X0
+            V
+            HVsubUnion2).
+          exact HconnV.
+        }
+        claim HVSides :
+          V c= S0 \/ V c= D.
+        {
+          exact (connected_subset_in_separation_side
+            X0
+            (subspace_topology E Te X0)
+            S0
+            D
+            V
+            HtopX0
+            HVsubUnion2
+            HconnVX0
+            HS0OpenX0
+            HDOpenX0
+            HSepX0).
+        }
+        apply HVSides.
+        + assume HVS0.
+          exact HVS0.
+        + assume HVD.
+          let x.
+          assume HxV.
+          claim Hv0D : v0 :e D.
+          {
+            exact (HVD
+              v0
+              Hv0V).
+          }
+          claim Hv0Int : v0 :e S0 :/\: D.
+          {
+            exact (binintersectI
+              S0
+              D
+              v0
+              Hv0S0
+              Hv0D).
+          }
+          claim Hv0E : v0 :e Empty.
+          {
+            exact (mem_eqR
+              v0
+              (S0 :/\: D)
+              Empty
+              HS0DisjD
+              Hv0Int).
+          }
+          exact (FalseE
+            (EmptyE
+              v0
+              Hv0E
+              False)
+            (x :e S0)).
+    }
+    claim HS0SubV : S0 c= V.
+    {
+      let x.
+      assume HxS0.
+      claim HgraphS0Cont :
+        continuous_map S0 (subspace_topology E Te S0) U (subspace_topology B Tb U)
+          (graph S0 (fun z:set => apply_fun p z)).
+      {
+        exact (homeomorphism_continuous
+          S0
+          (subspace_topology E Te S0)
+          U
+          (subspace_topology B Tb U)
+          (graph S0 (fun z:set => apply_fun p z))
+          HhomeS0).
+      }
+      claim HgraphS0Fun :
+        function_on (graph S0 (fun z:set => apply_fun p z)) S0 U.
+      {
+        exact (continuous_map_function_on
+          S0
+          (subspace_topology E Te S0)
+          U
+          (subspace_topology B Tb U)
+          (graph S0 (fun z:set => apply_fun p z))
+          HgraphS0Cont).
+      }
+      claim HpxU : apply_fun p x :e U.
+      {
+        rewrite <- (apply_fun_graph
+          S0
+          (fun z:set => apply_fun p z)
+          x
+          HxS0).
+        exact (HgraphS0Fun
+          x
+          HxS0).
+      }
+      claim HuniqueFromHome :
+        forall W:set,
+          homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+            (graph W (fun z:set => apply_fun p z)) ->
+          forall b:set, b :e U ->
+            exists w0:set, w0 :e W /\ apply_fun p w0 = b /\
+              forall y:set, y :e W -> apply_fun p y = b -> y = w0.
+      {
+        let W.
+        assume HhomeW.
+        let b.
+        assume HbU.
+        apply (homeomorphism_inverse_package
+          W
+          (subspace_topology E Te W)
+          U
+          (subspace_topology B Tb U)
+          (graph W (fun z:set => apply_fun p z))
+          HhomeW).
+        let g.
+        assume HgPack.
+        claim HgCont :
+          continuous_map U (subspace_topology B Tb U) W (subspace_topology E Te W) g.
+        {
+          exact (andEL
+            (continuous_map U (subspace_topology B Tb U) W (subspace_topology E Te W) g)
+            (forall x:set, x :e W ->
+              apply_fun g (apply_fun (graph W (fun z:set => apply_fun p z)) x) = x)
+            (andEL
+              (continuous_map U (subspace_topology B Tb U) W (subspace_topology E Te W) g /\
+                (forall x:set, x :e W ->
+                  apply_fun g (apply_fun (graph W (fun z:set => apply_fun p z)) x) = x))
+              (forall y:set, y :e U ->
+                apply_fun (graph W (fun z:set => apply_fun p z)) (apply_fun g y) = y)
+              HgPack)).
+        }
+        claim HgLeft :
+          forall x:set, x :e W ->
+            apply_fun g (apply_fun (graph W (fun z:set => apply_fun p z)) x) = x.
+        {
+          exact (andER
+            (continuous_map U (subspace_topology B Tb U) W (subspace_topology E Te W) g)
+            (forall x:set, x :e W ->
+              apply_fun g (apply_fun (graph W (fun z:set => apply_fun p z)) x) = x)
+            (andEL
+              (continuous_map U (subspace_topology B Tb U) W (subspace_topology E Te W) g /\
+                (forall x:set, x :e W ->
+                  apply_fun g (apply_fun (graph W (fun z:set => apply_fun p z)) x) = x))
+              (forall y:set, y :e U ->
+                apply_fun (graph W (fun z:set => apply_fun p z)) (apply_fun g y) = y)
+              HgPack)).
+        }
+        claim HgRight :
+          forall y:set, y :e U ->
+            apply_fun (graph W (fun z:set => apply_fun p z)) (apply_fun g y) = y.
+        {
+          exact (andER
+            (continuous_map U (subspace_topology B Tb U) W (subspace_topology E Te W) g /\
+              (forall x:set, x :e W ->
+                apply_fun g (apply_fun (graph W (fun z:set => apply_fun p z)) x) = x))
+            (forall y:set, y :e U ->
+              apply_fun (graph W (fun z:set => apply_fun p z)) (apply_fun g y) = y)
+            HgPack).
+        }
+        claim HgFun : function_on g U W.
+        {
+          exact (continuous_map_function_on
+            U
+            (subspace_topology B Tb U)
+            W
+            (subspace_topology E Te W)
+            g
+            HgCont).
+        }
+        witness (apply_fun g b).
+        apply andI.
+        - apply andI.
+          + exact (HgFun
+              b
+              HbU).
+          + claim Hgraphgb :
+              apply_fun (graph W (fun z:set => apply_fun p z)) (apply_fun g b)
+              = apply_fun p (apply_fun g b).
+            {
+              exact (apply_fun_graph
+                W
+                (fun z:set => apply_fun p z)
+                (apply_fun g b)
+                (HgFun b HbU)).
+            }
+            rewrite <- Hgraphgb.
+            exact (HgRight
+              b
+              HbU).
+        - let y.
+          assume HyW Hypy.
+          claim HgraphEq :
+            apply_fun (graph W (fun z:set => apply_fun p z)) y = b.
+          {
+            rewrite (apply_fun_graph
+              W
+              (fun z:set => apply_fun p z)
+              y
+              HyW).
+            exact Hypy.
+          }
+          claim HgbEqY : apply_fun g b = y.
+          {
+            rewrite <- HgraphEq.
+            exact (HgLeft
+              y
+              HyW).
+          }
+          symmetry.
+          exact HgbEqY.
+      }
+      claim HuniqV :
+        exists xv:set, xv :e V /\ apply_fun p xv = apply_fun p x /\
+          forall y:set, y :e V -> apply_fun p y = apply_fun p x -> y = xv.
+      {
+        exact (HuniqueFromHome
+          V
+          HhomeV
+          (apply_fun p x)
+          HpxU).
+      }
+      apply HuniqV.
+      let xv.
+      assume HxvPack.
+      claim HxvV : xv :e V.
+      {
+        exact (andEL
+          (xv :e V)
+          (apply_fun p xv = apply_fun p x)
+          (andEL
+            (xv :e V /\ apply_fun p xv = apply_fun p x)
+            (forall y:set, y :e V -> apply_fun p y = apply_fun p x -> y = xv)
+            HxvPack)).
+      }
+      claim HxvPx : apply_fun p xv = apply_fun p x.
+      {
+        exact (andER
+          (xv :e V)
+          (apply_fun p xv = apply_fun p x)
+          (andEL
+            (xv :e V /\ apply_fun p xv = apply_fun p x)
+            (forall y:set, y :e V -> apply_fun p y = apply_fun p x -> y = xv)
+            HxvPack)).
+      }
+      claim HuniqS0 :
+        exists xs:set, xs :e S0 /\ apply_fun p xs = apply_fun p x /\
+          forall y:set, y :e S0 -> apply_fun p y = apply_fun p x -> y = xs.
+      {
+        exact (HuniqueFromHome
+          S0
+          HhomeS0
+          (apply_fun p x)
+          HpxU).
+      }
+      apply HuniqS0.
+      let xs.
+      assume HxsPack.
+      claim Huniqxs :
+        forall y:set, y :e S0 -> apply_fun p y = apply_fun p x -> y = xs.
+      {
+        exact (andER
+          (xs :e S0 /\ apply_fun p xs = apply_fun p x)
+          (forall y:set, y :e S0 -> apply_fun p y = apply_fun p x -> y = xs)
+          HxsPack).
+      }
+      claim HxEqxs : x = xs.
+      {
+        claim Hself : apply_fun p x = apply_fun p x.
+        {
+          reflexivity.
+        }
+        exact (Huniqxs
+          x
+          HxS0
+          Hself).
+      }
+      claim HxvS0 : xv :e S0.
+      {
+        exact (HVsubS0
+          xv
+          HxvV).
+      }
+      claim HxvEqxs : xv = xs.
+      {
+        exact (Huniqxs
+          xv
+          HxvS0
+          HxvPx).
+      }
+      rewrite HxEqxs.
+      rewrite <- HxvEqxs.
+      exact HxvV.
+    }
+    claim HVeqS0 : V = S0.
+    {
+      apply set_ext.
+      - exact HVsubS0.
+      - exact HS0SubV.
+    }
+    rewrite HVeqS0.
+    exact HS0Slice.
 - let V.
   assume HV2.
   claim HVsubPreU : V c= preimage_of E p U.
@@ -109043,7 +110012,8 @@ Definition free_group_with_generators : set -> set -> set -> set -> set -> set -
 (** and any family {y_alpha} of elements of H, there is a unique homomorphism **)
 (** h: G -> H with h(a_alpha) = y_alpha. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
+(** Bounty 97 **)
+(** Lock Bob 1771480439 **)
 Theorem lemma69_1_extension_free_group :
   forall G mult e inv J gens:set,
   group_structure G mult e inv ->
@@ -109060,7 +110030,93 @@ Theorem lemma69_1_extension_free_group :
            (forall alpha:set, alpha :e J ->
              apply_fun h' (apply_fun gens alpha) = apply_fun ys alpha) ->
            forall x:set, x :e G -> apply_fun h' x = apply_fun h x))).
-admit.
+let G mult e inv J gens.
+assume Hgrp : group_structure G mult e inv.
+assume Hgens : function_on gens J G.
+apply (iffI
+  (free_group_with_generators G mult e inv J gens)
+  (forall H multH eH invH:set,
+    group_structure H multH eH invH ->
+    forall ys:set, function_on ys J H ->
+      exists h:set,
+        group_homomorphism G mult H multH h /\
+        (forall alpha:set, alpha :e J ->
+          apply_fun h (apply_fun gens alpha) = apply_fun ys alpha) /\
+        (forall h':set, group_homomorphism G mult H multH h' ->
+          (forall alpha:set, alpha :e J ->
+            apply_fun h' (apply_fun gens alpha) = apply_fun ys alpha) ->
+          forall x:set, x :e G -> apply_fun h' x = apply_fun h x))).
+- assume Hfree : free_group_with_generators G mult e inv J gens.
+  apply (and4E
+    (group_structure G mult e inv)
+    (function_on gens J G)
+    (forall alpha:set, alpha :e J ->
+      infinite_cyclic_subgroup G mult e inv (apply_fun gens alpha))
+    (free_product_of_subgroups G mult e inv J
+      (graph J (fun alpha:set =>
+        {g :e G | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}))
+      (graph J (fun alpha:set => e)))
+    Hfree).
+  assume Hgrp_free Hgens_free Hinfcyc Hfp.
+  let H multH eH invH.
+  assume HgrpH : group_structure H multH eH invH.
+  let ys.
+  assume Hys : function_on ys J H.
+  admit.
+- assume Hext :
+    forall H multH eH invH:set,
+      group_structure H multH eH invH ->
+      forall ys:set, function_on ys J H ->
+        exists h:set,
+          group_homomorphism G mult H multH h /\
+          (forall alpha:set, alpha :e J ->
+            apply_fun h (apply_fun gens alpha) = apply_fun ys alpha) /\
+          (forall h':set, group_homomorphism G mult H multH h' ->
+            (forall alpha:set, alpha :e J ->
+              apply_fun h' (apply_fun gens alpha) = apply_fun ys alpha) ->
+            forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+  apply (andI
+    (group_structure G mult e inv)
+    (function_on gens J G /\
+      (forall alpha:set, alpha :e J ->
+        infinite_cyclic_subgroup G mult e inv (apply_fun gens alpha)) /\
+      free_product_of_subgroups G mult e inv J
+        (graph J (fun alpha:set =>
+          {g :e G | exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}))
+        (graph J (fun alpha:set => e)))
+    Hgrp).
+  apply (andI
+    (function_on gens J G)
+    ((forall alpha:set, alpha :e J ->
+      infinite_cyclic_subgroup G mult e inv (apply_fun gens alpha)) /\
+    free_product_of_subgroups G mult e inv J
+      (graph J (fun alpha:set =>
+        {g :e G | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}))
+      (graph J (fun alpha:set => e)))
+    Hgens).
+  apply (andI
+    (forall alpha:set, alpha :e J ->
+      infinite_cyclic_subgroup G mult e inv (apply_fun gens alpha))
+    (free_product_of_subgroups G mult e inv J
+      (graph J (fun alpha:set =>
+        {g :e G | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}))
+      (graph J (fun alpha:set => e)))).
+  + let alpha.
+    assume Halpha : alpha :e J.
+    admit.
+  + admit.
 Admitted.
 
 (** from S69 Thm 69.2 (line 3057 in algtop.tex): free product of free groups is free **)
@@ -109083,6 +110139,21 @@ Theorem thm69_2_free_product_of_free_groups :
   free_group_with_generators G2 mult e inv K
     (graph K (fun alpha:set => apply_fun gens alpha)) ->
   free_group_with_generators G mult e inv (J :\/: K) gens.
+let G mult e inv G1 G2 J K gens.
+assume Hgrp : group_structure G mult e inv.
+assume Hsub1 : subgroup_of G1 G mult e inv.
+assume Hsub2 : subgroup_of G2 G mult e inv.
+assume Hfp :
+  free_product_of_subgroups G mult e inv (UPair 0 1)
+    (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+    (graph (UPair 0 1) (fun i:set => e)).
+assume Hdisj : J :/\: K = Empty.
+assume Hfree1 :
+  free_group_with_generators G1 mult e inv J
+    (graph J (fun alpha:set => apply_fun gens alpha)).
+assume Hfree2 :
+  free_group_with_generators G2 mult e inv K
+    (graph K (fun alpha:set => apply_fun gens alpha)).
 admit.
 Admitted.
 
@@ -109122,7 +110193,43 @@ Theorem lemma69_3_commutator_subgroup :
     abelian_group H multH eH invH ->
     group_homomorphism G mult H multH h ->
     commutator_subgroup G mult e inv c= kernel_of G eH h).
-admit.
+let G mult e inv.
+assume Hgrp : group_structure G mult e inv.
+set C := commutator_subgroup G mult e inv.
+claim HCdef : C = commutator_subgroup G mult e inv.
+{
+  reflexivity.
+}
+rewrite <- HCdef.
+rewrite <- HCdef.
+rewrite <- HCdef.
+rewrite <- HCdef.
+rewrite <- HCdef.
+rewrite <- HCdef.
+apply (andI
+  (normal_subgroup C G mult e inv)
+  (abelian_group
+    (quotient_group_set G mult C)
+    (quotient_group_mult G mult C)
+    (quotient_group_id G mult e C)
+    (quotient_group_inv G mult inv C) /\
+   (forall H multH eH invH h:set,
+     abelian_group H multH eH invH ->
+     group_homomorphism G mult H multH h ->
+     C c= kernel_of G eH h))).
+- admit.
+- apply (andI
+    (abelian_group
+      (quotient_group_set G mult C)
+      (quotient_group_mult G mult C)
+      (quotient_group_id G mult e C)
+      (quotient_group_inv G mult inv C))
+    (forall H multH eH invH h:set,
+      abelian_group H multH eH invH ->
+      group_homomorphism G mult H multH h ->
+      C c= kernel_of G eH h)).
+  + admit.
+  + admit.
 Admitted.
 
 (** from S69 Thm 69.4 (line 3125 in algtop.tex): abelianization of free group **)
@@ -109141,6 +110248,27 @@ Theorem thm69_4_abelianization_free_group :
     (quotient_group_inv G mult inv C)
     J
     (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)).
+let G mult e inv J gens.
+assume Hfree : free_group_with_generators G mult e inv J gens.
+set C := commutator_subgroup G mult e inv.
+claim HCdef : C = commutator_subgroup G mult e inv.
+{
+  reflexivity.
+}
+apply (and4E
+  (group_structure G mult e inv)
+  (function_on gens J G)
+  (forall alpha:set, alpha :e J ->
+    infinite_cyclic_subgroup G mult e inv (apply_fun gens alpha))
+  (free_product_of_subgroups G mult e inv J
+    (graph J (fun alpha:set =>
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}))
+    (graph J (fun alpha:set => e)))
+  Hfree).
+assume HgrpG HgensG HinfG HfpG.
 admit.
 Admitted.
 
@@ -109155,6 +110283,39 @@ Theorem cor69_5_free_generators_well_defined :
   free_group_with_generators G mult e inv n2 gens2 ->
   finite n1 -> finite n2 ->
   equip n1 n2.
+let G mult e inv n1 n2 gens1 gens2.
+assume Hfree1 : free_group_with_generators G mult e inv n1 gens1.
+assume Hfree2 : free_group_with_generators G mult e inv n2 gens2.
+assume Hfin1 : finite n1.
+assume Hfin2 : finite n2.
+apply (and4E
+  (group_structure G mult e inv)
+  (function_on gens1 n1 G)
+  (forall alpha:set, alpha :e n1 ->
+    infinite_cyclic_subgroup G mult e inv (apply_fun gens1 alpha))
+  (free_product_of_subgroups G mult e inv n1
+    (graph n1 (fun alpha:set =>
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens1 alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens1 alpha)) (ordsucc m)))}))
+    (graph n1 (fun alpha:set => e)))
+  Hfree1).
+assume Hgrp1 Hgens1 Hinf1 Hfp1.
+apply (and4E
+  (group_structure G mult e inv)
+  (function_on gens2 n2 G)
+  (forall alpha:set, alpha :e n2 ->
+    infinite_cyclic_subgroup G mult e inv (apply_fun gens2 alpha))
+  (free_product_of_subgroups G mult e inv n2
+    (graph n2 (fun alpha:set =>
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens2 alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens2 alpha)) (ordsucc m)))}))
+    (graph n2 (fun alpha:set => e)))
+  Hfree2).
+assume Hgrp2 Hgens2 Hinf2 Hfp2.
 admit.
 Admitted.
 
