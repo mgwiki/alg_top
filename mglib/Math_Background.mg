@@ -1,4 +1,4 @@
-(** Balance Alice 3337 **)
+(** Balance Alice 3320 **)
 (** Balance Bob 3021 **)
 (** Balance Charlie 1171 **)
 (** Balance Dave 1436 **)
@@ -106125,7 +106125,8 @@ Definition least_normal_subgroup : set -> set -> set -> set -> set -> set :=
 (** homomorphisms h_alpha: G_alpha -> H, there exists a unique h: G -> H whose restriction **)
 (** to G_alpha equals h_alpha. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
+(** Bounty 182 **)
+(** Lock Alice 1771481109 **)
 Theorem lemma68_1_extension_condition_free_product :
   forall G multG eG invG J Gfam efam:set,
   free_product_of_subgroups G multG eG invG J Gfam efam ->
@@ -106144,7 +106145,315 @@ Theorem lemma68_1_extension_condition_free_product :
             forall x:set, x :e apply_fun Gfam alpha ->
               apply_fun h' x = apply_fun (apply_fun hfam alpha) x) ->
           forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+let G multG eG invG J Gfam efam.
+assume Hfp : free_product_of_subgroups G multG eG invG J Gfam efam.
+let H multH eH invH.
+assume HgrpH : group_structure H multH eH invH.
+let hfam.
+assume Hhfam : forall alpha:set, alpha :e J ->
+  group_homomorphism (apply_fun Gfam alpha) multG H multH (apply_fun hfam alpha).
+(** Unpack free_product_of_subgroups: 5 components **)
+apply (and5E
+  (group_structure G multG eG invG)
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G multG eG invG)
+  (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+    forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x = eG)
+  (subgroups_generate G multG eG invG J Gfam)
+  (forall x:set, x :e G -> x <> eG ->
+    exists n xs:set,
+      reduced_word J Gfam efam n xs /\ n <> 0 /\
+      word_product multG eG xs n = x /\
+      (forall n' xs':set,
+        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+        word_product multG eG xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
+  Hfp).
+assume Hgrp : group_structure G multG eG invG.
+assume Hsub : forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G multG eG invG.
+assume Hdisjoint : forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+  forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x = eG.
+assume Hgen : subgroups_generate G multG eG invG J Gfam.
+assume Huniq : forall x:set, x :e G -> x <> eG ->
+  exists n xs:set,
+    reduced_word J Gfam efam n xs /\ n <> 0 /\
+    word_product multG eG xs n = x /\
+    (forall n' xs':set,
+      reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+      word_product multG eG xs' n' = x ->
+      n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
+(** Unpack group_structure G **)
+apply (and6E
+  (function_on multG (setprod G G) G)
+  (function_on invG G G)
+  (eG :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun multG (apply_fun multG (x, y), z) = apply_fun multG (x, apply_fun multG (y, z)))
+  (forall x:set, x :e G -> apply_fun multG (eG, x) = x /\ apply_fun multG (x, eG) = x)
+  (forall x:set, x :e G ->
+    apply_fun multG (x, apply_fun invG x) = eG /\ apply_fun multG (apply_fun invG x, x) = eG)
+  Hgrp).
+assume HmultGF : function_on multG (setprod G G) G.
+assume HinvGF : function_on invG G G.
+assume HeGG : eG :e G.
+assume HassocG : forall x y z:set, x :e G -> y :e G -> z :e G ->
+  apply_fun multG (apply_fun multG (x, y), z) = apply_fun multG (x, apply_fun multG (y, z)).
+assume HidG : forall x:set, x :e G -> apply_fun multG (eG, x) = x /\ apply_fun multG (x, eG) = x.
+assume HinvG : forall x:set, x :e G ->
+  apply_fun multG (x, apply_fun invG x) = eG /\ apply_fun multG (apply_fun invG x, x) = eG.
+(** Unpack group_structure H **)
+apply (and6E
+  (function_on multH (setprod H H) H)
+  (function_on invH H H)
+  (eH :e H)
+  (forall x y z:set, x :e H -> y :e H -> z :e H ->
+    apply_fun multH (apply_fun multH (x, y), z) = apply_fun multH (x, apply_fun multH (y, z)))
+  (forall x:set, x :e H -> apply_fun multH (eH, x) = x /\ apply_fun multH (x, eH) = x)
+  (forall x:set, x :e H ->
+    apply_fun multH (x, apply_fun invH x) = eH /\ apply_fun multH (apply_fun invH x, x) = eH)
+  HgrpH).
+assume HmultHF : function_on multH (setprod H H) H.
+assume HinvHF : function_on invH H H.
+assume HeHH : eH :e H.
+assume HassocH : forall x y z:set, x :e H -> y :e H -> z :e H ->
+  apply_fun multH (apply_fun multH (x, y), z) = apply_fun multH (x, apply_fun multH (y, z)).
+assume HidH : forall x:set, x :e H -> apply_fun multH (eH, x) = x /\ apply_fun multH (x, eH) = x.
+assume HinvH : forall x:set, x :e H ->
+  apply_fun multH (x, apply_fun invH x) = eH /\ apply_fun multH (apply_fun invH x, x) = eH.
+(** Helper: multG closure **)
+claim HmultG_cl : forall x y:set, x :e G -> y :e G -> apply_fun multG (x, y) :e G.
+{ let x y. assume Hx Hy.
+  exact (HmultGF (x, y) (tuple_2_setprod_by_pair_Sigma G G x y Hx Hy)). }
+(** Helper: multH closure **)
+claim HmultH_cl : forall x y:set, x :e H -> y :e H -> apply_fun multH (x, y) :e H.
+{ let x y. assume Hx Hy.
+  exact (HmultHF (x, y) (tuple_2_setprod_by_pair_Sigma H H x y Hx Hy)). }
+(** Helper: subgroup elements are in G **)
+claim Hsub_in_G : forall alpha:set, alpha :e J -> apply_fun Gfam alpha c= G.
+{ let alpha. assume Hal.
+  apply (and4E
+    (apply_fun Gfam alpha c= G)
+    (eG :e apply_fun Gfam alpha)
+    (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+       apply_fun multG (x, y) :e apply_fun Gfam alpha)
+    (forall x:set, x :e apply_fun Gfam alpha -> apply_fun invG x :e apply_fun Gfam alpha)
+    (Hsub alpha Hal)).
+  assume HA HB HC HD. exact HA. }
+(** Helper: eG is in each subgroup **)
+claim HeG_sub : forall alpha:set, alpha :e J -> eG :e apply_fun Gfam alpha.
+{ let alpha. assume Hal.
+  apply (and4E
+    (apply_fun Gfam alpha c= G)
+    (eG :e apply_fun Gfam alpha)
+    (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+       apply_fun multG (x, y) :e apply_fun Gfam alpha)
+    (forall x:set, x :e apply_fun Gfam alpha -> apply_fun invG x :e apply_fun Gfam alpha)
+    (Hsub alpha Hal)).
+  assume HA HB HC HD. exact HB. }
+(** Helper: hfam maps G_alpha elements to H **)
+claim Hhfam_in_H : forall alpha:set, alpha :e J ->
+  forall x:set, x :e apply_fun Gfam alpha -> apply_fun (apply_fun hfam alpha) x :e H.
+{ let alpha. assume Hal. let x. assume Hx.
+  exact (andEL
+    (function_on (apply_fun hfam alpha) (apply_fun Gfam alpha) H)
+    (forall u v:set, u :e apply_fun Gfam alpha -> v :e apply_fun Gfam alpha ->
+      apply_fun (apply_fun hfam alpha) (apply_fun multG (u, v)) =
+        apply_fun multH (apply_fun (apply_fun hfam alpha) u, apply_fun (apply_fun hfam alpha) v))
+    (Hhfam alpha Hal) x Hx). }
+(** Helper: each hfam(alpha) maps eG to eH **)
+claim Hhfam_id : forall alpha:set, alpha :e J ->
+  apply_fun (apply_fun hfam alpha) eG = eH.
+{ let alpha. assume Hal.
+  admit. }
+(** Helper: word_product stays in G **)
+claim Hwp_in_G_nat : forall n:set, nat_p n ->
+  forall xs:set, (forall i:set, i :e n -> apply_fun xs i :e G) ->
+  word_product multG eG xs n :e G.
+{ apply (nat_ind (fun n:set =>
+    forall xs:set, (forall i:set, i :e n -> apply_fun xs i :e G) ->
+    word_product multG eG xs n :e G)).
+  - let xs. assume Hxs.
+    claim Hwp0 : word_product multG eG xs 0 = eG.
+    { exact (nat_primrec_0 eG (fun i r => apply_fun multG (r, apply_fun xs i))). }
+    rewrite Hwp0. exact HeGG.
+  - let k. assume Hk : nat_p k. assume IH.
+    let xs. assume Hxs.
+    claim HwpS : word_product multG eG xs (ordsucc k) =
+      apply_fun multG (word_product multG eG xs k, apply_fun xs k).
+    { exact (nat_primrec_S eG (fun i r => apply_fun multG (r, apply_fun xs i)) k Hk). }
+    rewrite HwpS.
+    apply HmultG_cl.
+    + exact (IH xs (fun i Hi => Hxs i (ordsuccI1 k i Hi))).
+    + exact (Hxs k (ordsuccI2 k)). }
+claim Hwp_in_G : forall n:set, n :e omega ->
+  forall xs:set, (forall i:set, i :e n -> apply_fun xs i :e G) ->
+  word_product multG eG xs n :e G.
+{ let n. assume Hn. exact (Hwp_in_G_nat n (omega_nat_p n Hn)). }
+(** Define alpha_of: for xi in some G_alpha, select that alpha **)
+set alpha_of := fun xi:set =>
+  Eps_i (fun alpha:set => alpha :e J /\ xi :e apply_fun Gfam alpha).
+(** Helper: alpha_of is valid when xi is in some G_alpha **)
+claim Halpha_of_valid : forall alpha:set, alpha :e J ->
+  forall xi:set, xi :e apply_fun Gfam alpha ->
+  alpha_of xi :e J /\ xi :e apply_fun Gfam (alpha_of xi).
+{ let alpha. assume Hal. let xi. assume Hxi.
+  claim Hex : exists a:set, a :e J /\ xi :e apply_fun Gfam a.
+  { witness alpha. apply andI. exact Hal. exact Hxi. }
+  exact (Eps_i_ex (fun a:set => a :e J /\ xi :e apply_fun Gfam a) Hex). }
+(** Helper: hfam(alpha_of(xi))(xi) = hfam(alpha)(xi) for xi in G_alpha **)
+claim Hhfam_alpha_of : forall alpha:set, alpha :e J ->
+  forall xi:set, xi :e apply_fun Gfam alpha ->
+  apply_fun (apply_fun hfam (alpha_of xi)) xi = apply_fun (apply_fun hfam alpha) xi.
+{ let alpha. assume Hal. let xi. assume Hxi.
+  claim Haov : alpha_of xi :e J /\ xi :e apply_fun Gfam (alpha_of xi).
+  { exact (Halpha_of_valid alpha Hal xi Hxi). }
+  claim Hao_J : alpha_of xi :e J.
+  { exact (andEL (alpha_of xi :e J) (xi :e apply_fun Gfam (alpha_of xi)) Haov). }
+  claim Hxi_ao : xi :e apply_fun Gfam (alpha_of xi).
+  { exact (andER (alpha_of xi :e J) (xi :e apply_fun Gfam (alpha_of xi)) Haov). }
+  apply (xm (alpha_of xi = alpha)).
+  - assume Heq : alpha_of xi = alpha. rewrite Heq. reflexivity.
+  - assume Hne : alpha_of xi <> alpha.
+    claim Hxi_eG : xi = eG.
+    { exact (Hdisjoint (alpha_of xi) alpha Hao_J Hal Hne xi Hxi_ao Hxi). }
+    rewrite Hxi_eG.
+    (** Goal: hfam(alpha_of eG)(eG) = hfam(alpha)(eG) **)
+    claim HeG_Gal : eG :e apply_fun Gfam alpha.
+    { exact (HeG_sub alpha Hal). }
+    claim Hao_eG_valid : alpha_of eG :e J /\ eG :e apply_fun Gfam (alpha_of eG).
+    { exact (Halpha_of_valid alpha Hal eG HeG_Gal). }
+    claim Hao_eG_J : alpha_of eG :e J.
+    { exact (andEL (alpha_of eG :e J) (eG :e apply_fun Gfam (alpha_of eG)) Hao_eG_valid). }
+    claim Hlhs : apply_fun (apply_fun hfam (alpha_of eG)) eG = eH.
+    { exact (Hhfam_id (alpha_of eG) Hao_eG_J). }
+    claim Hrhs : apply_fun (apply_fun hfam alpha) eG = eH.
+    { exact (Hhfam_id alpha Hal). }
+    rewrite Hlhs. rewrite Hrhs. reflexivity. }
+(** Define h_single: apply appropriate h_alpha to a single element **)
+set h_single := fun xi:set =>
+  apply_fun (apply_fun hfam (alpha_of xi)) xi.
+(** Define h on G using reduced word representation **)
+set n_of := fun x:set =>
+  Eps_i (fun n:set => exists xs:set,
+    reduced_word J Gfam efam n xs /\ n <> 0 /\
+    word_product multG eG xs n = x /\
+    (forall n' xs':set,
+      reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+      word_product multG eG xs' n' = x ->
+      n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))).
+set xs_of := fun x:set =>
+  Eps_i (fun xs:set =>
+    reduced_word J Gfam efam (n_of x) xs /\ (n_of x) <> 0 /\
+    word_product multG eG xs (n_of x) = x /\
+    (forall n' xs':set,
+      reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+      word_product multG eG xs' n' = x ->
+      (n_of x) = n' /\ (forall i:set, i :e (n_of x) -> apply_fun xs i = apply_fun xs' i))).
+set h := graph G (fun x:set =>
+  If_i (x = eG) eH
+    (nat_primrec eH
+      (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of x) i)))
+      (n_of x))).
+(** Witness h **)
+witness h.
+(** Prove the three-part conjunction **)
+apply and3I.
+(** Part 1: group_homomorphism G multG H multH h **)
 admit.
+(** Part 2: restriction - for alpha in J, x in G_alpha, h(x) = hfam(alpha)(x) **)
+admit.
+(** Part 3: uniqueness - any extending homomorphism agrees with h **)
+(** Strategy: any h' extending hfam maps word products to H-word-products **)
+(** by induction. Then h must do the same (from Parts 1+2). **)
+(** So h'(x) = h(x) for all x in G. **)
+let h'. assume Hh'hom : group_homomorphism G multG H multH h'.
+assume Hh'ext : forall alpha:set, alpha :e J ->
+  forall x:set, x :e apply_fun Gfam alpha ->
+    apply_fun h' x = apply_fun (apply_fun hfam alpha) x.
+let x. assume HxG : x :e G.
+(** h' maps eG to eH **)
+claim Hh'_id : apply_fun h' eG = eH.
+{ exact (group_hom_maps_id_to_id G multG eG invG H multH eH invH h' Hgrp HgrpH Hh'hom). }
+(** From subgroups_generate, decompose x **)
+claim Hgen_third : forall z:set, z :e G ->
+  z = eG \/
+  exists n:set, n :e omega /\ n <> 0 /\
+  exists xs:set, function_on xs n G /\
+    (forall i:set, i :e n ->
+      exists alpha:set, alpha :e J /\ apply_fun xs i :e apply_fun Gfam alpha) /\
+    z = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n.
+{ exact (andER
+    (group_structure G multG eG invG /\
+     (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G multG eG invG))
+    (forall z:set, z :e G ->
+      z = eG \/
+      exists n:set, n :e omega /\ n <> 0 /\
+      exists xs:set, function_on xs n G /\
+        (forall i:set, i :e n ->
+          exists alpha:set, alpha :e J /\ apply_fun xs i :e apply_fun Gfam alpha) /\
+        z = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+    Hgen). }
+(** h' maps word products correctly by induction **)
+claim Hh'_wp : forall k:set, nat_p k ->
+  forall ys:set,
+  (forall i:set, i :e k -> apply_fun ys i :e G) ->
+  (forall i:set, i :e k ->
+    exists alpha:set, alpha :e J /\ apply_fun ys i :e apply_fun Gfam alpha) ->
+  apply_fun h' (word_product multG eG ys k) =
+    nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun ys i))) k.
+{ apply (nat_ind (fun k:set =>
+    forall ys:set,
+    (forall i:set, i :e k -> apply_fun ys i :e G) ->
+    (forall i:set, i :e k ->
+      exists alpha:set, alpha :e J /\ apply_fun ys i :e apply_fun Gfam alpha) ->
+    apply_fun h' (word_product multG eG ys k) =
+      nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun ys i))) k)).
+  (** Base: k = 0 **)
+  - let ys. assume Hys_G Hys_al. admit.
+  (** Step: k = ordsucc j **)
+  - let j. assume Hj : nat_p j. assume IH.
+    let ys. assume Hys_G Hys_al. admit. }
+(** Now conclude: h'(x) = h(x) using decomposition of x **)
+claim Hgen_x : x = eG \/
+  exists n:set, n :e omega /\ n <> 0 /\
+  exists xs:set, function_on xs n G /\
+    (forall i:set, i :e n ->
+      exists alpha:set, alpha :e J /\ apply_fun xs i :e apply_fun Gfam alpha) /\
+    x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n.
+{ exact (Hgen_third x HxG). }
+apply Hgen_x.
+(** Case x = eG **)
+- assume Hxe : x = eG.
+  claim Hh_eG : apply_fun h eG = eH.
+  { claim Heval : apply_fun h eG =
+      If_i (eG = eG) eH
+        (nat_primrec eH
+          (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of eG) i)))
+          (n_of eG)).
+    { exact (apply_fun_graph G
+        (fun z:set =>
+          If_i (z = eG) eH
+            (nat_primrec eH
+              (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of z) i)))
+              (n_of z)))
+        eG HeGG). }
+    rewrite Heval.
+    claim HeG_refl : eG = eG. { reflexivity. }
+    exact (If_i_1 (eG = eG) eH
+      (nat_primrec eH
+        (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of eG) i)))
+        (n_of eG))
+      HeG_refl). }
+  rewrite Hxe. rewrite Hh_eG. exact Hh'_id.
+(** Case x = word_product **)
+- assume Hex : exists n:set, n :e omega /\ n <> 0 /\
+    exists xs:set, function_on xs n G /\
+      (forall i:set, i :e n ->
+        exists alpha:set, alpha :e J /\ apply_fun xs i :e apply_fun Gfam alpha) /\
+      x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n.
+  (** h'(x) = H-word-product of h_single on the generators **)
+  (** h(x) must also equal this (from Parts 1+2, which are admitted) **)
+  (** For now, we admit this case since it depends on the admitted parts **)
+  admit.
 Admitted.
 
 (** from S68 Definition (line 2827 in algtop.tex): external free product **)
