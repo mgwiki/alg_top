@@ -71431,6 +71431,211 @@ rewrite (group_hom_sends_inverse_cyclic_helper
 reflexivity.
 Qed.
 
+(** Proven Bob **)
+(** Infrastructure helper: homomorphisms from a generated cyclic group are determined by the generator image. **)
+Theorem group_homomorphisms_equal_if_agree_on_generator_cyclic_helper :
+  forall G mult e inv x H multH eH invH h1 h2:set,
+  group_structure G mult e inv ->
+  generator_of G mult e inv x ->
+  group_structure H multH eH invH ->
+  group_homomorphism G mult H multH h1 ->
+  group_homomorphism G mult H multH h2 ->
+  apply_fun h1 x = apply_fun h2 x ->
+  forall g:set, g :e G -> apply_fun h1 g = apply_fun h2 g.
+let G mult e inv x H multH eH invH h1 h2.
+assume HgrpG HgenX HgrpH Hh1Hom Hh2Hom HxEq.
+claim HxG : x :e G.
+{
+  exact (andEL
+    (x :e G)
+    (forall g:set, g :e G ->
+      exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e x n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv x) (ordsucc m))))
+    HgenX).
+}
+claim HgenRep :
+  forall g:set, g :e G ->
+    exists n:set, n :e int /\
+      ((n :e omega /\ g = group_power_nat mult e x n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+        g = group_power_nat mult e (apply_fun inv x) (ordsucc m))).
+{
+  exact (andER
+    (x :e G)
+    (forall g:set, g :e G ->
+      exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e x n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv x) (ordsucc m))))
+    HgenX).
+}
+let g.
+assume HgG.
+apply (HgenRep g HgG).
+let n.
+assume HnPack.
+claim Hrep :
+  (n :e omega /\ g = group_power_nat mult e x n) \/
+  (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+    g = group_power_nat mult e (apply_fun inv x) (ordsucc m)).
+{
+  exact (andER
+    (n :e int)
+    ((n :e omega /\ g = group_power_nat mult e x n) \/
+     (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+      g = group_power_nat mult e (apply_fun inv x) (ordsucc m)))
+    HnPack).
+}
+apply Hrep.
+- assume HnatCase.
+  claim HnO : n :e omega.
+  {
+    exact (andEL
+      (n :e omega)
+      (g = group_power_nat mult e x n)
+      HnatCase).
+  }
+  claim HgPow :
+    g = group_power_nat mult e x n.
+  {
+    exact (andER
+      (n :e omega)
+      (g = group_power_nat mult e x n)
+      HnatCase).
+  }
+  claim Hh1Pow :
+    apply_fun h1 (group_power_nat mult e x n) =
+    group_power_nat multH eH (apply_fun h1 x) n.
+  {
+    exact (group_homomorphism_preserves_power_nat_cyclic_helper
+      G
+      mult
+      e
+      inv
+      H
+      multH
+      eH
+      invH
+      h1
+      x
+      n
+      HgrpG
+      HgrpH
+      Hh1Hom
+      HxG
+      HnO).
+  }
+  claim Hh2Pow :
+    apply_fun h2 (group_power_nat mult e x n) =
+    group_power_nat multH eH (apply_fun h2 x) n.
+  {
+    exact (group_homomorphism_preserves_power_nat_cyclic_helper
+      G
+      mult
+      e
+      inv
+      H
+      multH
+      eH
+      invH
+      h2
+      x
+      n
+      HgrpG
+      HgrpH
+      Hh2Hom
+      HxG
+      HnO).
+  }
+  rewrite HgPow.
+  rewrite Hh1Pow.
+  rewrite Hh2Pow.
+  rewrite HxEq.
+  reflexivity.
+- assume HnegCase.
+  apply HnegCase.
+  let m.
+  assume HmPack.
+  claim HmMid :
+    m :e omega /\ n = minus_SNo (ordsucc m).
+  {
+    exact (andEL
+      (m :e omega /\ n = minus_SNo (ordsucc m))
+      (g = group_power_nat mult e (apply_fun inv x) (ordsucc m))
+      HmPack).
+  }
+  claim HgInvPow :
+    g = group_power_nat mult e (apply_fun inv x) (ordsucc m).
+  {
+    exact (andER
+      (m :e omega /\ n = minus_SNo (ordsucc m))
+      (g = group_power_nat mult e (apply_fun inv x) (ordsucc m))
+      HmPack).
+  }
+  claim HmO : m :e omega.
+  {
+    exact (andEL
+      (m :e omega)
+      (n = minus_SNo (ordsucc m))
+      HmMid).
+  }
+  claim HsuccmO : ordsucc m :e omega.
+  {
+    exact (omega_ordsucc m HmO).
+  }
+  claim Hh1InvPow :
+    apply_fun h1 (group_power_nat mult e (apply_fun inv x) (ordsucc m)) =
+    group_power_nat multH eH (apply_fun invH (apply_fun h1 x)) (ordsucc m).
+  {
+    exact (group_homomorphism_preserves_inverse_power_nat_cyclic_helper
+      G
+      mult
+      e
+      inv
+      H
+      multH
+      eH
+      invH
+      h1
+      x
+      (ordsucc m)
+      HgrpG
+      HgrpH
+      Hh1Hom
+      HxG
+      HsuccmO).
+  }
+  claim Hh2InvPow :
+    apply_fun h2 (group_power_nat mult e (apply_fun inv x) (ordsucc m)) =
+    group_power_nat multH eH (apply_fun invH (apply_fun h2 x)) (ordsucc m).
+  {
+    exact (group_homomorphism_preserves_inverse_power_nat_cyclic_helper
+      G
+      mult
+      e
+      inv
+      H
+      multH
+      eH
+      invH
+      h2
+      x
+      (ordsucc m)
+      HgrpG
+      HgrpH
+      Hh2Hom
+      HxG
+      HsuccmO).
+  }
+  rewrite HgInvPow.
+  rewrite Hh1InvPow.
+  rewrite Hh2InvPow.
+  rewrite HxEq.
+  reflexivity.
+Qed.
+
 (** from S54 text (line 833 in algtop.tex) **)
 (** LATEX VERSION: A group is cyclic of infinite order iff it is isomorphic to Z; **)
 (** cyclic of order k iff isomorphic to Z/k. **)
@@ -71516,41 +71721,46 @@ Theorem infinite_cyclic_universal_property : forall G multG eG invG x H multH eH
       forall g:set, g :e G -> apply_fun h' g = apply_fun h g).
 let G multG eG invG x H multH eH invH y.
 assume HgrpG HcycG HinfG HgenX HgrpH Hy.
-claim HisoZ : exists phi:set, group_isomorphism G multG int integers_group_mult phi.
+claim HuniqFromGenerator :
+  forall h h':set,
+    group_homomorphism G multG H multH h ->
+    group_homomorphism G multG H multH h' ->
+    apply_fun h x = y ->
+    apply_fun h' x = y ->
+    forall g:set, g :e G -> apply_fun h' g = apply_fun h g.
 {
-  exact (cyclic_infinite_order_iff_Z
+  let h h'.
+  assume HhHom Hh'Hom Hhx Hyx.
+  claim HxAgree : apply_fun h' x = apply_fun h x.
+  {
+    rewrite Hyx.
+    rewrite Hhx.
+    reflexivity.
+  }
+  let g.
+  assume HgG.
+  exact (group_homomorphisms_equal_if_agree_on_generator_cyclic_helper
     G
     multG
     eG
     invG
+    x
+    H
+    multH
+    eH
+    invH
+    h'
+    h
     HgrpG
-    HcycG
-    HinfG).
+    HgenX
+    HgrpH
+    Hh'Hom
+    HhHom
+    HxAgree
+    g
+    HgG).
 }
-apply HisoZ.
-let phi.
-assume HphiIso.
-claim HphiHom : group_homomorphism G multG int integers_group_mult phi.
-{
-  exact (group_isomorphism_homomorphism
-    G
-    multG
-    int
-    integers_group_mult
-    phi
-    HphiIso).
-}
-claim HphiBij : bijection G int phi.
-{
-  exact (group_isomorphism_bijection
-    G
-    multG
-    int
-    integers_group_mult
-    phi
-    HphiIso).
-}
-(** TODO Bob: transport the universal map from Z to H back along phi, using h(x)=y. **)
+(** TODO Bob: construct existence of h : G -> H with h(x)=y, then discharge uniqueness via HuniqFromGenerator. **)
 admit.
 Admitted.
 
