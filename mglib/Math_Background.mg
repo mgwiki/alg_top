@@ -105063,6 +105063,84 @@ apply (xm
         rewrite <- Hj0.
         exact Hcsj_ne_e.
       }
+      claim Hcs1_G1 : apply_fun cs 1 :e G1.
+      {
+        rewrite <- Hk1.
+        exact Hcsk_G1.
+      }
+      claim Hcs0_G : apply_fun cs 0 :e G.
+      {
+        exact (HG2sub
+          (apply_fun cs 0)
+          Hcs0_G2).
+      }
+      claim Hcs1_G : apply_fun cs 1 :e G.
+      {
+        exact (HG1sub
+          (apply_fun cs 1)
+          Hcs1_G1).
+      }
+      apply (and6E
+        (function_on mult (setprod G G) G)
+        (function_on inv G G)
+        (e :e G)
+        (forall x1 y1 z1:set, x1 :e G -> y1 :e G -> z1 :e G ->
+          apply_fun mult (apply_fun mult (x1, y1), z1) = apply_fun mult (x1, apply_fun mult (y1, z1)))
+        (forall x1:set, x1 :e G -> apply_fun mult (e, x1) = x1 /\ apply_fun mult (x1, e) = x1)
+        (forall x1:set, x1 :e G ->
+          apply_fun mult (x1, apply_fun inv x1) = e /\ apply_fun mult (apply_fun inv x1, x1) = e)
+        Hgrp).
+      assume HmultF HinvF HeG Hassoc Hid Hinverse.
+      claim Hwp0 :
+        word_product mult e cs 0 = e.
+      {
+        exact (nat_primrec_0
+          e
+          (fun i r => apply_fun mult (r, apply_fun cs i))).
+      }
+      claim Hwp1 :
+        word_product mult e cs 1 =
+        apply_fun mult (word_product mult e cs 0, apply_fun cs 0).
+      {
+        rewrite <- ordsucc_0_eq_1_nat.
+        exact (nat_primrec_S
+          e
+          (fun i r => apply_fun mult (r, apply_fun cs i))
+          0
+          nat_0).
+      }
+      claim Hwp2 :
+        word_product mult e cs 2 =
+        apply_fun mult (word_product mult e cs 1, apply_fun cs 1).
+      {
+        rewrite <- ordsucc_1_eq_2_nat.
+        exact (nat_primrec_S
+          e
+          (fun i r => apply_fun mult (r, apply_fun cs i))
+          1
+          nat_1).
+      }
+      claim Hmul_e_cs0 :
+        apply_fun mult (e, apply_fun cs 0) = apply_fun cs 0.
+      {
+        exact (andEL
+          (apply_fun mult (e, apply_fun cs 0) = apply_fun cs 0)
+          (apply_fun mult (apply_fun cs 0, e) = apply_fun cs 0)
+          (Hid
+            (apply_fun cs 0)
+            Hcs0_G)).
+      }
+      claim Hc_eq_cs0cs1 :
+        c = apply_fun mult (apply_fun cs 0, apply_fun cs 1).
+      {
+        rewrite <- Hprod.
+        rewrite Hm2.
+        rewrite Hwp2.
+        rewrite Hwp1.
+        rewrite Hwp0.
+        rewrite Hmul_e_cs0.
+        reflexivity.
+      }
       admit. (** TODO Bob: handle j=0 case (k=1,m=2) via the leading G2 singleton reduction **)
     * assume Hj_ne0 : j <> 0.
       admit. (** TODO Bob: handle j<>0 case after predecessor split **)
