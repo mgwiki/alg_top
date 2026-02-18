@@ -1,6 +1,6 @@
 (** Balance Alice 3305 **)
 (** Balance Bob 3021 **)
-(** Balance Charlie 1234 **)
+(** Balance Charlie 1232 **)
 (** Balance Dave 1419 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -82422,7 +82422,8 @@ Admitted.
 (** from S58 Exercise 2(h) (line 1487 in algtop.tex) **)
 (** LATEX VERSION: {x in R^2 : norm(x) < 1} (open disk) is simply connected. **)
 (** EFFORT: 2 lines textbook, difficulty 1/10, USD 10 **)
-(** Bounty 11 **)
+(** Bounty 13 **)
+(** Lock Charlie 1771502000 **)
 Theorem ex58_2h_open_disk_simply_connected :
   let X := {p :e EuclidPlane | SNoLt (distance_R2 p (0, 0)) 1} in
   let TX := subspace_topology EuclidPlane R2_topology X in
