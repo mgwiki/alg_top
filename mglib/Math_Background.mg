@@ -113264,21 +113264,6 @@ apply (iffI
       }
       exact (HhUniq h2 Hh2Hom Hh2Restr).
   }
-  claim Hfactor_subG :
-    forall alpha:set, alpha :e J -> apply_fun Gfam0 alpha c= G.
-  {
-    let alpha.
-    assume Halpha : alpha :e J.
-    exact (lemma69_1_factor_family_subset_ambient
-      G
-      mult
-      e
-      inv
-      J
-      gens
-      alpha
-      Halpha).
-  }
   claim Hhom_restrict_factor :
     forall h2:set, group_homomorphism G mult H multH h2 ->
       forall alpha:set, alpha :e J ->
