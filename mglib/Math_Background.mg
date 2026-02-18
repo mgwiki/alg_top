@@ -107017,7 +107017,18 @@ apply and3I.
             claim HhgRW : apply_fun h g =
               nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun xsg i))) ng.
             { exact (Hh_val_any_rw g HgG Hg_ne ng xsg Hredw Hng_ne Hwpg). }
-            admit. }
+            claim Hgb_G : apply_fun multG (g, b) :e G. { exact (HmultG_cl g b HgG HbG). }
+            claim Hhs_H : h_single b :e H. { exact (Hh_single_H b Hb_fam2). }
+            claim HhgH : apply_fun h g :e H. { exact (Hh_in_H g HgG). }
+            apply (xm (apply_fun multG (g, b) = eG)).
+            + assume Hgb_eG : apply_fun multG (g, b) = eG.
+              admit.
+            + assume Hgb_ne : apply_fun multG (g, b) <> eG.
+              claim Hhgb : apply_fun h (apply_fun multG (g, b)) =
+                nat_primrec eH (fun i:set => fun r:set => apply_fun multH (r, h_single (apply_fun (xs_of (apply_fun multG (g, b))) i)))
+                  (n_of (apply_fun multG (g, b))).
+              { exact (Hh_ne_shared (apply_fun multG (g, b)) Hgb_G Hgb_ne). }
+              admit. }
         (** Using Hh_right_mult, prove multiplicativity by induction on word length of y **)
         (** y has reduced word ys of length n_y, each ys(i) in some Gfam **)
         (** y = mult(mult(...mult(eG, ys(0)), ys(1))..., ys(n_y - 1)) **)
@@ -108315,7 +108326,544 @@ Theorem thm68_4_uniqueness_free_product :
           apply_fun phi' (apply_fun (apply_fun ifam alpha) x) =
             apply_fun (apply_fun ifam' alpha) x) ->
       forall x:set, x :e G -> apply_fun phi' x = apply_fun phi x).
-admit.
+let J Gfam multfam G multG eG invG ifam G' multG' eG' invG' ifam'.
+assume Hext1 : external_free_product G multG eG invG J Gfam multfam ifam.
+assume Hext2 : external_free_product G' multG' eG' invG' J Gfam multfam ifam'.
+claim Hgrp1 : group_structure G multG eG invG.
+{ apply (and3E
+    (group_structure G multG eG invG)
+    (forall alpha:set, alpha :e J ->
+      group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha) /\
+      (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+        apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) y -> x = y))
+    (free_product_of_subgroups G multG eG invG J
+      (graph J (fun alpha:set => homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha)))
+      (graph J (fun alpha:set => apply_fun (apply_fun ifam alpha) (Eps_i (fun ea:set =>
+        exists ma ia:set, group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) ea ia)))))
+    Hext1).
+  assume H _ _. exact H. }
+claim Hgrp2 : group_structure G' multG' eG' invG'.
+{ apply (and3E
+    (group_structure G' multG' eG' invG')
+    (forall alpha:set, alpha :e J ->
+      group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G' multG' (apply_fun ifam' alpha) /\
+      (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+        apply_fun (apply_fun ifam' alpha) x = apply_fun (apply_fun ifam' alpha) y -> x = y))
+    (free_product_of_subgroups G' multG' eG' invG' J
+      (graph J (fun alpha:set => homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam' alpha)))
+      (graph J (fun alpha:set => apply_fun (apply_fun ifam' alpha) (Eps_i (fun ea:set =>
+        exists ma ia:set, group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) ea ia)))))
+    Hext2).
+  assume H _ _. exact H. }
+claim Hifam_hom : forall alpha:set, alpha :e J ->
+  group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha).
+{ let alpha. assume Hal.
+  apply (and3E
+    (group_structure G multG eG invG)
+    (forall alpha0:set, alpha0 :e J ->
+      group_homomorphism (apply_fun Gfam alpha0) (apply_fun multfam alpha0) G multG (apply_fun ifam alpha0) /\
+      (forall x y:set, x :e apply_fun Gfam alpha0 -> y :e apply_fun Gfam alpha0 ->
+        apply_fun (apply_fun ifam alpha0) x = apply_fun (apply_fun ifam alpha0) y -> x = y))
+    (free_product_of_subgroups G multG eG invG J
+      (graph J (fun a:set => homomorphism_image (apply_fun Gfam a) (apply_fun ifam a)))
+      (graph J (fun a:set => apply_fun (apply_fun ifam a) (Eps_i (fun ea:set =>
+        exists ma ia:set, group_structure (apply_fun Gfam a) (apply_fun multfam a) ea ia)))))
+    Hext1).
+  assume _ Hmono _.
+  exact (andEL
+    (group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha))
+    (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+      apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) y -> x = y)
+    (Hmono alpha Hal)). }
+claim Hifam'_hom : forall alpha:set, alpha :e J ->
+  group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G' multG' (apply_fun ifam' alpha).
+{ let alpha. assume Hal.
+  apply (and3E
+    (group_structure G' multG' eG' invG')
+    (forall alpha0:set, alpha0 :e J ->
+      group_homomorphism (apply_fun Gfam alpha0) (apply_fun multfam alpha0) G' multG' (apply_fun ifam' alpha0) /\
+      (forall x y:set, x :e apply_fun Gfam alpha0 -> y :e apply_fun Gfam alpha0 ->
+        apply_fun (apply_fun ifam' alpha0) x = apply_fun (apply_fun ifam' alpha0) y -> x = y))
+    (free_product_of_subgroups G' multG' eG' invG' J
+      (graph J (fun a:set => homomorphism_image (apply_fun Gfam a) (apply_fun ifam' a)))
+      (graph J (fun a:set => apply_fun (apply_fun ifam' a) (Eps_i (fun ea:set =>
+        exists ma ia:set, group_structure (apply_fun Gfam a) (apply_fun multfam a) ea ia)))))
+    Hext2).
+  assume _ Hmono _.
+  exact (andEL
+    (group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G' multG' (apply_fun ifam' alpha))
+    (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+      apply_fun (apply_fun ifam' alpha) x = apply_fun (apply_fun ifam' alpha) y -> x = y)
+    (Hmono alpha Hal)). }
+claim Hphi_ex : exists h:set,
+  group_homomorphism G multG G' multG' h /\
+  (forall alpha:set, alpha :e J ->
+    forall x:set, x :e apply_fun Gfam alpha ->
+      apply_fun h (apply_fun (apply_fun ifam alpha) x) =
+        apply_fun (apply_fun ifam' alpha) x) /\
+  (forall h':set, group_homomorphism G multG G' multG' h' ->
+    (forall alpha:set, alpha :e J ->
+      forall x:set, x :e apply_fun Gfam alpha ->
+        apply_fun h' (apply_fun (apply_fun ifam alpha) x) =
+          apply_fun (apply_fun ifam' alpha) x) ->
+    forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+{ exact (lemma68_3_extension_external_free_product G multG eG invG J Gfam multfam ifam Hext1
+    G' multG' eG' invG' Hgrp2 ifam' Hifam'_hom). }
+apply Hphi_ex. let phi. assume Hphi_all.
+apply (and3E
+  (group_homomorphism G multG G' multG' phi)
+  (forall alpha:set, alpha :e J ->
+    forall x:set, x :e apply_fun Gfam alpha ->
+      apply_fun phi (apply_fun (apply_fun ifam alpha) x) =
+        apply_fun (apply_fun ifam' alpha) x)
+  (forall h':set, group_homomorphism G multG G' multG' h' ->
+    (forall alpha:set, alpha :e J ->
+      forall x:set, x :e apply_fun Gfam alpha ->
+        apply_fun h' (apply_fun (apply_fun ifam alpha) x) =
+          apply_fun (apply_fun ifam' alpha) x) ->
+    forall x:set, x :e G -> apply_fun h' x = apply_fun phi x)
+  Hphi_all).
+assume Hphi_hom : group_homomorphism G multG G' multG' phi.
+assume Hphi_ext : forall alpha:set, alpha :e J ->
+  forall x:set, x :e apply_fun Gfam alpha ->
+    apply_fun phi (apply_fun (apply_fun ifam alpha) x) =
+      apply_fun (apply_fun ifam' alpha) x.
+assume Hphi_uniq : forall h':set, group_homomorphism G multG G' multG' h' ->
+  (forall alpha:set, alpha :e J ->
+    forall x:set, x :e apply_fun Gfam alpha ->
+      apply_fun h' (apply_fun (apply_fun ifam alpha) x) =
+        apply_fun (apply_fun ifam' alpha) x) ->
+  forall x:set, x :e G -> apply_fun h' x = apply_fun phi x.
+claim Hpsi_ex : exists h:set,
+  group_homomorphism G' multG' G multG h /\
+  (forall alpha:set, alpha :e J ->
+    forall x:set, x :e apply_fun Gfam alpha ->
+      apply_fun h (apply_fun (apply_fun ifam' alpha) x) =
+        apply_fun (apply_fun ifam alpha) x) /\
+  (forall h':set, group_homomorphism G' multG' G multG h' ->
+    (forall alpha:set, alpha :e J ->
+      forall x:set, x :e apply_fun Gfam alpha ->
+        apply_fun h' (apply_fun (apply_fun ifam' alpha) x) =
+          apply_fun (apply_fun ifam alpha) x) ->
+    forall x:set, x :e G' -> apply_fun h' x = apply_fun h x).
+{ exact (lemma68_3_extension_external_free_product G' multG' eG' invG' J Gfam multfam ifam' Hext2
+    G multG eG invG Hgrp1 ifam Hifam_hom). }
+apply Hpsi_ex. let psi. assume Hpsi_all.
+apply (and3E
+  (group_homomorphism G' multG' G multG psi)
+  (forall alpha:set, alpha :e J ->
+    forall x:set, x :e apply_fun Gfam alpha ->
+      apply_fun psi (apply_fun (apply_fun ifam' alpha) x) =
+        apply_fun (apply_fun ifam alpha) x)
+  (forall h':set, group_homomorphism G' multG' G multG h' ->
+    (forall alpha:set, alpha :e J ->
+      forall x:set, x :e apply_fun Gfam alpha ->
+        apply_fun h' (apply_fun (apply_fun ifam' alpha) x) =
+          apply_fun (apply_fun ifam alpha) x) ->
+    forall x:set, x :e G' -> apply_fun h' x = apply_fun psi x)
+  Hpsi_all).
+assume Hpsi_hom : group_homomorphism G' multG' G multG psi.
+assume Hpsi_ext : forall alpha:set, alpha :e J ->
+  forall x:set, x :e apply_fun Gfam alpha ->
+    apply_fun psi (apply_fun (apply_fun ifam' alpha) x) =
+      apply_fun (apply_fun ifam alpha) x.
+assume Hpsi_uniq : forall h':set, group_homomorphism G' multG' G multG h' ->
+  (forall alpha:set, alpha :e J ->
+    forall x:set, x :e apply_fun Gfam alpha ->
+      apply_fun h' (apply_fun (apply_fun ifam' alpha) x) =
+        apply_fun (apply_fun ifam alpha) x) ->
+  forall x:set, x :e G' -> apply_fun h' x = apply_fun psi x.
+claim Hphi_fo : function_on phi G G'.
+{ exact (group_homomorphism_function_on G multG G' multG' phi Hphi_hom). }
+claim Hpsi_fo : function_on psi G' G.
+{ exact (group_homomorphism_function_on G' multG' G multG psi Hpsi_hom). }
+claim Hid_ex : exists h:set,
+  group_homomorphism G multG G multG h /\
+  (forall alpha:set, alpha :e J ->
+    forall x:set, x :e apply_fun Gfam alpha ->
+      apply_fun h (apply_fun (apply_fun ifam alpha) x) =
+        apply_fun (apply_fun ifam alpha) x) /\
+  (forall h':set, group_homomorphism G multG G multG h' ->
+    (forall alpha:set, alpha :e J ->
+      forall x:set, x :e apply_fun Gfam alpha ->
+        apply_fun h' (apply_fun (apply_fun ifam alpha) x) =
+          apply_fun (apply_fun ifam alpha) x) ->
+    forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+{ exact (lemma68_3_extension_external_free_product G multG eG invG J Gfam multfam ifam Hext1
+    G multG eG invG Hgrp1 ifam Hifam_hom). }
+apply Hid_ex. let h_id. assume Hid_all.
+apply (and3E
+  (group_homomorphism G multG G multG h_id)
+  (forall alpha:set, alpha :e J ->
+    forall x:set, x :e apply_fun Gfam alpha ->
+      apply_fun h_id (apply_fun (apply_fun ifam alpha) x) =
+        apply_fun (apply_fun ifam alpha) x)
+  (forall h':set, group_homomorphism G multG G multG h' ->
+    (forall alpha:set, alpha :e J ->
+      forall x:set, x :e apply_fun Gfam alpha ->
+        apply_fun h' (apply_fun (apply_fun ifam alpha) x) =
+          apply_fun (apply_fun ifam alpha) x) ->
+    forall x:set, x :e G -> apply_fun h' x = apply_fun h_id x)
+  Hid_all).
+assume Hid_hom : group_homomorphism G multG G multG h_id.
+assume Hid_ext : forall alpha:set, alpha :e J ->
+  forall x:set, x :e apply_fun Gfam alpha ->
+    apply_fun h_id (apply_fun (apply_fun ifam alpha) x) =
+      apply_fun (apply_fun ifam alpha) x.
+assume Hid_uniq : forall h':set, group_homomorphism G multG G multG h' ->
+  (forall alpha:set, alpha :e J ->
+    forall x:set, x :e apply_fun Gfam alpha ->
+      apply_fun h' (apply_fun (apply_fun ifam alpha) x) =
+        apply_fun (apply_fun ifam alpha) x) ->
+  forall x:set, x :e G -> apply_fun h' x = apply_fun h_id x.
+set id_G := graph G (fun x:set => x).
+claim Hid_G_hom : group_homomorphism G multG G multG id_G.
+{ prove function_on id_G G G /\
+    (forall x y:set, x :e G -> y :e G ->
+      apply_fun id_G (apply_fun multG (x, y)) = apply_fun multG (apply_fun id_G x, apply_fun id_G y)).
+  apply andI.
+  - prove function_on id_G G G.
+    let x. assume Hx : x :e G.
+    prove apply_fun (graph G (fun z:set => z)) x :e G.
+    rewrite (apply_fun_graph G (fun z:set => z) x Hx). exact Hx.
+  - let x y. assume Hx : x :e G. assume Hy : y :e G.
+    claim HxyG : apply_fun multG (x, y) :e G.
+    { apply (and6E
+        (function_on multG (setprod G G) G) (function_on invG G G) (eG :e G)
+        (forall x0 y0 z:set, x0 :e G -> y0 :e G -> z :e G ->
+          apply_fun multG (apply_fun multG (x0, y0), z) = apply_fun multG (x0, apply_fun multG (y0, z)))
+        (forall x0:set, x0 :e G -> apply_fun multG (eG, x0) = x0 /\ apply_fun multG (x0, eG) = x0)
+        (forall x0:set, x0 :e G ->
+          apply_fun multG (x0, apply_fun invG x0) = eG /\ apply_fun multG (apply_fun invG x0, x0) = eG)
+        Hgrp1).
+      assume Hmult_fo _ _ _ _ _.
+      exact (Hmult_fo (x, y) (tuple_2_setprod_by_pair_Sigma G G x y Hx Hy)). }
+    prove apply_fun id_G (apply_fun multG (x, y)) =
+      apply_fun multG (apply_fun id_G x, apply_fun id_G y).
+    rewrite (apply_fun_graph G (fun z:set => z) (apply_fun multG (x, y)) HxyG).
+    rewrite (apply_fun_graph G (fun z:set => z) x Hx).
+    rewrite (apply_fun_graph G (fun z:set => z) y Hy).
+    reflexivity. }
+claim Hid_G_ext : forall alpha:set, alpha :e J ->
+  forall x:set, x :e apply_fun Gfam alpha ->
+    apply_fun id_G (apply_fun (apply_fun ifam alpha) x) =
+      apply_fun (apply_fun ifam alpha) x.
+{ let alpha. assume Hal. let x. assume Hx.
+  claim Hifx_G : apply_fun (apply_fun ifam alpha) x :e G.
+  { exact (group_homomorphism_function_on (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG
+      (apply_fun ifam alpha) (Hifam_hom alpha Hal) x Hx). }
+  exact (apply_fun_graph G (fun z:set => z) (apply_fun (apply_fun ifam alpha) x) Hifx_G). }
+claim Hid_G_agrees : forall x:set, x :e G -> apply_fun h_id x = x.
+{ let x. assume Hx.
+  claim Hid_eq : apply_fun id_G x = apply_fun h_id x.
+  { exact (Hid_uniq id_G Hid_G_hom Hid_G_ext x Hx). }
+  claim Hid_eq_sym : apply_fun h_id x = apply_fun id_G x.
+  { symmetry. exact Hid_eq. }
+  claim Hid_val : apply_fun id_G x = x.
+  { exact (apply_fun_graph G (fun z:set => z) x Hx). }
+  exact (eq_i_tra (apply_fun h_id x) (apply_fun id_G x) x Hid_eq_sym Hid_val). }
+set comp_psi_phi := graph G (fun x:set => apply_fun psi (apply_fun phi x)).
+claim Hcomp_fo : function_on comp_psi_phi G G.
+{ let x. assume Hx.
+  claim HphixG' : apply_fun phi x :e G'. { exact (Hphi_fo x Hx). }
+  claim Hval : apply_fun comp_psi_phi x = apply_fun psi (apply_fun phi x).
+  { exact (apply_fun_graph G (fun z:set => apply_fun psi (apply_fun phi z)) x Hx). }
+  rewrite Hval. exact (Hpsi_fo (apply_fun phi x) HphixG'). }
+claim Hcomp_hom : group_homomorphism G multG G multG comp_psi_phi.
+{ prove function_on comp_psi_phi G G /\
+    (forall x y:set, x :e G -> y :e G ->
+      apply_fun comp_psi_phi (apply_fun multG (x, y)) = apply_fun multG (apply_fun comp_psi_phi x, apply_fun comp_psi_phi y)).
+  apply andI.
+  - exact Hcomp_fo.
+  - let x y. assume Hx : x :e G. assume Hy : y :e G.
+    claim HxyG : apply_fun multG (x, y) :e G.
+    { apply (and6E
+        (function_on multG (setprod G G) G) (function_on invG G G) (eG :e G)
+        (forall x0 y0 z:set, x0 :e G -> y0 :e G -> z :e G ->
+          apply_fun multG (apply_fun multG (x0, y0), z) = apply_fun multG (x0, apply_fun multG (y0, z)))
+        (forall x0:set, x0 :e G -> apply_fun multG (eG, x0) = x0 /\ apply_fun multG (x0, eG) = x0)
+        (forall x0:set, x0 :e G ->
+          apply_fun multG (x0, apply_fun invG x0) = eG /\ apply_fun multG (apply_fun invG x0, x0) = eG)
+        Hgrp1).
+      assume Hmult_fo _ _ _ _ _.
+      exact (Hmult_fo (x, y) (tuple_2_setprod_by_pair_Sigma G G x y Hx Hy)). }
+    claim HphixG' : apply_fun phi x :e G'. { exact (Hphi_fo x Hx). }
+    claim HphiyG' : apply_fun phi y :e G'. { exact (Hphi_fo y Hy). }
+    claim Hval_xy : apply_fun comp_psi_phi (apply_fun multG (x, y)) =
+      apply_fun psi (apply_fun phi (apply_fun multG (x, y))).
+    { exact (apply_fun_graph G (fun z:set => apply_fun psi (apply_fun phi z)) (apply_fun multG (x, y)) HxyG). }
+    claim Hval_x : apply_fun comp_psi_phi x = apply_fun psi (apply_fun phi x).
+    { exact (apply_fun_graph G (fun z:set => apply_fun psi (apply_fun phi z)) x Hx). }
+    claim Hval_y : apply_fun comp_psi_phi y = apply_fun psi (apply_fun phi y).
+    { exact (apply_fun_graph G (fun z:set => apply_fun psi (apply_fun phi z)) y Hy). }
+    claim Hphi_mult : apply_fun phi (apply_fun multG (x, y)) = apply_fun multG' (apply_fun phi x, apply_fun phi y).
+    { exact (group_homomorphism_mult_rule G multG G' multG' phi x y Hphi_hom Hx Hy). }
+    claim Hpsi_mult : apply_fun psi (apply_fun multG' (apply_fun phi x, apply_fun phi y)) =
+      apply_fun multG (apply_fun psi (apply_fun phi x), apply_fun psi (apply_fun phi y)).
+    { exact (group_homomorphism_mult_rule G' multG' G multG psi (apply_fun phi x) (apply_fun phi y) Hpsi_hom HphixG' HphiyG'). }
+    claim Hlhs : apply_fun comp_psi_phi (apply_fun multG (x, y)) =
+      apply_fun multG (apply_fun psi (apply_fun phi x), apply_fun psi (apply_fun phi y)).
+    { claim Hstep1 : apply_fun comp_psi_phi (apply_fun multG (x, y)) =
+        apply_fun psi (apply_fun multG' (apply_fun phi x, apply_fun phi y)).
+      { rewrite Hval_xy. rewrite Hphi_mult. reflexivity. }
+      exact (eq_i_tra
+        (apply_fun comp_psi_phi (apply_fun multG (x, y)))
+        (apply_fun psi (apply_fun multG' (apply_fun phi x, apply_fun phi y)))
+        (apply_fun multG (apply_fun psi (apply_fun phi x), apply_fun psi (apply_fun phi y)))
+        Hstep1 Hpsi_mult). }
+    claim Hrhs : apply_fun multG (apply_fun psi (apply_fun phi x), apply_fun psi (apply_fun phi y)) =
+      apply_fun multG (apply_fun comp_psi_phi x, apply_fun comp_psi_phi y).
+    { rewrite Hval_x. rewrite Hval_y. reflexivity. }
+    exact (eq_i_tra
+      (apply_fun comp_psi_phi (apply_fun multG (x, y)))
+      (apply_fun multG (apply_fun psi (apply_fun phi x), apply_fun psi (apply_fun phi y)))
+      (apply_fun multG (apply_fun comp_psi_phi x, apply_fun comp_psi_phi y))
+      Hlhs Hrhs). }
+claim Hcomp_ext : forall alpha:set, alpha :e J ->
+  forall x:set, x :e apply_fun Gfam alpha ->
+    apply_fun comp_psi_phi (apply_fun (apply_fun ifam alpha) x) =
+      apply_fun (apply_fun ifam alpha) x.
+{ let alpha. assume Hal. let x. assume Hx.
+  claim Hifx_G : apply_fun (apply_fun ifam alpha) x :e G.
+  { exact (group_homomorphism_function_on (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG
+      (apply_fun ifam alpha) (Hifam_hom alpha Hal) x Hx). }
+  claim Hval : apply_fun comp_psi_phi (apply_fun (apply_fun ifam alpha) x) =
+    apply_fun psi (apply_fun phi (apply_fun (apply_fun ifam alpha) x)).
+  { exact (apply_fun_graph G (fun z:set => apply_fun psi (apply_fun phi z))
+      (apply_fun (apply_fun ifam alpha) x) Hifx_G). }
+  claim Hphi_ifam : apply_fun phi (apply_fun (apply_fun ifam alpha) x) =
+    apply_fun (apply_fun ifam' alpha) x.
+  { exact (Hphi_ext alpha Hal x Hx). }
+  claim Hpsi_ifam' : apply_fun psi (apply_fun (apply_fun ifam' alpha) x) =
+    apply_fun (apply_fun ifam alpha) x.
+  { exact (Hpsi_ext alpha Hal x Hx). }
+  rewrite Hval. rewrite Hphi_ifam. exact Hpsi_ifam'. }
+claim Hpsi_phi_id : forall x:set, x :e G -> apply_fun psi (apply_fun phi x) = x.
+{ let x. assume Hx.
+  claim Hcomp_hid : apply_fun comp_psi_phi x = apply_fun h_id x.
+  { exact (Hid_uniq comp_psi_phi Hcomp_hom Hcomp_ext x Hx). }
+  claim Hcomp_val : apply_fun comp_psi_phi x = apply_fun psi (apply_fun phi x).
+  { exact (apply_fun_graph G (fun z:set => apply_fun psi (apply_fun phi z)) x Hx). }
+  claim Hcomp_val_sym : apply_fun psi (apply_fun phi x) = apply_fun comp_psi_phi x.
+  { symmetry. exact Hcomp_val. }
+  claim Hpsi_phi_eq_hid : apply_fun psi (apply_fun phi x) = apply_fun h_id x.
+  { exact (eq_i_tra
+      (apply_fun psi (apply_fun phi x))
+      (apply_fun comp_psi_phi x)
+      (apply_fun h_id x)
+      Hcomp_val_sym
+      Hcomp_hid). }
+  exact (eq_i_tra
+    (apply_fun psi (apply_fun phi x))
+    (apply_fun h_id x) x
+    Hpsi_phi_eq_hid (Hid_G_agrees x Hx)). }
+claim Hid2_ex : exists h:set,
+  group_homomorphism G' multG' G' multG' h /\
+  (forall alpha:set, alpha :e J ->
+    forall x:set, x :e apply_fun Gfam alpha ->
+      apply_fun h (apply_fun (apply_fun ifam' alpha) x) =
+        apply_fun (apply_fun ifam' alpha) x) /\
+  (forall h':set, group_homomorphism G' multG' G' multG' h' ->
+    (forall alpha:set, alpha :e J ->
+      forall x:set, x :e apply_fun Gfam alpha ->
+        apply_fun h' (apply_fun (apply_fun ifam' alpha) x) =
+          apply_fun (apply_fun ifam' alpha) x) ->
+    forall x:set, x :e G' -> apply_fun h' x = apply_fun h x).
+{ exact (lemma68_3_extension_external_free_product G' multG' eG' invG' J Gfam multfam ifam' Hext2
+    G' multG' eG' invG' Hgrp2 ifam' Hifam'_hom). }
+apply Hid2_ex. let h_id2. assume Hid2_all.
+apply (and3E
+  (group_homomorphism G' multG' G' multG' h_id2)
+  (forall alpha:set, alpha :e J ->
+    forall x:set, x :e apply_fun Gfam alpha ->
+      apply_fun h_id2 (apply_fun (apply_fun ifam' alpha) x) =
+        apply_fun (apply_fun ifam' alpha) x)
+  (forall h':set, group_homomorphism G' multG' G' multG' h' ->
+    (forall alpha:set, alpha :e J ->
+      forall x:set, x :e apply_fun Gfam alpha ->
+        apply_fun h' (apply_fun (apply_fun ifam' alpha) x) =
+          apply_fun (apply_fun ifam' alpha) x) ->
+    forall x:set, x :e G' -> apply_fun h' x = apply_fun h_id2 x)
+  Hid2_all).
+assume Hid2_hom : group_homomorphism G' multG' G' multG' h_id2.
+assume Hid2_ext : forall alpha:set, alpha :e J ->
+  forall x:set, x :e apply_fun Gfam alpha ->
+    apply_fun h_id2 (apply_fun (apply_fun ifam' alpha) x) =
+      apply_fun (apply_fun ifam' alpha) x.
+assume Hid2_uniq : forall h':set, group_homomorphism G' multG' G' multG' h' ->
+  (forall alpha:set, alpha :e J ->
+    forall x:set, x :e apply_fun Gfam alpha ->
+      apply_fun h' (apply_fun (apply_fun ifam' alpha) x) =
+        apply_fun (apply_fun ifam' alpha) x) ->
+  forall x:set, x :e G' -> apply_fun h' x = apply_fun h_id2 x.
+set id_G' := graph G' (fun x:set => x).
+claim Hid_G'_hom : group_homomorphism G' multG' G' multG' id_G'.
+{ prove function_on id_G' G' G' /\
+    (forall x y:set, x :e G' -> y :e G' ->
+      apply_fun id_G' (apply_fun multG' (x, y)) = apply_fun multG' (apply_fun id_G' x, apply_fun id_G' y)).
+  apply andI.
+  - let x. assume Hx : x :e G'.
+    rewrite (apply_fun_graph G' (fun z:set => z) x Hx). exact Hx.
+  - let x y. assume Hx : x :e G'. assume Hy : y :e G'.
+    claim HxyG' : apply_fun multG' (x, y) :e G'.
+    { apply (and6E
+        (function_on multG' (setprod G' G') G') (function_on invG' G' G') (eG' :e G')
+        (forall x0 y0 z:set, x0 :e G' -> y0 :e G' -> z :e G' ->
+          apply_fun multG' (apply_fun multG' (x0, y0), z) = apply_fun multG' (x0, apply_fun multG' (y0, z)))
+        (forall x0:set, x0 :e G' -> apply_fun multG' (eG', x0) = x0 /\ apply_fun multG' (x0, eG') = x0)
+        (forall x0:set, x0 :e G' ->
+          apply_fun multG' (x0, apply_fun invG' x0) = eG' /\ apply_fun multG' (apply_fun invG' x0, x0) = eG')
+        Hgrp2).
+      assume Hmult_fo' _ _ _ _ _.
+      exact (Hmult_fo' (x, y) (tuple_2_setprod_by_pair_Sigma G' G' x y Hx Hy)). }
+    rewrite (apply_fun_graph G' (fun z:set => z) (apply_fun multG' (x, y)) HxyG').
+    rewrite (apply_fun_graph G' (fun z:set => z) x Hx).
+    rewrite (apply_fun_graph G' (fun z:set => z) y Hy).
+    reflexivity. }
+claim Hid_G'_ext : forall alpha:set, alpha :e J ->
+  forall x:set, x :e apply_fun Gfam alpha ->
+    apply_fun id_G' (apply_fun (apply_fun ifam' alpha) x) =
+      apply_fun (apply_fun ifam' alpha) x.
+{ let alpha. assume Hal. let x. assume Hx.
+  claim Hifx_G' : apply_fun (apply_fun ifam' alpha) x :e G'.
+  { exact (group_homomorphism_function_on (apply_fun Gfam alpha) (apply_fun multfam alpha) G' multG'
+      (apply_fun ifam' alpha) (Hifam'_hom alpha Hal) x Hx). }
+  exact (apply_fun_graph G' (fun z:set => z) (apply_fun (apply_fun ifam' alpha) x) Hifx_G'). }
+claim Hid2_G'_agrees : forall x:set, x :e G' -> apply_fun h_id2 x = x.
+{ let x. assume Hx.
+  claim Hid2_eq : apply_fun id_G' x = apply_fun h_id2 x.
+  { exact (Hid2_uniq id_G' Hid_G'_hom Hid_G'_ext x Hx). }
+  claim Hid2_eq_sym : apply_fun h_id2 x = apply_fun id_G' x.
+  { symmetry. exact Hid2_eq. }
+  claim Hid2_val : apply_fun id_G' x = x.
+  { exact (apply_fun_graph G' (fun z:set => z) x Hx). }
+  exact (eq_i_tra (apply_fun h_id2 x) (apply_fun id_G' x) x Hid2_eq_sym Hid2_val). }
+set comp_phi_psi := graph G' (fun y:set => apply_fun phi (apply_fun psi y)).
+claim Hcomp2_hom : group_homomorphism G' multG' G' multG' comp_phi_psi.
+{ prove function_on comp_phi_psi G' G' /\
+    (forall x y:set, x :e G' -> y :e G' ->
+      apply_fun comp_phi_psi (apply_fun multG' (x, y)) = apply_fun multG' (apply_fun comp_phi_psi x, apply_fun comp_phi_psi y)).
+  apply andI.
+  - let y. assume Hy : y :e G'.
+    claim HpsiyG : apply_fun psi y :e G. { exact (Hpsi_fo y Hy). }
+    claim Hval : apply_fun comp_phi_psi y = apply_fun phi (apply_fun psi y).
+    { exact (apply_fun_graph G' (fun z:set => apply_fun phi (apply_fun psi z)) y Hy). }
+    rewrite Hval. exact (Hphi_fo (apply_fun psi y) HpsiyG).
+  - let x y. assume Hx : x :e G'. assume Hy : y :e G'.
+    claim HxyG' : apply_fun multG' (x, y) :e G'.
+    { apply (and6E
+        (function_on multG' (setprod G' G') G') (function_on invG' G' G') (eG' :e G')
+        (forall x0 y0 z:set, x0 :e G' -> y0 :e G' -> z :e G' ->
+          apply_fun multG' (apply_fun multG' (x0, y0), z) = apply_fun multG' (x0, apply_fun multG' (y0, z)))
+        (forall x0:set, x0 :e G' -> apply_fun multG' (eG', x0) = x0 /\ apply_fun multG' (x0, eG') = x0)
+        (forall x0:set, x0 :e G' ->
+          apply_fun multG' (x0, apply_fun invG' x0) = eG' /\ apply_fun multG' (apply_fun invG' x0, x0) = eG')
+        Hgrp2).
+      assume Hmult_fo' _ _ _ _ _.
+      exact (Hmult_fo' (x, y) (tuple_2_setprod_by_pair_Sigma G' G' x y Hx Hy)). }
+    claim HpsixG : apply_fun psi x :e G. { exact (Hpsi_fo x Hx). }
+    claim HpsiyG : apply_fun psi y :e G. { exact (Hpsi_fo y Hy). }
+    claim Hval_xy : apply_fun comp_phi_psi (apply_fun multG' (x, y)) =
+      apply_fun phi (apply_fun psi (apply_fun multG' (x, y))).
+    { exact (apply_fun_graph G' (fun z:set => apply_fun phi (apply_fun psi z)) (apply_fun multG' (x, y)) HxyG'). }
+    claim Hval_x : apply_fun comp_phi_psi x = apply_fun phi (apply_fun psi x).
+    { exact (apply_fun_graph G' (fun z:set => apply_fun phi (apply_fun psi z)) x Hx). }
+    claim Hval_y : apply_fun comp_phi_psi y = apply_fun phi (apply_fun psi y).
+    { exact (apply_fun_graph G' (fun z:set => apply_fun phi (apply_fun psi z)) y Hy). }
+    claim Hpsi_m : apply_fun psi (apply_fun multG' (x, y)) =
+      apply_fun multG (apply_fun psi x, apply_fun psi y).
+    { exact (group_homomorphism_mult_rule G' multG' G multG psi x y Hpsi_hom Hx Hy). }
+    claim Hphi_m : apply_fun phi (apply_fun multG (apply_fun psi x, apply_fun psi y)) =
+      apply_fun multG' (apply_fun phi (apply_fun psi x), apply_fun phi (apply_fun psi y)).
+    { exact (group_homomorphism_mult_rule G multG G' multG' phi (apply_fun psi x) (apply_fun psi y) Hphi_hom HpsixG HpsiyG). }
+    claim Hlhs : apply_fun comp_phi_psi (apply_fun multG' (x, y)) =
+      apply_fun multG' (apply_fun phi (apply_fun psi x), apply_fun phi (apply_fun psi y)).
+    { claim Hstep1 : apply_fun comp_phi_psi (apply_fun multG' (x, y)) =
+        apply_fun phi (apply_fun multG (apply_fun psi x, apply_fun psi y)).
+      { rewrite Hval_xy. rewrite Hpsi_m. reflexivity. }
+      exact (eq_i_tra
+        (apply_fun comp_phi_psi (apply_fun multG' (x, y)))
+        (apply_fun phi (apply_fun multG (apply_fun psi x, apply_fun psi y)))
+        (apply_fun multG' (apply_fun phi (apply_fun psi x), apply_fun phi (apply_fun psi y)))
+        Hstep1 Hphi_m). }
+    claim Hrhs : apply_fun multG' (apply_fun phi (apply_fun psi x), apply_fun phi (apply_fun psi y)) =
+      apply_fun multG' (apply_fun comp_phi_psi x, apply_fun comp_phi_psi y).
+    { rewrite Hval_x. rewrite Hval_y. reflexivity. }
+    exact (eq_i_tra
+      (apply_fun comp_phi_psi (apply_fun multG' (x, y)))
+      (apply_fun multG' (apply_fun phi (apply_fun psi x), apply_fun phi (apply_fun psi y)))
+      (apply_fun multG' (apply_fun comp_phi_psi x, apply_fun comp_phi_psi y))
+      Hlhs Hrhs). }
+claim Hcomp2_ext : forall alpha:set, alpha :e J ->
+  forall x:set, x :e apply_fun Gfam alpha ->
+    apply_fun comp_phi_psi (apply_fun (apply_fun ifam' alpha) x) =
+      apply_fun (apply_fun ifam' alpha) x.
+{ let alpha. assume Hal. let x. assume Hx.
+  claim Hifx_G' : apply_fun (apply_fun ifam' alpha) x :e G'.
+  { exact (group_homomorphism_function_on (apply_fun Gfam alpha) (apply_fun multfam alpha) G' multG'
+      (apply_fun ifam' alpha) (Hifam'_hom alpha Hal) x Hx). }
+  claim Hval : apply_fun comp_phi_psi (apply_fun (apply_fun ifam' alpha) x) =
+    apply_fun phi (apply_fun psi (apply_fun (apply_fun ifam' alpha) x)).
+  { exact (apply_fun_graph G' (fun z:set => apply_fun phi (apply_fun psi z))
+      (apply_fun (apply_fun ifam' alpha) x) Hifx_G'). }
+  claim Hpsi_ifam' : apply_fun psi (apply_fun (apply_fun ifam' alpha) x) =
+    apply_fun (apply_fun ifam alpha) x.
+  { exact (Hpsi_ext alpha Hal x Hx). }
+  claim Hphi_ifam : apply_fun phi (apply_fun (apply_fun ifam alpha) x) =
+    apply_fun (apply_fun ifam' alpha) x.
+  { exact (Hphi_ext alpha Hal x Hx). }
+  rewrite Hval. rewrite Hpsi_ifam'. exact Hphi_ifam. }
+claim Hphi_psi_id : forall y:set, y :e G' -> apply_fun phi (apply_fun psi y) = y.
+{ let y. assume Hy.
+  claim Hcomp2_hid2 : apply_fun comp_phi_psi y = apply_fun h_id2 y.
+  { exact (Hid2_uniq comp_phi_psi Hcomp2_hom Hcomp2_ext y Hy). }
+  claim Hcomp2_val : apply_fun comp_phi_psi y = apply_fun phi (apply_fun psi y).
+  { exact (apply_fun_graph G' (fun z:set => apply_fun phi (apply_fun psi z)) y Hy). }
+  claim Hcomp2_val_sym : apply_fun phi (apply_fun psi y) = apply_fun comp_phi_psi y.
+  { symmetry. exact Hcomp2_val. }
+  claim Hphi_psi_eq_hid2 : apply_fun phi (apply_fun psi y) = apply_fun h_id2 y.
+  { exact (eq_i_tra
+      (apply_fun phi (apply_fun psi y))
+      (apply_fun comp_phi_psi y)
+      (apply_fun h_id2 y)
+      Hcomp2_val_sym
+      Hcomp2_hid2). }
+  exact (eq_i_tra
+    (apply_fun phi (apply_fun psi y))
+    (apply_fun h_id2 y) y
+    Hphi_psi_eq_hid2 (Hid2_G'_agrees y Hy)). }
+claim Hphi_bij : bijection G G' phi.
+{ prove function_on phi G G' /\
+    (forall y:set, y :e G' ->
+      exists x:set, x :e G /\ apply_fun phi x = y /\
+        (forall x':set, x' :e G -> apply_fun phi x' = y -> x' = x)).
+  apply andI.
+  - exact Hphi_fo.
+  - let y. assume Hy : y :e G'.
+    set x := apply_fun psi y.
+    claim HxG : x :e G. { exact (Hpsi_fo y Hy). }
+    witness x. apply and3I.
+    + exact HxG.
+    + prove apply_fun phi x = y. exact (Hphi_psi_id y Hy).
+    + let x'. assume Hx'G : x' :e G. assume Heq : apply_fun phi x' = y.
+      prove x' = x.
+      claim Hstep : apply_fun psi (apply_fun phi x') = apply_fun psi y.
+      { rewrite Heq. reflexivity. }
+      claim Hx'_eq : x' = apply_fun psi (apply_fun phi x').
+      { symmetry. exact (Hpsi_phi_id x' Hx'G). }
+      exact (eq_i_tra x' (apply_fun psi (apply_fun phi x')) x Hx'_eq Hstep). }
+witness phi. apply and3I.
+- prove group_homomorphism G multG G' multG' phi /\ bijection G G' phi.
+  apply andI. exact Hphi_hom. exact Hphi_bij.
+- exact Hphi_ext.
+- let phi'. assume Hphi'_iso : group_isomorphism G multG G' multG' phi'.
+  assume Hphi'_ext : forall alpha:set, alpha :e J ->
+    forall x:set, x :e apply_fun Gfam alpha ->
+      apply_fun phi' (apply_fun (apply_fun ifam alpha) x) =
+        apply_fun (apply_fun ifam' alpha) x.
+  claim Hphi'_hom : group_homomorphism G multG G' multG' phi'.
+  { exact (group_isomorphism_homomorphism G multG G' multG' phi' Hphi'_iso). }
+  exact (Hphi_uniq phi' Hphi'_hom Hphi'_ext).
 Admitted.
 
 (** from S68 Lem 68.5 (line 2950 in algtop.tex): extension condition characterizes free products **)
