@@ -62497,6 +62497,61 @@ claim Hex :
                 (0 :e N1)
                 HN1open0).
             }
+            claim Hlt1LiftSub :
+              lifting_of
+                N1
+                (subspace_topology unit_interval unit_interval_topology N1)
+                E
+                Te
+                B
+                Tb
+                p
+                f
+                lt1.
+            {
+              exact HN1lift.
+            }
+            claim Hlt1ContSub0 :
+              continuous_map
+                N1
+                (subspace_topology unit_interval unit_interval_topology N1)
+                E
+                Te
+                lt1.
+            {
+              exact (andEL
+                (continuous_map
+                  N1
+                  (subspace_topology unit_interval unit_interval_topology N1)
+                  E
+                  Te
+                  lt1)
+                (forall x:set, x :e N1 ->
+                  apply_fun p (apply_fun lt1 x) = apply_fun f x)
+                Hlt1LiftSub).
+            }
+            claim Hlt1FunSub :
+              function_on lt1 N1 E.
+            {
+              exact (continuous_map_function_on
+                N1
+                (subspace_topology unit_interval unit_interval_topology N1)
+                E
+                Te
+                lt1
+                Hlt1ContSub0).
+            }
+            claim HlrFunSub :
+              function_on lr Nr E.
+            {
+              exact (continuous_map_function_on
+                Nr
+                (subspace_topology unit_interval unit_interval_topology Nr)
+                E
+                Te
+                lr
+                HlrCont).
+            }
             claim Hlt1Comm0 : apply_fun p (apply_fun lt1 0) = apply_fun f 0.
             {
               exact ((andER
