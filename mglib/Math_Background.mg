@@ -105913,6 +105913,27 @@ rewrite <- (subspace_topology_whole
 exact HimgCompactP.
 Qed.
 
+(** Proven Charlie **)
+Theorem thm60_3_projective_plane_surface_covering_from_parts :
+  m_manifold projective_plane projective_plane_topology 2 ->
+  compact_space (Sn 2) (Sn_topology 2) ->
+  covering_map (Sn 2) (Sn_topology 2)
+    projective_plane projective_plane_topology projective_plane_map ->
+  m_manifold projective_plane projective_plane_topology 2 /\
+  compact_space projective_plane projective_plane_topology /\
+  covering_map (Sn 2) (Sn_topology 2)
+    projective_plane projective_plane_topology projective_plane_map.
+assume Hmanifold HcompactS2 Hcover.
+exact (and3I
+  (m_manifold projective_plane projective_plane_topology 2)
+  (compact_space projective_plane projective_plane_topology)
+  (covering_map (Sn 2) (Sn_topology 2)
+    projective_plane projective_plane_topology projective_plane_map)
+  Hmanifold
+  (projective_plane_compact_from_s2_compact HcompactS2)
+  Hcover).
+Qed.
+
 (** from S60 Thm 60.3 (line 1691 in algtop.tex) **)
 (** LATEX VERSION: P^2 is a compact surface, and the quotient map p: S^2 -> P^2 **)
 (** is a covering map. **)
@@ -105924,7 +105945,26 @@ Theorem thm60_3_projective_plane_surface_covering :
   compact_space projective_plane projective_plane_topology /\
   covering_map (Sn 2) (Sn_topology 2)
     projective_plane projective_plane_topology projective_plane_map.
-admit.
+claim Hmanifold :
+  m_manifold projective_plane projective_plane_topology 2.
+{
+  admit.
+}
+claim HcompactS2 :
+  compact_space (Sn 2) (Sn_topology 2).
+{
+  admit.
+}
+claim Hcover :
+  covering_map (Sn 2) (Sn_topology 2)
+    projective_plane projective_plane_topology projective_plane_map.
+{
+  admit.
+}
+exact (thm60_3_projective_plane_surface_covering_from_parts
+  Hmanifold
+  HcompactS2
+  Hcover).
 Admitted.
 
 (** from S60 Cor 60.4 (line 1725 in algtop.tex) **)
