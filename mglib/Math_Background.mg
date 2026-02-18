@@ -77472,7 +77472,19 @@ claim HallTrivial :
         (graph S1 (fun x:set => x)))
       (fundamental_group_id S1 S1_topology (1, 0)).
   {
-    admit.
+    claim HjBaseEq :
+      apply_fun j (1, 0) = (1, 0).
+    {
+      rewrite (apply_fun_graph
+        S1
+        (fun z:set => z)
+        (1, 0)
+        Hb0S1).
+      reflexivity.
+    }
+    rewrite <- HjBaseEq at 2.
+    rewrite <- HjBaseEq at 4.
+    exact HeqImgs.
   }
   exact (Hinj
     cls
@@ -77481,7 +77493,157 @@ claim HallTrivial :
     HidMem
     HeqImgsStd).
 }
-admit.
+set G := fundamental_group S1 S1_topology (1, 0).
+claim HisoEx :
+  exists phi:set,
+    group_isomorphism
+      G
+      (fundamental_group_mult S1 S1_topology (1, 0))
+      int
+      integers_group_mult
+      phi.
+{
+  exact thm54_5_pi1_circle.
+}
+apply HisoEx.
+let phi.
+assume Hiso.
+claim Hbij :
+  bijection
+    G
+    int
+    phi.
+{
+  exact (group_isomorphism_bijection
+    G
+    (fundamental_group_mult S1 S1_topology (1, 0))
+    int
+    integers_group_mult
+    phi
+    Hiso).
+}
+claim Hsur :
+  forall y:set, y :e int ->
+    exists x:set,
+      x :e G /\
+      apply_fun phi x = y /\
+      (forall x':set, x' :e G -> apply_fun phi x' = y -> x' = x).
+{
+  exact (andER
+    (function_on phi G int)
+    (forall y:set, y :e int ->
+      exists x:set,
+        x :e G /\
+        apply_fun phi x = y /\
+        (forall x':set, x' :e G -> apply_fun phi x' = y -> x' = x))
+    Hbij).
+}
+claim H0int : 0 :e int.
+{
+  exact (Subq_omega_int
+    0
+    (nat_p_omega 0 nat_0)).
+}
+claim H1int : 1 :e int.
+{
+  exact (Subq_omega_int
+    1
+    (nat_p_omega 1 nat_1)).
+}
+claim H0EqPhiId :
+  0 = apply_fun phi (fundamental_group_id S1 S1_topology (1, 0)).
+{
+  apply (Hsur 0 H0int).
+  let x0.
+  assume Hx0Pack.
+  claim Hx0Pair :
+    x0 :e G /\ apply_fun phi x0 = 0.
+  {
+    exact (andEL
+      (x0 :e G /\ apply_fun phi x0 = 0)
+      (forall x':set, x' :e G -> apply_fun phi x' = 0 -> x' = x0)
+      Hx0Pack).
+  }
+  claim Hx0G : x0 :e G.
+  {
+    exact (andEL
+      (x0 :e G)
+      (apply_fun phi x0 = 0)
+      Hx0Pair).
+  }
+  claim Hx0Eq : apply_fun phi x0 = 0.
+  {
+    exact (andER
+      (x0 :e G)
+      (apply_fun phi x0 = 0)
+      Hx0Pair).
+  }
+  claim Hx0Id :
+    x0 = fundamental_group_id S1 S1_topology (1, 0).
+  {
+    exact (HallTrivial
+      x0
+      Hx0G).
+  }
+  rewrite <- Hx0Id.
+  rewrite Hx0Eq.
+  reflexivity.
+}
+claim H1EqPhiId :
+  1 = apply_fun phi (fundamental_group_id S1 S1_topology (1, 0)).
+{
+  apply (Hsur 1 H1int).
+  let x1.
+  assume Hx1Pack.
+  claim Hx1Pair :
+    x1 :e G /\ apply_fun phi x1 = 1.
+  {
+    exact (andEL
+      (x1 :e G /\ apply_fun phi x1 = 1)
+      (forall x':set, x' :e G -> apply_fun phi x' = 1 -> x' = x1)
+      Hx1Pack).
+  }
+  claim Hx1G : x1 :e G.
+  {
+    exact (andEL
+      (x1 :e G)
+      (apply_fun phi x1 = 1)
+      Hx1Pair).
+  }
+  claim Hx1Eq : apply_fun phi x1 = 1.
+  {
+    exact (andER
+      (x1 :e G)
+      (apply_fun phi x1 = 1)
+      Hx1Pair).
+  }
+  claim Hx1Id :
+    x1 = fundamental_group_id S1 S1_topology (1, 0).
+  {
+    exact (HallTrivial
+      x1
+      Hx1G).
+  }
+  rewrite <- Hx1Id.
+  rewrite Hx1Eq.
+  reflexivity.
+}
+claim H0eq1 : 0 = 1.
+{
+  claim HphiEq1 :
+    apply_fun phi (fundamental_group_id S1 S1_topology (1, 0)) = 1.
+  {
+    symmetry.
+    exact H1EqPhiId.
+  }
+  exact (eq_i_tra
+    0
+    (apply_fun phi (fundamental_group_id S1 S1_topology (1, 0)))
+    1
+    H0EqPhiId
+    HphiEq1).
+}
+exact (neq_0_1 H0eq1).
 Admitted.
 
 (** S55 helper: S1 lies in R2 minus origin. **)
