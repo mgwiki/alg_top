@@ -62783,6 +62783,67 @@ claim Hex :
                       (graph V (fun z:set => apply_fun p z)))
                   HslicesUrPack).
               }
+              claim HslicesUrSub : slicesUr c= Te.
+              {
+                exact (andEL
+                  (slicesUr c= Te)
+                  (pairwise_disjoint slicesUr)
+                  (andEL
+                    (slicesUr c= Te /\ pairwise_disjoint slicesUr)
+                    (Union slicesUr = preimage_of E p Ur)
+                    HslicesUrCore)).
+              }
+              claim HslicesUrUnion : Union slicesUr = preimage_of E p Ur.
+              {
+                exact (andER
+                  (slicesUr c= Te /\ pairwise_disjoint slicesUr)
+                  (Union slicesUr = preimage_of E p Ur)
+                  HslicesUrCore).
+              }
+              claim HhomeUr :
+                forall V:set, V :e slicesUr ->
+                  homeomorphism V (subspace_topology E Te V) Ur (subspace_topology B Tb Ur)
+                    (graph V (fun z:set => apply_fun p z)).
+              {
+                exact (andER
+                  ((slicesUr c= Te /\ pairwise_disjoint slicesUr) /\
+                    Union slicesUr = preimage_of E p Ur)
+                  (forall V:set, V :e slicesUr ->
+                    homeomorphism V (subspace_topology E Te V) Ur (subspace_topology B Tb Ur)
+                      (graph V (fun z:set => apply_fun p z)))
+                  HslicesUrPack).
+              }
+              claim HlrRPreUr : apply_fun lr r :e preimage_of E p Ur.
+              {
+                claim HplrRUr : apply_fun p (apply_fun lr r) :e Ur.
+                {
+                  rewrite HplrReqfr.
+                  exact HfrUr.
+                }
+                exact (SepI
+                  E
+                  (fun z:set => apply_fun p z :e Ur)
+                  (apply_fun lr r)
+                  HlrR_E
+                  HplrRUr).
+              }
+              claim HlrRUnion : apply_fun lr r :e Union slicesUr.
+              {
+                exact (mem_eqL
+                  (apply_fun lr r)
+                  (Union slicesUr)
+                  (preimage_of E p Ur)
+                  HslicesUrUnion
+                  HlrRPreUr).
+              }
+              claim HsliceAtLrR :
+                exists Vr:set, apply_fun lr r :e Vr /\ Vr :e slicesUr.
+              {
+                exact (UnionE
+                  slicesUr
+                  (apply_fun lr r)
+                  HlrRUnion).
+              }
               (** TODO Charlie: compare lr with lt1 starting from Hlr0EqLt10 and local evenly-covered neighborhood Ur at f(r). **)
               admit.
             }
