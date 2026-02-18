@@ -117001,12 +117001,9 @@ Admitted.
 (** (lines 3699-3806 in algtop.tex)                              **)
 (** ============================================================ **)
 
-(** from S73 Thm 73.1 (line 3702 in algtop.tex): torus presentation **)
-(** LATEX VERSION: The fundamental group of the torus has a presentation **)
-(** with two generators alpha, beta and a single relation alpha beta alpha^{-1} beta^{-1}. **)
-(** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-Theorem thm73_1_torus_presentation :
+(** Infrastructure helper for S73 Thm 73.1:
+    presentation of torus fundamental group by two generators and one commutator relation. **)
+Theorem torus_fundamental_group_presentation_helper :
   forall x0:set,
   x0 :e torus ->
   exists F multF eF invF alpha beta:set,
@@ -117024,11 +117021,32 @@ Theorem thm73_1_torus_presentation :
 admit.
 Admitted.
 
-(** from S73 Cor 73.2 (line 3724 in algtop.tex): torus pi1 is Z x Z **)
-(** LATEX VERSION: The fundamental group of the torus is a free abelian group of rank 2. **)
-(** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-Theorem cor73_2_torus_free_abelian_rank_2 :
+(** from S73 Thm 73.1 (line 3702 in algtop.tex): torus presentation **)
+(** LATEX VERSION: The fundamental group of the torus has a presentation **)
+(** with two generators alpha, beta and a single relation alpha beta alpha^{-1} beta^{-1}. **)
+(** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
+(** Bounty 110 **)
+Theorem thm73_1_torus_presentation :
+  forall x0:set,
+  x0 :e torus ->
+  exists F multF eF invF alpha beta:set,
+    free_group_with_generators F multF eF invF (UPair 0 1)
+      (graph (UPair 0 1) (fun i:set => if i = 0 then alpha else beta)) /\
+    let rel := commutator multF invF alpha beta in
+    let N := least_normal_subgroup F multF eF invF (Sing rel) in
+	    exists phi:set,
+	      group_isomorphism
+	        (quotient_group_set F multF N)
+	        (quotient_group_mult F multF N)
+	        (fundamental_group torus torus_topology x0)
+	        (fundamental_group_mult torus torus_topology x0)
+	        phi.
+exact torus_fundamental_group_presentation_helper.
+Admitted.
+
+(** Infrastructure helper for S73 Cor 73.2:
+    torus fundamental group is free abelian of rank 2. **)
+Theorem torus_pi1_free_abelian_rank_two_helper :
   forall x0:set,
   x0 :e torus ->
   exists basis:set,
@@ -117040,6 +117058,24 @@ Theorem cor73_2_torus_free_abelian_rank_2 :
       (UPair 0 1)
       basis.
 admit.
+Admitted.
+
+(** from S73 Cor 73.2 (line 3724 in algtop.tex): torus pi1 is Z x Z **)
+(** LATEX VERSION: The fundamental group of the torus is a free abelian group of rank 2. **)
+(** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
+(** Bounty 88 **)
+Theorem cor73_2_torus_free_abelian_rank_2 :
+  forall x0:set,
+  x0 :e torus ->
+	  exists basis:set,
+	    free_abelian_group_with_basis
+	      (fundamental_group torus torus_topology x0)
+	      (fundamental_group_mult torus torus_topology x0)
+	      (fundamental_group_id torus torus_topology x0)
+	      (fundamental_group_inv torus torus_topology x0)
+	      (UPair 0 1)
+	      basis.
+exact torus_pi1_free_abelian_rank_two_helper.
 Admitted.
 
 (** Infrastructure: real number division a/b for b nonzero **)
@@ -117073,11 +117109,9 @@ Definition dunce_cap_topology : set -> set :=
       Hausdorff_space (dunce_cap n) Tx /\
       compact_space (dunce_cap n) Tx).
 
-(** from S73 Lem 73.3 (line 3736 in algtop.tex): closed quotient map preserves normality **)
-(** LATEX VERSION: If pi: E -> X is a closed quotient map and E is normal, then X is normal. **)
-(** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-Theorem lemma73_3_closed_quotient_normal :
+(** Infrastructure helper for S73 Lem 73.3:
+    closed quotient maps preserve normality. **)
+Theorem closed_quotient_map_preserves_normality_helper :
   forall E Te X Tx pi:set,
   topology_on E Te -> topology_on X Tx ->
   normal_space E Te ->
@@ -117088,12 +117122,24 @@ Theorem lemma73_3_closed_quotient_normal :
 admit.
 Admitted.
 
-(** from S73 Thm 73.4 (line 3761 in algtop.tex): pi1 of n-fold dunce cap **)
-(** LATEX VERSION: The fundamental group of the n-fold dunce cap is a cyclic group **)
-(** of order n. **)
-(** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-Theorem thm73_4_dunce_cap_pi1 :
+(** from S73 Lem 73.3 (line 3736 in algtop.tex): closed quotient map preserves normality **)
+(** LATEX VERSION: If pi: E -> X is a closed quotient map and E is normal, then X is normal. **)
+(** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
+(** Bounty 88 **)
+Theorem lemma73_3_closed_quotient_normal :
+  forall E Te X Tx pi:set,
+  topology_on E Te -> topology_on X Tx ->
+  normal_space E Te ->
+	  continuous_map E Te X Tx pi ->
+	  (forall C:set, closed_in E Te C -> closed_in X Tx (image_of pi C)) ->
+	  (forall V:set, V :e Tx -> {x :e E | apply_fun pi x :e V} :e Te) ->
+	  normal_space X Tx.
+exact closed_quotient_map_preserves_normality_helper.
+Admitted.
+
+(** Infrastructure helper for S73 Thm 73.4:
+    fundamental group of n-fold dunce cap is cyclic of order n. **)
+Theorem n_fold_dunce_cap_fundamental_group_helper :
   forall n:set,
   n :e omega -> n <> 0 -> ordsucc 0 :e n ->
   forall x0:set,
@@ -117107,12 +117153,28 @@ Theorem thm73_4_dunce_cap_pi1 :
 admit.
 Admitted.
 
-(** from S73 Exercise 1(a) (line 3789 in algtop.tex) **)
-(** LATEX VERSION: Find a space with pi1 isomorphic to Z/n x Z/m. **)
-(** (Product of two dunce caps of orders n and m.) **)
-(** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
-Theorem ex73_1a_cyclic_product_space :
+(** from S73 Thm 73.4 (line 3761 in algtop.tex): pi1 of n-fold dunce cap **)
+(** LATEX VERSION: The fundamental group of the n-fold dunce cap is a cyclic group **)
+(** of order n. **)
+(** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
+(** Bounty 110 **)
+Theorem thm73_4_dunce_cap_pi1 :
+  forall n:set,
+  n :e omega -> n <> 0 -> ordsucc 0 :e n ->
+	  forall x0:set,
+	    x0 :e dunce_cap n ->
+	    cyclic_group
+	      (fundamental_group (dunce_cap n) (dunce_cap_topology n) x0)
+	      (fundamental_group_mult (dunce_cap n) (dunce_cap_topology n) x0)
+	      (fundamental_group_id (dunce_cap n) (dunce_cap_topology n) x0)
+	      (fundamental_group_inv (dunce_cap n) (dunce_cap_topology n) x0) /\
+	    equip (fundamental_group (dunce_cap n) (dunce_cap_topology n) x0) n.
+exact n_fold_dunce_cap_fundamental_group_helper.
+Admitted.
+
+(** Infrastructure helper for S73 Exercise 1(a):
+    existence of a space with pi1 isomorphic to Z/n x Z/m. **)
+Theorem cyclic_product_fundamental_group_space_helper :
   forall n m:set, n :e omega -> n <> 0 -> m :e omega -> m <> 0 ->
   exists X Tx x0:set,
     compact_space X Tx /\ Hausdorff_space X Tx /\ x0 :e X /\
@@ -117130,12 +117192,32 @@ Theorem ex73_1a_cyclic_product_space :
 admit.
 Admitted.
 
-(** from S73 Exercise 1(c) (line 3792 in algtop.tex) **)
-(** LATEX VERSION: Find a space with pi1 isomorphic to Z/n free-product Z/m. **)
-(** (Wedge of two dunce caps of orders n and m.) **)
+(** from S73 Exercise 1(a) (line 3789 in algtop.tex) **)
+(** LATEX VERSION: Find a space with pi1 isomorphic to Z/n x Z/m. **)
+(** (Product of two dunce caps of orders n and m.) **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
 (** Bounty 33 **)
-Theorem ex73_1c_cyclic_free_product_space :
+Theorem ex73_1a_cyclic_product_space :
+  forall n m:set, n :e omega -> n <> 0 -> m :e omega -> m <> 0 ->
+  exists X Tx x0:set,
+    compact_space X Tx /\ Hausdorff_space X Tx /\ x0 :e X /\
+    abelian_group
+      (fundamental_group X Tx x0)
+      (fundamental_group_mult X Tx x0)
+      (fundamental_group_id X Tx x0)
+      (fundamental_group_inv X Tx x0) /\
+	    cyclic_group
+	      (fundamental_group X Tx x0)
+	      (fundamental_group_mult X Tx x0)
+	      (fundamental_group_id X Tx x0)
+	      (fundamental_group_inv X Tx x0) /\
+	    equip (fundamental_group X Tx x0) (mul_nat n m).
+exact cyclic_product_fundamental_group_space_helper.
+Admitted.
+
+(** Infrastructure helper for S73 Exercise 1(c):
+    existence of a space with pi1 isomorphic to Z/n free-product Z/m. **)
+Theorem cyclic_free_product_fundamental_group_space_helper :
   forall n m:set, n :e omega -> n <> 0 -> m :e omega -> m <> 0 ->
   exists X Tx x0:set,
     compact_space X Tx /\ Hausdorff_space X Tx /\ x0 :e X /\
@@ -117152,6 +117234,30 @@ Theorem ex73_1c_cyclic_free_product_space :
             (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
             FP multFP phi.
 admit.
+Admitted.
+
+(** from S73 Exercise 1(c) (line 3792 in algtop.tex) **)
+(** LATEX VERSION: Find a space with pi1 isomorphic to Z/n free-product Z/m. **)
+(** (Wedge of two dunce caps of orders n and m.) **)
+(** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
+(** Bounty 33 **)
+Theorem ex73_1c_cyclic_free_product_space :
+  forall n m:set, n :e omega -> n <> 0 -> m :e omega -> m <> 0 ->
+  exists X Tx x0:set,
+    compact_space X Tx /\ Hausdorff_space X Tx /\ x0 :e X /\
+    exists G1 mult1 e1 inv1 G2 mult2 e2 inv2:set,
+      cyclic_group G1 mult1 e1 inv1 /\ equip G1 n /\
+      cyclic_group G2 mult2 e2 inv2 /\ equip G2 m /\
+	      exists FP multFP eFP invFP ifam:set,
+	        external_free_product FP multFP eFP invFP (UPair 0 1)
+	          (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2))
+	          (graph (UPair 0 1) (fun i:set => if i = 0 then mult1 else mult2))
+	          ifam /\
+	        exists phi:set,
+	          group_isomorphism
+	            (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+	            FP multFP phi.
+exact cyclic_free_product_fundamental_group_space_helper.
 Admitted.
 
 (** from S73 Exercise 4 (line 3805 in algtop.tex) **)
