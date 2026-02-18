@@ -70946,6 +70946,491 @@ Definition generator_of : set -> set -> set -> set -> set -> prop :=
          (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
           g = group_power_nat mult e (apply_fun inv x) (ordsucc m))).
 
+(** Infrastructure helper: group homomorphism sends identity to identity (local cyclic section copy). **)
+(** Proven Bob **)
+Theorem group_hom_sends_identity_cyclic_helper :
+  forall G mult e inv H multH eH invH h:set,
+  group_structure G mult e inv ->
+  group_structure H multH eH invH ->
+  group_homomorphism G mult H multH h ->
+  apply_fun h e = eH.
+let G mult e inv H multH eH invH h.
+assume HgrpG HgrpH Hhom.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  HgrpG).
+assume HmultG_fn HinvG_fn HeG HassocG HidG HinvG.
+apply (and6E
+  (function_on multH (setprod H H) H)
+  (function_on invH H H)
+  (eH :e H)
+  (forall x y z:set, x :e H -> y :e H -> z :e H ->
+    apply_fun multH (apply_fun multH (x, y), z) = apply_fun multH (x, apply_fun multH (y, z)))
+  (forall x:set, x :e H -> apply_fun multH (eH, x) = x /\ apply_fun multH (x, eH) = x)
+  (forall x:set, x :e H ->
+    apply_fun multH (x, apply_fun invH x) = eH /\ apply_fun multH (apply_fun invH x, x) = eH)
+  HgrpH).
+assume HmultH_fn HinvH_fn HeH HassocH HidH HinvH.
+claim Hhfn : function_on h G H.
+{
+  exact (group_homomorphism_function_on G mult H multH h Hhom).
+}
+claim Hhe_in_H : apply_fun h e :e H.
+{
+  exact (Hhfn e HeG).
+}
+claim Hee_eq : apply_fun mult (e, e) = e.
+{
+  exact (andEL
+    (apply_fun mult (e, e) = e)
+    (apply_fun mult (e, e) = e)
+    (HidG e HeG)).
+}
+claim Hhe_sq : apply_fun multH (apply_fun h e, apply_fun h e) = apply_fun h e.
+{
+  claim Hmr :
+    apply_fun h (apply_fun mult (e, e)) =
+    apply_fun multH (apply_fun h e, apply_fun h e).
+  {
+    exact (group_homomorphism_mult_rule
+      G
+      mult
+      H
+      multH
+      h
+      e
+      e
+      Hhom
+      HeG
+      HeG).
+  }
+  rewrite <- Hmr.
+  rewrite Hee_eq.
+  reflexivity.
+}
+claim HinvH_he_he :
+  apply_fun multH (apply_fun invH (apply_fun h e), apply_fun h e) = eH.
+{
+  exact (andER
+    (apply_fun multH (apply_fun h e, apply_fun invH (apply_fun h e)) = eH)
+    (apply_fun multH (apply_fun invH (apply_fun h e), apply_fun h e) = eH)
+    (HinvH (apply_fun h e) Hhe_in_H)).
+}
+claim HinvH_he_in_H : apply_fun invH (apply_fun h e) :e H.
+{
+  exact (HinvH_fn (apply_fun h e) Hhe_in_H).
+}
+claim Hassoc_step :
+  apply_fun multH (apply_fun multH (apply_fun invH (apply_fun h e), apply_fun h e), apply_fun h e) =
+  apply_fun multH (apply_fun invH (apply_fun h e), apply_fun h e).
+{
+  rewrite (HassocH
+    (apply_fun invH (apply_fun h e))
+    (apply_fun h e)
+    (apply_fun h e)
+    HinvH_he_in_H
+    Hhe_in_H
+    Hhe_in_H).
+  rewrite Hhe_sq.
+  reflexivity.
+}
+claim HeH_he : apply_fun multH (eH, apply_fun h e) = eH.
+{
+  rewrite <- HinvH_he_he.
+  exact Hassoc_step.
+}
+claim H1 : apply_fun multH (eH, apply_fun h e) = apply_fun h e.
+{
+  exact (andEL
+    (apply_fun multH (eH, apply_fun h e) = apply_fun h e)
+    (apply_fun multH (apply_fun h e, eH) = apply_fun h e)
+    (HidH (apply_fun h e) Hhe_in_H)).
+}
+rewrite <- H1.
+exact HeH_he.
+Qed.
+
+(** Proven Bob **)
+(** Infrastructure helper: group homomorphism sends inverses to inverses (local cyclic section copy). **)
+Theorem group_hom_sends_inverse_cyclic_helper :
+  forall G mult e inv H multH eH invH h:set,
+  group_structure G mult e inv ->
+  group_structure H multH eH invH ->
+  group_homomorphism G mult H multH h ->
+  forall x:set, x :e G ->
+  apply_fun h (apply_fun inv x) = apply_fun invH (apply_fun h x).
+let G mult e inv H multH eH invH h.
+assume HgrpG HgrpH Hhom.
+let x.
+assume HxG.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  HgrpG).
+assume HmultG_fn HinvG_fn HeG HassocG HidG HinvG.
+apply (and6E
+  (function_on multH (setprod H H) H)
+  (function_on invH H H)
+  (eH :e H)
+  (forall a b c:set, a :e H -> b :e H -> c :e H ->
+    apply_fun multH (apply_fun multH (a, b), c) = apply_fun multH (a, apply_fun multH (b, c)))
+  (forall a:set, a :e H -> apply_fun multH (eH, a) = a /\ apply_fun multH (a, eH) = a)
+  (forall a:set, a :e H ->
+    apply_fun multH (a, apply_fun invH a) = eH /\ apply_fun multH (apply_fun invH a, a) = eH)
+  HgrpH).
+assume HmultH_fn HinvH_fn HeH HassocH HidH HinvH.
+claim Hhfn : function_on h G H.
+{
+  exact (group_homomorphism_function_on G mult H multH h Hhom).
+}
+claim Hhx_in_H : apply_fun h x :e H.
+{
+  exact (Hhfn x HxG).
+}
+claim Hinvx_in_G : apply_fun inv x :e G.
+{
+  exact (HinvG_fn x HxG).
+}
+claim Hhinvx_in_H : apply_fun h (apply_fun inv x) :e H.
+{
+  exact (Hhfn (apply_fun inv x) Hinvx_in_G).
+}
+claim HinvH_hx_in_H : apply_fun invH (apply_fun h x) :e H.
+{
+  exact (HinvH_fn (apply_fun h x) Hhx_in_H).
+}
+claim Hhe_eq : apply_fun h e = eH.
+{
+  exact (group_hom_sends_identity_cyclic_helper
+    G
+    mult
+    e
+    inv
+    H
+    multH
+    eH
+    invH
+    h
+    HgrpG
+    HgrpH
+    Hhom).
+}
+claim Hx_xinv : apply_fun mult (x, apply_fun inv x) = e.
+{
+  exact (andEL
+    (apply_fun mult (x, apply_fun inv x) = e)
+    (apply_fun mult (apply_fun inv x, x) = e)
+    (HinvG x HxG)).
+}
+claim Hmult_hx_hinvx : apply_fun multH (apply_fun h x, apply_fun h (apply_fun inv x)) = eH.
+{
+  claim Hmr :
+    apply_fun h (apply_fun mult (x, apply_fun inv x)) =
+    apply_fun multH (apply_fun h x, apply_fun h (apply_fun inv x)).
+  {
+    exact (group_homomorphism_mult_rule
+      G
+      mult
+      H
+      multH
+      h
+      x
+      (apply_fun inv x)
+      Hhom
+      HxG
+      Hinvx_in_G).
+  }
+  rewrite <- Hmr.
+  rewrite Hx_xinv.
+  exact Hhe_eq.
+}
+claim Hcond :
+  apply_fun multH
+    (apply_fun invH (apply_fun invH (apply_fun h x)), apply_fun h (apply_fun inv x)) = eH.
+{
+  rewrite (group_inv_inv
+    H
+    multH
+    invH
+    eH
+    (apply_fun h x)
+    HmultH_fn
+    HinvH_fn
+    HeH
+    HassocH
+    HidH
+    HinvH
+    Hhx_in_H).
+  exact Hmult_hx_hinvx.
+}
+exact (group_left_inv_solve
+  H
+  multH
+  invH
+  eH
+  (apply_fun invH (apply_fun h x))
+  (apply_fun h (apply_fun inv x))
+  HmultH_fn
+  HinvH_fn
+  HeH
+  HassocH
+  HidH
+  HinvH
+  HinvH_hx_in_H
+  Hhinvx_in_H
+  Hcond).
+Qed.
+
+(** Proven Bob **)
+(** Infrastructure helper: homomorphisms preserve natural powers (local cyclic section copy). **)
+Theorem group_homomorphism_preserves_power_nat_cyclic_helper :
+  forall G mult e inv H multH eH invH h x n:set,
+  group_structure G mult e inv ->
+  group_structure H multH eH invH ->
+  group_homomorphism G mult H multH h ->
+  x :e G ->
+  n :e omega ->
+  apply_fun h (group_power_nat mult e x n) =
+  group_power_nat multH eH (apply_fun h x) n.
+let G mult e inv H multH eH invH h x n.
+assume HgrpG HgrpH Hhom HxG HnO.
+claim HhFn : function_on h G H.
+{
+  exact (group_homomorphism_function_on
+    G
+    mult
+    H
+    multH
+    h
+    Hhom).
+}
+  claim HpowClosed :
+  forall k:set, nat_p k -> group_power_nat mult e x k :e G.
+{
+  apply nat_ind.
+  - prove group_power_nat mult e x 0 :e G.
+    claim Hpow0 : group_power_nat mult e x 0 = e.
+    {
+      exact (nat_primrec_0
+        e
+        (fun _ r => apply_fun mult (x, r))).
+    }
+    rewrite Hpow0.
+    apply (and6E
+      (function_on mult (setprod G G) G)
+      (function_on inv G G)
+      (e :e G)
+      (forall a b c:set, a :e G -> b :e G -> c :e G ->
+        apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+      (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+      (forall a:set, a :e G ->
+        apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+      HgrpG).
+    assume HmultFn HinvFn HeG Hassoc Hid HinvLaw.
+    exact HeG.
+  - let k.
+    assume HkNat.
+    assume IH : group_power_nat mult e x k :e G.
+    claim HpowS :
+      group_power_nat mult e x (ordsucc k) =
+      apply_fun mult (x, group_power_nat mult e x k).
+    {
+      exact (nat_primrec_S
+        e
+        (fun _ r => apply_fun mult (x, r))
+        k
+        HkNat).
+    }
+    rewrite HpowS.
+    apply (and6E
+      (function_on mult (setprod G G) G)
+      (function_on inv G G)
+      (e :e G)
+      (forall a b c:set, a :e G -> b :e G -> c :e G ->
+        apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+      (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+      (forall a:set, a :e G ->
+        apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+      HgrpG).
+    assume HmultFn HinvFn HeG Hassoc Hid HinvLaw.
+    exact (HmultFn
+      (x, group_power_nat mult e x k)
+      (tuple_2_setprod_by_pair_Sigma
+        G
+        G
+        x
+        (group_power_nat mult e x k)
+        HxG
+        IH)).
+}
+claim HhE : apply_fun h e = eH.
+{
+  exact (group_hom_sends_identity_cyclic_helper
+    G
+    mult
+    e
+    inv
+    H
+    multH
+    eH
+    invH
+    h
+    HgrpG
+    HgrpH
+    Hhom).
+}
+claim HpowNat :
+  forall k:set, nat_p k ->
+    apply_fun h (group_power_nat mult e x k) =
+    group_power_nat multH eH (apply_fun h x) k.
+{
+  apply nat_ind.
+  - claim Hpow0L : group_power_nat mult e x 0 = e.
+    {
+      exact (nat_primrec_0
+        e
+        (fun _ r => apply_fun mult (x, r))).
+    }
+    claim Hpow0R : group_power_nat multH eH (apply_fun h x) 0 = eH.
+    {
+      exact (nat_primrec_0
+        eH
+        (fun _ r => apply_fun multH (apply_fun h x, r))).
+    }
+    rewrite Hpow0L.
+    rewrite HhE.
+    rewrite Hpow0R.
+    reflexivity.
+  - let k.
+    assume HkNat.
+    assume IH :
+      apply_fun h (group_power_nat mult e x k) =
+      group_power_nat multH eH (apply_fun h x) k.
+    claim HpowSkL :
+      group_power_nat mult e x (ordsucc k) =
+      apply_fun mult (x, group_power_nat mult e x k).
+    {
+      exact (nat_primrec_S
+        e
+        (fun _ r => apply_fun mult (x, r))
+        k
+        HkNat).
+    }
+    claim HpowSkR :
+      group_power_nat multH eH (apply_fun h x) (ordsucc k) =
+      apply_fun multH (apply_fun h x, group_power_nat multH eH (apply_fun h x) k).
+    {
+      exact (nat_primrec_S
+        eH
+        (fun _ r => apply_fun multH (apply_fun h x, r))
+        k
+        HkNat).
+    }
+    claim HpowkG : group_power_nat mult e x k :e G.
+    {
+      exact (HpowClosed k HkNat).
+    }
+    rewrite HpowSkL.
+    rewrite (group_homomorphism_mult_rule
+      G
+      mult
+      H
+      multH
+      h
+      x
+      (group_power_nat mult e x k)
+      Hhom
+      HxG
+      HpowkG).
+    rewrite IH.
+    rewrite HpowSkR.
+    reflexivity.
+}
+exact (HpowNat n (omega_nat_p n HnO)).
+Qed.
+
+(** Proven Bob **)
+(** Infrastructure helper: homomorphisms preserve natural powers of inverses. **)
+Theorem group_homomorphism_preserves_inverse_power_nat_cyclic_helper :
+  forall G mult e inv H multH eH invH h x n:set,
+  group_structure G mult e inv ->
+  group_structure H multH eH invH ->
+  group_homomorphism G mult H multH h ->
+  x :e G ->
+  n :e omega ->
+  apply_fun h (group_power_nat mult e (apply_fun inv x) n) =
+  group_power_nat multH eH (apply_fun invH (apply_fun h x)) n.
+let G mult e inv H multH eH invH h x n.
+assume HgrpG HgrpH Hhom HxG HnO.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  HgrpG).
+assume HmultFn HinvFn HeG Hassoc Hid HinvLaw.
+claim HinvxG : apply_fun inv x :e G.
+{
+  exact (HinvFn x HxG).
+}
+claim HpowInv :
+  apply_fun h (group_power_nat mult e (apply_fun inv x) n) =
+  group_power_nat multH eH (apply_fun h (apply_fun inv x)) n.
+{
+  exact (group_homomorphism_preserves_power_nat_cyclic_helper
+    G
+    mult
+    e
+    inv
+    H
+    multH
+    eH
+    invH
+    h
+    (apply_fun inv x)
+    n
+    HgrpG
+    HgrpH
+    Hhom
+    HinvxG
+    HnO).
+}
+rewrite HpowInv.
+rewrite (group_hom_sends_inverse_cyclic_helper
+  G
+  mult
+  e
+  inv
+  H
+  multH
+  eH
+  invH
+  h
+  HgrpG
+  HgrpH
+  Hhom
+  x
+  HxG).
+reflexivity.
+Qed.
+
 (** from S54 text (line 833 in algtop.tex) **)
 (** LATEX VERSION: A group is cyclic of infinite order iff it is isomorphic to Z; **)
 (** cyclic of order k iff isomorphic to Z/k. **)
