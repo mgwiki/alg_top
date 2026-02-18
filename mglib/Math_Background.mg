@@ -113484,30 +113484,26 @@ apply (iffI
         Hgens
         Halpha).
     }
-    claim Hsub_factor : subgroup_of Galpha G mult e inv.
-    {
-      rewrite HGalpha_def.
-      exact (lemma69_1_factor_family_subgroup_from_free_product
-        G
-        mult
-        e
-        inv
-        J
-        gens
-        alpha
-        Hfp
-        Halpha).
-    }
     claim Hgrp_factor : group_structure Galpha mult e inv.
     {
+      rewrite HGalpha_def.
       exact (subgroup_inherits_group_structure
         G
         mult
         e
         inv
-        Galpha
+        (apply_fun Gfam0 alpha)
         Hgrp_free
-        Hsub_factor).
+        (lemma69_1_factor_family_subgroup_from_free_product
+          G
+          mult
+          e
+          inv
+          J
+          gens
+          alpha
+          Hfp
+          Halpha)).
     }
     claim Hcyc_factor : cyclic_group Galpha mult e inv.
     {
