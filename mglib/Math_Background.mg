@@ -111642,16 +111642,31 @@ apply (andI
       assume HnO : n :e omega.
       exact (HnatPow n (omega_nat_p n HnO)).
     }
-    apply andI.
-    - apply andI.
-      + let n.
+    claim HpowPair :
+      (forall n:set, n :e omega ->
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n :e quotient_group_set G mult C) /\
+      (forall m:set, m :e omega ->
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun
+            (quotient_group_inv G mult inv C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha))
+          (ordsucc m) :e quotient_group_set G mult C).
+    {
+      apply andI.
+      - let n.
         assume HnO : n :e omega.
         exact (HpowClosed
           (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
           HaQ
           n
           HnO).
-      + let m.
+      - let m.
         assume HmO : m :e omega.
         claim HinvAQ :
           apply_fun
@@ -111670,7 +111685,30 @@ apply (andI
           HinvAQ
           (ordsucc m)
           (omega_ordsucc m HmO)).
-    - admit.
+    }
+    apply (andI
+      ((forall n:set, n :e omega ->
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n :e quotient_group_set G mult C) /\
+       (forall m:set, m :e omega ->
+         group_power_nat
+           (quotient_group_mult G mult C)
+           (quotient_group_id G mult e C)
+           (apply_fun
+             (quotient_group_inv G mult inv C)
+             (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha))
+           (ordsucc m) :e quotient_group_set G mult C))
+      (~(exists n:set, n :e omega /\ n <> 0 /\
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          n = quotient_group_id G mult e C))
+      HpowPair).
+    admit.
   admit.
 Admitted.
 
