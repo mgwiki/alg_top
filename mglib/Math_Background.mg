@@ -57402,8 +57402,264 @@ claim Hex :
                 rewrite <- HpluuEqfu.
                 exact HguLuu.
               }
-              (** TODO Bob: combine HluLift on Nu and localNt on Nt using HlocalNtAtU to obtain a seed witness at t. **)
-              admit.
+              claim HlocalNtLift :
+                lifting_of
+                  Nt
+                  (subspace_topology unit_interval unit_interval_topology Nt)
+                  E
+                  Te
+                  B
+                  Tb
+                  p
+                  f
+                  localNt.
+              {
+                exact (andI
+                  (continuous_map
+                    Nt
+                    (subspace_topology unit_interval unit_interval_topology Nt)
+                    E
+                    Te
+                    localNt)
+                  (forall x:set, x :e Nt ->
+                    apply_fun p (apply_fun localNt x) = apply_fun f x)
+                  HlocalNtContE
+                  HlocalNtComm).
+              }
+              set Ntu := Nu :\/: Nt.
+              claim HNtuOpen : Ntu :e unit_interval_topology.
+              {
+                exact (topology_binunion_closed
+                  unit_interval
+                  unit_interval_topology
+                  Nu
+                  Nt
+                  unit_interval_topology_on
+                  HNuOpen
+                  HNtOpen).
+              }
+              claim H0Ntu : 0 :e Ntu.
+              {
+                exact (binunionI1
+                  Nu
+                  Nt
+                  0
+                  H0Nu).
+              }
+              claim HtNtu : t :e Ntu.
+              {
+                exact (binunionI2
+                  Nu
+                  Nt
+                  t
+                  HtNt).
+              }
+              claim HtSeedProp :
+                exists N0 l0:set,
+                  N0 :e unit_interval_topology /\
+                  0 :e N0 /\
+                  t :e N0 /\
+                  lifting_of
+                    N0
+                    (subspace_topology unit_interval unit_interval_topology N0)
+                    E
+                    Te
+                    B
+                    Tb
+                    p
+                    f
+                    l0 /\
+                  apply_fun l0 0 = e0.
+              {
+                claim HexGlue :
+                  exists l0:set,
+                    continuous_map
+                      Ntu
+                      (subspace_topology unit_interval unit_interval_topology Ntu)
+                      E
+                      Te
+                      l0 /\
+                    apply_fun l0 0 = e0 /\
+                    (forall x:set, x :e Ntu ->
+                      apply_fun p (apply_fun l0 x) = apply_fun f x).
+                {
+                  (** TODO Bob: glue lu on Nu with localNt on Nt using HlocalNtAtU (and overlap compatibility). **)
+                  admit.
+                }
+                apply HexGlue.
+                let l0.
+                assume Hl0Pack.
+                claim Hl0Left :
+                  continuous_map
+                    Ntu
+                    (subspace_topology unit_interval unit_interval_topology Ntu)
+                    E
+                    Te
+                    l0 /\
+                  apply_fun l0 0 = e0.
+                {
+                  exact (andEL
+                    (continuous_map
+                      Ntu
+                      (subspace_topology unit_interval unit_interval_topology Ntu)
+                      E
+                      Te
+                      l0 /\
+                      apply_fun l0 0 = e0)
+                    (forall x:set, x :e Ntu ->
+                      apply_fun p (apply_fun l0 x) = apply_fun f x)
+                    Hl0Pack).
+                }
+                claim Hl0Cont :
+                  continuous_map
+                    Ntu
+                    (subspace_topology unit_interval unit_interval_topology Ntu)
+                    E
+                    Te
+                    l0.
+                {
+                  exact (andEL
+                    (continuous_map
+                      Ntu
+                      (subspace_topology unit_interval unit_interval_topology Ntu)
+                      E
+                      Te
+                      l0)
+                    (apply_fun l0 0 = e0)
+                    Hl0Left).
+                }
+                claim Hl00 : apply_fun l0 0 = e0.
+                {
+                  exact (andER
+                    (continuous_map
+                      Ntu
+                      (subspace_topology unit_interval unit_interval_topology Ntu)
+                      E
+                      Te
+                      l0)
+                    (apply_fun l0 0 = e0)
+                    Hl0Left).
+                }
+                claim Hl0Comm :
+                  forall x:set, x :e Ntu ->
+                    apply_fun p (apply_fun l0 x) = apply_fun f x.
+                {
+                  exact (andER
+                    (continuous_map
+                      Ntu
+                      (subspace_topology unit_interval unit_interval_topology Ntu)
+                      E
+                      Te
+                      l0 /\
+                      apply_fun l0 0 = e0)
+                    (forall x:set, x :e Ntu ->
+                      apply_fun p (apply_fun l0 x) = apply_fun f x)
+                    Hl0Pack).
+                }
+                claim Hl0Lift :
+                  lifting_of
+                    Ntu
+                    (subspace_topology unit_interval unit_interval_topology Ntu)
+                    E
+                    Te
+                    B
+                    Tb
+                    p
+                    f
+                    l0.
+                {
+                  exact (andI
+                    (continuous_map
+                      Ntu
+                      (subspace_topology unit_interval unit_interval_topology Ntu)
+                      E
+                      Te
+                      l0)
+                    (forall x:set, x :e Ntu ->
+                      apply_fun p (apply_fun l0 x) = apply_fun f x)
+                    Hl0Cont
+                    Hl0Comm).
+                }
+                witness Ntu.
+                witness l0.
+                claim HNtu0t :
+                  (Ntu :e unit_interval_topology /\ 0 :e Ntu) /\ t :e Ntu.
+                {
+                  exact (andI
+                    (Ntu :e unit_interval_topology /\ 0 :e Ntu)
+                    (t :e Ntu)
+                    (andI
+                      (Ntu :e unit_interval_topology)
+                      (0 :e Ntu)
+                      HNtuOpen
+                      H0Ntu)
+                    HtNtu).
+                }
+                claim HNtu0tLift :
+                  ((Ntu :e unit_interval_topology /\ 0 :e Ntu) /\ t :e Ntu) /\
+                  lifting_of
+                    Ntu
+                    (subspace_topology unit_interval unit_interval_topology Ntu)
+                    E
+                    Te
+                    B
+                    Tb
+                    p
+                    f
+                    l0.
+                {
+                  exact (andI
+                    ((Ntu :e unit_interval_topology /\ 0 :e Ntu) /\ t :e Ntu)
+                    (lifting_of
+                      Ntu
+                      (subspace_topology unit_interval unit_interval_topology Ntu)
+                      E
+                      Te
+                      B
+                      Tb
+                      p
+                      f
+                      l0)
+                    HNtu0t
+                    Hl0Lift).
+                }
+                exact (andI
+                  (((Ntu :e unit_interval_topology /\ 0 :e Ntu) /\ t :e Ntu) /\
+                    lifting_of
+                      Ntu
+                      (subspace_topology unit_interval unit_interval_topology Ntu)
+                      E
+                      Te
+                      B
+                      Tb
+                      p
+                      f
+                      l0)
+                  (apply_fun l0 0 = e0)
+                  HNtu0tLift
+                  Hl00).
+              }
+              exact (SepI
+                unit_interval
+                (fun t0:set =>
+                  exists Nt0 lt0:set,
+                    Nt0 :e unit_interval_topology /\
+                    0 :e Nt0 /\
+                    t0 :e Nt0 /\
+                    lifting_of
+                      Nt0
+                      (subspace_topology unit_interval unit_interval_topology Nt0)
+                      E
+                      Te
+                      B
+                      Tb
+                      p
+                      f
+                      lt0 /\
+                    apply_fun lt0 0 = e0)
+                t
+                HtUnit
+                HtSeedProp).
             }
             exact (HtNotSeed
               HtSeed).
