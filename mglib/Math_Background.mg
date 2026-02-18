@@ -118230,27 +118230,421 @@ exact (Hnat n (omega_nat_p n HnO)).
 Qed.
 
 (** Helper: integers under surreal addition form a group. **)
+(** Proven Bob **)
 Theorem integers_group_is_group :
   group_structure int integers_group_mult 0 integers_group_inv.
-admit.
-Admitted.
+claim HmultDef :
+  integers_group_mult =
+  graph (setprod int int) (fun p:set => add_SNo (p 0) (p 1)).
+{
+  reflexivity.
+}
+claim HinvDef :
+  integers_group_inv =
+  graph int (fun n:set => minus_SNo n).
+{
+  reflexivity.
+}
+prove
+  function_on integers_group_mult (setprod int int) int /\
+  function_on integers_group_inv int int /\
+  0 :e int /\
+  (forall x y z:set, x :e int -> y :e int -> z :e int ->
+    apply_fun integers_group_mult (apply_fun integers_group_mult (x, y), z) =
+    apply_fun integers_group_mult (x, apply_fun integers_group_mult (y, z))) /\
+  (forall x:set, x :e int ->
+    apply_fun integers_group_mult (0, x) = x /\
+    apply_fun integers_group_mult (x, 0) = x) /\
+  (forall x:set, x :e int ->
+    apply_fun integers_group_mult (x, apply_fun integers_group_inv x) = 0 /\
+    apply_fun integers_group_mult (apply_fun integers_group_inv x, x) = 0).
+apply and6I.
+- rewrite HmultDef.
+  apply (total_function_on_function_on
+    (graph (setprod int int) (fun p:set => add_SNo (p 0) (p 1)))
+    (setprod int int)
+    int).
+  apply (total_function_on_graph
+    (setprod int int)
+    int
+    (fun p:set => add_SNo (p 0) (p 1))).
+  let p.
+  assume Hp : p :e setprod int int.
+  claim Hp0Int : p 0 :e int.
+  {
+    exact (ap0_Sigma int (fun _ : set => int) p Hp).
+  }
+  claim Hp1Int : p 1 :e int.
+  {
+    exact (ap1_Sigma int (fun _ : set => int) p Hp).
+  }
+  exact (int_add_SNo
+    (p 0)
+    Hp0Int
+    (p 1)
+    Hp1Int).
+- rewrite HinvDef.
+  apply (total_function_on_function_on
+    (graph int (fun n:set => minus_SNo n))
+    int
+    int).
+  apply (total_function_on_graph
+    int
+    int
+    (fun n:set => minus_SNo n)).
+  let n.
+  assume Hn : n :e int.
+  exact (int_minus_SNo n Hn).
+- exact (Subq_omega_int 0 (nat_p_omega 0 nat_0)).
+- let x y z.
+  assume Hx : x :e int.
+  assume Hy : y :e int.
+  assume Hz : z :e int.
+  claim HxS : SNo x.
+  {
+    exact (int_SNo x Hx).
+  }
+  claim HyS : SNo y.
+  {
+    exact (int_SNo y Hy).
+  }
+  claim HzS : SNo z.
+  {
+    exact (int_SNo z Hz).
+  }
+  claim HxyInt : add_SNo x y :e int.
+  {
+    exact (int_add_SNo x Hx y Hy).
+  }
+  claim HyzInt : add_SNo y z :e int.
+  {
+    exact (int_add_SNo y Hy z Hz).
+  }
+  claim HxyEval :
+    apply_fun integers_group_mult (x, y) = add_SNo x y.
+  {
+    rewrite HmultDef.
+    rewrite (apply_fun_graph
+      (setprod int int)
+      (fun p:set => add_SNo (p 0) (p 1))
+      (x, y)
+      (tuple_2_setprod_by_pair_Sigma
+        int
+        int
+        x
+        y
+        Hx
+        Hy)).
+    rewrite (tuple_2_0_eq x y).
+    rewrite (tuple_2_1_eq x y).
+    reflexivity.
+  }
+  claim HyzEval :
+    apply_fun integers_group_mult (y, z) = add_SNo y z.
+  {
+    rewrite HmultDef.
+    rewrite (apply_fun_graph
+      (setprod int int)
+      (fun p:set => add_SNo (p 0) (p 1))
+      (y, z)
+      (tuple_2_setprod_by_pair_Sigma
+        int
+        int
+        y
+        z
+        Hy
+        Hz)).
+    rewrite (tuple_2_0_eq y z).
+    rewrite (tuple_2_1_eq y z).
+    reflexivity.
+  }
+  claim HlhsEval :
+    apply_fun integers_group_mult (apply_fun integers_group_mult (x, y), z) =
+    add_SNo (add_SNo x y) z.
+  {
+    rewrite HxyEval.
+    rewrite HmultDef.
+    rewrite (apply_fun_graph
+      (setprod int int)
+      (fun p:set => add_SNo (p 0) (p 1))
+      (add_SNo x y, z)
+      (tuple_2_setprod_by_pair_Sigma
+        int
+        int
+        (add_SNo x y)
+        z
+        HxyInt
+        Hz)).
+    rewrite (tuple_2_0_eq (add_SNo x y) z).
+    rewrite (tuple_2_1_eq (add_SNo x y) z).
+    reflexivity.
+  }
+  claim HrhsEval :
+    apply_fun integers_group_mult (x, apply_fun integers_group_mult (y, z)) =
+    add_SNo x (add_SNo y z).
+  {
+    rewrite HyzEval.
+    rewrite HmultDef.
+    rewrite (apply_fun_graph
+      (setprod int int)
+      (fun p:set => add_SNo (p 0) (p 1))
+      (x, add_SNo y z)
+      (tuple_2_setprod_by_pair_Sigma
+        int
+        int
+        x
+        (add_SNo y z)
+        Hx
+        HyzInt)).
+    rewrite (tuple_2_0_eq x (add_SNo y z)).
+    rewrite (tuple_2_1_eq x (add_SNo y z)).
+    reflexivity.
+  }
+  rewrite HlhsEval.
+  rewrite HrhsEval.
+  symmetry.
+  exact (add_SNo_assoc
+    x
+    y
+    z
+    HxS
+    HyS
+    HzS).
+- let x.
+  assume Hx : x :e int.
+  claim HxS : SNo x.
+  {
+    exact (int_SNo x Hx).
+  }
+  claim H0Int : 0 :e int.
+  {
+    exact (Subq_omega_int 0 (nat_p_omega 0 nat_0)).
+  }
+  rewrite HmultDef.
+  apply andI.
+  + rewrite (apply_fun_graph
+      (setprod int int)
+      (fun p:set => add_SNo (p 0) (p 1))
+      (0, x)
+      (tuple_2_setprod_by_pair_Sigma
+        int
+        int
+        0
+        x
+        H0Int
+        Hx)).
+    rewrite (tuple_2_0_eq 0 x).
+    rewrite (tuple_2_1_eq 0 x).
+    exact (add_SNo_0L x HxS).
+  + rewrite (apply_fun_graph
+      (setprod int int)
+      (fun p:set => add_SNo (p 0) (p 1))
+      (x, 0)
+      (tuple_2_setprod_by_pair_Sigma
+        int
+        int
+        x
+        0
+        Hx
+        H0Int)).
+    rewrite (tuple_2_0_eq x 0).
+    rewrite (tuple_2_1_eq x 0).
+    exact (add_SNo_0R x HxS).
+- let x.
+  assume Hx : x :e int.
+  claim HxS : SNo x.
+  {
+    exact (int_SNo x Hx).
+  }
+  claim HmxInt : minus_SNo x :e int.
+  {
+    exact (int_minus_SNo x Hx).
+  }
+  rewrite HmultDef.
+  rewrite HinvDef.
+  apply andI.
+  + rewrite (apply_fun_graph
+      int
+      (fun n:set => minus_SNo n)
+      x
+      Hx).
+    rewrite (apply_fun_graph
+      (setprod int int)
+      (fun p:set => add_SNo (p 0) (p 1))
+      (x, minus_SNo x)
+      (tuple_2_setprod_by_pair_Sigma
+        int
+        int
+        x
+        (minus_SNo x)
+        Hx
+        HmxInt)).
+    rewrite (tuple_2_0_eq x (minus_SNo x)).
+    rewrite (tuple_2_1_eq x (minus_SNo x)).
+    exact (add_SNo_minus_SNo_rinv x HxS).
+  + rewrite (apply_fun_graph
+      int
+      (fun n:set => minus_SNo n)
+      x
+      Hx).
+    rewrite (apply_fun_graph
+      (setprod int int)
+      (fun p:set => add_SNo (p 0) (p 1))
+      (minus_SNo x, x)
+      (tuple_2_setprod_by_pair_Sigma
+        int
+        int
+        (minus_SNo x)
+        x
+        HmxInt
+        Hx)).
+    rewrite (tuple_2_0_eq (minus_SNo x) x).
+    rewrite (tuple_2_1_eq (minus_SNo x) x).
+    exact (add_SNo_minus_SNo_linv x HxS).
+Qed.
 
 (** Helper: integers under surreal addition form an abelian group. **)
+(** Proven Bob **)
 Theorem integers_group_is_abelian :
   abelian_group
     int
     integers_group_mult
     0
     integers_group_inv.
-admit.
-Admitted.
+prove
+  group_structure int integers_group_mult 0 integers_group_inv /\
+  (forall x y:set, x :e int -> y :e int ->
+    apply_fun integers_group_mult (x, y) =
+    apply_fun integers_group_mult (y, x)).
+apply andI.
+- exact integers_group_is_group.
+- let x y.
+  assume Hx : x :e int.
+  assume Hy : y :e int.
+  claim HxS : SNo x.
+  {
+    exact (int_SNo x Hx).
+  }
+  claim HyS : SNo y.
+  {
+    exact (int_SNo y Hy).
+  }
+  claim HmultDef :
+    integers_group_mult =
+    graph (setprod int int) (fun p:set => add_SNo (p 0) (p 1)).
+  {
+    reflexivity.
+  }
+  rewrite HmultDef.
+  rewrite (apply_fun_graph
+    (setprod int int)
+    (fun p:set => add_SNo (p 0) (p 1))
+    (x, y)
+    (tuple_2_setprod_by_pair_Sigma
+      int
+      int
+      x
+      y
+      Hx
+      Hy)).
+  rewrite (tuple_2_0_eq x y).
+  rewrite (tuple_2_1_eq x y).
+  rewrite (apply_fun_graph
+    (setprod int int)
+    (fun p:set => add_SNo (p 0) (p 1))
+    (y, x)
+    (tuple_2_setprod_by_pair_Sigma
+      int
+      int
+      y
+      x
+      Hy
+      Hx)).
+  rewrite (tuple_2_0_eq y x).
+  rewrite (tuple_2_1_eq y x).
+  exact (add_SNo_com x y HxS HyS).
+Qed.
 
 (** Helper: in the integer additive group, the n-th power of 1 equals n. **)
+(** Proven Bob **)
 Theorem integers_group_power_nat_one_eq_nat :
   forall n:set, n :e omega ->
   group_power_nat integers_group_mult 0 1 n = n.
-admit.
-Admitted.
+let n.
+assume HnO : n :e omega.
+claim H1Int : 1 :e int.
+{
+  exact (Subq_omega_int 1 (nat_p_omega 1 nat_1)).
+}
+claim HpowNat :
+  forall k:set, nat_p k ->
+    group_power_nat integers_group_mult 0 1 k = k.
+{
+  apply nat_ind.
+  - exact (nat_primrec_0
+      0
+      (fun _ r => apply_fun integers_group_mult (1, r))).
+  - let k.
+    assume Hk : nat_p k.
+    assume IH : group_power_nat integers_group_mult 0 1 k = k.
+    claim HkO : k :e omega.
+    {
+      exact (nat_p_omega k Hk).
+    }
+    claim HkInt : k :e int.
+    {
+      exact (Subq_omega_int k HkO).
+    }
+    claim HpowInt : group_power_nat integers_group_mult 0 1 k :e int.
+    {
+      rewrite IH.
+      exact HkInt.
+    }
+    claim Hstep :
+      group_power_nat integers_group_mult 0 1 (ordsucc k) =
+      apply_fun integers_group_mult (1, group_power_nat integers_group_mult 0 1 k).
+    {
+      exact (nat_primrec_S
+        0
+        (fun _ r => apply_fun integers_group_mult (1, r))
+        k
+        Hk).
+    }
+    rewrite Hstep.
+    claim HmultDef :
+      integers_group_mult =
+      graph (setprod int int) (fun p:set => add_SNo (p 0) (p 1)).
+    {
+      reflexivity.
+    }
+    rewrite HmultDef.
+    rewrite (apply_fun_graph
+      (setprod int int)
+      (fun p:set => add_SNo (p 0) (p 1))
+      (1, group_power_nat integers_group_mult 0 1 k)
+      (tuple_2_setprod_by_pair_Sigma
+        int
+        int
+        1
+        (group_power_nat integers_group_mult 0 1 k)
+        H1Int
+        HpowInt)).
+    rewrite (tuple_2_0_eq 1 (group_power_nat integers_group_mult 0 1 k)).
+    rewrite (tuple_2_1_eq 1 (group_power_nat integers_group_mult 0 1 k)).
+    rewrite IH.
+    claim H1S : SNo 1.
+    {
+      exact (int_SNo 1 H1Int).
+    }
+    claim HkS : SNo k.
+    {
+      exact (int_SNo k HkInt).
+    }
+    rewrite (add_SNo_com 1 k H1S HkS).
+    exact (add_SNo_1_ordsucc k HkO).
+}
+exact (HpowNat n (omega_nat_p n HnO)).
+Qed.
 
 (** Proven Bob **)
 (** Helper: inverses stay in the carrier of a group. **)
