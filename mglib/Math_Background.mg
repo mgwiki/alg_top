@@ -115141,12 +115141,9 @@ Theorem ex69_3_free_product_uniqueness_cyclic :
 exact free_product_uniqueness_cyclic_orders_helper.
 Admitted.
 
-(** from S69 Exercise 1 (line 3159 in algtop.tex) **)
-(** LATEX VERSION: If G = G1 free-product G2, then G/[G,G] is isomorphic to **)
-(** (G1/[G1,G1]) direct-sum (G2/[G2,G2]). **)
-(** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
-Theorem ex69_1_abelianization_free_product :
+(** Infrastructure helper for S69 Exercise 1:
+    abelianization of a binary free product is the direct sum of abelianizations. **)
+Theorem abelianization_of_binary_free_product_helper :
   forall G multG eG invG G1 G2:set,
   free_product_of_subgroups G multG eG invG 2
     (graph 2 (fun i => if i = 0 then G1 else G2))
@@ -115166,6 +115163,58 @@ Theorem ex69_1_abelianization_free_product :
           (apply_fun (quotient_group_mult G1 multG C1) ((p 0) 0, (p 1) 0),
            apply_fun (quotient_group_mult G2 multG C2) ((p 0) 1, (p 1) 1))))
       phi.
+admit.
+Admitted.
+
+(** from S69 Exercise 1 (line 3159 in algtop.tex) **)
+(** LATEX VERSION: If G = G1 free-product G2, then G/[G,G] is isomorphic to **)
+(** (G1/[G1,G1]) direct-sum (G2/[G2,G2]). **)
+(** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
+(** Bounty 110 **)
+Theorem ex69_1_abelianization_free_product :
+  forall G multG eG invG G1 G2:set,
+  free_product_of_subgroups G multG eG invG 2
+    (graph 2 (fun i => if i = 0 then G1 else G2))
+    (graph 2 (fun _ => eG)) ->
+  let CG := commutator_subgroup G multG eG invG in
+  let C1 := commutator_subgroup G1 multG eG invG in
+  let C2 := commutator_subgroup G2 multG eG invG in
+  exists phi:set,
+    group_isomorphism
+      (quotient_group_set G multG CG)
+      (quotient_group_mult G multG CG)
+      (setprod (quotient_group_set G1 multG C1) (quotient_group_set G2 multG C2))
+	      (graph (setprod
+	        (setprod (quotient_group_set G1 multG C1) (quotient_group_set G2 multG C2))
+	        (setprod (quotient_group_set G1 multG C1) (quotient_group_set G2 multG C2)))
+	        (fun p:set =>
+	          (apply_fun (quotient_group_mult G1 multG C1) ((p 0) 0, (p 1) 0),
+	           apply_fun (quotient_group_mult G2 multG C2) ((p 0) 1, (p 1) 1))))
+	      phi.
+exact abelianization_of_binary_free_product_helper.
+Admitted.
+
+(** Infrastructure helper for S69 Exercise 2:
+    abelianization of an arbitrary free product is the direct sum of component abelianizations. **)
+Theorem abelianization_of_general_free_product_helper :
+  forall G multG eG invG J Gfam multfam efam invfam ifam:set,
+  (forall alpha:set, alpha :e J ->
+    group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha)
+      (apply_fun efam alpha) (apply_fun invfam alpha)) ->
+  external_free_product G multG eG invG J Gfam multfam ifam ->
+  let CG := commutator_subgroup G multG eG invG in
+  exists H multH eH invH:set,
+    abelian_group H multH eH invH /\
+    direct_sum_of_subgroups H multH eH invH J
+      (graph J (fun alpha:set =>
+        quotient_group_set (apply_fun Gfam alpha) (apply_fun multfam alpha)
+          (commutator_subgroup (apply_fun Gfam alpha) (apply_fun multfam alpha)
+            (apply_fun efam alpha) (apply_fun invfam alpha)))) /\
+    exists phi:set,
+      group_isomorphism
+        (quotient_group_set G multG CG)
+        (quotient_group_mult G multG CG)
+        H multH phi.
 admit.
 Admitted.
 
@@ -115189,12 +115238,12 @@ Theorem ex69_2_abelianization_general_free_product :
         quotient_group_set (apply_fun Gfam alpha) (apply_fun multfam alpha)
           (commutator_subgroup (apply_fun Gfam alpha) (apply_fun multfam alpha)
             (apply_fun efam alpha) (apply_fun invfam alpha)))) /\
-    exists phi:set,
-      group_isomorphism
-        (quotient_group_set G multG CG)
-        (quotient_group_mult G multG CG)
-        H multH phi.
-admit.
+	    exists phi:set,
+	      group_isomorphism
+	        (quotient_group_set G multG CG)
+	        (quotient_group_mult G multG CG)
+	        H multH phi.
+exact abelianization_of_general_free_product_helper.
 Admitted.
 
 (** from S69 Exercise 4 (line 3181 in algtop.tex) **)
