@@ -112355,6 +112355,119 @@ apply (andI
         assume HCsub HeC HmulC HinvC.
         exact HeC.
       }
+      claim HCsub : C c= G.
+      {
+        apply (and4E
+          (C c= G)
+          (e :e C)
+          (forall x y:set, x :e C -> y :e C -> apply_fun mult (x, y) :e C)
+          (forall x:set, x :e C -> apply_fun inv x :e C)
+          HsubC).
+        assume HCsub HeC HmulC HinvC.
+        exact HCsub.
+      }
+      claim HidG :
+        forall x:set, x :e G ->
+          apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x.
+      {
+        apply (and6E
+          (function_on mult (setprod G G) G)
+          (function_on inv G G)
+          (e :e G)
+          (forall x y z:set, x :e G -> y :e G -> z :e G ->
+            apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+          (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+          (forall x:set, x :e G ->
+            apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+          HgrpG).
+        assume HmultG HinvG HeG HassocG HidG HinvLawG.
+        exact HidG.
+      }
+      claim HeMulC : forall c:set, c :e C -> apply_fun mult (e, c) = c.
+      {
+        let c.
+        assume HcC : c :e C.
+        claim HcG : c :e G.
+        {
+          exact (HCsub c HcC).
+        }
+        exact (andEL
+          (apply_fun mult (e, c) = c)
+          (apply_fun mult (c, e) = c)
+          (HidG c HcG)).
+      }
+      claim HleftCosetEsubC : left_coset mult e C c= C.
+      {
+        let y.
+        assume HyE : y :e left_coset mult e C.
+        apply (ReplE C (fun n:set => apply_fun mult (e, n)) y HyE).
+        let c.
+        assume HcPack : c :e C /\ y = apply_fun mult (e, c).
+        claim HcC : c :e C.
+        {
+          exact (andEL
+            (c :e C)
+            (y = apply_fun mult (e, c))
+            HcPack).
+        }
+        claim HyDef : y = apply_fun mult (e, c).
+        {
+          exact (andER
+            (c :e C)
+            (y = apply_fun mult (e, c))
+            HcPack).
+        }
+        rewrite HyDef.
+        rewrite (HeMulC c HcC).
+        exact HcC.
+      }
+      claim HCsubLeftCosetE : C c= left_coset mult e C.
+      {
+        let c.
+        assume HcC : c :e C.
+        rewrite <- (HeMulC c HcC).
+        exact (ReplI
+          C
+          (fun n:set => apply_fun mult (e, n))
+          c
+          HcC).
+      }
+      claim HleftCosetEqC : left_coset mult e C = C.
+      {
+        apply set_ext.
+        - exact HleftCosetEsubC.
+        - exact HCsubLeftCosetE.
+      }
+      claim HpowSetSubC :
+        (group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+            group_power_nat
+              (quotient_group_mult G mult C)
+              (quotient_group_id G mult e C)
+              (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+              n = quotient_group_id G mult e C))) c= C.
+      {
+        let y.
+        assume HyPow : y :e group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+            group_power_nat
+              (quotient_group_mult G mult C)
+              (quotient_group_id G mult e C)
+              (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+              n = quotient_group_id G mult e C)).
+        claim HyCoset : y :e left_coset mult e C.
+        {
+          rewrite <- HpowQidEq.
+          exact HyPow.
+        }
+        exact (HleftCosetEsubC y HyCoset).
+      }
       admit.
   admit.
 Admitted.
@@ -117689,7 +117802,88 @@ apply xm (second_countable_space X Tx).
     A
     HcovA).
 - assume HnscX.
-  (** TODO Charlie: finite star refinement from compact Hausdorff normality without second-countability. **)
+  claim HfinA : has_finite_subcover X Tx A.
+  {
+    exact (compact_space_subcover_property
+      X
+      Tx
+      HcompX
+      A
+      HcovA).
+  }
+  apply HfinA.
+  let A0.
+  assume HA0pack.
+  claim HA0subA : A0 c= A.
+  {
+    exact (andEL
+      (A0 c= A)
+      (finite A0)
+      (andEL
+        (A0 c= A /\ finite A0)
+        (X c= Union A0)
+        HA0pack)).
+  }
+  claim HA0fin : finite A0.
+  {
+    exact (andER
+      (A0 c= A)
+      (finite A0)
+      (andEL
+        (A0 c= A /\ finite A0)
+        (X c= Union A0)
+        HA0pack)).
+  }
+  claim HXsubUnionA0 : X c= Union A0.
+  {
+    exact (andER
+      (A0 c= A /\ finite A0)
+      (X c= Union A0)
+      HA0pack).
+  }
+  claim HAsubPowX : A c= Power X.
+  {
+    exact (open_cover_of_family_sub
+      X
+      Tx
+      A
+      HcovA).
+  }
+  claim HA0subPowX : A0 c= Power X.
+  {
+    exact (Subq_tra
+      A0
+      A
+      (Power X)
+      HA0subA
+      HAsubPowX).
+  }
+  claim HtopX : topology_on X Tx.
+  {
+    exact (open_cover_of_topology
+      X
+      Tx
+      A
+      HcovA).
+  }
+  claim HopenA0 : open_cover_of X Tx A0.
+  {
+    exact (open_cover_ofI
+      X
+      Tx
+      A0
+      HtopX
+      HA0subPowX
+      HXsubUnionA0
+      (fun U HU => open_cover_of_members_open
+        X
+        Tx
+        A
+        U
+        HcovA
+        (HA0subA U HU))).
+  }
+  (** TODO Charlie: use compact Hausdorff normality to construct a star-refinement of finite cover A0. **)
   admit.
 Admitted.
 
