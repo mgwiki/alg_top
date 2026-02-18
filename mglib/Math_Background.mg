@@ -74006,11 +74006,442 @@ rewrite HihEq.
 reflexivity.
 Qed.
 
+(** S55 helper: a retraction B^2 -> S^1 forces identity on S^1 to be nulhomotopic. **)
+(** Proven Charlie **)
+Theorem s55_retraction_B2_S1_implies_identity_nulhomotopic :
+  retraction_of B2 B2_topology S1 ->
+  nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x)).
+assume Hretr.
+claim HretrPack :
+  S1 c= B2 /\
+  exists r:set,
+    function_on r B2 B2 /\
+    continuous_map B2 B2_topology B2 B2_topology r /\
+    (forall x:set, x :e B2 -> apply_fun r x :e S1) /\
+    (forall x:set, x :e S1 -> apply_fun r x = x).
+{
+  exact Hretr.
+}
+claim HnulB2 :
+  nulhomotopic B2 B2_topology B2 B2_topology (graph B2 (fun x:set => x)).
+{
+  exact (andER
+    (topology_on B2 B2_topology)
+    (nulhomotopic B2 B2_topology B2 B2_topology (graph B2 (fun x:set => x)))
+    B2_contractible).
+}
+claim HtopEq :
+  subspace_topology B2 B2_topology S1 = S1_topology.
+{
+  exact (subspace_topology_transitive_weak
+    (setprod R R)
+    R2_topology
+    B2
+    S1
+    S1_subset_B2).
+}
+claim HS1subB2 : S1 c= B2.
+{
+  exact (andEL
+    (S1 c= B2)
+    (exists r:set,
+      function_on r B2 B2 /\
+      continuous_map B2 B2_topology B2 B2_topology r /\
+      (forall x:set, x :e B2 -> apply_fun r x :e S1) /\
+      (forall x:set, x :e S1 -> apply_fun r x = x))
+    HretrPack).
+}
+claim HrWit :
+  exists r:set,
+    function_on r B2 B2 /\
+    continuous_map B2 B2_topology B2 B2_topology r /\
+    (forall x:set, x :e B2 -> apply_fun r x :e S1) /\
+    (forall x:set, x :e S1 -> apply_fun r x = x).
+{
+  exact (andER
+    (S1 c= B2)
+    (exists r:set,
+      function_on r B2 B2 /\
+      continuous_map B2 B2_topology B2 B2_topology r /\
+      (forall x:set, x :e B2 -> apply_fun r x :e S1) /\
+      (forall x:set, x :e S1 -> apply_fun r x = x))
+    HretrPack).
+}
+apply HrWit.
+let r.
+assume HrPack.
+claim HrAB :
+  function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r.
+{
+  exact (andEL
+    (function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r)
+    (forall x:set, x :e B2 -> apply_fun r x :e S1)
+    (andEL
+      ((function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r) /\
+       (forall x:set, x :e B2 -> apply_fun r x :e S1))
+      (forall x:set, x :e S1 -> apply_fun r x = x)
+      HrPack)).
+}
+claim HrIntoS1 : forall x:set, x :e B2 -> apply_fun r x :e S1.
+{
+  exact (andER
+    (function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r)
+    (forall x:set, x :e B2 -> apply_fun r x :e S1)
+    (andEL
+      ((function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r) /\
+       (forall x:set, x :e B2 -> apply_fun r x :e S1))
+      (forall x:set, x :e S1 -> apply_fun r x = x)
+      HrPack)).
+}
+claim HrFixS1 : forall x:set, x :e S1 -> apply_fun r x = x.
+{
+  exact (andER
+    ((function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r) /\
+     (forall x:set, x :e B2 -> apply_fun r x :e S1))
+    (forall x:set, x :e S1 -> apply_fun r x = x)
+    HrPack).
+}
+claim HrContBB2 : continuous_map B2 B2_topology B2 B2_topology r.
+{
+  exact (andER
+    (function_on r B2 B2)
+    (continuous_map B2 B2_topology B2 B2_topology r)
+    HrAB).
+}
+claim HrContSub :
+  continuous_map B2 B2_topology S1 (subspace_topology B2 B2_topology S1) r.
+{
+  exact (continuous_map_range_restrict
+    B2
+    B2_topology
+    B2
+    B2_topology
+    r
+    S1
+    HrContBB2
+    HS1subB2
+    HrIntoS1).
+}
+claim HrContBS1 :
+  continuous_map B2 B2_topology S1 S1_topology r.
+{
+  rewrite <- HtopEq.
+  exact HrContSub.
+}
+apply HnulB2.
+let y0.
+assume Hy0Pack.
+claim Hy0B2 : y0 :e B2.
+{
+  exact (andEL
+    (y0 :e B2)
+    (homotopic_maps B2 B2_topology B2 B2_topology
+      (graph B2 (fun x:set => x))
+      (const_fun B2 y0))
+    Hy0Pack).
+}
+claim HhomIdConstB2 :
+  homotopic_maps B2 B2_topology B2 B2_topology
+    (graph B2 (fun x:set => x))
+    (const_fun B2 y0).
+{
+  exact (andER
+    (y0 :e B2)
+    (homotopic_maps B2 B2_topology B2 B2_topology
+      (graph B2 (fun x:set => x))
+      (const_fun B2 y0))
+    Hy0Pack).
+}
+set i := graph S1 (fun x:set => x).
+claim HiCont :
+  continuous_map S1 S1_topology B2 B2_topology i.
+{
+  exact inclusion_S1_B2_continuous.
+}
+claim HreflI :
+  homotopic_maps S1 S1_topology B2 B2_topology i i.
+{
+  exact (Lemma_51_1_homotopy_refl
+    S1
+    S1_topology
+    B2
+    B2_topology
+    i
+    HiCont).
+}
+claim HcompIdConst :
+  homotopic_maps S1 S1_topology B2 B2_topology
+    (compose_fun S1 i (graph B2 (fun x:set => x)))
+    (compose_fun S1 i (const_fun B2 y0)).
+{
+  exact (ex51_1_composition_homotopic
+    S1
+    S1_topology
+    B2
+    B2_topology
+    B2
+    B2_topology
+    i
+    i
+    (graph B2 (fun x:set => x))
+    (const_fun B2 y0)
+    HreflI
+    HhomIdConstB2).
+}
+claim HreflR :
+  homotopic_maps B2 B2_topology S1 S1_topology r r.
+{
+  exact (Lemma_51_1_homotopy_refl
+    B2
+    B2_topology
+    S1
+    S1_topology
+    r
+    HrContBS1).
+}
+claim HhomToS1 :
+  homotopic_maps S1 S1_topology S1 S1_topology
+    (compose_fun S1 (compose_fun S1 i (graph B2 (fun x:set => x))) r)
+    (compose_fun S1 (compose_fun S1 i (const_fun B2 y0)) r).
+{
+  exact (ex51_1_composition_homotopic
+    S1
+    S1_topology
+    B2
+    B2_topology
+    S1
+    S1_topology
+    (compose_fun S1 i (graph B2 (fun x:set => x)))
+    (compose_fun S1 i (const_fun B2 y0))
+    r
+    r
+    HcompIdConst
+    HreflR).
+}
+claim HiFun : function_on i S1 B2.
+{
+  exact (continuous_map_function_on
+    S1
+    S1_topology
+    B2
+    B2_topology
+    i
+    HiCont).
+}
+claim HiTF : i :e total_function_space S1 B2.
+{
+  exact (graph_in_total_function_space
+    S1
+    B2
+    (fun x:set => x)
+    (fun x:set => fun Hx:x :e S1 => HS1subB2 x Hx)).
+}
+claim HrFun : function_on r B2 S1.
+{
+  exact (continuous_map_function_on
+    B2
+    B2_topology
+    S1
+    S1_topology
+    r
+    HrContBS1).
+}
+claim HleftId :
+  compose_fun S1 i (graph B2 (fun x:set => x)) = i.
+{
+  exact (compose_fun_identity_graph_eq_algtop
+    S1
+    B2
+    i
+    HiTF).
+}
+claim HleftRet :
+  compose_fun S1 i r = graph S1 (fun x:set => x).
+{
+  apply (total_function_space_extensional
+    S1
+    S1
+    (compose_fun S1 i r)
+    (graph S1 (fun x:set => x))).
+  - exact (compose_fun_in_total_function_space
+      S1
+      B2
+      S1
+      i
+      r
+      HiFun
+      HrFun).
+  - exact (graph_in_total_function_space
+      S1
+      S1
+      (fun x:set => x)
+      (fun x:set => fun Hx:x :e S1 => Hx)).
+  - let x.
+    assume Hx.
+    rewrite (compose_fun_apply
+      S1
+      i
+      r
+      x
+      Hx).
+    rewrite (apply_fun_graph
+      S1
+      (fun z:set => z)
+      x
+      Hx).
+    exact (HrFixS1 x Hx).
+}
+claim HleftTarget :
+  compose_fun S1 (compose_fun S1 i (graph B2 (fun x:set => x))) r =
+  graph S1 (fun x:set => x).
+{
+  rewrite HleftId.
+  exact HleftRet.
+}
+claim HconstB2Fun : function_on (const_fun B2 y0) B2 B2.
+{
+  exact (total_function_on_function_on
+    (const_fun B2 y0)
+    B2
+    B2
+    (const_fun_total_function_on
+      B2
+      B2
+      y0
+      Hy0B2)).
+}
+claim HinnerConst :
+  compose_fun S1 i (const_fun B2 y0) = const_fun S1 y0.
+{
+  apply (total_function_space_extensional
+    S1
+    B2
+    (compose_fun S1 i (const_fun B2 y0))
+    (const_fun S1 y0)).
+  - exact (compose_fun_in_total_function_space
+      S1
+      B2
+      B2
+      i
+      (const_fun B2 y0)
+      HiFun
+      HconstB2Fun).
+  - exact (graph_in_total_function_space
+      S1
+      B2
+      (fun _ : set => y0)
+      (fun x Hx => Hy0B2)).
+  - let x.
+    assume Hx.
+    rewrite (compose_fun_apply
+      S1
+      i
+      (const_fun B2 y0)
+      x
+      Hx).
+    rewrite (apply_fun_graph
+      S1
+      (fun z:set => z)
+      x
+      Hx).
+    rewrite (const_fun_apply
+      B2
+      y0
+      x
+      (HS1subB2 x Hx)).
+    rewrite (const_fun_apply
+      S1
+      y0
+      x
+      Hx).
+    reflexivity.
+}
+claim Hy0S1 : apply_fun r y0 :e S1.
+{
+  exact (HrIntoS1 y0 Hy0B2).
+}
+claim HrightTarget :
+  compose_fun S1 (compose_fun S1 i (const_fun B2 y0)) r =
+  const_fun S1 (apply_fun r y0).
+{
+  rewrite HinnerConst.
+  apply (total_function_space_extensional
+    S1
+    S1
+    (compose_fun S1 (const_fun S1 y0) r)
+    (const_fun S1 (apply_fun r y0))).
+  - exact (compose_fun_in_total_function_space
+      S1
+      B2
+      S1
+      (const_fun S1 y0)
+      r
+      (total_function_on_function_on
+        (const_fun S1 y0)
+        S1
+        B2
+        (const_fun_total_function_on
+          S1
+          B2
+          y0
+          Hy0B2))
+      HrFun).
+  - exact (graph_in_total_function_space
+      S1
+      S1
+      (fun _ : set => apply_fun r y0)
+      (fun x Hx => Hy0S1)).
+  - let x.
+    assume Hx.
+    rewrite (compose_fun_apply
+      S1
+      (const_fun S1 y0)
+      r
+      x
+      Hx).
+    rewrite (const_fun_apply
+      S1
+      y0
+      x
+      Hx).
+    rewrite (const_fun_apply
+      S1
+      (apply_fun r y0)
+      x
+      Hx).
+    reflexivity.
+}
+claim HhomIdConstS1 :
+  homotopic_maps S1 S1_topology S1 S1_topology
+    (graph S1 (fun x:set => x))
+    (const_fun S1 (apply_fun r y0)).
+{
+  rewrite <- HleftTarget.
+  rewrite <- HrightTarget.
+  exact HhomToS1.
+}
+prove exists y:set, y :e S1 /\
+  homotopic_maps S1 S1_topology S1 S1_topology
+    (graph S1 (fun x:set => x))
+    (const_fun S1 y).
+witness (apply_fun r y0).
+apply andI.
+- exact Hy0S1.
+- exact HhomIdConstS1.
+Qed.
+
 (** from S55 Thm 55.2 (line 904 in algtop.tex): No-retraction theorem **)
 (** LATEX VERSION: There is no retraction of B^2 onto S^1. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 88 **)
 Theorem thm55_2_no_retraction_B2_S1 : ~(retraction_of B2 B2_topology S1).
+assume Hretr.
+claim HnulId :
+  nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x)).
+{
+  exact (s55_retraction_B2_S1_implies_identity_nulhomotopic
+    Hretr).
+}
 admit.
 Admitted.
 
