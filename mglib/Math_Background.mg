@@ -126157,7 +126157,7 @@ apply and3I.
           claim Hxs0_ne_eG : apply_fun xsw 0 <> eG.
           { rewrite Hxs0_x0. exact Hx0ne. }
           exact (Hxs0_ne_eG Hxs0_eG).
-      + (** m <> 0 so nw >= 2: same hard case as Hefam_contra n>=2 **)
+      + (** m <> 0 so nw >= 2: need Hefam_contra-style argument **)
         assume Hm_ne0 : m <> 0.
         admit. }
   (** [x0] is a reduced word of length 1 **)
