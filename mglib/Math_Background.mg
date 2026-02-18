@@ -112473,6 +112473,15 @@ apply (andI
         }
         exact (HleftCosetEsubC y HyCoset).
       }
+      claim HeInLeftCosetE : e :e left_coset mult e C.
+      {
+        rewrite <- (HeMulC e HeC) at 1.
+        exact (ReplI
+          C
+          (fun n:set => apply_fun mult (e, n))
+          e
+          HeC).
+      }
       admit.
   admit.
 Admitted.
