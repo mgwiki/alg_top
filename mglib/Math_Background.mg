@@ -82115,7 +82115,42 @@ assume Hj_triv : forall cls:set,
   cls :e fundamental_group V (subspace_topology X Tx V) x0 ->
   apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
     (graph V (fun x:set => x))) cls = fundamental_group_id X Tx x0.
-admit.
+claim Hx0U : x0 :e U.
+{
+  exact (binintersectE1 U V x0 Hx0UV).
+}
+claim Hx0V : x0 :e V.
+{
+  exact (binintersectE2 U V x0 Hx0UV).
+}
+claim HUsub : U c= X.
+{
+  exact (topology_elem_subset X Tx U Htop HU).
+}
+claim HVsub : V c= X.
+{
+  exact (topology_elem_subset X Tx V Htop HV).
+}
+claim Hx0X : x0 :e X.
+{
+  exact (HUsub x0 Hx0U).
+}
+claim HtopU : topology_on U (subspace_topology X Tx U).
+{
+  exact (subspace_topology_is_topology X Tx U Htop HUsub).
+}
+claim HtopV : topology_on V (subspace_topology X Tx V).
+{
+  exact (subspace_topology_is_topology X Tx V Htop HVsub).
+}
+claim HneUV : (U :/\: V) <> Empty.
+{
+  exact (elem_implies_nonempty
+    (U :/\: V)
+    x0
+    Hx0UV).
+}
+admit. (** remaining gap: derive path-connectedness of U and V from current hypotheses **)
 Admitted.
 
 (** Helper: if i-star and j-star are trivial and pieces are path connected, then X is simply connected. **)
