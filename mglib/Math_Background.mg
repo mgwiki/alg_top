@@ -39750,9 +39750,168 @@ claim HinducedThroughExtension :
   apply_fun (induced_homomorphism A Ta a0 Y Ty y0 h) cls
   = apply_fun (induced_homomorphism A Ta a0 Y Ty y0 (compose_fun A i H)) cls.
 {
-  (** TODO Charlie: lift pointwise equality H|A = h to equality of induced homomorphisms on pi1 classes. **)
-  (** This needs the Eps_i representative argument plus class equality in fundamental_group. **)
-  admit.
+  set eps := Eps_i (fun f:set => f :e cls).
+  claim HhFun52 : function_on h A Y.
+  {
+    exact (continuous_map_function_on
+      A
+      Ta
+      Y
+      Ty
+      h
+      Hhcont).
+  }
+  claim HHFun : function_on H R Y.
+  {
+    exact (continuous_map_function_on
+      R
+      R_standard_topology
+      Y
+      Ty
+      H
+      HHcont).
+  }
+  claim HiTFS : i :e total_function_space A R.
+  {
+    exact (graph_in_total_function_space
+      A
+      R
+      (fun x:set => x)
+      (fun x Hx => HAsubR x Hx)).
+  }
+  claim HiFun : function_on i A R.
+  {
+    exact (total_function_space_function_on_algtop
+      A
+      R
+      i
+      HiTFS).
+  }
+  claim HcompFun : function_on (compose_fun A i H) A Y.
+  {
+    exact (total_function_space_function_on_algtop
+      A
+      Y
+      (compose_fun A i H)
+      (compose_fun_in_total_function_space
+        A
+        R
+        Y
+        i
+        H
+        HiFun
+        HHFun)).
+  }
+  claim HepsLoop : eps :e loop_space A Ta a0.
+  {
+    exact (eps_of_fundamental_group_member_in_loop_space
+      A
+      Ta
+      a0
+      cls
+      Hcls).
+  }
+  claim HepsLoopAt : loop_at A Ta a0 eps.
+  {
+    exact (loop_space_has_loop_at
+      A
+      Ta
+      a0
+      eps
+      HepsLoop).
+  }
+  claim HepsCont : continuous_map unit_interval unit_interval_topology A Ta eps.
+  {
+    exact (loop_at_continuous
+      A
+      Ta
+      a0
+      eps
+      HepsLoopAt).
+  }
+  claim HepsFun : function_on eps unit_interval A.
+  {
+    exact (continuous_map_function_on
+      unit_interval
+      unit_interval_topology
+      A
+      Ta
+      eps
+      HepsCont).
+  }
+  set loop_h := compose_fun unit_interval eps h.
+  set loop_H := compose_fun unit_interval eps (compose_fun A i H).
+  claim Hloop_h_TFS : loop_h :e total_function_space unit_interval Y.
+  {
+    exact (compose_fun_in_total_function_space
+      unit_interval
+      A
+      Y
+      eps
+      h
+      HepsFun
+      HhFun52).
+  }
+  claim Hloop_H_TFS : loop_H :e total_function_space unit_interval Y.
+  {
+    exact (compose_fun_in_total_function_space
+      unit_interval
+      A
+      Y
+      eps
+      (compose_fun A i H)
+      HepsFun
+      HcompFun).
+  }
+  claim HloopsEq : loop_h = loop_H.
+  {
+    apply (total_function_space_extensional
+      unit_interval
+      Y
+      loop_h
+      loop_H
+      Hloop_h_TFS
+      Hloop_H_TFS).
+    let t.
+    assume Ht.
+    rewrite (compose_fun_apply
+      unit_interval
+      eps
+      h
+      t
+      Ht).
+    rewrite (compose_fun_apply
+      unit_interval
+      eps
+      (compose_fun A i H)
+      t
+      Ht).
+    exact (HhEqComp
+      (apply_fun eps t)
+      (HepsFun t Ht)).
+  }
+  rewrite (induced_homomorphism_apply
+    A
+    Ta
+    a0
+    Y
+    Ty
+    y0
+    h
+    cls
+    Hcls).
+  rewrite (induced_homomorphism_apply
+    A
+    Ta
+    a0
+    Y
+    Ty
+    y0
+    (compose_fun A i H)
+    cls
+    Hcls).
+  rewrite HloopsEq.
+  reflexivity.
 }
 claim HextTrivial :
   apply_fun (induced_homomorphism A Ta a0 Y Ty y0 (compose_fun A i H)) cls
