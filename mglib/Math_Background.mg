@@ -112049,11 +112049,149 @@ apply (iffI
         (Hfactor_subG alpha Halpha x Hx)
         (Hfactor_subG alpha Halpha y Hy)).
   }
+  claim Hfactor_univ :
+    forall alpha:set, alpha :e J ->
+      exists f:set,
+        group_homomorphism (apply_fun Gfam0 alpha) mult H multH f /\
+        apply_fun f (apply_fun gens alpha) = apply_fun ys alpha /\
+        (forall f':set,
+          group_homomorphism (apply_fun Gfam0 alpha) mult H multH f' ->
+          apply_fun f' (apply_fun gens alpha) = apply_fun ys alpha ->
+          forall x:set, x :e apply_fun Gfam0 alpha ->
+            apply_fun f' x = apply_fun f x).
+  {
+    admit.
+  }
   set hfam0 := graph J (fun alpha:set =>
     Eps_i (fun f:set =>
       group_homomorphism (apply_fun Gfam0 alpha) mult H multH f /\
-      apply_fun f (apply_fun gens alpha) = apply_fun ys alpha)).
-  admit.
+      apply_fun f (apply_fun gens alpha) = apply_fun ys alpha /\
+      (forall f':set,
+        group_homomorphism (apply_fun Gfam0 alpha) mult H multH f' ->
+        apply_fun f' (apply_fun gens alpha) = apply_fun ys alpha ->
+        forall x:set, x :e apply_fun Gfam0 alpha ->
+          apply_fun f' x = apply_fun f x))).
+  claim Hhfam0_spec :
+    forall alpha:set, alpha :e J ->
+      group_homomorphism (apply_fun Gfam0 alpha) mult H multH (apply_fun hfam0 alpha) /\
+      apply_fun (apply_fun hfam0 alpha) (apply_fun gens alpha) = apply_fun ys alpha /\
+      (forall f':set,
+        group_homomorphism (apply_fun Gfam0 alpha) mult H multH f' ->
+        apply_fun f' (apply_fun gens alpha) = apply_fun ys alpha ->
+        forall x:set, x :e apply_fun Gfam0 alpha ->
+          apply_fun f' x = apply_fun (apply_fun hfam0 alpha) x).
+  {
+    let alpha.
+    assume Halpha : alpha :e J.
+    rewrite (apply_fun_graph
+      J
+      (fun alpha:set =>
+        Eps_i (fun f:set =>
+          group_homomorphism (apply_fun Gfam0 alpha) mult H multH f /\
+          apply_fun f (apply_fun gens alpha) = apply_fun ys alpha /\
+          (forall f':set,
+            group_homomorphism (apply_fun Gfam0 alpha) mult H multH f' ->
+            apply_fun f' (apply_fun gens alpha) = apply_fun ys alpha ->
+            forall x:set, x :e apply_fun Gfam0 alpha ->
+              apply_fun f' x = apply_fun f x)))
+      alpha
+      Halpha).
+    exact (Eps_i_ex
+      (fun f:set =>
+        group_homomorphism (apply_fun Gfam0 alpha) mult H multH f /\
+        apply_fun f (apply_fun gens alpha) = apply_fun ys alpha /\
+        (forall f':set,
+          group_homomorphism (apply_fun Gfam0 alpha) mult H multH f' ->
+          apply_fun f' (apply_fun gens alpha) = apply_fun ys alpha ->
+          forall x:set, x :e apply_fun Gfam0 alpha ->
+            apply_fun f' x = apply_fun f x))
+      (Hfactor_univ alpha Halpha)).
+  }
+  claim Hhfam0_hom :
+    forall alpha:set, alpha :e J ->
+      group_homomorphism (apply_fun Gfam0 alpha) mult H multH (apply_fun hfam0 alpha).
+  {
+    let alpha.
+    assume Halpha : alpha :e J.
+    apply (and3E
+      (group_homomorphism (apply_fun Gfam0 alpha) mult H multH (apply_fun hfam0 alpha))
+      (apply_fun (apply_fun hfam0 alpha) (apply_fun gens alpha) = apply_fun ys alpha)
+      (forall f':set,
+        group_homomorphism (apply_fun Gfam0 alpha) mult H multH f' ->
+        apply_fun f' (apply_fun gens alpha) = apply_fun ys alpha ->
+        forall x:set, x :e apply_fun Gfam0 alpha ->
+          apply_fun f' x = apply_fun (apply_fun hfam0 alpha) x)
+      (Hhfam0_spec alpha Halpha)).
+    assume Hhom Hgen Huniq.
+    exact Hhom.
+  }
+  claim Hhfam0_gen :
+    forall alpha:set, alpha :e J ->
+      apply_fun (apply_fun hfam0 alpha) (apply_fun gens alpha) = apply_fun ys alpha.
+  {
+    let alpha.
+    assume Halpha : alpha :e J.
+    apply (and3E
+      (group_homomorphism (apply_fun Gfam0 alpha) mult H multH (apply_fun hfam0 alpha))
+      (apply_fun (apply_fun hfam0 alpha) (apply_fun gens alpha) = apply_fun ys alpha)
+      (forall f':set,
+        group_homomorphism (apply_fun Gfam0 alpha) mult H multH f' ->
+        apply_fun f' (apply_fun gens alpha) = apply_fun ys alpha ->
+        forall x:set, x :e apply_fun Gfam0 alpha ->
+          apply_fun f' x = apply_fun (apply_fun hfam0 alpha) x)
+      (Hhfam0_spec alpha Halpha)).
+    assume Hhom Hgen Huniq.
+    exact Hgen.
+  }
+  claim Hhfam0_uniq :
+    forall alpha:set, alpha :e J ->
+      forall f':set,
+        group_homomorphism (apply_fun Gfam0 alpha) mult H multH f' ->
+        apply_fun f' (apply_fun gens alpha) = apply_fun ys alpha ->
+        forall x:set, x :e apply_fun Gfam0 alpha ->
+          apply_fun f' x = apply_fun (apply_fun hfam0 alpha) x.
+  {
+    let alpha.
+    assume Halpha : alpha :e J.
+    apply (and3E
+      (group_homomorphism (apply_fun Gfam0 alpha) mult H multH (apply_fun hfam0 alpha))
+      (apply_fun (apply_fun hfam0 alpha) (apply_fun gens alpha) = apply_fun ys alpha)
+      (forall f':set,
+        group_homomorphism (apply_fun Gfam0 alpha) mult H multH f' ->
+        apply_fun f' (apply_fun gens alpha) = apply_fun ys alpha ->
+        forall x:set, x :e apply_fun Gfam0 alpha ->
+          apply_fun f' x = apply_fun (apply_fun hfam0 alpha) x)
+      (Hhfam0_spec alpha Halpha)).
+    assume Hhom Hgen Huniq.
+    exact Huniq.
+  }
+  claim HfromGen0 :
+    forall h2:set, group_homomorphism G mult H multH h2 ->
+      (forall alpha:set, alpha :e J ->
+        apply_fun h2 (apply_fun gens alpha) = apply_fun ys alpha) ->
+      forall alpha:set, alpha :e J ->
+        forall x:set, x :e apply_fun Gfam0 alpha ->
+          apply_fun h2 x = apply_fun (apply_fun hfam0 alpha) x.
+  {
+    let h2.
+    assume Hh2 : group_homomorphism G mult H multH h2.
+    assume Hh2Gen :
+      forall alpha:set, alpha :e J ->
+        apply_fun h2 (apply_fun gens alpha) = apply_fun ys alpha.
+    let alpha.
+    assume Halpha : alpha :e J.
+    let x.
+    assume Hx : x :e apply_fun Gfam0 alpha.
+    exact (Hhfam0_uniq
+      alpha
+      Halpha
+      h2
+      (Hhom_restrict_factor h2 Hh2 alpha Halpha)
+      (Hh2Gen alpha Halpha)
+      x
+      Hx).
+  }
+  exact (Hreduce_from_family hfam0 Hhfam0_hom Hhfam0_gen HfromGen0).
 - assume Hext :
     forall H multH eH invH:set,
       group_structure H multH eH invH ->
