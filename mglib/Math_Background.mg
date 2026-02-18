@@ -101197,7 +101197,6 @@ Qed.
 (** LATEX VERSION: If X = U union V, U and V open and simply connected, U intersect V nonempty and path connected, then X is simply connected. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
 (** Bounty 37 **)
-(** Lock Bob 1771439500 **)
 Theorem cor59_2_simply_connected_union : forall X Tx U V:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
