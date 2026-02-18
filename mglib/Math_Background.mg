@@ -83197,8 +83197,317 @@ claim Hpi1Trivial :
                       (0, 0))
                     1.
               {
-                (** remaining geometric gap: radial contraction stays inside the open unit disk **)
-                admit.
+                let z t.
+                assume HzX Ht.
+                set a := add_SNo 1 (minus_SNo t).
+                set q := (mul_SNo a (R2_xcoord z), mul_SNo a (R2_ycoord z)).
+                claim HzPlane : z :e EuclidPlane.
+                {
+                  exact (SepE1
+                    EuclidPlane
+                    (fun p0:set => SNoLt (distance_R2 p0 (0, 0)) 1)
+                    z
+                    HzX).
+                }
+                claim HzLt1 : SNoLt (distance_R2 z (0, 0)) 1.
+                {
+                  exact (SepE2
+                    EuclidPlane
+                    (fun p0:set => SNoLt (distance_R2 p0 (0, 0)) 1)
+                    z
+                    HzX).
+                }
+                claim HaI : a :e unit_interval.
+                {
+                  rewrite <- (flip_unit_interval_apply t Ht).
+                  exact (flip_unit_interval_function_on t Ht).
+                }
+                claim HaR : a :e R.
+                {
+                  rewrite <- (flip_unit_interval_apply t Ht).
+                  exact (flip_unit_interval_in_R t Ht).
+                }
+                claim HaS : SNo a.
+                {
+                  exact (real_SNo a HaR).
+                }
+                claim HaNonneg : SNoLe 0 a.
+                {
+                  exact (SNoLe_of_Rle
+                    0
+                    a
+                    (unit_interval_Rle0 a HaI)).
+                }
+                claim HaLe1 : SNoLe a 1.
+                {
+                  exact (SNoLe_of_Rle
+                    a
+                    1
+                    (unit_interval_Rle1 a HaI)).
+                }
+                claim HxR : R2_xcoord z :e R.
+                {
+                  exact (EuclidPlane_xcoord_in_R z HzPlane).
+                }
+                claim HyR : R2_ycoord z :e R.
+                {
+                  exact (EuclidPlane_ycoord_in_R z HzPlane).
+                }
+                claim HxS : SNo (R2_xcoord z).
+                {
+                  exact (real_SNo (R2_xcoord z) HxR).
+                }
+                claim HyS : SNo (R2_ycoord z).
+                {
+                  exact (real_SNo (R2_ycoord z) HyR).
+                }
+                claim HaxR : mul_SNo a (R2_xcoord z) :e R.
+                {
+                  exact (real_mul_SNo a HaR (R2_xcoord z) HxR).
+                }
+                claim HayR : mul_SNo a (R2_ycoord z) :e R.
+                {
+                  exact (real_mul_SNo a HaR (R2_ycoord z) HyR).
+                }
+                claim HaxS : SNo (mul_SNo a (R2_xcoord z)).
+                {
+                  exact (real_SNo (mul_SNo a (R2_xcoord z)) HaxR).
+                }
+                claim HayS : SNo (mul_SNo a (R2_ycoord z)).
+                {
+                  exact (real_SNo (mul_SNo a (R2_ycoord z)) HayR).
+                }
+                claim HqPlane : q :e EuclidPlane.
+                {
+                  exact (tuple_2_setprod_by_pair_Sigma
+                    R
+                    R
+                    (mul_SNo a (R2_xcoord z))
+                    (mul_SNo a (R2_ycoord z))
+                    HaxR
+                    HayR).
+                }
+                claim HdR : distance_R2 z (0, 0) :e R.
+                {
+                  exact (distance_R2_in_R
+                    z
+                    (0, 0)
+                    HzPlane
+                    H00Plane).
+                }
+                claim HdS : SNo (distance_R2 z (0, 0)).
+                {
+                  exact (real_SNo (distance_R2 z (0, 0)) HdR).
+                }
+                claim HdNonneg : SNoLe 0 (distance_R2 z (0, 0)).
+                {
+                  exact (distance_R2_nonneg
+                    z
+                    (0, 0)
+                    HzPlane
+                    H00Plane).
+                }
+                claim Hd'R : distance_R2 q (0, 0) :e R.
+                {
+                  exact (distance_R2_in_R
+                    q
+                    (0, 0)
+                    HqPlane
+                    H00Plane).
+                }
+                claim Hd'S : SNo (distance_R2 q (0, 0)).
+                {
+                  exact (real_SNo (distance_R2 q (0, 0)) Hd'R).
+                }
+                claim Hd'Nonneg : SNoLe 0 (distance_R2 q (0, 0)).
+                {
+                  exact (distance_R2_nonneg
+                    q
+                    (0, 0)
+                    HqPlane
+                    H00Plane).
+                }
+                claim Hx2S : SNo (mul_SNo (R2_xcoord z) (R2_xcoord z)).
+                {
+                  exact (SNo_mul_SNo
+                    (R2_xcoord z)
+                    (R2_xcoord z)
+                    HxS
+                    HxS).
+                }
+                claim Hy2S : SNo (mul_SNo (R2_ycoord z) (R2_ycoord z)).
+                {
+                  exact (SNo_mul_SNo
+                    (R2_ycoord z)
+                    (R2_ycoord z)
+                    HyS
+                    HyS).
+                }
+                claim HaaS : SNo (mul_SNo a a).
+                {
+                  exact (SNo_mul_SNo a a HaS HaS).
+                }
+                claim Hd2S : SNo (mul_SNo (distance_R2 z (0, 0)) (distance_R2 z (0, 0))).
+                {
+                  exact (SNo_mul_SNo
+                    (distance_R2 z (0, 0))
+                    (distance_R2 z (0, 0))
+                    HdS
+                    HdS).
+                }
+                claim HdSqNonneg :
+                  0 <= mul_SNo (distance_R2 z (0, 0)) (distance_R2 z (0, 0)).
+                {
+                  exact (SNo_sqr_nonneg
+                    (distance_R2 z (0, 0))
+                    HdS).
+                }
+                claim HqSq :
+                  mul_SNo (distance_R2 q (0, 0)) (distance_R2 q (0, 0))
+                  =
+                  add_SNo
+                    (mul_SNo (mul_SNo a (R2_xcoord z)) (mul_SNo a (R2_xcoord z)))
+                    (mul_SNo (mul_SNo a (R2_ycoord z)) (mul_SNo a (R2_ycoord z))).
+                {
+                  rewrite (distance_R2_sqr
+                    q
+                    (0, 0)
+                    HqPlane
+                    H00Plane).
+                  rewrite (R2_xcoord_tuple
+                    (mul_SNo a (R2_xcoord z))
+                    (mul_SNo a (R2_ycoord z))).
+                  rewrite (R2_ycoord_tuple
+                    (mul_SNo a (R2_xcoord z))
+                    (mul_SNo a (R2_ycoord z))).
+                  rewrite (R2_xcoord_tuple 0 0).
+                  rewrite (R2_ycoord_tuple 0 0).
+                  rewrite minus_SNo_0.
+                  rewrite (add_SNo_0R
+                    (mul_SNo a (R2_xcoord z))
+                    HaxS).
+                  rewrite (add_SNo_0R
+                    (mul_SNo a (R2_ycoord z))
+                    HayS).
+                  reflexivity.
+                }
+                claim HzSq :
+                  mul_SNo (distance_R2 z (0, 0)) (distance_R2 z (0, 0))
+                  =
+                  add_SNo
+                    (mul_SNo (R2_xcoord z) (R2_xcoord z))
+                    (mul_SNo (R2_ycoord z) (R2_ycoord z)).
+                {
+                  rewrite (distance_R2_sqr
+                    z
+                    (0, 0)
+                    HzPlane
+                    H00Plane).
+                  rewrite (R2_xcoord_tuple 0 0).
+                  rewrite (R2_ycoord_tuple 0 0).
+                  rewrite minus_SNo_0.
+                  rewrite (add_SNo_0R
+                    (R2_xcoord z)
+                    HxS).
+                  rewrite (add_SNo_0R
+                    (R2_ycoord z)
+                    HyS).
+                  reflexivity.
+                }
+                claim HqSqFactored :
+                  mul_SNo (distance_R2 q (0, 0)) (distance_R2 q (0, 0))
+                  =
+                  mul_SNo
+                    (mul_SNo a a)
+                    (add_SNo
+                      (mul_SNo (R2_xcoord z) (R2_xcoord z))
+                      (mul_SNo (R2_ycoord z) (R2_ycoord z))).
+                {
+                  rewrite HqSq.
+                  rewrite (mul_SNo_com_4_inner_mid
+                    a
+                    (R2_xcoord z)
+                    a
+                    (R2_xcoord z)
+                    HaS
+                    HxS
+                    HaS
+                    HxS).
+                  rewrite (mul_SNo_com_4_inner_mid
+                    a
+                    (R2_ycoord z)
+                    a
+                    (R2_ycoord z)
+                    HaS
+                    HyS
+                    HaS
+                    HyS).
+                  rewrite <- (mul_SNo_distrL
+                    (mul_SNo a a)
+                    (mul_SNo (R2_xcoord z) (R2_xcoord z))
+                    (mul_SNo (R2_ycoord z) (R2_ycoord z))
+                    HaaS
+                    Hx2S
+                    Hy2S).
+                  reflexivity.
+                }
+                claim HaaLeA : mul_SNo a a <= a.
+                {
+                  exact (mul_SNo_Le1_nonneg_Le
+                    a
+                    a
+                    HaS
+                    HaS
+                    HaLe1
+                    HaNonneg).
+                }
+                claim HaaLe1 : mul_SNo a a <= 1.
+                {
+                  exact (SNoLe_tra
+                    (mul_SNo a a)
+                    a
+                    1
+                    HaaS
+                    HaS
+                    SNo_1
+                    HaaLeA
+                    HaLe1).
+                }
+                claim HqSqLe :
+                  mul_SNo (distance_R2 q (0, 0)) (distance_R2 q (0, 0))
+                  <=
+                  mul_SNo (distance_R2 z (0, 0)) (distance_R2 z (0, 0)).
+                {
+                  rewrite HqSqFactored.
+                  rewrite <- HzSq.
+                  exact (mul_SNo_Le1_nonneg_Le
+                    (mul_SNo a a)
+                    (mul_SNo (distance_R2 z (0, 0)) (distance_R2 z (0, 0)))
+                    HaaS
+                    Hd2S
+                    HaaLe1
+                    HdSqNonneg).
+                }
+                claim Hd'LeD : distance_R2 q (0, 0) <= distance_R2 z (0, 0).
+                {
+                  exact (SNo_nonneg_sqr_Le_imp_Le
+                    (distance_R2 q (0, 0))
+                    (distance_R2 z (0, 0))
+                    Hd'S
+                    HdS
+                    Hd'Nonneg
+                    HdNonneg
+                    HqSqLe).
+                }
+                exact (SNoLeLt_tra
+                  (distance_R2 q (0, 0))
+                  (distance_R2 z (0, 0))
+                  1
+                  Hd'S
+                  HdS
+                  SNo_1
+                  Hd'LeD
+                  HzLt1).
               }
               rewrite (apply_fun_graph
                 unit_square
