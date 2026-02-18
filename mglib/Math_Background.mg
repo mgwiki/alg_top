@@ -114502,6 +114502,58 @@ assume Hfree : free_group_with_generators G mult e inv J gens.
 admit.
 Admitted.
 
+(** Helper for S69 Thm 69.4: quotient generator family is well-typed. **)
+(** Proven Bob **)
+Theorem lemma69_4_quotient_generator_family_function_on :
+  forall G mult e inv J gens:set,
+  free_group_with_generators G mult e inv J gens ->
+  let C := commutator_subgroup G mult e inv in
+  function_on
+    (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C))
+    J
+    (quotient_group_set G mult C).
+let G mult e inv J gens.
+assume Hfree : free_group_with_generators G mult e inv J gens.
+set C := commutator_subgroup G mult e inv.
+apply (and4E
+  (group_structure G mult e inv)
+  (function_on gens J G)
+  (forall alpha:set, alpha :e J ->
+    infinite_cyclic_subgroup G mult e inv (apply_fun gens alpha))
+  (free_product_of_subgroups G mult e inv J
+    (graph J (fun alpha:set =>
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}))
+    (graph J (fun alpha:set => e)))
+  Hfree).
+assume HgrpG HgensG HinfG HfpG.
+claim HbasisTotal :
+  total_function_on
+    (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C))
+    J
+    (quotient_group_set G mult C).
+{
+  apply (total_function_on_graph
+    J
+    (quotient_group_set G mult C)
+    (fun alpha:set => left_coset mult (apply_fun gens alpha) C)).
+  let alpha.
+  assume Halpha : alpha :e J.
+  exact (ReplI
+    G
+    (fun g:set => left_coset mult g C)
+    (apply_fun gens alpha)
+    (HgensG alpha Halpha)).
+}
+exact (total_function_on_function_on
+  (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C))
+  J
+  (quotient_group_set G mult C)
+  HbasisTotal).
+Qed.
+
 (** from S69 Thm 69.4 (line 3125 in algtop.tex): abelianization of free group **)
 (** LATEX VERSION: If G is free with generators {a_alpha}, then G/[G,G] is a free **)
 (** abelian group with basis {[a_alpha]}. **)
@@ -114632,35 +114684,20 @@ apply (andI
               (ordsucc m)))}))))
   HquotAb).
 apply andI.
-claim HbasisTotal :
-  total_function_on
-    (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C))
-    J
-    (quotient_group_set G mult C).
-{
-  apply (total_function_on_graph
-    J
-    (quotient_group_set G mult C)
-    (fun alpha:set => left_coset mult (apply_fun gens alpha) C)).
-  let alpha.
-  assume Halpha : alpha :e J.
-  exact (ReplI
-    G
-    (fun g:set => left_coset mult g C)
-    (apply_fun gens alpha)
-    (HgensG alpha Halpha)).
-}
 claim HbasisFn :
   function_on
     (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C))
     J
     (quotient_group_set G mult C).
 {
-  exact (total_function_on_function_on
-    (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C))
+  exact (lemma69_4_quotient_generator_family_function_on
+    G
+    mult
+    e
+    inv
     J
-    (quotient_group_set G mult C)
-    HbasisTotal).
+    gens
+    Hfree).
 }
 apply (andI
   (function_on
