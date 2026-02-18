@@ -110113,7 +110113,9 @@ apply (iffI
            (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
             g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}))
       (graph J (fun alpha:set => e)))).
-  + admit.
+  + let alpha.
+    assume Halpha : alpha :e J.
+    admit.
   + admit.
 Admitted.
 
