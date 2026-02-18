@@ -105914,6 +105914,71 @@ exact HimgCompactP.
 Qed.
 
 (** Proven Charlie **)
+Theorem projective_plane_map_covering_from_evenly_covered :
+  (forall b:set, b :e projective_plane ->
+    exists U:set, U :e projective_plane_topology /\ b :e U /\
+      evenly_covered (Sn 2) (Sn_topology 2)
+        projective_plane projective_plane_topology projective_plane_map U) ->
+  covering_map (Sn 2) (Sn_topology 2)
+    projective_plane projective_plane_topology projective_plane_map.
+assume HlocalEven.
+exact (and3I
+  (continuous_map (Sn 2) (Sn_topology 2)
+    projective_plane projective_plane_topology projective_plane_map)
+  (surjective_map (Sn 2) projective_plane projective_plane_map)
+  (forall b:set, b :e projective_plane ->
+    exists U:set, U :e projective_plane_topology /\ b :e U /\
+      evenly_covered (Sn 2) (Sn_topology 2)
+        projective_plane projective_plane_topology projective_plane_map U)
+  projective_plane_map_continuous
+  projective_plane_map_surjective_map
+  HlocalEven).
+Qed.
+
+(** Proven Charlie **)
+Theorem projective_plane_map_covering_implies_evenly_covered :
+  covering_map (Sn 2) (Sn_topology 2)
+    projective_plane projective_plane_topology projective_plane_map ->
+  (forall b:set, b :e projective_plane ->
+    exists U:set, U :e projective_plane_topology /\ b :e U /\
+      evenly_covered (Sn 2) (Sn_topology 2)
+        projective_plane projective_plane_topology projective_plane_map U).
+assume Hcov.
+exact (andER
+  ((continuous_map (Sn 2) (Sn_topology 2)
+    projective_plane projective_plane_topology projective_plane_map) /\
+   surjective_map (Sn 2) projective_plane projective_plane_map)
+  (forall b:set, b :e projective_plane ->
+    exists U:set, U :e projective_plane_topology /\ b :e U /\
+      evenly_covered (Sn 2) (Sn_topology 2)
+        projective_plane projective_plane_topology projective_plane_map U)
+  Hcov).
+Qed.
+
+(** Proven Charlie **)
+Theorem thm60_3_projective_plane_surface_covering_from_evenly_covered_parts :
+  m_manifold projective_plane projective_plane_topology 2 ->
+  compact_space (Sn 2) (Sn_topology 2) ->
+  (forall b:set, b :e projective_plane ->
+    exists U:set, U :e projective_plane_topology /\ b :e U /\
+      evenly_covered (Sn 2) (Sn_topology 2)
+        projective_plane projective_plane_topology projective_plane_map U) ->
+  m_manifold projective_plane projective_plane_topology 2 /\
+  compact_space projective_plane projective_plane_topology /\
+  covering_map (Sn 2) (Sn_topology 2)
+    projective_plane projective_plane_topology projective_plane_map.
+assume Hmanifold HcompactS2 HlocalEven.
+exact (and3I
+  (m_manifold projective_plane projective_plane_topology 2)
+  (compact_space projective_plane projective_plane_topology)
+  (covering_map (Sn 2) (Sn_topology 2)
+    projective_plane projective_plane_topology projective_plane_map)
+  Hmanifold
+  (projective_plane_compact_from_s2_compact HcompactS2)
+  (projective_plane_map_covering_from_evenly_covered HlocalEven)).
+Qed.
+
+(** Proven Charlie **)
 Theorem thm60_3_projective_plane_surface_covering_from_parts :
   m_manifold projective_plane projective_plane_topology 2 ->
   compact_space (Sn 2) (Sn_topology 2) ->
@@ -105955,16 +106020,18 @@ claim HcompactS2 :
 {
   admit.
 }
-claim Hcover :
-  covering_map (Sn 2) (Sn_topology 2)
-    projective_plane projective_plane_topology projective_plane_map.
+claim HlocalEven :
+  forall b:set, b :e projective_plane ->
+    exists U:set, U :e projective_plane_topology /\ b :e U /\
+      evenly_covered (Sn 2) (Sn_topology 2)
+        projective_plane projective_plane_topology projective_plane_map U.
 {
   admit.
 }
-exact (thm60_3_projective_plane_surface_covering_from_parts
+exact (thm60_3_projective_plane_surface_covering_from_evenly_covered_parts
   Hmanifold
   HcompactS2
-  Hcover).
+  HlocalEven).
 Admitted.
 
 (** from S60 Cor 60.4 (line 1725 in algtop.tex) **)
