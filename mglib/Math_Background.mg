@@ -63776,7 +63776,65 @@ claim Hex :
                       rewrite Hlt1Eqz0.
                       reflexivity.
               }
-              (** TODO Charlie: compare lr with lt1 on Nr :/\: N1 from Hlr0EqLt10 and Hplr0Eqplt10, then propagate membership of r into N1 via the local evenly-covered neighborhood Ur at f(r). **)
+              claim HlocEq0 :
+                exists N0:set,
+                  N0 :e subspace_topology unit_interval unit_interval_topology (Nr :/\: N1) /\
+                  (0 :e N0 /\
+                    (forall u:set, u :e N0 ->
+                      apply_fun lr u = apply_fun lt1 u)).
+              {
+                apply Hloc0InV0.
+                let V0.
+                assume HV0Pack2.
+                apply HV0Pack2.
+                let N0.
+                assume HN0Pack2.
+                witness N0.
+                exact (andER
+                  (V0 :e Te /\ apply_fun lr 0 :e V0 /\ apply_fun lt1 0 :e V0)
+                  (N0 :e subspace_topology unit_interval unit_interval_topology (Nr :/\: N1) /\
+                    (0 :e N0 /\
+                      (forall u:set, u :e N0 ->
+                        apply_fun lr u = apply_fun lt1 u)))
+                  HN0Pack2).
+              }
+              apply HlocEq0.
+              let N0.
+              assume HN0Pack3.
+              claim HN0Open :
+                N0 :e subspace_topology unit_interval unit_interval_topology (Nr :/\: N1).
+              {
+                exact (andEL
+                  (N0 :e subspace_topology unit_interval unit_interval_topology (Nr :/\: N1))
+                  (0 :e N0 /\ forall u:set, u :e N0 ->
+                    apply_fun lr u = apply_fun lt1 u)
+                  HN0Pack3).
+              }
+              claim HN0SubNrN1 : N0 c= Nr :/\: N1.
+              {
+                exact (subspace_topology_subset
+                  unit_interval
+                  unit_interval_topology
+                  (Nr :/\: N1)
+                  N0
+                  HN0Open).
+              }
+              claim HrN1IfHrN0 : r :e N0 -> r :e N1.
+              {
+                assume HrN0.
+                claim HrNrN1 : r :e Nr :/\: N1.
+                {
+                  exact (HN0SubNrN1
+                    r
+                    HrN0).
+                }
+                exact (binintersectE2
+                  Nr
+                  N1
+                  r
+                  HrNrN1).
+              }
+              (** TODO Charlie: show r :e N0 (using local-equality propagation from 0 along Nr with evenly-covered Ur data), then conclude with HrN1IfHrN0. **)
               admit.
             }
             exact HrN1.
