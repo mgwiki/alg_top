@@ -112670,6 +112670,90 @@ exact (Sep_Subq
       g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))).
 Qed.
 
+(** Helper for S69 Lem 69.1: any homomorphism on G restricts to each cyclic factor family. **)
+(** Proven Bob **)
+Theorem lemma69_1_hom_restricts_to_factor_family :
+  forall G mult e inv J gens H multH h alpha:set,
+  group_homomorphism G mult H multH h ->
+  alpha :e J ->
+  group_homomorphism
+    (apply_fun
+      (graph J (fun beta:set =>
+        {g :e G | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens beta) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))}))
+      alpha)
+    mult
+    H
+    multH
+    h.
+let G mult e inv J gens H multH h alpha.
+assume Hhom : group_homomorphism G mult H multH h.
+assume Halpha : alpha :e J.
+claim HhFnG : function_on h G H.
+{
+  exact (andEL
+    (function_on h G H)
+    (forall x y:set, x :e G -> y :e G ->
+      apply_fun h (apply_fun mult (x, y)) =
+      apply_fun multH (apply_fun h x, apply_fun h y))
+    Hhom).
+}
+claim HhMul :
+  forall x y:set, x :e G -> y :e G ->
+    apply_fun h (apply_fun mult (x, y)) =
+    apply_fun multH (apply_fun h x, apply_fun h y).
+{
+  exact (andER
+    (function_on h G H)
+    (forall x y:set, x :e G -> y :e G ->
+      apply_fun h (apply_fun mult (x, y)) =
+      apply_fun multH (apply_fun h x, apply_fun h y))
+    Hhom).
+}
+set Galpha :=
+  apply_fun
+    (graph J (fun beta:set =>
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens beta) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))}))
+    alpha.
+claim Hsub : Galpha c= G.
+{
+  exact (lemma69_1_factor_family_subset_ambient
+    G
+    mult
+    e
+    inv
+    J
+    gens
+    alpha
+    Halpha).
+}
+apply (andI
+  (function_on h Galpha H)
+  (forall x y:set, x :e Galpha -> y :e Galpha ->
+    apply_fun h (apply_fun mult (x, y)) =
+    apply_fun multH (apply_fun h x, apply_fun h y))).
+- exact (function_on_subdomain
+    h
+    G
+    H
+    Galpha
+    HhFnG
+    Hsub).
+- let x y.
+  assume Hx : x :e Galpha.
+  assume Hy : y :e Galpha.
+  exact (HhMul
+    x
+    y
+    (Hsub x Hx)
+    (Hsub y Hy)).
+Qed.
+
 (** from S69 Lem 69.1 (line 3047 in algtop.tex): extension condition for free groups **)
 (** LATEX VERSION: G is a free group with generators {a_alpha} iff for any group H **)
 (** and any family {y_alpha} of elements of H, there is a unique homomorphism **)
@@ -112905,49 +112989,21 @@ apply (iffI
   {
     let h2.
     assume Hh2 : group_homomorphism G mult H multH h2.
-    claim Hh2FnG : function_on h2 G H.
-    {
-      exact (andEL
-        (function_on h2 G H)
-        (forall x y:set, x :e G -> y :e G ->
-          apply_fun h2 (apply_fun mult (x, y)) =
-          apply_fun multH (apply_fun h2 x, apply_fun h2 y))
-        Hh2).
-    }
-    claim Hh2Mul :
-      forall x y:set, x :e G -> y :e G ->
-        apply_fun h2 (apply_fun mult (x, y)) =
-        apply_fun multH (apply_fun h2 x, apply_fun h2 y).
-    {
-      exact (andER
-        (function_on h2 G H)
-        (forall x y:set, x :e G -> y :e G ->
-          apply_fun h2 (apply_fun mult (x, y)) =
-          apply_fun multH (apply_fun h2 x, apply_fun h2 y))
-        Hh2).
-    }
     let alpha.
     assume Halpha : alpha :e J.
-    apply (andI
-      (function_on h2 (apply_fun Gfam0 alpha) H)
-      (forall x y:set, x :e apply_fun Gfam0 alpha -> y :e apply_fun Gfam0 alpha ->
-        apply_fun h2 (apply_fun mult (x, y)) =
-        apply_fun multH (apply_fun h2 x, apply_fun h2 y))).
-    - exact (function_on_subdomain
-        h2
-        G
-        H
-        (apply_fun Gfam0 alpha)
-        Hh2FnG
-        (Hfactor_subG alpha Halpha)).
-    - let x y.
-      assume Hx : x :e apply_fun Gfam0 alpha.
-      assume Hy : y :e apply_fun Gfam0 alpha.
-      exact (Hh2Mul
-        x
-        y
-        (Hfactor_subG alpha Halpha x Hx)
-        (Hfactor_subG alpha Halpha y Hy)).
+    exact (lemma69_1_hom_restricts_to_factor_family
+      G
+      mult
+      e
+      inv
+      J
+      gens
+      H
+      multH
+      h2
+      alpha
+      Hh2
+      Halpha).
   }
   claim Hfactor_univ :
     forall alpha:set, alpha :e J ->
