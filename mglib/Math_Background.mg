@@ -117609,7 +117609,88 @@ apply xm (second_countable_space X Tx).
     A
     HcovA).
 - assume HnscX.
-  (** TODO Charlie: finite star refinement from compact Hausdorff normality without second-countability. **)
+  claim HfinA : has_finite_subcover X Tx A.
+  {
+    exact (compact_space_subcover_property
+      X
+      Tx
+      HcompX
+      A
+      HcovA).
+  }
+  apply HfinA.
+  let A0.
+  assume HA0pack.
+  claim HA0subA : A0 c= A.
+  {
+    exact (andEL
+      (A0 c= A)
+      (finite A0)
+      (andEL
+        (A0 c= A /\ finite A0)
+        (X c= Union A0)
+        HA0pack)).
+  }
+  claim HA0fin : finite A0.
+  {
+    exact (andER
+      (A0 c= A)
+      (finite A0)
+      (andEL
+        (A0 c= A /\ finite A0)
+        (X c= Union A0)
+        HA0pack)).
+  }
+  claim HXsubUnionA0 : X c= Union A0.
+  {
+    exact (andER
+      (A0 c= A /\ finite A0)
+      (X c= Union A0)
+      HA0pack).
+  }
+  claim HAsubPowX : A c= Power X.
+  {
+    exact (open_cover_of_family_sub
+      X
+      Tx
+      A
+      HcovA).
+  }
+  claim HA0subPowX : A0 c= Power X.
+  {
+    exact (Subq_tra
+      A0
+      A
+      (Power X)
+      HA0subA
+      HAsubPowX).
+  }
+  claim HtopX : topology_on X Tx.
+  {
+    exact (open_cover_of_topology
+      X
+      Tx
+      A
+      HcovA).
+  }
+  claim HopenA0 : open_cover_of X Tx A0.
+  {
+    exact (open_cover_ofI
+      X
+      Tx
+      A0
+      HtopX
+      HA0subPowX
+      HXsubUnionA0
+      (fun U HU => open_cover_of_members_open
+        X
+        Tx
+        A
+        U
+        HcovA
+        (HA0subA U HU))).
+  }
+  (** TODO Charlie: use compact Hausdorff normality to construct a star-refinement of finite cover A0. **)
   admit.
 Admitted.
 
