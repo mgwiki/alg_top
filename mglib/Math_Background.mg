@@ -111965,6 +111965,90 @@ apply (iffI
       }
       exact (HhUniq h2 Hh2Hom Hh2Restr).
   }
+  claim Hfactor_subG :
+    forall alpha:set, alpha :e J -> apply_fun Gfam0 alpha c= G.
+  {
+    apply (and5E
+      (group_structure G mult e inv)
+      (forall alpha:set, alpha :e J ->
+        subgroup_of (apply_fun Gfam0 alpha) G mult e inv)
+      (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+        forall x:set, x :e apply_fun Gfam0 alpha ->
+          x :e apply_fun Gfam0 beta -> x = e)
+      (subgroups_generate G mult e inv J Gfam0)
+      (forall x:set, x :e G -> x <> e ->
+        exists n xs:set,
+          reduced_word J Gfam0 efam0 n xs /\ n <> 0 /\
+          word_product mult e xs n = x /\
+          (forall n' xs':set,
+            reduced_word J Gfam0 efam0 n' xs' -> n' <> 0 ->
+            word_product mult e xs' n' = x ->
+            n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
+      Hfp).
+    assume Hgrp_fp Hsub_fp Hdis_fp Hgen_fp Huniq_fp.
+    let alpha.
+    assume Halpha : alpha :e J.
+    apply (and4E
+      (apply_fun Gfam0 alpha c= G)
+      (e :e apply_fun Gfam0 alpha)
+      (forall x y:set, x :e apply_fun Gfam0 alpha -> y :e apply_fun Gfam0 alpha ->
+        apply_fun mult (x, y) :e apply_fun Gfam0 alpha)
+      (forall x:set, x :e apply_fun Gfam0 alpha -> apply_fun inv x :e apply_fun Gfam0 alpha)
+      (Hsub_fp alpha Halpha)).
+    assume HsubA HeA HmulA HinvA.
+    exact HsubA.
+  }
+  claim Hhom_restrict_factor :
+    forall h2:set, group_homomorphism G mult H multH h2 ->
+      forall alpha:set, alpha :e J ->
+        group_homomorphism (apply_fun Gfam0 alpha) mult H multH h2.
+  {
+    let h2.
+    assume Hh2 : group_homomorphism G mult H multH h2.
+    claim Hh2FnG : function_on h2 G H.
+    {
+      exact (andEL
+        (function_on h2 G H)
+        (forall x y:set, x :e G -> y :e G ->
+          apply_fun h2 (apply_fun mult (x, y)) =
+          apply_fun multH (apply_fun h2 x, apply_fun h2 y))
+        Hh2).
+    }
+    claim Hh2Mul :
+      forall x y:set, x :e G -> y :e G ->
+        apply_fun h2 (apply_fun mult (x, y)) =
+        apply_fun multH (apply_fun h2 x, apply_fun h2 y).
+    {
+      exact (andER
+        (function_on h2 G H)
+        (forall x y:set, x :e G -> y :e G ->
+          apply_fun h2 (apply_fun mult (x, y)) =
+          apply_fun multH (apply_fun h2 x, apply_fun h2 y))
+        Hh2).
+    }
+    let alpha.
+    assume Halpha : alpha :e J.
+    apply (andI
+      (function_on h2 (apply_fun Gfam0 alpha) H)
+      (forall x y:set, x :e apply_fun Gfam0 alpha -> y :e apply_fun Gfam0 alpha ->
+        apply_fun h2 (apply_fun mult (x, y)) =
+        apply_fun multH (apply_fun h2 x, apply_fun h2 y))).
+    - exact (function_on_subdomain
+        h2
+        G
+        H
+        (apply_fun Gfam0 alpha)
+        Hh2FnG
+        (Hfactor_subG alpha Halpha)).
+    - let x y.
+      assume Hx : x :e apply_fun Gfam0 alpha.
+      assume Hy : y :e apply_fun Gfam0 alpha.
+      exact (Hh2Mul
+        x
+        y
+        (Hfactor_subG alpha Halpha x Hx)
+        (Hfactor_subG alpha Halpha y Hy)).
+  }
   set hfam0 := graph J (fun alpha:set =>
     Eps_i (fun f:set =>
       group_homomorphism (apply_fun Gfam0 alpha) mult H multH f /\
