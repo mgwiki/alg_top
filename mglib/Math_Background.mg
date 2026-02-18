@@ -79311,14 +79311,23 @@ claim HioCore :
             - exact Hin.
             - exact Hout.
           }
-          exact (FalseE
-            (HnoIO HioWit)
-            (~(exists x:set, x :e S1 /\ points_directly_inward v x)
-              \/
-             ~(exists x:set, x :e S1 /\ points_directly_outward v x))).
-      }
-      admit.
-    }
+	          exact (FalseE
+	            (HnoIO HioWit)
+	            (~(exists x:set, x :e S1 /\ points_directly_inward v x)
+	              \/
+	             ~(exists x:set, x :e S1 /\ points_directly_outward v x))).
+	      }
+	      claim HgeomContra :
+	        (~(exists x:set, x :e S1 /\ points_directly_inward v x)
+	          \/
+	         ~(exists x:set, x :e S1 /\ points_directly_outward v x))
+	        -> False.
+	      {
+	        admit.
+	      }
+	      exact (HgeomContra
+	        HnoInOrNoOut).
+	    }
     exact (FalseE
       Hcontra
       ((exists x:set, x :e S1 /\ points_directly_inward v x)
