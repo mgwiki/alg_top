@@ -82656,8 +82656,520 @@ claim Hpi1Trivial :
         claim HFcont :
           continuous_map unit_square unit_square_topology X TX F.
         {
-          (** remaining gap: continuity and image-in-open-disk for radial contraction **)
-          admit.
+          set s_coord := projection_map1 unit_interval unit_interval.
+          set t_coord := projection_map2 unit_interval unit_interval.
+          claim HtopSq : topology_on unit_square unit_square_topology.
+          {
+            exact (product_topology_is_topology
+              unit_interval
+              unit_interval_topology
+              unit_interval
+              unit_interval_topology
+              unit_interval_topology_on
+              unit_interval_topology_on).
+          }
+          claim HprojPair :
+            continuous_map unit_square unit_square_topology unit_interval unit_interval_topology s_coord /\
+            continuous_map unit_square unit_square_topology unit_interval unit_interval_topology t_coord.
+          {
+            exact (projection_maps_continuous
+              unit_interval
+              unit_interval_topology
+              unit_interval
+              unit_interval_topology
+              unit_interval_topology_on
+              unit_interval_topology_on).
+          }
+          claim HsCoordCont :
+            continuous_map unit_square unit_square_topology unit_interval unit_interval_topology s_coord.
+          {
+            exact (andEL
+              (continuous_map unit_square unit_square_topology unit_interval unit_interval_topology s_coord)
+              (continuous_map unit_square unit_square_topology unit_interval unit_interval_topology t_coord)
+              HprojPair).
+          }
+          claim HtCoordCont :
+            continuous_map unit_square unit_square_topology unit_interval unit_interval_topology t_coord.
+          {
+            exact (andER
+              (continuous_map unit_square unit_square_topology unit_interval unit_interval_topology s_coord)
+              (continuous_map unit_square unit_square_topology unit_interval unit_interval_topology t_coord)
+              HprojPair).
+          }
+          set one_minus_t := compose_fun unit_square t_coord flip_unit_interval.
+          claim HoneMinusI :
+            continuous_map unit_square unit_square_topology unit_interval unit_interval_topology one_minus_t.
+          {
+            exact (composition_continuous
+              unit_square
+              unit_square_topology
+              unit_interval
+              unit_interval_topology
+              unit_interval
+              unit_interval_topology
+              t_coord
+              flip_unit_interval
+              HtCoordCont
+              flip_unit_interval_continuous).
+          }
+          claim HoneMinusR :
+            continuous_map unit_square unit_square_topology R R_standard_topology one_minus_t.
+          {
+            exact (continuous_map_range_expand
+              unit_square
+              unit_square_topology
+              unit_interval
+              unit_interval_topology
+              R
+              R_standard_topology
+              one_minus_t
+              HoneMinusI
+              unit_interval_sub_R
+              R_standard_topology_is_topology
+              (fun Q H => H)).
+          }
+          set f_sq := compose_fun unit_square s_coord f.
+          claim HfSqContX :
+            continuous_map unit_square unit_square_topology X TX f_sq.
+          {
+            exact (composition_continuous
+              unit_square
+              unit_square_topology
+              unit_interval
+              unit_interval_topology
+              X
+              TX
+              s_coord
+              f
+              HsCoordCont
+              HfCont).
+          }
+          claim HfSqContE :
+            continuous_map unit_square unit_square_topology EuclidPlane R2_topology f_sq.
+          {
+            exact (continuous_map_range_expand
+              unit_square
+              unit_square_topology
+              X
+              TX
+              EuclidPlane
+              R2_topology
+              f_sq
+              HfSqContX
+              HXsub
+              HtopR2
+              (fun Q H => H)).
+          }
+          claim HfSqFunE : function_on f_sq unit_square EuclidPlane.
+          {
+            exact (continuous_map_function_on
+              unit_square
+              unit_square_topology
+              EuclidPlane
+              R2_topology
+              f_sq
+              HfSqContE).
+          }
+          claim HprojRPair :
+            continuous_map EuclidPlane R2_topology R R_standard_topology (projection1 R R) /\
+            continuous_map EuclidPlane R2_topology R R_standard_topology (projection2 R R).
+          {
+            exact (projection_maps_continuous
+              R
+              R_standard_topology
+              R
+              R_standard_topology
+              R_standard_topology_is_topology
+              R_standard_topology_is_topology).
+          }
+          claim Hproj1Cont :
+            continuous_map EuclidPlane R2_topology R R_standard_topology (projection1 R R).
+          {
+            exact (andEL
+              (continuous_map EuclidPlane R2_topology R R_standard_topology (projection1 R R))
+              (continuous_map EuclidPlane R2_topology R R_standard_topology (projection2 R R))
+              HprojRPair).
+          }
+          claim Hproj2Cont :
+            continuous_map EuclidPlane R2_topology R R_standard_topology (projection2 R R).
+          {
+            exact (andER
+              (continuous_map EuclidPlane R2_topology R R_standard_topology (projection1 R R))
+              (continuous_map EuclidPlane R2_topology R R_standard_topology (projection2 R R))
+              HprojRPair).
+          }
+          set x_coord := compose_fun unit_square f_sq (projection1 R R).
+          set y_coord := compose_fun unit_square f_sq (projection2 R R).
+          claim HxCoordCont :
+            continuous_map unit_square unit_square_topology R R_standard_topology x_coord.
+          {
+            exact (composition_continuous
+              unit_square
+              unit_square_topology
+              EuclidPlane
+              R2_topology
+              R
+              R_standard_topology
+              f_sq
+              (projection1 R R)
+              HfSqContE
+              Hproj1Cont).
+          }
+          claim HyCoordCont :
+            continuous_map unit_square unit_square_topology R R_standard_topology y_coord.
+          {
+            exact (composition_continuous
+              unit_square
+              unit_square_topology
+              EuclidPlane
+              R2_topology
+              R
+              R_standard_topology
+              f_sq
+              (projection2 R R)
+              HfSqContE
+              Hproj2Cont).
+          }
+          set x_scaled := compose_fun unit_square (pair_map unit_square one_minus_t x_coord) mul_fun_R.
+          set y_scaled := compose_fun unit_square (pair_map unit_square one_minus_t y_coord) mul_fun_R.
+          claim HxScaledCont :
+            continuous_map unit_square unit_square_topology R R_standard_topology x_scaled.
+          {
+            exact (mul_two_continuous_R
+              unit_square
+              unit_square_topology
+              one_minus_t
+              x_coord
+              HtopSq
+              HoneMinusR
+              HxCoordCont).
+          }
+          claim HyScaledCont :
+            continuous_map unit_square unit_square_topology R R_standard_topology y_scaled.
+          {
+            exact (mul_two_continuous_R
+              unit_square
+              unit_square_topology
+              one_minus_t
+              y_coord
+              HtopSq
+              HoneMinusR
+              HyCoordCont).
+          }
+          set Fraw := pair_map unit_square x_scaled y_scaled.
+          claim HFrawCont :
+            continuous_map unit_square unit_square_topology EuclidPlane R2_topology Fraw.
+          {
+            exact (maps_into_products
+              unit_square
+              unit_square_topology
+              R
+              R_standard_topology
+              R
+              R_standard_topology
+              x_scaled
+              y_scaled
+              HxScaledCont
+              HyScaledCont).
+          }
+          claim HFFunE : function_on F unit_square EuclidPlane.
+          {
+            claim HFTotalE : total_function_on F unit_square EuclidPlane.
+            {
+              apply (total_function_on_graph
+                unit_square
+                EuclidPlane
+                (fun p:set =>
+                  (mul_SNo (add_SNo 1 (minus_SNo (p 1))) (R2_xcoord (apply_fun f (p 0))),
+                   mul_SNo (add_SNo 1 (minus_SNo (p 1))) (R2_ycoord (apply_fun f (p 0)))))).
+              let p.
+              assume Hp.
+              claim Hp0I : p 0 :e unit_interval.
+              {
+                exact (ap0_Sigma
+                  unit_interval
+                  (fun _ : set => unit_interval)
+                  p
+                  Hp).
+              }
+              claim HfP0Plane : apply_fun f (p 0) :e EuclidPlane.
+              {
+                exact (HfOnPlane (p 0) Hp0I).
+              }
+              claim HoneValI : apply_fun one_minus_t p :e unit_interval.
+              {
+                exact (continuous_map_function_on
+                  unit_square
+                  unit_square_topology
+                  unit_interval
+                  unit_interval_topology
+                  one_minus_t
+                  HoneMinusI
+                  p
+                  Hp).
+              }
+              claim HoneValR : apply_fun one_minus_t p :e R.
+              {
+                exact (unit_interval_sub_R
+                  (apply_fun one_minus_t p)
+                  HoneValI).
+              }
+              claim HxR : R2_xcoord (apply_fun f (p 0)) :e R.
+              {
+                exact (EuclidPlane_xcoord_in_R
+                  (apply_fun f (p 0))
+                  HfP0Plane).
+              }
+              claim HyR : R2_ycoord (apply_fun f (p 0)) :e R.
+              {
+                exact (EuclidPlane_ycoord_in_R
+                  (apply_fun f (p 0))
+                  HfP0Plane).
+              }
+              claim HxMulR :
+                mul_SNo (add_SNo 1 (minus_SNo (p 1))) (R2_xcoord (apply_fun f (p 0))) :e R.
+              {
+                claim HoneRawR : add_SNo 1 (minus_SNo (p 1)) :e R.
+                {
+                  claim Hp1I : p 1 :e unit_interval.
+                  {
+                    exact (ap1_Sigma
+                      unit_interval
+                      (fun _ : set => unit_interval)
+                      p
+                      Hp).
+                  }
+                  claim Hp1R : p 1 :e R.
+                  {
+                    exact (unit_interval_sub_R
+                      (p 1)
+                      Hp1I).
+                  }
+                  exact (real_add_SNo
+                    1
+                    real_1
+                    (minus_SNo (p 1))
+                    (real_minus_SNo (p 1) Hp1R)).
+                }
+                exact (real_mul_SNo
+                  (add_SNo 1 (minus_SNo (p 1)))
+                  HoneRawR
+                  (R2_xcoord (apply_fun f (p 0)))
+                  HxR).
+              }
+              claim HyMulR :
+                mul_SNo (add_SNo 1 (minus_SNo (p 1))) (R2_ycoord (apply_fun f (p 0))) :e R.
+              {
+                claim HoneRawR : add_SNo 1 (minus_SNo (p 1)) :e R.
+                {
+                  claim Hp1I : p 1 :e unit_interval.
+                  {
+                    exact (ap1_Sigma
+                      unit_interval
+                      (fun _ : set => unit_interval)
+                      p
+                      Hp).
+                  }
+                  claim Hp1R : p 1 :e R.
+                  {
+                    exact (unit_interval_sub_R
+                      (p 1)
+                      Hp1I).
+                  }
+                  exact (real_add_SNo
+                    1
+                    real_1
+                    (minus_SNo (p 1))
+                    (real_minus_SNo (p 1) Hp1R)).
+                }
+                exact (real_mul_SNo
+                  (add_SNo 1 (minus_SNo (p 1)))
+                  HoneRawR
+                  (R2_ycoord (apply_fun f (p 0)))
+                  HyR).
+              }
+              exact (tuple_2_setprod_by_pair_Sigma
+                R
+                R
+                (mul_SNo (add_SNo 1 (minus_SNo (p 1))) (R2_xcoord (apply_fun f (p 0))))
+                (mul_SNo (add_SNo 1 (minus_SNo (p 1))) (R2_ycoord (apply_fun f (p 0))))
+                HxMulR
+                HyMulR).
+            }
+            exact (total_function_on_function_on
+              F
+              unit_square
+              EuclidPlane
+              HFTotalE).
+          }
+          claim HFeqOn : forall p:set, p :e unit_square -> apply_fun Fraw p = apply_fun F p.
+          {
+            let p.
+            assume Hp.
+            claim HoneValI : apply_fun one_minus_t p :e unit_interval.
+            {
+              exact (continuous_map_function_on
+                unit_square
+                unit_square_topology
+                unit_interval
+                unit_interval_topology
+                one_minus_t
+                HoneMinusI
+                p
+                Hp).
+            }
+            claim HoneValR : apply_fun one_minus_t p :e R.
+            {
+              exact (unit_interval_sub_R
+                (apply_fun one_minus_t p)
+                HoneValI).
+            }
+            claim HxCoordValR : apply_fun x_coord p :e R.
+            {
+              exact (continuous_map_function_on
+                unit_square
+                unit_square_topology
+                R
+                R_standard_topology
+                x_coord
+                HxCoordCont
+                p
+                Hp).
+            }
+            claim HyCoordValR : apply_fun y_coord p :e R.
+            {
+              exact (continuous_map_function_on
+                unit_square
+                unit_square_topology
+                R
+                R_standard_topology
+                y_coord
+                HyCoordCont
+                p
+                Hp).
+            }
+            rewrite (pair_map_apply
+              unit_square
+              R
+              R
+              x_scaled
+              y_scaled
+              p
+              Hp).
+            rewrite (mul_of_pair_map_apply
+              unit_square
+              one_minus_t
+              x_coord
+              p
+              Hp
+              HoneValR
+              HxCoordValR).
+            rewrite (mul_of_pair_map_apply
+              unit_square
+              one_minus_t
+              y_coord
+              p
+              Hp
+              HoneValR
+              HyCoordValR).
+            rewrite (compose_fun_apply
+              unit_square
+              f_sq
+              (projection1 R R)
+              p
+              Hp).
+            rewrite (compose_fun_apply
+              unit_square
+              f_sq
+              (projection2 R R)
+              p
+              Hp).
+            claim HfSqVal : apply_fun f_sq p :e EuclidPlane.
+            {
+              exact (HfSqFunE p Hp).
+            }
+            rewrite (projection1_apply
+              R
+              R
+              (apply_fun f_sq p)
+              HfSqVal).
+            rewrite (projection2_apply
+              R
+              R
+              (apply_fun f_sq p)
+              HfSqVal).
+            rewrite (compose_fun_apply
+              unit_square
+              s_coord
+              f
+              p
+              Hp).
+            rewrite (projection1_apply
+              unit_interval
+              unit_interval
+              p
+              Hp).
+            rewrite (compose_fun_apply
+              unit_square
+              t_coord
+              flip_unit_interval
+              p
+              Hp).
+            rewrite (projection2_apply
+              unit_interval
+              unit_interval
+              p
+              Hp).
+            claim Hp1I : p 1 :e unit_interval.
+            {
+              exact (ap1_Sigma
+                unit_interval
+                (fun _ : set => unit_interval)
+                p
+                Hp).
+            }
+            rewrite (flip_unit_interval_apply
+              (p 1)
+              Hp1I).
+            rewrite (apply_fun_graph
+              unit_square
+              (fun p0:set =>
+                (mul_SNo (add_SNo 1 (minus_SNo (p0 1))) (R2_xcoord (apply_fun f (p0 0))),
+                 mul_SNo (add_SNo 1 (minus_SNo (p0 1))) (R2_ycoord (apply_fun f (p0 0)))))
+              p
+              Hp).
+            reflexivity.
+          }
+          claim HFcontPlane :
+            continuous_map unit_square unit_square_topology EuclidPlane R2_topology F.
+          {
+            exact (continuous_map_congr_on
+              unit_square
+              unit_square_topology
+              EuclidPlane
+              R2_topology
+              Fraw
+              F
+              HFrawCont
+              HFFunE
+              HFeqOn).
+          }
+          claim HFintoX :
+            forall p:set, p :e unit_square -> apply_fun F p :e X.
+          {
+            (** remaining geometric gap: radial contraction stays inside the open unit disk **)
+            admit.
+          }
+          exact (continuous_map_range_restrict
+            unit_square
+            unit_square_topology
+            EuclidPlane
+            R2_topology
+            F
+            X
+            HFcontPlane
+            HXsub
+            HFintoX).
         }
         claim HFs0 : forall s:set, s :e unit_interval ->
           apply_fun F (s, 0) = apply_fun f s.
