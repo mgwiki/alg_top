@@ -112558,6 +112558,87 @@ assume Hext :
 admit.
 Admitted.
 
+(** Helper for S69 Lem 69.1: each generator lies in its cyclic factor family. **)
+(** Proven Bob **)
+Theorem lemma69_1_generator_in_factor_family :
+  forall G mult e inv J gens alpha:set,
+  group_structure G mult e inv ->
+  function_on gens J G ->
+  alpha :e J ->
+  apply_fun gens alpha :e
+    apply_fun
+      (graph J (fun beta:set =>
+        {g :e G | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens beta) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))}))
+      alpha.
+let G mult e inv J gens alpha.
+assume Hgrp : group_structure G mult e inv.
+assume Hgens : function_on gens J G.
+assume Halpha : alpha :e J.
+rewrite (apply_fun_graph
+  J
+  (fun beta:set =>
+    {g :e G | exists n:set, n :e int /\
+      ((n :e omega /\ g = group_power_nat mult e (apply_fun gens beta) n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+        g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))})
+  alpha
+  Halpha).
+apply (SepI
+  G
+  (fun g:set => exists n:set, n :e int /\
+    ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+     (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+      g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))
+  (apply_fun gens alpha)
+  (Hgens alpha Halpha)).
+witness (ordsucc 0).
+apply andI.
+- exact (Subq_omega_int
+    (ordsucc 0)
+    (nat_p_omega (ordsucc 0) (nat_ordsucc 0 nat_0))).
+- apply orIL.
+  apply andI.
+  + exact (nat_p_omega
+      (ordsucc 0)
+      (nat_ordsucc 0 nat_0)).
+  + claim HS : group_power_nat mult e (apply_fun gens alpha) (ordsucc 0) =
+      apply_fun mult (apply_fun gens alpha, group_power_nat mult e (apply_fun gens alpha) 0).
+    {
+      exact (nat_primrec_S
+        e
+        (fun _ r => apply_fun mult (apply_fun gens alpha, r))
+        0
+        nat_0).
+    }
+    claim H0 : group_power_nat mult e (apply_fun gens alpha) 0 = e.
+    {
+      exact (nat_primrec_0
+        e
+        (fun _ r => apply_fun mult (apply_fun gens alpha, r))).
+    }
+    apply (and6E
+      (function_on mult (setprod G G) G)
+      (function_on inv G G)
+      (e :e G)
+      (forall x y z:set, x :e G -> y :e G -> z :e G ->
+        apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+      (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+      (forall x:set, x :e G ->
+        apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+      Hgrp).
+    assume HmultF HinvF HeG HassocG HidG HinvG.
+    rewrite HS.
+    rewrite H0.
+    symmetry.
+    exact (andER
+      (apply_fun mult (e, apply_fun gens alpha) = apply_fun gens alpha)
+      (apply_fun mult (apply_fun gens alpha, e) = apply_fun gens alpha)
+      (HidG (apply_fun gens alpha) (Hgens alpha Halpha))).
+Qed.
+
 (** from S69 Lem 69.1 (line 3047 in algtop.tex): extension condition for free groups **)
 (** LATEX VERSION: G is a free group with generators {a_alpha} iff for any group H **)
 (** and any family {y_alpha} of elements of H, there is a unique homomorphism **)
@@ -112658,66 +112739,17 @@ apply (iffI
   {
     let alpha.
     assume Halpha : alpha :e J.
-    rewrite (apply_fun_graph
-      J
-      (fun alpha:set =>
-        {g :e G | exists n:set, n :e int /\
-          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
-           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
-            g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))})
-      alpha
-      Halpha).
-    apply (SepI
+    exact (lemma69_1_generator_in_factor_family
       G
-      (fun g:set => exists n:set, n :e int /\
-        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
-         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
-          g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))))
-      (apply_fun gens alpha)
-      (Hgens alpha Halpha)).
-    witness (ordsucc 0).
-    apply andI.
-    - exact (Subq_omega_int
-        (ordsucc 0)
-        (nat_p_omega (ordsucc 0) (nat_ordsucc 0 nat_0))).
-    - apply orIL.
-      apply andI.
-      + exact (nat_p_omega
-          (ordsucc 0)
-          (nat_ordsucc 0 nat_0)).
-      + claim HS : group_power_nat mult e (apply_fun gens alpha) (ordsucc 0) =
-          apply_fun mult (apply_fun gens alpha, group_power_nat mult e (apply_fun gens alpha) 0).
-        {
-          exact (nat_primrec_S
-            e
-            (fun _ r => apply_fun mult (apply_fun gens alpha, r))
-            0
-            nat_0).
-        }
-        claim H0 : group_power_nat mult e (apply_fun gens alpha) 0 = e.
-        {
-          exact (nat_primrec_0
-            e
-            (fun _ r => apply_fun mult (apply_fun gens alpha, r))).
-        }
-        apply (and6E
-          (function_on mult (setprod G G) G)
-          (function_on inv G G)
-          (e :e G)
-          (forall x y z:set, x :e G -> y :e G -> z :e G ->
-            apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
-          (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
-          (forall x:set, x :e G ->
-            apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
-          Hgrp_free).
-        assume HmultF HinvF HeG HassocG HidG HinvG.
-        rewrite HS.
-        rewrite H0.
-        symmetry.
-        exact (andER
-          (apply_fun mult (e, apply_fun gens alpha) = apply_fun gens alpha)
-          (apply_fun mult (apply_fun gens alpha, e) = apply_fun gens alpha)
-          (HidG (apply_fun gens alpha) (Hgens alpha Halpha))).
+      mult
+      e
+      inv
+      J
+      gens
+      alpha
+      Hgrp_free
+      Hgens
+      Halpha).
   }
   claim Hreduce_from_family :
     forall hfam:set,
