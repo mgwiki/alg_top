@@ -112482,6 +112482,25 @@ apply (andI
           e
           HeC).
       }
+      claim HeInPowSet :
+        e :e group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+            group_power_nat
+              (quotient_group_mult G mult C)
+              (quotient_group_id G mult e C)
+              (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+              n = quotient_group_id G mult e C)).
+      {
+        rewrite HpowQidEq at 1.
+        exact HeInLeftCosetE.
+      }
+      claim HeFromPowSet : e :e C.
+      {
+        exact (HpowSetSubC e HeInPowSet).
+      }
       admit.
   admit.
 Admitted.
