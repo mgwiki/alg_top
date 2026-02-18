@@ -1,6 +1,6 @@
 (** Balance Alice 3305 **)
 (** Balance Bob 3021 **)
-(** Balance Charlie 1160 **)
+(** Balance Charlie 1248 **)
 (** Balance Dave 1419 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -117700,14 +117700,1314 @@ Qed.
 (** open covering B refining A such that for each pair B, B' in B with nonempty **)
 (** intersection, B union B' lies in an element of A. **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
+(** Collected Charlie 88 **)
+(** Proven Charlie **)
 Theorem supp_ex_1a_metrizable_star_refinement :
   forall X Tx:set,
   metrizable X Tx ->
   forall A:set, open_cover_of X Tx A ->
   exists B:set, star_refinement_cover X Tx B A.
-admit.
-Admitted.
+let X Tx.
+assume HmetX.
+let A.
+assume HcovA.
+apply HmetX.
+let d.
+assume Hdpack.
+claim Hmetric : metric_on X d.
+{
+  exact (andEL
+    (metric_on X d)
+    (metric_topology X d = Tx)
+    Hdpack).
+}
+claim HtxEq : metric_topology X d = Tx.
+{
+  exact (andER
+    (metric_on X d)
+    (metric_topology X d = Tx)
+    Hdpack).
+}
+claim HcovA_metric : open_cover_of X (metric_topology X d) A.
+{
+  rewrite HtxEq.
+  exact HcovA.
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (open_cover_of_topology
+    X
+    Tx
+    A
+    HcovA).
+}
+claim HAopenMetric : forall U:set, U :e A -> U :e metric_topology X d.
+{
+  let U.
+  assume HUA.
+  claim HUtx : U :e Tx.
+  {
+    exact (open_cover_of_members_open
+      X
+      Tx
+      A
+      U
+      HcovA
+      HUA).
+  }
+  rewrite HtxEq.
+  exact HUtx.
+}
+set P := {p :e setprod X omega |
+  exists W:set, W :e A /\ open_ball X d (p 0) (eps_ (p 1)) c= W}.
+set B := {open_ball X d (p 0) (eps_ (ordsucc (ordsucc (p 1))))|p :e P}.
+claim HBsubPowX : B c= Power X.
+{
+  let U.
+  assume HUB.
+  apply (PowerI X U).
+  let z.
+  assume HzU.
+  apply (ReplE
+    P
+    (fun p:set => open_ball X d (p 0) (eps_ (ordsucc (ordsucc (p 1)))))
+    U
+    HUB).
+  let p.
+  assume HpPack.
+  claim HpP : p :e P.
+  {
+    exact (andEL
+      (p :e P)
+      (U = open_ball X d (p 0) (eps_ (ordsucc (ordsucc (p 1)))))
+      HpPack).
+  }
+  claim HUeq : U = open_ball X d (p 0) (eps_ (ordsucc (ordsucc (p 1)))).
+  {
+    exact (andER
+      (p :e P)
+      (U = open_ball X d (p 0) (eps_ (ordsucc (ordsucc (p 1)))))
+      HpPack).
+  }
+  claim HzBall : z :e open_ball X d (p 0) (eps_ (ordsucc (ordsucc (p 1)))).
+  {
+    rewrite <- HUeq.
+    exact HzU.
+  }
+  exact (open_ballE1
+    X
+    d
+    (p 0)
+    (eps_ (ordsucc (ordsucc (p 1))))
+    z
+    HzBall).
+}
+claim HXsubUnionB : X c= Union B.
+{
+  let x.
+  assume HxX.
+  claim HxUnionA : x :e Union A.
+  {
+    exact (open_cover_of_covers
+      X
+      Tx
+      A
+      HcovA
+      x
+      HxX).
+  }
+  apply (UnionE
+    A
+    x
+    HxUnionA).
+  let W.
+  assume HWpack.
+  claim HWA : W :e A.
+  {
+    exact (andER
+      (x :e W)
+      (W :e A)
+      HWpack).
+  }
+  claim HxW : x :e W.
+  {
+    exact (andEL
+      (x :e W)
+      (W :e A)
+      HWpack).
+  }
+  claim HWmetric : W :e metric_topology X d.
+  {
+    exact (HAopenMetric
+      W
+      HWA).
+  }
+  claim HopenW : open_in X (metric_topology X d) W.
+  {
+    exact (andI
+      (topology_on X (metric_topology X d))
+      (W :e metric_topology X d)
+      (metric_topology_is_topology
+        X
+        d
+        Hmetric)
+      HWmetric).
+  }
+  claim HballEx :
+    exists n:set, n :e omega /\
+      open_ball X d x (eps_ (ordsucc (ordsucc n))) c= W.
+  {
+    exact (open_in_metric_topology_has_eps_succsucc_ball_sub
+      X
+      d
+      W
+      x
+      Hmetric
+      HopenW
+      HxW).
+  }
+  apply HballEx.
+  let n.
+  assume HnPack.
+  claim Hnomega : n :e omega.
+  {
+    exact (andEL
+      (n :e omega)
+      (open_ball X d x (eps_ (ordsucc (ordsucc n))) c= W)
+      HnPack).
+  }
+  claim HballSubW : open_ball X d x (eps_ (ordsucc (ordsucc n))) c= W.
+  {
+    exact (andER
+      (n :e omega)
+      (open_ball X d x (eps_ (ordsucc (ordsucc n))) c= W)
+      HnPack).
+  }
+  claim Hssnomega : ordsucc (ordsucc n) :e omega.
+  {
+    exact (omega_ordsucc
+      (ordsucc n)
+      (omega_ordsucc
+        n
+        Hnomega)).
+  }
+  claim HpP : (x,ordsucc (ordsucc n)) :e P.
+  {
+    apply (SepI
+      (setprod X omega)
+      (fun p:set =>
+        exists W:set, W :e A /\ open_ball X d (p 0) (eps_ (p 1)) c= W)
+      (x,ordsucc (ordsucc n))).
+    - exact (tuple_2_setprod_by_pair_Sigma
+        X
+        omega
+        x
+        (ordsucc (ordsucc n))
+        HxX
+        Hssnomega).
+    - witness W.
+      apply andI.
+      + exact HWA.
+      + claim HpairEq :
+          open_ball X d ((x,ordsucc (ordsucc n)) 0) (eps_ ((x,ordsucc (ordsucc n)) 1))
+          = open_ball X d x (eps_ (ordsucc (ordsucc n))).
+        {
+          rewrite (tuple_2_0_eq x (ordsucc (ordsucc n))).
+          rewrite (tuple_2_1_eq x (ordsucc (ordsucc n))).
+          reflexivity.
+        }
+        rewrite HpairEq.
+        exact HballSubW.
+  }
+  claim Hssssnomega : ordsucc (ordsucc (ordsucc (ordsucc n))) :e omega.
+  {
+    exact (omega_ordsucc
+      (ordsucc (ordsucc (ordsucc n)))
+      (omega_ordsucc
+        (ordsucc (ordsucc n))
+        (omega_ordsucc
+          (ordsucc n)
+          (omega_ordsucc
+            n
+            Hnomega)))).
+  }
+  claim HepsPos : Rlt 0 (eps_ (ordsucc (ordsucc (ordsucc (ordsucc n))))).
+  {
+    exact (RltI
+      0
+      (eps_ (ordsucc (ordsucc (ordsucc (ordsucc n)))))
+      real_0
+      (eps_in_R_omega
+        (ordsucc (ordsucc (ordsucc (ordsucc n))))
+        Hssssnomega)
+      (SNo_eps_pos
+        (ordsucc (ordsucc (ordsucc (ordsucc n))))
+        Hssssnomega)).
+  }
+  claim HxBall : x :e open_ball X d x (eps_ (ordsucc (ordsucc (ordsucc (ordsucc n))))).
+  {
+    exact (center_in_open_ball
+      X
+      d
+      x
+      (eps_ (ordsucc (ordsucc (ordsucc (ordsucc n)))))
+      Hmetric
+      HxX
+      HepsPos).
+  }
+  claim HxBallPair :
+    x :e open_ball X d ((x,ordsucc (ordsucc n)) 0)
+      (eps_ (ordsucc (ordsucc ((x,ordsucc (ordsucc n)) 1)))).
+  {
+    rewrite (tuple_2_0_eq x (ordsucc (ordsucc n))).
+    rewrite (tuple_2_1_eq x (ordsucc (ordsucc n))).
+    exact HxBall.
+  }
+  exact (UnionI
+    B
+    x
+    (open_ball X d ((x,ordsucc (ordsucc n)) 0)
+      (eps_ (ordsucc (ordsucc ((x,ordsucc (ordsucc n)) 1)))))
+    HxBallPair
+    (ReplI
+      P
+      (fun p:set => open_ball X d (p 0) (eps_ (ordsucc (ordsucc (p 1)))))
+      (x,ordsucc (ordsucc n))
+      HpP)).
+}
+claim HBmembersOpen : forall U:set, U :e B -> U :e Tx.
+{
+  let U.
+  assume HUB.
+  apply (ReplE
+    P
+    (fun p:set => open_ball X d (p 0) (eps_ (ordsucc (ordsucc (p 1)))))
+    U
+    HUB).
+  let p.
+  assume HpPack.
+  claim HpP : p :e P.
+  {
+    exact (andEL
+      (p :e P)
+      (U = open_ball X d (p 0) (eps_ (ordsucc (ordsucc (p 1)))))
+      HpPack).
+  }
+  claim HUeq : U = open_ball X d (p 0) (eps_ (ordsucc (ordsucc (p 1)))).
+  {
+    exact (andER
+      (p :e P)
+      (U = open_ball X d (p 0) (eps_ (ordsucc (ordsucc (p 1)))))
+      HpPack).
+  }
+  claim HpProd : p :e setprod X omega.
+  {
+    exact (SepE1
+      (setprod X omega)
+      (fun q:set =>
+        exists W:set, W :e A /\ open_ball X d (q 0) (eps_ (q 1)) c= W)
+      p
+      HpP).
+  }
+  claim HpX : (p 0) :e X.
+  {
+    exact (ap0_Sigma
+      X
+      (fun _:set => omega)
+      p
+      HpProd).
+  }
+  claim HpNomega : (p 1) :e omega.
+  {
+    exact (ap1_Sigma
+      X
+      (fun _:set => omega)
+      p
+      HpProd).
+  }
+  claim HssNomega : ordsucc (ordsucc (p 1)) :e omega.
+  {
+    exact (omega_ordsucc
+      (ordsucc (p 1))
+      (omega_ordsucc
+        (p 1)
+        HpNomega)).
+  }
+  claim HepsPos : Rlt 0 (eps_ (ordsucc (ordsucc (p 1)))).
+  {
+    exact (RltI
+      0
+      (eps_ (ordsucc (ordsucc (p 1))))
+      real_0
+      (eps_in_R_omega
+        (ordsucc (ordsucc (p 1)))
+        HssNomega)
+      (SNo_eps_pos
+        (ordsucc (ordsucc (p 1)))
+        HssNomega)).
+  }
+  claim HUmetric : open_ball X d (p 0) (eps_ (ordsucc (ordsucc (p 1)))) :e metric_topology X d.
+  {
+    exact (open_ball_in_metric_topology
+      X
+      d
+      (p 0)
+      (eps_ (ordsucc (ordsucc (p 1))))
+      Hmetric
+      HpX
+      HepsPos).
+  }
+  rewrite HUeq.
+  rewrite <- HtxEq.
+  exact HUmetric.
+}
+claim HopenB : open_cover_of X Tx B.
+{
+  exact (open_cover_ofI
+    X
+    Tx
+    B
+    HtopX
+    HBsubPowX
+    HXsubUnionB
+    HBmembersOpen).
+}
+claim HrefBA : refines_cover B A.
+{
+  let U.
+  assume HUB.
+  apply (ReplE
+    P
+    (fun p:set => open_ball X d (p 0) (eps_ (ordsucc (ordsucc (p 1)))))
+    U
+    HUB).
+  let p.
+  assume HpPack.
+  claim HpP : p :e P.
+  {
+    exact (andEL
+      (p :e P)
+      (U = open_ball X d (p 0) (eps_ (ordsucc (ordsucc (p 1)))))
+      HpPack).
+  }
+  claim HUeq : U = open_ball X d (p 0) (eps_ (ordsucc (ordsucc (p 1)))).
+  {
+    exact (andER
+      (p :e P)
+      (U = open_ball X d (p 0) (eps_ (ordsucc (ordsucc (p 1)))))
+      HpPack).
+  }
+  claim HpNomega : (p 1) :e omega.
+  {
+    exact (ap1_Sigma
+      X
+      (fun _:set => omega)
+      p
+      (SepE1
+        (setprod X omega)
+        (fun q:set =>
+          exists W:set, W :e A /\ open_ball X d (q 0) (eps_ (q 1)) c= W)
+        p
+        HpP)).
+  }
+  claim HWex : exists W:set, W :e A /\ open_ball X d (p 0) (eps_ (p 1)) c= W.
+  {
+    exact (SepE2
+      (setprod X omega)
+      (fun q:set =>
+        exists W:set, W :e A /\ open_ball X d (q 0) (eps_ (q 1)) c= W)
+      p
+      HpP).
+  }
+  apply HWex.
+  let W.
+  assume HWpack.
+  claim HWA : W :e A.
+  {
+    exact (andEL
+      (W :e A)
+      (open_ball X d (p 0) (eps_ (p 1)) c= W)
+      HWpack).
+  }
+  claim HballSubW : open_ball X d (p 0) (eps_ (p 1)) c= W.
+  {
+    exact (andER
+      (W :e A)
+      (open_ball X d (p 0) (eps_ (p 1)) c= W)
+      HWpack).
+  }
+  witness W.
+  apply andI.
+  - exact HWA.
+  - rewrite HUeq.
+    exact (Subq_tra
+      (open_ball X d (p 0) (eps_ (ordsucc (ordsucc (p 1)))))
+      (open_ball X d (p 0) (eps_ (p 1)))
+      W
+      (open_ball_radius_mono
+        X
+        d
+        (p 0)
+        (eps_ (ordsucc (ordsucc (p 1))))
+        (eps_ (p 1))
+        (eps_ordsucc_ordsucc_lt_eps
+          (p 1)
+          HpNomega))
+      HballSubW).
+}
+claim HstarPair :
+  forall U V:set, U :e B -> V :e B -> U :/\: V <> Empty ->
+    exists W:set, W :e A /\ U :\/: V c= W.
+{
+  let U V.
+  assume HUB HVB Hnon.
+  claim HqEx : exists q:set, q :e U :/\: V.
+  {
+    exact (nonempty_has_element
+      (U :/\: V)
+      Hnon).
+  }
+  apply HqEx.
+  let q.
+  assume HqInt.
+  claim HqU : q :e U.
+  {
+    exact (binintersectE1
+      U
+      V
+      q
+      HqInt).
+  }
+  claim HqV : q :e V.
+  {
+    exact (binintersectE2
+      U
+      V
+      q
+      HqInt).
+  }
+  apply (ReplE
+    P
+    (fun p:set => open_ball X d (p 0) (eps_ (ordsucc (ordsucc (p 1)))))
+    U
+    HUB).
+  let pU.
+  assume HpUPack.
+  claim HpUP : pU :e P.
+  {
+    exact (andEL
+      (pU :e P)
+      (U = open_ball X d (pU 0) (eps_ (ordsucc (ordsucc (pU 1)))))
+      HpUPack).
+  }
+  claim HUeq : U = open_ball X d (pU 0) (eps_ (ordsucc (ordsucc (pU 1)))).
+  {
+    exact (andER
+      (pU :e P)
+      (U = open_ball X d (pU 0) (eps_ (ordsucc (ordsucc (pU 1)))))
+      HpUPack).
+  }
+  apply (ReplE
+    P
+    (fun p:set => open_ball X d (p 0) (eps_ (ordsucc (ordsucc (p 1)))))
+    V
+    HVB).
+  let pV.
+  assume HpVPack.
+  claim HpVP : pV :e P.
+  {
+    exact (andEL
+      (pV :e P)
+      (V = open_ball X d (pV 0) (eps_ (ordsucc (ordsucc (pV 1)))))
+      HpVPack).
+  }
+  claim HVeq : V = open_ball X d (pV 0) (eps_ (ordsucc (ordsucc (pV 1)))).
+  {
+    exact (andER
+      (pV :e P)
+      (V = open_ball X d (pV 0) (eps_ (ordsucc (ordsucc (pV 1)))))
+      HpVPack).
+  }
+  claim HpUProd : pU :e setprod X omega.
+  {
+    exact (SepE1
+      (setprod X omega)
+      (fun p:set =>
+        exists W:set, W :e A /\ open_ball X d (p 0) (eps_ (p 1)) c= W)
+      pU
+      HpUP).
+  }
+  claim HpVProd : pV :e setprod X omega.
+  {
+    exact (SepE1
+      (setprod X omega)
+      (fun p:set =>
+        exists W:set, W :e A /\ open_ball X d (p 0) (eps_ (p 1)) c= W)
+      pV
+      HpVP).
+  }
+  claim HcUX : (pU 0) :e X.
+  {
+    exact (ap0_Sigma
+      X
+      (fun _:set => omega)
+      pU
+      HpUProd).
+  }
+  claim HcVX : (pV 0) :e X.
+  {
+    exact (ap0_Sigma
+      X
+      (fun _:set => omega)
+      pV
+      HpVProd).
+  }
+  claim HnUomega : (pU 1) :e omega.
+  {
+    exact (ap1_Sigma
+      X
+      (fun _:set => omega)
+      pU
+      HpUProd).
+  }
+  claim HnVomega : (pV 1) :e omega.
+  {
+    exact (ap1_Sigma
+      X
+      (fun _:set => omega)
+      pV
+      HpVProd).
+  }
+  claim HnUnat : nat_p (pU 1).
+  {
+    exact (omega_nat_p
+      (pU 1)
+      HnUomega).
+  }
+  claim HnVnat : nat_p (pV 1).
+  {
+    exact (omega_nat_p
+      (pV 1)
+      HnVomega).
+  }
+  claim HsUomega : ordsucc (pU 1) :e omega.
+  {
+    exact (omega_ordsucc
+      (pU 1)
+      HnUomega).
+  }
+  claim HsVomega : ordsucc (pV 1) :e omega.
+  {
+    exact (omega_ordsucc
+      (pV 1)
+      HnVomega).
+  }
+  claim HqBallU : q :e open_ball X d (pU 0) (eps_ (ordsucc (ordsucc (pU 1)))).
+  {
+    rewrite <- HUeq.
+    exact HqU.
+  }
+  claim HqBallV : q :e open_ball X d (pV 0) (eps_ (ordsucc (ordsucc (pV 1)))).
+  {
+    rewrite <- HVeq.
+    exact HqV.
+  }
+  claim HsubUEx : exists W:set, W :e A /\ open_ball X d (pU 0) (eps_ (pU 1)) c= W.
+  {
+    exact (SepE2
+      (setprod X omega)
+      (fun p:set =>
+        exists W:set, W :e A /\ open_ball X d (p 0) (eps_ (p 1)) c= W)
+      pU
+      HpUP).
+  }
+  claim HsubVEx : exists W:set, W :e A /\ open_ball X d (pV 0) (eps_ (pV 1)) c= W.
+  {
+    exact (SepE2
+      (setprod X omega)
+      (fun p:set =>
+        exists W:set, W :e A /\ open_ball X d (p 0) (eps_ (p 1)) c= W)
+      pV
+      HpVP).
+  }
+  apply HsubUEx.
+  let AU.
+  assume HAUPack.
+  claim HAUA : AU :e A.
+  {
+    exact (andEL
+      (AU :e A)
+      (open_ball X d (pU 0) (eps_ (pU 1)) c= AU)
+      HAUPack).
+  }
+  claim HballUSubAU : open_ball X d (pU 0) (eps_ (pU 1)) c= AU.
+  {
+    exact (andER
+      (AU :e A)
+      (open_ball X d (pU 0) (eps_ (pU 1)) c= AU)
+      HAUPack).
+  }
+  apply HsubVEx.
+  let AV.
+  assume HAVPack.
+  claim HAVA : AV :e A.
+  {
+    exact (andEL
+      (AV :e A)
+      (open_ball X d (pV 0) (eps_ (pV 1)) c= AV)
+      HAVPack).
+  }
+  claim HballVSubAV : open_ball X d (pV 0) (eps_ (pV 1)) c= AV.
+  {
+    exact (andER
+      (AV :e A)
+      (open_ball X d (pV 0) (eps_ (pV 1)) c= AV)
+      HAVPack).
+  }
+  claim HradUinR : eps_ (ordsucc (pU 1)) :e R.
+  {
+    exact (eps_in_R_omega
+      (ordsucc (pU 1))
+      HsUomega).
+  }
+  claim HradVinR : eps_ (ordsucc (pV 1)) :e R.
+  {
+    exact (eps_in_R_omega
+      (ordsucc (pV 1))
+      HsVomega).
+  }
+  apply xm (Rlt (eps_ (ordsucc (pU 1))) (eps_ (ordsucc (pV 1)))).
+  - assume HrUV.
+    witness AV.
+    apply andI.
+    + exact HAVA.
+    + let z.
+      assume HzUV.
+      apply (binunionE
+        U
+        V
+        z
+        HzUV).
+      * assume HzU.
+        claim HzBallU : z :e open_ball X d (pU 0) (eps_ (ordsucc (ordsucc (pU 1)))).
+        {
+          rewrite <- HUeq.
+          exact HzU.
+        }
+        claim HzX : z :e X.
+        {
+          exact (open_ballE1
+            X
+            d
+            (pU 0)
+            (eps_ (ordsucc (ordsucc (pU 1))))
+            z
+            HzBallU).
+        }
+        claim HcVBallV : (pV 0) :e open_ball X d (pV 0) (eps_ (ordsucc (ordsucc (pV 1)))).
+        {
+          claim HssVomega : ordsucc (ordsucc (pV 1)) :e omega.
+          {
+            exact (omega_ordsucc
+              (ordsucc (pV 1))
+              (omega_ordsucc
+                (pV 1)
+                HnVomega)).
+          }
+          claim HepsPosV : Rlt 0 (eps_ (ordsucc (ordsucc (pV 1)))).
+          {
+            exact (RltI
+              0
+              (eps_ (ordsucc (ordsucc (pV 1))))
+              real_0
+              (eps_in_R_omega
+                (ordsucc (ordsucc (pV 1)))
+                HssVomega)
+              (SNo_eps_pos
+                (ordsucc (ordsucc (pV 1)))
+                HssVomega)).
+          }
+          exact (center_in_open_ball
+            X
+            d
+            (pV 0)
+            (eps_ (ordsucc (ordsucc (pV 1))))
+            Hmetric
+            HcVX
+            HepsPosV).
+        }
+        claim HdistzqU : Rlt (apply_fun d (z,q)) (eps_ (ordsucc (pU 1))).
+        {
+          exact (open_ball_pair_dist_lt_eps_pred
+            X
+            d
+            (pU 0)
+            (ordsucc (pU 1))
+            z
+            q
+            Hmetric
+            HcUX
+            HsUomega
+            HzBallU
+            HqBallU).
+        }
+        claim HdistzqV : Rlt (apply_fun d (z,q)) (eps_ (ordsucc (pV 1))).
+        {
+          exact (Rlt_tra
+            (apply_fun d (z,q))
+            (eps_ (ordsucc (pU 1)))
+            (eps_ (ordsucc (pV 1)))
+            HdistzqU
+            HrUV).
+        }
+        claim Hdistqcv : Rlt (apply_fun d (q,pV 0)) (eps_ (ordsucc (pV 1))).
+        {
+          exact (open_ball_pair_dist_lt_eps_pred
+            X
+            d
+            (pV 0)
+            (ordsucc (pV 1))
+            q
+            (pV 0)
+            Hmetric
+            HcVX
+            HsVomega
+            HqBallV
+            HcVBallV).
+        }
+        claim HsumLt :
+          Rlt
+            (add_SNo (apply_fun d (z,q)) (apply_fun d (q,pV 0)))
+            (add_SNo (eps_ (ordsucc (pV 1))) (eps_ (ordsucc (pV 1)))).
+        {
+          exact (Rlt_add_SNo
+            (apply_fun d (z,q))
+            (eps_ (ordsucc (pV 1)))
+            (apply_fun d (q,pV 0))
+            (eps_ (ordsucc (pV 1)))
+            HdistzqV
+            Hdistqcv).
+        }
+        claim Htri :
+          Rle
+            (apply_fun d (z,pV 0))
+            (add_SNo (apply_fun d (z,q)) (apply_fun d (q,pV 0))).
+        {
+          exact (metric_triangle_Rle
+            X
+            d
+            z
+            q
+            (pV 0)
+            Hmetric
+            HzX
+            (open_ballE1
+              X
+              d
+              (pU 0)
+              (eps_ (ordsucc (ordsucc (pU 1))))
+              q
+              HqBallU)
+            HcVX).
+        }
+        claim Hdistzcv :
+          Rlt
+            (apply_fun d (z,pV 0))
+            (add_SNo (eps_ (ordsucc (pV 1))) (eps_ (ordsucc (pV 1)))).
+        {
+          exact (Rle_Rlt_tra_Euclid
+            (apply_fun d (z,pV 0))
+            (add_SNo (apply_fun d (z,q)) (apply_fun d (q,pV 0)))
+            (add_SNo (eps_ (ordsucc (pV 1))) (eps_ (ordsucc (pV 1))))
+            Htri
+            HsumLt).
+        }
+        claim Hdistcvz : Rlt (apply_fun d (pV 0,z))
+          (add_SNo (eps_ (ordsucc (pV 1))) (eps_ (ordsucc (pV 1)))).
+        {
+          rewrite <- (metric_on_symmetric
+            X
+            d
+            z
+            (pV 0)
+            Hmetric
+            HzX
+            HcVX).
+          exact Hdistzcv.
+        }
+        claim HdistcvzSmall : Rlt (apply_fun d (pV 0,z)) (eps_ (pV 1)).
+        {
+          rewrite <- (eps_ordsucc_half_add
+            (pV 1)
+            HnVnat).
+          exact Hdistcvz.
+        }
+        claim HzBallVsmall : z :e open_ball X d (pV 0) (eps_ (pV 1)).
+        {
+          exact (open_ballI
+            X
+            d
+            (pV 0)
+            (eps_ (pV 1))
+            z
+            HzX
+            HdistcvzSmall).
+        }
+        exact (HballVSubAV
+          z
+          HzBallVsmall).
+      * assume HzV.
+        claim HzBallV : z :e open_ball X d (pV 0) (eps_ (ordsucc (ordsucc (pV 1)))).
+        {
+          rewrite <- HVeq.
+          exact HzV.
+        }
+        claim HzBallVsmall : z :e open_ball X d (pV 0) (eps_ (pV 1)).
+        {
+          exact (open_ball_radius_mono
+            X
+            d
+            (pV 0)
+            (eps_ (ordsucc (ordsucc (pV 1))))
+            (eps_ (pV 1))
+            (eps_ordsucc_ordsucc_lt_eps
+              (pV 1)
+              HnVomega)
+            z
+            HzBallV).
+        }
+        exact (HballVSubAV
+          z
+          HzBallVsmall).
+  - assume HnltUV.
+    apply xm (Rlt (eps_ (ordsucc (pV 1))) (eps_ (ordsucc (pU 1)))).
+    + assume HrVU.
+      witness AU.
+      apply andI.
+      * exact HAUA.
+      * let z.
+        assume HzUV.
+        apply (binunionE
+          U
+          V
+          z
+          HzUV).
+        * assume HzU.
+           claim HzBallU : z :e open_ball X d (pU 0) (eps_ (ordsucc (ordsucc (pU 1)))).
+           {
+             rewrite <- HUeq.
+             exact HzU.
+           }
+           claim HzBallUsmall : z :e open_ball X d (pU 0) (eps_ (pU 1)).
+           {
+             exact (open_ball_radius_mono
+               X
+               d
+               (pU 0)
+               (eps_ (ordsucc (ordsucc (pU 1))))
+               (eps_ (pU 1))
+               (eps_ordsucc_ordsucc_lt_eps
+                 (pU 1)
+                 HnUomega)
+               z
+               HzBallU).
+           }
+           exact (HballUSubAU
+             z
+             HzBallUsmall).
+        * assume HzV.
+           claim HzBallV : z :e open_ball X d (pV 0) (eps_ (ordsucc (ordsucc (pV 1)))).
+           {
+             rewrite <- HVeq.
+             exact HzV.
+           }
+           claim HzX : z :e X.
+           {
+             exact (open_ballE1
+               X
+               d
+               (pV 0)
+               (eps_ (ordsucc (ordsucc (pV 1))))
+               z
+               HzBallV).
+           }
+           claim HcUBallU : (pU 0) :e open_ball X d (pU 0) (eps_ (ordsucc (ordsucc (pU 1)))).
+           {
+             claim HssUomega : ordsucc (ordsucc (pU 1)) :e omega.
+             {
+               exact (omega_ordsucc
+                 (ordsucc (pU 1))
+                 (omega_ordsucc
+                   (pU 1)
+                   HnUomega)).
+             }
+             claim HepsPosU : Rlt 0 (eps_ (ordsucc (ordsucc (pU 1)))).
+             {
+               exact (RltI
+                 0
+                 (eps_ (ordsucc (ordsucc (pU 1))))
+                 real_0
+                 (eps_in_R_omega
+                   (ordsucc (ordsucc (pU 1)))
+                   HssUomega)
+                 (SNo_eps_pos
+                   (ordsucc (ordsucc (pU 1)))
+                   HssUomega)).
+             }
+             exact (center_in_open_ball
+               X
+               d
+               (pU 0)
+               (eps_ (ordsucc (ordsucc (pU 1))))
+               Hmetric
+               HcUX
+               HepsPosU).
+           }
+           claim HdistzqV : Rlt (apply_fun d (z,q)) (eps_ (ordsucc (pV 1))).
+           {
+             exact (open_ball_pair_dist_lt_eps_pred
+               X
+               d
+               (pV 0)
+               (ordsucc (pV 1))
+               z
+               q
+               Hmetric
+               HcVX
+               HsVomega
+               HzBallV
+               HqBallV).
+           }
+           claim HdistzqU : Rlt (apply_fun d (z,q)) (eps_ (ordsucc (pU 1))).
+           {
+             exact (Rlt_tra
+               (apply_fun d (z,q))
+               (eps_ (ordsucc (pV 1)))
+               (eps_ (ordsucc (pU 1)))
+               HdistzqV
+               HrVU).
+           }
+           claim Hdistqcu : Rlt (apply_fun d (q,pU 0)) (eps_ (ordsucc (pU 1))).
+           {
+             exact (open_ball_pair_dist_lt_eps_pred
+               X
+               d
+               (pU 0)
+               (ordsucc (pU 1))
+               q
+               (pU 0)
+               Hmetric
+               HcUX
+               HsUomega
+               HqBallU
+               HcUBallU).
+           }
+           claim HsumLt :
+             Rlt
+               (add_SNo (apply_fun d (z,q)) (apply_fun d (q,pU 0)))
+               (add_SNo (eps_ (ordsucc (pU 1))) (eps_ (ordsucc (pU 1)))).
+           {
+             exact (Rlt_add_SNo
+               (apply_fun d (z,q))
+               (eps_ (ordsucc (pU 1)))
+               (apply_fun d (q,pU 0))
+               (eps_ (ordsucc (pU 1)))
+               HdistzqU
+               Hdistqcu).
+           }
+           claim Htri :
+             Rle
+               (apply_fun d (z,pU 0))
+               (add_SNo (apply_fun d (z,q)) (apply_fun d (q,pU 0))).
+           {
+             exact (metric_triangle_Rle
+               X
+               d
+               z
+               q
+               (pU 0)
+               Hmetric
+               HzX
+               (open_ballE1
+                 X
+                 d
+                 (pV 0)
+                 (eps_ (ordsucc (ordsucc (pV 1))))
+                 q
+                 HqBallV)
+               HcUX).
+           }
+           claim Hdistzcu :
+             Rlt
+               (apply_fun d (z,pU 0))
+               (add_SNo (eps_ (ordsucc (pU 1))) (eps_ (ordsucc (pU 1)))).
+           {
+             exact (Rle_Rlt_tra_Euclid
+               (apply_fun d (z,pU 0))
+               (add_SNo (apply_fun d (z,q)) (apply_fun d (q,pU 0)))
+               (add_SNo (eps_ (ordsucc (pU 1))) (eps_ (ordsucc (pU 1))))
+               Htri
+               HsumLt).
+           }
+           claim Hdistcuz : Rlt (apply_fun d (pU 0,z))
+             (add_SNo (eps_ (ordsucc (pU 1))) (eps_ (ordsucc (pU 1)))).
+           {
+             rewrite <- (metric_on_symmetric
+               X
+               d
+               z
+               (pU 0)
+               Hmetric
+               HzX
+               HcUX).
+             exact Hdistzcu.
+           }
+           claim HdistcuzSmall : Rlt (apply_fun d (pU 0,z)) (eps_ (pU 1)).
+           {
+             rewrite <- (eps_ordsucc_half_add
+               (pU 1)
+               HnUnat).
+             exact Hdistcuz.
+           }
+           claim HzBallUsmall : z :e open_ball X d (pU 0) (eps_ (pU 1)).
+           {
+             exact (open_ballI
+               X
+               d
+               (pU 0)
+               (eps_ (pU 1))
+               z
+               HzX
+               HdistcuzSmall).
+           }
+           exact (HballUSubAU
+             z
+             HzBallUsmall).
+    + assume HnltVU.
+      claim HeqRad : eps_ (ordsucc (pU 1)) = eps_ (ordsucc (pV 1)).
+      {
+        exact (R_eq_of_not_Rlt
+          (eps_ (ordsucc (pU 1)))
+          (eps_ (ordsucc (pV 1)))
+          HradUinR
+          HradVinR
+          HnltUV
+          HnltVU).
+      }
+      witness AU.
+      apply andI.
+      * exact HAUA.
+      * let z.
+        assume HzUV.
+        apply (binunionE
+          U
+          V
+          z
+          HzUV).
+        * assume HzU.
+           claim HzBallU : z :e open_ball X d (pU 0) (eps_ (ordsucc (ordsucc (pU 1)))).
+           {
+             rewrite <- HUeq.
+             exact HzU.
+           }
+           claim HzBallUsmall : z :e open_ball X d (pU 0) (eps_ (pU 1)).
+           {
+             exact (open_ball_radius_mono
+               X
+               d
+               (pU 0)
+               (eps_ (ordsucc (ordsucc (pU 1))))
+               (eps_ (pU 1))
+               (eps_ordsucc_ordsucc_lt_eps
+                 (pU 1)
+                 HnUomega)
+               z
+               HzBallU).
+           }
+           exact (HballUSubAU
+             z
+             HzBallUsmall).
+        * assume HzV.
+           claim HzBallV : z :e open_ball X d (pV 0) (eps_ (ordsucc (ordsucc (pV 1)))).
+           {
+             rewrite <- HVeq.
+             exact HzV.
+           }
+           claim HzX : z :e X.
+           {
+             exact (open_ballE1
+               X
+               d
+               (pV 0)
+               (eps_ (ordsucc (ordsucc (pV 1))))
+               z
+               HzBallV).
+           }
+           claim HcUBallU : (pU 0) :e open_ball X d (pU 0) (eps_ (ordsucc (ordsucc (pU 1)))).
+           {
+             claim HssUomega : ordsucc (ordsucc (pU 1)) :e omega.
+             {
+               exact (omega_ordsucc
+                 (ordsucc (pU 1))
+                 (omega_ordsucc
+                   (pU 1)
+                   HnUomega)).
+             }
+             claim HepsPosU : Rlt 0 (eps_ (ordsucc (ordsucc (pU 1)))).
+             {
+               exact (RltI
+                 0
+                 (eps_ (ordsucc (ordsucc (pU 1))))
+                 real_0
+                 (eps_in_R_omega
+                   (ordsucc (ordsucc (pU 1)))
+                   HssUomega)
+                 (SNo_eps_pos
+                   (ordsucc (ordsucc (pU 1)))
+                   HssUomega)).
+             }
+             exact (center_in_open_ball
+               X
+               d
+               (pU 0)
+               (eps_ (ordsucc (ordsucc (pU 1))))
+               Hmetric
+               HcUX
+               HepsPosU).
+           }
+           claim HdistzqV : Rlt (apply_fun d (z,q)) (eps_ (ordsucc (pV 1))).
+           {
+             exact (open_ball_pair_dist_lt_eps_pred
+               X
+               d
+               (pV 0)
+               (ordsucc (pV 1))
+               z
+               q
+               Hmetric
+               HcVX
+               HsVomega
+               HzBallV
+               HqBallV).
+           }
+           claim HdistzqU : Rlt (apply_fun d (z,q)) (eps_ (ordsucc (pU 1))).
+           {
+             rewrite HeqRad.
+             exact HdistzqV.
+           }
+           claim Hdistqcu : Rlt (apply_fun d (q,pU 0)) (eps_ (ordsucc (pU 1))).
+           {
+             exact (open_ball_pair_dist_lt_eps_pred
+               X
+               d
+               (pU 0)
+               (ordsucc (pU 1))
+               q
+               (pU 0)
+               Hmetric
+               HcUX
+               HsUomega
+               HqBallU
+               HcUBallU).
+           }
+           claim HsumLt :
+             Rlt
+               (add_SNo (apply_fun d (z,q)) (apply_fun d (q,pU 0)))
+               (add_SNo (eps_ (ordsucc (pU 1))) (eps_ (ordsucc (pU 1)))).
+           {
+             exact (Rlt_add_SNo
+               (apply_fun d (z,q))
+               (eps_ (ordsucc (pU 1)))
+               (apply_fun d (q,pU 0))
+               (eps_ (ordsucc (pU 1)))
+               HdistzqU
+               Hdistqcu).
+           }
+           claim Htri :
+             Rle
+               (apply_fun d (z,pU 0))
+               (add_SNo (apply_fun d (z,q)) (apply_fun d (q,pU 0))).
+           {
+             exact (metric_triangle_Rle
+               X
+               d
+               z
+               q
+               (pU 0)
+               Hmetric
+               HzX
+               (open_ballE1
+                 X
+                 d
+                 (pV 0)
+                 (eps_ (ordsucc (ordsucc (pV 1))))
+                 q
+                 HqBallV)
+               HcUX).
+           }
+           claim Hdistzcu :
+             Rlt
+               (apply_fun d (z,pU 0))
+               (add_SNo (eps_ (ordsucc (pU 1))) (eps_ (ordsucc (pU 1)))).
+           {
+             exact (Rle_Rlt_tra_Euclid
+               (apply_fun d (z,pU 0))
+               (add_SNo (apply_fun d (z,q)) (apply_fun d (q,pU 0)))
+               (add_SNo (eps_ (ordsucc (pU 1))) (eps_ (ordsucc (pU 1))))
+               Htri
+               HsumLt).
+           }
+           claim Hdistcuz : Rlt (apply_fun d (pU 0,z))
+             (add_SNo (eps_ (ordsucc (pU 1))) (eps_ (ordsucc (pU 1)))).
+           {
+             rewrite <- (metric_on_symmetric
+               X
+               d
+               z
+               (pU 0)
+               Hmetric
+               HzX
+               HcUX).
+             exact Hdistzcu.
+           }
+           claim HdistcuzSmall : Rlt (apply_fun d (pU 0,z)) (eps_ (pU 1)).
+           {
+             rewrite <- (eps_ordsucc_half_add
+               (pU 1)
+               HnUnat).
+             exact Hdistcuz.
+           }
+           claim HzBallUsmall : z :e open_ball X d (pU 0) (eps_ (pU 1)).
+           {
+             exact (open_ballI
+               X
+               d
+               (pU 0)
+               (eps_ (pU 1))
+               z
+               HzX
+               HdistcuzSmall).
+           }
+           exact (HballUSubAU
+             z
+             HzBallUsmall).
+}
+witness B.
+exact (andI
+  ((open_cover_of X Tx B /\ open_cover_of X Tx A) /\ refines_cover B A)
+  (forall U V:set, U :e B -> V :e B -> U :/\: V <> Empty ->
+    exists W:set, W :e A /\ U :\/: V c= W)
+  (andI
+    (open_cover_of X Tx B /\ open_cover_of X Tx A)
+    (refines_cover B A)
+    (andI
+      (open_cover_of X Tx B)
+      (open_cover_of X Tx A)
+      HopenB
+      HcovA)
+    HrefBA)
+  HstarPair).
+Qed.
 
 (** Helper: finite star-refinement in the compact Hausdorff second-countable case. **)
 Theorem supp_ex_1b_compact_Hausdorff_star_refinement_with_second_countable :
