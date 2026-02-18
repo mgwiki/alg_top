@@ -119326,6 +119326,425 @@ exact (left_coset_right_mult_subgroup_preserves
 Qed.
 
 (** Proven Bob **)
+(** Helper: quotient multiplication on principal left cosets matches multiplication of representatives. **)
+Theorem quotient_group_mult_on_left_coset_representatives :
+  forall G mult e inv C x y:set,
+  group_structure G mult e inv ->
+  normal_subgroup C G mult e inv ->
+  x :e G ->
+  y :e G ->
+  apply_fun
+    (quotient_group_mult G mult C)
+    (left_coset mult x C, left_coset mult y C) =
+  left_coset mult (apply_fun mult (x, y)) C.
+let G mult e inv C x y.
+assume Hgrp : group_structure G mult e inv.
+assume HnormalC : normal_subgroup C G mult e inv.
+assume HxG : x :e G.
+assume HyG : y :e G.
+claim HsubC : subgroup_of C G mult e inv.
+{
+  exact (andEL
+    (subgroup_of C G mult e inv)
+    (forall t g0:set, t :e C -> g0 :e G ->
+      apply_fun mult (apply_fun mult (g0, t), apply_fun inv g0) :e C)
+    HnormalC).
+}
+claim HxQ : left_coset mult x C :e quotient_group_set G mult C.
+{
+  exact (ReplI
+    G
+    (fun g:set => left_coset mult g C)
+    x
+    HxG).
+}
+claim HyQ : left_coset mult y C :e quotient_group_set G mult C.
+{
+  exact (ReplI
+    G
+    (fun g:set => left_coset mult g C)
+    y
+    HyG).
+}
+claim HpairQ :
+  (left_coset mult x C, left_coset mult y C) :e
+  setprod (quotient_group_set G mult C) (quotient_group_set G mult C).
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    (quotient_group_set G mult C)
+    (quotient_group_set G mult C)
+    (left_coset mult x C)
+    (left_coset mult y C)
+    HxQ
+    HyQ).
+}
+claim HqmultDef :
+  quotient_group_mult G mult C =
+  graph (setprod (quotient_group_set G mult C) (quotient_group_set G mult C))
+    (fun p:set =>
+      left_coset mult
+        (apply_fun mult
+          (Eps_i (fun g:set => g :e G /\ p 0 = left_coset mult g C),
+           Eps_i (fun g:set => g :e G /\ p 1 = left_coset mult g C)))
+        C).
+{
+  reflexivity.
+}
+rewrite HqmultDef.
+rewrite (apply_fun_graph
+  (setprod (quotient_group_set G mult C) (quotient_group_set G mult C))
+  (fun p:set =>
+    left_coset mult
+      (apply_fun mult
+        (Eps_i (fun g:set => g :e G /\ p 0 = left_coset mult g C),
+         Eps_i (fun g:set => g :e G /\ p 1 = left_coset mult g C)))
+      C)
+  (left_coset mult x C, left_coset mult y C)
+  HpairQ).
+rewrite tuple_2_0_eq.
+rewrite tuple_2_1_eq.
+set epsx := Eps_i (fun g:set => g :e G /\ left_coset mult x C = left_coset mult g C).
+set epsy := Eps_i (fun g:set => g :e G /\ left_coset mult y C = left_coset mult g C).
+claim HexX : exists g:set, g :e G /\ left_coset mult x C = left_coset mult g C.
+{
+  witness x.
+  apply andI.
+  - exact HxG.
+  - reflexivity.
+}
+claim HexY : exists g:set, g :e G /\ left_coset mult y C = left_coset mult g C.
+{
+  witness y.
+  apply andI.
+  - exact HyG.
+  - reflexivity.
+}
+claim HepsxPack : epsx :e G /\ left_coset mult x C = left_coset mult epsx C.
+{
+  exact (Eps_i_ex
+    (fun g:set => g :e G /\ left_coset mult x C = left_coset mult g C)
+    HexX).
+}
+claim HepsyPack : epsy :e G /\ left_coset mult y C = left_coset mult epsy C.
+{
+  exact (Eps_i_ex
+    (fun g:set => g :e G /\ left_coset mult y C = left_coset mult g C)
+    HexY).
+}
+claim HepsxG : epsx :e G.
+{
+  exact (andEL
+    (epsx :e G)
+    (left_coset mult x C = left_coset mult epsx C)
+    HepsxPack).
+}
+claim HepsyG : epsy :e G.
+{
+  exact (andEL
+    (epsy :e G)
+    (left_coset mult y C = left_coset mult epsy C)
+    HepsyPack).
+}
+claim HepsxEq : left_coset mult x C = left_coset mult epsx C.
+{
+  exact (andER
+    (epsx :e G)
+    (left_coset mult x C = left_coset mult epsx C)
+    HepsxPack).
+}
+claim HepsyEq : left_coset mult y C = left_coset mult epsy C.
+{
+  exact (andER
+    (epsy :e G)
+    (left_coset mult y C = left_coset mult epsy C)
+    HepsyPack).
+}
+claim HepsxInOwn : epsx :e left_coset mult epsx C.
+{
+  exact (representative_in_own_left_coset
+    G
+    mult
+    e
+    inv
+    C
+    epsx
+    Hgrp
+    HsubC
+    HepsxG).
+}
+claim HepsyInOwn : epsy :e left_coset mult epsy C.
+{
+  exact (representative_in_own_left_coset
+    G
+    mult
+    e
+    inv
+    C
+    epsy
+    Hgrp
+    HsubC
+    HepsyG).
+}
+claim HepsxInX : epsx :e left_coset mult x C.
+{
+  exact (mem_eqL
+    epsx
+    (left_coset mult x C)
+    (left_coset mult epsx C)
+    HepsxEq
+    HepsxInOwn).
+}
+claim HepsyInY : epsy :e left_coset mult y C.
+{
+  exact (mem_eqL
+    epsy
+    (left_coset mult y C)
+    (left_coset mult epsy C)
+    HepsyEq
+    HepsyInOwn).
+}
+apply (ReplE
+  C
+  (fun n:set => apply_fun mult (x, n))
+  epsx
+  HepsxInX).
+let c1.
+assume Hc1Pack : c1 :e C /\ epsx = apply_fun mult (x, c1).
+apply (ReplE
+  C
+  (fun n:set => apply_fun mult (y, n))
+  epsy
+  HepsyInY).
+let c2.
+assume Hc2Pack : c2 :e C /\ epsy = apply_fun mult (y, c2).
+claim Hc1C : c1 :e C.
+{
+  exact (andEL
+    (c1 :e C)
+    (epsx = apply_fun mult (x, c1))
+    Hc1Pack).
+}
+claim Hc2C : c2 :e C.
+{
+  exact (andEL
+    (c2 :e C)
+    (epsy = apply_fun mult (y, c2))
+    Hc2Pack).
+}
+claim HepsxDef : epsx = apply_fun mult (x, c1).
+{
+  exact (andER
+    (c1 :e C)
+    (epsx = apply_fun mult (x, c1))
+    Hc1Pack).
+}
+claim HepsyDef : epsy = apply_fun mult (y, c2).
+{
+  exact (andER
+    (c2 :e C)
+    (epsy = apply_fun mult (y, c2))
+    Hc2Pack).
+}
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall a b d:set, a :e G -> b :e G -> d :e G ->
+    apply_fun mult (apply_fun mult (a, b), d) = apply_fun mult (a, apply_fun mult (b, d)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  Hgrp).
+assume HmultG HinvG HeG HassocG HidG HinvLawG.
+apply (and4E
+  (C c= G)
+  (e :e C)
+  (forall u v:set, u :e C -> v :e C -> apply_fun mult (u, v) :e C)
+  (forall u:set, u :e C -> apply_fun inv u :e C)
+  HsubC).
+assume HCsub HeC HmulC HinvC.
+claim Hc1G : c1 :e G.
+{
+  exact (HCsub c1 Hc1C).
+}
+claim Hc2G : c2 :e G.
+{
+  exact (HCsub c2 Hc2C).
+}
+claim Hxc1G : apply_fun mult (x, c1) :e G.
+{
+  exact (HmultG
+    (x, c1)
+    (tuple_2_setprod_by_pair_Sigma G G x c1 HxG Hc1G)).
+}
+claim Hyc2G : apply_fun mult (y, c2) :e G.
+{
+  exact (HmultG
+    (y, c2)
+    (tuple_2_setprod_by_pair_Sigma G G y c2 HyG Hc2G)).
+}
+claim HxcyG : apply_fun mult (apply_fun mult (x, c1), y) :e G.
+{
+  exact (HmultG
+    (apply_fun mult (x, c1), y)
+    (tuple_2_setprod_by_pair_Sigma G G (apply_fun mult (x, c1)) y Hxc1G HyG)).
+}
+rewrite HepsxDef.
+rewrite HepsyDef.
+rewrite <- (HassocG
+  (apply_fun mult (x, c1))
+  y
+  c2
+  Hxc1G
+  HyG
+  Hc2G).
+rewrite (left_coset_right_mult_subgroup_preserves
+  G
+  mult
+  e
+  inv
+  C
+  (apply_fun mult (apply_fun mult (x, c1), y))
+  c2
+  Hgrp
+  HsubC
+  HxcyG
+  Hc2C).
+exact (left_coset_middle_subgroup_factor_normal_preserves
+  G
+  mult
+  e
+  inv
+  C
+  x
+  y
+  c1
+  Hgrp
+  HnormalC
+  HxG
+  HyG
+  Hc1C).
+Qed.
+
+(** Proven Bob **)
+(** Helper: quotient projection is a group homomorphism for normal subgroups. **)
+Theorem quotient_projection_group_homomorphism :
+  forall G mult e inv C:set,
+  group_structure G mult e inv ->
+  normal_subgroup C G mult e inv ->
+  group_homomorphism
+    G
+    mult
+    (quotient_group_set G mult C)
+    (quotient_group_mult G mult C)
+    (quotient_projection G mult C).
+let G mult e inv C.
+assume Hgrp : group_structure G mult e inv.
+assume HnormalC : normal_subgroup C G mult e inv.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall a b d:set, a :e G -> b :e G -> d :e G ->
+    apply_fun mult (apply_fun mult (a, b), d) = apply_fun mult (a, apply_fun mult (b, d)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  Hgrp).
+assume HmultG HinvG HeG HassocG HidG HinvLawG.
+claim HprojTotal :
+  total_function_on
+    (quotient_projection G mult C)
+    G
+    (quotient_group_set G mult C).
+{
+  claim HprojDef :
+    quotient_projection G mult C = graph G (fun g:set => left_coset mult g C).
+  {
+    reflexivity.
+  }
+  rewrite HprojDef.
+  apply (total_function_on_graph
+    G
+    (quotient_group_set G mult C)
+    (fun g:set => left_coset mult g C)).
+  let g.
+  assume HgG : g :e G.
+  exact (ReplI
+    G
+    (fun g0:set => left_coset mult g0 C)
+    g
+    HgG).
+}
+claim HprojFn :
+  function_on
+    (quotient_projection G mult C)
+    G
+    (quotient_group_set G mult C).
+{
+  exact (total_function_on_function_on
+    (quotient_projection G mult C)
+    G
+    (quotient_group_set G mult C)
+    HprojTotal).
+}
+apply (andI
+  (function_on
+    (quotient_projection G mult C)
+    G
+    (quotient_group_set G mult C))
+  (forall a b:set, a :e G -> b :e G ->
+    apply_fun (quotient_projection G mult C) (apply_fun mult (a, b)) =
+    apply_fun (quotient_group_mult G mult C)
+      (apply_fun (quotient_projection G mult C) a,
+       apply_fun (quotient_projection G mult C) b))
+  HprojFn).
+let a b.
+assume HaG : a :e G.
+assume HbG : b :e G.
+claim HabG : apply_fun mult (a, b) :e G.
+{
+  exact (HmultG
+    (a, b)
+    (tuple_2_setprod_by_pair_Sigma G G a b HaG HbG)).
+}
+claim HprojDef2 :
+  quotient_projection G mult C = graph G (fun g:set => left_coset mult g C).
+{
+  reflexivity.
+}
+rewrite HprojDef2.
+rewrite (apply_fun_graph
+  G
+  (fun g:set => left_coset mult g C)
+  (apply_fun mult (a, b))
+  HabG).
+rewrite (apply_fun_graph
+  G
+  (fun g:set => left_coset mult g C)
+  a
+  HaG).
+rewrite (apply_fun_graph
+  G
+  (fun g:set => left_coset mult g C)
+  b
+  HbG).
+symmetry.
+exact (quotient_group_mult_on_left_coset_representatives
+  G
+  mult
+  e
+  inv
+  C
+  a
+  b
+  Hgrp
+  HnormalC
+  HaG
+  HbG).
+Qed.
+
+(** Proven Bob **)
 (** Helper: if a quotient element equals C, its chosen representative lies in C. **)
 Theorem quotient_element_eq_subgroup_implies_eps_rep_in_subgroup :
   forall G mult e inv C q:set,
@@ -119618,101 +120037,180 @@ claim HpowQeqC :
   rewrite HpowQ.
   exact HqidEqC.
 }
-claim HeC : e :e C.
-{
-  apply (and4E
-    (C c= G)
-    (e :e C)
-    (forall x y:set, x :e C -> y :e C -> apply_fun mult (x, y) :e C)
-    (forall x:set, x :e C -> apply_fun inv x :e C)
-    HsubC).
-  assume HCsub0 HeC0 HmulC0 HinvC0.
-  exact HeC0.
-}
-claim HCsub : C c= G.
-{
-  apply (and4E
-    (C c= G)
-    (e :e C)
-    (forall x y:set, x :e C -> y :e C -> apply_fun mult (x, y) :e C)
-    (forall x:set, x :e C -> apply_fun inv x :e C)
-    HsubC).
-  assume HCsub0 HeC0 HmulC0 HinvC0.
-  exact HCsub0.
-}
-claim HeG : e :e G.
-{
-  exact (HCsub e HeC).
-}
-claim HqidInQ : quotient_group_id G mult e C :e quotient_group_set G mult C.
-{
-  claim HqidDef : quotient_group_id G mult e C = left_coset mult e C.
-  {
-    reflexivity.
-  }
-  claim HqsetDef : quotient_group_set G mult C = Repl G (fun g:set => left_coset mult g C).
-  {
-    reflexivity.
-  }
-  rewrite HqidDef.
-  rewrite HqsetDef.
-  exact (ReplI
-    G
-    (fun g:set => left_coset mult g C)
-    e
-    HeG).
-}
-claim HpowQInQ :
-  group_power_nat
+claim HquotAb :
+  abelian_group
+    (quotient_group_set G mult C)
     (quotient_group_mult G mult C)
     (quotient_group_id G mult e C)
-    (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-    n :e quotient_group_set G mult C.
+    (quotient_group_inv G mult inv C).
 {
-  rewrite HpowQ.
-  exact HqidInQ.
-}
-claim HexPowRep :
-  exists g0:set, g0 :e G /\
-    group_power_nat
+  claim HNA :
+    normal_subgroup C G mult e inv /\
+    abelian_group
+      (quotient_group_set G mult C)
       (quotient_group_mult G mult C)
       (quotient_group_id G mult e C)
-      (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-      n = left_coset mult g0 C.
+      (quotient_group_inv G mult inv C).
+  {
+    exact (andEL
+      (normal_subgroup C G mult e inv /\
+       abelian_group
+         (quotient_group_set G mult C)
+         (quotient_group_mult G mult C)
+         (quotient_group_id G mult e C)
+         (quotient_group_inv G mult inv C))
+      (forall H multH eH invH h:set,
+        abelian_group H multH eH invH ->
+        group_homomorphism G mult H multH h ->
+        C c= kernel_of G eH h)
+      HcommProps).
+  }
+  exact (andER
+    (normal_subgroup C G mult e inv)
+    (abelian_group
+      (quotient_group_set G mult C)
+      (quotient_group_mult G mult C)
+      (quotient_group_id G mult e C)
+      (quotient_group_inv G mult inv C))
+    HNA).
+}
+claim HgrpQ :
+  group_structure
+    (quotient_group_set G mult C)
+    (quotient_group_mult G mult C)
+    (quotient_group_id G mult e C)
+    (quotient_group_inv G mult inv C).
 {
-  exact (ReplE
+  exact (andEL
+    (group_structure
+      (quotient_group_set G mult C)
+      (quotient_group_mult G mult C)
+      (quotient_group_id G mult e C)
+      (quotient_group_inv G mult inv C))
+    (forall x y:set, x :e quotient_group_set G mult C -> y :e quotient_group_set G mult C ->
+      apply_fun (quotient_group_mult G mult C) (x, y) =
+      apply_fun (quotient_group_mult G mult C) (y, x))
+    HquotAb).
+}
+claim HgenAlphaG : apply_fun gens alpha :e G.
+{
+  exact (HgensG alpha Halpha).
+}
+claim HprojHom :
+  group_homomorphism
     G
-    (fun g:set => left_coset mult g C)
-    (group_power_nat
-      (quotient_group_mult G mult C)
-      (quotient_group_id G mult e C)
-      (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-      n)
-    HpowQInQ).
-}
-claim Hg0InC :
-  (Eps_i (fun g0:set => g0 :e G /\
-    group_power_nat
-      (quotient_group_mult G mult C)
-      (quotient_group_id G mult e C)
-      (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-      n = left_coset mult g0 C)) :e C.
+    mult
+    (quotient_group_set G mult C)
+    (quotient_group_mult G mult C)
+    (quotient_projection G mult C).
 {
-  exact (quotient_element_eq_subgroup_implies_eps_rep_in_subgroup
+  exact (quotient_projection_group_homomorphism
     G
     mult
     e
     inv
     C
-    (group_power_nat
-      (quotient_group_mult G mult C)
-      (quotient_group_id G mult e C)
-      (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-      n)
+    HgrpG
+    HnormalC).
+}
+claim HprojPow :
+  apply_fun
+    (quotient_projection G mult C)
+    (group_power_nat mult e (apply_fun gens alpha) n) =
+  group_power_nat
+    (quotient_group_mult G mult C)
+    (quotient_group_id G mult e C)
+    (apply_fun (quotient_projection G mult C) (apply_fun gens alpha))
+    n.
+{
+  exact (group_homomorphism_preserves_power_nat
+    G
+    mult
+    e
+    inv
+    (quotient_group_set G mult C)
+    (quotient_group_mult G mult C)
+    (quotient_group_id G mult e C)
+    (quotient_group_inv G mult inv C)
+    (quotient_projection G mult C)
+    (apply_fun gens alpha)
+    n
+    HgrpG
+    HgrpQ
+    HprojHom
+    HgenAlphaG
+    HnO).
+}
+claim HbasisAtAlpha :
+  apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha =
+  left_coset mult (apply_fun gens alpha) C.
+{
+  exact (apply_fun_graph
+    J
+    (fun alpha:set => left_coset mult (apply_fun gens alpha) C)
+    alpha
+    Halpha).
+}
+claim HpowQbasis :
+  group_power_nat
+    (quotient_group_mult G mult C)
+    (quotient_group_id G mult e C)
+    (left_coset mult (apply_fun gens alpha) C)
+    n = quotient_group_id G mult e C.
+{
+  rewrite <- HbasisAtAlpha.
+  exact HpowQ.
+}
+claim HpowOrigCosetEqC :
+  left_coset mult (group_power_nat mult e (apply_fun gens alpha) n) C = C.
+{
+  claim HprojDef :
+    quotient_projection G mult C = graph G (fun g:set => left_coset mult g C).
+  {
+    reflexivity.
+  }
+  claim HprojPowAtPower :
+    apply_fun (quotient_projection G mult C)
+      (group_power_nat mult e (apply_fun gens alpha) n) =
+    left_coset mult (group_power_nat mult e (apply_fun gens alpha) n) C.
+  {
+    rewrite HprojDef.
+    exact (apply_fun_graph
+      G
+      (fun g:set => left_coset mult g C)
+      (group_power_nat mult e (apply_fun gens alpha) n)
+      HpowOrigInG).
+  }
+  claim HprojPowAtGen :
+    apply_fun (quotient_projection G mult C) (apply_fun gens alpha) =
+    left_coset mult (apply_fun gens alpha) C.
+  {
+    rewrite HprojDef.
+    exact (apply_fun_graph
+      G
+      (fun g:set => left_coset mult g C)
+      (apply_fun gens alpha)
+      HgenAlphaG).
+  }
+  rewrite <- HprojPowAtPower.
+  rewrite HprojPow.
+  rewrite HprojPowAtGen.
+  rewrite HpowQbasis.
+  exact HqidEqC.
+}
+claim HpowOrigInC : group_power_nat mult e (apply_fun gens alpha) n :e C.
+{
+  exact (left_coset_eq_subgroup_implies_member
+    G
+    mult
+    e
+    inv
+    C
+    (group_power_nat mult e (apply_fun gens alpha) n)
     HgrpG
     HsubC
-    HpowQInQ
-    HpowQeqC).
+    HpowOrigInG
+    HpowOrigCosetEqC).
 }
 admit.
 Admitted.
