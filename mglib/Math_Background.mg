@@ -62445,6 +62445,40 @@ claim Hex :
                 (apply_fun lr 0 = e0)
                 HlrPack).
             }
+            claim HlrCont :
+              continuous_map
+                Nr
+                (subspace_topology unit_interval unit_interval_topology Nr)
+                E
+                Te
+                lr.
+            {
+              exact (andEL
+                (continuous_map
+                  Nr
+                  (subspace_topology unit_interval unit_interval_topology Nr)
+                  E
+                  Te
+                  lr)
+                (forall x:set, x :e Nr ->
+                  apply_fun p (apply_fun lr x) = apply_fun f x)
+                HNrLift).
+            }
+            claim HlrComm :
+              forall x:set, x :e Nr ->
+                apply_fun p (apply_fun lr x) = apply_fun f x.
+            {
+              exact (andER
+                (continuous_map
+                  Nr
+                  (subspace_topology unit_interval unit_interval_topology Nr)
+                  E
+                  Te
+                  lr)
+                (forall x:set, x :e Nr ->
+                  apply_fun p (apply_fun lr x) = apply_fun f x)
+                HNrLift).
+            }
             claim HrN1 : r :e N1.
             {
               (** TODO Charlie: compare lr with lt1 using start value e0 at 0 to place r in N1. **)
