@@ -105879,6 +105879,19 @@ apply set_ext.
 Qed.
 
 (** Proven Charlie **)
+Theorem projective_plane_map_apply_eq_pair : forall x:set,
+  x :e Sn 2 ->
+  apply_fun projective_plane_map x = UPair x (Rn_negate 3 x).
+let x.
+assume Hx.
+exact (apply_fun_graph
+  (Sn 2)
+  (fun u:set => UPair u (Rn_negate 3 u))
+  x
+  Hx).
+Qed.
+
+(** Proven Charlie **)
 Theorem projective_plane_compact_from_s2_compact :
   compact_space (Sn 2) (Sn_topology 2) ->
   compact_space projective_plane projective_plane_topology.
@@ -105956,6 +105969,49 @@ exact (andER
 Qed.
 
 (** Proven Charlie **)
+Theorem projective_plane_local_evenly_covered_from_pointwise :
+  (forall x:set, x :e Sn 2 ->
+    exists U:set, U :e projective_plane_topology /\
+      apply_fun projective_plane_map x :e U /\
+      evenly_covered (Sn 2) (Sn_topology 2)
+        projective_plane projective_plane_topology projective_plane_map U) ->
+  forall b:set, b :e projective_plane ->
+    exists U:set, U :e projective_plane_topology /\ b :e U /\
+      evenly_covered (Sn 2) (Sn_topology 2)
+        projective_plane projective_plane_topology projective_plane_map U.
+assume Hpoint.
+let b.
+assume Hb.
+apply (projective_plane_map_surjective b Hb).
+let x.
+assume HxPack.
+claim HxSn : x :e Sn 2.
+{
+  exact (andEL
+    (x :e Sn 2)
+    (apply_fun projective_plane_map x = b)
+    HxPack).
+}
+claim HxEq : apply_fun projective_plane_map x = b.
+{
+  exact (andER
+    (x :e Sn 2)
+    (apply_fun projective_plane_map x = b)
+    HxPack).
+}
+claim Hpointx :
+  exists U:set, U :e projective_plane_topology /\
+    apply_fun projective_plane_map x :e U /\
+    evenly_covered (Sn 2) (Sn_topology 2)
+      projective_plane projective_plane_topology projective_plane_map U.
+{
+  exact (Hpoint x HxSn).
+}
+rewrite <- HxEq.
+exact Hpointx.
+Qed.
+
+(** Proven Charlie **)
 Theorem thm60_3_projective_plane_surface_covering_from_evenly_covered_parts :
   m_manifold projective_plane projective_plane_topology 2 ->
   compact_space (Sn 2) (Sn_topology 2) ->
@@ -106020,9 +106076,10 @@ claim HcompactS2 :
 {
   admit.
 }
-claim HlocalEven :
-  forall b:set, b :e projective_plane ->
-    exists U:set, U :e projective_plane_topology /\ b :e U /\
+claim HpointEven :
+  forall x:set, x :e Sn 2 ->
+    exists U:set, U :e projective_plane_topology /\
+      apply_fun projective_plane_map x :e U /\
       evenly_covered (Sn 2) (Sn_topology 2)
         projective_plane projective_plane_topology projective_plane_map U.
 {
@@ -106031,7 +106088,7 @@ claim HlocalEven :
 exact (thm60_3_projective_plane_surface_covering_from_evenly_covered_parts
   Hmanifold
   HcompactS2
-  HlocalEven).
+  (projective_plane_local_evenly_covered_from_pointwise HpointEven)).
 Admitted.
 
 (** from S60 Cor 60.4 (line 1725 in algtop.tex) **)
