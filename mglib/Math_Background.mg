@@ -116675,46 +116675,6 @@ claim HquotAb :
       (quotient_group_inv G mult inv C))
     HNA).
 }
-apply (andI
-  (abelian_group
-    (quotient_group_set G mult C)
-    (quotient_group_mult G mult C)
-    (quotient_group_id G mult e C)
-    (quotient_group_inv G mult inv C))
-  (function_on
-    (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C))
-    J
-    (quotient_group_set G mult C) /\
-   ((forall alpha:set, alpha :e J ->
-      infinite_cyclic_subgroup
-        (quotient_group_set G mult C)
-        (quotient_group_mult G mult C)
-        (quotient_group_id G mult e C)
-        (quotient_group_inv G mult inv C)
-        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)) /\
-    direct_sum_of_subgroups
-      (quotient_group_set G mult C)
-      (quotient_group_mult G mult C)
-      (quotient_group_id G mult e C)
-      (quotient_group_inv G mult inv C)
-      J
-      (graph J (fun alpha:set =>
-        {g :e quotient_group_set G mult C | exists n:set, n :e int /\
-          ((n :e omega /\ g = group_power_nat
-            (quotient_group_mult G mult C)
-            (quotient_group_id G mult e C)
-            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-            n) \/
-           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
-            g = group_power_nat
-              (quotient_group_mult G mult C)
-              (quotient_group_id G mult e C)
-              (apply_fun
-                (quotient_group_inv G mult inv C)
-                (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha))
-              (ordsucc m)))}))))
-  HquotAb).
-apply andI.
 claim HbasisFn :
   function_on
     (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C))
@@ -116731,48 +116691,23 @@ claim HbasisFn :
     Hfree).
 }
 apply (andI
-  (function_on
-    (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C))
-    J
-    (quotient_group_set G mult C))
-  ((forall alpha:set, alpha :e J ->
-    infinite_cyclic_subgroup
+  (((abelian_group
       (quotient_group_set G mult C)
       (quotient_group_mult G mult C)
       (quotient_group_id G mult e C)
-      (quotient_group_inv G mult inv C)
-      (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)) /\
-   direct_sum_of_subgroups
-     (quotient_group_set G mult C)
-     (quotient_group_mult G mult C)
-     (quotient_group_id G mult e C)
-     (quotient_group_inv G mult inv C)
-     J
-     (graph J (fun alpha:set =>
-       {g :e quotient_group_set G mult C | exists n:set, n :e int /\
-         ((n :e omega /\ g = group_power_nat
-           (quotient_group_mult G mult C)
-           (quotient_group_id G mult e C)
-           (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
-           n) \/
-          (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
-           g = group_power_nat
-             (quotient_group_mult G mult C)
-             (quotient_group_id G mult e C)
-             (apply_fun
-               (quotient_group_inv G mult inv C)
-               (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha))
-             (ordsucc m)))})))).
-- exact HbasisFn.
-- apply (andI
+      (quotient_group_inv G mult inv C)) /\
+     function_on
+       (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C))
+       J
+       (quotient_group_set G mult C)) /\
     (forall alpha:set, alpha :e J ->
       infinite_cyclic_subgroup
         (quotient_group_set G mult C)
         (quotient_group_mult G mult C)
         (quotient_group_id G mult e C)
         (quotient_group_inv G mult inv C)
-        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha))
-    (direct_sum_of_subgroups
+        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)))
+  (direct_sum_of_subgroups
       (quotient_group_set G mult C)
       (quotient_group_mult G mult C)
       (quotient_group_id G mult e C)
@@ -116793,6 +116728,35 @@ apply (andI
                 (quotient_group_inv G mult inv C)
                 (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha))
               (ordsucc m)))})))).
+- apply (andI
+    ((abelian_group
+        (quotient_group_set G mult C)
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        (quotient_group_inv G mult inv C)) /\
+      function_on
+        (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C))
+        J
+        (quotient_group_set G mult C))
+    (forall alpha:set, alpha :e J ->
+      infinite_cyclic_subgroup
+        (quotient_group_set G mult C)
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        (quotient_group_inv G mult inv C)
+        (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha))).
+  + apply (andI
+      (abelian_group
+        (quotient_group_set G mult C)
+        (quotient_group_mult G mult C)
+        (quotient_group_id G mult e C)
+        (quotient_group_inv G mult inv C))
+      (function_on
+        (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C))
+        J
+        (quotient_group_set G mult C))
+      HquotAb).
+    exact HbasisFn.
   + let alpha.
     assume Halpha : alpha :e J.
     claim HaQ :
@@ -117064,7 +117028,7 @@ apply (andI
           HnO
           HnNZ
           HpowQ).
-  + exact (commutator_quotient_direct_sum_of_generator_subgroups
+ - exact (commutator_quotient_direct_sum_of_generator_subgroups
       G
       mult
       e
