@@ -58187,8 +58187,114 @@ claim Hex :
                       forall x:set, x :e Nu :/\: Nt ->
                         apply_fun lu x = apply_fun localNt x.
                     {
-                      (** TODO Bob: prove lu and localNt agree on Nu cap Nt. **)
-                      admit.
+                      claim HluOverlapVu :
+                        forall x:set, x :e Nu :/\: Nt ->
+                          apply_fun lu x :e Vu.
+                      {
+                        (** TODO Bob: show lu maps Nu cap Nt into the chosen slice Vu. **)
+                        admit.
+                      }
+                      let x.
+                      assume HxNuNt.
+                      claim HxNu : x :e Nu.
+                      {
+                        exact (binintersectE1
+                          Nu
+                          Nt
+                          x
+                          HxNuNt).
+                      }
+                      claim HxNt : x :e Nt.
+                      {
+                        exact (binintersectE2
+                          Nu
+                          Nt
+                          x
+                          HxNuNt).
+                      }
+                      claim HfxUt : apply_fun f x :e Ut.
+                      {
+                        exact (HNtMap
+                          x
+                          HxNt).
+                      }
+                      claim HluVu : apply_fun lu x :e Vu.
+                      {
+                        exact (HluOverlapVu
+                          x
+                          HxNuNt).
+                      }
+                      claim HlocalNtVu : apply_fun localNt x :e Vu.
+                      {
+                        rewrite (compose_fun_apply
+                          Nt
+                          f
+                          gu
+                          x
+                          HxNt).
+                        exact (HguFun
+                          (apply_fun f x)
+                          HfxUt).
+                      }
+                      claim HpluEqfx : apply_fun p (apply_fun lu x) = apply_fun f x.
+                      {
+                        exact (HluComm
+                          x
+                          HxNu).
+                      }
+                      claim HplocalNtEqfx : apply_fun p (apply_fun localNt x) = apply_fun f x.
+                      {
+                        exact (HlocalNtComm
+                          x
+                          HxNt).
+                      }
+                      claim HuniqFibx :
+                        exists z:set, z :e Vu /\ apply_fun p z = apply_fun f x /\
+                          forall y:set, y :e Vu ->
+                            apply_fun p y = apply_fun f x -> y = z.
+                      {
+                        exact (homeomorphic_sheet_unique_fiber_point
+                          E
+                          Te
+                          B
+                          Tb
+                          p
+                          Vu
+                          Ut
+                          (apply_fun f x)
+                          HhomeVu
+                          HfxUt).
+                      }
+                      apply HuniqFibx.
+                      let z.
+                      assume HzPack.
+                      claim Huniqz :
+                        forall y:set, y :e Vu ->
+                          apply_fun p y = apply_fun f x -> y = z.
+                      {
+                        exact (andER
+                          (z :e Vu /\ apply_fun p z = apply_fun f x)
+                          (forall y:set, y :e Vu ->
+                            apply_fun p y = apply_fun f x -> y = z)
+                          HzPack).
+                      }
+                      claim HluEqz : apply_fun lu x = z.
+                      {
+                        exact (Huniqz
+                          (apply_fun lu x)
+                          HluVu
+                          HpluEqfx).
+                      }
+                      claim HlocalNtEqz : apply_fun localNt x = z.
+                      {
+                        exact (Huniqz
+                          (apply_fun localNt x)
+                          HlocalNtVu
+                          HplocalNtEqfx).
+                      }
+                      rewrite HluEqz.
+                      rewrite HlocalNtEqz.
+                      reflexivity.
                     }
                     claim Hl0EqNt :
                       forall x:set, x :e Nt ->
