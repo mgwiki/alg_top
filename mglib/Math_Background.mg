@@ -61337,8 +61337,27 @@ claim Hex :
                                       HxlocalVxlocal
                                       HVxlocalSlice).
                                   }
+                                  claim HVxlocalEqVu : Vxlocal = Vu.
+                                  {
+                                    exact (pairwise_disjoint_point_unique_member
+                                      slicesUt
+                                      Vxlocal
+                                      Vu
+                                      xlocal
+                                      HpdSlicesUt
+                                      HVxlocalSlice
+                                      HVuSlice
+                                      HxlocalVxlocal
+                                      HxlocalVu).
+                                  }
+                                  claim HVlocalEqVu : Vlocal = Vu.
+                                  {
+                                    rewrite <- HVxlocalEqVlocal.
+                                    exact HVxlocalEqVu.
+                                  }
                                   rewrite HVxlocalEqVlocal.
-                                  (** TODO Charlie: reduce to Vlocal = Vx using compatibility of the two lifts over f(x). **)
+                                  rewrite HVlocalEqVu.
+                                  (** TODO Charlie: reduce to Vu = Vx using compatibility of the two lifts over f(x). **)
                                   admit.
                                 }
                                 rewrite <- HVxlocalEqVx.
