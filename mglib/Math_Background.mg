@@ -112275,6 +112275,23 @@ apply (andI
         rewrite (HeMulC c HcC).
         exact HcC.
       }
+      claim HCsubLeftCosetE : C c= left_coset mult e C.
+      {
+        let c.
+        assume HcC : c :e C.
+        rewrite <- (HeMulC c HcC).
+        exact (ReplI
+          C
+          (fun n:set => apply_fun mult (e, n))
+          c
+          HcC).
+      }
+      claim HleftCosetEqC : left_coset mult e C = C.
+      {
+        apply set_ext.
+        - exact HleftCosetEsubC.
+        - exact HCsubLeftCosetE.
+      }
       claim HpowSetSubC :
         (group_power_nat
           (quotient_group_mult G mult C)
