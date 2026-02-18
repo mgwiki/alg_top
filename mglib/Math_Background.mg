@@ -1,5 +1,5 @@
 (** Balance Alice 3337 **)
-(** Balance Bob 3028 **)
+(** Balance Bob 3021 **)
 (** Balance Charlie 1171 **)
 (** Balance Dave 1436 **)
 
@@ -111255,7 +111255,8 @@ Admitted.
 (** LATEX VERSION: If G is free with generators {a_alpha}, then G/[G,G] is a free **)
 (** abelian group with basis {[a_alpha]}. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 66 **)
+(** Bounty 73 **)
+(** Lock Bob 1771481400 **)
 Theorem thm69_4_abelianization_free_group :
   forall G mult e inv J gens:set,
   free_group_with_generators G mult e inv J gens ->
