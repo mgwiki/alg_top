@@ -1,6 +1,6 @@
 (** Balance Alice 3305 **)
 (** Balance Bob 3021 **)
-(** Balance Charlie 1232 **)
+(** Balance Charlie 1245 **)
 (** Balance Dave 1419 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -82422,8 +82422,8 @@ Admitted.
 (** from S58 Exercise 2(h) (line 1487 in algtop.tex) **)
 (** LATEX VERSION: {x in R^2 : norm(x) < 1} (open disk) is simply connected. **)
 (** EFFORT: 2 lines textbook, difficulty 1/10, USD 10 **)
-(** Bounty 13 **)
-(** Lock Charlie 1771502000 **)
+(** Collected Charlie 13 **)
+(** Proven Charlie **)
 Theorem ex58_2h_open_disk_simply_connected :
   let X := {p :e EuclidPlane | SNoLt (distance_R2 p (0, 0)) 1} in
   let TX := subspace_topology EuclidPlane R2_topology X in
@@ -82487,28 +82487,857 @@ claim HpcX : path_connected_space X TX.
   - exact HtopX.
   - let x y.
     assume HxX HyX.
-    claim Hpath : exists p:set, path_between X x y p.
+    claim HradialPath :
+      forall z:set, z :e X ->
+        exists pz:set, path_between X z (0, 0) pz /\
+          continuous_map unit_interval unit_interval_topology X TX pz.
     {
-      exact (path_between_exists
+      let z.
+      assume HzX.
+      set pz := graph unit_interval
+        (fun s:set =>
+          (mul_SNo (add_SNo 1 (minus_SNo s)) (R2_xcoord z),
+           mul_SNo (add_SNo 1 (minus_SNo s)) (R2_ycoord z))).
+      claim HpzCont :
+        continuous_map unit_interval unit_interval_topology X TX pz.
+      {
+        claim HzPlane : z :e EuclidPlane.
+        {
+          exact (SepE1
+            EuclidPlane
+            (fun p:set => SNoLt (distance_R2 p (0, 0)) 1)
+            z
+            HzX).
+        }
+        claim HxzR : R2_xcoord z :e R.
+        {
+          exact (EuclidPlane_xcoord_in_R z HzPlane).
+        }
+        claim HyzR : R2_ycoord z :e R.
+        {
+          exact (EuclidPlane_ycoord_in_R z HzPlane).
+        }
+        set one_minus_s := flip_unit_interval.
+        set const_xz := const_fun unit_interval (R2_xcoord z).
+        set const_yz := const_fun unit_interval (R2_ycoord z).
+        set x_term := compose_fun unit_interval (pair_map unit_interval one_minus_s const_xz) mul_fun_R.
+        set y_term := compose_fun unit_interval (pair_map unit_interval one_minus_s const_yz) mul_fun_R.
+        set pzR2 := pair_map unit_interval x_term y_term.
+        claim HoneMinusI :
+          continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology one_minus_s.
+        {
+          exact flip_unit_interval_continuous.
+        }
+        claim HoneMinusR :
+          continuous_map unit_interval unit_interval_topology R R_standard_topology one_minus_s.
+        {
+          exact (continuous_map_range_expand
+            unit_interval
+            unit_interval_topology
+            unit_interval
+            unit_interval_topology
+            R
+            R_standard_topology
+            one_minus_s
+            HoneMinusI
+            unit_interval_sub_R
+            R_standard_topology_is_topology
+            (fun Q H => H)).
+        }
+        claim HconstXCont :
+          continuous_map unit_interval unit_interval_topology R R_standard_topology const_xz.
+        {
+          exact (const_fun_continuous
+            unit_interval
+            unit_interval_topology
+            R
+            R_standard_topology
+            (R2_xcoord z)
+            unit_interval_topology_on
+            R_standard_topology_is_topology
+            HxzR).
+        }
+        claim HconstYCont :
+          continuous_map unit_interval unit_interval_topology R R_standard_topology const_yz.
+        {
+          exact (const_fun_continuous
+            unit_interval
+            unit_interval_topology
+            R
+            R_standard_topology
+            (R2_ycoord z)
+            unit_interval_topology_on
+            R_standard_topology_is_topology
+            HyzR).
+        }
+        claim HxTermCont :
+          continuous_map unit_interval unit_interval_topology R R_standard_topology x_term.
+        {
+          exact (mul_two_continuous_R
+            unit_interval
+            unit_interval_topology
+            one_minus_s
+            const_xz
+            unit_interval_topology_on
+            HoneMinusR
+            HconstXCont).
+        }
+        claim HyTermCont :
+          continuous_map unit_interval unit_interval_topology R R_standard_topology y_term.
+        {
+          exact (mul_two_continuous_R
+            unit_interval
+            unit_interval_topology
+            one_minus_s
+            const_yz
+            unit_interval_topology_on
+            HoneMinusR
+            HconstYCont).
+        }
+        claim HpzR2Cont :
+          continuous_map unit_interval unit_interval_topology EuclidPlane R2_topology pzR2.
+        {
+          exact (maps_into_products
+            unit_interval
+            unit_interval_topology
+            R
+            R_standard_topology
+            R
+            R_standard_topology
+            x_term
+            y_term
+            HxTermCont
+            HyTermCont).
+        }
+        claim HpzFunE : function_on pz unit_interval EuclidPlane.
+        {
+          claim HpzValE :
+            forall s:set, s :e unit_interval ->
+              (mul_SNo (add_SNo 1 (minus_SNo s)) (R2_xcoord z),
+               mul_SNo (add_SNo 1 (minus_SNo s)) (R2_ycoord z)) :e EuclidPlane.
+          {
+            let s.
+            assume Hs.
+            claim H1msR : add_SNo 1 (minus_SNo s) :e R.
+            {
+              rewrite <- (flip_unit_interval_apply s Hs).
+              exact (flip_unit_interval_in_R s Hs).
+            }
+            exact (tuple_2_setprod_by_pair_Sigma
+              R
+              R
+              (mul_SNo (add_SNo 1 (minus_SNo s)) (R2_xcoord z))
+              (mul_SNo (add_SNo 1 (minus_SNo s)) (R2_ycoord z))
+              (real_mul_SNo
+                (add_SNo 1 (minus_SNo s))
+                H1msR
+                (R2_xcoord z)
+                HxzR)
+              (real_mul_SNo
+                (add_SNo 1 (minus_SNo s))
+                H1msR
+                (R2_ycoord z)
+                HyzR)).
+          }
+          claim HpzFS : pz :e function_space unit_interval EuclidPlane.
+          {
+            exact (graph_in_function_space
+              unit_interval
+              EuclidPlane
+              (fun s:set =>
+                (mul_SNo (add_SNo 1 (minus_SNo s)) (R2_xcoord z),
+                 mul_SNo (add_SNo 1 (minus_SNo s)) (R2_ycoord z)))
+              HpzValE).
+          }
+          exact (function_on_of_function_space
+            pz
+            unit_interval
+            EuclidPlane
+            HpzFS).
+        }
+        claim HpzEqOn :
+          forall s:set, s :e unit_interval ->
+            apply_fun pzR2 s = apply_fun pz s.
+        {
+          let s.
+          assume Hs.
+          claim HoneValR : apply_fun one_minus_s s :e R.
+          {
+            exact (flip_unit_interval_in_R s Hs).
+          }
+          claim HconstXValR : apply_fun const_xz s :e R.
+          {
+            rewrite (const_fun_apply
+              unit_interval
+              (R2_xcoord z)
+              s
+              Hs).
+            exact HxzR.
+          }
+          claim HconstYValR : apply_fun const_yz s :e R.
+          {
+            rewrite (const_fun_apply
+              unit_interval
+              (R2_ycoord z)
+              s
+              Hs).
+            exact HyzR.
+          }
+          rewrite (pair_map_apply
+            unit_interval
+            R
+            R
+            x_term
+            y_term
+            s
+            Hs).
+          rewrite (mul_of_pair_map_apply
+            unit_interval
+            one_minus_s
+            const_xz
+            s
+            Hs
+            HoneValR
+            HconstXValR).
+          rewrite (mul_of_pair_map_apply
+            unit_interval
+            one_minus_s
+            const_yz
+            s
+            Hs
+            HoneValR
+            HconstYValR).
+          rewrite (flip_unit_interval_apply s Hs).
+          rewrite (const_fun_apply
+            unit_interval
+            (R2_xcoord z)
+            s
+            Hs).
+          rewrite (const_fun_apply
+            unit_interval
+            (R2_ycoord z)
+            s
+            Hs).
+          rewrite (apply_fun_graph
+            unit_interval
+            (fun s0:set =>
+              (mul_SNo (add_SNo 1 (minus_SNo s0)) (R2_xcoord z),
+               mul_SNo (add_SNo 1 (minus_SNo s0)) (R2_ycoord z)))
+            s
+            Hs).
+          reflexivity.
+        }
+        claim HpzContPlane :
+          continuous_map unit_interval unit_interval_topology EuclidPlane R2_topology pz.
+        {
+          exact (continuous_map_congr_on
+            unit_interval
+            unit_interval_topology
+            EuclidPlane
+            R2_topology
+            pzR2
+            pz
+            HpzR2Cont
+            HpzFunE
+            HpzEqOn).
+        }
+        claim HpzIntoX : forall s:set, s :e unit_interval -> apply_fun pz s :e X.
+        {
+          claim Hradial_open_disk :
+            forall t:set,
+              t :e unit_interval ->
+              SNoLt
+                (distance_R2
+                  (mul_SNo (add_SNo 1 (minus_SNo t)) (R2_xcoord z),
+                   mul_SNo (add_SNo 1 (minus_SNo t)) (R2_ycoord z))
+                  (0, 0))
+                1.
+          {
+            let t.
+            assume Ht.
+            set a := add_SNo 1 (minus_SNo t).
+            set q := (mul_SNo a (R2_xcoord z), mul_SNo a (R2_ycoord z)).
+            claim HzPlane : z :e EuclidPlane.
+            {
+              exact (SepE1
+                EuclidPlane
+                (fun p0:set => SNoLt (distance_R2 p0 (0, 0)) 1)
+                z
+                HzX).
+            }
+            claim HzLt1 : SNoLt (distance_R2 z (0, 0)) 1.
+            {
+              exact (SepE2
+                EuclidPlane
+                (fun p0:set => SNoLt (distance_R2 p0 (0, 0)) 1)
+                z
+                HzX).
+            }
+            claim HaI : a :e unit_interval.
+            {
+              rewrite <- (flip_unit_interval_apply t Ht).
+              exact (flip_unit_interval_function_on t Ht).
+            }
+            claim HaR : a :e R.
+            {
+              rewrite <- (flip_unit_interval_apply t Ht).
+              exact (flip_unit_interval_in_R t Ht).
+            }
+            claim HaS : SNo a.
+            {
+              exact (real_SNo a HaR).
+            }
+            claim HaNonneg : SNoLe 0 a.
+            {
+              exact (SNoLe_of_Rle
+                0
+                a
+                (unit_interval_Rle0 a HaI)).
+            }
+            claim HaLe1 : SNoLe a 1.
+            {
+              exact (SNoLe_of_Rle
+                a
+                1
+                (unit_interval_Rle1 a HaI)).
+            }
+            claim HxR : R2_xcoord z :e R.
+            {
+              exact (EuclidPlane_xcoord_in_R z HzPlane).
+            }
+            claim HyR : R2_ycoord z :e R.
+            {
+              exact (EuclidPlane_ycoord_in_R z HzPlane).
+            }
+            claim HxS : SNo (R2_xcoord z).
+            {
+              exact (real_SNo (R2_xcoord z) HxR).
+            }
+            claim HyS : SNo (R2_ycoord z).
+            {
+              exact (real_SNo (R2_ycoord z) HyR).
+            }
+            claim HaxR : mul_SNo a (R2_xcoord z) :e R.
+            {
+              exact (real_mul_SNo a HaR (R2_xcoord z) HxR).
+            }
+            claim HayR : mul_SNo a (R2_ycoord z) :e R.
+            {
+              exact (real_mul_SNo a HaR (R2_ycoord z) HyR).
+            }
+            claim HaxS : SNo (mul_SNo a (R2_xcoord z)).
+            {
+              exact (real_SNo (mul_SNo a (R2_xcoord z)) HaxR).
+            }
+            claim HayS : SNo (mul_SNo a (R2_ycoord z)).
+            {
+              exact (real_SNo (mul_SNo a (R2_ycoord z)) HayR).
+            }
+            claim HqPlane : q :e EuclidPlane.
+            {
+              exact (tuple_2_setprod_by_pair_Sigma
+                R
+                R
+                (mul_SNo a (R2_xcoord z))
+                (mul_SNo a (R2_ycoord z))
+                HaxR
+                HayR).
+            }
+            claim HdR : distance_R2 z (0, 0) :e R.
+            {
+              exact (distance_R2_in_R
+                z
+                (0, 0)
+                HzPlane
+                H00Plane).
+            }
+            claim HdS : SNo (distance_R2 z (0, 0)).
+            {
+              exact (real_SNo (distance_R2 z (0, 0)) HdR).
+            }
+            claim HdNonneg : SNoLe 0 (distance_R2 z (0, 0)).
+            {
+              exact (distance_R2_nonneg
+                z
+                (0, 0)
+                HzPlane
+                H00Plane).
+            }
+            claim Hd'R : distance_R2 q (0, 0) :e R.
+            {
+              exact (distance_R2_in_R
+                q
+                (0, 0)
+                HqPlane
+                H00Plane).
+            }
+            claim Hd'S : SNo (distance_R2 q (0, 0)).
+            {
+              exact (real_SNo (distance_R2 q (0, 0)) Hd'R).
+            }
+            claim Hd'Nonneg : SNoLe 0 (distance_R2 q (0, 0)).
+            {
+              exact (distance_R2_nonneg
+                q
+                (0, 0)
+                HqPlane
+                H00Plane).
+            }
+            claim Hx2S : SNo (mul_SNo (R2_xcoord z) (R2_xcoord z)).
+            {
+              exact (SNo_mul_SNo
+                (R2_xcoord z)
+                (R2_xcoord z)
+                HxS
+                HxS).
+            }
+            claim Hy2S : SNo (mul_SNo (R2_ycoord z) (R2_ycoord z)).
+            {
+              exact (SNo_mul_SNo
+                (R2_ycoord z)
+                (R2_ycoord z)
+                HyS
+                HyS).
+            }
+            claim HaaS : SNo (mul_SNo a a).
+            {
+              exact (SNo_mul_SNo a a HaS HaS).
+            }
+            claim Hd2S : SNo (mul_SNo (distance_R2 z (0, 0)) (distance_R2 z (0, 0))).
+            {
+              exact (SNo_mul_SNo
+                (distance_R2 z (0, 0))
+                (distance_R2 z (0, 0))
+                HdS
+                HdS).
+            }
+            claim HdSqNonneg :
+              0 <= mul_SNo (distance_R2 z (0, 0)) (distance_R2 z (0, 0)).
+            {
+              exact (SNo_sqr_nonneg
+                (distance_R2 z (0, 0))
+                HdS).
+            }
+            claim HqSq :
+              mul_SNo (distance_R2 q (0, 0)) (distance_R2 q (0, 0))
+              =
+              add_SNo
+                (mul_SNo (mul_SNo a (R2_xcoord z)) (mul_SNo a (R2_xcoord z)))
+                (mul_SNo (mul_SNo a (R2_ycoord z)) (mul_SNo a (R2_ycoord z))).
+            {
+              rewrite (distance_R2_sqr
+                q
+                (0, 0)
+                HqPlane
+                H00Plane).
+              rewrite (R2_xcoord_tuple
+                (mul_SNo a (R2_xcoord z))
+                (mul_SNo a (R2_ycoord z))).
+              rewrite (R2_ycoord_tuple
+                (mul_SNo a (R2_xcoord z))
+                (mul_SNo a (R2_ycoord z))).
+              rewrite (R2_xcoord_tuple 0 0).
+              rewrite (R2_ycoord_tuple 0 0).
+              rewrite minus_SNo_0.
+              rewrite (add_SNo_0R
+                (mul_SNo a (R2_xcoord z))
+                HaxS).
+              rewrite (add_SNo_0R
+                (mul_SNo a (R2_ycoord z))
+                HayS).
+              reflexivity.
+            }
+            claim HzSq :
+              mul_SNo (distance_R2 z (0, 0)) (distance_R2 z (0, 0))
+              =
+              add_SNo
+                (mul_SNo (R2_xcoord z) (R2_xcoord z))
+                (mul_SNo (R2_ycoord z) (R2_ycoord z)).
+            {
+              rewrite (distance_R2_sqr
+                z
+                (0, 0)
+                HzPlane
+                H00Plane).
+              rewrite (R2_xcoord_tuple 0 0).
+              rewrite (R2_ycoord_tuple 0 0).
+              rewrite minus_SNo_0.
+              rewrite (add_SNo_0R
+                (R2_xcoord z)
+                HxS).
+              rewrite (add_SNo_0R
+                (R2_ycoord z)
+                HyS).
+              reflexivity.
+            }
+            claim HqSqFactored :
+              mul_SNo (distance_R2 q (0, 0)) (distance_R2 q (0, 0))
+              =
+              mul_SNo
+                (mul_SNo a a)
+                (add_SNo
+                  (mul_SNo (R2_xcoord z) (R2_xcoord z))
+                  (mul_SNo (R2_ycoord z) (R2_ycoord z))).
+            {
+              rewrite HqSq.
+              rewrite (mul_SNo_com_4_inner_mid
+                a
+                (R2_xcoord z)
+                a
+                (R2_xcoord z)
+                HaS
+                HxS
+                HaS
+                HxS).
+              rewrite (mul_SNo_com_4_inner_mid
+                a
+                (R2_ycoord z)
+                a
+                (R2_ycoord z)
+                HaS
+                HyS
+                HaS
+                HyS).
+              rewrite <- (mul_SNo_distrL
+                (mul_SNo a a)
+                (mul_SNo (R2_xcoord z) (R2_xcoord z))
+                (mul_SNo (R2_ycoord z) (R2_ycoord z))
+                HaaS
+                Hx2S
+                Hy2S).
+              reflexivity.
+            }
+            claim HaaLeA : mul_SNo a a <= a.
+            {
+              exact (mul_SNo_Le1_nonneg_Le
+                a
+                a
+                HaS
+                HaS
+                HaLe1
+                HaNonneg).
+            }
+            claim HaaLe1 : mul_SNo a a <= 1.
+            {
+              exact (SNoLe_tra
+                (mul_SNo a a)
+                a
+                1
+                HaaS
+                HaS
+                SNo_1
+                HaaLeA
+                HaLe1).
+            }
+            claim HqSqLe :
+              mul_SNo (distance_R2 q (0, 0)) (distance_R2 q (0, 0))
+              <=
+              mul_SNo (distance_R2 z (0, 0)) (distance_R2 z (0, 0)).
+            {
+              rewrite HqSqFactored.
+              rewrite <- HzSq.
+              exact (mul_SNo_Le1_nonneg_Le
+                (mul_SNo a a)
+                (mul_SNo (distance_R2 z (0, 0)) (distance_R2 z (0, 0)))
+                HaaS
+                Hd2S
+                HaaLe1
+                HdSqNonneg).
+            }
+            claim Hd'LeD : distance_R2 q (0, 0) <= distance_R2 z (0, 0).
+            {
+              exact (SNo_nonneg_sqr_Le_imp_Le
+                (distance_R2 q (0, 0))
+                (distance_R2 z (0, 0))
+                Hd'S
+                HdS
+                Hd'Nonneg
+                HdNonneg
+                HqSqLe).
+            }
+            exact (SNoLeLt_tra
+              (distance_R2 q (0, 0))
+              (distance_R2 z (0, 0))
+              1
+              Hd'S
+              HdS
+              SNo_1
+              Hd'LeD
+              HzLt1).
+          }
+          let s.
+          assume Hs.
+          apply (SepI
+            EuclidPlane
+            (fun p0:set => SNoLt (distance_R2 p0 (0, 0)) 1)
+            (apply_fun pz s)).
+          - exact (HpzFunE s Hs).
+          - rewrite (apply_fun_graph
+              unit_interval
+              (fun s0:set =>
+                (mul_SNo (add_SNo 1 (minus_SNo s0)) (R2_xcoord z),
+                 mul_SNo (add_SNo 1 (minus_SNo s0)) (R2_ycoord z)))
+              s
+              Hs).
+            exact (Hradial_open_disk s Hs).
+        }
+        exact (continuous_map_range_restrict
+          unit_interval
+          unit_interval_topology
+          EuclidPlane
+          R2_topology
+          pz
+          X
+          HpzContPlane
+          HXsub
+          HpzIntoX).
+      }
+      claim HpzFun : function_on pz unit_interval X.
+      {
+        exact (continuous_map_function_on
+          unit_interval
+          unit_interval_topology
+          X
+          TX
+          pz
+          HpzCont).
+      }
+      claim HzPlane : z :e EuclidPlane.
+      {
+        exact (SepE1
+          EuclidPlane
+          (fun p:set => SNoLt (distance_R2 p (0, 0)) 1)
+          z
+          HzX).
+      }
+      claim Hpz0 : apply_fun pz 0 = z.
+      {
+        rewrite (apply_fun_graph
+          unit_interval
+          (fun s:set =>
+            (mul_SNo (add_SNo 1 (minus_SNo s)) (R2_xcoord z),
+             mul_SNo (add_SNo 1 (minus_SNo s)) (R2_ycoord z)))
+          0
+          zero_in_unit_interval).
+        rewrite minus_SNo_0.
+        rewrite (add_SNo_0R 1 SNo_1).
+        claim HxR : R2_xcoord z :e R.
+        {
+          exact (EuclidPlane_xcoord_in_R z HzPlane).
+        }
+        claim HyR : R2_ycoord z :e R.
+        {
+          exact (EuclidPlane_ycoord_in_R z HzPlane).
+        }
+        claim HxS : SNo (R2_xcoord z).
+        {
+          exact (real_SNo (R2_xcoord z) HxR).
+        }
+        claim HyS : SNo (R2_ycoord z).
+        {
+          exact (real_SNo (R2_ycoord z) HyR).
+        }
+        rewrite (mul_SNo_oneL
+          (R2_xcoord z)
+          HxS).
+        rewrite (mul_SNo_oneL
+          (R2_ycoord z)
+          HyS).
+        exact (EuclidPlane_eta
+          z
+          HzPlane).
+      }
+      claim Hpz1 : apply_fun pz 1 = (0, 0).
+      {
+        rewrite (apply_fun_graph
+          unit_interval
+          (fun s:set =>
+            (mul_SNo (add_SNo 1 (minus_SNo s)) (R2_xcoord z),
+             mul_SNo (add_SNo 1 (minus_SNo s)) (R2_ycoord z)))
+          1
+          one_in_unit_interval).
+        rewrite (add_SNo_minus_SNo_rinv 1 SNo_1).
+        claim HxR : R2_xcoord z :e R.
+        {
+          exact (EuclidPlane_xcoord_in_R z HzPlane).
+        }
+        claim HyR : R2_ycoord z :e R.
+        {
+          exact (EuclidPlane_ycoord_in_R z HzPlane).
+        }
+        claim HxS : SNo (R2_xcoord z).
+        {
+          exact (real_SNo (R2_xcoord z) HxR).
+        }
+        claim HyS : SNo (R2_ycoord z).
+        {
+          exact (real_SNo (R2_ycoord z) HyR).
+        }
+        rewrite (mul_SNo_zeroL
+          (R2_xcoord z)
+          HxS).
+        rewrite (mul_SNo_zeroL
+          (R2_ycoord z)
+          HyS).
+        reflexivity.
+      }
+      witness pz.
+      apply andI.
+      - exact (path_betweenI
+          X
+          z
+          (0, 0)
+          pz
+          HpzFun
+          Hpz0
+          Hpz1).
+      - exact HpzCont.
+    }
+    apply (HradialPath x HxX).
+    let px.
+    assume HpxPack.
+    claim HpxPath : path_between X x (0, 0) px.
+    {
+      exact (andEL
+        (path_between X x (0, 0) px)
+        (continuous_map unit_interval unit_interval_topology X TX px)
+        HpxPack).
+    }
+    claim HpxCont :
+      continuous_map unit_interval unit_interval_topology X TX px.
+    {
+      exact (andER
+        (path_between X x (0, 0) px)
+        (continuous_map unit_interval unit_interval_topology X TX px)
+        HpxPack).
+    }
+    apply (HradialPath y HyX).
+    let py.
+    assume HpyPack.
+    claim HpyPath : path_between X y (0, 0) py.
+    {
+      exact (andEL
+        (path_between X y (0, 0) py)
+        (continuous_map unit_interval unit_interval_topology X TX py)
+        HpyPack).
+    }
+    claim HpyCont :
+      continuous_map unit_interval unit_interval_topology X TX py.
+    {
+      exact (andER
+        (path_between X y (0, 0) py)
+        (continuous_map unit_interval unit_interval_topology X TX py)
+        HpyPack).
+    }
+    claim Hpx0 : apply_fun px 0 = x.
+    {
+      exact (path_between_at_zero
         X
         x
-        y
-        HxX
-        HyX).
+        (0, 0)
+        px
+        HpxPath).
     }
-    apply Hpath.
-    let p.
-    assume HpPath.
-    witness p.
-    apply andI.
-    * exact HpPath.
-    * exact (lemma58_path_between_continuous_bridge
+    claim Hpx1 : apply_fun px 1 = (0, 0).
+    {
+      exact (path_between_at_one
+        X
+        x
+        (0, 0)
+        px
+        HpxPath).
+    }
+    claim Hpy0 : apply_fun py 0 = y.
+    {
+      exact (path_between_at_zero
+        X
+        y
+        (0, 0)
+        py
+        HpyPath).
+    }
+    claim Hpy1 : apply_fun py 1 = (0, 0).
+    {
+      exact (path_between_at_one
+        X
+        y
+        (0, 0)
+        py
+        HpyPath).
+    }
+    claim HrevPyCont :
+      continuous_map unit_interval unit_interval_topology X TX (reverse_path py).
+    {
+      exact (reverse_path_continuous
+        X
+        TX
+        py
+        HpyCont).
+    }
+    claim HrevPy0 : apply_fun (reverse_path py) 0 = (0, 0).
+    {
+      rewrite (reverse_path_at_zero py).
+      exact Hpy1.
+    }
+    claim HrevPy1 : apply_fun (reverse_path py) 1 = y.
+    {
+      rewrite (reverse_path_at_one py).
+      exact Hpy0.
+    }
+    set p := path_concat px (reverse_path py).
+    claim HpCont :
+      continuous_map unit_interval unit_interval_topology X TX p.
+    {
+      exact (path_concat_continuous
         X
         TX
         x
+        (0, 0)
+        y
+        px
+        (reverse_path py)
+        HpxCont
+        HrevPyCont
+        Hpx0
+        Hpx1
+        HrevPy0
+        HrevPy1).
+    }
+    claim HpFun : function_on p unit_interval X.
+    {
+      exact (continuous_map_function_on
+        unit_interval
+        unit_interval_topology
+        X
+        TX
+        p
+        HpCont).
+    }
+    claim Hp0 : apply_fun p 0 = x.
+    {
+      rewrite (path_concat_at_zero
+        px
+        (reverse_path py)).
+      exact Hpx0.
+    }
+    claim Hp1 : apply_fun p 1 = y.
+    {
+      rewrite (path_concat_at_one
+        px
+        (reverse_path py)).
+      exact HrevPy1.
+    }
+    witness p.
+    apply andI.
+    * exact (path_betweenI
+        X
+        x
         y
         p
-        HpPath).
+        HpFun
+        Hp0
+        Hp1).
+    * exact HpCont.
 }
 claim Hpi1Trivial :
   fundamental_group X TX (0, 0) = {fundamental_group_id X TX (0, 0)}.
@@ -83882,7 +84711,7 @@ apply andI.
   apply andI.
   * exact H00InX.
   * exact Hpi1Trivial.
-Admitted.
+Qed.
 
 (** from S58 Exercise 2(i) (line 1488 in algtop.tex) **)
 (** LATEX VERSION: S^1 union (R+ x {0}) has pi1 = Z (infinite cyclic). **)
