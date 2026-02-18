@@ -113845,6 +113845,70 @@ apply (andI
     (Hsub y Hy)).
 Qed.
 
+(** Proven Bob **)
+(** Helper: group powers stay in the carrier of a group. **)
+Theorem group_power_nat_closed_in_group :
+  forall G mult e inv a n:set,
+  group_structure G mult e inv ->
+  a :e G ->
+  n :e omega ->
+  group_power_nat mult e a n :e G.
+let G mult e inv a n.
+assume Hgrp : group_structure G mult e inv.
+assume HaG : a :e G.
+assume HnO : n :e omega.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume HmultFun HinvFun HeG Hassoc Hid HinvLaw.
+claim HnatPow :
+  forall k:set, nat_p k ->
+    group_power_nat mult e a k :e G.
+{
+  apply nat_ind.
+  - prove group_power_nat mult e a 0 :e G.
+    claim H0 : group_power_nat mult e a 0 = e.
+    {
+      exact (nat_primrec_0
+        e
+        (fun _ r => apply_fun mult (a, r))).
+    }
+    rewrite H0.
+    exact HeG.
+  - let k.
+    assume Hk : nat_p k.
+    assume IH : group_power_nat mult e a k :e G.
+    prove group_power_nat mult e a (ordsucc k) :e G.
+    claim HS : group_power_nat mult e a (ordsucc k) =
+      apply_fun mult (a, group_power_nat mult e a k).
+    {
+      exact (nat_primrec_S
+        e
+        (fun _ r => apply_fun mult (a, r))
+        k
+        Hk).
+    }
+    rewrite HS.
+    exact (HmultFun
+      (a, group_power_nat mult e a k)
+      (tuple_2_setprod_by_pair_Sigma
+        G
+        G
+        a
+        (group_power_nat mult e a k)
+        HaG
+        IH)).
+}
+exact (HnatPow n (omega_nat_p n HnO)).
+Qed.
+
 (** from S69 Lem 69.1 (line 3047 in algtop.tex): extension condition for free groups **)
 (** LATEX VERSION: G is a free group with generators {a_alpha} iff for any group H **)
 (** and any family {y_alpha} of elements of H, there is a unique homomorphism **)
@@ -114378,58 +114442,18 @@ apply (iffI
     {
       let a.
       assume HaG : a :e G.
-      apply (and6E
-        (function_on mult (setprod G G) G)
-        (function_on inv G G)
-        (e :e G)
-        (forall x y z:set, x :e G -> y :e G -> z :e G ->
-          apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
-        (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
-        (forall x:set, x :e G ->
-          apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
-        Hgrp).
-      assume HmultFun HinvFun HeG Hassoc Hid HinvLaw.
-      claim HnatPow :
-        forall n:set, nat_p n ->
-          group_power_nat mult e a n :e G.
-      {
-        apply nat_ind.
-        - prove group_power_nat mult e a 0 :e G.
-          claim H0 : group_power_nat mult e a 0 = e.
-          {
-            exact (nat_primrec_0
-              e
-              (fun _ r => apply_fun mult (a, r))).
-          }
-          rewrite H0.
-          exact HeG.
-        - let n.
-          assume Hn : nat_p n.
-          assume IH : group_power_nat mult e a n :e G.
-          prove group_power_nat mult e a (ordsucc n) :e G.
-          claim HS : group_power_nat mult e a (ordsucc n) =
-            apply_fun mult (a, group_power_nat mult e a n).
-          {
-            exact (nat_primrec_S
-              e
-              (fun _ r => apply_fun mult (a, r))
-              n
-              Hn).
-          }
-          rewrite HS.
-          exact (HmultFun
-            (a, group_power_nat mult e a n)
-            (tuple_2_setprod_by_pair_Sigma
-              G
-              G
-              a
-              (group_power_nat mult e a n)
-              HaG
-              IH)).
-      }
       let n.
       assume HnO : n :e omega.
-      exact (HnatPow n (omega_nat_p n HnO)).
+      exact (group_power_nat_closed_in_group
+        G
+        mult
+        e
+        inv
+        a
+        n
+        Hgrp
+        HaG
+        HnO).
     }
     claim HinvGalphaG : apply_fun inv galpha :e G.
     {
