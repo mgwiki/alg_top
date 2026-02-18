@@ -112501,6 +112501,37 @@ apply (andI
       {
         exact (HpowSetSubC e HeInPowSet).
       }
+      claim HCnonempty : C <> Empty.
+      {
+        exact (elem_implies_nonempty C e HeC).
+      }
+      claim HpowSetNonempty :
+        group_power_nat
+          (quotient_group_mult G mult C)
+          (quotient_group_id G mult e C)
+          (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+          (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+            group_power_nat
+              (quotient_group_mult G mult C)
+              (quotient_group_id G mult e C)
+              (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+              n = quotient_group_id G mult e C))
+          <> Empty.
+      {
+        exact (elem_implies_nonempty
+          (group_power_nat
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+            (Eps_i (fun n:set => n :e omega /\ n <> 0 /\
+              group_power_nat
+                (quotient_group_mult G mult C)
+                (quotient_group_id G mult e C)
+                (apply_fun (graph J (fun alpha:set => left_coset mult (apply_fun gens alpha) C)) alpha)
+                n = quotient_group_id G mult e C)))
+          e
+          HeInPowSet).
+      }
       admit.
   admit.
 Admitted.
