@@ -111235,8 +111235,15 @@ apply (andI
       abelian_group H multH eH invH ->
       group_homomorphism G mult H multH h ->
       C c= kernel_of G eH h)).
-  + admit.
-  + admit.
+	  + admit.
+	  + let H.
+	    let multH.
+	    let eH.
+	    let invH.
+	    let h.
+	    assume HabH : abelian_group H multH eH invH.
+	    assume Hhom : group_homomorphism G mult H multH h.
+	    admit.
 Admitted.
 
 (** from S69 Thm 69.4 (line 3125 in algtop.tex): abelianization of free group **)
