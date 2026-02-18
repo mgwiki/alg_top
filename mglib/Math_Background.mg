@@ -111849,6 +111849,57 @@ apply (andI
         rewrite Hqid.
         exact HpowQ.
       }
+      claim HnormalC : normal_subgroup C G mult e inv.
+      {
+        claim HNA :
+          normal_subgroup C G mult e inv /\
+          abelian_group
+            (quotient_group_set G mult C)
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (quotient_group_inv G mult inv C).
+        {
+          exact (andEL
+            (normal_subgroup C G mult e inv /\
+             abelian_group
+               (quotient_group_set G mult C)
+               (quotient_group_mult G mult C)
+               (quotient_group_id G mult e C)
+               (quotient_group_inv G mult inv C))
+            (forall H multH eH invH h:set,
+              abelian_group H multH eH invH ->
+              group_homomorphism G mult H multH h ->
+              C c= kernel_of G eH h)
+            HcommProps).
+        }
+        exact (andEL
+          (normal_subgroup C G mult e inv)
+          (abelian_group
+            (quotient_group_set G mult C)
+            (quotient_group_mult G mult C)
+            (quotient_group_id G mult e C)
+            (quotient_group_inv G mult inv C))
+          HNA).
+      }
+      claim HsubC : subgroup_of C G mult e inv.
+      {
+        exact (andEL
+          (subgroup_of C G mult e inv)
+          (forall n g:set, n :e C -> g :e G ->
+            apply_fun mult (apply_fun mult (g, n), apply_fun inv g) :e C)
+          HnormalC).
+      }
+      claim HeC : e :e C.
+      {
+        apply (and4E
+          (C c= G)
+          (e :e C)
+          (forall x y:set, x :e C -> y :e C -> apply_fun mult (x, y) :e C)
+          (forall x:set, x :e C -> apply_fun inv x :e C)
+          HsubC).
+        assume HCsub HeC HmulC HinvC.
+        exact HeC.
+      }
       admit.
   admit.
 Admitted.
