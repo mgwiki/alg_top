@@ -39699,7 +39699,71 @@ Theorem ex52_5_extendable_trivial : forall A Ta a0 Y Ty y0 h:set,
     (forall a:set, a :e A -> apply_fun H a = apply_fun h a)) ->
   forall cls:set, cls :e fundamental_group A Ta a0 ->
     apply_fun (induced_homomorphism A Ta a0 Y Ty y0 h) cls = fundamental_group_id Y Ty y0.
-admit.
+let A Ta a0 Y Ty y0 h.
+assume HAsubR HtopA HtopY Hhcont Hha0 Ha0 Hext.
+apply Hext.
+let H.
+assume HextPack.
+claim HHcont : continuous_map R R_standard_topology Y Ty H.
+{
+  exact (andEL
+    (continuous_map R R_standard_topology Y Ty H)
+    (forall a:set, a :e A -> apply_fun H a = apply_fun h a)
+    HextPack).
+}
+claim HHrestr :
+  forall a:set, a :e A -> apply_fun H a = apply_fun h a.
+{
+  exact (andER
+    (continuous_map R R_standard_topology Y Ty H)
+    (forall a:set, a :e A -> apply_fun H a = apply_fun h a)
+    HextPack).
+}
+let cls.
+assume Hcls.
+set i := graph A (fun x:set => x).
+claim Ha0R : a0 :e R.
+{
+  exact (HAsubR a0 Ha0).
+}
+claim Hi0 : apply_fun i a0 = a0.
+{
+  exact (apply_fun_graph A (fun x:set => x) a0 Ha0).
+}
+claim HHa0 : apply_fun H a0 = y0.
+{
+  rewrite (HHrestr a0 Ha0).
+  exact Hha0.
+}
+claim HhEqComp :
+  forall a:set, a :e A ->
+    apply_fun h a = apply_fun (compose_fun A i H) a.
+{
+  let a.
+  assume Ha.
+  rewrite (compose_fun_apply A i H a Ha).
+  rewrite (apply_fun_graph A (fun x:set => x) a Ha).
+  symmetry.
+  exact (HHrestr a Ha).
+}
+claim HinducedThroughExtension :
+  apply_fun (induced_homomorphism A Ta a0 Y Ty y0 h) cls
+  = apply_fun (induced_homomorphism A Ta a0 Y Ty y0 (compose_fun A i H)) cls.
+{
+  (** TODO Charlie: lift pointwise equality H|A = h to equality of induced homomorphisms on pi1 classes. **)
+  (** This needs the Eps_i representative argument plus class equality in fundamental_group. **)
+  admit.
+}
+claim HextTrivial :
+  apply_fun (induced_homomorphism A Ta a0 Y Ty y0 (compose_fun A i H)) cls
+  = fundamental_group_id Y Ty y0.
+{
+  (** TODO Charlie: factor through R and use the triviality of loops after extension to ambient R. **)
+  (** Needed ingredients: continuity of inclusion i:A->R in Ta context and induced-map identity behavior. **)
+  admit.
+}
+rewrite HinducedThroughExtension.
+exact HextTrivial.
 Admitted.
 
 
