@@ -73581,6 +73581,50 @@ Definition integers_group_inv : set :=
 (** The basepoint (1,0) on S^1 **)
 Definition S1_basepoint : set := (1, 0).
 
+(** Infrastructure helper: R with the standard topology is simply connected. **)
+Theorem simply_connected_R_standard :
+  simply_connected R R_standard_topology.
+claim HcontrR : contractible_space R R_standard_topology.
+{
+  exact ex51_3a_R_contractible.
+}
+claim HpcR : path_connected_space R R_standard_topology.
+{
+  exact (ex51_3b_contractible_path_connected
+    R
+    R_standard_topology
+    HcontrR).
+}
+claim HconvR : convex_in R R.
+{
+  exact (andI
+    (R c= R)
+    (forall a b:set, a :e R -> b :e R -> order_interval R a b c= R)
+    (Subq_ref R)
+    (fun a b HaR HbR => order_interval_subset R a b)).
+}
+claim HtrivPi1R0 :
+  fundamental_group R R_standard_topology 0
+  =
+  {fundamental_group_id R R_standard_topology 0}.
+{
+  exact (Example_52_1_convex_trivial_pi1
+    R
+    R_standard_topology
+    0
+    (Subq_ref R)
+    HconvR
+    R_standard_topology_is_topology
+    real_0).
+}
+apply andI.
+- exact HpcR.
+- witness 0.
+  apply andI.
+  + exact real_0.
+  + exact HtrivPi1R0.
+Qed.
+
 (** from S54 Thm 54.5 (line 810 in algtop.tex) **)
 (** LATEX VERSION: The fundamental group of S^1 is isomorphic to the additive group **)
 (** of integers. **)
