@@ -67829,6 +67829,58 @@ exact (andI
   HimgConn).
 Qed.
 
+(** Infrastructure: connected image under a map into a disjoint open sheet union stays in one anchored sheet **)
+(** Proven Bob **)
+Theorem lemma54_2_connected_image_anchor_slice : forall X Tx F S0 C h c0:set,
+  topology_on X Tx ->
+  F c= Tx ->
+  pairwise_disjoint F ->
+  connected_space C (subspace_topology X Tx C) ->
+  continuous_map C (subspace_topology X Tx C) X Tx h ->
+  image_of h C c= Union F ->
+  S0 :e F ->
+  c0 :e C ->
+  apply_fun h c0 :e S0 ->
+  image_of h C c= S0.
+let X Tx F S0 C h c0.
+assume HtopX HsubF HpdF HCconn Hh HCimgUF HS0F Hc0C Hh0S0.
+claim HimgConn :
+  connected_space (image_of h C) (subspace_topology X Tx (image_of h C)).
+{
+  exact (continuous_image_connected
+    C
+    (subspace_topology X Tx C)
+    X
+    Tx
+    h
+    HCconn
+    Hh).
+}
+claim Hh0Img : apply_fun h c0 :e image_of h C.
+{
+  exact (ReplI
+    C
+    (fun x:set => apply_fun h x)
+    c0
+    Hc0C).
+}
+exact (connected_subset_of_pairwise_disjoint_open_union_anchor
+  X
+  Tx
+  F
+  S0
+  (image_of h C)
+  (apply_fun h c0)
+  HtopX
+  HsubF
+  HpdF
+  HCimgUF
+  HimgConn
+  HS0F
+  Hh0Img
+  Hh0S0).
+Qed.
+
 (** Infrastructure: existence package for homotopy lifting in Lem 54.2 **)
 Theorem lemma54_2_homotopy_lifting_exists : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
