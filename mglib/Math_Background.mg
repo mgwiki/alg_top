@@ -63539,7 +63539,7 @@ claim Hex :
                                     }
                                     claim HVluEqVu : Vlu = Vu.
                                     {
-                                      (** TODO Charlie: prove this final slice-identification step from overlap data on Nu /\ Nt. **)
+                                      (** TODO Charlie: show apply_fun lu x :e Vu by transporting overlap fiber data on Nu /\ Nt to Vlu, then conclude Vlu = Vu via pairwise disjointness at apply_fun lu x. **)
                                       admit.
                                     }
                                     rewrite <- HVluEqVu.
@@ -66024,7 +66024,7 @@ claim Hex :
               }
               claim HrN0 : r :e N0.
               {
-                (** TODO Charlie: prove propagation from 0 to r inside Nr /\ N1 where lr=lt1. **)
+                (** TODO Charlie: replace this local neighborhood obligation with a global equalizer propagation on Nr /\ N1 (clopen style argument on the component containing 0 and r). **)
                 admit.
               }
               exact (HrN1IfHrN0
@@ -68611,7 +68611,8 @@ claim HFt_54_cont :
                             HxqEqFz).
                         }
                         (** Remaining gap:
-                            identify Vxq and Vz from the local lift comparison data on N. **)
+                            derive xq :e Vz from local comparison data for Ft_local_N and Ft_54 near q,
+                            then conclude Vxq = Vz by pairwise disjointness at xq. **)
                         admit.
                       }
                       rewrite <- HVxqEqVz.
