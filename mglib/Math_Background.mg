@@ -1,7 +1,7 @@
 (** Balance Alice 3269 **)
 (** Balance Bob 3043 **)
 (** Balance Charlie 1220 **)
-(** Balance Dave 1672 **)
+(** Balance Dave 1793 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -136149,8 +136149,8 @@ Admitted.
 (** LATEX VERSION: If the groups i_alpha(G_alpha) generate G and the extension condition holds, **)
 (** then each i_alpha is a monomorphism and G is the direct sum of the groups i_alpha(G_alpha). **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 121 **)
-(** Lock Dave 1771565305 **)
+(** Collected Dave 121 **)
+(** Proven Dave **)
 Theorem lemma67_5_extension_converse :
   forall G multG eG invG J Gfam multfam efam invfam ifam:set,
   abelian_group G multG eG invG ->
@@ -136176,8 +136176,268 @@ Theorem lemma67_5_extension_converse :
       apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) y -> x = y) /\
   direct_sum_of_subgroups G multG eG invG J
     (graph J (fun alpha:set => homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))).
-admit.
-Admitted.
+let G multG eG invG J Gfam multfam efam invfam ifam.
+assume HabG.
+assume HabGfam : forall alpha:set, alpha :e J ->
+  abelian_group (apply_fun Gfam alpha) (apply_fun multfam alpha) (apply_fun efam alpha) (apply_fun invfam alpha).
+assume Hifam_hom : forall alpha:set, alpha :e J ->
+  group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha).
+assume Hgen_img : subgroups_generate_abelian G multG eG invG J
+  (graph J (fun alpha:set => homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))).
+assume Hext_cond : forall H multH eH invH:set,
+  abelian_group H multH eH invH ->
+  forall hfam:set,
+    (forall alpha:set, alpha :e J ->
+      group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) H multH (apply_fun hfam alpha)) ->
+    exists h:set,
+      group_homomorphism G multG H multH h /\
+      (forall alpha:set, alpha :e J ->
+        forall x:set, x :e apply_fun Gfam alpha ->
+          apply_fun h (apply_fun (apply_fun ifam alpha) x) =
+            apply_fun (apply_fun hfam alpha) x).
+apply andI.
++ let alpha0. assume Halpha0J.
+  let x y. assume HxGfam0. assume HyGfam0. assume HifamEq.
+  claim HabGfam0 : abelian_group (apply_fun Gfam alpha0) (apply_fun multfam alpha0) (apply_fun efam alpha0) (apply_fun invfam alpha0).
+  { exact (HabGfam alpha0 Halpha0J). }
+  claim HgrpGfam0 : group_structure (apply_fun Gfam alpha0) (apply_fun multfam alpha0) (apply_fun efam alpha0) (apply_fun invfam alpha0).
+  { exact (andEL
+      (group_structure (apply_fun Gfam alpha0) (apply_fun multfam alpha0) (apply_fun efam alpha0) (apply_fun invfam alpha0))
+      (forall u v:set, u :e apply_fun Gfam alpha0 -> v :e apply_fun Gfam alpha0 ->
+        apply_fun (apply_fun multfam alpha0) (u, v) = apply_fun (apply_fun multfam alpha0) (v, u))
+      HabGfam0). }
+  apply (and6E
+    (function_on (apply_fun multfam alpha0) (setprod (apply_fun Gfam alpha0) (apply_fun Gfam alpha0)) (apply_fun Gfam alpha0))
+    (function_on (apply_fun invfam alpha0) (apply_fun Gfam alpha0) (apply_fun Gfam alpha0))
+    (apply_fun efam alpha0 :e apply_fun Gfam alpha0)
+    (forall u v w:set, u :e apply_fun Gfam alpha0 -> v :e apply_fun Gfam alpha0 -> w :e apply_fun Gfam alpha0 ->
+      apply_fun (apply_fun multfam alpha0) (apply_fun (apply_fun multfam alpha0) (u, v), w) =
+      apply_fun (apply_fun multfam alpha0) (u, apply_fun (apply_fun multfam alpha0) (v, w)))
+    (forall u:set, u :e apply_fun Gfam alpha0 ->
+      apply_fun (apply_fun multfam alpha0) (apply_fun efam alpha0, u) = u /\
+      apply_fun (apply_fun multfam alpha0) (u, apply_fun efam alpha0) = u)
+    (forall u:set, u :e apply_fun Gfam alpha0 ->
+      apply_fun (apply_fun multfam alpha0) (u, apply_fun (apply_fun invfam alpha0) u) = apply_fun efam alpha0 /\
+      apply_fun (apply_fun multfam alpha0) (apply_fun (apply_fun invfam alpha0) u, u) = apply_fun efam alpha0)
+    HgrpGfam0).
+  assume HmultFn0 HinvFn0 HeGfam0mem HassocGfam0 HidGfam0 HinvGfam0.
+  claim Hhom_proj : forall alpha:set, alpha :e J ->
+    group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha)
+      (apply_fun Gfam alpha0) (apply_fun multfam alpha0)
+      (apply_fun (graph J (fun al:set => graph (apply_fun Gfam al) (fun z:set =>
+        if al = alpha0 then z else apply_fun efam alpha0))) alpha).
+  {
+    let alpha. assume HalphaJ.
+    rewrite (apply_fun_graph J (fun al:set => graph (apply_fun Gfam al) (fun z:set =>
+      if al = alpha0 then z else apply_fun efam alpha0)) alpha HalphaJ).
+    claim HgrpGfam_alpha : group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) (apply_fun efam alpha) (apply_fun invfam alpha).
+    { exact (andEL
+        (group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) (apply_fun efam alpha) (apply_fun invfam alpha))
+        (forall u v:set, u :e apply_fun Gfam alpha -> v :e apply_fun Gfam alpha ->
+          apply_fun (apply_fun multfam alpha) (u, v) = apply_fun (apply_fun multfam alpha) (v, u))
+        (HabGfam alpha HalphaJ)). }
+    apply (and6E
+      (function_on (apply_fun multfam alpha) (setprod (apply_fun Gfam alpha) (apply_fun Gfam alpha)) (apply_fun Gfam alpha))
+      (function_on (apply_fun invfam alpha) (apply_fun Gfam alpha) (apply_fun Gfam alpha))
+      (apply_fun efam alpha :e apply_fun Gfam alpha)
+      (forall u v w:set, u :e apply_fun Gfam alpha -> v :e apply_fun Gfam alpha -> w :e apply_fun Gfam alpha ->
+        apply_fun (apply_fun multfam alpha) (apply_fun (apply_fun multfam alpha) (u, v), w) =
+        apply_fun (apply_fun multfam alpha) (u, apply_fun (apply_fun multfam alpha) (v, w)))
+      (forall u:set, u :e apply_fun Gfam alpha ->
+        apply_fun (apply_fun multfam alpha) (apply_fun efam alpha, u) = u /\
+        apply_fun (apply_fun multfam alpha) (u, apply_fun efam alpha) = u)
+      (forall u:set, u :e apply_fun Gfam alpha ->
+        apply_fun (apply_fun multfam alpha) (u, apply_fun (apply_fun invfam alpha) u) = apply_fun efam alpha /\
+        apply_fun (apply_fun multfam alpha) (apply_fun (apply_fun invfam alpha) u, u) = apply_fun efam alpha)
+      HgrpGfam_alpha).
+    assume HmultFn_alpha HinvFn_alpha HeGfam_alpha HassocGfam_alpha HidGfam_alpha HinvGfam_alpha.
+    prove function_on (graph (apply_fun Gfam alpha) (fun z:set => if alpha = alpha0 then z else apply_fun efam alpha0))
+        (apply_fun Gfam alpha) (apply_fun Gfam alpha0) /\
+      (forall u v:set, u :e apply_fun Gfam alpha -> v :e apply_fun Gfam alpha ->
+        apply_fun (graph (apply_fun Gfam alpha) (fun z:set => if alpha = alpha0 then z else apply_fun efam alpha0))
+          (apply_fun (apply_fun multfam alpha) (u, v)) =
+        apply_fun (apply_fun multfam alpha0)
+          (apply_fun (graph (apply_fun Gfam alpha) (fun z:set => if alpha = alpha0 then z else apply_fun efam alpha0)) u,
+           apply_fun (graph (apply_fun Gfam alpha) (fun z:set => if alpha = alpha0 then z else apply_fun efam alpha0)) v)).
+    apply andI.
+    - let z. assume HzGfam.
+      rewrite (apply_fun_graph (apply_fun Gfam alpha) (fun z:set => if alpha = alpha0 then z else apply_fun efam alpha0) z HzGfam).
+      apply (xm (alpha = alpha0)).
+      * assume Heq. rewrite (If_i_1 (alpha = alpha0) z (apply_fun efam alpha0) Heq).
+        rewrite <- Heq. exact HzGfam.
+      * assume Hne. rewrite (If_i_0 (alpha = alpha0) z (apply_fun efam alpha0) Hne).
+        exact HeGfam0mem.
+    - let u v. assume HuGfam. assume HvGfam.
+      claim Hmult_uv : apply_fun (apply_fun multfam alpha) (u, v) :e apply_fun Gfam alpha.
+      { exact (HmultFn_alpha (u, v)
+          (tuple_2_setprod_by_pair_Sigma (apply_fun Gfam alpha) (apply_fun Gfam alpha) u v HuGfam HvGfam)). }
+      rewrite (apply_fun_graph (apply_fun Gfam alpha) (fun z:set => if alpha = alpha0 then z else apply_fun efam alpha0)
+        (apply_fun (apply_fun multfam alpha) (u, v)) Hmult_uv).
+      rewrite (apply_fun_graph (apply_fun Gfam alpha) (fun z:set => if alpha = alpha0 then z else apply_fun efam alpha0) u HuGfam).
+      rewrite (apply_fun_graph (apply_fun Gfam alpha) (fun z:set => if alpha = alpha0 then z else apply_fun efam alpha0) v HvGfam).
+      apply (xm (alpha = alpha0)).
+      * assume Heq.
+        rewrite (If_i_1 (alpha = alpha0) (apply_fun (apply_fun multfam alpha) (u, v)) (apply_fun efam alpha0) Heq).
+        rewrite (If_i_1 (alpha = alpha0) u (apply_fun efam alpha0) Heq).
+        rewrite (If_i_1 (alpha = alpha0) v (apply_fun efam alpha0) Heq).
+        rewrite Heq. reflexivity.
+      * assume Hne.
+        rewrite (If_i_0 (alpha = alpha0) (apply_fun (apply_fun multfam alpha) (u, v)) (apply_fun efam alpha0) Hne).
+        rewrite (If_i_0 (alpha = alpha0) u (apply_fun efam alpha0) Hne).
+        rewrite (If_i_0 (alpha = alpha0) v (apply_fun efam alpha0) Hne).
+        rewrite (andEL
+          (apply_fun (apply_fun multfam alpha0) (apply_fun efam alpha0, apply_fun efam alpha0) = apply_fun efam alpha0)
+          (apply_fun (apply_fun multfam alpha0) (apply_fun efam alpha0, apply_fun efam alpha0) = apply_fun efam alpha0)
+          (HidGfam0 (apply_fun efam alpha0) HeGfam0mem)).
+        reflexivity.
+  }
+  apply (Hext_cond (apply_fun Gfam alpha0) (apply_fun multfam alpha0) (apply_fun efam alpha0) (apply_fun invfam alpha0)
+    HabGfam0
+    (graph J (fun al:set => graph (apply_fun Gfam al) (fun z:set => if al = alpha0 then z else apply_fun efam alpha0)))
+    Hhom_proj).
+  let h. assume Hh_split.
+  claim Hretract : forall z:set, z :e apply_fun Gfam alpha0 ->
+    apply_fun h (apply_fun (apply_fun ifam alpha0) z) = z.
+  {
+    let z. assume HzGfam0.
+    rewrite ((andER
+      (group_homomorphism G multG (apply_fun Gfam alpha0) (apply_fun multfam alpha0) h)
+      (forall al:set, al :e J -> forall z0:set, z0 :e apply_fun Gfam al ->
+        apply_fun h (apply_fun (apply_fun ifam al) z0) =
+        apply_fun (apply_fun (graph J (fun al0:set => graph (apply_fun Gfam al0) (fun z1:set =>
+          if al0 = alpha0 then z1 else apply_fun efam alpha0))) al) z0)
+      Hh_split) alpha0 Halpha0J z HzGfam0).
+    rewrite (apply_fun_apply_fun_graph J
+      (fun al0:set => graph (apply_fun Gfam al0) (fun z1:set => if al0 = alpha0 then z1 else apply_fun efam alpha0))
+      alpha0 z Halpha0J).
+    rewrite (apply_fun_graph (apply_fun Gfam alpha0)
+      (fun z1:set => if alpha0 = alpha0 then z1 else apply_fun efam alpha0) z HzGfam0).
+    claim Hself : alpha0 = alpha0. { reflexivity. }
+    rewrite (If_i_1 (alpha0 = alpha0) z (apply_fun efam alpha0) Hself).
+    reflexivity.
+  }
+  rewrite <- (Hretract x HxGfam0).
+  rewrite HifamEq.
+  exact (Hretract y HyGfam0).
++ apply (lemma67_1_converse G multG eG invG J
+    (graph J (fun alpha:set => homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha)))
+    Hgen_img).
+  let H multH eH invH. assume HabH.
+  let hfam'. assume Hhfam' : forall alpha:set, alpha :e J ->
+    group_homomorphism
+      (apply_fun (graph J (fun al:set => homomorphism_image (apply_fun Gfam al) (apply_fun ifam al))) alpha)
+      multG H multH (apply_fun hfam' alpha).
+  claim Hhfam_pre : forall alpha:set, alpha :e J ->
+    group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) H multH
+      (apply_fun (graph J (fun al:set => graph (apply_fun Gfam al) (fun z:set =>
+        apply_fun (apply_fun hfam' al) (apply_fun (apply_fun ifam al) z)))) alpha).
+  {
+    let alpha. assume HalphaJ.
+    rewrite (apply_fun_graph J (fun al:set => graph (apply_fun Gfam al) (fun z:set =>
+      apply_fun (apply_fun hfam' al) (apply_fun (apply_fun ifam al) z))) alpha HalphaJ).
+    claim Hhfam'_alpha : group_homomorphism (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))
+      multG H multH (apply_fun hfam' alpha).
+    { rewrite <- (apply_fun_graph J (fun al:set => homomorphism_image (apply_fun Gfam al) (apply_fun ifam al)) alpha HalphaJ).
+      exact (Hhfam' alpha HalphaJ). }
+    claim Hifam_alpha_hom : group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha).
+    { exact (Hifam_hom alpha HalphaJ). }
+    claim HgrpGfam_alpha2 : group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) (apply_fun efam alpha) (apply_fun invfam alpha).
+    { exact (andEL
+        (group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha) (apply_fun efam alpha) (apply_fun invfam alpha))
+        (forall u v:set, u :e apply_fun Gfam alpha -> v :e apply_fun Gfam alpha ->
+          apply_fun (apply_fun multfam alpha) (u, v) = apply_fun (apply_fun multfam alpha) (v, u))
+        (HabGfam alpha HalphaJ)). }
+    apply (and6E
+      (function_on (apply_fun multfam alpha) (setprod (apply_fun Gfam alpha) (apply_fun Gfam alpha)) (apply_fun Gfam alpha))
+      (function_on (apply_fun invfam alpha) (apply_fun Gfam alpha) (apply_fun Gfam alpha))
+      (apply_fun efam alpha :e apply_fun Gfam alpha)
+      (forall u v w:set, u :e apply_fun Gfam alpha -> v :e apply_fun Gfam alpha -> w :e apply_fun Gfam alpha ->
+        apply_fun (apply_fun multfam alpha) (apply_fun (apply_fun multfam alpha) (u, v), w) =
+        apply_fun (apply_fun multfam alpha) (u, apply_fun (apply_fun multfam alpha) (v, w)))
+      (forall u:set, u :e apply_fun Gfam alpha ->
+        apply_fun (apply_fun multfam alpha) (apply_fun efam alpha, u) = u /\
+        apply_fun (apply_fun multfam alpha) (u, apply_fun efam alpha) = u)
+      (forall u:set, u :e apply_fun Gfam alpha ->
+        apply_fun (apply_fun multfam alpha) (u, apply_fun (apply_fun invfam alpha) u) = apply_fun efam alpha /\
+        apply_fun (apply_fun multfam alpha) (apply_fun (apply_fun invfam alpha) u, u) = apply_fun efam alpha)
+      HgrpGfam_alpha2).
+    assume HmultFn_alpha2 HinvFn_alpha2 HeGfam_alpha2 HassocGfam_alpha2 HidGfam_alpha2 HinvGfam_alpha2.
+    prove function_on (graph (apply_fun Gfam alpha) (fun z:set =>
+          apply_fun (apply_fun hfam' alpha) (apply_fun (apply_fun ifam alpha) z)))
+        (apply_fun Gfam alpha) H /\
+      (forall u v:set, u :e apply_fun Gfam alpha -> v :e apply_fun Gfam alpha ->
+        apply_fun (graph (apply_fun Gfam alpha) (fun z:set =>
+            apply_fun (apply_fun hfam' alpha) (apply_fun (apply_fun ifam alpha) z)))
+          (apply_fun (apply_fun multfam alpha) (u, v)) =
+        apply_fun multH
+          (apply_fun (graph (apply_fun Gfam alpha) (fun z:set =>
+              apply_fun (apply_fun hfam' alpha) (apply_fun (apply_fun ifam alpha) z))) u,
+           apply_fun (graph (apply_fun Gfam alpha) (fun z:set =>
+              apply_fun (apply_fun hfam' alpha) (apply_fun (apply_fun ifam alpha) z))) v)).
+    apply andI.
+    - let z. assume HzGfam.
+      rewrite (apply_fun_graph (apply_fun Gfam alpha) (fun z:set =>
+        apply_fun (apply_fun hfam' alpha) (apply_fun (apply_fun ifam alpha) z)) z HzGfam).
+      exact (group_homomorphism_function_on (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))
+        multG H multH (apply_fun hfam' alpha) Hhfam'_alpha
+        (apply_fun (apply_fun ifam alpha) z)
+        (ReplI (apply_fun Gfam alpha) (apply_fun (apply_fun ifam alpha)) z HzGfam)).
+    - let u v. assume HuGfam. assume HvGfam.
+      claim Hmult_uv2 : apply_fun (apply_fun multfam alpha) (u, v) :e apply_fun Gfam alpha.
+      { exact (HmultFn_alpha2 (u, v)
+          (tuple_2_setprod_by_pair_Sigma (apply_fun Gfam alpha) (apply_fun Gfam alpha) u v HuGfam HvGfam)). }
+      rewrite (apply_fun_graph (apply_fun Gfam alpha) (fun z:set =>
+        apply_fun (apply_fun hfam' alpha) (apply_fun (apply_fun ifam alpha) z))
+        (apply_fun (apply_fun multfam alpha) (u, v)) Hmult_uv2).
+      rewrite (apply_fun_graph (apply_fun Gfam alpha) (fun z:set =>
+        apply_fun (apply_fun hfam' alpha) (apply_fun (apply_fun ifam alpha) z)) u HuGfam).
+      rewrite (apply_fun_graph (apply_fun Gfam alpha) (fun z:set =>
+        apply_fun (apply_fun hfam' alpha) (apply_fun (apply_fun ifam alpha) z)) v HvGfam).
+      rewrite (group_homomorphism_mult_rule (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG
+        (apply_fun ifam alpha) u v Hifam_alpha_hom HuGfam HvGfam).
+      exact (group_homomorphism_mult_rule
+        (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))
+        multG H multH (apply_fun hfam' alpha)
+        (apply_fun (apply_fun ifam alpha) u) (apply_fun (apply_fun ifam alpha) v)
+        Hhfam'_alpha
+        (ReplI (apply_fun Gfam alpha) (apply_fun (apply_fun ifam alpha)) u HuGfam)
+        (ReplI (apply_fun Gfam alpha) (apply_fun (apply_fun ifam alpha)) v HvGfam)).
+  }
+  apply (Hext_cond H multH eH invH HabH
+    (graph J (fun al:set => graph (apply_fun Gfam al) (fun z:set =>
+      apply_fun (apply_fun hfam' al) (apply_fun (apply_fun ifam al) z))))
+    Hhfam_pre).
+  let h2. assume Hh2_split.
+  witness h2. apply andI.
+  - exact (andEL
+      (group_homomorphism G multG H multH h2)
+      (forall al:set, al :e J -> forall z0:set, z0 :e apply_fun Gfam al ->
+        apply_fun h2 (apply_fun (apply_fun ifam al) z0) =
+        apply_fun (apply_fun (graph J (fun al0:set => graph (apply_fun Gfam al0) (fun z1:set =>
+          apply_fun (apply_fun hfam' al0) (apply_fun (apply_fun ifam al0) z1)))) al) z0)
+      Hh2_split).
+  - let alpha. assume HalphaJ. let x0. assume Hx0Img.
+    claim Hx0Img2 : x0 :e homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha).
+    { rewrite <- (apply_fun_graph J
+        (fun al:set => homomorphism_image (apply_fun Gfam al) (apply_fun ifam al)) alpha HalphaJ).
+      exact Hx0Img. }
+    apply (ReplE_impred (apply_fun Gfam alpha) (apply_fun (apply_fun ifam alpha)) x0 Hx0Img2).
+    let z'. assume Hz'Gfam. assume Hx0Eq.
+    rewrite Hx0Eq.
+    rewrite ((andER
+      (group_homomorphism G multG H multH h2)
+      (forall al:set, al :e J -> forall z0:set, z0 :e apply_fun Gfam al ->
+        apply_fun h2 (apply_fun (apply_fun ifam al) z0) =
+        apply_fun (apply_fun (graph J (fun al0:set => graph (apply_fun Gfam al0) (fun z1:set =>
+          apply_fun (apply_fun hfam' al0) (apply_fun (apply_fun ifam al0) z1)))) al) z0)
+      Hh2_split) alpha HalphaJ z' Hz'Gfam).
+    rewrite (apply_fun_apply_fun_graph J
+      (fun al0:set => graph (apply_fun Gfam al0) (fun z1:set =>
+        apply_fun (apply_fun hfam' al0) (apply_fun (apply_fun ifam al0) z1)))
+      alpha z' HalphaJ).
+    exact (apply_fun_graph (apply_fun Gfam alpha) (fun z1:set =>
+      apply_fun (apply_fun hfam' alpha) (apply_fun (apply_fun ifam alpha) z1)) z' Hz'Gfam).
+Qed.
 
 (** from S67 Thm 67.6 (line 2671 in algtop.tex): uniqueness of direct sums **)
 (** LATEX VERSION: If G and G' are both external direct sums of {G_alpha} via **)
