@@ -69313,7 +69313,6 @@ Admitted. (** was qed but depends on unproved lemma54_2_homotopy_lifting - chang
 (** and are path homotopic. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 97 **)
-(** Lock Dave 1771476232 **)
 Theorem thm54_3_homotopic_lifts : forall E Te B Tb p e0 b0 b1 f g:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = b0 ->
@@ -70271,7 +70270,6 @@ Definition lifting_correspondence : set -> set -> set -> set -> set -> set -> se
 (** If E is simply connected, phi is bijective. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 107 **)
-(** Lock Dave 1771476232 **)
 Theorem thm54_4_lifting_correspondence_surjective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   path_connected_space E Te ->
@@ -78138,6 +78136,175 @@ claim HphiSelAtGenSuccPowers :
           HpsiPosEqE)
         (p = q)).
   }
+  claim HpsiEqNegSuccIndex :
+    forall p q:set, p :e omega -> q :e omega ->
+      apply_fun psi (minus_SNo (ordsucc p)) =
+      apply_fun psi (minus_SNo (ordsucc q)) ->
+      p = q.
+  {
+    let p q.
+    assume HpO HqO HpsiEqNeg.
+    set sp := ordsucc p.
+    set sq := ordsucc q.
+    set d := add_SNo (minus_SNo sp) sq.
+    claim HspInt : sp :e int.
+    {
+      exact (Subq_omega_int
+        sp
+        (omega_ordsucc p HpO)).
+    }
+    claim HsqInt : sq :e int.
+    {
+      exact (Subq_omega_int
+        sq
+        (omega_ordsucc q HqO)).
+    }
+    claim HdInt : d :e int.
+    {
+      exact (int_add_SNo
+        (minus_SNo sp)
+        (int_minus_SNo sp HspInt)
+        sq
+        HsqInt).
+    }
+    claim HpsiDiffEqE : apply_fun psi d = e.
+    {
+      claim HpsiMulRaw :
+        apply_fun psi (apply_fun integers_group_mult (minus_SNo sp, sq)) =
+        apply_fun mult (apply_fun psi (minus_SNo sp), apply_fun psi sq).
+      {
+        exact (group_homomorphism_mult_rule
+          int
+          integers_group_mult
+          G
+          mult
+          psi
+          (minus_SNo sp)
+          sq
+          HpsiHom
+          (int_minus_SNo sp HspInt)
+          HsqInt).
+      }
+      claim HpsiMulD :
+        apply_fun psi d =
+        apply_fun mult (apply_fun psi (minus_SNo sp), apply_fun psi sq).
+      {
+        rewrite <- (HintMultEval
+          (minus_SNo sp)
+          sq
+          (int_minus_SNo sp HspInt)
+          HsqInt).
+        exact HpsiMulRaw.
+      }
+      claim HpsiSqG : apply_fun psi sq :e G.
+      {
+        exact (HpsiFn
+          sq
+          HsqInt).
+      }
+      claim HrhsEqE :
+        apply_fun mult (apply_fun psi (minus_SNo sp), apply_fun psi sq) = e.
+      {
+        rewrite HpsiEqNeg.
+        rewrite (HpsiInvInt
+          sq
+          HsqInt).
+        apply (and6E
+          (function_on mult (setprod G G) G)
+          (function_on inv G G)
+          (e :e G)
+          (forall a b c:set, a :e G -> b :e G -> c :e G ->
+            apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+          (forall a:set, a :e G ->
+            apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+          (forall a:set, a :e G ->
+            apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+          Hgrp).
+        assume HmultFn HinvFn HeG' Hassoc Hid HinvLaw.
+        exact (andER
+          (apply_fun mult (apply_fun psi sq, apply_fun inv (apply_fun psi sq)) = e)
+          (apply_fun mult (apply_fun inv (apply_fun psi sq), apply_fun psi sq) = e)
+          (HinvLaw
+            (apply_fun psi sq)
+            HpsiSqG)).
+      }
+      rewrite HpsiMulD.
+      exact HrhsEqE.
+    }
+    apply (int_3_cases
+      d
+      HdInt
+      (p = q)).
+    - let r.
+      assume HrO HdNeg.
+      claim HpsiNegEqE :
+        apply_fun psi (minus_SNo (ordsucc r)) = e.
+      {
+        rewrite <- HdNeg.
+        exact HpsiDiffEqE.
+      }
+      exact (FalseE
+        ((HpsiNegSuccNeE
+          r
+          HrO)
+          HpsiNegEqE)
+        (p = q)).
+    - assume Hd0.
+      claim HnegspPlusSq0 :
+        add_SNo sq (minus_SNo sp) = 0.
+      {
+        claim HsqS : SNo sq.
+        {
+          exact (int_SNo
+            sq
+            HsqInt).
+        }
+        claim HnegspS : SNo (minus_SNo sp).
+        {
+          exact (int_SNo
+            (minus_SNo sp)
+            (int_minus_SNo sp HspInt)).
+        }
+        rewrite <- (add_SNo_com
+          (minus_SNo sp)
+          sq
+          HnegspS
+          HsqS).
+        exact Hd0.
+      }
+      claim HsqEqSp : sq = sp.
+      {
+        exact (HintAddMinusEq0
+          sq
+          sp
+          HsqInt
+          HspInt
+          HnegspPlusSq0).
+      }
+      claim HqEqP : q = p.
+      {
+        exact (ordsucc_inj
+          q
+          p
+          HsqEqSp).
+      }
+      symmetry.
+      exact HqEqP.
+    - let r.
+      assume HrO HdPos.
+      claim HpsiPosEqE :
+        apply_fun psi (ordsucc r) = e.
+      {
+        rewrite <- HdPos.
+        exact HpsiDiffEqE.
+      }
+      exact (FalseE
+        ((HpsiPosSuccNeE
+          r
+          HrO)
+          HpsiPosEqE)
+        (p = q)).
+  }
   (** TODO Bob: finish uniqueness argument using psi-image equalities and HnoPowAtSuccBoth. **)
   admit.
 }
@@ -79496,7 +79663,6 @@ Admitted.
 (** then alpha_tilde . beta_tilde is a lifting of alpha . beta. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
 (** Bounty 37 **)
-(** Lock Dave 1771476232 **)
 Theorem ex54_3_lift_of_product : forall E Te B Tb p e0 alpha beta:set,
   covering_map E Te B Tb p -> e0 :e E ->
   continuous_map unit_interval unit_interval_topology B Tb alpha ->
