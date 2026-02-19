@@ -77010,6 +77010,195 @@ claim HphiSelRep :
   rewrite HnEqEps.
   exact HEpsPg.
 }
+claim HphiSelRepNatNonzero :
+  forall g n:set, g :e G -> apply_fun phi_sel g = n ->
+    n :e omega -> n <> 0 ->
+    g = group_power_nat mult e x n.
+{
+  let g n.
+  assume HgG HphiEq HnO HnNe0.
+  claim Hrep :
+    n :e int /\
+      ((n :e omega /\ g = group_power_nat mult e x n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+         g = group_power_nat mult e (apply_fun inv x) (ordsucc m))).
+  {
+    exact (HphiSelRep
+      g
+      n
+      HgG
+      HphiEq).
+  }
+  claim Hcases :
+    (n :e omega /\ g = group_power_nat mult e x n) \/
+    (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+      g = group_power_nat mult e (apply_fun inv x) (ordsucc m)).
+  {
+    exact (andER
+      (n :e int)
+      ((n :e omega /\ g = group_power_nat mult e x n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+         g = group_power_nat mult e (apply_fun inv x) (ordsucc m)))
+      Hrep).
+  }
+  apply Hcases.
+  - assume HnatCase.
+    exact (andER
+      (n :e omega)
+      (g = group_power_nat mult e x n)
+      HnatCase).
+  - assume HnegCase.
+    apply HnegCase.
+    let m.
+    assume HmPack.
+    claim HmO : m :e omega.
+    {
+      exact (andEL
+        (m :e omega)
+        (n = minus_SNo (ordsucc m))
+        (andEL
+          (m :e omega /\ n = minus_SNo (ordsucc m))
+          (g = group_power_nat mult e (apply_fun inv x) (ordsucc m))
+          HmPack)).
+    }
+    claim HnNeg : n = minus_SNo (ordsucc m).
+    {
+      exact (andER
+        (m :e omega)
+        (n = minus_SNo (ordsucc m))
+        (andEL
+          (m :e omega /\ n = minus_SNo (ordsucc m))
+          (g = group_power_nat mult e (apply_fun inv x) (ordsucc m))
+          HmPack)).
+    }
+    claim Hnnm :
+      n <> minus_SNo (ordsucc m).
+    {
+      exact (nat_nonzero_not_minus_succ_cyclic_helper
+        n
+        m
+        HnO
+        HnNe0
+        HmO).
+    }
+    exact (FalseE
+      (Hnnm HnNeg)
+      (g = group_power_nat mult e x n)).
+}
+claim HphiSelRepZero :
+  forall g:set, g :e G -> apply_fun phi_sel g = 0 -> g = e.
+{
+  let g.
+  assume HgG Hphi0.
+  claim Hrep :
+    0 :e int /\
+      ((0 :e omega /\ g = group_power_nat mult e x 0) \/
+       (exists m:set, m :e omega /\ 0 = minus_SNo (ordsucc m) /\
+         g = group_power_nat mult e (apply_fun inv x) (ordsucc m))).
+  {
+    exact (HphiSelRep
+      g
+      0
+      HgG
+      Hphi0).
+  }
+  claim Hcases :
+    (0 :e omega /\ g = group_power_nat mult e x 0) \/
+    (exists m:set, m :e omega /\ 0 = minus_SNo (ordsucc m) /\
+      g = group_power_nat mult e (apply_fun inv x) (ordsucc m)).
+  {
+    exact (andER
+      (0 :e int)
+      ((0 :e omega /\ g = group_power_nat mult e x 0) \/
+       (exists m:set, m :e omega /\ 0 = minus_SNo (ordsucc m) /\
+         g = group_power_nat mult e (apply_fun inv x) (ordsucc m)))
+      Hrep).
+  }
+  apply Hcases.
+  - assume HnatCase.
+    claim Hg0 :
+      g = group_power_nat mult e x 0.
+    {
+      exact (andER
+        (0 :e omega)
+        (g = group_power_nat mult e x 0)
+        HnatCase).
+    }
+    rewrite Hg0.
+    exact (nat_primrec_0
+      e
+      (fun _ r => apply_fun mult (x, r))).
+  - assume HnegCase.
+    apply HnegCase.
+    let m.
+    assume HmPack.
+    claim HmO : m :e omega.
+    {
+      exact (andEL
+        (m :e omega)
+        (0 = minus_SNo (ordsucc m))
+        (andEL
+          (m :e omega /\ 0 = minus_SNo (ordsucc m))
+          (g = group_power_nat mult e (apply_fun inv x) (ordsucc m))
+          HmPack)).
+    }
+    claim H0Neg : 0 = minus_SNo (ordsucc m).
+    {
+      exact (andER
+        (m :e omega)
+        (0 = minus_SNo (ordsucc m))
+        (andEL
+          (m :e omega /\ 0 = minus_SNo (ordsucc m))
+          (g = group_power_nat mult e (apply_fun inv x) (ordsucc m))
+          HmPack)).
+    }
+    claim HsuccmO : ordsucc m :e omega.
+    {
+      exact (omega_ordsucc m HmO).
+    }
+    claim HsuccmInt : ordsucc m :e int.
+    {
+      exact (Subq_omega_int
+        (ordsucc m)
+        HsuccmO).
+    }
+    claim HsuccmS : SNo (ordsucc m).
+    {
+      exact (int_SNo
+        (ordsucc m)
+        HsuccmInt).
+    }
+    claim H0EqSucc : minus_SNo 0 = ordsucc m.
+    {
+      claim Htmp : minus_SNo 0 = minus_SNo (minus_SNo (ordsucc m)).
+      {
+        rewrite H0Neg.
+        reflexivity.
+      }
+      claim Hinvol : minus_SNo (minus_SNo (ordsucc m)) = ordsucc m.
+      {
+        exact (minus_SNo_invol
+          (ordsucc m)
+          HsuccmS).
+      }
+      rewrite <- Hinvol.
+      exact Htmp.
+    }
+    claim H0EqSucc0 : 0 = ordsucc m.
+    {
+      rewrite <- minus_SNo_0.
+      exact H0EqSucc.
+    }
+    claim HsuccEq0 : ordsucc m = 0.
+    {
+      rewrite <- H0EqSucc0.
+      reflexivity.
+    }
+    exact (neq_ordsucc_0
+      m
+      HsuccEq0
+      (g = e)).
+}
 claim HphiSelIso : group_isomorphism G mult int integers_group_mult phi_sel.
 {
   claim HphiSelHom : group_homomorphism G mult int integers_group_mult phi_sel.
