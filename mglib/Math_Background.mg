@@ -123921,7 +123921,75 @@ claim Hcore :
                                                              X Tx x0
                                                              (graph U (fun x:set => x)))
                                                            u2))).
-                                            admit. (** pending: close exhaustive final branch (all U/V 3-term patterns excluded) **)
+                                            (** General loop decomposition via Lebesgue number **)
+                                            (** Step 1: Metric and compactness on unit interval **)
+                                            claim HmetI : metric_on unit_interval R_bounded_metric.
+                                            { exact R_bounded_metric_is_metric_on_unit_interval. }
+                                            claim HmetTopI : metric_topology unit_interval R_bounded_metric = unit_interval_topology.
+                                            { exact metric_topology_unit_interval_eq_I_topology. }
+                                            claim HcompMetI : compact_space unit_interval (metric_topology unit_interval R_bounded_metric).
+                                            {
+                                              rewrite HmetTopI.
+                                              exact unit_interval_compact_axiom.
+                                            }
+                                            claim HseqI : sequentially_compact unit_interval (metric_topology unit_interval R_bounded_metric).
+                                            {
+                                              exact (iffEL
+                                                (compact_space unit_interval (metric_topology unit_interval R_bounded_metric))
+                                                (sequentially_compact unit_interval (metric_topology unit_interval R_bounded_metric))
+                                                (compact_metric_equivalences unit_interval R_bounded_metric HmetI)
+                                                HcompMetI).
+                                            }
+                                            (** Step 2: Convert open cover to metric topology **)
+                                            claim HcovMetric : open_cover_of unit_interval (metric_topology unit_interval R_bounded_metric)
+                                              (UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V)).
+                                            {
+                                              rewrite HmetTopI.
+                                              exact HcoverPrePair.
+                                            }
+                                            (** Step 3: Apply Lebesgue number lemma **)
+                                            claim HlebEx : exists N:set, N :e omega /\
+                                              lebesgue_number_metric unit_interval R_bounded_metric
+                                                (UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V))
+                                                (eps_ N).
+                                            {
+                                              exact (sequentially_compact_metric_has_lebesgue_number_eps
+                                                unit_interval
+                                                R_bounded_metric
+                                                (UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V))
+                                                HmetI
+                                                HseqI
+                                                HcovMetric).
+                                            }
+                                            apply HlebEx.
+                                            let Nleb.
+                                            assume HNlebPack.
+                                            claim HNlebOmega : Nleb :e omega.
+                                            {
+                                              exact (andEL
+                                                (Nleb :e omega)
+                                                (lebesgue_number_metric unit_interval R_bounded_metric
+                                                  (UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V))
+                                                  (eps_ Nleb))
+                                                HNlebPack).
+                                            }
+                                            claim Hleb : lebesgue_number_metric unit_interval R_bounded_metric
+                                              (UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V))
+                                              (eps_ Nleb).
+                                            {
+                                              exact (andER
+                                                (Nleb :e omega)
+                                                (lebesgue_number_metric unit_interval R_bounded_metric
+                                                  (UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V))
+                                                  (eps_ Nleb))
+                                                HNlebPack).
+                                            }
+                                            (** Step 4: Lebesgue number tells us: for every t in [0,1],
+                                                there exists W in {preU, preV} with B(t, eps_Nleb) c= W.
+                                                Combined with finite ball cover, this gives us
+                                                a finite decomposition of [0,1] into pieces each in preU or preV. **)
+                                            (** Use this to construct the word decomposition. **)
+                                            admit. (** TODO Alice: complete loop decomposition from Lebesgue number **)
 }
 exact Hcore.
 Admitted.
