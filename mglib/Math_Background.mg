@@ -1,5 +1,5 @@
 (** Balance Alice 3269 **)
-(** Balance Bob 3062 **)
+(** Balance Bob 3043 **)
 (** Balance Charlie 1220 **)
 (** Balance Dave 1551 **)
 
@@ -136777,6 +136777,17 @@ apply (and5E
         n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
   Hfp).
 assume Hgrp Hsub Hdisjoint Hgen Huniq.
+apply (and6E
+  (function_on multG (setprod G G) G)
+  (function_on invG G G)
+  (eG :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun multG (apply_fun multG (x, y), z) = apply_fun multG (x, apply_fun multG (y, z)))
+  (forall x:set, x :e G -> apply_fun multG (eG, x) = x /\ apply_fun multG (x, eG) = x)
+  (forall x:set, x :e G ->
+    apply_fun multG (x, apply_fun invG x) = eG /\ apply_fun multG (apply_fun invG x, x) = eG)
+  Hgrp).
+assume HmultGF HinvGF HeGG HassocG HidG HinvG.
 claim Hefam_G : apply_fun efam al :e G.
 {
   apply (and4E
@@ -136797,11 +136808,182 @@ apply (Huniq
   Hefam_ne).
 let nw.
 assume Hex_xs.
-(** Remaining work:
-    exclude all reduced-word possibilities for efam(al) using subgroup disjointness
-    and reduced-word uniqueness. The full case analysis is currently carried out
-    inline in lemma68_1's Hefam_contra branch and should be lifted here. **)
-admit.
+apply Hex_xs.
+let xsw.
+assume Hcomb.
+apply (and4E
+  (reduced_word J Gfam efam nw xsw)
+  (nw <> 0)
+  (word_product multG eG xsw nw = apply_fun efam al)
+  (forall n' xs':set,
+    reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+    word_product multG eG xs' n' = apply_fun efam al ->
+    nw = n' /\ (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs' i))
+  Hcomb).
+assume Hred Hnw_ne0 Hwp_xsw Huniq_xsw.
+apply (and3E
+  (nw :e omega)
+  (forall i:set, i :e nw ->
+    exists alpha:set, alpha :e J /\
+      apply_fun xsw i :e apply_fun Gfam alpha /\
+      apply_fun xsw i <> apply_fun efam alpha)
+  (forall i:set, i :e nw -> ordsucc i :e nw ->
+    forall alpha beta:set, alpha :e J -> beta :e J ->
+      apply_fun xsw i :e apply_fun Gfam alpha ->
+      apply_fun xsw (ordsucc i) :e apply_fun Gfam beta ->
+      alpha <> beta)
+  Hred).
+assume Hnw_om Helem Hadj.
+claim Hnw_nat : nat_p nw.
+{
+  exact (omega_nat_p nw Hnw_om).
+}
+apply (nat_inv nw Hnw_nat).
+- assume Hnw0.
+  exact (Hnw_ne0 Hnw0).
+- assume Hm_ex.
+  apply Hm_ex.
+  let m.
+  assume Hm_comb.
+  claim Hm_nat : nat_p m.
+  {
+    exact (andEL
+      (nat_p m)
+      (nw = ordsucc m)
+      Hm_comb).
+  }
+  claim Hnw_eq : nw = ordsucc m.
+  {
+    exact (andER
+      (nat_p m)
+      (nw = ordsucc m)
+      Hm_comb).
+  }
+  claim H0_in_nw : 0 :e nw.
+  {
+    rewrite Hnw_eq.
+    exact (nat_0_in_ordsucc
+      m
+      Hm_nat).
+  }
+  apply (Helem
+    0
+    H0_in_nw).
+  let alpha0.
+  assume Hal0_pack.
+  apply (and3E
+    (alpha0 :e J)
+    (apply_fun xsw 0 :e apply_fun Gfam alpha0)
+    (apply_fun xsw 0 <> apply_fun efam alpha0)
+    Hal0_pack).
+  assume Hal0 Hxs0_Gal0 Hxs0_ne_efam0.
+  claim Hwp1_eq_xs0 : word_product multG eG xsw (ordsucc 0) = apply_fun xsw 0.
+  {
+    claim HwpS :
+      word_product multG eG xsw (ordsucc 0) =
+      apply_fun multG (word_product multG eG xsw 0, apply_fun xsw 0).
+    {
+      exact (nat_primrec_S
+        eG
+        (fun i r => apply_fun multG (r, apply_fun xsw i))
+        0
+        nat_0).
+    }
+    claim Hwp0 : word_product multG eG xsw 0 = eG.
+    {
+      exact (nat_primrec_0
+        eG
+        (fun i r => apply_fun multG (r, apply_fun xsw i))).
+    }
+    claim Hxs0_G : apply_fun xsw 0 :e G.
+    {
+      apply (and4E
+        (apply_fun Gfam alpha0 c= G)
+        (eG :e apply_fun Gfam alpha0)
+        (forall x y:set, x :e apply_fun Gfam alpha0 -> y :e apply_fun Gfam alpha0 ->
+          apply_fun multG (x, y) :e apply_fun Gfam alpha0)
+        (forall x:set, x :e apply_fun Gfam alpha0 -> apply_fun invG x :e apply_fun Gfam alpha0)
+        (Hsub alpha0 Hal0)).
+      assume HsubGal0 _ _ _.
+      exact (HsubGal0
+        (apply_fun xsw 0)
+        Hxs0_Gal0).
+    }
+    rewrite HwpS.
+    rewrite Hwp0.
+    exact (andEL
+      (apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0)
+      (apply_fun multG (apply_fun xsw 0, eG) = apply_fun xsw 0)
+      (HidG
+        (apply_fun xsw 0)
+        Hxs0_G)).
+  }
+  apply (xm (m = 0)).
+  + assume Hm0.
+    claim Hxs0_efam : apply_fun xsw 0 = apply_fun efam al.
+    {
+      claim Hnw_1 : nw = ordsucc 0.
+      {
+        rewrite Hnw_eq.
+        rewrite Hm0.
+        reflexivity.
+      }
+      claim Hwp_nw : word_product multG eG xsw (ordsucc 0) = apply_fun efam al.
+      {
+        rewrite <- Hnw_1.
+        exact Hwp_xsw.
+      }
+      claim Hwp_sym : apply_fun xsw 0 = word_product multG eG xsw (ordsucc 0).
+      {
+        symmetry.
+        exact Hwp1_eq_xs0.
+      }
+      exact (eq_i_tra
+        (apply_fun xsw 0)
+        (word_product multG eG xsw (ordsucc 0))
+        (apply_fun efam al)
+        Hwp_sym
+        Hwp_nw).
+    }
+    apply (xm (alpha0 = al)).
+    * assume Hal0eq.
+      claim Habs : apply_fun xsw 0 = apply_fun efam alpha0.
+      {
+        rewrite Hal0eq.
+        exact Hxs0_efam.
+      }
+      exact (Hxs0_ne_efam0
+        Habs).
+    * assume Hal0ne.
+      claim Hxs0_Gal : apply_fun xsw 0 :e apply_fun Gfam al.
+      {
+        rewrite Hxs0_efam.
+        exact Hefam_Gal.
+      }
+      claim Hxs0_eG : apply_fun xsw 0 = eG.
+      {
+        exact (Hdisjoint
+          alpha0
+          al
+          Hal0
+          Hal
+          Hal0ne
+          (apply_fun xsw 0)
+          Hxs0_Gal0
+          Hxs0_Gal).
+      }
+      claim Hxs0_ne_eG : apply_fun xsw 0 <> eG.
+      {
+        rewrite Hxs0_efam.
+        exact Hefam_ne.
+      }
+      exact (Hxs0_ne_eG
+        Hxs0_eG).
+  + assume Hm_ne0.
+    (** Remaining work:
+        handle the nw >= 2 branch by contradiction via reduced-word uniqueness
+        (currently only partially ported from lemma68_1's inline Hefam_contra proof). **)
+    admit.
 Admitted.
 
 (** from S68 Lem 68.1 (line 2781 in algtop.tex): extension condition for free products **)
@@ -136809,7 +136991,8 @@ Admitted.
 (** homomorphisms h_alpha: G_alpha -> H, there exists a unique h: G -> H whose restriction **)
 (** to G_alpha equals h_alpha. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 182 **)
+(** Bounty 201 **)
+(** Lock Bob 1771569613 **)
 Theorem lemma68_1_extension_condition_free_product :
   forall G multG eG invG J Gfam efam:set,
   free_product_of_subgroups G multG eG invG J Gfam efam ->
