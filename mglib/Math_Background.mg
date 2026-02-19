@@ -135290,22 +135290,99 @@ claim Hext : forall alpha:set, alpha :e J ->
   assume Hxe_mem : forall i:set, i :e n_e -> apply_fun xs_e i :e apply_fun Gfam_img (apply_fun alphas_e i).
   assume Hae_dist : forall i j:set, i :e n_e -> j :e n_e -> i <> j -> apply_fun alphas_e i <> apply_fun alphas_e j.
   assume Hg_eq_e : g = nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun xs_e i)) n_e.
-  (** Step E: Apply uniqueness to pack_c (n1=1, a1=ac, x1=xc) and pack_e (n2=n_e, a2=alphas_e, x2=xs_e) **)
-  (** For each beta in J, we get the three-part agreement **)
-  claim Huniq_applied : forall beta:set, beta :e J ->
-    (forall i j:set, i :e 1 -> j :e n_e ->
-      apply_fun ac i = beta -> apply_fun alphas_e j = beta -> apply_fun xc i = apply_fun xs_e j) /\
-    ((exists i:set, i :e 1 /\ apply_fun ac i = beta) ->
+  (** Step D2: Unpack rep_pred from Hrep_c **)
+  claim Hrep_c2 : (pack_c 0) :e omega /\ (pack_c 0) <> 0 /\
+      function_on ((pack_c 1) 0) (pack_c 0) J /\
+      function_on ((pack_c 1) 1) (pack_c 0) G /\
+      (forall i:set, i :e (pack_c 0) ->
+        apply_fun ((pack_c 1) 1) i :e apply_fun Gfam_img (apply_fun ((pack_c 1) 0) i)) /\
+      (forall i j:set, i :e (pack_c 0) -> j :e (pack_c 0) -> i <> j ->
+        apply_fun ((pack_c 1) 0) i <> apply_fun ((pack_c 1) 0) j) /\
+      g = nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun ((pack_c 1) 1) i)) (pack_c 0).
+  { exact Hrep_c. }
+  apply (and7E
+    ((pack_c 0) :e omega) ((pack_c 0) <> 0)
+    (function_on ((pack_c 1) 0) (pack_c 0) J) (function_on ((pack_c 1) 1) (pack_c 0) G)
+    (forall i:set, i :e (pack_c 0) ->
+      apply_fun ((pack_c 1) 1) i :e apply_fun Gfam_img (apply_fun ((pack_c 1) 0) i))
+    (forall i j:set, i :e (pack_c 0) -> j :e (pack_c 0) -> i <> j ->
+      apply_fun ((pack_c 1) 0) i <> apply_fun ((pack_c 1) 0) j)
+    (g = nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun ((pack_c 1) 1) i)) (pack_c 0))
+    Hrep_c2).
+  assume Hnc_omega : (pack_c 0) :e omega.
+  assume Hnc_ne0 : (pack_c 0) <> 0.
+  assume Hac_fn2 : function_on ((pack_c 1) 0) (pack_c 0) J.
+  assume Hxc_fn2 : function_on ((pack_c 1) 1) (pack_c 0) G.
+  assume Hxc_mem2 : forall i:set, i :e (pack_c 0) ->
+    apply_fun ((pack_c 1) 1) i :e apply_fun Gfam_img (apply_fun ((pack_c 1) 0) i).
+  assume Hac_dist2 : forall i j:set, i :e (pack_c 0) -> j :e (pack_c 0) -> i <> j ->
+    apply_fun ((pack_c 1) 0) i <> apply_fun ((pack_c 1) 0) j.
+  assume Hg_eq_c : g = nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun ((pack_c 1) 1) i)) (pack_c 0).
+  (** Step E: Apply uniqueness to pack_c and pack_e representations **)
+  claim Huniq_applied_raw : forall beta:set, beta :e J ->
+    (forall i j:set, i :e (pack_c 0) -> j :e n_e ->
+      apply_fun ((pack_c 1) 0) i = beta -> apply_fun alphas_e j = beta -> apply_fun ((pack_c 1) 1) i = apply_fun xs_e j) /\
+    ((exists i:set, i :e (pack_c 0) /\ apply_fun ((pack_c 1) 0) i = beta) ->
      ~(exists j:set, j :e n_e /\ apply_fun alphas_e j = beta) ->
-     forall i:set, i :e 1 -> apply_fun ac i = beta -> apply_fun xc i = eG) /\
-    (~(exists i:set, i :e 1 /\ apply_fun ac i = beta) ->
+     forall i:set, i :e (pack_c 0) -> apply_fun ((pack_c 1) 0) i = beta -> apply_fun ((pack_c 1) 1) i = eG) /\
+    (~(exists i:set, i :e (pack_c 0) /\ apply_fun ((pack_c 1) 0) i = beta) ->
      (exists j:set, j :e n_e /\ apply_fun alphas_e j = beta) ->
      forall j:set, j :e n_e -> apply_fun alphas_e j = beta -> apply_fun xs_e j = eG).
-  { admit. (** TODO: apply Huniq_DS to g with pack_c and pack_e representations **) }
+  { exact (Huniq_DS g HgG
+      (pack_c 0) n_e Hnc_omega Hne_omega Hnc_ne0 Hne_ne0
+      ((pack_c 1) 0) alphas_e Hac_fn2 Hae_fn
+      ((pack_c 1) 1) xs_e Hxc_fn2 Hxe_fn
+      Hxc_mem2 Hxe_mem Hac_dist2 Hae_dist
+      Hg_eq_c Hg_eq_e). }
   (** Step F: For each j in n_e with alphas_e(j) != alpha, xs_e(j) = eG **)
   claim Hxe_trivial : forall j:set, j :e n_e -> apply_fun alphas_e j <> alpha ->
     apply_fun xs_e j = eG.
-  { admit. (** follows from Huniq_applied clause 3 **) }
+  { let j. assume Hj : j :e n_e. assume Hneq : apply_fun alphas_e j <> alpha.
+    set beta := apply_fun alphas_e j.
+    claim Hbeta_J : beta :e J. { exact (Hae_fn j Hj). }
+    claim Huniq_beta : (forall i0 j0:set, i0 :e (pack_c 0) -> j0 :e n_e ->
+        apply_fun ((pack_c 1) 0) i0 = beta -> apply_fun alphas_e j0 = beta -> apply_fun ((pack_c 1) 1) i0 = apply_fun xs_e j0) /\
+      ((exists i0:set, i0 :e (pack_c 0) /\ apply_fun ((pack_c 1) 0) i0 = beta) ->
+       ~(exists j0:set, j0 :e n_e /\ apply_fun alphas_e j0 = beta) ->
+       forall i0:set, i0 :e (pack_c 0) -> apply_fun ((pack_c 1) 0) i0 = beta -> apply_fun ((pack_c 1) 1) i0 = eG) /\
+      (~(exists i0:set, i0 :e (pack_c 0) /\ apply_fun ((pack_c 1) 0) i0 = beta) ->
+       (exists j0:set, j0 :e n_e /\ apply_fun alphas_e j0 = beta) ->
+       forall j0:set, j0 :e n_e -> apply_fun alphas_e j0 = beta -> apply_fun xs_e j0 = eG).
+    { exact (Huniq_applied_raw beta Hbeta_J). }
+    (** Extract clause 3 **)
+    apply (and3E
+      (forall i0 j0:set, i0 :e (pack_c 0) -> j0 :e n_e ->
+        apply_fun ((pack_c 1) 0) i0 = beta -> apply_fun alphas_e j0 = beta -> apply_fun ((pack_c 1) 1) i0 = apply_fun xs_e j0)
+      ((exists i0:set, i0 :e (pack_c 0) /\ apply_fun ((pack_c 1) 0) i0 = beta) ->
+       ~(exists j0:set, j0 :e n_e /\ apply_fun alphas_e j0 = beta) ->
+       forall i0:set, i0 :e (pack_c 0) -> apply_fun ((pack_c 1) 0) i0 = beta -> apply_fun ((pack_c 1) 1) i0 = eG)
+      (~(exists i0:set, i0 :e (pack_c 0) /\ apply_fun ((pack_c 1) 0) i0 = beta) ->
+       (exists j0:set, j0 :e n_e /\ apply_fun alphas_e j0 = beta) ->
+       forall j0:set, j0 :e n_e -> apply_fun alphas_e j0 = beta -> apply_fun xs_e j0 = eG)
+      Huniq_beta).
+    assume _. assume _. assume Hclause3.
+    (** beta doesn't appear in pack_c: pack_c has only index 0 with ac(0) = alpha != beta **)
+    claim Hno_beta_in_c : ~(exists i0:set, i0 :e (pack_c 0) /\ apply_fun ((pack_c 1) 0) i0 = beta).
+    { assume Hex. apply Hex. let i0. assume Hi0_conj.
+      apply Hi0_conj. assume Hi0_in : i0 :e (pack_c 0). assume Hi0_eq : apply_fun ((pack_c 1) 0) i0 = beta.
+      (** Transport i0 membership to i0 :e 1 using Hpc0 **)
+      claim Hi0_1 : i0 :e 1. { exact (mem_eqR i0 (pack_c 0) 1 Hpc0 Hi0_in). }
+      claim Hi0_0 : i0 = 0.
+      { apply (ordsuccE 0 i0 Hi0_1).
+        - assume H : i0 :e 0. exact (FalseE (EmptyE i0 H) (i0 = 0)).
+        - assume H : i0 = 0. exact H. }
+      (** (pack_c 1) 0 = ac (by Hpc10), ac i0 = ac 0 = alpha **)
+      claim Hbeta_is_alpha : beta = alpha.
+      { rewrite <- Hi0_eq. rewrite Hi0_0.
+        claim Hpc10_eval : apply_fun ((pack_c 1) 0) 0 = apply_fun ac 0.
+        { rewrite Hpc10. reflexivity. }
+        rewrite Hpc10_eval. exact Hac_eval. }
+      exact (Hneq Hbeta_is_alpha). }
+    (** beta appears in pack_e at position j **)
+    claim Hbeta_in_e : exists j0:set, j0 :e n_e /\ apply_fun alphas_e j0 = beta.
+    { witness j. apply andI. - exact Hj. - reflexivity. }
+    claim Hrefl : apply_fun alphas_e j = beta. { reflexivity. }
+    exact (Hclause3 Hno_beta_in_c Hbeta_in_e j Hj Hrefl). }
   (** Step G: map_rep pack_e = hfam(alpha)(x) **)
   claim Hresult : map_rep pack_e = apply_fun (apply_fun hfam alpha) x.
   { admit. (** TODO: use Huniq_applied, Hxe_trivial, induction on n_e **) }
