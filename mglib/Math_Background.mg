@@ -66865,6 +66865,41 @@ exact (union_connected_common_point
   Hcommon).
 Qed.
 
+(** Infrastructure: continuous image of an L-shape in I^2 is connected **)
+(** Proven Bob **)
+Theorem lemma54_2_L_shape_image_connected : forall E Te a b h:set,
+  a :e unit_interval ->
+  b :e unit_interval ->
+  continuous_map
+    (Union (UPair (setprod {a} unit_interval) (setprod unit_interval {b})))
+    (subspace_topology
+      unit_square
+      unit_square_topology
+      (Union (UPair (setprod {a} unit_interval) (setprod unit_interval {b}))))
+    E
+    Te
+    h ->
+  connected_space
+    (image_of h (Union (UPair (setprod {a} unit_interval) (setprod unit_interval {b}))))
+    (subspace_topology
+      E
+      Te
+      (image_of h (Union (UPair (setprod {a} unit_interval) (setprod unit_interval {b}))))).
+let E Te a b h.
+assume Ha Hb Hh.
+exact (continuous_image_connected
+  (Union (UPair (setprod {a} unit_interval) (setprod unit_interval {b})))
+  (subspace_topology
+    unit_square
+    unit_square_topology
+    (Union (UPair (setprod {a} unit_interval) (setprod unit_interval {b}))))
+  E
+  Te
+  h
+  (lemma54_2_L_shape_connected a b Ha Hb)
+  Hh).
+Qed.
+
 (** Infrastructure: existence package for homotopy lifting in Lem 54.2 **)
 Theorem lemma54_2_homotopy_lifting_exists : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
