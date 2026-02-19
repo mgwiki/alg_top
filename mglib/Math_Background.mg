@@ -60441,7 +60441,6 @@ Qed.
 (** beginning at b0 has a unique lifting to a path in E beginning at e0. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
 (** Bounty 161 **)
-(** Lock Charlie 1771555973 **)
 Theorem lemma54_1_path_lifting : forall E Te B Tb p e0 f:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun f 0 ->
@@ -72228,7 +72227,6 @@ Definition S1_basepoint : set := (1, 0).
 (** of integers. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
 (** Bounty 267 **)
-(** Lock Charlie 1771544000 **)
 Theorem thm54_5_pi1_circle : exists phi:set,
   group_isomorphism
     (fundamental_group S1 S1_topology S1_basepoint)
