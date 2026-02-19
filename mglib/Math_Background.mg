@@ -140844,7 +140844,69 @@ apply (nat_inv nw Hnw_nat).
                   symmetry.
                   exact Hxsw0_eq_xie0.
                 }
-                admit.
+                apply (xm (m = 0)).
+                {
+                  assume Hm0.
+                  claim Hnw_1 : nw = ordsucc 0.
+                  {
+                    rewrite Hnw_eq.
+                    rewrite Hm0.
+                    reflexivity.
+                  }
+                  claim Hwp_nw_1 : word_product multG eG xsw (ordsucc 0) = apply_fun efam al.
+                  {
+                    rewrite <- Hnw_1.
+                    exact Hwp_xsw.
+                  }
+                  claim Hxs0_efam : apply_fun xsw 0 = apply_fun efam al.
+                  {
+                    claim Hsym_wp1 : apply_fun xsw 0 = word_product multG eG xsw (ordsucc 0).
+                    {
+                      symmetry.
+                      exact Hwp1_eq_xs0.
+                    }
+                    exact (eq_i_tra
+                      (apply_fun xsw 0)
+                      (word_product multG eG xsw (ordsucc 0))
+                      (apply_fun efam al)
+                      Hsym_wp1
+                      Hwp_nw_1).
+                  }
+                  claim Hxs0_Gal : apply_fun xsw 0 :e apply_fun Gfam al.
+                  {
+                    rewrite Hxs0_efam.
+                    exact Hefam_Gal.
+                  }
+                  claim Hal_ne_b0 : al <> beta_0.
+                  {
+                    assume Heq.
+                    claim Hsym : beta_0 = al.
+                    {
+                      symmetry.
+                      exact Heq.
+                    }
+                    exact (Hb0_ne_al
+                      Hsym).
+                  }
+                  claim Hxs0_eG : apply_fun xsw 0 = eG.
+                  {
+                    exact (Hdisjoint
+                      al
+                      beta_0
+                      Hal
+                      Hb0_J
+                      Hal_ne_b0
+                      (apply_fun xsw 0)
+                      Hxs0_Gal
+                      Hxs0_Gb0).
+                  }
+                  exact (Hxs0_ne_eG
+                    Hxs0_eG).
+                }
+                {
+                  assume Hm_ne0.
+                  admit.
+                }
               + assume Hinv_ne_efam.
                 set ie := apply_fun invG (apply_fun efam al).
                 set ie_word := graph 1 (fun _:set => ie).
