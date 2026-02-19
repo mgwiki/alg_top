@@ -73569,6 +73569,149 @@ exact (andI
   Huniq).
 Qed.
 
+(** S54 helper: if one fiber over p(e0) has at least two points, then pi_1(B,p(e0)) is nontrivial. **)
+(** Proven Bob **)
+Theorem s54_pi1_nontrivial_from_two_fiber_points : forall E Te B Tb p e0 e1:set,
+  covering_map E Te B Tb p ->
+  simply_connected E Te ->
+  e0 :e E ->
+  e1 :e E ->
+  apply_fun p e1 = apply_fun p e0 ->
+  e1 <> e0 ->
+  exists cls:set,
+    cls :e fundamental_group B Tb (apply_fun p e0) /\
+    cls <> fundamental_group_id B Tb (apply_fun p e0).
+let E Te B Tb p e0 e1.
+assume Hcov HscE He0 He1 He1Eq He1Ne.
+set G := fundamental_group B Tb (apply_fun p e0).
+set Fib := {x :e E | apply_fun p x = apply_fun p e0}.
+set lc := lifting_correspondence E Te B Tb p e0.
+claim Hbij : bijection G Fib lc.
+{
+  exact (thm54_4_lifting_correspondence_bijective
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    Hcov
+    He0
+    HscE).
+}
+claim Hsur :
+  forall y:set, y :e Fib ->
+    exists x:set, x :e G /\ apply_fun lc x = y /\
+      (forall x':set, x' :e G -> apply_fun lc x' = y -> x' = x).
+{
+  exact (andER
+    (function_on lc G Fib)
+    (forall y:set, y :e Fib ->
+      exists x:set, x :e G /\ apply_fun lc x = y /\
+        (forall x':set, x' :e G -> apply_fun lc x' = y -> x' = x))
+    Hbij).
+}
+claim He0Fib : e0 :e Fib.
+{
+  apply (SepI
+    E
+    (fun z:set => apply_fun p z = apply_fun p e0)
+    e0
+    He0).
+  reflexivity.
+}
+claim He1Fib : e1 :e Fib.
+{
+  apply (SepI
+    E
+    (fun z:set => apply_fun p z = apply_fun p e0)
+    e1
+    He1).
+  exact He1Eq.
+}
+apply (Hsur e0 He0Fib).
+let c0.
+assume Hc0Pack.
+claim Hc0G : c0 :e G.
+{
+  exact (andEL
+    (c0 :e G)
+    (apply_fun lc c0 = e0)
+    (andEL
+      (c0 :e G /\ apply_fun lc c0 = e0)
+      (forall x':set, x' :e G -> apply_fun lc x' = e0 -> x' = c0)
+      Hc0Pack)).
+}
+claim Hc0Map : apply_fun lc c0 = e0.
+{
+  exact (andER
+    (c0 :e G)
+    (apply_fun lc c0 = e0)
+    (andEL
+      (c0 :e G /\ apply_fun lc c0 = e0)
+      (forall x':set, x' :e G -> apply_fun lc x' = e0 -> x' = c0)
+      Hc0Pack)).
+}
+apply (Hsur e1 He1Fib).
+let c1.
+assume Hc1Pack.
+claim Hc1G : c1 :e G.
+{
+  exact (andEL
+    (c1 :e G)
+    (apply_fun lc c1 = e1)
+    (andEL
+      (c1 :e G /\ apply_fun lc c1 = e1)
+      (forall x':set, x' :e G -> apply_fun lc x' = e1 -> x' = c1)
+      Hc1Pack)).
+}
+claim Hc1Map : apply_fun lc c1 = e1.
+{
+  exact (andER
+    (c1 :e G)
+    (apply_fun lc c1 = e1)
+    (andEL
+      (c1 :e G /\ apply_fun lc c1 = e1)
+      (forall x':set, x' :e G -> apply_fun lc x' = e1 -> x' = c1)
+      Hc1Pack)).
+}
+claim Hc0NeC1 : c0 <> c1.
+{
+  assume Hc0c1.
+  claim He0Eq1 : e0 = e1.
+  {
+    rewrite <- Hc0Map.
+    rewrite <- Hc1Map.
+    rewrite Hc0c1.
+    reflexivity.
+  }
+  claim He1Eq0 : e1 = e0.
+  {
+    symmetry.
+    exact He0Eq1.
+  }
+  exact (He1Ne He1Eq0).
+}
+apply (xm (c0 = fundamental_group_id B Tb (apply_fun p e0))).
+- assume Hc0Id.
+  witness c1.
+  apply andI.
+  + exact Hc1G.
+  + assume Hc1Id.
+    claim Hc0EqC1 : c0 = c1.
+    {
+      rewrite Hc0Id.
+      rewrite Hc1Id.
+      reflexivity.
+    }
+    exact (Hc0NeC1 Hc0EqC1).
+- assume Hc0NeId.
+  witness c0.
+  apply andI.
+  + exact Hc0G.
+  + exact Hc0NeId.
+Qed.
+
 (** Infrastructure: the additive group of integers **)
 (** Multiplication is addition of surreal numbers restricted to int **)
 Definition integers_group_mult : set :=
