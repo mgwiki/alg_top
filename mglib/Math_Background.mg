@@ -1,7 +1,7 @@
 (** Balance Alice 3269 **)
 (** Balance Bob 3062 **)
 (** Balance Charlie 1220 **)
-(** Balance Dave 1634 **)
+(** Balance Dave 1551 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -134021,7 +134021,8 @@ Definition quotient_projection : set -> set -> set -> set :=
 (** Conversely, if the groups G_alpha generate G and the extension condition holds, **)
 (** then G is the direct sum of the G_alpha. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
+(** Bounty 182 **)
+(** Lock Dave 1771565305 **)
 Theorem lemma67_1_extension_condition_direct_sum :
   forall G multG eG invG J Gfam:set,
   direct_sum_of_subgroups G multG eG invG J Gfam ->
@@ -134047,7 +134048,8 @@ Admitted.
 (** LATEX VERSION: If the groups G_alpha generate G and the extension condition holds, **)
 (** then G is the direct sum of the G_alpha. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
+(** Bounty 121 **)
+(** Lock Dave 1771565305 **)
 Theorem lemma67_1_converse :
   forall G multG eG invG J Gfam:set,
   subgroups_generate_abelian G multG eG invG J Gfam ->
@@ -134127,7 +134129,8 @@ Definition external_direct_sum : set -> set -> set -> set -> set -> set -> set -
 (** group G and monomorphisms i_alpha: G_alpha -> G such that G is the direct sum **)
 (** of the images i_alpha(G_alpha). **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
+(** Bounty 182 **)
+(** Lock Dave 1771565305 **)
 Theorem thm67_4_existence_external_direct_sum :
   forall J Gfam multfam efam invfam:set,
   (forall alpha:set, alpha :e J ->
@@ -134348,7 +134351,8 @@ Admitted.
 (** LATEX VERSION: If the groups i_alpha(G_alpha) generate G and the extension condition holds, **)
 (** then each i_alpha is a monomorphism and G is the direct sum of the groups i_alpha(G_alpha). **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
+(** Bounty 121 **)
+(** Lock Dave 1771565305 **)
 Theorem lemma67_5_extension_converse :
   forall G multG eG invG J Gfam multfam efam invfam ifam:set,
   abelian_group G multG eG invG ->
@@ -134382,7 +134386,8 @@ Admitted.
 (** i_alpha and i'_alpha respectively, then there is a unique isomorphism **)
 (** phi: G -> G' such that phi o i_alpha = i'_alpha. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
+(** Bounty 97 **)
+(** Lock Dave 1771565305 **)
 Theorem thm67_6_uniqueness_direct_sum :
   forall J Gfam multfam G multG eG invG ifam G' multG' eG' invG' ifam':set,
   abelian_group G multG eG invG ->
@@ -134444,7 +134449,8 @@ Definition free_abelian_group_with_basis : set -> set -> set -> set -> set -> se
 (** group H and any family {y_alpha} of elements of H, there is a unique homomorphism **)
 (** h: G -> H with h(a_alpha) = y_alpha. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
+(** Bounty 97 **)
+(** Lock Dave 1771565305 **)
 Theorem lemma67_7_extension_free_abelian :
   forall G mult e inv J basis:set,
   abelian_group G mult e inv ->
@@ -134470,7 +134476,8 @@ Admitted.
 (** LATEX VERSION: If G is a free abelian group with basis {a_1,...,a_n}, **)
 (** then n is uniquely determined by G. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
+(** Bounty 97 **)
+(** Lock Dave 1771565305 **)
 Theorem thm67_8_rank_well_defined :
   forall G mult e inv n1 n2 basis1 basis2:set,
   free_abelian_group_with_basis G mult e inv n1 basis1 ->
