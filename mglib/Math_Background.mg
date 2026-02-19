@@ -73866,6 +73866,27 @@ claim HgenRep :
           g = group_power_nat mult e (apply_fun inv x) (ordsucc m))))
     HgenX).
 }
+claim HxNeE : x <> e.
+{
+  assume Hxe.
+  claim HfinG : finite G.
+  {
+    exact (generator_identity_implies_finite_cyclic_helper
+      G
+      mult
+      e
+      inv
+      x
+      Hgrp
+      HgenX
+      Hxe).
+  }
+  exact (Hnfin HfinG).
+}
+claim HgrpZ : group_structure int integers_group_mult 0 integers_group_inv.
+{
+  exact integers_group_is_group_cyclic_helper.
+}
 (** TODO Bob: build explicit isomorphism G ~= Z from generator x and nonfiniteness. **)
 admit.
 Admitted.
