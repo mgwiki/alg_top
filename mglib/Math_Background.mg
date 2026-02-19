@@ -140731,7 +140731,148 @@ apply (nat_inv nw Hnw_nat).
                 exact (Hefam_ne
                   Hefam_eG).
               }
-              admit.
+              apply (xm (apply_fun invG (apply_fun efam al) = apply_fun efam al)).
+              + assume Hinv_eq_efam.
+                admit.
+              + assume Hinv_ne_efam.
+                set ie := apply_fun invG (apply_fun efam al).
+                set ie_word := graph 1 (fun _:set => ie).
+                claim Hie_word_0 : apply_fun ie_word 0 = ie.
+                {
+                  exact (apply_fun_graph
+                    1
+                    (fun _:set => ie)
+                    0
+                    (ordsuccI2 0)).
+                }
+                claim Hie_redw1 : reduced_word J Gfam efam 1 ie_word.
+                {
+                  prove 1 :e omega /\
+                    (forall i:set, i :e 1 ->
+                      exists alpha:set, alpha :e J /\
+                        apply_fun ie_word i :e apply_fun Gfam alpha /\
+                        apply_fun ie_word i <> apply_fun efam alpha) /\
+                    (forall i:set, i :e 1 -> ordsucc i :e 1 ->
+                      forall alpha beta:set, alpha :e J -> beta :e J ->
+                        apply_fun ie_word i :e apply_fun Gfam alpha ->
+                        apply_fun ie_word (ordsucc i) :e apply_fun Gfam beta ->
+                        alpha <> beta).
+                  apply and3I.
+                  - exact (nat_p_omega
+                      1
+                      (nat_ordsucc 0 nat_0)).
+                  - let i.
+                    assume Hi.
+                    apply (cases_1
+                      i
+                      Hi
+                      (fun j:set =>
+                        exists alpha:set, alpha :e J /\
+                          apply_fun ie_word j :e apply_fun Gfam alpha /\
+                          apply_fun ie_word j <> apply_fun efam alpha)).
+                    prove exists alpha:set, alpha :e J /\
+                      apply_fun ie_word 0 :e apply_fun Gfam alpha /\
+                      apply_fun ie_word 0 <> apply_fun efam alpha.
+                    witness al.
+                    apply and3I.
+                    + exact Hal.
+                    + rewrite Hie_word_0.
+                      exact Hinv_efam_Gal.
+                    + rewrite Hie_word_0.
+                      exact Hinv_ne_efam.
+                  - let i.
+                    assume Hi Hsi.
+                    let a1 a2.
+                    assume Ha1J Ha2J Hia1 Hia2.
+                    apply (ordsuccE
+                      0
+                      i
+                      Hi).
+                    + assume H0.
+                      exact (FalseE
+                        (EmptyE i H0)
+                        (a1 <> a2)).
+                    + assume Hi0.
+                      claim Heq : ordsucc i = 1.
+                      {
+                        rewrite Hi0.
+                        exact ordsucc_0_eq_1_nat.
+                      }
+                      claim H1in1 : 1 :e 1.
+                      {
+                        exact (eq_subst_mem_rev
+                          (ordsucc i)
+                          1
+                          1
+                          Heq
+                          Hsi).
+                      }
+                      exact (FalseE
+                        (In_irref 1 H1in1)
+                        (a1 <> a2)).
+                }
+                claim Hwp_ie1 : word_product multG eG ie_word 1 = ie.
+                {
+                  prove nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ie_word i)) 1 = ie.
+                  rewrite <- ordsucc_0_eq_1_nat.
+                  rewrite (nat_primrec_S
+                    eG
+                    (fun i r => apply_fun multG (r, apply_fun ie_word i))
+                    0
+                    nat_0).
+                  rewrite (nat_primrec_0
+                    eG
+                    (fun i r => apply_fun multG (r, apply_fun ie_word i))).
+                  rewrite Hie_word_0.
+                  exact (andEL
+                    (apply_fun multG (eG, ie) = ie)
+                    (apply_fun multG (ie, eG) = ie)
+                    (HidG
+                      ie
+                      Hinv_efam_G)).
+                }
+                claim Hie_pack : exists n xs:set,
+                  reduced_word J Gfam efam n xs /\ n <> 0 /\
+                  word_product multG eG xs n = ie /\
+                  (forall n' xs':set,
+                    reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+                    word_product multG eG xs' n' = ie ->
+                    n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
+                {
+                  exact (Huniq
+                    ie
+                    Hinv_efam_G
+                    Hinv_efam_ne_eG).
+                }
+                apply Hie_pack.
+                let nie.
+                assume Hnie_ex.
+                apply Hnie_ex.
+                let xie.
+                assume HieU.
+                apply (and4E
+                  (reduced_word J Gfam efam nie xie)
+                  (nie <> 0)
+                  (word_product multG eG xie nie = ie)
+                  (forall n' xs':set,
+                    reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+                    word_product multG eG xs' n' = ie ->
+                    nie = n' /\ (forall i:set, i :e nie -> apply_fun xie i = apply_fun xs' i))
+                  HieU).
+                assume Hred_ie Hnie_ne Hwp_ie Huniq_ie.
+                claim Hnie_eq_1 : nie = 1.
+                {
+                  exact (andEL
+                    (nie = 1)
+                    (forall i:set, i :e nie -> apply_fun xie i = apply_fun ie_word i)
+                    (Huniq_ie
+                      1
+                      ie_word
+                      Hie_redw1
+                      (neq_ordsucc_0 0)
+                      Hwp_ie1)).
+                }
+                admit.
 Admitted.
 
 (** from S68 Lem 68.1 (line 2781 in algtop.tex): extension condition for free products **)
