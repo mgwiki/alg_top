@@ -128586,6 +128586,15 @@ Definition least_normal_subgroup : set -> set -> set -> set -> set -> set :=
       S c= N /\
       (forall N':set, normal_subgroup N' G mult e inv -> S c= N' -> N c= N')).
 
+(** Helper lemma: in a free product, efam(alpha) in Gfam(alpha) with efam(alpha) != eG is impossible **)
+(** This captures the key fact that reduced word uniqueness forces efam(alpha) = eG **)
+Theorem efam_not_in_Gfam_nontrivial : forall G multG eG invG J Gfam efam:set,
+  free_product_of_subgroups G multG eG invG J Gfam efam ->
+  forall al:set, al :e J ->
+    apply_fun efam al :e apply_fun Gfam al -> apply_fun efam al <> eG -> False.
+admit.
+Admitted.
+
 (** from S68 Lem 68.1 (line 2781 in algtop.tex): extension condition for free products **)
 (** LATEX VERSION: If G is the free product of {G_alpha}, then given any group H and **)
 (** homomorphisms h_alpha: G_alpha -> H, there exists a unique h: G -> H whose restriction **)
@@ -130833,7 +130842,8 @@ apply and3I.
                         { exact (HinvGF (apply_fun efam al) Hefam_G). }
                         apply (xm (apply_fun invG (apply_fun efam al) = apply_fun efam al)).
                         + assume Hinv_eq_efam : apply_fun invG (apply_fun efam al) = apply_fun efam al.
-                          (** efam(al)^2 = eG case: use triple concatenation **)
+                          (** efam(al)^2 = eG case **)
+                          (** Triple concatenation when beta_0 != beta_mw; other cases need more work **)
                           admit.
                         + assume Hinv_ne_efam : apply_fun invG (apply_fun efam al) <> apply_fun efam al.
                           (** Construct word [inv(efam(al)), xsw(0), ..., xsw(mw), inv(efam(al))] **)
@@ -132826,9 +132836,11 @@ apply and3I.
           claim Hxs0_ne_eG : apply_fun xsw 0 <> eG.
           { rewrite Hxs0_x0. exact Hx0ne. }
           exact (Hxs0_ne_eG Hxs0_eG).
-      + (** m <> 0 so nw >= 2: need Hefam_contra-style argument **)
+      + (** m <> 0 so nw >= 2: efam(alpha0) in Gfam(alpha0) with efam(alpha0) <> eG contradicts free product **)
         assume Hm_ne0 : m <> 0.
-        admit. }
+        exact (efam_not_in_Gfam_nontrivial G multG eG invG J Gfam efam Hfp alpha0 Hal0
+          (Heq (fun a b:set => a :e apply_fun Gfam alpha0) Hx0Gal)
+          (Heq (fun a b:set => a <> eG) Hx0ne)). }
   (** [x0] is a reduced word of length 1 **)
   claim Hred1 : reduced_word J Gfam efam 1 xs1.
   { prove 1 :e omega /\
