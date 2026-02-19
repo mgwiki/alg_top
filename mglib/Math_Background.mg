@@ -139755,6 +139755,34 @@ apply (nat_inv nw Hnw_nat).
                     Hh_G
                     Hh_ne_eG).
                 }
+                apply Hh_huniq.
+                let nh.
+                assume Hex_xsh.
+                apply Hex_xsh.
+                let xsh_u.
+                assume Hhu.
+                apply (and4E
+                  (reduced_word J Gfam efam nh xsh_u)
+                  (nh <> 0)
+                  (word_product multG eG xsh_u nh = h_left)
+                  (forall n' xs':set,
+                    reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+                    word_product multG eG xs' n' = h_left ->
+                    nh = n' /\ (forall i:set, i :e nh -> apply_fun xsh_u i = apply_fun xs' i))
+                  Hhu).
+                assume _ Hnh_ne Hwp_hu Huniq_h.
+                claim Hnh_eq_1 : nh = 1.
+                {
+                  exact (andEL
+                    (nh = 1)
+                    (forall i:set, i :e nh -> apply_fun xsh_u i = apply_fun xs_h i)
+                    (Huniq_h
+                      1
+                      xs_h
+                      Hredw_h
+                      (neq_ordsucc_0 0)
+                      Hwp_h)).
+                }
                 admit.
               }
           + assume Hb0_ne_al.
