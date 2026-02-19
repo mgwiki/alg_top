@@ -137651,9 +137651,158 @@ apply (nat_inv nw Hnw_nat).
           (apply_fun xsw m <> apply_fun efam beta_m)
           Hbm_pack).
         assume Hbm_J Hxsm_Gbm Hxsm_ne_ebm.
-        (** Remaining work: finish the p not eG and not efam(al) subcase
-            by splitting on beta_m = al and constructing uniqueness contradictions. **)
-        admit.
+        apply (xm (beta_m = al)).
+        - assume Hbm_eq_al.
+          claim Hxsm_Gal : apply_fun xsw m :e apply_fun Gfam al.
+          {
+            rewrite <- Hbm_eq_al.
+            exact Hxsm_Gbm.
+          }
+          claim Hinv_xsm_Gal : apply_fun invG (apply_fun xsw m) :e apply_fun Gfam al.
+          {
+            apply (and4E
+              (apply_fun Gfam al c= G)
+              (eG :e apply_fun Gfam al)
+              (forall x y:set, x :e apply_fun Gfam al -> y :e apply_fun Gfam al ->
+                apply_fun multG (x, y) :e apply_fun Gfam al)
+              (forall x:set, x :e apply_fun Gfam al -> apply_fun invG x :e apply_fun Gfam al)
+              (Hsub al Hal)).
+            assume _ _ _ Hinv_sub_al.
+            exact (Hinv_sub_al
+              (apply_fun xsw m)
+              Hxsm_Gal).
+          }
+          claim Hp_eq2 :
+            p = apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun xsw m)).
+          {
+            claim Hinv_xsm_G : apply_fun invG (apply_fun xsw m) :e G.
+            {
+              exact (HinvGF
+                (apply_fun xsw m)
+                Hxsm_G).
+            }
+            claim Hassoc :
+              apply_fun multG (apply_fun multG (p, apply_fun xsw m), apply_fun invG (apply_fun xsw m)) =
+              apply_fun multG (p, apply_fun multG (apply_fun xsw m, apply_fun invG (apply_fun xsw m))).
+            {
+              exact (HassocG
+                p
+                (apply_fun xsw m)
+                (apply_fun invG (apply_fun xsw m))
+                Hp_G
+                Hxsm_G
+                Hinv_xsm_G).
+            }
+            claim Hrinv :
+              apply_fun multG (apply_fun xsw m, apply_fun invG (apply_fun xsw m)) = eG.
+            {
+              exact (andEL
+                (apply_fun multG (apply_fun xsw m, apply_fun invG (apply_fun xsw m)) = eG)
+                (apply_fun multG (apply_fun invG (apply_fun xsw m), apply_fun xsw m) = eG)
+                (HinvG
+                  (apply_fun xsw m)
+                  Hxsm_G)).
+            }
+            claim HidR_p : apply_fun multG (p, eG) = p.
+            {
+              exact (andER
+                (apply_fun multG (eG, p) = p)
+                (apply_fun multG (p, eG) = p)
+                (HidG
+                  p
+                  Hp_G)).
+            }
+            claim Hlhs :
+              apply_fun multG (apply_fun multG (p, apply_fun xsw m), apply_fun invG (apply_fun xsw m)) =
+              apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun xsw m)).
+            {
+              rewrite Hp_eq.
+              reflexivity.
+            }
+            claim Hrhs :
+              apply_fun multG (p, apply_fun multG (apply_fun xsw m, apply_fun invG (apply_fun xsw m))) =
+              apply_fun multG (p, eG).
+            {
+              rewrite Hrinv.
+              reflexivity.
+            }
+            claim Hrhs_sym :
+              apply_fun multG (p, eG) =
+              apply_fun multG (p, apply_fun multG (apply_fun xsw m, apply_fun invG (apply_fun xsw m))).
+            {
+              symmetry.
+              exact Hrhs.
+            }
+            claim Hassoc_sym :
+              apply_fun multG (p, apply_fun multG (apply_fun xsw m, apply_fun invG (apply_fun xsw m))) =
+              apply_fun multG (apply_fun multG (p, apply_fun xsw m), apply_fun invG (apply_fun xsw m)).
+            {
+              symmetry.
+              exact Hassoc.
+            }
+            claim Hchain :
+              apply_fun multG (p, eG) =
+              apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun xsw m)).
+            {
+              exact (eq_i_tra
+                (apply_fun multG (p, eG))
+                (apply_fun multG (p, apply_fun multG (apply_fun xsw m, apply_fun invG (apply_fun xsw m))))
+                (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun xsw m)))
+                Hrhs_sym
+                (eq_i_tra
+                  (apply_fun multG (p, apply_fun multG (apply_fun xsw m, apply_fun invG (apply_fun xsw m))))
+                  (apply_fun multG (apply_fun multG (p, apply_fun xsw m), apply_fun invG (apply_fun xsw m)))
+                  (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun xsw m)))
+                  Hassoc_sym
+                  Hlhs)).
+            }
+            claim HidR_sym : p = apply_fun multG (p, eG).
+            {
+              symmetry.
+              exact HidR_p.
+            }
+            exact (eq_i_tra
+              p
+              (apply_fun multG (p, eG))
+              (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun xsw m)))
+              HidR_sym
+              Hchain).
+          }
+          claim Hp_Gal : p :e apply_fun Gfam al.
+          {
+            apply (and4E
+              (apply_fun Gfam al c= G)
+              (eG :e apply_fun Gfam al)
+              (forall x y:set, x :e apply_fun Gfam al -> y :e apply_fun Gfam al ->
+                apply_fun multG (x, y) :e apply_fun Gfam al)
+              (forall x:set, x :e apply_fun Gfam al -> apply_fun invG x :e apply_fun Gfam al)
+              (Hsub al Hal)).
+            assume _ _ Hmult_sub_al _.
+            rewrite Hp_eq2.
+            exact (Hmult_sub_al
+              (apply_fun efam al)
+              (apply_fun invG (apply_fun xsw m))
+              Hefam_Gal
+              Hinv_xsm_Gal).
+          }
+          claim Hp_huniq : exists n xs:set,
+            reduced_word J Gfam efam n xs /\ n <> 0 /\
+            word_product multG eG xs n = p /\
+            (forall n' xs':set,
+              reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+              word_product multG eG xs' n' = p ->
+              n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
+          {
+            exact (Huniq
+              p
+              Hp_G
+              Hp_ne).
+          }
+          (** Remaining work in beta_m = al branch: finish contradiction via uniqueness on p. **)
+          admit.
+        - assume Hbm_ne_al.
+          (** Remaining work in beta_m <> al branch. **)
+          admit.
 Admitted.
 
 (** from S68 Lem 68.1 (line 2781 in algtop.tex): extension condition for free products **)
