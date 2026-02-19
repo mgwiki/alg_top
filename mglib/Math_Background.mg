@@ -137425,8 +137425,99 @@ apply (nat_inv nw Hnw_nat).
         Hm_in_nw
         Hxsm_efam).
     - assume Hp_ne.
-      (** Remaining work: finish the p not eG subcase. **)
-      admit.
+      claim Hred_prefix : reduced_word J Gfam efam m xsw.
+      {
+        prove m :e omega /\
+          (forall i:set, i :e m ->
+            exists alpha:set, alpha :e J /\
+              apply_fun xsw i :e apply_fun Gfam alpha /\
+              apply_fun xsw i <> apply_fun efam alpha) /\
+          (forall i:set, i :e m -> ordsucc i :e m ->
+            forall alpha beta:set, alpha :e J -> beta :e J ->
+              apply_fun xsw i :e apply_fun Gfam alpha ->
+              apply_fun xsw (ordsucc i) :e apply_fun Gfam beta ->
+              alpha <> beta).
+        apply andI.
+        - apply andI.
+          + exact (nat_p_omega
+              m
+              Hm_nat).
+          + let i.
+            assume Hi.
+            claim Hi_nw : i :e nw.
+            {
+              rewrite Hnw_eq.
+              exact (ordsuccI1
+                m
+                i
+                Hi).
+            }
+            exact (Helem
+              i
+              Hi_nw).
+        - let i.
+          assume Hi Hsi.
+          claim Hi_nw : i :e nw.
+          {
+            rewrite Hnw_eq.
+            exact (ordsuccI1
+              m
+              i
+              Hi).
+          }
+          claim Hsi_nw : ordsucc i :e nw.
+          {
+            rewrite Hnw_eq.
+            exact (ordsuccI1
+              m
+              (ordsucc i)
+              Hsi).
+          }
+          exact (Hadj
+            i
+            Hi_nw
+            Hsi_nw).
+      }
+      apply (xm (p = apply_fun efam al)).
+      + assume Hp_efam.
+        claim Hnw_eq_m : nw = m.
+        {
+          exact (andEL
+            (nw = m)
+            (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xsw i)
+            (Huniq_xsw
+              m
+              xsw
+              Hred_prefix
+              Hm_ne0
+              Hp_efam)).
+        }
+        claim Hsm_nw : ordsucc m = nw.
+        {
+          symmetry.
+          exact Hnw_eq.
+        }
+        claim Hsm_m : ordsucc m = m.
+        {
+          exact (eq_i_tra
+            (ordsucc m)
+            nw
+            m
+            Hsm_nw
+            Hnw_eq_m).
+        }
+        claim Hsubq : ordsucc m c= m.
+        {
+          rewrite Hsm_m.
+          exact (Subq_ref
+            m).
+        }
+        exact (ordsucc_not_Subq_self
+          m
+          Hsubq).
+      + assume Hp_ne_efam.
+        (** Remaining work: finish the p not eG and not efam(al) subcase. **)
+        admit.
 Admitted.
 
 (** from S68 Lem 68.1 (line 2781 in algtop.tex): extension condition for free products **)
