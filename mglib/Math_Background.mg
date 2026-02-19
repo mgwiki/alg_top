@@ -136980,9 +136980,86 @@ apply (nat_inv nw Hnw_nat).
       exact (Hxs0_ne_eG
         Hxs0_eG).
   + assume Hm_ne0.
-    (** Remaining work:
-        handle the nw >= 2 branch by contradiction via reduced-word uniqueness
-        (currently only partially ported from lemma68_1's inline Hefam_contra proof). **)
+    claim Hm_succ_ex : exists k:set, nat_p k /\ m = ordsucc k.
+    {
+      apply (nat_inv
+        m
+        Hm_nat).
+      - assume Hm0.
+        exact (FalseE
+          (Hm_ne0 Hm0)
+          (exists k:set, nat_p k /\ m = ordsucc k)).
+      - assume Hk_ex.
+        exact Hk_ex.
+    }
+    apply Hm_succ_ex.
+    let k.
+    assume Hk_pack.
+    claim Hk_nat : nat_p k.
+    {
+      exact (andEL
+        (nat_p k)
+        (m = ordsucc k)
+        Hk_pack).
+    }
+    claim Hm_succ : m = ordsucc k.
+    {
+      exact (andER
+        (nat_p k)
+        (m = ordsucc k)
+        Hk_pack).
+    }
+    claim Hnw_ssk : nw = ordsucc (ordsucc k).
+    {
+      rewrite Hnw_eq.
+      rewrite Hm_succ.
+      reflexivity.
+    }
+    claim H1_in_nw : 1 :e nw.
+    {
+      rewrite Hnw_ssk.
+      rewrite <- ordsucc_0_eq_1_nat.
+      exact (nat_ordsucc_in_ordsucc
+        (ordsucc k)
+        (nat_ordsucc
+          k
+          Hk_nat)
+        0
+        (nat_0_in_ordsucc
+          k
+          Hk_nat)).
+    }
+    apply (Helem
+      1
+      H1_in_nw).
+    let alpha1.
+    assume Hal1_pack.
+    apply (and3E
+      (alpha1 :e J)
+      (apply_fun xsw 1 :e apply_fun Gfam alpha1)
+      (apply_fun xsw 1 <> apply_fun efam alpha1)
+      Hal1_pack).
+    assume Hal1 Hxs1_Gal1 Hxs1_ne_efam1.
+    claim Hs0_in_nw : ordsucc 0 :e nw.
+    {
+      rewrite ordsucc_0_eq_1_nat.
+      exact H1_in_nw.
+    }
+    claim Halpha0_ne_alpha1 : alpha0 <> alpha1.
+    {
+      exact (Hadj
+        0
+        H0_in_nw
+        Hs0_in_nw
+        alpha0
+        alpha1
+        Hal0
+        Hal1
+        Hxs0_Gal0
+        Hxs1_Gal1).
+    }
+    (** Remaining work: finish the nw ge 2 contradiction using
+        Hwp_xsw together with Halpha0_ne_alpha1 and reduced-word uniqueness. **)
     admit.
 Admitted.
 
