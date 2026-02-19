@@ -77536,6 +77536,14 @@ claim HpowAt1 :
     (apply_fun mult (a, e) = a)
     (Hid a HaG)).
 }
+claim HnoPowAtSuccBoth :
+  forall m:set, m :e omega ->
+    group_power_nat mult e x (ordsucc m) <> e /\
+    group_power_nat mult e (apply_fun inv x) (ordsucc m) <> e.
+{
+  (** TODO Bob: derive nontriviality of all nonzero generator powers from Hnfin and generator structure. **)
+  admit.
+}
 claim HphiSelIso : group_isomorphism G mult int integers_group_mult phi_sel.
 {
   claim HphiSelHom : group_homomorphism G mult int integers_group_mult phi_sel.
@@ -77746,7 +77754,21 @@ claim HphiSelIso : group_isomorphism G mult int integers_group_mult phi_sel.
                    (Hnfin HfinG)
                    (ne = 0)).
                + assume HmS.
-                 admit.
+                 claim HpowInvEqE :
+                   group_power_nat mult e (apply_fun inv x) (ordsucc m) = e.
+                 {
+                   symmetry.
+                   exact HeNegRep.
+                 }
+                 exact (FalseE
+                   ((andER
+                     (group_power_nat mult e x (ordsucc m) <> e)
+                     (group_power_nat mult e (apply_fun inv x) (ordsucc m) <> e)
+                     (HnoPowAtSuccBoth
+                       m
+                       HmO))
+                    HpowInvEqE)
+                   (ne = 0)).
             - assume Hne0.
                exact Hne0.
             - let m.
@@ -77836,7 +77858,21 @@ claim HphiSelIso : group_isomorphism G mult int integers_group_mult phi_sel.
                    (Hnfin HfinG)
                    (ne = 0)).
                + assume HmS.
-                 admit.
+                 claim HpowEqE :
+                   group_power_nat mult e x (ordsucc m) = e.
+                 {
+                   symmetry.
+                   exact HePosRep.
+                 }
+                 exact (FalseE
+                   ((andEL
+                     (group_power_nat mult e x (ordsucc m) <> e)
+                     (group_power_nat mult e (apply_fun inv x) (ordsucc m) <> e)
+                     (HnoPowAtSuccBoth
+                       m
+                       HmO))
+                    HpowEqE)
+                   (ne = 0)).
         + let g'.
           assume Hg'G HphiEq'.
           claim HphiEq0 : apply_fun phi_sel g' = 0.
