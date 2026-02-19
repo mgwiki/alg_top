@@ -39692,7 +39692,6 @@ Qed.
 (** LATEX VERSION: If h: (A,a0)->(Y,y0) is extendable to Rn, then h-star is the trivial homomorphism. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 55 **)
-(** Lock Charlie 1771464662 **)
 Theorem ex52_5_extendable_trivial : forall A Ta a0 Y Ty y0 h:set,
   A c= R ->
   topology_on A Ta -> topology_on Y Ty ->
@@ -129528,7 +129527,86 @@ apply and3I.
                               (** Case i=nw: yw(nw)=xsw(mw) in Gfam(beta_mw), yw(snw)=ie in Gfam(al) **)
                               claim Hi_snw : i :e ordsucc nw.
                               { exact (nat_ordsucc_trans (ordsucc nw) Hsnw_nat (ordsucc i) Hsi i (ordsuccI2 i)). }
-                              admit. }
+                              apply (ordsuccE nw i Hi_snw).
+                              + assume Hi_nw : i :e nw.
+                                claim Hi_nat : nat_p i. { exact (nat_p_trans nw Hnw_nat i Hi_nw). }
+                                apply (nat_inv i Hi_nat).
+                                * assume Hi0 : i = 0.
+                                  (** Boundary: yw(0)=ie :e Gfam(al), yw(1)=xsw(0) :e Gfam(beta_0), beta_0 <> al **)
+                                  assume Ha_eq : a1 = a2.
+                                  claim Hyw_i_ie : apply_fun yw i = ie.
+                                  { rewrite Hi0. exact Hyw_0. }
+                                  claim Hie_a1 : ie :e apply_fun Gfam a1.
+                                  { rewrite <- Hyw_i_ie. exact Hia1. }
+                                  claim H0_nw_adj : 0 :e nw. { rewrite Hnw_sm. exact (nat_0_in_ordsucc mw Hmw_nat). }
+                                  claim Hyw_si_xs0 : apply_fun yw (ordsucc i) = apply_fun xsw 0.
+                                  { rewrite Hi0. exact (Hyw_mid 0 H0_nw_adj). }
+                                  claim Hxs0_a2 : apply_fun xsw 0 :e apply_fun Gfam a2.
+                                  { rewrite <- Hyw_si_xs0. exact Hsia2. }
+                                  claim Hxs0_a1 : apply_fun xsw 0 :e apply_fun Gfam a1.
+                                  { rewrite Ha_eq. exact Hxs0_a2. }
+                                  (** ie in Gfam(a1) and Gfam(al), so a1 = al **)
+                                  claim Ha1_al : a1 = al.
+                                  { apply (dneg (a1 = al)). assume Ha1_ne_al : a1 <> al.
+                                    claim Hie_eG : ie = eG.
+                                    { exact (Hdisjoint a1 al Ha1J Hal Ha1_ne_al ie Hie_a1 Hinv_efam_Gal). }
+                                    exact (Hinv_efam_ne_eG Hie_eG). }
+                                  (** xsw(0) in Gfam(al) and Gfam(beta_0), al <> beta_0 -> xsw(0) = eG **)
+                                  claim Hxs0_al : apply_fun xsw 0 :e apply_fun Gfam al.
+                                  { rewrite <- Ha1_al. exact Hxs0_a1. }
+                                  claim Hal_ne_b0 : al <> beta_0.
+                                  { assume Heq : al = beta_0.
+                                    claim Hsym : beta_0 = al. { symmetry. exact Heq. }
+                                    exact (Hb0_ne_al Hsym). }
+                                  claim Hxs0_eG : apply_fun xsw 0 = eG.
+                                  { exact (Hdisjoint al beta_0 Hal Hb0_J Hal_ne_b0
+                                      (apply_fun xsw 0) Hxs0_al Hxs0_Gb0). }
+                                  exact (Hxs0_ne_eG Hxs0_eG).
+                                * assume Hex_k : exists k:set, nat_p k /\ i = ordsucc k.
+                                  (** Interior: yw(sk) = xsw(k), yw(ssk) = xsw(sk), use Hadj_w **)
+                                  apply Hex_k. let k. assume Hk_props : nat_p k /\ i = ordsucc k.
+                                  claim Hi_eq : i = ordsucc k. { exact (andER (nat_p k) (i = ordsucc k) Hk_props). }
+                                  claim Hsk_nw : ordsucc k :e nw. { rewrite <- Hi_eq. exact Hi_nw. }
+                                  claim Hk_nw : k :e nw. { exact (nat_trans nw Hnw_nat (ordsucc k) Hsk_nw k (ordsuccI2 k)). }
+                                  claim Hyw_i_xsk : apply_fun yw i = apply_fun xsw k.
+                                  { rewrite Hi_eq. exact (Hyw_mid k Hk_nw). }
+                                  claim Hxs_k_a1 : apply_fun xsw k :e apply_fun Gfam a1.
+                                  { rewrite <- Hyw_i_xsk. exact Hia1. }
+                                  claim Hyw_si_xssk : apply_fun yw (ordsucc i) = apply_fun xsw (ordsucc k).
+                                  { rewrite Hi_eq. exact (Hyw_mid (ordsucc k) Hsk_nw). }
+                                  claim Hxs_sk_a2 : apply_fun xsw (ordsucc k) :e apply_fun Gfam a2.
+                                  { rewrite <- Hyw_si_xssk. exact Hsia2. }
+                                  exact (Hadj_w k Hk_nw Hsk_nw a1 a2 Ha1J Ha2J Hxs_k_a1 Hxs_sk_a2).
+                              + assume Hi_eq_nw : i = nw.
+                                (** Boundary: yw(nw)=xsw(mw), yw(snw)=ie, beta_mw <> al **)
+                                assume Ha_eq : a1 = a2.
+                                claim Hi_eq_smw : i = ordsucc mw. { rewrite Hi_eq_nw. exact Hnw_sm. }
+                                claim Hmw_nw_adj : mw :e nw. { rewrite Hnw_sm. exact (ordsuccI2 mw). }
+                                claim Hyw_i_xsmw : apply_fun yw i = apply_fun xsw mw.
+                                { rewrite Hi_eq_smw. exact (Hyw_mid mw Hmw_nw_adj). }
+                                claim Hxsmw_a1 : apply_fun xsw mw :e apply_fun Gfam a1.
+                                { rewrite <- Hyw_i_xsmw. exact Hia1. }
+                                claim Hyw_si_ie : apply_fun yw (ordsucc i) = ie.
+                                { rewrite Hi_eq_nw. exact Hyw_last. }
+                                claim Hie_a2 : ie :e apply_fun Gfam a2.
+                                { rewrite <- Hyw_si_ie. exact Hsia2. }
+                                (** ie in Gfam(a2) and Gfam(al), so a2 = al **)
+                                claim Ha2_al : a2 = al.
+                                { apply (dneg (a2 = al)). assume Ha2_ne_al : a2 <> al.
+                                  claim Hie_eG : ie = eG.
+                                  { exact (Hdisjoint a2 al Ha2J Hal Ha2_ne_al ie Hie_a2 Hinv_efam_Gal). }
+                                  exact (Hinv_efam_ne_eG Hie_eG). }
+                                (** xsw(mw) in Gfam(al) and Gfam(beta_mw), al <> beta_mw **)
+                                claim Hxsmw_al : apply_fun xsw mw :e apply_fun Gfam al.
+                                { rewrite <- Ha2_al. rewrite <- Ha_eq. exact Hxsmw_a1. }
+                                claim Hal_ne_bmw : al <> beta_mw.
+                                { assume Heq : al = beta_mw.
+                                  claim Hsym : beta_mw = al. { symmetry. exact Heq. }
+                                  exact (Hbmw_ne_al Hsym). }
+                                claim Hxsmw_eG : apply_fun xsw mw = eG.
+                                { exact (Hdisjoint al beta_mw Hal Hbmw_J Hal_ne_bmw
+                                    (apply_fun xsw mw) Hxsmw_al Hxsmw_Gbmw). }
+                                exact (Hxsmw_ne_eG Hxsmw_eG). }
                           (** Word product of yw equals ie **)
                           (** By shift lemma: wp(yw, ordsucc k) = mult(ie, wp(xsw, k)) **)
                           (** At k = nw: wp(yw, ordsucc nw) = mult(ie, efam(al)) = eG **)
