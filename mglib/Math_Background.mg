@@ -96608,6 +96608,60 @@ apply (xm (exists x:set, x :e Bn_closed n /\ apply_fun f x = x)).
       (exists x:set, x :e Sn n /\ points_directly_outward_Rn n vdisp x)
       HioDisp).
   }
+  apply HdispInward.
+  let xin.
+  assume HxinPack.
+  claim HxinSn : xin :e Sn n.
+  {
+    exact (andEL
+      (xin :e Sn n)
+      (points_directly_inward_Rn n vdisp xin)
+      HxinPack).
+  }
+  claim HxinInward : points_directly_inward_Rn n vdisp xin.
+  {
+    exact (andER
+      (xin :e Sn n)
+      (points_directly_inward_Rn n vdisp xin)
+      HxinPack).
+  }
+  claim HinwardScale :
+    exists a:set, a :e R /\ Rlt 0 a /\
+      apply_fun vdisp xin = Rn_scalar_mult (ordsucc n) (minus_SNo a) xin.
+  {
+    exact (andER
+      (xin :e Sn n)
+      (exists a:set, a :e R /\ Rlt 0 a /\
+        apply_fun vdisp xin = Rn_scalar_mult (ordsucc n) (minus_SNo a) xin)
+      HxinInward).
+  }
+  apply HdispOutward.
+  let xout.
+  assume HxoutPack.
+  claim HxoutSn : xout :e Sn n.
+  {
+    exact (andEL
+      (xout :e Sn n)
+      (points_directly_outward_Rn n vdisp xout)
+      HxoutPack).
+  }
+  claim HxoutOutward : points_directly_outward_Rn n vdisp xout.
+  {
+    exact (andER
+      (xout :e Sn n)
+      (points_directly_outward_Rn n vdisp xout)
+      HxoutPack).
+  }
+  claim HoutwardScale :
+    exists a:set, a :e R /\ Rlt 0 a /\
+      apply_fun vdisp xout = Rn_scalar_mult (ordsucc n) a xout.
+  {
+    exact (andER
+      (xout :e Sn n)
+      (exists a:set, a :e R /\ Rlt 0 a /\
+        apply_fun vdisp xout = Rn_scalar_mult (ordsucc n) a xout)
+      HxoutOutward).
+  }
   admit.
 Admitted.
 
