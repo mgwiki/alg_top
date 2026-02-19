@@ -75384,6 +75384,337 @@ claim HpsiHom : group_homomorphism int integers_group_mult H multH psi.
         HnegInt).
       exact HEpsPneg.
     }
+    claim HinvOfProd :
+      forall a b:set, a :e H -> b :e H ->
+      apply_fun invH (apply_fun multH (a, b)) =
+      apply_fun multH (apply_fun invH b, apply_fun invH a).
+    {
+      apply (and6E
+        (function_on multH (setprod H H) H)
+        (function_on invH H H)
+        (eH :e H)
+        (forall a b c:set, a :e H -> b :e H -> c :e H ->
+          apply_fun multH (apply_fun multH (a, b), c) = apply_fun multH (a, apply_fun multH (b, c)))
+        (forall a:set, a :e H -> apply_fun multH (eH, a) = a /\ apply_fun multH (a, eH) = a)
+        (forall a:set, a :e H ->
+          apply_fun multH (a, apply_fun invH a) = eH /\ apply_fun multH (apply_fun invH a, a) = eH)
+        HgrpH).
+      assume HmultFn HinvFn HeHH HassocH HidH HinvLaw.
+      let a b.
+      assume HaH HbH.
+      claim HabH : apply_fun multH (a, b) :e H.
+      {
+        exact (HmultFn
+          (a, b)
+          (tuple_2_setprod_by_pair_Sigma
+            H
+            H
+            a
+            b
+            HaH
+            HbH)).
+      }
+      claim HinvbH : apply_fun invH b :e H.
+      {
+        exact (HinvFn b HbH).
+      }
+      claim HinvaH : apply_fun invH a :e H.
+      {
+        exact (HinvFn a HaH).
+      }
+      claim HinvbinvaH : apply_fun multH (apply_fun invH b, apply_fun invH a) :e H.
+      {
+        exact (HmultFn
+          (apply_fun invH b, apply_fun invH a)
+          (tuple_2_setprod_by_pair_Sigma
+            H
+            H
+            (apply_fun invH b)
+            (apply_fun invH a)
+            HinvbH
+            HinvaH)).
+      }
+      claim HinvabH : apply_fun invH (apply_fun multH (a, b)) :e H.
+      {
+        exact (HinvFn
+          (apply_fun multH (a, b))
+          HabH).
+      }
+      claim HprodEqE :
+        apply_fun multH (apply_fun multH (a, b), apply_fun multH (apply_fun invH b, apply_fun invH a)) = eH.
+      {
+        rewrite (HassocH
+          a
+          b
+          (apply_fun multH (apply_fun invH b, apply_fun invH a))
+          HaH
+          HbH
+          HinvbinvaH).
+        rewrite <- (HassocH
+          b
+          (apply_fun invH b)
+          (apply_fun invH a)
+          HbH
+          HinvbH
+          HinvaH).
+        rewrite (andEL
+          (apply_fun multH (b, apply_fun invH b) = eH)
+          (apply_fun multH (apply_fun invH b, b) = eH)
+          (HinvLaw b HbH)).
+        rewrite (andEL
+          (apply_fun multH (eH, apply_fun invH a) = apply_fun invH a)
+          (apply_fun multH (apply_fun invH a, eH) = apply_fun invH a)
+          (HidH
+            (apply_fun invH a)
+            HinvaH)).
+        exact (andEL
+          (apply_fun multH (a, apply_fun invH a) = eH)
+          (apply_fun multH (apply_fun invH a, a) = eH)
+          (HinvLaw a HaH)).
+      }
+      claim Hsym :
+        apply_fun multH (apply_fun invH b, apply_fun invH a) =
+        apply_fun invH (apply_fun multH (a, b)).
+      {
+        apply (group_left_inv_solve
+          H
+          multH
+          invH
+          eH
+          (apply_fun invH (apply_fun multH (a, b)))
+          (apply_fun multH (apply_fun invH b, apply_fun invH a))
+          HmultFn
+          HinvFn
+          HeHH
+          HassocH
+          HidH
+          HinvLaw
+          HinvabH
+          HinvbinvaH).
+        rewrite (group_inv_inv
+          H
+          multH
+          invH
+          eH
+          (apply_fun multH (a, b))
+          HmultFn
+          HinvFn
+          HeHH
+          HassocH
+          HidH
+          HinvLaw
+          HabH).
+        exact HprodEqE.
+      }
+      rewrite Hsym.
+      reflexivity.
+    }
+    claim HpowSuccRightY :
+      forall n:set, n :e omega ->
+        group_power_nat multH eH y (ordsucc n) =
+        apply_fun multH (group_power_nat multH eH y n, y).
+    {
+      let n.
+      assume HnO.
+      claim HnNat : nat_p n.
+      {
+        exact (omega_nat_p
+          n
+          HnO).
+      }
+      claim Hn1Eq :
+        add_nat n 1 = ordsucc n.
+      {
+        rewrite (add_nat_SR
+          n
+          0
+          nat_0).
+        rewrite (add_nat_0R
+          n).
+        reflexivity.
+      }
+      claim HpowAdd :
+        group_power_nat multH eH y (add_nat n 1) =
+        apply_fun multH (group_power_nat multH eH y n, group_power_nat multH eH y 1).
+      {
+        exact (group_power_nat_add_nat_cyclic_helper
+          H
+          multH
+          eH
+          invH
+          y
+          n
+          1
+          HgrpH
+          Hy
+          HnO
+          (nat_p_omega
+            1
+            nat_1)).
+      }
+      claim HpowY1 :
+        group_power_nat multH eH y 1 = y.
+      {
+        claim HS :
+          group_power_nat multH eH y (ordsucc 0) =
+          apply_fun multH (y, group_power_nat multH eH y 0).
+        {
+          exact (nat_primrec_S
+            eH
+            (fun _ r => apply_fun multH (y, r))
+            0
+            nat_0).
+        }
+        claim H0 :
+          group_power_nat multH eH y 0 = eH.
+        {
+          exact (nat_primrec_0
+            eH
+            (fun _ r => apply_fun multH (y, r))).
+        }
+        apply (and6E
+          (function_on multH (setprod H H) H)
+          (function_on invH H H)
+          (eH :e H)
+          (forall a b c:set, a :e H -> b :e H -> c :e H ->
+            apply_fun multH (apply_fun multH (a, b), c) = apply_fun multH (a, apply_fun multH (b, c)))
+          (forall a:set, a :e H -> apply_fun multH (eH, a) = a /\ apply_fun multH (a, eH) = a)
+          (forall a:set, a :e H ->
+            apply_fun multH (a, apply_fun invH a) = eH /\ apply_fun multH (apply_fun invH a, a) = eH)
+          HgrpH).
+        assume HmultFn HinvFn HeHH HassocH HidH HinvLaw.
+        rewrite HS.
+        rewrite H0.
+        exact (andER
+          (apply_fun multH (eH, y) = y)
+          (apply_fun multH (y, eH) = y)
+          (HidH y Hy)).
+      }
+      rewrite <- Hn1Eq.
+      rewrite HpowAdd.
+      rewrite HpowY1.
+      reflexivity.
+    }
+    claim HinvPowEq :
+      forall n:set, n :e omega ->
+        group_power_nat multH eH (apply_fun invH y) n =
+        apply_fun invH (group_power_nat multH eH y n).
+    {
+      claim HinvE : apply_fun invH eH = eH.
+      {
+        apply (and6E
+          (function_on multH (setprod H H) H)
+          (function_on invH H H)
+          (eH :e H)
+          (forall a b c:set, a :e H -> b :e H -> c :e H ->
+            apply_fun multH (apply_fun multH (a, b), c) = apply_fun multH (a, apply_fun multH (b, c)))
+          (forall a:set, a :e H -> apply_fun multH (eH, a) = a /\ apply_fun multH (a, eH) = a)
+          (forall a:set, a :e H ->
+            apply_fun multH (a, apply_fun invH a) = eH /\ apply_fun multH (apply_fun invH a, a) = eH)
+          HgrpH).
+        assume HmultFn HinvFn HeHH HassocH HidH HinvLaw.
+        claim HinvEInH : apply_fun invH eH :e H.
+        {
+          exact (HinvFn
+            eH
+            HeHH).
+        }
+        claim HmultEInvEqE :
+          apply_fun multH (eH, apply_fun invH eH) = eH.
+        {
+          exact (andEL
+            (apply_fun multH (eH, apply_fun invH eH) = eH)
+            (apply_fun multH (apply_fun invH eH, eH) = eH)
+            (HinvLaw
+              eH
+              HeHH)).
+        }
+        claim HmultEInvEqInv :
+          apply_fun multH (eH, apply_fun invH eH) = apply_fun invH eH.
+        {
+          exact (andEL
+            (apply_fun multH (eH, apply_fun invH eH) = apply_fun invH eH)
+            (apply_fun multH (apply_fun invH eH, eH) = apply_fun invH eH)
+            (HidH
+              (apply_fun invH eH)
+              HinvEInH)).
+        }
+        rewrite <- HmultEInvEqInv.
+        exact HmultEInvEqE.
+      }
+      claim Hnat :
+        forall k:set, nat_p k ->
+          group_power_nat multH eH (apply_fun invH y) k =
+          apply_fun invH (group_power_nat multH eH y k).
+      {
+        apply nat_ind.
+        - claim HpowInv0 :
+            group_power_nat multH eH (apply_fun invH y) 0 = eH.
+          {
+            exact (nat_primrec_0
+              eH
+              (fun _ r => apply_fun multH (apply_fun invH y, r))).
+          }
+          claim Hpow0 :
+            group_power_nat multH eH y 0 = eH.
+          {
+            exact (nat_primrec_0
+              eH
+              (fun _ r => apply_fun multH (y, r))).
+          }
+          rewrite HpowInv0.
+          rewrite Hpow0.
+          symmetry.
+          exact HinvE.
+        - let k.
+          assume HkNat.
+          assume IH :
+            group_power_nat multH eH (apply_fun invH y) k =
+            apply_fun invH (group_power_nat multH eH y k).
+          claim HkO : k :e omega.
+          {
+            exact (nat_p_omega
+              k
+              HkNat).
+          }
+          claim HpowInvSk :
+            group_power_nat multH eH (apply_fun invH y) (ordsucc k) =
+            apply_fun multH (apply_fun invH y, group_power_nat multH eH (apply_fun invH y) k).
+          {
+            exact (nat_primrec_S
+              eH
+              (fun _ r => apply_fun multH (apply_fun invH y, r))
+              k
+              HkNat).
+          }
+          claim HpowSkR :
+            group_power_nat multH eH y (ordsucc k) =
+            apply_fun multH (group_power_nat multH eH y k, y).
+          {
+            exact (HpowSuccRightY
+              k
+              HkO).
+          }
+          rewrite HpowInvSk.
+          rewrite IH.
+          rewrite HpowSkR.
+          rewrite (HinvOfProd
+            (group_power_nat multH eH y k)
+            y
+            (HpowInH
+              y
+              Hy
+              k
+              HkO)
+            Hy).
+          reflexivity.
+      }
+      let n.
+      assume HnO.
+      exact (Hnat
+        n
+        (omega_nat_p n HnO)).
+    }
     let a b.
     assume HaInt HbInt.
     apply (int_3_cases
@@ -75528,8 +75859,436 @@ claim HpsiHom : group_homomorphism int integers_group_mult H multH psi.
           (HpsiFn a HaInt)).
       + let mb.
         assume HmbO HbPos.
-        (** TODO Bob: finish negative/positive integer multiplicativity branch. **)
-        admit.
+        claim HsuccmaO : ordsucc ma :e omega.
+        {
+          exact (omega_ordsucc
+            ma
+            HmaO).
+        }
+        claim HsuccmbO : ordsucc mb :e omega.
+        {
+          exact (omega_ordsucc
+            mb
+            HmbO).
+        }
+        claim HsuccmaInt : ordsucc ma :e int.
+        {
+          exact (Subq_omega_int
+            (ordsucc ma)
+            HsuccmaO).
+        }
+        claim HsuccmbInt : ordsucc mb :e int.
+        {
+          exact (Subq_omega_int
+            (ordsucc mb)
+            HsuccmbO).
+        }
+        claim HsuccmaS : SNo (ordsucc ma).
+        {
+          exact (int_SNo
+            (ordsucc ma)
+            HsuccmaInt).
+        }
+        claim HsuccmbS : SNo (ordsucc mb).
+        {
+          exact (int_SNo
+            (ordsucc mb)
+            HsuccmbInt).
+        }
+        set s := add_SNo (minus_SNo (ordsucc ma)) (ordsucc mb).
+        claim HsInt : s :e int.
+        {
+          exact (int_add_SNo
+            (minus_SNo (ordsucc ma))
+            (int_minus_SNo_omega
+              (ordsucc ma)
+              HsuccmaO)
+            (ordsucc mb)
+            HsuccmbInt).
+        }
+        rewrite HmultIntDef.
+        rewrite (apply_fun_graph
+          (setprod int int)
+          (fun p:set => add_SNo (p 0) (p 1))
+          (a, b)
+          (tuple_2_setprod_by_pair_Sigma
+            int
+            int
+            a
+            b
+            HaInt
+            HbInt)).
+        rewrite (tuple_2_0_eq a b).
+        rewrite (tuple_2_1_eq a b).
+        rewrite HaNeg.
+        rewrite HbPos.
+        rewrite (HpsiAtNegSucc
+          ma
+          HmaO).
+        rewrite (HpsiAtNatNonzero
+          (ordsucc mb)
+          HsuccmbO
+          (neq_ordsucc_0 mb)).
+        rewrite (HinvPowEq
+          (ordsucc ma)
+          HsuccmaO).
+        apply (int_3_cases
+          s
+          HsInt
+          (apply_fun psi s =
+           apply_fun multH
+             (apply_fun invH (group_power_nat multH eH y (ordsucc ma)),
+              group_power_nat multH eH y (ordsucc mb)))).
+        * let r.
+          assume HrO HsNeg.
+          claim HsuccrO : ordsucc r :e omega.
+          {
+            exact (omega_ordsucc
+              r
+              HrO).
+          }
+          claim HsuccrInt : ordsucc r :e int.
+          {
+            exact (Subq_omega_int
+              (ordsucc r)
+              HsuccrO).
+          }
+          claim HsuccrS : SNo (ordsucc r).
+          {
+            exact (int_SNo
+              (ordsucc r)
+              HsuccrInt).
+          }
+          claim HmbEqMaMinusR :
+            ordsucc mb = add_SNo (ordsucc ma) (minus_SNo (ordsucc r)).
+          {
+            claim HcommL :
+              add_SNo (minus_SNo (ordsucc ma)) (ordsucc mb) =
+              add_SNo (ordsucc mb) (minus_SNo (ordsucc ma)).
+            {
+              exact (add_SNo_com
+                (minus_SNo (ordsucc ma))
+                (ordsucc mb)
+                (SNo_minus_SNo
+                  (ordsucc ma)
+                  HsuccmaS)
+                HsuccmbS).
+            }
+            claim Htmp :
+              add_SNo (ordsucc mb) (minus_SNo (ordsucc ma)) = minus_SNo (ordsucc r).
+            {
+              rewrite <- HcommL.
+              exact HsNeg.
+            }
+            claim Hstep :
+              add_SNo (add_SNo (ordsucc mb) (minus_SNo (ordsucc ma))) (ordsucc ma) = ordsucc mb.
+            {
+              exact (add_SNo_minus_R2'
+                (ordsucc mb)
+                (ordsucc ma)
+                HsuccmbS
+                HsuccmaS).
+            }
+            rewrite <- Hstep.
+            rewrite Htmp.
+            rewrite (add_SNo_com
+              (minus_SNo (ordsucc r))
+              (ordsucc ma)
+              (SNo_minus_SNo
+                (ordsucc r)
+                HsuccrS)
+              HsuccmaS).
+            reflexivity.
+          }
+          claim HmaEqMbPlusR :
+            add_SNo (ordsucc mb) (ordsucc r) = ordsucc ma.
+          {
+            rewrite HmbEqMaMinusR.
+            exact (add_SNo_minus_R2'
+              (ordsucc ma)
+              (ordsucc r)
+              HsuccmaS
+              HsuccrS).
+          }
+          claim HmaEqMbPlusRNat :
+            add_nat (ordsucc mb) (ordsucc r) = ordsucc ma.
+          {
+            rewrite (add_nat_add_SNo
+              (ordsucc mb)
+              HsuccmbO
+              (ordsucc r)
+              HsuccrO).
+            exact HmaEqMbPlusR.
+          }
+          rewrite HsNeg.
+          rewrite (HpsiAtNegSucc
+            r
+            HrO).
+          apply (and6E
+            (function_on multH (setprod H H) H)
+            (function_on invH H H)
+            (eH :e H)
+            (forall u v w:set, u :e H -> v :e H -> w :e H ->
+              apply_fun multH (apply_fun multH (u, v), w) = apply_fun multH (u, apply_fun multH (v, w)))
+            (forall u:set, u :e H -> apply_fun multH (eH, u) = u /\ apply_fun multH (u, eH) = u)
+            (forall u:set, u :e H ->
+              apply_fun multH (u, apply_fun invH u) = eH /\ apply_fun multH (apply_fun invH u, u) = eH)
+            HgrpH).
+          assume HmultFn HinvFn HeHH HassocH HidH HinvLaw.
+          claim HpowMbH : group_power_nat multH eH y (ordsucc mb) :e H.
+          {
+            exact (HpowInH
+              y
+              Hy
+              (ordsucc mb)
+              HsuccmbO).
+          }
+          claim HpowRH : group_power_nat multH eH y (ordsucc r) :e H.
+          {
+            exact (HpowInH
+              y
+              Hy
+              (ordsucc r)
+              HsuccrO).
+          }
+          rewrite <- HmaEqMbPlusRNat.
+          rewrite (group_power_nat_add_nat_cyclic_helper
+            H
+            multH
+            eH
+            invH
+            y
+            (ordsucc mb)
+            (ordsucc r)
+            HgrpH
+            Hy
+            HsuccmbO
+            HsuccrO).
+          rewrite (HinvOfProd
+            (group_power_nat multH eH y (ordsucc mb))
+            (group_power_nat multH eH y (ordsucc r))
+            HpowMbH
+            HpowRH).
+          rewrite (HassocH
+            (apply_fun invH (group_power_nat multH eH y (ordsucc r)))
+            (apply_fun invH (group_power_nat multH eH y (ordsucc mb)))
+            (group_power_nat multH eH y (ordsucc mb))
+            (HinvFn (group_power_nat multH eH y (ordsucc r)) HpowRH)
+            (HinvFn (group_power_nat multH eH y (ordsucc mb)) HpowMbH)
+            HpowMbH).
+          rewrite (andER
+            (apply_fun multH (group_power_nat multH eH y (ordsucc mb), apply_fun invH (group_power_nat multH eH y (ordsucc mb))) = eH)
+            (apply_fun multH (apply_fun invH (group_power_nat multH eH y (ordsucc mb)), group_power_nat multH eH y (ordsucc mb)) = eH)
+            (HinvLaw
+              (group_power_nat multH eH y (ordsucc mb))
+              HpowMbH)).
+          rewrite (andER
+            (apply_fun multH (eH, apply_fun invH (group_power_nat multH eH y (ordsucc r))) = apply_fun invH (group_power_nat multH eH y (ordsucc r)))
+            (apply_fun multH (apply_fun invH (group_power_nat multH eH y (ordsucc r)), eH) = apply_fun invH (group_power_nat multH eH y (ordsucc r)))
+            (HidH
+              (apply_fun invH (group_power_nat multH eH y (ordsucc r)))
+              (HinvFn (group_power_nat multH eH y (ordsucc r)) HpowRH))).
+          rewrite <- (HinvPowEq
+            (ordsucc r)
+            HsuccrO).
+          reflexivity.
+        * assume Hs0.
+          rewrite Hs0.
+          rewrite HpsiAt0.
+          apply (and6E
+            (function_on multH (setprod H H) H)
+            (function_on invH H H)
+            (eH :e H)
+            (forall u v w:set, u :e H -> v :e H -> w :e H ->
+              apply_fun multH (apply_fun multH (u, v), w) = apply_fun multH (u, apply_fun multH (v, w)))
+            (forall u:set, u :e H -> apply_fun multH (eH, u) = u /\ apply_fun multH (u, eH) = u)
+            (forall u:set, u :e H ->
+              apply_fun multH (u, apply_fun invH u) = eH /\ apply_fun multH (apply_fun invH u, u) = eH)
+            HgrpH).
+          assume HmultFn HinvFn HeHH HassocH HidH HinvLaw.
+          claim HmbEqMa :
+            ordsucc mb = ordsucc ma.
+          {
+            claim HcommL :
+              add_SNo (minus_SNo (ordsucc ma)) (ordsucc mb) =
+              add_SNo (ordsucc mb) (minus_SNo (ordsucc ma)).
+            {
+              exact (add_SNo_com
+                (minus_SNo (ordsucc ma))
+                (ordsucc mb)
+                (SNo_minus_SNo
+                  (ordsucc ma)
+                  HsuccmaS)
+                HsuccmbS).
+            }
+            claim Htmp :
+              add_SNo (ordsucc mb) (minus_SNo (ordsucc ma)) = 0.
+            {
+              rewrite <- HcommL.
+              exact Hs0.
+            }
+            claim Hstep :
+              add_SNo (add_SNo (ordsucc mb) (minus_SNo (ordsucc ma))) (ordsucc ma) = ordsucc mb.
+            {
+              exact (add_SNo_minus_R2'
+                (ordsucc mb)
+                (ordsucc ma)
+                HsuccmbS
+                HsuccmaS).
+            }
+            rewrite <- Hstep.
+            rewrite Htmp.
+            exact (add_SNo_0L
+              (ordsucc ma)
+              HsuccmaS).
+          }
+          rewrite HmbEqMa.
+          claim HpowMaH : group_power_nat multH eH y (ordsucc ma) :e H.
+          {
+            exact (HpowInH
+              y
+              Hy
+              (ordsucc ma)
+              HsuccmaO).
+          }
+          rewrite (andER
+            (apply_fun multH (group_power_nat multH eH y (ordsucc ma), apply_fun invH (group_power_nat multH eH y (ordsucc ma))) = eH)
+            (apply_fun multH (apply_fun invH (group_power_nat multH eH y (ordsucc ma)), group_power_nat multH eH y (ordsucc ma)) = eH)
+            (HinvLaw
+              (group_power_nat multH eH y (ordsucc ma))
+              HpowMaH)).
+          reflexivity.
+        * let r.
+          assume HrO HsPos.
+          claim HsuccrO : ordsucc r :e omega.
+          {
+            exact (omega_ordsucc
+              r
+              HrO).
+          }
+          claim HsuccrS : SNo (ordsucc r).
+          {
+            exact (int_SNo
+              (ordsucc r)
+              (Subq_omega_int
+                (ordsucc r)
+                HsuccrO)).
+          }
+          claim HmbEqMaPlusR :
+            ordsucc mb = add_SNo (ordsucc ma) (ordsucc r).
+          {
+            claim HcommL :
+              add_SNo (minus_SNo (ordsucc ma)) (ordsucc mb) =
+              add_SNo (ordsucc mb) (minus_SNo (ordsucc ma)).
+            {
+              exact (add_SNo_com
+                (minus_SNo (ordsucc ma))
+                (ordsucc mb)
+                (SNo_minus_SNo
+                  (ordsucc ma)
+                  HsuccmaS)
+                HsuccmbS).
+            }
+            claim Htmp :
+              add_SNo (ordsucc mb) (minus_SNo (ordsucc ma)) = ordsucc r.
+            {
+              rewrite <- HcommL.
+              exact HsPos.
+            }
+            claim Hstep :
+              add_SNo (add_SNo (ordsucc mb) (minus_SNo (ordsucc ma))) (ordsucc ma) = ordsucc mb.
+            {
+              exact (add_SNo_minus_R2'
+                (ordsucc mb)
+                (ordsucc ma)
+                HsuccmbS
+                HsuccmaS).
+            }
+            rewrite <- Hstep.
+            rewrite Htmp.
+            rewrite (add_SNo_com
+              (ordsucc r)
+              (ordsucc ma)
+              HsuccrS
+              HsuccmaS).
+            reflexivity.
+          }
+          claim HmbEqMaPlusRNat :
+            add_nat (ordsucc ma) (ordsucc r) = ordsucc mb.
+          {
+            rewrite (add_nat_add_SNo
+              (ordsucc ma)
+              HsuccmaO
+              (ordsucc r)
+              HsuccrO).
+            symmetry.
+            exact HmbEqMaPlusR.
+          }
+          rewrite HsPos.
+          rewrite (HpsiAtNatNonzero
+            (ordsucc r)
+            HsuccrO
+            (neq_ordsucc_0 r)).
+          apply (and6E
+            (function_on multH (setprod H H) H)
+            (function_on invH H H)
+            (eH :e H)
+            (forall u v w:set, u :e H -> v :e H -> w :e H ->
+              apply_fun multH (apply_fun multH (u, v), w) = apply_fun multH (u, apply_fun multH (v, w)))
+            (forall u:set, u :e H -> apply_fun multH (eH, u) = u /\ apply_fun multH (u, eH) = u)
+            (forall u:set, u :e H ->
+              apply_fun multH (u, apply_fun invH u) = eH /\ apply_fun multH (apply_fun invH u, u) = eH)
+            HgrpH).
+          assume HmultFn HinvFn HeHH HassocH HidH HinvLaw.
+          claim HpowMaH : group_power_nat multH eH y (ordsucc ma) :e H.
+          {
+            exact (HpowInH
+              y
+              Hy
+              (ordsucc ma)
+              HsuccmaO).
+          }
+          claim HpowRH : group_power_nat multH eH y (ordsucc r) :e H.
+          {
+            exact (HpowInH
+              y
+              Hy
+              (ordsucc r)
+              HsuccrO).
+          }
+          rewrite <- HmbEqMaPlusRNat.
+          rewrite (group_power_nat_add_nat_cyclic_helper
+            H
+            multH
+            eH
+            invH
+            y
+            (ordsucc ma)
+            (ordsucc r)
+            HgrpH
+            Hy
+            HsuccmaO
+            HsuccrO).
+          rewrite <- (HassocH
+            (apply_fun invH (group_power_nat multH eH y (ordsucc ma)))
+            (group_power_nat multH eH y (ordsucc ma))
+            (group_power_nat multH eH y (ordsucc r))
+            (HinvFn (group_power_nat multH eH y (ordsucc ma)) HpowMaH)
+            HpowMaH
+            HpowRH).
+          rewrite (andER
+            (apply_fun multH (group_power_nat multH eH y (ordsucc ma), apply_fun invH (group_power_nat multH eH y (ordsucc ma))) = eH)
+            (apply_fun multH (apply_fun invH (group_power_nat multH eH y (ordsucc ma)), group_power_nat multH eH y (ordsucc ma)) = eH)
+            (HinvLaw
+              (group_power_nat multH eH y (ordsucc ma))
+              HpowMaH)).
+          rewrite (andEL
+            (apply_fun multH (eH, group_power_nat multH eH y (ordsucc r)) = group_power_nat multH eH y (ordsucc r))
+            (apply_fun multH (group_power_nat multH eH y (ordsucc r), eH) = group_power_nat multH eH y (ordsucc r))
+            (HidH
+              (group_power_nat multH eH y (ordsucc r))
+              HpowRH)).
+          reflexivity.
     - assume Ha0.
       rewrite Ha0.
       rewrite (HmultIntLeftId
@@ -75549,8 +76308,391 @@ claim HpsiHom : group_homomorphism int integers_group_mult H multH psi.
          apply_fun multH (apply_fun psi a, apply_fun psi b))).
       + let mb.
         assume HmbO HbNeg.
-        (** TODO Bob: finish positive/negative integer multiplicativity branch. **)
-        admit.
+        claim HsuccmaO : ordsucc ma :e omega.
+        {
+          exact (omega_ordsucc
+            ma
+            HmaO).
+        }
+        claim HsuccmbO : ordsucc mb :e omega.
+        {
+          exact (omega_ordsucc
+            mb
+            HmbO).
+        }
+        claim HsuccmaInt : ordsucc ma :e int.
+        {
+          exact (Subq_omega_int
+            (ordsucc ma)
+            HsuccmaO).
+        }
+        claim HsuccmbInt : ordsucc mb :e int.
+        {
+          exact (Subq_omega_int
+            (ordsucc mb)
+            HsuccmbO).
+        }
+        claim HsuccmaS : SNo (ordsucc ma).
+        {
+          exact (int_SNo
+            (ordsucc ma)
+            HsuccmaInt).
+        }
+        claim HsuccmbS : SNo (ordsucc mb).
+        {
+          exact (int_SNo
+            (ordsucc mb)
+            HsuccmbInt).
+        }
+        set s := add_SNo (ordsucc ma) (minus_SNo (ordsucc mb)).
+        claim HsInt : s :e int.
+        {
+          exact (int_add_SNo
+            (ordsucc ma)
+            HsuccmaInt
+            (minus_SNo (ordsucc mb))
+            (int_minus_SNo_omega
+              (ordsucc mb)
+              HsuccmbO)).
+        }
+        rewrite HmultIntDef.
+        rewrite (apply_fun_graph
+          (setprod int int)
+          (fun p:set => add_SNo (p 0) (p 1))
+          (a, b)
+          (tuple_2_setprod_by_pair_Sigma
+            int
+            int
+            a
+            b
+            HaInt
+            HbInt)).
+        rewrite (tuple_2_0_eq a b).
+        rewrite (tuple_2_1_eq a b).
+        rewrite HaPos.
+        rewrite HbNeg.
+        rewrite (HpsiAtNatNonzero
+          (ordsucc ma)
+          HsuccmaO
+          (neq_ordsucc_0 ma)).
+        rewrite (HpsiAtNegSucc
+          mb
+          HmbO).
+        rewrite (HinvPowEq
+          (ordsucc mb)
+          HsuccmbO).
+        apply (int_3_cases
+          s
+          HsInt
+          (apply_fun psi s =
+           apply_fun multH
+             (group_power_nat multH eH y (ordsucc ma),
+              apply_fun invH (group_power_nat multH eH y (ordsucc mb))))).
+        * let r.
+          assume HrO HsNeg.
+          claim HsuccrO : ordsucc r :e omega.
+          {
+            exact (omega_ordsucc
+              r
+              HrO).
+          }
+          claim HsuccrS : SNo (ordsucc r).
+          {
+            exact (int_SNo
+              (ordsucc r)
+              (Subq_omega_int
+                (ordsucc r)
+                HsuccrO)).
+          }
+          claim HmbEqMaPlusR :
+            ordsucc mb = add_SNo (ordsucc ma) (ordsucc r).
+          {
+            claim Hstep :
+              add_SNo (add_SNo (ordsucc ma) (minus_SNo (ordsucc mb))) (ordsucc mb) = ordsucc ma.
+            {
+              exact (add_SNo_minus_R2'
+                (ordsucc ma)
+                (ordsucc mb)
+                HsuccmaS
+                HsuccmbS).
+            }
+            claim Htmp :
+              add_SNo (minus_SNo (ordsucc r)) (ordsucc mb) = ordsucc ma.
+            {
+              rewrite <- Hstep.
+              rewrite HsNeg.
+              reflexivity.
+            }
+            claim Htmp2 :
+              add_SNo (ordsucc mb) (minus_SNo (ordsucc r)) = ordsucc ma.
+            {
+              rewrite (add_SNo_com
+                (ordsucc mb)
+                (minus_SNo (ordsucc r))
+                HsuccmbS
+                (SNo_minus_SNo
+                  (ordsucc r)
+                  HsuccrS)).
+              exact Htmp.
+            }
+            symmetry.
+            rewrite <- Htmp2.
+            exact (add_SNo_minus_R2'
+              (ordsucc mb)
+              (ordsucc r)
+              HsuccmbS
+              HsuccrS).
+          }
+          claim HmbEqRPlusMa :
+            ordsucc mb = add_SNo (ordsucc r) (ordsucc ma).
+          {
+            rewrite HmbEqMaPlusR.
+            rewrite (add_SNo_com
+              (ordsucc ma)
+              (ordsucc r)
+              HsuccmaS
+              HsuccrS).
+            reflexivity.
+          }
+          claim HmbEqRPlusMaNat :
+            add_nat (ordsucc r) (ordsucc ma) = ordsucc mb.
+          {
+	            rewrite (add_nat_add_SNo
+	              (ordsucc r)
+	              HsuccrO
+	              (ordsucc ma)
+	              HsuccmaO).
+	            symmetry.
+	            exact HmbEqRPlusMa.
+	          }
+          rewrite HsNeg.
+          rewrite (HpsiAtNegSucc
+            r
+            HrO).
+          apply (and6E
+            (function_on multH (setprod H H) H)
+            (function_on invH H H)
+            (eH :e H)
+            (forall u v w:set, u :e H -> v :e H -> w :e H ->
+              apply_fun multH (apply_fun multH (u, v), w) = apply_fun multH (u, apply_fun multH (v, w)))
+            (forall u:set, u :e H -> apply_fun multH (eH, u) = u /\ apply_fun multH (u, eH) = u)
+            (forall u:set, u :e H ->
+              apply_fun multH (u, apply_fun invH u) = eH /\ apply_fun multH (apply_fun invH u, u) = eH)
+            HgrpH).
+          assume HmultFn HinvFn HeHH HassocH HidH HinvLaw.
+          claim HpowMaH : group_power_nat multH eH y (ordsucc ma) :e H.
+          {
+            exact (HpowInH
+              y
+              Hy
+              (ordsucc ma)
+              HsuccmaO).
+          }
+          claim HpowRH : group_power_nat multH eH y (ordsucc r) :e H.
+          {
+            exact (HpowInH
+              y
+              Hy
+              (ordsucc r)
+              HsuccrO).
+          }
+          rewrite <- HmbEqRPlusMaNat.
+          rewrite (group_power_nat_add_nat_cyclic_helper
+            H
+            multH
+            eH
+            invH
+            y
+            (ordsucc r)
+            (ordsucc ma)
+            HgrpH
+            Hy
+            HsuccrO
+            HsuccmaO).
+          rewrite (HinvOfProd
+            (group_power_nat multH eH y (ordsucc r))
+            (group_power_nat multH eH y (ordsucc ma))
+            HpowRH
+            HpowMaH).
+	          rewrite <- (HassocH
+	            (group_power_nat multH eH y (ordsucc ma))
+	            (apply_fun invH (group_power_nat multH eH y (ordsucc ma)))
+	            (apply_fun invH (group_power_nat multH eH y (ordsucc r)))
+	            HpowMaH
+	            (HinvFn (group_power_nat multH eH y (ordsucc ma)) HpowMaH)
+	            (HinvFn (group_power_nat multH eH y (ordsucc r)) HpowRH)).
+          rewrite (andEL
+            (apply_fun multH (group_power_nat multH eH y (ordsucc ma), apply_fun invH (group_power_nat multH eH y (ordsucc ma))) = eH)
+            (apply_fun multH (apply_fun invH (group_power_nat multH eH y (ordsucc ma)), group_power_nat multH eH y (ordsucc ma)) = eH)
+            (HinvLaw
+              (group_power_nat multH eH y (ordsucc ma))
+              HpowMaH)).
+          rewrite (andEL
+            (apply_fun multH (eH, apply_fun invH (group_power_nat multH eH y (ordsucc r))) = apply_fun invH (group_power_nat multH eH y (ordsucc r)))
+            (apply_fun multH (apply_fun invH (group_power_nat multH eH y (ordsucc r)), eH) = apply_fun invH (group_power_nat multH eH y (ordsucc r)))
+            (HidH
+              (apply_fun invH (group_power_nat multH eH y (ordsucc r)))
+              (HinvFn (group_power_nat multH eH y (ordsucc r)) HpowRH))).
+          rewrite <- (HinvPowEq
+            (ordsucc r)
+            HsuccrO).
+          reflexivity.
+        * assume Hs0.
+          rewrite Hs0.
+          rewrite HpsiAt0.
+          apply (and6E
+            (function_on multH (setprod H H) H)
+            (function_on invH H H)
+            (eH :e H)
+            (forall u v w:set, u :e H -> v :e H -> w :e H ->
+              apply_fun multH (apply_fun multH (u, v), w) = apply_fun multH (u, apply_fun multH (v, w)))
+            (forall u:set, u :e H -> apply_fun multH (eH, u) = u /\ apply_fun multH (u, eH) = u)
+            (forall u:set, u :e H ->
+              apply_fun multH (u, apply_fun invH u) = eH /\ apply_fun multH (apply_fun invH u, u) = eH)
+            HgrpH).
+          assume HmultFn HinvFn HeHH HassocH HidH HinvLaw.
+          claim HmaEqMb :
+            ordsucc ma = ordsucc mb.
+          {
+            claim Hstep :
+              add_SNo (add_SNo (ordsucc ma) (minus_SNo (ordsucc mb))) (ordsucc mb) = ordsucc ma.
+            {
+              exact (add_SNo_minus_R2'
+                (ordsucc ma)
+                (ordsucc mb)
+                HsuccmaS
+                HsuccmbS).
+            }
+            rewrite <- Hstep.
+            rewrite Hs0.
+            exact (add_SNo_0L
+              (ordsucc mb)
+              HsuccmbS).
+          }
+          rewrite HmaEqMb.
+          claim HpowMbH : group_power_nat multH eH y (ordsucc mb) :e H.
+          {
+            exact (HpowInH
+              y
+              Hy
+              (ordsucc mb)
+              HsuccmbO).
+          }
+          rewrite (andEL
+            (apply_fun multH (group_power_nat multH eH y (ordsucc mb), apply_fun invH (group_power_nat multH eH y (ordsucc mb))) = eH)
+            (apply_fun multH (apply_fun invH (group_power_nat multH eH y (ordsucc mb)), group_power_nat multH eH y (ordsucc mb)) = eH)
+            (HinvLaw
+              (group_power_nat multH eH y (ordsucc mb))
+              HpowMbH)).
+          reflexivity.
+        * let r.
+          assume HrO HsPos.
+          claim HsuccrO : ordsucc r :e omega.
+          {
+            exact (omega_ordsucc
+              r
+              HrO).
+          }
+          claim HsuccrS : SNo (ordsucc r).
+          {
+            exact (int_SNo
+              (ordsucc r)
+              (Subq_omega_int
+                (ordsucc r)
+                HsuccrO)).
+          }
+          claim HmaEqRPlusMb :
+            ordsucc ma = add_SNo (ordsucc r) (ordsucc mb).
+          {
+            claim Hstep :
+              add_SNo (add_SNo (ordsucc ma) (minus_SNo (ordsucc mb))) (ordsucc mb) = ordsucc ma.
+            {
+              exact (add_SNo_minus_R2'
+                (ordsucc ma)
+                (ordsucc mb)
+                HsuccmaS
+                HsuccmbS).
+            }
+	            rewrite <- Hstep.
+	            rewrite HsPos.
+	            reflexivity.
+	          }
+          claim HmaEqRPlusMbNat :
+            add_nat (ordsucc r) (ordsucc mb) = ordsucc ma.
+          {
+	            rewrite (add_nat_add_SNo
+	              (ordsucc r)
+	              HsuccrO
+	              (ordsucc mb)
+	              HsuccmbO).
+	            symmetry.
+	            exact HmaEqRPlusMb.
+	          }
+          rewrite HsPos.
+          rewrite (HpsiAtNatNonzero
+            (ordsucc r)
+            HsuccrO
+            (neq_ordsucc_0 r)).
+          apply (and6E
+            (function_on multH (setprod H H) H)
+            (function_on invH H H)
+            (eH :e H)
+            (forall u v w:set, u :e H -> v :e H -> w :e H ->
+              apply_fun multH (apply_fun multH (u, v), w) = apply_fun multH (u, apply_fun multH (v, w)))
+            (forall u:set, u :e H -> apply_fun multH (eH, u) = u /\ apply_fun multH (u, eH) = u)
+            (forall u:set, u :e H ->
+              apply_fun multH (u, apply_fun invH u) = eH /\ apply_fun multH (apply_fun invH u, u) = eH)
+            HgrpH).
+          assume HmultFn HinvFn HeHH HassocH HidH HinvLaw.
+          claim HpowMbH : group_power_nat multH eH y (ordsucc mb) :e H.
+          {
+            exact (HpowInH
+              y
+              Hy
+              (ordsucc mb)
+              HsuccmbO).
+          }
+          claim HpowRH : group_power_nat multH eH y (ordsucc r) :e H.
+          {
+            exact (HpowInH
+              y
+              Hy
+              (ordsucc r)
+              HsuccrO).
+          }
+          rewrite <- HmaEqRPlusMbNat.
+          rewrite (group_power_nat_add_nat_cyclic_helper
+            H
+            multH
+            eH
+            invH
+            y
+            (ordsucc r)
+            (ordsucc mb)
+            HgrpH
+            Hy
+            HsuccrO
+            HsuccmbO).
+          rewrite (HassocH
+            (group_power_nat multH eH y (ordsucc r))
+            (group_power_nat multH eH y (ordsucc mb))
+            (apply_fun invH (group_power_nat multH eH y (ordsucc mb)))
+            HpowRH
+            HpowMbH
+            (HinvFn (group_power_nat multH eH y (ordsucc mb)) HpowMbH)).
+          rewrite (andEL
+            (apply_fun multH (group_power_nat multH eH y (ordsucc mb), apply_fun invH (group_power_nat multH eH y (ordsucc mb))) = eH)
+            (apply_fun multH (apply_fun invH (group_power_nat multH eH y (ordsucc mb)), group_power_nat multH eH y (ordsucc mb)) = eH)
+            (HinvLaw
+              (group_power_nat multH eH y (ordsucc mb))
+              HpowMbH)).
+          rewrite (andER
+            (apply_fun multH (eH, group_power_nat multH eH y (ordsucc r)) = group_power_nat multH eH y (ordsucc r))
+            (apply_fun multH (group_power_nat multH eH y (ordsucc r), eH) = group_power_nat multH eH y (ordsucc r))
+            (HidH
+              (group_power_nat multH eH y (ordsucc r))
+              HpowRH)).
+          reflexivity.
       + assume Hb0.
         rewrite Hb0.
         rewrite (HmultIntRightId
