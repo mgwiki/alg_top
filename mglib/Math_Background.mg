@@ -135024,7 +135024,186 @@ claim Hext : forall alpha:set, alpha :e J ->
     apply_fun h (apply_fun (apply_fun ifam alpha) x) =
       apply_fun (apply_fun hfam alpha) x.
 {
-  admit. (** TODO Alice: prove extension property **)
+  let alpha. assume Hal : alpha :e J.
+  let x. assume Hx : x :e apply_fun Gfam alpha.
+  set g := apply_fun (apply_fun ifam alpha) x.
+  (** Extract ifam(alpha) homomorphism and injectivity **)
+  claim Hifam_hom : group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha).
+  { exact (andEL
+      (group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha))
+      (forall x0 y:set, x0 :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+        apply_fun (apply_fun ifam alpha) x0 = apply_fun (apply_fun ifam alpha) y -> x0 = y)
+      (Hifam alpha Hal)). }
+  claim Hifam_inj : forall x0 y:set, x0 :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+    apply_fun (apply_fun ifam alpha) x0 = apply_fun (apply_fun ifam alpha) y -> x0 = y.
+  { exact (andER
+      (group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha))
+      (forall x0 y:set, x0 :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+        apply_fun (apply_fun ifam alpha) x0 = apply_fun (apply_fun ifam alpha) y -> x0 = y)
+      (Hifam alpha Hal)). }
+  (** g is in G **)
+  claim HgG : g :e G.
+  { exact (andEL
+      (function_on (apply_fun ifam alpha) (apply_fun Gfam alpha) G)
+      (forall u v:set, u :e apply_fun Gfam alpha -> v :e apply_fun Gfam alpha ->
+        apply_fun (apply_fun ifam alpha) (apply_fun (apply_fun multfam alpha) (u, v)) =
+          apply_fun multG (apply_fun (apply_fun ifam alpha) u, apply_fun (apply_fun ifam alpha) v))
+      Hifam_hom x Hx). }
+  (** h(g) = map_rep(Eps_i(rep_pred g)) **)
+  claim Hh_val : apply_fun h g = map_rep (Eps_i (rep_pred g)).
+  { exact (apply_fun_graph G (fun g0:set => map_rep (Eps_i (rep_pred g0))) g HgG). }
+  (** Gfam_img(alpha) = homomorphism_image **)
+  claim Hgfam_img_eval : apply_fun Gfam_img alpha =
+    homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha).
+  { exact (apply_fun_graph J
+      (fun a:set => homomorphism_image (apply_fun Gfam a) (apply_fun ifam a))
+      alpha Hal). }
+  (** g is in Gfam_img(alpha) **)
+  claim Hg_in_img : g :e apply_fun Gfam_img alpha.
+  { rewrite Hgfam_img_eval.
+    exact (ReplI (apply_fun Gfam alpha) (fun z:set => apply_fun (apply_fun ifam alpha) z) x Hx). }
+  (** Left identity in G **)
+  claim Hlid : forall y:set, y :e G -> apply_fun multG (eG, y) = y.
+  { let y. assume Hy.
+    apply (and6E
+      (function_on multG (setprod G G) G) (function_on invG G G) (eG :e G)
+      (forall x0 y0 z:set, x0 :e G -> y0 :e G -> z :e G ->
+        apply_fun multG (apply_fun multG (x0, y0), z) = apply_fun multG (x0, apply_fun multG (y0, z)))
+      (forall x0:set, x0 :e G -> apply_fun multG (eG, x0) = x0 /\ apply_fun multG (x0, eG) = x0)
+      (forall x0:set, x0 :e G ->
+        apply_fun multG (x0, apply_fun invG x0) = eG /\ apply_fun multG (apply_fun invG x0, x0) = eG)
+      HgrpG).
+    assume _ _ _ _ Hid _.
+    exact (andEL (apply_fun multG (eG, y) = y) (apply_fun multG (y, eG) = y) (Hid y Hy)). }
+  (** Left identity in H **)
+  claim HlidH : forall y:set, y :e H -> apply_fun multH (eH, y) = y.
+  { let y. assume Hy.
+    apply (and6E
+      (function_on multH (setprod H H) H) (function_on invH H H) (eH :e H)
+      (forall x0 y0 z:set, x0 :e H -> y0 :e H -> z :e H ->
+        apply_fun multH (apply_fun multH (x0, y0), z) = apply_fun multH (x0, apply_fun multH (y0, z)))
+      (forall x0:set, x0 :e H -> apply_fun multH (eH, x0) = x0 /\ apply_fun multH (x0, eH) = x0)
+      (forall x0:set, x0 :e H ->
+        apply_fun multH (x0, apply_fun invH x0) = eH /\ apply_fun multH (apply_fun invH x0, x0) = eH)
+      HgrpH).
+    assume _ _ _ _ Hid _.
+    exact (andEL (apply_fun multH (eH, y) = y) (apply_fun multH (y, eH) = y) (Hid y Hy)). }
+  (** hfam(alpha)(x) is in H **)
+  claim Hhfam_x_H : apply_fun (apply_fun hfam alpha) x :e H.
+  { exact (andEL
+      (function_on (apply_fun hfam alpha) (apply_fun Gfam alpha) H)
+      (forall u v:set, u :e apply_fun Gfam alpha -> v :e apply_fun Gfam alpha ->
+        apply_fun (apply_fun hfam alpha) (apply_fun (apply_fun multfam alpha) (u, v)) =
+          apply_fun multH (apply_fun (apply_fun hfam alpha) u, apply_fun (apply_fun hfam alpha) v))
+      (Hhfam alpha Hal) x Hx). }
+  (** Preim properties: for g = ifam(alpha)(x), preim(alpha, g) is in Gfam(alpha) and maps to g **)
+  claim Hex_preim : exists y:set, y :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) y = g.
+  { witness x. apply andI. - exact Hx. - reflexivity. }
+  claim Hpreim_props : preim alpha g :e apply_fun Gfam alpha /\
+    apply_fun (apply_fun ifam alpha) (preim alpha g) = g.
+  { exact (Eps_i_ex (fun y:set => y :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) y = g)
+      Hex_preim). }
+  claim Hpreim_Gal : preim alpha g :e apply_fun Gfam alpha.
+  { exact (andEL
+      (preim alpha g :e apply_fun Gfam alpha)
+      (apply_fun (apply_fun ifam alpha) (preim alpha g) = g)
+      Hpreim_props). }
+  claim Hpreim_eq : apply_fun (apply_fun ifam alpha) (preim alpha g) = g.
+  { exact (andER
+      (preim alpha g :e apply_fun Gfam alpha)
+      (apply_fun (apply_fun ifam alpha) (preim alpha g) = g)
+      Hpreim_props). }
+  (** preim(alpha, g) = x by injectivity **)
+  claim Hpreim_is_x : preim alpha g = x.
+  { exact (Hifam_inj (preim alpha g) x Hpreim_Gal Hx Hpreim_eq). }
+  (** Construct canonical representation **)
+  set ac := graph 1 (fun _:set => alpha).
+  set xc := graph 1 (fun _:set => g).
+  set pack_c := (1, (ac, xc)).
+  (** Projection lemmas for pack_c **)
+  claim Hpc0 : pack_c 0 = 1. { exact (tuple_2_0_eq 1 (ac, xc)). }
+  claim Hpc1 : pack_c 1 = (ac, xc). { exact (tuple_2_1_eq 1 (ac, xc)). }
+  claim Hpc10 : (pack_c 1) 0 = ac.
+  { rewrite Hpc1. exact (tuple_2_0_eq ac xc). }
+  claim Hpc11 : (pack_c 1) 1 = xc.
+  { rewrite Hpc1. exact (tuple_2_1_eq ac xc). }
+  claim Hac_eval : apply_fun ac 0 = alpha.
+  { exact (apply_fun_graph 1 (fun _:set => alpha) 0 (ordsuccI2 0)). }
+  claim Hxc_eval : apply_fun xc 0 = g.
+  { exact (apply_fun_graph 1 (fun _:set => g) 0 (ordsuccI2 0)). }
+  (** Canonical rep satisfies rep_pred g **)
+  claim Hrep_c : rep_pred g pack_c.
+  { prove (pack_c 0) :e omega /\ (pack_c 0) <> 0 /\
+      function_on ((pack_c 1) 0) (pack_c 0) J /\
+      function_on ((pack_c 1) 1) (pack_c 0) G /\
+      (forall i:set, i :e (pack_c 0) ->
+        apply_fun ((pack_c 1) 1) i :e apply_fun Gfam_img (apply_fun ((pack_c 1) 0) i)) /\
+      (forall i j:set, i :e (pack_c 0) -> j :e (pack_c 0) -> i <> j ->
+        apply_fun ((pack_c 1) 0) i <> apply_fun ((pack_c 1) 0) j) /\
+      g = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ((pack_c 1) 1) i)) (pack_c 0).
+    apply andI. apply andI. apply andI. apply andI. apply andI. apply andI.
+    - (** 1 in omega **) rewrite Hpc0.
+      exact (omega_ordsucc 0 (nat_p_omega 0 nat_0)).
+    - (** 1 != 0 **) rewrite Hpc0. exact (neq_ordsucc_0 0).
+    - (** function_on ac 1 J **) rewrite Hpc10. rewrite Hpc0.
+      let i. assume Hi : i :e 1.
+      claim Hi0 : i = 0.
+      { apply (ordsuccE 0 i Hi). - assume H : i :e 0. exact (FalseE (EmptyE i H) (i = 0)). - assume H : i = 0. exact H. }
+      rewrite Hi0. rewrite Hac_eval. exact Hal.
+    - (** function_on xc 1 G **) rewrite Hpc11. rewrite Hpc0.
+      let i. assume Hi : i :e 1.
+      claim Hi0 : i = 0.
+      { apply (ordsuccE 0 i Hi). - assume H : i :e 0. exact (FalseE (EmptyE i H) (i = 0)). - assume H : i = 0. exact H. }
+      rewrite Hi0. rewrite Hxc_eval. exact HgG.
+    - (** membership **) rewrite Hpc11. rewrite Hpc10. rewrite Hpc0.
+      let i. assume Hi : i :e 1.
+      claim Hi0 : i = 0.
+      { apply (ordsuccE 0 i Hi). - assume H : i :e 0. exact (FalseE (EmptyE i H) (i = 0)). - assume H : i = 0. exact H. }
+      rewrite Hi0. rewrite Hxc_eval. rewrite Hac_eval. exact Hg_in_img.
+    - (** distinctness - vacuous for n=1 **) rewrite Hpc10. rewrite Hpc0.
+      let i j. assume Hi : i :e 1. assume Hj : j :e 1. assume Hne : i <> j.
+      claim Hi0 : i = 0.
+      { apply (ordsuccE 0 i Hi). - assume H : i :e 0. exact (FalseE (EmptyE i H) (i = 0)). - assume H : i = 0. exact H. }
+      claim Hj0 : j = 0.
+      { apply (ordsuccE 0 j Hj). - assume H : j :e 0. exact (FalseE (EmptyE j H) (j = 0)). - assume H : j = 0. exact H. }
+      claim Hcontra : i = j. { rewrite Hi0. rewrite Hj0. reflexivity. }
+      assume _. exact (Hne Hcontra).
+    - (** g = nat_primrec eG F 1 **) rewrite Hpc11. rewrite Hpc0.
+      claim Hstep1 : nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun xc i)) 1 =
+        (fun i r:set => apply_fun multG (r, apply_fun xc i)) 0
+          (nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun xc i)) 0).
+      { exact (nat_primrec_S eG (fun i r:set => apply_fun multG (r, apply_fun xc i)) 0 nat_0). }
+      claim Hstep2 : nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun xc i)) 0 = eG.
+      { exact (nat_primrec_0 eG (fun i r:set => apply_fun multG (r, apply_fun xc i))). }
+      claim Hstep3 : nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun xc i)) 1 =
+        apply_fun multG (eG, apply_fun xc 0).
+      { rewrite Hstep1. rewrite Hstep2. reflexivity. }
+      claim Hstep4 : apply_fun multG (eG, apply_fun xc 0) = apply_fun multG (eG, g).
+      { rewrite Hxc_eval. reflexivity. }
+      claim Hstep5 : apply_fun multG (eG, g) = g.
+      { exact (Hlid g HgG). }
+      symmetry.
+      exact (eq_i_tra
+        (nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun xc i)) 1)
+        (apply_fun multG (eG, apply_fun xc 0))
+        g
+        Hstep3
+        (eq_i_tra
+          (apply_fun multG (eG, apply_fun xc 0))
+          (apply_fun multG (eG, g))
+          g
+          Hstep4 Hstep5)).
+  }
+  (** Eps_i gives valid representation **)
+  set pack_e := Eps_i (rep_pred g).
+  claim Hrep_e : rep_pred g pack_e.
+  { exact (Eps_i_ax (rep_pred g) pack_c Hrep_c). }
+  (** map_rep(pack_e) = hfam(alpha)(x) by representation invariance **)
+  claim Hresult : map_rep pack_e = apply_fun (apply_fun hfam alpha) x.
+  { admit. (** representation invariance - the hard part **)
+  }
+  rewrite Hh_val.
+  exact Hresult.
 }
 (** Part 3: h is unique **)
 claim Huniq : forall h':set, group_homomorphism G multG H multH h' ->
