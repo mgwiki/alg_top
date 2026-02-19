@@ -74169,8 +74169,13 @@ claim HphiSelFn : function_on phi_sel G int.
         g = group_power_nat mult e (apply_fun inv x) (ordsucc m)))
     HEpsPg).
 }
-(** TODO Bob: build explicit isomorphism G ~= Z from generator x and nonfiniteness. **)
-admit.
+claim HphiSelIso : group_isomorphism G mult int integers_group_mult phi_sel.
+{
+  (** TODO Bob: prove phi_sel is a homomorphism and bijection using generator normal forms and nonfiniteness. **)
+  admit.
+}
+witness phi_sel.
+exact HphiSelIso.
 Admitted.
 
 (** from S54 text (line 835 in algtop.tex) **)
