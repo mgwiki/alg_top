@@ -74285,6 +74285,187 @@ apply (xm (e1 = e0)).
     HclsEq).
 Qed.
 
+(** S54 helper: if S1 is compact, the standard covering has two distinct points in one fiber. **)
+Theorem s54_two_distinct_lifts_if_S1_compact :
+  compact_space S1 S1_topology ->
+  exists e0 e1:set,
+    e0 :e R /\ e1 :e R /\
+    apply_fun covering_map_R_S1 e1 = apply_fun covering_map_R_S1 e0 /\
+    e1 <> e0.
+assume HcompS1.
+set p := covering_map_R_S1.
+apply (xm (exists e0 e1:set,
+  e0 :e R /\ e1 :e R /\
+  apply_fun p e1 = apply_fun p e0 /\
+  e1 <> e0)).
+- assume Hex.
+  exact Hex.
+- assume Hnone.
+  claim HcovPair :
+    continuous_map R R_standard_topology S1 S1_topology p /\
+    surjective_map R S1 p.
+  {
+    exact (andEL
+      (continuous_map R R_standard_topology S1 S1_topology p /\
+        surjective_map R S1 p)
+      (forall b:set, b :e S1 ->
+        exists U:set, U :e S1_topology /\ b :e U /\
+          evenly_covered R R_standard_topology S1 S1_topology p U)
+      thm53_1_R_covers_S1).
+  }
+  claim Hcont : continuous_map R R_standard_topology S1 S1_topology p.
+  {
+    exact (andEL
+      (continuous_map R R_standard_topology S1 S1_topology p)
+      (surjective_map R S1 p)
+      HcovPair).
+  }
+  claim Hsurj : surjective_map R S1 p.
+  {
+    exact (andER
+      (continuous_map R R_standard_topology S1 S1_topology p)
+      (surjective_map R S1 p)
+      HcovPair).
+  }
+  claim Hinj :
+    forall x y:set, x :e R -> y :e R ->
+      apply_fun p y = apply_fun p x ->
+      y = x.
+  {
+    let x y.
+    assume HxR HyR Hyx.
+    apply (xm (y = x)).
+    + assume HyxEq.
+      exact HyxEq.
+    + assume Hneq.
+      claim Hcontra : False.
+      {
+        apply Hnone.
+        witness x.
+        witness y.
+        apply andI.
+        - exact HxR.
+        - apply andI.
+          + exact HyR.
+          + apply andI.
+            * exact Hyx.
+            * exact Hneq.
+      }
+      exact (FalseE
+        Hcontra
+        (y = x)).
+  }
+  claim HfinFib :
+    forall b:set, b :e S1 ->
+      finite {x :e R | apply_fun p x = b}.
+  {
+    let b.
+    assume HbS1.
+    claim HsurjWitness :
+      forall y:set, y :e S1 -> exists x:set, x :e R /\ apply_fun p x = y.
+    {
+      exact (andER
+        (function_on p R S1)
+        (forall y:set, y :e S1 -> exists x:set, x :e R /\ apply_fun p x = y)
+        Hsurj).
+    }
+    apply (HsurjWitness b HbS1).
+    let x0.
+    assume Hx0Pack.
+    claim Hx0R : x0 :e R.
+    {
+      exact (andEL
+        (x0 :e R)
+        (apply_fun p x0 = b)
+        Hx0Pack).
+    }
+    claim Hx0Eq : apply_fun p x0 = b.
+    {
+      exact (andER
+        (x0 :e R)
+        (apply_fun p x0 = b)
+        Hx0Pack).
+    }
+    claim HFibEq :
+      {x :e R | apply_fun p x = b} = {x0}.
+    {
+      apply set_ext.
+      - let x.
+        assume HxFib.
+        claim HxR : x :e R.
+        {
+          exact (SepE1
+            R
+            (fun z:set => apply_fun p z = b)
+            x
+            HxFib).
+        }
+        claim HxEqb : apply_fun p x = b.
+        {
+          exact (SepE2
+            R
+            (fun z:set => apply_fun p z = b)
+            x
+            HxFib).
+        }
+        claim HxEqx0 : x = x0.
+        {
+          apply (Hinj
+            x0
+            x
+            Hx0R
+            HxR).
+          rewrite HxEqb.
+          rewrite Hx0Eq.
+          reflexivity.
+        }
+        rewrite HxEqx0.
+        exact (SingI x0).
+      - let x.
+        assume HxSing.
+        claim HxEqx0 : x = x0.
+        {
+          exact (SingE
+            x0
+            x
+            HxSing).
+        }
+        rewrite HxEqx0.
+        apply (SepI
+          R
+          (fun z:set => apply_fun p z = b)
+          x0
+          Hx0R).
+        exact Hx0Eq.
+    }
+    rewrite HFibEq.
+    exact (Sing_finite x0).
+  }
+  claim HcompR : compact_space R R_standard_topology.
+  {
+    exact (ex53_6b_compact_finite_fiber
+      R
+      R_standard_topology
+      S1
+      S1_topology
+      p
+      thm53_1_R_covers_S1
+      HcompS1
+      HfinFib).
+  }
+  claim Hfalse : False.
+  {
+    exact (R_standard_topology_not_compact
+      HcompR).
+  }
+  exact (FalseE
+    Hfalse
+    (exists e0 e1:set,
+      e0 :e R /\ e1 :e R /\
+      apply_fun p e1 = apply_fun p e0 /\
+      e1 <> e0)).
+Qed.
+
 (** S54 helper: two distinct lifts over S1_basepoint force identity on S1 to be non-nulhomotopic. **)
 (** Proven Bob **)
 Theorem s54_identity_S1_not_nulhomotopic_from_two_lifts : forall e0 e1:set,
