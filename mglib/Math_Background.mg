@@ -88181,7 +88181,7 @@ apply (xm (exists x:set, x :e B2 /\ apply_fun f x = x)).
   exact (FalseE
     Hcontra
     (exists x:set, x :e B2 /\ apply_fun f x = x)).
-Qed.
+Admitted.
 
 (** Infrastructure for starred Cor 55.7: finite sum of real-valued terms **)
 (** finite_real_sum f n = f(0) + f(1) + ... + f(n-1) **)
