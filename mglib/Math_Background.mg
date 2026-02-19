@@ -130649,7 +130649,104 @@ apply and3I.
                           (** At k = nw: wp(yw, ordsucc nw) = mult(ie, efam(al)) = eG **)
                           (** Then wp(yw, nw2) = mult(eG, ie) = ie **)
                           claim Hyw_wp : word_product multG eG yw nw2 = ie.
-                          { admit. }
+                          { (** Shift lemma: wp(yw, sk) = mult(ie, wp(xsw, k)) for k <= nw **)
+                            claim Hshift : forall k:set, nat_p k -> k :e ordsucc nw ->
+                              word_product multG eG yw (ordsucc k) =
+                                apply_fun multG (ie, word_product multG eG xsw k).
+                            { apply nat_ind.
+                              - (** Base: k = 0 **)
+                                assume H0_snw : 0 :e ordsucc nw.
+                                claim HwpY1 : word_product multG eG yw (ordsucc 0) =
+                                  apply_fun multG (word_product multG eG yw 0, apply_fun yw 0).
+                                { prove nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun yw i)) (ordsucc 0) =
+                                    apply_fun multG (nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun yw i)) 0,
+                                      apply_fun yw 0).
+                                  exact (nat_primrec_S eG (fun i r:set => apply_fun multG (r, apply_fun yw i)) 0 nat_0). }
+                                claim HwpY0 : word_product multG eG yw 0 = eG.
+                                { prove nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun yw i)) 0 = eG.
+                                  exact (nat_primrec_0 eG (fun i r:set => apply_fun multG (r, apply_fun yw i))). }
+                                claim HwpX0 : word_product multG eG xsw 0 = eG.
+                                { prove nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun xsw i)) 0 = eG.
+                                  exact (nat_primrec_0 eG (fun i r:set => apply_fun multG (r, apply_fun xsw i))). }
+                                claim HidL_ie : apply_fun multG (eG, ie) = ie.
+                                { exact (andEL (apply_fun multG (eG, ie) = ie)
+                                    (apply_fun multG (ie, eG) = ie) (HidG ie Hinv_efam_G)). }
+                                claim HidR_ie : apply_fun multG (ie, eG) = ie.
+                                { exact (andER (apply_fun multG (eG, ie) = ie)
+                                    (apply_fun multG (ie, eG) = ie) (HidG ie Hinv_efam_G)). }
+                                claim Hlhs : word_product multG eG yw (ordsucc 0) = ie.
+                                { rewrite HwpY1. rewrite HwpY0. rewrite Hyw_0. exact HidL_ie. }
+                                claim Hrhs_ie : apply_fun multG (ie, word_product multG eG xsw 0) = ie.
+                                { rewrite HwpX0. exact HidR_ie. }
+                                claim Hrhs_sym : ie = apply_fun multG (ie, word_product multG eG xsw 0).
+                                { symmetry. exact Hrhs_ie. }
+                                exact (eq_i_tra (word_product multG eG yw (ordsucc 0)) ie
+                                  (apply_fun multG (ie, word_product multG eG xsw 0)) Hlhs Hrhs_sym).
+                              - (** Step: k -> ordsucc k **)
+                                let k. assume Hk_nat : nat_p k.
+                                assume IH : k :e ordsucc nw ->
+                                  word_product multG eG yw (ordsucc k) =
+                                    apply_fun multG (ie, word_product multG eG xsw k).
+                                assume Hsk_snw : ordsucc k :e ordsucc nw.
+                                prove word_product multG eG yw (ordsucc (ordsucc k)) =
+                                  apply_fun multG (ie, word_product multG eG xsw (ordsucc k)).
+                                claim Hsk_nat : nat_p (ordsucc k). { exact (nat_ordsucc k Hk_nat). }
+                                claim Hk_snw : k :e ordsucc nw.
+                                { exact (ordsuccI1 nw k (nat_ordsucc_trans nw Hnw_nat (ordsucc k) Hsk_snw k (ordsuccI2 k))). }
+                                claim Hk_nw : k :e nw.
+                                { apply (ordsuccE nw k Hk_snw).
+                                  + assume Hk_in : k :e nw. exact Hk_in.
+                                  + assume Hk_eq : k = nw.
+                                    claim Hsk_snw2 : ordsucc nw :e ordsucc nw.
+                                    { exact (Hk_eq (fun a b:set => ordsucc a :e ordsucc nw) Hsk_snw). }
+                                    exact (FalseE (In_irref (ordsucc nw) Hsk_snw2) (k :e nw)). }
+                                claim HIH : word_product multG eG yw (ordsucc k) =
+                                  apply_fun multG (ie, word_product multG eG xsw k).
+                                { exact (IH Hk_snw). }
+                                claim Hyw_sk : apply_fun yw (ordsucc k) = apply_fun xsw k.
+                                { exact (Hyw_mid k Hk_nw). }
+                                claim HwpY_ss : word_product multG eG yw (ordsucc (ordsucc k)) =
+                                  apply_fun multG (word_product multG eG yw (ordsucc k), apply_fun yw (ordsucc k)).
+                                { prove nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun yw i)) (ordsucc (ordsucc k)) =
+                                    apply_fun multG (nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun yw i)) (ordsucc k),
+                                      apply_fun yw (ordsucc k)).
+                                  exact (nat_primrec_S eG (fun i r:set => apply_fun multG (r, apply_fun yw i)) (ordsucc k) Hsk_nat). }
+                                claim HwpX_s : word_product multG eG xsw (ordsucc k) =
+                                  apply_fun multG (word_product multG eG xsw k, apply_fun xsw k).
+                                { prove nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun xsw i)) (ordsucc k) =
+                                    apply_fun multG (nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun xsw i)) k,
+                                      apply_fun xsw k).
+                                  exact (nat_primrec_S eG (fun i r:set => apply_fun multG (r, apply_fun xsw i)) k Hk_nat). }
+                                claim Hwpxk_G : word_product multG eG xsw k :e G.
+                                { exact (Hwp_in_G_nat k Hk_nat xsw
+                                    (fun i:set => fun Hi_k : i :e k =>
+                                      Hxsw_in_G i (nat_trans nw Hnw_nat k Hk_nw i Hi_k))). }
+                                claim Hxsk_G : apply_fun xsw k :e G. { exact (Hxsw_in_G k Hk_nw). }
+                                claim Hassoc_step : apply_fun multG (apply_fun multG (ie, word_product multG eG xsw k), apply_fun xsw k) =
+                                  apply_fun multG (ie, apply_fun multG (word_product multG eG xsw k, apply_fun xsw k)).
+                                { exact (HassocG ie (word_product multG eG xsw k) (apply_fun xsw k)
+                                    Hinv_efam_G Hwpxk_G Hxsk_G). }
+                                rewrite HwpY_ss. rewrite HIH. rewrite Hyw_sk. rewrite Hassoc_step.
+                                rewrite <- HwpX_s. reflexivity. }
+                            (** Apply shift at k = nw **)
+                            claim Hnw_snw : nw :e ordsucc nw. { exact (ordsuccI2 nw). }
+                            claim Hshift_nw : word_product multG eG yw (ordsucc nw) =
+                              apply_fun multG (ie, word_product multG eG xsw nw).
+                            { exact (Hshift nw Hnw_nat Hnw_snw). }
+                            claim HwpY_snw : word_product multG eG yw (ordsucc nw) = eG.
+                            { rewrite Hshift_nw. rewrite Hwp_efam. exact Hie_efam_eG. }
+                            (** Final step: wp(yw, nw2) = mult(eG, ie) = ie **)
+                            claim HwpY_nw2 : word_product multG eG yw nw2 =
+                              apply_fun multG (word_product multG eG yw (ordsucc nw), apply_fun yw (ordsucc nw)).
+                            { prove nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun yw i)) (ordsucc (ordsucc nw)) =
+                                apply_fun multG (nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun yw i)) (ordsucc nw),
+                                  apply_fun yw (ordsucc nw)).
+                              exact (nat_primrec_S eG (fun i r:set => apply_fun multG (r, apply_fun yw i)) (ordsucc nw) Hsnw_nat). }
+                            claim HidL_ie_final : apply_fun multG (eG, ie) = ie.
+                            { exact (andEL (apply_fun multG (eG, ie) = ie)
+                                (apply_fun multG (ie, eG) = ie) (HidG ie Hinv_efam_G)). }
+                            rewrite HwpY_nw2. rewrite HwpY_snw. rewrite Hyw_last.
+                            exact HidL_ie_final. }
                           (** By Hie_uniq: 1 = nw2 **)
                           claim H1_eq_nw2 : 1 = nw2.
                           { exact (Hie_uniq nw2 yw Hyw_redw Hnw2_ne0 Hyw_wp). }
