@@ -96538,6 +96538,31 @@ apply (xm (exists x:set, x :e Bn_closed n /\ apply_fun f x = x)).
 - assume Hfix.
   exact Hfix.
 - assume HnoFix.
+  claim HfIntoB :
+    forall x:set, x :e Bn_closed n -> apply_fun f x :e Bn_closed n.
+  {
+    let x.
+    assume HxB.
+    exact (HfFun
+      x
+      HxB).
+  }
+  claim HnoFix_pointwise :
+    forall x:set, x :e Bn_closed n -> apply_fun f x <> x.
+  {
+    let x.
+    assume HxB HfxEq.
+    claim Hfixx :
+      exists z:set, z :e Bn_closed n /\ apply_fun f z = z.
+    {
+      witness x.
+      apply andI.
+      - exact HxB.
+      - exact HfxEq.
+    }
+    exact (HnoFix
+      Hfixx).
+  }
   admit.
 Admitted.
 
