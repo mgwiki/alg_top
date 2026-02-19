@@ -66681,6 +66681,190 @@ exact (union_connected_common_point
   Hcommon).
 Qed.
 
+(** Infrastructure: any L-shape ({a}xI) U (Ix{b}) in I^2 is connected **)
+(** Proven Bob **)
+Theorem lemma54_2_L_shape_connected : forall a b:set,
+  a :e unit_interval ->
+  b :e unit_interval ->
+  connected_space
+    (Union (UPair (setprod {a} unit_interval) (setprod unit_interval {b})))
+    (subspace_topology
+      unit_square
+      unit_square_topology
+      (Union (UPair (setprod {a} unit_interval) (setprod unit_interval {b})))).
+let a b.
+assume Ha Hb.
+claim HtopSq : topology_on unit_square unit_square_topology.
+{
+  exact (product_topology_is_topology
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    unit_interval_topology_on
+    unit_interval_topology_on).
+}
+claim HUIRefl : unit_interval c= unit_interval.
+{
+  let x.
+  assume Hx.
+  exact Hx.
+}
+claim HsingaSub : {a} c= unit_interval.
+{
+  exact (singleton_subset
+    a
+    unit_interval
+    Ha).
+}
+claim HsingbSub : {b} c= unit_interval.
+{
+  exact (singleton_subset
+    b
+    unit_interval
+    Hb).
+}
+claim HleftSub : setprod {a} unit_interval c= unit_square.
+{
+  exact (setprod_Subq
+    {a}
+    unit_interval
+    unit_interval
+    unit_interval
+    HsingaSub
+    HUIRefl).
+}
+claim HbottomSub : setprod unit_interval {b} c= unit_square.
+{
+  exact (setprod_Subq
+    unit_interval
+    {b}
+    unit_interval
+    unit_interval
+    HUIRefl
+    HsingbSub).
+}
+claim HleftConn :
+  connected_space
+    (setprod {a} unit_interval)
+    (subspace_topology
+      unit_square
+      unit_square_topology
+      (setprod {a} unit_interval)).
+{
+  exact (slice_Y_connected
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    a
+    unit_interval_connected
+    unit_interval_topology_on
+    Ha).
+}
+claim HbottomConn :
+  connected_space
+    (setprod unit_interval {b})
+    (subspace_topology
+      unit_square
+      unit_square_topology
+      (setprod unit_interval {b})).
+{
+  exact (slice_X_connected
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    b
+    unit_interval_connected
+    unit_interval_topology_on
+    Hb).
+}
+claim HfamSub :
+  forall C:set, C :e UPair (setprod {a} unit_interval) (setprod unit_interval {b}) ->
+    C c= unit_square.
+{
+  let C.
+  assume HC.
+  apply (UPairE
+    C
+    (setprod {a} unit_interval)
+    (setprod unit_interval {b})
+    HC).
+  - assume HCleft.
+    rewrite HCleft.
+    exact HleftSub.
+  - assume HCbottom.
+    rewrite HCbottom.
+    exact HbottomSub.
+}
+claim HfamConn :
+  forall C:set, C :e UPair (setprod {a} unit_interval) (setprod unit_interval {b}) ->
+    connected_space C (subspace_topology unit_square unit_square_topology C).
+{
+  let C.
+  assume HC.
+  apply (UPairE
+    C
+    (setprod {a} unit_interval)
+    (setprod unit_interval {b})
+    HC).
+  - assume HCleft.
+    rewrite HCleft.
+    exact HleftConn.
+  - assume HCbottom.
+    rewrite HCbottom.
+    exact HbottomConn.
+}
+claim HabLeft : (a, b) :e setprod {a} unit_interval.
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    {a}
+    unit_interval
+    a
+    b
+    (SingI a)
+    Hb).
+}
+claim HabBottom : (a, b) :e setprod unit_interval {b}.
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    unit_interval
+    {b}
+    a
+    b
+    Ha
+    (SingI b)).
+}
+claim Hcommon :
+  exists x:set,
+    forall C:set, C :e UPair (setprod {a} unit_interval) (setprod unit_interval {b}) -> x :e C.
+{
+  witness (a, b).
+  let C.
+  assume HC.
+  apply (UPairE
+    C
+    (setprod {a} unit_interval)
+    (setprod unit_interval {b})
+    HC).
+  - assume HCleft.
+    rewrite HCleft.
+    exact HabLeft.
+  - assume HCbottom.
+    rewrite HCbottom.
+    exact HabBottom.
+}
+exact (union_connected_common_point
+  unit_square
+  unit_square_topology
+  (UPair (setprod {a} unit_interval) (setprod unit_interval {b}))
+  HtopSq
+  HfamSub
+  HfamConn
+  Hcommon).
+Qed.
+
 (** Infrastructure: existence package for homotopy lifting in Lem 54.2 **)
 Theorem lemma54_2_homotopy_lifting_exists : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
