@@ -140995,6 +140995,60 @@ apply (nat_inv nw Hnw_nat).
                     symmetry.
                     exact Hxsw1_eq_xie1.
                   }
+                  claim Hal_ne_b0 : al <> beta_0.
+                  {
+                    assume Heq.
+                    claim Hsym : beta_0 = al.
+                    {
+                      symmetry.
+                      exact Heq.
+                    }
+                    exact (Hb0_ne_al
+                      Hsym).
+                  }
+                  claim Hie_not_Gb0 : ie :e apply_fun Gfam beta_0 -> False.
+                  {
+                    assume Hie_Gb0.
+                    claim Hie_eG : ie = eG.
+                    {
+                      exact (Hdisjoint
+                        al
+                        beta_0
+                        Hal
+                        Hb0_J
+                        Hal_ne_b0
+                        ie
+                        Hie_Gal
+                        Hie_Gb0).
+                    }
+                    exact (Hie_ne_eG
+                      Hie_eG).
+                  }
+                  claim Hxie0_ne_ie : apply_fun xie 0 <> ie.
+                  {
+                    assume Hxie0_ie.
+                    claim Hxsw0_eq_xie0 : apply_fun xsw 0 = apply_fun xie 0.
+                    {
+                      symmetry.
+                      exact Hxie0_eq_xsw0.
+                    }
+                    claim Hxsw0_ie : apply_fun xsw 0 = ie.
+                    {
+                      exact (eq_i_tra
+                        (apply_fun xsw 0)
+                        (apply_fun xie 0)
+                        ie
+                        Hxsw0_eq_xie0
+                        Hxie0_ie).
+                    }
+                    claim Hie_Gb0 : ie :e apply_fun Gfam beta_0.
+                    {
+                      rewrite <- Hxsw0_ie.
+                      exact Hxs0_Gb0.
+                    }
+                    exact (Hie_not_Gb0
+                      Hie_Gb0).
+                  }
                   admit.
                 }
               + assume Hinv_ne_efam.
