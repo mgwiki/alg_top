@@ -75148,6 +75148,241 @@ claim HpsiHom : group_homomorphism int integers_group_mult H multH psi.
         HnInt).
       exact HEpsPn.
     }
+    claim HpsiAtNegSucc :
+      forall r:set, r :e omega ->
+        apply_fun psi (minus_SNo (ordsucc r)) =
+        group_power_nat multH eH (apply_fun invH y) (ordsucc r).
+    {
+      let r.
+      assume HrO.
+      set Pneg := fun h0:set =>
+        h0 :e H /\
+          (((minus_SNo (ordsucc r)) :e omega /\
+             h0 = group_power_nat multH eH y (minus_SNo (ordsucc r))) \/
+           (exists m:set, m :e omega /\ (minus_SNo (ordsucc r)) = minus_SNo (ordsucc m) /\
+             h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m))).
+      claim HsuccrO : ordsucc r :e omega.
+      {
+        exact (omega_ordsucc
+          r
+          HrO).
+      }
+      claim HPnegInvRaw :
+        group_power_nat multH eH (apply_fun invH y) (ordsucc r) :e H /\
+        (((minus_SNo (ordsucc r)) :e omega /\
+           group_power_nat multH eH (apply_fun invH y) (ordsucc r) =
+           group_power_nat multH eH y (minus_SNo (ordsucc r))) \/
+         (exists m:set, m :e omega /\ (minus_SNo (ordsucc r)) = minus_SNo (ordsucc m) /\
+           group_power_nat multH eH (apply_fun invH y) (ordsucc r) =
+           group_power_nat multH eH (apply_fun invH y) (ordsucc m))).
+      {
+        apply andI.
+        - exact (HpowInH
+            (apply_fun invH y)
+            HyInv
+            (ordsucc r)
+            HsuccrO).
+        - apply orIR.
+          witness r.
+          apply andI.
+          + apply andI.
+            * exact HrO.
+            * reflexivity.
+          + reflexivity.
+      }
+      claim HPnegInv : Pneg (group_power_nat multH eH (apply_fun invH y) (ordsucc r)).
+      {
+        exact HPnegInvRaw.
+      }
+      claim HPnegUniq :
+        forall h0:set, Pneg h0 ->
+          h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc r).
+      {
+        let h0.
+        assume HPnegh0.
+        claim Hcases :
+          ((minus_SNo (ordsucc r)) :e omega /\
+            h0 = group_power_nat multH eH y (minus_SNo (ordsucc r))) \/
+          (exists m:set, m :e omega /\ (minus_SNo (ordsucc r)) = minus_SNo (ordsucc m) /\
+            h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m)).
+        {
+          exact (andER
+            (h0 :e H)
+            (((minus_SNo (ordsucc r)) :e omega /\
+               h0 = group_power_nat multH eH y (minus_SNo (ordsucc r))) \/
+             (exists m:set, m :e omega /\ (minus_SNo (ordsucc r)) = minus_SNo (ordsucc m) /\
+               h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m)))
+            HPnegh0).
+        }
+        apply Hcases.
+        - assume HnatCase.
+          claim HnegO : (minus_SNo (ordsucc r)) :e omega.
+          {
+            exact (andEL
+              ((minus_SNo (ordsucc r)) :e omega)
+              (h0 = group_power_nat multH eH y (minus_SNo (ordsucc r)))
+              HnatCase).
+          }
+          claim HnegNe0 : (minus_SNo (ordsucc r)) <> 0.
+          {
+            assume Hneg0.
+            claim HsuccrInt : ordsucc r :e int.
+            {
+              exact (Subq_omega_int
+                (ordsucc r)
+                HsuccrO).
+            }
+            claim HsuccrS : SNo (ordsucc r).
+            {
+              exact (int_SNo
+                (ordsucc r)
+                HsuccrInt).
+            }
+            claim HsuccrEq0 : ordsucc r = 0.
+            {
+              claim Htmp : minus_SNo (minus_SNo (ordsucc r)) = minus_SNo 0.
+              {
+                rewrite Hneg0.
+                reflexivity.
+              }
+              claim Htmp2 : ordsucc r = minus_SNo 0.
+              {
+                rewrite <- (minus_SNo_invol
+                  (ordsucc r)
+                  HsuccrS).
+                exact Htmp.
+              }
+              rewrite <- minus_SNo_0.
+              exact Htmp2.
+            }
+            exact (neq_ordsucc_0
+              r
+              HsuccrEq0).
+          }
+          claim HnegSelf :
+            (minus_SNo (ordsucc r)) = minus_SNo (ordsucc r).
+          {
+            reflexivity.
+          }
+          exact (FalseE
+            (nat_nonzero_not_minus_succ_cyclic_helper
+              (minus_SNo (ordsucc r))
+              r
+              HnegO
+              HnegNe0
+              HrO
+              HnegSelf)
+            (h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc r))).
+        - assume HnegCase.
+          apply HnegCase.
+          let m.
+          assume HmPack.
+          claim HmO : m :e omega.
+          {
+            exact (andEL
+              (m :e omega)
+              ((minus_SNo (ordsucc r)) = minus_SNo (ordsucc m))
+              (andEL
+                (m :e omega /\ (minus_SNo (ordsucc r)) = minus_SNo (ordsucc m))
+                (h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m))
+                HmPack)).
+          }
+          claim HnegEq : (minus_SNo (ordsucc r)) = minus_SNo (ordsucc m).
+          {
+            exact (andER
+              (m :e omega)
+              ((minus_SNo (ordsucc r)) = minus_SNo (ordsucc m))
+              (andEL
+                (m :e omega /\ (minus_SNo (ordsucc r)) = minus_SNo (ordsucc m))
+                (h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m))
+                HmPack)).
+          }
+          claim Hh0m :
+            h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m).
+          {
+            exact (andER
+              (m :e omega /\ (minus_SNo (ordsucc r)) = minus_SNo (ordsucc m))
+              (h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m))
+              HmPack).
+          }
+          claim HsuccrInt : ordsucc r :e int.
+          {
+            exact (Subq_omega_int
+              (ordsucc r)
+              HsuccrO).
+          }
+          claim HsuccrS : SNo (ordsucc r).
+          {
+            exact (int_SNo
+              (ordsucc r)
+              HsuccrInt).
+          }
+          claim HsuccmO : ordsucc m :e omega.
+          {
+            exact (omega_ordsucc
+              m
+              HmO).
+          }
+          claim HsuccmInt : ordsucc m :e int.
+          {
+            exact (Subq_omega_int
+              (ordsucc m)
+              HsuccmO).
+          }
+          claim HsuccmS : SNo (ordsucc m).
+          {
+            exact (int_SNo
+              (ordsucc m)
+              HsuccmInt).
+          }
+          claim HsuccEq : ordsucc r = ordsucc m.
+          {
+            claim Htmp :
+              minus_SNo (minus_SNo (ordsucc r)) =
+              minus_SNo (minus_SNo (ordsucc m)).
+            {
+              rewrite HnegEq.
+              reflexivity.
+            }
+            rewrite <- (minus_SNo_invol
+              (ordsucc r)
+              HsuccrS).
+            rewrite <- (minus_SNo_invol
+              (ordsucc m)
+              HsuccmS).
+            exact Htmp.
+          }
+          rewrite Hh0m.
+          rewrite <- HsuccEq.
+          reflexivity.
+      }
+      claim HEpsPneg :
+        Eps_i Pneg = group_power_nat multH eH (apply_fun invH y) (ordsucc r).
+      {
+        exact (Eps_i_unique
+          Pneg
+          (group_power_nat multH eH (apply_fun invH y) (ordsucc r))
+          HPnegInv
+          HPnegUniq).
+      }
+      claim HnegInt : minus_SNo (ordsucc r) :e int.
+      {
+        exact (int_minus_SNo_omega
+          (ordsucc r)
+          HsuccrO).
+      }
+      rewrite (apply_fun_graph
+        int
+        (fun n0:set =>
+          Eps_i (fun h0:set =>
+            h0 :e H /\
+              ((n0 :e omega /\ h0 = group_power_nat multH eH y n0) \/
+               (exists m:set, m :e omega /\ n0 = minus_SNo (ordsucc m) /\
+                 h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m)))))
+        (minus_SNo (ordsucc r))
+        HnegInt).
+      exact HEpsPneg.
+    }
     let a b.
     assume HaInt HbInt.
     apply (int_3_cases
@@ -75164,8 +75399,122 @@ claim HpsiHom : group_homomorphism int integers_group_mult H multH psi.
          apply_fun multH (apply_fun psi a, apply_fun psi b))).
       + let mb.
         assume HmbO HbNeg.
-        (** TODO Bob: finish negative/negative integer multiplicativity branch. **)
-        admit.
+        claim HsuccmaO : ordsucc ma :e omega.
+        {
+          exact (omega_ordsucc
+            ma
+            HmaO).
+        }
+        claim HsuccmbO : ordsucc mb :e omega.
+        {
+          exact (omega_ordsucc
+            mb
+            HmbO).
+        }
+        claim HsuccmaInt : ordsucc ma :e int.
+        {
+          exact (Subq_omega_int
+            (ordsucc ma)
+            HsuccmaO).
+        }
+        claim HsuccmbInt : ordsucc mb :e int.
+        {
+          exact (Subq_omega_int
+            (ordsucc mb)
+            HsuccmbO).
+        }
+        claim HsuccmaS : SNo (ordsucc ma).
+        {
+          exact (int_SNo
+            (ordsucc ma)
+            HsuccmaInt).
+        }
+        claim HsuccmbS : SNo (ordsucc mb).
+        {
+          exact (int_SNo
+            (ordsucc mb)
+            HsuccmbInt).
+        }
+        set q := add_SNo ma (ordsucc mb).
+        claim HqO : q :e omega.
+        {
+          exact (add_SNo_In_omega
+            ma
+            HmaO
+            (ordsucc mb)
+            HsuccmbO).
+        }
+        claim HmaOrd : ordinal ma.
+        {
+          exact (nat_p_ordinal
+            ma
+            (omega_nat_p ma HmaO)).
+        }
+        claim HsuccmbOrd : ordinal (ordsucc mb).
+        {
+          exact (nat_p_ordinal
+            (ordsucc mb)
+            (nat_ordsucc mb (omega_nat_p mb HmbO))).
+        }
+        claim HsumSucc :
+          add_SNo (ordsucc ma) (ordsucc mb) = ordsucc q.
+        {
+          exact (add_SNo_ordinal_SL
+            ma
+            HmaOrd
+            (ordsucc mb)
+            HsuccmbOrd).
+        }
+        rewrite HmultIntDef.
+        rewrite (apply_fun_graph
+          (setprod int int)
+          (fun p:set => add_SNo (p 0) (p 1))
+          (a, b)
+          (tuple_2_setprod_by_pair_Sigma
+            int
+            int
+            a
+            b
+            HaInt
+            HbInt)).
+        rewrite (tuple_2_0_eq a b).
+        rewrite (tuple_2_1_eq a b).
+        rewrite HaNeg.
+        rewrite HbNeg.
+        rewrite <- (minus_add_SNo_distr
+          (ordsucc ma)
+          (ordsucc mb)
+          HsuccmaS
+          HsuccmbS).
+        rewrite HsumSucc.
+        rewrite (HpsiAtNegSucc
+          q
+          HqO).
+        rewrite (HpsiAtNegSucc
+          ma
+          HmaO).
+        rewrite (HpsiAtNegSucc
+          mb
+          HmbO).
+        rewrite <- (group_power_nat_add_nat_cyclic_helper
+          H
+          multH
+          eH
+          invH
+          (apply_fun invH y)
+          (ordsucc ma)
+          (ordsucc mb)
+          HgrpH
+          HyInv
+          HsuccmaO
+          HsuccmbO).
+        rewrite (add_nat_add_SNo
+          (ordsucc ma)
+          HsuccmaO
+          (ordsucc mb)
+          HsuccmbO).
+        rewrite HsumSucc.
+        reflexivity.
       + assume Hb0.
         rewrite Hb0.
         rewrite (HmultIntRightId
