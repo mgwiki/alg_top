@@ -60444,7 +60444,6 @@ Qed.
 (** beginning at b0 has a unique lifting to a path in E beginning at e0. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
 (** Bounty 146 **)
-(** Lock Charlie 1771470376 **)
 Theorem lemma54_1_path_lifting : forall E Te B Tb p e0 f:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun f 0 ->
@@ -74224,6 +74223,114 @@ apply and6I.
     exact (add_SNo_minus_SNo_linv x HxS).
 Qed.
 
+(** Proven Bob **)
+(** Infrastructure helper: a nonzero natural cannot be a negative successor integer. **)
+Theorem nat_nonzero_not_minus_succ_cyclic_helper :
+  forall n m:set,
+  n :e omega ->
+  n <> 0 ->
+  m :e omega ->
+  n <> minus_SNo (ordsucc m).
+let n m.
+assume HnO HnNe0 HmO.
+assume HnNeg.
+apply (nat_inv
+  n
+  (omega_nat_p n HnO)).
+- assume Hn0.
+  exact (HnNe0
+    Hn0).
+- assume HnS.
+  apply HnS.
+  let k.
+  assume HkPack.
+  claim HkNat : nat_p k.
+  {
+    exact (andEL
+      (nat_p k)
+      (n = ordsucc k)
+      HkPack).
+  }
+  claim HnEq : n = ordsucc k.
+  {
+    exact (andER
+      (nat_p k)
+      (n = ordsucc k)
+      HkPack).
+  }
+  claim HkEqNeg : ordsucc k = minus_SNo (ordsucc m).
+  {
+    rewrite <- HnEq.
+    exact HnNeg.
+  }
+  claim HsuccmO : ordsucc m :e omega.
+  {
+    exact (omega_ordsucc
+      m
+      HmO).
+  }
+  claim HsuccmInt : ordsucc m :e int.
+  {
+    exact (Subq_omega_int
+      (ordsucc m)
+      HsuccmO).
+  }
+  claim HsuccmS : SNo (ordsucc m).
+  {
+    exact (int_SNo
+      (ordsucc m)
+      HsuccmInt).
+  }
+  claim HsumEq0 :
+    add_SNo (ordsucc k) (ordsucc m) = 0.
+  {
+    rewrite HkEqNeg.
+    exact (add_SNo_minus_SNo_linv
+      (ordsucc m)
+      HsuccmS).
+  }
+  claim HkInSucck : k :e ordsucc k.
+  {
+    exact (ordsuccI2
+      k).
+  }
+  claim HsucckOrd : ordinal (ordsucc k).
+  {
+    exact (nat_p_ordinal
+      (ordsucc k)
+      (nat_ordsucc
+        k
+        HkNat)).
+  }
+  claim HsuccmOrd : ordinal (ordsucc m).
+  {
+    exact (nat_p_ordinal
+      (ordsucc m)
+      (nat_ordsucc
+        m
+        (omega_nat_p m HmO))).
+  }
+  claim HsumHasElem :
+    add_SNo k (ordsucc m) :e add_SNo (ordsucc k) (ordsucc m).
+  {
+    exact (add_SNo_ordinal_InL
+      (ordsucc k)
+      HsucckOrd
+      (ordsucc m)
+      HsuccmOrd
+      k
+      HkInSucck).
+  }
+  exact (EmptyE
+    (add_SNo k (ordsucc m))
+    (mem_eqR
+      (add_SNo k (ordsucc m))
+      (add_SNo (ordsucc k) (ordsucc m))
+      0
+      HsumEq0
+      HsumHasElem)).
+Qed.
+
 (** Infrastructure helper: existence of a homomorphism Z -> H with prescribed value at 1. **)
 Theorem integers_group_hom_exists_at_one_cyclic_helper :
   forall H multH eH invH y:set,
@@ -74924,6 +75031,123 @@ claim HpsiHom : group_homomorphism int integers_group_mult H multH psi.
         (apply_fun multH (z, eH) = z)
         (HidH z HzH)).
     }
+    claim HpsiAtNatNonzero :
+      forall n:set, n :e omega -> n <> 0 ->
+        apply_fun psi n = group_power_nat multH eH y n.
+    {
+      let n.
+      assume HnO HnNe0.
+      set Pn := fun h0:set =>
+        h0 :e H /\
+          ((n :e omega /\ h0 = group_power_nat multH eH y n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+             h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m))).
+      claim HPnPowRaw :
+        group_power_nat multH eH y n :e H /\
+        ((n :e omega /\ group_power_nat multH eH y n = group_power_nat multH eH y n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+           group_power_nat multH eH y n =
+           group_power_nat multH eH (apply_fun invH y) (ordsucc m))).
+      {
+        apply andI.
+        - exact (HpowInH
+            y
+            Hy
+            n
+            HnO).
+        - apply orIL.
+          apply andI.
+          + exact HnO.
+          + reflexivity.
+      }
+      claim HPnPow : Pn (group_power_nat multH eH y n).
+      {
+        exact HPnPowRaw.
+      }
+      claim HPnUniq :
+        forall h0:set, Pn h0 -> h0 = group_power_nat multH eH y n.
+      {
+        let h0.
+        assume HPnh0.
+        claim Hcases :
+          (n :e omega /\ h0 = group_power_nat multH eH y n) \/
+          (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m)).
+        {
+          exact (andER
+            (h0 :e H)
+            ((n :e omega /\ h0 = group_power_nat multH eH y n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+               h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m)))
+            HPnh0).
+        }
+        apply Hcases.
+        - assume HnatCase.
+          exact (andER
+            (n :e omega)
+            (h0 = group_power_nat multH eH y n)
+            HnatCase).
+        - assume HnegCase.
+          apply HnegCase.
+          let m.
+          assume HmPack.
+          claim HmO : m :e omega.
+          {
+            exact (andEL
+              (m :e omega)
+              (n = minus_SNo (ordsucc m))
+              (andEL
+                (m :e omega /\ n = minus_SNo (ordsucc m))
+                (h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m))
+                HmPack)).
+          }
+          claim HnNeg : n = minus_SNo (ordsucc m).
+          {
+            exact (andER
+              (m :e omega)
+              (n = minus_SNo (ordsucc m))
+              (andEL
+                (m :e omega /\ n = minus_SNo (ordsucc m))
+                (h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m))
+                HmPack)).
+          }
+          exact (FalseE
+            (nat_nonzero_not_minus_succ_cyclic_helper
+              n
+              m
+              HnO
+              HnNe0
+              HmO
+              HnNeg)
+            (h0 = group_power_nat multH eH y n)).
+      }
+      claim HEpsPn :
+        Eps_i Pn = group_power_nat multH eH y n.
+      {
+        exact (Eps_i_unique
+          Pn
+          (group_power_nat multH eH y n)
+          HPnPow
+          HPnUniq).
+      }
+      claim HnInt : n :e int.
+      {
+        exact (Subq_omega_int
+          n
+          HnO).
+      }
+      rewrite (apply_fun_graph
+        int
+        (fun n0:set =>
+          Eps_i (fun h0:set =>
+            h0 :e H /\
+              ((n0 :e omega /\ h0 = group_power_nat multH eH y n0) \/
+               (exists m:set, m :e omega /\ n0 = minus_SNo (ordsucc m) /\
+                 h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m)))))
+        n
+        HnInt).
+      exact HEpsPn.
+    }
     let a b.
     assume HaInt HbInt.
     apply (int_3_cases
@@ -74989,8 +75213,139 @@ claim HpsiHom : group_homomorphism int integers_group_mult H multH psi.
           (HpsiFn a HaInt)).
       + let mb.
         assume HmbO HbPos.
-        (** TODO Bob: finish positive/positive integer multiplicativity branch. **)
-        admit.
+        claim HaO : a :e omega.
+        {
+          rewrite HaPos.
+          exact (omega_ordsucc
+            ma
+            HmaO).
+        }
+        claim HaNe0 : a <> 0.
+        {
+          rewrite HaPos.
+          exact (neq_ordsucc_0
+            ma).
+        }
+        claim HbO : b :e omega.
+        {
+          rewrite HbPos.
+          exact (omega_ordsucc
+            mb
+            HmbO).
+        }
+        claim HbNe0 : b <> 0.
+        {
+          rewrite HbPos.
+          exact (neq_ordsucc_0
+            mb).
+        }
+        claim HsumO : add_SNo a b :e omega.
+        {
+          exact (add_SNo_In_omega
+            a
+            HaO
+            b
+            HbO).
+        }
+        claim HsumNe0 : add_SNo a b <> 0.
+        {
+          assume Hsum0.
+          claim HaOrd : ordinal a.
+          {
+            exact (nat_p_ordinal
+              a
+              (omega_nat_p a HaO)).
+          }
+          claim HbOrd : ordinal b.
+          {
+            exact (nat_p_ordinal
+              b
+              (omega_nat_p b HbO)).
+          }
+          claim HmbInB : mb :e b.
+          {
+            rewrite HbPos.
+            exact (ordsuccI2
+              mb).
+          }
+          claim HsumHasElem : add_SNo a mb :e add_SNo a b.
+          {
+            exact (add_SNo_ordinal_InR
+              a
+              HaOrd
+              b
+              HbOrd
+              mb
+              HmbInB).
+          }
+          exact (EmptyE
+            (add_SNo a mb)
+            (mem_eqR
+              (add_SNo a mb)
+              (add_SNo a b)
+              0
+              Hsum0
+              HsumHasElem)).
+        }
+        claim HsumInt : add_SNo a b :e int.
+        {
+          exact (Subq_omega_int
+            (add_SNo a b)
+            HsumO).
+        }
+        claim HpsiA :
+          apply_fun psi a = group_power_nat multH eH y a.
+        {
+          exact (HpsiAtNatNonzero
+            a
+            HaO
+            HaNe0).
+        }
+        claim HpsiB :
+          apply_fun psi b = group_power_nat multH eH y b.
+        {
+          exact (HpsiAtNatNonzero
+            b
+            HbO
+            HbNe0).
+        }
+        rewrite HmultIntDef.
+        rewrite (apply_fun_graph
+          (setprod int int)
+          (fun p:set => add_SNo (p 0) (p 1))
+          (a, b)
+          (tuple_2_setprod_by_pair_Sigma
+            int
+            int
+            a
+            b
+            HaInt
+            HbInt)).
+        rewrite (tuple_2_0_eq a b).
+        rewrite (tuple_2_1_eq a b).
+        rewrite (HpsiAtNatNonzero
+          (add_SNo a b)
+          HsumO
+          HsumNe0).
+        rewrite HpsiA.
+        rewrite HpsiB.
+        rewrite <- (add_nat_add_SNo
+          a
+          HaO
+          b
+          HbO).
+        exact (group_power_nat_add_nat_cyclic_helper
+          H
+          multH
+          eH
+          invH
+          y
+          a
+          b
+          HgrpH
+          Hy
+          HaO
+          HbO).
   }
   exact (andI
     (function_on psi int H)
