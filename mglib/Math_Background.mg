@@ -138598,7 +138598,129 @@ apply (nat_inv nw Hnw_nat).
               exact (Hxs0_ne_efam_al
                 Hxs0_efam).
             * assume Hh_ne_eG.
-              admit.
+              apply (xm (apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun efam al) = apply_fun efam al)).
+              {
+                assume Hh_efam.
+                claim Hstep_eq :
+                  apply_fun multG (apply_fun xsw 0, apply_fun efam al) = apply_fun efam al.
+                {
+                  claim Hstep :
+                    apply_fun multG (apply_fun xsw 0, apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun efam al)) =
+                    apply_fun multG (apply_fun xsw 0, apply_fun efam al).
+                  {
+                    rewrite Hh_efam.
+                    reflexivity.
+                  }
+                  claim Hstep_sym :
+                    apply_fun multG (apply_fun xsw 0, apply_fun efam al) =
+                    apply_fun multG (apply_fun xsw 0, apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun efam al)).
+                  {
+                    symmetry.
+                    exact Hstep.
+                  }
+                  exact (eq_i_tra
+                    (apply_fun multG (apply_fun xsw 0, apply_fun efam al))
+                    (apply_fun multG (apply_fun xsw 0, apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun efam al)))
+                    (apply_fun efam al)
+                    Hstep_sym
+                    Hxs0h_efam).
+                }
+                claim Hxs0_eG : apply_fun xsw 0 = eG.
+                {
+                  claim Hinv_efam_G : apply_fun invG (apply_fun efam al) :e G.
+                  {
+                    exact (HinvGF
+                      (apply_fun efam al)
+                      Hefam_G).
+                  }
+                  claim Hrinv_efam :
+                    apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)) = eG.
+                  {
+                    exact (andEL
+                      (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)) = eG)
+                      (apply_fun multG (apply_fun invG (apply_fun efam al), apply_fun efam al) = eG)
+                      (HinvG
+                        (apply_fun efam al)
+                        Hefam_G)).
+                  }
+                  claim Hassoc2 :
+                    apply_fun multG (apply_fun multG (apply_fun xsw 0, apply_fun efam al), apply_fun invG (apply_fun efam al)) =
+                    apply_fun multG (apply_fun xsw 0, apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al))).
+                  {
+                    exact (HassocG
+                      (apply_fun xsw 0)
+                      (apply_fun efam al)
+                      (apply_fun invG (apply_fun efam al))
+                      Hxs0_G
+                      Hefam_G
+                      Hinv_efam_G).
+                  }
+                  claim Hright :
+                    apply_fun multG (apply_fun xsw 0, apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al))) =
+                    apply_fun multG (apply_fun xsw 0, eG).
+                  {
+                    rewrite Hrinv_efam.
+                    reflexivity.
+                  }
+                  claim Hleft :
+                    apply_fun multG (apply_fun multG (apply_fun xsw 0, apply_fun efam al), apply_fun invG (apply_fun efam al)) = eG.
+                  {
+                    rewrite Hstep_eq.
+                    exact Hrinv_efam.
+                  }
+                  claim HidR_xs0 :
+                    apply_fun multG (apply_fun xsw 0, eG) = apply_fun xsw 0.
+                  {
+                    exact (andER
+                      (apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0)
+                      (apply_fun multG (apply_fun xsw 0, eG) = apply_fun xsw 0)
+                      (HidG
+                        (apply_fun xsw 0)
+                        Hxs0_G)).
+                  }
+                  claim Hc1 :
+                    apply_fun xsw 0 = apply_fun multG (apply_fun xsw 0, eG).
+                  {
+                    symmetry.
+                    exact HidR_xs0.
+                  }
+                  claim Hc2 :
+                    apply_fun multG (apply_fun xsw 0, eG) =
+                    apply_fun multG (apply_fun xsw 0, apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al))).
+                  {
+                    symmetry.
+                    exact Hright.
+                  }
+                  claim Hc3 :
+                    apply_fun multG (apply_fun xsw 0, apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al))) =
+                    apply_fun multG (apply_fun multG (apply_fun xsw 0, apply_fun efam al), apply_fun invG (apply_fun efam al)).
+                  {
+                    symmetry.
+                    exact Hassoc2.
+                  }
+                  exact (eq_i_tra
+                    (apply_fun xsw 0)
+                    (apply_fun multG (apply_fun xsw 0, eG))
+                    eG
+                    Hc1
+                    (eq_i_tra
+                      (apply_fun multG (apply_fun xsw 0, eG))
+                      (apply_fun multG (apply_fun xsw 0, apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al))))
+                      eG
+                      Hc2
+                      (eq_i_tra
+                        (apply_fun multG (apply_fun xsw 0, apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al))))
+                        (apply_fun multG (apply_fun multG (apply_fun xsw 0, apply_fun efam al), apply_fun invG (apply_fun efam al)))
+                        eG
+                        Hc3
+                        Hleft))).
+                }
+                admit.
+              }
+              {
+                assume Hh_ne_efam.
+                admit.
+              }
           + assume Hb0_ne_al.
             admit.
 Admitted.
