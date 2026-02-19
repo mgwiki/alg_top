@@ -78305,6 +78305,163 @@ claim HphiSelAtGenSuccPowers :
           HpsiPosEqE)
         (p = q)).
   }
+  claim HpsiPosSuccNeNegSucc :
+    forall p q:set, p :e omega -> q :e omega ->
+      apply_fun psi (ordsucc p) <>
+      apply_fun psi (minus_SNo (ordsucc q)).
+  {
+    let p q.
+    assume HpO HqO.
+    assume Hbad.
+    set sp := ordsucc p.
+    set sq := ordsucc q.
+    set d := add_SNo sp sq.
+    claim HspInt : sp :e int.
+    {
+      exact (Subq_omega_int
+        sp
+        (omega_ordsucc p HpO)).
+    }
+    claim HsqInt : sq :e int.
+    {
+      exact (Subq_omega_int
+        sq
+        (omega_ordsucc q HqO)).
+    }
+    claim HpsiDiffEqE : apply_fun psi d = e.
+    {
+      claim HpsiMulRaw :
+        apply_fun psi (apply_fun integers_group_mult (sp, sq)) =
+        apply_fun mult (apply_fun psi sp, apply_fun psi sq).
+      {
+        exact (group_homomorphism_mult_rule
+          int
+          integers_group_mult
+          G
+          mult
+          psi
+          sp
+          sq
+          HpsiHom
+          HspInt
+          HsqInt).
+      }
+      claim HpsiMulD :
+        apply_fun psi d =
+        apply_fun mult (apply_fun psi sp, apply_fun psi sq).
+      {
+        rewrite <- (HintMultEval
+          sp
+          sq
+          HspInt
+          HsqInt).
+        exact HpsiMulRaw.
+      }
+      claim HpsiSqG : apply_fun psi sq :e G.
+      {
+        exact (HpsiFn
+          sq
+          HsqInt).
+      }
+      claim HrhsEqE :
+        apply_fun mult (apply_fun psi sp, apply_fun psi sq) = e.
+      {
+        rewrite Hbad.
+        rewrite (HpsiInvInt
+          sq
+          HsqInt).
+        apply (and6E
+          (function_on mult (setprod G G) G)
+          (function_on inv G G)
+          (e :e G)
+          (forall a b c:set, a :e G -> b :e G -> c :e G ->
+            apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+          (forall a:set, a :e G ->
+            apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+          (forall a:set, a :e G ->
+            apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+          Hgrp).
+        assume HmultFn HinvFn HeG' Hassoc Hid HinvLaw.
+        exact (andER
+          (apply_fun mult (apply_fun psi sq, apply_fun inv (apply_fun psi sq)) = e)
+          (apply_fun mult (apply_fun inv (apply_fun psi sq), apply_fun psi sq) = e)
+          (HinvLaw
+            (apply_fun psi sq)
+            HpsiSqG)).
+      }
+      rewrite HpsiMulD.
+      exact HrhsEqE.
+    }
+    claim HspNat : nat_p sp.
+    {
+      exact (nat_ordsucc
+        p
+        (omega_nat_p p HpO)).
+    }
+    claim HqNat : nat_p q.
+    {
+      exact (omega_nat_p
+        q
+        HqO).
+    }
+    claim HsqDef : sq = ordsucc q.
+    {
+      reflexivity.
+    }
+    claim HaddNat :
+      add_nat sp sq = ordsucc (add_nat sp q).
+    {
+      rewrite HsqDef.
+      exact (add_nat_SR
+        sp
+        q
+        HqNat).
+    }
+    claim HaddSNo : add_nat sp sq = d.
+    {
+      rewrite (add_nat_add_SNo
+        sp
+        (nat_p_omega sp HspNat)
+        sq
+        (nat_p_omega sq (nat_ordsucc q HqNat))).
+      reflexivity.
+    }
+    claim HdSucc :
+      d = ordsucc (add_nat sp q).
+    {
+      claim HdEqAdd : d = add_nat sp sq.
+      {
+        symmetry.
+        exact HaddSNo.
+      }
+      exact (eq_i_tra
+        d
+        (add_nat sp sq)
+        (ordsucc (add_nat sp q))
+        HdEqAdd
+        HaddNat).
+    }
+    claim HtO : (add_nat sp q) :e omega.
+    {
+      exact (nat_p_omega
+        (add_nat sp q)
+        (add_nat_p
+          sp
+          HspNat
+          q
+          HqNat)).
+    }
+    claim HpsiPosEqE :
+      apply_fun psi (ordsucc (add_nat sp q)) = e.
+    {
+      rewrite <- HdSucc.
+      exact HpsiDiffEqE.
+    }
+    exact ((HpsiPosSuccNeE
+      (add_nat sp q)
+      HtO)
+      HpsiPosEqE).
+  }
   (** TODO Bob: finish uniqueness argument using psi-image equalities and HnoPowAtSuccBoth. **)
   admit.
 }
