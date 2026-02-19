@@ -77806,6 +77806,338 @@ claim HphiSelAtGenSuccPowers :
       HoneInt
       (omega_ordsucc k HkO)).
   }
+  claim HintAddMinusEq0 :
+    forall a b:set, a :e int -> b :e int ->
+      add_SNo a (minus_SNo b) = 0 -> a = b.
+  {
+    let a b.
+    assume HaInt HbInt Hadd0.
+    apply (and6E
+      (function_on integers_group_mult (setprod int int) int)
+      (function_on integers_group_inv int int)
+      (0 :e int)
+      (forall u v w:set, u :e int -> v :e int -> w :e int ->
+        apply_fun integers_group_mult (apply_fun integers_group_mult (u, v), w) =
+        apply_fun integers_group_mult (u, apply_fun integers_group_mult (v, w)))
+      (forall u:set, u :e int ->
+        apply_fun integers_group_mult (0, u) = u /\
+        apply_fun integers_group_mult (u, 0) = u)
+      (forall u:set, u :e int ->
+        apply_fun integers_group_mult (u, apply_fun integers_group_inv u) = 0 /\
+        apply_fun integers_group_mult (apply_fun integers_group_inv u, u) = 0)
+      HgrpZ).
+    assume HmultZFn HinvZFn H0Int HassocZ HidZ HinvLawZ.
+    claim HinvbEval : apply_fun integers_group_inv b = minus_SNo b.
+    {
+      exact (HintInvEval
+        b
+        HbInt).
+    }
+    claim HinvbPlusb0 : apply_fun integers_group_mult (minus_SNo b, b) = 0.
+    {
+      rewrite <- HinvbEval.
+      exact (andER
+        (apply_fun integers_group_mult (b, apply_fun integers_group_inv b) = 0)
+        (apply_fun integers_group_mult (apply_fun integers_group_inv b, b) = 0)
+        (HinvLawZ b HbInt)).
+    }
+    claim Ha0EqB : apply_fun integers_group_mult (a, 0) = b.
+    {
+      claim HassocStep :
+        apply_fun integers_group_mult (a, apply_fun integers_group_mult (minus_SNo b, b)) =
+        apply_fun integers_group_mult (apply_fun integers_group_mult (a, minus_SNo b), b).
+      {
+        symmetry.
+        exact (HassocZ
+          a
+          (minus_SNo b)
+          b
+          HaInt
+          (int_minus_SNo b HbInt)
+          HbInt).
+      }
+      claim HmulAB : apply_fun integers_group_mult (a, minus_SNo b) = 0.
+      {
+        rewrite (HintMultEval
+          a
+          (minus_SNo b)
+          HaInt
+          (int_minus_SNo b HbInt)).
+        exact Hadd0.
+      }
+      claim Hleft0b : apply_fun integers_group_mult (0, b) = b.
+      {
+        exact (andEL
+          (apply_fun integers_group_mult (0, b) = b)
+          (apply_fun integers_group_mult (b, 0) = b)
+          (HidZ b HbInt)).
+      }
+      claim Hrhs :
+        apply_fun integers_group_mult (apply_fun integers_group_mult (a, minus_SNo b), b) = b.
+      {
+        rewrite HmulAB.
+        exact Hleft0b.
+      }
+      claim Hlhs :
+        apply_fun integers_group_mult (a, apply_fun integers_group_mult (minus_SNo b, b)) = b.
+      {
+        rewrite HassocStep.
+        exact Hrhs.
+      }
+      claim Hlhs0 :
+        apply_fun integers_group_mult (a, 0) = b.
+      {
+        claim HleftEq :
+          apply_fun integers_group_mult (a, apply_fun integers_group_mult (minus_SNo b, b)) =
+          apply_fun integers_group_mult (a, 0).
+        {
+          rewrite HinvbPlusb0.
+          reflexivity.
+        }
+        claim HleftEqSym :
+          apply_fun integers_group_mult (a, 0) =
+          apply_fun integers_group_mult (a, apply_fun integers_group_mult (minus_SNo b, b)).
+        {
+          symmetry.
+          exact HleftEq.
+        }
+        exact (eq_i_tra
+          (apply_fun integers_group_mult (a, 0))
+          (apply_fun integers_group_mult (a, apply_fun integers_group_mult (minus_SNo b, b)))
+          b
+          HleftEqSym
+          Hlhs).
+      }
+      exact Hlhs0.
+    }
+    claim Haright0 : apply_fun integers_group_mult (a, 0) = a.
+    {
+      exact (andER
+        (apply_fun integers_group_mult (0, a) = a)
+        (apply_fun integers_group_mult (a, 0) = a)
+        (HidZ a HaInt)).
+    }
+    rewrite <- Haright0.
+    exact Ha0EqB.
+  }
+  claim HpsiPosSuccNeE :
+    forall k:set, k :e omega ->
+      apply_fun psi (ordsucc k) <> e.
+  {
+    let k.
+    assume HkO.
+    assume HpsiEqE.
+    claim HpowEqE :
+      group_power_nat mult e x (ordsucc k) = e.
+    {
+      rewrite <- (HpsiAtPosSucc
+        k
+        HkO).
+      exact HpsiEqE.
+    }
+    exact ((andEL
+      (group_power_nat mult e x (ordsucc k) <> e)
+      (group_power_nat mult e (apply_fun inv x) (ordsucc k) <> e)
+      (HnoPowAtSuccBoth
+        k
+        HkO))
+      HpowEqE).
+  }
+  claim HpsiNegSuccNeE :
+    forall k:set, k :e omega ->
+      apply_fun psi (minus_SNo (ordsucc k)) <> e.
+  {
+    let k.
+    assume HkO.
+    assume HpsiEqE.
+    claim HpowEqE :
+      group_power_nat mult e (apply_fun inv x) (ordsucc k) = e.
+    {
+      rewrite <- (HpsiAtNegSucc
+        k
+        HkO).
+      exact HpsiEqE.
+    }
+    exact ((andER
+      (group_power_nat mult e x (ordsucc k) <> e)
+      (group_power_nat mult e (apply_fun inv x) (ordsucc k) <> e)
+      (HnoPowAtSuccBoth
+        k
+        HkO))
+      HpowEqE).
+  }
+  claim HpsiInvInt :
+    forall z:set, z :e int ->
+      apply_fun psi (minus_SNo z) = apply_fun inv (apply_fun psi z).
+  {
+    let z.
+    assume HzInt.
+    claim HpsiInvRaw :
+      apply_fun psi (apply_fun integers_group_inv z) =
+      apply_fun inv (apply_fun psi z).
+    {
+      exact (group_hom_sends_inverse_cyclic_helper
+        int
+        integers_group_mult
+        0
+        integers_group_inv
+        G
+        mult
+        e
+        inv
+        psi
+        HgrpZ
+        Hgrp
+        HpsiHom
+        z
+        HzInt).
+    }
+    rewrite <- (HintInvEval
+      z
+      HzInt).
+    exact HpsiInvRaw.
+  }
+  claim HpsiEqPosSuccIndex :
+    forall p q:set, p :e omega -> q :e omega ->
+      apply_fun psi (ordsucc p) = apply_fun psi (ordsucc q) ->
+      p = q.
+  {
+    let p q.
+    assume HpO HqO HpsiEq.
+    set sp := ordsucc p.
+    set sq := ordsucc q.
+    set d := add_SNo sp (minus_SNo sq).
+    claim HspInt : sp :e int.
+    {
+      exact (Subq_omega_int
+        sp
+        (omega_ordsucc p HpO)).
+    }
+    claim HsqInt : sq :e int.
+    {
+      exact (Subq_omega_int
+        sq
+        (omega_ordsucc q HqO)).
+    }
+    claim HdInt : d :e int.
+    {
+      exact (int_add_SNo
+        sp
+        HspInt
+        (minus_SNo sq)
+        (int_minus_SNo sq HsqInt)).
+    }
+    claim HpsiDiffEqE : apply_fun psi d = e.
+    {
+      claim HpsiMulRaw :
+        apply_fun psi (apply_fun integers_group_mult (sp, minus_SNo sq)) =
+        apply_fun mult (apply_fun psi sp, apply_fun psi (minus_SNo sq)).
+      {
+        exact (group_homomorphism_mult_rule
+          int
+          integers_group_mult
+          G
+          mult
+          psi
+          sp
+          (minus_SNo sq)
+          HpsiHom
+          HspInt
+          (int_minus_SNo sq HsqInt)).
+      }
+      claim HpsiMulD :
+        apply_fun psi d =
+        apply_fun mult (apply_fun psi sp, apply_fun psi (minus_SNo sq)).
+      {
+        rewrite <- (HintMultEval
+          sp
+          (minus_SNo sq)
+          HspInt
+          (int_minus_SNo sq HsqInt)).
+        exact HpsiMulRaw.
+      }
+      claim HpsiSqG : apply_fun psi sq :e G.
+      {
+        exact (HpsiFn
+          sq
+          HsqInt).
+      }
+      claim HrhsEqE :
+        apply_fun mult (apply_fun psi sp, apply_fun psi (minus_SNo sq)) = e.
+      {
+        rewrite HpsiEq.
+        rewrite (HpsiInvInt
+          sq
+          HsqInt).
+        apply (and6E
+          (function_on mult (setprod G G) G)
+          (function_on inv G G)
+          (e :e G)
+          (forall a b c:set, a :e G -> b :e G -> c :e G ->
+            apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+          (forall a:set, a :e G ->
+            apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+          (forall a:set, a :e G ->
+            apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+          Hgrp).
+        assume HmultFn HinvFn HeG' Hassoc Hid HinvLaw.
+        exact (andEL
+          (apply_fun mult (apply_fun psi sq, apply_fun inv (apply_fun psi sq)) = e)
+          (apply_fun mult (apply_fun inv (apply_fun psi sq), apply_fun psi sq) = e)
+          (HinvLaw
+            (apply_fun psi sq)
+            HpsiSqG)).
+      }
+      rewrite HpsiMulD.
+      exact HrhsEqE.
+    }
+    apply (int_3_cases
+      d
+      HdInt
+      (p = q)).
+    - let r.
+      assume HrO HdNeg.
+      claim HpsiNegEqE :
+        apply_fun psi (minus_SNo (ordsucc r)) = e.
+      {
+        rewrite <- HdNeg.
+        exact HpsiDiffEqE.
+      }
+      exact (FalseE
+        ((HpsiNegSuccNeE
+          r
+          HrO)
+          HpsiNegEqE)
+        (p = q)).
+    - assume Hd0.
+      claim HspEqSq : sp = sq.
+      {
+        exact (HintAddMinusEq0
+          sp
+          sq
+          HspInt
+          HsqInt
+          Hd0).
+      }
+      exact (ordsucc_inj
+        p
+        q
+        HspEqSq).
+    - let r.
+      assume HrO HdPos.
+      claim HpsiPosEqE :
+        apply_fun psi (ordsucc r) = e.
+      {
+        rewrite <- HdPos.
+        exact HpsiDiffEqE.
+      }
+      exact (FalseE
+        ((HpsiPosSuccNeE
+          r
+          HrO)
+          HpsiPosEqE)
+        (p = q)).
+  }
   (** TODO Bob: finish uniqueness argument using psi-image equalities and HnoPowAtSuccBoth. **)
   admit.
 }
