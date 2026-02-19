@@ -135198,10 +135198,117 @@ claim Hext : forall alpha:set, alpha :e J ->
   set pack_e := Eps_i (rep_pred g).
   claim Hrep_e : rep_pred g pack_e.
   { exact (Eps_i_ax (rep_pred g) pack_c Hrep_c). }
-  (** map_rep(pack_e) = hfam(alpha)(x) by representation invariance **)
-  claim Hresult : map_rep pack_e = apply_fun (apply_fun hfam alpha) x.
-  { admit. (** representation invariance - the hard part **)
+  (** Step A: map_rep pack_c = hfam(alpha)(x) by direct computation **)
+  claim Hmap_rep_c : map_rep pack_c = apply_fun (apply_fun hfam alpha) x.
+  {
+    prove nat_primrec eH
+      (fun i r:set => apply_fun multH (r,
+        apply_fun (apply_fun hfam (apply_fun ((pack_c 1) 0) i))
+          (preim (apply_fun ((pack_c 1) 0) i) (apply_fun ((pack_c 1) 1) i))))
+      (pack_c 0) = apply_fun (apply_fun hfam alpha) x.
+    rewrite Hpc0. rewrite Hpc10. rewrite Hpc11.
+    set Fc := (fun i r:set => apply_fun multH (r,
+      apply_fun (apply_fun hfam (apply_fun ac i))
+        (preim (apply_fun ac i) (apply_fun xc i)))).
+    claim HFc_step : nat_primrec eH Fc 1 = Fc 0 (nat_primrec eH Fc 0).
+    { exact (nat_primrec_S eH Fc 0 nat_0). }
+    claim HFc_base : nat_primrec eH Fc 0 = eH.
+    { exact (nat_primrec_0 eH Fc). }
+    rewrite HFc_step. rewrite HFc_base.
+    prove apply_fun multH (eH,
+      apply_fun (apply_fun hfam (apply_fun ac 0))
+        (preim (apply_fun ac 0) (apply_fun xc 0))) =
+      apply_fun (apply_fun hfam alpha) x.
+    rewrite Hac_eval. rewrite Hxc_eval. rewrite Hpreim_is_x.
+    exact (HlidH (apply_fun (apply_fun hfam alpha) x) Hhfam_x_H).
   }
+  (** Step B: Extract uniqueness from direct_sum_of_subgroups **)
+  claim Huniq_DS : forall x0:set, x0 :e G ->
+    forall n1 n2:set, n1 :e omega -> n2 :e omega -> n1 <> 0 -> n2 <> 0 ->
+    forall a1 a2:set, function_on a1 n1 J -> function_on a2 n2 J ->
+    forall x1 x2:set, function_on x1 n1 G -> function_on x2 n2 G ->
+      (forall i:set, i :e n1 -> apply_fun x1 i :e apply_fun Gfam_img (apply_fun a1 i)) ->
+      (forall i:set, i :e n2 -> apply_fun x2 i :e apply_fun Gfam_img (apply_fun a2 i)) ->
+      (forall i j:set, i :e n1 -> j :e n1 -> i <> j -> apply_fun a1 i <> apply_fun a1 j) ->
+      (forall i j:set, i :e n2 -> j :e n2 -> i <> j -> apply_fun a2 i <> apply_fun a2 j) ->
+      x0 = nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun x1 i)) n1 ->
+      x0 = nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun x2 i)) n2 ->
+      (forall al:set, al :e J ->
+        (forall i j:set, i :e n1 -> j :e n2 ->
+          apply_fun a1 i = al -> apply_fun a2 j = al -> apply_fun x1 i = apply_fun x2 j) /\
+        ((exists i:set, i :e n1 /\ apply_fun a1 i = al) ->
+         ~(exists j:set, j :e n2 /\ apply_fun a2 j = al) ->
+         forall i:set, i :e n1 -> apply_fun a1 i = al -> apply_fun x1 i = eG) /\
+        (~(exists i:set, i :e n1 /\ apply_fun a1 i = al) ->
+         (exists j:set, j :e n2 /\ apply_fun a2 j = al) ->
+         forall j:set, j :e n2 -> apply_fun a2 j = al -> apply_fun x2 j = eG)).
+  { exact (andER
+      (subgroups_generate_abelian G multG eG invG J Gfam_img)
+      (forall x0:set, x0 :e G ->
+        forall n1 n2:set, n1 :e omega -> n2 :e omega -> n1 <> 0 -> n2 <> 0 ->
+        forall a1 a2:set, function_on a1 n1 J -> function_on a2 n2 J ->
+        forall x1 x2:set, function_on x1 n1 G -> function_on x2 n2 G ->
+          (forall i:set, i :e n1 -> apply_fun x1 i :e apply_fun Gfam_img (apply_fun a1 i)) ->
+          (forall i:set, i :e n2 -> apply_fun x2 i :e apply_fun Gfam_img (apply_fun a2 i)) ->
+          (forall i j:set, i :e n1 -> j :e n1 -> i <> j -> apply_fun a1 i <> apply_fun a1 j) ->
+          (forall i j:set, i :e n2 -> j :e n2 -> i <> j -> apply_fun a2 i <> apply_fun a2 j) ->
+          x0 = nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun x1 i)) n1 ->
+          x0 = nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun x2 i)) n2 ->
+          (forall al:set, al :e J ->
+            (forall i j:set, i :e n1 -> j :e n2 ->
+              apply_fun a1 i = al -> apply_fun a2 j = al -> apply_fun x1 i = apply_fun x2 j) /\
+            ((exists i:set, i :e n1 /\ apply_fun a1 i = al) ->
+             ~(exists j:set, j :e n2 /\ apply_fun a2 j = al) ->
+             forall i:set, i :e n1 -> apply_fun a1 i = al -> apply_fun x1 i = eG) /\
+            (~(exists i:set, i :e n1 /\ apply_fun a1 i = al) ->
+             (exists j:set, j :e n2 /\ apply_fun a2 j = al) ->
+             forall j:set, j :e n2 -> apply_fun a2 j = al -> apply_fun x2 j = eG)))
+      HDS). }
+  (** Step C: Unpack rep_pred from Hrep_e via intermediate unfolded claim **)
+  set n_e := pack_e 0.
+  set alphas_e := (pack_e 1) 0.
+  set xs_e := (pack_e 1) 1.
+  claim Hrep_e2 : n_e :e omega /\ n_e <> 0 /\
+      function_on alphas_e n_e J /\ function_on xs_e n_e G /\
+      (forall i:set, i :e n_e -> apply_fun xs_e i :e apply_fun Gfam_img (apply_fun alphas_e i)) /\
+      (forall i j:set, i :e n_e -> j :e n_e -> i <> j -> apply_fun alphas_e i <> apply_fun alphas_e j) /\
+      g = nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun xs_e i)) n_e.
+  { exact Hrep_e. }
+  apply (and7E
+    (n_e :e omega)
+    (n_e <> 0)
+    (function_on alphas_e n_e J)
+    (function_on xs_e n_e G)
+    (forall i:set, i :e n_e -> apply_fun xs_e i :e apply_fun Gfam_img (apply_fun alphas_e i))
+    (forall i j:set, i :e n_e -> j :e n_e -> i <> j -> apply_fun alphas_e i <> apply_fun alphas_e j)
+    (g = nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun xs_e i)) n_e)
+    Hrep_e2).
+  assume Hne_omega : n_e :e omega.
+  assume Hne_ne0 : n_e <> 0.
+  assume Hae_fn : function_on alphas_e n_e J.
+  assume Hxe_fn : function_on xs_e n_e G.
+  assume Hxe_mem : forall i:set, i :e n_e -> apply_fun xs_e i :e apply_fun Gfam_img (apply_fun alphas_e i).
+  assume Hae_dist : forall i j:set, i :e n_e -> j :e n_e -> i <> j -> apply_fun alphas_e i <> apply_fun alphas_e j.
+  assume Hg_eq_e : g = nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun xs_e i)) n_e.
+  (** Step E: Apply uniqueness to pack_c (n1=1, a1=ac, x1=xc) and pack_e (n2=n_e, a2=alphas_e, x2=xs_e) **)
+  (** For each beta in J, we get the three-part agreement **)
+  claim Huniq_applied : forall beta:set, beta :e J ->
+    (forall i j:set, i :e 1 -> j :e n_e ->
+      apply_fun ac i = beta -> apply_fun alphas_e j = beta -> apply_fun xc i = apply_fun xs_e j) /\
+    ((exists i:set, i :e 1 /\ apply_fun ac i = beta) ->
+     ~(exists j:set, j :e n_e /\ apply_fun alphas_e j = beta) ->
+     forall i:set, i :e 1 -> apply_fun ac i = beta -> apply_fun xc i = eG) /\
+    (~(exists i:set, i :e 1 /\ apply_fun ac i = beta) ->
+     (exists j:set, j :e n_e /\ apply_fun alphas_e j = beta) ->
+     forall j:set, j :e n_e -> apply_fun alphas_e j = beta -> apply_fun xs_e j = eG).
+  { admit. (** TODO: apply Huniq_DS to g with pack_c and pack_e representations **) }
+  (** Step F: For each j in n_e with alphas_e(j) != alpha, xs_e(j) = eG **)
+  claim Hxe_trivial : forall j:set, j :e n_e -> apply_fun alphas_e j <> alpha ->
+    apply_fun xs_e j = eG.
+  { admit. (** follows from Huniq_applied clause 3 **) }
+  (** Step G: map_rep pack_e = hfam(alpha)(x) **)
+  claim Hresult : map_rep pack_e = apply_fun (apply_fun hfam alpha) x.
+  { admit. (** TODO: use Huniq_applied, Hxe_trivial, induction on n_e **) }
   rewrite Hh_val.
   exact Hresult.
 }
