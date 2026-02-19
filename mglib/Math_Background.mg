@@ -74171,8 +74171,21 @@ claim HphiSelFn : function_on phi_sel G int.
 }
 claim HphiSelIso : group_isomorphism G mult int integers_group_mult phi_sel.
 {
-  (** TODO Bob: prove phi_sel is a homomorphism and bijection using generator normal forms and nonfiniteness. **)
-  admit.
+  claim HphiSelHom : group_homomorphism G mult int integers_group_mult phi_sel.
+  {
+    (** TODO Bob: prove multiplicativity of phi_sel from generator normal forms. **)
+    admit.
+  }
+  claim HphiSelBij : bijection G int phi_sel.
+  {
+    (** TODO Bob: prove injectivity/surjectivity using nonfiniteness and generator powers. **)
+    admit.
+  }
+  exact (andI
+    (group_homomorphism G mult int integers_group_mult phi_sel)
+    (bijection G int phi_sel)
+    HphiSelHom
+    HphiSelBij).
 }
 witness phi_sel.
 exact HphiSelIso.
