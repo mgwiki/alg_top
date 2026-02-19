@@ -138211,7 +138211,177 @@ apply (nat_inv nw Hnw_nat).
               Hp_G
               Hp_ne).
           }
-          (** Remaining work in beta_m = al branch: finish contradiction via uniqueness on p. **)
+          set xs_p := graph 1 (fun _:set => p).
+          claim Hxsp_0 : apply_fun xs_p 0 = p.
+          {
+            exact (apply_fun_graph
+              1
+              (fun _:set => p)
+              0
+              (nat_0_in_ordsucc
+                0
+                nat_0)).
+          }
+          claim Hwp_p : word_product multG eG xs_p 1 = p.
+          {
+            prove nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs_p i)) 1 = p.
+            rewrite <- ordsucc_0_eq_1_nat.
+            rewrite (nat_primrec_S
+              eG
+              (fun i r => apply_fun multG (r, apply_fun xs_p i))
+              0
+              nat_0).
+            rewrite (nat_primrec_0
+              eG
+              (fun i r => apply_fun multG (r, apply_fun xs_p i))).
+            rewrite Hxsp_0.
+            exact (andEL
+              (apply_fun multG (eG, p) = p)
+              (apply_fun multG (p, eG) = p)
+              (HidG
+                p
+                Hp_G)).
+          }
+          claim Hredw_1 : reduced_word J Gfam efam 1 xs_p.
+          {
+            prove 1 :e omega /\
+              (forall i:set, i :e 1 ->
+                exists alpha:set, alpha :e J /\
+                  apply_fun xs_p i :e apply_fun Gfam alpha /\
+                  apply_fun xs_p i <> apply_fun efam alpha) /\
+              (forall i:set, i :e 1 -> ordsucc i :e 1 ->
+                forall alpha beta:set, alpha :e J -> beta :e J ->
+                  apply_fun xs_p i :e apply_fun Gfam alpha ->
+                  apply_fun xs_p (ordsucc i) :e apply_fun Gfam beta ->
+                  alpha <> beta).
+            apply and3I.
+            - exact (nat_p_omega
+                1
+                nat_1).
+            - let i.
+              assume Hi.
+              claim Hi0 : i = 0.
+              {
+                apply (ordsuccE
+                  0
+                  i
+                  Hi).
+                + assume HiE.
+                  exact (EmptyE
+                    i
+                    HiE
+                    (i = 0)).
+                + assume Hieq.
+                  exact Hieq.
+              }
+              witness al.
+              apply and3I.
+              + exact Hal.
+              + rewrite Hi0.
+                rewrite Hxsp_0.
+                exact Hp_Gal.
+              + rewrite Hi0.
+                rewrite Hxsp_0.
+                exact Hp_ne_efam.
+            - let i.
+              assume Hi Hsi.
+              apply (ordsuccE
+                0
+                i
+                Hi).
+              + assume Hi0.
+                exact (FalseE
+                  (EmptyE i Hi0)
+                  (forall alpha beta:set, alpha :e J -> beta :e J ->
+                    apply_fun xs_p i :e apply_fun Gfam alpha ->
+                    apply_fun xs_p (ordsucc i) :e apply_fun Gfam beta ->
+                    alpha <> beta)).
+              + assume Hieq0.
+                claim Hsi_eq1 : ordsucc i = 1.
+                {
+                  rewrite Hieq0.
+                  exact ordsucc_0_eq_1_nat.
+                }
+                claim H1in1 : 1 :e 1.
+                {
+                  exact (eq_subst_mem_rev
+                    (ordsucc i)
+                    1
+                    1
+                    Hsi_eq1
+                    Hsi).
+                }
+                exact (FalseE
+                  (In_irref 1 H1in1)
+                  (forall alpha beta:set, alpha :e J -> beta :e J ->
+                    apply_fun xs_p i :e apply_fun Gfam alpha ->
+                    apply_fun xs_p (ordsucc i) :e apply_fun Gfam beta ->
+                    alpha <> beta)).
+          }
+          apply Hp_huniq.
+          let np.
+          assume Hex_xsp.
+          apply Hex_xsp.
+          let xsp_u.
+          assume Hpu.
+          apply (and4E
+            (reduced_word J Gfam efam np xsp_u)
+            (np <> 0)
+            (word_product multG eG xsp_u np = p)
+            (forall n' xs':set,
+              reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+              word_product multG eG xs' n' = p ->
+              np = n' /\ (forall i:set, i :e np -> apply_fun xsp_u i = apply_fun xs' i))
+            Hpu).
+          assume _ Hnp_ne Hwp_pu Huniq_p.
+          claim Hnp_eq_1 : np = 1.
+          {
+            claim Hone_ne : 1 <> 0.
+            {
+              exact (neq_ordsucc_0
+                0).
+            }
+            exact (andEL
+              (np = 1)
+              (forall i:set, i :e np -> apply_fun xsp_u i = apply_fun xs_p i)
+              (Huniq_p
+                1
+                xs_p
+                Hredw_1
+                Hone_ne
+                Hwp_p)).
+          }
+          claim Hm_eq_np : m = np.
+          {
+            claim Hwp_prefix_p : word_product multG eG xsw m = p.
+            {
+              reflexivity.
+            }
+            claim Hnp_eq_m : np = m.
+            {
+              exact (andEL
+                (np = m)
+                (forall i:set, i :e np -> apply_fun xsp_u i = apply_fun xsw i)
+                (Huniq_p
+                  m
+                  xsw
+                  Hred_prefix
+                  Hm_ne0
+                  Hwp_prefix_p)).
+            }
+            symmetry.
+            exact Hnp_eq_m.
+          }
+          claim Hm_eq_1 : m = 1.
+          {
+            exact (eq_i_tra
+              m
+              np
+              1
+              Hm_eq_np
+              Hnp_eq_1).
+          }
+          (** Remaining work in beta_m = al branch: conclude contradiction from m = 1 and adjacency. **)
           admit.
         - assume Hbm_ne_al.
           (** Remaining work in beta_m <> al branch. **)
