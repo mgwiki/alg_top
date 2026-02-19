@@ -73887,6 +73887,46 @@ claim HgrpZ : group_structure int integers_group_mult 0 integers_group_inv.
 {
   exact integers_group_is_group_cyclic_helper.
 }
+set phi_sel := graph G (fun g:set =>
+  Eps_i (fun n:set =>
+    n :e int /\
+      ((n :e omega /\ g = group_power_nat mult e x n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+         g = group_power_nat mult e (apply_fun inv x) (ordsucc m))))).
+claim HphiSelFn : function_on phi_sel G int.
+{
+  apply (total_function_on_function_on phi_sel G int).
+  apply (total_function_on_graph
+    G
+    int
+    (fun g:set =>
+      Eps_i (fun n:set =>
+        n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e x n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+             g = group_power_nat mult e (apply_fun inv x) (ordsucc m)))))).
+  let g.
+  assume HgG.
+  set Pg := fun n:set =>
+    n :e int /\
+      ((n :e omega /\ g = group_power_nat mult e x n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+         g = group_power_nat mult e (apply_fun inv x) (ordsucc m))).
+  claim HexPg : exists n:set, Pg n.
+  {
+    exact (HgenRep g HgG).
+  }
+  claim HEpsPg : Pg (Eps_i Pg).
+  {
+    exact (Eps_i_ex Pg HexPg).
+  }
+  exact (andEL
+    (Eps_i Pg :e int)
+    ((Eps_i Pg :e omega /\ g = group_power_nat mult e x (Eps_i Pg)) \/
+      (exists m:set, m :e omega /\ Eps_i Pg = minus_SNo (ordsucc m) /\
+        g = group_power_nat mult e (apply_fun inv x) (ordsucc m)))
+    HEpsPg).
+}
 (** TODO Bob: build explicit isomorphism G ~= Z from generator x and nonfiniteness. **)
 admit.
 Admitted.
