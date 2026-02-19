@@ -1,4 +1,4 @@
-(** Balance Alice 3280 **)
+(** Balance Alice 3269 **)
 (** Balance Bob 3062 **)
 (** Balance Charlie 1220 **)
 (** Balance Dave 1597 **)
@@ -134530,7 +134530,8 @@ Admitted.
 (** homomorphism h: G -> H such that h o i_alpha = h_alpha. Conversely, if the extension condition **)
 (** holds, then each i_alpha is a monomorphism and G is the direct sum. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
+(** Bounty 121 **)
+(** Lock Alice 1771562302 **)
 Theorem lemma67_5_extension_external :
   forall G multG eG invG J Gfam multfam ifam:set,
   abelian_group G multG eG invG ->
