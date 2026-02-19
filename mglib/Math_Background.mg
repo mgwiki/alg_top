@@ -96592,6 +96592,22 @@ apply (xm (exists x:set, x :e Bn_closed n /\ apply_fun f x = x)).
       HvdispCont
       HvdispNonzero).
   }
+  claim HdispInward :
+    exists x:set, x :e Sn n /\ points_directly_inward_Rn n vdisp x.
+  {
+    exact (andEL
+      (exists x:set, x :e Sn n /\ points_directly_inward_Rn n vdisp x)
+      (exists x:set, x :e Sn n /\ points_directly_outward_Rn n vdisp x)
+      HioDisp).
+  }
+  claim HdispOutward :
+    exists x:set, x :e Sn n /\ points_directly_outward_Rn n vdisp x.
+  {
+    exact (andER
+      (exists x:set, x :e Sn n /\ points_directly_inward_Rn n vdisp x)
+      (exists x:set, x :e Sn n /\ points_directly_outward_Rn n vdisp x)
+      HioDisp).
+  }
   admit.
 Admitted.
 
