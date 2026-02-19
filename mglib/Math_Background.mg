@@ -138381,8 +138381,83 @@ apply (nat_inv nw Hnw_nat).
               Hm_eq_np
               Hnp_eq_1).
           }
-          (** Remaining work in beta_m = al branch: conclude contradiction from m = 1 and adjacency. **)
-          admit.
+          claim Hxsw0_p : apply_fun xsw 0 = p.
+          {
+            claim Hwp_prefix_p : word_product multG eG xsw m = p.
+            {
+              reflexivity.
+            }
+            claim Hp_eq_wp1 : p = word_product multG eG xsw 1.
+            {
+              claim Hp_eq_wpm : p = word_product multG eG xsw m.
+              {
+                symmetry.
+                exact Hwp_prefix_p.
+              }
+              claim Hwpm_eq_wp1 : word_product multG eG xsw m = word_product multG eG xsw 1.
+              {
+                rewrite Hm_eq_1.
+                reflexivity.
+              }
+              exact (eq_i_tra
+                p
+                (word_product multG eG xsw m)
+                (word_product multG eG xsw 1)
+                Hp_eq_wpm
+                Hwpm_eq_wp1).
+            }
+            claim Hwp1_eq_p : word_product multG eG xsw 1 = p.
+            {
+              symmetry.
+              exact Hp_eq_wp1.
+            }
+            claim Hxsw0_eq_wp1 : apply_fun xsw 0 = word_product multG eG xsw 1.
+            {
+              symmetry.
+              exact Hwp1_eq_xs0.
+            }
+            exact (eq_i_tra
+              (apply_fun xsw 0)
+              (word_product multG eG xsw 1)
+              p
+              Hxsw0_eq_wp1
+              Hwp1_eq_p).
+          }
+          claim Hxsw0_Gal : apply_fun xsw 0 :e apply_fun Gfam al.
+          {
+            rewrite Hxsw0_p.
+            exact Hp_Gal.
+          }
+          claim Hs0_eq_m : ordsucc 0 = m.
+          {
+            rewrite ordsucc_0_eq_1_nat.
+            symmetry.
+            exact Hm_eq_1.
+          }
+          claim Hxs_s0_Gal : apply_fun xsw (ordsucc 0) :e apply_fun Gfam al.
+          {
+            rewrite Hs0_eq_m.
+            exact Hxsm_Gal.
+          }
+          claim Hal_ne_al : al <> al.
+          {
+            exact (Hadj
+              0
+              H0_in_nw
+              Hs0_in_nw
+              al
+              al
+              Hal
+              Hal
+              Hxsw0_Gal
+              Hxs_s0_Gal).
+          }
+          claim Hal_eq_al : al = al.
+          {
+            reflexivity.
+          }
+          exact (Hal_ne_al
+            Hal_eq_al).
         - assume Hbm_ne_al.
           (** Remaining work in beta_m <> al branch. **)
           admit.
