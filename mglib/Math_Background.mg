@@ -74045,6 +74045,17 @@ apply and6I.
     exact (add_SNo_minus_SNo_linv x HxS).
 Qed.
 
+(** Infrastructure helper: existence of a homomorphism Z -> H with prescribed value at 1. **)
+Theorem integers_group_hom_exists_at_one_cyclic_helper :
+  forall H multH eH invH y:set,
+  group_structure H multH eH invH ->
+  y :e H ->
+  exists psi:set,
+    group_homomorphism int integers_group_mult H multH psi /\
+    apply_fun psi 1 = y.
+admit.
+Admitted.
+
 (** from S54 text (line 833 in algtop.tex) **)
 (** LATEX VERSION: A group is cyclic of infinite order iff it is isomorphic to Z; **)
 (** cyclic of order k iff isomorphic to Z/k. **)
@@ -74806,11 +74817,180 @@ claim HpsiEx :
   }
   apply HphiXUnit.
   - assume HphiX1.
-    (** TODO Bob: construct psi with psi(1)=y, then rewrite by HphiX1. **)
-    admit.
+    claim HoneInt : 1 :e int.
+    {
+      exact (Subq_omega_int
+        1
+        (nat_p_omega 1 nat_1)).
+    }
+    claim Hpsi1Ex :
+      exists psi:set,
+        group_homomorphism int integers_group_mult H multH psi /\
+        apply_fun psi 1 = y.
+    {
+      exact (integers_group_hom_exists_at_one_cyclic_helper
+        H
+        multH
+        eH
+        invH
+        y
+        HgrpH
+        Hy).
+    }
+    apply Hpsi1Ex.
+    let psi.
+    assume HpsiPack.
+    claim HpsiHom : group_homomorphism int integers_group_mult H multH psi.
+    {
+      exact (andEL
+        (group_homomorphism int integers_group_mult H multH psi)
+        (apply_fun psi 1 = y)
+        HpsiPack).
+    }
+    claim Hpsi1y : apply_fun psi 1 = y.
+    {
+      exact (andER
+        (group_homomorphism int integers_group_mult H multH psi)
+        (apply_fun psi 1 = y)
+        HpsiPack).
+    }
+    witness psi.
+    apply andI.
+    + exact HpsiHom.
+    + rewrite HphiX1.
+      exact Hpsi1y.
   - assume HphiXm1.
-    (** TODO Bob: construct psi with psi(1)=invH(y), then use psi(-1)=y via HphiXm1. **)
-    admit.
+    claim HoneInt : 1 :e int.
+    {
+      exact (Subq_omega_int
+        1
+        (nat_p_omega 1 nat_1)).
+    }
+    claim HyInv : apply_fun invH y :e H.
+    {
+      apply (and6E
+        (function_on multH (setprod H H) H)
+        (function_on invH H H)
+        (eH :e H)
+        (forall a b c:set, a :e H -> b :e H -> c :e H ->
+          apply_fun multH (apply_fun multH (a, b), c) =
+          apply_fun multH (a, apply_fun multH (b, c)))
+        (forall a:set, a :e H ->
+          apply_fun multH (eH, a) = a /\ apply_fun multH (a, eH) = a)
+        (forall a:set, a :e H ->
+          apply_fun multH (a, apply_fun invH a) = eH /\
+          apply_fun multH (apply_fun invH a, a) = eH)
+        HgrpH).
+      assume HmultHfn HinvHfn HeHH HassocHid HidH HinvLaw.
+      exact (HinvHfn
+        y
+        Hy).
+    }
+    claim Hpsi1Ex :
+      exists psi:set,
+        group_homomorphism int integers_group_mult H multH psi /\
+        apply_fun psi 1 = apply_fun invH y.
+    {
+      exact (integers_group_hom_exists_at_one_cyclic_helper
+        H
+        multH
+        eH
+        invH
+        (apply_fun invH y)
+        HgrpH
+        HyInv).
+    }
+    apply Hpsi1Ex.
+    let psi.
+    assume HpsiPack.
+    claim HpsiHom : group_homomorphism int integers_group_mult H multH psi.
+    {
+      exact (andEL
+        (group_homomorphism int integers_group_mult H multH psi)
+        (apply_fun psi 1 = apply_fun invH y)
+        HpsiPack).
+    }
+    claim Hpsi1InvY : apply_fun psi 1 = apply_fun invH y.
+    {
+      exact (andER
+        (group_homomorphism int integers_group_mult H multH psi)
+        (apply_fun psi 1 = apply_fun invH y)
+        HpsiPack).
+    }
+    claim HpsiMinus1 :
+      apply_fun psi (minus_SNo 1) = apply_fun invH (apply_fun psi 1).
+    {
+      claim HinvDef :
+        integers_group_inv =
+        graph int (fun n:set => minus_SNo n).
+      {
+        reflexivity.
+      }
+      claim HpsiInvRaw :
+        apply_fun psi (apply_fun integers_group_inv 1) =
+        apply_fun invH (apply_fun psi 1).
+      {
+        exact (group_hom_sends_inverse_cyclic_helper
+          int
+          integers_group_mult
+          0
+          integers_group_inv
+          H
+          multH
+          eH
+          invH
+          psi
+          HgrpZ
+          HgrpH
+          HpsiHom
+          1
+          HoneInt).
+      }
+      rewrite <- (apply_fun_graph
+        int
+        (fun n:set => minus_SNo n)
+        1
+        HoneInt).
+      rewrite <- HinvDef.
+      exact HpsiInvRaw.
+    }
+    claim HinvInvY : apply_fun invH (apply_fun invH y) = y.
+    {
+      apply (and6E
+        (function_on multH (setprod H H) H)
+        (function_on invH H H)
+        (eH :e H)
+        (forall a b c:set, a :e H -> b :e H -> c :e H ->
+          apply_fun multH (apply_fun multH (a, b), c) =
+          apply_fun multH (a, apply_fun multH (b, c)))
+        (forall a:set, a :e H ->
+          apply_fun multH (eH, a) = a /\ apply_fun multH (a, eH) = a)
+        (forall a:set, a :e H ->
+          apply_fun multH (a, apply_fun invH a) = eH /\
+          apply_fun multH (apply_fun invH a, a) = eH)
+        HgrpH).
+      assume HmultHfn HinvHfn HeHH HassocH HidH HinvLaw.
+      exact (group_inv_inv
+        H
+        multH
+        invH
+        eH
+        y
+        HmultHfn
+        HinvHfn
+        HeHH
+        HassocH
+        HidH
+        HinvLaw
+        Hy).
+    }
+    witness psi.
+    apply andI.
+    + exact HpsiHom.
+    + rewrite HphiXm1.
+      rewrite HpsiMinus1.
+      rewrite Hpsi1InvY.
+      exact HinvInvY.
 }
 apply HpsiEx.
 let psi.
