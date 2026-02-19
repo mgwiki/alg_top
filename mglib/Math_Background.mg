@@ -140872,6 +140872,36 @@ apply (nat_inv nw Hnw_nat).
                       (neq_ordsucc_0 0)
                       Hwp_ie1)).
                 }
+                claim H0_in_nie : 0 :e nie.
+                {
+                  rewrite Hnie_eq_1.
+                  exact (nat_0_in_ordsucc
+                    0
+                    nat_0).
+                }
+                claim Hxie0_ie : apply_fun xie 0 = ie.
+                {
+                  claim Hxie0_word : apply_fun xie 0 = apply_fun ie_word 0.
+                  {
+                    exact (andER
+                      (nie = 1)
+                      (forall i:set, i :e nie -> apply_fun xie i = apply_fun ie_word i)
+                      (Huniq_ie
+                        1
+                        ie_word
+                        Hie_redw1
+                        (neq_ordsucc_0 0)
+                        Hwp_ie1)
+                      0
+                      H0_in_nie).
+                  }
+                  exact (eq_i_tra
+                    (apply_fun xie 0)
+                    (apply_fun ie_word 0)
+                    ie
+                    Hxie0_word
+                    Hie_word_0).
+                }
                 admit.
 Admitted.
 
