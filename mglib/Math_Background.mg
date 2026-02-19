@@ -69893,9 +69893,87 @@ claim HFt_54_cont :
                     }
                     claim HxqVz : xq :e Vz.
                     {
+                      claim HxqEqFz : apply_fun p xq = apply_fun F z.
+                      {
+                        exact (andER
+                          (xq :e Vq)
+                          (apply_fun p xq = apply_fun F z)
+                          (andEL
+                            (xq :e Vq /\ apply_fun p xq = apply_fun F z)
+                            (forall y:set, y :e Vq -> apply_fun p y = apply_fun F z -> y = xq)
+                            HxqPack)).
+                      }
+                      claim HxqE : xq :e E.
+                      {
+                        exact (HVqsubE
+                          xq
+                          HxqVq).
+                      }
+                      claim HxqPreU : xq :e preimage_of E p U.
+                      {
+                        claim HpxqU : apply_fun p xq :e U.
+                        {
+                          rewrite HxqEqFz.
+                          exact HFzU.
+                        }
+                        exact (SepI
+                          E
+                          (fun z0:set => apply_fun p z0 :e U)
+                          xq
+                          HxqE
+                          HpxqU).
+                      }
+                      claim HxqUnion : xq :e Union slices.
+                      {
+                        exact (mem_eqL
+                          xq
+                          (Union slices)
+                          (preimage_of E p U)
+                          HslicesUnion
+                          HxqPreU).
+                      }
+                      claim HxqSlicePack :
+                        exists Vxq:set, xq :e Vxq /\ Vxq :e slices.
+                      {
+                        exact (UnionE
+                          slices
+                          xq
+                          HxqUnion).
+                      }
+                      apply HxqSlicePack.
+                      let Vxq.
+                      assume HVxqPack.
+                      claim HxqVxq : xq :e Vxq.
+                      {
+                        exact (andEL
+                          (xq :e Vxq)
+                          (Vxq :e slices)
+                          HVxqPack).
+                      }
+                      claim HVxqSlice : Vxq :e slices.
+                      {
+                        exact (andER
+                          (xq :e Vxq)
+                          (Vxq :e slices)
+                          HVxqPack).
+                      }
+                      claim HVxqEqVq : Vxq = Vq.
+                      {
+                        exact (pairwise_disjoint_point_unique_member
+                          slices
+                          Vxq
+                          Vq
+                          xq
+                          HpdSlices
+                          HVxqSlice
+                          HVqSlice
+                          HxqVxq
+                          HxqVq).
+                      }
                       (** Remaining gap:
-                          prove the local chosen fiber point xq over F z lies in Vz.
-                          This is the sheet-coincidence step from Lemma 54.2. **)
+                          upgrade the sheet witness Vxq = Vq to Vxq = Vz
+                          (equivalently xq :e Vz) via the local Ft_local_N/Ft_54 comparison
+                          at the point z from Lemma 54.2. **)
                       admit.
                     }
                     exact (pairwise_disjoint_point_unique_member
