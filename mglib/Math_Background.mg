@@ -72200,6 +72200,117 @@ apply (andI
     exact Hmul.
 Qed.
 
+(** Proven Bob **)
+(** Infrastructure helper: in the integer additive group, natural powers are scalar multiples. **)
+Theorem integers_group_power_nat_mul_right_cyclic_helper :
+  forall a n:set, a :e int -> n :e omega ->
+    group_power_nat integers_group_mult 0 a n = mul_SNo a n.
+let a n.
+assume HaInt HnO.
+claim HaS : SNo a.
+{
+  exact (int_SNo a HaInt).
+}
+claim Hnat :
+  forall k:set, nat_p k ->
+    group_power_nat integers_group_mult 0 a k = mul_SNo a k.
+{
+  apply nat_ind.
+  - claim Hpow0 : group_power_nat integers_group_mult 0 a 0 = 0.
+    {
+      exact (nat_primrec_0
+        0
+        (fun _ r => apply_fun integers_group_mult (a, r))).
+    }
+    rewrite Hpow0.
+    symmetry.
+    exact (mul_SNo_zeroR a HaS).
+  - let k.
+    assume Hk : nat_p k.
+    assume IH :
+      group_power_nat integers_group_mult 0 a k = mul_SNo a k.
+    claim HkO : k :e omega.
+    {
+      exact (nat_p_omega k Hk).
+    }
+    claim HkInt : k :e int.
+    {
+      exact (Subq_omega_int k HkO).
+    }
+    claim HpowkInt : group_power_nat integers_group_mult 0 a k :e int.
+    {
+      rewrite IH.
+      exact (int_mul_SNo a HaInt k HkInt).
+    }
+    claim HpowSk :
+      group_power_nat integers_group_mult 0 a (ordsucc k) =
+      apply_fun integers_group_mult (a, group_power_nat integers_group_mult 0 a k).
+    {
+      exact (nat_primrec_S
+        0
+        (fun _ r => apply_fun integers_group_mult (a, r))
+        k
+        Hk).
+    }
+    claim HmultDef :
+      integers_group_mult =
+      graph (setprod int int) (fun p:set => add_SNo (p 0) (p 1)).
+    {
+      reflexivity.
+    }
+    rewrite HpowSk.
+    rewrite HmultDef.
+    rewrite (apply_fun_graph
+      (setprod int int)
+      (fun p:set => add_SNo (p 0) (p 1))
+      (a, group_power_nat integers_group_mult 0 a k)
+      (tuple_2_setprod_by_pair_Sigma
+        int
+        int
+        a
+        (group_power_nat integers_group_mult 0 a k)
+        HaInt
+        HpowkInt)).
+    rewrite (tuple_2_0_eq a (group_power_nat integers_group_mult 0 a k)).
+    rewrite (tuple_2_1_eq a (group_power_nat integers_group_mult 0 a k)).
+    rewrite IH.
+    claim HkS : SNo k.
+    {
+      exact (int_SNo k HkInt).
+    }
+    claim HakInt : mul_SNo a k :e int.
+    {
+      exact (int_mul_SNo a HaInt k HkInt).
+    }
+    claim HakS : SNo (mul_SNo a k).
+    {
+      exact (int_SNo (mul_SNo a k) HakInt).
+    }
+    rewrite (add_SNo_com a (mul_SNo a k) HaS HakS).
+    claim Hk1 : add_SNo k 1 = ordsucc k.
+    {
+      exact (add_SNo_1_ordsucc k HkO).
+    }
+    claim HmulSucc :
+      mul_SNo a (ordsucc k) = add_SNo (mul_SNo a k) a.
+    {
+      rewrite <- Hk1.
+      rewrite (mul_SNo_distrL
+        a
+        k
+        1
+        HaS
+        HkS
+        SNo_1).
+      rewrite (mul_SNo_oneR a HaS).
+      reflexivity.
+    }
+    rewrite <- HmulSucc.
+    reflexivity.
+}
+exact (Hnat n (omega_nat_p n HnO)).
+Qed.
+
 (** from S54 text (line 833 in algtop.tex) **)
 (** LATEX VERSION: A group is cyclic of infinite order iff it is isomorphic to Z; **)
 (** cyclic of order k iff isomorphic to Z/k. **)
@@ -72396,6 +72507,11 @@ claim HphiHom : group_homomorphism G multG int integers_group_mult phi.
     phi
     HphiIso).
 }
+claim HgrpZ : group_structure int integers_group_mult 0 integers_group_inv.
+{
+  (** TODO Bob: discharge from an earlier proved integer-group structure theorem in this region. **)
+  admit.
+}
 claim HphiFn : function_on phi G int.
 {
   exact (group_homomorphism_function_on
@@ -72579,6 +72695,308 @@ claim HphiXSignCase :
     (apply_fun phi x)
     HphiXInt
     HphiXNe0).
+}
+claim HgenRepG :
+  forall g:set, g :e G ->
+    exists n:set, n :e int /\
+      ((n :e omega /\ g = group_power_nat multG eG x n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+         g = group_power_nat multG eG (apply_fun invG x) (ordsucc m))).
+{
+  exact (andER
+    (x :e G)
+    (forall g:set, g :e G ->
+      exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat multG eG x n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+           g = group_power_nat multG eG (apply_fun invG x) (ordsucc m))))
+    HgenX).
+}
+claim HphiXDiv1 : divides_int (apply_fun phi x) 1.
+{
+  claim HphiBij : bijection G int phi.
+  {
+    exact (group_isomorphism_bijection
+      G
+      multG
+      int
+      integers_group_mult
+      phi
+      HphiIso).
+  }
+  claim H1Int : 1 :e int.
+  {
+    exact (Subq_omega_int 1 (nat_p_omega 1 nat_1)).
+  }
+  claim Hsurj1 :
+    exists g:set, g :e G /\ apply_fun phi g = 1.
+  {
+    exact (bijection_surj
+      G
+      int
+      phi
+      1
+      HphiBij
+      H1Int).
+  }
+  apply Hsurj1.
+  let g1.
+  assume Hg1Pack.
+  claim Hg1G : g1 :e G.
+  {
+    exact (andEL
+      (g1 :e G)
+      (apply_fun phi g1 = 1)
+      Hg1Pack).
+  }
+  claim HphiG1 : apply_fun phi g1 = 1.
+  {
+    exact (andER
+      (g1 :e G)
+      (apply_fun phi g1 = 1)
+      Hg1Pack).
+  }
+  apply (HgenRepG g1 Hg1G).
+  let n.
+  assume HnPack.
+  claim HnInt : n :e int.
+  {
+    exact (andEL
+      (n :e int)
+      ((n :e omega /\ g1 = group_power_nat multG eG x n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+         g1 = group_power_nat multG eG (apply_fun invG x) (ordsucc m)))
+      HnPack).
+  }
+  claim Hrep :
+    (n :e omega /\ g1 = group_power_nat multG eG x n) \/
+    (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+      g1 = group_power_nat multG eG (apply_fun invG x) (ordsucc m)).
+  {
+    exact (andER
+      (n :e int)
+      ((n :e omega /\ g1 = group_power_nat multG eG x n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+         g1 = group_power_nat multG eG (apply_fun invG x) (ordsucc m)))
+      HnPack).
+  }
+  apply Hrep.
+  - assume HnatRep.
+    claim HnO : n :e omega.
+    {
+      exact (andEL
+        (n :e omega)
+        (g1 = group_power_nat multG eG x n)
+        HnatRep).
+    }
+    claim Hg1Pow : g1 = group_power_nat multG eG x n.
+    {
+      exact (andER
+        (n :e omega)
+        (g1 = group_power_nat multG eG x n)
+        HnatRep).
+    }
+    claim HphiPow :
+      apply_fun phi (group_power_nat multG eG x n) =
+      group_power_nat integers_group_mult 0 (apply_fun phi x) n.
+    {
+      exact (group_homomorphism_preserves_power_nat_cyclic_helper
+        G
+        multG
+        eG
+        invG
+        int
+        integers_group_mult
+        0
+        integers_group_inv
+        phi
+        x
+        n
+        HgrpG
+        HgrpZ
+        HphiHom
+        HxG
+        HnO).
+    }
+    claim HpowMul :
+      group_power_nat integers_group_mult 0 (apply_fun phi x) n =
+      mul_SNo (apply_fun phi x) n.
+    {
+      exact (integers_group_power_nat_mul_right_cyclic_helper
+        (apply_fun phi x)
+        n
+        HphiXInt
+        HnO).
+    }
+    apply (andI
+      (apply_fun phi x :e int /\ 1 :e int)
+      (exists k:set, k :e int /\ mul_SNo (apply_fun phi x) k = 1)).
+    + apply andI.
+      * exact HphiXInt.
+      * exact H1Int.
+    + witness n.
+      apply andI.
+      * exact (Subq_omega_int n HnO).
+      * rewrite <- HphiG1.
+        rewrite Hg1Pow.
+        rewrite HphiPow.
+        symmetry.
+        exact HpowMul.
+  - assume HnegRep.
+    apply HnegRep.
+    let m.
+    assume HmPack.
+    claim HmO : m :e omega.
+    {
+      exact (andEL
+        (m :e omega)
+        (n = minus_SNo (ordsucc m))
+        (andEL
+          (m :e omega /\ n = minus_SNo (ordsucc m))
+          (g1 = group_power_nat multG eG (apply_fun invG x) (ordsucc m))
+          HmPack)).
+    }
+    claim Hg1InvPow :
+      g1 = group_power_nat multG eG (apply_fun invG x) (ordsucc m).
+    {
+      exact (andER
+        (m :e omega /\ n = minus_SNo (ordsucc m))
+        (g1 = group_power_nat multG eG (apply_fun invG x) (ordsucc m))
+        HmPack).
+    }
+    claim HsuccmO : ordsucc m :e omega.
+    {
+      exact (omega_ordsucc m HmO).
+    }
+    claim HsuccmInt : ordsucc m :e int.
+    {
+      exact (Subq_omega_int
+        (ordsucc m)
+        HsuccmO).
+    }
+    claim HsuccmS : SNo (ordsucc m).
+    {
+      exact (int_SNo
+        (ordsucc m)
+        HsuccmInt).
+    }
+    claim HphiXInvEq :
+      apply_fun integers_group_inv (apply_fun phi x) =
+      minus_SNo (apply_fun phi x).
+    {
+      rewrite (apply_fun_graph
+        int
+        (fun n0:set => minus_SNo n0)
+        (apply_fun phi x)
+        HphiXInt).
+      reflexivity.
+    }
+    claim HphiXInvInt :
+      apply_fun integers_group_inv (apply_fun phi x) :e int.
+    {
+      rewrite HphiXInvEq.
+      exact (int_minus_SNo
+        (apply_fun phi x)
+        HphiXInt).
+    }
+    claim HphiInvPow :
+      apply_fun phi (group_power_nat multG eG (apply_fun invG x) (ordsucc m)) =
+      group_power_nat integers_group_mult 0
+        (apply_fun integers_group_inv (apply_fun phi x))
+        (ordsucc m).
+    {
+      exact (group_homomorphism_preserves_inverse_power_nat_cyclic_helper
+        G
+        multG
+        eG
+        invG
+        int
+        integers_group_mult
+        0
+        integers_group_inv
+        phi
+        x
+        (ordsucc m)
+        HgrpG
+        HgrpZ
+        HphiHom
+        HxG
+        HsuccmO).
+    }
+    claim HpowMulInv :
+      group_power_nat integers_group_mult 0
+        (apply_fun integers_group_inv (apply_fun phi x))
+        (ordsucc m) =
+      mul_SNo
+        (apply_fun integers_group_inv (apply_fun phi x))
+        (ordsucc m).
+    {
+      exact (integers_group_power_nat_mul_right_cyclic_helper
+        (apply_fun integers_group_inv (apply_fun phi x))
+        (ordsucc m)
+        HphiXInvInt
+        HsuccmO).
+    }
+    claim HphiXS : SNo (apply_fun phi x).
+    {
+      exact (int_SNo
+        (apply_fun phi x)
+        HphiXInt).
+    }
+    claim HphiXInvMul :
+      mul_SNo
+        (apply_fun integers_group_inv (apply_fun phi x))
+        (ordsucc m) =
+      mul_SNo
+        (apply_fun phi x)
+        (minus_SNo (ordsucc m)).
+    {
+      rewrite HphiXInvEq.
+      claim HnegPhiXS : SNo (minus_SNo (apply_fun phi x)).
+      {
+        exact (SNo_minus_SNo
+          (apply_fun phi x)
+          HphiXS).
+      }
+      rewrite (mul_SNo_com
+        (minus_SNo (apply_fun phi x))
+        (ordsucc m)
+        HnegPhiXS
+        HsuccmS).
+      rewrite (mul_SNo_minus_distrR
+        (ordsucc m)
+        (apply_fun phi x)
+        HsuccmS
+        HphiXS).
+      rewrite (mul_SNo_com
+        (ordsucc m)
+        (apply_fun phi x)
+        HsuccmS
+        HphiXS).
+      rewrite <- (mul_SNo_minus_distrR
+        (apply_fun phi x)
+        (ordsucc m)
+        HphiXS
+        HsuccmS).
+      reflexivity.
+    }
+    apply (andI
+      (apply_fun phi x :e int /\ 1 :e int)
+      (exists k:set, k :e int /\ mul_SNo (apply_fun phi x) k = 1)).
+    + apply andI.
+      * exact HphiXInt.
+      * exact H1Int.
+    + witness (minus_SNo (ordsucc m)).
+      apply andI.
+      * exact (int_minus_SNo_omega
+          (ordsucc m)
+          HsuccmO).
+      * rewrite <- HphiG1.
+        rewrite Hg1InvPow.
+        rewrite HphiInvPow.
+        rewrite HpowMulInv.
+        symmetry.
+        exact HphiXInvMul.
 }
 claim HpsiEx :
   exists psi:set,
