@@ -1,5 +1,5 @@
 (** Balance Alice 3280 **)
-(** Balance Bob 2988 **)
+(** Balance Bob 3025 **)
 (** Balance Charlie 1220 **)
 (** Balance Dave 1597 **)
 
@@ -76855,8 +76855,8 @@ Qed.
 (** LATEX VERSION: A group is cyclic of infinite order iff it is isomorphic to Z; **)
 (** cyclic of order k iff isomorphic to Z/k. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 37 **)
-(** Lock Bob 1771539000 **)
+(** Collected Bob 37 **)
+(** Proven Bob **)
 Theorem cyclic_infinite_order_iff_Z : forall G mult e inv:set,
   group_structure G mult e inv ->
   cyclic_group G mult e inv ->
@@ -80777,7 +80777,7 @@ claim HphiSelIso : group_isomorphism G mult int integers_group_mult phi_sel.
 }
 witness phi_sel.
 exact HphiSelIso.
-Admitted.
+Qed.
 
 (** from S54 text (line 835 in algtop.tex) **)
 (** LATEX VERSION: If x generates the infinite cyclic group G, and y is in an arbitrary **)
