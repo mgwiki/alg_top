@@ -134859,7 +134859,138 @@ claim Huniq : forall h':set, group_homomorphism G multG H multH h' ->
         apply_fun (apply_fun hfam alpha) x) ->
   forall x:set, x :e G -> apply_fun h' x = apply_fun h x.
 {
-  admit. (** TODO Alice: prove uniqueness **)
+  let h'.
+  assume Hh'hom : group_homomorphism G multG H multH h'.
+  assume Hh'ext : forall alpha:set, alpha :e J ->
+    forall x:set, x :e apply_fun Gfam alpha ->
+      apply_fun h' (apply_fun (apply_fun ifam alpha) x) =
+        apply_fun (apply_fun hfam alpha) x.
+  let g.
+  assume HgG : g :e G.
+  (** By generation, g has a representation **)
+  apply (Hgen g HgG).
+  let n. assume Hn_body.
+  (** Hn_body : (n :e omega /\ n <> 0) /\ (exists alphas, ...) **)
+  apply Hn_body. assume Hn_conj. assume Hex_alphas.
+  apply Hn_conj. assume HnO : n :e omega. assume Hn0 : n <> 0.
+  apply Hex_alphas.
+  let alphas. assume Hal_body.
+  (** Hal_body : function_on alphas n J /\ (exists xs, ...) **)
+  apply Hal_body. assume Halphas_conj : function_on alphas n J. assume Hex_xs.
+  apply Hex_xs.
+  let xs. assume Hxs_body.
+  (** Hxs_body : (((function_on xs n G /\ forall i...) /\ forall i j...) /\ g = ...) **)
+  apply Hxs_body. assume Hxs_3. assume Hg_eq : g = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n.
+  apply Hxs_3. assume Hxs_2. assume Hadist : forall i j:set, i :e n -> j :e n -> i <> j -> apply_fun alphas i <> apply_fun alphas j.
+  apply Hxs_2. assume Hxs_fn : function_on xs n G.
+  assume Hxs_mem : forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam_img (apply_fun alphas i).
+  (** Step 1: h' and h agree on each generator xs(i) **)
+  claim Hxs_eq : forall i:set, i :e n ->
+    apply_fun h' (apply_fun xs i) = apply_fun h (apply_fun xs i).
+  {
+    let i. assume Hi : i :e n.
+    claim Hai : apply_fun alphas i :e J. { exact (Halphas_conj i Hi). }
+    claim Hgi : apply_fun Gfam_img (apply_fun alphas i) =
+      homomorphism_image (apply_fun Gfam (apply_fun alphas i)) (apply_fun ifam (apply_fun alphas i)).
+    { exact (apply_fun_graph J
+        (fun alpha => homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))
+        (apply_fun alphas i) Hai). }
+    claim Hxsi_hom : apply_fun xs i :e
+      homomorphism_image (apply_fun Gfam (apply_fun alphas i)) (apply_fun ifam (apply_fun alphas i)).
+    { rewrite <- Hgi. exact (Hxs_mem i Hi). }
+    apply (ReplE_impred
+      (apply_fun Gfam (apply_fun alphas i))
+      (fun y => apply_fun (apply_fun ifam (apply_fun alphas i)) y)
+      (apply_fun xs i) Hxsi_hom).
+    let y. assume Hy : y :e apply_fun Gfam (apply_fun alphas i).
+    assume Hxsi_eq : apply_fun xs i = apply_fun (apply_fun ifam (apply_fun alphas i)) y.
+    rewrite Hxsi_eq.
+    claim Hh'_val : apply_fun h' (apply_fun (apply_fun ifam (apply_fun alphas i)) y) =
+      apply_fun (apply_fun hfam (apply_fun alphas i)) y.
+    { exact (Hh'ext (apply_fun alphas i) Hai y Hy). }
+    claim Hh_val : apply_fun h (apply_fun (apply_fun ifam (apply_fun alphas i)) y) =
+      apply_fun (apply_fun hfam (apply_fun alphas i)) y.
+    { exact (Hext (apply_fun alphas i) Hai y Hy). }
+    rewrite Hh'_val. rewrite Hh_val. reflexivity.
+  }
+  (** Step 2: Extract mult closure from group_structure **)
+  claim HmultG_cl : function_on multG (setprod G G) G.
+  {
+    apply (and6E
+      (function_on multG (setprod G G) G)
+      (function_on invG G G)
+      (eG :e G)
+      (forall x y z:set, x :e G -> y :e G -> z :e G ->
+        apply_fun multG (apply_fun multG (x, y), z) = apply_fun multG (x, apply_fun multG (y, z)))
+      (forall x:set, x :e G -> apply_fun multG (eG, x) = x /\ apply_fun multG (x, eG) = x)
+      (forall x:set, x :e G ->
+        apply_fun multG (x, apply_fun invG x) = eG /\ apply_fun multG (apply_fun invG x, x) = eG)
+      HgrpG).
+    assume Hmcl _ _ _ _ _.
+    exact Hmcl.
+  }
+  (** Step 3: By induction, h' and h agree on nat_primrec products **)
+  set F := fun i r:set => apply_fun multG (r, apply_fun xs i).
+  claim Hind : forall k:set, nat_p k ->
+    (forall j:set, j :e k -> apply_fun xs j :e G /\
+      apply_fun h' (apply_fun xs j) = apply_fun h (apply_fun xs j)) ->
+    nat_primrec eG F k :e G /\
+    apply_fun h' (nat_primrec eG F k) = apply_fun h (nat_primrec eG F k).
+  {
+    apply nat_ind.
+    - (** Base: k = 0 **)
+      assume Hvac : forall j:set, j :e 0 -> apply_fun xs j :e G /\
+        apply_fun h' (apply_fun xs j) = apply_fun h (apply_fun xs j).
+      apply andI.
+      - rewrite (nat_primrec_0 eG F). exact HeGG.
+      - rewrite (nat_primrec_0 eG F).
+        claim Hh'e : apply_fun h' eG = eH.
+        { exact (group_hom_preserves_identity G multG eG invG H multH eH invH h' HgrpG HgrpH Hh'hom). }
+        claim Hhe : apply_fun h eG = eH.
+        { exact (group_hom_preserves_identity G multG eG invG H multH eH invH h HgrpG HgrpH Hhom). }
+        rewrite Hh'e. rewrite Hhe. reflexivity.
+    - (** Step: k -> ordsucc k **)
+      let k. assume Hk : nat_p k. assume IH.
+      assume Hjs : forall j:set, j :e ordsucc k -> apply_fun xs j :e G /\
+        apply_fun h' (apply_fun xs j) = apply_fun h (apply_fun xs j).
+      claim Hjs_k : forall j:set, j :e k -> apply_fun xs j :e G /\
+        apply_fun h' (apply_fun xs j) = apply_fun h (apply_fun xs j).
+      { let j. assume Hj : j :e k. exact (Hjs j (ordsuccI1 k j Hj)). }
+      claim HIH : nat_primrec eG F k :e G /\
+        apply_fun h' (nat_primrec eG F k) = apply_fun h (nat_primrec eG F k).
+      { exact (IH Hjs_k). }
+      apply HIH. assume Hnp_G : nat_primrec eG F k :e G.
+      assume Hnp_eq : apply_fun h' (nat_primrec eG F k) = apply_fun h (nat_primrec eG F k).
+      claim Hxsk_conj : apply_fun xs k :e G /\
+        apply_fun h' (apply_fun xs k) = apply_fun h (apply_fun xs k).
+      { exact (Hjs k (ordsuccI2 k)). }
+      apply Hxsk_conj. assume Hxsk_G : apply_fun xs k :e G.
+      assume Hxsk_eq : apply_fun h' (apply_fun xs k) = apply_fun h (apply_fun xs k).
+      rewrite (nat_primrec_S eG F k Hk).
+      apply andI.
+      - exact (HmultG_cl (nat_primrec eG F k, apply_fun xs k)
+          (tuple_2_setprod_by_pair_Sigma G G (nat_primrec eG F k) (apply_fun xs k) Hnp_G Hxsk_G)).
+      - claim Hh'_mult : apply_fun h' (apply_fun multG (nat_primrec eG F k, apply_fun xs k)) =
+          apply_fun multH (apply_fun h' (nat_primrec eG F k), apply_fun h' (apply_fun xs k)).
+        { exact (group_homomorphism_mult_rule G multG H multH h'
+            (nat_primrec eG F k) (apply_fun xs k) Hh'hom Hnp_G Hxsk_G). }
+        claim Hh_mult : apply_fun h (apply_fun multG (nat_primrec eG F k, apply_fun xs k)) =
+          apply_fun multH (apply_fun h (nat_primrec eG F k), apply_fun h (apply_fun xs k)).
+        { exact (group_homomorphism_mult_rule G multG H multH h
+            (nat_primrec eG F k) (apply_fun xs k) Hhom Hnp_G Hxsk_G). }
+        rewrite Hh'_mult. rewrite Hh_mult. rewrite Hnp_eq. rewrite Hxsk_eq. reflexivity.
+  }
+  (** Step 4: Apply induction at n to get h'(g) = h(g) **)
+  claim Hjs_n : forall j:set, j :e n -> apply_fun xs j :e G /\
+    apply_fun h' (apply_fun xs j) = apply_fun h (apply_fun xs j).
+  { let j. assume Hj : j :e n. apply andI. - exact (Hxs_fn j Hj). - exact (Hxs_eq j Hj). }
+  claim Hresult : nat_primrec eG F n :e G /\
+    apply_fun h' (nat_primrec eG F n) = apply_fun h (nat_primrec eG F n).
+  { exact (Hind n (omega_nat_p n HnO) Hjs_n). }
+  rewrite Hg_eq.
+  exact (andER (nat_primrec eG F n :e G)
+    (apply_fun h' (nat_primrec eG F n) = apply_fun h (nat_primrec eG F n))
+    Hresult).
 }
 witness h.
 apply and3I.
