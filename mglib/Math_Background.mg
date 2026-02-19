@@ -76967,6 +76967,49 @@ claim HphiSelFn : function_on phi_sel G int.
         g = group_power_nat mult e (apply_fun inv x) (ordsucc m)))
     HEpsPg).
 }
+claim HphiSelRep :
+  forall g n:set, g :e G -> apply_fun phi_sel g = n ->
+    n :e int /\
+      ((n :e omega /\ g = group_power_nat mult e x n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+        g = group_power_nat mult e (apply_fun inv x) (ordsucc m))).
+{
+  let g n.
+  assume HgG HphiEq.
+  set Pg := fun n0:set =>
+    n0 :e int /\
+      ((n0 :e omega /\ g = group_power_nat mult e x n0) \/
+       (exists m:set, m :e omega /\ n0 = minus_SNo (ordsucc m) /\
+         g = group_power_nat mult e (apply_fun inv x) (ordsucc m))).
+  claim HEpsPg : Pg (Eps_i Pg).
+  {
+    exact (Eps_i_ex
+      Pg
+      (HgenRep g HgG)).
+  }
+  claim HphiSelg :
+    apply_fun phi_sel g = Eps_i Pg.
+  {
+    rewrite (apply_fun_graph
+      G
+      (fun g0:set =>
+        Eps_i (fun n0:set =>
+          n0 :e int /\
+            ((n0 :e omega /\ g0 = group_power_nat mult e x n0) \/
+             (exists m:set, m :e omega /\ n0 = minus_SNo (ordsucc m) /\
+               g0 = group_power_nat mult e (apply_fun inv x) (ordsucc m)))))
+      g
+      HgG).
+    reflexivity.
+  }
+  claim HnEqEps : n = Eps_i Pg.
+  {
+    rewrite <- HphiEq.
+    exact HphiSelg.
+  }
+  rewrite HnEqEps.
+  exact HEpsPg.
+}
 claim HphiSelIso : group_isomorphism G mult int integers_group_mult phi_sel.
 {
   claim HphiSelHom : group_homomorphism G mult int integers_group_mult phi_sel.
