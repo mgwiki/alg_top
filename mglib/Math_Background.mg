@@ -129422,16 +129422,131 @@ apply and3I.
                           set nw2 := ordsucc (ordsucc nw).
                           claim Hnw2_nat : nat_p nw2. { exact (nat_ordsucc (ordsucc nw) Hsnw_nat). }
                           claim Hnw2_ne0 : nw2 <> 0. { exact (neq_ordsucc_0 (ordsucc nw)). }
-                          (** ie != eG and ie is in only Gfam(al) **)
-                          (** xsw(0) is in only Gfam(beta_0), beta_0 != al **)
-                          (** xsw(mw) is in only Gfam(beta_mw), beta_mw != al **)
-                          (** So adjacency at junctions is satisfied **)
-                          (** For full proof, need to construct graph and verify reduced_word **)
-                          (** This is mechanical but long. Use Huniq_efam on the resulting word. **)
-                          (** Actually simpler: just use Hie_uniq directly. **)
-                          (** Need: reduced_word of length nw+2 with product ie **)
-                          (** For now, admit and TODO this construction **)
-                          admit. }
+                          (** Define the long word yw = [ie, xsw(0), ..., xsw(mw), ie] of length nw2 **)
+                          set yw := graph nw2 (fun i:set =>
+                            if i :e ordsucc nw then
+                              (if i = 0 then ie else apply_fun xsw (nat_primrec 0 (fun j _:set => j) i))
+                            else ie).
+                          (** yw(0) = ie **)
+                          claim H0_in_nw2 : 0 :e nw2. { exact (nat_0_in_ordsucc (ordsucc nw) Hsnw_nat). }
+                          claim H0_in_snw : 0 :e ordsucc nw. { exact (nat_0_in_ordsucc nw Hnw_nat). }
+                          claim Hyw_0 : apply_fun yw 0 = ie.
+                          { claim Hgr : apply_fun yw 0 = (if 0 :e ordsucc nw then (if 0 = 0 then ie else apply_fun xsw (nat_primrec 0 (fun j _:set => j) 0)) else ie).
+                            { exact (apply_fun_graph nw2 (fun i:set => if i :e ordsucc nw then (if i = 0 then ie else apply_fun xsw (nat_primrec 0 (fun j _:set => j) i)) else ie) 0 H0_in_nw2). }
+                            rewrite Hgr. rewrite (If_i_1 (0 :e ordsucc nw) (if 0 = 0 then ie else apply_fun xsw (nat_primrec 0 (fun j _:set => j) 0)) ie H0_in_snw).
+                            claim H0eq0 : 0 = 0. { reflexivity. }
+                            exact (If_i_1 (0 = 0) ie (apply_fun xsw (nat_primrec 0 (fun j _:set => j) 0)) H0eq0). }
+                          (** yw(ordsucc k) = xsw(k) for k :e nw **)
+                          claim Hyw_mid : forall k:set, k :e nw ->
+                            apply_fun yw (ordsucc k) = apply_fun xsw k.
+                          { let k. assume Hk : k :e nw.
+                            claim Hsk_nw2 : ordsucc k :e nw2.
+                            { exact (ordsuccI1 (ordsucc nw) (ordsucc k) (nat_ordsucc_in_ordsucc nw Hnw_nat k Hk)). }
+                            claim Hsk_snw : ordsucc k :e ordsucc nw.
+                            { exact (nat_ordsucc_in_ordsucc nw Hnw_nat k Hk). }
+                            claim Hsk_ne0 : ordsucc k <> 0. { exact (neq_ordsucc_0 k). }
+                            claim Hgr : apply_fun yw (ordsucc k) =
+                              (if ordsucc k :e ordsucc nw then
+                                (if ordsucc k = 0 then ie else apply_fun xsw (nat_primrec 0 (fun j _:set => j) (ordsucc k)))
+                              else ie).
+                            { exact (apply_fun_graph nw2 (fun i:set => if i :e ordsucc nw then (if i = 0 then ie else apply_fun xsw (nat_primrec 0 (fun j _:set => j) i)) else ie) (ordsucc k) Hsk_nw2). }
+                            rewrite Hgr.
+                            rewrite (If_i_1 (ordsucc k :e ordsucc nw)
+                              (if ordsucc k = 0 then ie else apply_fun xsw (nat_primrec 0 (fun j _:set => j) (ordsucc k)))
+                              ie Hsk_snw).
+                            rewrite (If_i_0 (ordsucc k = 0) ie
+                              (apply_fun xsw (nat_primrec 0 (fun j _:set => j) (ordsucc k))) Hsk_ne0).
+                            claim Hpred : nat_primrec 0 (fun j _:set => j) (ordsucc k) = k.
+                            { claim Hk_nat : nat_p k. { exact (nat_p_trans nw Hnw_nat k Hk). }
+                              exact (nat_primrec_S 0 (fun j _:set => j) k Hk_nat). }
+                            rewrite Hpred. reflexivity. }
+                          (** yw(ordsucc nw) = ie (the last element) **)
+                          claim Hsnw_nw2 : ordsucc nw :e nw2. { exact (ordsuccI2 (ordsucc nw)). }
+                          claim Hsnw_notin_snw : ordsucc nw :e ordsucc nw -> False.
+                          { exact (In_irref (ordsucc nw)). }
+                          claim Hyw_last : apply_fun yw (ordsucc nw) = ie.
+                          { claim Hgr : apply_fun yw (ordsucc nw) =
+                              (if ordsucc nw :e ordsucc nw then
+                                (if ordsucc nw = 0 then ie else apply_fun xsw (nat_primrec 0 (fun j _:set => j) (ordsucc nw)))
+                              else ie).
+                            { exact (apply_fun_graph nw2 (fun i:set => if i :e ordsucc nw then (if i = 0 then ie else apply_fun xsw (nat_primrec 0 (fun j _:set => j) i)) else ie) (ordsucc nw) Hsnw_nw2). }
+                            rewrite Hgr. exact (If_i_0 (ordsucc nw :e ordsucc nw)
+                              (if ordsucc nw = 0 then ie else apply_fun xsw (nat_primrec 0 (fun j _:set => j) (ordsucc nw)))
+                              ie Hsnw_notin_snw). }
+                          (** Prove yw is a reduced word **)
+                          claim Hyw_redw : reduced_word J Gfam efam nw2 yw.
+                          { prove nw2 :e omega /\
+                              (forall i:set, i :e nw2 ->
+                                exists alpha:set, alpha :e J /\ apply_fun yw i :e apply_fun Gfam alpha /\
+                                  apply_fun yw i <> apply_fun efam alpha) /\
+                              (forall i:set, i :e nw2 -> ordsucc i :e nw2 ->
+                                forall a1 a2:set, a1 :e J -> a2 :e J ->
+                                  apply_fun yw i :e apply_fun Gfam a1 ->
+                                  apply_fun yw (ordsucc i) :e apply_fun Gfam a2 -> a1 <> a2).
+                            apply and3I.
+                            - exact (nat_p_omega nw2 Hnw2_nat).
+                            - (** Element condition **)
+                              let i. assume Hi : i :e nw2.
+                              apply (ordsuccE (ordsucc nw) i Hi).
+                              + assume Hi_snw : i :e ordsucc nw.
+                                apply (ordsuccE nw i Hi_snw).
+                                * assume Hi_nw : i :e nw.
+                                  (** i :e nw: use nat_inv to split i = 0 or i = ordsucc j **)
+                                  claim Hi_nat : nat_p i. { exact (nat_p_trans nw Hnw_nat i Hi_nw). }
+                                  apply (nat_inv i Hi_nat).
+                                  - assume Hi0 : i = 0.
+                                    (** yw(0) = ie :e Gfam(al), ie <> efam(al) **)
+                                    rewrite Hi0. rewrite Hyw_0.
+                                    witness al. apply and3I. exact Hal. exact Hinv_efam_Gal. exact Hinv_ne_efam.
+                                  - assume Hex_j : exists j:set, nat_p j /\ i = ordsucc j.
+                                    apply Hex_j. let j. assume Hj_props : nat_p j /\ i = ordsucc j.
+                                    claim Hi_eq : i = ordsucc j. { exact (andER (nat_p j) (i = ordsucc j) Hj_props). }
+                                    rewrite Hi_eq.
+                                    claim Hsj_nw : ordsucc j :e nw. { rewrite <- Hi_eq. exact Hi_nw. }
+                                    claim Hj_nw : j :e nw. { exact (nat_trans nw Hnw_nat (ordsucc j) Hsj_nw j (ordsuccI2 j)). }
+                                    rewrite (Hyw_mid j Hj_nw).
+                                    exact (Helem_w j Hj_nw).
+                                * assume Hi_eq_nw : i = nw.
+                                  (** yw(nw) = yw(ordsucc mw) = xsw(mw) **)
+                                  claim Hi_eq_smw : i = ordsucc mw. { rewrite Hi_eq_nw. exact Hnw_sm. }
+                                  claim Hmw_nw : mw :e nw. { rewrite Hnw_sm. exact (ordsuccI2 mw). }
+                                  rewrite Hi_eq_smw.
+                                  rewrite (Hyw_mid mw Hmw_nw).
+                                  exact (Helem_w mw Hmw_nw).
+                              + assume Hi_eq_snw : i = ordsucc nw.
+                                (** yw(ordsucc nw) = ie **)
+                                rewrite Hi_eq_snw. rewrite Hyw_last.
+                                witness al. apply and3I. exact Hal. exact Hinv_efam_Gal. exact Hinv_ne_efam.
+                            - (** Adjacency condition **)
+                              let i. assume Hi : i :e nw2. assume Hsi : ordsucc i :e nw2.
+                              let a1 a2. assume Ha1J : a1 :e J. assume Ha2J : a2 :e J.
+                              assume Hia1 : apply_fun yw i :e apply_fun Gfam a1.
+                              assume Hsia2 : apply_fun yw (ordsucc i) :e apply_fun Gfam a2.
+                              (** Need: a1 <> a2. Three junction cases: **)
+                              (** Case i=0: yw(0)=ie in Gfam(al), yw(1)=xsw(0) in Gfam(beta_0) **)
+                              (** Interior: yw(sk) = xsw(k), same adjacency as xsw **)
+                              (** Case i=nw: yw(nw)=xsw(mw) in Gfam(beta_mw), yw(snw)=ie in Gfam(al) **)
+                              claim Hi_snw : i :e ordsucc nw.
+                              { exact (nat_ordsucc_trans (ordsucc nw) Hsnw_nat (ordsucc i) Hsi i (ordsuccI2 i)). }
+                              admit. }
+                          (** Word product of yw equals ie **)
+                          (** By shift lemma: wp(yw, ordsucc k) = mult(ie, wp(xsw, k)) **)
+                          (** At k = nw: wp(yw, ordsucc nw) = mult(ie, efam(al)) = eG **)
+                          (** Then wp(yw, nw2) = mult(eG, ie) = ie **)
+                          claim Hyw_wp : word_product multG eG yw nw2 = ie.
+                          { admit. }
+                          (** By Hie_uniq: 1 = nw2 **)
+                          claim H1_eq_nw2 : 1 = nw2.
+                          { exact (Hie_uniq nw2 yw Hyw_redw Hnw2_ne0 Hyw_wp). }
+                          (** But nw2 = ordsucc(ordsucc nw) >= 3 (since mw >= 1, nw >= 2) **)
+                          (** 1 = ordsucc(ordsucc nw) -> 0 = ordsucc nw -> contradiction **)
+                          claim Hnw2_eq_1 : nw2 = 1.
+                          { rewrite <- H1_eq_nw2. reflexivity. }
+                          claim Hss_eq_s0 : ordsucc (ordsucc nw) = ordsucc 0.
+                          { rewrite <- ordsucc_0_eq_1_nat. exact Hnw2_eq_1. }
+                          claim Hsnw_eq_0 : ordsucc nw = 0.
+                          { exact (ordsucc_inj (ordsucc nw) 0 Hss_eq_s0). }
+                          exact (neq_ordsucc_0 nw Hsnw_eq_0). }
         (** Key claim: h(mult(g, b)) = multH(h(g), h single(b)) for b in Gfam, b != eG **)
         (** This is "right multiplication by a single generator" **)
         claim Hh_right_mult : forall g:set, g :e G ->
