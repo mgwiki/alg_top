@@ -140795,6 +140795,55 @@ apply (nat_inv nw Hnw_nat).
                     nie = n' /\ (forall i:set, i :e nie -> apply_fun xie i = apply_fun xs' i))
                   HieU).
                 assume Hred_ie_eq Hnie_ne_eq Hwp_ie_eq Huniq_ie_eq.
+                claim Hwp_ie_efam : word_product multG eG xie nie = apply_fun efam al.
+                {
+                  exact (eq_i_tra
+                    (word_product multG eG xie nie)
+                    ie
+                    (apply_fun efam al)
+                    Hwp_ie_eq
+                    Hie_eq_efam).
+                }
+                claim Hnw_eq_nie : nw = nie.
+                {
+                  exact (andEL
+                    (nw = nie)
+                    (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xie i)
+                    (Huniq_xsw
+                      nie
+                      xie
+                      Hred_ie_eq
+                      Hnie_ne_eq
+                      Hwp_ie_efam)).
+                }
+                claim Hxsw_eq_xie : forall i:set, i :e nw -> apply_fun xsw i = apply_fun xie i.
+                {
+                  exact (andER
+                    (nw = nie)
+                    (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xie i)
+                    (Huniq_xsw
+                      nie
+                      xie
+                      Hred_ie_eq
+                      Hnie_ne_eq
+                      Hwp_ie_efam)).
+                }
+                claim H0_in_nie : 0 :e nie.
+                {
+                  rewrite <- Hnw_eq_nie.
+                  exact H0_in_nw.
+                }
+                claim Hxie0_eq_xsw0 : apply_fun xie 0 = apply_fun xsw 0.
+                {
+                  claim Hxsw0_eq_xie0 : apply_fun xsw 0 = apply_fun xie 0.
+                  {
+                    exact (Hxsw_eq_xie
+                      0
+                      H0_in_nw).
+                  }
+                  symmetry.
+                  exact Hxsw0_eq_xie0.
+                }
                 admit.
               + assume Hinv_ne_efam.
                 set ie := apply_fun invG (apply_fun efam al).
