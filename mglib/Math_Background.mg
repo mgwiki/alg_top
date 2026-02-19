@@ -73140,6 +73140,185 @@ exact (Hnat n (omega_nat_p n HnO)).
 Qed.
 
 (** Proven Bob **)
+(** Infrastructure helper: natural powers split over natural addition in any group. **)
+Theorem group_power_nat_add_nat_cyclic_helper :
+  forall G mult e inv a m n:set,
+  group_structure G mult e inv ->
+  a :e G ->
+  m :e omega ->
+  n :e omega ->
+  group_power_nat mult e a (add_nat m n) =
+  apply_fun mult (group_power_nat mult e a m, group_power_nat mult e a n).
+let G mult e inv a m n.
+assume Hgrp HaG HmO HnO.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume HmultFn HinvFn HeG Hassoc Hid HinvLaw.
+claim HpowInG :
+  forall k:set, k :e omega -> group_power_nat mult e a k :e G.
+{
+  claim Hnat :
+    forall k:set, nat_p k -> group_power_nat mult e a k :e G.
+  {
+    apply nat_ind.
+    - claim Hpow0 : group_power_nat mult e a 0 = e.
+      {
+        exact (nat_primrec_0
+          e
+          (fun _ r => apply_fun mult (a, r))).
+      }
+      rewrite Hpow0.
+      exact HeG.
+    - let k.
+      assume HkNat.
+      assume IH : group_power_nat mult e a k :e G.
+      claim HpowS :
+        group_power_nat mult e a (ordsucc k) =
+        apply_fun mult (a, group_power_nat mult e a k).
+      {
+        exact (nat_primrec_S
+          e
+          (fun _ r => apply_fun mult (a, r))
+          k
+          HkNat).
+      }
+      rewrite HpowS.
+      exact (HmultFn
+        (a, group_power_nat mult e a k)
+        (tuple_2_setprod_by_pair_Sigma
+          G
+          G
+          a
+          (group_power_nat mult e a k)
+          HaG
+          IH)).
+  }
+  let k.
+  assume HkO.
+  exact (Hnat
+    k
+    (omega_nat_p k HkO)).
+}
+claim HmNat : nat_p m.
+{
+  exact (omega_nat_p m HmO).
+}
+claim HnNat : nat_p n.
+{
+  exact (omega_nat_p n HnO).
+}
+claim Hnat :
+  forall k:set, nat_p k ->
+    group_power_nat mult e a (add_nat k n) =
+    apply_fun mult (group_power_nat mult e a k, group_power_nat mult e a n).
+{
+  apply nat_ind.
+  - claim Hadd0L : add_nat 0 n = n.
+    {
+      exact (add_nat_0L
+        n
+        HnNat).
+    }
+    claim Hpow0 : group_power_nat mult e a 0 = e.
+    {
+      exact (nat_primrec_0
+        e
+        (fun _ r => apply_fun mult (a, r))).
+    }
+    rewrite Hadd0L.
+    rewrite Hpow0.
+    symmetry.
+    exact (andEL
+      (apply_fun mult (e, group_power_nat mult e a n) = group_power_nat mult e a n)
+      (apply_fun mult (group_power_nat mult e a n, e) = group_power_nat mult e a n)
+      (Hid
+        (group_power_nat mult e a n)
+        (HpowInG n HnO))).
+  - let k.
+    assume HkNat.
+    assume IH :
+      group_power_nat mult e a (add_nat k n) =
+      apply_fun mult (group_power_nat mult e a k, group_power_nat mult e a n).
+    claim HaddSL :
+      add_nat (ordsucc k) n = ordsucc (add_nat k n).
+    {
+      exact (add_nat_SL
+        k
+        HkNat
+        n
+        HnNat).
+    }
+    claim HkplusnNat : nat_p (add_nat k n).
+    {
+      exact (add_nat_p
+        k
+        HkNat
+        n
+        HnNat).
+    }
+    claim HpowSsum :
+      group_power_nat mult e a (ordsucc (add_nat k n)) =
+      apply_fun mult (a, group_power_nat mult e a (add_nat k n)).
+    {
+      exact (nat_primrec_S
+        e
+        (fun _ r => apply_fun mult (a, r))
+        (add_nat k n)
+        HkplusnNat).
+    }
+    claim HpowSk :
+      group_power_nat mult e a (ordsucc k) =
+      apply_fun mult (a, group_power_nat mult e a k).
+    {
+      exact (nat_primrec_S
+        e
+        (fun _ r => apply_fun mult (a, r))
+        k
+        HkNat).
+    }
+    claim HkO : k :e omega.
+    {
+      exact (nat_p_omega k HkNat).
+    }
+    claim HpowkG : group_power_nat mult e a k :e G.
+    {
+      exact (HpowInG
+        k
+        HkO).
+    }
+    claim HpownG : group_power_nat mult e a n :e G.
+    {
+      exact (HpowInG
+        n
+        HnO).
+    }
+    rewrite HaddSL.
+    rewrite HpowSsum.
+    rewrite IH.
+    rewrite HpowSk.
+    symmetry.
+    exact (Hassoc
+      a
+      (group_power_nat mult e a k)
+      (group_power_nat mult e a n)
+      HaG
+      HpowkG
+      HpownG).
+}
+exact (Hnat
+  m
+  HmNat).
+Qed.
+
+(** Proven Bob **)
 (** Infrastructure helper: if a generator equals the identity, every element is the identity. **)
 Theorem generator_identity_implies_singleton_cyclic_helper :
   forall G mult e inv x g:set,
@@ -74053,7 +74232,429 @@ Theorem integers_group_hom_exists_at_one_cyclic_helper :
   exists psi:set,
     group_homomorphism int integers_group_mult H multH psi /\
     apply_fun psi 1 = y.
-admit.
+let H multH eH invH y.
+assume HgrpH Hy.
+set psi := graph int (fun n:set =>
+  Eps_i (fun h0:set =>
+    h0 :e H /\
+      ((n :e omega /\ h0 = group_power_nat multH eH y n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+         h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m))))).
+claim HpsiAt1 : apply_fun psi 1 = y.
+{
+  claim Hpow1 : group_power_nat multH eH y 1 = y.
+  {
+    claim HS :
+      group_power_nat multH eH y (ordsucc 0) =
+      apply_fun multH (y, group_power_nat multH eH y 0).
+    {
+      exact (nat_primrec_S
+        eH
+        (fun _ r => apply_fun multH (y, r))
+        0
+        nat_0).
+    }
+    claim H0 : group_power_nat multH eH y 0 = eH.
+    {
+      exact (nat_primrec_0
+        eH
+        (fun _ r => apply_fun multH (y, r))).
+    }
+    apply (and6E
+      (function_on multH (setprod H H) H)
+      (function_on invH H H)
+      (eH :e H)
+      (forall a b c:set, a :e H -> b :e H -> c :e H ->
+        apply_fun multH (apply_fun multH (a, b), c) = apply_fun multH (a, apply_fun multH (b, c)))
+      (forall a:set, a :e H -> apply_fun multH (eH, a) = a /\ apply_fun multH (a, eH) = a)
+      (forall a:set, a :e H ->
+        apply_fun multH (a, apply_fun invH a) = eH /\ apply_fun multH (apply_fun invH a, a) = eH)
+      HgrpH).
+    assume HmultHfn HinvHfn HeHH HassocH HidH HinvH.
+    rewrite HS.
+    rewrite H0.
+    exact (andER
+      (apply_fun multH (eH, y) = y)
+      (apply_fun multH (y, eH) = y)
+      (HidH y Hy)).
+  }
+  set P1 := fun h0:set =>
+    h0 :e H /\
+      ((1 :e omega /\ h0 = group_power_nat multH eH y 1) \/
+       (exists m:set, m :e omega /\ 1 = minus_SNo (ordsucc m) /\
+         h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m))).
+  claim HP1y : P1 y.
+  {
+    exact (andI
+      (y :e H)
+      ((1 :e omega /\ y = group_power_nat multH eH y 1) \/
+       (exists m:set, m :e omega /\ 1 = minus_SNo (ordsucc m) /\
+         y = group_power_nat multH eH (apply_fun invH y) (ordsucc m)))
+      Hy
+      (orIL
+        (1 :e omega /\ y = group_power_nat multH eH y 1)
+        (exists m:set, m :e omega /\ 1 = minus_SNo (ordsucc m) /\
+          y = group_power_nat multH eH (apply_fun invH y) (ordsucc m))
+        (andI
+          (1 :e omega)
+          (y = group_power_nat multH eH y 1)
+          (nat_p_omega
+            1
+            nat_1)
+          (Hpow1
+            (fun a b => y = b)
+            (fun P H => H))))).
+  }
+  claim HP1uniq : forall h0:set, P1 h0 -> h0 = y.
+  {
+    let h0.
+    assume HP1h0.
+    claim Hcases :
+      (1 :e omega /\ h0 = group_power_nat multH eH y 1) \/
+      (exists m:set, m :e omega /\ 1 = minus_SNo (ordsucc m) /\
+        h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m)).
+    {
+      exact (andER
+        (h0 :e H)
+        ((1 :e omega /\ h0 = group_power_nat multH eH y 1) \/
+         (exists m:set, m :e omega /\ 1 = minus_SNo (ordsucc m) /\
+           h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m)))
+        HP1h0).
+    }
+    apply Hcases.
+    - assume HnatCase.
+      claim Hh0Pow1 : h0 = group_power_nat multH eH y 1.
+      {
+        exact (andER
+          (1 :e omega)
+          (h0 = group_power_nat multH eH y 1)
+          HnatCase).
+      }
+      rewrite Hh0Pow1.
+      exact Hpow1.
+    - assume HnegCase.
+      apply HnegCase.
+      let m.
+      assume HmPack.
+      claim HmO : m :e omega.
+      {
+        exact (andEL
+          (m :e omega)
+          (1 = minus_SNo (ordsucc m))
+          (andEL
+            (m :e omega /\ 1 = minus_SNo (ordsucc m))
+            (h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m))
+            HmPack)).
+      }
+      claim H1Neg : 1 = minus_SNo (ordsucc m).
+      {
+        exact (andER
+          (m :e omega)
+          (1 = minus_SNo (ordsucc m))
+          (andEL
+            (m :e omega /\ 1 = minus_SNo (ordsucc m))
+            (h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m))
+            HmPack)).
+      }
+      claim HsuccmO : ordsucc m :e omega.
+      {
+        exact (omega_ordsucc
+          m
+          HmO).
+      }
+      claim HsuccmInt : ordsucc m :e int.
+      {
+        exact (Subq_omega_int
+          (ordsucc m)
+          HsuccmO).
+      }
+      claim HsuccmS : SNo (ordsucc m).
+      {
+        exact (int_SNo
+          (ordsucc m)
+          HsuccmInt).
+      }
+      claim Hm1EqSucc : minus_SNo 1 = ordsucc m.
+      {
+        rewrite H1Neg.
+        exact (minus_SNo_invol
+          (ordsucc m)
+          HsuccmS).
+      }
+      claim Hm1O : minus_SNo 1 :e omega.
+      {
+        rewrite Hm1EqSucc.
+        exact HsuccmO.
+      }
+      exact (FalseE
+        (minus_one_not_in_omega Hm1O)
+        (h0 = y)).
+  }
+  claim HEpsP1 : Eps_i P1 = y.
+  {
+    exact (Eps_i_unique
+      P1
+      y
+      HP1y
+      HP1uniq).
+  }
+  claim H1Int : 1 :e int.
+  {
+    exact (Subq_omega_int
+      1
+      (nat_p_omega 1 nat_1)).
+  }
+  rewrite (apply_fun_graph
+    int
+    (fun n:set =>
+      Eps_i (fun h0:set =>
+        h0 :e H /\
+          ((n :e omega /\ h0 = group_power_nat multH eH y n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+             h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m)))))
+    1
+    H1Int).
+  exact HEpsP1.
+}
+claim HpowInH : forall a:set, a :e H -> forall n:set, n :e omega ->
+  group_power_nat multH eH a n :e H.
+{
+  let a.
+  assume HaH.
+  claim Hnat :
+    forall k:set, nat_p k ->
+      group_power_nat multH eH a k :e H.
+  {
+    apply nat_ind.
+    - apply (and6E
+        (function_on multH (setprod H H) H)
+        (function_on invH H H)
+        (eH :e H)
+        (forall x y z:set, x :e H -> y :e H -> z :e H ->
+          apply_fun multH (apply_fun multH (x, y), z) = apply_fun multH (x, apply_fun multH (y, z)))
+        (forall x:set, x :e H -> apply_fun multH (eH, x) = x /\ apply_fun multH (x, eH) = x)
+        (forall x:set, x :e H ->
+          apply_fun multH (x, apply_fun invH x) = eH /\ apply_fun multH (apply_fun invH x, x) = eH)
+        HgrpH).
+      assume HmultHfn HinvHfn HeHH HassocH HidH HinvH.
+      claim Hpow0 : group_power_nat multH eH a 0 = eH.
+      {
+        exact (nat_primrec_0
+          eH
+          (fun _ r => apply_fun multH (a, r))).
+      }
+      rewrite Hpow0.
+      exact HeHH.
+    - let k.
+      assume HkNat.
+      assume IH : group_power_nat multH eH a k :e H.
+      apply (and6E
+        (function_on multH (setprod H H) H)
+        (function_on invH H H)
+        (eH :e H)
+        (forall x y z:set, x :e H -> y :e H -> z :e H ->
+          apply_fun multH (apply_fun multH (x, y), z) = apply_fun multH (x, apply_fun multH (y, z)))
+        (forall x:set, x :e H -> apply_fun multH (eH, x) = x /\ apply_fun multH (x, eH) = x)
+        (forall x:set, x :e H ->
+          apply_fun multH (x, apply_fun invH x) = eH /\ apply_fun multH (apply_fun invH x, x) = eH)
+        HgrpH).
+      assume HmultHfn HinvHfn HeHH HassocH HidH HinvH.
+      claim HpowSk :
+        group_power_nat multH eH a (ordsucc k) =
+        apply_fun multH (a, group_power_nat multH eH a k).
+      {
+        exact (nat_primrec_S
+          eH
+          (fun _ r => apply_fun multH (a, r))
+          k
+          HkNat).
+      }
+      rewrite HpowSk.
+      exact (HmultHfn
+        (a, group_power_nat multH eH a k)
+        (tuple_2_setprod_by_pair_Sigma
+          H
+          H
+          a
+          (group_power_nat multH eH a k)
+          HaH
+          IH)).
+  }
+  let n.
+  assume HnO.
+  exact (Hnat
+    n
+    (omega_nat_p n HnO)).
+}
+claim HyInv : apply_fun invH y :e H.
+{
+  apply (and6E
+    (function_on multH (setprod H H) H)
+    (function_on invH H H)
+    (eH :e H)
+    (forall a b c:set, a :e H -> b :e H -> c :e H ->
+      apply_fun multH (apply_fun multH (a, b), c) = apply_fun multH (a, apply_fun multH (b, c)))
+    (forall a:set, a :e H -> apply_fun multH (eH, a) = a /\ apply_fun multH (a, eH) = a)
+    (forall a:set, a :e H ->
+      apply_fun multH (a, apply_fun invH a) = eH /\ apply_fun multH (apply_fun invH a, a) = eH)
+    HgrpH).
+  assume HmultHfn HinvHfn HeHH HassocH HidH HinvH.
+  exact (HinvHfn
+    y
+    Hy).
+}
+claim HpsiFn : function_on psi int H.
+{
+  apply (total_function_on_function_on
+    psi
+    int
+    H).
+  apply (total_function_on_graph
+    int
+    H
+    (fun n:set =>
+      Eps_i (fun h0:set =>
+        h0 :e H /\
+          ((n :e omega /\ h0 = group_power_nat multH eH y n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+             h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m)))))).
+  let n.
+  assume HnInt.
+  set Pn := fun h0:set =>
+    h0 :e H /\
+      ((n :e omega /\ h0 = group_power_nat multH eH y n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+         h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m))).
+  claim HexPn : exists h0:set, Pn h0.
+  {
+    apply (int_3_cases
+      n
+      HnInt
+      (exists h0:set, Pn h0)).
+    - let m.
+      assume HmO HnNeg.
+      witness (group_power_nat multH eH (apply_fun invH y) (ordsucc m)).
+      claim HnegRep :
+        (n :e omega /\ group_power_nat multH eH (apply_fun invH y) (ordsucc m) =
+          group_power_nat multH eH y n) \/
+        (exists m0:set, m0 :e omega /\ n = minus_SNo (ordsucc m0) /\
+          group_power_nat multH eH (apply_fun invH y) (ordsucc m) =
+          group_power_nat multH eH (apply_fun invH y) (ordsucc m0)).
+      {
+        apply orIR.
+        witness m.
+        apply andI.
+        - apply andI.
+          + exact HmO.
+          + exact HnNeg.
+        - reflexivity.
+      }
+      exact (andI
+        (group_power_nat multH eH (apply_fun invH y) (ordsucc m) :e H)
+        ((n :e omega /\ group_power_nat multH eH (apply_fun invH y) (ordsucc m) =
+          group_power_nat multH eH y n) \/
+         (exists m0:set, m0 :e omega /\ n = minus_SNo (ordsucc m0) /\
+           group_power_nat multH eH (apply_fun invH y) (ordsucc m) =
+           group_power_nat multH eH (apply_fun invH y) (ordsucc m0)))
+        (HpowInH
+          (apply_fun invH y)
+          HyInv
+          (ordsucc m)
+          (omega_ordsucc m HmO))
+        HnegRep).
+    - assume Hn0.
+      witness (group_power_nat multH eH y 0).
+      claim HzeroRep :
+        (n :e omega /\ group_power_nat multH eH y 0 = group_power_nat multH eH y n) \/
+        (exists m0:set, m0 :e omega /\ n = minus_SNo (ordsucc m0) /\
+          group_power_nat multH eH y 0 =
+          group_power_nat multH eH (apply_fun invH y) (ordsucc m0)).
+      {
+        apply orIL.
+        apply andI.
+        - rewrite Hn0.
+          exact (nat_p_omega 0 nat_0).
+        - rewrite Hn0.
+          reflexivity.
+      }
+      exact (andI
+        (group_power_nat multH eH y 0 :e H)
+        ((n :e omega /\ group_power_nat multH eH y 0 = group_power_nat multH eH y n) \/
+         (exists m0:set, m0 :e omega /\ n = minus_SNo (ordsucc m0) /\
+           group_power_nat multH eH y 0 =
+           group_power_nat multH eH (apply_fun invH y) (ordsucc m0)))
+        (HpowInH
+          y
+          Hy
+          0
+          (nat_p_omega 0 nat_0))
+        HzeroRep).
+    - let m.
+      assume HmO HnPos.
+      witness (group_power_nat multH eH y (ordsucc m)).
+      claim HposRep :
+        (n :e omega /\ group_power_nat multH eH y (ordsucc m) =
+          group_power_nat multH eH y n) \/
+        (exists m0:set, m0 :e omega /\ n = minus_SNo (ordsucc m0) /\
+          group_power_nat multH eH y (ordsucc m) =
+          group_power_nat multH eH (apply_fun invH y) (ordsucc m0)).
+      {
+        apply orIL.
+        apply andI.
+        - rewrite HnPos.
+          exact (omega_ordsucc m HmO).
+        - rewrite HnPos.
+          reflexivity.
+      }
+      exact (andI
+        (group_power_nat multH eH y (ordsucc m) :e H)
+        ((n :e omega /\ group_power_nat multH eH y (ordsucc m) =
+          group_power_nat multH eH y n) \/
+         (exists m0:set, m0 :e omega /\ n = minus_SNo (ordsucc m0) /\
+           group_power_nat multH eH y (ordsucc m) =
+           group_power_nat multH eH (apply_fun invH y) (ordsucc m0)))
+        (HpowInH
+          y
+          Hy
+          (ordsucc m)
+          (omega_ordsucc m HmO))
+        HposRep).
+  }
+  claim HEpsPn : Pn (Eps_i Pn).
+  {
+    exact (Eps_i_ex
+      Pn
+      HexPn).
+  }
+  exact (andEL
+    (Eps_i Pn :e H)
+    ((n :e omega /\ Eps_i Pn = group_power_nat multH eH y n) \/
+     (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+       Eps_i Pn = group_power_nat multH eH (apply_fun invH y) (ordsucc m)))
+    HEpsPn).
+}
+claim HpsiHom : group_homomorphism int integers_group_mult H multH psi.
+{
+  claim HpsiMult :
+    forall a b:set, a :e int -> b :e int ->
+      apply_fun psi (apply_fun integers_group_mult (a, b)) =
+      apply_fun multH (apply_fun psi a, apply_fun psi b).
+  {
+    (** TODO Bob: prove multiplicativity by integer-case analysis on a and b. **)
+    admit.
+  }
+  exact (andI
+    (function_on psi int H)
+    (forall a b:set, a :e int -> b :e int ->
+      apply_fun psi (apply_fun integers_group_mult (a, b)) =
+      apply_fun multH (apply_fun psi a, apply_fun psi b))
+    HpsiFn
+    HpsiMult).
+}
+witness psi.
+apply andI.
+- exact HpsiHom.
+- exact HpsiAt1.
 Admitted.
 
 (** from S54 text (line 833 in algtop.tex) **)
