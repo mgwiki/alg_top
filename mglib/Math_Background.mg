@@ -96563,6 +96563,35 @@ apply (xm (exists x:set, x :e Bn_closed n /\ apply_fun f x = x)).
     exact (HnoFix
       Hfixx).
   }
+  set vdisp := graph (Bn_closed n) (fun x:set =>
+    graph (ordsucc n) (fun i:set =>
+      add_SNo (apply_fun (apply_fun f x) i)
+        (minus_SNo (apply_fun x i)))).
+  claim HvdispCont :
+    continuous_map (Bn_closed n) (Bn_closed_topology n)
+      (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n))
+      vdisp.
+  {
+    admit.
+  }
+  claim HvdispNonzero :
+    forall x:set, x :e Bn_closed n ->
+      ~(forall i:set, i :e ordsucc n -> apply_fun (apply_fun vdisp x) i = 0).
+  {
+    admit.
+  }
+  claim HioDisp :
+    (exists x:set, x :e Sn n /\ points_directly_inward_Rn n vdisp x) /\
+    (exists x:set, x :e Sn n /\ points_directly_outward_Rn n vdisp x).
+  {
+    exact (ex55_4c_nonvanishing_vector_field_Rn
+      n
+      Hn_om
+      HnoRetr
+      vdisp
+      HvdispCont
+      HvdispNonzero).
+  }
   admit.
 Admitted.
 
