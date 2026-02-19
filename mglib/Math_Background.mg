@@ -67133,6 +67133,110 @@ exact (andI
   HzC).
 Qed.
 
+(** Infrastructure: a continuous map carries some connected subset through q,z to a connected image **)
+(** Proven Bob **)
+Theorem lemma54_2_connected_image_through_two_points : forall E Te h q z:set,
+  q :e unit_square ->
+  z :e unit_square ->
+  continuous_map unit_square unit_square_topology E Te h ->
+  exists C:set,
+    C c= unit_square /\
+    connected_space C (subspace_topology unit_square unit_square_topology C) /\
+    q :e C /\ z :e C /\
+    connected_space (image_of h C) (subspace_topology E Te (image_of h C)).
+let E Te h q z.
+assume Hq Hz Hh.
+apply (lemma54_2_connected_L_through_points
+  q
+  z
+  Hq
+  Hz).
+let C.
+assume HCPack.
+claim HCleft :
+  C c= unit_square /\ connected_space C (subspace_topology unit_square unit_square_topology C) /\
+    q :e C.
+{
+  exact (andEL
+    (C c= unit_square /\ connected_space C (subspace_topology unit_square unit_square_topology C) /\
+      q :e C)
+    (z :e C)
+    HCPack).
+}
+claim HCleft2 :
+  (C c= unit_square /\ connected_space C (subspace_topology unit_square unit_square_topology C)) /\
+  q :e C.
+{
+  exact HCleft.
+}
+claim HCpair :
+  C c= unit_square /\ connected_space C (subspace_topology unit_square unit_square_topology C).
+{
+  exact (andEL
+    (C c= unit_square /\ connected_space C (subspace_topology unit_square unit_square_topology C))
+    (q :e C)
+    HCleft2).
+}
+claim HCsub : C c= unit_square.
+{
+  exact (andEL
+    (C c= unit_square)
+    (connected_space C (subspace_topology unit_square unit_square_topology C))
+    HCpair).
+}
+claim HCconn :
+  connected_space C (subspace_topology unit_square unit_square_topology C).
+{
+  exact (andER
+    (C c= unit_square)
+    (connected_space C (subspace_topology unit_square unit_square_topology C))
+    HCpair).
+}
+claim HtopSq : topology_on unit_square unit_square_topology.
+{
+  exact (product_topology_is_topology
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    unit_interval_topology_on
+    unit_interval_topology_on).
+}
+claim HhC :
+  continuous_map C (subspace_topology unit_square unit_square_topology C) E Te h.
+{
+  exact (continuous_on_subspace
+    unit_square
+    unit_square_topology
+    E
+    Te
+    h
+    C
+    HtopSq
+    HCsub
+    Hh).
+}
+claim HimgConn :
+  connected_space (image_of h C) (subspace_topology E Te (image_of h C)).
+{
+  exact (continuous_image_connected
+    C
+    (subspace_topology unit_square unit_square_topology C)
+    E
+    Te
+    h
+    HCconn
+    HhC).
+}
+witness C.
+exact (andI
+  (C c= unit_square /\ connected_space C (subspace_topology unit_square unit_square_topology C) /\
+    q :e C /\ z :e C)
+  (connected_space (image_of h C) (subspace_topology E Te (image_of h C)))
+  HCPack
+  HimgConn).
+Qed.
+
 (** Infrastructure: existence package for homotopy lifting in Lem 54.2 **)
 Theorem lemma54_2_homotopy_lifting_exists : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
