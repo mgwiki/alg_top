@@ -68642,8 +68642,9 @@ claim HFt_54_cont :
                             HxqEqFz).
                         }
                         (** Remaining gap:
-                            derive xq :e Vz from local comparison data for Ft_local_N and Ft_54 near q,
-                            then conclude Vxq = Vz by pairwise disjointness at xq. **)
+                            derive xq :e Vz from local comparison data for Ft_local_N and Ft_54 near q
+                            (the tex proof uses connectedness of the already-defined boundary piece C to force
+                             both lifts into one sheet), then conclude Vxq = Vz by pairwise disjointness at xq. **)
                         admit.
                       }
                       rewrite <- HVxqEqVz.
