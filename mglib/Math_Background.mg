@@ -1,7 +1,7 @@
 (** Balance Alice 3280 **)
 (** Balance Bob 2988 **)
 (** Balance Charlie 1260 **)
-(** Balance Dave 1601 **)
+(** Balance Dave 1597 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -124052,7 +124052,8 @@ Qed.
 (** from S67 Exercise 4(b) (line 2709 in algtop.tex) **)
 (** LATEX VERSION: If G is free abelian, it has no elements of finite order. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
+(** Lock Dave 1771543824 **)
+(** Bounty 37 **)
 Theorem ex67_4b_free_abelian_no_torsion :
   forall G mult e inv J basis:set,
   free_abelian_group_with_basis G mult e inv J basis ->
