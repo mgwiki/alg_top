@@ -70913,7 +70913,88 @@ Theorem thm54_5_pi1_circle : exists phi:set,
     (fundamental_group_mult S1 S1_topology S1_basepoint)
     int integers_group_mult
     phi.
-admit.
+set G := fundamental_group S1 S1_topology S1_basepoint.
+claim HS1subR2 : S1 c= setprod R R.
+{
+  exact (Sep_Subq
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)).
+}
+claim HtopR2 : topology_on (setprod R R) R2_topology.
+{
+  exact (product_topology_is_topology
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    R_standard_topology_is_topology
+    R_standard_topology_is_topology).
+}
+claim HtopS1 : topology_on S1 S1_topology.
+{
+  exact (subspace_topology_is_topology
+    (setprod R R)
+    R2_topology
+    S1
+    HtopR2
+    HS1subR2).
+}
+claim Hb0raw : (1, 0) :e S1.
+{
+  apply (SepI
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)
+    (1, 0)).
+  - exact (tuple_2_setprod_by_pair_Sigma
+      R
+      R
+      1
+      0
+      real_1
+      real_0).
+  - rewrite tuple_2_0_eq at 1.
+    rewrite tuple_2_0_eq at 1.
+    rewrite tuple_2_1_eq at 1.
+    rewrite tuple_2_1_eq at 1.
+    rewrite (mul_SNo_oneR 1 SNo_1) at 1.
+    rewrite (mul_SNo_zeroR 0 SNo_0) at 1.
+    exact (add_SNo_0R 1 SNo_1).
+}
+claim Hb0S1 : S1_basepoint :e S1.
+{
+  exact Hb0raw.
+}
+claim Hgrp :
+  group_structure
+    G
+    (fundamental_group_mult S1 S1_topology S1_basepoint)
+    (fundamental_group_id S1 S1_topology S1_basepoint)
+    (fundamental_group_inv S1 S1_topology S1_basepoint).
+{
+  exact (fundamental_group_is_group
+    S1
+    S1_topology
+    S1_basepoint
+    HtopS1
+    Hb0S1).
+}
+claim Hiso :
+  exists phi:set,
+    group_isomorphism
+      G
+      (fundamental_group_mult S1 S1_topology S1_basepoint)
+      int
+      integers_group_mult
+      phi.
+{
+  (** TODO Charlie: prove cyclicity and infinitude of pi_1(S^1) and construct the isomorphism. **)
+  admit.
+}
+exact Hiso.
 Admitted.
 
 (** from S54 Definition (line 831 in algtop.tex) **)
