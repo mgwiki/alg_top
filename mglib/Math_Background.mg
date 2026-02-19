@@ -77405,6 +77405,97 @@ claim HphiSelRepNegSucc :
     rewrite <- HsuccEq.
     reflexivity.
 }
+claim HeG : e :e G.
+{
+  apply (and6E
+    (function_on mult (setprod G G) G)
+    (function_on inv G G)
+    (e :e G)
+    (forall a b c:set, a :e G -> b :e G -> c :e G ->
+      apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+    (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+    (forall a:set, a :e G ->
+      apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+    Hgrp).
+  assume HmultFn HinvFn HeG' Hassoc Hid HinvLaw.
+  exact HeG'.
+}
+claim HinvXG : apply_fun inv x :e G.
+{
+  apply (and6E
+    (function_on mult (setprod G G) G)
+    (function_on inv G G)
+    (e :e G)
+    (forall a b c:set, a :e G -> b :e G -> c :e G ->
+      apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+    (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+    (forall a:set, a :e G ->
+      apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+    Hgrp).
+  assume HmultFn HinvFn HeG' Hassoc Hid HinvLaw.
+  exact (HinvFn
+    x
+    HxG).
+}
+claim HpowInG : forall a:set, a :e G -> forall n:set, n :e omega ->
+  group_power_nat mult e a n :e G.
+{
+  let a.
+  assume HaG.
+  let n.
+  assume HnO.
+  claim Hnat :
+    forall k:set, nat_p k ->
+      group_power_nat mult e a k :e G.
+  {
+    apply nat_ind.
+    - claim Hpow0 : group_power_nat mult e a 0 = e.
+      {
+        exact (nat_primrec_0
+          e
+          (fun _ r => apply_fun mult (a, r))).
+      }
+      rewrite Hpow0.
+      exact HeG.
+    - let k.
+      assume Hk.
+      assume IH : group_power_nat mult e a k :e G.
+      claim Hstep :
+        group_power_nat mult e a (ordsucc k) =
+        apply_fun mult (a, group_power_nat mult e a k).
+      {
+        exact (nat_primrec_S
+          e
+          (fun _ r => apply_fun mult (a, r))
+          k
+          Hk).
+      }
+      rewrite Hstep.
+      apply (and6E
+        (function_on mult (setprod G G) G)
+        (function_on inv G G)
+        (e :e G)
+        (forall u v w:set, u :e G -> v :e G -> w :e G ->
+          apply_fun mult (apply_fun mult (u, v), w) = apply_fun mult (u, apply_fun mult (v, w)))
+        (forall u:set, u :e G -> apply_fun mult (e, u) = u /\ apply_fun mult (u, e) = u)
+        (forall u:set, u :e G ->
+          apply_fun mult (u, apply_fun inv u) = e /\ apply_fun mult (apply_fun inv u, u) = e)
+        Hgrp).
+      assume HmultFn HinvFn HeG' Hassoc Hid HinvLaw.
+      exact (HmultFn
+        (a, group_power_nat mult e a k)
+        (tuple_2_setprod_by_pair_Sigma
+          G
+          G
+          a
+          (group_power_nat mult e a k)
+          HaG
+          IH)).
+  }
+  exact (Hnat
+    n
+    (omega_nat_p n HnO)).
+}
 claim HphiSelIso : group_isomorphism G mult int integers_group_mult phi_sel.
 {
   claim HphiSelHom : group_homomorphism G mult int integers_group_mult phi_sel.
@@ -77432,8 +77523,100 @@ claim HphiSelIso : group_isomorphism G mult int integers_group_mult phi_sel.
         exists g:set, g :e G /\ apply_fun phi_sel g = n /\
           (forall g':set, g' :e G -> apply_fun phi_sel g' = n -> g' = g).
     {
-      (** TODO Bob: prove unique-surjectivity using nonfiniteness and generator powers. **)
-      admit.
+      let n.
+      assume HnInt.
+      apply (int_3_cases
+        n
+        HnInt
+        (exists g:set, g :e G /\ apply_fun phi_sel g = n /\
+          (forall g':set, g' :e G -> apply_fun phi_sel g' = n -> g' = g))).
+      - let m.
+        assume HmO HnNeg.
+        set gneg := group_power_nat mult e (apply_fun inv x) (ordsucc m).
+        witness gneg.
+        apply andI.
+        + apply andI.
+          * exact (HpowInG
+              (apply_fun inv x)
+              HinvXG
+              (ordsucc m)
+              (omega_ordsucc m HmO)).
+          * admit.
+        + let g'.
+          assume Hg'G HphiEq'.
+          claim HphiEqNeg :
+            apply_fun phi_sel g' = minus_SNo (ordsucc m).
+          {
+            rewrite <- HnNeg.
+            exact HphiEq'.
+          }
+          claim Hg'Neg :
+            g' = group_power_nat mult e (apply_fun inv x) (ordsucc m).
+          {
+            exact (HphiSelRepNegSucc
+              g'
+              m
+              Hg'G
+              HphiEqNeg
+              HmO).
+          }
+          rewrite <- Hg'Neg.
+          reflexivity.
+      - assume Hn0.
+        witness e.
+        apply andI.
+        + apply andI.
+          * exact HeG.
+          * rewrite Hn0.
+            admit.
+        + let g'.
+          assume Hg'G HphiEq'.
+          claim HphiEq0 : apply_fun phi_sel g' = 0.
+          {
+            rewrite <- Hn0.
+            exact HphiEq'.
+          }
+          claim Hg'E : g' = e.
+          {
+            exact (HphiSelRepZero
+              g'
+              Hg'G
+              HphiEq0).
+          }
+          rewrite <- Hg'E.
+          reflexivity.
+      - let m.
+        assume HmO HnPos.
+        set gpos := group_power_nat mult e x (ordsucc m).
+        witness gpos.
+        apply andI.
+        + apply andI.
+          * exact (HpowInG
+              x
+              HxG
+              (ordsucc m)
+              (omega_ordsucc m HmO)).
+          * admit.
+        + let g'.
+          assume Hg'G HphiEq'.
+          claim HphiEqPos :
+            apply_fun phi_sel g' = ordsucc m.
+          {
+            rewrite <- HnPos.
+            exact HphiEq'.
+          }
+          claim Hg'Pos :
+            g' = group_power_nat mult e x (ordsucc m).
+          {
+            exact (HphiSelRepPosSucc
+              g'
+              m
+              Hg'G
+              HphiEqPos
+              HmO).
+          }
+          rewrite <- Hg'Pos.
+          reflexivity.
     }
     exact (andI
       (function_on phi_sel G int)
