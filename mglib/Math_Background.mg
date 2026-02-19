@@ -84469,7 +84469,7 @@ claim Hx2x1 : x2 = x1.
 }
 symmetry.
 exact Hx2x1.
-Admitted.
+Qed.
 
 (** from S54 Exercise 8 (line 893 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map with E path connected. **)
