@@ -1,6 +1,6 @@
 (** Balance Alice 3280 **)
 (** Balance Bob 2988 **)
-(** Balance Charlie 1260 **)
+(** Balance Charlie 1235 **)
 (** Balance Dave 1597 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -40725,7 +40725,6 @@ Qed.
 (** from S52 Exercise 7(b) (line 516 in algtop.tex): tensor induces operation on pi1 **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 55 **)
-(** Lock Charlie 1771463938 **)
 Theorem ex52_7b_tensor_induces_operation : forall G Tg:set,
   topological_group G Tg ->
   forall e mult:set,
@@ -70906,7 +70905,8 @@ Definition S1_basepoint : set := (1, 0).
 (** LATEX VERSION: The fundamental group of S^1 is isomorphic to the additive group **)
 (** of integers. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 242 **)
+(** Bounty 267 **)
+(** Lock Charlie 1771544000 **)
 Theorem thm54_5_pi1_circle : exists phi:set,
   group_isomorphism
     (fundamental_group S1 S1_topology S1_basepoint)
