@@ -73768,6 +73768,42 @@ apply andI.
   + exact HtrivPi1R0.
 Qed.
 
+(** S54 helper specialized to R -> S1: two distinct lifts over S1_basepoint imply nontrivial pi_1(S1). **)
+(** Proven Bob **)
+Theorem s54_pi1_S1_nontrivial_from_two_lifts : forall e0 e1:set,
+  e0 :e R ->
+  e1 :e R ->
+  apply_fun covering_map_R_S1 e0 = S1_basepoint ->
+  apply_fun covering_map_R_S1 e1 = S1_basepoint ->
+  e1 <> e0 ->
+  exists cls:set,
+    cls :e fundamental_group S1 S1_topology S1_basepoint /\
+    cls <> fundamental_group_id S1 S1_topology S1_basepoint.
+let e0 e1.
+assume He0R He1R He0Base He1Base He1Ne.
+set p := covering_map_R_S1.
+claim He1Eq0 : apply_fun p e1 = apply_fun p e0.
+{
+  rewrite He1Base.
+  rewrite He0Base.
+  reflexivity.
+}
+exact (s54_pi1_nontrivial_from_two_fiber_points
+  R
+  R_standard_topology
+  S1
+  S1_topology
+  p
+  e0
+  e1
+  thm53_1_R_covers_S1
+  simply_connected_R_standard
+  He0R
+  He1R
+  He1Eq0
+  He1Ne).
+Qed.
+
 (** from S54 Thm 54.5 (line 810 in algtop.tex) **)
 (** LATEX VERSION: The fundamental group of S^1 is isomorphic to the additive group **)
 (** of integers. **)
