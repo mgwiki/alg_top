@@ -134013,6 +134013,184 @@ Definition quotient_projection : set -> set -> set -> set :=
   fun G mult N =>
     graph G (fun g:set => left_coset mult g N).
 
+(** Helper lemma: group homomorphism distributes over nat_primrec products **)
+(** Proven Dave **)
+Lemma group_hom_distributes_nat_primrec :
+  forall G mult e inv H multH eH invH h:set,
+  group_structure G mult e inv ->
+  group_structure H multH eH invH ->
+  group_homomorphism G mult H multH h ->
+  forall n:set, nat_p n ->
+  forall xs:set,
+  (forall i:set, i :e n -> apply_fun xs i :e G) ->
+  apply_fun h (nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n) =
+  nat_primrec eH (fun i r => apply_fun multH (r, apply_fun h (apply_fun xs i))) n.
+let G mult e inv H multH eH invH h.
+assume HgrpG : group_structure G mult e inv.
+assume HgrpH : group_structure H multH eH invH.
+assume Hhom : group_homomorphism G mult H multH h.
+claim HhE : apply_fun h e = eH.
+{ exact (group_hom_maps_id_to_id G mult e inv H multH eH invH h HgrpG HgrpH Hhom). }
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  HgrpG).
+assume HmultGF HinvGF HeGG HassocG HidG HinvG.
+claim HmGcl : forall x y:set, x :e G -> y :e G -> apply_fun mult (x, y) :e G.
+{ let x y. assume Hx Hy.
+  exact (HmultGF (x, y) (tuple_2_setprod_by_pair_Sigma G G x y Hx Hy)). }
+claim Hnat : forall n:set, nat_p n ->
+  forall xs:set,
+  (forall i:set, i :e n -> apply_fun xs i :e G) ->
+  nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n :e G /\
+  apply_fun h (nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n) =
+  nat_primrec eH (fun i r => apply_fun multH (r, apply_fun h (apply_fun xs i))) n.
+{
+  apply nat_ind.
+  - let xs. assume _.
+    claim HG0 : nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) 0 = e.
+    { exact (nat_primrec_0 e (fun i r => apply_fun mult (r, apply_fun xs i))). }
+    claim HH0 : nat_primrec eH (fun i r => apply_fun multH (r, apply_fun h (apply_fun xs i))) 0 = eH.
+    { exact (nat_primrec_0 eH (fun i r => apply_fun multH (r, apply_fun h (apply_fun xs i)))). }
+    apply andI.
+    + rewrite HG0. exact HeGG.
+    + rewrite HG0. rewrite HH0. exact HhE.
+  - let k. assume Hk : nat_p k.
+    assume IH : forall xs:set,
+      (forall i:set, i :e k -> apply_fun xs i :e G) ->
+      nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) k :e G /\
+      apply_fun h (nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) k) =
+      nat_primrec eH (fun i r => apply_fun multH (r, apply_fun h (apply_fun xs i))) k.
+    let xs. assume Hxs : forall i:set, i :e ordsucc k -> apply_fun xs i :e G.
+    claim HxsK : forall i:set, i :e k -> apply_fun xs i :e G.
+    { let i. assume HiK. exact (Hxs i (ordsuccI1 k i HiK)). }
+    claim HxskG : apply_fun xs k :e G.
+    { exact (Hxs k (ordsuccI2 k)). }
+    claim HIHK :
+      nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) k :e G /\
+      apply_fun h (nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) k) =
+      nat_primrec eH (fun i r => apply_fun multH (r, apply_fun h (apply_fun xs i))) k.
+    { exact (IH xs HxsK). }
+    claim HprodKG : nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) k :e G.
+    { exact (andEL
+        (nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) k :e G)
+        (apply_fun h (nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) k) =
+          nat_primrec eH (fun i r => apply_fun multH (r, apply_fun h (apply_fun xs i))) k)
+        HIHK). }
+    claim HprodKH : apply_fun h (nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) k) =
+      nat_primrec eH (fun i r => apply_fun multH (r, apply_fun h (apply_fun xs i))) k.
+    { exact (andER
+        (nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) k :e G)
+        (apply_fun h (nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) k) =
+          nat_primrec eH (fun i r => apply_fun multH (r, apply_fun h (apply_fun xs i))) k)
+        HIHK). }
+    claim HprodSG : nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) (ordsucc k) =
+      apply_fun mult (nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) k, apply_fun xs k).
+    { exact (nat_primrec_S e (fun i r => apply_fun mult (r, apply_fun xs i)) k Hk). }
+    claim HprodSH : nat_primrec eH (fun i r => apply_fun multH (r, apply_fun h (apply_fun xs i))) (ordsucc k) =
+      apply_fun multH (nat_primrec eH (fun i r => apply_fun multH (r, apply_fun h (apply_fun xs i))) k,
+        apply_fun h (apply_fun xs k)).
+    { exact (nat_primrec_S eH (fun i r => apply_fun multH (r, apply_fun h (apply_fun xs i))) k Hk). }
+    claim Hhom_rule : apply_fun h (apply_fun mult (nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) k, apply_fun xs k)) =
+      apply_fun multH (apply_fun h (nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) k),
+        apply_fun h (apply_fun xs k)).
+    { exact (group_homomorphism_mult_rule G mult H multH h
+        (nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) k) (apply_fun xs k)
+        Hhom HprodKG HxskG). }
+    apply andI.
+    + rewrite HprodSG.
+      exact (HmGcl (nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) k)
+        (apply_fun xs k) HprodKG HxskG).
+    + rewrite HprodSG. rewrite HprodSH.
+      rewrite Hhom_rule.
+      rewrite HprodKH.
+      reflexivity.
+}
+let n. assume HnP : nat_p n.
+let xs. assume Hxs.
+exact (andER
+  (nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n :e G)
+  (apply_fun h (nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n) =
+    nat_primrec eH (fun i r => apply_fun multH (r, apply_fun h (apply_fun xs i))) n)
+  (Hnat n HnP xs Hxs)).
+Qed.
+
+(** Helper lemma: subgroup of an abelian group is abelian **)
+(** Proven Dave **)
+Lemma subgroup_of_abelian_is_abelian :
+  forall G mult e inv H:set,
+  abelian_group G mult e inv ->
+  subgroup_of H G mult e inv ->
+  abelian_group H mult e inv.
+let G mult e inv H.
+assume HabG : abelian_group G mult e inv.
+assume HsubH : subgroup_of H G mult e inv.
+claim HgrpG : group_structure G mult e inv.
+{ exact (andEL (group_structure G mult e inv)
+    (forall x y:set, x :e G -> y :e G -> apply_fun mult (x, y) = apply_fun mult (y, x)) HabG). }
+claim HcommG : forall x y:set, x :e G -> y :e G ->
+  apply_fun mult (x, y) = apply_fun mult (y, x).
+{ exact (andER (group_structure G mult e inv)
+    (forall x y:set, x :e G -> y :e G -> apply_fun mult (x, y) = apply_fun mult (y, x)) HabG). }
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  HgrpG).
+assume HmultGF HinvGF HeGG HassocG HidG HinvG.
+apply (and4E
+  (H c= G)
+  (e :e H)
+  (forall x y:set, x :e H -> y :e H -> apply_fun mult (x, y) :e H)
+  (forall x:set, x :e H -> apply_fun inv x :e H)
+  HsubH).
+assume HHG HeH HmHcl HinvH.
+apply (andI (group_structure H mult e inv)
+  (forall x y:set, x :e H -> y :e H -> apply_fun mult (x, y) = apply_fun mult (y, x))).
+- (** group_structure H mult e inv **)
+  apply (and6I
+    (function_on mult (setprod H H) H)
+    (function_on inv H H)
+    (e :e H)
+    (forall x y z:set, x :e H -> y :e H -> z :e H ->
+      apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+    (forall x:set, x :e H -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+    (forall x:set, x :e H ->
+      apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)).
+  + (** function_on mult (setprod H H) H **)
+    let p. assume HpHH.
+    claim Hp0H : p 0 :e H.
+    { exact (ap0_Sigma H (fun _ => H) p HpHH). }
+    claim Hp1H : p 1 :e H.
+    { exact (ap1_Sigma H (fun _ => H) p HpHH). }
+    rewrite (setprod_eta H H p HpHH).
+    exact (HmHcl (p 0) (p 1) Hp0H Hp1H).
+  + (** function_on inv H H **)
+    let x. assume HxH. exact (HinvH x HxH).
+  + exact HeH.
+  + (** associativity **)
+    let x y z. assume HxH HyH HzH.
+    exact (HassocG x y z (HHG x HxH) (HHG y HyH) (HHG z HzH)).
+  + (** identity **)
+    let x. assume HxH. exact (HidG x (HHG x HxH)).
+  + (** inverse **)
+    let x. assume HxH. exact (HinvG x (HHG x HxH)).
+- (** commutativity **)
+  let x y. assume HxH HyH.
+  exact (HcommG x y (HHG x HxH) (HHG y HyH)).
+Qed.
+
 (** from S67 Lem 67.1 (line 2609 in algtop.tex): extension condition for direct sums **)
 (** LATEX VERSION: If G is the direct sum of the groups G_alpha, then given any abelian **)
 (** group H and any family of homomorphisms h_alpha: G_alpha -> H, there exists a unique **)
@@ -161163,7 +161341,6 @@ Qed.
 (** a finite open covering B refining A with the star property. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
 (** Bounty 121 **)
-(** Lock Charlie 1771483000 **)
 Theorem supp_ex_1b_compact_Hausdorff_star_refinement :
   forall X Tx:set,
   compact_space X Tx -> Hausdorff_space X Tx ->
