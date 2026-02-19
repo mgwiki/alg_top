@@ -68438,10 +68438,10 @@ claim HFt_54_cont :
                       rewrite <- HlocalEqxq.
                       exact HlocalVlocal.
                     }
-                    claim HxqVz : xq :e Vz.
-                    {
-                      admit.
-                    }
+	                    claim HxqVz : xq :e Vz.
+	                    {
+	                      admit.
+	                    }
                     exact (pairwise_disjoint_point_unique_member
                       slices
                       Vlocal
@@ -74333,6 +74333,7 @@ apply (nat_inv
 Qed.
 
 (** Infrastructure helper: existence of a homomorphism Z -> H with prescribed value at 1. **)
+(** Proven Bob **)
 Theorem integers_group_hom_exists_at_one_cyclic_helper :
   forall H multH eH invH y:set,
   group_structure H multH eH invH ->
@@ -76851,7 +76852,7 @@ witness psi.
 apply andI.
 - exact HpsiHom.
 - exact HpsiAt1.
-Admitted.
+Qed.
 
 (** from S54 text (line 833 in algtop.tex) **)
 (** LATEX VERSION: A group is cyclic of infinite order iff it is isomorphic to Z; **)
