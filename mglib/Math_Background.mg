@@ -139170,6 +139170,119 @@ apply (nat_inv nw Hnw_nat).
                         Hc3
                         Hleft))).
                 }
+                claim Hm_omega : m :e omega.
+                {
+                  exact (nat_p_omega
+                    m
+                    Hm_nat).
+                }
+                set xs_suf := graph m (fun i:set => apply_fun xsw (ordsucc i)).
+                claim Hxs_suf_val : forall i:set, i :e m ->
+                  apply_fun xs_suf i = apply_fun xsw (ordsucc i).
+                {
+                  let i.
+                  assume Hi.
+                  exact (apply_fun_graph
+                    m
+                    (fun i0:set => apply_fun xsw (ordsucc i0))
+                    i
+                    Hi).
+                }
+                claim Hredw_suf : reduced_word J Gfam efam m xs_suf.
+                {
+                  prove m :e omega /\
+                    (forall i:set, i :e m ->
+                      exists alpha:set, alpha :e J /\
+                        apply_fun xs_suf i :e apply_fun Gfam alpha /\
+                        apply_fun xs_suf i <> apply_fun efam alpha) /\
+                    (forall i:set, i :e m -> ordsucc i :e m ->
+                      forall alpha beta:set, alpha :e J -> beta :e J ->
+                        apply_fun xs_suf i :e apply_fun Gfam alpha ->
+                        apply_fun xs_suf (ordsucc i) :e apply_fun Gfam beta ->
+                        alpha <> beta).
+                  apply and3I.
+                  - exact Hm_omega.
+                  - let i.
+                    assume Hi.
+                    claim Hsi_nw : ordsucc i :e nw.
+                    {
+                      rewrite Hnw_eq.
+                      exact (nat_ordsucc_in_ordsucc
+                        m
+                        Hm_nat
+                        i
+                        Hi).
+                    }
+                    apply (Helem
+                      (ordsucc i)
+                      Hsi_nw).
+                    let alpha.
+                    assume Hcomb.
+                    apply (and3E
+                      (alpha :e J)
+                      (apply_fun xsw (ordsucc i) :e apply_fun Gfam alpha)
+                      (apply_fun xsw (ordsucc i) <> apply_fun efam alpha)
+                      Hcomb).
+                    assume HalphaJ Hxsi_Galpha Hxsi_ne_ef.
+                    witness alpha.
+                    apply andI.
+                    * apply andI.
+                      { exact HalphaJ. }
+                      { rewrite (Hxs_suf_val
+                          i
+                          Hi).
+                        exact Hxsi_Galpha. }
+                    * rewrite (Hxs_suf_val
+                        i
+                        Hi).
+                      exact Hxsi_ne_ef.
+                  - let i.
+                    assume Hi Hsi.
+                    claim Hsi_nw : ordsucc i :e nw.
+                    {
+                      rewrite Hnw_eq.
+                      exact (nat_ordsucc_in_ordsucc
+                        m
+                        Hm_nat
+                        i
+                        Hi).
+                    }
+                    claim Hssi_nw : ordsucc (ordsucc i) :e nw.
+                    {
+                      rewrite Hnw_eq.
+                      exact (nat_ordsucc_in_ordsucc
+                        m
+                        Hm_nat
+                        (ordsucc i)
+                        Hsi).
+                    }
+                    let alpha beta.
+                    assume HaJ HbJ Hxsi_Ga Hxsis_Gb.
+                    claim Hxswsi_Ga : apply_fun xsw (ordsucc i) :e apply_fun Gfam alpha.
+                    {
+                      rewrite <- (Hxs_suf_val
+                        i
+                        Hi).
+                      exact Hxsi_Ga.
+                    }
+                    claim Hxswssi_Gb : apply_fun xsw (ordsucc (ordsucc i)) :e apply_fun Gfam beta.
+                    {
+                      rewrite <- (Hxs_suf_val
+                        (ordsucc i)
+                        Hsi).
+                      exact Hxsis_Gb.
+                    }
+                    exact (Hadj
+                      (ordsucc i)
+                      Hsi_nw
+                      Hssi_nw
+                      alpha
+                      beta
+                      HaJ
+                      HbJ
+                      Hxswsi_Ga
+                      Hxswssi_Gb).
+                }
                 admit.
               }
               {
