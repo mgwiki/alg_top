@@ -140905,6 +140905,96 @@ apply (nat_inv nw Hnw_nat).
                 }
                 {
                   assume Hm_ne0.
+                  claim Hm_succ_ex : exists k:set, nat_p k /\ m = ordsucc k.
+                  {
+                    apply (nat_inv
+                      m
+                      Hm_nat).
+                    - assume Hm0.
+                      exact (FalseE
+                        (Hm_ne0
+                          Hm0)
+                        (exists k:set, nat_p k /\ m = ordsucc k)).
+                    - assume Hk_ex.
+                      exact Hk_ex.
+                  }
+                  apply Hm_succ_ex.
+                  let k.
+                  assume Hk_pack.
+                  claim Hk_nat : nat_p k.
+                  {
+                    exact (andEL
+                      (nat_p k)
+                      (m = ordsucc k)
+                      Hk_pack).
+                  }
+                  claim Hm_succ : m = ordsucc k.
+                  {
+                    exact (andER
+                      (nat_p k)
+                      (m = ordsucc k)
+                      Hk_pack).
+                  }
+                  claim Hnw_ssk : nw = ordsucc (ordsucc k).
+                  {
+                    rewrite Hnw_eq.
+                    rewrite Hm_succ.
+                    reflexivity.
+                  }
+                  claim H1_in_nw : 1 :e nw.
+                  {
+                    rewrite Hnw_ssk.
+                    rewrite <- ordsucc_0_eq_1_nat.
+                    exact (nat_ordsucc_in_ordsucc
+                      (ordsucc k)
+                      (nat_ordsucc
+                        k
+                        Hk_nat)
+                      0
+                      (nat_0_in_ordsucc
+                        k
+                        Hk_nat)).
+                  }
+                  apply (Helem
+                    1
+                    H1_in_nw).
+                  let beta_1.
+                  assume Hb1_pack.
+                  apply (and3E
+                    (beta_1 :e J)
+                    (apply_fun xsw 1 :e apply_fun Gfam beta_1)
+                    (apply_fun xsw 1 <> apply_fun efam beta_1)
+                    Hb1_pack).
+                  assume Hb1_J Hxs1_Gb1 Hxs1_ne_eb1.
+                  claim Hs0_in_nw : ordsucc 0 :e nw.
+                  {
+                    rewrite ordsucc_0_eq_1_nat.
+                    exact H1_in_nw.
+                  }
+                  claim Hbeta0_ne_beta1 : beta_0 <> beta_1.
+                  {
+                    exact (Hadj
+                      0
+                      H0_in_nw
+                      Hs0_in_nw
+                      beta_0
+                      beta_1
+                      Hb0_J
+                      Hb1_J
+                      Hxs0_Gb0
+                      Hxs1_Gb1).
+                  }
+                  claim Hxie1_eq_xsw1 : apply_fun xie 1 = apply_fun xsw 1.
+                  {
+                    claim Hxsw1_eq_xie1 : apply_fun xsw 1 = apply_fun xie 1.
+                    {
+                      exact (Hxsw_eq_xie
+                        1
+                        H1_in_nw).
+                    }
+                    symmetry.
+                    exact Hxsw1_eq_xie1.
+                  }
                   admit.
                 }
               + assume Hinv_ne_efam.
