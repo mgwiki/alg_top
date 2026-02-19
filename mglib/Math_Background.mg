@@ -66508,6 +66508,179 @@ exact (Eps_i_ax
   HFt).
 Qed.
 
+(** Infrastructure: connectedness of the L-shaped boundary C=(0xI) U (Ix0) of I^2 **)
+(** Proven Bob **)
+Theorem lemma54_2_boundary_C_connected :
+  connected_space
+    (Union (UPair (setprod {0} unit_interval) (setprod unit_interval {0})))
+    (subspace_topology
+      unit_square
+      unit_square_topology
+      (Union (UPair (setprod {0} unit_interval) (setprod unit_interval {0})))).
+claim HtopSq : topology_on unit_square unit_square_topology.
+{
+  exact (product_topology_is_topology
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    unit_interval_topology_on
+    unit_interval_topology_on).
+}
+claim HUIRefl : unit_interval c= unit_interval.
+{
+  let x.
+  assume Hx.
+  exact Hx.
+}
+claim Hsing0Sub : {0} c= unit_interval.
+{
+  exact (singleton_subset
+    0
+    unit_interval
+    zero_in_unit_interval).
+}
+claim HleftSub : setprod {0} unit_interval c= unit_square.
+{
+  exact (setprod_Subq
+    {0}
+    unit_interval
+    unit_interval
+    unit_interval
+    Hsing0Sub
+    HUIRefl).
+}
+claim HbottomSub : setprod unit_interval {0} c= unit_square.
+{
+  exact (setprod_Subq
+    unit_interval
+    {0}
+    unit_interval
+    unit_interval
+    HUIRefl
+    Hsing0Sub).
+}
+claim HleftConn :
+  connected_space
+    (setprod {0} unit_interval)
+    (subspace_topology
+      unit_square
+      unit_square_topology
+      (setprod {0} unit_interval)).
+{
+  exact (slice_Y_connected
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    0
+    unit_interval_connected
+    unit_interval_topology_on
+    zero_in_unit_interval).
+}
+claim HbottomConn :
+  connected_space
+    (setprod unit_interval {0})
+    (subspace_topology
+      unit_square
+      unit_square_topology
+      (setprod unit_interval {0})).
+{
+  exact (slice_X_connected
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    0
+    unit_interval_connected
+    unit_interval_topology_on
+    zero_in_unit_interval).
+}
+claim HfamSub :
+  forall C:set, C :e UPair (setprod {0} unit_interval) (setprod unit_interval {0}) ->
+    C c= unit_square.
+{
+  let C.
+  assume HC.
+  apply (UPairE
+    C
+    (setprod {0} unit_interval)
+    (setprod unit_interval {0})
+    HC).
+  - assume HCleft.
+    rewrite HCleft.
+    exact HleftSub.
+  - assume HCbottom.
+    rewrite HCbottom.
+    exact HbottomSub.
+}
+claim HfamConn :
+  forall C:set, C :e UPair (setprod {0} unit_interval) (setprod unit_interval {0}) ->
+    connected_space C (subspace_topology unit_square unit_square_topology C).
+{
+  let C.
+  assume HC.
+  apply (UPairE
+    C
+    (setprod {0} unit_interval)
+    (setprod unit_interval {0})
+    HC).
+  - assume HCleft.
+    rewrite HCleft.
+    exact HleftConn.
+  - assume HCbottom.
+    rewrite HCbottom.
+    exact HbottomConn.
+}
+claim H00Left : (0, 0) :e setprod {0} unit_interval.
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    {0}
+    unit_interval
+    0
+    0
+    (SingI 0)
+    zero_in_unit_interval).
+}
+claim H00Bottom : (0, 0) :e setprod unit_interval {0}.
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    unit_interval
+    {0}
+    0
+    0
+    zero_in_unit_interval
+    (SingI 0)).
+}
+claim Hcommon :
+  exists x:set,
+    forall C:set, C :e UPair (setprod {0} unit_interval) (setprod unit_interval {0}) -> x :e C.
+{
+  witness (0, 0).
+  let C.
+  assume HC.
+  apply (UPairE
+    C
+    (setprod {0} unit_interval)
+    (setprod unit_interval {0})
+    HC).
+  - assume HCleft.
+    rewrite HCleft.
+    exact H00Left.
+  - assume HCbottom.
+    rewrite HCbottom.
+    exact H00Bottom.
+}
+exact (union_connected_common_point
+  unit_square
+  unit_square_topology
+  (UPair (setprod {0} unit_interval) (setprod unit_interval {0}))
+  HtopSq
+  HfamSub
+  HfamConn
+  Hcommon).
+Qed.
+
 (** Infrastructure: existence package for homotopy lifting in Lem 54.2 **)
 Theorem lemma54_2_homotopy_lifting_exists : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
