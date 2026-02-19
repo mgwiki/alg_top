@@ -137058,8 +137058,44 @@ apply (nat_inv nw Hnw_nat).
         Hxs0_Gal0
         Hxs1_Gal1).
     }
+    claim Hxs0_ne_efamal : apply_fun xsw 0 <> apply_fun efam al.
+    {
+      apply (xm (alpha0 = al)).
+      - assume Hal0eq.
+        assume Habs.
+        apply Hxs0_ne_efam0.
+        rewrite Hal0eq.
+        exact Habs.
+      - assume Hal0ne_al.
+        assume Habs.
+        claim Hxs0_Gal : apply_fun xsw 0 :e apply_fun Gfam al.
+        {
+          rewrite Habs.
+          exact Hefam_Gal.
+        }
+        claim Hxs0_eG : apply_fun xsw 0 = eG.
+        {
+          exact (Hdisjoint
+            alpha0
+            al
+            Hal0
+            Hal
+            Hal0ne_al
+            (apply_fun xsw 0)
+            Hxs0_Gal0
+            Hxs0_Gal).
+        }
+        claim Hefam_eG : apply_fun efam al = eG.
+        {
+          rewrite <- Habs.
+          exact Hxs0_eG.
+        }
+        exact (Hefam_ne
+          Hefam_eG).
+    }
     (** Remaining work: finish the nw ge 2 contradiction using
-        Hwp_xsw together with Halpha0_ne_alpha1 and reduced-word uniqueness. **)
+        Hwp_xsw together with Halpha0_ne_alpha1, Hxs0_ne_efamal
+        and reduced-word uniqueness. **)
     admit.
 Admitted.
 
