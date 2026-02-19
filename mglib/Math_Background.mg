@@ -49722,7 +49722,6 @@ Qed.
 (** then the partition of p^{-1}(U) into slices is unique. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 61 **)
-(** Lock Charlie 1771477442 **)
 Theorem ex53_2_unique_partition : forall E Te B Tb p U:set,
   topology_on E Te -> topology_on B Tb ->
   connected_space U (subspace_topology B Tb U) ->
@@ -77539,8 +77538,323 @@ claim HnoPowAtSuccBoth :
     group_power_nat mult e x (ordsucc m) <> e /\
     group_power_nat mult e (apply_fun inv x) (ordsucc m) <> e.
 {
-  (** TODO Bob: derive nontriviality of all nonzero generator powers from Hnfin and generator structure. **)
-  admit.
+  let m.
+  assume HmO.
+  claim HnoPowPos :
+    group_power_nat mult e x (ordsucc m) <> e.
+  {
+    assume HpowEqE.
+    claim HfinG : finite G.
+    {
+      (** TODO Bob: prove that a nonzero generator power equal to e forces finiteness of G. **)
+      admit.
+    }
+    exact (Hnfin
+      HfinG).
+  }
+  claim HnoPowInv :
+    group_power_nat mult e (apply_fun inv x) (ordsucc m) <> e.
+  {
+    assume HpowInvEqE.
+    claim HpsiEx :
+      exists psi:set,
+        group_homomorphism int integers_group_mult G mult psi /\
+        apply_fun psi 1 = x.
+    {
+      exact (integers_group_hom_exists_at_one_cyclic_helper
+        G
+        mult
+        e
+        inv
+        x
+        Hgrp
+        HxG).
+    }
+    apply HpsiEx.
+    let psi.
+    assume HpsiPack.
+    claim HpsiHom : group_homomorphism int integers_group_mult G mult psi.
+    {
+      exact (andEL
+        (group_homomorphism int integers_group_mult G mult psi)
+        (apply_fun psi 1 = x)
+        HpsiPack).
+    }
+    claim HpsiAt1 : apply_fun psi 1 = x.
+    {
+      exact (andER
+        (group_homomorphism int integers_group_mult G mult psi)
+        (apply_fun psi 1 = x)
+        HpsiPack).
+    }
+    claim HintInvEval :
+      forall a0:set, a0 :e int ->
+        apply_fun integers_group_inv a0 = minus_SNo a0.
+    {
+      let a0.
+      assume Ha0Int.
+      claim HinvDef :
+        integers_group_inv =
+        graph int (fun n:set => minus_SNo n).
+      {
+        reflexivity.
+      }
+      rewrite HinvDef.
+      rewrite (apply_fun_graph
+        int
+        (fun n:set => minus_SNo n)
+        a0
+        Ha0Int).
+      reflexivity.
+    }
+    claim HoneInt : 1 :e int.
+    {
+      exact (Subq_omega_int
+        1
+        (nat_p_omega 1 nat_1)).
+    }
+    claim HpowInt1 :
+      group_power_nat integers_group_mult 0 1 (ordsucc m) = ordsucc m.
+    {
+      rewrite (integers_group_power_nat_mul_right_cyclic_helper
+        1
+        (ordsucc m)
+        HoneInt
+        (omega_ordsucc m HmO)).
+      claim HsuccmInt : ordsucc m :e int.
+      {
+        exact (Subq_omega_int
+          (ordsucc m)
+          (omega_ordsucc m HmO)).
+      }
+      claim HsuccmS : SNo (ordsucc m).
+      {
+        exact (int_SNo
+          (ordsucc m)
+          HsuccmInt).
+      }
+      exact (mul_SNo_oneL
+        (ordsucc m)
+        HsuccmS).
+    }
+    claim HpsiPos :
+      apply_fun psi (ordsucc m) =
+      group_power_nat mult e x (ordsucc m).
+    {
+      claim Htmp :
+        apply_fun psi (group_power_nat integers_group_mult 0 1 (ordsucc m)) =
+        group_power_nat mult e x (ordsucc m).
+      {
+        rewrite <- HpsiAt1.
+        exact (group_homomorphism_preserves_power_nat_cyclic_helper
+          int
+          integers_group_mult
+          0
+          integers_group_inv
+          G
+          mult
+          e
+          inv
+          psi
+          1
+          (ordsucc m)
+          HgrpZ
+          Hgrp
+          HpsiHom
+          HoneInt
+          (omega_ordsucc m HmO)).
+      }
+      claim Hlhs :
+        apply_fun psi (ordsucc m) =
+        apply_fun psi (group_power_nat integers_group_mult 0 1 (ordsucc m)).
+      {
+        rewrite HpowInt1.
+        reflexivity.
+      }
+      rewrite Hlhs.
+      exact Htmp.
+    }
+    claim HpowIntMinusOne :
+      group_power_nat integers_group_mult 0 (minus_SNo 1) (ordsucc m) =
+      minus_SNo (ordsucc m).
+    {
+      claim Hm1Int : minus_SNo 1 :e int.
+      {
+        exact (int_minus_SNo
+          1
+          HoneInt).
+      }
+      rewrite (integers_group_power_nat_mul_right_cyclic_helper
+        (minus_SNo 1)
+        (ordsucc m)
+        Hm1Int
+        (omega_ordsucc m HmO)).
+      claim HsuccmInt : ordsucc m :e int.
+      {
+        exact (Subq_omega_int
+          (ordsucc m)
+          (omega_ordsucc m HmO)).
+      }
+      claim HsuccmS : SNo (ordsucc m).
+      {
+        exact (int_SNo
+          (ordsucc m)
+          HsuccmInt).
+      }
+      rewrite (mul_SNo_minus_distrL
+        1
+        (ordsucc m)
+        SNo_1
+        HsuccmS).
+      rewrite (mul_SNo_oneL
+        (ordsucc m)
+        HsuccmS).
+      reflexivity.
+    }
+    claim HpsiNeg :
+      apply_fun psi (minus_SNo (ordsucc m)) =
+      group_power_nat mult e (apply_fun inv x) (ordsucc m).
+    {
+      claim Hinv1 : apply_fun integers_group_inv 1 = minus_SNo 1.
+      {
+        exact (HintInvEval
+          1
+          HoneInt).
+      }
+      rewrite <- HpowIntMinusOne.
+      rewrite <- Hinv1.
+      rewrite <- HpsiAt1.
+      exact (group_homomorphism_preserves_inverse_power_nat_cyclic_helper
+        int
+        integers_group_mult
+        0
+        integers_group_inv
+        G
+        mult
+        e
+        inv
+        psi
+        1
+        (ordsucc m)
+        HgrpZ
+        Hgrp
+        HpsiHom
+        HoneInt
+        (omega_ordsucc m HmO)).
+    }
+    claim HpsiNegEqE :
+      apply_fun psi (minus_SNo (ordsucc m)) = e.
+    {
+      rewrite HpsiNeg.
+      exact HpowInvEqE.
+    }
+    claim HsuccmInt : ordsucc m :e int.
+    {
+      exact (Subq_omega_int
+        (ordsucc m)
+        (omega_ordsucc m HmO)).
+    }
+    claim HpsiInv :
+      apply_fun psi (minus_SNo (ordsucc m)) =
+      apply_fun inv (apply_fun psi (ordsucc m)).
+    {
+      claim Hraw :
+        apply_fun psi (apply_fun integers_group_inv (ordsucc m)) =
+        apply_fun inv (apply_fun psi (ordsucc m)).
+      {
+        exact (group_hom_sends_inverse_cyclic_helper
+          int
+          integers_group_mult
+          0
+          integers_group_inv
+          G
+          mult
+          e
+          inv
+          psi
+          HgrpZ
+          Hgrp
+          HpsiHom
+          (ordsucc m)
+          HsuccmInt).
+      }
+      rewrite <- (HintInvEval
+        (ordsucc m)
+        HsuccmInt).
+      exact Hraw.
+    }
+    claim HinvPsiPosEqE :
+      apply_fun inv (apply_fun psi (ordsucc m)) = e.
+    {
+      rewrite <- HpsiInv.
+      exact HpsiNegEqE.
+    }
+    claim HpsiPosEqE :
+      apply_fun psi (ordsucc m) = e.
+    {
+      apply (and6E
+        (function_on mult (setprod G G) G)
+        (function_on inv G G)
+        (e :e G)
+        (forall u v w:set, u :e G -> v :e G -> w :e G ->
+          apply_fun mult (apply_fun mult (u, v), w) = apply_fun mult (u, apply_fun mult (v, w)))
+        (forall u:set, u :e G -> apply_fun mult (e, u) = u /\ apply_fun mult (u, e) = u)
+        (forall u:set, u :e G ->
+          apply_fun mult (u, apply_fun inv u) = e /\ apply_fun mult (apply_fun inv u, u) = e)
+        Hgrp).
+      assume HmultFn HinvFn HeG' Hassoc Hid HinvLaw.
+      claim HpsiPosG : apply_fun psi (ordsucc m) :e G.
+      {
+        exact ((group_homomorphism_function_on
+          int
+          integers_group_mult
+          G
+          mult
+          psi
+          HpsiHom)
+          (ordsucc m)
+          HsuccmInt).
+      }
+      claim HmulEqE :
+        apply_fun mult (apply_fun psi (ordsucc m), e) = e.
+      {
+        claim HmulEqInv :
+          apply_fun mult (apply_fun psi (ordsucc m), e) =
+          apply_fun mult (apply_fun psi (ordsucc m), apply_fun inv (apply_fun psi (ordsucc m))).
+        {
+          rewrite <- HinvPsiPosEqE.
+          reflexivity.
+        }
+        rewrite HmulEqInv.
+        exact (andEL
+          (apply_fun mult (apply_fun psi (ordsucc m), apply_fun inv (apply_fun psi (ordsucc m))) = e)
+          (apply_fun mult (apply_fun inv (apply_fun psi (ordsucc m)), apply_fun psi (ordsucc m)) = e)
+          (HinvLaw
+            (apply_fun psi (ordsucc m))
+            HpsiPosG)).
+      }
+      rewrite <- (andER
+        (apply_fun mult (e, apply_fun psi (ordsucc m)) = apply_fun psi (ordsucc m))
+        (apply_fun mult (apply_fun psi (ordsucc m), e) = apply_fun psi (ordsucc m))
+        (Hid
+          (apply_fun psi (ordsucc m))
+          HpsiPosG)).
+      exact HmulEqE.
+    }
+    claim HpowPosEqE :
+      group_power_nat mult e x (ordsucc m) = e.
+    {
+      rewrite <- HpsiPos.
+      exact HpsiPosEqE.
+    }
+    exact (HnoPowPos
+      HpowPosEqE).
+  }
+  exact (andI
+    (group_power_nat mult e x (ordsucc m) <> e)
+    (group_power_nat mult e (apply_fun inv x) (ordsucc m) <> e)
+    HnoPowPos
+    HnoPowInv).
 }
 claim HphiSelAtGenSuccPowers :
   forall m:set, m :e omega ->
@@ -79049,8 +79363,230 @@ claim HphiSelIso : group_isomorphism G mult int integers_group_mult phi_sel.
               m
               HmO)).
       }
-      (** TODO Bob: prove psi(phi_sel g)=g and finish multiplicativity via phi_sel(psi(n)) = n. **)
-      admit.
+      claim HpsiAtPhiSel :
+        forall g:set, g :e G ->
+          apply_fun psi (apply_fun phi_sel g) = g.
+      {
+        let g.
+        assume HgG.
+        set ng := apply_fun phi_sel g.
+        claim HngDef : ng = apply_fun phi_sel g.
+        {
+          reflexivity.
+        }
+        claim HphiEqNg : apply_fun phi_sel g = ng.
+        {
+          symmetry.
+          exact HngDef.
+        }
+        claim HngRep :
+          ng :e int /\
+            ((ng :e omega /\ g = group_power_nat mult e x ng) \/
+             (exists m:set, m :e omega /\ ng = minus_SNo (ordsucc m) /\
+               g = group_power_nat mult e (apply_fun inv x) (ordsucc m))).
+        {
+          exact (HphiSelRep
+            g
+            ng
+            HgG
+            HphiEqNg).
+        }
+        claim Hcases :
+          (ng :e omega /\ g = group_power_nat mult e x ng) \/
+          (exists m:set, m :e omega /\ ng = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv x) (ordsucc m)).
+        {
+          exact (andER
+            (ng :e int)
+            ((ng :e omega /\ g = group_power_nat mult e x ng) \/
+             (exists m:set, m :e omega /\ ng = minus_SNo (ordsucc m) /\
+               g = group_power_nat mult e (apply_fun inv x) (ordsucc m)))
+            HngRep).
+        }
+        apply Hcases.
+        - assume HnatCase.
+          claim HngO : ng :e omega.
+          {
+            exact (andEL
+              (ng :e omega)
+              (g = group_power_nat mult e x ng)
+              HnatCase).
+          }
+          claim HgPos : g = group_power_nat mult e x ng.
+          {
+            exact (andER
+              (ng :e omega)
+              (g = group_power_nat mult e x ng)
+              HnatCase).
+          }
+          apply (nat_inv
+            ng
+            (omega_nat_p ng HngO)).
+          + assume Hng0.
+            claim Hpow0x : group_power_nat mult e x 0 = e.
+            {
+              exact (nat_primrec_0
+                e
+                (fun _ r => apply_fun mult (x, r))).
+            }
+            rewrite HngDef.
+            rewrite Hng0.
+            rewrite HpsiAt0.
+            rewrite HgPos.
+            rewrite Hng0.
+            rewrite Hpow0x.
+            reflexivity.
+          + assume HngS.
+            apply HngS.
+            let t.
+            assume HtPack.
+            claim HtNat : nat_p t.
+            {
+              exact (andEL
+                (nat_p t)
+                (ng = ordsucc t)
+                HtPack).
+            }
+            claim HngEqS : ng = ordsucc t.
+            {
+              exact (andER
+                (nat_p t)
+                (ng = ordsucc t)
+                HtPack).
+            }
+            rewrite HngDef.
+            rewrite HngEqS.
+            rewrite (HpsiAtPosSucc
+              t
+              (nat_p_omega t HtNat)).
+            rewrite HgPos.
+            rewrite HngEqS.
+            reflexivity.
+        - assume HnegCase.
+          apply HnegCase.
+          let m.
+          assume HmPack.
+          claim HmO : m :e omega.
+          {
+            exact (andEL
+              (m :e omega)
+              (ng = minus_SNo (ordsucc m))
+              (andEL
+                (m :e omega /\ ng = minus_SNo (ordsucc m))
+                (g = group_power_nat mult e (apply_fun inv x) (ordsucc m))
+                HmPack)).
+          }
+          claim HngNeg : ng = minus_SNo (ordsucc m).
+          {
+            exact (andER
+              (m :e omega)
+              (ng = minus_SNo (ordsucc m))
+              (andEL
+                (m :e omega /\ ng = minus_SNo (ordsucc m))
+                (g = group_power_nat mult e (apply_fun inv x) (ordsucc m))
+                HmPack)).
+          }
+          claim HgNeg : g = group_power_nat mult e (apply_fun inv x) (ordsucc m).
+          {
+            exact (andER
+              (m :e omega /\ ng = minus_SNo (ordsucc m))
+              (g = group_power_nat mult e (apply_fun inv x) (ordsucc m))
+              HmPack).
+          }
+          rewrite HngDef.
+          rewrite HngNeg.
+          rewrite (HpsiAtNegSucc
+            m
+            HmO).
+          rewrite HgNeg.
+          reflexivity.
+      }
+      set na := apply_fun phi_sel a.
+      set nb := apply_fun phi_sel b.
+      claim HnaInt : na :e int.
+      {
+        exact (HphiSelFn
+          a
+          HaG).
+      }
+      claim HnbInt : nb :e int.
+      {
+        exact (HphiSelFn
+          b
+          HbG).
+      }
+      claim HnabInt :
+        apply_fun integers_group_mult (na, nb) :e int.
+      {
+        apply (and6E
+          (function_on integers_group_mult (setprod int int) int)
+          (function_on integers_group_inv int int)
+          (0 :e int)
+          (forall u v w:set, u :e int -> v :e int -> w :e int ->
+            apply_fun integers_group_mult (apply_fun integers_group_mult (u, v), w) =
+            apply_fun integers_group_mult (u, apply_fun integers_group_mult (v, w)))
+          (forall u:set, u :e int ->
+            apply_fun integers_group_mult (0, u) = u /\
+            apply_fun integers_group_mult (u, 0) = u)
+          (forall u:set, u :e int ->
+            apply_fun integers_group_mult (u, apply_fun integers_group_inv u) = 0 /\
+            apply_fun integers_group_mult (apply_fun integers_group_inv u, u) = 0)
+          HgrpZ).
+        assume HmultZFn HinvZFn H0Int HassocZ HidZ HinvLawZ.
+        exact (HmultZFn
+          (na, nb)
+          (tuple_2_setprod_by_pair_Sigma
+            int
+            int
+            na
+            nb
+            HnaInt
+            HnbInt)).
+      }
+      claim HpsiMulAB :
+        apply_fun psi (apply_fun integers_group_mult (na, nb)) =
+        apply_fun mult (a, b).
+      {
+        claim HpsiMulRaw :
+          apply_fun psi (apply_fun integers_group_mult (na, nb)) =
+          apply_fun mult (apply_fun psi na, apply_fun psi nb).
+        {
+          exact (group_homomorphism_mult_rule
+            int
+            integers_group_mult
+            G
+            mult
+            psi
+            na
+            nb
+            HpsiHom
+            HnaInt
+            HnbInt).
+        }
+        rewrite HpsiMulRaw.
+        rewrite (HpsiAtPhiSel
+          a
+          HaG).
+        rewrite (HpsiAtPhiSel
+          b
+          HbG).
+        reflexivity.
+      }
+      rewrite <- HpsiMulAB.
+      rewrite (HphiSelAtPsi
+        (apply_fun integers_group_mult (na, nb))
+        HnabInt).
+      claim HnaDef : na = apply_fun phi_sel a.
+      {
+        reflexivity.
+      }
+      claim HnbDef : nb = apply_fun phi_sel b.
+      {
+        reflexivity.
+      }
+      rewrite HnaDef.
+      rewrite HnbDef.
+      reflexivity.
     }
     exact (andI
       (function_on phi_sel G int)
