@@ -74416,6 +74416,168 @@ claim HpsiAt1 : apply_fun psi 1 = y.
     H1Int).
   exact HEpsP1.
 }
+claim HpsiAt0 : apply_fun psi 0 = eH.
+{
+  claim Hpow0y : group_power_nat multH eH y 0 = eH.
+  {
+    exact (nat_primrec_0
+      eH
+      (fun _ r => apply_fun multH (y, r))).
+  }
+  set P0 := fun h0:set =>
+    h0 :e H /\
+      ((0 :e omega /\ h0 = group_power_nat multH eH y 0) \/
+       (exists m:set, m :e omega /\ 0 = minus_SNo (ordsucc m) /\
+         h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m))).
+  claim HP0e : P0 eH.
+  {
+    apply (and6E
+      (function_on multH (setprod H H) H)
+      (function_on invH H H)
+      (eH :e H)
+      (forall a b c:set, a :e H -> b :e H -> c :e H ->
+        apply_fun multH (apply_fun multH (a, b), c) = apply_fun multH (a, apply_fun multH (b, c)))
+      (forall a:set, a :e H -> apply_fun multH (eH, a) = a /\ apply_fun multH (a, eH) = a)
+      (forall a:set, a :e H ->
+        apply_fun multH (a, apply_fun invH a) = eH /\ apply_fun multH (apply_fun invH a, a) = eH)
+      HgrpH).
+    assume HmultHfn HinvHfn HeHH HassocH HidH HinvH.
+    exact (andI
+      (eH :e H)
+      ((0 :e omega /\ eH = group_power_nat multH eH y 0) \/
+       (exists m:set, m :e omega /\ 0 = minus_SNo (ordsucc m) /\
+         eH = group_power_nat multH eH (apply_fun invH y) (ordsucc m)))
+      HeHH
+      (orIL
+        (0 :e omega /\ eH = group_power_nat multH eH y 0)
+        (exists m:set, m :e omega /\ 0 = minus_SNo (ordsucc m) /\
+          eH = group_power_nat multH eH (apply_fun invH y) (ordsucc m))
+        (andI
+          (0 :e omega)
+          (eH = group_power_nat multH eH y 0)
+          (nat_p_omega 0 nat_0)
+          (Hpow0y
+            (fun a b => eH = b)
+            (fun P H => H))))).
+  }
+  claim HP0uniq : forall h0:set, P0 h0 -> h0 = eH.
+  {
+    let h0.
+    assume HP0h0.
+    claim Hcases :
+      (0 :e omega /\ h0 = group_power_nat multH eH y 0) \/
+      (exists m:set, m :e omega /\ 0 = minus_SNo (ordsucc m) /\
+        h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m)).
+    {
+      exact (andER
+        (h0 :e H)
+        ((0 :e omega /\ h0 = group_power_nat multH eH y 0) \/
+         (exists m:set, m :e omega /\ 0 = minus_SNo (ordsucc m) /\
+           h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m)))
+        HP0h0).
+    }
+    apply Hcases.
+    - assume HnatCase.
+      claim Hh0pow0 : h0 = group_power_nat multH eH y 0.
+      {
+        exact (andER
+          (0 :e omega)
+          (h0 = group_power_nat multH eH y 0)
+          HnatCase).
+      }
+      rewrite Hh0pow0.
+      exact Hpow0y.
+    - assume HnegCase.
+      apply HnegCase.
+      let m.
+      assume HmPack.
+      claim HmO : m :e omega.
+      {
+        exact (andEL
+          (m :e omega)
+          (0 = minus_SNo (ordsucc m))
+          (andEL
+            (m :e omega /\ 0 = minus_SNo (ordsucc m))
+            (h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m))
+            HmPack)).
+      }
+      claim H0Neg : 0 = minus_SNo (ordsucc m).
+      {
+        exact (andER
+          (m :e omega)
+          (0 = minus_SNo (ordsucc m))
+          (andEL
+            (m :e omega /\ 0 = minus_SNo (ordsucc m))
+            (h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m))
+            HmPack)).
+      }
+      claim HsuccmO : ordsucc m :e omega.
+      {
+        exact (omega_ordsucc
+          m
+          HmO).
+      }
+      claim HsuccmInt : ordsucc m :e int.
+      {
+        exact (Subq_omega_int
+          (ordsucc m)
+          HsuccmO).
+      }
+      claim HsuccmS : SNo (ordsucc m).
+      {
+        exact (int_SNo
+          (ordsucc m)
+          HsuccmInt).
+      }
+      claim H0EqSucc : minus_SNo 0 = ordsucc m.
+      {
+        rewrite H0Neg.
+        exact (minus_SNo_invol
+          (ordsucc m)
+          HsuccmS).
+      }
+      claim HzeroEqSucc : 0 = ordsucc m.
+      {
+        rewrite <- minus_SNo_0.
+        exact H0EqSucc.
+      }
+      claim HsuccEq0 : ordsucc m = 0.
+      {
+        symmetry.
+        exact HzeroEqSucc.
+      }
+      exact (FalseE
+        (neq_ordsucc_0
+          m
+          HsuccEq0)
+        (h0 = eH)).
+  }
+  claim HEpsP0 : Eps_i P0 = eH.
+  {
+    exact (Eps_i_unique
+      P0
+      eH
+      HP0e
+      HP0uniq).
+  }
+  claim H0Int : 0 :e int.
+  {
+    exact (Subq_omega_int
+      0
+      (nat_p_omega 0 nat_0)).
+  }
+  rewrite (apply_fun_graph
+    int
+    (fun n:set =>
+      Eps_i (fun h0:set =>
+        h0 :e H /\
+          ((n :e omega /\ h0 = group_power_nat multH eH y n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+             h0 = group_power_nat multH eH (apply_fun invH y) (ordsucc m)))))
+    0
+    H0Int).
+  exact HEpsP0.
+}
 claim HpowInH : forall a:set, a :e H -> forall n:set, n :e omega ->
   group_power_nat multH eH a n :e H.
 {
@@ -74640,8 +74802,195 @@ claim HpsiHom : group_homomorphism int integers_group_mult H multH psi.
       apply_fun psi (apply_fun integers_group_mult (a, b)) =
       apply_fun multH (apply_fun psi a, apply_fun psi b).
   {
-    (** TODO Bob: prove multiplicativity by integer-case analysis on a and b. **)
-    admit.
+    claim HmultIntDef :
+      integers_group_mult =
+      graph (setprod int int) (fun p:set => add_SNo (p 0) (p 1)).
+    {
+      reflexivity.
+    }
+    claim HmultIntLeftId :
+      forall z:set, z :e int ->
+        apply_fun integers_group_mult (0, z) = z.
+    {
+      let z.
+      assume HzInt.
+      claim HzS : SNo z.
+      {
+        exact (int_SNo
+          z
+          HzInt).
+      }
+      claim H0Int : 0 :e int.
+      {
+        exact (Subq_omega_int
+          0
+          (nat_p_omega 0 nat_0)).
+      }
+      rewrite HmultIntDef.
+      rewrite (apply_fun_graph
+        (setprod int int)
+        (fun p:set => add_SNo (p 0) (p 1))
+        (0, z)
+        (tuple_2_setprod_by_pair_Sigma
+          int
+          int
+          0
+          z
+          H0Int
+          HzInt)).
+      rewrite (tuple_2_0_eq 0 z).
+      rewrite (tuple_2_1_eq 0 z).
+      exact (add_SNo_0L
+        z
+        HzS).
+    }
+    claim HmultIntRightId :
+      forall z:set, z :e int ->
+        apply_fun integers_group_mult (z, 0) = z.
+    {
+      let z.
+      assume HzInt.
+      claim HzS : SNo z.
+      {
+        exact (int_SNo
+          z
+          HzInt).
+      }
+      claim H0Int : 0 :e int.
+      {
+        exact (Subq_omega_int
+          0
+          (nat_p_omega 0 nat_0)).
+      }
+      rewrite HmultIntDef.
+      rewrite (apply_fun_graph
+        (setprod int int)
+        (fun p:set => add_SNo (p 0) (p 1))
+        (z, 0)
+        (tuple_2_setprod_by_pair_Sigma
+          int
+          int
+          z
+          0
+          HzInt
+          H0Int)).
+      rewrite (tuple_2_0_eq z 0).
+      rewrite (tuple_2_1_eq z 0).
+      exact (add_SNo_0R
+        z
+        HzS).
+    }
+    claim HmultHLeftId :
+      forall z:set, z :e H ->
+        apply_fun multH (eH, z) = z.
+    {
+      let z.
+      assume HzH.
+      apply (and6E
+        (function_on multH (setprod H H) H)
+        (function_on invH H H)
+        (eH :e H)
+        (forall u v w:set, u :e H -> v :e H -> w :e H ->
+          apply_fun multH (apply_fun multH (u, v), w) = apply_fun multH (u, apply_fun multH (v, w)))
+        (forall u:set, u :e H -> apply_fun multH (eH, u) = u /\ apply_fun multH (u, eH) = u)
+        (forall u:set, u :e H ->
+          apply_fun multH (u, apply_fun invH u) = eH /\ apply_fun multH (apply_fun invH u, u) = eH)
+        HgrpH).
+      assume HmultHfn HinvHfn HeHH HassocH HidH HinvH.
+      exact (andEL
+        (apply_fun multH (eH, z) = z)
+        (apply_fun multH (z, eH) = z)
+        (HidH z HzH)).
+    }
+    claim HmultHRightId :
+      forall z:set, z :e H ->
+        apply_fun multH (z, eH) = z.
+    {
+      let z.
+      assume HzH.
+      apply (and6E
+        (function_on multH (setprod H H) H)
+        (function_on invH H H)
+        (eH :e H)
+        (forall u v w:set, u :e H -> v :e H -> w :e H ->
+          apply_fun multH (apply_fun multH (u, v), w) = apply_fun multH (u, apply_fun multH (v, w)))
+        (forall u:set, u :e H -> apply_fun multH (eH, u) = u /\ apply_fun multH (u, eH) = u)
+        (forall u:set, u :e H ->
+          apply_fun multH (u, apply_fun invH u) = eH /\ apply_fun multH (apply_fun invH u, u) = eH)
+        HgrpH).
+      assume HmultHfn HinvHfn HeHH HassocH HidH HinvH.
+      exact (andER
+        (apply_fun multH (eH, z) = z)
+        (apply_fun multH (z, eH) = z)
+        (HidH z HzH)).
+    }
+    let a b.
+    assume HaInt HbInt.
+    apply (int_3_cases
+      a
+      HaInt
+      (apply_fun psi (apply_fun integers_group_mult (a, b)) =
+       apply_fun multH (apply_fun psi a, apply_fun psi b))).
+    - let ma.
+      assume HmaO HaNeg.
+      apply (int_3_cases
+        b
+        HbInt
+        (apply_fun psi (apply_fun integers_group_mult (a, b)) =
+         apply_fun multH (apply_fun psi a, apply_fun psi b))).
+      + let mb.
+        assume HmbO HbNeg.
+        (** TODO Bob: finish negative/negative integer multiplicativity branch. **)
+        admit.
+      + assume Hb0.
+        rewrite Hb0.
+        rewrite (HmultIntRightId
+          a
+          HaInt).
+        rewrite HpsiAt0.
+        symmetry.
+        exact (HmultHRightId
+          (apply_fun psi a)
+          (HpsiFn a HaInt)).
+      + let mb.
+        assume HmbO HbPos.
+        (** TODO Bob: finish negative/positive integer multiplicativity branch. **)
+        admit.
+    - assume Ha0.
+      rewrite Ha0.
+      rewrite (HmultIntLeftId
+        b
+        HbInt).
+      rewrite HpsiAt0.
+      symmetry.
+      exact (HmultHLeftId
+        (apply_fun psi b)
+        (HpsiFn b HbInt)).
+    - let ma.
+      assume HmaO HaPos.
+      apply (int_3_cases
+        b
+        HbInt
+        (apply_fun psi (apply_fun integers_group_mult (a, b)) =
+         apply_fun multH (apply_fun psi a, apply_fun psi b))).
+      + let mb.
+        assume HmbO HbNeg.
+        (** TODO Bob: finish positive/negative integer multiplicativity branch. **)
+        admit.
+      + assume Hb0.
+        rewrite Hb0.
+        rewrite (HmultIntRightId
+          a
+          HaInt).
+        rewrite HpsiAt0.
+        symmetry.
+        exact (HmultHRightId
+          (apply_fun psi a)
+          (HpsiFn a HaInt)).
+      + let mb.
+        assume HmbO HbPos.
+        (** TODO Bob: finish positive/positive integer multiplicativity branch. **)
+        admit.
   }
   exact (andI
     (function_on psi int H)
