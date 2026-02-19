@@ -138459,8 +138459,148 @@ apply (nat_inv nw Hnw_nat).
           exact (Hal_ne_al
             Hal_eq_al).
         - assume Hbm_ne_al.
-          (** Remaining work in beta_m <> al branch. **)
-          admit.
+          claim H0_in_nw2 : 0 :e nw.
+          {
+            exact H0_in_nw.
+          }
+          apply (Helem
+            0
+            H0_in_nw2).
+          let beta_0.
+          assume Hb0_pack.
+          apply (and3E
+            (beta_0 :e J)
+            (apply_fun xsw 0 :e apply_fun Gfam beta_0)
+            (apply_fun xsw 0 <> apply_fun efam beta_0)
+            Hb0_pack).
+          assume Hb0_J Hxs0_Gb0 Hxs0_ne_eb0.
+          apply (xm (beta_0 = al)).
+          + assume Hb0_eq_al.
+            claim Hxs0_G : apply_fun xsw 0 :e G.
+            {
+              exact (Hxsw_in_G
+                0
+                H0_in_nw).
+            }
+            claim Hinv_xs0_G : apply_fun invG (apply_fun xsw 0) :e G.
+            {
+              exact (HinvGF
+                (apply_fun xsw 0)
+                Hxs0_G).
+            }
+            claim Hassoc_xs0 :
+              apply_fun multG (apply_fun xsw 0,
+                apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun efam al)) =
+              apply_fun multG (apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0)),
+                apply_fun efam al).
+            {
+              symmetry.
+              exact (HassocG
+                (apply_fun xsw 0)
+                (apply_fun invG (apply_fun xsw 0))
+                (apply_fun efam al)
+                Hxs0_G
+                Hinv_xs0_G
+                Hefam_G).
+            }
+            claim Hrinv_xs0 :
+              apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0)) = eG.
+            {
+              exact (andEL
+                (apply_fun multG (apply_fun xsw 0, apply_fun invG (apply_fun xsw 0)) = eG)
+                (apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun xsw 0) = eG)
+                (HinvG
+                  (apply_fun xsw 0)
+                  Hxs0_G)).
+            }
+            claim HidL_efam :
+              apply_fun multG (eG, apply_fun efam al) = apply_fun efam al.
+            {
+              exact (andEL
+                (apply_fun multG (eG, apply_fun efam al) = apply_fun efam al)
+                (apply_fun multG (apply_fun efam al, eG) = apply_fun efam al)
+                (HidG
+                  (apply_fun efam al)
+                  Hefam_G)).
+            }
+            claim Hxs0h_efam :
+              apply_fun multG (apply_fun xsw 0,
+                apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun efam al)) =
+              apply_fun efam al.
+            {
+              rewrite Hassoc_xs0.
+              rewrite Hrinv_xs0.
+              exact HidL_efam.
+            }
+            apply (xm (apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun efam al) = eG)).
+            * assume Hh_eG.
+              claim Hstep :
+                apply_fun multG (apply_fun xsw 0,
+                  apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun efam al)) =
+                apply_fun multG (apply_fun xsw 0, eG).
+              {
+                rewrite Hh_eG.
+                reflexivity.
+              }
+              claim Hstep_sym :
+                apply_fun multG (apply_fun xsw 0, eG) =
+                apply_fun multG (apply_fun xsw 0,
+                  apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun efam al)).
+              {
+                symmetry.
+                exact Hstep.
+              }
+              claim Hxs0_efam :
+                apply_fun xsw 0 = apply_fun efam al.
+              {
+                claim Hmul_xs0_eG :
+                  apply_fun multG (apply_fun xsw 0, eG) = apply_fun efam al.
+                {
+                  exact (eq_i_tra
+                    (apply_fun multG (apply_fun xsw 0, eG))
+                    (apply_fun multG (apply_fun xsw 0,
+                      apply_fun multG (apply_fun invG (apply_fun xsw 0), apply_fun efam al)))
+                    (apply_fun efam al)
+                    Hstep_sym
+                    Hxs0h_efam).
+                }
+                claim HidR_xs0 :
+                  apply_fun multG (apply_fun xsw 0, eG) = apply_fun xsw 0.
+                {
+                  exact (andER
+                    (apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0)
+                    (apply_fun multG (apply_fun xsw 0, eG) = apply_fun xsw 0)
+                    (HidG
+                      (apply_fun xsw 0)
+                      Hxs0_G)).
+                }
+                claim HidR_xs0_sym :
+                  apply_fun xsw 0 = apply_fun multG (apply_fun xsw 0, eG).
+                {
+                  symmetry.
+                  exact HidR_xs0.
+                }
+                exact (eq_i_tra
+                  (apply_fun xsw 0)
+                  (apply_fun multG (apply_fun xsw 0, eG))
+                  (apply_fun efam al)
+                  HidR_xs0_sym
+                  Hmul_xs0_eG).
+              }
+              claim Hxs0_ne_efam_al : apply_fun xsw 0 <> apply_fun efam al.
+              {
+                assume Habs.
+                exact (Hxsw_ne_efamal_all
+                  0
+                  H0_in_nw
+                  Habs).
+              }
+              exact (Hxs0_ne_efam_al
+                Hxs0_efam).
+            * assume Hh_ne_eG.
+              admit.
+          + assume Hb0_ne_al.
+            admit.
 Admitted.
 
 (** from S68 Lem 68.1 (line 2781 in algtop.tex): extension condition for free products **)
