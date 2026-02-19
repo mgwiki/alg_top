@@ -70832,7 +70832,7 @@ exact (andI
   (forall t:set, t :e unit_interval -> apply_fun Ft (1, t) = e1)
   HleftConst
   HrightConst).
-Admitted. (** was qed but depends on unproved lemma54_2_homotopy_lifting - changed to admitted **)
+Qed.
 
 (** from S54 Thm 54.3 (line 785 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be covering, p(e0) = b0. Let f and g be paths in B **)
@@ -71782,7 +71782,7 @@ apply andI.
       reflexivity.
     * exact HleftEdgeE0.
     * exact HrightEdgeFF1.
-Admitted. (** was qed but depends on admitted lemma54_2_path_homotopy_preserved **)
+Qed.
 
 (** from S54 Definition (line 791 in algtop.tex) **)
 (** LATEX VERSION: The lifting correspondence phi: pi_1(B,b0) -> p^{-1}(b0) maps **)
@@ -72400,7 +72400,7 @@ apply andI.
     rewrite HlcApply0.
     rewrite HendRepEqF0.
     exact HendF0.
-Admitted.
+Qed.
 
 (** from S54 Thm 54.4 (line 799 in algtop.tex): lifting correspondence bijective **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 60 **)
@@ -73562,7 +73562,7 @@ exact (andI
       (forall x':set, x' :e G -> apply_fun lc x' = y -> x' = x))
   Hfun
   Huniq).
-Admitted.
+Qed.
 
 (** Infrastructure: the additive group of integers **)
 (** Multiplication is addition of surreal numbers restricted to int **)
