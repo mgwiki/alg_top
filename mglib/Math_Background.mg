@@ -139635,6 +139635,126 @@ apply (nat_inv nw Hnw_nat).
                       Hxswsi_Ga
                       Hxswssi_Gb).
                 }
+                set xs_h := graph 1 (fun _:set => h_left).
+                claim Hxsh_0 : apply_fun xs_h 0 = h_left.
+                {
+                  exact (apply_fun_graph
+                    1
+                    (fun _:set => h_left)
+                    0
+                    (nat_0_in_ordsucc
+                      0
+                      nat_0)).
+                }
+                claim Hwp_h : word_product multG eG xs_h 1 = h_left.
+                {
+                  prove nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs_h i)) 1 = h_left.
+                  rewrite <- ordsucc_0_eq_1_nat.
+                  rewrite (nat_primrec_S
+                    eG
+                    (fun i r => apply_fun multG (r, apply_fun xs_h i))
+                    0
+                    nat_0).
+                  rewrite (nat_primrec_0
+                    eG
+                    (fun i r => apply_fun multG (r, apply_fun xs_h i))).
+                  rewrite Hxsh_0.
+                  exact (andEL
+                    (apply_fun multG (eG, h_left) = h_left)
+                    (apply_fun multG (h_left, eG) = h_left)
+                    (HidG
+                      h_left
+                      Hh_G)).
+                }
+                claim Hredw_h : reduced_word J Gfam efam 1 xs_h.
+                {
+                  prove 1 :e omega /\
+                    (forall i:set, i :e 1 ->
+                      exists alpha:set, alpha :e J /\
+                        apply_fun xs_h i :e apply_fun Gfam alpha /\
+                        apply_fun xs_h i <> apply_fun efam alpha) /\
+                    (forall i:set, i :e 1 -> ordsucc i :e 1 ->
+                      forall alpha beta:set, alpha :e J -> beta :e J ->
+                        apply_fun xs_h i :e apply_fun Gfam alpha ->
+                        apply_fun xs_h (ordsucc i) :e apply_fun Gfam beta ->
+                        alpha <> beta).
+                  apply and3I.
+                  - exact (nat_p_omega
+                      1
+                      nat_1).
+                  - let i.
+                    assume Hi.
+                    claim Hi_0 : i = 0.
+                    {
+                      claim Hi_s0 : i :e ordsucc 0.
+                      {
+                        rewrite ordsucc_0_eq_1_nat.
+                        exact Hi.
+                      }
+                      apply (ordsuccE
+                        0
+                        i
+                        Hi_s0).
+                      + assume Hi_emp.
+                        exact (EmptyE
+                          i
+                          Hi_emp
+                          (i = 0)).
+                      + assume Hieq.
+                        exact Hieq.
+                    }
+                    witness al.
+                    apply and3I.
+                    + exact Hal.
+                    + rewrite Hi_0.
+                      rewrite Hxsh_0.
+                      exact Hh_Gal.
+                    + rewrite Hi_0.
+                      rewrite Hxsh_0.
+                      exact Hh_ne_efam.
+                  - let i.
+                    assume Hi Hsi.
+                    claim Hsi_0 : ordsucc i = 0.
+                    {
+                      claim Hsi_s0 : ordsucc i :e ordsucc 0.
+                      {
+                        rewrite ordsucc_0_eq_1_nat.
+                        exact Hsi.
+                      }
+                      apply (ordsuccE
+                        0
+                        (ordsucc i)
+                        Hsi_s0).
+                      + assume Hsi_emp.
+                        exact (EmptyE
+                          (ordsucc i)
+                          Hsi_emp
+                          (ordsucc i = 0)).
+                      + assume Hsieq.
+                        exact Hsieq.
+                    }
+                    exact (FalseE
+                      (neq_ordsucc_0
+                        i
+                        Hsi_0)
+                      (forall alpha beta:set, alpha :e J -> beta :e J ->
+                        apply_fun xs_h i :e apply_fun Gfam alpha ->
+                        apply_fun xs_h (ordsucc i) :e apply_fun Gfam beta ->
+                        alpha <> beta)).
+                }
+                claim Hh_huniq : exists n xs:set,
+                  reduced_word J Gfam efam n xs /\ n <> 0 /\
+                  word_product multG eG xs n = h_left /\
+                  (forall n' xs':set,
+                    reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+                    word_product multG eG xs' n' = h_left ->
+                    n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
+                {
+                  exact (Huniq
+                    h_left
+                    Hh_G
+                    Hh_ne_eG).
+                }
                 admit.
               }
           + assume Hb0_ne_al.
