@@ -140733,6 +140733,68 @@ apply (nat_inv nw Hnw_nat).
               }
               apply (xm (apply_fun invG (apply_fun efam al) = apply_fun efam al)).
               + assume Hinv_eq_efam.
+                set ie := apply_fun invG (apply_fun efam al).
+                claim Hie_eq_efam : ie = apply_fun efam al.
+                {
+                  exact Hinv_eq_efam.
+                }
+                claim Hie_ne_eG : ie <> eG.
+                {
+                  assume Hie_eG.
+                  claim Hinv_eG : apply_fun invG (apply_fun efam al) = eG.
+                  {
+                    claim Hinv_ie : apply_fun invG (apply_fun efam al) = ie.
+                    {
+                      reflexivity.
+                    }
+                    exact (eq_i_tra
+                      (apply_fun invG (apply_fun efam al))
+                      ie
+                      eG
+                      Hinv_ie
+                      Hie_eG).
+                  }
+                  exact (Hinv_efam_ne_eG
+                    Hinv_eG).
+                }
+                claim Hie_Gal : ie :e apply_fun Gfam al.
+                {
+                  rewrite Hie_eq_efam.
+                  exact Hefam_Gal.
+                }
+                claim Hie_G : ie :e G.
+                {
+                  exact Hinv_efam_G.
+                }
+                claim Hie_pack : exists n xs:set,
+                  reduced_word J Gfam efam n xs /\ n <> 0 /\
+                  word_product multG eG xs n = ie /\
+                  (forall n' xs':set,
+                    reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+                    word_product multG eG xs' n' = ie ->
+                    n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)).
+                {
+                  exact (Huniq
+                    ie
+                    Hie_G
+                    Hie_ne_eG).
+                }
+                apply Hie_pack.
+                let nie.
+                assume Hnie_ex.
+                apply Hnie_ex.
+                let xie.
+                assume HieU.
+                apply (and4E
+                  (reduced_word J Gfam efam nie xie)
+                  (nie <> 0)
+                  (word_product multG eG xie nie = ie)
+                  (forall n' xs':set,
+                    reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+                    word_product multG eG xs' n' = ie ->
+                    nie = n' /\ (forall i:set, i :e nie -> apply_fun xie i = apply_fun xs' i))
+                  HieU).
+                assume Hred_ie_eq Hnie_ne_eq Hwp_ie_eq Huniq_ie_eq.
                 admit.
               + assume Hinv_ne_efam.
                 set ie := apply_fun invG (apply_fun efam al).
