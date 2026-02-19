@@ -63499,9 +63499,56 @@ claim Hex :
                                       HluVu
                                       HluVx).
                                   }
+                                  claim HluVu : apply_fun lu x :e Vu.
+                                  {
+                                    claim HluSlicePack :
+                                      exists Vlu:set, apply_fun lu x :e Vlu /\ Vlu :e slicesUt.
+                                    {
+                                      exact (UnionE
+                                        slicesUt
+                                        (apply_fun lu x)
+                                        HluUnion).
+                                    }
+                                    apply HluSlicePack.
+                                    let Vlu.
+                                    assume HVluPack.
+                                    claim HluVlu : apply_fun lu x :e Vlu.
+                                    {
+                                      exact (andEL
+                                        (apply_fun lu x :e Vlu)
+                                        (Vlu :e slicesUt)
+                                        HVluPack).
+                                    }
+                                    claim HVluSlice : Vlu :e slicesUt.
+                                    {
+                                      exact (andER
+                                        (apply_fun lu x :e Vlu)
+                                        (Vlu :e slicesUt)
+                                        HVluPack).
+                                    }
+                                    claim HVluEqVx : Vlu = Vx.
+                                    {
+                                      exact (pairwise_disjoint_point_unique_member
+                                        slicesUt
+                                        Vlu
+                                        Vx
+                                        (apply_fun lu x)
+                                        HpdSlicesUt
+                                        HVluSlice
+                                        HVxSlice
+                                        HluVlu
+                                        HluVx).
+                                    }
+                                    claim HVluEqVu : Vlu = Vu.
+                                    {
+                                      (** TODO Charlie: prove this final slice-identification step from overlap data on Nu /\ Nt. **)
+                                      admit.
+                                    }
+                                    rewrite <- HVluEqVu.
+                                    exact HluVlu.
+                                  }
                                   apply HVuEqVxIfHluVu.
-                                  (** TODO Charlie: prove apply_fun lu x :e Vu from current overlap-lift data. **)
-                                  admit.
+                                  exact HluVu.
                                 }
                                 rewrite <- HVxlocalEqVx.
                                 exact HxlocalVxlocal.
@@ -65977,8 +66024,13 @@ claim Hex :
                   r
                   HrNrN1).
               }
-              (** TODO Charlie: show r :e N0 (using local-equality propagation from 0 along Nr with evenly-covered Ur data), then conclude with HrN1IfHrN0. **)
-              admit.
+              claim HrN0 : r :e N0.
+              {
+                (** TODO Charlie: prove propagation from 0 to r inside Nr /\ N1 where lr=lt1. **)
+                admit.
+              }
+              exact (HrN1IfHrN0
+                HrN0).
             }
             exact HrN1.
           }
@@ -68437,10 +68489,93 @@ claim HFt_54_cont :
                       rewrite <- HlocalEqxq.
                       exact HlocalVlocal.
                     }
-	                    claim HxqVz : xq :e Vz.
-	                    {
-	                      admit.
-	                    }
+                    claim HxqVz : xq :e Vz.
+                    {
+                      claim HxqEqFz : apply_fun p xq = apply_fun F z.
+                      {
+                        exact (andER
+                          (xq :e Vq)
+                          (apply_fun p xq = apply_fun F z)
+                          (andEL
+                            (xq :e Vq /\ apply_fun p xq = apply_fun F z)
+                            (forall y:set, y :e Vq -> apply_fun p y = apply_fun F z -> y = xq)
+                            HxqPack)).
+                      }
+                      claim HxqE : xq :e E.
+                      {
+                        exact (HVqsubE
+                          xq
+                          HxqVq).
+                      }
+                      claim HxqPreU : xq :e preimage_of E p U.
+                      {
+                        claim HpxqU : apply_fun p xq :e U.
+                        {
+                          rewrite HxqEqFz.
+                          exact HFzU.
+                        }
+                        exact (SepI
+                          E
+                          (fun z0:set => apply_fun p z0 :e U)
+                          xq
+                          HxqE
+                          HpxqU).
+                      }
+                      claim HxqUnion : xq :e Union slices.
+                      {
+                        exact (mem_eqL
+                          xq
+                          (Union slices)
+                          (preimage_of E p U)
+                          HslicesUnion
+                          HxqPreU).
+                      }
+                      claim HxqSlicePack :
+                        exists Vxq:set, xq :e Vxq /\ Vxq :e slices.
+                      {
+                        exact (UnionE
+                          slices
+                          xq
+                          HxqUnion).
+                      }
+                      apply HxqSlicePack.
+                      let Vxq.
+                      assume HVxqPack.
+                      claim HxqVxq : xq :e Vxq.
+                      {
+                        exact (andEL
+                          (xq :e Vxq)
+                          (Vxq :e slices)
+                          HVxqPack).
+                      }
+                      claim HVxqSlice : Vxq :e slices.
+                      {
+                        exact (andER
+                          (xq :e Vxq)
+                          (Vxq :e slices)
+                          HVxqPack).
+                      }
+                      claim HVxqEqVq : Vxq = Vq.
+                      {
+                        exact (pairwise_disjoint_point_unique_member
+                          slices
+                          Vxq
+                          Vq
+                          xq
+                          HpdSlices
+                          HVxqSlice
+                          HVqSlice
+                          HxqVxq
+                          HxqVq).
+                      }
+                      claim HVxqEqVz : Vxq = Vz.
+                      {
+                        (** TODO Charlie: prove this final slice-identification step from local data around q,z in N. **)
+                        admit.
+                      }
+                      rewrite <- HVxqEqVz.
+                      exact HxqVxq.
+                    }
                     exact (pairwise_disjoint_point_unique_member
                       slices
                       Vlocal
