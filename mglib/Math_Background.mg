@@ -77496,6 +77496,46 @@ claim HpowInG : forall a:set, a :e G -> forall n:set, n :e omega ->
     n
     (omega_nat_p n HnO)).
 }
+claim HpowAt1 :
+  forall a:set, a :e G ->
+    group_power_nat mult e a 1 = a.
+{
+  let a.
+  assume HaG.
+  claim HS :
+    group_power_nat mult e a (ordsucc 0) =
+    apply_fun mult (a, group_power_nat mult e a 0).
+  {
+    exact (nat_primrec_S
+      e
+      (fun _ r => apply_fun mult (a, r))
+      0
+      nat_0).
+  }
+  claim H0 : group_power_nat mult e a 0 = e.
+  {
+    exact (nat_primrec_0
+      e
+      (fun _ r => apply_fun mult (a, r))).
+  }
+  apply (and6E
+    (function_on mult (setprod G G) G)
+    (function_on inv G G)
+    (e :e G)
+    (forall u v w:set, u :e G -> v :e G -> w :e G ->
+      apply_fun mult (apply_fun mult (u, v), w) = apply_fun mult (u, apply_fun mult (v, w)))
+    (forall u:set, u :e G -> apply_fun mult (e, u) = u /\ apply_fun mult (u, e) = u)
+    (forall u:set, u :e G ->
+      apply_fun mult (u, apply_fun inv u) = e /\ apply_fun mult (apply_fun inv u, u) = e)
+    Hgrp).
+  assume HmultFn HinvFn HeG' Hassoc Hid HinvLaw.
+  rewrite HS.
+  rewrite H0.
+  exact (andER
+    (apply_fun mult (e, a) = a)
+    (apply_fun mult (a, e) = a)
+    (Hid a HaG)).
+}
 claim HphiSelIso : group_isomorphism G mult int integers_group_mult phi_sel.
 {
   claim HphiSelHom : group_homomorphism G mult int integers_group_mult phi_sel.
@@ -77591,7 +77631,122 @@ claim HphiSelIso : group_isomorphism G mult int integers_group_mult phi_sel.
                    HneNeg
                    HmO).
                }
-               admit.
+               apply (nat_inv
+                 m
+                 (omega_nat_p m HmO)).
+               + assume Hm0.
+                 claim HinvxEqE : apply_fun inv x = e.
+                 {
+                   claim HeEqPowSucc0 :
+                     e = group_power_nat mult e (apply_fun inv x) (ordsucc 0).
+                   {
+                     rewrite <- Hm0.
+                     exact HeNegRep.
+                   }
+                   claim HpowSucc0EqE :
+                     group_power_nat mult e (apply_fun inv x) (ordsucc 0) = e.
+                   {
+                     symmetry.
+                     exact HeEqPowSucc0.
+                   }
+                   claim HpowSucc0Inv :
+                     group_power_nat mult e (apply_fun inv x) (ordsucc 0) =
+                     apply_fun inv x.
+                   {
+                     claim HS :
+                       group_power_nat mult e (apply_fun inv x) (ordsucc 0) =
+                       apply_fun mult (apply_fun inv x, group_power_nat mult e (apply_fun inv x) 0).
+                     {
+                       exact (nat_primrec_S
+                         e
+                         (fun _ r => apply_fun mult (apply_fun inv x, r))
+                         0
+                         nat_0).
+                     }
+                     claim H0 :
+                       group_power_nat mult e (apply_fun inv x) 0 = e.
+                     {
+                       exact (nat_primrec_0
+                         e
+                         (fun _ r => apply_fun mult (apply_fun inv x, r))).
+                     }
+                     apply (and6E
+                       (function_on mult (setprod G G) G)
+                       (function_on inv G G)
+                       (e :e G)
+                       (forall a b c:set, a :e G -> b :e G -> c :e G ->
+                         apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+                       (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+                       (forall a:set, a :e G ->
+                         apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+                       Hgrp).
+                     assume HmultFn HinvFn HeG' Hassoc Hid HinvLaw.
+                     rewrite HS.
+                     rewrite H0.
+                     exact (andER
+                       (apply_fun mult (e, apply_fun inv x) = apply_fun inv x)
+                       (apply_fun mult (apply_fun inv x, e) = apply_fun inv x)
+                       (Hid (apply_fun inv x) HinvXG)).
+                   }
+                   rewrite <- HpowSucc0Inv.
+                   exact HpowSucc0EqE.
+                 }
+                 claim HxEqE : x = e.
+                 {
+                   apply (and6E
+                     (function_on mult (setprod G G) G)
+                     (function_on inv G G)
+                     (e :e G)
+                     (forall a b c:set, a :e G -> b :e G -> c :e G ->
+                       apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+                     (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+                     (forall a:set, a :e G ->
+                       apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+                     Hgrp).
+                   assume HmultFn HinvFn HeG' Hassoc Hid HinvLaw.
+                   claim HxMulInv :
+                     apply_fun mult (x, apply_fun inv x) = e.
+                   {
+                     exact (andEL
+                       (apply_fun mult (x, apply_fun inv x) = e)
+                       (apply_fun mult (apply_fun inv x, x) = e)
+                       (HinvLaw x HxG)).
+                   }
+                   claim HxMulE :
+                     apply_fun mult (x, e) = e.
+                   {
+                     claim HxMulEqInv :
+                       apply_fun mult (x, e) = apply_fun mult (x, apply_fun inv x).
+                     {
+                       rewrite <- HinvxEqE.
+                       reflexivity.
+                     }
+                     rewrite HxMulEqInv.
+                     exact HxMulInv.
+                   }
+                   rewrite <- (andER
+                     (apply_fun mult (e, x) = x)
+                     (apply_fun mult (x, e) = x)
+                     (Hid x HxG)).
+                   exact HxMulE.
+                 }
+                 claim HfinG : finite G.
+                 {
+                   exact (generator_identity_implies_finite_cyclic_helper
+                     G
+                     mult
+                     e
+                     inv
+                     x
+                     Hgrp
+                     HgenX
+                     HxEqE).
+                 }
+                 exact (FalseE
+                   (Hnfin HfinG)
+                   (ne = 0)).
+               + assume HmS.
+                 admit.
             - assume Hne0.
                exact Hne0.
             - let m.
@@ -77606,7 +77761,82 @@ claim HphiSelIso : group_isomorphism G mult int integers_group_mult phi_sel.
                    HnePos
                    HmO).
                }
-               admit.
+               apply (nat_inv
+                 m
+                 (omega_nat_p m HmO)).
+               + assume Hm0.
+                 claim HxEqE : x = e.
+                 {
+                   claim HeEqPowSucc0 :
+                     e = group_power_nat mult e x (ordsucc 0).
+                   {
+                     rewrite <- Hm0.
+                     exact HePosRep.
+                   }
+                   claim HpowSucc0EqE :
+                     group_power_nat mult e x (ordsucc 0) = e.
+                   {
+                     symmetry.
+                     exact HeEqPowSucc0.
+                   }
+                   claim HpowSucc0X :
+                     group_power_nat mult e x (ordsucc 0) = x.
+                   {
+                     claim HS :
+                       group_power_nat mult e x (ordsucc 0) =
+                       apply_fun mult (x, group_power_nat mult e x 0).
+                     {
+                       exact (nat_primrec_S
+                         e
+                         (fun _ r => apply_fun mult (x, r))
+                         0
+                         nat_0).
+                     }
+                     claim H0 :
+                       group_power_nat mult e x 0 = e.
+                     {
+                       exact (nat_primrec_0
+                         e
+                         (fun _ r => apply_fun mult (x, r))).
+                     }
+                     apply (and6E
+                       (function_on mult (setprod G G) G)
+                       (function_on inv G G)
+                       (e :e G)
+                       (forall a b c:set, a :e G -> b :e G -> c :e G ->
+                         apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+                       (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+                       (forall a:set, a :e G ->
+                         apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+                       Hgrp).
+                     assume HmultFn HinvFn HeG' Hassoc Hid HinvLaw.
+                     rewrite HS.
+                     rewrite H0.
+                     exact (andER
+                       (apply_fun mult (e, x) = x)
+                       (apply_fun mult (x, e) = x)
+                       (Hid x HxG)).
+                   }
+                   rewrite <- HpowSucc0X.
+                   exact HpowSucc0EqE.
+                 }
+                 claim HfinG : finite G.
+                 {
+                   exact (generator_identity_implies_finite_cyclic_helper
+                     G
+                     mult
+                     e
+                     inv
+                     x
+                     Hgrp
+                     HgenX
+                     HxEqE).
+                 }
+                 exact (FalseE
+                   (Hnfin HfinG)
+                   (ne = 0)).
+               + assume HmS.
+                 admit.
         + let g'.
           assume Hg'G HphiEq'.
           claim HphiEq0 : apply_fun phi_sel g' = 0.
