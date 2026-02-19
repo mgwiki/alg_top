@@ -70886,7 +70886,119 @@ Theorem thm54_4_lifting_correspondence_bijective : forall E Te B Tb p e0:set,
     (fundamental_group B Tb (apply_fun p e0))
     {x :e E | apply_fun p x = apply_fun p e0}
     (lifting_correspondence E Te B Tb p e0).
-admit.
+let E Te B Tb p e0.
+assume Hcov He0 HscE.
+set G := fundamental_group B Tb (apply_fun p e0).
+set Fib := {x :e E | apply_fun p x = apply_fun p e0}.
+set lc := lifting_correspondence E Te B Tb p e0.
+claim HpcE : path_connected_space E Te.
+{
+  exact (simply_connected_path_connected
+    E
+    Te
+    HscE).
+}
+claim Hsur : surjective_map G Fib lc.
+{
+  exact (thm54_4_lifting_correspondence_surjective
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    Hcov
+    He0
+    HpcE).
+}
+claim Hfun : function_on lc G Fib.
+{
+  exact (andEL
+    (function_on lc G Fib)
+    (forall y:set, y :e Fib ->
+      exists x:set, x :e G /\ apply_fun lc x = y)
+    Hsur).
+}
+claim Huniq :
+  forall y:set, y :e Fib ->
+    exists x:set, x :e G /\ apply_fun lc x = y /\
+      (forall x':set, x' :e G -> apply_fun lc x' = y -> x' = x).
+{
+  let y.
+  assume HyFib.
+  apply (andER
+    (function_on lc G Fib)
+    (forall y0:set, y0 :e Fib ->
+      exists x0:set, x0 :e G /\ apply_fun lc x0 = y0)
+    Hsur
+    y
+    HyFib).
+  let cls0.
+  assume Hcls0Pack.
+  claim Hcls0G : cls0 :e G.
+  {
+    exact (andEL
+      (cls0 :e G)
+      (apply_fun lc cls0 = y)
+      Hcls0Pack).
+  }
+  claim Hcls0EqY : apply_fun lc cls0 = y.
+  {
+    exact (andER
+      (cls0 :e G)
+      (apply_fun lc cls0 = y)
+      Hcls0Pack).
+  }
+  witness cls0.
+  apply andI.
+  - apply andI.
+    + exact Hcls0G.
+    + exact Hcls0EqY.
+  - let x'.
+    assume HxG HxEqY.
+    claim HendEq :
+        apply_fun (path_lift E Te B Tb p e0 (Eps_i (fun f:set => f :e x'))) 1
+        =
+        apply_fun (path_lift E Te B Tb p e0 (Eps_i (fun f:set => f :e cls0))) 1.
+    {
+      claim HlcX :
+        apply_fun lc x' =
+        apply_fun (path_lift E Te B Tb p e0 (Eps_i (fun f:set => f :e x'))) 1.
+      {
+        exact (apply_fun_graph
+          G
+          (fun cls:set =>
+            apply_fun (path_lift E Te B Tb p e0 (Eps_i (fun f:set => f :e cls))) 1)
+          x'
+          HxG).
+      }
+      claim HlcC0 :
+        apply_fun lc cls0 =
+        apply_fun (path_lift E Te B Tb p e0 (Eps_i (fun f:set => f :e cls0))) 1.
+      {
+        exact (apply_fun_graph
+          G
+          (fun cls:set =>
+            apply_fun (path_lift E Te B Tb p e0 (Eps_i (fun f:set => f :e cls))) 1)
+          cls0
+          Hcls0G).
+      }
+      rewrite <- HlcX.
+      rewrite <- HlcC0.
+      rewrite HxEqY.
+      rewrite Hcls0EqY.
+      reflexivity.
+    }
+    (** TODO Charlie: conclude x' = cls0 from simple connectedness and lift uniqueness. **)
+    admit.
+}
+exact (andI
+  (function_on lc G Fib)
+  (forall y:set, y :e Fib ->
+    exists x:set, x :e G /\ apply_fun lc x = y /\
+      (forall x':set, x' :e G -> apply_fun lc x' = y -> x' = x))
+  Hfun
+  Huniq).
 Admitted.
 
 (** Infrastructure: the additive group of integers **)
