@@ -77544,6 +77544,15 @@ claim HnoPowAtSuccBoth :
   (** TODO Bob: derive nontriviality of all nonzero generator powers from Hnfin and generator structure. **)
   admit.
 }
+claim HphiSelAtGenSuccPowers :
+  forall m:set, m :e omega ->
+    apply_fun phi_sel (group_power_nat mult e x (ordsucc m)) = ordsucc m /\
+    apply_fun phi_sel (group_power_nat mult e (apply_fun inv x) (ordsucc m)) =
+      minus_SNo (ordsucc m).
+{
+  (** TODO Bob: show phi_sel normalizes positive/negative successor powers of the generator. **)
+  admit.
+}
 claim HphiSelIso : group_isomorphism G mult int integers_group_mult phi_sel.
 {
   claim HphiSelHom : group_homomorphism G mult int integers_group_mult phi_sel.
@@ -77589,7 +77598,14 @@ claim HphiSelIso : group_isomorphism G mult int integers_group_mult phi_sel.
               HinvXG
               (ordsucc m)
               (omega_ordsucc m HmO)).
-          * admit.
+          * rewrite HnNeg.
+            exact (andER
+              (apply_fun phi_sel (group_power_nat mult e x (ordsucc m)) = ordsucc m)
+              (apply_fun phi_sel (group_power_nat mult e (apply_fun inv x) (ordsucc m)) =
+                minus_SNo (ordsucc m))
+              (HphiSelAtGenSuccPowers
+                m
+                HmO)).
         + let g'.
           assume Hg'G HphiEq'.
           claim HphiEqNeg :
@@ -77900,7 +77916,14 @@ claim HphiSelIso : group_isomorphism G mult int integers_group_mult phi_sel.
               HxG
               (ordsucc m)
               (omega_ordsucc m HmO)).
-          * admit.
+          * rewrite HnPos.
+            exact (andEL
+              (apply_fun phi_sel (group_power_nat mult e x (ordsucc m)) = ordsucc m)
+              (apply_fun phi_sel (group_power_nat mult e (apply_fun inv x) (ordsucc m)) =
+                minus_SNo (ordsucc m))
+              (HphiSelAtGenSuccPowers
+                m
+                HmO)).
         + let g'.
           assume Hg'G HphiEq'.
           claim HphiEqPos :
