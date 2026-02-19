@@ -83228,7 +83228,2438 @@ claim HioCore :
 	                (graph S1 (fun x:set => x))
 	                wS1.
 	            {
-	              admit.
+	              set dom := setprod S1 unit_interval.
+	              set Tdom := product_topology S1 S1_topology unit_interval unit_interval_topology.
+	              set xproj := projection_map1 S1 unit_interval.
+	              set tproj := projection_map2 S1 unit_interval.
+	              set one_minus_t := compose_fun dom tproj flip_unit_interval.
+	              claim HtopS1 : topology_on S1 S1_topology.
+	              {
+	                exact (continuous_map_topology_dom
+	                  S1
+	                  S1_topology
+	                  B2
+	                  B2_topology
+	                  (graph S1 (fun z:set => z))
+	                  inclusion_S1_B2_continuous).
+	              }
+	              claim HtopDom : topology_on dom Tdom.
+	              {
+	                exact (product_topology_is_topology
+	                  S1
+	                  S1_topology
+	                  unit_interval
+	                  unit_interval_topology
+	                  HtopS1
+	                  unit_interval_topology_on).
+	              }
+	              claim HprojPack :
+	                continuous_map dom Tdom S1 S1_topology xproj /\
+	                continuous_map dom Tdom unit_interval unit_interval_topology tproj.
+	              {
+	                exact (projection_maps_continuous
+	                  S1
+	                  S1_topology
+	                  unit_interval
+	                  unit_interval_topology
+	                  HtopS1
+	                  unit_interval_topology_on).
+	              }
+	              claim HxprojCont :
+	                continuous_map dom Tdom S1 S1_topology xproj.
+	              {
+	                exact (andEL
+	                  (continuous_map dom Tdom S1 S1_topology xproj)
+	                  (continuous_map dom Tdom unit_interval unit_interval_topology tproj)
+	                  HprojPack).
+	              }
+	              claim HtprojContI :
+	                continuous_map dom Tdom unit_interval unit_interval_topology tproj.
+	              {
+	                exact (andER
+	                  (continuous_map dom Tdom S1 S1_topology xproj)
+	                  (continuous_map dom Tdom unit_interval unit_interval_topology tproj)
+	                  HprojPack).
+	              }
+	              claim HtprojContR :
+	                continuous_map dom Tdom R R_standard_topology tproj.
+	              {
+	                exact (continuous_map_range_expand
+	                  dom
+	                  Tdom
+	                  unit_interval
+	                  unit_interval_topology
+	                  R
+	                  R_standard_topology
+	                  tproj
+	                  HtprojContI
+	                  unit_interval_sub_R
+	                  R_standard_topology_is_topology
+	                  (fun P H => H)).
+	              }
+	              claim HoneMinusContI :
+	                continuous_map dom Tdom unit_interval unit_interval_topology one_minus_t.
+	              {
+	                exact (composition_continuous
+	                  dom
+	                  Tdom
+	                  unit_interval
+	                  unit_interval_topology
+	                  unit_interval
+	                  unit_interval_topology
+	                  tproj
+	                  flip_unit_interval
+	                  HtprojContI
+	                  flip_unit_interval_continuous).
+	              }
+	              claim HoneMinusContR :
+	                continuous_map dom Tdom R R_standard_topology one_minus_t.
+	              {
+	                exact (continuous_map_range_expand
+	                  dom
+	                  Tdom
+	                  unit_interval
+	                  unit_interval_topology
+	                  R
+	                  R_standard_topology
+	                  one_minus_t
+	                  HoneMinusContI
+	                  unit_interval_sub_R
+	                  R_standard_topology_is_topology
+	                  (fun P H => H)).
+	              }
+	              claim HtopR2 : topology_on (setprod R R) R2_topology.
+	              {
+	                exact (product_topology_is_topology
+	                  R
+	                  R_standard_topology
+	                  R
+	                  R_standard_topology
+	                  R_standard_topology_is_topology
+	                  R_standard_topology_is_topology).
+	              }
+	              claim HS1subR2 : S1 c= setprod R R.
+	              {
+	                exact (Sep_Subq
+	                  (setprod R R)
+	                  (fun p:set =>
+	                    add_SNo (mul_SNo (p 0) (p 0))
+	                      (mul_SNo (p 1) (p 1)) = 1)).
+	              }
+	              claim HxprojContR2 :
+	                continuous_map dom Tdom (setprod R R) R2_topology xproj.
+	              {
+	                exact (continuous_map_range_expand
+	                  dom
+	                  Tdom
+	                  S1
+	                  S1_topology
+	                  (setprod R R)
+	                  R2_topology
+	                  xproj
+	                  HxprojCont
+	                  HS1subR2
+	                  HtopR2
+	                  (fun P H => H)).
+	              }
+	              set wsq := compose_fun dom xproj wS1.
+	              claim HwsqCont :
+	                continuous_map dom Tdom R2_minus_origin R2_minus_origin_topology wsq.
+	              {
+	                exact (composition_continuous
+	                  dom
+	                  Tdom
+	                  S1
+	                  S1_topology
+	                  R2_minus_origin
+	                  R2_minus_origin_topology
+	                  xproj
+	                  wS1
+	                  HxprojCont
+	                  HwS1Cont).
+	              }
+	              claim HR2m0subR2 : R2_minus_origin c= setprod R R.
+	              {
+	                exact (Sep_Subq
+	                  (setprod R R)
+	                  (fun p:set => ~(p 0 = 0 /\ p 1 = 0))).
+	              }
+	              claim HwsqContR2 :
+	                continuous_map dom Tdom (setprod R R) R2_topology wsq.
+	              {
+	                exact (continuous_map_range_expand
+	                  dom
+	                  Tdom
+	                  R2_minus_origin
+	                  R2_minus_origin_topology
+	                  (setprod R R)
+	                  R2_topology
+	                  wsq
+	                  HwsqCont
+	                  HR2m0subR2
+	                  HtopR2
+	                  (fun P H => H)).
+	              }
+	              claim HprojR2Pack :
+	                continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R) /\
+	                continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R).
+	              {
+	                exact (projection_maps_continuous
+	                  R
+	                  R_standard_topology
+	                  R
+	                  R_standard_topology
+	                  R_standard_topology_is_topology
+	                  R_standard_topology_is_topology).
+	              }
+	              claim Hproj1Cont :
+	                continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R).
+	              {
+	                exact (andEL
+	                  (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R))
+	                  (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R))
+	                  HprojR2Pack).
+	              }
+	              claim Hproj2Cont :
+	                continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R).
+	              {
+	                exact (andER
+	                  (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R))
+	                  (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R))
+	                  HprojR2Pack).
+	              }
+	              set wx := compose_fun dom wsq (projection_map1 R R).
+	              set wy := compose_fun dom wsq (projection_map2 R R).
+	              set xx := compose_fun dom xproj (projection_map1 R R).
+	              set xy := compose_fun dom xproj (projection_map2 R R).
+	              claim HwxCont :
+	                continuous_map dom Tdom R R_standard_topology wx.
+	              {
+	                exact (composition_continuous
+	                  dom
+	                  Tdom
+	                  (setprod R R)
+	                  R2_topology
+	                  R
+	                  R_standard_topology
+	                  wsq
+	                  (projection_map1 R R)
+	                  HwsqContR2
+	                  Hproj1Cont).
+	              }
+	              claim HwyCont :
+	                continuous_map dom Tdom R R_standard_topology wy.
+	              {
+	                exact (composition_continuous
+	                  dom
+	                  Tdom
+	                  (setprod R R)
+	                  R2_topology
+	                  R
+	                  R_standard_topology
+	                  wsq
+	                  (projection_map2 R R)
+	                  HwsqContR2
+	                  Hproj2Cont).
+	              }
+	              claim HxxCont :
+	                continuous_map dom Tdom R R_standard_topology xx.
+	              {
+	                exact (composition_continuous
+	                  dom
+	                  Tdom
+	                  (setprod R R)
+	                  R2_topology
+	                  R
+	                  R_standard_topology
+	                  xproj
+	                  (projection_map1 R R)
+	                  HxprojContR2
+	                  Hproj1Cont).
+	              }
+	              claim HxyCont :
+	                continuous_map dom Tdom R R_standard_topology xy.
+	              {
+	                exact (composition_continuous
+	                  dom
+	                  Tdom
+	                  (setprod R R)
+	                  R2_topology
+	                  R
+	                  R_standard_topology
+	                  xproj
+	                  (projection_map2 R R)
+	                  HxprojContR2
+	                  Hproj2Cont).
+	              }
+	              set leftx := compose_fun dom (pair_map dom one_minus_t wx) mul_fun_R.
+	              set rightx := compose_fun dom (pair_map dom tproj xx) mul_fun_R.
+	              set lefty := compose_fun dom (pair_map dom one_minus_t wy) mul_fun_R.
+	              set righty := compose_fun dom (pair_map dom tproj xy) mul_fun_R.
+	              claim HleftxCont :
+	                continuous_map dom Tdom R R_standard_topology leftx.
+	              {
+	                exact (mul_two_continuous_R
+	                  dom
+	                  Tdom
+	                  one_minus_t
+	                  wx
+	                  HtopDom
+	                  HoneMinusContR
+	                  HwxCont).
+	              }
+	              claim HrightxCont :
+	                continuous_map dom Tdom R R_standard_topology rightx.
+	              {
+	                exact (mul_two_continuous_R
+	                  dom
+	                  Tdom
+	                  tproj
+	                  xx
+	                  HtopDom
+	                  HtprojContR
+	                  HxxCont).
+	              }
+	              claim HleftyCont :
+	                continuous_map dom Tdom R R_standard_topology lefty.
+	              {
+	                exact (mul_two_continuous_R
+	                  dom
+	                  Tdom
+	                  one_minus_t
+	                  wy
+	                  HtopDom
+	                  HoneMinusContR
+	                  HwyCont).
+	              }
+	              claim HrightyCont :
+	                continuous_map dom Tdom R R_standard_topology righty.
+	              {
+	                exact (mul_two_continuous_R
+	                  dom
+	                  Tdom
+	                  tproj
+	                  xy
+	                  HtopDom
+	                  HtprojContR
+	                  HxyCont).
+	              }
+	              set sumx := compose_fun dom (pair_map dom leftx rightx) add_fun_R.
+	              set sumy := compose_fun dom (pair_map dom lefty righty) add_fun_R.
+	              claim HsumxCont :
+	                continuous_map dom Tdom R R_standard_topology sumx.
+	              {
+	                exact (add_two_continuous_R
+	                  dom
+	                  Tdom
+	                  leftx
+	                  rightx
+	                  HtopDom
+	                  HleftxCont
+	                  HrightxCont).
+	              }
+	              claim HsumyCont :
+	                continuous_map dom Tdom R R_standard_topology sumy.
+	              {
+	                exact (add_two_continuous_R
+	                  dom
+	                  Tdom
+	                  lefty
+	                  righty
+	                  HtopDom
+	                  HleftyCont
+	                  HrightyCont).
+	              }
+	              set Fraw := pair_map dom sumx sumy.
+	              claim HFrawContR2 :
+	                continuous_map dom Tdom (setprod R R) R2_topology Fraw.
+	              {
+	                exact (maps_into_products
+	                  dom
+	                  Tdom
+	                  R
+	                  R_standard_topology
+	                  R
+	                  R_standard_topology
+	                  sumx
+	                  sumy
+	                  HsumxCont
+	                  HsumyCont).
+	              }
+	              claim HFrawIntoR2m0 :
+	                forall p:set, p :e dom -> apply_fun Fraw p :e R2_minus_origin.
+	              {
+	                let p.
+	                assume Hp.
+	                apply (SepI
+	                  (setprod R R)
+	                  (fun q:set => ~(q 0 = 0 /\ q 1 = 0))
+	                  (apply_fun Fraw p)).
+	                - exact (continuous_map_function_on
+	                    dom
+	                    Tdom
+	                    (setprod R R)
+	                    R2_topology
+	                    Fraw
+	                    HFrawContR2
+	                    p
+	                    Hp).
+	                - assume Hzero.
+	                  claim HpS1 : p 0 :e S1.
+	                  {
+	                    exact (ap0_Sigma
+	                      S1
+	                      (fun _ : set => unit_interval)
+	                      p
+	                      Hp).
+	                  }
+	                  claim HpI : p 1 :e unit_interval.
+	                  {
+	                    exact (ap1_Sigma
+	                      S1
+	                      (fun _ : set => unit_interval)
+	                      p
+	                      Hp).
+	                  }
+	                  claim HoneMinusR : apply_fun one_minus_t p :e R.
+	                  {
+	                    exact (continuous_map_function_on
+	                      dom
+	                      Tdom
+	                      R
+	                      R_standard_topology
+	                      one_minus_t
+	                      HoneMinusContR
+	                      p
+	                      Hp).
+	                  }
+	                  claim HtprojR : apply_fun tproj p :e R.
+	                  {
+	                    exact (continuous_map_function_on
+	                      dom
+	                      Tdom
+	                      R
+	                      R_standard_topology
+	                      tproj
+	                      HtprojContR
+	                      p
+	                      Hp).
+	                  }
+	                  claim HwxR : apply_fun wx p :e R.
+	                  {
+	                    exact (continuous_map_function_on
+	                      dom
+	                      Tdom
+	                      R
+	                      R_standard_topology
+	                      wx
+	                      HwxCont
+	                      p
+	                      Hp).
+	                  }
+	                  claim HwyR : apply_fun wy p :e R.
+	                  {
+	                    exact (continuous_map_function_on
+	                      dom
+	                      Tdom
+	                      R
+	                      R_standard_topology
+	                      wy
+	                      HwyCont
+	                      p
+	                      Hp).
+	                  }
+	                  claim HxxR : apply_fun xx p :e R.
+	                  {
+	                    exact (continuous_map_function_on
+	                      dom
+	                      Tdom
+	                      R
+	                      R_standard_topology
+	                      xx
+	                      HxxCont
+	                      p
+	                      Hp).
+	                  }
+	                  claim HxyR : apply_fun xy p :e R.
+	                  {
+	                    exact (continuous_map_function_on
+	                      dom
+	                      Tdom
+	                      R
+	                      R_standard_topology
+	                      xy
+	                      HxyCont
+	                      p
+	                      Hp).
+	                  }
+	                  claim HleftxR : apply_fun leftx p :e R.
+	                  {
+	                    exact (continuous_map_function_on
+	                      dom
+	                      Tdom
+	                      R
+	                      R_standard_topology
+	                      leftx
+	                      HleftxCont
+	                      p
+	                      Hp).
+	                  }
+	                  claim HrightxR : apply_fun rightx p :e R.
+	                  {
+	                    exact (continuous_map_function_on
+	                      dom
+	                      Tdom
+	                      R
+	                      R_standard_topology
+	                      rightx
+	                      HrightxCont
+	                      p
+	                      Hp).
+	                  }
+	                  claim HleftyR : apply_fun lefty p :e R.
+	                  {
+	                    exact (continuous_map_function_on
+	                      dom
+	                      Tdom
+	                      R
+	                      R_standard_topology
+	                      lefty
+	                      HleftyCont
+	                      p
+	                      Hp).
+	                  }
+	                  claim HrightyR : apply_fun righty p :e R.
+	                  {
+	                    exact (continuous_map_function_on
+	                      dom
+	                      Tdom
+	                      R
+	                      R_standard_topology
+	                      righty
+	                      HrightyCont
+	                      p
+	                      Hp).
+	                  }
+	                  claim HsumxEq0 :
+	                    apply_fun sumx p = 0.
+	                  {
+	                    rewrite <- (tuple_2_0_eq
+	                      (apply_fun sumx p)
+	                      (apply_fun sumy p)).
+	                    rewrite <- (pair_map_apply
+	                      dom
+	                      R
+	                      R
+	                      sumx
+	                      sumy
+	                      p
+	                      Hp).
+	                    exact (andEL
+	                      (apply_fun Fraw p 0 = 0)
+	                      (apply_fun Fraw p 1 = 0)
+	                      Hzero).
+	                  }
+	                  claim HsumyEq0 :
+	                    apply_fun sumy p = 0.
+	                  {
+	                    rewrite <- (tuple_2_1_eq
+	                      (apply_fun sumx p)
+	                      (apply_fun sumy p)).
+	                    rewrite <- (pair_map_apply
+	                      dom
+	                      R
+	                      R
+	                      sumx
+	                      sumy
+	                      p
+	                      Hp).
+	                    exact (andER
+	                      (apply_fun Fraw p 0 = 0)
+	                      (apply_fun Fraw p 1 = 0)
+	                      Hzero).
+	                  }
+	                  claim HxEq :
+	                    add_SNo (apply_fun leftx p) (apply_fun rightx p) = 0.
+	                  {
+	                    rewrite <- (add_of_pair_map_apply
+	                      dom
+	                      leftx
+	                      rightx
+	                      p
+	                      Hp
+	                      HleftxR
+	                      HrightxR).
+	                    exact HsumxEq0.
+	                  }
+	                  claim HyEq :
+	                    add_SNo (apply_fun lefty p) (apply_fun righty p) = 0.
+	                  {
+	                    rewrite <- (add_of_pair_map_apply
+	                      dom
+	                      lefty
+	                      righty
+	                      p
+	                      Hp
+	                      HleftyR
+	                      HrightyR).
+	                    exact HsumyEq0.
+	                  }
+	                  claim HxEqLin :
+	                    add_SNo
+	                      (mul_SNo (apply_fun one_minus_t p) (apply_fun wx p))
+	                      (mul_SNo (apply_fun tproj p) (apply_fun xx p)) = 0.
+	                  {
+	                    rewrite <- (mul_of_pair_map_apply
+	                      dom
+	                      one_minus_t
+	                      wx
+	                      p
+	                      Hp
+	                      HoneMinusR
+	                      HwxR).
+	                    rewrite <- (mul_of_pair_map_apply
+	                      dom
+	                      tproj
+	                      xx
+	                      p
+	                      Hp
+	                      HtprojR
+	                      HxxR).
+	                    exact HxEq.
+	                  }
+	                  claim HyEqLin :
+	                    add_SNo
+	                      (mul_SNo (apply_fun one_minus_t p) (apply_fun wy p))
+	                      (mul_SNo (apply_fun tproj p) (apply_fun xy p)) = 0.
+	                  {
+	                    rewrite <- (mul_of_pair_map_apply
+	                      dom
+	                      one_minus_t
+	                      wy
+	                      p
+	                      Hp
+	                      HoneMinusR
+	                      HwyR).
+	                    rewrite <- (mul_of_pair_map_apply
+	                      dom
+	                      tproj
+	                      xy
+	                      p
+	                      Hp
+	                      HtprojR
+	                      HxyR).
+	                    exact HyEq.
+	                  }
+	                  apply (xm (p 1 = 0)).
+	                  + assume Hp10.
+	                    claim HoneMinusEq : apply_fun one_minus_t p = 1.
+	                    {
+	                      rewrite (compose_fun_apply
+	                        dom
+	                        tproj
+	                        flip_unit_interval
+	                        p
+	                        Hp).
+	                      rewrite (projection2_apply
+	                        S1
+	                        unit_interval
+	                        p
+	                        Hp).
+	                      rewrite Hp10.
+	                      exact flip_unit_interval_at_0.
+	                    }
+	                    claim HtEq0 : apply_fun tproj p = 0.
+	                    {
+	                      rewrite (projection2_apply
+	                        S1
+	                        unit_interval
+	                        p
+	                        Hp).
+	                      exact Hp10.
+	                    }
+	                    claim HwxEq0 : apply_fun wx p = 0.
+	                    {
+	                      claim HwxS : SNo (apply_fun wx p).
+	                      {
+	                        exact (real_SNo
+	                          (apply_fun wx p)
+	                          HwxR).
+	                      }
+	                      claim HxxS : SNo (apply_fun xx p).
+	                      {
+	                        exact (real_SNo
+	                          (apply_fun xx p)
+	                          HxxR).
+	                      }
+	                      claim Hmul1 :
+	                        mul_SNo (apply_fun one_minus_t p) (apply_fun wx p) =
+	                        apply_fun wx p.
+	                      {
+	                        rewrite HoneMinusEq.
+	                        rewrite (mul_SNo_com
+	                          1
+	                          (apply_fun wx p)
+	                          SNo_1
+	                          HwxS).
+	                        rewrite (mul_SNo_oneR
+	                          (apply_fun wx p)
+	                          HwxS).
+	                        reflexivity.
+	                      }
+	                      claim Hmul0 :
+	                        mul_SNo (apply_fun tproj p) (apply_fun xx p) = 0.
+	                      {
+	                        rewrite HtEq0.
+	                        rewrite (mul_SNo_zeroL
+	                          (apply_fun xx p)
+	                          HxxS).
+	                        reflexivity.
+	                      }
+	                      claim HxEqLin' :
+	                        add_SNo (apply_fun wx p) 0 = 0.
+	                      {
+	                        claim HxEqLin1 :
+	                          add_SNo
+	                            (apply_fun wx p)
+	                            (mul_SNo (apply_fun tproj p) (apply_fun xx p)) = 0.
+	                        {
+	                          rewrite <- Hmul1 at 1.
+	                          exact HxEqLin.
+	                        }
+	                        rewrite <- Hmul0 at 1.
+	                        exact HxEqLin1.
+	                      }
+	                      rewrite <- (add_SNo_0R
+	                        (apply_fun wx p)
+	                        HwxS).
+	                      exact HxEqLin'.
+	                    }
+	                    claim HwyEq0 : apply_fun wy p = 0.
+	                    {
+	                      claim HwyS : SNo (apply_fun wy p).
+	                      {
+	                        exact (real_SNo
+	                          (apply_fun wy p)
+	                          HwyR).
+	                      }
+	                      claim HxyS : SNo (apply_fun xy p).
+	                      {
+	                        exact (real_SNo
+	                          (apply_fun xy p)
+	                          HxyR).
+	                      }
+	                      claim Hmul1 :
+	                        mul_SNo (apply_fun one_minus_t p) (apply_fun wy p) =
+	                        apply_fun wy p.
+	                      {
+	                        rewrite HoneMinusEq.
+	                        rewrite (mul_SNo_com
+	                          1
+	                          (apply_fun wy p)
+	                          SNo_1
+	                          HwyS).
+	                        rewrite (mul_SNo_oneR
+	                          (apply_fun wy p)
+	                          HwyS).
+	                        reflexivity.
+	                      }
+	                      claim Hmul0 :
+	                        mul_SNo (apply_fun tproj p) (apply_fun xy p) = 0.
+	                      {
+	                        rewrite HtEq0.
+	                        rewrite (mul_SNo_zeroL
+	                          (apply_fun xy p)
+	                          HxyS).
+	                        reflexivity.
+	                      }
+	                      claim HyEqLin' :
+	                        add_SNo (apply_fun wy p) 0 = 0.
+	                      {
+	                        claim HyEqLin1 :
+	                          add_SNo
+	                            (apply_fun wy p)
+	                            (mul_SNo (apply_fun tproj p) (apply_fun xy p)) = 0.
+	                        {
+	                          rewrite <- Hmul1 at 1.
+	                          exact HyEqLin.
+	                        }
+	                        rewrite <- Hmul0 at 1.
+	                        exact HyEqLin1.
+	                      }
+	                      rewrite <- (add_SNo_0R
+	                        (apply_fun wy p)
+	                        HwyS).
+	                      exact HyEqLin'.
+	                    }
+	                    claim HwS1p : apply_fun wS1 (p 0) :e R2_minus_origin.
+	                    {
+	                      exact (continuous_map_function_on
+	                        S1
+	                        S1_topology
+	                        R2_minus_origin
+	                        R2_minus_origin_topology
+	                        wS1
+	                        HwS1Cont
+	                        (p 0)
+	                        HpS1).
+	                    }
+	                    claim HwS1pR2 : apply_fun wS1 (p 0) :e setprod R R.
+	                    {
+	                      exact (SepE1
+	                        (setprod R R)
+	                        (fun q:set => ~(q 0 = 0 /\ q 1 = 0))
+	                        (apply_fun wS1 (p 0))
+	                        HwS1p).
+	                    }
+	                    claim HwS1x0 : apply_fun wS1 (p 0) 0 = 0.
+	                    {
+	                      claim HwxExpand :
+	                        apply_fun wx p = apply_fun wS1 (p 0) 0.
+	                      {
+	                        rewrite (compose_fun_apply
+	                          dom
+	                          wsq
+	                          (projection_map1 R R)
+	                          p
+	                          Hp).
+	                        rewrite (compose_fun_apply
+	                          dom
+	                          xproj
+	                          wS1
+	                          p
+	                          Hp).
+	                        rewrite (projection1_apply
+	                          S1
+	                          unit_interval
+	                          p
+	                          Hp).
+	                        rewrite (projection1_apply
+	                          R
+	                          R
+	                          (apply_fun wS1 (p 0))
+	                          HwS1pR2).
+	                        reflexivity.
+	                      }
+	                      rewrite <- HwxExpand.
+	                      exact HwxEq0.
+	                    }
+	                    claim HwS1x1 : apply_fun wS1 (p 0) 1 = 0.
+	                    {
+	                      claim HwyExpand :
+	                        apply_fun wy p = apply_fun wS1 (p 0) 1.
+	                      {
+	                        rewrite (compose_fun_apply
+	                          dom
+	                          wsq
+	                          (projection_map2 R R)
+	                          p
+	                          Hp).
+	                        rewrite (compose_fun_apply
+	                          dom
+	                          xproj
+	                          wS1
+	                          p
+	                          Hp).
+	                        rewrite (projection1_apply
+	                          S1
+	                          unit_interval
+	                          p
+	                          Hp).
+	                        rewrite (projection2_apply
+	                          R
+	                          R
+	                          (apply_fun wS1 (p 0))
+	                          HwS1pR2).
+	                        reflexivity.
+	                      }
+	                      rewrite <- HwyExpand.
+	                      exact HwyEq0.
+	                    }
+	                    apply (SepE2
+	                      (setprod R R)
+	                      (fun q:set => ~(q 0 = 0 /\ q 1 = 0))
+	                      (apply_fun wS1 (p 0))
+	                      HwS1p).
+	                    apply andI.
+	                    * exact HwS1x0.
+	                    * exact HwS1x1.
+	                  + assume Hp1Ne0.
+	                    apply (xm (p 1 = 1)).
+	                    * assume Hp11.
+	                      claim HoneMinusEq : apply_fun one_minus_t p = 0.
+	                      {
+	                        rewrite (compose_fun_apply
+	                          dom
+	                          tproj
+	                          flip_unit_interval
+	                          p
+	                          Hp).
+	                        rewrite (projection2_apply
+	                          S1
+	                          unit_interval
+	                          p
+	                          Hp).
+	                        rewrite Hp11.
+	                        exact flip_unit_interval_at_1.
+	                      }
+	                      claim HtEq1 : apply_fun tproj p = 1.
+	                      {
+	                        rewrite (projection2_apply
+	                          S1
+	                          unit_interval
+	                          p
+	                          Hp).
+	                        exact Hp11.
+	                      }
+	                      claim HxxEq0 : apply_fun xx p = 0.
+	                      {
+	                        claim HwxS : SNo (apply_fun wx p).
+	                        {
+	                          exact (real_SNo
+	                            (apply_fun wx p)
+	                            HwxR).
+	                        }
+	                        claim HxxS : SNo (apply_fun xx p).
+	                        {
+	                          exact (real_SNo
+	                            (apply_fun xx p)
+	                            HxxR).
+	                        }
+	                        claim Hmul0 :
+	                          mul_SNo (apply_fun one_minus_t p) (apply_fun wx p) = 0.
+	                        {
+	                          rewrite HoneMinusEq.
+	                          rewrite (mul_SNo_zeroL
+	                            (apply_fun wx p)
+	                            HwxS).
+	                          reflexivity.
+	                        }
+	                        claim Hmul1 :
+	                          mul_SNo (apply_fun tproj p) (apply_fun xx p) =
+	                          apply_fun xx p.
+	                        {
+	                          rewrite HtEq1.
+	                          rewrite (mul_SNo_com
+	                            1
+	                            (apply_fun xx p)
+	                            SNo_1
+	                            HxxS).
+	                          rewrite (mul_SNo_oneR
+	                            (apply_fun xx p)
+	                            HxxS).
+	                          reflexivity.
+	                        }
+	                        claim HxEqLin' :
+	                          add_SNo 0 (apply_fun xx p) = 0.
+	                        {
+	                          claim HxEqLin1 :
+	                            add_SNo
+	                              0
+	                              (mul_SNo (apply_fun tproj p) (apply_fun xx p)) = 0.
+	                          {
+	                            rewrite <- Hmul0 at 1.
+	                            exact HxEqLin.
+	                          }
+	                          rewrite <- Hmul1 at 1.
+	                          exact HxEqLin1.
+	                        }
+	                        rewrite <- (add_SNo_0L
+	                          (apply_fun xx p)
+	                          HxxS).
+	                        exact HxEqLin'.
+	                      }
+	                      claim HxyEq0 : apply_fun xy p = 0.
+	                      {
+	                        claim HwyS : SNo (apply_fun wy p).
+	                        {
+	                          exact (real_SNo
+	                            (apply_fun wy p)
+	                            HwyR).
+	                        }
+	                        claim HxyS : SNo (apply_fun xy p).
+	                        {
+	                          exact (real_SNo
+	                            (apply_fun xy p)
+	                            HxyR).
+	                        }
+	                        claim Hmul0 :
+	                          mul_SNo (apply_fun one_minus_t p) (apply_fun wy p) = 0.
+	                        {
+	                          rewrite HoneMinusEq.
+	                          rewrite (mul_SNo_zeroL
+	                            (apply_fun wy p)
+	                            HwyS).
+	                          reflexivity.
+	                        }
+	                        claim Hmul1 :
+	                          mul_SNo (apply_fun tproj p) (apply_fun xy p) =
+	                          apply_fun xy p.
+	                        {
+	                          rewrite HtEq1.
+	                          rewrite (mul_SNo_com
+	                            1
+	                            (apply_fun xy p)
+	                            SNo_1
+	                            HxyS).
+	                          rewrite (mul_SNo_oneR
+	                            (apply_fun xy p)
+	                            HxyS).
+	                          reflexivity.
+	                        }
+	                        claim HyEqLin' :
+	                          add_SNo 0 (apply_fun xy p) = 0.
+	                        {
+	                          claim HyEqLin1 :
+	                            add_SNo
+	                              0
+	                              (mul_SNo (apply_fun tproj p) (apply_fun xy p)) = 0.
+	                          {
+	                            rewrite <- Hmul0 at 1.
+	                            exact HyEqLin.
+	                          }
+	                          rewrite <- Hmul1 at 1.
+	                          exact HyEqLin1.
+	                        }
+	                        rewrite <- (add_SNo_0L
+	                          (apply_fun xy p)
+	                          HxyS).
+	                        exact HyEqLin'.
+	                      }
+	                      claim Hp0R2 : p 0 :e setprod R R.
+	                      {
+	                        exact (SepE1
+	                          (setprod R R)
+	                          (fun q:set =>
+	                            add_SNo (mul_SNo (q 0) (q 0))
+	                              (mul_SNo (q 1) (q 1)) = 1)
+	                          (p 0)
+	                          HpS1).
+	                      }
+	                      claim Hp0x0 : p 0 0 = 0.
+	                      {
+	                        claim HxxExpand :
+	                          apply_fun xx p = p 0 0.
+	                        {
+	                          rewrite (compose_fun_apply
+	                            dom
+	                            xproj
+	                            (projection_map1 R R)
+	                            p
+	                            Hp).
+	                          rewrite (projection1_apply
+	                            S1
+	                            unit_interval
+	                            p
+	                            Hp).
+	                          rewrite (projection1_apply
+	                            R
+	                            R
+	                            (p 0)
+	                            Hp0R2).
+	                          reflexivity.
+	                        }
+	                        rewrite <- HxxExpand.
+	                        exact HxxEq0.
+	                      }
+	                      claim Hp0x1 : p 0 1 = 0.
+	                      {
+	                        claim HxyExpand :
+	                          apply_fun xy p = p 0 1.
+	                        {
+	                          rewrite (compose_fun_apply
+	                            dom
+	                            xproj
+	                            (projection_map2 R R)
+	                            p
+	                            Hp).
+	                          rewrite (projection1_apply
+	                            S1
+	                            unit_interval
+	                            p
+	                            Hp).
+	                          rewrite (projection2_apply
+	                            R
+	                            R
+	                            (p 0)
+	                            Hp0R2).
+	                          reflexivity.
+	                        }
+	                        rewrite <- HxyExpand.
+	                        exact HxyEq0.
+	                      }
+	                      claim Hp0R2m0 : p 0 :e R2_minus_origin.
+	                      {
+	                        exact (S1_subset_R2_minus_origin
+	                          (p 0)
+	                          HpS1).
+	                      }
+	                      apply (SepE2
+	                        (setprod R R)
+	                        (fun q:set => ~(q 0 = 0 /\ q 1 = 0))
+	                        (p 0)
+	                        Hp0R2m0).
+	                      apply andI.
+	                      { exact Hp0x0. }
+	                      { exact Hp0x1. }
+	                    * assume Hp1Ne1.
+	                      claim HtEqVal :
+	                        apply_fun tproj p = p 1.
+	                      {
+	                        exact (projection2_apply
+	                          S1
+	                          unit_interval
+	                          p
+	                          Hp).
+	                      }
+	                      claim HtR : apply_fun tproj p :e R.
+	                      {
+	                        exact HtprojR.
+	                      }
+	                      claim HtI : apply_fun tproj p :e unit_interval.
+	                      {
+	                        rewrite HtEqVal.
+	                        exact HpI.
+	                      }
+	                      claim HtS : SNo (apply_fun tproj p).
+	                      {
+	                        exact (real_SNo
+	                          (apply_fun tproj p)
+	                          HtR).
+	                      }
+	                      claim HtNe0 : ~(apply_fun tproj p = 0).
+	                      {
+	                        assume Ht0.
+	                        apply Hp1Ne0.
+	                        rewrite <- HtEqVal.
+	                        exact Ht0.
+	                      }
+	                      claim HtNe1 : ~(apply_fun tproj p = 1).
+	                      {
+	                        assume Ht1.
+	                        apply Hp1Ne1.
+	                        rewrite <- HtEqVal.
+	                        exact Ht1.
+	                      }
+	                      claim HtLe0 : Rle 0 (apply_fun tproj p).
+	                      {
+	                        exact (unit_interval_Rle0
+	                          (apply_fun tproj p)
+	                          HtI).
+	                      }
+	                      claim HtLe1 : Rle (apply_fun tproj p) 1.
+	                      {
+	                        exact (unit_interval_Rle1
+	                          (apply_fun tproj p)
+	                          HtI).
+	                      }
+	                      claim HtPos : Rlt 0 (apply_fun tproj p).
+	                      {
+	                        apply (xm (Rlt 0 (apply_fun tproj p))).
+	                        + assume HtPos.
+	                          exact HtPos.
+	                        + assume HnLt0t.
+	                          claim HnLtt0 :
+	                            ~ (Rlt (apply_fun tproj p) 0).
+	                          {
+	                            exact (RleE_nlt
+	                              0
+	                              (apply_fun tproj p)
+	                              HtLe0).
+	                          }
+	                          claim HtEq0 :
+	                            0 = apply_fun tproj p.
+	                          {
+	                            exact (R_eq_of_not_Rlt
+	                              0
+	                              (apply_fun tproj p)
+	                              real_0
+	                              HtR
+	                              HnLt0t
+	                              HnLtt0).
+	                          }
+	                          claim HtEq0' :
+	                            apply_fun tproj p = 0.
+	                          {
+	                            symmetry.
+	                            exact HtEq0.
+	                          }
+	                          exact (FalseE
+	                            (HtNe0 HtEq0')
+	                            (Rlt 0 (apply_fun tproj p))).
+	                      }
+	                      claim HtLt1 : Rlt (apply_fun tproj p) 1.
+	                      {
+	                        apply (xm (Rlt (apply_fun tproj p) 1)).
+	                        + assume HtLt1.
+	                          exact HtLt1.
+	                        + assume HnLtt1.
+	                          claim HnLt1t :
+	                            ~ (Rlt 1 (apply_fun tproj p)).
+	                          {
+	                            exact (RleE_nlt
+	                              (apply_fun tproj p)
+	                              1
+	                              HtLe1).
+	                          }
+	                          claim HtEq1 :
+	                            apply_fun tproj p = 1.
+	                          {
+	                            exact (R_eq_of_not_Rlt
+	                              (apply_fun tproj p)
+	                              1
+	                              HtR
+	                              real_1
+	                              HnLtt1
+	                              HnLt1t).
+	                          }
+	                          exact (FalseE
+	                            (HtNe1 HtEq1)
+	                            (Rlt (apply_fun tproj p) 1)).
+	                      }
+	                      claim HoneMinusVal :
+	                        apply_fun one_minus_t p =
+	                        add_SNo 1 (minus_SNo (apply_fun tproj p)).
+	                      {
+	                        rewrite (compose_fun_apply
+	                          dom
+	                          tproj
+	                          flip_unit_interval
+	                          p
+	                          Hp).
+	                        exact (flip_unit_interval_apply
+	                          (apply_fun tproj p)
+	                          HtI).
+	                      }
+	                      claim HoneMinusS : SNo (apply_fun one_minus_t p).
+	                      {
+	                        exact (real_SNo
+	                          (apply_fun one_minus_t p)
+	                          HoneMinusR).
+	                      }
+	                      claim HoneMinusPos :
+	                        Rlt 0 (apply_fun one_minus_t p).
+	                      {
+	                        rewrite HoneMinusVal.
+	                        exact (Rlt_0_diff_of_lt
+	                          (apply_fun tproj p)
+	                          1
+	                          HtLt1).
+	                      }
+	                      claim HoneMinusNe0 :
+	                        ~(apply_fun one_minus_t p = 0).
+	                      {
+	                        assume HoneMinus0.
+	                        claim HoneMinusPos0 : Rlt 0 0.
+	                        {
+	                          rewrite <- HoneMinus0 at 2.
+	                          exact HoneMinusPos.
+	                        }
+	                        exact (not_Rlt_refl
+	                          0
+	                          real_0
+	                          HoneMinusPos0).
+	                      }
+	                      set a := div_SNo
+	                        (apply_fun tproj p)
+	                        (apply_fun one_minus_t p).
+	                      claim HaR : a :e R.
+	                      {
+	                        exact (real_div_SNo
+	                          (apply_fun tproj p)
+	                          HtR
+	                          (apply_fun one_minus_t p)
+	                          HoneMinusR).
+	                      }
+	                      claim HaS : SNo a.
+	                      {
+	                        exact (real_SNo
+	                          a
+	                          HaR).
+	                      }
+	                      claim HaPos : Rlt 0 a.
+	                      {
+	                        claim HtLtSNo :
+	                          0 < apply_fun tproj p.
+	                        {
+	                          exact (RltE_lt
+	                            0
+	                            (apply_fun tproj p)
+	                            HtPos).
+	                        }
+	                        claim HoneMinusLtSNo :
+	                          0 < apply_fun one_minus_t p.
+	                        {
+	                          exact (RltE_lt
+	                            0
+	                            (apply_fun one_minus_t p)
+	                            HoneMinusPos).
+	                        }
+	                        claim HaLtSNo :
+	                          0 < a.
+	                        {
+	                          exact (div_SNo_pos_pos
+	                            (apply_fun tproj p)
+	                            (apply_fun one_minus_t p)
+	                            HtS
+	                            HoneMinusS
+	                            HtLtSNo
+	                            HoneMinusLtSNo).
+	                        }
+	                        exact (RltI
+	                          0
+	                          a
+	                          real_0
+	                          HaR
+	                          HaLtSNo).
+	                      }
+	                      claim HwxS : SNo (apply_fun wx p).
+	                      {
+	                        exact (real_SNo
+	                          (apply_fun wx p)
+	                          HwxR).
+	                      }
+	                      claim HwyS : SNo (apply_fun wy p).
+	                      {
+	                        exact (real_SNo
+	                          (apply_fun wy p)
+	                          HwyR).
+	                      }
+	                      claim HxxS : SNo (apply_fun xx p).
+	                      {
+	                        exact (real_SNo
+	                          (apply_fun xx p)
+	                          HxxR).
+	                      }
+	                      claim HxyS : SNo (apply_fun xy p).
+	                      {
+	                        exact (real_SNo
+	                          (apply_fun xy p)
+	                          HxyR).
+	                      }
+	                      claim HxMulEq :
+	                        mul_SNo (apply_fun one_minus_t p) (apply_fun wx p) =
+	                        minus_SNo (mul_SNo (apply_fun tproj p) (apply_fun xx p)).
+	                      {
+	                        claim HxmulS :
+	                          SNo (mul_SNo (apply_fun one_minus_t p) (apply_fun wx p)).
+	                        {
+	                          exact (SNo_mul_SNo
+	                            (apply_fun one_minus_t p)
+	                            (apply_fun wx p)
+	                            HoneMinusS
+	                            HwxS).
+	                        }
+	                        claim HtmulS :
+	                          SNo (mul_SNo (apply_fun tproj p) (apply_fun xx p)).
+	                        {
+	                          exact (SNo_mul_SNo
+	                            (apply_fun tproj p)
+	                            (apply_fun xx p)
+	                            HtS
+	                            HxxS).
+	                        }
+	                        rewrite <- (add_SNo_minus_R2
+	                          (mul_SNo (apply_fun one_minus_t p) (apply_fun wx p))
+	                          (mul_SNo (apply_fun tproj p) (apply_fun xx p))
+	                          HxmulS
+	                          HtmulS).
+	                        rewrite HxEqLin at 1.
+	                        rewrite (add_SNo_0L
+	                          (minus_SNo (mul_SNo (apply_fun tproj p) (apply_fun xx p)))
+	                          (SNo_minus_SNo
+	                            (mul_SNo (apply_fun tproj p) (apply_fun xx p))
+	                            HtmulS)).
+	                        reflexivity.
+	                      }
+	                      claim HyMulEq :
+	                        mul_SNo (apply_fun one_minus_t p) (apply_fun wy p) =
+	                        minus_SNo (mul_SNo (apply_fun tproj p) (apply_fun xy p)).
+	                      {
+	                        claim HymulS :
+	                          SNo (mul_SNo (apply_fun one_minus_t p) (apply_fun wy p)).
+	                        {
+	                          exact (SNo_mul_SNo
+	                            (apply_fun one_minus_t p)
+	                            (apply_fun wy p)
+	                            HoneMinusS
+	                            HwyS).
+	                        }
+	                        claim HtmulS :
+	                          SNo (mul_SNo (apply_fun tproj p) (apply_fun xy p)).
+	                        {
+	                          exact (SNo_mul_SNo
+	                            (apply_fun tproj p)
+	                            (apply_fun xy p)
+	                            HtS
+	                            HxyS).
+	                        }
+	                        rewrite <- (add_SNo_minus_R2
+	                          (mul_SNo (apply_fun one_minus_t p) (apply_fun wy p))
+	                          (mul_SNo (apply_fun tproj p) (apply_fun xy p))
+	                          HymulS
+	                          HtmulS).
+	                        rewrite HyEqLin at 1.
+	                        rewrite (add_SNo_0L
+	                          (minus_SNo (mul_SNo (apply_fun tproj p) (apply_fun xy p)))
+	                          (SNo_minus_SNo
+	                            (mul_SNo (apply_fun tproj p) (apply_fun xy p))
+	                            HtmulS)).
+	                        reflexivity.
+	                      }
+	                      claim HwxInward :
+	                        apply_fun wx p = mul_SNo (minus_SNo a) (apply_fun xx p).
+	                      {
+	                        claim HtmulS :
+	                          SNo (mul_SNo (apply_fun tproj p) (apply_fun xx p)).
+	                        {
+	                          exact (SNo_mul_SNo
+	                            (apply_fun tproj p)
+	                            (apply_fun xx p)
+	                            HtS
+	                            HxxS).
+	                        }
+	                        claim HminusTmS :
+	                          SNo (minus_SNo (mul_SNo (apply_fun tproj p) (apply_fun xx p))).
+	                        {
+	                          exact (SNo_minus_SNo
+	                            (mul_SNo (apply_fun tproj p) (apply_fun xx p))
+	                            HtmulS).
+	                        }
+	                        claim HwxDiv :
+	                          apply_fun wx p =
+	                          div_SNo
+	                            (minus_SNo (mul_SNo (apply_fun tproj p) (apply_fun xx p)))
+	                            (apply_fun one_minus_t p).
+	                        {
+	                          claim Hcancel :
+	                            mul_SNo (apply_fun one_minus_t p) (apply_fun wx p) =
+	                            mul_SNo
+	                              (apply_fun one_minus_t p)
+	                              (div_SNo
+	                                (minus_SNo (mul_SNo (apply_fun tproj p) (apply_fun xx p)))
+	                                (apply_fun one_minus_t p)).
+	                          {
+	                            rewrite HxMulEq.
+	                            symmetry.
+	                            exact (mul_div_SNo_invR
+	                              (minus_SNo (mul_SNo (apply_fun tproj p) (apply_fun xx p)))
+	                              (apply_fun one_minus_t p)
+	                              HminusTmS
+	                              HoneMinusS
+	                              HoneMinusNe0).
+	                          }
+	                          exact (mul_SNo_nonzero_cancel_L
+	                            (apply_fun one_minus_t p)
+	                            (apply_fun wx p)
+	                            (div_SNo
+	                              (minus_SNo (mul_SNo (apply_fun tproj p) (apply_fun xx p)))
+	                              (apply_fun one_minus_t p))
+	                            HoneMinusS
+	                            HoneMinusNe0
+	                            HwxS
+	                            (SNo_div_SNo
+	                              (minus_SNo (mul_SNo (apply_fun tproj p) (apply_fun xx p)))
+	                              (apply_fun one_minus_t p)
+	                              HminusTmS
+	                              HoneMinusS)
+	                            Hcancel).
+	                        }
+	                        rewrite HwxDiv.
+	                        rewrite (div_SNo_minus_num
+	                          (mul_SNo (apply_fun tproj p) (apply_fun xx p))
+	                          (apply_fun one_minus_t p)
+	                          HtmulS
+	                          HoneMinusS
+	                          HoneMinusNe0).
+	                        claim HdivEq :
+	                          div_SNo
+	                            (mul_SNo (apply_fun tproj p) (apply_fun xx p))
+	                            (apply_fun one_minus_t p)
+	                          = mul_SNo a (apply_fun xx p).
+	                        {
+	                          rewrite <- (mul_div_SNo_R
+	                            (apply_fun tproj p)
+	                            (apply_fun one_minus_t p)
+	                            (apply_fun xx p)
+	                            HtS
+	                            HoneMinusS
+	                            HxxS).
+	                          reflexivity.
+	                        }
+	                        rewrite HdivEq.
+	                        rewrite <- (mul_SNo_minus_distrL
+	                          a
+	                          (apply_fun xx p)
+	                          HaS
+	                          HxxS).
+	                        reflexivity.
+	                      }
+	                      claim HwyInward :
+	                        apply_fun wy p = mul_SNo (minus_SNo a) (apply_fun xy p).
+	                      {
+	                        claim HtmulS :
+	                          SNo (mul_SNo (apply_fun tproj p) (apply_fun xy p)).
+	                        {
+	                          exact (SNo_mul_SNo
+	                            (apply_fun tproj p)
+	                            (apply_fun xy p)
+	                            HtS
+	                            HxyS).
+	                        }
+	                        claim HminusTmS :
+	                          SNo (minus_SNo (mul_SNo (apply_fun tproj p) (apply_fun xy p))).
+	                        {
+	                          exact (SNo_minus_SNo
+	                            (mul_SNo (apply_fun tproj p) (apply_fun xy p))
+	                            HtmulS).
+	                        }
+	                        claim HwyDiv :
+	                          apply_fun wy p =
+	                          div_SNo
+	                            (minus_SNo (mul_SNo (apply_fun tproj p) (apply_fun xy p)))
+	                            (apply_fun one_minus_t p).
+	                        {
+	                          claim Hcancel :
+	                            mul_SNo (apply_fun one_minus_t p) (apply_fun wy p) =
+	                            mul_SNo
+	                              (apply_fun one_minus_t p)
+	                              (div_SNo
+	                                (minus_SNo (mul_SNo (apply_fun tproj p) (apply_fun xy p)))
+	                                (apply_fun one_minus_t p)).
+	                          {
+	                            rewrite HyMulEq.
+	                            symmetry.
+	                            exact (mul_div_SNo_invR
+	                              (minus_SNo (mul_SNo (apply_fun tproj p) (apply_fun xy p)))
+	                              (apply_fun one_minus_t p)
+	                              HminusTmS
+	                              HoneMinusS
+	                              HoneMinusNe0).
+	                          }
+	                          exact (mul_SNo_nonzero_cancel_L
+	                            (apply_fun one_minus_t p)
+	                            (apply_fun wy p)
+	                            (div_SNo
+	                              (minus_SNo (mul_SNo (apply_fun tproj p) (apply_fun xy p)))
+	                              (apply_fun one_minus_t p))
+	                            HoneMinusS
+	                            HoneMinusNe0
+	                            HwyS
+	                            (SNo_div_SNo
+	                              (minus_SNo (mul_SNo (apply_fun tproj p) (apply_fun xy p)))
+	                              (apply_fun one_minus_t p)
+	                              HminusTmS
+	                              HoneMinusS)
+	                            Hcancel).
+	                        }
+	                        rewrite HwyDiv.
+	                        rewrite (div_SNo_minus_num
+	                          (mul_SNo (apply_fun tproj p) (apply_fun xy p))
+	                          (apply_fun one_minus_t p)
+	                          HtmulS
+	                          HoneMinusS
+	                          HoneMinusNe0).
+	                        claim HdivEq :
+	                          div_SNo
+	                            (mul_SNo (apply_fun tproj p) (apply_fun xy p))
+	                            (apply_fun one_minus_t p)
+	                          = mul_SNo a (apply_fun xy p).
+	                        {
+	                          rewrite <- (mul_div_SNo_R
+	                            (apply_fun tproj p)
+	                            (apply_fun one_minus_t p)
+	                            (apply_fun xy p)
+	                            HtS
+	                            HoneMinusS
+	                            HxyS).
+	                          reflexivity.
+	                        }
+	                        rewrite HdivEq.
+	                        rewrite <- (mul_SNo_minus_distrL
+	                          a
+	                          (apply_fun xy p)
+	                          HaS
+	                          HxyS).
+	                        reflexivity.
+	                      }
+	                      claim HwS1p : apply_fun wS1 (p 0) :e R2_minus_origin.
+	                      {
+	                        exact (continuous_map_function_on
+	                          S1
+	                          S1_topology
+	                          R2_minus_origin
+	                          R2_minus_origin_topology
+	                          wS1
+	                          HwS1Cont
+	                          (p 0)
+	                          HpS1).
+	                      }
+	                      claim HwS1pR2 : apply_fun wS1 (p 0) :e setprod R R.
+	                      {
+	                        exact (SepE1
+	                          (setprod R R)
+	                          (fun q:set => ~(q 0 = 0 /\ q 1 = 0))
+	                          (apply_fun wS1 (p 0))
+	                          HwS1p).
+	                      }
+	                      claim Hp0R2 : p 0 :e setprod R R.
+	                      {
+	                        exact (SepE1
+	                          (setprod R R)
+	                          (fun q:set =>
+	                            add_SNo (mul_SNo (q 0) (q 0))
+	                              (mul_SNo (q 1) (q 1)) = 1)
+	                          (p 0)
+	                          HpS1).
+	                      }
+	                      claim HwxExpand :
+	                        apply_fun wx p = apply_fun wS1 (p 0) 0.
+	                      {
+	                        rewrite (compose_fun_apply
+	                          dom
+	                          wsq
+	                          (projection_map1 R R)
+	                          p
+	                          Hp).
+	                        rewrite (compose_fun_apply
+	                          dom
+	                          xproj
+	                          wS1
+	                          p
+	                          Hp).
+	                        rewrite (projection1_apply
+	                          S1
+	                          unit_interval
+	                          p
+	                          Hp).
+	                        rewrite (projection1_apply
+	                          R
+	                          R
+	                          (apply_fun wS1 (p 0))
+	                          HwS1pR2).
+	                        reflexivity.
+	                      }
+	                      claim HwyExpand :
+	                        apply_fun wy p = apply_fun wS1 (p 0) 1.
+	                      {
+	                        rewrite (compose_fun_apply
+	                          dom
+	                          wsq
+	                          (projection_map2 R R)
+	                          p
+	                          Hp).
+	                        rewrite (compose_fun_apply
+	                          dom
+	                          xproj
+	                          wS1
+	                          p
+	                          Hp).
+	                        rewrite (projection1_apply
+	                          S1
+	                          unit_interval
+	                          p
+	                          Hp).
+	                        rewrite (projection2_apply
+	                          R
+	                          R
+	                          (apply_fun wS1 (p 0))
+	                          HwS1pR2).
+	                        reflexivity.
+	                      }
+	                      claim HxxExpand :
+	                        apply_fun xx p = p 0 0.
+	                      {
+	                        rewrite (compose_fun_apply
+	                          dom
+	                          xproj
+	                          (projection_map1 R R)
+	                          p
+	                          Hp).
+	                        rewrite (projection1_apply
+	                          S1
+	                          unit_interval
+	                          p
+	                          Hp).
+	                        rewrite (projection1_apply
+	                          R
+	                          R
+	                          (p 0)
+	                          Hp0R2).
+	                        reflexivity.
+	                      }
+	                      claim HxyExpand :
+	                        apply_fun xy p = p 0 1.
+	                      {
+	                        rewrite (compose_fun_apply
+	                          dom
+	                          xproj
+	                          (projection_map2 R R)
+	                          p
+	                          Hp).
+	                        rewrite (projection1_apply
+	                          S1
+	                          unit_interval
+	                          p
+	                          Hp).
+	                        rewrite (projection2_apply
+	                          R
+	                          R
+	                          (p 0)
+	                          Hp0R2).
+	                        reflexivity.
+	                      }
+	                      claim HwS1Coord0 :
+	                        apply_fun wS1 (p 0) 0 =
+	                        mul_SNo (minus_SNo a) (p 0 0).
+	                      {
+	                        rewrite <- HwxExpand.
+	                        rewrite HwxInward.
+	                        rewrite HxxExpand.
+	                        reflexivity.
+	                      }
+	                      claim HwS1Coord1 :
+	                        apply_fun wS1 (p 0) 1 =
+	                        mul_SNo (minus_SNo a) (p 0 1).
+	                      {
+	                        rewrite <- HwyExpand.
+	                        rewrite HwyInward.
+	                        rewrite HxyExpand.
+	                        reflexivity.
+	                      }
+	                      claim HwS1Inward :
+	                        apply_fun wS1 (p 0) =
+	                        R2_scalar_mult (minus_SNo a) (p 0).
+	                      {
+	                        rewrite (setprod_eta
+	                          R
+	                          R
+	                          (apply_fun wS1 (p 0))
+	                          HwS1pR2).
+	                        exact (tuple_2_ext
+	                          (apply_fun wS1 (p 0) 0)
+	                          (apply_fun wS1 (p 0) 1)
+	                          (mul_SNo (minus_SNo a) (p 0 0))
+	                          (mul_SNo (minus_SNo a) (p 0 1))
+	                          HwS1Coord0
+	                          HwS1Coord1).
+	                      }
+	                      claim HinwardW :
+	                        exists x:set, x :e S1 /\ points_directly_inward w x.
+	                      {
+	                        witness (p 0).
+	                        apply andI.
+	                        - exact HpS1.
+	                        - claim HaPack :
+	                            exists b:set, b :e R /\ Rlt 0 b /\
+	                              apply_fun w (p 0) = R2_scalar_mult (minus_SNo b) (p 0).
+	                          {
+	                            witness a.
+	                            apply andI.
+	                            * apply andI.
+	                              { exact HaR. }
+	                              { exact HaPos. }
+	                            * rewrite <- (HwS1Eq
+	                                (p 0)
+	                                HpS1).
+	                              exact HwS1Inward.
+	                          }
+	                          exact (andI
+	                            ((p 0) :e S1)
+	                            (exists b:set, b :e R /\ Rlt 0 b /\
+	                              apply_fun w (p 0) = R2_scalar_mult (minus_SNo b) (p 0))
+	                            HpS1
+	                            HaPack).
+	                      }
+	                      exact (HnoInW HinwardW).
+	              }
+	              claim HFrawCont :
+	                continuous_map dom Tdom R2_minus_origin R2_minus_origin_topology Fraw.
+	              {
+	                exact (continuous_map_range_restrict
+	                  dom
+	                  Tdom
+	                  (setprod R R)
+	                  R2_topology
+	                  Fraw
+	                  R2_minus_origin
+	                  HFrawContR2
+	                  HR2m0subR2
+	                  HFrawIntoR2m0).
+	              }
+	              claim HFs0 :
+	                forall x:set, x :e S1 ->
+	                  apply_fun Fraw (x, 0) = apply_fun wS1 x.
+	              {
+	                let x.
+	                assume HxS1.
+	                claim Hx0Dom : (x, 0) :e dom.
+	                {
+	                  exact (tuple_2_setprod_by_pair_Sigma
+	                    S1
+	                    unit_interval
+	                    x
+	                    0
+	                    HxS1
+	                    zero_in_unit_interval).
+	                }
+	                claim HsumxR : apply_fun sumx (x, 0) :e R.
+	                {
+	                  exact (continuous_map_function_on
+	                    dom
+	                    Tdom
+	                    R
+	                    R_standard_topology
+	                    sumx
+	                    HsumxCont
+	                    (x, 0)
+	                    Hx0Dom).
+	                }
+	                claim HsumyR : apply_fun sumy (x, 0) :e R.
+	                {
+	                  exact (continuous_map_function_on
+	                    dom
+	                    Tdom
+	                    R
+	                    R_standard_topology
+	                    sumy
+	                    HsumyCont
+	                    (x, 0)
+	                    Hx0Dom).
+	                }
+	                claim HleftxR : apply_fun leftx (x, 0) :e R.
+	                {
+	                  exact (continuous_map_function_on
+	                    dom
+	                    Tdom
+	                    R
+	                    R_standard_topology
+	                    leftx
+	                    HleftxCont
+	                    (x, 0)
+	                    Hx0Dom).
+	                }
+	                claim HrightxR : apply_fun rightx (x, 0) :e R.
+	                {
+	                  exact (continuous_map_function_on
+	                    dom
+	                    Tdom
+	                    R
+	                    R_standard_topology
+	                    rightx
+	                    HrightxCont
+	                    (x, 0)
+	                    Hx0Dom).
+	                }
+	                claim HleftyR : apply_fun lefty (x, 0) :e R.
+	                {
+	                  exact (continuous_map_function_on
+	                    dom
+	                    Tdom
+	                    R
+	                    R_standard_topology
+	                    lefty
+	                    HleftyCont
+	                    (x, 0)
+	                    Hx0Dom).
+	                }
+	                claim HrightyR : apply_fun righty (x, 0) :e R.
+	                {
+	                  exact (continuous_map_function_on
+	                    dom
+	                    Tdom
+	                    R
+	                    R_standard_topology
+	                    righty
+	                    HrightyCont
+	                    (x, 0)
+	                    Hx0Dom).
+	                }
+	                claim HoneMinusR : apply_fun one_minus_t (x, 0) :e R.
+	                {
+	                  exact (continuous_map_function_on
+	                    dom
+	                    Tdom
+	                    R
+	                    R_standard_topology
+	                    one_minus_t
+	                    HoneMinusContR
+	                    (x, 0)
+	                    Hx0Dom).
+	                }
+	                claim HtprojR : apply_fun tproj (x, 0) :e R.
+	                {
+	                  exact (continuous_map_function_on
+	                    dom
+	                    Tdom
+	                    R
+	                    R_standard_topology
+	                    tproj
+	                    HtprojContR
+	                    (x, 0)
+	                    Hx0Dom).
+	                }
+	                claim HwxR : apply_fun wx (x, 0) :e R.
+	                {
+	                  exact (continuous_map_function_on
+	                    dom
+	                    Tdom
+	                    R
+	                    R_standard_topology
+	                    wx
+	                    HwxCont
+	                    (x, 0)
+	                    Hx0Dom).
+	                }
+	                claim HwyR : apply_fun wy (x, 0) :e R.
+	                {
+	                  exact (continuous_map_function_on
+	                    dom
+	                    Tdom
+	                    R
+	                    R_standard_topology
+	                    wy
+	                    HwyCont
+	                    (x, 0)
+	                    Hx0Dom).
+	                }
+	                claim HxxR : apply_fun xx (x, 0) :e R.
+	                {
+	                  exact (continuous_map_function_on
+	                    dom
+	                    Tdom
+	                    R
+	                    R_standard_topology
+	                    xx
+	                    HxxCont
+	                    (x, 0)
+	                    Hx0Dom).
+	                }
+	                claim HxyR : apply_fun xy (x, 0) :e R.
+	                {
+	                  exact (continuous_map_function_on
+	                    dom
+	                    Tdom
+	                    R
+	                    R_standard_topology
+	                    xy
+	                    HxyCont
+	                    (x, 0)
+	                    Hx0Dom).
+	                }
+	                claim HwS1xR2m0 : apply_fun wS1 x :e R2_minus_origin.
+	                {
+	                  exact (continuous_map_function_on
+	                    S1
+	                    S1_topology
+	                    R2_minus_origin
+	                    R2_minus_origin_topology
+	                    wS1
+	                    HwS1Cont
+	                    x
+	                    HxS1).
+	                }
+	                claim HwS1xR2 : apply_fun wS1 x :e setprod R R.
+	                {
+	                  exact (SepE1
+	                    (setprod R R)
+	                    (fun p:set => ~(p 0 = 0 /\ p 1 = 0))
+	                    (apply_fun wS1 x)
+	                    HwS1xR2m0).
+	                }
+	                rewrite (pair_map_apply
+	                  dom
+	                  R
+	                  R
+	                  sumx
+	                  sumy
+	                  (x, 0)
+	                  Hx0Dom).
+	                rewrite (add_of_pair_map_apply
+	                  dom
+	                  leftx
+	                  rightx
+	                  (x, 0)
+	                  Hx0Dom
+	                  HleftxR
+	                  HrightxR).
+	                rewrite (add_of_pair_map_apply
+	                  dom
+	                  lefty
+	                  righty
+	                  (x, 0)
+	                  Hx0Dom
+	                  HleftyR
+	                  HrightyR).
+	                rewrite (mul_of_pair_map_apply
+	                  dom
+	                  one_minus_t
+	                  wx
+	                  (x, 0)
+	                  Hx0Dom
+	                  HoneMinusR
+	                  HwxR).
+	                rewrite (mul_of_pair_map_apply
+	                  dom
+	                  tproj
+	                  xx
+	                  (x, 0)
+	                  Hx0Dom
+	                  HtprojR
+	                  HxxR).
+	                rewrite (mul_of_pair_map_apply
+	                  dom
+	                  one_minus_t
+	                  wy
+	                  (x, 0)
+	                  Hx0Dom
+	                  HoneMinusR
+	                  HwyR).
+	                rewrite (mul_of_pair_map_apply
+	                  dom
+	                  tproj
+	                  xy
+	                  (x, 0)
+	                  Hx0Dom
+	                  HtprojR
+	                  HxyR).
+	                claim HoneMinusAt0 : apply_fun one_minus_t (x, 0) = 1.
+	                {
+	                  rewrite (compose_fun_apply
+	                    dom
+	                    tproj
+	                    flip_unit_interval
+	                    (x, 0)
+	                    Hx0Dom).
+	                  rewrite (projection2_apply
+	                    S1
+	                    unit_interval
+	                    (x, 0)
+	                    Hx0Dom).
+	                  rewrite tuple_2_1_eq.
+	                  exact flip_unit_interval_at_0.
+	                }
+	                claim HtAt0 : apply_fun tproj (x, 0) = 0.
+	                {
+	                  rewrite (projection2_apply
+	                    S1
+	                    unit_interval
+	                    (x, 0)
+	                    Hx0Dom).
+	                  rewrite tuple_2_1_eq.
+	                  reflexivity.
+	                }
+	                rewrite HoneMinusAt0.
+	                rewrite HtAt0.
+	                rewrite (mul_SNo_oneL
+	                  (apply_fun wx (x, 0))
+	                  (real_SNo (apply_fun wx (x, 0)) HwxR)).
+	                rewrite (mul_SNo_zeroL
+	                  (apply_fun xx (x, 0))
+	                  (real_SNo (apply_fun xx (x, 0)) HxxR)).
+	                rewrite (mul_SNo_oneL
+	                  (apply_fun wy (x, 0))
+	                  (real_SNo (apply_fun wy (x, 0)) HwyR)).
+	                rewrite (mul_SNo_zeroL
+	                  (apply_fun xy (x, 0))
+	                  (real_SNo (apply_fun xy (x, 0)) HxyR)).
+	                rewrite (add_SNo_0R
+	                  (apply_fun wx (x, 0))
+	                  (real_SNo (apply_fun wx (x, 0)) HwxR)).
+	                rewrite (add_SNo_0R
+	                  (apply_fun wy (x, 0))
+	                  (real_SNo (apply_fun wy (x, 0)) HwyR)).
+	                rewrite (compose_fun_apply
+	                  dom
+	                  wsq
+	                  (projection_map1 R R)
+	                  (x, 0)
+	                  Hx0Dom).
+	                rewrite (compose_fun_apply
+	                  dom
+	                  wsq
+	                  (projection_map2 R R)
+	                  (x, 0)
+	                  Hx0Dom).
+	                rewrite (compose_fun_apply
+	                  dom
+	                  xproj
+	                  wS1
+	                  (x, 0)
+	                  Hx0Dom).
+	                rewrite (projection1_apply
+	                  S1
+	                  unit_interval
+	                  (x, 0)
+	                  Hx0Dom).
+	                rewrite tuple_2_0_eq.
+	                rewrite (projection1_apply
+	                  R
+	                  R
+	                  (apply_fun wS1 x)
+	                  HwS1xR2).
+	                rewrite (projection2_apply
+	                  R
+	                  R
+	                  (apply_fun wS1 x)
+	                  HwS1xR2).
+	                symmetry.
+	                exact (setprod_eta
+	                  R
+	                  R
+	                  (apply_fun wS1 x)
+	                  HwS1xR2).
+	              }
+	              claim HFs1 :
+	                forall x:set, x :e S1 ->
+	                  apply_fun Fraw (x, 1) = apply_fun (graph S1 (fun z:set => z)) x.
+	              {
+	                let x.
+	                assume HxS1.
+	                claim Hx1Dom : (x, 1) :e dom.
+	                {
+	                  exact (tuple_2_setprod_by_pair_Sigma
+	                    S1
+	                    unit_interval
+	                    x
+	                    1
+	                    HxS1
+	                    one_in_unit_interval).
+	                }
+	                claim HleftxR : apply_fun leftx (x, 1) :e R.
+	                {
+	                  exact (continuous_map_function_on
+	                    dom
+	                    Tdom
+	                    R
+	                    R_standard_topology
+	                    leftx
+	                    HleftxCont
+	                    (x, 1)
+	                    Hx1Dom).
+	                }
+	                claim HrightxR : apply_fun rightx (x, 1) :e R.
+	                {
+	                  exact (continuous_map_function_on
+	                    dom
+	                    Tdom
+	                    R
+	                    R_standard_topology
+	                    rightx
+	                    HrightxCont
+	                    (x, 1)
+	                    Hx1Dom).
+	                }
+	                claim HleftyR : apply_fun lefty (x, 1) :e R.
+	                {
+	                  exact (continuous_map_function_on
+	                    dom
+	                    Tdom
+	                    R
+	                    R_standard_topology
+	                    lefty
+	                    HleftyCont
+	                    (x, 1)
+	                    Hx1Dom).
+	                }
+	                claim HrightyR : apply_fun righty (x, 1) :e R.
+	                {
+	                  exact (continuous_map_function_on
+	                    dom
+	                    Tdom
+	                    R
+	                    R_standard_topology
+	                    righty
+	                    HrightyCont
+	                    (x, 1)
+	                    Hx1Dom).
+	                }
+	                claim HoneMinusR : apply_fun one_minus_t (x, 1) :e R.
+	                {
+	                  exact (continuous_map_function_on
+	                    dom
+	                    Tdom
+	                    R
+	                    R_standard_topology
+	                    one_minus_t
+	                    HoneMinusContR
+	                    (x, 1)
+	                    Hx1Dom).
+	                }
+	                claim HtprojR : apply_fun tproj (x, 1) :e R.
+	                {
+	                  exact (continuous_map_function_on
+	                    dom
+	                    Tdom
+	                    R
+	                    R_standard_topology
+	                    tproj
+	                    HtprojContR
+	                    (x, 1)
+	                    Hx1Dom).
+	                }
+	                claim HwxR : apply_fun wx (x, 1) :e R.
+	                {
+	                  exact (continuous_map_function_on
+	                    dom
+	                    Tdom
+	                    R
+	                    R_standard_topology
+	                    wx
+	                    HwxCont
+	                    (x, 1)
+	                    Hx1Dom).
+	                }
+	                claim HwyR : apply_fun wy (x, 1) :e R.
+	                {
+	                  exact (continuous_map_function_on
+	                    dom
+	                    Tdom
+	                    R
+	                    R_standard_topology
+	                    wy
+	                    HwyCont
+	                    (x, 1)
+	                    Hx1Dom).
+	                }
+	                claim HxxR : apply_fun xx (x, 1) :e R.
+	                {
+	                  exact (continuous_map_function_on
+	                    dom
+	                    Tdom
+	                    R
+	                    R_standard_topology
+	                    xx
+	                    HxxCont
+	                    (x, 1)
+	                    Hx1Dom).
+	                }
+	                claim HxyR : apply_fun xy (x, 1) :e R.
+	                {
+	                  exact (continuous_map_function_on
+	                    dom
+	                    Tdom
+	                    R
+	                    R_standard_topology
+	                    xy
+	                    HxyCont
+	                    (x, 1)
+	                    Hx1Dom).
+	                }
+	                claim HxR2 : x :e setprod R R.
+	                {
+	                  exact (SepE1
+	                    (setprod R R)
+	                    (fun p:set =>
+	                      add_SNo (mul_SNo (p 0) (p 0))
+	                        (mul_SNo (p 1) (p 1)) = 1)
+	                    x
+	                    HxS1).
+	                }
+	                rewrite (pair_map_apply
+	                  dom
+	                  R
+	                  R
+	                  sumx
+	                  sumy
+	                  (x, 1)
+	                  Hx1Dom).
+	                rewrite (add_of_pair_map_apply
+	                  dom
+	                  leftx
+	                  rightx
+	                  (x, 1)
+	                  Hx1Dom
+	                  HleftxR
+	                  HrightxR).
+	                rewrite (add_of_pair_map_apply
+	                  dom
+	                  lefty
+	                  righty
+	                  (x, 1)
+	                  Hx1Dom
+	                  HleftyR
+	                  HrightyR).
+	                rewrite (mul_of_pair_map_apply
+	                  dom
+	                  one_minus_t
+	                  wx
+	                  (x, 1)
+	                  Hx1Dom
+	                  HoneMinusR
+	                  HwxR).
+	                rewrite (mul_of_pair_map_apply
+	                  dom
+	                  tproj
+	                  xx
+	                  (x, 1)
+	                  Hx1Dom
+	                  HtprojR
+	                  HxxR).
+	                rewrite (mul_of_pair_map_apply
+	                  dom
+	                  one_minus_t
+	                  wy
+	                  (x, 1)
+	                  Hx1Dom
+	                  HoneMinusR
+	                  HwyR).
+	                rewrite (mul_of_pair_map_apply
+	                  dom
+	                  tproj
+	                  xy
+	                  (x, 1)
+	                  Hx1Dom
+	                  HtprojR
+	                  HxyR).
+	                claim HoneMinusAt1 : apply_fun one_minus_t (x, 1) = 0.
+	                {
+	                  rewrite (compose_fun_apply
+	                    dom
+	                    tproj
+	                    flip_unit_interval
+	                    (x, 1)
+	                    Hx1Dom).
+	                  rewrite (projection2_apply
+	                    S1
+	                    unit_interval
+	                    (x, 1)
+	                    Hx1Dom).
+	                  rewrite tuple_2_1_eq.
+	                  exact flip_unit_interval_at_1.
+	                }
+	                claim HtAt1 : apply_fun tproj (x, 1) = 1.
+	                {
+	                  rewrite (projection2_apply
+	                    S1
+	                    unit_interval
+	                    (x, 1)
+	                    Hx1Dom).
+	                  rewrite tuple_2_1_eq.
+	                  reflexivity.
+	                }
+	                rewrite HoneMinusAt1.
+	                rewrite HtAt1.
+	                rewrite (mul_SNo_zeroL
+	                  (apply_fun wx (x, 1))
+	                  (real_SNo (apply_fun wx (x, 1)) HwxR)).
+	                rewrite (mul_SNo_oneL
+	                  (apply_fun xx (x, 1))
+	                  (real_SNo (apply_fun xx (x, 1)) HxxR)).
+	                rewrite (mul_SNo_zeroL
+	                  (apply_fun wy (x, 1))
+	                  (real_SNo (apply_fun wy (x, 1)) HwyR)).
+	                rewrite (mul_SNo_oneL
+	                  (apply_fun xy (x, 1))
+	                  (real_SNo (apply_fun xy (x, 1)) HxyR)).
+	                rewrite (add_SNo_0L
+	                  (apply_fun xx (x, 1))
+	                  (real_SNo (apply_fun xx (x, 1)) HxxR)).
+	                rewrite (add_SNo_0L
+	                  (apply_fun xy (x, 1))
+	                  (real_SNo (apply_fun xy (x, 1)) HxyR)).
+	                rewrite (compose_fun_apply
+	                  dom
+	                  xproj
+	                  (projection_map1 R R)
+	                  (x, 1)
+	                  Hx1Dom).
+	                rewrite (projection1_apply
+	                  S1
+	                  unit_interval
+	                  (x, 1)
+	                  Hx1Dom).
+	                rewrite tuple_2_0_eq.
+	                rewrite (projection1_apply
+	                  R
+	                  R
+	                  x
+	                  HxR2).
+	                rewrite (compose_fun_apply
+	                  dom
+	                  xproj
+	                  (projection_map2 R R)
+	                  (x, 1)
+	                  Hx1Dom).
+	                rewrite (projection1_apply
+	                  S1
+	                  unit_interval
+	                  (x, 1)
+	                  Hx1Dom).
+	                rewrite tuple_2_0_eq.
+	                rewrite (projection2_apply
+	                  R
+	                  R
+	                  x
+	                  HxR2).
+	                rewrite (apply_fun_graph
+	                  S1
+	                  (fun z:set => z)
+	                  x
+	                  HxS1).
+	                symmetry.
+	                exact (setprod_eta
+	                  R
+	                  R
+	                  x
+	                  HxR2).
+	              }
+	              claim Hws1ToInc :
+	                homotopic_maps
+	                  S1
+	                  S1_topology
+	                  R2_minus_origin
+	                  R2_minus_origin_topology
+	                  wS1
+	                  (graph S1 (fun z:set => z)).
+	              {
+	                prove
+	                  continuous_map
+	                    S1
+	                    S1_topology
+	                    R2_minus_origin
+	                    R2_minus_origin_topology
+	                    wS1
+	                  /\
+	                  continuous_map
+	                    S1
+	                    S1_topology
+	                    R2_minus_origin
+	                    R2_minus_origin_topology
+	                    (graph S1 (fun z:set => z))
+	                  /\
+	                  exists F:set,
+	                    continuous_map
+	                      (setprod S1 unit_interval)
+	                      (product_topology S1 S1_topology unit_interval unit_interval_topology)
+	                      R2_minus_origin
+	                      R2_minus_origin_topology
+	                      F
+	                    /\
+	                    (forall x:set, x :e S1 ->
+	                      apply_fun F (x, 0) = apply_fun wS1 x)
+	                    /\
+	                    (forall x:set, x :e S1 ->
+	                      apply_fun F (x, 1) = apply_fun (graph S1 (fun z:set => z)) x).
+	                apply andI.
+	                - apply andI.
+	                  + exact HwS1Cont.
+	                  + exact s55_inclusion_S1_R2_minus_origin_continuous.
+	                - witness Fraw.
+	                  apply andI.
+	                  * apply andI.
+	                    { exact HFrawCont. }
+	                    { exact HFs0. }
+	                  * exact HFs1.
+	              }
+	              exact (Lemma_51_1_homotopy_sym
+	                S1
+	                S1_topology
+	                R2_minus_origin
+	                R2_minus_origin_topology
+	                wS1
+	                (graph S1 (fun z:set => z))
+	                Hws1ToInc).
 	            }
 	            prove exists y0:set,
 	              y0 :e R2_minus_origin /\
@@ -85750,7 +88181,7 @@ apply (xm (exists x:set, x :e B2 /\ apply_fun f x = x)).
   exact (FalseE
     Hcontra
     (exists x:set, x :e B2 /\ apply_fun f x = x)).
-Admitted.
+Qed.
 
 (** Infrastructure for starred Cor 55.7: finite sum of real-valued terms **)
 (** finite_real_sum f n = f(0) + f(1) + ... + f(n-1) **)
