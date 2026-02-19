@@ -137516,6 +137516,122 @@ apply (nat_inv nw Hnw_nat).
           m
           Hsubq).
       + assume Hp_ne_efam.
+        claim Hwp_in_G_nat : forall n:set, nat_p n ->
+          forall xs:set, (forall i:set, i :e n -> apply_fun xs i :e G) ->
+            word_product multG eG xs n :e G.
+        {
+          apply (nat_ind
+            (fun n:set =>
+              forall xs:set, (forall i:set, i :e n -> apply_fun xs i :e G) ->
+                word_product multG eG xs n :e G)).
+          - let xs.
+            assume Hxs.
+            claim Hwp0 : word_product multG eG xs 0 = eG.
+            {
+              exact (nat_primrec_0
+                eG
+                (fun i r => apply_fun multG (r, apply_fun xs i))).
+            }
+            rewrite Hwp0.
+            exact HeGG.
+          - let n.
+            assume Hn_nat IH.
+            let xs.
+            assume Hxs.
+            claim HwpS : word_product multG eG xs (ordsucc n) =
+              apply_fun multG (word_product multG eG xs n, apply_fun xs n).
+            {
+              exact (nat_primrec_S
+                eG
+                (fun i r => apply_fun multG (r, apply_fun xs i))
+                n
+                Hn_nat).
+            }
+            claim Hwpn_G : word_product multG eG xs n :e G.
+            {
+              exact (IH
+                xs
+                (fun i Hi => Hxs i (ordsuccI1 n i Hi))).
+            }
+            claim Hxsn_G : apply_fun xs n :e G.
+            {
+              exact (Hxs
+                n
+                (ordsuccI2 n)).
+            }
+            rewrite HwpS.
+            exact (HmultGF
+              (word_product multG eG xs n, apply_fun xs n)
+              (tuple_2_setprod_by_pair_Sigma
+                G
+                G
+                (word_product multG eG xs n)
+                (apply_fun xs n)
+                Hwpn_G
+                Hxsn_G)).
+        }
+        claim Hp_G : p :e G.
+        {
+          exact (Hwp_in_G_nat
+            m
+            Hm_nat
+            xsw
+            (fun i Hi =>
+              Hxsw_in_G
+                i
+                (mem_eqL
+                  i
+                  nw
+                  (ordsucc m)
+                  Hnw_eq
+                  (ordsuccI1 m i Hi)))).
+        }
+        claim Hxsm_ne_eG : apply_fun xsw m <> eG.
+        {
+          assume Habs.
+          claim HidR : apply_fun multG (p, eG) = p.
+          {
+            exact (andER
+              (apply_fun multG (eG, p) = p)
+              (apply_fun multG (p, eG) = p)
+              (HidG
+                p
+                Hp_G)).
+          }
+          claim Hp_efam2 : p = apply_fun efam al.
+          {
+            claim Hstep :
+              apply_fun multG (p, apply_fun xsw m) = apply_fun multG (p, eG).
+            {
+              rewrite Habs.
+              reflexivity.
+            }
+            claim HidR_sym : p = apply_fun multG (p, eG).
+            {
+              symmetry.
+              exact HidR.
+            }
+            claim Hstep_sym :
+              apply_fun multG (p, eG) = apply_fun multG (p, apply_fun xsw m).
+            {
+              symmetry.
+              exact Hstep.
+            }
+            exact (eq_i_tra
+              p
+              (apply_fun multG (p, eG))
+              (apply_fun efam al)
+              HidR_sym
+              (eq_i_tra
+                (apply_fun multG (p, eG))
+                (apply_fun multG (p, apply_fun xsw m))
+                (apply_fun efam al)
+                Hstep_sym
+                Hp_eq)).
+          }
+          exact (Hp_ne_efam
+            Hp_efam2).
+        }
         (** Remaining work: finish the p not eG and not efam(al) subcase. **)
         admit.
 Admitted.
