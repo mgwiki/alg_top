@@ -137200,10 +137200,156 @@ apply (nat_inv nw Hnw_nat).
         exact (Hefam_ne
           Hefam_eG).
     }
-    (** Remaining work: finish the nw ge 2 contradiction using
-        Hwp_xsw together with Halpha0_ne_alpha1, Hxs0_ne_efamal
-        and reduced-word uniqueness. **)
-    admit.
+    claim Hxsw_ne_efamal_all :
+      forall i:set, i :e nw -> apply_fun xsw i = apply_fun efam al -> False.
+    {
+      let i.
+      assume Hi Heqi.
+      apply (Helem
+        i
+        Hi).
+      let ai.
+      assume Hai_pack.
+      apply (and3E
+        (ai :e J)
+        (apply_fun xsw i :e apply_fun Gfam ai)
+        (apply_fun xsw i <> apply_fun efam ai)
+        Hai_pack).
+      assume Hai Hxi_Gai Hxi_ne_efai.
+      apply (xm (ai = al)).
+      - assume Haieq.
+        claim Hne : apply_fun xsw i <> apply_fun efam al.
+        {
+          exact (Haieq
+            (fun a b:set => apply_fun xsw i <> apply_fun efam a)
+            Hxi_ne_efai).
+        }
+        exact (Hne
+          Heqi).
+      - assume Haine.
+        claim Hxi_Gal : apply_fun xsw i :e apply_fun Gfam al.
+        {
+          rewrite Heqi.
+          exact Hefam_Gal.
+        }
+        claim Hxi_eG : apply_fun xsw i = eG.
+        {
+          exact (Hdisjoint
+            ai
+            al
+            Hai
+            Hal
+            Haine
+            (apply_fun xsw i)
+            Hxi_Gai
+            Hxi_Gal).
+        }
+        claim Hefam_eG : apply_fun efam al = eG.
+        {
+          rewrite <- Heqi.
+          exact Hxi_eG.
+        }
+        exact (Hefam_ne
+          Hefam_eG).
+    }
+    claim Hxsw_in_G : forall i:set, i :e nw -> apply_fun xsw i :e G.
+    {
+      let i.
+      assume Hi.
+      apply (Helem
+        i
+        Hi).
+      let ai.
+      assume Hai_pack.
+      apply (and3E
+        (ai :e J)
+        (apply_fun xsw i :e apply_fun Gfam ai)
+        (apply_fun xsw i <> apply_fun efam ai)
+        Hai_pack).
+      assume Hai Hxi_Gai _.
+      apply (and4E
+        (apply_fun Gfam ai c= G)
+        (eG :e apply_fun Gfam ai)
+        (forall x y:set, x :e apply_fun Gfam ai -> y :e apply_fun Gfam ai ->
+          apply_fun multG (x, y) :e apply_fun Gfam ai)
+        (forall x:set, x :e apply_fun Gfam ai -> apply_fun invG x :e apply_fun Gfam ai)
+        (Hsub ai Hai)).
+      assume Hsubai _ _ _.
+      exact (Hsubai
+        (apply_fun xsw i)
+        Hxi_Gai).
+    }
+    claim Hm_in_nw : m :e nw.
+    {
+      rewrite Hnw_eq.
+      exact (ordsuccI2
+        m).
+    }
+    claim Hxsm_G : apply_fun xsw m :e G.
+    {
+      exact (Hxsw_in_G
+        m
+        Hm_in_nw).
+    }
+    set p := word_product multG eG xsw m.
+    claim Hp_eq :
+      apply_fun multG (p, apply_fun xsw m) = apply_fun efam al.
+    {
+      claim HwpS :
+        word_product multG eG xsw nw =
+        apply_fun multG (word_product multG eG xsw m, apply_fun xsw m).
+      {
+        rewrite Hnw_eq.
+        exact (nat_primrec_S
+          eG
+          (fun i r => apply_fun multG (r, apply_fun xsw i))
+          m
+          Hm_nat).
+      }
+      rewrite <- HwpS.
+      exact Hwp_xsw.
+    }
+    apply (xm (p = eG)).
+    - assume Hp_eG.
+      claim HidL_xsm :
+        apply_fun multG (eG, apply_fun xsw m) = apply_fun xsw m.
+      {
+        exact (andEL
+          (apply_fun multG (eG, apply_fun xsw m) = apply_fun xsw m)
+          (apply_fun multG (apply_fun xsw m, eG) = apply_fun xsw m)
+          (HidG
+            (apply_fun xsw m)
+            Hxsm_G)).
+      }
+      claim Hmult_eG :
+        apply_fun multG (eG, apply_fun xsw m) = apply_fun efam al.
+      {
+        rewrite <- Hp_eG.
+        exact Hp_eq.
+      }
+      claim Hxsm_efam :
+        apply_fun xsw m = apply_fun efam al.
+      {
+        claim HidL_sym :
+          apply_fun xsw m = apply_fun multG (eG, apply_fun xsw m).
+        {
+          symmetry.
+          exact HidL_xsm.
+        }
+        exact (eq_i_tra
+          (apply_fun xsw m)
+          (apply_fun multG (eG, apply_fun xsw m))
+          (apply_fun efam al)
+          HidL_sym
+          Hmult_eG).
+      }
+      exact (Hxsw_ne_efamal_all
+        m
+        Hm_in_nw
+        Hxsm_efam).
+    - assume Hp_ne.
+      (** Remaining work: finish the p not eG subcase. **)
+      admit.
 Admitted.
 
 (** from S68 Lem 68.1 (line 2781 in algtop.tex): extension condition for free products **)
