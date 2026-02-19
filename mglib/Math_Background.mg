@@ -73430,6 +73430,237 @@ apply (andI
 Qed.
 
 (** Proven Bob **)
+(** Infrastructure helper: the only integer divisors of 1 are 1 and -1. **)
+Theorem divides_int_one_unit_cases_cyclic_helper :
+  forall d:set, d :e int -> divides_int d 1 -> d = 1 \/ d = minus_SNo 1.
+let d.
+assume HdInt HdDiv.
+claim Hsucc_divides_one_eq_one :
+  forall m:set, m :e omega -> divides_int (ordsucc m) 1 -> ordsucc m = 1.
+{
+  let m.
+  assume HmO HdivPos.
+  claim HsuccLe1 : ordsucc m <= 1.
+  {
+    exact (divides_int_pos_Le
+      (ordsucc m)
+      1
+      HdivPos
+      SNoLt_0_1).
+  }
+  claim H1LeSucc : 1 <= ordsucc m.
+  {
+    apply (nat_inv
+      m
+      (omega_nat_p m HmO)).
+    - assume Hm0.
+      rewrite Hm0.
+      exact (SNoLe_ref 1).
+    - assume HmSCase.
+      apply HmSCase.
+      let k.
+      assume HkPack.
+      claim HkNat : nat_p k.
+      {
+        exact (andEL
+          (nat_p k)
+          (m = ordsucc k)
+          HkPack).
+      }
+      claim HmEq : m = ordsucc k.
+      {
+        exact (andER
+          (nat_p k)
+          (m = ordsucc k)
+          HkPack).
+      }
+      claim HmNat : nat_p m.
+      {
+        rewrite HmEq.
+        exact (nat_ordsucc
+          k
+          HkNat).
+      }
+      claim H0InM : 0 :e m.
+      {
+        rewrite HmEq.
+        exact (nat_0_in_ordsucc
+          k
+          HkNat).
+      }
+      claim H1InSuccM : 1 :e ordsucc m.
+      {
+        exact (nat_ordsucc_in_ordsucc
+          m
+          HmNat
+          0
+          H0InM).
+      }
+      claim HsuccMNat : nat_p (ordsucc m).
+      {
+        exact (nat_ordsucc
+          m
+          HmNat).
+      }
+      claim H1SubSuccM : 1 c= ordsucc m.
+      {
+        exact (nat_trans
+          (ordsucc m)
+          HsuccMNat
+          1
+          H1InSuccM).
+      }
+      exact (ordinal_Subq_SNoLe
+        1
+        (ordsucc m)
+        (nat_p_ordinal
+          1
+          nat_1)
+        (nat_p_ordinal
+          (ordsucc m)
+          HsuccMNat)
+        H1SubSuccM).
+  }
+  claim HsuccInt : ordsucc m :e int.
+  {
+    exact (Subq_omega_int
+      (ordsucc m)
+      (omega_ordsucc m HmO)).
+  }
+  claim HsuccS : SNo (ordsucc m).
+  {
+    exact (int_SNo
+      (ordsucc m)
+      HsuccInt).
+  }
+  exact (SNoLe_antisym
+    (ordsucc m)
+    1
+    HsuccS
+    SNo_1
+    HsuccLe1
+    H1LeSucc).
+}
+apply (int_3_cases
+  d
+  HdInt
+  (d = 1 \/ d = minus_SNo 1)).
+- let m.
+  assume HmO HdNeg.
+  claim HnegDiv : divides_int (minus_SNo (ordsucc m)) 1.
+  {
+    rewrite <- HdNeg.
+    exact HdDiv.
+  }
+  claim HsuccInt : ordsucc m :e int.
+  {
+    exact (Subq_omega_int
+      (ordsucc m)
+      (omega_ordsucc m HmO)).
+  }
+  claim HsuccS : SNo (ordsucc m).
+  {
+    exact (int_SNo
+      (ordsucc m)
+      HsuccInt).
+  }
+  claim HposDivRaw : divides_int (minus_SNo (minus_SNo (ordsucc m))) 1.
+  {
+    exact (divides_int_neg_divisor_cyclic_helper
+      (minus_SNo (ordsucc m))
+      1
+      HnegDiv).
+  }
+  claim HposDiv : divides_int (ordsucc m) 1.
+  {
+    rewrite <- (minus_SNo_invol
+      (ordsucc m)
+      HsuccS).
+    exact HposDivRaw.
+  }
+  claim HsuccEq1 : ordsucc m = 1.
+  {
+    exact (Hsucc_divides_one_eq_one
+      m
+      HmO
+      HposDiv).
+  }
+  apply orIR.
+  rewrite HdNeg.
+  rewrite HsuccEq1.
+  reflexivity.
+- assume Hd0.
+  apply (and3E
+    (d :e int)
+    (1 :e int)
+    (exists k:set, k :e int /\ mul_SNo d k = 1)
+    HdDiv).
+  assume HdInt0 H1Int HkEx.
+  apply HkEx.
+  let k.
+  assume HkPack.
+  claim HkInt : k :e int.
+  {
+    exact (andEL
+      (k :e int)
+      (mul_SNo d k = 1)
+      HkPack).
+  }
+  claim HdMulEqOne : mul_SNo d k = 1.
+  {
+    exact (andER
+      (k :e int)
+      (mul_SNo d k = 1)
+      HkPack).
+  }
+  claim HzeroMul : mul_SNo 0 k = 0.
+  {
+    exact (mul_SNo_zeroL
+      k
+      (int_SNo k HkInt)).
+  }
+  claim HzeroEqOne : 0 = 1.
+  {
+    claim HdMulZero : mul_SNo d k = 0.
+    {
+      rewrite Hd0.
+      exact HzeroMul.
+    }
+    claim HzeroEqMul : 0 = mul_SNo d k.
+    {
+      symmetry.
+      exact HdMulZero.
+    }
+    exact (eq_i_tra
+      0
+      (mul_SNo d k)
+      1
+      HzeroEqMul
+      HdMulEqOne).
+  }
+  exact (FalseE
+    (neq_0_1 HzeroEqOne)
+    (d = 1 \/ d = minus_SNo 1)).
+- let m.
+  assume HmO HdPos.
+  claim HposDiv : divides_int (ordsucc m) 1.
+  {
+    rewrite <- HdPos.
+    exact HdDiv.
+  }
+  claim HsuccEq1 : ordsucc m = 1.
+  {
+    exact (Hsucc_divides_one_eq_one
+      m
+      HmO
+      HposDiv).
+  }
+  apply orIL.
+  rewrite HdPos.
+  exact HsuccEq1.
+Qed.
+
+(** Proven Bob **)
 (** Infrastructure helper: in the integer additive group, natural powers are scalar multiples. **)
 Theorem integers_group_power_nat_mul_right_cyclic_helper :
   forall a n:set, a :e int -> n :e omega ->
@@ -74566,9 +74797,20 @@ claim HpsiEx :
     group_homomorphism int integers_group_mult H multH psi /\
     apply_fun psi (apply_fun phi x) = y.
 {
-  (** TODO Bob: build a homomorphism psi : int -> H hitting y at phi(x). **)
-  (** Note: we now have nontriviality and sign split data: HxNeE, HphiXNe0, HphiXSignCase. **)
-  admit.
+  claim HphiXUnit : apply_fun phi x = 1 \/ apply_fun phi x = minus_SNo 1.
+  {
+    exact (divides_int_one_unit_cases_cyclic_helper
+      (apply_fun phi x)
+      HphiXInt
+      HphiXDiv1).
+  }
+  apply HphiXUnit.
+  - assume HphiX1.
+    (** TODO Bob: construct psi with psi(1)=y, then rewrite by HphiX1. **)
+    admit.
+  - assume HphiXm1.
+    (** TODO Bob: construct psi with psi(1)=invH(y), then use psi(-1)=y via HphiXm1. **)
+    admit.
 }
 apply HpsiEx.
 let psi.
