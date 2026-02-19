@@ -1,4 +1,4 @@
-(** Balance Alice 3269 **)
+(** Balance Alice 3219 **)
 (** Balance Bob 3043 **)
 (** Balance Charlie 1220 **)
 (** Balance Dave 1793 **)
@@ -108733,6 +108733,37 @@ Admitted.
 
 (** ======================= S59 THE FUNDAMENTAL GROUP OF S^n ======================= **)
 
+(** Helper: Given a loop fcls with a Lebesgue number for {preU, preV}, construct
+    the word decomposition in pi_1(U) and pi_1(V). This is the key technical
+    step for Seifert-van Kampen (lemma59_1). **)
+(** Bounty 50 **)
+Lemma loop_lebesgue_decomposition : forall X Tx U V x0 fcls Nleb:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx ->
+  X = U :\/: V ->
+  x0 :e U :/\: V ->
+  path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
+  fcls :e loop_space X Tx x0 ->
+  Nleb :e omega ->
+  lebesgue_number_metric unit_interval R_bounded_metric
+    (UPair (preimage_of unit_interval fcls U) (preimage_of unit_interval fcls V))
+    (eps_ Nleb) ->
+  exists n:set, n :e omega /\
+  exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls)) /\
+    path_homotopy_class_loop X Tx x0 fcls = nat_primrec (fundamental_group_id X Tx x0)
+      (fun k r => apply_fun (fundamental_group_mult X Tx x0) (r, apply_fun gs k)) n.
+admit.
+Admitted.
+
 (** from S59 Thm 59.1 (line 1541 in algtop.tex) **)
 (** LATEX VERSION: Suppose X = U union V where U, V are open in X. If U intersect V is path connected and x0 in U intersect V, then the images of i-star and j-star generate pi_1(X, x0). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
@@ -123984,12 +124015,10 @@ claim Hcore :
                                                   (eps_ Nleb))
                                                 HNlebPack).
                                             }
-                                            (** Step 4: Lebesgue number tells us: for every t in [0,1],
-                                                there exists W in {preU, preV} with B(t, eps_Nleb) c= W.
-                                                Combined with finite ball cover, this gives us
-                                                a finite decomposition of [0,1] into pieces each in preU or preV. **)
-                                            (** Use this to construct the word decomposition. **)
-                                            admit. (** TODO Alice: complete loop decomposition from Lebesgue number **)
+                                            (** Step 4: Apply helper lemma for Lebesgue-to-word decomposition **)
+                                            rewrite HclsEqf.
+                                            exact (loop_lebesgue_decomposition X Tx U V x0 fcls Nleb
+                                              Htop HU HV Hcover Hx0UV HpcUV HfclsLoop HNlebOmega Hleb).
 }
 exact Hcore.
 Admitted.
