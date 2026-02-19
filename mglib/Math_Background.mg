@@ -84807,7 +84807,7 @@ apply andI.
       y
       Hbij
       HyB).
-Admitted.
+Qed.
 
 (** ======================= S55 RETRACTIONS AND FIXED POINTS ======================= **)
 
