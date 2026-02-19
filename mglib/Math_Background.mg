@@ -77568,7 +77568,45 @@ claim HphiSelIso : group_isomorphism G mult int integers_group_mult phi_sel.
         + apply andI.
           * exact HeG.
           * rewrite Hn0.
-            admit.
+            set ne := apply_fun phi_sel e.
+            claim HneInt : ne :e int.
+            {
+              exact (HphiSelFn
+                e
+                HeG).
+            }
+            apply (int_3_cases
+              ne
+              HneInt
+              (ne = 0)).
+            - let m.
+               assume HmO HneNeg.
+               claim HeNegRep :
+                 e = group_power_nat mult e (apply_fun inv x) (ordsucc m).
+               {
+                 exact (HphiSelRepNegSucc
+                   e
+                   m
+                   HeG
+                   HneNeg
+                   HmO).
+               }
+               admit.
+            - assume Hne0.
+               exact Hne0.
+            - let m.
+               assume HmO HnePos.
+               claim HePosRep :
+                 e = group_power_nat mult e x (ordsucc m).
+               {
+                 exact (HphiSelRepPosSucc
+                   e
+                   m
+                   HeG
+                   HnePos
+                   HmO).
+               }
+               admit.
         + let g'.
           assume Hg'G HphiEq'.
           claim HphiEq0 : apply_fun phi_sel g' = 0.
