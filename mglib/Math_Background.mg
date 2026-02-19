@@ -134254,6 +134254,109 @@ rewrite <- Hrid_pe.
 exact H3.
 Qed.
 
+(** Helper: nat_primrec product stays in group **)
+(** Proven Alice **)
+Theorem nat_primrec_product_in_group :
+  forall G mult e:set,
+  function_on mult (setprod G G) G ->
+  e :e G ->
+  forall f:set -> set,
+  (forall i:set, f i :e G) ->
+  forall n:set, n :e omega ->
+  nat_primrec e (fun i r => apply_fun mult (r, f i)) n :e G.
+let G mult e.
+assume HmultFn : function_on mult (setprod G G) G.
+assume HeG : e :e G.
+let f.
+assume Hf : forall i:set, f i :e G.
+claim Hnat : forall n:set, nat_p n ->
+  nat_primrec e (fun i r => apply_fun mult (r, f i)) n :e G.
+{
+  apply nat_ind.
+  - prove nat_primrec e (fun i r => apply_fun mult (r, f i)) 0 :e G.
+    rewrite (nat_primrec_0 e (fun i r => apply_fun mult (r, f i))).
+    exact HeG.
+  - let k. assume Hk : nat_p k.
+    assume IH : nat_primrec e (fun i r => apply_fun mult (r, f i)) k :e G.
+    prove nat_primrec e (fun i r => apply_fun mult (r, f i)) (ordsucc k) :e G.
+    rewrite (nat_primrec_S e (fun i r => apply_fun mult (r, f i)) k Hk).
+    prove apply_fun mult (nat_primrec e (fun i r => apply_fun mult (r, f i)) k, f k) :e G.
+    exact (HmultFn
+      (nat_primrec e (fun i r => apply_fun mult (r, f i)) k, f k)
+      (tuple_2_setprod_by_pair_Sigma G G
+        (nat_primrec e (fun i r => apply_fun mult (r, f i)) k)
+        (f k) IH (Hf k))).
+}
+let n. assume Hn : n :e omega.
+exact (Hnat n (omega_nat_p n Hn)).
+Qed.
+
+(** Helper: group homomorphism distributes over nat_primrec product **)
+(** Proven Alice **)
+Theorem hom_distributes_nat_primrec :
+  forall G1 mult1 e1 inv1 G2 mult2 e2 inv2 phi:set,
+  group_structure G1 mult1 e1 inv1 ->
+  group_structure G2 mult2 e2 inv2 ->
+  group_homomorphism G1 mult1 G2 mult2 phi ->
+  forall f:set -> set,
+  (forall i:set, f i :e G1) ->
+  forall n:set, n :e omega ->
+  apply_fun phi (nat_primrec e1 (fun i r => apply_fun mult1 (r, f i)) n) =
+    nat_primrec e2 (fun i r => apply_fun mult2 (r, apply_fun phi (f i))) n.
+let G1 mult1 e1 inv1 G2 mult2 e2 inv2 phi.
+assume Hgrp1 : group_structure G1 mult1 e1 inv1.
+assume Hgrp2 : group_structure G2 mult2 e2 inv2.
+assume Hphi : group_homomorphism G1 mult1 G2 mult2 phi.
+let f.
+assume Hf : forall i:set, f i :e G1.
+(** Extract components from group_structure G1 using and6E **)
+apply (and6E
+  (function_on mult1 (setprod G1 G1) G1)
+  (function_on inv1 G1 G1)
+  (e1 :e G1)
+  (forall x y z:set, x :e G1 -> y :e G1 -> z :e G1 ->
+    apply_fun mult1 (apply_fun mult1 (x, y), z) = apply_fun mult1 (x, apply_fun mult1 (y, z)))
+  (forall x:set, x :e G1 -> apply_fun mult1 (e1, x) = x /\ apply_fun mult1 (x, e1) = x)
+  (forall x:set, x :e G1 ->
+    apply_fun mult1 (x, apply_fun inv1 x) = e1 /\ apply_fun mult1 (apply_fun inv1 x, x) = e1)
+  Hgrp1).
+assume Hmult1Fn : function_on mult1 (setprod G1 G1) G1.
+assume _ : function_on inv1 G1 G1.
+assume He1G1 : e1 :e G1.
+assume _ _ _.
+claim Hnat : forall n:set, nat_p n ->
+  apply_fun phi (nat_primrec e1 (fun i r => apply_fun mult1 (r, f i)) n) =
+    nat_primrec e2 (fun i r => apply_fun mult2 (r, apply_fun phi (f i))) n.
+{
+  apply nat_ind.
+  - prove apply_fun phi (nat_primrec e1 (fun i r => apply_fun mult1 (r, f i)) 0) =
+      nat_primrec e2 (fun i r => apply_fun mult2 (r, apply_fun phi (f i))) 0.
+    rewrite (nat_primrec_0 e1 (fun i r => apply_fun mult1 (r, f i))).
+    rewrite (nat_primrec_0 e2 (fun i r => apply_fun mult2 (r, apply_fun phi (f i)))).
+    exact (group_hom_preserves_identity G1 mult1 e1 inv1 G2 mult2 e2 inv2 phi Hgrp1 Hgrp2 Hphi).
+  - let k. assume Hk : nat_p k.
+    assume IH : apply_fun phi (nat_primrec e1 (fun i r => apply_fun mult1 (r, f i)) k) =
+      nat_primrec e2 (fun i r => apply_fun mult2 (r, apply_fun phi (f i))) k.
+    prove apply_fun phi (nat_primrec e1 (fun i r => apply_fun mult1 (r, f i)) (ordsucc k)) =
+      nat_primrec e2 (fun i r => apply_fun mult2 (r, apply_fun phi (f i))) (ordsucc k).
+    rewrite (nat_primrec_S e1 (fun i r => apply_fun mult1 (r, f i)) k Hk).
+    rewrite (nat_primrec_S e2 (fun i r => apply_fun mult2 (r, apply_fun phi (f i))) k Hk).
+    prove apply_fun phi (apply_fun mult1 (nat_primrec e1 (fun i r => apply_fun mult1 (r, f i)) k, f k)) =
+      apply_fun mult2 (nat_primrec e2 (fun i r => apply_fun mult2 (r, apply_fun phi (f i))) k, apply_fun phi (f k)).
+    claim HpkG1 : nat_primrec e1 (fun i r => apply_fun mult1 (r, f i)) k :e G1.
+    {
+      exact (nat_primrec_product_in_group G1 mult1 e1 Hmult1Fn He1G1 f Hf k
+        (nat_p_omega k Hk)).
+    }
+    rewrite (group_homomorphism_mult_rule G1 mult1 G2 mult2 phi
+      (nat_primrec e1 (fun i r => apply_fun mult1 (r, f i)) k)
+      (f k) Hphi HpkG1 (Hf k)).
+    rewrite IH. reflexivity.
+}
+let n. assume Hn : n :e omega.
+exact (Hnat n (omega_nat_p n Hn)).
+Qed.
+
 (** from S67 Lem 67.5 (line 2660 in algtop.tex): extension condition for external direct sums **)
 (** LATEX VERSION: If each i_alpha is a monomorphism and G is the direct sum of i_alpha(G_alpha), **)
 (** then given any abelian group H and homomorphisms h_alpha: G_alpha -> H, there exists a unique **)
