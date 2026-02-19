@@ -56965,6 +56965,598 @@ apply xm (A = B).
   exact (EmptyE x HxE (A = B)).
 Qed.
 
+(** Infrastructure: a connected subset of a pairwise-disjoint open union stays in one anchored member **)
+(** Proven Bob **)
+Theorem connected_subset_of_pairwise_disjoint_open_union_anchor :
+  forall X Tx F S0 Y y0:set,
+  topology_on X Tx ->
+  F c= Tx ->
+  pairwise_disjoint F ->
+  Y c= Union F ->
+  connected_space Y (subspace_topology X Tx Y) ->
+  S0 :e F ->
+  y0 :e Y ->
+  y0 :e S0 ->
+  Y c= S0.
+let X Tx F S0 Y y0.
+assume HtopX HsubF HpdF HYsubUF HconnY HS0F Hy0Y Hy0S0.
+set D := Union (F :\: {S0}).
+claim HrestSubTx : F :\: {S0} c= Tx.
+{
+  let W.
+  assume HWrest.
+  claim HWF : W :e F.
+  {
+    exact (setminusE1
+      F
+      {S0}
+      W
+      HWrest).
+  }
+  exact (HsubF
+    W
+    HWF).
+}
+claim HDOpen : D :e Tx.
+{
+  exact (topology_union_closed
+    X
+    Tx
+    (F :\: {S0})
+    HtopX
+    HrestSubTx).
+}
+claim HS0Open : S0 :e Tx.
+{
+  exact (HsubF
+    S0
+    HS0F).
+}
+claim HS0DisjD : S0 :/\: D = Empty.
+{
+  apply set_ext.
+  - let z.
+    assume HzInt.
+    claim HzS0 : z :e S0.
+    {
+      exact (binintersectE1
+        S0
+        D
+        z
+        HzInt).
+    }
+    claim HzD : z :e D.
+    {
+      exact (binintersectE2
+        S0
+        D
+        z
+        HzInt).
+    }
+    apply (UnionE
+      (F :\: {S0})
+      z
+      HzD).
+    let W.
+    assume HzWPack.
+    claim HzW : z :e W.
+    {
+      exact (andEL
+        (z :e W)
+        (W :e F :\: {S0})
+        HzWPack).
+    }
+    claim HWrest : W :e F :\: {S0}.
+    {
+      exact (andER
+        (z :e W)
+        (W :e F :\: {S0})
+        HzWPack).
+    }
+    claim HWF : W :e F.
+    {
+      exact (setminusE1
+        F
+        {S0}
+        W
+        HWrest).
+    }
+    claim HWneqS0 : W <> S0.
+    {
+      claim HWnotSing : W /:e {S0}.
+      {
+        exact (setminusE2
+          F
+          {S0}
+          W
+          HWrest).
+      }
+      assume HW0.
+      claim HWSing : W :e {S0}.
+      {
+        rewrite HW0.
+        exact (SingI
+          S0).
+      }
+      exact (HWnotSing
+        HWSing).
+    }
+    claim HS0WDisj : S0 :/\: W = Empty.
+    {
+      claim HS0neqW : S0 <> W.
+      {
+        assume HS0W.
+        claim HW0 : W = S0.
+        {
+          rewrite HS0W.
+          reflexivity.
+        }
+        exact (HWneqS0
+          HW0).
+      }
+      exact (HpdF
+        S0
+        W
+        HS0F
+        HWF
+        HS0neqW).
+    }
+    claim HzS0W : z :e S0 :/\: W.
+    {
+      exact (binintersectI
+        S0
+        W
+        z
+        HzS0
+        HzW).
+    }
+    claim HzE : z :e Empty.
+    {
+      exact (mem_eqR
+        z
+        (S0 :/\: W)
+        Empty
+        HS0WDisj
+        HzS0W).
+    }
+    exact (EmptyE
+      z
+      HzE
+      (z :e Empty)).
+  - let z.
+    assume HzE.
+    exact (EmptyE
+      z
+      HzE
+      (z :e S0 :/\: D)).
+}
+claim HUnionDecomp : S0 :\/: D = Union F.
+{
+  apply set_ext.
+  - let z.
+    assume HzSD.
+    apply (binunionE
+      S0
+      D
+      z
+      HzSD).
+    + assume HzS0.
+      exact (UnionI
+        F
+        z
+        S0
+        HzS0
+        HS0F).
+    + assume HzD.
+      apply (UnionE
+        (F :\: {S0})
+        z
+        HzD).
+      let W.
+      assume HzWPack.
+      claim HzW : z :e W.
+      {
+        exact (andEL
+          (z :e W)
+          (W :e F :\: {S0})
+          HzWPack).
+      }
+      claim HWrest : W :e F :\: {S0}.
+      {
+        exact (andER
+          (z :e W)
+          (W :e F :\: {S0})
+          HzWPack).
+      }
+      claim HWF : W :e F.
+      {
+        exact (setminusE1
+          F
+          {S0}
+          W
+          HWrest).
+      }
+      exact (UnionI
+        F
+        z
+        W
+        HzW
+        HWF).
+  - let z.
+    assume HzUF.
+    apply (UnionE
+      F
+      z
+      HzUF).
+    let W.
+    assume HzWPack.
+    claim HzW : z :e W.
+    {
+      exact (andEL
+        (z :e W)
+        (W :e F)
+        HzWPack).
+    }
+    claim HWF : W :e F.
+    {
+      exact (andER
+        (z :e W)
+        (W :e F)
+        HzWPack).
+    }
+    apply xm (W = S0).
+    + assume HW0.
+      claim HzS0 : z :e S0.
+      {
+        rewrite <- HW0.
+        exact HzW.
+      }
+      exact (binunionI1
+        S0
+        D
+        z
+        HzS0).
+    + assume HWneq.
+      claim HWrest : W :e F :\: {S0}.
+      {
+        claim HWnotSing : W /:e {S0}.
+        {
+          assume HWSing.
+          claim HW0 : W = S0.
+          {
+            exact (SingE
+              S0
+              W
+              HWSing).
+          }
+          exact (HWneq
+            HW0).
+        }
+        exact (setminusI
+          F
+          {S0}
+          W
+          HWF
+          HWnotSing).
+      }
+      claim HzD : z :e D.
+      {
+        exact (UnionI
+          (F :\: {S0})
+          z
+          W
+          HzW
+          HWrest).
+      }
+      exact (binunionI2
+        S0
+        D
+        z
+        HzD).
+}
+claim HYsubX0 : Y c= Union F.
+{
+  exact HYsubUF.
+}
+claim HUFsubX : Union F c= X.
+{
+  let x.
+  assume HxUF.
+  apply (UnionE
+    F
+    x
+    HxUF).
+  let W.
+  assume HxWPack.
+  claim HxW : x :e W.
+  {
+    exact (andEL
+      (x :e W)
+      (W :e F)
+      HxWPack).
+  }
+  claim HWF : W :e F.
+  {
+    exact (andER
+      (x :e W)
+      (W :e F)
+      HxWPack).
+  }
+  claim HWOpen : W :e Tx.
+  {
+    exact (HsubF
+      W
+      HWF).
+  }
+  exact (topology_elem_subset
+    X
+    Tx
+    W
+    HtopX
+    HWOpen
+    x
+    HxW).
+}
+claim HS0SubUF : S0 c= Union F.
+{
+  let z.
+  assume HzS0.
+  exact (UnionI
+    F
+    z
+    S0
+    HzS0
+    HS0F).
+}
+claim HDSubUF : D c= Union F.
+{
+  let z.
+  assume HzD.
+  apply (UnionE
+    (F :\: {S0})
+    z
+    HzD).
+  let W.
+  assume HzWPack.
+  claim HzW : z :e W.
+  {
+    exact (andEL
+      (z :e W)
+      (W :e F :\: {S0})
+      HzWPack).
+  }
+  claim HWrest : W :e F :\: {S0}.
+  {
+    exact (andER
+      (z :e W)
+      (W :e F :\: {S0})
+      HzWPack).
+  }
+  claim HWF : W :e F.
+  {
+    exact (setminusE1
+      F
+      {S0}
+      W
+      HWrest).
+  }
+  exact (UnionI
+    F
+    z
+    W
+    HzW
+    HWF).
+}
+apply xm (D = Empty).
+- assume HDE.
+  let y.
+  assume HyY.
+  claim HyUF : y :e Union F.
+  {
+    exact (HYsubUF
+      y
+      HyY).
+  }
+  claim HySD : y :e S0 :\/: D.
+  {
+    exact (mem_eqL
+      y
+      (S0 :\/: D)
+      (Union F)
+      HUnionDecomp
+      HyUF).
+  }
+  apply (binunionE
+    S0
+    D
+    y
+    HySD).
+  * assume HyS0.
+    exact HyS0.
+  * assume HyD.
+    claim HyE : y :e Empty.
+    {
+      rewrite <- HDE.
+      exact HyD.
+    }
+    exact (EmptyE
+      y
+      HyE
+      (y :e S0)).
+- assume HDne.
+  set X0 := Union F.
+  claim HtopX0 :
+    topology_on X0 (subspace_topology X Tx X0).
+  {
+    exact (subspace_topology_is_topology
+      X
+      Tx
+      X0
+      HtopX
+      HUFsubX).
+  }
+  claim HYsubX0 : Y c= X0.
+  {
+    let y.
+    assume HyY.
+    exact (HYsubUF y HyY).
+  }
+  claim HS0SubX0 : S0 c= X0.
+  {
+    exact HS0SubUF.
+  }
+  claim HDSubX0 : D c= X0.
+  {
+    exact HDSubUF.
+  }
+  claim HS0OpenX0 : S0 :e subspace_topology X Tx X0.
+  {
+    claim HS0IntEq : S0 :/\: X0 = S0.
+    {
+      apply set_ext.
+      - let z.
+        assume HzInt.
+        exact (binintersectE1
+          S0
+          X0
+          z
+          HzInt).
+      - let z.
+        assume HzS0.
+        exact (binintersectI
+          S0
+          X0
+          z
+          HzS0
+          (HS0SubX0 z HzS0)).
+    }
+    rewrite <- HS0IntEq.
+    exact (subspace_topologyI
+      X
+      Tx
+      X0
+      S0
+      HS0Open).
+  }
+  claim HDOpenX0 : D :e subspace_topology X Tx X0.
+  {
+    claim HDIntEq : D :/\: X0 = D.
+    {
+      apply set_ext.
+      - let z.
+        assume HzInt.
+        exact (binintersectE1
+          D
+          X0
+          z
+          HzInt).
+      - let z.
+        assume HzD.
+        exact (binintersectI
+          D
+          X0
+          z
+          HzD
+          (HDSubX0 z HzD)).
+    }
+    rewrite <- HDIntEq.
+    exact (subspace_topologyI
+      X
+      Tx
+      X0
+      D
+      HDOpen).
+  }
+  claim HSepX0 : separation_of X0 S0 D.
+  {
+    exact (and6I
+      (S0 :e Power X0)
+      (D :e Power X0)
+      (S0 :/\: D = Empty)
+      (S0 <> Empty)
+      (D <> Empty)
+      (S0 :\/: D = X0)
+      (PowerI
+        X0
+        S0
+        HS0SubX0)
+      (PowerI
+        X0
+        D
+        HDSubX0)
+      HS0DisjD
+      (elem_implies_nonempty
+        S0
+        y0
+        Hy0S0)
+      HDne
+      HUnionDecomp).
+  }
+  claim HconnYX0 :
+    connected_space Y (subspace_topology X0 (subspace_topology X Tx X0) Y).
+  {
+    rewrite (subspace_topology_transitive_weak
+      X
+      Tx
+      X0
+      Y
+      HYsubX0).
+    exact HconnY.
+  }
+  claim HYSides :
+    Y c= S0 \/ Y c= D.
+  {
+    exact (connected_subset_in_separation_side
+      X0
+      (subspace_topology X Tx X0)
+      S0
+      D
+      Y
+      HtopX0
+      HYsubX0
+      HconnYX0
+      HS0OpenX0
+      HDOpenX0
+      HSepX0).
+  }
+  apply HYSides.
+  * assume HYS0.
+    exact HYS0.
+  * assume HYD.
+    let y.
+    assume HyY.
+    claim Hy0D : y0 :e D.
+    {
+      exact (HYD
+        y0
+        Hy0Y).
+    }
+    claim Hy0Int : y0 :e S0 :/\: D.
+    {
+      exact (binintersectI
+        S0
+        D
+        y0
+        Hy0S0
+        Hy0D).
+    }
+    claim Hy0E : y0 :e Empty.
+    {
+      exact (mem_eqR
+        y0
+        (S0 :/\: D)
+        Empty
+        HS0DisjD
+        Hy0Int).
+    }
+    exact (FalseE
+      (EmptyE
+        y0
+        Hy0E
+        False)
+      (y :e S0)).
+Qed.
+
 (** Infrastructure: a homeomorphic sheet has a unique point over each base point **)
 (** Proven Bob **)
 Theorem homeomorphic_sheet_unique_fiber_point : forall E Te B Tb p V U b:set,
