@@ -45080,7 +45080,39 @@ Definition covering_map_R_S1 : set :=
 (** Bounty 182 **)
 Theorem thm53_1_R_covers_S1 :
   covering_map R R_standard_topology S1 S1_topology covering_map_R_S1.
-admit.
+set p := covering_map_R_S1.
+claim Hcont :
+  continuous_map R R_standard_topology S1 S1_topology p.
+{
+  (** TODO Bob: prove continuity of x |-> (cos(2pi x), sin(2pi x)). **)
+  admit.
+}
+claim Hsurj :
+  surjective_map R S1 p.
+{
+  (** TODO Bob: prove every point on S1 has a real-angle preimage under p. **)
+  admit.
+}
+claim Heven :
+  forall b:set, b :e S1 ->
+    exists U:set, U :e S1_topology /\ b :e U /\
+      evenly_covered R R_standard_topology S1 S1_topology p U.
+{
+  (** TODO Bob: construct evenly covered arcs on S1 and inverse branches on R. **)
+  admit.
+}
+exact (andI
+  (continuous_map R R_standard_topology S1 S1_topology p /\
+    surjective_map R S1 p)
+  (forall b:set, b :e S1 ->
+    exists U:set, U :e S1_topology /\ b :e U /\
+      evenly_covered R R_standard_topology S1 S1_topology p U)
+  (andI
+    (continuous_map R R_standard_topology S1 S1_topology p)
+    (surjective_map R S1 p)
+    Hcont
+    Hsurj)
+  Heven).
 Admitted.
 
 (** from S53 Thm 53.2 (line 608 in algtop.tex) **)
