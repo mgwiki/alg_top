@@ -74173,13 +74173,39 @@ claim HphiSelIso : group_isomorphism G mult int integers_group_mult phi_sel.
 {
   claim HphiSelHom : group_homomorphism G mult int integers_group_mult phi_sel.
   {
-    (** TODO Bob: prove multiplicativity of phi_sel from generator normal forms. **)
-    admit.
+    claim HphiSelMult :
+      forall a b:set, a :e G -> b :e G ->
+        apply_fun phi_sel (apply_fun mult (a, b)) =
+        apply_fun integers_group_mult (apply_fun phi_sel a, apply_fun phi_sel b).
+    {
+      (** TODO Bob: prove multiplicativity of phi_sel from generator normal forms. **)
+      admit.
+    }
+    exact (andI
+      (function_on phi_sel G int)
+      (forall a b:set, a :e G -> b :e G ->
+        apply_fun phi_sel (apply_fun mult (a, b)) =
+        apply_fun integers_group_mult (apply_fun phi_sel a, apply_fun phi_sel b))
+      HphiSelFn
+      HphiSelMult).
   }
   claim HphiSelBij : bijection G int phi_sel.
   {
-    (** TODO Bob: prove injectivity/surjectivity using nonfiniteness and generator powers. **)
-    admit.
+    claim HphiSelUniqueSurj :
+      forall n:set, n :e int ->
+        exists g:set, g :e G /\ apply_fun phi_sel g = n /\
+          (forall g':set, g' :e G -> apply_fun phi_sel g' = n -> g' = g).
+    {
+      (** TODO Bob: prove unique-surjectivity using nonfiniteness and generator powers. **)
+      admit.
+    }
+    exact (andI
+      (function_on phi_sel G int)
+      (forall n:set, n :e int ->
+        exists g:set, g :e G /\ apply_fun phi_sel g = n /\
+          (forall g':set, g' :e G -> apply_fun phi_sel g' = n -> g' = g))
+      HphiSelFn
+      HphiSelUniqueSurj).
   }
   exact (andI
     (group_homomorphism G mult int integers_group_mult phi_sel)
