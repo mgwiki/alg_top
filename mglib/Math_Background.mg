@@ -86919,11 +86919,11 @@ claim HinclNotNul :
   ~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
     (graph S1 (fun x:set => x))).
 {
-  admit.
+  exact cor55_4a_inclusion_S1_R2_not_nulhomotopic.
 }
 exact (HinclNotNul
   HnulIncl).
-Admitted.
+Qed.
 
 (** from S55 Lem 55.3 direction (1) implies (2) (line 907 in algtop.tex) **)
 (** LATEX VERSION: Let h: S^1 -> X be continuous. If h is nulhomotopic, then h extends to a continuous map k: B^2 -> X. **)
