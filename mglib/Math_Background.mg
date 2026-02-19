@@ -78462,8 +78462,242 @@ claim HphiSelAtGenSuccPowers :
       HtO)
       HpsiPosEqE).
   }
-  (** TODO Bob: finish uniqueness argument using psi-image equalities and HnoPowAtSuccBoth. **)
-  admit.
+  let m.
+  assume HmO.
+  apply andI.
+  - set gpos := group_power_nat mult e x (ordsucc m).
+    claim HgposG : gpos :e G.
+    {
+      exact (HpowInG
+        x
+        HxG
+        (ordsucc m)
+        (omega_ordsucc m HmO)).
+    }
+    set npos := apply_fun phi_sel gpos.
+    claim HnposInt : npos :e int.
+    {
+      exact (HphiSelFn
+        gpos
+        HgposG).
+    }
+    claim HnposEq : npos = ordsucc m.
+    {
+      apply (int_3_cases
+        npos
+        HnposInt
+        (npos = ordsucc m)).
+      + let r.
+        assume HrO HnposNeg.
+        claim HgposAsNeg :
+          gpos = group_power_nat mult e (apply_fun inv x) (ordsucc r).
+        {
+          exact (HphiSelRepNegSucc
+            gpos
+            r
+            HgposG
+            HnposNeg
+            HrO).
+        }
+        claim HpsiBad :
+          apply_fun psi (ordsucc m) =
+          apply_fun psi (minus_SNo (ordsucc r)).
+        {
+          rewrite (HpsiAtPosSucc
+            m
+            HmO).
+          rewrite (HpsiAtNegSucc
+            r
+            HrO).
+          exact HgposAsNeg.
+        }
+        exact (FalseE
+          ((HpsiPosSuccNeNegSucc
+            m
+            r
+            HmO
+            HrO)
+            HpsiBad)
+          (npos = ordsucc m)).
+      + assume Hnpos0.
+        claim HgposEqE : gpos = e.
+        {
+          exact (HphiSelRepZero
+            gpos
+            HgposG
+            Hnpos0).
+        }
+        exact (FalseE
+          ((andEL
+            (group_power_nat mult e x (ordsucc m) <> e)
+            (group_power_nat mult e (apply_fun inv x) (ordsucc m) <> e)
+            (HnoPowAtSuccBoth
+              m
+              HmO))
+            HgposEqE)
+          (npos = ordsucc m)).
+      + let r.
+        assume HrO HnposPos.
+        claim HgposAsPos :
+          gpos = group_power_nat mult e x (ordsucc r).
+        {
+          exact (HphiSelRepPosSucc
+            gpos
+            r
+            HgposG
+            HnposPos
+            HrO).
+        }
+        claim HpsiEq :
+          apply_fun psi (ordsucc m) = apply_fun psi (ordsucc r).
+        {
+          rewrite (HpsiAtPosSucc
+            m
+            HmO).
+          rewrite (HpsiAtPosSucc
+            r
+            HrO).
+          exact HgposAsPos.
+        }
+        claim HmEqR : m = r.
+        {
+          exact (HpsiEqPosSuccIndex
+            m
+            r
+            HmO
+            HrO
+            HpsiEq).
+        }
+        rewrite HnposPos.
+        rewrite <- HmEqR.
+        reflexivity.
+    }
+    claim HnposDef : npos = apply_fun phi_sel gpos.
+    {
+      reflexivity.
+    }
+    rewrite <- HnposDef.
+    exact HnposEq.
+  - set gneg := group_power_nat mult e (apply_fun inv x) (ordsucc m).
+    claim HgnegG : gneg :e G.
+    {
+      exact (HpowInG
+        (apply_fun inv x)
+        HinvXG
+        (ordsucc m)
+        (omega_ordsucc m HmO)).
+    }
+    set nneg := apply_fun phi_sel gneg.
+    claim HnnegInt : nneg :e int.
+    {
+      exact (HphiSelFn
+        gneg
+        HgnegG).
+    }
+    claim HnnegEq : nneg = minus_SNo (ordsucc m).
+    {
+      apply (int_3_cases
+        nneg
+        HnnegInt
+        (nneg = minus_SNo (ordsucc m))).
+      + let r.
+        assume HrO HnnegNeg.
+        claim HgnegAsNeg :
+          gneg = group_power_nat mult e (apply_fun inv x) (ordsucc r).
+        {
+          exact (HphiSelRepNegSucc
+            gneg
+            r
+            HgnegG
+            HnnegNeg
+            HrO).
+        }
+        claim HpsiEq :
+          apply_fun psi (minus_SNo (ordsucc m)) =
+          apply_fun psi (minus_SNo (ordsucc r)).
+        {
+          rewrite (HpsiAtNegSucc
+            m
+            HmO).
+          rewrite (HpsiAtNegSucc
+            r
+            HrO).
+          exact HgnegAsNeg.
+        }
+        claim HmEqR : m = r.
+        {
+          exact (HpsiEqNegSuccIndex
+            m
+            r
+            HmO
+            HrO
+            HpsiEq).
+        }
+        rewrite HnnegNeg.
+        rewrite <- HmEqR.
+        reflexivity.
+      + assume Hnneg0.
+        claim HgnegEqE : gneg = e.
+        {
+          exact (HphiSelRepZero
+            gneg
+            HgnegG
+            Hnneg0).
+        }
+        exact (FalseE
+          ((andER
+            (group_power_nat mult e x (ordsucc m) <> e)
+            (group_power_nat mult e (apply_fun inv x) (ordsucc m) <> e)
+            (HnoPowAtSuccBoth
+              m
+              HmO))
+            HgnegEqE)
+          (nneg = minus_SNo (ordsucc m))).
+      + let r.
+        assume HrO HnnegPos.
+        claim HgnegAsPos :
+          gneg = group_power_nat mult e x (ordsucc r).
+        {
+          exact (HphiSelRepPosSucc
+            gneg
+            r
+            HgnegG
+            HnnegPos
+            HrO).
+        }
+        claim HgposEqNeg :
+          group_power_nat mult e x (ordsucc r) = gneg.
+        {
+          symmetry.
+          exact HgnegAsPos.
+        }
+        claim HpsiBad :
+          apply_fun psi (ordsucc r) =
+          apply_fun psi (minus_SNo (ordsucc m)).
+        {
+          rewrite (HpsiAtPosSucc
+            r
+            HrO).
+          rewrite (HpsiAtNegSucc
+            m
+            HmO).
+          exact HgposEqNeg.
+        }
+        exact (FalseE
+          ((HpsiPosSuccNeNegSucc
+            r
+            m
+            HrO
+            HmO)
+            HpsiBad)
+          (nneg = minus_SNo (ordsucc m))).
+    }
+    claim HnnegDef : nneg = apply_fun phi_sel gneg.
+    {
+      reflexivity.
+    }
+    rewrite <- HnnegDef.
+    exact HnnegEq.
 }
 claim HphiSelIso : group_isomorphism G mult int integers_group_mult phi_sel.
 {
