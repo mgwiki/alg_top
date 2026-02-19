@@ -134326,6 +134326,138 @@ apply (andI (group_structure H mult e inv)
   exact (HcommG x y (HHG x HxH) (HHG y HyH)).
 Qed.
 
+(** Helper: product of all-identity sequence equals identity **)
+(** Proven Dave **)
+Lemma nat_primrec_all_e :
+  forall G mult e:set,
+  function_on mult (setprod G G) G ->
+  e :e G ->
+  (forall x:set, x :e G -> apply_fun mult (x, e) = x) ->
+  forall ys:set,
+  forall n:set, n :e omega ->
+  (forall i:set, i :e n -> apply_fun ys i :e G) ->
+  (forall i:set, i :e n -> apply_fun ys i = e) ->
+  nat_primrec e (fun i r => apply_fun mult (r, apply_fun ys i)) n = e.
+let G mult e.
+assume HmultFn HeG HrightId.
+let ys.
+claim Hnat : forall n:set, nat_p n ->
+  (forall i:set, i :e n -> apply_fun ys i :e G) ->
+  (forall i:set, i :e n -> apply_fun ys i = e) ->
+  nat_primrec e (fun i r => apply_fun mult (r, apply_fun ys i)) n = e.
+{
+  apply nat_ind.
+  - assume _ _.
+    prove nat_primrec e (fun i r => apply_fun mult (r, apply_fun ys i)) 0 = e.
+    rewrite (nat_primrec_0 e (fun i r => apply_fun mult (r, apply_fun ys i))).
+    reflexivity.
+  - let k. assume Hk : nat_p k.
+    assume IH : (forall i:set, i :e k -> apply_fun ys i :e G) ->
+      (forall i:set, i :e k -> apply_fun ys i = e) ->
+      nat_primrec e (fun i r => apply_fun mult (r, apply_fun ys i)) k = e.
+    assume HysG_n1 : forall i:set, i :e ordsucc k -> apply_fun ys i :e G.
+    assume Hyse_n1 : forall i:set, i :e ordsucc k -> apply_fun ys i = e.
+    prove nat_primrec e (fun i r => apply_fun mult (r, apply_fun ys i)) (ordsucc k) = e.
+    rewrite (nat_primrec_S e (fun i r => apply_fun mult (r, apply_fun ys i)) k Hk).
+    prove apply_fun mult (nat_primrec e (fun i r => apply_fun mult (r, apply_fun ys i)) k, apply_fun ys k) = e.
+    claim Hprod_k : nat_primrec e (fun i r => apply_fun mult (r, apply_fun ys i)) k = e.
+    {
+      apply IH.
+      - let i. assume Hi. exact (HysG_n1 i (ordsuccI1 k i Hi)).
+      - let i. assume Hi. exact (Hyse_n1 i (ordsuccI1 k i Hi)).
+    }
+    rewrite Hprod_k.
+    claim Hysk : apply_fun ys k = e.
+    { exact (Hyse_n1 k (ordsuccI2 k)). }
+    rewrite Hysk.
+    exact (HrightId e HeG).
+}
+let n. assume Hn HysG Hyse.
+exact (Hnat n (omega_nat_p n Hn) HysG Hyse).
+Qed.
+
+(** Helper: product with single non-identity element equals that element **)
+(** Proven Dave **)
+Lemma nat_primrec_single_nonzero :
+  forall G mult e:set,
+  function_on mult (setprod G G) G ->
+  e :e G ->
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x) ->
+  (forall x:set, x :e G -> apply_fun mult (x, e) = x) ->
+  forall ys:set,
+  forall n:set, n :e omega ->
+  forall i0:set, i0 :e n ->
+  (forall i:set, i :e n -> apply_fun ys i :e G) ->
+  (forall i:set, i :e n -> i <> i0 -> apply_fun ys i = e) ->
+  nat_primrec e (fun i r => apply_fun mult (r, apply_fun ys i)) n = apply_fun ys i0.
+let G mult e.
+assume HmultFn HeG HleftId HrightId.
+let ys.
+claim Hnat : forall n:set, nat_p n ->
+  forall i0:set, i0 :e n ->
+  (forall i:set, i :e n -> apply_fun ys i :e G) ->
+  (forall i:set, i :e n -> i <> i0 -> apply_fun ys i = e) ->
+  nat_primrec e (fun i r => apply_fun mult (r, apply_fun ys i)) n = apply_fun ys i0.
+{
+  apply nat_ind.
+  - let i0. assume Hi0 : i0 :e 0. assume _ _.
+    exact (EmptyE i0 Hi0 (nat_primrec e (fun i r => apply_fun mult (r, apply_fun ys i)) 0 = apply_fun ys i0)).
+  - let k. assume Hk : nat_p k.
+    assume IH : forall i0:set, i0 :e k ->
+      (forall i:set, i :e k -> apply_fun ys i :e G) ->
+      (forall i:set, i :e k -> i <> i0 -> apply_fun ys i = e) ->
+      nat_primrec e (fun i r => apply_fun mult (r, apply_fun ys i)) k = apply_fun ys i0.
+    let i0. assume Hi0_n1 : i0 :e ordsucc k.
+    assume HysG_n1 : forall i:set, i :e ordsucc k -> apply_fun ys i :e G.
+    assume Hdist_n1 : forall i:set, i :e ordsucc k -> i <> i0 -> apply_fun ys i = e.
+    prove nat_primrec e (fun i r => apply_fun mult (r, apply_fun ys i)) (ordsucc k) = apply_fun ys i0.
+    rewrite (nat_primrec_S e (fun i r => apply_fun mult (r, apply_fun ys i)) k Hk).
+    prove apply_fun mult (nat_primrec e (fun i r => apply_fun mult (r, apply_fun ys i)) k, apply_fun ys k) = apply_fun ys i0.
+    apply (ordsuccE k i0 Hi0_n1).
+    + assume Hi0_k : i0 :e k.
+      prove apply_fun mult (nat_primrec e (fun i r => apply_fun mult (r, apply_fun ys i)) k, apply_fun ys k) = apply_fun ys i0.
+      claim Hprod_k : nat_primrec e (fun i r => apply_fun mult (r, apply_fun ys i)) k = apply_fun ys i0.
+      {
+        apply (IH i0 Hi0_k).
+        - let i. assume Hi. exact (HysG_n1 i (ordsuccI1 k i Hi)).
+        - let i. assume Hi Hi_ne. exact (Hdist_n1 i (ordsuccI1 k i Hi) Hi_ne).
+      }
+      claim Hk_ne_i0 : k <> i0.
+      {
+        assume Hk_eq : k = i0.
+        exact (In_irref k (eq_subst_mem k i0 k Hk_eq Hi0_k)).
+      }
+      claim Hysk : apply_fun ys k = e.
+      { exact (Hdist_n1 k (ordsuccI2 k) Hk_ne_i0). }
+      rewrite Hprod_k.
+      rewrite Hysk.
+      exact (HrightId (apply_fun ys i0) (HysG_n1 i0 Hi0_n1)).
+    + assume Hi0_eq_k : i0 = k.
+      prove apply_fun mult (nat_primrec e (fun i r => apply_fun mult (r, apply_fun ys i)) k, apply_fun ys k) = apply_fun ys i0.
+      claim Hprod_k_e : nat_primrec e (fun i r => apply_fun mult (r, apply_fun ys i)) k = e.
+      {
+        apply (nat_primrec_all_e G mult e HmultFn HeG HrightId ys k (nat_p_omega k Hk)).
+        - let i. assume Hi. exact (HysG_n1 i (ordsuccI1 k i Hi)).
+        - let i. assume Hi_k.
+          apply (Hdist_n1 i (ordsuccI1 k i Hi_k)).
+          assume Hi_eq_i0 : i = i0.
+          claim Hi_eq_k : i = k.
+          { rewrite Hi_eq_i0. exact Hi0_eq_k. }
+          exact (In_irref k (eq_subst_mem_rev i k k Hi_eq_k Hi_k)).
+      }
+      rewrite Hprod_k_e.
+      claim Hys_i0_eq_k : apply_fun ys i0 = apply_fun ys k.
+      { rewrite Hi0_eq_k. reflexivity. }
+      rewrite Hys_i0_eq_k.
+      exact (HleftId (apply_fun ys k) (HysG_n1 k (ordsuccI2 k))).
+}
+let n. assume Hn : n :e omega.
+let i0. assume Hi0 : i0 :e n.
+assume HysG : forall i:set, i :e n -> apply_fun ys i :e G.
+assume Hdist : forall i:set, i :e n -> i <> i0 -> apply_fun ys i = e.
+exact (Hnat n (omega_nat_p n Hn) i0 Hi0 HysG Hdist).
+Qed.
+
 (** from S67 Lem 67.1 (line 2609 in algtop.tex): extension condition for direct sums **)
 (** LATEX VERSION: If G is the direct sum of the groups G_alpha, then given any abelian **)
 (** group H and any family of homomorphisms h_alpha: G_alpha -> H, there exists a unique **)
