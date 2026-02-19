@@ -24897,7 +24897,7 @@ apply set_ext.
     x0
     (constant_path x0)
     HconstInLoop).
-Admitted.
+Qed.
 
 (** from S52 Definition (line 374 in algtop.tex): the alpha-hat map for change of basepoint **)
 (** LATEX VERSION: Let alpha be a path from x0 to x1. Define alpha-hat: pi1(X,x0) -> pi1(X,x1) by alpha-hat([f]) = [alpha-bar] . [f] . [alpha]. **)
@@ -34690,7 +34690,7 @@ apply andI.
   + exact Hseg_cont_A.
   + exact Hseg_at_0.
 - exact Hseg_at_1.
-Admitted.
+Qed.
 
 (** from S52 Exercise 1b (line 496 in algtop.tex) **)
 (** LATEX VERSION: If A is star convex, A is simply connected. **)
@@ -70280,7 +70280,7 @@ exact (homotopy_lift_from_exists_witness
   e0
   F
   Hex).
-Admitted.
+Qed.
 
 (** from S54 Lem 54.2 path homotopy preservation (line 783 in algtop.tex) **)
 (** LATEX VERSION: If F is a path homotopy, then the lift F_tilde is also a path homotopy. **)
@@ -92034,7 +92034,7 @@ claim H0eq1 : 0 = 1.
     HphiEq1).
 }
 exact (neq_0_1 H0eq1).
-Admitted.
+Qed.
 
 (** S55 helper: S1 lies in R2 minus origin. **)
 (** Proven Charlie **)
@@ -92334,7 +92334,7 @@ claim HnulIncl :
 }
 exact (cor55_4a_inclusion_S1_R2_not_nulhomotopic
   HnulIncl).
-Admitted. (** depends on non-proved cor55_4a_inclusion_S1_R2_not_nulhomotopic **)
+Qed.
 
 (** from S55 Thm 55.5 (line 950 in algtop.tex) **)
 (** LATEX VERSION: Given a nonvanishing vector field on B^2, there exists a point of S^1 where the vector field points directly inward and a point of S^1 where it points directly outward. **)
@@ -96075,7 +96075,7 @@ claim HioCore :
        (exists x:set, x :e S1 /\ points_directly_outward v x))).
 }
 exact HioCore.
-Admitted.
+Qed.
 
 (** from S55 Thm 55.6 (line 983 in algtop.tex): Brouwer fixed-point theorem for the disc **)
 (** LATEX VERSION: If f: B^2 -> B^2 is continuous, then there exists a point x in B^2 such that f(x) = x. **)
@@ -97648,7 +97648,7 @@ apply (xm (exists x:set, x :e B2 /\ apply_fun f x = x)).
   exact (FalseE
     Hcontra
     (exists x:set, x :e B2 /\ apply_fun f x = x)).
-Admitted.
+Qed.
 
 (** Infrastructure for starred Cor 55.7: finite sum of real-valued terms **)
 (** finite_real_sum f n = f(0) + f(1) + ... + f(n-1) **)
