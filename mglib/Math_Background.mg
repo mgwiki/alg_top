@@ -136757,6 +136757,50 @@ Theorem efam_not_in_Gfam_nontrivial : forall G multG eG invG J Gfam efam:set,
   free_product_of_subgroups G multG eG invG J Gfam efam ->
   forall al:set, al :e J ->
     apply_fun efam al :e apply_fun Gfam al -> apply_fun efam al <> eG -> False.
+let G multG eG invG J Gfam efam.
+assume Hfp.
+let al.
+assume Hal Hefam_Gal Hefam_ne.
+apply (and5E
+  (group_structure G multG eG invG)
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G multG eG invG)
+  (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+    forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x = eG)
+  (subgroups_generate G multG eG invG J Gfam)
+  (forall x:set, x :e G -> x <> eG ->
+    exists n xs:set,
+      reduced_word J Gfam efam n xs /\ n <> 0 /\
+      word_product multG eG xs n = x /\
+      (forall n' xs':set,
+        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+        word_product multG eG xs' n' = x ->
+        n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
+  Hfp).
+assume Hgrp Hsub Hdisjoint Hgen Huniq.
+claim Hefam_G : apply_fun efam al :e G.
+{
+  apply (and4E
+    (apply_fun Gfam al c= G)
+    (eG :e apply_fun Gfam al)
+    (forall x y:set, x :e apply_fun Gfam al -> y :e apply_fun Gfam al ->
+      apply_fun multG (x, y) :e apply_fun Gfam al)
+    (forall x:set, x :e apply_fun Gfam al -> apply_fun invG x :e apply_fun Gfam al)
+    (Hsub al Hal)).
+  assume HsubGal _ _ _.
+  exact (HsubGal
+    (apply_fun efam al)
+    Hefam_Gal).
+}
+apply (Huniq
+  (apply_fun efam al)
+  Hefam_G
+  Hefam_ne).
+let nw.
+assume Hex_xs.
+(** Remaining work:
+    exclude all reduced-word possibilities for efam(al) using subgroup disjointness
+    and reduced-word uniqueness. The full case analysis is currently carried out
+    inline in lemma68_1's Hefam_contra branch and should be lifted here. **)
 admit.
 Admitted.
 
