@@ -134149,6 +134149,111 @@ Theorem thm67_4_existence_external_direct_sum :
 admit.
 Admitted.
 
+(** Helper: group homomorphism preserves identity **)
+(** Proven Alice **)
+Theorem group_hom_preserves_identity :
+  forall G1 mult1 e1 inv1 G2 mult2 e2 inv2 phi:set,
+  group_structure G1 mult1 e1 inv1 ->
+  group_structure G2 mult2 e2 inv2 ->
+  group_homomorphism G1 mult1 G2 mult2 phi ->
+  apply_fun phi e1 = e2.
+let G1 mult1 e1 inv1 G2 mult2 e2 inv2 phi.
+assume Hgrp1 : group_structure G1 mult1 e1 inv1.
+assume Hgrp2 : group_structure G2 mult2 e2 inv2.
+assume Hphi : group_homomorphism G1 mult1 G2 mult2 phi.
+apply (and6E
+  (function_on mult1 (setprod G1 G1) G1)
+  (function_on inv1 G1 G1)
+  (e1 :e G1)
+  (forall x y z:set, x :e G1 -> y :e G1 -> z :e G1 ->
+    apply_fun mult1 (apply_fun mult1 (x, y), z) = apply_fun mult1 (x, apply_fun mult1 (y, z)))
+  (forall x:set, x :e G1 -> apply_fun mult1 (e1, x) = x /\ apply_fun mult1 (x, e1) = x)
+  (forall x:set, x :e G1 ->
+    apply_fun mult1 (x, apply_fun inv1 x) = e1 /\ apply_fun mult1 (apply_fun inv1 x, x) = e1)
+  Hgrp1).
+assume Hmult1Fn Hinv1Fn He1G1 Hassoc1 Hid1 Hinv1Law.
+apply (and6E
+  (function_on mult2 (setprod G2 G2) G2)
+  (function_on inv2 G2 G2)
+  (e2 :e G2)
+  (forall x y z:set, x :e G2 -> y :e G2 -> z :e G2 ->
+    apply_fun mult2 (apply_fun mult2 (x, y), z) = apply_fun mult2 (x, apply_fun mult2 (y, z)))
+  (forall x:set, x :e G2 -> apply_fun mult2 (e2, x) = x /\ apply_fun mult2 (x, e2) = x)
+  (forall x:set, x :e G2 ->
+    apply_fun mult2 (x, apply_fun inv2 x) = e2 /\ apply_fun mult2 (apply_fun inv2 x, x) = e2)
+  Hgrp2).
+assume Hmult2Fn Hinv2Fn He2G2 Hassoc2 Hid2 Hinv2Law.
+set pe := apply_fun phi e1.
+claim HpeG2 : pe :e G2.
+{
+  exact (group_homomorphism_function_on G1 mult1 G2 mult2 phi Hphi e1 He1G1).
+}
+claim Hinv_peG2 : apply_fun inv2 pe :e G2.
+{
+  exact (Hinv2Fn pe HpeG2).
+}
+(** mult2(pe, pe) = pe (since pe = phi(mult1(e1,e1)) = mult2(phi(e1),phi(e1))) **)
+claim Hpe_idem : apply_fun mult2 (pe, pe) = pe.
+{
+  claim Hee : apply_fun mult1 (e1, e1) = e1.
+  {
+    exact (andEL
+      (apply_fun mult1 (e1, e1) = e1)
+      (apply_fun mult1 (e1, e1) = e1)
+      (Hid1 e1 He1G1)).
+  }
+  claim Hhom_ee : apply_fun phi (apply_fun mult1 (e1, e1)) =
+    apply_fun mult2 (apply_fun phi e1, apply_fun phi e1).
+  {
+    exact (group_homomorphism_mult_rule G1 mult1 G2 mult2 phi e1 e1 Hphi He1G1 He1G1).
+  }
+  (** phi(e1) = phi(mult1(e1,e1)) = mult2(phi(e1), phi(e1)) **)
+  (** phi(mult1(e1,e1)) rewrites to phi(e1) using Hee **)
+  (** Goal: mult2(pe, pe) = pe **)
+  rewrite <- Hhom_ee.
+  rewrite Hee. reflexivity.
+}
+(** In a group, a.a = a implies a = e. Apply to pe. **)
+(** pe.inv(pe) = e2, and (pe.pe).inv(pe) = pe.inv(pe) by rewriting pe.pe=pe **)
+(** By assoc, pe.inv(pe) = e2, and we get pe.e2 = e2, so pe = e2 **)
+claim Hinv_pe : apply_fun mult2 (pe, apply_fun inv2 pe) = e2.
+{
+  exact (andEL
+    (apply_fun mult2 (pe, apply_fun inv2 pe) = e2)
+    (apply_fun mult2 (apply_fun inv2 pe, pe) = e2)
+    (Hinv2Law pe HpeG2)).
+}
+claim Hrid_pe : apply_fun mult2 (pe, e2) = pe.
+{
+  exact (andER
+    (apply_fun mult2 (e2, pe) = pe)
+    (apply_fun mult2 (pe, e2) = pe)
+    (Hid2 pe HpeG2)).
+}
+(** (pe.pe).inv(pe) = pe.inv(pe) [rewrite pe.pe=pe in LHS] **)
+claim H1 : apply_fun mult2 (apply_fun mult2 (pe, pe), apply_fun inv2 pe) =
+  apply_fun mult2 (pe, apply_fun inv2 pe).
+{
+  rewrite Hpe_idem at 1. reflexivity.
+}
+(** (pe.pe).inv(pe) = pe.(pe.inv(pe)) [by assoc] **)
+claim H2 : apply_fun mult2 (apply_fun mult2 (pe, pe), apply_fun inv2 pe) =
+  apply_fun mult2 (pe, apply_fun mult2 (pe, apply_fun inv2 pe)).
+{
+  exact (Hassoc2 pe pe (apply_fun inv2 pe) HpeG2 HpeG2 Hinv_peG2).
+}
+(** pe.e2 = e2 **)
+claim H3 : apply_fun mult2 (pe, e2) = e2.
+{
+  rewrite <- Hinv_pe.
+  rewrite <- H2.
+  exact H1.
+}
+(** pe = e2 **)
+rewrite <- Hrid_pe.
+exact H3.
+Qed.
+
 (** from S67 Lem 67.5 (line 2660 in algtop.tex): extension condition for external direct sums **)
 (** LATEX VERSION: If each i_alpha is a monomorphism and G is the direct sum of i_alpha(G_alpha), **)
 (** then given any abelian group H and homomorphisms h_alpha: G_alpha -> H, there exists a unique **)
@@ -135760,7 +135865,6 @@ Admitted.
 (** to G_alpha equals h_alpha. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 182 **)
-(** Lock Alice 1771481109 **)
 Theorem lemma68_1_extension_condition_free_product :
   forall G multG eG invG J Gfam efam:set,
   free_product_of_subgroups G multG eG invG J Gfam efam ->
