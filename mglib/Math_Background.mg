@@ -66900,6 +66900,239 @@ exact (continuous_image_connected
   Hh).
 Qed.
 
+(** Infrastructure: any two points in I^2 lie in a connected L-shaped subset **)
+(** Proven Bob **)
+Theorem lemma54_2_connected_L_through_points : forall q z:set,
+  q :e unit_square ->
+  z :e unit_square ->
+  exists C:set,
+    C c= unit_square /\
+    connected_space C (subspace_topology unit_square unit_square_topology C) /\
+    q :e C /\ z :e C.
+let q z.
+assume Hq Hz.
+set C := Union (UPair (setprod {q 0} unit_interval) (setprod unit_interval {z 1})).
+claim HCdef :
+  C = Union (UPair (setprod {q 0} unit_interval) (setprod unit_interval {z 1})).
+{
+  reflexivity.
+}
+claim Hq0I : q 0 :e unit_interval.
+{
+  exact (ap0_Sigma
+    unit_interval
+    (fun _ : set => unit_interval)
+    q
+    Hq).
+}
+claim Hq1I : q 1 :e unit_interval.
+{
+  exact (ap1_Sigma
+    unit_interval
+    (fun _ : set => unit_interval)
+    q
+    Hq).
+}
+claim Hz0I : z 0 :e unit_interval.
+{
+  exact (ap0_Sigma
+    unit_interval
+    (fun _ : set => unit_interval)
+    z
+    Hz).
+}
+claim Hz1I : z 1 :e unit_interval.
+{
+  exact (ap1_Sigma
+    unit_interval
+    (fun _ : set => unit_interval)
+    z
+    Hz).
+}
+claim HCsub : C c= unit_square.
+{
+  let x.
+  assume HxC.
+  claim HleftSub : setprod {q 0} unit_interval c= unit_square.
+  {
+    exact (setprod_Subq
+      {q 0}
+      unit_interval
+      unit_interval
+      unit_interval
+      (singleton_subset (q 0) unit_interval Hq0I)
+      (fun y Hy => Hy)).
+  }
+  claim HbottomSub : setprod unit_interval {z 1} c= unit_square.
+  {
+    exact (setprod_Subq
+      unit_interval
+      {z 1}
+      unit_interval
+      unit_interval
+      (fun y Hy => Hy)
+      (singleton_subset (z 1) unit_interval Hz1I)).
+  }
+  apply (UnionE
+    (UPair (setprod {q 0} unit_interval) (setprod unit_interval {z 1}))
+    x
+    HxC).
+  let V.
+  assume HVPack.
+  claim HxV : x :e V.
+  {
+    exact (andEL
+      (x :e V)
+      (V :e UPair (setprod {q 0} unit_interval) (setprod unit_interval {z 1}))
+      HVPack).
+  }
+  claim HVfam : V :e UPair (setprod {q 0} unit_interval) (setprod unit_interval {z 1}).
+  {
+    exact (andER
+      (x :e V)
+      (V :e UPair (setprod {q 0} unit_interval) (setprod unit_interval {z 1}))
+      HVPack).
+  }
+  apply (UPairE
+    V
+    (setprod {q 0} unit_interval)
+    (setprod unit_interval {z 1})
+    HVfam).
+  - assume HVleft.
+    claim HxLeft : x :e setprod {q 0} unit_interval.
+    {
+      rewrite <- HVleft.
+      exact HxV.
+    }
+    exact (HleftSub x HxLeft).
+  - assume HVbottom.
+    claim HxBottom : x :e setprod unit_interval {z 1}.
+    {
+      rewrite <- HVbottom.
+      exact HxV.
+    }
+    exact (HbottomSub x HxBottom).
+}
+claim HCconn :
+  connected_space C (subspace_topology unit_square unit_square_topology C).
+{
+  exact (lemma54_2_L_shape_connected
+    (q 0)
+    (z 1)
+    Hq0I
+    Hz1I).
+}
+claim HqC : q :e C.
+{
+  claim HqUnion :
+    q :e Union (UPair (setprod {q 0} unit_interval) (setprod unit_interval {z 1})).
+  {
+  claim Hqeta : q = (q 0, q 1).
+  {
+    exact (setprod_eta unit_interval unit_interval q Hq).
+  }
+  claim HqPairIn :
+    (q 0, q 1) :e setprod {q 0} unit_interval.
+  {
+    exact (tuple_2_setprod_by_pair_Sigma
+      {q 0}
+      unit_interval
+      (q 0)
+      (q 1)
+      (SingI (q 0))
+      Hq1I).
+  }
+  claim HqSetIn :
+    setprod {q 0} unit_interval :e UPair (setprod {q 0} unit_interval) (setprod unit_interval {z 1}).
+  {
+    exact (UPairI1
+      (setprod {q 0} unit_interval)
+      (setprod unit_interval {z 1})).
+  }
+  claim HqPairUnion :
+    (q 0, q 1) :e Union (UPair (setprod {q 0} unit_interval) (setprod unit_interval {z 1})).
+  {
+    exact (UnionI
+      (UPair (setprod {q 0} unit_interval) (setprod unit_interval {z 1}))
+      (q 0, q 1)
+      (setprod {q 0} unit_interval)
+      HqPairIn
+      HqSetIn).
+  }
+  rewrite Hqeta at 1.
+  exact HqPairUnion.
+  }
+  exact (mem_eqL
+    q
+    C
+    (Union (UPair (setprod {q 0} unit_interval) (setprod unit_interval {z 1})))
+    HCdef
+    HqUnion).
+}
+claim HzC : z :e C.
+{
+  claim HzUnion :
+    z :e Union (UPair (setprod {q 0} unit_interval) (setprod unit_interval {z 1})).
+  {
+  claim Hzeta : z = (z 0, z 1).
+  {
+    exact (setprod_eta unit_interval unit_interval z Hz).
+  }
+  claim HzPairIn :
+    (z 0, z 1) :e setprod unit_interval {z 1}.
+  {
+    exact (tuple_2_setprod_by_pair_Sigma
+      unit_interval
+      {z 1}
+      (z 0)
+      (z 1)
+      Hz0I
+      (SingI (z 1))).
+  }
+  claim HzSetIn :
+    setprod unit_interval {z 1} :e UPair (setprod {q 0} unit_interval) (setprod unit_interval {z 1}).
+  {
+    exact (UPairI2
+      (setprod {q 0} unit_interval)
+      (setprod unit_interval {z 1})).
+  }
+  claim HzPairUnion :
+    (z 0, z 1) :e Union (UPair (setprod {q 0} unit_interval) (setprod unit_interval {z 1})).
+  {
+    exact (UnionI
+      (UPair (setprod {q 0} unit_interval) (setprod unit_interval {z 1}))
+      (z 0, z 1)
+      (setprod unit_interval {z 1})
+      HzPairIn
+      HzSetIn).
+  }
+  rewrite Hzeta at 1.
+  exact HzPairUnion.
+  }
+  exact (mem_eqL
+    z
+    C
+    (Union (UPair (setprod {q 0} unit_interval) (setprod unit_interval {z 1})))
+    HCdef
+    HzUnion).
+}
+witness C.
+exact (andI
+  (C c= unit_square /\ connected_space C (subspace_topology unit_square unit_square_topology C) /\
+    q :e C)
+  (z :e C)
+  (andI
+    (C c= unit_square /\ connected_space C (subspace_topology unit_square unit_square_topology C))
+    (q :e C)
+    (andI
+      (C c= unit_square)
+      (connected_space C (subspace_topology unit_square unit_square_topology C))
+      HCsub
+      HCconn)
+    HqC)
+  HzC).
+Qed.
+
 (** Infrastructure: existence package for homotopy lifting in Lem 54.2 **)
 Theorem lemma54_2_homotopy_lifting_exists : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
