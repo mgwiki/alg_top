@@ -140281,7 +140281,457 @@ apply (nat_inv nw Hnw_nat).
                   Hxsm_eG).
               }
           + assume Hb0_ne_al.
-            admit.
+            apply (xm (apply_fun xsw 0 = eG)).
+            * assume Hxs0_eG.
+              claim H0_in_nw : 0 :e nw.
+              {
+                rewrite Hnw_eq.
+                exact (nat_0_in_ordsucc
+                  m
+                  Hm_nat).
+              }
+              claim Hxs0_G : apply_fun xsw 0 :e G.
+              {
+                exact (Hxsw_in_G
+                  0
+                  H0_in_nw).
+              }
+              set xs_suf3 := graph m (fun i:set => apply_fun xsw (ordsucc i)).
+              claim Hxs_suf3_val : forall i:set, i :e m ->
+                apply_fun xs_suf3 i = apply_fun xsw (ordsucc i).
+              {
+                let i.
+                assume Hi.
+                exact (apply_fun_graph
+                  m
+                  (fun i0:set => apply_fun xsw (ordsucc i0))
+                  i
+                  Hi).
+              }
+              claim Hm_omega : m :e omega.
+              {
+                exact (nat_p_omega
+                  m
+                  Hm_nat).
+              }
+              claim Hredw_suf3 : reduced_word J Gfam efam m xs_suf3.
+              {
+                prove m :e omega /\
+                  (forall i:set, i :e m ->
+                    exists alpha:set, alpha :e J /\
+                      apply_fun xs_suf3 i :e apply_fun Gfam alpha /\
+                      apply_fun xs_suf3 i <> apply_fun efam alpha) /\
+                  (forall i:set, i :e m -> ordsucc i :e m ->
+                    forall alpha beta:set, alpha :e J -> beta :e J ->
+                      apply_fun xs_suf3 i :e apply_fun Gfam alpha ->
+                      apply_fun xs_suf3 (ordsucc i) :e apply_fun Gfam beta ->
+                      alpha <> beta).
+                apply and3I.
+                - exact Hm_omega.
+                - let i.
+                  assume Hi.
+                  claim Hsi_nw : ordsucc i :e nw.
+                  {
+                    rewrite Hnw_eq.
+                    exact (nat_ordsucc_in_ordsucc
+                      m
+                      Hm_nat
+                      i
+                      Hi).
+                  }
+                  claim Hsuf_eq : apply_fun xs_suf3 i = apply_fun xsw (ordsucc i).
+                  {
+                    exact (Hxs_suf3_val
+                      i
+                      Hi).
+                  }
+                  apply (Helem
+                    (ordsucc i)
+                    Hsi_nw).
+                  let alpha.
+                  assume Hcomb.
+                  apply (and3E
+                    (alpha :e J)
+                    (apply_fun xsw (ordsucc i) :e apply_fun Gfam alpha)
+                    (apply_fun xsw (ordsucc i) <> apply_fun efam alpha)
+                    Hcomb).
+                  assume HaJ Hxi_Ga Hxi_ne.
+                  witness alpha.
+                  apply and3I.
+                  + exact HaJ.
+                  + rewrite Hsuf_eq.
+                    exact Hxi_Ga.
+                  + rewrite Hsuf_eq.
+                    exact Hxi_ne.
+                - let i.
+                  assume Hi Hsi.
+                  claim Hsi_nw : ordsucc i :e nw.
+                  {
+                    rewrite Hnw_eq.
+                    exact (nat_ordsucc_in_ordsucc
+                      m
+                      Hm_nat
+                      i
+                      Hi).
+                  }
+                  claim Hssi_nw : ordsucc (ordsucc i) :e nw.
+                  {
+                    rewrite Hnw_eq.
+                    exact (nat_ordsucc_in_ordsucc
+                      m
+                      Hm_nat
+                      (ordsucc i)
+                      Hsi).
+                  }
+                  claim Hsuf_i : apply_fun xs_suf3 i = apply_fun xsw (ordsucc i).
+                  {
+                    exact (Hxs_suf3_val
+                      i
+                      Hi).
+                  }
+                  claim Hsuf_si : apply_fun xs_suf3 (ordsucc i) = apply_fun xsw (ordsucc (ordsucc i)).
+                  {
+                    exact (Hxs_suf3_val
+                      (ordsucc i)
+                      Hsi).
+                  }
+                  let alpha beta.
+                  assume HaJ HbJ Hxi_Ga Hxsi_Gb.
+                  claim Hxsw_si_Ga : apply_fun xsw (ordsucc i) :e apply_fun Gfam alpha.
+                  {
+                    rewrite <- Hsuf_i.
+                    exact Hxi_Ga.
+                  }
+                  claim Hxsw_ssi_Gb : apply_fun xsw (ordsucc (ordsucc i)) :e apply_fun Gfam beta.
+                  {
+                    rewrite <- Hsuf_si.
+                    exact Hxsi_Gb.
+                  }
+                  exact (Hadj
+                    (ordsucc i)
+                    Hsi_nw
+                    Hssi_nw
+                    alpha
+                    beta
+                    HaJ
+                    HbJ
+                    Hxsw_si_Ga
+                    Hxsw_ssi_Gb).
+              }
+              claim Hwp_shift3 : forall k:set, nat_p k -> k :e ordsucc m ->
+                word_product multG eG xsw (ordsucc k) = word_product multG eG xs_suf3 k.
+              {
+                apply nat_ind.
+                - assume _.
+                  claim Hwp_xsw_1 : word_product multG eG xsw 1 =
+                    apply_fun multG (eG, apply_fun xsw 0).
+                  {
+                    prove nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xsw i)) 1 =
+                      apply_fun multG (eG, apply_fun xsw 0).
+                    rewrite <- ordsucc_0_eq_1_nat.
+                    rewrite (nat_primrec_S
+                      eG
+                      (fun i r => apply_fun multG (r, apply_fun xsw i))
+                      0
+                      nat_0).
+                    rewrite (nat_primrec_0
+                      eG
+                      (fun i r => apply_fun multG (r, apply_fun xsw i))).
+                    reflexivity.
+                  }
+                  claim Hwp_xsw_1_eG : word_product multG eG xsw 1 = eG.
+                  {
+                    claim HidL : apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0.
+                    {
+                      exact (andEL
+                        (apply_fun multG (eG, apply_fun xsw 0) = apply_fun xsw 0)
+                        (apply_fun multG (apply_fun xsw 0, eG) = apply_fun xsw 0)
+                        (HidG
+                          (apply_fun xsw 0)
+                          Hxs0_G)).
+                    }
+                    claim Hc1 : word_product multG eG xsw 1 = apply_fun xsw 0.
+                    {
+                      exact (eq_i_tra
+                        (word_product multG eG xsw 1)
+                        (apply_fun multG (eG, apply_fun xsw 0))
+                        (apply_fun xsw 0)
+                        Hwp_xsw_1
+                        HidL).
+                    }
+                    exact (eq_i_tra
+                      (word_product multG eG xsw 1)
+                      (apply_fun xsw 0)
+                      eG
+                      Hc1
+                      Hxs0_eG).
+                  }
+                  claim Hwp_suf3_0 : word_product multG eG xs_suf3 0 = eG.
+                  {
+                    exact (nat_primrec_0
+                      eG
+                      (fun i r => apply_fun multG (r, apply_fun xs_suf3 i))).
+                  }
+                  claim Hsym : eG = word_product multG eG xs_suf3 0.
+                  {
+                    symmetry.
+                    exact Hwp_suf3_0.
+                  }
+                  exact (eq_i_tra
+                    (word_product multG eG xsw 1)
+                    eG
+                    (word_product multG eG xs_suf3 0)
+                    Hwp_xsw_1_eG
+                    Hsym).
+                - let k.
+                  assume Hk_nat IH.
+                  assume Hsk_sm.
+                  claim Hk_sm : k :e ordsucc m.
+                  {
+                    exact (ordsuccI1
+                      m
+                      k
+                      (nat_ordsucc_trans
+                        m
+                        Hm_nat
+                        (ordsucc k)
+                        Hsk_sm
+                        k
+                        (ordsuccI2 k))).
+                  }
+                  claim Hk_m : k :e m.
+                  {
+                    exact (nat_ordsucc_trans
+                      m
+                      Hm_nat
+                      (ordsucc k)
+                      Hsk_sm
+                      k
+                      (ordsuccI2 k)).
+                  }
+                  claim Hsk_nat : nat_p (ordsucc k).
+                  {
+                    exact (nat_ordsucc
+                      k
+                      Hk_nat).
+                  }
+                  claim HwpS_xsw : word_product multG eG xsw (ordsucc (ordsucc k)) =
+                    apply_fun multG (word_product multG eG xsw (ordsucc k), apply_fun xsw (ordsucc k)).
+                  {
+                    exact (nat_primrec_S
+                      eG
+                      (fun i r => apply_fun multG (r, apply_fun xsw i))
+                      (ordsucc k)
+                      Hsk_nat).
+                  }
+                  claim HwpS_suf3 : word_product multG eG xs_suf3 (ordsucc k) =
+                    apply_fun multG (word_product multG eG xs_suf3 k, apply_fun xs_suf3 k).
+                  {
+                    exact (nat_primrec_S
+                      eG
+                      (fun i r => apply_fun multG (r, apply_fun xs_suf3 i))
+                      k
+                      Hk_nat).
+                  }
+                  claim HIH : word_product multG eG xsw (ordsucc k) = word_product multG eG xs_suf3 k.
+                  {
+                    exact (IH
+                      Hk_sm).
+                  }
+                  claim Hsuf3_k : apply_fun xs_suf3 k = apply_fun xsw (ordsucc k).
+                  {
+                    exact (Hxs_suf3_val
+                      k
+                      Hk_m).
+                  }
+                  rewrite HwpS_xsw.
+                  rewrite HIH.
+                  rewrite <- Hsuf3_k.
+                  symmetry.
+                  exact HwpS_suf3.
+              }
+              claim Hm_sm : m :e ordsucc m.
+              {
+                exact (ordsuccI2
+                  m).
+              }
+              claim Hwp_suf3 : word_product multG eG xs_suf3 m = apply_fun efam al.
+              {
+                claim Hshift : word_product multG eG xsw (ordsucc m) = word_product multG eG xs_suf3 m.
+                {
+                  exact (Hwp_shift3
+                    m
+                    Hm_nat
+                    Hm_sm).
+                }
+                claim Hnw_val : word_product multG eG xsw nw = word_product multG eG xs_suf3 m.
+                {
+                  rewrite Hnw_eq.
+                  exact Hshift.
+                }
+                claim Hsym_shift : word_product multG eG xs_suf3 m = word_product multG eG xsw nw.
+                {
+                  symmetry.
+                  exact Hnw_val.
+                }
+                exact (eq_i_tra
+                  (word_product multG eG xs_suf3 m)
+                  (word_product multG eG xsw nw)
+                  (apply_fun efam al)
+                  Hsym_shift
+                  Hwp_xsw).
+              }
+              claim Hnw_eq_m : nw = m.
+              {
+                exact (andEL
+                  (nw = m)
+                  (forall i:set, i :e nw -> apply_fun xsw i = apply_fun xs_suf3 i)
+                  (Huniq_xsw
+                    m
+                    xs_suf3
+                    Hredw_suf3
+                    Hm_ne0
+                    Hwp_suf3)).
+              }
+              claim Hsm_nw : ordsucc m = nw.
+              {
+                symmetry.
+                exact Hnw_eq.
+              }
+              claim Hsm_m : ordsucc m = m.
+              {
+                exact (eq_i_tra
+                  (ordsucc m)
+                  nw
+                  m
+                  Hsm_nw
+                  Hnw_eq_m).
+              }
+              claim Hsubq : ordsucc m c= m.
+              {
+                rewrite Hsm_m.
+                exact (Subq_ref
+                  m).
+              }
+              exact (ordsucc_not_Subq_self
+                m
+                Hsubq).
+            * assume Hxs0_ne_eG.
+              claim Hxs0_ne_efam : apply_fun xsw 0 <> apply_fun efam al.
+              {
+                assume Habs.
+                claim Hef_Gb0 : apply_fun efam al :e apply_fun Gfam beta_0.
+                {
+                  rewrite <- Habs.
+                  exact Hxs0_Gb0.
+                }
+                claim Hal_ne_b0 : al <> beta_0.
+                {
+                  assume Heq.
+                  claim Hsym : beta_0 = al.
+                  {
+                    symmetry.
+                    exact Heq.
+                  }
+                  exact (Hb0_ne_al
+                    Hsym).
+                }
+                claim Hef_eG : apply_fun efam al = eG.
+                {
+                  exact (Hdisjoint
+                    al
+                    beta_0
+                    Hal
+                    Hb0_J
+                    Hal_ne_b0
+                    (apply_fun efam al)
+                    Hefam_Gal
+                    Hef_Gb0).
+                }
+                exact (Hefam_ne
+                  Hef_eG).
+              }
+              claim Hinv_efam_Gal : apply_fun invG (apply_fun efam al) :e apply_fun Gfam al.
+              {
+                apply (and4E
+                  (apply_fun Gfam al c= G)
+                  (eG :e apply_fun Gfam al)
+                  (forall x y:set, x :e apply_fun Gfam al -> y :e apply_fun Gfam al ->
+                    apply_fun multG (x, y) :e apply_fun Gfam al)
+                  (forall x:set, x :e apply_fun Gfam al -> apply_fun invG x :e apply_fun Gfam al)
+                  (Hsub
+                    al
+                    Hal)).
+                assume _ _ _ Hinv_sub.
+                exact (Hinv_sub
+                  (apply_fun efam al)
+                  Hefam_Gal).
+              }
+              claim Hinv_efam_G : apply_fun invG (apply_fun efam al) :e G.
+              {
+                exact (HinvGF
+                  (apply_fun efam al)
+                  Hefam_G).
+              }
+              claim Hinv_efam_ne_eG : apply_fun invG (apply_fun efam al) <> eG.
+              {
+                assume Habs.
+                claim Hlinv : apply_fun multG (apply_fun invG (apply_fun efam al), apply_fun efam al) = eG.
+                {
+                  exact (andER
+                    (apply_fun multG (apply_fun efam al, apply_fun invG (apply_fun efam al)) = eG)
+                    (apply_fun multG (apply_fun invG (apply_fun efam al), apply_fun efam al) = eG)
+                    (HinvG
+                      (apply_fun efam al)
+                      Hefam_G)).
+                }
+                claim HidL2 : apply_fun multG (eG, apply_fun efam al) = apply_fun efam al.
+                {
+                  exact (andEL
+                    (apply_fun multG (eG, apply_fun efam al) = apply_fun efam al)
+                    (apply_fun multG (apply_fun efam al, eG) = apply_fun efam al)
+                    (HidG
+                      (apply_fun efam al)
+                      Hefam_G)).
+                }
+                claim Heq : apply_fun multG (apply_fun invG (apply_fun efam al), apply_fun efam al) =
+                  apply_fun multG (eG, apply_fun efam al).
+                {
+                  rewrite Habs.
+                  reflexivity.
+                }
+                claim Hefam_eG : apply_fun efam al = eG.
+                {
+                  claim H2 : apply_fun multG (apply_fun invG (apply_fun efam al), apply_fun efam al) = apply_fun efam al.
+                  {
+                    exact (eq_i_tra
+                      (apply_fun multG (apply_fun invG (apply_fun efam al), apply_fun efam al))
+                      (apply_fun multG (eG, apply_fun efam al))
+                      (apply_fun efam al)
+                      Heq
+                      HidL2).
+                  }
+                  claim Hlinv_sym : eG = apply_fun multG (apply_fun invG (apply_fun efam al), apply_fun efam al).
+                  {
+                    symmetry.
+                    exact Hlinv.
+                  }
+                  claim H3 : eG = apply_fun efam al.
+                  {
+                    exact (eq_i_tra
+                      eG
+                      (apply_fun multG (apply_fun invG (apply_fun efam al), apply_fun efam al))
+                      (apply_fun efam al)
+                      Hlinv_sym
+                      H2).
+                  }
+                  symmetry.
+                  exact H3.
+                }
+                exact (Hefam_ne
+                  Hefam_eG).
+              }
+              admit.
 Admitted.
 
 (** from S68 Lem 68.1 (line 2781 in algtop.tex): extension condition for free products **)
