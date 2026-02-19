@@ -138785,8 +138785,20 @@ apply and3I.
                         apply (xm (apply_fun invG (apply_fun efam al) = apply_fun efam al)).
                         + assume Hinv_eq_efam : apply_fun invG (apply_fun efam al) = apply_fun efam al.
                           (** efam(al)^2 = eG case **)
-                          (** Triple concatenation when beta_0 != beta_mw; other cases need more work **)
-                          admit.
+                          (** This is impossible in a free product when efam(al) is assumed nontrivial. **)
+                          exact (efam_not_in_Gfam_nontrivial
+                            G
+                            multG
+                            eG
+                            invG
+                            J
+                            Gfam
+                            efam
+                            Hfp
+                            al
+                            Hal
+                            Hefam_Gal
+                            Hefam_ne).
                         + assume Hinv_ne_efam : apply_fun invG (apply_fun efam al) <> apply_fun efam al.
                           (** Construct word [inv(efam(al)), xsw(0), ..., xsw(mw), inv(efam(al))] **)
                           (** of length nw+2 for inv(efam(al)). Contradicts [inv(efam(al))] of length 1. **)
