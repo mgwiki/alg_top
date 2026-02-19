@@ -68570,7 +68570,50 @@ claim HFt_54_cont :
                       }
                       claim HVxqEqVz : Vxq = Vz.
                       {
-                        (** TODO Charlie: prove this final slice-identification step from local data around q,z in N. **)
+                        claim HhomeVz :
+                          homeomorphism Vz (subspace_topology E Te Vz) U (subspace_topology B Tb U)
+                            (graph Vz (fun z0:set => apply_fun p z0)).
+                        {
+                          exact (HhomeSlices
+                            Vz
+                            HVzSlice).
+                        }
+                        claim HuniqVz :
+                          exists xv:set, xv :e Vz /\ apply_fun p xv = apply_fun F z /\
+                            forall y:set, y :e Vz -> apply_fun p y = apply_fun F z -> y = xv.
+                        {
+                          exact (homeomorphic_sheet_unique_fiber_point
+                            E
+                            Te
+                            B
+                            Tb
+                            p
+                            Vz
+                            U
+                            (apply_fun F z)
+                            HhomeVz
+                            HFzU).
+                        }
+                        claim Hft54FiberVz :
+                          apply_fun Ft_54 z :e Vz /\ apply_fun p (apply_fun Ft_54 z) = apply_fun F z.
+                        {
+                          exact (andI
+                            (apply_fun Ft_54 z :e Vz)
+                            (apply_fun p (apply_fun Ft_54 z) = apply_fun F z)
+                            HFt54zVz
+                            HpFt54zEqFz).
+                        }
+                        claim HxqFiberVq :
+                          xq :e Vq /\ apply_fun p xq = apply_fun F z.
+                        {
+                          exact (andI
+                            (xq :e Vq)
+                            (apply_fun p xq = apply_fun F z)
+                            HxqVq
+                            HxqEqFz).
+                        }
+                        (** Remaining gap:
+                            identify Vxq and Vz from the local lift comparison data on N. **)
                         admit.
                       }
                       rewrite <- HVxqEqVz.
