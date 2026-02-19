@@ -141197,8 +141197,127 @@ apply Hgen_x.
       x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n.
   (** h'(x) = H-word-product of h_single on the generators **)
   (** h(x) must also equal this (from Parts 1+2, which are admitted) **)
-  (** For now, we admit this case since it depends on the admitted parts **)
-  admit.
+  apply (xm (x = eG)).
+  * assume Hxe_case : x = eG.
+    rewrite Hxe_case.
+    rewrite Hh'_id.
+    rewrite Hh_eG_shared.
+    reflexivity.
+  * assume Hx_ne_case : x <> eG.
+    claim Hred_x :
+      reduced_word J Gfam efam (n_of x) (xs_of x) /\ (n_of x) <> 0 /\
+      word_product multG eG (xs_of x) (n_of x) = x /\
+      (forall n' xs':set,
+        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+        word_product multG eG xs' n' = x ->
+        (n_of x) = n' /\ (forall i:set, i :e (n_of x) -> apply_fun (xs_of x) i = apply_fun xs' i)).
+    {
+      exact (Hred_extract x HxG Hx_ne_case).
+    }
+    apply (and4E
+      (reduced_word J Gfam efam (n_of x) (xs_of x))
+      ((n_of x) <> 0)
+      (word_product multG eG (xs_of x) (n_of x) = x)
+      (forall n' xs':set,
+        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+        word_product multG eG xs' n' = x ->
+        (n_of x) = n' /\ (forall i:set, i :e (n_of x) -> apply_fun (xs_of x) i = apply_fun xs' i))
+      Hred_x).
+    assume Hred_xrw Hn_of_ne0 Hwp_x_of Huniq_x.
+    apply (and3E
+      ((n_of x) :e omega)
+      (forall i:set, i :e (n_of x) ->
+        exists alpha:set, alpha :e J /\
+          apply_fun (xs_of x) i :e apply_fun Gfam alpha /\
+          apply_fun (xs_of x) i <> apply_fun efam alpha)
+      (forall i:set, i :e (n_of x) -> ordsucc i :e (n_of x) ->
+        forall alpha beta:set, alpha :e J -> beta :e J ->
+          apply_fun (xs_of x) i :e apply_fun Gfam alpha ->
+          apply_fun (xs_of x) (ordsucc i) :e apply_fun Gfam beta ->
+          alpha <> beta)
+      Hred_xrw).
+    assume Hn_of_omega Helem_x_of Hadj_x_of.
+    claim Hxsof_in_G : forall i:set, i :e (n_of x) -> apply_fun (xs_of x) i :e G.
+    {
+      let i.
+      assume Hi_n.
+      apply (Helem_x_of i Hi_n).
+      let alpha.
+      assume Halpha_pack.
+      claim Halpha_J : alpha :e J.
+      {
+        exact (andEL
+          (alpha :e J)
+          (apply_fun (xs_of x) i :e apply_fun Gfam alpha)
+          (andEL
+            (alpha :e J /\ apply_fun (xs_of x) i :e apply_fun Gfam alpha)
+            (apply_fun (xs_of x) i <> apply_fun efam alpha)
+            Halpha_pack)).
+      }
+      claim Hxsi_Galpha : apply_fun (xs_of x) i :e apply_fun Gfam alpha.
+      {
+        exact (andER
+          (alpha :e J)
+          (apply_fun (xs_of x) i :e apply_fun Gfam alpha)
+          (andEL
+            (alpha :e J /\ apply_fun (xs_of x) i :e apply_fun Gfam alpha)
+            (apply_fun (xs_of x) i <> apply_fun efam alpha)
+            Halpha_pack)).
+      }
+      exact (Hsub_in_G alpha Halpha_J (apply_fun (xs_of x) i) Hxsi_Galpha).
+    }
+    claim Hxsof_in_fam :
+      forall i:set, i :e (n_of x) ->
+        exists alpha:set, alpha :e J /\ apply_fun (xs_of x) i :e apply_fun Gfam alpha.
+    {
+      let i.
+      assume Hi_n.
+      apply (Helem_x_of i Hi_n).
+      let alpha.
+      assume Halpha_pack.
+      witness alpha.
+      exact (andEL
+        (alpha :e J /\ apply_fun (xs_of x) i :e apply_fun Gfam alpha)
+        (apply_fun (xs_of x) i <> apply_fun efam alpha)
+        Halpha_pack).
+    }
+    claim Hh'_x_word :
+      apply_fun h' x =
+      nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of x) i))) (n_of x).
+    {
+      claim Hh'_wp_xsof :
+        apply_fun h' (word_product multG eG (xs_of x) (n_of x)) =
+        nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of x) i))) (n_of x).
+      {
+        exact (Hh'_wp
+          (n_of x)
+          (omega_nat_p (n_of x) Hn_of_omega)
+          (xs_of x)
+          Hxsof_in_G
+          Hxsof_in_fam).
+      }
+      rewrite <- Hwp_x_of at 1.
+      exact Hh'_wp_xsof.
+    }
+    claim Hh_x_word :
+      apply_fun h x =
+      nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of x) i))) (n_of x).
+    {
+      exact (Hh_ne_shared x HxG Hx_ne_case).
+    }
+    claim Hh_x_word_sym :
+      nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of x) i))) (n_of x) =
+      apply_fun h x.
+    {
+      symmetry.
+      exact Hh_x_word.
+    }
+    exact (eq_i_tra
+      (apply_fun h' x)
+      (nat_primrec eH (fun i r => apply_fun multH (r, h_single (apply_fun (xs_of x) i))) (n_of x))
+      (apply_fun h x)
+      Hh'_x_word
+      Hh_x_word_sym).
 Admitted.
 
 (** from S68 Definition (line 2827 in algtop.tex): external free product **)
