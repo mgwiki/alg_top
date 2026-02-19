@@ -1,5 +1,5 @@
 (** Balance Alice 3219 **)
-(** Balance Bob 3043 **)
+(** Balance Bob 3037 **)
 (** Balance Charlie 1220 **)
 (** Balance Dave 1793 **)
 
@@ -96500,14 +96500,45 @@ Admitted.
 (** from S55 Exercise 4(d) (line 1049 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every continuous map f: B^{n+1} -> B^{n+1} has a fixed point. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
+(** Bounty 61 **)
+(** Lock Bob 1771599000 **)
 Theorem ex55_4d_brouwer_fixed_point_Rn : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   forall f:set,
     continuous_map (Bn_closed n) (Bn_closed_topology n)
                    (Bn_closed n) (Bn_closed_topology n) f ->
     exists x:set, x :e Bn_closed n /\ apply_fun f x = x.
-admit.
+let n.
+assume Hn_om HnoRetr.
+let f.
+assume HfCont.
+claim HtopB :
+  topology_on (Bn_closed n) (Bn_closed_topology n).
+{
+  exact (continuous_map_topology_dom
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    f
+    HfCont).
+}
+claim HfFun :
+  function_on f (Bn_closed n) (Bn_closed n).
+{
+  exact (continuous_map_function_on
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    (Bn_closed n)
+    (Bn_closed_topology n)
+    f
+    HfCont).
+}
+apply (xm (exists x:set, x :e Bn_closed n /\ apply_fun f x = x)).
+- assume Hfix.
+  exact Hfix.
+- assume HnoFix.
+  admit.
 Admitted.
 
 (** from S55 Exercise 4(e) (line 1050 in algtop.tex) **)
@@ -132536,7 +132567,6 @@ Qed.
 (** is a covering map. **)
 (** EFFORT: 25 lines textbook, difficulty 6/10, USD 300 **)
 (** Bounty 363 **)
-(** Lock Charlie 1771512800 **)
 Theorem thm60_3_projective_plane_surface_covering :
   m_manifold projective_plane projective_plane_topology 2 /\
   compact_space projective_plane projective_plane_topology /\
