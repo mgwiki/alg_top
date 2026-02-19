@@ -137632,7 +137632,27 @@ apply (nat_inv nw Hnw_nat).
           exact (Hp_ne_efam
             Hp_efam2).
         }
-        (** Remaining work: finish the p not eG and not efam(al) subcase. **)
+        claim Hxsm_ne_efamal : apply_fun xsw m <> apply_fun efam al.
+        {
+          assume Habs.
+          exact (Hxsw_ne_efamal_all
+            m
+            Hm_in_nw
+            Habs).
+        }
+        apply (Helem
+          m
+          Hm_in_nw).
+        let beta_m.
+        assume Hbm_pack.
+        apply (and3E
+          (beta_m :e J)
+          (apply_fun xsw m :e apply_fun Gfam beta_m)
+          (apply_fun xsw m <> apply_fun efam beta_m)
+          Hbm_pack).
+        assume Hbm_J Hxsm_Gbm Hxsm_ne_ebm.
+        (** Remaining work: finish the p not eG and not efam(al) subcase
+            by splitting on beta_m = al and constructing uniqueness contradictions. **)
         admit.
 Admitted.
 
