@@ -170919,6 +170919,55 @@ Theorem s55_continuous_descends_to_quotient_topology :
     continuous_map X Tx Z Tz (compose_fun X q g) ->
     topology_on Y (quotient_topology X Tx Y q) ->
     continuous_map Y (quotient_topology X Tx Y q) Z Tz g.
+let X Tx Y q Z Tz g.
+assume HqFun HgFun HcompCont HtopQ.
+claim HtopZ : topology_on Z Tz.
+{
+  exact (continuous_map_topology_cod
+    X
+    Tx
+    Z
+    Tz
+    (compose_fun X q g)
+    HcompCont).
+}
+claim HpreComp :
+  forall V:set, V :e Tz ->
+    preimage_of X (compose_fun X q g) V :e Tx.
+{
+  exact (andER
+    (topology_on X Tx /\ topology_on Z Tz /\
+      function_on (compose_fun X q g) X Z)
+    (forall V:set, V :e Tz ->
+      preimage_of X (compose_fun X q g) V :e Tx)
+    HcompCont).
+}
+claim HpreGOpen :
+  forall V:set, V :e Tz ->
+    preimage_of Y g V :e quotient_topology X Tx Y q.
+{
+  let V.
+  assume HV.
+  exact (SepI
+    (Power Y)
+    (fun W:set => preimage_of X q W :e Tx)
+    (preimage_of Y g V)
+    (PowerI
+      Y
+      (preimage_of Y g V)
+      (Sep_Subq Y (fun y:set => apply_fun g y :e V)))
+    ((preimage_compose_fun
+      X
+      Y
+      q
+      g
+      V
+      HqFun)
+      (fun A B => A :e Tx)
+      (HpreComp V HV))).
+}
+prove continuous_map Y (quotient_topology X Tx Y q) Z Tz g.
+admit.
 Admitted.
 
 Theorem s55_radial_collapse_map_function_on :
