@@ -89369,6 +89369,153 @@ apply set_ext.
     Hcont).
 Qed.
 
+(** S55 helper: surjective maps factor fiber-constant functions through codomain. **)
+Theorem s55_surjective_fiber_constant_factorization :
+  forall X Y Z q F:set,
+    surjective_map X Y q ->
+    function_on F X Z ->
+    (forall x1 x2:set, x1 :e X -> x2 :e X ->
+      apply_fun q x1 = apply_fun q x2 ->
+      apply_fun F x1 = apply_fun F x2) ->
+    exists k:set, function_on k Y Z /\
+      (forall x:set, x :e X ->
+        apply_fun k (apply_fun q x) = apply_fun F x).
+let X Y Z q F.
+assume Hsurj HFfun Hconst.
+claim HqFun : function_on q X Y.
+{
+  exact (andEL
+    (function_on q X Y)
+    (forall y:set, y :e Y -> exists x:set, x :e X /\ apply_fun q x = y)
+    Hsurj).
+}
+claim HqSurjWit :
+  forall y:set, y :e Y -> exists x:set, x :e X /\ apply_fun q x = y.
+{
+  exact (andER
+    (function_on q X Y)
+    (forall y:set, y :e Y -> exists x:set, x :e X /\ apply_fun q x = y)
+    Hsurj).
+}
+set k := graph Y (fun y:set =>
+  apply_fun F (Eps_i (fun x:set => x :e X /\ apply_fun q x = y))).
+claim HkFun : function_on k Y Z.
+{
+  apply (graph_function_on
+    Y
+    Z
+    (fun y:set =>
+      apply_fun F (Eps_i (fun x:set => x :e X /\ apply_fun q x = y)))).
+  let y.
+  assume HyY.
+  apply (HqSurjWit y HyY).
+  let x.
+  assume HxPack.
+  claim HxX : x :e X.
+  {
+    exact (andEL
+      (x :e X)
+      (apply_fun q x = y)
+      HxPack).
+  }
+  claim HxEq : apply_fun q x = y.
+  {
+    exact (andER
+      (x :e X)
+      (apply_fun q x = y)
+      HxPack).
+  }
+  claim HEpsPack :
+    Eps_i (fun u:set => u :e X /\ apply_fun q u = y) :e X /\
+    apply_fun q (Eps_i (fun u:set => u :e X /\ apply_fun q u = y)) = y.
+  {
+    exact (Eps_i_ex
+      (fun u:set => u :e X /\ apply_fun q u = y)
+      x
+      (andI
+        (x :e X)
+        (apply_fun q x = y)
+        HxX
+        HxEq)).
+  }
+  claim HEpsX :
+    Eps_i (fun u:set => u :e X /\ apply_fun q u = y) :e X.
+  {
+    exact (andEL
+      (Eps_i (fun u:set => u :e X /\ apply_fun q u = y) :e X)
+      (apply_fun q (Eps_i (fun u:set => u :e X /\ apply_fun q u = y)) = y)
+      HEpsPack).
+  }
+  exact (HFfun
+    (Eps_i (fun u:set => u :e X /\ apply_fun q u = y))
+    HEpsX).
+}
+witness k.
+apply andI.
+- exact HkFun.
+- let x.
+  assume HxX.
+  claim HqxY : apply_fun q x :e Y.
+  {
+    exact (HqFun
+      x
+      HxX).
+  }
+  claim HEpsPack :
+    Eps_i (fun u:set => u :e X /\ apply_fun q u = apply_fun q x) :e X /\
+    apply_fun q
+      (Eps_i (fun u:set => u :e X /\ apply_fun q u = apply_fun q x))
+      =
+    apply_fun q x.
+  {
+    exact (Eps_i_ex
+      (fun u:set => u :e X /\ apply_fun q u = apply_fun q x)
+      x
+      (andI
+        (x :e X)
+        (apply_fun q x = apply_fun q x)
+        HxX
+        reflexivity)).
+  }
+  claim HEpsX :
+    Eps_i (fun u:set => u :e X /\ apply_fun q u = apply_fun q x) :e X.
+  {
+    exact (andEL
+      (Eps_i (fun u:set => u :e X /\ apply_fun q u = apply_fun q x) :e X)
+      (apply_fun q
+        (Eps_i (fun u:set => u :e X /\ apply_fun q u = apply_fun q x))
+        =
+       apply_fun q x)
+      HEpsPack).
+  }
+  claim HEpsEq :
+    apply_fun q
+      (Eps_i (fun u:set => u :e X /\ apply_fun q u = apply_fun q x))
+      =
+    apply_fun q x.
+  {
+    exact (andER
+      (Eps_i (fun u:set => u :e X /\ apply_fun q u = apply_fun q x) :e X)
+      (apply_fun q
+        (Eps_i (fun u:set => u :e X /\ apply_fun q u = apply_fun q x))
+        =
+       apply_fun q x)
+      HEpsPack).
+  }
+  rewrite (apply_fun_graph
+    Y
+    (fun y:set =>
+      apply_fun F (Eps_i (fun u:set => u :e X /\ apply_fun q u = y)))
+    (apply_fun q x)
+    HqxY).
+  exact (Hconst
+    (Eps_i (fun u:set => u :e X /\ apply_fun q u = apply_fun q x))
+    x
+    HEpsX
+    HxX
+    HEpsEq).
+Qed.
+
 (** S55 helper: radial collapse map pi : S1 x I -> B2, pi(x,t) = (1-t)x. **)
 Definition s55_radial_collapse_map : set :=
   graph (setprod S1 unit_interval)
@@ -91519,11 +91666,178 @@ claim HextFromHomotopy :
 	      HqClosed
 	      HqCont).
 	  }
-	  (** Remaining steps:
-	     - build k : B2 -> X induced by F through fibers of q
-	     - prove compose_fun dom q k = F and continuity via quotient equality
-	     - use HqBottom and HFAt0 to conclude k|S1 = h. **)
-	  admit.
+	  claim HfiberConst :
+	    forall p1 p2:set, p1 :e dom -> p2 :e dom ->
+	      apply_fun q p1 = apply_fun q p2 ->
+	      apply_fun F p1 = apply_fun F p2.
+	  {
+	    (** Remaining geometric gap:
+	       characterize fibers of q (only top circle collapses) and use HFAt1/HFTopConst. **)
+	    admit.
+	  }
+	  claim HkPack :
+	    exists k:set, function_on k B2 X /\
+	      (forall p:set, p :e dom ->
+	        apply_fun k (apply_fun q p) = apply_fun F p).
+	  {
+	    exact (s55_surjective_fiber_constant_factorization
+	      dom
+	      B2
+	      X
+	      q
+	      F
+	      HqSurj
+	      (continuous_map_function_on
+	        dom
+	        Tdom
+	        X
+	        Tx
+	        F
+	        HFCont)
+	      HfiberConst).
+	  }
+	  apply HkPack.
+	  let k.
+	  assume HkPack2.
+	  claim HkFun : function_on k B2 X.
+	  {
+	    exact (andEL
+	      (function_on k B2 X)
+	      (forall p:set, p :e dom ->
+	        apply_fun k (apply_fun q p) = apply_fun F p)
+	      HkPack2).
+	  }
+	  claim HkComp :
+	    forall p:set, p :e dom ->
+	      apply_fun k (apply_fun q p) = apply_fun F p.
+	  {
+	    exact (andER
+	      (function_on k B2 X)
+	      (forall p:set, p :e dom ->
+	        apply_fun k (apply_fun q p) = apply_fun F p)
+	      HkPack2).
+	  }
+	  claim HcompFun :
+	    function_on (compose_fun dom q k) dom X.
+	  {
+	    exact (function_on_compose_fun
+	      dom
+	      B2
+	      X
+	      q
+	      k
+	      HqFun
+	      HkFun).
+	  }
+	  claim HcompEq :
+	    forall p:set, p :e dom ->
+	      apply_fun F p = apply_fun (compose_fun dom q k) p.
+	  {
+	    let p.
+	    assume Hp.
+	    claim HkCompP :
+	      apply_fun k (apply_fun q p) = apply_fun F p.
+	    {
+	      exact (HkComp
+	        p
+	        Hp).
+	    }
+	    rewrite (compose_fun_apply
+	      dom
+	      q
+	      k
+	      p
+	      Hp).
+	    rewrite HkCompP.
+	    reflexivity.
+	  }
+	  claim HcompCont :
+	    continuous_map dom Tdom X Tx (compose_fun dom q k).
+	  {
+	    exact (continuous_map_congr_on
+	      dom
+	      Tdom
+	      X
+	      Tx
+	      F
+	      (compose_fun dom q k)
+	      HFCont
+	      HcompFun
+	      HcompEq).
+	  }
+	  claim HqQuotMap :
+	    quotient_map dom Tdom B2 q.
+	  {
+	    apply andI.
+	    - apply andI.
+	      + exact HtopDom.
+	      + exact HqFun.
+	    - exact (andER
+	        (function_on q dom B2)
+	        (forall y:set, y :e B2 -> exists x:set, x :e dom /\ apply_fun q x = y)
+	        HqSurj).
+	  }
+	  claim HqQuotTop :
+	    topology_on B2 (quotient_topology dom Tdom B2 q).
+	  {
+	    exact (quotient_topology_is_topology
+	      dom
+	      Tdom
+	      B2
+	      q
+	      HqQuotMap).
+	  }
+	  claim HkContQuot :
+	    continuous_map B2 (quotient_topology dom Tdom B2 q) X Tx k.
+	  {
+	    exact (s55_continuous_descends_to_quotient_topology
+	      dom
+	      Tdom
+	      B2
+	      q
+	      X
+	      Tx
+	      k
+	      HqFun
+	      HkFun
+	      HcompCont
+	      HqQuotTop).
+	  }
+	  claim HkCont :
+	    continuous_map B2 B2_topology X Tx k.
+	  {
+	    rewrite <- HqQuotEq.
+	    exact HkContQuot.
+	  }
+	  witness k.
+	  apply andI.
+	  - exact HkCont.
+	  - let x.
+	    assume HxS1.
+	    claim Hx0Dom : (x, 0) :e dom.
+	    {
+	      exact (tuple_2_setprod_by_pair_Sigma
+	        S1
+	        unit_interval
+	        x
+	        0
+	        HxS1
+	        zero_in_unit_interval).
+	    }
+	    claim HkAtBottom :
+	      apply_fun k (apply_fun q (x, 0)) = apply_fun F (x, 0).
+	    {
+	      exact (HkComp
+	        (x, 0)
+	        Hx0Dom).
+	    }
+	    rewrite <- (HqBottom
+	      x
+	      HxS1) in HkAtBottom.
+	    rewrite (HFAt0
+	      x
+	      HxS1) in HkAtBottom.
+	    exact HkAtBottom.
 	}
 exact HextFromHomotopy.
 Admitted.
