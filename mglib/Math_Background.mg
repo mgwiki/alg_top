@@ -170185,6 +170185,1003 @@ Theorem ex85_3_covering_of_wedge_in_torus :
 admit.
 Admitted.
 
+
+(** Salvaged helper declarations from post-38a patches. **)
+(** Added as compiling placeholders when full patch application was not possible. **)
+Definition s55_radial_collapse_map : set :=
+  graph (setprod S1 unit_interval)
+    (fun p:set =>
+      (mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 0),
+       mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 1))).
+
+Theorem graph_function_on : forall A Y:set, forall g:set -> set,
+  (forall a:set, a :e A -> g a :e Y) ->
+  function_on (graph A g) A Y.
+let A Y.
+let g.
+assume Hg.
+exact (total_function_on_function_on
+  (graph A g)
+  A
+  Y
+  (total_function_on_graph
+    A
+    Y
+    g
+    Hg)).
+Qed.
+
+Theorem simply_connected_R_standard :
+  simply_connected R R_standard_topology.
+Admitted.
+
+Theorem s54_pi1_nontrivial_from_two_fiber_points : forall E Te B Tb p e0 e1:set,
+  covering_map E Te B Tb p ->
+  simply_connected E Te ->
+  e0 :e E ->
+  e1 :e E ->
+  apply_fun p e1 = apply_fun p e0 ->
+  e1 <> e0 ->
+  exists cls:set,
+    cls :e fundamental_group B Tb (apply_fun p e0) /\
+    cls <> fundamental_group_id B Tb (apply_fun p e0).
+Admitted.
+
+Theorem s54_pi1_S1_nontrivial_from_two_lifts : forall e0 e1:set,
+  e0 :e R ->
+  e1 :e R ->
+  apply_fun covering_map_R_S1 e0 = S1_basepoint ->
+  apply_fun covering_map_R_S1 e1 = S1_basepoint ->
+  e1 <> e0 ->
+  exists cls:set,
+    cls :e fundamental_group S1 S1_topology S1_basepoint /\
+    cls <> fundamental_group_id S1 S1_topology S1_basepoint.
+Admitted.
+
+Theorem s54_identity_S1_not_nulhomotopic_from_two_lifts : forall e0 e1:set,
+  e0 :e R ->
+  e1 :e R ->
+  apply_fun covering_map_R_S1 e0 = S1_basepoint ->
+  apply_fun covering_map_R_S1 e1 = S1_basepoint ->
+  e1 <> e0 ->
+  ~(nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x))).
+Admitted.
+
+Theorem fundamental_group_id_member : forall X Tx x0:set,
+  topology_on X Tx ->
+  x0 :e X ->
+  fundamental_group_id X Tx x0 :e fundamental_group X Tx x0.
+let X Tx x0.
+assume HtopX Hx0X.
+claim Hgrp :
+  group_structure
+    (fundamental_group X Tx x0)
+    (fundamental_group_mult X Tx x0)
+    (fundamental_group_id X Tx x0)
+    (fundamental_group_inv X Tx x0).
+{
+  exact (fundamental_group_is_group
+    X
+    Tx
+    x0
+    HtopX
+    Hx0X).
+}
+apply (and6E
+  (function_on
+    (fundamental_group_mult X Tx x0)
+    (setprod (fundamental_group X Tx x0) (fundamental_group X Tx x0))
+    (fundamental_group X Tx x0))
+  (function_on
+    (fundamental_group_inv X Tx x0)
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x0))
+  ((fundamental_group_id X Tx x0) :e fundamental_group X Tx x0)
+  (forall a b c:set,
+    a :e fundamental_group X Tx x0 ->
+    b :e fundamental_group X Tx x0 ->
+    c :e fundamental_group X Tx x0 ->
+    apply_fun (fundamental_group_mult X Tx x0)
+      (apply_fun (fundamental_group_mult X Tx x0) (a, b), c)
+    =
+    apply_fun (fundamental_group_mult X Tx x0)
+      (a, apply_fun (fundamental_group_mult X Tx x0) (b, c)))
+  (forall a:set, a :e fundamental_group X Tx x0 ->
+    apply_fun (fundamental_group_mult X Tx x0)
+      (fundamental_group_id X Tx x0, a) = a /\
+    apply_fun (fundamental_group_mult X Tx x0)
+      (a, fundamental_group_id X Tx x0) = a)
+  (forall a:set, a :e fundamental_group X Tx x0 ->
+    apply_fun (fundamental_group_mult X Tx x0)
+      (a, apply_fun (fundamental_group_inv X Tx x0) a)
+    = fundamental_group_id X Tx x0 /\
+    apply_fun (fundamental_group_mult X Tx x0)
+      (apply_fun (fundamental_group_inv X Tx x0) a, a)
+    = fundamental_group_id X Tx x0)
+  Hgrp).
+assume Hm Hinv He Hass Hid Hinvax.
+exact He.
+Qed.
+
+Theorem s54_pi1_S1_nontrivial_from_any_two_lifts : forall e0 e1:set,
+  e0 :e R ->
+  e1 :e R ->
+  apply_fun covering_map_R_S1 e1 = apply_fun covering_map_R_S1 e0 ->
+  e1 <> e0 ->
+  exists cls:set,
+    cls :e fundamental_group S1 S1_topology S1_basepoint /\
+    cls <> fundamental_group_id S1 S1_topology S1_basepoint.
+let e0 e1.
+assume He0R He1R HeEq HeNe.
+set p := covering_map_R_S1.
+claim HcovPair :
+  continuous_map R R_standard_topology S1 S1_topology p /\
+  surjective_map R S1 p.
+{
+  exact (andEL
+    (continuous_map R R_standard_topology S1 S1_topology p /\
+      surjective_map R S1 p)
+    (forall b:set, b :e S1 ->
+      exists U:set, U :e S1_topology /\ b :e U /\
+        evenly_covered R R_standard_topology S1 S1_topology p U)
+    thm53_1_R_covers_S1).
+}
+claim Hcont : continuous_map R R_standard_topology S1 S1_topology p.
+{
+  exact (andEL
+    (continuous_map R R_standard_topology S1 S1_topology p)
+    (surjective_map R S1 p)
+    HcovPair).
+}
+claim Hsurj : surjective_map R S1 p.
+{
+  exact (andER
+    (continuous_map R R_standard_topology S1 S1_topology p)
+    (surjective_map R S1 p)
+    HcovPair).
+}
+claim Hfunp : function_on p R S1.
+{
+  exact (continuous_map_function_on
+    R
+    R_standard_topology
+    S1
+    S1_topology
+    p
+    Hcont).
+}
+claim HbS1 : apply_fun p e0 :e S1.
+{
+  exact (Hfunp
+    e0
+    He0R).
+}
+claim HtopS1 : topology_on S1 S1_topology.
+{
+  exact (continuous_map_topology_cod
+    R
+    R_standard_topology
+    S1
+    S1_topology
+    p
+    Hcont).
+}
+claim HpcR : path_connected_space R R_standard_topology.
+{
+  exact (andEL
+    (path_connected_space R R_standard_topology)
+    (exists x0:set, x0 :e R /\
+      fundamental_group R R_standard_topology x0 =
+      {fundamental_group_id R R_standard_topology x0})
+    simply_connected_R_standard).
+}
+claim HsurjWitness :
+  forall y:set, y :e S1 -> exists x:set, x :e R /\ apply_fun p x = y.
+{
+  exact (andER
+    (function_on p R S1)
+    (forall y:set, y :e S1 -> exists x:set, x :e R /\ apply_fun p x = y)
+    Hsurj).
+}
+claim HpcS1 : path_connected_space S1 S1_topology.
+{
+  exact (continuous_image_path_connected
+    R
+    R_standard_topology
+    S1
+    S1_topology
+    p
+    HpcR
+    Hcont
+    HsurjWitness).
+}
+claim Hb0raw : (1, 0) :e S1.
+{
+  apply (SepI
+    (setprod R R)
+    (fun q:set =>
+      add_SNo (mul_SNo (q 0) (q 0))
+        (mul_SNo (q 1) (q 1)) = 1)
+    (1, 0)).
+  - exact (tuple_2_setprod_by_pair_Sigma
+      R
+      R
+      1
+      0
+      real_1
+      real_0).
+  - rewrite tuple_2_0_eq at 1.
+    rewrite tuple_2_0_eq at 1.
+    rewrite tuple_2_1_eq at 1.
+    rewrite tuple_2_1_eq at 1.
+    rewrite (mul_SNo_oneR 1 SNo_1) at 1.
+    rewrite (mul_SNo_zeroR 0 SNo_0) at 1.
+    exact (add_SNo_0R 1 SNo_1).
+}
+claim Hb0S1 : S1_basepoint :e S1.
+{
+  exact Hb0raw.
+}
+claim HnontrivAtB :
+  exists cls:set,
+    cls :e fundamental_group S1 S1_topology (apply_fun p e0) /\
+    cls <> fundamental_group_id S1 S1_topology (apply_fun p e0).
+{
+  exact (s54_pi1_nontrivial_from_two_fiber_points
+    R
+    R_standard_topology
+    S1
+    S1_topology
+    p
+    e0
+    e1
+    thm53_1_R_covers_S1
+    simply_connected_R_standard
+    He0R
+    He1R
+    HeEq
+    HeNe).
+}
+apply HnontrivAtB.
+let clsb.
+assume HclsbPack.
+claim Hclsb :
+  clsb :e fundamental_group S1 S1_topology (apply_fun p e0).
+{
+  exact (andEL
+    (clsb :e fundamental_group S1 S1_topology (apply_fun p e0))
+    (clsb <> fundamental_group_id S1 S1_topology (apply_fun p e0))
+    HclsbPack).
+}
+claim HclsbNe :
+  clsb <> fundamental_group_id S1 S1_topology (apply_fun p e0).
+{
+  exact (andER
+    (clsb :e fundamental_group S1 S1_topology (apply_fun p e0))
+    (clsb <> fundamental_group_id S1 S1_topology (apply_fun p e0))
+    HclsbPack).
+}
+apply (path_connected_space_paths
+  S1
+  S1_topology
+  (apply_fun p e0)
+  S1_basepoint
+  HpcS1
+  HbS1
+  Hb0S1).
+let alpha.
+assume HalphaPack.
+claim HalphaPath :
+  path_between S1 (apply_fun p e0) S1_basepoint alpha.
+{
+  exact (andEL
+    (path_between S1 (apply_fun p e0) S1_basepoint alpha)
+    (continuous_map unit_interval unit_interval_topology S1 S1_topology alpha)
+    HalphaPack).
+}
+claim HalphaCont :
+  continuous_map unit_interval unit_interval_topology S1 S1_topology alpha.
+{
+  exact (andER
+    (path_between S1 (apply_fun p e0) S1_basepoint alpha)
+    (continuous_map unit_interval unit_interval_topology S1 S1_topology alpha)
+    HalphaPack).
+}
+claim Halpha0 : apply_fun alpha 0 = apply_fun p e0.
+{
+  exact (path_between_at_zero
+    S1
+    (apply_fun p e0)
+    S1_basepoint
+    alpha
+    HalphaPath).
+}
+claim Halpha1 : apply_fun alpha 1 = S1_basepoint.
+{
+  exact (path_between_at_one
+    S1
+    (apply_fun p e0)
+    S1_basepoint
+    alpha
+    HalphaPath).
+}
+set bc := basepoint_change_map S1 S1_topology (apply_fun p e0) S1_basepoint alpha.
+claim HbcIso :
+  group_isomorphism
+    (fundamental_group S1 S1_topology (apply_fun p e0))
+    (fundamental_group_mult S1 S1_topology (apply_fun p e0))
+    (fundamental_group S1 S1_topology S1_basepoint)
+    (fundamental_group_mult S1 S1_topology S1_basepoint)
+    bc.
+{
+  exact (Theorem_52_1_basepoint_isomorphism
+    S1
+    S1_topology
+    (apply_fun p e0)
+    S1_basepoint
+    alpha
+    HtopS1
+    HalphaCont
+    Halpha0
+    Halpha1).
+}
+claim HbcBij :
+  bijection
+    (fundamental_group S1 S1_topology (apply_fun p e0))
+    (fundamental_group S1 S1_topology S1_basepoint)
+    bc.
+{
+  exact (group_isomorphism_bijection
+    (fundamental_group S1 S1_topology (apply_fun p e0))
+    (fundamental_group_mult S1 S1_topology (apply_fun p e0))
+    (fundamental_group S1 S1_topology S1_basepoint)
+    (fundamental_group_mult S1 S1_topology S1_basepoint)
+    bc
+    HbcIso).
+}
+claim HbcFun :
+  function_on
+    bc
+    (fundamental_group S1 S1_topology (apply_fun p e0))
+    (fundamental_group S1 S1_topology S1_basepoint).
+{
+  exact (andEL
+    (function_on
+      bc
+      (fundamental_group S1 S1_topology (apply_fun p e0))
+      (fundamental_group S1 S1_topology S1_basepoint))
+    (forall y:set, y :e fundamental_group S1 S1_topology S1_basepoint ->
+      exists x:set,
+        x :e fundamental_group S1 S1_topology (apply_fun p e0) /\
+        apply_fun bc x = y /\
+        (forall x':set,
+          x' :e fundamental_group S1 S1_topology (apply_fun p e0) ->
+          apply_fun bc x' = y ->
+          x' = x))
+    HbcBij).
+}
+claim HgrpDom :
+  group_structure
+    (fundamental_group S1 S1_topology (apply_fun p e0))
+    (fundamental_group_mult S1 S1_topology (apply_fun p e0))
+    (fundamental_group_id S1 S1_topology (apply_fun p e0))
+    (fundamental_group_inv S1 S1_topology (apply_fun p e0)).
+{
+  exact (fundamental_group_is_group
+    S1
+    S1_topology
+    (apply_fun p e0)
+    HtopS1
+    HbS1).
+}
+claim HgrpCod :
+  group_structure
+    (fundamental_group S1 S1_topology S1_basepoint)
+    (fundamental_group_mult S1 S1_topology S1_basepoint)
+    (fundamental_group_id S1 S1_topology S1_basepoint)
+    (fundamental_group_inv S1 S1_topology S1_basepoint).
+{
+  exact (fundamental_group_is_group
+    S1
+    S1_topology
+    S1_basepoint
+    HtopS1
+    Hb0S1).
+}
+claim HbcHom :
+  group_homomorphism
+    (fundamental_group S1 S1_topology (apply_fun p e0))
+    (fundamental_group_mult S1 S1_topology (apply_fun p e0))
+    (fundamental_group S1 S1_topology S1_basepoint)
+    (fundamental_group_mult S1 S1_topology S1_basepoint)
+    bc.
+{
+  exact (group_isomorphism_homomorphism
+    (fundamental_group S1 S1_topology (apply_fun p e0))
+    (fundamental_group_mult S1 S1_topology (apply_fun p e0))
+    (fundamental_group S1 S1_topology S1_basepoint)
+    (fundamental_group_mult S1 S1_topology S1_basepoint)
+    bc
+    HbcIso).
+}
+claim HbcId :
+  apply_fun bc (fundamental_group_id S1 S1_topology (apply_fun p e0))
+  =
+  fundamental_group_id S1 S1_topology S1_basepoint.
+{
+  exact (s55_group_hom_maps_id_to_id_s58
+    (fundamental_group S1 S1_topology (apply_fun p e0))
+    (fundamental_group_mult S1 S1_topology (apply_fun p e0))
+    (fundamental_group_id S1 S1_topology (apply_fun p e0))
+    (fundamental_group_inv S1 S1_topology (apply_fun p e0))
+    (fundamental_group S1 S1_topology S1_basepoint)
+    (fundamental_group_mult S1 S1_topology S1_basepoint)
+    (fundamental_group_id S1 S1_topology S1_basepoint)
+    (fundamental_group_inv S1 S1_topology S1_basepoint)
+    bc
+    HgrpDom
+    HgrpCod
+    HbcHom).
+}
+witness apply_fun bc clsb.
+apply andI.
+- exact (HbcFun
+    clsb
+    Hclsb).
+- assume HimgId.
+  claim HidDomMem :
+    fundamental_group_id S1 S1_topology (apply_fun p e0)
+    :e fundamental_group S1 S1_topology (apply_fun p e0).
+  {
+    exact (fundamental_group_id_member
+      S1
+      S1_topology
+      (apply_fun p e0)
+      HtopS1
+      HbS1).
+  }
+  claim HbcEq :
+    apply_fun bc clsb
+    =
+    apply_fun bc (fundamental_group_id S1 S1_topology (apply_fun p e0)).
+  {
+    rewrite HimgId.
+    rewrite <- HbcId.
+    reflexivity.
+  }
+  claim HclsbEqId :
+    clsb = fundamental_group_id S1 S1_topology (apply_fun p e0).
+  {
+    exact (bijection_inj
+      (fundamental_group S1 S1_topology (apply_fun p e0))
+      (fundamental_group S1 S1_topology S1_basepoint)
+      bc
+      clsb
+      (fundamental_group_id S1 S1_topology (apply_fun p e0))
+      HbcBij
+      Hclsb
+      HidDomMem
+      HbcEq).
+  }
+  exact (HclsbNe
+    HclsbEqId).
+Admitted.
+Theorem s54_covering_R_S1_injective_if_pi1_basepoint_trivial :
+  (forall cls:set, cls :e fundamental_group S1 S1_topology S1_basepoint ->
+    cls = fundamental_group_id S1 S1_topology S1_basepoint) ->
+  forall e0 e1:set,
+    e0 :e R ->
+    e1 :e R ->
+    apply_fun covering_map_R_S1 e1 = apply_fun covering_map_R_S1 e0 ->
+    e1 = e0.
+assume Htriv.
+let e0 e1.
+assume He0R He1R HeEq.
+apply (xm (e1 = e0)).
+- assume Heq.
+  exact Heq.
+- assume Hne.
+  claim Hnontriv :
+    exists cls:set,
+      cls :e fundamental_group S1 S1_topology S1_basepoint /\
+      cls <> fundamental_group_id S1 S1_topology S1_basepoint.
+  {
+    exact (s54_pi1_S1_nontrivial_from_any_two_lifts
+      e0
+      e1
+      He0R
+      He1R
+      HeEq
+      Hne).
+  }
+  apply Hnontriv.
+  let cls.
+  assume HclsPack.
+  claim Hcls :
+    cls :e fundamental_group S1 S1_topology S1_basepoint.
+  {
+    exact (andEL
+      (cls :e fundamental_group S1 S1_topology S1_basepoint)
+      (cls <> fundamental_group_id S1 S1_topology S1_basepoint)
+      HclsPack).
+  }
+  claim HclsNe :
+    cls <> fundamental_group_id S1 S1_topology S1_basepoint.
+  {
+    exact (andER
+      (cls :e fundamental_group S1 S1_topology S1_basepoint)
+      (cls <> fundamental_group_id S1 S1_topology S1_basepoint)
+      HclsPack).
+  }
+  claim HclsEq :
+    cls = fundamental_group_id S1 S1_topology S1_basepoint.
+  {
+    exact (Htriv
+      cls
+      Hcls).
+  }
+  claim Hfalse : False.
+  {
+    exact (HclsNe
+      HclsEq).
+  }
+  exact (FalseE
+    Hfalse
+    (e1 = e0)).
+Admitted.
+Theorem s54_two_distinct_lifts_if_S1_compact :
+  compact_space S1 S1_topology ->
+  exists e0 e1:set,
+    e0 :e R /\ e1 :e R /\
+    apply_fun covering_map_R_S1 e1 = apply_fun covering_map_R_S1 e0 /\
+    e1 <> e0.
+assume HcompS1.
+set p := covering_map_R_S1.
+apply (xm (exists e0 e1:set,
+  e0 :e R /\ e1 :e R /\
+  apply_fun p e1 = apply_fun p e0 /\
+  e1 <> e0)).
+- assume Hex.
+  exact Hex.
+- assume Hnone.
+  claim HcovPair :
+    continuous_map R R_standard_topology S1 S1_topology p /\
+    surjective_map R S1 p.
+  {
+    exact (andEL
+      (continuous_map R R_standard_topology S1 S1_topology p /\
+        surjective_map R S1 p)
+      (forall b:set, b :e S1 ->
+        exists U:set, U :e S1_topology /\ b :e U /\
+          evenly_covered R R_standard_topology S1 S1_topology p U)
+      thm53_1_R_covers_S1).
+  }
+  claim Hcont : continuous_map R R_standard_topology S1 S1_topology p.
+  {
+    exact (andEL
+      (continuous_map R R_standard_topology S1 S1_topology p)
+      (surjective_map R S1 p)
+      HcovPair).
+  }
+  claim Hsurj : surjective_map R S1 p.
+  {
+    exact (andER
+      (continuous_map R R_standard_topology S1 S1_topology p)
+      (surjective_map R S1 p)
+      HcovPair).
+  }
+  claim Hinj :
+    forall x y:set, x :e R -> y :e R ->
+      apply_fun p y = apply_fun p x ->
+      y = x.
+  {
+    let x y.
+    assume HxR HyR Hyx.
+    apply (xm (y = x)).
+    + assume HyxEq.
+      exact HyxEq.
+    + assume Hneq.
+      claim Hcontra : False.
+      {
+        apply Hnone.
+        witness x.
+        witness y.
+        apply andI.
+        - apply andI.
+          + apply andI.
+            * exact HxR.
+            * exact HyR.
+          + exact Hyx.
+        - exact Hneq.
+      }
+      exact (FalseE
+        Hcontra
+        (y = x)).
+  }
+  claim HfinFib :
+    forall b:set, b :e S1 ->
+      finite {x :e R | apply_fun p x = b}.
+  {
+    let b.
+    assume HbS1.
+    claim HsurjWitness :
+      forall y:set, y :e S1 -> exists x:set, x :e R /\ apply_fun p x = y.
+    {
+      exact (andER
+        (function_on p R S1)
+        (forall y:set, y :e S1 -> exists x:set, x :e R /\ apply_fun p x = y)
+        Hsurj).
+    }
+    apply (HsurjWitness b HbS1).
+    let x0.
+    assume Hx0Pack.
+    claim Hx0R : x0 :e R.
+    {
+      exact (andEL
+        (x0 :e R)
+        (apply_fun p x0 = b)
+        Hx0Pack).
+    }
+    claim Hx0Eq : apply_fun p x0 = b.
+    {
+      exact (andER
+        (x0 :e R)
+        (apply_fun p x0 = b)
+        Hx0Pack).
+    }
+    claim HFibEq :
+      {x :e R | apply_fun p x = b} = {x0}.
+    {
+      apply set_ext.
+      - let x.
+        assume HxFib.
+        claim HxR : x :e R.
+        {
+          exact (SepE1
+            R
+            (fun z:set => apply_fun p z = b)
+            x
+            HxFib).
+        }
+        claim HxEqb : apply_fun p x = b.
+        {
+          exact (SepE2
+            R
+            (fun z:set => apply_fun p z = b)
+            x
+            HxFib).
+        }
+        claim HxEqx0 : x = x0.
+        {
+          apply (Hinj
+            x0
+            x
+            Hx0R
+            HxR).
+          rewrite HxEqb.
+          rewrite Hx0Eq.
+          reflexivity.
+        }
+        rewrite HxEqx0.
+        exact (SingI x0).
+      - let x.
+        assume HxSing.
+        claim HxEqx0 : x = x0.
+        {
+          exact (SingE
+            x0
+            x
+            HxSing).
+        }
+        rewrite HxEqx0.
+        apply (SepI
+          R
+          (fun z:set => apply_fun p z = b)
+          x0
+          Hx0R).
+        exact Hx0Eq.
+    }
+    rewrite HFibEq.
+    exact (Sing_finite x0).
+  }
+  claim HcompR : compact_space R R_standard_topology.
+  {
+    exact (ex53_6b_compact_finite_fiber
+      R
+      R_standard_topology
+      S1
+      S1_topology
+      p
+      thm53_1_R_covers_S1
+      HcompS1
+      HfinFib).
+  }
+  claim Hfalse : False.
+  {
+    exact (R_standard_topology_not_compact
+      HcompR).
+  }
+  exact (FalseE
+    Hfalse
+    (exists e0 e1:set,
+      e0 :e R /\ e1 :e R /\
+      apply_fun p e1 = apply_fun p e0 /\
+      e1 <> e0)).
+Admitted.
+Theorem s54_S1_compact :
+  compact_space S1 S1_topology.
+Admitted.
+
+Theorem s55_continuous_descends_to_quotient_topology :
+  forall X Tx Y q Z Tz g:set,
+    function_on q X Y ->
+    function_on g Y Z ->
+    continuous_map X Tx Z Tz (compose_fun X q g) ->
+    topology_on Y (quotient_topology X Tx Y q) ->
+    continuous_map Y (quotient_topology X Tx Y q) Z Tz g.
+Admitted.
+
+Theorem s55_radial_collapse_map_function_on :
+  function_on s55_radial_collapse_map (setprod S1 unit_interval) B2.
+apply (graph_function_on
+  (setprod S1 unit_interval)
+  B2
+  (fun p:set =>
+    (mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 0),
+     mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 1)))).
+let p.
+assume Hp.
+claim HpS1 : p 0 :e S1.
+{
+  exact (ap0_Sigma
+    S1
+    (fun _ : set => unit_interval)
+    p
+    Hp).
+}
+claim HpI : p 1 :e unit_interval.
+{
+  exact (ap1_Sigma
+    S1
+    (fun _ : set => unit_interval)
+    p
+    Hp).
+}
+claim H1mtI : add_SNo 1 (minus_SNo (p 1)) :e unit_interval.
+{
+  rewrite <- (flip_unit_interval_apply
+    (p 1)
+    HpI).
+  exact (flip_unit_interval_function_on
+    (p 1)
+    HpI).
+}
+exact (B2_scale_S1
+  (add_SNo 1 (minus_SNo (p 1)))
+  (p 0)
+  H1mtI
+  HpS1).
+Qed.
+
+Theorem s55_radial_collapse_map_top_collapses :
+  forall x:set, x :e S1 ->
+    apply_fun s55_radial_collapse_map (x, 1) = (0, 0).
+let x.
+assume HxS1.
+claim HxR2 : x :e setprod R R.
+{
+  exact (SepE1
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)
+    x
+    HxS1).
+}
+claim Hx0R : x 0 :e R.
+{
+  exact (EuclidPlane_xcoord_in_R
+    x
+    HxR2).
+}
+claim Hx1R : x 1 :e R.
+{
+  exact (EuclidPlane_ycoord_in_R
+    x
+    HxR2).
+}
+claim Hx0S : SNo (x 0).
+{
+  exact (real_SNo
+    (x 0)
+    Hx0R).
+}
+claim Hx1S : SNo (x 1).
+{
+  exact (real_SNo
+    (x 1)
+    Hx1R).
+}
+rewrite (apply_fun_graph
+  (setprod S1 unit_interval)
+  (fun p:set =>
+    (mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 0),
+     mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 1)))
+  (x, 1)
+  (tuple_2_setprod_by_pair_Sigma
+    S1
+    unit_interval
+    x
+    1
+    HxS1
+    one_in_unit_interval)).
+rewrite tuple_2_0_eq.
+rewrite tuple_2_1_eq.
+rewrite (add_SNo_minus_SNo_rinv 1 SNo_1).
+rewrite (mul_SNo_zeroL
+  (x 0)
+  Hx0S).
+rewrite (mul_SNo_zeroL
+  (x 1)
+  Hx1S).
+reflexivity.
+Qed.
+
+Theorem s55_radial_collapse_map_bottom_is_inclusion :
+  forall x:set, x :e S1 ->
+    apply_fun s55_radial_collapse_map (x, 0) = x.
+let x.
+assume HxS1.
+claim HxR2 : x :e setprod R R.
+{
+  exact (SepE1
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)
+    x
+    HxS1).
+}
+claim Hx0R : x 0 :e R.
+{
+  exact (EuclidPlane_xcoord_in_R
+    x
+    HxR2).
+}
+claim Hx1R : x 1 :e R.
+{
+  exact (EuclidPlane_ycoord_in_R
+    x
+    HxR2).
+}
+claim Hx0S : SNo (x 0).
+{
+  exact (real_SNo
+    (x 0)
+    Hx0R).
+}
+claim Hx1S : SNo (x 1).
+{
+  exact (real_SNo
+    (x 1)
+    Hx1R).
+}
+rewrite (apply_fun_graph
+  (setprod S1 unit_interval)
+  (fun p:set =>
+    (mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 0),
+     mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 1)))
+  (x, 0)
+  (tuple_2_setprod_by_pair_Sigma
+    S1
+    unit_interval
+    x
+    0
+    HxS1
+    zero_in_unit_interval)).
+rewrite tuple_2_0_eq.
+rewrite tuple_2_1_eq.
+rewrite minus_SNo_0.
+rewrite (add_SNo_0R 1 SNo_1).
+rewrite (mul_SNo_oneL
+  (x 0)
+  Hx0S).
+rewrite (mul_SNo_oneL
+  (x 1)
+  Hx1S).
+exact (EuclidPlane_eta
+  x
+  HxR2).
+Qed.
+
+Theorem s55_radial_collapse_map_top_constant :
+  forall x y:set, x :e S1 -> y :e S1 ->
+    apply_fun s55_radial_collapse_map (x, 1)
+    =
+    apply_fun s55_radial_collapse_map (y, 1).
+let x y.
+assume HxS1 HyS1.
+rewrite (s55_radial_collapse_map_top_collapses
+  x
+  HxS1).
+rewrite (s55_radial_collapse_map_top_collapses
+  y
+  HyS1).
+reflexivity.
+Qed.
+
+Theorem s55_radial_collapse_map_continuous :
+  continuous_map
+    (setprod S1 unit_interval)
+    (product_topology S1 S1_topology unit_interval unit_interval_topology)
+    B2
+    B2_topology
+    s55_radial_collapse_map.
+Admitted.
+
+Theorem s55_continuous_codomain_sub_quotient_topology :
+  forall X Tx Y Ty f:set,
+    continuous_map X Tx Y Ty f ->
+    Ty c= quotient_topology X Tx Y f.
+Admitted.
+
+Theorem s55_continuous_compact_Hausdorff_closed_map :
+  forall X Tx Y Ty f:set,
+    compact_space X Tx ->
+    Hausdorff_space Y Ty ->
+    continuous_map X Tx Y Ty f ->
+    closed_map X Tx Y Ty f.
+Admitted.
+
+Theorem s55_surjective_closed_map_quotient_sub :
+  forall X Tx Y Ty f:set,
+    topology_on X Tx ->
+    topology_on Y Ty ->
+    surjective_map X Y f ->
+    closed_map X Tx Y Ty f ->
+    quotient_topology X Tx Y f c= Ty.
+Admitted.
+
+Theorem s55_surjective_closed_continuous_quotient_eq :
+  forall X Tx Y Ty f:set,
+    topology_on X Tx ->
+    topology_on Y Ty ->
+    surjective_map X Y f ->
+    closed_map X Tx Y Ty f ->
+    continuous_map X Tx Y Ty f ->
+    quotient_topology X Tx Y f = Ty.
+Admitted.
+
+Theorem s55_R2_minus_origin_normalized_in_S1 : forall x:set,
+  x :e R2_minus_origin ->
+  (div_SNo (x 0)
+    (sqrt_SNo_nonneg
+      (add_SNo (mul_SNo (x 0) (x 0))
+        (mul_SNo (x 1) (x 1)))),
+   div_SNo (x 1)
+    (sqrt_SNo_nonneg
+      (add_SNo (mul_SNo (x 0) (x 0))
+        (mul_SNo (x 1) (x 1))))):e S1.
+Admitted.
+
+Theorem s55_surjective_fiber_constant_factorization :
+  forall X Y Z q F:set,
+    surjective_map X Y q ->
+    function_on F X Z ->
+    (forall x1 x2:set, x1 :e X -> x2 :e X ->
+      apply_fun q x1 = apply_fun q x2 ->
+      apply_fun F x1 = apply_fun F x2) ->
+    exists k:set, function_on k Y Z /\
+      (forall x:set, x :e X ->
+        apply_fun k (apply_fun q x) = apply_fun F x).
+Admitted.
+
+Theorem s55_radial_collapse_map_zero_implies_top :
+  forall p:set, p :e setprod S1 unit_interval ->
+    apply_fun s55_radial_collapse_map p = (0, 0) ->
+    p 1 = 1.
+Admitted.
+
 (** Sandbox Begin Alice **)
 (** Sandbox End Alice **)
 (** Sandbox Begin Bob **)
