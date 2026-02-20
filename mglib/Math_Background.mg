@@ -88882,6 +88882,71 @@ exact (HinclNotNul
   HnulIncl).
 Qed.
 
+(** S55 helper: continuity descends to the quotient topology once the composite is continuous. **)
+(** Proven Bob **)
+Theorem s55_continuous_descends_to_quotient_topology :
+  forall X Tx Y q Z Tz g:set,
+    function_on q X Y ->
+    function_on g Y Z ->
+    continuous_map X Tx Z Tz (compose_fun X q g) ->
+    topology_on Y (quotient_topology X Tx Y q) ->
+    continuous_map Y (quotient_topology X Tx Y q) Z Tz g.
+let X Tx Y q Z Tz g.
+assume HqFun HgFun HcompCont HtopQ.
+claim HtopZ : topology_on Z Tz.
+{
+  exact (continuous_map_topology_cod
+    X
+    Tx
+    Z
+    Tz
+    (compose_fun X q g)
+    HcompCont).
+}
+claim HpreComp :
+  forall V:set, V :e Tz ->
+    preimage_of X (compose_fun X q g) V :e Tx.
+{
+  exact (andER
+    (topology_on X Tx /\ topology_on Z Tz /\
+      function_on (compose_fun X q g) X Z)
+    (forall V:set, V :e Tz ->
+      preimage_of X (compose_fun X q g) V :e Tx)
+    HcompCont).
+}
+claim HpreGOpen :
+  forall V:set, V :e Tz ->
+    preimage_of Y g V :e quotient_topology X Tx Y q.
+{
+  let V.
+  assume HV.
+  apply (SepI
+    (Power Y)
+    (fun W:set => preimage_of X q W :e Tx)
+    (preimage_of Y g V)).
+  - exact (PowerI
+      Y
+      (preimage_of Y g V)
+      (Sep_Subq Y (fun y:set => apply_fun g y :e V))).
+  - rewrite (preimage_compose_fun
+    X
+      Y
+      q
+      g
+      V
+      HqFun).
+    exact (HpreComp V HV).
+}
+prove continuous_map Y (quotient_topology X Tx Y q) Z Tz g.
+apply andI.
+- apply andI.
+  + exact HtopQ.
+  + exact HtopZ.
+- apply andI.
+  + exact HgFun.
+  + exact HpreGOpen.
+Qed.
+
 (** from S55 Lem 55.3 direction (1) implies (2) (line 907 in algtop.tex) **)
 (** LATEX VERSION: Let h: S^1 -> X be continuous. If h is nulhomotopic, then h extends to a continuous map k: B^2 -> X. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 120 **)
