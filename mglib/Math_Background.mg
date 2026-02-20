@@ -172854,7 +172854,35 @@ claim Hstep :
     SNo_1
     HptS).
 }
-admit.
+claim Hstep2 : add_SNo 0 (p 1) = 1.
+{
+  claim HleftEq :
+    add_SNo 0 (p 1) =
+    add_SNo (add_SNo 1 (minus_SNo (p 1))) (p 1).
+  {
+    rewrite HoneMinusEq0.
+    reflexivity.
+  }
+  exact (eq_i_tra
+    (add_SNo 0 (p 1))
+    (add_SNo (add_SNo 1 (minus_SNo (p 1))) (p 1))
+    1
+    HleftEq
+    Hstep).
+}
+claim H0L : p 1 = add_SNo 0 (p 1).
+{
+  symmetry.
+  exact (add_SNo_0L
+    (p 1)
+    HptS).
+}
+exact (eq_i_tra
+  (p 1)
+  (add_SNo 0 (p 1))
+  1
+  H0L
+  Hstep2).
 Admitted.
 
 (** Sandbox Begin Alice **)
