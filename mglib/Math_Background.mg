@@ -88947,6 +88947,210 @@ apply andI.
   + exact HpreGOpen.
 Qed.
 
+(** S55 helper: radial collapse map pi : S1 x I -> B2, pi(x,t) = (1-t)x. **)
+Definition s55_radial_collapse_map : set :=
+  graph (setprod S1 unit_interval)
+    (fun p:set =>
+      (mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 0),
+       mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 1))).
+
+(** S55 helper: pi maps S1 x I into B2. **)
+(** Proven Bob **)
+Theorem s55_radial_collapse_map_function_on :
+  function_on s55_radial_collapse_map (setprod S1 unit_interval) B2.
+apply (graph_function_on
+  (setprod S1 unit_interval)
+  B2
+  (fun p:set =>
+    (mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 0),
+     mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 1)))).
+let p.
+assume Hp.
+claim HpS1 : p 0 :e S1.
+{
+  exact (ap0_Sigma
+    S1
+    (fun _ : set => unit_interval)
+    p
+    Hp).
+}
+claim HpI : p 1 :e unit_interval.
+{
+  exact (ap1_Sigma
+    S1
+    (fun _ : set => unit_interval)
+    p
+    Hp).
+}
+claim H1mtI : add_SNo 1 (minus_SNo (p 1)) :e unit_interval.
+{
+  rewrite <- (flip_unit_interval_apply
+    (p 1)
+    HpI).
+  exact (flip_unit_interval_function_on
+    (p 1)
+    HpI).
+}
+exact (B2_scale_S1
+  (add_SNo 1 (minus_SNo (p 1)))
+  (p 0)
+  H1mtI
+  HpS1).
+Qed.
+
+(** S55 helper: pi collapses S1 x {1} to the origin. **)
+(** Proven Bob **)
+Theorem s55_radial_collapse_map_top_collapses :
+  forall x:set, x :e S1 ->
+    apply_fun s55_radial_collapse_map (x, 1) = (0, 0).
+let x.
+assume HxS1.
+claim HxR2 : x :e setprod R R.
+{
+  exact (SepE1
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)
+    x
+    HxS1).
+}
+claim Hx0R : x 0 :e R.
+{
+  exact (EuclidPlane_xcoord_in_R
+    x
+    HxR2).
+}
+claim Hx1R : x 1 :e R.
+{
+  exact (EuclidPlane_ycoord_in_R
+    x
+    HxR2).
+}
+claim Hx0S : SNo (x 0).
+{
+  exact (real_SNo
+    (x 0)
+    Hx0R).
+}
+claim Hx1S : SNo (x 1).
+{
+  exact (real_SNo
+    (x 1)
+    Hx1R).
+}
+rewrite (apply_fun_graph
+  (setprod S1 unit_interval)
+  (fun p:set =>
+    (mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 0),
+     mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 1)))
+  (x, 1)
+  (tuple_2_setprod_by_pair_Sigma
+    S1
+    unit_interval
+    x
+    1
+    HxS1
+    one_in_unit_interval)).
+rewrite tuple_2_0_eq.
+rewrite tuple_2_1_eq.
+rewrite (add_SNo_minus_SNo_rinv 1 SNo_1).
+rewrite (mul_SNo_zeroL
+  (x 0)
+  Hx0S).
+rewrite (mul_SNo_zeroL
+  (x 1)
+  Hx1S).
+reflexivity.
+Qed.
+
+(** S55 helper: pi restricts to the identity on S1 x {0}. **)
+(** Proven Bob **)
+Theorem s55_radial_collapse_map_bottom_is_inclusion :
+  forall x:set, x :e S1 ->
+    apply_fun s55_radial_collapse_map (x, 0) = x.
+let x.
+assume HxS1.
+claim HxR2 : x :e setprod R R.
+{
+  exact (SepE1
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)
+    x
+    HxS1).
+}
+claim Hx0R : x 0 :e R.
+{
+  exact (EuclidPlane_xcoord_in_R
+    x
+    HxR2).
+}
+claim Hx1R : x 1 :e R.
+{
+  exact (EuclidPlane_ycoord_in_R
+    x
+    HxR2).
+}
+claim Hx0S : SNo (x 0).
+{
+  exact (real_SNo
+    (x 0)
+    Hx0R).
+}
+claim Hx1S : SNo (x 1).
+{
+  exact (real_SNo
+    (x 1)
+    Hx1R).
+}
+rewrite (apply_fun_graph
+  (setprod S1 unit_interval)
+  (fun p:set =>
+    (mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 0),
+     mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 1)))
+  (x, 0)
+  (tuple_2_setprod_by_pair_Sigma
+    S1
+    unit_interval
+    x
+    0
+    HxS1
+    zero_in_unit_interval)).
+rewrite tuple_2_0_eq.
+rewrite tuple_2_1_eq.
+rewrite minus_SNo_0.
+rewrite (add_SNo_0R 1 SNo_1).
+rewrite (mul_SNo_oneL
+  (x 0)
+  Hx0S).
+rewrite (mul_SNo_oneL
+  (x 1)
+  Hx1S).
+exact (EuclidPlane_eta
+  x
+  HxR2).
+Qed.
+
+(** S55 helper: pi has constant value on the collapsed top boundary. **)
+(** Proven Bob **)
+Theorem s55_radial_collapse_map_top_constant :
+  forall x y:set, x :e S1 -> y :e S1 ->
+    apply_fun s55_radial_collapse_map (x, 1)
+    =
+    apply_fun s55_radial_collapse_map (y, 1).
+let x y.
+assume HxS1 HyS1.
+rewrite (s55_radial_collapse_map_top_collapses
+  x
+  HxS1).
+rewrite (s55_radial_collapse_map_top_collapses
+  y
+  HyS1).
+reflexivity.
+Qed.
+
 (** from S55 Lem 55.3 direction (1) implies (2) (line 907 in algtop.tex) **)
 (** LATEX VERSION: Let h: S^1 -> X be continuous. If h is nulhomotopic, then h extends to a continuous map k: B^2 -> X. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 120 **)
@@ -89060,6 +89264,38 @@ claim HextFromHomotopy :
       x
       HxS1).
   }
+  set q := s55_radial_collapse_map.
+  claim HqFun :
+    function_on q (setprod S1 unit_interval) B2.
+  {
+    exact s55_radial_collapse_map_function_on.
+  }
+  claim HqBottom :
+    forall x:set, x :e S1 -> apply_fun q (x, 0) = x.
+  {
+    exact s55_radial_collapse_map_bottom_is_inclusion.
+  }
+  claim HqTopConst :
+    forall x1 x2:set, x1 :e S1 -> x2 :e S1 ->
+      apply_fun q (x1, 1) = apply_fun q (x2, 1).
+  {
+    exact s55_radial_collapse_map_top_constant.
+  }
+  claim HFTopConst :
+    forall x1 x2:set, x1 :e S1 -> x2 :e S1 ->
+      apply_fun F (x1, 1) = apply_fun F (x2, 1).
+  {
+    let x1.
+    let x2.
+    assume Hx1S1 Hx2S1.
+    rewrite (HFAt1 x1 Hx1S1).
+    rewrite (HFAt1 x2 Hx2S1).
+    reflexivity.
+  }
+  (** Remaining steps:
+     - build k : B2 -> X induced by F through quotient fibers of q
+     - show continuity of k in B2_topology
+     - use HqBottom and HFAt0 to conclude k|S1 = h. **)
   admit.
 }
 exact HextFromHomotopy.
