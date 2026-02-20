@@ -91480,6 +91480,36 @@ claim HextFromHomotopy :
       x
       HxS1).
   }
+  set dom := setprod S1 unit_interval.
+  set q := s55_radial_collapse_map.
+  claim HqFun :
+    function_on q dom B2.
+  {
+    exact s55_radial_collapse_map_function_on.
+  }
+  claim HqCont :
+    continuous_map
+      dom
+      (product_topology S1 S1_topology unit_interval unit_interval_topology)
+      B2
+      B2_topology
+      q.
+  {
+    exact s55_radial_collapse_map_continuous.
+  }
+  claim HFfun :
+    function_on F dom X.
+  {
+    exact (continuous_map_function_on
+      dom
+      (product_topology S1 S1_topology unit_interval unit_interval_topology)
+      X
+      Tx
+      F
+      HFCont).
+  }
+  (** TODO Bob: show F is constant on q-fibers using HFAt1 and s55_radial_collapse_map_zero_implies_top;
+      then factor via s55_surjective_fiber_constant_factorization and prove continuity on B2. **)
   admit.
 }
 exact HextFromHomotopy.
