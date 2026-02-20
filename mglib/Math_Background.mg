@@ -92187,7 +92187,46 @@ claim HextFromHomotopy :
       rewrite HFp2.
       reflexivity.
     - assume Hq1Ne0.
-      (** TODO Bob: handle nonzero fibers of q using normalization uniqueness in R2_minus_origin. **)
+      claim Hq2Ne0 : apply_fun q p2 <> (0, 0).
+      {
+        assume Hq20.
+        claim Hq10 : apply_fun q p1 = (0, 0).
+        {
+          rewrite HqEq.
+          exact Hq20.
+        }
+        exact (Hq1Ne0
+          Hq10).
+      }
+      claim Hp11I : p1 1 :e unit_interval.
+      {
+        exact (ap1_Sigma
+          S1
+          (fun _ : set => unit_interval)
+          p1
+          Hp1Dom).
+      }
+      claim Hp21I : p2 1 :e unit_interval.
+      {
+        exact (ap1_Sigma
+          S1
+          (fun _ : set => unit_interval)
+          p2
+          Hp2Dom).
+      }
+      claim Hf1I : apply_fun flip_unit_interval (p1 1) :e unit_interval.
+      {
+        exact (flip_unit_interval_function_on
+          (p1 1)
+          Hp11I).
+      }
+      claim Hf2I : apply_fun flip_unit_interval (p2 1) :e unit_interval.
+      {
+        exact (flip_unit_interval_function_on
+          (p2 1)
+          Hp21I).
+      }
+      (** TODO Bob: nonzero fibers should be singletons; finish by recovering p1 and p2 from q p1 = q p2. **)
       admit.
   }
   claim HqSurj : surjective_map dom B2 q.
@@ -92240,7 +92279,81 @@ claim HextFromHomotopy :
           symmetry.
           exact Hy0.
       + assume HyNe0.
-        (** TODO Bob: nonzero y in B2 should be hit by normalized-direction lift (u, 1-||y||). **)
+        claim HyR2 : y :e setprod R R.
+        {
+          exact (SepE1
+            (setprod R R)
+            (fun p:set =>
+              ~(Rlt 1
+                (add_SNo (mul_SNo (p 0) (p 0))
+                  (mul_SNo (p 1) (p 1)))))
+            y
+            HyB2).
+        }
+        claim HyEta : y = (y 0, y 1).
+        {
+          exact (setprod_eta
+            R
+            R
+            y
+            HyR2).
+        }
+        claim HyNotCoords : ~(y 0 = 0 /\ y 1 = 0).
+        {
+          assume HyCoords.
+          claim HyPair00 : (y 0, y 1) = (0, 0).
+          {
+            exact (tuple_2_ext
+              (y 0)
+              (y 1)
+              0
+              0
+              (andEL
+                (y 0 = 0)
+                (y 1 = 0)
+                HyCoords)
+              (andER
+                (y 0 = 0)
+                (y 1 = 0)
+                HyCoords)).
+          }
+          claim HyEq00 : y = (0, 0).
+          {
+            exact (eq_i_tra
+              y
+              (y 0, y 1)
+              (0, 0)
+              HyEta
+              HyPair00).
+          }
+          exact (HyNe0
+            HyEq00).
+        }
+        claim HyR2m0 : y :e R2_minus_origin.
+        {
+          apply (SepI
+            (setprod R R)
+            (fun p:set => ~(p 0 = 0 /\ p 1 = 0))
+            y
+            HyR2).
+          exact HyNotCoords.
+        }
+        set yn :=
+          (div_SNo (y 0)
+            (sqrt_SNo_nonneg
+              (add_SNo (mul_SNo (y 0) (y 0))
+                (mul_SNo (y 1) (y 1)))),
+           div_SNo (y 1)
+            (sqrt_SNo_nonneg
+              (add_SNo (mul_SNo (y 0) (y 0))
+                (mul_SNo (y 1) (y 1))))).
+        claim HynS1 : yn :e S1.
+        {
+          exact (s55_R2_minus_origin_normalized_in_S1
+            y
+            HyR2m0).
+        }
+        (** TODO Bob: finish nonzero case by setting t := 1 - ||y|| and checking q(yn,t)=y. **)
         admit.
   }
   claim Hfactor :
