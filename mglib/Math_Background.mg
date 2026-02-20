@@ -89151,6 +89151,458 @@ rewrite (s55_radial_collapse_map_top_collapses
 reflexivity.
 Qed.
 
+(** S55 helper: pi is continuous from S1 x I to B2. **)
+(** Proven Bob **)
+Theorem s55_radial_collapse_map_continuous :
+  continuous_map
+    (setprod S1 unit_interval)
+    (product_topology S1 S1_topology unit_interval unit_interval_topology)
+    B2
+    B2_topology
+    s55_radial_collapse_map.
+set dom := setprod S1 unit_interval.
+set Tdom := product_topology S1 S1_topology unit_interval unit_interval_topology.
+claim HtopS1 : topology_on S1 S1_topology.
+{
+  exact (continuous_map_topology_dom
+    S1
+    S1_topology
+    B2
+    B2_topology
+    (graph S1 (fun x:set => x))
+    inclusion_S1_B2_continuous).
+}
+claim HtopDom : topology_on dom Tdom.
+{
+  exact (product_topology_is_topology
+    S1
+    S1_topology
+    unit_interval
+    unit_interval_topology
+    HtopS1
+    unit_interval_topology_on).
+}
+claim HtopR2 : topology_on (setprod R R) R2_topology.
+{
+  exact (product_topology_is_topology
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    R_standard_topology_is_topology
+    R_standard_topology_is_topology).
+}
+claim HS1subR2 : S1 c= setprod R R.
+{
+  exact (Sep_Subq
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)).
+}
+claim HB2subR2 : B2 c= setprod R R.
+{
+  exact (Sep_Subq
+    (setprod R R)
+    (fun p:set =>
+      ~(Rlt 1
+        (add_SNo (mul_SNo (p 0) (p 0))
+          (mul_SNo (p 1) (p 1)))))).
+}
+set xproj := projection_map1 S1 unit_interval.
+set tproj := projection_map2 S1 unit_interval.
+claim HprojPack :
+  continuous_map dom Tdom S1 S1_topology xproj /\
+  continuous_map dom Tdom unit_interval unit_interval_topology tproj.
+{
+  exact (projection_maps_continuous
+    S1
+    S1_topology
+    unit_interval
+    unit_interval_topology
+    HtopS1
+    unit_interval_topology_on).
+}
+claim HxprojCont :
+  continuous_map dom Tdom S1 S1_topology xproj.
+{
+  exact (andEL
+    (continuous_map dom Tdom S1 S1_topology xproj)
+    (continuous_map dom Tdom unit_interval unit_interval_topology tproj)
+    HprojPack).
+}
+claim HtprojContI :
+  continuous_map dom Tdom unit_interval unit_interval_topology tproj.
+{
+  exact (andER
+    (continuous_map dom Tdom S1 S1_topology xproj)
+    (continuous_map dom Tdom unit_interval unit_interval_topology tproj)
+    HprojPack).
+}
+claim HtprojContR :
+  continuous_map dom Tdom R R_standard_topology tproj.
+{
+  exact (continuous_map_range_expand
+    dom
+    Tdom
+    unit_interval
+    unit_interval_topology
+    R
+    R_standard_topology
+    tproj
+    HtprojContI
+    unit_interval_sub_R
+    R_standard_topology_is_topology
+    (fun P H => H)).
+}
+set one_minus_t := compose_fun dom tproj flip_unit_interval.
+claim HoneMinusContI :
+  continuous_map dom Tdom unit_interval unit_interval_topology one_minus_t.
+{
+  exact (composition_continuous
+    dom
+    Tdom
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    tproj
+    flip_unit_interval
+    HtprojContI
+    flip_unit_interval_continuous).
+}
+claim HoneMinusContR :
+  continuous_map dom Tdom R R_standard_topology one_minus_t.
+{
+  exact (continuous_map_range_expand
+    dom
+    Tdom
+    unit_interval
+    unit_interval_topology
+    R
+    R_standard_topology
+    one_minus_t
+    HoneMinusContI
+    unit_interval_sub_R
+    R_standard_topology_is_topology
+    (fun P H => H)).
+}
+claim HxprojContR2 :
+  continuous_map dom Tdom (setprod R R) R2_topology xproj.
+{
+  exact (continuous_map_range_expand
+    dom
+    Tdom
+    S1
+    S1_topology
+    (setprod R R)
+    R2_topology
+    xproj
+    HxprojCont
+    HS1subR2
+    HtopR2
+    (fun P H => H)).
+}
+claim HprojR2Pack :
+  continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R) /\
+  continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R).
+{
+  exact (projection_maps_continuous
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    R_standard_topology_is_topology
+    R_standard_topology_is_topology).
+}
+claim Hproj1Cont :
+  continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R).
+{
+  exact (andEL
+    (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R))
+    (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R))
+    HprojR2Pack).
+}
+claim Hproj2Cont :
+  continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R).
+{
+  exact (andER
+    (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R))
+    (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R))
+    HprojR2Pack).
+}
+set x0 := compose_fun dom xproj (projection_map1 R R).
+set x1 := compose_fun dom xproj (projection_map2 R R).
+claim Hx0Cont :
+  continuous_map dom Tdom R R_standard_topology x0.
+{
+  exact (composition_continuous
+    dom
+    Tdom
+    (setprod R R)
+    R2_topology
+    R
+    R_standard_topology
+    xproj
+    (projection_map1 R R)
+    HxprojContR2
+    Hproj1Cont).
+}
+claim Hx1Cont :
+  continuous_map dom Tdom R R_standard_topology x1.
+{
+  exact (composition_continuous
+    dom
+    Tdom
+    (setprod R R)
+    R2_topology
+    R
+    R_standard_topology
+    xproj
+    (projection_map2 R R)
+    HxprojContR2
+    Hproj2Cont).
+}
+set qx := compose_fun dom (pair_map dom one_minus_t x0) mul_fun_R.
+set qy := compose_fun dom (pair_map dom one_minus_t x1) mul_fun_R.
+claim HqxCont :
+  continuous_map dom Tdom R R_standard_topology qx.
+{
+  exact (mul_two_continuous_R
+    dom
+    Tdom
+    one_minus_t
+    x0
+    HtopDom
+    HoneMinusContR
+    Hx0Cont).
+}
+claim HqyCont :
+  continuous_map dom Tdom R R_standard_topology qy.
+{
+  exact (mul_two_continuous_R
+    dom
+    Tdom
+    one_minus_t
+    x1
+    HtopDom
+    HoneMinusContR
+    Hx1Cont).
+}
+set qR2 := pair_map dom qx qy.
+claim HqR2Cont :
+  continuous_map dom Tdom (setprod R R) R2_topology qR2.
+{
+  exact (maps_into_products
+    dom
+    Tdom
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    qx
+    qy
+    HqxCont
+    HqyCont).
+}
+claim HqFunB2 :
+  function_on s55_radial_collapse_map dom B2.
+{
+  exact s55_radial_collapse_map_function_on.
+}
+claim HqFunR2 :
+  function_on s55_radial_collapse_map dom (setprod R R).
+{
+  exact (function_on_codomain
+    s55_radial_collapse_map
+    dom
+    B2
+    (setprod R R)
+    HqFunB2
+    HB2subR2).
+}
+claim HqEq :
+  forall p:set, p :e dom ->
+    apply_fun qR2 p = apply_fun s55_radial_collapse_map p.
+{
+  let p.
+  assume Hp.
+  claim Hp0S1 : p 0 :e S1.
+  {
+    exact (ap0_Sigma
+      S1
+      (fun _ : set => unit_interval)
+      p
+      Hp).
+  }
+  claim Hp1I : p 1 :e unit_interval.
+  {
+    exact (ap1_Sigma
+      S1
+      (fun _ : set => unit_interval)
+      p
+      Hp).
+  }
+  claim Hp0R2 : p 0 :e setprod R R.
+  {
+    exact (SepE1
+      (setprod R R)
+      (fun z:set =>
+        add_SNo (mul_SNo (z 0) (z 0))
+          (mul_SNo (z 1) (z 1)) = 1)
+      (p 0)
+      Hp0S1).
+  }
+  claim HoneMinusR : apply_fun one_minus_t p :e R.
+  {
+    exact (continuous_map_function_on
+      dom
+      Tdom
+      R
+      R_standard_topology
+      one_minus_t
+      HoneMinusContR
+      p
+      Hp).
+  }
+  claim Hx0R :
+    apply_fun x0 p :e R.
+  {
+    exact (continuous_map_function_on
+      dom
+      Tdom
+      R
+      R_standard_topology
+      x0
+      Hx0Cont
+      p
+      Hp).
+  }
+  claim Hx1R :
+    apply_fun x1 p :e R.
+  {
+    exact (continuous_map_function_on
+      dom
+      Tdom
+      R
+      R_standard_topology
+      x1
+      Hx1Cont
+      p
+      Hp).
+  }
+  rewrite (pair_map_apply
+    dom
+    R
+    R
+    qx
+    qy
+    p
+    Hp).
+  rewrite (mul_of_pair_map_apply
+    dom
+    one_minus_t
+    x0
+    p
+    Hp
+    HoneMinusR
+    Hx0R).
+  rewrite (mul_of_pair_map_apply
+    dom
+    one_minus_t
+    x1
+    p
+    Hp
+    HoneMinusR
+    Hx1R).
+  rewrite (compose_fun_apply
+    dom
+    tproj
+    flip_unit_interval
+    p
+    Hp).
+  rewrite (projection2_apply
+    S1
+    unit_interval
+    p
+    Hp).
+  rewrite (flip_unit_interval_apply
+    (p 1)
+    Hp1I).
+  rewrite (compose_fun_apply
+    dom
+    xproj
+    (projection_map1 R R)
+    p
+    Hp).
+  rewrite (projection1_apply
+    S1
+    unit_interval
+    p
+    Hp).
+  rewrite (projection1_apply
+    R
+    R
+    (p 0)
+    Hp0R2).
+  rewrite (compose_fun_apply
+    dom
+    xproj
+    (projection_map2 R R)
+    p
+    Hp).
+  rewrite (projection1_apply
+    S1
+    unit_interval
+    p
+    Hp).
+  rewrite (projection2_apply
+    R
+    R
+    (p 0)
+    Hp0R2).
+  rewrite (apply_fun_graph
+    dom
+    (fun z:set =>
+      (mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 0),
+       mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 1)))
+    p
+    Hp).
+  reflexivity.
+}
+claim HqContR2 :
+  continuous_map dom Tdom (setprod R R) R2_topology s55_radial_collapse_map.
+{
+  exact (continuous_map_congr_on
+    dom
+    Tdom
+    (setprod R R)
+    R2_topology
+    qR2
+    s55_radial_collapse_map
+    HqR2Cont
+    HqFunR2
+    HqEq).
+}
+claim HqIntoB2 :
+  forall p:set, p :e dom -> apply_fun s55_radial_collapse_map p :e B2.
+{
+  let p.
+  assume Hp.
+  exact (HqFunB2 p Hp).
+}
+exact (continuous_map_range_restrict
+  dom
+  Tdom
+  (setprod R R)
+  R2_topology
+  s55_radial_collapse_map
+  B2
+  HqContR2
+  HB2subR2
+  HqIntoB2).
+Qed.
+
 (** from S55 Lem 55.3 direction (1) implies (2) (line 907 in algtop.tex) **)
 (** LATEX VERSION: Let h: S^1 -> X be continuous. If h is nulhomotopic, then h extends to a continuous map k: B^2 -> X. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 120 **)
@@ -89269,6 +89721,16 @@ claim HextFromHomotopy :
     function_on q (setprod S1 unit_interval) B2.
   {
     exact s55_radial_collapse_map_function_on.
+  }
+  claim HqCont :
+    continuous_map
+      (setprod S1 unit_interval)
+      (product_topology S1 S1_topology unit_interval unit_interval_topology)
+      B2
+      B2_topology
+      q.
+  {
+    exact s55_radial_collapse_map_continuous.
   }
   claim HqBottom :
     forall x:set, x :e S1 -> apply_fun q (x, 0) = x.
