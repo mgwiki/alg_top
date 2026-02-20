@@ -24897,7 +24897,7 @@ apply set_ext.
     x0
     (constant_path x0)
     HconstInLoop).
-Admitted.
+  Admitted.
 
 (** from S52 Definition (line 374 in algtop.tex): the alpha-hat map for change of basepoint **)
 (** LATEX VERSION: Let alpha be a path from x0 to x1. Define alpha-hat: pi1(X,x0) -> pi1(X,x1) by alpha-hat([f]) = [alpha-bar] . [f] . [alpha]. **)
@@ -86183,6 +86183,55 @@ Qed.
 (** Proven Charlie **)
 Theorem simply_connected_R_standard :
   simply_connected R R_standard_topology.
+claim HpcR : path_connected_space R R_standard_topology.
+{
+  exact (ex51_3b_contractible_path_connected
+    R
+    R_standard_topology
+    ex51_3a_R_contractible).
+}
+claim HRconvex : convex_in R R.
+{
+  exact (andI
+    (R c= R)
+    (forall a b:set, a :e R -> b :e R -> order_interval R a b c= R)
+    (Subq_ref R)
+    (fun a b HaR HbR =>
+      order_interval_subset R a b)).
+}
+claim Hpi1triv :
+  fundamental_group R R_standard_topology 0 =
+  {fundamental_group_id R R_standard_topology 0}.
+{
+  exact (Example_52_1_convex_trivial_pi1
+    R
+    R_standard_topology
+    0
+    (Subq_ref R)
+    HRconvex
+    R_standard_topology_is_topology
+    real_0).
+}
+claim HscWit :
+  exists x0:set, x0 :e R /\
+    fundamental_group R R_standard_topology x0 =
+    {fundamental_group_id R R_standard_topology x0}.
+{
+  witness 0.
+  exact (andI
+    (0 :e R)
+    (fundamental_group R R_standard_topology 0 =
+      {fundamental_group_id R R_standard_topology 0})
+    real_0
+    Hpi1triv).
+}
+exact (andI
+  (path_connected_space R R_standard_topology)
+  (exists x0:set, x0 :e R /\
+    fundamental_group R R_standard_topology x0 =
+    {fundamental_group_id R R_standard_topology x0})
+  HpcR
+  HscWit).
 Admitted.
 
 Theorem s54_pi1_nontrivial_from_two_fiber_points : forall E Te B Tb p e0 e1:set,
@@ -86195,6 +86244,173 @@ Theorem s54_pi1_nontrivial_from_two_fiber_points : forall E Te B Tb p e0 e1:set,
   exists cls:set,
     cls :e fundamental_group B Tb (apply_fun p e0) /\
     cls <> fundamental_group_id B Tb (apply_fun p e0).
+let E Te B Tb p e0 e1.
+assume Hcov HscE He0E He1E He1Eq He1Ne0.
+set b0 := apply_fun p e0.
+set G := fundamental_group B Tb b0.
+set idG := fundamental_group_id B Tb b0.
+set Fib := {x :e E | apply_fun p x = b0}.
+set lc := lifting_correspondence E Te B Tb p e0.
+apply (xm
+  (exists cls:set, cls :e G /\ cls <> idG)).
+- assume Hex.
+  exact Hex.
+- assume Hnone.
+  claim HallTriv : forall cls:set, cls :e G -> cls = idG.
+  {
+    let cls.
+    assume HclsG.
+    apply (xm (cls = idG)).
+    + assume Heq.
+      exact Heq.
+    + assume Hneq.
+      claim Hfalse : False.
+      {
+        apply Hnone.
+        witness cls.
+        exact (andI
+          (cls :e G)
+          (cls <> idG)
+          HclsG
+          Hneq).
+      }
+      exact (FalseE
+        Hfalse
+        (cls = idG)).
+  }
+  claim Hbij :
+    bijection G Fib lc.
+  {
+    exact (thm54_4_lifting_correspondence_bijective
+      E
+      Te
+      B
+      Tb
+      p
+      e0
+      Hcov
+      He0E
+      HscE).
+  }
+  claim HsurU :
+    forall y:set, y :e Fib ->
+      exists x:set, x :e G /\ apply_fun lc x = y /\
+        (forall x':set, x' :e G -> apply_fun lc x' = y -> x' = x).
+  {
+    exact (andER
+      (function_on lc G Fib)
+      (forall y:set, y :e Fib ->
+        exists x:set, x :e G /\ apply_fun lc x = y /\
+          (forall x':set, x' :e G -> apply_fun lc x' = y -> x' = x))
+      Hbij).
+  }
+  claim He0Fib : e0 :e Fib.
+  {
+    apply (SepI
+      E
+      (fun x:set => apply_fun p x = b0)
+      e0
+      He0E).
+    reflexivity.
+  }
+  claim He1Fib : e1 :e Fib.
+  {
+    apply (SepI
+      E
+      (fun x:set => apply_fun p x = b0)
+      e1
+      He1E).
+    exact He1Eq.
+  }
+  apply (HsurU e0 He0Fib).
+  let x0.
+  assume Hx0Pack.
+  claim Hx0Pair : x0 :e G /\ apply_fun lc x0 = e0.
+  {
+    exact (andEL
+      (x0 :e G /\ apply_fun lc x0 = e0)
+      (forall x':set, x' :e G -> apply_fun lc x' = e0 -> x' = x0)
+      Hx0Pack).
+  }
+  claim Hx0G : x0 :e G.
+  {
+    exact (andEL
+      (x0 :e G)
+      (apply_fun lc x0 = e0)
+      Hx0Pair).
+  }
+  claim Hx0Eq : apply_fun lc x0 = e0.
+  {
+    exact (andER
+      (x0 :e G)
+      (apply_fun lc x0 = e0)
+      Hx0Pair).
+  }
+  claim Hx0Id : x0 = idG.
+  {
+    exact (HallTriv
+      x0
+      Hx0G).
+  }
+  apply (HsurU e1 He1Fib).
+  let x1.
+  assume Hx1Pack.
+  claim Hx1Pair : x1 :e G /\ apply_fun lc x1 = e1.
+  {
+    exact (andEL
+      (x1 :e G /\ apply_fun lc x1 = e1)
+      (forall x':set, x' :e G -> apply_fun lc x' = e1 -> x' = x1)
+      Hx1Pack).
+  }
+  claim Hx1G : x1 :e G.
+  {
+    exact (andEL
+      (x1 :e G)
+      (apply_fun lc x1 = e1)
+      Hx1Pair).
+  }
+  claim Hx1Eq : apply_fun lc x1 = e1.
+  {
+    exact (andER
+      (x1 :e G)
+      (apply_fun lc x1 = e1)
+      Hx1Pair).
+  }
+  claim Hx1Id : x1 = idG.
+  {
+    exact (HallTriv
+      x1
+      Hx1G).
+  }
+  claim HlcId0 : apply_fun lc idG = e0.
+  {
+    rewrite <- Hx0Id.
+    exact Hx0Eq.
+  }
+  claim HlcId1 : apply_fun lc idG = e1.
+  {
+    rewrite <- Hx1Id.
+    exact Hx1Eq.
+  }
+  claim He0e1 : e0 = e1.
+  {
+    rewrite <- HlcId0.
+    rewrite <- HlcId1.
+    reflexivity.
+  }
+  claim He1e0 : e1 = e0.
+  {
+    symmetry.
+    exact He0e1.
+  }
+  claim Hfalse : False.
+  {
+    exact (He1Ne0
+      He1e0).
+  }
+  exact (FalseE
+    Hfalse
+    (exists cls:set, cls :e G /\ cls <> idG)).
 Admitted.
 
 Theorem s54_pi1_S1_nontrivial_from_two_lifts : forall e0 e1:set,
@@ -86206,6 +86422,31 @@ Theorem s54_pi1_S1_nontrivial_from_two_lifts : forall e0 e1:set,
   exists cls:set,
     cls :e fundamental_group S1 S1_topology S1_basepoint /\
     cls <> fundamental_group_id S1 S1_topology S1_basepoint.
+let e0 e1.
+assume He0R He1R He0Base He1Base He1Ne0.
+claim He1EqHe0 :
+  apply_fun covering_map_R_S1 e1 =
+  apply_fun covering_map_R_S1 e0.
+{
+  rewrite He1Base.
+  rewrite He0Base.
+  reflexivity.
+}
+rewrite <- He0Base.
+exact (s54_pi1_nontrivial_from_two_fiber_points
+  R
+  R_standard_topology
+  S1
+  S1_topology
+  covering_map_R_S1
+  e0
+  e1
+  thm53_1_R_covers_S1
+  simply_connected_R_standard
+  He0R
+  He1R
+  He1EqHe0
+  He1Ne0).
 Admitted.
 
 Theorem s54_identity_S1_not_nulhomotopic_from_two_lifts : forall e0 e1:set,
@@ -86215,6 +86456,168 @@ Theorem s54_identity_S1_not_nulhomotopic_from_two_lifts : forall e0 e1:set,
   apply_fun covering_map_R_S1 e1 = S1_basepoint ->
   e1 <> e0 ->
   ~(nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x))).
+let e0 e1.
+assume He0R He1R He0Base He1Base He1Ne0.
+assume Hnul.
+claim Hnontriv :
+  exists cls:set,
+    cls :e fundamental_group S1 S1_topology S1_basepoint /\
+    cls <> fundamental_group_id S1 S1_topology S1_basepoint.
+{
+  exact (s54_pi1_S1_nontrivial_from_two_lifts
+    e0
+    e1
+    He0R
+    He1R
+    He0Base
+    He1Base
+    He1Ne0).
+}
+apply Hnontriv.
+let cls.
+assume HclsPack.
+claim Hcls :
+  cls :e fundamental_group S1 S1_topology S1_basepoint.
+{
+  exact (andEL
+    (cls :e fundamental_group S1 S1_topology S1_basepoint)
+    (cls <> fundamental_group_id S1 S1_topology S1_basepoint)
+    HclsPack).
+}
+claim HclsNe :
+  cls <> fundamental_group_id S1 S1_topology S1_basepoint.
+{
+  exact (andER
+    (cls :e fundamental_group S1 S1_topology S1_basepoint)
+    (cls <> fundamental_group_id S1 S1_topology S1_basepoint)
+    HclsPack).
+}
+claim HcovPair :
+  continuous_map R R_standard_topology S1 S1_topology covering_map_R_S1 /\
+  surjective_map R S1 covering_map_R_S1.
+{
+  exact (andEL
+    (continuous_map R R_standard_topology S1 S1_topology covering_map_R_S1 /\
+      surjective_map R S1 covering_map_R_S1)
+    (forall b:set, b :e S1 ->
+      exists U:set, U :e S1_topology /\ b :e U /\
+        evenly_covered R R_standard_topology S1 S1_topology covering_map_R_S1 U)
+    thm53_1_R_covers_S1).
+}
+claim Hcontp :
+  continuous_map R R_standard_topology S1 S1_topology covering_map_R_S1.
+{
+  exact (andEL
+    (continuous_map R R_standard_topology S1 S1_topology covering_map_R_S1)
+    (surjective_map R S1 covering_map_R_S1)
+    HcovPair).
+}
+claim Hfunp :
+  function_on covering_map_R_S1 R S1.
+{
+  exact (continuous_map_function_on
+    R
+    R_standard_topology
+    S1
+    S1_topology
+    covering_map_R_S1
+    Hcontp).
+}
+claim Hb0S1 : S1_basepoint :e S1.
+{
+  rewrite <- He0Base.
+  exact (Hfunp
+    e0
+    He0R).
+}
+claim HS1subR2 : S1 c= setprod R R.
+{
+  exact (Sep_Subq
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)).
+}
+claim HtopR2 : topology_on (setprod R R) R2_topology.
+{
+  exact (product_topology_is_topology
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    R_standard_topology_is_topology
+    R_standard_topology_is_topology).
+}
+claim HtopS1 : topology_on S1 S1_topology.
+{
+  exact (subspace_topology_is_topology
+    (setprod R R)
+    R2_topology
+    S1
+    HtopR2
+    HS1subR2).
+}
+set idS1 := graph S1 (fun x:set => x).
+claim HidCont :
+  continuous_map S1 S1_topology S1 S1_topology idS1.
+{
+  exact (identity_continuous
+    S1
+    S1_topology
+    HtopS1).
+}
+claim HtrivInd :
+  forall c:set, c :e fundamental_group S1 S1_topology S1_basepoint ->
+    apply_fun
+      (induced_homomorphism
+        S1
+        S1_topology
+        S1_basepoint
+        S1
+        S1_topology
+        S1_basepoint
+        idS1)
+      c
+    =
+    fundamental_group_id
+      S1
+      S1_topology
+      S1_basepoint.
+{
+  admit.
+}
+claim HindId :
+  apply_fun
+    (induced_homomorphism
+      S1
+      S1_topology
+      S1_basepoint
+      S1
+      S1_topology
+      S1_basepoint
+      idS1)
+    cls
+  = cls.
+{
+  exact (Theorem_52_4_functorial_identity
+    S1
+    S1_topology
+    S1_basepoint
+    HtopS1
+    Hb0S1
+    cls
+    Hcls).
+}
+claim HclsEqId :
+  cls = fundamental_group_id S1 S1_topology S1_basepoint.
+{
+  rewrite <- HindId.
+  exact (HtrivInd
+    cls
+    Hcls).
+}
+exact (HclsNe
+  HclsEqId).
 Admitted.
 
 Theorem fundamental_group_id_member : forall X Tx x0:set,
@@ -86579,7 +86982,19 @@ claim HbcId :
   =
   fundamental_group_id S1 S1_topology S1_basepoint.
 {
-  admit.
+  exact (group_hom_sends_identity_cyclic_helper
+    (fundamental_group S1 S1_topology (apply_fun p e0))
+    (fundamental_group_mult S1 S1_topology (apply_fun p e0))
+    (fundamental_group_id S1 S1_topology (apply_fun p e0))
+    (fundamental_group_inv S1 S1_topology (apply_fun p e0))
+    (fundamental_group S1 S1_topology S1_basepoint)
+    (fundamental_group_mult S1 S1_topology S1_basepoint)
+    (fundamental_group_id S1 S1_topology S1_basepoint)
+    (fundamental_group_inv S1 S1_topology S1_basepoint)
+    bc
+    HgrpDom
+    HgrpCod
+    HbcHom).
 }
 witness apply_fun bc clsb.
 apply andI.
