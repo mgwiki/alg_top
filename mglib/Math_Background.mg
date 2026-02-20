@@ -1,5 +1,5 @@
 (** Balance Alice 3219 **)
-(** Balance Bob 3169 **)
+(** Balance Bob 3440 **)
 (** Balance Charlie 1220 **)
 (** Balance Dave 1793 **)
 
@@ -95501,7 +95501,8 @@ Admitted.
 (** from S55 Cor 55.4 part (a) (line 947 in algtop.tex) **)
 (** LATEX VERSION: The inclusion map j: S^1 -> R^2 - 0 is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
+(** Collected Bob 33 **)
+(** Proven Bob **)
 Theorem cor55_4a_inclusion_S1_R2_not_nulhomotopic :
   ~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
     (graph S1 (fun x:set => x))).
@@ -98056,7 +98057,8 @@ Qed.
 (** from S55 Thm 55.5 (line 950 in algtop.tex) **)
 (** LATEX VERSION: Given a nonvanishing vector field on B^2, there exists a point of S^1 where the vector field points directly inward and a point of S^1 where it points directly outward. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
+(** Collected Bob 165 **)
+(** Proven Bob **)
 Theorem thm55_5_nonvanishing_vector_field : forall v:set,
   continuous_map B2 B2_topology (setprod R R) R2_topology v ->
   (forall x:set, x :e B2 -> ~(apply_fun v x 0 = 0 /\ apply_fun v x 1 = 0)) ->
@@ -101797,7 +101799,8 @@ Qed.
 (** from S55 Thm 55.6 (line 983 in algtop.tex): Brouwer fixed-point theorem for the disc **)
 (** LATEX VERSION: If f: B^2 -> B^2 is continuous, then there exists a point x in B^2 such that f(x) = x. **)
 (** EFFORT: 6 lines textbook, difficulty 3/10, USD 60 **)
-(** Bounty 73 **)
+(** Collected Bob 73 **)
+(** Proven Bob **)
 Theorem thm55_6_brouwer_fixed_point_disc : forall f:set,
   continuous_map B2 B2_topology B2 B2_topology f ->
   exists x:set, x :e B2 /\ apply_fun f x = x.
