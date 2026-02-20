@@ -70392,7 +70392,6 @@ Admitted.
 (** F_tilde(0,0) = e0. If F is a path homotopy, then F_tilde is a path homotopy. **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 200 **)
 (** Bounty 267 **)
-(** Lock Bob 1771536475 **)
 Theorem lemma54_2_homotopy_lifting : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun F (0, 0) ->
@@ -86329,7 +86328,6 @@ reflexivity.
 Qed.
 
 (** S55 helper: a retraction B^2 -> S^1 forces identity on S^1 to be nulhomotopic. **)
-(** Proven Charlie **)
 Theorem simply_connected_R_standard :
   simply_connected R R_standard_topology.
 claim HpcR : path_connected_space R R_standard_topology.
@@ -91595,8 +91593,56 @@ claim HextFromHomotopy :
   }
   claim HqSurj : surjective_map dom B2 q.
   {
-    (** TODO Bob: prove surjectivity of radial collapse map onto B2. **)
-    admit.
+    prove
+      function_on q dom B2 /\
+      forall y:set, y :e B2 ->
+        exists x:set, x :e dom /\ apply_fun q x = y.
+    apply andI.
+    - exact HqFun.
+    - let y.
+      assume HyB2.
+      apply (xm (y = (0, 0))).
+      + assume Hy0.
+        claim H10S1 : (1, 0) :e S1.
+        {
+          apply (SepI
+            (setprod R R)
+            (fun p:set =>
+              add_SNo (mul_SNo (p 0) (p 0))
+                (mul_SNo (p 1) (p 1)) = 1)
+            (1, 0)).
+          - exact (tuple_2_setprod_by_pair_Sigma
+              R
+              R
+              1
+              0
+              real_1
+              real_0).
+          - rewrite tuple_2_0_eq at 1.
+            rewrite tuple_2_0_eq at 1.
+            rewrite tuple_2_1_eq at 1.
+            rewrite tuple_2_1_eq at 1.
+            rewrite (mul_SNo_oneR 1 SNo_1) at 1.
+            rewrite (mul_SNo_zeroR 0 SNo_0) at 1.
+            exact (add_SNo_0R 1 SNo_1).
+        }
+        witness ((1, 0), 1).
+        apply andI.
+        - exact (tuple_2_setprod_by_pair_Sigma
+            S1
+            unit_interval
+            (1, 0)
+            1
+            H10S1
+            one_in_unit_interval).
+        - rewrite (s55_radial_collapse_map_top_collapses
+            (1, 0)
+            H10S1).
+          symmetry.
+          exact Hy0.
+      + assume HyNe0.
+        (** TODO Bob: nonzero y in B2 should be hit by normalized-direction lift (u, 1-||y||). **)
+        admit.
   }
   claim Hfactor :
     exists k:set, function_on k B2 X /\
@@ -114797,7 +114843,6 @@ Admitted.
 (** LATEX VERSION: Suppose X = U union V where U, V are open in X. If U intersect V is path connected and x0 in U intersect V, then the images of i-star and j-star generate pi_1(X, x0). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
 (** Bounty 267 **)
-(** Lock Alice 1771525705 **)
 Theorem lemma59_1_open_cover_generates_pi1_core : forall X Tx U V x0 cls:set,
   topology_on X Tx ->
   U :e Tx -> V :e Tx ->
@@ -140689,7 +140734,6 @@ Admitted.
 (** then G is the direct sum of the G_alpha. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 182 **)
-(** Lock Dave 1771565305 **)
 Theorem lemma67_1_extension_condition_direct_sum :
   forall G multG eG invG J Gfam:set,
   direct_sum_of_subgroups G multG eG invG J Gfam ->
@@ -141351,7 +141395,6 @@ Definition external_direct_sum : set -> set -> set -> set -> set -> set -> set -
 (** of the images i_alpha(G_alpha). **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 182 **)
-(** Lock Dave 1771565305 **)
 Theorem thm67_4_existence_external_direct_sum :
   forall J Gfam multfam efam invfam:set,
   (forall alpha:set, alpha :e J ->
@@ -141586,7 +141629,6 @@ Qed.
 (** holds, then each i_alpha is a monomorphism and G is the direct sum. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
 (** Bounty 121 **)
-(** Lock Alice 1771562302 **)
 Theorem lemma67_5_extension_external :
   forall G multG eG invG J Gfam multfam ifam:set,
   abelian_group G multG eG invG ->
@@ -142570,7 +142612,6 @@ Qed.
 (** phi: G -> G' such that phi o i_alpha = i'_alpha. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 97 **)
-(** Lock Dave 1771565305 **)
 Theorem thm67_6_uniqueness_direct_sum :
   forall J Gfam multfam G multG eG invG ifam G' multG' eG' invG' ifam':set,
   abelian_group G multG eG invG ->
@@ -142633,7 +142674,6 @@ Definition free_abelian_group_with_basis : set -> set -> set -> set -> set -> se
 (** h: G -> H with h(a_alpha) = y_alpha. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 97 **)
-(** Lock Dave 1771565305 **)
 Theorem lemma67_7_extension_free_abelian :
   forall G mult e inv J basis:set,
   abelian_group G mult e inv ->
@@ -142660,7 +142700,6 @@ Admitted.
 (** then n is uniquely determined by G. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 97 **)
-(** Lock Dave 1771565305 **)
 Theorem thm67_8_rank_well_defined :
   forall G mult e inv n1 n2 basis1 basis2:set,
   free_abelian_group_with_basis G mult e inv n1 basis1 ->
