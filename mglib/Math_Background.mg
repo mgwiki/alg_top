@@ -170967,8 +170967,22 @@ claim HpreGOpen :
       (HpreComp V HV))).
 }
 prove continuous_map Y (quotient_topology X Tx Y q) Z Tz g.
-admit.
-Admitted.
+exact (andI
+  ((topology_on Y (quotient_topology X Tx Y q) /\ topology_on Z Tz)
+    /\ function_on g Y Z)
+  (forall V:set, V :e Tz ->
+    preimage_of Y g V :e quotient_topology X Tx Y q)
+  (andI
+    (topology_on Y (quotient_topology X Tx Y q) /\ topology_on Z Tz)
+    (function_on g Y Z)
+    (andI
+      (topology_on Y (quotient_topology X Tx Y q))
+      (topology_on Z Tz)
+      HtopQ
+      HtopZ)
+    HgFun)
+  HpreGOpen).
+Qed.
 
 Theorem s55_radial_collapse_map_function_on :
   function_on s55_radial_collapse_map (setprod S1 unit_interval) B2.
@@ -171607,7 +171621,7 @@ exact (continuous_map_range_restrict
   HqContR2
   HB2subR2
   HqIntoB2).
-Admitted.
+Qed.
 Theorem s55_continuous_codomain_sub_quotient_topology :
   forall X Tx Y Ty f:set,
     continuous_map X Tx Y Ty f ->
