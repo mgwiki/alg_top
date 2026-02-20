@@ -1,5 +1,5 @@
 (** Balance Alice 3219 **)
-(** Balance Bob 3037 **)
+(** Balance Bob 3169 **)
 (** Balance Charlie 1220 **)
 (** Balance Dave 1793 **)
 
@@ -89720,6 +89720,275 @@ rewrite (s55_radial_collapse_map_top_collapses
 reflexivity.
 Qed.
 
+(** S55 helper: only top boundary points map to the origin under pi. **)
+(** Proven Bob **)
+Theorem s55_radial_collapse_map_zero_implies_top :
+  forall p:set, p :e setprod S1 unit_interval ->
+    apply_fun s55_radial_collapse_map p = (0, 0) ->
+    p 1 = 1.
+let p.
+assume HpDom Hq0.
+claim HpS1 : p 0 :e S1.
+{
+  exact (ap0_Sigma
+    S1
+    (fun _ : set => unit_interval)
+    p
+    HpDom).
+}
+claim HptI : p 1 :e unit_interval.
+{
+  exact (ap1_Sigma
+    S1
+    (fun _ : set => unit_interval)
+    p
+    HpDom).
+}
+claim HptR : p 1 :e R.
+{
+  exact (unit_interval_sub_R
+    (p 1)
+    HptI).
+}
+claim HptS : SNo (p 1).
+{
+  exact (real_SNo
+    (p 1)
+    HptR).
+}
+claim HfI :
+  apply_fun flip_unit_interval (p 1) :e unit_interval.
+{
+  exact (flip_unit_interval_function_on
+    (p 1)
+    HptI).
+}
+claim HfR :
+  apply_fun flip_unit_interval (p 1) :e R.
+{
+  exact (unit_interval_sub_R
+    (apply_fun flip_unit_interval (p 1))
+    HfI).
+}
+claim HfS :
+  SNo (apply_fun flip_unit_interval (p 1)).
+{
+  exact (real_SNo
+    (apply_fun flip_unit_interval (p 1))
+    HfR).
+}
+claim Hp0R2 : p 0 :e setprod R R.
+{
+  exact (SepE1
+    (setprod R R)
+    (fun z:set =>
+      add_SNo (mul_SNo (z 0) (z 0))
+        (mul_SNo (z 1) (z 1)) = 1)
+    (p 0)
+    HpS1).
+}
+claim Hp00R : (p 0) 0 :e R.
+{
+  exact (EuclidPlane_xcoord_in_R
+    (p 0)
+    Hp0R2).
+}
+claim Hp01R : (p 0) 1 :e R.
+{
+  exact (EuclidPlane_ycoord_in_R
+    (p 0)
+    Hp0R2).
+}
+claim Hp00S : SNo ((p 0) 0).
+{
+  exact (real_SNo
+    ((p 0) 0)
+    Hp00R).
+}
+claim Hp01S : SNo ((p 0) 1).
+{
+  exact (real_SNo
+    ((p 0) 1)
+    Hp01R).
+}
+claim Hcoord0Zero :
+  mul_SNo (apply_fun flip_unit_interval (p 1)) ((p 0) 0) = 0.
+{
+  claim HpairEq :
+    (mul_SNo (apply_fun flip_unit_interval (p 1)) ((p 0) 0),
+     mul_SNo (apply_fun flip_unit_interval (p 1)) ((p 0) 1))
+    = (0, 0).
+  {
+    rewrite <- (flip_unit_interval_apply
+      (p 1)
+      HptI).
+    rewrite <- (flip_unit_interval_apply
+      (p 1)
+      HptI).
+    rewrite (apply_fun_graph
+      (setprod S1 unit_interval)
+      (fun z:set =>
+        (mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 0),
+         mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 1)))
+      p
+      HpDom).
+    exact Hq0.
+  }
+  claim Hcoord :
+    (mul_SNo (apply_fun flip_unit_interval (p 1)) ((p 0) 0),
+     mul_SNo (apply_fun flip_unit_interval (p 1)) ((p 0) 1)) 0
+    =
+    (0, 0) 0.
+  {
+    rewrite HpairEq.
+    reflexivity.
+  }
+  rewrite tuple_2_0_eq in Hcoord.
+  rewrite tuple_2_0_eq in Hcoord.
+  exact Hcoord.
+}
+claim Hcoord1Zero :
+  mul_SNo (apply_fun flip_unit_interval (p 1)) ((p 0) 1) = 0.
+{
+  claim HpairEq :
+    (mul_SNo (apply_fun flip_unit_interval (p 1)) ((p 0) 0),
+     mul_SNo (apply_fun flip_unit_interval (p 1)) ((p 0) 1))
+    = (0, 0).
+  {
+    rewrite <- (flip_unit_interval_apply
+      (p 1)
+      HptI).
+    rewrite <- (flip_unit_interval_apply
+      (p 1)
+      HptI).
+    rewrite (apply_fun_graph
+      (setprod S1 unit_interval)
+      (fun z:set =>
+        (mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 0),
+         mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 1)))
+      p
+      HpDom).
+    exact Hq0.
+  }
+  claim Hcoord :
+    (mul_SNo (apply_fun flip_unit_interval (p 1)) ((p 0) 0),
+     mul_SNo (apply_fun flip_unit_interval (p 1)) ((p 0) 1)) 1
+    =
+    (0, 0) 1.
+  {
+    rewrite HpairEq.
+    reflexivity.
+  }
+  rewrite tuple_2_1_eq in Hcoord.
+  rewrite tuple_2_1_eq in Hcoord.
+  exact Hcoord.
+}
+claim HflipEq0 :
+  apply_fun flip_unit_interval (p 1) = 0.
+{
+  apply (xm (apply_fun flip_unit_interval (p 1) = 0)).
+  - assume Hf0.
+    exact Hf0.
+  - assume HfNe0.
+    claim Hmul0Rhs :
+      mul_SNo (apply_fun flip_unit_interval (p 1)) 0 = 0.
+    {
+      exact (mul_SNo_zeroR
+        (apply_fun flip_unit_interval (p 1))
+        HfS).
+    }
+    claim Hp00Eq0 : (p 0) 0 = 0.
+    {
+      exact (mul_SNo_nonzero_cancel
+        (apply_fun flip_unit_interval (p 1))
+        ((p 0) 0)
+        0
+        HfS
+        HfNe0
+        Hp00S
+        SNo_0
+        (Hmul0Rhs
+          (fun a b =>
+            mul_SNo (apply_fun flip_unit_interval (p 1)) ((p 0) 0)
+            =
+            a)
+          Hcoord0Zero)).
+    }
+    claim Hmul1Rhs :
+      mul_SNo (apply_fun flip_unit_interval (p 1)) 0 = 0.
+    {
+      exact (mul_SNo_zeroR
+        (apply_fun flip_unit_interval (p 1))
+        HfS).
+    }
+    claim Hp01Eq0 : (p 0) 1 = 0.
+    {
+      exact (mul_SNo_nonzero_cancel
+        (apply_fun flip_unit_interval (p 1))
+        ((p 0) 1)
+        0
+        HfS
+        HfNe0
+        Hp01S
+        SNo_0
+        (Hmul1Rhs
+          (fun a b =>
+            mul_SNo (apply_fun flip_unit_interval (p 1)) ((p 0) 1)
+            =
+            a)
+          Hcoord1Zero)).
+    }
+    claim Hp0R2m0 : p 0 :e R2_minus_origin.
+    {
+      exact (s55_S1_subset_R2_minus_origin
+        (p 0)
+        HpS1).
+    }
+    claim Hp0Not00 : ~((p 0) 0 = 0 /\ (p 0) 1 = 0).
+    {
+      exact (SepE2
+        (setprod R R)
+        (fun z:set => ~(z 0 = 0 /\ z 1 = 0))
+        (p 0)
+        Hp0R2m0).
+    }
+    claim Hcontra : False.
+    {
+      exact (Hp0Not00
+        (andI
+          ((p 0) 0 = 0)
+          ((p 0) 1 = 0)
+          Hp00Eq0
+          Hp01Eq0)).
+    }
+    exact (FalseE
+      Hcontra
+      (apply_fun flip_unit_interval (p 1) = 0)).
+}
+claim HoneMinusEq0 :
+  add_SNo 1 (minus_SNo (p 1)) = 0.
+{
+  rewrite <- (flip_unit_interval_apply
+    (p 1)
+    HptI).
+  exact HflipEq0.
+}
+claim Hstep :
+  add_SNo (add_SNo 1 (minus_SNo (p 1))) (p 1) = 1.
+{
+  exact (add_SNo_minus_R2'
+    1
+    (p 1)
+    SNo_1
+    HptS).
+}
+rewrite HoneMinusEq0 in Hstep.
+rewrite (add_SNo_0L
+  (p 1)
+  HptS) in Hstep.
+exact Hstep.
+Qed.
+
 (** S55 helper: pi is continuous from S1 x I to B2. **)
 (** Proven Bob **)
 Theorem s55_radial_collapse_map_continuous :
@@ -90777,7 +91046,8 @@ Qed.
 (** from S55 Lem 55.3 direction (1) implies (2) (line 907 in algtop.tex) **)
 (** LATEX VERSION: Let h: S^1 -> X be continuous. If h is nulhomotopic, then h extends to a continuous map k: B^2 -> X. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 132 **)
+(** Collected Bob 132 **)
+(** Proven Bob **)
 Theorem lemma55_3_nulhomotopic_extends_to_B2 : forall X Tx h:set,
   continuous_map S1 S1_topology X Tx h ->
   nulhomotopic S1 S1_topology X Tx h ->
@@ -91671,9 +91941,720 @@ claim HextFromHomotopy :
 	      apply_fun q p1 = apply_fun q p2 ->
 	      apply_fun F p1 = apply_fun F p2.
 	  {
-	    (** Remaining geometric gap:
-	       characterize fibers of q (only top circle collapses) and use HFAt1/HFTopConst. **)
-	    admit.
+	    claim HFfun : function_on F dom X.
+	    {
+	      exact (continuous_map_function_on
+	        dom
+	        Tdom
+	        X
+	        Tx
+	        F
+	        HFCont).
+	    }
+	    let p1.
+	    let p2.
+	    assume Hp1Dom Hp2Dom HqEq.
+	    claim Hp1S1 : p1 0 :e S1.
+	    {
+	      exact (ap0_Sigma
+	        S1
+	        (fun _ : set => unit_interval)
+	        p1
+	        Hp1Dom).
+	    }
+	    claim Hp2S1 : p2 0 :e S1.
+	    {
+	      exact (ap0_Sigma
+	        S1
+	        (fun _ : set => unit_interval)
+	        p2
+	        Hp2Dom).
+	    }
+	    apply (xm (apply_fun q p1 = (0, 0))).
+	    - assume Hq1Zero.
+	      claim Hq2Zero : apply_fun q p2 = (0, 0).
+	      {
+	        rewrite <- HqEq.
+	        exact Hq1Zero.
+	      }
+	      claim Hp11Eq1 : p1 1 = 1.
+	      {
+	        exact (s55_radial_collapse_map_zero_implies_top
+	          p1
+	          Hp1Dom
+	          Hq1Zero).
+	      }
+	      claim Hp21Eq1 : p2 1 = 1.
+	      {
+	        exact (s55_radial_collapse_map_zero_implies_top
+	          p2
+	          Hp2Dom
+	          Hq2Zero).
+	      }
+	      claim Hp1Eta : p1 = (p1 0, p1 1).
+	      {
+	        exact (setprod_eta
+	          S1
+	          unit_interval
+	          p1
+	          Hp1Dom).
+	      }
+	      claim Hp2Eta : p2 = (p2 0, p2 1).
+	      {
+	        exact (setprod_eta
+	          S1
+	          unit_interval
+	          p2
+	          Hp2Dom).
+	      }
+	      claim Hp1TopPair : p1 = (p1 0, 1).
+	      {
+	        exact (eq_i_tra
+	          p1
+	          (p1 0, p1 1)
+	          (p1 0, 1)
+	          Hp1Eta
+	          (tuple_2_ext
+	            (p1 0)
+	            (p1 1)
+	            (p1 0)
+	            1
+	            reflexivity
+	            Hp11Eq1)).
+	      }
+	      claim Hp2TopPair : p2 = (p2 0, 1).
+	      {
+	        exact (eq_i_tra
+	          p2
+	          (p2 0, p2 1)
+	          (p2 0, 1)
+	          Hp2Eta
+	          (tuple_2_ext
+	            (p2 0)
+	            (p2 1)
+	            (p2 0)
+	            1
+	            reflexivity
+	            Hp21Eq1)).
+	      }
+	      claim HFp1Top :
+	        apply_fun F p1 = apply_fun F (p1 0, 1).
+	      {
+	        rewrite Hp1TopPair.
+	        reflexivity.
+	      }
+	      claim HFp2Top :
+	        apply_fun F p2 = apply_fun F (p2 0, 1).
+	      {
+	        rewrite Hp2TopPair.
+	        reflexivity.
+	      }
+	      rewrite HFp1Top.
+	      rewrite HFp2Top.
+	      exact (HFTopConst
+	        (p1 0)
+	        (p2 0)
+	        Hp1S1
+	        Hp2S1).
+	    - assume Hq1Nonzero.
+	      claim Hp11I : p1 1 :e unit_interval.
+	      {
+	        exact (ap1_Sigma
+	          S1
+	          (fun _ : set => unit_interval)
+	          p1
+	          Hp1Dom).
+	      }
+	      claim Hp21I : p2 1 :e unit_interval.
+	      {
+	        exact (ap1_Sigma
+	          S1
+	          (fun _ : set => unit_interval)
+	          p2
+	          Hp2Dom).
+	      }
+	      claim Hq2Nonzero : apply_fun q p2 <> (0, 0).
+	      {
+	        assume Hq2Zero.
+	        rewrite <- HqEq in Hq2Zero.
+	        exact (Hq1Nonzero
+	          Hq2Zero).
+	      }
+	      set f1 := apply_fun flip_unit_interval (p1 1).
+	      set f2 := apply_fun flip_unit_interval (p2 1).
+	      claim Hf1I : f1 :e unit_interval.
+	      {
+	        exact (flip_unit_interval_function_on
+	          (p1 1)
+	          Hp11I).
+	      }
+	      claim Hf2I : f2 :e unit_interval.
+	      {
+	        exact (flip_unit_interval_function_on
+	          (p2 1)
+	          Hp21I).
+	      }
+	      claim Hf1R : f1 :e R.
+	      {
+	        exact (unit_interval_sub_R
+	          f1
+	          Hf1I).
+	      }
+	      claim Hf2R : f2 :e R.
+	      {
+	        exact (unit_interval_sub_R
+	          f2
+	          Hf2I).
+	      }
+	      claim Hf1S : SNo f1.
+	      {
+	        exact (real_SNo
+	          f1
+	          Hf1R).
+	      }
+	      claim Hf2S : SNo f2.
+	      {
+	        exact (real_SNo
+	          f2
+	          Hf2R).
+	      }
+	      claim Hp10R2 : p1 0 :e setprod R R.
+	      {
+	        exact (SepE1
+	          (setprod R R)
+	          (fun z:set =>
+	            add_SNo (mul_SNo (z 0) (z 0))
+	              (mul_SNo (z 1) (z 1)) = 1)
+	          (p1 0)
+	          Hp1S1).
+	      }
+	      claim Hp20R2 : p2 0 :e setprod R R.
+	      {
+	        exact (SepE1
+	          (setprod R R)
+	          (fun z:set =>
+	            add_SNo (mul_SNo (z 0) (z 0))
+	              (mul_SNo (z 1) (z 1)) = 1)
+	          (p2 0)
+	          Hp2S1).
+	      }
+	      claim Hp100R : (p1 0) 0 :e R.
+	      {
+	        exact (EuclidPlane_xcoord_in_R
+	          (p1 0)
+	          Hp10R2).
+	      }
+	      claim Hp101R : (p1 0) 1 :e R.
+	      {
+	        exact (EuclidPlane_ycoord_in_R
+	          (p1 0)
+	          Hp10R2).
+	      }
+	      claim Hp200R : (p2 0) 0 :e R.
+	      {
+	        exact (EuclidPlane_xcoord_in_R
+	          (p2 0)
+	          Hp20R2).
+	      }
+	      claim Hp201R : (p2 0) 1 :e R.
+	      {
+	        exact (EuclidPlane_ycoord_in_R
+	          (p2 0)
+	          Hp20R2).
+	      }
+	      claim Hp100S : SNo ((p1 0) 0).
+	      {
+	        exact (real_SNo
+	          ((p1 0) 0)
+	          Hp100R).
+	      }
+	      claim Hp101S : SNo ((p1 0) 1).
+	      {
+	        exact (real_SNo
+	          ((p1 0) 1)
+	          Hp101R).
+	      }
+	      claim Hp200S : SNo ((p2 0) 0).
+	      {
+	        exact (real_SNo
+	          ((p2 0) 0)
+	          Hp200R).
+	      }
+	      claim Hp201S : SNo ((p2 0) 1).
+	      {
+	        exact (real_SNo
+	          ((p2 0) 1)
+	          Hp201R).
+	      }
+	      claim Hf1Ne0 : f1 <> 0.
+	      {
+	        assume Hf10.
+	        claim Hq1Zero : apply_fun q p1 = (0, 0).
+	        {
+	          rewrite (apply_fun_graph
+	            dom
+	            (fun z:set =>
+	              (mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 0),
+	               mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 1)))
+	            p1
+	            Hp1Dom).
+	          rewrite <- (flip_unit_interval_apply
+	            (p1 1)
+	            Hp11I).
+	          rewrite <- (flip_unit_interval_apply
+	            (p1 1)
+	            Hp11I).
+	          rewrite Hf10.
+	          rewrite (mul_SNo_zeroL
+	            ((p1 0) 0)
+	            Hp100S).
+	          rewrite (mul_SNo_zeroL
+	            ((p1 0) 1)
+	            Hp101S).
+	          reflexivity.
+	        }
+	        exact (Hq1Nonzero
+	          Hq1Zero).
+	      }
+	      claim Hf2Ne0 : f2 <> 0.
+	      {
+	        assume Hf20.
+	        claim Hq2Zero : apply_fun q p2 = (0, 0).
+	        {
+	          rewrite (apply_fun_graph
+	            dom
+	            (fun z:set =>
+	              (mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 0),
+	               mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 1)))
+	            p2
+	            Hp2Dom).
+	          rewrite <- (flip_unit_interval_apply
+	            (p2 1)
+	            Hp21I).
+	          rewrite <- (flip_unit_interval_apply
+	            (p2 1)
+	            Hp21I).
+	          rewrite Hf20.
+	          rewrite (mul_SNo_zeroL
+	            ((p2 0) 0)
+	            Hp200S).
+	          rewrite (mul_SNo_zeroL
+	            ((p2 0) 1)
+	            Hp201S).
+	          reflexivity.
+	        }
+	        exact (Hq2Nonzero
+	          Hq2Zero).
+	      }
+	      claim HqPairEq :
+	        (mul_SNo f1 ((p1 0) 0),
+	         mul_SNo f1 ((p1 0) 1))
+	        =
+	        (mul_SNo f2 ((p2 0) 0),
+	         mul_SNo f2 ((p2 0) 1)).
+	      {
+	        rewrite (apply_fun_graph
+	          dom
+	          (fun z:set =>
+	            (mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 0),
+	             mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 1)))
+	          p1
+	          Hp1Dom) in HqEq.
+	        rewrite (apply_fun_graph
+	          dom
+	          (fun z:set =>
+	            (mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 0),
+	             mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 1)))
+	          p2
+	          Hp2Dom) in HqEq.
+	        rewrite <- (flip_unit_interval_apply
+	          (p1 1)
+	          Hp11I) in HqEq.
+	        rewrite <- (flip_unit_interval_apply
+	          (p1 1)
+	          Hp11I) in HqEq.
+	        rewrite <- (flip_unit_interval_apply
+	          (p2 1)
+	          Hp21I) in HqEq.
+	        rewrite <- (flip_unit_interval_apply
+	          (p2 1)
+	          Hp21I) in HqEq.
+	        exact HqEq.
+	      }
+	      claim Hcoord0Eq :
+	        mul_SNo f1 ((p1 0) 0) = mul_SNo f2 ((p2 0) 0).
+	      {
+	        claim Hcoord :
+	          (mul_SNo f1 ((p1 0) 0),
+	           mul_SNo f1 ((p1 0) 1)) 0
+	          =
+	          (mul_SNo f2 ((p2 0) 0),
+	           mul_SNo f2 ((p2 0) 1)) 0.
+	        {
+	          rewrite HqPairEq.
+	          reflexivity.
+	        }
+	        rewrite tuple_2_0_eq in Hcoord.
+	        rewrite tuple_2_0_eq in Hcoord.
+	        exact Hcoord.
+	      }
+	      claim Hcoord1Eq :
+	        mul_SNo f1 ((p1 0) 1) = mul_SNo f2 ((p2 0) 1).
+	      {
+	        claim Hcoord :
+	          (mul_SNo f1 ((p1 0) 0),
+	           mul_SNo f1 ((p1 0) 1)) 1
+	          =
+	          (mul_SNo f2 ((p2 0) 0),
+	           mul_SNo f2 ((p2 0) 1)) 1.
+	        {
+	          rewrite HqPairEq.
+	          reflexivity.
+	        }
+	        rewrite tuple_2_1_eq in Hcoord.
+	        rewrite tuple_2_1_eq in Hcoord.
+	        exact Hcoord.
+	      }
+	      claim HsumEq :
+	        add_SNo
+	          (mul_SNo (mul_SNo f1 ((p1 0) 0)) (mul_SNo f1 ((p1 0) 0)))
+	          (mul_SNo (mul_SNo f1 ((p1 0) 1)) (mul_SNo f1 ((p1 0) 1)))
+	        =
+	        add_SNo
+	          (mul_SNo (mul_SNo f2 ((p2 0) 0)) (mul_SNo f2 ((p2 0) 0)))
+	          (mul_SNo (mul_SNo f2 ((p2 0) 1)) (mul_SNo f2 ((p2 0) 1))).
+	      {
+	        rewrite Hcoord0Eq.
+	        rewrite Hcoord1Eq.
+	        reflexivity.
+	      }
+	      claim Hx1Eq1 :
+	        add_SNo (mul_SNo ((p1 0) 0) ((p1 0) 0))
+	          (mul_SNo ((p1 0) 1) ((p1 0) 1)) = 1.
+	      {
+	        exact (SepE2
+	          (setprod R R)
+	          (fun z:set =>
+	            add_SNo (mul_SNo (z 0) (z 0))
+	              (mul_SNo (z 1) (z 1)) = 1)
+	          (p1 0)
+	          Hp1S1).
+	      }
+	      claim Hx2Eq1 :
+	        add_SNo (mul_SNo ((p2 0) 0) ((p2 0) 0))
+	          (mul_SNo ((p2 0) 1) ((p2 0) 1)) = 1.
+	      {
+	        exact (SepE2
+	          (setprod R R)
+	          (fun z:set =>
+	            add_SNo (mul_SNo (z 0) (z 0))
+	              (mul_SNo (z 1) (z 1)) = 1)
+	          (p2 0)
+	          Hp2S1).
+	      }
+	      claim HlhsFactor :
+	        add_SNo
+	          (mul_SNo (mul_SNo f1 ((p1 0) 0)) (mul_SNo f1 ((p1 0) 0)))
+	          (mul_SNo (mul_SNo f1 ((p1 0) 1)) (mul_SNo f1 ((p1 0) 1)))
+	        =
+	        mul_SNo
+	          (mul_SNo f1 f1)
+	          (add_SNo
+	            (mul_SNo ((p1 0) 0) ((p1 0) 0))
+	            (mul_SNo ((p1 0) 1) ((p1 0) 1))).
+	      {
+	        rewrite (mul_SNo_com_4_inner_mid
+	          f1
+	          ((p1 0) 0)
+	          f1
+	          ((p1 0) 0)
+	          Hf1S
+	          Hp100S
+	          Hf1S
+	          Hp100S).
+	        rewrite (mul_SNo_com_4_inner_mid
+	          f1
+	          ((p1 0) 1)
+	          f1
+	          ((p1 0) 1)
+	          Hf1S
+	          Hp101S
+	          Hf1S
+	          Hp101S).
+	        rewrite <- (mul_SNo_distrL
+	          (mul_SNo f1 f1)
+	          (mul_SNo ((p1 0) 0) ((p1 0) 0))
+	          (mul_SNo ((p1 0) 1) ((p1 0) 1))
+	          (SNo_mul_SNo
+	            f1
+	            f1
+	            Hf1S
+	            Hf1S)
+	          (SNo_mul_SNo
+	            ((p1 0) 0)
+	            ((p1 0) 0)
+	            Hp100S
+	            Hp100S)
+	          (SNo_mul_SNo
+	            ((p1 0) 1)
+	            ((p1 0) 1)
+	            Hp101S
+	            Hp101S)).
+	        reflexivity.
+	      }
+	      claim HrhsFactor :
+	        add_SNo
+	          (mul_SNo (mul_SNo f2 ((p2 0) 0)) (mul_SNo f2 ((p2 0) 0)))
+	          (mul_SNo (mul_SNo f2 ((p2 0) 1)) (mul_SNo f2 ((p2 0) 1)))
+	        =
+	        mul_SNo
+	          (mul_SNo f2 f2)
+	          (add_SNo
+	            (mul_SNo ((p2 0) 0) ((p2 0) 0))
+	            (mul_SNo ((p2 0) 1) ((p2 0) 1))).
+	      {
+	        rewrite (mul_SNo_com_4_inner_mid
+	          f2
+	          ((p2 0) 0)
+	          f2
+	          ((p2 0) 0)
+	          Hf2S
+	          Hp200S
+	          Hf2S
+	          Hp200S).
+	        rewrite (mul_SNo_com_4_inner_mid
+	          f2
+	          ((p2 0) 1)
+	          f2
+	          ((p2 0) 1)
+	          Hf2S
+	          Hp201S
+	          Hf2S
+	          Hp201S).
+	        rewrite <- (mul_SNo_distrL
+	          (mul_SNo f2 f2)
+	          (mul_SNo ((p2 0) 0) ((p2 0) 0))
+	          (mul_SNo ((p2 0) 1) ((p2 0) 1))
+	          (SNo_mul_SNo
+	            f2
+	            f2
+	            Hf2S
+	            Hf2S)
+	          (SNo_mul_SNo
+	            ((p2 0) 0)
+	            ((p2 0) 0)
+	            Hp200S
+	            Hp200S)
+	          (SNo_mul_SNo
+	            ((p2 0) 1)
+	            ((p2 0) 1)
+	            Hp201S
+	            Hp201S)).
+	        reflexivity.
+	      }
+	      claim HfSqEq :
+	        mul_SNo f1 f1 = mul_SNo f2 f2.
+	      {
+	        rewrite HlhsFactor in HsumEq.
+	        rewrite HrhsFactor in HsumEq.
+	        rewrite Hx1Eq1 in HsumEq.
+	        rewrite Hx2Eq1 in HsumEq.
+	        rewrite (mul_SNo_oneR
+	          (mul_SNo f1 f1)
+	          (SNo_mul_SNo
+	            f1
+	            f1
+	            Hf1S
+	            Hf1S)) in HsumEq.
+	        rewrite (mul_SNo_oneR
+	          (mul_SNo f2 f2)
+	          (SNo_mul_SNo
+	            f2
+	            f2
+	            Hf2S
+	            Hf2S)) in HsumEq.
+	        exact HsumEq.
+	      }
+	      claim Hf1Nonneg : 0 <= f1.
+	      {
+	        exact (SNoLe_of_Rle
+	          0
+	          f1
+	          (unit_interval_Rle0
+	            f1
+	            Hf1I)).
+	      }
+	      claim Hf2Nonneg : 0 <= f2.
+	      {
+	        exact (SNoLe_of_Rle
+	          0
+	          f2
+	          (unit_interval_Rle0
+	            f2
+	            Hf2I)).
+	      }
+	      claim HfEq : f1 = f2.
+	      {
+	        exact (SNo_nonneg_sqr_uniq
+	          f1
+	          f2
+	          Hf1S
+	          Hf2S
+	          Hf1Nonneg
+	          Hf2Nonneg
+	          HfSqEq).
+	      }
+	      claim Hp10CoordEq :
+	        (p1 0) 0 = (p2 0) 0.
+	      {
+	        claim Hcoord0Same :
+	          mul_SNo f1 ((p1 0) 0) = mul_SNo f1 ((p2 0) 0).
+	        {
+	          rewrite <- HfEq.
+	          exact Hcoord0Eq.
+	        }
+	        exact (mul_SNo_nonzero_cancel
+	          f1
+	          ((p1 0) 0)
+	          ((p2 0) 0)
+	          Hf1S
+	          Hf1Ne0
+	          Hp100S
+	          Hp200S
+	          Hcoord0Same).
+	      }
+	      claim Hp11CoordEq :
+	        (p1 0) 1 = (p2 0) 1.
+	      {
+	        claim Hcoord1Same :
+	          mul_SNo f1 ((p1 0) 1) = mul_SNo f1 ((p2 0) 1).
+	        {
+	          rewrite <- HfEq.
+	          exact Hcoord1Eq.
+	        }
+	        exact (mul_SNo_nonzero_cancel
+	          f1
+	          ((p1 0) 1)
+	          ((p2 0) 1)
+	          Hf1S
+	          Hf1Ne0
+	          Hp101S
+	          Hp201S
+	          Hcoord1Same).
+	      }
+	      claim Hp0Eq : p1 0 = p2 0.
+	      {
+	        claim Hp10Eta : p1 0 = ((p1 0) 0, (p1 0) 1).
+	        {
+	          exact (setprod_eta
+	            R
+	            R
+	            (p1 0)
+	            Hp10R2).
+	        }
+	        claim Hp20Eta : p2 0 = ((p2 0) 0, (p2 0) 1).
+	        {
+	          exact (setprod_eta
+	            R
+	            R
+	            (p2 0)
+	            Hp20R2).
+	        }
+	        claim HpairCoords :
+	          ((p1 0) 0, (p1 0) 1) = ((p2 0) 0, (p2 0) 1).
+	        {
+	          exact (tuple_2_ext
+	            ((p1 0) 0)
+	            ((p1 0) 1)
+	            ((p2 0) 0)
+	            ((p2 0) 1)
+	            Hp10CoordEq
+	            Hp11CoordEq).
+	        }
+	        claim Hp20EtaSym : ((p2 0) 0, (p2 0) 1) = p2 0.
+	        {
+	          symmetry.
+	          exact Hp20Eta.
+	        }
+	        exact (eq_i_tra
+	          (p1 0)
+	          ((p1 0) 0, (p1 0) 1)
+	          (p2 0)
+	          Hp10Eta
+	          (eq_i_tra
+	            ((p1 0) 0, (p1 0) 1)
+	            ((p2 0) 0, (p2 0) 1)
+	            (p2 0)
+	            HpairCoords
+	            Hp20EtaSym)).
+	      }
+	      claim HtEq :
+	        p1 1 = p2 1.
+	      {
+	        claim HflipTwice :
+	          apply_fun flip_unit_interval (apply_fun flip_unit_interval (p1 1))
+	          =
+	          apply_fun flip_unit_interval (apply_fun flip_unit_interval (p2 1)).
+	        {
+	          rewrite HfEq.
+	          reflexivity.
+	        }
+	        rewrite (flip_unit_interval_involutive
+	          (p1 1)
+	          Hp11I) in HflipTwice.
+	        rewrite (flip_unit_interval_involutive
+	          (p2 1)
+	          Hp21I) in HflipTwice.
+	        exact HflipTwice.
+	      }
+	      claim HpEq : p1 = p2.
+	      {
+	        claim Hp1Eta : p1 = (p1 0, p1 1).
+	        {
+	          exact (setprod_eta
+	            S1
+	            unit_interval
+	            p1
+	            Hp1Dom).
+	        }
+	        claim Hp2Eta : p2 = (p2 0, p2 1).
+	        {
+	          exact (setprod_eta
+	            S1
+	            unit_interval
+	            p2
+	            Hp2Dom).
+	        }
+	        claim HpairEq :
+	          (p1 0, p1 1) = (p2 0, p2 1).
+	        {
+	          exact (tuple_2_ext
+	            (p1 0)
+	            (p1 1)
+	            (p2 0)
+	            (p2 1)
+	            Hp0Eq
+	            HtEq).
+	        }
+	        claim Hp2EtaSym : (p2 0, p2 1) = p2.
+	        {
+	          symmetry.
+	          exact Hp2Eta.
+	        }
+	        exact (eq_i_tra
+	          p1
+	          (p1 0, p1 1)
+	          p2
+	          Hp1Eta
+	          (eq_i_tra
+	            (p1 0, p1 1)
+	            (p2 0, p2 1)
+	            p2
+	            HpairEq
+	            Hp2EtaSym)).
+	      }
+	      rewrite HpEq.
+	      reflexivity.
 	  }
 	  claim HkPack :
 	    exists k:set, function_on k B2 X /\
@@ -91840,7 +92821,7 @@ claim HextFromHomotopy :
 	    exact HkAtBottom.
 	}
 exact HextFromHomotopy.
-Admitted.
+Qed.
 
 (** S55 helper backport: proved S58 tools for nulhomotopic => trivial induced pi1 map. **)
 (** Proven Charlie **)
