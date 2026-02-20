@@ -172888,12 +172888,170 @@ claim Hp01S : SNo ((p 0) 1).
 claim Hcoord0Zero :
   mul_SNo (apply_fun flip_unit_interval (p 1)) ((p 0) 0) = 0.
 {
-  admit.
+  claim Hdef :
+    s55_radial_collapse_map =
+    graph (setprod S1 unit_interval)
+      (fun z:set =>
+        (mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 0),
+         mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 1))).
+  {
+    reflexivity.
+  }
+  claim Hq0Graph :
+    apply_fun
+      (graph (setprod S1 unit_interval)
+        (fun z:set =>
+          (mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 0),
+           mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 1))))
+      p
+    = (0, 0).
+  {
+    rewrite <- Hdef.
+    exact Hq0.
+  }
+  claim HpairEqAdd :
+    (mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 0),
+     mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 1))
+    = (0, 0).
+  {
+    rewrite <- (apply_fun_graph
+      (setprod S1 unit_interval)
+      (fun z:set =>
+        (mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 0),
+         mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 1)))
+      p
+      HpDom).
+    exact Hq0Graph.
+  }
+  claim HcoordEq :
+    (mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 0),
+     mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 1)) 0
+    =
+    (0, 0) 0.
+  {
+    rewrite HpairEqAdd.
+    reflexivity.
+  }
+  claim Hlhs :
+    mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 0)
+    =
+    (mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 0),
+     mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 1)) 0.
+  {
+    rewrite tuple_2_0_eq.
+    reflexivity.
+  }
+  claim Hrhs :
+    (0, 0) 0 = 0.
+  {
+    rewrite tuple_2_0_eq.
+    reflexivity.
+  }
+  claim HcoordAdd0 :
+    mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 0) = 0.
+  {
+    exact (eq_i_tra
+      (mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 0))
+      ((mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 0),
+        mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 1)) 0)
+      0
+      Hlhs
+      (eq_i_tra
+        ((mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 0),
+          mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 1)) 0)
+        ((0, 0) 0)
+        0
+        HcoordEq
+        Hrhs)).
+  }
+  rewrite (flip_unit_interval_apply
+    (p 1)
+    HptI).
+  exact HcoordAdd0.
 }
 claim Hcoord1Zero :
   mul_SNo (apply_fun flip_unit_interval (p 1)) ((p 0) 1) = 0.
 {
-  admit.
+  claim Hdef :
+    s55_radial_collapse_map =
+    graph (setprod S1 unit_interval)
+      (fun z:set =>
+        (mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 0),
+         mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 1))).
+  {
+    reflexivity.
+  }
+  claim Hq0Graph :
+    apply_fun
+      (graph (setprod S1 unit_interval)
+        (fun z:set =>
+          (mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 0),
+           mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 1))))
+      p
+    = (0, 0).
+  {
+    rewrite <- Hdef.
+    exact Hq0.
+  }
+  claim HpairEqAdd :
+    (mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 0),
+     mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 1))
+    = (0, 0).
+  {
+    rewrite <- (apply_fun_graph
+      (setprod S1 unit_interval)
+      (fun z:set =>
+        (mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 0),
+         mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 1)))
+      p
+      HpDom).
+    exact Hq0Graph.
+  }
+  claim HcoordEq :
+    (mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 0),
+     mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 1)) 1
+    =
+    (0, 0) 1.
+  {
+    rewrite HpairEqAdd.
+    reflexivity.
+  }
+  claim Hlhs :
+    mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 1)
+    =
+    (mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 0),
+     mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 1)) 1.
+  {
+    rewrite tuple_2_1_eq.
+    reflexivity.
+  }
+  claim Hrhs :
+    (0, 0) 1 = 0.
+  {
+    rewrite tuple_2_1_eq.
+    reflexivity.
+  }
+  claim HcoordAdd1 :
+    mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 1) = 0.
+  {
+    exact (eq_i_tra
+      (mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 1))
+      ((mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 0),
+        mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 1)) 1)
+      0
+      Hlhs
+      (eq_i_tra
+        ((mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 0),
+          mul_SNo (add_SNo 1 (minus_SNo (p 1))) ((p 0) 1)) 1)
+        ((0, 0) 1)
+        0
+        HcoordEq
+        Hrhs)).
+  }
+  rewrite (flip_unit_interval_apply
+    (p 1)
+    HptI).
+  exact HcoordAdd1.
 }
 claim HflipEq0 :
   apply_fun flip_unit_interval (p 1) = 0.
@@ -173034,7 +173192,7 @@ exact (eq_i_tra
   1
   H0L
   Hstep2).
-Admitted.
+Qed.
 
 (** Sandbox Begin Alice **)
 (** Sandbox End Alice **)
