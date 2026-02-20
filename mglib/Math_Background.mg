@@ -88947,6 +88947,428 @@ apply andI.
   + exact HpreGOpen.
 Qed.
 
+(** S55 helper: every codomain-open of a continuous map lies in the induced quotient topology. **)
+(** Proven Bob **)
+Theorem s55_continuous_codomain_sub_quotient_topology :
+  forall X Tx Y Ty f:set,
+    continuous_map X Tx Y Ty f ->
+    Ty c= quotient_topology X Tx Y f.
+let X Tx Y Ty f.
+assume Hcont.
+let V.
+assume HVTy.
+claim HtopY : topology_on Y Ty.
+{
+  exact (continuous_map_topology_cod
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hcont).
+}
+apply (SepI
+  (Power Y)
+  (fun W:set => preimage_of X f W :e Tx)
+  V).
+- exact (PowerI
+    Y
+    V
+    (topology_elem_subset
+      Y
+      Ty
+      V
+      HtopY
+      HVTy)).
+- exact (continuous_map_preimage
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hcont
+    V
+    HVTy).
+Qed.
+
+(** S55 helper: continuous map from compact domain to Hausdorff codomain is closed. **)
+(** Proven Bob **)
+Theorem s55_continuous_compact_Hausdorff_closed_map :
+  forall X Tx Y Ty f:set,
+    compact_space X Tx ->
+    Hausdorff_space Y Ty ->
+    continuous_map X Tx Y Ty f ->
+    closed_map X Tx Y Ty f.
+let X Tx Y Ty f.
+assume HcompX HHausY Hcont.
+claim HfFun : function_on f X Y.
+{
+  exact (continuous_map_function_on
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hcont).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (compact_space_topology
+    X
+    Tx
+    HcompX).
+}
+prove function_on f X Y /\
+  forall A:set, closed_in X Tx A ->
+    closed_in Y Ty (image_of f A).
+apply andI.
+- exact HfFun.
+- let A.
+  assume HclosedA.
+  claim HAsubX : A c= X.
+  {
+    exact (closed_in_subset
+      X
+      Tx
+      A
+      HclosedA).
+  }
+  claim HcompA :
+    compact_space A (subspace_topology X Tx A).
+  {
+    exact (closed_subspace_compact
+      X
+      Tx
+      A
+      HcompX
+      HclosedA).
+  }
+  claim HcontA :
+    continuous_map A (subspace_topology X Tx A) Y Ty f.
+  {
+    exact (continuous_on_subspace
+      X
+      Tx
+      Y
+      Ty
+      f
+      A
+      HtopX
+      HAsubX
+      Hcont).
+  }
+  claim HimgComp :
+    compact_space (image_of_fun f A)
+      (subspace_topology Y Ty (image_of_fun f A)).
+  {
+    exact (continuous_image_compact
+      A
+      (subspace_topology X Tx A)
+      Y
+      Ty
+      f
+      HcompA
+      HcontA).
+  }
+  claim HimgSubY : image_of_fun f A c= Y.
+  {
+    exact (image_of_sub_codomain
+      f
+      X
+      Y
+      A
+      HfFun
+      HAsubX).
+  }
+  exact (compact_subspace_in_Hausdorff_closed
+    Y
+    Ty
+    (image_of_fun f A)
+    HHausY
+    HimgSubY
+    HimgComp).
+Qed.
+
+(** S55 helper: surjective closed maps force the quotient topology to be no finer than codomain topology. **)
+(** Proven Bob **)
+Theorem s55_surjective_closed_map_quotient_sub :
+  forall X Tx Y Ty f:set,
+    topology_on X Tx ->
+    topology_on Y Ty ->
+    surjective_map X Y f ->
+    closed_map X Tx Y Ty f ->
+    quotient_topology X Tx Y f c= Ty.
+let X Tx Y Ty f.
+assume HtopX HtopY Hsurj Hclosed.
+claim HfFun :
+  function_on f X Y.
+{
+  exact (andEL
+    (function_on f X Y)
+    (forall y:set, y :e Y -> exists x:set, x :e X /\ apply_fun f x = y)
+    Hsurj).
+}
+claim HsurjWit :
+  forall y:set, y :e Y -> exists x:set, x :e X /\ apply_fun f x = y.
+{
+  exact (andER
+    (function_on f X Y)
+    (forall y:set, y :e Y -> exists x:set, x :e X /\ apply_fun f x = y)
+    Hsurj).
+}
+claim HclosedClause :
+  forall A:set, closed_in X Tx A -> closed_in Y Ty (image_of f A).
+{
+  exact (andER
+    (function_on f X Y)
+    (forall A:set, closed_in X Tx A -> closed_in Y Ty (image_of f A))
+    Hclosed).
+}
+let V.
+assume HVQ.
+claim HVPow : V :e Power Y.
+{
+  exact (SepE1
+    (Power Y)
+    (fun W:set => preimage_of X f W :e Tx)
+    V
+    HVQ).
+}
+claim HVpreOpen :
+  preimage_of X f V :e Tx.
+{
+  exact (SepE2
+    (Power Y)
+    (fun W:set => preimage_of X f W :e Tx)
+    V
+    HVQ).
+}
+claim HCclosedX :
+  closed_in X Tx (X :\: preimage_of X f V).
+{
+  exact (closed_of_open_complement
+    X
+    Tx
+    (preimage_of X f V)
+    HtopX
+    HVpreOpen).
+}
+claim HCclosedY :
+  closed_in Y Ty (image_of f (X :\: preimage_of X f V)).
+{
+  exact (HclosedClause
+    (X :\: preimage_of X f V)
+    HCclosedX).
+}
+claim HVCeq :
+  V = Y :\: image_of f (X :\: preimage_of X f V).
+{
+  apply set_ext.
+  - let y.
+    assume HyV.
+    apply (setminusI
+      Y
+      (image_of f (X :\: preimage_of X f V))
+      y).
+    + exact (PowerE
+        Y
+        V
+        HVPow
+        y
+        HyV).
+    + assume HyImg.
+      apply (ReplE
+        (X :\: preimage_of X f V)
+        (fun x:set => apply_fun f x)
+        y
+        HyImg).
+      let x.
+      assume HxPack.
+      claim HxInComp :
+        x :e X :\: preimage_of X f V.
+      {
+        exact (andEL
+          (x :e X :\: preimage_of X f V)
+          (y = apply_fun f x)
+          HxPack).
+      }
+      claim HyEq : y = apply_fun f x.
+      {
+        exact (andER
+          (x :e X :\: preimage_of X f V)
+          (y = apply_fun f x)
+          HxPack).
+      }
+      claim HxInX : x :e X.
+      {
+        exact (setminusE1
+          X
+          (preimage_of X f V)
+          x
+          HxInComp).
+      }
+      claim HxNotPre : x /:e preimage_of X f V.
+      {
+        exact (setminusE2
+          X
+          (preimage_of X f V)
+          x
+          HxInComp).
+      }
+      claim HfxInV : apply_fun f x :e V.
+      {
+        rewrite <- HyEq.
+        exact HyV.
+      }
+      claim HxPre : x :e preimage_of X f V.
+      {
+        apply (SepI
+          X
+          (fun z:set => apply_fun f z :e V)
+          x
+          HxInX).
+        exact HfxInV.
+      }
+      exact (HxNotPre
+        HxPre).
+  - let y.
+    assume HyComp.
+    claim HyY : y :e Y.
+    {
+      exact (setminusE1
+        Y
+        (image_of f (X :\: preimage_of X f V))
+        y
+        HyComp).
+    }
+    claim HyNotImg :
+      y /:e image_of f (X :\: preimage_of X f V).
+    {
+      exact (setminusE2
+        Y
+        (image_of f (X :\: preimage_of X f V))
+        y
+        HyComp).
+    }
+    apply (HsurjWit y HyY).
+    let x.
+    assume HxPack.
+    claim HxX : x :e X.
+    {
+      exact (andEL
+        (x :e X)
+        (apply_fun f x = y)
+        HxPack).
+    }
+    claim HfxEq : apply_fun f x = y.
+    {
+      exact (andER
+        (x :e X)
+        (apply_fun f x = y)
+        HxPack).
+    }
+    apply (xm (y :e V)).
+    + assume HyV.
+      exact HyV.
+    + assume HyNotV.
+      claim HxNotPre : x /:e preimage_of X f V.
+      {
+        assume HxPre.
+        claim HfxInV : apply_fun f x :e V.
+        {
+          exact (SepE2
+            X
+            (fun z:set => apply_fun f z :e V)
+            x
+            HxPre).
+        }
+        rewrite HfxEq in HfxInV.
+        exact (HyNotV
+          HfxInV).
+      }
+      claim HxInComp :
+        x :e X :\: preimage_of X f V.
+      {
+        exact (setminusI
+          X
+          (preimage_of X f V)
+          x
+          HxX
+          HxNotPre).
+      }
+      claim HfxImg :
+        apply_fun f x :e image_of f (X :\: preimage_of X f V).
+      {
+        exact (ReplI
+          (X :\: preimage_of X f V)
+          (fun z:set => apply_fun f z)
+          x
+          HxInComp).
+      }
+      claim HyImg :
+        y :e image_of f (X :\: preimage_of X f V).
+      {
+        rewrite <- HfxEq.
+        exact HfxImg.
+      }
+      claim Hcontra : False.
+      {
+        exact (HyNotImg
+          HyImg).
+      }
+      exact (FalseE
+        Hcontra
+        (y :e V)).
+}
+claim HVopen :
+  open_in Y Ty (Y :\: image_of f (X :\: preimage_of X f V)).
+{
+  exact (open_of_closed_complement
+    Y
+    Ty
+    (image_of f (X :\: preimage_of X f V))
+    HCclosedY).
+}
+rewrite HVCeq.
+exact (open_in_elem
+  Y
+  Ty
+  (Y :\: image_of f (X :\: preimage_of X f V))
+  HVopen).
+Qed.
+
+(** S55 helper: continuous, surjective, closed maps realize the quotient topology exactly. **)
+(** Proven Bob **)
+Theorem s55_surjective_closed_continuous_quotient_eq :
+  forall X Tx Y Ty f:set,
+    topology_on X Tx ->
+    topology_on Y Ty ->
+    surjective_map X Y f ->
+    closed_map X Tx Y Ty f ->
+    continuous_map X Tx Y Ty f ->
+    quotient_topology X Tx Y f = Ty.
+let X Tx Y Ty f.
+assume HtopX HtopY Hsurj Hclosed Hcont.
+apply set_ext.
+- exact (s55_surjective_closed_map_quotient_sub
+    X
+    Tx
+    Y
+    Ty
+    f
+    HtopX
+    HtopY
+    Hsurj
+    Hclosed).
+- exact (s55_continuous_codomain_sub_quotient_topology
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hcont).
+Qed.
+
 (** S55 helper: radial collapse map pi : S1 x I -> B2, pi(x,t) = (1-t)x. **)
 Definition s55_radial_collapse_map : set :=
   graph (setprod S1 unit_interval)
