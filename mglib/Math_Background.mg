@@ -171117,8 +171117,448 @@ Theorem s55_radial_collapse_map_continuous :
     B2
     B2_topology
     s55_radial_collapse_map.
+set dom := setprod S1 unit_interval.
+set Tdom := product_topology S1 S1_topology unit_interval unit_interval_topology.
+claim HtopS1 : topology_on S1 S1_topology.
+{
+  exact (continuous_map_topology_dom
+    S1
+    S1_topology
+    B2
+    B2_topology
+    (graph S1 (fun x:set => x))
+    inclusion_S1_B2_continuous).
+}
+claim HtopDom : topology_on dom Tdom.
+{
+  exact (product_topology_is_topology
+    S1
+    S1_topology
+    unit_interval
+    unit_interval_topology
+    HtopS1
+    unit_interval_topology_on).
+}
+claim HtopR2 : topology_on (setprod R R) R2_topology.
+{
+  exact (product_topology_is_topology
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    R_standard_topology_is_topology
+    R_standard_topology_is_topology).
+}
+claim HS1subR2 : S1 c= setprod R R.
+{
+  exact (Sep_Subq
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)).
+}
+claim HB2subR2 : B2 c= setprod R R.
+{
+  exact (Sep_Subq
+    (setprod R R)
+    (fun p:set =>
+      ~(Rlt 1
+        (add_SNo (mul_SNo (p 0) (p 0))
+          (mul_SNo (p 1) (p 1)))))).
+}
+set xproj := projection_map1 S1 unit_interval.
+set tproj := projection_map2 S1 unit_interval.
+claim HprojPack :
+  continuous_map dom Tdom S1 S1_topology xproj /\
+  continuous_map dom Tdom unit_interval unit_interval_topology tproj.
+{
+  exact (projection_maps_continuous
+    S1
+    S1_topology
+    unit_interval
+    unit_interval_topology
+    HtopS1
+    unit_interval_topology_on).
+}
+claim HxprojCont :
+  continuous_map dom Tdom S1 S1_topology xproj.
+{
+  exact (andEL
+    (continuous_map dom Tdom S1 S1_topology xproj)
+    (continuous_map dom Tdom unit_interval unit_interval_topology tproj)
+    HprojPack).
+}
+claim HtprojContI :
+  continuous_map dom Tdom unit_interval unit_interval_topology tproj.
+{
+  exact (andER
+    (continuous_map dom Tdom S1 S1_topology xproj)
+    (continuous_map dom Tdom unit_interval unit_interval_topology tproj)
+    HprojPack).
+}
+claim HtprojContR :
+  continuous_map dom Tdom R R_standard_topology tproj.
+{
+  exact (continuous_map_range_expand
+    dom
+    Tdom
+    unit_interval
+    unit_interval_topology
+    R
+    R_standard_topology
+    tproj
+    HtprojContI
+    unit_interval_sub_R
+    R_standard_topology_is_topology
+    (fun P H => H)).
+}
+set one_minus_t := compose_fun dom tproj flip_unit_interval.
+claim HoneMinusContI :
+  continuous_map dom Tdom unit_interval unit_interval_topology one_minus_t.
+{
+  exact (composition_continuous
+    dom
+    Tdom
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    tproj
+    flip_unit_interval
+    HtprojContI
+    flip_unit_interval_continuous).
+}
+claim HoneMinusContR :
+  continuous_map dom Tdom R R_standard_topology one_minus_t.
+{
+  exact (continuous_map_range_expand
+    dom
+    Tdom
+    unit_interval
+    unit_interval_topology
+    R
+    R_standard_topology
+    one_minus_t
+    HoneMinusContI
+    unit_interval_sub_R
+    R_standard_topology_is_topology
+    (fun P H => H)).
+}
+claim HxprojContR2 :
+  continuous_map dom Tdom (setprod R R) R2_topology xproj.
+{
+  exact (continuous_map_range_expand
+    dom
+    Tdom
+    S1
+    S1_topology
+    (setprod R R)
+    R2_topology
+    xproj
+    HxprojCont
+    HS1subR2
+    HtopR2
+    (fun P H => H)).
+}
+claim HprojR2Pack :
+  continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R) /\
+  continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R).
+{
+  exact (projection_maps_continuous
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    R_standard_topology_is_topology
+    R_standard_topology_is_topology).
+}
+claim Hproj1Cont :
+  continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R).
+{
+  exact (andEL
+    (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R))
+    (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R))
+    HprojR2Pack).
+}
+claim Hproj2Cont :
+  continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R).
+{
+  exact (andER
+    (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map1 R R))
+    (continuous_map (setprod R R) R2_topology R R_standard_topology (projection_map2 R R))
+    HprojR2Pack).
+}
+set x0 := compose_fun dom xproj (projection_map1 R R).
+set x1 := compose_fun dom xproj (projection_map2 R R).
+claim Hx0Cont :
+  continuous_map dom Tdom R R_standard_topology x0.
+{
+  exact (composition_continuous
+    dom
+    Tdom
+    (setprod R R)
+    R2_topology
+    R
+    R_standard_topology
+    xproj
+    (projection_map1 R R)
+    HxprojContR2
+    Hproj1Cont).
+}
+claim Hx1Cont :
+  continuous_map dom Tdom R R_standard_topology x1.
+{
+  exact (composition_continuous
+    dom
+    Tdom
+    (setprod R R)
+    R2_topology
+    R
+    R_standard_topology
+    xproj
+    (projection_map2 R R)
+    HxprojContR2
+    Hproj2Cont).
+}
+set qx := compose_fun dom (pair_map dom one_minus_t x0) mul_fun_R.
+set qy := compose_fun dom (pair_map dom one_minus_t x1) mul_fun_R.
+claim HqxCont :
+  continuous_map dom Tdom R R_standard_topology qx.
+{
+  exact (mul_two_continuous_R
+    dom
+    Tdom
+    one_minus_t
+    x0
+    HtopDom
+    HoneMinusContR
+    Hx0Cont).
+}
+claim HqyCont :
+  continuous_map dom Tdom R R_standard_topology qy.
+{
+  exact (mul_two_continuous_R
+    dom
+    Tdom
+    one_minus_t
+    x1
+    HtopDom
+    HoneMinusContR
+    Hx1Cont).
+}
+set qR2 := pair_map dom qx qy.
+claim HqR2Cont :
+  continuous_map dom Tdom (setprod R R) R2_topology qR2.
+{
+  exact (maps_into_products
+    dom
+    Tdom
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    qx
+    qy
+    HqxCont
+    HqyCont).
+}
+claim HqFunB2 :
+  function_on s55_radial_collapse_map dom B2.
+{
+  exact s55_radial_collapse_map_function_on.
+}
+claim HqFunR2 :
+  function_on s55_radial_collapse_map dom (setprod R R).
+{
+  exact (function_on_codomain
+    s55_radial_collapse_map
+    dom
+    B2
+    (setprod R R)
+    HqFunB2
+    HB2subR2).
+}
+claim HqEq :
+  forall p:set, p :e dom ->
+    apply_fun qR2 p = apply_fun s55_radial_collapse_map p.
+{
+  let p.
+  assume Hp.
+  claim Hp0S1 : p 0 :e S1.
+  {
+    exact (ap0_Sigma
+      S1
+      (fun _ : set => unit_interval)
+      p
+      Hp).
+  }
+  claim Hp1I : p 1 :e unit_interval.
+  {
+    exact (ap1_Sigma
+      S1
+      (fun _ : set => unit_interval)
+      p
+      Hp).
+  }
+  claim Hp0R2 : p 0 :e setprod R R.
+  {
+    exact (SepE1
+      (setprod R R)
+      (fun z:set =>
+        add_SNo (mul_SNo (z 0) (z 0))
+          (mul_SNo (z 1) (z 1)) = 1)
+      (p 0)
+      Hp0S1).
+  }
+  claim HoneMinusR : apply_fun one_minus_t p :e R.
+  {
+    exact (continuous_map_function_on
+      dom
+      Tdom
+      R
+      R_standard_topology
+      one_minus_t
+      HoneMinusContR
+      p
+      Hp).
+  }
+  claim Hx0R :
+    apply_fun x0 p :e R.
+  {
+    exact (continuous_map_function_on
+      dom
+      Tdom
+      R
+      R_standard_topology
+      x0
+      Hx0Cont
+      p
+      Hp).
+  }
+  claim Hx1R :
+    apply_fun x1 p :e R.
+  {
+    exact (continuous_map_function_on
+      dom
+      Tdom
+      R
+      R_standard_topology
+      x1
+      Hx1Cont
+      p
+      Hp).
+  }
+  rewrite (pair_map_apply
+    dom
+    R
+    R
+    qx
+    qy
+    p
+    Hp).
+  rewrite (mul_of_pair_map_apply
+    dom
+    one_minus_t
+    x0
+    p
+    Hp
+    HoneMinusR
+    Hx0R).
+  rewrite (mul_of_pair_map_apply
+    dom
+    one_minus_t
+    x1
+    p
+    Hp
+    HoneMinusR
+    Hx1R).
+  rewrite (compose_fun_apply
+    dom
+    tproj
+    flip_unit_interval
+    p
+    Hp).
+  rewrite (projection2_apply
+    S1
+    unit_interval
+    p
+    Hp).
+  rewrite (flip_unit_interval_apply
+    (p 1)
+    Hp1I).
+  rewrite (compose_fun_apply
+    dom
+    xproj
+    (projection_map1 R R)
+    p
+    Hp).
+  rewrite (projection1_apply
+    S1
+    unit_interval
+    p
+    Hp).
+  rewrite (projection1_apply
+    R
+    R
+    (p 0)
+    Hp0R2).
+  rewrite (compose_fun_apply
+    dom
+    xproj
+    (projection_map2 R R)
+    p
+    Hp).
+  rewrite (projection1_apply
+    S1
+    unit_interval
+    p
+    Hp).
+  rewrite (projection2_apply
+    R
+    R
+    (p 0)
+    Hp0R2).
+  rewrite (apply_fun_graph
+    dom
+    (fun z:set =>
+      (mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 0),
+       mul_SNo (add_SNo 1 (minus_SNo (z 1))) ((z 0) 1)))
+    p
+    Hp).
+  reflexivity.
+}
+claim HqContR2 :
+  continuous_map dom Tdom (setprod R R) R2_topology s55_radial_collapse_map.
+{
+  exact (continuous_map_congr_on
+    dom
+    Tdom
+    (setprod R R)
+    R2_topology
+    qR2
+    s55_radial_collapse_map
+    HqR2Cont
+    HqFunR2
+    HqEq).
+}
+claim HqIntoB2 :
+  forall p:set, p :e dom -> apply_fun s55_radial_collapse_map p :e B2.
+{
+  let p.
+  assume Hp.
+  exact (HqFunB2 p Hp).
+}
+exact (continuous_map_range_restrict
+  dom
+  Tdom
+  (setprod R R)
+  R2_topology
+  s55_radial_collapse_map
+  B2
+  HqContR2
+  HB2subR2
+  HqIntoB2).
 Admitted.
-
 Theorem s55_continuous_codomain_sub_quotient_topology :
   forall X Tx Y Ty f:set,
     continuous_map X Tx Y Ty f ->
@@ -171131,8 +171571,95 @@ Theorem s55_continuous_compact_Hausdorff_closed_map :
     Hausdorff_space Y Ty ->
     continuous_map X Tx Y Ty f ->
     closed_map X Tx Y Ty f.
+let X Tx Y Ty f.
+assume HcompX HHausY Hcont.
+claim HfFun : function_on f X Y.
+{
+  exact (continuous_map_function_on
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hcont).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (compact_space_topology
+    X
+    Tx
+    HcompX).
+}
+prove function_on f X Y /\
+  forall A:set, closed_in X Tx A ->
+    closed_in Y Ty (image_of f A).
+apply andI.
+- exact HfFun.
+- let A.
+  assume HclosedA.
+  claim HAsubX : A c= X.
+  {
+    exact (closed_in_subset
+      X
+      Tx
+      A
+      HclosedA).
+  }
+  claim HcompA :
+    compact_space A (subspace_topology X Tx A).
+  {
+    exact (closed_subspace_compact
+      X
+      Tx
+      A
+      HcompX
+      HclosedA).
+  }
+  claim HcontA :
+    continuous_map A (subspace_topology X Tx A) Y Ty f.
+  {
+    exact (continuous_on_subspace
+      X
+      Tx
+      Y
+      Ty
+      f
+      A
+      HtopX
+      HAsubX
+      Hcont).
+  }
+  claim HimgComp :
+    compact_space (image_of_fun f A)
+      (subspace_topology Y Ty (image_of_fun f A)).
+  {
+    exact (continuous_image_compact
+      A
+      (subspace_topology X Tx A)
+      Y
+      Ty
+      f
+      HcompA
+      HcontA).
+  }
+  claim HimgSubY : image_of_fun f A c= Y.
+  {
+    exact (image_of_sub_codomain
+      f
+      X
+      Y
+      A
+      HfFun
+      HAsubX).
+  }
+  exact (compact_subspace_in_Hausdorff_closed
+    Y
+    Ty
+    (image_of_fun f A)
+    HHausY
+    HimgSubY
+    HimgComp).
 Admitted.
-
 Theorem s55_surjective_closed_map_quotient_sub :
   forall X Tx Y Ty f:set,
     topology_on X Tx ->
@@ -171150,8 +171677,27 @@ Theorem s55_surjective_closed_continuous_quotient_eq :
     closed_map X Tx Y Ty f ->
     continuous_map X Tx Y Ty f ->
     quotient_topology X Tx Y f = Ty.
+let X Tx Y Ty f.
+assume HtopX HtopY Hsurj Hclosed Hcont.
+apply set_ext.
+- exact (s55_surjective_closed_map_quotient_sub
+    X
+    Tx
+    Y
+    Ty
+    f
+    HtopX
+    HtopY
+    Hsurj
+    Hclosed).
+- exact (s55_continuous_codomain_sub_quotient_topology
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hcont).
 Admitted.
-
 Theorem s55_R2_minus_origin_normalized_in_S1 : forall x:set,
   x :e R2_minus_origin ->
   (div_SNo (x 0)
@@ -171162,8 +171708,596 @@ Theorem s55_R2_minus_origin_normalized_in_S1 : forall x:set,
     (sqrt_SNo_nonneg
       (add_SNo (mul_SNo (x 0) (x 0))
         (mul_SNo (x 1) (x 1))))):e S1.
+let x.
+assume HxR2m0.
+claim HxR2 : x :e setprod R R.
+{
+  exact (SepE1
+    (setprod R R)
+    (fun p:set => ~(p 0 = 0 /\ p 1 = 0))
+    x
+    HxR2m0).
+}
+claim HxNot00 : ~(x 0 = 0 /\ x 1 = 0).
+{
+  exact (SepE2
+    (setprod R R)
+    (fun p:set => ~(p 0 = 0 /\ p 1 = 0))
+    x
+    HxR2m0).
+}
+claim HxEta : x = (x 0, x 1).
+{
+  exact (setprod_eta
+    R
+    R
+    x
+    HxR2).
+}
+claim HxPairSing :
+  (x 0, x 1) :e setprod {x 0} {x 1}.
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    {x 0}
+    {x 1}
+    (x 0)
+    (x 1)
+    (SingI (x 0))
+    (SingI (x 1))).
+}
+claim HxPairIn : (x 0, x 1) :e setprod R R.
+{
+  rewrite <- HxEta.
+  exact HxR2.
+}
+claim HxCoordsR : x 0 :e R /\ x 1 :e R.
+{
+  exact (setprod_coords_in
+    (x 0)
+    (x 1)
+    R
+    R
+    (x 0, x 1)
+    HxPairSing
+    HxPairIn).
+}
+claim Hx0R : x 0 :e R.
+{
+  exact (andEL
+    (x 0 :e R)
+    (x 1 :e R)
+    HxCoordsR).
+}
+claim Hx1R : x 1 :e R.
+{
+  exact (andER
+    (x 0 :e R)
+    (x 1 :e R)
+    HxCoordsR).
+}
+claim Hx0S : SNo (x 0).
+{
+  exact (real_SNo
+    (x 0)
+    Hx0R).
+}
+claim Hx1S : SNo (x 1).
+{
+  exact (real_SNo
+    (x 1)
+    Hx1R).
+}
+set x0sq := mul_SNo (x 0) (x 0).
+set x1sq := mul_SNo (x 1) (x 1).
+set s := add_SNo x0sq x1sq.
+claim Hx0sqS : SNo x0sq.
+{
+  exact (SNo_mul_SNo
+    (x 0)
+    (x 0)
+    Hx0S
+    Hx0S).
+}
+claim Hx1sqS : SNo x1sq.
+{
+  exact (SNo_mul_SNo
+    (x 1)
+    (x 1)
+    Hx1S
+    Hx1S).
+}
+claim HsS : SNo s.
+{
+  exact (SNo_add_SNo
+    x0sq
+    x1sq
+    Hx0sqS
+    Hx1sqS).
+}
+claim Hx0sqNonneg : 0 <= x0sq.
+{
+  exact (SNo_sqr_nonneg
+    (x 0)
+    Hx0S).
+}
+claim Hx1sqNonneg : 0 <= x1sq.
+{
+  exact (SNo_sqr_nonneg
+    (x 1)
+    Hx1S).
+}
+claim Hx0sqLeS : x0sq <= s.
+{
+  exact (SNoLe_add_nonneg_right
+    x0sq
+    x1sq
+    Hx0sqS
+    Hx1sqS
+    Hx1sqNonneg).
+}
+claim HsNonneg : 0 <= s.
+{
+  exact (SNoLe_tra
+    0
+    x0sq
+    s
+    SNo_0
+    Hx0sqS
+    HsS
+    Hx0sqNonneg
+    Hx0sqLeS).
+}
+claim Hx1sqLeS : x1sq <= s.
+{
+  rewrite (add_SNo_com
+    x0sq
+    x1sq
+    Hx0sqS
+    Hx1sqS).
+  exact (SNoLe_add_nonneg_right
+    x1sq
+    x0sq
+    Hx1sqS
+    Hx0sqS
+    Hx0sqNonneg).
+}
+claim HsNe0 : s <> 0.
+{
+  assume Hs0.
+  claim HsLe0 : s <= 0.
+  {
+    rewrite Hs0.
+    exact (SNoLe_ref
+      0).
+  }
+  claim Hx0sqLe0 : x0sq <= 0.
+  {
+    exact (SNoLe_tra
+      x0sq
+      s
+      0
+      Hx0sqS
+      HsS
+      SNo_0
+      Hx0sqLeS
+      HsLe0).
+  }
+  claim Hx1sqLe0 : x1sq <= 0.
+  {
+    exact (SNoLe_tra
+      x1sq
+      s
+      0
+      Hx1sqS
+      HsS
+      SNo_0
+      Hx1sqLeS
+      HsLe0).
+  }
+  claim Hx0Eq0 : x 0 = 0.
+  {
+    claim Hx0Cases : x 0 = 0 \/ 0 < mul_SNo (x 0) (x 0).
+    {
+      exact (SNo_zero_or_sqr_pos
+        (x 0)
+        Hx0S).
+    }
+    apply Hx0Cases.
+    - assume Hx0Eq0.
+      exact Hx0Eq0.
+    - assume Hx0sqPos.
+      claim Hx0sqPos0 : 0 < 0.
+      {
+        exact (SNoLtLe_tra
+          0
+          x0sq
+          0
+          SNo_0
+          Hx0sqS
+          SNo_0
+          Hx0sqPos
+          Hx0sqLe0).
+      }
+      claim H00Rlt : Rlt 0 0.
+      {
+        exact (RltI
+          0
+          0
+          real_0
+          real_0
+          Hx0sqPos0).
+      }
+      exact (FalseE
+        (not_Rlt_refl
+          0
+          real_0
+          H00Rlt)
+        (x 0 = 0)).
+  }
+  claim Hx1Eq0 : x 1 = 0.
+  {
+    claim Hx1Cases : x 1 = 0 \/ 0 < mul_SNo (x 1) (x 1).
+    {
+      exact (SNo_zero_or_sqr_pos
+        (x 1)
+        Hx1S).
+    }
+    apply Hx1Cases.
+    - assume Hx1Eq0.
+      exact Hx1Eq0.
+    - assume Hx1sqPos.
+      claim Hx1sqPos0 : 0 < 0.
+      {
+        exact (SNoLtLe_tra
+          0
+          x1sq
+          0
+          SNo_0
+          Hx1sqS
+          SNo_0
+          Hx1sqPos
+          Hx1sqLe0).
+      }
+      claim H00Rlt : Rlt 0 0.
+      {
+        exact (RltI
+          0
+          0
+          real_0
+          real_0
+          Hx1sqPos0).
+      }
+      exact (FalseE
+        (not_Rlt_refl
+          0
+          real_0
+          H00Rlt)
+        (x 1 = 0)).
+  }
+  claim Hx00 : x 0 = 0 /\ x 1 = 0.
+  {
+    apply andI.
+    - exact Hx0Eq0.
+    - exact Hx1Eq0.
+  }
+  exact (HxNot00
+    Hx00).
+}
+claim HsR : s :e R.
+{
+  exact (real_add_SNo
+    x0sq
+    (real_mul_SNo
+      (x 0)
+      Hx0R
+      (x 0)
+      Hx0R)
+    x1sq
+    (real_mul_SNo
+      (x 1)
+      Hx1R
+      (x 1)
+      Hx1R)).
+}
+set d := sqrt_SNo_nonneg s.
+claim HdS : SNo d.
+{
+  exact (SNo_sqrt_SNo_nonneg
+    s
+    HsS
+    HsNonneg).
+}
+claim HdR : d :e R.
+{
+  exact (sqrt_SNo_nonneg_real
+    s
+    HsR
+    HsNonneg).
+}
+claim HdSq : mul_SNo d d = s.
+{
+  exact (sqrt_SNo_nonneg_sqr
+    s
+    HsS
+    HsNonneg).
+}
+claim Hd2S : SNo (mul_SNo d d).
+{
+  exact (SNo_mul_SNo
+    d
+    d
+    HdS
+    HdS).
+}
+claim Hd2Ne0 : mul_SNo d d <> 0.
+{
+  assume Hd20.
+  claim Hs0 : s = 0.
+  {
+    rewrite <- HdSq.
+    exact Hd20.
+  }
+  exact (HsNe0
+    Hs0).
+}
+claim Hdiv0R :
+  div_SNo (x 0) d :e R.
+{
+  exact (real_div_SNo
+    (x 0)
+    Hx0R
+    d
+    HdR).
+}
+claim Hdiv1R :
+  div_SNo (x 1) d :e R.
+{
+  exact (real_div_SNo
+    (x 1)
+    Hx1R
+    d
+    HdR).
+}
+claim Hdiv0S : SNo (div_SNo (x 0) d).
+{
+  exact (real_SNo
+    (div_SNo (x 0) d)
+    Hdiv0R).
+}
+claim Hdiv1S : SNo (div_SNo (x 1) d).
+{
+  exact (real_SNo
+    (div_SNo (x 1) d)
+    Hdiv1R).
+}
+claim HlhsTimesD2 :
+  mul_SNo
+    (add_SNo
+      (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+      (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d)))
+    (mul_SNo d d)
+  = s.
+{
+  rewrite (mul_SNo_distrR
+    (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+    (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d))
+    (mul_SNo d d)
+    (SNo_mul_SNo
+      (div_SNo (x 0) d)
+      (div_SNo (x 0) d)
+      Hdiv0S
+      Hdiv0S)
+    (SNo_mul_SNo
+      (div_SNo (x 1) d)
+      (div_SNo (x 1) d)
+      Hdiv1S
+      Hdiv1S)
+    Hd2S).
+  rewrite (mul_div_SNo_both
+    (x 0)
+    d
+    (x 0)
+    d
+    Hx0S
+    HdS
+    Hx0S
+    HdS) at 1.
+  rewrite (mul_div_SNo_both
+    (x 1)
+    d
+    (x 1)
+    d
+    Hx1S
+    HdS
+    Hx1S
+    HdS) at 1.
+  rewrite (mul_div_SNo_invL
+    (mul_SNo (x 0) (x 0))
+    (mul_SNo d d)
+    (SNo_mul_SNo
+      (x 0)
+      (x 0)
+      Hx0S
+      Hx0S)
+    Hd2S
+    Hd2Ne0).
+  rewrite (mul_div_SNo_invL
+    (mul_SNo (x 1) (x 1))
+    (mul_SNo d d)
+    (SNo_mul_SNo
+      (x 1)
+      (x 1)
+      Hx1S
+      Hx1S)
+    Hd2S
+    Hd2Ne0).
+  reflexivity.
+}
+claim HrhsTimesD2 :
+  mul_SNo 1 (mul_SNo d d) = s.
+{
+  rewrite (mul_SNo_oneL
+    (mul_SNo d d)
+    Hd2S).
+  exact HdSq.
+}
+claim HnormEq :
+  add_SNo
+    (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+    (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d))
+  = 1.
+{
+  claim HAd2Eq1d2 :
+    mul_SNo
+      (add_SNo
+        (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+        (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d)))
+      (mul_SNo d d)
+    =
+    mul_SNo 1 (mul_SNo d d).
+  {
+    claim HsEq1d2 : s = mul_SNo 1 (mul_SNo d d).
+    {
+      symmetry.
+      exact HrhsTimesD2.
+    }
+    exact (eq_i_tra
+      (mul_SNo
+        (add_SNo
+          (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+          (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d)))
+        (mul_SNo d d))
+      s
+      (mul_SNo 1 (mul_SNo d d))
+      HlhsTimesD2
+      HsEq1d2).
+  }
+  claim HAS : SNo
+    (add_SNo
+      (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+      (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d))).
+  {
+    exact (SNo_add_SNo
+      (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+      (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d))
+      (SNo_mul_SNo
+        (div_SNo (x 0) d)
+        (div_SNo (x 0) d)
+        Hdiv0S
+        Hdiv0S)
+      (SNo_mul_SNo
+        (div_SNo (x 1) d)
+        (div_SNo (x 1) d)
+        Hdiv1S
+        Hdiv1S)).
+  }
+  claim Hd2AEqHd21 :
+    mul_SNo
+      (mul_SNo d d)
+      (add_SNo
+        (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+        (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d)))
+    =
+    mul_SNo
+      (mul_SNo d d)
+      1.
+  {
+    claim HcomL :
+      mul_SNo
+        (mul_SNo d d)
+        (add_SNo
+          (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+          (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d)))
+      =
+      mul_SNo
+        (add_SNo
+          (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+          (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d)))
+        (mul_SNo d d).
+    {
+      exact (mul_SNo_com
+        (mul_SNo d d)
+        (add_SNo
+          (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+          (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d)))
+        Hd2S
+        HAS).
+    }
+    claim HcomR :
+      mul_SNo 1 (mul_SNo d d) = mul_SNo (mul_SNo d d) 1.
+    {
+      exact (mul_SNo_com
+        1
+        (mul_SNo d d)
+        SNo_1
+        Hd2S).
+    }
+    exact (eq_i_tra
+      (mul_SNo
+        (mul_SNo d d)
+        (add_SNo
+          (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+          (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d))))
+      (mul_SNo
+        (add_SNo
+          (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+          (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d)))
+        (mul_SNo d d))
+      (mul_SNo
+        (mul_SNo d d)
+        1)
+      HcomL
+      (eq_i_tra
+        (mul_SNo
+          (add_SNo
+            (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+            (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d)))
+          (mul_SNo d d))
+        (mul_SNo 1 (mul_SNo d d))
+        (mul_SNo
+          (mul_SNo d d)
+          1)
+        HAd2Eq1d2
+        HcomR)).
+  }
+  exact (mul_SNo_nonzero_cancel
+    (mul_SNo d d)
+    (add_SNo
+      (mul_SNo (div_SNo (x 0) d) (div_SNo (x 0) d))
+      (mul_SNo (div_SNo (x 1) d) (div_SNo (x 1) d)))
+    1
+    Hd2S
+    Hd2Ne0
+    HAS
+    SNo_1
+    Hd2AEqHd21).
+}
+apply (SepI
+  (setprod R R)
+  (fun p:set =>
+    add_SNo (mul_SNo (p 0) (p 0))
+      (mul_SNo (p 1) (p 1)) = 1)
+  (div_SNo (x 0)
+    (sqrt_SNo_nonneg
+      (add_SNo (mul_SNo (x 0) (x 0))
+        (mul_SNo (x 1) (x 1)))),
+   div_SNo (x 1)
+    (sqrt_SNo_nonneg
+      (add_SNo (mul_SNo (x 0) (x 0))
+        (mul_SNo (x 1) (x 1)))))).
+- exact (tuple_2_setprod_by_pair_Sigma
+    R
+    R
+    (div_SNo (x 0) d)
+    (div_SNo (x 1) d)
+    Hdiv0R
+    Hdiv1R).
+- rewrite tuple_2_0_eq at 1.
+  rewrite tuple_2_0_eq at 1.
+  rewrite tuple_2_1_eq at 1.
+  rewrite tuple_2_1_eq at 1.
+  exact HnormEq.
 Admitted.
-
 Theorem s55_surjective_fiber_constant_factorization :
   forall X Y Z q F:set,
     surjective_map X Y q ->
