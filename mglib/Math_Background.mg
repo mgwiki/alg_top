@@ -91508,6 +91508,111 @@ claim HextFromHomotopy :
       F
       HFCont).
   }
+  claim HqFiberConst :
+    forall p1 p2:set,
+      p1 :e dom ->
+      p2 :e dom ->
+      apply_fun q p1 = apply_fun q p2 ->
+      apply_fun F p1 = apply_fun F p2.
+  {
+    let p1 p2.
+    assume Hp1Dom Hp2Dom HqEq.
+    apply (xm (apply_fun q p1 = (0, 0))).
+    - assume Hq10.
+      claim Hq20 : apply_fun q p2 = (0, 0).
+      {
+        rewrite <- HqEq.
+        exact Hq10.
+      }
+      claim Hp11 : p1 1 = 1.
+      {
+        exact (s55_radial_collapse_map_zero_implies_top
+          p1
+          Hp1Dom
+          Hq10).
+      }
+      claim Hp21 : p2 1 = 1.
+      {
+        exact (s55_radial_collapse_map_zero_implies_top
+          p2
+          Hp2Dom
+          Hq20).
+      }
+      claim Hp10S1 : p1 0 :e S1.
+      {
+        exact (ap0_Sigma
+          S1
+          (fun _ : set => unit_interval)
+          p1
+          Hp1Dom).
+      }
+      claim Hp20S1 : p2 0 :e S1.
+      {
+        exact (ap0_Sigma
+          S1
+          (fun _ : set => unit_interval)
+          p2
+          Hp2Dom).
+      }
+      claim HFp1 : apply_fun F p1 = y0.
+      {
+        claim Hp1Eta : p1 = (p1 0, p1 1).
+        {
+          exact (setprod_eta
+            S1
+            unit_interval
+            p1
+            Hp1Dom).
+        }
+        rewrite Hp1Eta.
+        rewrite Hp11.
+        exact (HFAt1
+          (p1 0)
+          Hp10S1).
+      }
+      claim HFp2 : apply_fun F p2 = y0.
+      {
+        claim Hp2Eta : p2 = (p2 0, p2 1).
+        {
+          exact (setprod_eta
+            S1
+            unit_interval
+            p2
+            Hp2Dom).
+        }
+        rewrite Hp2Eta.
+        rewrite Hp21.
+        exact (HFAt1
+          (p2 0)
+          Hp20S1).
+      }
+      rewrite HFp1.
+      rewrite HFp2.
+      reflexivity.
+    - assume Hq1Ne0.
+      (** TODO Bob: handle nonzero fibers of q using normalization uniqueness in R2_minus_origin. **)
+      admit.
+  }
+  claim HqSurj : surjective_map dom B2 q.
+  {
+    (** TODO Bob: prove surjectivity of radial collapse map onto B2. **)
+    admit.
+  }
+  claim Hfactor :
+    exists k:set, function_on k B2 X /\
+      (forall p:set, p :e dom ->
+        apply_fun k (apply_fun q p) = apply_fun F p).
+  {
+    exact (s55_surjective_fiber_constant_factorization
+      dom
+      B2
+      X
+      q
+      F
+      HqSurj
+      HFfun
+      HqFiberConst).
+  }
   (** TODO Bob: show F is constant on q-fibers using HFAt1 and s55_radial_collapse_map_zero_implies_top;
       then factor via s55_surjective_fiber_constant_factorization and prove continuity on B2. **)
   admit.
