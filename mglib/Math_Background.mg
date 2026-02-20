@@ -171563,7 +171563,43 @@ Theorem s55_continuous_codomain_sub_quotient_topology :
   forall X Tx Y Ty f:set,
     continuous_map X Tx Y Ty f ->
     Ty c= quotient_topology X Tx Y f.
-Admitted.
+let X Tx Y Ty f.
+assume Hcont.
+let V.
+assume HVTy.
+claim HtopY : topology_on Y Ty.
+{
+  exact (continuous_map_topology_cod
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hcont).
+}
+exact (SepI
+  (Power Y)
+  (fun W:set => preimage_of X f W :e Tx)
+  V
+  (PowerI
+    Y
+    V
+    (topology_elem_subset
+      Y
+      Ty
+      V
+      HtopY
+      HVTy))
+  (continuous_map_preimage
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hcont
+    V
+    HVTy)).
+Qed.
 
 Theorem s55_continuous_compact_Hausdorff_closed_map :
   forall X Tx Y Ty f:set,
@@ -171659,7 +171695,7 @@ apply andI.
     HHausY
     HimgSubY
     HimgComp).
-Admitted.
+Qed.
 Theorem s55_surjective_closed_map_quotient_sub :
   forall X Tx Y Ty f:set,
     topology_on X Tx ->
@@ -171667,7 +171703,248 @@ Theorem s55_surjective_closed_map_quotient_sub :
     surjective_map X Y f ->
     closed_map X Tx Y Ty f ->
     quotient_topology X Tx Y f c= Ty.
-Admitted.
+let X Tx Y Ty f.
+assume HtopX HtopY Hsurj Hclosed.
+claim HfFun :
+  function_on f X Y.
+{
+  exact (andEL
+    (function_on f X Y)
+    (forall y:set, y :e Y -> exists x:set, x :e X /\ apply_fun f x = y)
+    Hsurj).
+}
+claim HsurjWit :
+  forall y:set, y :e Y -> exists x:set, x :e X /\ apply_fun f x = y.
+{
+  exact (andER
+    (function_on f X Y)
+    (forall y:set, y :e Y -> exists x:set, x :e X /\ apply_fun f x = y)
+    Hsurj).
+}
+claim HclosedClause :
+  forall A:set, closed_in X Tx A -> closed_in Y Ty (image_of f A).
+{
+  exact (andER
+    (function_on f X Y)
+    (forall A:set, closed_in X Tx A -> closed_in Y Ty (image_of f A))
+    Hclosed).
+}
+let V.
+assume HVQ.
+claim HVPow : V :e Power Y.
+{
+  exact (SepE1
+    (Power Y)
+    (fun W:set => preimage_of X f W :e Tx)
+    V
+    HVQ).
+}
+claim HVpreOpen :
+  preimage_of X f V :e Tx.
+{
+  exact (SepE2
+    (Power Y)
+    (fun W:set => preimage_of X f W :e Tx)
+    V
+    HVQ).
+}
+claim HCclosedX :
+  closed_in X Tx (X :\: preimage_of X f V).
+{
+  exact (closed_of_open_complement
+    X
+    Tx
+    (preimage_of X f V)
+    HtopX
+    HVpreOpen).
+}
+claim HCclosedY :
+  closed_in Y Ty (image_of f (X :\: preimage_of X f V)).
+{
+  exact (HclosedClause
+    (X :\: preimage_of X f V)
+    HCclosedX).
+}
+claim HVCeq :
+  V = Y :\: image_of f (X :\: preimage_of X f V).
+{
+  apply set_ext.
+  - let y.
+    assume HyV.
+    apply (setminusI
+      Y
+      (image_of f (X :\: preimage_of X f V))
+      y).
+    + exact (PowerE
+        Y
+        V
+        HVPow
+        y
+        HyV).
+    + assume HyImg.
+      apply (ReplE
+        (X :\: preimage_of X f V)
+        (fun x:set => apply_fun f x)
+        y
+        HyImg).
+      let x.
+      assume HxPack.
+      claim HxInComp :
+        x :e X :\: preimage_of X f V.
+      {
+        exact (andEL
+          (x :e X :\: preimage_of X f V)
+          (y = apply_fun f x)
+          HxPack).
+      }
+      claim HyEq : y = apply_fun f x.
+      {
+        exact (andER
+          (x :e X :\: preimage_of X f V)
+          (y = apply_fun f x)
+          HxPack).
+      }
+      claim HxInX : x :e X.
+      {
+        exact (setminusE1
+          X
+          (preimage_of X f V)
+          x
+          HxInComp).
+      }
+      claim HxNotPre : x /:e preimage_of X f V.
+      {
+        exact (setminusE2
+          X
+          (preimage_of X f V)
+          x
+          HxInComp).
+      }
+      claim HfxInV : apply_fun f x :e V.
+      {
+        rewrite <- HyEq.
+        exact HyV.
+      }
+      claim HxPre : x :e preimage_of X f V.
+      {
+        exact (SepI
+          X
+          (fun z:set => apply_fun f z :e V)
+          x
+          HxInX
+          HfxInV).
+      }
+      exact (HxNotPre
+        HxPre).
+  - let y.
+    assume HyComp.
+    claim HyY : y :e Y.
+    {
+      exact (setminusE1
+        Y
+        (image_of f (X :\: preimage_of X f V))
+        y
+        HyComp).
+    }
+    claim HyNotImg :
+      y /:e image_of f (X :\: preimage_of X f V).
+    {
+      exact (setminusE2
+        Y
+        (image_of f (X :\: preimage_of X f V))
+        y
+        HyComp).
+    }
+    apply (HsurjWit y HyY).
+    let x.
+    assume HxPack.
+    claim HxX : x :e X.
+    {
+      exact (andEL
+        (x :e X)
+        (apply_fun f x = y)
+        HxPack).
+    }
+    claim HfxEq : apply_fun f x = y.
+    {
+      exact (andER
+        (x :e X)
+        (apply_fun f x = y)
+        HxPack).
+    }
+    apply (xm (y :e V)).
+    + assume HyV.
+      exact HyV.
+    + assume HyNotV.
+      claim HxNotPre : x /:e preimage_of X f V.
+      {
+        assume HxPre.
+        claim HfxInV : apply_fun f x :e V.
+        {
+          exact (SepE2
+            X
+            (fun z:set => apply_fun f z :e V)
+            x
+            HxPre).
+        }
+        claim HyV' : y :e V.
+        {
+          rewrite <- HfxEq.
+          exact HfxInV.
+        }
+        exact (HyNotV
+          HyV').
+      }
+      claim HxInComp :
+        x :e X :\: preimage_of X f V.
+      {
+        exact (setminusI
+          X
+          (preimage_of X f V)
+          x
+          HxX
+          HxNotPre).
+      }
+      claim HfxImg :
+        apply_fun f x :e image_of f (X :\: preimage_of X f V).
+      {
+        exact (ReplI
+          (X :\: preimage_of X f V)
+          (fun z:set => apply_fun f z)
+          x
+          HxInComp).
+      }
+      claim HyImg :
+        y :e image_of f (X :\: preimage_of X f V).
+      {
+        rewrite <- HfxEq.
+        exact HfxImg.
+      }
+      claim Hcontra : False.
+      {
+        exact (HyNotImg
+          HyImg).
+      }
+      exact (FalseE
+        Hcontra
+        (y :e V)).
+}
+claim HVopen :
+  open_in Y Ty (Y :\: image_of f (X :\: preimage_of X f V)).
+{
+  exact (open_of_closed_complement
+    Y
+    Ty
+    (image_of f (X :\: preimage_of X f V))
+    HCclosedY).
+}
+rewrite HVCeq.
+exact (open_in_elem
+  Y
+  Ty
+  (Y :\: image_of f (X :\: preimage_of X f V))
+  HVopen).
+Qed.
 
 Theorem s55_surjective_closed_continuous_quotient_eq :
   forall X Tx Y Ty f:set,
@@ -171697,7 +171974,7 @@ apply set_ext.
     Ty
     f
     Hcont).
-Admitted.
+Qed.
 Theorem s55_R2_minus_origin_normalized_in_S1 : forall x:set,
   x :e R2_minus_origin ->
   (div_SNo (x 0)
@@ -172297,7 +172574,7 @@ apply (SepI
   rewrite tuple_2_1_eq at 1.
   rewrite tuple_2_1_eq at 1.
   exact HnormEq.
-Admitted.
+Qed.
 Theorem s55_surjective_fiber_constant_factorization :
   forall X Y Z q F:set,
     surjective_map X Y q ->
@@ -172308,12 +172585,276 @@ Theorem s55_surjective_fiber_constant_factorization :
     exists k:set, function_on k Y Z /\
       (forall x:set, x :e X ->
         apply_fun k (apply_fun q x) = apply_fun F x).
-Admitted.
+let X Y Z q F.
+assume Hsurj HFfun Hconst.
+claim HqFun : function_on q X Y.
+{
+  exact (andEL
+    (function_on q X Y)
+    (forall y:set, y :e Y -> exists x:set, x :e X /\ apply_fun q x = y)
+    Hsurj).
+}
+claim HqSurjWit :
+  forall y:set, y :e Y -> exists x:set, x :e X /\ apply_fun q x = y.
+{
+  exact (andER
+    (function_on q X Y)
+    (forall y:set, y :e Y -> exists x:set, x :e X /\ apply_fun q x = y)
+    Hsurj).
+}
+set k := graph Y (fun y:set =>
+  apply_fun F (Eps_i (fun x:set => x :e X /\ apply_fun q x = y))).
+claim HkFun : function_on k Y Z.
+{
+  apply (graph_function_on
+    Y
+    Z
+    (fun y:set =>
+      apply_fun F (Eps_i (fun x:set => x :e X /\ apply_fun q x = y)))).
+  let y.
+  assume HyY.
+  apply (HqSurjWit y HyY).
+  let x.
+  assume HxPack.
+  claim HxX : x :e X.
+  {
+    exact (andEL
+      (x :e X)
+      (apply_fun q x = y)
+      HxPack).
+  }
+  claim HxEq : apply_fun q x = y.
+  {
+    exact (andER
+      (x :e X)
+      (apply_fun q x = y)
+      HxPack).
+  }
+  claim HEpsPack :
+    Eps_i (fun u:set => u :e X /\ apply_fun q u = y) :e X /\
+    apply_fun q (Eps_i (fun u:set => u :e X /\ apply_fun q u = y)) = y.
+  {
+    claim HxPair : x :e X /\ apply_fun q x = y.
+    {
+      apply andI.
+      - exact HxX.
+      - exact HxEq.
+    }
+    claim Hex : exists u:set, u :e X /\ apply_fun q u = y.
+    {
+      witness x.
+      exact HxPair.
+    }
+    exact (Eps_i_ex
+      (fun u:set => u :e X /\ apply_fun q u = y)
+      Hex).
+  }
+  claim HEpsX :
+    Eps_i (fun u:set => u :e X /\ apply_fun q u = y) :e X.
+  {
+    exact (andEL
+      (Eps_i (fun u:set => u :e X /\ apply_fun q u = y) :e X)
+      (apply_fun q (Eps_i (fun u:set => u :e X /\ apply_fun q u = y)) = y)
+      HEpsPack).
+  }
+  exact (HFfun
+    (Eps_i (fun u:set => u :e X /\ apply_fun q u = y))
+    HEpsX).
+}
+witness k.
+apply andI.
+- exact HkFun.
+- let x.
+  assume HxX.
+  claim HqxY : apply_fun q x :e Y.
+  {
+    exact (HqFun
+      x
+      HxX).
+  }
+  claim HEpsPack :
+    Eps_i (fun u:set => u :e X /\ apply_fun q u = apply_fun q x) :e X /\
+    apply_fun q
+      (Eps_i (fun u:set => u :e X /\ apply_fun q u = apply_fun q x))
+      =
+    apply_fun q x.
+  {
+    claim HxPair : x :e X /\ apply_fun q x = apply_fun q x.
+    {
+      apply andI.
+      - exact HxX.
+      - reflexivity.
+    }
+    claim Hex : exists u:set, u :e X /\ apply_fun q u = apply_fun q x.
+    {
+      witness x.
+      exact HxPair.
+    }
+    exact (Eps_i_ex
+      (fun u:set => u :e X /\ apply_fun q u = apply_fun q x)
+      Hex).
+  }
+  claim HEpsX :
+    Eps_i (fun u:set => u :e X /\ apply_fun q u = apply_fun q x) :e X.
+  {
+    exact (andEL
+      (Eps_i (fun u:set => u :e X /\ apply_fun q u = apply_fun q x) :e X)
+      (apply_fun q
+        (Eps_i (fun u:set => u :e X /\ apply_fun q u = apply_fun q x))
+        =
+       apply_fun q x)
+      HEpsPack).
+  }
+  claim HEpsEq :
+    apply_fun q
+      (Eps_i (fun u:set => u :e X /\ apply_fun q u = apply_fun q x))
+      =
+    apply_fun q x.
+  {
+    exact (andER
+      (Eps_i (fun u:set => u :e X /\ apply_fun q u = apply_fun q x) :e X)
+      (apply_fun q
+        (Eps_i (fun u:set => u :e X /\ apply_fun q u = apply_fun q x))
+        =
+       apply_fun q x)
+      HEpsPack).
+  }
+  rewrite (apply_fun_graph
+    Y
+    (fun y:set =>
+      apply_fun F (Eps_i (fun u:set => u :e X /\ apply_fun q u = y)))
+    (apply_fun q x)
+    HqxY).
+  exact (Hconst
+    (Eps_i (fun u:set => u :e X /\ apply_fun q u = apply_fun q x))
+    x
+    HEpsX
+    HxX
+    HEpsEq).
+Qed.
 
 Theorem s55_radial_collapse_map_zero_implies_top :
   forall p:set, p :e setprod S1 unit_interval ->
     apply_fun s55_radial_collapse_map p = (0, 0) ->
     p 1 = 1.
+let p.
+assume HpDom Hq0.
+claim HpS1 : p 0 :e S1.
+{
+  exact (ap0_Sigma
+    S1
+    (fun _ : set => unit_interval)
+    p
+    HpDom).
+}
+claim HptI : p 1 :e unit_interval.
+{
+  exact (ap1_Sigma
+    S1
+    (fun _ : set => unit_interval)
+    p
+    HpDom).
+}
+claim HptR : p 1 :e R.
+{
+  exact (unit_interval_sub_R
+    (p 1)
+    HptI).
+}
+claim HptS : SNo (p 1).
+{
+  exact (real_SNo
+    (p 1)
+    HptR).
+}
+claim HfI :
+  apply_fun flip_unit_interval (p 1) :e unit_interval.
+{
+  exact (flip_unit_interval_function_on
+    (p 1)
+    HptI).
+}
+claim HfR :
+  apply_fun flip_unit_interval (p 1) :e R.
+{
+  exact (unit_interval_sub_R
+    (apply_fun flip_unit_interval (p 1))
+    HfI).
+}
+claim HfS :
+  SNo (apply_fun flip_unit_interval (p 1)).
+{
+  exact (real_SNo
+    (apply_fun flip_unit_interval (p 1))
+    HfR).
+}
+claim Hp0R2 : p 0 :e setprod R R.
+{
+  exact (SepE1
+    (setprod R R)
+    (fun z:set =>
+      add_SNo (mul_SNo (z 0) (z 0))
+        (mul_SNo (z 1) (z 1)) = 1)
+    (p 0)
+    HpS1).
+}
+claim Hp00R : (p 0) 0 :e R.
+{
+  exact (EuclidPlane_xcoord_in_R
+    (p 0)
+    Hp0R2).
+}
+claim Hp01R : (p 0) 1 :e R.
+{
+  exact (EuclidPlane_ycoord_in_R
+    (p 0)
+    Hp0R2).
+}
+claim Hp00S : SNo ((p 0) 0).
+{
+  exact (real_SNo
+    ((p 0) 0)
+    Hp00R).
+}
+claim Hp01S : SNo ((p 0) 1).
+{
+  exact (real_SNo
+    ((p 0) 1)
+    Hp01R).
+}
+claim Hcoord0Zero :
+  mul_SNo (apply_fun flip_unit_interval (p 1)) ((p 0) 0) = 0.
+{
+  admit.
+}
+claim Hcoord1Zero :
+  mul_SNo (apply_fun flip_unit_interval (p 1)) ((p 0) 1) = 0.
+{
+  admit.
+}
+claim HflipEq0 :
+  apply_fun flip_unit_interval (p 1) = 0.
+{
+  admit.
+}
+claim HoneMinusEq0 :
+  add_SNo 1 (minus_SNo (p 1)) = 0.
+{
+  rewrite <- (flip_unit_interval_apply
+    (p 1)
+    HptI).
+  exact HflipEq0.
+}
+claim Hstep :
+  add_SNo (add_SNo 1 (minus_SNo (p 1))) (p 1) = 1.
+{
+  exact (add_SNo_minus_R2'
+    1
+    (p 1)
+    SNo_1
+    HptS).
+}
+admit.
 Admitted.
 
 (** Sandbox Begin Alice **)
