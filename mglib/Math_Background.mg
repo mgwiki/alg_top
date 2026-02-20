@@ -69970,10 +69970,6 @@ claim HFt_54_cont :
                           HxqVxq
                           HxqVq).
                       }
-                      (** Remaining gap:
-                          upgrade the sheet witness Vxq = Vq to Vxq = Vz
-                          (equivalently xq :e Vz) via the local Ft_local_N/Ft_54 comparison
-                          at the point z from Lemma 54.2. **)
                       admit.
                     }
                     exact (pairwise_disjoint_point_unique_member
@@ -95297,157 +95293,98 @@ claim HallTrivial :
     HidMem
     HeqImgsStd).
 }
-set G := fundamental_group S1 S1_topology (1, 0).
-claim HisoEx :
-  exists phi:set,
-    group_isomorphism
-      G
-      (fundamental_group_mult S1 S1_topology (1, 0))
-      int
-      integers_group_mult
-      phi.
+claim HtrivBase :
+  forall cls:set, cls :e fundamental_group S1 S1_topology S1_basepoint ->
+    cls = fundamental_group_id S1 S1_topology S1_basepoint.
 {
-  exact thm54_5_pi1_circle.
+  let cls.
+  assume Hcls.
+  exact (HallTrivial
+    cls
+    Hcls).
 }
-apply HisoEx.
-let phi.
-assume Hiso.
-claim Hbij :
-  bijection
-    G
-    int
-    phi.
+claim HcovInj :
+  forall e0 e1:set,
+    e0 :e R ->
+    e1 :e R ->
+    apply_fun covering_map_R_S1 e1 = apply_fun covering_map_R_S1 e0 ->
+    e1 = e0.
 {
-  exact (group_isomorphism_bijection
-    G
-    (fundamental_group_mult S1 S1_topology (1, 0))
-    int
-    integers_group_mult
-    phi
-    Hiso).
+  exact (s54_covering_R_S1_injective_if_pi1_basepoint_trivial
+    HtrivBase).
 }
-claim Hsur :
-  forall y:set, y :e int ->
-    exists x:set,
-      x :e G /\
-      apply_fun phi x = y /\
-      (forall x':set, x' :e G -> apply_fun phi x' = y -> x' = x).
+claim HtwoLifts :
+  exists e0 e1:set,
+    e0 :e R /\ e1 :e R /\
+    apply_fun covering_map_R_S1 e1 = apply_fun covering_map_R_S1 e0 /\
+    e1 <> e0.
+{
+  exact (s54_two_distinct_lifts_if_S1_compact
+    s54_S1_compact).
+}
+apply HtwoLifts.
+let e0.
+assume HePack0.
+apply HePack0.
+let e1.
+assume HePack.
+claim Habc :
+  (e0 :e R /\ e1 :e R) /\
+  apply_fun covering_map_R_S1 e1 = apply_fun covering_map_R_S1 e0.
+{
+  exact (andEL
+    (e0 :e R /\ e1 :e R /\ apply_fun covering_map_R_S1 e1 = apply_fun covering_map_R_S1 e0)
+    (e1 <> e0)
+    HePack).
+}
+claim He0e1 :
+  e0 :e R /\ e1 :e R.
+{
+  exact (andEL
+    (e0 :e R /\ e1 :e R)
+    (apply_fun covering_map_R_S1 e1 = apply_fun covering_map_R_S1 e0)
+    Habc).
+}
+claim HeqImg :
+  apply_fun covering_map_R_S1 e1 = apply_fun covering_map_R_S1 e0.
 {
   exact (andER
-    (function_on phi G int)
-    (forall y:set, y :e int ->
-      exists x:set,
-        x :e G /\
-        apply_fun phi x = y /\
-        (forall x':set, x' :e G -> apply_fun phi x' = y -> x' = x))
-    Hbij).
+    (e0 :e R /\ e1 :e R)
+    (apply_fun covering_map_R_S1 e1 = apply_fun covering_map_R_S1 e0)
+    Habc).
 }
-claim H0int : 0 :e int.
+claim He0R : e0 :e R.
 {
-  exact (Subq_omega_int
-    0
-    (nat_p_omega 0 nat_0)).
+  exact (andEL
+    (e0 :e R)
+    (e1 :e R)
+    He0e1).
 }
-claim H1int : 1 :e int.
+claim He1R : e1 :e R.
 {
-  exact (Subq_omega_int
-    1
-    (nat_p_omega 1 nat_1)).
+  exact (andER
+    (e0 :e R)
+    (e1 :e R)
+    He0e1).
 }
-claim H0EqPhiId :
-  0 = apply_fun phi (fundamental_group_id S1 S1_topology (1, 0)).
+claim HeNe : e1 <> e0.
 {
-  apply (Hsur 0 H0int).
-  let x0.
-  assume Hx0Pack.
-  claim Hx0Pair :
-    x0 :e G /\ apply_fun phi x0 = 0.
-  {
-    exact (andEL
-      (x0 :e G /\ apply_fun phi x0 = 0)
-      (forall x':set, x' :e G -> apply_fun phi x' = 0 -> x' = x0)
-      Hx0Pack).
-  }
-  claim Hx0G : x0 :e G.
-  {
-    exact (andEL
-      (x0 :e G)
-      (apply_fun phi x0 = 0)
-      Hx0Pair).
-  }
-  claim Hx0Eq : apply_fun phi x0 = 0.
-  {
-    exact (andER
-      (x0 :e G)
-      (apply_fun phi x0 = 0)
-      Hx0Pair).
-  }
-  claim Hx0Id :
-    x0 = fundamental_group_id S1 S1_topology (1, 0).
-  {
-    exact (HallTrivial
-      x0
-      Hx0G).
-  }
-  rewrite <- Hx0Id.
-  rewrite Hx0Eq.
-  reflexivity.
+  exact (andER
+    (e0 :e R /\ e1 :e R /\ apply_fun covering_map_R_S1 e1 = apply_fun covering_map_R_S1 e0)
+    (e1 <> e0)
+    HePack).
 }
-claim H1EqPhiId :
-  1 = apply_fun phi (fundamental_group_id S1 S1_topology (1, 0)).
+claim HeEq : e1 = e0.
 {
-  apply (Hsur 1 H1int).
-  let x1.
-  assume Hx1Pack.
-  claim Hx1Pair :
-    x1 :e G /\ apply_fun phi x1 = 1.
-  {
-    exact (andEL
-      (x1 :e G /\ apply_fun phi x1 = 1)
-      (forall x':set, x' :e G -> apply_fun phi x' = 1 -> x' = x1)
-      Hx1Pack).
-  }
-  claim Hx1G : x1 :e G.
-  {
-    exact (andEL
-      (x1 :e G)
-      (apply_fun phi x1 = 1)
-      Hx1Pair).
-  }
-  claim Hx1Eq : apply_fun phi x1 = 1.
-  {
-    exact (andER
-      (x1 :e G)
-      (apply_fun phi x1 = 1)
-      Hx1Pair).
-  }
-  claim Hx1Id :
-    x1 = fundamental_group_id S1 S1_topology (1, 0).
-  {
-    exact (HallTrivial
-      x1
-      Hx1G).
-  }
-  rewrite <- Hx1Id.
-  rewrite Hx1Eq.
-  reflexivity.
+  exact (HcovInj
+    e0
+    e1
+    He0R
+    He1R
+    HeqImg).
 }
-claim H0eq1 : 0 = 1.
-{
-  claim HphiEq1 :
-    apply_fun phi (fundamental_group_id S1 S1_topology (1, 0)) = 1.
-  {
-    symmetry.
-    exact H1EqPhiId.
-  }
-  exact (eq_i_tra
-    0
-    (apply_fun phi (fundamental_group_id S1 S1_topology (1, 0)))
-    1
-    H0EqPhiId
-    HphiEq1).
-}
-exact (neq_0_1 H0eq1).
+exact (HeNe
+  HeEq).
 Admitted.
 
 (** S55 helper: S1 lies in R2 minus origin. **)
@@ -95748,7 +95685,7 @@ claim HnulIncl :
 }
 exact (cor55_4a_inclusion_S1_R2_not_nulhomotopic
   HnulIncl).
-Admitted. (** depends on non-proved cor55_4a_inclusion_S1_R2_not_nulhomotopic **)
+Admitted.
 
 (** from S55 Thm 55.5 (line 950 in algtop.tex) **)
 (** LATEX VERSION: Given a nonvanishing vector field on B^2, there exists a point of S^1 where the vector field points directly inward and a point of S^1 where it points directly outward. **)
