@@ -172835,7 +172835,95 @@ claim Hcoord1Zero :
 claim HflipEq0 :
   apply_fun flip_unit_interval (p 1) = 0.
 {
-  admit.
+  apply (xm (apply_fun flip_unit_interval (p 1) = 0)).
+  - assume Hf0.
+    exact Hf0.
+  - assume HfNe0.
+    claim Hmul0Rhs :
+      mul_SNo (apply_fun flip_unit_interval (p 1)) 0 = 0.
+    {
+      exact (mul_SNo_zeroR
+        (apply_fun flip_unit_interval (p 1))
+        HfS).
+    }
+    claim Hmul0RhsSym :
+      0 = mul_SNo (apply_fun flip_unit_interval (p 1)) 0.
+    {
+      symmetry.
+      exact Hmul0Rhs.
+    }
+    claim Hcoord0EqMul0 :
+      mul_SNo (apply_fun flip_unit_interval (p 1)) ((p 0) 0)
+      =
+      mul_SNo (apply_fun flip_unit_interval (p 1)) 0.
+    {
+      exact (eq_i_tra
+        (mul_SNo (apply_fun flip_unit_interval (p 1)) ((p 0) 0))
+        0
+        (mul_SNo (apply_fun flip_unit_interval (p 1)) 0)
+        Hcoord0Zero
+        Hmul0RhsSym).
+    }
+    claim Hp00Eq0 : (p 0) 0 = 0.
+    {
+      exact (mul_SNo_nonzero_cancel
+        (apply_fun flip_unit_interval (p 1))
+        ((p 0) 0)
+        0
+        HfS
+        HfNe0
+        Hp00S
+        SNo_0
+        Hcoord0EqMul0).
+    }
+    claim Hcoord1EqMul0 :
+      mul_SNo (apply_fun flip_unit_interval (p 1)) ((p 0) 1)
+      =
+      mul_SNo (apply_fun flip_unit_interval (p 1)) 0.
+    {
+      exact (eq_i_tra
+        (mul_SNo (apply_fun flip_unit_interval (p 1)) ((p 0) 1))
+        0
+        (mul_SNo (apply_fun flip_unit_interval (p 1)) 0)
+        Hcoord1Zero
+        Hmul0RhsSym).
+    }
+    claim Hp01Eq0 : (p 0) 1 = 0.
+    {
+      exact (mul_SNo_nonzero_cancel
+        (apply_fun flip_unit_interval (p 1))
+        ((p 0) 1)
+        0
+        HfS
+        HfNe0
+        Hp01S
+        SNo_0
+        Hcoord1EqMul0).
+    }
+    claim Hp0R2m0 : p 0 :e R2_minus_origin.
+    {
+      exact (s55_S1_subset_R2_minus_origin
+        (p 0)
+        HpS1).
+    }
+    claim Hp0Not00 : ~((p 0) 0 = 0 /\ (p 0) 1 = 0).
+    {
+      exact (SepE2
+        (setprod R R)
+        (fun z:set => ~(z 0 = 0 /\ z 1 = 0))
+        (p 0)
+        Hp0R2m0).
+    }
+    claim Hcontra : False.
+    {
+      apply Hp0Not00.
+      apply andI.
+      - exact Hp00Eq0.
+      - exact Hp01Eq0.
+    }
+    exact (FalseE
+      Hcontra
+      (apply_fun flip_unit_interval (p 1) = 0)).
 }
 claim HoneMinusEq0 :
   add_SNo 1 (minus_SNo (p 1)) = 0.
