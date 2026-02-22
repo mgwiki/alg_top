@@ -149683,6 +149683,189 @@ apply (nat_inv nw Hnw_nat).
                     rewrite <- Ha_eq_b0.
                     exact Hxie0_ne_ea.
                   }
+                  claim Hxie0_G : apply_fun xie 0 :e G.
+                  {
+                    apply (and4E
+                      (apply_fun Gfam beta_0 c= G)
+                      (eG :e apply_fun Gfam beta_0)
+                      (forall x y:set, x :e apply_fun Gfam beta_0 -> y :e apply_fun Gfam beta_0 ->
+                        apply_fun multG (x, y) :e apply_fun Gfam beta_0)
+                      (forall x:set, x :e apply_fun Gfam beta_0 -> apply_fun invG x :e apply_fun Gfam beta_0)
+                      (Hsub
+                        beta_0
+                        Hb0_J)).
+                    assume HsubGb0 _ _ _.
+                    exact (HsubGb0
+                      (apply_fun xie 0)
+                      Hxie0_Gb0).
+                  }
+                  set x0_word := graph 1 (fun _:set => apply_fun xie 0).
+                  claim Hx0_word_0 : apply_fun x0_word 0 = apply_fun xie 0.
+                  {
+                    exact (apply_fun_graph
+                      1
+                      (fun _:set => apply_fun xie 0)
+                      0
+                      (ordsuccI2 0)).
+                  }
+                  claim Hx0_redw1 : reduced_word J Gfam efam 1 x0_word.
+                  {
+                    prove 1 :e omega /\
+                      (forall i:set, i :e 1 ->
+                        exists alpha:set, alpha :e J /\
+                          apply_fun x0_word i :e apply_fun Gfam alpha /\
+                          apply_fun x0_word i <> apply_fun efam alpha) /\
+                      (forall i:set, i :e 1 -> ordsucc i :e 1 ->
+                        forall a1 a2:set, a1 :e J -> a2 :e J ->
+                          apply_fun x0_word i :e apply_fun Gfam a1 ->
+                          apply_fun x0_word (ordsucc i) :e apply_fun Gfam a2 ->
+                          a1 <> a2).
+                    apply and3I.
+                    - exact (nat_p_omega
+                        1
+                        (nat_ordsucc 0 nat_0)).
+                    - let i.
+                      assume Hi.
+                      apply (cases_1
+                        i
+                        Hi
+                        (fun j:set =>
+                          exists alpha:set, alpha :e J /\
+                            apply_fun x0_word j :e apply_fun Gfam alpha /\
+                            apply_fun x0_word j <> apply_fun efam alpha)).
+                      prove exists alpha:set, alpha :e J /\
+                        apply_fun x0_word 0 :e apply_fun Gfam alpha /\
+                        apply_fun x0_word 0 <> apply_fun efam alpha.
+                      witness beta_0.
+                      apply and3I.
+                      + exact Hb0_J.
+                      + rewrite Hx0_word_0.
+                        exact Hxie0_Gb0.
+                      + rewrite Hx0_word_0.
+                        exact Hxie0_elem_beta0.
+                    - let i.
+                      assume Hi Hsi.
+                      let a1 a2.
+                      assume Ha1J Ha2J Hia1 Hia2.
+                      apply (ordsuccE
+                        0
+                        i
+                        Hi).
+                      + assume H0.
+                        exact (FalseE
+                          (EmptyE i H0)
+                          (a1 <> a2)).
+                      + assume Hi0.
+                        claim Heq : ordsucc i = 1.
+                        {
+                          rewrite Hi0.
+                          exact ordsucc_0_eq_1_nat.
+                        }
+                        claim H1in1 : 1 :e 1.
+                        {
+                          exact (eq_subst_mem_rev
+                            (ordsucc i)
+                            1
+                            1
+                            Heq
+                            Hsi).
+                        }
+                        exact (FalseE
+                          (In_irref 1 H1in1)
+                          (a1 <> a2)).
+                  }
+                  claim Hwp_x0_1 : word_product multG eG x0_word 1 = apply_fun xie 0.
+                  {
+                    prove nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x0_word i)) 1 = apply_fun xie 0.
+                    rewrite <- ordsucc_0_eq_1_nat.
+                    rewrite (nat_primrec_S
+                      eG
+                      (fun i r => apply_fun multG (r, apply_fun x0_word i))
+                      0
+                      nat_0).
+                    rewrite (nat_primrec_0
+                      eG
+                      (fun i r => apply_fun multG (r, apply_fun x0_word i))).
+                    rewrite Hx0_word_0.
+                    exact (andEL
+                      (apply_fun multG (eG, apply_fun xie 0) = apply_fun xie 0)
+                      (apply_fun multG (apply_fun xie 0, eG) = apply_fun xie 0)
+                      (HidG
+                        (apply_fun xie 0)
+                        Hxie0_G)).
+                  }
+                  claim Hxie0_pack : exists n0 xs0:set,
+                    reduced_word J Gfam efam n0 xs0 /\ n0 <> 0 /\
+                    word_product multG eG xs0 n0 = apply_fun xie 0 /\
+                    (forall n' xs':set,
+                      reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+                      word_product multG eG xs' n' = apply_fun xie 0 ->
+                      n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)).
+                  {
+                    exact (Huniq
+                      (apply_fun xie 0)
+                      Hxie0_G
+                      Hxie0_ne_eG).
+                  }
+                  claim Hxie0_uniq_len1 : forall n' xs':set,
+                    reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+                    word_product multG eG xs' n' = apply_fun xie 0 ->
+                    1 = n'.
+                  {
+                    apply Hxie0_pack.
+                    let n0.
+                    assume Hx0_ex.
+                    apply Hx0_ex.
+                    let xs0.
+                    assume Hx0U.
+                    apply (and4E
+                      (reduced_word J Gfam efam n0 xs0)
+                      (n0 <> 0)
+                      (word_product multG eG xs0 n0 = apply_fun xie 0)
+                      (forall n' xs':set,
+                        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+                        word_product multG eG xs' n' = apply_fun xie 0 ->
+                        n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i))
+                      Hx0U).
+                    assume Hred_x0 Hn0_ne Hwp_x0 Huniq_x0.
+                    claim Hn0_eq_1 : n0 = 1.
+                    {
+                      exact (andEL
+                        (n0 = 1)
+                        (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun x0_word i)
+                        (Huniq_x0
+                          1
+                          x0_word
+                          Hx0_redw1
+                          (neq_ordsucc_0 0)
+                          Hwp_x0_1)).
+                    }
+                    let n' xs'.
+                    assume Hred' Hne' Hwp'.
+                    claim Hn0_eq_n' : n0 = n'.
+                    {
+                      exact (andEL
+                        (n0 = n')
+                        (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)
+                        (Huniq_x0
+                          n'
+                          xs'
+                          Hred'
+                          Hne'
+                          Hwp')).
+                    }
+                    claim H1_eq_n0 : 1 = n0.
+                    {
+                      symmetry.
+                      exact Hn0_eq_1.
+                    }
+                    exact (eq_i_tra
+                      1
+                      n0
+                      n'
+                      H1_eq_n0
+                      Hn0_eq_n').
+                  }
                   admit.
                 }
               + assume Hinv_ne_efam.
