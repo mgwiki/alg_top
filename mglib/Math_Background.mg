@@ -149919,6 +149919,78 @@ apply (nat_inv nw Hnw_nat).
                     exact (Hxie0_not_Gal
                       Hxie0_Gal).
                   }
+                  claim Hie_label_eq_al : forall a:set, a :e J ->
+                    ie :e apply_fun Gfam a -> a = al.
+                  {
+                    let a.
+                    assume HaJ Hie_Ga.
+                    apply (xm
+                      (a = al)).
+                    - assume Ha_eq_al.
+                      exact Ha_eq_al.
+                    - assume Ha_ne_al.
+                      claim Hie_eG : ie = eG.
+                      {
+                        exact (Hdisjoint
+                          a
+                          al
+                          HaJ
+                          Hal
+                          Ha_ne_al
+                          ie
+                          Hie_Ga
+                          Hie_Gal).
+                      }
+                      exact (FalseE
+                        (Hie_ne_eG
+                          Hie_eG)
+                        (a = al)).
+                  }
+                  claim Hxie_ne_ie_all : forall i:set, i :e nie -> apply_fun xie i <> ie.
+                  {
+                    let i.
+                    assume Hi_nie.
+                    assume Hxiei_ie.
+                    apply (Helem_ie_eq
+                      i
+                      Hi_nie).
+                    let a.
+                    assume Ha_pack.
+                    apply (and3E
+                      (a :e J)
+                      (apply_fun xie i :e apply_fun Gfam a)
+                      (apply_fun xie i <> apply_fun efam a)
+                      Ha_pack).
+                    assume HaJ Hxiei_Ga Hxiei_ne_efama.
+                    claim Hie_Ga : ie :e apply_fun Gfam a.
+                    {
+                      rewrite <- Hxiei_ie.
+                      exact Hxiei_Ga.
+                    }
+                    claim Ha_eq_al : a = al.
+                    {
+                      exact (Hie_label_eq_al
+                        a
+                        HaJ
+                        Hie_Ga).
+                    }
+                    claim Hxiei_efamal : apply_fun xie i = apply_fun efam al.
+                    {
+                      exact (eq_i_tra
+                        (apply_fun xie i)
+                        ie
+                        (apply_fun efam al)
+                        Hxiei_ie
+                        Hie_eq_efam).
+                    }
+                    claim Hxiei_efama : apply_fun xie i = apply_fun efam a.
+                    {
+                      rewrite Ha_eq_al.
+                      exact Hxiei_efamal.
+                    }
+                    exact (Hxiei_ne_efama
+                      Hxiei_efama).
+                  }
                   claim Hxie0_repr_of_len_nie_impossible : forall xs':set,
                     reduced_word J Gfam efam nie xs' ->
                     word_product multG eG xs' nie = apply_fun xie 0 ->
