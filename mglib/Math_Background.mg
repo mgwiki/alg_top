@@ -149551,6 +149551,82 @@ apply (nat_inv nw Hnw_nat).
                     exact (Hxs0_ne_eG
                       Hxsw0_eG).
                   }
+                  apply (and3E
+                    (nie :e omega)
+                    (forall i:set, i :e nie ->
+                      exists alpha:set, alpha :e J /\
+                        apply_fun xie i :e apply_fun Gfam alpha /\
+                        apply_fun xie i <> apply_fun efam alpha)
+                    (forall i:set, i :e nie -> ordsucc i :e nie ->
+                      forall alpha beta:set, alpha :e J -> beta :e J ->
+                        apply_fun xie i :e apply_fun Gfam alpha ->
+                        apply_fun xie (ordsucc i) :e apply_fun Gfam beta ->
+                        alpha <> beta)
+                    Hred_ie_eq).
+                  assume Hnie_om_eq Helem_ie_eq Hadj_ie_eq.
+                  claim H1_in_nie : 1 :e nie.
+                  {
+                    rewrite <- Hnw_eq_nie.
+                    exact H1_in_nw.
+                  }
+                  claim Hxie0_ne_eb0 : apply_fun xie 0 <> apply_fun efam beta_0.
+                  {
+                    assume Hxie0_eb0.
+                    claim Hxsw0_eq_xie0 : apply_fun xsw 0 = apply_fun xie 0.
+                    {
+                      symmetry.
+                      exact Hxie0_eq_xsw0.
+                    }
+                    claim Hxsw0_eb0 : apply_fun xsw 0 = apply_fun efam beta_0.
+                    {
+                      exact (eq_i_tra
+                        (apply_fun xsw 0)
+                        (apply_fun xie 0)
+                        (apply_fun efam beta_0)
+                        Hxsw0_eq_xie0
+                        Hxie0_eb0).
+                    }
+                    exact (Hxs0_ne_eb0
+                      Hxsw0_eb0).
+                  }
+                  claim Hxie1_ne_eb1 : apply_fun xie 1 <> apply_fun efam beta_1.
+                  {
+                    assume Hxie1_eb1.
+                    claim Hxsw1_eq_xie1 : apply_fun xsw 1 = apply_fun xie 1.
+                    {
+                      symmetry.
+                      exact Hxie1_eq_xsw1.
+                    }
+                    claim Hxsw1_eb1 : apply_fun xsw 1 = apply_fun efam beta_1.
+                    {
+                      exact (eq_i_tra
+                        (apply_fun xsw 1)
+                        (apply_fun xie 1)
+                        (apply_fun efam beta_1)
+                        Hxsw1_eq_xie1
+                        Hxie1_eb1).
+                    }
+                    exact (Hxs1_ne_eb1
+                      Hxsw1_eb1).
+                  }
+                  claim Hxie0_not_Gal : apply_fun xie 0 :e apply_fun Gfam al -> False.
+                  {
+                    assume Hxie0_Gal.
+                    claim Hxie0_eG : apply_fun xie 0 = eG.
+                    {
+                      exact (Hdisjoint
+                        al
+                        beta_0
+                        Hal
+                        Hb0_J
+                        Hal_ne_b0
+                        (apply_fun xie 0)
+                        Hxie0_Gal
+                        Hxie0_Gb0).
+                    }
+                    exact (Hxie0_ne_eG
+                      Hxie0_eG).
+                  }
                   admit.
                 }
               + assume Hinv_ne_efam.
