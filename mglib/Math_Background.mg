@@ -149866,6 +149866,83 @@ apply (nat_inv nw Hnw_nat).
                       H1_eq_n0
                       Hn0_eq_n').
                   }
+                  claim Hnie_ne_1 : nie <> 1.
+                  {
+                    assume Hnie_eq_1.
+                    claim Hnw_eq_1 : nw = 1.
+                    {
+                      rewrite Hnw_eq_nie.
+                      exact Hnie_eq_1.
+                    }
+                    claim Hssm_eq_s0 : ordsucc m = ordsucc 0.
+                    {
+                      rewrite <- Hnw_eq.
+                      rewrite <- ordsucc_0_eq_1_nat.
+                      exact Hnw_eq_1.
+                    }
+                    claim Hm_eq_0 : m = 0.
+                    {
+                      exact (ordsucc_inj
+                        m
+                        0
+                        Hssm_eq_s0).
+                    }
+                    exact (Hm_ne0
+                      Hm_eq_0).
+                  }
+                  claim Hxie0_not_Gal : apply_fun xie 0 :e apply_fun Gfam al -> False.
+                  {
+                    assume Hxie0_Gal.
+                    claim Hxie0_eG : apply_fun xie 0 = eG.
+                    {
+                      exact (Hdisjoint
+                        al
+                        beta_0
+                        Hal
+                        Hb0_J
+                        Hal_ne_b0
+                        (apply_fun xie 0)
+                        Hxie0_Gal
+                        Hxie0_Gb0).
+                    }
+                    exact (Hxie0_ne_eG
+                      Hxie0_eG).
+                  }
+                  claim Hxie0_ne_efam_al : apply_fun xie 0 <> apply_fun efam al.
+                  {
+                    assume Hxie0_efamal.
+                    claim Hxie0_Gal : apply_fun xie 0 :e apply_fun Gfam al.
+                    {
+                      rewrite Hxie0_efamal.
+                      exact Hefam_Gal.
+                    }
+                    exact (Hxie0_not_Gal
+                      Hxie0_Gal).
+                  }
+                  claim Hxie0_repr_of_len_nie_impossible : forall xs':set,
+                    reduced_word J Gfam efam nie xs' ->
+                    word_product multG eG xs' nie = apply_fun xie 0 ->
+                    False.
+                  {
+                    let xs'.
+                    assume Hred_nie Hwp_nie.
+                    claim H1_eq_nie : 1 = nie.
+                    {
+                      exact (Hxie0_uniq_len1
+                        nie
+                        xs'
+                        Hred_nie
+                        Hnie_ne_eq
+                        Hwp_nie).
+                    }
+                    claim Hnie_eq_1 : nie = 1.
+                    {
+                      symmetry.
+                      exact H1_eq_nie.
+                    }
+                    exact (Hnie_ne_1
+                      Hnie_eq_1).
+                  }
                   admit.
                 }
               + assume Hinv_ne_efam.
