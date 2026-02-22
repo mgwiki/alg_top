@@ -149490,6 +149490,36 @@ apply (nat_inv nw Hnw_nat).
                     exact (Hie_not_Gb0
                       Hie_Gb0).
                   }
+                  claim Hxie0_Gb0 : apply_fun xie 0 :e apply_fun Gfam beta_0.
+                  {
+                    rewrite Hxie0_eq_xsw0.
+                    exact Hxs0_Gb0.
+                  }
+                  claim Hxie1_Gb1 : apply_fun xie 1 :e apply_fun Gfam beta_1.
+                  {
+                    rewrite Hxie1_eq_xsw1.
+                    exact Hxs1_Gb1.
+                  }
+                  claim Hxie0_ne_eG : apply_fun xie 0 <> eG.
+                  {
+                    assume Hxie0_eG.
+                    claim Hxsw0_eq_xie0 : apply_fun xsw 0 = apply_fun xie 0.
+                    {
+                      symmetry.
+                      exact Hxie0_eq_xsw0.
+                    }
+                    claim Hxsw0_eG : apply_fun xsw 0 = eG.
+                    {
+                      exact (eq_i_tra
+                        (apply_fun xsw 0)
+                        (apply_fun xie 0)
+                        eG
+                        Hxsw0_eq_xie0
+                        Hxie0_eG).
+                    }
+                    exact (Hxs0_ne_eG
+                      Hxsw0_eG).
+                  }
                   admit.
                 }
               + assume Hinv_ne_efam.
