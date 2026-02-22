@@ -104698,7 +104698,6 @@ Admitted.
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, every continuous map f: B^{n+1} -> B^{n+1} has a fixed point. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 61 **)
-(** Lock Bob 1771599000 **)
 Theorem ex55_4d_brouwer_fixed_point_Rn : forall n:set, n :e omega ->
   ~(retraction_of (Bn_closed n) (Bn_closed_topology n) (Sn n)) ->
   forall f:set,
@@ -151028,7 +151027,6 @@ Admitted.
 (** to G_alpha equals h_alpha. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 201 **)
-(** Lock Bob 1771569613 **)
 Theorem lemma68_1_extension_condition_free_product :
   forall G multG eG invG J Gfam efam:set,
   free_product_of_subgroups G multG eG invG J Gfam efam ->
@@ -155862,7 +155860,6 @@ Admitted.
 (** there exists a unique h: G -> H with h o i_alpha = h_alpha. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 61 **)
-(** Lock Alice 1771568868 **)
 Theorem lemma68_3_extension_external_free_product :
   forall G multG eG invG J Gfam multfam ifam:set,
   external_free_product G multG eG invG J Gfam multfam ifam ->
@@ -156296,7 +156293,6 @@ Admitted.
 (** with phi o i_alpha = i'_alpha. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 97 **)
-(** Lock Alice 1771568868 **)
 Theorem thm68_4_uniqueness_free_product :
   forall J Gfam multfam G multG eG invG ifam G' multG' eG' invG' ifam':set,
   external_free_product G multG eG invG J Gfam multfam ifam ->
