@@ -149627,6 +149627,62 @@ apply (nat_inv nw Hnw_nat).
                     exact (Hxie0_ne_eG
                       Hxie0_eG).
                   }
+                  claim Hxie0_label_eq_beta0 : forall a:set, a :e J ->
+                    apply_fun xie 0 :e apply_fun Gfam a -> a = beta_0.
+                  {
+                    let a.
+                    assume HaJ Hxie0_Ga.
+                    apply (xm
+                      (a = beta_0)).
+                    - assume Ha_eq_b0.
+                      exact Ha_eq_b0.
+                    - assume Ha_ne_b0.
+                      claim Hxie0_eG : apply_fun xie 0 = eG.
+                      {
+                        exact (Hdisjoint
+                          a
+                          beta_0
+                          HaJ
+                          Hb0_J
+                          Ha_ne_b0
+                          (apply_fun xie 0)
+                          Hxie0_Ga
+                          Hxie0_Gb0).
+                      }
+                      exact (FalseE
+                        (Hxie0_ne_eG
+                          Hxie0_eG)
+                        (a = beta_0)).
+                  }
+                  claim Hxie0_elem : exists a:set, a :e J /\
+                    apply_fun xie 0 :e apply_fun Gfam a /\
+                    apply_fun xie 0 <> apply_fun efam a.
+                  {
+                    exact (Helem_ie_eq
+                      0
+                      H0_in_nie).
+                  }
+                  claim Hxie0_elem_beta0 : apply_fun xie 0 <> apply_fun efam beta_0.
+                  {
+                    apply Hxie0_elem.
+                    let a.
+                    assume Ha_pack.
+                    apply (and3E
+                      (a :e J)
+                      (apply_fun xie 0 :e apply_fun Gfam a)
+                      (apply_fun xie 0 <> apply_fun efam a)
+                      Ha_pack).
+                    assume HaJ Hxie0_Ga Hxie0_ne_ea.
+                    claim Ha_eq_b0 : a = beta_0.
+                    {
+                      exact (Hxie0_label_eq_beta0
+                        a
+                        HaJ
+                        Hxie0_Ga).
+                    }
+                    rewrite <- Ha_eq_b0.
+                    exact Hxie0_ne_ea.
+                  }
                   admit.
                 }
               + assume Hinv_ne_efam.
