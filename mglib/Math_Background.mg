@@ -144162,10 +144162,38 @@ claim Hmap_rep_in_H : forall pack:set, forall g:set, g :e G -> rep_pred g pack -
         (apply_fun (apply_fun hfam (apply_fun ((pack 1) 0) i)) (apply_fun ((pack 1) 1) i))
         eH Hni).
       exact HeHH. }
-  admit. (** TODO Alice: show nat_primrec with fi equals nat_primrec with original f **) }
+  (** nat_primrec with fi gives an H element **)
+  claim Hprod_fi : nat_primrec eH (fun i r => apply_fun multH (r, fi i)) (pack 0) :e H.
+  { exact (local_nat_primrec_in_group H multH eH HmultH_fn HeHH fi Hfi_H (pack 0) HnO). }
+  (** Show nat_primrec with fi = nat_primrec with original using nat_primrec_ext **)
+  claim Hext : nat_primrec eH
+    (fun i r => apply_fun multH (r, fi i)) (pack 0) =
+    nat_primrec eH
+    (fun i r => apply_fun multH (r,
+      apply_fun (apply_fun hfam (apply_fun ((pack 1) 0) i)) (apply_fun ((pack 1) 1) i)))
+    (pack 0).
+  { apply (nat_primrec_ext eH
+      (fun i r => apply_fun multH (r, fi i))
+      (fun i r => apply_fun multH (r,
+        apply_fun (apply_fun hfam (apply_fun ((pack 1) 0) i)) (apply_fun ((pack 1) 1) i)))
+      (pack 0) HnO).
+    let i r. assume Hi : i :e (pack 0).
+    prove apply_fun multH (r, fi i) =
+      apply_fun multH (r,
+        apply_fun (apply_fun hfam (apply_fun ((pack 1) 0) i)) (apply_fun ((pack 1) 1) i)).
+    claim Hfi_eq : fi i = apply_fun (apply_fun hfam (apply_fun ((pack 1) 0) i)) (apply_fun ((pack 1) 1) i).
+    { prove If_i (i :e (pack 0))
+        (apply_fun (apply_fun hfam (apply_fun ((pack 1) 0) i)) (apply_fun ((pack 1) 1) i))
+        eH =
+        apply_fun (apply_fun hfam (apply_fun ((pack 1) 0) i)) (apply_fun ((pack 1) 1) i).
+      exact (If_i_1 (i :e (pack 0))
+        (apply_fun (apply_fun hfam (apply_fun ((pack 1) 0) i)) (apply_fun ((pack 1) 1) i))
+        eH Hi). }
+    rewrite Hfi_eq. reflexivity. }
+  rewrite <- Hext. exact Hprod_fi. }
 (** h is well-defined: apply_fun h g is in H for all g in G **)
 claim Hh_fn : function_on h G H.
-{ admit. (** TODO Alice: prove h maps G to H using Hmap_rep_in_H **) }
+{ admit. (** TODO Alice: rewrite issue with set abbreviation - need to work around **) }
 (** h preserves multiplication - the hard part **)
 (** For now, admit the homomorphism property and the extension property **)
 (** We prove the existence with admits for the complex parts **)
