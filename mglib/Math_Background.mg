@@ -143810,7 +143810,262 @@ Lemma direct_sum_hom_existence :
     (forall alpha:set, alpha :e J ->
       forall x:set, x :e apply_fun Gfam alpha ->
         apply_fun h x = apply_fun (apply_fun hfam alpha) x).
-admit.
+let G multG eG invG J Gfam H multH eH invH hfam.
+assume Hdsom HabH Hhfam_fn Hhfam.
+(** Extract subgroups_generate_abelian and uniqueness from direct_sum **)
+claim HsGA : subgroups_generate_abelian G multG eG invG J Gfam.
+{ exact (andEL
+    (subgroups_generate_abelian G multG eG invG J Gfam)
+    (forall x:set, x :e G ->
+      forall n1 n2:set, n1 :e omega -> n2 :e omega -> n1 <> 0 -> n2 <> 0 ->
+      forall a1 a2:set, function_on a1 n1 J -> function_on a2 n2 J ->
+      forall x1 x2:set, function_on x1 n1 G -> function_on x2 n2 G ->
+        (forall i:set, i :e n1 -> apply_fun x1 i :e apply_fun Gfam (apply_fun a1 i)) ->
+        (forall i:set, i :e n2 -> apply_fun x2 i :e apply_fun Gfam (apply_fun a2 i)) ->
+        (forall i j:set, i :e n1 -> j :e n1 -> i <> j -> apply_fun a1 i <> apply_fun a1 j) ->
+        (forall i j:set, i :e n2 -> j :e n2 -> i <> j -> apply_fun a2 i <> apply_fun a2 j) ->
+        x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x1 i)) n1 ->
+        x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x2 i)) n2 ->
+        (forall alpha:set, alpha :e J ->
+          (forall i j:set, i :e n1 -> j :e n2 ->
+            apply_fun a1 i = alpha -> apply_fun a2 j = alpha ->
+            apply_fun x1 i = apply_fun x2 j) /\
+          ((exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
+           ~(exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+           forall i:set, i :e n1 -> apply_fun a1 i = alpha -> apply_fun x1 i = eG) /\
+          (~(exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
+           (exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+           forall j:set, j :e n2 -> apply_fun a2 j = alpha -> apply_fun x2 j = eG)))
+    Hdsom). }
+claim Huniq : forall x:set, x :e G ->
+  forall n1 n2:set, n1 :e omega -> n2 :e omega -> n1 <> 0 -> n2 <> 0 ->
+  forall a1 a2:set, function_on a1 n1 J -> function_on a2 n2 J ->
+  forall x1 x2:set, function_on x1 n1 G -> function_on x2 n2 G ->
+    (forall i:set, i :e n1 -> apply_fun x1 i :e apply_fun Gfam (apply_fun a1 i)) ->
+    (forall i:set, i :e n2 -> apply_fun x2 i :e apply_fun Gfam (apply_fun a2 i)) ->
+    (forall i j:set, i :e n1 -> j :e n1 -> i <> j -> apply_fun a1 i <> apply_fun a1 j) ->
+    (forall i j:set, i :e n2 -> j :e n2 -> i <> j -> apply_fun a2 i <> apply_fun a2 j) ->
+    x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x1 i)) n1 ->
+    x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x2 i)) n2 ->
+    (forall alpha:set, alpha :e J ->
+      (forall i j:set, i :e n1 -> j :e n2 ->
+        apply_fun a1 i = alpha -> apply_fun a2 j = alpha ->
+        apply_fun x1 i = apply_fun x2 j) /\
+      ((exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
+       ~(exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+       forall i:set, i :e n1 -> apply_fun a1 i = alpha -> apply_fun x1 i = eG) /\
+      (~(exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
+       (exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+       forall j:set, j :e n2 -> apply_fun a2 j = alpha -> apply_fun x2 j = eG)).
+{ exact (andER
+    (subgroups_generate_abelian G multG eG invG J Gfam)
+    (forall x:set, x :e G ->
+      forall n1 n2:set, n1 :e omega -> n2 :e omega -> n1 <> 0 -> n2 <> 0 ->
+      forall a1 a2:set, function_on a1 n1 J -> function_on a2 n2 J ->
+      forall x1 x2:set, function_on x1 n1 G -> function_on x2 n2 G ->
+        (forall i:set, i :e n1 -> apply_fun x1 i :e apply_fun Gfam (apply_fun a1 i)) ->
+        (forall i:set, i :e n2 -> apply_fun x2 i :e apply_fun Gfam (apply_fun a2 i)) ->
+        (forall i j:set, i :e n1 -> j :e n1 -> i <> j -> apply_fun a1 i <> apply_fun a1 j) ->
+        (forall i j:set, i :e n2 -> j :e n2 -> i <> j -> apply_fun a2 i <> apply_fun a2 j) ->
+        x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x1 i)) n1 ->
+        x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x2 i)) n2 ->
+        (forall alpha:set, alpha :e J ->
+          (forall i j:set, i :e n1 -> j :e n2 ->
+            apply_fun a1 i = alpha -> apply_fun a2 j = alpha ->
+            apply_fun x1 i = apply_fun x2 j) /\
+          ((exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
+           ~(exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+           forall i:set, i :e n1 -> apply_fun a1 i = alpha -> apply_fun x1 i = eG) /\
+          (~(exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
+           (exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+           forall j:set, j :e n2 -> apply_fun a2 j = alpha -> apply_fun x2 j = eG)))
+    Hdsom). }
+(** Extract group structures and basic properties via and3E **)
+apply (and3E
+  (abelian_group G multG eG invG)
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G multG eG invG)
+  (forall x:set, x :e G ->
+    exists n:set, n :e omega /\ n <> 0 /\
+    exists alphas:set, function_on alphas n J /\
+    exists xs:set, function_on xs n G /\
+      (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) /\
+      (forall i j:set, i :e n -> j :e n -> i <> j ->
+        apply_fun alphas i <> apply_fun alphas j) /\
+      x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+  HsGA).
+assume HabG Hsub Hgen.
+claim HgrpG : group_structure G multG eG invG.
+{ exact (andEL
+    (group_structure G multG eG invG)
+    (forall x y:set, x :e G -> y :e G -> apply_fun multG (x, y) = apply_fun multG (y, x))
+    HabG). }
+claim HgrpH : group_structure H multH eH invH.
+{ exact (andEL
+    (group_structure H multH eH invH)
+    (forall x y:set, x :e H -> y :e H -> apply_fun multH (x, y) = apply_fun multH (y, x))
+    HabH). }
+(** Extract key group elements and operations **)
+claim HeGG : eG :e G.
+{ apply (and6E
+    (function_on multG (setprod G G) G) (function_on invG G G) (eG :e G)
+    (forall x y z:set, x :e G -> y :e G -> z :e G ->
+      apply_fun multG (apply_fun multG (x, y), z) = apply_fun multG (x, apply_fun multG (y, z)))
+    (forall x:set, x :e G -> apply_fun multG (eG, x) = x /\ apply_fun multG (x, eG) = x)
+    (forall x:set, x :e G ->
+      apply_fun multG (x, apply_fun invG x) = eG /\ apply_fun multG (apply_fun invG x, x) = eG)
+    HgrpG).
+  assume _ _ HeG _ _ _. exact HeG. }
+claim HeHH : eH :e H.
+{ apply (and6E
+    (function_on multH (setprod H H) H) (function_on invH H H) (eH :e H)
+    (forall x y z:set, x :e H -> y :e H -> z :e H ->
+      apply_fun multH (apply_fun multH (x, y), z) = apply_fun multH (x, apply_fun multH (y, z)))
+    (forall x:set, x :e H -> apply_fun multH (eH, x) = x /\ apply_fun multH (x, eH) = x)
+    (forall x:set, x :e H ->
+      apply_fun multH (x, apply_fun invH x) = eH /\ apply_fun multH (apply_fun invH x, x) = eH)
+    HgrpH).
+  assume _ _ HeH _ _ _. exact HeH. }
+claim HmultH_fn : function_on multH (setprod H H) H.
+{ apply (and6E
+    (function_on multH (setprod H H) H) (function_on invH H H) (eH :e H)
+    (forall x y z:set, x :e H -> y :e H -> z :e H ->
+      apply_fun multH (apply_fun multH (x, y), z) = apply_fun multH (x, apply_fun multH (y, z)))
+    (forall x:set, x :e H -> apply_fun multH (eH, x) = x /\ apply_fun multH (x, eH) = x)
+    (forall x:set, x :e H ->
+      apply_fun multH (x, apply_fun invH x) = eH /\ apply_fun multH (apply_fun invH x, x) = eH)
+    HgrpH).
+  assume Hf _ _ _ _ _. exact Hf. }
+claim HmHcl : forall x y:set, x :e H -> y :e H -> apply_fun multH (x, y) :e H.
+{ let x y. assume Hx Hy.
+  exact (HmultH_fn (x, y) (tuple_2_setprod_by_pair_Sigma H H x y Hx Hy)). }
+(** hfam sends subgroup elements to H **)
+claim Hhfam_to_H : forall alpha:set, alpha :e J ->
+  forall x:set, x :e apply_fun Gfam alpha -> apply_fun (apply_fun hfam alpha) x :e H.
+{ let alpha. assume Hal. let x. assume Hx.
+  exact (group_homomorphism_function_on
+    (apply_fun Gfam alpha) multG H multH (apply_fun hfam alpha)
+    (Hhfam alpha Hal) x Hx). }
+(** hfam preserves identity **)
+claim Hhfam_id : forall alpha:set, alpha :e J ->
+  apply_fun (apply_fun hfam alpha) eG = eH.
+{ admit. (** TODO Alice: needs subgroup_inherits_group_structure from later **) }
+(** Define the homomorphism via representations **)
+(** For each g in G, pick a representation (n, alphas, xs) and compute the product in H **)
+set rep_pred := fun g pack:set =>
+  (pack 0) :e omega /\ (pack 0) <> 0 /\
+  function_on ((pack 1) 0) (pack 0) J /\
+  function_on ((pack 1) 1) (pack 0) G /\
+  (forall i:set, i :e (pack 0) -> apply_fun ((pack 1) 1) i :e apply_fun Gfam (apply_fun ((pack 1) 0) i)) /\
+  (forall i j:set, i :e (pack 0) -> j :e (pack 0) -> i <> j -> apply_fun ((pack 1) 0) i <> apply_fun ((pack 1) 0) j) /\
+  g = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ((pack 1) 1) i)) (pack 0).
+set map_rep := fun pack:set =>
+  nat_primrec eH
+    (fun i r => apply_fun multH (r,
+      apply_fun (apply_fun hfam (apply_fun ((pack 1) 0) i)) (apply_fun ((pack 1) 1) i)))
+    (pack 0).
+set h := graph G (fun g:set => map_rep (Eps_i (rep_pred g))).
+(** Every g in G has a valid representation pack **)
+claim Hrep_exists : forall g:set, g :e G -> exists pack:set, rep_pred g pack.
+{ let g. assume Hg.
+  apply (Hgen g Hg).
+  let n. assume Hn_pack.
+  claim HnO : n :e omega.
+  { exact (andEL (n :e omega) (n <> 0) (andEL (n :e omega /\ n <> 0)
+      (exists alphas:set, function_on alphas n J /\ exists xs:set, function_on xs n G /\
+        (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) /\
+        (forall i j:set, i :e n -> j :e n -> i <> j -> apply_fun alphas i <> apply_fun alphas j) /\
+        g = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+      Hn_pack)). }
+  claim Hn_ne : n <> 0.
+  { exact (andER (n :e omega) (n <> 0) (andEL (n :e omega /\ n <> 0)
+      (exists alphas:set, function_on alphas n J /\ exists xs:set, function_on xs n G /\
+        (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) /\
+        (forall i j:set, i :e n -> j :e n -> i <> j -> apply_fun alphas i <> apply_fun alphas j) /\
+        g = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+      Hn_pack)). }
+  claim Hex_alphas : exists alphas:set, function_on alphas n J /\ exists xs:set, function_on xs n G /\
+    (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) /\
+    (forall i j:set, i :e n -> j :e n -> i <> j -> apply_fun alphas i <> apply_fun alphas j) /\
+    g = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n.
+  { exact (andER (n :e omega /\ n <> 0)
+      (exists alphas:set, function_on alphas n J /\ exists xs:set, function_on xs n G /\
+        (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) /\
+        (forall i j:set, i :e n -> j :e n -> i <> j -> apply_fun alphas i <> apply_fun alphas j) /\
+        g = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+      Hn_pack). }
+  apply Hex_alphas. let alphas. assume Halphas_pack.
+  claim HalphasFn : function_on alphas n J.
+  { exact (andEL (function_on alphas n J) (exists xs:set, function_on xs n G /\
+      (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) /\
+      (forall i j:set, i :e n -> j :e n -> i <> j -> apply_fun alphas i <> apply_fun alphas j) /\
+      g = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n) Halphas_pack). }
+  claim Hex_xs : exists xs:set, function_on xs n G /\
+    (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) /\
+    (forall i j:set, i :e n -> j :e n -> i <> j -> apply_fun alphas i <> apply_fun alphas j) /\
+    g = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n.
+  { exact (andER (function_on alphas n J) (exists xs:set, function_on xs n G /\
+      (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) /\
+      (forall i j:set, i :e n -> j :e n -> i <> j -> apply_fun alphas i <> apply_fun alphas j) /\
+      g = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n) Halphas_pack). }
+  apply Hex_xs. let xs. assume Hxs_pack.
+  witness (n, (alphas, xs)).
+  prove (n, (alphas, xs)) 0 :e omega /\ (n, (alphas, xs)) 0 <> 0 /\
+    function_on (((n, (alphas, xs)) 1) 0) ((n, (alphas, xs)) 0) J /\
+    function_on (((n, (alphas, xs)) 1) 1) ((n, (alphas, xs)) 0) G /\
+    (forall i:set, i :e (n, (alphas, xs)) 0 -> apply_fun (((n, (alphas, xs)) 1) 1) i :e apply_fun Gfam (apply_fun (((n, (alphas, xs)) 1) 0) i)) /\
+    (forall i j:set, i :e (n, (alphas, xs)) 0 -> j :e (n, (alphas, xs)) 0 -> i <> j -> apply_fun (((n, (alphas, xs)) 1) 0) i <> apply_fun (((n, (alphas, xs)) 1) 0) j) /\
+    g = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun (((n, (alphas, xs)) 1) 1) i)) ((n, (alphas, xs)) 0).
+  rewrite tuple_2_0_eq.
+  rewrite tuple_2_1_eq.
+  rewrite tuple_2_0_eq.
+  rewrite tuple_2_1_eq.
+  apply (and4E (function_on xs n G)
+    (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i))
+    (forall i j:set, i :e n -> j :e n -> i <> j -> apply_fun alphas i <> apply_fun alphas j)
+    (g = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+    Hxs_pack).
+  assume HxsFn Hxs_Gfam Hdist HgRep.
+  apply and7I.
+  - exact HnO.
+  - exact Hn_ne.
+  - exact HalphasFn.
+  - exact HxsFn.
+  - exact Hxs_Gfam.
+  - exact Hdist.
+  - exact HgRep.
+}
+(** The map_rep value is in H for any valid pack **)
+claim Hmap_rep_in_H : forall pack:set, forall g:set, g :e G -> rep_pred g pack ->
+  map_rep pack :e H.
+{ admit. (** TODO Alice: prove map_rep gives H element - needs nat_primrec_product_in_group from later **) }
+(** h is well-defined: apply_fun h g is in H for all g in G **)
+claim Hh_fn : function_on h G H.
+{ admit. (** TODO Alice: prove h maps G to H using Hmap_rep_in_H **) }
+(** h preserves multiplication - the hard part **)
+(** For now, admit the homomorphism property and the extension property **)
+(** We prove the existence with admits for the complex parts **)
+witness h.
+apply andI.
+- prove group_homomorphism G multG H multH h.
+  prove function_on h G H /\
+    (forall x y:set, x :e G -> y :e G ->
+      apply_fun h (apply_fun multG (x, y)) = apply_fun multH (apply_fun h x, apply_fun h y)).
+  apply andI.
+  + exact Hh_fn.
+  + admit. (** TODO Alice: prove h preserves multiplication using direct sum uniqueness **)
+- let alpha. assume Hal : alpha :e J.
+  let x. assume Hx : x :e apply_fun Gfam alpha.
+  claim HxG : x :e G.
+  { apply (and4E
+      (apply_fun Gfam alpha c= G)
+      (eG :e apply_fun Gfam alpha)
+      (forall x0 y:set, x0 :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+        apply_fun multG (x0, y) :e apply_fun Gfam alpha)
+      (forall x0:set, x0 :e apply_fun Gfam alpha -> apply_fun invG x0 :e apply_fun Gfam alpha)
+      (Hsub alpha Hal)).
+    assume HsubG _ _ _. exact (HsubG x Hx). }
+  prove apply_fun h x = apply_fun (apply_fun hfam alpha) x.
+  admit. (** TODO Alice: prove h extends hfam using uniqueness of representation **)
 Admitted.
 
 (** from S67 Lem 67.1 (line 2609 in algtop.tex): extension condition for direct sums **)
