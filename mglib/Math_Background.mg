@@ -105198,7 +105198,740 @@ apply (xm (exists x:set, x :e Bn_closed n /\ apply_fun f x = x)).
       (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n))
       vdisp.
   {
-    admit.
+    set Fcoord := graph (ordsucc n) (fun i:set =>
+      graph (Bn_closed n) (fun x:set =>
+        add_SNo (apply_fun (apply_fun f x) i)
+          (minus_SNo (apply_fun x i)))).
+    claim HtopEu :
+      topology_on (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n)).
+    {
+      apply (product_topology_full_is_topology
+        (ordsucc n)
+        (const_space_family (ordsucc n) R R_standard_topology)).
+      let j.
+      assume Hj : j :e ordsucc n.
+      rewrite (space_family_set_const_space_family
+        (ordsucc n) R R_standard_topology j Hj).
+      rewrite (space_family_topology_const_space_family
+        (ordsucc n) R R_standard_topology j Hj).
+      exact R_standard_topology_is_topology.
+    }
+    claim HBsubEu : Bn_closed n c= euclidean_space (ordsucc n).
+    {
+      exact (Sep_Subq
+        (euclidean_space (ordsucc n))
+        (fun v:set => ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v)))).
+    }
+    set inclB := graph (Bn_closed n) (fun x:set => x).
+    claim HinclBCont :
+      continuous_map (Bn_closed n) (Bn_closed_topology n)
+        (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n))
+        inclB.
+    {
+      exact (subspace_inclusion_continuous
+        (euclidean_space (ordsucc n))
+        (euclidean_topology (ordsucc n))
+        (Bn_closed n)
+        HtopEu
+        HBsubEu).
+    }
+    claim HfEuCont :
+      continuous_map (Bn_closed n) (Bn_closed_topology n)
+        (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n))
+        (compose_fun (Bn_closed n) f inclB).
+    {
+      exact (composition_continuous
+        (Bn_closed n)
+        (Bn_closed_topology n)
+        (Bn_closed n)
+        (Bn_closed_topology n)
+        (euclidean_space (ordsucc n))
+        (euclidean_topology (ordsucc n))
+        f
+        inclB
+        HfCont
+        HinclBCont).
+    }
+    claim Hcoord_val_in_R : forall i x:set, i :e ordsucc n -> x :e Bn_closed n ->
+      add_SNo (apply_fun (apply_fun f x) i) (minus_SNo (apply_fun x i)) :e R.
+    {
+      let i x.
+      assume Hi HxB.
+      claim HxEu : x :e euclidean_space (ordsucc n).
+      {
+        exact (SepE1
+          (euclidean_space (ordsucc n))
+          (fun v:set => ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v)))
+          x
+          HxB).
+      }
+      claim HfxB : apply_fun f x :e Bn_closed n.
+      {
+        exact (HfFun
+          x
+          HxB).
+      }
+      claim HfxEu : apply_fun f x :e euclidean_space (ordsucc n).
+      {
+        exact (SepE1
+          (euclidean_space (ordsucc n))
+          (fun v:set => ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v)))
+          (apply_fun f x)
+          HfxB).
+      }
+      claim HfiR : apply_fun (apply_fun f x) i :e R.
+      {
+        exact (euclidean_space_coord_in_R
+          (ordsucc n)
+          (apply_fun f x)
+          i
+          HfxEu
+          Hi).
+      }
+      claim HxiR : apply_fun x i :e R.
+      {
+        exact (euclidean_space_coord_in_R
+          (ordsucc n)
+          x
+          i
+          HxEu
+          Hi).
+      }
+      claim HmxiR : minus_SNo (apply_fun x i) :e R.
+      {
+        exact (real_minus_SNo
+          (apply_fun x i)
+          HxiR).
+      }
+      exact (real_add_SNo
+        (apply_fun (apply_fun f x) i)
+        HfiR
+        (minus_SNo (apply_fun x i))
+        HmxiR).
+    }
+    claim HFcoord_total :
+      total_function_on Fcoord (ordsucc n) (function_space (Bn_closed n) R).
+    {
+      apply (total_function_on_graph
+        (ordsucc n)
+        (function_space (Bn_closed n) R)
+        (fun i:set =>
+          graph (Bn_closed n) (fun x:set =>
+            add_SNo (apply_fun (apply_fun f x) i)
+              (minus_SNo (apply_fun x i))))).
+      let i.
+      assume Hi : i :e ordsucc n.
+      exact (graph_in_function_space
+        (Bn_closed n)
+        R
+        (fun x:set =>
+          add_SNo (apply_fun (apply_fun f x) i)
+            (minus_SNo (apply_fun x i)))
+        (fun x HxB => Hcoord_val_in_R i x Hi HxB)).
+    }
+    claim HFcoord_cont : forall i:set, i :e ordsucc n ->
+      continuous_map (Bn_closed n) (Bn_closed_topology n)
+        R R_standard_topology
+        (apply_fun Fcoord i).
+    {
+      let i.
+      assume Hi : i :e ordsucc n.
+      set evali := product_eval_map
+        (ordsucc n)
+        (const_space_family (ordsucc n) R R_standard_topology)
+        i.
+      claim Hevali_eq :
+        evali =
+        product_eval_map
+          (ordsucc n)
+          (const_space_family (ordsucc n) R R_standard_topology)
+          i.
+      {
+        reflexivity.
+      }
+      claim HeuSpaceEq :
+        euclidean_space (ordsucc n) =
+        product_space (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology).
+      {
+        reflexivity.
+      }
+      claim HevaliGraph :
+        evali =
+        graph
+          (product_space (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology))
+          (fun z:set => apply_fun z i).
+      {
+        reflexivity.
+      }
+      claim HfamTop :
+        forall j:set, j :e ordsucc n ->
+          topology_on
+            (space_family_set (const_space_family (ordsucc n) R R_standard_topology) j)
+            (space_family_topology (const_space_family (ordsucc n) R R_standard_topology) j).
+      {
+        let j.
+        assume Hj : j :e ordsucc n.
+        rewrite (space_family_set_const_space_family
+          (ordsucc n) R R_standard_topology j Hj).
+        rewrite (space_family_topology_const_space_family
+          (ordsucc n) R R_standard_topology j Hj).
+        exact R_standard_topology_is_topology.
+      }
+      claim HevalCont :
+        continuous_map
+          (euclidean_space (ordsucc n))
+          (euclidean_topology (ordsucc n))
+          (space_family_set (const_space_family (ordsucc n) R R_standard_topology) i)
+          (space_family_topology (const_space_family (ordsucc n) R R_standard_topology) i)
+          evali.
+      {
+        exact (product_eval_map_continuous
+          (ordsucc n)
+          (const_space_family (ordsucc n) R R_standard_topology)
+          i
+          HfamTop
+          Hi).
+      }
+      claim HYsub :
+        space_family_set (const_space_family (ordsucc n) R R_standard_topology) i c= R.
+      {
+        let y.
+        assume Hy :
+          y :e space_family_set (const_space_family (ordsucc n) R R_standard_topology) i.
+        rewrite <- (space_family_set_const_space_family
+          (ordsucc n) R R_standard_topology i Hi).
+        exact Hy.
+      }
+      claim HTyEq :
+        space_family_topology (const_space_family (ordsucc n) R R_standard_topology) i =
+        subspace_topology
+          R
+          R_standard_topology
+          (space_family_set (const_space_family (ordsucc n) R R_standard_topology) i).
+      {
+        rewrite (space_family_set_const_space_family
+          (ordsucc n) R R_standard_topology i Hi).
+        rewrite (space_family_topology_const_space_family
+          (ordsucc n) R R_standard_topology i Hi).
+        rewrite (subspace_topology_whole
+          R
+          R_standard_topology
+          R_standard_topology_is_topology).
+        reflexivity.
+      }
+      claim HevalContR :
+        continuous_map
+          (euclidean_space (ordsucc n))
+          (euclidean_topology (ordsucc n))
+          R
+          R_standard_topology
+          evali.
+      {
+        exact (continuous_map_range_expand
+          (euclidean_space (ordsucc n))
+          (euclidean_topology (ordsucc n))
+          (space_family_set (const_space_family (ordsucc n) R R_standard_topology) i)
+          (space_family_topology (const_space_family (ordsucc n) R R_standard_topology) i)
+          R
+          R_standard_topology
+          evali
+          HevalCont
+          HYsub
+          R_standard_topology_is_topology
+          HTyEq).
+      }
+      set fcoord := compose_fun
+        (Bn_closed n)
+        (compose_fun (Bn_closed n) f inclB)
+        evali.
+      set xcoord := compose_fun
+        (Bn_closed n)
+        inclB
+        evali.
+      claim HfcoordCont :
+        continuous_map (Bn_closed n) (Bn_closed_topology n) R R_standard_topology fcoord.
+      {
+        exact (composition_continuous
+          (Bn_closed n)
+          (Bn_closed_topology n)
+          (euclidean_space (ordsucc n))
+          (euclidean_topology (ordsucc n))
+          R
+          R_standard_topology
+          (compose_fun (Bn_closed n) f inclB)
+          evali
+          HfEuCont
+          HevalContR).
+      }
+      claim HxcoordCont :
+        continuous_map (Bn_closed n) (Bn_closed_topology n) R R_standard_topology xcoord.
+      {
+        exact (composition_continuous
+          (Bn_closed n)
+          (Bn_closed_topology n)
+          (euclidean_space (ordsucc n))
+          (euclidean_topology (ordsucc n))
+          R
+          R_standard_topology
+          inclB
+          evali
+          HinclBCont
+          HevalContR).
+      }
+      set sumcoord := compose_fun
+        (Bn_closed n)
+        (pair_map (Bn_closed n) fcoord (compose_fun (Bn_closed n) xcoord neg_fun))
+        add_fun_R.
+      claim HnegxCont :
+        continuous_map (Bn_closed n) (Bn_closed_topology n) R R_standard_topology
+          (compose_fun (Bn_closed n) xcoord neg_fun).
+      {
+        exact (composition_continuous
+          (Bn_closed n)
+          (Bn_closed_topology n)
+          R
+          R_standard_topology
+          R
+          R_standard_topology
+          xcoord
+          neg_fun
+          HxcoordCont
+          neg_fun_continuous).
+      }
+      claim HsumCont :
+        continuous_map (Bn_closed n) (Bn_closed_topology n) R R_standard_topology sumcoord.
+      {
+        exact (add_two_continuous_R
+          (Bn_closed n)
+          (Bn_closed_topology n)
+          fcoord
+          (compose_fun (Bn_closed n) xcoord neg_fun)
+          HtopB
+          HfcoordCont
+          HnegxCont).
+      }
+      claim HcoordGraphFun :
+        function_on
+          (graph (Bn_closed n) (fun x:set =>
+            add_SNo (apply_fun (apply_fun f x) i)
+              (minus_SNo (apply_fun x i))))
+          (Bn_closed n)
+          R.
+      {
+        exact (function_on_of_function_space
+          (graph (Bn_closed n) (fun x:set =>
+            add_SNo (apply_fun (apply_fun f x) i)
+              (minus_SNo (apply_fun x i))))
+          (Bn_closed n)
+          R
+          (graph_in_function_space
+            (Bn_closed n)
+            R
+            (fun x:set =>
+              add_SNo (apply_fun (apply_fun f x) i)
+                (minus_SNo (apply_fun x i)))
+            (fun x Hx => Hcoord_val_in_R i x Hi Hx))).
+      }
+      claim HsumEqOn :
+        forall x:set, x :e Bn_closed n ->
+          apply_fun sumcoord x =
+          apply_fun
+            (graph (Bn_closed n) (fun x0:set =>
+              add_SNo (apply_fun (apply_fun f x0) i)
+                (minus_SNo (apply_fun x0 i))))
+            x.
+      {
+        let x.
+        assume Hx : x :e Bn_closed n.
+        claim HfcoordR : apply_fun fcoord x :e R.
+        {
+          exact (continuous_map_function_on
+            (Bn_closed n)
+            (Bn_closed_topology n)
+            R
+            R_standard_topology
+            fcoord
+            HfcoordCont
+            x
+            Hx).
+        }
+        claim HxcoordR : apply_fun xcoord x :e R.
+        {
+          exact (continuous_map_function_on
+            (Bn_closed n)
+            (Bn_closed_topology n)
+            R
+            R_standard_topology
+            xcoord
+            HxcoordCont
+            x
+            Hx).
+        }
+        claim HsumRaw :
+          apply_fun sumcoord x =
+          add_SNo (apply_fun fcoord x) (minus_SNo (apply_fun xcoord x)).
+        {
+          exact (add_of_pair_map_neg_apply
+            (Bn_closed n)
+            fcoord
+            xcoord
+            x
+            Hx
+            HfcoordR
+            HxcoordR).
+        }
+        claim HfcoordEval : apply_fun fcoord x = apply_fun (apply_fun f x) i.
+        {
+          rewrite (compose_fun_apply
+            (Bn_closed n)
+            (compose_fun (Bn_closed n) f inclB)
+            evali
+            x
+            Hx).
+          rewrite (compose_fun_apply
+            (Bn_closed n)
+            f
+            inclB
+            x
+            Hx).
+          claim HfxB : apply_fun f x :e Bn_closed n.
+          {
+            exact (HfFun
+              x
+              Hx).
+          }
+          rewrite (apply_fun_graph
+            (Bn_closed n)
+            (fun z:set => z)
+            (apply_fun f x)
+            HfxB).
+          rewrite HevaliGraph.
+          claim HfxEu : apply_fun f x :e euclidean_space (ordsucc n).
+          {
+            exact (SepE1
+              (euclidean_space (ordsucc n))
+              (fun v:set => ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v)))
+              (apply_fun f x)
+              HfxB).
+          }
+          claim HfxProd :
+            apply_fun f x :e product_space (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology).
+          {
+            rewrite <- HeuSpaceEq.
+            exact HfxEu.
+          }
+          rewrite (apply_fun_graph
+            (product_space (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology))
+            (fun z:set => apply_fun z i)
+            (apply_fun f x)
+            HfxProd).
+          reflexivity.
+        }
+        claim HxcoordEval : apply_fun xcoord x = apply_fun x i.
+        {
+          rewrite (compose_fun_apply
+            (Bn_closed n)
+            inclB
+            evali
+            x
+            Hx).
+          rewrite (apply_fun_graph
+            (Bn_closed n)
+            (fun z:set => z)
+            x
+            Hx).
+          rewrite HevaliGraph.
+          claim HxEu : x :e euclidean_space (ordsucc n).
+          {
+            exact (SepE1
+              (euclidean_space (ordsucc n))
+              (fun v:set => ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v)))
+              x
+              Hx).
+          }
+          claim HxProd :
+            x :e product_space (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology).
+          {
+            rewrite <- HeuSpaceEq.
+            exact HxEu.
+          }
+          rewrite (apply_fun_graph
+            (product_space (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology))
+            (fun z:set => apply_fun z i)
+            x
+            HxProd).
+          reflexivity.
+        }
+        claim HsumExpr :
+          apply_fun sumcoord x =
+          add_SNo (apply_fun (apply_fun f x) i)
+            (minus_SNo (apply_fun x i)).
+        {
+          rewrite HsumRaw.
+          rewrite HfcoordEval.
+          rewrite HxcoordEval.
+          reflexivity.
+        }
+        claim HgraphVal :
+          apply_fun
+            (graph (Bn_closed n) (fun x0:set =>
+              add_SNo (apply_fun (apply_fun f x0) i)
+                (minus_SNo (apply_fun x0 i))))
+            x
+          =
+          add_SNo (apply_fun (apply_fun f x) i)
+            (minus_SNo (apply_fun x i)).
+        {
+          exact (apply_fun_graph
+            (Bn_closed n)
+            (fun x0:set =>
+              add_SNo (apply_fun (apply_fun f x0) i)
+                (minus_SNo (apply_fun x0 i)))
+            x
+            Hx).
+        }
+        claim HgraphValSym :
+          add_SNo (apply_fun (apply_fun f x) i)
+            (minus_SNo (apply_fun x i))
+          =
+          apply_fun
+            (graph (Bn_closed n) (fun x0:set =>
+              add_SNo (apply_fun (apply_fun f x0) i)
+                (minus_SNo (apply_fun x0 i))))
+            x.
+        {
+          symmetry.
+          exact HgraphVal.
+        }
+        exact (eq_i_tra
+          (apply_fun sumcoord x)
+          (add_SNo (apply_fun (apply_fun f x) i)
+            (minus_SNo (apply_fun x i)))
+          (apply_fun
+            (graph (Bn_closed n) (fun x0:set =>
+              add_SNo (apply_fun (apply_fun f x0) i)
+                (minus_SNo (apply_fun x0 i))))
+            x)
+          HsumExpr
+          HgraphValSym).
+      }
+      rewrite (apply_fun_graph
+        (ordsucc n)
+        (fun i0:set =>
+          graph (Bn_closed n) (fun x:set =>
+            add_SNo (apply_fun (apply_fun f x) i0)
+              (minus_SNo (apply_fun x i0))))
+        i
+        Hi).
+      exact (continuous_map_congr_on
+        (Bn_closed n)
+        (Bn_closed_topology n)
+        R
+        R_standard_topology
+        sumcoord
+        (graph (Bn_closed n) (fun x:set =>
+          add_SNo (apply_fun (apply_fun f x) i)
+            (minus_SNo (apply_fun x i))))
+        HsumCont
+        HcoordGraphFun
+        HsumEqOn).
+    }
+    claim HJnonempty : ordsucc n <> Empty.
+    {
+      assume Hempty.
+      claim H0in : 0 :e ordsucc n.
+      {
+        exact (nat_0_in_ordsucc
+          n
+          (omega_nat_p n Hn_om)).
+      }
+      claim H0inEmpty : 0 :e Empty.
+      {
+        exact (mem_eqR
+          0
+          (ordsucc n)
+          Empty
+          Hempty
+          H0in).
+      }
+      exact (EmptyE
+        0
+        H0inEmpty).
+    }
+    claim HdiagContPR :
+      continuous_map (Bn_closed n) (Bn_closed_topology n)
+        (power_real (ordsucc n))
+        (product_topology_full (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology))
+        (diagonal_map (Bn_closed n) Fcoord (ordsucc n)).
+    {
+      exact (diagonal_map_continuous_power_real
+        (Bn_closed n)
+        (Bn_closed_topology n)
+        Fcoord
+        (ordsucc n)
+        HtopB
+        HJnonempty
+        HFcoord_total
+        HFcoord_cont).
+    }
+    claim HdiagFun :
+      function_on (diagonal_map (Bn_closed n) Fcoord (ordsucc n))
+        (Bn_closed n)
+        (power_real (ordsucc n)).
+    {
+      exact (diagonal_map_function_on_power_real
+        (Bn_closed n)
+        Fcoord
+        (ordsucc n)
+        HFcoord_total).
+    }
+    claim HeuEq :
+      power_real (ordsucc n) = euclidean_space (ordsucc n).
+    {
+      reflexivity.
+    }
+    claim HeuTopEq :
+      product_topology_full (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology) =
+      euclidean_topology (ordsucc n).
+    {
+      reflexivity.
+    }
+    claim HdiagContEu :
+      continuous_map (Bn_closed n) (Bn_closed_topology n)
+        (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n))
+        (diagonal_map (Bn_closed n) Fcoord (ordsucc n)).
+    {
+      rewrite <- HeuEq.
+      rewrite <- HeuTopEq.
+      exact HdiagContPR.
+    }
+    claim HdiagEq : forall x:set, x :e Bn_closed n ->
+      apply_fun (diagonal_map (Bn_closed n) Fcoord (ordsucc n)) x = apply_fun vdisp x.
+    {
+      let x.
+      assume Hx : x :e Bn_closed n.
+      claim HdiagxPR :
+        apply_fun (diagonal_map (Bn_closed n) Fcoord (ordsucc n)) x :e power_real (ordsucc n).
+      {
+        exact (HdiagFun
+          x
+          Hx).
+      }
+      claim HvdispxPR : apply_fun vdisp x :e power_real (ordsucc n).
+      {
+        rewrite (apply_fun_graph
+          (Bn_closed n)
+          (fun x0:set =>
+            graph (ordsucc n) (fun i0:set =>
+              add_SNo (apply_fun (apply_fun f x0) i0)
+                (minus_SNo (apply_fun x0 i0))))
+          x
+          Hx).
+        exact (graph_to_R_in_power_real
+          (ordsucc n)
+          (fun i0:set =>
+            add_SNo (apply_fun (apply_fun f x) i0)
+              (minus_SNo (apply_fun x i0)))
+          (fun i0 Hi0 => Hcoord_val_in_R i0 x Hi0 Hx)).
+      }
+      apply (power_real_ext
+        (ordsucc n)
+        (apply_fun (diagonal_map (Bn_closed n) Fcoord (ordsucc n)) x)
+        (apply_fun vdisp x)).
+      - exact HdiagxPR.
+      - exact HvdispxPR.
+      - let i.
+        assume Hi.
+        claim Hlhs :
+          apply_fun (apply_fun (diagonal_map (Bn_closed n) Fcoord (ordsucc n)) x) i =
+          add_SNo (apply_fun (apply_fun f x) i)
+            (minus_SNo (apply_fun x i)).
+        {
+          rewrite (diagonal_map_coord_apply
+            (Bn_closed n)
+            Fcoord
+            (ordsucc n)
+            x
+            i
+            Hx
+            Hi).
+          rewrite (apply_fun_graph
+            (ordsucc n)
+            (fun i0:set =>
+              graph (Bn_closed n) (fun x0:set =>
+                add_SNo (apply_fun (apply_fun f x0) i0)
+                  (minus_SNo (apply_fun x0 i0))))
+            i
+            Hi).
+          rewrite (apply_fun_graph
+            (Bn_closed n)
+            (fun x0:set =>
+              add_SNo (apply_fun (apply_fun f x0) i)
+                (minus_SNo (apply_fun x0 i)))
+            x
+            Hx).
+          reflexivity.
+        }
+        claim Hrhs :
+          apply_fun (apply_fun vdisp x) i =
+          add_SNo (apply_fun (apply_fun f x) i)
+            (minus_SNo (apply_fun x i)).
+        {
+          rewrite (apply_fun_graph
+            (Bn_closed n)
+            (fun x0:set =>
+              graph (ordsucc n) (fun i0:set =>
+                add_SNo (apply_fun (apply_fun f x0) i0)
+                  (minus_SNo (apply_fun x0 i0))))
+            x
+            Hx).
+          rewrite (apply_fun_graph
+            (ordsucc n)
+            (fun i0:set =>
+              add_SNo (apply_fun (apply_fun f x) i0)
+                (minus_SNo (apply_fun x i0)))
+            i
+            Hi).
+          reflexivity.
+        }
+        claim HrhsSym :
+          add_SNo (apply_fun (apply_fun f x) i)
+            (minus_SNo (apply_fun x i)) =
+          apply_fun (apply_fun vdisp x) i.
+        {
+          symmetry.
+          exact Hrhs.
+        }
+        exact (eq_i_tra
+          (apply_fun (apply_fun (diagonal_map (Bn_closed n) Fcoord (ordsucc n)) x) i)
+          (add_SNo (apply_fun (apply_fun f x) i)
+            (minus_SNo (apply_fun x i)))
+          (apply_fun (apply_fun vdisp x) i)
+          Hlhs
+          HrhsSym).
+    }
+    claim HvdispFun : function_on vdisp (Bn_closed n) (euclidean_space (ordsucc n)).
+    {
+      let x.
+      assume Hx : x :e Bn_closed n.
+      rewrite <- (HdiagEq
+        x
+        Hx).
+      rewrite <- HeuEq.
+      exact (HdiagFun
+        x
+        Hx).
+    }
+    exact (continuous_map_congr_on
+      (Bn_closed n)
+      (Bn_closed_topology n)
+      (euclidean_space (ordsucc n))
+      (euclidean_topology (ordsucc n))
+      (diagonal_map (Bn_closed n) Fcoord (ordsucc n))
+      vdisp
+      HdiagContEu
+      HvdispFun
+      HdiagEq).
   }
   claim HvdispNonzero :
     forall x:set, x :e Bn_closed n ->
