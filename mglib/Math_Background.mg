@@ -104575,7 +104575,249 @@ Theorem ex55_1_retract_B2_fixed_point : forall A:set,
     continuous_map A (subspace_topology B2 B2_topology A)
                    A (subspace_topology B2 B2_topology A) f ->
     exists x:set, x :e A /\ apply_fun f x = x.
-admit.
+let A.
+assume HAsub Hretr.
+let f.
+assume HfCont.
+claim HfFunA : function_on f A A.
+{
+  exact (continuous_map_function_on
+    A
+    (subspace_topology B2 B2_topology A)
+    A
+    (subspace_topology B2 B2_topology A)
+    f
+    HfCont).
+}
+apply (andER
+  (A c= B2)
+  (exists r:set,
+    function_on r B2 B2 /\
+    continuous_map B2 B2_topology B2 B2_topology r /\
+    (forall x:set, x :e B2 -> apply_fun r x :e A) /\
+    (forall x:set, x :e A -> apply_fun r x = x))
+  Hretr).
+let r.
+assume HrPack.
+claim HrFunB2 : function_on r B2 B2.
+{
+  claim Htmp1 :
+    ((function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r) /\
+      (forall x:set, x :e B2 -> apply_fun r x :e A)).
+  {
+    exact (andEL
+      ((function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r) /\
+        (forall x:set, x :e B2 -> apply_fun r x :e A))
+      (forall x:set, x :e A -> apply_fun r x = x)
+      HrPack).
+  }
+  claim Htmp2 :
+    (function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r).
+  {
+    exact (andEL
+      (function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r)
+      (forall x:set, x :e B2 -> apply_fun r x :e A)
+      Htmp1).
+  }
+  exact (andEL
+    (function_on r B2 B2)
+    (continuous_map B2 B2_topology B2 B2_topology r)
+    Htmp2).
+}
+claim HrContB2 : continuous_map B2 B2_topology B2 B2_topology r.
+{
+  claim Htmp1 :
+    ((function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r) /\
+      (forall x:set, x :e B2 -> apply_fun r x :e A)).
+  {
+    exact (andEL
+      ((function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r) /\
+        (forall x:set, x :e B2 -> apply_fun r x :e A))
+      (forall x:set, x :e A -> apply_fun r x = x)
+      HrPack).
+  }
+  claim Htmp2 :
+    (function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r).
+  {
+    exact (andEL
+      (function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r)
+      (forall x:set, x :e B2 -> apply_fun r x :e A)
+      Htmp1).
+  }
+  exact (andER
+    (function_on r B2 B2)
+    (continuous_map B2 B2_topology B2 B2_topology r)
+    Htmp2).
+}
+claim HrIntoA : forall x:set, x :e B2 -> apply_fun r x :e A.
+{
+  exact (andER
+    (function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r)
+    (forall x:set, x :e B2 -> apply_fun r x :e A)
+    (andEL
+      ((function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r) /\
+        (forall x:set, x :e B2 -> apply_fun r x :e A))
+      (forall x:set, x :e A -> apply_fun r x = x)
+      HrPack)).
+}
+claim HrFixA : forall x:set, x :e A -> apply_fun r x = x.
+{
+  exact (andER
+    ((function_on r B2 B2 /\ continuous_map B2 B2_topology B2 B2_topology r) /\
+      (forall x:set, x :e B2 -> apply_fun r x :e A))
+    (forall x:set, x :e A -> apply_fun r x = x)
+    HrPack).
+}
+claim HrContA :
+  continuous_map B2 B2_topology A (subspace_topology B2 B2_topology A) r.
+{
+  exact (continuous_map_range_restrict
+    B2
+    B2_topology
+    B2
+    B2_topology
+    r
+    A
+    HrContB2
+    HAsub
+    HrIntoA).
+}
+claim HgContA :
+  continuous_map B2 B2_topology A (subspace_topology B2 B2_topology A)
+    (compose_fun B2 r f).
+{
+  exact (composition_continuous
+    B2
+    B2_topology
+    A
+    (subspace_topology B2 B2_topology A)
+    A
+    (subspace_topology B2 B2_topology A)
+    r
+    f
+    HrContA
+    HfCont).
+}
+claim HtopB2 : topology_on B2 B2_topology.
+{
+  exact (continuous_map_topology_dom
+    B2
+    B2_topology
+    B2
+    B2_topology
+    r
+    HrContB2).
+}
+claim HgContB2 :
+  continuous_map B2 B2_topology B2 B2_topology
+    (compose_fun B2 r f).
+{
+  claim HTyEq :
+    subspace_topology B2 B2_topology A =
+    subspace_topology B2 B2_topology A.
+  {
+    reflexivity.
+  }
+  exact (continuous_map_range_expand
+    B2
+    B2_topology
+    A
+    (subspace_topology B2 B2_topology A)
+    B2
+    B2_topology
+    (compose_fun B2 r f)
+    HgContA
+    HAsub
+    HtopB2
+    HTyEq).
+}
+claim HfixComp :
+  exists x:set, x :e B2 /\ apply_fun (compose_fun B2 r f) x = x.
+{
+  exact (thm55_6_brouwer_fixed_point_disc
+    (compose_fun B2 r f)
+    HgContB2).
+}
+apply HfixComp.
+let x.
+assume HxPack.
+claim HxB2 : x :e B2.
+{
+  exact (andEL
+    (x :e B2)
+    (apply_fun (compose_fun B2 r f) x = x)
+    HxPack).
+}
+claim HcompEq : apply_fun (compose_fun B2 r f) x = x.
+{
+  exact (andER
+    (x :e B2)
+    (apply_fun (compose_fun B2 r f) x = x)
+    HxPack).
+}
+claim HrxA : apply_fun r x :e A.
+{
+  exact (HrIntoA
+    x
+    HxB2).
+}
+claim HfRxEqX : apply_fun f (apply_fun r x) = x.
+{
+  claim HcompApply :
+    apply_fun (compose_fun B2 r f) x = apply_fun f (apply_fun r x).
+  {
+    exact (compose_fun_apply
+      B2
+      r
+      f
+      x
+      HxB2).
+  }
+  rewrite <- HcompApply.
+  exact HcompEq.
+}
+claim HgFunA : function_on (compose_fun B2 r f) B2 A.
+{
+  exact (continuous_map_function_on
+    B2
+    B2_topology
+    A
+    (subspace_topology B2 B2_topology A)
+    (compose_fun B2 r f)
+    HgContA).
+}
+claim HgxA : apply_fun (compose_fun B2 r f) x :e A.
+{
+  exact (HgFunA
+    x
+    HxB2).
+}
+claim HxA : x :e A.
+{
+  rewrite <- HcompEq.
+  exact HgxA.
+}
+claim HrXEq : apply_fun r x = x.
+{
+  exact (HrFixA
+    x
+    HxA).
+}
+claim HfxEq : apply_fun f x = x.
+{
+  claim HfRxEqRx :
+    apply_fun f (apply_fun r x) = apply_fun r x.
+  {
+    rewrite HrXEq at 2.
+    exact HfRxEqX.
+  }
+  rewrite <- HrXEq at 1 2.
+  exact HfRxEqRx.
+}
+witness x.
+apply andI.
+- exact HxA.
+- exact HfxEq.
 Admitted.
 
 (** from S55 Exercise 2 (line 1043 in algtop.tex) **)
