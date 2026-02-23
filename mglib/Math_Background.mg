@@ -61151,6 +61151,1074 @@ apply andI.
   exact (EmptyE (apply_fun ft2 t) Hft2Empty False).
 Qed.
 
+(** Infrastructure: general-domain versions of local equality/inequality for lifts **)
+
+(** If two lifts agree at a point, they agree on a neighborhood of that point (general domain). **)
+(** Proven Charlie **)
+Theorem covering_map_lifts_equal_on_local_neighborhood_general :
+  forall E Te B Tb p X Tx f ft1 ft2 x0:set,
+  covering_map E Te B Tb p ->
+  lifting_of X Tx E Te B Tb p f ft1 ->
+  lifting_of X Tx E Te B Tb p f ft2 ->
+  x0 :e X ->
+  apply_fun ft1 x0 = apply_fun ft2 x0 ->
+  exists N:set, N :e Tx /\ x0 :e N /\
+    forall x:set, x :e N -> apply_fun ft1 x = apply_fun ft2 x.
+let E Te B Tb p X Tx f ft1 ft2 x0.
+assume Hcov Hlift1 Hlift2 Hx0 Heq0.
+claim Hcontp : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    (andEL
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+      Hcov)).
+}
+claim HtopE : topology_on E Te.
+{
+  exact (continuous_map_topology_dom E Te B Tb p Hcontp).
+}
+claim Hlift1Pack :
+  continuous_map X Tx E Te ft1 /\
+  (forall x:set, x :e X ->
+    apply_fun p (apply_fun ft1 x) = apply_fun f x).
+{
+  exact Hlift1.
+}
+claim Hlift2Pack :
+  continuous_map X Tx E Te ft2 /\
+  (forall x:set, x :e X ->
+    apply_fun p (apply_fun ft2 x) = apply_fun f x).
+{
+  exact Hlift2.
+}
+claim Hft1Cont : continuous_map X Tx E Te ft1.
+{
+  exact (andEL
+    (continuous_map X Tx E Te ft1)
+    (forall x:set, x :e X -> apply_fun p (apply_fun ft1 x) = apply_fun f x)
+    Hlift1Pack).
+}
+claim Hft2Cont : continuous_map X Tx E Te ft2.
+{
+  exact (andEL
+    (continuous_map X Tx E Te ft2)
+    (forall x:set, x :e X -> apply_fun p (apply_fun ft2 x) = apply_fun f x)
+    Hlift2Pack).
+}
+claim Hcomm1 : forall x:set, x :e X -> apply_fun p (apply_fun ft1 x) = apply_fun f x.
+{
+  exact (andER
+    (continuous_map X Tx E Te ft1)
+    (forall x:set, x :e X -> apply_fun p (apply_fun ft1 x) = apply_fun f x)
+    Hlift1Pack).
+}
+claim Hcomm2 : forall x:set, x :e X -> apply_fun p (apply_fun ft2 x) = apply_fun f x.
+{
+  exact (andER
+    (continuous_map X Tx E Te ft2)
+    (forall x:set, x :e X -> apply_fun p (apply_fun ft2 x) = apply_fun f x)
+    Hlift2Pack).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (continuous_map_topology_dom X Tx E Te ft1 Hft1Cont).
+}
+claim Hft1Fun : function_on ft1 X E.
+{
+  exact (continuous_map_function_on X Tx E Te ft1 Hft1Cont).
+}
+claim He0E : apply_fun ft1 x0 :e E.
+{
+  exact (Hft1Fun x0 Hx0).
+}
+claim Hchart :
+  exists Ue slices Ux:set,
+    (Ux :e Te /\ apply_fun ft1 x0 :e Ux /\ Ue :e Tb /\
+      homeomorphism Ux (subspace_topology E Te Ux) Ue (subspace_topology B Tb Ue)
+        (graph Ux (fun z:set => apply_fun p z))) /\
+    (slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p Ue /\ Ux :e slices /\
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) Ue (subspace_topology B Tb Ue)
+          (graph V (fun z:set => apply_fun p z)))).
+{
+  exact (covering_map_local_homeomorphism_with_slices
+    E Te B Tb p (apply_fun ft1 x0) Hcov He0E).
+}
+apply Hchart.
+let Ue.
+assume HUePack.
+apply HUePack.
+let slices.
+assume HsPack.
+apply HsPack.
+let Ux.
+assume Hall.
+claim Hmain :
+  Ux :e Te /\ apply_fun ft1 x0 :e Ux /\ Ue :e Tb /\
+    homeomorphism Ux (subspace_topology E Te Ux) Ue (subspace_topology B Tb Ue)
+      (graph Ux (fun z:set => apply_fun p z)).
+{
+  exact (andEL
+    (Ux :e Te /\ apply_fun ft1 x0 :e Ux /\ Ue :e Tb /\
+      homeomorphism Ux (subspace_topology E Te Ux) Ue (subspace_topology B Tb Ue)
+        (graph Ux (fun z:set => apply_fun p z)))
+    (slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p Ue /\ Ux :e slices /\
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) Ue (subspace_topology B Tb Ue)
+          (graph V (fun z:set => apply_fun p z))))
+    Hall).
+}
+claim HUxOpen : Ux :e Te.
+{
+  exact (andEL
+    (Ux :e Te)
+    (apply_fun ft1 x0 :e Ux)
+    (andEL
+      (Ux :e Te /\ apply_fun ft1 x0 :e Ux)
+      (Ue :e Tb)
+      (andEL
+        ((Ux :e Te /\ apply_fun ft1 x0 :e Ux) /\ Ue :e Tb)
+        (homeomorphism Ux (subspace_topology E Te Ux) Ue (subspace_topology B Tb Ue)
+          (graph Ux (fun z:set => apply_fun p z)))
+        Hmain))).
+}
+claim Hft1x0Ux : apply_fun ft1 x0 :e Ux.
+{
+  exact (andER
+    (Ux :e Te)
+    (apply_fun ft1 x0 :e Ux)
+    (andEL
+      (Ux :e Te /\ apply_fun ft1 x0 :e Ux)
+      (Ue :e Tb)
+      (andEL
+        ((Ux :e Te /\ apply_fun ft1 x0 :e Ux) /\ Ue :e Tb)
+        (homeomorphism Ux (subspace_topology E Te Ux) Ue (subspace_topology B Tb Ue)
+          (graph Ux (fun z:set => apply_fun p z)))
+        Hmain))).
+}
+claim HhomeUx :
+  homeomorphism Ux (subspace_topology E Te Ux) Ue (subspace_topology B Tb Ue)
+    (graph Ux (fun z:set => apply_fun p z)).
+{
+  exact (andER
+    ((Ux :e Te /\ apply_fun ft1 x0 :e Ux) /\ Ue :e Tb)
+    (homeomorphism Ux (subspace_topology E Te Ux) Ue (subspace_topology B Tb Ue)
+      (graph Ux (fun z:set => apply_fun p z)))
+    Hmain).
+}
+claim Hft2x0Ux : apply_fun ft2 x0 :e Ux.
+{
+  rewrite <- Heq0.
+  exact Hft1x0Ux.
+}
+claim Hloc1 :
+  exists N1:set, N1 :e Tx /\ x0 :e N1 /\
+    forall x:set, x :e N1 -> apply_fun ft1 x :e Ux.
+{
+  exact (continuous_local_neighborhood
+    X Tx E Te ft1
+    HtopX HtopE Hft1Fun
+    (fun V:set => continuous_map_preimage X Tx E Te ft1 Hft1Cont V)
+    x0
+    Hx0
+    Ux
+    HUxOpen
+    Hft1x0Ux).
+}
+apply Hloc1.
+let N1.
+assume HN1Pack.
+claim HN1Open : N1 :e Tx.
+{
+  exact (andEL
+    (N1 :e Tx)
+    (x0 :e N1)
+    (andEL
+      (N1 :e Tx /\ x0 :e N1)
+      (forall x:set, x :e N1 -> apply_fun ft1 x :e Ux)
+      HN1Pack)).
+}
+claim Hx0N1 : x0 :e N1.
+{
+  exact (andER
+    (N1 :e Tx)
+    (x0 :e N1)
+    (andEL
+      (N1 :e Tx /\ x0 :e N1)
+      (forall x:set, x :e N1 -> apply_fun ft1 x :e Ux)
+      HN1Pack)).
+}
+claim HN1IntoUx : forall x:set, x :e N1 -> apply_fun ft1 x :e Ux.
+{
+  exact (andER
+    (N1 :e Tx /\ x0 :e N1)
+    (forall x:set, x :e N1 -> apply_fun ft1 x :e Ux)
+    HN1Pack).
+}
+claim Hft2Fun : function_on ft2 X E.
+{
+  exact (continuous_map_function_on X Tx E Te ft2 Hft2Cont).
+}
+claim Hloc2 :
+  exists N2:set, N2 :e Tx /\ x0 :e N2 /\
+    forall x:set, x :e N2 -> apply_fun ft2 x :e Ux.
+{
+  exact (continuous_local_neighborhood
+    X Tx E Te ft2
+    HtopX HtopE Hft2Fun
+    (fun V:set => continuous_map_preimage X Tx E Te ft2 Hft2Cont V)
+    x0
+    Hx0
+    Ux
+    HUxOpen
+    Hft2x0Ux).
+}
+apply Hloc2.
+let N2.
+assume HN2Pack.
+claim HN2Open : N2 :e Tx.
+{
+  exact (andEL
+    (N2 :e Tx)
+    (x0 :e N2)
+    (andEL
+      (N2 :e Tx /\ x0 :e N2)
+      (forall x:set, x :e N2 -> apply_fun ft2 x :e Ux)
+      HN2Pack)).
+}
+claim Hx0N2 : x0 :e N2.
+{
+  exact (andER
+    (N2 :e Tx)
+    (x0 :e N2)
+    (andEL
+      (N2 :e Tx /\ x0 :e N2)
+      (forall x:set, x :e N2 -> apply_fun ft2 x :e Ux)
+      HN2Pack)).
+}
+claim HN2IntoUx : forall x:set, x :e N2 -> apply_fun ft2 x :e Ux.
+{
+  exact (andER
+    (N2 :e Tx /\ x0 :e N2)
+    (forall x:set, x :e N2 -> apply_fun ft2 x :e Ux)
+    HN2Pack).
+}
+set N := N1 :/\: N2.
+witness N.
+apply andI.
+- apply andI.
+  + exact (topology_binintersect_closed X Tx N1 N2 HtopX HN1Open HN2Open).
+  + exact (binintersectI N1 N2 x0 Hx0N1 Hx0N2).
+- let x.
+  assume HxN.
+  claim HxN1 : x :e N1.
+  {
+    exact (binintersectE1 N1 N2 x HxN).
+  }
+  claim HxN2 : x :e N2.
+  {
+    exact (binintersectE2 N1 N2 x HxN).
+  }
+  claim Hft1Ux : apply_fun ft1 x :e Ux.
+  {
+    exact (HN1IntoUx x HxN1).
+  }
+  claim Hft2Ux : apply_fun ft2 x :e Ux.
+  {
+    exact (HN2IntoUx x HxN2).
+  }
+  claim HxX : x :e X.
+  {
+    exact (topology_elem_subset
+      X
+      Tx
+      N
+      HtopX
+      (topology_binintersect_closed X Tx N1 N2 HtopX HN1Open HN2Open)
+      x
+      HxN).
+  }
+  claim Hpt1Eqf : apply_fun p (apply_fun ft1 x) = apply_fun f x.
+  {
+    exact (Hcomm1 x HxX).
+  }
+  claim Hpt2Eqf : apply_fun p (apply_fun ft2 x) = apply_fun f x.
+  {
+    exact (Hcomm2 x HxX).
+  }
+  claim Hpt1Eqpt2 : apply_fun p (apply_fun ft1 x) = apply_fun p (apply_fun ft2 x).
+  {
+    rewrite Hpt1Eqf.
+    rewrite Hpt2Eqf.
+    reflexivity.
+  }
+  claim HcontGraph :
+    continuous_map Ux (subspace_topology E Te Ux) Ue (subspace_topology B Tb Ue)
+      (graph Ux (fun z:set => apply_fun p z)).
+  {
+    exact (homeomorphism_continuous
+      Ux (subspace_topology E Te Ux)
+      Ue (subspace_topology B Tb Ue)
+      (graph Ux (fun z:set => apply_fun p z))
+      HhomeUx).
+  }
+  claim HfunGraph :
+    function_on (graph Ux (fun z:set => apply_fun p z)) Ux Ue.
+  {
+    exact (continuous_map_function_on
+      Ux (subspace_topology E Te Ux)
+      Ue (subspace_topology B Tb Ue)
+      (graph Ux (fun z:set => apply_fun p z))
+      HcontGraph).
+  }
+  claim Hpt1Ue : apply_fun p (apply_fun ft1 x) :e Ue.
+  {
+    rewrite <- (apply_fun_graph
+      Ux
+      (fun z:set => apply_fun p z)
+      (apply_fun ft1 x)
+      Hft1Ux).
+    exact (HfunGraph (apply_fun ft1 x) Hft1Ux).
+  }
+  claim HexUnique :
+    exists z:set, z :e Ux /\ apply_fun p z = apply_fun p (apply_fun ft1 x) /\
+      forall y:set, y :e Ux -> apply_fun p y = apply_fun p (apply_fun ft1 x) -> y = z.
+  {
+    exact (homeomorphic_sheet_unique_fiber_point
+      E Te B Tb p Ux Ue (apply_fun p (apply_fun ft1 x))
+      HhomeUx
+      Hpt1Ue).
+  }
+  apply HexUnique.
+  let z.
+  assume HzPack.
+  claim Huniq :
+    forall y:set, y :e Ux ->
+      apply_fun p y = apply_fun p (apply_fun ft1 x) -> y = z.
+  {
+    exact (andER
+      (z :e Ux /\ apply_fun p z = apply_fun p (apply_fun ft1 x))
+      (forall y:set, y :e Ux -> apply_fun p y = apply_fun p (apply_fun ft1 x) -> y = z)
+      HzPack).
+  }
+  claim Hft1Eqz : apply_fun ft1 x = z.
+  {
+    claim Hpt1Self : apply_fun p (apply_fun ft1 x) = apply_fun p (apply_fun ft1 x).
+    {
+      reflexivity.
+    }
+    exact (Huniq (apply_fun ft1 x) Hft1Ux Hpt1Self).
+  }
+  claim Hpt2Eqpt1 : apply_fun p (apply_fun ft2 x) = apply_fun p (apply_fun ft1 x).
+  {
+    rewrite Hpt1Eqpt2.
+    reflexivity.
+  }
+  claim Hft2Eqz : apply_fun ft2 x = z.
+  {
+    exact (Huniq (apply_fun ft2 x) Hft2Ux Hpt2Eqpt1).
+  }
+  rewrite Hft1Eqz.
+  rewrite Hft2Eqz.
+  reflexivity.
+Qed.
+
+(** If two lifts differ at a point, they differ on a neighborhood of that point (general domain). **)
+(** Proven Charlie **)
+Theorem covering_map_lifts_neq_on_local_neighborhood_general :
+  forall E Te B Tb p X Tx f ft1 ft2 x0:set,
+  covering_map E Te B Tb p ->
+  lifting_of X Tx E Te B Tb p f ft1 ->
+  lifting_of X Tx E Te B Tb p f ft2 ->
+  x0 :e X ->
+  apply_fun ft1 x0 <> apply_fun ft2 x0 ->
+  exists N:set, N :e Tx /\ x0 :e N /\
+    forall x:set, x :e N -> apply_fun ft1 x <> apply_fun ft2 x.
+let E Te B Tb p X Tx f ft1 ft2 x0.
+assume Hcov Hlift1 Hlift2 Hx0 Hneq0.
+claim Hcontp : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    (andEL
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+      Hcov)).
+}
+claim HtopE : topology_on E Te.
+{
+  exact (continuous_map_topology_dom E Te B Tb p Hcontp).
+}
+claim Hlift1Pack :
+  continuous_map X Tx E Te ft1 /\
+  (forall x:set, x :e X ->
+    apply_fun p (apply_fun ft1 x) = apply_fun f x).
+{
+  exact Hlift1.
+}
+claim Hlift2Pack :
+  continuous_map X Tx E Te ft2 /\
+  (forall x:set, x :e X ->
+    apply_fun p (apply_fun ft2 x) = apply_fun f x).
+{
+  exact Hlift2.
+}
+claim Hft1Cont : continuous_map X Tx E Te ft1.
+{
+  exact (andEL
+    (continuous_map X Tx E Te ft1)
+    (forall x:set, x :e X -> apply_fun p (apply_fun ft1 x) = apply_fun f x)
+    Hlift1Pack).
+}
+claim Hft2Cont : continuous_map X Tx E Te ft2.
+{
+  exact (andEL
+    (continuous_map X Tx E Te ft2)
+    (forall x:set, x :e X -> apply_fun p (apply_fun ft2 x) = apply_fun f x)
+    Hlift2Pack).
+}
+claim Hcomm1 : forall x:set, x :e X -> apply_fun p (apply_fun ft1 x) = apply_fun f x.
+{
+  exact (andER
+    (continuous_map X Tx E Te ft1)
+    (forall x:set, x :e X -> apply_fun p (apply_fun ft1 x) = apply_fun f x)
+    Hlift1Pack).
+}
+claim Hcomm2 : forall x:set, x :e X -> apply_fun p (apply_fun ft2 x) = apply_fun f x.
+{
+  exact (andER
+    (continuous_map X Tx E Te ft2)
+    (forall x:set, x :e X -> apply_fun p (apply_fun ft2 x) = apply_fun f x)
+    Hlift2Pack).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (continuous_map_topology_dom X Tx E Te ft1 Hft1Cont).
+}
+claim Hft1Fun : function_on ft1 X E.
+{
+  exact (continuous_map_function_on X Tx E Te ft1 Hft1Cont).
+}
+claim Hft2Fun : function_on ft2 X E.
+{
+  exact (continuous_map_function_on X Tx E Te ft2 Hft2Cont).
+}
+claim He0E : apply_fun ft1 x0 :e E.
+{
+  exact (Hft1Fun x0 Hx0).
+}
+claim Hchart :
+  exists Ue slices Ux:set,
+    (Ux :e Te /\ apply_fun ft1 x0 :e Ux /\ Ue :e Tb /\
+      homeomorphism Ux (subspace_topology E Te Ux) Ue (subspace_topology B Tb Ue)
+        (graph Ux (fun z:set => apply_fun p z))) /\
+    (slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p Ue /\ Ux :e slices /\
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) Ue (subspace_topology B Tb Ue)
+          (graph V (fun z:set => apply_fun p z)))).
+{
+  exact (covering_map_local_homeomorphism_with_slices
+    E Te B Tb p (apply_fun ft1 x0) Hcov He0E).
+}
+apply Hchart.
+let Ue.
+assume HUePack.
+apply HUePack.
+let slices.
+assume HsPack.
+apply HsPack.
+let Ux.
+assume Hall.
+claim Hmain :
+  Ux :e Te /\ apply_fun ft1 x0 :e Ux /\ Ue :e Tb /\
+    homeomorphism Ux (subspace_topology E Te Ux) Ue (subspace_topology B Tb Ue)
+      (graph Ux (fun z:set => apply_fun p z)).
+{
+  exact (andEL
+    (Ux :e Te /\ apply_fun ft1 x0 :e Ux /\ Ue :e Tb /\
+      homeomorphism Ux (subspace_topology E Te Ux) Ue (subspace_topology B Tb Ue)
+        (graph Ux (fun z:set => apply_fun p z)))
+    (slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p Ue /\ Ux :e slices /\
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) Ue (subspace_topology B Tb Ue)
+          (graph V (fun z:set => apply_fun p z))))
+    Hall).
+}
+claim HUxOpen : Ux :e Te.
+{
+  exact (andEL
+    (Ux :e Te)
+    (apply_fun ft1 x0 :e Ux)
+    (andEL
+      (Ux :e Te /\ apply_fun ft1 x0 :e Ux)
+      (Ue :e Tb)
+      (andEL
+        ((Ux :e Te /\ apply_fun ft1 x0 :e Ux) /\ Ue :e Tb)
+        (homeomorphism Ux (subspace_topology E Te Ux) Ue (subspace_topology B Tb Ue)
+          (graph Ux (fun z:set => apply_fun p z)))
+        Hmain))).
+}
+claim Hft1x0Ux : apply_fun ft1 x0 :e Ux.
+{
+  exact (andER
+    (Ux :e Te)
+    (apply_fun ft1 x0 :e Ux)
+    (andEL
+      (Ux :e Te /\ apply_fun ft1 x0 :e Ux)
+      (Ue :e Tb)
+      (andEL
+        ((Ux :e Te /\ apply_fun ft1 x0 :e Ux) /\ Ue :e Tb)
+        (homeomorphism Ux (subspace_topology E Te Ux) Ue (subspace_topology B Tb Ue)
+          (graph Ux (fun z:set => apply_fun p z)))
+        Hmain))).
+}
+claim HslicesAll :
+  slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p Ue /\ Ux :e slices /\
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) Ue (subspace_topology B Tb Ue)
+        (graph V (fun z:set => apply_fun p z))).
+{
+  exact (andER
+    (Ux :e Te /\ apply_fun ft1 x0 :e Ux /\ Ue :e Tb /\
+      homeomorphism Ux (subspace_topology E Te Ux) Ue (subspace_topology B Tb Ue)
+        (graph Ux (fun z:set => apply_fun p z)))
+    (slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p Ue /\ Ux :e slices /\
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) Ue (subspace_topology B Tb Ue)
+          (graph V (fun z:set => apply_fun p z))))
+    Hall).
+}
+claim Hslices4 :
+  ((slices c= Te /\ pairwise_disjoint slices) /\
+    Union slices = preimage_of E p Ue) /\ Ux :e slices.
+{
+  exact (andEL
+    (((slices c= Te /\ pairwise_disjoint slices) /\
+      Union slices = preimage_of E p Ue) /\ Ux :e slices)
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) Ue (subspace_topology B Tb Ue)
+        (graph V (fun z:set => apply_fun p z)))
+    HslicesAll).
+}
+claim Hslices3 :
+  (slices c= Te /\ pairwise_disjoint slices) /\ Union slices = preimage_of E p Ue.
+{
+  exact (andEL
+    ((slices c= Te /\ pairwise_disjoint slices) /\ Union slices = preimage_of E p Ue)
+    (Ux :e slices)
+    Hslices4).
+}
+claim HslicesPair : slices c= Te /\ pairwise_disjoint slices.
+{
+  exact (andEL
+    (slices c= Te /\ pairwise_disjoint slices)
+    (Union slices = preimage_of E p Ue)
+    Hslices3).
+}
+claim HslicesSub : slices c= Te.
+{
+  exact (andEL
+    (slices c= Te)
+    (pairwise_disjoint slices)
+    HslicesPair).
+}
+claim HpdSlices : pairwise_disjoint slices.
+{
+  exact (andER
+    (slices c= Te)
+    (pairwise_disjoint slices)
+    HslicesPair).
+}
+claim HunionSlices : Union slices = preimage_of E p Ue.
+{
+  exact (andER
+    (slices c= Te /\ pairwise_disjoint slices)
+    (Union slices = preimage_of E p Ue)
+    Hslices3).
+}
+claim HUxSlice : Ux :e slices.
+{
+  exact (andER
+    ((slices c= Te /\ pairwise_disjoint slices) /\ Union slices = preimage_of E p Ue)
+    (Ux :e slices)
+    Hslices4).
+}
+claim HhomeUx :
+  homeomorphism Ux (subspace_topology E Te Ux) Ue (subspace_topology B Tb Ue)
+    (graph Ux (fun z:set => apply_fun p z)).
+{
+  exact (andER
+    ((Ux :e Te /\ apply_fun ft1 x0 :e Ux) /\ Ue :e Tb)
+    (homeomorphism Ux (subspace_topology E Te Ux) Ue (subspace_topology B Tb Ue)
+      (graph Ux (fun z:set => apply_fun p z)))
+    Hmain).
+}
+claim Hpx0Eq : apply_fun p (apply_fun ft1 x0) = apply_fun p (apply_fun ft2 x0).
+{
+  rewrite (Hcomm1 x0 Hx0).
+  rewrite (Hcomm2 x0 Hx0).
+  reflexivity.
+}
+claim HcontGraph :
+  continuous_map Ux (subspace_topology E Te Ux) Ue (subspace_topology B Tb Ue)
+    (graph Ux (fun z:set => apply_fun p z)).
+{
+  exact (homeomorphism_continuous
+    Ux (subspace_topology E Te Ux)
+    Ue (subspace_topology B Tb Ue)
+    (graph Ux (fun z:set => apply_fun p z))
+    HhomeUx).
+}
+claim HfunGraph :
+  function_on (graph Ux (fun z:set => apply_fun p z)) Ux Ue.
+{
+  exact (continuous_map_function_on
+    Ux (subspace_topology E Te Ux)
+    Ue (subspace_topology B Tb Ue)
+    (graph Ux (fun z:set => apply_fun p z))
+    HcontGraph).
+}
+claim Hpx0Ue : apply_fun p (apply_fun ft1 x0) :e Ue.
+{
+  rewrite <- (apply_fun_graph Ux (fun z:set => apply_fun p z) (apply_fun ft1 x0) Hft1x0Ux).
+  exact (HfunGraph (apply_fun ft1 x0) Hft1x0Ux).
+}
+claim Hft2x0PreUe : apply_fun ft2 x0 :e preimage_of E p Ue.
+{
+  claim Hpx2Ue : apply_fun p (apply_fun ft2 x0) :e Ue.
+  {
+    rewrite <- Hpx0Eq.
+    exact Hpx0Ue.
+  }
+  exact (SepI
+    E
+    (fun z:set => apply_fun p z :e Ue)
+    (apply_fun ft2 x0)
+    (Hft2Fun x0 Hx0)
+    Hpx2Ue).
+}
+claim Hft2x0Union : apply_fun ft2 x0 :e Union slices.
+{
+  exact (mem_eqL
+    (apply_fun ft2 x0)
+    (Union slices)
+    (preimage_of E p Ue)
+    HunionSlices
+    Hft2x0PreUe).
+}
+apply (UnionE slices (apply_fun ft2 x0) Hft2x0Union).
+let S2.
+assume HS2Pack.
+claim Hft2x0S2 : apply_fun ft2 x0 :e S2.
+{
+  exact (andEL
+    (apply_fun ft2 x0 :e S2)
+    (S2 :e slices)
+    HS2Pack).
+}
+claim HS2Slice : S2 :e slices.
+{
+  exact (andER
+    (apply_fun ft2 x0 :e S2)
+    (S2 :e slices)
+    HS2Pack).
+}
+claim HS2Disj : Ux :/\: S2 = Empty.
+{
+  apply (HpdSlices Ux S2 HUxSlice HS2Slice).
+  assume Heq.
+  claim Hft2x0Ux : apply_fun ft2 x0 :e Ux.
+  {
+    rewrite Heq.
+    exact Hft2x0S2.
+  }
+  claim Hft1x0Eq :
+    apply_fun ft1 x0 = apply_fun ft2 x0.
+  {
+    claim Hpt1Eqpt2 : apply_fun p (apply_fun ft1 x0) = apply_fun p (apply_fun ft2 x0).
+    {
+      exact Hpx0Eq.
+    }
+    claim HexUnique :
+      exists z:set, z :e Ux /\ apply_fun p z = apply_fun p (apply_fun ft1 x0) /\
+        forall y:set, y :e Ux -> apply_fun p y = apply_fun p (apply_fun ft1 x0) -> y = z.
+    {
+      exact (homeomorphic_sheet_unique_fiber_point
+        E Te B Tb p Ux Ue (apply_fun p (apply_fun ft1 x0))
+        HhomeUx
+        Hpx0Ue).
+    }
+    apply HexUnique.
+    let z.
+    assume HzPack.
+    claim Huniq :
+      forall y:set, y :e Ux ->
+        apply_fun p y = apply_fun p (apply_fun ft1 x0) -> y = z.
+    {
+      exact (andER
+        (z :e Ux /\ apply_fun p z = apply_fun p (apply_fun ft1 x0))
+        (forall y:set, y :e Ux ->
+          apply_fun p y = apply_fun p (apply_fun ft1 x0) -> y = z)
+        HzPack).
+    }
+    claim Hft1Eqz : apply_fun ft1 x0 = z.
+    {
+      claim Hself : apply_fun p (apply_fun ft1 x0) = apply_fun p (apply_fun ft1 x0).
+      {
+        reflexivity.
+      }
+      exact (Huniq (apply_fun ft1 x0) Hft1x0Ux Hself).
+    }
+    claim Hft2Eqz : apply_fun ft2 x0 = z.
+    {
+      claim Hpt2Eqpt1 : apply_fun p (apply_fun ft2 x0) = apply_fun p (apply_fun ft1 x0).
+      {
+        rewrite Hpt1Eqpt2.
+        reflexivity.
+      }
+      exact (Huniq (apply_fun ft2 x0) Hft2x0Ux Hpt2Eqpt1).
+    }
+    rewrite Hft1Eqz.
+    rewrite Hft2Eqz.
+    reflexivity.
+  }
+  exact (Hneq0 Hft1x0Eq).
+}
+claim Hloc1 :
+  exists N1:set, N1 :e Tx /\ x0 :e N1 /\
+    forall x:set, x :e N1 -> apply_fun ft1 x :e Ux.
+{
+  exact (continuous_local_neighborhood
+    X Tx E Te ft1
+    HtopX HtopE Hft1Fun
+    (fun V:set => continuous_map_preimage X Tx E Te ft1 Hft1Cont V)
+    x0
+    Hx0
+    Ux
+    HUxOpen
+    Hft1x0Ux).
+}
+apply Hloc1.
+let N1.
+assume HN1Pack.
+claim HN1Open : N1 :e Tx.
+{
+  exact (andEL
+    (N1 :e Tx)
+    (x0 :e N1)
+    (andEL
+      (N1 :e Tx /\ x0 :e N1)
+      (forall x:set, x :e N1 -> apply_fun ft1 x :e Ux)
+      HN1Pack)).
+}
+claim Hx0N1 : x0 :e N1.
+{
+  exact (andER
+    (N1 :e Tx)
+    (x0 :e N1)
+    (andEL
+      (N1 :e Tx /\ x0 :e N1)
+      (forall x:set, x :e N1 -> apply_fun ft1 x :e Ux)
+      HN1Pack)).
+}
+claim HN1IntoUx : forall x:set, x :e N1 -> apply_fun ft1 x :e Ux.
+{
+  exact (andER
+    (N1 :e Tx /\ x0 :e N1)
+    (forall x:set, x :e N1 -> apply_fun ft1 x :e Ux)
+    HN1Pack).
+}
+claim HS2Open : S2 :e Te.
+{
+  exact (HslicesSub S2 HS2Slice).
+}
+claim Hloc2 :
+  exists N2:set, N2 :e Tx /\ x0 :e N2 /\
+    forall x:set, x :e N2 -> apply_fun ft2 x :e S2.
+{
+  exact (continuous_local_neighborhood
+    X Tx E Te ft2
+    HtopX HtopE Hft2Fun
+    (fun V:set => continuous_map_preimage X Tx E Te ft2 Hft2Cont V)
+    x0
+    Hx0
+    S2
+    HS2Open
+    Hft2x0S2).
+}
+apply Hloc2.
+let N2.
+assume HN2Pack.
+claim HN2Open : N2 :e Tx.
+{
+  exact (andEL
+    (N2 :e Tx)
+    (x0 :e N2)
+    (andEL
+      (N2 :e Tx /\ x0 :e N2)
+      (forall x:set, x :e N2 -> apply_fun ft2 x :e S2)
+      HN2Pack)).
+}
+claim Hx0N2 : x0 :e N2.
+{
+  exact (andER
+    (N2 :e Tx)
+    (x0 :e N2)
+    (andEL
+      (N2 :e Tx /\ x0 :e N2)
+      (forall x:set, x :e N2 -> apply_fun ft2 x :e S2)
+      HN2Pack)).
+}
+claim HN2IntoS2 : forall x:set, x :e N2 -> apply_fun ft2 x :e S2.
+{
+  exact (andER
+    (N2 :e Tx /\ x0 :e N2)
+    (forall x:set, x :e N2 -> apply_fun ft2 x :e S2)
+    HN2Pack).
+}
+set N := N1 :/\: N2.
+witness N.
+apply andI.
+- apply andI.
+  + exact (topology_binintersect_closed X Tx N1 N2 HtopX HN1Open HN2Open).
+  + exact (binintersectI N1 N2 x0 Hx0N1 Hx0N2).
+- let x.
+  assume HxN.
+  claim HxN1 : x :e N1.
+  {
+    exact (binintersectE1 N1 N2 x HxN).
+  }
+  claim HxN2 : x :e N2.
+  {
+    exact (binintersectE2 N1 N2 x HxN).
+  }
+  claim Hft1Ux : apply_fun ft1 x :e Ux.
+  {
+    exact (HN1IntoUx x HxN1).
+  }
+  claim Hft2S2 : apply_fun ft2 x :e S2.
+  {
+    exact (HN2IntoS2 x HxN2).
+  }
+  assume Heq.
+  claim Hft2Ux : apply_fun ft2 x :e Ux.
+  {
+    rewrite <- Heq.
+    exact Hft1Ux.
+  }
+  claim Hft2Int : apply_fun ft2 x :e Ux :/\: S2.
+  {
+    exact (binintersectI Ux S2 (apply_fun ft2 x) Hft2Ux Hft2S2).
+  }
+  claim Hft2Empty : apply_fun ft2 x :e Empty.
+  {
+    exact (mem_eqR (apply_fun ft2 x) (Ux :/\: S2) Empty HS2Disj Hft2Int).
+  }
+  exact (EmptyE (apply_fun ft2 x) Hft2Empty False).
+Qed.
+
+(** Connected-domain uniqueness of lifts (general domain). **)
+(** Proven Charlie **)
+Theorem covering_map_lifts_agree_on_connected_domain :
+  forall E Te B Tb p X Tx f ft1 ft2 x0:set,
+  covering_map E Te B Tb p ->
+  connected_space X Tx ->
+  lifting_of X Tx E Te B Tb p f ft1 ->
+  lifting_of X Tx E Te B Tb p f ft2 ->
+  x0 :e X ->
+  apply_fun ft1 x0 = apply_fun ft2 x0 ->
+  forall x:set, x :e X -> apply_fun ft1 x = apply_fun ft2 x.
+let E Te B Tb p X Tx f ft1 ft2 x0.
+assume Hcov Hconn Hlift1 Hlift2 Hx0 Heq0.
+claim HtopX : topology_on X Tx.
+{
+  exact (connected_space_topology X Tx Hconn).
+}
+set A := {x :e X | apply_fun ft1 x = apply_fun ft2 x}.
+set CompA := X :\: A.
+claim HAopenIn : open_in X Tx A.
+{
+  apply (ex13_1_local_open_subset X Tx A HtopX).
+  let x.
+  assume HxA.
+  claim HxX : x :e X.
+  {
+    exact (SepE1 X (fun y:set => apply_fun ft1 y = apply_fun ft2 y) x HxA).
+  }
+  claim Hxeq : apply_fun ft1 x = apply_fun ft2 x.
+  {
+    exact (SepE2 X (fun y:set => apply_fun ft1 y = apply_fun ft2 y) x HxA).
+  }
+  claim Hloc :
+    exists N:set, N :e Tx /\ x :e N /\
+      forall u:set, u :e N -> apply_fun ft1 u = apply_fun ft2 u.
+  {
+    exact (covering_map_lifts_equal_on_local_neighborhood_general
+      E Te B Tb p X Tx f ft1 ft2 x
+      Hcov Hlift1 Hlift2 HxX Hxeq).
+  }
+  apply Hloc.
+  let N.
+  assume HNpack.
+  witness N.
+  apply andI.
+  - exact (andEL (N :e Tx) (x :e N) (andEL (N :e Tx /\ x :e N)
+      (forall u:set, u :e N -> apply_fun ft1 u = apply_fun ft2 u) HNpack)).
+  - apply andI.
+    + exact (andER (N :e Tx) (x :e N) (andEL (N :e Tx /\ x :e N)
+        (forall u:set, u :e N -> apply_fun ft1 u = apply_fun ft2 u) HNpack)).
+    + let u.
+      assume HuN.
+      apply (SepI X (fun y:set => apply_fun ft1 y = apply_fun ft2 y) u).
+      * exact (topology_elem_subset X Tx N HtopX
+          (andEL (N :e Tx) (x :e N) (andEL (N :e Tx /\ x :e N)
+            (forall u0:set, u0 :e N -> apply_fun ft1 u0 = apply_fun ft2 u0) HNpack))
+          u
+          HuN).
+      * exact ((andER
+          (N :e Tx /\ x :e N)
+          (forall u0:set, u0 :e N -> apply_fun ft1 u0 = apply_fun ft2 u0)
+          HNpack) u HuN).
+}
+claim HCompAopenIn : open_in X Tx CompA.
+{
+  apply (ex13_1_local_open_subset X Tx CompA HtopX).
+  let x.
+  assume HxCompA.
+  claim HxX : x :e X.
+  {
+    exact (setminusE1 X A x HxCompA).
+  }
+  claim Hxneq : apply_fun ft1 x <> apply_fun ft2 x.
+  {
+    assume Heq.
+    claim HxA : x :e A.
+    {
+      exact (SepI X (fun y:set => apply_fun ft1 y = apply_fun ft2 y) x HxX Heq).
+    }
+    exact (setminusE2 X A x HxCompA HxA).
+  }
+  claim Hloc :
+    exists N:set, N :e Tx /\ x :e N /\
+      forall u:set, u :e N -> apply_fun ft1 u <> apply_fun ft2 u.
+  {
+    exact (covering_map_lifts_neq_on_local_neighborhood_general
+      E Te B Tb p X Tx f ft1 ft2 x
+      Hcov Hlift1 Hlift2 HxX Hxneq).
+  }
+  apply Hloc.
+  let N.
+  assume HNpack.
+  witness N.
+  apply andI.
+  - exact (andEL (N :e Tx) (x :e N) (andEL (N :e Tx /\ x :e N)
+      (forall u:set, u :e N -> apply_fun ft1 u <> apply_fun ft2 u) HNpack)).
+  - apply andI.
+    + exact (andER (N :e Tx) (x :e N) (andEL (N :e Tx /\ x :e N)
+        (forall u:set, u :e N -> apply_fun ft1 u <> apply_fun ft2 u) HNpack)).
+    + let u.
+      assume HuN.
+      apply (setminusI X A u).
+      * exact (topology_elem_subset X Tx N HtopX
+          (andEL (N :e Tx) (x :e N) (andEL (N :e Tx /\ x :e N)
+            (forall u0:set, u0 :e N -> apply_fun ft1 u0 <> apply_fun ft2 u0) HNpack))
+          u
+          HuN).
+      * assume HuA.
+        claim Hueq : apply_fun ft1 u = apply_fun ft2 u.
+        {
+          exact (SepE2 X (fun y:set => apply_fun ft1 y = apply_fun ft2 y) u HuA).
+        }
+        exact (((andER
+          (N :e Tx /\ x :e N)
+          (forall u0:set, u0 :e N -> apply_fun ft1 u0 <> apply_fun ft2 u0)
+          HNpack) u HuN) Hueq).
+}
+claim HAclosedIn : closed_in X Tx A.
+{
+  claim HclosedComp : closed_in X Tx (X :\: CompA).
+  {
+    exact (closed_of_open_complement
+      X
+      Tx
+      CompA
+      HtopX
+      (open_in_elem X Tx CompA HCompAopenIn)).
+  }
+  claim Htmp : X :\: CompA = A.
+  {
+    exact (setminus_setminus_eq
+      X
+      A
+      (Sep_Subq X (fun y:set => apply_fun ft1 y = apply_fun ft2 y))).
+  }
+  rewrite <- Htmp.
+  exact HclosedComp.
+}
+claim HAall : A = X.
+{
+  claim Hnoclopen :
+    ~ (exists C:set, C <> Empty /\ C <> X /\ open_in X Tx C /\ closed_in X Tx C).
+  {
+    exact (iffEL
+      (connected_space X Tx)
+      (~ (exists C:set, C <> Empty /\ C <> X /\ open_in X Tx C /\ closed_in X Tx C))
+      (connected_iff_no_nontrivial_clopen X Tx HtopX)
+      Hconn).
+  }
+  apply xm (A = X).
+  - assume HAX : A = X.
+    exact HAX.
+  - assume HAXneq : ~ (A = X).
+    claim HAnonempty : A <> Empty.
+    {
+      assume HAempty.
+      claim Hx0A : x0 :e A.
+      {
+        exact (SepI X (fun y:set => apply_fun ft1 y = apply_fun ft2 y) x0 Hx0 Heq0).
+      }
+      claim Hx0Empty : x0 :e Empty.
+      {
+        exact (mem_eqR x0 A Empty HAempty Hx0A).
+      }
+      exact (EmptyE x0 Hx0Empty False).
+    }
+    claim Hbad :
+      exists C:set, C <> Empty /\ C <> X /\ open_in X Tx C /\ closed_in X Tx C.
+    {
+      witness A.
+      apply andI.
+      - apply andI.
+        + apply andI.
+          * exact HAnonempty.
+          * exact (fun H => HAXneq H).
+        + exact HAopenIn.
+      - exact HAclosedIn.
+    }
+    exact (FalseE (Hnoclopen Hbad) (A = X)).
+}
+let x.
+assume HxX.
+claim HxA : x :e A.
+{
+  rewrite HAall.
+  exact HxX.
+}
+exact (SepE2 X (fun y:set => apply_fun ft1 y = apply_fun ft2 y) x HxA).
+Qed.
+
 (** from S54 Lem 54.1 (temporary sub-bounty A) **)
 (** LATEX VERSION: Any point of the base has an evenly covered neighborhood under a covering map. **)
 (** EFFORT: 1 line, difficulty 1/10, USD 10 **)
