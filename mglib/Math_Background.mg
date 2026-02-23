@@ -143797,6 +143797,90 @@ let n. assume Hn Hfg.
 exact (Hnat n (omega_nat_p n Hn) Hfg).
 Qed.
 
+(** Helper: subgroup inherits group structure (local copy) **)
+Lemma local_subgroup_group_structure :
+  forall G mult e inv H:set,
+  group_structure G mult e inv ->
+  subgroup_of H G mult e inv ->
+  group_structure H mult e inv.
+let G mult e inv H.
+assume Hgrp : group_structure G mult e inv.
+assume Hsub : subgroup_of H G mult e inv.
+apply (and4E
+  (H c= G)
+  (e :e H)
+  (forall x y:set, x :e H -> y :e H -> apply_fun mult (x, y) :e H)
+  (forall x:set, x :e H -> apply_fun inv x :e H)
+  Hsub).
+assume HsubG HeH HmulH HinvH.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume HmultG HinvG HeG HassocG HidG HinvG_law.
+claim HmultH_fn : function_on mult (setprod H H) H.
+{ let p. assume Hp : p :e setprod H H.
+  claim Hp0 : p 0 :e H.
+  { exact (ap0_Sigma H (fun _ : set => H) p Hp). }
+  claim Hp1 : p 1 :e H.
+  { exact (ap1_Sigma H (fun _ : set => H) p Hp). }
+  rewrite (setprod_eta H H p Hp).
+  exact (HmulH (p 0) (p 1) Hp0 Hp1). }
+claim HinvH_fn : function_on inv H H.
+{ let x. assume Hx : x :e H. exact (HinvH x Hx). }
+exact (and6I
+  (function_on mult (setprod H H) H) (function_on inv H H) (e :e H)
+  (forall x y z:set, x :e H -> y :e H -> z :e H ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e H -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e H ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  HmultH_fn HinvH_fn HeH
+  (fun x y z Hx Hy Hz => HassocG x y z (HsubG x Hx) (HsubG y Hy) (HsubG z Hz))
+  (fun x Hx => HidG x (HsubG x Hx))
+  (fun x Hx => HinvG_law x (HsubG x Hx))).
+Qed.
+
+(** Helper: nat_primrec product stays in group (local copy) **)
+Lemma local_nat_primrec_in_group :
+  forall G mult e:set,
+  function_on mult (setprod G G) G ->
+  e :e G ->
+  forall f:set -> set,
+  (forall i:set, f i :e G) ->
+  forall n:set, n :e omega ->
+  nat_primrec e (fun i r => apply_fun mult (r, f i)) n :e G.
+let G mult e.
+assume HmultFn : function_on mult (setprod G G) G.
+assume HeG : e :e G.
+let f.
+assume Hf : forall i:set, f i :e G.
+claim Hnat : forall n:set, nat_p n ->
+  nat_primrec e (fun i r => apply_fun mult (r, f i)) n :e G.
+{ apply nat_ind.
+  - prove nat_primrec e (fun i r => apply_fun mult (r, f i)) 0 :e G.
+    rewrite (nat_primrec_0 e (fun i r => apply_fun mult (r, f i))).
+    exact HeG.
+  - let k. assume Hk : nat_p k.
+    assume IH : nat_primrec e (fun i r => apply_fun mult (r, f i)) k :e G.
+    prove nat_primrec e (fun i r => apply_fun mult (r, f i)) (ordsucc k) :e G.
+    rewrite (nat_primrec_S e (fun i r => apply_fun mult (r, f i)) k Hk).
+    prove apply_fun mult (nat_primrec e (fun i r => apply_fun mult (r, f i)) k, f k) :e G.
+    exact (HmultFn
+      (nat_primrec e (fun i r => apply_fun mult (r, f i)) k, f k)
+      (tuple_2_setprod_by_pair_Sigma G G
+        (nat_primrec e (fun i r => apply_fun mult (r, f i)) k)
+        (f k) IH (Hf k))). }
+let n. assume Hn : n :e omega.
+exact (Hnat n (omega_nat_p n Hn)).
+Qed.
+
 (** Helper: existence of extension homomorphism for direct sum (admitted) **)
 Lemma direct_sum_hom_existence :
   forall G multG eG invG J Gfam H multH eH invH hfam:set,
@@ -143948,7 +144032,11 @@ claim Hhfam_to_H : forall alpha:set, alpha :e J ->
 (** hfam preserves identity **)
 claim Hhfam_id : forall alpha:set, alpha :e J ->
   apply_fun (apply_fun hfam alpha) eG = eH.
-{ admit. (** TODO Alice: needs subgroup_inherits_group_structure from later **) }
+{ let alpha. assume Hal.
+  exact (group_hom_maps_id_to_id
+    (apply_fun Gfam alpha) multG eG invG H multH eH invH (apply_fun hfam alpha)
+    (local_subgroup_group_structure G multG eG invG (apply_fun Gfam alpha) HgrpG (Hsub alpha Hal))
+    HgrpH (Hhfam alpha Hal)). }
 (** Define the homomorphism via representations **)
 (** For each g in G, pick a representation (n, alphas, xs) and compute the product in H **)
 set rep_pred := fun g pack:set =>
@@ -144037,7 +144125,44 @@ claim Hrep_exists : forall g:set, g :e G -> exists pack:set, rep_pred g pack.
 (** The map_rep value is in H for any valid pack **)
 claim Hmap_rep_in_H : forall pack:set, forall g:set, g :e G -> rep_pred g pack ->
   map_rep pack :e H.
-{ admit. (** TODO Alice: prove map_rep gives H element - needs nat_primrec_product_in_group from later **) }
+{ let pack g. assume Hg Hrep.
+  apply (and7E
+    ((pack 0) :e omega) ((pack 0) <> 0)
+    (function_on ((pack 1) 0) (pack 0) J)
+    (function_on ((pack 1) 1) (pack 0) G)
+    (forall i:set, i :e (pack 0) -> apply_fun ((pack 1) 1) i :e apply_fun Gfam (apply_fun ((pack 1) 0) i))
+    (forall i j:set, i :e (pack 0) -> j :e (pack 0) -> i <> j -> apply_fun ((pack 1) 0) i <> apply_fun ((pack 1) 0) j)
+    (g = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ((pack 1) 1) i)) (pack 0))
+    Hrep).
+  assume HnO Hn_ne HaFn HxFn Hx_Gfam Hdist HgRep.
+  prove nat_primrec eH
+    (fun i r => apply_fun multH (r,
+      apply_fun (apply_fun hfam (apply_fun ((pack 1) 0) i)) (apply_fun ((pack 1) 1) i)))
+    (pack 0) :e H.
+  (** Use If_i to create total function that is eH outside the index range **)
+  set fi := fun i:set => If_i (i :e (pack 0))
+    (apply_fun (apply_fun hfam (apply_fun ((pack 1) 0) i)) (apply_fun ((pack 1) 1) i))
+    eH.
+  claim Hfi_H : forall i:set, fi i :e H.
+  { let i. apply (xm (i :e (pack 0))).
+    - assume Hi : i :e (pack 0).
+      prove If_i (i :e (pack 0))
+        (apply_fun (apply_fun hfam (apply_fun ((pack 1) 0) i)) (apply_fun ((pack 1) 1) i))
+        eH :e H.
+      rewrite (If_i_1 (i :e (pack 0))
+        (apply_fun (apply_fun hfam (apply_fun ((pack 1) 0) i)) (apply_fun ((pack 1) 1) i))
+        eH Hi).
+      exact (Hhfam_to_H (apply_fun ((pack 1) 0) i) (HaFn i Hi)
+        (apply_fun ((pack 1) 1) i) (Hx_Gfam i Hi)).
+    - assume Hni : ~(i :e (pack 0)).
+      prove If_i (i :e (pack 0))
+        (apply_fun (apply_fun hfam (apply_fun ((pack 1) 0) i)) (apply_fun ((pack 1) 1) i))
+        eH :e H.
+      rewrite (If_i_0 (i :e (pack 0))
+        (apply_fun (apply_fun hfam (apply_fun ((pack 1) 0) i)) (apply_fun ((pack 1) 1) i))
+        eH Hni).
+      exact HeHH. }
+  admit. (** TODO Alice: show nat_primrec with fi equals nat_primrec with original f **) }
 (** h is well-defined: apply_fun h g is in H for all g in G **)
 claim Hh_fn : function_on h G H.
 { admit. (** TODO Alice: prove h maps G to H using Hmap_rep_in_H **) }
