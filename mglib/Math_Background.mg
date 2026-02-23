@@ -104774,7 +104774,163 @@ apply (xm (exists x:set, x :e Bn_closed n /\ apply_fun f x = x)).
     forall x:set, x :e Bn_closed n ->
       ~(forall i:set, i :e ordsucc n -> apply_fun (apply_fun vdisp x) i = 0).
   {
-    admit.
+    let x.
+    assume HxB Hzero.
+    claim HfxB : apply_fun f x :e Bn_closed n.
+    {
+      exact (HfIntoB
+        x
+        HxB).
+    }
+    claim HxEu : x :e euclidean_space (ordsucc n).
+    {
+      exact (SepE1
+        (euclidean_space (ordsucc n))
+        (fun v:set =>
+          ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v)))
+        x
+        HxB).
+    }
+    claim HfxEu : apply_fun f x :e euclidean_space (ordsucc n).
+    {
+      exact (SepE1
+        (euclidean_space (ordsucc n))
+        (fun v:set =>
+          ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v)))
+        (apply_fun f x)
+        HfxB).
+    }
+    claim HfxNe : apply_fun f x <> x.
+    {
+      exact (HnoFix_pointwise
+        x
+        HxB).
+    }
+    claim HdiffCoord :
+      exists i:set, i :e ordsucc n /\
+        apply_fun (apply_fun f x) i <> apply_fun x i.
+    {
+      exact (product_space_points_differ_coord
+        (ordsucc n)
+        (const_space_family (ordsucc n) R R_standard_topology)
+        (apply_fun f x)
+        x
+        HfxEu
+        HxEu
+        HfxNe).
+    }
+    apply HdiffCoord.
+    let i.
+    assume HiPack.
+    claim Hi : i :e ordsucc n.
+    {
+      exact (andEL
+        (i :e ordsucc n)
+        (apply_fun (apply_fun f x) i <> apply_fun x i)
+        HiPack).
+    }
+    claim Hneqi : apply_fun (apply_fun f x) i <> apply_fun x i.
+    {
+      exact (andER
+        (i :e ordsucc n)
+        (apply_fun (apply_fun f x) i <> apply_fun x i)
+        HiPack).
+    }
+    claim HvZeroi :
+      add_SNo (apply_fun (apply_fun f x) i)
+        (minus_SNo (apply_fun x i)) = 0.
+    {
+      claim HvZeroiRaw :
+        apply_fun (apply_fun vdisp x) i =
+        add_SNo (apply_fun (apply_fun f x) i)
+          (minus_SNo (apply_fun x i)).
+      {
+        rewrite (apply_fun_graph
+          (Bn_closed n)
+          (fun x0:set =>
+            graph (ordsucc n) (fun i0:set =>
+              add_SNo (apply_fun (apply_fun f x0) i0)
+                (minus_SNo (apply_fun x0 i0))))
+          x
+          HxB).
+        exact (apply_fun_graph
+          (ordsucc n)
+          (fun i0:set =>
+            add_SNo (apply_fun (apply_fun f x) i0)
+              (minus_SNo (apply_fun x i0)))
+          i
+          Hi).
+      }
+      rewrite <- HvZeroiRaw.
+      exact (Hzero
+        i
+        Hi).
+    }
+    set fi := apply_fun (apply_fun f x) i.
+    set xi := apply_fun x i.
+    claim HfiR : fi :e R.
+    {
+      exact (euclidean_space_coord_in_R
+        (ordsucc n)
+        (apply_fun f x)
+        i
+        HfxEu
+        Hi).
+    }
+    claim HxiR : xi :e R.
+    {
+      exact (euclidean_space_coord_in_R
+        (ordsucc n)
+        x
+        i
+        HxEu
+        Hi).
+    }
+    claim HfiS : SNo fi.
+    {
+      exact (real_SNo
+        fi
+        HfiR).
+    }
+    claim HxiS : SNo xi.
+    {
+      exact (real_SNo
+        xi
+        HxiR).
+    }
+    claim HsumCancel :
+      add_SNo (add_SNo fi (minus_SNo xi)) xi = fi.
+    {
+      exact (add_SNo_minus_R2'
+        fi
+        xi
+        HfiS
+        HxiS).
+    }
+    claim Hsum0 :
+      add_SNo (add_SNo fi (minus_SNo xi)) xi = add_SNo 0 xi.
+    {
+      rewrite HvZeroi.
+      reflexivity.
+    }
+    claim HfiEq0xi : fi = add_SNo 0 xi.
+    {
+      rewrite <- HsumCancel.
+      exact Hsum0.
+    }
+    claim H0xiEq : add_SNo 0 xi = xi.
+    {
+      exact (add_SNo_0L
+        xi
+        HxiS).
+    }
+    claim HfiEqxi : fi = xi.
+    {
+      rewrite <- H0xiEq.
+      exact HfiEq0xi.
+    }
+    exact (Hneqi
+      HfiEqxi).
   }
   claim HioDisp :
     (exists x:set, x :e Sn n /\ points_directly_inward_Rn n vdisp x) /\
