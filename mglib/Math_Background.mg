@@ -57679,6 +57679,347 @@ apply andI.
   reflexivity.
 Qed.
 
+(** Infrastructure: two lifts into the same evenly-covered sheet agree on a connected domain. **)
+(** Proven Charlie **)
+Theorem lifts_agree_on_connected_domain_in_evenly_covered_sheet :
+  forall E Te B Tb p Ut slicesUt Vu D Td f lu lt u0:set,
+  topology_on E Te ->
+  slicesUt c= Te ->
+  pairwise_disjoint slicesUt ->
+  Union slicesUt = preimage_of E p Ut ->
+  (forall V:set, V :e slicesUt ->
+    homeomorphism V (subspace_topology E Te V) Ut (subspace_topology B Tb Ut)
+      (graph V (fun z:set => apply_fun p z))) ->
+  connected_space D Td ->
+  continuous_map D Td E Te lu ->
+  continuous_map D Td E Te lt ->
+  (forall x:set, x :e D -> apply_fun p (apply_fun lu x) = apply_fun f x) ->
+  (forall x:set, x :e D -> apply_fun p (apply_fun lt x) = apply_fun f x) ->
+  (forall x:set, x :e D -> apply_fun f x :e Ut) ->
+  Vu :e slicesUt ->
+  u0 :e D ->
+  apply_fun lu u0 :e Vu ->
+  apply_fun lt u0 :e Vu ->
+  forall x:set, x :e D -> apply_fun lu x = apply_fun lt x.
+let E Te B Tb p Ut slicesUt Vu D Td f lu lt u0.
+assume HtopE HslicesSub HpdSlices HunionSlices HhomeSlices
+  HconnD HluCont HltCont HluComm HltComm HfUt HVuSlice Hu0D Hlu0Vu Hlt0Vu.
+claim HluFun : function_on lu D E.
+{
+  exact (continuous_map_function_on
+    D
+    Td
+    E
+    Te
+    lu
+    HluCont).
+}
+claim HltFun : function_on lt D E.
+{
+  exact (continuous_map_function_on
+    D
+    Td
+    E
+    Te
+    lt
+    HltCont).
+}
+claim HimgLuConn :
+  connected_space (image_of lu D) (subspace_topology E Te (image_of lu D)).
+{
+  exact (continuous_image_connected
+    D
+    Td
+    E
+    Te
+    lu
+    HconnD
+    HluCont).
+}
+claim HimgLtConn :
+  connected_space (image_of lt D) (subspace_topology E Te (image_of lt D)).
+{
+  exact (continuous_image_connected
+    D
+    Td
+    E
+    Te
+    lt
+    HconnD
+    HltCont).
+}
+claim HimgLuSubUF : image_of lu D c= Union slicesUt.
+{
+  let y.
+  assume HyImg.
+  apply (ReplE
+    D
+    (fun x:set => apply_fun lu x)
+    y
+    HyImg).
+  let x.
+  assume HxPack.
+  claim HxD : x :e D.
+  {
+    exact (andEL
+      (x :e D)
+      (y = apply_fun lu x)
+      HxPack).
+  }
+  claim HyEq : y = apply_fun lu x.
+  {
+    exact (andER
+      (x :e D)
+      (y = apply_fun lu x)
+      HxPack).
+  }
+  rewrite HyEq.
+  claim HluE : apply_fun lu x :e E.
+  {
+    exact (HluFun
+      x
+      HxD).
+  }
+  claim HfxUt : apply_fun f x :e Ut.
+  {
+    exact (HfUt
+      x
+      HxD).
+  }
+  claim HpluEq : apply_fun p (apply_fun lu x) = apply_fun f x.
+  {
+    exact (HluComm
+      x
+      HxD).
+  }
+  claim HpluUt : apply_fun p (apply_fun lu x) :e Ut.
+  {
+    rewrite HpluEq.
+    exact HfxUt.
+  }
+  claim HluPreUt : apply_fun lu x :e preimage_of E p Ut.
+  {
+    exact (SepI
+      E
+      (fun z:set => apply_fun p z :e Ut)
+      (apply_fun lu x)
+      HluE
+      HpluUt).
+  }
+  exact (mem_eqL
+    (apply_fun lu x)
+    (Union slicesUt)
+    (preimage_of E p Ut)
+    HunionSlices
+    HluPreUt).
+}
+claim HimgLtSubUF : image_of lt D c= Union slicesUt.
+{
+  let y.
+  assume HyImg.
+  apply (ReplE
+    D
+    (fun x:set => apply_fun lt x)
+    y
+    HyImg).
+  let x.
+  assume HxPack.
+  claim HxD : x :e D.
+  {
+    exact (andEL
+      (x :e D)
+      (y = apply_fun lt x)
+      HxPack).
+  }
+  claim HyEq : y = apply_fun lt x.
+  {
+    exact (andER
+      (x :e D)
+      (y = apply_fun lt x)
+      HxPack).
+  }
+  rewrite HyEq.
+  claim HltE : apply_fun lt x :e E.
+  {
+    exact (HltFun
+      x
+      HxD).
+  }
+  claim HfxUt : apply_fun f x :e Ut.
+  {
+    exact (HfUt
+      x
+      HxD).
+  }
+  claim HpltEq : apply_fun p (apply_fun lt x) = apply_fun f x.
+  {
+    exact (HltComm
+      x
+      HxD).
+  }
+  claim HpltUt : apply_fun p (apply_fun lt x) :e Ut.
+  {
+    rewrite HpltEq.
+    exact HfxUt.
+  }
+  claim HltPreUt : apply_fun lt x :e preimage_of E p Ut.
+  {
+    exact (SepI
+      E
+      (fun z:set => apply_fun p z :e Ut)
+      (apply_fun lt x)
+      HltE
+      HpltUt).
+  }
+  exact (mem_eqL
+    (apply_fun lt x)
+    (Union slicesUt)
+    (preimage_of E p Ut)
+    HunionSlices
+    HltPreUt).
+}
+claim Hlu0Img : apply_fun lu u0 :e image_of lu D.
+{
+  exact (ReplI
+    D
+    (fun x:set => apply_fun lu x)
+    u0
+    Hu0D).
+}
+claim Hlt0Img : apply_fun lt u0 :e image_of lt D.
+{
+  exact (ReplI
+    D
+    (fun x:set => apply_fun lt x)
+    u0
+    Hu0D).
+}
+claim HimgLuSubVu : image_of lu D c= Vu.
+{
+  exact (connected_subset_of_pairwise_disjoint_open_union_anchor
+    E
+    Te
+    slicesUt
+    Vu
+    (image_of lu D)
+    (apply_fun lu u0)
+    HtopE
+    HslicesSub
+    HpdSlices
+    HimgLuSubUF
+    HimgLuConn
+    HVuSlice
+    Hlu0Img
+    Hlu0Vu).
+}
+claim HimgLtSubVu : image_of lt D c= Vu.
+{
+  exact (connected_subset_of_pairwise_disjoint_open_union_anchor
+    E
+    Te
+    slicesUt
+    Vu
+    (image_of lt D)
+    (apply_fun lt u0)
+    HtopE
+    HslicesSub
+    HpdSlices
+    HimgLtSubUF
+    HimgLtConn
+    HVuSlice
+    Hlt0Img
+    Hlt0Vu).
+}
+claim HhomeVu :
+  homeomorphism Vu (subspace_topology E Te Vu) Ut (subspace_topology B Tb Ut)
+    (graph Vu (fun z:set => apply_fun p z)).
+{
+  exact (HhomeSlices
+    Vu
+    HVuSlice).
+}
+let x.
+assume HxD.
+claim HluxImg : apply_fun lu x :e image_of lu D.
+{
+  exact (ReplI
+    D
+    (fun t:set => apply_fun lu t)
+    x
+    HxD).
+}
+claim HltxImg : apply_fun lt x :e image_of lt D.
+{
+  exact (ReplI
+    D
+    (fun t:set => apply_fun lt t)
+    x
+    HxD).
+}
+claim HluxVu : apply_fun lu x :e Vu.
+{
+  exact (HimgLuSubVu
+    (apply_fun lu x)
+    HluxImg).
+}
+claim HltxVu : apply_fun lt x :e Vu.
+{
+  exact (HimgLtSubVu
+    (apply_fun lt x)
+    HltxImg).
+}
+claim HfxUt : apply_fun f x :e Ut.
+{
+  exact (HfUt
+    x
+    HxD).
+}
+claim HuniqVu :
+  exists x0:set, x0 :e Vu /\ apply_fun p x0 = apply_fun f x /\
+    forall y:set, y :e Vu -> apply_fun p y = apply_fun f x -> y = x0.
+{
+  exact (homeomorphic_sheet_unique_fiber_point
+    E
+    Te
+    B
+    Tb
+    p
+    Vu
+    Ut
+    (apply_fun f x)
+    HhomeVu
+    HfxUt).
+}
+apply HuniqVu.
+let x0.
+assume Hx0Pack.
+claim Huniqx0 :
+  forall y:set, y :e Vu -> apply_fun p y = apply_fun f x -> y = x0.
+{
+  exact (andER
+    (x0 :e Vu /\ apply_fun p x0 = apply_fun f x)
+    (forall y:set, y :e Vu -> apply_fun p y = apply_fun f x -> y = x0)
+    Hx0Pack).
+}
+claim HluEqx0 : apply_fun lu x = x0.
+{
+  exact (Huniqx0
+    (apply_fun lu x)
+    HluxVu
+    (HluComm x HxD)).
+}
+claim HltEqx0 : apply_fun lt x = x0.
+{
+  exact (Huniqx0
+    (apply_fun lt x)
+    HltxVu
+    (HltComm x HxD)).
+}
+rewrite HluEqx0.
+rewrite HltEqx0.
+reflexivity.
+Qed.
+
 (** Infrastructure: local base-neighborhood lift into a chosen ambient open set on a sheet **)
 (** Proven Bob **)
 Theorem homeomorphic_sheet_lift_into_open_neighborhood :
