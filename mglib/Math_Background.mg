@@ -143798,6 +143798,7 @@ exact (Hnat n (omega_nat_p n Hn) Hfg).
 Qed.
 
 (** Helper: subgroup inherits group structure (local copy) **)
+(** Proven Alice **)
 Lemma local_subgroup_group_structure :
   forall G mult e inv H:set,
   group_structure G mult e inv ->
@@ -143848,6 +143849,7 @@ exact (and6I
 Qed.
 
 (** Helper: nat_primrec product stays in group (local copy) **)
+(** Proven Alice **)
 Lemma local_nat_primrec_in_group :
   forall G mult e:set,
   function_on mult (setprod G G) G ->
@@ -144218,7 +144220,173 @@ apply andI.
       (Hsub alpha Hal)).
     assume HsubG _ _ _. exact (HsubG x Hx). }
   prove apply_fun h x = apply_fun (apply_fun hfam alpha) x.
-  admit. (** TODO Alice: prove h extends hfam using uniqueness of representation **)
+  (** Step 1: apply_fun h x = map_rep(Eps_i(rep_pred x)) **)
+  claim Happly : apply_fun h x = map_rep (Eps_i (rep_pred x)).
+  { exact (apply_fun_graph G (fun g0:set => map_rep (Eps_i (rep_pred g0))) x HxG). }
+  (** Step 2: Get the Eps_i-chosen representation **)
+  claim Hpack : rep_pred x (Eps_i (rep_pred x)).
+  { exact (Eps_i_ex (rep_pred x) (Hrep_exists x HxG)). }
+  set pack := Eps_i (rep_pred x).
+  set n2 := pack 0. set a2 := (pack 1) 0. set x2 := (pack 1) 1.
+  (** Extract pack components **)
+  claim Hpack_exp : n2 :e omega /\ n2 <> 0 /\ function_on a2 n2 J /\ function_on x2 n2 G /\
+    (forall i:set, i :e n2 -> apply_fun x2 i :e apply_fun Gfam (apply_fun a2 i)) /\
+    (forall i j:set, i :e n2 -> j :e n2 -> i <> j -> apply_fun a2 i <> apply_fun a2 j) /\
+    x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x2 i)) n2.
+  { exact Hpack. }
+  apply (and7E
+    (n2 :e omega) (n2 <> 0) (function_on a2 n2 J) (function_on x2 n2 G)
+    (forall i:set, i :e n2 -> apply_fun x2 i :e apply_fun Gfam (apply_fun a2 i))
+    (forall i j:set, i :e n2 -> j :e n2 -> i <> j -> apply_fun a2 i <> apply_fun a2 j)
+    (x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x2 i)) n2)
+    Hpack_exp).
+  assume Hn2O Hn2_ne Ha2Fn Hx2Fn Hx2_Gfam Hdist2 HxRep2.
+  (** Step 3: Construct trivial representation of x **)
+  (** Trivial: n1=1, a1(0)=alpha, x1(0)=x **)
+  claim HeG_sub : eG :e apply_fun Gfam alpha.
+  { apply (and4E (apply_fun Gfam alpha c= G) (eG :e apply_fun Gfam alpha)
+      (forall x0 y:set, x0 :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+        apply_fun multG (x0, y) :e apply_fun Gfam alpha)
+      (forall x0:set, x0 :e apply_fun Gfam alpha -> apply_fun invG x0 :e apply_fun Gfam alpha)
+      (Hsub alpha Hal)).
+    assume _ HeG_s _ _. exact HeG_s. }
+  (** Extract left and right identity from G **)
+  claim HleftIdG : forall y:set, y :e G -> apply_fun multG (eG, y) = y.
+  { let y. assume Hy.
+    apply (and6E
+      (function_on multG (setprod G G) G) (function_on invG G G) (eG :e G)
+      (forall a b c:set, a :e G -> b :e G -> c :e G ->
+        apply_fun multG (apply_fun multG (a, b), c) = apply_fun multG (a, apply_fun multG (b, c)))
+      (forall a:set, a :e G -> apply_fun multG (eG, a) = a /\ apply_fun multG (a, eG) = a)
+      (forall a:set, a :e G -> apply_fun multG (a, apply_fun invG a) = eG /\ apply_fun multG (apply_fun invG a, a) = eG)
+      HgrpG).
+    assume _ _ _ _ HidG _.
+    exact (andEL (apply_fun multG (eG, y) = y) (apply_fun multG (y, eG) = y) (HidG y Hy)). }
+  (** Trivial rep: x = multG(eG, x) = nat_primrec eG (...) 1 **)
+  claim Htriv_rep : x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun (graph 1 (fun _ => x)) i)) 1.
+  { rewrite (nat_primrec_S eG (fun i r => apply_fun multG (r, apply_fun (graph 1 (fun _ => x)) i)) 0 nat_0).
+    rewrite (nat_primrec_0 eG (fun i r => apply_fun multG (r, apply_fun (graph 1 (fun _ => x)) i))).
+    prove x = apply_fun multG (eG, apply_fun (graph 1 (fun _ => x)) 0).
+    rewrite (apply_fun_graph 1 (fun _ => x) 0 In_0_1).
+    prove x = apply_fun multG (eG, x).
+    claim HxG2 : x :e G. { exact HxG. }
+    rewrite (HleftIdG x HxG2). reflexivity. }
+  (** Apply uniqueness with trivial (rep1) and Eps_i (rep2) **)
+  claim H1O : 1 :e omega. { exact nat_p_omega 1 nat_1. }
+  claim H1ne0 : 1 <> 0. { exact neq_1_0. }
+  claim Ha1Fn : function_on (graph 1 (fun _ => alpha)) 1 J.
+  { let i. assume Hi : i :e 1.
+    rewrite (apply_fun_graph 1 (fun _ => alpha) i Hi). exact Hal. }
+  claim Hx1Fn : function_on (graph 1 (fun _ => x)) 1 G.
+  { let i. assume Hi : i :e 1.
+    rewrite (apply_fun_graph 1 (fun _ => x) i Hi). exact HxG. }
+  claim Hx1_Gfam : forall i:set, i :e 1 ->
+    apply_fun (graph 1 (fun _ => x)) i :e apply_fun Gfam (apply_fun (graph 1 (fun _ => alpha)) i).
+  { let i. assume Hi.
+    rewrite (apply_fun_graph 1 (fun _ => x) i Hi).
+    rewrite (apply_fun_graph 1 (fun _ => alpha) i Hi).
+    exact Hx. }
+  claim Hdist1 : forall i j:set, i :e 1 -> j :e 1 -> i <> j ->
+    apply_fun (graph 1 (fun _ => alpha)) i <> apply_fun (graph 1 (fun _ => alpha)) j.
+  { let i j. assume Hi Hj Hne.
+    (** i :e 1 = ordsucc 0, so i :e 0 \/ i = 0. Since 0 = Empty, i = 0. Similarly j = 0. **)
+    apply (ordsuccE 0 i Hi).
+    - assume Hi0 : i :e 0.
+      exact (FalseE (EmptyE i Hi0)
+        (apply_fun (graph 1 (fun _ => alpha)) i <> apply_fun (graph 1 (fun _ => alpha)) j)).
+    - assume Hi0 : i = 0.
+      apply (ordsuccE 0 j Hj).
+      + assume Hj0 : j :e 0.
+        exact (FalseE (EmptyE j Hj0)
+          (apply_fun (graph 1 (fun _ => alpha)) i <> apply_fun (graph 1 (fun _ => alpha)) j)).
+      + assume Hj0 : j = 0.
+        assume _.
+        claim Hij : i = j. { rewrite Hi0. rewrite Hj0. reflexivity. }
+        exact (Hne Hij). }
+  (** Now use Huniq **)
+  claim Huniq_applied : forall beta:set, beta :e J ->
+    (forall i j:set, i :e 1 -> j :e n2 ->
+      apply_fun (graph 1 (fun _ => alpha)) i = beta -> apply_fun a2 j = beta ->
+      apply_fun (graph 1 (fun _ => x)) i = apply_fun x2 j) /\
+    ((exists i:set, i :e 1 /\ apply_fun (graph 1 (fun _ => alpha)) i = beta) ->
+     ~(exists j:set, j :e n2 /\ apply_fun a2 j = beta) ->
+     forall i:set, i :e 1 -> apply_fun (graph 1 (fun _ => alpha)) i = beta ->
+       apply_fun (graph 1 (fun _ => x)) i = eG) /\
+    (~(exists i:set, i :e 1 /\ apply_fun (graph 1 (fun _ => alpha)) i = beta) ->
+     (exists j:set, j :e n2 /\ apply_fun a2 j = beta) ->
+     forall j:set, j :e n2 -> apply_fun a2 j = beta -> apply_fun x2 j = eG).
+  { let beta. assume Hbeta.
+    exact (Huniq x HxG 1 n2 H1O Hn2O H1ne0 Hn2_ne
+      (graph 1 (fun _ => alpha)) a2 Ha1Fn Ha2Fn
+      (graph 1 (fun _ => x)) x2 Hx1Fn Hx2Fn
+      Hx1_Gfam Hx2_Gfam Hdist1 Hdist2 Htriv_rep HxRep2
+      beta Hbeta). }
+  (** Step 4: Show map_rep(pack) = hfam(alpha)(x) **)
+  (** map_rep(pack) = nat_primrec eH (fun i r => multH(r, hfam(a2(i))(x2(i)))) n2 **)
+  (** For each i :e n2: if a2(i) = alpha then x2(i) = x; if a2(i) ≠ alpha then x2(i) = eG **)
+  claim Hcomp : forall j:set, j :e n2 ->
+    (apply_fun a2 j = alpha -> apply_fun x2 j = x) /\
+    (apply_fun a2 j <> alpha -> apply_fun x2 j = eG).
+  { let j. assume Hj.
+    apply andI.
+    - assume Haj : apply_fun a2 j = alpha.
+      (** Both reps have alpha, so x2(j) = x1(0) = x **)
+      apply (and3E
+        (forall i j0:set, i :e 1 -> j0 :e n2 ->
+          apply_fun (graph 1 (fun _ => alpha)) i = alpha -> apply_fun a2 j0 = alpha ->
+          apply_fun (graph 1 (fun _ => x)) i = apply_fun x2 j0)
+        ((exists i:set, i :e 1 /\ apply_fun (graph 1 (fun _ => alpha)) i = alpha) ->
+         ~(exists j0:set, j0 :e n2 /\ apply_fun a2 j0 = alpha) ->
+         forall i:set, i :e 1 -> apply_fun (graph 1 (fun _ => alpha)) i = alpha ->
+           apply_fun (graph 1 (fun _ => x)) i = eG)
+        (~(exists i:set, i :e 1 /\ apply_fun (graph 1 (fun _ => alpha)) i = alpha) ->
+         (exists j0:set, j0 :e n2 /\ apply_fun a2 j0 = alpha) ->
+         forall j0:set, j0 :e n2 -> apply_fun a2 j0 = alpha -> apply_fun x2 j0 = eG)
+        (Huniq_applied alpha Hal)).
+      assume Hmatch _ _.
+      claim Heq : apply_fun (graph 1 (fun _ => x)) 0 = apply_fun x2 j.
+      { exact (Hmatch 0 j In_0_1 Hj
+          (apply_fun_graph 1 (fun _ => alpha) 0 In_0_1) Haj). }
+      (** Goal: apply_fun x2 j = x. Use rewrite <- Heq in goal, then apply_fun_graph **)
+      rewrite <- Heq.
+      exact (apply_fun_graph 1 (fun _ => x) 0 In_0_1).
+    - assume Haj_ne : apply_fun a2 j <> alpha.
+      (** a2(j) ≠ alpha. Since trivial rep has only alpha, trivial doesn't have a2(j). **)
+      (** So by uniqueness clause 3: x2(j) = eG **)
+      set beta := apply_fun a2 j.
+      claim Hbeta_J : beta :e J. { exact (Ha2Fn j Hj). }
+      apply (and3E
+        (forall i j0:set, i :e 1 -> j0 :e n2 ->
+          apply_fun (graph 1 (fun _ => alpha)) i = beta -> apply_fun a2 j0 = beta ->
+          apply_fun (graph 1 (fun _ => x)) i = apply_fun x2 j0)
+        ((exists i:set, i :e 1 /\ apply_fun (graph 1 (fun _ => alpha)) i = beta) ->
+         ~(exists j0:set, j0 :e n2 /\ apply_fun a2 j0 = beta) ->
+         forall i:set, i :e 1 -> apply_fun (graph 1 (fun _ => alpha)) i = beta ->
+           apply_fun (graph 1 (fun _ => x)) i = eG)
+        (~(exists i:set, i :e 1 /\ apply_fun (graph 1 (fun _ => alpha)) i = beta) ->
+         (exists j0:set, j0 :e n2 /\ apply_fun a2 j0 = beta) ->
+         forall j0:set, j0 :e n2 -> apply_fun a2 j0 = beta -> apply_fun x2 j0 = eG)
+        (Huniq_applied beta Hbeta_J)).
+      assume _ _ Hclause3.
+      (** Trivial rep doesn't have beta (since beta = a2(j) ≠ alpha) **)
+      claim Hno_triv : ~(exists i:set, i :e 1 /\ apply_fun (graph 1 (fun _ => alpha)) i = beta).
+      { assume Hex. apply Hex. let i. assume Hand.
+        claim Hi : i :e 1. { exact (andEL (i :e 1) (apply_fun (graph 1 (fun _ => alpha)) i = beta) Hand). }
+        claim Hai : apply_fun (graph 1 (fun _ => alpha)) i = beta.
+        { exact (andER (i :e 1) (apply_fun (graph 1 (fun _ => alpha)) i = beta) Hand). }
+        claim Hbeta_eq : beta = alpha.
+        { rewrite <- Hai. exact (apply_fun_graph 1 (fun _ => alpha) i Hi). }
+        exact (Haj_ne Hbeta_eq). }
+      claim Hex_pack : exists j0:set, j0 :e n2 /\ apply_fun a2 j0 = beta.
+      { witness j. apply andI. exact Hj. reflexivity. }
+      claim Haj_beta : apply_fun a2 j = beta. { reflexivity. }
+      exact (Hclause3 Hno_triv Hex_pack j Hj Haj_beta). }
+  (** Now show map_rep = hfam(alpha)(x) **)
+  (** Case: does pack have an index with a2(j) = alpha? **)
+  claim Hmap_eq : map_rep pack = apply_fun (apply_fun hfam alpha) x.
+  { admit. (** TODO Alice: use Hcomp + nat_primrec_single_nonzero or nat_primrec_all_e **) }
+  exact (eq_i_tra (apply_fun h x) (map_rep pack) (apply_fun (apply_fun hfam alpha) x)
+    Happly Hmap_eq).
 Admitted.
 
 (** from S67 Lem 67.1 (line 2609 in algtop.tex): extension condition for direct sums **)
