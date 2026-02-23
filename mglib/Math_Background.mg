@@ -1,4 +1,4 @@
-(** Balance Alice 3219 **)
+(** Balance Alice 3200 **)
 (** Balance Bob 3451 **)
 (** Balance Charlie 1203 **)
 (** Balance Dave 1793 **)
@@ -143821,7 +143821,8 @@ Admitted.
 (** Conversely, if the groups G_alpha generate G and the extension condition holds, **)
 (** then G is the direct sum of the G_alpha. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 182 **)
+(** Bounty 201 **)
+(** Lock Alice 1771968000 **)
 Theorem lemma67_1_extension_condition_direct_sum :
   forall G multG eG invG J Gfam:set,
   direct_sum_of_subgroups G multG eG invG J Gfam ->
