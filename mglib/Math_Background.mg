@@ -1,5 +1,5 @@
 (** Balance Alice 3219 **)
-(** Balance Bob 3363 **)
+(** Balance Bob 3451 **)
 (** Balance Charlie 1203 **)
 (** Balance Dave 1793 **)
 
@@ -90162,35 +90162,6 @@ exact (s55_nulhomotopic_identity_implies_nulhomotopic_inclusion_R2_minus_origin
     Hretr)).
 Qed.
 
-(** from S55 Thm 55.2 (line 904 in algtop.tex): No-retraction theorem **)
-(** LATEX VERSION: There is no retraction of B^2 onto S^1. **)
-(** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
-Theorem thm55_2_no_retraction_B2_S1 : ~(retraction_of B2 B2_topology S1).
-assume Hretr.
-claim HnulId :
-  nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x)).
-{
-  exact (s55_retraction_B2_S1_implies_identity_nulhomotopic
-    Hretr).
-}
-claim HnulIncl :
-  nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
-    (graph S1 (fun x:set => x)).
-{
-  exact (s55_retraction_B2_S1_implies_inclusion_R2m0_nulhomotopic
-    Hretr).
-}
-claim HinclNotNul :
-  ~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
-    (graph S1 (fun x:set => x))).
-{
-  admit.
-}
-exact (HinclNotNul
-  HnulIncl).
-Admitted.
-
 (** from S55 Lem 55.3 direction (1) implies (2) (line 907 in algtop.tex) **)
 (** LATEX VERSION: Let h: S^1 -> X be continuous. If h is nulhomotopic, then h extends to a continuous map k: B^2 -> X. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 120 **)
@@ -99463,6 +99434,18 @@ claim H0eq1 : 0 = 1.
 }
 exact (neq_0_1
   H0eq1).
+Qed.
+
+(** from S55 Thm 55.2 (line 904 in algtop.tex): No-retraction theorem **)
+(** LATEX VERSION: There is no retraction of B^2 onto S^1. **)
+(** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
+(** Collected Bob 88 **)
+(** Proven Bob **)
+Theorem thm55_2_no_retraction_B2_S1 : ~(retraction_of B2 B2_topology S1).
+assume Hretr.
+exact (cor55_4a_inclusion_S1_R2_not_nulhomotopic
+  (s55_retraction_B2_S1_implies_inclusion_R2m0_nulhomotopic
+    Hretr)).
 Qed.
 
 (** S55 helper: S1 lies in R2 minus origin. **)
