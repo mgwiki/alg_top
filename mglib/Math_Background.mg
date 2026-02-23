@@ -87418,6 +87418,7 @@ apply (xm
 		    (exists cls:set, cls :e G /\ cls <> idG)).
 		Admitted.
 
+ (** Proven Bob **)
 Theorem s54_pi1_S1_nontrivial_from_two_lifts : forall e0 e1:set,
   e0 :e R ->
   e1 :e R ->
@@ -87429,30 +87430,136 @@ Theorem s54_pi1_S1_nontrivial_from_two_lifts : forall e0 e1:set,
     cls <> fundamental_group_id S1 S1_topology S1_basepoint.
 let e0 e1.
 assume He0R He1R He0Base He1Base He1Ne0.
-claim He1EqHe0 :
-  apply_fun covering_map_R_S1 e1 =
-  apply_fun covering_map_R_S1 e0.
+apply thm54_5_pi1_circle.
+let phi.
+assume HphiIso.
+claim HphiBij :
+  bijection
+    (fundamental_group S1 S1_topology S1_basepoint)
+    int
+    phi.
 {
-  rewrite He1Base.
-  rewrite He0Base.
-  reflexivity.
+  exact (group_isomorphism_bijection
+    (fundamental_group S1 S1_topology S1_basepoint)
+    (fundamental_group_mult S1 S1_topology S1_basepoint)
+    int
+    integers_group_mult
+    phi
+    HphiIso).
 }
-rewrite <- He0Base.
-exact (s54_pi1_nontrivial_from_two_fiber_points
-  R
-  R_standard_topology
-  S1
-  S1_topology
-  covering_map_R_S1
-  e0
-  e1
-  thm53_1_R_covers_S1
-  simply_connected_R_standard
-  He0R
-  He1R
-  He1EqHe0
-  He1Ne0).
-Admitted.
+claim H0Int : 0 :e int.
+{
+  exact (Subq_omega_int
+    0
+    (nat_p_omega 0 nat_0)).
+}
+claim H1Int : 1 :e int.
+{
+  exact (Subq_omega_int
+    1
+    (nat_p_omega 1 nat_1)).
+}
+claim Hpre0 :
+  exists cls0:set,
+    cls0 :e fundamental_group S1 S1_topology S1_basepoint /\
+    apply_fun phi cls0 = 0.
+{
+  exact (bijection_surj
+    (fundamental_group S1 S1_topology S1_basepoint)
+    int
+    phi
+    0
+    HphiBij
+    H0Int).
+}
+apply Hpre0.
+let cls0.
+assume Hcls0Pack.
+claim Hcls0G : cls0 :e fundamental_group S1 S1_topology S1_basepoint.
+{
+  exact (andEL
+    (cls0 :e fundamental_group S1 S1_topology S1_basepoint)
+    (apply_fun phi cls0 = 0)
+    Hcls0Pack).
+}
+claim Hphi0 : apply_fun phi cls0 = 0.
+{
+  exact (andER
+    (cls0 :e fundamental_group S1 S1_topology S1_basepoint)
+    (apply_fun phi cls0 = 0)
+    Hcls0Pack).
+}
+claim Hpre1 :
+  exists cls1:set,
+    cls1 :e fundamental_group S1 S1_topology S1_basepoint /\
+    apply_fun phi cls1 = 1.
+{
+  exact (bijection_surj
+    (fundamental_group S1 S1_topology S1_basepoint)
+    int
+    phi
+    1
+    HphiBij
+    H1Int).
+}
+apply Hpre1.
+let cls1.
+assume Hcls1Pack.
+claim Hcls1G : cls1 :e fundamental_group S1 S1_topology S1_basepoint.
+{
+  exact (andEL
+    (cls1 :e fundamental_group S1 S1_topology S1_basepoint)
+    (apply_fun phi cls1 = 1)
+    Hcls1Pack).
+}
+claim Hphi1 : apply_fun phi cls1 = 1.
+{
+  exact (andER
+    (cls1 :e fundamental_group S1 S1_topology S1_basepoint)
+    (apply_fun phi cls1 = 1)
+    Hcls1Pack).
+}
+apply xm (cls0 = fundamental_group_id S1 S1_topology S1_basepoint).
+- assume Hcls0Id.
+  witness cls1.
+  apply andI.
+  + exact Hcls1G.
+  + assume Hcls1Id.
+    claim HphiId0 :
+      apply_fun phi (fundamental_group_id S1 S1_topology S1_basepoint) = 0.
+    {
+      rewrite <- Hcls0Id.
+      exact Hphi0.
+    }
+    claim HphiId1 :
+      apply_fun phi (fundamental_group_id S1 S1_topology S1_basepoint) = 1.
+    {
+      rewrite <- Hcls1Id.
+      exact Hphi1.
+    }
+    claim H0eq1 : 0 = 1.
+    {
+      claim H0eqPhi :
+        0 = apply_fun phi (fundamental_group_id S1 S1_topology S1_basepoint).
+      {
+        symmetry.
+        exact HphiId0.
+      }
+      exact (eq_i_tra
+        0
+        (apply_fun phi (fundamental_group_id S1 S1_topology S1_basepoint))
+        1
+        H0eqPhi
+        HphiId1).
+    }
+    exact (neq_0_1
+      H0eq1).
+- assume Hcls0Ne.
+  witness cls0.
+  apply andI.
+  + exact Hcls0G.
+  + exact Hcls0Ne.
+Qed.
 
 Theorem fundamental_group_id_member : forall X Tx x0:set,
   topology_on X Tx ->
