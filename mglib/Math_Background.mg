@@ -63629,1499 +63629,709 @@ claim Hex :
                     l0 /\
                   apply_fun l0 0 = e0.
               {
-                claim HexGlue :
-                  exists l0:set,
-                    continuous_map
-                      Ntu
-                      (subspace_topology unit_interval unit_interval_topology Ntu)
-                      E
-                      Te
-                      l0 /\
-                    apply_fun l0 0 = e0 /\
-                    (forall x:set, x :e Ntu ->
-                      apply_fun p (apply_fun l0 x) = apply_fun f x).
+                claim HtNe0 : t <> 0.
                 {
-                  set l0 := graph Ntu
-                    (fun x:set => If_i (x :e Nu) (apply_fun lu x) (apply_fun localNt x)).
-                  claim Hl00 : apply_fun l0 0 = e0.
+                  assume HtEq0.
+                  claim HtSeed : t :e SeedTimes.
                   {
-                    rewrite (apply_fun_graph
-                      Ntu
-                      (fun x:set => If_i (x :e Nu) (apply_fun lu x) (apply_fun localNt x))
-                      0
-                      H0Ntu).
-                    rewrite (If_i_1
-                      (0 :e Nu)
-                      (apply_fun lu 0)
-                      (apply_fun localNt 0)
-                      H0Nu).
-                    exact Hlu0.
+                    rewrite HtEq0.
+                    exact H0SeedTimes.
                   }
-                  claim Hl0Comm :
-                    forall x:set, x :e Ntu ->
-                      apply_fun p (apply_fun l0 x) = apply_fun f x.
-                  {
-                    let x.
-                    assume HxNtu.
-                    rewrite (apply_fun_graph
-                      Ntu
-                      (fun y:set => If_i (y :e Nu) (apply_fun lu y) (apply_fun localNt y))
-                      x
-                      HxNtu).
-                    apply xm (x :e Nu).
-                    - assume HxNu.
-                      rewrite (If_i_1
-                        (x :e Nu)
-                        (apply_fun lu x)
-                        (apply_fun localNt x)
-                        HxNu).
-                      exact (HluComm
-                        x
-                        HxNu).
-                    - assume HxNotNu.
-                      claim HxNt : x :e Nt.
-                      {
-                        apply (binunionE
-                          Nu
-                          Nt
-                          x
-                          HxNtu).
-                        + assume HxNu.
-                          claim Hfalse : False.
-                          {
-                            exact (HxNotNu
-                              HxNu).
-                          }
-                          exact (FalseE
-                            Hfalse
-                            (x :e Nt)).
-                        + assume HxNt0.
-                          exact HxNt0.
-                      }
-                      rewrite (If_i_0
-                        (x :e Nu)
-                        (apply_fun lu x)
-                        (apply_fun localNt x)
-                        HxNotNu).
-                      exact (HlocalNtComm
-                        x
-                        HxNt).
-                  }
-                  claim Hl0Cont :
-                    continuous_map
-                      Ntu
-                      (subspace_topology unit_interval unit_interval_topology Ntu)
-                      E
-                      Te
-                      l0.
-                  {
-                    claim HlocalNtFun : function_on localNt Nt E.
-                    {
-                      exact (continuous_map_function_on
-                        Nt
-                        (subspace_topology unit_interval unit_interval_topology Nt)
-                        E
-                        Te
-                        localNt
-                        HlocalNtContE).
-                    }
-                    claim Hl0Total :
-                      total_function_on
-                        l0
-                        Ntu
-                        E.
-                    {
-                      apply (total_function_on_graph
-                        Ntu
-                        E
-                        (fun x:set => If_i (x :e Nu) (apply_fun lu x) (apply_fun localNt x))).
-                      let x.
-                      assume HxNtu.
-                      apply xm (x :e Nu).
-                      - assume HxNu.
-                        claim Hbeta :
-                          (fun y:set => If_i (y :e Nu) (apply_fun lu y) (apply_fun localNt y)) x =
-                          If_i (x :e Nu) (apply_fun lu x) (apply_fun localNt x).
-                        {
-                          reflexivity.
-                        }
-                        rewrite Hbeta.
-                        rewrite (If_i_1
-                          (x :e Nu)
-                          (apply_fun lu x)
-                          (apply_fun localNt x)
-                          HxNu).
-                        exact (HluFun
-                          x
-                          HxNu).
-                      - assume HxNotNu.
-                        claim HxNt : x :e Nt.
-                        {
-                          apply (binunionE
-                            Nu
-                            Nt
-                            x
-                            HxNtu).
-                          + assume HxNu.
-                            claim Hfalse : False.
-                            {
-                              exact (HxNotNu
-                                HxNu).
-                            }
-                            exact (FalseE
-                              Hfalse
-                              (x :e Nt)).
-                          + assume HxNt0.
-                            exact HxNt0.
-                        }
-                        claim Hbeta :
-                          (fun y:set => If_i (y :e Nu) (apply_fun lu y) (apply_fun localNt y)) x =
-                          If_i (x :e Nu) (apply_fun lu x) (apply_fun localNt x).
-                        {
-                          reflexivity.
-                        }
-                        rewrite Hbeta.
-                        rewrite (If_i_0
-                          (x :e Nu)
-                          (apply_fun lu x)
-                          (apply_fun localNt x)
-                          HxNotNu).
-                        exact (HlocalNtFun
-                          x
-                          HxNt).
-                    }
-                    claim Hl0FunNtu : function_on l0 Ntu E.
-                    {
-                      exact (total_function_on_function_on
-                        l0
-                        Ntu
-                        E
-                        Hl0Total).
-                    }
-                    claim HNtuSub :
-                      Ntu c= unit_interval.
-                    {
-                      exact (topology_elem_subset
-                        unit_interval
-                        unit_interval_topology
-                        Ntu
-                        unit_interval_topology_on
-                        HNtuOpen).
-                    }
-                    claim HtopNtu :
-                      topology_on
-                        Ntu
-                        (subspace_topology unit_interval unit_interval_topology Ntu).
-                    {
-                      exact (subspace_topology_is_topology
-                        unit_interval
-                        unit_interval_topology
-                        Ntu
-                        unit_interval_topology_on
-                        HNtuSub).
-                    }
-                    claim HNuSubNtu : Nu c= Ntu.
-                    {
-                      let x.
-                      assume HxNu.
-                      exact (binunionI1
-                        Nu
-                        Nt
-                        x
-                        HxNu).
-                    }
-                    claim HNtSubNtu : Nt c= Ntu.
-                    {
-                      let x.
-                      assume HxNt.
-                      exact (binunionI2
-                        Nu
-                        Nt
-                        x
-                        HxNt).
-                    }
-                    claim HNuTy :
-                      subspace_topology
-                        Ntu
-                        (subspace_topology unit_interval unit_interval_topology Ntu)
-                        Nu =
-                      subspace_topology
-                        unit_interval
-                        unit_interval_topology
-                        Nu.
-                    {
-                      exact (subspace_topology_transitive_weak
-                        unit_interval
-                        unit_interval_topology
-                        Ntu
-                        Nu
-                        HNuSubNtu).
-                    }
-                    claim HNuCont0 :
-                      continuous_map
-                        Nu
-                        (subspace_topology
-                          Ntu
-                          (subspace_topology unit_interval unit_interval_topology Ntu)
-                          Nu)
-                        E
-                        Te
-                        lu.
-                    {
-                      rewrite HNuTy.
-                      exact HluCont.
-                    }
-                    claim Hl0FunNu : function_on l0 Nu E.
-                    {
-                      exact (function_on_subdomain
-                        l0
-                        Ntu
-                        E
-                        Nu
-                        Hl0FunNtu
-                        HNuSubNtu).
-                    }
-                    claim Hl0EqNu :
-                      forall x:set, x :e Nu ->
-                        apply_fun lu x = apply_fun l0 x.
-                    {
-                      let x.
-                      assume HxNu.
-                      rewrite (apply_fun_graph
-                        Ntu
-                        (fun y:set => If_i (y :e Nu) (apply_fun lu y) (apply_fun localNt y))
-                        x
-                        (HNuSubNtu x HxNu)).
-                      rewrite (If_i_1
-                        (x :e Nu)
-                        (apply_fun lu x)
-                        (apply_fun localNt x)
-                        HxNu).
-                      reflexivity.
-                    }
-                    claim HNuCont :
-                      continuous_map
-                        Nu
-                        (subspace_topology
-                          Ntu
-                          (subspace_topology unit_interval unit_interval_topology Ntu)
-                          Nu)
-                        E
-                        Te
-                        l0.
-                    {
-                      exact (continuous_map_congr_on
-                        Nu
-                        (subspace_topology
-                          Ntu
-                          (subspace_topology unit_interval unit_interval_topology Ntu)
-                          Nu)
-                        E
-                        Te
-                        lu
-                        l0
-                        HNuCont0
-                        Hl0FunNu
-                        Hl0EqNu).
-                    }
-                    claim HNtTy :
-                      subspace_topology
-                        Ntu
-                        (subspace_topology unit_interval unit_interval_topology Ntu)
-                        Nt =
-                      subspace_topology
-                        unit_interval
-                        unit_interval_topology
-                        Nt.
-                    {
-                      exact (subspace_topology_transitive_weak
-                        unit_interval
-                        unit_interval_topology
-                        Ntu
-                        Nt
-                        HNtSubNtu).
-                    }
-                    claim HNtCont0 :
-                      continuous_map
-                        Nt
-                        (subspace_topology
-                          Ntu
-                          (subspace_topology unit_interval unit_interval_topology Ntu)
-                          Nt)
-                        E
-                        Te
-                        localNt.
-                    {
-                      rewrite HNtTy.
-                      exact HlocalNtContE.
-                    }
-                    claim Hl0FunNt : function_on l0 Nt E.
-                    {
-                      exact (function_on_subdomain
-                        l0
-                        Ntu
-                        E
-                        Nt
-                        Hl0FunNtu
-                        HNtSubNtu).
-                    }
-                    claim HagreeNuNt :
-                      forall x:set, x :e Nu :/\: Nt ->
-                        apply_fun lu x = apply_fun localNt x.
-                    {
-                      claim HluOverlapVu :
-                        forall x:set, x :e Nu :/\: Nt ->
-                          apply_fun lu x :e Vu.
-                      {
-                        let x.
-                        assume HxNuNt.
-                        claim HxNu : x :e Nu.
-                        {
-                          exact (binintersectE1
-                            Nu
-                            Nt
-                            x
-                            HxNuNt).
-                        }
-                        claim HxNt : x :e Nt.
-                        {
-                          exact (binintersectE2
-                            Nu
-                            Nt
-                            x
-                            HxNuNt).
-                        }
-                        claim HluEx : apply_fun lu x :e E.
-                        {
-                          exact (HluFun
-                            x
-                            HxNu).
-                        }
-                        claim HfxUt : apply_fun f x :e Ut.
-                        {
-                          exact (HNtMap
-                            x
-                            HxNt).
-                        }
-                        claim HpluEqfx : apply_fun p (apply_fun lu x) = apply_fun f x.
-                        {
-                          exact (HluComm
-                            x
-                            HxNu).
-                        }
-                        claim HpluUt : apply_fun p (apply_fun lu x) :e Ut.
-                        {
-                          rewrite HpluEqfx.
-                          exact HfxUt.
-                        }
-                        claim HluPreUt : apply_fun lu x :e preimage_of E p Ut.
-                        {
-                          exact (SepI
-                            E
-                            (fun z:set => apply_fun p z :e Ut)
-                            (apply_fun lu x)
-                            HluEx
-                            HpluUt).
-                        }
-                        claim HluUnion : apply_fun lu x :e Union slicesUt.
-                        {
-                          exact (mem_eqL
-                            (apply_fun lu x)
-                            (Union slicesUt)
-                            (preimage_of E p Ut)
-                            HslicesUtUnion
-                            HluPreUt).
-                        }
-                        claim HsliceAtLux :
-                          exists Vx:set, apply_fun lu x :e Vx /\ Vx :e slicesUt.
-                        {
-                          exact (UnionE
-                            slicesUt
-                            (apply_fun lu x)
-                            HluUnion).
-                        }
-                        apply HsliceAtLux.
-                        let Vx.
-                        assume HVxPack.
-                        claim HluVx : apply_fun lu x :e Vx.
-                        {
-                          exact (andEL
-                            (apply_fun lu x :e Vx)
-                            (Vx :e slicesUt)
-                            HVxPack).
-                        }
-                        claim HVxSlice : Vx :e slicesUt.
-                        {
-                          exact (andER
-                            (apply_fun lu x :e Vx)
-                            (Vx :e slicesUt)
-                            HVxPack).
-                        }
-                        claim HVxEqVu : Vx = Vu.
-                        {
-                          claim HpdSlicesUt : pairwise_disjoint slicesUt.
-                          {
-                            exact (andER
-                              (slicesUt c= Te)
-                              (pairwise_disjoint slicesUt)
-                              (andEL
-                                (slicesUt c= Te /\ pairwise_disjoint slicesUt)
-                                (Union slicesUt = preimage_of E p Ut)
-                                HslicesUtCore)).
-                          }
-                          claim HhomeVx :
-                            homeomorphism Vx (subspace_topology E Te Vx) Ut (subspace_topology B Tb Ut)
-                              (graph Vx (fun z:set => apply_fun p z)).
-                          {
-                            exact (HhomeSlicesUt
-                              Vx
-                              HVxSlice).
-                          }
-                          claim HuniqVx :
-                            exists xv:set, xv :e Vx /\ apply_fun p xv = apply_fun f x /\
-                              forall y:set, y :e Vx ->
-                                apply_fun p y = apply_fun f x -> y = xv.
-                          {
-                            exact (homeomorphic_sheet_unique_fiber_point
-                              E
-                              Te
-                              B
-                              Tb
-                              p
-                              Vx
-                              Ut
-                              (apply_fun f x)
-                              HhomeVx
-                              HfxUt).
-                          }
-                          apply HuniqVx.
-                          let xv.
-                          assume HxvPack.
-                          claim HxvLeft :
-                            (xv :e Vx /\ apply_fun p xv = apply_fun f x).
-                          {
-                            exact (andEL
-                              (xv :e Vx /\ apply_fun p xv = apply_fun f x)
-                              (forall y:set, y :e Vx ->
-                                apply_fun p y = apply_fun f x -> y = xv)
-                              HxvPack).
-                          }
-                          claim HxvVx : xv :e Vx.
-                          {
-                            exact (andEL
-                              (xv :e Vx)
-                              (apply_fun p xv = apply_fun f x)
-                              HxvLeft).
-                          }
-                          claim HpxvEqfx : apply_fun p xv = apply_fun f x.
-                          {
-                            exact (andER
-                              (xv :e Vx)
-                              (apply_fun p xv = apply_fun f x)
-                              HxvLeft).
-                          }
-                          claim Huniqxv :
-                            forall y:set, y :e Vx ->
-                              apply_fun p y = apply_fun f x -> y = xv.
-                          {
-                            exact (andER
-                              (xv :e Vx /\ apply_fun p xv = apply_fun f x)
-                              (forall y:set, y :e Vx ->
-                                apply_fun p y = apply_fun f x -> y = xv)
-                              HxvPack).
-                          }
-                          claim HlocalNtVuX : apply_fun localNt x :e Vu.
-                          {
-                            rewrite (compose_fun_apply
-                              Nt
-                              f
-                              gu
-                              x
-                              HxNt).
-                            exact (HguFun
-                              (apply_fun f x)
-                              HfxUt).
-                          }
-                          claim HlocalNtEqfx :
-                            apply_fun p (apply_fun localNt x) = apply_fun f x.
-                          {
-                            exact (HlocalNtComm
-                              x
-                              HxNt).
-                          }
-                          claim HlocalNtInUnionSlices :
-                            apply_fun localNt x :e Union slicesUt.
-                          {
-                            exact (UnionI
-                              slicesUt
-                              (apply_fun localNt x)
-                              Vu
-                              HlocalNtVuX
-                              HVuSlice).
-                          }
-                          claim HlocalNtSlicePack :
-                            exists Vlocal:set, apply_fun localNt x :e Vlocal /\ Vlocal :e slicesUt.
-                          {
-                            exact (UnionE
-                              slicesUt
-                              (apply_fun localNt x)
-                              HlocalNtInUnionSlices).
-                          }
-                          claim HlocalNtInVx : apply_fun localNt x :e Vx.
-                          {
-                            apply HlocalNtSlicePack.
-                            let Vlocal.
-                            assume HVlocalPack.
-                            claim HlocalNtVlocal : apply_fun localNt x :e Vlocal.
-                            {
-                              exact (andEL
-                                (apply_fun localNt x :e Vlocal)
-                                (Vlocal :e slicesUt)
-                                HVlocalPack).
-                            }
-                            claim HVlocalSlice : Vlocal :e slicesUt.
-                            {
-                              exact (andER
-                                (apply_fun localNt x :e Vlocal)
-                                (Vlocal :e slicesUt)
-                                HVlocalPack).
-                            }
-                            claim HVlocalEqVu : Vlocal = Vu.
-                            {
-                              exact (pairwise_disjoint_point_unique_member
-                                slicesUt
-                                Vlocal
-                                Vu
-                                (apply_fun localNt x)
-                                HpdSlicesUt
-                                HVlocalSlice
-                                HVuSlice
-                                HlocalNtVlocal
-                                HlocalNtVuX).
-                            }
-                            claim HVlocalEqVx : Vlocal = Vx.
-                            {
-                              claim HhomeVlocal :
-                                homeomorphism Vlocal (subspace_topology E Te Vlocal) Ut (subspace_topology B Tb Ut)
-                                  (graph Vlocal (fun z:set => apply_fun p z)).
-                              {
-                                exact (HhomeSlicesUt
-                                  Vlocal
-                                  HVlocalSlice).
-                              }
-                              claim HuniqVlocal :
-                                exists xlocal:set,
-                                  xlocal :e Vlocal /\ apply_fun p xlocal = apply_fun f x /\
-                                  forall y:set, y :e Vlocal ->
-                                    apply_fun p y = apply_fun f x -> y = xlocal.
-                              {
-                                exact (homeomorphic_sheet_unique_fiber_point
-                                  E
-                                  Te
-                                  B
-                                  Tb
-                                  p
-                                  Vlocal
-                                  Ut
-                                  (apply_fun f x)
-                                  HhomeVlocal
-                                  HfxUt).
-                              }
-                              apply HuniqVlocal.
-                              let xlocal.
-                              assume HxlocalPack.
-                              claim HxlocalVlocal : xlocal :e Vlocal.
-                              {
-                                exact (andEL
-                                  (xlocal :e Vlocal)
-                                  (apply_fun p xlocal = apply_fun f x)
-                                  (andEL
-                                    (xlocal :e Vlocal /\ apply_fun p xlocal = apply_fun f x)
-                                    (forall y:set, y :e Vlocal ->
-                                      apply_fun p y = apply_fun f x -> y = xlocal)
-                                    HxlocalPack)).
-                              }
-                              claim HpxlocalEqfx : apply_fun p xlocal = apply_fun f x.
-                              {
-                                exact (andER
-                                  (xlocal :e Vlocal)
-                                  (apply_fun p xlocal = apply_fun f x)
-                                  (andEL
-                                    (xlocal :e Vlocal /\ apply_fun p xlocal = apply_fun f x)
-                                    (forall y:set, y :e Vlocal ->
-                                      apply_fun p y = apply_fun f x -> y = xlocal)
-                                    HxlocalPack)).
-                              }
-                              claim Huniqxlocal :
-                                forall y:set, y :e Vlocal ->
-                                  apply_fun p y = apply_fun f x -> y = xlocal.
-                              {
-                                exact (andER
-                                  (xlocal :e Vlocal /\ apply_fun p xlocal = apply_fun f x)
-                                  (forall y:set, y :e Vlocal ->
-                                    apply_fun p y = apply_fun f x -> y = xlocal)
-                                  HxlocalPack).
-                              }
-                              claim HxlocalEqlocalNt : apply_fun localNt x = xlocal.
-                              {
-                                exact (Huniqxlocal
-                                  (apply_fun localNt x)
-                                  HlocalNtVlocal
-                                  HlocalNtEqfx).
-                              }
-                              claim HxlocalVu : xlocal :e Vu.
-                              {
-                                rewrite <- HxlocalEqlocalNt.
-                                exact HlocalNtVuX.
-                              }
-                              claim HpxlocalUt : apply_fun p xlocal :e Ut.
-                              {
-                                rewrite HpxlocalEqfx.
-                                exact HfxUt.
-                              }
-                              claim HVlocalOpen : Vlocal :e Te.
-                              {
-                                exact (HslicesUtSub
-                                  Vlocal
-                                  HVlocalSlice).
-                              }
-                              claim HVlocalSubE : Vlocal c= E.
-                              {
-                                exact (topology_elem_subset
-                                  E
-                                  Te
-                                  Vlocal
-                                  HtopE
-                                  HVlocalOpen).
-                              }
-                              claim HxlocalE : xlocal :e E.
-                              {
-                                exact (HVlocalSubE
-                                  xlocal
-                                  HxlocalVlocal).
-                              }
-                              claim HxlocalPreUt : xlocal :e preimage_of E p Ut.
-                              {
-                                exact (SepI
-                                  E
-                                  (fun z:set => apply_fun p z :e Ut)
-                                  xlocal
-                                  HxlocalE
-                                  HpxlocalUt).
-                              }
-                              claim HxlocalUnion : xlocal :e Union slicesUt.
-                              {
-                                exact (mem_eqL
-                                  xlocal
-                                  (Union slicesUt)
-                                  (preimage_of E p Ut)
-                                  HslicesUtUnion
-                                  HxlocalPreUt).
-                              }
-                              claim HxlocalSlicePack :
-                                exists Vxlocal:set, xlocal :e Vxlocal /\ Vxlocal :e slicesUt.
-                              {
-                                exact (UnionE
-                                  slicesUt
-                                  xlocal
-                                  HxlocalUnion).
-                              }
-                              claim HxlocalSliceEqVlocal :
-                                forall Vxlocal:set, xlocal :e Vxlocal -> Vxlocal :e slicesUt -> Vxlocal = Vlocal.
-                              {
-                                let Vxlocal.
-                                assume HxlocalVxlocal HVxlocalSlice.
-                                exact (pairwise_disjoint_point_unique_member
-                                  slicesUt
-                                  Vxlocal
-                                  Vlocal
-                                  xlocal
-                                  HpdSlicesUt
-                                  HVxlocalSlice
-                                  HVlocalSlice
-                                  HxlocalVxlocal
-                                  HxlocalVlocal).
-                              }
-                              claim HxlocalVx : xlocal :e Vx.
-                              {
-                                apply HxlocalSlicePack.
-                                let Vxlocal.
-                                assume HxlocalPack.
-                                claim HxlocalVxlocal : xlocal :e Vxlocal.
-                                {
-                                  exact (andEL
-                                    (xlocal :e Vxlocal)
-                                    (Vxlocal :e slicesUt)
-                                    HxlocalPack).
-                                }
-                                claim HVxlocalSlice : Vxlocal :e slicesUt.
-                                {
-                                  exact (andER
-                                    (xlocal :e Vxlocal)
-                                    (Vxlocal :e slicesUt)
-                                    HxlocalPack).
-                                }
-                                claim HhomeVxlocal :
-                                  homeomorphism Vxlocal (subspace_topology E Te Vxlocal) Ut (subspace_topology B Tb Ut)
-                                    (graph Vxlocal (fun z:set => apply_fun p z)).
-                                {
-                                  exact (HhomeSlicesUt
-                                    Vxlocal
-                                    HVxlocalSlice).
-                                }
-                                claim HuniqVxlocal :
-                                  exists xvl:set, xvl :e Vxlocal /\ apply_fun p xvl = apply_fun f x /\
-                                    forall y:set, y :e Vxlocal ->
-                                      apply_fun p y = apply_fun f x -> y = xvl.
-                                {
-                                  exact (homeomorphic_sheet_unique_fiber_point
-                                    E
-                                    Te
-                                    B
-                                    Tb
-                                    p
-                                    Vxlocal
-                                    Ut
-                                    (apply_fun f x)
-                                    HhomeVxlocal
-                                    HfxUt).
-                                }
-                                claim HxlocalUniqInVxlocal :
-                                  forall y:set, y :e Vxlocal ->
-                                    apply_fun p y = apply_fun f x -> y = xlocal.
-                                {
-                                  apply HuniqVxlocal.
-                                  let xvl.
-                                  assume HxvlPack.
-                                  claim Huniqxvl :
-                                    forall y:set, y :e Vxlocal ->
-                                      apply_fun p y = apply_fun f x -> y = xvl.
-                                  {
-                                    exact (andER
-                                      (xvl :e Vxlocal /\ apply_fun p xvl = apply_fun f x)
-                                      (forall y:set, y :e Vxlocal ->
-                                        apply_fun p y = apply_fun f x -> y = xvl)
-                                      HxvlPack).
-                                  }
-                                  claim HxlocalEqxvl : xlocal = xvl.
-                                  {
-                                    exact (Huniqxvl
-                                      xlocal
-                                      HxlocalVxlocal
-                                      HpxlocalEqfx).
-                                  }
-                                  let y.
-                                  assume HyVxlocal Hypy.
-                                  rewrite HxlocalEqxvl.
-                                  exact (Huniqxvl
-                                    y
-                                    HyVxlocal
-                                    Hypy).
-                                }
-                                claim HVxlocalEqVx : Vxlocal = Vx.
-                                {
-                                  claim HVxlocalEqVlocal : Vxlocal = Vlocal.
-                                  {
-                                    exact (HxlocalSliceEqVlocal
-                                      Vxlocal
-                                      HxlocalVxlocal
-                                      HVxlocalSlice).
-                                  }
-                                  claim HVxlocalEqVu : Vxlocal = Vu.
-                                  {
-                                    exact (pairwise_disjoint_point_unique_member
-                                      slicesUt
-                                      Vxlocal
-                                      Vu
-                                      xlocal
-                                      HpdSlicesUt
-                                      HVxlocalSlice
-                                      HVuSlice
-                                      HxlocalVxlocal
-                                      HxlocalVu).
-                                  }
-                                  claim HVlocalEqVu : Vlocal = Vu.
-                                  {
-                                    rewrite <- HVxlocalEqVlocal.
-                                    exact HVxlocalEqVu.
-                                  }
-                                  rewrite HVxlocalEqVlocal.
-                                  rewrite HVlocalEqVu.
-                                  claim HVuEqVxIfHluVu :
-                                    apply_fun lu x :e Vu -> Vu = Vx.
-                                  {
-                                    assume HluVu.
-                                    exact (pairwise_disjoint_point_unique_member
-                                      slicesUt
-                                      Vu
-                                      Vx
-                                      (apply_fun lu x)
-                                      HpdSlicesUt
-                                      HVuSlice
-                                      HVxSlice
-                                      HluVu
-                                      HluVx).
-                                  }
-                                  claim HluVu : apply_fun lu x :e Vu.
-                                  {
-                                    claim HluSlicePack :
-                                      exists Vlu:set, apply_fun lu x :e Vlu /\ Vlu :e slicesUt.
-                                    {
-                                      exact (UnionE
-                                        slicesUt
-                                        (apply_fun lu x)
-                                        HluUnion).
-                                    }
-                                    apply HluSlicePack.
-                                    let Vlu.
-                                    assume HVluPack.
-                                    claim HluVlu : apply_fun lu x :e Vlu.
-                                    {
-                                      exact (andEL
-                                        (apply_fun lu x :e Vlu)
-                                        (Vlu :e slicesUt)
-                                        HVluPack).
-                                    }
-                                    claim HVluSlice : Vlu :e slicesUt.
-                                    {
-                                      exact (andER
-                                        (apply_fun lu x :e Vlu)
-                                        (Vlu :e slicesUt)
-                                        HVluPack).
-                                    }
-                                    claim HVluEqVx : Vlu = Vx.
-                                    {
-                                      exact (pairwise_disjoint_point_unique_member
-                                        slicesUt
-                                        Vlu
-                                        Vx
-                                        (apply_fun lu x)
-                                        HpdSlicesUt
-                                        HVluSlice
-                                        HVxSlice
-                                        HluVlu
-                                        HluVx).
-                                    }
-                                    claim HVluEqVu : Vlu = Vu.
-                                    {
-                                      (** TODO Charlie: show apply_fun lu x :e Vu by transporting overlap fiber data on Nu /\ Nt to Vlu, then conclude Vlu = Vu via pairwise disjointness at apply_fun lu x. **)
-                                      admit.
-                                    }
-                                    rewrite <- HVluEqVu.
-                                    exact HluVlu.
-                                  }
-                                  apply HVuEqVxIfHluVu.
-                                  exact HluVu.
-                                }
-                                rewrite <- HVxlocalEqVx.
-                                exact HxlocalVxlocal.
-                              }
-                              claim HxlocalEqxv : xlocal = xv.
-                              {
-                                exact (Huniqxv
-                                  xlocal
-                                  HxlocalVx
-                                  HpxlocalEqfx).
-                              }
-                              claim HxvVlocal : xv :e Vlocal.
-                              {
-                                rewrite <- HxlocalEqxv.
-                                exact HxlocalVlocal.
-                              }
-                              exact (pairwise_disjoint_point_unique_member
-                                slicesUt
-                                Vlocal
-                                Vx
-                                xv
-                                HpdSlicesUt
-                                HVlocalSlice
-                                HVxSlice
-                                HxvVlocal
-                                HxvVx).
-                            }
-                            rewrite <- HVlocalEqVx.
-                            exact HlocalNtVlocal.
-                          }
-                          claim HlocalEqxv : apply_fun localNt x = xv.
-                          {
-                            exact (Huniqxv
-                              (apply_fun localNt x)
-                              HlocalNtInVx
-                              HlocalNtEqfx).
-                          }
-                          claim HxvVu : xv :e Vu.
-                          {
-                            rewrite <- HlocalEqxv.
-                            exact HlocalNtVuX.
-                          }
-                          exact (pairwise_disjoint_point_unique_member
-                            slicesUt
-                            Vx
-                            Vu
-                            xv
-                            HpdSlicesUt
-                            HVxSlice
-                            HVuSlice
-                            HxvVx
-                            HxvVu).
-                        }
-                        rewrite <- HVxEqVu.
-                        exact HluVx.
-                      }
-                      let x.
-                      assume HxNuNt.
-                      claim HxNu : x :e Nu.
-                      {
-                        exact (binintersectE1
-                          Nu
-                          Nt
-                          x
-                          HxNuNt).
-                      }
-                      claim HxNt : x :e Nt.
-                      {
-                        exact (binintersectE2
-                          Nu
-                          Nt
-                          x
-                          HxNuNt).
-                      }
-                      claim HfxUt : apply_fun f x :e Ut.
-                      {
-                        exact (HNtMap
-                          x
-                          HxNt).
-                      }
-                      claim HluVu : apply_fun lu x :e Vu.
-                      {
-                        exact (HluOverlapVu
-                          x
-                          HxNuNt).
-                      }
-                      claim HlocalNtVu : apply_fun localNt x :e Vu.
-                      {
-                        rewrite (compose_fun_apply
-                          Nt
-                          f
-                          gu
-                          x
-                          HxNt).
-                        exact (HguFun
-                          (apply_fun f x)
-                          HfxUt).
-                      }
-                      claim HpluEqfx : apply_fun p (apply_fun lu x) = apply_fun f x.
-                      {
-                        exact (HluComm
-                          x
-                          HxNu).
-                      }
-                      claim HplocalNtEqfx : apply_fun p (apply_fun localNt x) = apply_fun f x.
-                      {
-                        exact (HlocalNtComm
-                          x
-                          HxNt).
-                      }
-                      claim HuniqFibx :
-                        exists z:set, z :e Vu /\ apply_fun p z = apply_fun f x /\
-                          forall y:set, y :e Vu ->
-                            apply_fun p y = apply_fun f x -> y = z.
-                      {
-                        exact (homeomorphic_sheet_unique_fiber_point
-                          E
-                          Te
-                          B
-                          Tb
-                          p
-                          Vu
-                          Ut
-                          (apply_fun f x)
-                          HhomeVu
-                          HfxUt).
-                      }
-                      apply HuniqFibx.
-                      let z.
-                      assume HzPack.
-                      claim Huniqz :
-                        forall y:set, y :e Vu ->
-                          apply_fun p y = apply_fun f x -> y = z.
-                      {
-                        exact (andER
-                          (z :e Vu /\ apply_fun p z = apply_fun f x)
-                          (forall y:set, y :e Vu ->
-                            apply_fun p y = apply_fun f x -> y = z)
-                          HzPack).
-                      }
-                      claim HluEqz : apply_fun lu x = z.
-                      {
-                        exact (Huniqz
-                          (apply_fun lu x)
-                          HluVu
-                          HpluEqfx).
-                      }
-                      claim HlocalNtEqz : apply_fun localNt x = z.
-                      {
-                        exact (Huniqz
-                          (apply_fun localNt x)
-                          HlocalNtVu
-                          HplocalNtEqfx).
-                      }
-                      rewrite HluEqz.
-                      rewrite HlocalNtEqz.
-                      reflexivity.
-                    }
-                    claim Hl0EqNt :
-                      forall x:set, x :e Nt ->
-                        apply_fun localNt x = apply_fun l0 x.
-                    {
-                      let x.
-                      assume HxNt.
-                      rewrite (apply_fun_graph
-                        Ntu
-                        (fun y:set => If_i (y :e Nu) (apply_fun lu y) (apply_fun localNt y))
-                        x
-                        (HNtSubNtu x HxNt)).
-                      apply xm (x :e Nu).
-                      - assume HxNu.
-                        rewrite (If_i_1
-                          (x :e Nu)
-                          (apply_fun lu x)
-                          (apply_fun localNt x)
-                          HxNu).
-                        claim HxNuNt : x :e Nu :/\: Nt.
-                        {
-                          exact (binintersectI
-                            Nu
-                            Nt
-                            x
-                            HxNu
-                            HxNt).
-                        }
-                        rewrite <- (HagreeNuNt
-                          x
-                          HxNuNt).
-                        reflexivity.
-                      - assume HxNotNu.
-                        rewrite (If_i_0
-                          (x :e Nu)
-                          (apply_fun lu x)
-                          (apply_fun localNt x)
-                          HxNotNu).
-                        reflexivity.
-                    }
-                    claim HNtCont :
-                      continuous_map
-                        Nt
-                        (subspace_topology
-                          Ntu
-                          (subspace_topology unit_interval unit_interval_topology Ntu)
-                          Nt)
-                        E
-                        Te
-                        l0.
-                    {
-                      exact (continuous_map_congr_on
-                        Nt
-                        (subspace_topology
-                          Ntu
-                          (subspace_topology unit_interval unit_interval_topology Ntu)
-                          Nt)
-                        E
-                        Te
-                        localNt
-                        l0
-                        HNtCont0
-                        Hl0FunNt
-                        Hl0EqNt).
-                    }
-                    set UFam := (Sing (Nu :/\: Ntu)) :\/: (Sing (Nt :/\: Ntu)).
-                    claim HUFamSub :
-                      UFam c=
-                        subspace_topology unit_interval unit_interval_topology Ntu.
-                    {
-                      let U.
-                      assume HU.
-                      apply (binunionE
-                        (Sing (Nu :/\: Ntu))
-                        (Sing (Nt :/\: Ntu))
-                        U
-                        HU).
-                      - assume HUSNu.
-                        rewrite (SingE
-                          (Nu :/\: Ntu)
-                          U
-                          HUSNu).
-                        exact (subspace_topologyI
-                          unit_interval
-                          unit_interval_topology
-                          Ntu
-                          Nu
-                          HNuOpen).
-                      - assume HUSNt.
-                        rewrite (SingE
-                          (Nt :/\: Ntu)
-                          U
-                          HUSNt).
-                        exact (subspace_topologyI
-                          unit_interval
-                          unit_interval_topology
-                          Ntu
-                          Nt
-                          HNtOpen).
-                    }
-                    claim HUFamUnion :
-                      Union UFam = Ntu.
-                    {
-                      apply set_ext.
-                      - let x.
-                        assume HxUnion.
-                        apply (UnionE
-                          UFam
-                          x
-                          HxUnion).
-                        let U.
-                        assume HxUPack.
-                        claim HxU : x :e U.
-                        {
-                          exact (andEL
-                            (x :e U)
-                            (U :e UFam)
-                            HxUPack).
-                        }
-                        claim HUUFam : U :e UFam.
-                        {
-                          exact (andER
-                            (x :e U)
-                            (U :e UFam)
-                            HxUPack).
-                        }
-                        apply (binunionE
-                          (Sing (Nu :/\: Ntu))
-                          (Sing (Nt :/\: Ntu))
-                          U
-                          HUUFam).
-                        + assume HUSNu.
-                          claim HxNuInt : x :e Nu :/\: Ntu.
-                          {
-                            rewrite <- (SingE
-                              (Nu :/\: Ntu)
-                              U
-                              HUSNu).
-                            exact HxU.
-                          }
-                          exact (binintersectE2
-                            Nu
-                            Ntu
-                            x
-                            HxNuInt).
-                        + assume HUSNt.
-                          claim HxNtInt : x :e Nt :/\: Ntu.
-                          {
-                            rewrite <- (SingE
-                              (Nt :/\: Ntu)
-                              U
-                              HUSNt).
-                            exact HxU.
-                          }
-                          exact (binintersectE2
-                            Nt
-                            Ntu
-                            x
-                            HxNtInt).
-                      - let x.
-                        assume HxNtu.
-                        apply (binunionE
-                          Nu
-                          Nt
-                          x
-                          HxNtu).
-                        + assume HxNu.
-                          claim HxNuInt : x :e Nu :/\: Ntu.
-                          {
-                            exact (binintersectI
-                              Nu
-                              Ntu
-                              x
-                              HxNu
-                              HxNtu).
-                          }
-                          exact (UnionI
-                            UFam
-                            x
-                            (Nu :/\: Ntu)
-                            HxNuInt
-                            (binunionI1
-                              (Sing (Nu :/\: Ntu))
-                              (Sing (Nt :/\: Ntu))
-                              (Nu :/\: Ntu)
-                              (SingI (Nu :/\: Ntu)))).
-                        + assume HxNt.
-                          claim HxNtInt : x :e Nt :/\: Ntu.
-                          {
-                            exact (binintersectI
-                              Nt
-                              Ntu
-                              x
-                              HxNt
-                              HxNtu).
-                          }
-                          exact (UnionI
-                            UFam
-                            x
-                            (Nt :/\: Ntu)
-                            HxNtInt
-                            (binunionI2
-                              (Sing (Nu :/\: Ntu))
-                              (Sing (Nt :/\: Ntu))
-                              (Nt :/\: Ntu)
-                              (SingI (Nt :/\: Ntu)))).
-                    }
-                    claim HUFamCont :
-                      forall U:set, U :e UFam ->
-                        continuous_map
-                          U
-                          (subspace_topology
-                            Ntu
-                            (subspace_topology unit_interval unit_interval_topology Ntu)
-                            U)
-                          E
-                          Te
-                          l0.
-                    {
-                      let U.
-                      assume HU.
-                      apply (binunionE
-                        (Sing (Nu :/\: Ntu))
-                        (Sing (Nt :/\: Ntu))
-                        U
-                        HU).
-                      - assume HUSNu.
-                        rewrite (SingE
-                          (Nu :/\: Ntu)
-                          U
-                          HUSNu).
-                        rewrite (binintersect_Subq_eq_1
-                          Nu
-                          Ntu
-                          HNuSubNtu).
-                        exact HNuCont.
-                      - assume HUSNt.
-                        rewrite (SingE
-                          (Nt :/\: Ntu)
-                          U
-                          HUSNt).
-                        rewrite (binintersect_Subq_eq_1
-                          Nt
-                          Ntu
-                          HNtSubNtu).
-                        exact HNtCont.
-                    }
-                    apply (continuous_map_local_cover
-                      Ntu
-                      (subspace_topology unit_interval unit_interval_topology Ntu)
-                      E
-                      Te
-                      l0
-                      HtopNtu
-                      HtopE).
-                    witness UFam.
-                    exact (andI
-                      (UFam c=
-                        subspace_topology unit_interval unit_interval_topology Ntu /\
-                        Union UFam = Ntu)
-                      (forall U:set, U :e UFam ->
-                        continuous_map
-                          U
-                          (subspace_topology
-                            Ntu
-                            (subspace_topology unit_interval unit_interval_topology Ntu)
-                            U)
-                          E
-                          Te
-                          l0)
-                      (andI
-                        (UFam c=
-                          subspace_topology unit_interval unit_interval_topology Ntu)
-                        (Union UFam = Ntu)
-                        HUFamSub
-                        HUFamUnion)
-                      HUFamCont).
-                  }
-                  witness l0.
-                  exact (andI
-                    (continuous_map
-                      Ntu
-                      (subspace_topology unit_interval unit_interval_topology Ntu)
-                      E
-                      Te
-                      l0 /\
-                      apply_fun l0 0 = e0)
-                    (forall x:set, x :e Ntu ->
-                      apply_fun p (apply_fun l0 x) = apply_fun f x)
-                    (andI
-                      (continuous_map
-                        Ntu
-                        (subspace_topology unit_interval unit_interval_topology Ntu)
-                        E
-                        Te
-                        l0)
-                      (apply_fun l0 0 = e0)
-                      Hl0Cont
-                      Hl00)
-                    Hl0Comm).
+                  exact (HtNotSeed HtSeed).
                 }
-                apply HexGlue.
-                let l0.
-                assume Hl0Pack.
-                claim Hl0Left :
-                  continuous_map
-                    Ntu
-                    (subspace_topology unit_interval unit_interval_topology Ntu)
-                    E
-                    Te
-                    l0 /\
-                  apply_fun l0 0 = e0.
+
+                apply (unit_interval_disjoint_neighborhood_refinement
+                  t
+                  Nu
+                  Nt
+                  HtUnit
+                  HtNe0
+                  HNuOpen
+                  H0Nu
+                  HNtOpen
+                  HtNt).
+                let N0.
+                assume HN0Ex.
+                apply HN0Ex.
+                let Nt0.
+                assume Hpack.
+
+                claim Hpack6 :
+                  (((((N0 :e unit_interval_topology /\ Nt0 :e unit_interval_topology) /\ 0 :e N0) /\
+                    t :e Nt0) /\ N0 c= Nu) /\ Nt0 c= Nt).
                 {
                   exact (andEL
-                    (continuous_map
-                      Ntu
-                      (subspace_topology unit_interval unit_interval_topology Ntu)
-                      E
-                      Te
-                      l0 /\
-                      apply_fun l0 0 = e0)
-                    (forall x:set, x :e Ntu ->
-                      apply_fun p (apply_fun l0 x) = apply_fun f x)
-                    Hl0Pack).
+                    (((((N0 :e unit_interval_topology /\ Nt0 :e unit_interval_topology) /\ 0 :e N0) /\
+                      t :e Nt0) /\ N0 c= Nu) /\ Nt0 c= Nt)
+                    (N0 :/\: Nt0 = Empty)
+                    Hpack).
                 }
-                claim Hl0Cont :
-                  continuous_map
-                    Ntu
-                    (subspace_topology unit_interval unit_interval_topology Ntu)
-                    E
-                    Te
-                    l0.
+                claim HN0Nt0Disj : N0 :/\: Nt0 = Empty.
+                {
+                  exact (andER
+                    (((((N0 :e unit_interval_topology /\ Nt0 :e unit_interval_topology) /\ 0 :e N0) /\
+                      t :e Nt0) /\ N0 c= Nu) /\ Nt0 c= Nt)
+                    (N0 :/\: Nt0 = Empty)
+                    Hpack).
+                }
+                claim Hpack5 :
+                  ((((N0 :e unit_interval_topology /\ Nt0 :e unit_interval_topology) /\ 0 :e N0) /\
+                    t :e Nt0) /\ N0 c= Nu).
                 {
                   exact (andEL
-                    (continuous_map
-                      Ntu
-                      (subspace_topology unit_interval unit_interval_topology Ntu)
-                      E
-                      Te
-                      l0)
-                    (apply_fun l0 0 = e0)
-                    Hl0Left).
+                    ((((N0 :e unit_interval_topology /\ Nt0 :e unit_interval_topology) /\ 0 :e N0) /\
+                      t :e Nt0) /\ N0 c= Nu)
+                    (Nt0 c= Nt)
+                    Hpack6).
                 }
+                claim HNt0SubNt : Nt0 c= Nt.
+                {
+                  exact (andER
+                    ((((N0 :e unit_interval_topology /\ Nt0 :e unit_interval_topology) /\ 0 :e N0) /\
+                      t :e Nt0) /\ N0 c= Nu)
+                    (Nt0 c= Nt)
+                    Hpack6).
+                }
+                claim Hpack4 :
+                  (((N0 :e unit_interval_topology /\ Nt0 :e unit_interval_topology) /\ 0 :e N0) /\ t :e Nt0).
+                {
+                  exact (andEL
+                    (((N0 :e unit_interval_topology /\ Nt0 :e unit_interval_topology) /\ 0 :e N0) /\ t :e Nt0)
+                    (N0 c= Nu)
+                    Hpack5).
+                }
+                claim HN0SubNu : N0 c= Nu.
+                {
+                  exact (andER
+                    (((N0 :e unit_interval_topology /\ Nt0 :e unit_interval_topology) /\ 0 :e N0) /\ t :e Nt0)
+                    (N0 c= Nu)
+                    Hpack5).
+                }
+                claim Hpack3 :
+                  ((N0 :e unit_interval_topology /\ Nt0 :e unit_interval_topology) /\ 0 :e N0).
+                {
+                  exact (andEL
+                    ((N0 :e unit_interval_topology /\ Nt0 :e unit_interval_topology) /\ 0 :e N0)
+                    (t :e Nt0)
+                    Hpack4).
+                }
+                claim HtNt0 : t :e Nt0.
+                {
+                  exact (andER
+                    ((N0 :e unit_interval_topology /\ Nt0 :e unit_interval_topology) /\ 0 :e N0)
+                    (t :e Nt0)
+                    Hpack4).
+                }
+                claim Hpack2 : N0 :e unit_interval_topology /\ Nt0 :e unit_interval_topology.
+                {
+                  exact (andEL
+                    (N0 :e unit_interval_topology /\ Nt0 :e unit_interval_topology)
+                    (0 :e N0)
+                    Hpack3).
+                }
+                claim H0N0 : 0 :e N0.
+                {
+                  exact (andER
+                    (N0 :e unit_interval_topology /\ Nt0 :e unit_interval_topology)
+                    (0 :e N0)
+                    Hpack3).
+                }
+                claim HN0OpenD : N0 :e unit_interval_topology.
+                {
+                  exact (andEL
+                    (N0 :e unit_interval_topology)
+                    (Nt0 :e unit_interval_topology)
+                    Hpack2).
+                }
+                claim HNt0OpenD : Nt0 :e unit_interval_topology.
+                {
+                  exact (andER
+                    (N0 :e unit_interval_topology)
+                    (Nt0 :e unit_interval_topology)
+                    Hpack2).
+                }
+
+	                set N0t := N0 :\/: Nt0.
+	                claim HN0tDef : N0t = N0 :\/: Nt0.
+	                {
+	                  reflexivity.
+	                }
+	                claim HN0tOpen : N0t :e unit_interval_topology.
+	                {
+	                  exact (topology_binunion_closed
+	                    unit_interval
+                    unit_interval_topology
+                    N0
+                    Nt0
+                    unit_interval_topology_on
+                    HN0OpenD
+                    HNt0OpenD).
+                }
+                claim H0N0t : 0 :e N0t.
+                {
+                  exact (binunionI1
+                    N0
+                    Nt0
+                    0
+                    H0N0).
+                }
+                claim HtN0t : t :e N0t.
+                {
+                  exact (binunionI2
+                    N0
+                    Nt0
+                    t
+                    HtNt0).
+                }
+
+                set l0 := graph N0t (fun x:set => If_i (x :e N0) (apply_fun lu x) (apply_fun localNt x)).
+
                 claim Hl00 : apply_fun l0 0 = e0.
                 {
-                  exact (andER
-                    (continuous_map
-                      Ntu
-                      (subspace_topology unit_interval unit_interval_topology Ntu)
-                      E
-                      Te
-                      l0)
-                    (apply_fun l0 0 = e0)
-                    Hl0Left).
+                  rewrite (apply_fun_graph
+                    N0t
+                    (fun x:set => If_i (x :e N0) (apply_fun lu x) (apply_fun localNt x))
+                    0
+                    H0N0t).
+                  rewrite (If_i_1
+                    (0 :e N0)
+                    (apply_fun lu 0)
+                    (apply_fun localNt 0)
+                    H0N0).
+                  exact Hlu0.
                 }
+
                 claim Hl0Comm :
-                  forall x:set, x :e Ntu ->
-                    apply_fun p (apply_fun l0 x) = apply_fun f x.
+                  forall x:set, x :e N0t -> apply_fun p (apply_fun l0 x) = apply_fun f x.
                 {
-                  exact (andER
-                    (continuous_map
-                      Ntu
-                      (subspace_topology unit_interval unit_interval_topology Ntu)
+                  let x.
+                  assume HxN0t.
+                  rewrite (apply_fun_graph
+                    N0t
+                    (fun y:set => If_i (y :e N0) (apply_fun lu y) (apply_fun localNt y))
+                    x
+                    HxN0t).
+                  apply (binunionE N0 Nt0 x HxN0t).
+                  - assume HxN0.
+                    rewrite (If_i_1
+                      (x :e N0)
+                      (apply_fun lu x)
+                      (apply_fun localNt x)
+                      HxN0).
+                    exact (HluComm x (HN0SubNu x HxN0)).
+                  - assume HxNt0.
+                    claim HxNotN0 : ~ x :e N0.
+                    {
+                      assume HxN0.
+                      claim HxInter : x :e N0 :/\: Nt0.
+                      { exact (binintersectI N0 Nt0 x HxN0 HxNt0). }
+                      claim HxEmpty : x :e Empty.
+                      { exact (mem_eqR x (N0 :/\: Nt0) Empty HN0Nt0Disj HxInter). }
+                      exact (EmptyE x HxEmpty False).
+                    }
+                    rewrite (If_i_0
+                      (x :e N0)
+                      (apply_fun lu x)
+                      (apply_fun localNt x)
+                      HxNotN0).
+                    exact (HlocalNtComm x (HNt0SubNt x HxNt0)).
+                }
+
+                claim HN0SubN0t : N0 c= N0t.
+                { exact (binunion_Subq_1 N0 Nt0). }
+                claim HNt0SubN0t : Nt0 c= N0t.
+                { exact (binunion_Subq_2 N0 Nt0). }
+
+                claim Hl0EqLu : forall x:set, x :e N0 -> apply_fun l0 x = apply_fun lu x.
+                {
+                  let x.
+                  assume HxN0.
+                  claim HxN0t : x :e N0t.
+                  { exact (HN0SubN0t x HxN0). }
+                  rewrite (apply_fun_graph
+                    N0t
+                    (fun y:set => If_i (y :e N0) (apply_fun lu y) (apply_fun localNt y))
+                    x
+                    HxN0t).
+                  exact (If_i_1
+                    (x :e N0)
+                    (apply_fun lu x)
+                    (apply_fun localNt x)
+                    HxN0).
+                }
+
+                claim Hl0EqLocal : forall x:set, x :e Nt0 -> apply_fun l0 x = apply_fun localNt x.
+                {
+                  let x.
+                  assume HxNt0.
+                  claim HxN0t : x :e N0t.
+                  { exact (HNt0SubN0t x HxNt0). }
+                  claim HxNotN0 : ~ x :e N0.
+                  {
+                    assume HxN0.
+                    claim HxInter : x :e N0 :/\: Nt0.
+                    { exact (binintersectI N0 Nt0 x HxN0 HxNt0). }
+                    claim HxEmpty : x :e Empty.
+                    { exact (mem_eqR x (N0 :/\: Nt0) Empty HN0Nt0Disj HxInter). }
+                    exact (EmptyE x HxEmpty False).
+                  }
+                  rewrite (apply_fun_graph
+                    N0t
+                    (fun y:set => If_i (y :e N0) (apply_fun lu y) (apply_fun localNt y))
+                    x
+                    HxN0t).
+                  exact (If_i_0
+                    (x :e N0)
+                    (apply_fun lu x)
+                    (apply_fun localNt x)
+                    HxNotN0).
+                }
+
+                claim HNuSubUnit : Nu c= unit_interval.
+                {
+                  let x.
+                  assume HxNu.
+                  exact (topology_elem_subset
+                    unit_interval
+                    unit_interval_topology
+                    Nu
+                    unit_interval_topology_on
+                    HNuOpen
+                    x
+                    HxNu).
+                }
+                claim HNtSubUnit : Nt c= unit_interval.
+                {
+                  let x.
+                  assume HxNt.
+                  exact (topology_elem_subset
+                    unit_interval
+                    unit_interval_topology
+                    Nt
+                    unit_interval_topology_on
+                    HNtOpen
+                    x
+                    HxNt).
+                }
+
+	                claim HtopNu : topology_on Nu (subspace_topology unit_interval unit_interval_topology Nu).
+	                {
+	                  exact (subspace_topology_is_topology
+	                    unit_interval
+	                    unit_interval_topology
+	                    Nu
+	                    unit_interval_topology_on
+	                    HNuSubUnit).
+	                }
+                claim HluContN0 : continuous_map N0 (subspace_topology unit_interval unit_interval_topology N0) E Te lu.
+                {
+                  claim HluContSub :
+                    continuous_map N0 (subspace_topology Nu (subspace_topology unit_interval unit_interval_topology Nu) N0) E Te lu.
+                  {
+                    exact (continuous_on_subspace
+                      Nu
+                      (subspace_topology unit_interval unit_interval_topology Nu)
                       E
                       Te
-                      l0 /\
-                      apply_fun l0 0 = e0)
-                    (forall x:set, x :e Ntu ->
-                      apply_fun p (apply_fun l0 x) = apply_fun f x)
-                    Hl0Pack).
+                      lu
+                      N0
+                      HtopNu
+                      HN0SubNu
+                      HluCont).
+                  }
+                  rewrite <- (ex16_1_subspace_transitive
+                    unit_interval
+                    unit_interval_topology
+                    Nu
+                    N0
+                    unit_interval_topology_on
+                    HNuSubUnit
+                    HN0SubNu).
+                  exact HluContSub.
                 }
-                claim Hl0Lift :
-                  lifting_of
-                    Ntu
-                    (subspace_topology unit_interval unit_interval_topology Ntu)
+
+	                claim HtopNt : topology_on Nt (subspace_topology unit_interval unit_interval_topology Nt).
+	                {
+	                  exact (subspace_topology_is_topology
+	                    unit_interval
+	                    unit_interval_topology
+	                    Nt
+	                    unit_interval_topology_on
+	                    HNtSubUnit).
+	                }
+                claim HlocalNtContNt0 : continuous_map Nt0 (subspace_topology unit_interval unit_interval_topology Nt0) E Te localNt.
+                {
+                  claim HlocalNtContSub :
+                    continuous_map Nt0 (subspace_topology Nt (subspace_topology unit_interval unit_interval_topology Nt) Nt0) E Te localNt.
+                  {
+                    exact (continuous_on_subspace
+                      Nt
+                      (subspace_topology unit_interval unit_interval_topology Nt)
+                      E
+                      Te
+                      localNt
+                      Nt0
+                      HtopNt
+                      HNt0SubNt
+                      HlocalNtContE).
+                  }
+                  rewrite <- (ex16_1_subspace_transitive
+                    unit_interval
+                    unit_interval_topology
+                    Nt
+                    Nt0
+                    unit_interval_topology_on
+                    HNtSubUnit
+                    HNt0SubNt).
+                  exact HlocalNtContSub.
+                }
+
+                claim HlocalNtFun : function_on localNt Nt E.
+                { exact (continuous_map_function_on Nt (subspace_topology unit_interval unit_interval_topology Nt) E Te localNt HlocalNtContE). }
+
+                claim Hl0ContN0_base : continuous_map N0 (subspace_topology unit_interval unit_interval_topology N0) E Te l0.
+                {
+	                  claim HtopN0 : topology_on N0 (subspace_topology unit_interval unit_interval_topology N0).
+	                  {
+	                    claim HN0SubUnit : N0 c= unit_interval.
+	                    {
+	                      let x.
+	                      assume HxN0.
+	                      exact (topology_elem_subset
+	                        unit_interval
+	                        unit_interval_topology
+	                        N0
+	                        unit_interval_topology_on
+	                        HN0OpenD
+	                        x
+	                        HxN0).
+	                    }
+	                    exact (subspace_topology_is_topology
+	                      unit_interval
+	                      unit_interval_topology
+	                      N0
+	                      unit_interval_topology_on
+	                      HN0SubUnit).
+	                  }
+                  claim HpreLu : forall V:set, V :e Te -> preimage_of N0 lu V :e subspace_topology unit_interval unit_interval_topology N0.
+                  { exact (andER ((topology_on N0 (subspace_topology unit_interval unit_interval_topology N0) /\ topology_on E Te) /\ function_on lu N0 E) (forall V:set, V :e Te -> preimage_of N0 lu V :e subspace_topology unit_interval unit_interval_topology N0) HluContN0). }
+
+	                  claim Hl0FunN0 : function_on l0 N0 E.
+	                  {
+	                    let x.
+	                    assume HxN0.
+	                    rewrite (Hl0EqLu x HxN0).
+	                    exact (HluFun x (HN0SubNu x HxN0)).
+	                  }
+	                  claim Hl0PreN0 :
+	                    forall V:set, V :e Te ->
+	                      preimage_of N0 l0 V :e subspace_topology unit_interval unit_interval_topology N0.
+	                  {
+	                    let V.
+	                    assume HVTe.
+	                    claim HpreEq : preimage_of N0 l0 V = preimage_of N0 lu V.
+	                    {
+	                      apply set_ext.
+	                      - let x.
+	                        assume Hx.
+	                        claim HxN0 : x :e N0.
+	                        { exact (SepE1 N0 (fun y:set => apply_fun l0 y :e V) x Hx). }
+	                        claim HxV : apply_fun l0 x :e V.
+	                        { exact (SepE2 N0 (fun y:set => apply_fun l0 y :e V) x Hx). }
+	                        claim HxVlu : apply_fun lu x :e V.
+	                        {
+	                          rewrite <- (Hl0EqLu x HxN0).
+	                          exact HxV.
+	                        }
+	                        exact (SepI
+	                          N0
+	                          (fun y:set => apply_fun lu y :e V)
+	                          x
+	                          HxN0
+	                          HxVlu).
+	                      - let x.
+	                        assume Hx.
+	                        claim HxN0 : x :e N0.
+	                        { exact (SepE1 N0 (fun y:set => apply_fun lu y :e V) x Hx). }
+	                        claim HxV : apply_fun lu x :e V.
+	                        { exact (SepE2 N0 (fun y:set => apply_fun lu y :e V) x Hx). }
+	                        claim HxVl0 : apply_fun l0 x :e V.
+	                        {
+	                          rewrite (Hl0EqLu x HxN0).
+	                          exact HxV.
+	                        }
+	                        exact (SepI
+	                          N0
+	                          (fun y:set => apply_fun l0 y :e V)
+	                          x
+	                          HxN0
+	                          HxVl0).
+	                    }
+	                    rewrite HpreEq.
+	                    exact (HpreLu V HVTe).
+	                  }
+	                  exact (andI
+	                    ((topology_on N0 (subspace_topology unit_interval unit_interval_topology N0) /\
+	                      topology_on E Te) /\ function_on l0 N0 E)
+	                    (forall V:set, V :e Te ->
+	                      preimage_of N0 l0 V :e subspace_topology unit_interval unit_interval_topology N0)
+	                    (andI
+	                      (topology_on N0 (subspace_topology unit_interval unit_interval_topology N0) /\
+	                        topology_on E Te)
+	                      (function_on l0 N0 E)
+	                      (andI
+	                        (topology_on N0 (subspace_topology unit_interval unit_interval_topology N0))
+	                        (topology_on E Te)
+	                        HtopN0
+	                        HtopE)
+	                      Hl0FunN0)
+	                    Hl0PreN0).
+                }
+
+                claim Hl0ContNt0_base : continuous_map Nt0 (subspace_topology unit_interval unit_interval_topology Nt0) E Te l0.
+                {
+	                  claim HtopNt0 : topology_on Nt0 (subspace_topology unit_interval unit_interval_topology Nt0).
+	                  {
+	                    claim HNt0SubUnit : Nt0 c= unit_interval.
+	                    {
+	                      let x.
+	                      assume HxNt0.
+	                      exact (topology_elem_subset
+	                        unit_interval
+	                        unit_interval_topology
+	                        Nt0
+	                        unit_interval_topology_on
+	                        HNt0OpenD
+	                        x
+	                        HxNt0).
+	                    }
+	                    exact (subspace_topology_is_topology
+	                      unit_interval
+	                      unit_interval_topology
+	                      Nt0
+	                      unit_interval_topology_on
+	                      HNt0SubUnit).
+	                  }
+                  claim HpreLocal : forall V:set, V :e Te -> preimage_of Nt0 localNt V :e subspace_topology unit_interval unit_interval_topology Nt0.
+                  { exact (andER ((topology_on Nt0 (subspace_topology unit_interval unit_interval_topology Nt0) /\ topology_on E Te) /\ function_on localNt Nt0 E) (forall V:set, V :e Te -> preimage_of Nt0 localNt V :e subspace_topology unit_interval unit_interval_topology Nt0) HlocalNtContNt0). }
+
+	                  claim Hl0FunNt0 : function_on l0 Nt0 E.
+	                  {
+	                    let x.
+	                    assume HxNt0.
+	                    rewrite (Hl0EqLocal x HxNt0).
+	                    exact (HlocalNtFun x (HNt0SubNt x HxNt0)).
+	                  }
+	                  claim Hl0PreNt0 :
+	                    forall V:set, V :e Te ->
+	                      preimage_of Nt0 l0 V :e subspace_topology unit_interval unit_interval_topology Nt0.
+	                  {
+	                    let V.
+	                    assume HVTe.
+	                    claim HpreEq : preimage_of Nt0 l0 V = preimage_of Nt0 localNt V.
+	                    {
+	                      apply set_ext.
+	                      - let x.
+	                        assume Hx.
+	                        claim HxNt0 : x :e Nt0.
+	                        { exact (SepE1 Nt0 (fun y:set => apply_fun l0 y :e V) x Hx). }
+	                        claim HxV : apply_fun l0 x :e V.
+	                        { exact (SepE2 Nt0 (fun y:set => apply_fun l0 y :e V) x Hx). }
+	                        claim HxVlocal : apply_fun localNt x :e V.
+	                        {
+	                          rewrite <- (Hl0EqLocal x HxNt0).
+	                          exact HxV.
+	                        }
+	                        exact (SepI
+	                          Nt0
+	                          (fun y:set => apply_fun localNt y :e V)
+	                          x
+	                          HxNt0
+	                          HxVlocal).
+	                      - let x.
+	                        assume Hx.
+	                        claim HxNt0 : x :e Nt0.
+	                        { exact (SepE1 Nt0 (fun y:set => apply_fun localNt y :e V) x Hx). }
+	                        claim HxV : apply_fun localNt x :e V.
+	                        { exact (SepE2 Nt0 (fun y:set => apply_fun localNt y :e V) x Hx). }
+	                        claim HxVl0 : apply_fun l0 x :e V.
+	                        {
+	                          rewrite (Hl0EqLocal x HxNt0).
+	                          exact HxV.
+	                        }
+	                        exact (SepI
+	                          Nt0
+	                          (fun y:set => apply_fun l0 y :e V)
+	                          x
+	                          HxNt0
+	                          HxVl0).
+	                    }
+	                    rewrite HpreEq.
+	                    exact (HpreLocal V HVTe).
+	                  }
+	                  exact (andI
+	                    ((topology_on Nt0 (subspace_topology unit_interval unit_interval_topology Nt0) /\
+	                      topology_on E Te) /\ function_on l0 Nt0 E)
+	                    (forall V:set, V :e Te ->
+	                      preimage_of Nt0 l0 V :e subspace_topology unit_interval unit_interval_topology Nt0)
+	                    (andI
+	                      (topology_on Nt0 (subspace_topology unit_interval unit_interval_topology Nt0) /\
+	                        topology_on E Te)
+	                      (function_on l0 Nt0 E)
+	                      (andI
+	                        (topology_on Nt0 (subspace_topology unit_interval unit_interval_topology Nt0))
+	                        (topology_on E Te)
+	                        HtopNt0
+	                        HtopE)
+	                      Hl0FunNt0)
+	                    Hl0PreNt0).
+                }
+
+                claim HN0tSubUnit : N0t c= unit_interval.
+                {
+                  let x.
+                  assume HxN0t.
+                  exact (topology_elem_subset
+                    unit_interval
+                    unit_interval_topology
+                    N0t
+                    unit_interval_topology_on
+                    HN0tOpen
+                    x
+                    HxN0t).
+                }
+                claim HtopN0t : topology_on N0t (subspace_topology unit_interval unit_interval_topology N0t).
+                {
+                  exact (subspace_topology_is_topology
+                    unit_interval
+                    unit_interval_topology
+                    N0t
+                    unit_interval_topology_on
+                    HN0tSubUnit).
+                }
+
+                claim Hl0Cont :
+                  continuous_map N0t (subspace_topology unit_interval unit_interval_topology N0t) E Te l0.
+                {
+                  apply (continuous_map_local_cover
+                    N0t
+                    (subspace_topology unit_interval unit_interval_topology N0t)
                     E
                     Te
-                    B
-                    Tb
-                    p
-                    f
-                    l0.
-                {
-                  exact (andI
-                    (continuous_map
-                      Ntu
-                      (subspace_topology unit_interval unit_interval_topology Ntu)
-                      E
-                      Te
-                      l0)
-                    (forall x:set, x :e Ntu ->
-                      apply_fun p (apply_fun l0 x) = apply_fun f x)
-                    Hl0Cont
-                    Hl0Comm).
+                    l0
+                    HtopN0t
+                    HtopE).
+
+			                  witness {N0,Nt0}.
+			                  apply andI.
+			                  - apply andI.
+			                    + let U.
+			                      assume HU : U :e {N0,Nt0}.
+			                      apply (UPairE U N0 Nt0 HU).
+			                      * assume HUeq : U = N0.
+			                        rewrite HUeq.
+			                        claim Hex : exists V :e unit_interval_topology, N0 = V :/\: N0t.
+			                        {
+			                          witness N0.
+			                          apply andI.
+			                          { exact HN0OpenD. }
+			                          { rewrite (binintersect_Subq_eq_1 N0 N0t HN0SubN0t). reflexivity. }
+			                        }
+			                        exact (SepI
+			                          (Power N0t)
+			                          (fun U0:set => exists V :e unit_interval_topology, U0 = V :/\: N0t)
+			                          N0
+			                          (PowerI N0t N0 HN0SubN0t)
+			                          Hex).
+			                      * assume HUeq : U = Nt0.
+			                        rewrite HUeq.
+			                        claim Hex : exists V :e unit_interval_topology, Nt0 = V :/\: N0t.
+			                        {
+			                          witness Nt0.
+			                          apply andI.
+			                          { exact HNt0OpenD. }
+			                          { rewrite (binintersect_Subq_eq_1 Nt0 N0t HNt0SubN0t). reflexivity. }
+			                        }
+				                        exact (SepI
+				                          (Power N0t)
+				                          (fun U0:set => exists V :e unit_interval_topology, U0 = V :/\: N0t)
+				                          Nt0
+				                          (PowerI N0t Nt0 HNt0SubN0t)
+				                          Hex).
+				                    + rewrite HN0tDef.
+				                      apply set_ext.
+				                      - let x.
+				                        assume Hx : x :e Union {N0,Nt0}.
+				                        apply (UnionE {N0,Nt0} x Hx).
+				                        let Y.
+				                        assume HY.
+				                        claim HxY : x :e Y.
+				                        { exact (andEL (x :e Y) (Y :e {N0,Nt0}) HY). }
+				                        claim HYP : Y :e {N0,Nt0}.
+				                        { exact (andER (x :e Y) (Y :e {N0,Nt0}) HY). }
+				                        apply (UPairE Y N0 Nt0 HYP).
+				                        + assume HYeq : Y = N0.
+				                          apply binunionI1.
+				                          rewrite <- HYeq.
+				                          exact HxY.
+				                        + assume HYeq : Y = Nt0.
+				                          apply binunionI2.
+				                          rewrite <- HYeq.
+				                          exact HxY.
+				                      - let x.
+				                        assume Hx : x :e N0 :\/: Nt0.
+				                        apply (binunionE N0 Nt0 x Hx).
+				                        + assume HxN0 : x :e N0.
+				                          exact (UnionI {N0,Nt0} x N0 HxN0 (UPairI1 N0 Nt0)).
+				                        + assume HxNt0 : x :e Nt0.
+				                          exact (UnionI {N0,Nt0} x Nt0 HxNt0 (UPairI2 N0 Nt0)).
+				                  - let U.
+				                    assume HU : U :e {N0,Nt0}.
+				                    apply (UPairE U N0 Nt0 HU).
+			                    + assume HUeq : U = N0.
+			                      rewrite HUeq.
+				                      rewrite (ex16_1_subspace_transitive
+				                        unit_interval
+				                        unit_interval_topology
+				                        N0t
+				                        N0
+				                        unit_interval_topology_on
+				                        HN0tSubUnit
+				                        HN0SubN0t).
+			                      exact Hl0ContN0_base.
+			                    + assume HUeq : U = Nt0.
+			                      rewrite HUeq.
+				                      rewrite (ex16_1_subspace_transitive
+				                        unit_interval
+				                        unit_interval_topology
+				                        N0t
+				                        Nt0
+				                        unit_interval_topology_on
+				                        HN0tSubUnit
+				                        HNt0SubN0t).
+			                      exact Hl0ContNt0_base.
                 }
-                witness Ntu.
-                witness l0.
-                claim HNtu0t :
-                  (Ntu :e unit_interval_topology /\ 0 :e Ntu) /\ t :e Ntu.
-                {
-                  exact (andI
-                    (Ntu :e unit_interval_topology /\ 0 :e Ntu)
-                    (t :e Ntu)
-                    (andI
-                      (Ntu :e unit_interval_topology)
-                      (0 :e Ntu)
-                      HNtuOpen
-                      H0Ntu)
-                    HtNtu).
-                }
-                claim HNtu0tLift :
-                  ((Ntu :e unit_interval_topology /\ 0 :e Ntu) /\ t :e Ntu) /\
-                  lifting_of
-                    Ntu
-                    (subspace_topology unit_interval unit_interval_topology Ntu)
-                    E
-                    Te
-                    B
-                    Tb
-                    p
-                    f
-                    l0.
-                {
-                  exact (andI
-                    ((Ntu :e unit_interval_topology /\ 0 :e Ntu) /\ t :e Ntu)
-                    (lifting_of
-                      Ntu
-                      (subspace_topology unit_interval unit_interval_topology Ntu)
-                      E
-                      Te
-                      B
-                      Tb
-                      p
-                      f
-                      l0)
-                    HNtu0t
-                    Hl0Lift).
-                }
-                exact (andI
-                  (((Ntu :e unit_interval_topology /\ 0 :e Ntu) /\ t :e Ntu) /\
-                    lifting_of
-                      Ntu
-                      (subspace_topology unit_interval unit_interval_topology Ntu)
-                      E
-                      Te
-                      B
-                      Tb
-                      p
-                      f
-                      l0)
-                  (apply_fun l0 0 = e0)
-                  HNtu0tLift
-                  Hl00).
+
+	                witness N0t.
+	                witness l0.
+	                apply andI.
+	                - apply andI.
+	                  + apply andI.
+	                    * apply andI.
+	                      { exact HN0tOpen. }
+	                      { exact H0N0t. }
+	                    * exact HtN0t.
+	                  + exact (andI
+	                    (continuous_map
+	                      N0t
+	                      (subspace_topology unit_interval unit_interval_topology N0t)
+	                      E
+	                      Te
+	                      l0)
+	                    (forall x:set, x :e N0t -> apply_fun p (apply_fun l0 x) = apply_fun f x)
+	                    Hl0Cont
+	                    Hl0Comm).
+	                - exact Hl00.
               }
               exact (SepI
                 unit_interval
