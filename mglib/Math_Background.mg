@@ -88044,6 +88044,7 @@ apply andI.
   exact (HclsbNe
     HclsbEqId).
 Admitted.
+(** Proven Bob **)
 Theorem s54_covering_R_S1_injective_if_pi1_basepoint_trivial :
   (forall cls:set, cls :e fundamental_group S1 S1_topology S1_basepoint ->
     cls = fundamental_group_id S1 S1_topology S1_basepoint) ->
@@ -88055,58 +88056,145 @@ Theorem s54_covering_R_S1_injective_if_pi1_basepoint_trivial :
 assume Htriv.
 let e0 e1.
 assume He0R He1R HeEq.
-apply (xm (e1 = e0)).
-- assume Heq.
-  exact Heq.
-- assume Hne.
-  claim Hnontriv :
-    exists cls:set,
-      cls :e fundamental_group S1 S1_topology S1_basepoint /\
-      cls <> fundamental_group_id S1 S1_topology S1_basepoint.
+apply thm54_5_pi1_circle.
+let phi.
+assume HphiIso.
+claim HphiBij :
+  bijection
+    (fundamental_group S1 S1_topology S1_basepoint)
+    int
+    phi.
+{
+  exact (group_isomorphism_bijection
+    (fundamental_group S1 S1_topology S1_basepoint)
+    (fundamental_group_mult S1 S1_topology S1_basepoint)
+    int
+    integers_group_mult
+    phi
+    HphiIso).
+}
+claim H0Int : 0 :e int.
+{
+  exact (Subq_omega_int
+    0
+    (nat_p_omega 0 nat_0)).
+}
+claim H1Int : 1 :e int.
+{
+  exact (Subq_omega_int
+    1
+    (nat_p_omega 1 nat_1)).
+}
+claim Hpre0 :
+  exists cls0:set,
+    cls0 :e fundamental_group S1 S1_topology S1_basepoint /\
+    apply_fun phi cls0 = 0.
+{
+  exact (bijection_surj
+    (fundamental_group S1 S1_topology S1_basepoint)
+    int
+    phi
+    0
+    HphiBij
+    H0Int).
+}
+apply Hpre0.
+let cls0.
+assume Hcls0Pack.
+claim Hcls0G : cls0 :e fundamental_group S1 S1_topology S1_basepoint.
+{
+  exact (andEL
+    (cls0 :e fundamental_group S1 S1_topology S1_basepoint)
+    (apply_fun phi cls0 = 0)
+    Hcls0Pack).
+}
+claim Hphi0 : apply_fun phi cls0 = 0.
+{
+  exact (andER
+    (cls0 :e fundamental_group S1 S1_topology S1_basepoint)
+    (apply_fun phi cls0 = 0)
+    Hcls0Pack).
+}
+claim Hcls0Id :
+  cls0 = fundamental_group_id S1 S1_topology S1_basepoint.
+{
+  exact (Htriv
+    cls0
+    Hcls0G).
+}
+claim HphiId0 :
+  apply_fun phi (fundamental_group_id S1 S1_topology S1_basepoint) = 0.
+{
+  rewrite <- Hcls0Id.
+  exact Hphi0.
+}
+claim Hpre1 :
+  exists cls1:set,
+    cls1 :e fundamental_group S1 S1_topology S1_basepoint /\
+    apply_fun phi cls1 = 1.
+{
+  exact (bijection_surj
+    (fundamental_group S1 S1_topology S1_basepoint)
+    int
+    phi
+    1
+    HphiBij
+    H1Int).
+}
+apply Hpre1.
+let cls1.
+assume Hcls1Pack.
+claim Hcls1G : cls1 :e fundamental_group S1 S1_topology S1_basepoint.
+{
+  exact (andEL
+    (cls1 :e fundamental_group S1 S1_topology S1_basepoint)
+    (apply_fun phi cls1 = 1)
+    Hcls1Pack).
+}
+claim Hphi1 : apply_fun phi cls1 = 1.
+{
+  exact (andER
+    (cls1 :e fundamental_group S1 S1_topology S1_basepoint)
+    (apply_fun phi cls1 = 1)
+    Hcls1Pack).
+}
+claim Hcls1Id :
+  cls1 = fundamental_group_id S1 S1_topology S1_basepoint.
+{
+  exact (Htriv
+    cls1
+    Hcls1G).
+}
+claim HphiId1 :
+  apply_fun phi (fundamental_group_id S1 S1_topology S1_basepoint) = 1.
+{
+  rewrite <- Hcls1Id.
+  exact Hphi1.
+}
+claim H0eq1 : 0 = 1.
+{
+  claim H0eqPhi :
+    0 = apply_fun phi (fundamental_group_id S1 S1_topology S1_basepoint).
   {
-    exact (s54_pi1_S1_nontrivial_from_any_two_lifts
-      e0
-      e1
-      He0R
-      He1R
-      HeEq
-      Hne).
+    symmetry.
+    exact HphiId0.
   }
-  apply Hnontriv.
-  let cls.
-  assume HclsPack.
-  claim Hcls :
-    cls :e fundamental_group S1 S1_topology S1_basepoint.
-  {
-    exact (andEL
-      (cls :e fundamental_group S1 S1_topology S1_basepoint)
-      (cls <> fundamental_group_id S1 S1_topology S1_basepoint)
-      HclsPack).
-  }
-  claim HclsNe :
-    cls <> fundamental_group_id S1 S1_topology S1_basepoint.
-  {
-    exact (andER
-      (cls :e fundamental_group S1 S1_topology S1_basepoint)
-      (cls <> fundamental_group_id S1 S1_topology S1_basepoint)
-      HclsPack).
-  }
-  claim HclsEq :
-    cls = fundamental_group_id S1 S1_topology S1_basepoint.
-  {
-    exact (Htriv
-      cls
-      Hcls).
-  }
-  claim Hfalse : False.
-  {
-    exact (HclsNe
-      HclsEq).
-  }
-  exact (FalseE
-    Hfalse
-    (e1 = e0)).
-Admitted.
+  exact (eq_i_tra
+    0
+    (apply_fun phi (fundamental_group_id S1 S1_topology S1_basepoint))
+    1
+    H0eqPhi
+    HphiId1).
+}
+claim Hfalse : False.
+{
+  exact (neq_0_1
+    H0eq1).
+}
+exact (FalseE
+  Hfalse
+  (e1 = e0)).
+Qed.
 
 (** S54 helper: any covering map R->S1 forces a nontrivial fiber if S1 is compact. **)
 (** Proven Charlie **)
