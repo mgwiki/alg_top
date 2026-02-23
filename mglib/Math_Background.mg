@@ -87454,177 +87454,6 @@ exact (s54_pi1_nontrivial_from_two_fiber_points
   He1Ne0).
 Admitted.
 
-Theorem s54_identity_S1_not_nulhomotopic_from_two_lifts : forall e0 e1:set,
-  e0 :e R ->
-  e1 :e R ->
-  apply_fun covering_map_R_S1 e0 = S1_basepoint ->
-  apply_fun covering_map_R_S1 e1 = S1_basepoint ->
-  e1 <> e0 ->
-  ~(nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x))).
-let e0 e1.
-assume He0R He1R He0Base He1Base He1Ne0.
-assume Hnul.
-claim Hnontriv :
-  exists cls:set,
-    cls :e fundamental_group S1 S1_topology S1_basepoint /\
-    cls <> fundamental_group_id S1 S1_topology S1_basepoint.
-{
-  exact (s54_pi1_S1_nontrivial_from_two_lifts
-    e0
-    e1
-    He0R
-    He1R
-    He0Base
-    He1Base
-    He1Ne0).
-}
-apply Hnontriv.
-let cls.
-assume HclsPack.
-claim Hcls :
-  cls :e fundamental_group S1 S1_topology S1_basepoint.
-{
-  exact (andEL
-    (cls :e fundamental_group S1 S1_topology S1_basepoint)
-    (cls <> fundamental_group_id S1 S1_topology S1_basepoint)
-    HclsPack).
-}
-claim HclsNe :
-  cls <> fundamental_group_id S1 S1_topology S1_basepoint.
-{
-  exact (andER
-    (cls :e fundamental_group S1 S1_topology S1_basepoint)
-    (cls <> fundamental_group_id S1 S1_topology S1_basepoint)
-    HclsPack).
-}
-claim HcovPair :
-  continuous_map R R_standard_topology S1 S1_topology covering_map_R_S1 /\
-  surjective_map R S1 covering_map_R_S1.
-{
-  exact (andEL
-    (continuous_map R R_standard_topology S1 S1_topology covering_map_R_S1 /\
-      surjective_map R S1 covering_map_R_S1)
-    (forall b:set, b :e S1 ->
-      exists U:set, U :e S1_topology /\ b :e U /\
-        evenly_covered R R_standard_topology S1 S1_topology covering_map_R_S1 U)
-    thm53_1_R_covers_S1).
-}
-claim Hcontp :
-  continuous_map R R_standard_topology S1 S1_topology covering_map_R_S1.
-{
-  exact (andEL
-    (continuous_map R R_standard_topology S1 S1_topology covering_map_R_S1)
-    (surjective_map R S1 covering_map_R_S1)
-    HcovPair).
-}
-claim Hfunp :
-  function_on covering_map_R_S1 R S1.
-{
-  exact (continuous_map_function_on
-    R
-    R_standard_topology
-    S1
-    S1_topology
-    covering_map_R_S1
-    Hcontp).
-}
-claim Hb0S1 : S1_basepoint :e S1.
-{
-  rewrite <- He0Base.
-  exact (Hfunp
-    e0
-    He0R).
-}
-claim HS1subR2 : S1 c= setprod R R.
-{
-  exact (Sep_Subq
-    (setprod R R)
-    (fun p:set =>
-      add_SNo (mul_SNo (p 0) (p 0))
-        (mul_SNo (p 1) (p 1)) = 1)).
-}
-claim HtopR2 : topology_on (setprod R R) R2_topology.
-{
-  exact (product_topology_is_topology
-    R
-    R_standard_topology
-    R
-    R_standard_topology
-    R_standard_topology_is_topology
-    R_standard_topology_is_topology).
-}
-claim HtopS1 : topology_on S1 S1_topology.
-{
-  exact (subspace_topology_is_topology
-    (setprod R R)
-    R2_topology
-    S1
-    HtopR2
-    HS1subR2).
-}
-set idS1 := graph S1 (fun x:set => x).
-claim HidCont :
-  continuous_map S1 S1_topology S1 S1_topology idS1.
-{
-  exact (identity_continuous
-    S1
-    S1_topology
-    HtopS1).
-}
-claim HtrivInd :
-  forall c:set, c :e fundamental_group S1 S1_topology S1_basepoint ->
-    apply_fun
-      (induced_homomorphism
-        S1
-        S1_topology
-        S1_basepoint
-        S1
-        S1_topology
-        S1_basepoint
-        idS1)
-      c
-    =
-    fundamental_group_id
-      S1
-      S1_topology
-      S1_basepoint.
-{
-  admit.
-}
-claim HindId :
-  apply_fun
-    (induced_homomorphism
-      S1
-      S1_topology
-      S1_basepoint
-      S1
-      S1_topology
-      S1_basepoint
-      idS1)
-    cls
-  = cls.
-{
-  exact (Theorem_52_4_functorial_identity
-    S1
-    S1_topology
-    S1_basepoint
-    HtopS1
-    Hb0S1
-    cls
-    Hcls).
-}
-claim HclsEqId :
-  cls = fundamental_group_id S1 S1_topology S1_basepoint.
-{
-  rewrite <- HindId.
-  exact (HtrivInd
-    cls
-    Hcls).
-}
-exact (HclsNe
-  HclsEqId).
-Admitted.
-
 Theorem fundamental_group_id_member : forall X Tx x0:set,
   topology_on X Tx ->
   x0 :e X ->
@@ -96728,6 +96557,193 @@ claim HcompTriv :
 }
 rewrite HinducedEq.
 exact HcompTriv.
+Qed.
+
+(** S54 helper completed from S58 tools: two distinct lifts force identity on S1 non-nulhomotopic. **)
+(** Proven Bob **)
+Theorem s54_identity_S1_not_nulhomotopic_from_two_lifts : forall e0 e1:set,
+  e0 :e R ->
+  e1 :e R ->
+  apply_fun covering_map_R_S1 e0 = S1_basepoint ->
+  apply_fun covering_map_R_S1 e1 = S1_basepoint ->
+  e1 <> e0 ->
+  ~(nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x))).
+let e0 e1.
+assume He0R He1R He0Base He1Base He1Ne0.
+assume Hnul.
+claim Hb0raw : (1, 0) :e S1.
+{
+  apply (SepI
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)
+    (1, 0)).
+  - exact (tuple_2_setprod_by_pair_Sigma
+      R
+      R
+      1
+      0
+      real_1
+      real_0).
+  - rewrite tuple_2_0_eq at 1.
+    rewrite tuple_2_0_eq at 1.
+    rewrite tuple_2_1_eq at 1.
+    rewrite tuple_2_1_eq at 1.
+    rewrite (mul_SNo_oneR 1 SNo_1) at 1.
+    rewrite (mul_SNo_zeroR 0 SNo_0) at 1.
+    exact (add_SNo_0R 1 SNo_1).
+}
+claim Hb0S1 : S1_basepoint :e S1.
+{
+  exact Hb0raw.
+}
+claim HS1subR2 : S1 c= setprod R R.
+{
+  exact (Sep_Subq
+    (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0))
+        (mul_SNo (p 1) (p 1)) = 1)).
+}
+claim HtopR2 : topology_on (setprod R R) R2_topology.
+{
+  exact (product_topology_is_topology
+    R
+    R_standard_topology
+    R
+    R_standard_topology
+    R_standard_topology_is_topology
+    R_standard_topology_is_topology).
+}
+claim HtopS1 : topology_on S1 S1_topology.
+{
+  exact (subspace_topology_is_topology
+    (setprod R R)
+    R2_topology
+    S1
+    HtopR2
+    HS1subR2).
+}
+set idS1 := graph S1 (fun x:set => x).
+claim HidCont :
+  continuous_map S1 S1_topology S1 S1_topology idS1.
+{
+  exact (identity_continuous
+    S1
+    S1_topology
+    HtopS1).
+}
+claim HidBase :
+  apply_fun idS1 S1_basepoint = S1_basepoint.
+{
+  exact (apply_fun_graph
+    S1
+    (fun x:set => x)
+    S1_basepoint
+    Hb0S1).
+}
+claim Htriv :
+  forall cls:set, cls :e fundamental_group S1 S1_topology S1_basepoint ->
+    cls = fundamental_group_id S1 S1_topology S1_basepoint.
+{
+  let cls.
+  assume Hcls.
+  claim HtrivIndRaw :
+    apply_fun
+      (induced_homomorphism
+        S1
+        S1_topology
+        S1_basepoint
+        S1
+        S1_topology
+        (apply_fun idS1 S1_basepoint)
+        idS1)
+      cls
+    =
+    fundamental_group_id
+      S1
+      S1_topology
+      (apply_fun idS1 S1_basepoint).
+  {
+    exact (s55_cor58_6_nulhomotopic_trivial
+      S1
+      S1_topology
+      S1
+      S1_topology
+      idS1
+      S1_basepoint
+      HidCont
+      Hb0S1
+      Hnul
+      cls
+      Hcls).
+  }
+  claim HtrivInd :
+    apply_fun
+      (induced_homomorphism
+        S1
+        S1_topology
+        S1_basepoint
+        S1
+        S1_topology
+        S1_basepoint
+        idS1)
+      cls
+    =
+    fundamental_group_id
+      S1
+      S1_topology
+      S1_basepoint.
+  {
+    rewrite <- HidBase at 2.
+    rewrite <- HidBase at 3.
+    exact HtrivIndRaw.
+  }
+  claim HindId :
+    apply_fun
+      (induced_homomorphism
+        S1
+        S1_topology
+        S1_basepoint
+        S1
+        S1_topology
+        S1_basepoint
+        idS1)
+      cls
+    = cls.
+  {
+    exact (Theorem_52_4_functorial_identity
+      S1
+      S1_topology
+      S1_basepoint
+      HtopS1
+      Hb0S1
+      cls
+      Hcls).
+  }
+  rewrite <- HindId.
+  exact HtrivInd.
+}
+claim HeqFiber :
+  apply_fun covering_map_R_S1 e1 = apply_fun covering_map_R_S1 e0.
+{
+  rewrite He1Base.
+  rewrite He0Base.
+  reflexivity.
+}
+claim He1Eqe0 : e1 = e0.
+{
+  exact (s54_covering_R_S1_injective_if_pi1_basepoint_trivial
+    Htriv
+    e0
+    e1
+    He0R
+    He1R
+    HeqFiber).
+}
+exact (He1Ne0
+  He1Eqe0).
 Qed.
 
 (** S55 helper: direct direction (2) => (1): extension to B2 gives nulhomotopy. **)
