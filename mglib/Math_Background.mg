@@ -1,5 +1,5 @@
 (** Balance Alice 3219 **)
-(** Balance Bob 3037 **)
+(** Balance Bob 3363 **)
 (** Balance Charlie 1203 **)
 (** Balance Dave 1793 **)
 
@@ -97065,7 +97065,8 @@ Admitted.
 (** from S55 Cor 55.4 part (a) (line 947 in algtop.tex) **)
 (** LATEX VERSION: The inclusion map j: S^1 -> R^2 - 0 is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
+(** Collected Bob 33 **)
+(** Proven Bob **)
 Theorem cor55_4a_inclusion_S1_R2_not_nulhomotopic :
   ~(nulhomotopic S1 S1_topology R2_minus_origin R2_minus_origin_topology
     (graph S1 (fun x:set => x))).
@@ -99242,89 +99243,139 @@ claim HtrivBase :
     cls
     Hcls).
 }
-claim HcovInj :
-  forall e0 e1:set,
-    e0 :e R ->
-    e1 :e R ->
-    apply_fun covering_map_R_S1 e1 = apply_fun covering_map_R_S1 e0 ->
-    e1 = e0.
+apply thm54_5_pi1_circle.
+let phi.
+assume HphiIso.
+claim HphiBij :
+  bijection
+    (fundamental_group S1 S1_topology S1_basepoint)
+    int
+    phi.
 {
-  exact (s54_covering_R_S1_injective_if_pi1_basepoint_trivial
-    HtrivBase).
+  exact (group_isomorphism_bijection
+    (fundamental_group S1 S1_topology S1_basepoint)
+    (fundamental_group_mult S1 S1_topology S1_basepoint)
+    int
+    integers_group_mult
+    phi
+    HphiIso).
 }
-claim HtwoLifts :
-  exists e0 e1:set,
-    e0 :e R /\ e1 :e R /\
-    apply_fun covering_map_R_S1 e1 = apply_fun covering_map_R_S1 e0 /\
-    e1 <> e0.
+claim H0Int : 0 :e int.
 {
-  exact (s54_two_distinct_lifts_if_S1_compact
-    s54_S1_compact).
+  exact (Subq_omega_int
+    0
+    (nat_p_omega 0 nat_0)).
 }
-apply HtwoLifts.
-let e0.
-assume HePack0.
-apply HePack0.
-let e1.
-assume HePack.
-claim Habc :
-  (e0 :e R /\ e1 :e R) /\
-  apply_fun covering_map_R_S1 e1 = apply_fun covering_map_R_S1 e0.
+claim H1Int : 1 :e int.
 {
-  exact (andEL
-    (e0 :e R /\ e1 :e R /\ apply_fun covering_map_R_S1 e1 = apply_fun covering_map_R_S1 e0)
-    (e1 <> e0)
-    HePack).
+  exact (Subq_omega_int
+    1
+    (nat_p_omega 1 nat_1)).
 }
-claim He0e1 :
-  e0 :e R /\ e1 :e R.
+claim Hpre0 :
+  exists cls0:set,
+    cls0 :e fundamental_group S1 S1_topology S1_basepoint /\
+    apply_fun phi cls0 = 0.
 {
-  exact (andEL
-    (e0 :e R /\ e1 :e R)
-    (apply_fun covering_map_R_S1 e1 = apply_fun covering_map_R_S1 e0)
-    Habc).
+  exact (bijection_surj
+    (fundamental_group S1 S1_topology S1_basepoint)
+    int
+    phi
+    0
+    HphiBij
+    H0Int).
 }
-claim HeqImg :
-  apply_fun covering_map_R_S1 e1 = apply_fun covering_map_R_S1 e0.
-{
-  exact (andER
-    (e0 :e R /\ e1 :e R)
-    (apply_fun covering_map_R_S1 e1 = apply_fun covering_map_R_S1 e0)
-    Habc).
-}
-claim He0R : e0 :e R.
+apply Hpre0.
+let cls0.
+assume Hcls0Pack.
+claim Hcls0G : cls0 :e fundamental_group S1 S1_topology S1_basepoint.
 {
   exact (andEL
-    (e0 :e R)
-    (e1 :e R)
-    He0e1).
+    (cls0 :e fundamental_group S1 S1_topology S1_basepoint)
+    (apply_fun phi cls0 = 0)
+    Hcls0Pack).
 }
-claim He1R : e1 :e R.
+claim Hphi0 : apply_fun phi cls0 = 0.
 {
   exact (andER
-    (e0 :e R)
-    (e1 :e R)
-    He0e1).
+    (cls0 :e fundamental_group S1 S1_topology S1_basepoint)
+    (apply_fun phi cls0 = 0)
+    Hcls0Pack).
 }
-claim HeNe : e1 <> e0.
+claim Hcls0Id :
+  cls0 = fundamental_group_id S1 S1_topology S1_basepoint.
+{
+  exact (HtrivBase
+    cls0
+    Hcls0G).
+}
+claim HphiId0 :
+  apply_fun phi (fundamental_group_id S1 S1_topology S1_basepoint) = 0.
+{
+  rewrite <- Hcls0Id.
+  exact Hphi0.
+}
+claim Hpre1 :
+  exists cls1:set,
+    cls1 :e fundamental_group S1 S1_topology S1_basepoint /\
+    apply_fun phi cls1 = 1.
+{
+  exact (bijection_surj
+    (fundamental_group S1 S1_topology S1_basepoint)
+    int
+    phi
+    1
+    HphiBij
+    H1Int).
+}
+apply Hpre1.
+let cls1.
+assume Hcls1Pack.
+claim Hcls1G : cls1 :e fundamental_group S1 S1_topology S1_basepoint.
+{
+  exact (andEL
+    (cls1 :e fundamental_group S1 S1_topology S1_basepoint)
+    (apply_fun phi cls1 = 1)
+    Hcls1Pack).
+}
+claim Hphi1 : apply_fun phi cls1 = 1.
 {
   exact (andER
-    (e0 :e R /\ e1 :e R /\ apply_fun covering_map_R_S1 e1 = apply_fun covering_map_R_S1 e0)
-    (e1 <> e0)
-    HePack).
+    (cls1 :e fundamental_group S1 S1_topology S1_basepoint)
+    (apply_fun phi cls1 = 1)
+    Hcls1Pack).
 }
-claim HeEq : e1 = e0.
+claim Hcls1Id :
+  cls1 = fundamental_group_id S1 S1_topology S1_basepoint.
 {
-  exact (HcovInj
-    e0
-    e1
-    He0R
-    He1R
-    HeqImg).
+  exact (HtrivBase
+    cls1
+    Hcls1G).
 }
-exact (HeNe
-  HeEq).
-Admitted.
+claim HphiId1 :
+  apply_fun phi (fundamental_group_id S1 S1_topology S1_basepoint) = 1.
+{
+  rewrite <- Hcls1Id.
+  exact Hphi1.
+}
+claim H0eq1 : 0 = 1.
+{
+  claim H0eqPhi :
+    0 = apply_fun phi (fundamental_group_id S1 S1_topology S1_basepoint).
+  {
+    symmetry.
+    exact HphiId0.
+  }
+  exact (eq_i_tra
+    0
+    (apply_fun phi (fundamental_group_id S1 S1_topology S1_basepoint))
+    1
+    H0eqPhi
+    HphiId1).
+}
+exact (neq_0_1
+  H0eq1).
+Qed.
 
 (** S55 helper: S1 lies in R2 minus origin. **)
 (** Proven Charlie **)
@@ -99611,7 +99662,8 @@ Qed.
 (** from S55 Cor 55.4 part (b) (line 947 in algtop.tex) **)
 (** LATEX VERSION: The identity map i: S^1 -> S^1 is not nulhomotopic. **)
 (** EFFORT: 2 lines textbook, difficulty 1/10, USD 20 **)
-(** Bounty 22 **)
+(** Collected Bob 22 **)
+(** Proven Bob **)
 Theorem cor55_4b_identity_S1_not_nulhomotopic :
   ~(nulhomotopic S1 S1_topology S1 S1_topology (graph S1 (fun x:set => x))).
 assume Hnul.
@@ -99624,12 +99676,13 @@ claim HnulIncl :
 }
 exact (cor55_4a_inclusion_S1_R2_not_nulhomotopic
   HnulIncl).
-Admitted.
+Qed.
 
 (** from S55 Thm 55.5 (line 950 in algtop.tex) **)
 (** LATEX VERSION: Given a nonvanishing vector field on B^2, there exists a point of S^1 where the vector field points directly inward and a point of S^1 where it points directly outward. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
+(** Collected Bob 165 **)
+(** Proven Bob **)
 Theorem thm55_5_nonvanishing_vector_field : forall v:set,
   continuous_map B2 B2_topology (setprod R R) R2_topology v ->
   (forall x:set, x :e B2 -> ~(apply_fun v x 0 = 0 /\ apply_fun v x 1 = 0)) ->
@@ -103365,12 +103418,13 @@ claim HioCore :
        (exists x:set, x :e S1 /\ points_directly_outward v x))).
 }
 exact HioCore.
-Admitted.
+Qed.
 
 (** from S55 Thm 55.6 (line 983 in algtop.tex): Brouwer fixed-point theorem for the disc **)
 (** LATEX VERSION: If f: B^2 -> B^2 is continuous, then there exists a point x in B^2 such that f(x) = x. **)
 (** EFFORT: 6 lines textbook, difficulty 3/10, USD 60 **)
-(** Bounty 73 **)
+(** Collected Bob 73 **)
+(** Proven Bob **)
 Theorem thm55_6_brouwer_fixed_point_disc : forall f:set,
   continuous_map B2 B2_topology B2 B2_topology f ->
   exists x:set, x :e B2 /\ apply_fun f x = x.
@@ -104938,7 +104992,7 @@ apply (xm (exists x:set, x :e B2 /\ apply_fun f x = x)).
   exact (FalseE
     Hcontra
     (exists x:set, x :e B2 /\ apply_fun f x = x)).
-Admitted.
+Qed.
 
 (** Infrastructure for starred Cor 55.7: finite sum of real-valued terms **)
 (** finite_real_sum f n = f(0) + f(1) + ... + f(n-1) **)
@@ -105011,7 +105065,8 @@ Admitted.
 (** from S55 Exercise 1 (line 1042 in algtop.tex) **)
 (** LATEX VERSION: If A is a retract of B^2, then every continuous map f: A -> A has a fixed point. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
+(** Collected Bob 33 **)
+(** Proven Bob **)
 Theorem ex55_1_retract_B2_fixed_point : forall A:set,
   A c= B2 ->
   retraction_of B2 B2_topology A ->
@@ -105262,7 +105317,7 @@ witness x.
 apply andI.
 - exact HxA.
 - exact HfxEq.
-Admitted.
+Qed.
 
 (** from S55 Exercise 2 (line 1043 in algtop.tex) **)
 (** LATEX VERSION: If h: S^1 -> S^1 is nulhomotopic, then h has a fixed point and h maps some point x to its antipode -x. **)
