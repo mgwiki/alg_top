@@ -123594,7 +123594,138 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
         rewrite Hj_star. rewrite Hclass_repV_eq. symmetry. exact Hclass_fV_eq.
   + (** Case 2b: Mixed case - loop crosses between U and V **)
     assume HnotAllV : ~(forall t:set, t :e unit_interval -> apply_fun f t :e V).
-    (** Mixed case requires the full subdivision argument **)
+    (** Mixed case: We have HnotAllU and HnotAllV.
+        Strategy: find transition point a in (0,1) with f(a) in U cap V,
+        split f at a, build connecting path, construct loops, express [f] as product. **)
+    (** Step 1: Get witness for not-all-U: exists t_U with f(t_U) not in U **)
+    claim HexNIU : exists t:set, ~(t :e unit_interval -> apply_fun f t :e U).
+    { exact (not_all_ex_demorgan_i (fun t:set => t :e unit_interval -> apply_fun f t :e U) HnotAllU). }
+    apply HexNIU.
+    let t_U.
+    assume HtU_nimp : ~(t_U :e unit_interval -> apply_fun f t_U :e U).
+    claim HtU_ui : t_U :e unit_interval.
+    { apply dneg. assume Hneg : ~(t_U :e unit_interval).
+      apply HtU_nimp. assume Habs : t_U :e unit_interval.
+      exact (FalseE (Hneg Habs) (apply_fun f t_U :e U)). }
+    claim HtU_notU : ~(apply_fun f t_U :e U).
+    { assume HftU : apply_fun f t_U :e U.
+      apply HtU_nimp. assume Hdummy : t_U :e unit_interval. exact HftU. }
+    (** Step 2: Get witness for not-all-V: exists t_V with f(t_V) not in V **)
+    claim HexNIV : exists t:set, ~(t :e unit_interval -> apply_fun f t :e V).
+    { exact (not_all_ex_demorgan_i (fun t:set => t :e unit_interval -> apply_fun f t :e V) HnotAllV). }
+    apply HexNIV.
+    let t_V.
+    assume HtV_nimp : ~(t_V :e unit_interval -> apply_fun f t_V :e V).
+    claim HtV_ui : t_V :e unit_interval.
+    { apply dneg. assume Hneg : ~(t_V :e unit_interval).
+      apply HtV_nimp. assume Habs : t_V :e unit_interval.
+      exact (FalseE (Hneg Habs) (apply_fun f t_V :e V)). }
+    claim HtV_notV : ~(apply_fun f t_V :e V).
+    { assume HftV : apply_fun f t_V :e V.
+      apply HtV_nimp. assume Hdummy : t_V :e unit_interval. exact HftV. }
+    (** Step 3: B(t_U, r) maps entirely to V (since f(t_U) not in U) **)
+    claim HballU_toV : forall t:set, t :e open_ball unit_interval R_bounded_metric t_U r -> apply_fun f t :e V.
+    { apply (Hball_image t_U HtU_ui).
+      - assume HallU : forall t:set, t :e open_ball unit_interval R_bounded_metric t_U r -> apply_fun f t :e U.
+        claim HtU_in_ball : t_U :e open_ball unit_interval R_bounded_metric t_U r.
+        { exact (center_in_open_ball unit_interval R_bounded_metric t_U r
+            R_bounded_metric_is_metric_on_unit_interval HtU_ui Hrpos). }
+        exact (FalseE (HtU_notU (HallU t_U HtU_in_ball))
+          (forall t:set, t :e open_ball unit_interval R_bounded_metric t_U r -> apply_fun f t :e V)).
+      - assume HallV : forall t:set, t :e open_ball unit_interval R_bounded_metric t_U r -> apply_fun f t :e V.
+        exact HallV. }
+    (** Step 4: B(t_V, r) maps entirely to U (since f(t_V) not in V) **)
+    claim HballV_toU : forall t:set, t :e open_ball unit_interval R_bounded_metric t_V r -> apply_fun f t :e U.
+    { apply (Hball_image t_V HtV_ui).
+      - assume HallU : forall t:set, t :e open_ball unit_interval R_bounded_metric t_V r -> apply_fun f t :e U.
+        exact HallU.
+      - assume HallV : forall t:set, t :e open_ball unit_interval R_bounded_metric t_V r -> apply_fun f t :e V.
+        claim HtV_in_ball : t_V :e open_ball unit_interval R_bounded_metric t_V r.
+        { exact (center_in_open_ball unit_interval R_bounded_metric t_V r
+            R_bounded_metric_is_metric_on_unit_interval HtV_ui Hrpos). }
+        exact (FalseE (HtV_notV (HallV t_V HtV_in_ball))
+          (forall t:set, t :e open_ball unit_interval R_bounded_metric t_V r -> apply_fun f t :e U)).
+    }
+    (** Step 5: f(t_U) in V and f(t_V) in U **)
+    claim HftU_V : apply_fun f t_U :e V.
+    { exact (HballU_toV t_U (center_in_open_ball unit_interval R_bounded_metric t_U r
+        R_bounded_metric_is_metric_on_unit_interval HtU_ui Hrpos)). }
+    claim HftV_U : apply_fun f t_V :e U.
+    { exact (HballV_toU t_V (center_in_open_ball unit_interval R_bounded_metric t_V r
+        R_bounded_metric_is_metric_on_unit_interval HtV_ui Hrpos)). }
+    (** Step 6: Find transition point a in (0,1) with f(a) in U cap V.
+        The preimage f^-1(U cap V) is open in [0,1] and contains 0.
+        Since open sets in the metric space [0,1] contain balls around their points,
+        and any ball around 0 contains points in (0,1), such a point exists.
+        This step is admitted and will be proved using metric space infrastructure. **)
+    claim Hmixed_pt : exists a:set,
+      a :e unit_interval /\ Rlt 0 a /\ Rlt a 1 /\ apply_fun f a :e U :/\: V.
+    { admit. }
+    apply Hmixed_pt.
+    let a.
+    assume Ha_all : a :e unit_interval /\ Rlt 0 a /\ Rlt a 1 /\ apply_fun f a :e U :/\: V.
+    (** Destructure the 4-fold conjunction: ((A /\ B) /\ C) /\ D **)
+    claim Ha_D : apply_fun f a :e U :/\: V.
+    { exact (andER
+        ((a :e unit_interval /\ Rlt 0 a) /\ Rlt a 1)
+        (apply_fun f a :e U :/\: V)
+        Ha_all). }
+    claim Ha_ABC : (a :e unit_interval /\ Rlt 0 a) /\ Rlt a 1.
+    { exact (andEL
+        ((a :e unit_interval /\ Rlt 0 a) /\ Rlt a 1)
+        (apply_fun f a :e U :/\: V)
+        Ha_all). }
+    claim Ha_lt1 : Rlt a 1.
+    { exact (andER
+        (a :e unit_interval /\ Rlt 0 a)
+        (Rlt a 1)
+        Ha_ABC). }
+    claim Ha_AB : a :e unit_interval /\ Rlt 0 a.
+    { exact (andEL
+        (a :e unit_interval /\ Rlt 0 a)
+        (Rlt a 1)
+        Ha_ABC). }
+    claim Ha_ui : a :e unit_interval.
+    { exact (andEL
+        (a :e unit_interval)
+        (Rlt 0 a)
+        Ha_AB). }
+    claim Ha_pos : Rlt 0 a.
+    { exact (andER
+        (a :e unit_interval)
+        (Rlt 0 a)
+        Ha_AB). }
+    claim Ha_UV : apply_fun f a :e U :/\: V.
+    { exact Ha_D. }
+    (** Step 7: Split f at a using Theorem 51.3 **)
+    claim Hsplit : exists f1 f2:set,
+      continuous_map unit_interval unit_interval_topology X Tx f1 /\
+      continuous_map unit_interval unit_interval_topology X Tx f2 /\
+      apply_fun f1 0 = x0 /\ apply_fun f1 1 = apply_fun f a /\
+      apply_fun f2 0 = apply_fun f a /\ apply_fun f2 1 = x0 /\
+      path_homotopic X Tx x0 x0 f (path_concat f1 f2).
+    { exact (Theorem_51_3_reparametrization X Tx x0 x0 f a
+        HfCont Hf0 Hf1 Ha_ui Ha_pos Ha_lt1). }
+    (** Step 8: Get connecting path gamma from x0 to f(a) in U cap V **)
+    claim Hfa_U : apply_fun f a :e U.
+    { exact (binintersectE1 U V (apply_fun f a) Ha_UV). }
+    claim Hfa_V : apply_fun f a :e V.
+    { exact (binintersectE2 U V (apply_fun f a) Ha_UV). }
+    claim Hgamma_ex : exists gamma:set,
+      path_between (U :/\: V) x0 (apply_fun f a) gamma /\
+      continuous_map unit_interval unit_interval_topology
+        (U :/\: V) (subspace_topology X Tx (U :/\: V)) gamma.
+    { exact (path_connected_space_paths
+        (U :/\: V) (subspace_topology X Tx (U :/\: V))
+        x0 (apply_fun f a) HpcUV Hx0UV Ha_UV). }
+    (** Step 9: Full word construction from the split and connecting path.
+        Using f ~ path_concat(f1, f2) and gamma from x0 to f(a) in U cap V:
+        - L1 = path_concat(f1, reverse_path(gamma)) is a loop at x0
+        - L2 = path_concat(gamma, f2) is a loop at x0
+        - f ~ path_concat(L1, L2) by inserting gamma_inv then gamma
+        - [f] = [L1] then [L2]
+        - Each piece needs further decomposition if mixed (by induction on chain length)
+        This is the core technical construction; admitted for incremental progress. **)
     admit.
 Admitted.
 
