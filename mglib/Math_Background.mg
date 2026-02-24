@@ -154229,34 +154229,56 @@ apply andI.
                 exact (Hne Hij).
             + (** f = product: use G_ext + pointwise_nat_primrec **)
               claim Hnat_n : nat_p n. { exact (omega_nat_p n HnO). }
-              (** my_xs i :e G for all i (unguarded, needed for pointwise_nat_primrec) **)
-              claim Hmy_xs_G : forall i:set, (fun j:set => apply_fun my_xs j) i :e G.
+              (** my_xs guarded: If_i for out-of-domain safety **)
+              set my_xs_g := fun i:set => If_i (i :e n) (apply_fun my_xs i) eG.
+              claim Hxsg_G : forall i:set, my_xs_g i :e G.
               { let i. apply (xm (i :e n)).
                 - assume Hi : i :e n.
+                  prove If_i (i :e n) (apply_fun my_xs i) eG :e G.
+                  rewrite (If_i_1 (i :e n) (apply_fun my_xs i) eG Hi).
                   claim Hev : apply_fun my_xs i =
                     apply_fun (apply_fun ifam (apply_fun e_bij i)) (f (apply_fun e_bij i)).
                   { exact (apply_fun_graph n (fun i =>
                       apply_fun (apply_fun ifam (apply_fun e_bij i)) (f (apply_fun e_bij i))) i Hi). }
                   claim HfaGa : f (apply_fun e_bij i) :e Ga (apply_fun e_bij i).
                   { exact (HG_ap f Hf (apply_fun e_bij i) (Hei_J i Hi)). }
-                  prove (fun j:set => apply_fun my_xs j) i :e G.
-                  prove apply_fun my_xs i :e G.
                   rewrite Hev. exact (ifam_x_G (apply_fun e_bij i) (Hei_J i Hi)
                     (f (apply_fun e_bij i)) HfaGa).
                 - assume Hni : i :e n -> False.
-                  prove (fun j:set => apply_fun my_xs j) i :e G.
-                  prove apply_fun my_xs i :e G.
-                  admit. (** out-of-domain case: apply_fun on graph outside domain **)
+                  prove If_i (i :e n) (apply_fun my_xs i) eG :e G.
+                  rewrite (If_i_0 (i :e n) (apply_fun my_xs i) eG Hni). exact HeG_G.
               }
+              claim Hext_prod : nat_primrec eG (fun i r => apply_fun multG (r, apply_fun my_xs i)) n =
+                nat_primrec eG (fun i r => apply_fun multG (r, my_xs_g i)) n.
+              { apply (nat_primrec_ext eG
+                  (fun i r:set => apply_fun multG (r, apply_fun my_xs i))
+                  (fun i r:set => apply_fun multG (r, my_xs_g i)) n HnO).
+                let i r. assume Hi : i :e n.
+                prove apply_fun multG (r, apply_fun my_xs i) = apply_fun multG (r, my_xs_g i).
+                prove apply_fun multG (r, apply_fun my_xs i) = apply_fun multG (r, If_i (i :e n) (apply_fun my_xs i) eG).
+                rewrite (If_i_1 (i :e n) (apply_fun my_xs i) eG Hi). reflexivity. }
+              claim Hprod_g_G : nat_primrec eG (fun i r => apply_fun multG (r, my_xs_g i)) n :e G.
+              { exact (nat_primrec_product_in_group G multG eG HmultG_fn HeG_G my_xs_g Hxsg_G n HnO). }
               claim Hprod_G : nat_primrec eG (fun i r => apply_fun multG (r, apply_fun my_xs i)) n :e G.
-              { exact (nat_primrec_product_in_group G multG eG HmultG_fn HeG_G
-                  (fun i:set => apply_fun my_xs i) Hmy_xs_G n HnO). }
+              { rewrite Hext_prod. exact Hprod_g_G. }
               apply (G_ext f (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun my_xs i)) n) Hf Hprod_G).
               let alpha. assume Hal : alpha :e J.
-              (** Use pointwise_nat_primrec **)
-              claim Hpw : (nat_primrec eG (fun i r => apply_fun multG (r, (fun j:set => apply_fun my_xs j) i)) n) alpha =
-                nat_primrec (ea alpha) (fun i r => apply_fun (ma alpha) (r, ((fun j:set => apply_fun my_xs j) i) alpha)) n.
-              { exact (pointwise_nat_primrec n Hnat_n (fun j:set => apply_fun my_xs j) Hmy_xs_G alpha Hal). }
+              (** Use pointwise_nat_primrec via guarded version **)
+              claim Hpw_g : (nat_primrec eG (fun i r => apply_fun multG (r, my_xs_g i)) n) alpha =
+                nat_primrec (ea alpha) (fun i r => apply_fun (ma alpha) (r, (my_xs_g i) alpha)) n.
+              { exact (pointwise_nat_primrec n Hnat_n my_xs_g Hxsg_G alpha Hal). }
+              claim Hext_a : nat_primrec (ea alpha) (fun i r => apply_fun (ma alpha) (r, (my_xs_g i) alpha)) n =
+                nat_primrec (ea alpha) (fun i r => apply_fun (ma alpha) (r, (apply_fun my_xs i) alpha)) n.
+              { apply (nat_primrec_ext (ea alpha)
+                  (fun i r:set => apply_fun (ma alpha) (r, (my_xs_g i) alpha))
+                  (fun i r:set => apply_fun (ma alpha) (r, (apply_fun my_xs i) alpha)) n HnO).
+                let i r. assume Hi : i :e n.
+                prove apply_fun (ma alpha) (r, (my_xs_g i) alpha) = apply_fun (ma alpha) (r, (apply_fun my_xs i) alpha).
+                prove apply_fun (ma alpha) (r, (If_i (i :e n) (apply_fun my_xs i) eG) alpha) = apply_fun (ma alpha) (r, (apply_fun my_xs i) alpha).
+                rewrite (If_i_1 (i :e n) (apply_fun my_xs i) eG Hi). reflexivity. }
+              claim Hpw : (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun my_xs i)) n) alpha =
+                nat_primrec (ea alpha) (fun i r => apply_fun (ma alpha) (r, (apply_fun my_xs i) alpha)) n.
+              { rewrite Hext_prod. rewrite Hpw_g. exact Hext_a. }
               (** Coordinate computation: (my_xs i) alpha = if alpha = e_bij i then f(e_bij i) else ea alpha **)
               claim Hcoord : forall i:set, i :e n ->
                 (apply_fun my_xs i) alpha = (if alpha = apply_fun e_bij i then f (apply_fun e_bij i) else ea alpha).
@@ -154460,32 +154482,77 @@ apply andI.
           ((apply_fun (apply_fun ifam (apply_fun a2 i)) z) (apply_fun a2 i)) (ea gamma) Hne).
         reflexivity.
     }
-    (** Unguarded xs membership for pointwise_nat_primrec **)
-    claim Hx1_G_ug : forall i:set, (fun j:set => apply_fun x1 j) i :e G.
-    { let i. apply (xm (i :e n1)).
-      - assume Hi : i :e n1. exact (Hx1fn i Hi).
-      - assume _. admit. }
-    claim Hx2_G_ug : forall i:set, (fun j:set => apply_fun x2 j) i :e G.
-    { let i. apply (xm (i :e n2)).
-      - assume Hi : i :e n2. exact (Hx2fn i Hi).
-      - assume _. admit. }
-    (** Pointwise product at each alpha **)
+    (** Pointwise product at each alpha - using guarded If_i for unguarded membership **)
     claim Hpw1 : forall alpha:set, alpha :e J ->
       x alpha = nat_primrec (ea alpha) (fun i r => apply_fun (ma alpha) (r, (apply_fun x1 i) alpha)) n1.
     { let alpha. assume Hal : alpha :e J.
-      claim Heval : (nat_primrec eG (fun i r => apply_fun multG (r, (fun j:set => apply_fun x1 j) i)) n1) alpha =
-        nat_primrec (ea alpha) (fun i r => apply_fun (ma alpha) (r, ((fun j:set => apply_fun x1 j) i) alpha)) n1.
-      { exact (pointwise_nat_primrec n1 Hnat1 (fun j:set => apply_fun x1 j) Hx1_G_ug alpha Hal). }
+      set x1g := fun i:set => If_i (i :e n1) (apply_fun x1 i) eG.
+      claim Hx1g_G : forall i:set, x1g i :e G.
+      { let i. apply (xm (i :e n1)).
+        - assume Hi : i :e n1.
+          prove If_i (i :e n1) (apply_fun x1 i) eG :e G.
+          rewrite (If_i_1 (i :e n1) (apply_fun x1 i) eG Hi). exact (Hx1fn i Hi).
+        - assume Hni : i :e n1 -> False.
+          prove If_i (i :e n1) (apply_fun x1 i) eG :e G.
+          rewrite (If_i_0 (i :e n1) (apply_fun x1 i) eG Hni). exact HeG_G. }
+      claim Heval_g : (nat_primrec eG (fun i r => apply_fun multG (r, x1g i)) n1) alpha =
+        nat_primrec (ea alpha) (fun i r => apply_fun (ma alpha) (r, (x1g i) alpha)) n1.
+      { exact (pointwise_nat_primrec n1 Hnat1 x1g Hx1g_G alpha Hal). }
+      claim Hext_G : nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x1 i)) n1 =
+        nat_primrec eG (fun i r => apply_fun multG (r, x1g i)) n1.
+      { apply (nat_primrec_ext eG
+          (fun i r:set => apply_fun multG (r, apply_fun x1 i))
+          (fun i r:set => apply_fun multG (r, x1g i)) n1 Hn1O).
+        let i r. assume Hi : i :e n1.
+        prove apply_fun multG (r, apply_fun x1 i) = apply_fun multG (r, x1g i).
+        prove apply_fun multG (r, apply_fun x1 i) = apply_fun multG (r, If_i (i :e n1) (apply_fun x1 i) eG).
+        rewrite (If_i_1 (i :e n1) (apply_fun x1 i) eG Hi). reflexivity. }
+      claim Hext_a : nat_primrec (ea alpha) (fun i r => apply_fun (ma alpha) (r, (x1g i) alpha)) n1 =
+        nat_primrec (ea alpha) (fun i r => apply_fun (ma alpha) (r, (apply_fun x1 i) alpha)) n1.
+      { apply (nat_primrec_ext (ea alpha)
+          (fun i r:set => apply_fun (ma alpha) (r, (x1g i) alpha))
+          (fun i r:set => apply_fun (ma alpha) (r, (apply_fun x1 i) alpha)) n1 Hn1O).
+        let i r. assume Hi : i :e n1.
+        prove apply_fun (ma alpha) (r, (x1g i) alpha) = apply_fun (ma alpha) (r, (apply_fun x1 i) alpha).
+        prove apply_fun (ma alpha) (r, (If_i (i :e n1) (apply_fun x1 i) eG) alpha) = apply_fun (ma alpha) (r, (apply_fun x1 i) alpha).
+        rewrite (If_i_1 (i :e n1) (apply_fun x1 i) eG Hi). reflexivity. }
       prove x alpha = nat_primrec (ea alpha) (fun i r => apply_fun (ma alpha) (r, (apply_fun x1 i) alpha)) n1.
-      rewrite Hx_eq1. exact Heval. }
+      rewrite Hx_eq1. rewrite Hext_G. rewrite Heval_g. exact Hext_a. }
     claim Hpw2 : forall alpha:set, alpha :e J ->
       x alpha = nat_primrec (ea alpha) (fun i r => apply_fun (ma alpha) (r, (apply_fun x2 i) alpha)) n2.
     { let alpha. assume Hal : alpha :e J.
-      claim Heval : (nat_primrec eG (fun i r => apply_fun multG (r, (fun j:set => apply_fun x2 j) i)) n2) alpha =
-        nat_primrec (ea alpha) (fun i r => apply_fun (ma alpha) (r, ((fun j:set => apply_fun x2 j) i) alpha)) n2.
-      { exact (pointwise_nat_primrec n2 Hnat2 (fun j:set => apply_fun x2 j) Hx2_G_ug alpha Hal). }
+      set x2g := fun i:set => If_i (i :e n2) (apply_fun x2 i) eG.
+      claim Hx2g_G : forall i:set, x2g i :e G.
+      { let i. apply (xm (i :e n2)).
+        - assume Hi : i :e n2.
+          prove If_i (i :e n2) (apply_fun x2 i) eG :e G.
+          rewrite (If_i_1 (i :e n2) (apply_fun x2 i) eG Hi). exact (Hx2fn i Hi).
+        - assume Hni : i :e n2 -> False.
+          prove If_i (i :e n2) (apply_fun x2 i) eG :e G.
+          rewrite (If_i_0 (i :e n2) (apply_fun x2 i) eG Hni). exact HeG_G. }
+      claim Heval_g : (nat_primrec eG (fun i r => apply_fun multG (r, x2g i)) n2) alpha =
+        nat_primrec (ea alpha) (fun i r => apply_fun (ma alpha) (r, (x2g i) alpha)) n2.
+      { exact (pointwise_nat_primrec n2 Hnat2 x2g Hx2g_G alpha Hal). }
+      claim Hext_G : nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x2 i)) n2 =
+        nat_primrec eG (fun i r => apply_fun multG (r, x2g i)) n2.
+      { apply (nat_primrec_ext eG
+          (fun i r:set => apply_fun multG (r, apply_fun x2 i))
+          (fun i r:set => apply_fun multG (r, x2g i)) n2 Hn2O).
+        let i r. assume Hi : i :e n2.
+        prove apply_fun multG (r, apply_fun x2 i) = apply_fun multG (r, x2g i).
+        prove apply_fun multG (r, apply_fun x2 i) = apply_fun multG (r, If_i (i :e n2) (apply_fun x2 i) eG).
+        rewrite (If_i_1 (i :e n2) (apply_fun x2 i) eG Hi). reflexivity. }
+      claim Hext_a : nat_primrec (ea alpha) (fun i r => apply_fun (ma alpha) (r, (x2g i) alpha)) n2 =
+        nat_primrec (ea alpha) (fun i r => apply_fun (ma alpha) (r, (apply_fun x2 i) alpha)) n2.
+      { apply (nat_primrec_ext (ea alpha)
+          (fun i r:set => apply_fun (ma alpha) (r, (x2g i) alpha))
+          (fun i r:set => apply_fun (ma alpha) (r, (apply_fun x2 i) alpha)) n2 Hn2O).
+        let i r. assume Hi : i :e n2.
+        prove apply_fun (ma alpha) (r, (x2g i) alpha) = apply_fun (ma alpha) (r, (apply_fun x2 i) alpha).
+        prove apply_fun (ma alpha) (r, (If_i (i :e n2) (apply_fun x2 i) eG) alpha) = apply_fun (ma alpha) (r, (apply_fun x2 i) alpha).
+        rewrite (If_i_1 (i :e n2) (apply_fun x2 i) eG Hi). reflexivity. }
       prove x alpha = nat_primrec (ea alpha) (fun i r => apply_fun (ma alpha) (r, (apply_fun x2 i) alpha)) n2.
-      rewrite Hx_eq2. exact Heval. }
+      rewrite Hx_eq2. rewrite Hext_G. rewrite Heval_g. exact Hext_a. }
     let alpha. assume Hal : alpha :e J.
     (** Membership in component group at alpha **)
     claim Hx1_Ga : forall i:set, i :e n1 -> (apply_fun x1 i) alpha :e Ga alpha.
