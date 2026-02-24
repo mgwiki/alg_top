@@ -184858,6 +184858,77 @@ exact (surjective_map_preimage_nonempty_singleton_iff_mem_codomain
 Qed.
 
 (** Proven Bob **)
+Theorem preimage_singleton_nonempty_iff_exists_preimage_point :
+  forall E pi y:set,
+  (preimage_of E pi (Sing y) <> Empty <->
+    exists x:set, x :e E /\ apply_fun pi x = y).
+let E pi y.
+apply iffI.
+- assume HpreNe.
+  apply (nonempty_has_element (preimage_of E pi (Sing y)) HpreNe).
+  let x.
+  assume HxPre.
+  witness x.
+  apply andI.
+  + exact (SepE1
+      E
+      (fun z:set => apply_fun pi z :e Sing y)
+      x
+      HxPre).
+  + exact (singleton_elem
+      (apply_fun pi x)
+      y
+      (SepE2
+        E
+        (fun z:set => apply_fun pi z :e Sing y)
+        x
+        HxPre)).
+- assume HxPack.
+  apply HxPack.
+  let x.
+  assume HxProof.
+  claim HxE : x :e E.
+  {
+    exact (andEL
+      (x :e E)
+      (apply_fun pi x = y)
+      HxProof).
+  }
+  claim HxEq : apply_fun pi x = y.
+  {
+    exact (andER
+      (x :e E)
+      (apply_fun pi x = y)
+      HxProof).
+  }
+  claim HxPre : x :e preimage_of E pi (Sing y).
+  {
+    claim HxSing : apply_fun pi x :e Sing y.
+    {
+      rewrite HxEq.
+      exact (SingI y).
+    }
+    exact (SepI
+      E
+      (fun z:set => apply_fun pi z :e Sing y)
+      x
+      HxE
+      HxSing).
+  }
+  assume HpreEmpty.
+  claim HxEmpty : x :e Empty.
+  {
+    exact (mem_eqR
+      x
+      (preimage_of E pi (Sing y))
+      Empty
+      HpreEmpty
+      HxPre).
+  }
+  exact (EmptyE x HxEmpty False).
+Qed.
+
+(** Proven Bob **)
 Theorem surjective_map_preimage_singleton_empty_iff_not_mem_codomain :
   forall E X pi y:set,
   surjective_map E X pi ->
