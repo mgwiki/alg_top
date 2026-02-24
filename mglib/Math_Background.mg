@@ -184211,6 +184211,84 @@ exact (surjective_map_image_of_whole
 Qed.
 
 (** Proven Bob **)
+Theorem surjective_map_of_image_whole :
+  forall E X pi:set,
+  function_on pi E X ->
+  image_of pi E = X ->
+  surjective_map E X pi.
+let E X pi.
+assume Hfun HimgEq.
+claim Hsurjpoint : forall y:set, y :e X -> exists x:set, x :e E /\ apply_fun pi x = y.
+{
+  let y.
+  assume HyX.
+  claim HyImg : y :e image_of pi E.
+  {
+    rewrite HimgEq.
+    exact HyX.
+  }
+  claim HyPack : exists x:set, x :e E /\ y = apply_fun pi x.
+  {
+    exact (ReplE
+      E
+      (fun x:set => apply_fun pi x)
+      y
+      HyImg).
+  }
+  apply HyPack.
+  let x.
+  assume HxPack.
+  witness x.
+  apply andI.
+  - exact (andEL
+      (x :e E)
+      (y = apply_fun pi x)
+      HxPack).
+  - rewrite (andER
+      (x :e E)
+      (y = apply_fun pi x)
+      HxPack).
+    reflexivity.
+}
+exact (andI
+  (function_on pi E X)
+  (forall y:set, y :e X -> exists x:set, x :e E /\ apply_fun pi x = y)
+  Hfun
+  Hsurjpoint).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_of_topology_function_and_image_whole :
+  forall E Te X pi:set,
+  topology_on E Te ->
+  function_on pi E X ->
+  image_of pi E = X ->
+  quotient_map E Te X pi.
+let E Te X pi.
+assume HtopE Hfun HimgEq.
+exact (andI
+  (topology_on E Te /\ function_on pi E X)
+  (forall y:set, y :e X -> exists x:set, x :e E /\ apply_fun pi x = y)
+  (andI
+    (topology_on E Te)
+    (function_on pi E X)
+    HtopE
+    Hfun)
+  (fun y:set => fun HyX:y :e X =>
+    (andER
+      (function_on pi E X)
+      (forall y0:set, y0 :e X -> exists x:set, x :e E /\ apply_fun pi x = y0)
+      (surjective_map_of_image_whole
+        E
+        X
+        pi
+        Hfun
+        HimgEq)
+      y
+      HyX))).
+Qed.
+
+(** Proven Bob **)
 Theorem surjective_map_preimage_of_whole :
   forall E X pi:set,
   surjective_map E X pi ->
