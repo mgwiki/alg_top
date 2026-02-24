@@ -72567,6 +72567,498 @@ exact (connected_subset_of_pairwise_disjoint_open_union_anchor
   Hh0S0).
 Qed.
 
+(** Infrastructure: connected images in a pairwise-disjoint open union stay in the anchored member **)
+(** Proven Charlie **)
+Theorem connected_image_stays_in_anchored_open_union_member :
+  forall X Tx E Te slices V0 f x0:set,
+  topology_on E Te ->
+  slices c= Te ->
+  pairwise_disjoint slices ->
+  connected_space X Tx ->
+  continuous_map X Tx E Te f ->
+  image_of f X c= Union slices ->
+  V0 :e slices ->
+  x0 :e X ->
+  apply_fun f x0 :e V0 ->
+  image_of f X c= V0.
+let X Tx E Te slices V0 f x0.
+assume HtopE HslicesSub HpdSlices HXconn Hfcont HimgSubU HV0Slice Hx0X Hfx0V0.
+claim HimgConn :
+  connected_space (image_of f X) (subspace_topology E Te (image_of f X)).
+{
+  exact (continuous_image_connected
+    X
+    Tx
+    E
+    Te
+    f
+    HXconn
+    Hfcont).
+}
+claim HimgSubU2 : image_of f X c= Union slices.
+{
+  exact HimgSubU.
+}
+claim Hfx0Img : apply_fun f x0 :e image_of f X.
+{
+  exact (ReplI
+    X
+    (fun x:set => apply_fun f x)
+    x0
+    Hx0X).
+}
+exact (connected_subset_of_pairwise_disjoint_open_union_anchor
+  E
+  Te
+  slices
+  V0
+  (image_of f X)
+  (apply_fun f x0)
+  HtopE
+  HslicesSub
+  HpdSlices
+  HimgSubU2
+  HimgConn
+  HV0Slice
+  Hfx0Img
+  Hfx0V0).
+Qed.
+
+(** Infrastructure: any open neighborhood in the unit square contains a product of small open balls **)
+(** Proven Charlie **)
+Theorem unit_square_open_neighborhood_contains_product_balls :
+  forall N q:set,
+  q :e unit_square ->
+  N :e unit_square_topology ->
+  q :e N ->
+  exists r0 r1:set,
+    r0 :e R /\ Rlt 0 r0 /\ Rlt r0 1 /\
+    r1 :e R /\ Rlt 0 r1 /\ Rlt r1 1 /\
+    setprod
+      (open_ball unit_interval R_bounded_metric (q 0) r0)
+      (open_ball unit_interval R_bounded_metric (q 1) r1) c= N /\
+    q :e setprod
+      (open_ball unit_interval R_bounded_metric (q 0) r0)
+      (open_ball unit_interval R_bounded_metric (q 1) r1).
+let N q.
+assume HqSq HNopen HqN.
+claim HtopI : topology_on unit_interval unit_interval_topology.
+{
+  exact unit_interval_topology_on.
+}
+claim HtopSq : topology_on unit_square unit_square_topology.
+{
+  exact (product_topology_is_topology
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    HtopI
+    HtopI).
+}
+claim Hrefine :
+  exists b:set,
+    b :e product_subbasis unit_interval unit_interval_topology unit_interval unit_interval_topology /\
+    (q :e b /\ b c= N).
+{
+  exact (generated_topology_local_refine
+    unit_square
+    (product_subbasis unit_interval unit_interval_topology unit_interval unit_interval_topology)
+    N
+    q
+    HNopen
+    HqN).
+}
+apply Hrefine.
+let b.
+assume HbPack.
+claim HbSubbasis :
+  b :e product_subbasis unit_interval unit_interval_topology unit_interval unit_interval_topology.
+{
+  exact (andEL
+    (b :e product_subbasis unit_interval unit_interval_topology unit_interval unit_interval_topology)
+    (q :e b /\ b c= N)
+    HbPack).
+}
+claim Hqb : q :e b.
+{
+  exact (andEL
+    (q :e b)
+    (b c= N)
+    (andER
+      (b :e product_subbasis unit_interval unit_interval_topology unit_interval unit_interval_topology)
+      (q :e b /\ b c= N)
+      HbPack)).
+}
+claim HbSub : b c= N.
+{
+  exact (andER
+    (q :e b)
+    (b c= N)
+    (andER
+      (b :e product_subbasis unit_interval unit_interval_topology unit_interval unit_interval_topology)
+      (q :e b /\ b c= N)
+      HbPack)).
+}
+apply (famunionE
+  unit_interval_topology
+  (fun U0:set => {rectangle_set U0 V|V :e unit_interval_topology})
+  b
+  HbSubbasis).
+let U0.
+assume HU0Pack.
+claim HU0open : U0 :e unit_interval_topology.
+{
+  exact (andEL
+    (U0 :e unit_interval_topology)
+    (b :e {rectangle_set U0 V|V :e unit_interval_topology})
+    HU0Pack).
+}
+claim HbRepl : b :e {rectangle_set U0 V|V :e unit_interval_topology}.
+{
+  exact (andER
+    (U0 :e unit_interval_topology)
+    (b :e {rectangle_set U0 V|V :e unit_interval_topology})
+    HU0Pack).
+}
+apply (ReplE
+  unit_interval_topology
+  (fun V:set => rectangle_set U0 V)
+  b
+  HbRepl).
+let V0.
+assume HV0Pack.
+claim HV0open : V0 :e unit_interval_topology.
+{
+  exact (andEL
+    (V0 :e unit_interval_topology)
+    (b = rectangle_set U0 V0)
+    HV0Pack).
+}
+claim HbEq : b = rectangle_set U0 V0.
+{
+  exact (andER
+    (V0 :e unit_interval_topology)
+    (b = rectangle_set U0 V0)
+    HV0Pack).
+}
+claim Hq0I : q 0 :e unit_interval.
+{
+  exact (ap0_Sigma
+    unit_interval
+    (fun _ : set => unit_interval)
+    q
+    HqSq).
+}
+claim Hq1I : q 1 :e unit_interval.
+{
+  exact (ap1_Sigma
+    unit_interval
+    (fun _ : set => unit_interval)
+    q
+    HqSq).
+}
+claim HqbRect : q :e rectangle_set U0 V0.
+{
+  rewrite <- HbEq.
+  exact Hqb.
+}
+claim HqbSetprod : q :e setprod U0 V0.
+{
+  rewrite <- (rectangle_set_def U0 V0).
+  exact HqbRect.
+}
+claim Hq0U0 : q 0 :e U0.
+{
+  exact (ap0_Sigma
+    U0
+    (fun _ : set => V0)
+    q
+    HqbSetprod).
+}
+claim Hq1V0 : q 1 :e V0.
+{
+  exact (ap1_Sigma
+    U0
+    (fun _ : set => V0)
+    q
+    HqbSetprod).
+}
+claim HmetI : metric_on unit_interval R_bounded_metric.
+{
+  exact R_bounded_metric_is_metric_on_unit_interval.
+}
+claim HU0met : U0 :e metric_topology unit_interval R_bounded_metric.
+{
+  rewrite metric_topology_unit_interval_eq_I_topology.
+  exact HU0open.
+}
+claim HV0met : V0 :e metric_topology unit_interval R_bounded_metric.
+{
+  rewrite metric_topology_unit_interval_eq_I_topology.
+  exact HV0open.
+}
+claim Hr0Ex :
+  exists r0:set, r0 :e R /\ Rlt 0 r0 /\
+    open_ball unit_interval R_bounded_metric (q 0) r0 c= U0 /\
+    Rlt r0 (eps_ 1).
+{
+  exact (metric_topology_neighborhood_contains_ball_bounded
+    unit_interval
+    R_bounded_metric
+    (q 0)
+    U0
+    (eps_ 1)
+    HmetI
+    Hq0I
+    HU0met
+    Hq0U0
+    eps_1_in_R
+    eps_1_pos_R).
+}
+apply Hr0Ex.
+let r0.
+assume Hr0Pack.
+claim Hr0Core :
+  (r0 :e R /\ Rlt 0 r0) /\
+  open_ball unit_interval R_bounded_metric (q 0) r0 c= U0.
+{
+  exact (andEL
+    ((r0 :e R /\ Rlt 0 r0) /\
+      open_ball unit_interval R_bounded_metric (q 0) r0 c= U0)
+    (Rlt r0 (eps_ 1))
+    Hr0Pack).
+}
+claim Hr0Rpos : r0 :e R /\ Rlt 0 r0.
+{
+  exact (andEL
+    (r0 :e R /\ Rlt 0 r0)
+    (open_ball unit_interval R_bounded_metric (q 0) r0 c= U0)
+    Hr0Core).
+}
+claim Hr0R : r0 :e R.
+{
+  exact (andEL
+    (r0 :e R)
+    (Rlt 0 r0)
+    Hr0Rpos).
+}
+claim Hr0pos : Rlt 0 r0.
+{
+  exact (andER
+    (r0 :e R)
+    (Rlt 0 r0)
+    Hr0Rpos).
+}
+claim Hball0SubU0 : open_ball unit_interval R_bounded_metric (q 0) r0 c= U0.
+{
+  exact (andER
+    (r0 :e R /\ Rlt 0 r0)
+    (open_ball unit_interval R_bounded_metric (q 0) r0 c= U0)
+    Hr0Core).
+}
+claim Hr0LtEps : Rlt r0 (eps_ 1).
+{
+  exact (andER
+    ((r0 :e R /\ Rlt 0 r0) /\
+      open_ball unit_interval R_bounded_metric (q 0) r0 c= U0)
+    (Rlt r0 (eps_ 1))
+    Hr0Pack).
+}
+claim Hr0lt1 : Rlt r0 1.
+{
+  exact (Rlt_tra
+    r0
+    (eps_ 1)
+    1
+    Hr0LtEps
+    eps_1_lt1_R).
+}
+claim Hr1Ex :
+  exists r1:set, r1 :e R /\ Rlt 0 r1 /\
+    open_ball unit_interval R_bounded_metric (q 1) r1 c= V0 /\
+    Rlt r1 (eps_ 1).
+{
+  exact (metric_topology_neighborhood_contains_ball_bounded
+    unit_interval
+    R_bounded_metric
+    (q 1)
+    V0
+    (eps_ 1)
+    HmetI
+    Hq1I
+    HV0met
+    Hq1V0
+    eps_1_in_R
+    eps_1_pos_R).
+}
+apply Hr1Ex.
+let r1.
+assume Hr1Pack.
+claim Hr1Core :
+  (r1 :e R /\ Rlt 0 r1) /\
+  open_ball unit_interval R_bounded_metric (q 1) r1 c= V0.
+{
+  exact (andEL
+    ((r1 :e R /\ Rlt 0 r1) /\
+      open_ball unit_interval R_bounded_metric (q 1) r1 c= V0)
+    (Rlt r1 (eps_ 1))
+    Hr1Pack).
+}
+claim Hr1Rpos : r1 :e R /\ Rlt 0 r1.
+{
+  exact (andEL
+    (r1 :e R /\ Rlt 0 r1)
+    (open_ball unit_interval R_bounded_metric (q 1) r1 c= V0)
+    Hr1Core).
+}
+claim Hr1R : r1 :e R.
+{
+  exact (andEL
+    (r1 :e R)
+    (Rlt 0 r1)
+    Hr1Rpos).
+}
+claim Hr1pos : Rlt 0 r1.
+{
+  exact (andER
+    (r1 :e R)
+    (Rlt 0 r1)
+    Hr1Rpos).
+}
+claim Hball1SubV0 : open_ball unit_interval R_bounded_metric (q 1) r1 c= V0.
+{
+  exact (andER
+    (r1 :e R /\ Rlt 0 r1)
+    (open_ball unit_interval R_bounded_metric (q 1) r1 c= V0)
+    Hr1Core).
+}
+claim Hr1LtEps : Rlt r1 (eps_ 1).
+{
+  exact (andER
+    ((r1 :e R /\ Rlt 0 r1) /\
+      open_ball unit_interval R_bounded_metric (q 1) r1 c= V0)
+    (Rlt r1 (eps_ 1))
+    Hr1Pack).
+}
+claim Hr1lt1 : Rlt r1 1.
+{
+  exact (Rlt_tra
+    r1
+    (eps_ 1)
+    1
+    Hr1LtEps
+    eps_1_lt1_R).
+}
+claim HprodSubB : setprod
+  (open_ball unit_interval R_bounded_metric (q 0) r0)
+  (open_ball unit_interval R_bounded_metric (q 1) r1) c= b.
+{
+  rewrite HbEq.
+  rewrite (rectangle_set_def U0 V0).
+  exact (setprod_Subq
+    (open_ball unit_interval R_bounded_metric (q 0) r0)
+    (open_ball unit_interval R_bounded_metric (q 1) r1)
+    U0
+    V0
+    Hball0SubU0
+    Hball1SubV0).
+}
+claim HprodSubN : setprod
+  (open_ball unit_interval R_bounded_metric (q 0) r0)
+  (open_ball unit_interval R_bounded_metric (q 1) r1) c= N.
+{
+  exact (Subq_tra
+    (setprod
+      (open_ball unit_interval R_bounded_metric (q 0) r0)
+      (open_ball unit_interval R_bounded_metric (q 1) r1))
+    b
+    N
+    HprodSubB
+    HbSub).
+}
+claim HqBall0 : q 0 :e open_ball unit_interval R_bounded_metric (q 0) r0.
+{
+  exact (center_in_open_ball
+    unit_interval
+    R_bounded_metric
+    (q 0)
+    r0
+    HmetI
+    Hq0I
+    Hr0pos).
+}
+claim HqBall1 : q 1 :e open_ball unit_interval R_bounded_metric (q 1) r1.
+{
+  exact (center_in_open_ball
+    unit_interval
+    R_bounded_metric
+    (q 1)
+    r1
+    HmetI
+    Hq1I
+    Hr1pos).
+}
+claim HqEta : q = (q 0, q 1).
+{
+  exact (setprod_eta
+    unit_interval
+    unit_interval
+    q
+    HqSq).
+}
+claim HqInProd : (q 0, q 1) :e setprod
+  (open_ball unit_interval R_bounded_metric (q 0) r0)
+  (open_ball unit_interval R_bounded_metric (q 1) r1).
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    (open_ball unit_interval R_bounded_metric (q 0) r0)
+    (open_ball unit_interval R_bounded_metric (q 1) r1)
+    (q 0)
+    (q 1)
+    HqBall0
+    HqBall1).
+}
+witness r0.
+witness r1.
+apply andI.
+{
+  apply andI.
+  {
+    apply andI.
+    {
+      apply andI.
+      {
+        apply andI.
+        {
+          apply andI.
+          {
+            apply andI.
+            { exact Hr0R. }
+            { exact Hr0pos. }
+          }
+          { exact Hr0lt1. }
+        }
+        { exact Hr1R. }
+      }
+      { exact Hr1pos. }
+    }
+    { exact Hr1lt1. }
+  }
+  { exact HprodSubN. }
+}
+{
+  exact (eq_subst_mem
+    q
+    (q 0, q 1)
+    (setprod
+      (open_ball unit_interval R_bounded_metric (q 0) r0)
+      (open_ball unit_interval R_bounded_metric (q 1) r1))
+    HqEta
+    HqInProd).
+}
+Qed.
+
 (** Infrastructure: existence package for homotopy lifting in Lem 54.2 **)
 Theorem lemma54_2_homotopy_lifting_exists : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
