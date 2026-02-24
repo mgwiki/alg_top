@@ -184929,6 +184929,53 @@ apply iffI.
 Qed.
 
 (** Proven Bob **)
+Theorem preimage_singleton_empty_iff_no_preimage_point :
+  forall E pi y:set,
+  (preimage_of E pi (Sing y) = Empty <->
+    ~ (exists x:set, x :e E /\ apply_fun pi x = y)).
+let E pi y.
+apply iffI.
+- assume HpreEmpty.
+  assume HxPack.
+  claim HpreNe : preimage_of E pi (Sing y) <> Empty.
+  {
+    exact ((andER
+      (preimage_of E pi (Sing y) <> Empty -> (exists x:set, x :e E /\ apply_fun pi x = y))
+      ((exists x:set, x :e E /\ apply_fun pi x = y) -> preimage_of E pi (Sing y) <> Empty)
+      (preimage_singleton_nonempty_iff_exists_preimage_point E pi y))
+      HxPack).
+  }
+  exact (HpreNe HpreEmpty).
+- assume HnoPre.
+  apply set_ext.
+  + let x.
+    assume HxPre.
+    claim HpreNe : preimage_of E pi (Sing y) <> Empty.
+    {
+      exact (elem_implies_nonempty
+        (preimage_of E pi (Sing y))
+        x
+        HxPre).
+    }
+    claim HxPack : exists x0:set, x0 :e E /\ apply_fun pi x0 = y.
+    {
+      exact ((andEL
+        (preimage_of E pi (Sing y) <> Empty -> (exists x0:set, x0 :e E /\ apply_fun pi x0 = y))
+        ((exists x0:set, x0 :e E /\ apply_fun pi x0 = y) -> preimage_of E pi (Sing y) <> Empty)
+        (preimage_singleton_nonempty_iff_exists_preimage_point E pi y))
+        HpreNe).
+    }
+    claim Hfalse : False.
+    {
+      exact (HnoPre HxPack).
+    }
+    exact (FalseE Hfalse (x :e Empty)).
+  + let x.
+    assume HxE.
+    exact (EmptyE x HxE (x :e preimage_of E pi (Sing y))).
+Qed.
+
+(** Proven Bob **)
 Theorem surjective_map_preimage_singleton_empty_iff_not_mem_codomain :
   forall E X pi y:set,
   surjective_map E X pi ->
