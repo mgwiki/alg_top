@@ -123660,7 +123660,131 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
         This step is admitted and will be proved using metric space infrastructure. **)
     claim Hmixed_pt : exists a:set,
       a :e unit_interval /\ Rlt 0 a /\ Rlt a 1 /\ apply_fun f a :e U :/\: V.
-    { admit. }
+    {
+    (** U cap V is open in Tx **)
+    claim HUVopen : U :/\: V :e Tx.
+    { exact (topology_binintersect_closed X Tx U V Htop HU HV). }
+    (** Preimage of U cap V under f is open in unit_interval_topology **)
+    claim Hpre_open : preimage_of unit_interval f (U :/\: V) :e unit_interval_topology.
+    { exact (continuous_map_preimage unit_interval unit_interval_topology X Tx f
+        HfCont (U :/\: V) HUVopen). }
+    (** 0 is in the preimage since f(0) = x0 in U cap V **)
+    claim H0_uv : apply_fun f 0 :e U :/\: V.
+    { rewrite Hf0. exact Hx0UV. }
+    claim H0_in_pre : 0 :e preimage_of unit_interval f (U :/\: V).
+    { exact (SepI unit_interval (fun x:set => apply_fun f x :e U :/\: V) 0
+        zero_in_unit_interval H0_uv). }
+    (** Convert to metric topology **)
+    claim Hpre_metric : preimage_of unit_interval f (U :/\: V) :e
+      metric_topology unit_interval R_bounded_metric.
+    { rewrite metric_topology_unit_interval_eq_I_topology. exact Hpre_open. }
+    (** Get ball B(0, r2) inside preimage with r2 < 1 **)
+    claim HRlt01 : Rlt 0 1. { exact (RltI 0 1 real_0 real_1 SNoLt_0_1). }
+    claim Hball_ex : exists r2:set, r2 :e R /\ Rlt 0 r2 /\
+      open_ball unit_interval R_bounded_metric 0 r2 c=
+        preimage_of unit_interval f (U :/\: V) /\ Rlt r2 1.
+    { exact (metric_topology_neighborhood_contains_ball_bounded
+        unit_interval R_bounded_metric 0
+        (preimage_of unit_interval f (U :/\: V)) 1
+        R_bounded_metric_is_metric_on_unit_interval
+        zero_in_unit_interval Hpre_metric H0_in_pre real_1 HRlt01). }
+    apply Hball_ex. let r2.
+    assume Hr2_conj : ((r2 :e R /\ Rlt 0 r2) /\
+      open_ball unit_interval R_bounded_metric 0 r2 c=
+        preimage_of unit_interval f (U :/\: V)) /\ Rlt r2 1.
+    claim Hr2lt1 : Rlt r2 1.
+    { exact (andER
+        ((r2 :e R /\ Rlt 0 r2) /\ open_ball unit_interval R_bounded_metric 0 r2 c=
+          preimage_of unit_interval f (U :/\: V))
+        (Rlt r2 1) Hr2_conj). }
+    claim Hr2_inner : (r2 :e R /\ Rlt 0 r2) /\
+      open_ball unit_interval R_bounded_metric 0 r2 c=
+        preimage_of unit_interval f (U :/\: V).
+    { exact (andEL
+        ((r2 :e R /\ Rlt 0 r2) /\ open_ball unit_interval R_bounded_metric 0 r2 c=
+          preimage_of unit_interval f (U :/\: V))
+        (Rlt r2 1) Hr2_conj). }
+    claim Hball_sub : open_ball unit_interval R_bounded_metric 0 r2 c=
+      preimage_of unit_interval f (U :/\: V).
+    { exact (andER (r2 :e R /\ Rlt 0 r2)
+        (open_ball unit_interval R_bounded_metric 0 r2 c=
+          preimage_of unit_interval f (U :/\: V))
+        Hr2_inner). }
+    claim Hr2_pair : r2 :e R /\ Rlt 0 r2.
+    { exact (andEL (r2 :e R /\ Rlt 0 r2)
+        (open_ball unit_interval R_bounded_metric 0 r2 c=
+          preimage_of unit_interval f (U :/\: V))
+        Hr2_inner). }
+    claim Hr2R : r2 :e R.
+    { exact (andEL (r2 :e R) (Rlt 0 r2) Hr2_pair). }
+    claim Hr2pos : Rlt 0 r2.
+    { exact (andER (r2 :e R) (Rlt 0 r2) Hr2_pair). }
+    (** Use Archimedean property to find N with inv_nat(ordsucc N) < r2 **)
+    claim HN_ex : exists N:set, N :e omega /\ Rlt (inv_nat (ordsucc N)) r2.
+    { exact (exists_inv_nat_ordsucc_lt_local r2 Hr2R Hr2pos). }
+    apply HN_ex. let N0.
+    assume HN0_conj : N0 :e omega /\ Rlt (inv_nat (ordsucc N0)) r2.
+    claim HN0omega : N0 :e omega.
+    { exact (andEL (N0 :e omega) (Rlt (inv_nat (ordsucc N0)) r2) HN0_conj). }
+    claim Ha_lt_r2 : Rlt (inv_nat (ordsucc N0)) r2.
+    { exact (andER (N0 :e omega) (Rlt (inv_nat (ordsucc N0)) r2) HN0_conj). }
+    claim HoN0_omega : ordsucc N0 :e omega.
+    { exact (omega_ordsucc N0 HN0omega). }
+    claim HoN0_nz : ordsucc N0 /:e {0}.
+    { assume Habs : ordsucc N0 :e {0}.
+      exact (neq_ordsucc_0 N0 (SingE 0 (ordsucc N0) Habs)). }
+    claim HoN0_diff : ordsucc N0 :e omega :\: {0}.
+    { exact (setminusI omega {0} (ordsucc N0) HoN0_omega HoN0_nz). }
+    claim HaR : inv_nat (ordsucc N0) :e R.
+    { exact (inv_nat_real (ordsucc N0) HoN0_omega). }
+    claim Ha_SNo : SNo (inv_nat (ordsucc N0)).
+    { exact (real_SNo (inv_nat (ordsucc N0)) HaR). }
+    claim Ha_ui : inv_nat (ordsucc N0) :e unit_interval.
+    { exact (inv_nat_in_unit_interval (ordsucc N0) HoN0_diff). }
+    claim Ha_pos : Rlt 0 (inv_nat (ordsucc N0)).
+    { exact (inv_nat_pos (ordsucc N0) HoN0_diff). }
+    claim Ha_lt1 : Rlt (inv_nat (ordsucc N0)) 1.
+    { exact (Rlt_tra (inv_nat (ordsucc N0)) r2 1 Ha_lt_r2 Hr2lt1). }
+    (** Show inv_nat(ordsucc N0) is in the ball B(0, r2) **)
+    claim Habs_chain : abs_SNo (add_SNo 0 (minus_SNo (inv_nat (ordsucc N0)))) =
+      inv_nat (ordsucc N0).
+    { rewrite (add_SNo_0L (minus_SNo (inv_nat (ordsucc N0)))
+        (SNo_minus_SNo (inv_nat (ordsucc N0)) Ha_SNo)).
+      rewrite (abs_SNo_minus (inv_nat (ordsucc N0)) Ha_SNo).
+      exact (pos_abs_SNo (inv_nat (ordsucc N0))
+        (RltE_lt 0 (inv_nat (ordsucc N0)) Ha_pos)). }
+    claim Hd_le_a : Rle (R_bounded_distance 0 (inv_nat (ordsucc N0)))
+      (inv_nat (ordsucc N0)).
+    { exact (Habs_chain
+        (fun w y:set => Rle (R_bounded_distance 0 (inv_nat (ordsucc N0))) w)
+        (R_bounded_distance_le_abs_diff 0 (inv_nat (ordsucc N0)) real_0 HaR)). }
+    claim Hd_lt_r2 : Rlt (R_bounded_distance 0 (inv_nat (ordsucc N0))) r2.
+    { exact (Rle_Rlt_tra
+        (R_bounded_distance 0 (inv_nat (ordsucc N0)))
+        (inv_nat (ordsucc N0)) r2 Hd_le_a Ha_lt_r2). }
+    claim Hd_metric_lt : Rlt (apply_fun R_bounded_metric (0, inv_nat (ordsucc N0))) r2.
+    { rewrite (R_bounded_metric_apply_early 0 (inv_nat (ordsucc N0)) real_0 HaR).
+      exact Hd_lt_r2. }
+    claim Ha_in_ball : inv_nat (ordsucc N0) :e
+      open_ball unit_interval R_bounded_metric 0 r2.
+    { exact (open_ballI unit_interval R_bounded_metric 0 r2
+        (inv_nat (ordsucc N0)) Ha_ui Hd_metric_lt). }
+    (** a is in the preimage, so f(a) in U cap V **)
+    claim Ha_in_pre : inv_nat (ordsucc N0) :e
+      preimage_of unit_interval f (U :/\: V).
+    { exact (Hball_sub (inv_nat (ordsucc N0)) Ha_in_ball). }
+    claim Hfa_UV : apply_fun f (inv_nat (ordsucc N0)) :e U :/\: V.
+    { exact (SepE2 unit_interval
+        (fun x:set => apply_fun f x :e U :/\: V)
+        (inv_nat (ordsucc N0)) Ha_in_pre). }
+    (** Witness: a = inv_nat(ordsucc N0) **)
+    witness (inv_nat (ordsucc N0)).
+    apply andI. apply andI. apply andI.
+    - exact Ha_ui.
+    - exact Ha_pos.
+    - exact Ha_lt1.
+    - exact Hfa_UV.
+    }
     apply Hmixed_pt.
     let a.
     assume Ha_all : a :e unit_interval /\ Rlt 0 a /\ Rlt a 1 /\ apply_fun f a :e U :/\: V.
