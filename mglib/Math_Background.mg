@@ -184383,6 +184383,90 @@ exact (surjective_map_image_nonempty_iff_codomain_nonempty
 Qed.
 
 (** Proven Bob **)
+Theorem surjective_map_image_empty_iff_codomain_empty :
+  forall E X pi:set,
+  surjective_map E X pi ->
+  (image_of pi E = Empty <-> X = Empty).
+let E X pi.
+assume Hsurj.
+apply iffI.
+- assume HimgEmpty.
+  claim HimgEq : image_of pi E = X.
+  {
+    exact (surjective_map_image_of_whole
+      E
+      X
+      pi
+      Hsurj).
+  }
+  apply set_ext.
+  + let x.
+    assume HxX.
+    claim HxImg : x :e image_of pi E.
+    {
+      rewrite HimgEq.
+      exact HxX.
+    }
+    claim HxEmpty : x :e Empty.
+    {
+      exact (mem_eqR
+        x
+        (image_of pi E)
+        Empty
+        HimgEmpty
+        HxImg).
+    }
+    exact (EmptyE x HxEmpty (x :e Empty)).
+  + let x.
+    assume HxE.
+    exact (EmptyE x HxE (x :e X)).
+- assume HXempty.
+  claim HimgEq : image_of pi E = X.
+  {
+    exact (surjective_map_image_of_whole
+      E
+      X
+      pi
+      Hsurj).
+  }
+  apply set_ext.
+  + let x.
+    assume HxImg.
+    claim HxX : x :e X.
+    {
+      rewrite <- HimgEq.
+      exact HxImg.
+    }
+    claim HxEmpty : x :e Empty.
+    {
+      exact (mem_eqR
+        x
+        X
+        Empty
+        HXempty
+        HxX).
+    }
+    exact HxEmpty.
+  + let x.
+    assume HxE.
+    exact (EmptyE x HxE (x :e image_of pi E)).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_image_empty_iff_codomain_empty :
+  forall E Te X pi:set,
+  quotient_map E Te X pi ->
+  (image_of pi E = Empty <-> X = Empty).
+let E Te X pi.
+assume Hquot.
+exact (surjective_map_image_empty_iff_codomain_empty
+  E
+  X
+  pi
+  (quotient_map_implies_surjective_map E Te X pi Hquot)).
+Qed.
+
+(** Proven Bob **)
 Theorem closed_quotient_map_preserves_normality_from_surjective_map :
   forall E Te X Tx pi:set,
   topology_on E Te -> topology_on X Tx ->
