@@ -183914,6 +183914,57 @@ exact (surjective_map_preimage_nonempty_of_nonempty_subset
 Qed.
 
 (** Proven Bob **)
+Theorem image_of_nonempty_of_nonempty_domain :
+  forall E X pi A:set,
+  function_on pi E X ->
+  A c= E ->
+  A <> Empty ->
+  image_of pi A <> Empty.
+let E X pi A.
+assume Hfun HAsub HAne.
+apply (nonempty_has_element A HAne).
+let a.
+assume HaA.
+claim HimgMem : apply_fun pi a :e image_of pi A.
+{
+  exact (ReplI
+    A
+    (fun z:set => apply_fun pi z)
+    a
+    HaA).
+}
+assume HimgEmpty.
+claim HimgEmptyMem : apply_fun pi a :e Empty.
+{
+  exact (mem_eqR
+    (apply_fun pi a)
+    (image_of pi A)
+    Empty
+    HimgEmpty
+    HimgMem).
+}
+exact (EmptyE (apply_fun pi a) HimgEmptyMem False).
+Qed.
+
+(** Proven Bob **)
+Theorem image_of_nonempty_of_surjective_map :
+  forall E X pi:set,
+  surjective_map E X pi ->
+  E <> Empty ->
+  image_of pi E <> Empty.
+let E X pi.
+assume Hsurj HEnonempty.
+exact (image_of_nonempty_of_nonempty_domain
+  E
+  X
+  pi
+  E
+  (surjective_map_function_on E X pi Hsurj)
+  (fun x Hx => Hx)
+  HEnonempty).
+Qed.
+
+(** Proven Bob **)
 Theorem closed_quotient_map_preserves_normality_from_surjective_map :
   forall E Te X Tx pi:set,
   topology_on E Te -> topology_on X Tx ->
