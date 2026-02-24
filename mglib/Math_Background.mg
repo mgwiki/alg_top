@@ -146078,7 +146078,69 @@ apply andI.
               symmetry. exact Hmap2_eH.
           + (** Inductive case: k >= 1, pack1 has size >= 2 **)
             assume Hk_ne0 : k <> 0.
-            admit. }
+            (** Unfold nat_primrec at ordsucc k **)
+            rewrite (nat_primrec_S eH
+              (fun i r => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun a1 i)) (apply_fun x1 i)))
+              k Hk).
+            (** Goal: multH(P_k, hfam(a1(k))(x1(k))) = map_rep pack2 **)
+            (** Restricted conditions for IH **)
+            claim Ha1Fn_k : function_on a1 k J.
+            { let i. assume Hi : i :e k. exact (Ha1Fn i (ordsuccI1 k i Hi)). }
+            claim Hx1Fn_k : function_on x1 k G.
+            { let i. assume Hi : i :e k. exact (Hx1Fn i (ordsuccI1 k i Hi)). }
+            claim Hx1Gfam_k : forall i:set, i :e k -> apply_fun x1 i :e apply_fun Gfam (apply_fun a1 i).
+            { let i. assume Hi. exact (Hx1Gfam i (ordsuccI1 k i Hi)). }
+            claim Hdist1_k : forall i j:set, i :e k -> j :e k -> i <> j -> apply_fun a1 i <> apply_fun a1 j.
+            { let i j. assume Hi Hj Hne. exact (Hdist1 i j (ordsuccI1 k i Hi) (ordsuccI1 k j Hj) Hne). }
+            (** Membership: hfam(a1(k))(x1(k)) :e H **)
+            claim Hterm_k_H : apply_fun (apply_fun hfam (apply_fun a1 k)) (apply_fun x1 k) :e H.
+            { exact (Hhfam_to_H (apply_fun a1 k) (Ha1Fn k Hk_in_n1) (apply_fun x1 k) (Hx1Gfam k Hk_in_n1)). }
+            (** Case split on a1(k) appearing in pack2 **)
+            apply (xm (exists j0:set, j0 :e n2 /\ apply_fun a2 j0 = apply_fun a1 k)).
+            - (** Case A: a1(k) appears in pack2 at j0 **)
+              assume Hex_j0 : exists j0:set, j0 :e n2 /\ apply_fun a2 j0 = apply_fun a1 k.
+              admit.
+            - (** Case B: a1(k) not in pack2. x1(k) = eG by Huniq clause 2. **)
+              assume Hnex : ~(exists j0:set, j0 :e n2 /\ apply_fun a2 j0 = apply_fun a1 k).
+              claim Hex_k : exists i0:set, i0 :e ordsucc k /\ apply_fun a1 i0 = apply_fun a1 k.
+              { witness k. apply andI. exact Hk_in_n1. reflexivity. }
+              apply (and3E
+                (forall i0 j0:set, i0 :e ordsucc k -> j0 :e n2 ->
+                  apply_fun a1 i0 = apply_fun a1 k -> apply_fun a2 j0 = apply_fun a1 k ->
+                  apply_fun x1 i0 = apply_fun x2 j0)
+                ((exists i0:set, i0 :e ordsucc k /\ apply_fun a1 i0 = apply_fun a1 k) ->
+                 ~(exists j0:set, j0 :e n2 /\ apply_fun a2 j0 = apply_fun a1 k) ->
+                 forall i0:set, i0 :e ordsucc k -> apply_fun a1 i0 = apply_fun a1 k -> apply_fun x1 i0 = eG)
+                (~(exists i0:set, i0 :e ordsucc k /\ apply_fun a1 i0 = apply_fun a1 k) ->
+                 (exists j0:set, j0 :e n2 /\ apply_fun a2 j0 = apply_fun a1 k) ->
+                 forall j0:set, j0 :e n2 -> apply_fun a2 j0 = apply_fun a1 k -> apply_fun x2 j0 = eG)
+                (Huniq_g (apply_fun a1 k) (Ha1Fn k Hk_in_n1))).
+              assume _ Hc2 _.
+              claim Hx1k_eG : apply_fun x1 k = eG.
+              { claim Ha1k_refl : apply_fun a1 k = apply_fun a1 k. { reflexivity. }
+                exact (Hc2 Hex_k Hnex k Hk_in_n1 Ha1k_refl). }
+              rewrite Hx1k_eG.
+              rewrite (Hhfam_id (apply_fun a1 k) (Ha1Fn k Hk_in_n1)).
+              (** Goal: multH(P_k, eH) = map_rep pack2 **)
+              (** P_k :e H **)
+              claim HP_k_H : nat_primrec eH
+                (fun i r => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun a1 i)) (apply_fun x1 i))) k :e H.
+              { admit. }
+              rewrite (HridH
+                (nat_primrec eH
+                  (fun i r => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun a1 i)) (apply_fun x1 i))) k)
+                HP_k_H).
+              (** Goal: P_k = map_rep pack2 **)
+              (** g = nat_primrec eG (multG-fun x1) k since x1(k) = eG **)
+              claim Hg'_G : nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x1 i)) k :e G.
+              { admit. }
+              claim HgRep_k : g = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x1 i)) k.
+              { rewrite HgRep.
+                rewrite (nat_primrec_S eG (fun i r => apply_fun multG (r, apply_fun x1 i)) k Hk).
+                rewrite Hx1k_eG.
+                exact (HridG
+                  (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x1 i)) k) Hg'_G). }
+              exact (IH Hk_ne0 g HgG a1 x1 Ha1Fn_k Hx1Fn_k Hx1Gfam_k Hdist1_k HgRep_k pack2 Hp2). }
       (** Apply Hind to get Hwell_def **)
       let g. assume HgG. let pack1 pack2. assume Hp1 Hp2.
       set n1 := pack1 0. set a1 := (pack1 1) 0. set x1' := (pack1 1) 1.
