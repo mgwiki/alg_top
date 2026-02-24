@@ -73183,6 +73183,88 @@ apply andI.
 }
 Qed.
 
+(** Infrastructure: products of two open balls in unit_interval are open in the unit square topology **)
+(** Proven Charlie **)
+Theorem unit_square_product_balls_open_lt1 :
+  forall x0 x1 r0 r1:set,
+  x0 :e unit_interval ->
+  x1 :e unit_interval ->
+  r0 :e R ->
+  Rlt 0 r0 ->
+  Rlt r0 1 ->
+  r1 :e R ->
+  Rlt 0 r1 ->
+  Rlt r1 1 ->
+  setprod
+    (open_ball unit_interval R_bounded_metric x0 r0)
+    (open_ball unit_interval R_bounded_metric x1 r1)
+  :e unit_square_topology.
+let x0 x1 r0 r1.
+assume Hx0I Hx1I Hr0R Hr0pos Hr0lt1 Hr1R Hr1pos Hr1lt1.
+set B0 := open_ball unit_interval R_bounded_metric x0 r0.
+set B1 := open_ball unit_interval R_bounded_metric x1 r1.
+claim HB0open : B0 :e unit_interval_topology.
+{
+  rewrite <- metric_topology_unit_interval_eq_I_topology.
+  exact (open_ball_in_metric_topology
+    unit_interval
+    R_bounded_metric
+    x0
+    r0
+    R_bounded_metric_is_metric_on_unit_interval
+    Hx0I
+    Hr0pos).
+}
+claim HB1open : B1 :e unit_interval_topology.
+{
+  rewrite <- metric_topology_unit_interval_eq_I_topology.
+  exact (open_ball_in_metric_topology
+    unit_interval
+    R_bounded_metric
+    x1
+    r1
+    R_bounded_metric_is_metric_on_unit_interval
+    Hx1I
+    Hr1pos).
+}
+claim HbasisSub :
+  basis_on unit_square (product_subbasis unit_interval unit_interval_topology unit_interval unit_interval_topology).
+{
+  exact (product_subbasis_is_basis
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    unit_interval_topology_on
+    unit_interval_topology_on).
+}
+claim HrectSub :
+  rectangle_set B0 B1 :e product_subbasis unit_interval unit_interval_topology unit_interval unit_interval_topology.
+{
+  exact (famunionI
+    unit_interval_topology
+    (fun U0:set => {rectangle_set U0 V|V :e unit_interval_topology})
+    B0
+    (rectangle_set B0 B1)
+    HB0open
+    (ReplI unit_interval_topology (fun V:set => rectangle_set B0 V) B1 HB1open)).
+}
+claim HrectOpen :
+  rectangle_set B0 B1 :e generated_topology
+    unit_square
+    (product_subbasis unit_interval unit_interval_topology unit_interval unit_interval_topology).
+{
+  exact (basis_in_generated
+    unit_square
+    (product_subbasis unit_interval unit_interval_topology unit_interval unit_interval_topology)
+    (rectangle_set B0 B1)
+    HbasisSub
+    HrectSub).
+}
+rewrite <- (rectangle_set_def B0 B1).
+exact HrectOpen.
+Qed.
+
 (** Infrastructure: products of two connected open balls in unit_interval are connected in the unit square **)
 (** Proven Charlie **)
 Theorem unit_square_product_balls_connected_lt1 :
