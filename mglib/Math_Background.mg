@@ -183835,6 +183835,85 @@ exact (surjective_map_preimage_nonempty_singleton
 Qed.
 
 (** Proven Bob **)
+Theorem surjective_map_preimage_nonempty_of_nonempty_subset :
+  forall E X pi V:set,
+  surjective_map E X pi ->
+  V c= X ->
+  V <> Empty ->
+  preimage_of E pi V <> Empty.
+let E X pi V.
+assume Hsurj HVsub HVne.
+apply (nonempty_has_element V HVne).
+let y.
+assume HyV.
+claim HyX : y :e X.
+{
+  exact (HVsub y HyV).
+}
+apply (surjective_map_has_preimage E X pi y Hsurj HyX).
+let x.
+assume HxPack.
+claim HxE : x :e E.
+{
+  exact (andEL
+    (x :e E)
+    (apply_fun pi x = y)
+    HxPack).
+}
+claim HxEq : apply_fun pi x = y.
+{
+  exact (andER
+    (x :e E)
+    (apply_fun pi x = y)
+    HxPack).
+}
+claim HxPre : x :e preimage_of E pi V.
+{
+  claim HimgV : apply_fun pi x :e V.
+  {
+    rewrite HxEq.
+    exact HyV.
+  }
+  exact (SepI
+    E
+    (fun z:set => apply_fun pi z :e V)
+    x
+    HxE
+    HimgV).
+}
+assume HpreEmpty.
+claim HxEmpty : x :e Empty.
+{
+  exact (mem_eqR
+    x
+    (preimage_of E pi V)
+    Empty
+    HpreEmpty
+    HxPre).
+}
+exact (EmptyE x HxEmpty False).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_preimage_nonempty_of_nonempty_subset :
+  forall E Te X pi V:set,
+  quotient_map E Te X pi ->
+  V c= X ->
+  V <> Empty ->
+  preimage_of E pi V <> Empty.
+let E Te X pi V.
+assume Hquot HVsub HVne.
+exact (surjective_map_preimage_nonempty_of_nonempty_subset
+  E
+  X
+  pi
+  V
+  (quotient_map_implies_surjective_map E Te X pi Hquot)
+  HVsub
+  HVne).
+Qed.
+
+(** Proven Bob **)
 Theorem closed_quotient_map_preserves_normality_from_surjective_map :
   forall E Te X Tx pi:set,
   topology_on E Te -> topology_on X Tx ->
