@@ -62469,6 +62469,264 @@ exact (and7I
   HN0NtDisj).
 Qed.
 
+(** Infrastructure: R is a linear continuum in its standard topology **)
+(** Proven Charlie **)
+Theorem linear_continuum_R_standard :
+  linear_continuum R R_standard_topology.
+claim HtopEq : R_standard_topology = order_topology R.
+{
+  rewrite <- standard_topology_is_order_topology.
+  reflexivity.
+}
+claim H0R : 0 :e R.
+{
+  exact real_0.
+}
+claim H1R : 1 :e R.
+{
+  exact real_1.
+}
+claim Hdistinct : exists x y:set, x :e R /\ y :e R /\ x <> y.
+{
+  witness 0.
+  witness 1.
+  apply andI.
+  - apply andI.
+    + exact H0R.
+    + exact H1R.
+  - exact neq_0_1.
+}
+claim Hdense :
+  forall x y:set, x :e R -> y :e R -> order_rel R x y ->
+    exists z:set, z :e R /\ order_rel R x z /\ order_rel R z y.
+{
+  let x.
+  let y.
+  assume HxR.
+  assume HyR.
+  assume HxyOrd.
+  claim HxyLt : Rlt x y.
+  {
+    exact (order_rel_R_implies_Rlt x y HxyOrd).
+  }
+  claim HqEx :
+    exists q :e rational_numbers, Rlt x q /\ Rlt q y.
+  {
+    exact (rational_dense_between_reals x y HxR HyR HxyLt).
+  }
+  apply HqEx.
+  let q.
+  assume HqPack.
+  apply HqPack.
+  assume HqRat HqLts.
+  witness q.
+  claim HqR : q :e R.
+  {
+    exact (rational_numbers_Subq_R q HqRat).
+  }
+  apply andI.
+  - apply andI.
+    + exact HqR.
+    + exact (Rlt_implies_order_rel_R x q (andEL (Rlt x q) (Rlt q y) HqLts)).
+  - exact (Rlt_implies_order_rel_R q y (andER (Rlt x q) (Rlt q y) HqLts)).
+}
+claim Hub :
+  forall A:set, A c= R -> A <> Empty ->
+    (exists upper:set, upper :e R /\ forall a:set, a :e A -> order_rel R a upper \/ a = upper) ->
+    exists lub:set,
+      lub :e R /\
+      (forall a:set, a :e A -> order_rel R a lub \/ a = lub) /\
+      (forall bound:set, bound :e R ->
+        (forall a:set, a :e A -> order_rel R a bound \/ a = bound) ->
+        order_rel R lub bound \/ lub = bound).
+{
+  let A.
+  assume HAsub HAne Hupper.
+  claim Ha0Ex : exists a0:set, a0 :e A.
+  {
+    exact (nonempty_has_element A HAne).
+  }
+  claim HAinR : forall a:set, a :e A -> a :e R.
+  {
+    let a.
+    assume HaA.
+    exact (HAsub a HaA).
+  }
+  apply Hupper.
+  let upper.
+  assume HupperPack.
+  claim HupperR : upper :e R.
+  {
+    exact (andEL
+      (upper :e R)
+      (forall a:set, a :e A -> order_rel R a upper \/ a = upper)
+      HupperPack).
+  }
+  claim HupperOrd :
+    forall a:set, a :e A -> order_rel R a upper \/ a = upper.
+  {
+    exact (andER
+      (upper :e R)
+      (forall a:set, a :e A -> order_rel R a upper \/ a = upper)
+      HupperPack).
+  }
+  claim HubRle :
+    forall a:set, a :e A -> a :e R -> Rle a upper.
+  {
+    let a.
+    assume HaA HaR.
+    apply (HupperOrd a HaA).
+    - assume HaOrd.
+      exact (Rlt_implies_Rle a upper (order_rel_R_implies_Rlt a upper HaOrd)).
+    - assume HaEq.
+      rewrite HaEq.
+      exact (Rle_refl upper HupperR).
+  }
+  claim HlubEx : exists l:set, R_lub A l.
+  {
+    apply (R_lub_exists
+      A
+      Ha0Ex
+      HAinR).
+    witness upper.
+    apply andI.
+    - exact HupperR.
+    - exact HubRle.
+  }
+  apply HlubEx.
+  let lub.
+  assume Hlub.
+  witness lub.
+  claim HlubR : lub :e R.
+  {
+    exact (R_lub_in_R A lub Hlub).
+  }
+  apply andI.
+  - apply andI.
+    + exact HlubR.
+    + let a.
+      assume HaA.
+      apply xm (a = lub).
+      * assume HaEq.
+        exact (orIR (order_rel R a lub) (a = lub) HaEq).
+      * assume HaNe.
+        claim HaR : a :e R.
+        {
+          exact (HAinR a HaA).
+        }
+        claim Hale : Rle a lub.
+        {
+          exact (R_lub_upper A lub a Hlub HaA HaR).
+        }
+        claim Halt : Rlt a lub.
+        {
+          exact (Rle_neq_implies_Rlt a lub Hale HaNe).
+        }
+        exact (orIL (order_rel R a lub) (a = lub) (Rlt_implies_order_rel_R a lub Halt)).
+  - let bound.
+    assume HboundR HboundProp.
+    apply xm (lub = bound).
+    * assume Heq.
+      exact (orIR (order_rel R lub bound) (lub = bound) Heq).
+    * assume Hne.
+      claim HuboundRle : forall a:set, a :e A -> a :e R -> Rle a bound.
+      {
+        let a.
+        assume HaA HaR.
+        apply (HboundProp a HaA).
+        - assume HaOrd.
+          exact (Rlt_implies_Rle a bound (order_rel_R_implies_Rlt a bound HaOrd)).
+        - assume HaEq.
+          rewrite HaEq.
+          exact (Rle_refl bound HboundR).
+      }
+      claim HlubLe : Rle lub bound.
+      {
+        exact (R_lub_min A lub bound Hlub HboundR HuboundRle).
+      }
+      claim HlubLt : Rlt lub bound.
+      {
+        exact (Rle_neq_implies_Rlt lub bound HlubLe Hne).
+      }
+      exact (orIL (order_rel R lub bound) (lub = bound)
+        (Rlt_implies_order_rel_R lub bound HlubLt)).
+}
+claim HAB : simply_ordered_set R /\ R_standard_topology = order_topology R.
+{
+  exact (andI
+    (simply_ordered_set R)
+    (R_standard_topology = order_topology R)
+    simply_ordered_set_R
+    HtopEq).
+}
+claim HABC :
+  (simply_ordered_set R /\ R_standard_topology = order_topology R) /\
+  (exists x y:set, x :e R /\ y :e R /\ x <> y).
+{
+  exact (andI
+    (simply_ordered_set R /\ R_standard_topology = order_topology R)
+    (exists x y:set, x :e R /\ y :e R /\ x <> y)
+    HAB
+    Hdistinct).
+}
+claim HABCD :
+  ((simply_ordered_set R /\ R_standard_topology = order_topology R) /\
+    (exists x y:set, x :e R /\ y :e R /\ x <> y)) /\
+  (forall x y:set, x :e R -> y :e R -> order_rel R x y ->
+    exists z:set, z :e R /\ order_rel R x z /\ order_rel R z y).
+{
+  exact (andI
+    ((simply_ordered_set R /\ R_standard_topology = order_topology R) /\
+      (exists x y:set, x :e R /\ y :e R /\ x <> y))
+    (forall x y:set, x :e R -> y :e R -> order_rel R x y ->
+      exists z:set, z :e R /\ order_rel R x z /\ order_rel R z y)
+    HABC
+    Hdense).
+}
+exact (andI
+  (((simply_ordered_set R /\ R_standard_topology = order_topology R) /\
+     (exists x y:set, x :e R /\ y :e R /\ x <> y)) /\
+    (forall x y:set, x :e R -> y :e R -> order_rel R x y ->
+      exists z:set, z :e R /\ order_rel R x z /\ order_rel R z y))
+  (forall A:set, A c= R -> A <> Empty ->
+    (exists upper:set, upper :e R /\ forall a:set, a :e A -> order_rel R a upper \/ a = upper) ->
+    exists lub:set,
+      lub :e R /\
+      (forall a:set, a :e A -> order_rel R a lub \/ a = lub) /\
+      (forall bound:set, bound :e R ->
+        (forall a:set, a :e A -> order_rel R a bound \/ a = bound) ->
+        order_rel R lub bound \/ lub = bound))
+  HABCD
+  Hub).
+Qed.
+
+(** Infrastructure: open intervals are connected in R **)
+(** Proven Charlie **)
+Theorem open_interval_connected :
+  forall a b:set,
+  a :e R ->
+  b :e R ->
+  order_rel R a b ->
+  connected_space (open_interval a b) (subspace_topology R R_standard_topology (open_interval a b)).
+let a b.
+assume HaR HbR HabOrd.
+claim Hconn :
+  connected_space (order_interval R a b) (subspace_topology R R_standard_topology (order_interval R a b)).
+{
+  exact (thm24_1_linear_continuum_intervals_connected
+    R
+    R_standard_topology
+    a
+    b
+    linear_continuum_R_standard
+    HaR
+    HbR
+    HabOrd).
+}
+rewrite <- (order_interval_R_eq_open_interval a b).
+exact Hconn.
+Qed.
+
 (** from S54 Lem 54.1 (line 715 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map, p(e0) = b0. Any path f:[0,1] -> B **)
 (** beginning at b0 has a unique lifting to a path in E beginning at e0. **)
