@@ -124332,6 +124332,121 @@ Admitted.
 
 (** ======================= S59 THE FUNDAMENTAL GROUP OF S^n ======================= **)
 
+(** Helper: two continuous paths that agree pointwise are path-homotopic **)
+Lemma path_homotopic_of_pointwise_equal : forall X Tx x0 x1 f g:set,
+  continuous_map unit_interval unit_interval_topology X Tx f ->
+  continuous_map unit_interval unit_interval_topology X Tx g ->
+  apply_fun f 0 = x0 -> apply_fun f 1 = x1 ->
+  apply_fun g 0 = x0 -> apply_fun g 1 = x1 ->
+  (forall s:set, s :e unit_interval -> apply_fun f s = apply_fun g s) ->
+  path_homotopic X Tx x0 x1 f g.
+let X Tx x0 x1 f g.
+assume Hf : continuous_map unit_interval unit_interval_topology X Tx f.
+assume Hg : continuous_map unit_interval unit_interval_topology X Tx g.
+assume Hf0 : apply_fun f 0 = x0.
+assume Hf1 : apply_fun f 1 = x1.
+assume Hg0 : apply_fun g 0 = x0.
+assume Hg1 : apply_fun g 1 = x1.
+assume Hpw : forall s:set, s :e unit_interval -> apply_fun f s = apply_fun g s.
+prove continuous_map unit_interval unit_interval_topology X Tx f /\
+  continuous_map unit_interval unit_interval_topology X Tx g /\
+  apply_fun f 0 = x0 /\ apply_fun f 1 = x1 /\
+  apply_fun g 0 = x0 /\ apply_fun g 1 = x1 /\
+  exists F:set,
+    continuous_map unit_square unit_square_topology X Tx F /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 0) = apply_fun f s) /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 1) = apply_fun g s) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (0, t) = x0) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (1, t) = x1).
+apply andI.
+- exact (and6I
+    (continuous_map unit_interval unit_interval_topology X Tx f)
+    (continuous_map unit_interval unit_interval_topology X Tx g)
+    (apply_fun f 0 = x0)
+    (apply_fun f 1 = x1)
+    (apply_fun g 0 = x0)
+    (apply_fun g 1 = x1)
+    Hf Hg Hf0 Hf1 Hg0 Hg1).
+- witness (compose_fun unit_square (projection_map1 unit_interval unit_interval) f).
+  claim Hproj1Cont :
+    continuous_map unit_square unit_square_topology
+      unit_interval unit_interval_topology (projection_map1 unit_interval unit_interval).
+  {
+    exact (andEL
+      (continuous_map unit_square unit_square_topology
+        unit_interval unit_interval_topology (projection_map1 unit_interval unit_interval))
+      (continuous_map unit_square unit_square_topology
+        unit_interval unit_interval_topology (projection_map2 unit_interval unit_interval))
+      (projection_maps_continuous
+        unit_interval unit_interval_topology
+        unit_interval unit_interval_topology
+        unit_interval_topology_on
+        unit_interval_topology_on)).
+  }
+  claim HcontF :
+    continuous_map unit_square unit_square_topology X Tx
+      (compose_fun unit_square (projection_map1 unit_interval unit_interval) f).
+  {
+    exact (composition_continuous
+      unit_square unit_square_topology
+      unit_interval unit_interval_topology
+      X Tx
+      (projection_map1 unit_interval unit_interval)
+      f
+      Hproj1Cont
+      Hf).
+  }
+  apply andI.
+  + apply andI.
+    * apply andI.
+      { apply andI.
+        - exact HcontF.
+        - let s. assume Hs : s :e unit_interval.
+          rewrite (compose_fun_apply unit_square
+            (projection_map1 unit_interval unit_interval) f (s, 0)
+            (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval
+              s 0 Hs zero_in_unit_interval)).
+          rewrite (projection1_apply unit_interval unit_interval (s, 0)
+            (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval
+              s 0 Hs zero_in_unit_interval)).
+          rewrite (tuple_2_0_eq s 0).
+          reflexivity. }
+      { let s. assume Hs : s :e unit_interval.
+        rewrite (compose_fun_apply unit_square
+          (projection_map1 unit_interval unit_interval) f (s, 1)
+          (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval
+            s 1 Hs one_in_unit_interval)).
+        rewrite (projection1_apply unit_interval unit_interval (s, 1)
+          (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval
+            s 1 Hs one_in_unit_interval)).
+        rewrite (tuple_2_0_eq s 1).
+        exact (Hpw s Hs). }
+    * let t. assume Ht : t :e unit_interval.
+      rewrite (compose_fun_apply unit_square
+        (projection_map1 unit_interval unit_interval) f (0, t)
+        (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval
+          0 t zero_in_unit_interval Ht)).
+      rewrite (projection1_apply unit_interval unit_interval (0, t)
+        (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval
+          0 t zero_in_unit_interval Ht)).
+      rewrite (tuple_2_0_eq 0 t).
+      exact Hf0.
+  + let t. assume Ht : t :e unit_interval.
+    rewrite (compose_fun_apply unit_square
+      (projection_map1 unit_interval unit_interval) f (1, t)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval
+        1 t one_in_unit_interval Ht)).
+    rewrite (projection1_apply unit_interval unit_interval (1, t)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval
+        1 t one_in_unit_interval Ht)).
+    rewrite (tuple_2_0_eq 1 t).
+    exact Hf1.
+Qed.
+
 (** Helper: Given a loop fcls with a Lebesgue number for {preU, preV}, construct
     the word decomposition in pi_1(U) and pi_1(V). This is the key technical
     step for Seifert-van Kampen (lemma59_1). **)
