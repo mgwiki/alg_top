@@ -124646,7 +124646,121 @@ claim HloopInU_istar :
     }
     rewrite Hi_star_ucls.
     (** Show the compose equals fcls's class via path homotopy **)
-    admit.
+    set rep := Eps_i (fun g:set => g :e ucls).
+    set incU := graph U (fun x:set => x).
+    (** rep is in ucls by Eps_i_ax **)
+    claim HfU_in_ucls : f_U :e ucls.
+    {
+      exact (loop_in_own_class_early U (subspace_topology X Tx U) x0 f_U
+        HtopU Hf_U_loop_space).
+    }
+    claim Hrep_in_ucls : rep :e ucls.
+    {
+      exact (Eps_i_ax (fun g:set => g :e ucls) f_U HfU_in_ucls).
+    }
+    (** rep is in loop_space U **)
+    claim Hrep_loop : rep :e loop_space U (subspace_topology X Tx U) x0.
+    {
+      exact (path_homotopy_class_loop_in_loop_space
+        U (subspace_topology X Tx U) x0 f_U rep Hrep_in_ucls).
+    }
+    claim Hrep_loop_at : loop_at U (subspace_topology X Tx U) x0 rep.
+    {
+      exact (loop_space_has_loop_at U (subspace_topology X Tx U) x0 rep Hrep_loop).
+    }
+    claim Hrep_cont : continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) rep.
+    {
+      exact (loop_at_continuous U (subspace_topology X Tx U) x0 rep Hrep_loop_at).
+    }
+    claim Hrep_fun : function_on rep unit_interval U.
+    {
+      exact (continuous_map_function_on unit_interval unit_interval_topology
+        U (subspace_topology X Tx U) rep Hrep_cont).
+    }
+    (** f_U and rep are path-homotopic in U **)
+    claim Hfg_hom_U : path_homotopic U (subspace_topology X Tx U) x0 x0 f_U rep.
+    {
+      exact (path_homotopy_class_loop_has_homotopy
+        U (subspace_topology X Tx U) x0 f_U rep Hrep_in_ucls).
+    }
+    (** Inclusion is continuous **)
+    claim HincCont : continuous_map U (subspace_topology X Tx U) X Tx incU.
+    {
+      exact (subspace_inclusion_continuous X Tx U Htop HUsub).
+    }
+    claim HincX0 : apply_fun incU x0 = x0.
+    {
+      exact (apply_fun_graph U (fun x:set => x) x0 Hx0U).
+    }
+    (** Post-compose: path-homotopic in X **)
+    claim Hpost_hom : path_homotopic X Tx x0 x0
+      (compose_fun unit_interval f_U incU) (compose_fun unit_interval rep incU).
+    {
+      exact (path_homotopic_postcompose
+        U (subspace_topology X Tx U) X Tx x0 x0 x0 x0
+        f_U rep incU
+        Hfg_hom_U HincCont HincX0 HincX0).
+    }
+    (** compose_fun I f_U incU agrees pointwise with fcls **)
+    claim HfU_inc_cont : continuous_map unit_interval unit_interval_topology X Tx
+      (compose_fun unit_interval f_U incU).
+    {
+      exact (composition_continuous unit_interval unit_interval_topology
+        U (subspace_topology X Tx U) X Tx f_U incU Hf_U_cont HincCont).
+    }
+    claim HfU_inc_pw : forall t:set, t :e unit_interval ->
+      apply_fun (compose_fun unit_interval f_U incU) t = apply_fun fcls t.
+    {
+      let t. assume Ht.
+      rewrite (compose_fun_apply unit_interval f_U incU t Ht).
+      claim HfUt_in_U : apply_fun f_U t :e U.
+      { rewrite (Hf_U_apply t Ht). exact (HallU t Ht). }
+      rewrite (apply_fun_graph U (fun x:set => x) (apply_fun f_U t) HfUt_in_U).
+      exact (Hf_U_apply t Ht).
+    }
+    claim HfU_inc_0 : apply_fun (compose_fun unit_interval f_U incU) 0 = x0.
+    {
+      rewrite (HfU_inc_pw 0 zero_in_unit_interval).
+      exact Hfcls0.
+    }
+    claim HfU_inc_1 : apply_fun (compose_fun unit_interval f_U incU) 1 = x0.
+    {
+      rewrite (HfU_inc_pw 1 one_in_unit_interval).
+      exact Hfcls1.
+    }
+    (** compose_fun I f_U incU is path-homotopic to fcls in X **)
+    claim HfU_inc_hom_fcls : path_homotopic X Tx x0 x0
+      (compose_fun unit_interval f_U incU) fcls.
+    {
+      exact (path_homotopic_of_pointwise_equal X Tx x0 x0
+        (compose_fun unit_interval f_U incU) fcls
+        HfU_inc_cont HfclsCont
+        HfU_inc_0 HfU_inc_1 Hfcls0 Hfcls1
+        HfU_inc_pw).
+    }
+    (** Chain: [compose I rep incU]_X = [compose I f_U incU]_X = [fcls]_X **)
+    claim Hclass_rep_eq_fU : path_homotopy_class_loop X Tx x0
+      (compose_fun unit_interval rep incU)
+      = path_homotopy_class_loop X Tx x0 (compose_fun unit_interval f_U incU).
+    {
+      exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0
+        (compose_fun unit_interval rep incU)
+        (compose_fun unit_interval f_U incU)
+        (Lemma_51_1_path_homotopy_sym X Tx x0 x0
+          (compose_fun unit_interval f_U incU)
+          (compose_fun unit_interval rep incU)
+          Hpost_hom)).
+    }
+    claim Hclass_fU_eq_fcls : path_homotopy_class_loop X Tx x0
+      (compose_fun unit_interval f_U incU)
+      = path_homotopy_class_loop X Tx x0 fcls.
+    {
+      exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0
+        (compose_fun unit_interval f_U incU) fcls
+        HfU_inc_hom_fcls).
+    }
+    rewrite Hclass_rep_eq_fU.
+    exact Hclass_fU_eq_fcls.
 }
 (** Similarly for V **)
 claim HloopInV_jstar :
@@ -124765,7 +124879,108 @@ claim HloopInV_jstar :
         (graph V (fun x:set => x)) vcls HvclsMem).
     }
     rewrite Hj_star_vcls.
-    admit.
+    set repV := Eps_i (fun g:set => g :e vcls).
+    set incV := graph V (fun x:set => x).
+    claim HfV_in_vcls : f_V :e vcls.
+    {
+      exact (loop_in_own_class_early V (subspace_topology X Tx V) x0 f_V
+        HtopV Hf_V_loop_space).
+    }
+    claim HrepV_in_vcls : repV :e vcls.
+    {
+      exact (Eps_i_ax (fun g:set => g :e vcls) f_V HfV_in_vcls).
+    }
+    claim HrepV_loop : repV :e loop_space V (subspace_topology X Tx V) x0.
+    {
+      exact (path_homotopy_class_loop_in_loop_space
+        V (subspace_topology X Tx V) x0 f_V repV HrepV_in_vcls).
+    }
+    claim HrepV_loop_at : loop_at V (subspace_topology X Tx V) x0 repV.
+    {
+      exact (loop_space_has_loop_at V (subspace_topology X Tx V) x0 repV HrepV_loop).
+    }
+    claim HrepV_cont : continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) repV.
+    {
+      exact (loop_at_continuous V (subspace_topology X Tx V) x0 repV HrepV_loop_at).
+    }
+    claim HfV_rep_hom : path_homotopic V (subspace_topology X Tx V) x0 x0 f_V repV.
+    {
+      exact (path_homotopy_class_loop_has_homotopy
+        V (subspace_topology X Tx V) x0 f_V repV HrepV_in_vcls).
+    }
+    claim HincVCont : continuous_map V (subspace_topology X Tx V) X Tx incV.
+    {
+      exact (subspace_inclusion_continuous X Tx V Htop HVsub).
+    }
+    claim HincVX0 : apply_fun incV x0 = x0.
+    {
+      exact (apply_fun_graph V (fun x:set => x) x0 Hx0V).
+    }
+    claim Hpost_homV : path_homotopic X Tx x0 x0
+      (compose_fun unit_interval f_V incV) (compose_fun unit_interval repV incV).
+    {
+      exact (path_homotopic_postcompose
+        V (subspace_topology X Tx V) X Tx x0 x0 x0 x0
+        f_V repV incV
+        HfV_rep_hom HincVCont HincVX0 HincVX0).
+    }
+    claim HfV_inc_cont : continuous_map unit_interval unit_interval_topology X Tx
+      (compose_fun unit_interval f_V incV).
+    {
+      exact (composition_continuous unit_interval unit_interval_topology
+        V (subspace_topology X Tx V) X Tx f_V incV Hf_V_cont HincVCont).
+    }
+    claim HfV_inc_pw : forall t:set, t :e unit_interval ->
+      apply_fun (compose_fun unit_interval f_V incV) t = apply_fun fcls t.
+    {
+      let t. assume Ht.
+      rewrite (compose_fun_apply unit_interval f_V incV t Ht).
+      claim HfVt_in_V : apply_fun f_V t :e V.
+      { rewrite (Hf_V_apply t Ht). exact (HallV t Ht). }
+      rewrite (apply_fun_graph V (fun x:set => x) (apply_fun f_V t) HfVt_in_V).
+      exact (Hf_V_apply t Ht).
+    }
+    claim HfV_inc_0 : apply_fun (compose_fun unit_interval f_V incV) 0 = x0.
+    {
+      rewrite (HfV_inc_pw 0 zero_in_unit_interval).
+      exact Hfcls0.
+    }
+    claim HfV_inc_1 : apply_fun (compose_fun unit_interval f_V incV) 1 = x0.
+    {
+      rewrite (HfV_inc_pw 1 one_in_unit_interval).
+      exact Hfcls1.
+    }
+    claim HfV_inc_hom_fcls : path_homotopic X Tx x0 x0
+      (compose_fun unit_interval f_V incV) fcls.
+    {
+      exact (path_homotopic_of_pointwise_equal X Tx x0 x0
+        (compose_fun unit_interval f_V incV) fcls
+        HfV_inc_cont HfclsCont
+        HfV_inc_0 HfV_inc_1 Hfcls0 Hfcls1
+        HfV_inc_pw).
+    }
+    claim Hclass_repV_eq_fV : path_homotopy_class_loop X Tx x0
+      (compose_fun unit_interval repV incV)
+      = path_homotopy_class_loop X Tx x0 (compose_fun unit_interval f_V incV).
+    {
+      exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0
+        (compose_fun unit_interval repV incV)
+        (compose_fun unit_interval f_V incV)
+        (Lemma_51_1_path_homotopy_sym X Tx x0 x0
+          (compose_fun unit_interval f_V incV)
+          (compose_fun unit_interval repV incV)
+          Hpost_homV)).
+    }
+    claim Hclass_fV_eq_fcls : path_homotopy_class_loop X Tx x0
+      (compose_fun unit_interval f_V incV)
+      = path_homotopy_class_loop X Tx x0 fcls.
+    {
+      exact (path_homotopy_class_loop_eq_of_path_homotopic X Tx x0
+        (compose_fun unit_interval f_V incV) fcls
+        HfV_inc_hom_fcls).
+    }
+    rewrite Hclass_repV_eq_fV.
+    exact Hclass_fV_eq_fcls.
 }
 (** Main case analysis **)
 apply (xm (forall t:set, t :e unit_interval -> apply_fun fcls t :e U)).
