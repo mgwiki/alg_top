@@ -67002,6 +67002,373 @@ apply (open_cover_ofI
     HUopen).
 Qed.
 
+(** Infrastructure: build a local lift through a specified fiber point over an evenly covered neighborhood. **)
+(** Proven Charlie **)
+Theorem covering_map_local_lift_from_evenly_covered :
+  forall E Te B Tb p U X Tx f x0 e0:set,
+  covering_map E Te B Tb p ->
+  evenly_covered E Te B Tb p U ->
+  continuous_map X Tx B Tb f ->
+  (forall x:set, x :e X -> apply_fun f x :e U) ->
+  x0 :e X ->
+  e0 :e E ->
+  apply_fun p e0 = apply_fun f x0 ->
+  exists ft:set,
+    lifting_of X Tx E Te B Tb p f ft /\
+    apply_fun ft x0 = e0.
+let E Te B Tb p U X Tx f x0 e0.
+assume Hcov Heven Hfcont Hmap Hx0X He0E Hp0.
+claim Hcontp : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    (andEL
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists U0:set, U0 :e Tb /\ b :e U0 /\ evenly_covered E Te B Tb p U0)
+      Hcov)).
+}
+claim HtopE : topology_on E Te.
+{
+  exact (continuous_map_topology_dom
+    E
+    Te
+    B
+    Tb
+    p
+    Hcontp).
+}
+claim HUopen : U :e Tb.
+{
+  exact (andEL
+    (U :e Tb)
+    (exists slices:set,
+      slices c= Te /\
+      pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (fun x:set => apply_fun p x))))
+    Heven).
+}
+claim HslicesPack :
+  exists slices:set,
+    slices c= Te /\
+    pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun x:set => apply_fun p x))).
+{
+  exact (andER
+    (U :e Tb)
+    (exists slices:set,
+      slices c= Te /\
+      pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (fun x:set => apply_fun p x))))
+    Heven).
+}
+apply HslicesPack.
+let slices.
+assume HslicesPack2.
+claim HslicesSub : slices c= Te.
+{
+  exact (andEL
+    (slices c= Te)
+    (pairwise_disjoint slices)
+    (andEL
+      (slices c= Te /\ pairwise_disjoint slices)
+      (Union slices = preimage_of E p U)
+      (andEL
+        ((slices c= Te /\ pairwise_disjoint slices) /\ Union slices = preimage_of E p U)
+        (forall V:set, V :e slices ->
+          homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+            (graph V (fun x:set => apply_fun p x)))
+        HslicesPack2))).
+}
+claim HslicesUnion : Union slices = preimage_of E p U.
+{
+  exact (andER
+    (slices c= Te /\ pairwise_disjoint slices)
+    (Union slices = preimage_of E p U)
+    (andEL
+      ((slices c= Te /\ pairwise_disjoint slices) /\ Union slices = preimage_of E p U)
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (fun x:set => apply_fun p x)))
+      HslicesPack2)).
+}
+claim Hhome :
+  forall V:set, V :e slices ->
+    homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+      (graph V (fun x:set => apply_fun p x)).
+{
+  exact (andER
+    ((slices c= Te /\ pairwise_disjoint slices) /\ Union slices = preimage_of E p U)
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun x:set => apply_fun p x)))
+    HslicesPack2).
+}
+claim Hfx0U : apply_fun f x0 :e U.
+{
+  exact (Hmap
+    x0
+    Hx0X).
+}
+claim He0Pre : e0 :e preimage_of E p U.
+{
+  claim Hp0U : apply_fun p e0 :e U.
+  {
+    rewrite Hp0.
+    exact Hfx0U.
+  }
+  exact (SepI
+    E
+    (fun x:set => apply_fun p x :e U)
+    e0
+    He0E
+    Hp0U).
+}
+claim He0Union : e0 :e Union slices.
+{
+  rewrite HslicesUnion.
+  exact He0Pre.
+}
+apply (UnionE slices e0 He0Union).
+let V0.
+assume HV0Pack.
+claim He0V0 : e0 :e V0.
+{
+  exact (andEL
+    (e0 :e V0)
+    (V0 :e slices)
+    HV0Pack).
+}
+claim HV0Slice : V0 :e slices.
+{
+  exact (andER
+    (e0 :e V0)
+    (V0 :e slices)
+    HV0Pack).
+}
+claim HV0open : V0 :e Te.
+{
+  exact (HslicesSub
+    V0
+    HV0Slice).
+}
+claim HV0subE : V0 c= E.
+{
+  exact (topology_elem_subset
+    E
+    Te
+    V0
+    HtopE
+    HV0open).
+}
+claim HhomeV0 :
+  homeomorphism V0 (subspace_topology E Te V0) U (subspace_topology B Tb U)
+    (graph V0 (fun x:set => apply_fun p x)).
+{
+  exact (Hhome
+    V0
+    HV0Slice).
+}
+apply (homeomorphism_inverse_package
+  V0
+  (subspace_topology E Te V0)
+  U
+  (subspace_topology B Tb U)
+  (graph V0 (fun x:set => apply_fun p x))
+  HhomeV0).
+let g0.
+assume Hg0Pack.
+claim Hg0cont :
+  continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0.
+{
+  exact (andEL
+    (continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0)
+    (forall x:set, x :e V0 ->
+      apply_fun g0 (apply_fun (graph V0 (fun y:set => apply_fun p y)) x) = x)
+    (andEL
+      (continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0 /\
+       (forall x:set, x :e V0 ->
+         apply_fun g0 (apply_fun (graph V0 (fun y:set => apply_fun p y)) x) = x))
+      (forall y:set, y :e U ->
+        apply_fun (graph V0 (fun y:set => apply_fun p y)) (apply_fun g0 y) = y)
+      Hg0Pack)).
+}
+claim Hg0Fun : function_on g0 U V0.
+{
+  exact (continuous_map_function_on
+    U
+    (subspace_topology B Tb U)
+    V0
+    (subspace_topology E Te V0)
+    g0
+    Hg0cont).
+}
+claim Hg0InvV0 :
+  forall x:set, x :e V0 ->
+    apply_fun g0 (apply_fun (graph V0 (fun y:set => apply_fun p y)) x) = x.
+{
+  exact (andER
+    (continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0)
+    (forall x:set, x :e V0 ->
+      apply_fun g0 (apply_fun (graph V0 (fun y:set => apply_fun p y)) x) = x)
+    (andEL
+      (continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0 /\
+       (forall x:set, x :e V0 ->
+         apply_fun g0 (apply_fun (graph V0 (fun y:set => apply_fun p y)) x) = x))
+      (forall y:set, y :e U ->
+        apply_fun (graph V0 (fun y:set => apply_fun p y)) (apply_fun g0 y) = y)
+      Hg0Pack)).
+}
+claim Hg0CommU :
+  forall y:set, y :e U ->
+    apply_fun p (apply_fun g0 y) = y.
+{
+  let y.
+  assume HyU.
+  claim HrightInv :
+    forall y0:set, y0 :e U ->
+      apply_fun (graph V0 (fun y1:set => apply_fun p y1)) (apply_fun g0 y0) = y0.
+  {
+    exact (andER
+      (continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0 /\
+       (forall x:set, x :e V0 ->
+         apply_fun g0 (apply_fun (graph V0 (fun y1:set => apply_fun p y1)) x) = x))
+      (forall y0:set, y0 :e U ->
+        apply_fun (graph V0 (fun y1:set => apply_fun p y1)) (apply_fun g0 y0) = y0)
+      Hg0Pack).
+  }
+  claim HgraphEq :
+    apply_fun (graph V0 (fun z:set => apply_fun p z)) (apply_fun g0 y) = y.
+  {
+    exact (HrightInv
+      y
+      HyU).
+  }
+  claim Hg0yV0 : apply_fun g0 y :e V0.
+  {
+    exact (Hg0Fun
+      y
+      HyU).
+  }
+  rewrite <- (apply_fun_graph
+    V0
+    (fun z:set => apply_fun p z)
+    (apply_fun g0 y)
+    Hg0yV0).
+  exact HgraphEq.
+}
+claim Hg0fx0e0 : apply_fun g0 (apply_fun f x0) = e0.
+{
+  claim Hgraph0 :
+    apply_fun (graph V0 (fun y:set => apply_fun p y)) e0 = apply_fun p e0.
+  {
+    rewrite (apply_fun_graph
+      V0
+      (fun y:set => apply_fun p y)
+      e0
+      He0V0).
+    reflexivity.
+  }
+  rewrite <- Hp0.
+  rewrite <- Hgraph0.
+  exact (Hg0InvV0
+    e0
+    He0V0).
+}
+claim HfcontU :
+  continuous_map X Tx U (subspace_topology B Tb U) f.
+{
+  claim HUsubB : U c= B.
+  {
+    exact (topology_elem_subset
+      B
+      Tb
+      U
+      (continuous_map_topology_cod X Tx B Tb f Hfcont)
+      HUopen).
+  }
+  exact (continuous_map_range_restrict
+    X
+    Tx
+    B
+    Tb
+    f
+    U
+    Hfcont
+    HUsubB
+    Hmap).
+}
+set ft := compose_fun X f g0.
+claim HftContV0 :
+  continuous_map X Tx V0 (subspace_topology E Te V0) ft.
+{
+  exact (composition_continuous
+    X
+    Tx
+    U
+    (subspace_topology B Tb U)
+    V0
+    (subspace_topology E Te V0)
+    f
+    g0
+    HfcontU
+    Hg0cont).
+}
+claim HftContE : continuous_map X Tx E Te ft.
+{
+  claim HV0TyEq : subspace_topology E Te V0 = subspace_topology E Te V0.
+  {
+    reflexivity.
+  }
+  exact (continuous_map_range_expand
+    X
+    Tx
+    V0
+    (subspace_topology E Te V0)
+    E
+    Te
+    ft
+    HftContV0
+    HV0subE
+    HtopE
+    HV0TyEq).
+}
+claim HftComm :
+  forall x:set, x :e X ->
+    apply_fun p (apply_fun ft x) = apply_fun f x.
+{
+  let x.
+  assume HxX.
+  rewrite (compose_fun_apply X f g0 x HxX).
+  exact (Hg0CommU
+    (apply_fun f x)
+    (Hmap x HxX)).
+}
+claim HftStart : apply_fun ft x0 = e0.
+{
+  rewrite (compose_fun_apply X f g0 x0 Hx0X).
+  exact Hg0fx0e0.
+}
+witness ft.
+apply andI.
+- exact (andI
+    (continuous_map X Tx E Te ft)
+    (forall x:set, x :e X -> apply_fun p (apply_fun ft x) = apply_fun f x)
+    HftContE
+    HftComm).
+- exact HftStart.
+Qed.
+
 (** Infrastructure: glue functional graphs on overlapping domains when they agree. **)
 (** Proven Charlie **)
 Theorem functional_graph_union_agree_on_overlap :
