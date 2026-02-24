@@ -184921,6 +184921,57 @@ exact (surjective_map_preimage_singleton_empty_iff_not_mem_codomain
 Qed.
 
 (** Proven Bob **)
+Theorem surjective_map_mem_codomain_iff_exists_preimage_point :
+  forall E X pi y:set,
+  surjective_map E X pi ->
+  (y :e X <-> exists x:set, x :e E /\ apply_fun pi x = y).
+let E X pi y.
+assume Hsurj.
+claim Hfun : function_on pi E X.
+{
+  exact (surjective_map_function_on E X pi Hsurj).
+}
+apply iffI.
+- assume HyX.
+  exact (surjective_map_has_preimage E X pi y Hsurj HyX).
+- assume HxPack.
+  apply HxPack.
+  let x.
+  assume HxProof.
+  claim HxE : x :e E.
+  {
+    exact (andEL
+      (x :e E)
+      (apply_fun pi x = y)
+      HxProof).
+  }
+  claim HxEq : apply_fun pi x = y.
+  {
+    exact (andER
+      (x :e E)
+      (apply_fun pi x = y)
+      HxProof).
+  }
+  rewrite <- HxEq.
+  exact (Hfun x HxE).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_mem_codomain_iff_exists_preimage_point :
+  forall E Te X pi y:set,
+  quotient_map E Te X pi ->
+  (y :e X <-> exists x:set, x :e E /\ apply_fun pi x = y).
+let E Te X pi y.
+assume Hquot.
+exact (surjective_map_mem_codomain_iff_exists_preimage_point
+  E
+  X
+  pi
+  y
+  (quotient_map_implies_surjective_map E Te X pi Hquot)).
+Qed.
+
+(** Proven Bob **)
 Theorem surjective_map_preimage_of_whole :
   forall E X pi:set,
   surjective_map E X pi ->
