@@ -126012,7 +126012,129 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun fcls t :e U)).
         exact HvEq.
   + (** Case 2b: Mixed - loop crosses between U and V **)
     assume HnotAllV : ~(forall t:set, t :e unit_interval -> apply_fun fcls t :e V).
-    (** This is the hard case requiring the full Lebesgue number subdivision **)
+    (** Mixed case: Use Lebesgue number to cover I by balls, each mapping to U or V,
+        then extract a chain and build the word from transition points. **)
+    set preU := preimage_of unit_interval fcls U.
+    set preV := preimage_of unit_interval fcls V.
+    (** Step 1: Refined radius r = eps_(ordsucc Nleb) < eps_Nleb **)
+    set N := ordsucc Nleb.
+    set r := eps_ N.
+    claim HNnat : nat_p N.
+    { exact (nat_ordsucc Nleb (omega_nat_p Nleb HNleb)). }
+    claim HNomega : N :e omega.
+    { exact (nat_p_omega N HNnat). }
+    claim HrR : r :e R.
+    { exact (eps_in_R_omega N HNomega). }
+    claim Hrpos : Rlt 0 r.
+    { exact (RltI 0 r real_0 HrR (SNo_eps_pos N HNomega)). }
+    claim Hrlt1 : Rlt r 1.
+    { exact (eps_ordsucc_lt1_R Nleb HNleb). }
+    claim HrltNleb : Rlt r (eps_ Nleb).
+    { exact (eps_ordsucc_lt_eps Nleb HNleb). }
+    (** Step 2: Cover I by balls of radius r, get chain from 0 to 1 **)
+    set BallFam := {open_ball unit_interval R_bounded_metric x r | x :e unit_interval}.
+    claim HballCover : open_cover_of unit_interval unit_interval_topology BallFam.
+    { exact (unit_interval_open_cover_by_fixed_radius_balls r HrR Hrpos). }
+    claim Hchain :
+      exists U0 U1 n seq:set,
+        U0 :e BallFam /\ 0 :e U0 /\
+        U1 :e BallFam /\ 1 :e U1 /\
+        n :e omega /\
+        function_on seq (ordsucc n) BallFam /\
+        apply_fun seq 0 = U0 /\
+        apply_fun seq n = U1 /\
+        (forall k:set, k :e n ->
+          apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty).
+    {
+      exact (connected_space_open_cover_chain
+        unit_interval unit_interval_topology BallFam 0 1
+        unit_interval_connected HballCover
+        zero_in_unit_interval one_in_unit_interval).
+    }
+    (** Step 3: Each ball in chain maps entirely to U or V **)
+    (** Key: B(c, r) c= B(c, eps_Nleb) c= preU or preV **)
+    claim Hleb_forall : forall x:set, x :e unit_interval ->
+      exists S:set, S :e UPair preU preV /\
+        open_ball unit_interval R_bounded_metric x (eps_ Nleb) c= S.
+    {
+      exact (andER
+        (eps_ Nleb :e R /\ Rlt 0 (eps_ Nleb))
+        (forall x:set, x :e unit_interval ->
+          exists S:set, S :e UPair preU preV /\
+            open_ball unit_interval R_bounded_metric x (eps_ Nleb) c= S)
+        Hleb).
+    }
+    claim Hball_in_preUV : forall c:set, c :e unit_interval ->
+      exists S:set, S :e UPair preU preV /\
+        open_ball unit_interval R_bounded_metric c r c= S.
+    {
+      let c. assume Hc : c :e unit_interval.
+      apply (Hleb_forall c Hc).
+      let S. assume HS : S :e UPair preU preV /\
+        open_ball unit_interval R_bounded_metric c (eps_ Nleb) c= S.
+      claim HSmem : S :e UPair preU preV.
+      { exact (andEL
+          (S :e UPair preU preV)
+          (open_ball unit_interval R_bounded_metric c (eps_ Nleb) c= S)
+          HS). }
+      claim HSsub : open_ball unit_interval R_bounded_metric c (eps_ Nleb) c= S.
+      { exact (andER
+          (S :e UPair preU preV)
+          (open_ball unit_interval R_bounded_metric c (eps_ Nleb) c= S)
+          HS). }
+      witness S.
+      apply andI.
+      - exact HSmem.
+      - let t. assume Ht : t :e open_ball unit_interval R_bounded_metric c r.
+        exact (HSsub t (open_ball_radius_mono unit_interval R_bounded_metric c r (eps_ Nleb) HrltNleb t Ht)).
+    }
+    (** Step 4: Every point in a chain ball is in preU or preV **)
+    claim Hball_image : forall c:set, c :e unit_interval ->
+      (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun fcls t :e U) \/
+      (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun fcls t :e V).
+    {
+      let c. assume Hc.
+      apply (Hball_in_preUV c Hc).
+      let S. assume HS.
+      claim HSmem : S :e UPair preU preV.
+      { exact (andEL
+          (S :e UPair preU preV)
+          (open_ball unit_interval R_bounded_metric c r c= S)
+          HS). }
+      claim HSsub : open_ball unit_interval R_bounded_metric c r c= S.
+      { exact (andER
+          (S :e UPair preU preV)
+          (open_ball unit_interval R_bounded_metric c r c= S)
+          HS). }
+      apply (UPairE S preU preV HSmem).
+      - assume HSeqU : S = preU.
+        apply orIL.
+        let t. assume Ht : t :e open_ball unit_interval R_bounded_metric c r.
+        claim HtS : t :e S. { exact (HSsub t Ht). }
+        claim HtPreU : t :e preU. { rewrite <- HSeqU. exact HtS. }
+        exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e U) t HtPreU).
+      - assume HSeqV : S = preV.
+        apply orIR.
+        let t. assume Ht : t :e open_ball unit_interval R_bounded_metric c r.
+        claim HtS : t :e S. { exact (HSsub t Ht). }
+        claim HtPreV : t :e preV. { rewrite <- HSeqV. exact HtS. }
+        exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e V) t HtPreV).
+    }
+    (** Step 5: preU and preV are both open and non-empty, covering I **)
+    claim HpreUopen : preU :e unit_interval_topology.
+    { exact (continuous_map_preimage unit_interval unit_interval_topology X Tx fcls HfclsCont U HU). }
+    claim HpreVopen : preV :e unit_interval_topology.
+    { exact (continuous_map_preimage unit_interval unit_interval_topology X Tx fcls HfclsCont V HV). }
+    claim H0preU : 0 :e preU.
+    { exact (SepI unit_interval (fun x:set => apply_fun fcls x :e U) 0
+        zero_in_unit_interval (Hfcls0 (fun a b:set => b :e U) Hx0U)). }
+    claim H0preV : 0 :e preV.
+    { exact (SepI unit_interval (fun x:set => apply_fun fcls x :e V) 0
+        zero_in_unit_interval (Hfcls0 (fun a b:set => b :e V) Hx0V)). }
+    (** Step 6: The remaining word construction from the chain **)
+    (** Each chain ball maps to U or V. Overlapping balls at transitions give
+        points in U cap V. Use path-connectivity of U cap V for connecting paths.
+        Build the word of loops. **)
     admit.
 Admitted.
 
