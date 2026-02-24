@@ -147679,14 +147679,284 @@ apply andI.
           (nat_primrec eH (fun i0 r => apply_fun multH (r, apply_fun fi i0)) nE) eH Hmap_eq_fi Hprod_eH). }
       rewrite HapplyEG.
       exact Hmap_eH. }
+    (** h(g) = map_rep(any valid pack of g) -- needed by both Hstep2 and Hmult_ind **)
+    claim Hh_eq_map : forall g0:set, g0 :e G -> forall pack0:set, rep_pred g0 pack0 ->
+      apply_fun h g0 = map_rep pack0.
+    { let g0. assume Hg0. let pack0. assume Hpack0.
+      claim Heval : apply_fun h g0 = map_rep (Eps_i (rep_pred g0)).
+      { exact (apply_fun_graph G (fun g1:set => map_rep (Eps_i (rep_pred g1))) g0 Hg0). }
+      claim Heps0 : rep_pred g0 (Eps_i (rep_pred g0)).
+      { exact (Eps_i_ex (rep_pred g0) (Hrep_exists g0 Hg0)). }
+      claim Heqm : map_rep (Eps_i (rep_pred g0)) = map_rep pack0.
+      { exact (Hwell_def g0 Hg0 (Eps_i (rep_pred g0)) pack0 Heps0 Hpack0). }
+      exact (eq_i_tra (apply_fun h g0) (map_rep (Eps_i (rep_pred g0))) (map_rep pack0) Heval Heqm). }
+    (** h maps G to H **)
+    claim Hh_to_H : forall g0:set, g0 :e G -> apply_fun h g0 :e H.
+    { let g0. assume Hg0.
+      claim Heval : apply_fun h g0 = map_rep (Eps_i (rep_pred g0)).
+      { exact (apply_fun_graph G (fun g1:set => map_rep (Eps_i (rep_pred g1))) g0 Hg0). }
+      rewrite Heval.
+      exact (Hmap_rep_in_H (Eps_i (rep_pred g0)) g0 Hg0 (Eps_i_ex (rep_pred g0) (Hrep_exists g0 Hg0))). }
     (** h distributes over single subgroup element multiplication **)
     claim Hstep2 : forall z:set, z :e G -> forall alpha:set, alpha :e J ->
       forall w:set, w :e apply_fun Gfam alpha ->
         apply_fun h (apply_fun multG (z, w)) =
-          apply_fun multH (apply_fun h z, apply_fun h w). { admit. }
+          apply_fun multH (apply_fun h z, apply_fun h w).
+    {
+      let z. assume HzG : z :e G.
+      let alpha. assume Hal : alpha :e J.
+      let w. assume Hw : w :e apply_fun Gfam alpha.
+      claim HwG : w :e G. { exact (Hsub_sub alpha Hal w Hw). }
+      claim HzwG : apply_fun multG (z, w) :e G. { exact (HmGcl z w HzG HwG). }
+      (** Associativity of G **)
+      claim HassocG_l : forall x0 y0 z0:set, x0 :e G -> y0 :e G -> z0 :e G ->
+        apply_fun multG (apply_fun multG (x0, y0), z0) = apply_fun multG (x0, apply_fun multG (y0, z0)).
+      { apply (and6E (function_on multG (setprod G G) G) (function_on invG G G) (eG :e G)
+          (forall x0 y0 z0:set, x0 :e G -> y0 :e G -> z0 :e G ->
+            apply_fun multG (apply_fun multG (x0, y0), z0) = apply_fun multG (x0, apply_fun multG (y0, z0)))
+          (forall x0:set, x0 :e G -> apply_fun multG (eG, x0) = x0 /\ apply_fun multG (x0, eG) = x0)
+          (forall x0:set, x0 :e G ->
+            apply_fun multG (x0, apply_fun invG x0) = eG /\ apply_fun multG (apply_fun invG x0, x0) = eG)
+          HgrpG). assume _ _ _ Ha _ _. exact Ha. }
+      (** Prove h(w) = hfam(alpha)(w) using Hwell_def **)
+      claim Hhw_ext : apply_fun h w = apply_fun (apply_fun hfam alpha) w.
+      { (** Construct trivial 1-element rep of w **)
+        claim Htriv : rep_pred w (1, (graph 1 (fun _:set => alpha), graph 1 (fun _:set => w))).
+        { prove (1, (graph 1 (fun _:set => alpha), graph 1 (fun _:set => w))) 0 :e omega /\
+            (1, (graph 1 (fun _:set => alpha), graph 1 (fun _:set => w))) 0 <> 0 /\
+            function_on (((1, (graph 1 (fun _:set => alpha), graph 1 (fun _:set => w))) 1) 0) ((1, (graph 1 (fun _:set => alpha), graph 1 (fun _:set => w))) 0) J /\
+            function_on (((1, (graph 1 (fun _:set => alpha), graph 1 (fun _:set => w))) 1) 1) ((1, (graph 1 (fun _:set => alpha), graph 1 (fun _:set => w))) 0) G /\
+            (forall i:set, i :e (1, (graph 1 (fun _:set => alpha), graph 1 (fun _:set => w))) 0 -> apply_fun (((1, (graph 1 (fun _:set => alpha), graph 1 (fun _:set => w))) 1) 1) i :e apply_fun Gfam (apply_fun (((1, (graph 1 (fun _:set => alpha), graph 1 (fun _:set => w))) 1) 0) i)) /\
+            (forall i j:set, i :e (1, (graph 1 (fun _:set => alpha), graph 1 (fun _:set => w))) 0 -> j :e (1, (graph 1 (fun _:set => alpha), graph 1 (fun _:set => w))) 0 -> i <> j -> apply_fun (((1, (graph 1 (fun _:set => alpha), graph 1 (fun _:set => w))) 1) 0) i <> apply_fun (((1, (graph 1 (fun _:set => alpha), graph 1 (fun _:set => w))) 1) 0) j) /\
+            w = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun (((1, (graph 1 (fun _:set => alpha), graph 1 (fun _:set => w))) 1) 1) i)) ((1, (graph 1 (fun _:set => alpha), graph 1 (fun _:set => w))) 0).
+          rewrite tuple_2_0_eq.
+          rewrite tuple_2_1_eq.
+          rewrite tuple_2_0_eq.
+          rewrite tuple_2_1_eq.
+          apply and7I.
+          - exact (nat_p_omega 1 nat_1).
+          - exact neq_1_0.
+          - let i. assume Hi : i :e 1. rewrite (apply_fun_graph 1 (fun _:set => alpha) i Hi). exact Hal.
+          - let i. assume Hi : i :e 1. rewrite (apply_fun_graph 1 (fun _:set => w) i Hi). exact HwG.
+          - let i. assume Hi : i :e 1.
+            rewrite (apply_fun_graph 1 (fun _:set => w) i Hi).
+            rewrite (apply_fun_graph 1 (fun _:set => alpha) i Hi). exact Hw.
+          - let i j. assume Hi Hj Hne.
+            apply (ordsuccE 0 i Hi).
+            + assume Hi0 : i :e 0.
+              exact (FalseE (EmptyE i Hi0)
+                (apply_fun (graph 1 (fun _:set => alpha)) i <> apply_fun (graph 1 (fun _:set => alpha)) j)).
+            + assume Hi0 : i = 0.
+              apply (ordsuccE 0 j Hj).
+              * assume Hj0 : j :e 0.
+                exact (FalseE (EmptyE j Hj0)
+                  (apply_fun (graph 1 (fun _:set => alpha)) i <> apply_fun (graph 1 (fun _:set => alpha)) j)).
+              * assume Hj0 : j = 0. assume _.
+                claim Hij : i = j. { rewrite Hi0. rewrite Hj0. reflexivity. }
+                exact (Hne Hij).
+          - (** w = nat_primrec eG (fun i r => multG(r, apply_fun (graph 1 (fun _ => w)) i)) 1 **)
+            rewrite (nat_primrec_S eG (fun i r:set => apply_fun multG (r, apply_fun (graph 1 (fun _:set => w)) i)) 0 nat_0).
+            rewrite (nat_primrec_0 eG (fun i r:set => apply_fun multG (r, apply_fun (graph 1 (fun _:set => w)) i))).
+            rewrite (apply_fun_graph 1 (fun _:set => w) 0 In_0_1).
+            claim HleftIdG_loc : apply_fun multG (eG, w) = w.
+            { apply (and6E (function_on multG (setprod G G) G) (function_on invG G G) (eG :e G)
+                (forall a b c:set, a :e G -> b :e G -> c :e G ->
+                  apply_fun multG (apply_fun multG (a, b), c) = apply_fun multG (a, apply_fun multG (b, c)))
+                (forall a:set, a :e G -> apply_fun multG (eG, a) = a /\ apply_fun multG (a, eG) = a)
+                (forall a:set, a :e G ->
+                  apply_fun multG (a, apply_fun invG a) = eG /\ apply_fun multG (apply_fun invG a, a) = eG)
+                HgrpG). assume _ _ _ _ Hid _.
+              exact (andEL (apply_fun multG (eG, w) = w) (apply_fun multG (w, eG) = w) (Hid w HwG)). }
+            symmetry. exact HleftIdG_loc. }
+        (** Compute map_rep of trivial pack **)
+        claim Hmap_triv : map_rep (1, (graph 1 (fun _:set => alpha), graph 1 (fun _:set => w))) =
+          apply_fun (apply_fun hfam alpha) w.
+        { prove nat_primrec eH
+            (fun i r:set => apply_fun multH (r,
+              apply_fun (apply_fun hfam (apply_fun (((1, (graph 1 (fun _:set => alpha), graph 1 (fun _:set => w))) 1) 0) i))
+                (apply_fun (((1, (graph 1 (fun _:set => alpha), graph 1 (fun _:set => w))) 1) 1) i)))
+            ((1, (graph 1 (fun _:set => alpha), graph 1 (fun _:set => w))) 0) = apply_fun (apply_fun hfam alpha) w.
+          rewrite tuple_2_0_eq.
+          rewrite tuple_2_1_eq.
+          rewrite tuple_2_0_eq.
+          rewrite tuple_2_1_eq.
+          (** map_rep = nat_primrec eH (fun i r => multH(r, hfam(graph_alpha(i))(graph_w(i)))) 1 **)
+          rewrite (nat_primrec_S eH
+            (fun i r:set => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun (graph 1 (fun _:set => alpha)) i)) (apply_fun (graph 1 (fun _:set => w)) i)))
+            0 nat_0).
+          rewrite (nat_primrec_0 eH
+            (fun i r:set => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun (graph 1 (fun _:set => alpha)) i)) (apply_fun (graph 1 (fun _:set => w)) i)))).
+          rewrite (apply_fun_graph 1 (fun _:set => alpha) 0 In_0_1).
+          rewrite (apply_fun_graph 1 (fun _:set => w) 0 In_0_1).
+          exact (HleftIdH (apply_fun (apply_fun hfam alpha) w) (Hhfam_to_H alpha Hal w Hw)). }
+        exact (eq_i_tra (apply_fun h w)
+          (map_rep (1, (graph 1 (fun _:set => alpha), graph 1 (fun _:set => w))))
+          (apply_fun (apply_fun hfam alpha) w)
+          (Hh_eq_map w HwG (1, (graph 1 (fun _:set => alpha), graph 1 (fun _:set => w))) Htriv)
+          Hmap_triv). }
+      (** Get z's representation **)
+      claim Hz_pack : exists pack0:set, rep_pred z pack0.
+      { exact (Hrep_exists z HzG). }
+      apply Hz_pack. let pack_z. assume Hpack_z : rep_pred z pack_z.
+      set nz := pack_z 0. set az := (pack_z 1) 0. set xsz := (pack_z 1) 1.
+      claim Hpz_exp : nz :e omega /\ nz <> 0 /\ function_on az nz J /\ function_on xsz nz G /\
+        (forall i:set, i :e nz -> apply_fun xsz i :e apply_fun Gfam (apply_fun az i)) /\
+        (forall i j:set, i :e nz -> j :e nz -> i <> j -> apply_fun az i <> apply_fun az j) /\
+        z = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xsz i)) nz.
+      { exact Hpack_z. }
+      apply (and7E
+        (nz :e omega) (nz <> 0) (function_on az nz J) (function_on xsz nz G)
+        (forall i:set, i :e nz -> apply_fun xsz i :e apply_fun Gfam (apply_fun az i))
+        (forall i j:set, i :e nz -> j :e nz -> i <> j -> apply_fun az i <> apply_fun az j)
+        (z = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xsz i)) nz)
+        Hpz_exp).
+      assume HnzO Hnz_ne HazFn HxszFn Hxsz_Gfam Hdistz HzRep.
+      claim HnzNP : nat_p nz. { exact (omega_nat_p nz HnzO). }
+      (** h(z) = map_rep pack_z **)
+      claim Hhz : apply_fun h z = map_rep pack_z.
+      { exact (Hh_eq_map z HzG pack_z Hpack_z). }
+      (** Case split: does alpha appear in az? **)
+      apply (xm (exists j0:set, j0 :e nz /\ apply_fun az j0 = alpha)).
+      - (** Case A: alpha at j0 in z's rep **)
+        assume Hex_j0 : exists j0:set, j0 :e nz /\ apply_fun az j0 = alpha.
+        apply Hex_j0. let j0. assume Hj0_and.
+        claim Hj0 : j0 :e nz.
+        { exact (andEL (j0 :e nz) (apply_fun az j0 = alpha) Hj0_and). }
+        claim Haj0 : apply_fun az j0 = alpha.
+        { exact (andER (j0 :e nz) (apply_fun az j0 = alpha) Hj0_and). }
+        admit.
+      - (** Case B: alpha not in z's rep **)
+        assume Hnex : ~(exists j0:set, j0 :e nz /\ apply_fun az j0 = alpha).
+        admit.
+    }
     (** Full mult preservation by induction on representation of y **)
+    (** Prove by omega induction on n = representation length of y **)
+    claim Hmult_ind : forall n0:set, nat_p n0 ->
+      forall a0 xs0:set, function_on a0 n0 J -> function_on xs0 n0 G ->
+      (forall i:set, i :e n0 -> apply_fun xs0 i :e apply_fun Gfam (apply_fun a0 i)) ->
+      forall z0:set, z0 :e G ->
+      apply_fun h (apply_fun multG (z0, nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs0 i)) n0)) =
+        apply_fun multH (apply_fun h z0, apply_fun h (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs0 i)) n0)).
+    { apply nat_ind.
+      - (** Base: n0 = 0. product = eG **)
+        let a0 xs0. assume _ _ _.
+        let z0. assume Hz0G : z0 :e G.
+        claim Hprod0 : nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun xs0 i)) 0 = eG.
+        { exact (nat_primrec_0 eG (fun i r:set => apply_fun multG (r, apply_fun xs0 i))). }
+        rewrite Hprod0.
+        claim HmGz0 : apply_fun multG (z0, eG) = z0. { exact (HridG z0 Hz0G). }
+        rewrite HmGz0.
+        rewrite HheG.
+        claim HmHz0 : apply_fun multH (apply_fun h z0, eH) = apply_fun h z0.
+        { exact (HridH (apply_fun h z0) (Hh_to_H z0 Hz0G)). }
+        rewrite HmHz0.
+        reflexivity.
+      - (** Inductive step: n0 -> ordsucc n0 **)
+        let n0. assume Hn0NP : nat_p n0.
+        assume IH : forall a0 xs0:set, function_on a0 n0 J -> function_on xs0 n0 G ->
+          (forall i:set, i :e n0 -> apply_fun xs0 i :e apply_fun Gfam (apply_fun a0 i)) ->
+          forall z0:set, z0 :e G ->
+          apply_fun h (apply_fun multG (z0, nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs0 i)) n0)) =
+            apply_fun multH (apply_fun h z0, apply_fun h (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs0 i)) n0)).
+        let a0 xs0. assume Ha0Fn : function_on a0 (ordsucc n0) J.
+        assume Hxs0Fn : function_on xs0 (ordsucc n0) G.
+        assume Hxs0_Gfam : forall i:set, i :e (ordsucc n0) -> apply_fun xs0 i :e apply_fun Gfam (apply_fun a0 i).
+        let z0. assume Hz0G : z0 :e G.
+        admit.
+    }
     let x y. assume HxG : x :e G. assume HyG : y :e G.
-    admit.
+    (** Get y's representation **)
+    apply (Hgen y HyG).
+    let ny. assume Hny_pack :
+      ny :e omega /\ ny <> 0 /\
+      exists alphas:set, function_on alphas ny J /\
+      exists xs_y:set, function_on xs_y ny G /\
+        (forall i:set, i :e ny -> apply_fun xs_y i :e apply_fun Gfam (apply_fun alphas i)) /\
+        (forall i j:set, i :e ny -> j :e ny -> i <> j ->
+          apply_fun alphas i <> apply_fun alphas j) /\
+        y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs_y i)) ny.
+    claim Hny_first : ny :e omega /\ ny <> 0.
+    { exact (andEL (ny :e omega /\ ny <> 0)
+        (exists alphas:set, function_on alphas ny J /\ exists xs_y:set, function_on xs_y ny G /\
+          (forall i:set, i :e ny -> apply_fun xs_y i :e apply_fun Gfam (apply_fun alphas i)) /\
+          (forall i j:set, i :e ny -> j :e ny -> i <> j -> apply_fun alphas i <> apply_fun alphas j) /\
+          y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs_y i)) ny)
+        Hny_pack). }
+    claim HnyO : ny :e omega.
+    { exact (andEL (ny :e omega) (ny <> 0) Hny_first). }
+    claim HnyNP : nat_p ny. { exact (omega_nat_p ny HnyO). }
+    claim Hny_ne : ny <> 0.
+    { exact (andER (ny :e omega) (ny <> 0) Hny_first). }
+    claim Hny_ex : exists alphas:set, function_on alphas ny J /\ exists xs_y:set, function_on xs_y ny G /\
+        (forall i:set, i :e ny -> apply_fun xs_y i :e apply_fun Gfam (apply_fun alphas i)) /\
+        (forall i j:set, i :e ny -> j :e ny -> i <> j ->
+          apply_fun alphas i <> apply_fun alphas j) /\
+        y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs_y i)) ny.
+    { exact (andER (ny :e omega /\ ny <> 0)
+        (exists alphas:set, function_on alphas ny J /\ exists xs_y:set, function_on xs_y ny G /\
+          (forall i:set, i :e ny -> apply_fun xs_y i :e apply_fun Gfam (apply_fun alphas i)) /\
+          (forall i j:set, i :e ny -> j :e ny -> i <> j -> apply_fun alphas i <> apply_fun alphas j) /\
+          y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs_y i)) ny)
+        Hny_pack). }
+    apply Hny_ex.
+    let ay. assume Hay_and : function_on ay ny J /\ exists xs_y:set, function_on xs_y ny G /\
+        (forall i:set, i :e ny -> apply_fun xs_y i :e apply_fun Gfam (apply_fun ay i)) /\
+        (forall i j:set, i :e ny -> j :e ny -> i <> j ->
+          apply_fun ay i <> apply_fun ay j) /\
+        y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs_y i)) ny.
+    claim HayFn : function_on ay ny J.
+    { exact (andEL (function_on ay ny J)
+        (exists xs_y:set, function_on xs_y ny G /\
+          (forall i:set, i :e ny -> apply_fun xs_y i :e apply_fun Gfam (apply_fun ay i)) /\
+          (forall i j:set, i :e ny -> j :e ny -> i <> j -> apply_fun ay i <> apply_fun ay j) /\
+          y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs_y i)) ny)
+        Hay_and). }
+    apply (andER (function_on ay ny J)
+        (exists xs_y:set, function_on xs_y ny G /\
+          (forall i:set, i :e ny -> apply_fun xs_y i :e apply_fun Gfam (apply_fun ay i)) /\
+          (forall i j:set, i :e ny -> j :e ny -> i <> j -> apply_fun ay i <> apply_fun ay j) /\
+          y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs_y i)) ny)
+        Hay_and).
+    let xsy. assume Hxsy_and :
+      function_on xsy ny G /\
+        (forall i:set, i :e ny -> apply_fun xsy i :e apply_fun Gfam (apply_fun ay i)) /\
+        (forall i j:set, i :e ny -> j :e ny -> i <> j ->
+          apply_fun ay i <> apply_fun ay j) /\
+        y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xsy i)) ny.
+    (** Hxsy_and has type ((D /\ E) /\ F) /\ G due to left-assoc /\ **)
+    claim HyRep : y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xsy i)) ny.
+    { exact (andER
+        ((function_on xsy ny G /\
+          (forall i:set, i :e ny -> apply_fun xsy i :e apply_fun Gfam (apply_fun ay i))) /\
+          (forall i j:set, i :e ny -> j :e ny -> i <> j -> apply_fun ay i <> apply_fun ay j))
+        (y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xsy i)) ny)
+        Hxsy_and). }
+    claim Hxsy_DEF : (function_on xsy ny G /\
+          (forall i:set, i :e ny -> apply_fun xsy i :e apply_fun Gfam (apply_fun ay i))) /\
+          (forall i j:set, i :e ny -> j :e ny -> i <> j -> apply_fun ay i <> apply_fun ay j).
+    { exact (andEL
+        ((function_on xsy ny G /\
+          (forall i:set, i :e ny -> apply_fun xsy i :e apply_fun Gfam (apply_fun ay i))) /\
+          (forall i j:set, i :e ny -> j :e ny -> i <> j -> apply_fun ay i <> apply_fun ay j))
+        (y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xsy i)) ny)
+        Hxsy_and). }
+    claim Hxsy_DE : function_on xsy ny G /\
+          (forall i:set, i :e ny -> apply_fun xsy i :e apply_fun Gfam (apply_fun ay i)).
+    { exact (andEL
+        (function_on xsy ny G /\
+          (forall i:set, i :e ny -> apply_fun xsy i :e apply_fun Gfam (apply_fun ay i)))
+        (forall i j:set, i :e ny -> j :e ny -> i <> j -> apply_fun ay i <> apply_fun ay j)
+        Hxsy_DEF). }
+    claim HxsyFn : function_on xsy ny G.
+    { exact (andEL (function_on xsy ny G)
+        (forall i:set, i :e ny -> apply_fun xsy i :e apply_fun Gfam (apply_fun ay i))
+        Hxsy_DE). }
+    claim Hxsy_Gfam : forall i:set, i :e ny -> apply_fun xsy i :e apply_fun Gfam (apply_fun ay i).
+    { exact (andER (function_on xsy ny G)
+        (forall i:set, i :e ny -> apply_fun xsy i :e apply_fun Gfam (apply_fun ay i))
+        Hxsy_DE). }
+    rewrite HyRep.
+    exact (Hmult_ind ny HnyNP ay xsy HayFn HxsyFn Hxsy_Gfam x HxG).
 - let alpha. assume Hal : alpha :e J.
   let x. assume Hx : x :e apply_fun Gfam alpha.
   claim HxG : x :e G.
