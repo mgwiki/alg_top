@@ -64356,6 +64356,96 @@ rewrite (open_ball_R_bounded_metric_eq_open_interval x r HxR HrR Hrpos Hrlt1).
 reflexivity.
 Qed.
 
+(** Infrastructure: an open interval strictly inside (0,1) lies in unit_interval. **)
+(** Proven Charlie **)
+Theorem unit_interval_binintersect_open_interval_inside :
+  forall a b:set,
+  a :e R ->
+  b :e R ->
+  Rlt 0 a ->
+  Rlt b 1 ->
+  unit_interval :/\: open_interval a b = open_interval a b.
+let a b.
+assume HaR HbR H0lta Hblt1.
+apply set_ext.
+- let x.
+  assume HxInt.
+  exact (binintersectE2
+    unit_interval
+    (open_interval a b)
+    x
+    HxInt).
+- let x.
+  assume HxO.
+  claim HxR : x :e R.
+  {
+    exact (SepE1
+      R
+      (fun y:set => Rlt a y /\ Rlt y b)
+      x
+      HxO).
+  }
+  claim HxLtPack : Rlt a x /\ Rlt x b.
+  {
+    exact (SepE2
+      R
+      (fun y:set => Rlt a y /\ Rlt y b)
+      x
+      HxO).
+  }
+  claim Haltx : Rlt a x.
+  {
+    exact (andEL
+      (Rlt a x)
+      (Rlt x b)
+      HxLtPack).
+  }
+  claim Hxltb : Rlt x b.
+  {
+    exact (andER
+      (Rlt a x)
+      (Rlt x b)
+      HxLtPack).
+  }
+  claim H0ltx : Rlt 0 x.
+  {
+    exact (Rlt_tra
+      0
+      a
+      x
+      H0lta
+      Haltx).
+  }
+  claim Hxlt1 : Rlt x 1.
+  {
+    exact (Rlt_tra
+      x
+      b
+      1
+      Hxltb
+      Hblt1).
+  }
+  claim HxI : x :e unit_interval.
+  {
+    exact (SepI
+      R
+      (fun y:set => ~ (Rlt y 0) /\ ~ (Rlt 1 y))
+      x
+      HxR
+      (andI
+        (~ (Rlt x 0))
+        (~ (Rlt 1 x))
+        (not_Rlt_sym 0 x H0ltx)
+        (not_Rlt_sym x 1 Hxlt1))).
+  }
+  exact (binintersectI
+    unit_interval
+    (open_interval a b)
+    x
+    HxI
+    HxO).
+Qed.
+
 (** Infrastructure: Lebesgue number for open covers of unit_interval (metric topology = subspace topology). **)
 (** Proven Charlie **)
 Theorem unit_interval_open_cover_has_lebesgue_number_eps :
