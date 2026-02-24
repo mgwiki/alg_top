@@ -66633,6 +66633,98 @@ exact (sequentially_compact_metric_has_lebesgue_number_eps
   HcovMet).
 Qed.
 
+(** Infrastructure: eps_(ordsucc n) is always < 1 on omega. **)
+(** Proven Charlie **)
+Theorem eps_ordsucc_lt1_R : forall n:set,
+  n :e omega ->
+  Rlt (eps_ (ordsucc n)) 1.
+let n.
+assume HnO.
+set P := fun m:set => Rlt (eps_ (ordsucc m)) 1.
+claim HnNat : nat_p n.
+{
+  exact (omega_nat_p n HnO).
+}
+apply (nat_ind P).
+- (** base m = 0 **)
+  rewrite ordsucc_0_eq_1_nat.
+  exact eps_1_lt1_R.
+- (** step **)
+  let m.
+  assume HmNat HmIH.
+  claim HsMO : ordsucc m :e omega.
+  {
+    exact (nat_p_omega (ordsucc m) (nat_ordsucc m HmNat)).
+  }
+  claim HstepLt :
+    Rlt (eps_ (ordsucc (ordsucc m))) (eps_ (ordsucc m)).
+  {
+    exact (eps_ordsucc_lt_eps (ordsucc m) HsMO).
+  }
+  exact (Rlt_tra
+    (eps_ (ordsucc (ordsucc m)))
+    (eps_ (ordsucc m))
+    1
+    HstepLt
+    HmIH).
+- exact HnNat.
+Qed.
+
+(** Infrastructure: a Lebesgue number remains a Lebesgue number after shrinking radii. **)
+(** Proven Charlie **)
+Theorem lebesgue_number_metric_shrink :
+  forall X d Fam r1 r2:set,
+  r1 :e R ->
+  r2 :e R ->
+  Rlt 0 r1 ->
+  Rlt r1 r2 ->
+  lebesgue_number_metric X d Fam r2 ->
+  lebesgue_number_metric X d Fam r1.
+let X d Fam r1 r2.
+assume Hr1R Hr2R Hr1pos Hr12 Hleb2.
+claim HlebProp :
+  forall x:set, x :e X -> exists U:set, U :e Fam /\ open_ball X d x r2 c= U.
+{
+  exact (andER
+    (r2 :e R /\ Rlt 0 r2)
+    (forall x:set, x :e X -> exists U:set, U :e Fam /\ open_ball X d x r2 c= U)
+    Hleb2).
+}
+claim HlebProp1 :
+  forall x:set, x :e X -> exists U:set, U :e Fam /\ open_ball X d x r1 c= U.
+{
+  let x.
+  assume HxX.
+  apply (HlebProp x HxX).
+  let U.
+  assume HUPack.
+  witness U.
+  apply andI.
+  - exact (andEL
+      (U :e Fam)
+      (open_ball X d x r2 c= U)
+      HUPack).
+  - exact (Subq_tra
+      (open_ball X d x r1)
+      (open_ball X d x r2)
+      U
+      (open_ball_radius_mono X d x r1 r2 Hr12)
+      (andER
+        (U :e Fam)
+        (open_ball X d x r2 c= U)
+        HUPack)).
+}
+exact (andI
+  (r1 :e R /\ Rlt 0 r1)
+  (forall x:set, x :e X -> exists U:set, U :e Fam /\ open_ball X d x r1 c= U)
+  (andI
+    (r1 :e R)
+    (Rlt 0 r1)
+    Hr1R
+    Hr1pos)
+  HlebProp1).
+Qed.
+
 (** Infrastructure: glue functional graphs on overlapping domains when they agree. **)
 (** Proven Charlie **)
 Theorem functional_graph_union_agree_on_overlap :
