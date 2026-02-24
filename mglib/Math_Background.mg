@@ -64679,6 +64679,239 @@ apply set_ext.
     HxO).
 Qed.
 
+(** Infrastructure: intersecting unit_interval with an open_interval that crosses 1 yields a right-closed interval. **)
+(** Proven Charlie **)
+Theorem unit_interval_binintersect_open_interval_right_cross :
+  forall a b:set,
+  a :e R ->
+  b :e R ->
+  Rlt 0 a ->
+  Rlt a 1 ->
+  Rlt 1 b ->
+  unit_interval :/\: open_interval a b = halfopen_interval_right_in R a 1.
+let a b.
+assume HaR HbR H0lta Halt1 H1ltb.
+apply set_ext.
+- let x.
+  assume HxInt.
+  claim HxI : x :e unit_interval.
+  {
+    exact (binintersectE1
+      unit_interval
+      (open_interval a b)
+      x
+      HxInt).
+  }
+  claim HxO : x :e open_interval a b.
+  {
+    exact (binintersectE2
+      unit_interval
+      (open_interval a b)
+      x
+      HxInt).
+  }
+  claim HxR : x :e R.
+  {
+    exact (SepE1
+      R
+      (fun y:set => ~ (Rlt y 0) /\ ~ (Rlt 1 y))
+      x
+      HxI).
+  }
+  claim HxLe1 : ~ (Rlt 1 x).
+  {
+    exact (andER
+      (~ (Rlt x 0))
+      (~ (Rlt 1 x))
+      (SepE2
+        R
+        (fun y:set => ~ (Rlt y 0) /\ ~ (Rlt 1 y))
+        x
+        HxI)).
+  }
+  claim HxLtPack : Rlt a x /\ Rlt x b.
+  {
+    exact (SepE2
+      R
+      (fun y:set => Rlt a y /\ Rlt y b)
+      x
+      HxO).
+  }
+  claim Haltx : Rlt a x.
+  {
+    exact (andEL
+      (Rlt a x)
+      (Rlt x b)
+      HxLtPack).
+  }
+  claim Hprop :
+    order_rel R a x /\ (x = 1 \/ order_rel R x 1).
+  {
+    apply andI.
+    - exact (Rlt_implies_order_rel_R
+        a
+        x
+        Haltx).
+    - apply xm (Rlt x 1).
+      + assume Hxlt1.
+        exact (orIR
+          (x = 1)
+          (order_rel R x 1)
+          (Rlt_implies_order_rel_R x 1 Hxlt1)).
+      + assume Hnxlt1 : ~ (Rlt x 1).
+        claim Hx1 : x = 1.
+        {
+          exact (R_eq_of_not_Rlt
+            x
+            1
+            HxR
+            real_1
+            Hnxlt1
+            HxLe1).
+        }
+        exact (orIL
+          (x = 1)
+          (order_rel R x 1)
+          Hx1).
+  }
+  exact (SepI
+    R
+    (fun y:set => order_rel R a y /\ (y = 1 \/ order_rel R y 1))
+    x
+    HxR
+    Hprop).
+- let x.
+  assume HxHalf.
+  claim HxR : x :e R.
+  {
+    exact (SepE1
+      R
+      (fun y:set => order_rel R a y /\ (y = 1 \/ order_rel R y 1))
+      x
+      HxHalf).
+  }
+  claim HxPack :
+    order_rel R a x /\ (x = 1 \/ order_rel R x 1).
+  {
+    exact (SepE2
+      R
+      (fun y:set => order_rel R a y /\ (y = 1 \/ order_rel R y 1))
+      x
+      HxHalf).
+  }
+  claim HaOrd : order_rel R a x.
+  {
+    exact (andEL
+      (order_rel R a x)
+      (x = 1 \/ order_rel R x 1)
+      HxPack).
+  }
+  claim Hx1or : x = 1 \/ order_rel R x 1.
+  {
+    exact (andER
+      (order_rel R a x)
+      (x = 1 \/ order_rel R x 1)
+      HxPack).
+  }
+  claim Haltx : Rlt a x.
+  {
+    exact (order_rel_R_implies_Rlt
+      a
+      x
+      HaOrd).
+  }
+  claim HxI : x :e unit_interval.
+  {
+    claim HxGe0 : ~ (Rlt x 0).
+    {
+      claim H0ltx : Rlt 0 x.
+      {
+        exact (Rlt_tra
+          0
+          a
+          x
+          H0lta
+          Haltx).
+      }
+      exact (not_Rlt_sym
+        0
+        x
+        H0ltx).
+    }
+    claim HxLe1 : ~ (Rlt 1 x).
+    {
+      apply Hx1or.
+      - assume Hx1.
+        rewrite Hx1.
+        exact (not_Rlt_refl
+          1
+          real_1).
+      - assume Hxlt1Ord.
+        claim Hxlt1 : Rlt x 1.
+        {
+          exact (order_rel_R_implies_Rlt
+            x
+            1
+            Hxlt1Ord).
+        }
+        exact (not_Rlt_sym
+          x
+          1
+          Hxlt1).
+    }
+    exact (SepI
+      R
+      (fun y:set => ~ (Rlt y 0) /\ ~ (Rlt 1 y))
+      x
+      HxR
+      (andI
+        (~ (Rlt x 0))
+        (~ (Rlt 1 x))
+        HxGe0
+        HxLe1)).
+  }
+  claim HxO : x :e open_interval a b.
+  {
+    claim Hxltb : Rlt x b.
+    {
+      apply Hx1or.
+      - assume Hx1.
+        rewrite Hx1.
+        exact H1ltb.
+      - assume Hxlt1Ord.
+        claim Hxlt1 : Rlt x 1.
+        {
+          exact (order_rel_R_implies_Rlt
+            x
+            1
+            Hxlt1Ord).
+        }
+        exact (Rlt_tra
+          x
+          1
+          b
+          Hxlt1
+          H1ltb).
+    }
+    exact (SepI
+      R
+      (fun y:set => Rlt a y /\ Rlt y b)
+      x
+      HxR
+      (andI
+        (Rlt a x)
+        (Rlt x b)
+        Haltx
+        Hxltb)).
+  }
+  exact (binintersectI
+    unit_interval
+    (open_interval a b)
+    x
+    HxI
+    HxO).
+Qed.
+
 (** Infrastructure: Lebesgue number for open covers of unit_interval (metric topology = subspace topology). **)
 (** Proven Charlie **)
 Theorem unit_interval_open_cover_has_lebesgue_number_eps :
