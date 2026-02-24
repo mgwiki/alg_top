@@ -1,4 +1,4 @@
-(** Balance Alice 3369 **)
+(** Balance Alice 3359 **)
 (** Balance Bob 3451 **)
 (** Balance Charlie 1203 **)
 (** Balance Dave 1793 **)
@@ -156164,7 +156164,8 @@ Qed.
 (** i_alpha and i'_alpha respectively, then there is a unique isomorphism **)
 (** phi: G -> G' such that phi o i_alpha = i'_alpha. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 97 **)
+(** Bounty 107 **)
+(** Lock Alice 1772012635 **)
 Theorem thm67_6_uniqueness_direct_sum :
   forall J Gfam multfam G multG eG invG ifam G' multG' eG' invG' ifam':set,
   abelian_group G multG eG invG ->
