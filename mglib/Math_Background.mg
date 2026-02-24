@@ -183540,6 +183540,44 @@ Definition dunce_cap_topology : set -> set :=
 
 (** Infrastructure helper for S73 Lem 73.3:
     closed quotient maps preserve normality. **)
+(** Proven Bob **)
+Theorem closed_quotient_map_preserves_normality_with_surjective :
+  forall E Te X Tx pi:set,
+  topology_on E Te -> topology_on X Tx ->
+  normal_space E Te ->
+  continuous_map E Te X Tx pi ->
+  (forall C:set, closed_in E Te C -> closed_in X Tx (image_of pi C)) ->
+  (forall V:set, V :e Tx -> {x :e E | apply_fun pi x :e V} :e Te) ->
+  (forall y:set, y :e X -> exists x:set, x :e E /\ apply_fun pi x = y) ->
+  normal_space X Tx.
+let E Te X Tx pi.
+assume HtopE HtopX HnormE Hcont HclosedImg HpreimOpen Hsurj.
+claim HclosedMap : closed_map E Te X Tx pi.
+{
+  exact (andI
+    (function_on pi E X)
+    (forall C:set, closed_in E Te C -> closed_in X Tx (image_of pi C))
+    (continuous_map_function_on
+      E
+      Te
+      X
+      Tx
+      pi
+      Hcont)
+    HclosedImg).
+}
+exact (ex31_6_closed_map_preserves_normal
+  E
+  Te
+  X
+  Tx
+  pi
+  HnormE
+  Hcont
+  HclosedMap
+  Hsurj).
+Qed.
+
 Theorem closed_quotient_map_preserves_normality_helper :
   forall E Te X Tx pi:set,
   topology_on E Te -> topology_on X Tx ->
