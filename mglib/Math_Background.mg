@@ -1,4 +1,4 @@
-(** Balance Alice 3401 **)
+(** Balance Alice 3369 **)
 (** Balance Bob 3451 **)
 (** Balance Charlie 1203 **)
 (** Balance Dave 1793 **)
@@ -149585,7 +149585,8 @@ Definition external_direct_sum : set -> set -> set -> set -> set -> set -> set -
 (** group G and monomorphisms i_alpha: G_alpha -> G such that G is the direct sum **)
 (** of the images i_alpha(G_alpha). **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 182 **)
+(** Bounty 201 **)
+(** Lock Alice 1771991764 **)
 Theorem thm67_4_existence_external_direct_sum :
   forall J Gfam multfam efam invfam:set,
   (forall alpha:set, alpha :e J ->
@@ -149782,7 +149783,8 @@ Qed.
 (** homomorphism h: G -> H such that h o i_alpha = h_alpha. Conversely, if the extension condition **)
 (** holds, then each i_alpha is a monomorphism and G is the direct sum. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 121 **)
+(** Bounty 134 **)
+(** Lock Alice 1771991764 **)
 Theorem lemma67_5_extension_external :
   forall G multG eG invG J Gfam multfam ifam:set,
   abelian_group G multG eG invG ->
