@@ -63926,6 +63926,44 @@ apply Hinterval.
     HBsubClosure).
 Qed.
 
+(** Infrastructure: interval-like subsets of unit_interval are connected (via R). **)
+(** Proven Charlie **)
+Theorem interval_in_unit_interval_connected :
+  forall a b Y:set,
+  a :e R ->
+  b :e R ->
+  order_rel R a b ->
+  interval_in R a b Y ->
+  Y c= unit_interval ->
+  connected_space Y (subspace_topology unit_interval unit_interval_topology Y).
+let a b Y.
+assume HaR HbR Hab Hinterval HYsubI.
+claim HtopEq :
+  subspace_topology unit_interval unit_interval_topology Y =
+    subspace_topology R R_standard_topology Y.
+{
+  exact (subspace_topology_transitive_weak
+    R
+    R_standard_topology
+    unit_interval
+    Y
+    HYsubI).
+}
+claim HconnR : connected_space Y (subspace_topology R R_standard_topology Y).
+{
+  exact (interval_in_R_connected
+    a
+    b
+    Y
+    HaR
+    HbR
+    Hab
+    Hinterval).
+}
+rewrite HtopEq.
+exact HconnR.
+Qed.
+
 (** Infrastructure: a connected subspace of unit_interval containing 0 and 1 is all of unit_interval. **)
 (** Proven Charlie **)
 Theorem connected_subset_unit_interval_endpoints_all :
@@ -64893,6 +64931,243 @@ apply set_ext.
           Hxlt1
           H1ltb).
     }
+    exact (SepI
+      R
+      (fun y:set => Rlt a y /\ Rlt y b)
+      x
+      HxR
+      (andI
+        (Rlt a x)
+        (Rlt x b)
+        Haltx
+        Hxltb)).
+  }
+  exact (binintersectI
+    unit_interval
+    (open_interval a b)
+    x
+    HxI
+    HxO).
+Qed.
+
+(** Infrastructure: boundary cases for open intervals intersect unit_interval. **)
+
+(** Proven Charlie **)
+Theorem unit_interval_binintersect_open_interval_left_boundary :
+  forall b:set,
+  b :e R ->
+  Rlt 0 b ->
+  Rlt b 1 ->
+  unit_interval :/\: open_interval 0 b = open_interval 0 b.
+let b.
+assume HbR H0ltb Hblt1.
+apply set_ext.
+- let x.
+  assume HxInt.
+  exact (binintersectE2
+    unit_interval
+    (open_interval 0 b)
+    x
+    HxInt).
+- let x.
+  assume HxO.
+  claim HxR : x :e R.
+  {
+    exact (SepE1
+      R
+      (fun y:set => Rlt 0 y /\ Rlt y b)
+      x
+      HxO).
+  }
+  claim HxLtPack : Rlt 0 x /\ Rlt x b.
+  {
+    exact (SepE2
+      R
+      (fun y:set => Rlt 0 y /\ Rlt y b)
+      x
+      HxO).
+  }
+  claim H0ltx : Rlt 0 x.
+  {
+    exact (andEL
+      (Rlt 0 x)
+      (Rlt x b)
+      HxLtPack).
+  }
+  claim Hxltb : Rlt x b.
+  {
+    exact (andER
+      (Rlt 0 x)
+      (Rlt x b)
+      HxLtPack).
+  }
+  claim Hxlt1 : Rlt x 1.
+  {
+    exact (Rlt_tra
+      x
+      b
+      1
+      Hxltb
+      Hblt1).
+  }
+  claim HxI : x :e unit_interval.
+  {
+    exact (SepI
+      R
+      (fun y:set => ~ (Rlt y 0) /\ ~ (Rlt 1 y))
+      x
+      HxR
+      (andI
+        (~ (Rlt x 0))
+        (~ (Rlt 1 x))
+        (not_Rlt_sym 0 x H0ltx)
+        (not_Rlt_sym x 1 Hxlt1))).
+  }
+  exact (binintersectI
+    unit_interval
+    (open_interval 0 b)
+    x
+    HxI
+    HxO).
+Qed.
+
+(** Proven Charlie **)
+Theorem unit_interval_binintersect_open_interval_right_boundary :
+  forall a:set,
+  a :e R ->
+  Rlt 0 a ->
+  Rlt a 1 ->
+  unit_interval :/\: open_interval a 1 = open_interval a 1.
+let a.
+assume HaR H0lta Halt1.
+apply set_ext.
+- let x.
+  assume HxInt.
+  exact (binintersectE2
+    unit_interval
+    (open_interval a 1)
+    x
+    HxInt).
+- let x.
+  assume HxO.
+  claim HxR : x :e R.
+  {
+    exact (SepE1
+      R
+      (fun y:set => Rlt a y /\ Rlt y 1)
+      x
+      HxO).
+  }
+  claim HxLtPack : Rlt a x /\ Rlt x 1.
+  {
+    exact (SepE2
+      R
+      (fun y:set => Rlt a y /\ Rlt y 1)
+      x
+      HxO).
+  }
+  claim Haltx : Rlt a x.
+  {
+    exact (andEL
+      (Rlt a x)
+      (Rlt x 1)
+      HxLtPack).
+  }
+  claim Hxlt1 : Rlt x 1.
+  {
+    exact (andER
+      (Rlt a x)
+      (Rlt x 1)
+      HxLtPack).
+  }
+  claim H0ltx : Rlt 0 x.
+  {
+    exact (Rlt_tra
+      0
+      a
+      x
+      H0lta
+      Haltx).
+  }
+  claim HxI : x :e unit_interval.
+  {
+    exact (SepI
+      R
+      (fun y:set => ~ (Rlt y 0) /\ ~ (Rlt 1 y))
+      x
+      HxR
+      (andI
+        (~ (Rlt x 0))
+        (~ (Rlt 1 x))
+        (not_Rlt_sym 0 x H0ltx)
+        (not_Rlt_sym x 1 Hxlt1))).
+  }
+  exact (binintersectI
+    unit_interval
+    (open_interval a 1)
+    x
+    HxI
+    HxO).
+Qed.
+
+(** Proven Charlie **)
+Theorem unit_interval_binintersect_open_interval_both_cross :
+  forall a b:set,
+  a :e R ->
+  b :e R ->
+  Rlt a 0 ->
+  Rlt 1 b ->
+  unit_interval :/\: open_interval a b = unit_interval.
+let a b.
+assume HaR HbR Halt0 H1ltb.
+apply set_ext.
+- let x.
+  assume HxInt.
+  exact (binintersectE1
+    unit_interval
+    (open_interval a b)
+    x
+    HxInt).
+- let x.
+  assume HxI.
+  claim HxR : x :e R.
+  {
+    exact (unit_interval_sub_R
+      x
+      HxI).
+  }
+  claim Hxle1 : Rle x 1.
+  {
+    exact (unit_interval_Rle1
+      x
+      HxI).
+  }
+  claim H0lex : Rle 0 x.
+  {
+    exact (unit_interval_Rle0
+      x
+      HxI).
+  }
+  claim Haltx : Rlt a x.
+  {
+    exact (Rlt_Rle_tra
+      a
+      0
+      x
+      Halt0
+      H0lex).
+  }
+  claim Hxltb : Rlt x b.
+  {
+    exact (Rle_Rlt_tra
+      x
+      1
+      b
+      Hxle1
+      H1ltb).
+  }
+  claim HxO : x :e open_interval a b.
+  {
     exact (SepI
       R
       (fun y:set => Rlt a y /\ Rlt y b)
