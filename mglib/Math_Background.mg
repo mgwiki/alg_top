@@ -62222,6 +62222,7 @@ Qed.
 (** Infrastructure: chain connectivity in an open cover of a connected space **)
 (** If X is connected and Fam is an open cover, then any two points lie in a finite chain
     U0,...,Un from Fam with consecutive intersections nonempty. **)
+(** Proven Charlie **)
 Theorem connected_space_open_cover_chain :
   forall X Tx Fam x0 x1:set,
   connected_space X Tx ->
