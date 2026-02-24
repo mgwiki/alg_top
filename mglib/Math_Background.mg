@@ -126131,10 +126131,101 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun fcls t :e U)).
     claim H0preV : 0 :e preV.
     { exact (SepI unit_interval (fun x:set => apply_fun fcls x :e V) 0
         zero_in_unit_interval (Hfcls0 (fun a b:set => b :e V) Hx0V)). }
-    (** Step 6: The remaining word construction from the chain **)
-    (** Each chain ball maps to U or V. Overlapping balls at transitions give
-        points in U cap V. Use path-connectivity of U cap V for connecting paths.
-        Build the word of loops. **)
+    (** Step 6: Find an interior point in preU cap preV (i.e., f(t) in U cap V for some t in (0,1)) **)
+    claim HmetI : metric_on unit_interval R_bounded_metric.
+    { exact R_bounded_metric_is_metric_on_unit_interval. }
+    claim HmetTopEq : metric_topology unit_interval R_bounded_metric = unit_interval_topology.
+    { exact metric_topology_unit_interval_eq_I_topology. }
+    (** preV is open in metric topology, 0 :e preV, so there exists a ball B(0, delta) c= preV **)
+    claim HpreVmetric : preV :e metric_topology unit_interval R_bounded_metric.
+    { rewrite HmetTopEq. exact HpreVopen. }
+    claim HpreUmetric : preU :e metric_topology unit_interval R_bounded_metric.
+    { rewrite HmetTopEq. exact HpreUopen. }
+    claim Hball_in_preV : exists rv:set, rv :e R /\ (Rlt 0 rv /\
+      open_ball unit_interval R_bounded_metric 0 rv c= preV).
+    {
+      exact (metric_topology_neighborhood_contains_ball
+        unit_interval R_bounded_metric 0 preV
+        HmetI zero_in_unit_interval HpreVmetric H0preV).
+    }
+    claim Hball_in_preU : exists ru:set, ru :e R /\ (Rlt 0 ru /\
+      open_ball unit_interval R_bounded_metric 0 ru c= preU).
+    {
+      exact (metric_topology_neighborhood_contains_ball
+        unit_interval R_bounded_metric 0 preU
+        HmetI zero_in_unit_interval HpreUmetric H0preU).
+    }
+    (** Step 7: Find t0 in (0,1) with f(t0) in U cap V **)
+    apply Hball_in_preU.
+    let ru. assume Hru : ru :e R /\ (Rlt 0 ru /\ open_ball unit_interval R_bounded_metric 0 ru c= preU).
+    claim HruR : ru :e R.
+    { exact (andEL (ru :e R) (Rlt 0 ru /\ open_ball unit_interval R_bounded_metric 0 ru c= preU) Hru). }
+    claim Hrurest : Rlt 0 ru /\ open_ball unit_interval R_bounded_metric 0 ru c= preU.
+    { exact (andER (ru :e R) (Rlt 0 ru /\ open_ball unit_interval R_bounded_metric 0 ru c= preU) Hru). }
+    claim Hrupos : Rlt 0 ru.
+    { exact (andEL (Rlt 0 ru) (open_ball unit_interval R_bounded_metric 0 ru c= preU) Hrurest). }
+    claim HruBallSub : open_ball unit_interval R_bounded_metric 0 ru c= preU.
+    { exact (andER (Rlt 0 ru) (open_ball unit_interval R_bounded_metric 0 ru c= preU) Hrurest). }
+    apply Hball_in_preV.
+    let rv. assume Hrv : rv :e R /\ (Rlt 0 rv /\ open_ball unit_interval R_bounded_metric 0 rv c= preV).
+    claim HrvR : rv :e R.
+    { exact (andEL (rv :e R) (Rlt 0 rv /\ open_ball unit_interval R_bounded_metric 0 rv c= preV) Hrv). }
+    claim Hrvrest : Rlt 0 rv /\ open_ball unit_interval R_bounded_metric 0 rv c= preV.
+    { exact (andER (rv :e R) (Rlt 0 rv /\ open_ball unit_interval R_bounded_metric 0 rv c= preV) Hrv). }
+    claim Hrvpos : Rlt 0 rv.
+    { exact (andEL (Rlt 0 rv) (open_ball unit_interval R_bounded_metric 0 rv c= preV) Hrvrest). }
+    claim HrvBallSub : open_ball unit_interval R_bounded_metric 0 rv c= preV.
+    { exact (andER (Rlt 0 rv) (open_ball unit_interval R_bounded_metric 0 rv c= preV) Hrvrest). }
+    (** Find t0 < min(ru, rv, 1) **)
+    apply (exists_eps_lt_four_pos ru rv 1 1 HruR HrvR real_1 real_1 Hrupos Hrvpos Rlt_0_1 Rlt_0_1).
+    let t0. assume Ht0.
+    apply (and6E (t0 :e R) (Rlt 0 t0) (Rlt t0 ru) (Rlt t0 rv) (Rlt t0 1) (Rlt t0 1) Ht0).
+    assume Ht0R : t0 :e R.
+    assume Ht0pos : Rlt 0 t0.
+    assume Ht0ltru : Rlt t0 ru.
+    assume Ht0ltrv : Rlt t0 rv.
+    assume Ht0lt1 : Rlt t0 1.
+    assume Ht0lt1b : Rlt t0 1.
+    (** t0 in unit_interval **)
+    claim Ht0I : t0 :e unit_interval.
+    { exact (SepI R (fun x:set => ~(Rlt x 0) /\ ~(Rlt 1 x)) t0 Ht0R
+        (andI (~(Rlt t0 0)) (~(Rlt 1 t0))
+          (not_Rlt_sym 0 t0 Ht0pos) (not_Rlt_sym t0 1 Ht0lt1))). }
+    (** Arithmetic: abs_SNo(0 - t0) = t0, so R_bounded_distance 0 t0 le t0 **)
+    claim Hstep1 : add_SNo 0 (minus_SNo t0) = minus_SNo t0.
+    { exact (add_SNo_0L (minus_SNo t0) (SNo_minus_SNo t0 (real_SNo t0 Ht0R))). }
+    claim Hstep2 : abs_SNo (minus_SNo t0) = abs_SNo t0.
+    { exact (abs_SNo_minus t0 (real_SNo t0 Ht0R)). }
+    claim Hstep3 : abs_SNo t0 = t0.
+    { exact (pos_abs_SNo t0 (RltE_lt 0 t0 Ht0pos)). }
+    claim Habs_Rle : Rle (abs_SNo (add_SNo 0 (minus_SNo t0))) t0.
+    { rewrite Hstep1. rewrite Hstep2. rewrite Hstep3. exact (Rle_refl t0 Ht0R). }
+    claim Hdist_le : Rle (R_bounded_distance 0 t0) t0.
+    { exact (R_bounded_distance_le_of_abs_le_lt1 0 t0 t0 real_0 Ht0R Ht0R Ht0lt1 Habs_Rle). }
+    (** t0 in B(0, ru) c= preU **)
+    claim Hmetric_eq : apply_fun R_bounded_metric (0, t0) = R_bounded_distance 0 t0.
+    { exact (R_bounded_metric_apply_early 0 t0 real_0 Ht0R). }
+    claim Hmetric_lt_ru : Rlt (apply_fun R_bounded_metric (0, t0)) ru.
+    { rewrite Hmetric_eq.
+      exact (Rle_Rlt_tra (R_bounded_distance 0 t0) t0 ru Hdist_le Ht0ltru). }
+    claim Ht0preU : t0 :e preU.
+    { exact (HruBallSub t0
+        (open_ballI unit_interval R_bounded_metric 0 ru t0 Ht0I Hmetric_lt_ru)). }
+    (** t0 in B(0, rv) c= preV **)
+    claim Hmetric_lt_rv : Rlt (apply_fun R_bounded_metric (0, t0)) rv.
+    { rewrite Hmetric_eq.
+      exact (Rle_Rlt_tra (R_bounded_distance 0 t0) t0 rv Hdist_le Ht0ltrv). }
+    claim Ht0preV : t0 :e preV.
+    { exact (HrvBallSub t0
+        (open_ballI unit_interval R_bounded_metric 0 rv t0 Ht0I Hmetric_lt_rv)). }
+    (** f(t0) in U cap V **)
+    claim Ht0fU : apply_fun fcls t0 :e U.
+    { exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e U) t0 Ht0preU). }
+    claim Ht0fV : apply_fun fcls t0 :e V.
+    { exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e V) t0 Ht0preV). }
+    claim Ht0fUV : apply_fun fcls t0 :e U :/\: V.
+    { exact (binintersectI U V (apply_fun fcls t0) Ht0fU Ht0fV). }
+    (** Word construction from interior transition point - to be completed **)
     admit.
 Admitted.
 
