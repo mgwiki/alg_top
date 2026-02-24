@@ -154915,9 +154915,21 @@ Definition external_direct_sum : set -> set -> set -> set -> set -> set -> set -
 (** of the images i_alpha(G_alpha). **)
 (** Pi elimination: Pi is defined as Sep(Power(Sigma...), ...) but is Opaque.
     This bridge theorem is trivially true from the definition. **)
+Transparent Pi.
 Theorem Pi_sub_Power_Sigma : forall X:set, forall Y:set->set, forall f:set,
   f :e (Pi_ x :e X, Y x) -> f c= Sigma_ x :e X, Union (Y x).
-Admitted.
+let X Y f.
+assume HfPi.
+exact (PowerE
+  (Sigma_ x :e X, Union (Y x))
+  f
+  (SepE1
+    (Power (Sigma_ x :e X, Union (Y x)))
+    (fun g:set => forall x :e X, g x :e Y x)
+    f
+    HfPi)).
+Qed.
+Opaque Pi.
 
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 201 **)
