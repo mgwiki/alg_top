@@ -63573,6 +63573,59 @@ apply set_ext.
             Hxlt1))).
 Qed.
 
+(** Infrastructure: connected subsets of unit_interval are interval-like in R. **)
+(** Proven Charlie **)
+Theorem connected_subset_unit_interval_interval_property :
+  forall A:set,
+  A c= unit_interval ->
+  connected_space A (subspace_topology unit_interval unit_interval_topology A) ->
+  forall x y z:set,
+    x :e A ->
+    y :e A ->
+    z :e unit_interval ->
+    (Rlt x z /\ Rlt z y \/ Rlt y z /\ Rlt z x) ->
+    z :e A.
+let A.
+assume HAsubI HconnA.
+claim HAsubR : A c= R.
+{
+  exact (Subq_tra A unit_interval R HAsubI unit_interval_sub_R).
+}
+claim HtopEqA :
+  subspace_topology unit_interval unit_interval_topology A =
+    subspace_topology R R_standard_topology A.
+{
+  exact (subspace_topology_transitive_weak
+    R
+    R_standard_topology
+    unit_interval
+    A
+    HAsubI).
+}
+claim HconnAR : connected_space A (subspace_topology R R_standard_topology A).
+{
+  rewrite <- HtopEqA.
+  exact HconnA.
+}
+let x y z.
+assume HxA HyA HzI HzBetween.
+claim HzR : z :e R.
+{
+  exact (unit_interval_sub_R z HzI).
+}
+exact (connected_subsets_real_are_intervals
+  A
+  HAsubR
+  HconnAR
+  x
+  y
+  z
+  HxA
+  HyA
+  HzR
+  HzBetween).
+Qed.
+
 (** Infrastructure: open_ball in unit_interval is intersection with open_ball in R. **)
 (** Proven Charlie **)
 Theorem open_ball_unit_interval_eq_binintersect_R :
