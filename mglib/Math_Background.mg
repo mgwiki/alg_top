@@ -75584,20 +75584,40 @@ claim HFt_54_cont :
                             HyVxz
                             Hypy).
 	                        }
-		                        claim HVxzEqVq : Vxz = Vq.
-		                        {
-		                          claim Hft54zVxz : apply_fun Ft_54 z :e Vxz.
-		                          {
-		                            rewrite Hft54zEqxz.
-		                            exact HxzVxz.
-		                          }
-		                          (** TODO Charlie: eliminate this admit by proving the needed "sheet non switching" step
-		                              directly from the covering-map local trivialization argument. **)
-		                          admit.
-		                        }
-		                        rewrite <- HVxzEqVq.
-		                        exact HxzVxz.
-		                      }
+			                        claim HVxzEqVq : Vxz = Vq.
+				                        {
+				                          claim Hft54zVxz : apply_fun Ft_54 z :e Vxz.
+				                          {
+				                            rewrite Hft54zEqxz.
+				                            exact HxzVxz.
+				                          }
+				                          exact (lemma54_2_sheet_non_switching_local
+				                            E
+				                            Te
+				                            B
+				                            Tb
+				                            p
+				                            F
+				                            Ft_54
+				                            q
+				                            z
+				                            N
+				                            U
+				                            slices
+				                            Vq
+				                            Vxz
+				                            HpdSlices
+				                            HN_into_U
+				                            HqN
+				                            HzN
+				                            HFtqVq
+				                            HVqSlice
+				                            Hft54zVxz
+				                            HVxzSlice).
+				                        }
+			                        rewrite <- HVxzEqVq.
+			                        exact HxzVxz.
+			                      }
                       claim HxzEqxq : xz = xq.
                       {
                         exact (Huniqxq
