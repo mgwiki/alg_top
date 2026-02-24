@@ -63478,6 +63478,454 @@ rewrite <- (order_interval_R_eq_open_interval a b).
 exact Hconn.
 Qed.
 
+(** Infrastructure: no immediate successor and predecessor in R (from density of linear continuum). **)
+(** Proven Charlie **)
+Theorem no_immediate_successor_R : forall a:set,
+  a :e R ->
+  no_immediate_successor R a.
+let a.
+assume HaR.
+let c.
+assume HcR Hac.
+apply (and5E
+  (simply_ordered_set R)
+  (R_standard_topology = order_topology R)
+  (exists x y:set, x :e R /\ y :e R /\ x <> y)
+  (forall x y:set, x :e R -> y :e R -> order_rel R x y ->
+    exists z:set, z :e R /\ order_rel R x z /\ order_rel R z y)
+  (forall A:set, A c= R -> A <> Empty ->
+    (exists upper:set, upper :e R /\ forall a0:set, a0 :e A -> order_rel R a0 upper \/ a0 = upper) ->
+    exists lub:set,
+      lub :e R /\
+      (forall a0:set, a0 :e A -> order_rel R a0 lub \/ a0 = lub) /\
+      (forall bound:set, bound :e R ->
+        (forall a0:set, a0 :e A -> order_rel R a0 bound \/ a0 = bound) ->
+        order_rel R lub bound \/ lub = bound))
+  linear_continuum_R_standard).
+assume _ _ _ Hdense _.
+exact (Hdense a c HaR HcR Hac).
+Qed.
+
+(** Infrastructure: no immediate successor and predecessor in R (from density of linear continuum). **)
+(** Proven Charlie **)
+Theorem no_immediate_predecessor_R : forall b:set,
+  b :e R ->
+  no_immediate_predecessor R b.
+let b.
+assume HbR.
+let c.
+assume HcR Hcb.
+apply (and5E
+  (simply_ordered_set R)
+  (R_standard_topology = order_topology R)
+  (exists x y:set, x :e R /\ y :e R /\ x <> y)
+  (forall x y:set, x :e R -> y :e R -> order_rel R x y ->
+    exists z:set, z :e R /\ order_rel R x z /\ order_rel R z y)
+  (forall A:set, A c= R -> A <> Empty ->
+    (exists upper:set, upper :e R /\ forall a0:set, a0 :e A -> order_rel R a0 upper \/ a0 = upper) ->
+    exists lub:set,
+      lub :e R /\
+      (forall a0:set, a0 :e A -> order_rel R a0 lub \/ a0 = lub) /\
+      (forall bound:set, bound :e R ->
+        (forall a0:set, a0 :e A -> order_rel R a0 bound \/ a0 = bound) ->
+        order_rel R lub bound \/ lub = bound))
+  linear_continuum_R_standard).
+assume _ _ _ Hdense _.
+exact (Hdense c b HcR HbR Hcb).
+Qed.
+
+(** Infrastructure: closure of an open interval in R is the corresponding closed interval. **)
+(** Proven Charlie **)
+Theorem closure_order_interval_R_eq_closed_interval_in :
+  forall a b:set,
+  a :e R ->
+  b :e R ->
+  order_rel R a b ->
+  closure_of R R_standard_topology (order_interval R a b) = closed_interval_in R a b.
+let a b.
+assume HaR HbR Hab.
+claim HtopEq : R_standard_topology = order_topology R.
+{
+  apply (and5E
+    (simply_ordered_set R)
+    (R_standard_topology = order_topology R)
+    (exists x y:set, x :e R /\ y :e R /\ x <> y)
+    (forall x y:set, x :e R -> y :e R -> order_rel R x y ->
+      exists z:set, z :e R /\ order_rel R x z /\ order_rel R z y)
+    (forall A:set, A c= R -> A <> Empty ->
+      (exists upper:set, upper :e R /\ forall a0:set, a0 :e A -> order_rel R a0 upper \/ a0 = upper) ->
+      exists lub:set,
+        lub :e R /\
+        (forall a0:set, a0 :e A -> order_rel R a0 lub \/ a0 = lub) /\
+        (forall bound:set, bound :e R ->
+          (forall a0:set, a0 :e A -> order_rel R a0 bound \/ a0 = bound) ->
+          order_rel R lub bound \/ lub = bound))
+    linear_continuum_R_standard).
+  assume _ HtopEq _ _ _.
+  exact HtopEq.
+}
+rewrite HtopEq.
+exact (ex17_5_closure_of_interval_eq_conditions
+  R
+  a
+  b
+  simply_ordered_set_R
+  HaR
+  HbR
+  Hab
+  (no_immediate_successor_R a HaR)
+  (no_immediate_predecessor_R b HbR)).
+Qed.
+
+(** Infrastructure: closed and halfopen intervals are connected in R. **)
+(** Proven Charlie **)
+Theorem interval_in_R_connected :
+  forall a b Y:set,
+  a :e R ->
+  b :e R ->
+  order_rel R a b ->
+  interval_in R a b Y ->
+  connected_space Y (subspace_topology R R_standard_topology Y).
+let a b Y.
+assume HaR HbR Hab Hinterval.
+apply Hinterval.
+- assume H123.
+  apply H123.
+  + assume H12.
+    apply H12.
+    * assume HYopen.
+      rewrite HYopen.
+      exact (thm24_1_linear_continuum_intervals_connected
+        R
+        R_standard_topology
+        a
+        b
+        linear_continuum_R_standard
+        HaR
+        HbR
+        Hab).
+    * assume HYhl.
+      rewrite HYhl.
+      set A := open_interval a b.
+      set B := halfopen_interval_left_in R a b.
+      claim HAconn :
+        connected_space A (subspace_topology R R_standard_topology A).
+      {
+        exact (open_interval_connected a b HaR HbR Hab).
+      }
+      claim HAsubR : A c= R.
+      {
+        exact (open_interval_Subq_R a b).
+      }
+      claim HBsubR : B c= R.
+      {
+        let x.
+        assume HxB.
+        exact (SepE1
+          R
+          (fun x0:set => (x0 = a \/ order_rel R a x0) /\ order_rel R x0 b)
+          x
+          HxB).
+      }
+	  claim HAinB : A c= B.
+	  {
+	    let x.
+	    assume HxA.
+	    claim HxR : x :e R.
+        {
+          exact (SepE1 R (fun y:set => Rlt a y /\ Rlt y b) x HxA).
+        }
+        claim HxLt : Rlt a x /\ Rlt x b.
+        {
+          exact (SepE2 R (fun y:set => Rlt a y /\ Rlt y b) x HxA).
+        }
+        claim Hprop :
+          (x = a \/ order_rel R a x) /\ order_rel R x b.
+        {
+          apply andI.
+          - exact (orIR
+              (x = a)
+              (order_rel R a x)
+              (Rlt_implies_order_rel_R
+                a
+                x
+                (andEL (Rlt a x) (Rlt x b) HxLt))).
+          - exact (Rlt_implies_order_rel_R
+              x
+              b
+              (andER (Rlt a x) (Rlt x b) HxLt)).
+        }
+        exact (SepI
+          R
+          (fun x0:set => (x0 = a \/ order_rel R a x0) /\ order_rel R x0 b)
+          x
+          HxR
+          Hprop).
+      }
+      claim HclosureEq :
+        closure_of R R_standard_topology A = closed_interval_in R a b.
+      {
+        rewrite <- (order_interval_R_eq_open_interval a b).
+        rewrite <- (closure_order_interval_R_eq_closed_interval_in a b HaR HbR Hab).
+        reflexivity.
+      }
+      claim HBsubClosure : B c= closure_of R R_standard_topology A.
+      {
+        rewrite HclosureEq.
+        let x.
+        assume HxB.
+        claim HxR : x :e R.
+        {
+          exact (SepE1
+            R
+            (fun x0:set => (x0 = a \/ order_rel R a x0) /\ order_rel R x0 b)
+            x
+            HxB).
+        }
+        claim Hprop :
+          (x = a \/ order_rel R a x) /\ (x = b \/ order_rel R x b).
+        {
+          apply andI.
+          - exact (andEL
+              (x = a \/ order_rel R a x)
+              (order_rel R x b)
+              (SepE2
+                R
+                (fun x0:set => (x0 = a \/ order_rel R a x0) /\ order_rel R x0 b)
+                x
+                HxB)).
+          - exact (orIR
+              (x = b)
+              (order_rel R x b)
+              (andER
+                (x = a \/ order_rel R a x)
+                (order_rel R x b)
+                (SepE2
+                  R
+                  (fun x0:set => (x0 = a \/ order_rel R a x0) /\ order_rel R x0 b)
+                  x
+                  HxB))).
+        }
+        exact (SepI
+          R
+          (fun x0:set => (x0 = a \/ order_rel R a x0) /\ (x0 = b \/ order_rel R x0 b))
+          x
+          HxR
+          Hprop).
+      }
+      exact (connected_with_limit_points
+        R
+        R_standard_topology
+        A
+        B
+        R_standard_topology_is_topology
+        HAsubR
+        HBsubR
+        HAconn
+        HAinB
+        HBsubClosure).
+  + assume HYhr.
+    rewrite HYhr.
+    set A := open_interval a b.
+    set B := halfopen_interval_right_in R a b.
+    claim HAconn :
+      connected_space A (subspace_topology R R_standard_topology A).
+    {
+      exact (open_interval_connected a b HaR HbR Hab).
+    }
+    claim HAsubR : A c= R.
+    {
+      exact (open_interval_Subq_R a b).
+    }
+    claim HBsubR : B c= R.
+    {
+      let x.
+      assume HxB.
+      exact (SepE1
+        R
+        (fun x0:set => order_rel R a x0 /\ (x0 = b \/ order_rel R x0 b))
+        x
+        HxB).
+    }
+    claim HAinB : A c= B.
+    {
+      let x.
+      assume HxA.
+      claim HxR : x :e R.
+      {
+        exact (SepE1 R (fun y:set => Rlt a y /\ Rlt y b) x HxA).
+      }
+      claim HxLt : Rlt a x /\ Rlt x b.
+      {
+        exact (SepE2 R (fun y:set => Rlt a y /\ Rlt y b) x HxA).
+      }
+      claim Hprop :
+        order_rel R a x /\ (x = b \/ order_rel R x b).
+      {
+        apply andI.
+        - exact (Rlt_implies_order_rel_R
+            a
+            x
+            (andEL (Rlt a x) (Rlt x b) HxLt)).
+        - exact (orIR
+            (x = b)
+            (order_rel R x b)
+            (Rlt_implies_order_rel_R
+              x
+              b
+              (andER (Rlt a x) (Rlt x b) HxLt))).
+      }
+      exact (SepI
+        R
+        (fun x0:set => order_rel R a x0 /\ (x0 = b \/ order_rel R x0 b))
+        x
+        HxR
+        Hprop).
+    }
+    claim HclosureEq :
+      closure_of R R_standard_topology A = closed_interval_in R a b.
+    {
+      rewrite <- (order_interval_R_eq_open_interval a b).
+      rewrite <- (closure_order_interval_R_eq_closed_interval_in a b HaR HbR Hab).
+      reflexivity.
+    }
+    claim HBsubClosure : B c= closure_of R R_standard_topology A.
+    {
+      rewrite HclosureEq.
+      let x.
+      assume HxB.
+      claim HxR : x :e R.
+      {
+        exact (SepE1
+          R
+          (fun x0:set => order_rel R a x0 /\ (x0 = b \/ order_rel R x0 b))
+          x
+          HxB).
+      }
+      claim Hprop :
+        (x = a \/ order_rel R a x) /\ (x = b \/ order_rel R x b).
+      {
+        apply andI.
+        - exact (orIR
+            (x = a)
+            (order_rel R a x)
+            (andEL
+              (order_rel R a x)
+              (x = b \/ order_rel R x b)
+              (SepE2
+                R
+                (fun x0:set => order_rel R a x0 /\ (x0 = b \/ order_rel R x0 b))
+                x
+                HxB))).
+        - exact (andER
+            (order_rel R a x)
+            (x = b \/ order_rel R x b)
+            (SepE2
+              R
+              (fun x0:set => order_rel R a x0 /\ (x0 = b \/ order_rel R x0 b))
+              x
+              HxB)).
+      }
+      exact (SepI
+        R
+        (fun x0:set => (x0 = a \/ order_rel R a x0) /\ (x0 = b \/ order_rel R x0 b))
+        x
+        HxR
+        Hprop).
+    }
+    exact (connected_with_limit_points
+      R
+      R_standard_topology
+      A
+      B
+      R_standard_topology_is_topology
+      HAsubR
+      HBsubR
+      HAconn
+      HAinB
+      HBsubClosure).
+- assume HYcl.
+  rewrite HYcl.
+  set A := open_interval a b.
+  set B := closed_interval_in R a b.
+  claim HAconn :
+    connected_space A (subspace_topology R R_standard_topology A).
+  {
+    exact (open_interval_connected a b HaR HbR Hab).
+  }
+  claim HAsubR : A c= R.
+  {
+    exact (open_interval_Subq_R a b).
+  }
+  claim HBsubR : B c= R.
+  {
+    let x.
+    assume HxB.
+    exact (SepE1
+      R
+      (fun x0:set => (x0 = a \/ order_rel R a x0) /\ (x0 = b \/ order_rel R x0 b))
+      x
+      HxB).
+  }
+  claim HAinB : A c= B.
+  {
+    let x.
+    assume HxA.
+    claim HxR : x :e R.
+    {
+      exact (SepE1 R (fun y:set => Rlt a y /\ Rlt y b) x HxA).
+    }
+	    claim HxLt : Rlt a x /\ Rlt x b.
+	    {
+	      exact (SepE2 R (fun y:set => Rlt a y /\ Rlt y b) x HxA).
+	    }
+	    claim Hprop :
+	      (x = a \/ order_rel R a x) /\ (x = b \/ order_rel R x b).
+	    {
+	      apply andI.
+	      - exact (orIR
+	          (x = a)
+	          (order_rel R a x)
+	          (Rlt_implies_order_rel_R
+	            a
+	            x
+	            (andEL (Rlt a x) (Rlt x b) HxLt))).
+	      - exact (orIR
+	          (x = b)
+	          (order_rel R x b)
+	          (Rlt_implies_order_rel_R
+	            x
+	            b
+	            (andER (Rlt a x) (Rlt x b) HxLt))).
+	    }
+	    exact (SepI
+	      R
+	      (fun x0:set => (x0 = a \/ order_rel R a x0) /\ (x0 = b \/ order_rel R x0 b))
+	      x
+	      HxR
+	      Hprop).
+	  }
+  claim HBsubClosure : B c= closure_of R R_standard_topology A.
+  {
+    rewrite <- (order_interval_R_eq_open_interval a b).
+    rewrite (closure_order_interval_R_eq_closed_interval_in a b HaR HbR Hab).
+    let x.
+    assume HxB.
+    exact HxB.
+  }
+  exact (connected_with_limit_points
+    R
+    R_standard_topology
+    A
+    B
+    R_standard_topology_is_topology
+    HAsubR
+    HBsubR
+    HAconn
+    HAinB
+    HBsubClosure).
+Qed.
+
 (** Infrastructure: a connected subspace of unit_interval containing 0 and 1 is all of unit_interval. **)
 (** Proven Charlie **)
 Theorem connected_subset_unit_interval_endpoints_all :
