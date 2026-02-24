@@ -62219,6 +62219,27 @@ claim HxA : x :e A.
 exact (SepE2 X (fun y:set => apply_fun ft1 y = apply_fun ft2 y) x HxA).
 Qed.
 
+(** Infrastructure: chain connectivity in an open cover of a connected space **)
+(** If X is connected and Fam is an open cover, then any two points lie in a finite chain
+    U0,...,Un from Fam with consecutive intersections nonempty. **)
+Theorem connected_space_open_cover_chain :
+  forall X Tx Fam x0 x1:set,
+  connected_space X Tx ->
+  open_cover_of X Tx Fam ->
+  x0 :e X ->
+  x1 :e X ->
+  exists U0 U1 n seq:set,
+    U0 :e Fam /\ x0 :e U0 /\
+    U1 :e Fam /\ x1 :e U1 /\
+    n :e omega /\
+    function_on seq (ordsucc n) Fam /\
+    apply_fun seq 0 = U0 /\
+    apply_fun seq n = U1 /\
+    (forall k:set, k :e n ->
+      apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty).
+admit.
+Admitted.
+
 (** from S54 Lem 54.1 (temporary sub-bounty A) **)
 (** LATEX VERSION: Any point of the base has an evenly covered neighborhood under a covering map. **)
 (** EFFORT: 1 line, difficulty 1/10, USD 10 **)
