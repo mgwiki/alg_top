@@ -183665,6 +183665,36 @@ exact (andER
 Qed.
 
 (** Proven Bob **)
+Theorem quotient_map_topology_on_domain :
+  forall E Te X pi:set,
+  quotient_map E Te X pi ->
+  topology_on E Te.
+let E Te X pi.
+assume Hquot.
+exact (andEL
+  (topology_on E Te)
+  (function_on pi E X)
+  (andEL
+    (topology_on E Te /\ function_on pi E X)
+    (forall y:set, y :e X -> exists x:set, x :e E /\ apply_fun pi x = y)
+    Hquot)).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_has_preimage :
+  forall E Te X pi y:set,
+  quotient_map E Te X pi ->
+  y :e X ->
+  exists x:set, x :e E /\ apply_fun pi x = y.
+let E Te X pi y.
+assume Hquot Hy.
+exact ((andER
+  (topology_on E Te /\ function_on pi E X)
+  (forall y0:set, y0 :e X -> exists x:set, x :e E /\ apply_fun pi x = y0)
+  Hquot) y Hy).
+Qed.
+
+(** Proven Bob **)
 Theorem closed_quotient_map_preserves_normality_from_surjective_map :
   forall E Te X Tx pi:set,
   topology_on E Te -> topology_on X Tx ->
