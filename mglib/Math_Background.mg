@@ -63478,6 +63478,101 @@ rewrite <- (order_interval_R_eq_open_interval a b).
 exact Hconn.
 Qed.
 
+(** Infrastructure: a connected subspace of unit_interval containing 0 and 1 is all of unit_interval. **)
+(** Proven Charlie **)
+Theorem connected_subset_unit_interval_endpoints_all :
+  forall A:set,
+  A c= unit_interval ->
+  connected_space A (subspace_topology unit_interval unit_interval_topology A) ->
+  0 :e A ->
+  1 :e A ->
+  A = unit_interval.
+let A.
+assume HAsubI HconnA H0A H1A.
+claim HAsubR : A c= R.
+{
+  exact (Subq_tra A unit_interval R HAsubI unit_interval_sub_R).
+}
+claim HtopEqA :
+  subspace_topology unit_interval unit_interval_topology A =
+    subspace_topology R R_standard_topology A.
+{
+  exact (subspace_topology_transitive_weak
+    R
+    R_standard_topology
+    unit_interval
+    A
+    HAsubI).
+}
+claim HconnAR : connected_space A (subspace_topology R R_standard_topology A).
+{
+  rewrite <- HtopEqA.
+  exact HconnA.
+}
+apply set_ext.
+- let x.
+  assume HxA.
+  exact (HAsubI x HxA).
+- let x.
+  assume HxI.
+  apply xm (x = 0).
+  + assume Hx0.
+    rewrite Hx0.
+    exact H0A.
+  + assume HxNe0 : ~ (x = 0).
+    apply xm (x = 1).
+    * assume Hx1.
+      rewrite Hx1.
+      exact H1A.
+    * assume HxNe1 : ~ (x = 1).
+      claim HxR : x :e R.
+      {
+        exact (unit_interval_sub_R x HxI).
+      }
+      claim H0leX : Rle 0 x.
+      {
+        exact (unit_interval_Rle0 x HxI).
+      }
+      claim Hxle1 : Rle x 1.
+      {
+        exact (unit_interval_Rle1 x HxI).
+      }
+      claim H0neX : 0 <> x.
+      {
+        exact (neq_i_sym x 0 (fun Heq => HxNe0 Heq)).
+      }
+      claim Hxne1 : x <> 1.
+      {
+        exact (fun Heq => HxNe1 Heq).
+      }
+      claim H0ltX : Rlt 0 x.
+      {
+        exact (Rle_neq_implies_Rlt 0 x H0leX H0neX).
+      }
+      claim Hxlt1 : Rlt x 1.
+      {
+        exact (Rle_neq_implies_Rlt x 1 Hxle1 Hxne1).
+      }
+      exact (connected_subsets_real_are_intervals
+        A
+        HAsubR
+        HconnAR
+        0
+        1
+        x
+        H0A
+        H1A
+        HxR
+        (orIL
+          (Rlt 0 x /\ Rlt x 1)
+          (Rlt 1 x /\ Rlt x 0)
+          (andI
+            (Rlt 0 x)
+            (Rlt x 1)
+            H0ltX
+            Hxlt1))).
+Qed.
+
 (** Infrastructure: open_ball in unit_interval is intersection with open_ball in R. **)
 (** Proven Charlie **)
 Theorem open_ball_unit_interval_eq_binintersect_R :
