@@ -183634,7 +183634,7 @@ Theorem closed_quotient_map_preserves_normality_helper :
   (forall C:set, closed_in E Te C -> closed_in X Tx (image_of pi C)) ->
   (forall V:set, V :e Tx -> {x :e E | apply_fun pi x :e V} :e Te) ->
   normal_space X Tx.
-admit.
+admit. (** missing hypothesis: surjectivity of pi; see proved theorem closed_quotient_map_preserves_normality_with_surjective **)
 Admitted.
 
 (** Proven Bob **)
@@ -183675,9 +183675,9 @@ Theorem lemma73_3_closed_quotient_normal :
 	  continuous_map E Te X Tx pi ->
 	  (forall C:set, closed_in E Te C -> closed_in X Tx (image_of pi C)) ->
 	  (forall V:set, V :e Tx -> {x :e E | apply_fun pi x :e V} :e Te) ->
-	  normal_space X Tx.
+  normal_space X Tx.
 exact closed_quotient_map_preserves_normality_helper.
-Admitted.
+Admitted. (** depends on admitted closed_quotient_map_preserves_normality_helper, whose remaining gap is missing surjectivity **)
 
 (** Infrastructure helper for S73 Thm 73.4:
     fundamental group of n-fold dunce cap is cyclic of order n. **)
