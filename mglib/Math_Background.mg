@@ -73345,6 +73345,77 @@ exact HconnProd.
 Qed.
 
 (** Infrastructure: sheet non switching placeholder inside an evenly covered neighborhood in Lem 54.2 **)
+(** The statement below is intentionally strong and currently serves as a placeholder. **)
+(** A provable variant is given first: it assumes the relevant connectedness and continuity hypotheses **)
+(** and derives non switching from connectedness of the image inside a pairwise disjoint open union. **)
+
+(** Provable non switching criterion for connected images in pairwise disjoint open unions **)
+(** Proven Charlie **)
+Theorem connected_image_sheet_non_switching_in_pairwise_disjoint_union :
+  forall X Tx E Te slices f q z Vq Vz:set,
+  topology_on E Te ->
+  slices c= Te ->
+  pairwise_disjoint slices ->
+  connected_space X Tx ->
+  continuous_map X Tx E Te f ->
+  image_of f X c= Union slices ->
+  q :e X ->
+  z :e X ->
+  apply_fun f q :e Vq ->
+  Vq :e slices ->
+  apply_fun f z :e Vz ->
+  Vz :e slices ->
+  Vz = Vq.
+let X Tx E Te slices f q z Vq Vz.
+assume HtopE HslicesSub HpdSlices HXconn Hfcont HimgSubU
+  HqX HzX HfqVq HVqSlice HfzVz HVzSlice.
+claim HimgSubVq : image_of f X c= Vq.
+{
+  exact (connected_image_stays_in_anchored_open_union_member
+    X
+    Tx
+    E
+    Te
+    slices
+    Vq
+    f
+    q
+    HtopE
+    HslicesSub
+    HpdSlices
+    HXconn
+    Hfcont
+    HimgSubU
+    HVqSlice
+    HqX
+    HfqVq).
+}
+claim HfzImg : apply_fun f z :e image_of f X.
+{
+  exact (ReplI
+    X
+    (fun x:set => apply_fun f x)
+    z
+    HzX).
+}
+claim HfzVq : apply_fun f z :e Vq.
+{
+  exact (HimgSubVq
+    (apply_fun f z)
+    HfzImg).
+}
+exact (pairwise_disjoint_point_unique_member
+  slices
+  Vz
+  Vq
+  (apply_fun f z)
+  HpdSlices
+  HVzSlice
+  HVqSlice
+  HfzVz
+  HfzVq).
+Qed.
+
 Theorem lemma54_2_sheet_non_switching_local :
   forall E Te B Tb p F Ft q z N U slices Vq Vz:set,
   pairwise_disjoint slices ->
