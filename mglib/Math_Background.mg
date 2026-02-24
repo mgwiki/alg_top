@@ -183578,6 +183578,54 @@ exact (ex31_6_closed_map_preserves_normal
   Hsurj).
 Qed.
 
+(** Proven Bob **)
+Theorem closed_quotient_map_preserves_normality_from_quotient_map :
+  forall E Te X Tx pi:set,
+  quotient_map E Te X pi ->
+  topology_on X Tx ->
+  normal_space E Te ->
+  continuous_map E Te X Tx pi ->
+  (forall C:set, closed_in E Te C -> closed_in X Tx (image_of pi C)) ->
+  normal_space X Tx.
+let E Te X Tx pi.
+assume Hquot HXtop HnormE Hcont HclosedImg.
+claim Hsurj : forall y:set, y :e X -> exists x:set, x :e E /\ apply_fun pi x = y.
+{
+  exact (andER
+    (topology_on E Te /\ function_on pi E X)
+    (forall y:set, y :e X -> exists x:set, x :e E /\ apply_fun pi x = y)
+    Hquot).
+}
+exact (closed_quotient_map_preserves_normality_with_surjective
+  E
+  Te
+  X
+  Tx
+  pi
+  (andEL
+    (topology_on E Te)
+    (function_on pi E X)
+    (andEL
+      (topology_on E Te /\ function_on pi E X)
+      (forall y:set, y :e X -> exists x:set, x :e E /\ apply_fun pi x = y)
+      Hquot))
+  HXtop
+  HnormE
+  Hcont
+  HclosedImg
+  (fun V:set => fun HV:V :e Tx =>
+    continuous_map_preimage
+      E
+      Te
+      X
+      Tx
+      pi
+      Hcont
+      V
+      HV)
+  Hsurj).
+Qed.
+
 Theorem closed_quotient_map_preserves_normality_helper :
   forall E Te X Tx pi:set,
   topology_on E Te -> topology_on X Tx ->
