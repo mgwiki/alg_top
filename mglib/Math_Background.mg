@@ -63521,6 +63521,194 @@ exact (sequentially_compact_metric_has_lebesgue_number_eps
   HcovMet).
 Qed.
 
+(** Infrastructure: glue functional graphs on overlapping domains when they agree. **)
+(** Proven Charlie **)
+Theorem functional_graph_union_agree_on_overlap :
+  forall A B f g:set,
+  graph_domain_subset f A ->
+  graph_domain_subset g B ->
+  functional_graph f ->
+  functional_graph g ->
+  (forall x:set, x :e A :/\: B -> apply_fun f x = apply_fun g x) ->
+  functional_graph (f :\/: g).
+let A B f g.
+assume Hdomf Hdomg Hfuncf Hfuncg Hagree.
+let x y1 y2.
+assume Hxy1 Hxy2.
+apply (binunionE f g (x,y1) Hxy1).
+- assume Hxy1f.
+  apply (binunionE f g (x,y2) Hxy2).
+  + assume Hxy2f.
+    exact (Hfuncf x y1 y2 Hxy1f Hxy2f).
+  + assume Hxy2g.
+    claim HxA : x :e A.
+    {
+      exact (Hdomf x y1 Hxy1f).
+    }
+    claim HxB : x :e B.
+    {
+      exact (Hdomg x y2 Hxy2g).
+    }
+    claim HxAB : x :e A :/\: B.
+    {
+      exact (binintersectI A B x HxA HxB).
+    }
+    claim Hy1 : apply_fun f x = y1.
+    {
+      exact (functional_graph_apply_fun_eq f x y1 Hfuncf Hxy1f).
+    }
+    claim Hy2 : apply_fun g x = y2.
+    {
+      exact (functional_graph_apply_fun_eq g x y2 Hfuncg Hxy2g).
+    }
+    rewrite <- Hy1.
+    rewrite <- Hy2.
+    exact (Hagree x HxAB).
+- assume Hxy1g.
+  apply (binunionE f g (x,y2) Hxy2).
+  + assume Hxy2f.
+    claim HxA : x :e A.
+    {
+      exact (Hdomf x y2 Hxy2f).
+    }
+    claim HxB : x :e B.
+    {
+      exact (Hdomg x y1 Hxy1g).
+    }
+    claim HxAB : x :e A :/\: B.
+    {
+      exact (binintersectI A B x HxA HxB).
+    }
+    claim Hy1 : apply_fun g x = y1.
+    {
+      exact (functional_graph_apply_fun_eq g x y1 Hfuncg Hxy1g).
+    }
+    claim Hy2 : apply_fun f x = y2.
+    {
+      exact (functional_graph_apply_fun_eq f x y2 Hfuncf Hxy2f).
+    }
+    rewrite <- Hy1.
+    rewrite <- Hy2.
+    rewrite <- (Hagree x HxAB).
+    reflexivity.
+  + assume Hxy2g.
+    exact (Hfuncg x y1 y2 Hxy1g Hxy2g).
+Qed.
+
+(** Infrastructure: glue total functions on overlapping domains when they agree. **)
+(** Proven Charlie **)
+Theorem total_function_on_union_agree_on_overlap :
+  forall A B Y f g:set,
+  graph_domain_subset f A ->
+  graph_domain_subset g B ->
+  total_function_on f A Y ->
+  total_function_on g B Y ->
+  functional_graph f ->
+  functional_graph g ->
+  (forall x:set, x :e A :/\: B -> apply_fun f x = apply_fun g x) ->
+  total_function_on (f :\/: g) (A :\/: B) Y /\ functional_graph (f :\/: g).
+let A B Y f g.
+assume Hdomf Hdomg Htotf Htotg Hfuncf Hfuncg Hagree.
+claim HfuncUnion : functional_graph (f :\/: g).
+{
+  exact (functional_graph_union_agree_on_overlap
+    A B f g Hdomf Hdomg Hfuncf Hfuncg Hagree).
+}
+claim Hex :
+  forall x:set, x :e A :\/: B -> exists y:set, y :e Y /\ (x,y) :e (f :\/: g).
+{
+  let x.
+  assume HxAB.
+  apply (binunionE A B x HxAB).
+  - assume HxA.
+    claim Hexf : exists y:set, y :e Y /\ (x,y) :e f.
+    {
+      exact (andER
+        (function_on f A Y)
+        (forall x0:set, x0 :e A -> exists y:set, y :e Y /\ (x0,y) :e f)
+        Htotf
+        x
+        HxA).
+    }
+    apply Hexf.
+    let y.
+    assume HyPack.
+    witness y.
+    apply andI.
+    + exact (andEL (y :e Y) ((x,y) :e f) HyPack).
+    + exact (binunionI1
+        f
+        g
+        (x,y)
+        (andER (y :e Y) ((x,y) :e f) HyPack)).
+  - assume HxB.
+    claim Hexg : exists y:set, y :e Y /\ (x,y) :e g.
+    {
+      exact (andER
+        (function_on g B Y)
+        (forall x0:set, x0 :e B -> exists y:set, y :e Y /\ (x0,y) :e g)
+        Htotg
+        x
+        HxB).
+    }
+    apply Hexg.
+    let y.
+    assume HyPack.
+    witness y.
+    apply andI.
+    + exact (andEL (y :e Y) ((x,y) :e g) HyPack).
+    + exact (binunionI2
+        f
+        g
+        (x,y)
+        (andER (y :e Y) ((x,y) :e g) HyPack)).
+}
+claim Hfun :
+  function_on (f :\/: g) (A :\/: B) Y.
+{
+  let x.
+  assume HxAB.
+  apply (Hex x HxAB).
+  let y.
+  assume HyPack.
+  claim Hxy : (x,y) :e (f :\/: g).
+  {
+    exact (andER
+      (y :e Y)
+      ((x,y) :e (f :\/: g))
+      HyPack).
+  }
+  claim Happ : apply_fun (f :\/: g) x = y.
+  {
+    exact (functional_graph_apply_fun_eq
+      (f :\/: g)
+      x
+      y
+      HfuncUnion
+      Hxy).
+  }
+  rewrite Happ.
+  exact (andEL
+    (y :e Y)
+    ((x,y) :e (f :\/: g))
+    HyPack).
+}
+claim Htot :
+  total_function_on (f :\/: g) (A :\/: B) Y.
+{
+  exact (andI
+    (function_on (f :\/: g) (A :\/: B) Y)
+    (forall x:set, x :e A :\/: B -> exists y:set, y :e Y /\ (x,y) :e (f :\/: g))
+    Hfun
+    Hex).
+}
+exact (andI
+  (total_function_on (f :\/: g) (A :\/: B) Y)
+  (functional_graph (f :\/: g))
+  Htot
+  HfuncUnion).
+Qed.
+
 (** from S54 Lem 54.1 (line 715 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map, p(e0) = b0. Any path f:[0,1] -> B **)
 (** beginning at b0 has a unique lifting to a path in E beginning at e0. **)
