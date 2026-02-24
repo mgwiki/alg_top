@@ -146115,6 +146115,43 @@ let j0. assume Hj0 : j0 :e n.
 exact (Hnat n (omega_nat_p n Hn) j0 Hj0).
 Qed.
 
+(** Helper: nat_primrec product stays in group **)
+(** Proven Alice **)
+Theorem nat_primrec_product_in_group :
+  forall G mult e:set,
+  function_on mult (setprod G G) G ->
+  e :e G ->
+  forall f:set -> set,
+  (forall i:set, f i :e G) ->
+  forall n:set, n :e omega ->
+  nat_primrec e (fun i r => apply_fun mult (r, f i)) n :e G.
+let G mult e.
+assume HmultFn : function_on mult (setprod G G) G.
+assume HeG : e :e G.
+let f.
+assume Hf : forall i:set, f i :e G.
+claim Hnat : forall n:set, nat_p n ->
+  nat_primrec e (fun i r => apply_fun mult (r, f i)) n :e G.
+{
+  apply nat_ind.
+  - prove nat_primrec e (fun i r => apply_fun mult (r, f i)) 0 :e G.
+    rewrite (nat_primrec_0 e (fun i r => apply_fun mult (r, f i))).
+    exact HeG.
+  - let k. assume Hk : nat_p k.
+    assume IH : nat_primrec e (fun i r => apply_fun mult (r, f i)) k :e G.
+    prove nat_primrec e (fun i r => apply_fun mult (r, f i)) (ordsucc k) :e G.
+    rewrite (nat_primrec_S e (fun i r => apply_fun mult (r, f i)) k Hk).
+    prove apply_fun mult (nat_primrec e (fun i r => apply_fun mult (r, f i)) k, f k) :e G.
+    exact (HmultFn
+      (nat_primrec e (fun i r => apply_fun mult (r, f i)) k, f k)
+      (tuple_2_setprod_by_pair_Sigma G G
+        (nat_primrec e (fun i r => apply_fun mult (r, f i)) k)
+        (f k) IH (Hf k))).
+}
+let n. assume Hn : n :e omega.
+exact (Hnat n (omega_nat_p n Hn)).
+Qed.
+
 (** Helper: existence of extension homomorphism for direct sum (admitted) **)
 Lemma direct_sum_hom_existence :
   forall G multG eG invG J Gfam H multH eH invH hfam:set,
@@ -146825,11 +146862,116 @@ apply andI.
             (** Membership: hfam(a1(k))(x1(k)) :e H **)
             claim Hterm_k_H : apply_fun (apply_fun hfam (apply_fun a1 k)) (apply_fun x1 k) :e H.
             { exact (Hhfam_to_H (apply_fun a1 k) (Ha1Fn k Hk_in_n1) (apply_fun x1 k) (Hx1Gfam k Hk_in_n1)). }
+            (** Membership: product of first k terms in G **)
+            claim Hprod_k_G : nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x1 i)) k :e G.
+            { set fG_w := fun i:set => If_i (i :e ordsucc k) (apply_fun x1 i) eG.
+              claim HfG_w : forall i:set, fG_w i :e G.
+              { let i. apply (xm (i :e ordsucc k)).
+                - assume Hi.
+                  claim Hv : fG_w i = apply_fun x1 i. { exact (If_i_1 (i :e ordsucc k) (apply_fun x1 i) eG Hi). }
+                  rewrite Hv. exact (Hx1Fn i Hi).
+                - assume Hni.
+                  claim Hv : fG_w i = eG. { exact (If_i_0 (i :e ordsucc k) (apply_fun x1 i) eG Hni). }
+                  rewrite Hv. exact HeGG. }
+              claim Hm : nat_primrec eG (fun i r => apply_fun multG (r, fG_w i)) k :e G.
+              { exact (nat_primrec_product_in_group G multG eG HmultG_fn HeGG fG_w HfG_w k HkO). }
+              claim Hext : nat_primrec eG (fun i r => apply_fun multG (r, fG_w i)) k =
+                nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x1 i)) k.
+              { apply (nat_primrec_ext eG
+                  (fun i r => apply_fun multG (r, fG_w i))
+                  (fun i r => apply_fun multG (r, apply_fun x1 i))
+                  k HkO).
+                let i r. assume Hi : i :e k.
+                rewrite (If_i_1 (i :e ordsucc k) (apply_fun x1 i) eG (ordsuccI1 k i Hi)). reflexivity. }
+              rewrite <- Hext. exact Hm. }
+            (** Membership: product of first k hfam terms in H **)
+            claim Hprod_k_H : nat_primrec eH
+              (fun i r => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun a1 i)) (apply_fun x1 i))) k :e H.
+            { set fH_w := fun i:set => If_i (i :e ordsucc k)
+                (apply_fun (apply_fun hfam (apply_fun a1 i)) (apply_fun x1 i)) eH.
+              claim HfH_w : forall i:set, fH_w i :e H.
+              { let i. apply (xm (i :e ordsucc k)).
+                - assume Hi.
+                  claim Hv : fH_w i = apply_fun (apply_fun hfam (apply_fun a1 i)) (apply_fun x1 i).
+                  { exact (If_i_1 (i :e ordsucc k) (apply_fun (apply_fun hfam (apply_fun a1 i)) (apply_fun x1 i)) eH Hi). }
+                  rewrite Hv. exact (Hhfam_to_H (apply_fun a1 i) (Ha1Fn i Hi) (apply_fun x1 i) (Hx1Gfam i Hi)).
+                - assume Hni.
+                  claim Hv : fH_w i = eH.
+                  { exact (If_i_0 (i :e ordsucc k) (apply_fun (apply_fun hfam (apply_fun a1 i)) (apply_fun x1 i)) eH Hni). }
+                  rewrite Hv. exact HeHH. }
+              claim Hm : nat_primrec eH (fun i r => apply_fun multH (r, fH_w i)) k :e H.
+              { exact (nat_primrec_product_in_group H multH eH HmultH_fn HeHH fH_w HfH_w k HkO). }
+              claim Hext : nat_primrec eH (fun i r => apply_fun multH (r, fH_w i)) k =
+                nat_primrec eH (fun i r => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun a1 i)) (apply_fun x1 i))) k.
+              { apply (nat_primrec_ext eH
+                  (fun i r => apply_fun multH (r, fH_w i))
+                  (fun i r => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun a1 i)) (apply_fun x1 i)))
+                  k HkO).
+                let i r. assume Hi : i :e k.
+                rewrite (If_i_1 (i :e ordsucc k) (apply_fun (apply_fun hfam (apply_fun a1 i)) (apply_fun x1 i)) eH (ordsuccI1 k i Hi)). reflexivity. }
+              rewrite <- Hext. exact Hm. }
             (** Case split on a1(k) appearing in pack2 **)
             apply (xm (exists j0:set, j0 :e n2 /\ apply_fun a2 j0 = apply_fun a1 k)).
             - (** Case A: a1(k) appears in pack2 at j0 **)
               assume Hex_j0 : exists j0:set, j0 :e n2 /\ apply_fun a2 j0 = apply_fun a1 k.
-              admit.
+              apply Hex_j0. let j0. assume Hj0_and.
+              claim Hj0 : j0 :e n2.
+              { exact (andEL (j0 :e n2) (apply_fun a2 j0 = apply_fun a1 k) Hj0_and). }
+              claim Ha2j0 : apply_fun a2 j0 = apply_fun a1 k.
+              { exact (andER (j0 :e n2) (apply_fun a2 j0 = apply_fun a1 k) Hj0_and). }
+              (** By Huniq clause 1: x1(k) = x2(j0) **)
+              apply (and3E
+                (forall i0 j0':set, i0 :e ordsucc k -> j0' :e n2 ->
+                  apply_fun a1 i0 = apply_fun a1 k -> apply_fun a2 j0' = apply_fun a1 k ->
+                  apply_fun x1 i0 = apply_fun x2 j0')
+                ((exists i0:set, i0 :e ordsucc k /\ apply_fun a1 i0 = apply_fun a1 k) ->
+                 ~(exists j0':set, j0' :e n2 /\ apply_fun a2 j0' = apply_fun a1 k) ->
+                 forall i0:set, i0 :e ordsucc k -> apply_fun a1 i0 = apply_fun a1 k -> apply_fun x1 i0 = eG)
+                (~(exists i0:set, i0 :e ordsucc k /\ apply_fun a1 i0 = apply_fun a1 k) ->
+                 (exists j0':set, j0' :e n2 /\ apply_fun a2 j0' = apply_fun a1 k) ->
+                 forall j0':set, j0' :e n2 -> apply_fun a2 j0' = apply_fun a1 k -> apply_fun x2 j0' = eG)
+                (Huniq_g (apply_fun a1 k) (Ha1Fn k Hk_in_n1))).
+              assume Hc1 _ _.
+              claim Ha1k_refl : apply_fun a1 k = apply_fun a1 k. { reflexivity. }
+              claim Hx1k_eq : apply_fun x1 k = apply_fun x2 j0.
+              { exact (Hc1 k j0 Hk_in_n1 Hj0 Ha1k_refl Ha2j0). }
+              (** The matching hfam terms are equal **)
+              claim Hterm_eq : apply_fun (apply_fun hfam (apply_fun a1 k)) (apply_fun x1 k) =
+                apply_fun (apply_fun hfam (apply_fun a2 j0)) (apply_fun x2 j0).
+              { rewrite Hx1k_eq. rewrite Ha2j0. reflexivity. }
+              (** Define x2' = x2 with j0 replaced by eG **)
+              set x2' := graph n2 (fun j => If_i (j = j0) eG (apply_fun x2 j)).
+              (** g' = product of first k terms in G **)
+              set g' := nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x1 i)) k.
+              claim Hg'_G : g' :e G. { exact Hprod_k_G. }
+              claim Hg'_def : g' = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x1 i)) k.
+              { reflexivity. }
+              (** Key: g' = nat_primrec eG (multG-fun, x2') n2 **)
+              claim HgRep_k' : g' = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x2' i)) n2.
+              { admit. }
+              (** Construct pack2' and show it represents g' **)
+              set pack2' := (n2, (a2, x2')).
+              claim Hrep2' : rep_pred g' pack2'.
+              { admit. }
+              (** Apply IH **)
+              claim HIH : nat_primrec eH
+                (fun i r => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun a1 i)) (apply_fun x1 i))) k =
+                map_rep pack2'.
+              { exact (IH Hk_ne0 g' Hg'_G a1 x1 Ha1Fn_k Hx1Fn_k Hx1Gfam_k Hdist1_k Hg'_def pack2' Hrep2'). }
+              (** rest_H = map_rep pack2' (via nat_primrec_ext + If_i manipulation) **)
+              claim Hmap2'_eq_restH : map_rep pack2' =
+                nat_primrec eH (fun j r => apply_fun multH (r,
+                  If_i (j = j0) eH (apply_fun (apply_fun hfam (apply_fun a2 j)) (apply_fun x2 j)))) n2.
+              { admit. }
+              (** abelian_extract in H: map_rep pack2 = multH(rest_H, hfam(a2(j0))(x2(j0))) **)
+              claim Hextract_H : map_rep pack2 =
+                apply_fun multH (
+                  nat_primrec eH (fun j r => apply_fun multH (r,
+                    If_i (j = j0) eH (apply_fun (apply_fun hfam (apply_fun a2 j)) (apply_fun x2 j)))) n2,
+                  apply_fun (apply_fun hfam (apply_fun a2 j0)) (apply_fun x2 j0)).
+              { admit. }
+              (** Combine: multH(P_k, T_k) = multH(rest_H, T_j0) = map_rep pack2 **)
+              rewrite Hextract_H. rewrite <- Hmap2'_eq_restH. rewrite <- HIH. rewrite Hterm_eq. reflexivity.
             - (** Case B: a1(k) not in pack2. x1(k) = eG by Huniq clause 2. **)
               assume Hnex : ~(exists j0:set, j0 :e n2 /\ apply_fun a2 j0 = apply_fun a1 k).
               claim Hex_k : exists i0:set, i0 :e ordsucc k /\ apply_fun a1 i0 = apply_fun a1 k.
@@ -146855,7 +146997,7 @@ apply andI.
               (** P_k :e H **)
               claim HP_k_H : nat_primrec eH
                 (fun i r => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun a1 i)) (apply_fun x1 i))) k :e H.
-              { admit. }
+              { exact Hprod_k_H. }
               rewrite (HridH
                 (nat_primrec eH
                   (fun i r => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun a1 i)) (apply_fun x1 i))) k)
@@ -146863,7 +147005,7 @@ apply andI.
               (** Goal: P_k = map_rep pack2 **)
               (** g = nat_primrec eG (multG-fun x1) k since x1(k) = eG **)
               claim Hg'_G : nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x1 i)) k :e G.
-              { admit. }
+              { exact Hprod_k_G. }
               claim HgRep_k : g = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x1 i)) k.
               { rewrite HgRep.
                 rewrite (nat_primrec_S eG (fun i r => apply_fun multG (r, apply_fun x1 i)) k Hk).
@@ -148136,43 +148278,6 @@ claim H3 : apply_fun mult2 (pe, e2) = e2.
 (** pe = e2 **)
 rewrite <- Hrid_pe.
 exact H3.
-Qed.
-
-(** Helper: nat_primrec product stays in group **)
-(** Proven Alice **)
-Theorem nat_primrec_product_in_group :
-  forall G mult e:set,
-  function_on mult (setprod G G) G ->
-  e :e G ->
-  forall f:set -> set,
-  (forall i:set, f i :e G) ->
-  forall n:set, n :e omega ->
-  nat_primrec e (fun i r => apply_fun mult (r, f i)) n :e G.
-let G mult e.
-assume HmultFn : function_on mult (setprod G G) G.
-assume HeG : e :e G.
-let f.
-assume Hf : forall i:set, f i :e G.
-claim Hnat : forall n:set, nat_p n ->
-  nat_primrec e (fun i r => apply_fun mult (r, f i)) n :e G.
-{
-  apply nat_ind.
-  - prove nat_primrec e (fun i r => apply_fun mult (r, f i)) 0 :e G.
-    rewrite (nat_primrec_0 e (fun i r => apply_fun mult (r, f i))).
-    exact HeG.
-  - let k. assume Hk : nat_p k.
-    assume IH : nat_primrec e (fun i r => apply_fun mult (r, f i)) k :e G.
-    prove nat_primrec e (fun i r => apply_fun mult (r, f i)) (ordsucc k) :e G.
-    rewrite (nat_primrec_S e (fun i r => apply_fun mult (r, f i)) k Hk).
-    prove apply_fun mult (nat_primrec e (fun i r => apply_fun mult (r, f i)) k, f k) :e G.
-    exact (HmultFn
-      (nat_primrec e (fun i r => apply_fun mult (r, f i)) k, f k)
-      (tuple_2_setprod_by_pair_Sigma G G
-        (nat_primrec e (fun i r => apply_fun mult (r, f i)) k)
-        (f k) IH (Hf k))).
-}
-let n. assume Hn : n :e omega.
-exact (Hnat n (omega_nat_p n Hn)).
 Qed.
 
 (** Helper: group homomorphism distributes over nat_primrec product **)
