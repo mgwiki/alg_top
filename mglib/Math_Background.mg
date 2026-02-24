@@ -62237,8 +62237,737 @@ Theorem connected_space_open_cover_chain :
     apply_fun seq n = U1 /\
     (forall k:set, k :e n ->
       apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty).
-admit.
-Admitted.
+let X Tx Fam x0 x1.
+assume Hconn Hcover Hx0X Hx1X.
+apply (and4E
+  (topology_on X Tx)
+  (Fam c= Power X)
+  (X c= Union Fam)
+  (forall U:set, U :e Fam -> U :e Tx)
+  Hcover).
+assume HtopX HFamSubPow HXsubUnion HFamOpen.
+claim Hnosep :
+  ~ (exists U V:set, U :e Tx /\ V :e Tx /\ separation_of X U V).
+{
+  exact (andER
+    (topology_on X Tx)
+    (~ (exists U V:set, U :e Tx /\ V :e Tx /\ separation_of X U V))
+    Hconn).
+}
+
+claim Hx0Union : x0 :e Union Fam.
+{
+  exact (HXsubUnion x0 Hx0X).
+}
+apply (UnionE Fam x0 Hx0Union).
+let U0.
+assume HU0Pack.
+claim Hx0U0 : x0 :e U0.
+{
+  exact (andEL (x0 :e U0) (U0 :e Fam) HU0Pack).
+}
+claim HU0Fam : U0 :e Fam.
+{
+  exact (andER (x0 :e U0) (U0 :e Fam) HU0Pack).
+}
+
+set ReachFam :=
+  {U :e Fam |
+    exists n seq:set,
+      n :e omega /\
+      function_on seq (ordsucc n) Fam /\
+      apply_fun seq 0 = U0 /\
+      apply_fun seq n = U /\
+      (forall k:set, k :e n ->
+        apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty)}.
+set Reach := Union ReachFam.
+set NonReach := X :\: Reach.
+
+claim HReachFamSubTx : ReachFam c= Tx.
+{
+  let U.
+  assume HU.
+  claim HUFam : U :e Fam.
+  {
+    exact (SepE1
+      Fam
+      (fun V:set =>
+        exists n seq:set,
+          n :e omega /\
+          function_on seq (ordsucc n) Fam /\
+          apply_fun seq 0 = U0 /\
+          apply_fun seq n = V /\
+          (forall k:set, k :e n ->
+            apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty))
+      U
+      HU).
+  }
+  exact (HFamOpen U HUFam).
+}
+claim HReachOpen : Reach :e Tx.
+{
+  exact (topology_union_closed X Tx ReachFam HtopX HReachFamSubTx).
+}
+
+claim HU0InReachFam : U0 :e ReachFam.
+{
+  apply (SepI
+    Fam
+    (fun U:set =>
+      exists n seq:set,
+        n :e omega /\
+        function_on seq (ordsucc n) Fam /\
+        apply_fun seq 0 = U0 /\
+        apply_fun seq n = U /\
+        (forall k:set, k :e n ->
+          apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty))
+    U0
+    HU0Fam).
+	  witness 0.
+	  witness (graph (ordsucc 0) (fun _ : set => U0)).
+	  apply andI.
+	  - apply andI.
+	    + apply andI.
+	      * apply andI.
+	        - exact (nat_p_omega 0 nat_0).
+	        - apply (total_function_on_function_on
+	            (graph (ordsucc 0) (fun _ : set => U0))
+	            (ordsucc 0)
+	            Fam).
+	          apply (total_function_on_graph
+	            (ordsucc 0)
+	            Fam
+	            (fun _ : set => U0)).
+	          let i.
+	          assume Hi.
+	          exact HU0Fam.
+	      * rewrite (apply_fun_graph
+	          (ordsucc 0)
+	          (fun _ : set => U0)
+	          0
+	          (nat_0_in_ordsucc 0 nat_0)).
+	        reflexivity.
+	    + rewrite (apply_fun_graph
+	        (ordsucc 0)
+	        (fun _ : set => U0)
+	        0
+	        (nat_0_in_ordsucc 0 nat_0)).
+	      reflexivity.
+	  - let k.
+	    assume Hk.
+	    exact (EmptyE k Hk
+	      (apply_fun (graph (ordsucc 0) (fun _ : set => U0)) k :/\:
+	       apply_fun (graph (ordsucc 0) (fun _ : set => U0)) (ordsucc k) <> Empty)).
+	}
+claim Hx0InReach : x0 :e Reach.
+{
+  exact (UnionI ReachFam x0 U0 Hx0U0 HU0InReachFam).
+}
+claim HReachNe : Reach <> Empty.
+{
+  assume Hempty.
+  claim Hfalse : x0 :e Empty.
+  {
+    exact (mem_eqR x0 Reach Empty Hempty Hx0InReach).
+  }
+  exact (EmptyE x0 Hfalse False).
+}
+
+claim ReachFam_closed_under_meets :
+  forall Ur U z:set,
+    Ur :e ReachFam ->
+    U :e Fam ->
+    z :e Ur ->
+    z :e U ->
+    U :e ReachFam.
+{
+  let Ur U z.
+  assume HUrReach HUFam HzUr HzU.
+  claim HUrChain :
+    exists n seq:set,
+      n :e omega /\
+      function_on seq (ordsucc n) Fam /\
+      apply_fun seq 0 = U0 /\
+      apply_fun seq n = Ur /\
+      (forall k:set, k :e n ->
+        apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty).
+  {
+    exact (SepE2
+      Fam
+      (fun V:set =>
+        exists n seq:set,
+          n :e omega /\
+          function_on seq (ordsucc n) Fam /\
+          apply_fun seq 0 = U0 /\
+          apply_fun seq n = V /\
+          (forall k:set, k :e n ->
+            apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty))
+      Ur
+      HUrReach).
+  }
+  apply HUrChain.
+  let n.
+  assume HnPack.
+  apply HnPack.
+  let seq.
+  assume HseqPack.
+  claim HseqLeft :
+    (n :e omega /\
+      function_on seq (ordsucc n) Fam /\
+      apply_fun seq 0 = U0 /\
+      apply_fun seq n = Ur).
+  {
+    exact (andEL
+      (n :e omega /\
+        function_on seq (ordsucc n) Fam /\
+        apply_fun seq 0 = U0 /\
+        apply_fun seq n = Ur)
+      (forall k:set, k :e n ->
+        apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty)
+      HseqPack).
+  }
+	  claim HseqEdges :
+	    forall k:set, k :e n ->
+	      apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty.
+	  {
+	    exact (andER
+	      (n :e omega /\
+	        function_on seq (ordsucc n) Fam /\
+	        apply_fun seq 0 = U0 /\
+	        apply_fun seq n = Ur)
+	      (forall k:set, k :e n ->
+	        apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty)
+	      HseqPack).
+	  }
+	  claim Hleft3 :
+	    (n :e omega /\
+	      function_on seq (ordsucc n) Fam /\
+	      apply_fun seq 0 = U0).
+	  {
+	    exact (andEL
+	      (n :e omega /\
+	        function_on seq (ordsucc n) Fam /\
+	        apply_fun seq 0 = U0)
+	      (apply_fun seq n = Ur)
+	      HseqLeft).
+	  }
+	  claim HseqEnd : apply_fun seq n = Ur.
+	  {
+	    exact (andER
+	      (n :e omega /\
+	        function_on seq (ordsucc n) Fam /\
+	        apply_fun seq 0 = U0)
+	      (apply_fun seq n = Ur)
+	      HseqLeft).
+	  }
+	  claim Hleft2 :
+	    (n :e omega /\
+	      function_on seq (ordsucc n) Fam).
+	  {
+	    exact (andEL
+	      (n :e omega /\
+	        function_on seq (ordsucc n) Fam)
+	      (apply_fun seq 0 = U0)
+	      Hleft3).
+	  }
+	  claim Hseq0 : apply_fun seq 0 = U0.
+	  {
+	    exact (andER
+	      (n :e omega /\
+	        function_on seq (ordsucc n) Fam)
+	      (apply_fun seq 0 = U0)
+	      Hleft3).
+	  }
+	  claim HnOmega : n :e omega.
+	  {
+	    exact (andEL
+	      (n :e omega)
+	      (function_on seq (ordsucc n) Fam)
+	      Hleft2).
+	  }
+	  claim HseqFun : function_on seq (ordsucc n) Fam.
+	  {
+	    exact (andER
+	      (n :e omega)
+	      (function_on seq (ordsucc n) Fam)
+	      Hleft2).
+	  }
+
+  apply (SepI
+    Fam
+    (fun V:set =>
+      exists n0 seq0:set,
+        n0 :e omega /\
+        function_on seq0 (ordsucc n0) Fam /\
+        apply_fun seq0 0 = U0 /\
+        apply_fun seq0 n0 = V /\
+        (forall k:set, k :e n0 ->
+          apply_fun seq0 k :/\: apply_fun seq0 (ordsucc k) <> Empty))
+    U
+    HUFam).
+  witness (ordsucc n).
+  witness (graph (ordsucc (ordsucc n))
+    (fun k : set => If_i (k :e ordsucc n) (apply_fun seq k) U)).
+  apply andI.
+  - apply andI.
+    + apply andI.
+      * apply andI.
+        - exact (omega_ordsucc n HnOmega).
+        - apply (total_function_on_function_on
+            (graph (ordsucc (ordsucc n))
+              (fun k : set => If_i (k :e ordsucc n) (apply_fun seq k) U))
+            (ordsucc (ordsucc n))
+            Fam).
+          apply (total_function_on_graph
+            (ordsucc (ordsucc n))
+            Fam
+            (fun k : set => If_i (k :e ordsucc n) (apply_fun seq k) U)).
+          let k.
+          assume Hk.
+          apply xm (k :e ordsucc n).
+          - assume HkIn.
+            claim Hif :
+              (if (k :e ordsucc n) then (apply_fun seq k) else U) = apply_fun seq k.
+            {
+              exact (If_i_1
+                (k :e ordsucc n)
+                (apply_fun seq k)
+                U
+                HkIn).
+            }
+            exact (Hif
+              (fun a b:set => b :e Fam)
+              (HseqFun k HkIn)).
+          - assume HkNotIn.
+            claim Hif :
+              (if (k :e ordsucc n) then (apply_fun seq k) else U) = U.
+            {
+              exact (If_i_0
+                (k :e ordsucc n)
+                (apply_fun seq k)
+                U
+                HkNotIn).
+            }
+            exact (Hif
+              (fun a b:set => b :e Fam)
+              HUFam).
+      * claim H0In : 0 :e ordsucc n.
+        { exact (nat_0_in_ordsucc n (omega_nat_p n HnOmega)). }
+        rewrite (apply_fun_graph
+          (ordsucc (ordsucc n))
+          (fun k : set => If_i (k :e ordsucc n) (apply_fun seq k) U)
+          0
+          (nat_0_in_ordsucc (ordsucc n) (omega_nat_p (ordsucc n) (omega_ordsucc n HnOmega)))).
+        rewrite (If_i_1
+          (0 :e ordsucc n)
+          (apply_fun seq 0)
+          U
+          H0In).
+        exact Hseq0.
+    + rewrite (apply_fun_graph
+        (ordsucc (ordsucc n))
+        (fun k : set => If_i (k :e ordsucc n) (apply_fun seq k) U)
+        (ordsucc n)
+        (ordsuccI2 (ordsucc n))).
+      claim HnNotIn : ~ (ordsucc n :e ordsucc n).
+      { exact (In_irref (ordsucc n)). }
+      rewrite (If_i_0
+        (ordsucc n :e ordsucc n)
+        (apply_fun seq (ordsucc n))
+        U
+        HnNotIn).
+      reflexivity.
+  - let k.
+    assume Hk.
+    apply (ordsuccE n k Hk).
+    - assume HkInN.
+      claim HordN : ordinal n.
+      { exact (ordinal_Hered omega omega_ordinal n HnOmega). }
+      claim HsuccIn : ordsucc k :e ordsucc n.
+      { exact (ordinal_ordsucc_In n HordN k HkInN). }
+      rewrite (apply_fun_graph
+        (ordsucc (ordsucc n))
+        (fun j : set => If_i (j :e ordsucc n) (apply_fun seq j) U)
+        k
+        (ordsuccI1 (ordsucc n) k Hk)).
+      rewrite (If_i_1
+        (k :e ordsucc n)
+        (apply_fun seq k)
+        U
+        (ordsuccI1 n k HkInN)).
+      rewrite (apply_fun_graph
+        (ordsucc (ordsucc n))
+        (fun j : set => If_i (j :e ordsucc n) (apply_fun seq j) U)
+        (ordsucc k)
+        (ordsuccI1 (ordsucc n) (ordsucc k) HsuccIn)).
+      rewrite (If_i_1
+        (ordsucc k :e ordsucc n)
+        (apply_fun seq (ordsucc k))
+        U
+        HsuccIn).
+      exact (HseqEdges k HkInN).
+    - assume HkEq.
+      rewrite HkEq.
+      rewrite (apply_fun_graph
+        (ordsucc (ordsucc n))
+        (fun j : set => If_i (j :e ordsucc n) (apply_fun seq j) U)
+        n
+        (ordsuccI1 (ordsucc n) n (ordsuccI2 n))).
+      rewrite (If_i_1
+        (n :e ordsucc n)
+        (apply_fun seq n)
+        U
+        (ordsuccI2 n)).
+      rewrite HseqEnd.
+      rewrite (apply_fun_graph
+        (ordsucc (ordsucc n))
+        (fun j : set => If_i (j :e ordsucc n) (apply_fun seq j) U)
+        (ordsucc n)
+        (ordsuccI2 (ordsucc n))).
+      claim HnNotIn2 : ~ (ordsucc n :e ordsucc n).
+      { exact (In_irref (ordsucc n)). }
+      rewrite (If_i_0
+        (ordsucc n :e ordsucc n)
+        (apply_fun seq (ordsucc n))
+        U
+        HnNotIn2).
+      assume Hempty.
+      claim HzIn : z :e (Ur :/\: U).
+      {
+        exact (binintersectI Ur U z HzUr HzU).
+      }
+      claim Hfalse : z :e Empty.
+      {
+        exact (mem_eqR z (Ur :/\: U) Empty Hempty HzIn).
+      }
+      exact (EmptyE z Hfalse False).
+}
+
+claim HNonReachOpenIn : open_in X Tx NonReach.
+{
+  apply (ex13_1_local_open_subset X Tx NonReach HtopX).
+  let x.
+  assume HxNon.
+  claim HxX : x :e X.
+  { exact (setminusE1 X Reach x HxNon). }
+  claim HxNotReach : x /:e Reach.
+  { exact (setminusE2 X Reach x HxNon). }
+  claim HxUnion : x :e Union Fam.
+  { exact (HXsubUnion x HxX). }
+  apply (UnionE Fam x HxUnion).
+  let U.
+  assume HUPack.
+  claim HxU : x :e U.
+  { exact (andEL (x :e U) (U :e Fam) HUPack). }
+  claim HUFam : U :e Fam.
+  { exact (andER (x :e U) (U :e Fam) HUPack). }
+  claim HUOpen : U :e Tx.
+  { exact (HFamOpen U HUFam). }
+  witness U.
+  apply andI.
+  - exact HUOpen.
+  - apply andI.
+    + exact HxU.
+    + let y.
+      assume HyU.
+      apply (setminusI X Reach y).
+      * exact (topology_elem_subset X Tx U HtopX HUOpen y HyU).
+      * assume HyReach.
+        apply (UnionE ReachFam y HyReach).
+        let Ur.
+        assume HUrPack2.
+        claim HyUr : y :e Ur.
+        { exact (andEL (y :e Ur) (Ur :e ReachFam) HUrPack2). }
+        claim HUrReach : Ur :e ReachFam.
+        { exact (andER (y :e Ur) (Ur :e ReachFam) HUrPack2). }
+        claim HUReach : U :e ReachFam.
+        { exact (ReachFam_closed_under_meets Ur U y HUrReach HUFam HyUr HyU). }
+        claim HxReach : x :e Reach.
+        { exact (UnionI ReachFam x U HxU HUReach). }
+        exact (HxNotReach HxReach).
+}
+claim HNonReachOpen : NonReach :e Tx.
+{
+  exact (open_in_elem X Tx NonReach HNonReachOpenIn).
+}
+
+claim Hx1InReach : x1 :e Reach.
+{
+  apply xm (x1 :e Reach).
+  - assume Hyes. exact Hyes.
+  - assume Hno.
+    claim Hx1Non : x1 :e NonReach.
+    { exact (setminusI X Reach x1 Hx1X Hno). }
+    claim HNonReachNe : NonReach <> Empty.
+    {
+      assume Hempty.
+      claim Hfalse : x1 :e Empty.
+      { exact (mem_eqR x1 NonReach Empty Hempty Hx1Non). }
+      exact (EmptyE x1 Hfalse False).
+    }
+    claim HReachSubX : Reach c= X.
+    {
+      claim HReachFamSubPowX : ReachFam c= Power X.
+      {
+        let U.
+        assume HUReach.
+        apply (HFamSubPow U).
+        exact (SepE1
+          Fam
+          (fun V:set =>
+            exists n seq:set,
+              n :e omega /\
+              function_on seq (ordsucc n) Fam /\
+              apply_fun seq 0 = U0 /\
+              apply_fun seq n = V /\
+              (forall k:set, k :e n ->
+                apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty))
+          U
+          HUReach).
+      }
+      exact (Union_Power X ReachFam HReachFamSubPowX).
+    }
+    claim HNonReachSubX : NonReach c= X.
+    {
+      let x.
+      assume Hx.
+      exact (setminusE1 X Reach x Hx).
+    }
+    claim HReachNeX : Reach <> X.
+    {
+      assume HReachX.
+      claim Hx1Reach : x1 :e Reach.
+      { exact (mem_eqL x1 Reach X HReachX Hx1X). }
+      exact (Hno Hx1Reach).
+    }
+    claim Hsep : separation_of X Reach NonReach.
+    {
+      exact (separation_of_complement X Reach HReachSubX HReachNe HReachNeX).
+    }
+    claim Hbad : exists U V:set, U :e Tx /\ V :e Tx /\ separation_of X U V.
+    {
+      witness Reach.
+      witness NonReach.
+      exact (andI
+        (Reach :e Tx /\ NonReach :e Tx)
+        (separation_of X Reach NonReach)
+        (andI (Reach :e Tx) (NonReach :e Tx) HReachOpen HNonReachOpen)
+        Hsep).
+    }
+    exact (FalseE (Hnosep Hbad) (x1 :e Reach)).
+}
+
+apply (UnionE ReachFam x1 Hx1InReach).
+let U1.
+assume HU1Pack.
+claim Hx1U1 : x1 :e U1.
+{ exact (andEL (x1 :e U1) (U1 :e ReachFam) HU1Pack). }
+claim HU1Reach : U1 :e ReachFam.
+{ exact (andER (x1 :e U1) (U1 :e ReachFam) HU1Pack). }
+claim HU1Fam : U1 :e Fam.
+{
+  exact (SepE1
+    Fam
+    (fun V:set =>
+      exists n seq:set,
+        n :e omega /\
+        function_on seq (ordsucc n) Fam /\
+        apply_fun seq 0 = U0 /\
+        apply_fun seq n = V /\
+        (forall k:set, k :e n ->
+          apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty))
+    U1
+    HU1Reach).
+}
+claim HU1Chain :
+  exists n seq:set,
+    n :e omega /\
+    function_on seq (ordsucc n) Fam /\
+    apply_fun seq 0 = U0 /\
+    apply_fun seq n = U1 /\
+    (forall k:set, k :e n ->
+      apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty).
+{
+  exact (SepE2
+    Fam
+    (fun V:set =>
+      exists n seq:set,
+        n :e omega /\
+        function_on seq (ordsucc n) Fam /\
+        apply_fun seq 0 = U0 /\
+        apply_fun seq n = V /\
+        (forall k:set, k :e n ->
+          apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty))
+    U1
+    HU1Reach).
+}
+apply HU1Chain.
+let n.
+assume HnPack.
+apply HnPack.
+let seq.
+assume HseqPack.
+witness U0.
+witness U1.
+witness n.
+witness seq.
+claim Hedge :
+  forall k:set, k :e n ->
+    apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty.
+{
+  exact (andER
+    (n :e omega /\
+      function_on seq (ordsucc n) Fam /\
+      apply_fun seq 0 = U0 /\
+      apply_fun seq n = U1)
+    (forall k:set, k :e n ->
+      apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty)
+    HseqPack).
+}
+claim Hpack4 :
+  n :e omega /\
+  function_on seq (ordsucc n) Fam /\
+  apply_fun seq 0 = U0 /\
+  apply_fun seq n = U1.
+{
+  exact (andEL
+    (n :e omega /\
+      function_on seq (ordsucc n) Fam /\
+      apply_fun seq 0 = U0 /\
+      apply_fun seq n = U1)
+    (forall k:set, k :e n ->
+      apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty)
+    HseqPack).
+}
+claim Hleft3_2 :
+  (n :e omega /\
+    function_on seq (ordsucc n) Fam /\
+    apply_fun seq 0 = U0).
+{
+  exact (andEL
+    (n :e omega /\
+      function_on seq (ordsucc n) Fam /\
+      apply_fun seq 0 = U0)
+    (apply_fun seq n = U1)
+    Hpack4).
+}
+claim HseqEnd2 : apply_fun seq n = U1.
+{
+  exact (andER
+    (n :e omega /\
+      function_on seq (ordsucc n) Fam /\
+      apply_fun seq 0 = U0)
+    (apply_fun seq n = U1)
+    Hpack4).
+}
+claim Hleft2_2 :
+  (n :e omega /\
+    function_on seq (ordsucc n) Fam).
+{
+  exact (andEL
+    (n :e omega /\
+      function_on seq (ordsucc n) Fam)
+    (apply_fun seq 0 = U0)
+    Hleft3_2).
+}
+claim Hseq0_2 : apply_fun seq 0 = U0.
+{
+  exact (andER
+    (n :e omega /\
+      function_on seq (ordsucc n) Fam)
+    (apply_fun seq 0 = U0)
+    Hleft3_2).
+}
+claim HnOmega2 : n :e omega.
+{
+  exact (andEL
+    (n :e omega)
+    (function_on seq (ordsucc n) Fam)
+    Hleft2_2).
+}
+claim HseqFun2 : function_on seq (ordsucc n) Fam.
+{
+  exact (andER
+    (n :e omega)
+    (function_on seq (ordsucc n) Fam)
+    Hleft2_2).
+}
+
+claim H12 : U0 :e Fam /\ x0 :e U0.
+{
+  exact (andI
+    (U0 :e Fam)
+    (x0 :e U0)
+    HU0Fam
+    Hx0U0).
+}
+claim H123 : (U0 :e Fam /\ x0 :e U0) /\ U1 :e Fam.
+{
+  exact (andI
+    (U0 :e Fam /\ x0 :e U0)
+    (U1 :e Fam)
+    H12
+    HU1Fam).
+}
+claim H1234 : ((U0 :e Fam /\ x0 :e U0) /\ U1 :e Fam) /\ x1 :e U1.
+{
+  exact (andI
+    ((U0 :e Fam /\ x0 :e U0) /\ U1 :e Fam)
+    (x1 :e U1)
+    H123
+    Hx1U1).
+}
+claim H12345 :
+  (((U0 :e Fam /\ x0 :e U0) /\ U1 :e Fam) /\ x1 :e U1) /\ n :e omega.
+{
+  exact (andI
+    (((U0 :e Fam /\ x0 :e U0) /\ U1 :e Fam) /\ x1 :e U1)
+    (n :e omega)
+    H1234
+    HnOmega2).
+}
+claim H123456 :
+  ((((U0 :e Fam /\ x0 :e U0) /\ U1 :e Fam) /\ x1 :e U1) /\ n :e omega) /\
+  function_on seq (ordsucc n) Fam.
+{
+  exact (andI
+    ((((U0 :e Fam /\ x0 :e U0) /\ U1 :e Fam) /\ x1 :e U1) /\ n :e omega)
+    (function_on seq (ordsucc n) Fam)
+    H12345
+    HseqFun2).
+}
+claim H1234567 :
+  (((((U0 :e Fam /\ x0 :e U0) /\ U1 :e Fam) /\ x1 :e U1) /\ n :e omega) /\
+    function_on seq (ordsucc n) Fam) /\ apply_fun seq 0 = U0.
+{
+  exact (andI
+    (((((U0 :e Fam /\ x0 :e U0) /\ U1 :e Fam) /\ x1 :e U1) /\ n :e omega) /\
+      function_on seq (ordsucc n) Fam)
+    (apply_fun seq 0 = U0)
+    H123456
+    Hseq0_2).
+}
+claim H12345678 :
+  ((((((U0 :e Fam /\ x0 :e U0) /\ U1 :e Fam) /\ x1 :e U1) /\ n :e omega) /\
+      function_on seq (ordsucc n) Fam) /\ apply_fun seq 0 = U0) /\
+  apply_fun seq n = U1.
+{
+  exact (andI
+    ((((((U0 :e Fam /\ x0 :e U0) /\ U1 :e Fam) /\ x1 :e U1) /\ n :e omega) /\
+        function_on seq (ordsucc n) Fam) /\ apply_fun seq 0 = U0)
+    (apply_fun seq n = U1)
+    H1234567
+    HseqEnd2).
+}
+exact (andI
+  (((((((U0 :e Fam /\ x0 :e U0) /\ U1 :e Fam) /\ x1 :e U1) /\ n :e omega) /\
+      function_on seq (ordsucc n) Fam) /\ apply_fun seq 0 = U0) /\
+    apply_fun seq n = U1)
+  (forall k:set, k :e n ->
+    apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty)
+  H12345678
+  Hedge).
+Qed.
 
 (** from S54 Lem 54.1 (temporary sub-bounty A) **)
 (** LATEX VERSION: Any point of the base has an evenly covered neighborhood under a covering map. **)
