@@ -183689,6 +183689,32 @@ exact (closed_quotient_map_preserves_normality_with_surjective
   Hsurj).
 Qed.
 
+(** Proven Bob **)
+Theorem lemma73_3_closed_quotient_normal_from_quotient_map :
+  forall E Te X Tx pi:set,
+  quotient_map E Te X pi ->
+  topology_on X Tx ->
+  normal_space E Te ->
+	continuous_map E Te X Tx pi ->
+	(forall C:set, closed_in E Te C -> closed_in X Tx (image_of pi C)) ->
+	(forall V:set, V :e Tx -> {x :e E | apply_fun pi x :e V} :e Te) ->
+	normal_space X Tx.
+let E Te X Tx pi.
+assume Hquot HtopX HnormE Hcont Hclosed HpreimOpen.
+exact (closed_quotient_map_preserves_normality_helper_from_quotient_map
+  E
+  Te
+  X
+  Tx
+  pi
+  Hquot
+  HtopX
+  HnormE
+  Hcont
+  Hclosed
+  HpreimOpen).
+Qed.
+
 (** from S73 Lem 73.3 (line 3736 in algtop.tex): closed quotient map preserves normality **)
 (** LATEX VERSION: If pi: E -> X is a closed quotient map and E is normal, then X is normal. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
