@@ -184137,6 +184137,58 @@ exact (surjective_map_codomain_nonempty_of_domain_nonempty
 Qed.
 
 (** Proven Bob **)
+Theorem surjective_map_empty_domain_implies_empty_codomain :
+  forall E X pi:set,
+  surjective_map E X pi ->
+  E = Empty ->
+  X = Empty.
+let E X pi.
+assume Hsurj HEempty.
+apply set_ext.
+- let x.
+  assume HxX.
+  apply (surjective_map_has_preimage E X pi x Hsurj HxX).
+  let e.
+  assume HePack.
+  claim HeE : e :e E.
+  {
+    exact (andEL
+      (e :e E)
+      (apply_fun pi e = x)
+      HePack).
+  }
+  claim HeEmpty : e :e Empty.
+  {
+    exact (mem_eqR
+      e
+      E
+      Empty
+      HEempty
+      HeE).
+  }
+  exact (EmptyE e HeEmpty (x :e Empty)).
+- let x.
+  assume HxE.
+  exact (EmptyE x HxE (x :e X)).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_empty_domain_implies_empty_codomain :
+  forall E Te X pi:set,
+  quotient_map E Te X pi ->
+  E = Empty ->
+  X = Empty.
+let E Te X pi.
+assume Hquot HEempty.
+exact (surjective_map_empty_domain_implies_empty_codomain
+  E
+  X
+  pi
+  (quotient_map_implies_surjective_map E Te X pi Hquot)
+  HEempty).
+Qed.
+
+(** Proven Bob **)
 Theorem closed_quotient_map_preserves_normality_from_surjective_map :
   forall E Te X Tx pi:set,
   topology_on E Te -> topology_on X Tx ->
