@@ -67709,6 +67709,716 @@ exact (andI
   Hinter).
 Qed.
 
+(** Infrastructure: convex subsets of R are connected (standard topology). **)
+(** Proven Charlie **)
+Theorem convex_in_R_connected :
+  forall Y:set,
+  Y c= R ->
+  convex_in R Y ->
+  Y <> Empty ->
+  connected_space Y (subspace_topology R R_standard_topology Y).
+let Y.
+assume HYsubR HconvY HYne.
+claim Hex0 : exists y0:set, y0 :e Y.
+{
+  exact (nonempty_has_element
+    Y
+    HYne).
+}
+apply Hex0.
+let y0.
+assume Hy0Y.
+claim Hy0R : y0 :e R.
+{
+  exact (HYsubR
+    y0
+    Hy0Y).
+}
+claim Hy0eq : y0 = y0.
+{
+  reflexivity.
+}
+claim HtopR : topology_on R R_standard_topology.
+{
+  exact R_standard_topology_is_topology.
+}
+set seg := (fun y:set =>
+  if y = y0 then {y0}
+  else if order_rel R y0 y then closed_interval_in R y0 y
+  else closed_interval_in R y y0).
+set F := {seg y | y :e Y}.
+
+claim Hseg : forall y:set,
+  seg y =
+    if y = y0 then {y0}
+    else if order_rel R y0 y then closed_interval_in R y0 y
+    else closed_interval_in R y y0.
+{
+  let y.
+  reflexivity.
+}
+
+claim HsegSubR : forall y:set, y :e Y -> seg y c= R.
+{
+  let y.
+  assume HyY.
+  claim HyR : y :e R.
+  {
+    exact (HYsubR
+      y
+      HyY).
+  }
+  apply xm (y = y0).
+  - assume Hey.
+    let z.
+    assume Hz.
+    claim Hz_if :
+      z :e
+        (if y = y0 then {y0}
+         else if order_rel R y0 y then closed_interval_in R y0 y
+         else closed_interval_in R y y0).
+    {
+      rewrite <- (Hseg y).
+      exact Hz.
+    }
+    claim HzSing : z :e {y0}.
+    {
+      rewrite <- (If_i_1
+        (y = y0)
+        {y0}
+        (if order_rel R y0 y then closed_interval_in R y0 y else closed_interval_in R y y0)
+        Hey).
+      exact Hz_if.
+    }
+    claim Hz0 : z = y0.
+    {
+      exact (SingE
+        y0
+        z
+        HzSing).
+    }
+    rewrite Hz0.
+    exact Hy0R.
+  - assume Hney : ~ (y = y0).
+    let z.
+    assume Hz.
+    claim Hz_if :
+      z :e
+        (if y = y0 then {y0}
+         else if order_rel R y0 y then closed_interval_in R y0 y
+         else closed_interval_in R y y0).
+    {
+      rewrite <- (Hseg y).
+      exact Hz.
+    }
+    claim Hz_inner :
+      z :e (if order_rel R y0 y then closed_interval_in R y0 y else closed_interval_in R y y0).
+    {
+      rewrite <- (If_i_0
+        (y = y0)
+        {y0}
+        (if order_rel R y0 y then closed_interval_in R y0 y else closed_interval_in R y y0)
+        Hney).
+      exact Hz_if.
+    }
+    apply xm (order_rel R y0 y).
+    + assume Hy0y.
+      claim Hzci : z :e closed_interval_in R y0 y.
+      {
+        rewrite <- (If_i_1
+          (order_rel R y0 y)
+          (closed_interval_in R y0 y)
+          (closed_interval_in R y y0)
+          Hy0y).
+        exact Hz_inner.
+      }
+      exact (SepE1
+        R
+        (fun x:set => (x = y0 \/ order_rel R y0 x) /\ (x = y \/ order_rel R x y))
+        z
+        Hzci).
+    + assume HnHy0y : ~ (order_rel R y0 y).
+      claim Hzci : z :e closed_interval_in R y y0.
+      {
+        rewrite <- (If_i_0
+          (order_rel R y0 y)
+          (closed_interval_in R y0 y)
+          (closed_interval_in R y y0)
+          HnHy0y).
+        exact Hz_inner.
+      }
+      exact (SepE1
+        R
+        (fun x:set => (x = y \/ order_rel R y x) /\ (x = y0 \/ order_rel R x y0))
+        z
+        Hzci).
+	}
+
+claim HFsubR : forall C:set, C :e F -> C c= R.
+{
+  let C.
+  assume HC.
+  apply (ReplE_impred
+    Y
+    (fun y:set => seg y)
+    C
+    HC).
+  let y.
+  assume HyY HeqC.
+  rewrite HeqC.
+  exact (HsegSubR
+    y
+    HyY).
+}
+
+claim HsegSubY : forall y:set, y :e Y -> seg y c= Y.
+{
+  let y.
+  assume HyY.
+  claim HyR : y :e R.
+  {
+    exact (HYsubR
+      y
+      HyY).
+  }
+  let u.
+  assume Hu.
+  claim Hu_if :
+    u :e
+      (if y = y0 then {y0}
+       else if order_rel R y0 y then closed_interval_in R y0 y
+       else closed_interval_in R y y0).
+  {
+    rewrite <- (Hseg y).
+    exact Hu.
+  }
+  apply xm (y = y0).
+  - assume Hey.
+    claim HuSing : u :e {y0}.
+    {
+      rewrite <- (If_i_1
+        (y = y0)
+        {y0}
+        (if order_rel R y0 y then closed_interval_in R y0 y else closed_interval_in R y y0)
+        Hey).
+      exact Hu_if.
+    }
+    claim Hu0 : u = y0.
+    {
+      exact (SingE
+        y0
+        u
+        HuSing).
+    }
+    rewrite Hu0.
+    exact Hy0Y.
+  - assume Hney : ~ (y = y0).
+    claim Hu_inner :
+      u :e (if order_rel R y0 y then closed_interval_in R y0 y else closed_interval_in R y y0).
+    {
+      rewrite <- (If_i_0
+        (y = y0)
+        {y0}
+        (if order_rel R y0 y then closed_interval_in R y0 y else closed_interval_in R y y0)
+        Hney).
+      exact Hu_if.
+    }
+    apply xm (order_rel R y0 y).
+    + assume Hy0y.
+      claim HuCI : u :e closed_interval_in R y0 y.
+      {
+        rewrite <- (If_i_1
+          (order_rel R y0 y)
+          (closed_interval_in R y0 y)
+          (closed_interval_in R y y0)
+          Hy0y).
+        exact Hu_inner.
+      }
+      claim HuR : u :e R.
+      {
+        exact (SepE1
+          R
+          (fun x:set => (x = y0 \/ order_rel R y0 x) /\ (x = y \/ order_rel R x y))
+          u
+          HuCI).
+      }
+      claim HuPack :
+        (u = y0 \/ order_rel R y0 u) /\ (u = y \/ order_rel R u y).
+      {
+        exact (SepE2
+          R
+          (fun x:set => (x = y0 \/ order_rel R y0 x) /\ (x = y \/ order_rel R x y))
+          u
+          HuCI).
+      }
+      claim Hu0or : u = y0 \/ order_rel R y0 u.
+      {
+        exact (andEL
+          (u = y0 \/ order_rel R y0 u)
+          (u = y \/ order_rel R u y)
+          HuPack).
+      }
+      claim Huyor : u = y \/ order_rel R u y.
+      {
+        exact (andER
+          (u = y0 \/ order_rel R y0 u)
+          (u = y \/ order_rel R u y)
+          HuPack).
+      }
+      apply Hu0or.
+      * assume Hu0.
+        rewrite Hu0.
+        exact Hy0Y.
+	      * assume Hy0u.
+	        apply Huyor.
+	        + assume Huy.
+	           rewrite Huy.
+	           exact HyY.
+	        + assume Huyu.
+	           claim HuOrd : u :e order_interval R y0 y.
+	           {
+	             apply (order_intervalI
+	               R
+	               y0
+	               y
+	               u).
+	             - exact HuR.
+	             - exact Hy0u.
+	             - exact Huyu.
+	           }
+	           exact (convex_in_interval_property
+	             R
+	             Y
+             HconvY
+             y0
+             y
+             Hy0Y
+             HyY
+             u
+             HuOrd).
+    + assume HnHy0y : ~ (order_rel R y0 y).
+      claim HuCI : u :e closed_interval_in R y y0.
+      {
+        rewrite <- (If_i_0
+          (order_rel R y0 y)
+          (closed_interval_in R y0 y)
+          (closed_interval_in R y y0)
+          HnHy0y).
+        exact Hu_inner.
+      }
+      claim Hyy0 : order_rel R y y0.
+      {
+        apply (order_rel_trichotomy_or_impred
+          R
+          y0
+          y
+          simply_ordered_set_R
+          Hy0R
+          HyR
+          (order_rel R y y0)).
+        - assume Hy0y.
+          exact (FalseE (HnHy0y Hy0y) (order_rel R y y0)).
+        - assume Hey.
+          claim Hey' : y = y0.
+          {
+            symmetry.
+            exact Hey.
+          }
+          exact (FalseE (Hney Hey') (order_rel R y y0)).
+        - assume Hyy0.
+          exact Hyy0.
+      }
+      claim HuR : u :e R.
+      {
+        exact (SepE1
+          R
+          (fun x:set => (x = y \/ order_rel R y x) /\ (x = y0 \/ order_rel R x y0))
+          u
+          HuCI).
+      }
+      claim HuPack :
+        (u = y \/ order_rel R y u) /\ (u = y0 \/ order_rel R u y0).
+      {
+        exact (SepE2
+          R
+          (fun x:set => (x = y \/ order_rel R y x) /\ (x = y0 \/ order_rel R x y0))
+          u
+          HuCI).
+      }
+      claim Huyor : u = y \/ order_rel R y u.
+      {
+        exact (andEL
+          (u = y \/ order_rel R y u)
+          (u = y0 \/ order_rel R u y0)
+          HuPack).
+      }
+      claim Hu0or : u = y0 \/ order_rel R u y0.
+      {
+        exact (andER
+          (u = y \/ order_rel R y u)
+          (u = y0 \/ order_rel R u y0)
+          HuPack).
+      }
+      apply Hu0or.
+      * assume Hu0.
+        rewrite Hu0.
+        exact Hy0Y.
+	      * assume Huuy0.
+	        apply Huyor.
+	        + assume Huy.
+	           rewrite Huy.
+	           exact HyY.
+	        + assume Hyyu.
+	           claim HuOrd : u :e order_interval R y y0.
+	           {
+	             apply (order_intervalI
+	               R
+	               y
+	               y0
+	               u).
+	             - exact HuR.
+	             - exact Hyyu.
+	             - exact Huuy0.
+	           }
+	           exact (convex_in_interval_property
+	             R
+	             Y
+             HconvY
+             y
+             y0
+             HyY
+             Hy0Y
+             u
+             HuOrd).
+}
+
+claim HFconn : forall C:set, C :e F ->
+  connected_space C (subspace_topology R R_standard_topology C).
+{
+  let C.
+  assume HC.
+  apply (ReplE_impred
+    Y
+    (fun y:set => seg y)
+    C
+    HC).
+  let y.
+  assume HyY HeqC.
+  claim HyR : y :e R.
+  {
+    exact (HYsubR y HyY).
+  }
+  rewrite HeqC.
+  apply xm (y = y0).
+  - assume Hey.
+    rewrite Hey.
+    rewrite (If_i_1
+      (y0 = y0)
+      {y0}
+      (if order_rel R y0 y0 then closed_interval_in R y0 y0 else closed_interval_in R y0 y0)
+      Hy0eq).
+    exact (singleton_subspace_connected
+      R
+      R_standard_topology
+      y0
+      HtopR
+      Hy0R).
+  - assume Hney : ~ (y = y0).
+    rewrite (If_i_0
+      (y = y0)
+      {y0}
+      (if order_rel R y0 y then closed_interval_in R y0 y else closed_interval_in R y y0)
+      Hney).
+    apply xm (order_rel R y0 y).
+    + assume Hy0y.
+      rewrite (If_i_1
+        (order_rel R y0 y)
+        (closed_interval_in R y0 y)
+        (closed_interval_in R y y0)
+        Hy0y).
+      exact (interval_in_R_connected
+        y0
+        y
+        (closed_interval_in R y0 y)
+        Hy0R
+        HyR
+        Hy0y
+        (interval_in_R_closed_interval_in y0 y Hy0R HyR)).
+    + assume HnHy0y : ~ (order_rel R y0 y).
+      rewrite (If_i_0
+        (order_rel R y0 y)
+        (closed_interval_in R y0 y)
+        (closed_interval_in R y y0)
+        HnHy0y).
+      claim Hyy0 : order_rel R y y0.
+      {
+        apply (order_rel_trichotomy_or_impred
+          R
+          y0
+          y
+          simply_ordered_set_R
+          Hy0R
+          HyR
+          (order_rel R y y0)).
+        - assume Hy0y.
+          exact (FalseE (HnHy0y Hy0y) (order_rel R y y0)).
+        - assume Hey.
+          claim Hey' : y = y0.
+          {
+            symmetry.
+            exact Hey.
+          }
+          exact (FalseE (Hney Hey') (order_rel R y y0)).
+        - assume Hyy0.
+          exact Hyy0.
+      }
+      exact (interval_in_R_connected
+        y
+        y0
+        (closed_interval_in R y y0)
+        HyR
+        Hy0R
+        Hyy0
+        (interval_in_R_closed_interval_in y y0 HyR Hy0R)).
+}
+
+claim Hcommon : exists x:set, forall C:set, C :e F -> x :e C.
+{
+  witness y0.
+  let C.
+  assume HC.
+  apply (ReplE_impred
+    Y
+    (fun y:set => seg y)
+    C
+    HC).
+  let y.
+  assume HyY HeqC.
+  claim HyR : y :e R.
+  {
+    exact (HYsubR y HyY).
+  }
+  rewrite HeqC.
+  apply xm (y = y0).
+  - assume Hey.
+    rewrite Hey.
+    rewrite (If_i_1
+      (y0 = y0)
+      {y0}
+      (if order_rel R y0 y0 then closed_interval_in R y0 y0 else closed_interval_in R y0 y0)
+      Hy0eq).
+    exact (SingI y0).
+  - assume Hney : ~ (y = y0).
+    rewrite (If_i_0
+      (y = y0)
+      {y0}
+      (if order_rel R y0 y then closed_interval_in R y0 y else closed_interval_in R y y0)
+      Hney).
+    apply xm (order_rel R y0 y).
+	    + assume Hy0y.
+	      rewrite (If_i_1
+	        (order_rel R y0 y)
+	        (closed_interval_in R y0 y)
+	        (closed_interval_in R y y0)
+	        Hy0y).
+	      exact (SepI
+	        R
+	        (fun x:set => (x = y0 \/ order_rel R y0 x) /\ (x = y \/ order_rel R x y))
+	        y0
+	        Hy0R
+	        (andI
+	          (y0 = y0 \/ order_rel R y0 y0)
+	          (y0 = y \/ order_rel R y0 y)
+	          (orIL (y0 = y0) (order_rel R y0 y0) Hy0eq)
+	          (orIR (y0 = y) (order_rel R y0 y) Hy0y))).
+	    + assume HnHy0y : ~ (order_rel R y0 y).
+      rewrite (If_i_0
+        (order_rel R y0 y)
+        (closed_interval_in R y0 y)
+        (closed_interval_in R y y0)
+        HnHy0y).
+      claim Hyy0 : order_rel R y y0.
+      {
+        apply (order_rel_trichotomy_or_impred
+          R
+          y0
+          y
+          simply_ordered_set_R
+          Hy0R
+          HyR
+          (order_rel R y y0)).
+        - assume Hy0y.
+          exact (FalseE (HnHy0y Hy0y) (order_rel R y y0)).
+        - assume Hey.
+          claim Hey' : y = y0.
+          {
+            symmetry.
+            exact Hey.
+          }
+          exact (FalseE (Hney Hey') (order_rel R y y0)).
+        - assume Hyy0.
+          exact Hyy0.
+      }
+      exact (SepI
+        R
+        (fun x:set => (x = y \/ order_rel R y x) /\ (x = y0 \/ order_rel R x y0))
+        y0
+        Hy0R
+        (andI
+          (y0 = y \/ order_rel R y y0)
+          (y0 = y0 \/ order_rel R y0 y0)
+          (orIR (y0 = y) (order_rel R y y0) Hyy0)
+          (orIL (y0 = y0) (order_rel R y0 y0) Hy0eq))).
+}
+
+claim HUnionEq : Union F = Y.
+{
+  apply set_ext.
+	  - let z.
+	    assume HzUF.
+	    apply (UnionE_impred
+	      F
+	      z
+	      HzUF
+	      (z :e Y)).
+	    let C.
+	    assume HzC HC.
+	    apply (ReplE_impred
+	      Y
+	      (fun y:set => seg y)
+	      C
+	      HC).
+	    let y.
+		    assume HyY HeqC.
+		    claim HzSeg : z :e seg y.
+		    {
+		      claim HeqC' : seg y = C.
+		      {
+		        symmetry.
+		        exact HeqC.
+		      }
+		      rewrite HeqC'.
+		      exact HzC.
+		    }
+		    exact (HsegSubY y HyY z HzSeg).
+	  - let z.
+	    assume HzY.
+	    claim HzF : seg z :e F.
+    {
+      exact (ReplI
+        Y
+        (fun y:set => seg y)
+        z
+        HzY).
+    }
+    claim HzIn : z :e seg z.
+    {
+      claim HzIn_if :
+        z :e
+          (if z = y0 then {y0}
+           else if order_rel R y0 z then closed_interval_in R y0 z
+           else closed_interval_in R z y0).
+      {
+        apply xm (z = y0).
+        - assume Heq.
+          rewrite (If_i_1
+            (z = y0)
+            {y0}
+            (if order_rel R y0 z then closed_interval_in R y0 z else closed_interval_in R z y0)
+            Heq).
+          rewrite Heq.
+          exact (SingI y0).
+        - assume Hneq : ~ (z = y0).
+          rewrite (If_i_0
+            (z = y0)
+            {y0}
+            (if order_rel R y0 z then closed_interval_in R y0 z else closed_interval_in R z y0)
+            Hneq).
+          apply xm (order_rel R y0 z).
+          + assume Hy0z.
+            rewrite (If_i_1
+              (order_rel R y0 z)
+              (closed_interval_in R y0 z)
+              (closed_interval_in R z y0)
+              Hy0z).
+            claim Hzeq : z = z.
+            {
+              reflexivity.
+            }
+            exact (SepI
+              R
+              (fun x:set => (x = y0 \/ order_rel R y0 x) /\ (x = z \/ order_rel R x z))
+              z
+              (HYsubR z HzY)
+              (andI
+                (z = y0 \/ order_rel R y0 z)
+                (z = z \/ order_rel R z z)
+                (orIR (z = y0) (order_rel R y0 z) Hy0z)
+                (orIL (z = z) (order_rel R z z) Hzeq))).
+          + assume HnHy0z : ~ (order_rel R y0 z).
+            rewrite (If_i_0
+              (order_rel R y0 z)
+              (closed_interval_in R y0 z)
+              (closed_interval_in R z y0)
+              HnHy0z).
+            claim Hzy0 : order_rel R z y0.
+            {
+              apply (order_rel_trichotomy_or_impred
+                R
+                y0
+                z
+                simply_ordered_set_R
+                Hy0R
+                (HYsubR z HzY)
+                (order_rel R z y0)).
+              - assume Hy0z.
+                exact (FalseE (HnHy0z Hy0z) (order_rel R z y0)).
+              - assume Heq.
+                claim Heq' : z = y0.
+                {
+                  symmetry.
+                  exact Heq.
+                }
+                exact (FalseE (Hneq Heq') (order_rel R z y0)).
+              - assume Hzy0.
+                exact Hzy0.
+            }
+            claim Hzeq : z = z.
+            {
+              reflexivity.
+            }
+            exact (SepI
+              R
+              (fun x:set => (x = z \/ order_rel R z x) /\ (x = y0 \/ order_rel R x y0))
+              z
+              (HYsubR z HzY)
+              (andI
+                (z = z \/ order_rel R z z)
+                (z = y0 \/ order_rel R z y0)
+                (orIL (z = z) (order_rel R z z) Hzeq)
+                (orIR (z = y0) (order_rel R z y0) Hzy0))).
+      }
+      exact HzIn_if.
+    }
+    exact (UnionI
+      F
+      z
+      (seg z)
+      HzIn
+      HzF).
+}
+
+rewrite <- HUnionEq.
+exact (union_connected_common_point
+  R
+  R_standard_topology
+  F
+  HtopR
+  (fun C HC => HFsubR C HC)
+  (fun C HC => HFconn C HC)
+  Hcommon).
+Qed.
+
 (** Infrastructure: existence form of path lifting for later reuse. **)
 Theorem lemma54_1_path_lifting_exists_witness :
   forall E Te B Tb p e0 f:set,
