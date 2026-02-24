@@ -183794,6 +183794,33 @@ exact (closed_quotient_map_preserves_normality_with_surjective
 Qed.
 
 (** Proven Bob **)
+Theorem lemma73_3_closed_quotient_normal_from_surjective_map :
+  forall E Te X Tx pi:set,
+  topology_on E Te -> topology_on X Tx ->
+  normal_space E Te ->
+	continuous_map E Te X Tx pi ->
+	(forall C:set, closed_in E Te C -> closed_in X Tx (image_of pi C)) ->
+	(forall V:set, V :e Tx -> {x :e E | apply_fun pi x :e V} :e Te) ->
+  surjective_map E X pi ->
+	normal_space X Tx.
+let E Te X Tx pi.
+assume HtopE HtopX HnormE Hcont Hclosed HpreimOpen HsurjMap.
+exact (closed_quotient_map_preserves_normality_from_surjective_map
+  E
+  Te
+  X
+  Tx
+  pi
+  HtopE
+  HtopX
+  HnormE
+  Hcont
+  Hclosed
+  HpreimOpen
+  HsurjMap).
+Qed.
+
+(** Proven Bob **)
 Theorem lemma73_3_closed_quotient_normal_from_quotient_map :
   forall E Te X Tx pi:set,
   quotient_map E Te X pi ->
