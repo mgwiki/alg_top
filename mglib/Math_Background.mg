@@ -68544,6 +68544,792 @@ claim Hchain :
     one_in_unit_interval).
 }
 (** The remaining work is to build compatible local lifts on the chain and glue them. **)
+apply (and4E
+  (topology_on unit_interval unit_interval_topology)
+  (BallFam c= Power unit_interval)
+  (unit_interval c= Union BallFam)
+  (forall U:set, U :e BallFam -> U :e unit_interval_topology)
+  HballCover).
+assume _ _ _ HBallFamOpen.
+
+apply Hchain.
+let Ball0.
+assume HBall0Pack.
+apply HBall0Pack.
+let Ball1.
+assume HBall1Pack.
+apply HBall1Pack.
+let n0.
+assume Hn0Pack.
+apply Hn0Pack.
+let seq.
+assume HseqPack.
+claim Hpack8 :
+  (((((((Ball0 :e BallFam /\ 0 :e Ball0) /\ Ball1 :e BallFam) /\ 1 :e Ball1) /\
+    n0 :e omega) /\ function_on seq (ordsucc n0) BallFam) /\
+    apply_fun seq 0 = Ball0) /\ apply_fun seq n0 = Ball1).
+{
+  exact (andEL
+    (((((((Ball0 :e BallFam /\ 0 :e Ball0) /\ Ball1 :e BallFam) /\ 1 :e Ball1) /\
+      n0 :e omega) /\ function_on seq (ordsucc n0) BallFam) /\
+      apply_fun seq 0 = Ball0) /\ apply_fun seq n0 = Ball1)
+    (forall k:set, k :e n0 ->
+      apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty)
+    HseqPack).
+}
+claim Hedge :
+  forall k:set, k :e n0 ->
+    apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty.
+{
+  exact (andER
+    (((((((Ball0 :e BallFam /\ 0 :e Ball0) /\ Ball1 :e BallFam) /\ 1 :e Ball1) /\
+      n0 :e omega) /\ function_on seq (ordsucc n0) BallFam) /\
+      apply_fun seq 0 = Ball0) /\ apply_fun seq n0 = Ball1)
+    (forall k:set, k :e n0 ->
+      apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty)
+    HseqPack).
+}
+claim Hpack7 :
+  ((((((Ball0 :e BallFam /\ 0 :e Ball0) /\ Ball1 :e BallFam) /\ 1 :e Ball1) /\
+    n0 :e omega) /\ function_on seq (ordsucc n0) BallFam) /\
+    apply_fun seq 0 = Ball0).
+{
+  exact (andEL
+    ((((((Ball0 :e BallFam /\ 0 :e Ball0) /\ Ball1 :e BallFam) /\ 1 :e Ball1) /\
+        n0 :e omega) /\ function_on seq (ordsucc n0) BallFam) /\
+        apply_fun seq 0 = Ball0)
+    (apply_fun seq n0 = Ball1)
+    Hpack8).
+}
+claim Hseqn : apply_fun seq n0 = Ball1.
+{
+  exact (andER
+    ((((((Ball0 :e BallFam /\ 0 :e Ball0) /\ Ball1 :e BallFam) /\ 1 :e Ball1) /\
+        n0 :e omega) /\ function_on seq (ordsucc n0) BallFam) /\
+        apply_fun seq 0 = Ball0)
+    (apply_fun seq n0 = Ball1)
+    Hpack8).
+}
+claim Hpack6 :
+  (((((Ball0 :e BallFam /\ 0 :e Ball0) /\ Ball1 :e BallFam) /\ 1 :e Ball1) /\
+    n0 :e omega) /\ function_on seq (ordsucc n0) BallFam).
+{
+  exact (andEL
+    (((((Ball0 :e BallFam /\ 0 :e Ball0) /\ Ball1 :e BallFam) /\ 1 :e Ball1) /\
+        n0 :e omega) /\ function_on seq (ordsucc n0) BallFam)
+    (apply_fun seq 0 = Ball0)
+    Hpack7).
+}
+claim Hseq0 : apply_fun seq 0 = Ball0.
+{
+  exact (andER
+    (((((Ball0 :e BallFam /\ 0 :e Ball0) /\ Ball1 :e BallFam) /\ 1 :e Ball1) /\
+        n0 :e omega) /\ function_on seq (ordsucc n0) BallFam)
+    (apply_fun seq 0 = Ball0)
+    Hpack7).
+}
+claim Hpack5 :
+  ((((Ball0 :e BallFam /\ 0 :e Ball0) /\ Ball1 :e BallFam) /\ 1 :e Ball1) /\
+    n0 :e omega).
+{
+  exact (andEL
+    ((((Ball0 :e BallFam /\ 0 :e Ball0) /\ Ball1 :e BallFam) /\ 1 :e Ball1) /\
+        n0 :e omega)
+    (function_on seq (ordsucc n0) BallFam)
+    Hpack6).
+}
+claim HseqFun : function_on seq (ordsucc n0) BallFam.
+{
+  exact (andER
+    ((((Ball0 :e BallFam /\ 0 :e Ball0) /\ Ball1 :e BallFam) /\ 1 :e Ball1) /\
+        n0 :e omega)
+    (function_on seq (ordsucc n0) BallFam)
+    Hpack6).
+}
+claim Hpack4 :
+  (((Ball0 :e BallFam /\ 0 :e Ball0) /\ Ball1 :e BallFam) /\ 1 :e Ball1).
+{
+  exact (andEL
+    (((Ball0 :e BallFam /\ 0 :e Ball0) /\ Ball1 :e BallFam) /\ 1 :e Ball1)
+    (n0 :e omega)
+    Hpack5).
+}
+claim Hn0omega : n0 :e omega.
+{
+  exact (andER
+    (((Ball0 :e BallFam /\ 0 :e Ball0) /\ Ball1 :e BallFam) /\ 1 :e Ball1)
+    (n0 :e omega)
+    Hpack5).
+}
+claim Hpack3 :
+  ((Ball0 :e BallFam /\ 0 :e Ball0) /\ Ball1 :e BallFam).
+{
+  exact (andEL
+    ((Ball0 :e BallFam /\ 0 :e Ball0) /\ Ball1 :e BallFam)
+    (1 :e Ball1)
+    Hpack4).
+}
+claim H1Ball1 : 1 :e Ball1.
+{
+  exact (andER
+    ((Ball0 :e BallFam /\ 0 :e Ball0) /\ Ball1 :e BallFam)
+    (1 :e Ball1)
+    Hpack4).
+}
+claim Hpack2 : Ball0 :e BallFam /\ 0 :e Ball0.
+{
+  exact (andEL
+    (Ball0 :e BallFam /\ 0 :e Ball0)
+    (Ball1 :e BallFam)
+    Hpack3).
+}
+claim HBall1Fam : Ball1 :e BallFam.
+{
+  exact (andER
+    (Ball0 :e BallFam /\ 0 :e Ball0)
+    (Ball1 :e BallFam)
+    Hpack3).
+}
+claim HBall0Fam : Ball0 :e BallFam.
+{
+  exact (andEL
+    (Ball0 :e BallFam)
+    (0 :e Ball0)
+    Hpack2).
+}
+claim H0Ball0 : 0 :e Ball0.
+{
+  exact (andER
+    (Ball0 :e BallFam)
+    (0 :e Ball0)
+    Hpack2).
+}
+
+claim Hnatn0 : nat_p n0.
+{
+  exact (omega_nat_p
+    n0
+    Hn0omega).
+}
+claim Hcontp : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    (andEL
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+      Hcov)).
+}
+claim HtopE : topology_on E Te.
+{
+  exact (continuous_map_topology_dom
+    E
+    Te
+    B
+    Tb
+    p
+    Hcontp).
+}
+claim HtopB : topology_on B Tb.
+{
+  exact (continuous_map_topology_cod
+    unit_interval
+    unit_interval_topology
+    B
+    Tb
+    f
+    Hfcont).
+}
+claim HBallConnected :
+  forall U:set, U :e BallFam ->
+    connected_space U (subspace_topology unit_interval unit_interval_topology U).
+{
+  let U.
+  assume HU.
+  apply (ReplE
+    unit_interval
+    (fun x:set => open_ball unit_interval R_bounded_metric x r)
+    U
+    HU).
+  let x.
+  assume HxPack.
+  claim HxI : x :e unit_interval.
+  {
+    exact (andEL
+      (x :e unit_interval)
+      (U = open_ball unit_interval R_bounded_metric x r)
+      HxPack).
+  }
+  claim HUeq : U = open_ball unit_interval R_bounded_metric x r.
+  {
+    exact (andER
+      (x :e unit_interval)
+      (U = open_ball unit_interval R_bounded_metric x r)
+      HxPack).
+  }
+  rewrite HUeq.
+  exact (open_ball_unit_interval_connected_lt1
+    x
+    r
+    HxI
+    HrR
+    Hrpos
+    Hrlt1).
+}
+claim HBallToEven :
+  forall U:set, U :e BallFam ->
+    exists Ueven:set,
+      Ueven :e EvenFam /\
+      U c= preimage_of unit_interval f Ueven.
+{
+  let U.
+  assume HU.
+  apply (ReplE
+    unit_interval
+    (fun x:set => open_ball unit_interval R_bounded_metric x r)
+    U
+    HU).
+  let x.
+  assume HxPack.
+  claim HxI : x :e unit_interval.
+  {
+    exact (andEL
+      (x :e unit_interval)
+      (U = open_ball unit_interval R_bounded_metric x r)
+      HxPack).
+  }
+  claim HUeq : U = open_ball unit_interval R_bounded_metric x r.
+  {
+    exact (andER
+      (x :e unit_interval)
+      (U = open_ball unit_interval R_bounded_metric x r)
+      HxPack).
+  }
+  claim HlebAtX : exists V:set, V :e Fam /\ open_ball unit_interval R_bounded_metric x r c= V.
+  {
+    claim HlebForall :
+      forall x0:set, x0 :e unit_interval ->
+        exists V:set, V :e Fam /\ open_ball unit_interval R_bounded_metric x0 r c= V.
+    {
+      exact (andER
+        (r :e R /\ Rlt 0 r)
+        (forall x0:set, x0 :e unit_interval ->
+          exists V:set, V :e Fam /\ open_ball unit_interval R_bounded_metric x0 r c= V)
+        HlebR).
+    }
+    exact (HlebForall
+      x
+      HxI).
+  }
+  apply HlebAtX.
+  let V.
+  assume HVpack.
+  claim HVFam : V :e Fam.
+  {
+    exact (andEL
+      (V :e Fam)
+      (open_ball unit_interval R_bounded_metric x r c= V)
+      HVpack).
+  }
+  claim HballSubV : open_ball unit_interval R_bounded_metric x r c= V.
+  {
+    exact (andER
+      (V :e Fam)
+      (open_ball unit_interval R_bounded_metric x r c= V)
+      HVpack).
+  }
+  apply (ReplE
+    EvenFam
+    (fun U0:set => preimage_of unit_interval f U0)
+    V
+    HVFam).
+  let Ueven.
+  assume HUevenPack.
+  claim HUevenMem : Ueven :e EvenFam.
+  {
+    exact (andEL
+      (Ueven :e EvenFam)
+      (V = preimage_of unit_interval f Ueven)
+      HUevenPack).
+  }
+  claim HVe : V = preimage_of unit_interval f Ueven.
+  {
+    exact (andER
+      (Ueven :e EvenFam)
+      (V = preimage_of unit_interval f Ueven)
+      HUevenPack).
+  }
+  witness Ueven.
+  apply andI.
+  - exact HUevenMem.
+  - rewrite HUeq.
+    rewrite <- HVe.
+    exact HballSubV.
+}
+
+claim Hprefix :
+  forall k:set, nat_p k -> k :e ordsucc n0 ->
+    exists Dk gk:set,
+      Dk :e unit_interval_topology /\
+      connected_space Dk (subspace_topology unit_interval unit_interval_topology Dk) /\
+      0 :e Dk /\
+      apply_fun seq k c= Dk /\
+      lifting_of
+        Dk
+        (subspace_topology unit_interval unit_interval_topology Dk)
+        E
+        Te
+        B
+        Tb
+        p
+        f
+        gk /\
+      apply_fun gk 0 = e0 /\
+      graph_domain_subset gk Dk /\
+      total_function_on gk Dk E /\
+      functional_graph gk.
+{
+  set P := fun k:set =>
+    k :e ordsucc n0 ->
+      exists Dk gk:set,
+        Dk :e unit_interval_topology /\
+        connected_space Dk (subspace_topology unit_interval unit_interval_topology Dk) /\
+        0 :e Dk /\
+        apply_fun seq k c= Dk /\
+        lifting_of
+          Dk
+          (subspace_topology unit_interval unit_interval_topology Dk)
+          E
+          Te
+          B
+          Tb
+          p
+          f
+          gk /\
+        apply_fun gk 0 = e0 /\
+        graph_domain_subset gk Dk /\
+        total_function_on gk Dk E /\
+        functional_graph gk.
+  apply (nat_ind P).
+  - assume H0dom.
+    (** Base case: build a lift on Ball0 through e0 at time 0. **)
+    claim HBall0Open : Ball0 :e unit_interval_topology.
+    {
+      exact (HBallFamOpen
+        Ball0
+        HBall0Fam).
+    }
+    claim HBall0Conn :
+      connected_space Ball0 (subspace_topology unit_interval unit_interval_topology Ball0).
+    {
+      exact (HBallConnected
+        Ball0
+        HBall0Fam).
+    }
+    apply (HBallToEven Ball0 HBall0Fam).
+    let Ueven0.
+    assume HUeven0Pack.
+    claim HUeven0Mem : Ueven0 :e EvenFam.
+    {
+      exact (andEL
+        (Ueven0 :e EvenFam)
+        (Ball0 c= preimage_of unit_interval f Ueven0)
+        HUeven0Pack).
+    }
+    claim HBall0SubPre : Ball0 c= preimage_of unit_interval f Ueven0.
+    {
+      exact (andER
+        (Ueven0 :e EvenFam)
+        (Ball0 c= preimage_of unit_interval f Ueven0)
+        HUeven0Pack).
+    }
+    claim HUeven0 : evenly_covered E Te B Tb p Ueven0.
+    {
+      exact (SepE2
+        Tb
+        (fun U0:set => evenly_covered E Te B Tb p U0)
+        Ueven0
+        HUeven0Mem).
+    }
+    claim HBall0SubI : Ball0 c= unit_interval.
+    {
+      exact (topology_elem_subset
+        unit_interval
+        unit_interval_topology
+        Ball0
+        unit_interval_topology_on
+        HBall0Open).
+    }
+    claim HfcontBall0 :
+      continuous_map
+        Ball0
+        (subspace_topology unit_interval unit_interval_topology Ball0)
+        B
+        Tb
+        f.
+    {
+      exact (continuous_on_subspace
+        unit_interval
+        unit_interval_topology
+        B
+        Tb
+        f
+        Ball0
+        unit_interval_topology_on
+        HBall0SubI
+        Hfcont).
+    }
+    claim HmapBall0 : forall t:set, t :e Ball0 -> apply_fun f t :e Ueven0.
+    {
+      let t.
+      assume HtBall0.
+      claim HtPre : t :e preimage_of unit_interval f Ueven0.
+      {
+        exact (HBall0SubPre
+          t
+          HtBall0).
+      }
+      exact (SepE2
+        unit_interval
+        (fun x:set => apply_fun f x :e Ueven0)
+        t
+        HtPre).
+    }
+    claim Hloc0 :
+      exists ft0:set,
+        lifting_of
+          Ball0
+          (subspace_topology unit_interval unit_interval_topology Ball0)
+          E
+          Te
+          B
+          Tb
+          p
+          f
+          ft0 /\
+        apply_fun ft0 0 = e0.
+    {
+      exact (covering_map_local_lift_from_evenly_covered
+        E
+        Te
+        B
+        Tb
+        p
+        Ueven0
+        Ball0
+        (subspace_topology unit_interval unit_interval_topology Ball0)
+        f
+        0
+        e0
+        Hcov
+        HUeven0
+        HfcontBall0
+        HmapBall0
+        H0Ball0
+        He0
+        Hstart).
+    }
+    apply Hloc0.
+    let ft0.
+    assume Hft0Pack.
+    claim Hft0Lift :
+      lifting_of
+        Ball0
+        (subspace_topology unit_interval unit_interval_topology Ball0)
+        E
+        Te
+        B
+        Tb
+        p
+        f
+        ft0.
+    {
+      exact (andEL
+        (lifting_of
+          Ball0
+          (subspace_topology unit_interval unit_interval_topology Ball0)
+          E
+          Te
+          B
+          Tb
+          p
+          f
+          ft0)
+        (apply_fun ft0 0 = e0)
+        Hft0Pack).
+    }
+    claim Hft00 : apply_fun ft0 0 = e0.
+    {
+      exact (andER
+        (lifting_of
+          Ball0
+          (subspace_topology unit_interval unit_interval_topology Ball0)
+          E
+          Te
+          B
+          Tb
+          p
+          f
+          ft0)
+        (apply_fun ft0 0 = e0)
+        Hft0Pack).
+    }
+    claim Hft0Cont :
+      continuous_map
+        Ball0
+        (subspace_topology unit_interval unit_interval_topology Ball0)
+        E
+        Te
+        ft0.
+    {
+      exact (andEL
+        (continuous_map
+          Ball0
+          (subspace_topology unit_interval unit_interval_topology Ball0)
+          E
+          Te
+          ft0)
+        (forall t:set, t :e Ball0 -> apply_fun p (apply_fun ft0 t) = apply_fun f t)
+        Hft0Lift).
+    }
+    claim Hft0Comm :
+      forall t:set, t :e Ball0 ->
+        apply_fun p (apply_fun ft0 t) = apply_fun f t.
+    {
+      exact (andER
+        (continuous_map
+          Ball0
+          (subspace_topology unit_interval unit_interval_topology Ball0)
+          E
+          Te
+          ft0)
+        (forall t:set, t :e Ball0 -> apply_fun p (apply_fun ft0 t) = apply_fun f t)
+        Hft0Lift).
+    }
+    set g0 := graph Ball0 (fun t:set => apply_fun ft0 t).
+    claim Hft0Fun : function_on ft0 Ball0 E.
+    {
+      exact (continuous_map_function_on
+        Ball0
+        (subspace_topology unit_interval unit_interval_topology Ball0)
+        E
+        Te
+        ft0
+        Hft0Cont).
+    }
+    claim Hg0Tot : total_function_on g0 Ball0 E.
+    {
+      apply (total_function_on_graph
+        Ball0
+        E
+        (fun t:set => apply_fun ft0 t)).
+      let t.
+      assume HtBall0.
+      exact (Hft0Fun
+        t
+        HtBall0).
+    }
+    claim Hg0Fun : function_on g0 Ball0 E.
+    {
+      exact (total_function_on_function_on
+        g0
+        Ball0
+        E
+        Hg0Tot).
+    }
+    claim Hg0Agree :
+      forall t:set, t :e Ball0 -> apply_fun ft0 t = apply_fun g0 t.
+    {
+      let t.
+      assume HtBall0.
+      rewrite (apply_fun_graph
+        Ball0
+        (fun u:set => apply_fun ft0 u)
+        t
+        HtBall0).
+      reflexivity.
+    }
+    claim Hg0Cont :
+      continuous_map
+        Ball0
+        (subspace_topology unit_interval unit_interval_topology Ball0)
+        E
+        Te
+        g0.
+    {
+      exact (continuous_map_congr_on
+        Ball0
+        (subspace_topology unit_interval unit_interval_topology Ball0)
+        E
+        Te
+        ft0
+        g0
+        Hft0Cont
+        Hg0Fun
+        Hg0Agree).
+    }
+    claim Hg0Comm :
+      forall t:set, t :e Ball0 ->
+        apply_fun p (apply_fun g0 t) = apply_fun f t.
+    {
+      let t.
+      assume HtBall0.
+      rewrite (apply_fun_graph
+        Ball0
+        (fun u:set => apply_fun ft0 u)
+        t
+        HtBall0).
+      exact (Hft0Comm
+        t
+        HtBall0).
+    }
+    claim Hg0Lift :
+      lifting_of
+        Ball0
+        (subspace_topology unit_interval unit_interval_topology Ball0)
+        E
+        Te
+        B
+        Tb
+        p
+        f
+        g0.
+    {
+      exact (andI
+        (continuous_map
+          Ball0
+          (subspace_topology unit_interval unit_interval_topology Ball0)
+          E
+          Te
+          g0)
+        (forall t:set, t :e Ball0 -> apply_fun p (apply_fun g0 t) = apply_fun f t)
+        Hg0Cont
+        Hg0Comm).
+    }
+    claim Hg00 : apply_fun g0 0 = e0.
+    {
+      rewrite (apply_fun_graph
+        Ball0
+        (fun u:set => apply_fun ft0 u)
+        0
+        H0Ball0).
+      exact Hft00.
+    }
+    claim HsubSeq0 : apply_fun seq 0 c= Ball0.
+    {
+      rewrite Hseq0.
+      let t.
+      assume Ht.
+      exact Ht.
+    }
+    claim Hdomg0 : graph_domain_subset g0 Ball0.
+    {
+      exact (graph_domain_subset_graph
+        Ball0
+        (fun t:set => apply_fun ft0 t)).
+    }
+    claim Hfuncg0 : functional_graph g0.
+    {
+      exact (functional_graph_graph
+        Ball0
+        (fun t:set => apply_fun ft0 t)).
+    }
+    witness Ball0.
+    witness g0.
+    exact (and9I
+      (Ball0 :e unit_interval_topology)
+      (connected_space Ball0 (subspace_topology unit_interval unit_interval_topology Ball0))
+      (0 :e Ball0)
+      (apply_fun seq 0 c= Ball0)
+      (lifting_of
+        Ball0
+        (subspace_topology unit_interval unit_interval_topology Ball0)
+        E
+        Te
+        B
+        Tb
+        p
+        f
+        g0)
+      (apply_fun g0 0 = e0)
+      (graph_domain_subset g0 Ball0)
+      (total_function_on g0 Ball0 E)
+      (functional_graph g0)
+      True
+      True
+      True
+      True
+      True
+      HBall0Open
+      HBall0Conn
+      H0Ball0
+      HsubSeq0
+      Hg0Lift
+      Hg00
+      Hdomg0
+      Hg0Tot
+      Hfuncg0).
+  - let k.
+    assume HkNat IH.
+    assume Hk1dom.
+    (** Inductive step. **)
+    claim HsubSucc : ordsucc k c= n0.
+    {
+      exact (nat_ordsucc_trans
+        n0
+        Hnatn0
+        (ordsucc k)
+        Hk1dom).
+    }
+    claim HkInN0 : k :e n0.
+    {
+      exact (HsubSucc
+        k
+        (ordsuccI2 k)).
+    }
+    claim Hkdom : k :e ordsucc n0.
+    {
+      exact ((ordsuccI1 n0)
+        k
+        HkInN0).
+    }
+    apply (IH Hkdom).
+    let Dk.
+    assume HDkPack.
+    apply HDkPack.
+    let gk.
+    assume HgkPack.
+    set Ballk := apply_fun seq k.
+    set Ballk1 := apply_fun seq (ordsucc k).
+    claim HBallkFam : Ballk :e BallFam.
+    {
+      exact (HseqFun
+        k
+        Hkdom).
+    }
+    claim HBallk1Fam : Ballk1 :e BallFam.
+    {
+      exact (HseqFun
+        (ordsucc k)
+        Hk1dom).
+    }
+    claim Hmeet : Ballk :/\: Ballk1 <> Empty.
+    {
+      exact (Hedge
+        k
+        HkInN0).
+    }
+    apply (nonempty_has_element
+      (Ballk :/\: Ballk1)
+      Hmeet).
+    let u.
+    assume HuInt.
+    (** Remaining work: build a compatible local lift on Ballk1 through u and glue. **)
+    admit.
+}
+
 admit.
 Admitted.
 
