@@ -146948,7 +146948,155 @@ apply andI.
               { reflexivity. }
               (** Key: g' = nat_primrec eG (multG-fun, x2') n2 **)
               claim HgRep_k' : g' = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x2' i)) n2.
-              { admit. }
+              { (** Step 1: abelian extract on G: g = multG(product_x2', x2(j0)) **)
+                (** Define wrapper for x2 **)
+                claim HfG : forall i:set, If_i (i :e n2) (apply_fun x2 i) eG :e G.
+                { let i. apply (xm (i :e n2)).
+                  - assume Hi.
+                    rewrite (If_i_1 (i :e n2) (apply_fun x2 i) eG Hi).
+                    exact (Hx2Fn i Hi).
+                  - assume Hni.
+                    rewrite (If_i_0 (i :e n2) (apply_fun x2 i) eG Hni).
+                    exact HeGG. }
+                (** Bridge g to wrapper form **)
+                claim Hg_wrap : g = nat_primrec eG (fun i r => apply_fun multG (r, If_i (i :e n2) (apply_fun x2 i) eG)) n2.
+                { rewrite HgRep2.
+                  apply (nat_primrec_ext eG
+                    (fun i r => apply_fun multG (r, apply_fun x2 i))
+                    (fun i r => apply_fun multG (r, If_i (i :e n2) (apply_fun x2 i) eG))
+                    n2 Hn2O).
+                  let i r. assume Hi : i :e n2.
+                  rewrite (If_i_1 (i :e n2) (apply_fun x2 i) eG Hi).
+                  reflexivity. }
+                (** Apply nat_primrec_abelian_extract **)
+                claim Hextract_G : nat_primrec eG (fun i r => apply_fun multG (r, If_i (i :e n2) (apply_fun x2 i) eG)) n2 =
+                  apply_fun multG (
+                    nat_primrec eG (fun i r => apply_fun multG (r, If_i (i = j0) eG (If_i (i :e n2) (apply_fun x2 i) eG))) n2,
+                    If_i (j0 :e n2) (apply_fun x2 j0) eG).
+                { exact (nat_primrec_abelian_extract G multG eG invG HgrpG HcommG
+                    (fun i:set => If_i (i :e n2) (apply_fun x2 i) eG) HfG n2 Hn2O j0 Hj0). }
+                (** If_i (j0 :e n2) (apply_fun x2 j0) eG = x2(j0) **)
+                claim HfGj0 : If_i (j0 :e n2) (apply_fun x2 j0) eG = apply_fun x2 j0.
+                { exact (If_i_1 (j0 :e n2) (apply_fun x2 j0) eG Hj0). }
+                (** x2(j0) :e G **)
+                claim Hx2j0G : apply_fun x2 j0 :e G.
+                { exact (Hx2Fn j0 Hj0). }
+                (** Bridge If_i(i=j0) eG (If_i(i :e n2)...) to apply_fun x2' i for i :e n2 **)
+                claim Hprod_x2'_wrap : nat_primrec eG (fun i r => apply_fun multG (r, If_i (i = j0) eG (If_i (i :e n2) (apply_fun x2 i) eG))) n2 =
+                  nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x2' i)) n2.
+                { apply (nat_primrec_ext eG
+                    (fun i r => apply_fun multG (r, If_i (i = j0) eG (If_i (i :e n2) (apply_fun x2 i) eG)))
+                    (fun i r => apply_fun multG (r, apply_fun x2' i))
+                    n2 Hn2O).
+                  let i r. assume Hi : i :e n2.
+                  claim Hx2'i : apply_fun x2' i = If_i (i = j0) eG (apply_fun x2 i).
+                  { exact (apply_fun_graph n2 (fun j => If_i (j = j0) eG (apply_fun x2 j)) i Hi). }
+                  apply (xm (i = j0)).
+                  - assume Heq : i = j0.
+                    rewrite (If_i_1 (i = j0) eG (If_i (i :e n2) (apply_fun x2 i) eG) Heq).
+                    rewrite Hx2'i. rewrite (If_i_1 (i = j0) eG (apply_fun x2 i) Heq).
+                    reflexivity.
+                  - assume Hne : i <> j0.
+                    rewrite (If_i_0 (i = j0) eG (If_i (i :e n2) (apply_fun x2 i) eG) Hne).
+                    rewrite (If_i_1 (i :e n2) (apply_fun x2 i) eG Hi).
+                    rewrite Hx2'i. rewrite (If_i_0 (i = j0) eG (apply_fun x2 i) Hne).
+                    reflexivity. }
+                (** Now: g = multG(product_x2', x2(j0)) **)
+                claim Hg_decomp : g = apply_fun multG (
+                  nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x2' i)) n2,
+                  apply_fun x2 j0).
+                { rewrite Hg_wrap. rewrite Hextract_G. rewrite HfGj0. rewrite Hprod_x2'_wrap. reflexivity. }
+                (** Step 2: g = multG(g', x1(k)) from nat_primrec_S **)
+                claim Hg_step : g = apply_fun multG (g', apply_fun x1 k).
+                { rewrite HgRep.
+                  rewrite (nat_primrec_S eG (fun i r => apply_fun multG (r, apply_fun x1 i)) k Hk).
+                  reflexivity. }
+                (** Step 3: x1(k) = x2(j0), so multG(g', x2(j0)) = multG(product_x2', x2(j0)) **)
+                set p := nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x2' i)) n2.
+                claim Hboth : apply_fun multG (g', apply_fun x2 j0) =
+                  apply_fun multG (p, apply_fun x2 j0).
+                { claim Hg1 : g = apply_fun multG (g', apply_fun x2 j0).
+                  { rewrite Hg_step. rewrite Hx1k_eq. reflexivity. }
+                  rewrite <- Hg1. rewrite <- Hg_decomp. reflexivity. }
+                (** Step 4: right cancellation in group G **)
+                claim HassocG : forall x0 y0 z0:set, x0 :e G -> y0 :e G -> z0 :e G ->
+                  apply_fun multG (apply_fun multG (x0, y0), z0) = apply_fun multG (x0, apply_fun multG (y0, z0)).
+                { apply (and6E (function_on multG (setprod G G) G) (function_on invG G G) (eG :e G)
+                    (forall x0 y0 z0:set, x0 :e G -> y0 :e G -> z0 :e G ->
+                      apply_fun multG (apply_fun multG (x0, y0), z0) = apply_fun multG (x0, apply_fun multG (y0, z0)))
+                    (forall x0:set, x0 :e G -> apply_fun multG (eG, x0) = x0 /\ apply_fun multG (x0, eG) = x0)
+                    (forall x0:set, x0 :e G ->
+                      apply_fun multG (x0, apply_fun invG x0) = eG /\ apply_fun multG (apply_fun invG x0, x0) = eG)
+                    HgrpG). assume _ _ _ Ha _ _. exact Ha. }
+                claim HinvG_law : forall x0:set, x0 :e G ->
+                  apply_fun multG (x0, apply_fun invG x0) = eG /\ apply_fun multG (apply_fun invG x0, x0) = eG.
+                { apply (and6E (function_on multG (setprod G G) G) (function_on invG G G) (eG :e G)
+                    (forall x0 y0 z0:set, x0 :e G -> y0 :e G -> z0 :e G ->
+                      apply_fun multG (apply_fun multG (x0, y0), z0) = apply_fun multG (x0, apply_fun multG (y0, z0)))
+                    (forall x0:set, x0 :e G -> apply_fun multG (eG, x0) = x0 /\ apply_fun multG (x0, eG) = x0)
+                    (forall x0:set, x0 :e G ->
+                      apply_fun multG (x0, apply_fun invG x0) = eG /\ apply_fun multG (apply_fun invG x0, x0) = eG)
+                    HgrpG). assume _ _ _ _ _ Hi. exact Hi. }
+                claim HinvG_fn : function_on invG G G.
+                { apply (and6E (function_on multG (setprod G G) G) (function_on invG G G) (eG :e G)
+                    (forall x0 y0 z0:set, x0 :e G -> y0 :e G -> z0 :e G ->
+                      apply_fun multG (apply_fun multG (x0, y0), z0) = apply_fun multG (x0, apply_fun multG (y0, z0)))
+                    (forall x0:set, x0 :e G -> apply_fun multG (eG, x0) = x0 /\ apply_fun multG (x0, eG) = x0)
+                    (forall x0:set, x0 :e G ->
+                      apply_fun multG (x0, apply_fun invG x0) = eG /\ apply_fun multG (apply_fun invG x0, x0) = eG)
+                    HgrpG). assume _ Hi _ _ _ _. exact Hi. }
+                claim HpG : p :e G.
+                { (** product of x2' in G - use wrapper approach **)
+                  claim HfG2 : forall i:set, If_i (i :e n2) (apply_fun x2' i) eG :e G.
+                  { let i. apply (xm (i :e n2)).
+                    - assume Hi.
+                      rewrite (If_i_1 (i :e n2) (apply_fun x2' i) eG Hi).
+                      claim Hx2'i : apply_fun x2' i = If_i (i = j0) eG (apply_fun x2 i).
+                      { exact (apply_fun_graph n2 (fun j => If_i (j = j0) eG (apply_fun x2 j)) i Hi). }
+                      apply (xm (i = j0)).
+                      + assume Heq : i = j0. rewrite Hx2'i. rewrite (If_i_1 (i = j0) eG (apply_fun x2 i) Heq). exact HeGG.
+                      + assume Hne : i <> j0. rewrite Hx2'i. rewrite (If_i_0 (i = j0) eG (apply_fun x2 i) Hne). exact (Hx2Fn i Hi).
+                    - assume Hni.
+                      rewrite (If_i_0 (i :e n2) (apply_fun x2' i) eG Hni). exact HeGG. }
+                  claim Hm : nat_primrec eG (fun i r => apply_fun multG (r, If_i (i :e n2) (apply_fun x2' i) eG)) n2 :e G.
+                  { exact (nat_primrec_product_in_group G multG eG HmultG_fn HeGG (fun i:set => If_i (i :e n2) (apply_fun x2' i) eG) HfG2 n2 Hn2O). }
+                  claim Hext : nat_primrec eG (fun i r => apply_fun multG (r, If_i (i :e n2) (apply_fun x2' i) eG)) n2 = p.
+                  { apply (nat_primrec_ext eG
+                      (fun i r => apply_fun multG (r, If_i (i :e n2) (apply_fun x2' i) eG))
+                      (fun i r => apply_fun multG (r, apply_fun x2' i))
+                      n2 Hn2O).
+                    let i r. assume Hi : i :e n2.
+                    rewrite (If_i_1 (i :e n2) (apply_fun x2' i) eG Hi). reflexivity. }
+                  rewrite <- Hext. exact Hm. }
+                claim Hinv_x2j0 : apply_fun invG (apply_fun x2 j0) :e G.
+                { exact (HinvG_fn (apply_fun x2 j0) Hx2j0G). }
+                (** Right cancellation: a.c = b.c implies a = b **)
+                (** x2(j0).inv(x2(j0)) = eG **)
+                claim Hinv_eq : apply_fun multG (apply_fun x2 j0, apply_fun invG (apply_fun x2 j0)) = eG.
+                { exact (andEL
+                    (apply_fun multG (apply_fun x2 j0, apply_fun invG (apply_fun x2 j0)) = eG)
+                    (apply_fun multG (apply_fun invG (apply_fun x2 j0), apply_fun x2 j0) = eG)
+                    (HinvG_law (apply_fun x2 j0) Hx2j0G)). }
+                (** Prove g' = p by equational chaining **)
+                (** g'.x2j0 = p.x2j0 from Hboth **)
+                claim HmultG_x2j0 : apply_fun multG (g', apply_fun x2 j0) :e G.
+                { exact (HmGcl g' (apply_fun x2 j0) Hg'_G Hx2j0G). }
+                claim HmultP_x2j0 : apply_fun multG (p, apply_fun x2 j0) :e G.
+                { exact (HmGcl p (apply_fun x2 j0) HpG Hx2j0G). }
+                (** (g'.x2j0).inv(x2j0) = (p.x2j0).inv(x2j0) **)
+                claim Hcancel1 : apply_fun multG (apply_fun multG (g', apply_fun x2 j0), apply_fun invG (apply_fun x2 j0)) =
+                  apply_fun multG (apply_fun multG (p, apply_fun x2 j0), apply_fun invG (apply_fun x2 j0)).
+                { rewrite Hboth. reflexivity. }
+                (** By assoc LHS: g'.(x2j0.inv(x2j0)) = g'.eG = g' **)
+                claim Hcancel_lhs : apply_fun multG (apply_fun multG (g', apply_fun x2 j0), apply_fun invG (apply_fun x2 j0)) = g'.
+                { rewrite (HassocG g' (apply_fun x2 j0) (apply_fun invG (apply_fun x2 j0)) Hg'_G Hx2j0G Hinv_x2j0).
+                  rewrite Hinv_eq. exact (HridG g' Hg'_G). }
+                (** By assoc RHS: p.(x2j0.inv(x2j0)) = p.eG = p **)
+                claim Hcancel_rhs : apply_fun multG (apply_fun multG (p, apply_fun x2 j0), apply_fun invG (apply_fun x2 j0)) = p.
+                { rewrite (HassocG p (apply_fun x2 j0) (apply_fun invG (apply_fun x2 j0)) HpG Hx2j0G Hinv_x2j0).
+                  rewrite Hinv_eq. exact (HridG p HpG). }
+                (** g' = (g'.x2j0).inv(x2j0) = (p.x2j0).inv(x2j0) = p **)
+                rewrite <- Hcancel_lhs. rewrite Hcancel1. exact Hcancel_rhs. }
               (** Construct pack2' and show it represents g' **)
               set pack2' := (n2, (a2, x2')).
               claim Hrep2' : rep_pred g' pack2'.
