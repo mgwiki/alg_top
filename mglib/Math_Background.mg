@@ -147918,7 +147918,160 @@ apply andI.
         admit.
       - (** Case B: alpha not in z's rep **)
         assume Hnex : ~(exists j0:set, j0 :e nz /\ apply_fun az j0 = alpha).
-        admit.
+        (** Extend z's rep with alpha and w at position nz **)
+        set az_ext := graph (ordsucc nz) (fun i:set => If_i (i :e nz) (apply_fun az i) alpha).
+        set xsz_ext := graph (ordsucc nz) (fun i:set => If_i (i :e nz) (apply_fun xsz i) w).
+        set pack_zw := (ordsucc nz, (az_ext, xsz_ext)).
+        claim HSnzO : ordsucc nz :e omega. { exact (omega_ordsucc nz HnzO). }
+        claim HSnz_ne : ordsucc nz <> 0. { exact (neq_ordsucc_0 nz). }
+        claim Hnz_in_Snz : nz :e ordsucc nz. { exact (ordsuccI2 nz). }
+        (** Key evaluations for az_ext **)
+        claim Haz_ext_in : forall i:set, i :e nz -> apply_fun az_ext i = apply_fun az i.
+        { let i. assume Hi : i :e nz.
+          claim Hgr : apply_fun az_ext i = If_i (i :e nz) (apply_fun az i) alpha.
+          { exact (apply_fun_graph (ordsucc nz) (fun i0:set => If_i (i0 :e nz) (apply_fun az i0) alpha) i (ordsuccI1 nz i Hi)). }
+          rewrite Hgr. exact (If_i_1 (i :e nz) (apply_fun az i) alpha Hi). }
+        claim Haz_ext_nz : apply_fun az_ext nz = alpha.
+        { claim Hgr : apply_fun az_ext nz = If_i (nz :e nz) (apply_fun az nz) alpha.
+          { exact (apply_fun_graph (ordsucc nz) (fun i0:set => If_i (i0 :e nz) (apply_fun az i0) alpha) nz Hnz_in_Snz). }
+          rewrite Hgr. exact (If_i_0 (nz :e nz) (apply_fun az nz) alpha (In_irref nz)). }
+        (** Key evaluations for xsz_ext **)
+        claim Hxsz_ext_in : forall i:set, i :e nz -> apply_fun xsz_ext i = apply_fun xsz i.
+        { let i. assume Hi : i :e nz.
+          claim Hgr : apply_fun xsz_ext i = If_i (i :e nz) (apply_fun xsz i) w.
+          { exact (apply_fun_graph (ordsucc nz) (fun i0:set => If_i (i0 :e nz) (apply_fun xsz i0) w) i (ordsuccI1 nz i Hi)). }
+          rewrite Hgr. exact (If_i_1 (i :e nz) (apply_fun xsz i) w Hi). }
+        claim Hxsz_ext_nz : apply_fun xsz_ext nz = w.
+        { claim Hgr : apply_fun xsz_ext nz = If_i (nz :e nz) (apply_fun xsz nz) w.
+          { exact (apply_fun_graph (ordsucc nz) (fun i0:set => If_i (i0 :e nz) (apply_fun xsz i0) w) nz Hnz_in_Snz). }
+          rewrite Hgr. exact (If_i_0 (nz :e nz) (apply_fun xsz nz) w (In_irref nz)). }
+        (** Prove rep_pred for z times w **)
+        claim Hrep_zw : rep_pred (apply_fun multG (z, w)) pack_zw.
+        { prove (ordsucc nz, (az_ext, xsz_ext)) 0 :e omega /\
+            (ordsucc nz, (az_ext, xsz_ext)) 0 <> 0 /\
+            function_on (((ordsucc nz, (az_ext, xsz_ext)) 1) 0) ((ordsucc nz, (az_ext, xsz_ext)) 0) J /\
+            function_on (((ordsucc nz, (az_ext, xsz_ext)) 1) 1) ((ordsucc nz, (az_ext, xsz_ext)) 0) G /\
+            (forall i:set, i :e (ordsucc nz, (az_ext, xsz_ext)) 0 ->
+              apply_fun (((ordsucc nz, (az_ext, xsz_ext)) 1) 1) i :e
+                apply_fun Gfam (apply_fun (((ordsucc nz, (az_ext, xsz_ext)) 1) 0) i)) /\
+            (forall i j:set, i :e (ordsucc nz, (az_ext, xsz_ext)) 0 ->
+              j :e (ordsucc nz, (az_ext, xsz_ext)) 0 -> i <> j ->
+              apply_fun (((ordsucc nz, (az_ext, xsz_ext)) 1) 0) i <>
+                apply_fun (((ordsucc nz, (az_ext, xsz_ext)) 1) 0) j) /\
+            apply_fun multG (z, w) = nat_primrec eG
+              (fun i r => apply_fun multG (r, apply_fun (((ordsucc nz, (az_ext, xsz_ext)) 1) 1) i))
+              ((ordsucc nz, (az_ext, xsz_ext)) 0).
+          rewrite tuple_2_0_eq. rewrite tuple_2_1_eq. rewrite tuple_2_0_eq. rewrite tuple_2_1_eq.
+          apply and7I.
+          - (** ordsucc nz :e omega **) exact HSnzO.
+          - (** ordsucc nz <> 0 **) exact HSnz_ne.
+          - (** function_on az_ext (ordsucc nz) J **)
+            let i. assume Hi : i :e ordsucc nz.
+            apply (ordsuccE nz i Hi).
+            + assume Hi_in : i :e nz.
+              rewrite (Haz_ext_in i Hi_in). exact (HazFn i Hi_in).
+            + assume Hi_eq : i = nz.
+              rewrite Hi_eq. rewrite Haz_ext_nz. exact Hal.
+          - (** function_on xsz_ext (ordsucc nz) G **)
+            let i. assume Hi : i :e ordsucc nz.
+            apply (ordsuccE nz i Hi).
+            + assume Hi_in : i :e nz.
+              rewrite (Hxsz_ext_in i Hi_in). exact (HxszFn i Hi_in).
+            + assume Hi_eq : i = nz.
+              rewrite Hi_eq. rewrite Hxsz_ext_nz. exact HwG.
+          - (** Gfam membership **)
+            let i. assume Hi : i :e ordsucc nz.
+            apply (ordsuccE nz i Hi).
+            + assume Hi_in : i :e nz.
+              rewrite (Hxsz_ext_in i Hi_in). rewrite (Haz_ext_in i Hi_in).
+              exact (Hxsz_Gfam i Hi_in).
+            + assume Hi_eq : i = nz.
+              rewrite Hi_eq. rewrite Hxsz_ext_nz. rewrite Haz_ext_nz. exact Hw.
+          - (** Distinctness **)
+            let i j. assume Hi : i :e ordsucc nz. assume Hj : j :e ordsucc nz. assume Hne : i <> j.
+            apply (ordsuccE nz i Hi).
+            + assume Hi_in : i :e nz.
+              rewrite (Haz_ext_in i Hi_in).
+              apply (ordsuccE nz j Hj).
+              * assume Hj_in : j :e nz.
+                rewrite (Haz_ext_in j Hj_in). exact (Hdistz i j Hi_in Hj_in Hne).
+              * assume Hj_eq : j = nz.
+                rewrite Hj_eq. rewrite Haz_ext_nz.
+                assume Heq : apply_fun az i = alpha.
+                claim Hex : exists j0:set, j0 :e nz /\ apply_fun az j0 = alpha.
+                { witness i. apply andI. exact Hi_in. exact Heq. }
+                exact (Hnex Hex).
+            + assume Hi_eq : i = nz.
+              rewrite Hi_eq. rewrite Haz_ext_nz.
+              apply (ordsuccE nz j Hj).
+              * assume Hj_in : j :e nz.
+                rewrite (Haz_ext_in j Hj_in).
+                assume Heq : alpha = apply_fun az j.
+                claim Heq2 : apply_fun az j = alpha. { symmetry. exact Heq. }
+                claim Hex : exists j0:set, j0 :e nz /\ apply_fun az j0 = alpha.
+                { witness j. apply andI. exact Hj_in. exact Heq2. }
+                exact (Hnex Hex).
+              * assume Hj_eq : j = nz.
+                assume _.
+                claim Hijnz : i = j. { rewrite Hi_eq. rewrite Hj_eq. reflexivity. }
+                exact (Hne Hijnz).
+          - (** Product equality: multG(z, w) = nat_primrec ... (ordsucc nz) **)
+            claim HprodS_ext : nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun xsz_ext i)) (ordsucc nz) =
+              apply_fun multG (nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun xsz_ext i)) nz, apply_fun xsz_ext nz).
+            { exact (nat_primrec_S eG (fun i r:set => apply_fun multG (r, apply_fun xsz_ext i)) nz HnzNP). }
+            (** The first nz terms of xsz_ext match xsz **)
+            claim Hprod_ext : nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun xsz_ext i)) nz =
+              nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun xsz i)) nz.
+            { apply (nat_primrec_ext eG
+                (fun i r => apply_fun multG (r, apply_fun xsz_ext i))
+                (fun i r => apply_fun multG (r, apply_fun xsz i))
+                nz HnzO).
+              let i r. assume Hi : i :e nz.
+              rewrite (Hxsz_ext_in i Hi). reflexivity. }
+            rewrite HprodS_ext. rewrite Hprod_ext. rewrite Hxsz_ext_nz.
+            rewrite HzRep. reflexivity. }
+        (** h(z times w) = map_rep(pack_zw) **)
+        claim Hhzw : apply_fun h (apply_fun multG (z, w)) = map_rep pack_zw.
+        { exact (Hh_eq_map (apply_fun multG (z, w)) HzwG pack_zw Hrep_zw). }
+        (** Compute map_rep(pack_zw) **)
+        claim Hmap_zw : map_rep pack_zw = apply_fun multH (map_rep pack_z, apply_fun (apply_fun hfam alpha) w).
+        { prove nat_primrec eH
+            (fun i r:set => apply_fun multH (r,
+              apply_fun (apply_fun hfam (apply_fun (((ordsucc nz, (az_ext, xsz_ext)) 1) 0) i))
+                (apply_fun (((ordsucc nz, (az_ext, xsz_ext)) 1) 1) i)))
+            ((ordsucc nz, (az_ext, xsz_ext)) 0) =
+          apply_fun multH (
+            nat_primrec eH
+              (fun i r:set => apply_fun multH (r,
+                apply_fun (apply_fun hfam (apply_fun ((pack_z 1) 0) i)) (apply_fun ((pack_z 1) 1) i)))
+              (pack_z 0),
+            apply_fun (apply_fun hfam alpha) w).
+          rewrite tuple_2_0_eq. rewrite tuple_2_1_eq. rewrite tuple_2_0_eq. rewrite tuple_2_1_eq.
+          (** nat_primrec ... (ordsucc nz) = multH(nat_primrec ... nz, hfam(az_ext(nz))(xsz_ext(nz))) **)
+          claim HmapS : nat_primrec eH
+            (fun i r:set => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun az_ext i)) (apply_fun xsz_ext i)))
+            (ordsucc nz) =
+            apply_fun multH (
+              nat_primrec eH (fun i r:set => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun az_ext i)) (apply_fun xsz_ext i))) nz,
+              apply_fun (apply_fun hfam (apply_fun az_ext nz)) (apply_fun xsz_ext nz)).
+          { exact (nat_primrec_S eH
+              (fun i r:set => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun az_ext i)) (apply_fun xsz_ext i)))
+              nz HnzNP). }
+          rewrite HmapS. rewrite Haz_ext_nz. rewrite Hxsz_ext_nz.
+          (** Show first nz terms match map_rep(pack_z) **)
+          claim Hmap_ext : nat_primrec eH
+            (fun i r:set => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun az_ext i)) (apply_fun xsz_ext i))) nz =
+            nat_primrec eH
+              (fun i r:set => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun az i)) (apply_fun xsz i))) nz.
+          { apply (nat_primrec_ext eH
+              (fun i r => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun az_ext i)) (apply_fun xsz_ext i)))
+              (fun i r => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun az i)) (apply_fun xsz i)))
+              nz HnzO).
+            let i r. assume Hi : i :e nz.
+            rewrite (Haz_ext_in i Hi). rewrite (Hxsz_ext_in i Hi). reflexivity. }
+          rewrite Hmap_ext. reflexivity. }
+        (** Assemble the final equation **)
+        rewrite Hhzw. rewrite Hmap_zw. rewrite Hhz. rewrite Hhw_ext. reflexivity.
     }
     (** Full mult preservation by induction on representation of y **)
     (** Prove by omega induction on n = representation length of y **)
