@@ -183638,6 +183638,31 @@ admit. (** missing hypothesis: surjectivity of pi; see proved theorem closed_quo
 Admitted.
 
 (** Proven Bob **)
+Theorem closed_quotient_map_preserves_normality_helper_from_quotient_map :
+  forall E Te X Tx pi:set,
+  quotient_map E Te X pi ->
+  topology_on X Tx ->
+  normal_space E Te ->
+	continuous_map E Te X Tx pi ->
+	(forall C:set, closed_in E Te C -> closed_in X Tx (image_of pi C)) ->
+	(forall V:set, V :e Tx -> {x :e E | apply_fun pi x :e V} :e Te) ->
+	normal_space X Tx.
+let E Te X Tx pi.
+assume Hquot HtopX HnormE Hcont Hclosed HpreimOpen.
+exact (closed_quotient_map_preserves_normality_from_quotient_map
+  E
+  Te
+  X
+  Tx
+  pi
+  Hquot
+  HtopX
+  HnormE
+  Hcont
+  Hclosed).
+Qed.
+
+(** Proven Bob **)
 Theorem lemma73_3_closed_quotient_normal_with_surjective :
   forall E Te X Tx pi:set,
   topology_on E Te -> topology_on X Tx ->
