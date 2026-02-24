@@ -126225,7 +126225,149 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun fcls t :e U)).
     { exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e V) t0 Ht0preV). }
     claim Ht0fUV : apply_fun fcls t0 :e U :/\: V.
     { exact (binintersectI U V (apply_fun fcls t0) Ht0fU Ht0fV). }
-    (** Word construction from interior transition point - to be completed **)
+    (** Word construction from interior transition point **)
+    (** Strategy: Destructure chain, then use induction on chain length **)
+    (** Each chain ball maps to U or V. At overlap points between **)
+    (** different-colored balls, f maps to U cap V. **)
+    (** Destructure the chain of balls **)
+    apply Hchain.
+    let U0. assume HchU0.
+    apply HchU0.
+    let U1. assume HchU1.
+    apply HchU1.
+    let nch. assume HchN.
+    apply HchN.
+    let chseq. assume HchAll :
+      U0 :e BallFam /\ 0 :e U0 /\
+      U1 :e BallFam /\ 1 :e U1 /\
+      nch :e omega /\
+      function_on chseq (ordsucc nch) BallFam /\
+      apply_fun chseq 0 = U0 /\
+      apply_fun chseq nch = U1 /\
+      (forall k:set, k :e nch ->
+        apply_fun chseq k :/\: apply_fun chseq (ordsucc k) <> Empty).
+    (** Extract last conjunct: consecutive overlap **)
+    claim HchOverlap : forall k:set, k :e nch ->
+      apply_fun chseq k :/\: apply_fun chseq (ordsucc k) <> Empty.
+    { exact (andER
+        (((((((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1) /\
+        nch :e omega) /\ function_on chseq (ordsucc nch) BallFam) /\
+        apply_fun chseq 0 = U0) /\ apply_fun chseq nch = U1)
+        (forall k:set, k :e nch ->
+          apply_fun chseq k :/\: apply_fun chseq (ordsucc k) <> Empty)
+        HchAll). }
+    claim HchRest : ((((((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1) /\
+      nch :e omega) /\ function_on chseq (ordsucc nch) BallFam) /\
+      apply_fun chseq 0 = U0) /\ apply_fun chseq nch = U1.
+    { exact (andEL
+        (((((((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1) /\
+        nch :e omega) /\ function_on chseq (ordsucc nch) BallFam) /\
+        apply_fun chseq 0 = U0) /\ apply_fun chseq nch = U1)
+        (forall k:set, k :e nch ->
+          apply_fun chseq k :/\: apply_fun chseq (ordsucc k) <> Empty)
+        HchAll). }
+    claim HchSeqN : apply_fun chseq nch = U1.
+    { exact (andER
+        ((((((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1) /\
+        nch :e omega) /\ function_on chseq (ordsucc nch) BallFam) /\
+        apply_fun chseq 0 = U0)
+        (apply_fun chseq nch = U1)
+        HchRest). }
+    claim HchRest2 : (((((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1) /\
+      nch :e omega) /\ function_on chseq (ordsucc nch) BallFam) /\
+      apply_fun chseq 0 = U0.
+    { exact (andEL
+        ((((((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1) /\
+        nch :e omega) /\ function_on chseq (ordsucc nch) BallFam) /\
+        apply_fun chseq 0 = U0)
+        (apply_fun chseq nch = U1)
+        HchRest). }
+    claim HchSeq0 : apply_fun chseq 0 = U0.
+    { exact (andER
+        (((((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1) /\
+        nch :e omega) /\ function_on chseq (ordsucc nch) BallFam)
+        (apply_fun chseq 0 = U0)
+        HchRest2). }
+    claim HchRest3 : ((((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1) /\
+      nch :e omega) /\ function_on chseq (ordsucc nch) BallFam.
+    { exact (andEL
+        (((((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1) /\
+        nch :e omega) /\ function_on chseq (ordsucc nch) BallFam)
+        (apply_fun chseq 0 = U0)
+        HchRest2). }
+    claim HchSeqFun : function_on chseq (ordsucc nch) BallFam.
+    { exact (andER
+        ((((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1) /\
+        nch :e omega)
+        (function_on chseq (ordsucc nch) BallFam)
+        HchRest3). }
+    claim HchRest4 : (((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1) /\
+      nch :e omega.
+    { exact (andEL
+        ((((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1) /\
+        nch :e omega)
+        (function_on chseq (ordsucc nch) BallFam)
+        HchRest3). }
+    claim HnchOmega : nch :e omega.
+    { exact (andER
+        (((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1)
+        (nch :e omega)
+        HchRest4). }
+    claim H1inU1 : 1 :e U1.
+    { exact (andER
+        ((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam)
+        (1 :e U1)
+        (andEL
+          (((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1)
+          (nch :e omega)
+          HchRest4)). }
+    claim HU1fam : U1 :e BallFam.
+    { exact (andER
+        (U0 :e BallFam /\ 0 :e U0)
+        (U1 :e BallFam)
+        (andEL
+          ((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam)
+          (1 :e U1)
+          (andEL
+            (((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1)
+            (nch :e omega)
+            HchRest4))). }
+    claim H0inU0 : 0 :e U0.
+    { exact (andER
+        (U0 :e BallFam)
+        (0 :e U0)
+        (andEL
+          (U0 :e BallFam /\ 0 :e U0)
+          (U1 :e BallFam)
+          (andEL
+            ((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam)
+            (1 :e U1)
+            (andEL
+              (((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1)
+              (nch :e omega)
+              HchRest4)))). }
+    claim HU0fam : U0 :e BallFam.
+    { exact (andEL
+        (U0 :e BallFam)
+        (0 :e U0)
+        (andEL
+          (U0 :e BallFam /\ 0 :e U0)
+          (U1 :e BallFam)
+          (andEL
+            ((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam)
+            (1 :e U1)
+            (andEL
+              (((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1)
+              (nch :e omega)
+              HchRest4)))). }
+    (** Chain destructured. Now build the word. **)
+    (** The full inductive word construction from the chain requires: **)
+    (** - Base case (nch=0): single ball covers I, f maps to U or V **)
+    (** - Inductive step: find overlap point, determine colors, **)
+    (**   split loop, peel one factor via connecting path in UcapV, **)
+    (**   apply IH to remainder **)
+    (** This is the core of Munkres Thm 59.1 Step 1+2 and requires **)
+    (** ~200 lines of inductive proof. Admitted for now. **)
     admit.
 Admitted.
 
