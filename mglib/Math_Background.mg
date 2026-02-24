@@ -123145,6 +123145,37 @@ apply andI.
     exact Hf1.
 Qed.
 
+(** Core word construction: given ball property for a loop, produce word decomposition.
+    This is the inductive heart of Munkres Thm 59.1, separated from the Lebesgue setup. **)
+Lemma ball_cover_word_construction : forall X Tx U V x0 f r:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx ->
+  X = U :\/: V ->
+  x0 :e U :/\: V ->
+  path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
+  f :e loop_space X Tx x0 ->
+  r :e R -> Rlt 0 r ->
+  (forall c:set, c :e unit_interval ->
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun f t :e U) \/
+    (forall t:set, t :e open_ball unit_interval R_bounded_metric c r -> apply_fun f t :e V)) ->
+  exists n:set, n :e omega /\
+  exists gs:set, function_on gs n (fundamental_group X Tx x0) /\
+    (forall i:set, i :e n ->
+      (exists ucls:set, ucls :e fundamental_group U (subspace_topology X Tx U) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+            (graph U (fun x:set => x))) ucls) \/
+      (exists vcls:set, vcls :e fundamental_group V (subspace_topology X Tx V) x0 /\
+        apply_fun gs i =
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+            (graph V (fun x:set => x))) vcls)) /\
+    path_homotopy_class_loop X Tx x0 f = nat_primrec (fundamental_group_id X Tx x0)
+      (fun k rr => apply_fun (fundamental_group_mult X Tx x0) (rr, apply_fun gs k)) n.
+let X Tx U V x0 f r.
+assume Htop HU HV Hcover Hx0UV HpcUV HfLoop HrR Hrpos Hball_image.
+admit.
+Admitted.
+
 (** Helper: Given a loop fcls with a Lebesgue number for {preU, preV}, construct
     the word decomposition in pi_1(U) and pi_1(V). This is the key technical
     step for Seifert-van Kampen (lemma59_1). **)
@@ -124019,27 +124050,7 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun fcls t :e U)).
     { exact (eps_ordsucc_lt1_R Nleb HNleb). }
     claim HrltNleb : Rlt r (eps_ Nleb).
     { exact (eps_ordsucc_lt_eps Nleb HNleb). }
-    (** Step 2: Cover I by balls of radius r, get chain from 0 to 1 **)
-    set BallFam := {open_ball unit_interval R_bounded_metric x r | x :e unit_interval}.
-    claim HballCover : open_cover_of unit_interval unit_interval_topology BallFam.
-    { exact (unit_interval_open_cover_by_fixed_radius_balls r HrR Hrpos). }
-    claim Hchain :
-      exists U0 U1 n seq:set,
-        U0 :e BallFam /\ 0 :e U0 /\
-        U1 :e BallFam /\ 1 :e U1 /\
-        n :e omega /\
-        function_on seq (ordsucc n) BallFam /\
-        apply_fun seq 0 = U0 /\
-        apply_fun seq n = U1 /\
-        (forall k:set, k :e n ->
-          apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty).
-    {
-      exact (connected_space_open_cover_chain
-        unit_interval unit_interval_topology BallFam 0 1
-        unit_interval_connected HballCover
-        zero_in_unit_interval one_in_unit_interval).
-    }
-    (** Step 3: Each ball in chain maps entirely to U or V **)
+    (** Step 2: Each ball of radius r maps entirely to U or V **)
     (** Key: B(c, r) c= B(c, eps_Nleb) c= preU or preV **)
     claim Hleb_forall : forall x:set, x :e unit_interval ->
       exists S:set, S :e UPair preU preV /\
@@ -124108,255 +124119,9 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun fcls t :e U)).
         claim HtPreV : t :e preV. { rewrite <- HSeqV. exact HtS. }
         exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e V) t HtPreV).
     }
-    (** Step 5: preU and preV are both open and non-empty, covering I **)
-    claim HpreUopen : preU :e unit_interval_topology.
-    { exact (continuous_map_preimage unit_interval unit_interval_topology X Tx fcls HfclsCont U HU). }
-    claim HpreVopen : preV :e unit_interval_topology.
-    { exact (continuous_map_preimage unit_interval unit_interval_topology X Tx fcls HfclsCont V HV). }
-    claim H0preU : 0 :e preU.
-    { exact (SepI unit_interval (fun x:set => apply_fun fcls x :e U) 0
-        zero_in_unit_interval (Hfcls0 (fun a b:set => b :e U) Hx0U)). }
-    claim H0preV : 0 :e preV.
-    { exact (SepI unit_interval (fun x:set => apply_fun fcls x :e V) 0
-        zero_in_unit_interval (Hfcls0 (fun a b:set => b :e V) Hx0V)). }
-    (** Step 6: Find an interior point in preU cap preV (i.e., f(t) in U cap V for some t in (0,1)) **)
-    claim HmetI : metric_on unit_interval R_bounded_metric.
-    { exact R_bounded_metric_is_metric_on_unit_interval. }
-    claim HmetTopEq : metric_topology unit_interval R_bounded_metric = unit_interval_topology.
-    { exact metric_topology_unit_interval_eq_I_topology. }
-    (** preV is open in metric topology, 0 :e preV, so there exists a ball B(0, delta) c= preV **)
-    claim HpreVmetric : preV :e metric_topology unit_interval R_bounded_metric.
-    { rewrite HmetTopEq. exact HpreVopen. }
-    claim HpreUmetric : preU :e metric_topology unit_interval R_bounded_metric.
-    { rewrite HmetTopEq. exact HpreUopen. }
-    claim Hball_in_preV : exists rv:set, rv :e R /\ (Rlt 0 rv /\
-      open_ball unit_interval R_bounded_metric 0 rv c= preV).
-    {
-      exact (metric_topology_neighborhood_contains_ball
-        unit_interval R_bounded_metric 0 preV
-        HmetI zero_in_unit_interval HpreVmetric H0preV).
-    }
-    claim Hball_in_preU : exists ru:set, ru :e R /\ (Rlt 0 ru /\
-      open_ball unit_interval R_bounded_metric 0 ru c= preU).
-    {
-      exact (metric_topology_neighborhood_contains_ball
-        unit_interval R_bounded_metric 0 preU
-        HmetI zero_in_unit_interval HpreUmetric H0preU).
-    }
-    (** Step 7: Find t0 in (0,1) with f(t0) in U cap V **)
-    apply Hball_in_preU.
-    let ru. assume Hru : ru :e R /\ (Rlt 0 ru /\ open_ball unit_interval R_bounded_metric 0 ru c= preU).
-    claim HruR : ru :e R.
-    { exact (andEL (ru :e R) (Rlt 0 ru /\ open_ball unit_interval R_bounded_metric 0 ru c= preU) Hru). }
-    claim Hrurest : Rlt 0 ru /\ open_ball unit_interval R_bounded_metric 0 ru c= preU.
-    { exact (andER (ru :e R) (Rlt 0 ru /\ open_ball unit_interval R_bounded_metric 0 ru c= preU) Hru). }
-    claim Hrupos : Rlt 0 ru.
-    { exact (andEL (Rlt 0 ru) (open_ball unit_interval R_bounded_metric 0 ru c= preU) Hrurest). }
-    claim HruBallSub : open_ball unit_interval R_bounded_metric 0 ru c= preU.
-    { exact (andER (Rlt 0 ru) (open_ball unit_interval R_bounded_metric 0 ru c= preU) Hrurest). }
-    apply Hball_in_preV.
-    let rv. assume Hrv : rv :e R /\ (Rlt 0 rv /\ open_ball unit_interval R_bounded_metric 0 rv c= preV).
-    claim HrvR : rv :e R.
-    { exact (andEL (rv :e R) (Rlt 0 rv /\ open_ball unit_interval R_bounded_metric 0 rv c= preV) Hrv). }
-    claim Hrvrest : Rlt 0 rv /\ open_ball unit_interval R_bounded_metric 0 rv c= preV.
-    { exact (andER (rv :e R) (Rlt 0 rv /\ open_ball unit_interval R_bounded_metric 0 rv c= preV) Hrv). }
-    claim Hrvpos : Rlt 0 rv.
-    { exact (andEL (Rlt 0 rv) (open_ball unit_interval R_bounded_metric 0 rv c= preV) Hrvrest). }
-    claim HrvBallSub : open_ball unit_interval R_bounded_metric 0 rv c= preV.
-    { exact (andER (Rlt 0 rv) (open_ball unit_interval R_bounded_metric 0 rv c= preV) Hrvrest). }
-    (** Find t0 < min(ru, rv, 1) **)
-    apply (exists_eps_lt_four_pos ru rv 1 1 HruR HrvR real_1 real_1 Hrupos Hrvpos Rlt_0_1 Rlt_0_1).
-    let t0. assume Ht0.
-    apply (and6E (t0 :e R) (Rlt 0 t0) (Rlt t0 ru) (Rlt t0 rv) (Rlt t0 1) (Rlt t0 1) Ht0).
-    assume Ht0R : t0 :e R.
-    assume Ht0pos : Rlt 0 t0.
-    assume Ht0ltru : Rlt t0 ru.
-    assume Ht0ltrv : Rlt t0 rv.
-    assume Ht0lt1 : Rlt t0 1.
-    assume Ht0lt1b : Rlt t0 1.
-    (** t0 in unit_interval **)
-    claim Ht0I : t0 :e unit_interval.
-    { exact (SepI R (fun x:set => ~(Rlt x 0) /\ ~(Rlt 1 x)) t0 Ht0R
-        (andI (~(Rlt t0 0)) (~(Rlt 1 t0))
-          (not_Rlt_sym 0 t0 Ht0pos) (not_Rlt_sym t0 1 Ht0lt1))). }
-    (** Arithmetic: abs_SNo(0 - t0) = t0, so R_bounded_distance 0 t0 le t0 **)
-    claim Hstep1 : add_SNo 0 (minus_SNo t0) = minus_SNo t0.
-    { exact (add_SNo_0L (minus_SNo t0) (SNo_minus_SNo t0 (real_SNo t0 Ht0R))). }
-    claim Hstep2 : abs_SNo (minus_SNo t0) = abs_SNo t0.
-    { exact (abs_SNo_minus t0 (real_SNo t0 Ht0R)). }
-    claim Hstep3 : abs_SNo t0 = t0.
-    { exact (pos_abs_SNo t0 (RltE_lt 0 t0 Ht0pos)). }
-    claim Habs_Rle : Rle (abs_SNo (add_SNo 0 (minus_SNo t0))) t0.
-    { rewrite Hstep1. rewrite Hstep2. rewrite Hstep3. exact (Rle_refl t0 Ht0R). }
-    claim Hdist_le : Rle (R_bounded_distance 0 t0) t0.
-    { exact (R_bounded_distance_le_of_abs_le_lt1 0 t0 t0 real_0 Ht0R Ht0R Ht0lt1 Habs_Rle). }
-    (** t0 in B(0, ru) c= preU **)
-    claim Hmetric_eq : apply_fun R_bounded_metric (0, t0) = R_bounded_distance 0 t0.
-    { exact (R_bounded_metric_apply_early 0 t0 real_0 Ht0R). }
-    claim Hmetric_lt_ru : Rlt (apply_fun R_bounded_metric (0, t0)) ru.
-    { rewrite Hmetric_eq.
-      exact (Rle_Rlt_tra (R_bounded_distance 0 t0) t0 ru Hdist_le Ht0ltru). }
-    claim Ht0preU : t0 :e preU.
-    { exact (HruBallSub t0
-        (open_ballI unit_interval R_bounded_metric 0 ru t0 Ht0I Hmetric_lt_ru)). }
-    (** t0 in B(0, rv) c= preV **)
-    claim Hmetric_lt_rv : Rlt (apply_fun R_bounded_metric (0, t0)) rv.
-    { rewrite Hmetric_eq.
-      exact (Rle_Rlt_tra (R_bounded_distance 0 t0) t0 rv Hdist_le Ht0ltrv). }
-    claim Ht0preV : t0 :e preV.
-    { exact (HrvBallSub t0
-        (open_ballI unit_interval R_bounded_metric 0 rv t0 Ht0I Hmetric_lt_rv)). }
-    (** f(t0) in U cap V **)
-    claim Ht0fU : apply_fun fcls t0 :e U.
-    { exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e U) t0 Ht0preU). }
-    claim Ht0fV : apply_fun fcls t0 :e V.
-    { exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e V) t0 Ht0preV). }
-    claim Ht0fUV : apply_fun fcls t0 :e U :/\: V.
-    { exact (binintersectI U V (apply_fun fcls t0) Ht0fU Ht0fV). }
-    (** Word construction from interior transition point **)
-    (** Strategy: Destructure chain, then use induction on chain length **)
-    (** Each chain ball maps to U or V. At overlap points between **)
-    (** different-colored balls, f maps to U cap V. **)
-    (** Destructure the chain of balls **)
-    apply Hchain.
-    let U0. assume HchU0.
-    apply HchU0.
-    let U1. assume HchU1.
-    apply HchU1.
-    let nch. assume HchN.
-    apply HchN.
-    let chseq. assume HchAll :
-      U0 :e BallFam /\ 0 :e U0 /\
-      U1 :e BallFam /\ 1 :e U1 /\
-      nch :e omega /\
-      function_on chseq (ordsucc nch) BallFam /\
-      apply_fun chseq 0 = U0 /\
-      apply_fun chseq nch = U1 /\
-      (forall k:set, k :e nch ->
-        apply_fun chseq k :/\: apply_fun chseq (ordsucc k) <> Empty).
-    (** Extract last conjunct: consecutive overlap **)
-    claim HchOverlap : forall k:set, k :e nch ->
-      apply_fun chseq k :/\: apply_fun chseq (ordsucc k) <> Empty.
-    { exact (andER
-        (((((((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1) /\
-        nch :e omega) /\ function_on chseq (ordsucc nch) BallFam) /\
-        apply_fun chseq 0 = U0) /\ apply_fun chseq nch = U1)
-        (forall k:set, k :e nch ->
-          apply_fun chseq k :/\: apply_fun chseq (ordsucc k) <> Empty)
-        HchAll). }
-    claim HchRest : ((((((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1) /\
-      nch :e omega) /\ function_on chseq (ordsucc nch) BallFam) /\
-      apply_fun chseq 0 = U0) /\ apply_fun chseq nch = U1.
-    { exact (andEL
-        (((((((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1) /\
-        nch :e omega) /\ function_on chseq (ordsucc nch) BallFam) /\
-        apply_fun chseq 0 = U0) /\ apply_fun chseq nch = U1)
-        (forall k:set, k :e nch ->
-          apply_fun chseq k :/\: apply_fun chseq (ordsucc k) <> Empty)
-        HchAll). }
-    claim HchSeqN : apply_fun chseq nch = U1.
-    { exact (andER
-        ((((((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1) /\
-        nch :e omega) /\ function_on chseq (ordsucc nch) BallFam) /\
-        apply_fun chseq 0 = U0)
-        (apply_fun chseq nch = U1)
-        HchRest). }
-    claim HchRest2 : (((((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1) /\
-      nch :e omega) /\ function_on chseq (ordsucc nch) BallFam) /\
-      apply_fun chseq 0 = U0.
-    { exact (andEL
-        ((((((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1) /\
-        nch :e omega) /\ function_on chseq (ordsucc nch) BallFam) /\
-        apply_fun chseq 0 = U0)
-        (apply_fun chseq nch = U1)
-        HchRest). }
-    claim HchSeq0 : apply_fun chseq 0 = U0.
-    { exact (andER
-        (((((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1) /\
-        nch :e omega) /\ function_on chseq (ordsucc nch) BallFam)
-        (apply_fun chseq 0 = U0)
-        HchRest2). }
-    claim HchRest3 : ((((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1) /\
-      nch :e omega) /\ function_on chseq (ordsucc nch) BallFam.
-    { exact (andEL
-        (((((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1) /\
-        nch :e omega) /\ function_on chseq (ordsucc nch) BallFam)
-        (apply_fun chseq 0 = U0)
-        HchRest2). }
-    claim HchSeqFun : function_on chseq (ordsucc nch) BallFam.
-    { exact (andER
-        ((((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1) /\
-        nch :e omega)
-        (function_on chseq (ordsucc nch) BallFam)
-        HchRest3). }
-    claim HchRest4 : (((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1) /\
-      nch :e omega.
-    { exact (andEL
-        ((((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1) /\
-        nch :e omega)
-        (function_on chseq (ordsucc nch) BallFam)
-        HchRest3). }
-    claim HnchOmega : nch :e omega.
-    { exact (andER
-        (((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1)
-        (nch :e omega)
-        HchRest4). }
-    claim H1inU1 : 1 :e U1.
-    { exact (andER
-        ((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam)
-        (1 :e U1)
-        (andEL
-          (((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1)
-          (nch :e omega)
-          HchRest4)). }
-    claim HU1fam : U1 :e BallFam.
-    { exact (andER
-        (U0 :e BallFam /\ 0 :e U0)
-        (U1 :e BallFam)
-        (andEL
-          ((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam)
-          (1 :e U1)
-          (andEL
-            (((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1)
-            (nch :e omega)
-            HchRest4))). }
-    claim H0inU0 : 0 :e U0.
-    { exact (andER
-        (U0 :e BallFam)
-        (0 :e U0)
-        (andEL
-          (U0 :e BallFam /\ 0 :e U0)
-          (U1 :e BallFam)
-          (andEL
-            ((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam)
-            (1 :e U1)
-            (andEL
-              (((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1)
-              (nch :e omega)
-              HchRest4)))). }
-    claim HU0fam : U0 :e BallFam.
-    { exact (andEL
-        (U0 :e BallFam)
-        (0 :e U0)
-        (andEL
-          (U0 :e BallFam /\ 0 :e U0)
-          (U1 :e BallFam)
-          (andEL
-            ((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam)
-            (1 :e U1)
-            (andEL
-              (((U0 :e BallFam /\ 0 :e U0) /\ U1 :e BallFam) /\ 1 :e U1)
-              (nch :e omega)
-              HchRest4)))). }
-    (** Chain destructured. Now build the word. **)
-    (** The full inductive word construction from the chain requires: **)
-    (** - Base case (nch=0): single ball covers I, f maps to U or V **)
-    (** - Inductive step: find overlap point, determine colors, **)
-    (**   split loop, peel one factor via connecting path in UcapV, **)
-    (**   apply IH to remainder **)
-    (** This is the core of Munkres Thm 59.1 Step 1+2 and requires **)
-    (** ~200 lines of inductive proof. Admitted for now. **)
-    admit.
+    (** Apply the ball cover word construction helper **)
+    exact (ball_cover_word_construction X Tx U V x0 fcls r
+      Htop HU HV Hcover Hx0UV HpcUV HfclsLoop HrR Hrpos Hball_image).
 Admitted.
 
 (** from S59 Thm 59.1 (line 1541 in algtop.tex) **)
