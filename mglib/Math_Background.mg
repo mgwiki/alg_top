@@ -66830,6 +66830,178 @@ apply (open_cover_ofI
   exact HballMet.
 Qed.
 
+(** Infrastructure: pull back the evenly covered neighborhood cover of B along a continuous path f: I -> B. **)
+(** Proven Charlie **)
+Theorem covering_map_preimage_evenly_covered_open_cover_of_unit_interval :
+  forall E Te B Tb p f:set,
+  covering_map E Te B Tb p ->
+  continuous_map unit_interval unit_interval_topology B Tb f ->
+  open_cover_of
+    unit_interval
+    unit_interval_topology
+    {preimage_of unit_interval f U | U :e {U0 :e Tb | evenly_covered E Te B Tb p U0}}.
+let E Te B Tb p f.
+assume Hcov Hfcont.
+set EvenFam := {U0 :e Tb | evenly_covered E Te B Tb p U0}.
+set Fam := {preimage_of unit_interval f U | U :e EvenFam}.
+apply (open_cover_ofI
+  unit_interval
+  unit_interval_topology
+  Fam).
+- exact unit_interval_topology_on.
+- let V.
+  assume HV.
+  apply (ReplE
+    EvenFam
+    (fun U:set => preimage_of unit_interval f U)
+    V
+    HV).
+  let U.
+  assume HUPack.
+  claim HVe : V = preimage_of unit_interval f U.
+  {
+    exact (andER
+      (U :e EvenFam)
+      (V = preimage_of unit_interval f U)
+      HUPack).
+  }
+  rewrite HVe.
+  apply (PowerI
+    unit_interval
+    (preimage_of unit_interval f U)).
+  exact (Sep_Subq
+    unit_interval
+    (fun x:set => apply_fun f x :e U)).
+- let t.
+  assume HtI.
+  claim HfFun : function_on f unit_interval B.
+  {
+    exact (continuous_map_function_on
+      unit_interval
+      unit_interval_topology
+      B
+      Tb
+      f
+      Hfcont).
+  }
+  claim HftB : apply_fun f t :e B.
+  {
+    exact (HfFun
+      t
+      HtI).
+  }
+  claim Hloc :
+    exists U:set, U :e Tb /\ apply_fun f t :e U /\ evenly_covered E Te B Tb p U.
+  {
+    exact (andER
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+      Hcov
+      (apply_fun f t)
+      HftB).
+  }
+  apply Hloc.
+  let U.
+  assume HUPack.
+  claim HUopen : U :e Tb.
+  {
+    exact (andEL
+      (U :e Tb)
+      (apply_fun f t :e U)
+      (andEL
+        (U :e Tb /\ apply_fun f t :e U)
+        (evenly_covered E Te B Tb p U)
+        HUPack)).
+  }
+  claim HftU : apply_fun f t :e U.
+  {
+    exact (andER
+      (U :e Tb)
+      (apply_fun f t :e U)
+      (andEL
+        (U :e Tb /\ apply_fun f t :e U)
+        (evenly_covered E Te B Tb p U)
+        HUPack)).
+  }
+  claim HevenU : evenly_covered E Te B Tb p U.
+  {
+    exact (andER
+      (U :e Tb /\ apply_fun f t :e U)
+      (evenly_covered E Te B Tb p U)
+      HUPack).
+  }
+  claim HUevenFam : U :e EvenFam.
+  {
+    exact (SepI
+      Tb
+      (fun U0:set => evenly_covered E Te B Tb p U0)
+      U
+      HUopen
+      HevenU).
+  }
+  claim HtPre : t :e preimage_of unit_interval f U.
+  {
+    exact (SepI
+      unit_interval
+      (fun x:set => apply_fun f x :e U)
+      t
+      HtI
+      HftU).
+  }
+  exact (UnionI
+    Fam
+    t
+    (preimage_of unit_interval f U)
+    HtPre
+    (ReplI
+      EvenFam
+      (fun U0:set => preimage_of unit_interval f U0)
+      U
+      HUevenFam)).
+- let V.
+  assume HV.
+  apply (ReplE
+    EvenFam
+    (fun U:set => preimage_of unit_interval f U)
+    V
+    HV).
+  let U.
+  assume HUPack.
+  claim HUeven : U :e EvenFam.
+  {
+    exact (andEL
+      (U :e EvenFam)
+      (V = preimage_of unit_interval f U)
+      HUPack).
+  }
+  claim HVeq : V = preimage_of unit_interval f U.
+  {
+    exact (andER
+      (U :e EvenFam)
+      (V = preimage_of unit_interval f U)
+      HUPack).
+  }
+  claim HUopen : U :e Tb.
+  {
+    exact (SepE1
+      Tb
+      (fun U0:set => evenly_covered E Te B Tb p U0)
+      U
+      HUeven).
+  }
+  rewrite HVeq.
+  exact (continuous_map_preimage
+    unit_interval
+    unit_interval_topology
+    B
+    Tb
+    f
+    Hfcont
+    U
+    HUopen).
+Qed.
+
 (** Infrastructure: glue functional graphs on overlapping domains when they agree. **)
 (** Proven Charlie **)
 Theorem functional_graph_union_agree_on_overlap :
@@ -67017,6 +67189,134 @@ exact (andI
   Htot
   HfuncUnion).
 Qed.
+
+(** Infrastructure: existence form of path lifting for later reuse. **)
+Theorem lemma54_1_path_lifting_exists_witness :
+  forall E Te B Tb p e0 f:set,
+  covering_map E Te B Tb p ->
+  e0 :e E ->
+  apply_fun p e0 = apply_fun f 0 ->
+  continuous_map unit_interval unit_interval_topology B Tb f ->
+  exists ft:set,
+    continuous_map unit_interval unit_interval_topology E Te ft /\
+    apply_fun ft 0 = e0 /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun ft t) = apply_fun f t).
+let E Te B Tb p e0 f.
+assume Hcov He0 Hstart Hfcont.
+(** Build an open cover of unit_interval by pullbacks of evenly covered neighborhoods along f. **)
+set EvenFam := {U0 :e Tb | evenly_covered E Te B Tb p U0}.
+set Fam := {preimage_of unit_interval f U | U :e EvenFam}.
+claim HcoverFam : open_cover_of unit_interval unit_interval_topology Fam.
+{
+  exact (covering_map_preimage_evenly_covered_open_cover_of_unit_interval
+    E Te B Tb p f Hcov Hfcont).
+}
+(** Get a Lebesgue number eps_N for this cover, then shrink radius to eps_(ordsucc N) and use that it is less than 1. **)
+claim HlebPack :
+  exists N:set, N :e omega /\ lebesgue_number_metric unit_interval R_bounded_metric Fam (eps_ N).
+{
+  exact (unit_interval_open_cover_has_lebesgue_number_eps Fam HcoverFam).
+}
+apply HlebPack.
+let N.
+assume HNpack.
+claim HNomega : N :e omega.
+{
+  exact (andEL
+    (N :e omega)
+    (lebesgue_number_metric unit_interval R_bounded_metric Fam (eps_ N))
+    HNpack).
+}
+claim HlebN : lebesgue_number_metric unit_interval R_bounded_metric Fam (eps_ N).
+{
+  exact (andER
+    (N :e omega)
+    (lebesgue_number_metric unit_interval R_bounded_metric Fam (eps_ N))
+    HNpack).
+}
+set r := eps_ (ordsucc N).
+claim HrR : r :e R.
+{
+  exact (eps_in_R_omega
+    (ordsucc N)
+    (nat_p_omega (ordsucc N) (nat_ordsucc N (omega_nat_p N HNomega)))).
+}
+claim Hrpos : Rlt 0 r.
+{
+  claim HrSNoPos : 0 < r.
+  {
+    exact (SNo_eps_pos
+      (ordsucc N)
+      (nat_p_omega (ordsucc N) (nat_ordsucc N (omega_nat_p N HNomega)))).
+  }
+  exact (RltI
+    0
+    r
+    real_0
+    HrR
+    HrSNoPos).
+}
+claim Hrlt1 : Rlt r 1.
+{
+  exact (eps_ordsucc_lt1_R
+    N
+    HNomega).
+}
+claim HrepsLt : Rlt r (eps_ N).
+{
+  exact (eps_ordsucc_lt_eps
+    N
+    HNomega).
+}
+claim HlebR : lebesgue_number_metric unit_interval R_bounded_metric Fam r.
+{
+  exact (lebesgue_number_metric_shrink
+    unit_interval
+    R_bounded_metric
+    Fam
+    r
+    (eps_ N)
+    HrR
+    (eps_in_R_omega N HNomega)
+    Hrpos
+    HrepsLt
+    HlebN).
+}
+(** Cover unit_interval by fixed-radius balls and extract a finite chain of such balls from 0 to 1. **)
+set BallFam := {open_ball unit_interval R_bounded_metric x r | x :e unit_interval}.
+claim HballCover : open_cover_of unit_interval unit_interval_topology BallFam.
+{
+  exact (unit_interval_open_cover_by_fixed_radius_balls
+    r
+    HrR
+    Hrpos).
+}
+claim Hchain :
+  exists U0 U1 n seq:set,
+    U0 :e BallFam /\ 0 :e U0 /\
+    U1 :e BallFam /\ 1 :e U1 /\
+    n :e omega /\
+    function_on seq (ordsucc n) BallFam /\
+    apply_fun seq 0 = U0 /\
+    apply_fun seq n = U1 /\
+    (forall k:set, k :e n ->
+      apply_fun seq k :/\: apply_fun seq (ordsucc k) <> Empty).
+{
+  exact (connected_space_open_cover_chain
+    unit_interval
+    unit_interval_topology
+    BallFam
+    0
+    1
+    unit_interval_connected
+    HballCover
+    zero_in_unit_interval
+    one_in_unit_interval).
+}
+(** The remaining work is to build compatible local lifts on the chain and glue them. **)
+admit.
+Admitted.
 
 (** from S54 Lem 54.1 (line 715 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map, p(e0) = b0. Any path f:[0,1] -> B **)
