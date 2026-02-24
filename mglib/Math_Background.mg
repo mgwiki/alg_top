@@ -63478,6 +63478,88 @@ rewrite <- (order_interval_R_eq_open_interval a b).
 exact Hconn.
 Qed.
 
+(** Infrastructure: open_ball in unit_interval is intersection with open_ball in R. **)
+(** Proven Charlie **)
+Theorem open_ball_unit_interval_eq_binintersect_R :
+  forall x r:set,
+  x :e unit_interval ->
+  r :e R ->
+  open_ball unit_interval R_bounded_metric x r =
+    unit_interval :/\: open_ball R R_bounded_metric x r.
+let x r.
+assume HxI HrR.
+apply set_ext.
+- let y.
+  assume HyBallI.
+  claim HyI : y :e unit_interval.
+  {
+    exact (SepE1
+      unit_interval
+      (fun y0:set => Rlt (apply_fun R_bounded_metric (x,y0)) r)
+      y
+      HyBallI).
+  }
+  claim HyCond : Rlt (apply_fun R_bounded_metric (x,y)) r.
+  {
+    exact (SepE2
+      unit_interval
+      (fun y0:set => Rlt (apply_fun R_bounded_metric (x,y0)) r)
+      y
+      HyBallI).
+  }
+  claim HyR : y :e R.
+  {
+    exact (unit_interval_sub_R y HyI).
+  }
+  claim HyBallR : y :e open_ball R R_bounded_metric x r.
+  {
+    exact (SepI
+      R
+      (fun y0:set => Rlt (apply_fun R_bounded_metric (x,y0)) r)
+      y
+      HyR
+      HyCond).
+  }
+  exact (binintersectI
+    unit_interval
+    (open_ball R R_bounded_metric x r)
+    y
+    HyI
+    HyBallR).
+- let y.
+  assume HyInt.
+  claim HyI : y :e unit_interval.
+  {
+    exact (binintersectE1
+      unit_interval
+      (open_ball R R_bounded_metric x r)
+      y
+      HyInt).
+  }
+  claim HyBallR : y :e open_ball R R_bounded_metric x r.
+  {
+    exact (binintersectE2
+      unit_interval
+      (open_ball R R_bounded_metric x r)
+      y
+      HyInt).
+  }
+  claim HyCond : Rlt (apply_fun R_bounded_metric (x,y)) r.
+  {
+    exact (SepE2
+      R
+      (fun y0:set => Rlt (apply_fun R_bounded_metric (x,y0)) r)
+      y
+      HyBallR).
+  }
+  exact (SepI
+    unit_interval
+    (fun y0:set => Rlt (apply_fun R_bounded_metric (x,y0)) r)
+    y
+    HyI
+    HyCond).
+Qed.
+
 (** Infrastructure: Lebesgue number for open covers of unit_interval (metric topology = subspace topology). **)
 (** Proven Charlie **)
 Theorem unit_interval_open_cover_has_lebesgue_number_eps :
