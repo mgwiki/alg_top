@@ -183914,6 +183914,101 @@ exact (surjective_map_preimage_nonempty_of_nonempty_subset
 Qed.
 
 (** Proven Bob **)
+Theorem surjective_map_preimage_empty_iff_subset_empty :
+  forall E X pi V:set,
+  surjective_map E X pi ->
+  V c= X ->
+  (preimage_of E pi V = Empty <-> V = Empty).
+let E X pi V.
+assume Hsurj HVsub.
+apply iffI.
+- assume HpreEmpty.
+  apply set_ext.
+  + let v.
+    assume HvV.
+    claim HVne : V <> Empty.
+    {
+      exact (elem_implies_nonempty V v HvV).
+    }
+    claim HpreNe : preimage_of E pi V <> Empty.
+    {
+      exact (surjective_map_preimage_nonempty_of_nonempty_subset
+        E
+        X
+        pi
+        V
+        Hsurj
+        HVsub
+        HVne).
+    }
+    claim Hfalse : False.
+    {
+      exact (HpreNe HpreEmpty).
+    }
+    exact (FalseE Hfalse (v :e Empty)).
+  + let v.
+    assume HvE.
+    exact (EmptyE v HvE (v :e V)).
+- assume HVempty.
+  apply set_ext.
+  + let x.
+    assume HxPre.
+    claim HxE : x :e E.
+    {
+      exact (SepE1
+        E
+        (fun z:set => apply_fun pi z :e V)
+        x
+        HxPre).
+    }
+    claim HxV : apply_fun pi x :e V.
+    {
+      exact (SepE2
+        E
+        (fun z:set => apply_fun pi z :e V)
+        x
+        HxPre).
+    }
+    claim HxVEmpty : apply_fun pi x :e Empty.
+    {
+      exact (mem_eqR
+        (apply_fun pi x)
+        V
+        Empty
+        HVempty
+        HxV).
+    }
+    claim Hfalse : False.
+    {
+      exact (EmptyE
+        (apply_fun pi x)
+        HxVEmpty
+        False).
+    }
+    exact (FalseE Hfalse (x :e Empty)).
+  + let x.
+    assume HxE.
+    exact (EmptyE x HxE (x :e preimage_of E pi V)).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_preimage_empty_iff_subset_empty :
+  forall E Te X pi V:set,
+  quotient_map E Te X pi ->
+  V c= X ->
+  (preimage_of E pi V = Empty <-> V = Empty).
+let E Te X pi V.
+assume Hquot HVsub.
+exact (surjective_map_preimage_empty_iff_subset_empty
+  E
+  X
+  pi
+  V
+  (quotient_map_implies_surjective_map E Te X pi Hquot)
+  HVsub).
+Qed.
+
+(** Proven Bob **)
 Theorem image_of_nonempty_of_nonempty_domain :
   forall E X pi A:set,
   function_on pi E X ->
