@@ -146962,14 +146962,120 @@ apply andI.
               claim Hmap2'_eq_restH : map_rep pack2' =
                 nat_primrec eH (fun j r => apply_fun multH (r,
                   If_i (j = j0) eH (apply_fun (apply_fun hfam (apply_fun a2 j)) (apply_fun x2 j)))) n2.
-              { admit. }
+              { (** Unfold map_rep pack2' using tuple projections **)
+                claim Hp0 : pack2' 0 = n2. { exact (tuple_2_0_eq n2 (a2, x2')). }
+                claim Hp10 : (pack2' 1) 0 = a2.
+                { claim H1 : pack2' 1 = (a2, x2'). { exact (tuple_2_1_eq n2 (a2, x2')). }
+                  rewrite H1. exact (tuple_2_0_eq a2 x2'). }
+                claim Hp11 : (pack2' 1) 1 = x2'.
+                { claim H1 : pack2' 1 = (a2, x2'). { exact (tuple_2_1_eq n2 (a2, x2')). }
+                  rewrite H1. exact (tuple_2_1_eq a2 x2'). }
+                (** map_rep pack2' = nat_primrec eH (fun i r => multH(r, hfam(a2(i))(x2'(i)))) n2 **)
+                prove map_rep pack2' =
+                  nat_primrec eH (fun j r => apply_fun multH (r,
+                    If_i (j = j0) eH (apply_fun (apply_fun hfam (apply_fun a2 j)) (apply_fun x2 j)))) n2.
+                (** First rewrite map_rep pack2' to explicit form **)
+                claim Hmr : map_rep pack2' = nat_primrec eH
+                  (fun i r => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun a2 i)) (apply_fun x2' i))) n2.
+                { prove map_rep pack2' = nat_primrec eH
+                    (fun i r => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun a2 i)) (apply_fun x2' i))) n2.
+                  prove nat_primrec eH
+                    (fun i r => apply_fun multH (r,
+                      apply_fun (apply_fun hfam (apply_fun ((pack2' 1) 0) i)) (apply_fun ((pack2' 1) 1) i)))
+                    (pack2' 0) = nat_primrec eH
+                    (fun i r => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun a2 i)) (apply_fun x2' i))) n2.
+                  rewrite Hp0. rewrite Hp10. rewrite Hp11. reflexivity. }
+                rewrite Hmr.
+                (** Now use nat_primrec_ext to match **)
+                apply (nat_primrec_ext eH
+                  (fun i r => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun a2 i)) (apply_fun x2' i)))
+                  (fun i r => apply_fun multH (r, If_i (i = j0) eH (apply_fun (apply_fun hfam (apply_fun a2 i)) (apply_fun x2 i))))
+                  n2 Hn2O).
+                let i r. assume Hi : i :e n2.
+                (** apply_fun x2' i = If_i (i=j0) eG (apply_fun x2 i) **)
+                claim Hx2'i : apply_fun x2' i = If_i (i = j0) eG (apply_fun x2 i).
+                { exact (apply_fun_graph n2 (fun j => If_i (j = j0) eG (apply_fun x2 j)) i Hi). }
+                apply (xm (i = j0)).
+                - assume Heq : i = j0.
+                  claim Hx2'_eG : apply_fun x2' i = eG.
+                  { rewrite Hx2'i. exact (If_i_1 (i = j0) eG (apply_fun x2 i) Heq). }
+                  claim Hif_eH : If_i (i = j0) eH (apply_fun (apply_fun hfam (apply_fun a2 i)) (apply_fun x2 i)) = eH.
+                  { exact (If_i_1 (i = j0) eH (apply_fun (apply_fun hfam (apply_fun a2 i)) (apply_fun x2 i)) Heq). }
+                  claim Ha2iJ : apply_fun a2 i :e J. { exact (Ha2Fn i Hi). }
+                  claim Hhfam_eG : apply_fun (apply_fun hfam (apply_fun a2 i)) eG = eH.
+                  { exact (Hhfam_id (apply_fun a2 i) Ha2iJ). }
+                  rewrite Hx2'_eG. rewrite Hif_eH. rewrite Hhfam_eG. reflexivity.
+                - assume Hne : i <> j0.
+                  claim Hx2'_x2 : apply_fun x2' i = apply_fun x2 i.
+                  { rewrite Hx2'i. exact (If_i_0 (i = j0) eG (apply_fun x2 i) Hne). }
+                  claim Hif_hfam : If_i (i = j0) eH (apply_fun (apply_fun hfam (apply_fun a2 i)) (apply_fun x2 i)) =
+                    apply_fun (apply_fun hfam (apply_fun a2 i)) (apply_fun x2 i).
+                  { exact (If_i_0 (i = j0) eH (apply_fun (apply_fun hfam (apply_fun a2 i)) (apply_fun x2 i)) Hne). }
+                  rewrite Hx2'_x2. rewrite Hif_hfam. reflexivity. }
               (** abelian_extract in H: map_rep pack2 = multH(rest_H, hfam(a2(j0))(x2(j0))) **)
               claim Hextract_H : map_rep pack2 =
                 apply_fun multH (
                   nat_primrec eH (fun j r => apply_fun multH (r,
                     If_i (j = j0) eH (apply_fun (apply_fun hfam (apply_fun a2 j)) (apply_fun x2 j)))) n2,
                   apply_fun (apply_fun hfam (apply_fun a2 j0)) (apply_fun x2 j0)).
-              { admit. }
+              { (** Use wrapper approach for nat_primrec_abelian_extract **)
+                claim HcommH_ex : forall x y:set, x :e H -> y :e H -> apply_fun multH (x, y) = apply_fun multH (y, x).
+                { exact (andER
+                    (group_structure H multH eH invH)
+                    (forall x y:set, x :e H -> y :e H -> apply_fun multH (x, y) = apply_fun multH (y, x))
+                    HabH). }
+                (** Define wrapper **)
+                set fH := fun i:set => If_i (i :e n2) (apply_fun (apply_fun hfam (apply_fun a2 i)) (apply_fun x2 i)) eH.
+                claim HfH : forall i:set, fH i :e H.
+                { let i. apply (xm (i :e n2)).
+                  - assume Hi.
+                    claim Hv : fH i = apply_fun (apply_fun hfam (apply_fun a2 i)) (apply_fun x2 i).
+                    { exact (If_i_1 (i :e n2) (apply_fun (apply_fun hfam (apply_fun a2 i)) (apply_fun x2 i)) eH Hi). }
+                    rewrite Hv. exact (Hhfam_to_H (apply_fun a2 i) (Ha2Fn i Hi) (apply_fun x2 i) (Hx2Gfam i Hi)).
+                  - assume Hni.
+                    claim Hv : fH i = eH.
+                    { exact (If_i_0 (i :e n2) (apply_fun (apply_fun hfam (apply_fun a2 i)) (apply_fun x2 i)) eH Hni). }
+                    rewrite Hv. exact HeHH. }
+                (** Bridge: map_rep pack2 = nat_primrec eH (...fH...) n2 **)
+                claim Hbridge : map_rep pack2 = nat_primrec eH (fun i r => apply_fun multH (r, fH i)) n2.
+                { apply (nat_primrec_ext eH
+                    (fun i r => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun a2 i)) (apply_fun x2 i)))
+                    (fun i r => apply_fun multH (r, fH i))
+                    n2 Hn2O).
+                  let i r. assume Hi : i :e n2.
+                  rewrite (If_i_1 (i :e n2) (apply_fun (apply_fun hfam (apply_fun a2 i)) (apply_fun x2 i)) eH Hi).
+                  reflexivity. }
+                (** Apply nat_primrec_abelian_extract **)
+                claim Hextract : nat_primrec eH (fun i r => apply_fun multH (r, fH i)) n2 =
+                  apply_fun multH (
+                    nat_primrec eH (fun i r => apply_fun multH (r, If_i (i = j0) eH (fH i))) n2,
+                    fH j0).
+                { exact (nat_primrec_abelian_extract H multH eH invH HgrpH HcommH_ex fH HfH n2 Hn2O j0 Hj0). }
+                (** fH j0 = hfam(a2(j0))(x2(j0)) **)
+                claim HfHj0 : fH j0 = apply_fun (apply_fun hfam (apply_fun a2 j0)) (apply_fun x2 j0).
+                { exact (If_i_1 (j0 :e n2) (apply_fun (apply_fun hfam (apply_fun a2 j0)) (apply_fun x2 j0)) eH Hj0). }
+                (** Bridge the If_i(i=j0) eH (fH i) to If_i(i=j0) eH hfam(a2(i))(x2(i)) **)
+                claim Hbridge2 : nat_primrec eH (fun i r => apply_fun multH (r, If_i (i = j0) eH (fH i))) n2 =
+                  nat_primrec eH (fun j r => apply_fun multH (r,
+                    If_i (j = j0) eH (apply_fun (apply_fun hfam (apply_fun a2 j)) (apply_fun x2 j)))) n2.
+                { apply (nat_primrec_ext eH
+                    (fun i r => apply_fun multH (r, If_i (i = j0) eH (fH i)))
+                    (fun j r => apply_fun multH (r,
+                      If_i (j = j0) eH (apply_fun (apply_fun hfam (apply_fun a2 j)) (apply_fun x2 j))))
+                    n2 Hn2O).
+                  let i r. assume Hi : i :e n2.
+                  apply (xm (i = j0)).
+                  - assume Heq : i = j0.
+                    rewrite (If_i_1 (i = j0) eH (fH i) Heq).
+                    rewrite (If_i_1 (i = j0) eH (apply_fun (apply_fun hfam (apply_fun a2 i)) (apply_fun x2 i)) Heq).
+                    reflexivity.
+                  - assume Hne : i <> j0.
+                    rewrite (If_i_0 (i = j0) eH (fH i) Hne).
+                    rewrite (If_i_0 (i = j0) eH (apply_fun (apply_fun hfam (apply_fun a2 i)) (apply_fun x2 i)) Hne).
+                    rewrite (If_i_1 (i :e n2) (apply_fun (apply_fun hfam (apply_fun a2 i)) (apply_fun x2 i)) eH Hi).
+                    reflexivity. }
+                (** Combine **)
+                rewrite Hbridge. rewrite Hextract. rewrite HfHj0. rewrite Hbridge2. reflexivity. }
               (** Combine: multH(P_k, T_k) = multH(rest_H, T_j0) = map_rep pack2 **)
               rewrite Hextract_H. rewrite <- Hmap2'_eq_restH. rewrite <- HIH. rewrite Hterm_eq. reflexivity.
             - (** Case B: a1(k) not in pack2. x1(k) = eG by Huniq clause 2. **)
