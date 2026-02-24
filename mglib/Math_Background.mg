@@ -147142,8 +147142,53 @@ apply andI.
                 rewrite <- Hcancel_lhs. rewrite Hcancel1. exact Hcancel_rhs. }
               (** Construct pack2' and show it represents g' **)
               set pack2' := (n2, (a2, x2')).
+              (** Tuple projections for pack2' **)
+              claim Hp0 : pack2' 0 = n2. { exact (tuple_2_0_eq n2 (a2, x2')). }
+              claim Hp10 : (pack2' 1) 0 = a2.
+              { claim H1 : pack2' 1 = (a2, x2'). { exact (tuple_2_1_eq n2 (a2, x2')). }
+                rewrite H1. exact (tuple_2_0_eq a2 x2'). }
+              claim Hp11 : (pack2' 1) 1 = x2'.
+              { claim H1 : pack2' 1 = (a2, x2'). { exact (tuple_2_1_eq n2 (a2, x2')). }
+                rewrite H1. exact (tuple_2_1_eq a2 x2'). }
               claim Hrep2' : rep_pred g' pack2'.
-              { admit. }
+              { prove (pack2' 0) :e omega /\ (pack2' 0) <> 0 /\
+                  function_on ((pack2' 1) 0) (pack2' 0) J /\
+                  function_on ((pack2' 1) 1) (pack2' 0) G /\
+                  (forall i:set, i :e (pack2' 0) -> apply_fun ((pack2' 1) 1) i :e apply_fun Gfam (apply_fun ((pack2' 1) 0) i)) /\
+                  (forall i j:set, i :e (pack2' 0) -> j :e (pack2' 0) -> i <> j -> apply_fun ((pack2' 1) 0) i <> apply_fun ((pack2' 1) 0) j) /\
+                  g' = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ((pack2' 1) 1) i)) (pack2' 0).
+                rewrite Hp0. rewrite Hp10. rewrite Hp11.
+                apply and7I.
+                - exact Hn2O.
+                - exact Hn2ne.
+                - exact Ha2Fn.
+                - (** function_on x2' n2 G **)
+                  prove function_on x2' n2 G.
+                  apply (graph_function_on n2 G (fun j:set => If_i (j = j0) eG (apply_fun x2 j))).
+                  let j. assume Hj : j :e n2.
+                  prove If_i (j = j0) eG (apply_fun x2 j) :e G.
+                  apply (xm (j = j0)).
+                  + assume Heq : j = j0.
+                    rewrite (If_i_1 (j = j0) eG (apply_fun x2 j) Heq). exact HeGG.
+                  + assume Hne : j <> j0.
+                    rewrite (If_i_0 (j = j0) eG (apply_fun x2 j) Hne). exact (Hx2Fn j Hj).
+                - (** forall i, i :e n2 -> x2'(i) :e Gfam(a2(i)) **)
+                  let i. assume Hi : i :e n2.
+                  claim Hx2'i : apply_fun x2' i = If_i (i = j0) eG (apply_fun x2 i).
+                  { exact (apply_fun_graph n2 (fun j => If_i (j = j0) eG (apply_fun x2 j)) i Hi). }
+                  rewrite Hx2'i.
+                  apply (xm (i = j0)).
+                  + assume Heq : i = j0.
+                    rewrite (If_i_1 (i = j0) eG (apply_fun x2 i) Heq).
+                    rewrite Heq.
+                    exact (Hsub_eG (apply_fun a2 j0) (Ha2Fn j0 Hj0)).
+                  + assume Hne : i <> j0.
+                    rewrite (If_i_0 (i = j0) eG (apply_fun x2 i) Hne).
+                    exact (Hx2Gfam i Hi).
+                - (** distinctness of a2 **)
+                  exact Hdist2.
+                - (** g' = product of x2' **)
+                  exact HgRep_k'. }
               (** Apply IH **)
               claim HIH : nat_primrec eH
                 (fun i r => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun a1 i)) (apply_fun x1 i))) k =
