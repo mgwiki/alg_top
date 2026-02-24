@@ -153520,7 +153520,273 @@ apply andI.
             (fun z => apply_fun (apply_fun ifam alpha) z)
             (apply_fun (ia alpha) (x alpha)) Hia_cl).
     * (** generation: every element of G is a product of elements from Gi(alpha) **)
-      admit.
+      (** Helper: product of identities at a coordinate **)
+      claim product_all_id : forall m:set, nat_p m ->
+        forall gamma:set, gamma :e J ->
+        forall vals : set -> set,
+        (forall i:set, i :e m -> vals i = ea gamma) ->
+        nat_primrec (ea gamma) (fun i r => apply_fun (ma gamma) (r, vals i)) m = ea gamma.
+      { apply nat_ind.
+        - let gamma. assume Hg : gamma :e J. let vals. assume _.
+          exact (nat_primrec_0 (ea gamma) (fun i r => apply_fun (ma gamma) (r, vals i))).
+        - let k. assume Hk : nat_p k.
+          assume IH : forall gamma:set, gamma :e J ->
+            forall vals : set -> set,
+            (forall i:set, i :e k -> vals i = ea gamma) ->
+            nat_primrec (ea gamma) (fun i r => apply_fun (ma gamma) (r, vals i)) k = ea gamma.
+          let gamma. assume Hg : gamma :e J.
+          let vals. assume Hvals : forall i:set, i :e ordsucc k -> vals i = ea gamma.
+          claim Hvals_k : forall i:set, i :e k -> vals i = ea gamma.
+          { let i. assume Hi. exact (Hvals i (ordsuccI1 k i Hi)). }
+          claim Hstep : nat_primrec (ea gamma) (fun i r => apply_fun (ma gamma) (r, vals i)) (ordsucc k) =
+            apply_fun (ma gamma) (nat_primrec (ea gamma) (fun i r => apply_fun (ma gamma) (r, vals i)) k, vals k).
+          { exact (nat_primrec_S (ea gamma) (fun i r => apply_fun (ma gamma) (r, vals i)) k Hk). }
+          claim Hih : nat_primrec (ea gamma) (fun i r => apply_fun (ma gamma) (r, vals i)) k = ea gamma.
+          { exact (IH gamma Hg vals Hvals_k). }
+          claim Hvk : vals k = ea gamma. { exact (Hvals k (ordsuccI2 k)). }
+          prove nat_primrec (ea gamma) (fun i r => apply_fun (ma gamma) (r, vals i)) (ordsucc k) = ea gamma.
+          rewrite Hstep. rewrite Hih. rewrite Hvk.
+          exact (Hid_left gamma Hg (ea gamma) (Hea_mem gamma Hg)).
+      }
+      (** Helper: product with single nonidentity at position k **)
+      claim product_single_nonid : forall m:set, nat_p m ->
+        forall gamma:set, gamma :e J ->
+        forall vals : set -> set,
+        (forall i:set, i :e m -> vals i :e Ga gamma) ->
+        forall k:set, k :e m ->
+        (forall i:set, i :e m -> i <> k -> vals i = ea gamma) ->
+        nat_primrec (ea gamma) (fun i r => apply_fun (ma gamma) (r, vals i)) m = vals k.
+      { admit. }
+      (** Main generation proof **)
+      let f. assume Hf : f :e G.
+      claim Hsupp_fin : finite (supp f). { exact (HG_fin f Hf). }
+      apply (xm (supp f = Empty)).
+      - (** supp f = Empty: f = eG **)
+        assume Hsupp_empty : supp f = Empty.
+        claim Hf_eG : f = eG.
+        { apply G_ext.
+          - exact Hf.
+          - exact HeG_G.
+          - let gamma. assume Hg : gamma :e J.
+            claim Hfg : f gamma :e Ga gamma. { exact (HG_ap f Hf gamma Hg). }
+            claim HeGg : eG gamma = ea gamma. { exact (beta J ea gamma Hg). }
+            claim Hf_not_in_supp : gamma /:e supp f.
+            { rewrite Hsupp_empty. exact (EmptyE gamma). }
+            claim Hfg_eq : f gamma = ea gamma.
+            { apply (xm (f gamma = ea gamma)).
+              - assume H. exact H.
+              - assume Hne : f gamma <> ea gamma.
+                claim Hin : gamma :e supp f.
+                { prove gamma :e {alpha :e J | f alpha <> ea alpha}.
+                  exact (SepI J (fun alpha => f alpha <> ea alpha) gamma Hg Hne). }
+                exact (FalseE (Hf_not_in_supp Hin) (f gamma = ea gamma)).
+            }
+            prove f gamma = eG gamma.
+            rewrite HeGg. exact Hfg_eq.
+        }
+        (** Now construct the trivial witness **)
+        apply (xm (J = Empty)).
+        + (** J = Empty: formalization gap **)
+          assume _. admit.
+        + assume HJne : J <> Empty.
+          claim Hex : exists alpha0:set, alpha0 :e J.
+          { apply (xm (exists alpha0:set, alpha0 :e J)).
+            - assume H. exact H.
+            - assume Hnex.
+              claim HJempty : J = Empty.
+              { apply set_ext.
+                - let z. assume Hz : z :e J.
+                  claim Hex2 : exists a:set, a :e J. { witness z. exact Hz. }
+                  exact (FalseE (Hnex Hex2) (z :e Empty)).
+                - let z. assume Hz : z :e Empty. exact (FalseE (EmptyE z Hz) (z :e J)). }
+              exact (FalseE (HJne HJempty) (exists alpha0:set, alpha0 :e J)).
+          }
+          apply Hex. let alpha0. assume Halpha0 : alpha0 :e J.
+          witness 1. apply andI.
+          - apply andI.
+            + exact (nat_p_omega 1 (nat_ordsucc 0 nat_0)).
+            + prove 1 <> 0. exact (neq_ordsucc_0 0).
+          - witness (graph 1 (fun _ => alpha0)). apply andI.
+            + (** function_on alphas 1 J **)
+              prove function_on (graph 1 (fun _ => alpha0)) 1 J.
+              let i. assume Hi : i :e 1.
+              claim Hev : apply_fun (graph 1 (fun _ => alpha0)) i = alpha0.
+              { exact (apply_fun_graph 1 (fun _ => alpha0) i Hi). }
+              rewrite Hev. exact Halpha0.
+            + witness (graph 1 (fun _ => eG)). apply andI.
+              - (** ((fn_on /\ xs_in_Gi) /\ injectivity) **)
+                apply andI.
+                + (** (fn_on /\ xs_in_Gi) **)
+                  apply andI.
+                  * (** function_on xs 1 G **)
+                    let i. assume Hi : i :e 1.
+                    claim Hev : apply_fun (graph 1 (fun _ => eG)) i = eG.
+                    { exact (apply_fun_graph 1 (fun _ => eG) i Hi). }
+                    rewrite Hev. exact HeG_G.
+                  * (** xs i :e Gimages(alphas i) **)
+                    let i. assume Hi : i :e 1.
+                    claim Hai : apply_fun (graph 1 (fun _ => alpha0)) i = alpha0.
+                    { exact (apply_fun_graph 1 (fun _ => alpha0) i Hi). }
+                    claim Hxi : apply_fun (graph 1 (fun _ => eG)) i = eG.
+                    { exact (apply_fun_graph 1 (fun _ => eG) i Hi). }
+                    rewrite Hai. rewrite Hxi. exact (eG_in_Gi alpha0 Halpha0).
+                + (** injectivity of alphas **)
+                  let i j. assume Hi : i :e 1. assume Hj : j :e 1.
+                  assume Hne : i <> j.
+                  (** 1 = {0}, so i = 0 and j = 0, contradicting i <> j **)
+                  claim Hi0 : i = 0.
+                  { apply (ordsuccE 0 i Hi).
+                    - assume Habs : i :e 0. exact (FalseE (EmptyE i Habs) (i = 0)).
+                    - assume H. exact H. }
+                  claim Hj0 : j = 0.
+                  { apply (ordsuccE 0 j Hj).
+                    - assume Habs : j :e 0. exact (FalseE (EmptyE j Habs) (j = 0)).
+                    - assume H. exact H. }
+                  claim Heq : i = j. { rewrite Hi0. rewrite Hj0. reflexivity. }
+                  exact (FalseE (Hne Heq) (apply_fun (graph 1 (fun _ => alpha0)) i <> apply_fun (graph 1 (fun _ => alpha0)) j)).
+              - (** f = product **)
+                claim Hstep : nat_primrec eG (fun i r => apply_fun multG (r, apply_fun (graph 1 (fun _ => eG)) i)) 1 =
+                  apply_fun multG (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun (graph 1 (fun _ => eG)) i)) 0,
+                    apply_fun (graph 1 (fun _ => eG)) 0).
+                { exact (nat_primrec_S eG (fun i r => apply_fun multG (r, apply_fun (graph 1 (fun _ => eG)) i)) 0 nat_0). }
+                claim Hbase : nat_primrec eG (fun i r => apply_fun multG (r, apply_fun (graph 1 (fun _ => eG)) i)) 0 = eG.
+                { exact (nat_primrec_0 eG (fun i r => apply_fun multG (r, apply_fun (graph 1 (fun _ => eG)) i))). }
+                claim H0in1 : 0 :e 1. { exact (ordsuccI2 0). }
+                claim Hx0 : apply_fun (graph 1 (fun _ => eG)) 0 = eG.
+                { exact (apply_fun_graph 1 (fun _ => eG) 0 H0in1). }
+                claim Hprod : nat_primrec eG (fun i r => apply_fun multG (r, apply_fun (graph 1 (fun _ => eG)) i)) 1 =
+                  apply_fun multG (eG, eG).
+                { prove nat_primrec eG (fun i r => apply_fun multG (r, apply_fun (graph 1 (fun _ => eG)) i)) 1 =
+                    apply_fun multG (eG, eG).
+                  rewrite Hstep. rewrite Hbase. rewrite Hx0. reflexivity. }
+                claim HmulteG : apply_fun multG (eG, eG) = eG.
+                { apply (G_ext (apply_fun multG (eG, eG)) eG (HmultG_G eG eG HeG_G HeG_G) HeG_G).
+                  let alpha. assume Hal : alpha :e J.
+                  claim Hcoord : (apply_fun multG (eG, eG)) alpha = apply_fun (ma alpha) (eG alpha, eG alpha).
+                  { exact (HmultG_coord eG eG HeG_G HeG_G alpha Hal). }
+                  claim HeGa : eG alpha = ea alpha. { exact (beta J (fun alpha => ea alpha) alpha Hal). }
+                  claim Hid_ea : apply_fun (ma alpha) (ea alpha, ea alpha) = ea alpha.
+                  { exact (Hid_left alpha Hal (ea alpha) (Hea_mem alpha Hal)). }
+                  prove (apply_fun multG (eG, eG)) alpha = eG alpha.
+                  rewrite Hcoord. rewrite HeGa. rewrite Hid_ea. reflexivity. }
+                prove f = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun (graph 1 (fun _ => eG)) i)) 1.
+                rewrite Hf_eG. rewrite Hprod. symmetry. exact HmulteG.
+      - (** supp f <> Empty: use finite enumeration **)
+        assume Hsupp_ne : supp f <> Empty.
+        (** Enumerate the support **)
+        apply (finite_ex_bijection_from_omega (supp f) Hsupp_fin).
+        let n. assume Hex_e. apply Hex_e. let e_bij.
+        assume Hneb : n :e omega /\ bijection n (supp f) e_bij.
+        claim HnO : n :e omega. { exact (andEL (n :e omega) (bijection n (supp f) e_bij) Hneb). }
+        claim Hbij : bijection n (supp f) e_bij.
+        { exact (andER (n :e omega) (bijection n (supp f) e_bij) Hneb). }
+        claim Hbij_fn : function_on e_bij n (supp f).
+        { exact (andEL (function_on e_bij n (supp f))
+            (forall y:set, y :e supp f -> exists x:set, x :e n /\ apply_fun e_bij x = y /\
+              (forall x':set, x' :e n -> apply_fun e_bij x' = y -> x' = x))
+            Hbij). }
+        claim Hbij_surj_inj :
+          forall y:set, y :e supp f -> exists x:set, x :e n /\ apply_fun e_bij x = y /\
+            (forall x':set, x' :e n -> apply_fun e_bij x' = y -> x' = x).
+        { exact (andER (function_on e_bij n (supp f))
+            (forall y:set, y :e supp f -> exists x:set, x :e n /\ apply_fun e_bij x = y /\
+              (forall x':set, x' :e n -> apply_fun e_bij x' = y -> x' = x))
+            Hbij). }
+        claim Hei_supp : forall i:set, i :e n -> apply_fun e_bij i :e supp f.
+        { exact Hbij_fn. }
+        claim Hei_J : forall i:set, i :e n -> apply_fun e_bij i :e J.
+        { let i. assume Hi. exact (SepE1 J (fun alpha => f alpha <> ea alpha)
+            (apply_fun e_bij i) (Hei_supp i Hi)). }
+        claim Hei_ne : forall i:set, i :e n -> f (apply_fun e_bij i) <> ea (apply_fun e_bij i).
+        { let i. assume Hi. exact (SepE2 J (fun alpha => f alpha <> ea alpha)
+            (apply_fun e_bij i) (Hei_supp i Hi)). }
+        (** n <> 0 since supp f is non-empty **)
+        claim Hn_ne : n <> 0.
+        { assume Hn0 : n = 0.
+          claim Hequip : equip n (supp f).
+          { exact (equip_of_bijection n (supp f) e_bij Hbij). }
+          claim Hequip_sym : equip (supp f) n.
+          { exact (equip_sym n (supp f) Hequip). }
+          claim Hequip_0 : equip (supp f) 0.
+          { prove equip (supp f) 0. rewrite <- Hn0. exact Hequip_sym. }
+          claim Hsupp_0 : supp f = 0.
+          { exact (equip_0_Empty (supp f) Hequip_0). }
+          exact (Hsupp_ne Hsupp_0).
+        }
+        (** Construct witnesses **)
+        set my_alphas := graph n (fun i => apply_fun e_bij i).
+        set my_xs := graph n (fun i =>
+          apply_fun (apply_fun ifam (apply_fun e_bij i)) (f (apply_fun e_bij i))).
+        witness n. apply andI.
+        + apply andI.
+          - exact HnO.
+          - exact Hn_ne.
+        + witness my_alphas. apply andI.
+          - (** function_on my_alphas n J **)
+            let i. assume Hi : i :e n.
+            prove apply_fun my_alphas i :e J.
+            claim Hev : apply_fun my_alphas i = apply_fun e_bij i.
+            { exact (apply_fun_graph n (fun i => apply_fun e_bij i) i Hi). }
+            rewrite Hev. exact (Hei_J i Hi).
+          - witness my_xs. apply andI.
+            + (** ((fn_on /\ xs_in_Gi) /\ injectivity) **)
+              apply andI.
+              - (** (fn_on /\ xs_in_Gi) **)
+                apply andI.
+                + (** function_on my_xs n G **)
+                  let i. assume Hi : i :e n.
+                  prove apply_fun my_xs i :e G.
+                  claim Hev : apply_fun my_xs i =
+                    apply_fun (apply_fun ifam (apply_fun e_bij i)) (f (apply_fun e_bij i)).
+                  { exact (apply_fun_graph n (fun i =>
+                      apply_fun (apply_fun ifam (apply_fun e_bij i)) (f (apply_fun e_bij i))) i Hi). }
+                  claim HfaGa : f (apply_fun e_bij i) :e Ga (apply_fun e_bij i).
+                  { exact (HG_ap f Hf (apply_fun e_bij i) (Hei_J i Hi)). }
+                  rewrite Hev. exact (ifam_x_G (apply_fun e_bij i) (Hei_J i Hi)
+                    (f (apply_fun e_bij i)) HfaGa).
+                + (** xs i :e Gimages(alphas i) **)
+                  let i. assume Hi : i :e n.
+                  claim Hai : apply_fun my_alphas i = apply_fun e_bij i.
+                  { exact (apply_fun_graph n (fun i => apply_fun e_bij i) i Hi). }
+                  claim Hxi : apply_fun my_xs i =
+                    apply_fun (apply_fun ifam (apply_fun e_bij i)) (f (apply_fun e_bij i)).
+                  { exact (apply_fun_graph n (fun i =>
+                      apply_fun (apply_fun ifam (apply_fun e_bij i)) (f (apply_fun e_bij i))) i Hi). }
+                  rewrite Hai. rewrite Hxi.
+                  rewrite (Gimages_eval (apply_fun e_bij i) (Hei_J i Hi)).
+                  prove apply_fun (apply_fun ifam (apply_fun e_bij i)) (f (apply_fun e_bij i)) :e
+                    {apply_fun (apply_fun ifam (apply_fun e_bij i)) z | z :e Ga (apply_fun e_bij i)}.
+                  exact (ReplI (Ga (apply_fun e_bij i))
+                    (fun z => apply_fun (apply_fun ifam (apply_fun e_bij i)) z)
+                    (f (apply_fun e_bij i))
+                    (HG_ap f Hf (apply_fun e_bij i) (Hei_J i Hi))).
+              - (** injectivity of alphas **)
+                let i j. assume Hi : i :e n. assume Hj : j :e n.
+                assume Hne : i <> j.
+                claim Hai : apply_fun my_alphas i = apply_fun e_bij i.
+                { exact (apply_fun_graph n (fun i => apply_fun e_bij i) i Hi). }
+                claim Haj : apply_fun my_alphas j = apply_fun e_bij j.
+                { exact (apply_fun_graph n (fun i => apply_fun e_bij i) j Hj). }
+                rewrite Hai. rewrite Haj.
+                (** apply_fun e_bij i <> apply_fun e_bij j from bijectivity **)
+                assume Heq : apply_fun e_bij i = apply_fun e_bij j.
+                claim Hei_in : apply_fun e_bij i :e supp f. { exact (Hei_supp i Hi). }
+                apply (Hbij_surj_inj (apply_fun e_bij i) Hei_in).
+                let x0. assume Hx0 : (x0 :e n /\ apply_fun e_bij x0 = apply_fun e_bij i) /\
+                  (forall x':set, x' :e n -> apply_fun e_bij x' = apply_fun e_bij i -> x' = x0).
+                claim Huniq : forall x':set, x' :e n -> apply_fun e_bij x' = apply_fun e_bij i -> x' = x0.
+                { exact (andER (x0 :e n /\ apply_fun e_bij x0 = apply_fun e_bij i)
+                    (forall x':set, x' :e n -> apply_fun e_bij x' = apply_fun e_bij i -> x' = x0)
+                    Hx0). }
+                claim Hrefl_ei : apply_fun e_bij i = apply_fun e_bij i. { reflexivity. }
+                claim Hi_eq : i = x0. { exact (Huniq i Hi Hrefl_ei). }
+                claim Heq_sym : apply_fun e_bij j = apply_fun e_bij i.
+                { symmetry. exact Heq. }
+                claim Hj_eq : j = x0. { exact (Huniq j Hj Heq_sym). }
+                claim Hij : i = j. { rewrite Hi_eq. symmetry. exact Hj_eq. }
+                exact (Hne Hij).
+            + (** f = product **)
+              admit.
   + (** uniqueness **)
     admit.
 Admitted.
