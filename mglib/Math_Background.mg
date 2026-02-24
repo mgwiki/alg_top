@@ -145694,7 +145694,103 @@ apply andI.
       apply_fun h (apply_fun multG (x, y)) = apply_fun multH (apply_fun h x, apply_fun h y)).
   apply andI.
   + exact Hh_fn.
-  + admit. (** TODO Alice: prove h preserves multiplication using direct sum uniqueness **)
+  + (** Prove h preserves multiplication **)
+    prove forall x y:set, x :e G -> y :e G ->
+      apply_fun h (apply_fun multG (x, y)) = apply_fun multH (apply_fun h x, apply_fun h y).
+    (** Extract group properties **)
+    claim HmultG_fn : function_on multG (setprod G G) G.
+    { apply (and6E (function_on multG (setprod G G) G) (function_on invG G G) (eG :e G)
+        (forall x0 y0 z0:set, x0 :e G -> y0 :e G -> z0 :e G ->
+          apply_fun multG (apply_fun multG (x0, y0), z0) = apply_fun multG (x0, apply_fun multG (y0, z0)))
+        (forall x0:set, x0 :e G -> apply_fun multG (eG, x0) = x0 /\ apply_fun multG (x0, eG) = x0)
+        (forall x0:set, x0 :e G ->
+          apply_fun multG (x0, apply_fun invG x0) = eG /\ apply_fun multG (apply_fun invG x0, x0) = eG)
+        HgrpG). assume Hf _ _ _ _ _. exact Hf. }
+    claim HmGcl : forall x0 y0:set, x0 :e G -> y0 :e G -> apply_fun multG (x0, y0) :e G.
+    { let x0 y0. assume Hx0 Hy0.
+      exact (HmultG_fn (x0, y0) (tuple_2_setprod_by_pair_Sigma G G x0 y0 Hx0 Hy0)). }
+    claim HridG : forall x0:set, x0 :e G -> apply_fun multG (x0, eG) = x0.
+    { let x0. assume Hx0.
+      apply (and6E (function_on multG (setprod G G) G) (function_on invG G G) (eG :e G)
+        (forall x1 y1 z1:set, x1 :e G -> y1 :e G -> z1 :e G ->
+          apply_fun multG (apply_fun multG (x1, y1), z1) = apply_fun multG (x1, apply_fun multG (y1, z1)))
+        (forall x1:set, x1 :e G -> apply_fun multG (eG, x1) = x1 /\ apply_fun multG (x1, eG) = x1)
+        (forall x1:set, x1 :e G ->
+          apply_fun multG (x1, apply_fun invG x1) = eG /\ apply_fun multG (apply_fun invG x1, x1) = eG)
+        HgrpG). assume _ _ _ _ Hid0 _.
+      exact (andER (apply_fun multG (eG, x0) = x0) (apply_fun multG (x0, eG) = x0) (Hid0 x0 Hx0)). }
+    claim HcommG : forall x0 y0:set, x0 :e G -> y0 :e G -> apply_fun multG (x0, y0) = apply_fun multG (y0, x0).
+    { exact (andER (group_structure G multG eG invG)
+        (forall x0 y0:set, x0 :e G -> y0 :e G -> apply_fun multG (x0, y0) = apply_fun multG (y0, x0))
+        HabG). }
+    claim HassocH : forall x0 y0 z0:set, x0 :e H -> y0 :e H -> z0 :e H ->
+      apply_fun multH (apply_fun multH (x0, y0), z0) = apply_fun multH (x0, apply_fun multH (y0, z0)).
+    { apply (and6E (function_on multH (setprod H H) H) (function_on invH H H) (eH :e H)
+        (forall x0 y0 z0:set, x0 :e H -> y0 :e H -> z0 :e H ->
+          apply_fun multH (apply_fun multH (x0, y0), z0) = apply_fun multH (x0, apply_fun multH (y0, z0)))
+        (forall x0:set, x0 :e H -> apply_fun multH (eH, x0) = x0 /\ apply_fun multH (x0, eH) = x0)
+        (forall x0:set, x0 :e H ->
+          apply_fun multH (x0, apply_fun invH x0) = eH /\ apply_fun multH (apply_fun invH x0, x0) = eH)
+        HgrpH). assume _ _ _ Ha _ _. exact Ha. }
+    claim HridH : forall x0:set, x0 :e H -> apply_fun multH (x0, eH) = x0.
+    { let x0. assume Hx0.
+      apply (and6E (function_on multH (setprod H H) H) (function_on invH H H) (eH :e H)
+        (forall x1 y1 z1:set, x1 :e H -> y1 :e H -> z1 :e H ->
+          apply_fun multH (apply_fun multH (x1, y1), z1) = apply_fun multH (x1, apply_fun multH (y1, z1)))
+        (forall x1:set, x1 :e H -> apply_fun multH (eH, x1) = x1 /\ apply_fun multH (x1, eH) = x1)
+        (forall x1:set, x1 :e H ->
+          apply_fun multH (x1, apply_fun invH x1) = eH /\ apply_fun multH (apply_fun invH x1, x1) = eH)
+        HgrpH). assume _ _ _ _ Hid0 _.
+      exact (andER (apply_fun multH (eH, x0) = x0) (apply_fun multH (x0, eH) = x0) (Hid0 x0 Hx0)). }
+    (** Subgroup helpers **)
+    claim Hsub_cl : forall alpha:set, alpha :e J ->
+      forall x0 y0:set, x0 :e apply_fun Gfam alpha -> y0 :e apply_fun Gfam alpha ->
+        apply_fun multG (x0, y0) :e apply_fun Gfam alpha.
+    { let alpha. assume Hal.
+      apply (and4E (apply_fun Gfam alpha c= G) (eG :e apply_fun Gfam alpha)
+        (forall x0 y0:set, x0 :e apply_fun Gfam alpha -> y0 :e apply_fun Gfam alpha ->
+          apply_fun multG (x0, y0) :e apply_fun Gfam alpha)
+        (forall x0:set, x0 :e apply_fun Gfam alpha -> apply_fun invG x0 :e apply_fun Gfam alpha)
+        (Hsub alpha Hal)). assume _ _ Hcl _. exact Hcl. }
+    claim Hsub_eG : forall alpha:set, alpha :e J -> eG :e apply_fun Gfam alpha.
+    { let alpha. assume Hal.
+      apply (and4E (apply_fun Gfam alpha c= G) (eG :e apply_fun Gfam alpha)
+        (forall x0 y0:set, x0 :e apply_fun Gfam alpha -> y0 :e apply_fun Gfam alpha ->
+          apply_fun multG (x0, y0) :e apply_fun Gfam alpha)
+        (forall x0:set, x0 :e apply_fun Gfam alpha -> apply_fun invG x0 :e apply_fun Gfam alpha)
+        (Hsub alpha Hal)). assume _ HeGa _ _. exact HeGa. }
+    claim Hsub_sub : forall alpha:set, alpha :e J -> apply_fun Gfam alpha c= G.
+    { let alpha. assume Hal.
+      apply (and4E (apply_fun Gfam alpha c= G) (eG :e apply_fun Gfam alpha)
+        (forall x0 y0:set, x0 :e apply_fun Gfam alpha -> y0 :e apply_fun Gfam alpha ->
+          apply_fun multG (x0, y0) :e apply_fun Gfam alpha)
+        (forall x0:set, x0 :e apply_fun Gfam alpha -> apply_fun invG x0 :e apply_fun Gfam alpha)
+        (Hsub alpha Hal)). assume HsubG _ _ _. exact HsubG. }
+    (** hfam preserves multiplication **)
+    claim Hhfam_mult : forall alpha:set, alpha :e J ->
+      forall x0 y0:set, x0 :e apply_fun Gfam alpha -> y0 :e apply_fun Gfam alpha ->
+        apply_fun (apply_fun hfam alpha) (apply_fun multG (x0, y0)) =
+          apply_fun multH (apply_fun (apply_fun hfam alpha) x0, apply_fun (apply_fun hfam alpha) y0).
+    { let alpha. assume Hal : alpha :e J. let x0 y0. assume Hx0 Hy0.
+      claim Hhom_al : group_homomorphism (apply_fun Gfam alpha) multG H multH (apply_fun hfam alpha).
+      { exact (Hhfam alpha Hal). }
+      exact (group_homomorphism_mult_rule
+        (apply_fun Gfam alpha) multG H multH (apply_fun hfam alpha)
+        x0 y0 Hhom_al Hx0 Hy0). }
+    (** WELL-DEFINEDNESS: for any g in G, all valid packs give same map_rep **)
+    claim Hwell_def : forall g:set, g :e G ->
+      forall pack1 pack2:set, rep_pred g pack1 -> rep_pred g pack2 ->
+        map_rep pack1 = map_rep pack2.
+    { admit. }
+    claim HheG : apply_fun h eG = eH. { admit. }
+    (** h distributes over single subgroup element multiplication **)
+    claim Hstep2 : forall z:set, z :e G -> forall alpha:set, alpha :e J ->
+      forall w:set, w :e apply_fun Gfam alpha ->
+        apply_fun h (apply_fun multG (z, w)) =
+          apply_fun multH (apply_fun h z, apply_fun h w). { admit. }
+    (** Full mult preservation by induction on representation of y **)
+    let x y. assume HxG : x :e G. assume HyG : y :e G.
+    admit.
 - let alpha. assume Hal : alpha :e J.
   let x. assume Hx : x :e apply_fun Gfam alpha.
   claim HxG : x :e G.
