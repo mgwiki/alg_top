@@ -183599,6 +183599,29 @@ exact (ex31_6_closed_map_preserves_normal
 Qed.
 
 (** Proven Bob **)
+Theorem quotient_map_implies_surjective_map :
+  forall E Te X pi:set,
+  quotient_map E Te X pi ->
+  surjective_map E X pi.
+let E Te X pi.
+assume Hquot.
+exact (andI
+  (function_on pi E X)
+  (forall y:set, y :e X -> exists x:set, x :e E /\ apply_fun pi x = y)
+  (andER
+    (topology_on E Te)
+    (function_on pi E X)
+    (andEL
+      (topology_on E Te /\ function_on pi E X)
+      (forall y:set, y :e X -> exists x:set, x :e E /\ apply_fun pi x = y)
+      Hquot))
+  (andER
+    (topology_on E Te /\ function_on pi E X)
+    (forall y:set, y :e X -> exists x:set, x :e E /\ apply_fun pi x = y)
+    Hquot)).
+Qed.
+
+(** Proven Bob **)
 Theorem closed_quotient_map_preserves_normality_from_surjective_map :
   forall E Te X Tx pi:set,
   topology_on E Te -> topology_on X Tx ->
