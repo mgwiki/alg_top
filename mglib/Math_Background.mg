@@ -124449,7 +124449,44 @@ claim HloopInU_istar :
   (** f_U is continuous to U -- use that it agrees with fcls pointwise **)
   claim Hf_U_cont : continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) f_U.
   {
-    admit.
+    prove ((topology_on unit_interval unit_interval_topology /\
+      topology_on U (subspace_topology X Tx U)) /\
+      function_on f_U unit_interval U) /\
+      (forall V0:set, V0 :e (subspace_topology X Tx U) ->
+        preimage_of unit_interval f_U V0 :e unit_interval_topology).
+    apply andI.
+    - apply andI.
+      + apply andI.
+        * exact unit_interval_topology_on.
+        * exact HtopU.
+      + exact (total_function_on_function_on f_U unit_interval U
+          (total_function_space_total_function_on_algtop unit_interval U f_U Hf_U_total)).
+    - let V0. assume HV0 : V0 :e (subspace_topology X Tx U).
+      claim Hpreimage_eq : preimage_of unit_interval f_U V0 = preimage_of unit_interval fcls V0.
+      {
+        apply (set_ext
+          (preimage_of unit_interval f_U V0)
+          (preimage_of unit_interval fcls V0)).
+        - let t. assume Ht : t :e preimage_of unit_interval f_U V0.
+          claim HtI : t :e unit_interval.
+          { exact (SepE1 unit_interval (fun x:set => apply_fun f_U x :e V0) t Ht). }
+          claim Hval : apply_fun f_U t :e V0.
+          { exact (SepE2 unit_interval (fun x:set => apply_fun f_U x :e V0) t Ht). }
+          claim Hval2 : apply_fun fcls t :e V0.
+          { rewrite <- (Hf_U_apply t HtI). exact Hval. }
+          exact (SepI unit_interval (fun x:set => apply_fun fcls x :e V0) t HtI Hval2).
+        - let t. assume Ht : t :e preimage_of unit_interval fcls V0.
+          claim HtI : t :e unit_interval.
+          { exact (SepE1 unit_interval (fun x:set => apply_fun fcls x :e V0) t Ht). }
+          claim Hval : apply_fun fcls t :e V0.
+          { exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e V0) t Ht). }
+          claim Hval2 : apply_fun f_U t :e V0.
+          { rewrite (Hf_U_apply t HtI). exact Hval. }
+          exact (SepI unit_interval (fun x:set => apply_fun f_U x :e V0) t HtI Hval2).
+      }
+      rewrite Hpreimage_eq.
+      exact (continuous_map_preimage unit_interval unit_interval_topology
+        U (subspace_topology X Tx U) fcls HfclsContU V0 HV0).
   }
   (** f_U is a loop in U at x0 **)
   claim Hf_U_loop_at : loop_at U (subspace_topology X Tx U) x0 f_U.
@@ -124503,7 +124540,117 @@ claim HloopInV_jstar :
     apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
       (graph V (fun x:set => x))) vcls = path_homotopy_class_loop X Tx x0 fcls.
 {
-  admit.
+  assume HallV : forall t:set, t :e unit_interval -> apply_fun fcls t :e V.
+  claim HfclsContV : continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) fcls.
+  { exact (continuous_map_range_restrict unit_interval unit_interval_topology X Tx fcls V HfclsCont HVsub HallV). }
+  set f_V := graph unit_interval (fun t:set => apply_fun fcls t).
+  claim Hf_V_total : f_V :e total_function_space unit_interval V.
+  {
+    exact (graph_in_total_function_space
+      unit_interval V (fun t:set => apply_fun fcls t) HallV).
+  }
+  claim Hf_V_fun_space : f_V :e function_space unit_interval V.
+  {
+    exact (total_function_space_sub_function_space unit_interval V f_V Hf_V_total).
+  }
+  claim Hf_V_apply : forall t:set, t :e unit_interval ->
+    apply_fun f_V t = apply_fun fcls t.
+  {
+    let t. assume Ht.
+    exact (apply_fun_graph unit_interval (fun t':set => apply_fun fcls t') t Ht).
+  }
+  claim Hf_V_0 : apply_fun f_V 0 = x0.
+  {
+    rewrite (Hf_V_apply 0 zero_in_unit_interval).
+    exact Hfcls0.
+  }
+  claim Hf_V_1 : apply_fun f_V 1 = x0.
+  {
+    rewrite (Hf_V_apply 1 one_in_unit_interval).
+    exact Hfcls1.
+  }
+  claim Hf_V_cont : continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) f_V.
+  {
+    prove ((topology_on unit_interval unit_interval_topology /\
+      topology_on V (subspace_topology X Tx V)) /\
+      function_on f_V unit_interval V) /\
+      (forall V0:set, V0 :e (subspace_topology X Tx V) ->
+        preimage_of unit_interval f_V V0 :e unit_interval_topology).
+    apply andI.
+    - apply andI.
+      + apply andI.
+        * exact unit_interval_topology_on.
+        * exact HtopV.
+      + exact (total_function_on_function_on f_V unit_interval V
+          (total_function_space_total_function_on_algtop unit_interval V f_V Hf_V_total)).
+    - let V0. assume HV0 : V0 :e (subspace_topology X Tx V).
+      claim Hpreimage_eq : preimage_of unit_interval f_V V0 = preimage_of unit_interval fcls V0.
+      {
+        apply (set_ext
+          (preimage_of unit_interval f_V V0)
+          (preimage_of unit_interval fcls V0)).
+        - let t. assume Ht : t :e preimage_of unit_interval f_V V0.
+          claim HtI : t :e unit_interval.
+          { exact (SepE1 unit_interval (fun x:set => apply_fun f_V x :e V0) t Ht). }
+          claim Hval : apply_fun f_V t :e V0.
+          { exact (SepE2 unit_interval (fun x:set => apply_fun f_V x :e V0) t Ht). }
+          claim Hval2 : apply_fun fcls t :e V0.
+          { rewrite <- (Hf_V_apply t HtI). exact Hval. }
+          exact (SepI unit_interval (fun x:set => apply_fun fcls x :e V0) t HtI Hval2).
+        - let t. assume Ht : t :e preimage_of unit_interval fcls V0.
+          claim HtI : t :e unit_interval.
+          { exact (SepE1 unit_interval (fun x:set => apply_fun fcls x :e V0) t Ht). }
+          claim Hval : apply_fun fcls t :e V0.
+          { exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e V0) t Ht). }
+          claim Hval2 : apply_fun f_V t :e V0.
+          { rewrite (Hf_V_apply t HtI). exact Hval. }
+          exact (SepI unit_interval (fun x:set => apply_fun f_V x :e V0) t HtI Hval2).
+      }
+      rewrite Hpreimage_eq.
+      exact (continuous_map_preimage unit_interval unit_interval_topology
+        V (subspace_topology X Tx V) fcls HfclsContV V0 HV0).
+  }
+  claim Hf_V_loop_at : loop_at V (subspace_topology X Tx V) x0 f_V.
+  {
+    prove (continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) f_V /\
+      apply_fun f_V 0 = x0) /\
+      apply_fun f_V 1 = x0.
+    apply andI.
+    - apply andI.
+      + exact Hf_V_cont.
+      + exact Hf_V_0.
+    - exact Hf_V_1.
+  }
+  claim Hf_V_loop_space : f_V :e loop_space V (subspace_topology X Tx V) x0.
+  {
+    exact (SepI
+      (function_space unit_interval V)
+      (fun g:set => loop_at V (subspace_topology X Tx V) x0 g)
+      f_V
+      Hf_V_fun_space
+      Hf_V_loop_at).
+  }
+  set vcls := path_homotopy_class_loop V (subspace_topology X Tx V) x0 f_V.
+  claim HvclsMem : vcls :e fundamental_group V (subspace_topology X Tx V) x0.
+  {
+    exact (path_homotopy_class_in_fundamental_group
+      V (subspace_topology X Tx V) x0 f_V Hf_V_loop_space).
+  }
+  witness vcls.
+  apply andI.
+  - exact HvclsMem.
+  - claim Hj_star_vcls :
+      apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+        (graph V (fun x:set => x))) vcls
+      = path_homotopy_class_loop X Tx x0
+          (compose_fun unit_interval (Eps_i (fun g:set => g :e vcls)) (graph V (fun x:set => x))).
+    {
+      exact (induced_homomorphism_apply
+        V (subspace_topology X Tx V) x0 X Tx x0
+        (graph V (fun x:set => x)) vcls HvclsMem).
+    }
+    rewrite Hj_star_vcls.
+    admit.
 }
 (** Main case analysis **)
 apply (xm (forall t:set, t :e unit_interval -> apply_fun fcls t :e U)).
