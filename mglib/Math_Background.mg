@@ -73059,6 +73059,85 @@ apply andI.
 }
 Qed.
 
+(** Infrastructure: products of two connected open balls in unit_interval are connected in the unit square **)
+(** Proven Charlie **)
+Theorem unit_square_product_balls_connected_lt1 :
+  forall x0 x1 r0 r1:set,
+  x0 :e unit_interval ->
+  x1 :e unit_interval ->
+  r0 :e R ->
+  Rlt 0 r0 ->
+  Rlt r0 1 ->
+  r1 :e R ->
+  Rlt 0 r1 ->
+  Rlt r1 1 ->
+  connected_space
+    (setprod
+      (open_ball unit_interval R_bounded_metric x0 r0)
+      (open_ball unit_interval R_bounded_metric x1 r1))
+    (subspace_topology
+      unit_square
+      unit_square_topology
+      (setprod
+        (open_ball unit_interval R_bounded_metric x0 r0)
+        (open_ball unit_interval R_bounded_metric x1 r1))).
+let x0 x1 r0 r1.
+assume Hx0I Hx1I Hr0R Hr0pos Hr0lt1 Hr1R Hr1pos Hr1lt1.
+set B0 := open_ball unit_interval R_bounded_metric x0 r0.
+set B1 := open_ball unit_interval R_bounded_metric x1 r1.
+claim HconnB0 :
+  connected_space B0 (subspace_topology unit_interval unit_interval_topology B0).
+{
+  exact (open_ball_unit_interval_connected_lt1
+    x0
+    r0
+    Hx0I
+    Hr0R
+    Hr0pos
+    Hr0lt1).
+}
+claim HconnB1 :
+  connected_space B1 (subspace_topology unit_interval unit_interval_topology B1).
+{
+  exact (open_ball_unit_interval_connected_lt1
+    x1
+    r1
+    Hx1I
+    Hr1R
+    Hr1pos
+    Hr1lt1).
+}
+claim HconnProd :
+  connected_space
+    (setprod B0 B1)
+    (product_topology
+      B0
+      (subspace_topology unit_interval unit_interval_topology B0)
+      B1
+      (subspace_topology unit_interval unit_interval_topology B1)).
+{
+  exact (finite_product_connected
+    B0
+    (subspace_topology unit_interval unit_interval_topology B0)
+    B1
+    (subspace_topology unit_interval unit_interval_topology B1)
+    HconnB0
+    HconnB1).
+}
+rewrite <- (product_subspace_topology
+  unit_interval
+  unit_interval_topology
+  unit_interval
+  unit_interval_topology
+  B0
+  B1
+  unit_interval_topology_on
+  unit_interval_topology_on
+  (open_ball_subset_X unit_interval R_bounded_metric x0 r0)
+  (open_ball_subset_X unit_interval R_bounded_metric x1 r1)).
+exact HconnProd.
+Qed.
+
 (** Infrastructure: existence package for homotopy lifting in Lem 54.2 **)
 Theorem lemma54_2_homotopy_lifting_exists : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
