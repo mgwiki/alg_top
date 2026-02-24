@@ -146824,6 +146824,15 @@ apply andI.
     { exact (andER (group_structure G multG eG invG)
         (forall x0 y0:set, x0 :e G -> y0 :e G -> apply_fun multG (x0, y0) = apply_fun multG (y0, x0))
         HabG). }
+    claim HassocG : forall x0 y0 z0:set, x0 :e G -> y0 :e G -> z0 :e G ->
+      apply_fun multG (apply_fun multG (x0, y0), z0) = apply_fun multG (x0, apply_fun multG (y0, z0)).
+    { apply (and6E (function_on multG (setprod G G) G) (function_on invG G G) (eG :e G)
+        (forall x0 y0 z0:set, x0 :e G -> y0 :e G -> z0 :e G ->
+          apply_fun multG (apply_fun multG (x0, y0), z0) = apply_fun multG (x0, apply_fun multG (y0, z0)))
+        (forall x0:set, x0 :e G -> apply_fun multG (eG, x0) = x0 /\ apply_fun multG (x0, eG) = x0)
+        (forall x0:set, x0 :e G ->
+          apply_fun multG (x0, apply_fun invG x0) = eG /\ apply_fun multG (apply_fun invG x0, x0) = eG)
+        HgrpG). assume _ _ _ Ha _ _. exact Ha. }
     claim HassocH : forall x0 y0 z0:set, x0 :e H -> y0 :e H -> z0 :e H ->
       apply_fun multH (apply_fun multH (x0, y0), z0) = apply_fun multH (x0, apply_fun multH (y0, z0)).
     { apply (and6E (function_on multH (setprod H H) H) (function_on invH H H) (eH :e H)
@@ -147944,7 +147953,75 @@ apply andI.
         assume Hxs0Fn : function_on xs0 (ordsucc n0) G.
         assume Hxs0_Gfam : forall i:set, i :e (ordsucc n0) -> apply_fun xs0 i :e apply_fun Gfam (apply_fun a0 i).
         let z0. assume Hz0G : z0 :e G.
-        admit.
+        claim Hn0O : n0 :e omega. { exact (nat_p_omega n0 Hn0NP). }
+        claim HprodS : nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun xs0 i)) (ordsucc n0) =
+          apply_fun multG (nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun xs0 i)) n0, apply_fun xs0 n0).
+        { exact (nat_primrec_S eG (fun i r:set => apply_fun multG (r, apply_fun xs0 i)) n0 Hn0NP). }
+        rewrite HprodS.
+        set prod_n := nat_primrec eG (fun i r:set => apply_fun multG (r, apply_fun xs0 i)) n0.
+        claim Hn0_in_Sn0 : n0 :e ordsucc n0. { exact (ordsuccI2 n0). }
+        claim Hxs0n0_Gfam : apply_fun xs0 n0 :e apply_fun Gfam (apply_fun a0 n0).
+        { exact (Hxs0_Gfam n0 Hn0_in_Sn0). }
+        claim Ha0n0_J : apply_fun a0 n0 :e J.
+        { exact (Ha0Fn n0 Hn0_in_Sn0). }
+        claim Hxs0n0_G : apply_fun xs0 n0 :e G.
+        { exact (Hsub_sub (apply_fun a0 n0) Ha0n0_J (apply_fun xs0 n0) Hxs0n0_Gfam). }
+        claim Hprod_n_G : prod_n :e G.
+        { set fG_w := fun i:set => If_i (i :e ordsucc n0) (apply_fun xs0 i) eG.
+          claim HfG_w : forall i:set, fG_w i :e G.
+          { let i. apply (xm (i :e ordsucc n0)).
+            - assume Hi.
+              claim Hv : fG_w i = apply_fun xs0 i. { exact (If_i_1 (i :e ordsucc n0) (apply_fun xs0 i) eG Hi). }
+              rewrite Hv. exact (Hxs0Fn i Hi).
+            - assume Hni.
+              claim Hv : fG_w i = eG. { exact (If_i_0 (i :e ordsucc n0) (apply_fun xs0 i) eG Hni). }
+              rewrite Hv. exact HeGG. }
+          claim Hm : nat_primrec eG (fun i r => apply_fun multG (r, fG_w i)) n0 :e G.
+          { exact (nat_primrec_product_in_group G multG eG HmultG_fn HeGG fG_w HfG_w n0 Hn0O). }
+          claim Hext : nat_primrec eG (fun i r => apply_fun multG (r, fG_w i)) n0 =
+            nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs0 i)) n0.
+          { apply (nat_primrec_ext eG
+              (fun i r => apply_fun multG (r, fG_w i))
+              (fun i r => apply_fun multG (r, apply_fun xs0 i))
+              n0 Hn0O).
+            let i r. assume Hi : i :e n0.
+            rewrite (If_i_1 (i :e ordsucc n0) (apply_fun xs0 i) eG (ordsuccI1 n0 i Hi)). reflexivity. }
+          rewrite <- Hext. exact Hm. }
+        (** z0 times prod_n in G **)
+        claim Hz0p_G : apply_fun multG (z0, prod_n) :e G.
+        { exact (HmGcl z0 prod_n Hz0G Hprod_n_G). }
+        (** Step 1: Associativity regroup **)
+        claim HassocG_step : apply_fun multG (z0, apply_fun multG (prod_n, apply_fun xs0 n0)) =
+          apply_fun multG (apply_fun multG (z0, prod_n), apply_fun xs0 n0).
+        { symmetry. exact (HassocG z0 prod_n (apply_fun xs0 n0) Hz0G Hprod_n_G Hxs0n0_G). }
+        rewrite HassocG_step.
+        (** Step 2: Hstep2 on LHS **)
+        claim Hstep2_lhs : apply_fun h (apply_fun multG (apply_fun multG (z0, prod_n), apply_fun xs0 n0)) =
+          apply_fun multH (apply_fun h (apply_fun multG (z0, prod_n)), apply_fun h (apply_fun xs0 n0)).
+        { exact (Hstep2 (apply_fun multG (z0, prod_n)) Hz0p_G (apply_fun a0 n0) Ha0n0_J (apply_fun xs0 n0) Hxs0n0_Gfam). }
+        rewrite Hstep2_lhs.
+        (** Step 3: IH application **)
+        claim Ha0Fn_n0 : function_on a0 n0 J.
+        { let i. assume Hi : i :e n0. exact (Ha0Fn i (ordsuccI1 n0 i Hi)). }
+        claim Hxs0Fn_n0 : function_on xs0 n0 G.
+        { let i. assume Hi : i :e n0. exact (Hxs0Fn i (ordsuccI1 n0 i Hi)). }
+        claim Hxs0_Gfam_n0 : forall i:set, i :e n0 -> apply_fun xs0 i :e apply_fun Gfam (apply_fun a0 i).
+        { let i. assume Hi. exact (Hxs0_Gfam i (ordsuccI1 n0 i Hi)). }
+        claim HIH : apply_fun h (apply_fun multG (z0, prod_n)) =
+          apply_fun multH (apply_fun h z0, apply_fun h prod_n).
+        { exact (IH a0 xs0 Ha0Fn_n0 Hxs0Fn_n0 Hxs0_Gfam_n0 z0 Hz0G). }
+        rewrite HIH.
+        (** Step 4: Hstep2 on RHS **)
+        claim Hstep2_rhs : apply_fun h (apply_fun multG (prod_n, apply_fun xs0 n0)) =
+          apply_fun multH (apply_fun h prod_n, apply_fun h (apply_fun xs0 n0)).
+        { exact (Hstep2 prod_n Hprod_n_G (apply_fun a0 n0) Ha0n0_J (apply_fun xs0 n0) Hxs0n0_Gfam). }
+        rewrite Hstep2_rhs.
+        (** Step 5: Associativity of H **)
+        claim Hh_z0_H : apply_fun h z0 :e H. { exact (Hh_to_H z0 Hz0G). }
+        claim Hh_pn_H : apply_fun h prod_n :e H. { exact (Hh_to_H prod_n Hprod_n_G). }
+        claim Hh_xn_H : apply_fun h (apply_fun xs0 n0) :e H. { exact (Hh_to_H (apply_fun xs0 n0) Hxs0n0_G). }
+        exact (HassocH (apply_fun h z0) (apply_fun h prod_n) (apply_fun h (apply_fun xs0 n0))
+          Hh_z0_H Hh_pn_H Hh_xn_H).
     }
     let x y. assume HxG : x :e G. assume HyG : y :e G.
     (** Get y's representation **)
