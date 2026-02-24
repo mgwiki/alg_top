@@ -184289,6 +184289,71 @@ exact (andI
 Qed.
 
 (** Proven Bob **)
+Theorem surjective_map_iff_function_on_and_image_whole :
+  forall E X pi:set,
+  surjective_map E X pi <->
+  (function_on pi E X /\ image_of pi E = X).
+let E X pi.
+apply iffI.
+- assume Hsurj.
+  apply andI.
+  + exact (surjective_map_function_on E X pi Hsurj).
+  + exact (surjective_map_image_of_whole E X pi Hsurj).
+- assume Hpack.
+  exact (surjective_map_of_image_whole
+    E
+    X
+    pi
+    (andEL
+      (function_on pi E X)
+      (image_of pi E = X)
+      Hpack)
+    (andER
+      (function_on pi E X)
+      (image_of pi E = X)
+      Hpack)).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_iff_topology_function_and_image_whole :
+  forall E Te X pi:set,
+  quotient_map E Te X pi <->
+  (topology_on E Te /\ function_on pi E X /\ image_of pi E = X).
+let E Te X pi.
+apply iffI.
+- assume Hquot.
+  apply andI.
+  + apply andI.
+    * exact (quotient_map_topology_on_domain E Te X pi Hquot).
+    * exact (quotient_map_function_on E Te X pi Hquot).
+  + exact (quotient_map_image_of_whole E Te X pi Hquot).
+- assume Hpack.
+  exact (quotient_map_of_topology_function_and_image_whole
+    E
+    Te
+    X
+    pi
+    (andEL
+      (topology_on E Te)
+      (function_on pi E X)
+      (andEL
+        (topology_on E Te /\ function_on pi E X)
+        (image_of pi E = X)
+        Hpack))
+    (andER
+      (topology_on E Te)
+      (function_on pi E X)
+      (andEL
+        (topology_on E Te /\ function_on pi E X)
+        (image_of pi E = X)
+        Hpack))
+    (andER
+      (topology_on E Te /\ function_on pi E X)
+      (image_of pi E = X)
+      Hpack)).
+Qed.
+
+(** Proven Bob **)
 Theorem surjective_map_preimage_of_whole :
   forall E X pi:set,
   surjective_map E X pi ->
