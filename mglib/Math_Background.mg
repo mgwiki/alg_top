@@ -67557,6 +67557,158 @@ exact (andI
   HfuncUnion).
 Qed.
 
+(** Infrastructure: connected subsets of R are convex_in (interval property). **)
+(** Proven Charlie **)
+Theorem connected_subset_R_convex_in :
+  forall A:set,
+  A c= R ->
+  connected_space A (subspace_topology R R_standard_topology A) ->
+  convex_in R A.
+let A.
+assume HAsubR HconnA.
+claim Hinterval :
+  forall a b:set,
+    a :e A ->
+    b :e A ->
+    order_interval R a b c= A.
+{
+  let a b.
+  assume HaA HbA.
+  let z.
+  assume HzOrd.
+  claim HzR : z :e R.
+  {
+    exact (SepE1
+      R
+      (fun x:set => order_rel R a x /\ order_rel R x b)
+      z
+      HzOrd).
+  }
+  claim HzPack : order_rel R a z /\ order_rel R z b.
+  {
+    exact (SepE2
+      R
+      (fun x:set => order_rel R a x /\ order_rel R x b)
+      z
+      HzOrd).
+  }
+  claim Haz : order_rel R a z.
+  {
+    exact (andEL
+      (order_rel R a z)
+      (order_rel R z b)
+      HzPack).
+  }
+  claim Hzb : order_rel R z b.
+  {
+    exact (andER
+      (order_rel R a z)
+      (order_rel R z b)
+      HzPack).
+  }
+  claim Haltz : Rlt a z.
+  {
+    exact (order_rel_R_implies_Rlt
+      a
+      z
+      Haz).
+  }
+  claim Hzltb : Rlt z b.
+  {
+    exact (order_rel_R_implies_Rlt
+      z
+      b
+      Hzb).
+  }
+  exact (connected_subsets_real_are_intervals
+    A
+    HAsubR
+    HconnA
+    a
+    b
+    z
+    HaA
+    HbA
+    HzR
+    (orIL
+      (Rlt a z /\ Rlt z b)
+      (Rlt b z /\ Rlt z a)
+      (andI
+        (Rlt a z)
+        (Rlt z b)
+        Haltz
+        Hzltb))).
+}
+exact (andI
+  (A c= R)
+  (forall a b:set, a :e A -> b :e A -> order_interval R a b c= A)
+  HAsubR
+  Hinterval).
+Qed.
+
+(** Infrastructure: intersection of convex subsets of R is convex. **)
+(** Proven Charlie **)
+Theorem convex_in_R_binintersect :
+  forall A B:set,
+  convex_in R A ->
+  convex_in R B ->
+  convex_in R (A :/\: B).
+let A B.
+assume HconvA HconvB.
+claim HsubR : A :/\: B c= R.
+{
+  exact (Subq_tra
+    (A :/\: B)
+    A
+    R
+    (binintersect_Subq_1 A B)
+    (convex_in_subset R A HconvA)).
+}
+claim Hinter :
+  forall a b:set,
+    a :e A :/\: B ->
+    b :e A :/\: B ->
+    order_interval R a b c= A :/\: B.
+{
+  let a b.
+  assume HaAB HbAB.
+  claim HaA : a :e A.
+  {
+    exact (binintersectE1 A B a HaAB).
+  }
+  claim HbA : b :e A.
+  {
+    exact (binintersectE1 A B b HbAB).
+  }
+  claim HaB : a :e B.
+  {
+    exact (binintersectE2 A B a HaAB).
+  }
+  claim HbB : b :e B.
+  {
+    exact (binintersectE2 A B b HbAB).
+  }
+  let z.
+  assume HzOrd.
+  claim HzA : z :e A.
+  {
+    exact (convex_in_interval_property
+      R A HconvA a b HaA HbA z HzOrd).
+  }
+  claim HzB : z :e B.
+  {
+    exact (convex_in_interval_property
+      R B HconvB a b HaB HbB z HzOrd).
+  }
+  exact (binintersectI A B z HzA HzB).
+}
+exact (andI
+  (A :/\: B c= R)
+  (forall a b:set, a :e A :/\: B -> b :e A :/\: B -> order_interval R a b c= A :/\: B)
+  HsubR
+  Hinter).
+Qed.
+
 (** Infrastructure: existence form of path lifting for later reuse. **)
 Theorem lemma54_1_path_lifting_exists_witness :
   forall E Te B Tb p e0 f:set,
