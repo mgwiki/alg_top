@@ -184354,6 +184354,55 @@ apply iffI.
 Qed.
 
 (** Proven Bob **)
+Theorem quotient_map_of_topology_on_and_surjective_map :
+  forall E Te X pi:set,
+  topology_on E Te ->
+  surjective_map E X pi ->
+  quotient_map E Te X pi.
+let E Te X pi.
+assume HtopE Hsurj.
+exact (andI
+  (topology_on E Te /\ function_on pi E X)
+  (forall y:set, y :e X -> exists x:set, x :e E /\ apply_fun pi x = y)
+  (andI
+    (topology_on E Te)
+    (function_on pi E X)
+    HtopE
+    (surjective_map_function_on E X pi Hsurj))
+  (andER
+    (function_on pi E X)
+    (forall y:set, y :e X -> exists x:set, x :e E /\ apply_fun pi x = y)
+    Hsurj)).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_iff_topology_on_and_surjective_map :
+  forall E Te X pi:set,
+  quotient_map E Te X pi <->
+  (topology_on E Te /\ surjective_map E X pi).
+let E Te X pi.
+apply iffI.
+- assume Hquot.
+  apply andI.
+  + exact (quotient_map_topology_on_domain E Te X pi Hquot).
+  + exact (quotient_map_implies_surjective_map E Te X pi Hquot).
+- assume Hpack.
+  exact (quotient_map_of_topology_on_and_surjective_map
+    E
+    Te
+    X
+    pi
+    (andEL
+      (topology_on E Te)
+      (surjective_map E X pi)
+      Hpack)
+    (andER
+      (topology_on E Te)
+      (surjective_map E X pi)
+      Hpack)).
+Qed.
+
+(** Proven Bob **)
 Theorem surjective_map_preimage_of_whole :
   forall E X pi:set,
   surjective_map E X pi ->
