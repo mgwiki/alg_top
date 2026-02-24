@@ -145803,7 +145803,130 @@ apply andI.
       forall pack1 pack2:set, rep_pred g pack1 -> rep_pred g pack2 ->
         map_rep pack1 = map_rep pack2.
     { admit. }
-    claim HheG : apply_fun h eG = eH. { admit. }
+    claim HheG : apply_fun h eG = eH.
+    { claim HapplyEG : apply_fun h eG = map_rep (Eps_i (rep_pred eG)).
+      { exact (apply_fun_graph G (fun g0:set => map_rep (Eps_i (rep_pred g0))) eG HeGG). }
+      claim Hpack : rep_pred eG (Eps_i (rep_pred eG)).
+      { exact (Eps_i_ex (rep_pred eG) (Hrep_exists eG HeGG)). }
+      set packE := Eps_i (rep_pred eG).
+      set nE := packE 0. set aE := (packE 1) 0. set xE := (packE 1) 1.
+      apply (and7E
+        (nE :e omega) (nE <> 0) (function_on aE nE J) (function_on xE nE G)
+        (forall i:set, i :e nE -> apply_fun xE i :e apply_fun Gfam (apply_fun aE i))
+        (forall i j:set, i :e nE -> j :e nE -> i <> j -> apply_fun aE i <> apply_fun aE j)
+        (eG = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xE i)) nE)
+        Hpack).
+      assume HnEO HnE_ne HaEFn HxEFn HxE_Gfam HaE_dist HeG_rep.
+      (** All components x_i must be eG since eG has trivial representation **)
+      (** Use Huniq: compare pack with the trivial 1-element pack **)
+      (** For Huniq, need J nonempty - get some alpha from the pack **)
+      claim Hxi_eG : forall i:set, i :e nE -> apply_fun xE i = eG.
+      { let i. assume Hi.
+        claim Hal : apply_fun aE i :e J. { exact (HaEFn i Hi). }
+        claim Hxi_Ga : apply_fun xE i :e apply_fun Gfam (apply_fun aE i).
+        { exact (HxE_Gfam i Hi). }
+        claim Hxi_G : apply_fun xE i :e G. { exact (Hsub_sub (apply_fun aE i) Hal (apply_fun xE i) Hxi_Ga). }
+        (** Build trivial 1-pack for eG: n=1, a={0 -> aE(i)}, x={0 -> eG} **)
+        claim Htrivial_rep : eG = nat_primrec eG (fun j r => apply_fun multG (r, apply_fun (graph 1 (fun _ => eG)) j)) 1.
+        { rewrite (nat_primrec_S eG (fun j r => apply_fun multG (r, apply_fun (graph 1 (fun _ => eG)) j)) 0 nat_0).
+          rewrite (nat_primrec_0 eG (fun j r => apply_fun multG (r, apply_fun (graph 1 (fun _ => eG)) j))).
+          rewrite (apply_fun_graph 1 (fun _ => eG) 0 In_0_1).
+          symmetry. exact (HridG eG HeGG). }
+        (** Injectivity of trivial 1-element pack is vacuous **)
+        claim Htrivial_inj : forall j0 j1:set, j0 :e 1 -> j1 :e 1 -> j0 <> j1 ->
+          apply_fun (graph 1 (fun _ => apply_fun aE i)) j0 <> apply_fun (graph 1 (fun _ => apply_fun aE i)) j1.
+        { let j0 j1. assume Hj0 : j0 :e 1. assume Hj1 : j1 :e 1. assume Hne : j0 <> j1.
+          apply (ordsuccE 0 j0 Hj0).
+          - assume Hj0_0 : j0 :e 0.
+            exact (FalseE (EmptyE j0 Hj0_0)
+              (apply_fun (graph 1 (fun _ => apply_fun aE i)) j0 <> apply_fun (graph 1 (fun _ => apply_fun aE i)) j1)).
+          - assume Hj0_eq : j0 = 0.
+            apply (ordsuccE 0 j1 Hj1).
+            + assume Hj1_0 : j1 :e 0.
+              exact (FalseE (EmptyE j1 Hj1_0)
+                (apply_fun (graph 1 (fun _ => apply_fun aE i)) j0 <> apply_fun (graph 1 (fun _ => apply_fun aE i)) j1)).
+            + assume Hj1_eq : j1 = 0.
+              claim Hij : j0 = j1. { rewrite Hj0_eq. rewrite Hj1_eq. reflexivity. }
+              exact (FalseE (Hne Hij)
+                (apply_fun (graph 1 (fun _ => apply_fun aE i)) j0 <> apply_fun (graph 1 (fun _ => apply_fun aE i)) j1)). }
+        (** Trivial pack x-values are in correct Gfam **)
+        claim Htriv_xGfam : forall j:set, j :e 1 ->
+          apply_fun (graph 1 (fun _ => eG)) j :e apply_fun Gfam (apply_fun (graph 1 (fun _ => apply_fun aE i)) j).
+        { let j. assume Hj : j :e 1.
+          rewrite (apply_fun_graph 1 (fun _ => eG) j Hj).
+          rewrite (apply_fun_graph 1 (fun _ => apply_fun aE i) j Hj).
+          exact (Hsub_eG (apply_fun aE i) Hal). }
+        (** Apply Huniq to eG with packE and trivial pack **)
+        claim Huniq_applied : forall alpha:set, alpha :e J ->
+          (forall i0 j0:set, i0 :e nE -> j0 :e 1 ->
+            apply_fun aE i0 = alpha -> apply_fun (graph 1 (fun _ => apply_fun aE i)) j0 = alpha ->
+            apply_fun xE i0 = apply_fun (graph 1 (fun _ => eG)) j0) /\
+          ((exists i0:set, i0 :e nE /\ apply_fun aE i0 = alpha) ->
+           ~(exists j0:set, j0 :e 1 /\ apply_fun (graph 1 (fun _ => apply_fun aE i)) j0 = alpha) ->
+           forall i0:set, i0 :e nE -> apply_fun aE i0 = alpha -> apply_fun xE i0 = eG) /\
+          (~(exists i0:set, i0 :e nE /\ apply_fun aE i0 = alpha) ->
+           (exists j0:set, j0 :e 1 /\ apply_fun (graph 1 (fun _ => apply_fun aE i)) j0 = alpha) ->
+           forall j0:set, j0 :e 1 -> apply_fun (graph 1 (fun _ => apply_fun aE i)) j0 = alpha ->
+             apply_fun (graph 1 (fun _ => eG)) j0 = eG).
+        { let alpha. assume HalJ : alpha :e J.
+          exact (Huniq eG HeGG
+            nE 1 HnEO (nat_p_omega 1 nat_1) HnE_ne neq_1_0
+            aE (graph 1 (fun _ => apply_fun aE i))
+            HaEFn (graph_function_on 1 J (fun _ => apply_fun aE i) (fun j Hj => Hal))
+            xE (graph 1 (fun _ => eG))
+            HxEFn (graph_function_on 1 G (fun _ => eG) (fun j Hj => HeGG))
+            HxE_Gfam Htriv_xGfam
+            HaE_dist Htrivial_inj
+            HeG_rep Htrivial_rep alpha HalJ). }
+        (** From Huniq clause 1: xE(i) = trivial_x(0) = eG **)
+        apply (and3E
+          (forall i0 j0:set, i0 :e nE -> j0 :e 1 ->
+            apply_fun aE i0 = apply_fun aE i -> apply_fun (graph 1 (fun _ => apply_fun aE i)) j0 = apply_fun aE i ->
+            apply_fun xE i0 = apply_fun (graph 1 (fun _ => eG)) j0)
+          ((exists i0:set, i0 :e nE /\ apply_fun aE i0 = apply_fun aE i) ->
+           ~(exists j0:set, j0 :e 1 /\ apply_fun (graph 1 (fun _ => apply_fun aE i)) j0 = apply_fun aE i) ->
+           forall i0:set, i0 :e nE -> apply_fun aE i0 = apply_fun aE i -> apply_fun xE i0 = eG)
+          (~(exists i0:set, i0 :e nE /\ apply_fun aE i0 = apply_fun aE i) ->
+           (exists j0:set, j0 :e 1 /\ apply_fun (graph 1 (fun _ => apply_fun aE i)) j0 = apply_fun aE i) ->
+           forall j0:set, j0 :e 1 -> apply_fun (graph 1 (fun _ => apply_fun aE i)) j0 = apply_fun aE i ->
+             apply_fun (graph 1 (fun _ => eG)) j0 = eG)
+          (Huniq_applied (apply_fun aE i) Hal)).
+        assume Hc1 _ _.
+        claim Htrivial_val : apply_fun (graph 1 (fun _ => apply_fun aE i)) 0 = apply_fun aE i.
+        { exact (apply_fun_graph 1 (fun _ => apply_fun aE i) 0 In_0_1). }
+        claim Hai_refl : apply_fun aE i = apply_fun aE i. { reflexivity. }
+        claim Hxi_triv : apply_fun xE i = apply_fun (graph 1 (fun _ => eG)) 0.
+        { exact (Hc1 i 0 Hi In_0_1 Hai_refl Htrivial_val). }
+        rewrite Hxi_triv.
+        exact (apply_fun_graph 1 (fun _ => eG) 0 In_0_1). }
+      (** All hfam contributions are eH, so map_rep = eH **)
+      claim Hmap_eH : map_rep packE = eH.
+      { set fi := graph nE (fun i0 => apply_fun (apply_fun hfam (apply_fun aE i0)) (apply_fun xE i0)).
+        claim Hfi_val : forall i0:set, i0 :e nE ->
+          apply_fun fi i0 = apply_fun (apply_fun hfam (apply_fun aE i0)) (apply_fun xE i0).
+        { let i0. assume Hi0. exact (apply_fun_graph nE
+            (fun i1 => apply_fun (apply_fun hfam (apply_fun aE i1)) (apply_fun xE i1)) i0 Hi0). }
+        claim Hfi_H : forall i0:set, i0 :e nE -> apply_fun fi i0 :e H.
+        { let i0. assume Hi0. rewrite (Hfi_val i0 Hi0).
+          exact (Hhfam_to_H (apply_fun aE i0) (HaEFn i0 Hi0) (apply_fun xE i0) (HxE_Gfam i0 Hi0)). }
+        claim Hfi_eH : forall i0:set, i0 :e nE -> apply_fun fi i0 = eH.
+        { let i0. assume Hi0. rewrite (Hfi_val i0 Hi0).
+          rewrite (Hxi_eG i0 Hi0).
+          exact (Hhfam_id (apply_fun aE i0) (HaEFn i0 Hi0)). }
+        claim Hmap_eq_fi : map_rep packE =
+          nat_primrec eH (fun i0 r => apply_fun multH (r, apply_fun fi i0)) nE.
+        { apply (nat_primrec_ext eH
+            (fun i0 r => apply_fun multH (r, apply_fun (apply_fun hfam (apply_fun aE i0)) (apply_fun xE i0)))
+            (fun i0 r => apply_fun multH (r, apply_fun fi i0))
+            nE HnEO).
+          let i0 r. assume Hi0.
+          rewrite <- (Hfi_val i0 Hi0). reflexivity. }
+        claim Hprod_eH : nat_primrec eH (fun i0 r => apply_fun multH (r, apply_fun fi i0)) nE = eH.
+        { exact (nat_primrec_all_e H multH eH HmultH_fn HeHH HridH fi nE HnEO Hfi_H Hfi_eH). }
+        exact (eq_i_tra (map_rep packE)
+          (nat_primrec eH (fun i0 r => apply_fun multH (r, apply_fun fi i0)) nE) eH Hmap_eq_fi Hprod_eH). }
+      rewrite HapplyEG.
+      exact Hmap_eH. }
     (** h distributes over single subgroup element multiplication **)
     claim Hstep2 : forall z:set, z :e G -> forall alpha:set, alpha :e J ->
       forall w:set, w :e apply_fun Gfam alpha ->
