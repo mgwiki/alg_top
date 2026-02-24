@@ -64333,6 +64333,29 @@ apply set_ext.
     HyCond).
 Qed.
 
+(** Infrastructure: open_ball in unit_interval is an intersection with an open interval in R when r < 1. **)
+(** Proven Charlie **)
+Theorem open_ball_unit_interval_eq_binintersect_open_interval :
+  forall x r:set,
+  x :e unit_interval ->
+  r :e R ->
+  Rlt 0 r ->
+  Rlt r 1 ->
+  open_ball unit_interval R_bounded_metric x r =
+    unit_interval :/\: open_interval (add_SNo x (minus_SNo r)) (add_SNo x r).
+let x r.
+assume HxI HrR Hrpos Hrlt1.
+claim HxR : x :e R.
+{
+  exact (unit_interval_sub_R
+    x
+    HxI).
+}
+rewrite (open_ball_unit_interval_eq_binintersect_R x r HxI HrR).
+rewrite (open_ball_R_bounded_metric_eq_open_interval x r HxR HrR Hrpos Hrlt1).
+reflexivity.
+Qed.
+
 (** Infrastructure: Lebesgue number for open covers of unit_interval (metric topology = subspace topology). **)
 (** Proven Charlie **)
 Theorem unit_interval_open_cover_has_lebesgue_number_eps :
