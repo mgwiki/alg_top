@@ -63478,6 +63478,49 @@ rewrite <- (order_interval_R_eq_open_interval a b).
 exact Hconn.
 Qed.
 
+(** Infrastructure: Lebesgue number for open covers of unit_interval (metric topology = subspace topology). **)
+(** Proven Charlie **)
+Theorem unit_interval_open_cover_has_lebesgue_number_eps :
+  forall Fam:set,
+  open_cover_of unit_interval unit_interval_topology Fam ->
+  exists N:set, N :e omega /\ lebesgue_number_metric unit_interval R_bounded_metric Fam (eps_ N).
+let Fam.
+assume Hcov.
+claim HmetI : metric_on unit_interval R_bounded_metric.
+{
+  exact R_bounded_metric_is_metric_on_unit_interval.
+}
+claim HtopEq : metric_topology unit_interval R_bounded_metric = unit_interval_topology.
+{
+  exact metric_topology_unit_interval_eq_I_topology.
+}
+claim HcompI : compact_space unit_interval (metric_topology unit_interval R_bounded_metric).
+{
+  rewrite HtopEq.
+  exact unit_interval_compact_axiom.
+}
+claim HseqI : sequentially_compact unit_interval (metric_topology unit_interval R_bounded_metric).
+{
+  exact (iffEL
+    (compact_space unit_interval (metric_topology unit_interval R_bounded_metric))
+    (sequentially_compact unit_interval (metric_topology unit_interval R_bounded_metric))
+    (compact_metric_equivalences unit_interval R_bounded_metric HmetI)
+    HcompI).
+}
+claim HcovMet : open_cover_of unit_interval (metric_topology unit_interval R_bounded_metric) Fam.
+{
+  rewrite HtopEq.
+  exact Hcov.
+}
+exact (sequentially_compact_metric_has_lebesgue_number_eps
+  unit_interval
+  R_bounded_metric
+  Fam
+  HmetI
+  HseqI
+  HcovMet).
+Qed.
+
 (** from S54 Lem 54.1 (line 715 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map, p(e0) = b0. Any path f:[0,1] -> B **)
 (** beginning at b0 has a unique lifting to a path in E beginning at e0. **)
