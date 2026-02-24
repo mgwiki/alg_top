@@ -123659,7 +123659,8 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
         and any ball around 0 contains points in (0,1), such a point exists.
         This step is admitted and will be proved using metric space infrastructure. **)
     claim Hmixed_pt : exists a:set,
-      a :e unit_interval /\ Rlt 0 a /\ Rlt a 1 /\ apply_fun f a :e U :/\: V.
+      (a :e unit_interval /\ Rlt 0 a /\ Rlt a 1 /\ apply_fun f a :e U :/\: V) /\
+      (forall t:set, t :e unit_interval -> Rle 0 t -> Rle t a -> apply_fun f t :e U :/\: V).
     {
     (** U cap V is open in Tx **)
     claim HUVopen : U :/\: V :e Tx.
@@ -123779,15 +123780,61 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
         (inv_nat (ordsucc N0)) Ha_in_pre). }
     (** Witness: a = inv_nat(ordsucc N0) **)
     witness (inv_nat (ordsucc N0)).
-    apply andI. apply andI. apply andI.
-    - exact Ha_ui.
-    - exact Ha_pos.
-    - exact Ha_lt1.
-    - exact Hfa_UV.
+    apply andI.
+    - apply andI. apply andI. apply andI.
+      + exact Ha_ui.
+      + exact Ha_pos.
+      + exact Ha_lt1.
+      + exact Hfa_UV.
+    - (** f([0, a]) maps to U cap V: any t in [0, a] is in B(0, r2) **)
+      let t. assume Ht_ui : t :e unit_interval. assume Ht_ge0 : Rle 0 t.
+      assume Ht_le_a : Rle t (inv_nat (ordsucc N0)).
+      apply (xm (t = 0)).
+      + (** Case t = 0: f(0) = x0 in U cap V **)
+        assume Ht0 : t = 0. rewrite Ht0. rewrite Hf0. exact Hx0UV.
+      + (** Case t > 0: use abs chain to show t in B(0, r2) **)
+        assume Ht_ne0 : t <> 0.
+        claim H0_ne_t : ~(0 = t).
+        { assume H0t : 0 = t. exact (Ht_ne0 (H0t (fun a0 b:set => a0 = b) H0t)). }
+        claim HtR : t :e R. { exact (unit_interval_sub_R t Ht_ui). }
+        claim Ht_SNo : SNo t. { exact (real_SNo t HtR). }
+        claim Ht_pos : Rlt 0 t. { exact (Rle_neq_implies_Rlt 0 t Ht_ge0 H0_ne_t). }
+        claim Habs_chain : abs_SNo (add_SNo 0 (minus_SNo t)) = t.
+        { rewrite (add_SNo_0L (minus_SNo t) (SNo_minus_SNo t Ht_SNo)).
+          rewrite (abs_SNo_minus t Ht_SNo).
+          exact (pos_abs_SNo t (RltE_lt 0 t Ht_pos)). }
+        claim Hd_le_t : Rle (R_bounded_distance 0 t) t.
+        { exact (Habs_chain
+            (fun w y:set => Rle (R_bounded_distance 0 t) w)
+            (R_bounded_distance_le_abs_diff 0 t real_0 HtR)). }
+        claim Hd_le_a : Rle (R_bounded_distance 0 t) (inv_nat (ordsucc N0)).
+        { exact (Rle_tra (R_bounded_distance 0 t) t (inv_nat (ordsucc N0))
+            Hd_le_t Ht_le_a). }
+        claim Hd_lt_r2 : Rlt (R_bounded_distance 0 t) r2.
+        { exact (Rle_Rlt_tra (R_bounded_distance 0 t) (inv_nat (ordsucc N0)) r2
+            Hd_le_a Ha_lt_r2). }
+        claim Hd_metric : Rlt (apply_fun R_bounded_metric (0, t)) r2.
+        { rewrite (R_bounded_metric_apply_early 0 t real_0 HtR). exact Hd_lt_r2. }
+        claim Ht_in_ball : t :e open_ball unit_interval R_bounded_metric 0 r2.
+        { exact (open_ballI unit_interval R_bounded_metric 0 r2 t Ht_ui Hd_metric). }
+        claim Ht_in_pre : t :e preimage_of unit_interval f (U :/\: V).
+        { exact (Hball_sub t Ht_in_ball). }
+        exact (SepE2 unit_interval (fun x:set => apply_fun f x :e U :/\: V) t Ht_in_pre).
     }
     apply Hmixed_pt.
     let a.
-    assume Ha_all : a :e unit_interval /\ Rlt 0 a /\ Rlt a 1 /\ apply_fun f a :e U :/\: V.
+    assume Ha_pair : (a :e unit_interval /\ Rlt 0 a /\ Rlt a 1 /\ apply_fun f a :e U :/\: V) /\
+      (forall t:set, t :e unit_interval -> Rle 0 t -> Rle t a -> apply_fun f t :e U :/\: V).
+    claim Ha_all : a :e unit_interval /\ Rlt 0 a /\ Rlt a 1 /\ apply_fun f a :e U :/\: V.
+    { exact (andEL
+        (a :e unit_interval /\ Rlt 0 a /\ Rlt a 1 /\ apply_fun f a :e U :/\: V)
+        (forall t:set, t :e unit_interval -> Rle 0 t -> Rle t a -> apply_fun f t :e U :/\: V)
+        Ha_pair). }
+    claim Hf_on_0a : forall t:set, t :e unit_interval -> Rle 0 t -> Rle t a -> apply_fun f t :e U :/\: V.
+    { exact (andER
+        (a :e unit_interval /\ Rlt 0 a /\ Rlt a 1 /\ apply_fun f a :e U :/\: V)
+        (forall t:set, t :e unit_interval -> Rle 0 t -> Rle t a -> apply_fun f t :e U :/\: V)
+        Ha_pair). }
     (** Destructure the 4-fold conjunction: ((A /\ B) /\ C) /\ D **)
     claim Ha_D : apply_fun f a :e U :/\: V.
     { exact (andER
