@@ -183965,6 +183965,98 @@ exact (image_of_nonempty_of_nonempty_domain
 Qed.
 
 (** Proven Bob **)
+Theorem surjective_map_image_of_whole :
+  forall E X pi:set,
+  surjective_map E X pi ->
+  image_of pi E = X.
+let E X pi.
+assume Hsurj.
+claim Hfun : function_on pi E X.
+{
+  exact (surjective_map_function_on E X pi Hsurj).
+}
+apply set_ext.
+- let z.
+  assume HzImg : z :e image_of pi E.
+  claim HzPack : exists x:set, x :e E /\ z = apply_fun pi x.
+  {
+    exact (ReplE
+      E
+      (fun x:set => apply_fun pi x)
+      z
+      HzImg).
+  }
+  apply HzPack.
+  let x.
+  assume HxPack.
+  claim HxE : x :e E.
+  {
+    exact (andEL
+      (x :e E)
+      (z = apply_fun pi x)
+      HxPack).
+  }
+  claim HzEq : z = apply_fun pi x.
+  {
+    exact (andER
+      (x :e E)
+      (z = apply_fun pi x)
+      HxPack).
+  }
+  rewrite HzEq.
+  exact (Hfun x HxE).
+- let z.
+  assume HzX : z :e X.
+  claim HzPre : exists x:set, x :e E /\ apply_fun pi x = z.
+  {
+    exact (surjective_map_has_preimage
+      E
+      X
+      pi
+      z
+      Hsurj
+      HzX).
+  }
+  apply HzPre.
+  let x.
+  assume HxPack.
+  claim HxE : x :e E.
+  {
+    exact (andEL
+      (x :e E)
+      (apply_fun pi x = z)
+      HxPack).
+  }
+  claim HxEq : apply_fun pi x = z.
+  {
+    exact (andER
+      (x :e E)
+      (apply_fun pi x = z)
+      HxPack).
+  }
+  rewrite <- HxEq.
+  exact (ReplI
+    E
+    (fun x0:set => apply_fun pi x0)
+    x
+    HxE).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_image_of_whole :
+  forall E Te X pi:set,
+  quotient_map E Te X pi ->
+  image_of pi E = X.
+let E Te X pi.
+assume Hquot.
+exact (surjective_map_image_of_whole
+  E
+  X
+  pi
+  (quotient_map_implies_surjective_map E Te X pi Hquot)).
+Qed.
+
+(** Proven Bob **)
 Theorem closed_quotient_map_preserves_normality_from_surjective_map :
   forall E Te X Tx pi:set,
   topology_on E Te -> topology_on X Tx ->
