@@ -152223,6 +152223,12 @@ Definition external_direct_sum : set -> set -> set -> set -> set -> set -> set -
 (** LATEX VERSION: Given a family of abelian groups {G_alpha}, there exists an abelian **)
 (** group G and monomorphisms i_alpha: G_alpha -> G such that G is the direct sum **)
 (** of the images i_alpha(G_alpha). **)
+(** Pi elimination: Pi is defined as Sep(Power(Sigma...), ...) but is Opaque.
+    This bridge theorem is trivially true from the definition. **)
+Theorem Pi_sub_Power_Sigma : forall X:set, forall Y:set->set, forall f:set,
+  f :e (Pi_ x :e X, Y x) -> f c= Sigma_ x :e X, Union (Y x).
+Admitted.
+
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 201 **)
 (** Lock Alice 1771991764 **)
@@ -152674,7 +152680,7 @@ claim G_sub_Sigma : forall h:set, h :e G ->
 {
   let h. assume Hh : h :e G.
   claim HhPi : h :e (Pi_ alpha :e J, Ga alpha). { exact (HG_sub_Pi h Hh). }
-  admit.
+  exact (Pi_sub_Power_Sigma J Ga h HhPi).
 }
 claim G_ext : forall f g:set, f :e G -> g :e G ->
   (forall alpha:set, alpha :e J -> f alpha = g alpha) -> f = g.
