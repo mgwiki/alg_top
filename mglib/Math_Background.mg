@@ -73262,6 +73262,20 @@ rewrite <- (product_subspace_topology
 exact HconnProd.
 Qed.
 
+(** Infrastructure: sheet non switching placeholder inside an evenly covered neighborhood in Lem 54.2 **)
+Theorem lemma54_2_sheet_non_switching_local :
+  forall E Te B Tb p F Ft q z N U slices Vq Vz:set,
+  pairwise_disjoint slices ->
+  (forall x:set, x :e N -> apply_fun F x :e U) ->
+  q :e N ->
+  z :e N ->
+  apply_fun Ft q :e Vq ->
+  Vq :e slices ->
+  apply_fun Ft z :e Vz ->
+  Vz :e slices ->
+  Vz = Vq.
+Admitted.
+
 (** Infrastructure: existence package for homotopy lifting in Lem 54.2 **)
 Theorem lemma54_2_homotopy_lifting_exists : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
@@ -75487,15 +75501,41 @@ claim HFt_54_cont :
                             y
                             HyVxz
                             Hypy).
-                        }
-                        claim HVxzEqVq : Vxz = Vq.
-                        {
-                          (** TODO Bob: show slice containing xz equals Vq; needs stronger non-switching argument. **)
-                          admit.
-                        }
-                        rewrite <- HVxzEqVq.
-                        exact HxzVxz.
-                      }
+	                        }
+	                        claim HVxzEqVq : Vxz = Vq.
+	                        {
+	                          claim Hft54zVxz : apply_fun Ft_54 z :e Vxz.
+	                          {
+	                            rewrite Hft54zEqxz.
+	                            exact HxzVxz.
+	                          }
+	                          exact (lemma54_2_sheet_non_switching_local
+	                            E
+	                            Te
+	                            B
+	                            Tb
+	                            p
+	                            F
+	                            Ft_54
+	                            q
+	                            z
+	                            N
+	                            U
+	                            slices
+	                            Vq
+	                            Vxz
+	                            HpdSlices
+	                            HN_into_U
+	                            HqN
+	                            HzN
+	                            HFtqVq
+	                            HVqSlice
+	                            Hft54zVxz
+	                            HVxzSlice).
+	                        }
+	                        rewrite <- HVxzEqVq.
+	                        exact HxzVxz.
+	                      }
                       claim HxzEqxq : xz = xq.
                       {
                         exact (Huniqxq
