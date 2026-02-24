@@ -73344,6 +73344,203 @@ rewrite <- (product_subspace_topology
 exact HconnProd.
 Qed.
 
+(** Infrastructure: any open neighborhood in the unit square contains an open connected neighborhood **)
+(** Proven Charlie **)
+Theorem unit_square_open_neighborhood_contains_connected_open_subset :
+  forall N q:set,
+  q :e unit_square ->
+  N :e unit_square_topology ->
+  q :e N ->
+  exists M:set,
+    M :e unit_square_topology /\
+    connected_space M (subspace_topology unit_square unit_square_topology M) /\
+    q :e M /\
+    M c= N.
+let N q.
+assume HqSq HNopen HqN.
+claim Hq0I : q 0 :e unit_interval.
+{
+  exact (ap0_Sigma
+    unit_interval
+    (fun _ : set => unit_interval)
+    q
+    HqSq).
+}
+claim Hq1I : q 1 :e unit_interval.
+{
+  exact (ap1_Sigma
+    unit_interval
+    (fun _ : set => unit_interval)
+    q
+    HqSq).
+}
+apply (unit_square_open_neighborhood_contains_product_balls
+  N
+  q
+  HqSq
+  HNopen
+  HqN).
+let r0.
+assume Hr0Pack.
+apply Hr0Pack.
+let r1.
+assume HradPack.
+set M :=
+  setprod
+    (open_ball unit_interval R_bounded_metric (q 0) r0)
+    (open_ball unit_interval R_bounded_metric (q 1) r1).
+claim HMpair :
+  ((((((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1) /\ r1 :e R) /\ Rlt 0 r1) /\ Rlt r1 1) /\
+    (M c= N)) /\ q :e M.
+{
+  exact HradPack.
+}
+claim HradSub :
+  (((((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1) /\ r1 :e R) /\ Rlt 0 r1) /\ Rlt r1 1) /\
+  (M c= N).
+{
+  exact (andEL
+    ((((((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1) /\ r1 :e R) /\ Rlt 0 r1) /\ Rlt r1 1) /\ (M c= N))
+    (q :e M)
+    HMpair).
+}
+claim HqM : q :e M.
+{
+  exact (andER
+    ((((((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1) /\ r1 :e R) /\ Rlt 0 r1) /\ Rlt r1 1) /\ (M c= N))
+    (q :e M)
+    HMpair).
+}
+claim HradCore :
+  (((((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1) /\ r1 :e R) /\ Rlt 0 r1) /\ Rlt r1 1).
+{
+  exact (andEL
+    (((((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1) /\ r1 :e R) /\ Rlt 0 r1) /\ Rlt r1 1)
+    (M c= N)
+    HradSub).
+}
+claim HMsubN : M c= N.
+{
+  exact (andER
+    (((((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1) /\ r1 :e R) /\ Rlt 0 r1) /\ Rlt r1 1)
+    (M c= N)
+    HradSub).
+}
+claim Hrad5 :
+  ((((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1) /\ r1 :e R) /\ Rlt 0 r1).
+{
+  exact (andEL
+    ((((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1) /\ r1 :e R) /\ Rlt 0 r1)
+    (Rlt r1 1)
+    HradCore).
+}
+claim Hr1lt1 : Rlt r1 1.
+{
+  exact (andER
+    ((((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1) /\ r1 :e R) /\ Rlt 0 r1)
+    (Rlt r1 1)
+    HradCore).
+}
+claim Hrad4 :
+  (((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1) /\ r1 :e R).
+{
+  exact (andEL
+    (((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1) /\ r1 :e R)
+    (Rlt 0 r1)
+    Hrad5).
+}
+claim Hr1pos : Rlt 0 r1.
+{
+  exact (andER
+    (((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1) /\ r1 :e R)
+    (Rlt 0 r1)
+    Hrad5).
+}
+claim Hrad3 : ((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1).
+{
+  exact (andEL
+    ((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1)
+    (r1 :e R)
+    Hrad4).
+}
+claim Hr1R : r1 :e R.
+{
+  exact (andER
+    ((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1)
+    (r1 :e R)
+    Hrad4).
+}
+claim Hr0Rpos : r0 :e R /\ Rlt 0 r0.
+{
+  exact (andEL
+    (r0 :e R /\ Rlt 0 r0)
+    (Rlt r0 1)
+    Hrad3).
+}
+claim Hr0lt1 : Rlt r0 1.
+{
+  exact (andER
+    (r0 :e R /\ Rlt 0 r0)
+    (Rlt r0 1)
+    Hrad3).
+}
+claim Hr0R : r0 :e R.
+{
+  exact (andEL
+    (r0 :e R)
+    (Rlt 0 r0)
+    Hr0Rpos).
+}
+claim Hr0pos : Rlt 0 r0.
+{
+  exact (andER
+    (r0 :e R)
+    (Rlt 0 r0)
+    Hr0Rpos).
+}
+claim HMopen : M :e unit_square_topology.
+{
+  exact (unit_square_product_balls_open_lt1
+    (q 0)
+    (q 1)
+    r0
+    r1
+    Hq0I
+    Hq1I
+    Hr0R
+    Hr0pos
+    Hr0lt1
+    Hr1R
+    Hr1pos
+    Hr1lt1).
+}
+claim HMconn :
+  connected_space M (subspace_topology unit_square unit_square_topology M).
+{
+  exact (unit_square_product_balls_connected_lt1
+    (q 0)
+    (q 1)
+    r0
+    r1
+    Hq0I
+    Hq1I
+    Hr0R
+    Hr0pos
+    Hr0lt1
+    Hr1R
+    Hr1pos
+    Hr1lt1).
+}
+witness M.
+apply andI.
+- apply andI.
+  + apply andI.
+    * exact HMopen.
+    * exact HMconn.
+  + exact HqM.
+- exact HMsubN.
+Qed.
+
 (** Infrastructure: sheet non switching placeholder inside an evenly covered neighborhood in Lem 54.2 **)
 (** The statement below is intentionally strong and currently serves as a placeholder. **)
 (** A provable variant is given first: it assumes the relevant connectedness and continuity hypotheses **)
