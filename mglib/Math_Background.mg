@@ -183622,6 +183622,49 @@ exact (andI
 Qed.
 
 (** Proven Bob **)
+Theorem surjective_map_function_on :
+  forall E X pi:set,
+  surjective_map E X pi ->
+  function_on pi E X.
+let E X pi.
+assume Hsurj.
+exact (andEL
+  (function_on pi E X)
+  (forall y:set, y :e X -> exists x:set, x :e E /\ apply_fun pi x = y)
+  Hsurj).
+Qed.
+
+(** Proven Bob **)
+Theorem surjective_map_has_preimage :
+  forall E X pi y:set,
+  surjective_map E X pi ->
+  y :e X ->
+  exists x:set, x :e E /\ apply_fun pi x = y.
+let E X pi y.
+assume Hsurj Hy.
+exact ((andER
+  (function_on pi E X)
+  (forall y0:set, y0 :e X -> exists x:set, x :e E /\ apply_fun pi x = y0)
+  Hsurj) y Hy).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_function_on :
+  forall E Te X pi:set,
+  quotient_map E Te X pi ->
+  function_on pi E X.
+let E Te X pi.
+assume Hquot.
+exact (andER
+  (topology_on E Te)
+  (function_on pi E X)
+  (andEL
+    (topology_on E Te /\ function_on pi E X)
+    (forall y:set, y :e X -> exists x:set, x :e E /\ apply_fun pi x = y)
+    Hquot)).
+Qed.
+
+(** Proven Bob **)
 Theorem closed_quotient_map_preserves_normality_from_surjective_map :
   forall E Te X Tx pi:set,
   topology_on E Te -> topology_on X Tx ->
