@@ -152582,7 +152582,305 @@ claim Hinv_fin : forall f:set, f :e G ->
 apply andI.
 - apply andI.
   + (** abelian_group G multG eG invG **)
-    admit.
+    prove abelian_group G multG eG invG.
+    prove group_structure G multG eG invG /\
+      (forall x y:set, x :e G -> y :e G ->
+        apply_fun multG (x, y) = apply_fun multG (y, x)).
+    (** Master computation lemma for multG **)
+    claim HmultG_eval : forall f1 f2:set, f1 :e G -> f2 :e G ->
+      apply_fun multG (f1, f2) = fun alpha :e J => apply_fun (ma alpha) ((f1, f2) 0 alpha, (f1, f2) 1 alpha).
+    {
+      let f1 f2. assume Hf1 : f1 :e G. assume Hf2 : f2 :e G.
+      claim Hpair_in : (f1, f2) :e setprod G G.
+      { exact (tuple_2_setprod_by_pair_Sigma G G f1 f2 Hf1 Hf2). }
+      exact (apply_fun_graph (setprod G G) (fun p:set => fun alpha :e J => apply_fun (ma alpha) (p 0 alpha, p 1 alpha)) (f1, f2) Hpair_in).
+    }
+    (** Pointwise computation at each coordinate **)
+    claim HmultG_coord : forall f1 f2:set, f1 :e G -> f2 :e G ->
+      forall alpha:set, alpha :e J ->
+      (apply_fun multG (f1, f2)) alpha = apply_fun (ma alpha) (f1 alpha, f2 alpha).
+    {
+      let f1 f2. assume Hf1 : f1 :e G. assume Hf2 : f2 :e G.
+      let alpha. assume Hal : alpha :e J.
+      claim Hpair_in : (f1, f2) :e setprod G G.
+      { exact (tuple_2_setprod_by_pair_Sigma G G f1 f2 Hf1 Hf2). }
+      claim Heval : apply_fun multG (f1, f2) = fun alpha :e J => apply_fun (ma alpha) ((f1, f2) 0 alpha, (f1, f2) 1 alpha).
+      { exact (apply_fun_graph (setprod G G) (fun p:set => fun alpha :e J => apply_fun (ma alpha) (p 0 alpha, p 1 alpha)) (f1, f2) Hpair_in). }
+      claim Hfst : (f1, f2) 0 = f1. { exact (tuple_2_0_eq f1 f2). }
+      claim Hsnd : (f1, f2) 1 = f2. { exact (tuple_2_1_eq f1 f2). }
+      (** Goal: (apply_fun multG (f1, f2)) alpha = apply_fun (ma alpha) (f1 alpha, f2 alpha) **)
+      rewrite Heval.
+      rewrite Hfst. rewrite Hsnd.
+      exact (beta J (fun alpha => apply_fun (ma alpha) (f1 alpha, f2 alpha)) alpha Hal).
+    }
+    (** invG computation **)
+    claim HinvG_eval : forall f:set, f :e G ->
+      apply_fun invG f = fun alpha :e J => apply_fun (ia alpha) (f alpha).
+    {
+      let f. assume Hf : f :e G.
+      exact (apply_fun_graph G (fun f:set => fun alpha :e J => apply_fun (ia alpha) (f alpha)) f Hf).
+    }
+    (** multG membership in G **)
+    claim HmultG_G : forall f1 f2:set, f1 :e G -> f2 :e G ->
+      apply_fun multG (f1, f2) :e G.
+    {
+      let f1 f2. assume Hf1 : f1 :e G. assume Hf2 : f2 :e G.
+      claim Hpair_in : (f1, f2) :e setprod G G.
+      { exact (tuple_2_setprod_by_pair_Sigma G G f1 f2 Hf1 Hf2). }
+      claim Heval : apply_fun multG (f1, f2) = fun alpha :e J => apply_fun (ma alpha) ((f1, f2) 0 alpha, (f1, f2) 1 alpha).
+      { exact (apply_fun_graph (setprod G G) (fun p:set => fun alpha :e J => apply_fun (ma alpha) (p 0 alpha, p 1 alpha)) (f1, f2) Hpair_in). }
+      claim Hp0G : (f1, f2) 0 :e G.
+      { exact (eq_subst_mem ((f1, f2) 0) f1 G (tuple_2_0_eq f1 f2) Hf1). }
+      claim Hp1G : (f1, f2) 1 :e G.
+      { exact (eq_subst_mem ((f1, f2) 1) f2 G (tuple_2_1_eq f1 f2) Hf2). }
+      claim Hlam_Pi : (fun alpha :e J => apply_fun (ma alpha) ((f1, f2) 0 alpha, (f1, f2) 1 alpha)) :e Pi_ alpha :e J, Ga alpha.
+      { exact (Hmult_Pi ((f1, f2) 0) ((f1, f2) 1) Hp0G Hp1G). }
+      claim Hlam_fin : finite (supp (fun alpha :e J => apply_fun (ma alpha) ((f1, f2) 0 alpha, (f1, f2) 1 alpha))).
+      { exact (Hmult_fin ((f1, f2) 0) ((f1, f2) 1) Hp0G Hp1G). }
+      claim Hlam_G : (fun alpha :e J => apply_fun (ma alpha) ((f1, f2) 0 alpha, (f1, f2) 1 alpha)) :e G.
+      {
+        prove (fun alpha :e J => apply_fun (ma alpha) ((f1, f2) 0 alpha, (f1, f2) 1 alpha)) :e
+          {f :e Pi_ alpha :e J, apply_fun Gfam alpha | finite ({alpha :e J | f alpha <> apply_fun efam alpha})}.
+        exact (SepI (Pi_ alpha :e J, apply_fun Gfam alpha)
+          (fun f:set => finite ({alpha :e J | f alpha <> apply_fun efam alpha}))
+          (fun alpha :e J => apply_fun (ma alpha) ((f1, f2) 0 alpha, (f1, f2) 1 alpha))
+          Hlam_Pi Hlam_fin).
+      }
+      exact (eq_subst_mem (apply_fun multG (f1, f2))
+        (fun alpha :e J => apply_fun (ma alpha) ((f1, f2) 0 alpha, (f1, f2) 1 alpha))
+        G Heval Hlam_G).
+    }
+    (** invG membership in G **)
+    claim HinvG_G : forall f:set, f :e G ->
+      apply_fun invG f :e G.
+    {
+      let f. assume Hf : f :e G.
+      claim Heval : apply_fun invG f = fun alpha :e J => apply_fun (ia alpha) (f alpha).
+      { exact (HinvG_eval f Hf). }
+      claim Hlam_Pi : (fun alpha :e J => apply_fun (ia alpha) (f alpha)) :e Pi_ alpha :e J, Ga alpha.
+      { exact (Hinv_Pi f Hf). }
+      claim Hlam_fin : finite (supp (fun alpha :e J => apply_fun (ia alpha) (f alpha))).
+      { exact (Hinv_fin f Hf). }
+      claim Hlam_G : (fun alpha :e J => apply_fun (ia alpha) (f alpha)) :e G.
+      {
+        prove (fun alpha :e J => apply_fun (ia alpha) (f alpha)) :e
+          {f :e Pi_ alpha :e J, apply_fun Gfam alpha | finite ({alpha :e J | f alpha <> apply_fun efam alpha})}.
+        exact (SepI (Pi_ alpha :e J, apply_fun Gfam alpha)
+          (fun f:set => finite ({alpha :e J | f alpha <> apply_fun efam alpha}))
+          (fun alpha :e J => apply_fun (ia alpha) (f alpha))
+          Hlam_Pi Hlam_fin).
+      }
+      exact (eq_subst_mem (apply_fun invG f)
+        (fun alpha :e J => apply_fun (ia alpha) (f alpha))
+        G Heval Hlam_G).
+    }
+    (** === Extensionality === **)
+    (** G extensionality: G elements agreeing pointwise on J are equal **)
+    claim G_sub_Sigma : forall h:set, h :e G ->
+      h c= Sigma_ alpha :e J, Union (Ga alpha).
+    {
+      let h. assume Hh : h :e G.
+      claim HhPi : h :e (Pi_ alpha :e J, Ga alpha). { exact (HG_sub_Pi h Hh). }
+      admit.
+    }
+    claim G_ext : forall f g:set, f :e G -> g :e G ->
+      (forall alpha:set, alpha :e J -> f alpha = g alpha) -> f = g.
+    {
+      let f g. assume Hf : f :e G. assume Hg : g :e G.
+      assume Heq : forall alpha:set, alpha :e J -> f alpha = g alpha.
+      claim Hf_sub : f c= Sigma_ alpha :e J, Union (Ga alpha). { exact (G_sub_Sigma f Hf). }
+      claim Hg_sub : g c= Sigma_ alpha :e J, Union (Ga alpha). { exact (G_sub_Sigma g Hg). }
+      apply set_ext.
+      - let z. assume Hz : z :e f.
+        claim Hz_sig : z :e Sigma_ alpha :e J, Union (Ga alpha). { exact (Hf_sub z Hz). }
+        prove z :e g.
+        apply (Sigma_eta_proj0_proj1 J (fun alpha => Union (Ga alpha)) z Hz_sig).
+        assume Hleft. assume _.
+        apply Hleft.
+        assume Hpair_eq. assume Hproj0J : proj0 z :e J.
+        claim Hproj1_f : proj1 z :e f (proj0 z).
+        { apply (apI f (proj0 z) (proj1 z)). rewrite Hpair_eq. exact Hz. }
+        claim Heq_alpha : f (proj0 z) = g (proj0 z). { exact (Heq (proj0 z) Hproj0J). }
+        claim Hproj1_g : proj1 z :e g (proj0 z). { rewrite <- Heq_alpha. exact Hproj1_f. }
+        rewrite <- Hpair_eq.
+        exact (apE g (proj0 z) (proj1 z) Hproj1_g).
+      - let z. assume Hz : z :e g.
+        claim Hz_sig : z :e Sigma_ alpha :e J, Union (Ga alpha). { exact (Hg_sub z Hz). }
+        prove z :e f.
+        apply (Sigma_eta_proj0_proj1 J (fun alpha => Union (Ga alpha)) z Hz_sig).
+        assume Hleft. assume _.
+        apply Hleft.
+        assume Hpair_eq. assume Hproj0J : proj0 z :e J.
+        claim Hproj1_g : proj1 z :e g (proj0 z).
+        { apply (apI g (proj0 z) (proj1 z)). rewrite Hpair_eq. exact Hz. }
+        claim Heq_alpha : f (proj0 z) = g (proj0 z). { exact (Heq (proj0 z) Hproj0J). }
+        claim Hproj1_f : proj1 z :e f (proj0 z). { rewrite Heq_alpha. exact Hproj1_g. }
+        rewrite <- Hpair_eq.
+        exact (apE f (proj0 z) (proj1 z) Hproj1_f).
+    }
+    apply andI.
+    * (** group_structure G multG eG invG **)
+      prove function_on multG (setprod G G) G /\
+        function_on invG G G /\
+        eG :e G /\
+        (forall x y z:set, x :e G -> y :e G -> z :e G ->
+          apply_fun multG (apply_fun multG (x, y), z) = apply_fun multG (x, apply_fun multG (y, z))) /\
+        (forall x:set, x :e G -> apply_fun multG (eG, x) = x /\ apply_fun multG (x, eG) = x) /\
+        (forall x:set, x :e G ->
+          apply_fun multG (x, apply_fun invG x) = eG /\ apply_fun multG (apply_fun invG x, x) = eG).
+      apply (and6I
+        (function_on multG (setprod G G) G)
+        (function_on invG G G)
+        (eG :e G)
+        (forall x y z:set, x :e G -> y :e G -> z :e G ->
+          apply_fun multG (apply_fun multG (x, y), z) = apply_fun multG (x, apply_fun multG (y, z)))
+        (forall x:set, x :e G -> apply_fun multG (eG, x) = x /\ apply_fun multG (x, eG) = x)
+        (forall x:set, x :e G ->
+          apply_fun multG (x, apply_fun invG x) = eG /\ apply_fun multG (apply_fun invG x, x) = eG)).
+      - (** function_on multG **)
+        let p. assume Hp : p :e setprod G G.
+        claim Hp0G : p 0 :e G. { exact (ap0_Sigma G (fun _ => G) p Hp). }
+        claim Hp1G : p 1 :e G. { exact (ap1_Sigma G (fun _ => G) p Hp). }
+        claim Heval : apply_fun multG p =
+          (fun alpha :e J => apply_fun (ma alpha) (p 0 alpha, p 1 alpha)).
+        {
+          exact (apply_fun_graph (setprod G G)
+            (fun p:set => fun alpha :e J => apply_fun (ma alpha) (p 0 alpha, p 1 alpha))
+            p Hp).
+        }
+        claim Hbody_Pi :
+          (fun alpha :e J => apply_fun (ma alpha) (p 0 alpha, p 1 alpha)) :e Pi_ alpha :e J, Ga alpha.
+        {
+          apply (lam_Pi J Ga (fun alpha => apply_fun (ma alpha) (p 0 alpha, p 1 alpha))).
+          let alpha. assume Hal : alpha :e J.
+          exact (Hma_cl alpha Hal (p 0 alpha) (p 1 alpha)
+            (HG_ap (p 0) Hp0G alpha Hal) (HG_ap (p 1) Hp1G alpha Hal)).
+        }
+        claim Hbody_fin :
+          finite ({alpha :e J | (fun alpha :e J => apply_fun (ma alpha) (p 0 alpha, p 1 alpha)) alpha <> apply_fun efam alpha}).
+        {
+          exact (Hmult_fin (p 0) (p 1) Hp0G Hp1G).
+        }
+        claim Hbody_G :
+          (fun alpha :e J => apply_fun (ma alpha) (p 0 alpha, p 1 alpha)) :e G.
+        {
+          prove (fun alpha :e J => apply_fun (ma alpha) (p 0 alpha, p 1 alpha)) :e
+            {f :e Pi_ alpha :e J, apply_fun Gfam alpha | finite ({alpha :e J | f alpha <> apply_fun efam alpha})}.
+          exact (SepI (Pi_ alpha :e J, apply_fun Gfam alpha)
+            (fun f:set => finite ({alpha :e J | f alpha <> apply_fun efam alpha}))
+            (fun alpha :e J => apply_fun (ma alpha) (p 0 alpha, p 1 alpha))
+            Hbody_Pi Hbody_fin).
+        }
+        exact (eq_subst_mem (apply_fun multG p)
+          (fun alpha :e J => apply_fun (ma alpha) (p 0 alpha, p 1 alpha))
+          G Heval Hbody_G).
+      - (** function_on invG **)
+        let f. assume Hf : f :e G.
+        exact (HinvG_G f Hf).
+      - (** eG :e G **)
+        exact HeG_G.
+      - (** associativity **)
+        let x y z. assume Hx : x :e G. assume Hy : y :e G. assume Hz : z :e G.
+        claim Hxy_G : apply_fun multG (x, y) :e G. { exact (HmultG_G x y Hx Hy). }
+        claim Hyz_G : apply_fun multG (y, z) :e G. { exact (HmultG_G y z Hy Hz). }
+        apply (G_ext (apply_fun multG (apply_fun multG (x, y), z)) (apply_fun multG (x, apply_fun multG (y, z))) (HmultG_G (apply_fun multG (x, y)) z Hxy_G Hz) (HmultG_G x (apply_fun multG (y, z)) Hx Hyz_G)).
+        let alpha. assume Hal : alpha :e J.
+        claim Hxa : x alpha :e Ga alpha. { exact (HG_ap x Hx alpha Hal). }
+        claim Hya : y alpha :e Ga alpha. { exact (HG_ap y Hy alpha Hal). }
+        claim Hza : z alpha :e Ga alpha. { exact (HG_ap z Hz alpha Hal). }
+        claim Hxya : apply_fun (ma alpha) (x alpha, y alpha) :e Ga alpha. { exact (Hma_cl alpha Hal (x alpha) (y alpha) Hxa Hya). }
+        claim Hyza : apply_fun (ma alpha) (y alpha, z alpha) :e Ga alpha. { exact (Hma_cl alpha Hal (y alpha) (z alpha) Hya Hza). }
+        claim Hlhs : (apply_fun multG (apply_fun multG (x, y), z)) alpha = apply_fun (ma alpha) ((apply_fun multG (x, y)) alpha, z alpha).
+        { exact (HmultG_coord (apply_fun multG (x, y)) z Hxy_G Hz alpha Hal). }
+        claim Hrhs : (apply_fun multG (x, apply_fun multG (y, z))) alpha = apply_fun (ma alpha) (x alpha, (apply_fun multG (y, z)) alpha).
+        { exact (HmultG_coord x (apply_fun multG (y, z)) Hx Hyz_G alpha Hal). }
+        claim Hxy_coord : (apply_fun multG (x, y)) alpha = apply_fun (ma alpha) (x alpha, y alpha).
+        { exact (HmultG_coord x y Hx Hy alpha Hal). }
+        claim Hyz_coord : (apply_fun multG (y, z)) alpha = apply_fun (ma alpha) (y alpha, z alpha).
+        { exact (HmultG_coord y z Hy Hz alpha Hal). }
+        claim Hassoc_coord : apply_fun (ma alpha) (apply_fun (ma alpha) (x alpha, y alpha), z alpha) = apply_fun (ma alpha) (x alpha, apply_fun (ma alpha) (y alpha, z alpha)).
+        { exact (Hassoc_a alpha Hal (x alpha) (y alpha) (z alpha) Hxa Hya Hza). }
+        prove (apply_fun multG (apply_fun multG (x, y), z)) alpha = (apply_fun multG (x, apply_fun multG (y, z))) alpha.
+        rewrite Hlhs. rewrite Hxy_coord. rewrite Hrhs. rewrite Hyz_coord. exact Hassoc_coord.
+      - (** identity laws **)
+        let x. assume Hx : x :e G.
+        apply andI.
+        - (** left identity: apply_fun multG (eG, x) = x **)
+          apply (G_ext (apply_fun multG (eG, x)) x (HmultG_G eG x HeG_G Hx) Hx).
+          let alpha. assume Hal : alpha :e J.
+          claim Hcoord : (apply_fun multG (eG, x)) alpha = apply_fun (ma alpha) (eG alpha, x alpha).
+          { exact (HmultG_coord eG x HeG_G Hx alpha Hal). }
+          claim HeG_beta : eG alpha = ea alpha. { exact (beta J (fun alpha => ea alpha) alpha Hal). }
+          claim Hxa : x alpha :e Ga alpha. { exact (HG_ap x Hx alpha Hal). }
+          claim Hid : apply_fun (ma alpha) (ea alpha, x alpha) = x alpha.
+          { exact (Hid_left alpha Hal (x alpha) Hxa). }
+          prove (apply_fun multG (eG, x)) alpha = x alpha.
+          rewrite Hcoord. rewrite HeG_beta. exact Hid.
+        - (** right identity: apply_fun multG (x, eG) = x **)
+          apply (G_ext (apply_fun multG (x, eG)) x (HmultG_G x eG Hx HeG_G) Hx).
+          let alpha. assume Hal : alpha :e J.
+          claim Hcoord : (apply_fun multG (x, eG)) alpha = apply_fun (ma alpha) (x alpha, eG alpha).
+          { exact (HmultG_coord x eG Hx HeG_G alpha Hal). }
+          claim HeG_beta : eG alpha = ea alpha. { exact (beta J (fun alpha => ea alpha) alpha Hal). }
+          claim Hxa : x alpha :e Ga alpha. { exact (HG_ap x Hx alpha Hal). }
+          claim Hid : apply_fun (ma alpha) (x alpha, ea alpha) = x alpha.
+          { exact (Hid_right alpha Hal (x alpha) Hxa). }
+          prove (apply_fun multG (x, eG)) alpha = x alpha.
+          rewrite Hcoord. rewrite HeG_beta. exact Hid.
+      - (** inverse laws **)
+        let x. assume Hx : x :e G.
+        claim HinvX_G : apply_fun invG x :e G. { exact (HinvG_G x Hx). }
+        apply andI.
+        - (** right inverse: apply_fun multG (x, apply_fun invG x) = eG **)
+          apply (G_ext (apply_fun multG (x, apply_fun invG x)) eG (HmultG_G x (apply_fun invG x) Hx HinvX_G) HeG_G).
+          let alpha. assume Hal : alpha :e J.
+          claim Hcoord : (apply_fun multG (x, apply_fun invG x)) alpha = apply_fun (ma alpha) (x alpha, (apply_fun invG x) alpha).
+          { exact (HmultG_coord x (apply_fun invG x) Hx HinvX_G alpha Hal). }
+          claim Hinv_coord : (apply_fun invG x) alpha = apply_fun (ia alpha) (x alpha).
+          { claim Heval : apply_fun invG x = fun alpha :e J => apply_fun (ia alpha) (x alpha).
+            { exact (HinvG_eval x Hx). }
+            rewrite Heval.
+            exact (beta J (fun alpha => apply_fun (ia alpha) (x alpha)) alpha Hal). }
+          claim HeG_beta : eG alpha = ea alpha. { exact (beta J (fun alpha => ea alpha) alpha Hal). }
+          claim Hxa : x alpha :e Ga alpha. { exact (HG_ap x Hx alpha Hal). }
+          claim Hinv_law : apply_fun (ma alpha) (x alpha, apply_fun (ia alpha) (x alpha)) = ea alpha.
+          { exact (andEL (apply_fun (ma alpha) (x alpha, apply_fun (ia alpha) (x alpha)) = ea alpha)
+              (apply_fun (ma alpha) (apply_fun (ia alpha) (x alpha), x alpha) = ea alpha)
+              (Hinv_a alpha Hal (x alpha) Hxa)). }
+          prove (apply_fun multG (x, apply_fun invG x)) alpha = eG alpha.
+          rewrite Hcoord. rewrite Hinv_coord. rewrite HeG_beta. exact Hinv_law.
+        - (** left inverse: apply_fun multG (apply_fun invG x, x) = eG **)
+          apply (G_ext (apply_fun multG (apply_fun invG x, x)) eG (HmultG_G (apply_fun invG x) x HinvX_G Hx) HeG_G).
+          let alpha. assume Hal : alpha :e J.
+          claim Hcoord : (apply_fun multG (apply_fun invG x, x)) alpha = apply_fun (ma alpha) ((apply_fun invG x) alpha, x alpha).
+          { exact (HmultG_coord (apply_fun invG x) x HinvX_G Hx alpha Hal). }
+          claim Hinv_coord : (apply_fun invG x) alpha = apply_fun (ia alpha) (x alpha).
+          { claim Heval : apply_fun invG x = fun alpha :e J => apply_fun (ia alpha) (x alpha).
+            { exact (HinvG_eval x Hx). }
+            rewrite Heval.
+            exact (beta J (fun alpha => apply_fun (ia alpha) (x alpha)) alpha Hal). }
+          claim HeG_beta : eG alpha = ea alpha. { exact (beta J (fun alpha => ea alpha) alpha Hal). }
+          claim Hxa : x alpha :e Ga alpha. { exact (HG_ap x Hx alpha Hal). }
+          claim Hinv_law : apply_fun (ma alpha) (apply_fun (ia alpha) (x alpha), x alpha) = ea alpha.
+          { exact (andER (apply_fun (ma alpha) (x alpha, apply_fun (ia alpha) (x alpha)) = ea alpha)
+              (apply_fun (ma alpha) (apply_fun (ia alpha) (x alpha), x alpha) = ea alpha)
+              (Hinv_a alpha Hal (x alpha) Hxa)). }
+          prove (apply_fun multG (apply_fun invG x, x)) alpha = eG alpha.
+          rewrite Hcoord. rewrite Hinv_coord. rewrite HeG_beta. exact Hinv_law.
+    * (** commutativity **)
+      let x y. assume Hx : x :e G. assume Hy : y :e G.
+      apply (G_ext (apply_fun multG (x, y)) (apply_fun multG (y, x)) (HmultG_G x y Hx Hy) (HmultG_G y x Hy Hx)).
+      let alpha. assume Hal : alpha :e J.
+      claim Hcoord_xy : (apply_fun multG (x, y)) alpha = apply_fun (ma alpha) (x alpha, y alpha).
+      { exact (HmultG_coord x y Hx Hy alpha Hal). }
+      claim Hcoord_yx : (apply_fun multG (y, x)) alpha = apply_fun (ma alpha) (y alpha, x alpha).
+      { exact (HmultG_coord y x Hy Hx alpha Hal). }
+      claim Hxa : x alpha :e Ga alpha. { exact (HG_ap x Hx alpha Hal). }
+      claim Hya : y alpha :e Ga alpha. { exact (HG_ap y Hy alpha Hal). }
+      claim Hcomm : apply_fun (ma alpha) (x alpha, y alpha) = apply_fun (ma alpha) (y alpha, x alpha).
+      { exact (Hcomm_a alpha Hal (x alpha) (y alpha) Hxa Hya). }
+      prove (apply_fun multG (x, y)) alpha = (apply_fun multG (y, x)) alpha.
+      rewrite Hcoord_xy. rewrite Hcoord_yx. exact Hcomm.
   + (** forall alpha :e J, group_homomorphism ... /\ injectivity **)
     admit.
 - (** direct_sum_of_subgroups **)
