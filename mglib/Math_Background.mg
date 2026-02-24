@@ -65502,6 +65502,703 @@ apply set_ext.
   exact (binintersectI unit_interval (open_interval 0 1) x HxI HxO).
 Qed.
 
+(** Infrastructure: interval_in witnesses for standard interval constructors in R. **)
+
+(** Proven Charlie **)
+Theorem interval_in_R_open_interval :
+  forall a b:set,
+  a :e R ->
+  b :e R ->
+  interval_in R a b (open_interval a b).
+let a b.
+assume HaR HbR.
+claim Heq : open_interval a b = order_interval R a b.
+{
+  symmetry.
+  exact (order_interval_R_eq_open_interval a b).
+}
+set P1 := open_interval a b = order_interval R a b.
+set P2 := open_interval a b = halfopen_interval_left_in R a b.
+set P3 := open_interval a b = halfopen_interval_right_in R a b.
+set P4 := open_interval a b = closed_interval_in R a b.
+exact (orIL
+  ((P1 \/ P2) \/ P3)
+  P4
+  (orIL
+    (P1 \/ P2)
+    P3
+    (orIL
+      P1
+      P2
+      Heq))).
+Qed.
+
+(** Proven Charlie **)
+Theorem interval_in_R_halfopen_interval_left_in :
+  forall a b:set,
+  a :e R ->
+  b :e R ->
+  interval_in R a b (halfopen_interval_left_in R a b).
+let a b.
+assume HaR HbR.
+set P1 := halfopen_interval_left_in R a b = order_interval R a b.
+set P2 := halfopen_interval_left_in R a b = halfopen_interval_left_in R a b.
+set P3 := halfopen_interval_left_in R a b = halfopen_interval_right_in R a b.
+set P4 := halfopen_interval_left_in R a b = closed_interval_in R a b.
+claim HP2 : P2.
+{
+  reflexivity.
+}
+exact (orIL
+  ((P1 \/ P2) \/ P3)
+  P4
+  (orIL
+    (P1 \/ P2)
+    P3
+    (orIR
+      P1
+      P2
+      HP2))).
+Qed.
+
+(** Proven Charlie **)
+Theorem interval_in_R_halfopen_interval_right_in :
+  forall a b:set,
+  a :e R ->
+  b :e R ->
+  interval_in R a b (halfopen_interval_right_in R a b).
+let a b.
+assume HaR HbR.
+set P12 := halfopen_interval_right_in R a b = order_interval R a b \/
+           halfopen_interval_right_in R a b = halfopen_interval_left_in R a b.
+set P3 := halfopen_interval_right_in R a b = halfopen_interval_right_in R a b.
+set P4 := halfopen_interval_right_in R a b = closed_interval_in R a b.
+claim HP3 : P3.
+{
+  reflexivity.
+}
+exact (orIL
+  (P12 \/ P3)
+  P4
+  (orIR
+    P12
+    P3
+    HP3)).
+Qed.
+
+(** Proven Charlie **)
+Theorem interval_in_R_closed_interval_in :
+  forall a b:set,
+  a :e R ->
+  b :e R ->
+  interval_in R a b (closed_interval_in R a b).
+let a b.
+assume HaR HbR.
+set P123 := (closed_interval_in R a b = order_interval R a b \/
+             closed_interval_in R a b = halfopen_interval_left_in R a b) \/
+            closed_interval_in R a b = halfopen_interval_right_in R a b.
+set P4 := closed_interval_in R a b = closed_interval_in R a b.
+claim HP4 : P4.
+{
+  reflexivity.
+}
+exact (orIR
+  P123
+  P4
+  HP4).
+Qed.
+
+(** Infrastructure: open balls in unit_interval are connected when radius is < 1. **)
+(** Proven Charlie **)
+Theorem open_ball_unit_interval_connected_lt1 :
+  forall x r:set,
+  x :e unit_interval ->
+  r :e R ->
+  Rlt 0 r ->
+  Rlt r 1 ->
+  connected_space
+    (open_ball unit_interval R_bounded_metric x r)
+    (subspace_topology
+      unit_interval
+      unit_interval_topology
+      (open_ball unit_interval R_bounded_metric x r)).
+let x r.
+assume HxI HrR Hrpos Hrlt1.
+set a := add_SNo x (minus_SNo r).
+set b := add_SNo x r.
+claim HxR : x :e R.
+{
+  exact (unit_interval_sub_R x HxI).
+}
+claim HaR : a :e R.
+{
+  exact (real_add_SNo x HxR (minus_SNo r) (real_minus_SNo r HrR)).
+}
+claim HbR : b :e R.
+{
+  exact (real_add_SNo x HxR r HrR).
+}
+claim HmetI : metric_on unit_interval R_bounded_metric.
+{
+  exact R_bounded_metric_is_metric_on_unit_interval.
+}
+claim Hdx0 : apply_fun R_bounded_metric (x,x) = 0.
+{
+  apply (and5E
+    (function_on R_bounded_metric (setprod unit_interval unit_interval) R)
+    (forall u v:set, u :e unit_interval -> v :e unit_interval ->
+      apply_fun R_bounded_metric (u,v) = apply_fun R_bounded_metric (v,u))
+    (forall u:set, u :e unit_interval -> apply_fun R_bounded_metric (u,u) = 0)
+    (forall u v:set, u :e unit_interval -> v :e unit_interval ->
+      ~ (Rlt (apply_fun R_bounded_metric (u,v)) 0) /\ (apply_fun R_bounded_metric (u,v) = 0 -> u = v))
+    (forall u v w:set, u :e unit_interval -> v :e unit_interval -> w :e unit_interval ->
+      ~ (Rlt (add_SNo (apply_fun R_bounded_metric (u,v)) (apply_fun R_bounded_metric (v,w)))
+            (apply_fun R_bounded_metric (u,w))))
+    HmetI).
+  assume _ _ Hrefl _ _.
+  exact (Hrefl x HxI).
+}
+claim HxBall : x :e open_ball unit_interval R_bounded_metric x r.
+{
+  claim Hcond : Rlt (apply_fun R_bounded_metric (x,x)) r.
+  {
+    rewrite Hdx0.
+    exact Hrpos.
+  }
+  exact (SepI
+    unit_interval
+    (fun y:set => Rlt (apply_fun R_bounded_metric (x,y)) r)
+    x
+    HxI
+    Hcond).
+}
+rewrite (open_ball_unit_interval_eq_binintersect_open_interval
+  x
+  r
+  HxI
+  HrR
+  Hrpos
+  Hrlt1).
+claim HxInInt : x :e unit_interval :/\: open_interval a b.
+{
+  exact (mem_eqR
+    x
+    (open_ball unit_interval R_bounded_metric x r)
+    (unit_interval :/\: open_interval a b)
+    (open_ball_unit_interval_eq_binintersect_open_interval x r HxI HrR Hrpos Hrlt1)
+    HxBall).
+}
+claim HxOab : x :e open_interval a b.
+{
+  exact (binintersectE2 unit_interval (open_interval a b) x HxInInt).
+}
+claim HxPack : Rlt a x /\ Rlt x b.
+{
+  exact (SepE2 R (fun y:set => Rlt a y /\ Rlt y b) x HxOab).
+}
+claim Haltx : Rlt a x.
+{
+  exact (andEL (Rlt a x) (Rlt x b) HxPack).
+}
+claim Hxltb : Rlt x b.
+{
+  exact (andER (Rlt a x) (Rlt x b) HxPack).
+}
+claim Hablt : Rlt a b.
+{
+  exact (Rlt_tra a x b Haltx Hxltb).
+}
+claim Hab : order_rel R a b.
+{
+  exact (Rlt_implies_order_rel_R a b Hablt).
+}
+claim H0lex : Rle 0 x.
+{
+  exact (unit_interval_Rle0 x HxI).
+}
+claim Hxle1 : Rle x 1.
+{
+  exact (unit_interval_Rle1 x HxI).
+}
+claim H0ltb : Rlt 0 b.
+{
+  exact (Rle_Rlt_tra 0 x b H0lex Hxltb).
+}
+claim Halt1 : Rlt a 1.
+{
+  exact (Rlt_Rle_tra a x 1 Haltx Hxle1).
+}
+
+apply (order_rel_trichotomy_or_impred
+  R
+  a
+  0
+  simply_ordered_set_R
+  HaR
+  real_0).
+- assume Halt0Ord.
+  claim Halt0 : Rlt a 0.
+  {
+    exact (order_rel_R_implies_Rlt a 0 Halt0Ord).
+  }
+  apply (order_rel_trichotomy_or_impred
+    R
+    b
+    1
+    simply_ordered_set_R
+    HbR
+    real_1).
+  + assume Hblt1Ord.
+    claim Hblt1 : Rlt b 1.
+    {
+      exact (order_rel_R_implies_Rlt b 1 Hblt1Ord).
+    }
+    rewrite (unit_interval_binintersect_open_interval_left_cross
+      a
+      b
+      HaR
+      HbR
+      Halt0
+      H0ltb
+      Hblt1).
+    apply (interval_in_unit_interval_connected
+      0
+      b
+      (halfopen_interval_left_in R 0 b)).
+    - exact real_0.
+    - exact HbR.
+    - exact (Rlt_implies_order_rel_R 0 b H0ltb).
+    - exact (interval_in_R_halfopen_interval_left_in 0 b real_0 HbR).
+    - let y.
+      assume Hy.
+      claim HyR : y :e R.
+      {
+        exact (SepE1 R (fun y0:set => (y0 = 0 \/ order_rel R 0 y0) /\ order_rel R y0 b) y Hy).
+      }
+      claim HyPack2 : (y = 0 \/ order_rel R 0 y) /\ order_rel R y b.
+      {
+        exact (SepE2 R (fun y0:set => (y0 = 0 \/ order_rel R 0 y0) /\ order_rel R y0 b) y Hy).
+      }
+      claim Hy0or : y = 0 \/ order_rel R 0 y.
+      {
+        exact (andEL (y = 0 \/ order_rel R 0 y) (order_rel R y b) HyPack2).
+      }
+      claim HyltbOrd : order_rel R y b.
+      {
+        exact (andER (y = 0 \/ order_rel R 0 y) (order_rel R y b) HyPack2).
+      }
+      claim Hyltb : Rlt y b.
+      {
+        exact (order_rel_R_implies_Rlt y b HyltbOrd).
+      }
+      claim Hylt1 : Rlt y 1.
+      {
+        exact (Rlt_tra y b 1 Hyltb Hblt1).
+      }
+      claim Hnylt0 : ~ (Rlt y 0).
+      {
+        apply Hy0or.
+        - assume Hy0.
+          rewrite Hy0.
+          exact (not_Rlt_refl 0 real_0).
+        - assume H0ltyOrd.
+          claim H0lty : Rlt 0 y.
+          {
+            exact (order_rel_R_implies_Rlt 0 y H0ltyOrd).
+          }
+          exact (not_Rlt_sym 0 y H0lty).
+      }
+      exact (SepI
+        R
+        (fun t:set => ~ (Rlt t 0) /\ ~ (Rlt 1 t))
+        y
+        HyR
+        (andI
+          (~ (Rlt y 0))
+          (~ (Rlt 1 y))
+          Hnylt0
+          (not_Rlt_sym y 1 Hylt1))).
+  + assume Hb1.
+    rewrite Hb1.
+    rewrite (unit_interval_binintersect_open_interval_right_boundary_cross
+      a
+      HaR
+      Halt0).
+    apply (interval_in_unit_interval_connected
+      0
+      1
+      (halfopen_interval_left_in R 0 1)).
+    - exact real_0.
+    - exact real_1.
+    - exact (Rlt_implies_order_rel_R 0 1 Rlt_0_1).
+    - exact (interval_in_R_halfopen_interval_left_in 0 1 real_0 real_1).
+    - let y.
+      assume Hy.
+      claim HyR : y :e R.
+      {
+        exact (SepE1 R (fun y0:set => (y0 = 0 \/ order_rel R 0 y0) /\ order_rel R y0 1) y Hy).
+      }
+      claim HyPack2 : (y = 0 \/ order_rel R 0 y) /\ order_rel R y 1.
+      {
+        exact (SepE2 R (fun y0:set => (y0 = 0 \/ order_rel R 0 y0) /\ order_rel R y0 1) y Hy).
+      }
+      claim Hy0or : y = 0 \/ order_rel R 0 y.
+      {
+        exact (andEL (y = 0 \/ order_rel R 0 y) (order_rel R y 1) HyPack2).
+      }
+      claim Hylt1Ord : order_rel R y 1.
+      {
+        exact (andER (y = 0 \/ order_rel R 0 y) (order_rel R y 1) HyPack2).
+      }
+      claim Hylt1 : Rlt y 1.
+      {
+        exact (order_rel_R_implies_Rlt y 1 Hylt1Ord).
+      }
+      claim Hnylt0 : ~ (Rlt y 0).
+      {
+        apply Hy0or.
+        - assume Hy0.
+          rewrite Hy0.
+          exact (not_Rlt_refl 0 real_0).
+        - assume H0ltyOrd.
+          claim H0lty : Rlt 0 y.
+          {
+            exact (order_rel_R_implies_Rlt 0 y H0ltyOrd).
+          }
+          exact (not_Rlt_sym 0 y H0lty).
+      }
+      exact (SepI
+        R
+        (fun t:set => ~ (Rlt t 0) /\ ~ (Rlt 1 t))
+        y
+        HyR
+        (andI
+          (~ (Rlt y 0))
+          (~ (Rlt 1 y))
+          Hnylt0
+          (not_Rlt_sym y 1 Hylt1))).
+  + assume H1ltbOrd.
+    claim H1ltb : Rlt 1 b.
+    {
+      exact (order_rel_R_implies_Rlt 1 b H1ltbOrd).
+    }
+    rewrite (unit_interval_binintersect_open_interval_both_cross
+      a
+      b
+      HaR
+      HbR
+      Halt0
+      H1ltb).
+    rewrite (subspace_topology_whole unit_interval unit_interval_topology unit_interval_topology_on).
+    exact unit_interval_connected.
+- assume Ha0.
+  rewrite Ha0.
+  apply (order_rel_trichotomy_or_impred
+    R
+    b
+    1
+    simply_ordered_set_R
+    HbR
+    real_1).
+  + assume Hblt1Ord.
+    claim Hblt1 : Rlt b 1.
+    {
+      exact (order_rel_R_implies_Rlt b 1 Hblt1Ord).
+    }
+    rewrite (unit_interval_binintersect_open_interval_left_boundary
+      b
+      HbR
+      H0ltb
+      Hblt1).
+    apply (interval_in_unit_interval_connected
+      0
+      b
+      (open_interval 0 b)).
+    - exact real_0.
+    - exact HbR.
+    - exact (Rlt_implies_order_rel_R 0 b H0ltb).
+    - exact (interval_in_R_open_interval 0 b real_0 HbR).
+    - let y.
+      assume Hy.
+      claim HyR : y :e R.
+      {
+        exact (SepE1 R (fun y0:set => Rlt 0 y0 /\ Rlt y0 b) y Hy).
+      }
+      claim HyPack2 : Rlt 0 y /\ Rlt y b.
+      {
+        exact (SepE2 R (fun y0:set => Rlt 0 y0 /\ Rlt y0 b) y Hy).
+      }
+      claim H0lty : Rlt 0 y.
+      {
+        exact (andEL (Rlt 0 y) (Rlt y b) HyPack2).
+      }
+      claim Hyltb : Rlt y b.
+      {
+        exact (andER (Rlt 0 y) (Rlt y b) HyPack2).
+      }
+      claim Hylt1 : Rlt y 1.
+      {
+        exact (Rlt_tra y b 1 Hyltb Hblt1).
+      }
+      exact (SepI
+        R
+        (fun t:set => ~ (Rlt t 0) /\ ~ (Rlt 1 t))
+        y
+        HyR
+        (andI
+          (~ (Rlt y 0))
+          (~ (Rlt 1 y))
+          (not_Rlt_sym 0 y H0lty)
+          (not_Rlt_sym y 1 Hylt1))).
+  + assume Hb1.
+    rewrite Hb1.
+    rewrite unit_interval_binintersect_open_interval_0_1.
+    apply (interval_in_unit_interval_connected
+      0
+      1
+      (open_interval 0 1)).
+    - exact real_0.
+    - exact real_1.
+    - exact (Rlt_implies_order_rel_R 0 1 Rlt_0_1).
+    - exact (interval_in_R_open_interval 0 1 real_0 real_1).
+    - let y.
+      assume Hy.
+      claim HyR : y :e R.
+      {
+        exact (SepE1 R (fun y0:set => Rlt 0 y0 /\ Rlt y0 1) y Hy).
+      }
+      claim HyPack2 : Rlt 0 y /\ Rlt y 1.
+      {
+        exact (SepE2 R (fun y0:set => Rlt 0 y0 /\ Rlt y0 1) y Hy).
+      }
+      claim H0lty : Rlt 0 y.
+      {
+        exact (andEL (Rlt 0 y) (Rlt y 1) HyPack2).
+      }
+      claim Hylt1 : Rlt y 1.
+      {
+        exact (andER (Rlt 0 y) (Rlt y 1) HyPack2).
+      }
+      exact (SepI
+        R
+        (fun t:set => ~ (Rlt t 0) /\ ~ (Rlt 1 t))
+        y
+        HyR
+        (andI
+          (~ (Rlt y 0))
+          (~ (Rlt 1 y))
+          (not_Rlt_sym 0 y H0lty)
+          (not_Rlt_sym y 1 Hylt1))).
+  + assume H1ltbOrd.
+    claim H1ltb : Rlt 1 b.
+    {
+      exact (order_rel_R_implies_Rlt 1 b H1ltbOrd).
+    }
+    rewrite (unit_interval_binintersect_open_interval_left_boundary_cross
+      b
+      HbR
+      H1ltb).
+    apply (interval_in_unit_interval_connected
+      0
+      1
+      (halfopen_interval_right_in R 0 1)).
+    - exact real_0.
+    - exact real_1.
+    - exact (Rlt_implies_order_rel_R 0 1 Rlt_0_1).
+    - exact (interval_in_R_halfopen_interval_right_in 0 1 real_0 real_1).
+    - let y.
+      assume Hy.
+      claim HyR : y :e R.
+      {
+        exact (SepE1 R (fun y0:set => order_rel R 0 y0 /\ (y0 = 1 \/ order_rel R y0 1)) y Hy).
+      }
+      claim HyPack2 : order_rel R 0 y /\ (y = 1 \/ order_rel R y 1).
+      {
+        exact (SepE2 R (fun y0:set => order_rel R 0 y0 /\ (y0 = 1 \/ order_rel R y0 1)) y Hy).
+      }
+      claim H0lty : Rlt 0 y.
+      {
+        exact (order_rel_R_implies_Rlt 0 y (andEL (order_rel R 0 y) (y = 1 \/ order_rel R y 1) HyPack2)).
+      }
+      claim Hy1or : y = 1 \/ order_rel R y 1.
+      {
+        exact (andER (order_rel R 0 y) (y = 1 \/ order_rel R y 1) HyPack2).
+      }
+      claim Hnylt1 : ~ (Rlt 1 y).
+      {
+        apply Hy1or.
+        - assume Hy1.
+          rewrite Hy1.
+          exact (not_Rlt_refl 1 real_1).
+        - assume Hylt1Ord.
+          claim Hylt1 : Rlt y 1.
+          {
+            exact (order_rel_R_implies_Rlt y 1 Hylt1Ord).
+          }
+          exact (not_Rlt_sym y 1 Hylt1).
+      }
+      exact (SepI
+        R
+        (fun t:set => ~ (Rlt t 0) /\ ~ (Rlt 1 t))
+        y
+        HyR
+        (andI
+          (~ (Rlt y 0))
+          (~ (Rlt 1 y))
+          (not_Rlt_sym 0 y H0lty)
+          Hnylt1)).
+- assume H0ltaOrd.
+  claim H0lta : Rlt 0 a.
+  {
+    exact (order_rel_R_implies_Rlt 0 a H0ltaOrd).
+  }
+  apply (order_rel_trichotomy_or_impred
+    R
+    b
+    1
+    simply_ordered_set_R
+    HbR
+    real_1).
+  + assume Hblt1Ord.
+    claim Hblt1 : Rlt b 1.
+    {
+      exact (order_rel_R_implies_Rlt b 1 Hblt1Ord).
+    }
+    rewrite (unit_interval_binintersect_open_interval_inside
+      a
+      b
+      HaR
+      HbR
+      H0lta
+      Hblt1).
+    apply (interval_in_unit_interval_connected
+      a
+      b
+      (open_interval a b)).
+    - exact HaR.
+    - exact HbR.
+    - exact Hab.
+    - exact (interval_in_R_open_interval a b HaR HbR).
+    - exact (open_interval_Subq_unit_interval a b HaR HbR H0lta Hblt1).
+  + assume Hb1.
+    rewrite Hb1.
+    rewrite (unit_interval_binintersect_open_interval_right_boundary
+      a
+      HaR
+      H0lta
+      Halt1).
+    apply (interval_in_unit_interval_connected
+      a
+      1
+      (open_interval a 1)).
+    - exact HaR.
+    - exact real_1.
+    - exact (Rlt_implies_order_rel_R a 1 Halt1).
+    - exact (interval_in_R_open_interval a 1 HaR real_1).
+    - let y.
+      assume Hy.
+      claim HyR : y :e R.
+      {
+        exact (SepE1 R (fun y0:set => Rlt a y0 /\ Rlt y0 1) y Hy).
+      }
+      claim HyPack2 : Rlt a y /\ Rlt y 1.
+      {
+        exact (SepE2 R (fun y0:set => Rlt a y0 /\ Rlt y0 1) y Hy).
+      }
+      claim HaltY : Rlt a y.
+      {
+        exact (andEL (Rlt a y) (Rlt y 1) HyPack2).
+      }
+      claim Hylt1 : Rlt y 1.
+      {
+        exact (andER (Rlt a y) (Rlt y 1) HyPack2).
+      }
+      claim H0lty : Rlt 0 y.
+      {
+        exact (Rlt_tra 0 a y H0lta HaltY).
+      }
+      exact (SepI
+        R
+        (fun t:set => ~ (Rlt t 0) /\ ~ (Rlt 1 t))
+        y
+        HyR
+        (andI
+          (~ (Rlt y 0))
+          (~ (Rlt 1 y))
+          (not_Rlt_sym 0 y H0lty)
+          (not_Rlt_sym y 1 Hylt1))).
+  + assume H1ltbOrd.
+    claim H1ltb : Rlt 1 b.
+    {
+      exact (order_rel_R_implies_Rlt 1 b H1ltbOrd).
+    }
+    rewrite (unit_interval_binintersect_open_interval_right_cross
+      a
+      b
+      HaR
+      HbR
+      H0lta
+      Halt1
+      H1ltb).
+    apply (interval_in_unit_interval_connected
+      a
+      1
+      (halfopen_interval_right_in R a 1)).
+    - exact HaR.
+    - exact real_1.
+    - exact (Rlt_implies_order_rel_R a 1 Halt1).
+    - exact (interval_in_R_halfopen_interval_right_in a 1 HaR real_1).
+    - let y.
+      assume Hy.
+      claim HyR : y :e R.
+      {
+        exact (SepE1 R (fun y0:set => order_rel R a y0 /\ (y0 = 1 \/ order_rel R y0 1)) y Hy).
+      }
+      claim HyPack2 : order_rel R a y /\ (y = 1 \/ order_rel R y 1).
+      {
+        exact (SepE2 R (fun y0:set => order_rel R a y0 /\ (y0 = 1 \/ order_rel R y0 1)) y Hy).
+      }
+      claim HaltYOrd : order_rel R a y.
+      {
+        exact (andEL (order_rel R a y) (y = 1 \/ order_rel R y 1) HyPack2).
+      }
+      claim Hy1or : y = 1 \/ order_rel R y 1.
+      {
+        exact (andER (order_rel R a y) (y = 1 \/ order_rel R y 1) HyPack2).
+      }
+      claim HaltY : Rlt a y.
+      {
+        exact (order_rel_R_implies_Rlt a y HaltYOrd).
+      }
+      claim H0lty : Rlt 0 y.
+      {
+        exact (Rlt_tra 0 a y H0lta HaltY).
+      }
+      claim Hnylt1 : ~ (Rlt 1 y).
+      {
+        apply Hy1or.
+        - assume Hy1.
+          rewrite Hy1.
+          exact (not_Rlt_refl 1 real_1).
+        - assume Hylt1Ord.
+          claim Hylt1 : Rlt y 1.
+          {
+            exact (order_rel_R_implies_Rlt y 1 Hylt1Ord).
+          }
+          exact (not_Rlt_sym y 1 Hylt1).
+      }
+      exact (SepI
+        R
+        (fun t:set => ~ (Rlt t 0) /\ ~ (Rlt 1 t))
+        y
+        HyR
+        (andI
+          (~ (Rlt y 0))
+          (~ (Rlt 1 y))
+          (not_Rlt_sym 0 y H0lty)
+          Hnylt1)).
+Qed.
+
 (** Infrastructure: Lebesgue number for open covers of unit_interval (metric topology = subspace topology). **)
 (** Proven Charlie **)
 Theorem unit_interval_open_cover_has_lebesgue_number_eps :
