@@ -72624,6 +72624,130 @@ exact (connected_subset_of_pairwise_disjoint_open_union_anchor
   Hfx0V0).
 Qed.
 
+(** Infrastructure: a connected lift into an evenly covered union stays in the anchored sheet **)
+(** Proven Charlie **)
+Theorem connected_lift_stays_in_anchored_sheet :
+  forall E Te B Tb p U slices V0 X Tx f ft x0:set,
+  topology_on E Te ->
+  slices c= Te ->
+  pairwise_disjoint slices ->
+  Union slices = preimage_of E p U ->
+  connected_space X Tx ->
+  continuous_map X Tx E Te ft ->
+  (forall x:set, x :e X -> apply_fun p (apply_fun ft x) = apply_fun f x) ->
+  (forall x:set, x :e X -> apply_fun f x :e U) ->
+  V0 :e slices ->
+  x0 :e X ->
+  apply_fun ft x0 :e V0 ->
+  forall x:set, x :e X -> apply_fun ft x :e V0.
+let E Te B Tb p U slices V0 X Tx f ft x0.
+assume HtopE HslicesSub HpdSlices Hunion
+  HconnX HftCont Hcomm HfU HV0Slice Hx0X Hft0V0.
+claim HftFun : function_on ft X E.
+{
+  exact (continuous_map_function_on
+    X
+    Tx
+    E
+    Te
+    ft
+    HftCont).
+}
+claim HimgSub : image_of ft X c= Union slices.
+{
+  let y.
+  assume HyImg.
+  apply (ReplE
+    X
+    (fun x:set => apply_fun ft x)
+    y
+    HyImg).
+  let x.
+  assume HxPack.
+  claim HxX : x :e X.
+  {
+    exact (andEL
+      (x :e X)
+      (y = apply_fun ft x)
+      HxPack).
+  }
+  claim HyEq : y = apply_fun ft x.
+  {
+    exact (andER
+      (x :e X)
+      (y = apply_fun ft x)
+      HxPack).
+  }
+  rewrite HyEq.
+  claim HftxE : apply_fun ft x :e E.
+  {
+    exact (HftFun
+      x
+      HxX).
+  }
+  claim HfxU : apply_fun f x :e U.
+  {
+    exact (HfU
+      x
+      HxX).
+  }
+  claim Hpf : apply_fun p (apply_fun ft x) :e U.
+  {
+    rewrite (Hcomm x HxX).
+    exact HfxU.
+  }
+  claim Hpre : apply_fun ft x :e preimage_of E p U.
+  {
+    exact (SepI
+      E
+      (fun z0:set => apply_fun p z0 :e U)
+      (apply_fun ft x)
+      HftxE
+      Hpf).
+  }
+  exact (mem_eqL
+    (apply_fun ft x)
+    (Union slices)
+    (preimage_of E p U)
+    Hunion
+    Hpre).
+}
+claim HimgSubV0 : image_of ft X c= V0.
+{
+  exact (connected_image_stays_in_anchored_open_union_member
+    X
+    Tx
+    E
+    Te
+    slices
+    V0
+    ft
+    x0
+    HtopE
+    HslicesSub
+    HpdSlices
+    HconnX
+    HftCont
+    HimgSub
+    HV0Slice
+    Hx0X
+    Hft0V0).
+}
+let x.
+assume HxX.
+claim HftxImg : apply_fun ft x :e image_of ft X.
+{
+  exact (ReplI
+    X
+    (fun y:set => apply_fun ft y)
+    x
+    HxX).
+}
+exact (HimgSubV0
+  (apply_fun ft x)
+  HftxImg).
+Qed.
+
 (** Infrastructure: any open neighborhood in the unit square contains a product of small open balls **)
 (** Proven Charlie **)
 Theorem unit_square_open_neighborhood_contains_product_balls :
