@@ -184764,6 +184764,57 @@ exact ((andER
 Qed.
 
 (** Proven Bob **)
+Theorem surjective_map_preimage_nonempty_singleton_iff_mem_codomain :
+  forall E X pi y:set,
+  surjective_map E X pi ->
+  (preimage_of E pi (Sing y) <> Empty <-> y :e X).
+let E X pi y.
+assume Hsurj.
+claim Hfun : function_on pi E X.
+{
+  exact (surjective_map_function_on E X pi Hsurj).
+}
+apply iffI.
+- assume HpreNe.
+  apply (nonempty_has_element (preimage_of E pi (Sing y)) HpreNe).
+  let x.
+  assume HxPre.
+  claim HxE : x :e E.
+  {
+    exact (SepE1
+      E
+      (fun z:set => apply_fun pi z :e Sing y)
+      x
+      HxPre).
+  }
+  claim HxSing : apply_fun pi x :e Sing y.
+  {
+    exact (SepE2
+      E
+      (fun z:set => apply_fun pi z :e Sing y)
+      x
+      HxPre).
+  }
+  claim HxEq : apply_fun pi x = y.
+  {
+    exact (singleton_elem
+      (apply_fun pi x)
+      y
+      HxSing).
+  }
+  rewrite <- HxEq.
+  exact (Hfun x HxE).
+- assume HyX.
+  exact (surjective_map_preimage_nonempty_singleton
+    E
+    X
+    pi
+    y
+    Hsurj
+    HyX).
+Qed.
+
+(** Proven Bob **)
 Theorem quotient_map_of_topology_function_and_preimage_nonempty_singleton :
   forall E Te X pi:set,
   topology_on E Te ->
@@ -184789,6 +184840,21 @@ exact ((andER
       HtopE
       Hfun)
     Hpre)).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_preimage_nonempty_singleton_iff_mem_codomain :
+  forall E Te X pi y:set,
+  quotient_map E Te X pi ->
+  (preimage_of E pi (Sing y) <> Empty <-> y :e X).
+let E Te X pi y.
+assume Hquot.
+exact (surjective_map_preimage_nonempty_singleton_iff_mem_codomain
+  E
+  X
+  pi
+  y
+  (quotient_map_implies_surjective_map E Te X pi Hquot)).
 Qed.
 
 (** Proven Bob **)
