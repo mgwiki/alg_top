@@ -64074,6 +64074,183 @@ exact (connected_subsets_real_are_intervals
   HzBetween).
 Qed.
 
+(** Infrastructure: unit_interval is the closed interval [0,1] in order notation. **)
+(** Proven Charlie **)
+Theorem unit_interval_eq_closed_interval_in_R_0_1 :
+  unit_interval = closed_interval_in R 0 1.
+apply set_ext.
+- let x.
+  assume HxI.
+  claim HxR : x :e R.
+  {
+    exact (SepE1
+      R
+      (fun y:set => ~ (Rlt y 0) /\ ~ (Rlt 1 y))
+      x
+      HxI).
+  }
+  claim HxGe0 : ~ (Rlt x 0).
+  {
+    exact (andEL
+      (~ (Rlt x 0))
+      (~ (Rlt 1 x))
+      (SepE2
+        R
+        (fun y:set => ~ (Rlt y 0) /\ ~ (Rlt 1 y))
+        x
+        HxI)).
+  }
+  claim HxLe1 : ~ (Rlt 1 x).
+  {
+    exact (andER
+      (~ (Rlt x 0))
+      (~ (Rlt 1 x))
+      (SepE2
+        R
+        (fun y:set => ~ (Rlt y 0) /\ ~ (Rlt 1 y))
+        x
+        HxI)).
+  }
+  claim Hprop :
+    (x = 0 \/ order_rel R 0 x) /\ (x = 1 \/ order_rel R x 1).
+  {
+    apply andI.
+    - apply xm (Rlt 0 x).
+      + assume H0ltx.
+        exact (orIR
+          (x = 0)
+          (order_rel R 0 x)
+          (Rlt_implies_order_rel_R 0 x H0ltx)).
+      + assume Hn0ltx : ~ (Rlt 0 x).
+        claim Hx0 : x = 0.
+        {
+          exact (R_eq_of_not_Rlt
+            x
+            0
+            HxR
+            real_0
+            HxGe0
+            Hn0ltx).
+        }
+        exact (orIL
+          (x = 0)
+          (order_rel R 0 x)
+          Hx0).
+    - apply xm (Rlt x 1).
+      + assume Hxlt1.
+        exact (orIR
+          (x = 1)
+          (order_rel R x 1)
+          (Rlt_implies_order_rel_R x 1 Hxlt1)).
+      + assume Hnxlt1 : ~ (Rlt x 1).
+        claim Hx1 : x = 1.
+        {
+          exact (R_eq_of_not_Rlt
+            x
+            1
+            HxR
+            real_1
+            Hnxlt1
+            HxLe1).
+        }
+        exact (orIL
+          (x = 1)
+          (order_rel R x 1)
+          Hx1).
+  }
+  exact (SepI
+    R
+    (fun y:set => (y = 0 \/ order_rel R 0 y) /\ (y = 1 \/ order_rel R y 1))
+    x
+    HxR
+    Hprop).
+- let x.
+  assume HxCI.
+  claim HxR : x :e R.
+  {
+    exact (SepE1
+      R
+      (fun y:set => (y = 0 \/ order_rel R 0 y) /\ (y = 1 \/ order_rel R y 1))
+      x
+      HxCI).
+  }
+  claim HxPack :
+    (x = 0 \/ order_rel R 0 x) /\ (x = 1 \/ order_rel R x 1).
+  {
+    exact (SepE2
+      R
+      (fun y:set => (y = 0 \/ order_rel R 0 y) /\ (y = 1 \/ order_rel R y 1))
+      x
+      HxCI).
+  }
+  claim HxGe0 : ~ (Rlt x 0).
+  {
+    apply xm (Rlt x 0).
+    - assume Hxlt0.
+      claim Hx0or : x = 0 \/ order_rel R 0 x.
+      {
+        exact (andEL
+          (x = 0 \/ order_rel R 0 x)
+          (x = 1 \/ order_rel R x 1)
+          HxPack).
+      }
+      apply Hx0or.
+      + assume Hx0.
+        claim H00 : Rlt 0 0.
+        {
+          rewrite <- Hx0 at 1.
+          exact Hxlt0.
+        }
+        exact (FalseE (not_Rlt_refl 0 real_0 H00) (~ (Rlt x 0))).
+      + assume H0ltxOrd.
+        claim H0ltx : Rlt 0 x.
+        {
+          exact (order_rel_R_implies_Rlt 0 x H0ltxOrd).
+        }
+        exact (FalseE (not_Rlt_sym 0 x H0ltx Hxlt0) (~ (Rlt x 0))).
+    - assume Hnxlt0.
+      exact Hnxlt0.
+  }
+  claim HxLe1 : ~ (Rlt 1 x).
+  {
+    apply xm (Rlt 1 x).
+    - assume H1ltx.
+      claim Hx1or : x = 1 \/ order_rel R x 1.
+      {
+        exact (andER
+          (x = 0 \/ order_rel R 0 x)
+          (x = 1 \/ order_rel R x 1)
+          HxPack).
+      }
+      apply Hx1or.
+      + assume Hx1.
+        claim H11 : Rlt 1 1.
+        {
+          rewrite <- Hx1 at 2.
+          exact H1ltx.
+        }
+        exact (FalseE (not_Rlt_refl 1 real_1 H11) (~ (Rlt 1 x))).
+      + assume Hxlt1Ord.
+        claim Hxlt1 : Rlt x 1.
+        {
+          exact (order_rel_R_implies_Rlt x 1 Hxlt1Ord).
+        }
+        exact (FalseE (not_Rlt_sym x 1 Hxlt1 H1ltx) (~ (Rlt 1 x))).
+    - assume Hn1ltx.
+      exact Hn1ltx.
+  }
+  exact (SepI
+    R
+    (fun y:set => ~ (Rlt y 0) /\ ~ (Rlt 1 y))
+    x
+    HxR
+    (andI
+      (~ (Rlt x 0))
+      (~ (Rlt 1 x))
+      HxGe0
+      HxLe1)).
+Qed.
+
 (** Infrastructure: open_ball in unit_interval is intersection with open_ball in R. **)
 (** Proven Charlie **)
 Theorem open_ball_unit_interval_eq_binintersect_R :
