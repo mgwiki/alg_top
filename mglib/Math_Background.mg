@@ -66725,6 +66725,111 @@ exact (andI
   HlebProp1).
 Qed.
 
+(** Infrastructure: fixed-radius ball family is an open cover of unit_interval (in unit_interval_topology). **)
+(** Proven Charlie **)
+Theorem unit_interval_open_cover_by_fixed_radius_balls :
+  forall r:set,
+  r :e R ->
+  Rlt 0 r ->
+  open_cover_of
+    unit_interval
+    unit_interval_topology
+    {open_ball unit_interval R_bounded_metric x r | x :e unit_interval}.
+let r.
+assume HrR Hrpos.
+apply (open_cover_ofI
+  unit_interval
+  unit_interval_topology
+  {open_ball unit_interval R_bounded_metric x r | x :e unit_interval}).
+- exact unit_interval_topology_on.
+- let U.
+  assume HU.
+  apply (ReplE
+    unit_interval
+    (fun x0:set => open_ball unit_interval R_bounded_metric x0 r)
+    U
+    HU).
+  let x.
+  assume HxPack.
+  claim HUeq : U = open_ball unit_interval R_bounded_metric x r.
+  {
+    exact (andER
+      (x :e unit_interval)
+      (U = open_ball unit_interval R_bounded_metric x r)
+      HxPack).
+  }
+  rewrite HUeq.
+  apply (PowerI
+    unit_interval
+    (open_ball unit_interval R_bounded_metric x r)).
+  exact (open_ball_subset_X
+    unit_interval
+    R_bounded_metric
+    x
+    r).
+- let x.
+  assume HxI.
+  claim HxBall : x :e open_ball unit_interval R_bounded_metric x r.
+  {
+    exact (center_in_open_ball
+      unit_interval
+      R_bounded_metric
+      x
+      r
+      R_bounded_metric_is_metric_on_unit_interval
+      HxI
+      Hrpos).
+  }
+  exact (UnionI
+    {open_ball unit_interval R_bounded_metric x0 r | x0 :e unit_interval}
+    x
+    (open_ball unit_interval R_bounded_metric x r)
+    HxBall
+    (ReplI
+      unit_interval
+      (fun x0:set => open_ball unit_interval R_bounded_metric x0 r)
+      x
+      HxI)).
+- let U.
+  assume HU.
+  apply (ReplE
+    unit_interval
+    (fun x0:set => open_ball unit_interval R_bounded_metric x0 r)
+    U
+    HU).
+  let x.
+  assume HxPack.
+  claim HxI : x :e unit_interval.
+  {
+    exact (andEL
+      (x :e unit_interval)
+      (U = open_ball unit_interval R_bounded_metric x r)
+      HxPack).
+  }
+  claim HUeq : U = open_ball unit_interval R_bounded_metric x r.
+  {
+    exact (andER
+      (x :e unit_interval)
+      (U = open_ball unit_interval R_bounded_metric x r)
+      HxPack).
+  }
+  rewrite HUeq.
+  claim HballMet :
+    open_ball unit_interval R_bounded_metric x r :e metric_topology unit_interval R_bounded_metric.
+  {
+    exact (open_ball_in_metric_topology
+      unit_interval
+      R_bounded_metric
+      x
+      r
+      R_bounded_metric_is_metric_on_unit_interval
+      HxI
+      Hrpos).
+  }
+  rewrite <- (metric_topology_unit_interval_eq_I_topology).
+  exact HballMet.
+Qed.
+
 (** Infrastructure: glue functional graphs on overlapping domains when they agree. **)
 (** Proven Charlie **)
 Theorem functional_graph_union_agree_on_overlap :
