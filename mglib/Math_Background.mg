@@ -66199,6 +66199,397 @@ apply (order_rel_trichotomy_or_impred
           Hnylt1)).
 Qed.
 
+(** Infrastructure: max/min on R via If_i. **)
+Definition Rmax : set -> set -> set := fun a b => if Rlt a b then b else a.
+Definition Rmin : set -> set -> set := fun a b => if Rlt a b then a else b.
+
+(** Proven Charlie **)
+Theorem Rmax_unfold : forall a b:set, Rmax a b = (if Rlt a b then b else a).
+let a b.
+reflexivity.
+Qed.
+
+(** Proven Charlie **)
+Theorem Rmin_unfold : forall a b:set, Rmin a b = (if Rlt a b then a else b).
+let a b.
+reflexivity.
+Qed.
+
+(** Infrastructure: intersection of open intervals is an open interval with If-defined endpoints. **)
+(** Proven Charlie **)
+Theorem open_interval_binintersect_open_interval_eq :
+  forall a b c d:set,
+  a :e R ->
+  b :e R ->
+  c :e R ->
+  d :e R ->
+  open_interval a b :/\: open_interval c d =
+    open_interval (Rmax a c) (Rmin b d).
+let a b c d.
+assume HaR HbR HcR HdR.
+apply set_ext.
+- let x.
+  assume HxInt.
+  claim HxOab : x :e open_interval a b.
+  {
+    exact (binintersectE1
+      (open_interval a b)
+      (open_interval c d)
+      x
+      HxInt).
+  }
+  claim HxOcd : x :e open_interval c d.
+  {
+    exact (binintersectE2
+      (open_interval a b)
+      (open_interval c d)
+      x
+      HxInt).
+  }
+  claim HxR : x :e R.
+  {
+    exact (SepE1
+      R
+      (fun y:set => Rlt a y /\ Rlt y b)
+      x
+      HxOab).
+  }
+  claim Hxab : Rlt a x /\ Rlt x b.
+  {
+    exact (SepE2
+      R
+      (fun y:set => Rlt a y /\ Rlt y b)
+      x
+      HxOab).
+  }
+  claim Hxcd : Rlt c x /\ Rlt x d.
+  {
+    exact (SepE2
+      R
+      (fun y:set => Rlt c y /\ Rlt y d)
+      x
+      HxOcd).
+  }
+  claim Hax : Rlt a x.
+  {
+    exact (andEL (Rlt a x) (Rlt x b) Hxab).
+  }
+  claim Hxb : Rlt x b.
+  {
+    exact (andER (Rlt a x) (Rlt x b) Hxab).
+  }
+  claim Hcx : Rlt c x.
+  {
+    exact (andEL (Rlt c x) (Rlt x d) Hxcd).
+  }
+  claim Hxd : Rlt x d.
+  {
+    exact (andER (Rlt c x) (Rlt x d) Hxcd).
+  }
+  claim HmaxLt : Rlt (Rmax a c) x.
+  {
+    apply (xm (Rlt a c)).
+    - assume Hac: Rlt a c.
+      rewrite (Rmax_unfold a c).
+      rewrite (If_i_1 (Rlt a c) c a Hac).
+      exact Hcx.
+    - assume Hnac: ~ (Rlt a c).
+      rewrite (Rmax_unfold a c).
+      rewrite (If_i_0 (Rlt a c) c a Hnac).
+      exact Hax.
+  }
+  claim HxLtMin : Rlt x (Rmin b d).
+  {
+    apply (xm (Rlt b d)).
+    - assume Hbd: Rlt b d.
+      rewrite (Rmin_unfold b d).
+      rewrite (If_i_1 (Rlt b d) b d Hbd).
+      exact Hxb.
+    - assume Hnbd: ~ (Rlt b d).
+      rewrite (Rmin_unfold b d).
+      rewrite (If_i_0 (Rlt b d) b d Hnbd).
+      exact Hxd.
+  }
+  exact (SepI
+    R
+    (fun y:set => Rlt (Rmax a c) y /\ Rlt y (Rmin b d))
+    x
+    HxR
+    (andI
+      (Rlt (Rmax a c) x)
+      (Rlt x (Rmin b d))
+      HmaxLt
+      HxLtMin)).
+- let x.
+  assume HxO.
+  claim HxR : x :e R.
+  {
+    exact (SepE1
+      R
+      (fun y:set => Rlt (Rmax a c) y /\ Rlt y (Rmin b d))
+      x
+      HxO).
+  }
+  claim HxPack : Rlt (Rmax a c) x /\ Rlt x (Rmin b d).
+  {
+    exact (SepE2
+      R
+      (fun y:set => Rlt (Rmax a c) y /\ Rlt y (Rmin b d))
+      x
+      HxO).
+  }
+  claim HmaxLt : Rlt (Rmax a c) x.
+  {
+    exact (andEL
+      (Rlt (Rmax a c) x)
+      (Rlt x (Rmin b d))
+      HxPack).
+  }
+  claim HxLtMin : Rlt x (Rmin b d).
+  {
+    exact (andER
+      (Rlt (Rmax a c) x)
+      (Rlt x (Rmin b d))
+      HxPack).
+  }
+  claim Hax : Rlt a x.
+  {
+    apply (xm (Rlt a c)).
+    - assume Hac: Rlt a c.
+      claim Hcx : Rlt c x.
+      {
+        claim HmaxEq : Rmax a c = c.
+        {
+          rewrite (Rmax_unfold a c).
+          rewrite (If_i_1 (Rlt a c) c a Hac).
+          reflexivity.
+        }
+        rewrite <- HmaxEq.
+        exact HmaxLt.
+      }
+      exact (Rlt_tra a c x Hac Hcx).
+    - assume Hnac: ~ (Rlt a c).
+      claim HmaxEq : Rmax a c = a.
+      {
+        rewrite (Rmax_unfold a c).
+        rewrite (If_i_0 (Rlt a c) c a Hnac).
+        reflexivity.
+      }
+      rewrite <- HmaxEq.
+      exact HmaxLt.
+  }
+  claim Hcx : Rlt c x.
+  {
+    apply (xm (Rlt a c)).
+    - assume Hac: Rlt a c.
+      claim HmaxEq : Rmax a c = c.
+      {
+        rewrite (Rmax_unfold a c).
+        rewrite (If_i_1 (Rlt a c) c a Hac).
+        reflexivity.
+      }
+      rewrite <- HmaxEq.
+      exact HmaxLt.
+	    - assume Hnac: ~ (Rlt a c).
+	      claim Hax : Rlt a x.
+	      {
+	        claim HmaxEq : Rmax a c = a.
+	        {
+	          rewrite (Rmax_unfold a c).
+	          rewrite (If_i_0 (Rlt a c) c a Hnac).
+	          reflexivity.
+	        }
+	        rewrite <- HmaxEq.
+	        exact HmaxLt.
+	      }
+	      claim HcaOrEqOrAc :
+	        (order_rel R c a \/ c = a) \/ order_rel R a c.
+	      {
+	        apply (order_rel_trichotomy_or_impred
+	          R
+	          c
+	          a
+	          simply_ordered_set_R
+	          HcR
+	          HaR
+	          ((order_rel R c a \/ c = a) \/ order_rel R a c)).
+	        - assume HcaOrd.
+	          exact (orIL
+	            (order_rel R c a \/ c = a)
+	            (order_rel R a c)
+	            (orIL
+	              (order_rel R c a)
+	              (c = a)
+	              HcaOrd)).
+	        - assume HcaEq.
+	          exact (orIL
+	            (order_rel R c a \/ c = a)
+	            (order_rel R a c)
+	            (orIR
+	              (order_rel R c a)
+	              (c = a)
+	              HcaEq)).
+	        - assume HacOrd.
+	          exact (orIR
+	            (order_rel R c a \/ c = a)
+	            (order_rel R a c)
+	            HacOrd).
+	      }
+	      apply HcaOrEqOrAc.
+	      + assume HcaOrdOrEq.
+	        apply HcaOrdOrEq.
+	        - assume HcaOrd.
+	          claim Hca : Rlt c a.
+	          {
+	            exact (order_rel_R_implies_Rlt c a HcaOrd).
+	          }
+	          exact (Rlt_tra c a x Hca Hax).
+	        - assume HcaEq.
+	          rewrite HcaEq.
+	          exact Hax.
+	      + assume HacOrd.
+	        claim Hac : Rlt a c.
+	        {
+	          exact (order_rel_R_implies_Rlt a c HacOrd).
+	        }
+	        exact (FalseE (Hnac Hac) (Rlt c x)).
+	  }
+  claim Hxb : Rlt x b.
+  {
+    apply (xm (Rlt b d)).
+    - assume Hbd: Rlt b d.
+      claim HminEq : Rmin b d = b.
+      {
+        rewrite (Rmin_unfold b d).
+        rewrite (If_i_1 (Rlt b d) b d Hbd).
+        reflexivity.
+      }
+      rewrite <- HminEq.
+      exact HxLtMin.
+	    - assume Hnbd: ~ (Rlt b d).
+	      claim HminEq : Rmin b d = d.
+	      {
+	        rewrite (Rmin_unfold b d).
+	        rewrite (If_i_0 (Rlt b d) b d Hnbd).
+	        reflexivity.
+	      }
+	      claim Hxd : Rlt x d.
+	      {
+	        rewrite <- HminEq.
+	        exact HxLtMin.
+	      }
+	      claim HbdOrEqOrDb :
+	        (order_rel R b d \/ b = d) \/ order_rel R d b.
+	      {
+	        apply (order_rel_trichotomy_or_impred
+	          R
+	          b
+          d
+	          simply_ordered_set_R
+	          HbR
+	          HdR
+	          ((order_rel R b d \/ b = d) \/ order_rel R d b)).
+	        - assume HbdOrd.
+	          exact (orIL
+	            (order_rel R b d \/ b = d)
+	            (order_rel R d b)
+	            (orIL
+	              (order_rel R b d)
+	              (b = d)
+	              HbdOrd)).
+	        - assume Hbeq.
+	          exact (orIL
+	            (order_rel R b d \/ b = d)
+	            (order_rel R d b)
+	            (orIR
+	              (order_rel R b d)
+	              (b = d)
+	              Hbeq)).
+	        - assume HdbOrd.
+	          exact (orIR
+	            (order_rel R b d \/ b = d)
+	            (order_rel R d b)
+	            HdbOrd).
+	      }
+	      apply HbdOrEqOrDb.
+	      + assume HbdOrdOrEq.
+	        apply HbdOrdOrEq.
+	        - assume HbdOrd.
+	          claim Hbd : Rlt b d.
+	          {
+	            exact (order_rel_R_implies_Rlt b d HbdOrd).
+	          }
+	          exact (FalseE (Hnbd Hbd) (Rlt x b)).
+		        - assume Hbeq.
+		          rewrite Hbeq.
+		          exact Hxd.
+	      + assume HdbOrd.
+	        claim Hdb : Rlt d b.
+	        {
+	          exact (order_rel_R_implies_Rlt d b HdbOrd).
+	        }
+	        exact (Rlt_tra x d b Hxd Hdb).
+	  }
+  claim Hxd : Rlt x d.
+  {
+    apply (xm (Rlt b d)).
+    - assume Hbd: Rlt b d.
+      claim Hxb : Rlt x b.
+      {
+        claim HminEq : Rmin b d = b.
+        {
+          rewrite (Rmin_unfold b d).
+          rewrite (If_i_1 (Rlt b d) b d Hbd).
+          reflexivity.
+        }
+        rewrite <- HminEq.
+        exact HxLtMin.
+      }
+      exact (Rlt_tra x b d Hxb Hbd).
+    - assume Hnbd: ~ (Rlt b d).
+      claim HminEq : Rmin b d = d.
+      {
+        rewrite (Rmin_unfold b d).
+        rewrite (If_i_0 (Rlt b d) b d Hnbd).
+        reflexivity.
+      }
+      rewrite <- HminEq.
+      exact HxLtMin.
+  }
+  claim HxOab : x :e open_interval a b.
+  {
+    exact (SepI
+      R
+      (fun y:set => Rlt a y /\ Rlt y b)
+      x
+      HxR
+      (andI
+        (Rlt a x)
+        (Rlt x b)
+        Hax
+        Hxb)).
+  }
+  claim HxOcd : x :e open_interval c d.
+  {
+    exact (SepI
+      R
+      (fun y:set => Rlt c y /\ Rlt y d)
+      x
+      HxR
+      (andI
+        (Rlt c x)
+        (Rlt x d)
+        Hcx
+        Hxd)).
+  }
+  exact (binintersectI
+    (open_interval a b)
+    (open_interval c d)
+    x
+    HxOab
+    HxOcd).
+Qed.
+
 (** Infrastructure: Lebesgue number for open covers of unit_interval (metric topology = subspace topology). **)
 (** Proven Charlie **)
 Theorem unit_interval_open_cover_has_lebesgue_number_eps :
