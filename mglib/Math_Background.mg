@@ -188071,6 +188071,118 @@ exact ((andEL
 Qed.
 
 (** Proven Bob **)
+Theorem mem_image_implies_exists_preimage_point_via_bridges :
+  forall E pi y:set,
+  y :e image_of pi E ->
+  exists x:set, x :e E /\ apply_fun pi x = y.
+let E pi y.
+assume HyImg.
+exact (mem_image_implies_exists_preimage_point
+  E
+  pi
+  y
+  HyImg).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_preimage_point_implies_mem_image_via_bridges :
+  forall E pi y:set,
+  (exists x:set, x :e E /\ apply_fun pi x = y) ->
+  y :e image_of pi E.
+let E pi y.
+assume HxPack.
+exact (exists_preimage_point_implies_mem_image
+  E
+  pi
+  y
+  HxPack).
+Qed.
+
+(** Proven Bob **)
+Theorem not_mem_image_implies_no_preimage_point_via_bridges :
+  forall E pi y:set,
+  y /:e image_of pi E ->
+  ~ (exists x:set, x :e E /\ apply_fun pi x = y).
+let E pi y.
+assume HyNotImg.
+exact (not_mem_image_implies_no_preimage_point
+  E
+  pi
+  y
+  HyNotImg).
+Qed.
+
+(** Proven Bob **)
+Theorem no_preimage_point_implies_not_mem_image_via_bridges :
+  forall E pi y:set,
+  ~ (exists x:set, x :e E /\ apply_fun pi x = y) ->
+  y /:e image_of pi E.
+let E pi y.
+assume HnoPt.
+exact (no_preimage_point_implies_not_mem_image
+  E
+  pi
+  y
+  HnoPt).
+Qed.
+
+(** Proven Bob **)
+Theorem preimage_singleton_nonempty_implies_mem_image_via_bridges :
+  forall E pi y:set,
+  preimage_of E pi (Sing y) <> Empty ->
+  y :e image_of pi E.
+let E pi y.
+assume HpreNe.
+exact (preimage_singleton_nonempty_implies_mem_image
+  E
+  pi
+  y
+  HpreNe).
+Qed.
+
+(** Proven Bob **)
+Theorem mem_image_implies_preimage_singleton_nonempty_via_bridges :
+  forall E pi y:set,
+  y :e image_of pi E ->
+  preimage_of E pi (Sing y) <> Empty.
+let E pi y.
+assume HyImg.
+exact (mem_image_implies_preimage_singleton_nonempty
+  E
+  pi
+  y
+  HyImg).
+Qed.
+
+(** Proven Bob **)
+Theorem preimage_singleton_empty_implies_not_mem_image_via_bridges :
+  forall E pi y:set,
+  preimage_of E pi (Sing y) = Empty ->
+  y /:e image_of pi E.
+let E pi y.
+assume HpreEmp.
+exact (preimage_singleton_empty_implies_not_mem_image
+  E
+  pi
+  y
+  HpreEmp).
+Qed.
+
+(** Proven Bob **)
+Theorem not_mem_image_implies_preimage_singleton_empty_via_bridges :
+  forall E pi y:set,
+  y /:e image_of pi E ->
+  preimage_of E pi (Sing y) = Empty.
+let E pi y.
+assume HyNotImg.
+exact (not_mem_image_implies_preimage_singleton_empty
+  E
+  pi
+  y
+  HyNotImg).
+Qed.
+
+(** Proven Bob **)
 Theorem function_on_mem_image_implies_mem_codomain :
   forall E X pi y:set,
   function_on pi E X ->
