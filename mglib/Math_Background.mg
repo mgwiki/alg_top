@@ -204913,10 +204913,10 @@ claim HsemiB : semilocally_simply_connected B Tb.
       Hcont).
   - exact HsemiBProp.
 }
-apply andI.
-- exact HpcB.
-- exact HsemiB.
-Admitted. (** depends on non-proved lemma80_4_universal_cover_semilocal **)
+	apply andI.
+	- exact HpcB.
+	- exact HsemiB.
+	Qed.
 
 (** Infrastructure for Cor 82.2: RHS + chosen basepoint implies universal cover **)
 Theorem lemma82_2_basepoint_conditions_imply_universal_covering :
