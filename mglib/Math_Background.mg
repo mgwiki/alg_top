@@ -218137,6 +218137,52 @@ exact (maximal_tree_tree_extension_forces_edge_subset
 Qed.
 
 (** Proven Bob **)
+Theorem maximal_tree_noncontained_edge_cannot_form_tree_extension :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  ~(A c= T) ->
+  ~ tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
+let T ArcsT X Tx Arcs A.
+assume Hmax Hnsub.
+assume HtreeExt.
+exact (maximal_tree_noncontained_edge_tree_extension_contradiction
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  Hmax
+  HtreeExt
+  Hnsub).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_single_vertex_noncontained_edge_cannot_form_tree_extension :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  A :e Arcs ->
+  ~(A c= T) ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  ~ tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
+let T ArcsT X Tx Arcs A.
+assume Hmax HA Hnsub Hmeet.
+assume HtreeExt.
+exact (maximal_tree_single_vertex_edge_tree_extension_contradiction
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  Hmax
+  HtreeExt
+  HA
+  Hnsub
+  Hmeet).
+Qed.
+
+(** Proven Bob **)
 Theorem not_subset_implies_right_union_neq :
   forall T A:set,
   ~(A c= T) ->
