@@ -222795,6 +222795,60 @@ exact (maximal_tree_all_vertices_if_noncontained_edges_meet_tree_and_extend
 Admitted.
 
 (** Proven Bob **)
+Theorem maximal_tree_all_vertices_if_noncontained_edges_meet_tree_in_single_vertex_and_extension_obligation :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+    tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs) ->
+  graph_vertices X Tx Arcs c= T.
+let T ArcsT X Tx Arcs.
+assume Hmax Hmeetall HextTree.
+apply (maximal_tree_all_vertices_if_noncontained_edges_meet_tree_and_extend
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hmax).
+let A.
+assume HA Hnsub.
+claim Hmeet : exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
+{
+  exact (Hmeetall
+    A
+    HA
+    Hnsub).
+}
+apply Hmeet.
+let v.
+assume Hvpack.
+witness v.
+apply andI.
+- apply andI.
+  + exact (andEL
+      (v :e graph_vertices X Tx Arcs)
+      (T :/\: A = Sing v)
+      Hvpack).
+  + exact (andER
+      (v :e graph_vertices X Tx Arcs)
+      (T :/\: A = Sing v)
+      Hvpack).
+- claim HmeetEx : exists v0:set, v0 :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v0.
+  {
+    witness v.
+    exact Hvpack.
+  }
+  exact (HextTree
+    A
+    HA
+    Hnsub
+    HmeetEx).
+Qed.
+
+(** Proven Bob **)
 Theorem graph_vertices_subset_T_arc_endpoint_left_in_T :
   forall T X Tx Arcs A p q:set,
   general_linear_graph X Tx Arcs ->
