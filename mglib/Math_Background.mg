@@ -191262,6 +191262,60 @@ apply iffI.
     HpcX).
 Qed.
 
+(** Helper: non-path-connectedness equivalence from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_path_connected_space_iff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ path_connected_space X Tx <-> ~ path_connected_space Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+apply Hhex.
+let h.
+assume Hhome.
+exact (homeomorphism_not_path_connected_space_iff
+  X
+  Tx
+  Y
+  Ty
+  h
+  Hhome).
+Qed.
+
+(** Helper: negated transfer implications from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_path_connected_space_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ path_connected_space X Tx -> ~ path_connected_space Y Ty) /\
+  (~ path_connected_space Y Ty -> ~ path_connected_space X Tx).
+let X Tx Y Ty.
+assume Hhex.
+claim Hiff :
+  (~ path_connected_space X Tx <-> ~ path_connected_space Y Ty).
+{
+  exact (exists_homeomorphism_not_path_connected_space_iff
+    X
+    Tx
+    Y
+    Ty
+    Hhex).
+}
+apply andI.
+- assume HnX.
+  exact (iffEL
+    (~ path_connected_space X Tx)
+    (~ path_connected_space Y Ty)
+    Hiff
+    HnX).
+- assume HnY.
+  exact (iffER
+    (~ path_connected_space X Tx)
+    (~ path_connected_space Y Ty)
+    Hiff
+    HnY).
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
