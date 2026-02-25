@@ -210934,6 +210934,40 @@ exact (graph_vertices_subset_union_arcs
     HxSel)).
 Qed.
 
+(** Proven Bob **)
+Theorem subgraph_of_graph_vertices_selected_subset_Y :
+  forall Y X Tx Arcs:set,
+  subgraph_of Y X Tx Arcs ->
+  graph_vertices X Tx {B :e Arcs | B c= Y} c= Y.
+let Y X Tx Arcs.
+assume Hsub.
+exact (graph_vertices_selected_arcs_subset_Y
+  X
+  Tx
+  Arcs
+  Y).
+Qed.
+
+(** Proven Bob **)
+Theorem subgraph_of_graph_vertices_selected_subset_union_arcs :
+  forall Y X Tx Arcs:set,
+  subgraph_of Y X Tx Arcs ->
+  graph_vertices X Tx {B :e Arcs | B c= Y} c= Union Arcs.
+let Y X Tx Arcs.
+assume Hsub.
+exact (graph_vertices_selected_arcs_subset_union_arcs
+  X
+  Tx
+  Arcs
+  Y
+  (subgraph_of_general_linear_graph
+    Y
+    X
+    Tx
+    Arcs
+    Hsub)).
+Qed.
+
 (** from S83 Lem 83.1 (line 5470 in algtop.tex): linear graphs are normal **)
 (** LATEX VERSION: Every linear graph X is Hausdorff; in fact, it is normal. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
