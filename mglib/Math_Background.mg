@@ -183909,6 +183909,33 @@ exact (ex31_6_closed_map_preserves_normal
 Qed.
 
 (** Proven Bob **)
+Theorem closed_quotient_map_preserves_normality_with_surjective_via_bridges :
+  forall E Te X Tx pi:set,
+  topology_on E Te -> topology_on X Tx ->
+  normal_space E Te ->
+  continuous_map E Te X Tx pi ->
+  (forall C:set, closed_in E Te C -> closed_in X Tx (image_of pi C)) ->
+  (forall V:set, V :e Tx -> {x :e E | apply_fun pi x :e V} :e Te) ->
+  (forall y:set, y :e X -> exists x:set, x :e E /\ apply_fun pi x = y) ->
+  normal_space X Tx.
+let E Te X Tx pi.
+assume HtopE HtopX HnormE Hcont HclosedImg HpreimOpen Hsurj.
+exact (closed_quotient_map_preserves_normality_with_surjective
+  E
+  Te
+  X
+  Tx
+  pi
+  HtopE
+  HtopX
+  HnormE
+  Hcont
+  HclosedImg
+  HpreimOpen
+  Hsurj).
+Qed.
+
+(** Proven Bob **)
 Theorem quotient_map_implies_surjective_map :
   forall E Te X pi:set,
   quotient_map E Te X pi ->
@@ -183929,6 +183956,21 @@ exact (andI
     (topology_on E Te /\ function_on pi E X)
     (forall y:set, y :e X -> exists x:set, x :e E /\ apply_fun pi x = y)
     Hquot)).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_implies_surjective_map_via_bridges :
+  forall E Te X pi:set,
+  quotient_map E Te X pi ->
+  surjective_map E X pi.
+let E Te X pi.
+assume Hquot.
+exact (quotient_map_implies_surjective_map
+  E
+  Te
+  X
+  pi
+  Hquot).
 Qed.
 
 (** Proven Bob **)
@@ -183956,6 +183998,23 @@ exact ((andER
   (function_on pi E X)
   (forall y0:set, y0 :e X -> exists x:set, x :e E /\ apply_fun pi x = y0)
   Hsurj) y Hy).
+Qed.
+
+(** Proven Bob **)
+Theorem surjective_map_has_preimage_via_bridges :
+  forall E X pi y:set,
+  surjective_map E X pi ->
+  y :e X ->
+  exists x:set, x :e E /\ apply_fun pi x = y.
+let E X pi y.
+assume Hsurj Hy.
+exact (surjective_map_has_preimage
+  E
+  X
+  pi
+  y
+  Hsurj
+  Hy).
 Qed.
 
 (** Proven Bob **)
@@ -184002,6 +184061,24 @@ exact ((andER
   (topology_on E Te /\ function_on pi E X)
   (forall y0:set, y0 :e X -> exists x:set, x :e E /\ apply_fun pi x = y0)
   Hquot) y Hy).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_has_preimage_via_bridges :
+  forall E Te X pi y:set,
+  quotient_map E Te X pi ->
+  y :e X ->
+  exists x:set, x :e E /\ apply_fun pi x = y.
+let E Te X pi y.
+assume Hquot Hy.
+exact (quotient_map_has_preimage
+  E
+  Te
+  X
+  pi
+  y
+  Hquot
+  Hy).
 Qed.
 
 (** Proven Bob **)
