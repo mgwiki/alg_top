@@ -209986,6 +209986,23 @@ claim HqA : q :e A.
 exact (HAcX q HqA).
 Qed.
 
+(** Proven Bob **)
+Theorem selected_arc_subset_union_selected_arcs :
+  forall Y Arcs A:set,
+  A :e {B :e Arcs | B c= Y} ->
+  A c= Union {B :e Arcs | B c= Y}.
+let Y Arcs A.
+assume HA.
+let x.
+assume HxA.
+exact (UnionI
+  {B :e Arcs | B c= Y}
+  x
+  A
+  HxA
+  HA).
+Qed.
+
 (** Infrastructure: vertices of a linear graph **)
 Definition graph_vertices : set -> set -> set -> set :=
   fun X Tx Arcs =>
@@ -210275,6 +210292,52 @@ apply andI.
   + assume Hxq.
     rewrite Hxq.
     exact HqA.
+Qed.
+
+(** Proven Bob **)
+Theorem graph_vertices_elem_in_union_arcs :
+  forall X Tx Arcs x:set,
+  general_linear_graph X Tx Arcs ->
+  x :e graph_vertices X Tx Arcs ->
+  x :e Union Arcs.
+let X Tx Arcs x.
+assume Hglg HxV.
+apply (graph_vertices_member_in_some_arc X Tx Arcs x HxV).
+let A.
+assume HApack.
+claim HAArcs : A :e Arcs.
+{
+  exact (andEL
+    (A :e Arcs)
+    (x :e A)
+    HApack).
+}
+claim HxA : x :e A.
+{
+  exact (andER
+    (A :e Arcs)
+    (x :e A)
+    HApack).
+}
+exact (UnionI Arcs x A HxA HAArcs).
+Qed.
+
+(** Proven Bob **)
+Theorem graph_vertices_subset_union_arcs :
+  forall X Tx Arcs:set,
+  general_linear_graph X Tx Arcs ->
+  graph_vertices X Tx Arcs c= Union Arcs.
+let X Tx Arcs.
+assume Hglg.
+let x.
+assume HxV.
+exact (graph_vertices_elem_in_union_arcs
+  X
+  Tx
+  Arcs
+  x
+  Hglg
+  HxV).
 Qed.
 
 (** from S83 Lem 83.1 (line 5470 in algtop.tex): linear graphs are normal **)
