@@ -228149,7 +228149,61 @@ claim HunionTA : (T :\/: A) = Union ({A} :\/: ArcsT).
     (pairwise intersection endpoint clause and coherence clause).
     The setup above now discharges topology, arc-membership, and union-of-family
     obligations, and records ambient/subspace facts for the remaining clauses. **)
-admit.
+claim HinterFamTA :
+  forall E F:set, E :e ({A} :\/: ArcsT) -> F :e ({A} :\/: ArcsT) -> E <> F ->
+    E :/\: F = Empty \/
+    (exists p:set, E :/\: F = Sing p /\
+      (exists q:set, end_points_of_arc E
+        (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E) p q \/
+        end_points_of_arc E
+          (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E) q p) /\
+      (exists r:set, end_points_of_arc F
+        (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) F) p r \/
+        end_points_of_arc F
+          (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) F) r p)).
+{
+  (** Remaining hard branch analysis over E/F in {A} or ArcsT, with endpoint transport. **)
+  admit.
+}
+claim HcohFamTA :
+  forall C:set, C c= (T :\/: A) ->
+    (closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) C <->
+     (forall E:set, E :e ({A} :\/: ArcsT) ->
+       closed_in E
+         (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E)
+         (C :/\: E))).
+{
+  (** Remaining coherence transfer between selected-family presentation and extended family {A} union ArcsT. **)
+  admit.
+}
+exact (and5I
+  (topology_on (T :\/: A) (subspace_topology X Tx (T :\/: A)))
+  (forall E:set, E :e ({A} :\/: ArcsT) ->
+    E c= (T :\/: A) /\
+    arc E (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E))
+  ((T :\/: A) = Union ({A} :\/: ArcsT))
+  (forall E F:set, E :e ({A} :\/: ArcsT) -> F :e ({A} :\/: ArcsT) -> E <> F ->
+    E :/\: F = Empty \/
+    (exists p:set, E :/\: F = Sing p /\
+      (exists q:set, end_points_of_arc E
+        (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E) p q \/
+        end_points_of_arc E
+          (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E) q p) /\
+      (exists r:set, end_points_of_arc F
+        (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) F) p r \/
+        end_points_of_arc F
+          (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) F) r p)))
+  (forall C:set, C c= (T :\/: A) ->
+    (closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) C <->
+     (forall E:set, E :e ({A} :\/: ArcsT) ->
+       closed_in E
+         (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E)
+         (C :/\: E))))
+  HtopTA
+  HarcFamTA
+  HunionTA
+  HinterFamTA
+  HcohFamTA).
 Admitted.
 
 (** Proven Charlie **)
