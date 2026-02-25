@@ -76606,6 +76606,166 @@ apply andI.
       Hanchor)).
 Qed.
 
+(** Proven Bob **)
+Theorem lemma54_2_two_points_same_sheet_eq_data_from_evenly_covered :
+  forall N E Te B Tb p U F Ft q z:set,
+  topology_on E Te ->
+  evenly_covered E Te B Tb p U ->
+  N c= unit_square ->
+  connected_space N (subspace_topology unit_square unit_square_topology N) ->
+  continuous_map N (subspace_topology unit_square unit_square_topology N) E Te Ft ->
+  (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t)) ->
+  (forall x:set, x :e N -> apply_fun F x :e U) ->
+  q :e N ->
+  z :e N ->
+  exists slices Vq Vz:set,
+    (slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall W:set, W :e slices ->
+        homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+          (graph W (apply_fun p)))) /\
+    (apply_fun Ft q :e Vq /\ apply_fun Ft z :e Vz /\
+      Vq :e slices /\ Vz :e slices /\ Vz = Vq).
+let N E Te B Tb p U F Ft q z.
+assume HtopE Heven HNsubSq HNconn HFtCont HcommSq HFU HqN HzN.
+claim Hsame :
+  exists slices Vq:set,
+    (slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall W:set, W :e slices ->
+        homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+          (graph W (apply_fun p)))) /\
+    apply_fun Ft q :e Vq /\ apply_fun Ft z :e Vq /\ Vq :e slices.
+{
+  exact (lemma54_2_two_points_same_sheet_from_evenly_covered
+    N
+    E
+    Te
+    B
+    Tb
+    p
+    U
+    F
+    Ft
+    q
+    z
+    HtopE
+    Heven
+    HNsubSq
+    HNconn
+    HFtCont
+    HcommSq
+    HFU
+    HqN
+    HzN).
+}
+apply Hsame.
+let slices.
+assume HsPack.
+apply HsPack.
+let Vq.
+assume HVqPack.
+witness slices.
+witness Vq.
+witness Vq.
+claim Htriple :
+  ((slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall W:set, W :e slices ->
+      homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+        (graph W (apply_fun p)))) /\ (apply_fun Ft q :e Vq)) /\
+  (apply_fun Ft z :e Vq).
+{
+  exact (andEL
+    (((slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall W:set, W :e slices ->
+        homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+          (graph W (apply_fun p)))) /\ (apply_fun Ft q :e Vq)) /\
+      (apply_fun Ft z :e Vq))
+    (Vq :e slices)
+    HVqPack).
+}
+claim Hpair :
+  (slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall W:set, W :e slices ->
+      homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+        (graph W (apply_fun p)))) /\ (apply_fun Ft q :e Vq).
+{
+  exact (andEL
+    (slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall W:set, W :e slices ->
+        homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+          (graph W (apply_fun p))) /\ (apply_fun Ft q :e Vq))
+    (apply_fun Ft z :e Vq)
+    Htriple).
+}
+claim Hpack :
+  slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall W:set, W :e slices ->
+      homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+        (graph W (apply_fun p))).
+{
+  exact (andEL
+    (slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall W:set, W :e slices ->
+        homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+          (graph W (apply_fun p))))
+    (apply_fun Ft q :e Vq)
+    Hpair).
+}
+claim HFtqVq : apply_fun Ft q :e Vq.
+{
+  exact (andER
+    (slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall W:set, W :e slices ->
+        homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+          (graph W (apply_fun p))))
+    (apply_fun Ft q :e Vq)
+    Hpair).
+}
+claim HFtzVq : apply_fun Ft z :e Vq.
+{
+  exact (andER
+    ((slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall W:set, W :e slices ->
+        homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+          (graph W (apply_fun p)))) /\ (apply_fun Ft q :e Vq))
+    (apply_fun Ft z :e Vq)
+    Htriple).
+}
+claim HVqSlice : Vq :e slices.
+{
+  exact (andER
+    (((slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall W:set, W :e slices ->
+        homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+          (graph W (apply_fun p)))) /\ (apply_fun Ft q :e Vq)) /\
+      (apply_fun Ft z :e Vq))
+    (Vq :e slices)
+    HVqPack).
+}
+apply andI.
+- exact Hpack.
+- apply andI.
+  + apply andI.
+    * apply andI.
+      { apply andI.
+        - exact HFtqVq.
+        - exact HFtzVq. }
+      { exact HVqSlice. }
+    * exact HVqSlice.
+  + reflexivity.
+Qed.
+
 Theorem lemma54_2_sheet_non_switching_local :
   forall E Te B Tb p F Ft q z N U slices Vq Vz:set,
   pairwise_disjoint slices ->
