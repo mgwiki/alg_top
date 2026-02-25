@@ -77683,6 +77683,230 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Theorem lemma54_2_sheet_non_switching_from_common_sheet_and_pairwise :
+  forall Ft q z slices Vq Vz:set,
+  pairwise_disjoint slices ->
+  apply_fun Ft q :e Vq ->
+  apply_fun Ft z :e Vz ->
+  Vq :e slices ->
+  Vz :e slices ->
+  (exists V:set,
+    apply_fun Ft q :e V /\ apply_fun Ft z :e V /\ V :e slices) ->
+  Vz = Vq.
+let Ft q z slices Vq Vz.
+assume Hpd HFtqVq HFtzVz HVqSlice HVzSlice Hcommon.
+apply Hcommon.
+let V.
+assume HVPack.
+claim Hleft :
+  apply_fun Ft q :e V /\ apply_fun Ft z :e V.
+{
+  exact (andEL
+    (apply_fun Ft q :e V /\ apply_fun Ft z :e V)
+    (V :e slices)
+    HVPack).
+}
+claim HFtqV : apply_fun Ft q :e V.
+{
+  exact (andEL
+    (apply_fun Ft q :e V)
+    (apply_fun Ft z :e V)
+    Hleft).
+}
+claim HFtzV : apply_fun Ft z :e V.
+{
+  exact (andER
+    (apply_fun Ft q :e V)
+    (apply_fun Ft z :e V)
+    Hleft).
+}
+claim HVSlice : V :e slices.
+{
+  exact (andER
+    (apply_fun Ft q :e V /\ apply_fun Ft z :e V)
+    (V :e slices)
+    HVPack).
+}
+claim HVqEqV : Vq = V.
+{
+  exact (pairwise_disjoint_point_unique_member
+    slices
+    Vq
+    V
+    (apply_fun Ft q)
+    Hpd
+    HVqSlice
+    HVSlice
+    HFtqVq
+    HFtqV).
+}
+claim HVzEqV : Vz = V.
+{
+  exact (pairwise_disjoint_point_unique_member
+    slices
+    Vz
+    V
+    (apply_fun Ft z)
+    Hpd
+    HVzSlice
+    HVSlice
+    HFtzVz
+    HFtzV).
+}
+rewrite HVzEqV.
+rewrite <- HVqEqV.
+reflexivity.
+Qed.
+
+(** Proven Bob **)
+Theorem lemma54_2_common_sheet_exists_from_evenly_covered :
+  forall N E Te B Tb p U F Ft q z:set,
+  topology_on E Te ->
+  evenly_covered E Te B Tb p U ->
+  N c= unit_square ->
+  connected_space N (subspace_topology unit_square unit_square_topology N) ->
+  continuous_map N (subspace_topology unit_square unit_square_topology N) E Te Ft ->
+  (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t)) ->
+  (forall x:set, x :e N -> apply_fun F x :e U) ->
+  q :e N ->
+  z :e N ->
+  exists slices V:set,
+    pairwise_disjoint slices /\
+    apply_fun Ft q :e V /\ apply_fun Ft z :e V /\ V :e slices.
+let N E Te B Tb p U F Ft q z.
+assume HtopE Heven HNsubSq HNconn HFtCont HcommSq HFU HqN HzN.
+claim Hns :
+  exists slices:set,
+    pairwise_disjoint slices /\
+    (exists Vq Vz:set,
+      apply_fun Ft q :e Vq /\ apply_fun Ft z :e Vz /\
+      Vq :e slices /\ Vz :e slices /\ Vz = Vq).
+{
+  exact (lemma54_2_sheet_non_switching_exists_from_evenly_covered
+    N
+    E
+    Te
+    B
+    Tb
+    p
+    U
+    F
+    Ft
+    q
+    z
+    HtopE
+    Heven
+    HNsubSq
+    HNconn
+    HFtCont
+    HcommSq
+    HFU
+    HqN
+    HzN).
+}
+apply Hns.
+let slices.
+assume HsPack.
+claim Hpd : pairwise_disjoint slices.
+{
+  exact (andEL
+    (pairwise_disjoint slices)
+    (exists Vq Vz:set,
+      apply_fun Ft q :e Vq /\ apply_fun Ft z :e Vz /\
+      Vq :e slices /\ Vz :e slices /\ Vz = Vq)
+    HsPack).
+}
+claim HeqData :
+  exists Vq Vz:set,
+    apply_fun Ft q :e Vq /\ apply_fun Ft z :e Vz /\
+    Vq :e slices /\ Vz :e slices /\ Vz = Vq.
+{
+  exact (andER
+    (pairwise_disjoint slices)
+    (exists Vq Vz:set,
+      apply_fun Ft q :e Vq /\ apply_fun Ft z :e Vz /\
+      Vq :e slices /\ Vz :e slices /\ Vz = Vq)
+    HsPack).
+}
+apply HeqData.
+let Vq.
+assume HVqPack.
+apply HVqPack.
+let Vz.
+assume HVzPack.
+claim Hleft4 :
+  (((apply_fun Ft q :e Vq /\ apply_fun Ft z :e Vz) /\ Vq :e slices) /\ Vz :e slices).
+{
+  exact (andEL
+    (((apply_fun Ft q :e Vq /\ apply_fun Ft z :e Vz) /\ Vq :e slices) /\ Vz :e slices)
+    (Vz = Vq)
+    HVzPack).
+}
+claim Hleft3 :
+  ((apply_fun Ft q :e Vq /\ apply_fun Ft z :e Vz) /\ Vq :e slices).
+{
+  exact (andEL
+    ((apply_fun Ft q :e Vq /\ apply_fun Ft z :e Vz) /\ Vq :e slices)
+    (Vz :e slices)
+    Hleft4).
+}
+claim Hpair :
+  (apply_fun Ft q :e Vq /\ apply_fun Ft z :e Vz).
+{
+  exact (andEL
+    (apply_fun Ft q :e Vq /\ apply_fun Ft z :e Vz)
+    (Vq :e slices)
+    Hleft3).
+}
+claim HFtqVq : apply_fun Ft q :e Vq.
+{
+  exact (andEL
+    (apply_fun Ft q :e Vq)
+    (apply_fun Ft z :e Vz)
+    Hpair).
+}
+claim HFtzVz : apply_fun Ft z :e Vz.
+{
+  exact (andER
+    (apply_fun Ft q :e Vq)
+    (apply_fun Ft z :e Vz)
+    Hpair).
+}
+claim HVqSlice : Vq :e slices.
+{
+  exact (andER
+    (apply_fun Ft q :e Vq /\ apply_fun Ft z :e Vz)
+    (Vq :e slices)
+    Hleft3).
+}
+claim HVzSlice : Vz :e slices.
+{
+  exact (andER
+    ((apply_fun Ft q :e Vq /\ apply_fun Ft z :e Vz) /\ Vq :e slices)
+    (Vz :e slices)
+    Hleft4).
+}
+claim HVzEqVq : Vz = Vq.
+{
+  exact (andER
+    (((apply_fun Ft q :e Vq /\ apply_fun Ft z :e Vz) /\ Vq :e slices) /\ Vz :e slices)
+    (Vz = Vq)
+    HVzPack).
+}
+witness slices.
+witness Vq.
+apply andI.
+- apply andI.
+  + apply andI.
+    * exact Hpd.
+    * exact HFtqVq.
+  + rewrite <- HVzEqVq.
+    exact HFtzVz.
+- exact HVqSlice.
+Qed.
+
+(** Proven Bob **)
 Theorem lemma54_2_sheet_non_switching_from_eq_data_and_pairwise :
   forall Ft q z slices Vq Vz:set,
   pairwise_disjoint slices ->
