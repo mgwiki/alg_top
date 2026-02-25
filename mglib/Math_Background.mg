@@ -185301,6 +185301,159 @@ exact (surjective_map_not_mem_codomain_iff_preimage_singleton_empty
 Qed.
 
 (** Proven Bob **)
+Theorem mem_image_iff_exists_preimage_point :
+  forall E pi y:set,
+  (y :e image_of pi E <-> exists x:set, x :e E /\ apply_fun pi x = y).
+let E pi y.
+apply iffI.
+- assume HyImg.
+  apply (ReplE
+    E
+    (fun x:set => apply_fun pi x)
+    y
+    HyImg).
+  let x.
+  assume HxPack.
+  witness x.
+  apply andI.
+  + exact (andEL
+      (x :e E)
+      (y = apply_fun pi x)
+      HxPack).
+  + rewrite <- (andER
+      (x :e E)
+      (y = apply_fun pi x)
+      HxPack).
+    reflexivity.
+- assume HxPack.
+  apply HxPack.
+  let x.
+  assume HxProof.
+  claim HxE : x :e E.
+  {
+    exact (andEL
+      (x :e E)
+      (apply_fun pi x = y)
+      HxProof).
+  }
+  claim HxEq : apply_fun pi x = y.
+  {
+    exact (andER
+      (x :e E)
+      (apply_fun pi x = y)
+      HxProof).
+  }
+  rewrite <- HxEq.
+  exact (ReplI
+    E
+    (fun z:set => apply_fun pi z)
+    x
+    HxE).
+Qed.
+
+(** Proven Bob **)
+Theorem mem_image_iff_preimage_singleton_nonempty :
+  forall E pi y:set,
+  (y :e image_of pi E <-> preimage_of E pi (Sing y) <> Empty).
+let E pi y.
+apply iffI.
+- assume HyImg.
+  claim HxPack : exists x:set, x :e E /\ apply_fun pi x = y.
+  {
+    exact ((andEL
+      (y :e image_of pi E -> (exists x:set, x :e E /\ apply_fun pi x = y))
+      ((exists x:set, x :e E /\ apply_fun pi x = y) -> y :e image_of pi E)
+      (mem_image_iff_exists_preimage_point E pi y))
+      HyImg).
+  }
+  exact ((andEL
+    ((exists x:set, x :e E /\ apply_fun pi x = y) -> preimage_of E pi (Sing y) <> Empty)
+    (preimage_of E pi (Sing y) <> Empty -> (exists x:set, x :e E /\ apply_fun pi x = y))
+    (exists_preimage_point_iff_preimage_singleton_nonempty E pi y))
+    HxPack).
+- assume HpreNe.
+  claim HxPack : exists x:set, x :e E /\ apply_fun pi x = y.
+  {
+    exact ((andER
+      ((exists x:set, x :e E /\ apply_fun pi x = y) -> preimage_of E pi (Sing y) <> Empty)
+      (preimage_of E pi (Sing y) <> Empty -> (exists x:set, x :e E /\ apply_fun pi x = y))
+      (exists_preimage_point_iff_preimage_singleton_nonempty E pi y))
+      HpreNe).
+  }
+  exact ((andER
+    (y :e image_of pi E -> (exists x:set, x :e E /\ apply_fun pi x = y))
+    ((exists x:set, x :e E /\ apply_fun pi x = y) -> y :e image_of pi E)
+    (mem_image_iff_exists_preimage_point E pi y))
+    HxPack).
+Qed.
+
+(** Proven Bob **)
+Theorem not_mem_image_iff_no_preimage_point :
+  forall E pi y:set,
+  (y /:e image_of pi E <-> ~ (exists x:set, x :e E /\ apply_fun pi x = y)).
+let E pi y.
+apply iffI.
+- assume HyNotImg.
+  assume HxPack.
+  claim HyImg : y :e image_of pi E.
+  {
+    exact ((andER
+      (y :e image_of pi E -> (exists x:set, x :e E /\ apply_fun pi x = y))
+      ((exists x:set, x :e E /\ apply_fun pi x = y) -> y :e image_of pi E)
+      (mem_image_iff_exists_preimage_point E pi y))
+      HxPack).
+  }
+  exact (HyNotImg HyImg).
+- assume HnoPre.
+  assume HyImg.
+  claim HxPack : exists x:set, x :e E /\ apply_fun pi x = y.
+  {
+    exact ((andEL
+      (y :e image_of pi E -> (exists x:set, x :e E /\ apply_fun pi x = y))
+      ((exists x:set, x :e E /\ apply_fun pi x = y) -> y :e image_of pi E)
+      (mem_image_iff_exists_preimage_point E pi y))
+      HyImg).
+  }
+  exact (HnoPre HxPack).
+Qed.
+
+(** Proven Bob **)
+Theorem not_mem_image_iff_preimage_singleton_empty :
+  forall E pi y:set,
+  (y /:e image_of pi E <-> preimage_of E pi (Sing y) = Empty).
+let E pi y.
+apply iffI.
+- assume HyNotImg.
+  claim HnoPre : ~ (exists x:set, x :e E /\ apply_fun pi x = y).
+  {
+    exact ((andEL
+      (y /:e image_of pi E -> ~ (exists x:set, x :e E /\ apply_fun pi x = y))
+      (~ (exists x:set, x :e E /\ apply_fun pi x = y) -> y /:e image_of pi E)
+      (not_mem_image_iff_no_preimage_point E pi y))
+      HyNotImg).
+  }
+  exact ((andEL
+    (~ (exists x:set, x :e E /\ apply_fun pi x = y) -> preimage_of E pi (Sing y) = Empty)
+    (preimage_of E pi (Sing y) = Empty -> ~ (exists x:set, x :e E /\ apply_fun pi x = y))
+    (no_preimage_point_iff_preimage_singleton_empty E pi y))
+    HnoPre).
+- assume HpreEmpty.
+  claim HnoPre : ~ (exists x:set, x :e E /\ apply_fun pi x = y).
+  {
+    exact ((andER
+      (~ (exists x:set, x :e E /\ apply_fun pi x = y) -> preimage_of E pi (Sing y) = Empty)
+      (preimage_of E pi (Sing y) = Empty -> ~ (exists x:set, x :e E /\ apply_fun pi x = y))
+      (no_preimage_point_iff_preimage_singleton_empty E pi y))
+      HpreEmpty).
+  }
+  exact ((andER
+    (y /:e image_of pi E -> ~ (exists x:set, x :e E /\ apply_fun pi x = y))
+    (~ (exists x:set, x :e E /\ apply_fun pi x = y) -> y /:e image_of pi E)
+    (not_mem_image_iff_no_preimage_point E pi y))
+    HnoPre).
+Qed.
+
+(** Proven Bob **)
 Theorem surjective_map_mem_image_iff_mem_codomain :
   forall E X pi y:set,
   surjective_map E X pi ->
