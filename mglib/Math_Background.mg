@@ -184656,6 +184656,34 @@ apply iffI.
 Qed.
 
 (** Proven Bob **)
+Theorem surjective_map_implies_function_on_and_image_whole :
+  forall E X pi:set,
+  surjective_map E X pi ->
+  function_on pi E X /\ image_of pi E = X.
+let E X pi.
+assume Hsurj.
+exact ((andEL
+  (surjective_map E X pi -> function_on pi E X /\ image_of pi E = X)
+  (function_on pi E X /\ image_of pi E = X -> surjective_map E X pi)
+  (surjective_map_iff_function_on_and_image_whole E X pi))
+  Hsurj).
+Qed.
+
+(** Proven Bob **)
+Theorem function_on_and_image_whole_implies_surjective_map :
+  forall E X pi:set,
+  function_on pi E X /\ image_of pi E = X ->
+  surjective_map E X pi.
+let E X pi.
+assume Hpack.
+exact ((andER
+  (surjective_map E X pi -> function_on pi E X /\ image_of pi E = X)
+  (function_on pi E X /\ image_of pi E = X -> surjective_map E X pi)
+  (surjective_map_iff_function_on_and_image_whole E X pi))
+  Hpack).
+Qed.
+
+(** Proven Bob **)
 Theorem quotient_map_iff_topology_function_and_image_whole :
   forall E Te X pi:set,
   quotient_map E Te X pi <->
@@ -184692,6 +184720,34 @@ apply iffI.
       (topology_on E Te /\ function_on pi E X)
       (image_of pi E = X)
       Hpack)).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_implies_topology_function_and_image_whole :
+  forall E Te X pi:set,
+  quotient_map E Te X pi ->
+  topology_on E Te /\ function_on pi E X /\ image_of pi E = X.
+let E Te X pi.
+assume Hquot.
+exact ((andEL
+  (quotient_map E Te X pi -> topology_on E Te /\ function_on pi E X /\ image_of pi E = X)
+  (topology_on E Te /\ function_on pi E X /\ image_of pi E = X -> quotient_map E Te X pi)
+  (quotient_map_iff_topology_function_and_image_whole E Te X pi))
+  Hquot).
+Qed.
+
+(** Proven Bob **)
+Theorem topology_function_and_image_whole_implies_quotient_map :
+  forall E Te X pi:set,
+  topology_on E Te /\ function_on pi E X /\ image_of pi E = X ->
+  quotient_map E Te X pi.
+let E Te X pi.
+assume Hpack.
+exact ((andER
+  (quotient_map E Te X pi -> topology_on E Te /\ function_on pi E X /\ image_of pi E = X)
+  (topology_on E Te /\ function_on pi E X /\ image_of pi E = X -> quotient_map E Te X pi)
+  (quotient_map_iff_topology_function_and_image_whole E Te X pi))
+  Hpack).
 Qed.
 
 (** Proven Bob **)
@@ -184741,6 +184797,34 @@ apply iffI.
       (topology_on E Te)
       (surjective_map E X pi)
       Hpack)).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_implies_topology_on_and_surjective_map :
+  forall E Te X pi:set,
+  quotient_map E Te X pi ->
+  topology_on E Te /\ surjective_map E X pi.
+let E Te X pi.
+assume Hquot.
+exact ((andEL
+  (quotient_map E Te X pi -> topology_on E Te /\ surjective_map E X pi)
+  (topology_on E Te /\ surjective_map E X pi -> quotient_map E Te X pi)
+  (quotient_map_iff_topology_on_and_surjective_map E Te X pi))
+  Hquot).
+Qed.
+
+(** Proven Bob **)
+Theorem topology_on_and_surjective_map_implies_quotient_map :
+  forall E Te X pi:set,
+  topology_on E Te /\ surjective_map E X pi ->
+  quotient_map E Te X pi.
+let E Te X pi.
+assume Hpack.
+exact ((andER
+  (quotient_map E Te X pi -> topology_on E Te /\ surjective_map E X pi)
+  (topology_on E Te /\ surjective_map E X pi -> quotient_map E Te X pi)
+  (quotient_map_iff_topology_on_and_surjective_map E Te X pi))
+  Hpack).
 Qed.
 
 (** Proven Bob **)
@@ -184905,6 +184989,42 @@ exact ((andER
     (forall y:set, y :e X -> preimage_of E pi (Sing y) <> Empty)
     Hfun
     Hpre)).
+Qed.
+
+(** Proven Bob **)
+Theorem surjective_map_implies_function_on_and_preimage_nonempty_singleton :
+  forall E X pi:set,
+  surjective_map E X pi ->
+  function_on pi E X /\ (forall y:set, y :e X -> preimage_of E pi (Sing y) <> Empty).
+let E X pi.
+assume Hsurj.
+exact ((andEL
+  (surjective_map E X pi ->
+    function_on pi E X /\
+      (forall y:set, y :e X -> preimage_of E pi (Sing y) <> Empty))
+  ((function_on pi E X /\
+      (forall y:set, y :e X -> preimage_of E pi (Sing y) <> Empty)) ->
+    surjective_map E X pi)
+  (surjective_map_iff_function_on_and_preimage_nonempty_singleton E X pi))
+  Hsurj).
+Qed.
+
+(** Proven Bob **)
+Theorem function_on_and_preimage_nonempty_singleton_implies_surjective_map :
+  forall E X pi:set,
+  (function_on pi E X /\ (forall y:set, y :e X -> preimage_of E pi (Sing y) <> Empty)) ->
+  surjective_map E X pi.
+let E X pi.
+assume Hpack.
+exact ((andER
+  (surjective_map E X pi ->
+    function_on pi E X /\
+      (forall y:set, y :e X -> preimage_of E pi (Sing y) <> Empty))
+  ((function_on pi E X /\
+      (forall y:set, y :e X -> preimage_of E pi (Sing y) <> Empty)) ->
+    surjective_map E X pi)
+  (surjective_map_iff_function_on_and_preimage_nonempty_singleton E X pi))
+  Hpack).
 Qed.
 
 (** Proven Bob **)
