@@ -214425,6 +214425,137 @@ exact (tree_in_graph_selected_arc_subset_T
   HA).
 Qed.
 
+(** Proven Bob **)
+Theorem tree_in_graph_vertices_selected_subset_T :
+  forall T ArcsT X Tx Arcs:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  graph_vertices X Tx {B :e Arcs | B c= T} c= T.
+let T ArcsT X Tx Arcs.
+assume Htree.
+exact (subgraph_of_graph_vertices_selected_subset_Y
+  T
+  X
+  Tx
+  Arcs
+  (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree)).
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_vertices_selected_subset_union_arcs :
+  forall T ArcsT X Tx Arcs:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  graph_vertices X Tx {B :e Arcs | B c= T} c= Union Arcs.
+let T ArcsT X Tx Arcs.
+assume Htree.
+exact (subgraph_of_graph_vertices_selected_subset_union_arcs
+  T
+  X
+  Tx
+  Arcs
+  (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree)).
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_vertices_selected_subset_vertices :
+  forall T ArcsT X Tx Arcs:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  graph_vertices X Tx {B :e Arcs | B c= T} c=
+  graph_vertices X Tx Arcs.
+let T ArcsT X Tx Arcs.
+assume Htree.
+exact (subgraph_of_graph_vertices_selected_subset_graph_vertices
+  T
+  X
+  Tx
+  Arcs
+  (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree)).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_vertices_selected_subset_T :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  graph_vertices X Tx {B :e Arcs | B c= T} c= T.
+let T ArcsT X Tx Arcs.
+assume Hmax.
+exact (tree_in_graph_vertices_selected_subset_T
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax)).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_vertices_selected_subset_union_arcs :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  graph_vertices X Tx {B :e Arcs | B c= T} c= Union Arcs.
+let T ArcsT X Tx Arcs.
+assume Hmax.
+exact (tree_in_graph_vertices_selected_subset_union_arcs
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax)).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_vertices_selected_subset_vertices :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  graph_vertices X Tx {B :e Arcs | B c= T} c=
+  graph_vertices X Tx Arcs.
+let T ArcsT X Tx Arcs.
+assume Hmax.
+exact (tree_in_graph_vertices_selected_subset_vertices
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax)).
+Qed.
+
 (** from S84 Lem 84.1 (line 5563 in algtop.tex): connected iff edge paths **)
 (** LATEX VERSION: A graph X is connected iff every pair of vertices can be **)
 (** joined by an edge path. **)
