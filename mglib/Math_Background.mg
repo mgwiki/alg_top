@@ -209809,6 +209809,524 @@ assume Htop Harcs Hunion Hinter Hcoh.
 exact (Hcoh C HCsub).
 Qed.
 
+(** Proven Charlie **)
+(** helper: coherence for open sets (dual to general_linear_graph_coherence_closed). **)
+Theorem general_linear_graph_coherence_open :
+  forall X Tx Arcs U:set,
+  general_linear_graph X Tx Arcs ->
+  U c= X ->
+  (open_in X Tx U <->
+   (forall A:set, A :e Arcs ->
+     open_in A (subspace_topology X Tx A) (U :/\: A))).
+let X Tx Arcs U.
+assume Hglg HUs.
+claim HtopX : topology_on X Tx.
+{
+  exact (general_linear_graph_topology_on
+    X
+    Tx
+    Arcs
+    Hglg).
+}
+set C := X :\: U.
+claim HCs : C c= X.
+{
+  exact (setminus_Subq
+    X
+    U).
+}
+claim HintId :
+  forall A:set,
+  A c= X ->
+  (C :/\: A) = A :\: U.
+{
+  let A.
+  assume HAs.
+  apply (set_ext
+    (C :/\: A)
+    (A :\: U)).
+  - let x.
+    assume Hx.
+    claim HxPair : x :e C /\ x :e A.
+    {
+      exact (binintersectE
+        C
+        A
+        x
+        Hx).
+    }
+    claim HxC : x :e C.
+    {
+      exact (andEL
+        (x :e C)
+        (x :e A)
+        HxPair).
+    }
+    claim HxA : x :e A.
+    {
+      exact (andER
+        (x :e C)
+        (x :e A)
+        HxPair).
+    }
+    claim HxNotU : x /:e U.
+    {
+      exact (setminusE2
+        X
+        U
+        x
+        HxC).
+    }
+    exact (setminusI
+      A
+      U
+      x
+      HxA
+      HxNotU).
+  - let x.
+    assume Hx.
+    claim HxA : x :e A.
+    {
+      exact (setminusE1
+        A
+        U
+        x
+        Hx).
+    }
+    claim HxNotU : x /:e U.
+    {
+      exact (setminusE2
+        A
+        U
+        x
+        Hx).
+    }
+    claim HxX : x :e X.
+    {
+      exact (HAs x HxA).
+    }
+    claim HxC : x :e C.
+    {
+      exact (setminusI
+        X
+        U
+        x
+        HxX
+        HxNotU).
+    }
+    exact (binintersectI
+      C
+      A
+      x
+      HxC
+      HxA).
+}
+claim HcohC :
+  (closed_in X Tx C <->
+   (forall A:set, A :e Arcs ->
+     closed_in A (subspace_topology X Tx A) (C :/\: A))).
+{
+  exact (general_linear_graph_coherence_closed
+    X
+    Tx
+    Arcs
+    C
+    Hglg
+    HCs).
+}
+claim Hopen_to_rhs :
+  open_in X Tx U ->
+  (forall A:set, A :e Arcs ->
+    open_in A (subspace_topology X Tx A) (U :/\: A)).
+{
+  assume HopenU.
+  claim HclosedC : closed_in X Tx C.
+  {
+    exact (closed_of_open_complement
+      X
+      Tx
+      U
+      HtopX
+      (andER
+        (topology_on X Tx)
+        (U :e Tx)
+        HopenU)).
+  }
+  let A.
+  assume HAArcs.
+  claim HArcPack :
+    A c= X /\ arc A (subspace_topology X Tx A).
+  {
+    exact (general_linear_graph_arc_data
+      X
+      Tx
+      Arcs
+      A
+      Hglg
+      HAArcs).
+  }
+  claim HAs : A c= X.
+  {
+    exact (andEL
+      (A c= X)
+      (arc A (subspace_topology X Tx A))
+      HArcPack).
+  }
+  claim HclosedCA : closed_in A (subspace_topology X Tx A) (C :/\: A).
+  {
+    exact (((andEL
+      (closed_in X Tx C ->
+        (forall A0:set, A0 :e Arcs ->
+          closed_in A0 (subspace_topology X Tx A0) (C :/\: A0)))
+      ((forall A0:set, A0 :e Arcs ->
+          closed_in A0 (subspace_topology X Tx A0) (C :/\: A0)) ->
+        closed_in X Tx C)
+      HcohC)
+      HclosedC)
+      A
+      HAArcs).
+  }
+  claim HtopA : topology_on A (subspace_topology X Tx A).
+  {
+    exact (subspace_topology_is_topology
+      X
+      Tx
+      A
+      HtopX
+      HAs).
+  }
+  claim HUcapAeq : (U :/\: A) = A :\: (C :/\: A).
+  {
+    apply (set_ext
+      (U :/\: A)
+      (A :\: (C :/\: A))).
+    - let x.
+      assume Hx.
+      claim HxPair : x :e U /\ x :e A.
+      {
+        exact (binintersectE
+          U
+          A
+          x
+          Hx).
+      }
+      claim HxU : x :e U.
+      {
+        exact (andEL
+          (x :e U)
+          (x :e A)
+          HxPair).
+      }
+      claim HxA : x :e A.
+      {
+        exact (andER
+          (x :e U)
+          (x :e A)
+          HxPair).
+      }
+      claim HxNotCA : x /:e (C :/\: A).
+      {
+        assume HxCA.
+        claim HxC : x :e C.
+        {
+          exact (andEL
+            (x :e C)
+            (x :e A)
+            (binintersectE
+              C
+              A
+              x
+              HxCA)).
+        }
+        exact ((setminusE2
+          X
+          U
+          x
+          HxC)
+          HxU).
+      }
+      exact (setminusI
+        A
+        (C :/\: A)
+        x
+        HxA
+        HxNotCA).
+    - let x.
+      assume Hx.
+      claim HxA : x :e A.
+      {
+        exact (setminusE1
+          A
+          (C :/\: A)
+          x
+          Hx).
+      }
+      claim HxNotCA : x /:e (C :/\: A).
+      {
+        exact (setminusE2
+          A
+          (C :/\: A)
+          x
+          Hx).
+      }
+      claim HxNotC : x /:e C.
+      {
+        assume HxC.
+        claim HxCA : x :e (C :/\: A).
+        {
+          exact (binintersectI
+            C
+            A
+            x
+            HxC
+            HxA).
+        }
+        exact (HxNotCA HxCA).
+      }
+      claim HxU : x :e U.
+      {
+        apply (xm (x :e U)).
+        - assume HxU.
+          exact HxU.
+        - assume HxNotU.
+          claim HxX : x :e X.
+          {
+            exact (HAs x HxA).
+          }
+          claim HxC : x :e C.
+          {
+            exact (setminusI
+              X
+              U
+              x
+              HxX
+              HxNotU).
+          }
+          claim Hfalse : False.
+          {
+            exact (HxNotC HxC).
+          }
+          exact (FalseE
+            Hfalse
+            (x :e U)).
+      }
+      exact (binintersectI
+        U
+        A
+        x
+        HxU
+        HxA).
+  }
+  rewrite HUcapAeq.
+  exact (open_of_closed_complement
+    A
+    (subspace_topology X Tx A)
+    (C :/\: A)
+    HclosedCA).
+}
+claim Hrhs_to_open :
+  (forall A:set, A :e Arcs ->
+    open_in A (subspace_topology X Tx A) (U :/\: A)) ->
+  open_in X Tx U.
+{
+  assume Hrhs.
+  claim HclosedCA :
+    forall A:set, A :e Arcs ->
+      closed_in A (subspace_topology X Tx A) (C :/\: A).
+  {
+    let A.
+    assume HAArcs.
+    claim HArcPack :
+      A c= X /\ arc A (subspace_topology X Tx A).
+    {
+      exact (general_linear_graph_arc_data
+        X
+        Tx
+        Arcs
+        A
+        Hglg
+        HAArcs).
+    }
+    claim HAs : A c= X.
+    {
+      exact (andEL
+        (A c= X)
+        (arc A (subspace_topology X Tx A))
+        HArcPack).
+    }
+    claim HtopA : topology_on A (subspace_topology X Tx A).
+    {
+      exact (subspace_topology_is_topology
+        X
+        Tx
+        A
+        HtopX
+        HAs).
+    }
+    claim HopenUA : open_in A (subspace_topology X Tx A) (U :/\: A).
+    {
+      exact (Hrhs
+        A
+        HAArcs).
+    }
+    claim HUAeq : (C :/\: A) = A :\: (U :/\: A).
+    {
+      apply (set_ext
+        (C :/\: A)
+        (A :\: (U :/\: A))).
+      - let x.
+        assume Hx.
+        claim HxPair : x :e C /\ x :e A.
+        {
+          exact (binintersectE
+            C
+            A
+            x
+            Hx).
+        }
+        claim HxC : x :e C.
+        {
+          exact (andEL
+            (x :e C)
+            (x :e A)
+            HxPair).
+        }
+        claim HxA : x :e A.
+        {
+          exact (andER
+            (x :e C)
+            (x :e A)
+            HxPair).
+        }
+        claim HxNotUA : x /:e (U :/\: A).
+        {
+          assume HxUA.
+          claim HxU : x :e U.
+          {
+            exact (andEL
+              (x :e U)
+              (x :e A)
+              (binintersectE
+                U
+                A
+                x
+                HxUA)).
+          }
+          exact ((setminusE2
+            X
+            U
+            x
+            HxC)
+            HxU).
+        }
+        exact (setminusI
+          A
+          (U :/\: A)
+          x
+          HxA
+          HxNotUA).
+      - let x.
+        assume Hx.
+        claim HxA : x :e A.
+        {
+          exact (setminusE1
+            A
+            (U :/\: A)
+            x
+            Hx).
+        }
+        claim HxNotUA : x /:e (U :/\: A).
+        {
+          exact (setminusE2
+            A
+            (U :/\: A)
+            x
+            Hx).
+        }
+        claim HxX : x :e X.
+        {
+          exact (HAs x HxA).
+        }
+        claim HxNotU : x /:e U.
+        {
+          assume HxU.
+          claim HxUA : x :e (U :/\: A).
+          {
+            exact (binintersectI
+              U
+              A
+              x
+              HxU
+              HxA).
+          }
+          exact (HxNotUA HxUA).
+        }
+        claim HxC : x :e C.
+        {
+          exact (setminusI
+            X
+            U
+            x
+            HxX
+            HxNotU).
+        }
+        exact (binintersectI
+          C
+          A
+          x
+          HxC
+          HxA).
+    }
+    rewrite HUAeq.
+    exact (closed_of_open_complement
+      A
+      (subspace_topology X Tx A)
+      (U :/\: A)
+      HtopA
+      (andER
+        (topology_on A (subspace_topology X Tx A))
+        ((U :/\: A) :e (subspace_topology X Tx A))
+        HopenUA)).
+  }
+  claim HclosedC : closed_in X Tx C.
+  {
+    exact ((andER
+      (closed_in X Tx C ->
+        (forall A0:set, A0 :e Arcs ->
+          closed_in A0 (subspace_topology X Tx A0) (C :/\: A0)))
+      ((forall A0:set, A0 :e Arcs ->
+          closed_in A0 (subspace_topology X Tx A0) (C :/\: A0)) ->
+        closed_in X Tx C)
+      HcohC)
+      HclosedCA).
+  }
+  claim Hop : open_in X Tx (X :\: C).
+  {
+    exact (open_of_closed_complement
+      X
+      Tx
+      C
+      HclosedC).
+  }
+  claim Heq : U = (X :\: C).
+  {
+    symmetry.
+    exact (setminus_setminus_eq
+      X
+      U
+      HUs).
+  }
+  rewrite Heq.
+  exact Hop.
+}
+exact (iffI
+  (open_in X Tx U)
+  (forall A:set, A :e Arcs ->
+    open_in A (subspace_topology X Tx A) (U :/\: A))
+  Hopen_to_rhs
+  Hrhs_to_open).
+Qed.
+
 (** from S83 Definition (line 5499 in algtop.tex): subgraph **)
 (** LATEX VERSION: A subgraph of X is a subspace Y that is a union of edges of X. **)
 Definition subgraph_of : set -> set -> set -> set -> prop :=
