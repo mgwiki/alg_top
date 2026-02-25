@@ -221183,13 +221183,101 @@ apply (thm84_4_maximal_tree_all_vertices_from_obligations
 - assume Hmax.
   let A.
   assume HA Hnsub.
-  (** remaining forward obligation:
-      for each noncontained edge, construct:
-      - a single-vertex intersection witness with T,
-      - general_linear_graph on (T :\/: A),
-      - connectedness on (T :\/: A),
-      - no closed reduced edge path on (T :\/: A). **)
-  admit.
+  claim HmeetA :
+    exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
+  {
+    (** remaining forward subgap (meeting):
+        construct a single-vertex intersection witness for noncontained edge A. **)
+    admit.
+  }
+  claim HcompA :
+    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
+    ~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT) n path_seq x0 /\
+        (exists j:set, j :e n /\ ordsucc j /:e n /\
+          (apply_fun path_seq j) 0 1 = x0)).
+  {
+    (** remaining forward subgap (components):
+        prove glg/connected/no-closed-reduced-path on (T :\/: A). **)
+    admit.
+  }
+  apply HmeetA.
+  let v.
+  assume Hvpack.
+  claim HvVert : v :e graph_vertices X Tx Arcs.
+  {
+    exact (andEL
+      (v :e graph_vertices X Tx Arcs)
+      (T :/\: A = Sing v)
+      Hvpack).
+  }
+  claim HmeetEq : T :/\: A = Sing v.
+  {
+    exact (andER
+      (v :e graph_vertices X Tx Arcs)
+      (T :/\: A = Sing v)
+      Hvpack).
+  }
+  claim HglgConn :
+    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)).
+  {
+    exact (andEL
+      (general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+       connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)))
+      (~(exists n path_seq x0:set,
+          n :e omega /\ n <> 0 /\
+          reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+            ({A} :\/: ArcsT) n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0)))
+      HcompA).
+  }
+  claim HglgTA :
+    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT).
+  {
+    exact (andEL
+      (general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT))
+      (connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)))
+      HglgConn).
+  }
+  claim HconnTA :
+    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)).
+  {
+    exact (andER
+      (general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT))
+      (connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)))
+      HglgConn).
+  }
+  claim HnoloopTA :
+    ~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT) n path_seq x0 /\
+        (exists j:set, j :e n /\ ordsucc j /:e n /\
+          (apply_fun path_seq j) 0 1 = x0)).
+  {
+    exact (andER
+      (general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+       connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)))
+      (~(exists n path_seq x0:set,
+          n :e omega /\ n <> 0 /\
+          reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+            ({A} :\/: ArcsT) n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0)))
+      HcompA).
+  }
+  witness v.
+  apply and5I.
+  - exact HvVert.
+  - exact HmeetEq.
+  - exact HglgTA.
+  - exact HconnTA.
+  - exact HnoloopTA.
 - assume Hrhs.
   let T' ArcsT'.
   assume Htree' HTsub.
