@@ -229056,7 +229056,58 @@ claim HcohFamTA :
           HCcapTsubT)
         HallT).
     }
-    (** Remaining (backward): combine HCcapT and HCA into closed_in TA C. **)
+    claim HtopAeqTA :
+      subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) A =
+      subspace_topology X Tx A.
+    {
+      exact (ex16_1_subspace_transitive
+        X
+        Tx
+        (T :\/: A)
+        A
+        HtopX
+        HTAsubX
+        HAsubTA).
+    }
+    claim HCA_X :
+      closed_in A
+        (subspace_topology X Tx A)
+        (C :/\: A).
+    {
+      rewrite <- HtopAeqTA.
+      exact HCA.
+    }
+    claim HexT :
+      exists DT:set, closed_in X Tx DT /\ (C :/\: T) = DT :/\: T.
+    {
+      exact (iffEL
+        (closed_in T (subspace_topology X Tx T) (C :/\: T))
+        (exists DT:set, closed_in X Tx DT /\ (C :/\: T) = DT :/\: T)
+        (closed_in_subspace_iff_intersection
+          X
+          Tx
+          T
+          (C :/\: T)
+          HtopX
+          HTsubX)
+        HCcapT).
+    }
+    claim HexA :
+      exists DA:set, closed_in X Tx DA /\ (C :/\: A) = DA :/\: A.
+    {
+      exact (iffEL
+        (closed_in A (subspace_topology X Tx A) (C :/\: A))
+        (exists DA:set, closed_in X Tx DA /\ (C :/\: A) = DA :/\: A)
+        (closed_in_subspace_iff_intersection
+          X
+          Tx
+          A
+          (C :/\: A)
+          HtopX
+          HAsubX)
+        HCA_X).
+    }
+    (** Remaining (backward): assemble HexT and HexA into closed_in TA C. **)
     admit.
 }
 exact (and5I
