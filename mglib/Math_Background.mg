@@ -216336,6 +216336,27 @@ exact (binintersectE
   HvInt).
 Qed.
 
+(** Proven Bob **)
+Theorem meeting_single_vertex_has_shared_point :
+  forall T X Tx Arcs A:set,
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  exists v:set, v :e T /\ v :e A.
+let T X Tx Arcs A.
+assume Hmeet.
+apply Hmeet.
+let v.
+assume Hvpack.
+witness v.
+exact (single_vertex_intersection_witness_in_both
+  T
+  A
+  v
+  (andER
+    (v :e graph_vertices X Tx Arcs)
+    (T :/\: A = Sing v)
+    Hvpack)).
+Qed.
+
 Theorem maximal_tree_edge_meeting_tree_forces_subset :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
