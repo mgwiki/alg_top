@@ -224682,6 +224682,25 @@ apply (xm (A c= T)).
 Qed.
 
 (** Proven Bob **)
+Theorem selected_arc_subset_from_noncontained_selected_arc_contradiction_via_bridges :
+  forall T T' ArcsT' X Tx Arcs:set,
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  (forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False) ->
+  (forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T).
+let T T' ArcsT' X Tx Arcs.
+assume Htree' Hcontra.
+exact (selected_arc_subset_from_noncontained_selected_arc_contradiction
+  T
+  T'
+  ArcsT'
+  X
+  Tx
+  Arcs
+  Htree'
+  Hcontra).
+Qed.
+
+(** Proven Bob **)
 Theorem thm84_4_backward_maximality_from_selected_arc_noncontained_contradiction :
   forall T ArcsT X Tx Arcs:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -224870,6 +224889,34 @@ exact (HendpointClose
         HVT
         HASel
         HpqPack)))).
+Qed.
+
+(** Proven Bob **)
+Theorem selected_arc_subset_from_endpoint_witness_and_endpoint_target_obligation_via_bridges :
+  forall T T' ArcsT' X Tx Arcs:set,
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  graph_vertices X Tx Arcs c= T ->
+  (forall A:set, A :e {B :e Arcs | B c= T'} ->
+    exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q) ->
+  (forall A p q:set,
+    A :e {B :e Arcs | B c= T'} ->
+    end_points_of_arc A (subspace_topology X Tx A) p q ->
+    p :e T /\ q :e T ->
+    A c= T) ->
+  (forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T).
+let T T' ArcsT' X Tx Arcs.
+assume Htree' HVT HendpointWit HendpointClose.
+exact (selected_arc_subset_from_endpoint_witness_and_endpoint_target_obligation
+  T
+  T'
+  ArcsT'
+  X
+  Tx
+  Arcs
+  Htree'
+  HVT
+  HendpointWit
+  HendpointClose).
 Qed.
 
 (** from S84 Lem 84.2 converse (line 5601 in algtop.tex): finite tree decomposition **)
