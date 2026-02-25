@@ -203116,7 +203116,6 @@ Qed.
 (** covering map r: Y -> B, there is a covering map q: E -> Y such that r o q = p. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
 (** Bounty 121 **)
-(** Lock Charlie 1772073000 **)
 Theorem thm80_3_universal_covers_everything :
   forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
