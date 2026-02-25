@@ -213056,6 +213056,181 @@ apply andI.
     exact HqA.
 Qed.
 
+(** Proven Charlie **)
+(** Infrastructure: a graph vertex lying on an edge is an endpoint of that edge. **)
+Theorem general_linear_graph_vertex_in_arc_is_endpoint :
+  forall X Tx Arcs A v:set,
+  general_linear_graph X Tx Arcs ->
+  v :e graph_vertices X Tx Arcs ->
+  A :e Arcs ->
+  v :e A ->
+  exists q:set,
+    end_points_of_arc A (subspace_topology X Tx A) v q \/
+    end_points_of_arc A (subspace_topology X Tx A) q v.
+let X Tx Arcs A v.
+assume Hglg HvV HAArcs HvA.
+apply (graph_vertices_has_endpoint_witness X Tx Arcs v HvV).
+let B.
+assume HBpack.
+claim HBArcs : B :e Arcs.
+{
+  exact (andEL
+    (B :e Arcs)
+    (exists p q:set, end_points_of_arc B (subspace_topology X Tx B) p q /\
+      (v = p \/ v = q))
+    HBpack).
+}
+claim HendPack :
+  exists p q:set, end_points_of_arc B (subspace_topology X Tx B) p q /\
+    (v = p \/ v = q).
+{
+  exact (andER
+    (B :e Arcs)
+    (exists p q:set, end_points_of_arc B (subspace_topology X Tx B) p q /\
+      (v = p \/ v = q))
+    HBpack).
+}
+apply HendPack.
+let p.
+assume HpPack.
+apply HpPack.
+let q.
+assume HpqPack.
+claim HendB : end_points_of_arc B (subspace_topology X Tx B) p q.
+{
+  exact (andEL
+    (end_points_of_arc B (subspace_topology X Tx B) p q)
+    (v = p \/ v = q)
+    HpqPack).
+}
+claim HvEq : v = p \/ v = q.
+{
+  exact (andER
+    (end_points_of_arc B (subspace_topology X Tx B) p q)
+    (v = p \/ v = q)
+    HpqPack).
+}
+claim HpB : p :e B.
+{
+  exact (end_points_of_arc_left_in_set
+    B
+    (subspace_topology X Tx B)
+    p
+    q
+    HendB).
+}
+claim HqB : q :e B.
+{
+  exact (end_points_of_arc_right_in_set
+    B
+    (subspace_topology X Tx B)
+    p
+    q
+    HendB).
+}
+claim HvB : v :e B.
+{
+  apply HvEq.
+  - assume Heq.
+    rewrite Heq.
+    exact HpB.
+  - assume Heq.
+    rewrite Heq.
+    exact HqB.
+}
+	apply (xm (B = A)).
+	- assume HeqBA.
+	  apply HvEq.
+	  * assume Heqvp.
+	    witness q.
+	    apply orIL.
+	    rewrite Heqvp.
+	    rewrite <- HeqBA.
+	    exact HendB.
+	  * assume Heqvq.
+	    witness p.
+	    apply orIR.
+	    rewrite Heqvq.
+	    rewrite <- HeqBA.
+	    exact HendB.
+- assume HneqBA.
+  claim HneqAB : A <> B.
+  {
+    assume Heq.
+    apply HneqBA.
+    symmetry.
+    exact Heq.
+  }
+  apply (general_linear_graph_arc_intersection_case
+    X
+    Tx
+    Arcs
+    A
+    B
+    Hglg
+    HAArcs
+    HBArcs
+    HneqAB).
+		  + assume HintE.
+		    claim HvInt : v :e A :/\: B.
+		    { exact (binintersectI A B v HvA HvB). }
+		    claim HvEmp : v :e Empty.
+		    { exact (mem_eqR v (A :/\: B) Empty HintE HvInt). }
+		    exact ((FalseE ((EmptyE v) HvEmp))
+		      (exists q:set,
+		        end_points_of_arc A (subspace_topology X Tx A) v q \/
+		        end_points_of_arc A (subspace_topology X Tx A) q v)).
+		  + assume Hex.
+		    apply Hex.
+		    let r.
+		    assume Hrpack.
+	    claim HintEq : A :/\: B = Sing r.
+	    {
+	      apply (and3E
+	        (A :/\: B = Sing r)
+	        (exists q0:set, end_points_of_arc A (subspace_topology X Tx A) r q0 \/
+	                       end_points_of_arc A (subspace_topology X Tx A) q0 r)
+	        (exists s0:set, end_points_of_arc B (subspace_topology X Tx B) r s0 \/
+	                       end_points_of_arc B (subspace_topology X Tx B) s0 r)
+	        Hrpack).
+	      assume HintEq0 HAend0 HBend0.
+	      exact HintEq0.
+	    }
+	    claim HAendPack :
+	      exists q0:set, end_points_of_arc A (subspace_topology X Tx A) r q0 \/
+	                     end_points_of_arc A (subspace_topology X Tx A) q0 r.
+	    {
+	      apply (and3E
+	        (A :/\: B = Sing r)
+	        (exists q0:set, end_points_of_arc A (subspace_topology X Tx A) r q0 \/
+	                       end_points_of_arc A (subspace_topology X Tx A) q0 r)
+	        (exists s0:set, end_points_of_arc B (subspace_topology X Tx B) r s0 \/
+	                       end_points_of_arc B (subspace_topology X Tx B) s0 r)
+	        Hrpack).
+	      assume HintEq0 HAend0 HBend0.
+	      exact HAend0.
+	    }
+	    claim HvInt : v :e A :/\: B.
+	    { exact (binintersectI A B v HvA HvB). }
+	    claim HvSing : v :e Sing r.
+	    { exact (mem_eqR v (A :/\: B) (Sing r) HintEq HvInt). }
+	    claim Hvr : v = r.
+	    { exact (SingE r v HvSing). }
+    apply HAendPack.
+    let q0.
+    assume Hq0pack.
+    witness q0.
+    apply Hq0pack.
+    - assume HendA.
+      apply orIL.
+      rewrite Hvr.
+      exact HendA.
+    - assume HendA.
+      apply orIR.
+      rewrite Hvr.
+      exact HendA.
+Qed.
+
 (** Proven Bob **)
 Theorem graph_vertices_elem_in_union_arcs :
   forall X Tx Arcs x:set,
