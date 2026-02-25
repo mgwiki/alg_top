@@ -1,6 +1,6 @@
 (** Balance Alice 3327 **)
 (** Balance Bob 3451 **)
-(** Balance Charlie 1337 **)
+(** Balance Charlie 1519 **)
 (** Balance Dave 1793 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -188754,13 +188754,119 @@ Admitted.
 (** is called a universal covering space of B. **)
 (** Note: this is implicitly defined in the text, not a separate formal definition **)
 
+(** Helper: homeomorphism preserves path connectedness (pullback along inverse). **)
+(** Proven Charlie **)
+Theorem homeomorphism_preserves_path_connected_space_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  path_connected_space Y Ty ->
+  path_connected_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HpcY.
+claim HfCont : continuous_map X Tx Y Ty f.
+{ exact (homeomorphism_continuous X Tx Y Ty f Hhome). }
+claim HtopX : topology_on X Tx.
+{ exact (continuous_map_topology_dom X Tx Y Ty f HfCont). }
+claim HfFun : function_on f X Y.
+{ exact (continuous_map_function_on X Tx Y Ty f HfCont). }
+claim HtopY : topology_on Y Ty.
+{
+  exact (andEL
+    (topology_on Y Ty)
+    (forall x y:set, x :e Y -> y :e Y ->
+      exists p:set,
+        path_between Y x y p /\
+        continuous_map unit_interval unit_interval_topology Y Ty p)
+    HpcY).
+}
+claim HpathsY :
+  forall x y:set, x :e Y -> y :e Y ->
+    exists p:set,
+      path_between Y x y p /\
+      continuous_map unit_interval unit_interval_topology Y Ty p.
+{
+  exact (andER
+    (topology_on Y Ty)
+    (forall x y:set, x :e Y -> y :e Y ->
+      exists p:set,
+        path_between Y x y p /\
+        continuous_map unit_interval unit_interval_topology Y Ty p)
+    HpcY).
+}
+prove topology_on X Tx /\
+  forall x y:set, x :e X -> y :e X ->
+    exists p:set,
+      path_between X x y p /\
+      continuous_map unit_interval unit_interval_topology X Tx p.
+apply andI.
+- exact HtopX.
+- let x y.
+  assume HxX HyX.
+  claim HfxY : apply_fun f x :e Y.
+  { exact (HfFun x HxX). }
+  claim HfyY : apply_fun f y :e Y.
+  { exact (HfFun y HyX). }
+  apply (HpathsY (apply_fun f x) (apply_fun f y) HfxY HfyY).
+  let pY.
+  assume HpYpack.
+  claim HpYbetween : path_between Y (apply_fun f x) (apply_fun f y) pY.
+  {
+    exact (andEL
+      (path_between Y (apply_fun f x) (apply_fun f y) pY)
+      (continuous_map unit_interval unit_interval_topology Y Ty pY)
+      HpYpack).
+  }
+  claim HpYcont : continuous_map unit_interval unit_interval_topology Y Ty pY.
+  {
+    exact (andER
+      (path_between Y (apply_fun f x) (apply_fun f y) pY)
+      (continuous_map unit_interval unit_interval_topology Y Ty pY)
+      HpYpack).
+  }
+  apply (homeomorphism_inverse_package X Tx Y Ty f Hhome).
+  let g.
+  assume Hgpack.
+  apply (and3E
+    (continuous_map Y Ty X Tx g)
+    (forall x0:set, x0 :e X -> apply_fun g (apply_fun f x0) = x0)
+    (forall y0:set, y0 :e Y -> apply_fun f (apply_fun g y0) = y0)
+    Hgpack).
+  assume HgCont Hgleft _.
+  set pX := compose_fun unit_interval pY g.
+  claim HpXcont : continuous_map unit_interval unit_interval_topology X Tx pX.
+  { exact (composition_continuous unit_interval unit_interval_topology Y Ty X Tx pY g HpYcont HgCont). }
+  claim HpXfun : function_on pX unit_interval X.
+  { exact (continuous_map_function_on unit_interval unit_interval_topology X Tx pX HpXcont). }
+  witness pX.
+  apply andI.
+  + apply (path_betweenI X x y pX).
+    * exact HpXfun.
+    * rewrite (compose_fun_apply unit_interval pY g 0 zero_in_unit_interval).
+      rewrite (path_between_at_zero
+        Y
+        (apply_fun f x)
+        (apply_fun f y)
+        pY
+        HpYbetween).
+      exact (Hgleft x HxX).
+    * rewrite (compose_fun_apply unit_interval pY g 1 one_in_unit_interval).
+      rewrite (path_between_at_one
+        Y
+        (apply_fun f x)
+        (apply_fun f y)
+        pY
+        HpYbetween).
+      exact (Hgleft y HyX).
+  + exact HpXcont.
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
 (** then the restriction p0: E0 -> B is a covering map. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 182 **)
-(** Lock Charlie 1772060804 **)
+(** Collected Charlie 182 **)
+(** Proven Charlie **)
 Theorem lemma80_1_path_component_covering :
   forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
@@ -188775,8 +188881,646 @@ Theorem lemma80_1_path_component_covering :
       x :e E0) ->
     covering_map E0 (subspace_topology E Te E0) B Tb
       (graph E0 (fun x:set => apply_fun p x)).
-admit.
-Admitted.
+let E Te B Tb p.
+assume Hcov HpcB HlpcB.
+let E0.
+assume HE0subE HE0nonempty HpcE0 HmaxE0.
+set Te0 := subspace_topology E Te E0.
+set p0 := graph E0 (fun x:set => apply_fun p x).
+
+(** Extract basic covering data **)
+claim Hpair : continuous_map E Te B Tb p /\ surjective_map E B p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p /\ surjective_map E B p)
+    (forall b:set, b :e B ->
+      exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+    Hcov).
+}
+claim Hcont : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    Hpair).
+}
+claim Hsurj : surjective_map E B p.
+{
+  exact (andER
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    Hpair).
+}
+claim Hneigh :
+  forall b:set, b :e B ->
+    exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U.
+{
+  exact (andER
+    (continuous_map E Te B Tb p /\ surjective_map E B p)
+    (forall b:set, b :e B ->
+      exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+    Hcov).
+}
+claim HtopE : topology_on E Te.
+{ exact (continuous_map_topology_dom E Te B Tb p Hcont). }
+claim HtopB : topology_on B Tb.
+{ exact (continuous_map_topology_cod E Te B Tb p Hcont). }
+claim Hfunp : function_on p E B.
+{ exact (continuous_map_function_on E Te B Tb p Hcont). }
+
+(** Continuity of p0 **)
+claim HcontE0B : continuous_map E0 Te0 B Tb p.
+{
+  exact (continuous_on_subspace_rule
+    E Te B Tb p E0
+    HtopE HtopB HE0subE Hcont).
+}
+claim Hp0IntoB : forall x:set, x :e E0 -> apply_fun p x :e B.
+{
+  let x.
+  assume HxE0.
+  exact (Hfunp x (HE0subE x HxE0)).
+}
+claim Hfunp0 : function_on p0 E0 B.
+{
+  let x.
+  assume HxE0.
+  rewrite (apply_fun_graph E0 (fun t:set => apply_fun p t) x HxE0).
+  exact (Hp0IntoB x HxE0).
+}
+claim Hcong0 : forall x:set, x :e E0 -> apply_fun p x = apply_fun p0 x.
+{
+  let x.
+  assume HxE0.
+  symmetry.
+  exact (apply_fun_graph E0 (fun t:set => apply_fun p t) x HxE0).
+}
+claim Hcontp0 : continuous_map E0 Te0 B Tb p0.
+{
+  exact (continuous_map_congr_on
+    E0 Te0 B Tb p p0
+    HcontE0B
+    Hfunp0
+    Hcong0).
+}
+
+(** Surjectivity of p0 using path lifting **)
+claim Hsurjp0 : surjective_map E0 B p0.
+{
+  claim Hfunp0B : function_on p0 E0 B.
+  { exact (continuous_map_function_on E0 Te0 B Tb p0 Hcontp0). }
+  prove function_on p0 E0 B /\
+    forall y:set, y :e B -> exists x:set, x :e E0 /\ apply_fun p0 x = y.
+  apply andI.
+  - exact Hfunp0B.
+  - let b.
+    assume HbB.
+    apply (nonempty_has_element E0 HE0nonempty).
+    let y0.
+    assume Hy0E0.
+    claim Hy0E : y0 :e E.
+    { exact (HE0subE y0 Hy0E0). }
+    claim Hpy0B : apply_fun p y0 :e B.
+    { exact (Hfunp y0 Hy0E). }
+    apply (path_connected_space_paths B Tb (apply_fun p y0) b HpcB Hpy0B HbB).
+    let f.
+    assume Hfpack.
+    claim Hfbetween : path_between B (apply_fun p y0) b f.
+    { exact (path_witness_between B Tb (apply_fun p y0) b f Hfpack). }
+    claim Hfcont : continuous_map unit_interval unit_interval_topology B Tb f.
+    { exact (path_witness_continuous B Tb (apply_fun p y0) b f Hfpack). }
+    claim HliftPack :
+      continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p y0 f) /\
+      apply_fun (path_lift E Te B Tb p y0 f) 0 = y0 /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun (path_lift E Te B Tb p y0 f) t) = apply_fun f t).
+    {
+      claim Hstart : apply_fun p y0 = apply_fun f 0.
+      {
+        symmetry.
+        exact (path_between_at_zero
+          B
+          (apply_fun p y0)
+          b
+          f
+          Hfbetween).
+      }
+      exact (lemma54_1_path_lifting
+        E Te B Tb p y0 f
+        Hcov
+        Hy0E
+        Hstart
+        Hfcont).
+    }
+    set ft := path_lift E Te B Tb p y0 f.
+    apply (and3E
+      (continuous_map unit_interval unit_interval_topology E Te ft)
+      (apply_fun ft 0 = y0)
+      (forall t:set, t :e unit_interval -> apply_fun p (apply_fun ft t) = apply_fun f t)
+      HliftPack).
+    assume Hftcont Hft0 Hftcomm.
+    claim HftFun : function_on ft unit_interval E.
+    { exact (continuous_map_function_on unit_interval unit_interval_topology E Te ft Hftcont). }
+    set x1 := apply_fun ft 1.
+    claim Hx1E : x1 :e E.
+    { exact (HftFun 1 one_in_unit_interval). }
+    claim Hx1E0 : x1 :e E0.
+    {
+      apply (HmaxE0 x1 Hx1E).
+      witness y0.
+      apply andI.
+      - exact Hy0E0.
+      - witness reverse_path ft.
+        apply andI.
+        + apply andI.
+          * exact (reverse_path_continuous E Te ft Hftcont).
+          * rewrite (reverse_path_at_zero ft).
+            reflexivity.
+        + rewrite (reverse_path_at_one ft).
+          exact Hft0.
+    }
+    witness x1.
+    apply andI.
+    - exact Hx1E0.
+    - rewrite (apply_fun_graph E0 (fun t:set => apply_fun p t) x1 Hx1E0).
+      rewrite (Hftcomm 1 one_in_unit_interval).
+      exact (path_between_at_one
+        B
+        (apply_fun p y0)
+        b
+        f
+        Hfbetween).
+}
+
+(** Covering neighborhood condition for p0 **)
+claim Hcoverp0 :
+  forall b:set, b :e B ->
+    exists U:set,
+      U :e Tb /\ b :e U /\ evenly_covered E0 Te0 B Tb p0 U.
+{
+  let b.
+  assume HbB.
+  apply (Hneigh b HbB).
+  let U.
+  assume HUpack.
+  apply (and3E
+    (U :e Tb)
+    (b :e U)
+    (evenly_covered E Te B Tb p U)
+    HUpack).
+  assume HUt HbU HevenU.
+  (** Use local path connectedness to refine U to a path connected open W **)
+  claim Hlp :
+    forall x:set, x :e B -> forall U0:set, U0 :e Tb -> x :e U0 ->
+      exists V:set, V :e Tb /\ x :e V /\ V c= U0 /\
+        path_connected_space V (subspace_topology B Tb V).
+  {
+    exact (andER
+      (topology_on B Tb)
+      (forall x:set, x :e B -> forall U0:set, U0 :e Tb -> x :e U0 ->
+        exists V:set, V :e Tb /\ x :e V /\ V c= U0 /\
+          path_connected_space V (subspace_topology B Tb V))
+      HlpcB).
+  }
+  apply (Hlp b HbB U HUt HbU).
+  let W.
+  assume HWpack.
+  apply (and4E
+    (W :e Tb)
+    (b :e W)
+    (W c= U)
+    (path_connected_space W (subspace_topology B Tb W))
+    HWpack).
+  assume HWt HbW HWsubU HpcW.
+  (** W is evenly covered by p (refine from U) **)
+  claim HevenW : evenly_covered E Te B Tb p W.
+  {
+    exact (evenly_covered_open_subset_top
+      E Te B Tb p U W
+      HtopE
+      HevenU
+      HWt
+      HWsubU).
+  }
+  (** Build slices0 as those slices intersecting E0; they lie in E0 by maximality. **)
+  claim HslicesEx : exists slices:set,
+    slices c= Te /\
+    pairwise_disjoint slices /\
+    Union slices = preimage_of E p W /\
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) W (subspace_topology B Tb W)
+        (graph V (apply_fun p))).
+  {
+    exact (andER
+      (W :e Tb)
+      (exists slices:set,
+        slices c= Te /\
+        pairwise_disjoint slices /\
+        Union slices = preimage_of E p W /\
+        (forall V:set, V :e slices ->
+          homeomorphism V (subspace_topology E Te V) W (subspace_topology B Tb W)
+            (graph V (apply_fun p))))
+      HevenW).
+  }
+  apply HslicesEx.
+  let slices.
+  assume Hslices.
+  apply (and4E
+    (slices c= Te)
+    (pairwise_disjoint slices)
+    (Union slices = preimage_of E p W)
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) W (subspace_topology B Tb W)
+        (graph V (apply_fun p)))
+    Hslices).
+  assume HsTe Hpd Hunion Hhome.
+  set slices0 := {V :e slices | exists y:set, y :e V /\ y :e E0}.
+  claim Hslice0_subE0 : forall V:set, V :e slices0 -> V c= E0.
+  {
+    let V.
+    assume HV0.
+    claim HVs : V :e slices.
+    { exact (SepE1 slices (fun V0:set => exists y:set, y :e V0 /\ y :e E0) V HV0). }
+    claim HVhit : exists y:set, y :e V /\ y :e E0.
+    { exact (SepE2 slices (fun V0:set => exists y:set, y :e V0 /\ y :e E0) V HV0). }
+    claim HVTe : V :e Te.
+    { exact (HsTe V HVs). }
+    claim HVsubE : V c= E.
+    {
+      claim HTePow : Te c= Power E.
+      { exact (topology_sub_Power E Te HtopE). }
+      claim HVpow : V :e Power E.
+      { exact (HTePow V HVTe). }
+      exact (PowerE E V HVpow).
+    }
+    claim HhomeV :
+      homeomorphism V (subspace_topology E Te V) W (subspace_topology B Tb W)
+        (graph V (apply_fun p)).
+    { exact (Hhome V HVs). }
+    claim HpcV : path_connected_space V (subspace_topology E Te V).
+    {
+      exact (homeomorphism_preserves_path_connected_space_left
+        V
+        (subspace_topology E Te V)
+        W
+        (subspace_topology B Tb W)
+        (graph V (apply_fun p))
+        HhomeV
+        HpcW).
+    }
+    apply HVhit.
+    let y0.
+    assume Hy0pack.
+    claim Hy0V : y0 :e V.
+    { exact (andEL (y0 :e V) (y0 :e E0) Hy0pack). }
+    claim Hy0E0 : y0 :e E0.
+    { exact (andER (y0 :e V) (y0 :e E0) Hy0pack). }
+    let x.
+    assume HxV.
+    claim HxE : x :e E.
+    { exact (HVsubE x HxV). }
+    apply (HmaxE0 x HxE).
+    witness y0.
+    apply andI.
+    - exact Hy0E0.
+    - apply (path_connected_space_paths
+        V (subspace_topology E Te V) x y0
+        HpcV HxV Hy0V).
+      let gammaV.
+      assume HgammaPack.
+      claim HgammaBetween : path_between V x y0 gammaV.
+      {
+        exact (path_witness_between V (subspace_topology E Te V) x y0 gammaV HgammaPack).
+      }
+      claim HgammaContV :
+        continuous_map unit_interval unit_interval_topology V (subspace_topology E Te V) gammaV.
+      {
+        exact (path_witness_continuous V (subspace_topology E Te V) x y0 gammaV HgammaPack).
+      }
+      set incV := {(t,t)|t :e V}.
+      claim HincCont : continuous_map V (subspace_topology E Te V) E Te incV.
+      { exact (subspace_inclusion_continuous E Te V HtopE HVsubE). }
+      set gamma := compose_fun unit_interval gammaV incV.
+      witness gamma.
+      apply andI.
+      + apply andI.
+        * exact (composition_continuous
+          unit_interval unit_interval_topology
+          V (subspace_topology E Te V)
+          E Te
+          gammaV incV
+          HgammaContV
+          HincCont).
+        * rewrite (compose_fun_apply unit_interval gammaV incV 0 zero_in_unit_interval).
+          claim HgammaFun : function_on gammaV unit_interval V.
+          { exact (path_between_function_on V x y0 gammaV HgammaBetween). }
+          claim Hgam0V : apply_fun gammaV 0 :e V.
+          { exact (HgammaFun 0 zero_in_unit_interval). }
+          rewrite (identity_function_apply V (apply_fun gammaV 0) Hgam0V).
+          exact (path_between_at_zero V x y0 gammaV HgammaBetween).
+      + rewrite (compose_fun_apply unit_interval gammaV incV 1 one_in_unit_interval).
+        claim HgammaFun : function_on gammaV unit_interval V.
+        { exact (path_between_function_on V x y0 gammaV HgammaBetween). }
+        claim Hgam1V : apply_fun gammaV 1 :e V.
+        { exact (HgammaFun 1 one_in_unit_interval). }
+        rewrite (identity_function_apply V (apply_fun gammaV 1) Hgam1V).
+        exact (path_between_at_one V x y0 gammaV HgammaBetween).
+  }
+  witness W.
+  apply andI.
+  - apply andI.
+    + exact HWt.
+    + exact HbW.
+  - (** show W is evenly covered by the restricted map p0 **)
+    prove W :e Tb /\
+      exists S0:set,
+        S0 c= Te0 /\
+        pairwise_disjoint S0 /\
+        Union S0 = preimage_of E0 p0 W /\
+        (forall V:set, V :e S0 ->
+          homeomorphism V (subspace_topology E0 Te0 V) W (subspace_topology B Tb W)
+            (graph V (apply_fun p0))).
+    apply andI.
+    * exact HWt.
+    * witness slices0.
+        apply and4I.
+        - (** slices0 c= Te0 **)
+          let V.
+          assume HV0.
+          claim HVslice : V :e slices.
+          {
+            exact (SepE1 slices (fun V0:set => exists y:set, y :e V0 /\ y :e E0) V HV0).
+          }
+          claim HVhit : exists y:set, y :e V /\ y :e E0.
+          {
+            exact (SepE2 slices (fun V0:set => exists y:set, y :e V0 /\ y :e E0) V HV0).
+          }
+          claim HVTe : V :e Te.
+          { exact (HsTe V HVslice). }
+          claim HVsubE : V c= E.
+          {
+            claim HTePow : Te c= Power E.
+            { exact (topology_sub_Power E Te HtopE). }
+            claim HVpow : V :e Power E.
+            {
+              exact (HTePow V HVTe).
+            }
+            exact (PowerE E V HVpow).
+          }
+          claim HhomeV :
+            homeomorphism V (subspace_topology E Te V) W (subspace_topology B Tb W)
+              (graph V (apply_fun p)).
+          { exact (Hhome V HVslice). }
+          claim HpcV : path_connected_space V (subspace_topology E Te V).
+          {
+            exact (homeomorphism_preserves_path_connected_space_left
+              V
+              (subspace_topology E Te V)
+              W
+              (subspace_topology B Tb W)
+              (graph V (apply_fun p))
+              HhomeV
+              HpcW).
+          }
+          (** V is contained in E0 since it meets E0 and is path connected **)
+          claim HVsubE0 : V c= E0.
+          {
+            apply HVhit.
+            let y0.
+            assume Hy0pack.
+            claim Hy0V : y0 :e V.
+            { exact (andEL (y0 :e V) (y0 :e E0) Hy0pack). }
+            claim Hy0E0 : y0 :e E0.
+            { exact (andER (y0 :e V) (y0 :e E0) Hy0pack). }
+            let x.
+            assume HxV.
+            claim HxE : x :e E.
+            { exact (HVsubE x HxV). }
+            apply (HmaxE0 x HxE).
+            witness y0.
+            apply andI.
+            - exact Hy0E0.
+            - apply (path_connected_space_paths
+                V (subspace_topology E Te V) x y0
+                HpcV HxV Hy0V).
+              let gammaV.
+              assume HgammaPack.
+              claim HgammaBetween : path_between V x y0 gammaV.
+              {
+                exact (path_witness_between V (subspace_topology E Te V) x y0 gammaV HgammaPack).
+              }
+              claim HgammaContV :
+                continuous_map unit_interval unit_interval_topology V (subspace_topology E Te V) gammaV.
+              {
+                exact (path_witness_continuous V (subspace_topology E Te V) x y0 gammaV HgammaPack).
+              }
+              set incV := {(t,t)|t :e V}.
+              claim HincCont : continuous_map V (subspace_topology E Te V) E Te incV.
+              { exact (subspace_inclusion_continuous E Te V HtopE HVsubE). }
+              set gamma := compose_fun unit_interval gammaV incV.
+              witness gamma.
+              apply andI.
+              + apply andI.
+                * exact (composition_continuous
+                  unit_interval unit_interval_topology
+                  V (subspace_topology E Te V)
+                  E Te
+                  gammaV incV
+                  HgammaContV
+                  HincCont).
+                * rewrite (compose_fun_apply unit_interval gammaV incV 0 zero_in_unit_interval).
+                  claim HgammaFun : function_on gammaV unit_interval V.
+                  { exact (path_between_function_on V x y0 gammaV HgammaBetween). }
+                  claim Hgam0V : apply_fun gammaV 0 :e V.
+                  { exact (HgammaFun 0 zero_in_unit_interval). }
+                  rewrite (identity_function_apply V (apply_fun gammaV 0) Hgam0V).
+                  exact (path_between_at_zero V x y0 gammaV HgammaBetween).
+              + rewrite (compose_fun_apply unit_interval gammaV incV 1 one_in_unit_interval).
+                claim HgammaFun : function_on gammaV unit_interval V.
+                { exact (path_between_function_on V x y0 gammaV HgammaBetween). }
+                claim Hgam1V : apply_fun gammaV 1 :e V.
+                { exact (HgammaFun 1 one_in_unit_interval). }
+                rewrite (identity_function_apply V (apply_fun gammaV 1) Hgam1V).
+                exact (path_between_at_one V x y0 gammaV HgammaBetween).
+          }
+          (** Now V is open in the subspace topology Te0 **)
+          claim HVeq : V :/\: E0 = V.
+          { exact (binintersect_Subq_eq_1 V E0 HVsubE0). }
+          claim HVsubOpen : V :/\: E0 :e Te0.
+          { exact (subspace_topologyI E Te E0 V HVTe). }
+          rewrite <- HVeq.
+          exact HVsubOpen.
+        - (** pairwise_disjoint slices0 **)
+          let A B.
+          assume HA HB Hneq.
+          claim HAs : A :e slices.
+          { exact (SepE1 slices (fun V0:set => exists y:set, y :e V0 /\ y :e E0) A HA). }
+          claim HBs : B :e slices.
+          { exact (SepE1 slices (fun V0:set => exists y:set, y :e V0 /\ y :e E0) B HB). }
+          exact (Hpd A B HAs HBs Hneq).
+        - (** Union slices0 = preimage_of E0 p0 W **)
+          apply set_ext.
+          + let x.
+            assume HxU.
+            apply (UnionE slices0 x HxU).
+            let V.
+            assume HVpack.
+            claim HxV : x :e V.
+            { exact (andEL (x :e V) (V :e slices0) HVpack). }
+            claim HV0 : V :e slices0.
+            { exact (andER (x :e V) (V :e slices0) HVpack). }
+            claim HVhit : exists y:set, y :e V /\ y :e E0.
+            {
+              exact (SepE2 slices (fun V0:set => exists y:set, y :e V0 /\ y :e E0) V HV0).
+            }
+            (** show x :e E0 **)
+            claim HVsubE0 : V c= E0.
+            {
+              exact (Hslice0_subE0 V HV0).
+            }
+            claim HxE0 : x :e E0.
+            { exact (HVsubE0 x HxV). }
+            claim HxE : x :e E.
+            { exact (HE0subE x HxE0). }
+            claim HxPreE : x :e preimage_of E p W.
+            {
+              claim HVs : V :e slices.
+              {
+                exact (SepE1 slices (fun V0:set => exists y:set, y :e V0 /\ y :e E0) V HV0).
+              }
+              claim HxUnionS : x :e Union slices.
+              { exact (UnionI slices x V HxV HVs). }
+              exact (mem_eqR x (Union slices) (preimage_of E p W) Hunion HxUnionS).
+            }
+            claim HpxW : apply_fun p x :e W.
+            { exact (SepE2 E (fun t:set => apply_fun p t :e W) x HxPreE). }
+            (** transfer to p0 **)
+            claim Hpx0W : apply_fun p0 x :e W.
+            {
+              rewrite (apply_fun_graph E0 (fun t:set => apply_fun p t) x HxE0).
+              exact HpxW.
+            }
+            exact (SepI E0 (fun t:set => apply_fun p0 t :e W) x HxE0 Hpx0W).
+          + let x.
+            assume HxPre.
+            claim HxE0 : x :e E0.
+            { exact (SepE1 E0 (fun t:set => apply_fun p0 t :e W) x HxPre). }
+            claim HxW : apply_fun p0 x :e W.
+            { exact (SepE2 E0 (fun t:set => apply_fun p0 t :e W) x HxPre). }
+            claim HxE : x :e E.
+            { exact (HE0subE x HxE0). }
+            claim HxW' : apply_fun p x :e W.
+            {
+              rewrite <- (apply_fun_graph E0 (fun t:set => apply_fun p t) x HxE0).
+              exact HxW.
+            }
+            claim HxPreE : x :e preimage_of E p W.
+            { exact (SepI E (fun t:set => apply_fun p t :e W) x HxE HxW'). }
+            claim HxUnion : x :e Union slices.
+            { exact (mem_eqL x (Union slices) (preimage_of E p W) Hunion HxPreE). }
+            apply (UnionE slices x HxUnion).
+            let V.
+            assume HVpack.
+            claim HxV : x :e V.
+            { exact (andEL (x :e V) (V :e slices) HVpack). }
+            claim HVs : V :e slices.
+            { exact (andER (x :e V) (V :e slices) HVpack). }
+            claim HV0 : V :e slices0.
+            {
+              apply (SepI slices (fun V0:set => exists y:set, y :e V0 /\ y :e E0) V HVs).
+              witness x.
+              apply andI.
+              - exact HxV.
+              - exact HxE0.
+            }
+            exact (UnionI slices0 x V HxV HV0).
+        - (** homeomorphism for each slice in slices0 (with p0) **)
+          let V.
+          assume HV0.
+          claim HVs : V :e slices.
+          { exact (SepE1 slices (fun V0:set => exists y:set, y :e V0 /\ y :e E0) V HV0). }
+          claim HVTe : V :e Te.
+          { exact (HsTe V HVs). }
+          claim HVsubE : V c= E.
+          {
+            claim HTePow : Te c= Power E.
+            { exact (topology_sub_Power E Te HtopE). }
+            claim HVpow : V :e Power E.
+            {
+              exact (HTePow V HVTe).
+            }
+            exact (PowerE E V HVpow).
+          }
+          claim HVhit : exists y:set, y :e V /\ y :e E0.
+          { exact (SepE2 slices (fun V0:set => exists y:set, y :e V0 /\ y :e E0) V HV0). }
+          (** as above, V c= E0 **)
+          claim HVsubE0 : V c= E0.
+          { exact (Hslice0_subE0 V HV0). }
+          claim HtopEq :
+            subspace_topology E0 Te0 V = subspace_topology E Te V.
+          {
+            exact (subspace_topology_transitive_weak E Te E0 V HVsubE0).
+          }
+          claim HhomeV :
+            homeomorphism V (subspace_topology E Te V) W (subspace_topology B Tb W)
+              (graph V (apply_fun p)).
+          { exact (Hhome V HVs). }
+          rewrite HtopEq.
+          apply (homeomorphism_congr_on
+            V
+            (subspace_topology E Te V)
+            W
+            (subspace_topology B Tb W)
+            (graph V (apply_fun p))
+            (graph V (apply_fun p0))
+            HhomeV).
+          + (** function_on for the new graph **)
+            let x.
+            assume HxV.
+            rewrite (apply_fun_graph V (apply_fun p0) x HxV).
+            claim HxE0 : x :e E0.
+            { exact (HVsubE0 x HxV). }
+            rewrite (apply_fun_graph E0 (fun t:set => apply_fun p t) x HxE0).
+            claim HfFun : function_on (graph V (apply_fun p)) V W.
+            {
+              exact (continuous_map_function_on
+                V
+                (subspace_topology E Te V)
+                W
+                (subspace_topology B Tb W)
+                (graph V (apply_fun p))
+                (homeomorphism_continuous
+                  V
+                  (subspace_topology E Te V)
+                  W
+                  (subspace_topology B Tb W)
+                  (graph V (apply_fun p))
+                  HhomeV)).
+            }
+            rewrite <- (apply_fun_graph V (apply_fun p) x HxV).
+            exact (HfFun x HxV).
+          + (** pointwise agreement **)
+            let x.
+            assume HxV.
+            rewrite (apply_fun_graph V (apply_fun p) x HxV).
+            rewrite (apply_fun_graph V (apply_fun p0) x HxV).
+            claim HxE0 : x :e E0.
+            { exact (HVsubE0 x HxV). }
+            symmetry.
+            exact (apply_fun_graph E0 (fun t:set => apply_fun p t) x HxE0).
+	}
+
+exact (andI
+  (continuous_map E0 Te0 B Tb p0 /\ surjective_map E0 B p0)
+  (forall b:set, b :e B ->
+    exists U:set, U :e Tb /\ b :e U /\ evenly_covered E0 Te0 B Tb p0 U)
+  (andI
+    (continuous_map E0 Te0 B Tb p0)
+    (surjective_map E0 B p0)
+    Hcontp0
+    Hsurjp0)
+  Hcoverp0).
+Qed.
 
 (** from S80 Lem 80.2a (line 4962 in algtop.tex): if p and r covering, so is q **)
 (** LATEX VERSION: Let p = r o q with p: X -> Z, q: X -> Y, r: Y -> Z. **)
