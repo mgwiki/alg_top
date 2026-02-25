@@ -222834,6 +222834,56 @@ exact (lemma84_2_tree_extension_from_hypotheses_and_components
   HnoloopTA).
 Qed.
 
+(** Proven Bob **)
+Theorem maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge_from_component_obligation_families :
+  forall T ArcsT X Tx Arcs x A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  x :e graph_vertices X Tx Arcs ->
+  x /:e T ->
+  A :e Arcs ->
+  (forall A0:set, A0 :e Arcs -> ~(A0 c= T) ->
+    exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A0 = Sing v) ->
+  (forall A0:set, A0 :e Arcs -> ~(A0 c= T) ->
+    general_linear_graph (T :\/: A0) (subspace_topology X Tx (T :\/: A0)) ({A0} :\/: ArcsT)) ->
+  (forall A0:set, A0 :e Arcs -> ~(A0 c= T) ->
+    connected_space (T :\/: A0) (subspace_topology X Tx (T :\/: A0))) ->
+  (forall A0:set, A0 :e Arcs -> ~(A0 c= T) ->
+    ~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path (T :\/: A0) (subspace_topology X Tx (T :\/: A0))
+          ({A0} :\/: ArcsT) n path_seq x0 /\
+        (exists j:set, j :e n /\ ordsucc j /:e n /\
+          (apply_fun path_seq j) 0 1 = x0))) ->
+  ~ (x :e A).
+let T ArcsT X Tx Arcs x A.
+assume Hmax HxVert HxNotT HA HmeetFam HglgFam HconnFam HnoloopFam.
+apply (xm (A c= T)).
+- assume HAsubT.
+  exact (outside_set_not_in_subset
+    T
+    A
+    x
+    HxNotT
+    HAsubT).
+- assume Hnsub.
+  exact (maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge_from_component_obligations
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    x
+    A
+    Hmax
+    HxVert
+    HxNotT
+    HA
+    (HmeetFam A HA Hnsub)
+    (HglgFam A HA Hnsub)
+    (HconnFam A HA Hnsub)
+    (HnoloopFam A HA Hnsub)).
+Qed.
+
 Theorem maximal_tree_all_vertices_if_noncontained_edges_meet_tree_in_single_vertex :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
