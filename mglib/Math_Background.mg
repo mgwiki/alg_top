@@ -215657,7 +215657,38 @@ Theorem thm84_4_maximal_tree_all_vertices :
   (maximal_tree T ArcsT X Tx Arcs <->
    (tree_in_graph T ArcsT X Tx Arcs /\
     graph_vertices X Tx Arcs c= T)).
-admit.
+let T ArcsT X Tx Arcs.
+assume Hglg Hconn.
+apply iffI.
+- assume Hmax.
+  apply andI.
+  * exact (maximal_tree_tree_in_graph
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      Hmax).
+  * (** remaining forward gap:
+        maximal tree should contain all ambient vertices.
+        planned route: assume x :e graph_vertices X Tx Arcs with x /:e T,
+        use maximal_tree_vertex_outside_yields_edge_not_subset + lemma84_2_tree_extension
+        to construct a strictly larger tree, contradiction to maximality. **)
+    admit.
+- assume Hrhs.
+  claim Htree : tree_in_graph T ArcsT X Tx Arcs.
+  {
+    exact (andEL
+      (tree_in_graph T ArcsT X Tx Arcs)
+      (graph_vertices X Tx Arcs c= T)
+      Hrhs).
+  }
+  (** remaining backward gap:
+      from Htree and graph_vertices X Tx Arcs c= T, show maximality:
+      if T c= T' and T' is a tree, then T'=T.
+      intended contradiction uses connectedness of X and vertex containment to
+      force any extra edge/vertex outside T to violate subtree assumptions. **)
+  admit.
 Admitted.
 
 (** from S84 Thm 84.5 (line 5631 in algtop.tex): every tree in maximal tree **)
