@@ -76165,7 +76165,6 @@ Admitted.
 (** F_tilde(0,0) = e0. If F is a path homotopy, then F_tilde is a path homotopy. **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 200 **)
 (** Bounty 294 **)
-(** Lock Charlie 1772032602 **)
 Theorem lemma54_2_homotopy_lifting : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun F (0, 0) ->
