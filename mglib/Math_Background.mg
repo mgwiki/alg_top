@@ -205610,6 +205610,123 @@ exact (semilocally_simply_connected_has_open_neighborhood_subset
 Qed.
 
 (** Proven Bob **)
+Theorem semilocally_simply_connected_local_witness_subset :
+  forall B Tb:set,
+  semilocally_simply_connected B Tb ->
+  forall b:set, b :e B ->
+    exists U:set, U :e Tb /\ b :e U /\ U c= B /\
+      (forall cls:set,
+        cls :e fundamental_group U (subspace_topology B Tb U) b ->
+        apply_fun
+          (induced_homomorphism U (subspace_topology B Tb U) b B Tb b
+            (graph U (fun x:set => x)))
+          cls =
+        fundamental_group_id B Tb b).
+let B Tb.
+assume Hsemi.
+let b.
+assume Hb.
+claim HtopB : topology_on B Tb.
+{
+  exact (semilocally_simply_connected_topology_on
+    B Tb Hsemi).
+}
+apply (semilocally_simply_connected_local_witness
+  B
+  Tb
+  Hsemi
+  b
+  Hb).
+let U.
+assume HUpack.
+witness U.
+apply and4I.
+- exact (andEL
+    (U :e Tb)
+    (b :e U)
+    (andEL
+      (U :e Tb /\ b :e U)
+      (forall cls:set,
+        cls :e fundamental_group U (subspace_topology B Tb U) b ->
+        apply_fun
+          (induced_homomorphism U (subspace_topology B Tb U) b B Tb b
+            (graph U (fun x:set => x)))
+          cls =
+        fundamental_group_id B Tb b)
+      HUpack)).
+- exact (andER
+    (U :e Tb)
+    (b :e U)
+    (andEL
+      (U :e Tb /\ b :e U)
+      (forall cls:set,
+        cls :e fundamental_group U (subspace_topology B Tb U) b ->
+        apply_fun
+          (induced_homomorphism U (subspace_topology B Tb U) b B Tb b
+            (graph U (fun x:set => x)))
+          cls =
+        fundamental_group_id B Tb b)
+      HUpack)).
+- exact (topology_elem_subset
+    B
+    Tb
+    U
+    HtopB
+    (andEL
+      (U :e Tb)
+      (b :e U)
+      (andEL
+        (U :e Tb /\ b :e U)
+        (forall cls:set,
+          cls :e fundamental_group U (subspace_topology B Tb U) b ->
+          apply_fun
+            (induced_homomorphism U (subspace_topology B Tb U) b B Tb b
+              (graph U (fun x:set => x)))
+            cls =
+          fundamental_group_id B Tb b)
+        HUpack))).
+- exact (andER
+    (U :e Tb /\ b :e U)
+    (forall cls:set,
+      cls :e fundamental_group U (subspace_topology B Tb U) b ->
+      apply_fun
+        (induced_homomorphism U (subspace_topology B Tb U) b B Tb b
+          (graph U (fun x:set => x)))
+        cls =
+      fundamental_group_id B Tb b)
+    HUpack).
+Qed.
+
+(** Proven Bob **)
+Theorem universal_covering_implies_semilocal_witness_subset :
+  forall B Tb:set,
+  (exists E Te p:set,
+    covering_map E Te B Tb p /\ simply_connected E Te) ->
+  forall b:set, b :e B ->
+    exists U:set, U :e Tb /\ b :e U /\ U c= B /\
+      (forall cls:set,
+        cls :e fundamental_group U (subspace_topology B Tb U) b ->
+        apply_fun
+          (induced_homomorphism U (subspace_topology B Tb U) b B Tb b
+            (graph U (fun x:set => x)))
+          cls =
+        fundamental_group_id B Tb b).
+let B Tb.
+assume Huniv.
+let b.
+assume Hb.
+exact (semilocally_simply_connected_local_witness_subset
+  B
+  Tb
+  (universal_covering_implies_semilocally_simply_connected
+    B
+    Tb
+    Huniv)
+  b
+  Hb).
+Qed.
+
+(** Proven Bob **)
 Theorem universal_covering_base_core_consequences :
   forall B Tb:set,
   (exists E Te p:set,
