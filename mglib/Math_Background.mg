@@ -203113,6 +203113,8 @@ Qed.
 (** from S80 Thm 80.3 (line 4983 in algtop.tex): universal covering covers everything **)
 (** LATEX VERSION: Let p: E -> B be covering with E simply connected. Given any **)
 (** covering map r: Y -> B, there is a covering map q: E -> Y such that r o q = p. **)
+(** NOTE: as stated, this requires a connectedness hypothesis on Y (e.g. path_connected_space Y Ty);
+    otherwise it fails for disconnected covering spaces. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
 (** Bounty 121 **)
 Theorem thm80_3_universal_covers_everything :
