@@ -220921,6 +220921,90 @@ Theorem thm84_3_tree_simply_connected :
 admit.
 Admitted.
 
+(** Proven Bob **)
+Theorem thm84_4_maximal_tree_all_vertices_from_obligations :
+  forall T ArcsT X Tx Arcs:set,
+  general_linear_graph X Tx Arcs ->
+  connected_space X Tx ->
+  (maximal_tree T ArcsT X Tx Arcs ->
+    forall A:set, A :e Arcs -> ~(A c= T) ->
+      exists v:set,
+        v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
+        general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+        connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
+        ~(exists n path_seq x0:set,
+            n :e omega /\ n <> 0 /\
+            reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+              ({A} :\/: ArcsT) n path_seq x0 /\
+            (exists j:set, j :e n /\ ordsucc j /:e n /\
+              (apply_fun path_seq j) 0 1 = x0))) ->
+  ((tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+    forall T' ArcsT':set,
+      tree_in_graph T' ArcsT' X Tx Arcs ->
+      T c= T' ->
+      forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False) ->
+  (maximal_tree T ArcsT X Tx Arcs <->
+   (tree_in_graph T ArcsT X Tx Arcs /\
+    graph_vertices X Tx Arcs c= T)).
+let T ArcsT X Tx Arcs.
+assume Hglg Hconn HfwdOb HgwdOb.
+apply iffI.
+- assume Hmax.
+  apply andI.
+  * exact (maximal_tree_tree_in_graph
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      Hmax).
+  * let x.
+    assume HxVert.
+    apply (xm (x :e T)).
+    + assume HxT.
+      exact HxT.
+    + assume HxNotT.
+      exact (FalseE
+        (maximal_tree_outside_vertex_component_extension_contradiction_from_noncontained_edges
+          T
+          ArcsT
+          X
+          Tx
+          Arcs
+          x
+          Hmax
+          (HfwdOb
+            Hmax)
+          HxVert
+          HxNotT)
+        (x :e T)).
+- assume Hrhs.
+  claim Htree : tree_in_graph T ArcsT X Tx Arcs.
+  {
+    exact (andEL
+      (tree_in_graph T ArcsT X Tx Arcs)
+      (graph_vertices X Tx Arcs c= T)
+      Hrhs).
+  }
+  claim HVT : graph_vertices X Tx Arcs c= T.
+  {
+    exact (andER
+      (tree_in_graph T ArcsT X Tx Arcs)
+      (graph_vertices X Tx Arcs c= T)
+      Hrhs).
+  }
+  exact (thm84_4_backward_maximality_from_selected_arc_noncontained_contradiction
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree
+    HVT
+    (HgwdOb
+      Hrhs)).
+Qed.
+
 (** from S84 Thm 84.4 (line 5625 in algtop.tex): maximal tree contains all vertices **)
 (** LATEX VERSION: Let X be a connected graph. A tree T in X is maximal iff it **)
 (** contains all the vertices of X. **)
