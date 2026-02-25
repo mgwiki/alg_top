@@ -1,6 +1,6 @@
 (** Balance Alice 3327 **)
 (** Balance Bob 3451 **)
-(** Balance Charlie 2282 **)
+(** Balance Charlie 2260 **)
 (** Balance Dave 1793 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -220491,7 +220491,8 @@ Admitted.
 (** then T union A is a tree. Conversely, if T is a finite tree with more than one **)
 (** edge, then T = T0 union A where T0 is a tree and A intersects T0 in one vertex. **)
 (** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
-(** Bounty 220 **)
+(** Bounty 242 **)
+(** Lock Charlie 1772106313 **)
 Theorem lemma84_2_tree_extension :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
