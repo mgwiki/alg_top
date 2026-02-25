@@ -216115,6 +216115,33 @@ Theorem lemma84_2_tree_extension :
 admit.
 Admitted.
 
+(** Proven Bob **)
+Theorem single_vertex_intersection_witness_in_both :
+  forall T A v:set,
+  T :/\: A = Sing v ->
+  v :e T /\ v :e A.
+let T A v.
+assume Hmeet.
+claim HvSing : v :e Sing v.
+{
+  exact (SingI v).
+}
+claim HvInt : v :e T :/\: A.
+{
+  exact (mem_eqL
+    v
+    (T :/\: A)
+    (Sing v)
+    Hmeet
+    HvSing).
+}
+exact (binintersectE
+  T
+  A
+  v
+  HvInt).
+Qed.
+
 Theorem maximal_tree_edge_meeting_tree_forces_subset :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
