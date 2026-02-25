@@ -74898,6 +74898,142 @@ exact (UnionE
   HxUnion).
 Qed.
 
+(** Infrastructure: convert full slices witness pack into core slices pack **)
+(** Proven Bob **)
+Theorem slices_witness_to_core_pack :
+  forall E Te B Tb p U slices:set,
+  (slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall W:set, W :e slices ->
+      homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+        (graph W (fun z:set => apply_fun p z)))) ->
+  ((slices c= Te /\ pairwise_disjoint slices) /\
+    Union slices = preimage_of E p U).
+let E Te B Tb p U slices.
+assume Hpack.
+exact (andI
+  (slices c= Te /\ pairwise_disjoint slices)
+  (Union slices = preimage_of E p U)
+  (andI
+    (slices c= Te)
+    (pairwise_disjoint slices)
+    (slices_witness_sub E Te B Tb p U slices Hpack)
+    (slices_witness_pairwise_disjoint E Te B Tb p U slices Hpack))
+  (slices_witness_union_eq_preimage E Te B Tb p U slices Hpack)).
+Qed.
+
+(** Infrastructure: recover full slices witness pack from core pack plus homeomorphism clause **)
+(** Proven Bob **)
+Theorem slices_core_and_homeomorphism_to_witness_pack :
+  forall E Te B Tb p U slices:set,
+  ((slices c= Te /\ pairwise_disjoint slices) /\
+    Union slices = preimage_of E p U) ->
+  (forall W:set, W :e slices ->
+    homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+      (graph W (fun z:set => apply_fun p z))) ->
+  (slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall W:set, W :e slices ->
+      homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+        (graph W (fun z:set => apply_fun p z)))).
+let E Te B Tb p U slices.
+assume Hcore Hhome.
+claim Hsub : slices c= Te.
+{
+  exact (andEL
+    (slices c= Te)
+    (pairwise_disjoint slices)
+    (andEL
+      (slices c= Te /\ pairwise_disjoint slices)
+      (Union slices = preimage_of E p U)
+      Hcore)).
+}
+claim Hpd : pairwise_disjoint slices.
+{
+  exact (andER
+    (slices c= Te)
+    (pairwise_disjoint slices)
+    (andEL
+      (slices c= Te /\ pairwise_disjoint slices)
+      (Union slices = preimage_of E p U)
+      Hcore)).
+}
+claim Hunion : Union slices = preimage_of E p U.
+{
+  exact (andER
+    (slices c= Te /\ pairwise_disjoint slices)
+    (Union slices = preimage_of E p U)
+    Hcore).
+}
+exact (and4I
+  (slices c= Te)
+  (pairwise_disjoint slices)
+  (Union slices = preimage_of E p U)
+  (forall W:set, W :e slices ->
+    homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+      (graph W (fun z:set => apply_fun p z)))
+  Hsub
+  Hpd
+  Hunion
+  Hhome).
+Qed.
+
+(** Infrastructure: evenly_covered directly yields full slices witness pack **)
+(** Proven Bob **)
+Theorem evenly_covered_slices_witness_pack :
+  forall E Te B Tb p U:set,
+  evenly_covered E Te B Tb p U ->
+  exists slices:set,
+    (slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall W:set, W :e slices ->
+        homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+          (graph W (fun z:set => apply_fun p z)))).
+let E Te B Tb p U.
+assume Heven.
+exact (andER
+  (U :e Tb)
+  (exists slices:set,
+    slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall W:set, W :e slices ->
+        homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+          (graph W (fun z:set => apply_fun p z))))
+  Heven).
+Qed.
+
+(** Infrastructure: evenly_covered directly yields core slices pack **)
+(** Proven Bob **)
+Theorem evenly_covered_to_core_slices_pack :
+  forall E Te B Tb p U:set,
+  evenly_covered E Te B Tb p U ->
+  exists slices:set,
+    ((slices c= Te /\ pairwise_disjoint slices) /\
+      Union slices = preimage_of E p U).
+let E Te B Tb p U.
+assume Heven.
+apply (evenly_covered_slices_witness_pack
+  E
+  Te
+  B
+  Tb
+  p
+  U
+  Heven).
+let slices.
+assume Hpack.
+witness slices.
+exact (slices_witness_to_core_pack
+  E
+  Te
+  B
+  Tb
+  p
+  U
+  slices
+  Hpack).
+Qed.
+
 Theorem lemma54_2_sheet_non_switching_local :
   forall E Te B Tb p F Ft q z N U slices Vq Vz:set,
   pairwise_disjoint slices ->
