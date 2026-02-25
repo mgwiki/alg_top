@@ -224988,6 +224988,34 @@ apply (xm (x :e T)).
 Qed.
 
 (** Proven Bob **)
+Theorem thm84_4_forward_vertices_from_component_obligation_via_bridges :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    exists v:set,
+      v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
+      general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+      connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
+      ~(exists n path_seq x0:set,
+          n :e omega /\ n <> 0 /\
+          reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+            ({A} :\/: ArcsT) n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0))) ->
+  graph_vertices X Tx Arcs c= T.
+let T ArcsT X Tx Arcs.
+assume Hmax HfwdOb.
+exact (thm84_4_forward_vertices_from_component_obligation
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hmax
+  HfwdOb).
+Qed.
+
+(** Proven Bob **)
 Theorem thm84_4_backward_maximality_from_component_obligation :
   forall T ArcsT X Tx Arcs:set,
   (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
@@ -225708,6 +225736,43 @@ apply and5I.
 - exact HglgTA.
 - exact HconnTA.
 - exact HnoloopTA.
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_forward_component_witness_from_component_obligations_via_bridges :
+  forall T ArcsT X Tx Arcs A:set,
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) ->
+  connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) ->
+  ~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+        ({A} :\/: ArcsT) n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)) ->
+  exists v:set,
+    v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
+    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
+    ~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT) n path_seq x0 /\
+        (exists j:set, j :e n /\ ordsucc j /:e n /\
+          (apply_fun path_seq j) 0 1 = x0)).
+let T ArcsT X Tx Arcs A.
+assume HmeetA HglgTA HconnTA HnoloopTA.
+exact (thm84_4_forward_component_witness_from_component_obligations
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  HmeetA
+  HglgTA
+  HconnTA
+  HnoloopTA).
 Qed.
 
 (** Proven Bob **)
@@ -227287,6 +227352,36 @@ exact (thm84_4_backward_noncontained_contradiction_from_endpoint_obligations_via
       HA
       Hend
       Hep)).
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_backward_maximality_from_endpoint_obligation_families_via_bridges :
+  forall T ArcsT X Tx Arcs:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  (forall T' ArcsT':set,
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' ->
+    forall A:set, A :e {B :e Arcs | B c= T'} ->
+      exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q) ->
+  (forall T' ArcsT' A p q:set,
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' ->
+    A :e {B :e Arcs | B c= T'} ->
+    end_points_of_arc A (subspace_topology X Tx A) p q ->
+    p :e T /\ q :e T ->
+    A c= T) ->
+  maximal_tree T ArcsT X Tx Arcs.
+let T ArcsT X Tx Arcs.
+assume Hrhs HwitFam HcloseFam.
+exact (thm84_4_backward_maximality_from_endpoint_obligation_families
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hrhs
+  HwitFam
+  HcloseFam).
 Qed.
 
 (** Proven Bob **)
