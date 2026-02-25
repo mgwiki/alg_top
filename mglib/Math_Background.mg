@@ -185672,6 +185672,38 @@ exact (surjective_map_mem_image_iff_mem_codomain
 Qed.
 
 (** Proven Bob **)
+Theorem surjective_map_mem_codomain_implies_mem_image :
+  forall E X pi y:set,
+  surjective_map E X pi ->
+  y :e X ->
+  y :e image_of pi E.
+let E X pi y.
+assume Hsurj HyX.
+exact ((andER
+  (y :e image_of pi E -> y :e X)
+  (y :e X -> y :e image_of pi E)
+  (surjective_map_mem_image_iff_mem_codomain E X pi y Hsurj))
+  HyX).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_mem_codomain_implies_mem_image :
+  forall E Te X pi y:set,
+  quotient_map E Te X pi ->
+  y :e X ->
+  y :e image_of pi E.
+let E Te X pi y.
+assume Hquot HyX.
+exact (surjective_map_mem_codomain_implies_mem_image
+  E
+  X
+  pi
+  y
+  (quotient_map_implies_surjective_map E Te X pi Hquot)
+  HyX).
+Qed.
+
+(** Proven Bob **)
 Theorem surjective_map_mem_image_iff_preimage_singleton_nonempty :
   forall E X pi y:set,
   surjective_map E X pi ->
