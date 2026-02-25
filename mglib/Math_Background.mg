@@ -193540,6 +193540,321 @@ apply andI.
     HcrY).
 Qed.
 
+(** Helper: non-path-connectedness transfer implications from a homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_not_path_connected_space_transfer :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ path_connected_space X Tx -> ~ path_connected_space Y Ty) /\
+  (~ path_connected_space Y Ty -> ~ path_connected_space X Tx).
+let X Tx Y Ty f.
+assume Hhome.
+claim Hiff :
+  (~ path_connected_space X Tx <-> ~ path_connected_space Y Ty).
+{
+  exact (homeomorphism_not_path_connected_space_iff
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+apply andI.
+- assume HnX.
+  exact (iffEL
+    (~ path_connected_space X Tx)
+    (~ path_connected_space Y Ty)
+    Hiff
+    HnX).
+- assume HnY.
+  exact (iffER
+    (~ path_connected_space X Tx)
+    (~ path_connected_space Y Ty)
+    Hiff
+    HnY).
+Qed.
+
+(** Helper: non-connectedness transfer implications from a homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_not_connected_space_transfer :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ connected_space X Tx -> ~ connected_space Y Ty) /\
+  (~ connected_space Y Ty -> ~ connected_space X Tx).
+let X Tx Y Ty f.
+assume Hhome.
+claim Hiff :
+  (~ connected_space X Tx <-> ~ connected_space Y Ty).
+{
+  exact (homeomorphism_not_connected_space_iff
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+apply andI.
+- assume HnX.
+  exact (iffEL
+    (~ connected_space X Tx)
+    (~ connected_space Y Ty)
+    Hiff
+    HnX).
+- assume HnY.
+  exact (iffER
+    (~ connected_space X Tx)
+    (~ connected_space Y Ty)
+    Hiff
+    HnY).
+Qed.
+
+(** Helper: non-Hausdorffness transfer implications from a homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_not_Hausdorff_space_transfer :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ Hausdorff_space X Tx -> ~ Hausdorff_space Y Ty) /\
+  (~ Hausdorff_space Y Ty -> ~ Hausdorff_space X Tx).
+let X Tx Y Ty f.
+assume Hhome.
+claim Hiff :
+  (~ Hausdorff_space X Tx <-> ~ Hausdorff_space Y Ty).
+{
+  exact (homeomorphism_not_Hausdorff_space_iff
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+apply andI.
+- assume HnX.
+  exact (iffEL
+    (~ Hausdorff_space X Tx)
+    (~ Hausdorff_space Y Ty)
+    Hiff
+    HnX).
+- assume HnY.
+  exact (iffER
+    (~ Hausdorff_space X Tx)
+    (~ Hausdorff_space Y Ty)
+    Hiff
+    HnY).
+Qed.
+
+(** Helper: non-metrizability transfer implications from a homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_not_metrizable_transfer :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ metrizable X Tx -> ~ metrizable Y Ty) /\
+  (~ metrizable Y Ty -> ~ metrizable X Tx).
+let X Tx Y Ty f.
+assume Hhome.
+claim Hiff :
+  (~ metrizable X Tx <-> ~ metrizable Y Ty).
+{
+  exact (homeomorphism_not_metrizable_iff
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+apply andI.
+- assume HnX.
+  exact (iffEL
+    (~ metrizable X Tx)
+    (~ metrizable Y Ty)
+    Hiff
+    HnX).
+- assume HnY.
+  exact (iffER
+    (~ metrizable X Tx)
+    (~ metrizable Y Ty)
+    Hiff
+    HnY).
+Qed.
+
+(** Helper: non-second-countability transfer implications from a homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_not_second_countable_space_transfer :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ second_countable_space X Tx -> ~ second_countable_space Y Ty) /\
+  (~ second_countable_space Y Ty -> ~ second_countable_space X Tx).
+let X Tx Y Ty f.
+assume Hhome.
+claim Hiff :
+  (~ second_countable_space X Tx <-> ~ second_countable_space Y Ty).
+{
+  exact (homeomorphism_not_second_countable_space_iff
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+apply andI.
+- assume HnX.
+  exact (iffEL
+    (~ second_countable_space X Tx)
+    (~ second_countable_space Y Ty)
+    Hiff
+    HnX).
+- assume HnY.
+  exact (iffER
+    (~ second_countable_space X Tx)
+    (~ second_countable_space Y Ty)
+    Hiff
+    HnY).
+Qed.
+
+(** Helper: non-local-compactness transfer implications from a homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_not_locally_compact_transfer :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ locally_compact X Tx -> ~ locally_compact Y Ty) /\
+  (~ locally_compact Y Ty -> ~ locally_compact X Tx).
+let X Tx Y Ty f.
+assume Hhome.
+claim Hiff :
+  (~ locally_compact X Tx <-> ~ locally_compact Y Ty).
+{
+  exact (homeomorphism_not_locally_compact_iff
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+apply andI.
+- assume HnX.
+  exact (iffEL
+    (~ locally_compact X Tx)
+    (~ locally_compact Y Ty)
+    Hiff
+    HnX).
+- assume HnY.
+  exact (iffER
+    (~ locally_compact X Tx)
+    (~ locally_compact Y Ty)
+    Hiff
+    HnY).
+Qed.
+
+(** Helper: non-regularity transfer implications from a homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_not_regular_space_transfer :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ regular_space X Tx -> ~ regular_space Y Ty) /\
+  (~ regular_space Y Ty -> ~ regular_space X Tx).
+let X Tx Y Ty f.
+assume Hhome.
+claim Hiff :
+  (~ regular_space X Tx <-> ~ regular_space Y Ty).
+{
+  exact (homeomorphism_not_regular_space_iff
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+apply andI.
+- assume HnX.
+  exact (iffEL
+    (~ regular_space X Tx)
+    (~ regular_space Y Ty)
+    Hiff
+    HnX).
+- assume HnY.
+  exact (iffER
+    (~ regular_space X Tx)
+    (~ regular_space Y Ty)
+    Hiff
+    HnY).
+Qed.
+
+(** Helper: non-normality transfer implications from a homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_not_normal_space_transfer :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ normal_space X Tx -> ~ normal_space Y Ty) /\
+  (~ normal_space Y Ty -> ~ normal_space X Tx).
+let X Tx Y Ty f.
+assume Hhome.
+claim Hiff :
+  (~ normal_space X Tx <-> ~ normal_space Y Ty).
+{
+  exact (homeomorphism_not_normal_space_iff
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+apply andI.
+- assume HnX.
+  exact (iffEL
+    (~ normal_space X Tx)
+    (~ normal_space Y Ty)
+    Hiff
+    HnX).
+- assume HnY.
+  exact (iffER
+    (~ normal_space X Tx)
+    (~ normal_space Y Ty)
+    Hiff
+    HnY).
+Qed.
+
+(** Helper: non-complete-regularity transfer implications from a homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_not_completely_regular_space_transfer :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ completely_regular_space X Tx -> ~ completely_regular_space Y Ty) /\
+  (~ completely_regular_space Y Ty -> ~ completely_regular_space X Tx).
+let X Tx Y Ty f.
+assume Hhome.
+claim Hiff :
+  (~ completely_regular_space X Tx <-> ~ completely_regular_space Y Ty).
+{
+  exact (homeomorphism_not_completely_regular_space_iff
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+apply andI.
+- assume HnX.
+  exact (iffEL
+    (~ completely_regular_space X Tx)
+    (~ completely_regular_space Y Ty)
+    Hiff
+    HnX).
+- assume HnY.
+  exact (iffER
+    (~ completely_regular_space X Tx)
+    (~ completely_regular_space Y Ty)
+    Hiff
+    HnY).
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
