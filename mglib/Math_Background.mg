@@ -210031,6 +210031,82 @@ exact (HAcX q HqA).
 Qed.
 
 (** Proven Bob **)
+Theorem subgraph_of_selected_arc_endpoint_left_in_Y :
+  forall Y X Tx Arcs A p q:set,
+  subgraph_of Y X Tx Arcs ->
+  A :e {B :e Arcs | B c= Y} ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  p :e Y.
+let Y X Tx Arcs A p q.
+assume Hsub HA Hend.
+claim HAcY : A c= Y.
+{
+  exact (subgraph_of_selected_arc_subset_Y
+    Y
+    X
+    Tx
+    Arcs
+    A
+    Hsub
+    HA).
+}
+claim HpA : p :e A.
+{
+  apply (and6E
+    (arc A (subspace_topology X Tx A))
+    (p :e A)
+    (q :e A)
+    (p <> q)
+    (connected_space (A :\: (Sing p))
+      (subspace_topology A (subspace_topology X Tx A) (A :\: (Sing p))))
+    (connected_space (A :\: (Sing q))
+      (subspace_topology A (subspace_topology X Tx A) (A :\: (Sing q))))
+    Hend).
+  assume Harc HpA0 HqA0 Hneq Hconnp Hconnq.
+  exact HpA0.
+}
+exact (HAcY p HpA).
+Qed.
+
+(** Proven Bob **)
+Theorem subgraph_of_selected_arc_endpoint_right_in_Y :
+  forall Y X Tx Arcs A p q:set,
+  subgraph_of Y X Tx Arcs ->
+  A :e {B :e Arcs | B c= Y} ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  q :e Y.
+let Y X Tx Arcs A p q.
+assume Hsub HA Hend.
+claim HAcY : A c= Y.
+{
+  exact (subgraph_of_selected_arc_subset_Y
+    Y
+    X
+    Tx
+    Arcs
+    A
+    Hsub
+    HA).
+}
+claim HqA : q :e A.
+{
+  apply (and6E
+    (arc A (subspace_topology X Tx A))
+    (p :e A)
+    (q :e A)
+    (p <> q)
+    (connected_space (A :\: (Sing p))
+      (subspace_topology A (subspace_topology X Tx A) (A :\: (Sing p))))
+    (connected_space (A :\: (Sing q))
+      (subspace_topology A (subspace_topology X Tx A) (A :\: (Sing q))))
+    Hend).
+  assume Harc HpA0 HqA0 Hneq Hconnp Hconnq.
+  exact HqA0.
+}
+exact (HAcY q HqA).
+Qed.
+
+(** Proven Bob **)
 Theorem selected_arc_subset_union_selected_arcs :
   forall Y Arcs A:set,
   A :e {B :e Arcs | B c= Y} ->
@@ -210224,6 +210300,48 @@ exact (SepI
   q
   HqX
   HqPred).
+Qed.
+
+(** Proven Bob **)
+Theorem subgraph_of_selected_arc_endpoint_left_vertex :
+  forall Y X Tx Arcs A p q:set,
+  subgraph_of Y X Tx Arcs ->
+  A :e {B :e Arcs | B c= Y} ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  p :e graph_vertices X Tx Arcs.
+let Y X Tx Arcs A p q.
+assume Hsub HA Hend.
+exact (graph_vertices_intro_from_endpoint_left
+  X
+  Tx
+  Arcs
+  A
+  p
+  q
+  (subgraph_of_general_linear_graph Y X Tx Arcs Hsub)
+  (subgraph_of_selected_arc_in_arcs Y X Tx Arcs A Hsub HA)
+  Hend).
+Qed.
+
+(** Proven Bob **)
+Theorem subgraph_of_selected_arc_endpoint_right_vertex :
+  forall Y X Tx Arcs A p q:set,
+  subgraph_of Y X Tx Arcs ->
+  A :e {B :e Arcs | B c= Y} ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  q :e graph_vertices X Tx Arcs.
+let Y X Tx Arcs A p q.
+assume Hsub HA Hend.
+exact (graph_vertices_intro_from_endpoint_right
+  X
+  Tx
+  Arcs
+  A
+  p
+  q
+  (subgraph_of_general_linear_graph Y X Tx Arcs Hsub)
+  (subgraph_of_selected_arc_in_arcs Y X Tx Arcs A Hsub HA)
+  Hend).
 Qed.
 
 (** Proven Bob **)
