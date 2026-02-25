@@ -234195,7 +234195,16 @@ Theorem lemma84_2_tree_extension :
 		    Hnsub
 		    Hmeet).
 		}
-		admit.
+		exact (tree_in_graph_intro
+		  (T :\/: A)
+		  ({A} :\/: ArcsT)
+		  X
+		  Tx
+		  Arcs
+		  HsubTA
+		  HglgTA
+		  HconnTA
+		  HnoloopTA).
 Admitted.
 
 (** Proven Bob **)
@@ -237966,7 +237975,42 @@ Theorem thm84_4_forward_glg_obligation :
   A :e Arcs ->
   ~(A c= T) ->
   general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT).
-admit.
+let T ArcsT X Tx Arcs A.
+assume Hmax HA Hnsub.
+claim Htree : tree_in_graph T ArcsT X Tx Arcs.
+{
+  exact (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax).
+}
+claim Hmeet : exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
+{
+  exact (thm84_4_forward_meeting_obligation
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    A
+    Hmax
+    HA
+    Hnsub).
+}
+exact (lemma84_2_tree_extension_general_linear_graph_part
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  Htree
+  HA
+  Hnsub
+  Hmeet).
 Admitted.
 
 Theorem thm84_4_forward_connected_obligation :
@@ -237975,7 +238019,42 @@ Theorem thm84_4_forward_connected_obligation :
   A :e Arcs ->
   ~(A c= T) ->
   connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)).
-admit.
+let T ArcsT X Tx Arcs A.
+assume Hmax HA Hnsub.
+claim Htree : tree_in_graph T ArcsT X Tx Arcs.
+{
+  exact (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax).
+}
+claim Hmeet : exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
+{
+  exact (thm84_4_forward_meeting_obligation
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    A
+    Hmax
+    HA
+    Hnsub).
+}
+exact (lemma84_2_tree_extension_connected_part
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  Htree
+  HA
+  Hnsub
+  Hmeet).
 Admitted.
 
 Theorem thm84_4_forward_no_loop_obligation :
@@ -237989,7 +238068,42 @@ Theorem thm84_4_forward_no_loop_obligation :
         ({A} :\/: ArcsT) n path_seq x0 /\
       (exists j:set, j :e n /\ ordsucc j /:e n /\
         (apply_fun path_seq j) 0 1 = x0)).
-admit.
+let T ArcsT X Tx Arcs A.
+assume Hmax HA Hnsub.
+claim Htree : tree_in_graph T ArcsT X Tx Arcs.
+{
+  exact (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax).
+}
+claim Hmeet : exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
+{
+  exact (thm84_4_forward_meeting_obligation
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    A
+    Hmax
+    HA
+    Hnsub).
+}
+exact (lemma84_2_tree_extension_no_closed_reduced_edge_path_part
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  Htree
+  HA
+  Hnsub
+  Hmeet).
 Admitted.
 
 (** Proven Bob **)
