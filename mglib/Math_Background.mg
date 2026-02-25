@@ -185773,6 +185773,82 @@ exact ((andER
 Qed.
 
 (** Proven Bob **)
+Theorem exists_preimage_point_of_subset_implies_mem_image_of_subset :
+  forall A pi y:set,
+  (exists x:set, x :e A /\ apply_fun pi x = y) ->
+  y :e image_of pi A.
+let A pi y.
+assume HxPack.
+exact ((andER
+  (y :e image_of pi A -> (exists x:set, x :e A /\ apply_fun pi x = y))
+  ((exists x:set, x :e A /\ apply_fun pi x = y) -> y :e image_of pi A)
+  (mem_image_iff_exists_preimage_point A pi y))
+  HxPack).
+Qed.
+
+(** Proven Bob **)
+Theorem not_mem_image_of_subset_implies_no_preimage_point_of_subset :
+  forall A pi y:set,
+  y /:e image_of pi A ->
+  ~ (exists x:set, x :e A /\ apply_fun pi x = y).
+let A pi y.
+assume HyNotImg.
+exact ((andEL
+  (y /:e image_of pi A -> ~ (exists x:set, x :e A /\ apply_fun pi x = y))
+  (~ (exists x:set, x :e A /\ apply_fun pi x = y) -> y /:e image_of pi A)
+  (not_mem_image_iff_no_preimage_point A pi y))
+  HyNotImg).
+Qed.
+
+(** Proven Bob **)
+Theorem function_on_exists_preimage_point_of_subset_implies_mem_codomain :
+  forall E X pi A y:set,
+  function_on pi E X ->
+  A c= E ->
+  (exists x:set, x :e A /\ apply_fun pi x = y) ->
+  y :e X.
+let E X pi A y.
+assume Hfun HAsub HxPack.
+apply HxPack.
+let x.
+assume HxProof.
+claim HxE : x :e E.
+{
+  exact (HAsub
+    x
+    (andEL
+      (x :e A)
+      (apply_fun pi x = y)
+      HxProof)).
+}
+claim HxEq : apply_fun pi x = y.
+{
+  exact (andER
+    (x :e A)
+    (apply_fun pi x = y)
+    HxProof).
+}
+rewrite <- HxEq.
+exact (Hfun x HxE).
+Qed.
+
+(** Proven Bob **)
+Theorem function_on_exists_preimage_point_of_subset_implies_mem_image_of_subset :
+  forall E X pi A y:set,
+  function_on pi E X ->
+  A c= E ->
+  (exists x:set, x :e A /\ apply_fun pi x = y) ->
+  y :e image_of pi A.
+let E X pi A y.
+assume Hfun HAsub HxPack.
+exact (exists_preimage_point_of_subset_implies_mem_image_of_subset
+  A
+  pi
+  y
+  HxPack).
+Qed.
+
+(** Proven Bob **)
 Theorem preimage_singleton_nonempty_iff_mem_image :
   forall E pi y:set,
   (preimage_of E pi (Sing y) <> Empty <-> y :e image_of pi E).
