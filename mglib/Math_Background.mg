@@ -214036,6 +214036,138 @@ exact (andER
 Qed.
 
 (** Proven Bob **)
+Theorem oriented_edge_initial_in_arc :
+  forall X Tx Arcs A ini fin:set,
+  oriented_edge X Tx Arcs A ini fin ->
+  ini :e A.
+let X Tx Arcs A ini fin.
+assume Hori.
+exact (end_points_of_arc_left_in_set
+  A
+  (subspace_topology X Tx A)
+  ini
+  fin
+  (oriented_edge_endpoints
+    X
+    Tx
+    Arcs
+    A
+    ini
+    fin
+    Hori)).
+Qed.
+
+(** Proven Bob **)
+Theorem oriented_edge_final_in_arc :
+  forall X Tx Arcs A ini fin:set,
+  oriented_edge X Tx Arcs A ini fin ->
+  fin :e A.
+let X Tx Arcs A ini fin.
+assume Hori.
+exact (end_points_of_arc_right_in_set
+  A
+  (subspace_topology X Tx A)
+  ini
+  fin
+  (oriented_edge_endpoints
+    X
+    Tx
+    Arcs
+    A
+    ini
+    fin
+    Hori)).
+Qed.
+
+(** Proven Bob **)
+Theorem oriented_edge_initial_in_X :
+  forall X Tx Arcs A ini fin:set,
+  general_linear_graph X Tx Arcs ->
+  oriented_edge X Tx Arcs A ini fin ->
+  ini :e X.
+let X Tx Arcs A ini fin.
+assume Hglg Hori.
+claim HAArcs : A :e Arcs.
+{
+  exact (oriented_edge_in_arcs
+    X
+    Tx
+    Arcs
+    A
+    ini
+    fin
+    Hori).
+}
+claim HAcX : A c= X.
+{
+  exact (andEL
+    (A c= X)
+    (arc A (subspace_topology X Tx A))
+    (general_linear_graph_arc_data
+      X
+      Tx
+      Arcs
+      A
+      Hglg
+      HAArcs)).
+}
+exact (HAcX
+  ini
+  (oriented_edge_initial_in_arc
+    X
+    Tx
+    Arcs
+    A
+    ini
+    fin
+    Hori)).
+Qed.
+
+(** Proven Bob **)
+Theorem oriented_edge_final_in_X :
+  forall X Tx Arcs A ini fin:set,
+  general_linear_graph X Tx Arcs ->
+  oriented_edge X Tx Arcs A ini fin ->
+  fin :e X.
+let X Tx Arcs A ini fin.
+assume Hglg Hori.
+claim HAArcs : A :e Arcs.
+{
+  exact (oriented_edge_in_arcs
+    X
+    Tx
+    Arcs
+    A
+    ini
+    fin
+    Hori).
+}
+claim HAcX : A c= X.
+{
+  exact (andEL
+    (A c= X)
+    (arc A (subspace_topology X Tx A))
+    (general_linear_graph_arc_data
+      X
+      Tx
+      Arcs
+      A
+      Hglg
+      HAArcs)).
+}
+exact (HAcX
+  fin
+  (oriented_edge_final_in_arc
+    X
+    Tx
+    Arcs
+    A
+    ini
+    fin
+    Hori)).
+Qed.
+
+(** Proven Bob **)
 Theorem edge_path_n_in_omega :
   forall X Tx Arcs n path_seq x0:set,
   edge_path X Tx Arcs n path_seq x0 ->
@@ -214149,6 +214281,76 @@ apply (and5E
   Hep).
 assume Hn Hom Hdec Hstart Hstep.
 exact (Hstep i Hi His).
+Qed.
+
+(** Proven Bob **)
+Theorem edge_path_index_decomposition_endpoints_in_X :
+  forall X Tx Arcs n path_seq x0 i:set,
+  general_linear_graph X Tx Arcs ->
+  edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  exists A ini fin:set,
+    apply_fun path_seq i = ((ini, fin), A) /\
+    oriented_edge X Tx Arcs A ini fin /\
+    ini :e X /\ fin :e X.
+let X Tx Arcs n path_seq x0 i.
+assume Hglg Hep Hi.
+apply (edge_path_edge_decomposition
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  i
+  Hep
+  Hi).
+let A.
+assume HA.
+apply HA.
+let ini.
+assume Hini.
+apply Hini.
+let fin.
+assume Hfin.
+witness A.
+witness ini.
+witness fin.
+apply andI.
+- apply andI.
+  + apply andI.
+    * exact (andEL
+        (apply_fun path_seq i = ((ini, fin), A))
+        (oriented_edge X Tx Arcs A ini fin)
+        Hfin).
+    * exact (andER
+        (apply_fun path_seq i = ((ini, fin), A))
+        (oriented_edge X Tx Arcs A ini fin)
+        Hfin).
+  + exact (oriented_edge_initial_in_X
+      X
+      Tx
+      Arcs
+      A
+      ini
+      fin
+      Hglg
+      (andER
+        (apply_fun path_seq i = ((ini, fin), A))
+        (oriented_edge X Tx Arcs A ini fin)
+        Hfin)).
+- exact (oriented_edge_final_in_X
+    X
+    Tx
+    Arcs
+    A
+    ini
+    fin
+    Hglg
+    (andER
+      (apply_fun path_seq i = ((ini, fin), A))
+      (oriented_edge X Tx Arcs A ini fin)
+      Hfin)).
 Qed.
 
 (** Proven Bob **)
