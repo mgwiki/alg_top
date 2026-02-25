@@ -227889,6 +227889,36 @@ claim HAsubTA : A c= (T :\/: A).
     T
     A).
 }
+apply Hmeet.
+let v.
+assume Hvpack.
+claim HvVert : v :e graph_vertices X Tx Arcs.
+{
+  exact (andEL
+    (v :e graph_vertices X Tx Arcs)
+    (T :/\: A = Sing v)
+    Hvpack).
+}
+claim HcapEq : T :/\: A = Sing v.
+{
+  exact (andER
+    (v :e graph_vertices X Tx Arcs)
+    (T :/\: A = Sing v)
+    Hvpack).
+}
+claim HvA : v :e A.
+{
+  claim HvCap : v :e T :/\: A.
+  {
+    rewrite HcapEq.
+    exact (SingI v).
+  }
+  exact (binintersectE2
+    T
+    A
+    v
+    HvCap).
+}
 claim HTsubX : T c= X.
 {
   exact (subgraph_of_subset
@@ -228234,7 +228264,85 @@ claim HinterFamTA :
   {
     let U V.
     assume HUSing HVArcsT HUVneq.
-    (** Remaining: mixed {A}/ArcsT case. **)
+    claim HUeqA : U = A.
+    {
+      exact (SingE
+        A
+        U
+        HUSing).
+    }
+    claim HVneqA : V <> A.
+    {
+      assume HVeqA.
+      claim HUeqV : U = V.
+      {
+        rewrite HUeqA.
+        symmetry.
+        exact HVeqA.
+      }
+      exact (HUVneq HUeqV).
+    }
+    claim HVSubT : V c= T.
+    {
+      exact (andEL
+        (V c= T)
+        (arc V (subspace_topology T (subspace_topology X Tx T) V))
+        (general_linear_graph_arc_data
+          T
+          (subspace_topology X Tx T)
+          ArcsT
+          V
+          HglgT
+          HVArcsT)).
+    }
+    claim HUVsubSing : U :/\: V c= Sing v.
+    {
+      let x.
+      assume HxUV.
+      claim HxU : x :e U.
+      {
+        exact (binintersectE1
+          U
+          V
+          x
+          HxUV).
+      }
+      claim HxV : x :e V.
+      {
+        exact (binintersectE2
+          U
+          V
+          x
+          HxUV).
+      }
+      claim HxA : x :e A.
+      {
+        rewrite <- HUeqA.
+        exact HxU.
+      }
+      claim HxT : x :e T.
+      {
+        exact (HVSubT
+          x
+          HxV).
+      }
+      claim HxTA : x :e T :/\: A.
+      {
+        exact (binintersectI
+          T
+          A
+          x
+          HxT
+          HxA).
+      }
+      exact (mem_eqR
+        x
+        (T :/\: A)
+        (Sing v)
+        HcapEq
+        HxTA).
+    }
+    (** Remaining: mixed {A}/ArcsT case endpoint witnesses at v. **)
     admit.
   }
   apply (binunionE
