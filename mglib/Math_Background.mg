@@ -226392,6 +226392,49 @@ exact (thm84_4_forward_component_witness_from_component_obligation_family
 Qed.
 
 (** Proven Bob **)
+Theorem thm84_4_forward_component_witness_family_from_stub_obligation_families_via_bridges :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  (forall A:set, maximal_tree T ArcsT X Tx Arcs -> A :e Arcs -> ~(A c= T) ->
+    exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  (forall A:set, maximal_tree T ArcsT X Tx Arcs -> A :e Arcs -> ~(A c= T) ->
+    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT)) ->
+  (forall A:set, maximal_tree T ArcsT X Tx Arcs -> A :e Arcs -> ~(A c= T) ->
+    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A))) ->
+  (forall A:set, maximal_tree T ArcsT X Tx Arcs -> A :e Arcs -> ~(A c= T) ->
+    ~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT) n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0))) ->
+  forall A:set, A :e Arcs -> ~(A c= T) ->
+    exists v:set,
+      v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
+      general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+      connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
+      ~(exists n path_seq x0:set,
+          n :e omega /\ n <> 0 /\
+          reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+            ({A} :\/: ArcsT) n path_seq x0 /\
+            (exists j:set, j :e n /\ ordsucc j /:e n /\
+              (apply_fun path_seq j) 0 1 = x0)).
+let T ArcsT X Tx Arcs.
+assume Hmax HmeetStub HglgStub HconnStub HnoloopStub.
+exact (thm84_4_forward_component_witness_family_from_stub_obligation_families
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hmax
+  HmeetStub
+  HglgStub
+  HconnStub
+  HnoloopStub).
+Qed.
+
+(** Proven Bob **)
 Theorem thm84_4_forward_component_witness_from_stub_obligation_families :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -226568,6 +226611,39 @@ exact (thm84_4_forward_component_witness_from_component_obligations
   (HglgOb A HA Hnsub)
   (HconnOb A HA Hnsub)
   (HnoloopOb A HA Hnsub)).
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_forward_vertices_from_split_obligations_via_bridges :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT)) ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A))) ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    ~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT) n path_seq x0 /\
+        (exists j:set, j :e n /\ ordsucc j /:e n /\
+          (apply_fun path_seq j) 0 1 = x0))) ->
+  graph_vertices X Tx Arcs c= T.
+let T ArcsT X Tx Arcs.
+assume Hmax HmeetOb HglgOb HconnOb HnoloopOb.
+exact (thm84_4_forward_vertices_from_split_obligations
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hmax
+  HmeetOb
+  HglgOb
+  HconnOb
+  HnoloopOb).
 Qed.
 
 (** Proven Bob **)
@@ -227287,6 +227363,37 @@ exact ((selected_arc_obligation_subset_implies_noncontained_contradiction
   A
   HASel
   Hnsub).
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_backward_noncontained_contradiction_from_endpoint_obligations_via_bridges :
+  forall T ArcsT T' ArcsT' X Tx Arcs:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  T c= T' ->
+  (forall A:set, A :e {B :e Arcs | B c= T'} ->
+    exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q) ->
+  (forall A p q:set,
+    A :e {B :e Arcs | B c= T'} ->
+    end_points_of_arc A (subspace_topology X Tx A) p q ->
+    p :e T /\ q :e T ->
+    A c= T) ->
+  forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False.
+let T ArcsT T' ArcsT' X Tx Arcs.
+assume Hrhs Htree' HTsub HendpointWitnessSel HendpointCloseSel.
+exact (thm84_4_backward_noncontained_contradiction_from_endpoint_obligations
+  T
+  ArcsT
+  T'
+  ArcsT'
+  X
+  Tx
+  Arcs
+  Hrhs
+  Htree'
+  HTsub
+  HendpointWitnessSel
+  HendpointCloseSel).
 Qed.
 
 (** Proven Bob **)
