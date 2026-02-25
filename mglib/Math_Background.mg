@@ -210726,6 +210726,21 @@ exact (SepI
 Qed.
 
 (** Proven Bob **)
+Theorem graph_vertices_selected_arcs_subset_X :
+  forall X Tx Arcs Y:set,
+  graph_vertices X Tx {B :e Arcs | B c= Y} c= X.
+let X Tx Arcs Y.
+let x.
+assume Hx.
+exact (graph_vertices_subset_X
+  X
+  Tx
+  {B :e Arcs | B c= Y}
+  x
+  Hx).
+Qed.
+
+(** Proven Bob **)
 Theorem graph_vertices_selected_arcs_subset_union_selected_arcs :
   forall X Tx Arcs Y:set,
   graph_vertices X Tx {B :e Arcs | B c= Y} c=
@@ -210761,6 +210776,30 @@ exact (UnionI
   A
   HxA
   HAInSel).
+Qed.
+
+(** Proven Bob **)
+Theorem graph_vertices_selected_arcs_subset_union_arcs :
+  forall X Tx Arcs Y:set,
+  general_linear_graph X Tx Arcs ->
+  graph_vertices X Tx {B :e Arcs | B c= Y} c= Union Arcs.
+let X Tx Arcs Y.
+assume Hglg.
+let x.
+assume HxSel.
+exact (graph_vertices_subset_union_arcs
+  X
+  Tx
+  Arcs
+  Hglg
+  x
+  (graph_vertices_selected_arcs_subset_graph_vertices
+    X
+    Tx
+    Arcs
+    Y
+    x
+    HxSel)).
 Qed.
 
 (** from S83 Lem 83.1 (line 5470 in algtop.tex): linear graphs are normal **)
