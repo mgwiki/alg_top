@@ -211609,6 +211609,236 @@ exact (graph_vertices_selected_arcs_subset_graph_vertices
   Y).
 Qed.
 
+(** S83 infrastructure: extract T1 from arc-coherent structure (normality separation still pending). **)
+
+(** Proven Charlie **)
+(** helper: unit_interval is Hausdorff (as a subspace of R). **)
+Theorem unit_interval_Hausdorff_space :
+  Hausdorff_space unit_interval unit_interval_topology.
+claim HsubR : unit_interval c= R.
+{
+  exact (Sep_Subq
+    R
+    (fun x0:set => ~ (Rlt x0 0) /\ ~ (Rlt 1 x0))).
+}
+exact (ex17_12_subspace_Hausdorff
+  R
+  R_standard_topology
+  unit_interval
+  R_standard_topology_Hausdorff
+  HsubR).
+Qed.
+
+(** Proven Charlie **)
+(** helper: arcs are Hausdorff. **)
+Theorem arc_Hausdorff_space :
+  forall A Ta:set,
+  arc A Ta ->
+  Hausdorff_space A Ta.
+let A Ta.
+assume Harc.
+apply Harc.
+let f.
+assume Hhome.
+exact (homeomorphism_preserves_Hausdorff_right
+  unit_interval
+  unit_interval_topology
+  A
+  Ta
+  f
+  Hhome
+  unit_interval_Hausdorff_space).
+Qed.
+
+(** Proven Charlie **)
+(** helper: general linear graphs are T1 (one-point sets are closed). **)
+Theorem general_linear_graph_one_point_sets_closed :
+  forall X Tx Arcs:set,
+  general_linear_graph X Tx Arcs ->
+  one_point_sets_closed X Tx.
+let X Tx Arcs.
+assume Hglg.
+claim HtopX : topology_on X Tx.
+{
+  exact (general_linear_graph_topology_on
+    X
+    Tx
+    Arcs
+    Hglg).
+}
+claim HoneptPack :
+  topology_on X Tx /\
+  (forall x:set, x :e X -> closed_in X Tx {x}).
+{
+  apply andI.
+  - exact HtopX.
+  - let x.
+    assume HxX.
+    claim HSingSub : {x} c= X.
+    {
+      let y.
+      assume HySing.
+      rewrite (SingE x y HySing).
+      exact HxX.
+    }
+    claim Hcoh :
+      (closed_in X Tx {x} <->
+       (forall A:set, A :e Arcs ->
+         closed_in A (subspace_topology X Tx A) ({x} :/\: A))).
+    {
+      exact (general_linear_graph_coherence_closed
+        X
+        Tx
+        Arcs
+        {x}
+        Hglg
+        HSingSub).
+    }
+    claim Hrhs_to_closed :
+      (forall A:set, A :e Arcs ->
+        closed_in A (subspace_topology X Tx A) ({x} :/\: A)) ->
+      closed_in X Tx {x}.
+    {
+      exact (andER
+        (closed_in X Tx {x} ->
+          (forall A:set, A :e Arcs ->
+            closed_in A (subspace_topology X Tx A) ({x} :/\: A)))
+        ((forall A:set, A :e Arcs ->
+            closed_in A (subspace_topology X Tx A) ({x} :/\: A)) ->
+          closed_in X Tx {x})
+        Hcoh).
+    }
+    apply Hrhs_to_closed.
+    let A.
+    assume HAArcs.
+    claim HArcPack :
+      A c= X /\ arc A (subspace_topology X Tx A).
+    {
+      exact (general_linear_graph_arc_data
+        X
+        Tx
+        Arcs
+        A
+        Hglg
+        HAArcs).
+    }
+    claim HAsubX : A c= X.
+    {
+      exact (andEL
+        (A c= X)
+        (arc A (subspace_topology X Tx A))
+        HArcPack).
+    }
+    claim HarcA : arc A (subspace_topology X Tx A).
+    {
+      exact (andER
+        (A c= X)
+        (arc A (subspace_topology X Tx A))
+        HArcPack).
+    }
+    claim HtopA : topology_on A (subspace_topology X Tx A).
+    {
+      exact (subspace_topology_is_topology
+        X
+        Tx
+        A
+        HtopX
+        HAsubX).
+    }
+    claim HHausA : Hausdorff_space A (subspace_topology X Tx A).
+    {
+      exact (arc_Hausdorff_space
+        A
+        (subspace_topology X Tx A)
+        HarcA).
+    }
+    claim HoneptA : one_point_sets_closed A (subspace_topology X Tx A).
+    {
+      exact (Hausdorff_one_point_sets_closed
+        A
+        (subspace_topology X Tx A)
+        HHausA).
+    }
+    apply (xm (x :e A)).
+    + assume HxA.
+      claim HsingSubA : {x} c= A.
+      {
+        let y.
+        assume HySing.
+        rewrite (SingE x y HySing).
+        exact HxA.
+      }
+      claim HintEq : {x} :/\: A = {x}.
+      {
+        exact (binintersect_Subq_eq_1
+          {x}
+          A
+          HsingSubA).
+      }
+      rewrite HintEq.
+      exact ((andER
+        (topology_on A (subspace_topology X Tx A))
+        (forall y:set, y :e A -> closed_in A (subspace_topology X Tx A) {y})
+        HoneptA)
+        x
+        HxA).
+    + assume HxNotA.
+      claim HintEq : {x} :/\: A = Empty.
+      {
+        apply (set_ext
+          ({x} :/\: A)
+          Empty).
+        - let y.
+          assume HyInt.
+          claim HyPair : y :e {x} /\ y :e A.
+          {
+            exact (binintersectE
+              {x}
+              A
+              y
+              HyInt).
+          }
+          claim HySing : y :e {x}.
+          {
+            exact (andEL
+              (y :e {x})
+              (y :e A)
+              HyPair).
+          }
+          claim HyA : y :e A.
+          {
+            exact (andER
+              (y :e {x})
+              (y :e A)
+              HyPair).
+          }
+          claim HyEq : y = x.
+          {
+            exact (SingE
+              x
+              y
+              HySing).
+          }
+          claim HxA : x :e A.
+          {
+            rewrite <- HyEq.
+            exact HyA.
+          }
+          exact (FalseE
+            (HxNotA HxA)
+            (y :e Empty)).
+        - exact (Subq_Empty
+            ({x} :/\: A)).
+      }
+      rewrite HintEq.
+      exact (empty_is_closed
+        A
+        (subspace_topology X Tx A)
+        HtopA).
+}
+exact HoneptPack.
+Qed.
+
 (** from S83 Lem 83.1 (line 5470 in algtop.tex): linear graphs are normal **)
 (** LATEX VERSION: Every linear graph X is Hausdorff; in fact, it is normal. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
@@ -211618,7 +211848,26 @@ Theorem lemma83_1_linear_graph_normal :
   forall X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
   normal_space X Tx.
-admit.
+let X Tx Arcs.
+assume Hglg.
+claim HnormPack :
+  one_point_sets_closed X Tx /\
+  (forall A B : set,
+    closed_in X Tx A ->
+    closed_in X Tx B ->
+    A :/\: B = Empty ->
+    exists U V : set,
+      U :e Tx /\
+      V :e Tx /\
+      A c= U /\
+      B c= V /\
+      U :/\: V = Empty).
+{
+  apply andI.
+  - exact (general_linear_graph_one_point_sets_closed X Tx Arcs Hglg).
+  - admit.
+}
+exact HnormPack.
 Admitted.
 
 (** from S83 Lem 83.2 (line 5503 in algtop.tex): compact subspace in finite subgraph **)
