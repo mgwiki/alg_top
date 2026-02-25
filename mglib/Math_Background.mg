@@ -1,6 +1,6 @@
 (** Balance Alice 3327 **)
 (** Balance Bob 3451 **)
-(** Balance Charlie 2212 **)
+(** Balance Charlie 2198 **)
 (** Balance Dave 1793 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -215326,7 +215326,8 @@ Qed.
 (** LATEX VERSION: If C is a compact subspace of a linear graph X, there is a finite **)
 (** subgraph Y containing C. If C is connected, Y can be chosen connected. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 132 **)
+(** Bounty 146 **)
+(** Lock Charlie 1772093126 **)
 Theorem lemma83_2_compact_finite_subgraph :
   forall X Tx Arcs C:set,
   general_linear_graph X Tx Arcs ->
