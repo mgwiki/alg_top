@@ -75920,6 +75920,200 @@ apply andI.
 - exact HVqAll.
 Qed.
 
+(** Infrastructure: image of Ft over N lies in one anchored sheet (from evenly_covered) **)
+(** Proven Bob **)
+Theorem unit_square_subset_commutation_image_sub_single_sheet_from_evenly_covered :
+  forall N E Te B Tb p U F Ft q:set,
+  topology_on E Te ->
+  evenly_covered E Te B Tb p U ->
+  N c= unit_square ->
+  connected_space N (subspace_topology unit_square unit_square_topology N) ->
+  continuous_map N (subspace_topology unit_square unit_square_topology N) E Te Ft ->
+  (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t)) ->
+  (forall x:set, x :e N -> apply_fun F x :e U) ->
+  q :e N ->
+  exists slices Vq:set,
+    (slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall W:set, W :e slices ->
+        homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+          (graph W (apply_fun p)))) /\
+    (apply_fun Ft q :e Vq /\ Vq :e slices /\ image_of Ft N c= Vq).
+let N E Te B Tb p U F Ft q.
+assume HtopE Heven HNsubSq HNconn HFtCont HcommSq HFU HqN.
+apply (unit_square_subset_commutation_anchor_sheet_from_evenly_covered
+  N
+  E
+  Te
+  B
+  Tb
+  p
+  U
+  F
+  Ft
+  q
+  HtopE
+  Heven
+  HNsubSq
+  HNconn
+  HFtCont
+  HcommSq
+  HFU
+  HqN).
+let slices.
+assume HsPack.
+apply HsPack.
+let Vq.
+assume HVqPack.
+claim Hpack :
+  slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall W:set, W :e slices ->
+      homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+        (graph W (apply_fun p))).
+{
+  exact (andEL
+    (slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall W:set, W :e slices ->
+        homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+          (graph W (apply_fun p))))
+    (apply_fun Ft q :e Vq /\ Vq :e slices /\
+      (forall z Vz:set, z :e N ->
+        apply_fun Ft z :e Vz -> Vz :e slices ->
+        Vz = Vq))
+    HVqPack).
+}
+claim Hanchor :
+  apply_fun Ft q :e Vq /\ Vq :e slices /\
+    (forall z Vz:set, z :e N ->
+      apply_fun Ft z :e Vz -> Vz :e slices ->
+      Vz = Vq).
+{
+  exact (andER
+    (slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall W:set, W :e slices ->
+        homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+          (graph W (apply_fun p))))
+    (apply_fun Ft q :e Vq /\ Vq :e slices /\
+      (forall z Vz:set, z :e N ->
+        apply_fun Ft z :e Vz -> Vz :e slices ->
+        Vz = Vq))
+    HVqPack).
+}
+witness slices.
+witness Vq.
+apply andI.
+- exact Hpack.
+- apply andI.
+  + apply andI.
+    * exact (andEL
+        (apply_fun Ft q :e Vq)
+        (Vq :e slices)
+        (andEL
+          (apply_fun Ft q :e Vq /\ Vq :e slices)
+          (forall z Vz:set, z :e N ->
+            apply_fun Ft z :e Vz -> Vz :e slices ->
+            Vz = Vq)
+          Hanchor)).
+    * exact (andER
+        (apply_fun Ft q :e Vq)
+        (Vq :e slices)
+        (andEL
+          (apply_fun Ft q :e Vq /\ Vq :e slices)
+          (forall z Vz:set, z :e N ->
+            apply_fun Ft z :e Vz -> Vz :e slices ->
+            Vz = Vq)
+          Hanchor)).
+  + let y.
+      assume HyImg.
+      apply (ReplE
+        N
+        (fun x:set => apply_fun Ft x)
+        y
+        HyImg).
+      let z.
+      assume HzPack.
+      claim HzN : z :e N.
+      {
+        exact (andEL
+          (z :e N)
+          (y = apply_fun Ft z)
+          HzPack).
+      }
+      claim HyEq : y = apply_fun Ft z.
+      {
+        exact (andER
+          (z :e N)
+          (y = apply_fun Ft z)
+          HzPack).
+      }
+      rewrite HyEq.
+      claim HzSheet :
+        exists Vz:set, apply_fun Ft z :e Vz /\ Vz :e slices.
+      {
+        exact (unit_square_subset_commutation_point_exists_sheet_witness
+          N
+          E
+          Te
+          B
+          Tb
+          p
+          F
+          Ft
+          U
+          slices
+          z
+          HNsubSq
+          (continuous_map_function_on
+            N
+            (subspace_topology unit_square unit_square_topology N)
+            E
+            Te
+            Ft
+            HFtCont)
+          HcommSq
+          HFU
+          Hpack
+          HzN).
+      }
+      apply HzSheet.
+      let Vz.
+      assume HVzPack.
+      claim HFtzVz : apply_fun Ft z :e Vz.
+      {
+        exact (andEL
+          (apply_fun Ft z :e Vz)
+          (Vz :e slices)
+          HVzPack).
+      }
+      claim HVzSlice : Vz :e slices.
+      {
+        exact (andER
+          (apply_fun Ft z :e Vz)
+          (Vz :e slices)
+          HVzPack).
+      }
+      claim HVzEqVq : Vz = Vq.
+      {
+        exact ((andER
+          (apply_fun Ft q :e Vq /\ Vq :e slices)
+          (forall z Vz:set, z :e N ->
+            apply_fun Ft z :e Vz -> Vz :e slices ->
+            Vz = Vq)
+          Hanchor)
+          z
+          Vz
+          HzN
+          HFtzVz
+          HVzSlice).
+      }
+      rewrite <- HVzEqVq.
+      exact HFtzVz.
+Qed.
+
 Theorem lemma54_2_sheet_non_switching_local :
   forall E Te B Tb p F Ft q z N U slices Vq Vz:set,
   pairwise_disjoint slices ->
