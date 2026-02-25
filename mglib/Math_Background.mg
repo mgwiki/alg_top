@@ -219638,6 +219638,120 @@ apply (xm (x :e T)).
 Qed.
 
 (** Proven Bob **)
+Theorem maximal_tree_outside_vertex_component_extension_contradiction_from_noncontained_edges :
+  forall T ArcsT X Tx Arcs x:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    exists v:set,
+      v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
+      general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+      connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
+      ~(exists n path_seq x0:set,
+          n :e omega /\ n <> 0 /\
+          reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+            ({A} :\/: ArcsT) n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0))) ->
+  x :e graph_vertices X Tx Arcs ->
+  x /:e T ->
+  False.
+let T ArcsT X Tx Arcs x.
+assume Hmax HcompExt HxVert HxNotT.
+claim HAwit : exists A:set, A :e Arcs /\ ~(A c= T) /\ x :e A.
+{
+  exact (maximal_tree_vertex_outside_yields_edge_not_subset
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    x
+    Hmax
+    HxVert
+    HxNotT).
+}
+apply HAwit.
+let A.
+assume HApack.
+claim HA : A :e Arcs.
+{
+  exact (andEL
+    (A :e Arcs)
+    (~(A c= T))
+    (andEL
+      (A :e Arcs /\ ~(A c= T))
+      (x :e A)
+      HApack)).
+}
+claim Hnsub : ~(A c= T).
+{
+  exact (andER
+    (A :e Arcs)
+    (~(A c= T))
+    (andEL
+      (A :e Arcs /\ ~(A c= T))
+      (x :e A)
+      HApack)).
+}
+claim Hvpack :
+  exists v:set,
+    v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
+    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
+    ~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT) n path_seq x0 /\
+        (exists j:set, j :e n /\ ordsucc j /:e n /\
+          (apply_fun path_seq j) 0 1 = x0)).
+{
+  exact (HcompExt
+    A
+    HA
+    Hnsub).
+}
+apply Hvpack.
+let v.
+assume Hvpack2.
+apply (and5E
+  (v :e graph_vertices X Tx Arcs)
+  (T :/\: A = Sing v)
+  (general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT))
+  (connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)))
+  (~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+        ({A} :\/: ArcsT) n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)))
+  Hvpack2).
+assume HvVert Hmeet HglgTA HconnTA HnoloopTA.
+claim HmeetEx : exists v0:set, v0 :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v0.
+{
+  witness v.
+  exact (andI
+    (v :e graph_vertices X Tx Arcs)
+    (T :/\: A = Sing v)
+    HvVert
+    Hmeet).
+}
+exact (maximal_tree_single_vertex_noncontained_edge_component_extension_contradiction
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  Hmax
+  HA
+  Hnsub
+  HmeetEx
+  HglgTA
+  HconnTA
+  HnoloopTA).
+Qed.
+
+(** Proven Bob **)
 Theorem maximal_tree_all_vertices_if_noncontained_edges_meet_tree_and_extend :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
