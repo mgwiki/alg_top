@@ -229334,13 +229334,32 @@ claim HinterFamTA :
 		              (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V)
 		              (V :\: (Sing v))).
 		        {
+		          claim HVEpAtv :
+		            exists r:set, end_points_of_arc V
+		              (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) v r \/
+		              end_points_of_arc V
+		                (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) r v.
+		          {
+		            (** Remaining mixed-case endpoint-at-v obligation on V.
+		                Intended route: derive endpoint-at-v from HarcV_TA plus HvV. **)
+		            admit.
+		          }
 		          claim HVEpExists :
 		            exists p q:set, end_points_of_arc V
 		              (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) p q.
 		          {
-		            (** Remaining mixed-case endpoint witness obligation on V.
-		                Intended route: extract endpoints from HarcV_TA (homeomorphism from I). **)
-		            admit.
+		            apply HVEpAtv.
+		            let r.
+		            assume HrEp.
+		            apply HrEp.
+		            - assume Hendvr.
+		              witness v.
+		              witness r.
+		              exact Hendvr.
+		            - assume Hendrv.
+		              witness r.
+		              witness v.
+		              exact Hendrv.
 		          }
 		          claim HconnVminusAtv :
 		            connected_space
@@ -229350,9 +229369,52 @@ claim HinterFamTA :
 		                (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V)
 		                (V :\: (Sing v))).
 		          {
-		            (** Remaining mixed-case connected-complement obligation at v for V.
-		                Intended route: establish v is an endpoint of V, then use endpoint definition. **)
-		            admit.
+		            apply HVEpAtv.
+		            let r.
+		            assume HrEp.
+		            apply HrEp.
+		            - assume Hendvr.
+		              apply (and6E
+		                (arc V (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V))
+		                (v :e V)
+		                (r :e V)
+		                (v <> r)
+		                (connected_space
+		                  (V :\: (Sing v))
+		                  (subspace_topology
+		                    V
+		                    (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V)
+		                    (V :\: (Sing v))))
+		                (connected_space
+		                  (V :\: (Sing r))
+		                  (subspace_topology
+		                    V
+		                    (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V)
+		                    (V :\: (Sing r))))
+		                Hendvr).
+		              assume HarcV HvVinV HrVinV Hvneqr HconnVminus HconnRminus.
+		              exact HconnVminus.
+		            - assume Hendrv.
+		              apply (and6E
+		                (arc V (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V))
+		                (r :e V)
+		                (v :e V)
+		                (r <> v)
+		                (connected_space
+		                  (V :\: (Sing r))
+		                  (subspace_topology
+		                    V
+		                    (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V)
+		                    (V :\: (Sing r))))
+		                (connected_space
+		                  (V :\: (Sing v))
+		                  (subspace_topology
+		                    V
+		                    (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V)
+		                    (V :\: (Sing v))))
+		                Hendrv).
+		              assume HarcV HrVinV HvVinV Hrneqv HconnRminus HconnVminus.
+		              exact HconnVminus.
 		          }
 		          exact (andI
 		            (exists p q:set, end_points_of_arc V
