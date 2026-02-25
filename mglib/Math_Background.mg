@@ -187104,6 +187104,39 @@ exact ((andI
 Qed.
 
 (** Proven Bob **)
+Theorem preimage_nonempty_singleton_iff_mem_image_of_subset :
+  forall A pi y:set,
+  (preimage_of A pi (Sing y) <> Empty <-> y :e image_of pi A).
+let A pi y.
+exact (preimage_singleton_nonempty_iff_mem_image_of_subset
+  A
+  pi
+  y).
+Qed.
+
+(** Proven Bob **)
+Theorem preimage_empty_singleton_iff_not_mem_image_of_subset :
+  forall A pi y:set,
+  (preimage_of A pi (Sing y) = Empty <-> y /:e image_of pi A).
+let A pi y.
+exact (preimage_singleton_empty_iff_not_mem_image_of_subset
+  A
+  pi
+  y).
+Qed.
+
+(** Proven Bob **)
+Theorem preimage_empty_singleton_iff_no_preimage_point_of_subset :
+  forall A pi y:set,
+  (preimage_of A pi (Sing y) = Empty <-> ~ (exists x:set, x :e A /\ apply_fun pi x = y)).
+let A pi y.
+exact (preimage_singleton_empty_iff_no_preimage_point_of_subset
+  A
+  pi
+  y).
+Qed.
+
+(** Proven Bob **)
 Theorem preimage_singleton_nonempty_iff_mem_image :
   forall E pi y:set,
   (preimage_of E pi (Sing y) <> Empty <-> y :e image_of pi E).
@@ -187122,6 +187155,17 @@ exact ((andI
 Qed.
 
 (** Proven Bob **)
+Theorem preimage_nonempty_singleton_iff_mem_image :
+  forall E pi y:set,
+  (preimage_of E pi (Sing y) <> Empty <-> y :e image_of pi E).
+let E pi y.
+exact (preimage_singleton_nonempty_iff_mem_image
+  E
+  pi
+  y).
+Qed.
+
+(** Proven Bob **)
 Theorem preimage_singleton_empty_iff_not_mem_image :
   forall E pi y:set,
   (preimage_of E pi (Sing y) = Empty <-> y /:e image_of pi E).
@@ -187137,6 +187181,39 @@ exact ((andI
     (y /:e image_of pi E -> preimage_of E pi (Sing y) = Empty)
     (preimage_of E pi (Sing y) = Empty -> y /:e image_of pi E)
     (not_mem_image_iff_preimage_singleton_empty E pi y)))).
+Qed.
+
+(** Proven Bob **)
+Theorem preimage_empty_singleton_iff_not_mem_image :
+  forall E pi y:set,
+  (preimage_of E pi (Sing y) = Empty <-> y /:e image_of pi E).
+let E pi y.
+exact (preimage_singleton_empty_iff_not_mem_image
+  E
+  pi
+  y).
+Qed.
+
+(** Proven Bob **)
+Theorem preimage_nonempty_singleton_iff_exists_preimage_point :
+  forall E pi y:set,
+  (preimage_of E pi (Sing y) <> Empty <-> exists x:set, x :e E /\ apply_fun pi x = y).
+let E pi y.
+exact (preimage_singleton_nonempty_iff_exists_preimage_point
+  E
+  pi
+  y).
+Qed.
+
+(** Proven Bob **)
+Theorem preimage_empty_singleton_iff_no_preimage_point :
+  forall E pi y:set,
+  (preimage_of E pi (Sing y) = Empty <-> ~ (exists x:set, x :e E /\ apply_fun pi x = y)).
+let E pi y.
+exact (preimage_singleton_empty_iff_no_preimage_point
+  E
+  pi
+  y).
 Qed.
 
 (** Proven Bob **)
