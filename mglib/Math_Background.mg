@@ -192616,6 +192616,190 @@ apply andI.
     HnY).
 Qed.
 
+(** Helper: non-metrizability is invariant under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_not_metrizable_iff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ metrizable X Tx <-> ~ metrizable Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+claim Hiff :
+  metrizable X Tx <-> metrizable Y Ty.
+{
+  exact (homeomorphism_metrizable_iff
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+apply iffI.
+- assume HnX.
+  assume HmetY.
+  apply HnX.
+  exact (iffER
+    (metrizable X Tx)
+    (metrizable Y Ty)
+    Hiff
+    HmetY).
+- assume HnY.
+  assume HmetX.
+  apply HnY.
+  exact (iffEL
+    (metrizable X Tx)
+    (metrizable Y Ty)
+    Hiff
+    HmetX).
+Qed.
+
+(** Helper: non-metrizability equivalence from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_metrizable_iff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ metrizable X Tx <-> ~ metrizable Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+apply Hhex.
+let h.
+assume Hhome.
+exact (homeomorphism_not_metrizable_iff
+  X
+  Tx
+  Y
+  Ty
+  h
+  Hhome).
+Qed.
+
+(** Helper: non-metrizability transfer implications from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_metrizable_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ metrizable X Tx -> ~ metrizable Y Ty) /\
+  (~ metrizable Y Ty -> ~ metrizable X Tx).
+let X Tx Y Ty.
+assume Hhex.
+claim Hiff :
+  (~ metrizable X Tx <-> ~ metrizable Y Ty).
+{
+  exact (exists_homeomorphism_not_metrizable_iff
+    X
+    Tx
+    Y
+    Ty
+    Hhex).
+}
+apply andI.
+- assume HnX.
+  exact (iffEL
+    (~ metrizable X Tx)
+    (~ metrizable Y Ty)
+    Hiff
+    HnX).
+- assume HnY.
+  exact (iffER
+    (~ metrizable X Tx)
+    (~ metrizable Y Ty)
+    Hiff
+    HnY).
+Qed.
+
+(** Helper: non-second-countability is invariant under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_not_second_countable_space_iff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ second_countable_space X Tx <-> ~ second_countable_space Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+claim Hiff :
+  second_countable_space X Tx <-> second_countable_space Y Ty.
+{
+  exact (homeomorphism_second_countable_space_iff
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+apply iffI.
+- assume HnX.
+  assume HscY.
+  apply HnX.
+  exact (iffER
+    (second_countable_space X Tx)
+    (second_countable_space Y Ty)
+    Hiff
+    HscY).
+- assume HnY.
+  assume HscX.
+  apply HnY.
+  exact (iffEL
+    (second_countable_space X Tx)
+    (second_countable_space Y Ty)
+    Hiff
+    HscX).
+Qed.
+
+(** Helper: non-second-countability equivalence from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_second_countable_space_iff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ second_countable_space X Tx <-> ~ second_countable_space Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+apply Hhex.
+let h.
+assume Hhome.
+exact (homeomorphism_not_second_countable_space_iff
+  X
+  Tx
+  Y
+  Ty
+  h
+  Hhome).
+Qed.
+
+(** Helper: non-second-countability transfer implications from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_second_countable_space_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ second_countable_space X Tx -> ~ second_countable_space Y Ty) /\
+  (~ second_countable_space Y Ty -> ~ second_countable_space X Tx).
+let X Tx Y Ty.
+assume Hhex.
+claim Hiff :
+  (~ second_countable_space X Tx <-> ~ second_countable_space Y Ty).
+{
+  exact (exists_homeomorphism_not_second_countable_space_iff
+    X
+    Tx
+    Y
+    Ty
+    Hhex).
+}
+apply andI.
+- assume HnX.
+  exact (iffEL
+    (~ second_countable_space X Tx)
+    (~ second_countable_space Y Ty)
+    Hiff
+    HnX).
+- assume HnY.
+  exact (iffER
+    (~ second_countable_space X Tx)
+    (~ second_countable_space Y Ty)
+    Hiff
+    HnY).
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
