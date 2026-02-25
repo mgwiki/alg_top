@@ -77225,6 +77225,27 @@ exact (lemma54_2_sheet_non_switching_local_from_slices_witness
   HVzSlice).
 Qed.
 
+(** Proven Bob **)
+Theorem lemma54_2_sheet_eq_data_implies_common_sheet :
+  forall Ft q z slices Vq Vz:set,
+  apply_fun Ft q :e Vq ->
+  apply_fun Ft z :e Vz ->
+  Vq :e slices ->
+  Vz :e slices ->
+  Vz = Vq ->
+  exists V:set,
+    apply_fun Ft q :e V /\ apply_fun Ft z :e V /\ V :e slices.
+let Ft q z slices Vq Vz.
+assume HFtqVq HFtzVz HVqSlice HVzSlice HVzEqVq.
+witness Vq.
+apply andI.
+- apply andI.
+  + exact HFtqVq.
+  + rewrite <- HVzEqVq.
+    exact HFtzVz.
+- exact HVqSlice.
+Qed.
+
 Theorem lemma54_2_sheet_non_switching_local :
   forall E Te B Tb p F Ft q z N U slices Vq Vz:set,
   pairwise_disjoint slices ->
