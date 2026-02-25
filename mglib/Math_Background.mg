@@ -221281,12 +221281,42 @@ apply (thm84_4_maximal_tree_all_vertices_from_obligations
 - assume Hrhs.
   let T' ArcsT'.
   assume Htree' HTsub.
+  claim HVT : graph_vertices X Tx Arcs c= T.
+  {
+    exact (andER
+      (tree_in_graph T ArcsT X Tx Arcs)
+      (graph_vertices X Tx Arcs c= T)
+      Hrhs).
+  }
+  claim HendpointInT :
+    forall A0 p q:set,
+      A0 :e {B :e Arcs | B c= T'} ->
+      end_points_of_arc A0 (subspace_topology X Tx A0) p q ->
+      p :e T /\ q :e T.
+  {
+    let A0 p q.
+    assume HA0Sel Hend0.
+    exact (tree_in_graph_selected_arc_endpoints_in_target_from_graph_vertex_cover
+      T
+      T'
+      ArcsT'
+      X
+      Tx
+      Arcs
+      A0
+      p
+      q
+      Htree'
+      HVT
+      HA0Sel
+      Hend0).
+  }
   claim HsubsetSel :
     forall A0:set, A0 :e {B :e Arcs | B c= T'} -> A0 c= T.
   {
     (** remaining backward subgap:
-        prove selected-arc subset in T for supertree T',
-        using Hrhs, tree/subgraph endpoint structure, and HTsub. **)
+        prove selected-arc subset in T for supertree T';
+        endpoint containment in T is now available as `HendpointInT`. **)
     admit.
   }
   exact ((selected_arc_obligation_subset_implies_noncontained_contradiction
