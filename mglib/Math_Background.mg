@@ -195862,6 +195862,103 @@ exact (exists_homeomorphism_reflects_not_simply_connected_space
   X Tx Y Ty Hhex HnY).
 Qed.
 
+(** Compatibility aliases: simply-connectedness implication names with _space suffix. **)
+(** Proven Bob **)
+Theorem homeomorphism_simply_connected_space_implies :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  simply_connected X Tx ->
+  simply_connected Y Ty.
+let X Tx Y Ty f.
+assume Hhome HscX.
+exact (homeomorphism_simply_connected_implies
+  X Tx Y Ty f Hhome HscX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_simply_connected_space_of :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  simply_connected Y Ty ->
+  simply_connected X Tx.
+let X Tx Y Ty f.
+assume Hhome HscY.
+exact (homeomorphism_simply_connected_of
+  X Tx Y Ty f Hhome HscY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_simply_connected_space_implies :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  simply_connected X Tx ->
+  simply_connected Y Ty.
+let X Tx Y Ty.
+assume Hhex HscX.
+exact (exists_homeomorphism_simply_connected_implies
+  X Tx Y Ty Hhex HscX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_simply_connected_space_of :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  simply_connected Y Ty ->
+  simply_connected X Tx.
+let X Tx Y Ty.
+assume Hhex HscY.
+exact (exists_homeomorphism_simply_connected_of
+  X Tx Y Ty Hhex HscY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_not_simply_connected_space_implies :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ simply_connected X Tx ->
+  ~ simply_connected Y Ty.
+let X Tx Y Ty f.
+assume Hhome HnX.
+exact (homeomorphism_not_simply_connected_implies
+  X Tx Y Ty f Hhome HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_not_simply_connected_space_of :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ simply_connected Y Ty ->
+  ~ simply_connected X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_not_simply_connected_of
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_simply_connected_space_implies :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ simply_connected X Tx ->
+  ~ simply_connected Y Ty.
+let X Tx Y Ty.
+assume Hhex HnX.
+exact (exists_homeomorphism_not_simply_connected_implies
+  X Tx Y Ty Hhex HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_simply_connected_space_of :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ simply_connected Y Ty ->
+  ~ simply_connected X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (exists_homeomorphism_not_simply_connected_of
+  X Tx Y Ty Hhex HnY).
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
