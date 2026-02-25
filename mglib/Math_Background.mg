@@ -1,6 +1,6 @@
 (** Balance Alice 3327 **)
 (** Balance Bob 3451 **)
-(** Balance Charlie 2344 **)
+(** Balance Charlie 2282 **)
 (** Balance Dave 1793 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -224934,7 +224934,8 @@ Admitted.
 (** a nontrivial free group. If T is a maximal tree in X, the fundamental group **)
 (** has free generators in bijection with edges of X not in T. **)
 (** EFFORT: 35 lines textbook, difficulty 8/10, USD 560 **)
-(** Bounty 616 **)
+(** Bounty 678 **)
+(** Lock Charlie 1772105582 **)
 Theorem thm84_7_pi1_graph_is_free :
   forall X Tx Arcs T ArcsT x0:set,
   general_linear_graph X Tx Arcs ->
