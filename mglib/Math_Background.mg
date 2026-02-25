@@ -212453,6 +212453,158 @@ Definition maximal_tree : set -> set -> set -> set -> set -> prop :=
       tree_in_graph T' ArcsT' X Tx Arcs ->
       T c= T' -> T' = T).
 
+(** Infrastructure: destructors for tree_in_graph / maximal_tree **)
+(** Proven Bob **)
+Theorem tree_in_graph_subgraph_of :
+  forall T ArcsT X Tx Arcs:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  subgraph_of T X Tx Arcs.
+let T ArcsT X Tx Arcs.
+assume Htree.
+apply (and4E
+  (subgraph_of T X Tx Arcs)
+  (general_linear_graph T (subspace_topology X Tx T) ArcsT)
+  (connected_space T (subspace_topology X Tx T))
+  (~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)))
+  Htree).
+assume Hsub HTglg HTconn Hnoloop.
+exact Hsub.
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_general_linear_graph :
+  forall T ArcsT X Tx Arcs:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  general_linear_graph T (subspace_topology X Tx T) ArcsT.
+let T ArcsT X Tx Arcs.
+assume Htree.
+apply (and4E
+  (subgraph_of T X Tx Arcs)
+  (general_linear_graph T (subspace_topology X Tx T) ArcsT)
+  (connected_space T (subspace_topology X Tx T))
+  (~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)))
+  Htree).
+assume Hsub HTglg HTconn Hnoloop.
+exact HTglg.
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_connected :
+  forall T ArcsT X Tx Arcs:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  connected_space T (subspace_topology X Tx T).
+let T ArcsT X Tx Arcs.
+assume Htree.
+apply (and4E
+  (subgraph_of T X Tx Arcs)
+  (general_linear_graph T (subspace_topology X Tx T) ArcsT)
+  (connected_space T (subspace_topology X Tx T))
+  (~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)))
+  Htree).
+assume Hsub HTglg HTconn Hnoloop.
+exact HTconn.
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_no_closed_reduced_edge_path :
+  forall T ArcsT X Tx Arcs:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  ~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)).
+let T ArcsT X Tx Arcs.
+assume Htree.
+apply (and4E
+  (subgraph_of T X Tx Arcs)
+  (general_linear_graph T (subspace_topology X Tx T) ArcsT)
+  (connected_space T (subspace_topology X Tx T))
+  (~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)))
+  Htree).
+assume Hsub HTglg HTconn Hnoloop.
+exact Hnoloop.
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_tree_in_graph :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  tree_in_graph T ArcsT X Tx Arcs.
+let T ArcsT X Tx Arcs.
+assume Hmax.
+apply (andEL
+  (tree_in_graph T ArcsT X Tx Arcs)
+  (forall T' ArcsT':set,
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' -> T' = T)
+  Hmax).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_inclusion_eq :
+  forall T ArcsT T' ArcsT' X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  T c= T' ->
+  T' = T.
+let T ArcsT T' ArcsT' X Tx Arcs.
+assume Hmax HT' Hsub.
+exact ((andER
+  (tree_in_graph T ArcsT X Tx Arcs)
+  (forall U ArcsU:set,
+    tree_in_graph U ArcsU X Tx Arcs ->
+    T c= U -> U = T)
+  Hmax)
+  T'
+  ArcsT'
+  HT'
+  Hsub).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_subset_X :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  T c= X.
+let T ArcsT X Tx Arcs.
+assume Hmax.
+exact (subgraph_of_subset
+  T
+  X
+  Tx
+  Arcs
+  (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    (maximal_tree_tree_in_graph
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      Hmax))).
+Qed.
+
 (** from S84 Lem 84.1 (line 5563 in algtop.tex): connected iff edge paths **)
 (** LATEX VERSION: A graph X is connected iff every pair of vertices can be **)
 (** joined by an edge path. **)
