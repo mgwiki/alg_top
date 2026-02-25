@@ -227889,6 +227889,126 @@ claim HAsubTA : A c= (T :\/: A).
     T
     A).
 }
+claim HunionTA : (T :\/: A) = Union ({A} :\/: ArcsT).
+{
+  apply set_ext.
+  - let x.
+    assume HxTA.
+    apply (binunionE
+      T
+      A
+      x
+      HxTA).
+    + assume HxT.
+      claim HxUT : x :e Union ArcsT.
+      {
+        exact (mem_eqR
+          x
+          T
+          (Union ArcsT)
+          HunionT
+          HxT).
+      }
+      apply (UnionE
+        ArcsT
+        x
+        HxUT).
+      let E.
+      assume HxEpack.
+      exact (UnionI
+        ({A} :\/: ArcsT)
+        x
+        E
+        (andEL
+          (x :e E)
+          (E :e ArcsT)
+          HxEpack)
+        (binunionI2
+          {A}
+          ArcsT
+          E
+          (andER
+            (x :e E)
+            (E :e ArcsT)
+            HxEpack))).
+    + assume HxA.
+      exact (UnionI
+        ({A} :\/: ArcsT)
+        x
+        A
+        HxA
+        (binunionI1
+          {A}
+          ArcsT
+          A
+          (SingI A))).
+  - let x.
+    assume HxU.
+    apply (UnionE
+      ({A} :\/: ArcsT)
+      x
+      HxU).
+    let E.
+    assume HxEpack.
+    claim HxE : x :e E.
+    {
+      exact (andEL
+        (x :e E)
+        (E :e {A} :\/: ArcsT)
+        HxEpack).
+    }
+    claim HEfam : E :e {A} :\/: ArcsT.
+    {
+      exact (andER
+        (x :e E)
+        (E :e {A} :\/: ArcsT)
+        HxEpack).
+    }
+    apply (binunionE
+      {A}
+      ArcsT
+      E
+      HEfam).
+    + assume HEA.
+      claim HEqA : E = A.
+      {
+        exact (SingE
+          A
+          E
+          HEA).
+      }
+      exact (binunionI2
+        T
+        A
+        x
+        (mem_eqR
+          x
+          E
+          A
+          HEqA
+          HxE)).
+    + assume HEArcsT.
+      claim HESubT : E c= T.
+      {
+        exact (andEL
+          (E c= T)
+          (arc E (subspace_topology T (subspace_topology X Tx T) E))
+          (general_linear_graph_arc_data
+            T
+            (subspace_topology X Tx T)
+            ArcsT
+            E
+            HglgT
+            HEArcsT)).
+      }
+      exact (binunionI1
+        T
+        A
+        x
+        (HESubT
+          x
+          HxE)).
+}
 (** Remaining work: verify the four remaining general_linear_graph clauses for
     family `{A} :\/: ArcsT` over carrier `T :\/: A`
     (arc-membership clause, union-of-family, pairwise intersection endpoint
