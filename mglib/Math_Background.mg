@@ -155224,7 +155224,6 @@ Opaque Pi.
 
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 201 **)
-(** Lock Alice 1771991764 **)
 Theorem thm67_4_existence_external_direct_sum :
   forall J Gfam multfam efam invfam:set,
   (forall alpha:set, alpha :e J ->
@@ -157512,7 +157511,6 @@ Qed.
 (** holds, then each i_alpha is a monomorphism and G is the direct sum. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
 (** Bounty 134 **)
-(** Lock Alice 1771991764 **)
 Theorem lemma67_5_extension_external :
   forall G multG eG invG J Gfam multfam ifam:set,
   abelian_group G multG eG invG ->
@@ -205328,6 +205326,81 @@ exact (andER
     B
     Tb
     Huniv)).
+Qed.
+
+(** Proven Bob **)
+Theorem universal_covering_implies_base_nonempty :
+  forall B Tb:set,
+  (exists E Te p:set,
+    covering_map E Te B Tb p /\ simply_connected E Te) ->
+  exists b0:set, b0 :e B.
+let B Tb.
+assume Huniv.
+apply Huniv.
+let E.
+assume HETePack.
+apply HETePack.
+let Te.
+assume HTepPack.
+apply HTepPack.
+let p.
+assume Hpack.
+claim Hcov : covering_map E Te B Tb p.
+{
+  exact (andEL
+    (covering_map E Te B Tb p)
+    (simply_connected E Te)
+    Hpack).
+}
+claim HsimpE : simply_connected E Te.
+{
+  exact (andER
+    (covering_map E Te B Tb p)
+    (simply_connected E Te)
+    Hpack).
+}
+claim Hcont : continuous_map E Te B Tb p.
+{
+  apply (and3E
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    (forall b:set, b :e B ->
+      exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+    Hcov).
+  assume Hcont0 Hsurj0 Hloc0.
+  exact Hcont0.
+}
+claim Hfun : function_on p E B.
+{
+  exact (continuous_map_function_on
+    E
+    Te
+    B
+    Tb
+    p
+    Hcont).
+}
+claim Hx0Ex : exists x0:set, x0 :e E /\
+  fundamental_group E Te x0 = {fundamental_group_id E Te x0}.
+{
+  exact (andER
+    (path_connected_space E Te)
+    (exists x0:set, x0 :e E /\
+      fundamental_group E Te x0 = {fundamental_group_id E Te x0})
+    HsimpE).
+}
+apply Hx0Ex.
+let x0.
+assume Hx0Pack.
+claim Hx0E : x0 :e E.
+{
+  exact (andEL
+    (x0 :e E)
+    (fundamental_group E Te x0 = {fundamental_group_id E Te x0})
+    Hx0Pack).
+}
+witness (apply_fun p x0).
+exact (Hfun x0 Hx0E).
 Qed.
 
 (** Proven Bob **)
