@@ -199859,6 +199859,102 @@ exact (exists_homeomorphism_preserves_not_simply_connected_left
   X Tx Y Ty Hhex HnY).
 Qed.
 
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_locally_compact_space_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ locally_compact X Tx ->
+  ~ locally_compact Y Ty.
+let X Tx Y Ty f.
+assume Hhome HnX.
+exact (homeomorphism_preserves_not_locally_compact_right
+  X Tx Y Ty f Hhome HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_locally_compact_space_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ locally_compact Y Ty ->
+  ~ locally_compact X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_preserves_not_locally_compact_left
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_metrizable_space_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ metrizable X Tx ->
+  ~ metrizable Y Ty.
+let X Tx Y Ty f.
+assume Hhome HnX.
+exact (homeomorphism_preserves_not_metrizable_right
+  X Tx Y Ty f Hhome HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_metrizable_space_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ metrizable Y Ty ->
+  ~ metrizable X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_preserves_not_metrizable_left
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_locally_compact_space_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ locally_compact X Tx ->
+  ~ locally_compact Y Ty.
+let X Tx Y Ty.
+assume Hhex HnX.
+exact (exists_homeomorphism_preserves_not_locally_compact_right
+  X Tx Y Ty Hhex HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_locally_compact_space_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ locally_compact Y Ty ->
+  ~ locally_compact X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (exists_homeomorphism_preserves_not_locally_compact_left
+  X Tx Y Ty Hhex HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_metrizable_space_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ metrizable X Tx ->
+  ~ metrizable Y Ty.
+let X Tx Y Ty.
+assume Hhex HnX.
+exact (exists_homeomorphism_preserves_not_metrizable_right
+  X Tx Y Ty Hhex HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_metrizable_space_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ metrizable Y Ty ->
+  ~ metrizable X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (exists_homeomorphism_preserves_not_metrizable_left
+  X Tx Y Ty Hhex HnY).
+Qed.
+
 (** Short-name compatibility aliases for negated connected/Hausdorff/countable families. **)
 (** Proven Bob **)
 Theorem homeomorphism_preserves_not_connected_right :
