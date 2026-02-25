@@ -225272,6 +225272,128 @@ exact (thm84_4_forward_component_witness_from_component_obligations
 Qed.
 
 (** Proven Bob **)
+Theorem thm84_4_forward_tree_extension_obligation_family_from_component_obligation_families :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT)) ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A))) ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    ~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT) n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0))) ->
+  forall A:set, A :e Arcs -> ~(A c= T) ->
+    (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+    tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
+let T ArcsT X Tx Arcs.
+assume Hmax HmeetFam HglgFam HconnFam HnoloopFam.
+let A.
+assume HA Hnsub Hmeet.
+exact (lemma84_2_tree_extension_from_hypotheses_and_components
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax)
+  HA
+  Hnsub
+  Hmeet
+  (HglgFam A HA Hnsub)
+  (HconnFam A HA Hnsub)
+  (HnoloopFam A HA Hnsub)).
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_forward_tree_extension_obligation_family_from_stub_component_obligation_families :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  (forall A:set, maximal_tree T ArcsT X Tx Arcs -> A :e Arcs -> ~(A c= T) ->
+    exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  (forall A:set, maximal_tree T ArcsT X Tx Arcs -> A :e Arcs -> ~(A c= T) ->
+    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT)) ->
+  (forall A:set, maximal_tree T ArcsT X Tx Arcs -> A :e Arcs -> ~(A c= T) ->
+    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A))) ->
+  (forall A:set, maximal_tree T ArcsT X Tx Arcs -> A :e Arcs -> ~(A c= T) ->
+    ~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT) n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0))) ->
+  forall A:set, A :e Arcs -> ~(A c= T) ->
+    (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+    tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
+let T ArcsT X Tx Arcs.
+assume Hmax HmeetStub HglgStub HconnStub HnoloopStub.
+exact (thm84_4_forward_tree_extension_obligation_family_from_component_obligation_families
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hmax
+  (fun A HA Hnsub => HmeetStub A Hmax HA Hnsub)
+  (fun A HA Hnsub => HglgStub A Hmax HA Hnsub)
+  (fun A HA Hnsub => HconnStub A Hmax HA Hnsub)
+  (fun A HA Hnsub => HnoloopStub A Hmax HA Hnsub)).
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_forward_vertices_from_component_obligation_families_via_meeting_and_tree_extension :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT)) ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A))) ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    ~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT) n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0))) ->
+  graph_vertices X Tx Arcs c= T.
+let T ArcsT X Tx Arcs.
+assume Hmax HmeetFam HglgFam HconnFam HnoloopFam.
+exact (thm84_4_forward_vertices_from_meeting_and_tree_extension_obligation_family
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hmax
+  HmeetFam
+  (thm84_4_forward_tree_extension_obligation_family_from_component_obligation_families
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax
+    HmeetFam
+    HglgFam
+    HconnFam
+    HnoloopFam)).
+Qed.
+
+(** Proven Bob **)
 Theorem thm84_4_forward_vertices_from_stub_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
