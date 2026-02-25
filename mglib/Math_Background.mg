@@ -194227,6 +194227,226 @@ exact (iffER
   HnY).
 Qed.
 
+(** Helper aliases: implication forms for local compactness wrappers. **)
+(** Proven Bob **)
+Theorem homeomorphism_locally_compact_implies :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  locally_compact X Tx ->
+  locally_compact Y Ty.
+let X Tx Y Ty f.
+assume Hhome HlocX.
+exact (homeomorphism_preserves_locally_compact_right
+  X Tx Y Ty f Hhome HlocX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_locally_compact_of :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  locally_compact Y Ty ->
+  locally_compact X Tx.
+let X Tx Y Ty f.
+assume Hhome HlocY.
+exact (homeomorphism_preserves_locally_compact
+  X Tx Y Ty f Hhome HlocY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_locally_compact_implies :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  locally_compact X Tx ->
+  locally_compact Y Ty.
+let X Tx Y Ty.
+assume Hhex HlocX.
+exact (iffEL
+  (locally_compact X Tx)
+  (locally_compact Y Ty)
+  (exists_homeomorphism_locally_compact_iff X Tx Y Ty Hhex)
+  HlocX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_locally_compact_of :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  locally_compact Y Ty ->
+  locally_compact X Tx.
+let X Tx Y Ty.
+assume Hhex HlocY.
+exact (iffER
+  (locally_compact X Tx)
+  (locally_compact Y Ty)
+  (exists_homeomorphism_locally_compact_iff X Tx Y Ty Hhex)
+  HlocY).
+Qed.
+
+(** Helper aliases: implication forms for regularity wrappers. **)
+(** Proven Bob **)
+Theorem homeomorphism_regular_space_implies :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  regular_space X Tx ->
+  regular_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HregX.
+exact (homeomorphism_preserves_regular_right
+  X Tx Y Ty f Hhome HregX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_regular_space_of :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  regular_space Y Ty ->
+  regular_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HregY.
+exact (homeomorphism_preserves_regular
+  X Tx Y Ty f Hhome HregY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_regular_space_implies :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  regular_space X Tx ->
+  regular_space Y Ty.
+let X Tx Y Ty.
+assume Hhex HregX.
+exact (iffEL
+  (regular_space X Tx)
+  (regular_space Y Ty)
+  (exists_homeomorphism_regular_space_iff X Tx Y Ty Hhex)
+  HregX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_regular_space_of :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  regular_space Y Ty ->
+  regular_space X Tx.
+let X Tx Y Ty.
+assume Hhex HregY.
+exact (iffER
+  (regular_space X Tx)
+  (regular_space Y Ty)
+  (exists_homeomorphism_regular_space_iff X Tx Y Ty Hhex)
+  HregY).
+Qed.
+
+(** Helper aliases: implication forms for normality wrappers. **)
+(** Proven Bob **)
+Theorem homeomorphism_normal_space_implies :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  normal_space X Tx ->
+  normal_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HnormX.
+exact (homeomorphism_preserves_normal_right
+  X Tx Y Ty f Hhome HnormX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_normal_space_of :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  normal_space Y Ty ->
+  normal_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnormY.
+exact (homeomorphism_preserves_normal
+  X Tx Y Ty f Hhome HnormY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_normal_space_implies :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  normal_space X Tx ->
+  normal_space Y Ty.
+let X Tx Y Ty.
+assume Hhex HnormX.
+exact (iffEL
+  (normal_space X Tx)
+  (normal_space Y Ty)
+  (exists_homeomorphism_normal_space_iff X Tx Y Ty Hhex)
+  HnormX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_normal_space_of :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  normal_space Y Ty ->
+  normal_space X Tx.
+let X Tx Y Ty.
+assume Hhex HnormY.
+exact (iffER
+  (normal_space X Tx)
+  (normal_space Y Ty)
+  (exists_homeomorphism_normal_space_iff X Tx Y Ty Hhex)
+  HnormY).
+Qed.
+
+(** Helper aliases: implication forms for complete-regularity wrappers. **)
+(** Proven Bob **)
+Theorem homeomorphism_completely_regular_space_implies :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  completely_regular_space X Tx ->
+  completely_regular_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HcrX.
+exact (homeomorphism_preserves_completely_regular_right
+  X Tx Y Ty f Hhome HcrX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_completely_regular_space_of :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  completely_regular_space Y Ty ->
+  completely_regular_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HcrY.
+exact (homeomorphism_preserves_completely_regular
+  X Tx Y Ty f Hhome HcrY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_completely_regular_space_implies :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  completely_regular_space X Tx ->
+  completely_regular_space Y Ty.
+let X Tx Y Ty.
+assume Hhex HcrX.
+exact (iffEL
+  (completely_regular_space X Tx)
+  (completely_regular_space Y Ty)
+  (exists_homeomorphism_completely_regular_space_iff X Tx Y Ty Hhex)
+  HcrX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_completely_regular_space_of :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  completely_regular_space Y Ty ->
+  completely_regular_space X Tx.
+let X Tx Y Ty.
+assume Hhex HcrY.
+exact (iffER
+  (completely_regular_space X Tx)
+  (completely_regular_space Y Ty)
+  (exists_homeomorphism_completely_regular_space_iff X Tx Y Ty Hhex)
+  HcrY).
+Qed.
+
 (** Helper aliases: implication forms for path-connectedness wrappers. **)
 (** Proven Bob **)
 Theorem homeomorphism_path_connected_space_implies :
