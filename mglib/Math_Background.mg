@@ -1,6 +1,6 @@
 (** Balance Alice 3327 **)
 (** Balance Bob 3451 **)
-(** Balance Charlie 2135 **)
+(** Balance Charlie 2124 **)
 (** Balance Dave 1793 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -200817,7 +200817,8 @@ Qed.
 (** LATEX VERSION: Let p: E -> B be covering with E simply connected. Given any **)
 (** covering map r: Y -> B, there is a covering map q: E -> Y such that r o q = p. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
+(** Bounty 121 **)
+(** Lock Charlie 1772073000 **)
 Theorem thm80_3_universal_covers_everything :
   forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
