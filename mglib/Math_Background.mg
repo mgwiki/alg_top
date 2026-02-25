@@ -212828,6 +212828,317 @@ apply HtEndpoint.
   reflexivity.
 Qed.
 
+(** Proven Charlie **)
+(** helper: in a general linear graph, an arc meets other arcs only in finitely many points (in fact, at most two). **)
+Theorem general_linear_graph_arc_overlap_points_finite :
+  forall X Tx Arcs E:set,
+  general_linear_graph X Tx Arcs ->
+  E :e Arcs ->
+  finite {p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}.
+let X Tx Arcs E.
+assume Hglg HEArcs.
+claim HtopX : topology_on X Tx.
+{
+  exact (general_linear_graph_topology_on
+    X
+    Tx
+    Arcs
+    Hglg).
+}
+claim HEdata : E c= X /\ arc E (subspace_topology X Tx E).
+{
+  exact (general_linear_graph_arc_data
+    X
+    Tx
+    Arcs
+    E
+    Hglg
+    HEArcs).
+}
+claim HEsubX : E c= X.
+{
+  exact (andEL
+    (E c= X)
+    (arc E (subspace_topology X Tx E))
+    HEdata).
+}
+claim HarcE : arc E (subspace_topology X Tx E).
+{
+  exact (andER
+    (E c= X)
+    (arc E (subspace_topology X Tx E))
+    HEdata).
+}
+apply HarcE.
+let f.
+assume Hhome.
+set Endpts := UPair (apply_fun f 0) (apply_fun f 1).
+claim HsubEndpts :
+  {p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F} c= Endpts.
+{
+  let p.
+  assume HpOver.
+  claim HpE : p :e E.
+  {
+    exact (SepE1
+      E
+      (fun p0:set => exists F:set, F :e Arcs /\ F <> E /\ p0 :e F)
+      p
+      HpOver).
+  }
+  claim HpEx : exists F:set, F :e Arcs /\ F <> E /\ p :e F.
+  {
+    exact (SepE2
+      E
+      (fun p0:set => exists F:set, F :e Arcs /\ F <> E /\ p0 :e F)
+      p
+      HpOver).
+  }
+  apply HpEx.
+  let F.
+  assume HFpack.
+  claim HFleft : F :e Arcs /\ F <> E.
+  {
+    exact (andEL
+      (F :e Arcs /\ F <> E)
+      (p :e F)
+      HFpack).
+  }
+  claim HFArcs : F :e Arcs.
+  {
+    exact (andEL
+      (F :e Arcs)
+      (F <> E)
+      HFleft).
+  }
+  claim HFneq : F <> E.
+  {
+    exact (andER
+      (F :e Arcs)
+      (F <> E)
+      HFleft).
+  }
+  claim HpF : p :e F.
+  {
+    exact (andER
+      (F :e Arcs /\ F <> E)
+      (p :e F)
+      HFpack).
+  }
+  claim Hcase : E :/\: F = Empty \/
+    (exists p0:set, E :/\: F = Sing p0 /\
+      (exists q:set, end_points_of_arc E (subspace_topology X Tx E) p0 q \/
+                     end_points_of_arc E (subspace_topology X Tx E) q p0) /\
+      (exists r:set, end_points_of_arc F (subspace_topology X Tx F) p0 r \/
+                     end_points_of_arc F (subspace_topology X Tx F) r p0)).
+  {
+    exact (general_linear_graph_arc_intersection_case
+      X
+      Tx
+      Arcs
+      E
+      F
+      Hglg
+      HEArcs
+      HFArcs
+      (neq_i_sym
+        F
+        E
+        HFneq)).
+  }
+  apply Hcase.
+  - assume HinterEmpty.
+    claim HpInter : p :e E :/\: F.
+    {
+      exact (binintersectI
+        E
+        F
+        p
+        HpE
+        HpF).
+    }
+    claim HpEmpty : p :e Empty.
+    {
+      exact (mem_eqR
+        p
+        (E :/\: F)
+        Empty
+        HinterEmpty
+        HpInter).
+    }
+    claim Hfalse : False.
+    {
+      exact (EmptyE p HpEmpty).
+    }
+    exact (FalseE
+      Hfalse
+      (p :e Endpts)).
+  - assume HexP.
+    apply HexP.
+    let p0.
+    assume Hp0pack.
+    claim Hp0left :
+      (E :/\: F = Sing p0) /\
+      (exists q:set, end_points_of_arc E (subspace_topology X Tx E) p0 q \/
+                     end_points_of_arc E (subspace_topology X Tx E) q p0).
+    {
+      exact (andEL
+        ((E :/\: F = Sing p0) /\
+         (exists q:set, end_points_of_arc E (subspace_topology X Tx E) p0 q \/
+                        end_points_of_arc E (subspace_topology X Tx E) q p0))
+        (exists r:set, end_points_of_arc F (subspace_topology X Tx F) p0 r \/
+                       end_points_of_arc F (subspace_topology X Tx F) r p0)
+        Hp0pack).
+    }
+    claim HEFsing : E :/\: F = Sing p0.
+    {
+      exact (andEL
+        (E :/\: F = Sing p0)
+        (exists q:set, end_points_of_arc E (subspace_topology X Tx E) p0 q \/
+                       end_points_of_arc E (subspace_topology X Tx E) q p0)
+        Hp0left).
+    }
+    claim HepE : exists q:set,
+      end_points_of_arc E (subspace_topology X Tx E) p0 q \/
+      end_points_of_arc E (subspace_topology X Tx E) q p0.
+    {
+      exact (andER
+        (E :/\: F = Sing p0)
+        (exists q:set, end_points_of_arc E (subspace_topology X Tx E) p0 q \/
+                       end_points_of_arc E (subspace_topology X Tx E) q p0)
+        Hp0left).
+    }
+    claim Hp0eq : p = p0.
+    {
+      claim HpInter : p :e E :/\: F.
+      {
+        exact (binintersectI
+          E
+          F
+          p
+          HpE
+          HpF).
+      }
+      claim HpSing : p :e Sing p0.
+      {
+        exact (mem_eqR
+          p
+          (E :/\: F)
+          (Sing p0)
+          HEFsing
+          HpInter).
+      }
+      exact (SingE
+        p0
+        p
+        HpSing).
+    }
+    apply HepE.
+    let q.
+    assume HqOr.
+    claim HconnEp0 :
+      connected_space (E :\: (Sing p0))
+        (subspace_topology E (subspace_topology X Tx E) (E :\: (Sing p0))).
+    {
+      apply HqOr.
+      - assume Hep.
+        apply (and6E
+          (arc E (subspace_topology X Tx E))
+          (p0 :e E)
+          (q :e E)
+          (p0 <> q)
+          (connected_space (E :\: (Sing p0))
+            (subspace_topology E (subspace_topology X Tx E) (E :\: (Sing p0))))
+          (connected_space (E :\: (Sing q))
+            (subspace_topology E (subspace_topology X Tx E) (E :\: (Sing q))))
+          Hep).
+        assume HarcE' Hp0E' HqE' Hp0neq Hconnp0 Hconnq.
+        exact Hconnp0.
+      - assume Hep.
+        apply (and6E
+          (arc E (subspace_topology X Tx E))
+          (q :e E)
+          (p0 :e E)
+          (q <> p0)
+          (connected_space (E :\: (Sing q))
+            (subspace_topology E (subspace_topology X Tx E) (E :\: (Sing q))))
+          (connected_space (E :\: (Sing p0))
+            (subspace_topology E (subspace_topology X Tx E) (E :\: (Sing p0))))
+          Hep).
+        assume HarcE' HqE' Hp0E' Hqneq Hconnq Hconnp0.
+        exact Hconnp0.
+    }
+    claim Hp0E : p0 :e E.
+    {
+      apply HqOr.
+      - assume Hep.
+        apply (and6E
+          (arc E (subspace_topology X Tx E))
+          (p0 :e E)
+          (q :e E)
+          (p0 <> q)
+          (connected_space (E :\: (Sing p0))
+            (subspace_topology E (subspace_topology X Tx E) (E :\: (Sing p0))))
+          (connected_space (E :\: (Sing q))
+            (subspace_topology E (subspace_topology X Tx E) (E :\: (Sing q))))
+          Hep).
+        assume HarcE' Hp0E' HqE' Hp0neq Hconnp0 Hconnq.
+        exact Hp0E'.
+      - assume Hep.
+        apply (and6E
+          (arc E (subspace_topology X Tx E))
+          (q :e E)
+          (p0 :e E)
+          (q <> p0)
+          (connected_space (E :\: (Sing q))
+            (subspace_topology E (subspace_topology X Tx E) (E :\: (Sing q))))
+          (connected_space (E :\: (Sing p0))
+            (subspace_topology E (subspace_topology X Tx E) (E :\: (Sing p0))))
+          Hep).
+        assume HarcE' HqE' Hp0E' Hqneq Hconnq Hconnp0.
+        exact Hp0E'.
+    }
+    claim Hp0End : p0 = apply_fun f 0 \/ p0 = apply_fun f 1.
+    {
+      exact (homeomorphism_unit_interval_connected_complement_implies_endpoint
+        E
+        (subspace_topology X Tx E)
+        f
+        p0
+        Hhome
+        Hp0E
+        HconnEp0).
+    }
+    claim Hp0Endpts : p0 :e Endpts.
+    {
+      apply Hp0End.
+      - assume HpEq0.
+        rewrite HpEq0.
+        exact (UPairI1
+          (apply_fun f 0)
+          (apply_fun f 1)).
+      - assume HpEq1.
+        rewrite HpEq1.
+        exact (UPairI2
+          (apply_fun f 0)
+          (apply_fun f 1)).
+    }
+    exact (eq_subst_mem
+      p
+      p0
+      Endpts
+      Hp0eq
+      Hp0Endpts).
+}
+exact (Subq_finite
+  Endpts
+  (finite_UPair
+    (apply_fun f 0)
+    (apply_fun f 1))
+  {p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}
+  HsubEndpts).
+Qed.
+
 (** from S83 Lem 83.1 (line 5470 in algtop.tex): linear graphs are normal **)
 (** LATEX VERSION: Every linear graph X is Hausdorff; in fact, it is normal. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
