@@ -219277,6 +219277,87 @@ apply iffI.
 Qed.
 
 (** Proven Bob **)
+Theorem maximal_tree_single_vertex_edge_component_extension_forces_subset :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  A :e Arcs ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) ->
+  connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) ->
+  ~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+        ({A} :\/: ArcsT) n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)) ->
+  A c= T.
+let T ArcsT X Tx Arcs A.
+assume Hmax HA Hmeet HglgTA HconnTA HnoloopTA.
+apply (xm (A c= T)).
+- assume HAsubT.
+  exact HAsubT.
+- assume Hnsub.
+  exact (FalseE
+    (maximal_tree_single_vertex_noncontained_edge_component_extension_contradiction
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      A
+      Hmax
+      HA
+      Hnsub
+      Hmeet
+      HglgTA
+      HconnTA
+      HnoloopTA)
+    (A c= T)).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_single_vertex_vertex_outside_not_in_edge_from_component_extension :
+  forall T ArcsT X Tx Arcs x A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  x :e graph_vertices X Tx Arcs ->
+  x /:e T ->
+  A :e Arcs ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) ->
+  connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) ->
+  ~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+        ({A} :\/: ArcsT) n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)) ->
+  ~ (x :e A).
+let T ArcsT X Tx Arcs x A.
+assume Hmax HxVert HxNotT HA Hmeet HglgTA HconnTA HnoloopTA.
+assume HxA.
+claim HAsubT : A c= T.
+{
+  exact (maximal_tree_single_vertex_edge_component_extension_forces_subset
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    A
+    Hmax
+    HA
+    Hmeet
+    HglgTA
+    HconnTA
+    HnoloopTA).
+}
+exact (HxNotT
+  (HAsubT
+    x
+    HxA)).
+Qed.
+
+(** Proven Bob **)
 Theorem maximal_tree_single_vertex_edge_tree_extension_forces_edge_subset :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
