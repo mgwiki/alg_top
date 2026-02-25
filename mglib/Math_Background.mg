@@ -220170,6 +220170,74 @@ apply andI.
         Hvpack))).
 Qed.
 
+(** Proven Bob **)
+Theorem maximal_tree_tree_extension_forces_subset :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs ->
+  A c= T.
+let T ArcsT X Tx Arcs A.
+assume Hmax HtreeExt.
+claim HunionEqT : T :\/: A = T.
+{
+  exact (maximal_tree_inclusion_eq
+    T
+    ArcsT
+    (T :\/: A)
+    ({A} :\/: ArcsT)
+    X
+    Tx
+    Arcs
+    Hmax
+    HtreeExt
+    (binunion_Subq_1
+      T
+      A)).
+}
+let x.
+assume HxA.
+claim HxUnion : x :e T :\/: A.
+{
+  exact (binunionI2
+    T
+    A
+    x
+    HxA).
+}
+exact (mem_eqR
+  x
+  (T :\/: A)
+  T
+  HunionEqT
+  HxUnion).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_edge_meeting_tree_forces_subset_from_extension_obligation :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  A :e Arcs ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  (~(A c= T) ->
+    tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs) ->
+  A c= T.
+let T ArcsT X Tx Arcs A.
+assume Hmax HA Hmeet Hext.
+apply (xm (A c= T)).
+- assume HAsubT.
+  exact HAsubT.
+- assume Hnsub.
+  exact (maximal_tree_tree_extension_forces_subset
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    A
+    Hmax
+    (Hext Hnsub)).
+Qed.
+
 Theorem maximal_tree_edge_meeting_tree_forces_subset :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
