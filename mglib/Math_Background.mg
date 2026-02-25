@@ -191126,6 +191126,50 @@ apply iffI.
     HpcY).
 Qed.
 
+(** Helper: path connectedness equivalence under homeomorphism (reversed orientation). **)
+(** Proven Bob **)
+Theorem homeomorphism_path_connected_space_iff_rev :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (path_connected_space Y Ty <-> path_connected_space X Tx).
+let X Tx Y Ty f.
+assume Hhome.
+exact (iff_sym
+  (path_connected_space X Tx)
+  (path_connected_space Y Ty)
+  (homeomorphism_path_connected_space_iff X Tx Y Ty f Hhome)).
+Qed.
+
+(** Helper: package both transfer directions as a conjunction. **)
+(** Proven Bob **)
+Theorem homeomorphism_path_connected_space_transfer :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (path_connected_space X Tx -> path_connected_space Y Ty) /\
+  (path_connected_space Y Ty -> path_connected_space X Tx).
+let X Tx Y Ty f.
+assume Hhome.
+apply andI.
+- assume HpcX.
+  exact (homeomorphism_preserves_path_connected_space_right
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome
+    HpcX).
+- assume HpcY.
+  exact (homeomorphism_preserves_path_connected_space_left
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome
+    HpcY).
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
