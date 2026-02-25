@@ -184684,6 +184684,25 @@ exact ((andER
 Qed.
 
 (** Proven Bob **)
+Theorem surjective_map_of_function_on_and_image_whole :
+  forall E X pi:set,
+  function_on pi E X ->
+  image_of pi E = X ->
+  surjective_map E X pi.
+let E X pi.
+assume Hfun HimgEq.
+exact (function_on_and_image_whole_implies_surjective_map
+  E
+  X
+  pi
+  (andI
+    (function_on pi E X)
+    (image_of pi E = X)
+    Hfun
+    HimgEq)).
+Qed.
+
+(** Proven Bob **)
 Theorem quotient_map_iff_topology_function_and_image_whole :
   forall E Te X pi:set,
   quotient_map E Te X pi <->
@@ -184959,13 +184978,51 @@ apply iffI.
         Hfun
         Hpre)).
   }
-  exact (quotient_map_of_topology_on_and_surjective_map
-    E
-    Te
-    X
+	  exact (quotient_map_of_topology_on_and_surjective_map
+	    E
+	    Te
+	    X
     pi
     HtopE
-    Hsurj).
+	    Hsurj).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_implies_topology_function_and_preimage_nonempty_singleton :
+  forall E Te X pi:set,
+  quotient_map E Te X pi ->
+  topology_on E Te /\ function_on pi E X /\
+    (forall y:set, y :e X -> preimage_of E pi (Sing y) <> Empty).
+let E Te X pi.
+assume Hquot.
+exact ((andEL
+  (quotient_map E Te X pi ->
+    topology_on E Te /\ function_on pi E X /\
+      (forall y:set, y :e X -> preimage_of E pi (Sing y) <> Empty))
+  ((topology_on E Te /\ function_on pi E X /\
+      (forall y:set, y :e X -> preimage_of E pi (Sing y) <> Empty)) ->
+    quotient_map E Te X pi)
+  (quotient_map_iff_topology_function_and_preimage_nonempty_singleton E Te X pi))
+  Hquot).
+Qed.
+
+(** Proven Bob **)
+Theorem topology_function_and_preimage_nonempty_singleton_implies_quotient_map :
+  forall E Te X pi:set,
+  topology_on E Te /\ function_on pi E X /\
+    (forall y:set, y :e X -> preimage_of E pi (Sing y) <> Empty) ->
+  quotient_map E Te X pi.
+let E Te X pi.
+assume Hpack.
+exact ((andER
+  (quotient_map E Te X pi ->
+    topology_on E Te /\ function_on pi E X /\
+      (forall y:set, y :e X -> preimage_of E pi (Sing y) <> Empty))
+  ((topology_on E Te /\ function_on pi E X /\
+      (forall y:set, y :e X -> preimage_of E pi (Sing y) <> Empty)) ->
+    quotient_map E Te X pi)
+  (quotient_map_iff_topology_function_and_preimage_nonempty_singleton E Te X pi))
+  Hpack).
 Qed.
 
 (** Proven Bob **)
