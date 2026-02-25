@@ -211093,6 +211093,105 @@ exact (SepI
 Qed.
 
 (** Proven Bob **)
+Theorem graph_vertices_selected_has_arc_in_selected :
+  forall X Tx Arcs Y x:set,
+  x :e graph_vertices X Tx {B :e Arcs | B c= Y} ->
+  exists A:set, A :e {B :e Arcs | B c= Y} /\ x :e A.
+let X Tx Arcs Y x.
+assume HxSel.
+exact (graph_vertices_member_in_some_arc
+  X
+  Tx
+  {B :e Arcs | B c= Y}
+  x
+  HxSel).
+Qed.
+
+(** Proven Bob **)
+Theorem graph_vertices_selected_has_arc_in_arcs :
+  forall X Tx Arcs Y x:set,
+  x :e graph_vertices X Tx {B :e Arcs | B c= Y} ->
+  exists A:set, A :e Arcs /\ x :e A.
+let X Tx Arcs Y x.
+assume HxSel.
+apply (graph_vertices_selected_has_arc_in_selected
+  X
+  Tx
+  Arcs
+  Y
+  x
+  HxSel).
+let A.
+assume HApack.
+witness A.
+apply andI.
+- exact (SepE1
+    Arcs
+    (fun B:set => B c= Y)
+    A
+    (andEL
+      (A :e {B :e Arcs | B c= Y})
+      (x :e A)
+      HApack)).
+- exact (andER
+    (A :e {B :e Arcs | B c= Y})
+    (x :e A)
+    HApack).
+Qed.
+
+(** Proven Bob **)
+Theorem graph_vertices_selected_endpoint_witness :
+  forall X Tx Arcs Y x:set,
+  x :e graph_vertices X Tx {B :e Arcs | B c= Y} ->
+  exists A:set, A :e Arcs /\ A c= Y /\
+    exists p q:set,
+      end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q).
+let X Tx Arcs Y x.
+assume HxSel.
+apply (graph_vertices_has_endpoint_witness
+  X
+  Tx
+  {B :e Arcs | B c= Y}
+  x
+  HxSel).
+let A.
+assume HApack.
+claim HAInSel : A :e {B :e Arcs | B c= Y}.
+{
+  exact (andEL
+    (A :e {B :e Arcs | B c= Y})
+    (exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q))
+    HApack).
+}
+claim HpqEx :
+  exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+    (x = p \/ x = q).
+{
+  exact (andER
+    (A :e {B :e Arcs | B c= Y})
+    (exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q))
+    HApack).
+}
+witness A.
+apply andI.
+- apply andI.
+  + exact (SepE1
+      Arcs
+      (fun B:set => B c= Y)
+      A
+      HAInSel).
+  + exact (SepE2
+      Arcs
+      (fun B:set => B c= Y)
+      A
+      HAInSel).
+- exact HpqEx.
+Qed.
+
+(** Proven Bob **)
 Theorem graph_vertices_selected_arcs_subset_X :
   forall X Tx Arcs Y:set,
   graph_vertices X Tx {B :e Arcs | B c= Y} c= X.
