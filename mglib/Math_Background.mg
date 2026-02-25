@@ -216392,6 +216392,132 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Theorem lemma84_2_not_subset_has_outside_point_in_X :
+  forall T ArcsT X Tx Arcs A:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e Arcs -> ~(A c= T) ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  exists x:set, x :e X /\ x :e A /\ x /:e T.
+let T ArcsT X Tx Arcs A.
+assume Htree HA Hnsub Hmeet.
+claim Hout : exists x:set, x :e A /\ x /:e T.
+{
+  exact (lemma84_2_not_subset_has_outside_point
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    A
+    Htree
+    HA
+    Hnsub
+    Hmeet).
+}
+claim Hglg : general_linear_graph X Tx Arcs.
+{
+  exact (subgraph_of_general_linear_graph
+    T
+    X
+    Tx
+    Arcs
+    (tree_in_graph_subgraph_of
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      Htree)).
+}
+claim HAsubX : A c= X.
+{
+  exact (andEL
+    (A c= X)
+    (arc A (subspace_topology X Tx A))
+    (general_linear_graph_arc_data
+      X
+      Tx
+      Arcs
+      A
+      Hglg
+      HA)).
+}
+apply Hout.
+let x.
+assume Hxpack.
+witness x.
+apply andI.
+- apply andI.
+  + exact (HAsubX
+      x
+      (andEL
+        (x :e A)
+        (x /:e T)
+        Hxpack)).
+  + exact (andEL
+      (x :e A)
+      (x /:e T)
+      Hxpack).
+- exact (andER
+    (x :e A)
+    (x /:e T)
+    Hxpack).
+Qed.
+
+(** Proven Bob **)
+Theorem lemma84_2_union_has_point_in_X_outside_original_tree :
+  forall T ArcsT X Tx Arcs A:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e Arcs -> ~(A c= T) ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  exists x:set, x :e X /\ x :e (T :\/: A) /\ x /:e T.
+let T ArcsT X Tx Arcs A.
+assume Htree HA Hnsub Hmeet.
+claim HoutX : exists x:set, x :e X /\ x :e A /\ x /:e T.
+{
+  exact (lemma84_2_not_subset_has_outside_point_in_X
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    A
+    Htree
+    HA
+    Hnsub
+    Hmeet).
+}
+apply HoutX.
+let x.
+assume Hxpack.
+witness x.
+apply andI.
+- apply andI.
+  + exact (andEL
+      (x :e X)
+      (x :e A)
+      (andEL
+        (x :e X /\ x :e A)
+        (x /:e T)
+        Hxpack)).
+  + exact (binunionI2
+      T
+      A
+      x
+      (andER
+        (x :e X)
+        (x :e A)
+        (andEL
+          (x :e X /\ x :e A)
+          (x /:e T)
+          Hxpack))).
+- exact (andER
+    (x :e X /\ x :e A)
+    (x /:e T)
+    Hxpack).
+Qed.
+
+(** Proven Bob **)
 Theorem single_vertex_intersection_witness_in_both :
   forall T A v:set,
   T :/\: A = Sing v ->
