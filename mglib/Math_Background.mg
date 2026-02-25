@@ -209821,6 +209821,53 @@ assume Hglg HYsub HYunion.
 exact HYunion.
 Qed.
 
+(** Proven Bob **)
+Theorem subgraph_of_selected_arc_in_arcs :
+  forall Y X Tx Arcs A:set,
+  subgraph_of Y X Tx Arcs ->
+  A :e {B :e Arcs | B c= Y} ->
+  A :e Arcs.
+let Y X Tx Arcs A.
+assume Hsub HA.
+exact (SepE1
+  Arcs
+  (fun B:set => B c= Y)
+  A
+  HA).
+Qed.
+
+(** Proven Bob **)
+Theorem subgraph_of_selected_arc_subset_Y :
+  forall Y X Tx Arcs A:set,
+  subgraph_of Y X Tx Arcs ->
+  A :e {B :e Arcs | B c= Y} ->
+  A c= Y.
+let Y X Tx Arcs A.
+assume Hsub HA.
+exact (SepE2
+  Arcs
+  (fun B:set => B c= Y)
+  A
+  HA).
+Qed.
+
+(** Proven Bob **)
+Theorem subgraph_of_selected_arc_arc_data :
+  forall Y X Tx Arcs A:set,
+  subgraph_of Y X Tx Arcs ->
+  A :e {B :e Arcs | B c= Y} ->
+  A c= X /\ arc A (subspace_topology X Tx A).
+let Y X Tx Arcs A.
+assume Hsub HA.
+exact (general_linear_graph_arc_data
+  X
+  Tx
+  Arcs
+  A
+  (subgraph_of_general_linear_graph Y X Tx Arcs Hsub)
+  (subgraph_of_selected_arc_in_arcs Y X Tx Arcs A Hsub HA)).
+Qed.
+
 (** Infrastructure: vertices of a linear graph **)
 Definition graph_vertices : set -> set -> set -> set :=
   fun X Tx Arcs =>
