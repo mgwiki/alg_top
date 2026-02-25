@@ -185739,6 +185739,40 @@ exact (Hfun x HxE).
 Qed.
 
 (** Proven Bob **)
+Theorem preimage_singleton_nonempty_of_subset_implies_exists_preimage_point :
+  forall A pi y:set,
+  preimage_of A pi (Sing y) <> Empty ->
+  exists x:set, x :e A /\ apply_fun pi x = y.
+let A pi y.
+assume HpreNe.
+exact ((andEL
+  (preimage_of A pi (Sing y) <> Empty -> (exists x:set, x :e A /\ apply_fun pi x = y))
+  ((exists x:set, x :e A /\ apply_fun pi x = y) -> preimage_of A pi (Sing y) <> Empty)
+  (preimage_singleton_nonempty_iff_exists_preimage_point A pi y))
+  HpreNe).
+Qed.
+
+(** Proven Bob **)
+Theorem function_on_preimage_singleton_nonempty_of_subset_implies_mem_image_of_subset :
+  forall E X pi A y:set,
+  function_on pi E X ->
+  A c= E ->
+  preimage_of A pi (Sing y) <> Empty ->
+  y :e image_of pi A.
+let E X pi A y.
+assume Hfun HAsub HpreNe.
+exact ((andER
+  (y :e image_of pi A -> (exists x:set, x :e A /\ apply_fun pi x = y))
+  ((exists x:set, x :e A /\ apply_fun pi x = y) -> y :e image_of pi A)
+  (mem_image_iff_exists_preimage_point A pi y))
+  (preimage_singleton_nonempty_of_subset_implies_exists_preimage_point
+    A
+    pi
+    y
+    HpreNe)).
+Qed.
+
+(** Proven Bob **)
 Theorem preimage_singleton_nonempty_iff_mem_image :
   forall E pi y:set,
   (preimage_of E pi (Sing y) <> Empty <-> y :e image_of pi E).
