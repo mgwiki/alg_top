@@ -219205,6 +219205,128 @@ apply (xm (x :e T)).
 Qed.
 
 (** Proven Bob **)
+Theorem maximal_tree_all_vertices_if_noncontained_edges_meet_tree_and_extend :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
+      tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs) ->
+  graph_vertices X Tx Arcs c= T.
+let T ArcsT X Tx Arcs.
+assume Hmax HextA.
+apply (maximal_tree_all_vertices_if_outside_vertex_has_single_vertex_tree_extension_edge
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hmax).
+let x.
+assume HxVert HxNotT.
+claim HAwit : exists A:set, A :e Arcs /\ ~(A c= T) /\ x :e A.
+{
+  exact (maximal_tree_vertex_outside_yields_edge_not_subset
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    x
+    Hmax
+    HxVert
+    HxNotT).
+}
+apply HAwit.
+let A.
+assume HApack.
+claim HA : A :e Arcs.
+{
+  exact (andEL
+    (A :e Arcs)
+    (~(A c= T))
+    (andEL
+      (A :e Arcs /\ ~(A c= T))
+      (x :e A)
+      HApack)).
+}
+claim Hnsub : ~(A c= T).
+{
+  exact (andER
+    (A :e Arcs)
+    (~(A c= T))
+    (andEL
+      (A :e Arcs /\ ~(A c= T))
+      (x :e A)
+      HApack)).
+}
+claim HxA : x :e A.
+{
+  exact (andER
+    (A :e Arcs /\ ~(A c= T))
+    (x :e A)
+    HApack).
+}
+claim Hvpack : exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
+  tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
+{
+  exact (HextA
+    A
+    HA
+    Hnsub).
+}
+apply Hvpack.
+let v.
+assume Hvpack2.
+claim HvVert : v :e graph_vertices X Tx Arcs.
+{
+  claim Hvpair : v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
+  {
+    exact (andEL
+      (v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v)
+      (tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs)
+      Hvpack2).
+  }
+  exact (andEL
+    (v :e graph_vertices X Tx Arcs)
+    (T :/\: A = Sing v)
+    Hvpair).
+}
+claim Hmeet : T :/\: A = Sing v.
+{
+  claim Hvpair : v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
+  {
+    exact (andEL
+      (v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v)
+      (tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs)
+      Hvpack2).
+  }
+  exact (andER
+    (v :e graph_vertices X Tx Arcs)
+    (T :/\: A = Sing v)
+    Hvpair).
+}
+claim HtreeExt : tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
+{
+  exact (andER
+    (v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v)
+    (tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs)
+    Hvpack2).
+}
+witness A.
+apply and5I.
+- exact HA.
+- exact Hnsub.
+- exact HxA.
+- witness v.
+  exact (andI
+    (v :e graph_vertices X Tx Arcs)
+    (T :/\: A = Sing v)
+    HvVert
+    Hmeet).
+- exact HtreeExt.
+Qed.
+
+(** Proven Bob **)
 Theorem not_subset_implies_right_union_neq :
   forall T A:set,
   ~(A c= T) ->
