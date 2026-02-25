@@ -211651,6 +211651,38 @@ exact (homeomorphism_preserves_Hausdorff_right
 Qed.
 
 (** Proven Charlie **)
+(** helper: unit_interval is normal. **)
+Theorem unit_interval_normal_space :
+  normal_space unit_interval unit_interval_topology.
+exact (compact_Hausdorff_normal
+  unit_interval
+  unit_interval_topology
+  unit_interval_compact_axiom
+  unit_interval_Hausdorff_space).
+Qed.
+
+(** Proven Charlie **)
+(** helper: arcs are normal. **)
+Theorem arc_normal_space :
+  forall A Ta:set,
+  arc A Ta ->
+  normal_space A Ta.
+let A Ta.
+assume Harc.
+apply Harc.
+let f.
+assume Hhome.
+exact (homeomorphism_preserves_normal_right
+  unit_interval
+  unit_interval_topology
+  A
+  Ta
+  f
+  Hhome
+  unit_interval_normal_space).
+Qed.
+
+(** Proven Charlie **)
 (** helper: general linear graphs are T1 (one-point sets are closed). **)
 Theorem general_linear_graph_one_point_sets_closed :
   forall X Tx Arcs:set,
