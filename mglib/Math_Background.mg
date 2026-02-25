@@ -187823,6 +187823,254 @@ exact (surjective_map_image_empty_iff_codomain_empty
 Qed.
 
 (** Proven Bob **)
+Theorem surjective_map_domain_nonempty_implies_codomain_nonempty :
+  forall E X pi:set,
+  surjective_map E X pi ->
+  E <> Empty ->
+  X <> Empty.
+let E X pi.
+assume Hsurj HEnonempty.
+exact ((andEL
+  (E <> Empty -> X <> Empty)
+  (X <> Empty -> E <> Empty)
+  (surjective_map_domain_nonempty_iff_codomain_nonempty E X pi Hsurj))
+  HEnonempty).
+Qed.
+
+(** Proven Bob **)
+Theorem surjective_map_codomain_nonempty_implies_domain_nonempty :
+  forall E X pi:set,
+  surjective_map E X pi ->
+  X <> Empty ->
+  E <> Empty.
+let E X pi.
+assume Hsurj HXnonempty.
+exact ((andER
+  (E <> Empty -> X <> Empty)
+  (X <> Empty -> E <> Empty)
+  (surjective_map_domain_nonempty_iff_codomain_nonempty E X pi Hsurj))
+  HXnonempty).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_domain_nonempty_implies_codomain_nonempty :
+  forall E Te X pi:set,
+  quotient_map E Te X pi ->
+  E <> Empty ->
+  X <> Empty.
+let E Te X pi.
+assume Hquot HEnonempty.
+exact (surjective_map_domain_nonempty_implies_codomain_nonempty
+  E
+  X
+  pi
+  (quotient_map_implies_surjective_map E Te X pi Hquot)
+  HEnonempty).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_codomain_nonempty_implies_domain_nonempty :
+  forall E Te X pi:set,
+  quotient_map E Te X pi ->
+  X <> Empty ->
+  E <> Empty.
+let E Te X pi.
+assume Hquot HXnonempty.
+exact (surjective_map_codomain_nonempty_implies_domain_nonempty
+  E
+  X
+  pi
+  (quotient_map_implies_surjective_map E Te X pi Hquot)
+  HXnonempty).
+Qed.
+
+(** Proven Bob **)
+Theorem surjective_map_domain_empty_implies_codomain_empty :
+  forall E X pi:set,
+  surjective_map E X pi ->
+  E = Empty ->
+  X = Empty.
+let E X pi.
+assume Hsurj HEempty.
+exact ((andEL
+  (E = Empty -> X = Empty)
+  (X = Empty -> E = Empty)
+  (surjective_map_domain_empty_iff_codomain_empty E X pi Hsurj))
+  HEempty).
+Qed.
+
+(** Proven Bob **)
+Theorem surjective_map_codomain_empty_implies_domain_empty :
+  forall E X pi:set,
+  surjective_map E X pi ->
+  X = Empty ->
+  E = Empty.
+let E X pi.
+assume Hsurj HXempty.
+exact ((andER
+  (E = Empty -> X = Empty)
+  (X = Empty -> E = Empty)
+  (surjective_map_domain_empty_iff_codomain_empty E X pi Hsurj))
+  HXempty).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_domain_empty_implies_codomain_empty :
+  forall E Te X pi:set,
+  quotient_map E Te X pi ->
+  E = Empty ->
+  X = Empty.
+let E Te X pi.
+assume Hquot HEempty.
+exact (surjective_map_domain_empty_implies_codomain_empty
+  E
+  X
+  pi
+  (quotient_map_implies_surjective_map E Te X pi Hquot)
+  HEempty).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_codomain_empty_implies_domain_empty :
+  forall E Te X pi:set,
+  quotient_map E Te X pi ->
+  X = Empty ->
+  E = Empty.
+let E Te X pi.
+assume Hquot HXempty.
+exact (surjective_map_codomain_empty_implies_domain_empty
+  E
+  X
+  pi
+  (quotient_map_implies_surjective_map E Te X pi Hquot)
+  HXempty).
+Qed.
+
+(** Proven Bob **)
+Theorem surjective_map_image_nonempty_implies_codomain_nonempty :
+  forall E X pi:set,
+  surjective_map E X pi ->
+  image_of pi E <> Empty ->
+  X <> Empty.
+let E X pi.
+assume Hsurj HimgNe.
+exact ((andEL
+  (image_of pi E <> Empty -> X <> Empty)
+  (X <> Empty -> image_of pi E <> Empty)
+  (surjective_map_image_nonempty_iff_codomain_nonempty E X pi Hsurj))
+  HimgNe).
+Qed.
+
+(** Proven Bob **)
+Theorem surjective_map_codomain_nonempty_implies_image_nonempty :
+  forall E X pi:set,
+  surjective_map E X pi ->
+  X <> Empty ->
+  image_of pi E <> Empty.
+let E X pi.
+assume Hsurj HXne.
+exact ((andER
+  (image_of pi E <> Empty -> X <> Empty)
+  (X <> Empty -> image_of pi E <> Empty)
+  (surjective_map_image_nonempty_iff_codomain_nonempty E X pi Hsurj))
+  HXne).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_image_nonempty_implies_codomain_nonempty :
+  forall E Te X pi:set,
+  quotient_map E Te X pi ->
+  image_of pi E <> Empty ->
+  X <> Empty.
+let E Te X pi.
+assume Hquot HimgNe.
+exact (surjective_map_image_nonempty_implies_codomain_nonempty
+  E
+  X
+  pi
+  (quotient_map_implies_surjective_map E Te X pi Hquot)
+  HimgNe).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_codomain_nonempty_implies_image_nonempty :
+  forall E Te X pi:set,
+  quotient_map E Te X pi ->
+  X <> Empty ->
+  image_of pi E <> Empty.
+let E Te X pi.
+assume Hquot HXne.
+exact (surjective_map_codomain_nonempty_implies_image_nonempty
+  E
+  X
+  pi
+  (quotient_map_implies_surjective_map E Te X pi Hquot)
+  HXne).
+Qed.
+
+(** Proven Bob **)
+Theorem surjective_map_image_empty_implies_codomain_empty :
+  forall E X pi:set,
+  surjective_map E X pi ->
+  image_of pi E = Empty ->
+  X = Empty.
+let E X pi.
+assume Hsurj HimgEmpty.
+exact ((andEL
+  (image_of pi E = Empty -> X = Empty)
+  (X = Empty -> image_of pi E = Empty)
+  (surjective_map_image_empty_iff_codomain_empty E X pi Hsurj))
+  HimgEmpty).
+Qed.
+
+(** Proven Bob **)
+Theorem surjective_map_codomain_empty_implies_image_empty :
+  forall E X pi:set,
+  surjective_map E X pi ->
+  X = Empty ->
+  image_of pi E = Empty.
+let E X pi.
+assume Hsurj HXempty.
+exact ((andER
+  (image_of pi E = Empty -> X = Empty)
+  (X = Empty -> image_of pi E = Empty)
+  (surjective_map_image_empty_iff_codomain_empty E X pi Hsurj))
+  HXempty).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_image_empty_implies_codomain_empty :
+  forall E Te X pi:set,
+  quotient_map E Te X pi ->
+  image_of pi E = Empty ->
+  X = Empty.
+let E Te X pi.
+assume Hquot HimgEmpty.
+exact (surjective_map_image_empty_implies_codomain_empty
+  E
+  X
+  pi
+  (quotient_map_implies_surjective_map E Te X pi Hquot)
+  HimgEmpty).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_codomain_empty_implies_image_empty :
+  forall E Te X pi:set,
+  quotient_map E Te X pi ->
+  X = Empty ->
+  image_of pi E = Empty.
+let E Te X pi.
+assume Hquot HXempty.
+exact (surjective_map_codomain_empty_implies_image_empty
+  E
+  X
+  pi
+  (quotient_map_implies_surjective_map E Te X pi Hquot)
+  HXempty).
+Qed.
+
+(** Proven Bob **)
 Theorem closed_quotient_map_preserves_normality_from_surjective_map :
   forall E Te X Tx pi:set,
   topology_on E Te -> topology_on X Tx ->
