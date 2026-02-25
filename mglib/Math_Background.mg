@@ -217994,6 +217994,104 @@ exact (maximal_tree_inclusion_eq
 Qed.
 
 (** Proven Bob **)
+Theorem union_eq_right_iff_right_subset :
+  forall T A:set,
+  (T :\/: A = T <-> A c= T).
+let T A.
+apply iffI.
+- assume HunionEq.
+  let x.
+  assume HxA.
+  claim HxUnion : x :e T :\/: A.
+  {
+    exact (binunionI2
+      T
+      A
+      x
+      HxA).
+  }
+  exact (mem_eqR
+    x
+    (T :\/: A)
+    T
+    HunionEq
+    HxUnion).
+- assume HAsubT.
+  claim HunionSubT : T :\/: A c= T.
+  {
+    exact (binunion_Subq_min
+      T
+      A
+      T
+      (Subq_ref T)
+      HAsubT).
+  }
+  exact (set_ext
+    (T :\/: A)
+    T
+    HunionSubT
+    (binunion_Subq_1
+      T
+      A)).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_tree_extension_union_subset_T :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs ->
+  T :\/: A c= T.
+let T ArcsT X Tx Arcs A.
+assume Hmax HtreeExt.
+claim HAsubT : A c= T.
+{
+  exact (iffEL
+    (T :\/: A = T)
+    (A c= T)
+    (union_eq_right_iff_right_subset
+      T
+      A)
+    (maximal_tree_tree_extension_forces_union_eq
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      A
+      Hmax
+      HtreeExt)).
+}
+exact (binunion_Subq_min
+  T
+  A
+  T
+  (Subq_ref T)
+  HAsubT).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_tree_extension_union_point_in_T :
+  forall T ArcsT X Tx Arcs A x:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs ->
+  x :e T :\/: A ->
+  x :e T.
+let T ArcsT X Tx Arcs A x.
+assume Hmax HtreeExt HxUnion.
+exact ((maximal_tree_tree_extension_union_subset_T
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  Hmax
+  HtreeExt)
+  x
+  HxUnion).
+Qed.
+
+(** Proven Bob **)
 Theorem maximal_tree_tree_extension_forces_edge_subset :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
