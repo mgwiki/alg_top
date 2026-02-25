@@ -217971,6 +217971,112 @@ exact (lemma84_2_union_not_eq_original_tree
 Qed.
 
 (** Proven Bob **)
+Theorem maximal_tree_tree_extension_forces_union_eq :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs ->
+  T :\/: A = T.
+let T ArcsT X Tx Arcs A.
+assume Hmax HtreeExt.
+exact (maximal_tree_inclusion_eq
+  T
+  ArcsT
+  (T :\/: A)
+  ({A} :\/: ArcsT)
+  X
+  Tx
+  Arcs
+  Hmax
+  HtreeExt
+  (binunion_Subq_1
+    T
+    A)).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_noncontained_edge_tree_extension_contradiction :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs ->
+  ~(A c= T) ->
+  False.
+let T ArcsT X Tx Arcs A.
+assume Hmax HtreeExt Hnsub.
+claim HunionEq : T :\/: A = T.
+{
+  exact (maximal_tree_tree_extension_forces_union_eq
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    A
+    Hmax
+    HtreeExt).
+}
+claim HunionNe : (T :\/: A) <> T.
+{
+  assume HunionEq2.
+  apply (not_subset_ex_elem
+    T
+    A
+    Hnsub).
+  let x.
+  assume Hxpack.
+  claim HxUnion : x :e T :\/: A.
+  {
+    exact (binunionI2
+      T
+      A
+      x
+      (andEL
+        (x :e A)
+        (x /:e T)
+        Hxpack)).
+  }
+  claim HxT : x :e T.
+  {
+    exact (mem_eqR
+      x
+      (T :\/: A)
+      T
+      HunionEq2
+      HxUnion).
+  }
+  exact ((andER
+    (x :e A)
+    (x /:e T)
+    Hxpack)
+    HxT).
+}
+exact (HunionNe
+  HunionEq).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_single_vertex_edge_tree_extension_contradiction :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs ->
+  A :e Arcs ->
+  ~(A c= T) ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  False.
+let T ArcsT X Tx Arcs A.
+assume Hmax HtreeExt HA Hnsub Hmeet.
+exact (maximal_tree_noncontained_edge_tree_extension_contradiction
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  Hmax
+  HtreeExt
+  Hnsub).
+Qed.
+
+(** Proven Bob **)
 Theorem not_subset_implies_right_union_neq :
   forall T A:set,
   ~(A c= T) ->
