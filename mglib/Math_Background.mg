@@ -221340,11 +221340,12 @@ Theorem thm84_4_forward_component_witness_from_split_obligations :
         n :e omega /\ n <> 0 /\
         reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
           ({A} :\/: ArcsT) n path_seq x0 /\
-        (exists j:set, j :e n /\ ordsucc j /:e n /\
-          (apply_fun path_seq j) 0 1 = x0))).
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0))).
 admit.
 Admitted.
 
+(** Proven Bob **)
 Theorem thm84_4_backward_noncontained_contradiction_from_endpoint_obligations :
   forall T ArcsT T' ArcsT' X Tx Arcs:set,
   (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
@@ -221358,8 +221359,44 @@ Theorem thm84_4_backward_noncontained_contradiction_from_endpoint_obligations :
     p :e T /\ q :e T ->
     A c= T) ->
   forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False.
-admit.
-Admitted.
+let T ArcsT T' ArcsT' X Tx Arcs.
+assume Hrhs Htree' HTsub HendpointWitnessSel HendpointCloseSel.
+let A.
+assume HASel Hnsub.
+claim HVT : graph_vertices X Tx Arcs c= T.
+{
+  exact (andER
+    (tree_in_graph T ArcsT X Tx Arcs)
+    (graph_vertices X Tx Arcs c= T)
+    Hrhs).
+}
+claim HsubsetSel : forall A0:set, A0 :e {B :e Arcs | B c= T'} -> A0 c= T.
+{
+  exact (selected_arc_subset_from_endpoint_witness_and_endpoint_target_obligation
+    T
+    T'
+    ArcsT'
+    X
+    Tx
+    Arcs
+    Htree'
+    HVT
+    HendpointWitnessSel
+    HendpointCloseSel).
+}
+exact ((selected_arc_obligation_subset_implies_noncontained_contradiction
+  T
+  T'
+  ArcsT'
+  X
+  Tx
+  Arcs
+  Htree'
+  HsubsetSel)
+  A
+  HASel
+  Hnsub).
+Qed.
 
 (** from S84 Thm 84.4 (line 5625 in algtop.tex): maximal tree contains all vertices **)
 (** LATEX VERSION: Let X be a connected graph. A tree T in X is maximal iff it **)
