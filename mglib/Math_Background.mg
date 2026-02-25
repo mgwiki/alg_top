@@ -223983,6 +223983,131 @@ Theorem lemma84_2_tree_extension_general_linear_graph_part :
 admit.
 Admitted.
 
+(** Proven Charlie **)
+(** helper: if A meets T exactly at v and v is a graph vertex, then A has a second endpoint outside T. **)
+Theorem lemma84_2_tree_extension_attaching_arc_has_endpoint_outside_T :
+  forall T ArcsT X Tx Arcs A v:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e Arcs ->
+  v :e graph_vertices X Tx Arcs ->
+  T :/\: A = Sing v ->
+  exists w:set,
+    (end_points_of_arc A (subspace_topology X Tx A) v w \/
+     end_points_of_arc A (subspace_topology X Tx A) w v) /\
+    w /:e T.
+let T ArcsT X Tx Arcs A v.
+assume Htree HA HvVert HcapEq.
+claim HglgX : general_linear_graph X Tx Arcs.
+{
+  exact (subgraph_of_general_linear_graph
+    T
+    X
+    Tx
+    Arcs
+    (tree_in_graph_subgraph_of
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      Htree)).
+}
+claim HvCap : v :e T :/\: A.
+{
+  rewrite HcapEq.
+  exact (SingI v).
+}
+claim HvA : v :e A.
+{
+  exact (binintersectE2
+    T
+    A
+    v
+    HvCap).
+}
+claim Hexw :
+  exists w:set,
+    end_points_of_arc A (subspace_topology X Tx A) v w \/
+    end_points_of_arc A (subspace_topology X Tx A) w v.
+{
+  exact (general_linear_graph_vertex_in_arc_is_endpoint
+    X
+    Tx
+    Arcs
+    A
+    v
+    HglgX
+    HvVert
+    HA
+    HvA).
+}
+apply Hexw.
+let w.
+assume Hendw.
+witness w.
+apply andI.
+- exact Hendw.
+- (** show w is not in T **)
+  assume HwT.
+  claim HwA : w :e A.
+  {
+    apply Hendw.
+    - assume Hend.
+      exact (end_points_of_arc_right_in_set
+        A
+        (subspace_topology X Tx A)
+        v
+        w
+        Hend).
+    - assume Hend.
+      exact (end_points_of_arc_left_in_set
+        A
+        (subspace_topology X Tx A)
+        w
+        v
+        Hend).
+  }
+  claim Hwneq : w <> v.
+  {
+    apply Hendw.
+    - assume Hend.
+      apply (and6E
+        (arc A (subspace_topology X Tx A))
+        (v :e A)
+        (w :e A)
+        (v <> w)
+        (connected_space (A :\: (Sing v)) (subspace_topology A (subspace_topology X Tx A) (A :\: (Sing v))))
+        (connected_space (A :\: (Sing w)) (subspace_topology A (subspace_topology X Tx A) (A :\: (Sing w))))
+        Hend).
+      assume Harc HvAw HwAw Hvneqw Hcv Hcw.
+      assume Heq.
+      claim HvEqw : v = w.
+      {
+        rewrite Heq.
+        reflexivity.
+      }
+      exact (Hvneqw HvEqw).
+    - assume Hend.
+      apply (and6E
+        (arc A (subspace_topology X Tx A))
+        (w :e A)
+        (v :e A)
+        (w <> v)
+        (connected_space (A :\: (Sing w)) (subspace_topology A (subspace_topology X Tx A) (A :\: (Sing w))))
+        (connected_space (A :\: (Sing v)) (subspace_topology A (subspace_topology X Tx A) (A :\: (Sing v))))
+        Hend).
+      assume Harc HwAw HvAw Hwneqv Hcw Hcv.
+      exact Hwneqv.
+  }
+  claim HwCap : w :e T :/\: A.
+  { exact (binintersectI T A w HwT HwA). }
+  claim HwSing : w :e Sing v.
+  { exact (mem_eqR w (T :/\: A) (Sing v) HcapEq HwCap). }
+  claim HwEqv : w = v.
+  { exact (SingE v w HwSing). }
+  exact (Hwneq HwEqv).
+Qed.
+
 (** helper: no closed reduced edge path appears after attaching A along a single vertex **)
 Theorem lemma84_2_tree_extension_no_closed_reduced_edge_path_part :
   forall T ArcsT X Tx Arcs A:set,
