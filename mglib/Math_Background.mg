@@ -74448,6 +74448,86 @@ exact (local_sheet_non_switching_from_connected_commuting_lift
   HVzSlice).
 Qed.
 
+(** Infrastructure: local sheet non-switching from bundled slices core data **)
+(** Proven Bob **)
+Theorem local_sheet_non_switching_on_unit_square_subset_from_slices_core :
+  forall N E Te B Tb p U slices F Ft q z Vq Vz:set,
+  topology_on E Te ->
+  ((slices c= Te /\ pairwise_disjoint slices) /\ Union slices = preimage_of E p U) ->
+  N c= unit_square ->
+  connected_space N (subspace_topology unit_square unit_square_topology N) ->
+  continuous_map N (subspace_topology unit_square unit_square_topology N) E Te Ft ->
+  (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t)) ->
+  (forall x:set, x :e N -> apply_fun F x :e U) ->
+  q :e N ->
+  z :e N ->
+  apply_fun Ft q :e Vq ->
+  Vq :e slices ->
+  apply_fun Ft z :e Vz ->
+  Vz :e slices ->
+  Vz = Vq.
+let N E Te B Tb p U slices F Ft q z Vq Vz.
+assume HtopE HslicesCore HNsubSq HNconn HFtCont HcommSq HFU
+  HqN HzN HFtqVq HVqSlice HFtzVz HVzSlice.
+claim HslicesSub : slices c= Te.
+{
+  exact (andEL
+    (slices c= Te)
+    (pairwise_disjoint slices)
+    (andEL
+      (slices c= Te /\ pairwise_disjoint slices)
+      (Union slices = preimage_of E p U)
+      HslicesCore)).
+}
+claim HpdSlices : pairwise_disjoint slices.
+{
+  exact (andER
+    (slices c= Te)
+    (pairwise_disjoint slices)
+    (andEL
+      (slices c= Te /\ pairwise_disjoint slices)
+      (Union slices = preimage_of E p U)
+      HslicesCore)).
+}
+claim Hunion : Union slices = preimage_of E p U.
+{
+  exact (andER
+    (slices c= Te /\ pairwise_disjoint slices)
+    (Union slices = preimage_of E p U)
+    HslicesCore).
+}
+exact (local_sheet_non_switching_on_unit_square_subset
+  N
+  E
+  Te
+  B
+  p
+  F
+  Ft
+  U
+  slices
+  q
+  z
+  Vq
+  Vz
+  HtopE
+  HslicesSub
+  HpdSlices
+  HNsubSq
+  HNconn
+  HFtCont
+  HcommSq
+  HFU
+  Hunion
+  HqN
+  HzN
+  HFtqVq
+  HVqSlice
+  HFtzVz
+  HVzSlice).
+Qed.
+
 Theorem lemma54_2_sheet_non_switching_local :
   forall E Te B Tb p F Ft q z N U slices Vq Vz:set,
   pairwise_disjoint slices ->
