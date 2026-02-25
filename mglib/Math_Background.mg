@@ -238165,6 +238165,56 @@ Theorem lemma84_2_tree_decomposition :
     let T0 := Union B in
     (exists v:set, v :e graph_vertices X Tx Arcs /\ T0 :/\: A = Sing v) /\
     tree_in_graph T0 B X Tx Arcs.
+let T ArcsT X Tx Arcs.
+assume Htree HfinArcsT HtwoArcs.
+claim HsubT : subgraph_of T X Tx Arcs.
+{
+  exact (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+claim HglgT : general_linear_graph T (subspace_topology X Tx T) ArcsT.
+{
+  exact (tree_in_graph_general_linear_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+claim HconnT : connected_space T (subspace_topology X Tx T).
+{
+  exact (tree_in_graph_connected
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+claim HnoLoopT :
+  ~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)).
+{
+  exact (tree_in_graph_no_closed_reduced_edge_path
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+(** Remaining S84.2-converse gap:
+    choose a removable edge from finite non-singleton ArcsT, set B := ArcsT\\{A},
+    prove T0 = Union B is a tree, and isolate the single-vertex intersection witness. **)
 admit.
 Admitted.
 
@@ -238176,6 +238226,36 @@ Theorem thm84_3_tree_simply_connected :
   forall T ArcsT X Tx Arcs:set,
   tree_in_graph T ArcsT X Tx Arcs ->
   simply_connected T (subspace_topology X Tx T).
+let T ArcsT X Tx Arcs.
+assume Htree.
+claim HconnT : connected_space T (subspace_topology X Tx T).
+{
+  exact (tree_in_graph_connected
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+claim HnoLoopT :
+  ~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)).
+{
+  exact (tree_in_graph_no_closed_reduced_edge_path
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+(** Remaining S84.3 gap:
+    convert the no-closed-reduced-edge-path invariant (plus connectedness)
+    into simply_connected for the graph topology on T. **)
 admit.
 Admitted.
 
@@ -240163,7 +240243,8 @@ exact (thm84_4_forward_component_witness_from_component_obligations
     Hmax
     HA
     Hnsub)).
-(** blocked only on the four forward obligation theorems above. **)
+(** blocked only on thm84_4_forward_meeting_obligation;
+    the other three forward obligations now have explicit proof bodies. **)
 Admitted.
 
 (** Proven Bob **)
