@@ -213748,6 +213748,151 @@ apply HtEndpoint.
 Qed.
 
 (** Proven Charlie **)
+(** helper: endpoints of an arc are exactly the points whose singleton-complement is connected. **)
+Theorem end_points_of_arc_connected_complement_implies_endpoint :
+  forall X Tx p q z:set,
+  end_points_of_arc X Tx p q ->
+  z :e X ->
+  connected_space (X :\: (Sing z))
+    (subspace_topology X Tx (X :\: (Sing z))) ->
+  z = p \/ z = q.
+let X Tx p q z.
+assume Hend HzX HconnZ.
+apply (and6E
+  (arc X Tx)
+  (p :e X)
+  (q :e X)
+  (p <> q)
+  (connected_space (X :\: (Sing p))
+    (subspace_topology X Tx (X :\: (Sing p))))
+  (connected_space (X :\: (Sing q))
+    (subspace_topology X Tx (X :\: (Sing q))))
+  Hend).
+assume Harc HpX HqX Hneq Hconnp Hconnq.
+apply Harc.
+let f.
+assume Hhome.
+set f0 := apply_fun f 0.
+set f1 := apply_fun f 1.
+claim HpImg : p = f0 \/ p = f1.
+{
+  exact (homeomorphism_unit_interval_connected_complement_implies_endpoint
+    X
+    Tx
+    f
+    p
+    Hhome
+    HpX
+    Hconnp).
+}
+claim HqImg : q = f0 \/ q = f1.
+{
+  exact (homeomorphism_unit_interval_connected_complement_implies_endpoint
+    X
+    Tx
+    f
+    q
+    Hhome
+    HqX
+    Hconnq).
+}
+claim HzImg : z = f0 \/ z = f1.
+{
+  exact (homeomorphism_unit_interval_connected_complement_implies_endpoint
+    X
+    Tx
+    f
+    z
+    Hhome
+    HzX
+    HconnZ).
+}
+claim Hf0NeF1 : f0 <> f1.
+{
+  assume Heq.
+  claim H0eq1 : 0 = 1.
+  {
+    exact (homeomorphism_injective
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      f
+      Hhome
+      0
+      1
+      zero_in_unit_interval
+      one_in_unit_interval
+      Heq).
+  }
+  exact (neq_0_1 H0eq1).
+}
+claim HpqOrder : (p = f0 /\ q = f1) \/ (p = f1 /\ q = f0).
+{
+  apply HpImg.
+  - assume Hp0.
+    apply orIL.
+    apply andI.
+    + exact Hp0.
+    + apply HqImg.
+      * assume Hq0.
+        claim Hpq : p = q.
+        {
+          rewrite Hp0.
+          rewrite <- Hq0.
+          reflexivity.
+        }
+        exact (FalseE
+          (Hneq Hpq)
+          (q = f1)).
+      * assume Hq1.
+        exact Hq1.
+  - assume Hp1.
+    apply orIR.
+    apply andI.
+    + exact Hp1.
+    + apply HqImg.
+      * assume Hq0.
+        exact Hq0.
+      * assume Hq1.
+        claim Hpq : p = q.
+        {
+          rewrite Hp1.
+          rewrite <- Hq1.
+          reflexivity.
+        }
+        exact (FalseE
+          (Hneq Hpq)
+          (q = f0)).
+}
+apply HzImg.
+- assume Hz0.
+  apply HpqOrder.
+  * assume Hpq.
+    apply orIL.
+    rewrite Hz0.
+    rewrite <- (andEL (p = f0) (q = f1) Hpq).
+    reflexivity.
+  * assume Hpq.
+    apply orIR.
+    rewrite Hz0.
+    rewrite <- (andER (p = f1) (q = f0) Hpq).
+    reflexivity.
+- assume Hz1.
+  apply HpqOrder.
+  * assume Hpq.
+    apply orIR.
+    rewrite Hz1.
+    rewrite <- (andER (p = f0) (q = f1) Hpq).
+    reflexivity.
+  * assume Hpq.
+    apply orIL.
+    rewrite Hz1.
+    rewrite <- (andEL (p = f1) (q = f0) Hpq).
+    reflexivity.
+Qed.
+
+(** Proven Charlie **)
 (** helper: in a general linear graph, an arc meets other arcs only in finitely many points (in fact, at most two). **)
 Theorem general_linear_graph_arc_overlap_points_finite :
   forall X Tx Arcs E:set,
