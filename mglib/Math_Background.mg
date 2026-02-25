@@ -192500,7 +192500,128 @@ Theorem lemma80_2b_covering_composition :
   continuous_map Y Ty Z Tz r ->
   surjective_map Y Z r ->
   covering_map Y Ty Z Tz r.
-admit.
+let X Tx Y Ty Z Tz q r.
+assume HpcX HlpX HpcY HlpY HpcZ HlpZ Hcovp Hcovq Hcontr Hsurjr.
+set p := compose_fun X q r.
+
+claim Hcontp : continuous_map X Tx Z Tz p.
+{
+  exact (andEL
+    (continuous_map X Tx Z Tz p)
+    (surjective_map X Z p)
+    (andEL
+      (continuous_map X Tx Z Tz p /\ surjective_map X Z p)
+      (forall z:set, z :e Z -> exists U:set, U :e Tz /\ z :e U /\ evenly_covered X Tx Z Tz p U)
+      Hcovp)).
+}
+claim Hneighp :
+  forall z:set, z :e Z -> exists U:set, U :e Tz /\ z :e U /\ evenly_covered X Tx Z Tz p U.
+{
+  exact (andER
+    (continuous_map X Tx Z Tz p /\ surjective_map X Z p)
+    (forall z:set, z :e Z -> exists U:set, U :e Tz /\ z :e U /\ evenly_covered X Tx Z Tz p U)
+    Hcovp).
+}
+claim HtopX : topology_on X Tx.
+{ exact (path_connected_space_topology X Tx HpcX). }
+claim HtopY : topology_on Y Ty.
+{ exact (path_connected_space_topology Y Ty HpcY). }
+claim HtopZ : topology_on Z Tz.
+{ exact (path_connected_space_topology Z Tz HpcZ). }
+claim Hfunq : function_on q X Y.
+{
+  exact (continuous_map_function_on
+    X
+    Tx
+    Y
+    Ty
+    q
+    (andEL
+      (continuous_map X Tx Y Ty q)
+      (surjective_map X Y q)
+      (andEL
+        (continuous_map X Tx Y Ty q /\ surjective_map X Y q)
+        (forall y:set, y :e Y -> exists U:set, U :e Ty /\ y :e U /\ evenly_covered X Tx Y Ty q U)
+        Hcovq))).
+}
+claim Hfunr : function_on r Y Z.
+{ exact (continuous_map_function_on Y Ty Z Tz r Hcontr). }
+
+prove continuous_map Y Ty Z Tz r /\
+  surjective_map Y Z r /\
+  (forall z:set, z :e Z ->
+    exists U:set, U :e Tz /\ z :e U /\ evenly_covered Y Ty Z Tz r U).
+apply and3I.
+- exact Hcontr.
+- exact Hsurjr.
+- let z.
+  assume HzZ.
+  apply (Hneighp z HzZ).
+  let U0.
+  assume HU0pack.
+  apply (and3E
+    (U0 :e Tz)
+    (z :e U0)
+    (evenly_covered X Tx Z Tz p U0)
+    HU0pack).
+  assume HU0Tz HzU0 HevenpU0.
+
+  (** refine to a path-connected evenly covered neighborhood U1 **)
+  apply (locally_path_connected_local Z Tz z U0 HlpZ HzZ HU0Tz HzU0).
+  let U1.
+  assume HU1pack.
+  apply (and4E
+    (U1 :e Tz)
+    (z :e U1)
+    (U1 c= U0)
+    (path_connected_space U1 (subspace_topology Z Tz U1))
+    HU1pack).
+  assume HU1Tz HzU1 HU1subU0 HpcU1.
+  claim HevenpU1 : evenly_covered X Tx Z Tz p U1.
+  {
+    exact (evenly_covered_open_subset_top
+      X Tx Z Tz p U0 U1
+      HtopX
+      HevenpU0
+      HU1Tz
+      HU1subU0).
+  }
+
+  (** unfold evenly covered p over U1 and start building evenly covered r over U1 **)
+  claim HslicesPEx :
+    exists slicesP:set,
+      slicesP c= Tx /\
+      pairwise_disjoint slicesP /\
+      Union slicesP = preimage_of X p U1 /\
+      (forall W:set, W :e slicesP ->
+        homeomorphism W (subspace_topology X Tx W) U1 (subspace_topology Z Tz U1)
+          (graph W (fun x:set => apply_fun p x))).
+  {
+    exact (andER
+      (U1 :e Tz)
+      (exists slices:set,
+        slices c= Tx /\
+        pairwise_disjoint slices /\
+        Union slices = preimage_of X p U1 /\
+        (forall V:set, V :e slices ->
+          homeomorphism V (subspace_topology X Tx V) U1 (subspace_topology Z Tz U1)
+            (graph V (fun x:set => apply_fun p x))))
+      HevenpU1).
+  }
+  apply HslicesPEx.
+  let slicesP.
+  assume HslicesPPack.
+  apply (and4E
+    (slicesP c= Tx)
+    (pairwise_disjoint slicesP)
+    (Union slicesP = preimage_of X p U1)
+    (forall W:set, W :e slicesP ->
+      homeomorphism W (subspace_topology X Tx W) U1 (subspace_topology Z Tz U1)
+        (graph W (fun x:set => apply_fun p x)))
+    HslicesPPack).
+  assume HslicesPSub HpdSlicesP HunionP HhomeP.
+
+  admit. (** TODO: construct slices in Y and show evenly_covered Y Ty Z Tz r U1 **)
 Admitted.
 
 (** from S80 Thm 80.3 (line 4983 in algtop.tex): universal covering covers everything **)
