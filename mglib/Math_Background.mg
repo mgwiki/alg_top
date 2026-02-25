@@ -216310,6 +216310,31 @@ admit.
 Admitted.
 
 (** Proven Bob **)
+Theorem lemma84_2_tree_extension_subgraph_part :
+  forall T ArcsT X Tx Arcs A:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e Arcs -> ~(A c= T) ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  subgraph_of (T :\/: A) X Tx Arcs.
+let T ArcsT X Tx Arcs A.
+assume Htree HA Hnsub Hmeet.
+exact (subgraph_of_union_with_arc
+  T
+  X
+  Tx
+  Arcs
+  A
+  (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree)
+  HA).
+Qed.
+
+(** Proven Bob **)
 Theorem single_vertex_intersection_witness_in_both :
   forall T A v:set,
   T :/\: A = Sing v ->
