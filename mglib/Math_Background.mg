@@ -186502,6 +186502,70 @@ exact (surjective_map_mem_image_iff_exists_preimage_point
 Qed.
 
 (** Proven Bob **)
+Theorem surjective_map_mem_image_implies_exists_preimage_point :
+  forall E X pi y:set,
+  surjective_map E X pi ->
+  y :e image_of pi E ->
+  exists x:set, x :e E /\ apply_fun pi x = y.
+let E X pi y.
+assume Hsurj HyImg.
+exact ((andEL
+  (y :e image_of pi E -> (exists x:set, x :e E /\ apply_fun pi x = y))
+  ((exists x:set, x :e E /\ apply_fun pi x = y) -> y :e image_of pi E)
+  (surjective_map_mem_image_iff_exists_preimage_point E X pi y Hsurj))
+  HyImg).
+Qed.
+
+(** Proven Bob **)
+Theorem surjective_map_exists_preimage_point_implies_mem_image :
+  forall E X pi y:set,
+  surjective_map E X pi ->
+  (exists x:set, x :e E /\ apply_fun pi x = y) ->
+  y :e image_of pi E.
+let E X pi y.
+assume Hsurj HxPack.
+exact ((andER
+  (y :e image_of pi E -> (exists x:set, x :e E /\ apply_fun pi x = y))
+  ((exists x:set, x :e E /\ apply_fun pi x = y) -> y :e image_of pi E)
+  (surjective_map_mem_image_iff_exists_preimage_point E X pi y Hsurj))
+  HxPack).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_mem_image_implies_exists_preimage_point :
+  forall E Te X pi y:set,
+  quotient_map E Te X pi ->
+  y :e image_of pi E ->
+  exists x:set, x :e E /\ apply_fun pi x = y.
+let E Te X pi y.
+assume Hquot HyImg.
+exact (surjective_map_mem_image_implies_exists_preimage_point
+  E
+  X
+  pi
+  y
+  (quotient_map_implies_surjective_map E Te X pi Hquot)
+  HyImg).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_exists_preimage_point_implies_mem_image :
+  forall E Te X pi y:set,
+  quotient_map E Te X pi ->
+  (exists x:set, x :e E /\ apply_fun pi x = y) ->
+  y :e image_of pi E.
+let E Te X pi y.
+assume Hquot HxPack.
+exact (surjective_map_exists_preimage_point_implies_mem_image
+  E
+  X
+  pi
+  y
+  (quotient_map_implies_surjective_map E Te X pi Hquot)
+  HxPack).
+Qed.
+
+(** Proven Bob **)
 Theorem surjective_map_not_mem_image_iff_no_preimage_point :
   forall E X pi y:set,
   surjective_map E X pi ->
@@ -186540,6 +186604,36 @@ apply iffI.
 Qed.
 
 (** Proven Bob **)
+Theorem surjective_map_not_mem_image_implies_no_preimage_point :
+  forall E X pi y:set,
+  surjective_map E X pi ->
+  y /:e image_of pi E ->
+  ~ (exists x:set, x :e E /\ apply_fun pi x = y).
+let E X pi y.
+assume Hsurj HyNotImg.
+exact ((andEL
+  (y /:e image_of pi E -> ~ (exists x:set, x :e E /\ apply_fun pi x = y))
+  (~ (exists x:set, x :e E /\ apply_fun pi x = y) -> y /:e image_of pi E)
+  (surjective_map_not_mem_image_iff_no_preimage_point E X pi y Hsurj))
+  HyNotImg).
+Qed.
+
+(** Proven Bob **)
+Theorem surjective_map_no_preimage_point_implies_not_mem_image :
+  forall E X pi y:set,
+  surjective_map E X pi ->
+  ~ (exists x:set, x :e E /\ apply_fun pi x = y) ->
+  y /:e image_of pi E.
+let E X pi y.
+assume Hsurj HnoPt.
+exact ((andER
+  (y /:e image_of pi E -> ~ (exists x:set, x :e E /\ apply_fun pi x = y))
+  (~ (exists x:set, x :e E /\ apply_fun pi x = y) -> y /:e image_of pi E)
+  (surjective_map_not_mem_image_iff_no_preimage_point E X pi y Hsurj))
+  HnoPt).
+Qed.
+
+(** Proven Bob **)
 Theorem quotient_map_not_mem_image_iff_no_preimage_point :
   forall E Te X pi y:set,
   quotient_map E Te X pi ->
@@ -186552,6 +186646,40 @@ exact (surjective_map_not_mem_image_iff_no_preimage_point
   pi
   y
   (quotient_map_implies_surjective_map E Te X pi Hquot)).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_not_mem_image_implies_no_preimage_point :
+  forall E Te X pi y:set,
+  quotient_map E Te X pi ->
+  y /:e image_of pi E ->
+  ~ (exists x:set, x :e E /\ apply_fun pi x = y).
+let E Te X pi y.
+assume Hquot HyNotImg.
+exact (surjective_map_not_mem_image_implies_no_preimage_point
+  E
+  X
+  pi
+  y
+  (quotient_map_implies_surjective_map E Te X pi Hquot)
+  HyNotImg).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_no_preimage_point_implies_not_mem_image :
+  forall E Te X pi y:set,
+  quotient_map E Te X pi ->
+  ~ (exists x:set, x :e E /\ apply_fun pi x = y) ->
+  y /:e image_of pi E.
+let E Te X pi y.
+assume Hquot HnoPt.
+exact (surjective_map_no_preimage_point_implies_not_mem_image
+  E
+  X
+  pi
+  y
+  (quotient_map_implies_surjective_map E Te X pi Hquot)
+  HnoPt).
 Qed.
 
 (** Proven Bob **)
