@@ -190021,7 +190021,174 @@ Theorem lemma80_2a_covering_composition :
   covering_map Y Ty Z Tz r ->
   continuous_map X Tx Y Ty q ->
   covering_map X Tx Y Ty q.
-admit.
+let X Tx Y Ty Z Tz q r.
+assume HpcX HlpX HpcY HlpY HpcZ HlpZ Hcovp Hcovr Hcontq.
+set p := compose_fun X q r.
+claim Hcontp : continuous_map X Tx Z Tz p.
+{
+  exact (andEL
+    (continuous_map X Tx Z Tz p)
+    (surjective_map X Z p)
+    (andEL
+      (continuous_map X Tx Z Tz p /\ surjective_map X Z p)
+      (forall z:set, z :e Z -> exists U:set, U :e Tz /\ z :e U /\ evenly_covered X Tx Z Tz p U)
+      Hcovp)).
+}
+claim Hsurjp : surjective_map X Z p.
+{
+  exact (andER
+    (continuous_map X Tx Z Tz p)
+    (surjective_map X Z p)
+    (andEL
+      (continuous_map X Tx Z Tz p /\ surjective_map X Z p)
+      (forall z:set, z :e Z -> exists U:set, U :e Tz /\ z :e U /\ evenly_covered X Tx Z Tz p U)
+      Hcovp)).
+}
+claim Hcontr : continuous_map Y Ty Z Tz r.
+{
+  exact (andEL
+    (continuous_map Y Ty Z Tz r)
+    (surjective_map Y Z r)
+    (andEL
+      (continuous_map Y Ty Z Tz r /\ surjective_map Y Z r)
+      (forall z:set, z :e Z -> exists U:set, U :e Tz /\ z :e U /\ evenly_covered Y Ty Z Tz r U)
+      Hcovr)).
+}
+claim Hsurjr : surjective_map Y Z r.
+{
+  exact (andER
+    (continuous_map Y Ty Z Tz r)
+    (surjective_map Y Z r)
+    (andEL
+      (continuous_map Y Ty Z Tz r /\ surjective_map Y Z r)
+      (forall z:set, z :e Z -> exists U:set, U :e Tz /\ z :e U /\ evenly_covered Y Ty Z Tz r U)
+      Hcovr)).
+}
+claim Hfunq : function_on q X Y.
+{ exact (continuous_map_function_on X Tx Y Ty q Hcontq). }
+claim Hfunr : function_on r Y Z.
+{ exact (continuous_map_function_on Y Ty Z Tz r Hcontr). }
+claim Hfunp : function_on p X Z.
+{ exact (continuous_map_function_on X Tx Z Tz p Hcontp). }
+claim HtopX : topology_on X Tx.
+{ exact (path_connected_space_topology X Tx HpcX). }
+claim HtopY : topology_on Y Ty.
+{ exact (path_connected_space_topology Y Ty HpcY). }
+claim HtopZ : topology_on Z Tz.
+{ exact (path_connected_space_topology Z Tz HpcZ). }
+
+prove continuous_map X Tx Y Ty q /\
+  surjective_map X Y q /\
+  (forall y:set, y :e Y -> exists U:set, U :e Ty /\ y :e U /\ evenly_covered X Tx Y Ty q U).
+apply and3I.
+- exact Hcontq.
+- (** surjectivity of q using path lifting and uniqueness for r **)
+  prove function_on q X Y /\ forall y:set, y :e Y -> exists x:set, x :e X /\ apply_fun q x = y.
+  apply andI.
+  + exact Hfunq.
+  + let y.
+    assume HyY.
+    set z := apply_fun r y.
+    claim HzZ : z :e Z.
+    { exact (Hfunr y HyY). }
+    apply (surjective_map_has_preimage X Z p z Hsurjp HzZ).
+    let x0.
+    assume Hx0pack.
+    claim Hx0X : x0 :e X.
+    { exact (andEL (x0 :e X) (apply_fun p x0 = z) Hx0pack). }
+    claim Hpx0 : apply_fun p x0 = z.
+    { exact (andER (x0 :e X) (apply_fun p x0 = z) Hx0pack). }
+    claim Hqx0Y : apply_fun q x0 :e Y.
+    { exact (Hfunq x0 Hx0X). }
+    apply (path_connected_space_paths Y Ty (apply_fun q x0) y HpcY Hqx0Y HyY).
+    let beta.
+    assume HbetaPack.
+    claim HbetaBetween : path_between Y (apply_fun q x0) y beta.
+    { exact (path_witness_between Y Ty (apply_fun q x0) y beta HbetaPack). }
+    claim HbetaCont : continuous_map unit_interval unit_interval_topology Y Ty beta.
+    { exact (path_witness_continuous Y Ty (apply_fun q x0) y beta HbetaPack). }
+    set f := compose_fun unit_interval beta r.
+    claim HfCont : continuous_map unit_interval unit_interval_topology Z Tz f.
+    { exact (composition_continuous unit_interval unit_interval_topology Y Ty Z Tz beta r HbetaCont Hcontr). }
+    claim Hstart : apply_fun p x0 = apply_fun f 0.
+    {
+      rewrite (compose_fun_apply unit_interval beta r 0 zero_in_unit_interval).
+      rewrite (path_between_at_zero Y (apply_fun q x0) y beta HbetaBetween).
+      rewrite (compose_fun_apply X q r x0 Hx0X).
+      reflexivity.
+    }
+    claim HliftPack :
+      continuous_map unit_interval unit_interval_topology X Tx (path_lift X Tx Z Tz p x0 f) /\
+      apply_fun (path_lift X Tx Z Tz p x0 f) 0 = x0 /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun (path_lift X Tx Z Tz p x0 f) t) = apply_fun f t).
+    { exact (lemma54_1_path_lifting X Tx Z Tz p x0 f Hcovp Hx0X Hstart HfCont). }
+    set gamma := path_lift X Tx Z Tz p x0 f.
+    apply (and3E
+      (continuous_map unit_interval unit_interval_topology X Tx gamma)
+      (apply_fun gamma 0 = x0)
+      (forall t:set, t :e unit_interval -> apply_fun p (apply_fun gamma t) = apply_fun f t)
+      HliftPack).
+    assume HgammaCont Hgamma0 HgammaComm.
+    set qt := compose_fun unit_interval gamma q.
+    claim HqtCont : continuous_map unit_interval unit_interval_topology Y Ty qt.
+    { exact (composition_continuous unit_interval unit_interval_topology X Tx Y Ty gamma q HgammaCont Hcontq). }
+    claim HqtLift : lifting_of unit_interval unit_interval_topology Y Ty Z Tz r f qt.
+    {
+      prove continuous_map unit_interval unit_interval_topology Y Ty qt /\
+        (forall t:set, t :e unit_interval -> apply_fun r (apply_fun qt t) = apply_fun f t).
+      apply andI.
+      - exact HqtCont.
+      - let t.
+        assume HtI.
+        rewrite (compose_fun_apply unit_interval gamma q t HtI).
+        rewrite <- (compose_fun_apply
+          X
+          q
+          r
+          (apply_fun gamma t)
+          (continuous_map_function_on unit_interval unit_interval_topology X Tx gamma HgammaCont t HtI)).
+        exact (HgammaComm t HtI).
+    }
+    claim HbetaLift : lifting_of unit_interval unit_interval_topology Y Ty Z Tz r f beta.
+    {
+      prove continuous_map unit_interval unit_interval_topology Y Ty beta /\
+        (forall t:set, t :e unit_interval -> apply_fun r (apply_fun beta t) = apply_fun f t).
+      apply andI.
+      - exact HbetaCont.
+      - let t.
+        assume HtI.
+        rewrite (compose_fun_apply unit_interval beta r t HtI).
+        reflexivity.
+    }
+    claim Hqt0 : apply_fun qt 0 = apply_fun beta 0.
+    {
+      rewrite (compose_fun_apply unit_interval gamma q 0 zero_in_unit_interval).
+      rewrite Hgamma0.
+      rewrite (path_between_at_zero Y (apply_fun q x0) y beta HbetaBetween).
+      reflexivity.
+    }
+    claim HqtEqBeta :
+      forall t:set, t :e unit_interval -> apply_fun qt t = apply_fun beta t.
+    {
+      exact (lemma54_1_path_lifting_unique
+        Y Ty Z Tz r (apply_fun beta 0) f qt beta
+        Hcovr
+        (path_between_function_on Y (apply_fun q x0) y beta HbetaBetween 0 zero_in_unit_interval)
+        (composition_continuous unit_interval unit_interval_topology Y Ty Z Tz beta r HbetaCont Hcontr)
+        HqtLift
+        Hqt0
+        HbetaLift
+        (fun P H => H)).
+    }
+    witness (apply_fun gamma 1).
+    apply andI.
+    - exact (continuous_map_function_on unit_interval unit_interval_topology X Tx gamma HgammaCont 1 one_in_unit_interval).
+    - rewrite <- (compose_fun_apply unit_interval gamma q 1 one_in_unit_interval).
+      rewrite (HqtEqBeta 1 one_in_unit_interval).
+      exact (path_between_at_one Y (apply_fun q x0) y beta HbetaBetween).
+- (** local evenly covered neighborhoods for q **)
+  admit.
 Admitted.
 
 (** from S80 Lem 80.2b (line 4965 in algtop.tex): if p and q covering, so is r **)
