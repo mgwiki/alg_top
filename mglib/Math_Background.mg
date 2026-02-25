@@ -158312,7 +158312,6 @@ Qed.
 (** phi: G -> G' such that phi o i_alpha = i'_alpha. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 107 **)
-(** Lock Alice 1772012635 **)
 Theorem thm67_6_uniqueness_direct_sum :
   forall J Gfam multfam G multG eG invG ifam G' multG' eG' invG' ifam':set,
   abelian_group G multG eG invG ->
@@ -219766,10 +219765,35 @@ apply iffI.
       Hmax).
   * (** remaining forward gap:
         maximal tree should contain all ambient vertices.
-        planned route: assume x :e graph_vertices X Tx Arcs with x /:e T,
-        use maximal_tree_vertex_outside_yields_edge_not_subset + lemma84_2_tree_extension
-        to construct a strictly larger tree, contradiction to maximality. **)
-    admit.
+        This is now reduced to a single extension-producing obligation
+        via `maximal_tree_all_vertices_if_noncontained_edges_meet_tree_and_extend`. **)
+    claim Hbridge :
+      (forall A:set, A :e Arcs -> ~(A c= T) ->
+        exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
+          tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs) ->
+      graph_vertices X Tx Arcs c= T.
+    {
+      exact (maximal_tree_all_vertices_if_noncontained_edges_meet_tree_and_extend
+        T
+        ArcsT
+        X
+        Tx
+        Arcs
+        Hmax).
+    }
+    claim Hext_goal :
+      forall A:set, A :e Arcs -> ~(A c= T) ->
+      exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
+        tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
+    {
+      (** remaining subgap:
+          produce single-vertex meeting witness and extension for each noncontained edge.
+          expected route:
+          - use graph/connected hypotheses to obtain the meeting witness,
+          - apply `lemma84_2_tree_extension` for the extension part. **)
+      admit.
+    }
+    exact (Hbridge Hext_goal).
 - assume Hrhs.
   claim Htree : tree_in_graph T ArcsT X Tx Arcs.
   {
