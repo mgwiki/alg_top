@@ -210123,6 +210123,56 @@ exact (UnionI
   HA).
 Qed.
 
+(** Proven Bob **)
+Theorem union_selected_arcs_subset_Y :
+  forall Y Arcs:set,
+  Union {B :e Arcs | B c= Y} c= Y.
+let Y Arcs.
+let x.
+assume HxU.
+apply (UnionE
+  {B :e Arcs | B c= Y}
+  x
+  HxU).
+let A.
+assume HxApack.
+claim HxA : x :e A.
+{
+  exact (andEL
+    (x :e A)
+    (A :e {B :e Arcs | B c= Y})
+    HxApack).
+}
+claim HAInSel : A :e {B :e Arcs | B c= Y}.
+{
+  exact (andER
+    (x :e A)
+    (A :e {B :e Arcs | B c= Y})
+    HxApack).
+}
+claim HAsubY : A c= Y.
+{
+  exact (SepE2
+    Arcs
+    (fun B:set => B c= Y)
+    A
+    HAInSel).
+}
+exact (HAsubY x HxA).
+Qed.
+
+(** Proven Bob **)
+Theorem subgraph_of_selected_union_subset_Y :
+  forall Y X Tx Arcs:set,
+  subgraph_of Y X Tx Arcs ->
+  Union {B :e Arcs | B c= Y} c= Y.
+let Y X Tx Arcs.
+assume Hsub.
+exact (union_selected_arcs_subset_Y
+  Y
+  Arcs).
+Qed.
+
 (** Infrastructure: vertices of a linear graph **)
 Definition graph_vertices : set -> set -> set -> set :=
   fun X Tx Arcs =>
@@ -210673,6 +210723,44 @@ exact (SepI
   x
   HxX
   HxPred).
+Qed.
+
+(** Proven Bob **)
+Theorem graph_vertices_selected_arcs_subset_union_selected_arcs :
+  forall X Tx Arcs Y:set,
+  graph_vertices X Tx {B :e Arcs | B c= Y} c=
+  Union {B :e Arcs | B c= Y}.
+let X Tx Arcs Y.
+let x.
+assume HxSel.
+apply (graph_vertices_member_in_some_arc
+  X
+  Tx
+  {B :e Arcs | B c= Y}
+  x
+  HxSel).
+let A.
+assume HApack.
+claim HAInSel : A :e {B :e Arcs | B c= Y}.
+{
+  exact (andEL
+    (A :e {B :e Arcs | B c= Y})
+    (x :e A)
+    HApack).
+}
+claim HxA : x :e A.
+{
+  exact (andER
+    (A :e {B :e Arcs | B c= Y})
+    (x :e A)
+    HApack).
+}
+exact (UnionI
+  {B :e Arcs | B c= Y}
+  x
+  A
+  HxA
+  HAInSel).
 Qed.
 
 (** from S83 Lem 83.1 (line 5470 in algtop.tex): linear graphs are normal **)
