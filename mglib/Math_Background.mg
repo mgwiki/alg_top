@@ -197673,6 +197673,182 @@ exact (exists_homeomorphism_reflects_not_completely_regular_space
   X Tx Y Ty Hhex HnY).
 Qed.
 
+(** Proven Bob **)
+Theorem homeomorphism_metrizable_iff_short :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (metrizable X Tx <-> metrizable Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+exact (homeomorphism_metrizable_iff
+  X Tx Y Ty f Hhome).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_metrizable_iff_short :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (metrizable X Tx <-> metrizable Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+exact (exists_homeomorphism_metrizable_iff
+  X Tx Y Ty Hhex).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_locally_compact_iff_short :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (locally_compact X Tx <-> locally_compact Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+exact (homeomorphism_locally_compact_iff
+  X Tx Y Ty f Hhome).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_locally_compact_iff_short :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (locally_compact X Tx <-> locally_compact Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+exact (exists_homeomorphism_locally_compact_iff
+  X Tx Y Ty Hhex).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_not_metrizable_iff_short :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ metrizable X Tx <-> ~ metrizable Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+exact (homeomorphism_not_metrizable_iff
+  X Tx Y Ty f Hhome).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_metrizable_iff_short :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ metrizable X Tx <-> ~ metrizable Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+exact (exists_homeomorphism_not_metrizable_iff
+  X Tx Y Ty Hhex).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_not_locally_compact_iff_short :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ locally_compact X Tx <-> ~ locally_compact Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+exact (homeomorphism_not_locally_compact_iff
+  X Tx Y Ty f Hhome).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_locally_compact_iff_short :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ locally_compact X Tx <-> ~ locally_compact Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+exact (exists_homeomorphism_not_locally_compact_iff
+  X Tx Y Ty Hhex).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_metrizable_transfer_short :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (metrizable X Tx <-> metrizable Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+exact (homeomorphism_metrizable_transfer
+  X Tx Y Ty f Hhome).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_metrizable_transfer_short :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (metrizable X Tx <-> metrizable Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+exact (exists_homeomorphism_metrizable_transfer
+  X Tx Y Ty Hhex).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_locally_compact_transfer_short :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (locally_compact X Tx <-> locally_compact Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+exact (homeomorphism_locally_compact_transfer
+  X Tx Y Ty f Hhome).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_locally_compact_transfer_short :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (locally_compact X Tx <-> locally_compact Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+exact (exists_homeomorphism_locally_compact_transfer
+  X Tx Y Ty Hhex).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_not_metrizable_transfer_short :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ metrizable X Tx <-> ~ metrizable Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+exact (homeomorphism_not_metrizable_transfer
+  X Tx Y Ty f Hhome).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_metrizable_transfer_short :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ metrizable X Tx <-> ~ metrizable Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+exact (exists_homeomorphism_not_metrizable_transfer
+  X Tx Y Ty Hhex).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_not_locally_compact_transfer_short :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ locally_compact X Tx <-> ~ locally_compact Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+exact (homeomorphism_not_locally_compact_transfer
+  X Tx Y Ty f Hhome).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_locally_compact_transfer_short :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ locally_compact X Tx <-> ~ locally_compact Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+exact (exists_homeomorphism_not_locally_compact_transfer
+  X Tx Y Ty Hhex).
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
