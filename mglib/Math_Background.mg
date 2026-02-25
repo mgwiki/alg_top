@@ -220891,28 +220891,6 @@ apply iffI.
         This is reduced to producing, for each noncontained edge, a
         single-vertex intersection plus the three extension components
         (general-linear-graph, connectedness, no reduced closed path). **)
-    claim Hbridge :
-      (forall A:set, A :e Arcs -> ~(A c= T) ->
-        exists v:set,
-          v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
-          general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
-          connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
-          ~(exists n path_seq x0:set,
-              n :e omega /\ n <> 0 /\
-              reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
-                ({A} :\/: ArcsT) n path_seq x0 /\
-              (exists j:set, j :e n /\ ordsucc j /:e n /\
-                (apply_fun path_seq j) 0 1 = x0))) ->
-      graph_vertices X Tx Arcs c= T.
-    {
-      exact (maximal_tree_all_vertices_if_noncontained_edges_meet_tree_and_component_extension
-        T
-        ArcsT
-        X
-        Tx
-        Arcs
-        Hmax).
-    }
     claim Hext_goal :
       forall A:set, A :e Arcs -> ~(A c= T) ->
       exists v:set,
@@ -220935,7 +220913,25 @@ apply iffI.
           - show no closed reduced edge path for the enlarged edge family. **)
       admit.
     }
-    exact (Hbridge Hext_goal).
+    let x.
+    assume HxVert.
+    apply (xm (x :e T)).
+    + assume HxT.
+      exact HxT.
+    + assume HxNotT.
+      exact (FalseE
+        (maximal_tree_outside_vertex_component_extension_contradiction_from_noncontained_edges
+          T
+          ArcsT
+          X
+          Tx
+          Arcs
+          x
+          Hmax
+          Hext_goal
+          HxVert
+          HxNotT)
+        (x :e T)).
 - assume Hrhs.
   claim Htree : tree_in_graph T ArcsT X Tx Arcs.
   {
