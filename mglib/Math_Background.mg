@@ -196047,6 +196047,375 @@ exact (exists_homeomorphism_not_simply_connected_iff
   X Tx Y Ty Hhex).
 Qed.
 
+(** Compatibility aliases: local compactness/metrizability names with _space suffix. **)
+(** Proven Bob **)
+Theorem homeomorphism_locally_compact_space_implies :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  locally_compact X Tx ->
+  locally_compact Y Ty.
+let X Tx Y Ty f.
+assume Hhome HlocX.
+exact (homeomorphism_locally_compact_implies
+  X Tx Y Ty f Hhome HlocX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_locally_compact_space_of :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  locally_compact Y Ty ->
+  locally_compact X Tx.
+let X Tx Y Ty f.
+assume Hhome HlocY.
+exact (homeomorphism_locally_compact_of
+  X Tx Y Ty f Hhome HlocY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_locally_compact_space_implies :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  locally_compact X Tx ->
+  locally_compact Y Ty.
+let X Tx Y Ty.
+assume Hhex HlocX.
+exact (exists_homeomorphism_locally_compact_implies
+  X Tx Y Ty Hhex HlocX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_locally_compact_space_of :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  locally_compact Y Ty ->
+  locally_compact X Tx.
+let X Tx Y Ty.
+assume Hhex HlocY.
+exact (exists_homeomorphism_locally_compact_of
+  X Tx Y Ty Hhex HlocY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_metrizable_space_implies :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  metrizable X Tx ->
+  metrizable Y Ty.
+let X Tx Y Ty f.
+assume Hhome HmetX.
+exact (homeomorphism_metrizable_implies
+  X Tx Y Ty f Hhome HmetX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_metrizable_space_of :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  metrizable Y Ty ->
+  metrizable X Tx.
+let X Tx Y Ty f.
+assume Hhome HmetY.
+exact (homeomorphism_metrizable_of
+  X Tx Y Ty f Hhome HmetY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_metrizable_space_implies :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  metrizable X Tx ->
+  metrizable Y Ty.
+let X Tx Y Ty.
+assume Hhex HmetX.
+exact (exists_homeomorphism_metrizable_implies
+  X Tx Y Ty Hhex HmetX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_metrizable_space_of :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  metrizable Y Ty ->
+  metrizable X Tx.
+let X Tx Y Ty.
+assume Hhex HmetY.
+exact (exists_homeomorphism_metrizable_of
+  X Tx Y Ty Hhex HmetY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_not_locally_compact_space_implies :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ locally_compact X Tx ->
+  ~ locally_compact Y Ty.
+let X Tx Y Ty f.
+assume Hhome HnX.
+exact (homeomorphism_not_locally_compact_implies
+  X Tx Y Ty f Hhome HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_not_locally_compact_space_of :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ locally_compact Y Ty ->
+  ~ locally_compact X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_not_locally_compact_of
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_locally_compact_space_implies :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ locally_compact X Tx ->
+  ~ locally_compact Y Ty.
+let X Tx Y Ty.
+assume Hhex HnX.
+exact (exists_homeomorphism_not_locally_compact_implies
+  X Tx Y Ty Hhex HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_locally_compact_space_of :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ locally_compact Y Ty ->
+  ~ locally_compact X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (exists_homeomorphism_not_locally_compact_of
+  X Tx Y Ty Hhex HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_not_metrizable_space_implies :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ metrizable X Tx ->
+  ~ metrizable Y Ty.
+let X Tx Y Ty f.
+assume Hhome HnX.
+exact (homeomorphism_not_metrizable_implies
+  X Tx Y Ty f Hhome HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_not_metrizable_space_of :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ metrizable Y Ty ->
+  ~ metrizable X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_not_metrizable_of
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_metrizable_space_implies :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ metrizable X Tx ->
+  ~ metrizable Y Ty.
+let X Tx Y Ty.
+assume Hhex HnX.
+exact (exists_homeomorphism_not_metrizable_implies
+  X Tx Y Ty Hhex HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_metrizable_space_of :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ metrizable Y Ty ->
+  ~ metrizable X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (exists_homeomorphism_not_metrizable_of
+  X Tx Y Ty Hhex HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_locally_compact_space_iff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (locally_compact X Tx <-> locally_compact Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+exact (homeomorphism_locally_compact_iff
+  X Tx Y Ty f Hhome).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_locally_compact_space_iff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (locally_compact X Tx <-> locally_compact Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+exact (exists_homeomorphism_locally_compact_iff
+  X Tx Y Ty Hhex).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_metrizable_space_iff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (metrizable X Tx <-> metrizable Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+exact (homeomorphism_metrizable_iff
+  X Tx Y Ty f Hhome).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_metrizable_space_iff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (metrizable X Tx <-> metrizable Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+exact (exists_homeomorphism_metrizable_iff
+  X Tx Y Ty Hhex).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_not_locally_compact_space_iff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ locally_compact X Tx <-> ~ locally_compact Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+exact (homeomorphism_not_locally_compact_iff
+  X Tx Y Ty f Hhome).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_locally_compact_space_iff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ locally_compact X Tx <-> ~ locally_compact Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+exact (exists_homeomorphism_not_locally_compact_iff
+  X Tx Y Ty Hhex).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_not_metrizable_space_iff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ metrizable X Tx <-> ~ metrizable Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+exact (homeomorphism_not_metrizable_iff
+  X Tx Y Ty f Hhome).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_metrizable_space_iff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ metrizable X Tx <-> ~ metrizable Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+exact (exists_homeomorphism_not_metrizable_iff
+  X Tx Y Ty Hhex).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_locally_compact_space_transfer :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (locally_compact X Tx <-> locally_compact Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+exact (homeomorphism_locally_compact_transfer
+  X Tx Y Ty f Hhome).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_locally_compact_space_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (locally_compact X Tx <-> locally_compact Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+exact (exists_homeomorphism_locally_compact_transfer
+  X Tx Y Ty Hhex).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_metrizable_space_transfer :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (metrizable X Tx <-> metrizable Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+exact (homeomorphism_metrizable_transfer
+  X Tx Y Ty f Hhome).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_metrizable_space_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (metrizable X Tx <-> metrizable Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+exact (exists_homeomorphism_metrizable_transfer
+  X Tx Y Ty Hhex).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_not_locally_compact_space_transfer :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ locally_compact X Tx <-> ~ locally_compact Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+exact (homeomorphism_not_locally_compact_transfer
+  X Tx Y Ty f Hhome).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_locally_compact_space_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ locally_compact X Tx <-> ~ locally_compact Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+exact (exists_homeomorphism_not_locally_compact_transfer
+  X Tx Y Ty Hhex).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_not_metrizable_space_transfer :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ metrizable X Tx <-> ~ metrizable Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+exact (homeomorphism_not_metrizable_transfer
+  X Tx Y Ty f Hhome).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_metrizable_space_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ metrizable X Tx <-> ~ metrizable Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+exact (exists_homeomorphism_not_metrizable_transfer
+  X Tx Y Ty Hhex).
+Qed.
+
 (** Compatibility aliases: shorter names without `_space` suffix. **)
 (** Proven Bob **)
 Theorem homeomorphism_path_connected_implies :
