@@ -191667,6 +191667,240 @@ exact (homeomorphism_locally_compact_iff
   Hhome).
 Qed.
 
+(** Helper: homeomorphism preserves regularity (forward direction). **)
+(** Proven Bob **)
+Theorem homeomorphism_preserves_regular_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  regular_space X Tx ->
+  regular_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HregX.
+apply (homeomorphism_inverse_package X Tx Y Ty f Hhome).
+let g.
+assume Hgpack.
+claim HgAB :
+  continuous_map Y Ty X Tx g /\
+  (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x).
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+    Hgpack).
+}
+claim HgCont : continuous_map Y Ty X Tx g.
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g)
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+    HgAB).
+}
+claim HleftInv : forall x:set, x :e X -> apply_fun g (apply_fun f x) = x.
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g)
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+    HgAB).
+}
+claim HrightInv : forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y.
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+    Hgpack).
+}
+claim HhomeInv : homeomorphism Y Ty X Tx g.
+{
+  exact (homeomorphism_inverse_is_homeomorphism
+    X
+    Tx
+    Y
+    Ty
+    f
+    g
+    Hhome
+    HgCont
+    HleftInv
+    HrightInv).
+}
+exact (homeomorphism_preserves_regular
+  Y
+  Ty
+  X
+  Tx
+  g
+  HhomeInv
+  HregX).
+Qed.
+
+(** Helper: regularity is invariant under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_regular_space_iff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (regular_space X Tx <-> regular_space Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+apply iffI.
+- assume HregX.
+  exact (homeomorphism_preserves_regular_right
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome
+    HregX).
+- assume HregY.
+  exact (homeomorphism_preserves_regular
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome
+    HregY).
+Qed.
+
+(** Helper: regularity equivalence from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_regular_space_iff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (regular_space X Tx <-> regular_space Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+apply Hhex.
+let h.
+assume Hhome.
+exact (homeomorphism_regular_space_iff
+  X
+  Tx
+  Y
+  Ty
+  h
+  Hhome).
+Qed.
+
+(** Helper: homeomorphism preserves normality (forward direction). **)
+(** Proven Bob **)
+Theorem homeomorphism_preserves_normal_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  normal_space X Tx ->
+  normal_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HnormX.
+apply (homeomorphism_inverse_package X Tx Y Ty f Hhome).
+let g.
+assume Hgpack.
+claim HgAB :
+  continuous_map Y Ty X Tx g /\
+  (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x).
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+    Hgpack).
+}
+claim HgCont : continuous_map Y Ty X Tx g.
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g)
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+    HgAB).
+}
+claim HleftInv : forall x:set, x :e X -> apply_fun g (apply_fun f x) = x.
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g)
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+    HgAB).
+}
+claim HrightInv : forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y.
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+    Hgpack).
+}
+claim HhomeInv : homeomorphism Y Ty X Tx g.
+{
+  exact (homeomorphism_inverse_is_homeomorphism
+    X
+    Tx
+    Y
+    Ty
+    f
+    g
+    Hhome
+    HgCont
+    HleftInv
+    HrightInv).
+}
+exact (homeomorphism_preserves_normal
+  Y
+  Ty
+  X
+  Tx
+  g
+  HhomeInv
+  HnormX).
+Qed.
+
+(** Helper: normality is invariant under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_normal_space_iff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (normal_space X Tx <-> normal_space Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+apply iffI.
+- assume HnormX.
+  exact (homeomorphism_preserves_normal_right
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome
+    HnormX).
+- assume HnormY.
+  exact (homeomorphism_preserves_normal
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome
+    HnormY).
+Qed.
+
+(** Helper: normality equivalence from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_normal_space_iff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (normal_space X Tx <-> normal_space Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+apply Hhex.
+let h.
+assume Hhome.
+exact (homeomorphism_normal_space_iff
+  X
+  Tx
+  Y
+  Ty
+  h
+  Hhome).
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
