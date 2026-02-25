@@ -225007,6 +225007,103 @@ exact (selected_arc_subset_from_noncontained_selected_arc_contradiction
 Qed.
 
 (** Proven Bob **)
+Theorem thm84_4_backward_maximality_from_selected_arc_subset_condition_via_bridges :
+  forall T ArcsT X Tx Arcs:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  graph_vertices X Tx Arcs c= T ->
+  (forall T' ArcsT':set,
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' ->
+    (forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T)) ->
+  maximal_tree T ArcsT X Tx Arcs.
+let T ArcsT X Tx Arcs.
+assume Htree HVT HallCond.
+exact (thm84_4_backward_maximality_from_selected_arc_subset_condition
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Htree
+  HVT
+  HallCond).
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_backward_maximality_from_selected_arc_noncontained_contradiction_via_bridges :
+  forall T ArcsT X Tx Arcs:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  graph_vertices X Tx Arcs c= T ->
+  (forall T' ArcsT':set,
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' ->
+    (forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False)) ->
+  maximal_tree T ArcsT X Tx Arcs.
+let T ArcsT X Tx Arcs.
+assume Htree HVT HcontraCond.
+exact (thm84_4_backward_maximality_from_selected_arc_noncontained_contradiction
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Htree
+  HVT
+  HcontraCond).
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_backward_maximality_from_component_obligation_via_bridges :
+  forall T ArcsT X Tx Arcs:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  (forall T' ArcsT':set,
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' ->
+    forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False) ->
+  maximal_tree T ArcsT X Tx Arcs.
+let T ArcsT X Tx Arcs.
+assume Hrhs HgwdOb.
+exact (thm84_4_backward_maximality_from_component_obligation
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hrhs
+  HgwdOb).
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_backward_selected_arc_subset_from_component_obligation_via_bridges :
+  forall T ArcsT X Tx Arcs:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  (forall T' ArcsT':set,
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' ->
+    forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False) ->
+  forall T' ArcsT':set,
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' ->
+    forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T.
+let T ArcsT X Tx Arcs.
+assume Hrhs HgwdOb.
+let T' ArcsT'.
+assume Htree' HTsub.
+exact (thm84_4_backward_selected_arc_subset_from_component_obligation
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hrhs
+  HgwdOb
+  T'
+  ArcsT'
+  Htree'
+  HTsub).
+Qed.
+
+(** Proven Bob **)
 Theorem thm84_4_backward_selected_arc_endpoints_in_target_from_rhs :
   forall T ArcsT T' ArcsT' X Tx Arcs A p q:set,
   (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
