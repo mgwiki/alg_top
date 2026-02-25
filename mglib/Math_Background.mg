@@ -214556,6 +214556,234 @@ exact (tree_in_graph_vertices_selected_subset_vertices
     Hmax)).
 Qed.
 
+(** Proven Bob **)
+Theorem tree_in_graph_selected_arc_endpoint_left_in_T :
+  forall T ArcsT X Tx Arcs A p q:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e {B :e Arcs | B c= T} ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  p :e T.
+let T ArcsT X Tx Arcs A p q.
+assume Htree HA Hend.
+exact (subgraph_of_selected_arc_endpoint_left_in_Y
+  T
+  X
+  Tx
+  Arcs
+  A
+  p
+  q
+  (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree)
+  HA
+  Hend).
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_selected_arc_endpoint_right_in_T :
+  forall T ArcsT X Tx Arcs A p q:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e {B :e Arcs | B c= T} ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  q :e T.
+let T ArcsT X Tx Arcs A p q.
+assume Htree HA Hend.
+exact (subgraph_of_selected_arc_endpoint_right_in_Y
+  T
+  X
+  Tx
+  Arcs
+  A
+  p
+  q
+  (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree)
+  HA
+  Hend).
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_selected_arc_endpoint_left_vertex :
+  forall T ArcsT X Tx Arcs A p q:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e {B :e Arcs | B c= T} ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  p :e graph_vertices X Tx Arcs.
+let T ArcsT X Tx Arcs A p q.
+assume Htree HA Hend.
+exact (subgraph_of_selected_arc_endpoint_left_vertex
+  T
+  X
+  Tx
+  Arcs
+  A
+  p
+  q
+  (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree)
+  HA
+  Hend).
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_selected_arc_endpoint_right_vertex :
+  forall T ArcsT X Tx Arcs A p q:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e {B :e Arcs | B c= T} ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  q :e graph_vertices X Tx Arcs.
+let T ArcsT X Tx Arcs A p q.
+assume Htree HA Hend.
+exact (subgraph_of_selected_arc_endpoint_right_vertex
+  T
+  X
+  Tx
+  Arcs
+  A
+  p
+  q
+  (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree)
+  HA
+  Hend).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_selected_arc_endpoint_left_in_T :
+  forall T ArcsT X Tx Arcs A p q:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  A :e {B :e Arcs | B c= T} ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  p :e T.
+let T ArcsT X Tx Arcs A p q.
+assume Hmax HA Hend.
+exact (tree_in_graph_selected_arc_endpoint_left_in_T
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  p
+  q
+  (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax)
+  HA
+  Hend).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_selected_arc_endpoint_right_in_T :
+  forall T ArcsT X Tx Arcs A p q:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  A :e {B :e Arcs | B c= T} ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  q :e T.
+let T ArcsT X Tx Arcs A p q.
+assume Hmax HA Hend.
+exact (tree_in_graph_selected_arc_endpoint_right_in_T
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  p
+  q
+  (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax)
+  HA
+  Hend).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_selected_arc_endpoint_left_vertex :
+  forall T ArcsT X Tx Arcs A p q:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  A :e {B :e Arcs | B c= T} ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  p :e graph_vertices X Tx Arcs.
+let T ArcsT X Tx Arcs A p q.
+assume Hmax HA Hend.
+exact (tree_in_graph_selected_arc_endpoint_left_vertex
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  p
+  q
+  (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax)
+  HA
+  Hend).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_selected_arc_endpoint_right_vertex :
+  forall T ArcsT X Tx Arcs A p q:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  A :e {B :e Arcs | B c= T} ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  q :e graph_vertices X Tx Arcs.
+let T ArcsT X Tx Arcs A p q.
+assume Hmax HA Hend.
+exact (tree_in_graph_selected_arc_endpoint_right_vertex
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  p
+  q
+  (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax)
+  HA
+  Hend).
+Qed.
+
 (** from S84 Lem 84.1 (line 5563 in algtop.tex): connected iff edge paths **)
 (** LATEX VERSION: A graph X is connected iff every pair of vertices can be **)
 (** joined by an edge path. **)
