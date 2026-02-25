@@ -228422,9 +228422,186 @@ claim HinterFamTA :
           HFA
           HEArcsT
           HFEnq)).
-    + assume HFArcsT.
-      (** Remaining: internal ArcsT/ArcsT case with endpoint transport to (T :\/: A)-subspaces. **)
-      admit.
+	    + assume HFArcsT.
+	      (** Remaining: internal ArcsT/ArcsT case with endpoint transport to (T :\/: A)-subspaces. **)
+	      claim HinterEF_T :
+	        E :/\: F = Empty \/
+	        (exists p:set, E :/\: F = Sing p /\
+	          (exists q:set,
+	            end_points_of_arc E (subspace_topology T (subspace_topology X Tx T) E) p q \/
+	            end_points_of_arc E (subspace_topology T (subspace_topology X Tx T) E) q p) /\
+	          (exists r:set,
+	            end_points_of_arc F (subspace_topology T (subspace_topology X Tx T) F) p r \/
+	            end_points_of_arc F (subspace_topology T (subspace_topology X Tx T) F) r p)).
+	      {
+	        exact (general_linear_graph_arc_intersection_case
+	          T
+	          (subspace_topology X Tx T)
+	          ArcsT
+	          E
+	          F
+	          HglgT
+	          HEArcsT
+	          HFArcsT
+	          Hneq).
+	      }
+	      claim HESubT : E c= T.
+	      {
+	        exact (andEL
+	          (E c= T)
+	          (arc E (subspace_topology T (subspace_topology X Tx T) E))
+	          (general_linear_graph_arc_data
+	            T
+	            (subspace_topology X Tx T)
+	            ArcsT
+	            E
+	            HglgT
+	            HEArcsT)).
+	      }
+	      claim HFSubT : F c= T.
+	      {
+	        exact (andEL
+	          (F c= T)
+	          (arc F (subspace_topology T (subspace_topology X Tx T) F))
+	          (general_linear_graph_arc_data
+	            T
+	            (subspace_topology X Tx T)
+	            ArcsT
+	            F
+	            HglgT
+	            HFArcsT)).
+	      }
+	      claim HESubTA : E c= (T :\/: A).
+	      {
+	        exact (Subq_tra
+	          E
+	          T
+	          (T :\/: A)
+	          HESubT
+	          (binunion_Subq_1
+	            T
+	            A)).
+	      }
+	      claim HFSubTA : F c= (T :\/: A).
+	      {
+	        exact (Subq_tra
+	          F
+	          T
+	          (T :\/: A)
+	          HFSubT
+	          (binunion_Subq_1
+	            T
+	            A)).
+	      }
+	      claim HtopEeqX :
+	        subspace_topology T (subspace_topology X Tx T) E =
+	        subspace_topology X Tx E.
+	      {
+	        exact (ex16_1_subspace_transitive
+	          X
+	          Tx
+	          T
+	          E
+	          HtopX
+	          HTsubX
+	          HESubT).
+	      }
+	      claim HtopFeqX :
+	        subspace_topology T (subspace_topology X Tx T) F =
+	        subspace_topology X Tx F.
+	      {
+	        exact (ex16_1_subspace_transitive
+	          X
+	          Tx
+	          T
+	          F
+	          HtopX
+	          HTsubX
+	          HFSubT).
+	      }
+	      claim HtopEeqTA :
+	        subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E =
+	        subspace_topology X Tx E.
+	      {
+	        exact (ex16_1_subspace_transitive
+	          X
+	          Tx
+	          (T :\/: A)
+	          E
+	          HtopX
+	          HTAsubX
+	          HESubTA).
+	      }
+	      claim HtopFeqTA :
+	        subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) F =
+	        subspace_topology X Tx F.
+	      {
+	        exact (ex16_1_subspace_transitive
+	          X
+	          Tx
+	          (T :\/: A)
+	          F
+	          HtopX
+	          HTAsubX
+	          HFSubTA).
+	      }
+	      apply HinterEF_T.
+	      - assume Hempty.
+	        apply orIL.
+	        exact Hempty.
+	      - assume Hex.
+	        apply Hex.
+	        let p.
+	        assume Hppack.
+	        apply (and3E
+	          (E :/\: F = Sing p)
+	          (exists q:set,
+	            end_points_of_arc E (subspace_topology T (subspace_topology X Tx T) E) p q \/
+	            end_points_of_arc E (subspace_topology T (subspace_topology X Tx T) E) q p)
+	          (exists r:set,
+	            end_points_of_arc F (subspace_topology T (subspace_topology X Tx T) F) p r \/
+	            end_points_of_arc F (subspace_topology T (subspace_topology X Tx T) F) r p)
+	          Hppack).
+	        assume Hint HepE HepF.
+	        apply orIR.
+	        witness p.
+	        apply andI.
+	        - apply andI.
+	          + exact Hint.
+	          + apply HepE.
+	            let q.
+	            assume Hqpack.
+	            witness q.
+	            apply Hqpack.
+	            * assume Hend.
+	              apply orIL.
+	              claim HendX : end_points_of_arc E (subspace_topology X Tx E) p q.
+	              { rewrite <- HtopEeqX. exact Hend. }
+	              rewrite HtopEeqTA.
+	              exact HendX.
+	            * assume Hend.
+	              apply orIR.
+	              claim HendX : end_points_of_arc E (subspace_topology X Tx E) q p.
+	              { rewrite <- HtopEeqX. exact Hend. }
+	              rewrite HtopEeqTA.
+	              exact HendX.
+	        - apply HepF.
+	          let r.
+	          assume Hrpack.
+	          witness r.
+	          apply Hrpack.
+	          + assume Hend.
+	            apply orIL.
+	            claim HendX : end_points_of_arc F (subspace_topology X Tx F) p r.
+	            { rewrite <- HtopFeqX. exact Hend. }
+	            rewrite HtopFeqTA.
+	            exact HendX.
+	          + assume Hend.
+	            apply orIR.
+	            claim HendX : end_points_of_arc F (subspace_topology X Tx F) r p.
+	            { rewrite <- HtopFeqX. exact Hend. }
+	            rewrite HtopFeqTA.
+	            exact HendX.
 }
 claim HcohFamTA :
   forall C:set, C c= (T :\/: A) ->
