@@ -217970,6 +217970,62 @@ exact (lemma84_2_union_not_eq_original_tree
 Qed.
 
 (** Proven Bob **)
+Theorem not_subset_implies_right_union_neq :
+  forall T A:set,
+  ~(A c= T) ->
+  (T :\/: A) <> T.
+let T A.
+assume Hnsub.
+assume HunionEq.
+apply (not_subset_ex_elem
+  T
+  A
+  Hnsub).
+let x.
+assume Hxpack.
+claim HxUnion : x :e T :\/: A.
+{
+  exact (binunionI2
+    T
+    A
+    x
+    (andEL
+      (x :e A)
+      (x /:e T)
+      Hxpack)).
+}
+claim HxT : x :e T.
+{
+  exact (mem_eqR
+    x
+    (T :\/: A)
+    T
+    HunionEq
+    HxUnion).
+}
+exact ((andER
+  (x :e A)
+  (x /:e T)
+  Hxpack)
+  HxT).
+Qed.
+
+(** Proven Bob **)
+Theorem lemma84_2_union_not_eq_original_tree_from_not_subset :
+  forall T ArcsT X Tx Arcs A:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e Arcs -> ~(A c= T) ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  (T :\/: A) <> T.
+let T ArcsT X Tx Arcs A.
+assume Htree HA Hnsub Hmeet.
+exact (not_subset_implies_right_union_neq
+  T
+  A
+  Hnsub).
+Qed.
+
+(** Proven Bob **)
 Theorem single_vertex_intersection_witness_in_both :
   forall T A v:set,
   T :/\: A = Sing v ->
