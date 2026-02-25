@@ -219921,6 +219921,133 @@ apply andI.
     Hend).
 Qed.
 
+(** Proven Bob **)
+Theorem subgraph_selected_arcs_all_subset_target_implies_subgraph_subset_target :
+  forall Y X Tx Arcs T:set,
+  subgraph_of Y X Tx Arcs ->
+  (forall A:set, A :e {B :e Arcs | B c= Y} -> A c= T) ->
+  Y c= T.
+let Y X Tx Arcs T.
+assume Hsub Hall.
+let x.
+assume HxY.
+claim HxU : x :e Union {B :e Arcs | B c= Y}.
+{
+  exact (mem_eqR
+    x
+    Y
+    (Union {B :e Arcs | B c= Y})
+    (subgraph_of_union_of_contained_arcs
+      Y
+      X
+      Tx
+      Arcs
+      Hsub)
+    HxY).
+}
+apply (UnionE
+  {B :e Arcs | B c= Y}
+  x
+  HxU).
+let A.
+assume HxApack.
+claim HxA : x :e A.
+{
+  exact (andEL
+    (x :e A)
+    (A :e {B :e Arcs | B c= Y})
+    HxApack).
+}
+claim HASel : A :e {B :e Arcs | B c= Y}.
+{
+  exact (andER
+    (x :e A)
+    (A :e {B :e Arcs | B c= Y})
+    HxApack).
+}
+exact ((Hall
+  A
+  HASel)
+  x
+  HxA).
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_selected_arc_endpoints_in_graph_vertices :
+  forall T' ArcsT' X Tx Arcs A p q:set,
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  A :e {B :e Arcs | B c= T'} ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  p :e graph_vertices X Tx Arcs /\ q :e graph_vertices X Tx Arcs.
+let T' ArcsT' X Tx Arcs A p q.
+assume Htree' HASel Hend.
+apply andI.
+- exact (tree_in_graph_selected_arc_endpoint_left_vertex
+    T'
+    ArcsT'
+    X
+    Tx
+    Arcs
+    A
+    p
+    q
+    Htree'
+    HASel
+    Hend).
+- exact (tree_in_graph_selected_arc_endpoint_right_vertex
+    T'
+    ArcsT'
+    X
+    Tx
+    Arcs
+    A
+    p
+    q
+    Htree'
+    HASel
+    Hend).
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_selected_arc_endpoints_in_target_from_graph_vertex_cover :
+  forall T T' ArcsT' X Tx Arcs A p q:set,
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  graph_vertices X Tx Arcs c= T ->
+  A :e {B :e Arcs | B c= T'} ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  p :e T /\ q :e T.
+let T T' ArcsT' X Tx Arcs A p q.
+assume Htree' HVsubT HASel Hend.
+claim HepV : p :e graph_vertices X Tx Arcs /\ q :e graph_vertices X Tx Arcs.
+{
+  exact (tree_in_graph_selected_arc_endpoints_in_graph_vertices
+    T'
+    ArcsT'
+    X
+    Tx
+    Arcs
+    A
+    p
+    q
+    Htree'
+    HASel
+    Hend).
+}
+apply andI.
+- exact (HVsubT
+    p
+    (andEL
+      (p :e graph_vertices X Tx Arcs)
+      (q :e graph_vertices X Tx Arcs)
+      HepV)).
+- exact (HVsubT
+    q
+    (andER
+      (p :e graph_vertices X Tx Arcs)
+      (q :e graph_vertices X Tx Arcs)
+      HepV)).
+Qed.
+
 (** from S84 Lem 84.2 converse (line 5601 in algtop.tex): finite tree decomposition **)
 (** LATEX VERSION: If T is a finite tree with more than one edge, then T = T0 union A **)
 (** where T0 is a tree and A intersects T0 in a single vertex. **)
@@ -220012,12 +220139,63 @@ apply iffI.
       (graph_vertices X Tx Arcs c= T)
       Hrhs).
   }
-  (** remaining backward gap:
-      from Htree and graph_vertices X Tx Arcs c= T, show maximality:
-      if T c= T' and T' is a tree, then T'=T.
-      intended contradiction uses connectedness of X and vertex containment to
-      force any extra edge/vertex outside T to violate subtree assumptions. **)
-  admit.
+  claim HVT : graph_vertices X Tx Arcs c= T.
+  {
+    exact (andER
+      (tree_in_graph T ArcsT X Tx Arcs)
+      (graph_vertices X Tx Arcs c= T)
+      Hrhs).
+  }
+  claim HmaxProp :
+    forall T' ArcsT':set,
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' -> T' = T.
+  {
+    let T' ArcsT'.
+    assume Htree' HTsub.
+    claim Hsub' : subgraph_of T' X Tx Arcs.
+    {
+      exact (tree_in_graph_subgraph_of
+        T'
+        ArcsT'
+        X
+        Tx
+        Arcs
+        Htree').
+    }
+    claim HT'subT : T' c= T.
+    {
+      claim HallSel :
+        forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T.
+      {
+        (** remaining backward subgap:
+            show every ambient edge contained in T' is contained in T,
+            using `graph_vertices X Tx Arcs c= T` (HVT),
+            edge endpoint containment, and tree/subgraph constraints. **)
+        admit.
+      }
+      exact (subgraph_selected_arcs_all_subset_target_implies_subgraph_subset_target
+        T'
+        X
+        Tx
+        Arcs
+        T
+        Hsub'
+        HallSel).
+    }
+    exact (set_ext
+      T'
+      T
+      HT'subT
+      HTsub).
+  }
+  exact (andI
+    (tree_in_graph T ArcsT X Tx Arcs)
+    (forall T' ArcsT':set,
+      tree_in_graph T' ArcsT' X Tx Arcs ->
+      T c= T' -> T' = T)
+    Htree
+    HmaxProp).
 Admitted.
 
 (** from S84 Thm 84.5 (line 5631 in algtop.tex): every tree in maximal tree **)
