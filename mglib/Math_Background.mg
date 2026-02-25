@@ -228598,6 +228598,43 @@ apply Hvpq.
   exact Hendpq.
 Qed.
 
+(** Proven Bob **)
+Theorem general_linear_graph_arc_singleton_closed_in_subspace :
+  forall X Tx Arcs A v:set,
+  general_linear_graph X Tx Arcs ->
+  A :e Arcs ->
+  v :e A ->
+  closed_in A (subspace_topology X Tx A) (Sing v).
+let X Tx Arcs A v.
+assume Hglg HA HvA.
+claim HarcA : arc A (subspace_topology X Tx A).
+{
+  exact (andER
+    (A c= X)
+    (arc A (subspace_topology X Tx A))
+    (general_linear_graph_arc_data
+      X
+      Tx
+      Arcs
+      A
+      Hglg
+      HA)).
+}
+claim HHausA : Hausdorff_space A (subspace_topology X Tx A).
+{
+  exact (arc_Hausdorff_space
+    A
+    (subspace_topology X Tx A)
+    HarcA).
+}
+exact (Hausdorff_singletons_closed
+  A
+  (subspace_topology X Tx A)
+  v
+  HHausA
+  HvA).
+Qed.
+
 (** helper: general linear graph structure on the tree extension union **)
 Theorem lemma84_2_tree_extension_general_linear_graph_part :
   forall T ArcsT X Tx Arcs A:set,
@@ -230336,13 +230373,51 @@ claim HcohFamTA :
 	          HclosedTTA
 	          HcDT_on_T).
 	      }
-	      claim HclosedTTA :
-	        closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) T.
-	      {
-	        (** Remaining coherence-closed transfer obligation:
-	            establish T is closed in TA. **)
-	        admit.
-	      }
+		      claim HclosedTTA :
+		        closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) T.
+		      {
+		        claim HclosedCapA_on_A :
+		          closed_in A
+		            (subspace_topology X Tx A)
+		            (T :/\: A).
+		        {
+		          rewrite HcapEq.
+		          exact (general_linear_graph_arc_singleton_closed_in_subspace
+		            X
+		            Tx
+		            Arcs
+		            A
+		            v
+		            HglgX
+		            HA
+		            HvA).
+		        }
+		        claim HclosedCapA_on_A_fromTA :
+		          closed_in A
+		            (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) A)
+		            (T :/\: A).
+		        {
+		          claim HtopAeqTA :
+		            subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) A =
+		            subspace_topology X Tx A.
+		          {
+		            exact (ex16_1_subspace_transitive
+		              X
+		              Tx
+		              (T :\/: A)
+		              A
+		              HtopX
+		              HTAsubX
+		              HAsubTA).
+		          }
+		          rewrite HtopAeqTA.
+		          exact HclosedCapA_on_A.
+		        }
+		        (** Remaining coherence-closed transfer obligation:
+		            lift closedness of T:/\:A on A and trivial closedness on ArcsT-members
+		            to closed_in (T:\/:A) ... T. **)
+		        admit.
+		      }
 	      exact (HcDT_if_Tclosed
 	        HclosedTTA).
 	    }
