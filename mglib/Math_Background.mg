@@ -76341,6 +76341,64 @@ exact (Hpointwise
     HzPack)).
 Qed.
 
+(** Proven Bob **)
+Theorem lemma54_2_sheet_non_switching_local_from_anchor_membership :
+  forall Ft q z N slices Vq Vz:set,
+  pairwise_disjoint slices ->
+  (forall x:set, x :e N -> apply_fun Ft x :e Vq) ->
+  q :e N ->
+  z :e N ->
+  apply_fun Ft q :e Vq ->
+  Vq :e slices ->
+  apply_fun Ft z :e Vz ->
+  Vz :e slices ->
+  Vz = Vq.
+let Ft q z N slices Vq Vz.
+assume Hpd HanchorPoint HqN HzN HFtqVq HVqSlice HFtzVz HVzSlice.
+exact (pointwise_anchor_sheet_implies_sheet_equality
+  N
+  Ft
+  slices
+  Vq
+  Vz
+  z
+  Hpd
+  HanchorPoint
+  HzN
+  HVqSlice
+  HFtzVz
+  HVzSlice).
+Qed.
+
+(** Proven Bob **)
+Theorem lemma54_2_sheet_non_switching_local_from_image_subset :
+  forall Ft q z N slices Vq Vz:set,
+  pairwise_disjoint slices ->
+  image_of Ft N c= Vq ->
+  q :e N ->
+  z :e N ->
+  apply_fun Ft q :e Vq ->
+  Vq :e slices ->
+  apply_fun Ft z :e Vz ->
+  Vz :e slices ->
+  Vz = Vq.
+let Ft q z N slices Vq Vz.
+assume Hpd HimgSub HqN HzN HFtqVq HVqSlice HFtzVz HVzSlice.
+exact (image_sub_single_sheet_implies_sheet_equality
+  N
+  Ft
+  slices
+  Vq
+  Vz
+  z
+  Hpd
+  HzN
+  HimgSub
+  HVqSlice
+  HFtzVz
+  HVzSlice).
+Qed.
+
 Theorem lemma54_2_sheet_non_switching_local :
   forall E Te B Tb p F Ft q z N U slices Vq Vz:set,
   pairwise_disjoint slices ->
