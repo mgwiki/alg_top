@@ -226968,6 +226968,89 @@ apply andI.
   exact (Hwneq HwEqv).
 Qed.
 
+(** Proven Charlie **)
+(** helper: each arc in ArcsT is contained in the underlying tree space T. **)
+Theorem tree_in_graph_arc_subset_T :
+  forall T ArcsT X Tx Arcs E:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  E :e ArcsT ->
+  E c= T.
+let T ArcsT X Tx Arcs E.
+assume Htree HE.
+exact (andEL
+  (E c= T)
+  (arc E (subspace_topology T (subspace_topology X Tx T) E))
+  (general_linear_graph_arc_data
+    T
+    (subspace_topology X Tx T)
+    ArcsT
+    E
+    (tree_in_graph_general_linear_graph
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      Htree)
+    HE)).
+Qed.
+
+(** Proven Charlie **)
+(** helper: if a point lies outside T, it cannot lie on any arc from ArcsT. **)
+Theorem tree_in_graph_outside_point_notin_any_ArcsT_arc :
+  forall T ArcsT X Tx Arcs w E:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  w /:e T ->
+  E :e ArcsT ->
+  w /:e E.
+let T ArcsT X Tx Arcs w E.
+assume Htree HwNotT HE.
+assume HwE.
+exact (HwNotT
+  ((tree_in_graph_arc_subset_T
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    E
+    Htree
+    HE)
+    w
+    HwE)).
+Qed.
+
+(** Proven Charlie **)
+(** helper: in the extended arc-family `{A} union ArcsT`, any arc containing a point outside T must be A. **)
+Theorem tree_in_graph_outside_point_in_extended_family_implies_arc_is_A :
+  forall T ArcsT X Tx Arcs A w E:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  w /:e T ->
+  E :e ({A} :\/: ArcsT) ->
+  w :e E ->
+  E = A.
+let T ArcsT X Tx Arcs A w E.
+assume Htree HwNotT HEfam HwE.
+apply (binunionE {A} ArcsT E HEfam).
+- assume HEinSing.
+  exact (SingE A E HEinSing).
+- assume HEinAT.
+  exact (FalseE
+    (tree_in_graph_outside_point_notin_any_ArcsT_arc
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      w
+      E
+      Htree
+      HwNotT
+      HEinAT
+      HwE)
+    (E = A)).
+Qed.
+
 (** helper: no closed reduced edge path appears after attaching A along a single vertex **)
 Theorem lemma84_2_tree_extension_no_closed_reduced_edge_path_part :
   forall T ArcsT X Tx Arcs A:set,
@@ -226980,8 +227063,2310 @@ Theorem lemma84_2_tree_extension_no_closed_reduced_edge_path_part :
         ({A} :\/: ArcsT) n path_seq x0 /\
       (exists j:set, j :e n /\ ordsucc j /:e n /\
         (apply_fun path_seq j) 0 1 = x0)).
-admit.
-Admitted.
+let T ArcsT X Tx Arcs A.
+assume Htree HA Hnsub Hmeet.
+claim HnoLoopT :
+  ~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)).
+{
+  exact (tree_in_graph_no_closed_reduced_edge_path
+    T ArcsT X Tx Arcs Htree).
+}
+claim HglgX : general_linear_graph X Tx Arcs.
+{
+  exact (tree_in_graph_general_linear_graph_X
+    T ArcsT X Tx Arcs Htree).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (general_linear_graph_topology_on
+    X Tx Arcs HglgX).
+}
+claim HTsubX : T c= X.
+{
+  exact (tree_in_graph_subset_X
+    T ArcsT X Tx Arcs Htree).
+}
+claim HAsubX : A c= X.
+{
+  exact (andEL
+    (A c= X)
+    (arc A (subspace_topology X Tx A))
+    (general_linear_graph_arc_data
+      X Tx Arcs A HglgX HA)).
+}
+claim HTAsubX : (T :\/: A) c= X.
+{
+  exact (binunion_Subq_min
+    T A X HTsubX HAsubX).
+}
+
+(** Convert a closed reduced path in T union A with no A-edges into a closed reduced path in T. **)
+claim convert_no_A_edges :
+  forall n path_seq x0:set,
+    n :e omega -> n <> 0 ->
+    reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+      ({A} :\/: ArcsT) n path_seq x0 ->
+    (forall i:set, i :e n -> (apply_fun path_seq i) 1 <> A) ->
+    (exists j:set, j :e n /\ ordsucc j /:e n /\
+      (apply_fun path_seq j) 0 1 = x0) ->
+    False.
+{
+  let n path_seq x0.
+  assume HnOm HnNe0 Hred HnoA Hclosed.
+  claim Hep : edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+    ({A} :\/: ArcsT) n path_seq x0.
+  {
+    exact (reduced_edge_path_edge_path
+      (T :\/: A)
+      (subspace_topology X Tx (T :\/: A))
+      ({A} :\/: ArcsT)
+      n path_seq x0 Hred).
+  }
+  claim HfunT : function_on path_seq n (setprod (setprod T T) (Power T)).
+  {
+    let i.
+    assume Hi.
+    (** Use the same decomposition as for Hval, but provide the element proof directly. **)
+    apply (edge_path_edge_decomposition
+      (T :\/: A)
+      (subspace_topology X Tx (T :\/: A))
+      ({A} :\/: ArcsT)
+      n
+      path_seq
+      x0
+      i
+      Hep
+      Hi).
+    let E.
+    assume HE.
+    apply HE.
+    let ini.
+    assume Hini.
+    apply Hini.
+    let fin.
+    assume Hfin.
+    claim Happ : apply_fun path_seq i = ((ini, fin), E).
+    {
+      exact (andEL
+        (apply_fun path_seq i = ((ini, fin), E))
+        (oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT) E ini fin)
+        Hfin).
+    }
+    claim HoriU :
+      oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+        ({A} :\/: ArcsT) E ini fin.
+    {
+      exact (andER
+        (apply_fun path_seq i = ((ini, fin), E))
+        (oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT) E ini fin)
+        Hfin).
+    }
+    claim HcompE : (apply_fun path_seq i) 1 = E.
+    { rewrite Happ. rewrite (tuple_2_1_eq (ini, fin) E). reflexivity. }
+    claim HEnotA : E <> A.
+    {
+      assume HEeq.
+      claim HcompA : (apply_fun path_seq i) 1 = A.
+      { rewrite <- HEeq. exact HcompE. }
+      exact (HnoA i Hi HcompA).
+    }
+    claim HEfam : E :e ({A} :\/: ArcsT).
+    {
+      exact (oriented_edge_in_arcs
+        (T :\/: A)
+        (subspace_topology X Tx (T :\/: A))
+        ({A} :\/: ArcsT)
+        E ini fin HoriU).
+    }
+    claim HEArcsT : E :e ArcsT.
+    {
+      apply (binunionE {A} ArcsT E HEfam).
+      - assume HEin.
+        claim HEeq2 : E = A.
+        { exact (SingE A E HEin). }
+        exact (FalseE (HEnotA HEeq2) (E :e ArcsT)).
+      - assume HEin.
+        exact HEin.
+    }
+    claim HEsT : E c= T.
+    { exact (tree_in_graph_arc_subset_T
+        T ArcsT X Tx Arcs E Htree HEArcsT). }
+    claim HendU :
+      end_points_of_arc E
+        (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E)
+        ini fin.
+    {
+      exact (oriented_edge_endpoints
+        (T :\/: A)
+        (subspace_topology X Tx (T :\/: A))
+        ({A} :\/: ArcsT)
+        E ini fin HoriU).
+    }
+    claim HiniE : ini :e E.
+    {
+      exact (end_points_of_arc_left_in_set
+        E
+        (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E)
+        ini fin HendU).
+    }
+    claim HfinE : fin :e E.
+    {
+      exact (end_points_of_arc_right_in_set
+        E
+        (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E)
+        ini fin HendU).
+    }
+    claim HiniT : ini :e T.
+    { exact (HEsT ini HiniE). }
+    claim HfinT : fin :e T.
+    { exact (HEsT fin HfinE). }
+    claim HinifinTT : (ini, fin) :e setprod T T.
+    {
+      exact (tuple_2_setprod_by_pair_Sigma
+        T T ini fin HiniT HfinT).
+    }
+    claim HEpow : E :e Power T.
+    { exact (PowerI T E HEsT). }
+    rewrite Happ.
+    exact (tuple_2_setprod_by_pair_Sigma
+      (setprod T T)
+      (Power T)
+      (ini, fin)
+      E
+      HinifinTT
+      HEpow).
+  }
+
+  claim HdecT :
+    forall i:set, i :e n ->
+      exists E ini fin:set,
+        apply_fun path_seq i = ((ini, fin), E) /\
+        oriented_edge T (subspace_topology X Tx T) ArcsT E ini fin.
+  {
+    let i.
+    assume Hi.
+    apply (edge_path_edge_decomposition
+      (T :\/: A)
+      (subspace_topology X Tx (T :\/: A))
+      ({A} :\/: ArcsT)
+      n
+      path_seq
+      x0
+      i
+      Hep
+      Hi).
+    let E.
+    assume HE.
+    apply HE.
+    let ini.
+    assume Hini.
+    apply Hini.
+    let fin.
+    assume Hfin.
+    witness E.
+    witness ini.
+    witness fin.
+    apply andI.
+    - exact (andEL
+        (apply_fun path_seq i = ((ini, fin), E))
+        (oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT) E ini fin)
+        Hfin).
+    - claim HoriU :
+        oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT) E ini fin.
+      {
+        exact (andER
+          (apply_fun path_seq i = ((ini, fin), E))
+          (oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+            ({A} :\/: ArcsT) E ini fin)
+          Hfin).
+      }
+      claim HcompE : (apply_fun path_seq i) 1 = E.
+      {
+        rewrite (andEL
+          (apply_fun path_seq i = ((ini, fin), E))
+          (oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+            ({A} :\/: ArcsT) E ini fin)
+          Hfin).
+        rewrite (tuple_2_1_eq (ini, fin) E).
+        reflexivity.
+      }
+      claim HEnotA : E <> A.
+      {
+        assume HEeq.
+        claim HcompA : (apply_fun path_seq i) 1 = A.
+        { rewrite <- HEeq. exact HcompE. }
+        exact (HnoA i Hi HcompA).
+      }
+      claim HEfam : E :e ({A} :\/: ArcsT).
+      {
+        exact (oriented_edge_in_arcs
+          (T :\/: A)
+          (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT)
+          E ini fin HoriU).
+      }
+      claim HEArcsT : E :e ArcsT.
+      {
+        apply (binunionE {A} ArcsT E HEfam).
+        - assume HEin.
+          claim HEeq2 : E = A.
+          { exact (SingE A E HEin). }
+          exact (FalseE (HEnotA HEeq2) (E :e ArcsT)).
+        - assume HEin.
+          exact HEin.
+      }
+      claim HEsT : E c= T.
+      { exact (tree_in_graph_arc_subset_T
+          T ArcsT X Tx Arcs E Htree HEArcsT). }
+      claim HEsTA : E c= (T :\/: A).
+      {
+        let z.
+        assume HzE.
+        exact (binunionI1 T A z (HEsT z HzE)).
+      }
+      claim HendU :
+        end_points_of_arc E
+          (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E)
+          ini fin.
+      {
+        exact (oriented_edge_endpoints
+          (T :\/: A)
+          (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT)
+          E ini fin HoriU).
+      }
+      claim HtopE1 :
+        subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E =
+        subspace_topology X Tx E.
+      {
+        exact (ex16_1_subspace_transitive
+          X Tx (T :\/: A) E
+          HtopX HTAsubX HEsTA).
+      }
+      claim HtopE2 :
+        subspace_topology T (subspace_topology X Tx T) E =
+        subspace_topology X Tx E.
+      {
+        exact (ex16_1_subspace_transitive
+          X Tx T E
+          HtopX HTsubX HEsT).
+      }
+      claim HendT :
+        end_points_of_arc E (subspace_topology T (subspace_topology X Tx T) E) ini fin.
+      {
+        rewrite HtopE2.
+        rewrite <- HtopE1.
+        exact HendU.
+      }
+      exact (andI
+        (E :e ArcsT)
+        (end_points_of_arc E (subspace_topology T (subspace_topology X Tx T) E) ini fin)
+        HEArcsT
+        HendT).
+  }
+
+  claim HepT : edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0.
+  {
+    claim HstartT : n <> 0 -> (apply_fun path_seq 0) 0 0 = x0.
+    {
+      assume Hnz.
+      exact (edge_path_start_vertex
+        (T :\/: A)
+        (subspace_topology X Tx (T :\/: A))
+        ({A} :\/: ArcsT)
+        n path_seq x0 Hep Hnz).
+    }
+    claim HstepT :
+      forall i:set, i :e n -> ordsucc i :e n ->
+        (apply_fun path_seq i) 0 1 = (apply_fun path_seq (ordsucc i)) 0 0.
+    {
+      let i.
+      assume Hi His.
+      exact (edge_path_consecutive_match
+        (T :\/: A)
+        (subspace_topology X Tx (T :\/: A))
+        ({A} :\/: ArcsT)
+        n path_seq x0 i Hep Hi His).
+    }
+    claim H12 :
+      (n :e omega) /\
+      (function_on path_seq n (setprod (setprod T T) (Power T))).
+    {
+      exact (andI
+        (n :e omega)
+        (function_on path_seq n (setprod (setprod T T) (Power T)))
+        HnOm
+        HfunT).
+    }
+    claim H123 :
+      (n :e omega) /\
+      (function_on path_seq n (setprod (setprod T T) (Power T))) /\
+      (forall i:set, i :e n ->
+        exists E ini fin:set,
+          apply_fun path_seq i = ((ini, fin), E) /\
+          oriented_edge T (subspace_topology X Tx T) ArcsT E ini fin).
+    {
+      exact (andI
+        ((n :e omega) /\
+         (function_on path_seq n (setprod (setprod T T) (Power T))))
+        (forall i:set, i :e n ->
+          exists E ini fin:set,
+            apply_fun path_seq i = ((ini, fin), E) /\
+            oriented_edge T (subspace_topology X Tx T) ArcsT E ini fin)
+        H12
+        HdecT).
+    }
+    claim H1234 :
+      (n :e omega) /\
+      (function_on path_seq n (setprod (setprod T T) (Power T))) /\
+      (forall i:set, i :e n ->
+        exists E ini fin:set,
+          apply_fun path_seq i = ((ini, fin), E) /\
+          oriented_edge T (subspace_topology X Tx T) ArcsT E ini fin) /\
+      (n <> 0 -> (apply_fun path_seq 0) 0 0 = x0).
+    {
+      exact (andI
+        ((n :e omega) /\
+         (function_on path_seq n (setprod (setprod T T) (Power T))) /\
+         (forall i:set, i :e n ->
+           exists E ini fin:set,
+             apply_fun path_seq i = ((ini, fin), E) /\
+             oriented_edge T (subspace_topology X Tx T) ArcsT E ini fin))
+        (n <> 0 -> (apply_fun path_seq 0) 0 0 = x0)
+        H123
+        HstartT).
+    }
+    exact (andI
+      ((n :e omega) /\
+       (function_on path_seq n (setprod (setprod T T) (Power T))) /\
+       (forall i:set, i :e n ->
+         exists E ini fin:set,
+           apply_fun path_seq i = ((ini, fin), E) /\
+           oriented_edge T (subspace_topology X Tx T) ArcsT E ini fin) /\
+       (n <> 0 -> (apply_fun path_seq 0) 0 0 = x0))
+      (forall i:set, i :e n -> ordsucc i :e n ->
+        (apply_fun path_seq i) 0 1 = (apply_fun path_seq (ordsucc i)) 0 0)
+      H1234
+      HstepT).
+  }
+
+  claim HnoBack :
+    forall i:set, i :e n -> ordsucc i :e n ->
+      ~((apply_fun path_seq i) 1 = (apply_fun path_seq (ordsucc i)) 1 /\
+        (apply_fun path_seq i) 0 0 = (apply_fun path_seq (ordsucc i)) 0 1 /\
+        (apply_fun path_seq i) 0 1 = (apply_fun path_seq (ordsucc i)) 0 0).
+  {
+    exact (andER
+      (edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+        ({A} :\/: ArcsT) n path_seq x0)
+      (forall i0:set, i0 :e n -> ordsucc i0 :e n ->
+        ~((apply_fun path_seq i0) 1 = (apply_fun path_seq (ordsucc i0)) 1 /\
+          (apply_fun path_seq i0) 0 0 = (apply_fun path_seq (ordsucc i0)) 0 1 /\
+          (apply_fun path_seq i0) 0 1 = (apply_fun path_seq (ordsucc i0)) 0 0))
+      Hred).
+  }
+  claim HredT : reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0.
+  {
+    exact (andI
+      (edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0)
+      (forall i:set, i :e n -> ordsucc i :e n ->
+        ~((apply_fun path_seq i) 1 = (apply_fun path_seq (ordsucc i)) 1 /\
+          (apply_fun path_seq i) 0 0 = (apply_fun path_seq (ordsucc i)) 0 1 /\
+          (apply_fun path_seq i) 0 1 = (apply_fun path_seq (ordsucc i)) 0 0))
+      HepT
+      HnoBack).
+  }
+  apply HnoLoopT.
+  witness n.
+  witness path_seq.
+  witness x0.
+  apply andI.
+  - apply andI.
+    + apply andI.
+      * exact HnOm.
+      * exact HnNe0.
+    + exact HredT.
+  - exact Hclosed.
+}
+
+apply Hmeet.
+let v.
+assume Hvpack.
+claim HvVert : v :e graph_vertices X Tx Arcs.
+{ exact (andEL (v :e graph_vertices X Tx Arcs) (T :/\: A = Sing v) Hvpack). }
+claim HcapEq : T :/\: A = Sing v.
+{ exact (andER (v :e graph_vertices X Tx Arcs) (T :/\: A = Sing v) Hvpack). }
+claim Hexw : exists w:set,
+  (end_points_of_arc A (subspace_topology X Tx A) v w \/
+   end_points_of_arc A (subspace_topology X Tx A) w v) /\
+  w /:e T.
+{
+  exact (lemma84_2_tree_extension_attaching_arc_has_endpoint_outside_T
+    T ArcsT X Tx Arcs A v
+    Htree HA HvVert HcapEq).
+}
+apply Hexw.
+let w.
+assume Hwpack.
+claim HwNotT : w /:e T.
+{
+  exact (andER
+    (end_points_of_arc A (subspace_topology X Tx A) v w \/
+     end_points_of_arc A (subspace_topology X Tx A) w v)
+    (w /:e T)
+    Hwpack).
+}
+
+assume Hex.
+apply Hex.
+let n.
+assume Hn.
+apply Hn.
+let path_seq.
+assume Hps.
+	apply Hps.
+	let x0.
+	assume Hx0.
+	apply (and4E
+	  (n :e omega)
+	  (n <> 0)
+	  (reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+	    ({A} :\/: ArcsT) n path_seq x0)
+	  (exists j:set, j :e n /\ ordsucc j /:e n /\ (apply_fun path_seq j) 0 1 = x0)
+	  Hx0).
+assume HnOm HnNe0 Hred Hclosed.
+		apply (xm (exists i:set, i :e n /\ (apply_fun path_seq i) 1 = A)).
+		- assume HuseA.
+		  (** A reduced closed edge path in T union A cannot use the arc A. **)
+		  claim Hep : edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+		    ({A} :\/: ArcsT) n path_seq x0.
+		  {
+		    exact (reduced_edge_path_edge_path
+		      (T :\/: A)
+		      (subspace_topology X Tx (T :\/: A))
+		      ({A} :\/: ArcsT)
+		      n
+		      path_seq
+		      x0
+		      Hred).
+		  }
+		  claim HAsubTA : A c= (T :\/: A).
+		  {
+		    let z.
+		    assume HzA.
+		    exact (binunionI2 T A z HzA).
+		  }
+		  claim HtopAeq :
+		    subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) A =
+		    subspace_topology X Tx A.
+		  {
+		    exact (ex16_1_subspace_transitive
+		      X
+		      Tx
+		      (T :\/: A)
+		      A
+		      HtopX
+		      HTAsubX
+		      HAsubTA).
+		  }
+		  claim Hendvw_or :
+		    end_points_of_arc A (subspace_topology X Tx A) v w \/
+		    end_points_of_arc A (subspace_topology X Tx A) w v.
+		  {
+		    exact (andEL
+		      (end_points_of_arc A (subspace_topology X Tx A) v w \/
+		       end_points_of_arc A (subspace_topology X Tx A) w v)
+		      (w /:e T)
+		      Hwpack).
+		  }
+		  claim HvInCap : v :e (T :/\: A).
+		  { exact (mem_eqL v (T :/\: A) (Sing v) HcapEq (SingI v)). }
+		  claim HvInT : v :e T.
+		  { exact (binintersectE1 T A v HvInCap). }
+		  claim HvNeW : v <> w.
+		  {
+		    assume Heq.
+		    apply HwNotT.
+		    rewrite <- Heq.
+		    exact HvInT.
+		  }
+		  claim internal_w_implies_backtrack :
+		    forall i:set, i :e n -> ordsucc i :e n ->
+		      (apply_fun path_seq i) 0 1 = w -> False.
+		  {
+		    let i.
+		    assume Hi His Hfinw.
+		    claim HnoBack :
+		      ~((apply_fun path_seq i) 1 = (apply_fun path_seq (ordsucc i)) 1 /\
+		        (apply_fun path_seq i) 0 0 = (apply_fun path_seq (ordsucc i)) 0 1 /\
+		        (apply_fun path_seq i) 0 1 = (apply_fun path_seq (ordsucc i)) 0 0).
+		    {
+		      exact (reduced_edge_path_no_backtrack
+		        (T :\/: A)
+		        (subspace_topology X Tx (T :\/: A))
+		        ({A} :\/: ArcsT)
+		        n
+		        path_seq
+		        x0
+		        i
+		        Hred
+		        Hi
+		        His).
+		    }
+		    claim Hdeci :
+		      exists Ei ini fin:set,
+		        apply_fun path_seq i = ((ini, fin), Ei) /\
+		        oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+		          ({A} :\/: ArcsT) Ei ini fin.
+		    {
+		      exact (reduced_edge_path_edge_decomposition
+		        (T :\/: A)
+		        (subspace_topology X Tx (T :\/: A))
+		        ({A} :\/: ArcsT)
+		        n
+		        path_seq
+		        x0
+		        i
+		        Hred
+		        Hi).
+		    }
+		    apply Hdeci.
+		    let Ei.
+		    assume HEi.
+		    apply HEi.
+		    let ini.
+		    assume Hini.
+		    apply Hini.
+		    let fin.
+		    assume Hfin.
+		    claim Happi : apply_fun path_seq i = ((ini, fin), Ei).
+		    {
+		      exact (andEL
+		        (apply_fun path_seq i = ((ini, fin), Ei))
+		        (oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+		          ({A} :\/: ArcsT) Ei ini fin)
+		        Hfin).
+		    }
+		    claim Hori_i :
+		      oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+		        ({A} :\/: ArcsT) Ei ini fin.
+		    {
+		      exact (andER
+		        (apply_fun path_seq i = ((ini, fin), Ei))
+		        (oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+		          ({A} :\/: ArcsT) Ei ini fin)
+		        Hfin).
+		    }
+			    claim HfinEqW : fin = w.
+			    {
+			      claim Hproj : (apply_fun path_seq i) 0 1 = fin.
+			      {
+			        rewrite Happi.
+			        rewrite (tuple_2_0_eq (ini, fin) Ei).
+			        rewrite tuple_2_1_eq.
+			        reflexivity.
+			      }
+			      rewrite <- Hproj.
+			      exact Hfinw.
+			    }
+		    claim HwEi : w :e Ei.
+		    {
+		      rewrite <- HfinEqW.
+		      exact (oriented_edge_final_in_arc
+		        (T :\/: A)
+		        (subspace_topology X Tx (T :\/: A))
+		        ({A} :\/: ArcsT)
+		        Ei
+		        ini
+		        fin
+		        Hori_i).
+		    }
+		    claim HEifam : Ei :e ({A} :\/: ArcsT).
+		    {
+		      exact (oriented_edge_in_arcs
+		        (T :\/: A)
+		        (subspace_topology X Tx (T :\/: A))
+		        ({A} :\/: ArcsT)
+		        Ei
+		        ini
+		        fin
+		        Hori_i).
+		    }
+			    claim HEiEqA : Ei = A.
+			    {
+			      exact (tree_in_graph_outside_point_in_extended_family_implies_arc_is_A
+			        T
+			        ArcsT
+			        X
+			        Tx
+			        Arcs
+			        A
+			        w
+			        Ei
+			        Htree
+			        HwNotT
+			        HEifam
+			        HwEi).
+			    }
+			    claim HendU_i :
+			      end_points_of_arc Ei
+			        (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) Ei)
+			        ini
+			        fin.
+			    {
+			      exact (oriented_edge_endpoints
+			        (T :\/: A)
+			        (subspace_topology X Tx (T :\/: A))
+			        ({A} :\/: ArcsT)
+			        Ei
+			        ini
+			        fin
+			        Hori_i).
+			    }
+			    claim HEiSubTA : Ei c= (T :\/: A).
+			    {
+			      let z.
+			      assume HzEi.
+			      exact (HAsubTA
+			        z
+			        (mem_eqR z Ei A HEiEqA HzEi)).
+			    }
+			    claim HtopEeq :
+			      subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) Ei =
+			      subspace_topology X Tx Ei.
+			    {
+			      exact (ex16_1_subspace_transitive
+			        X
+			        Tx
+			        (T :\/: A)
+			        Ei
+			        HtopX
+			        HTAsubX
+			        HEiSubTA).
+			    }
+			    claim HendX_i : end_points_of_arc Ei (subspace_topology X Tx Ei) ini fin.
+			    {
+			      rewrite <- HtopEeq.
+			      exact HendU_i.
+			    }
+			    claim HendEi_or :
+			      end_points_of_arc Ei (subspace_topology X Tx Ei) v w \/
+			      end_points_of_arc Ei (subspace_topology X Tx Ei) w v.
+			    {
+			      rewrite HEiEqA.
+			      exact Hendvw_or.
+			    }
+			    claim HiniA : ini :e Ei.
+			    {
+			      apply (and6E
+			        (arc Ei (subspace_topology X Tx Ei))
+			        (ini :e Ei)
+			        (fin :e Ei)
+			        (ini <> fin)
+			        (connected_space (Ei :\: (Sing ini))
+			          (subspace_topology Ei (subspace_topology X Tx Ei) (Ei :\: (Sing ini))))
+			        (connected_space (Ei :\: (Sing fin))
+			          (subspace_topology Ei (subspace_topology X Tx Ei) (Ei :\: (Sing fin))))
+			        HendX_i).
+			      assume Harc HiniA HfinA Hneq Hc1 Hc2.
+			      exact HiniA.
+			    }
+			    claim HfinA : fin :e Ei.
+			    {
+			      apply (and6E
+			        (arc Ei (subspace_topology X Tx Ei))
+			        (ini :e Ei)
+			        (fin :e Ei)
+			        (ini <> fin)
+			        (connected_space (Ei :\: (Sing ini))
+			          (subspace_topology Ei (subspace_topology X Tx Ei) (Ei :\: (Sing ini))))
+			        (connected_space (Ei :\: (Sing fin))
+			          (subspace_topology Ei (subspace_topology X Tx Ei) (Ei :\: (Sing fin))))
+			        HendX_i).
+			      assume Harc HiniA HfinA Hneq Hc1 Hc2.
+			      exact HfinA.
+			    }
+			    claim HiniNeFin : ini <> fin.
+			    {
+			      apply (and6E
+			        (arc Ei (subspace_topology X Tx Ei))
+			        (ini :e Ei)
+			        (fin :e Ei)
+			        (ini <> fin)
+			        (connected_space (Ei :\: (Sing ini))
+			          (subspace_topology Ei (subspace_topology X Tx Ei) (Ei :\: (Sing ini))))
+			        (connected_space (Ei :\: (Sing fin))
+			          (subspace_topology Ei (subspace_topology X Tx Ei) (Ei :\: (Sing fin))))
+			        HendX_i).
+			      assume Harc HiniA HfinA Hneq Hc1 Hc2.
+			      exact Hneq.
+			    }
+			    claim HconnIni :
+			      connected_space (Ei :\: (Sing ini))
+			        (subspace_topology Ei (subspace_topology X Tx Ei) (Ei :\: (Sing ini))).
+			    {
+			      apply (and6E
+			        (arc Ei (subspace_topology X Tx Ei))
+			        (ini :e Ei)
+			        (fin :e Ei)
+			        (ini <> fin)
+			        (connected_space (Ei :\: (Sing ini))
+			          (subspace_topology Ei (subspace_topology X Tx Ei) (Ei :\: (Sing ini))))
+			        (connected_space (Ei :\: (Sing fin))
+			          (subspace_topology Ei (subspace_topology X Tx Ei) (Ei :\: (Sing fin))))
+			        HendX_i).
+			      assume Harc HiniA HfinA Hneq Hc1 Hc2.
+			      exact Hc1.
+			    }
+			    claim HconnFin :
+			      connected_space (Ei :\: (Sing fin))
+			        (subspace_topology Ei (subspace_topology X Tx Ei) (Ei :\: (Sing fin))).
+			    {
+			      apply (and6E
+			        (arc Ei (subspace_topology X Tx Ei))
+			        (ini :e Ei)
+			        (fin :e Ei)
+			        (ini <> fin)
+			        (connected_space (Ei :\: (Sing ini))
+			          (subspace_topology Ei (subspace_topology X Tx Ei) (Ei :\: (Sing ini))))
+			        (connected_space (Ei :\: (Sing fin))
+			          (subspace_topology Ei (subspace_topology X Tx Ei) (Ei :\: (Sing fin))))
+			        HendX_i).
+			      assume Harc HiniA HfinA Hneq Hc1 Hc2.
+			      exact Hc2.
+			    }
+			    claim Hini_vw : ini = v \/ ini = w.
+			    {
+			      apply HendEi_or.
+			      - assume Hendvw.
+			        exact (end_points_of_arc_connected_complement_implies_endpoint
+			          Ei
+			          (subspace_topology X Tx Ei)
+			          v
+			          w
+			          ini
+			          Hendvw
+			          HiniA
+			          HconnIni).
+			      - assume Hendwv.
+			        claim Htmp : ini = w \/ ini = v.
+			        {
+			          exact (end_points_of_arc_connected_complement_implies_endpoint
+			            Ei
+			            (subspace_topology X Tx Ei)
+			            w
+			            v
+			            ini
+			            Hendwv
+			            HiniA
+			            HconnIni).
+			        }
+			        apply Htmp.
+			        + assume Hiw.
+			          apply orIR.
+			          exact Hiw.
+			        + assume Hiv.
+			          apply orIL.
+			          exact Hiv.
+			    }
+			    claim Hfin_vw : fin = v \/ fin = w.
+			    {
+			      apply HendEi_or.
+			      - assume Hendvw.
+			        exact (end_points_of_arc_connected_complement_implies_endpoint
+			          Ei
+			          (subspace_topology X Tx Ei)
+			          v
+			          w
+			          fin
+			          Hendvw
+			          HfinA
+			          HconnFin).
+			      - assume Hendwv.
+			        claim Htmp : fin = w \/ fin = v.
+			        {
+			          exact (end_points_of_arc_connected_complement_implies_endpoint
+			            Ei
+			            (subspace_topology X Tx Ei)
+			            w
+			            v
+			            fin
+			            Hendwv
+			            HfinA
+			            HconnFin).
+			        }
+			        apply Htmp.
+			        + assume Hfw.
+			          apply orIR.
+			          exact Hfw.
+			        + assume Hfv.
+			          apply orIL.
+			          exact Hfv.
+			    }
+		    claim HiniEqV : ini = v.
+		    {
+		      apply Hini_vw.
+		      - assume Hiv.
+		        exact Hiv.
+			      - assume Hiw.
+			        claim HiniEqFin : ini = fin.
+			        {
+			          rewrite Hiw.
+			          rewrite HfinEqW.
+			          reflexivity.
+			        }
+			        exact (FalseE
+			          (HiniNeFin HiniEqFin)
+			          (ini = v)).
+			    }
+		    claim HiniProj : (apply_fun path_seq i) 0 0 = ini.
+		    {
+		      rewrite Happi.
+		      rewrite (tuple_2_0_eq (ini, fin) Ei).
+		      rewrite tuple_2_0_eq.
+		      reflexivity.
+		    }
+		    claim HfinProj : (apply_fun path_seq i) 0 1 = fin.
+		    {
+		      rewrite Happi.
+		      rewrite (tuple_2_0_eq (ini, fin) Ei).
+		      rewrite tuple_2_1_eq.
+		      reflexivity.
+		    }
+		    claim HlabProj : (apply_fun path_seq i) 1 = A.
+		    {
+		      rewrite Happi.
+		      rewrite (tuple_2_1_eq (ini, fin) Ei).
+		      rewrite HEiEqA.
+		      reflexivity.
+		    }
+		    claim Hconsec :
+		      (apply_fun path_seq i) 0 1 = (apply_fun path_seq (ordsucc i)) 0 0.
+		    {
+		      exact (reduced_edge_path_consecutive_match
+		        (T :\/: A)
+		        (subspace_topology X Tx (T :\/: A))
+		        ({A} :\/: ArcsT)
+		        n
+		        path_seq
+		        x0
+		        i
+		        Hred
+		        Hi
+		        His).
+		    }
+		    claim HiniSuccEqW : (apply_fun path_seq (ordsucc i)) 0 0 = w.
+		    {
+		      rewrite <- Hconsec.
+		      rewrite HfinProj.
+		      exact HfinEqW.
+		    }
+		    claim Hdecs :
+		      exists Es ini2 fin2:set,
+		        apply_fun path_seq (ordsucc i) = ((ini2, fin2), Es) /\
+		        oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+		          ({A} :\/: ArcsT) Es ini2 fin2.
+		    {
+		      exact (reduced_edge_path_edge_decomposition
+		        (T :\/: A)
+		        (subspace_topology X Tx (T :\/: A))
+		        ({A} :\/: ArcsT)
+		        n
+		        path_seq
+		        x0
+		        (ordsucc i)
+		        Hred
+		        His).
+		    }
+		    apply Hdecs.
+		    let Es.
+		    assume HEs.
+		    apply HEs.
+		    let ini2.
+		    assume Hini2.
+		    apply Hini2.
+		    let fin2.
+		    assume Hfin2.
+		    claim Happs : apply_fun path_seq (ordsucc i) = ((ini2, fin2), Es).
+		    {
+		      exact (andEL
+		        (apply_fun path_seq (ordsucc i) = ((ini2, fin2), Es))
+		        (oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+		          ({A} :\/: ArcsT) Es ini2 fin2)
+		        Hfin2).
+		    }
+		    claim Hori_s :
+		      oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+		        ({A} :\/: ArcsT) Es ini2 fin2.
+		    {
+		      exact (andER
+		        (apply_fun path_seq (ordsucc i) = ((ini2, fin2), Es))
+		        (oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+		          ({A} :\/: ArcsT) Es ini2 fin2)
+		        Hfin2).
+		    }
+			    claim Hini2EqW : ini2 = w.
+			    {
+			      claim Hproj0 : (apply_fun path_seq (ordsucc i)) 0 0 = ini2.
+			      {
+			        rewrite Happs.
+			        rewrite (tuple_2_0_eq (ini2, fin2) Es).
+			        rewrite tuple_2_0_eq.
+			        reflexivity.
+			      }
+			      rewrite <- Hproj0.
+			      exact HiniSuccEqW.
+			    }
+		    claim HwEs : w :e Es.
+		    {
+		      rewrite <- Hini2EqW.
+		      exact (oriented_edge_initial_in_arc
+		        (T :\/: A)
+		        (subspace_topology X Tx (T :\/: A))
+		        ({A} :\/: ArcsT)
+		        Es
+		        ini2
+		        fin2
+		        Hori_s).
+		    }
+		    claim HEsfam : Es :e ({A} :\/: ArcsT).
+		    {
+		      exact (oriented_edge_in_arcs
+		        (T :\/: A)
+		        (subspace_topology X Tx (T :\/: A))
+		        ({A} :\/: ArcsT)
+		        Es
+		        ini2
+		        fin2
+		        Hori_s).
+		    }
+		    claim HEsEqA : Es = A.
+		    {
+		      exact (tree_in_graph_outside_point_in_extended_family_implies_arc_is_A
+		        T
+		        ArcsT
+		        X
+		        Tx
+		        Arcs
+		        A
+		        w
+		        Es
+		        Htree
+		        HwNotT
+		        HEsfam
+		        HwEs).
+		    }
+			    claim HendU_s :
+			      end_points_of_arc Es
+			        (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) Es)
+			        ini2
+			        fin2.
+			    {
+			      exact (oriented_edge_endpoints
+			        (T :\/: A)
+			        (subspace_topology X Tx (T :\/: A))
+			        ({A} :\/: ArcsT)
+			        Es
+			        ini2
+			        fin2
+			        Hori_s).
+			    }
+			    claim HEsSubTA : Es c= (T :\/: A).
+			    {
+			      let z.
+			      assume HzEs.
+			      exact (HAsubTA
+			        z
+			        (mem_eqR z Es A HEsEqA HzEs)).
+			    }
+			    claim HtopSeq :
+			      subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) Es =
+			      subspace_topology X Tx Es.
+			    {
+			      exact (ex16_1_subspace_transitive
+			        X
+			        Tx
+			        (T :\/: A)
+			        Es
+			        HtopX
+			        HTAsubX
+			        HEsSubTA).
+			    }
+			    claim HendX_s : end_points_of_arc Es (subspace_topology X Tx Es) ini2 fin2.
+			    {
+			      rewrite <- HtopSeq.
+			      exact HendU_s.
+			    }
+			    claim HendEs_or :
+			      end_points_of_arc Es (subspace_topology X Tx Es) v w \/
+			      end_points_of_arc Es (subspace_topology X Tx Es) w v.
+			    {
+			      rewrite HEsEqA.
+			      exact Hendvw_or.
+			    }
+			    claim Hfin2A : fin2 :e Es.
+			    {
+			      apply (and6E
+			        (arc Es (subspace_topology X Tx Es))
+			        (ini2 :e Es)
+			        (fin2 :e Es)
+			        (ini2 <> fin2)
+			        (connected_space (Es :\: (Sing ini2))
+			          (subspace_topology Es (subspace_topology X Tx Es) (Es :\: (Sing ini2))))
+			        (connected_space (Es :\: (Sing fin2))
+			          (subspace_topology Es (subspace_topology X Tx Es) (Es :\: (Sing fin2))))
+			        HendX_s).
+			      assume Harc HiniA2 HfinA2 Hneq Hc1 Hc2.
+			      exact HfinA2.
+			    }
+			    claim Hneq2 : ini2 <> fin2.
+			    {
+			      apply (and6E
+			        (arc Es (subspace_topology X Tx Es))
+			        (ini2 :e Es)
+			        (fin2 :e Es)
+			        (ini2 <> fin2)
+			        (connected_space (Es :\: (Sing ini2))
+			          (subspace_topology Es (subspace_topology X Tx Es) (Es :\: (Sing ini2))))
+			        (connected_space (Es :\: (Sing fin2))
+			          (subspace_topology Es (subspace_topology X Tx Es) (Es :\: (Sing fin2))))
+			        HendX_s).
+			      assume Harc HiniA2 HfinA2 Hneq Hc1 Hc2.
+			      exact Hneq.
+			    }
+			    claim HconnFin2 :
+			      connected_space (Es :\: (Sing fin2))
+			        (subspace_topology Es (subspace_topology X Tx Es) (Es :\: (Sing fin2))).
+			    {
+			      apply (and6E
+			        (arc Es (subspace_topology X Tx Es))
+			        (ini2 :e Es)
+			        (fin2 :e Es)
+			        (ini2 <> fin2)
+			        (connected_space (Es :\: (Sing ini2))
+			          (subspace_topology Es (subspace_topology X Tx Es) (Es :\: (Sing ini2))))
+			        (connected_space (Es :\: (Sing fin2))
+			          (subspace_topology Es (subspace_topology X Tx Es) (Es :\: (Sing fin2))))
+			        HendX_s).
+			      assume Harc HiniA2 HfinA2 Hneq Hc1 Hc2.
+			      exact Hc2.
+			    }
+			    claim Hfin2_vw : fin2 = v \/ fin2 = w.
+			    {
+			      apply HendEs_or.
+			      - assume Hendvw.
+			        exact (end_points_of_arc_connected_complement_implies_endpoint
+			          Es
+			          (subspace_topology X Tx Es)
+			          v
+			          w
+			          fin2
+			          Hendvw
+			          Hfin2A
+			          HconnFin2).
+			      - assume Hendwv.
+			        claim Htmp : fin2 = w \/ fin2 = v.
+			        {
+			          exact (end_points_of_arc_connected_complement_implies_endpoint
+			            Es
+			            (subspace_topology X Tx Es)
+			            w
+			            v
+			            fin2
+			            Hendwv
+			            Hfin2A
+			            HconnFin2).
+			        }
+			        apply Htmp.
+			        + assume Hfw.
+			          apply orIR.
+			          exact Hfw.
+			        + assume Hfv.
+			          apply orIL.
+			          exact Hfv.
+			    }
+			    claim Hfin2EqV : fin2 = v.
+			    {
+			      apply Hfin2_vw.
+			      - assume Hfv.
+			        exact Hfv.
+			      - assume Hfw.
+			        claim Hini2EqFin2 : ini2 = fin2.
+			        {
+			          rewrite Hini2EqW.
+			          rewrite Hfw.
+			          reflexivity.
+			        }
+			        exact (FalseE
+			          (Hneq2 Hini2EqFin2)
+			          (fin2 = v)).
+			    }
+		    claim Hfin2Proj : (apply_fun path_seq (ordsucc i)) 0 1 = fin2.
+		    {
+		      rewrite Happs.
+		      rewrite (tuple_2_0_eq (ini2, fin2) Es).
+		      rewrite tuple_2_1_eq.
+		      reflexivity.
+		    }
+		    claim Hlab2Proj : (apply_fun path_seq (ordsucc i)) 1 = A.
+		    {
+		      rewrite Happs.
+		      rewrite (tuple_2_1_eq (ini2, fin2) Es).
+		      rewrite HEsEqA.
+		      reflexivity.
+		    }
+		    apply HnoBack.
+		    apply andI.
+		    - apply andI.
+		      + rewrite HlabProj.
+		        rewrite <- Hlab2Proj.
+		        reflexivity.
+		      + rewrite HiniProj.
+		        rewrite HiniEqV.
+		        rewrite Hfin2Proj.
+		        rewrite Hfin2EqV.
+		        reflexivity.
+			    - exact Hconsec.
+		  }
+				  apply (xm (x0 = w)).
+				  - assume Hx0w.
+				    (** Reduce the x0 = w case by analyzing the last index j with ordsucc j /:e n. **)
+				    claim HordN : ordinal n.
+				    { exact (nat_p_ordinal n (omega_nat_p n HnOm)). }
+				    apply Hclosed.
+				    let j.
+				    assume Hjpack.
+				    claim Hj12 : (j :e n /\ ordsucc j /:e n).
+				    {
+				      exact (andEL
+				        (j :e n /\ ordsucc j /:e n)
+				        ((apply_fun path_seq j) 0 1 = x0)
+				        Hjpack).
+				    }
+				    claim HjIn : j :e n.
+				    { exact (andEL (j :e n) (ordsucc j /:e n) Hj12). }
+				    claim HsjNot : ordsucc j /:e n.
+				    { exact (andER (j :e n) (ordsucc j /:e n) Hj12). }
+				    claim Hfinj : (apply_fun path_seq j) 0 1 = x0.
+				    {
+				      exact (andER
+				        (j :e n /\ ordsucc j /:e n)
+				        ((apply_fun path_seq j) 0 1 = x0)
+				        Hjpack).
+				    }
+				    claim HnEqSj : n = ordsucc j.
+				    {
+				      apply (ordinal_ordsucc_In_eq
+				        n
+				        j
+				        HordN
+				        HjIn).
+				      - assume HsjIn.
+				        exact (FalseE (HsjNot HsjIn) (n = ordsucc j)).
+				      - assume Heq.
+				        exact Heq.
+				    }
+				    claim HjOm : j :e omega.
+				    {
+				      claim HnSubOmega : n c= omega.
+				      { exact (ordinal_TransSet omega omega_ordinal n HnOm). }
+				      exact (HnSubOmega j HjIn).
+				    }
+				    claim HjNat : nat_p j.
+				    { exact (omega_nat_p j HjOm). }
+				    apply (nat_inv j HjNat).
+				    - assume HjEq0.
+				      (** Then j is 0, and the unique edge would start and end at x0, contradicting ini <> fin. **)
+				      claim Hdecj :
+				        exists Ej inij finj:set,
+				          apply_fun path_seq j = ((inij, finj), Ej) /\
+				          oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+				            ({A} :\/: ArcsT) Ej inij finj.
+				      {
+				        exact (reduced_edge_path_edge_decomposition
+				          (T :\/: A)
+				          (subspace_topology X Tx (T :\/: A))
+				          ({A} :\/: ArcsT)
+				          n
+				          path_seq
+				          x0
+				          j
+				          Hred
+				          HjIn).
+				      }
+				      apply Hdecj.
+				      let Ej.
+				      assume HEj.
+				      apply HEj.
+				      let inij.
+				      assume Hinij.
+				      apply Hinij.
+				      let finj0.
+				      assume Hfinj0.
+				      claim Happj : apply_fun path_seq j = ((inij, finj0), Ej).
+				      {
+				        exact (andEL
+				          (apply_fun path_seq j = ((inij, finj0), Ej))
+				          (oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+				            ({A} :\/: ArcsT) Ej inij finj0)
+				          Hfinj0).
+				      }
+				      claim Hori_j :
+				        oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+				          ({A} :\/: ArcsT) Ej inij finj0.
+				      {
+				        exact (andER
+				          (apply_fun path_seq j = ((inij, finj0), Ej))
+				          (oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+				            ({A} :\/: ArcsT) Ej inij finj0)
+				          Hfinj0).
+				      }
+				      claim Hend_j :
+				        end_points_of_arc Ej
+				          (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) Ej)
+				          inij
+				          finj0.
+				      {
+				        exact (oriented_edge_endpoints
+				          (T :\/: A)
+				          (subspace_topology X Tx (T :\/: A))
+				          ({A} :\/: ArcsT)
+				          Ej
+				          inij
+				          finj0
+				          Hori_j).
+				      }
+				      claim HiniNeFin : inij <> finj0.
+				      {
+				        apply (and6E
+				          (arc Ej (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) Ej))
+				          (inij :e Ej)
+				          (finj0 :e Ej)
+				          (inij <> finj0)
+				          (connected_space (Ej :\: (Sing inij))
+				            (subspace_topology Ej (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) Ej) (Ej :\: (Sing inij))))
+				          (connected_space (Ej :\: (Sing finj0))
+				            (subspace_topology Ej (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) Ej) (Ej :\: (Sing finj0))))
+				          Hend_j).
+				        assume Harc HinEj HfinEj Hneq Hc1 Hc2.
+				        exact Hneq.
+				      }
+				      claim Hstartj : (apply_fun path_seq j) 0 0 = x0.
+				      {
+				        rewrite HjEq0.
+				        exact (reduced_edge_path_start_vertex
+				          (T :\/: A)
+				          (subspace_topology X Tx (T :\/: A))
+				          ({A} :\/: ArcsT)
+				          n
+				          path_seq
+				          x0
+				          Hred
+				          HnNe0).
+				      }
+				      claim HiniProj : (apply_fun path_seq j) 0 0 = inij.
+				      {
+				        rewrite Happj.
+				        rewrite (tuple_2_0_eq (inij, finj0) Ej).
+				        rewrite tuple_2_0_eq.
+				        reflexivity.
+				      }
+				      claim HfinProj : (apply_fun path_seq j) 0 1 = finj0.
+				      {
+				        rewrite Happj.
+				        rewrite (tuple_2_0_eq (inij, finj0) Ej).
+				        rewrite tuple_2_1_eq.
+				        reflexivity.
+				      }
+				      claim HinijEqX0 : inij = x0.
+				      {
+				        rewrite <- Hstartj.
+				        rewrite HiniProj.
+				        reflexivity.
+				      }
+				      claim HfinjEqX0 : finj0 = x0.
+				      {
+				        rewrite <- Hfinj.
+				        rewrite HfinProj.
+				        reflexivity.
+				      }
+				      claim HiniEqFin : inij = finj0.
+				      {
+				        rewrite HinijEqX0.
+				        rewrite HfinjEqX0.
+				        reflexivity.
+				      }
+				      exact (FalseE (HiniNeFin HiniEqFin) False).
+				    - assume Hex.
+				      apply Hex.
+				      let m.
+				      assume Hmpack.
+				      claim HmNat : nat_p m.
+				      { exact (andEL (nat_p m) (j = ordsucc m) Hmpack). }
+				      claim HjEqSm : j = ordsucc m.
+				      { exact (andER (nat_p m) (j = ordsucc m) Hmpack). }
+				      apply (xm (m = 0)).
+				      - assume HmEq0.
+				        (** Then j = 1 and n = 2, so the two A-edges must immediately backtrack. **)
+				        claim HjEqS0 : j = ordsucc 0.
+				        {
+				          rewrite <- HmEq0.
+				          exact HjEqSm.
+				        }
+				        claim HjEq1 : j = 1.
+				        {
+				          rewrite HjEqS0.
+				          rewrite ordsucc_0_eq_1_nat.
+				          reflexivity.
+				        }
+				        claim HnEq2 : n = 2.
+				        {
+				          rewrite HnEqSj.
+				          rewrite HjEq1.
+				          rewrite ordsucc_1_eq_2_nat.
+				          reflexivity.
+				        }
+				        claim H0InN : 0 :e n.
+				        {
+				          rewrite HnEq2.
+				          rewrite <- ordsucc_1_eq_2_nat.
+				          exact (nat_0_in_ordsucc 1 nat_1).
+				        }
+				        claim H1InN : 1 :e n.
+				        {
+				          rewrite HnEq2.
+				          exact (ordsuccI2 1).
+				        }
+				        claim HnoBack0 :
+				          ~((apply_fun path_seq 0) 1 = (apply_fun path_seq 1) 1 /\
+				            (apply_fun path_seq 0) 0 0 = (apply_fun path_seq 1) 0 1 /\
+				            (apply_fun path_seq 0) 0 1 = (apply_fun path_seq 1) 0 0).
+				        {
+				          exact (reduced_edge_path_no_backtrack
+				            (T :\/: A)
+				            (subspace_topology X Tx (T :\/: A))
+				            ({A} :\/: ArcsT)
+				            n
+				            path_seq
+				            x0
+				            0
+				            Hred
+				            H0InN
+				            H1InN).
+				        }
+				        claim Hdec0 :
+				          exists E0 ini0 fin0:set,
+				            apply_fun path_seq 0 = ((ini0, fin0), E0) /\
+				            oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+				              ({A} :\/: ArcsT) E0 ini0 fin0.
+				        {
+				          exact (reduced_edge_path_edge_decomposition
+				            (T :\/: A)
+				            (subspace_topology X Tx (T :\/: A))
+				            ({A} :\/: ArcsT)
+				            n
+				            path_seq
+				            x0
+				            0
+				            Hred
+				            H0InN).
+				        }
+				        claim Hdecj :
+				          exists Ej inij finj0:set,
+				            apply_fun path_seq j = ((inij, finj0), Ej) /\
+				            oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+				              ({A} :\/: ArcsT) Ej inij finj0.
+				        {
+				          exact (reduced_edge_path_edge_decomposition
+				            (T :\/: A)
+				            (subspace_topology X Tx (T :\/: A))
+				            ({A} :\/: ArcsT)
+				            n
+				            path_seq
+				            x0
+				            j
+				            Hred
+				            HjIn).
+				        }
+				        apply Hdec0.
+				        let E0.
+				        assume HE0.
+				        apply HE0.
+				        let ini0.
+				        assume Hini0.
+				        apply Hini0.
+				        let fin0.
+				        assume Hfin0.
+				        claim Happ0 : apply_fun path_seq 0 = ((ini0, fin0), E0).
+				        {
+				          exact (andEL
+				            (apply_fun path_seq 0 = ((ini0, fin0), E0))
+				            (oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+				              ({A} :\/: ArcsT) E0 ini0 fin0)
+				            Hfin0).
+				        }
+				        claim Hori0 :
+				          oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+				            ({A} :\/: ArcsT) E0 ini0 fin0.
+				        {
+				          exact (andER
+				            (apply_fun path_seq 0 = ((ini0, fin0), E0))
+				            (oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+				              ({A} :\/: ArcsT) E0 ini0 fin0)
+				            Hfin0).
+				        }
+				        claim Hstart0 : (apply_fun path_seq 0) 0 0 = x0.
+				        {
+				          exact (reduced_edge_path_start_vertex
+				            (T :\/: A)
+				            (subspace_topology X Tx (T :\/: A))
+				            ({A} :\/: ArcsT)
+				            n
+				            path_seq
+				            x0
+				            Hred
+				            HnNe0).
+				        }
+				        claim Hini0EqW : ini0 = w.
+				        {
+				          rewrite <- Hx0w.
+				          rewrite <- Hstart0.
+				          rewrite Happ0.
+				          rewrite (tuple_2_0_eq (ini0, fin0) E0).
+				          rewrite tuple_2_0_eq.
+				          reflexivity.
+				        }
+				        claim HwE0 : w :e E0.
+				        {
+				          rewrite <- Hini0EqW.
+				          exact (oriented_edge_initial_in_arc
+				            (T :\/: A)
+				            (subspace_topology X Tx (T :\/: A))
+				            ({A} :\/: ArcsT)
+				            E0
+				            ini0
+				            fin0
+				            Hori0).
+				        }
+				        claim HE0fam : E0 :e ({A} :\/: ArcsT).
+				        {
+				          exact (oriented_edge_in_arcs
+				            (T :\/: A)
+				            (subspace_topology X Tx (T :\/: A))
+				            ({A} :\/: ArcsT)
+				            E0
+				            ini0
+				            fin0
+				            Hori0).
+				        }
+				        claim HE0EqA : E0 = A.
+				        {
+				          exact (tree_in_graph_outside_point_in_extended_family_implies_arc_is_A
+				            T
+				            ArcsT
+				            X
+				            Tx
+				            Arcs
+				            A
+				            w
+				            E0
+				            Htree
+				            HwNotT
+				            HE0fam
+				            HwE0).
+				        }
+				        claim Hlab0 : (apply_fun path_seq 0) 1 = A.
+				        {
+				          rewrite Happ0.
+				          rewrite (tuple_2_1_eq (ini0, fin0) E0).
+				          rewrite HE0EqA.
+				          reflexivity.
+				        }
+				        claim Hfin0EqV : fin0 = v.
+				        {
+				          claim HendU0 :
+				            end_points_of_arc E0
+				              (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E0)
+				              ini0
+				              fin0.
+				          {
+				            exact (oriented_edge_endpoints
+				              (T :\/: A)
+				              (subspace_topology X Tx (T :\/: A))
+				              ({A} :\/: ArcsT)
+				              E0
+				              ini0
+				              fin0
+				              Hori0).
+				          }
+				          claim HE0SubTA : E0 c= (T :\/: A).
+				          {
+				            let z.
+				            assume HzE0.
+				            exact (HAsubTA z (mem_eqR z E0 A HE0EqA HzE0)).
+				          }
+				          claim Htop0eq :
+				            subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E0 =
+				            subspace_topology X Tx E0.
+				          {
+				            exact (ex16_1_subspace_transitive
+				              X
+				              Tx
+				              (T :\/: A)
+				              E0
+				              HtopX
+				              HTAsubX
+				              HE0SubTA).
+				          }
+				          claim HendX0 : end_points_of_arc E0 (subspace_topology X Tx E0) ini0 fin0.
+				          {
+				            rewrite <- Htop0eq.
+				            exact HendU0.
+				          }
+				          claim HendE0_or :
+				            end_points_of_arc E0 (subspace_topology X Tx E0) v w \/
+				            end_points_of_arc E0 (subspace_topology X Tx E0) w v.
+				          {
+				            rewrite HE0EqA.
+				            exact Hendvw_or.
+				          }
+				          claim Hfin0_vw : fin0 = v \/ fin0 = w.
+				          {
+				            claim Hfin0E0 : fin0 :e E0.
+				            {
+				              exact (oriented_edge_final_in_arc
+				                (T :\/: A)
+				                (subspace_topology X Tx (T :\/: A))
+				                ({A} :\/: ArcsT)
+				                E0
+				                ini0
+				                fin0
+				                Hori0).
+				            }
+				            claim HconnFin0 :
+				              connected_space (E0 :\: (Sing fin0))
+				                (subspace_topology E0 (subspace_topology X Tx E0) (E0 :\: (Sing fin0))).
+				            {
+				              apply (and6E
+				                (arc E0 (subspace_topology X Tx E0))
+				                (ini0 :e E0)
+				                (fin0 :e E0)
+				                (ini0 <> fin0)
+				                (connected_space (E0 :\: (Sing ini0))
+				                  (subspace_topology E0 (subspace_topology X Tx E0) (E0 :\: (Sing ini0))))
+				                (connected_space (E0 :\: (Sing fin0))
+				                  (subspace_topology E0 (subspace_topology X Tx E0) (E0 :\: (Sing fin0))))
+				                HendX0).
+				              assume Harc HiniE0 HfinE0 Hneq Hc1 Hc2.
+				              exact Hc2.
+				            }
+				            apply HendE0_or.
+				            - assume Hendvw.
+				              exact (end_points_of_arc_connected_complement_implies_endpoint
+				                E0
+				                (subspace_topology X Tx E0)
+				                v
+				                w
+				                fin0
+				                Hendvw
+				                Hfin0E0
+				                HconnFin0).
+				            - assume Hendwv.
+				              claim Htmp : fin0 = w \/ fin0 = v.
+				              {
+				                exact (end_points_of_arc_connected_complement_implies_endpoint
+				                  E0
+				                  (subspace_topology X Tx E0)
+				                  w
+				                  v
+				                  fin0
+				                  Hendwv
+				                  Hfin0E0
+				                  HconnFin0).
+				              }
+				              apply Htmp.
+				              + assume Hfw.
+				                apply orIR.
+				                exact Hfw.
+				              + assume Hfv.
+				                apply orIL.
+				                exact Hfv.
+				          }
+				          apply Hfin0_vw.
+				          - assume Hfv.
+				            exact Hfv.
+					          - assume Hfw.
+					            claim HiniNeFin0 : ini0 <> fin0.
+					            {
+					              apply (and6E
+					                (arc E0 (subspace_topology X Tx E0))
+					                (ini0 :e E0)
+					                (fin0 :e E0)
+					                (ini0 <> fin0)
+					                (connected_space (E0 :\: (Sing ini0))
+					                  (subspace_topology E0 (subspace_topology X Tx E0) (E0 :\: (Sing ini0))))
+					                (connected_space (E0 :\: (Sing fin0))
+					                  (subspace_topology E0 (subspace_topology X Tx E0) (E0 :\: (Sing fin0))))
+					                HendX0).
+					              assume Harc HiniE0 HfinE0 Hneq Hc1 Hc2.
+					              exact Hneq.
+					            }
+					            claim HiniEqFin : ini0 = fin0.
+					            {
+					              rewrite Hini0EqW.
+					              rewrite Hfw.
+					              reflexivity.
+					            }
+					            exact (FalseE
+					              (HiniNeFin0 HiniEqFin)
+					              (fin0 = v)).
+					        }
+					        (** Obtain analogous data for the edge at index 1, and derive the forbidden backtrack at i = 0. **)
+					        claim Hfin1x0 : (apply_fun path_seq 1) 0 1 = x0.
+					        {
+					          claim Hpath1Eq : apply_fun path_seq 1 = apply_fun path_seq j.
+					          {
+					            rewrite <- HjEq1.
+					            reflexivity.
+					          }
+					          rewrite Hpath1Eq.
+					          exact Hfinj.
+					        }
+				        claim Hdec1 :
+				          exists E1 ini1 fin1:set,
+				            apply_fun path_seq 1 = ((ini1, fin1), E1) /\
+				            oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+				              ({A} :\/: ArcsT) E1 ini1 fin1.
+				        {
+				          exact (reduced_edge_path_edge_decomposition
+				            (T :\/: A)
+				            (subspace_topology X Tx (T :\/: A))
+				            ({A} :\/: ArcsT)
+				            n
+				            path_seq
+				            x0
+				            1
+				            Hred
+				            H1InN).
+				        }
+				        apply Hdec1.
+				        let E1.
+				        assume HE1.
+				        apply HE1.
+				        let ini1.
+				        assume Hini1.
+				        apply Hini1.
+				        let fin1.
+				        assume Hfin1p.
+				        claim Happ1 : apply_fun path_seq 1 = ((ini1, fin1), E1).
+				        {
+				          exact (andEL
+				            (apply_fun path_seq 1 = ((ini1, fin1), E1))
+				            (oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+				              ({A} :\/: ArcsT) E1 ini1 fin1)
+				            Hfin1p).
+				        }
+				        claim Hori1 :
+				          oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+				            ({A} :\/: ArcsT) E1 ini1 fin1.
+				        {
+				          exact (andER
+				            (apply_fun path_seq 1 = ((ini1, fin1), E1))
+				            (oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+				              ({A} :\/: ArcsT) E1 ini1 fin1)
+				            Hfin1p).
+				        }
+				        claim Hfin1EqW : fin1 = w.
+				        {
+				          claim Hproj1 : (apply_fun path_seq 1) 0 1 = fin1.
+				          {
+				            rewrite Happ1.
+				            rewrite (tuple_2_0_eq (ini1, fin1) E1).
+				            rewrite tuple_2_1_eq.
+				            reflexivity.
+				          }
+				          rewrite <- Hx0w.
+				          rewrite <- Hfin1x0.
+				          rewrite Hproj1.
+				          reflexivity.
+				        }
+				        claim HwE1 : w :e E1.
+				        {
+				          rewrite <- Hfin1EqW.
+				          exact (oriented_edge_final_in_arc
+				            (T :\/: A)
+				            (subspace_topology X Tx (T :\/: A))
+				            ({A} :\/: ArcsT)
+				            E1
+				            ini1
+				            fin1
+				            Hori1).
+				        }
+				        claim HE1fam : E1 :e ({A} :\/: ArcsT).
+				        {
+				          exact (oriented_edge_in_arcs
+				            (T :\/: A)
+				            (subspace_topology X Tx (T :\/: A))
+				            ({A} :\/: ArcsT)
+				            E1
+				            ini1
+				            fin1
+				            Hori1).
+				        }
+				        claim HE1EqA : E1 = A.
+				        {
+				          exact (tree_in_graph_outside_point_in_extended_family_implies_arc_is_A
+				            T
+				            ArcsT
+				            X
+				            Tx
+				            Arcs
+				            A
+				            w
+				            E1
+				            Htree
+				            HwNotT
+				            HE1fam
+				            HwE1).
+				        }
+				        claim Hlab1 : (apply_fun path_seq 1) 1 = A.
+				        {
+				          rewrite Happ1.
+				          rewrite (tuple_2_1_eq (ini1, fin1) E1).
+				          rewrite HE1EqA.
+				          reflexivity.
+				        }
+				        claim Hini0Proj : (apply_fun path_seq 0) 0 0 = ini0.
+				        {
+				          rewrite Happ0.
+				          rewrite (tuple_2_0_eq (ini0, fin0) E0).
+				          rewrite tuple_2_0_eq.
+				          reflexivity.
+				        }
+				        claim Hfin1Proj : (apply_fun path_seq 1) 0 1 = fin1.
+				        {
+				          rewrite Happ1.
+				          rewrite (tuple_2_0_eq (ini1, fin1) E1).
+				          rewrite tuple_2_1_eq.
+				          reflexivity.
+				        }
+				        claim Hini0EqFin1 : (apply_fun path_seq 0) 0 0 = (apply_fun path_seq 1) 0 1.
+				        {
+				          rewrite Hini0Proj.
+				          rewrite Hfin1Proj.
+				          rewrite Hini0EqW.
+				          rewrite Hfin1EqW.
+				          reflexivity.
+				        }
+				        claim Hconsec01 :
+				          (apply_fun path_seq 0) 0 1 = (apply_fun path_seq 1) 0 0.
+				        {
+				          exact (reduced_edge_path_consecutive_match
+				            (T :\/: A)
+				            (subspace_topology X Tx (T :\/: A))
+				            ({A} :\/: ArcsT)
+				            n
+				            path_seq
+				            x0
+				            0
+				            Hred
+				            H0InN
+				            H1InN).
+				        }
+				        apply HnoBack0.
+				        apply andI.
+				        - apply andI.
+				          + rewrite Hlab0.
+				            rewrite <- Hlab1.
+				            reflexivity.
+				          + exact Hini0EqFin1.
+				        - exact Hconsec01.
+				      - assume HmNe0.
+				        (** TODO: handle m <> 0 by extracting the interior closed path and applying convert_no_A_edges. **)
+				        admit.
+			  - assume Hx0NeW.
+			    apply HuseA.
+			    let i0.
+			    assume Hi0pack.
+		    claim Hi0 : i0 :e n.
+		    { exact (andEL (i0 :e n) ((apply_fun path_seq i0) 1 = A) Hi0pack). }
+		    claim Hi0E : (apply_fun path_seq i0) 1 = A.
+		    { exact (andER (i0 :e n) ((apply_fun path_seq i0) 1 = A) Hi0pack). }
+		    claim HordN : ordinal n.
+		    { exact (nat_p_ordinal n (omega_nat_p n HnOm)). }
+		    claim HTransN : TransSet n.
+		    { exact (ordinal_TransSet n HordN). }
+		    claim HnSubOmega : n c= omega.
+		    {
+		      exact (ordinal_TransSet omega omega_ordinal n HnOm).
+		    }
+		    claim Hdeci0 :
+		      exists E0 ini0 fin0:set,
+		        apply_fun path_seq i0 = ((ini0, fin0), E0) /\
+		        oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+		          ({A} :\/: ArcsT) E0 ini0 fin0.
+		    {
+		      exact (reduced_edge_path_edge_decomposition
+		        (T :\/: A)
+		        (subspace_topology X Tx (T :\/: A))
+		        ({A} :\/: ArcsT)
+		        n
+		        path_seq
+		        x0
+		        i0
+		        Hred
+		        Hi0).
+		    }
+		    apply Hdeci0.
+		    let E0.
+		    assume HE0.
+		    apply HE0.
+		    let ini0.
+		    assume Hini0.
+		    apply Hini0.
+		    let fin0.
+		    assume Hfin0.
+		    claim Happ0 : apply_fun path_seq i0 = ((ini0, fin0), E0).
+		    {
+		      exact (andEL
+		        (apply_fun path_seq i0 = ((ini0, fin0), E0))
+		        (oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+		          ({A} :\/: ArcsT) E0 ini0 fin0)
+		        Hfin0).
+		    }
+		    claim Hori0 :
+		      oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+		        ({A} :\/: ArcsT) E0 ini0 fin0.
+		    {
+		      exact (andER
+		        (apply_fun path_seq i0 = ((ini0, fin0), E0))
+		        (oriented_edge (T :\/: A) (subspace_topology X Tx (T :\/: A))
+		          ({A} :\/: ArcsT) E0 ini0 fin0)
+		        Hfin0).
+		    }
+		    claim Hcomp0 : (apply_fun path_seq i0) 1 = E0.
+		    {
+		      rewrite Happ0.
+		      rewrite (tuple_2_1_eq (ini0, fin0) E0).
+		      reflexivity.
+		    }
+		    claim HE0EqA : E0 = A.
+		    {
+		      rewrite <- Hcomp0.
+		      exact Hi0E.
+		    }
+		    claim HE0SubTA : E0 c= (T :\/: A).
+		    {
+		      let z.
+		      assume HzE0.
+		      exact (HAsubTA
+		        z
+		        (mem_eqR z E0 A HE0EqA HzE0)).
+		    }
+		    claim Htop0eq :
+		      subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E0 =
+		      subspace_topology X Tx E0.
+		    {
+		      exact (ex16_1_subspace_transitive
+		        X
+		        Tx
+		        (T :\/: A)
+		        E0
+		        HtopX
+		        HTAsubX
+		        HE0SubTA).
+		    }
+		    claim HendU0 :
+		      end_points_of_arc E0
+		        (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E0)
+		        ini0
+		        fin0.
+		    {
+		      exact (oriented_edge_endpoints
+		        (T :\/: A)
+		        (subspace_topology X Tx (T :\/: A))
+		        ({A} :\/: ArcsT)
+		        E0
+		        ini0
+		        fin0
+		        Hori0).
+		    }
+		    claim HendX0 : end_points_of_arc E0 (subspace_topology X Tx E0) ini0 fin0.
+		    {
+		      rewrite <- Htop0eq.
+		      exact HendU0.
+		    }
+		    claim HendE0_or :
+		      end_points_of_arc E0 (subspace_topology X Tx E0) v w \/
+		      end_points_of_arc E0 (subspace_topology X Tx E0) w v.
+		    {
+		      rewrite HE0EqA.
+		      exact Hendvw_or.
+		    }
+		    claim Hini0E0 : ini0 :e E0.
+		    {
+		      exact (oriented_edge_initial_in_arc
+		        (T :\/: A)
+		        (subspace_topology X Tx (T :\/: A))
+		        ({A} :\/: ArcsT)
+		        E0
+		        ini0
+		        fin0
+		        Hori0).
+		    }
+		    claim Hfin0E0 : fin0 :e E0.
+		    {
+		      exact (oriented_edge_final_in_arc
+		        (T :\/: A)
+		        (subspace_topology X Tx (T :\/: A))
+		        ({A} :\/: ArcsT)
+		        E0
+		        ini0
+		        fin0
+		        Hori0).
+		    }
+		    claim Hneq0 : ini0 <> fin0.
+		    {
+		      apply (and6E
+		        (arc E0 (subspace_topology X Tx E0))
+		        (ini0 :e E0)
+		        (fin0 :e E0)
+		        (ini0 <> fin0)
+		        (connected_space (E0 :\: (Sing ini0))
+		          (subspace_topology E0 (subspace_topology X Tx E0) (E0 :\: (Sing ini0))))
+		        (connected_space (E0 :\: (Sing fin0))
+		          (subspace_topology E0 (subspace_topology X Tx E0) (E0 :\: (Sing fin0))))
+		        HendX0).
+		      assume Harc HiniE0 HfinE0 Hneq Hc1 Hc2.
+		      exact Hneq.
+		    }
+		    claim HconnIni0 :
+		      connected_space (E0 :\: (Sing ini0))
+		        (subspace_topology E0 (subspace_topology X Tx E0) (E0 :\: (Sing ini0))).
+		    {
+		      apply (and6E
+		        (arc E0 (subspace_topology X Tx E0))
+		        (ini0 :e E0)
+		        (fin0 :e E0)
+		        (ini0 <> fin0)
+		        (connected_space (E0 :\: (Sing ini0))
+		          (subspace_topology E0 (subspace_topology X Tx E0) (E0 :\: (Sing ini0))))
+		        (connected_space (E0 :\: (Sing fin0))
+		          (subspace_topology E0 (subspace_topology X Tx E0) (E0 :\: (Sing fin0))))
+		        HendX0).
+		      assume Harc HiniE0 HfinE0 Hneq Hc1 Hc2.
+		      exact Hc1.
+		    }
+		    claim HconnFin0 :
+		      connected_space (E0 :\: (Sing fin0))
+		        (subspace_topology E0 (subspace_topology X Tx E0) (E0 :\: (Sing fin0))).
+		    {
+		      apply (and6E
+		        (arc E0 (subspace_topology X Tx E0))
+		        (ini0 :e E0)
+		        (fin0 :e E0)
+		        (ini0 <> fin0)
+		        (connected_space (E0 :\: (Sing ini0))
+		          (subspace_topology E0 (subspace_topology X Tx E0) (E0 :\: (Sing ini0))))
+		        (connected_space (E0 :\: (Sing fin0))
+		          (subspace_topology E0 (subspace_topology X Tx E0) (E0 :\: (Sing fin0))))
+		        HendX0).
+		      assume Harc HiniE0 HfinE0 Hneq Hc1 Hc2.
+		      exact Hc2.
+		    }
+		    claim Hini0_vw : ini0 = v \/ ini0 = w.
+		    {
+		      apply HendE0_or.
+		      - assume Hendvw.
+		        exact (end_points_of_arc_connected_complement_implies_endpoint
+		          E0
+		          (subspace_topology X Tx E0)
+		          v
+		          w
+		          ini0
+		          Hendvw
+		          Hini0E0
+		          HconnIni0).
+		      - assume Hendwv.
+		        claim Htmp : ini0 = w \/ ini0 = v.
+		        {
+		          exact (end_points_of_arc_connected_complement_implies_endpoint
+		            E0
+		            (subspace_topology X Tx E0)
+		            w
+		            v
+		            ini0
+		            Hendwv
+		            Hini0E0
+		            HconnIni0).
+		        }
+		        apply Htmp.
+		        + assume Hiw.
+		          apply orIR.
+		          exact Hiw.
+		        + assume Hiv.
+		          apply orIL.
+		          exact Hiv.
+		    }
+		    claim Hfin0_vw : fin0 = v \/ fin0 = w.
+		    {
+		      apply HendE0_or.
+		      - assume Hendvw.
+		        exact (end_points_of_arc_connected_complement_implies_endpoint
+		          E0
+		          (subspace_topology X Tx E0)
+		          v
+		          w
+		          fin0
+		          Hendvw
+		          Hfin0E0
+		          HconnFin0).
+		      - assume Hendwv.
+		        claim Htmp : fin0 = w \/ fin0 = v.
+		        {
+		          exact (end_points_of_arc_connected_complement_implies_endpoint
+		            E0
+		            (subspace_topology X Tx E0)
+		            w
+		            v
+		            fin0
+		            Hendwv
+		            Hfin0E0
+		            HconnFin0).
+		        }
+		        apply Htmp.
+		        + assume Hfw.
+		          apply orIR.
+		          exact Hfw.
+		        + assume Hfv.
+		          apply orIL.
+		          exact Hfv.
+		    }
+		    apply Hfin0_vw.
+		    - assume Hfin0v.
+		      claim Hini0EqW : ini0 = w.
+		      {
+			        apply Hini0_vw.
+			        - assume Hini0v.
+			          claim HiniEqFin : ini0 = fin0.
+			          {
+			            rewrite Hini0v.
+			            rewrite Hfin0v.
+			            reflexivity.
+			          }
+			          exact (FalseE
+			            (Hneq0 HiniEqFin)
+			            (ini0 = w)).
+			        - assume Hini0w.
+			          exact Hini0w.
+			      }
+		      claim Hi0Ne0 : i0 <> 0.
+		      {
+		        assume Hi0eq0.
+		        claim Hstart : (apply_fun path_seq 0) 0 0 = x0.
+				        {
+				          exact (reduced_edge_path_start_vertex
+				            (T :\/: A)
+				            (subspace_topology X Tx (T :\/: A))
+				            ({A} :\/: ArcsT)
+				            n
+				            path_seq
+				            x0
+				            Hred
+				            HnNe0).
+				        }
+				        claim HprojI0 : (apply_fun path_seq i0) 0 0 = ini0.
+				        {
+				          rewrite Happ0.
+				          rewrite (tuple_2_0_eq (ini0, fin0) E0).
+				          rewrite tuple_2_0_eq.
+				          reflexivity.
+				        }
+				        claim HstartI0 : (apply_fun path_seq i0) 0 0 = x0.
+				        {
+				          rewrite Hi0eq0.
+				          exact Hstart.
+				        }
+				        claim Hx0EqIni0 : x0 = ini0.
+				        {
+				          rewrite <- HstartI0.
+				          exact HprojI0.
+				        }
+				        claim Hx0EqW : x0 = w.
+				        {
+				          rewrite Hx0EqIni0.
+				          exact Hini0EqW.
+				        }
+			        exact (Hx0NeW Hx0EqW).
+			      }
+		      claim Hi0Om : i0 :e omega.
+		      { exact (HnSubOmega i0 Hi0). }
+		      claim Hi0Nat : nat_p i0.
+		      { exact (omega_nat_p i0 Hi0Om). }
+			      apply (nat_inv i0 Hi0Nat).
+			      - assume Hi0eq0.
+			        exact (FalseE (Hi0Ne0 Hi0eq0) False).
+			      - assume Hex.
+			        apply Hex.
+			        let k.
+			        assume Hkpack.
+			        claim HkNat : nat_p k.
+			        { exact (andEL (nat_p k) (i0 = ordsucc k) Hkpack). }
+			        claim Hi0EqSk : i0 = ordsucc k.
+			        { exact (andER (nat_p k) (i0 = ordsucc k) Hkpack). }
+		        claim HkInI0 : k :e i0.
+		        { rewrite Hi0EqSk. exact (ordsuccI2 k). }
+		        claim HkInN : k :e n.
+		        { exact (HTransN i0 Hi0 k HkInI0). }
+		        claim HskInN : ordsucc k :e n.
+		        { rewrite <- Hi0EqSk. exact Hi0. }
+		        claim Hconsec0 :
+		          (apply_fun path_seq k) 0 1 = (apply_fun path_seq (ordsucc k)) 0 0.
+		        {
+		          exact (reduced_edge_path_consecutive_match
+		            (T :\/: A)
+		            (subspace_topology X Tx (T :\/: A))
+		            ({A} :\/: ArcsT)
+		            n
+		            path_seq
+		            x0
+		            k
+		            Hred
+		            HkInN
+		            HskInN).
+		        }
+			        claim Hini0proj2 : (apply_fun path_seq (ordsucc k)) 0 0 = ini0.
+			        {
+			          claim HappSk : apply_fun path_seq (ordsucc k) = ((ini0, fin0), E0).
+			          {
+			            rewrite <- Hi0EqSk.
+			            exact Happ0.
+			          }
+			          rewrite HappSk.
+			          rewrite (tuple_2_0_eq (ini0, fin0) E0).
+			          rewrite tuple_2_0_eq.
+			          reflexivity.
+			        }
+		        claim HfinK : (apply_fun path_seq k) 0 1 = w.
+		        {
+		          rewrite Hconsec0.
+		          rewrite Hini0proj2.
+		          exact Hini0EqW.
+		        }
+		        exact (internal_w_implies_backtrack k HkInN HskInN HfinK).
+		    - assume Hfin0w.
+		      claim His0 : ordsucc i0 :e n.
+		      {
+		        apply (ordinal_ordsucc_In_eq
+		          n
+		          i0
+		          HordN
+		          Hi0).
+		        - assume Hsi0.
+		          exact Hsi0.
+		        - assume Hneq.
+		          claim Hlast :
+		            exists j:set, j :e n /\ ordsucc j /:e n /\
+		              (apply_fun path_seq j) 0 1 = x0.
+		          { exact Hclosed. }
+			          apply Hlast.
+			          let j.
+			          assume Hjpack.
+			          claim Hj12 : (j :e n /\ ordsucc j /:e n).
+			          {
+			            exact (andEL
+			              (j :e n /\ ordsucc j /:e n)
+			              ((apply_fun path_seq j) 0 1 = x0)
+			              Hjpack).
+			          }
+			          claim HjIn : j :e n.
+			          { exact (andEL (j :e n) (ordsucc j /:e n) Hj12). }
+			          claim HsjNot : ordsucc j /:e n.
+			          { exact (andER (j :e n) (ordsucc j /:e n) Hj12). }
+			          claim Hfinj : (apply_fun path_seq j) 0 1 = x0.
+			          {
+			            exact (andER
+			              (j :e n /\ ordsucc j /:e n)
+			              ((apply_fun path_seq j) 0 1 = x0)
+			              Hjpack).
+			          }
+		          claim HnEqSj : n = ordsucc j.
+		          {
+		            apply (ordinal_ordsucc_In_eq
+		              n
+		              j
+		              HordN
+		              HjIn).
+		            - assume HsjIn.
+		              exact (FalseE (HsjNot HsjIn) (n = ordsucc j)).
+		            - assume Heq.
+		              exact Heq.
+		          }
+			          claim Hi0EqJ : i0 = j.
+			          {
+			            claim Hsi0EqSj : ordsucc i0 = ordsucc j.
+			            {
+			              rewrite <- Hneq.
+			              rewrite HnEqSj.
+			              reflexivity.
+			            }
+			            exact (ordsucc_inj i0 j Hsi0EqSj).
+			          }
+		          claim HfinEq : (apply_fun path_seq i0) 0 1 = x0.
+		          {
+		            rewrite Hi0EqJ.
+		            exact Hfinj.
+		          }
+		          claim HfinI0 : (apply_fun path_seq i0) 0 1 = w.
+		          {
+		            rewrite Happ0.
+		            rewrite (tuple_2_0_eq (ini0, fin0) E0).
+		            rewrite tuple_2_1_eq.
+		            exact Hfin0w.
+		          }
+		          claim Hx0EqW : x0 = w.
+		          { rewrite <- HfinEq. exact HfinI0. }
+		          exact (FalseE (Hx0NeW Hx0EqW) (ordsucc i0 :e n)).
+		      }
+		      claim HfinI0 : (apply_fun path_seq i0) 0 1 = w.
+		      {
+		        rewrite Happ0.
+		        rewrite (tuple_2_0_eq (ini0, fin0) E0).
+		        rewrite tuple_2_1_eq.
+		        exact Hfin0w.
+		      }
+		      exact (internal_w_implies_backtrack i0 Hi0 His0 HfinI0).
+		- assume HnoUseA.
+		  claim HnoAedges :
+		    forall i:set, i :e n -> (apply_fun path_seq i) 1 <> A.
+		  {
+	    let i.
+	    assume Hi.
+	    assume Heq.
+	    apply HnoUseA.
+	    witness i.
+	    apply andI.
+	    - exact Hi.
+	    - exact Heq.
+	  }
+	  exact (convert_no_A_edges
+	    n
+	    path_seq
+	    x0
+	    HnOm
+	    HnNe0
+	    Hred
+	    HnoAedges
+	    Hclosed).
+	Admitted.
 
 (** Proven Bob **)
 Theorem lemma84_2_not_subset_has_outside_point :
