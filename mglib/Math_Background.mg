@@ -229107,7 +229107,108 @@ claim HcohFamTA :
           HAsubX)
         HCA_X).
     }
-    (** Remaining (backward): assemble HexT and HexA into closed_in TA C. **)
+    claim HCsplits :
+      C = (C :/\: T) :\/: (C :/\: A).
+    {
+      apply set_ext.
+      - let x.
+        assume HxC.
+        claim HxTA : x :e (T :\/: A).
+        {
+          exact (HCsubTA
+            x
+            HxC).
+        }
+        apply (binunionE
+          T
+          A
+          x
+          HxTA).
+        + assume HxT.
+          apply (binunionI1
+            (C :/\: T)
+            (C :/\: A)
+            x).
+          exact (binintersectI
+            C
+            T
+            x
+            HxC
+            HxT).
+        + assume HxA.
+          apply (binunionI2
+            (C :/\: T)
+            (C :/\: A)
+            x).
+          exact (binintersectI
+            C
+            A
+            x
+            HxC
+            HxA).
+      - let x.
+        assume HxU.
+        apply (binunionE
+          (C :/\: T)
+          (C :/\: A)
+          x
+          HxU).
+        + assume HxCT.
+          exact (binintersectE1
+            C
+            T
+            x
+            HxCT).
+        + assume HxCA.
+          exact (binintersectE1
+            C
+            A
+            x
+            HxCA).
+    }
+    apply HexT.
+    let DT.
+    assume HDTpack.
+    claim HDTclosed : closed_in X Tx DT.
+    {
+      exact (andEL
+        (closed_in X Tx DT)
+        ((C :/\: T) = DT :/\: T)
+        HDTpack).
+    }
+    claim HCTeqDT : (C :/\: T) = DT :/\: T.
+    {
+      exact (andER
+        (closed_in X Tx DT)
+        ((C :/\: T) = DT :/\: T)
+        HDTpack).
+    }
+    apply HexA.
+    let DA.
+    assume HDApack.
+    claim HDAclosed : closed_in X Tx DA.
+    {
+      exact (andEL
+        (closed_in X Tx DA)
+        ((C :/\: A) = DA :/\: A)
+        HDApack).
+    }
+    claim HCAeqDA : (C :/\: A) = DA :/\: A.
+    {
+      exact (andER
+        (closed_in X Tx DA)
+        ((C :/\: A) = DA :/\: A)
+        HDApack).
+    }
+    claim HCnormal :
+      C = (DT :/\: T) :\/: (DA :/\: A).
+    {
+      rewrite HCsplits.
+      rewrite HCTeqDT.
+      rewrite HCAeqDA.
+      reflexivity.
+    }
+    (** Remaining (backward): conclude closed_in TA C from HCnormal + HDTclosed + HDAclosed. **)
     admit.
 }
 exact (and5I
