@@ -1,6 +1,6 @@
 (** Balance Alice 3327 **)
 (** Balance Bob 3451 **)
-(** Balance Charlie 2243 **)
+(** Balance Charlie 2234 **)
 (** Balance Dave 1793 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -227260,7 +227260,8 @@ Qed.
 (** LATEX VERSION: A graph X is connected iff every pair of vertices can be **)
 (** joined by an edge path. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
+(** Bounty 97 **)
+(** Lock Charlie 1772142647 **)
 Theorem lemma84_1_connected_iff_edge_paths :
   forall X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
