@@ -213893,6 +213893,164 @@ apply HzImg.
 Qed.
 
 (** Proven Charlie **)
+(** helper: endpoints are unique (right endpoint). **)
+Theorem end_points_of_arc_unique_right :
+  forall X Tx p q r:set,
+  end_points_of_arc X Tx p q ->
+  end_points_of_arc X Tx p r ->
+  r = q.
+let X Tx p q r.
+assume Hendpq Hendpr.
+claim HrX0 : r :e X.
+{
+  apply (and6E
+    (arc X Tx)
+    (p :e X)
+    (r :e X)
+    (p <> r)
+    (connected_space (X :\: (Sing p))
+      (subspace_topology X Tx (X :\: (Sing p))))
+    (connected_space (X :\: (Sing r))
+      (subspace_topology X Tx (X :\: (Sing r))))
+    Hendpr).
+  assume Harc HpX HrX0 Hneq Hconnp Hconnr.
+  exact HrX0.
+}
+claim HrNeP : r <> p.
+{
+  apply (and6E
+    (arc X Tx)
+    (p :e X)
+    (r :e X)
+    (p <> r)
+    (connected_space (X :\: (Sing p))
+      (subspace_topology X Tx (X :\: (Sing p))))
+    (connected_space (X :\: (Sing r))
+      (subspace_topology X Tx (X :\: (Sing r))))
+    Hendpr).
+  assume Harc HpX HrX0 Hneq Hconnp Hconnr.
+  assume Heq.
+  claim Hpeq : p = r.
+  {
+    rewrite <- Heq.
+    reflexivity.
+  }
+  exact (Hneq Hpeq).
+}
+claim Hconnr :
+  connected_space (X :\: (Sing r)) (subspace_topology X Tx (X :\: (Sing r))).
+{
+  apply (and6E
+    (arc X Tx)
+    (p :e X)
+    (r :e X)
+    (p <> r)
+    (connected_space (X :\: (Sing p))
+      (subspace_topology X Tx (X :\: (Sing p))))
+    (connected_space (X :\: (Sing r))
+      (subspace_topology X Tx (X :\: (Sing r))))
+    Hendpr).
+  assume Harc HpX HrX0 Hneq Hconnp Hconnr.
+  exact Hconnr.
+}
+claim Hrpq : r = p \/ r = q.
+{
+  exact (end_points_of_arc_connected_complement_implies_endpoint
+    X
+    Tx
+    p
+    q
+    r
+    Hendpq
+    HrX0
+    Hconnr).
+}
+apply Hrpq.
+- assume Hrp.
+  exact (FalseE
+    (HrNeP Hrp)
+    (r = q)).
+- assume Hrq.
+  exact Hrq.
+Qed.
+
+(** Proven Charlie **)
+(** helper: endpoints are unique (left endpoint). **)
+Theorem end_points_of_arc_unique_left :
+  forall X Tx p q r:set,
+  end_points_of_arc X Tx p q ->
+  end_points_of_arc X Tx r q ->
+  r = p.
+let X Tx p q r.
+assume Hendpq Hendrq.
+claim HrX0 : r :e X.
+{
+  apply (and6E
+    (arc X Tx)
+    (r :e X)
+    (q :e X)
+    (r <> q)
+    (connected_space (X :\: (Sing r))
+      (subspace_topology X Tx (X :\: (Sing r))))
+    (connected_space (X :\: (Sing q))
+      (subspace_topology X Tx (X :\: (Sing q))))
+    Hendrq).
+  assume Harc HrX0 HqX Hneq Hconnr Hconnq.
+  exact HrX0.
+}
+claim HrNeQ : r <> q.
+{
+  apply (and6E
+    (arc X Tx)
+    (r :e X)
+    (q :e X)
+    (r <> q)
+    (connected_space (X :\: (Sing r))
+      (subspace_topology X Tx (X :\: (Sing r))))
+    (connected_space (X :\: (Sing q))
+      (subspace_topology X Tx (X :\: (Sing q))))
+    Hendrq).
+  assume Harc HrX0 HqX Hneq Hconnr Hconnq.
+  exact Hneq.
+}
+claim Hconnr :
+  connected_space (X :\: (Sing r)) (subspace_topology X Tx (X :\: (Sing r))).
+{
+  apply (and6E
+    (arc X Tx)
+    (r :e X)
+    (q :e X)
+    (r <> q)
+    (connected_space (X :\: (Sing r))
+      (subspace_topology X Tx (X :\: (Sing r))))
+    (connected_space (X :\: (Sing q))
+      (subspace_topology X Tx (X :\: (Sing q))))
+    Hendrq).
+  assume Harc HrX0 HqX Hneq Hconnr Hconnq.
+  exact Hconnr.
+}
+claim Hrpq : r = p \/ r = q.
+{
+  exact (end_points_of_arc_connected_complement_implies_endpoint
+    X
+    Tx
+    p
+    q
+    r
+    Hendpq
+    HrX0
+    Hconnr).
+}
+apply Hrpq.
+- assume Hrp.
+  exact Hrp.
+- assume Hrq.
+  exact (FalseE
+    (HrNeQ Hrq)
+    (r = p)).
+Qed.
+
+(** Proven Charlie **)
 (** helper: in a general linear graph, an arc meets other arcs only in finitely many points (in fact, at most two). **)
 Theorem general_linear_graph_arc_overlap_points_finite :
   forall X Tx Arcs E:set,
