@@ -185675,6 +185675,70 @@ exact ((andEL
 Qed.
 
 (** Proven Bob **)
+Theorem function_on_not_mem_codomain_implies_no_preimage_point_of_subset :
+  forall E X pi A y:set,
+  function_on pi E X ->
+  A c= E ->
+  y /:e X ->
+  ~ (exists x:set, x :e A /\ apply_fun pi x = y).
+let E X pi A y.
+assume Hfun HAsub HyNotX.
+exact ((andER
+  (~ (exists x:set, x :e A /\ apply_fun pi x = y) -> preimage_of A pi (Sing y) = Empty)
+  (preimage_of A pi (Sing y) = Empty -> ~ (exists x:set, x :e A /\ apply_fun pi x = y))
+  (no_preimage_point_iff_preimage_singleton_empty A pi y))
+  (function_on_not_mem_codomain_implies_preimage_singleton_empty_of_subset
+    E
+    X
+    pi
+    A
+    y
+    Hfun
+    HAsub
+    HyNotX)).
+Qed.
+
+(** Proven Bob **)
+Theorem function_on_preimage_singleton_nonempty_of_subset_implies_mem_codomain :
+  forall E X pi A y:set,
+  function_on pi E X ->
+  A c= E ->
+  preimage_of A pi (Sing y) <> Empty ->
+  y :e X.
+let E X pi A y.
+assume Hfun HAsub HpreNe.
+claim HxPack : exists x:set, x :e A /\ apply_fun pi x = y.
+{
+  exact ((andEL
+    (preimage_of A pi (Sing y) <> Empty -> (exists x:set, x :e A /\ apply_fun pi x = y))
+    ((exists x:set, x :e A /\ apply_fun pi x = y) -> preimage_of A pi (Sing y) <> Empty)
+    (preimage_singleton_nonempty_iff_exists_preimage_point A pi y))
+    HpreNe).
+}
+apply HxPack.
+let x.
+assume HxProof.
+claim HxE : x :e E.
+{
+  exact (HAsub
+    x
+    (andEL
+      (x :e A)
+      (apply_fun pi x = y)
+      HxProof)).
+}
+claim HxEq : apply_fun pi x = y.
+{
+  exact (andER
+    (x :e A)
+    (apply_fun pi x = y)
+    HxProof).
+}
+rewrite <- HxEq.
+exact (Hfun x HxE).
+Qed.
+
+(** Proven Bob **)
 Theorem preimage_singleton_nonempty_iff_mem_image :
   forall E pi y:set,
   (preimage_of E pi (Sing y) <> Empty <-> y :e image_of pi E).
