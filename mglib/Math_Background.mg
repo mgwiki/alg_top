@@ -192018,6 +192018,123 @@ exact (homeomorphism_completely_regular_space_iff
   Hhome).
 Qed.
 
+(** Helper: homeomorphism preserves metrizability (forward direction). **)
+(** Proven Bob **)
+Theorem homeomorphism_preserves_metrizable_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  metrizable X Tx ->
+  metrizable Y Ty.
+let X Tx Y Ty f.
+assume Hhome HmetX.
+apply (homeomorphism_inverse_package X Tx Y Ty f Hhome).
+let g.
+assume Hgpack.
+claim HgAB :
+  continuous_map Y Ty X Tx g /\
+  (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x).
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+    Hgpack).
+}
+claim HgCont : continuous_map Y Ty X Tx g.
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g)
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+    HgAB).
+}
+claim HleftInv : forall x:set, x :e X -> apply_fun g (apply_fun f x) = x.
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g)
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+    HgAB).
+}
+claim HrightInv : forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y.
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+    Hgpack).
+}
+claim HhomeInv : homeomorphism Y Ty X Tx g.
+{
+  exact (homeomorphism_inverse_is_homeomorphism
+    X
+    Tx
+    Y
+    Ty
+    f
+    g
+    Hhome
+    HgCont
+    HleftInv
+    HrightInv).
+}
+exact (homeomorphism_preserves_metrizable
+  Y
+  Ty
+  X
+  Tx
+  g
+  HhomeInv
+  HmetX).
+Qed.
+
+(** Helper: metrizability is invariant under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_metrizable_iff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (metrizable X Tx <-> metrizable Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+apply iffI.
+- assume HmetX.
+  exact (homeomorphism_preserves_metrizable_right
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome
+    HmetX).
+- assume HmetY.
+  exact (homeomorphism_preserves_metrizable
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome
+    HmetY).
+Qed.
+
+(** Helper: metrizability equivalence from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_metrizable_iff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (metrizable X Tx <-> metrizable Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+apply Hhex.
+let h.
+assume Hhome.
+exact (homeomorphism_metrizable_iff
+  X
+  Tx
+  Y
+  Ty
+  h
+  Hhome).
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
