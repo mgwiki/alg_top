@@ -224766,6 +224766,43 @@ apply iffI.
 Qed.
 
 (** Proven Bob **)
+Theorem selected_arc_obligation_subset_implies_noncontained_contradiction_via_bridges :
+  forall T T' ArcsT' X Tx Arcs:set,
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  (forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T) ->
+  (forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False).
+let T T' ArcsT' X Tx Arcs.
+assume Htree' HsubOb.
+exact (selected_arc_obligation_subset_implies_noncontained_contradiction
+  T
+  T'
+  ArcsT'
+  X
+  Tx
+  Arcs
+  Htree'
+  HsubOb).
+Qed.
+
+(** Proven Bob **)
+Theorem selected_arc_obligation_subset_iff_noncontained_contradiction_via_bridges :
+  forall T T' ArcsT' X Tx Arcs:set,
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  ((forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T) <->
+   (forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False)).
+let T T' ArcsT' X Tx Arcs.
+assume Htree'.
+exact (selected_arc_obligation_subset_iff_noncontained_contradiction
+  T
+  T'
+  ArcsT'
+  X
+  Tx
+  Arcs
+  Htree').
+Qed.
+
+(** Proven Bob **)
 Theorem selected_arc_subset_from_endpoint_witness_and_endpoint_target_obligation :
   forall T T' ArcsT' X Tx Arcs:set,
   tree_in_graph T' ArcsT' X Tx Arcs ->
