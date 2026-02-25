@@ -185606,6 +185606,51 @@ exact ((andER
 Qed.
 
 (** Proven Bob **)
+Theorem function_on_mem_image_of_subset_implies_mem_codomain :
+  forall E X pi A y:set,
+  function_on pi E X ->
+  A c= E ->
+  y :e image_of pi A ->
+  y :e X.
+let E X pi A y.
+assume Hfun HAsub HyImgA.
+exact ((image_of_sub_codomain
+  pi
+  E
+  X
+  A
+  Hfun
+  HAsub)
+  y
+  HyImgA).
+Qed.
+
+(** Proven Bob **)
+Theorem function_on_not_mem_codomain_implies_not_mem_image_of_subset :
+  forall E X pi A y:set,
+  function_on pi E X ->
+  A c= E ->
+  y /:e X ->
+  y /:e image_of pi A.
+let E X pi A y.
+assume Hfun HAsub HyNotX.
+assume HyImgA.
+claim HyX : y :e X.
+{
+  exact (function_on_mem_image_of_subset_implies_mem_codomain
+    E
+    X
+    pi
+    A
+    y
+    Hfun
+    HAsub
+    HyImgA).
+}
+exact (HyNotX HyX).
+Qed.
+
+(** Proven Bob **)
 Theorem preimage_singleton_nonempty_iff_mem_image :
   forall E pi y:set,
   (preimage_of E pi (Sing y) <> Empty <-> y :e image_of pi E).
