@@ -228717,12 +228717,67 @@ claim HcohFamTA :
   forall C:set, C c= (T :\/: A) ->
     (closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) C <->
      (forall E:set, E :e ({A} :\/: ArcsT) ->
-       closed_in E
-         (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E)
-         (C :/\: E))).
+	       closed_in E
+	         (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E)
+	         (C :/\: E))).
 {
-  (** Remaining coherence transfer between selected-family presentation and extended family {A} union ArcsT. **)
-  admit.
+  let C.
+  assume HCsubTA.
+  apply iffI.
+  - assume HCclosedTA.
+    let E.
+    assume HEfam.
+    apply (binunionE
+      {A}
+      ArcsT
+      E
+      HEfam).
+    + assume HEA.
+      claim HEqA : E = A.
+      {
+        exact (SingE
+          A
+          E
+          HEA).
+      }
+      rewrite HEqA.
+      (** Remaining (forward): closedness transfer from TA to the A-piece. **)
+      admit.
+    + assume HEArcsT.
+      (** Remaining (forward): closedness transfer from TA to ArcsT pieces. **)
+      admit.
+  - assume Hall.
+    claim HCA :
+      closed_in A
+        (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) A)
+        (C :/\: A).
+    {
+      exact (Hall
+        A
+        (binunionI1
+          {A}
+          ArcsT
+          A
+          (SingI A))).
+    }
+    claim HCArcsT :
+      forall E:set, E :e ArcsT ->
+        closed_in E
+          (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E)
+          (C :/\: E).
+    {
+      let E.
+      assume HEArcsT.
+      exact (Hall
+        E
+        (binunionI2
+          {A}
+          ArcsT
+          E
+          HEArcsT)).
+    }
+    (** Remaining (backward): combine A-piece and ArcsT-piece closedness into closed_in TA C. **)
+    admit.
 }
 exact (and5I
   (topology_on (T :\/: A) (subspace_topology X Tx (T :\/: A)))
