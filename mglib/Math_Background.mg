@@ -228162,8 +228162,67 @@ claim HinterFamTA :
         end_points_of_arc F
           (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) F) r p)).
 {
-  (** Remaining hard branch analysis over E/F in {A} or ArcsT, with endpoint transport. **)
-  admit.
+  let E F.
+  assume HEfam HFfam Hneq.
+  apply (binunionE
+    {A}
+    ArcsT
+    E
+    HEfam).
+  - assume HEA.
+    apply (binunionE
+      {A}
+      ArcsT
+      F
+      HFfam).
+    + assume HFA.
+      claim HEqA : E = A.
+      {
+        exact (SingE
+          A
+          E
+          HEA).
+      }
+      claim HFqA : F = A.
+      {
+        exact (SingE
+          A
+          F
+          HFA).
+      }
+      claim HEqF : E = F.
+      {
+        rewrite HEqA.
+        rewrite HFqA.
+        reflexivity.
+      }
+      exact (FalseE
+        (Hneq HEqF)
+        (E :/\: F = Empty \/
+          (exists p:set, E :/\: F = Sing p /\
+            (exists q:set, end_points_of_arc E
+              (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E) p q \/
+              end_points_of_arc E
+                (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E) q p) /\
+            (exists r:set, end_points_of_arc F
+              (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) F) p r \/
+              end_points_of_arc F
+                (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) F) r p)))).
+    + assume HFArcsT.
+      (** Remaining: mixed case E=A, F in ArcsT. **)
+      admit.
+  - assume HEArcsT.
+    apply (binunionE
+      {A}
+      ArcsT
+      F
+      HFfam).
+    + assume HFA.
+      (** Remaining: mixed case E in ArcsT, F=A. **)
+      admit.
+    + assume HFArcsT.
+      (** Remaining: internal ArcsT/ArcsT case with endpoint transport to (T :\/: A)-subspaces. **)
+      admit.
 }
 claim HcohFamTA :
   forall C:set, C c= (T :\/: A) ->
