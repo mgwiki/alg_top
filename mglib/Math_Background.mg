@@ -210310,6 +210310,37 @@ apply set_ext.
 Qed.
 
 (** Proven Bob **)
+Theorem subgraph_of_point_in_union_selected_iff_in_Y :
+  forall Y X Tx Arcs x:set,
+  subgraph_of Y X Tx Arcs ->
+  (x :e Union {B :e Arcs | B c= Y} <-> x :e Y).
+let Y X Tx Arcs x.
+assume Hsub.
+apply iffI.
+- assume HxU.
+  exact ((subgraph_of_selected_union_subset_Y
+    Y
+    X
+    Tx
+    Arcs
+    Hsub)
+    x
+    HxU).
+- assume HxY.
+  exact (mem_eqR
+    x
+    Y
+    (Union {B :e Arcs | B c= Y})
+    (subgraph_of_union_of_contained_arcs
+      Y
+      X
+      Tx
+      Arcs
+      Hsub)
+    HxY).
+Qed.
+
+(** Proven Bob **)
 Theorem subgraph_of_subset_union_arcs :
   forall Y X Tx Arcs:set,
   subgraph_of Y X Tx Arcs ->
@@ -210341,6 +210372,70 @@ exact ((union_selected_arcs_subset_union_arcs
   Arcs)
   x
   HxSel).
+Qed.
+
+(** Proven Bob **)
+Theorem subgraph_of_selected_arc_subset_union_arcs :
+  forall Y X Tx Arcs A:set,
+  subgraph_of Y X Tx Arcs ->
+  A :e {B :e Arcs | B c= Y} ->
+  A c= Union Arcs.
+let Y X Tx Arcs A.
+assume Hsub HA.
+exact (selected_arc_subset_union_arcs
+  Y
+  Arcs
+  A
+  HA).
+Qed.
+
+(** Proven Bob **)
+Theorem subgraph_of_selected_arc_subset_X_via_union_arcs :
+  forall Y X Tx Arcs A:set,
+  subgraph_of Y X Tx Arcs ->
+  A :e {B :e Arcs | B c= Y} ->
+  A c= X.
+let Y X Tx Arcs A.
+assume Hsub HA.
+let x.
+assume HxA.
+claim HxU : x :e Union Arcs.
+{
+  exact ((subgraph_of_selected_arc_subset_union_arcs
+    Y
+    X
+    Tx
+    Arcs
+    A
+    Hsub
+    HA)
+    x
+    HxA).
+}
+claim HXeqU : X = Union Arcs.
+{
+  exact (general_linear_graph_union_arcs
+    X
+    Tx
+    Arcs
+    (subgraph_of_general_linear_graph
+      Y
+      X
+      Tx
+      Arcs
+      Hsub)).
+}
+claim HUeqX : Union Arcs = X.
+{
+  symmetry.
+  exact HXeqU.
+}
+exact (mem_eqR
+  x
+  (Union Arcs)
+  X
+  HUeqX
+  HxU).
 Qed.
 
 (** Proven Bob **)
