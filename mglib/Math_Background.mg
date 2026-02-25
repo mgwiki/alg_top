@@ -193009,7 +193009,163 @@ apply and3I.
     HslicesPPack).
   assume HslicesPSub HpdSlicesP HunionP HhomeP.
 
-  admit. (** TODO: construct slices in Y and show evenly_covered Y Ty Z Tz r U1 **)
+  witness U1.
+  apply and3I.
+  - exact HU1Tz.
+  - exact HzU1.
+  - (** evenly_covered Y Ty Z Tz r U1 **)
+    prove U1 :e Tz /\
+      exists slicesR:set,
+        slicesR c= Ty /\
+        pairwise_disjoint slicesR /\
+        Union slicesR = preimage_of Y r U1 /\
+        (forall V:set, V :e slicesR ->
+          homeomorphism V (subspace_topology Y Ty V) U1 (subspace_topology Z Tz U1)
+            (graph V (fun y0:set => apply_fun r y0))).
+    apply andI.
+    + exact HU1Tz.
+    + set slicesR := {image_of q W | W :e slicesP}.
+      witness slicesR.
+      apply and4I.
+      * (** slicesR c= Ty **)
+        claim Hopenq : open_map X Tx Y Ty q.
+        { exact (covering_map_is_open X Tx Y Ty q Hcovq). }
+        apply (and4E
+          (topology_on X Tx)
+          (topology_on Y Ty)
+          (function_on q X Y)
+          (forall U:set, U :e Tx -> image_of q U :e Ty)
+          Hopenq).
+        assume _ _ _ HimgOpen.
+        let V.
+        assume HVsliceR.
+        apply (ReplE
+          slicesP
+          (fun W0:set => image_of q W0)
+          V
+          HVsliceR).
+        let W0.
+        assume HW0pack.
+        claim HW0P : W0 :e slicesP.
+        { exact (andEL (W0 :e slicesP) (V = image_of q W0) HW0pack). }
+        claim HVEq : V = image_of q W0.
+        { exact (andER (W0 :e slicesP) (V = image_of q W0) HW0pack). }
+        rewrite HVEq.
+        apply (HimgOpen W0).
+        exact (HslicesPSub W0 HW0P).
+      * (** pairwise_disjoint slicesR **)
+        admit.
+      * (** Union slicesR = preimage_of Y r U1 **)
+        apply set_ext.
+        { (** -> **)
+          let y.
+          assume HyUnion.
+          apply (UnionE slicesR y HyUnion).
+          let V.
+          assume HVpack.
+          claim HyV : y :e V.
+          { exact (andEL (y :e V) (V :e slicesR) HVpack). }
+          claim HVsliceR : V :e slicesR.
+          { exact (andER (y :e V) (V :e slicesR) HVpack). }
+          apply (ReplE slicesP (fun W0:set => image_of q W0) V HVsliceR).
+          let W0.
+          assume HW0pack.
+          claim HW0P : W0 :e slicesP.
+          { exact (andEL (W0 :e slicesP) (V = image_of q W0) HW0pack). }
+          claim HVEq : V = image_of q W0.
+          { exact (andER (W0 :e slicesP) (V = image_of q W0) HW0pack). }
+          claim HyImg : y :e image_of q W0.
+          {
+            rewrite <- HVEq.
+            exact HyV.
+          }
+          apply (ReplE
+            W0
+            (fun x0:set => apply_fun q x0)
+            y
+            HyImg).
+          let x0.
+          assume Hx0pack.
+          claim Hx0W0 : x0 :e W0.
+          { exact (andEL (x0 :e W0) (y = apply_fun q x0) Hx0pack). }
+          claim HyEq : y = apply_fun q x0.
+          { exact (andER (x0 :e W0) (y = apply_fun q x0) Hx0pack). }
+          rewrite HyEq.
+          claim Hx0UnionP : x0 :e Union slicesP.
+          { exact (UnionI slicesP x0 W0 Hx0W0 HW0P). }
+          claim Hx0PreP : x0 :e preimage_of X p U1.
+          { exact (mem_eqR x0 (Union slicesP) (preimage_of X p U1) HunionP Hx0UnionP). }
+          claim Hpx0U1 : apply_fun p x0 :e U1.
+          { exact (SepE2 X (fun t:set => apply_fun p t :e U1) x0 Hx0PreP). }
+          claim Hqx0Y : apply_fun q x0 :e Y.
+          { exact (Hfunq x0 (topology_elem_subset X Tx W0 HtopX (HslicesPSub W0 HW0P) x0 Hx0W0)). }
+          claim Hx0X : x0 :e X.
+          { exact (topology_elem_subset X Tx W0 HtopX (HslicesPSub W0 HW0P) x0 Hx0W0). }
+          claim Hrqx0U1 : apply_fun r (apply_fun q x0) :e U1.
+          {
+            rewrite <- (compose_fun_apply X q r x0 Hx0X).
+            exact Hpx0U1.
+          }
+          exact (SepI
+            Y
+            (fun y0:set => apply_fun r y0 :e U1)
+            (apply_fun q x0)
+            Hqx0Y
+            Hrqx0U1).
+        }
+        { (** <- **)
+          let y.
+          assume HyPre.
+          claim HyY : y :e Y.
+          { exact (SepE1 Y (fun y0:set => apply_fun r y0 :e U1) y HyPre). }
+          claim HryU1 : apply_fun r y :e U1.
+          { exact (SepE2 Y (fun y0:set => apply_fun r y0 :e U1) y HyPre). }
+          (** choose x with q x = y **)
+          claim Hsurjq : surjective_map X Y q.
+          {
+            exact (andER
+              (continuous_map X Tx Y Ty q)
+              (surjective_map X Y q)
+              (andEL
+                (continuous_map X Tx Y Ty q /\ surjective_map X Y q)
+                (forall y0:set, y0 :e Y -> exists U:set, U :e Ty /\ y0 :e U /\ evenly_covered X Tx Y Ty q U)
+                Hcovq)).
+          }
+          apply (surjective_map_has_preimage X Y q y Hsurjq HyY).
+          let x0.
+          assume Hx0pack.
+          claim Hx0X : x0 :e X.
+          { exact (andEL (x0 :e X) (apply_fun q x0 = y) Hx0pack). }
+          claim Hqx0Eq : apply_fun q x0 = y.
+          { exact (andER (x0 :e X) (apply_fun q x0 = y) Hx0pack). }
+          claim Hpx0U1 : apply_fun p x0 :e U1.
+          {
+            rewrite (compose_fun_apply X q r x0 Hx0X).
+            rewrite Hqx0Eq.
+            exact HryU1.
+          }
+          claim Hx0PreP : x0 :e preimage_of X p U1.
+          { exact (SepI X (fun t:set => apply_fun p t :e U1) x0 Hx0X Hpx0U1). }
+          claim Hx0UnionP : x0 :e Union slicesP.
+          { exact (mem_eqL x0 (Union slicesP) (preimage_of X p U1) HunionP Hx0PreP). }
+          apply (UnionE slicesP x0 Hx0UnionP).
+          let W0.
+          assume HW0pack.
+          claim Hx0W0 : x0 :e W0.
+          { exact (andEL (x0 :e W0) (W0 :e slicesP) HW0pack). }
+          claim HW0P : W0 :e slicesP.
+          { exact (andER (x0 :e W0) (W0 :e slicesP) HW0pack). }
+          claim HyInImg : y :e image_of q W0.
+          {
+            rewrite <- Hqx0Eq.
+            exact (ReplI W0 (fun t:set => apply_fun q t) x0 Hx0W0).
+          }
+          apply (UnionI slicesR y (image_of q W0)).
+          - exact HyInImg.
+          - exact (ReplI slicesP (fun W1:set => image_of q W1) W0 HW0P).
+        }
+      * (** sheets map homeomorphically to U1 under r **)
+        admit.
 Admitted.
 
 (** from S80 Thm 80.3 (line 4983 in algtop.tex): universal covering covers everything **)
