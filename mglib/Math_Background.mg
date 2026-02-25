@@ -217994,6 +217994,44 @@ exact (maximal_tree_inclusion_eq
 Qed.
 
 (** Proven Bob **)
+Theorem maximal_tree_tree_extension_forces_edge_subset :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs ->
+  A c= T.
+let T ArcsT X Tx Arcs A.
+assume Hmax HtreeExt.
+claim HunionEq : T :\/: A = T.
+{
+  exact (maximal_tree_tree_extension_forces_union_eq
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    A
+    Hmax
+    HtreeExt).
+}
+let x.
+assume HxA.
+claim HxUnion : x :e T :\/: A.
+{
+  exact (binunionI2
+    T
+    A
+    x
+    HxA).
+}
+exact (mem_eqR
+  x
+  (T :\/: A)
+  T
+  HunionEq
+  HxUnion).
+Qed.
+
+(** Proven Bob **)
 Theorem maximal_tree_noncontained_edge_tree_extension_contradiction :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -218074,6 +218112,28 @@ exact (maximal_tree_noncontained_edge_tree_extension_contradiction
   Hmax
   HtreeExt
   Hnsub).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_single_vertex_edge_tree_extension_forces_edge_subset :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs ->
+  A :e Arcs ->
+  ~(A c= T) ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  A c= T.
+let T ArcsT X Tx Arcs A.
+assume Hmax HtreeExt HA Hnsub Hmeet.
+exact (maximal_tree_tree_extension_forces_edge_subset
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  Hmax
+  HtreeExt).
 Qed.
 
 (** Proven Bob **)
