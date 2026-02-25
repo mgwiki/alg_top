@@ -209868,6 +209868,124 @@ exact (general_linear_graph_arc_data
   (subgraph_of_selected_arc_in_arcs Y X Tx Arcs A Hsub HA)).
 Qed.
 
+(** Proven Bob **)
+Theorem subgraph_of_selected_arc_subset_X :
+  forall Y X Tx Arcs A:set,
+  subgraph_of Y X Tx Arcs ->
+  A :e {B :e Arcs | B c= Y} ->
+  A c= X.
+let Y X Tx Arcs A.
+assume Hsub HA.
+exact (andEL
+  (A c= X)
+  (arc A (subspace_topology X Tx A))
+  (subgraph_of_selected_arc_arc_data
+    Y
+    X
+    Tx
+    Arcs
+    A
+    Hsub
+    HA)).
+Qed.
+
+(** Proven Bob **)
+Theorem subgraph_of_selected_arc_is_arc :
+  forall Y X Tx Arcs A:set,
+  subgraph_of Y X Tx Arcs ->
+  A :e {B :e Arcs | B c= Y} ->
+  arc A (subspace_topology X Tx A).
+let Y X Tx Arcs A.
+assume Hsub HA.
+exact (andER
+  (A c= X)
+  (arc A (subspace_topology X Tx A))
+  (subgraph_of_selected_arc_arc_data
+    Y
+    X
+    Tx
+    Arcs
+    A
+    Hsub
+    HA)).
+Qed.
+
+(** Proven Bob **)
+Theorem subgraph_of_selected_arc_endpoint_left_in_X :
+  forall Y X Tx Arcs A p q:set,
+  subgraph_of Y X Tx Arcs ->
+  A :e {B :e Arcs | B c= Y} ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  p :e X.
+let Y X Tx Arcs A p q.
+assume Hsub HA Hend.
+claim HAcX : A c= X.
+{
+  exact (subgraph_of_selected_arc_subset_X
+    Y
+    X
+    Tx
+    Arcs
+    A
+    Hsub
+    HA).
+}
+claim HpA : p :e A.
+{
+  apply (and6E
+    (arc A (subspace_topology X Tx A))
+    (p :e A)
+    (q :e A)
+    (p <> q)
+    (connected_space (A :\: (Sing p))
+      (subspace_topology A (subspace_topology X Tx A) (A :\: (Sing p))))
+    (connected_space (A :\: (Sing q))
+      (subspace_topology A (subspace_topology X Tx A) (A :\: (Sing q))))
+    Hend).
+  assume Harc HpA0 HqA0 Hneq Hconnp Hconnq.
+  exact HpA0.
+}
+exact (HAcX p HpA).
+Qed.
+
+(** Proven Bob **)
+Theorem subgraph_of_selected_arc_endpoint_right_in_X :
+  forall Y X Tx Arcs A p q:set,
+  subgraph_of Y X Tx Arcs ->
+  A :e {B :e Arcs | B c= Y} ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  q :e X.
+let Y X Tx Arcs A p q.
+assume Hsub HA Hend.
+claim HAcX : A c= X.
+{
+  exact (subgraph_of_selected_arc_subset_X
+    Y
+    X
+    Tx
+    Arcs
+    A
+    Hsub
+    HA).
+}
+claim HqA : q :e A.
+{
+  apply (and6E
+    (arc A (subspace_topology X Tx A))
+    (p :e A)
+    (q :e A)
+    (p <> q)
+    (connected_space (A :\: (Sing p))
+      (subspace_topology A (subspace_topology X Tx A) (A :\: (Sing p))))
+    (connected_space (A :\: (Sing q))
+      (subspace_topology A (subspace_topology X Tx A) (A :\: (Sing q))))
+    Hend).
+  assume Harc HpA0 HqA0 Hneq Hconnp Hconnq.
+  exact HqA0.
+}
+exact (HAcX q HqA).
+Qed.
+
 (** Infrastructure: vertices of a linear graph **)
 Definition graph_vertices : set -> set -> set -> set :=
   fun X Tx Arcs =>
