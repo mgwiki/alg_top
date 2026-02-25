@@ -191433,6 +191433,240 @@ exact (homeomorphism_second_countable_space_iff
   Hhome).
 Qed.
 
+(** Helper: homeomorphism preserves Hausdorffness (forward direction). **)
+(** Proven Bob **)
+Theorem homeomorphism_preserves_Hausdorff_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  Hausdorff_space X Tx ->
+  Hausdorff_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HHX.
+apply (homeomorphism_inverse_package X Tx Y Ty f Hhome).
+let g.
+assume Hgpack.
+claim HgAB :
+  continuous_map Y Ty X Tx g /\
+  (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x).
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+    Hgpack).
+}
+claim HgCont : continuous_map Y Ty X Tx g.
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g)
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+    HgAB).
+}
+claim HleftInv : forall x:set, x :e X -> apply_fun g (apply_fun f x) = x.
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g)
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+    HgAB).
+}
+claim HrightInv : forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y.
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+    Hgpack).
+}
+claim HhomeInv : homeomorphism Y Ty X Tx g.
+{
+  exact (homeomorphism_inverse_is_homeomorphism
+    X
+    Tx
+    Y
+    Ty
+    f
+    g
+    Hhome
+    HgCont
+    HleftInv
+    HrightInv).
+}
+exact (homeomorphism_preserves_Hausdorff
+  Y
+  Ty
+  X
+  Tx
+  g
+  HhomeInv
+  HHX).
+Qed.
+
+(** Helper: Hausdorffness is invariant under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_Hausdorff_space_iff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (Hausdorff_space X Tx <-> Hausdorff_space Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+apply iffI.
+- assume HHX.
+  exact (homeomorphism_preserves_Hausdorff_right
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome
+    HHX).
+- assume HHY.
+  exact (homeomorphism_preserves_Hausdorff
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome
+    HHY).
+Qed.
+
+(** Helper: Hausdorff equivalence from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_Hausdorff_space_iff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (Hausdorff_space X Tx <-> Hausdorff_space Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+apply Hhex.
+let h.
+assume Hhome.
+exact (homeomorphism_Hausdorff_space_iff
+  X
+  Tx
+  Y
+  Ty
+  h
+  Hhome).
+Qed.
+
+(** Helper: local compactness transfer along homeomorphisms (forward direction). **)
+(** Proven Bob **)
+Theorem homeomorphism_preserves_locally_compact_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  locally_compact X Tx ->
+  locally_compact Y Ty.
+let X Tx Y Ty f.
+assume Hhome HlocX.
+apply (homeomorphism_inverse_package X Tx Y Ty f Hhome).
+let g.
+assume Hgpack.
+claim HgAB :
+  continuous_map Y Ty X Tx g /\
+  (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x).
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+    Hgpack).
+}
+claim HgCont : continuous_map Y Ty X Tx g.
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g)
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+    HgAB).
+}
+claim HleftInv : forall x:set, x :e X -> apply_fun g (apply_fun f x) = x.
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g)
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+    HgAB).
+}
+claim HrightInv : forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y.
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+    Hgpack).
+}
+claim HhomeInv : homeomorphism Y Ty X Tx g.
+{
+  exact (homeomorphism_inverse_is_homeomorphism
+    X
+    Tx
+    Y
+    Ty
+    f
+    g
+    Hhome
+    HgCont
+    HleftInv
+    HrightInv).
+}
+exact (homeomorphism_preserves_locally_compact
+  Y
+  Ty
+  X
+  Tx
+  g
+  HhomeInv
+  HlocX).
+Qed.
+
+(** Helper: local compactness is invariant under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_locally_compact_iff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (locally_compact X Tx <-> locally_compact Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+apply iffI.
+- assume HlocX.
+  exact (homeomorphism_preserves_locally_compact_right
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome
+    HlocX).
+- assume HlocY.
+  exact (homeomorphism_preserves_locally_compact
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome
+    HlocY).
+Qed.
+
+(** Helper: local compactness equivalence from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_locally_compact_iff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (locally_compact X Tx <-> locally_compact Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+apply Hhex.
+let h.
+assume Hhome.
+exact (homeomorphism_locally_compact_iff
+  X
+  Tx
+  Y
+  Ty
+  h
+  Hhome).
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
