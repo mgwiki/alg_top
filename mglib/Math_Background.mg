@@ -192412,6 +192412,210 @@ apply andI.
     HmetY).
 Qed.
 
+(** Helper: second countability transfer implications from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_second_countable_space_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (second_countable_space X Tx -> second_countable_space Y Ty) /\
+  (second_countable_space Y Ty -> second_countable_space X Tx).
+let X Tx Y Ty.
+assume Hhex.
+claim Hiff :
+  second_countable_space X Tx <-> second_countable_space Y Ty.
+{
+  exact (exists_homeomorphism_second_countable_space_iff
+    X
+    Tx
+    Y
+    Ty
+    Hhex).
+}
+apply andI.
+- assume HscX.
+  exact (iffEL
+    (second_countable_space X Tx)
+    (second_countable_space Y Ty)
+    Hiff
+    HscX).
+- assume HscY.
+  exact (iffER
+    (second_countable_space X Tx)
+    (second_countable_space Y Ty)
+    Hiff
+    HscY).
+Qed.
+
+(** Helper: local compactness transfer implications from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_locally_compact_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (locally_compact X Tx -> locally_compact Y Ty) /\
+  (locally_compact Y Ty -> locally_compact X Tx).
+let X Tx Y Ty.
+assume Hhex.
+claim Hiff :
+  locally_compact X Tx <-> locally_compact Y Ty.
+{
+  exact (exists_homeomorphism_locally_compact_iff
+    X
+    Tx
+    Y
+    Ty
+    Hhex).
+}
+apply andI.
+- assume HlocX.
+  exact (iffEL
+    (locally_compact X Tx)
+    (locally_compact Y Ty)
+    Hiff
+    HlocX).
+- assume HlocY.
+  exact (iffER
+    (locally_compact X Tx)
+    (locally_compact Y Ty)
+    Hiff
+    HlocY).
+Qed.
+
+(** Helper: regularity transfer implications from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_regular_space_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (regular_space X Tx -> regular_space Y Ty) /\
+  (regular_space Y Ty -> regular_space X Tx).
+let X Tx Y Ty.
+assume Hhex.
+claim Hiff :
+  regular_space X Tx <-> regular_space Y Ty.
+{
+  exact (exists_homeomorphism_regular_space_iff
+    X
+    Tx
+    Y
+    Ty
+    Hhex).
+}
+apply andI.
+- assume HregX.
+  exact (iffEL
+    (regular_space X Tx)
+    (regular_space Y Ty)
+    Hiff
+    HregX).
+- assume HregY.
+  exact (iffER
+    (regular_space X Tx)
+    (regular_space Y Ty)
+    Hiff
+    HregY).
+Qed.
+
+(** Helper: normality transfer implications from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_normal_space_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (normal_space X Tx -> normal_space Y Ty) /\
+  (normal_space Y Ty -> normal_space X Tx).
+let X Tx Y Ty.
+assume Hhex.
+claim Hiff :
+  normal_space X Tx <-> normal_space Y Ty.
+{
+  exact (exists_homeomorphism_normal_space_iff
+    X
+    Tx
+    Y
+    Ty
+    Hhex).
+}
+apply andI.
+- assume HnormX.
+  exact (iffEL
+    (normal_space X Tx)
+    (normal_space Y Ty)
+    Hiff
+    HnormX).
+- assume HnormY.
+  exact (iffER
+    (normal_space X Tx)
+    (normal_space Y Ty)
+    Hiff
+    HnormY).
+Qed.
+
+(** Helper: complete regularity transfer implications from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_completely_regular_space_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (completely_regular_space X Tx -> completely_regular_space Y Ty) /\
+  (completely_regular_space Y Ty -> completely_regular_space X Tx).
+let X Tx Y Ty.
+assume Hhex.
+claim Hiff :
+  completely_regular_space X Tx <-> completely_regular_space Y Ty.
+{
+  exact (exists_homeomorphism_completely_regular_space_iff
+    X
+    Tx
+    Y
+    Ty
+    Hhex).
+}
+apply andI.
+- assume HcrX.
+  exact (iffEL
+    (completely_regular_space X Tx)
+    (completely_regular_space Y Ty)
+    Hiff
+    HcrX).
+- assume HcrY.
+  exact (iffER
+    (completely_regular_space X Tx)
+    (completely_regular_space Y Ty)
+    Hiff
+    HcrY).
+Qed.
+
+(** Helper: non-connectedness transfer implications from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_connected_space_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ connected_space X Tx -> ~ connected_space Y Ty) /\
+  (~ connected_space Y Ty -> ~ connected_space X Tx).
+let X Tx Y Ty.
+assume Hhex.
+claim Hiff :
+  (~ connected_space X Tx <-> ~ connected_space Y Ty).
+{
+  exact (exists_homeomorphism_not_connected_space_iff
+    X
+    Tx
+    Y
+    Ty
+    Hhex).
+}
+apply andI.
+- assume HnX.
+  exact (iffEL
+    (~ connected_space X Tx)
+    (~ connected_space Y Ty)
+    Hiff
+    HnX).
+- assume HnY.
+  exact (iffER
+    (~ connected_space X Tx)
+    (~ connected_space Y Ty)
+    Hiff
+    HnY).
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
