@@ -192310,6 +192310,108 @@ exact (homeomorphism_not_connected_space_iff
   Hhome).
 Qed.
 
+(** Helper: connectedness transfer implications from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_connected_space_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (connected_space X Tx -> connected_space Y Ty) /\
+  (connected_space Y Ty -> connected_space X Tx).
+let X Tx Y Ty.
+assume Hhex.
+claim Hiff :
+  connected_space X Tx <-> connected_space Y Ty.
+{
+  exact (exists_homeomorphism_connected_space_iff
+    X
+    Tx
+    Y
+    Ty
+    Hhex).
+}
+apply andI.
+- assume HconnX.
+  exact (iffEL
+    (connected_space X Tx)
+    (connected_space Y Ty)
+    Hiff
+    HconnX).
+- assume HconnY.
+  exact (iffER
+    (connected_space X Tx)
+    (connected_space Y Ty)
+    Hiff
+    HconnY).
+Qed.
+
+(** Helper: Hausdorff transfer implications from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_Hausdorff_space_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (Hausdorff_space X Tx -> Hausdorff_space Y Ty) /\
+  (Hausdorff_space Y Ty -> Hausdorff_space X Tx).
+let X Tx Y Ty.
+assume Hhex.
+claim Hiff :
+  Hausdorff_space X Tx <-> Hausdorff_space Y Ty.
+{
+  exact (exists_homeomorphism_Hausdorff_space_iff
+    X
+    Tx
+    Y
+    Ty
+    Hhex).
+}
+apply andI.
+- assume HHX.
+  exact (iffEL
+    (Hausdorff_space X Tx)
+    (Hausdorff_space Y Ty)
+    Hiff
+    HHX).
+- assume HHY.
+  exact (iffER
+    (Hausdorff_space X Tx)
+    (Hausdorff_space Y Ty)
+    Hiff
+    HHY).
+Qed.
+
+(** Helper: metrizability transfer implications from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_metrizable_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (metrizable X Tx -> metrizable Y Ty) /\
+  (metrizable Y Ty -> metrizable X Tx).
+let X Tx Y Ty.
+assume Hhex.
+claim Hiff :
+  metrizable X Tx <-> metrizable Y Ty.
+{
+  exact (exists_homeomorphism_metrizable_iff
+    X
+    Tx
+    Y
+    Ty
+    Hhex).
+}
+apply andI.
+- assume HmetX.
+  exact (iffEL
+    (metrizable X Tx)
+    (metrizable Y Ty)
+    Hiff
+    HmetX).
+- assume HmetY.
+  exact (iffER
+    (metrizable X Tx)
+    (metrizable Y Ty)
+    Hiff
+    HmetY).
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
