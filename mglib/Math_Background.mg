@@ -209772,12 +209772,95 @@ Definition subgraph_of : set -> set -> set -> set -> prop :=
     general_linear_graph X Tx Arcs /\
     Y c= X /\ Y = Union {A :e Arcs | A c= Y}.
 
+(** Infrastructure: destructors for subgraph_of **)
+(** Proven Bob **)
+Theorem subgraph_of_general_linear_graph :
+  forall Y X Tx Arcs:set,
+  subgraph_of Y X Tx Arcs ->
+  general_linear_graph X Tx Arcs.
+let Y X Tx Arcs.
+assume Hsub.
+apply (and3E
+  (general_linear_graph X Tx Arcs)
+  (Y c= X)
+  (Y = Union {A :e Arcs | A c= Y})
+  Hsub).
+assume Hglg HYsub HYunion.
+exact Hglg.
+Qed.
+
+(** Proven Bob **)
+Theorem subgraph_of_subset :
+  forall Y X Tx Arcs:set,
+  subgraph_of Y X Tx Arcs ->
+  Y c= X.
+let Y X Tx Arcs.
+assume Hsub.
+apply (and3E
+  (general_linear_graph X Tx Arcs)
+  (Y c= X)
+  (Y = Union {A :e Arcs | A c= Y})
+  Hsub).
+assume Hglg HYsub HYunion.
+exact HYsub.
+Qed.
+
+(** Proven Bob **)
+Theorem subgraph_of_union_of_contained_arcs :
+  forall Y X Tx Arcs:set,
+  subgraph_of Y X Tx Arcs ->
+  Y = Union {A :e Arcs | A c= Y}.
+let Y X Tx Arcs.
+assume Hsub.
+apply (and3E
+  (general_linear_graph X Tx Arcs)
+  (Y c= X)
+  (Y = Union {A :e Arcs | A c= Y})
+  Hsub).
+assume Hglg HYsub HYunion.
+exact HYunion.
+Qed.
+
 (** Infrastructure: vertices of a linear graph **)
 Definition graph_vertices : set -> set -> set -> set :=
   fun X Tx Arcs =>
     {x :e X | exists A:set, A :e Arcs /\
       exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
         (x = p \/ x = q)}.
+
+(** Proven Bob **)
+Theorem graph_vertices_subset_X :
+  forall X Tx Arcs:set,
+  graph_vertices X Tx Arcs c= X.
+let X Tx Arcs.
+let x.
+assume Hx.
+exact (SepE1
+  X
+  (fun y:set => exists A:set, A :e Arcs /\
+    exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (y = p \/ y = q))
+  x
+  Hx).
+Qed.
+
+(** Proven Bob **)
+Theorem graph_vertices_has_endpoint_witness :
+  forall X Tx Arcs x:set,
+  x :e graph_vertices X Tx Arcs ->
+  exists A:set, A :e Arcs /\
+    exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q).
+let X Tx Arcs x.
+assume Hx.
+exact (SepE2
+  X
+  (fun y:set => exists A:set, A :e Arcs /\
+    exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (y = p \/ y = q))
+  x
+  Hx).
+Qed.
 
 (** from S83 Lem 83.1 (line 5470 in algtop.tex): linear graphs are normal **)
 (** LATEX VERSION: Every linear graph X is Hausdorff; in fact, it is normal. **)
