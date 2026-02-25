@@ -225056,6 +225056,92 @@ apply iffI.
       Hrhs)).
 Qed.
 
+(** Proven Bob **)
+Theorem thm84_4_maximal_tree_implies_vertices_from_obligations :
+  forall T ArcsT X Tx Arcs:set,
+  general_linear_graph X Tx Arcs ->
+  connected_space X Tx ->
+  (maximal_tree T ArcsT X Tx Arcs ->
+    forall A:set, A :e Arcs -> ~(A c= T) ->
+      exists v:set,
+        v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
+        general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+        connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
+        ~(exists n path_seq x0:set,
+            n :e omega /\ n <> 0 /\
+            reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+              ({A} :\/: ArcsT) n path_seq x0 /\
+            (exists j:set, j :e n /\ ordsucc j /:e n /\
+              (apply_fun path_seq j) 0 1 = x0))) ->
+  ((tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+    forall T' ArcsT':set,
+      tree_in_graph T' ArcsT' X Tx Arcs ->
+      T c= T' ->
+      forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False) ->
+  maximal_tree T ArcsT X Tx Arcs ->
+  (tree_in_graph T ArcsT X Tx Arcs /\
+   graph_vertices X Tx Arcs c= T).
+let T ArcsT X Tx Arcs.
+assume Hglg Hconn HfwdOb HgwdOb Hmax.
+exact (iffEL
+  (maximal_tree T ArcsT X Tx Arcs)
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T)
+  (thm84_4_maximal_tree_all_vertices_from_obligations
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hglg
+    Hconn
+    HfwdOb
+    HgwdOb)
+  Hmax).
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_vertices_implies_maximal_tree_from_obligations :
+  forall T ArcsT X Tx Arcs:set,
+  general_linear_graph X Tx Arcs ->
+  connected_space X Tx ->
+  (maximal_tree T ArcsT X Tx Arcs ->
+    forall A:set, A :e Arcs -> ~(A c= T) ->
+      exists v:set,
+        v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
+        general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+        connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
+        ~(exists n path_seq x0:set,
+            n :e omega /\ n <> 0 /\
+            reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+              ({A} :\/: ArcsT) n path_seq x0 /\
+            (exists j:set, j :e n /\ ordsucc j /:e n /\
+              (apply_fun path_seq j) 0 1 = x0))) ->
+  ((tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+    forall T' ArcsT':set,
+      tree_in_graph T' ArcsT' X Tx Arcs ->
+      T c= T' ->
+      forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False) ->
+  (tree_in_graph T ArcsT X Tx Arcs /\
+   graph_vertices X Tx Arcs c= T) ->
+  maximal_tree T ArcsT X Tx Arcs.
+let T ArcsT X Tx Arcs.
+assume Hglg Hconn HfwdOb HgwdOb Hrhs.
+exact (iffER
+  (maximal_tree T ArcsT X Tx Arcs)
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T)
+  (thm84_4_maximal_tree_all_vertices_from_obligations
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hglg
+    Hconn
+    HfwdOb
+    HgwdOb)
+  Hrhs).
+Qed.
+
 (** targeted helper obligations for thm84_4 main statement **)
 Theorem thm84_4_forward_meeting_obligation :
   forall T ArcsT X Tx Arcs A:set,
