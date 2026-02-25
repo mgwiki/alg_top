@@ -229228,7 +229228,112 @@ claim HcohFamTA :
     claim HcDT_TA :
       closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) (DT :/\: T).
     {
-      (** Remaining: lift DT∩T closedness to TA. **)
+      claim HcDT_if_Tclosed :
+        closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) T ->
+        closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) (DT :/\: T).
+      {
+        assume HclosedTTA.
+        claim HTsubTA : T c= (T :\/: A).
+        {
+          exact (binunion_Subq_1
+            T
+            A).
+        }
+        claim HDTsubT : (DT :/\: T) c= T.
+        {
+          exact (binintersect_Subq_2
+            DT
+            T).
+        }
+        claim HDTsubTA : (DT :/\: T) c= (T :\/: A).
+        {
+          exact (Subq_tra
+            (DT :/\: T)
+            T
+            (T :\/: A)
+            HDTsubT
+            HTsubTA).
+        }
+        claim HtopDT_fromT :
+          subspace_topology T (subspace_topology X Tx T) (DT :/\: T) =
+          subspace_topology X Tx (DT :/\: T).
+        {
+          exact (ex16_1_subspace_transitive
+            X
+            Tx
+            T
+            (DT :/\: T)
+            HtopX
+            HTsubX
+            HDTsubT).
+        }
+        claim HtopDT_fromTA :
+          subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) (DT :/\: T) =
+          subspace_topology X Tx (DT :/\: T).
+        {
+          exact (ex16_1_subspace_transitive
+            X
+            Tx
+            (T :\/: A)
+            (DT :/\: T)
+            HtopX
+            HTAsubX
+            HDTsubTA).
+        }
+        claim HtopDT_fromTAviaT :
+          subspace_topology T (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) T) (DT :/\: T) =
+          subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) (DT :/\: T).
+        {
+          exact (ex16_1_subspace_transitive
+            (T :\/: A)
+            (subspace_topology X Tx (T :\/: A))
+            T
+            (DT :/\: T)
+            HtopTA
+            HTsubTA
+            HDTsubT).
+        }
+        claim HtopT_on_TA :
+          subspace_topology T (subspace_topology X Tx T) (DT :/\: T) =
+          subspace_topology T (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) T) (DT :/\: T).
+        {
+          rewrite HtopDT_fromT.
+          rewrite HtopDT_fromTAviaT.
+          rewrite <- HtopDT_fromTA.
+          reflexivity.
+        }
+        claim HcDT_on_T :
+          closed_in T
+            (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) T)
+            (DT :/\: T).
+        {
+          claim HtopTeq :
+            subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) T =
+            subspace_topology X Tx T.
+          {
+            exact (ex16_1_subspace_transitive
+              X
+              Tx
+              (T :\/: A)
+              T
+              HtopX
+              HTAsubX
+              HTsubTA).
+          }
+          rewrite HtopTeq.
+          rewrite <- HCTeqDT.
+          exact HCcapT.
+        }
+        exact (closed_in_closed_subspace
+          (T :\/: A)
+          (subspace_topology X Tx (T :\/: A))
+          T
+          (DT :/\: T)
+          HtopTA
+          HclosedTTA
+          HcDT_on_T).
+      }
+      (** Remaining: establish T closed in TA, then apply HcDT_if_Tclosed. **)
       admit.
     }
     claim HcDA_TA :
