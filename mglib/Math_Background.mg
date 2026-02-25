@@ -228566,9 +228566,37 @@ claim HinterFamTA :
 		              (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V)
 		              (V :\: (Sing v))).
 		        {
-		          (** Remaining mixed-case local data:
-		              endpoint witness existence on V and connectedness of V\\{v}. **)
-		          admit.
+		          claim HVEpExists :
+		            exists p q:set, end_points_of_arc V
+		              (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) p q.
+		          {
+		            (** Remaining mixed-case endpoint witness obligation on V.
+		                Intended route: extract endpoints from HarcV_TA (homeomorphism from I). **)
+		            admit.
+		          }
+		          claim HconnVminusAtv :
+		            connected_space
+		              (V :\: (Sing v))
+		              (subspace_topology
+		                V
+		                (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V)
+		                (V :\: (Sing v))).
+		          {
+		            (** Remaining mixed-case connected-complement obligation at v for V.
+		                Intended route: establish v is an endpoint of V, then use endpoint definition. **)
+		            admit.
+		          }
+		          exact (andI
+		            (exists p q:set, end_points_of_arc V
+		              (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) p q)
+		            (connected_space
+		              (V :\: (Sing v))
+		              (subspace_topology
+		                V
+		                (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V)
+		                (V :\: (Sing v))))
+		            HVEpExists
+		            HconnVminusAtv).
 		        }
 		        exact (HVEp_if_data
 		          (andEL
@@ -229369,9 +229397,9 @@ claim HcohFamTA :
         HcDT
         HcDA).
     }
-    claim HcDT_TA :
-      closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) (DT :/\: T).
-    {
+	    claim HcDT_TA :
+	      closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) (DT :/\: T).
+	    {
       claim HcDT_if_Tclosed :
         closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) T ->
         closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) (DT :/\: T).
@@ -229468,18 +229496,25 @@ claim HcohFamTA :
           rewrite <- HCTeqDT.
           exact HCcapT.
         }
-        exact (closed_in_closed_subspace
-          (T :\/: A)
-          (subspace_topology X Tx (T :\/: A))
-          T
-          (DT :/\: T)
-          HtopTA
-          HclosedTTA
-          HcDT_on_T).
-      }
-      (** Remaining: establish T closed in TA, then apply HcDT_if_Tclosed. **)
-      admit.
-    }
+	        exact (closed_in_closed_subspace
+	          (T :\/: A)
+	          (subspace_topology X Tx (T :\/: A))
+	          T
+	          (DT :/\: T)
+	          HtopTA
+	          HclosedTTA
+	          HcDT_on_T).
+	      }
+	      claim HclosedTTA :
+	        closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) T.
+	      {
+	        (** Remaining coherence-closed transfer obligation:
+	            establish T is closed in TA. **)
+	        admit.
+	      }
+	      exact (HcDT_if_Tclosed
+	        HclosedTTA).
+	    }
     claim HcDA_TA :
       closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) (DA :/\: A).
     {
