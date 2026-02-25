@@ -196784,6 +196784,198 @@ exact (exists_homeomorphism_not_second_countable_space_transfer
   X Tx Y Ty Hhex).
 Qed.
 
+(** Proven Bob **)
+Theorem homeomorphism_reflects_path_connected :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  path_connected_space Y Ty ->
+  path_connected_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HpcY.
+exact (homeomorphism_reflects_path_connected_space
+  X Tx Y Ty f Hhome HpcY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_path_connected :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  path_connected_space Y Ty ->
+  path_connected_space X Tx.
+let X Tx Y Ty.
+assume Hhex HpcY.
+exact (exists_homeomorphism_reflects_path_connected_space
+  X Tx Y Ty Hhex HpcY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_reflects_connected :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  connected_space Y Ty ->
+  connected_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HconnY.
+exact (homeomorphism_reflects_connected_space
+  X Tx Y Ty f Hhome HconnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_connected :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  connected_space Y Ty ->
+  connected_space X Tx.
+let X Tx Y Ty.
+assume Hhex HconnY.
+exact (exists_homeomorphism_reflects_connected_space
+  X Tx Y Ty Hhex HconnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_reflects_Hausdorff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  Hausdorff_space Y Ty ->
+  Hausdorff_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HHY.
+exact (homeomorphism_reflects_Hausdorff_space
+  X Tx Y Ty f Hhome HHY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_Hausdorff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  Hausdorff_space Y Ty ->
+  Hausdorff_space X Tx.
+let X Tx Y Ty.
+assume Hhex HHY.
+exact (exists_homeomorphism_reflects_Hausdorff_space
+  X Tx Y Ty Hhex HHY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_reflects_second_countable :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  second_countable_space Y Ty ->
+  second_countable_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HscY.
+exact (homeomorphism_reflects_second_countable_space
+  X Tx Y Ty f Hhome HscY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_second_countable :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  second_countable_space Y Ty ->
+  second_countable_space X Tx.
+let X Tx Y Ty.
+assume Hhex HscY.
+exact (exists_homeomorphism_reflects_second_countable_space
+  X Tx Y Ty Hhex HscY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_reflects_not_path_connected :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ path_connected_space Y Ty ->
+  ~ path_connected_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_reflects_not_path_connected_space
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_not_path_connected :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ path_connected_space Y Ty ->
+  ~ path_connected_space X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (exists_homeomorphism_reflects_not_path_connected_space
+  X Tx Y Ty Hhex HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_reflects_not_connected :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ connected_space Y Ty ->
+  ~ connected_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_reflects_not_connected_space
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_not_connected :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ connected_space Y Ty ->
+  ~ connected_space X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (exists_homeomorphism_reflects_not_connected_space
+  X Tx Y Ty Hhex HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_reflects_not_Hausdorff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ Hausdorff_space Y Ty ->
+  ~ Hausdorff_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_reflects_not_Hausdorff_space
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_not_Hausdorff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ Hausdorff_space Y Ty ->
+  ~ Hausdorff_space X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (exists_homeomorphism_reflects_not_Hausdorff_space
+  X Tx Y Ty Hhex HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_reflects_not_second_countable :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ second_countable_space Y Ty ->
+  ~ second_countable_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_reflects_not_second_countable_space
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_not_second_countable :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ second_countable_space Y Ty ->
+  ~ second_countable_space X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (exists_homeomorphism_reflects_not_second_countable_space
+  X Tx Y Ty Hhex HnY).
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
