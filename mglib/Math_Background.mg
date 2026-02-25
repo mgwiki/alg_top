@@ -228741,11 +228741,95 @@ claim HcohFamTA :
           HEA).
       }
       rewrite HEqA.
-      (** Remaining (forward): closedness transfer from TA to the A-piece. **)
-      admit.
+      claim HiffA :
+        (closed_in A
+          (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) A)
+          (C :/\: A) <->
+         exists D:set, closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) D /\
+           (C :/\: A) = D :/\: A).
+      {
+        exact (closed_in_subspace_iff_intersection
+          (T :\/: A)
+          (subspace_topology X Tx (T :\/: A))
+          A
+          (C :/\: A)
+          HtopTA
+          HAsubTA).
+      }
+      claim HexA :
+        exists D:set, closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) D /\
+          (C :/\: A) = D :/\: A.
+      {
+        witness C.
+        apply andI.
+        - exact HCclosedTA.
+        - reflexivity.
+      }
+      exact ((iffER
+        (closed_in A
+          (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) A)
+          (C :/\: A))
+        (exists D:set, closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) D /\
+          (C :/\: A) = D :/\: A)
+        HiffA)
+        HexA).
     + assume HEArcsT.
-      (** Remaining (forward): closedness transfer from TA to ArcsT pieces. **)
-      admit.
+      claim HESubT : E c= T.
+      {
+        exact (andEL
+          (E c= T)
+          (arc E (subspace_topology T (subspace_topology X Tx T) E))
+          (general_linear_graph_arc_data
+            T
+            (subspace_topology X Tx T)
+            ArcsT
+            E
+            HglgT
+            HEArcsT)).
+      }
+      claim HESubTA : E c= (T :\/: A).
+      {
+        exact (Subq_tra
+          E
+          T
+          (T :\/: A)
+          HESubT
+          (binunion_Subq_1
+            T
+            A)).
+      }
+      claim HiffE :
+        (closed_in E
+          (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E)
+          (C :/\: E) <->
+         exists D:set, closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) D /\
+           (C :/\: E) = D :/\: E).
+      {
+        exact (closed_in_subspace_iff_intersection
+          (T :\/: A)
+          (subspace_topology X Tx (T :\/: A))
+          E
+          (C :/\: E)
+          HtopTA
+          HESubTA).
+      }
+      claim HexE :
+        exists D:set, closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) D /\
+          (C :/\: E) = D :/\: E.
+      {
+        witness C.
+        apply andI.
+        - exact HCclosedTA.
+        - reflexivity.
+      }
+      exact ((iffER
+        (closed_in E
+          (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E)
+          (C :/\: E))
+        (exists D:set, closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) D /\
+          (C :/\: E) = D :/\: E)
+        HiffE)
+        HexE).
   - assume Hall.
     claim HCA :
       closed_in A
