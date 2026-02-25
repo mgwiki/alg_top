@@ -227793,6 +227793,107 @@ Theorem lemma84_2_tree_extension_general_linear_graph_part :
   A :e Arcs -> ~(A c= T) ->
   (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
   general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT).
+let T ArcsT X Tx Arcs A.
+assume Htree HA Hnsub Hmeet.
+claim HsubT : subgraph_of T X Tx Arcs.
+{
+  exact (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+claim HsubTA : subgraph_of (T :\/: A) X Tx Arcs.
+{
+  exact (subgraph_of_union_with_arc
+    T
+    X
+    Tx
+    Arcs
+    A
+    HsubT
+    HA).
+}
+claim HglgT :
+  general_linear_graph T (subspace_topology X Tx T) ArcsT.
+{
+  exact (tree_in_graph_general_linear_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+claim HglgX : general_linear_graph X Tx Arcs.
+{
+  exact (subgraph_of_general_linear_graph
+    T
+    X
+    Tx
+    Arcs
+    HsubT).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (general_linear_graph_topology_on
+    X
+    Tx
+    Arcs
+    HglgX).
+}
+claim HTAsubX : (T :\/: A) c= X.
+{
+  exact (subgraph_of_subset
+    (T :\/: A)
+    X
+    Tx
+    Arcs
+    HsubTA).
+}
+claim HtopTA : topology_on (T :\/: A) (subspace_topology X Tx (T :\/: A)).
+{
+  exact (subspace_topology_is_topology
+    X
+    Tx
+    (T :\/: A)
+    HtopX
+    HTAsubX).
+}
+claim HunionT : T = Union ArcsT.
+{
+  exact (general_linear_graph_union_arcs
+    T
+    (subspace_topology X Tx T)
+    ArcsT
+    HglgT).
+}
+claim HAsubX : A c= X.
+{
+  exact (andEL
+    (A c= X)
+    (arc A (subspace_topology X Tx A))
+    (general_linear_graph_arc_data
+      X
+      Tx
+      Arcs
+      A
+      HglgX
+      HA)).
+}
+claim HAsubTA : A c= (T :\/: A).
+{
+  exact (binunion_Subq_2
+    T
+    A).
+}
+(** Remaining work: verify the four remaining general_linear_graph clauses for
+    family `{A} :\/: ArcsT` over carrier `T :\/: A`
+    (arc-membership clause, union-of-family, pairwise intersection endpoint
+    clause, and coherence clause). The setup above records all ambient/subspace
+    facts needed in that derivation. **)
 admit.
 Admitted.
 
