@@ -216574,6 +216574,55 @@ Definition maximal_tree : set -> set -> set -> set -> set -> prop :=
       tree_in_graph T' ArcsT' X Tx Arcs ->
       T c= T' -> T' = T).
 
+(** Infrastructure: constructors for tree_in_graph / maximal_tree **)
+(** Proven Bob **)
+Theorem tree_in_graph_intro :
+  forall T ArcsT X Tx Arcs:set,
+  subgraph_of T X Tx Arcs ->
+  general_linear_graph T (subspace_topology X Tx T) ArcsT ->
+  connected_space T (subspace_topology X Tx T) ->
+  ~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)) ->
+  tree_in_graph T ArcsT X Tx Arcs.
+let T ArcsT X Tx Arcs.
+assume Hsub HglgT HconnT Hnoloop.
+exact (and4I
+  (subgraph_of T X Tx Arcs)
+  (general_linear_graph T (subspace_topology X Tx T) ArcsT)
+  (connected_space T (subspace_topology X Tx T))
+  (~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)))
+  Hsub
+  HglgT
+  HconnT
+  Hnoloop).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_intro :
+  forall T ArcsT X Tx Arcs:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  (forall T' ArcsT':set,
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' -> T' = T) ->
+  maximal_tree T ArcsT X Tx Arcs.
+let T ArcsT X Tx Arcs.
+assume Htree Hmaxprop.
+exact (andI
+  (tree_in_graph T ArcsT X Tx Arcs)
+  (forall T' ArcsT':set,
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' -> T' = T)
+  Htree
+  Hmaxprop).
+Qed.
+
 (** Infrastructure: destructors for tree_in_graph / maximal_tree **)
 (** Proven Bob **)
 Theorem tree_in_graph_subgraph_of :
@@ -216847,6 +216896,23 @@ exact ((andER
   ArcsT'
   HT'
   Hsub).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_maximality_condition :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  (forall T' ArcsT':set,
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' -> T' = T).
+let T ArcsT X Tx Arcs.
+assume Hmax.
+exact (andER
+  (tree_in_graph T ArcsT X Tx Arcs)
+  (forall T' ArcsT':set,
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' -> T' = T)
+  Hmax).
 Qed.
 
 (** Proven Bob **)
