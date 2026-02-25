@@ -73625,6 +73625,8 @@ Theorem lemma54_2_sheet_non_switching_local :
   Vz :e slices ->
   Vz = Vq.
 Admitted.
+(** TODO Bob: this local non-switching statement currently lacks hypotheses tying Ft values to a connected image in Union slices.
+    Intended bridge is via connected_image_sheet_non_switching_in_pairwise_disjoint_union once continuity and image-subset data are threaded in. **)
 
 (** Infrastructure: existence package for homotopy lifting in Lem 54.2 **)
 Theorem lemma54_2_homotopy_lifting_exists : forall E Te B Tb p e0 F:set,
@@ -115536,6 +115538,8 @@ let X Tx x0 x1 alpha.
 assume HalphaPath.
 admit.
 Admitted.
+(** TODO Bob: by definition path_between carries function_on and endpoints only.
+    Need an additional continuity witness hypothesis, or a stronger path type, to remove this admit constructively. **)
 
 (** helper sub-bounty for Cor 58.5: alpha-hat sends identity to identity **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
