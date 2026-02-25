@@ -195271,6 +195271,67 @@ exact (iffER
   HnY).
 Qed.
 
+(** Helper aliases: reflection forms for negated invariants under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_reflects_not_path_connected_space :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ path_connected_space Y Ty ->
+  ~ path_connected_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_not_path_connected_space_of
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_reflects_not_connected_space :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ connected_space Y Ty ->
+  ~ connected_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_not_connected_space_of
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_reflects_not_Hausdorff_space :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ Hausdorff_space Y Ty ->
+  ~ Hausdorff_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_not_Hausdorff_space_of
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_reflects_not_second_countable_space :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ second_countable_space Y Ty ->
+  ~ second_countable_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_not_second_countable_space_of
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_reflects_not_metrizable :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ metrizable Y Ty ->
+  ~ metrizable X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_not_metrizable_of
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
 (** Helper aliases: reflection form for path connectedness under homeomorphism. **)
 (** Proven Bob **)
 Theorem homeomorphism_reflects_path_connected_space :
