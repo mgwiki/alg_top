@@ -221193,12 +221193,23 @@ apply (thm84_4_maximal_tree_all_vertices_from_obligations
 - assume Hrhs.
   let T' ArcsT'.
   assume Htree' HTsub.
-  let A.
-  assume HASel Hnsub.
-  (** remaining backward obligation:
-      for selected arcs in any supertree T', derive contradiction from
-      noncontainment in T using Hrhs and tree/subgraph endpoint structure. **)
-  admit.
+  claim HsubsetSel :
+    forall A0:set, A0 :e {B :e Arcs | B c= T'} -> A0 c= T.
+  {
+    (** remaining backward subgap:
+        prove selected-arc subset in T for supertree T',
+        using Hrhs, tree/subgraph endpoint structure, and HTsub. **)
+    admit.
+  }
+  exact ((selected_arc_obligation_subset_implies_noncontained_contradiction
+    T
+    T'
+    ArcsT'
+    X
+    Tx
+    Arcs
+    Htree'
+    HsubsetSel)).
 Admitted.
 
 (** from S84 Thm 84.5 (line 5631 in algtop.tex): every tree in maximal tree **)
