@@ -191170,6 +191170,98 @@ apply andI.
     HpcY).
 Qed.
 
+(** Helper: path connectedness equivalence from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_path_connected_space_iff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (path_connected_space X Tx <-> path_connected_space Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+apply Hhex.
+let h.
+assume Hhome.
+exact (homeomorphism_path_connected_space_iff
+  X
+  Tx
+  Y
+  Ty
+  h
+  Hhome).
+Qed.
+
+(** Helper: transfer implications from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_path_connected_space_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (path_connected_space X Tx -> path_connected_space Y Ty) /\
+  (path_connected_space Y Ty -> path_connected_space X Tx).
+let X Tx Y Ty.
+assume Hhex.
+claim Hiff :
+  path_connected_space X Tx <-> path_connected_space Y Ty.
+{
+  exact (exists_homeomorphism_path_connected_space_iff
+    X
+    Tx
+    Y
+    Ty
+    Hhex).
+}
+apply andI.
+- assume HpcX.
+  exact (iffEL
+    (path_connected_space X Tx)
+    (path_connected_space Y Ty)
+    Hiff
+    HpcX).
+- assume HpcY.
+  exact (iffER
+    (path_connected_space X Tx)
+    (path_connected_space Y Ty)
+    Hiff
+    HpcY).
+Qed.
+
+(** Helper: non-path-connectedness is invariant under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_not_path_connected_space_iff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ path_connected_space X Tx <-> ~ path_connected_space Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+claim Hiff :
+  path_connected_space X Tx <-> path_connected_space Y Ty.
+{
+  exact (homeomorphism_path_connected_space_iff
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+apply iffI.
+- assume HnX.
+  assume HpcY.
+  apply HnX.
+  exact (iffER
+    (path_connected_space X Tx)
+    (path_connected_space Y Ty)
+    Hiff
+    HpcY).
+- assume HnY.
+  assume HpcX.
+  apply HnY.
+  exact (iffEL
+    (path_connected_space X Tx)
+    (path_connected_space Y Ty)
+    Hiff
+    HpcX).
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
