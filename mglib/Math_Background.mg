@@ -205059,6 +205059,90 @@ exact (andER
   Hb).
 Qed.
 
+(** Proven Bob **)
+Theorem semilocally_simply_connected_intro :
+  forall B Tb:set,
+  topology_on B Tb ->
+  (forall b:set, b :e B ->
+    exists U:set, U :e Tb /\ b :e U /\
+      (forall cls:set,
+        cls :e fundamental_group U (subspace_topology B Tb U) b ->
+        apply_fun
+          (induced_homomorphism U (subspace_topology B Tb U) b B Tb b
+            (graph U (fun x:set => x)))
+          cls =
+        fundamental_group_id B Tb b)) ->
+  semilocally_simply_connected B Tb.
+let B Tb.
+assume Htop Hlocal.
+exact (andI
+  (topology_on B Tb)
+  (forall b:set, b :e B ->
+    exists U:set, U :e Tb /\ b :e U /\
+      (forall cls:set,
+        cls :e fundamental_group U (subspace_topology B Tb U) b ->
+        apply_fun
+          (induced_homomorphism U (subspace_topology B Tb U) b B Tb b
+            (graph U (fun x:set => x)))
+          cls =
+        fundamental_group_id B Tb b))
+  Htop
+  Hlocal).
+Qed.
+
+(** Proven Bob **)
+Theorem semilocally_simply_connected_iff :
+  forall B Tb:set,
+  semilocally_simply_connected B Tb <->
+  (topology_on B Tb /\
+   (forall b:set, b :e B ->
+     exists U:set, U :e Tb /\ b :e U /\
+       (forall cls:set,
+         cls :e fundamental_group U (subspace_topology B Tb U) b ->
+         apply_fun
+           (induced_homomorphism U (subspace_topology B Tb U) b B Tb b
+             (graph U (fun x:set => x)))
+           cls =
+         fundamental_group_id B Tb b))).
+let B Tb.
+apply iffI.
+- assume Hsemi.
+  apply andI.
+  + exact (semilocally_simply_connected_topology_on
+      B Tb Hsemi).
+  + let b.
+    assume Hb.
+    exact (semilocally_simply_connected_local_witness
+      B Tb Hsemi b Hb).
+- assume Hpack.
+  exact (semilocally_simply_connected_intro
+    B Tb
+    (andEL
+      (topology_on B Tb)
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\
+          (forall cls:set,
+            cls :e fundamental_group U (subspace_topology B Tb U) b ->
+            apply_fun
+              (induced_homomorphism U (subspace_topology B Tb U) b B Tb b
+                (graph U (fun x:set => x)))
+              cls =
+            fundamental_group_id B Tb b))
+      Hpack)
+    (andER
+      (topology_on B Tb)
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\
+          (forall cls:set,
+            cls :e fundamental_group U (subspace_topology B Tb U) b ->
+            apply_fun
+              (induced_homomorphism U (subspace_topology B Tb U) b B Tb b
+                (graph U (fun x:set => x)))
+              cls =
+            fundamental_group_id B Tb b))
+      Hpack)).
+Qed.
+
 (** from S82 Thm 82.1 (line 5240 in algtop.tex): existence of covering spaces **)
 (** LATEX VERSION: Let B be path connected, locally path connected, and semilocally **)
 (** simply connected. Given a subgroup H of pi1(B,b0), there exists a covering map **)
