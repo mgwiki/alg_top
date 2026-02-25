@@ -216335,6 +216335,63 @@ exact (subgraph_of_union_with_arc
 Qed.
 
 (** Proven Bob **)
+Theorem lemma84_2_not_subset_has_outside_point :
+  forall T ArcsT X Tx Arcs A:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e Arcs -> ~(A c= T) ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  exists x:set, x :e A /\ x /:e T.
+let T ArcsT X Tx Arcs A.
+assume Htree HA Hnsub Hmeet.
+exact (not_subset_ex_elem
+  T
+  A
+  Hnsub).
+Qed.
+
+(** Proven Bob **)
+Theorem lemma84_2_union_has_point_outside_original_tree :
+  forall T ArcsT X Tx Arcs A:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e Arcs -> ~(A c= T) ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  exists x:set, x :e (T :\/: A) /\ x /:e T.
+let T ArcsT X Tx Arcs A.
+assume Htree HA Hnsub Hmeet.
+claim Hout : exists x:set, x :e A /\ x /:e T.
+{
+  exact (lemma84_2_not_subset_has_outside_point
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    A
+    Htree
+    HA
+    Hnsub
+    Hmeet).
+}
+apply Hout.
+let x.
+assume Hxpack.
+witness x.
+apply andI.
+- exact (binunionI2
+    T
+    A
+    x
+    (andEL
+      (x :e A)
+      (x /:e T)
+      Hxpack)).
+- exact (andER
+    (x :e A)
+    (x /:e T)
+    Hxpack).
+Qed.
+
+(** Proven Bob **)
 Theorem single_vertex_intersection_witness_in_both :
   forall T A v:set,
   T :/\: A = Sing v ->
