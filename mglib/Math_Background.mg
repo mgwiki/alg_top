@@ -222671,6 +222671,55 @@ claim HAsubT : A c= T.
 (** blocked via maximal_tree_edge_meeting_tree_forces_subset -> lemma84_2_tree_extension. **)
 Admitted.
 
+(** Proven Bob **)
+Theorem outside_set_not_in_subset :
+  forall T A x:set,
+  x /:e T ->
+  A c= T ->
+  ~ (x :e A).
+let T A x.
+assume HxNotT HAsub HxA.
+exact (HxNotT
+  (HAsub x HxA)).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge_from_extension_obligation :
+  forall T ArcsT X Tx Arcs x A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  x :e graph_vertices X Tx Arcs ->
+  x /:e T ->
+  A :e Arcs ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  (~(A c= T) ->
+    tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs) ->
+  ~ (x :e A).
+let T ArcsT X Tx Arcs x A.
+assume Hmax HxVert HxNotT HA Hmeet Hext.
+assume HxA.
+claim HAsubT : A c= T.
+{
+  exact (maximal_tree_edge_meeting_tree_forces_subset_from_extension_obligation
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    A
+    Hmax
+    HA
+    Hmeet
+    Hext).
+}
+exact (outside_set_not_in_subset
+  T
+  A
+  x
+  HxNotT
+  HAsubT
+  HxA).
+Qed.
+
 Theorem maximal_tree_all_vertices_if_noncontained_edges_meet_tree_in_single_vertex :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
