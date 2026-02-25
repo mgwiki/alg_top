@@ -184976,6 +184976,44 @@ apply iffI.
 Qed.
 
 (** Proven Bob **)
+Theorem exists_preimage_point_iff_preimage_singleton_nonempty :
+  forall E pi y:set,
+  ((exists x:set, x :e E /\ apply_fun pi x = y) <->
+    preimage_of E pi (Sing y) <> Empty).
+let E pi y.
+exact ((andI
+  ((exists x:set, x :e E /\ apply_fun pi x = y) -> preimage_of E pi (Sing y) <> Empty)
+  (preimage_of E pi (Sing y) <> Empty -> (exists x:set, x :e E /\ apply_fun pi x = y))
+  (andER
+    (preimage_of E pi (Sing y) <> Empty -> (exists x:set, x :e E /\ apply_fun pi x = y))
+    ((exists x:set, x :e E /\ apply_fun pi x = y) -> preimage_of E pi (Sing y) <> Empty)
+    (preimage_singleton_nonempty_iff_exists_preimage_point E pi y))
+  (andEL
+    (preimage_of E pi (Sing y) <> Empty -> (exists x:set, x :e E /\ apply_fun pi x = y))
+    ((exists x:set, x :e E /\ apply_fun pi x = y) -> preimage_of E pi (Sing y) <> Empty)
+    (preimage_singleton_nonempty_iff_exists_preimage_point E pi y)))).
+Qed.
+
+(** Proven Bob **)
+Theorem no_preimage_point_iff_preimage_singleton_empty :
+  forall E pi y:set,
+  (~ (exists x:set, x :e E /\ apply_fun pi x = y) <->
+    preimage_of E pi (Sing y) = Empty).
+let E pi y.
+exact ((andI
+  (~ (exists x:set, x :e E /\ apply_fun pi x = y) -> preimage_of E pi (Sing y) = Empty)
+  (preimage_of E pi (Sing y) = Empty -> ~ (exists x:set, x :e E /\ apply_fun pi x = y))
+  (andER
+    (preimage_of E pi (Sing y) = Empty -> ~ (exists x:set, x :e E /\ apply_fun pi x = y))
+    (~ (exists x:set, x :e E /\ apply_fun pi x = y) -> preimage_of E pi (Sing y) = Empty)
+    (preimage_singleton_empty_iff_no_preimage_point E pi y))
+  (andEL
+    (preimage_of E pi (Sing y) = Empty -> ~ (exists x:set, x :e E /\ apply_fun pi x = y))
+    (~ (exists x:set, x :e E /\ apply_fun pi x = y) -> preimage_of E pi (Sing y) = Empty)
+    (preimage_singleton_empty_iff_no_preimage_point E pi y)))).
+Qed.
+
+(** Proven Bob **)
 Theorem surjective_map_preimage_singleton_empty_iff_no_preimage_point :
   forall E X pi y:set,
   surjective_map E X pi ->
