@@ -221363,6 +221363,26 @@ exact (selected_arc_subset_from_endpoint_witness_and_endpoint_target_obligation
   HendpointCloseSel).
 Qed.
 
+(** Proven Bob **)
+Theorem thm84_4_backward_selected_arc_subset_iff_noncontained_from_rhs :
+  forall T ArcsT T' ArcsT' X Tx Arcs:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  T c= T' ->
+  ((forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T) <->
+   (forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False)).
+let T ArcsT T' ArcsT' X Tx Arcs.
+assume Hrhs Htree' HTsub.
+exact (selected_arc_obligation_subset_iff_noncontained_contradiction
+  T
+  T'
+  ArcsT'
+  X
+  Tx
+  Arcs
+  Htree').
+Qed.
+
 Theorem thm84_4_forward_component_witness_from_split_obligations :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
