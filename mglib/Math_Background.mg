@@ -218595,6 +218595,98 @@ apply iffI.
 Qed.
 
 (** Proven Bob **)
+Theorem maximal_tree_all_vertices_if_outside_vertex_has_tree_extension_edge :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  (forall x:set, x :e graph_vertices X Tx Arcs -> x /:e T ->
+    exists A:set,
+      A :e Arcs /\ ~(A c= T) /\ x :e A /\
+      tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs) ->
+  graph_vertices X Tx Arcs c= T.
+let T ArcsT X Tx Arcs.
+assume Hmax Hext.
+let x.
+assume HxVert.
+apply (xm (x :e T)).
+- assume HxT.
+  exact HxT.
+- assume HxNotT.
+  apply (Hext
+    x
+    HxVert
+    HxNotT).
+  let A.
+  assume HApack.
+  apply (and4E
+    (A :e Arcs)
+    (~(A c= T))
+    (x :e A)
+    (tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs)
+    HApack).
+  assume HA HnotSub HxA HtreeExt.
+  exact (FalseE
+    (maximal_tree_noncontained_edge_tree_extension_contradiction
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      A
+      Hmax
+      HtreeExt
+      HnotSub)
+    (x :e T)).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_all_vertices_if_outside_vertex_has_single_vertex_tree_extension_edge :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  (forall x:set, x :e graph_vertices X Tx Arcs -> x /:e T ->
+    exists A:set,
+      A :e Arcs /\ ~(A c= T) /\ x :e A /\
+      (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) /\
+      tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs) ->
+  graph_vertices X Tx Arcs c= T.
+let T ArcsT X Tx Arcs.
+assume Hmax Hext.
+let x.
+assume HxVert.
+apply (xm (x :e T)).
+- assume HxT.
+  exact HxT.
+- assume HxNotT.
+  apply (Hext
+    x
+    HxVert
+    HxNotT).
+  let A.
+  assume HApack.
+  apply (and5E
+    (A :e Arcs)
+    (~(A c= T))
+    (x :e A)
+    (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v)
+    (tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs)
+    HApack).
+  assume HA HnotSub HxA Hmeet HtreeExt.
+  exact (FalseE
+    (maximal_tree_single_vertex_edge_tree_extension_contradiction
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      A
+      Hmax
+      HtreeExt
+      HA
+      HnotSub
+      Hmeet)
+    (x :e T)).
+Qed.
+
+(** Proven Bob **)
 Theorem not_subset_implies_right_union_neq :
   forall T A:set,
   ~(A c= T) ->
