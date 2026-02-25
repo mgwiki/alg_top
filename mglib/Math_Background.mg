@@ -198456,6 +198456,54 @@ exact (exists_homeomorphism_preserves_Hausdorff_left
   X Tx Y Ty Hhex HHY).
 Qed.
 
+(** Proven Bob **)
+Theorem homeomorphism_preserves_simply_connected_space_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  simply_connected X Tx ->
+  simply_connected Y Ty.
+let X Tx Y Ty f.
+assume Hhome HscX.
+exact (homeomorphism_preserves_simply_connected_right
+  X Tx Y Ty f Hhome HscX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_simply_connected_space_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  simply_connected Y Ty ->
+  simply_connected X Tx.
+let X Tx Y Ty f.
+assume Hhome HscY.
+exact (homeomorphism_preserves_simply_connected_left
+  X Tx Y Ty f Hhome HscY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_simply_connected_space_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  simply_connected X Tx ->
+  simply_connected Y Ty.
+let X Tx Y Ty.
+assume Hhex HscX.
+exact (exists_homeomorphism_preserves_simply_connected_right
+  X Tx Y Ty Hhex HscX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_simply_connected_space_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  simply_connected Y Ty ->
+  simply_connected X Tx.
+let X Tx Y Ty.
+assume Hhex HscY.
+exact (exists_homeomorphism_preserves_simply_connected_left
+  X Tx Y Ty Hhex HscY).
+Qed.
+
 (** Side-labeled preservation aliases for negated invariants. **)
 (** Proven Bob **)
 Theorem homeomorphism_preserves_not_path_connected_space_right :
@@ -199055,6 +199103,54 @@ exact (iffER
   (~ simply_connected Y Ty)
   (exists_homeomorphism_not_simply_connected_iff X Tx Y Ty Hhex)
   HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_simply_connected_space_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ simply_connected X Tx ->
+  ~ simply_connected Y Ty.
+let X Tx Y Ty f.
+assume Hhome HnX.
+exact (homeomorphism_preserves_not_simply_connected_right
+  X Tx Y Ty f Hhome HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_simply_connected_space_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ simply_connected Y Ty ->
+  ~ simply_connected X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_preserves_not_simply_connected_left
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_simply_connected_space_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ simply_connected X Tx ->
+  ~ simply_connected Y Ty.
+let X Tx Y Ty.
+assume Hhex HnX.
+exact (exists_homeomorphism_preserves_not_simply_connected_right
+  X Tx Y Ty Hhex HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_simply_connected_space_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ simply_connected Y Ty ->
+  ~ simply_connected X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (exists_homeomorphism_preserves_not_simply_connected_left
+  X Tx Y Ty Hhex HnY).
 Qed.
 
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
