@@ -212605,6 +212605,60 @@ exact (subgraph_of_subset
       Hmax))).
 Qed.
 
+(** Proven Bob **)
+Theorem tree_in_graph_subset_X :
+  forall T ArcsT X Tx Arcs:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  T c= X.
+let T ArcsT X Tx Arcs.
+assume Htree.
+exact (subgraph_of_subset
+  T
+  X
+  Tx
+  Arcs
+  (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree)).
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_topology_on_T :
+  forall T ArcsT X Tx Arcs:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  topology_on T (subspace_topology X Tx T).
+let T ArcsT X Tx Arcs.
+assume Htree.
+exact (general_linear_graph_topology_on
+  T
+  (subspace_topology X Tx T)
+  ArcsT
+  (tree_in_graph_general_linear_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree)).
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_vertices_subset_T :
+  forall T ArcsT X Tx Arcs:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  graph_vertices T (subspace_topology X Tx T) ArcsT c= T.
+let T ArcsT X Tx Arcs.
+assume Htree.
+exact (graph_vertices_subset_X
+  T
+  (subspace_topology X Tx T)
+  ArcsT).
+Qed.
+
 (** from S84 Lem 84.1 (line 5563 in algtop.tex): connected iff edge paths **)
 (** LATEX VERSION: A graph X is connected iff every pair of vertices can be **)
 (** joined by an edge path. **)
