@@ -193855,6 +193855,251 @@ apply andI.
     HnY).
 Qed.
 
+(** Helper: simply connectedness is invariant under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_simply_connected_iff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (simply_connected X Tx <-> simply_connected Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+apply iffI.
+- assume HscX.
+  exact (homeomorphism_preserves_simply_connected
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome
+    HscX).
+- assume HscY.
+  exact (homeomorphism_reflects_simply_connected
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome
+    HscY).
+Qed.
+
+(** Helper: simply connectedness equivalence from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_simply_connected_iff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (simply_connected X Tx <-> simply_connected Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+apply Hhex.
+let h.
+assume Hhome.
+exact (homeomorphism_simply_connected_iff
+  X
+  Tx
+  Y
+  Ty
+  h
+  Hhome).
+Qed.
+
+(** Helper: simply connectedness transfer implications from a homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_simply_connected_transfer :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (simply_connected X Tx -> simply_connected Y Ty) /\
+  (simply_connected Y Ty -> simply_connected X Tx).
+let X Tx Y Ty f.
+assume Hhome.
+claim Hiff :
+  simply_connected X Tx <-> simply_connected Y Ty.
+{
+  exact (homeomorphism_simply_connected_iff
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+apply andI.
+- assume HscX.
+  exact (iffEL
+    (simply_connected X Tx)
+    (simply_connected Y Ty)
+    Hiff
+    HscX).
+- assume HscY.
+  exact (iffER
+    (simply_connected X Tx)
+    (simply_connected Y Ty)
+    Hiff
+    HscY).
+Qed.
+
+(** Helper: simply connectedness transfer implications from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_simply_connected_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (simply_connected X Tx -> simply_connected Y Ty) /\
+  (simply_connected Y Ty -> simply_connected X Tx).
+let X Tx Y Ty.
+assume Hhex.
+claim Hiff :
+  simply_connected X Tx <-> simply_connected Y Ty.
+{
+  exact (exists_homeomorphism_simply_connected_iff
+    X
+    Tx
+    Y
+    Ty
+    Hhex).
+}
+apply andI.
+- assume HscX.
+  exact (iffEL
+    (simply_connected X Tx)
+    (simply_connected Y Ty)
+    Hiff
+    HscX).
+- assume HscY.
+  exact (iffER
+    (simply_connected X Tx)
+    (simply_connected Y Ty)
+    Hiff
+    HscY).
+Qed.
+
+(** Helper: non-simply-connectedness is invariant under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_not_simply_connected_iff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ simply_connected X Tx <-> ~ simply_connected Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+claim Hiff :
+  simply_connected X Tx <-> simply_connected Y Ty.
+{
+  exact (homeomorphism_simply_connected_iff
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+apply iffI.
+- assume HnX.
+  assume HscY.
+  apply HnX.
+  exact (iffER
+    (simply_connected X Tx)
+    (simply_connected Y Ty)
+    Hiff
+    HscY).
+- assume HnY.
+  assume HscX.
+  apply HnY.
+  exact (iffEL
+    (simply_connected X Tx)
+    (simply_connected Y Ty)
+    Hiff
+    HscX).
+Qed.
+
+(** Helper: non-simply-connectedness equivalence from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_simply_connected_iff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ simply_connected X Tx <-> ~ simply_connected Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+apply Hhex.
+let h.
+assume Hhome.
+exact (homeomorphism_not_simply_connected_iff
+  X
+  Tx
+  Y
+  Ty
+  h
+  Hhome).
+Qed.
+
+(** Helper: non-simply-connectedness transfer implications from a homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_not_simply_connected_transfer :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ simply_connected X Tx -> ~ simply_connected Y Ty) /\
+  (~ simply_connected Y Ty -> ~ simply_connected X Tx).
+let X Tx Y Ty f.
+assume Hhome.
+claim Hiff :
+  (~ simply_connected X Tx <-> ~ simply_connected Y Ty).
+{
+  exact (homeomorphism_not_simply_connected_iff
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+apply andI.
+- assume HnX.
+  exact (iffEL
+    (~ simply_connected X Tx)
+    (~ simply_connected Y Ty)
+    Hiff
+    HnX).
+- assume HnY.
+  exact (iffER
+    (~ simply_connected X Tx)
+    (~ simply_connected Y Ty)
+    Hiff
+    HnY).
+Qed.
+
+(** Helper: non-simply-connectedness transfer implications from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_simply_connected_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ simply_connected X Tx -> ~ simply_connected Y Ty) /\
+  (~ simply_connected Y Ty -> ~ simply_connected X Tx).
+let X Tx Y Ty.
+assume Hhex.
+claim Hiff :
+  (~ simply_connected X Tx <-> ~ simply_connected Y Ty).
+{
+  exact (exists_homeomorphism_not_simply_connected_iff
+    X
+    Tx
+    Y
+    Ty
+    Hhex).
+}
+apply andI.
+- assume HnX.
+  exact (iffEL
+    (~ simply_connected X Tx)
+    (~ simply_connected Y Ty)
+    Hiff
+    HnX).
+- assume HnY.
+  exact (iffER
+    (~ simply_connected X Tx)
+    (~ simply_connected Y Ty)
+    Hiff
+    HnY).
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
