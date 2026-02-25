@@ -212930,6 +212930,112 @@ exact (tree_in_graph_no_closed_reduced_edge_path
     Hmax)).
 Qed.
 
+(** Proven Bob **)
+Theorem tree_in_graph_general_linear_graph_X :
+  forall T ArcsT X Tx Arcs:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  general_linear_graph X Tx Arcs.
+let T ArcsT X Tx Arcs.
+assume Htree.
+exact (subgraph_of_general_linear_graph
+  T
+  X
+  Tx
+  Arcs
+  (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree)).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_general_linear_graph_X :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  general_linear_graph X Tx Arcs.
+let T ArcsT X Tx Arcs.
+assume Hmax.
+exact (tree_in_graph_general_linear_graph_X
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax)).
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_subset_union_arcs :
+  forall T ArcsT X Tx Arcs:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  T c= Union Arcs.
+let T ArcsT X Tx Arcs.
+assume Htree.
+claim HTsubX : T c= X.
+{
+  exact (tree_in_graph_subset_X
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+claim HXeqU : X = Union Arcs.
+{
+  exact (general_linear_graph_union_arcs
+    X
+    Tx
+    Arcs
+    (tree_in_graph_general_linear_graph_X
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      Htree)).
+}
+let x.
+assume HxT.
+exact (mem_eqR
+  x
+  X
+  (Union Arcs)
+  HXeqU
+  (HTsubX x HxT)).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_subset_union_arcs :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  T c= Union Arcs.
+let T ArcsT X Tx Arcs.
+assume Hmax.
+exact (tree_in_graph_subset_union_arcs
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax)).
+Qed.
+
 (** from S84 Lem 84.1 (line 5563 in algtop.tex): connected iff edge paths **)
 (** LATEX VERSION: A graph X is connected iff every pair of vertices can be **)
 (** joined by an edge path. **)
