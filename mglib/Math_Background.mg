@@ -186244,6 +186244,70 @@ exact (surjective_map_not_mem_image_iff_not_mem_codomain
 Qed.
 
 (** Proven Bob **)
+Theorem surjective_map_not_mem_image_implies_not_mem_codomain :
+  forall E X pi y:set,
+  surjective_map E X pi ->
+  y /:e image_of pi E ->
+  y /:e X.
+let E X pi y.
+assume Hsurj HyNotImg.
+exact ((andEL
+  (y /:e image_of pi E -> y /:e X)
+  (y /:e X -> y /:e image_of pi E)
+  (surjective_map_not_mem_image_iff_not_mem_codomain E X pi y Hsurj))
+  HyNotImg).
+Qed.
+
+(** Proven Bob **)
+Theorem surjective_map_not_mem_codomain_implies_not_mem_image :
+  forall E X pi y:set,
+  surjective_map E X pi ->
+  y /:e X ->
+  y /:e image_of pi E.
+let E X pi y.
+assume Hsurj HyNotX.
+exact ((andER
+  (y /:e image_of pi E -> y /:e X)
+  (y /:e X -> y /:e image_of pi E)
+  (surjective_map_not_mem_image_iff_not_mem_codomain E X pi y Hsurj))
+  HyNotX).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_not_mem_image_implies_not_mem_codomain :
+  forall E Te X pi y:set,
+  quotient_map E Te X pi ->
+  y /:e image_of pi E ->
+  y /:e X.
+let E Te X pi y.
+assume Hquot HyNotImg.
+exact (surjective_map_not_mem_image_implies_not_mem_codomain
+  E
+  X
+  pi
+  y
+  (quotient_map_implies_surjective_map E Te X pi Hquot)
+  HyNotImg).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_not_mem_codomain_implies_not_mem_image :
+  forall E Te X pi y:set,
+  quotient_map E Te X pi ->
+  y /:e X ->
+  y /:e image_of pi E.
+let E Te X pi y.
+assume Hquot HyNotX.
+exact (surjective_map_not_mem_codomain_implies_not_mem_image
+  E
+  X
+  pi
+  y
+  (quotient_map_implies_surjective_map E Te X pi Hquot)
+  HyNotX).
+Qed.
+
+(** Proven Bob **)
 Theorem surjective_map_not_mem_image_iff_preimage_singleton_empty :
   forall E X pi y:set,
   surjective_map E X pi ->
