@@ -219397,6 +219397,70 @@ apply (xm (x :e T)).
 Qed.
 
 (** Proven Bob **)
+Theorem maximal_tree_all_vertices_if_outside_vertex_has_single_vertex_component_extension_edge :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  (forall x:set, x :e graph_vertices X Tx Arcs -> x /:e T ->
+    exists A:set,
+      A :e Arcs /\ ~(A c= T) /\ x :e A /\
+      (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) /\
+      general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+      connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
+      ~(exists n path_seq x0:set,
+          n :e omega /\ n <> 0 /\
+          reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+            ({A} :\/: ArcsT) n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0))) ->
+  graph_vertices X Tx Arcs c= T.
+let T ArcsT X Tx Arcs.
+assume Hmax Hext.
+let x.
+assume HxVert.
+apply (xm (x :e T)).
+- assume HxT.
+  exact HxT.
+- assume HxNotT.
+  apply (Hext
+    x
+    HxVert
+    HxNotT).
+  let A.
+  assume HApack.
+  apply (and7E
+    (A :e Arcs)
+    (~(A c= T))
+    (x :e A)
+    (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v)
+    (general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT))
+    (connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)))
+    (~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT) n path_seq x0 /\
+        (exists j:set, j :e n /\ ordsucc j /:e n /\
+          (apply_fun path_seq j) 0 1 = x0)))
+    HApack).
+  assume HA HnotSub HxA Hmeet HglgTA HconnTA HnoloopTA.
+  exact (FalseE
+    (maximal_tree_single_vertex_noncontained_edge_component_extension_contradiction
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      A
+      Hmax
+      HA
+      HnotSub
+      Hmeet
+      HglgTA
+      HconnTA
+      HnoloopTA)
+    (x :e T)).
+Qed.
+
+(** Proven Bob **)
 Theorem maximal_tree_all_vertices_if_noncontained_edges_meet_tree_and_extend :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
