@@ -75034,6 +75034,125 @@ exact (slices_witness_to_core_pack
   Hpack).
 Qed.
 
+(** Infrastructure: from a sheet member to preimage membership (core pack) **)
+(** Proven Bob **)
+Theorem slices_core_member_point_in_preimage :
+  forall E Te p U slices V x:set,
+  ((slices c= Te /\ pairwise_disjoint slices) /\
+    Union slices = preimage_of E p U) ->
+  V :e slices ->
+  x :e V ->
+  x :e preimage_of E p U.
+let E Te p U slices V x.
+assume Hcore HV HxV.
+claim HxUnion : x :e Union slices.
+{
+  exact (UnionI
+    slices
+    x
+    V
+    HxV
+    HV).
+}
+exact (mem_eqR
+  x
+  (Union slices)
+  (preimage_of E p U)
+  (andER
+    (slices c= Te /\ pairwise_disjoint slices)
+    (Union slices = preimage_of E p U)
+    Hcore)
+  HxUnion).
+Qed.
+
+(** Infrastructure: from preimage membership to union membership (core pack) **)
+(** Proven Bob **)
+Theorem slices_core_preimage_point_in_union :
+  forall E Te p U slices x:set,
+  ((slices c= Te /\ pairwise_disjoint slices) /\
+    Union slices = preimage_of E p U) ->
+  x :e preimage_of E p U ->
+  x :e Union slices.
+let E Te p U slices x.
+assume Hcore HxPre.
+exact (mem_eqL
+  x
+  (Union slices)
+  (preimage_of E p U)
+  (andER
+    (slices c= Te /\ pairwise_disjoint slices)
+    (Union slices = preimage_of E p U)
+    Hcore)
+  HxPre).
+Qed.
+
+(** Infrastructure: from a sheet member to preimage membership (full witness pack) **)
+(** Proven Bob **)
+Theorem slices_witness_member_point_in_preimage :
+  forall E Te B Tb p U slices V x:set,
+  (slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall W:set, W :e slices ->
+      homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+        (graph W (fun z:set => apply_fun p z)))) ->
+  V :e slices ->
+  x :e V ->
+  x :e preimage_of E p U.
+let E Te B Tb p U slices V x.
+assume Hpack HV HxV.
+exact (slices_core_member_point_in_preimage
+  E
+  Te
+  p
+  U
+  slices
+  V
+  x
+  (slices_witness_to_core_pack
+    E
+    Te
+    B
+    Tb
+    p
+    U
+    slices
+    Hpack)
+  HV
+  HxV).
+Qed.
+
+(** Infrastructure: from preimage membership to union membership (full witness pack) **)
+(** Proven Bob **)
+Theorem slices_witness_preimage_point_in_union :
+  forall E Te B Tb p U slices x:set,
+  (slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall W:set, W :e slices ->
+      homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+        (graph W (fun z:set => apply_fun p z)))) ->
+  x :e preimage_of E p U ->
+  x :e Union slices.
+let E Te B Tb p U slices x.
+assume Hpack HxPre.
+exact (slices_core_preimage_point_in_union
+  E
+  Te
+  p
+  U
+  slices
+  x
+  (slices_witness_to_core_pack
+    E
+    Te
+    B
+    Tb
+    p
+    U
+    slices
+    Hpack)
+  HxPre).
+Qed.
+
 Theorem lemma54_2_sheet_non_switching_local :
   forall E Te B Tb p F Ft q z N U slices Vq Vz:set,
   pairwise_disjoint slices ->
