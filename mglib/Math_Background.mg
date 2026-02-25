@@ -1,6 +1,6 @@
 (** Balance Alice 3327 **)
 (** Balance Bob 3451 **)
-(** Balance Charlie 2198 **)
+(** Balance Charlie 2344 **)
 (** Balance Dave 1793 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -213824,6 +213824,245 @@ exact (Subq_finite
 Qed.
 
 (** Proven Charlie **)
+(** helper: for a fixed arc, the nonoverlap part is open in the ambient graph topology. **)
+Theorem general_linear_graph_arc_nonoverlap_open_in_X :
+  forall X Tx Arcs E:set,
+  general_linear_graph X Tx Arcs ->
+  E :e Arcs ->
+  (E :\: {p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :e Tx.
+let X Tx Arcs E.
+assume Hglg HEArcs.
+claim HtopX : topology_on X Tx.
+{
+  exact (general_linear_graph_topology_on
+    X
+    Tx
+    Arcs
+    Hglg).
+}
+set OverE := {p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}.
+set U := E :\: OverE.
+claim HUEsubX : U c= X.
+{
+  claim HEsubX : E c= X.
+  {
+    exact (andEL
+      (E c= X)
+      (arc E (subspace_topology X Tx E))
+      (general_linear_graph_arc_data
+        X
+        Tx
+        Arcs
+        E
+        Hglg
+        HEArcs)).
+  }
+  let x.
+  assume HxU.
+  exact (HEsubX x
+    (setminusE1
+      E
+      OverE
+      x
+      HxU)).
+}
+claim HcohOpen :
+  (open_in X Tx U <->
+   (forall A:set, A :e Arcs ->
+     open_in A (subspace_topology X Tx A) (U :/\: A))).
+{
+  exact (general_linear_graph_coherence_open
+    X
+    Tx
+    Arcs
+    U
+    Hglg
+    HUEsubX).
+}
+claim Hrhs :
+  (forall A:set, A :e Arcs ->
+    open_in A (subspace_topology X Tx A) (U :/\: A)).
+{
+  let A.
+  assume HAArcs.
+  claim HAdat : A c= X /\ arc A (subspace_topology X Tx A).
+  {
+    exact (general_linear_graph_arc_data
+      X
+      Tx
+      Arcs
+      A
+      Hglg
+      HAArcs).
+  }
+  claim HAsubX : A c= X.
+  {
+    exact (andEL
+      (A c= X)
+      (arc A (subspace_topology X Tx A))
+      HAdat).
+  }
+  claim HtopA : topology_on A (subspace_topology X Tx A).
+  {
+    exact (subspace_topology_is_topology
+      X
+      Tx
+      A
+      HtopX
+      HAsubX).
+  }
+  apply (xm (A = E)).
+  - assume HAE.
+    rewrite HAE.
+    claim HcapEq : U :/\: E = U.
+    {
+      exact (binintersect_Subq_eq_1
+        U
+        E
+        (setminus_Subq
+          E
+          OverE)).
+    }
+    rewrite HcapEq.
+    claim HfinOver : finite OverE.
+    {
+      exact (general_linear_graph_arc_overlap_points_finite
+        X
+        Tx
+        Arcs
+        E
+        Hglg
+        HEArcs).
+    }
+    claim HOverSubE : OverE c= E.
+    {
+      let p.
+      assume HpOver.
+      exact (SepE1
+        E
+        (fun p0:set => exists F:set, F :e Arcs /\ F <> E /\ p0 :e F)
+        p
+        HpOver).
+    }
+    claim HarcE : arc E (subspace_topology X Tx E).
+    {
+      exact (andER
+        (E c= X)
+        (arc E (subspace_topology X Tx E))
+        (general_linear_graph_arc_data
+          X
+          Tx
+          Arcs
+          E
+          Hglg
+          HEArcs)).
+    }
+    claim HHausE : Hausdorff_space E (subspace_topology X Tx E).
+    {
+      exact (arc_Hausdorff_space
+        E
+        (subspace_topology X Tx E)
+        HarcE).
+    }
+    claim HclosedOver : closed_in E (subspace_topology X Tx E) OverE.
+    {
+      exact (finite_sets_closed_in_Hausdorff
+        E
+        (subspace_topology X Tx E)
+        HHausE
+        OverE
+        HOverSubE
+        HfinOver).
+    }
+    exact (open_of_closed_complement
+      E
+      (subspace_topology X Tx E)
+      OverE
+      HclosedOver).
+  - assume HANE.
+    claim HcapEmpty : U :/\: A = Empty.
+    {
+      apply Empty_Subq_eq.
+      let x.
+      assume HxCap.
+      claim HxU : x :e U.
+      {
+        exact (binintersectE1
+          U
+          A
+          x
+          HxCap).
+      }
+      claim HxA : x :e A.
+      {
+        exact (binintersectE2
+          U
+          A
+          x
+          HxCap).
+      }
+      claim HxE : x :e E.
+      {
+        exact (setminusE1
+          E
+          OverE
+          x
+          HxU).
+      }
+      claim HxNotOver : x /:e OverE.
+      {
+        exact (setminusE2
+          E
+          OverE
+          x
+          HxU).
+      }
+      claim HxOver : x :e OverE.
+      {
+        apply (SepI
+          E
+          (fun p:set => exists F:set, F :e Arcs /\ F <> E /\ p :e F)
+          x
+          HxE
+          ).
+        witness A.
+        apply andI.
+        - apply andI.
+          + exact HAArcs.
+          + exact HANE.
+        - exact HxA.
+      }
+      exact (FalseE
+        (HxNotOver HxOver)
+        (x :e Empty)).
+    }
+    rewrite HcapEmpty.
+    exact (andI
+      (topology_on A (subspace_topology X Tx A))
+      (Empty :e (subspace_topology X Tx A))
+      HtopA
+      (topology_has_empty
+        A
+        (subspace_topology X Tx A)
+        HtopA)).
+}
+claim HopenX : open_in X Tx U.
+{
+  exact ((iffER
+    (open_in X Tx U)
+    (forall A:set, A :e Arcs ->
+      open_in A (subspace_topology X Tx A) (U :/\: A))
+    HcohOpen)
+    Hrhs).
+}
+exact (open_in_elem
+  X
+  Tx
+  U
+  HopenX).
+Qed.
+
+(** Proven Charlie **)
 (** helper: the overlap set (and any subset of it) is closed inside an arc, since arcs are Hausdorff and overlap points are finite. **)
 Theorem general_linear_graph_arc_bad_overlap_closed :
   forall X Tx Arcs E A:set,
@@ -215841,8 +216080,8 @@ Qed.
 (** LATEX VERSION: If C is a compact subspace of a linear graph X, there is a finite **)
 (** subgraph Y containing C. If C is connected, Y can be chosen connected. **)
 (** EFFORT: 12 lines textbook, difficulty 5/10, USD 120 **)
-(** Bounty 146 **)
-(** Lock Charlie 1772093126 **)
+(** Collected Charlie 146 **)
+(** Proven Charlie **)
 Theorem lemma83_2_compact_finite_subgraph :
   forall X Tx Arcs C:set,
   general_linear_graph X Tx Arcs ->
@@ -215874,12 +216113,2100 @@ claim HCsubU : C c= Union Arcs.
     HXeqU
     HxX).
 }
-(** remaining gap:
-    derive a finite Arcs' c= Arcs with C c= Union Arcs'.
-    This needs a bridge turning HCsubU into a compactness/finite-subcover argument
-    for the family Arcs (or an equivalent closed-family extraction via coherence). **)
-admit.
-Admitted.
+claim HtopX : topology_on X Tx.
+{
+  exact (general_linear_graph_topology_on
+    X
+    Tx
+    Arcs
+    Hglg).
+}
+claim HcompactAmb :
+  forall Fam:set,
+  (Fam c= Tx /\ C c= Union Fam) ->
+  has_finite_subcover C Tx Fam.
+{
+  exact ((iffEL
+    (compact_space C (subspace_topology X Tx C))
+    (forall Fam:set, (Fam c= Tx /\ C c= Union Fam) ->
+      has_finite_subcover C Tx Fam)
+    (compact_subspace_via_ambient_covers
+      X
+      Tx
+      C
+      HtopX
+      HCsubX))
+    HcompC).
+}
+
+(** overlap points: points lying on two distinct arcs **)
+set OverX :=
+  {p :e X | exists E:set, E :e Arcs /\
+    exists F:set, F :e Arcs /\ F <> E /\ p :e E /\ p :e F}.
+set OverC := C :/\: OverX.
+
+(** arcwise overlap set and nonoverlap part of an arc **)
+set Over := fun E:set =>
+  {p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}.
+set Uarc := fun E:set => E :\: (Over E).
+
+claim HUarc_open_Tx :
+  forall E:set,
+  E :e Arcs ->
+  (Uarc E) :e Tx.
+{
+  let E.
+  assume HEArcs.
+  exact (general_linear_graph_arc_nonoverlap_open_in_X
+    X
+    Tx
+    Arcs
+    E
+    Hglg
+    HEArcs).
+}
+
+claim HUarc_disjoint_other_arc :
+  forall E F:set,
+  E :e Arcs ->
+  F :e Arcs ->
+  E <> F ->
+  (Uarc E) :/\: F = Empty.
+{
+  let E F.
+  assume HEArcs HFArcs Hneq.
+  apply Empty_Subq_eq.
+  let x.
+  assume HxCap.
+  claim HxU : x :e Uarc E.
+  { exact (binintersectE1 (Uarc E) F x HxCap). }
+  claim HxF : x :e F.
+  { exact (binintersectE2 (Uarc E) F x HxCap). }
+  claim HxE : x :e E.
+  { exact (setminusE1 E (Over E) x HxU). }
+  claim HxNotOver : x /:e Over E.
+  { exact (setminusE2 E (Over E) x HxU). }
+  claim HxOverPred : exists G:set, G :e Arcs /\ G <> E /\ x :e G.
+  {
+    witness F.
+    apply andI.
+    - apply andI.
+      + exact HFArcs.
+      + exact (neq_i_sym
+          E
+          F
+          Hneq).
+    - exact HxF.
+  }
+  claim HxOver : x :e Over E.
+  {
+    exact (SepI
+      E
+      (fun p:set => exists G:set, G :e Arcs /\ G <> E /\ p :e G)
+      x
+      HxE
+      HxOverPred).
+  }
+  exact (FalseE
+    (HxNotOver HxOver)
+    (x :e Empty)).
+}
+
+claim HUarc_pairwise_disjoint :
+  forall E F:set,
+  E :e Arcs ->
+  F :e Arcs ->
+  E <> F ->
+  (Uarc E) :/\: (Uarc F) = Empty.
+{
+  let E F.
+  assume HEArcs HFArcs Hneq.
+  apply Empty_Subq_eq.
+  let x.
+  assume HxCap.
+  claim HxU : x :e Uarc E.
+  { exact (binintersectE1 (Uarc E) (Uarc F) x HxCap). }
+  claim HxUF : x :e Uarc F.
+  { exact (binintersectE2 (Uarc E) (Uarc F) x HxCap). }
+  claim HxF : x :e F.
+  { exact (setminusE1 F (Over F) x HxUF). }
+  claim HxCap2 : x :e (Uarc E) :/\: F.
+  { exact (binintersectI (Uarc E) F x HxU HxF). }
+  claim Hemp : (Uarc E) :/\: F = Empty.
+  {
+    exact (HUarc_disjoint_other_arc
+      E
+      F
+      HEArcs
+      HFArcs
+      Hneq).
+  }
+  exact (mem_eqR
+    x
+    ((Uarc E) :/\: F)
+    Empty
+    Hemp
+    HxCap2).
+}
+
+(** build an open set covering all nonoverlap points of X **)
+set UfamAll := {Uarc E|E :e Arcs}.
+set Uall := Union UfamAll.
+
+claim HUall_open : Uall :e Tx.
+{
+  claim HUfamSub : UfamAll c= Tx.
+  {
+    let U0.
+    assume HU0.
+    apply (ReplE
+      Arcs
+      (fun E0:set => Uarc E0)
+      U0
+      HU0).
+    let E.
+    assume HEpack.
+    claim HEArcs : E :e Arcs.
+    {
+      exact (andEL
+        (E :e Arcs)
+        (U0 = Uarc E)
+        HEpack).
+    }
+    claim HU0eq : U0 = Uarc E.
+    {
+      exact (andER
+        (E :e Arcs)
+        (U0 = Uarc E)
+        HEpack).
+    }
+    rewrite HU0eq.
+    exact (HUarc_open_Tx
+      E
+      HEArcs).
+  }
+  exact (topology_union_closed
+    X
+    Tx
+    UfamAll
+    HtopX
+    HUfamSub).
+}
+
+claim Hover_not_in_Uall :
+  forall p:set,
+  p :e OverX ->
+  p /:e Uall.
+{
+  let p.
+  assume HpOver.
+  assume HpUall.
+  claim HexU : exists U0:set, p :e U0 /\ U0 :e UfamAll.
+  {
+    exact (UnionE
+      UfamAll
+      p
+      HpUall).
+  }
+  apply HexU.
+  let U0.
+  assume HU0pack.
+  claim HpU0 : p :e U0.
+  {
+    exact (andEL
+      (p :e U0)
+      (U0 :e UfamAll)
+      HU0pack).
+  }
+  claim HU0fam : U0 :e UfamAll.
+  {
+    exact (andER
+      (p :e U0)
+      (U0 :e UfamAll)
+      HU0pack).
+  }
+  apply (ReplE
+    Arcs
+    (fun E0:set => Uarc E0)
+    U0
+    HU0fam).
+  let E.
+  assume HEpack.
+  claim HEArcs : E :e Arcs.
+  { exact (andEL (E :e Arcs) (U0 = Uarc E) HEpack). }
+  claim HU0eq : U0 = Uarc E.
+  { exact (andER (E :e Arcs) (U0 = Uarc E) HEpack). }
+  claim HpUarc : p :e Uarc E.
+  { exact (mem_eqR p U0 (Uarc E) HU0eq HpU0). }
+  claim HpE : p :e E.
+  { exact (setminusE1 E (Over E) p HpUarc). }
+  claim HpNotOverE : p /:e Over E.
+  { exact (setminusE2 E (Over E) p HpUarc). }
+  claim HpPred :
+    exists E0:set, E0 :e Arcs /\
+      exists F0:set, F0 :e Arcs /\ F0 <> E0 /\ p :e E0 /\ p :e F0.
+  {
+    exact (SepE2
+      X
+      (fun p0:set => exists E0:set, E0 :e Arcs /\
+        exists F0:set, F0 :e Arcs /\ F0 <> E0 /\ p0 :e E0 /\ p0 :e F0)
+      p
+      HpOver).
+  }
+  apply HpPred.
+  let E0.
+  assume HE0pack.
+  claim HE0Arcs : E0 :e Arcs.
+  {
+    exact (andEL
+      (E0 :e Arcs)
+      (exists F0:set, F0 :e Arcs /\ F0 <> E0 /\ p :e E0 /\ p :e F0)
+      HE0pack).
+  }
+  claim HexF0 :
+    exists F0:set, F0 :e Arcs /\ F0 <> E0 /\ p :e E0 /\ p :e F0.
+  {
+    exact (andER
+      (E0 :e Arcs)
+      (exists F0:set, F0 :e Arcs /\ F0 <> E0 /\ p :e E0 /\ p :e F0)
+      HE0pack).
+  }
+  apply HexF0.
+  let F0.
+  assume HF0pack.
+  claim HF0left : (F0 :e Arcs /\ F0 <> E0) /\ p :e E0.
+  {
+    exact (andEL
+      ((F0 :e Arcs /\ F0 <> E0) /\ p :e E0)
+      (p :e F0)
+      HF0pack).
+  }
+  claim HF0left2 : F0 :e Arcs /\ F0 <> E0.
+  {
+    exact (andEL
+      (F0 :e Arcs /\ F0 <> E0)
+      (p :e E0)
+      HF0left).
+  }
+  claim HF0Arcs : F0 :e Arcs.
+  {
+    exact (andEL
+      (F0 :e Arcs)
+      (F0 <> E0)
+      HF0left2).
+  }
+  claim HF0neq : F0 <> E0.
+  {
+    exact (andER
+      (F0 :e Arcs)
+      (F0 <> E0)
+      HF0left2).
+  }
+  claim HpE0 : p :e E0.
+  {
+    exact (andER
+      ((F0 :e Arcs /\ F0 <> E0))
+      (p :e E0)
+      HF0left).
+  }
+  claim HpF0 : p :e F0.
+  {
+    exact (andER
+      ((F0 :e Arcs /\ F0 <> E0) /\ p :e E0)
+      (p :e F0)
+      HF0pack).
+  }
+  apply (xm (E0 = E)).
+  - assume HE0eq.
+    claim HF0neqE : F0 <> E.
+    {
+      assume HF0eqE.
+      apply HF0neq.
+      claim HF0eqE0 : F0 = E0.
+      {
+        rewrite HE0eq.
+        exact HF0eqE.
+      }
+      exact HF0eqE0.
+    }
+    claim HpOverE : p :e Over E.
+    {
+      claim HpOverPred : exists G:set, G :e Arcs /\ G <> E /\ p :e G.
+      {
+        witness F0.
+        apply andI.
+        - apply andI.
+          + exact HF0Arcs.
+          + exact HF0neqE.
+        - exact HpF0.
+      }
+      exact (SepI
+        E
+        (fun q:set => exists G:set, G :e Arcs /\ G <> E /\ q :e G)
+        p
+        HpE
+        HpOverPred).
+    }
+    exact (HpNotOverE HpOverE).
+  - assume HE0ne.
+    claim HpOverE : p :e Over E.
+    {
+      claim HpOverPred : exists G:set, G :e Arcs /\ G <> E /\ p :e G.
+      {
+        witness E0.
+        apply andI.
+        - apply andI.
+          + exact HE0Arcs.
+          + exact HE0ne.
+        - exact HpE0.
+      }
+      exact (SepI
+        E
+        (fun q:set => exists G:set, G :e Arcs /\ G <> E /\ q :e G)
+        p
+        HpE
+        HpOverPred).
+    }
+    exact (HpNotOverE HpOverE).
+}
+
+(** define an open neighborhood that contains an overlap point and no other overlap point **)
+set Npt := fun p:set =>
+  {x :e X | exists E:set, E :e Arcs /\ p :e E /\
+    x :e (E :\: ((Over E) :\: (Sing p)))}.
+
+claim HNpt_open_Tx :
+  forall p:set,
+  p :e OverC ->
+  (Npt p) :e Tx.
+{
+  let p.
+  assume HpOverC.
+  claim HpX : p :e X.
+  {
+    exact (HCsubX
+      p
+      (binintersectE1
+        C
+        OverX
+        p
+        HpOverC)).
+  }
+  claim HNsubX : (Npt p) c= X.
+  {
+    let x.
+    assume HxN.
+    exact (SepE1
+      X
+      (fun x0:set => exists E:set, E :e Arcs /\ p :e E /\
+        x0 :e (E :\: ((Over E) :\: (Sing p))))
+      x
+      HxN).
+  }
+  claim HcohN :
+    (open_in X Tx (Npt p) <->
+     (forall A:set, A :e Arcs ->
+       open_in A (subspace_topology X Tx A) ((Npt p) :/\: A))).
+  {
+    exact (general_linear_graph_coherence_open
+      X
+      Tx
+      Arcs
+      (Npt p)
+      Hglg
+      HNsubX).
+  }
+  claim Hrhs :
+    (forall A:set, A :e Arcs ->
+      open_in A (subspace_topology X Tx A) ((Npt p) :/\: A)).
+  {
+    let A.
+    assume HAArcs.
+    claim HAdat : A c= X /\ arc A (subspace_topology X Tx A).
+    {
+      exact (general_linear_graph_arc_data
+        X
+        Tx
+        Arcs
+        A
+        Hglg
+        HAArcs).
+    }
+    claim HAsubX : A c= X.
+    {
+      exact (andEL
+        (A c= X)
+        (arc A (subspace_topology X Tx A))
+        HAdat).
+    }
+    claim HtopA : topology_on A (subspace_topology X Tx A).
+    {
+      exact (subspace_topology_is_topology
+        X
+        Tx
+        A
+        HtopX
+        HAsubX).
+    }
+    apply (xm (p :e A)).
+    - assume HpA.
+      claim HcapEq :
+        (Npt p) :/\: A = (A :\: ((Over A) :\: (Sing p))).
+      {
+        apply (set_ext
+          ((Npt p) :/\: A)
+          (A :\: ((Over A) :\: (Sing p)))).
+        - let x.
+          assume HxL.
+          claim HxN : x :e Npt p.
+          { exact (binintersectE1 (Npt p) A x HxL). }
+          claim HxA : x :e A.
+          { exact (binintersectE2 (Npt p) A x HxL). }
+          claim HexE :
+            exists E:set, E :e Arcs /\ p :e E /\
+              x :e (E :\: ((Over E) :\: (Sing p))).
+          {
+            exact (SepE2
+              X
+              (fun x0:set => exists E:set, E :e Arcs /\ p :e E /\
+                x0 :e (E :\: ((Over E) :\: (Sing p))))
+              x
+              HxN).
+          }
+          apply HexE.
+          let E.
+          assume HEpack.
+          claim HEleft : E :e Arcs /\ p :e E.
+          {
+            exact (andEL
+              (E :e Arcs /\ p :e E)
+              (x :e (E :\: ((Over E) :\: (Sing p))))
+              HEpack).
+          }
+          claim HEArcs : E :e Arcs.
+          { exact (andEL (E :e Arcs) (p :e E) HEleft). }
+          claim HpE : p :e E.
+          { exact (andER (E :e Arcs) (p :e E) HEleft). }
+          claim HxEin : x :e (E :\: ((Over E) :\: (Sing p))).
+          {
+            exact (andER
+              (E :e Arcs /\ p :e E)
+              (x :e (E :\: ((Over E) :\: (Sing p))))
+              HEpack).
+          }
+          apply (xm (E = A)).
+          + assume HEA.
+            claim HxNotBadA : x /:e ((Over A) :\: (Sing p)).
+            {
+              assume HxBadA.
+              claim HbadEq : ((Over A) :\: (Sing p)) = ((Over E) :\: (Sing p)).
+              {
+                rewrite <- HEA.
+                reflexivity.
+              }
+              claim HxBadE : x :e ((Over E) :\: (Sing p)).
+              {
+                exact (mem_eqR
+                  x
+                  ((Over A) :\: (Sing p))
+                  ((Over E) :\: (Sing p))
+                  HbadEq
+                  HxBadA).
+              }
+              exact ((setminusE2
+                E
+                ((Over E) :\: (Sing p))
+                x
+                HxEin)
+                HxBadE).
+            }
+            exact (setminusI
+              A
+              ((Over A) :\: (Sing p))
+              x
+              HxA
+              HxNotBadA).
+          + assume HENA.
+            claim HxE : x :e E.
+            { exact (setminusE1 E ((Over E) :\: (Sing p)) x HxEin). }
+            claim HxInter : x :e A :/\: E.
+            { exact (binintersectI A E x HxA HxE). }
+            claim HpInter : p :e A :/\: E.
+            { exact (binintersectI A E p HpA HpE). }
+            claim Hcase :
+              A :/\: E = Empty \/
+              (exists r:set, A :/\: E = Sing r /\
+                (exists q:set, end_points_of_arc A (subspace_topology X Tx A) r q \/
+                               end_points_of_arc A (subspace_topology X Tx A) q r) /\
+                (exists s:set, end_points_of_arc E (subspace_topology X Tx E) r s \/
+                               end_points_of_arc E (subspace_topology X Tx E) s r)).
+            {
+              exact (general_linear_graph_arc_intersection_case
+                X
+                Tx
+                Arcs
+                A
+                E
+                Hglg
+                HAArcs
+                HEArcs
+                (neq_i_sym
+                  E
+                  A
+                  HENA)).
+            }
+            apply Hcase.
+            * assume Hempty.
+              exact (FalseE
+                (EmptyE p (mem_eqR p (A :/\: E) Empty Hempty HpInter))
+                (x :e (A :\: ((Over A) :\: (Sing p))))).
+            * assume HexR.
+              apply HexR.
+              let r.
+              assume Hrpack.
+              claim Hsing : A :/\: E = Sing r.
+              {
+                exact (andEL
+                  (A :/\: E = Sing r)
+                  (exists q:set, end_points_of_arc A (subspace_topology X Tx A) r q \/
+                                 end_points_of_arc A (subspace_topology X Tx A) q r)
+                  (andEL
+                    ((A :/\: E = Sing r) /\
+                     (exists q:set, end_points_of_arc A (subspace_topology X Tx A) r q \/
+                                    end_points_of_arc A (subspace_topology X Tx A) q r))
+                    (exists s:set, end_points_of_arc E (subspace_topology X Tx E) r s \/
+                                   end_points_of_arc E (subspace_topology X Tx E) s r)
+                    Hrpack)).
+              }
+              claim Hxeq : x = r.
+              {
+                exact (SingE
+                  r
+                  x
+                  (mem_eqR
+                    x
+                    (A :/\: E)
+                    (Sing r)
+                    Hsing
+                    HxInter)).
+              }
+              claim Hpeq : p = r.
+              {
+                exact (SingE
+                  r
+                  p
+                  (mem_eqR
+                    p
+                    (A :/\: E)
+                    (Sing r)
+                    Hsing
+                    HpInter)).
+              }
+              rewrite Hxeq.
+              rewrite <- Hpeq.
+              claim HpNotBad : p /:e ((Over A) :\: (Sing p)).
+              {
+                assume HpBad.
+                exact (setminusE2
+                  (Over A)
+                  (Sing p)
+                  p
+                  HpBad
+                  (SingI p)).
+              }
+              exact (setminusI
+                A
+                ((Over A) :\: (Sing p))
+                p
+                HpA
+                HpNotBad).
+        - let x.
+          assume HxR.
+          claim HxA : x :e A.
+          { exact (setminusE1 A ((Over A) :\: (Sing p)) x HxR). }
+          claim HxPred :
+            exists E:set, E :e Arcs /\ p :e E /\
+              x :e (E :\: ((Over E) :\: (Sing p))).
+          {
+            witness A.
+            apply andI.
+            - apply andI.
+              + exact HAArcs.
+              + exact HpA.
+            - exact (setminusI
+                A
+                ((Over A) :\: (Sing p))
+                x
+                HxA
+                (setminusE2
+                  A
+                  ((Over A) :\: (Sing p))
+                  x
+                  HxR)).
+          }
+          exact (binintersectI
+            (Npt p)
+            A
+            x
+            (SepI
+              X
+              (fun x0:set => exists E:set, E :e Arcs /\ p :e E /\
+                x0 :e (E :\: ((Over E) :\: (Sing p))))
+              x
+              (HAsubX x HxA)
+              HxPred)
+            HxA).
+      }
+      rewrite HcapEq.
+      claim HfinOverA : finite (Over A).
+      {
+        exact (general_linear_graph_arc_overlap_points_finite
+          X
+          Tx
+          Arcs
+          A
+          Hglg
+          HAArcs).
+      }
+      claim Hsub : ((Over A) :\: (Sing p)) c= Over A.
+      { exact (setminus_Subq (Over A) (Sing p)). }
+      claim HfinSub : finite ((Over A) :\: (Sing p)).
+      { exact (Subq_finite (Over A) HfinOverA ((Over A) :\: (Sing p)) Hsub). }
+      claim HarcA : arc A (subspace_topology X Tx A).
+      {
+        exact (andER
+          (A c= X)
+          (arc A (subspace_topology X Tx A))
+          HAdat).
+      }
+      claim HHausA : Hausdorff_space A (subspace_topology X Tx A).
+      {
+        exact (arc_Hausdorff_space
+          A
+          (subspace_topology X Tx A)
+          HarcA).
+      }
+      claim HsubA : ((Over A) :\: (Sing p)) c= A.
+      {
+        let x.
+        assume HxSub.
+        exact (SepE1
+          A
+          (fun p0:set => exists F:set, F :e Arcs /\ F <> A /\ p0 :e F)
+          x
+          (setminusE1 (Over A) (Sing p) x HxSub)).
+      }
+      claim HclosedSub :
+        closed_in A (subspace_topology X Tx A) ((Over A) :\: (Sing p)).
+      {
+        exact (finite_sets_closed_in_Hausdorff
+          A
+          (subspace_topology X Tx A)
+          HHausA
+          ((Over A) :\: (Sing p))
+          HsubA
+          HfinSub).
+      }
+      exact (open_of_closed_complement
+        A
+        (subspace_topology X Tx A)
+        ((Over A) :\: (Sing p))
+        HclosedSub).
+    - assume HpNotA.
+      claim HcapEmpty : (Npt p) :/\: A = Empty.
+      {
+        apply Empty_Subq_eq.
+        let x.
+        assume HxCap.
+        claim HxA : x :e A.
+        { exact (binintersectE2 (Npt p) A x HxCap). }
+        claim HxN : x :e Npt p.
+        { exact (binintersectE1 (Npt p) A x HxCap). }
+        claim HexE :
+          exists E:set, E :e Arcs /\ p :e E /\
+            x :e (E :\: ((Over E) :\: (Sing p))).
+        {
+          exact (SepE2
+            X
+            (fun x0:set => exists E:set, E :e Arcs /\ p :e E /\
+              x0 :e (E :\: ((Over E) :\: (Sing p))))
+            x
+            HxN).
+        }
+        apply HexE.
+        let E.
+        assume HEpack.
+        claim HEleft : E :e Arcs /\ p :e E.
+        {
+          exact (andEL
+            (E :e Arcs /\ p :e E)
+            (x :e (E :\: ((Over E) :\: (Sing p))))
+            HEpack).
+        }
+        claim HEArcs : E :e Arcs.
+        { exact (andEL (E :e Arcs) (p :e E) HEleft). }
+        claim HpE : p :e E.
+        { exact (andER (E :e Arcs) (p :e E) HEleft). }
+        claim HxEin : x :e (E :\: ((Over E) :\: (Sing p))).
+        {
+          exact (andER
+            (E :e Arcs /\ p :e E)
+            (x :e (E :\: ((Over E) :\: (Sing p))))
+            HEpack).
+        }
+        claim HxE : x :e E.
+        { exact (setminusE1 E ((Over E) :\: (Sing p)) x HxEin). }
+        claim HxNotBad : x /:e ((Over E) :\: (Sing p)).
+        { exact (setminusE2 E ((Over E) :\: (Sing p)) x HxEin). }
+        claim HEnA : E <> A.
+        {
+          assume HEA.
+          apply HpNotA.
+          rewrite <- HEA.
+          exact HpE.
+        }
+        claim HxOverE : x :e Over E.
+        {
+          claim HxOverPred : exists G:set, G :e Arcs /\ G <> E /\ x :e G.
+          {
+            witness A.
+            apply andI.
+            - apply andI.
+              + exact HAArcs.
+              + exact (neq_i_sym
+                  E
+                  A
+                  HEnA).
+            - exact HxA.
+          }
+          exact (SepI
+            E
+            (fun q:set => exists G:set, G :e Arcs /\ G <> E /\ q :e G)
+            x
+            HxE
+            HxOverPred).
+        }
+        claim HxEqP : x = p.
+        {
+          apply (xm (x = p)).
+          - assume Heq.
+            exact Heq.
+          - assume Hneq.
+            claim HxBad : x :e ((Over E) :\: (Sing p)).
+            {
+              exact (setminusI
+                (Over E)
+                (Sing p)
+                x
+                HxOverE
+                (fun HxSing => Hneq (SingE p x HxSing))).
+            }
+            exact (FalseE
+              (HxNotBad HxBad)
+              (x = p)).
+        }
+        claim HpEqX : p = x.
+        { symmetry. exact HxEqP. }
+        claim HpA : p :e A.
+        { exact (eq_subst_mem p x A HpEqX HxA). }
+        exact (FalseE
+          (HpNotA HpA)
+          (x :e Empty)).
+      }
+      rewrite HcapEmpty.
+      exact (andI
+        (topology_on A (subspace_topology X Tx A))
+        (Empty :e (subspace_topology X Tx A))
+        HtopA
+        (topology_has_empty
+          A
+          (subspace_topology X Tx A)
+          HtopA)).
+  }
+  claim HopenN : open_in X Tx (Npt p).
+  {
+    exact ((iffER
+      (open_in X Tx (Npt p))
+      (forall A:set, A :e Arcs ->
+        open_in A (subspace_topology X Tx A) ((Npt p) :/\: A))
+      HcohN)
+      Hrhs).
+  }
+  exact (open_in_elem
+    X
+    Tx
+    (Npt p)
+    HopenN).
+}
+
+(** from compactness, OverC is finite **)
+claim HOverC_finite : finite OverC.
+{
+  set Nfam := {Npt p|p :e OverC}.
+  set FamO := ({Uall} :\/: Nfam).
+  claim HFamOsubTx : FamO c= Tx.
+  {
+    let U0.
+    assume HU0Fam.
+    apply (binunionE
+      {Uall}
+      Nfam
+      U0
+      HU0Fam).
+    - assume HU0Sing.
+      rewrite (SingE Uall U0 HU0Sing).
+      exact HUall_open.
+    - assume HU0Nfam.
+      apply (ReplE
+        OverC
+        (fun p0:set => Npt p0)
+        U0
+        HU0Nfam).
+      let p.
+      assume HpPack.
+      claim HpOverC : p :e OverC.
+      { exact (andEL (p :e OverC) (U0 = Npt p) HpPack). }
+      claim HU0eq : U0 = Npt p.
+      { exact (andER (p :e OverC) (U0 = Npt p) HpPack). }
+      rewrite HU0eq.
+      exact (HNpt_open_Tx
+        p
+        HpOverC).
+  }
+  claim HFamOcov : C c= Union FamO.
+  {
+    let x.
+    assume HxC.
+    apply (xm (x :e OverX)).
+    - assume HxOver.
+      claim HxOverC : x :e OverC.
+      { exact (binintersectI C OverX x HxC HxOver). }
+      claim HxX : x :e X.
+      { exact (HCsubX x HxC). }
+      claim HxOverPred :
+        exists E:set, E :e Arcs /\
+          exists F:set, F :e Arcs /\ F <> E /\ x :e E /\ x :e F.
+      {
+        exact (SepE2
+          X
+          (fun p:set => exists E:set, E :e Arcs /\
+            exists F:set, F :e Arcs /\ F <> E /\ p :e E /\ p :e F)
+          x
+          HxOver).
+      }
+      claim HxInN : x :e Npt x.
+      {
+        claim HxPred :
+          exists E:set, E :e Arcs /\ x :e E /\
+            x :e (E :\: ((Over E) :\: (Sing x))).
+        {
+          apply HxOverPred.
+          let E.
+          assume HEpack.
+          claim HEArcs : E :e Arcs.
+          { exact (andEL (E :e Arcs) (exists F:set, F :e Arcs /\ F <> E /\ x :e E /\ x :e F) HEpack). }
+          claim HexF : exists F:set, F :e Arcs /\ F <> E /\ x :e E /\ x :e F.
+          { exact (andER (E :e Arcs) (exists F:set, F :e Arcs /\ F <> E /\ x :e E /\ x :e F) HEpack). }
+          apply HexF.
+          let F.
+          assume HFpack.
+          claim HxE : x :e E.
+          {
+            claim HFleft : (F :e Arcs /\ F <> E) /\ x :e E.
+            {
+              exact (andEL
+                ((F :e Arcs /\ F <> E) /\ x :e E)
+                (x :e F)
+                HFpack).
+            }
+            exact (andER
+              (F :e Arcs /\ F <> E)
+              (x :e E)
+              HFleft).
+          }
+          witness E.
+          apply andI.
+          - apply andI.
+            + exact HEArcs.
+            + exact HxE.
+          - claim HxNotBad : x /:e ((Over E) :\: (Sing x)).
+            {
+              assume HxBad.
+              exact (setminusE2
+                (Over E)
+                (Sing x)
+                x
+                HxBad
+                (SingI x)).
+            }
+            exact (setminusI
+              E
+              ((Over E) :\: (Sing x))
+              x
+              HxE
+              HxNotBad).
+        }
+        exact (SepI
+          X
+          (fun x0:set => exists E:set, E :e Arcs /\ x :e E /\
+            x0 :e (E :\: ((Over E) :\: (Sing x))))
+          x
+          HxX
+          HxPred).
+      }
+      exact (UnionI
+        FamO
+        x
+        (Npt x)
+        HxInN
+        (binunionI2
+          {Uall}
+          Nfam
+          (Npt x)
+          (ReplI
+            OverC
+            (fun p0:set => Npt p0)
+            x
+            HxOverC))).
+    - assume HxNotOver.
+      claim HxU : x :e Union Arcs.
+      { exact (HCsubU x HxC). }
+      claim HexE : exists E:set, x :e E /\ E :e Arcs.
+      { exact (UnionE Arcs x HxU). }
+      apply HexE.
+      let E.
+      assume HxEpack.
+      claim HxE : x :e E.
+      { exact (andEL (x :e E) (E :e Arcs) HxEpack). }
+      claim HEArcs : E :e Arcs.
+      { exact (andER (x :e E) (E :e Arcs) HxEpack). }
+      claim HxNotOverE : x /:e Over E.
+      {
+        assume HxOverE.
+        claim HexF : exists F:set, F :e Arcs /\ F <> E /\ x :e F.
+        {
+          exact (SepE2
+            E
+            (fun p:set => exists F:set, F :e Arcs /\ F <> E /\ p :e F)
+            x
+            HxOverE).
+        }
+        apply HexF.
+        let F.
+        assume HFpack.
+        claim HFArcs : F :e Arcs.
+        {
+          exact (andEL
+            (F :e Arcs)
+            (F <> E)
+            (andEL
+              (F :e Arcs /\ F <> E)
+              (x :e F)
+              HFpack)).
+        }
+        claim HFneq : F <> E.
+        {
+          exact (andER
+            (F :e Arcs)
+            (F <> E)
+            (andEL
+              (F :e Arcs /\ F <> E)
+              (x :e F)
+              HFpack)).
+        }
+        claim HxF : x :e F.
+        {
+          exact (andER
+            (F :e Arcs /\ F <> E)
+            (x :e F)
+            HFpack).
+        }
+        claim HxX : x :e X.
+        { exact (HCsubX x HxC). }
+        claim HxOverX : x :e OverX.
+        {
+          apply (SepI
+            X
+            (fun p:set => exists E0:set, E0 :e Arcs /\
+              exists F0:set, F0 :e Arcs /\ F0 <> E0 /\ p :e E0 /\ p :e F0)
+            x
+            HxX).
+          witness E.
+          apply andI.
+          - exact HEArcs.
+          - witness F.
+            apply andI.
+            + apply andI.
+              * apply andI.
+                { exact HFArcs. }
+                { exact HFneq. }
+              * exact HxE.
+            + exact HxF.
+        }
+        exact (FalseE
+          (HxNotOver HxOverX)
+          False).
+      }
+      claim HxUE : x :e Uarc E.
+      {
+        exact (setminusI
+          E
+          (Over E)
+          x
+          HxE
+          HxNotOverE).
+      }
+      claim HxUall : x :e Uall.
+      {
+        exact (UnionI
+          UfamAll
+          x
+          (Uarc E)
+          HxUE
+          (ReplI
+            Arcs
+            (fun E0:set => Uarc E0)
+            E
+            HEArcs)).
+      }
+      exact (UnionI
+        FamO
+        x
+        Uall
+        HxUall
+        (binunionI1
+          {Uall}
+          Nfam
+          Uall
+          (SingI Uall))).
+  }
+  claim Hhas : has_finite_subcover C Tx FamO.
+  {
+    apply (HcompactAmb FamO).
+    apply andI.
+    - exact HFamOsubTx.
+    - exact HFamOcov.
+  }
+  apply Hhas.
+  let G0.
+  assume HG0pack.
+  apply (and3E
+    (G0 c= FamO)
+    (finite G0)
+    (C c= Union G0)
+    HG0pack).
+  assume HG0sub HG0fin HG0cov.
+  (** extract a finite subset of OverC from the finite subcover **)
+  set G0N := G0 :/\: Nfam.
+  claim HG0Nfin : finite G0N.
+  {
+    exact (Subq_finite
+      G0
+      HG0fin
+      G0N
+      (binintersect_Subq_1 G0 Nfam)).
+  }
+	  claim HNpt_self :
+	    forall p:set,
+	    p :e OverX ->
+	    p :e Npt p.
+	  {
+	    let p.
+	    assume HpOverX.
+	    claim HpX : p :e X.
+	    { exact (SepE1 X (fun q:set => exists E:set, E :e Arcs /\ exists F:set, F :e Arcs /\ F <> E /\ q :e E /\ q :e F) p HpOverX). }
+	    claim HpPred2 :
+	      exists E:set, E :e Arcs /\ p :e E /\
+	        p :e (E :\: ((Over E) :\: (Sing p))).
+	    {
+	      claim HpPred :
+	        exists E:set, E :e Arcs /\
+	          exists F:set, F :e Arcs /\ F <> E /\ p :e E /\ p :e F.
+	      {
+	        exact (SepE2
+	          X
+	          (fun q:set => exists E:set, E :e Arcs /\ exists F:set, F :e Arcs /\ F <> E /\ q :e E /\ q :e F)
+	          p
+	          HpOverX).
+	      }
+	      apply HpPred.
+	      let E.
+	      assume HEpack.
+	      claim HEArcs : E :e Arcs.
+	      { exact (andEL (E :e Arcs) (exists F:set, F :e Arcs /\ F <> E /\ p :e E /\ p :e F) HEpack). }
+	      claim HexF : exists F:set, F :e Arcs /\ F <> E /\ p :e E /\ p :e F.
+	      { exact (andER (E :e Arcs) (exists F:set, F :e Arcs /\ F <> E /\ p :e E /\ p :e F) HEpack). }
+	      apply HexF.
+		      let F.
+		      assume HFpack.
+		      claim HpE : p :e E.
+		      {
+		        claim HFleft : (F :e Arcs /\ F <> E) /\ p :e E.
+		        {
+		          exact (andEL
+		            ((F :e Arcs /\ F <> E) /\ p :e E)
+		            (p :e F)
+		            HFpack).
+		        }
+		        exact (andER
+		          (F :e Arcs /\ F <> E)
+		          (p :e E)
+		          HFleft).
+		      }
+	      witness E.
+	      apply andI.
+	      - apply andI.
+	        + exact HEArcs.
+	        + exact HpE.
+	      - claim HpNotBad : p /:e ((Over E) :\: (Sing p)).
+	        {
+	          assume HpBad.
+	          exact (setminusE2
+	            (Over E)
+	            (Sing p)
+	            p
+	            HpBad
+	            (SingI p)).
+	        }
+	        exact (setminusI
+	          E
+	          ((Over E) :\: (Sing p))
+	          p
+	          HpE
+	          HpNotBad).
+	    }
+	    exact (SepI
+	      X
+	      (fun x0:set => exists E:set, E :e Arcs /\ p :e E /\
+	        x0 :e (E :\: ((Over E) :\: (Sing p))))
+	      p
+	      HpX
+	      HpPred2).
+	  }
+  claim HNpt_overlap_unique :
+    forall p q:set,
+    p :e OverX ->
+    q :e OverX ->
+    q :e Npt p ->
+    q = p.
+  {
+    let p q.
+    assume HpOverX HqOverX HqN.
+    claim HexE :
+      exists E:set, E :e Arcs /\ p :e E /\
+        q :e (E :\: ((Over E) :\: (Sing p))).
+    {
+      exact (SepE2
+        X
+        (fun x0:set => exists E:set, E :e Arcs /\ p :e E /\
+          x0 :e (E :\: ((Over E) :\: (Sing p))))
+        q
+        HqN).
+    }
+    apply HexE.
+    let E.
+    assume HEpack.
+    claim HEleft : E :e Arcs /\ p :e E.
+    { exact (andEL (E :e Arcs /\ p :e E) (q :e (E :\: ((Over E) :\: (Sing p)))) HEpack). }
+    claim HEArcs : E :e Arcs.
+    { exact (andEL (E :e Arcs) (p :e E) HEleft). }
+    claim HqEin : q :e (E :\: ((Over E) :\: (Sing p))).
+    {
+      exact (andER
+        (E :e Arcs /\ p :e E)
+        (q :e (E :\: ((Over E) :\: (Sing p))))
+        HEpack).
+    }
+    claim HqE : q :e E.
+    { exact (setminusE1 E ((Over E) :\: (Sing p)) q HqEin). }
+    claim HqNotBad : q /:e ((Over E) :\: (Sing p)).
+    { exact (setminusE2 E ((Over E) :\: (Sing p)) q HqEin). }
+    claim HqOverPredX :
+      exists E0:set, E0 :e Arcs /\
+        exists F0:set, F0 :e Arcs /\ F0 <> E0 /\ q :e E0 /\ q :e F0.
+    {
+      exact (SepE2
+        X
+        (fun r:set => exists E0:set, E0 :e Arcs /\
+          exists F0:set, F0 :e Arcs /\ F0 <> E0 /\ r :e E0 /\ r :e F0)
+        q
+        HqOverX).
+    }
+    apply HqOverPredX.
+    let E0.
+    assume HE0pack.
+    claim HE0Arcs : E0 :e Arcs.
+    { exact (andEL (E0 :e Arcs) (exists F0:set, F0 :e Arcs /\ F0 <> E0 /\ q :e E0 /\ q :e F0) HE0pack). }
+    claim HexF0 : exists F0:set, F0 :e Arcs /\ F0 <> E0 /\ q :e E0 /\ q :e F0.
+    { exact (andER (E0 :e Arcs) (exists F0:set, F0 :e Arcs /\ F0 <> E0 /\ q :e E0 /\ q :e F0) HE0pack). }
+    apply HexF0.
+    let F0.
+    assume HF0pack.
+    claim HF0left : (F0 :e Arcs /\ F0 <> E0) /\ q :e E0.
+    { exact (andEL ((F0 :e Arcs /\ F0 <> E0) /\ q :e E0) (q :e F0) HF0pack). }
+    claim HF0left2 : F0 :e Arcs /\ F0 <> E0.
+    { exact (andEL (F0 :e Arcs /\ F0 <> E0) (q :e E0) HF0left). }
+    claim HF0Arcs : F0 :e Arcs.
+    { exact (andEL (F0 :e Arcs) (F0 <> E0) HF0left2). }
+    claim HF0neq : F0 <> E0.
+    { exact (andER (F0 :e Arcs) (F0 <> E0) HF0left2). }
+    claim HqE0 : q :e E0.
+    { exact (andER (F0 :e Arcs /\ F0 <> E0) (q :e E0) HF0left). }
+    claim HqF0 : q :e F0.
+    { exact (andER ((F0 :e Arcs /\ F0 <> E0) /\ q :e E0) (q :e F0) HF0pack). }
+    apply (xm (E0 = E)).
+    - assume HE0eq.
+      claim HF0neqE : F0 <> E.
+      {
+        assume HF0eqE.
+        apply HF0neq.
+        claim HF0eqE0 : F0 = E0.
+        { rewrite HE0eq. exact HF0eqE. }
+        exact HF0eqE0.
+      }
+      claim HqOverE : q :e Over E.
+      {
+        claim HqOverPred : exists G:set, G :e Arcs /\ G <> E /\ q :e G.
+        {
+          witness F0.
+          apply andI.
+          - apply andI.
+            + exact HF0Arcs.
+            + exact HF0neqE.
+          - exact HqF0.
+        }
+        exact (SepI
+          E
+          (fun r:set => exists G:set, G :e Arcs /\ G <> E /\ r :e G)
+          q
+          HqE
+          HqOverPred).
+      }
+      apply (xm (q = p)).
+      + assume Heq.
+        exact Heq.
+      + assume Hneq.
+        claim HqBad : q :e ((Over E) :\: (Sing p)).
+        {
+          exact (setminusI
+            (Over E)
+            (Sing p)
+            q
+            HqOverE
+            (fun HqSing => Hneq (SingE p q HqSing))).
+        }
+        exact (FalseE
+          (HqNotBad HqBad)
+          (q = p)).
+    - assume HE0ne.
+      claim HqOverE : q :e Over E.
+      {
+        claim HqOverPred : exists G:set, G :e Arcs /\ G <> E /\ q :e G.
+        {
+	          witness E0.
+	          apply andI.
+	          - apply andI.
+	            + exact HE0Arcs.
+	            + exact HE0ne.
+	          - exact HqE0.
+	        }
+        exact (SepI
+          E
+          (fun r:set => exists G:set, G :e Arcs /\ G <> E /\ r :e G)
+          q
+          HqE
+          HqOverPred).
+      }
+      apply (xm (q = p)).
+      + assume Heq.
+        exact Heq.
+      + assume Hneq.
+        claim HqBad : q :e ((Over E) :\: (Sing p)).
+        {
+          exact (setminusI
+            (Over E)
+            (Sing p)
+            q
+            HqOverE
+            (fun HqSing => Hneq (SingE p q HqSing))).
+        }
+        exact (FalseE
+          (HqNotBad HqBad)
+          (q = p)).
+  }
+  set idxN := fun U0:set => Eps_i (fun p:set => p :e OverC /\ U0 = Npt p).
+  set P0 := {idxN U0|U0 :e G0N}.
+  claim HP0fin : finite P0.
+  { exact (Repl_finite idxN G0N HG0Nfin). }
+  claim HOverCsubP0 : OverC c= P0.
+  {
+    let p.
+    assume HpOverC.
+    claim HpOverX : p :e OverX.
+    { exact (binintersectE2 C OverX p HpOverC). }
+    claim HpNotUall : p /:e Uall.
+    { exact (Hover_not_in_Uall p HpOverX). }
+    claim HpCov : p :e Union G0.
+    { exact (HG0cov p (binintersectE1 C OverX p HpOverC)). }
+    claim HexU : exists U0:set, p :e U0 /\ U0 :e G0.
+    { exact (UnionE G0 p HpCov). }
+    apply HexU.
+    let U0.
+    assume HU0pack.
+    claim HpU0 : p :e U0.
+    { exact (andEL (p :e U0) (U0 :e G0) HU0pack). }
+    claim HU0G0 : U0 :e G0.
+    { exact (andER (p :e U0) (U0 :e G0) HU0pack). }
+    claim HU0NotUall : U0 <> Uall.
+    {
+      assume HU0eq.
+      apply HpNotUall.
+      rewrite <- HU0eq.
+      exact HpU0.
+    }
+    claim HU0Nfam : U0 :e Nfam.
+    {
+      apply (binunionE
+        {Uall}
+        Nfam
+        U0
+        (HG0sub U0 HU0G0)).
+      - assume HU0Sing.
+        exact (FalseE
+          (HU0NotUall (SingE Uall U0 HU0Sing))
+          (U0 :e Nfam)).
+      - assume HU0N.
+        exact HU0N.
+    }
+    claim HU0G0N : U0 :e G0N.
+    { exact (binintersectI G0 Nfam U0 HU0G0 HU0Nfam). }
+    apply (ReplE OverC (fun p0:set => Npt p0) U0 HU0Nfam).
+    let q.
+    assume HqPack.
+    claim HqOverC : q :e OverC.
+    { exact (andEL (q :e OverC) (U0 = Npt q) HqPack). }
+    claim HU0eqNq : U0 = Npt q.
+    { exact (andER (q :e OverC) (U0 = Npt q) HqPack). }
+    claim HqOverX : q :e OverX.
+    { exact (binintersectE2 C OverX q HqOverC). }
+    claim HpInNq : p :e Npt q.
+    { exact (mem_eqR p U0 (Npt q) HU0eqNq HpU0). }
+    claim HpEqQ : p = q.
+    { exact (HNpt_overlap_unique q p HqOverX HpOverX HpInNq). }
+    claim HidxProp : idxN U0 :e OverC /\ U0 = Npt (idxN U0).
+    {
+      exact (Eps_i_ax
+        (fun r:set => r :e OverC /\ U0 = Npt r)
+        q
+        (andI
+          (q :e OverC)
+          (U0 = Npt q)
+          HqOverC
+          HU0eqNq)).
+    }
+    claim HidxOverC : idxN U0 :e OverC.
+    { exact (andEL (idxN U0 :e OverC) (U0 = Npt (idxN U0)) HidxProp). }
+    claim HU0eqNidx : U0 = Npt (idxN U0).
+    { exact (andER (idxN U0 :e OverC) (U0 = Npt (idxN U0)) HidxProp). }
+    claim HidxOverX : idxN U0 :e OverX.
+    { exact (binintersectE2 C OverX (idxN U0) HidxOverC). }
+	    claim HqInNidx : q :e Npt (idxN U0).
+	    {
+	      claim HqInNq : q :e Npt q.
+	      { exact (HNpt_self q HqOverX). }
+	      claim HqInU0 : q :e U0.
+	      { exact (mem_eqL q U0 (Npt q) HU0eqNq HqInNq). }
+	      exact (mem_eqR q U0 (Npt (idxN U0)) HU0eqNidx HqInU0).
+	    }
+	    claim HqEqIdx : q = idxN U0.
+	    { exact (HNpt_overlap_unique (idxN U0) q HidxOverX HqOverX HqInNidx). }
+	    claim HpEqIdx : p = idxN U0.
+	    { rewrite HpEqQ. exact HqEqIdx. }
+	    rewrite HpEqIdx.
+	    exact (ReplI
+	      G0N
+	      (fun U1:set => idxN U1)
+      U0
+      HU0G0N).
+  }
+  exact (Subq_finite
+    P0
+    HP0fin
+    OverC
+    HOverCsubP0).
+}
+
+(** choose arcs covering overlap points in C **)
+set pickArc := fun p:set => Eps_i (fun E:set => E :e Arcs /\ p :e E).
+set QArcs := {pickArc p|p :e OverC}.
+claim HQArcs_finite : finite QArcs.
+{
+  exact (Repl_finite
+    pickArc
+    OverC
+    HOverC_finite).
+}
+
+(** arcs meeting C in nonoverlap points are finite, by the point picking trick **)
+set PArcs := {E :e Arcs | (C :/\: (Uarc E)) <> Empty}.
+set pickx := fun E:set => Eps_i (fun x:set => x :e C /\ x :e (Uarc E)).
+set Dpts := {pickx E|E :e PArcs}.
+
+claim HPArcs_finite : finite PArcs.
+{
+  claim HDsubX : Dpts c= X.
+	  {
+	    let x.
+	    assume HxD.
+	    apply (ReplE PArcs (fun E0:set => pickx E0) x HxD).
+	    let E.
+	    assume HEpack.
+	    claim HEinP : E :e PArcs.
+	    { exact (andEL (E :e PArcs) (x = pickx E) HEpack). }
+	    claim HEArcs : E :e Arcs.
+	    { exact (SepE1 Arcs (fun E0:set => (C :/\: (Uarc E0)) <> Empty) E HEinP). }
+	    rewrite (andER (E :e PArcs) (x = pickx E) HEpack).
+	    claim Hcapne : (C :/\: (Uarc E)) <> Empty.
+	    { exact (SepE2 Arcs (fun E0:set => (C :/\: (Uarc E0)) <> Empty) E HEinP). }
+	    claim Hexy : exists y:set, y :e (C :/\: (Uarc E)).
+	    { exact (nonempty_has_element (C :/\: (Uarc E)) Hcapne). }
+	    apply Hexy.
+	    let y.
+	    assume HyCap.
+	    claim HyC : y :e C.
+	    { exact (binintersectE1 C (Uarc E) y HyCap). }
+	    claim HyUE : y :e (Uarc E).
+	    { exact (binintersectE2 C (Uarc E) y HyCap). }
+	    claim HpickProp : (pickx E) :e C /\ (pickx E) :e (Uarc E).
+	    {
+	      exact (Eps_i_ax
+	        (fun y0:set => y0 :e C /\ y0 :e (Uarc E))
+	        y
+	        (andI (y :e C) (y :e (Uarc E)) HyC HyUE)).
+	    }
+	    claim HpickC : (pickx E) :e C.
+	    { exact (andEL ((pickx E) :e C) ((pickx E) :e (Uarc E)) HpickProp). }
+	    exact (HCsubX (pickx E) HpickC).
+	  }
+  claim HDclosed : closed_in X Tx Dpts.
+  {
+    apply (iffER
+      (closed_in X Tx Dpts)
+      (forall A:set, A :e Arcs ->
+        closed_in A (subspace_topology X Tx A) (Dpts :/\: A))
+      (general_linear_graph_coherence_closed
+        X
+        Tx
+        Arcs
+        Dpts
+        Hglg
+        HDsubX)).
+    let A.
+    assume HAArcs.
+    claim HAdat : A c= X /\ arc A (subspace_topology X Tx A).
+    { exact (general_linear_graph_arc_data X Tx Arcs A Hglg HAArcs). }
+    claim HarcA : arc A (subspace_topology X Tx A).
+    { exact (andER (A c= X) (arc A (subspace_topology X Tx A)) HAdat). }
+    claim HHausA : Hausdorff_space A (subspace_topology X Tx A).
+    { exact (arc_Hausdorff_space A (subspace_topology X Tx A) HarcA). }
+    claim HDA_sub : (Dpts :/\: A) c= {pickx A}.
+    {
+      let x.
+      assume HxDA.
+      claim HxD : x :e Dpts.
+      { exact (binintersectE1 Dpts A x HxDA). }
+	      claim HxA : x :e A.
+	      { exact (binintersectE2 Dpts A x HxDA). }
+	      apply (ReplE PArcs (fun E0:set => pickx E0) x HxD).
+	      let E.
+	      assume HEpack.
+      claim HEinP : E :e PArcs.
+      { exact (andEL (E :e PArcs) (x = pickx E) HEpack). }
+      claim HxEq : x = pickx E.
+      { exact (andER (E :e PArcs) (x = pickx E) HEpack). }
+	      claim HEArcs : E :e Arcs.
+	      { exact (SepE1 Arcs (fun E0:set => (C :/\: (Uarc E0)) <> Empty) E HEinP). }
+	      claim HxUE : x :e Uarc E.
+	      {
+	        rewrite HxEq.
+	        claim Hcapne : (C :/\: (Uarc E)) <> Empty.
+	        { exact (SepE2 Arcs (fun E0:set => (C :/\: (Uarc E0)) <> Empty) E HEinP). }
+	        claim Hexy : exists y:set, y :e (C :/\: (Uarc E)).
+	        { exact (nonempty_has_element (C :/\: (Uarc E)) Hcapne). }
+	        apply Hexy.
+	        let y.
+	        assume HyCap.
+	        claim HyC : y :e C.
+	        { exact (binintersectE1 C (Uarc E) y HyCap). }
+	        claim HyUE : y :e (Uarc E).
+	        { exact (binintersectE2 C (Uarc E) y HyCap). }
+	        claim HpickProp : (pickx E) :e C /\ (pickx E) :e (Uarc E).
+	        {
+	          exact (Eps_i_ax
+	            (fun y0:set => y0 :e C /\ y0 :e (Uarc E))
+	            y
+	            (andI (y :e C) (y :e (Uarc E)) HyC HyUE)).
+	        }
+	        exact (andER
+	          ((pickx E) :e C)
+	          ((pickx E) :e (Uarc E))
+	          HpickProp).
+	      }
+	      apply (xm (E = A)).
+	      - assume HEA.
+	        claim HxEqA : x = pickx A.
+	        {
+	          rewrite <- HEA.
+	          exact HxEq.
+	        }
+	        rewrite HxEqA.
+	        exact (SingI (pickx A)).
+	      - assume HENA.
+	        claim HxCap2 : x :e (Uarc E) :/\: A.
+	        { exact (binintersectI (Uarc E) A x HxUE HxA). }
+        claim Hemp : (Uarc E) :/\: A = Empty.
+        {
+          exact (HUarc_disjoint_other_arc
+            E
+            A
+            HEArcs
+            HAArcs
+            HENA).
+        }
+        exact (FalseE
+          (EmptyE x (mem_eqR x ((Uarc E) :/\: A) Empty Hemp HxCap2))
+          (x :e {pickx A})).
+    }
+    claim HfinDA : finite (Dpts :/\: A).
+    {
+      exact (Subq_finite
+        {pickx A}
+        (Sing_finite (pickx A))
+        (Dpts :/\: A)
+        HDA_sub).
+    }
+    exact (finite_sets_closed_in_Hausdorff
+      A
+      (subspace_topology X Tx A)
+      HHausA
+      (Dpts :/\: A)
+      (binintersect_Subq_2 Dpts A)
+      HfinDA).
+  }
+  set FamP := ({X :\: Dpts} :\/: {Uarc E|E :e PArcs}).
+  claim HFamPsubTx : FamP c= Tx.
+  {
+    let U0.
+    assume HU0Fam.
+    apply (binunionE
+      {X :\: Dpts}
+      {Uarc E|E :e PArcs}
+      U0
+      HU0Fam).
+    - assume HU0Sing.
+      rewrite (SingE (X :\: Dpts) U0 HU0Sing).
+      exact (open_in_elem
+        X
+        Tx
+        (X :\: Dpts)
+        (open_of_closed_complement
+          X
+          Tx
+          Dpts
+          HDclosed)).
+	    - assume HU0Ufam.
+	      apply (ReplE PArcs (fun E0:set => Uarc E0) U0 HU0Ufam).
+	      let E.
+	      assume HEpack.
+      claim HEinP : E :e PArcs.
+      { exact (andEL (E :e PArcs) (U0 = Uarc E) HEpack). }
+      claim HEArcs : E :e Arcs.
+      { exact (SepE1 Arcs (fun E0:set => (C :/\: (Uarc E0)) <> Empty) E HEinP). }
+      rewrite (andER (E :e PArcs) (U0 = Uarc E) HEpack).
+      exact (HUarc_open_Tx E HEArcs).
+  }
+  claim HFamPcov : C c= Union FamP.
+  {
+    let x.
+    assume HxC.
+	    apply (xm (x :e Dpts)).
+	    - assume HxD.
+	      apply (ReplE PArcs (fun E0:set => pickx E0) x HxD).
+	      let E.
+	      assume HEpack.
+	      claim HEinP : E :e PArcs.
+	      { exact (andEL (E :e PArcs) (x = pickx E) HEpack). }
+      claim HEArcs : E :e Arcs.
+      { exact (SepE1 Arcs (fun E0:set => (C :/\: (Uarc E0)) <> Empty) E HEinP). }
+      claim HxEq : x = pickx E.
+      { exact (andER (E :e PArcs) (x = pickx E) HEpack). }
+	      claim HxUE : x :e Uarc E.
+	      {
+	        rewrite HxEq.
+	        claim Hcapne : (C :/\: (Uarc E)) <> Empty.
+	        { exact (SepE2 Arcs (fun E0:set => (C :/\: (Uarc E0)) <> Empty) E HEinP). }
+	        claim Hexy : exists y:set, y :e (C :/\: (Uarc E)).
+	        { exact (nonempty_has_element (C :/\: (Uarc E)) Hcapne). }
+	        apply Hexy.
+	        let y.
+	        assume HyCap.
+	        claim HyC : y :e C.
+	        { exact (binintersectE1 C (Uarc E) y HyCap). }
+	        claim HyUE : y :e (Uarc E).
+	        { exact (binintersectE2 C (Uarc E) y HyCap). }
+	        claim HpickProp : (pickx E) :e C /\ (pickx E) :e (Uarc E).
+	        {
+	          exact (Eps_i_ax
+	            (fun y0:set => y0 :e C /\ y0 :e (Uarc E))
+	            y
+	            (andI (y :e C) (y :e (Uarc E)) HyC HyUE)).
+	        }
+	        exact (andER
+	          ((pickx E) :e C)
+	          ((pickx E) :e (Uarc E))
+	          HpickProp).
+	      }
+      exact (UnionI
+        FamP
+        x
+        (Uarc E)
+        HxUE
+        (binunionI2
+          {X :\: Dpts}
+          {Uarc E0|E0 :e PArcs}
+          (Uarc E)
+          (ReplI
+            PArcs
+            (fun E0:set => Uarc E0)
+            E
+            HEinP))).
+    - assume HxNotD.
+      exact (UnionI
+        FamP
+        x
+        (X :\: Dpts)
+        (setminusI
+          X
+          Dpts
+          x
+          (HCsubX x HxC)
+          HxNotD)
+        (binunionI1
+          {X :\: Dpts}
+          {Uarc E|E :e PArcs}
+          (X :\: Dpts)
+          (SingI (X :\: Dpts)))).
+  }
+	  claim Hhas : has_finite_subcover C Tx FamP.
+	  {
+	    exact (HcompactAmb
+	      FamP
+	      (andI
+	        (FamP c= Tx)
+	        (C c= Union FamP)
+	        HFamPsubTx
+	        HFamPcov)).
+	  }
+  apply Hhas.
+  let G.
+  assume HGpack.
+  apply (and3E
+    (G c= FamP)
+    (finite G)
+    (C c= Union G)
+    HGpack).
+  assume HGsub HGfin HGcov.
+  (** build a finite set of indices from the finite subcover and show it contains PArcs **)
+  set Gcells := G :/\: {Uarc E|E :e PArcs}.
+  claim HGcellsFin : finite Gcells.
+  {
+    exact (Subq_finite
+      G
+      HGfin
+      Gcells
+      (binintersect_Subq_1 G {Uarc E|E :e PArcs})).
+  }
+  set idx := fun U0:set => Eps_i (fun E:set => E :e PArcs /\ U0 = Uarc E).
+  set P0 := {idx U0|U0 :e Gcells}.
+  claim HP0fin : finite P0.
+  { exact (Repl_finite idx Gcells HGcellsFin). }
+  claim HPsubP0 : PArcs c= P0.
+  {
+    let E.
+    assume HEP.
+    claim HEArcs : E :e Arcs.
+    { exact (SepE1 Arcs (fun E0:set => (C :/\: (Uarc E0)) <> Empty) E HEP). }
+	    claim HxIn : (pickx E) :e C /\ (pickx E) :e (Uarc E).
+	    {
+	      claim Hcapne : (C :/\: (Uarc E)) <> Empty.
+	      { exact (SepE2 Arcs (fun E0:set => (C :/\: (Uarc E0)) <> Empty) E HEP). }
+	      claim Hexy : exists y:set, y :e (C :/\: (Uarc E)).
+	      { exact (nonempty_has_element (C :/\: (Uarc E)) Hcapne). }
+	      apply Hexy.
+	      let y.
+	      assume HyCap.
+	      claim HyC : y :e C.
+	      { exact (binintersectE1 C (Uarc E) y HyCap). }
+	      claim HyUE : y :e (Uarc E).
+	      { exact (binintersectE2 C (Uarc E) y HyCap). }
+	      exact (Eps_i_ax
+	        (fun y0:set => y0 :e C /\ y0 :e (Uarc E))
+	        y
+	        (andI (y :e C) (y :e (Uarc E)) HyC HyUE)).
+	    }
+    claim HxC : (pickx E) :e C.
+    { exact (andEL ((pickx E) :e C) ((pickx E) :e (Uarc E)) HxIn). }
+    claim HxUE : (pickx E) :e (Uarc E).
+    { exact (andER ((pickx E) :e C) ((pickx E) :e (Uarc E)) HxIn). }
+    claim HxCov : (pickx E) :e Union G.
+    { exact (HGcov (pickx E) HxC). }
+    claim HexU : exists U0:set, (pickx E) :e U0 /\ U0 :e G.
+    { exact (UnionE G (pickx E) HxCov). }
+    apply HexU.
+    let U0.
+    assume HU0pack.
+    claim HU0G : U0 :e G.
+    { exact (andER ((pickx E) :e U0) (U0 :e G) HU0pack). }
+    claim HU0Fam : U0 :e FamP.
+    { exact (HGsub U0 HU0G). }
+	    apply (binunionE
+	      {X :\: Dpts}
+	      {Uarc E0|E0 :e PArcs}
+	      U0
+	      HU0Fam).
+	    - assume HU0Sing.
+	      claim HU0eq : U0 = X :\: Dpts.
+	      { exact (SingE (X :\: Dpts) U0 HU0Sing). }
+	      claim HxU0 : (pickx E) :e U0.
+	      { exact (andEL ((pickx E) :e U0) (U0 :e G) HU0pack). }
+	      claim HxXD : (pickx E) :e X :\: Dpts.
+	      { exact (mem_eqR (pickx E) U0 (X :\: Dpts) HU0eq HxU0). }
+	      claim HxInD : (pickx E) :e Dpts.
+	      { exact (ReplI PArcs (fun E0:set => pickx E0) E HEP). }
+	      claim HxNotD : (pickx E) /:e Dpts.
+	      { exact (setminusE2 X Dpts (pickx E) HxXD). }
+	      exact (FalseE (HxNotD HxInD) (E :e P0)).
+	    - assume HU0cell.
+	      apply (ReplE PArcs (fun E0:set => Uarc E0) U0 HU0cell).
+	      let F.
+	      assume HFpack.
+	      claim HFP : F :e PArcs.
+	      { exact (andEL (F :e PArcs) (U0 = Uarc F) HFpack). }
+      claim HU0eqUF : U0 = Uarc F.
+      { exact (andER (F :e PArcs) (U0 = Uarc F) HFpack). }
+      claim HxInUF : (pickx E) :e Uarc F.
+      { rewrite <- HU0eqUF. exact (andEL ((pickx E) :e U0) (U0 :e G) HU0pack). }
+	      apply (xm (F = E)).
+	      + assume HFE.
+	        claim HU0inGcells : U0 :e Gcells.
+	        {
+	          exact (binintersectI
+	            G
+	            {Uarc E0|E0 :e PArcs}
+	            U0
+	            HU0G
+	            HU0cell).
+	        }
+	        claim HidxInP0 : idx U0 :e P0.
+	        {
+	          exact (ReplI
+	            Gcells
+	            (fun U1:set => idx U1)
+	            U0
+	            HU0inGcells).
+	        }
+	        claim HU0eqUE : U0 = Uarc E.
+	        {
+	          rewrite <- HFE.
+	          exact HU0eqUF.
+	        }
+	        claim HidxProp : idx U0 :e PArcs /\ U0 = Uarc (idx U0).
+	        {
+	          exact (Eps_i_ax
+	            (fun E0:set => E0 :e PArcs /\ U0 = Uarc E0)
+	            E
+	            (andI (E :e PArcs) (U0 = Uarc E) HEP HU0eqUE)).
+	        }
+	        claim HidxP : idx U0 :e PArcs.
+	        { exact (andEL (idx U0 :e PArcs) (U0 = Uarc (idx U0)) HidxProp). }
+	        claim HU0eqUidx : U0 = Uarc (idx U0).
+	        { exact (andER (idx U0 :e PArcs) (U0 = Uarc (idx U0)) HidxProp). }
+	        claim HxU0 : (pickx E) :e U0.
+	        { exact (andEL ((pickx E) :e U0) (U0 :e G) HU0pack). }
+	        claim HxUidx : (pickx E) :e Uarc (idx U0).
+	        { exact (mem_eqR (pickx E) U0 (Uarc (idx U0)) HU0eqUidx HxU0). }
+	        claim HxIdxArc : (pickx E) :e idx U0.
+	        { exact (setminusE1 (idx U0) (Over (idx U0)) (pickx E) HxUidx). }
+	        claim HidxArcs : idx U0 :e Arcs.
+	        { exact (SepE1 Arcs (fun E0:set => (C :/\: (Uarc E0)) <> Empty) (idx U0) HidxP). }
+	        claim HidxEqE : idx U0 = E.
+	        {
+	          apply (xm (idx U0 = E)).
+	          - assume Heq.
+	            exact Heq.
+	          - assume Hneq.
+	            claim HxCap2 : (pickx E) :e (Uarc E) :/\: (idx U0).
+	            { exact (binintersectI (Uarc E) (idx U0) (pickx E) HxUE HxIdxArc). }
+	            claim Hemp : (Uarc E) :/\: (idx U0) = Empty.
+	            {
+	              exact (HUarc_disjoint_other_arc
+	                E
+	                (idx U0)
+	                HEArcs
+	                HidxArcs
+	                (neq_i_sym (idx U0) E Hneq)).
+	            }
+	            exact (FalseE
+	              (EmptyE
+	                (pickx E)
+	                (mem_eqR
+	                  (pickx E)
+	                  ((Uarc E) :/\: (idx U0))
+	                  Empty
+	                  Hemp
+	                  HxCap2))
+	              (idx U0 = E)).
+	        }
+	        rewrite <- HidxEqE.
+	        exact HidxInP0.
+	      + assume HFNE.
+	        claim HxCap2 : (pickx E) :e (Uarc E) :/\: (Uarc F).
+	        { exact (binintersectI (Uarc E) (Uarc F) (pickx E) HxUE HxInUF). }
+        claim Hemp : (Uarc E) :/\: (Uarc F) = Empty.
+        {
+          exact (HUarc_pairwise_disjoint
+            E
+            F
+            HEArcs
+            (SepE1 Arcs (fun E0:set => (C :/\: (Uarc E0)) <> Empty) F HFP)
+            (neq_i_sym F E HFNE)).
+        }
+        exact (FalseE
+          (EmptyE (pickx E) (mem_eqR (pickx E) ((Uarc E) :/\: (Uarc F)) Empty Hemp HxCap2))
+          (E :e P0)).
+  }
+  exact (Subq_finite
+    P0
+    HP0fin
+    PArcs
+    HPsubP0).
+}
+
+set Arcs' := PArcs :\/: QArcs.
+witness Arcs'.
+apply andI.
+- apply andI.
+  + (** Arcs' c= Arcs **)
+    let E.
+    assume HE.
+    apply (binunionE
+      PArcs
+      QArcs
+      E
+      HE).
+    * assume HEP.
+      exact (SepE1
+        Arcs
+        (fun E0:set => (C :/\: (Uarc E0)) <> Empty)
+        E
+        HEP).
+	    * assume HEQ.
+	      apply (ReplE OverC (fun p0:set => pickArc p0) E HEQ).
+	      let p.
+	      assume HpPack.
+	      claim HpOverC : p :e OverC.
+	      { exact (andEL (p :e OverC) (E = pickArc p) HpPack). }
+	      claim HEeq : E = pickArc p.
+	      { exact (andER (p :e OverC) (E = pickArc p) HpPack). }
+	      rewrite HEeq.
+	      claim HpC : p :e C.
+	      { exact (binintersectE1 C OverX p HpOverC). }
+	      claim HpU : p :e Union Arcs.
+	      { exact (HCsubU p HpC). }
+	      claim HexArc : exists A0:set, p :e A0 /\ A0 :e Arcs.
+	      { exact (UnionE Arcs p HpU). }
+	      apply HexArc.
+	      let A0.
+	      assume HA0pack.
+	      claim HpA0 : p :e A0.
+	      { exact (andEL (p :e A0) (A0 :e Arcs) HA0pack). }
+	      claim HA0Arcs : A0 :e Arcs.
+	      { exact (andER (p :e A0) (A0 :e Arcs) HA0pack). }
+	      exact (andEL
+	        ((pickArc p) :e Arcs)
+	        (p :e (pickArc p))
+	        (Eps_i_ax
+	          (fun E0:set => E0 :e Arcs /\ p :e E0)
+	          A0
+	          (andI (A0 :e Arcs) (p :e A0) HA0Arcs HpA0))).
+  + (** finite Arcs' **)
+    exact (binunion_finite
+      PArcs
+      HPArcs_finite
+      QArcs
+      HQArcs_finite).
+- (** C c= Union Arcs' **)
+  let x.
+  assume HxC.
+  apply (xm (x :e OverX)).
+  + assume HxOver.
+    claim HxOverC : x :e OverC.
+    { exact (binintersectI C OverX x HxC HxOver). }
+	    claim HxIn : x :e (pickArc x).
+	    {
+	      claim HxU : x :e Union Arcs.
+	      { exact (HCsubU x HxC). }
+	      claim HexArc : exists A0:set, x :e A0 /\ A0 :e Arcs.
+	      { exact (UnionE Arcs x HxU). }
+	      apply HexArc.
+	      let A0.
+	      assume HA0pack.
+	      claim HxA0 : x :e A0.
+	      { exact (andEL (x :e A0) (A0 :e Arcs) HA0pack). }
+	      claim HA0Arcs : A0 :e Arcs.
+	      { exact (andER (x :e A0) (A0 :e Arcs) HA0pack). }
+	      exact (andER
+	        ((pickArc x) :e Arcs)
+	        (x :e (pickArc x))
+	        (Eps_i_ax
+	          (fun E0:set => E0 :e Arcs /\ x :e E0)
+	          A0
+	          (andI (A0 :e Arcs) (x :e A0) HA0Arcs HxA0))).
+	    }
+    exact (UnionI
+      Arcs'
+      x
+      (pickArc x)
+      HxIn
+      (binunionI2
+        PArcs
+        QArcs
+        (pickArc x)
+        (ReplI
+          OverC
+          (fun p:set => pickArc p)
+          x
+          HxOverC))).
+  + assume HxNotOver.
+    claim HxU : x :e Union Arcs.
+    { exact (HCsubU x HxC). }
+    claim HexE : exists E:set, x :e E /\ E :e Arcs.
+    { exact (UnionE Arcs x HxU). }
+    apply HexE.
+    let E.
+    assume HxEpack.
+    claim HxE : x :e E.
+    { exact (andEL (x :e E) (E :e Arcs) HxEpack). }
+    claim HEArcs : E :e Arcs.
+    { exact (andER (x :e E) (E :e Arcs) HxEpack). }
+    claim HxNotOverE : x /:e Over E.
+    {
+      assume HxOverE.
+      claim HexF : exists F:set, F :e Arcs /\ F <> E /\ x :e F.
+      {
+        exact (SepE2
+          E
+          (fun p:set => exists F:set, F :e Arcs /\ F <> E /\ p :e F)
+          x
+          HxOverE).
+      }
+      apply HexF.
+      let F.
+      assume HFpack.
+      claim HFArcs : F :e Arcs.
+      {
+        exact (andEL
+          (F :e Arcs)
+          (F <> E)
+          (andEL
+            (F :e Arcs /\ F <> E)
+            (x :e F)
+            HFpack)).
+      }
+      claim HFneq : F <> E.
+      {
+        exact (andER
+          (F :e Arcs)
+          (F <> E)
+          (andEL
+            (F :e Arcs /\ F <> E)
+            (x :e F)
+            HFpack)).
+      }
+      claim HxF : x :e F.
+      {
+        exact (andER
+          (F :e Arcs /\ F <> E)
+          (x :e F)
+          HFpack).
+      }
+      claim HxX : x :e X.
+      { exact (HCsubX x HxC). }
+      claim HxOverX : x :e OverX.
+      {
+        apply (SepI
+          X
+          (fun p:set => exists E0:set, E0 :e Arcs /\
+            exists F0:set, F0 :e Arcs /\ F0 <> E0 /\ p :e E0 /\ p :e F0)
+          x
+          HxX).
+        witness E.
+        apply andI.
+	        - exact HEArcs.
+	        - witness F.
+	          apply andI.
+	          + apply andI.
+	            * apply andI.
+	              - exact HFArcs.
+	              - exact HFneq.
+	            * exact HxE.
+	          + exact HxF.
+	      }
+      exact (FalseE
+        (HxNotOver HxOverX)
+        False).
+    }
+    claim HxUE : x :e Uarc E.
+    {
+      exact (setminusI
+        E
+        (Over E)
+        x
+        HxE
+        HxNotOverE).
+    }
+	    claim HEP : E :e PArcs.
+	    {
+	      claim Hcapne : (C :/\: (Uarc E)) <> Empty.
+	      {
+	        exact (elem_implies_nonempty
+	          (C :/\: (Uarc E))
+	          x
+	          (binintersectI
+	            C
+	            (Uarc E)
+	            x
+	            HxC
+	            HxUE)).
+	      }
+	      exact (SepI
+	        Arcs
+	        (fun E0:set => (C :/\: (Uarc E0)) <> Empty)
+	        E
+	        HEArcs
+	        Hcapne).
+	    }
+    exact (UnionI
+      Arcs'
+      x
+      E
+      HxE
+      (binunionI1
+        PArcs
+        QArcs
+        E
+        HEP)).
+Qed.
 
 (** from S83 Lem 83.3 (line 5510 in algtop.tex): graph is loc path connected **)
 (** LATEX VERSION: If X is a linear graph, then X is locally path connected **)
