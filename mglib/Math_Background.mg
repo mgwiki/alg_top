@@ -76114,6 +76114,185 @@ apply andI.
       exact HFtzVz.
 Qed.
 
+(** Infrastructure: pointwise membership in anchored sheet from evenly_covered (for all z in N) **)
+(** Proven Bob **)
+Theorem unit_square_subset_commutation_points_in_anchor_sheet_from_evenly_covered :
+  forall N E Te B Tb p U F Ft q:set,
+  topology_on E Te ->
+  evenly_covered E Te B Tb p U ->
+  N c= unit_square ->
+  connected_space N (subspace_topology unit_square unit_square_topology N) ->
+  continuous_map N (subspace_topology unit_square unit_square_topology N) E Te Ft ->
+  (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t)) ->
+  (forall x:set, x :e N -> apply_fun F x :e U) ->
+  q :e N ->
+  exists slices Vq:set,
+    (slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall W:set, W :e slices ->
+        homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+          (graph W (apply_fun p)))) /\
+    (apply_fun Ft q :e Vq /\ Vq :e slices /\
+      (forall z:set, z :e N -> apply_fun Ft z :e Vq)).
+let N E Te B Tb p U F Ft q.
+assume HtopE Heven HNsubSq HNconn HFtCont HcommSq HFU HqN.
+apply (unit_square_subset_commutation_image_sub_single_sheet_from_evenly_covered
+  N
+  E
+  Te
+  B
+  Tb
+  p
+  U
+  F
+  Ft
+  q
+  HtopE
+  Heven
+  HNsubSq
+  HNconn
+  HFtCont
+  HcommSq
+  HFU
+  HqN).
+let slices.
+assume HsPack.
+apply HsPack.
+let Vq.
+assume HVqPack.
+claim Hpack :
+  slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall W:set, W :e slices ->
+      homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+        (graph W (apply_fun p))).
+{
+  exact (andEL
+    (slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall W:set, W :e slices ->
+        homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+          (graph W (apply_fun p))))
+    (apply_fun Ft q :e Vq /\ Vq :e slices /\ image_of Ft N c= Vq)
+    HVqPack).
+}
+claim Hanchor :
+  apply_fun Ft q :e Vq /\ Vq :e slices /\ image_of Ft N c= Vq.
+{
+  exact (andER
+    (slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall W:set, W :e slices ->
+        homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+          (graph W (apply_fun p))))
+    (apply_fun Ft q :e Vq /\ Vq :e slices /\ image_of Ft N c= Vq)
+    HVqPack).
+}
+witness slices.
+witness Vq.
+apply andI.
+- exact Hpack.
+- apply andI.
+  + apply andI.
+    * exact (andEL
+        (apply_fun Ft q :e Vq)
+        (Vq :e slices)
+        (andEL
+          (apply_fun Ft q :e Vq /\ Vq :e slices)
+          (image_of Ft N c= Vq)
+          Hanchor)).
+    * exact (andER
+        (apply_fun Ft q :e Vq)
+        (Vq :e slices)
+        (andEL
+          (apply_fun Ft q :e Vq /\ Vq :e slices)
+          (image_of Ft N c= Vq)
+          Hanchor)).
+  + let z.
+    assume HzN.
+    exact ((andER
+      (apply_fun Ft q :e Vq /\ Vq :e slices)
+      (image_of Ft N c= Vq)
+      Hanchor)
+      (apply_fun Ft z)
+      (ReplI
+        N
+        (fun x:set => apply_fun Ft x)
+        z
+        HzN)).
+Qed.
+
+(** Infrastructure: image-subset-to-anchor-sheet implies local sheet equality **)
+(** Proven Bob **)
+Theorem image_sub_single_sheet_implies_sheet_equality :
+  forall N Ft slices Vq Vz z:set,
+  pairwise_disjoint slices ->
+  z :e N ->
+  image_of Ft N c= Vq ->
+  Vq :e slices ->
+  apply_fun Ft z :e Vz ->
+  Vz :e slices ->
+  Vz = Vq.
+let N Ft slices Vq Vz z.
+assume Hpd HzN HimgSubVq HVqSlice HFtzVz HVzSlice.
+claim HFtzImg : apply_fun Ft z :e image_of Ft N.
+{
+  exact (ReplI
+    N
+    (fun x:set => apply_fun Ft x)
+    z
+    HzN).
+}
+claim HFtzVq : apply_fun Ft z :e Vq.
+{
+  exact (HimgSubVq
+    (apply_fun Ft z)
+    HFtzImg).
+}
+exact (pairwise_disjoint_point_unique_member
+  slices
+  Vz
+  Vq
+  (apply_fun Ft z)
+  Hpd
+  HVzSlice
+  HVqSlice
+  HFtzVz
+  HFtzVq).
+Qed.
+
+(** Infrastructure: pointwise-anchor membership implies local sheet equality **)
+(** Proven Bob **)
+Theorem pointwise_anchor_sheet_implies_sheet_equality :
+  forall N Ft slices Vq Vz z:set,
+  pairwise_disjoint slices ->
+  (forall x:set, x :e N -> apply_fun Ft x :e Vq) ->
+  z :e N ->
+  Vq :e slices ->
+  apply_fun Ft z :e Vz ->
+  Vz :e slices ->
+  Vz = Vq.
+let N Ft slices Vq Vz z.
+assume Hpd Hpoint HzN HVqSlice HFtzVz HVzSlice.
+claim HFtzVq : apply_fun Ft z :e Vq.
+{
+  exact (Hpoint
+    z
+    HzN).
+}
+exact (pairwise_disjoint_point_unique_member
+  slices
+  Vz
+  Vq
+  (apply_fun Ft z)
+  Hpd
+  HVzSlice
+  HVqSlice
+  HFtzVz
+  HFtzVq).
+Qed.
+
 Theorem lemma54_2_sheet_non_switching_local :
   forall E Te B Tb p F Ft q z N U slices Vq Vz:set,
   pairwise_disjoint slices ->
