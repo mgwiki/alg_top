@@ -213210,6 +213210,138 @@ exact ((andER
   His).
 Qed.
 
+(** Proven Bob **)
+Theorem reduced_edge_path_n_in_omega :
+  forall X Tx Arcs n path_seq x0:set,
+  reduced_edge_path X Tx Arcs n path_seq x0 ->
+  n :e omega.
+let X Tx Arcs n path_seq x0.
+assume Hred.
+exact (edge_path_n_in_omega
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  (reduced_edge_path_edge_path
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    Hred)).
+Qed.
+
+(** Proven Bob **)
+Theorem reduced_edge_path_function_on :
+  forall X Tx Arcs n path_seq x0:set,
+  reduced_edge_path X Tx Arcs n path_seq x0 ->
+  function_on path_seq n (setprod (setprod X X) (Power X)).
+let X Tx Arcs n path_seq x0.
+assume Hred.
+exact (edge_path_function_on
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  (reduced_edge_path_edge_path
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    Hred)).
+Qed.
+
+(** Proven Bob **)
+Theorem reduced_edge_path_edge_decomposition :
+  forall X Tx Arcs n path_seq x0 i:set,
+  reduced_edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  exists A ini fin:set,
+    apply_fun path_seq i = ((ini, fin), A) /\
+    oriented_edge X Tx Arcs A ini fin.
+let X Tx Arcs n path_seq x0 i.
+assume Hred Hi.
+exact (edge_path_edge_decomposition
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  i
+  (reduced_edge_path_edge_path
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    Hred)
+  Hi).
+Qed.
+
+(** Proven Bob **)
+Theorem reduced_edge_path_start_vertex :
+  forall X Tx Arcs n path_seq x0:set,
+  reduced_edge_path X Tx Arcs n path_seq x0 ->
+  n <> 0 ->
+  (apply_fun path_seq 0) 0 0 = x0.
+let X Tx Arcs n path_seq x0.
+assume Hred Hn0.
+exact (edge_path_start_vertex
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  (reduced_edge_path_edge_path
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    Hred)
+  Hn0).
+Qed.
+
+(** Proven Bob **)
+Theorem reduced_edge_path_consecutive_match :
+  forall X Tx Arcs n path_seq x0 i:set,
+  reduced_edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  ordsucc i :e n ->
+  (apply_fun path_seq i) 0 1 = (apply_fun path_seq (ordsucc i)) 0 0.
+let X Tx Arcs n path_seq x0 i.
+assume Hred Hi His.
+exact (edge_path_consecutive_match
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  i
+  (reduced_edge_path_edge_path
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    Hred)
+  Hi
+  His).
+Qed.
+
 (** from S84 Definition (line 5581 in algtop.tex): tree **)
 (** LATEX VERSION: A subgraph T of X is a tree if T is connected and **)
 (** T contains no closed reduced edge paths. **)
