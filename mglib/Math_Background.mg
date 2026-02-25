@@ -221492,6 +221492,99 @@ exact (thm84_4_backward_noncontained_contradiction_from_subset_from_rhs
   HsubsetSel).
 Qed.
 
+(** Proven Bob **)
+Theorem thm84_4_backward_selected_arc_subset_iff_noncontained_from_endpoint_obligations_from_rhs :
+  forall T ArcsT T' ArcsT' X Tx Arcs:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  T c= T' ->
+  (forall A:set, A :e {B :e Arcs | B c= T'} ->
+    exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q) ->
+  (forall A p q:set,
+    A :e {B :e Arcs | B c= T'} ->
+    end_points_of_arc A (subspace_topology X Tx A) p q ->
+    p :e T /\ q :e T ->
+    A c= T) ->
+  ((forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T) <->
+   (forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False)).
+let T ArcsT T' ArcsT' X Tx Arcs.
+assume Hrhs Htree' HTsub HendpointWitnessSel HendpointCloseSel.
+claim HsubsetSel : forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T.
+{
+  exact (thm84_4_backward_selected_arc_subset_from_endpoint_obligations_from_rhs
+    T
+    ArcsT
+    T'
+    ArcsT'
+    X
+    Tx
+    Arcs
+    Hrhs
+    Htree'
+    HTsub
+    HendpointWitnessSel
+    HendpointCloseSel).
+}
+exact (selected_arc_obligation_subset_iff_noncontained_contradiction
+  T
+  T'
+  ArcsT'
+  X
+  Tx
+  Arcs
+  Htree').
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_backward_maximality_from_endpoint_obligations_from_rhs_families_via_subset :
+  forall T ArcsT X Tx Arcs:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  (forall T' ArcsT':set,
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' ->
+    (forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T)) ->
+  maximal_tree T ArcsT X Tx Arcs.
+let T ArcsT X Tx Arcs.
+assume Hrhs HsubsetFam.
+claim Htree : tree_in_graph T ArcsT X Tx Arcs.
+{
+  exact (andEL
+    (tree_in_graph T ArcsT X Tx Arcs)
+    (graph_vertices X Tx Arcs c= T)
+    Hrhs).
+}
+claim HVT : graph_vertices X Tx Arcs c= T.
+{
+  exact (andER
+    (tree_in_graph T ArcsT X Tx Arcs)
+    (graph_vertices X Tx Arcs c= T)
+    Hrhs).
+}
+apply (thm84_4_backward_maximality_from_selected_arc_noncontained_contradiction
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Htree
+  HVT).
+let T' ArcsT'.
+assume Htree' HTsub.
+exact (selected_arc_obligation_subset_implies_noncontained_contradiction
+  T
+  T'
+  ArcsT'
+  X
+  Tx
+  Arcs
+  Htree'
+  (HsubsetFam
+    T'
+    ArcsT'
+    Htree'
+    HTsub)).
+Qed.
+
 Theorem thm84_4_forward_component_witness_from_split_obligations :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
