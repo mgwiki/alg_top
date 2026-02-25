@@ -205609,6 +205609,32 @@ exact (semilocally_simply_connected_has_open_neighborhood_subset
   Hb).
 Qed.
 
+(** Proven Bob **)
+Theorem universal_covering_base_core_consequences :
+  forall B Tb:set,
+  (exists E Te p:set,
+    covering_map E Te B Tb p /\ simply_connected E Te) ->
+  topology_on B Tb /\ exists b0:set, b0 :e B /\
+  path_connected_space B Tb /\ semilocally_simply_connected B Tb.
+let B Tb.
+assume Huniv.
+apply andI.
+- exact (universal_covering_implies_topology_on_base
+    B Tb Huniv).
+ - apply (universal_covering_implies_base_nonempty
+     B Tb Huniv).
+   let b0.
+   assume Hb0.
+   witness b0.
+   apply andI.
+   + apply andI.
+     * exact Hb0.
+     * exact (universal_covering_implies_path_connected_base
+         B Tb Huniv).
+   + exact (universal_covering_implies_semilocally_simply_connected
+       B Tb Huniv).
+Qed.
+
 (** Infrastructure for Cor 82.2: RHS + chosen basepoint implies universal cover **)
 Theorem lemma82_2_basepoint_conditions_imply_universal_covering :
   forall B Tb b0:set,
