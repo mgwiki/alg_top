@@ -197954,6 +197954,18 @@ exact (iffER
 Qed.
 
 (** Proven Bob **)
+Theorem exists_homeomorphism_preserves_locally_compact_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  locally_compact Y Ty ->
+  locally_compact X Tx.
+let X Tx Y Ty.
+assume Hhex HlocY.
+exact (exists_homeomorphism_preserves_locally_compact
+  X Tx Y Ty Hhex HlocY).
+Qed.
+
+(** Proven Bob **)
 Theorem exists_homeomorphism_preserves_regular_right :
   forall X Tx Y Ty:set,
   (exists h:set, homeomorphism X Tx Y Ty h) ->
