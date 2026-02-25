@@ -214524,6 +214524,38 @@ exact (edge_path_consecutive_match
   His).
 Qed.
 
+(** Proven Bob **)
+Theorem reduced_edge_path_index_decomposition_endpoints_in_X :
+  forall X Tx Arcs n path_seq x0 i:set,
+  general_linear_graph X Tx Arcs ->
+  reduced_edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  exists A ini fin:set,
+    apply_fun path_seq i = ((ini, fin), A) /\
+    oriented_edge X Tx Arcs A ini fin /\
+    ini :e X /\ fin :e X.
+let X Tx Arcs n path_seq x0 i.
+assume Hglg Hred Hi.
+exact (edge_path_index_decomposition_endpoints_in_X
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  i
+  Hglg
+  (reduced_edge_path_edge_path
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    Hred)
+  Hi).
+Qed.
+
 (** from S84 Definition (line 5581 in algtop.tex): tree **)
 (** LATEX VERSION: A subgraph T of X is a tree if T is connected and **)
 (** T contains no closed reduced edge paths. **)
@@ -214649,6 +214681,156 @@ apply (andEL
     tree_in_graph T' ArcsT' X Tx Arcs ->
     T c= T' -> T' = T)
   Hmax).
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_reduced_edge_path_index_decomposition_endpoints_in_T :
+  forall T ArcsT X Tx Arcs n path_seq x0 i:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 ->
+  i :e n ->
+  exists A ini fin:set,
+    apply_fun path_seq i = ((ini, fin), A) /\
+    oriented_edge T (subspace_topology X Tx T) ArcsT A ini fin /\
+    ini :e T /\ fin :e T.
+let T ArcsT X Tx Arcs n path_seq x0 i.
+assume Htree HredT Hi.
+exact (reduced_edge_path_index_decomposition_endpoints_in_X
+  T
+  (subspace_topology X Tx T)
+  ArcsT
+  n
+  path_seq
+  x0
+  i
+  (tree_in_graph_general_linear_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree)
+  HredT
+  Hi).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_reduced_edge_path_index_decomposition_endpoints_in_T :
+  forall T ArcsT X Tx Arcs n path_seq x0 i:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 ->
+  i :e n ->
+  exists A ini fin:set,
+    apply_fun path_seq i = ((ini, fin), A) /\
+    oriented_edge T (subspace_topology X Tx T) ArcsT A ini fin /\
+    ini :e T /\ fin :e T.
+let T ArcsT X Tx Arcs n path_seq x0 i.
+assume Hmax HredT Hi.
+exact (tree_in_graph_reduced_edge_path_index_decomposition_endpoints_in_T
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  i
+  (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax)
+  HredT
+  Hi).
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_reduced_edge_path_start_vertex :
+  forall T ArcsT X Tx Arcs n path_seq x0:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 ->
+  n <> 0 ->
+  (apply_fun path_seq 0) 0 0 = x0.
+let T ArcsT X Tx Arcs n path_seq x0.
+assume Htree HredT Hn0.
+exact (reduced_edge_path_start_vertex
+  T
+  (subspace_topology X Tx T)
+  ArcsT
+  n
+  path_seq
+  x0
+  HredT
+  Hn0).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_reduced_edge_path_start_vertex :
+  forall T ArcsT X Tx Arcs n path_seq x0:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 ->
+  n <> 0 ->
+  (apply_fun path_seq 0) 0 0 = x0.
+let T ArcsT X Tx Arcs n path_seq x0.
+assume Hmax HredT Hn0.
+exact (reduced_edge_path_start_vertex
+  T
+  (subspace_topology X Tx T)
+  ArcsT
+  n
+  path_seq
+  x0
+  HredT
+  Hn0).
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_reduced_edge_path_consecutive_match :
+  forall T ArcsT X Tx Arcs n path_seq x0 i:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 ->
+  i :e n ->
+  ordsucc i :e n ->
+  (apply_fun path_seq i) 0 1 = (apply_fun path_seq (ordsucc i)) 0 0.
+let T ArcsT X Tx Arcs n path_seq x0 i.
+assume Htree HredT Hi His.
+exact (reduced_edge_path_consecutive_match
+  T
+  (subspace_topology X Tx T)
+  ArcsT
+  n
+  path_seq
+  x0
+  i
+  HredT
+  Hi
+  His).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_reduced_edge_path_consecutive_match :
+  forall T ArcsT X Tx Arcs n path_seq x0 i:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 ->
+  i :e n ->
+  ordsucc i :e n ->
+  (apply_fun path_seq i) 0 1 = (apply_fun path_seq (ordsucc i)) 0 0.
+let T ArcsT X Tx Arcs n path_seq x0 i.
+assume Hmax HredT Hi His.
+exact (reduced_edge_path_consecutive_match
+  T
+  (subspace_topology X Tx T)
+  ArcsT
+  n
+  path_seq
+  x0
+  i
+  HredT
+  Hi
+  His).
 Qed.
 
 (** Proven Bob **)
@@ -216007,6 +216189,7 @@ apply (xm (A c= T)).
   exact (FalseE
     (HnotSub HAsubT)
     (A c= T)).
+(** blocked on lemma84_2_tree_extension being admitted; upgrade to Qed after that theorem is proved. **)
 Admitted.
 
 Theorem maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge :
@@ -216033,8 +216216,9 @@ claim HAsubT : A c= T.
     HA
     Hmeet).
 }
-exact (HxNotT
-  (HAsubT x HxA)).
+	exact (HxNotT
+	  (HAsubT x HxA)).
+(** blocked via maximal_tree_edge_meeting_tree_forces_subset -> lemma84_2_tree_extension. **)
 Admitted.
 
 (** from S84 Lem 84.2 converse (line 5601 in algtop.tex): finite tree decomposition **)
