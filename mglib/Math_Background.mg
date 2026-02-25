@@ -210124,6 +210124,31 @@ exact (UnionI
 Qed.
 
 (** Proven Bob **)
+Theorem selected_arc_subset_union_arcs :
+  forall Y Arcs A:set,
+  A :e {B :e Arcs | B c= Y} ->
+  A c= Union Arcs.
+let Y Arcs A.
+assume HA.
+let x.
+assume HxA.
+claim HAArcs : A :e Arcs.
+{
+  exact (SepE1
+    Arcs
+    (fun B:set => B c= Y)
+    A
+    HA).
+}
+exact (UnionI
+  Arcs
+  x
+  A
+  HxA
+  HAArcs).
+Qed.
+
+(** Proven Bob **)
 Theorem union_selected_arcs_subset_Y :
   forall Y Arcs:set,
   Union {B :e Arcs | B c= Y} c= Y.
@@ -210171,6 +210196,36 @@ assume Hsub.
 exact (union_selected_arcs_subset_Y
   Y
   Arcs).
+Qed.
+
+(** Proven Bob **)
+Theorem subgraph_of_selected_union_subset_X :
+  forall Y X Tx Arcs:set,
+  subgraph_of Y X Tx Arcs ->
+  Union {B :e Arcs | B c= Y} c= X.
+let Y X Tx Arcs.
+assume Hsub.
+let x.
+assume HxU.
+claim HxY : x :e Y.
+{
+  exact ((subgraph_of_selected_union_subset_Y
+    Y
+    X
+    Tx
+    Arcs
+    Hsub)
+    x
+    HxU).
+}
+exact ((subgraph_of_subset
+  Y
+  X
+  Tx
+  Arcs
+  Hsub)
+  x
+  HxY).
 Qed.
 
 (** Infrastructure: vertices of a linear graph **)
