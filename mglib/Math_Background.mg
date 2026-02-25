@@ -74635,21 +74635,65 @@ claim HFt_54_cont :
         HFqU).
     }
     apply Hnear_q.
-    let N.
-    assume HNPack.
-    claim HNpair : N :e unit_square_topology /\ q :e N.
+    let N0.
+    assume HN0Pack.
+    claim HN0pair : N0 :e unit_square_topology /\ q :e N0.
     {
       exact (andEL
-        (N :e unit_square_topology /\ q :e N)
-        (forall z:set, z :e N -> apply_fun F z :e U)
-        HNPack).
+        (N0 :e unit_square_topology /\ q :e N0)
+        (forall z:set, z :e N0 -> apply_fun F z :e U)
+        HN0Pack).
+    }
+    claim HN0_into_U : forall z:set, z :e N0 -> apply_fun F z :e U.
+    {
+      exact (andER
+        (N0 :e unit_square_topology /\ q :e N0)
+        (forall z:set, z :e N0 -> apply_fun F z :e U)
+        HN0Pack).
+    }
+    claim HNconnEx :
+      exists N:set,
+        N :e unit_square_topology /\
+        connected_space N (subspace_topology unit_square unit_square_topology N) /\
+        q :e N /\
+        N c= N0.
+    {
+      exact (unit_square_open_neighborhood_contains_connected_open_subset
+        N0
+        q
+        Hq
+        (andEL
+          (N0 :e unit_square_topology)
+          (q :e N0)
+          HN0pair)
+        (andER
+          (N0 :e unit_square_topology)
+          (q :e N0)
+          HN0pair)).
+    }
+    apply HNconnEx.
+    let N.
+    assume HNPack.
+    apply (and4E
+      (N :e unit_square_topology)
+      (connected_space N (subspace_topology unit_square unit_square_topology N))
+      (q :e N)
+      (N c= N0)
+      HNPack).
+    assume HNopenN HNconnN HqN HNsubN0.
+    claim HNpair : N :e unit_square_topology /\ q :e N.
+    {
+      apply andI.
+      - exact HNopenN.
+      - exact HqN.
     }
     claim HN_into_U : forall z:set, z :e N -> apply_fun F z :e U.
     {
-      exact (andER
-        (N :e unit_square_topology /\ q :e N)
-        (forall z:set, z :e N -> apply_fun F z :e U)
-        HNPack).
+      let z.
+      assume HzN.
+      exact (HN0_into_U
+        z
+        (HNsubN0 z HzN)).
     }
     claim HNcontFt :
       continuous_map N (subspace_topology unit_square unit_square_topology N) E Te Ft_54.
@@ -75854,7 +75898,7 @@ claim HFt_54_cont :
                             HyVxz
                             Hypy).
 	                        }
-			                        claim HVxzEqVq : Vxz = Vq.
+				                        claim HVxzEqVq : Vxz = Vq.
 				                        {
 				                          claim Hft54zVxz : apply_fun Ft_54 z :e Vxz.
 				                          {
@@ -76758,7 +76802,7 @@ exact (andI
   (forall t:set, t :e unit_interval -> apply_fun Ft (1, t) = e1)
   HleftConst
   HrightConst).
-Admitted. (** was qed but depends on unproved lemma54_2_homotopy_lifting - changed to admitted **)
+Admitted.
 
 (** from S54 Thm 54.3 (line 785 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be covering, p(e0) = b0. Let f and g be paths in B **)
@@ -77708,7 +77752,7 @@ apply andI.
       reflexivity.
     * exact HleftEdgeE0.
     * exact HrightEdgeFF1.
-Admitted. (** was qed but depends on admitted lemma54_2_path_homotopy_preserved **)
+Admitted.
 
 (** from S54 Definition (line 791 in algtop.tex) **)
 (** LATEX VERSION: The lifting correspondence phi: pi_1(B,b0) -> p^{-1}(b0) maps **)
