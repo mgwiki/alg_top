@@ -63478,6 +63478,406 @@ rewrite <- (order_interval_R_eq_open_interval a b).
 exact Hconn.
 Qed.
 
+(** Proven Charlie **)
+(** Infrastructure: open intervals are path connected in R. **)
+Theorem open_interval_path_connected :
+  forall a b:set,
+  a :e R ->
+  b :e R ->
+  Rlt a b ->
+  path_connected_space (open_interval a b) (subspace_topology R R_standard_topology (open_interval a b)).
+let a b.
+assume HaR HbR Hab.
+set Iab := open_interval a b.
+set TIab := subspace_topology R R_standard_topology Iab.
+claim HIabSubR : Iab c= R.
+{ exact (open_interval_Subq_R a b). }
+claim HtopIab : topology_on Iab TIab.
+{
+  exact (subspace_topology_is_topology
+    R
+    R_standard_topology
+    Iab
+    R_standard_topology_is_topology
+    HIabSubR).
+}
+prove topology_on Iab TIab /\
+  forall x y:set, x :e Iab -> y :e Iab ->
+    exists p:set, path_between Iab x y p /\
+      continuous_map unit_interval unit_interval_topology Iab TIab p.
+apply andI.
+- exact HtopIab.
+- let x y.
+  assume HxI : x :e Iab.
+  assume HyI : y :e Iab.
+  claim HxR : x :e R.
+  { exact (HIabSubR x HxI). }
+  claim HyR : y :e R.
+  { exact (HIabSubR y HyI). }
+  apply (xm (x = y)).
+  * assume HxyEq.
+    set p := constant_path x.
+    witness p.
+    apply andI.
+    - claim HpCont0 : continuous_map unit_interval unit_interval_topology Iab TIab p.
+      { exact (constant_path_continuous Iab TIab x HtopIab HxI). }
+      claim HpFn : function_on p unit_interval Iab.
+      { exact (continuous_map_function_on unit_interval unit_interval_topology Iab TIab p HpCont0). }
+      claim Hp1 : apply_fun p 1 = y.
+      { rewrite <- HxyEq. exact (constant_path_at_one x). }
+      exact (path_betweenI Iab x y p HpFn (constant_path_at_zero x) Hp1).
+    - exact (constant_path_continuous Iab TIab x HtopIab HxI).
+  * assume HxyNe.
+    apply (xm (Rlt x y)).
+    { assume HxLty.
+      set c := add_SNo y (minus_SNo x).
+      claim HcR : c :e R.
+      {
+        exact (real_add_SNo
+          y
+          HyR
+          (minus_SNo x)
+          (real_minus_SNo x HxR)).
+      }
+      claim HcPos : Rlt 0 c.
+      { exact (Rlt_0_diff_of_lt x y HxLty). }
+      claim HcPosLt : 0 < c.
+      { exact (RltE_lt 0 c HcPos). }
+      claim HcNonneg : Rle 0 c.
+      { exact (Rlt_implies_Rle 0 c HcPos). }
+      set q := affine_fun_I x c.
+      claim HqInC : q :e C_I_R.
+      { exact (affine_fun_I_in_C_I_R_pos x c HxR HcR HcPosLt). }
+      claim HqContR : continuous_map unit_interval unit_interval_topology R R_standard_topology q.
+      { exact (C_I_R_continuous_real_on_I q HqInC). }
+      claim HqRange :
+        forall t:set, t :e unit_interval -> apply_fun q t :e Iab.
+      {
+        let t.
+        assume HtI.
+        claim HtR : t :e R.
+        { exact (unit_interval_sub_R t HtI). }
+        claim HmR : mul_SNo t c :e R.
+        { exact (real_mul_SNo t HtR c HcR). }
+        claim HmBounds : Rle 0 (mul_SNo t c) /\ Rle (mul_SNo t c) c.
+        {
+          exact (unit_interval_mul_const_bounds
+            t
+            c
+            HtI
+            HcR
+            HcNonneg).
+        }
+        claim HmNonneg : Rle 0 (mul_SNo t c).
+        { exact (andEL (Rle 0 (mul_SNo t c)) (Rle (mul_SNo t c) c) HmBounds). }
+        claim HmLeC : Rle (mul_SNo t c) c.
+        { exact (andER (Rle 0 (mul_SNo t c)) (Rle (mul_SNo t c) c) HmBounds). }
+        claim HSNo_x : SNo x.
+        { exact (real_SNo x HxR). }
+        claim HSNo_y : SNo y.
+        { exact (real_SNo y HyR). }
+        claim HSNo_mx : SNo (minus_SNo x).
+        { exact (SNo_minus_SNo x HSNo_x). }
+        claim HSNo_c : SNo c.
+        { exact (real_SNo c HcR). }
+        claim HvalEq : apply_fun q t = add_SNo (mul_SNo t c) x.
+        {
+          exact (affine_fun_I_apply
+            x
+            c
+            t
+            HxR
+            HcR
+            HcPosLt
+            HtI).
+        }
+        rewrite HvalEq.
+        claim HxLeVal : Rle x (add_SNo (mul_SNo t c) x).
+        {
+          exact (Rle_increase_by_nonneg_left
+            (mul_SNo t c)
+            x
+            HmR
+            HxR
+            HmNonneg).
+        }
+        claim HvalLeY : Rle (add_SNo (mul_SNo t c) x) y.
+        {
+          claim HvalLeCx : Rle (add_SNo (mul_SNo t c) x) (add_SNo c x).
+          {
+	            exact (Rle_add_SNo_1
+	              (mul_SNo t c)
+	              c
+	              x
+	              HmR
+	              HcR
+	              HxR
+	              HmLeC).
+	          }
+	          claim HcxEqY : add_SNo c x = y.
+	          {
+	            rewrite <- (add_SNo_assoc y (minus_SNo x) x HSNo_y HSNo_mx HSNo_x).
+            rewrite (add_SNo_minus_SNo_linv x HSNo_x).
+            exact (add_SNo_0R y HSNo_y).
+          }
+	          rewrite <- HcxEqY at 2.
+	          exact HvalLeCx.
+	        }
+        claim HxPack : Rlt a x /\ Rlt x b.
+        { exact (SepE2 R (fun z:set => Rlt a z /\ Rlt z b) x HxI). }
+        claim HyPack : Rlt a y /\ Rlt y b.
+        { exact (SepE2 R (fun z:set => Rlt a z /\ Rlt z b) y HyI). }
+        claim Haltx : Rlt a x.
+        { exact (andEL (Rlt a x) (Rlt x b) HxPack). }
+        claim Hyltb : Rlt y b.
+        { exact (andER (Rlt a y) (Rlt y b) HyPack). }
+	        claim Hpred : Rlt a (add_SNo (mul_SNo t c) x) /\ Rlt (add_SNo (mul_SNo t c) x) b.
+	        {
+	          apply andI.
+	          - exact (Rlt_Rle_tra a x (add_SNo (mul_SNo t c) x) Haltx HxLeVal).
+	          - exact (Rle_Rlt_tra (add_SNo (mul_SNo t c) x) y b HvalLeY Hyltb).
+	        }
+	        exact (SepI
+	          R
+	          (fun z:set => Rlt a z /\ Rlt z b)
+	          (add_SNo (mul_SNo t c) x)
+	          (real_add_SNo (mul_SNo t c) HmR x HxR)
+	          Hpred).
+      }
+      claim HqContIab : continuous_map unit_interval unit_interval_topology Iab TIab q.
+      {
+        exact (continuous_map_range_restrict
+          unit_interval
+          unit_interval_topology
+          R
+          R_standard_topology
+          q
+          Iab
+          HqContR
+          HIabSubR
+          HqRange).
+      }
+      claim HSNo_x : SNo x.
+      { exact (real_SNo x HxR). }
+      claim HSNo_y : SNo y.
+      { exact (real_SNo y HyR). }
+      claim HSNo_mx : SNo (minus_SNo x).
+      { exact (SNo_minus_SNo x HSNo_x). }
+      claim Hq0 : apply_fun q 0 = x.
+      {
+        rewrite (affine_fun_I_apply x c 0 HxR HcR HcPosLt zero_in_unit_interval).
+        rewrite (mul_SNo_zeroL c (real_SNo c HcR)).
+        exact (add_SNo_0L x HSNo_x).
+      }
+      claim Hq1 : apply_fun q 1 = y.
+      {
+        rewrite (affine_fun_I_apply x c 1 HxR HcR HcPosLt one_in_unit_interval).
+        rewrite (mul_SNo_oneL c (real_SNo c HcR)).
+        rewrite <- (add_SNo_assoc y (minus_SNo x) x HSNo_y HSNo_mx HSNo_x).
+        rewrite (add_SNo_minus_SNo_linv x HSNo_x).
+        exact (add_SNo_0R y HSNo_y).
+      }
+      witness q.
+      apply andI.
+      { exact (path_betweenI
+          Iab
+          x
+          y
+          q
+          (continuous_map_function_on
+            unit_interval
+            unit_interval_topology
+            Iab
+            TIab
+            q
+            HqContIab)
+          Hq0
+          Hq1). }
+      { exact HqContIab. } }
+    { assume Hnlt.
+      claim HyLex : Rle y x.
+      { exact (RleI y x HyR HxR Hnlt). }
+      claim Hneq_yx : ~(y = x).
+      {
+        assume Heq.
+        claim Heq' : x = y.
+        { symmetry. exact Heq. }
+        exact (HxyNe Heq').
+      }
+      claim HyLtx : Rlt y x.
+      { exact (Rle_neq_implies_Rlt y x HyLex Hneq_yx). }
+      set c := add_SNo x (minus_SNo y).
+      claim HcR : c :e R.
+      {
+        exact (real_add_SNo
+          x
+          HxR
+          (minus_SNo y)
+          (real_minus_SNo y HyR)).
+      }
+      claim HcPos : Rlt 0 c.
+      { exact (Rlt_0_diff_of_lt y x HyLtx). }
+      claim HcPosLt : 0 < c.
+      { exact (RltE_lt 0 c HcPos). }
+      set q := affine_fun_I y c.
+      claim HqContR : continuous_map unit_interval unit_interval_topology R R_standard_topology q.
+      { exact (C_I_R_continuous_real_on_I q (affine_fun_I_in_C_I_R_pos y c HyR HcR HcPosLt)). }
+      claim HqRange :
+        forall t:set, t :e unit_interval -> apply_fun q t :e Iab.
+      {
+        let t.
+        assume HtI.
+        claim HtR : t :e R.
+        { exact (unit_interval_sub_R t HtI). }
+        claim HmR : mul_SNo t c :e R.
+        { exact (real_mul_SNo t HtR c HcR). }
+        claim HcNonneg : Rle 0 c.
+        { exact (Rlt_implies_Rle 0 c HcPos). }
+        claim HmBounds : Rle 0 (mul_SNo t c) /\ Rle (mul_SNo t c) c.
+        {
+          exact (unit_interval_mul_const_bounds
+            t
+            c
+            HtI
+            HcR
+            HcNonneg).
+        }
+        claim HmNonneg : Rle 0 (mul_SNo t c).
+        { exact (andEL (Rle 0 (mul_SNo t c)) (Rle (mul_SNo t c) c) HmBounds). }
+        claim HmLeC : Rle (mul_SNo t c) c.
+        { exact (andER (Rle 0 (mul_SNo t c)) (Rle (mul_SNo t c) c) HmBounds). }
+        claim HSNo_x : SNo x.
+        { exact (real_SNo x HxR). }
+        claim HSNo_y : SNo y.
+        { exact (real_SNo y HyR). }
+        claim HSNo_my : SNo (minus_SNo y).
+        { exact (SNo_minus_SNo y HSNo_y). }
+        claim HSNo_c : SNo c.
+        { exact (real_SNo c HcR). }
+        claim HvalEq : apply_fun q t = add_SNo (mul_SNo t c) y.
+        {
+          exact (affine_fun_I_apply
+            y
+            c
+            t
+            HyR
+            HcR
+            HcPosLt
+            HtI).
+        }
+        rewrite HvalEq.
+        claim HyLeVal : Rle y (add_SNo (mul_SNo t c) y).
+        {
+          exact (Rle_increase_by_nonneg_left
+            (mul_SNo t c)
+            y
+            HmR
+            HyR
+            HmNonneg).
+        }
+        claim HvalLeX : Rle (add_SNo (mul_SNo t c) y) x.
+        {
+          claim HvalLeCy : Rle (add_SNo (mul_SNo t c) y) (add_SNo c y).
+          {
+	            exact (Rle_add_SNo_1
+	              (mul_SNo t c)
+	              c
+	              y
+	              HmR
+	              HcR
+	              HyR
+	              HmLeC).
+	          }
+	          claim HcyEqX : add_SNo c y = x.
+	          {
+	            rewrite <- (add_SNo_assoc x (minus_SNo y) y HSNo_x HSNo_my HSNo_y).
+            rewrite (add_SNo_minus_SNo_linv y HSNo_y).
+            exact (add_SNo_0R x HSNo_x).
+          }
+	          rewrite <- HcyEqX at 2.
+	          exact HvalLeCy.
+	        }
+        claim HxPack : Rlt a x /\ Rlt x b.
+        { exact (SepE2 R (fun z:set => Rlt a z /\ Rlt z b) x HxI). }
+        claim HyPack : Rlt a y /\ Rlt y b.
+        { exact (SepE2 R (fun z:set => Rlt a z /\ Rlt z b) y HyI). }
+        claim HaltY : Rlt a y.
+        { exact (andEL (Rlt a y) (Rlt y b) HyPack). }
+        claim Hxltb : Rlt x b.
+        { exact (andER (Rlt a x) (Rlt x b) HxPack). }
+	        claim Hpred : Rlt a (add_SNo (mul_SNo t c) y) /\ Rlt (add_SNo (mul_SNo t c) y) b.
+	        {
+	          apply andI.
+	          - exact (Rlt_Rle_tra a y (add_SNo (mul_SNo t c) y) HaltY HyLeVal).
+	          - exact (Rle_Rlt_tra (add_SNo (mul_SNo t c) y) x b HvalLeX Hxltb).
+	        }
+	        exact (SepI
+	          R
+	          (fun z:set => Rlt a z /\ Rlt z b)
+	          (add_SNo (mul_SNo t c) y)
+	          (real_add_SNo (mul_SNo t c) HmR y HyR)
+	          Hpred).
+      }
+      claim HqContIab : continuous_map unit_interval unit_interval_topology Iab TIab q.
+      {
+        exact (continuous_map_range_restrict
+          unit_interval
+          unit_interval_topology
+          R
+          R_standard_topology
+          q
+          Iab
+          HqContR
+          HIabSubR
+          HqRange).
+      }
+      claim HSNo_x : SNo x.
+      { exact (real_SNo x HxR). }
+      claim HSNo_y : SNo y.
+      { exact (real_SNo y HyR). }
+      claim HSNo_my : SNo (minus_SNo y).
+      { exact (SNo_minus_SNo y HSNo_y). }
+      claim Hq0 : apply_fun q 0 = y.
+      {
+        rewrite (affine_fun_I_apply y c 0 HyR HcR HcPosLt zero_in_unit_interval).
+        rewrite (mul_SNo_zeroL c (real_SNo c HcR)).
+        exact (add_SNo_0L y HSNo_y).
+      }
+      claim Hq1 : apply_fun q 1 = x.
+      {
+        rewrite (affine_fun_I_apply y c 1 HyR HcR HcPosLt one_in_unit_interval).
+        rewrite (mul_SNo_oneL c (real_SNo c HcR)).
+        rewrite <- (add_SNo_assoc x (minus_SNo y) y HSNo_x HSNo_my HSNo_y).
+        rewrite (add_SNo_minus_SNo_linv y HSNo_y).
+        exact (add_SNo_0R x HSNo_x).
+      }
+      set p := reverse_path q.
+      claim HpCont : continuous_map unit_interval unit_interval_topology Iab TIab p.
+      { exact (reverse_path_continuous Iab TIab q HqContIab). }
+      claim Hp0 : apply_fun p 0 = x.
+      { rewrite (reverse_path_at_zero q). exact Hq1. }
+      claim Hp1 : apply_fun p 1 = y.
+      { rewrite (reverse_path_at_one q). exact Hq0. }
+      witness p.
+      apply andI.
+      - exact (path_betweenI
+          Iab
+          x
+          y
+          p
+          (continuous_map_function_on
+            unit_interval
+            unit_interval_topology
+            Iab
+            TIab
+            p
+            HpCont)
+          Hp0
+          Hp1).
+      - exact HpCont.
+    }
+Qed.
+
 (** Infrastructure: no immediate successor and predecessor in R (from density of linear continuum). **)
 (** Proven Charlie **)
 Theorem no_immediate_successor_R : forall a:set,
