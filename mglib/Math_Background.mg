@@ -205752,6 +205752,138 @@ apply andI.
        B Tb Huniv).
 Qed.
 
+(** Proven Bob **)
+Theorem semilocally_simply_connected_nonempty_has_point_with_witness_subset :
+  forall B Tb:set,
+  semilocally_simply_connected B Tb ->
+  (exists b0:set, b0 :e B) ->
+  exists b0 U:set,
+    b0 :e B /\ U :e Tb /\ b0 :e U /\ U c= B /\
+    (forall cls:set,
+      cls :e fundamental_group U (subspace_topology B Tb U) b0 ->
+      apply_fun
+        (induced_homomorphism U (subspace_topology B Tb U) b0 B Tb b0
+          (graph U (fun x:set => x)))
+        cls =
+      fundamental_group_id B Tb b0).
+let B Tb.
+assume Hsemi HbEx.
+apply HbEx.
+let b0.
+assume Hb0.
+apply (semilocally_simply_connected_local_witness_subset
+  B
+  Tb
+  Hsemi
+  b0
+  Hb0).
+let U.
+assume HUpack.
+claim HUnpack :
+  U :e Tb /\ b0 :e U /\ U c= B.
+{
+  exact (andEL
+    (U :e Tb /\ b0 :e U /\ U c= B)
+    (forall cls:set,
+      cls :e fundamental_group U (subspace_topology B Tb U) b0 ->
+      apply_fun
+        (induced_homomorphism U (subspace_topology B Tb U) b0 B Tb b0
+          (graph U (fun x:set => x)))
+        cls =
+      fundamental_group_id B Tb b0)
+    HUpack).
+}
+claim Htriv :
+  forall cls:set,
+    cls :e fundamental_group U (subspace_topology B Tb U) b0 ->
+    apply_fun
+      (induced_homomorphism U (subspace_topology B Tb U) b0 B Tb b0
+        (graph U (fun x:set => x)))
+      cls =
+    fundamental_group_id B Tb b0.
+{
+  exact (andER
+    (U :e Tb /\ b0 :e U /\ U c= B)
+    (forall cls:set,
+      cls :e fundamental_group U (subspace_topology B Tb U) b0 ->
+      apply_fun
+        (induced_homomorphism U (subspace_topology B Tb U) b0 B Tb b0
+          (graph U (fun x:set => x)))
+        cls =
+      fundamental_group_id B Tb b0)
+    HUpack).
+}
+claim HUtb_b0U :
+  U :e Tb /\ b0 :e U.
+{
+  exact (andEL
+    (U :e Tb /\ b0 :e U)
+    (U c= B)
+    HUnpack).
+}
+claim HUtb : U :e Tb.
+{
+  exact (andEL
+    (U :e Tb)
+    (b0 :e U)
+    HUtb_b0U).
+}
+claim Hb0U : b0 :e U.
+{
+  exact (andER
+    (U :e Tb)
+    (b0 :e U)
+    HUtb_b0U).
+}
+claim HUSub : U c= B.
+{
+  exact (andER
+    (U :e Tb /\ b0 :e U)
+    (U c= B)
+    HUnpack).
+}
+witness b0.
+witness U.
+apply andI.
+- apply andI.
+  + apply andI.
+    * apply andI.
+      { exact Hb0. }
+      { exact HUtb. }
+    * exact Hb0U.
+  + exact HUSub.
+- exact Htriv.
+Qed.
+
+(** Proven Bob **)
+Theorem universal_covering_has_point_with_semilocal_witness_subset :
+  forall B Tb:set,
+  (exists E Te p:set,
+    covering_map E Te B Tb p /\ simply_connected E Te) ->
+  exists b0 U:set,
+    b0 :e B /\ U :e Tb /\ b0 :e U /\ U c= B /\
+    (forall cls:set,
+      cls :e fundamental_group U (subspace_topology B Tb U) b0 ->
+      apply_fun
+        (induced_homomorphism U (subspace_topology B Tb U) b0 B Tb b0
+          (graph U (fun x:set => x)))
+        cls =
+      fundamental_group_id B Tb b0).
+let B Tb.
+assume Huniv.
+exact (semilocally_simply_connected_nonempty_has_point_with_witness_subset
+  B
+  Tb
+  (universal_covering_implies_semilocally_simply_connected
+    B
+    Tb
+    Huniv)
+  (universal_covering_implies_base_nonempty
+    B
+    Tb
+    Huniv)).
+Qed.
+
 (** Infrastructure for Cor 82.2: RHS + chosen basepoint implies universal cover **)
 Theorem lemma82_2_basepoint_conditions_imply_universal_covering :
   forall B Tb b0:set,
