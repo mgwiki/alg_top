@@ -74757,6 +74757,147 @@ exact (andER
   Hpack).
 Qed.
 
+(** Infrastructure: members of slices witness family are open in E **)
+(** Proven Bob **)
+Theorem slices_witness_member_open :
+  forall E Te B Tb p U slices V:set,
+  (slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall W:set, W :e slices ->
+      homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+        (graph W (fun z:set => apply_fun p z)))) ->
+  V :e slices ->
+  V :e Te.
+let E Te B Tb p U slices V.
+assume Hpack HV.
+exact ((slices_witness_sub
+  E
+  Te
+  B
+  Tb
+  p
+  U
+  slices
+  Hpack)
+  V
+  HV).
+Qed.
+
+(** Infrastructure: members of slices witness family lie in E **)
+(** Proven Bob **)
+Theorem slices_witness_member_subset_space :
+  forall E Te B Tb p U slices V:set,
+  topology_on E Te ->
+  (slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall W:set, W :e slices ->
+      homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+        (graph W (fun z:set => apply_fun p z)))) ->
+  V :e slices ->
+  V c= E.
+let E Te B Tb p U slices V.
+assume HtopE Hpack HV.
+exact (topology_elem_subset
+  E
+  Te
+  V
+  HtopE
+  (slices_witness_member_open
+    E
+    Te
+    B
+    Tb
+    p
+    U
+    slices
+    V
+    Hpack
+    HV)).
+Qed.
+
+(** Infrastructure: members of slices core family are open in E **)
+(** Proven Bob **)
+Theorem slices_core_member_open :
+  forall E Te p U slices V:set,
+  ((slices c= Te /\ pairwise_disjoint slices) /\
+    Union slices = preimage_of E p U) ->
+  V :e slices ->
+  V :e Te.
+let E Te p U slices V.
+assume Hcore HV.
+exact ((andEL
+  (slices c= Te)
+  (pairwise_disjoint slices)
+  (andEL
+    (slices c= Te /\ pairwise_disjoint slices)
+    (Union slices = preimage_of E p U)
+    Hcore))
+  V
+  HV).
+Qed.
+
+(** Infrastructure: members of slices core family lie in E **)
+(** Proven Bob **)
+Theorem slices_core_member_subset_space :
+  forall E Te p U slices V:set,
+  topology_on E Te ->
+  ((slices c= Te /\ pairwise_disjoint slices) /\
+    Union slices = preimage_of E p U) ->
+  V :e slices ->
+  V c= E.
+let E Te p U slices V.
+assume HtopE Hcore HV.
+exact (topology_elem_subset
+  E
+  Te
+  V
+  HtopE
+  (slices_core_member_open
+    E
+    Te
+    p
+    U
+    slices
+    V
+    Hcore
+    HV)).
+Qed.
+
+(** Infrastructure: core slices union membership yields an explicit sheet witness **)
+(** Proven Bob **)
+Theorem slices_core_union_member_exists_sheet :
+  forall E Te p U slices x:set,
+  ((slices c= Te /\ pairwise_disjoint slices) /\
+    Union slices = preimage_of E p U) ->
+  x :e Union slices ->
+  exists V:set, x :e V /\ V :e slices.
+let E Te p U slices x.
+assume _ HxUnion.
+exact (UnionE
+  slices
+  x
+  HxUnion).
+Qed.
+
+(** Infrastructure: full slices witness union membership yields an explicit sheet witness **)
+(** Proven Bob **)
+Theorem slices_witness_union_member_exists_sheet :
+  forall E Te B Tb p U slices x:set,
+  (slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall W:set, W :e slices ->
+      homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+        (graph W (fun z:set => apply_fun p z)))) ->
+  x :e Union slices ->
+  exists V:set, x :e V /\ V :e slices.
+let E Te B Tb p U slices x.
+assume _ HxUnion.
+exact (UnionE
+  slices
+  x
+  HxUnion).
+Qed.
+
 Theorem lemma54_2_sheet_non_switching_local :
   forall E Te B Tb p F Ft q z N U slices Vq Vz:set,
   pairwise_disjoint slices ->
