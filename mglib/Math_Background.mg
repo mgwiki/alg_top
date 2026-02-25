@@ -229234,8 +229234,63 @@ claim HcohFamTA :
     claim HcDA_TA :
       closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) (DA :/\: A).
     {
-      (** Remaining: lift DA∩A closedness to TA. **)
-      admit.
+      claim HclosedAinX : closed_in X Tx A.
+      {
+        exact (general_linear_graph_arc_closed_in_X
+          X
+          Tx
+          Arcs
+          A
+          HglgX
+          HA).
+      }
+      claim HclosedDAA_X : closed_in X Tx (DA :/\: A).
+      {
+        exact (intersection_of_closed_is_closed
+          X
+          Tx
+          DA
+          A
+          HtopX
+          HDAclosed
+          HclosedAinX).
+      }
+      claim HDAAsubTA : (DA :/\: A) c= (T :\/: A).
+      {
+        exact (Subq_tra
+          (DA :/\: A)
+          A
+          (T :\/: A)
+          (binintersect_Subq_2
+            DA
+            A)
+          (binunion_Subq_2
+            T
+            A)).
+      }
+      claim HexDAA :
+        exists D:set, closed_in X Tx D /\ (DA :/\: A) = D :/\: (T :\/: A).
+      {
+        witness (DA :/\: A).
+        apply andI.
+        - exact HclosedDAA_X.
+        - symmetry.
+          exact (binintersect_Subq_eq_1
+            (DA :/\: A)
+            (T :\/: A)
+            HDAAsubTA).
+      }
+      exact (iffER
+        (closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) (DA :/\: A))
+        (exists D:set, closed_in X Tx D /\ (DA :/\: A) = D :/\: (T :\/: A))
+        (closed_in_subspace_iff_intersection
+          X
+          Tx
+          (T :\/: A)
+          (DA :/\: A)
+          HtopX
+          HTAsubX)
+        HexDAA).
     }
     exact (HfinalFromPieces
       HcDT_TA
