@@ -215358,6 +215358,120 @@ exact (tree_in_graph_vertices_selected_endpoint_witness
 Qed.
 
 (** Proven Bob **)
+Theorem tree_in_graph_vertices_selected_elem_in_T :
+  forall T ArcsT X Tx Arcs x:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  x :e graph_vertices X Tx {B :e Arcs | B c= T} ->
+  x :e T.
+let T ArcsT X Tx Arcs x.
+assume Htree HxSel.
+exact ((tree_in_graph_vertices_selected_subset_T
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Htree)
+  x
+  HxSel).
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_vertices_selected_elem_in_union_arcs :
+  forall T ArcsT X Tx Arcs x:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  x :e graph_vertices X Tx {B :e Arcs | B c= T} ->
+  x :e Union Arcs.
+let T ArcsT X Tx Arcs x.
+assume Htree HxSel.
+exact ((tree_in_graph_vertices_selected_subset_union_arcs
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Htree)
+  x
+  HxSel).
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_vertices_selected_elem_in_graph_vertices :
+  forall T ArcsT X Tx Arcs x:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  x :e graph_vertices X Tx {B :e Arcs | B c= T} ->
+  x :e graph_vertices X Tx Arcs.
+let T ArcsT X Tx Arcs x.
+assume Htree HxSel.
+exact ((tree_in_graph_vertices_selected_subset_vertices
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Htree)
+  x
+  HxSel).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_vertices_selected_elem_in_T :
+  forall T ArcsT X Tx Arcs x:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  x :e graph_vertices X Tx {B :e Arcs | B c= T} ->
+  x :e T.
+let T ArcsT X Tx Arcs x.
+assume Hmax HxSel.
+exact ((maximal_tree_vertices_selected_subset_T
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hmax)
+  x
+  HxSel).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_vertices_selected_elem_in_union_arcs :
+  forall T ArcsT X Tx Arcs x:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  x :e graph_vertices X Tx {B :e Arcs | B c= T} ->
+  x :e Union Arcs.
+let T ArcsT X Tx Arcs x.
+assume Hmax HxSel.
+exact ((maximal_tree_vertices_selected_subset_union_arcs
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hmax)
+  x
+  HxSel).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_vertices_selected_elem_in_graph_vertices :
+  forall T ArcsT X Tx Arcs x:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  x :e graph_vertices X Tx {B :e Arcs | B c= T} ->
+  x :e graph_vertices X Tx Arcs.
+let T ArcsT X Tx Arcs x.
+assume Hmax HxSel.
+exact ((maximal_tree_vertices_selected_subset_vertices
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hmax)
+  x
+  HxSel).
+Qed.
+
+(** Proven Bob **)
 Theorem tree_in_graph_selected_arc_endpoint_left_in_T :
   forall T ArcsT X Tx Arcs A p q:set,
   tree_in_graph T ArcsT X Tx Arcs ->
