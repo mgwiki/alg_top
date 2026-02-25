@@ -220836,6 +220836,85 @@ exact (lemma84_2_tree_extension_iff_components
 Qed.
 
 (** Proven Bob **)
+Theorem lemma84_2_tree_extension_components_pack_from_hypotheses_and_tree :
+  forall T ArcsT X Tx Arcs A:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e Arcs -> ~(A c= T) ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs ->
+  ((general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A))) /\
+   ~(exists n path_seq x0:set,
+       n :e omega /\ n <> 0 /\
+       reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+         ({A} :\/: ArcsT) n path_seq x0 /\
+       (exists j:set, j :e n /\ ordsucc j /:e n /\
+         (apply_fun path_seq j) 0 1 = x0))).
+let T ArcsT X Tx Arcs A.
+assume Htree HA Hnsub Hmeet HtreeExt.
+exact (iffEL
+  (tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs)
+  ((general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A))) /\
+   ~(exists n path_seq x0:set,
+       n :e omega /\ n <> 0 /\
+       reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+         ({A} :\/: ArcsT) n path_seq x0 /\
+       (exists j:set, j :e n /\ ordsucc j /:e n /\
+         (apply_fun path_seq j) 0 1 = x0)))
+  (lemma84_2_tree_extension_iff_components_from_hypotheses
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    A
+    Htree
+    HA
+    Hnsub
+    Hmeet)
+  HtreeExt).
+Qed.
+
+(** Proven Bob **)
+Theorem lemma84_2_tree_extension_no_closed_reduced_edge_path_from_hypotheses_and_tree :
+  forall T ArcsT X Tx Arcs A:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e Arcs -> ~(A c= T) ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs ->
+  ~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+        ({A} :\/: ArcsT) n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)).
+let T ArcsT X Tx Arcs A.
+assume Htree HA Hnsub Hmeet HtreeExt.
+exact (andER
+  (general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+   connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)))
+  (~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+        ({A} :\/: ArcsT) n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)))
+  (lemma84_2_tree_extension_components_pack_from_hypotheses_and_tree
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    A
+    Htree
+    HA
+    Hnsub
+    Hmeet
+    HtreeExt)).
+Qed.
+
+(** Proven Bob **)
 Theorem lemma84_2_tree_extension_from_hypotheses_and_components :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
