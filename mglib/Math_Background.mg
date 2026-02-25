@@ -215226,6 +215226,138 @@ exact (tree_in_graph_vertices_selected_subset_vertices
 Qed.
 
 (** Proven Bob **)
+Theorem tree_in_graph_vertices_selected_has_arc_in_selected :
+  forall T ArcsT X Tx Arcs x:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  x :e graph_vertices X Tx {B :e Arcs | B c= T} ->
+  exists A:set, A :e {B :e Arcs | B c= T} /\ x :e A.
+let T ArcsT X Tx Arcs x.
+assume Htree HxSel.
+exact (graph_vertices_selected_has_arc_in_selected
+  X
+  Tx
+  Arcs
+  T
+  x
+  HxSel).
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_vertices_selected_has_arc_in_arcs :
+  forall T ArcsT X Tx Arcs x:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  x :e graph_vertices X Tx {B :e Arcs | B c= T} ->
+  exists A:set, A :e Arcs /\ x :e A.
+let T ArcsT X Tx Arcs x.
+assume Htree HxSel.
+exact (graph_vertices_selected_has_arc_in_arcs
+  X
+  Tx
+  Arcs
+  T
+  x
+  HxSel).
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_vertices_selected_endpoint_witness :
+  forall T ArcsT X Tx Arcs x:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  x :e graph_vertices X Tx {B :e Arcs | B c= T} ->
+  exists A:set, A :e Arcs /\ A c= T /\
+    exists p q:set,
+      end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q).
+let T ArcsT X Tx Arcs x.
+assume Htree HxSel.
+exact (graph_vertices_selected_endpoint_witness
+  X
+  Tx
+  Arcs
+  T
+  x
+  HxSel).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_vertices_selected_has_arc_in_selected :
+  forall T ArcsT X Tx Arcs x:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  x :e graph_vertices X Tx {B :e Arcs | B c= T} ->
+  exists A:set, A :e {B :e Arcs | B c= T} /\ x :e A.
+let T ArcsT X Tx Arcs x.
+assume Hmax HxSel.
+exact (tree_in_graph_vertices_selected_has_arc_in_selected
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  x
+  (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax)
+  HxSel).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_vertices_selected_has_arc_in_arcs :
+  forall T ArcsT X Tx Arcs x:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  x :e graph_vertices X Tx {B :e Arcs | B c= T} ->
+  exists A:set, A :e Arcs /\ x :e A.
+let T ArcsT X Tx Arcs x.
+assume Hmax HxSel.
+exact (tree_in_graph_vertices_selected_has_arc_in_arcs
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  x
+  (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax)
+  HxSel).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_vertices_selected_endpoint_witness :
+  forall T ArcsT X Tx Arcs x:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  x :e graph_vertices X Tx {B :e Arcs | B c= T} ->
+  exists A:set, A :e Arcs /\ A c= T /\
+    exists p q:set,
+      end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q).
+let T ArcsT X Tx Arcs x.
+assume Hmax HxSel.
+exact (tree_in_graph_vertices_selected_endpoint_witness
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  x
+  (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax)
+  HxSel).
+Qed.
+
+(** Proven Bob **)
 Theorem tree_in_graph_selected_arc_endpoint_left_in_T :
   forall T ArcsT X Tx Arcs A p q:set,
   tree_in_graph T ArcsT X Tx Arcs ->
