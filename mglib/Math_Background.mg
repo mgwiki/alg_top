@@ -227889,6 +227889,141 @@ claim HAsubTA : A c= (T :\/: A).
     T
     A).
 }
+claim HTsubX : T c= X.
+{
+  exact (subgraph_of_subset
+    T
+    X
+    Tx
+    Arcs
+    HsubT).
+}
+claim HarcFamTA :
+  forall E:set, E :e ({A} :\/: ArcsT) ->
+    E c= (T :\/: A) /\
+    arc E (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E).
+{
+  let E.
+  assume HEfam.
+  apply (binunionE
+    {A}
+    ArcsT
+    E
+    HEfam).
+  - assume HEA.
+    claim HEqA : E = A.
+    {
+      exact (SingE
+        A
+        E
+        HEA).
+    }
+    claim HarcA_X : arc A (subspace_topology X Tx A).
+    {
+      exact (andER
+        (A c= X)
+        (arc A (subspace_topology X Tx A))
+        (general_linear_graph_arc_data
+          X
+          Tx
+          Arcs
+          A
+          HglgX
+          HA)).
+    }
+    claim HtopAeqTA :
+      subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) A =
+      subspace_topology X Tx A.
+    {
+      exact (ex16_1_subspace_transitive
+        X
+        Tx
+        (T :\/: A)
+        A
+        HtopX
+        HTAsubX
+        HAsubTA).
+    }
+    apply andI.
+    + rewrite HEqA.
+      exact HAsubTA.
+    + rewrite HEqA.
+      rewrite HtopAeqTA.
+      exact HarcA_X.
+  - assume HEArcsT.
+    claim HESubT : E c= T.
+    {
+      exact (andEL
+        (E c= T)
+        (arc E (subspace_topology T (subspace_topology X Tx T) E))
+        (general_linear_graph_arc_data
+          T
+          (subspace_topology X Tx T)
+          ArcsT
+          E
+          HglgT
+          HEArcsT)).
+    }
+    claim HESubTA : E c= (T :\/: A).
+    {
+      exact (Subq_tra
+        E
+        T
+        (T :\/: A)
+        HESubT
+        (binunion_Subq_1
+          T
+          A)).
+    }
+    claim HarcE_T : arc E (subspace_topology T (subspace_topology X Tx T) E).
+    {
+      exact (andER
+        (E c= T)
+        (arc E (subspace_topology T (subspace_topology X Tx T) E))
+        (general_linear_graph_arc_data
+          T
+          (subspace_topology X Tx T)
+          ArcsT
+          E
+          HglgT
+          HEArcsT)).
+    }
+    claim HtopEeqX :
+      subspace_topology T (subspace_topology X Tx T) E =
+      subspace_topology X Tx E.
+    {
+      exact (ex16_1_subspace_transitive
+        X
+        Tx
+        T
+        E
+        HtopX
+        HTsubX
+        HESubT).
+    }
+    claim HtopEeqTA :
+      subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E =
+      subspace_topology X Tx E.
+    {
+      exact (ex16_1_subspace_transitive
+        X
+        Tx
+        (T :\/: A)
+        E
+        HtopX
+        HTAsubX
+        HESubTA).
+    }
+    claim HarcE_X : arc E (subspace_topology X Tx E).
+    {
+      rewrite <- HtopEeqX.
+      exact HarcE_T.
+    }
+    apply andI.
+    + exact HESubTA.
+    + rewrite HtopEeqTA.
+      exact HarcE_X.
+}
 claim HunionTA : (T :\/: A) = Union ({A} :\/: ArcsT).
 {
   apply set_ext.
@@ -228009,11 +228144,11 @@ claim HunionTA : (T :\/: A) = Union ({A} :\/: ArcsT).
           x
           HxE)).
 }
-(** Remaining work: verify the four remaining general_linear_graph clauses for
+(** Remaining work: verify the remaining general_linear_graph clauses for
     family `{A} :\/: ArcsT` over carrier `T :\/: A`
-    (arc-membership clause, union-of-family, pairwise intersection endpoint
-    clause, and coherence clause). The setup above records all ambient/subspace
-    facts needed in that derivation. **)
+    (pairwise intersection endpoint clause and coherence clause).
+    The setup above now discharges topology, arc-membership, and union-of-family
+    obligations, and records ambient/subspace facts for the remaining clauses. **)
 admit.
 Admitted.
 
