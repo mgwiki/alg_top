@@ -238864,7 +238864,13 @@ claim Htree : tree_in_graph T ArcsT X Tx Arcs.
 (** Remaining forward S84.4 gap:
     construct a single-vertex intersection witness for each noncontained edge.
     This is the last missing input for the forward obligation quartet. **)
-admit.
+claim HmeetCore :
+  exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
+{
+  (** Core unresolved forward meeting witness obligation. **)
+  admit.
+}
+exact HmeetCore.
 Admitted.
 
 Theorem thm84_4_forward_glg_obligation :
@@ -239473,7 +239479,18 @@ claim HVT : graph_vertices X Tx Arcs c= T.
 }
 (** Remaining backward S84.4 endpoint-closure gap:
     from selected-arc endpoint placement in T, derive full selected-arc subset in T. **)
-admit.
+apply (xm (A c= T)).
+- assume Hsub.
+  exact Hsub.
+- assume Hnsub.
+  claim HnoncontainedCore : False.
+  {
+    (** Core unresolved backward endpoint-to-subset contradiction for selected arcs. **)
+    admit.
+  }
+  exact (FalseE
+    HnoncontainedCore
+    (A c= T)).
 Admitted.
 
 (** Proven Bob **)
