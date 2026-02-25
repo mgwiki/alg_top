@@ -205157,6 +205157,54 @@ claim HsemiB : semilocally_simply_connected B Tb.
 	- exact HsemiB.
 	Qed.
 
+(** Proven Bob **)
+Theorem universal_covering_implies_path_connected_base :
+  forall B Tb:set,
+  (exists E Te p:set,
+    covering_map E Te B Tb p /\ simply_connected E Te) ->
+  path_connected_space B Tb.
+let B Tb.
+assume Huniv.
+exact (andEL
+  (path_connected_space B Tb)
+  (semilocally_simply_connected B Tb)
+  (lemma82_2_universal_covering_implies_path_connected_semilocal
+    B
+    Tb
+    Huniv)).
+Qed.
+
+(** Proven Bob **)
+Theorem universal_covering_implies_semilocally_simply_connected :
+  forall B Tb:set,
+  (exists E Te p:set,
+    covering_map E Te B Tb p /\ simply_connected E Te) ->
+  semilocally_simply_connected B Tb.
+let B Tb.
+assume Huniv.
+exact (andER
+  (path_connected_space B Tb)
+  (semilocally_simply_connected B Tb)
+  (lemma82_2_universal_covering_implies_path_connected_semilocal
+    B
+    Tb
+    Huniv)).
+Qed.
+
+(** Proven Bob **)
+Theorem universal_covering_implies_path_connected_and_semilocally_simply_connected :
+  forall B Tb:set,
+  (exists E Te p:set,
+    covering_map E Te B Tb p /\ simply_connected E Te) ->
+  path_connected_space B Tb /\ semilocally_simply_connected B Tb.
+let B Tb.
+assume Huniv.
+exact (lemma82_2_universal_covering_implies_path_connected_semilocal
+  B
+  Tb
+  Huniv).
+Qed.
+
 (** Infrastructure for Cor 82.2: RHS + chosen basepoint implies universal cover **)
 Theorem lemma82_2_basepoint_conditions_imply_universal_covering :
   forall B Tb b0:set,
