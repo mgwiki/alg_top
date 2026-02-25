@@ -222870,6 +222870,42 @@ apply (xm (A c= T)).
     (HnoloopFam A HA Hnsub)).
 Qed.
 
+(** Proven Bob **)
+Theorem maximal_tree_edge_meeting_tree_forces_subset_from_stub_obligation_families :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  A :e Arcs ->
+  (forall A0:set, maximal_tree T ArcsT X Tx Arcs -> A0 :e Arcs -> ~(A0 c= T) ->
+    exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A0 = Sing v) ->
+  (forall A0:set, maximal_tree T ArcsT X Tx Arcs -> A0 :e Arcs -> ~(A0 c= T) ->
+    general_linear_graph (T :\/: A0) (subspace_topology X Tx (T :\/: A0)) ({A0} :\/: ArcsT)) ->
+  (forall A0:set, maximal_tree T ArcsT X Tx Arcs -> A0 :e Arcs -> ~(A0 c= T) ->
+    connected_space (T :\/: A0) (subspace_topology X Tx (T :\/: A0))) ->
+  (forall A0:set, maximal_tree T ArcsT X Tx Arcs -> A0 :e Arcs -> ~(A0 c= T) ->
+    ~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path (T :\/: A0) (subspace_topology X Tx (T :\/: A0))
+          ({A0} :\/: ArcsT) n path_seq x0 /\
+        (exists j:set, j :e n /\ ordsucc j /:e n /\
+          (apply_fun path_seq j) 0 1 = x0))) ->
+  A c= T.
+let T ArcsT X Tx Arcs A.
+assume Hmax HA HmeetStub HglgStub HconnStub HnoloopStub.
+exact (maximal_tree_edge_meeting_tree_forces_subset_from_component_obligation_families
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  Hmax
+  HA
+  (fun A0 HA0 Hnsub0 => HmeetStub A0 Hmax HA0 Hnsub0)
+  (fun A0 HA0 Hnsub0 => HglgStub A0 Hmax HA0 Hnsub0)
+  (fun A0 HA0 Hnsub0 => HconnStub A0 Hmax HA0 Hnsub0)
+  (fun A0 HA0 Hnsub0 => HnoloopStub A0 Hmax HA0 Hnsub0)).
+Qed.
+
 Theorem maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge :
   forall T ArcsT X Tx Arcs x A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -223053,8 +223089,49 @@ apply (xm (A c= T)).
     HA
     (HmeetFam A HA Hnsub)
     (HglgFam A HA Hnsub)
-    (HconnFam A HA Hnsub)
-    (HnoloopFam A HA Hnsub)).
+  (HconnFam A HA Hnsub)
+  (HnoloopFam A HA Hnsub)).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge_from_stub_obligation_families :
+  forall T ArcsT X Tx Arcs x A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  x :e graph_vertices X Tx Arcs ->
+  x /:e T ->
+  A :e Arcs ->
+  (forall A0:set, maximal_tree T ArcsT X Tx Arcs -> A0 :e Arcs -> ~(A0 c= T) ->
+    exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A0 = Sing v) ->
+  (forall A0:set, maximal_tree T ArcsT X Tx Arcs -> A0 :e Arcs -> ~(A0 c= T) ->
+    general_linear_graph (T :\/: A0) (subspace_topology X Tx (T :\/: A0)) ({A0} :\/: ArcsT)) ->
+  (forall A0:set, maximal_tree T ArcsT X Tx Arcs -> A0 :e Arcs -> ~(A0 c= T) ->
+    connected_space (T :\/: A0) (subspace_topology X Tx (T :\/: A0))) ->
+  (forall A0:set, maximal_tree T ArcsT X Tx Arcs -> A0 :e Arcs -> ~(A0 c= T) ->
+    ~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path (T :\/: A0) (subspace_topology X Tx (T :\/: A0))
+          ({A0} :\/: ArcsT) n path_seq x0 /\
+        (exists j:set, j :e n /\ ordsucc j /:e n /\
+          (apply_fun path_seq j) 0 1 = x0))) ->
+  ~ (x :e A).
+let T ArcsT X Tx Arcs x A.
+assume Hmax HxVert HxNotT HA HmeetStub HglgStub HconnStub HnoloopStub.
+exact (maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge_from_component_obligation_families
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  x
+  A
+  Hmax
+  HxVert
+  HxNotT
+  HA
+  (fun A0 HA0 Hnsub0 => HmeetStub A0 Hmax HA0 Hnsub0)
+  (fun A0 HA0 Hnsub0 => HglgStub A0 Hmax HA0 Hnsub0)
+  (fun A0 HA0 Hnsub0 => HconnStub A0 Hmax HA0 Hnsub0)
+  (fun A0 HA0 Hnsub0 => HnoloopStub A0 Hmax HA0 Hnsub0)).
 Qed.
 
 Theorem maximal_tree_all_vertices_if_noncontained_edges_meet_tree_in_single_vertex :
