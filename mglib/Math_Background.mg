@@ -74149,6 +74149,57 @@ exact (pairwise_disjoint_point_unique_member
   HfzVq).
 Qed.
 
+(** Infrastructure: square-parameter commutation restricts to any subset of unit_square **)
+(** Proven Bob **)
+Theorem commutation_on_unit_square_subset :
+  forall N p F Ft:set,
+  N c= unit_square ->
+  (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t)) ->
+  forall x:set, x :e N ->
+    apply_fun p (apply_fun Ft x) = apply_fun F x.
+let N p F Ft.
+assume HNsubSq HcommSq.
+let x.
+assume HxN.
+claim HxSq : x :e unit_square.
+{
+  exact (HNsubSq
+    x
+    HxN).
+}
+claim Hx0I : x 0 :e unit_interval.
+{
+  exact (ap0_Sigma
+    unit_interval
+    (fun _ : set => unit_interval)
+    x
+    HxSq).
+}
+claim Hx1I : x 1 :e unit_interval.
+{
+  exact (ap1_Sigma
+    unit_interval
+    (fun _ : set => unit_interval)
+    x
+    HxSq).
+}
+claim HxEta : x = (x 0, x 1).
+{
+  exact (setprod_eta
+    unit_interval
+    unit_interval
+    x
+    HxSq).
+}
+rewrite HxEta.
+exact (HcommSq
+  (x 0)
+  (x 1)
+  Hx0I
+  Hx1I).
+Qed.
+
 (** Infrastructure: image of a lift lies in the evenly-covered sheet union when it commutes over U **)
 (** Proven Bob **)
 Theorem image_of_lift_subset_union_sheets_from_commutation :
