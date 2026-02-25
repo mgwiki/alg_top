@@ -230411,7 +230411,83 @@ assume HnOm HnNe0 Hred Hclosed.
 				              exact HiniSmEqW.
 				          - exact HconsecMj.
 				        - assume HlabmNeA.
-				          (** Remaining work is the m-edge non-A branch, where we need to extract a contradiction without immediate backtrack. **)
+				          claim HEmNeA : Em <> A.
+				          {
+				            assume HEmEqA2.
+				            claim HlabmA2 : (apply_fun path_seq m) 1 = A.
+				            {
+				              rewrite HlabmComp.
+				              rewrite HEmEqA2.
+				              reflexivity.
+				            }
+				            exact (HlabmNeA HlabmA2).
+				          }
+				          claim HEmfam : Em :e ({A} :\/: ArcsT).
+				          {
+				            exact (oriented_edge_in_arcs
+				              (T :\/: A)
+				              (subspace_topology X Tx (T :\/: A))
+				              ({A} :\/: ArcsT)
+				              Em
+				              inim
+				              finm
+				              Hori_mM).
+				          }
+				          claim HEmInArcsT : Em :e ArcsT.
+				          {
+				            apply (binunionE {A} ArcsT Em HEmfam).
+				            - assume HEmSing.
+				              claim HEmEqA2 : Em = A.
+				              { exact (SingE A Em HEmSing). }
+				              exact (FalseE (HEmNeA HEmEqA2) (Em :e ArcsT)).
+				            - assume HEmAT.
+				              exact HEmAT.
+				          }
+				          claim HEmSubT : Em c= T.
+				          {
+				            exact (tree_in_graph_arc_subset_T
+				              T
+				              ArcsT
+				              X
+				              Tx
+				              Arcs
+				              Em
+				              Htree
+				              HEmInArcsT).
+				          }
+				          claim HinimEm : inim :e Em.
+				          {
+				            exact (oriented_edge_initial_in_arc
+				              (T :\/: A)
+				              (subspace_topology X Tx (T :\/: A))
+				              ({A} :\/: ArcsT)
+				              Em
+				              inim
+				              finm
+				              Hori_mM).
+				          }
+				          claim HinimT : inim :e T.
+				          {
+				            exact (HEmSubT
+				              inim
+				              HinimEm).
+				          }
+				          claim HfinmT : finm :e T.
+				          {
+				            rewrite HfinmEqV2.
+				            exact HvInT.
+				          }
+				          claim HinimNeW : inim <> w.
+				          {
+				            assume HinimEqW2.
+				            claim HwT : w :e T.
+				            {
+				              rewrite <- HinimEqW2.
+				              exact HinimT.
+				            }
+				            exact (HwNotT HwT).
+				          }
+				          (** Remaining work is the m-edge non-A branch, where we need to extract a contradiction from the surrounding path structure. **)
 				          admit.
 			  - assume Hx0NeW.
 			    apply HuseA.
