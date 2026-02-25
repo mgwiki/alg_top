@@ -222018,6 +222018,100 @@ exact (iffER
   Hrhs).
 Qed.
 
+(** Proven Bob **)
+Theorem thm84_4_maximal_tree_all_vertices_from_stub_obligation_families :
+  forall T ArcsT X Tx Arcs:set,
+  general_linear_graph X Tx Arcs ->
+  connected_space X Tx ->
+  (forall A:set, maximal_tree T ArcsT X Tx Arcs -> A :e Arcs -> ~(A c= T) ->
+    exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  (forall A:set, maximal_tree T ArcsT X Tx Arcs -> A :e Arcs -> ~(A c= T) ->
+    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT)) ->
+  (forall A:set, maximal_tree T ArcsT X Tx Arcs -> A :e Arcs -> ~(A c= T) ->
+    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A))) ->
+  (forall A:set, maximal_tree T ArcsT X Tx Arcs -> A :e Arcs -> ~(A c= T) ->
+    ~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT) n path_seq x0 /\
+        (exists j:set, j :e n /\ ordsucc j /:e n /\
+          (apply_fun path_seq j) 0 1 = x0))) ->
+  ((tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+    forall T' ArcsT':set,
+      tree_in_graph T' ArcsT' X Tx Arcs ->
+      T c= T' ->
+      forall A:set, A :e {B :e Arcs | B c= T'} ->
+        exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q) ->
+  ((tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+    forall T' ArcsT' A p q:set,
+      tree_in_graph T' ArcsT' X Tx Arcs ->
+      T c= T' ->
+      A :e {B :e Arcs | B c= T'} ->
+      end_points_of_arc A (subspace_topology X Tx A) p q ->
+      p :e T /\ q :e T ->
+      A c= T) ->
+  (maximal_tree T ArcsT X Tx Arcs <->
+   (tree_in_graph T ArcsT X Tx Arcs /\
+    graph_vertices X Tx Arcs c= T)).
+let T ArcsT X Tx Arcs.
+assume Hglg Hconn HmeetStub HglgStub HconnStub HnoloopStub HwitStub HcloseStub.
+apply (thm84_4_maximal_tree_all_vertices_from_obligations
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hglg
+  Hconn).
+- assume Hmax.
+  let A.
+  assume HA Hnsub.
+  exact (thm84_4_forward_component_witness_from_component_obligations
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    A
+    (HmeetStub A Hmax HA Hnsub)
+    (HglgStub A Hmax HA Hnsub)
+    (HconnStub A Hmax HA Hnsub)
+    (HnoloopStub A Hmax HA Hnsub)).
+- assume Hrhs.
+  let T' ArcsT'.
+  assume Htree' HTsub.
+  exact (thm84_4_backward_noncontained_contradiction_from_endpoint_obligations_via_subset_from_rhs
+    T
+    ArcsT
+    T'
+    ArcsT'
+    X
+    Tx
+    Arcs
+    Hrhs
+    Htree'
+    HTsub
+    (HwitStub
+      Hrhs
+      T'
+      ArcsT'
+      Htree'
+      HTsub)
+    (fun A p q HA Hend Hep =>
+      HcloseStub
+        Hrhs
+        T'
+        ArcsT'
+        A
+        p
+        q
+        Htree'
+        HTsub
+        HA
+        Hend
+        Hep)).
+Qed.
+
 (** from S84 Thm 84.4 (line 5625 in algtop.tex): maximal tree contains all vertices **)
 (** LATEX VERSION: Let X be a connected graph. A tree T in X is maximal iff it **)
 (** contains all the vertices of X. **)
@@ -222032,35 +222126,60 @@ Theorem thm84_4_maximal_tree_all_vertices :
     graph_vertices X Tx Arcs c= T)).
 let T ArcsT X Tx Arcs.
 assume Hglg Hconn.
-apply (thm84_4_maximal_tree_all_vertices_from_obligations
+exact (thm84_4_maximal_tree_all_vertices_from_stub_obligation_families
   T
   ArcsT
   X
   Tx
   Arcs
   Hglg
-  Hconn).
-- assume Hmax.
-  let A.
-  assume HA Hnsub.
-  exact (thm84_4_forward_component_witness_from_split_obligations
-    T
-    ArcsT
-    X
-    Tx
-    Arcs
-    A
-    Hmax
-    HA
-    Hnsub).
-- assume Hrhs.
-  let T' ArcsT'.
-  assume Htree' HTsub.
-  claim HendpointWitnessSel :
-    forall A0:set, A0 :e {B :e Arcs | B c= T'} ->
-      exists p q:set, end_points_of_arc A0 (subspace_topology X Tx A0) p q.
-  {
-    exact (thm84_4_backward_selected_arc_endpoint_witness_obligation
+  Hconn
+  (fun A Hmax HA Hnsub =>
+    thm84_4_forward_meeting_obligation
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      A
+      Hmax
+      HA
+      Hnsub)
+  (fun A Hmax HA Hnsub =>
+    thm84_4_forward_glg_obligation
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      A
+      Hmax
+      HA
+      Hnsub)
+  (fun A Hmax HA Hnsub =>
+    thm84_4_forward_connected_obligation
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      A
+      Hmax
+      HA
+      Hnsub)
+  (fun A Hmax HA Hnsub =>
+    thm84_4_forward_no_loop_obligation
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      A
+      Hmax
+      HA
+      Hnsub)
+  (fun Hrhs T' ArcsT' Htree' HTsub A HA =>
+    thm84_4_backward_selected_arc_endpoint_witness_obligation
       T
       ArcsT
       T'
@@ -222070,16 +222189,11 @@ apply (thm84_4_maximal_tree_all_vertices_from_obligations
       Arcs
       Hrhs
       Htree'
-      HTsub).
-  }
-  claim HendpointCloseSel :
-    forall A0 p q:set,
-      A0 :e {B :e Arcs | B c= T'} ->
-      end_points_of_arc A0 (subspace_topology X Tx A0) p q ->
-      p :e T /\ q :e T ->
-      A0 c= T.
-  {
-    exact (thm84_4_backward_selected_arc_endpoint_close_obligation
+      HTsub
+      A
+      HA)
+  (fun Hrhs T' ArcsT' A p q Htree' HTsub HA Hend Hep =>
+    thm84_4_backward_selected_arc_endpoint_close_obligation
       T
       ArcsT
       T'
@@ -222089,21 +222203,13 @@ apply (thm84_4_maximal_tree_all_vertices_from_obligations
       Arcs
       Hrhs
       Htree'
-      HTsub).
-  }
-  exact (thm84_4_backward_noncontained_contradiction_from_endpoint_obligations
-    T
-    ArcsT
-    T'
-    ArcsT'
-    X
-    Tx
-    Arcs
-    Hrhs
-    Htree'
-    HTsub
-    HendpointWitnessSel
-    HendpointCloseSel).
+      HTsub
+      A
+      p
+      q
+      HA
+      Hend
+      Hep)).
 Admitted.
 
 (** from S84 Thm 84.5 (line 5631 in algtop.tex): every tree in maximal tree **)
