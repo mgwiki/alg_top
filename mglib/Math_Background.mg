@@ -224812,6 +224812,62 @@ exact (thm84_4_forward_component_witness_from_meeting_and_tree_extension_obligat
 Qed.
 
 (** Proven Bob **)
+Theorem thm84_4_forward_component_witness_from_stub_meeting_and_tree_extension_obligation_families :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  (forall A:set, maximal_tree T ArcsT X Tx Arcs -> A :e Arcs -> ~(A c= T) ->
+    exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  (forall A:set, maximal_tree T ArcsT X Tx Arcs -> A :e Arcs -> ~(A c= T) ->
+    (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+    tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs) ->
+  forall A:set, A :e Arcs -> ~(A c= T) ->
+    exists v:set,
+      v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
+      general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+      connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
+      ~(exists n path_seq x0:set,
+          n :e omega /\ n <> 0 /\
+          reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+            ({A} :\/: ArcsT) n path_seq x0 /\
+            (exists j:set, j :e n /\ ordsucc j /:e n /\
+              (apply_fun path_seq j) 0 1 = x0)).
+let T ArcsT X Tx Arcs.
+assume Hmax HmeetStub HextStub.
+exact (thm84_4_forward_component_witness_from_meeting_and_tree_extension_obligation_family
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hmax
+  (fun A HA Hnsub => HmeetStub A Hmax HA Hnsub)
+  (fun A HA Hnsub Hmeet => HextStub A Hmax HA Hnsub Hmeet)).
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_forward_vertices_from_stub_meeting_and_tree_extension_obligation_families :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  (forall A:set, maximal_tree T ArcsT X Tx Arcs -> A :e Arcs -> ~(A c= T) ->
+    exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  (forall A:set, maximal_tree T ArcsT X Tx Arcs -> A :e Arcs -> ~(A c= T) ->
+    (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+    tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs) ->
+  graph_vertices X Tx Arcs c= T.
+let T ArcsT X Tx Arcs.
+assume Hmax HmeetStub HextStub.
+exact (thm84_4_forward_vertices_from_meeting_and_tree_extension_obligation_family
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hmax
+  (fun A HA Hnsub => HmeetStub A Hmax HA Hnsub)
+  (fun A HA Hnsub Hmeet => HextStub A Hmax HA Hnsub Hmeet)).
+Qed.
+
+(** Proven Bob **)
 Theorem thm84_4_backward_noncontained_contradiction_from_subset_from_rhs :
   forall T ArcsT T' ArcsT' X Tx Arcs:set,
   (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
