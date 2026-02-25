@@ -75153,6 +75153,142 @@ exact (slices_core_preimage_point_in_union
   HxPre).
 Qed.
 
+(** Infrastructure: from preimage membership, obtain a containing sheet (core pack) **)
+(** Proven Bob **)
+Theorem slices_core_preimage_point_exists_sheet :
+  forall E Te p U slices x:set,
+  ((slices c= Te /\ pairwise_disjoint slices) /\
+    Union slices = preimage_of E p U) ->
+  x :e preimage_of E p U ->
+  exists V:set, x :e V /\ V :e slices.
+let E Te p U slices x.
+assume Hcore HxPre.
+exact (slices_core_union_member_exists_sheet
+  E
+  Te
+  p
+  U
+  slices
+  x
+  Hcore
+  (slices_core_preimage_point_in_union
+    E
+    Te
+    p
+    U
+    slices
+    x
+    Hcore
+    HxPre)).
+Qed.
+
+(** Infrastructure: from preimage membership, obtain a containing sheet (full witness pack) **)
+(** Proven Bob **)
+Theorem slices_witness_preimage_point_exists_sheet :
+  forall E Te B Tb p U slices x:set,
+  (slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall W:set, W :e slices ->
+      homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+        (graph W (fun z:set => apply_fun p z)))) ->
+  x :e preimage_of E p U ->
+  exists V:set, x :e V /\ V :e slices.
+let E Te B Tb p U slices x.
+assume Hpack HxPre.
+exact (slices_witness_union_member_exists_sheet
+  E
+  Te
+  B
+  Tb
+  p
+  U
+  slices
+  x
+  Hpack
+  (slices_witness_preimage_point_in_union
+    E
+    Te
+    B
+    Tb
+    p
+    U
+    slices
+    x
+    Hpack
+    HxPre)).
+Qed.
+
+(** Infrastructure: uniqueness of containing sheet for a point (core pack) **)
+(** Proven Bob **)
+Theorem slices_core_unique_sheet_for_point :
+  forall E Te p U slices x V1 V2:set,
+  ((slices c= Te /\ pairwise_disjoint slices) /\
+    Union slices = preimage_of E p U) ->
+  V1 :e slices ->
+  V2 :e slices ->
+  x :e V1 ->
+  x :e V2 ->
+  V1 = V2.
+let E Te p U slices x V1 V2.
+assume Hcore HV1 HV2 HxV1 HxV2.
+exact (pairwise_disjoint_point_unique_member
+  slices
+  V1
+  V2
+  x
+  (andER
+    (slices c= Te)
+    (pairwise_disjoint slices)
+    (andEL
+      (slices c= Te /\ pairwise_disjoint slices)
+      (Union slices = preimage_of E p U)
+      Hcore))
+  HV1
+  HV2
+  HxV1
+  HxV2).
+Qed.
+
+(** Infrastructure: uniqueness of containing sheet for a point (full witness pack) **)
+(** Proven Bob **)
+Theorem slices_witness_unique_sheet_for_point :
+  forall E Te B Tb p U slices x V1 V2:set,
+  (slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall W:set, W :e slices ->
+      homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+        (graph W (fun z:set => apply_fun p z)))) ->
+  V1 :e slices ->
+  V2 :e slices ->
+  x :e V1 ->
+  x :e V2 ->
+  V1 = V2.
+let E Te B Tb p U slices x V1 V2.
+assume Hpack HV1 HV2 HxV1 HxV2.
+exact (slices_core_unique_sheet_for_point
+  E
+  Te
+  p
+  U
+  slices
+  x
+  V1
+  V2
+  (slices_witness_to_core_pack
+    E
+    Te
+    B
+    Tb
+    p
+    U
+    slices
+    Hpack)
+  HV1
+  HV2
+  HxV1
+  HxV2).
+Qed.
+
 Theorem lemma54_2_sheet_non_switching_local :
   forall E Te B Tb p F Ft q z N U slices Vq Vz:set,
   pairwise_disjoint slices ->
