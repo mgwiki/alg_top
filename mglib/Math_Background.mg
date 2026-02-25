@@ -222849,6 +222849,62 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Theorem maximal_tree_all_vertices_if_noncontained_edges_meet_tree_in_single_vertex_and_component_extension_obligations :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT)) ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A))) ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    ~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT) n path_seq x0 /\
+        (exists j:set, j :e n /\ ordsucc j /:e n /\
+          (apply_fun path_seq j) 0 1 = x0))) ->
+  graph_vertices X Tx Arcs c= T.
+let T ArcsT X Tx Arcs.
+assume Hmax Hmeetall HglgOb HconnOb HnoloopOb.
+apply (maximal_tree_all_vertices_if_noncontained_edges_meet_tree_in_single_vertex_and_extension_obligation
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hmax
+  Hmeetall).
+let A.
+assume HA Hnsub Hmeet.
+claim Htree : tree_in_graph T ArcsT X Tx Arcs.
+{
+  exact (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax).
+}
+exact (lemma84_2_tree_extension_from_hypotheses_and_components
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  Htree
+  HA
+  Hnsub
+  Hmeet
+  (HglgOb A HA Hnsub)
+  (HconnOb A HA Hnsub)
+  (HnoloopOb A HA Hnsub)).
+Qed.
+
+(** Proven Bob **)
 Theorem graph_vertices_subset_T_arc_endpoint_left_in_T :
   forall T X Tx Arcs A p q:set,
   general_linear_graph X Tx Arcs ->
