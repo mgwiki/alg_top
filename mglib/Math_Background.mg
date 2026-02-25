@@ -75732,6 +75732,111 @@ apply andI.
   + exact HVzSlice.
 Qed.
 
+(** Infrastructure: anchored sheet controls all local sheets under unit-square commutation (fixed slices witness) **)
+(** Proven Bob **)
+Theorem unit_square_subset_commutation_anchor_sheet_from_slices_witness :
+  forall N E Te B Tb p U slices F Ft q:set,
+  topology_on E Te ->
+  (slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall W:set, W :e slices ->
+      homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+        (graph W (fun y:set => apply_fun p y)))) ->
+  N c= unit_square ->
+  connected_space N (subspace_topology unit_square unit_square_topology N) ->
+  continuous_map N (subspace_topology unit_square unit_square_topology N) E Te Ft ->
+  (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t)) ->
+  (forall x:set, x :e N -> apply_fun F x :e U) ->
+  q :e N ->
+  exists Vq:set,
+    apply_fun Ft q :e Vq /\ Vq :e slices /\
+    (forall z Vz:set, z :e N ->
+      apply_fun Ft z :e Vz -> Vz :e slices ->
+      Vz = Vq).
+let N E Te B Tb p U slices F Ft q.
+assume HtopE Hpack HNsubSq HNconn HFtCont HcommSq HFU HqN.
+claim HFtFun : function_on Ft N E.
+{
+  exact (continuous_map_function_on
+    N
+    (subspace_topology unit_square unit_square_topology N)
+    E
+    Te
+    Ft
+    HFtCont).
+}
+apply (unit_square_subset_commutation_point_exists_sheet_witness
+  N
+  E
+  Te
+  B
+  Tb
+  p
+  F
+  Ft
+  U
+  slices
+  q
+  HNsubSq
+  HFtFun
+  HcommSq
+  HFU
+  Hpack
+  HqN).
+let Vq.
+assume HVqPack.
+witness Vq.
+claim HFtqVq : apply_fun Ft q :e Vq.
+{
+  exact (andEL
+    (apply_fun Ft q :e Vq)
+    (Vq :e slices)
+    HVqPack).
+}
+claim HVqSlice : Vq :e slices.
+{
+  exact (andER
+    (apply_fun Ft q :e Vq)
+    (Vq :e slices)
+    HVqPack).
+}
+apply andI.
+- apply andI.
+  + exact HFtqVq.
+  + exact HVqSlice.
+- let z Vz.
+  assume HzN HFtzVz HVzSlice.
+  exact (local_sheet_non_switching_on_unit_square_subset_from_slices_witness
+    N
+    E
+    Te
+    B
+    Tb
+    p
+    U
+    slices
+    F
+    Ft
+    q
+    z
+    Vq
+    Vz
+    HtopE
+    Hpack
+    HNsubSq
+    HNconn
+    HFtCont
+    HcommSq
+    HFU
+    HqN
+    HzN
+    HFtqVq
+    HVqSlice
+    HFtzVz
+    HVzSlice).
+Qed.
+
 Theorem lemma54_2_sheet_non_switching_local :
   forall E Te B Tb p F Ft q z N U slices Vq Vz:set,
   pairwise_disjoint slices ->
