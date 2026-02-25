@@ -75289,6 +75289,185 @@ exact (slices_core_unique_sheet_for_point
   HxV2).
 Qed.
 
+(** Infrastructure: unit-square subset commutation gives preimage membership at each domain point **)
+(** Proven Bob **)
+Theorem unit_square_subset_commutation_point_in_preimage :
+  forall N E p F Ft U x:set,
+  N c= unit_square ->
+  function_on Ft N E ->
+  (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t)) ->
+  (forall y:set, y :e N -> apply_fun F y :e U) ->
+  x :e N ->
+  apply_fun Ft x :e preimage_of E p U.
+let N E p F Ft U x.
+assume HNsubSq HFtFun HcommSq HFU HxN.
+claim Hcommx : apply_fun p (apply_fun Ft x) = apply_fun F x.
+{
+  exact (commutation_on_unit_square_subset
+    N
+    p
+    F
+    Ft
+    HNsubSq
+    HcommSq
+    x
+    HxN).
+}
+claim HFxU : apply_fun F x :e U.
+{
+  exact (HFU
+    x
+    HxN).
+}
+claim HpfU : apply_fun p (apply_fun Ft x) :e U.
+{
+  rewrite Hcommx.
+  exact HFxU.
+}
+exact (SepI
+  E
+  (fun z:set => apply_fun p z :e U)
+  (apply_fun Ft x)
+  (HFtFun
+    x
+    HxN)
+  HpfU).
+Qed.
+
+(** Infrastructure: commutation + witness pack gives a sheet containing Ft(x) **)
+(** Proven Bob **)
+Theorem unit_square_subset_commutation_point_exists_sheet_witness :
+  forall N E Te B Tb p F Ft U slices x:set,
+  N c= unit_square ->
+  function_on Ft N E ->
+  (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t)) ->
+  (forall y:set, y :e N -> apply_fun F y :e U) ->
+  (slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall W:set, W :e slices ->
+      homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+        (graph W (fun z:set => apply_fun p z)))) ->
+  x :e N ->
+  exists V:set, apply_fun Ft x :e V /\ V :e slices.
+let N E Te B Tb p F Ft U slices x.
+assume HNsubSq HFtFun HcommSq HFU Hpack HxN.
+claim HFtxE : apply_fun Ft x :e E.
+{
+  exact (HFtFun
+    x
+    HxN).
+}
+claim Hcommx : apply_fun p (apply_fun Ft x) = apply_fun F x.
+{
+  exact (commutation_on_unit_square_subset
+    N
+    p
+    F
+    Ft
+    HNsubSq
+    HcommSq
+    x
+    HxN).
+}
+claim HFxU : apply_fun F x :e U.
+{
+  exact (HFU
+    x
+    HxN).
+}
+claim HpfU : apply_fun p (apply_fun Ft x) :e U.
+{
+  rewrite Hcommx.
+  exact HFxU.
+}
+claim HFtxPre : apply_fun Ft x :e preimage_of E p U.
+{
+  exact (SepI
+    E
+    (fun z:set => apply_fun p z :e U)
+    (apply_fun Ft x)
+    HFtxE
+    HpfU).
+}
+exact (slices_witness_preimage_point_exists_sheet
+  E
+  Te
+  B
+  Tb
+  p
+  U
+  slices
+  (apply_fun Ft x)
+  Hpack
+  HFtxPre).
+Qed.
+
+(** Infrastructure: commutation + core pack gives a sheet containing Ft(x) **)
+(** Proven Bob **)
+Theorem unit_square_subset_commutation_point_exists_sheet_core :
+  forall N E Te p F Ft U slices x:set,
+  N c= unit_square ->
+  function_on Ft N E ->
+  (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t)) ->
+  (forall y:set, y :e N -> apply_fun F y :e U) ->
+  ((slices c= Te /\ pairwise_disjoint slices) /\
+    Union slices = preimage_of E p U) ->
+  x :e N ->
+  exists V:set, apply_fun Ft x :e V /\ V :e slices.
+let N E Te p F Ft U slices x.
+assume HNsubSq HFtFun HcommSq HFU Hcore HxN.
+claim HFtxE : apply_fun Ft x :e E.
+{
+  exact (HFtFun
+    x
+    HxN).
+}
+claim Hcommx : apply_fun p (apply_fun Ft x) = apply_fun F x.
+{
+  exact (commutation_on_unit_square_subset
+    N
+    p
+    F
+    Ft
+    HNsubSq
+    HcommSq
+    x
+    HxN).
+}
+claim HFxU : apply_fun F x :e U.
+{
+  exact (HFU
+    x
+    HxN).
+}
+claim HpfU : apply_fun p (apply_fun Ft x) :e U.
+{
+  rewrite Hcommx.
+  exact HFxU.
+}
+claim HFtxPre : apply_fun Ft x :e preimage_of E p U.
+{
+  exact (SepI
+    E
+    (fun z:set => apply_fun p z :e U)
+    (apply_fun Ft x)
+    HFtxE
+    HpfU).
+}
+exact (slices_core_preimage_point_exists_sheet
+  E
+  Te
+  p
+  U
+  slices
+  (apply_fun Ft x)
+  Hcore
+  HFtxPre).
+Qed.
+
 Theorem lemma54_2_sheet_non_switching_local :
   forall E Te B Tb p F Ft q z N U slices Vq Vz:set,
   pairwise_disjoint slices ->
