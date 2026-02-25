@@ -1,6 +1,6 @@
 (** Balance Alice 3327 **)
 (** Balance Bob 3451 **)
-(** Balance Charlie 2047 **)
+(** Balance Charlie 2038 **)
 (** Balance Dave 1793 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -198754,7 +198754,8 @@ Admitted.
 (** neighborhood U such that inclusion i: U -> B induces the trivial homomorphism **)
 (** i_star: pi1(U,b0) -> pi1(B,b0). **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
+(** Bounty 97 **)
+(** Lock Charlie 1772071768 **)
 Theorem lemma80_4_universal_cover_semilocal :
   forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
