@@ -185004,6 +185004,34 @@ exact (preimage_singleton_empty_iff_no_preimage_point
 Qed.
 
 (** Proven Bob **)
+Theorem surjective_map_preimage_singleton_nonempty_iff_exists_preimage_point :
+  forall E X pi y:set,
+  surjective_map E X pi ->
+  (preimage_of E pi (Sing y) <> Empty <->
+    exists x:set, x :e E /\ apply_fun pi x = y).
+let E X pi y.
+assume Hsurj.
+exact (preimage_singleton_nonempty_iff_exists_preimage_point
+  E
+  pi
+  y).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_preimage_singleton_nonempty_iff_exists_preimage_point :
+  forall E Te X pi y:set,
+  quotient_map E Te X pi ->
+  (preimage_of E pi (Sing y) <> Empty <->
+    exists x:set, x :e E /\ apply_fun pi x = y).
+let E Te X pi y.
+assume Hquot.
+exact (preimage_singleton_nonempty_iff_exists_preimage_point
+  E
+  pi
+  y).
+Qed.
+
+(** Proven Bob **)
 Theorem surjective_map_preimage_singleton_empty_iff_not_mem_codomain :
   forall E X pi y:set,
   surjective_map E X pi ->
