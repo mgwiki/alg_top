@@ -219636,79 +219636,70 @@ Theorem maximal_tree_all_vertices_if_noncontained_edges_meet_tree_in_single_vert
   graph_vertices X Tx Arcs c= T.
 let T ArcsT X Tx Arcs.
 assume Hmax Hmeetall.
-let x.
-assume HxVert.
-apply (xm (x :e T)).
-- assume HxT.
-  exact HxT.
-- assume HxNotT.
-  claim HAwit : exists A:set, A :e Arcs /\ ~(A c= T) /\ x :e A.
-  {
-    exact (maximal_tree_vertex_outside_yields_edge_not_subset
-      T
-      ArcsT
-      X
-      Tx
-      Arcs
-      x
-      Hmax
-      HxVert
-      HxNotT).
-  }
-  apply HAwit.
+claim Htree : tree_in_graph T ArcsT X Tx Arcs.
+{
+  exact (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax).
+}
+claim HextA :
+  forall A:set, A :e Arcs -> ~(A c= T) ->
+  exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
+    tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
+{
   let A.
-  assume HApack.
-  claim HAArcs : A :e Arcs.
-  {
-    exact (andEL
-      (A :e Arcs)
-      (~(A c= T))
-      (andEL
-        (A :e Arcs /\ ~(A c= T))
-        (x :e A)
-        HApack)).
-  }
-  claim Hnsub : ~(A c= T).
-  {
-    exact (andER
-      (A :e Arcs)
-      (~(A c= T))
-      (andEL
-        (A :e Arcs /\ ~(A c= T))
-        (x :e A)
-        HApack)).
-  }
-  claim HxA : x :e A.
-  {
-    exact (andER
-      (A :e Arcs /\ ~(A c= T))
-      (x :e A)
-      HApack).
-  }
+  assume HA Hnsub.
   claim Hmeet : exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
   {
     exact (Hmeetall
       A
-      HAArcs
+      HA
       Hnsub).
   }
-  exact (FalseE
-    ((maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge
+  apply Hmeet.
+  let v.
+  assume Hvpack.
+  witness v.
+  apply andI.
+  - apply andI.
+    + exact (andEL
+        (v :e graph_vertices X Tx Arcs)
+        (T :/\: A = Sing v)
+        Hvpack).
+    + exact (andER
+        (v :e graph_vertices X Tx Arcs)
+        (T :/\: A = Sing v)
+        Hvpack).
+  - claim HmeetEx : exists v0:set, v0 :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v0.
+    {
+      witness v.
+      exact Hvpack.
+    }
+    exact (lemma84_2_tree_extension
       T
       ArcsT
       X
       Tx
       Arcs
-      x
       A
-      Hmax
-      HxVert
-      HxNotT
-      HAArcs
-      Hmeet)
-      HxA)
-    (x :e T)).
-(** blocked via maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge -> lemma84_2_tree_extension. **)
+      Htree
+      HA
+      Hnsub
+      HmeetEx).
+}
+exact (maximal_tree_all_vertices_if_noncontained_edges_meet_tree_and_extend
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hmax
+  HextA).
+(** blocked directly on lemma84_2_tree_extension being admitted; upgrade to Qed after that theorem is proved. **)
 Admitted.
 
 (** from S84 Lem 84.2 converse (line 5601 in algtop.tex): finite tree decomposition **)
