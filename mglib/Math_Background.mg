@@ -1,6 +1,6 @@
 (** Balance Alice 3327 **)
 (** Balance Bob 3451 **)
-(** Balance Charlie 2115 **)
+(** Balance Charlie 2212 **)
 (** Balance Dave 1793 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -213980,14 +213980,8 @@ Qed.
 (** from S83 Lem 83.1 (line 5470 in algtop.tex): linear graphs are normal **)
 (** LATEX VERSION: Every linear graph X is Hausdorff; in fact, it is normal. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 97 **)
-(** Lock Charlie 1772077524 **)
-
-(** from S83 Lem 83.1 (line 5470 in algtop.tex): linear graphs are normal **)
-(** LATEX VERSION: Every linear graph X is Hausdorff; in fact, it is normal. **)
-(** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 97 **)
-(** Lock Charlie 1772077524 **)
+(** Collected Charlie 97 **)
+(** Proven Charlie **)
 Theorem lemma83_1_linear_graph_normal :
   forall X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -214009,10 +214003,1324 @@ claim HnormPack :
 {
   apply andI.
   - exact (general_linear_graph_one_point_sets_closed X Tx Arcs Hglg).
-  - admit.
+  - let A B.
+    assume HclA HclB HABdisj.
+    claim HtopX : topology_on X Tx.
+    {
+      exact (general_linear_graph_topology_on
+        X
+        Tx
+        Arcs
+        Hglg).
+    }
+    claim HAsubX : A c= X.
+    {
+      exact (closed_in_subset
+        X
+        Tx
+        A
+        HclA).
+    }
+    claim HBsubX : B c= X.
+    {
+      exact (closed_in_subset
+        X
+        Tx
+        B
+        HclB).
+    }
+    claim HXeqU : X = Union Arcs.
+    {
+      exact (general_linear_graph_union_arcs
+        X
+        Tx
+        Arcs
+        Hglg).
+    }
+
+    set pick := fun E:set =>
+      Eps_i (fun uv:set =>
+        exists U V:set,
+          uv = (U,V) /\
+          (U :e (subspace_topology X Tx E) /\
+           V :e (subspace_topology X Tx E) /\
+           (A :/\: E) c= U /\
+           (B :/\: E) c= V /\
+           U :/\: V = Empty /\
+           U :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+           V :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty)).
+
+    set Ufam := {((pick E) 0)|E :e Arcs}.
+    set Vfam := {((pick E) 1)|E :e Arcs}.
+    set U := Union Ufam.
+    set V := Union Vfam.
+
+    claim HpackE :
+      forall E:set,
+      E :e Arcs ->
+      exists U0 V0:set,
+        pick E = (U0,V0) /\
+        (U0 :e (subspace_topology X Tx E) /\
+         V0 :e (subspace_topology X Tx E) /\
+         (A :/\: E) c= U0 /\
+         (B :/\: E) c= V0 /\
+         U0 :/\: V0 = Empty /\
+         U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+         V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty).
+    {
+      let E.
+      assume HEArcs.
+      claim HexGood :
+        exists U0 V0:set,
+          U0 :e (subspace_topology X Tx E) /\
+          V0 :e (subspace_topology X Tx E) /\
+          (A :/\: E) c= U0 /\
+          (B :/\: E) c= V0 /\
+          U0 :/\: V0 = Empty /\
+          U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+          V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty.
+      {
+        exact (general_linear_graph_arc_separate_closed_sets_avoid_overlap
+          X
+          Tx
+          Arcs
+          E
+          A
+          B
+          Hglg
+          HEArcs
+          HclA
+          HclB
+          HABdisj).
+      }
+      apply HexGood.
+      let U0.
+      assume HU0ex.
+      apply HU0ex.
+      let V0.
+      assume HV0pack.
+      claim HPwitness :
+        exists U V:set,
+          (U0,V0) = (U,V) /\
+          (U :e (subspace_topology X Tx E) /\
+           V :e (subspace_topology X Tx E) /\
+           (A :/\: E) c= U /\
+           (B :/\: E) c= V /\
+           U :/\: V = Empty /\
+           U :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+           V :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty).
+      {
+        witness U0.
+        witness V0.
+        apply andI.
+        - reflexivity.
+        - exact HV0pack.
+      }
+      exact (Eps_i_ax
+        (fun uv:set =>
+          exists U V:set,
+            uv = (U,V) /\
+            (U :e (subspace_topology X Tx E) /\
+             V :e (subspace_topology X Tx E) /\
+             (A :/\: E) c= U /\
+             (B :/\: E) c= V /\
+             U :/\: V = Empty /\
+             U :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+             V :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty))
+        (U0,V0)
+        HPwitness).
+    }
+
+    claim HUE_open :
+      forall E:set,
+      E :e Arcs ->
+      ((pick E) 0) :e (subspace_topology X Tx E).
+    {
+      let E.
+      assume HEArcs.
+      apply (HpackE E HEArcs).
+      let U0.
+      assume HU0ex.
+      apply HU0ex.
+      let V0.
+      assume HV0pack.
+      claim HEq : pick E = (U0,V0).
+      {
+        exact (andEL
+          (pick E = (U0,V0))
+          (U0 :e (subspace_topology X Tx E) /\
+           V0 :e (subspace_topology X Tx E) /\
+           (A :/\: E) c= U0 /\
+           (B :/\: E) c= V0 /\
+           U0 :/\: V0 = Empty /\
+           U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+           V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty)
+          HV0pack).
+      }
+      claim Hpack : U0 :e (subspace_topology X Tx E) /\
+        V0 :e (subspace_topology X Tx E) /\
+        (A :/\: E) c= U0 /\
+        (B :/\: E) c= V0 /\
+        U0 :/\: V0 = Empty /\
+        U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+        V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty.
+      {
+        exact (andER
+          (pick E = (U0,V0))
+          (U0 :e (subspace_topology X Tx E) /\
+           V0 :e (subspace_topology X Tx E) /\
+           (A :/\: E) c= U0 /\
+           (B :/\: E) c= V0 /\
+           U0 :/\: V0 = Empty /\
+           U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+           V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty)
+          HV0pack).
+      }
+      apply (and7E
+        (U0 :e (subspace_topology X Tx E))
+        (V0 :e (subspace_topology X Tx E))
+        ((A :/\: E) c= U0)
+        ((B :/\: E) c= V0)
+        (U0 :/\: V0 = Empty)
+        (U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty)
+        (V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty)
+        Hpack).
+      assume HU0open HV0open HAU0 HBV0 HUV0empty HU0Bad HV0Bad.
+      rewrite HEq.
+      rewrite (tuple_2_0_eq U0 V0).
+      exact HU0open.
+    }
+    claim HVE_open :
+      forall E:set,
+      E :e Arcs ->
+      ((pick E) 1) :e (subspace_topology X Tx E).
+    {
+      let E.
+      assume HEArcs.
+      apply (HpackE E HEArcs).
+      let U0.
+      assume HU0ex.
+      apply HU0ex.
+      let V0.
+      assume HV0pack.
+      claim HEq : pick E = (U0,V0).
+      {
+        exact (andEL
+          (pick E = (U0,V0))
+          (U0 :e (subspace_topology X Tx E) /\
+           V0 :e (subspace_topology X Tx E) /\
+           (A :/\: E) c= U0 /\
+           (B :/\: E) c= V0 /\
+           U0 :/\: V0 = Empty /\
+           U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+           V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty)
+          HV0pack).
+      }
+      claim Hpack : U0 :e (subspace_topology X Tx E) /\
+        V0 :e (subspace_topology X Tx E) /\
+        (A :/\: E) c= U0 /\
+        (B :/\: E) c= V0 /\
+        U0 :/\: V0 = Empty /\
+        U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+        V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty.
+      {
+        exact (andER
+          (pick E = (U0,V0))
+          (U0 :e (subspace_topology X Tx E) /\
+           V0 :e (subspace_topology X Tx E) /\
+           (A :/\: E) c= U0 /\
+           (B :/\: E) c= V0 /\
+           U0 :/\: V0 = Empty /\
+           U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+           V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty)
+          HV0pack).
+      }
+      apply (and7E
+        (U0 :e (subspace_topology X Tx E))
+        (V0 :e (subspace_topology X Tx E))
+        ((A :/\: E) c= U0)
+        ((B :/\: E) c= V0)
+        (U0 :/\: V0 = Empty)
+        (U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty)
+        (V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty)
+        Hpack).
+      assume HU0open HV0open HAU0 HBV0 HUV0empty HU0Bad HV0Bad.
+      rewrite HEq.
+      rewrite (tuple_2_1_eq U0 V0).
+      exact HV0open.
+    }
+    claim HAUarc :
+      forall E:set,
+      E :e Arcs ->
+      (A :/\: E) c= ((pick E) 0).
+    {
+      let E.
+      assume HEArcs.
+      apply (HpackE E HEArcs).
+      let U0.
+      assume HU0ex.
+      apply HU0ex.
+      let V0.
+      assume HV0pack.
+      claim HEq : pick E = (U0,V0).
+      {
+        exact (andEL
+          (pick E = (U0,V0))
+          (U0 :e (subspace_topology X Tx E) /\
+           V0 :e (subspace_topology X Tx E) /\
+           (A :/\: E) c= U0 /\
+           (B :/\: E) c= V0 /\
+           U0 :/\: V0 = Empty /\
+           U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+           V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty)
+          HV0pack).
+      }
+      claim Hpack : U0 :e (subspace_topology X Tx E) /\
+        V0 :e (subspace_topology X Tx E) /\
+        (A :/\: E) c= U0 /\
+        (B :/\: E) c= V0 /\
+        U0 :/\: V0 = Empty /\
+        U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+        V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty.
+      {
+        exact (andER
+          (pick E = (U0,V0))
+          (U0 :e (subspace_topology X Tx E) /\
+           V0 :e (subspace_topology X Tx E) /\
+           (A :/\: E) c= U0 /\
+           (B :/\: E) c= V0 /\
+           U0 :/\: V0 = Empty /\
+           U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+           V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty)
+          HV0pack).
+      }
+      apply (and7E
+        (U0 :e (subspace_topology X Tx E))
+        (V0 :e (subspace_topology X Tx E))
+        ((A :/\: E) c= U0)
+        ((B :/\: E) c= V0)
+        (U0 :/\: V0 = Empty)
+        (U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty)
+        (V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty)
+        Hpack).
+      assume HU0open HV0open HAU0 HBV0 HUV0empty HU0Bad HV0Bad.
+      rewrite HEq.
+      rewrite (tuple_2_0_eq U0 V0).
+      exact HAU0.
+    }
+    claim HBVarc :
+      forall E:set,
+      E :e Arcs ->
+      (B :/\: E) c= ((pick E) 1).
+    {
+      let E.
+      assume HEArcs.
+      apply (HpackE E HEArcs).
+      let U0.
+      assume HU0ex.
+      apply HU0ex.
+      let V0.
+      assume HV0pack.
+      claim HEq : pick E = (U0,V0).
+      {
+        exact (andEL
+          (pick E = (U0,V0))
+          (U0 :e (subspace_topology X Tx E) /\
+           V0 :e (subspace_topology X Tx E) /\
+           (A :/\: E) c= U0 /\
+           (B :/\: E) c= V0 /\
+           U0 :/\: V0 = Empty /\
+           U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+           V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty)
+          HV0pack).
+      }
+      claim Hpack : U0 :e (subspace_topology X Tx E) /\
+        V0 :e (subspace_topology X Tx E) /\
+        (A :/\: E) c= U0 /\
+        (B :/\: E) c= V0 /\
+        U0 :/\: V0 = Empty /\
+        U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+        V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty.
+      {
+        exact (andER
+          (pick E = (U0,V0))
+          (U0 :e (subspace_topology X Tx E) /\
+           V0 :e (subspace_topology X Tx E) /\
+           (A :/\: E) c= U0 /\
+           (B :/\: E) c= V0 /\
+           U0 :/\: V0 = Empty /\
+           U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+           V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty)
+          HV0pack).
+      }
+      apply (and7E
+        (U0 :e (subspace_topology X Tx E))
+        (V0 :e (subspace_topology X Tx E))
+        ((A :/\: E) c= U0)
+        ((B :/\: E) c= V0)
+        (U0 :/\: V0 = Empty)
+        (U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty)
+        (V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty)
+        Hpack).
+      assume HU0open HV0open HAU0 HBV0 HUV0empty HU0Bad HV0Bad.
+      rewrite HEq.
+      rewrite (tuple_2_1_eq U0 V0).
+      exact HBV0.
+    }
+    claim HUVarc_empty :
+      forall E:set,
+      E :e Arcs ->
+      ((pick E) 0) :/\: ((pick E) 1) = Empty.
+    {
+      let E.
+      assume HEArcs.
+      apply (HpackE E HEArcs).
+      let U0.
+      assume HU0ex.
+      apply HU0ex.
+      let V0.
+      assume HV0pack.
+      claim HEq : pick E = (U0,V0).
+      {
+        exact (andEL
+          (pick E = (U0,V0))
+          (U0 :e (subspace_topology X Tx E) /\
+           V0 :e (subspace_topology X Tx E) /\
+           (A :/\: E) c= U0 /\
+           (B :/\: E) c= V0 /\
+           U0 :/\: V0 = Empty /\
+           U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+           V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty)
+          HV0pack).
+      }
+      claim Hpack : U0 :e (subspace_topology X Tx E) /\
+        V0 :e (subspace_topology X Tx E) /\
+        (A :/\: E) c= U0 /\
+        (B :/\: E) c= V0 /\
+        U0 :/\: V0 = Empty /\
+        U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+        V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty.
+      {
+        exact (andER
+          (pick E = (U0,V0))
+          (U0 :e (subspace_topology X Tx E) /\
+           V0 :e (subspace_topology X Tx E) /\
+           (A :/\: E) c= U0 /\
+           (B :/\: E) c= V0 /\
+           U0 :/\: V0 = Empty /\
+           U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+           V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty)
+          HV0pack).
+      }
+      apply (and7E
+        (U0 :e (subspace_topology X Tx E))
+        (V0 :e (subspace_topology X Tx E))
+        ((A :/\: E) c= U0)
+        ((B :/\: E) c= V0)
+        (U0 :/\: V0 = Empty)
+        (U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty)
+        (V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty)
+      Hpack).
+      assume HU0open HV0open HAU0 HBV0 HUV0empty HU0Bad HV0Bad.
+      rewrite HEq.
+      rewrite (tuple_2_0_eq U0 V0).
+      rewrite (tuple_2_1_eq U0 V0).
+      exact HUV0empty.
+    }
+    claim HbadU_empty :
+      forall E:set,
+      E :e Arcs ->
+      ((pick E) 0) :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty.
+    {
+      let E.
+      assume HEArcs.
+      apply (HpackE E HEArcs).
+      let U0.
+      assume HU0ex.
+      apply HU0ex.
+      let V0.
+      assume HV0pack.
+      claim HEq : pick E = (U0,V0).
+      {
+        exact (andEL
+          (pick E = (U0,V0))
+          (U0 :e (subspace_topology X Tx E) /\
+           V0 :e (subspace_topology X Tx E) /\
+           (A :/\: E) c= U0 /\
+           (B :/\: E) c= V0 /\
+           U0 :/\: V0 = Empty /\
+           U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+           V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty)
+          HV0pack).
+      }
+      claim Hpack : U0 :e (subspace_topology X Tx E) /\
+        V0 :e (subspace_topology X Tx E) /\
+        (A :/\: E) c= U0 /\
+        (B :/\: E) c= V0 /\
+        U0 :/\: V0 = Empty /\
+        U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+        V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty.
+      {
+        exact (andER
+          (pick E = (U0,V0))
+          (U0 :e (subspace_topology X Tx E) /\
+           V0 :e (subspace_topology X Tx E) /\
+           (A :/\: E) c= U0 /\
+           (B :/\: E) c= V0 /\
+           U0 :/\: V0 = Empty /\
+           U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+           V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty)
+          HV0pack).
+      }
+      apply (and7E
+        (U0 :e (subspace_topology X Tx E))
+        (V0 :e (subspace_topology X Tx E))
+        ((A :/\: E) c= U0)
+        ((B :/\: E) c= V0)
+        (U0 :/\: V0 = Empty)
+        (U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty)
+        (V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty)
+        Hpack).
+      assume HU0open HV0open HAU0 HBV0 HUV0empty HU0Bad HV0Bad.
+      rewrite HEq.
+      rewrite (tuple_2_0_eq U0 V0).
+      exact HU0Bad.
+    }
+    claim HbadV_empty :
+      forall E:set,
+      E :e Arcs ->
+      ((pick E) 1) :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty.
+    {
+      let E.
+      assume HEArcs.
+      apply (HpackE E HEArcs).
+      let U0.
+      assume HU0ex.
+      apply HU0ex.
+      let V0.
+      assume HV0pack.
+      claim HEq : pick E = (U0,V0).
+      {
+        exact (andEL
+          (pick E = (U0,V0))
+          (U0 :e (subspace_topology X Tx E) /\
+           V0 :e (subspace_topology X Tx E) /\
+           (A :/\: E) c= U0 /\
+           (B :/\: E) c= V0 /\
+           U0 :/\: V0 = Empty /\
+           U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+           V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty)
+          HV0pack).
+      }
+      claim Hpack : U0 :e (subspace_topology X Tx E) /\
+        V0 :e (subspace_topology X Tx E) /\
+        (A :/\: E) c= U0 /\
+        (B :/\: E) c= V0 /\
+        U0 :/\: V0 = Empty /\
+        U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+        V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty.
+      {
+        exact (andER
+          (pick E = (U0,V0))
+          (U0 :e (subspace_topology X Tx E) /\
+           V0 :e (subspace_topology X Tx E) /\
+           (A :/\: E) c= U0 /\
+           (B :/\: E) c= V0 /\
+           U0 :/\: V0 = Empty /\
+           U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+           V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty)
+          HV0pack).
+      }
+      apply (and7E
+        (U0 :e (subspace_topology X Tx E))
+        (V0 :e (subspace_topology X Tx E))
+        ((A :/\: E) c= U0)
+        ((B :/\: E) c= V0)
+        (U0 :/\: V0 = Empty)
+        (U0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty)
+        (V0 :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty)
+        Hpack).
+      assume HU0open HV0open HAU0 HBV0 HUV0empty HU0Bad HV0Bad.
+      rewrite HEq.
+      rewrite (tuple_2_1_eq U0 V0).
+      exact HV0Bad.
+    }
+
+    claim HAU : A c= U.
+    {
+      let x.
+      assume HxA.
+      claim HxX : x :e X.
+      { exact (HAsubX x HxA). }
+      claim HxUArcs : x :e Union Arcs.
+      {
+        exact (mem_eqR
+          x
+          X
+          (Union Arcs)
+          HXeqU
+          HxX).
+      }
+      apply (UnionE Arcs x HxUArcs).
+      let E.
+      assume HxEpack.
+      claim HxE : x :e E.
+      { exact (andEL (x :e E) (E :e Arcs) HxEpack). }
+      claim HEArcs : E :e Arcs.
+      { exact (andER (x :e E) (E :e Arcs) HxEpack). }
+      claim HxAE : x :e (A :/\: E).
+      { exact (binintersectI A E x HxA HxE). }
+      claim HxUE : x :e ((pick E) 0).
+      { exact ((HAUarc E HEArcs) x HxAE). }
+      exact (UnionI
+        Ufam
+        x
+        ((pick E) 0)
+        HxUE
+        (ReplI
+          Arcs
+          (fun E0:set => (pick E0) 0)
+          E
+          HEArcs)).
+    }
+    claim HBV : B c= V.
+    {
+      let x.
+      assume HxB.
+      claim HxX : x :e X.
+      { exact (HBsubX x HxB). }
+      claim HxUArcs : x :e Union Arcs.
+      {
+        exact (mem_eqR
+          x
+          X
+          (Union Arcs)
+          HXeqU
+          HxX).
+      }
+      apply (UnionE Arcs x HxUArcs).
+      let E.
+      assume HxEpack.
+      claim HxE : x :e E.
+      { exact (andEL (x :e E) (E :e Arcs) HxEpack). }
+      claim HEArcs : E :e Arcs.
+      { exact (andER (x :e E) (E :e Arcs) HxEpack). }
+      claim HxBE : x :e (B :/\: E).
+      { exact (binintersectI B E x HxB HxE). }
+      claim HxVE : x :e ((pick E) 1).
+      { exact ((HBVarc E HEArcs) x HxBE). }
+      exact (UnionI
+        Vfam
+        x
+        ((pick E) 1)
+        HxVE
+        (ReplI
+          Arcs
+          (fun E0:set => (pick E0) 1)
+          E
+          HEArcs)).
+    }
+
+    claim HUsupX : U c= X.
+    {
+      let x.
+      assume HxU.
+      apply (UnionE Ufam x HxU).
+      let Y.
+      assume HxYpack.
+      claim HxY : x :e Y.
+      { exact (andEL (x :e Y) (Y :e Ufam) HxYpack). }
+      claim HYUfam : Y :e Ufam.
+      { exact (andER (x :e Y) (Y :e Ufam) HxYpack). }
+      apply (ReplE Arcs (fun E0:set => (pick E0) 0) Y HYUfam).
+      let E.
+      assume HEpack.
+      claim HEArcs : E :e Arcs.
+      { exact (andEL (E :e Arcs) (Y = (pick E) 0) HEpack). }
+      claim HYE : Y = (pick E) 0.
+      { exact (andER (E :e Arcs) (Y = (pick E) 0) HEpack). }
+      claim HxUE : x :e ((pick E) 0).
+      { exact (mem_eqR x Y ((pick E) 0) HYE HxY). }
+      claim HUEsubE : ((pick E) 0) c= E.
+      { exact (subspace_topology_subset X Tx E ((pick E) 0) (HUE_open E HEArcs)). }
+      claim HxE : x :e E.
+      { exact (HUEsubE x HxUE). }
+      claim HEsubX : E c= X.
+      {
+        exact (andEL
+          (E c= X)
+          (arc E (subspace_topology X Tx E))
+          (general_linear_graph_arc_data X Tx Arcs E Hglg HEArcs)).
+      }
+      exact (HEsubX x HxE).
+    }
+    claim HVsupX : V c= X.
+    {
+      let x.
+      assume HxV.
+      apply (UnionE Vfam x HxV).
+      let Y.
+      assume HxYpack.
+      claim HxY : x :e Y.
+      { exact (andEL (x :e Y) (Y :e Vfam) HxYpack). }
+      claim HYVfam : Y :e Vfam.
+      { exact (andER (x :e Y) (Y :e Vfam) HxYpack). }
+      apply (ReplE Arcs (fun E0:set => (pick E0) 1) Y HYVfam).
+      let E.
+      assume HEpack.
+      claim HEArcs : E :e Arcs.
+      { exact (andEL (E :e Arcs) (Y = (pick E) 1) HEpack). }
+      claim HYE : Y = (pick E) 1.
+      { exact (andER (E :e Arcs) (Y = (pick E) 1) HEpack). }
+      claim HxVE : x :e ((pick E) 1).
+      { exact (mem_eqR x Y ((pick E) 1) HYE HxY). }
+      claim HVEsubE : ((pick E) 1) c= E.
+      { exact (subspace_topology_subset X Tx E ((pick E) 1) (HVE_open E HEArcs)). }
+      claim HxE : x :e E.
+      { exact (HVEsubE x HxVE). }
+      claim HEsubX : E c= X.
+      {
+        exact (andEL
+          (E c= X)
+          (arc E (subspace_topology X Tx E))
+          (general_linear_graph_arc_data X Tx Arcs E Hglg HEArcs)).
+      }
+      exact (HEsubX x HxE).
+    }
+
+    claim HUcapE_eq :
+      forall E0:set,
+      E0 :e Arcs ->
+      U :/\: E0 = (pick E0) 0.
+    {
+      let E0.
+      assume HE0Arcs.
+      apply (set_ext (U :/\: E0) ((pick E0) 0)).
+      - let x.
+        assume HxUE0.
+        claim HxU : x :e U.
+        { exact (binintersectE1 U E0 x HxUE0). }
+        claim HxE0 : x :e E0.
+        { exact (binintersectE2 U E0 x HxUE0). }
+        apply (UnionE Ufam x HxU).
+        let Y.
+        assume HxYpack.
+        claim HxY : x :e Y.
+        { exact (andEL (x :e Y) (Y :e Ufam) HxYpack). }
+        claim HYUfam : Y :e Ufam.
+        { exact (andER (x :e Y) (Y :e Ufam) HxYpack). }
+        apply (ReplE Arcs (fun E1:set => (pick E1) 0) Y HYUfam).
+        let E1.
+        assume HE1pack.
+        claim HE1Arcs : E1 :e Arcs.
+        { exact (andEL (E1 :e Arcs) (Y = (pick E1) 0) HE1pack). }
+        claim HYE1 : Y = (pick E1) 0.
+        { exact (andER (E1 :e Arcs) (Y = (pick E1) 0) HE1pack). }
+        claim HxUE1 : x :e ((pick E1) 0).
+        { exact (mem_eqR x Y ((pick E1) 0) HYE1 HxY). }
+        apply (xm (E1 = E0)).
+        assume HEeq.
+        + claim HEset : ((pick E1) 0) = ((pick E0) 0).
+          {
+            rewrite HEeq.
+            reflexivity.
+          }
+          exact (mem_eqR
+            x
+            ((pick E1) 0)
+            ((pick E0) 0)
+            HEset
+            HxUE1).
+        + assume Hneq.
+          claim HE0neqE1 : E0 <> E1.
+          {
+            assume Heq0.
+            apply Hneq.
+            symmetry.
+            exact Heq0.
+          }
+          claim HUE1subE1 : ((pick E1) 0) c= E1.
+          { exact (subspace_topology_subset X Tx E1 ((pick E1) 0) (HUE_open E1 HE1Arcs)). }
+          claim HxE1 : x :e E1.
+          { exact (HUE1subE1 x HxUE1). }
+          set OvE1 := {p :e E1 | exists F:set, F :e Arcs /\ F <> E1 /\ p :e F}.
+          claim HxOvE1 : x :e OvE1.
+          {
+            claim Hexists :
+              exists F:set, F :e Arcs /\ F <> E1 /\ x :e F.
+            {
+              witness E0.
+              apply andI.
+              - apply andI.
+                + exact HE0Arcs.
+                + exact HE0neqE1.
+              - exact HxE0.
+            }
+            exact (SepI
+              E1
+              (fun p:set => exists F:set, F :e Arcs /\ F <> E1 /\ p :e F)
+              x
+              HxE1
+              Hexists).
+          }
+          claim HxA : x :e A.
+          {
+            apply (xm (x :e A)).
+            assume HxA0.
+            - exact HxA0.
+            - assume HxNotA.
+              claim HxBad : x :e (OvE1 :\: A).
+              { exact (setminusI OvE1 A x HxOvE1 HxNotA). }
+              claim HxInter : x :e (((pick E1) 0) :/\: (OvE1 :\: A)).
+              { exact (binintersectI ((pick E1) 0) (OvE1 :\: A) x HxUE1 HxBad). }
+              claim HxEmpty : x :e Empty.
+              {
+                exact (mem_eqR
+                  x
+                  (((pick E1) 0) :/\: (OvE1 :\: A))
+                  Empty
+                  (HbadU_empty E1 HE1Arcs)
+                  HxInter).
+              }
+              exact (EmptyE x HxEmpty (x :e A)).
+          }
+          claim HxAE0 : x :e (A :/\: E0).
+          { exact (binintersectI A E0 x HxA HxE0). }
+          exact ((HAUarc E0 HE0Arcs) x HxAE0).
+      - let x.
+        assume HxUE0.
+        claim HxU : x :e U.
+        {
+          exact (UnionI
+            Ufam
+            x
+            ((pick E0) 0)
+            HxUE0
+            (ReplI Arcs (fun E1:set => (pick E1) 0) E0 HE0Arcs)).
+        }
+        claim HUE0subE0 : ((pick E0) 0) c= E0.
+        { exact (subspace_topology_subset X Tx E0 ((pick E0) 0) (HUE_open E0 HE0Arcs)). }
+        claim HxE0 : x :e E0.
+        { exact (HUE0subE0 x HxUE0). }
+        exact (binintersectI U E0 x HxU HxE0).
+    }
+
+    claim HVcapE_eq :
+      forall E0:set,
+      E0 :e Arcs ->
+      V :/\: E0 = (pick E0) 1.
+    {
+      let E0.
+      assume HE0Arcs.
+      apply (set_ext (V :/\: E0) ((pick E0) 1)).
+      - let x.
+        assume HxVE0.
+        claim HxV : x :e V.
+        { exact (binintersectE1 V E0 x HxVE0). }
+        claim HxE0 : x :e E0.
+        { exact (binintersectE2 V E0 x HxVE0). }
+        apply (UnionE Vfam x HxV).
+        let Y.
+        assume HxYpack.
+        claim HxY : x :e Y.
+        { exact (andEL (x :e Y) (Y :e Vfam) HxYpack). }
+        claim HYVfam : Y :e Vfam.
+        { exact (andER (x :e Y) (Y :e Vfam) HxYpack). }
+        apply (ReplE Arcs (fun E1:set => (pick E1) 1) Y HYVfam).
+        let E1.
+        assume HE1pack.
+        claim HE1Arcs : E1 :e Arcs.
+        { exact (andEL (E1 :e Arcs) (Y = (pick E1) 1) HE1pack). }
+        claim HYE1 : Y = (pick E1) 1.
+        { exact (andER (E1 :e Arcs) (Y = (pick E1) 1) HE1pack). }
+        claim HxVE1 : x :e ((pick E1) 1).
+        { exact (mem_eqR x Y ((pick E1) 1) HYE1 HxY). }
+        apply (xm (E1 = E0)).
+        assume HEeq.
+        + claim HEset : ((pick E1) 1) = ((pick E0) 1).
+          {
+            rewrite HEeq.
+            reflexivity.
+          }
+          exact (mem_eqR
+            x
+            ((pick E1) 1)
+            ((pick E0) 1)
+            HEset
+            HxVE1).
+        + assume Hneq.
+          claim HE0neqE1 : E0 <> E1.
+          {
+            assume Heq0.
+            apply Hneq.
+            symmetry.
+            exact Heq0.
+          }
+          claim HVE1subE1 : ((pick E1) 1) c= E1.
+          { exact (subspace_topology_subset X Tx E1 ((pick E1) 1) (HVE_open E1 HE1Arcs)). }
+          claim HxE1 : x :e E1.
+          { exact (HVE1subE1 x HxVE1). }
+          set OvE1 := {p :e E1 | exists F:set, F :e Arcs /\ F <> E1 /\ p :e F}.
+          claim HxOvE1 : x :e OvE1.
+          {
+            claim Hexists :
+              exists F:set, F :e Arcs /\ F <> E1 /\ x :e F.
+            {
+              witness E0.
+              apply andI.
+              - apply andI.
+                + exact HE0Arcs.
+                + exact HE0neqE1.
+              - exact HxE0.
+            }
+            exact (SepI
+              E1
+              (fun p:set => exists F:set, F :e Arcs /\ F <> E1 /\ p :e F)
+              x
+              HxE1
+              Hexists).
+          }
+          claim HxB : x :e B.
+          {
+            apply (xm (x :e B)).
+            assume HxB0.
+            - exact HxB0.
+            - assume HxNotB.
+              claim HxBad : x :e (OvE1 :\: B).
+              { exact (setminusI OvE1 B x HxOvE1 HxNotB). }
+              claim HxInter : x :e (((pick E1) 1) :/\: (OvE1 :\: B)).
+              { exact (binintersectI ((pick E1) 1) (OvE1 :\: B) x HxVE1 HxBad). }
+              claim HxEmpty : x :e Empty.
+              {
+                exact (mem_eqR
+                  x
+                  (((pick E1) 1) :/\: (OvE1 :\: B))
+                  Empty
+                  (HbadV_empty E1 HE1Arcs)
+                  HxInter).
+              }
+              exact (EmptyE x HxEmpty (x :e B)).
+          }
+          claim HxBE0 : x :e (B :/\: E0).
+          { exact (binintersectI B E0 x HxB HxE0). }
+          exact ((HBVarc E0 HE0Arcs) x HxBE0).
+      - let x.
+        assume HxVE0.
+        claim HxV : x :e V.
+        {
+          exact (UnionI
+            Vfam
+            x
+            ((pick E0) 1)
+            HxVE0
+            (ReplI Arcs (fun E1:set => (pick E1) 1) E0 HE0Arcs)).
+        }
+        claim HVE0subE0 : ((pick E0) 1) c= E0.
+        { exact (subspace_topology_subset X Tx E0 ((pick E0) 1) (HVE_open E0 HE0Arcs)). }
+        claim HxE0 : x :e E0.
+        { exact (HVE0subE0 x HxVE0). }
+        exact (binintersectI V E0 x HxV HxE0).
+    }
+
+    claim HUVempty : U :/\: V = Empty.
+    {
+      apply (Empty_Subq_eq (U :/\: V)).
+      let x.
+      assume HxUV.
+      claim HxU : x :e U.
+      { exact (binintersectE1 U V x HxUV). }
+      claim HxV : x :e V.
+      { exact (binintersectE2 U V x HxUV). }
+      apply (UnionE Ufam x HxU).
+      let YU.
+      assume HxYUpack.
+      claim HxYU : x :e YU.
+      { exact (andEL (x :e YU) (YU :e Ufam) HxYUpack). }
+      claim HYUfam : YU :e Ufam.
+      { exact (andER (x :e YU) (YU :e Ufam) HxYUpack). }
+      apply (ReplE Arcs (fun E0:set => (pick E0) 0) YU HYUfam).
+      let EU.
+      assume HEUpack.
+      claim HEUArcs : EU :e Arcs.
+      { exact (andEL (EU :e Arcs) (YU = (pick EU) 0) HEUpack). }
+      claim HYUeq : YU = (pick EU) 0.
+      { exact (andER (EU :e Arcs) (YU = (pick EU) 0) HEUpack). }
+      claim HxUEU : x :e ((pick EU) 0).
+      { exact (mem_eqR x YU ((pick EU) 0) HYUeq HxYU). }
+
+      apply (UnionE Vfam x HxV).
+      let YV.
+      assume HxYVpack.
+      claim HxYV : x :e YV.
+      { exact (andEL (x :e YV) (YV :e Vfam) HxYVpack). }
+      claim HYVfam : YV :e Vfam.
+      { exact (andER (x :e YV) (YV :e Vfam) HxYVpack). }
+      apply (ReplE Arcs (fun E0:set => (pick E0) 1) YV HYVfam).
+      let EV.
+      assume HEVpack.
+      claim HEVArcs : EV :e Arcs.
+      { exact (andEL (EV :e Arcs) (YV = (pick EV) 1) HEVpack). }
+      claim HYVeq : YV = (pick EV) 1.
+      { exact (andER (EV :e Arcs) (YV = (pick EV) 1) HEVpack). }
+      claim HxVEV : x :e ((pick EV) 1).
+      { exact (mem_eqR x YV ((pick EV) 1) HYVeq HxYV). }
+
+      apply (xm (EU = EV)).
+      assume HEeq.
+      - claim HEset : ((pick EV) 1) = ((pick EU) 1).
+        {
+          rewrite HEeq.
+          reflexivity.
+        }
+        claim HxVEU : x :e ((pick EU) 1).
+        {
+          exact (mem_eqR
+            x
+            ((pick EV) 1)
+            ((pick EU) 1)
+            HEset
+            HxVEV).
+        }
+        claim HxInter : x :e (((pick EU) 0) :/\: ((pick EU) 1)).
+        {
+          exact (binintersectI
+            ((pick EU) 0)
+            ((pick EU) 1)
+            x
+            HxUEU
+            HxVEU).
+        }
+        claim HxEmpty : x :e Empty.
+        {
+          exact (mem_eqR
+            x
+            (((pick EU) 0) :/\: ((pick EU) 1))
+            Empty
+            (HUVarc_empty EU HEUArcs)
+            HxInter).
+        }
+        exact HxEmpty.
+      - assume Hneq.
+        claim HEVneqEU : EV <> EU.
+        {
+          assume Heq0.
+          apply Hneq.
+          symmetry.
+          exact Heq0.
+        }
+        claim HUEUsubEU : ((pick EU) 0) c= EU.
+        { exact (subspace_topology_subset X Tx EU ((pick EU) 0) (HUE_open EU HEUArcs)). }
+        claim HxEU : x :e EU.
+        { exact (HUEUsubEU x HxUEU). }
+        claim HVEVsubEV : ((pick EV) 1) c= EV.
+        { exact (subspace_topology_subset X Tx EV ((pick EV) 1) (HVE_open EV HEVArcs)). }
+        claim HxEV : x :e EV.
+        { exact (HVEVsubEV x HxVEV). }
+        set OvEU := {p :e EU | exists F:set, F :e Arcs /\ F <> EU /\ p :e F}.
+        set OvEV := {p :e EV | exists F:set, F :e Arcs /\ F <> EV /\ p :e F}.
+        claim HxOvEU : x :e OvEU.
+        {
+          claim Hexists :
+            exists F:set, F :e Arcs /\ F <> EU /\ x :e F.
+          {
+            witness EV.
+            apply andI.
+            - apply andI.
+              + exact HEVArcs.
+              + exact HEVneqEU.
+            - exact HxEV.
+          }
+          exact (SepI
+            EU
+            (fun p:set => exists F:set, F :e Arcs /\ F <> EU /\ p :e F)
+            x
+            HxEU
+            Hexists).
+        }
+        claim HxOvEV : x :e OvEV.
+        {
+          claim Hexists :
+            exists F:set, F :e Arcs /\ F <> EV /\ x :e F.
+          {
+            witness EU.
+            apply andI.
+            - apply andI.
+              + exact HEUArcs.
+              + exact Hneq.
+            - exact HxEU.
+          }
+          exact (SepI
+            EV
+            (fun p:set => exists F:set, F :e Arcs /\ F <> EV /\ p :e F)
+            x
+            HxEV
+            Hexists).
+        }
+        claim HxA : x :e A.
+        {
+          apply (xm (x :e A)).
+          assume HxA0.
+          - exact HxA0.
+          - assume HxNotA.
+            claim HxBad : x :e (OvEU :\: A).
+            { exact (setminusI OvEU A x HxOvEU HxNotA). }
+            claim HxInter : x :e (((pick EU) 0) :/\: (OvEU :\: A)).
+            { exact (binintersectI ((pick EU) 0) (OvEU :\: A) x HxUEU HxBad). }
+            claim HxEmpty : x :e Empty.
+            {
+              exact (mem_eqR
+                x
+                (((pick EU) 0) :/\: (OvEU :\: A))
+                Empty
+                (HbadU_empty EU HEUArcs)
+                HxInter).
+            }
+            exact (EmptyE x HxEmpty (x :e A)).
+        }
+        claim HxB : x :e B.
+        {
+          apply (xm (x :e B)).
+          assume HxB0.
+          - exact HxB0.
+          - assume HxNotB.
+            claim HxBad : x :e (OvEV :\: B).
+            { exact (setminusI OvEV B x HxOvEV HxNotB). }
+            claim HxInter : x :e (((pick EV) 1) :/\: (OvEV :\: B)).
+            { exact (binintersectI ((pick EV) 1) (OvEV :\: B) x HxVEV HxBad). }
+            claim HxEmpty : x :e Empty.
+            {
+              exact (mem_eqR
+                x
+                (((pick EV) 1) :/\: (OvEV :\: B))
+                Empty
+                (HbadV_empty EV HEVArcs)
+                HxInter).
+            }
+            exact (EmptyE x HxEmpty (x :e B)).
+        }
+        claim HxAB : x :e (A :/\: B).
+        { exact (binintersectI A B x HxA HxB). }
+        exact (mem_eqR x (A :/\: B) Empty HABdisj HxAB).
+    }
+
+    claim HUopenTx : U :e Tx.
+    {
+      set CU := X :\: U.
+      claim HCUsubX : CU c= X.
+      {
+        let x.
+        assume HxCU.
+        exact (setminusE1 X U x HxCU).
+      }
+      claim HCUclosed : closed_in X Tx CU.
+      {
+        apply (iffER
+          (closed_in X Tx CU)
+          (forall E0:set, E0 :e Arcs ->
+            closed_in E0 (subspace_topology X Tx E0) (CU :/\: E0))
+          (general_linear_graph_coherence_closed X Tx Arcs CU Hglg HCUsubX)).
+        let E0.
+        assume HE0Arcs.
+        claim HE0subX : E0 c= X.
+        {
+          exact (andEL
+            (E0 c= X)
+            (arc E0 (subspace_topology X Tx E0))
+            (general_linear_graph_arc_data X Tx Arcs E0 Hglg HE0Arcs)).
+        }
+        claim HtopE0 : topology_on E0 (subspace_topology X Tx E0).
+        {
+          exact (subspace_topology_is_topology X Tx E0 HtopX HE0subX).
+        }
+        claim HCUcap :
+          (CU :/\: E0) = (E0 :\: ((pick E0) 0)).
+        {
+          apply (set_ext (CU :/\: E0) (E0 :\: ((pick E0) 0))).
+          - let x.
+            assume HxL.
+            claim HxCU : x :e CU.
+            { exact (binintersectE1 CU E0 x HxL). }
+            claim HxE0 : x :e E0.
+            { exact (binintersectE2 CU E0 x HxL). }
+            claim HxNotU : x /:e U.
+            { exact (setminusE2 X U x HxCU). }
+            claim HxNotUE0 : x /:e ((pick E0) 0).
+            {
+              assume HxUE0.
+              claim HxU0 : x :e U.
+              {
+                exact (UnionI
+                  Ufam
+                  x
+                  ((pick E0) 0)
+                  HxUE0
+                  (ReplI Arcs (fun E1:set => (pick E1) 0) E0 HE0Arcs)).
+              }
+              exact (HxNotU HxU0).
+            }
+            exact (setminusI E0 ((pick E0) 0) x HxE0 HxNotUE0).
+          - let x.
+            assume HxR.
+            claim HxE0 : x :e E0.
+            { exact (setminusE1 E0 ((pick E0) 0) x HxR). }
+            claim HxNotUE0 : x /:e ((pick E0) 0).
+            { exact (setminusE2 E0 ((pick E0) 0) x HxR). }
+            claim HxX : x :e X.
+            { exact (HE0subX x HxE0). }
+            claim HxNotU : x /:e U.
+            {
+              assume HxU.
+              claim HxUcap : x :e (U :/\: E0).
+              { exact (binintersectI U E0 x HxU HxE0). }
+              claim HxUE0 : x :e ((pick E0) 0).
+              { exact (mem_eqR x (U :/\: E0) ((pick E0) 0) (HUcapE_eq E0 HE0Arcs) HxUcap). }
+              exact (HxNotUE0 HxUE0).
+            }
+            exact (binintersectI CU E0 x (setminusI X U x HxX HxNotU) HxE0).
+        }
+        claim HclT :
+          closed_in E0 (subspace_topology X Tx E0) (E0 :\: ((pick E0) 0)).
+        {
+          exact (closed_of_open_complement
+            E0
+            (subspace_topology X Tx E0)
+            ((pick E0) 0)
+            HtopE0
+            (HUE_open E0 HE0Arcs)).
+        }
+        exact (HCUcap
+          (fun a b:set => closed_in E0 (subspace_topology X Tx E0) b)
+          HclT).
+      }
+      claim Hopen : open_in X Tx (X :\: CU).
+      { exact (open_of_closed_complement X Tx CU HCUclosed). }
+      claim Hmem : (X :\: CU) :e Tx.
+      { exact (open_in_elem X Tx (X :\: CU) Hopen). }
+      claim HUeq : U = X :\: CU.
+      {
+        symmetry.
+        exact (setminus_setminus_eq X U HUsupX).
+      }
+      rewrite HUeq.
+      exact Hmem.
+    }
+
+    claim HVopenTx : V :e Tx.
+    {
+      set CV := X :\: V.
+      claim HCVsubX : CV c= X.
+      {
+        let x.
+        assume HxCV.
+        exact (setminusE1 X V x HxCV).
+      }
+      claim HCVclosed : closed_in X Tx CV.
+      {
+        apply (iffER
+          (closed_in X Tx CV)
+          (forall E0:set, E0 :e Arcs ->
+            closed_in E0 (subspace_topology X Tx E0) (CV :/\: E0))
+          (general_linear_graph_coherence_closed X Tx Arcs CV Hglg HCVsubX)).
+        let E0.
+        assume HE0Arcs.
+        claim HE0subX : E0 c= X.
+        {
+          exact (andEL
+            (E0 c= X)
+            (arc E0 (subspace_topology X Tx E0))
+            (general_linear_graph_arc_data X Tx Arcs E0 Hglg HE0Arcs)).
+        }
+        claim HtopE0 : topology_on E0 (subspace_topology X Tx E0).
+        {
+          exact (subspace_topology_is_topology X Tx E0 HtopX HE0subX).
+        }
+        claim HCVcap :
+          (CV :/\: E0) = (E0 :\: ((pick E0) 1)).
+        {
+          apply (set_ext (CV :/\: E0) (E0 :\: ((pick E0) 1))).
+          - let x.
+            assume HxL.
+            claim HxCV : x :e CV.
+            { exact (binintersectE1 CV E0 x HxL). }
+            claim HxE0 : x :e E0.
+            { exact (binintersectE2 CV E0 x HxL). }
+            claim HxNotV : x /:e V.
+            { exact (setminusE2 X V x HxCV). }
+            claim HxNotVE0 : x /:e ((pick E0) 1).
+            {
+              assume HxVE0.
+              claim HxV0 : x :e V.
+              {
+                exact (UnionI
+                  Vfam
+                  x
+                  ((pick E0) 1)
+                  HxVE0
+                  (ReplI Arcs (fun E1:set => (pick E1) 1) E0 HE0Arcs)).
+              }
+              exact (HxNotV HxV0).
+            }
+            exact (setminusI E0 ((pick E0) 1) x HxE0 HxNotVE0).
+          - let x.
+            assume HxR.
+            claim HxE0 : x :e E0.
+            { exact (setminusE1 E0 ((pick E0) 1) x HxR). }
+            claim HxNotVE0 : x /:e ((pick E0) 1).
+            { exact (setminusE2 E0 ((pick E0) 1) x HxR). }
+            claim HxX : x :e X.
+            { exact (HE0subX x HxE0). }
+            claim HxNotV : x /:e V.
+            {
+              assume HxV0.
+              claim HxVcap : x :e (V :/\: E0).
+              { exact (binintersectI V E0 x HxV0 HxE0). }
+              claim HxVE0 : x :e ((pick E0) 1).
+              { exact (mem_eqR x (V :/\: E0) ((pick E0) 1) (HVcapE_eq E0 HE0Arcs) HxVcap). }
+              exact (HxNotVE0 HxVE0).
+            }
+            exact (binintersectI CV E0 x (setminusI X V x HxX HxNotV) HxE0).
+        }
+        claim HclT :
+          closed_in E0 (subspace_topology X Tx E0) (E0 :\: ((pick E0) 1)).
+        {
+          exact (closed_of_open_complement
+            E0
+            (subspace_topology X Tx E0)
+            ((pick E0) 1)
+            HtopE0
+            (HVE_open E0 HE0Arcs)).
+        }
+        exact (HCVcap
+          (fun a b:set => closed_in E0 (subspace_topology X Tx E0) b)
+          HclT).
+      }
+      claim Hopen : open_in X Tx (X :\: CV).
+      { exact (open_of_closed_complement X Tx CV HCVclosed). }
+      claim Hmem : (X :\: CV) :e Tx.
+      { exact (open_in_elem X Tx (X :\: CV) Hopen). }
+      claim HVeq : V = X :\: CV.
+      {
+        symmetry.
+        exact (setminus_setminus_eq X V HVsupX).
+      }
+      rewrite HVeq.
+      exact Hmem.
+    }
+
+    witness U.
+    witness V.
+    apply andI.
+    - apply andI.
+      + apply andI.
+        * apply andI.
+          { exact HUopenTx. }
+          { exact HVopenTx. }
+        * exact HAU.
+      + exact HBV.
+    - exact HUVempty.
 }
 exact HnormPack.
-Admitted.
+Qed.
 
 (** from S83 Lem 83.2 (line 5503 in algtop.tex): compact subspace in finite subgraph **)
 (** LATEX VERSION: If C is a compact subspace of a linear graph X, there is a finite **)
