@@ -224589,6 +224589,96 @@ exact (thm84_4_forward_component_witness_from_component_obligations
 Qed.
 
 (** Proven Bob **)
+Theorem thm84_4_forward_component_witness_family_from_stub_obligation_families :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  (forall A:set, maximal_tree T ArcsT X Tx Arcs -> A :e Arcs -> ~(A c= T) ->
+    exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  (forall A:set, maximal_tree T ArcsT X Tx Arcs -> A :e Arcs -> ~(A c= T) ->
+    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT)) ->
+  (forall A:set, maximal_tree T ArcsT X Tx Arcs -> A :e Arcs -> ~(A c= T) ->
+    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A))) ->
+  (forall A:set, maximal_tree T ArcsT X Tx Arcs -> A :e Arcs -> ~(A c= T) ->
+    ~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT) n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0))) ->
+  forall A:set, A :e Arcs -> ~(A c= T) ->
+    exists v:set,
+      v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
+      general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+      connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
+      ~(exists n path_seq x0:set,
+          n :e omega /\ n <> 0 /\
+          reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+            ({A} :\/: ArcsT) n path_seq x0 /\
+            (exists j:set, j :e n /\ ordsucc j /:e n /\
+              (apply_fun path_seq j) 0 1 = x0)).
+let T ArcsT X Tx Arcs.
+assume Hmax HmeetStub HglgStub HconnStub HnoloopStub.
+exact (thm84_4_forward_component_witness_from_component_obligation_family
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hmax
+  (fun A HA Hnsub => HmeetStub A Hmax HA Hnsub)
+  (fun A HA Hnsub => HglgStub A Hmax HA Hnsub)
+  (fun A HA Hnsub => HconnStub A Hmax HA Hnsub)
+  (fun A HA Hnsub => HnoloopStub A Hmax HA Hnsub)).
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_forward_component_witness_from_stub_obligation_families :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  A :e Arcs ->
+  ~(A c= T) ->
+  (forall A0:set, maximal_tree T ArcsT X Tx Arcs -> A0 :e Arcs -> ~(A0 c= T) ->
+    exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A0 = Sing v) ->
+  (forall A0:set, maximal_tree T ArcsT X Tx Arcs -> A0 :e Arcs -> ~(A0 c= T) ->
+    general_linear_graph (T :\/: A0) (subspace_topology X Tx (T :\/: A0)) ({A0} :\/: ArcsT)) ->
+  (forall A0:set, maximal_tree T ArcsT X Tx Arcs -> A0 :e Arcs -> ~(A0 c= T) ->
+    connected_space (T :\/: A0) (subspace_topology X Tx (T :\/: A0))) ->
+  (forall A0:set, maximal_tree T ArcsT X Tx Arcs -> A0 :e Arcs -> ~(A0 c= T) ->
+    ~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path (T :\/: A0) (subspace_topology X Tx (T :\/: A0))
+          ({A0} :\/: ArcsT) n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0))) ->
+  exists v:set,
+    v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
+    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
+    ~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT) n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0)).
+let T ArcsT X Tx Arcs A.
+assume Hmax HA Hnsub HmeetStub HglgStub HconnStub HnoloopStub.
+exact (thm84_4_forward_component_witness_family_from_stub_obligation_families
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hmax
+  HmeetStub
+  HglgStub
+  HconnStub
+  HnoloopStub
+  A
+  HA
+  Hnsub).
+Qed.
+
+(** Proven Bob **)
 Theorem thm84_4_forward_vertices_from_split_obligations :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
