@@ -229843,7 +229843,43 @@ assume HnOm HnNe0 Hred Hclosed.
 				          + exact Hini0EqFin1.
 				        - exact Hconsec01.
 				      - assume HmNe0.
-				        (** TODO: handle m <> 0 by extracting the interior closed path and applying convert_no_A_edges. **)
+				        (** Keep extracting concrete predecessor data for the last edge index j = S m. *)
+				        claim HmInJ : m :e j.
+				        {
+				          rewrite HjEqSm.
+				          exact (ordsuccI2 m).
+				        }
+				        claim HmInN : m :e n.
+				        {
+				          rewrite HnEqSj.
+				          exact (ordsuccI1 j m HmInJ).
+				        }
+				        claim HsmInN : ordsucc m :e n.
+				        {
+				          rewrite <- HjEqSm.
+				          exact HjIn.
+				        }
+				        claim HconsecMj :
+				          (apply_fun path_seq m) 0 1 = (apply_fun path_seq (ordsucc m)) 0 0.
+				        {
+				          exact (reduced_edge_path_consecutive_match
+				            (T :\/: A)
+				            (subspace_topology X Tx (T :\/: A))
+				            ({A} :\/: ArcsT)
+				            n
+				            path_seq
+				            x0
+				            m
+				            Hred
+				            HmInN
+				            HsmInN).
+				        }
+				        claim HfinjEqW : (apply_fun path_seq j) 0 1 = w.
+				        {
+				          rewrite Hfinj.
+				          exact Hx0w.
+				        }
+				        (** Remaining work: identify the j-edge as A, compute its initial endpoint, and close by contradiction. **)
 				        admit.
 			  - assume Hx0NeW.
 			    apply HuseA.
@@ -230512,27 +230548,27 @@ Theorem lemma84_2_tree_extension :
 	    Hnsub
 	    Hmeet).
 	}
-	claim HnoloopTA :
-	  ~(exists n path_seq x0:set,
-	      n :e omega /\ n <> 0 /\
-	      reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
-	        ({A} :\/: ArcsT) n path_seq x0 /\
-	      (exists j:set, j :e n /\ ordsucc j /:e n /\
-	        (apply_fun path_seq j) 0 1 = x0)).
-	{
-	  exact (lemma84_2_tree_extension_no_closed_reduced_edge_path_part
-	    T
-	    ArcsT
-	    X
-	    Tx
-	    Arcs
-	    A
-	    Htree
-	    HA
-	    Hnsub
-	    Hmeet).
-	}
-	admit.
+		claim HnoloopTA :
+		  ~(exists n path_seq x0:set,
+		      n :e omega /\ n <> 0 /\
+		      reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+		        ({A} :\/: ArcsT) n path_seq x0 /\
+		      (exists j:set, j :e n /\ ordsucc j /:e n /\
+		        (apply_fun path_seq j) 0 1 = x0)).
+		{
+		  exact (lemma84_2_tree_extension_no_closed_reduced_edge_path_part
+		    T
+		    ArcsT
+		    X
+		    Tx
+		    Arcs
+		    A
+		    Htree
+		    HA
+		    Hnsub
+		    Hmeet).
+		}
+		admit.
 Admitted.
 
 (** Proven Bob **)
