@@ -222643,6 +222643,60 @@ exact (FalseE
 (** blocked on lemma84_2_tree_extension being admitted; upgrade to Qed after that theorem is proved. **)
 Admitted.
 
+(** Proven Bob **)
+Theorem maximal_tree_edge_meeting_tree_forces_subset_from_component_obligations :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  A :e Arcs ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) ->
+  connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) ->
+  ~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+        ({A} :\/: ArcsT) n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)) ->
+  A c= T.
+let T ArcsT X Tx Arcs A.
+assume Hmax HA Hmeet HglgTA HconnTA HnoloopTA.
+apply (maximal_tree_edge_meeting_tree_forces_subset_from_extension_obligation
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  Hmax
+  HA
+  Hmeet).
+assume Hnsub.
+claim Htree : tree_in_graph T ArcsT X Tx Arcs.
+{
+  exact (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax).
+}
+exact (lemma84_2_tree_extension_from_hypotheses_and_components
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  Htree
+  HA
+  Hnsub
+  Hmeet
+  HglgTA
+  HconnTA
+  HnoloopTA).
+Qed.
+
 Theorem maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge :
   forall T ArcsT X Tx Arcs x A:set,
   maximal_tree T ArcsT X Tx Arcs ->
