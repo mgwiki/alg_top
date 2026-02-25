@@ -234329,6 +234329,420 @@ Theorem thm84_4_forward_no_loop_obligation :
 admit.
 Admitted.
 
+(** Proven Bob **)
+Theorem homeomorphism_unit_interval_minus_singleton_image :
+  forall X Tx f t:set,
+  homeomorphism unit_interval unit_interval_topology X Tx f ->
+  t :e unit_interval ->
+  image_of f (unit_interval :\: (Sing t)) = X :\: (Sing (apply_fun f t)).
+let X Tx f t.
+assume Hhome HtI.
+claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
+{
+  exact (homeomorphism_continuous
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    f
+    Hhome).
+}
+claim HfFun : function_on f unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    f
+    HfCont).
+}
+apply (homeomorphism_inverse_package
+  unit_interval
+  unit_interval_topology
+  X
+  Tx
+  f
+  Hhome).
+let g.
+assume HgPack.
+claim HleftInv : forall x:set, x :e unit_interval -> apply_fun g (apply_fun f x) = x.
+{
+  exact (andER
+    (continuous_map X Tx unit_interval unit_interval_topology g)
+    (forall x:set, x :e unit_interval -> apply_fun g (apply_fun f x) = x)
+    (andEL
+      (continuous_map X Tx unit_interval unit_interval_topology g /\
+       (forall x:set, x :e unit_interval -> apply_fun g (apply_fun f x) = x))
+      (forall y:set, y :e X -> apply_fun f (apply_fun g y) = y)
+      HgPack)).
+}
+claim HrightInv : forall y:set, y :e X -> apply_fun f (apply_fun g y) = y.
+{
+  exact (andER
+    (continuous_map X Tx unit_interval unit_interval_topology g /\
+     (forall x:set, x :e unit_interval -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e X -> apply_fun f (apply_fun g y) = y)
+    HgPack).
+}
+claim HgCont : continuous_map X Tx unit_interval unit_interval_topology g.
+{
+  exact (andEL
+    (continuous_map X Tx unit_interval unit_interval_topology g)
+    (forall x:set, x :e unit_interval -> apply_fun g (apply_fun f x) = x)
+    (andEL
+      (continuous_map X Tx unit_interval unit_interval_topology g /\
+       (forall x:set, x :e unit_interval -> apply_fun g (apply_fun f x) = x))
+      (forall y:set, y :e X -> apply_fun f (apply_fun g y) = y)
+      HgPack)).
+}
+claim HgFun : function_on g X unit_interval.
+{
+  exact (continuous_map_function_on
+    X
+    Tx
+    unit_interval
+    unit_interval_topology
+    g
+    HgCont).
+}
+apply set_ext.
+- let y.
+  assume HyImg.
+  apply (ReplE
+    (unit_interval :\: (Sing t))
+    (fun x0:set => apply_fun f x0)
+    y
+    HyImg).
+  let x.
+  assume HxPack.
+  claim HxDiff : x :e unit_interval :\: (Sing t).
+  {
+    exact (andEL
+      (x :e unit_interval :\: (Sing t))
+      (y = apply_fun f x)
+      HxPack).
+  }
+  claim HyEq : y = apply_fun f x.
+  {
+    exact (andER
+      (x :e unit_interval :\: (Sing t))
+      (y = apply_fun f x)
+      HxPack).
+  }
+  claim HxI : x :e unit_interval.
+  {
+    exact (setminusE1
+      unit_interval
+      (Sing t)
+      x
+      HxDiff).
+  }
+  claim HxNeT : x <> t.
+  {
+    assume Heq.
+    apply (setminusE2
+      unit_interval
+      (Sing t)
+      x
+      HxDiff).
+    rewrite Heq.
+    exact (SingI t).
+  }
+  claim HyX : y :e X.
+  {
+    rewrite HyEq.
+    exact (HfFun x HxI).
+  }
+  apply (setminusI
+    X
+    (Sing (apply_fun f t))
+    y
+    HyX).
+  assume HySing.
+  claim HyFt : y = apply_fun f t.
+  {
+    exact (SingE
+      (apply_fun f t)
+      y
+      HySing).
+  }
+  claim HfxEq : apply_fun f x = apply_fun f t.
+  {
+    rewrite <- HyEq.
+    rewrite HyFt.
+    reflexivity.
+  }
+  claim HxEqT : x = t.
+  {
+    exact (homeomorphism_injective
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      f
+      Hhome
+      x
+      t
+      HxI
+      HtI
+      HfxEq).
+  }
+  exact (HxNeT HxEqT).
+- let y.
+  assume HyDiff.
+  claim HyX : y :e X.
+  {
+    exact (setminusE1
+      X
+      (Sing (apply_fun f t))
+      y
+      HyDiff).
+  }
+  claim HyNeFt : y <> apply_fun f t.
+  {
+    assume Heq.
+    apply (setminusE2
+      X
+      (Sing (apply_fun f t))
+      y
+      HyDiff).
+    rewrite Heq.
+    exact (SingI (apply_fun f t)).
+  }
+  claim HgYI : apply_fun g y :e unit_interval.
+  {
+    exact (HgFun
+      y
+      HyX).
+  }
+  claim HgYNeT : apply_fun g y <> t.
+  {
+    assume Heq.
+    claim HyEqFt : y = apply_fun f t.
+    {
+      rewrite <- (HrightInv y HyX).
+      rewrite Heq.
+      reflexivity.
+    }
+    exact (HyNeFt HyEqFt).
+  }
+  claim HgYDiff : apply_fun g y :e unit_interval :\: (Sing t).
+  {
+    apply (setminusI
+      unit_interval
+      (Sing t)
+      (apply_fun g y)
+      HgYI).
+    assume HgYSing.
+    exact (HgYNeT
+      (SingE
+        t
+        (apply_fun g y)
+        HgYSing)).
+  }
+  claim HyImg0 : apply_fun f (apply_fun g y) :e image_of f (unit_interval :\: (Sing t)).
+  {
+    exact (ReplI
+      (unit_interval :\: (Sing t))
+      (fun x0:set => apply_fun f x0)
+      (apply_fun g y)
+      HgYDiff).
+  }
+  exact (eq_subst_mem_rev
+    (apply_fun f (apply_fun g y))
+    y
+    (image_of f (unit_interval :\: (Sing t)))
+    (HrightInv y HyX)
+    HyImg0).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_unit_interval_minus_singleton_connected_image :
+  forall X Tx f t:set,
+  homeomorphism unit_interval unit_interval_topology X Tx f ->
+  t :e unit_interval ->
+  connected_space (unit_interval :\: (Sing t))
+    (subspace_topology unit_interval unit_interval_topology (unit_interval :\: (Sing t))) ->
+  connected_space (X :\: (Sing (apply_fun f t)))
+    (subspace_topology X Tx (X :\: (Sing (apply_fun f t)))).
+let X Tx f t.
+assume Hhome HtI HconnMinus.
+claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
+{
+  exact (homeomorphism_continuous
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    f
+    Hhome).
+}
+claim HtopI : topology_on unit_interval unit_interval_topology.
+{
+  exact (continuous_map_topology_dom
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    f
+    HfCont).
+}
+claim HfContSub :
+  continuous_map (unit_interval :\: (Sing t))
+    (subspace_topology unit_interval unit_interval_topology (unit_interval :\: (Sing t)))
+    X
+    Tx
+    f.
+{
+  exact (continuous_on_subspace
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    f
+    (unit_interval :\: (Sing t))
+    HtopI
+    (setminus_Subq
+      unit_interval
+      (Sing t))
+    HfCont).
+}
+claim HconnImg :
+  connected_space (image_of f (unit_interval :\: (Sing t)))
+    (subspace_topology X Tx (image_of f (unit_interval :\: (Sing t)))).
+{
+  exact (continuous_image_connected
+    (unit_interval :\: (Sing t))
+    (subspace_topology unit_interval unit_interval_topology (unit_interval :\: (Sing t)))
+    X
+    Tx
+    f
+    HconnMinus
+    HfContSub).
+}
+claim HimgEq :
+  image_of f (unit_interval :\: (Sing t)) = X :\: (Sing (apply_fun f t)).
+{
+  exact (homeomorphism_unit_interval_minus_singleton_image
+    X
+    Tx
+    f
+    t
+    Hhome
+    HtI).
+}
+rewrite <- HimgEq.
+exact HconnImg.
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_unit_interval_minus_0_connected_image :
+  forall X Tx f:set,
+  homeomorphism unit_interval unit_interval_topology X Tx f ->
+  connected_space (X :\: (Sing (apply_fun f 0)))
+    (subspace_topology X Tx (X :\: (Sing (apply_fun f 0)))).
+let X Tx f.
+assume Hhome.
+exact (homeomorphism_unit_interval_minus_singleton_connected_image
+  X
+  Tx
+  f
+  0
+  Hhome
+  zero_in_unit_interval
+  unit_interval_minus_Sing_0_connected).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_unit_interval_minus_1_connected_image :
+  forall X Tx f:set,
+  homeomorphism unit_interval unit_interval_topology X Tx f ->
+  connected_space (X :\: (Sing (apply_fun f 1)))
+    (subspace_topology X Tx (X :\: (Sing (apply_fun f 1)))).
+let X Tx f.
+assume Hhome.
+exact (homeomorphism_unit_interval_minus_singleton_connected_image
+  X
+  Tx
+  f
+  1
+  Hhome
+  one_in_unit_interval
+  unit_interval_minus_Sing_1_connected).
+Qed.
+
+(** Proven Bob **)
+Theorem arc_has_end_points_of_arc :
+  forall X Tx:set,
+  arc X Tx ->
+  exists p q:set, end_points_of_arc X Tx p q.
+let X Tx.
+assume Harc.
+apply Harc.
+let f.
+assume Hhome.
+claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
+{
+  exact (homeomorphism_continuous
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    f
+    Hhome).
+}
+claim HfFun : function_on f unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    f
+    HfCont).
+}
+witness (apply_fun f 0).
+witness (apply_fun f 1).
+apply (and6I
+  (arc X Tx)
+  (apply_fun f 0 :e X)
+  (apply_fun f 1 :e X)
+  (apply_fun f 0 <> apply_fun f 1)
+  (connected_space (X :\: (Sing (apply_fun f 0)))
+    (subspace_topology X Tx (X :\: (Sing (apply_fun f 0)))))
+  (connected_space (X :\: (Sing (apply_fun f 1)))
+    (subspace_topology X Tx (X :\: (Sing (apply_fun f 1)))))).
+- exact Harc.
+- exact (HfFun 0 zero_in_unit_interval).
+- exact (HfFun 1 one_in_unit_interval).
+- assume Heq.
+  exact (neq_0_1
+    (homeomorphism_injective
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      f
+      Hhome
+      0
+      1
+      zero_in_unit_interval
+      one_in_unit_interval
+      Heq)).
+- exact (homeomorphism_unit_interval_minus_0_connected_image
+    X
+    Tx
+    f
+    Hhome).
+- exact (homeomorphism_unit_interval_minus_1_connected_image
+    X
+    Tx
+    f
+    Hhome).
+Qed.
+
+(** Proven Bob **)
 Theorem thm84_4_backward_selected_arc_endpoint_witness_obligation :
   forall T ArcsT T' ArcsT' X Tx Arcs:set,
   (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
@@ -234336,8 +234750,23 @@ Theorem thm84_4_backward_selected_arc_endpoint_witness_obligation :
   T c= T' ->
   forall A:set, A :e {B :e Arcs | B c= T'} ->
     exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q.
-admit.
-Admitted.
+let T ArcsT T' ArcsT' X Tx Arcs.
+assume Hrhs Htree' HTsub.
+let A.
+assume HASel.
+exact (arc_has_end_points_of_arc
+  A
+  (subspace_topology X Tx A)
+  (tree_in_graph_selected_arc_is_arc
+    T'
+    ArcsT'
+    X
+    Tx
+    Arcs
+    A
+    Htree'
+    HASel)).
+Qed.
 
 Theorem thm84_4_backward_selected_arc_endpoint_close_obligation :
   forall T ArcsT T' ArcsT' X Tx Arcs:set,
