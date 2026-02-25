@@ -212821,6 +212821,115 @@ exact (subgraph_of_selected_union_subset_Y
     Htree)).
 Qed.
 
+(** Proven Bob **)
+Theorem tree_in_graph_selected_union_eq_T :
+  forall T ArcsT X Tx Arcs:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  Union {A :e Arcs | A c= T} = T.
+let T ArcsT X Tx Arcs.
+assume Htree.
+symmetry.
+exact (tree_in_graph_union_of_contained_arcs
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Htree).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_subgraph_of :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  subgraph_of T X Tx Arcs.
+let T ArcsT X Tx Arcs.
+assume Hmax.
+exact (tree_in_graph_subgraph_of
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax)).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_general_linear_graph_on_T :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  general_linear_graph T (subspace_topology X Tx T) ArcsT.
+let T ArcsT X Tx Arcs.
+assume Hmax.
+exact (tree_in_graph_general_linear_graph
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax)).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_connected :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  connected_space T (subspace_topology X Tx T).
+let T ArcsT X Tx Arcs.
+assume Hmax.
+exact (tree_in_graph_connected
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax)).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_no_closed_reduced_edge_path :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  ~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)).
+let T ArcsT X Tx Arcs.
+assume Hmax.
+exact (tree_in_graph_no_closed_reduced_edge_path
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax)).
+Qed.
+
 (** from S84 Lem 84.1 (line 5563 in algtop.tex): connected iff edge paths **)
 (** LATEX VERSION: A graph X is connected iff every pair of vertices can be **)
 (** joined by an edge path. **)
