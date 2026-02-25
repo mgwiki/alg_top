@@ -195583,6 +195583,248 @@ exact (homeomorphism_reflects_simply_connected
   HscY).
 Qed.
 
+(** Helper aliases: reflection forms under existential homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_path_connected_space :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  path_connected_space Y Ty ->
+  path_connected_space X Tx.
+let X Tx Y Ty.
+assume Hhex HpcY.
+exact (exists_homeomorphism_path_connected_space_of
+  X Tx Y Ty Hhex HpcY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_connected_space :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  connected_space Y Ty ->
+  connected_space X Tx.
+let X Tx Y Ty.
+assume Hhex HconnY.
+exact (exists_homeomorphism_connected_space_of
+  X Tx Y Ty Hhex HconnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_Hausdorff_space :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  Hausdorff_space Y Ty ->
+  Hausdorff_space X Tx.
+let X Tx Y Ty.
+assume Hhex HHY.
+exact (exists_homeomorphism_Hausdorff_space_of
+  X Tx Y Ty Hhex HHY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_second_countable_space :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  second_countable_space Y Ty ->
+  second_countable_space X Tx.
+let X Tx Y Ty.
+assume Hhex HscY.
+exact (exists_homeomorphism_second_countable_space_of
+  X Tx Y Ty Hhex HscY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_locally_compact :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  locally_compact Y Ty ->
+  locally_compact X Tx.
+let X Tx Y Ty.
+assume Hhex HlocY.
+exact (exists_homeomorphism_locally_compact_of
+  X Tx Y Ty Hhex HlocY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_regular_space :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  regular_space Y Ty ->
+  regular_space X Tx.
+let X Tx Y Ty.
+assume Hhex HregY.
+exact (exists_homeomorphism_regular_space_of
+  X Tx Y Ty Hhex HregY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_normal_space :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  normal_space Y Ty ->
+  normal_space X Tx.
+let X Tx Y Ty.
+assume Hhex HnormY.
+exact (exists_homeomorphism_normal_space_of
+  X Tx Y Ty Hhex HnormY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_completely_regular_space :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  completely_regular_space Y Ty ->
+  completely_regular_space X Tx.
+let X Tx Y Ty.
+assume Hhex HcrY.
+exact (exists_homeomorphism_completely_regular_space_of
+  X Tx Y Ty Hhex HcrY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_metrizable :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  metrizable Y Ty ->
+  metrizable X Tx.
+let X Tx Y Ty.
+assume Hhex HmetY.
+exact (exists_homeomorphism_metrizable_of
+  X Tx Y Ty Hhex HmetY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_simply_connected_space :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  simply_connected Y Ty ->
+  simply_connected X Tx.
+let X Tx Y Ty.
+assume Hhex HscY.
+exact (exists_homeomorphism_simply_connected_of
+  X Tx Y Ty Hhex HscY).
+Qed.
+
+(** Helper aliases: reflection forms for additional negated invariants. **)
+(** Proven Bob **)
+Theorem homeomorphism_reflects_not_locally_compact :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ locally_compact Y Ty ->
+  ~ locally_compact X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_not_locally_compact_of
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_reflects_not_regular_space :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ regular_space Y Ty ->
+  ~ regular_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_not_regular_space_of
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_reflects_not_normal_space :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ normal_space Y Ty ->
+  ~ normal_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_not_normal_space_of
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_reflects_not_completely_regular_space :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ completely_regular_space Y Ty ->
+  ~ completely_regular_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_not_completely_regular_space_of
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_reflects_not_simply_connected_space :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ simply_connected Y Ty ->
+  ~ simply_connected X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_not_simply_connected_of
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_not_locally_compact :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ locally_compact Y Ty ->
+  ~ locally_compact X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (exists_homeomorphism_not_locally_compact_of
+  X Tx Y Ty Hhex HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_not_regular_space :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ regular_space Y Ty ->
+  ~ regular_space X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (exists_homeomorphism_not_regular_space_of
+  X Tx Y Ty Hhex HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_not_normal_space :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ normal_space Y Ty ->
+  ~ normal_space X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (exists_homeomorphism_not_normal_space_of
+  X Tx Y Ty Hhex HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_not_completely_regular_space :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ completely_regular_space Y Ty ->
+  ~ completely_regular_space X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (exists_homeomorphism_not_completely_regular_space_of
+  X Tx Y Ty Hhex HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_not_simply_connected_space :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ simply_connected Y Ty ->
+  ~ simply_connected X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (exists_homeomorphism_not_simply_connected_of
+  X Tx Y Ty Hhex HnY).
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
