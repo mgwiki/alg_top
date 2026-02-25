@@ -225711,7 +225711,154 @@ apply (thm84_4_maximal_tree_all_vertices_from_obligations
         HTsub
         HA
         Hend
+      Hep)).
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_maximal_tree_all_vertices_from_meeting_and_tree_extension_obligation_families :
+  forall T ArcsT X Tx Arcs:set,
+  general_linear_graph X Tx Arcs ->
+  connected_space X Tx ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+    tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs) ->
+  ((tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+    forall T' ArcsT':set,
+      tree_in_graph T' ArcsT' X Tx Arcs ->
+      T c= T' ->
+      forall A:set, A :e {B :e Arcs | B c= T'} ->
+        exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q) ->
+  ((tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+    forall T' ArcsT' A p q:set,
+      tree_in_graph T' ArcsT' X Tx Arcs ->
+      T c= T' ->
+      A :e {B :e Arcs | B c= T'} ->
+      end_points_of_arc A (subspace_topology X Tx A) p q ->
+      p :e T /\ q :e T ->
+      A c= T) ->
+  (maximal_tree T ArcsT X Tx Arcs <->
+   (tree_in_graph T ArcsT X Tx Arcs /\
+    graph_vertices X Tx Arcs c= T)).
+let T ArcsT X Tx Arcs.
+assume Hglg Hconn HmeetFam HextFam HwitFam HcloseFam.
+apply (thm84_4_maximal_tree_all_vertices_from_obligations
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hglg
+  Hconn).
+- assume Hmax.
+  exact (thm84_4_forward_component_witness_from_meeting_and_tree_extension_obligation_family
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax
+    HmeetFam
+    HextFam).
+- assume Hrhs.
+  let T' ArcsT'.
+  assume Htree' HTsub.
+  exact (thm84_4_backward_noncontained_contradiction_from_endpoint_obligations_via_subset_from_rhs
+    T
+    ArcsT
+    T'
+    ArcsT'
+    X
+    Tx
+    Arcs
+    Hrhs
+    Htree'
+    HTsub
+    (HwitFam
+      Hrhs
+      T'
+      ArcsT'
+      Htree'
+      HTsub)
+    (fun A p q HA Hend Hep =>
+      HcloseFam
+        Hrhs
+        T'
+        ArcsT'
+        A
+        p
+        q
+        Htree'
+        HTsub
+        HA
+        Hend
         Hep)).
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_maximal_tree_all_vertices_from_stub_meeting_and_tree_extension_obligation_families :
+  forall T ArcsT X Tx Arcs:set,
+  general_linear_graph X Tx Arcs ->
+  connected_space X Tx ->
+  (forall A:set, maximal_tree T ArcsT X Tx Arcs -> A :e Arcs -> ~(A c= T) ->
+    exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  (forall A:set, maximal_tree T ArcsT X Tx Arcs -> A :e Arcs -> ~(A c= T) ->
+    (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+    tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs) ->
+  ((tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+    forall T' ArcsT':set,
+      tree_in_graph T' ArcsT' X Tx Arcs ->
+      T c= T' ->
+      forall A:set, A :e {B :e Arcs | B c= T'} ->
+        exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q) ->
+  ((tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+    forall T' ArcsT' A p q:set,
+      tree_in_graph T' ArcsT' X Tx Arcs ->
+      T c= T' ->
+      A :e {B :e Arcs | B c= T'} ->
+      end_points_of_arc A (subspace_topology X Tx A) p q ->
+      p :e T /\ q :e T ->
+      A c= T) ->
+  (maximal_tree T ArcsT X Tx Arcs <->
+   (tree_in_graph T ArcsT X Tx Arcs /\
+    graph_vertices X Tx Arcs c= T)).
+let T ArcsT X Tx Arcs.
+assume Hglg Hconn HmeetStub HextStub HwitStub HcloseStub.
+apply (thm84_4_maximal_tree_all_vertices_from_obligations
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hglg
+  Hconn).
+- assume Hmax.
+  exact (thm84_4_forward_component_witness_from_stub_meeting_and_tree_extension_obligation_families
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax
+    HmeetStub
+    HextStub).
+- assume Hrhs.
+  let T' ArcsT'.
+  assume Htree' HTsub.
+  exact (thm84_4_backward_noncontained_contradiction_from_stub_obligation_families
+    T
+    ArcsT
+    T'
+    ArcsT'
+    X
+    Tx
+    Arcs
+    Hrhs
+    Htree'
+    HTsub
+    HwitStub
+    HcloseStub).
 Qed.
 
 (** Proven Bob **)
