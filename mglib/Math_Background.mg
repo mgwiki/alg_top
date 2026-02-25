@@ -211871,6 +211871,211 @@ claim HoneptPack :
 exact HoneptPack.
 Qed.
 
+(** Proven Charlie **)
+(** helper: each arc in a general linear graph is closed in X (using coherence + pairwise endpoint intersections). **)
+Theorem general_linear_graph_arc_closed_in_X :
+  forall X Tx Arcs A:set,
+  general_linear_graph X Tx Arcs ->
+  A :e Arcs ->
+  closed_in X Tx A.
+let X Tx Arcs A.
+assume Hglg HAArcs.
+claim HtopX : topology_on X Tx.
+{
+  exact (general_linear_graph_topology_on
+    X
+    Tx
+    Arcs
+    Hglg).
+}
+claim HArcPack :
+  A c= X /\ arc A (subspace_topology X Tx A).
+{
+  exact (general_linear_graph_arc_data
+    X
+    Tx
+    Arcs
+    A
+    Hglg
+    HAArcs).
+}
+claim HAsubX : A c= X.
+{
+  exact (andEL
+    (A c= X)
+    (arc A (subspace_topology X Tx A))
+    HArcPack).
+}
+claim Hcoh :
+  (closed_in X Tx A <->
+   (forall B:set, B :e Arcs ->
+     closed_in B (subspace_topology X Tx B) (A :/\: B))).
+{
+  exact (general_linear_graph_coherence_closed
+    X
+    Tx
+    Arcs
+    A
+    Hglg
+    HAsubX).
+}
+claim Hrhs_to_closed :
+  (forall B:set, B :e Arcs ->
+    closed_in B (subspace_topology X Tx B) (A :/\: B)) ->
+  closed_in X Tx A.
+{
+  exact (andER
+    (closed_in X Tx A ->
+      (forall B:set, B :e Arcs ->
+        closed_in B (subspace_topology X Tx B) (A :/\: B)))
+    ((forall B:set, B :e Arcs ->
+        closed_in B (subspace_topology X Tx B) (A :/\: B)) ->
+      closed_in X Tx A)
+    Hcoh).
+}
+apply Hrhs_to_closed.
+let B.
+assume HBArcs.
+apply (xm (B = A)).
+- assume HBeq.
+  rewrite HBeq.
+  claim HtopA : topology_on A (subspace_topology X Tx A).
+  {
+    exact (subspace_topology_is_topology
+      X
+      Tx
+      A
+      HtopX
+      HAsubX).
+  }
+  rewrite (binintersect_com A A).
+  rewrite (binintersect_Subq_eq_1 A A (fun x:set => fun Hx:x :e A => Hx)).
+  exact (X_is_closed
+    A
+    (subspace_topology X Tx A)
+    HtopA).
+- assume HBneq.
+  claim HBpack :
+    B c= X /\ arc B (subspace_topology X Tx B).
+  {
+    exact (general_linear_graph_arc_data
+      X
+      Tx
+      Arcs
+      B
+      Hglg
+      HBArcs).
+  }
+  claim HBsubX : B c= X.
+  {
+    exact (andEL
+      (B c= X)
+      (arc B (subspace_topology X Tx B))
+      HBpack).
+  }
+  claim HarcB : arc B (subspace_topology X Tx B).
+  {
+    exact (andER
+      (B c= X)
+      (arc B (subspace_topology X Tx B))
+      HBpack).
+  }
+  claim HtopB : topology_on B (subspace_topology X Tx B).
+  {
+    exact (subspace_topology_is_topology
+      X
+      Tx
+      B
+      HtopX
+      HBsubX).
+  }
+  claim Hinter :
+    A :/\: B = Empty \/
+    (exists p:set, A :/\: B = Sing p /\
+      (exists q:set, end_points_of_arc A (subspace_topology X Tx A) p q \/
+                     end_points_of_arc A (subspace_topology X Tx A) q p) /\
+      (exists r:set, end_points_of_arc B (subspace_topology X Tx B) p r \/
+                     end_points_of_arc B (subspace_topology X Tx B) r p)).
+  {
+    exact (general_linear_graph_arc_intersection_case
+      X
+      Tx
+      Arcs
+      A
+      B
+      Hglg
+      HAArcs
+      HBArcs
+      (neq_i_sym B A HBneq)).
+  }
+  apply Hinter.
+  + assume HabEmpty.
+    rewrite HabEmpty.
+    exact (empty_is_closed
+      B
+      (subspace_topology X Tx B)
+      HtopB).
+  + assume HpEx.
+    apply HpEx.
+    let p.
+    assume HpPack.
+    claim HpLeft :
+      A :/\: B = Sing p /\
+      (exists q:set,
+        end_points_of_arc A (subspace_topology X Tx A) p q \/
+        end_points_of_arc A (subspace_topology X Tx A) q p).
+    {
+      exact (andEL
+        (A :/\: B = Sing p /\
+          (exists q:set,
+            end_points_of_arc A (subspace_topology X Tx A) p q \/
+            end_points_of_arc A (subspace_topology X Tx A) q p))
+        (exists r:set,
+          end_points_of_arc B (subspace_topology X Tx B) p r \/
+          end_points_of_arc B (subspace_topology X Tx B) r p)
+        HpPack).
+    }
+    claim HabSing : A :/\: B = Sing p.
+    {
+      exact (andEL
+        (A :/\: B = Sing p)
+        (exists q:set,
+          end_points_of_arc A (subspace_topology X Tx A) p q \/
+          end_points_of_arc A (subspace_topology X Tx A) q p)
+        HpLeft).
+    }
+    claim HpInt : p :e A :/\: B.
+    {
+      rewrite HabSing.
+      exact (SingI p).
+    }
+    claim HpB : p :e B.
+    {
+      exact (andER
+        (p :e A)
+        (p :e B)
+        (binintersectE
+          A
+          B
+          p
+          HpInt)).
+    }
+    claim HHausB : Hausdorff_space B (subspace_topology X Tx B).
+    {
+      exact (arc_Hausdorff_space
+        B
+        (subspace_topology X Tx B)
+        HarcB).
+    }
+    rewrite HabSing.
+    exact (Hausdorff_singletons_closed
+      B
+      (subspace_topology X Tx B)
+      p
+      HHausB
+      HpB).
+Qed.
+
 (** from S83 Lem 83.1 (line 5470 in algtop.tex): linear graphs are normal **)
 (** LATEX VERSION: Every linear graph X is Hausdorff; in fact, it is normal. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
