@@ -213222,6 +213222,241 @@ apply (xm (z = 0 \/ z = 1)).
 Qed.
 
 (** Proven Charlie **)
+(** helper: unit_interval without 0 is the half-open interval (0,1] in order notation. **)
+Theorem unit_interval_minus_Sing_0_eq_halfopen_interval_right_in_R_0_1 :
+  unit_interval :\: (Sing 0) = halfopen_interval_right_in R 0 1.
+claim H2R : 2 :e R.
+{ exact real_2. }
+claim H1lt2 : Rlt 1 2.
+{ exact (RltI 1 2 real_1 H2R SNoLt_1_2). }
+claim HinterEq : unit_interval :/\: open_interval 0 2 = halfopen_interval_right_in R 0 1.
+{
+  exact (unit_interval_binintersect_open_interval_left_boundary_cross
+    2
+    H2R
+    H1lt2).
+}
+claim HminusEq : unit_interval :\: (Sing 0) = unit_interval :/\: open_interval 0 2.
+{
+  apply set_ext.
+  - let x.
+    assume HxDiff.
+    claim HxI : x :e unit_interval.
+    { exact (setminusE1 unit_interval (Sing 0) x HxDiff). }
+    claim HxNe0 : x <> 0.
+    {
+      assume Hx0.
+      apply (setminusE2 unit_interval (Sing 0) x HxDiff).
+      rewrite Hx0.
+      exact (SingI 0).
+    }
+    claim HxR : x :e R.
+    { exact (unit_interval_sub_R x HxI). }
+    claim H0leX : Rle 0 x.
+    { exact (unit_interval_Rle0 x HxI). }
+    claim H0ltX : Rlt 0 x.
+    {
+      exact (Rle_neq_implies_Rlt
+        0
+        x
+        H0leX
+        (neq_i_sym x 0 HxNe0)).
+    }
+    claim Hxle1 : Rle x 1.
+    { exact (unit_interval_Rle1 x HxI). }
+    claim Hxlt2 : Rlt x 2.
+    { exact (Rle_Rlt_tra x 1 2 Hxle1 H1lt2). }
+    claim HxOpen : x :e open_interval 0 2.
+    {
+      exact (SepI
+        R
+        (fun y:set => Rlt 0 y /\ Rlt y 2)
+        x
+        HxR
+        (andI
+          (Rlt 0 x)
+          (Rlt x 2)
+          H0ltX
+          Hxlt2)).
+    }
+    exact (binintersectI
+      unit_interval
+      (open_interval 0 2)
+      x
+      HxI
+      HxOpen).
+  - let x.
+    assume HxInt.
+    claim HxI : x :e unit_interval.
+    { exact (binintersectE1 unit_interval (open_interval 0 2) x HxInt). }
+    claim HxOpen : x :e open_interval 0 2.
+    { exact (binintersectE2 unit_interval (open_interval 0 2) x HxInt). }
+    claim HxR : x :e R.
+    { exact (unit_interval_sub_R x HxI). }
+    claim HxPack : Rlt 0 x /\ Rlt x 2.
+    { exact (SepE2 R (fun y:set => Rlt 0 y /\ Rlt y 2) x HxOpen). }
+    claim H0ltX : Rlt 0 x.
+    { exact (andEL (Rlt 0 x) (Rlt x 2) HxPack). }
+	    claim HxNe0 : x <> 0.
+	    {
+	      assume Hx0.
+	      claim H00 : Rlt 0 0.
+	      { rewrite <- Hx0 at 2. exact H0ltX. }
+	      exact (not_Rlt_refl 0 (RltE_left 0 x H0ltX) H00).
+	    }
+    apply (setminusI
+      unit_interval
+      (Sing 0)
+      x
+      HxI).
+    assume HxSing.
+    exact (HxNe0 (SingE 0 x HxSing)).
+}
+rewrite HminusEq.
+rewrite HinterEq.
+reflexivity.
+Qed.
+
+(** Proven Charlie **)
+(** helper: unit_interval without 1 is the half-open interval [0,1) in order notation. **)
+Theorem unit_interval_minus_Sing_1_eq_halfopen_interval_left_in_R_0_1 :
+  unit_interval :\: (Sing 1) = halfopen_interval_left_in R 0 1.
+claim Hm1lt0 : Rlt (minus_SNo 1) 0.
+{ exact Rlt_minus1_0. }
+claim Hm1R : minus_SNo 1 :e R.
+{ exact (RltE_left (minus_SNo 1) 0 Hm1lt0). }
+claim H0R : 0 :e R.
+{ exact (RltE_right (minus_SNo 1) 0 Hm1lt0). }
+claim HinterEq : unit_interval :/\: open_interval (minus_SNo 1) 1 = halfopen_interval_left_in R 0 1.
+{
+  exact (unit_interval_binintersect_open_interval_right_boundary_cross
+    (minus_SNo 1)
+    Hm1R
+    Hm1lt0).
+}
+claim HminusEq : unit_interval :\: (Sing 1) = unit_interval :/\: open_interval (minus_SNo 1) 1.
+{
+  apply set_ext.
+  - let x.
+    assume HxDiff.
+    claim HxI : x :e unit_interval.
+    { exact (setminusE1 unit_interval (Sing 1) x HxDiff). }
+    claim HxNe1 : x <> 1.
+    {
+      assume Hx1.
+      apply (setminusE2 unit_interval (Sing 1) x HxDiff).
+      rewrite Hx1.
+      exact (SingI 1).
+    }
+    claim HxR : x :e R.
+    { exact (unit_interval_sub_R x HxI). }
+    claim H0leX : Rle 0 x.
+    { exact (unit_interval_Rle0 x HxI). }
+    claim Hxle1 : Rle x 1.
+    { exact (unit_interval_Rle1 x HxI). }
+    claim Hxlt1 : Rlt x 1.
+    { exact (Rle_neq_implies_Rlt x 1 Hxle1 HxNe1). }
+    claim Hm1ltX : Rlt (minus_SNo 1) x.
+    {
+      exact (Rlt_Rle_tra
+        (minus_SNo 1)
+        0
+        x
+        Hm1lt0
+        H0leX).
+    }
+    claim HxOpen : x :e open_interval (minus_SNo 1) 1.
+    {
+      exact (SepI
+        R
+        (fun y:set => Rlt (minus_SNo 1) y /\ Rlt y 1)
+        x
+        HxR
+        (andI
+          (Rlt (minus_SNo 1) x)
+          (Rlt x 1)
+          Hm1ltX
+          Hxlt1)).
+    }
+    exact (binintersectI
+      unit_interval
+      (open_interval (minus_SNo 1) 1)
+      x
+      HxI
+      HxOpen).
+  - let x.
+    assume HxInt.
+    claim HxI : x :e unit_interval.
+    { exact (binintersectE1 unit_interval (open_interval (minus_SNo 1) 1) x HxInt). }
+    claim HxOpen : x :e open_interval (minus_SNo 1) 1.
+    { exact (binintersectE2 unit_interval (open_interval (minus_SNo 1) 1) x HxInt). }
+    claim HxPack : Rlt (minus_SNo 1) x /\ Rlt x 1.
+    { exact (SepE2 R (fun y:set => Rlt (minus_SNo 1) y /\ Rlt y 1) x HxOpen). }
+    claim Hxlt1 : Rlt x 1.
+    { exact (andER (Rlt (minus_SNo 1) x) (Rlt x 1) HxPack). }
+    claim HxNe1 : x <> 1.
+	    {
+	      assume Hx1.
+	      claim H11 : Rlt 1 1.
+	      { rewrite <- Hx1 at 1. exact Hxlt1. }
+	      exact (not_Rlt_refl 1 (RltE_right x 1 Hxlt1) H11).
+	    }
+    apply (setminusI
+      unit_interval
+      (Sing 1)
+      x
+      HxI).
+    assume HxSing.
+    exact (HxNe1 (SingE 1 x HxSing)).
+}
+rewrite HminusEq.
+rewrite HinterEq.
+reflexivity.
+Qed.
+
+(** Proven Charlie **)
+Theorem unit_interval_minus_Sing_0_connected :
+  connected_space (unit_interval :\: (Sing 0))
+    (subspace_topology unit_interval unit_interval_topology (unit_interval :\: (Sing 0))).
+rewrite (unit_interval_minus_Sing_0_eq_halfopen_interval_right_in_R_0_1).
+claim Hsub : halfopen_interval_right_in R 0 1 c= unit_interval.
+{
+  rewrite <- (unit_interval_minus_Sing_0_eq_halfopen_interval_right_in_R_0_1).
+  exact (setminus_Subq unit_interval (Sing 0)).
+}
+exact (interval_in_unit_interval_connected
+  0
+  1
+  (halfopen_interval_right_in R 0 1)
+  (RltE_left 0 1 Rlt_0_1)
+  (RltE_right 0 1 Rlt_0_1)
+  (Rlt_implies_order_rel_R 0 1 Rlt_0_1)
+  (interval_in_R_halfopen_interval_right_in 0 1 (RltE_left 0 1 Rlt_0_1) (RltE_right 0 1 Rlt_0_1))
+  Hsub).
+Qed.
+
+(** Proven Charlie **)
+Theorem unit_interval_minus_Sing_1_connected :
+  connected_space (unit_interval :\: (Sing 1))
+    (subspace_topology unit_interval unit_interval_topology (unit_interval :\: (Sing 1))).
+rewrite (unit_interval_minus_Sing_1_eq_halfopen_interval_left_in_R_0_1).
+claim Hsub : halfopen_interval_left_in R 0 1 c= unit_interval.
+{
+  rewrite <- (unit_interval_minus_Sing_1_eq_halfopen_interval_left_in_R_0_1).
+  exact (setminus_Subq unit_interval (Sing 1)).
+}
+exact (interval_in_unit_interval_connected
+  0
+  1
+  (halfopen_interval_left_in R 0 1)
+  (RltE_left 0 1 Rlt_0_1)
+  (RltE_right 0 1 Rlt_0_1)
+  (Rlt_implies_order_rel_R 0 1 Rlt_0_1)
+  (interval_in_R_halfopen_interval_left_in 0 1 (RltE_left 0 1 Rlt_0_1) (RltE_right 0 1 Rlt_0_1))
+  Hsub).
+Qed.
+
+(** Proven Charlie **)
 (** helper: in a space homeomorphic to unit_interval, connected complements are exactly the two images of 0 and 1. **)
 Theorem homeomorphism_unit_interval_connected_complement_implies_endpoint :
   forall X Tx f p:set,
