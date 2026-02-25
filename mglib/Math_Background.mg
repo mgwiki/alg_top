@@ -213139,6 +213139,675 @@ exact (Subq_finite
   HsubEndpts).
 Qed.
 
+(** Proven Charlie **)
+(** helper: the overlap set (and any subset of it) is closed inside an arc, since arcs are Hausdorff and overlap points are finite. **)
+Theorem general_linear_graph_arc_bad_overlap_closed :
+  forall X Tx Arcs E A:set,
+  general_linear_graph X Tx Arcs ->
+  E :e Arcs ->
+  closed_in E (subspace_topology X Tx E)
+    (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A).
+let X Tx Arcs E A.
+assume Hglg HEArcs.
+set OverE := {p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}.
+set Bad := OverE :\: A.
+claim HfinOver : finite OverE.
+{
+  exact (general_linear_graph_arc_overlap_points_finite
+    X
+    Tx
+    Arcs
+    E
+    Hglg
+    HEArcs).
+}
+claim HBadSub : Bad c= OverE.
+{
+  exact (setminus_Subq
+    OverE
+    A).
+}
+claim HfinBad : finite Bad.
+{
+  exact (Subq_finite
+    OverE
+    HfinOver
+    Bad
+    HBadSub).
+}
+claim HBadSubE : Bad c= E.
+{
+  let x.
+  assume HxBad.
+  claim HxOver : x :e OverE.
+  {
+    exact (setminusE1
+      OverE
+      A
+      x
+      HxBad).
+  }
+  exact (SepE1
+    E
+    (fun p:set => exists F:set, F :e Arcs /\ F <> E /\ p :e F)
+    x
+    HxOver).
+}
+claim HEdata : E c= X /\ arc E (subspace_topology X Tx E).
+{
+  exact (general_linear_graph_arc_data
+    X
+    Tx
+    Arcs
+    E
+    Hglg
+    HEArcs).
+}
+claim HarcE : arc E (subspace_topology X Tx E).
+{
+  exact (andER
+    (E c= X)
+    (arc E (subspace_topology X Tx E))
+    HEdata).
+}
+claim HHausE : Hausdorff_space E (subspace_topology X Tx E).
+{
+  exact (arc_Hausdorff_space
+    E
+    (subspace_topology X Tx E)
+    HarcE).
+}
+exact (finite_sets_closed_in_Hausdorff
+  E
+  (subspace_topology X Tx E)
+  HHausE
+  Bad
+  HBadSubE
+  HfinBad).
+Qed.
+
+(** Proven Charlie **)
+(** helper: inside a fixed arc of a general linear graph, disjoint closed sets restrict to disjoint closed sets and can be separated by disjoint open sets. **)
+Theorem general_linear_graph_arc_separate_closed_sets :
+  forall X Tx Arcs E A B:set,
+  general_linear_graph X Tx Arcs ->
+  E :e Arcs ->
+  closed_in X Tx A ->
+  closed_in X Tx B ->
+  A :/\: B = Empty ->
+  exists U V:set,
+    U :e (subspace_topology X Tx E) /\
+    V :e (subspace_topology X Tx E) /\
+    (A :/\: E) c= U /\
+    (B :/\: E) c= V /\
+    U :/\: V = Empty.
+let X Tx Arcs E A B.
+assume Hglg HEArcs HclA HclB HABdisj.
+claim HtopX : topology_on X Tx.
+{
+  exact (general_linear_graph_topology_on
+    X
+    Tx
+    Arcs
+    Hglg).
+}
+claim HEdata : E c= X /\ arc E (subspace_topology X Tx E).
+{
+  exact (general_linear_graph_arc_data
+    X
+    Tx
+    Arcs
+    E
+    Hglg
+    HEArcs).
+}
+claim HEsubX : E c= X.
+{
+  exact (andEL
+    (E c= X)
+    (arc E (subspace_topology X Tx E))
+    HEdata).
+}
+claim HarcE : arc E (subspace_topology X Tx E).
+{
+  exact (andER
+    (E c= X)
+    (arc E (subspace_topology X Tx E))
+    HEdata).
+}
+claim HnormE : normal_space E (subspace_topology X Tx E).
+{
+  exact (arc_normal_space
+    E
+    (subspace_topology X Tx E)
+    HarcE).
+}
+claim HsepE :
+  forall C D:set,
+  closed_in E (subspace_topology X Tx E) C ->
+  closed_in E (subspace_topology X Tx E) D ->
+  C :/\: D = Empty ->
+  exists U V:set,
+    U :e (subspace_topology X Tx E) /\
+    V :e (subspace_topology X Tx E) /\
+    C c= U /\
+    D c= V /\
+    U :/\: V = Empty.
+{
+  exact (andER
+    (one_point_sets_closed E (subspace_topology X Tx E))
+    (forall C D : set,
+      closed_in E (subspace_topology X Tx E) C ->
+      closed_in E (subspace_topology X Tx E) D ->
+      C :/\: D = Empty ->
+      exists U V : set,
+        U :e (subspace_topology X Tx E) /\
+        V :e (subspace_topology X Tx E) /\
+        C c= U /\
+        D c= V /\
+        U :/\: V = Empty)
+    HnormE).
+}
+claim HAsubX : A c= X.
+{
+  exact (closed_in_subset
+    X
+    Tx
+    A
+    HclA).
+}
+claim HBsubX : B c= X.
+{
+  exact (closed_in_subset
+    X
+    Tx
+    B
+    HclB).
+}
+claim HcohA :
+  closed_in X Tx A <->
+  (forall E0:set, E0 :e Arcs ->
+    closed_in E0 (subspace_topology X Tx E0) (A :/\: E0)).
+{
+  exact (general_linear_graph_coherence_closed
+    X
+    Tx
+    Arcs
+    A
+    Hglg
+    HAsubX).
+}
+claim HcohB :
+  closed_in X Tx B <->
+  (forall E0:set, E0 :e Arcs ->
+    closed_in E0 (subspace_topology X Tx E0) (B :/\: E0)).
+{
+  exact (general_linear_graph_coherence_closed
+    X
+    Tx
+    Arcs
+    B
+    Hglg
+    HBsubX).
+}
+claim HclAE : closed_in E (subspace_topology X Tx E) (A :/\: E).
+{
+  exact ((iffEL
+    (closed_in X Tx A)
+    (forall E0:set, E0 :e Arcs ->
+      closed_in E0 (subspace_topology X Tx E0) (A :/\: E0))
+    HcohA)
+    HclA
+    E
+    HEArcs).
+}
+claim HclBE : closed_in E (subspace_topology X Tx E) (B :/\: E).
+{
+  exact ((iffEL
+    (closed_in X Tx B)
+    (forall E0:set, E0 :e Arcs ->
+      closed_in E0 (subspace_topology X Tx E0) (B :/\: E0))
+    HcohB)
+    HclB
+    E
+    HEArcs).
+}
+claim HABEempty : (A :/\: E) :/\: (B :/\: E) = Empty.
+{
+  apply Empty_Subq_eq.
+  let x.
+  assume HxInter.
+  claim HxAE : x :e A :/\: E.
+  {
+    exact (binintersectE1
+      (A :/\: E)
+      (B :/\: E)
+      x
+      HxInter).
+  }
+  claim HxBE : x :e B :/\: E.
+  {
+    exact (binintersectE2
+      (A :/\: E)
+      (B :/\: E)
+      x
+      HxInter).
+  }
+  claim HxA : x :e A.
+  {
+    exact (binintersectE1
+      A
+      E
+      x
+      HxAE).
+  }
+  claim HxB : x :e B.
+  {
+    exact (binintersectE1
+      B
+      E
+      x
+      HxBE).
+  }
+  claim HxAB : x :e A :/\: B.
+  {
+    exact (binintersectI
+      A
+      B
+      x
+      HxA
+      HxB).
+  }
+  claim HxEmpty : x :e Empty.
+  {
+    exact (mem_eqR
+      x
+      (A :/\: B)
+      Empty
+      HABdisj
+      HxAB).
+  }
+  exact (FalseE
+    (EmptyE x HxEmpty)
+    (x :e Empty)).
+}
+exact (HsepE
+  (A :/\: E)
+  (B :/\: E)
+  HclAE
+  HclBE
+  HABEempty).
+Qed.
+
+(** Proven Charlie **)
+(** helper: refine the arcwise separation so that the chosen neighborhoods avoid overlap points not in the respective closed set. **)
+Theorem general_linear_graph_arc_separate_closed_sets_avoid_overlap :
+  forall X Tx Arcs E A B:set,
+  general_linear_graph X Tx Arcs ->
+  E :e Arcs ->
+  closed_in X Tx A ->
+  closed_in X Tx B ->
+  A :/\: B = Empty ->
+  exists U V:set,
+    U :e (subspace_topology X Tx E) /\
+    V :e (subspace_topology X Tx E) /\
+    (A :/\: E) c= U /\
+    (B :/\: E) c= V /\
+    U :/\: V = Empty /\
+    U :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A) = Empty /\
+    V :/\: (({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B) = Empty.
+let X Tx Arcs E A B.
+assume Hglg HEArcs HclA HclB HABdisj.
+claim HexUV0 : exists U0 V0:set,
+  U0 :e (subspace_topology X Tx E) /\
+  V0 :e (subspace_topology X Tx E) /\
+  (A :/\: E) c= U0 /\
+  (B :/\: E) c= V0 /\
+  U0 :/\: V0 = Empty.
+{
+  exact (general_linear_graph_arc_separate_closed_sets
+    X
+    Tx
+    Arcs
+    E
+    A
+    B
+    Hglg
+    HEArcs
+    HclA
+    HclB
+    HABdisj).
+}
+apply HexUV0.
+let U0.
+assume HU0ex.
+apply HU0ex.
+let V0.
+assume HV0pack.
+apply (and5E
+  (U0 :e (subspace_topology X Tx E))
+  (V0 :e (subspace_topology X Tx E))
+  ((A :/\: E) c= U0)
+  ((B :/\: E) c= V0)
+  (U0 :/\: V0 = Empty)
+  HV0pack).
+assume HU0open HV0open HAU0 HBV0 HUV0empty.
+set BadA := ({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: A.
+set BadB := ({p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}) :\: B.
+claim HEdata : E c= X /\ arc E (subspace_topology X Tx E).
+{
+  exact (general_linear_graph_arc_data
+    X
+    Tx
+    Arcs
+    E
+    Hglg
+    HEArcs).
+}
+claim HEsubX : E c= X.
+{
+  exact (andEL
+    (E c= X)
+    (arc E (subspace_topology X Tx E))
+    HEdata).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (general_linear_graph_topology_on
+    X
+    Tx
+    Arcs
+    Hglg).
+}
+claim HtopE : topology_on E (subspace_topology X Tx E).
+{
+  exact (subspace_topology_is_topology
+    X
+    Tx
+    E
+    HtopX
+    HEsubX).
+}
+claim HBadAclosed : closed_in E (subspace_topology X Tx E) BadA.
+{
+  exact (general_linear_graph_arc_bad_overlap_closed
+    X
+    Tx
+    Arcs
+    E
+    A
+    Hglg
+    HEArcs).
+}
+claim HBadBclosed : closed_in E (subspace_topology X Tx E) BadB.
+{
+  exact (general_linear_graph_arc_bad_overlap_closed
+    X
+    Tx
+    Arcs
+    E
+    B
+    Hglg
+    HEArcs).
+}
+claim HU0open_in : open_in E (subspace_topology X Tx E) U0.
+{
+  exact (andI
+    (topology_on E (subspace_topology X Tx E))
+    (U0 :e (subspace_topology X Tx E))
+    HtopE
+    HU0open).
+}
+claim HV0open_in : open_in E (subspace_topology X Tx E) V0.
+{
+  exact (andI
+    (topology_on E (subspace_topology X Tx E))
+    (V0 :e (subspace_topology X Tx E))
+    HtopE
+    HV0open).
+}
+claim HopenMinusA : open_in E (subspace_topology X Tx E) (U0 :\: BadA).
+{
+  exact (andEL
+    (open_in E (subspace_topology X Tx E) (U0 :\: BadA))
+    (closed_in E (subspace_topology X Tx E) (BadA :\: U0))
+    (ex17_4_open_minus_closed_and_closed_minus_open
+      E
+      (subspace_topology X Tx E)
+      U0
+      BadA
+      HtopE
+      HU0open_in
+      HBadAclosed)).
+}
+claim HopenMinusB : open_in E (subspace_topology X Tx E) (V0 :\: BadB).
+{
+  exact (andEL
+    (open_in E (subspace_topology X Tx E) (V0 :\: BadB))
+    (closed_in E (subspace_topology X Tx E) (BadB :\: V0))
+    (ex17_4_open_minus_closed_and_closed_minus_open
+      E
+      (subspace_topology X Tx E)
+      V0
+      BadB
+      HtopE
+      HV0open_in
+      HBadBclosed)).
+}
+claim HU1open : (U0 :\: BadA) :e (subspace_topology X Tx E).
+{
+  exact (andER
+    (topology_on E (subspace_topology X Tx E))
+    ((U0 :\: BadA) :e (subspace_topology X Tx E))
+    HopenMinusA).
+}
+claim HV1open : (V0 :\: BadB) :e (subspace_topology X Tx E).
+{
+  exact (andER
+    (topology_on E (subspace_topology X Tx E))
+    ((V0 :\: BadB) :e (subspace_topology X Tx E))
+    HopenMinusB).
+}
+claim HAU1 : (A :/\: E) c= (U0 :\: BadA).
+{
+  let x.
+  assume HxAE.
+  claim HxU0 : x :e U0.
+  {
+    exact (HAU0 x HxAE).
+  }
+  claim HxA : x :e A.
+  {
+    exact (binintersectE1
+      A
+      E
+      x
+      HxAE).
+  }
+  claim HxNotBad : x /:e BadA.
+  {
+    assume HxBad.
+    exact (setminusE2
+      {p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}
+      A
+      x
+      HxBad
+      HxA).
+  }
+  exact (setminusI
+    U0
+    BadA
+    x
+    HxU0
+    HxNotBad).
+}
+claim HBV1 : (B :/\: E) c= (V0 :\: BadB).
+{
+  let x.
+  assume HxBE.
+  claim HxV0 : x :e V0.
+  {
+    exact (HBV0 x HxBE).
+  }
+  claim HxB : x :e B.
+  {
+    exact (binintersectE1
+      B
+      E
+      x
+      HxBE).
+  }
+  claim HxNotBad : x /:e BadB.
+  {
+    assume HxBad.
+    exact (setminusE2
+      {p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}
+      B
+      x
+      HxBad
+      HxB).
+  }
+  exact (setminusI
+    V0
+    BadB
+    x
+    HxV0
+    HxNotBad).
+}
+claim HU1V1empty : (U0 :\: BadA) :/\: (V0 :\: BadB) = Empty.
+{
+  apply Empty_Subq_eq.
+  let x.
+  assume HxInter.
+  claim HxU1 : x :e U0 :\: BadA.
+  {
+    exact (binintersectE1
+      (U0 :\: BadA)
+      (V0 :\: BadB)
+      x
+      HxInter).
+  }
+  claim HxV1 : x :e V0 :\: BadB.
+  {
+    exact (binintersectE2
+      (U0 :\: BadA)
+      (V0 :\: BadB)
+      x
+      HxInter).
+  }
+  claim HxU0 : x :e U0.
+  {
+    exact (setminusE1 U0 BadA x HxU1).
+  }
+  claim HxV0 : x :e V0.
+  {
+    exact (setminusE1 V0 BadB x HxV1).
+  }
+  claim HxUV0 : x :e U0 :/\: V0.
+  {
+    exact (binintersectI
+      U0
+      V0
+      x
+      HxU0
+      HxV0).
+  }
+  claim HxEmpty : x :e Empty.
+  {
+    exact (mem_eqR
+      x
+      (U0 :/\: V0)
+      Empty
+      HUV0empty
+      HxUV0).
+  }
+  exact (FalseE
+    (EmptyE x HxEmpty)
+    (x :e Empty)).
+}
+claim HU1BadEmpty : (U0 :\: BadA) :/\: BadA = Empty.
+{
+  apply Empty_Subq_eq.
+  let x.
+  assume HxInter.
+  claim HxU1 : x :e U0 :\: BadA.
+  {
+    exact (binintersectE1
+      (U0 :\: BadA)
+      BadA
+      x
+      HxInter).
+  }
+  claim HxBad : x :e BadA.
+  {
+    exact (binintersectE2
+      (U0 :\: BadA)
+      BadA
+      x
+      HxInter).
+  }
+  claim HxNotBad : x /:e BadA.
+  {
+    exact (setminusE2
+      U0
+      BadA
+      x
+      HxU1).
+  }
+  exact (FalseE
+    (HxNotBad HxBad)
+    (x :e Empty)).
+}
+claim HV1BadEmpty : (V0 :\: BadB) :/\: BadB = Empty.
+{
+  apply Empty_Subq_eq.
+  let x.
+  assume HxInter.
+  claim HxV1 : x :e V0 :\: BadB.
+  {
+    exact (binintersectE1
+      (V0 :\: BadB)
+      BadB
+      x
+      HxInter).
+  }
+  claim HxBad : x :e BadB.
+  {
+    exact (binintersectE2
+      (V0 :\: BadB)
+      BadB
+      x
+      HxInter).
+  }
+  claim HxNotBad : x /:e BadB.
+  {
+    exact (setminusE2
+      V0
+      BadB
+      x
+      HxV1).
+  }
+  exact (FalseE
+    (HxNotBad HxBad)
+    (x :e Empty)).
+}
+witness (U0 :\: BadA).
+witness (V0 :\: BadB).
+apply andI.
+- apply andI.
+  - apply andI.
+    - apply andI.
+      - apply andI.
+        - apply andI.
+          - exact HU1open.
+          - exact HV1open.
+        - exact HAU1.
+      - exact HBV1.
+    - exact HU1V1empty.
+  - exact HU1BadEmpty.
+- exact HV1BadEmpty.
+Qed.
+
 (** from S83 Lem 83.1 (line 5470 in algtop.tex): linear graphs are normal **)
 (** LATEX VERSION: Every linear graph X is Hausdorff; in fact, it is normal. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
