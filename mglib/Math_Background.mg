@@ -205004,6 +205004,60 @@ Definition semilocally_simply_connected : set -> set -> prop :=
             cls =
           fundamental_group_id B Tb b)).
 
+(** Proven Bob **)
+Theorem semilocally_simply_connected_topology_on :
+  forall B Tb:set,
+  semilocally_simply_connected B Tb ->
+  topology_on B Tb.
+let B Tb.
+assume Hsemi.
+exact (andEL
+  (topology_on B Tb)
+  (forall b:set, b :e B ->
+    exists U:set, U :e Tb /\ b :e U /\
+      (forall cls:set,
+        cls :e fundamental_group U (subspace_topology B Tb U) b ->
+        apply_fun
+          (induced_homomorphism U (subspace_topology B Tb U) b B Tb b
+            (graph U (fun x:set => x)))
+          cls =
+        fundamental_group_id B Tb b))
+  Hsemi).
+Qed.
+
+(** Proven Bob **)
+Theorem semilocally_simply_connected_local_witness :
+  forall B Tb:set,
+  semilocally_simply_connected B Tb ->
+  forall b:set, b :e B ->
+    exists U:set, U :e Tb /\ b :e U /\
+      (forall cls:set,
+        cls :e fundamental_group U (subspace_topology B Tb U) b ->
+        apply_fun
+          (induced_homomorphism U (subspace_topology B Tb U) b B Tb b
+            (graph U (fun x:set => x)))
+          cls =
+        fundamental_group_id B Tb b).
+let B Tb.
+assume Hsemi.
+let b.
+assume Hb.
+exact (andER
+  (topology_on B Tb)
+  (forall b0:set, b0 :e B ->
+    exists U:set, U :e Tb /\ b0 :e U /\
+      (forall cls:set,
+        cls :e fundamental_group U (subspace_topology B Tb U) b0 ->
+        apply_fun
+          (induced_homomorphism U (subspace_topology B Tb U) b0 B Tb b0
+            (graph U (fun x:set => x)))
+          cls =
+        fundamental_group_id B Tb b0))
+  Hsemi
+  b
+  Hb).
+Qed.
+
 (** from S82 Thm 82.1 (line 5240 in algtop.tex): existence of covering spaces **)
 (** LATEX VERSION: Let B be path connected, locally path connected, and semilocally **)
 (** simply connected. Given a subgroup H of pi1(B,b0), there exists a covering map **)
@@ -205203,6 +205257,52 @@ exact (lemma82_2_universal_covering_implies_path_connected_semilocal
   B
   Tb
   Huniv).
+Qed.
+
+(** Proven Bob **)
+Theorem universal_covering_implies_topology_on_base :
+  forall B Tb:set,
+  (exists E Te p:set,
+    covering_map E Te B Tb p /\ simply_connected E Te) ->
+  topology_on B Tb.
+let B Tb.
+assume Huniv.
+exact (semilocally_simply_connected_topology_on
+  B
+  Tb
+  (universal_covering_implies_semilocally_simply_connected
+    B
+    Tb
+    Huniv)).
+Qed.
+
+(** Proven Bob **)
+Theorem universal_covering_implies_semilocal_neighborhood :
+  forall B Tb:set,
+  (exists E Te p:set,
+    covering_map E Te B Tb p /\ simply_connected E Te) ->
+  forall b:set, b :e B ->
+    exists U:set, U :e Tb /\ b :e U /\
+      (forall cls:set,
+        cls :e fundamental_group U (subspace_topology B Tb U) b ->
+        apply_fun
+          (induced_homomorphism U (subspace_topology B Tb U) b B Tb b
+            (graph U (fun x:set => x)))
+          cls =
+        fundamental_group_id B Tb b).
+let B Tb.
+assume Huniv.
+let b.
+assume Hb.
+exact (semilocally_simply_connected_local_witness
+  B
+  Tb
+  (universal_covering_implies_semilocally_simply_connected
+    B
+    Tb
+    Huniv)
+  b
+  Hb).
 Qed.
 
 (** Infrastructure for Cor 82.2: RHS + chosen basepoint implies universal cover **)
