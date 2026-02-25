@@ -200100,6 +200100,150 @@ exact (exists_homeomorphism_preserves_not_second_countable_space_left
   X Tx Y Ty Hhex HnY).
 Qed.
 
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_regular_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ regular_space X Tx ->
+  ~ regular_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HnX.
+exact (homeomorphism_preserves_not_regular_space_right
+  X Tx Y Ty f Hhome HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_regular_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ regular_space Y Ty ->
+  ~ regular_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_preserves_not_regular_space_left
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_normal_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ normal_space X Tx ->
+  ~ normal_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HnX.
+exact (homeomorphism_preserves_not_normal_space_right
+  X Tx Y Ty f Hhome HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_normal_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ normal_space Y Ty ->
+  ~ normal_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_preserves_not_normal_space_left
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_completely_regular_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ completely_regular_space X Tx ->
+  ~ completely_regular_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HnX.
+exact (homeomorphism_preserves_not_completely_regular_space_right
+  X Tx Y Ty f Hhome HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_completely_regular_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ completely_regular_space Y Ty ->
+  ~ completely_regular_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_preserves_not_completely_regular_space_left
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_regular_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ regular_space X Tx ->
+  ~ regular_space Y Ty.
+let X Tx Y Ty.
+assume Hhex HnX.
+exact (exists_homeomorphism_preserves_not_regular_space_right
+  X Tx Y Ty Hhex HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_regular_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ regular_space Y Ty ->
+  ~ regular_space X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (exists_homeomorphism_preserves_not_regular_space_left
+  X Tx Y Ty Hhex HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_normal_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ normal_space X Tx ->
+  ~ normal_space Y Ty.
+let X Tx Y Ty.
+assume Hhex HnX.
+exact (exists_homeomorphism_preserves_not_normal_space_right
+  X Tx Y Ty Hhex HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_normal_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ normal_space Y Ty ->
+  ~ normal_space X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (exists_homeomorphism_preserves_not_normal_space_left
+  X Tx Y Ty Hhex HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_completely_regular_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ completely_regular_space X Tx ->
+  ~ completely_regular_space Y Ty.
+let X Tx Y Ty.
+assume Hhex HnX.
+exact (exists_homeomorphism_preserves_not_completely_regular_space_right
+  X Tx Y Ty Hhex HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_completely_regular_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ completely_regular_space Y Ty ->
+  ~ completely_regular_space X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (exists_homeomorphism_preserves_not_completely_regular_space_left
+  X Tx Y Ty Hhex HnY).
+Qed.
+
 (** Short-name compatibility aliases for path_connected families. **)
 (** Proven Bob **)
 Theorem homeomorphism_preserves_path_connected_right :
