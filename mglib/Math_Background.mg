@@ -219181,6 +219181,102 @@ exact (maximal_tree_single_vertex_edge_tree_extension_contradiction
 Qed.
 
 (** Proven Bob **)
+Theorem maximal_tree_single_vertex_noncontained_edge_component_extension_iff_false :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  A :e Arcs ->
+  ~(A c= T) ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  (general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+   connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
+   ~(exists n path_seq x0:set,
+       n :e omega /\ n <> 0 /\
+       reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+         ({A} :\/: ArcsT) n path_seq x0 /\
+       (exists j:set, j :e n /\ ordsucc j /:e n /\
+         (apply_fun path_seq j) 0 1 = x0)) <-> False).
+let T ArcsT X Tx Arcs A.
+assume Hmax HA Hnsub Hmeet.
+apply iffI.
+- assume Hpack.
+  claim Hpair :
+    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)).
+  {
+    exact (andEL
+      (general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+       connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)))
+      (~(exists n path_seq x0:set,
+          n :e omega /\ n <> 0 /\
+          reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+            ({A} :\/: ArcsT) n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0)))
+      Hpack).
+  }
+  claim HglgTA :
+    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT).
+  {
+    exact (andEL
+      (general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT))
+      (connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)))
+      Hpair).
+  }
+  claim HconnTA :
+    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)).
+  {
+    exact (andER
+      (general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT))
+      (connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)))
+      Hpair).
+  }
+  claim HnoloopTA :
+    ~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT) n path_seq x0 /\
+        (exists j:set, j :e n /\ ordsucc j /:e n /\
+          (apply_fun path_seq j) 0 1 = x0)).
+  {
+    exact (andER
+      (general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+       connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)))
+      (~(exists n path_seq x0:set,
+          n :e omega /\ n <> 0 /\
+          reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+            ({A} :\/: ArcsT) n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0)))
+      Hpack).
+  }
+  exact (maximal_tree_single_vertex_noncontained_edge_component_extension_contradiction
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    A
+    Hmax
+    HA
+    Hnsub
+    Hmeet
+    HglgTA
+    HconnTA
+    HnoloopTA).
+- assume HFalse.
+  exact (FalseE
+    HFalse
+    (general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+     connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
+     ~(exists n path_seq x0:set,
+         n :e omega /\ n <> 0 /\
+         reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+           ({A} :\/: ArcsT) n path_seq x0 /\
+         (exists j:set, j :e n /\ ordsucc j /:e n /\
+           (apply_fun path_seq j) 0 1 = x0)))).
+Qed.
+
+(** Proven Bob **)
 Theorem maximal_tree_single_vertex_edge_tree_extension_forces_edge_subset :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
