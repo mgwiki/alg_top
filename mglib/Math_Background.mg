@@ -74343,6 +74343,111 @@ exact (connected_image_sheet_non_switching_in_pairwise_disjoint_union
   HVzSlice).
 Qed.
 
+(** Infrastructure: square-parameter commutation gives image subset in sheet unions on unit_square subsets **)
+(** Proven Bob **)
+Theorem image_of_lift_subset_union_sheets_from_square_commutation :
+  forall N E B p F Ft U slices:set,
+  N c= unit_square ->
+  function_on Ft N E ->
+  (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t)) ->
+  (forall x:set, x :e N -> apply_fun F x :e U) ->
+  Union slices = preimage_of E p U ->
+  image_of Ft N c= Union slices.
+let N E B p F Ft U slices.
+assume HNsubSq HFtFun HcommSq HFU Hunion.
+claim HcommN :
+  forall x:set, x :e N -> apply_fun p (apply_fun Ft x) = apply_fun F x.
+{
+  exact (commutation_on_unit_square_subset
+    N
+    p
+    F
+    Ft
+    HNsubSq
+    HcommSq).
+}
+exact (image_of_lift_subset_union_sheets_from_commutation
+  E
+  B
+  p
+  F
+  Ft
+  N
+  U
+  slices
+  HFtFun
+  HcommN
+  HFU
+  Hunion).
+Qed.
+
+(** Infrastructure: local sheet non-switching on unit_square subsets from global square commutation **)
+(** Proven Bob **)
+Theorem local_sheet_non_switching_on_unit_square_subset :
+  forall N E Te B p F Ft U slices q z Vq Vz:set,
+  topology_on E Te ->
+  slices c= Te ->
+  pairwise_disjoint slices ->
+  N c= unit_square ->
+  connected_space N (subspace_topology unit_square unit_square_topology N) ->
+  continuous_map N (subspace_topology unit_square unit_square_topology N) E Te Ft ->
+  (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t)) ->
+  (forall x:set, x :e N -> apply_fun F x :e U) ->
+  Union slices = preimage_of E p U ->
+  q :e N ->
+  z :e N ->
+  apply_fun Ft q :e Vq ->
+  Vq :e slices ->
+  apply_fun Ft z :e Vz ->
+  Vz :e slices ->
+  Vz = Vq.
+let N E Te B p F Ft U slices q z Vq Vz.
+assume HtopE HslicesSub HpdSlices HNsubSq HNconn HFtCont HcommSq HFU Hunion
+  HqN HzN HFtqVq HVqSlice HFtzVz HVzSlice.
+claim HcommN :
+  forall x:set, x :e N -> apply_fun p (apply_fun Ft x) = apply_fun F x.
+{
+  exact (commutation_on_unit_square_subset
+    N
+    p
+    F
+    Ft
+    HNsubSq
+    HcommSq).
+}
+exact (local_sheet_non_switching_from_connected_commuting_lift
+  N
+  (subspace_topology unit_square unit_square_topology N)
+  E
+  Te
+  B
+  p
+  F
+  Ft
+  U
+  slices
+  q
+  z
+  Vq
+  Vz
+  HtopE
+  HslicesSub
+  HpdSlices
+  HNconn
+  HFtCont
+  HcommN
+  HFU
+  Hunion
+  HqN
+  HzN
+  HFtqVq
+  HVqSlice
+  HFtzVz
+  HVzSlice).
+Qed.
+
 Theorem lemma54_2_sheet_non_switching_local :
   forall E Te B Tb p F Ft q z N U slices Vq Vz:set,
   pairwise_disjoint slices ->
