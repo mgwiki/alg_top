@@ -228860,7 +228860,203 @@ claim HcohFamTA :
           E
           HEArcsT)).
     }
-    (** Remaining (backward): combine A-piece and ArcsT-piece closedness into closed_in TA C. **)
+    claim HCArcsT_on_T :
+      forall E:set, E :e ArcsT ->
+        closed_in E
+          (subspace_topology T (subspace_topology X Tx T) E)
+          (C :/\: E).
+    {
+      let E.
+      assume HEArcsT.
+      claim HESubT : E c= T.
+      {
+        exact (andEL
+          (E c= T)
+          (arc E (subspace_topology T (subspace_topology X Tx T) E))
+          (general_linear_graph_arc_data
+            T
+            (subspace_topology X Tx T)
+            ArcsT
+            E
+            HglgT
+            HEArcsT)).
+      }
+      claim HESubTA : E c= (T :\/: A).
+      {
+        exact (Subq_tra
+          E
+          T
+          (T :\/: A)
+          HESubT
+          (binunion_Subq_1
+            T
+            A)).
+      }
+      claim HtopEeqT :
+        subspace_topology T (subspace_topology X Tx T) E =
+        subspace_topology X Tx E.
+      {
+        exact (ex16_1_subspace_transitive
+          X
+          Tx
+          T
+          E
+          HtopX
+          HTsubX
+          HESubT).
+      }
+      claim HtopEeqTA :
+        subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E =
+        subspace_topology X Tx E.
+      {
+        exact (ex16_1_subspace_transitive
+          X
+          Tx
+          (T :\/: A)
+          E
+          HtopX
+          HTAsubX
+          HESubTA).
+      }
+      claim HCinX :
+        closed_in E
+          (subspace_topology X Tx E)
+          (C :/\: E).
+      {
+        rewrite <- HtopEeqTA.
+        exact (HCArcsT
+          E
+          HEArcsT).
+      }
+      rewrite HtopEeqT.
+      exact HCinX.
+    }
+    claim HCcapT :
+      closed_in T (subspace_topology X Tx T) (C :/\: T).
+    {
+      claim HCcapTsubT : (C :/\: T) c= T.
+      {
+        exact (binintersect_Subq_2
+          C
+          T).
+      }
+      claim HallT :
+        forall E:set, E :e ArcsT ->
+          closed_in E
+            (subspace_topology T (subspace_topology X Tx T) E)
+            ((C :/\: T) :/\: E).
+      {
+        let E.
+        assume HEArcsT.
+        claim HESubT : E c= T.
+        {
+          exact (andEL
+            (E c= T)
+            (arc E (subspace_topology T (subspace_topology X Tx T) E))
+            (general_linear_graph_arc_data
+              T
+              (subspace_topology X Tx T)
+              ArcsT
+              E
+              HglgT
+              HEArcsT)).
+        }
+        claim HcapEq : ((C :/\: T) :/\: E) = (C :/\: E).
+        {
+          apply set_ext.
+          - let x.
+            assume Hx.
+            claim HxCcapT : x :e (C :/\: T).
+            {
+              exact (binintersectE1
+                (C :/\: T)
+                E
+                x
+                Hx).
+            }
+            claim HxE : x :e E.
+            {
+              exact (binintersectE2
+                (C :/\: T)
+                E
+                x
+                Hx).
+            }
+            claim HxC : x :e C.
+            {
+              exact (binintersectE1
+                C
+                T
+                x
+                HxCcapT).
+            }
+            exact (binintersectI
+              C
+              E
+              x
+              HxC
+              HxE).
+          - let x.
+            assume Hx.
+            claim HxC : x :e C.
+            {
+              exact (binintersectE1
+                C
+                E
+                x
+                Hx).
+            }
+            claim HxE : x :e E.
+            {
+              exact (binintersectE2
+                C
+                E
+                x
+                Hx).
+            }
+            claim HxT : x :e T.
+            {
+              exact (HESubT
+                x
+                HxE).
+            }
+            claim HxCT : x :e (C :/\: T).
+            {
+              exact (binintersectI
+                C
+                T
+                x
+                HxC
+                HxT).
+            }
+            exact (binintersectI
+              (C :/\: T)
+              E
+              x
+              HxCT
+              HxE).
+        }
+        rewrite HcapEq.
+        exact (HCArcsT_on_T
+          E
+          HEArcsT).
+      }
+      exact (iffER
+        (closed_in T (subspace_topology X Tx T) (C :/\: T))
+        (forall E:set, E :e ArcsT ->
+          closed_in E
+            (subspace_topology T (subspace_topology X Tx T) E)
+            ((C :/\: T) :/\: E))
+        (general_linear_graph_coherence_closed
+          T
+          (subspace_topology X Tx T)
+          ArcsT
+          (C :/\: T)
+          HglgT
+          HCcapTsubT)
+        HallT).
+    }
+    (** Remaining (backward): combine HCcapT and HCA into closed_in TA C. **)
     admit.
 }
 exact (and5I
