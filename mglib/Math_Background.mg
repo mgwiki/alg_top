@@ -221075,6 +221075,40 @@ exact (selected_arc_subset_from_noncontained_selected_arc_contradiction
 Qed.
 
 (** Proven Bob **)
+Theorem thm84_4_backward_selected_arc_endpoints_in_target_from_rhs :
+  forall T ArcsT T' ArcsT' X Tx Arcs A p q:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  T c= T' ->
+  A :e {B :e Arcs | B c= T'} ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  p :e T /\ q :e T.
+let T ArcsT T' ArcsT' X Tx Arcs A p q.
+assume Hrhs Htree' HTsub HASel Hend.
+claim HVT : graph_vertices X Tx Arcs c= T.
+{
+  exact (andER
+    (tree_in_graph T ArcsT X Tx Arcs)
+    (graph_vertices X Tx Arcs c= T)
+    Hrhs).
+}
+exact (tree_in_graph_selected_arc_endpoints_in_target_from_graph_vertex_cover
+  T
+  T'
+  ArcsT'
+  X
+  Tx
+  Arcs
+  A
+  p
+  q
+  Htree'
+  HVT
+  HASel
+  Hend).
+Qed.
+
+(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_obligations :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
