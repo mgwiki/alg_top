@@ -194100,6 +194100,196 @@ apply andI.
     HnY).
 Qed.
 
+(** Helper aliases: reflection form for path connectedness under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_reflects_path_connected_space :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  path_connected_space Y Ty ->
+  path_connected_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HpcY.
+exact (homeomorphism_preserves_path_connected_space_left
+  X
+  Tx
+  Y
+  Ty
+  f
+  Hhome
+  HpcY).
+Qed.
+
+(** Helper aliases: reflection form for connectedness under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_reflects_connected_space :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  connected_space Y Ty ->
+  connected_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HconnY.
+exact (homeomorphism_preserves_connected_left
+  X
+  Tx
+  Y
+  Ty
+  f
+  Hhome
+  HconnY).
+Qed.
+
+(** Helper aliases: reflection form for Hausdorffness under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_reflects_Hausdorff_space :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  Hausdorff_space Y Ty ->
+  Hausdorff_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HHY.
+exact (homeomorphism_preserves_Hausdorff
+  X
+  Tx
+  Y
+  Ty
+  f
+  Hhome
+  HHY).
+Qed.
+
+(** Helper aliases: reflection form for second countability under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_reflects_second_countable_space :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  second_countable_space Y Ty ->
+  second_countable_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HscY.
+exact (homeomorphism_preserves_second_countable
+  X
+  Tx
+  Y
+  Ty
+  f
+  Hhome
+  HscY).
+Qed.
+
+(** Helper aliases: reflection form for local compactness under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_reflects_locally_compact :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  locally_compact Y Ty ->
+  locally_compact X Tx.
+let X Tx Y Ty f.
+assume Hhome HlocY.
+exact (homeomorphism_preserves_locally_compact
+  X
+  Tx
+  Y
+  Ty
+  f
+  Hhome
+  HlocY).
+Qed.
+
+(** Helper aliases: reflection form for regularity under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_reflects_regular_space :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  regular_space Y Ty ->
+  regular_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HregY.
+exact (homeomorphism_preserves_regular
+  X
+  Tx
+  Y
+  Ty
+  f
+  Hhome
+  HregY).
+Qed.
+
+(** Helper aliases: reflection form for normality under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_reflects_normal_space :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  normal_space Y Ty ->
+  normal_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnormY.
+exact (homeomorphism_preserves_normal
+  X
+  Tx
+  Y
+  Ty
+  f
+  Hhome
+  HnormY).
+Qed.
+
+(** Helper aliases: reflection form for complete regularity under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_reflects_completely_regular_space :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  completely_regular_space Y Ty ->
+  completely_regular_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HcrY.
+exact (homeomorphism_preserves_completely_regular
+  X
+  Tx
+  Y
+  Ty
+  f
+  Hhome
+  HcrY).
+Qed.
+
+(** Helper aliases: reflection form for metrizability under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_reflects_metrizable :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  metrizable Y Ty ->
+  metrizable X Tx.
+let X Tx Y Ty f.
+assume Hhome HmetY.
+exact (homeomorphism_preserves_metrizable
+  X
+  Tx
+  Y
+  Ty
+  f
+  Hhome
+  HmetY).
+Qed.
+
+(** Helper aliases: reflection form for simply connectedness under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_reflects_simply_connected_space :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  simply_connected Y Ty ->
+  simply_connected X Tx.
+let X Tx Y Ty f.
+assume Hhome HscY.
+exact (homeomorphism_reflects_simply_connected
+  X
+  Tx
+  Y
+  Ty
+  f
+  Hhome
+  HscY).
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
