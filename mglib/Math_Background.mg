@@ -185651,6 +185651,30 @@ exact (HyNotX HyX).
 Qed.
 
 (** Proven Bob **)
+Theorem function_on_not_mem_codomain_implies_preimage_singleton_empty_of_subset :
+  forall E X pi A y:set,
+  function_on pi E X ->
+  A c= E ->
+  y /:e X ->
+  preimage_of A pi (Sing y) = Empty.
+let E X pi A y.
+assume Hfun HAsub HyNotX.
+exact ((andEL
+  (y /:e image_of pi A -> preimage_of A pi (Sing y) = Empty)
+  (preimage_of A pi (Sing y) = Empty -> y /:e image_of pi A)
+  (not_mem_image_iff_preimage_singleton_empty A pi y))
+  (function_on_not_mem_codomain_implies_not_mem_image_of_subset
+    E
+    X
+    pi
+    A
+    y
+    Hfun
+    HAsub
+    HyNotX)).
+Qed.
+
+(** Proven Bob **)
 Theorem preimage_singleton_nonempty_iff_mem_image :
   forall E pi y:set,
   (preimage_of E pi (Sing y) <> Empty <-> y :e image_of pi E).
