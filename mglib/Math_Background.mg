@@ -191029,6 +191029,103 @@ apply andI.
   + exact HpXcont.
 Qed.
 
+(** Helper: homeomorphism preserves path connectedness (forward direction). **)
+(** Proven Bob **)
+Theorem homeomorphism_preserves_path_connected_space_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  path_connected_space X Tx ->
+  path_connected_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HpcX.
+apply (homeomorphism_inverse_package X Tx Y Ty f Hhome).
+let g.
+assume Hgpack.
+claim HgAB :
+  continuous_map Y Ty X Tx g /\
+  (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x).
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+    Hgpack).
+}
+claim HgCont : continuous_map Y Ty X Tx g.
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g)
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+    HgAB).
+}
+claim HleftInv : forall x:set, x :e X -> apply_fun g (apply_fun f x) = x.
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g)
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+    HgAB).
+}
+claim HrightInv : forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y.
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+    Hgpack).
+}
+claim HhomeInv : homeomorphism Y Ty X Tx g.
+{
+  exact (homeomorphism_inverse_is_homeomorphism
+    X
+    Tx
+    Y
+    Ty
+    f
+    g
+    Hhome
+    HgCont
+    HleftInv
+    HrightInv).
+}
+exact (homeomorphism_preserves_path_connected_space_left
+  Y
+  Ty
+  X
+  Tx
+  g
+  HhomeInv
+  HpcX).
+Qed.
+
+(** Helper: path connectedness is invariant under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_path_connected_space_iff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (path_connected_space X Tx <-> path_connected_space Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+apply iffI.
+- assume HpcX.
+  exact (homeomorphism_preserves_path_connected_space_right
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome
+    HpcX).
+- assume HpcY.
+  exact (homeomorphism_preserves_path_connected_space_left
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome
+    HpcY).
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
