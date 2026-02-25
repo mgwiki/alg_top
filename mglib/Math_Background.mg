@@ -212236,6 +212236,604 @@ apply andI.
     HUFsubY).
 Qed.
 
+(** Proven Charlie **)
+(** helper: in unit_interval, removing an interior point disconnects; only 0 and 1 have connected complement. **)
+Theorem unit_interval_minus_Sing_connected_implies_endpoint :
+  forall z:set,
+  z :e unit_interval ->
+  connected_space (unit_interval :\: (Sing z))
+    (subspace_topology unit_interval unit_interval_topology (unit_interval :\: (Sing z))) ->
+  z = 0 \/ z = 1.
+let z.
+assume HzI HconnA.
+claim Rlt_eq_subst_left :
+  forall a b c:set,
+  a = b ->
+  Rlt a c ->
+  Rlt b c.
+{
+  let a b c.
+  assume Hab Hac.
+  claim HaR : a :e R.
+  {
+    exact (RltE_left a c Hac).
+  }
+  claim HcR : c :e R.
+  {
+    exact (RltE_right a c Hac).
+  }
+  claim HbR : b :e R.
+  {
+    rewrite <- Hab.
+    exact HaR.
+  }
+  claim HbLt : b < c.
+  {
+    rewrite <- Hab.
+    exact (RltE_lt a c Hac).
+  }
+  exact (RltI b c HbR HcR HbLt).
+}
+claim Rlt_eq_subst_right :
+  forall a b c:set,
+  b = c ->
+  Rlt a b ->
+  Rlt a c.
+{
+  let a b c.
+  assume Hbc Hab.
+  claim HaR : a :e R.
+  {
+    exact (RltE_left a b Hab).
+  }
+  claim HbR : b :e R.
+  {
+    exact (RltE_right a b Hab).
+  }
+  claim HcR : c :e R.
+  {
+    rewrite <- Hbc.
+    exact HbR.
+  }
+  claim HaLt : a < c.
+  {
+    rewrite <- Hbc.
+    exact (RltE_lt a b Hab).
+  }
+  exact (RltI a c HaR HcR HaLt).
+}
+apply (xm (z = 0 \/ z = 1)).
+- assume Hor.
+  exact Hor.
+- assume HnotOr.
+  claim HzNe0 : z <> 0.
+  {
+    assume Heq.
+    apply HnotOr.
+    exact (orIL
+      (z = 0)
+      (z = 1)
+      Heq).
+  }
+  claim HzNe1 : z <> 1.
+  {
+    assume Heq.
+    apply HnotOr.
+    exact (orIR
+      (z = 0)
+      (z = 1)
+      Heq).
+  }
+  set A := unit_interval :\: (Sing z).
+  claim HAsubI : A c= unit_interval.
+  {
+    exact (setminus_Subq
+      unit_interval
+      (Sing z)).
+  }
+  claim HzR : z :e R.
+  {
+    exact (unit_interval_sub_R z HzI).
+  }
+  claim H0R : 0 :e R.
+  {
+    exact (RltE_left 0 1 Rlt_0_1).
+  }
+  claim H1R : 1 :e R.
+  {
+    exact (RltE_right 0 1 Rlt_0_1).
+  }
+  claim H0ltZ : Rlt 0 z.
+  {
+    exact (Rle_neq_implies_Rlt
+      0
+      z
+      (unit_interval_Rle0 z HzI)
+      (neq_i_sym z 0 HzNe0)).
+  }
+  claim Hzlt1 : Rlt z 1.
+  {
+    exact (Rle_neq_implies_Rlt
+      z
+      1
+      (unit_interval_Rle1 z HzI)
+      HzNe1).
+  }
+  apply (rational_dense_between_reals
+    0
+    z
+    H0R
+    HzR
+    H0ltZ).
+  let x.
+  assume HxPack.
+  claim HxRltPack : Rlt 0 x /\ Rlt x z.
+  {
+    exact (andER
+      (x :e rational_numbers)
+      (Rlt 0 x /\ Rlt x z)
+      HxPack).
+  }
+  claim H0ltX : Rlt 0 x.
+  {
+    exact (andEL
+      (Rlt 0 x)
+      (Rlt x z)
+      HxRltPack).
+  }
+  claim HxltZ : Rlt x z.
+  {
+    exact (andER
+      (Rlt 0 x)
+      (Rlt x z)
+      HxRltPack).
+  }
+  claim HxR : x :e R.
+  {
+    exact (RltE_right 0 x H0ltX).
+  }
+  claim Hxlt1 : Rlt x 1.
+  {
+    exact (Rlt_Rle_tra
+      x
+      z
+      1
+      HxltZ
+      (unit_interval_Rle1 z HzI)).
+  }
+  claim HxI : x :e unit_interval.
+  {
+    exact (SepI
+      R
+      (fun t:set => ~ (Rlt t 0) /\ ~ (Rlt 1 t))
+      x
+      HxR
+      (andI
+        (~ (Rlt x 0))
+        (~ (Rlt 1 x))
+        (RleE_nlt 0 x (Rlt_implies_Rle 0 x H0ltX))
+        (RleE_nlt x 1 (Rlt_implies_Rle x 1 Hxlt1)))).
+  }
+  claim HxNeZ : x <> z.
+  {
+    assume Heq.
+    claim HzltZ : Rlt z z.
+    { exact (Rlt_eq_subst_left x z z Heq HxltZ). }
+    exact (not_Rlt_refl z HzR HzltZ).
+  }
+  claim HxA : x :e A.
+  {
+    apply (setminusI
+      unit_interval
+      (Sing z)
+      x
+      HxI).
+    assume HxSing.
+    exact (HxNeZ (SingE z x HxSing)).
+  }
+  apply (rational_dense_between_reals
+    z
+    1
+    HzR
+    H1R
+    Hzlt1).
+  let y.
+  assume HyPack.
+  claim HyRltPack : Rlt z y /\ Rlt y 1.
+  {
+    exact (andER
+      (y :e rational_numbers)
+      (Rlt z y /\ Rlt y 1)
+      HyPack).
+  }
+  claim HzltY : Rlt z y.
+  {
+    exact (andEL
+      (Rlt z y)
+      (Rlt y 1)
+      HyRltPack).
+  }
+  claim Hylt1 : Rlt y 1.
+  {
+    exact (andER
+      (Rlt z y)
+      (Rlt y 1)
+      HyRltPack).
+  }
+  claim HyR : y :e R.
+  {
+    exact (RltE_left y 1 Hylt1).
+  }
+  claim H0ltY : Rlt 0 y.
+  {
+    exact (Rlt_tra
+      0
+      z
+      y
+      H0ltZ
+      HzltY).
+  }
+  claim HyI : y :e unit_interval.
+  {
+    exact (SepI
+      R
+      (fun t:set => ~ (Rlt t 0) /\ ~ (Rlt 1 t))
+      y
+      HyR
+      (andI
+        (~ (Rlt y 0))
+        (~ (Rlt 1 y))
+        (RleE_nlt 0 y (Rlt_implies_Rle 0 y H0ltY))
+        (RleE_nlt y 1 (Rlt_implies_Rle y 1 Hylt1)))).
+  }
+  claim HyNeZ : y <> z.
+  {
+    assume Heq.
+    claim HzltZ : Rlt z z.
+    { exact (Rlt_eq_subst_right z y z Heq HzltY). }
+    exact (not_Rlt_refl z HzR HzltZ).
+  }
+  claim HyA : y :e A.
+  {
+    apply (setminusI
+      unit_interval
+      (Sing z)
+      y
+      HyI).
+    assume HySing.
+    exact (HyNeZ (SingE z y HySing)).
+  }
+  claim HzNotA : z /:e A.
+  {
+    assume HzA.
+    exact (setminusE2
+      unit_interval
+      (Sing z)
+      z
+      HzA
+      (SingI z)).
+  }
+  claim HzInA : z :e A.
+  {
+    exact (connected_subset_unit_interval_interval_property
+      A
+      HAsubI
+      HconnA
+      x
+      y
+      z
+      HxA
+      HyA
+      HzI
+      (orIL
+        (Rlt x z /\ Rlt z y)
+        (Rlt y z /\ Rlt z x)
+        (andI
+          (Rlt x z)
+          (Rlt z y)
+          HxltZ
+          HzltY))).
+  }
+  exact (FalseE (HzNotA HzInA) (z = 0 \/ z = 1)).
+Qed.
+
+(** Proven Charlie **)
+(** helper: in a space homeomorphic to unit_interval, connected complements are exactly the two images of 0 and 1. **)
+Theorem homeomorphism_unit_interval_connected_complement_implies_endpoint :
+  forall X Tx f p:set,
+  homeomorphism unit_interval unit_interval_topology X Tx f ->
+  p :e X ->
+  connected_space (X :\: (Sing p))
+    (subspace_topology X Tx (X :\: (Sing p))) ->
+  p = apply_fun f 0 \/ p = apply_fun f 1.
+let X Tx f p.
+assume Hhome HpX HconnXp.
+claim HfFun : function_on f unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    f
+    (homeomorphism_continuous
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      f
+      Hhome)).
+}
+apply (homeomorphism_inverse_package
+  unit_interval
+  unit_interval_topology
+  X
+  Tx
+  f
+  Hhome).
+let g.
+assume HgPack.
+claim HgLeft :
+  continuous_map X Tx unit_interval unit_interval_topology g /\
+  (forall x:set, x :e unit_interval -> apply_fun g (apply_fun f x) = x).
+{
+  exact (andEL
+    (continuous_map X Tx unit_interval unit_interval_topology g /\
+     (forall x:set, x :e unit_interval -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e X -> apply_fun f (apply_fun g y) = y)
+    HgPack).
+}
+claim HgCont : continuous_map X Tx unit_interval unit_interval_topology g.
+{
+  exact (andEL
+    (continuous_map X Tx unit_interval unit_interval_topology g)
+    (forall x:set, x :e unit_interval -> apply_fun g (apply_fun f x) = x)
+    HgLeft).
+}
+claim HleftInv : forall x:set, x :e unit_interval -> apply_fun g (apply_fun f x) = x.
+{
+  exact (andER
+    (continuous_map X Tx unit_interval unit_interval_topology g)
+    (forall x:set, x :e unit_interval -> apply_fun g (apply_fun f x) = x)
+    HgLeft).
+}
+claim HrightInv : forall y:set, y :e X -> apply_fun f (apply_fun g y) = y.
+{
+  exact (andER
+    (continuous_map X Tx unit_interval unit_interval_topology g /\
+     (forall x:set, x :e unit_interval -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e X -> apply_fun f (apply_fun g y) = y)
+    HgPack).
+}
+claim HgFun : function_on g X unit_interval.
+{
+  exact (continuous_map_function_on
+    X
+    Tx
+    unit_interval
+    unit_interval_topology
+    g
+    HgCont).
+}
+set t := apply_fun g p.
+claim HtI : t :e unit_interval.
+{
+  exact (HgFun p HpX).
+}
+claim HtopSub : topology_on (X :\: (Sing p)) (subspace_topology X Tx (X :\: (Sing p))).
+{
+  exact (subspace_topology_is_topology
+    X
+    Tx
+    (X :\: (Sing p))
+    (continuous_map_topology_dom X Tx unit_interval unit_interval_topology g HgCont)
+    (setminus_Subq X (Sing p))).
+}
+claim HgContSub : continuous_map (X :\: (Sing p)) (subspace_topology X Tx (X :\: (Sing p)))
+  unit_interval unit_interval_topology g.
+{
+  exact (continuous_on_subspace
+    X
+    Tx
+    unit_interval
+    unit_interval_topology
+    g
+    (X :\: (Sing p))
+    (continuous_map_topology_dom X Tx unit_interval unit_interval_topology g HgCont)
+    (setminus_Subq X (Sing p))
+    HgCont).
+}
+claim HconnImg :
+  connected_space (image_of g (X :\: (Sing p)))
+    (subspace_topology unit_interval unit_interval_topology (image_of g (X :\: (Sing p)))).
+{
+  exact (continuous_image_connected
+    (X :\: (Sing p))
+    (subspace_topology X Tx (X :\: (Sing p)))
+    unit_interval
+    unit_interval_topology
+    g
+    HconnXp
+    HgContSub).
+}
+claim HimgEq :
+  image_of g (X :\: (Sing p)) = unit_interval :\: (Sing t).
+{
+  apply set_ext.
+  - let y.
+    assume HyImg.
+    apply (ReplE
+      (X :\: (Sing p))
+      (fun x0:set => apply_fun g x0)
+      y
+      HyImg).
+    let x.
+    assume HxPack.
+    claim HxXp : x :e (X :\: (Sing p)).
+    {
+      exact (andEL
+        (x :e (X :\: (Sing p)))
+        (y = apply_fun g x)
+        HxPack).
+    }
+    claim HyEq : y = apply_fun g x.
+    {
+      exact (andER
+        (x :e (X :\: (Sing p)))
+        (y = apply_fun g x)
+        HxPack).
+    }
+    claim HxX : x :e X.
+    {
+      exact (setminusE1
+        X
+        (Sing p)
+        x
+        HxXp).
+    }
+    claim HxNeP : x <> p.
+    {
+      assume Heq.
+      apply (setminusE2 X (Sing p) x HxXp).
+      rewrite Heq.
+      exact (SingI p).
+    }
+    claim HyI : y :e unit_interval.
+    {
+      rewrite HyEq.
+      exact (HgFun x HxX).
+    }
+    apply (setminusI
+      unit_interval
+      (Sing t)
+      y
+      HyI).
+    assume HySing.
+    claim HyT : y = t.
+    {
+      exact (SingE t y HySing).
+    }
+    claim HgxEq : apply_fun g x = apply_fun g p.
+    {
+      rewrite <- HyEq.
+      rewrite HyT.
+      reflexivity.
+    }
+    claim HfxEq : apply_fun f (apply_fun g x) = apply_fun f (apply_fun g p).
+    {
+      rewrite HgxEq.
+      reflexivity.
+    }
+    claim HxEqP : x = p.
+    {
+      rewrite <- (HrightInv x HxX).
+      rewrite <- (HrightInv p HpX).
+      exact HfxEq.
+    }
+    exact (HxNeP HxEqP).
+  - let y.
+    assume HyDiff.
+    claim HyI : y :e unit_interval.
+    {
+      exact (setminusE1
+        unit_interval
+        (Sing t)
+        y
+        HyDiff).
+    }
+    claim HyNeT : y <> t.
+    {
+      assume Heq.
+      apply (setminusE2 unit_interval (Sing t) y HyDiff).
+      rewrite Heq.
+      exact (SingI t).
+    }
+    set x := apply_fun f y.
+    claim HxX : x :e X.
+    {
+      exact (HfFun y HyI).
+    }
+    claim HxNeP : x <> p.
+    {
+      assume Heq.
+      claim Hgy : apply_fun g x = y.
+      {
+        exact (HleftInv y HyI).
+      }
+      claim Hgp : apply_fun g p = y.
+      {
+        rewrite <- Heq.
+        exact Hgy.
+      }
+      claim HyEqT : y = t.
+      {
+        symmetry.
+        exact Hgp.
+      }
+      exact (HyNeT HyEqT).
+    }
+    claim HxXp : x :e (X :\: (Sing p)).
+    {
+      apply (setminusI
+        X
+        (Sing p)
+        x
+        HxX).
+      assume HxSing.
+      exact (HxNeP (SingE p x HxSing)).
+    }
+    claim Hgy : apply_fun g x = y.
+    {
+      exact (HleftInv y HyI).
+    }
+    claim HgySym : y = apply_fun g x.
+    {
+      symmetry.
+      exact Hgy.
+    }
+    exact (eq_subst_mem
+      y
+      (apply_fun g x)
+      (image_of g (X :\: (Sing p)))
+      HgySym
+      (ReplI
+        (X :\: (Sing p))
+        (fun x0:set => apply_fun g x0)
+        x
+        HxXp)).
+}
+claim HconnIminus : connected_space (unit_interval :\: (Sing t))
+  (subspace_topology unit_interval unit_interval_topology (unit_interval :\: (Sing t))).
+{
+  rewrite <- HimgEq.
+  exact HconnImg.
+}
+claim HtEndpoint : t = 0 \/ t = 1.
+{
+  exact (unit_interval_minus_Sing_connected_implies_endpoint
+    t
+    HtI
+    HconnIminus).
+}
+apply HtEndpoint.
+- assume Ht0.
+  apply orIL.
+  rewrite <- (HrightInv p HpX).
+  rewrite Ht0.
+  reflexivity.
+- assume Ht1.
+  apply orIR.
+  rewrite <- (HrightInv p HpX).
+  rewrite Ht1.
+  reflexivity.
+Qed.
+
+(** from S83 Lem 83.1 (line 5470 in algtop.tex): linear graphs are normal **)
+(** LATEX VERSION: Every linear graph X is Hausdorff; in fact, it is normal. **)
+(** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
+(** Bounty 97 **)
+(** Lock Charlie 1772077524 **)
+
 (** from S83 Lem 83.1 (line 5470 in algtop.tex): linear graphs are normal **)
 (** LATEX VERSION: Every linear graph X is Hausdorff; in fact, it is normal. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
