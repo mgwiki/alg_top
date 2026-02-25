@@ -212659,6 +212659,168 @@ exact (graph_vertices_subset_X
   ArcsT).
 Qed.
 
+(** Proven Bob **)
+Theorem tree_in_graph_union_of_contained_arcs :
+  forall T ArcsT X Tx Arcs:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  T = Union {A :e Arcs | A c= T}.
+let T ArcsT X Tx Arcs.
+assume Htree.
+exact (subgraph_of_union_of_contained_arcs
+  T
+  X
+  Tx
+  Arcs
+  (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree)).
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_selected_arc_in_arcs :
+  forall T ArcsT X Tx Arcs A:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e {B :e Arcs | B c= T} ->
+  A :e Arcs.
+let T ArcsT X Tx Arcs A.
+assume Htree HA.
+exact (subgraph_of_selected_arc_in_arcs
+  T
+  X
+  Tx
+  Arcs
+  A
+  (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree)
+  HA).
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_selected_arc_subset_T :
+  forall T ArcsT X Tx Arcs A:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e {B :e Arcs | B c= T} ->
+  A c= T.
+let T ArcsT X Tx Arcs A.
+assume Htree HA.
+exact (subgraph_of_selected_arc_subset_Y
+  T
+  X
+  Tx
+  Arcs
+  A
+  (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree)
+  HA).
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_selected_arc_arc_data :
+  forall T ArcsT X Tx Arcs A:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e {B :e Arcs | B c= T} ->
+  A c= X /\ arc A (subspace_topology X Tx A).
+let T ArcsT X Tx Arcs A.
+assume Htree HA.
+exact (subgraph_of_selected_arc_arc_data
+  T
+  X
+  Tx
+  Arcs
+  A
+  (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree)
+  HA).
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_selected_arc_subset_X :
+  forall T ArcsT X Tx Arcs A:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e {B :e Arcs | B c= T} ->
+  A c= X.
+let T ArcsT X Tx Arcs A.
+assume Htree HA.
+exact (subgraph_of_selected_arc_subset_X
+  T
+  X
+  Tx
+  Arcs
+  A
+  (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree)
+  HA).
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_selected_arc_is_arc :
+  forall T ArcsT X Tx Arcs A:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e {B :e Arcs | B c= T} ->
+  arc A (subspace_topology X Tx A).
+let T ArcsT X Tx Arcs A.
+assume Htree HA.
+exact (subgraph_of_selected_arc_is_arc
+  T
+  X
+  Tx
+  Arcs
+  A
+  (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree)
+  HA).
+Qed.
+
+(** Proven Bob **)
+Theorem tree_in_graph_selected_union_subset_T :
+  forall T ArcsT X Tx Arcs:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  Union {A :e Arcs | A c= T} c= T.
+let T ArcsT X Tx Arcs.
+assume Htree.
+exact (subgraph_of_selected_union_subset_Y
+  T
+  X
+  Tx
+  Arcs
+  (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree)).
+Qed.
+
 (** from S84 Lem 84.1 (line 5563 in algtop.tex): connected iff edge paths **)
 (** LATEX VERSION: A graph X is connected iff every pair of vertices can be **)
 (** joined by an edge path. **)
