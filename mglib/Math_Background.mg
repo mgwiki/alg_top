@@ -227058,61 +227058,6 @@ exact (union_connected_common_point
   Hcommon).
 Qed.
 
-(** from S84 Lem 84.2 (line 5601 in algtop.tex): tree extension **)
-(** LATEX VERSION: If T is a tree and A is an edge intersecting T in a single vertex, **)
-(** then T union A is a tree. Conversely, if T is a finite tree with more than one **)
-(** edge, then T = T0 union A where T0 is a tree and A intersects T0 in one vertex. **)
-(** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
-(** Bounty 242 **)
-(** Lock Charlie 1772106313 **)
-Theorem lemma84_2_tree_extension :
-  forall T ArcsT X Tx Arcs A:set,
-  tree_in_graph T ArcsT X Tx Arcs ->
-  A :e Arcs -> ~(A c= T) ->
-  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
-  tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
-let T ArcsT X Tx Arcs A.
-assume Htree HA Hnsub Hmeet.
-claim HsubTA : subgraph_of (T :\/: A) X Tx Arcs.
-{
-  exact (subgraph_of_union_with_arc
-    T
-    X
-    Tx
-    Arcs
-    A
-    (tree_in_graph_subgraph_of
-      T
-      ArcsT
-      X
-      Tx
-      Arcs
-      Htree)
-    HA).
-}
-(** partial progress:
-    `HsubTA` establishes the subgraph component of the target tree.
-    `HconnTA` establishes connectedness of `(T :\/: A)`.
-    Remaining work is to prove:
-    1) general_linear_graph on `(T :\/: A)` with edge-family `({A} :\/: ArcsT)`,
-    2) no closed reduced edge path in the enlarged graph. **)
-claim HconnTA : connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)).
-{
-  exact (lemma84_2_tree_extension_connected_part
-    T
-    ArcsT
-    X
-    Tx
-    Arcs
-    A
-    Htree
-    HA
-    Hnsub
-    Hmeet).
-}
-admit.
-Admitted.
-
 (** Proven Bob **)
 Theorem lemma84_2_tree_extension_from_components :
   forall T ArcsT X Tx Arcs A:set,
@@ -230157,6 +230102,90 @@ apply andI.
     (x /:e T)
     Hxpack).
 Qed.
+
+(** from S84 Lem 84.2 (line 5601 in algtop.tex): tree extension **)
+(** LATEX VERSION: If T is a tree and A is an edge intersecting T in a single vertex, **)
+(** then T union A is a tree. Conversely, if T is a finite tree with more than one **)
+(** edge, then T = T0 union A where T0 is a tree and A intersects T0 in one vertex. **)
+(** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
+(** Bounty 242 **)
+(** Lock Charlie 1772106313 **)
+Theorem lemma84_2_tree_extension :
+  forall T ArcsT X Tx Arcs A:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e Arcs -> ~(A c= T) ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
+	let T ArcsT X Tx Arcs A.
+	assume Htree HA Hnsub Hmeet.
+	claim HsubTA : subgraph_of (T :\/: A) X Tx Arcs.
+	{
+	  exact (subgraph_of_union_with_arc
+	    T
+	    X
+	    Tx
+	    Arcs
+	    A
+	    (tree_in_graph_subgraph_of
+	      T
+	      ArcsT
+	      X
+	      Tx
+	      Arcs
+	      Htree)
+	    HA).
+	}
+	claim HconnTA : connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)).
+	{
+	  exact (lemma84_2_tree_extension_connected_part
+	    T
+	    ArcsT
+	    X
+	    Tx
+	    Arcs
+	    A
+	    Htree
+	    HA
+	    Hnsub
+	    Hmeet).
+	}
+	claim HglgTA :
+	  general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT).
+	{
+	  exact (lemma84_2_tree_extension_general_linear_graph_part
+	    T
+	    ArcsT
+	    X
+	    Tx
+	    Arcs
+	    A
+	    Htree
+	    HA
+	    Hnsub
+	    Hmeet).
+	}
+	claim HnoloopTA :
+	  ~(exists n path_seq x0:set,
+	      n :e omega /\ n <> 0 /\
+	      reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+	        ({A} :\/: ArcsT) n path_seq x0 /\
+	      (exists j:set, j :e n /\ ordsucc j /:e n /\
+	        (apply_fun path_seq j) 0 1 = x0)).
+	{
+	  exact (lemma84_2_tree_extension_no_closed_reduced_edge_path_part
+	    T
+	    ArcsT
+	    X
+	    Tx
+	    Arcs
+	    A
+	    Htree
+	    HA
+	    Hnsub
+	    Hmeet).
+	}
+	admit.
+Admitted.
 
 (** Proven Bob **)
 Theorem lemma84_2_union_has_point_in_X_outside_original_tree :
