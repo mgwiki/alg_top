@@ -220893,6 +220893,53 @@ exact (selected_arc_subset_from_noncontained_selected_arc_contradiction
     HTsub)).
 Qed.
 
+(** Proven Bob **)
+Theorem selected_arc_obligation_subset_implies_noncontained_contradiction :
+  forall T T' ArcsT' X Tx Arcs:set,
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  (forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T) ->
+  (forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False).
+let T T' ArcsT' X Tx Arcs.
+assume Htree' HsubOb.
+let A.
+assume HASel Hnsub.
+exact (Hnsub
+  (HsubOb
+    A
+    HASel)).
+Qed.
+
+(** Proven Bob **)
+Theorem selected_arc_obligation_subset_iff_noncontained_contradiction :
+  forall T T' ArcsT' X Tx Arcs:set,
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  ((forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T) <->
+   (forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False)).
+let T T' ArcsT' X Tx Arcs.
+assume Htree'.
+apply iffI.
+- assume HsubOb.
+  exact (selected_arc_obligation_subset_implies_noncontained_contradiction
+    T
+    T'
+    ArcsT'
+    X
+    Tx
+    Arcs
+    Htree'
+    HsubOb).
+- assume HcontraOb.
+  exact (selected_arc_subset_from_noncontained_selected_arc_contradiction
+    T
+    T'
+    ArcsT'
+    X
+    Tx
+    Arcs
+    Htree'
+    HcontraOb).
+Qed.
+
 (** from S84 Lem 84.2 converse (line 5601 in algtop.tex): finite tree decomposition **)
 (** LATEX VERSION: If T is a finite tree with more than one edge, then T = T0 union A **)
 (** where T0 is a tree and A intersects T0 in a single vertex. **)
