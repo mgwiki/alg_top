@@ -223031,72 +223031,34 @@ Theorem maximal_tree_edge_meeting_tree_forces_subset :
   A c= T.
 let T ArcsT X Tx Arcs A.
 assume Hmax HA Hmeet.
-apply (xm (A c= T)).
-- assume HAsubT.
-  exact HAsubT.
-- assume HnotSub.
-  claim Htree : tree_in_graph T ArcsT X Tx Arcs.
-  {
-    exact (maximal_tree_tree_in_graph
-      T
-      ArcsT
-      X
-      Tx
-      Arcs
-      Hmax).
-  }
-  claim HtreeExt : tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
-  {
-    exact (lemma84_2_tree_extension
+exact (maximal_tree_edge_meeting_tree_forces_subset_from_extension_obligation
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  Hmax
+  HA
+  Hmeet
+  (fun Hnsub =>
+    lemma84_2_tree_extension
       T
       ArcsT
       X
       Tx
       Arcs
       A
-      Htree
+      (maximal_tree_tree_in_graph
+        T
+        ArcsT
+        X
+        Tx
+        Arcs
+        Hmax)
       HA
-      HnotSub
-      Hmeet).
-  }
-  claim HunionEqT : T :\/: A = T.
-  {
-    exact (maximal_tree_inclusion_eq
-      T
-      ArcsT
-      (T :\/: A)
-      ({A} :\/: ArcsT)
-      X
-      Tx
-      Arcs
-      Hmax
-      HtreeExt
-      (binunion_Subq_1
-        T
-        A)).
-  }
-  claim HAsubT : A c= T.
-  {
-    let x.
-    assume HxA.
-    claim HxUnion : x :e T :\/: A.
-    {
-      exact (binunionI2
-        T
-        A
-        x
-        HxA).
-    }
-    exact (mem_eqR
-      x
-      (T :\/: A)
-      T
-      HunionEqT
-      HxUnion).
-  }
-exact (FalseE
-    (HnotSub HAsubT)
-    (A c= T)).
+      Hnsub
+      Hmeet)).
 (** blocked on lemma84_2_tree_extension being admitted; upgrade to Qed after that theorem is proved. **)
 Admitted.
 
@@ -223254,8 +223216,10 @@ claim HAsubT : A c= T.
     HA
     Hmeet).
 }
-	exact (HxNotT
-	  (HAsubT x HxA)).
+exact (HxNotT
+  (HAsubT
+    x
+    HxA)).
 (** blocked via maximal_tree_edge_meeting_tree_forces_subset -> lemma84_2_tree_extension. **)
 Admitted.
 
