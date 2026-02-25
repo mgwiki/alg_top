@@ -220796,6 +220796,46 @@ apply iffI.
 Qed.
 
 (** Proven Bob **)
+Theorem lemma84_2_tree_extension_iff_components_from_hypotheses :
+  forall T ArcsT X Tx Arcs A:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e Arcs -> ~(A c= T) ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  (tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs <->
+   ((general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+     connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A))) /\
+    ~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT) n path_seq x0 /\
+        (exists j:set, j :e n /\ ordsucc j /:e n /\
+          (apply_fun path_seq j) 0 1 = x0)))).
+let T ArcsT X Tx Arcs A.
+assume Htree HA Hnsub Hmeet.
+exact (lemma84_2_tree_extension_iff_components
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  (subgraph_of_union_with_arc
+    T
+    X
+    Tx
+    Arcs
+    A
+    (tree_in_graph_subgraph_of
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      Htree)
+    HA)).
+Qed.
+
+(** Proven Bob **)
 Theorem lemma84_2_tree_extension_from_hypotheses_and_components :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
