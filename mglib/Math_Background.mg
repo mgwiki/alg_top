@@ -185773,6 +185773,62 @@ exact ((andER
 Qed.
 
 (** Proven Bob **)
+Theorem preimage_singleton_empty_of_subset_implies_no_preimage_point_of_subset :
+  forall A pi y:set,
+  preimage_of A pi (Sing y) = Empty ->
+  ~ (exists x:set, x :e A /\ apply_fun pi x = y).
+let A pi y.
+assume HpreEmp.
+exact ((andER
+  (~ (exists x:set, x :e A /\ apply_fun pi x = y) -> preimage_of A pi (Sing y) = Empty)
+  (preimage_of A pi (Sing y) = Empty -> ~ (exists x:set, x :e A /\ apply_fun pi x = y))
+  (no_preimage_point_iff_preimage_singleton_empty A pi y))
+  HpreEmp).
+Qed.
+
+(** Proven Bob **)
+Theorem no_preimage_point_of_subset_implies_preimage_singleton_empty_of_subset :
+  forall A pi y:set,
+  ~ (exists x:set, x :e A /\ apply_fun pi x = y) ->
+  preimage_of A pi (Sing y) = Empty.
+let A pi y.
+assume HnoPt.
+exact ((andEL
+  (~ (exists x:set, x :e A /\ apply_fun pi x = y) -> preimage_of A pi (Sing y) = Empty)
+  (preimage_of A pi (Sing y) = Empty -> ~ (exists x:set, x :e A /\ apply_fun pi x = y))
+  (no_preimage_point_iff_preimage_singleton_empty A pi y))
+  HnoPt).
+Qed.
+
+(** Proven Bob **)
+Theorem preimage_singleton_nonempty_of_subset_implies_mem_image_of_subset :
+  forall A pi y:set,
+  preimage_of A pi (Sing y) <> Empty ->
+  y :e image_of pi A.
+let A pi y.
+assume HpreNe.
+exact ((andER
+  (y :e image_of pi A -> preimage_of A pi (Sing y) <> Empty)
+  (preimage_of A pi (Sing y) <> Empty -> y :e image_of pi A)
+  (mem_image_iff_preimage_singleton_nonempty A pi y))
+  HpreNe).
+Qed.
+
+(** Proven Bob **)
+Theorem mem_image_of_subset_implies_preimage_singleton_nonempty_of_subset :
+  forall A pi y:set,
+  y :e image_of pi A ->
+  preimage_of A pi (Sing y) <> Empty.
+let A pi y.
+assume HyImg.
+exact ((andEL
+  (y :e image_of pi A -> preimage_of A pi (Sing y) <> Empty)
+  (preimage_of A pi (Sing y) <> Empty -> y :e image_of pi A)
+  (mem_image_iff_preimage_singleton_nonempty A pi y))
+  HyImg).
+Qed.
+
+(** Proven Bob **)
 Theorem exists_preimage_point_of_subset_implies_mem_image_of_subset :
   forall A pi y:set,
   (exists x:set, x :e A /\ apply_fun pi x = y) ->
