@@ -219702,6 +219702,91 @@ exact (maximal_tree_all_vertices_if_noncontained_edges_meet_tree_and_extend
 (** blocked directly on lemma84_2_tree_extension being admitted; upgrade to Qed after that theorem is proved. **)
 Admitted.
 
+(** Proven Bob **)
+Theorem graph_vertices_subset_T_arc_endpoint_left_in_T :
+  forall T X Tx Arcs A p q:set,
+  general_linear_graph X Tx Arcs ->
+  graph_vertices X Tx Arcs c= T ->
+  A :e Arcs ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  p :e T.
+let T X Tx Arcs A p q.
+assume Hglg HVsubT HA Hend.
+exact (HVsubT
+  p
+  (graph_vertices_intro_from_endpoint_left
+    X
+    Tx
+    Arcs
+    A
+    p
+    q
+    Hglg
+    HA
+    Hend)).
+Qed.
+
+(** Proven Bob **)
+Theorem graph_vertices_subset_T_arc_endpoint_right_in_T :
+  forall T X Tx Arcs A p q:set,
+  general_linear_graph X Tx Arcs ->
+  graph_vertices X Tx Arcs c= T ->
+  A :e Arcs ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  q :e T.
+let T X Tx Arcs A p q.
+assume Hglg HVsubT HA Hend.
+exact (HVsubT
+  q
+  (graph_vertices_intro_from_endpoint_right
+    X
+    Tx
+    Arcs
+    A
+    p
+    q
+    Hglg
+    HA
+    Hend)).
+Qed.
+
+(** Proven Bob **)
+Theorem graph_vertices_subset_T_arc_endpoints_in_T :
+  forall T X Tx Arcs A p q:set,
+  general_linear_graph X Tx Arcs ->
+  graph_vertices X Tx Arcs c= T ->
+  A :e Arcs ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  p :e T /\ q :e T.
+let T X Tx Arcs A p q.
+assume Hglg HVsubT HA Hend.
+apply andI.
+- exact (graph_vertices_subset_T_arc_endpoint_left_in_T
+    T
+    X
+    Tx
+    Arcs
+    A
+    p
+    q
+    Hglg
+    HVsubT
+    HA
+    Hend).
+- exact (graph_vertices_subset_T_arc_endpoint_right_in_T
+    T
+    X
+    Tx
+    Arcs
+    A
+    p
+    q
+    Hglg
+    HVsubT
+    HA
+    Hend).
+Qed.
+
 (** from S84 Lem 84.2 converse (line 5601 in algtop.tex): finite tree decomposition **)
 (** LATEX VERSION: If T is a finite tree with more than one edge, then T = T0 union A **)
 (** where T0 is a tree and A intersects T0 in a single vertex. **)
