@@ -77009,6 +77009,168 @@ apply andI.
 - reflexivity.
 Qed.
 
+(** Proven Bob **)
+Theorem lemma54_2_sheet_non_switching_local_from_slices_witness_via_eq_data :
+  forall N E Te B Tb p U slices F Ft q z Vq Vz:set,
+  topology_on E Te ->
+  (slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall W:set, W :e slices ->
+      homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+        (graph W (fun y:set => apply_fun p y)))) ->
+  N c= unit_square ->
+  connected_space N (subspace_topology unit_square unit_square_topology N) ->
+  continuous_map N (subspace_topology unit_square unit_square_topology N) E Te Ft ->
+  (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t)) ->
+  (forall x:set, x :e N -> apply_fun F x :e U) ->
+  q :e N ->
+  z :e N ->
+  apply_fun Ft q :e Vq ->
+  Vq :e slices ->
+  apply_fun Ft z :e Vz ->
+  Vz :e slices ->
+  Vz = Vq.
+let N E Te B Tb p U slices F Ft q z Vq Vz.
+assume HtopE Hpack HNsubSq HNconn HFtCont HcommSq HFU HqN HzN HFtqVq HVqSlice HFtzVz HVzSlice.
+claim Hpd : pairwise_disjoint slices.
+{
+  apply (and4E
+    (slices c= Te)
+    (pairwise_disjoint slices)
+    (Union slices = preimage_of E p U)
+    (forall W:set, W :e slices ->
+      homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+        (graph W (fun y:set => apply_fun p y)))
+    Hpack).
+  assume Hsub Hpd0 Hunion Hhome.
+  exact Hpd0.
+}
+claim HeqData :
+  exists Vq0 Vz0:set,
+    apply_fun Ft q :e Vq0 /\ apply_fun Ft z :e Vz0 /\
+    Vq0 :e slices /\ Vz0 :e slices /\ Vz0 = Vq0.
+{
+  exact (lemma54_2_two_points_same_sheet_eq_data_from_slices_witness
+    N
+    E
+    Te
+    B
+    Tb
+    p
+    U
+    slices
+    F
+    Ft
+    q
+    z
+    HtopE
+    Hpack
+    HNsubSq
+    HNconn
+    HFtCont
+    HcommSq
+    HFU
+    HqN
+    HzN).
+}
+apply HeqData.
+let Vq0.
+assume HVq0Pack.
+apply HVq0Pack.
+let Vz0.
+assume HVz0Pack.
+claim Hleft4 :
+  (((apply_fun Ft q :e Vq0 /\ apply_fun Ft z :e Vz0) /\ Vq0 :e slices) /\ Vz0 :e slices).
+{
+  exact (andEL
+    (((apply_fun Ft q :e Vq0 /\ apply_fun Ft z :e Vz0) /\ Vq0 :e slices) /\ Vz0 :e slices)
+    (Vz0 = Vq0)
+    HVz0Pack).
+}
+claim Hleft3 :
+  ((apply_fun Ft q :e Vq0 /\ apply_fun Ft z :e Vz0) /\ Vq0 :e slices).
+{
+  exact (andEL
+    ((apply_fun Ft q :e Vq0 /\ apply_fun Ft z :e Vz0) /\ Vq0 :e slices)
+    (Vz0 :e slices)
+    Hleft4).
+}
+claim Hpair :
+  (apply_fun Ft q :e Vq0 /\ apply_fun Ft z :e Vz0).
+{
+  exact (andEL
+    (apply_fun Ft q :e Vq0 /\ apply_fun Ft z :e Vz0)
+    (Vq0 :e slices)
+    Hleft3).
+}
+claim HFtqVq0 : apply_fun Ft q :e Vq0.
+{
+  exact (andEL
+    (apply_fun Ft q :e Vq0)
+    (apply_fun Ft z :e Vz0)
+    Hpair).
+}
+claim HFtzVz0 : apply_fun Ft z :e Vz0.
+{
+  exact (andER
+    (apply_fun Ft q :e Vq0)
+    (apply_fun Ft z :e Vz0)
+    Hpair).
+}
+claim HVq0Slice : Vq0 :e slices.
+{
+  exact (andER
+    (apply_fun Ft q :e Vq0 /\ apply_fun Ft z :e Vz0)
+    (Vq0 :e slices)
+    Hleft3).
+}
+claim HVz0Slice : Vz0 :e slices.
+{
+  exact (andER
+    ((apply_fun Ft q :e Vq0 /\ apply_fun Ft z :e Vz0) /\ Vq0 :e slices)
+    (Vz0 :e slices)
+    Hleft4).
+}
+claim HVz0EqVq0 : Vz0 = Vq0.
+{
+  exact (andER
+    (((apply_fun Ft q :e Vq0 /\ apply_fun Ft z :e Vz0) /\ Vq0 :e slices) /\ Vz0 :e slices)
+    (Vz0 = Vq0)
+    HVz0Pack).
+}
+claim HVqEqVq0 : Vq = Vq0.
+{
+  exact (pairwise_disjoint_point_unique_member
+    slices
+    Vq
+    Vq0
+    (apply_fun Ft q)
+    Hpd
+    HVqSlice
+    HVq0Slice
+    HFtqVq
+    HFtqVq0).
+}
+claim HVzEqVz0 : Vz = Vz0.
+{
+  exact (pairwise_disjoint_point_unique_member
+    slices
+    Vz
+    Vz0
+    (apply_fun Ft z)
+    Hpd
+    HVzSlice
+    HVz0Slice
+    HFtzVz
+    HFtzVz0).
+}
+rewrite HVzEqVz0.
+rewrite HVz0EqVq0.
+rewrite <- HVqEqVq0.
+reflexivity.
+Qed.
+
 Theorem lemma54_2_sheet_non_switching_local :
   forall E Te B Tb p F Ft q z N U slices Vq Vz:set,
   pairwise_disjoint slices ->
