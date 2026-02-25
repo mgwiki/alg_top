@@ -209875,6 +209875,178 @@ Definition graph_vertices : set -> set -> set -> set :=
       exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
         (x = p \/ x = q)}.
 
+(** Infrastructure: basic endpoint extractors for end_points_of_arc **)
+(** Proven Bob **)
+Theorem end_points_of_arc_implies_arc :
+  forall X Tx p q:set,
+  end_points_of_arc X Tx p q ->
+  arc X Tx.
+let X Tx p q.
+assume Hend.
+apply (and6E
+  (arc X Tx)
+  (p :e X)
+  (q :e X)
+  (p <> q)
+  (connected_space (X :\: (Sing p)) (subspace_topology X Tx (X :\: (Sing p))))
+  (connected_space (X :\: (Sing q)) (subspace_topology X Tx (X :\: (Sing q))))
+  Hend).
+assume Harc HpX HqX Hneq Hconnp Hconnq.
+exact Harc.
+Qed.
+
+(** Proven Bob **)
+Theorem end_points_of_arc_left_in_set :
+  forall X Tx p q:set,
+  end_points_of_arc X Tx p q ->
+  p :e X.
+let X Tx p q.
+assume Hend.
+apply (and6E
+  (arc X Tx)
+  (p :e X)
+  (q :e X)
+  (p <> q)
+  (connected_space (X :\: (Sing p)) (subspace_topology X Tx (X :\: (Sing p))))
+  (connected_space (X :\: (Sing q)) (subspace_topology X Tx (X :\: (Sing q))))
+  Hend).
+assume Harc HpX HqX Hneq Hconnp Hconnq.
+exact HpX.
+Qed.
+
+(** Proven Bob **)
+Theorem end_points_of_arc_right_in_set :
+  forall X Tx p q:set,
+  end_points_of_arc X Tx p q ->
+  q :e X.
+let X Tx p q.
+assume Hend.
+apply (and6E
+  (arc X Tx)
+  (p :e X)
+  (q :e X)
+  (p <> q)
+  (connected_space (X :\: (Sing p)) (subspace_topology X Tx (X :\: (Sing p))))
+  (connected_space (X :\: (Sing q)) (subspace_topology X Tx (X :\: (Sing q))))
+  Hend).
+assume Harc HpX HqX Hneq Hconnp Hconnq.
+exact HqX.
+Qed.
+
+(** Proven Bob **)
+Theorem graph_vertices_intro_from_endpoint_left :
+  forall X Tx Arcs A p q:set,
+  general_linear_graph X Tx Arcs ->
+  A :e Arcs ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  p :e graph_vertices X Tx Arcs.
+let X Tx Arcs A p q.
+assume Hglg HA Hend.
+claim HAcX : A c= X.
+{
+  exact (andEL
+    (A c= X)
+    (arc A (subspace_topology X Tx A))
+    (general_linear_graph_arc_data X Tx Arcs A Hglg HA)).
+}
+claim HpA : p :e A.
+{
+  exact (end_points_of_arc_left_in_set
+    A
+    (subspace_topology X Tx A)
+    p
+    q
+    Hend).
+}
+claim HpX : p :e X.
+{
+  exact (HAcX p HpA).
+}
+claim HpPred :
+  exists A0:set, A0 :e Arcs /\
+    exists p0 q0:set, end_points_of_arc A0 (subspace_topology X Tx A0) p0 q0 /\
+      (p = p0 \/ p = q0).
+{
+  claim Hpp : p = p.
+  {
+    reflexivity.
+  }
+  witness A.
+  apply andI.
+  - exact HA.
+  - witness p.
+    witness q.
+    apply andI.
+    + exact Hend.
+    + exact (orIL (p = p) (p = q) Hpp).
+}
+exact (SepI
+  X
+  (fun x:set => exists A0:set, A0 :e Arcs /\
+    exists p0 q0:set, end_points_of_arc A0 (subspace_topology X Tx A0) p0 q0 /\
+      (x = p0 \/ x = q0))
+  p
+  HpX
+  HpPred).
+Qed.
+
+(** Proven Bob **)
+Theorem graph_vertices_intro_from_endpoint_right :
+  forall X Tx Arcs A p q:set,
+  general_linear_graph X Tx Arcs ->
+  A :e Arcs ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  q :e graph_vertices X Tx Arcs.
+let X Tx Arcs A p q.
+assume Hglg HA Hend.
+claim HAcX : A c= X.
+{
+  exact (andEL
+    (A c= X)
+    (arc A (subspace_topology X Tx A))
+    (general_linear_graph_arc_data X Tx Arcs A Hglg HA)).
+}
+claim HqA : q :e A.
+{
+  exact (end_points_of_arc_right_in_set
+    A
+    (subspace_topology X Tx A)
+    p
+    q
+    Hend).
+}
+claim HqX : q :e X.
+{
+  exact (HAcX q HqA).
+}
+claim HqPred :
+  exists A0:set, A0 :e Arcs /\
+    exists p0 q0:set, end_points_of_arc A0 (subspace_topology X Tx A0) p0 q0 /\
+      (q = p0 \/ q = q0).
+{
+  claim Hqq : q = q.
+  {
+    reflexivity.
+  }
+  witness A.
+  apply andI.
+  - exact HA.
+  - witness p.
+    witness q.
+    apply andI.
+    + exact Hend.
+    + exact (orIR (q = p) (q = q) Hqq).
+}
+exact (SepI
+  X
+  (fun x:set => exists A0:set, A0 :e Arcs /\
+    exists p0 q0:set, end_points_of_arc A0 (subspace_topology X Tx A0) p0 q0 /\
+      (x = p0 \/ x = q0))
+  q
+  HqX
+  HqPred).
+Qed.
+
 (** Proven Bob **)
 Theorem graph_vertices_subset_X :
   forall X Tx Arcs:set,
@@ -209907,6 +210079,84 @@ exact (SepE2
       (y = p \/ y = q))
   x
   Hx).
+Qed.
+
+(** Proven Bob **)
+Theorem graph_vertices_member_in_some_arc :
+  forall X Tx Arcs x:set,
+  x :e graph_vertices X Tx Arcs ->
+  exists A:set, A :e Arcs /\ x :e A.
+let X Tx Arcs x.
+assume Hx.
+apply (graph_vertices_has_endpoint_witness X Tx Arcs x Hx).
+let A.
+assume HApack.
+claim HAArcs : A :e Arcs.
+{
+  exact (andEL
+    (A :e Arcs)
+    (exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q))
+    HApack).
+}
+claim HendPack :
+  exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+    (x = p \/ x = q).
+{
+  exact (andER
+    (A :e Arcs)
+    (exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q))
+    HApack).
+}
+apply HendPack.
+let p.
+assume HpPack.
+apply HpPack.
+let q.
+assume HpqPack.
+claim Hend : end_points_of_arc A (subspace_topology X Tx A) p q.
+{
+  exact (andEL
+    (end_points_of_arc A (subspace_topology X Tx A) p q)
+    (x = p \/ x = q)
+    HpqPack).
+}
+claim HxEq : x = p \/ x = q.
+{
+  exact (andER
+    (end_points_of_arc A (subspace_topology X Tx A) p q)
+    (x = p \/ x = q)
+    HpqPack).
+}
+claim HpA : p :e A.
+{
+  exact (end_points_of_arc_left_in_set
+    A
+    (subspace_topology X Tx A)
+    p
+    q
+    Hend).
+}
+claim HqA : q :e A.
+{
+  exact (end_points_of_arc_right_in_set
+    A
+    (subspace_topology X Tx A)
+    p
+    q
+    Hend).
+}
+witness A.
+apply andI.
+- exact HAArcs.
+- apply HxEq.
+  + assume Hxp.
+    rewrite Hxp.
+    exact HpA.
+  + assume Hxq.
+    rewrite Hxq.
+    exact HqA.
 Qed.
 
 (** from S83 Lem 83.1 (line 5470 in algtop.tex): linear graphs are normal **)
