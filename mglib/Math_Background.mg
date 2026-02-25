@@ -238001,6 +238001,21 @@ Theorem thm84_4_forward_meeting_obligation :
   A :e Arcs ->
   ~(A c= T) ->
   exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
+let T ArcsT X Tx Arcs A.
+assume Hmax HA Hnsub.
+claim Htree : tree_in_graph T ArcsT X Tx Arcs.
+{
+  exact (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax).
+}
+(** Remaining forward S84.4 gap:
+    construct a single-vertex intersection witness for each noncontained edge.
+    This is the last missing input for the forward obligation quartet. **)
 admit.
 Admitted.
 
@@ -238590,6 +238605,26 @@ Theorem thm84_4_backward_selected_arc_endpoint_close_obligation :
     end_points_of_arc A (subspace_topology X Tx A) p q ->
     p :e T /\ q :e T ->
     A c= T.
+let T ArcsT T' ArcsT' X Tx Arcs.
+assume Hrhs Htree' HTsub.
+let A p q.
+assume HASel Hend Hep.
+claim Htree : tree_in_graph T ArcsT X Tx Arcs.
+{
+  exact (andEL
+    (tree_in_graph T ArcsT X Tx Arcs)
+    (graph_vertices X Tx Arcs c= T)
+    Hrhs).
+}
+claim HVT : graph_vertices X Tx Arcs c= T.
+{
+  exact (andER
+    (tree_in_graph T ArcsT X Tx Arcs)
+    (graph_vertices X Tx Arcs c= T)
+    Hrhs).
+}
+(** Remaining backward S84.4 endpoint-closure gap:
+    from selected-arc endpoint placement in T, derive full selected-arc subset in T. **)
 admit.
 Admitted.
 
