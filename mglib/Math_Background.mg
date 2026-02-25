@@ -220622,6 +220622,139 @@ exact (subgraph_of_union_with_arc
   HA).
 Qed.
 
+(** helper: the tree extension union is connected whenever A meets T in a vertex **)
+(** Proven Charlie **)
+Theorem lemma84_2_tree_extension_connected_part :
+  forall T ArcsT X Tx Arcs A:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e Arcs -> ~(A c= T) ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)).
+let T ArcsT X Tx Arcs A.
+assume Htree HA Hnsub Hmeet.
+claim HglgX : general_linear_graph X Tx Arcs.
+{
+  exact (subgraph_of_general_linear_graph
+    T
+    X
+    Tx
+    Arcs
+    (tree_in_graph_subgraph_of
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      Htree)).
+}
+claim HtopX : topology_on X Tx.
+{ exact (general_linear_graph_topology_on X Tx Arcs HglgX). }
+claim HTsubX : T c= X.
+{ exact (tree_in_graph_subset_X T ArcsT X Tx Arcs Htree). }
+claim HAsubX : A c= X.
+{
+  exact (andEL
+    (A c= X)
+    (arc A (subspace_topology X Tx A))
+    (general_linear_graph_arc_data
+      X
+      Tx
+      Arcs
+      A
+      HglgX
+      HA)).
+}
+claim HconnT : connected_space T (subspace_topology X Tx T).
+{
+  exact (tree_in_graph_connected
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+claim HconnA : connected_space A (subspace_topology X Tx A).
+{
+  claim HarcA : arc A (subspace_topology X Tx A).
+  {
+    exact (andER
+      (A c= X)
+      (arc A (subspace_topology X Tx A))
+      (general_linear_graph_arc_data X Tx Arcs A HglgX HA)).
+  }
+  apply HarcA.
+  let f.
+  assume Hhome.
+  exact (homeomorphism_preserves_connected
+    unit_interval
+    unit_interval_topology
+    A
+    (subspace_topology X Tx A)
+    f
+    Hhome
+    unit_interval_connected).
+}
+apply Hmeet.
+let v.
+assume Hvpack.
+claim HcapEq : T :/\: A = Sing v.
+{ exact (andER (v :e graph_vertices X Tx Arcs) (T :/\: A = Sing v) Hvpack). }
+claim HvCap : v :e T :/\: A.
+{ exact (mem_eqL v (T :/\: A) (Sing v) HcapEq (SingI v)). }
+claim HvT : v :e T.
+{ exact (binintersectE1 T A v HvCap). }
+claim HvA : v :e A.
+{ exact (binintersectE2 T A v HvCap). }
+
+rewrite <- (Union_UPair_eq_binunion T A).
+claim HsubFam : forall C:set, C :e UPair T A -> C c= X.
+{
+  let C.
+  assume HC.
+  apply (UPairE C T A HC).
+  - assume Heq.
+    rewrite Heq.
+    exact HTsubX.
+  - assume Heq.
+    rewrite Heq.
+    exact HAsubX.
+}
+claim HconnFam : forall C:set, C :e UPair T A -> connected_space C (subspace_topology X Tx C).
+{
+  let C.
+  assume HC.
+  apply (UPairE C T A HC).
+  - assume Heq.
+    rewrite Heq.
+    exact HconnT.
+  - assume Heq.
+    rewrite Heq.
+    exact HconnA.
+}
+claim Hcommon : exists x:set, forall C:set, C :e UPair T A -> x :e C.
+{
+  witness v.
+  let C.
+  assume HC.
+  apply (UPairE C T A HC).
+  - assume Heq.
+    rewrite Heq.
+    exact HvT.
+  - assume Heq.
+    rewrite Heq.
+    exact HvA.
+}
+exact (union_connected_common_point
+  X
+  Tx
+  (UPair T A)
+  HtopX
+  HsubFam
+  HconnFam
+  Hcommon).
+Qed.
+
 (** Proven Bob **)
 Theorem lemma84_2_not_subset_has_outside_point :
   forall T ArcsT X Tx Arcs A:set,
