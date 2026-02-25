@@ -221294,9 +221294,21 @@ apply (thm84_4_maximal_tree_all_vertices_from_obligations
         construct a single-vertex intersection witness for noncontained edge A. **)
     admit.
   }
-  claim HcompA :
-    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
-    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
+  claim HglgTA :
+    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT).
+  {
+    (** remaining forward subgap (component 1):
+        prove glg on (T :\/: A) with edge family ({A} :\/: ArcsT). **)
+    admit.
+  }
+  claim HconnTA :
+    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)).
+  {
+    (** remaining forward subgap (component 2):
+        prove connectedness of (T :\/: A). **)
+    admit.
+  }
+  claim HnoloopTA :
     ~(exists n path_seq x0:set,
         n :e omega /\ n <> 0 /\
         reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
@@ -221304,8 +221316,8 @@ apply (thm84_4_maximal_tree_all_vertices_from_obligations
         (exists j:set, j :e n /\ ordsucc j /:e n /\
           (apply_fun path_seq j) 0 1 = x0)).
   {
-    (** remaining forward subgap (components):
-        prove glg/connected/no-closed-reduced-path on (T :\/: A). **)
+    (** remaining forward subgap (component 3):
+        prove no closed reduced edge path in (T :\/: A). **)
     admit.
   }
   apply HmeetA.
@@ -221324,56 +221336,6 @@ apply (thm84_4_maximal_tree_all_vertices_from_obligations
       (v :e graph_vertices X Tx Arcs)
       (T :/\: A = Sing v)
       Hvpack).
-  }
-  claim HglgConn :
-    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
-    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)).
-  {
-    exact (andEL
-      (general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
-       connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)))
-      (~(exists n path_seq x0:set,
-          n :e omega /\ n <> 0 /\
-          reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
-            ({A} :\/: ArcsT) n path_seq x0 /\
-          (exists j:set, j :e n /\ ordsucc j /:e n /\
-            (apply_fun path_seq j) 0 1 = x0)))
-      HcompA).
-  }
-  claim HglgTA :
-    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT).
-  {
-    exact (andEL
-      (general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT))
-      (connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)))
-      HglgConn).
-  }
-  claim HconnTA :
-    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)).
-  {
-    exact (andER
-      (general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT))
-      (connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)))
-      HglgConn).
-  }
-  claim HnoloopTA :
-    ~(exists n path_seq x0:set,
-        n :e omega /\ n <> 0 /\
-        reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
-          ({A} :\/: ArcsT) n path_seq x0 /\
-        (exists j:set, j :e n /\ ordsucc j /:e n /\
-          (apply_fun path_seq j) 0 1 = x0)).
-  {
-    exact (andER
-      (general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
-       connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)))
-      (~(exists n path_seq x0:set,
-          n :e omega /\ n <> 0 /\
-          reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
-            ({A} :\/: ArcsT) n path_seq x0 /\
-          (exists j:set, j :e n /\ ordsucc j /:e n /\
-            (apply_fun path_seq j) 0 1 = x0)))
-      HcompA).
   }
   witness v.
   apply and5I.
@@ -221408,7 +221370,8 @@ apply (thm84_4_maximal_tree_all_vertices_from_obligations
       A0 c= T.
   {
     (** remaining backward subgap B:
-        from endpoint-in-T information derive selected arc inclusion in T. **)
+        from endpoint-in-T information derive selected arc inclusion in T
+        for selected arcs of T'. **)
     admit.
   }
   claim HsubsetSel :
