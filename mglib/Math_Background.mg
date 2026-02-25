@@ -230477,6 +230477,41 @@ assume HnOm HnNe0 Hred Hclosed.
 				            rewrite HfinmEqV2.
 				            exact HvInT.
 				          }
+				          claim HfinmNeW : finm <> w.
+				          {
+				            assume HfinmEqW2.
+				            claim HvEqW2 : v = w.
+				            {
+				              rewrite <- HfinmEqV2.
+				              exact HfinmEqW2.
+				            }
+				            exact (HvNeW HvEqW2).
+				          }
+				          claim HiniSmEqV : (apply_fun path_seq (ordsucc m)) 0 0 = v.
+				          {
+				            rewrite HinijProjM.
+				            exact HinijEqV.
+				          }
+				          claim HfinSmEqW :
+				            (apply_fun path_seq (ordsucc m)) 0 1 = w.
+				          {
+				            claim HfinSmProj :
+				              (apply_fun path_seq (ordsucc m)) 0 1 = finj0.
+				            {
+				              claim HappSm :
+				                apply_fun path_seq (ordsucc m) = ((inij, finj0), Ej).
+				              {
+				                rewrite <- HjEqSm.
+				                exact HappjM.
+				              }
+				              rewrite HappSm.
+				              rewrite (tuple_2_0_eq (inij, finj0) Ej).
+				              rewrite tuple_2_1_eq.
+				              reflexivity.
+				            }
+				            rewrite HfinSmProj.
+				            exact Hfinj0EqW.
+				          }
 				          claim HinimNeW : inim <> w.
 				          {
 				            assume HinimEqW2.
