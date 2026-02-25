@@ -210540,6 +210540,175 @@ apply iffI.
       HApack)).
 Qed.
 
+(** Proven Bob **)
+Theorem subgraph_of_union_with_arc :
+  forall T X Tx Arcs A:set,
+  subgraph_of T X Tx Arcs ->
+  A :e Arcs ->
+  subgraph_of (T :\/: A) X Tx Arcs.
+let T X Tx Arcs A.
+assume Hsub HA.
+claim Hglg : general_linear_graph X Tx Arcs.
+{
+  exact (subgraph_of_general_linear_graph
+    T
+    X
+    Tx
+    Arcs
+    Hsub).
+}
+claim HTsubX : T c= X.
+{
+  exact (subgraph_of_subset
+    T
+    X
+    Tx
+    Arcs
+    Hsub).
+}
+claim HAsubX : A c= X.
+{
+  exact (andEL
+    (A c= X)
+    (arc A (subspace_topology X Tx A))
+    (general_linear_graph_arc_data
+      X
+      Tx
+      Arcs
+      A
+      Hglg
+      HA)).
+}
+claim HTA_sub_X : (T :\/: A) c= X.
+{
+  let x.
+  assume HxTA.
+  apply (binunionE T A x HxTA).
+  - assume HxT.
+    exact (HTsubX x HxT).
+  - assume HxA.
+    exact (HAsubX x HxA).
+}
+claim HTA_sub_UnionSel : (T :\/: A) c= Union {B :e Arcs | B c= T :\/: A}.
+{
+  let x.
+  assume HxTA.
+  apply (binunionE T A x HxTA).
+  - assume HxT.
+    apply (subgraph_of_point_in_Y_in_selected_arc
+      T
+      X
+      Tx
+      Arcs
+      x
+      Hsub
+      HxT).
+    let B.
+    assume HBpack.
+    claim HBselT : B :e {C :e Arcs | C c= T}.
+    {
+      exact (andEL
+        (B :e {C :e Arcs | C c= T})
+        (x :e B)
+        HBpack).
+    }
+    claim HxB : x :e B.
+    {
+      exact (andER
+        (B :e {C :e Arcs | C c= T})
+        (x :e B)
+        HBpack).
+    }
+    claim HBArcs : B :e Arcs.
+    {
+      exact (SepE1
+        Arcs
+        (fun C:set => C c= T)
+        B
+        HBselT).
+    }
+    claim HBsubT : B c= T.
+    {
+      exact (SepE2
+        Arcs
+        (fun C:set => C c= T)
+        B
+        HBselT).
+    }
+    claim HBsubTA : B c= T :\/: A.
+    {
+      exact (Subq_tra
+        B
+        T
+        (T :\/: A)
+        HBsubT
+        (binunion_Subq_1
+          T
+          A)).
+    }
+    claim HBselTA : B :e {C :e Arcs | C c= T :\/: A}.
+    {
+      exact (SepI
+        Arcs
+        (fun C:set => C c= T :\/: A)
+        B
+        HBArcs
+        HBsubTA).
+    }
+    exact (UnionI
+      {C :e Arcs | C c= T :\/: A}
+      x
+      B
+      HxB
+      HBselTA).
+  - assume HxA.
+    claim HAsubTA : A c= T :\/: A.
+    {
+      exact (binunion_Subq_2
+        T
+        A).
+    }
+    claim HAselTA : A :e {C :e Arcs | C c= T :\/: A}.
+    {
+      exact (SepI
+        Arcs
+        (fun C:set => C c= T :\/: A)
+        A
+        HA
+        HAsubTA).
+    }
+    exact (UnionI
+      {C :e Arcs | C c= T :\/: A}
+      x
+      A
+      HxA
+      HAselTA).
+}
+claim HUnionSel_sub_TA : Union {B :e Arcs | B c= T :\/: A} c= T :\/: A.
+{
+  exact (union_selected_arcs_subset_Y
+    (T :\/: A)
+    Arcs).
+}
+claim HTA_eq_UnionSel : T :\/: A = Union {B :e Arcs | B c= T :\/: A}.
+{
+  exact (set_ext
+    (T :\/: A)
+    (Union {B :e Arcs | B c= T :\/: A})
+    HTA_sub_UnionSel
+    HUnionSel_sub_TA).
+}
+exact (andI
+  (general_linear_graph X Tx Arcs /\ (T :\/: A) c= X)
+  ((T :\/: A) = Union {B :e Arcs | B c= T :\/: A})
+  (andI
+    (general_linear_graph X Tx Arcs)
+    ((T :\/: A) c= X)
+    Hglg
+    HTA_sub_X)
+  HTA_eq_UnionSel).
+Qed.
+
 (** Infrastructure: vertices of a linear graph **)
 Definition graph_vertices : set -> set -> set -> set :=
   fun X Tx Arcs =>
@@ -216112,6 +216281,31 @@ Theorem lemma84_2_tree_extension :
   A :e Arcs -> ~(A c= T) ->
   (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
   tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
+let T ArcsT X Tx Arcs A.
+assume Htree HA Hnsub Hmeet.
+claim HsubTA : subgraph_of (T :\/: A) X Tx Arcs.
+{
+  exact (subgraph_of_union_with_arc
+    T
+    X
+    Tx
+    Arcs
+    A
+    (tree_in_graph_subgraph_of
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      Htree)
+    HA).
+}
+(** partial progress:
+    `HsubTA` establishes the subgraph component of the target tree.
+    Remaining work is to prove:
+    1) general_linear_graph on `(T :\/: A)` with edge-family `({A} :\/: ArcsT)`,
+    2) connectedness of `(T :\/: A)`,
+    3) no closed reduced edge path in the enlarged graph. **)
 admit.
 Admitted.
 
