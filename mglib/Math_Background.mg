@@ -199298,6 +199298,103 @@ exact (exists_homeomorphism_preserves_not_second_countable_space_left
   X Tx Y Ty Hhex HnY).
 Qed.
 
+(** Short-name compatibility aliases for path_connected families. **)
+(** Proven Bob **)
+Theorem homeomorphism_preserves_path_connected_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  path_connected_space X Tx ->
+  path_connected_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HpcX.
+exact (homeomorphism_preserves_path_connected_space_right
+  X Tx Y Ty f Hhome HpcX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_path_connected_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  path_connected_space Y Ty ->
+  path_connected_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HpcY.
+exact (homeomorphism_preserves_path_connected_space_left
+  X Tx Y Ty f Hhome HpcY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_path_connected_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  path_connected_space X Tx ->
+  path_connected_space Y Ty.
+let X Tx Y Ty.
+assume Hhex HpcX.
+exact (exists_homeomorphism_preserves_path_connected_space_right
+  X Tx Y Ty Hhex HpcX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_path_connected_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  path_connected_space Y Ty ->
+  path_connected_space X Tx.
+let X Tx Y Ty.
+assume Hhex HpcY.
+exact (exists_homeomorphism_preserves_path_connected_space_left
+  X Tx Y Ty Hhex HpcY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_path_connected_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ path_connected_space X Tx ->
+  ~ path_connected_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HnX.
+exact (homeomorphism_preserves_not_path_connected_space_right
+  X Tx Y Ty f Hhome HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_path_connected_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ path_connected_space Y Ty ->
+  ~ path_connected_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_preserves_not_path_connected_space_left
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_path_connected_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ path_connected_space X Tx ->
+  ~ path_connected_space Y Ty.
+let X Tx Y Ty.
+assume Hhex HnX.
+exact (exists_homeomorphism_preserves_not_path_connected_space_right
+  X Tx Y Ty Hhex HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_path_connected_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ path_connected_space Y Ty ->
+  ~ path_connected_space X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (exists_homeomorphism_preserves_not_path_connected_space_left
+  X Tx Y Ty Hhex HnY).
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
