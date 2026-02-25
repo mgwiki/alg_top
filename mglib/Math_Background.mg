@@ -221560,6 +221560,48 @@ exact (thm84_4_forward_component_witness_from_component_obligations
 Admitted.
 
 (** Proven Bob **)
+Theorem thm84_4_forward_vertices_from_split_obligations :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT)) ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A))) ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    ~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT) n path_seq x0 /\
+        (exists j:set, j :e n /\ ordsucc j /:e n /\
+          (apply_fun path_seq j) 0 1 = x0))) ->
+  graph_vertices X Tx Arcs c= T.
+let T ArcsT X Tx Arcs.
+assume Hmax HmeetOb HglgOb HconnOb HnoloopOb.
+apply (thm84_4_forward_vertices_from_component_obligation
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hmax).
+let A.
+assume HA Hnsub.
+exact (thm84_4_forward_component_witness_from_component_obligations
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  (HmeetOb A HA Hnsub)
+  (HglgOb A HA Hnsub)
+  (HconnOb A HA Hnsub)
+  (HnoloopOb A HA Hnsub)).
+Qed.
+
+(** Proven Bob **)
 Theorem thm84_4_backward_noncontained_contradiction_from_endpoint_obligations :
   forall T ArcsT T' ArcsT' X Tx Arcs:set,
   (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
@@ -221610,6 +221652,71 @@ exact ((selected_arc_obligation_subset_implies_noncontained_contradiction
   A
   HASel
   Hnsub).
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_backward_maximality_from_endpoint_obligation_families :
+  forall T ArcsT X Tx Arcs:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  (forall T' ArcsT':set,
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' ->
+    forall A:set, A :e {B :e Arcs | B c= T'} ->
+      exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q) ->
+  (forall T' ArcsT' A p q:set,
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' ->
+    A :e {B :e Arcs | B c= T'} ->
+    end_points_of_arc A (subspace_topology X Tx A) p q ->
+    p :e T /\ q :e T ->
+    A c= T) ->
+  maximal_tree T ArcsT X Tx Arcs.
+let T ArcsT X Tx Arcs.
+assume Hrhs HwitFam HcloseFam.
+apply (thm84_4_backward_maximality_from_selected_arc_noncontained_contradiction
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  (andEL
+    (tree_in_graph T ArcsT X Tx Arcs)
+    (graph_vertices X Tx Arcs c= T)
+    Hrhs)
+  (andER
+    (tree_in_graph T ArcsT X Tx Arcs)
+    (graph_vertices X Tx Arcs c= T)
+    Hrhs)).
+let T' ArcsT'.
+assume Htree' HTsub.
+exact (thm84_4_backward_noncontained_contradiction_from_endpoint_obligations_via_subset_from_rhs
+  T
+  ArcsT
+  T'
+  ArcsT'
+  X
+  Tx
+  Arcs
+  Hrhs
+  Htree'
+  HTsub
+  (HwitFam
+    T'
+    ArcsT'
+    Htree'
+    HTsub)
+  (fun A p q HA Hend Hep =>
+    HcloseFam
+      T'
+      ArcsT'
+      A
+      p
+      q
+      Htree'
+      HTsub
+      HA
+      Hend
+      Hep)).
 Qed.
 
 (** from S84 Thm 84.4 (line 5625 in algtop.tex): maximal tree contains all vertices **)
