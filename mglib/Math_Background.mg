@@ -221327,6 +221327,42 @@ Theorem thm84_4_backward_selected_arc_endpoint_close_obligation :
 admit.
 Admitted.
 
+(** Proven Bob **)
+Theorem thm84_4_backward_selected_arc_subset_from_endpoint_obligations_from_rhs :
+  forall T ArcsT T' ArcsT' X Tx Arcs:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  T c= T' ->
+  (forall A:set, A :e {B :e Arcs | B c= T'} ->
+    exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q) ->
+  (forall A p q:set,
+    A :e {B :e Arcs | B c= T'} ->
+    end_points_of_arc A (subspace_topology X Tx A) p q ->
+    p :e T /\ q :e T ->
+    A c= T) ->
+  forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T.
+let T ArcsT T' ArcsT' X Tx Arcs.
+assume Hrhs Htree' HTsub HendpointWitnessSel HendpointCloseSel.
+claim HVT : graph_vertices X Tx Arcs c= T.
+{
+  exact (andER
+    (tree_in_graph T ArcsT X Tx Arcs)
+    (graph_vertices X Tx Arcs c= T)
+    Hrhs).
+}
+exact (selected_arc_subset_from_endpoint_witness_and_endpoint_target_obligation
+  T
+  T'
+  ArcsT'
+  X
+  Tx
+  Arcs
+  Htree'
+  HVT
+  HendpointWitnessSel
+  HendpointCloseSel).
+Qed.
+
 Theorem thm84_4_forward_component_witness_from_split_obligations :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
