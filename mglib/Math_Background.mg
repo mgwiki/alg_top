@@ -216357,6 +216357,99 @@ exact (single_vertex_intersection_witness_in_both
     Hvpack)).
 Qed.
 
+(** Proven Bob **)
+Theorem single_vertex_intersection_nonempty :
+  forall T A v:set,
+  T :/\: A = Sing v ->
+  T :/\: A <> Empty.
+let T A v.
+assume Hmeet.
+assume HintE.
+claim HvInt : v :e T :/\: A.
+{
+  exact (mem_eqL
+    v
+    (T :/\: A)
+    (Sing v)
+    Hmeet
+    (SingI v)).
+}
+claim HvEmpty : v :e Empty.
+{
+  exact (mem_eqR
+    v
+    (T :/\: A)
+    Empty
+    HintE
+    HvInt).
+}
+exact (EmptyE
+  v
+  HvEmpty
+  False).
+Qed.
+
+(** Proven Bob **)
+Theorem meeting_single_vertex_intersection_nonempty :
+  forall T X Tx Arcs A:set,
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  T :/\: A <> Empty.
+let T X Tx Arcs A.
+assume Hmeet.
+apply Hmeet.
+let v.
+assume Hvpack.
+exact (single_vertex_intersection_nonempty
+  T
+  A
+  v
+  (andER
+    (v :e graph_vertices X Tx Arcs)
+    (T :/\: A = Sing v)
+    Hvpack)).
+Qed.
+
+(** Proven Bob **)
+Theorem meeting_single_vertex_has_shared_vertex_point :
+  forall T X Tx Arcs A:set,
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  exists v:set, v :e graph_vertices X Tx Arcs /\ v :e T /\ v :e A.
+let T X Tx Arcs A.
+assume Hmeet.
+apply Hmeet.
+let v.
+assume Hvpack.
+witness v.
+apply andI.
+- apply andI.
+  + exact (andEL
+      (v :e graph_vertices X Tx Arcs)
+      (T :/\: A = Sing v)
+      Hvpack).
+  + exact (andEL
+      (v :e T)
+      (v :e A)
+      (single_vertex_intersection_witness_in_both
+        T
+        A
+        v
+        (andER
+          (v :e graph_vertices X Tx Arcs)
+          (T :/\: A = Sing v)
+          Hvpack))).
+- exact (andER
+    (v :e T)
+    (v :e A)
+    (single_vertex_intersection_witness_in_both
+      T
+      A
+      v
+      (andER
+        (v :e graph_vertices X Tx Arcs)
+        (T :/\: A = Sing v)
+        Hvpack))).
+Qed.
+
 Theorem maximal_tree_edge_meeting_tree_forces_subset :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
