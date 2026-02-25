@@ -224872,6 +224872,38 @@ exact (thm84_4_backward_noncontained_contradiction_from_endpoint_obligations_via
 Qed.
 
 (** Proven Bob **)
+Theorem thm84_4_backward_maximality_from_stub_obligation_families :
+  forall T ArcsT X Tx Arcs:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  ((tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+    forall T' ArcsT':set,
+      tree_in_graph T' ArcsT' X Tx Arcs ->
+      T c= T' ->
+      forall A:set, A :e {B :e Arcs | B c= T'} ->
+        exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q) ->
+  ((tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+    forall T' ArcsT' A p q:set,
+      tree_in_graph T' ArcsT' X Tx Arcs ->
+      T c= T' ->
+      A :e {B :e Arcs | B c= T'} ->
+      end_points_of_arc A (subspace_topology X Tx A) p q ->
+      p :e T /\ q :e T ->
+      A c= T) ->
+  maximal_tree T ArcsT X Tx Arcs.
+let T ArcsT X Tx Arcs.
+assume Hrhs HwitStub HcloseStub.
+exact (thm84_4_backward_maximality_from_endpoint_obligation_families
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hrhs
+  (HwitStub Hrhs)
+  (HcloseStub Hrhs)).
+Qed.
+
+(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_split_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
