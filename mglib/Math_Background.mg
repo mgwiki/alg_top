@@ -1,6 +1,6 @@
 (** Balance Alice 3327 **)
 (** Balance Bob 3451 **)
-(** Balance Charlie 1354 **)
+(** Balance Charlie 1337 **)
 (** Balance Dave 1793 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -187861,7 +187861,8 @@ Admitted.
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
 (** then the restriction p0: E0 -> B is a covering map. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
+(** Bounty 182 **)
+(** Lock Charlie 1772060804 **)
 Theorem lemma80_1_path_component_covering :
   forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
