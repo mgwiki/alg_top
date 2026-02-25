@@ -220140,6 +220140,52 @@ exact (graph_vertices_subset_T_arc_has_shared_graph_vertex_point
   Hend).
 Qed.
 
+(** Proven Bob **)
+Theorem thm84_4_backward_maximality_from_selected_arc_subset_condition :
+  forall T ArcsT X Tx Arcs:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  graph_vertices X Tx Arcs c= T ->
+  (forall T' ArcsT':set,
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' ->
+    (forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T)) ->
+  maximal_tree T ArcsT X Tx Arcs.
+let T ArcsT X Tx Arcs.
+assume Htree HVT HallCond.
+exact (andI
+  (tree_in_graph T ArcsT X Tx Arcs)
+  (forall T' ArcsT':set,
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' -> T' = T)
+  Htree
+  (fun T' ArcsT' Htree' HTsub =>
+    let Hsub' := tree_in_graph_subgraph_of
+      T'
+      ArcsT'
+      X
+      Tx
+      Arcs
+      Htree' in
+    let HallSel := HallCond
+      T'
+      ArcsT'
+      Htree'
+      HTsub in
+    let HT'subT := subgraph_selected_arcs_all_subset_target_implies_subgraph_subset_target
+      T'
+      X
+      Tx
+      Arcs
+      T
+      Hsub'
+      HallSel in
+    set_ext
+      T'
+      T
+      HT'subT
+      HTsub)).
+Qed.
+
 (** from S84 Lem 84.2 converse (line 5601 in algtop.tex): finite tree decomposition **)
 (** LATEX VERSION: If T is a finite tree with more than one edge, then T = T0 union A **)
 (** where T0 is a tree and A intersects T0 in a single vertex. **)
@@ -220238,56 +220284,29 @@ apply iffI.
       (graph_vertices X Tx Arcs c= T)
       Hrhs).
   }
-  claim HmaxProp :
+  claim HallCond :
     forall T' ArcsT':set,
     tree_in_graph T' ArcsT' X Tx Arcs ->
-    T c= T' -> T' = T.
+    T c= T' ->
+    (forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T).
   {
     let T' ArcsT'.
     assume Htree' HTsub.
-    claim Hsub' : subgraph_of T' X Tx Arcs.
-    {
-      exact (tree_in_graph_subgraph_of
-        T'
-        ArcsT'
-        X
-        Tx
-        Arcs
-        Htree').
-    }
-    claim HT'subT : T' c= T.
-    {
-      claim HallSel :
-        forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T.
-      {
-        (** remaining backward subgap:
-            show every ambient edge contained in T' is contained in T,
-            using `graph_vertices X Tx Arcs c= T` (HVT),
-            edge endpoint containment, and tree/subgraph constraints. **)
-        admit.
-      }
-      exact (subgraph_selected_arcs_all_subset_target_implies_subgraph_subset_target
-        T'
-        X
-        Tx
-        Arcs
-        T
-        Hsub'
-        HallSel).
-    }
-    exact (set_ext
-      T'
-      T
-      HT'subT
-      HTsub).
+    (** remaining backward subgap:
+        show every ambient edge contained in T' is contained in T,
+        using `graph_vertices X Tx Arcs c= T` (HVT),
+        edge endpoint containment, and tree/subgraph constraints. **)
+    admit.
   }
-  exact (andI
-    (tree_in_graph T ArcsT X Tx Arcs)
-    (forall T' ArcsT':set,
-      tree_in_graph T' ArcsT' X Tx Arcs ->
-      T c= T' -> T' = T)
+  exact (thm84_4_backward_maximality_from_selected_arc_subset_condition
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
     Htree
-    HmaxProp).
+    HVT
+    HallCond).
 Admitted.
 
 (** from S84 Thm 84.5 (line 5631 in algtop.tex): every tree in maximal tree **)
