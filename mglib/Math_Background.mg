@@ -76944,6 +76944,141 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Theorem lemma54_2_sheet_non_switching_eq_data_from_family :
+  forall N E Te B Tb p U slices F Ft q z:set,
+  (slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall W:set, W :e slices ->
+      homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+        (graph W (fun y:set => apply_fun p y)))) ->
+  N c= unit_square ->
+  continuous_map N (subspace_topology unit_square unit_square_topology N) E Te Ft ->
+  (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t)) ->
+  (forall x:set, x :e N -> apply_fun F x :e U) ->
+  q :e N ->
+  z :e N ->
+  (forall Vq Vz:set,
+    apply_fun Ft q :e Vq -> Vq :e slices ->
+    apply_fun Ft z :e Vz -> Vz :e slices ->
+    Vz = Vq) ->
+  exists Vq Vz:set,
+    apply_fun Ft q :e Vq /\ apply_fun Ft z :e Vz /\
+    Vq :e slices /\ Vz :e slices /\ Vz = Vq.
+let N E Te B Tb p U slices F Ft q z.
+assume Hpack HNsubSq HFtCont HcommSq HFU HqN HzN HnonSwitch.
+claim HFtFun : function_on Ft N E.
+{
+  exact (continuous_map_function_on
+    N
+    (subspace_topology unit_square unit_square_topology N)
+    E
+    Te
+    Ft
+    HFtCont).
+}
+claim HqSheet :
+  exists Vq:set, apply_fun Ft q :e Vq /\ Vq :e slices.
+{
+  exact (unit_square_subset_commutation_point_exists_sheet_witness
+    N
+    E
+    Te
+    B
+    Tb
+    p
+    F
+    Ft
+    U
+    slices
+    q
+    HNsubSq
+    HFtFun
+    HcommSq
+    HFU
+    Hpack
+    HqN).
+}
+claim HzSheet :
+  exists Vz:set, apply_fun Ft z :e Vz /\ Vz :e slices.
+{
+  exact (unit_square_subset_commutation_point_exists_sheet_witness
+    N
+    E
+    Te
+    B
+    Tb
+    p
+    F
+    Ft
+    U
+    slices
+    z
+    HNsubSq
+    HFtFun
+    HcommSq
+    HFU
+    Hpack
+    HzN).
+}
+apply HqSheet.
+let Vq.
+assume HVqPack.
+apply HzSheet.
+let Vz.
+assume HVzPack.
+claim HFtqVq : apply_fun Ft q :e Vq.
+{
+  exact (andEL
+    (apply_fun Ft q :e Vq)
+    (Vq :e slices)
+    HVqPack).
+}
+claim HVqSlice : Vq :e slices.
+{
+  exact (andER
+    (apply_fun Ft q :e Vq)
+    (Vq :e slices)
+    HVqPack).
+}
+claim HFtzVz : apply_fun Ft z :e Vz.
+{
+  exact (andEL
+    (apply_fun Ft z :e Vz)
+    (Vz :e slices)
+    HVzPack).
+}
+claim HVzSlice : Vz :e slices.
+{
+  exact (andER
+    (apply_fun Ft z :e Vz)
+    (Vz :e slices)
+    HVzPack).
+}
+claim HVzEqVq : Vz = Vq.
+{
+  exact (HnonSwitch
+    Vq
+    Vz
+    HFtqVq
+    HVqSlice
+    HFtzVz
+    HVzSlice).
+}
+witness Vq.
+witness Vz.
+apply andI.
+- apply andI.
+  + apply andI.
+    * apply andI.
+      { exact HFtqVq. }
+      { exact HFtzVz. }
+    * exact HVqSlice.
+  + exact HVzSlice.
+- exact HVzEqVq.
+Qed.
+
+(** Proven Bob **)
 Theorem lemma54_2_two_points_same_sheet_from_slices_witness :
   forall N E Te B Tb p U slices F Ft q z:set,
   topology_on E Te ->
