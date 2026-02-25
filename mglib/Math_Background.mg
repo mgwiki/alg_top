@@ -220997,6 +220997,37 @@ exact (thm84_4_backward_maximality_from_selected_arc_noncontained_contradiction
 Qed.
 
 (** Proven Bob **)
+Theorem thm84_4_backward_selected_arc_subset_from_component_obligation :
+  forall T ArcsT X Tx Arcs:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  (forall T' ArcsT':set,
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' ->
+    forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False) ->
+  forall T' ArcsT':set,
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' ->
+    forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T.
+let T ArcsT X Tx Arcs.
+assume Hrhs HgwdOb.
+let T' ArcsT'.
+assume Htree' HTsub.
+exact (selected_arc_subset_from_noncontained_selected_arc_contradiction
+  T
+  T'
+  ArcsT'
+  X
+  Tx
+  Arcs
+  Htree'
+  (HgwdOb
+    T'
+    ArcsT'
+    Htree'
+    HTsub)).
+Qed.
+
+(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_obligations :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
