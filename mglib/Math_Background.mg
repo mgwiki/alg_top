@@ -229209,8 +229209,37 @@ claim HcohFamTA :
       rewrite HCAeqDA.
       reflexivity.
     }
-    (** Remaining (backward): conclude closed_in TA C from HCnormal + HDTclosed + HDAclosed. **)
-    admit.
+    claim HfinalFromPieces :
+      closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) (DT :/\: T) ->
+      closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) (DA :/\: A) ->
+      closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) C.
+    {
+      assume HcDT HcDA.
+      rewrite HCnormal.
+      exact (union_of_closed_is_closed
+        (T :\/: A)
+        (subspace_topology X Tx (T :\/: A))
+        (DT :/\: T)
+        (DA :/\: A)
+        HtopTA
+        HcDT
+        HcDA).
+    }
+    claim HcDT_TA :
+      closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) (DT :/\: T).
+    {
+      (** Remaining: lift DT∩T closedness to TA. **)
+      admit.
+    }
+    claim HcDA_TA :
+      closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) (DA :/\: A).
+    {
+      (** Remaining: lift DA∩A closedness to TA. **)
+      admit.
+    }
+    exact (HfinalFromPieces
+      HcDT_TA
+      HcDA_TA).
 }
 exact (and5I
   (topology_on (T :\/: A) (subspace_topology X Tx (T :\/: A)))
