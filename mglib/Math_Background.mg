@@ -228341,10 +228341,120 @@ claim HinterFamTA :
         (Sing v)
         HcapEq
         HxTA).
-    }
-    (** Remaining: mixed {A}/ArcsT case endpoint witnesses at v. **)
-    admit.
-  }
+	    }
+	    apply (xm (U :/\: V = Empty)).
+	    - assume Hempty.
+	      apply orIL.
+	      exact Hempty.
+	    - assume Hnonempty.
+	      claim HexUV : exists x:set, x :e U :/\: V.
+	      {
+	        exact (nonempty_has_element
+	          (U :/\: V)
+	          Hnonempty).
+	      }
+	      apply HexUV.
+	      let x.
+	      assume HxUV.
+	      claim HxSing : x :e Sing v.
+	      {
+	        exact (HUVsubSing
+	          x
+	          HxUV).
+	      }
+	      claim HxEqv : x = v.
+	      {
+	        exact (SingE
+	          v
+	          x
+	          HxSing).
+	      }
+	      claim HvUV : v :e U :/\: V.
+	      {
+	        rewrite <- HxEqv.
+	        exact HxUV.
+	      }
+	      claim HSingSubUV : Sing v c= U :/\: V.
+	      {
+	        let y.
+	        assume HySing.
+	        claim HyEqv : y = v.
+	        {
+	          exact (SingE
+	            v
+	            y
+	            HySing).
+	        }
+	        rewrite HyEqv.
+	        exact HvUV.
+	      }
+	      claim HUVeqSing : U :/\: V = Sing v.
+	      {
+	        exact (set_ext
+	          (U :/\: V)
+	          (Sing v)
+	          HUVsubSing
+	          HSingSubUV).
+	      }
+	      claim HAEpX :
+	        exists q:set, end_points_of_arc A (subspace_topology X Tx A) v q \/
+	          end_points_of_arc A (subspace_topology X Tx A) q v.
+	      {
+	        exact (general_linear_graph_vertex_in_arc_is_endpoint
+	          X
+	          Tx
+	          Arcs
+	          A
+	          v
+	          HglgX
+	          HvVert
+	          HA
+	          HvA).
+	      }
+	      claim HtopAeqTA :
+	        subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) A =
+	        subspace_topology X Tx A.
+	      {
+	        exact (ex16_1_subspace_transitive
+	          X
+	          Tx
+	          (T :\/: A)
+	          A
+	          HtopX
+	          HTAsubX
+	          HAsubTA).
+	      }
+	      claim HUEp :
+	        exists q:set, end_points_of_arc U
+	          (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) U) v q \/
+	          end_points_of_arc U
+	            (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) U) q v.
+	      {
+	        apply HAEpX.
+	        let q.
+	        assume Hq.
+	        witness q.
+	        rewrite HUeqA.
+	        rewrite HtopAeqTA.
+	        exact Hq.
+	      }
+	      claim HVEp :
+	        exists r:set, end_points_of_arc V
+	          (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) v r \/
+	          end_points_of_arc V
+	            (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) r v.
+	      {
+	        (** Remaining mixed-case endpoint witness for V at v. **)
+	        admit.
+	      }
+	      apply orIR.
+	      witness v.
+	      apply andI.
+	      - apply andI.
+	        + exact HUVeqSing.
+	        + exact HUEp.
+	      - exact HVEp.
+	  }
   apply (binunionE
     {A}
     ArcsT
