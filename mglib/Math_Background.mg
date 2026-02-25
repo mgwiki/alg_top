@@ -219122,6 +219122,65 @@ exact (maximal_tree_noncontained_edge_tree_extension_contradiction
 Qed.
 
 (** Proven Bob **)
+Theorem maximal_tree_single_vertex_noncontained_edge_component_extension_contradiction :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  A :e Arcs ->
+  ~(A c= T) ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) ->
+  connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) ->
+  ~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+        ({A} :\/: ArcsT) n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)) ->
+  False.
+let T ArcsT X Tx Arcs A.
+assume Hmax HA Hnsub Hmeet HglgTA HconnTA HnoloopTA.
+claim Htree : tree_in_graph T ArcsT X Tx Arcs.
+{
+  exact (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax).
+}
+claim HtreeExt : tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
+{
+  exact (lemma84_2_tree_extension_from_hypotheses_and_components
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    A
+    Htree
+    HA
+    Hnsub
+    Hmeet
+    HglgTA
+    HconnTA
+    HnoloopTA).
+}
+exact (maximal_tree_single_vertex_edge_tree_extension_contradiction
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  Hmax
+  HtreeExt
+  HA
+  Hnsub
+  Hmeet).
+Qed.
+
+(** Proven Bob **)
 Theorem maximal_tree_single_vertex_edge_tree_extension_forces_edge_subset :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
