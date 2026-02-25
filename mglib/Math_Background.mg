@@ -209617,6 +209617,154 @@ Definition general_linear_graph : set -> set -> set -> prop :=
        (forall A:set, A :e Arcs ->
          closed_in A (subspace_topology X Tx A) (C :/\: A)))).
 
+(** Infrastructure: destructors for general_linear_graph data **)
+(** Proven Bob **)
+Theorem general_linear_graph_topology_on :
+  forall X Tx Arcs:set,
+  general_linear_graph X Tx Arcs ->
+  topology_on X Tx.
+let X Tx Arcs.
+assume Hglg.
+apply (and5E
+  (topology_on X Tx)
+  (forall A:set, A :e Arcs -> A c= X /\ arc A (subspace_topology X Tx A))
+  (X = Union Arcs)
+  (forall A B:set, A :e Arcs -> B :e Arcs -> A <> B ->
+    A :/\: B = Empty \/
+    (exists p:set, A :/\: B = Sing p /\
+      (exists q:set, end_points_of_arc A (subspace_topology X Tx A) p q \/
+                     end_points_of_arc A (subspace_topology X Tx A) q p) /\
+      (exists r:set, end_points_of_arc B (subspace_topology X Tx B) p r \/
+                     end_points_of_arc B (subspace_topology X Tx B) r p)))
+  (forall C:set, C c= X ->
+    (closed_in X Tx C <->
+     (forall A:set, A :e Arcs ->
+       closed_in A (subspace_topology X Tx A) (C :/\: A))))
+  Hglg).
+assume Htop Harcs Hunion Hinter Hcoh.
+exact Htop.
+Qed.
+
+(** Proven Bob **)
+Theorem general_linear_graph_arc_data :
+  forall X Tx Arcs A:set,
+  general_linear_graph X Tx Arcs ->
+  A :e Arcs ->
+  A c= X /\ arc A (subspace_topology X Tx A).
+let X Tx Arcs A.
+assume Hglg HA.
+apply (and5E
+  (topology_on X Tx)
+  (forall A0:set, A0 :e Arcs -> A0 c= X /\ arc A0 (subspace_topology X Tx A0))
+  (X = Union Arcs)
+  (forall A0 B0:set, A0 :e Arcs -> B0 :e Arcs -> A0 <> B0 ->
+    A0 :/\: B0 = Empty \/
+    (exists p:set, A0 :/\: B0 = Sing p /\
+      (exists q:set, end_points_of_arc A0 (subspace_topology X Tx A0) p q \/
+                     end_points_of_arc A0 (subspace_topology X Tx A0) q p) /\
+      (exists r:set, end_points_of_arc B0 (subspace_topology X Tx B0) p r \/
+                     end_points_of_arc B0 (subspace_topology X Tx B0) r p)))
+  (forall C:set, C c= X ->
+    (closed_in X Tx C <->
+     (forall A0:set, A0 :e Arcs ->
+       closed_in A0 (subspace_topology X Tx A0) (C :/\: A0))))
+  Hglg).
+assume Htop Harcs Hunion Hinter Hcoh.
+exact (Harcs A HA).
+Qed.
+
+(** Proven Bob **)
+Theorem general_linear_graph_union_arcs :
+  forall X Tx Arcs:set,
+  general_linear_graph X Tx Arcs ->
+  X = Union Arcs.
+let X Tx Arcs.
+assume Hglg.
+apply (and5E
+  (topology_on X Tx)
+  (forall A:set, A :e Arcs -> A c= X /\ arc A (subspace_topology X Tx A))
+  (X = Union Arcs)
+  (forall A B:set, A :e Arcs -> B :e Arcs -> A <> B ->
+    A :/\: B = Empty \/
+    (exists p:set, A :/\: B = Sing p /\
+      (exists q:set, end_points_of_arc A (subspace_topology X Tx A) p q \/
+                     end_points_of_arc A (subspace_topology X Tx A) q p) /\
+      (exists r:set, end_points_of_arc B (subspace_topology X Tx B) p r \/
+                     end_points_of_arc B (subspace_topology X Tx B) r p)))
+  (forall C:set, C c= X ->
+    (closed_in X Tx C <->
+     (forall A:set, A :e Arcs ->
+       closed_in A (subspace_topology X Tx A) (C :/\: A))))
+  Hglg).
+assume Htop Harcs Hunion Hinter Hcoh.
+exact Hunion.
+Qed.
+
+(** Proven Bob **)
+Theorem general_linear_graph_arc_intersection_case :
+  forall X Tx Arcs A B:set,
+  general_linear_graph X Tx Arcs ->
+  A :e Arcs ->
+  B :e Arcs ->
+  A <> B ->
+  A :/\: B = Empty \/
+  (exists p:set, A :/\: B = Sing p /\
+    (exists q:set, end_points_of_arc A (subspace_topology X Tx A) p q \/
+                   end_points_of_arc A (subspace_topology X Tx A) q p) /\
+    (exists r:set, end_points_of_arc B (subspace_topology X Tx B) p r \/
+                   end_points_of_arc B (subspace_topology X Tx B) r p)).
+let X Tx Arcs A B.
+assume Hglg HA HB Hneq.
+apply (and5E
+  (topology_on X Tx)
+  (forall A0:set, A0 :e Arcs -> A0 c= X /\ arc A0 (subspace_topology X Tx A0))
+  (X = Union Arcs)
+  (forall A0 B0:set, A0 :e Arcs -> B0 :e Arcs -> A0 <> B0 ->
+    A0 :/\: B0 = Empty \/
+    (exists p:set, A0 :/\: B0 = Sing p /\
+      (exists q:set, end_points_of_arc A0 (subspace_topology X Tx A0) p q \/
+                     end_points_of_arc A0 (subspace_topology X Tx A0) q p) /\
+      (exists r:set, end_points_of_arc B0 (subspace_topology X Tx B0) p r \/
+                     end_points_of_arc B0 (subspace_topology X Tx B0) r p)))
+  (forall C:set, C c= X ->
+    (closed_in X Tx C <->
+     (forall A0:set, A0 :e Arcs ->
+       closed_in A0 (subspace_topology X Tx A0) (C :/\: A0))))
+  Hglg).
+assume Htop Harcs Hunion Hinter Hcoh.
+exact (Hinter A B HA HB Hneq).
+Qed.
+
+(** Proven Bob **)
+Theorem general_linear_graph_coherence_closed :
+  forall X Tx Arcs C:set,
+  general_linear_graph X Tx Arcs ->
+  C c= X ->
+  (closed_in X Tx C <->
+   (forall A:set, A :e Arcs ->
+     closed_in A (subspace_topology X Tx A) (C :/\: A))).
+let X Tx Arcs C.
+assume Hglg HCsub.
+apply (and5E
+  (topology_on X Tx)
+  (forall A0:set, A0 :e Arcs -> A0 c= X /\ arc A0 (subspace_topology X Tx A0))
+  (X = Union Arcs)
+  (forall A0 B0:set, A0 :e Arcs -> B0 :e Arcs -> A0 <> B0 ->
+    A0 :/\: B0 = Empty \/
+    (exists p:set, A0 :/\: B0 = Sing p /\
+      (exists q:set, end_points_of_arc A0 (subspace_topology X Tx A0) p q \/
+                     end_points_of_arc A0 (subspace_topology X Tx A0) q p) /\
+      (exists r:set, end_points_of_arc B0 (subspace_topology X Tx B0) p r \/
+                     end_points_of_arc B0 (subspace_topology X Tx B0) r p)))
+  (forall C0:set, C0 c= X ->
+    (closed_in X Tx C0 <->
+     (forall A0:set, A0 :e Arcs ->
+       closed_in A0 (subspace_topology X Tx A0) (C0 :/\: A0))))
+  Hglg).
+assume Htop Harcs Hunion Hinter Hcoh.
+exact (Hcoh C HCsub).
+Qed.
+
 (** from S83 Definition (line 5499 in algtop.tex): subgraph **)
 (** LATEX VERSION: A subgraph of X is a subspace Y that is a union of edges of X. **)
 Definition subgraph_of : set -> set -> set -> set -> prop :=
