@@ -210502,6 +210502,179 @@ exact (graph_vertices_elem_in_union_arcs
   HxV).
 Qed.
 
+(** Proven Bob **)
+Theorem graph_vertices_selected_arcs_subset_Y :
+  forall X Tx Arcs Y:set,
+  graph_vertices X Tx {B :e Arcs | B c= Y} c= Y.
+let X Tx Arcs Y.
+let x.
+assume HxV.
+claim HxW :
+  exists A:set, A :e {B :e Arcs | B c= Y} /\
+    exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q).
+{
+  exact (graph_vertices_has_endpoint_witness
+    X
+    Tx
+    {B :e Arcs | B c= Y}
+    x
+    HxV).
+}
+apply HxW.
+let A.
+assume HApack.
+claim HAInSel : A :e {B :e Arcs | B c= Y}.
+{
+  exact (andEL
+    (A :e {B :e Arcs | B c= Y})
+    (exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q))
+    HApack).
+}
+claim HAsubY : A c= Y.
+{
+  exact (SepE2
+    Arcs
+    (fun B:set => B c= Y)
+    A
+    HAInSel).
+}
+claim HpqEx :
+  exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+    (x = p \/ x = q).
+{
+  exact (andER
+    (A :e {B :e Arcs | B c= Y})
+    (exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q))
+    HApack).
+}
+apply HpqEx.
+let p.
+assume HpPack.
+apply HpPack.
+let q.
+assume HpqPack.
+claim Hend : end_points_of_arc A (subspace_topology X Tx A) p q.
+{
+  exact (andEL
+    (end_points_of_arc A (subspace_topology X Tx A) p q)
+    (x = p \/ x = q)
+    HpqPack).
+}
+claim HxEq : x = p \/ x = q.
+{
+  exact (andER
+    (end_points_of_arc A (subspace_topology X Tx A) p q)
+    (x = p \/ x = q)
+    HpqPack).
+}
+claim HpA : p :e A.
+{
+  exact (end_points_of_arc_left_in_set
+    A
+    (subspace_topology X Tx A)
+    p
+    q
+    Hend).
+}
+claim HqA : q :e A.
+{
+  exact (end_points_of_arc_right_in_set
+    A
+    (subspace_topology X Tx A)
+    p
+    q
+    Hend).
+}
+apply HxEq.
+- assume Hxp.
+  rewrite Hxp.
+  exact (HAsubY p HpA).
+- assume Hxq.
+  rewrite Hxq.
+  exact (HAsubY q HqA).
+Qed.
+
+(** Proven Bob **)
+Theorem graph_vertices_selected_arcs_subset_graph_vertices :
+  forall X Tx Arcs Y:set,
+  graph_vertices X Tx {B :e Arcs | B c= Y} c=
+  graph_vertices X Tx Arcs.
+let X Tx Arcs Y.
+let x.
+assume HxSel.
+claim HxW :
+  exists A:set, A :e {B :e Arcs | B c= Y} /\
+    exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q).
+{
+  exact (graph_vertices_has_endpoint_witness
+    X
+    Tx
+    {B :e Arcs | B c= Y}
+    x
+    HxSel).
+}
+claim HxX : x :e X.
+{
+  exact (graph_vertices_subset_X
+    X
+    Tx
+    {B :e Arcs | B c= Y}
+    x
+    HxSel).
+}
+apply HxW.
+let A.
+assume HApack.
+claim HAInSel : A :e {B :e Arcs | B c= Y}.
+{
+  exact (andEL
+    (A :e {B :e Arcs | B c= Y})
+    (exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q))
+    HApack).
+}
+claim HAArcs : A :e Arcs.
+{
+  exact (SepE1
+    Arcs
+    (fun B:set => B c= Y)
+    A
+    HAInSel).
+}
+claim HpqEx :
+  exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+    (x = p \/ x = q).
+{
+  exact (andER
+    (A :e {B :e Arcs | B c= Y})
+    (exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q))
+    HApack).
+}
+claim HxPred :
+  exists A0:set, A0 :e Arcs /\
+    exists p q:set, end_points_of_arc A0 (subspace_topology X Tx A0) p q /\
+      (x = p \/ x = q).
+{
+  witness A.
+  apply andI.
+  - exact HAArcs.
+  - exact HpqEx.
+}
+exact (SepI
+  X
+  (fun y:set => exists A0:set, A0 :e Arcs /\
+    exists p q:set, end_points_of_arc A0 (subspace_topology X Tx A0) p q /\
+      (y = p \/ y = q))
+  x
+  HxX
+  HxPred).
+Qed.
+
 (** from S83 Lem 83.1 (line 5470 in algtop.tex): linear graphs are normal **)
 (** LATEX VERSION: Every linear graph X is Hausdorff; in fact, it is normal. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
