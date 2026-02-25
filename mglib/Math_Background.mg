@@ -74149,6 +74149,149 @@ exact (pairwise_disjoint_point_unique_member
   HfzVq).
 Qed.
 
+(** Infrastructure: image of a lift lies in the evenly-covered sheet union when it commutes over U **)
+(** Proven Bob **)
+Theorem image_of_lift_subset_union_sheets_from_commutation :
+  forall E B p F Ft N U slices:set,
+  function_on Ft N E ->
+  (forall x:set, x :e N -> apply_fun p (apply_fun Ft x) = apply_fun F x) ->
+  (forall x:set, x :e N -> apply_fun F x :e U) ->
+  Union slices = preimage_of E p U ->
+  image_of Ft N c= Union slices.
+let E B p F Ft N U slices.
+assume HFtFun Hcomm HFU Hunion.
+let y.
+assume HyImg.
+apply (ReplE
+  N
+  (fun x:set => apply_fun Ft x)
+  y
+  HyImg).
+let x.
+assume HxPack.
+claim HxN : x :e N.
+{
+  exact (andEL
+    (x :e N)
+    (y = apply_fun Ft x)
+    HxPack).
+}
+claim HyEq : y = apply_fun Ft x.
+{
+  exact (andER
+    (x :e N)
+    (y = apply_fun Ft x)
+    HxPack).
+}
+rewrite HyEq.
+claim HFtxE : apply_fun Ft x :e E.
+{
+  exact (HFtFun
+    x
+    HxN).
+}
+claim HFxU : apply_fun F x :e U.
+{
+  exact (HFU
+    x
+    HxN).
+}
+claim HpfU : apply_fun p (apply_fun Ft x) :e U.
+{
+  rewrite (Hcomm x HxN).
+  exact HFxU.
+}
+claim Hpre : apply_fun Ft x :e preimage_of E p U.
+{
+  exact (SepI
+    E
+    (fun z:set => apply_fun p z :e U)
+    (apply_fun Ft x)
+    HFtxE
+    HpfU).
+}
+exact (mem_eqL
+  (apply_fun Ft x)
+  (Union slices)
+  (preimage_of E p U)
+  Hunion
+  Hpre).
+Qed.
+
+(** Infrastructure: local sheet non-switching criterion with connectedness and commutation hypotheses **)
+(** Proven Bob **)
+Theorem local_sheet_non_switching_from_connected_commuting_lift :
+  forall N TxN E Te B p F Ft U slices q z Vq Vz:set,
+  topology_on E Te ->
+  slices c= Te ->
+  pairwise_disjoint slices ->
+  connected_space N TxN ->
+  continuous_map N TxN E Te Ft ->
+  (forall x:set, x :e N -> apply_fun p (apply_fun Ft x) = apply_fun F x) ->
+  (forall x:set, x :e N -> apply_fun F x :e U) ->
+  Union slices = preimage_of E p U ->
+  q :e N ->
+  z :e N ->
+  apply_fun Ft q :e Vq ->
+  Vq :e slices ->
+  apply_fun Ft z :e Vz ->
+  Vz :e slices ->
+  Vz = Vq.
+let N TxN E Te B p F Ft U slices q z Vq Vz.
+assume HtopE HslicesSub HpdSlices HNconn HFtCont Hcomm HFU Hunion
+  HqN HzN HFtqVq HVqSlice HFtzVz HVzSlice.
+claim HFtFun : function_on Ft N E.
+{
+  exact (continuous_map_function_on
+    N
+    TxN
+    E
+    Te
+    Ft
+    HFtCont).
+}
+claim HimgSub :
+  image_of Ft N c= Union slices.
+{
+  exact (image_of_lift_subset_union_sheets_from_commutation
+    E
+    B
+    p
+    F
+    Ft
+    N
+    U
+    slices
+    HFtFun
+    Hcomm
+    HFU
+    Hunion).
+}
+exact (connected_image_sheet_non_switching_in_pairwise_disjoint_union
+  N
+  TxN
+  E
+  Te
+  slices
+  Ft
+  q
+  z
+  Vq
+  Vz
+  HtopE
+  HslicesSub
+  HpdSlices
+  HNconn
+  HFtCont
+  HimgSub
+  HqN
+  HzN
+  HFtqVq
+  HVqSlice
+  HFtzVz
+  HVzSlice).
+Qed.
+
 Theorem lemma54_2_sheet_non_switching_local :
   forall E Te B Tb p F Ft q z N U slices Vq Vz:set,
   pairwise_disjoint slices ->
