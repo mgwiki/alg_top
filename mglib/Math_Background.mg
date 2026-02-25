@@ -212076,6 +212076,41 @@ apply (xm (B = A)).
       HpB).
 Qed.
 
+(** Proven Bob **)
+(** helper: finite unions of selected arcs are closed in the ambient graph topology. **)
+Theorem general_linear_graph_finite_union_arcs_closed :
+  forall X Tx Arcs F:set,
+  general_linear_graph X Tx Arcs ->
+  F c= Arcs ->
+  finite F ->
+  closed_in X Tx (Union F).
+let X Tx Arcs F.
+assume Hglg HFsub HfinF.
+claim HtopX : topology_on X Tx.
+{
+  exact (general_linear_graph_topology_on
+    X
+    Tx
+    Arcs
+    Hglg).
+}
+apply (finite_union_closed_in
+  X
+  Tx
+  F
+  HtopX
+  HfinF).
+let C.
+assume HCinF.
+exact (general_linear_graph_arc_closed_in_X
+  X
+  Tx
+  Arcs
+  C
+  Hglg
+  (HFsub C HCinF)).
+Qed.
+
 (** from S83 Lem 83.1 (line 5470 in algtop.tex): linear graphs are normal **)
 (** LATEX VERSION: Every linear graph X is Hausdorff; in fact, it is normal. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
