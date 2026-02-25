@@ -220940,6 +220940,76 @@ apply iffI.
     HcontraOb).
 Qed.
 
+(** Proven Bob **)
+Theorem selected_arc_subset_from_endpoint_witness_and_endpoint_target_obligation :
+  forall T T' ArcsT' X Tx Arcs:set,
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  graph_vertices X Tx Arcs c= T ->
+  (forall A:set, A :e {B :e Arcs | B c= T'} ->
+    exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q) ->
+  (forall A p q:set,
+    A :e {B :e Arcs | B c= T'} ->
+    end_points_of_arc A (subspace_topology X Tx A) p q ->
+    p :e T /\ q :e T ->
+    A c= T) ->
+  (forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T).
+let T T' ArcsT' X Tx Arcs.
+assume Htree' HVT HendpointWit HendpointClose.
+let A.
+assume HASel.
+apply (HendpointWit
+  A
+  HASel).
+let p.
+assume HpPack.
+apply HpPack.
+let q.
+assume HpqPack.
+exact (HendpointClose
+  A
+  p
+  q
+  HASel
+    HpqPack
+    (andI
+      (p :e T)
+      (q :e T)
+      (andEL
+      (p :e T)
+      (q :e T)
+      (tree_in_graph_selected_arc_endpoints_in_target_from_graph_vertex_cover
+        T
+        T'
+        ArcsT'
+        X
+        Tx
+        Arcs
+        A
+        p
+        q
+        Htree'
+        HVT
+        HASel
+        HpqPack))
+    (andER
+      (p :e T)
+      (q :e T)
+      (tree_in_graph_selected_arc_endpoints_in_target_from_graph_vertex_cover
+        T
+        T'
+        ArcsT'
+        X
+        Tx
+        Arcs
+        A
+        p
+        q
+        Htree'
+        HVT
+        HASel
+        HpqPack)))).
+Qed.
+
 (** from S84 Lem 84.2 converse (line 5601 in algtop.tex): finite tree decomposition **)
 (** LATEX VERSION: If T is a finite tree with more than one edge, then T = T0 union A **)
 (** where T0 is a tree and A intersects T0 in a single vertex. **)
@@ -221322,36 +221392,39 @@ apply (thm84_4_maximal_tree_all_vertices_from_obligations
       (graph_vertices X Tx Arcs c= T)
       Hrhs).
   }
-  claim HendpointInT :
+  claim HendpointWitnessSel :
+    forall A0:set, A0 :e {B :e Arcs | B c= T'} ->
+      exists p q:set, end_points_of_arc A0 (subspace_topology X Tx A0) p q.
+  {
+    (** remaining backward subgap A:
+        produce endpoint witnesses for selected arcs of T'. **)
+    admit.
+  }
+  claim HendpointCloseSel :
     forall A0 p q:set,
       A0 :e {B :e Arcs | B c= T'} ->
       end_points_of_arc A0 (subspace_topology X Tx A0) p q ->
-      p :e T /\ q :e T.
+      p :e T /\ q :e T ->
+      A0 c= T.
   {
-    let A0 p q.
-    assume HA0Sel Hend0.
-    exact (tree_in_graph_selected_arc_endpoints_in_target_from_graph_vertex_cover
+    (** remaining backward subgap B:
+        from endpoint-in-T information derive selected arc inclusion in T. **)
+    admit.
+  }
+  claim HsubsetSel :
+    forall A0:set, A0 :e {B :e Arcs | B c= T'} -> A0 c= T.
+  {
+    exact (selected_arc_subset_from_endpoint_witness_and_endpoint_target_obligation
       T
       T'
       ArcsT'
       X
       Tx
       Arcs
-      A0
-      p
-      q
       Htree'
       HVT
-      HA0Sel
-      Hend0).
-  }
-  claim HsubsetSel :
-    forall A0:set, A0 :e {B :e Arcs | B c= T'} -> A0 c= T.
-  {
-    (** remaining backward subgap:
-        prove selected-arc subset in T for supertree T';
-        endpoint containment in T is now available as `HendpointInT`. **)
-    admit.
+      HendpointWitnessSel
+      HendpointCloseSel).
   }
   exact ((selected_arc_obligation_subset_implies_noncontained_contradiction
     T
