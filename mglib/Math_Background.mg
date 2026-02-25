@@ -228164,6 +228164,79 @@ claim HinterFamTA :
 {
   let E F.
   assume HEfam HFfam Hneq.
+  claim HswapInterWitness :
+    forall U V:set,
+      (U :/\: V = Empty \/
+        (exists p:set, U :/\: V = Sing p /\
+          (exists q:set, end_points_of_arc U
+            (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) U) p q \/
+            end_points_of_arc U
+              (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) U) q p) /\
+          (exists r:set, end_points_of_arc V
+            (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) p r \/
+            end_points_of_arc V
+              (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) r p))) ->
+      (V :/\: U = Empty \/
+        (exists p:set, V :/\: U = Sing p /\
+          (exists q:set, end_points_of_arc V
+            (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) p q \/
+            end_points_of_arc V
+              (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) q p) /\
+          (exists r:set, end_points_of_arc U
+            (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) U) p r \/
+            end_points_of_arc U
+              (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) U) r p))).
+  {
+    let U V.
+    assume Huv.
+    apply Huv.
+    - assume Hempty.
+      apply orIL.
+      rewrite (binintersect_com V U).
+      exact Hempty.
+    - assume Hex.
+      apply Hex.
+      let p.
+      assume Hppack.
+      apply (and3E
+        (U :/\: V = Sing p)
+        (exists q:set, end_points_of_arc U
+          (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) U) p q \/
+          end_points_of_arc U
+            (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) U) q p)
+        (exists r:set, end_points_of_arc V
+          (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) p r \/
+          end_points_of_arc V
+            (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) r p)
+        Hppack).
+      assume Hint HUep HVep.
+      apply orIR.
+      witness p.
+      apply andI.
+      + apply andI.
+        * rewrite (binintersect_com V U).
+          exact Hint.
+        * exact HVep.
+      + exact HUep.
+  }
+  claim HmixedAV :
+    forall U V:set, U :e {A} -> V :e ArcsT -> U <> V ->
+      (U :/\: V = Empty \/
+        (exists p:set, U :/\: V = Sing p /\
+          (exists q:set, end_points_of_arc U
+            (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) U) p q \/
+            end_points_of_arc U
+              (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) U) q p) /\
+          (exists r:set, end_points_of_arc V
+            (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) p r \/
+            end_points_of_arc V
+              (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) r p))).
+  {
+    let U V.
+    assume HUSing HVArcsT HUVneq.
+    (** Remaining: mixed {A}/ArcsT case. **)
+    admit.
+  }
   apply (binunionE
     {A}
     ArcsT
@@ -228204,13 +228277,17 @@ claim HinterFamTA :
               (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E) p q \/
               end_points_of_arc E
                 (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) E) q p) /\
-            (exists r:set, end_points_of_arc F
+          (exists r:set, end_points_of_arc F
               (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) F) p r \/
               end_points_of_arc F
                 (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) F) r p)))).
     + assume HFArcsT.
-      (** Remaining: mixed case E=A, F in ArcsT. **)
-      admit.
+      exact (HmixedAV
+        E
+        F
+        HEA
+        HFArcsT
+        Hneq).
   - assume HEArcsT.
     apply (binunionE
       {A}
@@ -228218,8 +228295,25 @@ claim HinterFamTA :
       F
       HFfam).
     + assume HFA.
-      (** Remaining: mixed case E in ArcsT, F=A. **)
-      admit.
+      claim HFEnq : F <> E.
+      {
+        assume HFEeq.
+        claim HEqF : E = F.
+        {
+          symmetry.
+          exact HFEeq.
+        }
+        exact (Hneq HEqF).
+      }
+      exact (HswapInterWitness
+        F
+        E
+        (HmixedAV
+          F
+          E
+          HFA
+          HEArcsT
+          HFEnq)).
     + assume HFArcsT.
       (** Remaining: internal ArcsT/ArcsT case with endpoint transport to (T :\/: A)-subspaces. **)
       admit.
