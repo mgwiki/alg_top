@@ -221019,100 +221019,33 @@ Theorem thm84_4_maximal_tree_all_vertices :
     graph_vertices X Tx Arcs c= T)).
 let T ArcsT X Tx Arcs.
 assume Hglg Hconn.
-apply iffI.
+apply (thm84_4_maximal_tree_all_vertices_from_obligations
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Hglg
+  Hconn).
 - assume Hmax.
-  apply andI.
-  * exact (maximal_tree_tree_in_graph
-      T
-      ArcsT
-      X
-      Tx
-      Arcs
-      Hmax).
-  * (** remaining forward gap:
-        maximal tree should contain all ambient vertices.
-        This is reduced to producing, for each noncontained edge, a
-        single-vertex intersection plus the three extension components
-        (general-linear-graph, connectedness, no reduced closed path). **)
-    claim Hext_goal :
-      forall A:set, A :e Arcs -> ~(A c= T) ->
-      exists v:set,
-        v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
-        general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
-        connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
-        ~(exists n path_seq x0:set,
-            n :e omega /\ n <> 0 /\
-            reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
-              ({A} :\/: ArcsT) n path_seq x0 /\
-            (exists j:set, j :e n /\ ordsucc j /:e n /\
-              (apply_fun path_seq j) 0 1 = x0)).
-    {
-      (** remaining subgap:
-          produce single-vertex meeting witness and all three extension components
-          for each noncontained edge.
-          expected route:
-          - use graph/connected hypotheses to obtain the meeting witness and
-            connectedness/general-linear structure on `(T :\/: A)`,
-          - show no closed reduced edge path for the enlarged edge family. **)
-      admit.
-    }
-    let x.
-    assume HxVert.
-    apply (xm (x :e T)).
-    + assume HxT.
-      exact HxT.
-    + assume HxNotT.
-      exact (FalseE
-        (maximal_tree_outside_vertex_component_extension_contradiction_from_noncontained_edges
-          T
-          ArcsT
-          X
-          Tx
-          Arcs
-          x
-          Hmax
-          Hext_goal
-          HxVert
-          HxNotT)
-        (x :e T)).
+  let A.
+  assume HA Hnsub.
+  (** remaining forward obligation:
+      for each noncontained edge, construct:
+      - a single-vertex intersection witness with T,
+      - general_linear_graph on (T :\/: A),
+      - connectedness on (T :\/: A),
+      - no closed reduced edge path on (T :\/: A). **)
+  admit.
 - assume Hrhs.
-  claim Htree : tree_in_graph T ArcsT X Tx Arcs.
-  {
-    exact (andEL
-      (tree_in_graph T ArcsT X Tx Arcs)
-      (graph_vertices X Tx Arcs c= T)
-      Hrhs).
-  }
-  claim HVT : graph_vertices X Tx Arcs c= T.
-  {
-    exact (andER
-      (tree_in_graph T ArcsT X Tx Arcs)
-      (graph_vertices X Tx Arcs c= T)
-      Hrhs).
-  }
-  claim HcontraCond :
-    forall T' ArcsT':set,
-    tree_in_graph T' ArcsT' X Tx Arcs ->
-    T c= T' ->
-    (forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False).
-  {
-    let T' ArcsT'.
-    assume Htree' HTsub.
-    (** remaining backward subgap:
-        show every ambient edge contained in T' cannot be noncontained in T,
-        using `graph_vertices X Tx Arcs c= T` (HVT),
-        edge endpoint containment, and tree/subgraph constraints. **)
-    admit.
-  }
-  exact (thm84_4_backward_maximality_from_selected_arc_noncontained_contradiction
-    T
-    ArcsT
-    X
-    Tx
-    Arcs
-    Htree
-    HVT
-    HcontraCond).
+  let T' ArcsT'.
+  assume Htree' HTsub.
+  let A.
+  assume HASel Hnsub.
+  (** remaining backward obligation:
+      for selected arcs in any supertree T', derive contradiction from
+      noncontainment in T using Hrhs and tree/subgraph endpoint structure. **)
+  admit.
 Admitted.
 
 (** from S84 Thm 84.5 (line 5631 in algtop.tex): every tree in maximal tree **)
