@@ -221262,6 +221262,71 @@ apply iffI.
       Hrhs)).
 Qed.
 
+(** targeted helper obligations for thm84_4 main statement **)
+Theorem thm84_4_forward_meeting_obligation :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  A :e Arcs ->
+  ~(A c= T) ->
+  exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
+admit.
+Admitted.
+
+Theorem thm84_4_forward_glg_obligation :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  A :e Arcs ->
+  ~(A c= T) ->
+  general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT).
+admit.
+Admitted.
+
+Theorem thm84_4_forward_connected_obligation :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  A :e Arcs ->
+  ~(A c= T) ->
+  connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)).
+admit.
+Admitted.
+
+Theorem thm84_4_forward_no_loop_obligation :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  A :e Arcs ->
+  ~(A c= T) ->
+  ~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+        ({A} :\/: ArcsT) n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)).
+admit.
+Admitted.
+
+Theorem thm84_4_backward_selected_arc_endpoint_witness_obligation :
+  forall T ArcsT T' ArcsT' X Tx Arcs:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  T c= T' ->
+  forall A:set, A :e {B :e Arcs | B c= T'} ->
+    exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q.
+admit.
+Admitted.
+
+Theorem thm84_4_backward_selected_arc_endpoint_close_obligation :
+  forall T ArcsT T' ArcsT' X Tx Arcs:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  T c= T' ->
+  forall A p q:set,
+    A :e {B :e Arcs | B c= T'} ->
+    end_points_of_arc A (subspace_topology X Tx A) p q ->
+    p :e T /\ q :e T ->
+    A c= T.
+admit.
+Admitted.
+
 (** from S84 Thm 84.4 (line 5625 in algtop.tex): maximal tree contains all vertices **)
 (** LATEX VERSION: Let X be a connected graph. A tree T in X is maximal iff it **)
 (** contains all the vertices of X. **)
@@ -221290,23 +221355,44 @@ apply (thm84_4_maximal_tree_all_vertices_from_obligations
   claim HmeetA :
     exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
   {
-    (** remaining forward subgap (meeting):
-        construct a single-vertex intersection witness for noncontained edge A. **)
-    admit.
+    exact (thm84_4_forward_meeting_obligation
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      A
+      Hmax
+      HA
+      Hnsub).
   }
   claim HglgTA :
     general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT).
   {
-    (** remaining forward subgap (component 1):
-        prove glg on (T :\/: A) with edge family ({A} :\/: ArcsT). **)
-    admit.
+    exact (thm84_4_forward_glg_obligation
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      A
+      Hmax
+      HA
+      Hnsub).
   }
   claim HconnTA :
     connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)).
   {
-    (** remaining forward subgap (component 2):
-        prove connectedness of (T :\/: A). **)
-    admit.
+    exact (thm84_4_forward_connected_obligation
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      A
+      Hmax
+      HA
+      Hnsub).
   }
   claim HnoloopTA :
     ~(exists n path_seq x0:set,
@@ -221316,9 +221402,16 @@ apply (thm84_4_maximal_tree_all_vertices_from_obligations
         (exists j:set, j :e n /\ ordsucc j /:e n /\
           (apply_fun path_seq j) 0 1 = x0)).
   {
-    (** remaining forward subgap (component 3):
-        prove no closed reduced edge path in (T :\/: A). **)
-    admit.
+    exact (thm84_4_forward_no_loop_obligation
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      A
+      Hmax
+      HA
+      Hnsub).
   }
   apply HmeetA.
   let v.
@@ -221358,9 +221451,17 @@ apply (thm84_4_maximal_tree_all_vertices_from_obligations
     forall A0:set, A0 :e {B :e Arcs | B c= T'} ->
       exists p q:set, end_points_of_arc A0 (subspace_topology X Tx A0) p q.
   {
-    (** remaining backward subgap A:
-        produce endpoint witnesses for selected arcs of T'. **)
-    admit.
+    exact (thm84_4_backward_selected_arc_endpoint_witness_obligation
+      T
+      ArcsT
+      T'
+      ArcsT'
+      X
+      Tx
+      Arcs
+      Hrhs
+      Htree'
+      HTsub).
   }
   claim HendpointCloseSel :
     forall A0 p q:set,
@@ -221369,10 +221470,17 @@ apply (thm84_4_maximal_tree_all_vertices_from_obligations
       p :e T /\ q :e T ->
       A0 c= T.
   {
-    (** remaining backward subgap B:
-        from endpoint-in-T information derive selected arc inclusion in T
-        for selected arcs of T'. **)
-    admit.
+    exact (thm84_4_backward_selected_arc_endpoint_close_obligation
+      T
+      ArcsT
+      T'
+      ArcsT'
+      X
+      Tx
+      Arcs
+      Hrhs
+      Htree'
+      HTsub).
   }
   claim HsubsetSel :
     forall A0:set, A0 :e {B :e Arcs | B c= T'} -> A0 c= T.
