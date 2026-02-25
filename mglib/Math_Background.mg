@@ -220486,142 +220486,6 @@ Theorem lemma84_1_connected_iff_edge_paths :
 admit.
 Admitted.
 
-(** from S84 Lem 84.2 (line 5601 in algtop.tex): tree extension **)
-(** LATEX VERSION: If T is a tree and A is an edge intersecting T in a single vertex, **)
-(** then T union A is a tree. Conversely, if T is a finite tree with more than one **)
-(** edge, then T = T0 union A where T0 is a tree and A intersects T0 in one vertex. **)
-(** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
-(** Bounty 242 **)
-(** Lock Charlie 1772106313 **)
-Theorem lemma84_2_tree_extension :
-  forall T ArcsT X Tx Arcs A:set,
-  tree_in_graph T ArcsT X Tx Arcs ->
-  A :e Arcs -> ~(A c= T) ->
-  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
-  tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
-let T ArcsT X Tx Arcs A.
-assume Htree HA Hnsub Hmeet.
-claim HsubTA : subgraph_of (T :\/: A) X Tx Arcs.
-{
-  exact (subgraph_of_union_with_arc
-    T
-    X
-    Tx
-    Arcs
-    A
-    (tree_in_graph_subgraph_of
-      T
-      ArcsT
-      X
-      Tx
-      Arcs
-      Htree)
-    HA).
-}
-(** partial progress:
-    `HsubTA` establishes the subgraph component of the target tree.
-    Remaining work is to prove:
-    1) general_linear_graph on `(T :\/: A)` with edge-family `({A} :\/: ArcsT)`,
-    2) connectedness of `(T :\/: A)`,
-    3) no closed reduced edge path in the enlarged graph. **)
-admit.
-Admitted.
-
-(** Proven Bob **)
-Theorem lemma84_2_tree_extension_from_components :
-  forall T ArcsT X Tx Arcs A:set,
-  subgraph_of (T :\/: A) X Tx Arcs ->
-  general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) ->
-  connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) ->
-  ~(exists n path_seq x0:set,
-      n :e omega /\ n <> 0 /\
-      reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
-        ({A} :\/: ArcsT) n path_seq x0 /\
-      (exists j:set, j :e n /\ ordsucc j /:e n /\
-        (apply_fun path_seq j) 0 1 = x0)) ->
-  tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
-let T ArcsT X Tx Arcs A.
-assume HsubTA HglgTA HconnTA HnoloopTA.
-exact (tree_in_graph_intro
-  (T :\/: A)
-  ({A} :\/: ArcsT)
-  X
-  Tx
-  Arcs
-  HsubTA
-  HglgTA
-  HconnTA
-  HnoloopTA).
-Qed.
-
-(** Proven Bob **)
-Theorem lemma84_2_tree_extension_from_hypotheses_and_components :
-  forall T ArcsT X Tx Arcs A:set,
-  tree_in_graph T ArcsT X Tx Arcs ->
-  A :e Arcs -> ~(A c= T) ->
-  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
-  general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) ->
-  connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) ->
-  ~(exists n path_seq x0:set,
-      n :e omega /\ n <> 0 /\
-      reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
-        ({A} :\/: ArcsT) n path_seq x0 /\
-      (exists j:set, j :e n /\ ordsucc j /:e n /\
-        (apply_fun path_seq j) 0 1 = x0)) ->
-  tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
-let T ArcsT X Tx Arcs A.
-assume Htree HA Hnsub Hmeet HglgTA HconnTA HnoloopTA.
-exact (lemma84_2_tree_extension_from_components
-  T
-  ArcsT
-  X
-  Tx
-  Arcs
-  A
-  (subgraph_of_union_with_arc
-    T
-    X
-    Tx
-    Arcs
-    A
-    (tree_in_graph_subgraph_of
-      T
-      ArcsT
-      X
-      Tx
-      Arcs
-      Htree)
-    HA)
-  HglgTA
-  HconnTA
-  HnoloopTA).
-Qed.
-
-(** Proven Bob **)
-Theorem lemma84_2_tree_extension_subgraph_part :
-  forall T ArcsT X Tx Arcs A:set,
-  tree_in_graph T ArcsT X Tx Arcs ->
-  A :e Arcs -> ~(A c= T) ->
-  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
-  subgraph_of (T :\/: A) X Tx Arcs.
-let T ArcsT X Tx Arcs A.
-assume Htree HA Hnsub Hmeet.
-exact (subgraph_of_union_with_arc
-  T
-  X
-  Tx
-  Arcs
-  A
-  (tree_in_graph_subgraph_of
-    T
-    ArcsT
-    X
-    Tx
-    Arcs
-    Htree)
-  HA).
-Qed.
-
 (** helper: the tree extension union is connected whenever A meets T in a vertex **)
 (** Proven Charlie **)
 Theorem lemma84_2_tree_extension_connected_part :
@@ -220754,6 +220618,181 @@ exact (union_connected_common_point
   HconnFam
   Hcommon).
 Qed.
+
+(** from S84 Lem 84.2 (line 5601 in algtop.tex): tree extension **)
+(** LATEX VERSION: If T is a tree and A is an edge intersecting T in a single vertex, **)
+(** then T union A is a tree. Conversely, if T is a finite tree with more than one **)
+(** edge, then T = T0 union A where T0 is a tree and A intersects T0 in one vertex. **)
+(** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
+(** Bounty 242 **)
+(** Lock Charlie 1772106313 **)
+Theorem lemma84_2_tree_extension :
+  forall T ArcsT X Tx Arcs A:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e Arcs -> ~(A c= T) ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
+let T ArcsT X Tx Arcs A.
+assume Htree HA Hnsub Hmeet.
+claim HsubTA : subgraph_of (T :\/: A) X Tx Arcs.
+{
+  exact (subgraph_of_union_with_arc
+    T
+    X
+    Tx
+    Arcs
+    A
+    (tree_in_graph_subgraph_of
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      Htree)
+    HA).
+}
+(** partial progress:
+    `HsubTA` establishes the subgraph component of the target tree.
+    `HconnTA` establishes connectedness of `(T :\/: A)`.
+    Remaining work is to prove:
+    1) general_linear_graph on `(T :\/: A)` with edge-family `({A} :\/: ArcsT)`,
+    2) no closed reduced edge path in the enlarged graph. **)
+claim HconnTA : connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)).
+{
+  exact (lemma84_2_tree_extension_connected_part
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    A
+    Htree
+    HA
+    Hnsub
+    Hmeet).
+}
+admit.
+Admitted.
+
+(** Proven Bob **)
+Theorem lemma84_2_tree_extension_from_components :
+  forall T ArcsT X Tx Arcs A:set,
+  subgraph_of (T :\/: A) X Tx Arcs ->
+  general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) ->
+  connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) ->
+  ~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+        ({A} :\/: ArcsT) n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)) ->
+  tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
+let T ArcsT X Tx Arcs A.
+assume HsubTA HglgTA HconnTA HnoloopTA.
+exact (tree_in_graph_intro
+  (T :\/: A)
+  ({A} :\/: ArcsT)
+  X
+  Tx
+  Arcs
+  HsubTA
+  HglgTA
+  HconnTA
+  HnoloopTA).
+Qed.
+
+(** Proven Bob **)
+Theorem lemma84_2_tree_extension_from_hypotheses_and_components :
+  forall T ArcsT X Tx Arcs A:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e Arcs -> ~(A c= T) ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) ->
+  connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) ->
+  ~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+        ({A} :\/: ArcsT) n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)) ->
+  tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
+let T ArcsT X Tx Arcs A.
+assume Htree HA Hnsub Hmeet HglgTA HconnTA HnoloopTA.
+exact (lemma84_2_tree_extension_from_components
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  (subgraph_of_union_with_arc
+    T
+    X
+    Tx
+    Arcs
+    A
+    (tree_in_graph_subgraph_of
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      Htree)
+    HA)
+  HglgTA
+  HconnTA
+  HnoloopTA).
+Qed.
+
+(** Proven Bob **)
+Theorem lemma84_2_tree_extension_subgraph_part :
+  forall T ArcsT X Tx Arcs A:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e Arcs -> ~(A c= T) ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  subgraph_of (T :\/: A) X Tx Arcs.
+let T ArcsT X Tx Arcs A.
+assume Htree HA Hnsub Hmeet.
+exact (subgraph_of_union_with_arc
+  T
+  X
+  Tx
+  Arcs
+  A
+  (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree)
+  HA).
+Qed.
+
+(** helper: general linear graph structure on the tree extension union **)
+Theorem lemma84_2_tree_extension_general_linear_graph_part :
+  forall T ArcsT X Tx Arcs A:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e Arcs -> ~(A c= T) ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT).
+admit.
+Admitted.
+
+(** helper: no closed reduced edge path appears after attaching A along a single vertex **)
+Theorem lemma84_2_tree_extension_no_closed_reduced_edge_path_part :
+  forall T ArcsT X Tx Arcs A:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  A :e Arcs -> ~(A c= T) ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  ~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+        ({A} :\/: ArcsT) n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)).
+admit.
+Admitted.
 
 (** Proven Bob **)
 Theorem lemma84_2_not_subset_has_outside_point :
