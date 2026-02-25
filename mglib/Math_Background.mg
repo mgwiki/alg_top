@@ -74528,6 +74528,138 @@ exact (local_sheet_non_switching_on_unit_square_subset
   HVzSlice).
 Qed.
 
+(** Infrastructure: evenly_covered immediately provides slices core data **)
+(** Proven Bob **)
+Theorem evenly_covered_slices_core :
+  forall E Te B Tb p U:set,
+  evenly_covered E Te B Tb p U ->
+  exists slices:set,
+    ((slices c= Te /\ pairwise_disjoint slices) /\
+      Union slices = preimage_of E p U).
+let E Te B Tb p U.
+assume Heven.
+claim HslicesEx :
+  exists slices:set,
+    slices c= Te /\
+    pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun z:set => apply_fun p z))).
+{
+  exact (andER
+    (U :e Tb)
+    (exists slices:set,
+      slices c= Te /\
+      pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (fun z:set => apply_fun p z))))
+    Heven).
+}
+apply HslicesEx.
+let slices.
+assume Hslices.
+apply (and4E
+  (slices c= Te)
+  (pairwise_disjoint slices)
+  (Union slices = preimage_of E p U)
+  (forall V:set, V :e slices ->
+    homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+      (graph V (fun z:set => apply_fun p z)))
+  Hslices).
+assume Hsub Hpd Hunion _.
+witness slices.
+exact (andI
+  (slices c= Te /\ pairwise_disjoint slices)
+  (Union slices = preimage_of E p U)
+  (andI
+    (slices c= Te)
+    (pairwise_disjoint slices)
+    Hsub
+    Hpd)
+  Hunion).
+Qed.
+
+(** Infrastructure: local non-switching from full slices witness pack **)
+(** Proven Bob **)
+Theorem local_sheet_non_switching_on_unit_square_subset_from_slices_witness :
+  forall N E Te B Tb p U slices F Ft q z Vq Vz:set,
+  topology_on E Te ->
+  (slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun z:set => apply_fun p z)))) ->
+  N c= unit_square ->
+  connected_space N (subspace_topology unit_square unit_square_topology N) ->
+  continuous_map N (subspace_topology unit_square unit_square_topology N) E Te Ft ->
+  (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t)) ->
+  (forall x:set, x :e N -> apply_fun F x :e U) ->
+  q :e N ->
+  z :e N ->
+  apply_fun Ft q :e Vq ->
+  Vq :e slices ->
+  apply_fun Ft z :e Vz ->
+  Vz :e slices ->
+  Vz = Vq.
+let N E Te B Tb p U slices F Ft q z Vq Vz.
+assume HtopE HslicesPack HNsubSq HNconn HFtCont HcommSq HFU
+  HqN HzN HFtqVq HVqSlice HFtzVz HVzSlice.
+claim Hcore :
+  ((slices c= Te /\ pairwise_disjoint slices) /\ Union slices = preimage_of E p U).
+{
+  apply (and4E
+    (slices c= Te)
+    (pairwise_disjoint slices)
+    (Union slices = preimage_of E p U)
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun z:set => apply_fun p z)))
+    HslicesPack).
+  assume Hsub Hpd Hunion _.
+  exact (andI
+    (slices c= Te /\ pairwise_disjoint slices)
+    (Union slices = preimage_of E p U)
+    (andI
+      (slices c= Te)
+      (pairwise_disjoint slices)
+      Hsub
+      Hpd)
+    Hunion).
+}
+exact (local_sheet_non_switching_on_unit_square_subset_from_slices_core
+  N
+  E
+  Te
+  B
+  Tb
+  p
+  U
+  slices
+  F
+  Ft
+  q
+  z
+  Vq
+  Vz
+  HtopE
+  Hcore
+  HNsubSq
+  HNconn
+  HFtCont
+  HcommSq
+  HFU
+  HqN
+  HzN
+  HFtqVq
+  HVqSlice
+  HFtzVz
+  HVzSlice).
+Qed.
+
 Theorem lemma54_2_sheet_non_switching_local :
   forall E Te B Tb p F Ft q z N U slices Vq Vz:set,
   pairwise_disjoint slices ->
