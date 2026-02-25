@@ -213036,6 +213036,100 @@ exact (tree_in_graph_subset_union_arcs
     Hmax)).
 Qed.
 
+(** Proven Bob **)
+Theorem subgraph_vertex_outside_yields_edge_not_subset :
+  forall T X Tx Arcs x:set,
+  subgraph_of T X Tx Arcs ->
+  x :e graph_vertices X Tx Arcs ->
+  x /:e T ->
+  exists A:set, A :e Arcs /\ ~(A c= T) /\ x :e A.
+let T X Tx Arcs x.
+assume Hsub HxVert HxNotT.
+apply (graph_vertices_member_in_some_arc
+  X
+  Tx
+  Arcs
+  x
+  HxVert).
+let A.
+assume HAwit.
+claim HAArcs : A :e Arcs.
+{
+  exact (andEL
+    (A :e Arcs)
+    (x :e A)
+    HAwit).
+}
+claim HxA : x :e A.
+{
+  exact (andER
+    (A :e Arcs)
+    (x :e A)
+    HAwit).
+}
+witness A.
+apply andI.
+- apply andI.
+  + exact HAArcs.
+  + assume HAsubT.
+    exact (HxNotT
+      (HAsubT x HxA)).
+- exact HxA.
+Qed.
+
+(** Proven Bob **)
+Theorem tree_vertex_outside_yields_edge_not_subset :
+  forall T ArcsT X Tx Arcs x:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  x :e graph_vertices X Tx Arcs ->
+  x /:e T ->
+  exists A:set, A :e Arcs /\ ~(A c= T) /\ x :e A.
+let T ArcsT X Tx Arcs x.
+assume Htree HxVert HxNotT.
+exact (subgraph_vertex_outside_yields_edge_not_subset
+  T
+  X
+  Tx
+  Arcs
+  x
+  (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree)
+  HxVert
+  HxNotT).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_vertex_outside_yields_edge_not_subset :
+  forall T ArcsT X Tx Arcs x:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  x :e graph_vertices X Tx Arcs ->
+  x /:e T ->
+  exists A:set, A :e Arcs /\ ~(A c= T) /\ x :e A.
+let T ArcsT X Tx Arcs x.
+assume Hmax HxVert HxNotT.
+exact (tree_vertex_outside_yields_edge_not_subset
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  x
+  (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax)
+  HxVert
+  HxNotT).
+Qed.
+
 (** from S84 Lem 84.1 (line 5563 in algtop.tex): connected iff edge paths **)
 (** LATEX VERSION: A graph X is connected iff every pair of vertices can be **)
 (** joined by an edge path. **)
