@@ -214039,7 +214039,79 @@ exact (tree_vertex_outside_yields_edge_not_subset
     Arcs
     Hmax)
   HxVert
-  HxNotT).
+    HxNotT).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_selected_union_eq_T :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  Union {A :e Arcs | A c= T} = T.
+let T ArcsT X Tx Arcs.
+assume Hmax.
+exact (tree_in_graph_selected_union_eq_T
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax)).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_selected_arc_in_arcs :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  A :e {B :e Arcs | B c= T} ->
+  A :e Arcs.
+let T ArcsT X Tx Arcs A.
+assume Hmax HA.
+exact (tree_in_graph_selected_arc_in_arcs
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax)
+  HA).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_selected_arc_subset_T :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  A :e {B :e Arcs | B c= T} ->
+  A c= T.
+let T ArcsT X Tx Arcs A.
+assume Hmax HA.
+exact (tree_in_graph_selected_arc_subset_T
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax)
+  HA).
 Qed.
 
 (** from S84 Lem 84.1 (line 5563 in algtop.tex): connected iff edge paths **)
