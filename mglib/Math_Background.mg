@@ -211913,6 +211913,35 @@ Theorem lemma83_2_compact_finite_subgraph :
   C c= X -> compact_space C (subspace_topology X Tx C) ->
   exists Arcs':set,
     Arcs' c= Arcs /\ finite Arcs' /\ C c= Union Arcs'.
+let X Tx Arcs C.
+assume Hglg HCsubX HcompC.
+claim HXeqU : X = Union Arcs.
+{
+  exact (general_linear_graph_union_arcs
+    X
+    Tx
+    Arcs
+    Hglg).
+}
+claim HCsubU : C c= Union Arcs.
+{
+  let x.
+  assume HxC.
+  claim HxX : x :e X.
+  {
+    exact (HCsubX x HxC).
+  }
+  exact (mem_eqR
+    x
+    X
+    (Union Arcs)
+    HXeqU
+    HxX).
+}
+(** remaining gap:
+    derive a finite Arcs' c= Arcs with C c= Union Arcs'.
+    This needs a bridge turning HCsubU into a compactness/finite-subcover argument
+    for the family Arcs (or an equivalent closed-family extraction via coherence). **)
 admit.
 Admitted.
 
