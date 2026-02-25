@@ -225663,6 +225663,774 @@ exact (edge_path_index_decomposition_endpoints_in_X
   Hi).
 Qed.
 
+(** helper: the empty sequence is an edge path of length 0. **)
+(** Proven Charlie **)
+Theorem edge_path_0_empty :
+  forall X Tx Arcs x0:set,
+  edge_path X Tx Arcs 0 Empty x0.
+let X Tx Arcs x0.
+apply (and5I
+  (0 :e omega)
+  (function_on Empty 0 (setprod (setprod X X) (Power X)))
+  (forall i:set, i :e 0 ->
+    exists A ini fin:set,
+      apply_fun Empty i = ((ini, fin), A) /\
+      oriented_edge X Tx Arcs A ini fin)
+  (0 <> 0 -> (apply_fun Empty 0) 0 0 = x0)
+  (forall i:set, i :e 0 -> ordsucc i :e 0 ->
+    (apply_fun Empty i) 0 1 = (apply_fun Empty (ordsucc i)) 0 0)).
+- exact (nat_p_omega 0 nat_0).
+- let i.
+  assume Hi.
+  exact (FalseE
+    (EmptyE i Hi)
+    (apply_fun Empty i :e (setprod (setprod X X) (Power X)))).
+- let i.
+  assume Hi.
+  exact (FalseE
+    (EmptyE i Hi)
+    (exists A ini fin:set,
+      apply_fun Empty i = ((ini, fin), A) /\
+      oriented_edge X Tx Arcs A ini fin)).
+- assume Hbad.
+  claim H00 : 0 = 0.
+  { reflexivity. }
+  exact (FalseE
+    (Hbad H00)
+    ((apply_fun Empty 0) 0 0 = x0)).
+- let i.
+  assume Hi His.
+  exact (FalseE
+    (EmptyE i Hi)
+    ((apply_fun Empty i) 0 1 = (apply_fun Empty (ordsucc i)) 0 0)).
+Qed.
+
+(** helper: build a length-1 edge path from an oriented edge. **)
+(** Proven Charlie **)
+Theorem edge_path_1_from_oriented_edge :
+  forall X Tx Arcs A ini fin:set,
+  general_linear_graph X Tx Arcs ->
+  oriented_edge X Tx Arcs A ini fin ->
+  edge_path X Tx Arcs (ordsucc 0) (graph (ordsucc 0) (fun _:set => ((ini, fin), A))) ini.
+let X Tx Arcs A ini fin.
+assume Hglg Hori.
+claim HAArcs : A :e Arcs.
+{
+  exact (oriented_edge_in_arcs
+    X
+    Tx
+    Arcs
+    A
+    ini
+    fin
+    Hori).
+}
+claim Hend : end_points_of_arc A (subspace_topology X Tx A) ini fin.
+{
+  exact (oriented_edge_endpoints
+    X
+    Tx
+    Arcs
+    A
+    ini
+    fin
+    Hori).
+}
+claim HAsubX : A c= X.
+{
+  exact (andEL
+    (A c= X)
+    (arc A (subspace_topology X Tx A))
+    (general_linear_graph_arc_data
+      X
+      Tx
+      Arcs
+      A
+      Hglg
+      HAArcs)).
+}
+claim HiniX : ini :e X.
+{
+  exact (HAsubX
+    ini
+    (end_points_of_arc_left_in_set
+      A
+      (subspace_topology X Tx A)
+      ini
+      fin
+      Hend)).
+}
+claim HfinX : fin :e X.
+{
+  exact (HAsubX
+    fin
+    (end_points_of_arc_right_in_set
+      A
+      (subspace_topology X Tx A)
+      ini
+      fin
+      Hend)).
+}
+apply (and5I
+  ((ordsucc 0) :e omega)
+  (function_on (graph (ordsucc 0) (fun _:set => ((ini, fin), A)))
+    (ordsucc 0) (setprod (setprod X X) (Power X)))
+  (forall i:set, i :e ordsucc 0 ->
+    exists A0 ini0 fin0:set,
+      apply_fun (graph (ordsucc 0) (fun _:set => ((ini, fin), A))) i = ((ini0, fin0), A0) /\
+      oriented_edge X Tx Arcs A0 ini0 fin0)
+  (ordsucc 0 <> 0 ->
+    (apply_fun (graph (ordsucc 0) (fun _:set => ((ini, fin), A))) 0) 0 0 = ini)
+  (forall i:set, i :e ordsucc 0 -> ordsucc i :e ordsucc 0 ->
+    (apply_fun (graph (ordsucc 0) (fun _:set => ((ini, fin), A))) i) 0 1 =
+    (apply_fun (graph (ordsucc 0) (fun _:set => ((ini, fin), A))) (ordsucc i)) 0 0)).
+- exact (nat_p_omega
+    (ordsucc 0)
+    (nat_ordsucc 0 nat_0)).
+- exact (andEL
+    (function_on
+      (graph (ordsucc 0) (fun _:set => ((ini, fin), A)))
+      (ordsucc 0)
+      (setprod (setprod X X) (Power X)))
+    (forall x : set,
+      x :e ordsucc 0 ->
+      exists y : set,
+        y :e setprod (setprod X X) (Power X) /\
+        (x, y) :e graph (ordsucc 0) (fun _:set => ((ini, fin), A)))
+    (total_function_on_graph
+      (ordsucc 0)
+      (setprod (setprod X X) (Power X))
+      (fun _:set => ((ini, fin), A))
+      (fun i Hi =>
+        tuple_2_setprod_by_pair_Sigma
+          (setprod X X)
+          (Power X)
+          (ini, fin)
+          A
+          (tuple_2_setprod_by_pair_Sigma
+            X
+            X
+            ini
+            fin
+            HiniX
+            HfinX)
+          (PowerI
+            X
+            A
+            HAsubX)))).
+- let i.
+  assume Hi.
+  claim Hi0 : i = 0.
+  {
+    apply (ordsuccE 0 i Hi).
+    - assume HiE.
+      exact (FalseE
+        (EmptyE i HiE)
+        (i = 0)).
+    - assume HiEq.
+      exact HiEq.
+  }
+  witness A.
+  witness ini.
+  witness fin.
+  apply andI.
+  - rewrite Hi0.
+    rewrite (apply_fun_graph (ordsucc 0) (fun _:set => ((ini, fin), A)) 0 (ordsuccI2 0)).
+    reflexivity.
+  - exact Hori.
+- assume Hn0.
+  rewrite (apply_fun_graph (ordsucc 0) (fun _:set => ((ini, fin), A)) 0 (ordsuccI2 0)).
+  rewrite (tuple_2_0_eq (ini, fin) A).
+  rewrite tuple_2_0_eq.
+  reflexivity.
+- let i.
+  assume Hi His.
+  claim Hi0 : i = 0.
+  {
+    apply (ordsuccE 0 i Hi).
+    - assume HiE.
+      exact (FalseE
+        (EmptyE i HiE)
+        (i = 0)).
+    - assume HiEq.
+      exact HiEq.
+  }
+  claim HsiEq : ordsucc 0 = ordsucc i.
+  {
+    rewrite Hi0.
+    reflexivity.
+  }
+  claim Hbad : ordsucc 0 :e ordsucc 0.
+  {
+    exact (eq_subst_mem
+      (ordsucc 0)
+      (ordsucc i)
+      (ordsucc 0)
+      HsiEq
+      His).
+  }
+  exact (FalseE
+    (In_irref (ordsucc 0) Hbad)
+    ((apply_fun (graph (ordsucc 0) (fun _:set => ((ini, fin), A))) i) 0 1 =
+     (apply_fun (graph (ordsucc 0) (fun _:set => ((ini, fin), A))) (ordsucc i)) 0 0)).
+Qed.
+
+(** helper: append an oriented edge at the end of an edge path. **)
+(** The last vertex is specified by a final index j with ordsucc j /:e n. **)
+(** Proven Charlie **)
+Theorem edge_path_append_oriented_edge :
+  forall X Tx Arcs n path_seq x0 j A p q:set,
+  general_linear_graph X Tx Arcs ->
+  edge_path X Tx Arcs n path_seq x0 ->
+  j :e n ->
+  ordsucc j /:e n ->
+  (apply_fun path_seq j) 0 1 = p ->
+  oriented_edge X Tx Arcs A p q ->
+  edge_path X Tx Arcs (ordsucc n)
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    x0.
+let X Tx Arcs n path_seq x0 j A p q.
+assume Hglg Hep HjIn HsjNot Hfinj Hori.
+claim HnOm : n :e omega.
+{
+  exact (edge_path_n_in_omega
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    Hep).
+}
+claim HordN : ordinal n.
+{
+  exact (nat_p_ordinal
+    n
+    (omega_nat_p
+      n
+      HnOm)).
+}
+claim HnEqSj : n = ordsucc j.
+{
+  apply (ordinal_ordsucc_In_eq
+    n
+    j
+    HordN
+    HjIn).
+  - assume HsjIn.
+    exact (FalseE
+      (HsjNot HsjIn)
+      (n = ordsucc j)).
+  - assume Heq.
+    exact Heq.
+}
+claim HnSubOmega : n c= omega.
+{
+  exact (ordinal_TransSet
+    omega
+    omega_ordinal
+    n
+    HnOm).
+}
+claim HjOm : j :e omega.
+{
+  exact (HnSubOmega
+    j
+    HjIn).
+}
+claim HjsOrd : ordinal j.
+{
+  exact (nat_p_ordinal
+    j
+    (omega_nat_p
+      j
+      HjOm)).
+}
+claim Hj0InN : 0 :e n.
+{
+  rewrite HnEqSj.
+  exact (ordinal_0_In_ordsucc
+    j
+    HjsOrd).
+}
+claim HnNe0 : n <> 0.
+{
+  assume Hn0.
+  claim Hfalse : j :e 0.
+  { exact (mem_eqR j n 0 Hn0 HjIn). }
+  exact (EmptyE j Hfalse False).
+}
+claim HAArcs : A :e Arcs.
+{
+  exact (oriented_edge_in_arcs
+    X
+    Tx
+    Arcs
+    A
+    p
+    q
+    Hori).
+}
+claim HAsubX : A c= X.
+{
+  exact (andEL
+    (A c= X)
+    (arc A (subspace_topology X Tx A))
+    (general_linear_graph_arc_data
+      X
+      Tx
+      Arcs
+      A
+      Hglg
+      HAArcs)).
+}
+claim HpX : p :e X.
+{
+  exact (HAsubX
+    p
+    (end_points_of_arc_left_in_set
+      A
+      (subspace_topology X Tx A)
+      p
+      q
+      (oriented_edge_endpoints
+        X
+        Tx
+        Arcs
+        A
+        p
+        q
+        Hori))).
+}
+claim HqX : q :e X.
+{
+  exact (HAsubX
+    q
+    (end_points_of_arc_right_in_set
+      A
+      (subspace_topology X Tx A)
+      p
+      q
+      (oriented_edge_endpoints
+        X
+        Tx
+        Arcs
+        A
+        p
+        q
+        Hori))).
+}
+set seq' :=
+  (graph n (fun i:set => apply_fun path_seq i)) :\/:
+  (graph {n} (fun _:set => ((p, q), A))).
+claim HdisjDom : n :/\: {n} = Empty.
+{
+  apply (set_ext (n :/\: {n}) Empty).
+  - let x.
+    assume Hx.
+    claim HxPair : x :e n /\ x :e {n}.
+    { exact (binintersectE n {n} x Hx). }
+    claim HxN : x :e n.
+    { exact (andEL (x :e n) (x :e {n}) HxPair). }
+    claim HxEq : x = n.
+    { exact (SingE n x (andER (x :e n) (x :e {n}) HxPair)). }
+    claim HnInN : n :e n.
+    { exact (eq_subst_mem_rev x n n HxEq HxN). }
+    exact (FalseE (In_irref n HnInN) (x :e Empty)).
+  - let x.
+    assume HxE.
+    exact (FalseE (EmptyE x HxE) (x :e n :/\: {n})).
+}
+claim HtotLeft :
+  total_function_on (graph n (fun i:set => apply_fun path_seq i))
+    n (setprod (setprod X X) (Power X)).
+{
+  exact (total_function_on_graph
+    n
+    (setprod (setprod X X) (Power X))
+    (fun i:set => apply_fun path_seq i)
+    (fun i Hi =>
+      (edge_path_function_on
+        X
+        Tx
+        Arcs
+        n
+        path_seq
+        x0
+        Hep)
+        i
+        Hi)).
+}
+claim HtotRight :
+  total_function_on (graph {n} (fun _:set => ((p, q), A)))
+    {n} (setprod (setprod X X) (Power X)).
+{
+  exact (total_function_on_graph
+    {n}
+    (setprod (setprod X X) (Power X))
+    (fun _:set => ((p, q), A))
+    (fun x Hx =>
+      tuple_2_setprod_by_pair_Sigma
+        (setprod X X)
+        (Power X)
+        (p, q)
+        A
+        (tuple_2_setprod_by_pair_Sigma
+          X
+          X
+          p
+          q
+          HpX
+          HqX)
+        (PowerI
+          X
+          A
+          HAsubX))).
+}
+claim HfuncLeft :
+  functional_graph (graph n (fun i:set => apply_fun path_seq i)).
+{
+  exact (functional_graph_graph
+    n
+    (fun i:set => apply_fun path_seq i)).
+}
+claim HfuncRight :
+  functional_graph (graph {n} (fun _:set => ((p, q), A))).
+{
+  exact (functional_graph_graph
+    {n}
+    (fun _:set => ((p, q), A))).
+}
+claim HdomLeft : graph_domain_subset (graph n (fun i:set => apply_fun path_seq i)) n.
+{
+  exact (graph_domain_subset_graph
+    n
+    (fun i:set => apply_fun path_seq i)).
+}
+claim HdomRight : graph_domain_subset (graph {n} (fun _:set => ((p, q), A))) {n}.
+{
+  exact (graph_domain_subset_graph
+    {n}
+    (fun _:set => ((p, q), A))).
+}
+claim HfunSeq' :
+  function_on seq' (n :\/: {n}) (setprod (setprod X X) (Power X)).
+{
+  exact (function_union_on_disjoint_total_functional
+    n
+    {n}
+    (setprod (setprod X X) (Power X))
+    (graph n (fun i:set => apply_fun path_seq i))
+    (graph {n} (fun _:set => ((p, q), A)))
+    HdisjDom
+    HdomLeft
+    HdomRight
+    HtotLeft
+    HtotRight
+    HfuncLeft
+    HfuncRight).
+}
+apply (and5I
+  ((ordsucc n) :e omega)
+  (function_on seq' (ordsucc n) (setprod (setprod X X) (Power X)))
+  (forall i:set, i :e ordsucc n ->
+    exists A0 ini0 fin0:set,
+      apply_fun seq' i = ((ini0, fin0), A0) /\
+      oriented_edge X Tx Arcs A0 ini0 fin0)
+  (ordsucc n <> 0 -> (apply_fun seq' 0) 0 0 = x0)
+  (forall i:set, i :e ordsucc n -> ordsucc i :e ordsucc n ->
+    (apply_fun seq' i) 0 1 = (apply_fun seq' (ordsucc i)) 0 0)).
+- exact (omega_ordsucc
+    n
+    HnOm).
+- claim HsuccSub : ordsucc n c= n :\/: {n}.
+  {
+    let x.
+    assume Hx.
+    apply (ordsuccE
+      n
+      x
+      Hx).
+    - assume HxN.
+      exact (binunionI1
+        n
+        {n}
+        x
+        HxN).
+    - assume HxEq.
+      exact (binunionI2
+        n
+        {n}
+        x
+        (eq_subst_mem
+          x
+          n
+          {n}
+          HxEq
+          (SingI n))).
+  }
+  exact (function_on_restrict_dom
+    seq'
+    (n :\/: {n})
+    (ordsucc n)
+    (setprod (setprod X X) (Power X))
+    HfunSeq'
+    HsuccSub).
+- let i.
+  assume Hi.
+  apply (ordsuccE
+    n
+    i
+    Hi).
+  * assume Hin.
+    apply (edge_path_edge_decomposition
+      X
+      Tx
+      Arcs
+      n
+      path_seq
+      x0
+      i
+      Hep
+      Hin).
+    let A0.
+    assume HA0.
+    apply HA0.
+    let ini0.
+    assume Hini0.
+    apply Hini0.
+    let fin0.
+    assume Hfin0.
+    claim Happ :
+      apply_fun seq' i = apply_fun path_seq i.
+    {
+      rewrite (apply_fun_union_left
+        n
+        {n}
+        (setprod (setprod X X) (Power X))
+        (graph n (fun i0:set => apply_fun path_seq i0))
+        (graph {n} (fun _:set => ((p, q), A)))
+        i
+        HdisjDom
+        HdomLeft
+        HdomRight
+        HtotLeft
+        HtotRight
+        HfuncLeft
+        HfuncRight
+        Hin).
+      rewrite (apply_fun_graph n (fun i0:set => apply_fun path_seq i0) i Hin).
+      reflexivity.
+    }
+    witness A0.
+    witness ini0.
+    witness fin0.
+    apply andI.
+    { rewrite Happ.
+      exact (andEL
+        (apply_fun path_seq i = ((ini0, fin0), A0))
+        (oriented_edge X Tx Arcs A0 ini0 fin0)
+        Hfin0). }
+    { exact (andER
+        (apply_fun path_seq i = ((ini0, fin0), A0))
+        (oriented_edge X Tx Arcs A0 ini0 fin0)
+        Hfin0). }
+  * assume HiEq.
+    witness A.
+    witness p.
+    witness q.
+    apply andI.
+    { rewrite HiEq.
+      claim HnIn : n :e {n}.
+      { exact (SingI n). }
+      rewrite (apply_fun_union_right
+        n
+        {n}
+        (setprod (setprod X X) (Power X))
+        (graph n (fun i0:set => apply_fun path_seq i0))
+        (graph {n} (fun _:set => ((p, q), A)))
+        n
+        HdisjDom
+        HdomLeft
+        HdomRight
+        HtotLeft
+        HtotRight
+        HfuncLeft
+        HfuncRight
+        HnIn).
+      rewrite (apply_fun_graph {n} (fun _:set => ((p, q), A)) n HnIn).
+      reflexivity. }
+    { exact Hori. }
+- assume Hsn0.
+  claim H0In : 0 :e n.
+  { exact Hj0InN. }
+  rewrite (apply_fun_union_left
+    n
+    {n}
+    (setprod (setprod X X) (Power X))
+    (graph n (fun i0:set => apply_fun path_seq i0))
+    (graph {n} (fun _:set => ((p, q), A)))
+    0
+    HdisjDom
+    HdomLeft
+    HdomRight
+    HtotLeft
+    HtotRight
+    HfuncLeft
+    HfuncRight
+    H0In).
+  rewrite (apply_fun_graph n (fun i0:set => apply_fun path_seq i0) 0 H0In).
+  exact (edge_path_start_vertex
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    Hep
+    HnNe0).
+- let i.
+  assume Hi His.
+  apply (ordsuccE
+    n
+    i
+    Hi).
+  * assume Hin.
+    apply (ordsuccE
+      n
+      (ordsucc i)
+      His).
+    + assume HsIn.
+      (** internal old step **)
+      rewrite (apply_fun_union_left
+        n
+        {n}
+        (setprod (setprod X X) (Power X))
+        (graph n (fun i0:set => apply_fun path_seq i0))
+        (graph {n} (fun _:set => ((p, q), A)))
+        i
+        HdisjDom
+        HdomLeft
+        HdomRight
+        HtotLeft
+        HtotRight
+        HfuncLeft
+        HfuncRight
+        Hin).
+      rewrite (apply_fun_graph n (fun i0:set => apply_fun path_seq i0) i Hin).
+      rewrite (apply_fun_union_left
+        n
+        {n}
+        (setprod (setprod X X) (Power X))
+        (graph n (fun i0:set => apply_fun path_seq i0))
+        (graph {n} (fun _:set => ((p, q), A)))
+        (ordsucc i)
+        HdisjDom
+        HdomLeft
+        HdomRight
+        HtotLeft
+        HtotRight
+        HfuncLeft
+        HfuncRight
+        HsIn).
+      rewrite (apply_fun_graph n (fun i0:set => apply_fun path_seq i0) (ordsucc i) HsIn).
+      exact (edge_path_consecutive_match
+        X
+        Tx
+        Arcs
+        n
+        path_seq
+        x0
+        i
+        Hep
+        Hin
+        HsIn).
+    + assume HsEq.
+      (** junction step: ordsucc i = n, so i is j and we connect to the appended edge **)
+      claim HiEqj : i = j.
+      {
+        claim HSjEqN : ordsucc j = n.
+        {
+          rewrite HnEqSj.
+          reflexivity.
+        }
+        claim HsEq2 : ordsucc i = ordsucc j.
+        {
+          rewrite HSjEqN.
+          exact HsEq.
+        }
+        exact (ordsucc_inj
+          i
+          j
+          HsEq2).
+      }
+      rewrite (apply_fun_union_left
+        n
+        {n}
+        (setprod (setprod X X) (Power X))
+        (graph n (fun i0:set => apply_fun path_seq i0))
+        (graph {n} (fun _:set => ((p, q), A)))
+        i
+        HdisjDom
+        HdomLeft
+        HdomRight
+        HtotLeft
+        HtotRight
+        HfuncLeft
+        HfuncRight
+        Hin).
+      rewrite (apply_fun_graph n (fun i0:set => apply_fun path_seq i0) i Hin).
+      rewrite HiEqj.
+      rewrite Hfinj.
+      claim HSjEqN : ordsucc j = n.
+      {
+        rewrite <- HiEqj.
+        exact HsEq.
+      }
+      rewrite HSjEqN.
+      claim HnIn : n :e {n}.
+      { exact (SingI n). }
+      rewrite (apply_fun_union_right
+        n
+        {n}
+        (setprod (setprod X X) (Power X))
+        (graph n (fun i0:set => apply_fun path_seq i0))
+        (graph {n} (fun _:set => ((p, q), A)))
+        n
+        HdisjDom
+        HdomLeft
+        HdomRight
+        HtotLeft
+        HtotRight
+        HfuncLeft
+        HfuncRight
+        HnIn).
+      rewrite (apply_fun_graph {n} (fun _:set => ((p, q), A)) n HnIn).
+      rewrite (tuple_2_0_eq (p, q) A).
+      rewrite tuple_2_0_eq.
+      reflexivity.
+  * assume HiEq.
+    (** no successor step from the appended edge **)
+    claim HsEq0 : ordsucc n = ordsucc i.
+    {
+      rewrite HiEq.
+      reflexivity.
+    }
+    claim Hbad : ordsucc n :e ordsucc n.
+    {
+      exact (eq_subst_mem
+        (ordsucc n)
+        (ordsucc i)
+        (ordsucc n)
+        HsEq0
+        His).
+    }
+    exact (FalseE
+      (In_irref (ordsucc n) Hbad)
+      ((apply_fun seq' i) 0 1 = (apply_fun seq' (ordsucc i)) 0 0)).
+Qed.
+
 (** from S84 Definition (line 5581 in algtop.tex): tree **)
 (** LATEX VERSION: A subgraph T of X is a tree if T is connected and **)
 (** T contains no closed reduced edge paths. **)
