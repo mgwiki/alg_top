@@ -4927,6 +4927,9 @@ Axiom lemma_topology_from_basis : forall X B : set , basis_on X B -> topology_on
 Axiom generated_topology_contains_basis : forall X B : set , basis_on X B -> forall b : set , b :e B -> b :e generated_topology X B.
 Axiom generated_topology_finer_weak : forall X B T : set , topology_on X T -> (forall b :e B , b :e T) -> finer_than T (generated_topology X B).
 Definition basis_generates : set -> set -> set -> prop := fun X B T => basis_on X B /\ generated_topology X B = T.
+Axiom basis_generatesI : forall X B T : set , basis_on X B -> generated_topology X B = T -> basis_generates X B T.
+Axiom basis_generatesE1 : forall X B T : set , basis_generates X B T -> basis_on X B.
+Axiom basis_generatesE2 : forall X B T : set , basis_generates X B T -> generated_topology X B = T.
 Definition basis_refines : set -> set -> set -> prop := fun X B T => topology_on X T /\ (forall U :e T , forall x :e U , exists b :e B , x :e b /\ b c= U).
 Axiom lemma_generated_topology_characterization : forall X B : set , basis_on X B -> generated_topology X B = {U :e Power X|forall x :e U , exists b :e B , x :e b /\ b c= U}.
 Axiom open_sets_as_unions_of_basis : forall X B : set , basis_on X B -> forall U : set , open_in X (generated_topology X B) U -> exists Fam :e Power B , Union Fam = U.
@@ -5165,6 +5168,7 @@ Axiom finite_complement_open_in_R_standard_topology : forall F : set , finite F 
 Axiom ex13_7_R_topology_containments : finer_than R_upper_limit_topology R_standard_topology /\ finer_than R_K_topology R_standard_topology /\ finer_than R_standard_topology R_finite_complement_topology /\ finer_than R_standard_topology R_ray_topology.
 Definition rational_open_intervals_basis : set := \/_ q1 :e rational_numbers , {open_interval q1 q2|q2 :e rational_numbers}.
 Axiom rational_open_intervals_basis_Subq_R_standard_basis : rational_open_intervals_basis c= R_standard_basis.
+Axiom rational_open_intervals_basis_Subq_R_standard_topology : rational_open_intervals_basis c= R_standard_topology.
 Axiom rational_dense_between_reals : forall a b : set , a :e R -> b :e R -> Rlt a b -> exists q :e rational_numbers , Rlt a q /\ Rlt q b.
 Axiom rational_interval_refines_real_interval : forall a b x : set , a :e R -> b :e R -> x :e R -> x :e open_interval a b -> exists q1 :e rational_numbers , exists q2 :e rational_numbers , x :e open_interval q1 q2 /\ open_interval q1 q2 c= open_interval a b.
 Axiom ex13_8a_rational_intervals_basis_standard : basis_on R rational_open_intervals_basis /\ generated_topology R rational_open_intervals_basis = R_standard_topology.
@@ -5272,6 +5276,8 @@ Axiom order_rel_Q_implies_Rlt : forall a b : set , order_rel rational_numbers a 
 Axiom order_rel_setprod_2_omega_unfold : forall a b : set , order_rel (setprod 2 omega) a b -> exists i m j n : set , (i :e 2 /\ m :e omega /\ j :e 2 /\ n :e omega /\ a = (i,m) /\ b = (j,n) /\ (i :e j \/ (i = j /\ m :e n))).
 Axiom order_rel_setprod_R_R_unfold : forall a b : set , order_rel (setprod R R) a b -> exists a1 a2 b1 b2 : set , a = (a1,a2) /\ b = (b1,b2) /\ (Rlt a1 b1 \/ (a1 = b1 /\ Rlt a2 b2)).
 Axiom order_rel_setprod_R_R_intro : forall a1 a2 b1 b2 : set , (Rlt a1 b1 \/ (a1 = b1 /\ Rlt a2 b2)) -> order_rel (setprod R R) (a1,a2) (b1,b2).
+Axiom order_rel_setprod_R_R_intro_first : forall a1 a2 b1 b2 : set , Rlt a1 b1 -> order_rel (setprod R R) (a1,a2) (b1,b2).
+Axiom order_rel_setprod_R_R_intro_second : forall a1 a2 b2 : set , Rlt a2 b2 -> order_rel (setprod R R) (a1,a2) (a1,b2).
 Axiom Zplus_neq_setprod_2_omega : Zplus <> setprod 2 omega.
 Axiom Zplus_neq_setprod_R_R : Zplus <> setprod R R.
 Axiom order_rel_Zplus_iff_mem : forall a b : set , a :e Zplus -> b :e Zplus -> (order_rel Zplus a b <-> a :e b).
@@ -5323,6 +5329,10 @@ Axiom singleton_subset : forall x U : set , x :e U -> {x} c= U.
 Axiom singleton_elem : forall x y : set , x :e {y} -> x = y.
 Axiom setprod_coords_in : forall x y U V p : set , p :e setprod {x} {y} -> p :e setprod U V -> x :e U /\ y :e V.
 Axiom setprod_intersection : forall U1 V1 U2 V2 : set , setprod U1 V1 :/\: setprod U2 V2 = setprod (U1 :/\: U2) (V1 :/\: V2).
+Axiom setprod_Empty_right : forall X : set , setprod X Empty = Empty.
+Axiom setprod_Empty_left_local : forall Y : set , setprod Empty Y = Empty.
+Axiom rectangle_set_disjoint_of_vertical_disjoint : forall U1 V1 U2 V2 : set , V1 :/\: V2 = Empty -> rectangle_set U1 V1 :/\: rectangle_set U2 V2 = Empty.
+Axiom rectangle_set_disjoint_of_horizontal_disjoint : forall U1 V1 U2 V2 : set , U1 :/\: U2 = Empty -> rectangle_set U1 V1 :/\: rectangle_set U2 V2 = Empty.
 Definition product_subbasis : set -> set -> set -> set -> set := fun X Tx Y Ty => \/_ U :e Tx , {rectangle_set U V|V :e Ty}.
 Definition product_topology : set -> set -> set -> set -> set := fun X Tx Y Ty => generated_topology (setprod X Y) (product_subbasis X Tx Y Ty).
 Axiom product_subbasis_is_basis : forall X Tx Y Ty : set , topology_on X Tx -> topology_on Y Ty -> basis_on (setprod X Y) (product_subbasis X Tx Y Ty).
@@ -5399,12 +5409,26 @@ Definition product_cylinder : set -> set -> set -> set -> set := fun I Xi i U =>
 Definition product_subbasis_full : set -> set -> set := fun I Xi => \/_ i :e I , {product_cylinder I Xi i U|U :e space_family_topology Xi i}.
 Definition product_topology_full : set -> set -> set := fun I Xi => generated_topology_from_subbasis (product_space I Xi) (product_subbasis_full I Xi).
 Definition box_basis : set -> set -> set := fun I Xi => {B :e Power (product_space I Xi)|exists U : set , total_function_on U I (topology_family_union I Xi) /\ functional_graph U /\ (forall i : set , i :e I -> apply_fun U i :e space_family_topology Xi i) /\ B = {f :e product_space I Xi|forall i : set , i :e I -> apply_fun f i :e apply_fun U i}}.
+Axiom box_basis_coord_set_in_basis : forall I Xi : set , forall Ufun : set -> set , (forall i : set , i :e I -> Ufun i :e space_family_topology Xi i) -> {f :e product_space I Xi|forall i : set , i :e I -> apply_fun f i :e Ufun i} :e box_basis I Xi.
 Definition box_topology : set -> set -> set := fun I Xi => generated_topology (product_space I Xi) (box_basis I Xi).
 Definition countable_product_space : set -> set -> set := fun I Xi => product_space I Xi.
 Definition countable_product_topology : set -> set -> set := fun I Xi => product_topology_full I Xi.
 Definition euclidean_space : set -> set := fun n => product_space n (const_space_family n R R_standard_topology).
 Definition euclidean_topology : set -> set := fun n => product_topology_full n (const_space_family n R R_standard_topology).
+Axiom euclidean_space_succ_split_point : forall n f : set , nat_p n -> f :e euclidean_space (ordsucc n) -> (graph n (fun i : set => apply_fun f i),apply_fun f n) :e setprod (euclidean_space n) R.
+Axiom euclidean_space_succ_merge_point : forall n g r : set , nat_p n -> g :e euclidean_space n -> r :e R -> graph (ordsucc n) (fun i : set => if i :e n then apply_fun g i else r) :e euclidean_space (ordsucc n).
+Definition euclidean_space_succ_split_fun : set -> set -> set := fun n f => (graph n (fun i : set => apply_fun f i),apply_fun f n).
+Definition euclidean_space_succ_merge_fun : set -> set -> set := fun n p => graph (ordsucc n) (fun i : set => if i :e n then apply_fun (p 0) i else p 1).
+Axiom graph_extensional_euclid : forall A : set , forall g h : set -> set , (forall a : set , a :e A -> g a = h a) -> graph A g = graph A h.
+Axiom tuple_2_ext_euclid : forall a b c d : set , a = c -> b = d -> (a,b) = (c,d).
+Axiom euclidean_space_succ_merge_split_id : forall n f : set , nat_p n -> f :e euclidean_space (ordsucc n) -> euclidean_space_succ_merge_fun n (euclidean_space_succ_split_fun n f) = f.
+Axiom euclidean_space_succ_split_merge_id : forall n p : set , nat_p n -> p :e setprod (euclidean_space n) R -> euclidean_space_succ_split_fun n (euclidean_space_succ_merge_fun n p) = p.
+Axiom euclidean_space_succ_equip_setprod : forall n : set , nat_p n -> equip (euclidean_space (ordsucc n)) (setprod (euclidean_space n) R).
 Axiom SingEmpty_ne_Empty : Sing Empty <> Empty.
+Axiom SingEmpty_eq_1 : (Sing Empty) = 1.
+Axiom SingEmpty_in_omega : (Sing Empty) :e omega.
+Axiom SingEmpty_nat_p : nat_p (Sing Empty).
+Axiom add_nat_SingEmpty_eq_ordsucc : forall n : set , nat_p n -> add_nat n (Sing Empty) = ordsucc (add_nat n 0).
 Definition R1_singleton_seq : set -> set := fun r => graph (Sing Empty) (fun _ : set => r).
 Axiom R1_singleton_seq_in_euclidean_space_1 : forall r : set , r :e R -> R1_singleton_seq r :e euclidean_space (Sing Empty).
 Definition R1_singleton_map : set := graph R (fun r : set => R1_singleton_seq r).
@@ -5464,6 +5488,31 @@ Axiom unit_interval_open_neighborhood_has_other_point : forall U0 : set , U0 :e 
 Definition ordered_square : set := setprod unit_interval unit_interval.
 Definition ordered_square_order_basis : set := ({I :e Power ordered_square|exists a :e ordered_square , exists b :e ordered_square , I = {x :e ordered_square|order_rel (setprod R R) a x /\ order_rel (setprod R R) x b}} :\/: {I :e Power ordered_square|exists b :e ordered_square , I = {x :e ordered_square|order_rel (setprod R R) x b}} :\/: {I :e Power ordered_square|exists a :e ordered_square , I = {x :e ordered_square|order_rel (setprod R R) a x}}).
 Definition ordered_square_topology : set := generated_topology ordered_square ordered_square_order_basis.
+Definition ordered_square_min : set := (0,0).
+Definition ordered_square_max : set := (1,1).
+Axiom ordered_square_min_in : ordered_square_min :e ordered_square.
+Axiom ordered_square_max_in : ordered_square_max :e ordered_square.
+Axiom ordered_square_min_lt_max : order_rel (setprod R R) ordered_square_min ordered_square_max.
+Axiom ordered_square_order_basis_sub_Power : ordered_square_order_basis c= Power ordered_square.
+Axiom ordered_square_order_basis_cover : forall p :e ordered_square , exists b :e ordered_square_order_basis , p :e b.
+Axiom ordered_square_order_basis_is_basis_on : basis_on ordered_square ordered_square_order_basis.
+Axiom ordered_square_topology_on : topology_on ordered_square ordered_square_topology.
+Axiom ordered_square_elem_in_setprod_R_R : forall p : set , p :e ordered_square -> p :e setprod R R.
+Axiom ordered_square_coord0_in_unit_interval : forall p : set , p :e ordered_square -> (p 0) :e unit_interval.
+Axiom ordered_square_coord1_in_unit_interval : forall p : set , p :e ordered_square -> (p 1) :e unit_interval.
+Axiom ordered_square_dense_between : forall p q : set , p :e ordered_square -> q :e ordered_square -> order_rel (setprod R R) p q -> exists r : set , r :e ordered_square /\ order_rel (setprod R R) p r /\ order_rel (setprod R R) r q.
+Axiom ordered_square_not_lt_min : forall p : set , p :e ordered_square -> ~ (order_rel (setprod R R) p ordered_square_min).
+Axiom ordered_square_not_gt_max : forall p : set , p :e ordered_square -> ~ (order_rel (setprod R R) ordered_square_max p).
+Axiom ordered_square_min_le_all : forall p : set , p :e ordered_square -> p = ordered_square_min \/ order_rel (setprod R R) ordered_square_min p.
+Axiom ordered_square_le_max_all : forall p : set , p :e ordered_square -> p = ordered_square_max \/ order_rel (setprod R R) p ordered_square_max.
+Definition closed_interval_inherited : set -> set -> set -> set -> set := fun X Y a b => {x :e Y|(x = a \/ order_rel X a x) /\ (x = b \/ order_rel X x b)}.
+Axiom ordered_square_eq_closed_interval_inherited : ordered_square = closed_interval_inherited (setprod R R) ordered_square ordered_square_min ordered_square_max.
+Definition ordered_square_prefix : set -> set := fun a : set => {x :e ordered_square|x = a \/ order_rel (setprod R R) x a}.
+Axiom ordered_square_prefix_min_eq : ordered_square_prefix ordered_square_min = {ordered_square_min}.
+Axiom ordered_square_prefix_max_eq : ordered_square_prefix ordered_square_max = ordered_square.
+Axiom ordered_square_prefix_sub : forall a : set , a :e ordered_square -> ordered_square_prefix a c= ordered_square.
+Axiom ordered_square_prefix_mono : forall a b : set , a :e ordered_square -> b :e ordered_square -> (a = b \/ order_rel (setprod R R) a b) -> ordered_square_prefix a c= ordered_square_prefix b.
+Axiom generated_topology_add_self_if_cover : forall X B : set , B c= Power X -> (forall x :e X , exists b :e B , x :e b) -> generated_topology X B = generated_topology X (B :\/: {X}).
 Definition ordered_square_open_strip : set := {p :e ordered_square|exists y : set , p = (eps_ 1,y) /\ Rlt (eps_ 1) y /\ ~ (Rlt 1 y)}.
 Definition ordered_square_A : set := setprod unit_interval (open_interval 0 1).
 Definition ordered_square_A_topology : set := subspace_topology ordered_square ordered_square_topology ordered_square_A.
@@ -5483,6 +5532,7 @@ Axiom convex_in_subset : forall X Y : set , convex_in X Y -> Y c= X.
 Axiom convex_in_interval_property : forall X Y : set , convex_in X Y -> forall a b : set , a :e Y -> b :e Y -> order_interval X a b c= Y.
 Definition order_topology_basis_inherited : set -> set -> set := fun X Y => (({I :e Power Y|exists a :e Y , exists b :e Y , I = {x :e Y|order_rel X a x /\ order_rel X x b}} :\/: {I :e Power Y|exists b :e Y , I = {x :e Y|order_rel X x b}} :\/: {I :e Power Y|exists a :e Y , I = {x :e Y|order_rel X a x}}) :\/: {Y}).
 Definition order_topology_inherited : set -> set -> set := fun X Y => generated_topology Y (order_topology_basis_inherited X Y).
+Axiom ordered_square_topology_eq_order_topology_inherited : ordered_square_topology = order_topology_inherited (setprod R R) ordered_square.
 Axiom convex_subspace_order_topology : forall X Y : set , simply_ordered_set X -> convex_in X Y -> order_topology_inherited X Y = subspace_topology X (order_topology X) Y.
 Axiom binintersect_right_absorb_subset : forall W Y A : set , A c= Y -> (W :/\: Y) :/\: A = W :/\: A.
 Axiom ex16_1_subspace_transitive : forall X Tx Y A : set , topology_on X Tx -> Y c= X -> A c= Y -> subspace_topology Y (subspace_topology X Tx Y) A = subspace_topology X Tx A.
@@ -5510,6 +5560,7 @@ Definition rational_rectangle_basis : set := {r :e Power (setprod R R)|exists a 
 Axiom open_interval_in_R_standard_topology_endpoints : forall a b : set , a :e R -> b :e R -> open_interval a b :e R_standard_topology.
 Axiom open_interval_in_rational_open_intervals_basis : forall q1 q2 : set , q1 :e rational_numbers -> q2 :e rational_numbers -> open_interval q1 q2 :e rational_open_intervals_basis.
 Axiom rational_open_intervals_basisE : forall b : set , b :e rational_open_intervals_basis -> exists q1 , exists q2 , (q1 :e rational_numbers /\ q2 :e rational_numbers /\ b = open_interval q1 q2).
+Axiom open_interval_rational_endpoints_in_R_standard_topology : forall q1 q2 : set , q1 :e rational_numbers -> q2 :e rational_numbers -> open_interval q1 q2 :e R_standard_topology.
 Axiom rational_rectangle_basis_eq_product_basis_from : rational_rectangle_basis = product_basis_from rational_open_intervals_basis rational_open_intervals_basis.
 Axiom ex16_6_rational_rectangles_basis : basis_on (setprod R R) rational_rectangle_basis /\ generated_topology (setprod R R) rational_rectangle_basis = R2_standard_topology.
 Definition closed_interval_in : set -> set -> set -> set := fun X a b => {x :e X|(x = a \/ order_rel X a x) /\ (x = b \/ order_rel X x b)}.
@@ -5557,6 +5608,7 @@ Axiom interior_of_empty : forall X Tx : set , topology_on X Tx -> interior_of X 
 Axiom interior_of_space : forall X Tx : set , topology_on X Tx -> interior_of X Tx X = X.
 Axiom interior_is_open : forall X Tx A : set , topology_on X Tx -> A c= X -> interior_of X Tx A :e Tx.
 Axiom interior_union_contains_union_interiors : forall X Tx A B : set , topology_on X Tx -> A c= X -> B c= X -> interior_of X Tx A :\/: interior_of X Tx B c= interior_of X Tx (A :\/: B).
+Axiom Union_interiors_sub_interior_Union : forall X Tx Fam : set , topology_on X Tx -> Fam c= Power X -> Union {interior_of X Tx C|C :e Fam} c= interior_of X Tx (Union Fam).
 Axiom interior_intersection_contains_intersection : forall X Tx A B : set , topology_on X Tx -> A c= X -> B c= X -> interior_of X Tx (A :/\: B) c= interior_of X Tx A :/\: interior_of X Tx B.
 Axiom interior_intersection_of_opens : forall X Tx U V : set , topology_on X Tx -> U :e Tx -> V :e Tx -> interior_of X Tx (U :/\: V) = U :/\: V.
 Axiom interior_idempotent : forall X Tx A : set , topology_on X Tx -> A c= X -> interior_of X Tx (interior_of X Tx A) = interior_of X Tx A.
@@ -5836,6 +5888,8 @@ Axiom ex16_8_lines_in_lower_limit_products : forall a b c : set , a :e R -> b :e
 Axiom homeomorphism_injective : forall X Tx Y Ty f : set , homeomorphism X Tx Y Ty f -> forall x1 x2 : set , x1 :e X -> x2 :e X -> apply_fun f x1 = apply_fun f x2 -> x1 = x2.
 Axiom continuous_on_subspace : forall X Tx Y Ty f A : set , topology_on X Tx -> A c= X -> continuous_map X Tx Y Ty f -> continuous_map A (subspace_topology X Tx A) Y Ty f.
 Axiom homeomorphism_inverse_continuous : forall X Tx Y Ty f : set , homeomorphism X Tx Y Ty f -> exists g : set , continuous_map Y Ty X Tx g /\ (forall x : set , x :e X -> apply_fun g (apply_fun f x) = x) /\ (forall y : set , y :e Y -> apply_fun f (apply_fun g y) = y).
+Axiom homeomorphism_inverse_is_homeomorphism_variant : forall X Tx Y Ty f : set , homeomorphism X Tx Y Ty f -> exists g : set , homeomorphism Y Ty X Tx g.
+Axiom homeomorphism_compose : forall X Tx Y Ty Z Tz f g : set , homeomorphism X Tx Y Ty f -> homeomorphism Y Ty Z Tz g -> homeomorphism X Tx Z Tz (compose_fun X f g).
 Axiom function_union_on_disjoint_total_functional : forall A B Y f g : set , A :/\: B = Empty -> graph_domain_subset f A -> graph_domain_subset g B -> total_function_on f A Y -> total_function_on g B Y -> functional_graph f -> functional_graph g -> function_on (f :\/: g) (A :\/: B) Y.
 Axiom total_function_union_on_disjoint_total_functional : forall A B Y f g : set , A :/\: B = Empty -> graph_domain_subset f A -> graph_domain_subset g B -> total_function_on f A Y -> total_function_on g B Y -> functional_graph f -> functional_graph g -> total_function_on (f :\/: g) (A :\/: B) Y.
 Axiom functional_graph_union_disjoint_domains : forall A B f g : set , A :/\: B = Empty -> graph_domain_subset f A -> graph_domain_subset g B -> functional_graph f -> functional_graph g -> functional_graph (f :\/: g).
@@ -5947,6 +6001,7 @@ Definition image_of : set -> set -> set := fun f U => Repl U (fun x => apply_fun
 Definition function_sequence_value : set -> set -> set -> set := fun f_seq n x => apply_fun (apply_fun f_seq n) x.
 Axiom image_of_mono : forall f U V : set , U c= V -> image_of f U c= image_of f V.
 Axiom image_of_sub_codomain : forall f X Y U : set , function_on f X Y -> U c= X -> image_of f U c= Y.
+Axiom homeomorphism_restrict_to_image_of_subset : forall X Tx Y Ty f C : set , homeomorphism X Tx Y Ty f -> C c= X -> homeomorphism C (subspace_topology X Tx C) (image_of f C) (subspace_topology Y Ty (image_of f C)) f.
 Axiom image_of_Empty : forall f : set , image_of f Empty = Empty.
 Axiom image_of_binunion : forall f U V : set , image_of f (U :\/: V) = (image_of f U) :\/: (image_of f V).
 Axiom image_of_Union : forall f Fam : set , image_of f (Union Fam) = Union {image_of f U|U :e Fam}.
@@ -6004,6 +6059,7 @@ Axiom R_glb_unique : forall A g1 g2 : set , R_glb A g1 -> R_glb A g2 -> g1 = g2.
 Axiom R_lub_Sing0 : R_lub {0} 0.
 Axiom not_imp : forall A B : prop , ~ (A -> B) -> A /\ ~ B.
 Axiom R_lub_exists : forall A : set , (exists a0 : set , a0 :e A) -> (forall a : set , a :e A -> a :e R) -> (exists u : set , u :e R /\ forall a : set , a :e A -> a :e R -> Rle a u) -> exists l : set , R_lub A l.
+Axiom unit_interval_R_lub_exists : forall A : set , (exists a0 : set , a0 :e A) -> (forall a : set , a :e A -> a :e unit_interval) -> exists l : set , l :e unit_interval /\ R_lub A l.
 Axiom R_glb_exists : forall A : set , (exists a0 : set , a0 :e A) -> (forall a : set , a :e A -> a :e R) -> (exists l : set , l :e R /\ forall a : set , a :e A -> a :e R -> Rle l a) -> exists g : set , R_glb A g.
 Axiom R_lub_approx_from_below : forall A l eps : set , R_lub A l -> eps :e R -> Rlt 0 eps -> exists a : set , a :e A /\ a :e R /\ Rlt (add_SNo l (minus_SNo eps)) a.
 Axiom R_lub_ex_gt : forall A l a : set , R_lub A l -> (forall x : set , x :e A -> x :e R) -> a :e R -> Rlt a l -> exists x : set , x :e A /\ x :e R /\ Rlt a x.
@@ -6018,6 +6074,7 @@ Axiom connected_subsets_real_are_intervals : forall A : set , A c= R -> connecte
 Axiom image_of_id_const_is_slice : forall X y0 : set , image_of (pair_map X {(x,x)|x :e X} (const_fun X y0)) X = setprod X {y0}.
 Axiom slice_X_connected : forall X Tx Y Ty y0 : set , connected_space X Tx -> topology_on Y Ty -> y0 :e Y -> connected_space (setprod X {y0}) (subspace_topology (setprod X Y) (product_topology X Tx Y Ty) (setprod X {y0})).
 Axiom image_of_const_id_is_slice : forall Y x0 : set , image_of (pair_map Y (const_fun Y x0) {(y,y)|y :e Y}) Y = setprod {x0} Y.
+Axiom image_of_const_id_on_subset : forall Y x0 C : set , C c= Y -> image_of (pair_map Y (const_fun Y x0) {(y,y)|y :e Y}) C = setprod {x0} C.
 Axiom homeomorphism_const_id_slice : forall X Tx Y Ty x0 : set , topology_on X Tx -> topology_on Y Ty -> x0 :e X -> homeomorphism Y Ty (setprod {x0} Y) (subspace_topology (setprod X Y) (product_topology X Tx Y Ty) (setprod {x0} Y)) (pair_map Y (const_fun Y x0) {(y,y)|y :e Y}).
 Axiom slice_Y_connected : forall X Tx Y Ty x0 : set , connected_space Y Ty -> topology_on X Tx -> x0 :e X -> connected_space (setprod {x0} Y) (subspace_topology (setprod X Y) (product_topology X Tx Y Ty) (setprod {x0} Y)).
 Axiom finite_product_connected : forall X Tx Y Ty : set , connected_space X Tx -> connected_space Y Ty -> connected_space (setprod X Y) (product_topology X Tx Y Ty).
@@ -6233,6 +6290,8 @@ Axiom compact_space_subcover_property : forall X Tx : set , compact_space X Tx -
 Axiom compact_space_singleton : forall X Tx a : set , X = {a} -> topology_on X Tx -> compact_space X Tx.
 Axiom Heine_Borel_subcover : forall X Tx Fam : set , compact_space X Tx -> open_cover_of X Tx Fam -> has_finite_subcover X Tx Fam.
 Axiom compact_subspace_via_ambient_covers : forall X Tx Y : set , topology_on X Tx -> Y c= X -> (compact_space Y (subspace_topology X Tx Y) <-> forall Fam : set , (Fam c= Tx /\ Y c= Union Fam) -> has_finite_subcover Y Tx Fam).
+Axiom compact_subspace_binunion_compact : forall X Tx A B : set , topology_on X Tx -> A c= X -> B c= X -> compact_space A (subspace_topology X Tx A) -> compact_space B (subspace_topology X Tx B) -> compact_space (A :\/: B) (subspace_topology X Tx (A :\/: B)).
+Axiom compact_subspace_Union_finite_compact : forall X Tx F : set , topology_on X Tx -> finite F -> (forall C : set , C :e F -> C c= X /\ compact_space C (subspace_topology X Tx C)) -> compact_space (Union F) (subspace_topology X Tx (Union F)).
 Axiom closed_subspace_compact : forall X Tx Y : set , compact_space X Tx -> closed_in X Tx Y -> compact_space Y (subspace_topology X Tx Y).
 Axiom Hausdorff_separate_point_compact_set_aux : forall X Tx Y x : set , Hausdorff_space X Tx -> Y c= X -> compact_space Y (subspace_topology X Tx Y) -> x :e X -> x /:e Y -> exists U V : set , U :e Tx /\ V :e Tx /\ x :e U /\ Y c= V /\ U :/\: V = Empty.
 Axiom compact_subspace_in_Hausdorff_closed : forall X Tx Y : set , Hausdorff_space X Tx -> Y c= X -> compact_space Y (subspace_topology X Tx Y) -> closed_in X Tx Y.
@@ -6274,6 +6333,7 @@ Axiom limit_point_compact_not_necessarily_compact : exists X Tx : set , limit_po
 Definition locally_compact : set -> set -> prop := fun X Tx => topology_on X Tx /\ forall x : set , x :e X -> exists C : set , C c= X /\ compact_space C (subspace_topology X Tx C) /\ exists U : set , U :e Tx /\ x :e U /\ U c= C.
 Axiom locally_compact_topology : forall X Tx : set , locally_compact X Tx -> topology_on X Tx.
 Axiom locally_compact_local : forall X Tx x : set , locally_compact X Tx -> x :e X -> exists C : set , C c= X /\ compact_space C (subspace_topology X Tx C) /\ exists U : set , U :e Tx /\ x :e U /\ U c= C.
+Axiom closed_subspace_locally_compact : forall X Tx Y : set , locally_compact X Tx -> closed_in X Tx Y -> locally_compact Y (subspace_topology X Tx Y).
 Axiom product_locally_compact : forall X Tx Y Ty : set , locally_compact X Tx -> locally_compact Y Ty -> locally_compact (setprod X Y) (product_topology X Tx Y Ty).
 Axiom Hausdorff_compact_sets_closed : forall X Tx A : set , Hausdorff_space X Tx -> A c= X -> compact_space A (subspace_topology X Tx A) -> closed_in X Tx A.
 Axiom compact_empty_subspace : forall X Tx : set , topology_on X Tx -> compact_space Empty (subspace_topology X Tx Empty).
@@ -6815,6 +6875,8 @@ Axiom Sorgenfrey_plane_special_rectangle_L_point : forall a b d x : set , a :e R
 Axiom tuple_2_ext : forall a b c d : set , a = c -> b = d -> (a,b) = (c,d).
 Axiom Sorgenfrey_plane_L_closed : closed_in (setprod Sorgenfrey_line Sorgenfrey_line) Sorgenfrey_plane_topology Sorgenfrey_plane_L.
 Axiom Sorgenfrey_plane_not_Lindelof : ~ Lindelof_space (setprod Sorgenfrey_line Sorgenfrey_line) Sorgenfrey_plane_topology.
+Axiom ordered_square_has_finite_subcover : forall Fam : set , open_cover_of ordered_square ordered_square_topology Fam -> has_finite_subcover ordered_square ordered_square_topology Fam.
+Axiom ordered_square_compact : compact_space ordered_square ordered_square_topology.
 Axiom ordered_square_Lindelof : Lindelof_space ordered_square ordered_square_topology.
 Axiom ordered_square_Lindelof_sketch : Lindelof_space ordered_square ordered_square_topology.
 Axiom eps_1_in_open_interval_0_1 : (eps_ 1) :e open_interval 0 1.
@@ -7040,6 +7102,8 @@ Axiom homeomorphism_image_closed : forall X Tx Y Ty f F : set , homeomorphism X 
 Axiom homeomorphism_image_open : forall X Tx Y Ty f U : set , homeomorphism X Tx Y Ty f -> U :e Tx -> image_of f U :e Ty.
 Axiom homeomorphism_preserves_completely_regular : forall X Tx Y Ty f : set , homeomorphism X Tx Y Ty f -> completely_regular_space Y Ty -> completely_regular_space X Tx.
 Axiom homeomorphism_preserves_Hausdorff : forall X Tx Y Ty f : set , homeomorphism X Tx Y Ty f -> Hausdorff_space Y Ty -> Hausdorff_space X Tx.
+Axiom homeomorphism_preserves_locally_compact : forall X Tx Y Ty f : set , homeomorphism X Tx Y Ty f -> locally_compact Y Ty -> locally_compact X Tx.
+Axiom homeomorphism_preserves_second_countable : forall X Tx Y Ty f : set , homeomorphism X Tx Y Ty f -> second_countable_space Y Ty -> second_countable_space X Tx.
 Axiom homeomorphism_preserves_regular : forall X Tx Y Ty f : set , homeomorphism X Tx Y Ty f -> regular_space Y Ty -> regular_space X Tx.
 Axiom homeomorphism_preserves_normal : forall X Tx Y Ty f : set , homeomorphism X Tx Y Ty f -> normal_space Y Ty -> normal_space X Tx.
 Axiom metric_spaces_completely_regular : forall X d : set , metric_on X d -> completely_regular_space X (metric_topology X d).
@@ -7191,6 +7255,12 @@ Axiom recip_pos_value_eq_recip_SNo_pos : forall t : set , t :e open_ray_upper R 
 Axiom reciprocal_of_positive_continuous_map : forall X Tx f : set , topology_on X Tx -> continuous_map X Tx R R_standard_topology f -> (forall x : set , x :e X -> Rlt 0 (apply_fun f x)) -> continuous_map X Tx R R_standard_topology (compose_fun X f (compose_fun (open_ray_upper R 0) (compose_fun R bounded_transform_phi one_minus_fun) bounded_transform_psi)).
 Axiom Tietze_extension_real : forall X Tx A f : set , normal_space X Tx -> closed_in X Tx A -> continuous_map A (subspace_topology X Tx A) R R_standard_topology f -> exists g : set , continuous_map X Tx R R_standard_topology g /\ (forall x : set , x :e A -> apply_fun g x = apply_fun f x).
 Definition m_manifold : set -> set -> set -> prop := fun X Tx m => Hausdorff_space X Tx /\ second_countable_space X Tx /\ m :e omega /\ forall x : set , x :e X -> exists U : set , U :e Tx /\ x :e U /\ exists V : set , V :e (euclidean_topology m) /\ exists f : set , homeomorphism U (subspace_topology X Tx U) V (subspace_topology (euclidean_space m) (euclidean_topology m) V) f.
+Axiom m_manifold_parts : forall X Tx m : set , m_manifold X Tx m -> ((Hausdorff_space X Tx /\ second_countable_space X Tx) /\ m :e omega) /\ (forall x : set , x :e X -> exists U : set , U :e Tx /\ x :e U /\ exists V : set , V :e (euclidean_topology m) /\ exists f : set , homeomorphism U (subspace_topology X Tx U) V (subspace_topology (euclidean_space m) (euclidean_topology m) V) f).
+Axiom m_manifold_Hausdorff : forall X Tx m : set , m_manifold X Tx m -> Hausdorff_space X Tx.
+Axiom m_manifold_second_countable : forall X Tx m : set , m_manifold X Tx m -> second_countable_space X Tx.
+Axiom m_manifold_m_in_omega : forall X Tx m : set , m_manifold X Tx m -> m :e omega.
+Axiom m_manifold_local_chart : forall X Tx m x : set , m_manifold X Tx m -> x :e X -> exists U : set , U :e Tx /\ x :e U /\ exists V : set , V :e (euclidean_topology m) /\ exists f : set , homeomorphism U (subspace_topology X Tx U) V (subspace_topology (euclidean_space m) (euclidean_topology m) V) f.
+Axiom m_manifold_topology : forall X Tx m : set , m_manifold X Tx m -> topology_on X Tx.
 Definition support_of : set -> set -> set -> set := fun X Tx phi => closure_of X Tx {x :e X|apply_fun phi x <> 0}.
 Axiom support_of_sub_X : forall X Tx phi : set , topology_on X Tx -> support_of X Tx phi c= X.
 Axiom support_of_closed_in : forall X Tx phi : set , topology_on X Tx -> closed_in X Tx (support_of X Tx phi).
@@ -7307,13 +7377,12 @@ Axiom Lemma37_2b_max_fip_meets_all_implies_in : forall X D A : set , maximal_fin
 Axiom compact_space_closed_FIP_intersection_nonempty : forall X Tx D : set , compact_space X Tx -> (forall C : set , C :e D -> closed_in X Tx C) -> finite_intersection_property X D -> intersection_of_family X D <> Empty.
 Axiom compact_space_of_closed_FIP_intersection_nonempty : forall X Tx : set , topology_on X Tx -> (forall D : set , (forall C : set , C :e D -> closed_in X Tx C) -> finite_intersection_property X D -> intersection_of_family X D <> Empty) -> compact_space X Tx.
 Axiom net_pack_coord_projection_has_convergent_subnet_in_compact_factor : forall I Xi N i : set , net_pack_in_space (product_space I Xi) N -> i :e I -> compact_space (product_component Xi i) (product_component_topology Xi i) -> exists Ni Si x : set , net_pack_in_space (space_family_set Xi i) Ni /\ net_pack_index Ni = net_pack_index N /\ net_pack_le Ni = net_pack_le N /\ Ni = net_pack (net_pack_index N) (net_pack_le N) (graph (net_pack_index N) (fun j : set => apply_fun (apply_fun (net_pack_fun N) j) i)) /\ subnet_pack_of_in (space_family_set Xi i) Ni Si /\ net_pack_converges (space_family_set Xi i) (space_family_topology Xi i) Si x.
-Axiom Tychonoff_coordinate_subnets_to_common_subnet_final_diagonal : forall I Xi N x W : set , forall idx pickI : set -> set , I <> Empty -> net_pack_in_space (product_space I Xi) N -> x :e product_space I Xi -> (forall i : set , i :e I -> apply_fun x i :e space_family_set Xi i) -> well_ordered_set W -> (forall w : set , w :e W -> pickI w :e I /\ idx (pickI w) = w) -> (forall i : set , i :e I -> idx i :e W) -> (forall i : set , i :e I -> pickI (idx i) = i) -> (forall w : set , w :e W -> exists Sw : set , subnet_pack_of_in (product_space I Xi) N Sw /\ net_converges_on (space_family_set Xi (pickI w)) (space_family_topology Xi (pickI w)) (compose_fun (net_pack_index Sw) (net_pack_fun Sw) (product_eval_map I Xi (pickI w))) (net_pack_index Sw) (net_pack_le Sw) (apply_fun x (pickI w))) -> (forall w U j0 : set , w :e W -> U :e space_family_topology Xi (pickI w) -> apply_fun x (pickI w) :e U -> j0 :e net_pack_index N -> exists j : set , j :e net_pack_index N /\ (j0,j) :e net_pack_le N /\ apply_fun (apply_fun (net_pack_fun N) j) (pickI w) :e U) -> ordinal W -> (forall i : set , i :e I -> exists w : set , w :e W /\ pickI w = i) -> exists J le net : set , subnet_pack_of_in (product_space I Xi) N (net_pack J le net) /\ (forall i : set , i :e I -> net_converges_on (space_family_set Xi i) (space_family_topology Xi i) (compose_fun J net (product_eval_map I Xi i)) J le (apply_fun x i)).
-Axiom Tychonoff_coordinate_subnets_to_common_subnet_final_core : forall I Xi N x W : set , forall idx pickI : set -> set , I <> Empty -> net_pack_in_space (product_space I Xi) N -> x :e product_space I Xi -> (forall i : set , i :e I -> apply_fun x i :e space_family_set Xi i) -> well_ordered_set W -> (forall w : set , w :e W -> pickI w :e I /\ idx (pickI w) = w) -> (forall i : set , i :e I -> idx i :e W) -> (forall i : set , i :e I -> pickI (idx i) = i) -> (forall w : set , w :e W -> exists Sw : set , subnet_pack_of_in (product_space I Xi) N Sw /\ net_converges_on (space_family_set Xi (pickI w)) (space_family_topology Xi (pickI w)) (compose_fun (net_pack_index Sw) (net_pack_fun Sw) (product_eval_map I Xi (pickI w))) (net_pack_index Sw) (net_pack_le Sw) (apply_fun x (pickI w))) -> (forall w U j0 : set , w :e W -> U :e space_family_topology Xi (pickI w) -> apply_fun x (pickI w) :e U -> j0 :e net_pack_index N -> exists j : set , j :e net_pack_index N /\ (j0,j) :e net_pack_le N /\ apply_fun (apply_fun (net_pack_fun N) j) (pickI w) :e U) -> exists J le net : set , subnet_pack_of_in (product_space I Xi) N (net_pack J le net) /\ (forall i : set , i :e I -> net_converges_on (space_family_set Xi i) (space_family_topology Xi i) (compose_fun J net (product_eval_map I Xi i)) J le (apply_fun x i)).
-Axiom Tychonoff_coordinate_subnets_to_common_subnet_final : forall I Xi N x W : set , forall idx pickI : set -> set , I <> Empty -> net_pack_in_space (product_space I Xi) N -> x :e product_space I Xi -> (forall i : set , i :e I -> apply_fun x i :e space_family_set Xi i) -> well_ordered_set W -> (forall w : set , w :e W -> pickI w :e I /\ idx (pickI w) = w) -> (forall i : set , i :e I -> idx i :e W) -> (forall i : set , i :e I -> pickI (idx i) = i) -> (forall w : set , w :e W -> exists Sw : set , subnet_pack_of_in (product_space I Xi) N Sw /\ net_converges_on (space_family_set Xi (pickI w)) (space_family_topology Xi (pickI w)) (compose_fun (net_pack_index Sw) (net_pack_fun Sw) (product_eval_map I Xi (pickI w))) (net_pack_index Sw) (net_pack_le Sw) (apply_fun x (pickI w))) -> (forall w U j0 : set , w :e W -> U :e space_family_topology Xi (pickI w) -> apply_fun x (pickI w) :e U -> j0 :e net_pack_index N -> exists j : set , j :e net_pack_index N /\ (j0,j) :e net_pack_le N /\ apply_fun (apply_fun (net_pack_fun N) j) (pickI w) :e U) -> exists J le net : set , subnet_pack_of_in (product_space I Xi) N (net_pack J le net) /\ (forall i : set , i :e I -> net_converges_on (space_family_set Xi i) (space_family_topology Xi i) (compose_fun J net (product_eval_map I Xi i)) J le (apply_fun x i)).
-Axiom Tychonoff_coordinate_subnets_to_common_subnet : forall I Xi N x : set , I <> Empty -> net_pack_in_space (product_space I Xi) N -> x :e product_space I Xi -> (forall i : set , i :e I -> exists Ni Si : set , net_pack_in_space (space_family_set Xi i) Ni /\ net_pack_index Ni = net_pack_index N /\ net_pack_le Ni = net_pack_le N /\ Ni = net_pack (net_pack_index N) (net_pack_le N) (graph (net_pack_index N) (fun j : set => apply_fun (apply_fun (net_pack_fun N) j) i)) /\ subnet_pack_of_in (space_family_set Xi i) Ni Si /\ net_pack_converges (space_family_set Xi i) (space_family_topology Xi i) Si (apply_fun x i)) -> exists J le net : set , subnet_pack_of_in (product_space I Xi) N (net_pack J le net) /\ (forall i : set , i :e I -> net_converges_on (space_family_set Xi i) (space_family_topology Xi i) (compose_fun J net (product_eval_map I Xi i)) J le (apply_fun x i)).
-Axiom Tychonoff_coordinate_subnets_to_common_subnet_old_admitted : forall I Xi N x : set , I <> Empty -> net_pack_in_space (product_space I Xi) N -> x :e product_space I Xi -> (forall i : set , i :e I -> exists Ni Si : set , net_pack_in_space (space_family_set Xi i) Ni /\ net_pack_index Ni = net_pack_index N /\ net_pack_le Ni = net_pack_le N /\ Ni = net_pack (net_pack_index N) (net_pack_le N) (graph (net_pack_index N) (fun j : set => apply_fun (apply_fun (net_pack_fun N) j) i)) /\ subnet_pack_of_in (space_family_set Xi i) Ni Si /\ net_pack_converges (space_family_set Xi i) (space_family_topology Xi i) Si (apply_fun x i)) -> exists J le net : set , subnet_pack_of_in (product_space I Xi) N (net_pack J le net) /\ (forall i : set , i :e I -> net_converges_on (space_family_set Xi i) (space_family_topology Xi i) (compose_fun J net (product_eval_map I Xi i)) J le (apply_fun x i)).
-Axiom Tychonoff_diagonalize_from_coordinate_subnets : forall I Xi N : set , I <> Empty -> net_pack_in_space (product_space I Xi) N -> (forall i : set , i :e I -> exists Ni Si x : set , net_pack_in_space (space_family_set Xi i) Ni /\ net_pack_index Ni = net_pack_index N /\ net_pack_le Ni = net_pack_le N /\ Ni = net_pack (net_pack_index N) (net_pack_le N) (graph (net_pack_index N) (fun j : set => apply_fun (apply_fun (net_pack_fun N) j) i)) /\ subnet_pack_of_in (space_family_set Xi i) Ni Si /\ net_pack_converges (space_family_set Xi i) (space_family_topology Xi i) Si x) -> exists S x : set , subnet_pack_of_in (product_space I Xi) N S /\ net_pack_converges (product_space I Xi) (product_topology_full I Xi) S x.
 Axiom Tychonoff_theorem : forall I Xi : set , (forall i : set , i :e I -> compact_space (product_component Xi i) (product_component_topology Xi i)) -> compact_space (product_space I Xi) (product_topology_full I Xi).
+Axiom R_standard_open_has_compact_closure_neighborhood : forall U x : set , U :e R_standard_topology -> x :e U -> exists W : set , W :e R_standard_topology /\ x :e W /\ closure_of R R_standard_topology W c= U /\ compact_space (closure_of R R_standard_topology W) (subspace_topology R R_standard_topology (closure_of R R_standard_topology W)).
+Axiom R_standard_topology_locally_compact : locally_compact R R_standard_topology.
+Axiom locally_compact_regular_open_has_compact_closure_neighborhood : forall X Tx U x : set , locally_compact X Tx -> regular_space X Tx -> U :e Tx -> x :e U -> exists W : set , W :e Tx /\ x :e W /\ closure_of X Tx W c= U /\ compact_space (closure_of X Tx W) (subspace_topology X Tx (closure_of X Tx W)).
+Axiom euclidean_space_open_has_compact_closure_neighborhood_global : forall m : set , m :e omega -> topology_on (euclidean_space m) (euclidean_topology m) /\ forall x : set , x :e (euclidean_space m) -> exists U : set , U :e (euclidean_topology m) /\ x :e U /\ compact_space (closure_of (euclidean_space m) (euclidean_topology m) U) (subspace_topology (euclidean_space m) (euclidean_topology m) (closure_of (euclidean_space m) (euclidean_topology m) U)).
+Axiom euclidean_space_locally_compact : forall m : set , m :e omega -> locally_compact (euclidean_space m) (euclidean_topology m).
 Definition Stone_Cech_index : set -> set -> set := fun X Tx => {f :e function_space X unit_interval|continuous_map X Tx unit_interval unit_interval_topology f}.
 Definition Stone_Cech_ambient_family : set -> set -> set := fun X Tx => const_space_family (Stone_Cech_index X Tx) unit_interval unit_interval_topology.
 Definition Stone_Cech_ambient_space : set -> set -> set := fun X Tx => product_space (Stone_Cech_index X Tx) (Stone_Cech_ambient_family X Tx).
@@ -7383,10 +7452,7 @@ Axiom metric_spaces_regular : forall X d : set , metric_on X d -> regular_space 
 Axiom metric_ball_cover_point_eps_submember : forall X d B x : set , metric_on X d -> open_cover X (metric_topology X d) B -> (forall b : set , b :e B -> exists c :e X , exists r :e R , Rlt 0 r /\ b = open_ball X d c r) -> x :e X -> exists b : set , b :e B /\ x :e b /\ exists N : set , N :e omega /\ open_ball X d x (eps_ N) c= b.
 Axiom metric_ball_open_cover_refine_by_eps_balls : forall X d B : set , metric_on X d -> open_cover X (metric_topology X d) B -> (forall b : set , b :e B -> exists c :e X , exists r :e R , Rlt 0 r /\ b = open_ball X d c r) -> exists V : set , open_cover X (metric_topology X d) V /\ refine_of V B /\ (forall v : set , v :e V -> exists x : set , x :e X /\ exists N : set , N :e omega /\ v = open_ball X d x (eps_ N)).
 Axiom eps_separated_imp_eps_succ_succ_ball_locally_finite : forall X d S n : set , metric_on X d -> n :e omega -> eps_separated_set X d S n -> locally_finite_family X (metric_topology X d) {open_ball X d x (eps_ (ordsucc (ordsucc n)))|x :e S}.
-Axiom metric_eps_centers_for_sigma_ball_refinement_old : forall X d V0 : set , metric_on X d -> open_cover X (metric_topology X d) V0 -> exists Centers : set -> set , (forall n : set , n :e omega -> eps_separated_set X d (Centers n) n /\ (forall c : set , c :e Centers n -> exists v0 : set , v0 :e V0 /\ open_ball X d c (eps_ (ordsucc (ordsucc n))) c= v0)) /\ (forall x : set , x :e X -> exists n : set , n :e omega /\ exists c : set , c :e Centers n /\ x :e open_ball X d c (eps_ (ordsucc (ordsucc n)))).
-Axiom metric_eps_centers_for_sigma_ball_refinement_old_sketch : forall X d V0 : set , metric_on X d -> open_cover X (metric_topology X d) V0 -> exists Centers : set -> set , (forall n : set , n :e omega -> eps_separated_set X d (Centers n) n /\ (forall c : set , c :e Centers n -> exists v0 : set , v0 :e V0 /\ open_ball X d c (eps_ (ordsucc (ordsucc n))) c= v0)) /\ (forall x : set , x :e X -> exists n : set , n :e omega /\ exists c : set , c :e Centers n /\ x :e open_ball X d c (eps_ (ordsucc (ordsucc n)))).
 Axiom metric_ball_open_cover_has_sigma_locally_finite_refinement_core_wo : forall X d B : set , metric_on X d -> open_cover X (metric_topology X d) B -> (forall b : set , b :e B -> exists x :e X , exists r :e R , Rlt 0 r /\ b = open_ball X d x r) -> exists Fams : set , countable_set Fams /\ Fams c= Power (Power X) /\ (forall G : set , G :e Fams -> locally_finite_family X (metric_topology X d) G) /\ exists V : set , V = Union Fams /\ open_cover X (metric_topology X d) V /\ refine_of V B.
-Axiom metric_ball_open_cover_has_sigma_locally_finite_refinement_core_old : forall X d B : set , metric_on X d -> open_cover X (metric_topology X d) B -> (forall b : set , b :e B -> exists x :e X , exists r :e R , Rlt 0 r /\ b = open_ball X d x r) -> exists Fams : set , countable_set Fams /\ Fams c= Power (Power X) /\ (forall G : set , G :e Fams -> locally_finite_family X (metric_topology X d) G) /\ exists V : set , V = Union Fams /\ open_cover X (metric_topology X d) V /\ refine_of V B.
 Axiom metric_ball_open_cover_has_sigma_locally_finite_refinement_core : forall X d B : set , metric_on X d -> open_cover X (metric_topology X d) B -> (forall b : set , b :e B -> exists x :e X , exists r :e R , Rlt 0 r /\ b = open_ball X d x r) -> exists Fams : set , countable_set Fams /\ Fams c= Power (Power X) /\ (forall G : set , G :e Fams -> locally_finite_family X (metric_topology X d) G) /\ exists V : set , V = Union Fams /\ open_cover X (metric_topology X d) V /\ refine_of V B.
 Axiom metric_ball_open_cover_has_sigma_locally_finite_refinement : forall X d B : set , metric_on X d -> open_cover X (metric_topology X d) B -> (forall b : set , b :e B -> exists x :e X , exists r :e R , Rlt 0 r /\ b = open_ball X d x r) -> exists V : set , open_cover X (metric_topology X d) V /\ sigma_locally_finite_family X (metric_topology X d) V /\ refine_of V B.
 Axiom metric_ball_open_cover_has_locally_finite_refinement : forall X d B : set , metric_on X d -> open_cover X (metric_topology X d) B -> (forall b : set , b :e B -> exists x :e X , exists r :e R , Rlt 0 r /\ b = open_ball X d x r) -> exists V : set , open_cover X (metric_topology X d) V /\ locally_finite_family X (metric_topology X d) V /\ refine_of V B.
@@ -7414,6 +7480,9 @@ Definition discrete_metric : set -> set := fun X => graph (setprod X X) (fun p :
 Axiom discrete_metric_apply : forall X x y : set , x :e X -> y :e X -> apply_fun (discrete_metric X) (x,y) = If_i (x = y) 0 1.
 Axiom discrete_metric_is_metric_on : forall X : set , metric_on X (discrete_metric X).
 Axiom open_ball_discrete_radius1_eq_singleton : forall X x : set , x :e X -> open_ball X (discrete_metric X) x 1 = {x}.
+Axiom metric_topology_discrete_metric_eq_discrete_topology : forall X : set , metric_topology X (discrete_metric X) = discrete_topology X.
+Axiom discrete_topology_metrizable : forall X : set , metrizable X (discrete_topology X).
+Axiom R_standard_topology_metrizable : metrizable R R_standard_topology.
 Axiom discrete_metric_complete : forall X : set , complete_metric_space X (discrete_metric X).
 Definition euclidean_space_extend_to_Romega : set -> set -> set := fun n f => graph omega (fun i : set => If_i (i :e n) (apply_fun f i) 0).
 Definition euclidean_metric : set -> set := fun n => graph (setprod (euclidean_space n) (euclidean_space n)) (fun p : set => Romega_D_metric_value (euclidean_space_extend_to_Romega n (p 0)) (euclidean_space_extend_to_Romega n (p 1))).
@@ -7422,6 +7491,8 @@ Axiom euclidean_space_extend_to_Romega_in_Romega_space : forall n f : set , f :e
 Axiom euclidean_space_extend_to_Romega_apply : forall n f i : set , i :e omega -> apply_fun (euclidean_space_extend_to_Romega n f) i = If_i (i :e n) (apply_fun f i) 0.
 Axiom euclidean_space_extend_to_Romega_injective : forall n f g : set , n :e omega -> f :e euclidean_space n -> g :e euclidean_space n -> euclidean_space_extend_to_Romega n f = euclidean_space_extend_to_Romega n g -> f = g.
 Axiom euclidean_metric_apply : forall n x y : set , x :e euclidean_space n -> y :e euclidean_space n -> apply_fun (euclidean_metric n) (x,y) = Romega_D_metric_value (euclidean_space_extend_to_Romega n x) (euclidean_space_extend_to_Romega n y).
+Axiom euclidean_metric_coord_abs_lt : forall n f g i delta : set , n :e omega -> f :e euclidean_space n -> g :e euclidean_space n -> i :e n -> delta :e R -> Rlt 0 delta -> Rlt delta 1 -> Rlt (apply_fun (euclidean_metric n) (f,g)) (mul_SNo delta (inv_nat (ordsucc i))) -> abs_SNo (add_SNo (apply_fun f i) (minus_SNo (apply_fun g i))) < delta.
+Axiom euclidean_metric_coord_abs_lt_uniform : forall n f g delta : set , n :e omega -> f :e euclidean_space n -> g :e euclidean_space n -> delta :e R -> Rlt 0 delta -> Rlt delta 1 -> Rlt (apply_fun (euclidean_metric n) (f,g)) (mul_SNo delta (inv_nat (ordsucc n))) -> forall i : set , i :e n -> abs_SNo (add_SNo (apply_fun f i) (minus_SNo (apply_fun g i))) < delta.
 Axiom euclidean_metric_is_metric_on : forall n : set , n :e omega -> metric_on (euclidean_space n) (euclidean_metric n).
 Definition bounded_product_metric : set := Romega_D_metric.
 Axiom bounded_product_metric_eq_Romega_D_metric : bounded_product_metric = Romega_D_metric.
@@ -7710,22 +7781,44 @@ Axiom omega_ge2_nonzero : forall n : set , n :e omega -> 2 c= n -> n :e omega :\
 Axiom omega_Rlt_add_1 : forall n : set , n :e omega -> Rlt n (add_SNo n 1).
 Definition cardinality_exact : set -> set -> prop := fun S n => ordinal n /\ equip S n.
 Definition cardinality_at_most : set -> set -> prop := fun S n => ordinal n /\ exists k : set , ordinal k /\ k c= n /\ equip S k.
+Axiom cardinality_at_most_Empty : forall n : set , ordinal n -> cardinality_at_most Empty n.
+Axiom cardinality_at_most_Sing_1 : forall x : set , cardinality_at_most {x} 1.
 Axiom finite_ordinal_subset_equip_subordinal : forall n S : set , nat_p n -> S c= n -> exists m : set , nat_p m /\ (m c= n /\ equip S m).
 Axiom cardinality_at_most_mono_subset_finite : forall S1 S2 n : set , n :e omega -> S1 c= S2 -> cardinality_at_most S2 n -> cardinality_at_most S1 n.
+Axiom cardinality_at_most_unique_1 : forall S : set , (forall x y : set , x :e S -> y :e S -> x = y) -> cardinality_at_most S 1.
+Axiom cardinality_at_most_binunion_Sing_2 : forall x y : set , cardinality_at_most ({x} :\/: {y}) 2.
+Axiom cardinality_at_most_sub_binunion_Sing_2 : forall S a b : set , S c= ({a} :\/: {b}) -> cardinality_at_most S 2.
+Axiom cardinality_at_most_inj_into_omega : forall S n : set , forall f : set -> set , n :e omega -> inj S n f -> cardinality_at_most S n.
 Axiom cardinality_at_most_equip_left : forall S1 S2 n : set , equip S1 S2 -> cardinality_at_most S2 n -> cardinality_at_most S1 n.
 Axiom cardinality_at_most_image_finite : forall S n : set , forall f : set -> set , n :e omega -> cardinality_at_most S (ordsucc n) -> cardinality_at_most {f x|x :e S} (ordsucc n).
 Definition collection_has_order_at_m_plus_one : set -> set -> set -> prop := fun X A m => ordinal m /\ (exists x : set , x :e X /\ exists Fam : set , Fam c= A /\ finite Fam /\ cardinality_exact Fam (ordsucc m) /\ forall U : set , U :e Fam -> x :e U) /\ forall x : set , x :e X -> cardinality_at_most {U :e A|x :e U} (ordsucc m).
 Definition collection_has_order_at_most_m_plus_one : set -> set -> set -> prop := fun X A m => ordinal m /\ forall x : set , x :e X -> cardinality_at_most {U :e A|x :e U} (ordsucc m).
+Axiom collection_has_order_at_most_m_plus_one_pairwise_disjoint_0 : forall X Fam : set , Fam c= Power X -> pairwise_disjoint Fam -> collection_has_order_at_most_m_plus_one X Fam 0.
+Axiom collection_has_order_at_most_m_plus_one_binunion_pairwise_disjoint_1 : forall X Fam1 Fam2 : set , Fam1 c= Power X -> Fam2 c= Power X -> pairwise_disjoint Fam1 -> pairwise_disjoint Fam2 -> collection_has_order_at_most_m_plus_one X (Fam1 :\/: Fam2) 1.
+Axiom collection_has_order_at_most_m_plus_one_pointwise_unique_0 : forall X Fam : set , Fam c= Power X -> (forall x : set , x :e X -> forall U V : set , U :e Fam -> V :e Fam -> x :e U -> x :e V -> U = V) -> collection_has_order_at_most_m_plus_one X Fam 0.
+Axiom collection_has_order_at_most_m_plus_one_binunion_pointwise_unique_1 : forall X Fam1 Fam2 : set , Fam1 c= Power X -> Fam2 c= Power X -> (forall x : set , x :e X -> forall U V : set , U :e Fam1 -> V :e Fam1 -> x :e U -> x :e V -> U = V) -> (forall x : set , x :e X -> forall U V : set , U :e Fam2 -> V :e Fam2 -> x :e U -> x :e V -> U = V) -> collection_has_order_at_most_m_plus_one X (Fam1 :\/: Fam2) 1.
+Axiom collection_has_order_at_most_m_plus_one_from_pointwise_inj : forall X Fam m : set , forall idx : set -> set , m :e omega -> Fam c= Power X -> (forall x : set , x :e X -> inj {U :e Fam|x :e U} (ordsucc m) idx) -> collection_has_order_at_most_m_plus_one X Fam m.
+Axiom collection_has_order_at_most_m_plus_one_from_disjoint_coloring : forall X Fam m col : set , m :e omega -> Fam c= Power X -> function_on col Fam (ordsucc m) -> (forall U V : set , U :e Fam -> V :e Fam -> U <> V -> apply_fun col U = apply_fun col V -> U :/\: V = Empty) -> collection_has_order_at_most_m_plus_one X Fam m.
+Axiom collection_has_order_at_most_m_plus_one_famunion_pairwise_disjoint_layers : forall X N : set , forall A : set -> set , N :e omega -> (forall i : set , i :e ordsucc N -> A i c= Power X /\ pairwise_disjoint (A i)) -> collection_has_order_at_most_m_plus_one X (\/_ i :e ordsucc N , A i) N.
+Axiom collection_has_order_at_most_m_plus_one_Empty : forall X m : set , ordinal m -> collection_has_order_at_most_m_plus_one X Empty m.
 Definition refines_cover : set -> set -> prop := fun B A => forall U : set , U :e B -> exists V : set , V :e A /\ U c= V.
 Axiom refines_cover_ref : forall A : set , refines_cover A A.
+Axiom refines_cover_preserves_covers : forall X A B : set , refines_cover B A -> X c= Union B -> X c= Union A.
+Axiom open_cover_of_of_refinement : forall X Tx A B : set , open_cover_of X Tx B -> refines_cover B A -> A c= Power X -> (forall U : set , U :e A -> U :e Tx) -> open_cover_of X Tx A.
+Axiom disjoint_coloring_from_layers : forall N : set , forall A : set -> set , (forall i : set , i :e N -> pairwise_disjoint (A i)) -> exists col : set , function_on col (\/_ i :e N , A i) N /\ (forall U V : set , U :e (\/_ i :e N , A i) -> V :e (\/_ i :e N , A i) -> U <> V -> apply_fun col U = apply_fun col V -> U :/\: V = Empty).
+Axiom open_cover_layers_from_coloring : forall X Tx Cut B col N : set , open_cover_of X Tx B -> refines_cover B Cut -> function_on col B N -> (forall U V : set , U :e B -> V :e B -> U <> V -> apply_fun col U = apply_fun col V -> U :/\: V = Empty) -> exists A : set -> set , (forall i : set , i :e N -> A i c= Power X /\ pairwise_disjoint (A i)) /\ open_cover_of X Tx (\/_ i :e N , A i) /\ refines_cover (\/_ i :e N , A i) Cut.
+Axiom open_cover_layers_from_coloring_ordsucc : forall X Tx Cut B col m : set , m :e omega -> open_cover_of X Tx B -> refines_cover B Cut -> function_on col B (ordsucc m) -> (forall U V : set , U :e B -> V :e B -> U <> V -> apply_fun col U = apply_fun col V -> U :/\: V = Empty) -> exists A : set -> set , (forall i : set , i :e ordsucc m -> A i c= Power X /\ pairwise_disjoint (A i)) /\ open_cover_of X Tx (\/_ i :e ordsucc m , A i) /\ refines_cover (\/_ i :e ordsucc m , A i) Cut /\ collection_has_order_at_most_m_plus_one X (\/_ i :e ordsucc m , A i) m.
 Axiom refines_cover_tra : forall A B C : set , refines_cover C B -> refines_cover B A -> refines_cover C A.
 Axiom eq_subst_mem : forall x y S : set , x = y -> y :e S -> x :e S.
 Axiom eq_subst_mem_rev : forall x y S : set , x = y -> x :e S -> y :e S.
+Axiom eq_symm : forall x y : set , x = y -> y = x.
 Definition ambient_open_of_subspace_open : set -> set -> set -> set -> set := fun X Tx Y U => Eps_i (fun V : set => V :e Tx /\ U = V :/\: Y).
 Axiom ambient_open_of_subspace_open_spec : forall X Tx Y U : set , U :e subspace_topology X Tx Y -> (ambient_open_of_subspace_open X Tx Y U) :e Tx /\ U = (ambient_open_of_subspace_open X Tx Y U) :/\: Y.
 Definition covering_dimension : set -> set -> set -> prop := fun X Tx n => topology_on X Tx /\ n :e omega /\ forall A : set , open_cover_of X Tx A -> exists B : set , open_cover_of X Tx B /\ refines_cover B A /\ collection_has_order_at_most_m_plus_one X B n.
 Axiom covering_dimension_topology_on : forall X Tx n : set , covering_dimension X Tx n -> topology_on X Tx.
 Axiom covering_dimension_n_in_omega : forall X Tx n : set , covering_dimension X Tx n -> n :e omega.
+Axiom covering_dimension_refinement_property : forall X Tx n A : set , covering_dimension X Tx n -> open_cover_of X Tx A -> exists B : set , open_cover_of X Tx B /\ refines_cover B A /\ collection_has_order_at_most_m_plus_one X B n.
+Axiom covering_dimension_local_refinement_compact : forall X Tx C m A : set , m :e omega -> Hausdorff_space X Tx -> C c= X -> compact_space C (subspace_topology X Tx C) -> covering_dimension C (subspace_topology X Tx C) m -> open_cover_of X Tx A -> exists B : set , open_cover_of X Tx B /\ refines_cover B A /\ (forall x : set , x :e C -> cardinality_at_most {U :e B|x :e U} (ordsucc m)).
 Axiom covering_dimensionI : forall X Tx n : set , topology_on X Tx -> n :e omega -> (forall A : set , open_cover_of X Tx A -> exists B : set , open_cover_of X Tx B /\ refines_cover B A /\ collection_has_order_at_most_m_plus_one X B n) -> covering_dimension X Tx n.
 Definition finite_dimensional_space : set -> set -> prop := fun X Tx => topology_on X Tx /\ exists m : set , m :e omega /\ forall A : set , open_cover_of X Tx A -> exists B : set , open_cover_of X Tx B /\ refines_cover B A /\ collection_has_order_at_most_m_plus_one X B m.
 Axiom finite_dimensional_spaceI : forall X Tx : set , topology_on X Tx -> (exists m : set , m :e omega /\ forall A : set , open_cover_of X Tx A -> exists B : set , open_cover_of X Tx B /\ refines_cover B A /\ collection_has_order_at_most_m_plus_one X B m) -> finite_dimensional_space X Tx.
@@ -7733,23 +7826,307 @@ Axiom finite_dimensional_space_topology_on : forall X Tx : set , finite_dimensio
 Axiom finite_dimensional_space_exists_bound : forall X Tx : set , finite_dimensional_space X Tx -> exists m : set , m :e omega /\ forall A : set , open_cover_of X Tx A -> exists B : set , open_cover_of X Tx B /\ refines_cover B A /\ collection_has_order_at_most_m_plus_one X B m.
 Axiom covering_dimension_implies_finite_dimensional_space : forall X Tx n : set , covering_dimension X Tx n -> finite_dimensional_space X Tx.
 Axiom finite_dimensional_space_implies_exists_covering_dimension : forall X Tx : set , finite_dimensional_space X Tx -> exists m : set , covering_dimension X Tx m.
+Axiom euclidean_space_empty_is_singleton : euclidean_space Empty = {Empty}.
+Axiom topology_on_singleton_eq_Power : forall x Tx : set , topology_on {x} Tx -> Tx = Power {x}.
+Axiom euclidean_space_covering_dimension_le_refinement_empty : forall A : set , open_cover_of (euclidean_space Empty) (euclidean_topology Empty) A -> exists B : set , open_cover_of (euclidean_space Empty) (euclidean_topology Empty) B /\ refines_cover B A /\ collection_has_order_at_most_m_plus_one (euclidean_space Empty) B Empty.
+Axiom euclidean_space_succ_split_first : forall n f : set , nat_p n -> f :e euclidean_space (ordsucc n) -> graph n (fun i : set => apply_fun f i) :e euclidean_space n.
+Axiom euclidean_space_succ_split_last : forall n f : set , nat_p n -> f :e euclidean_space (ordsucc n) -> apply_fun f n :e R.
+Axiom euclidean_space_succ_merge_of_split_in : forall n f : set , nat_p n -> f :e euclidean_space (ordsucc n) -> graph (ordsucc n) (fun i : set => if i :e n then apply_fun (graph n (fun j : set => apply_fun f j)) i else apply_fun f n) :e euclidean_space (ordsucc n).
+Definition euclidean_space_succ_first_map : set -> set := fun n => graph (euclidean_space (ordsucc n)) (fun f : set => graph n (fun i : set => apply_fun f i)).
+Definition euclidean_space_succ_last_map : set -> set := fun n => product_eval_map (ordsucc n) (const_space_family (ordsucc n) R R_standard_topology) n.
+Definition euclidean_space_succ_split_map : set -> set := fun n => pair_map (euclidean_space (ordsucc n)) (euclidean_space_succ_first_map n) (euclidean_space_succ_last_map n).
+Definition euclidean_space_succ_merge_map : set -> set := fun n => graph (setprod (euclidean_space n) R) (fun p : set => euclidean_space_succ_merge_fun n p).
+Axiom euclidean_space_succ_split_map_apply : forall n f : set , nat_p n -> f :e euclidean_space (ordsucc n) -> apply_fun (euclidean_space_succ_split_map n) f = euclidean_space_succ_split_fun n f.
+Axiom euclidean_space_succ_merge_map_apply : forall n p : set , nat_p n -> p :e setprod (euclidean_space n) R -> apply_fun (euclidean_space_succ_merge_map n) p = euclidean_space_succ_merge_fun n p.
+Axiom euclidean_space_succ_split_map_function_on : forall n : set , nat_p n -> function_on (euclidean_space_succ_split_map n) (euclidean_space (ordsucc n)) (setprod (euclidean_space n) R).
+Axiom euclidean_space_succ_merge_map_function_on : forall n : set , nat_p n -> function_on (euclidean_space_succ_merge_map n) (setprod (euclidean_space n) R) (euclidean_space (ordsucc n)).
+Axiom continuous_map_congr_by_eq_fun : forall X Tx Y Ty X' Tx' Y' Ty' f g : set , X = X' -> Tx = Tx' -> Y = Y' -> Ty = Ty' -> f = g -> continuous_map X Tx Y Ty f -> continuous_map X' Tx' Y' Ty' g.
+Axiom euclidean_space_succ_last_map_continuous : forall n : set , nat_p n -> continuous_map (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n)) R R_standard_topology (euclidean_space_succ_last_map n).
+Axiom euclidean_space_succ_first_map_apply : forall n f : set , nat_p n -> f :e euclidean_space (ordsucc n) -> apply_fun (euclidean_space_succ_first_map n) f = graph n (fun i : set => apply_fun f i).
+Axiom euclidean_space_succ_first_map_continuous : forall n : set , nat_p n -> continuous_map (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n)) (euclidean_space n) (euclidean_topology n) (euclidean_space_succ_first_map n).
+Axiom euclidean_space_succ_split_map_continuous : forall n : set , nat_p n -> continuous_map (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n)) (setprod (euclidean_space n) R) (product_topology (euclidean_space n) (euclidean_topology n) R R_standard_topology) (euclidean_space_succ_split_map n).
+Axiom euclidean_space_succ_merge_map_continuous : forall n : set , nat_p n -> continuous_map (setprod (euclidean_space n) R) (product_topology (euclidean_space n) (euclidean_topology n) R R_standard_topology) (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n)) (euclidean_space_succ_merge_map n).
+Axiom euclidean_space_succ_split_homeomorphism : forall n : set , nat_p n -> homeomorphism (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n)) (setprod (euclidean_space n) R) (product_topology (euclidean_space n) (euclidean_topology n) R R_standard_topology) (euclidean_space_succ_split_map n).
+Definition two : set := 2.
+Axiom euclidean_space_covering_dimension_le_empty : covering_dimension (euclidean_space Empty) (euclidean_topology Empty) Empty.
+Axiom product_subbasis_elem_is_rectangle : forall X Tx Y Ty W : set , W :e product_subbasis X Tx Y Ty -> exists U V : set , U :e Tx /\ V :e Ty /\ W = rectangle_set U V.
+Axiom product_basis_from_elem_is_setprod : forall Bx By W : set , W :e product_basis_from Bx By -> exists U V : set , U :e Bx /\ V :e By /\ W = setprod U V.
+Axiom R_standard_basis_elem_is_open_interval : forall I : set , I :e R_standard_basis -> exists a b : set , a :e R /\ b :e R /\ I = open_interval a b.
+Axiom open_interval_in_R_standard_topology_of_endpoints_in_R : forall a b : set , a :e R -> b :e R -> open_interval a b :e R_standard_topology.
+Axiom int_Subq_R : int c= R.
+Axiom int_in_R : forall m : set , m :e int -> m :e R.
+Axiom int_Subq_rational_numbers : int c= rational_numbers.
+Axiom int_in_rational_numbers : forall m : set , m :e int -> m :e rational_numbers.
+Definition int_unit_open_intervals : set := {open_interval m (add_SNo m 1)|m :e int}.
+Axiom int_unit_open_intervalsE : forall I : set , I :e int_unit_open_intervals -> exists m :e int , I = open_interval m (add_SNo m 1).
+Definition int_unit_open_interval_index : set -> set := fun I : set => Eps_i (fun m : set => m :e int /\ I = open_interval m (add_SNo m 1)).
+Axiom int_unit_open_interval_index_spec : forall I : set , I :e int_unit_open_intervals -> int_unit_open_interval_index I :e int /\ I = open_interval (int_unit_open_interval_index I) (add_SNo (int_unit_open_interval_index I) 1).
+Axiom int_unit_open_intervals_Subq_rational_open_intervals_basis : int_unit_open_intervals c= rational_open_intervals_basis.
+Axiom int_unit_open_interval_open_in_R_standard_topology : forall I : set , I :e int_unit_open_intervals -> I :e R_standard_topology.
+Axiom int_unit_open_intervals_Subq_R_standard_topology : int_unit_open_intervals c= R_standard_topology.
+Definition int_singletons : set := {{m}|m :e int}.
+Axiom int_singletonsE : forall S : set , S :e int_singletons -> exists m :e int , S = {m}.
+Definition int_singleton_index : set -> set := fun S : set => Eps_i (fun m : set => m :e int /\ S = {m}).
+Axiom int_singleton_index_spec : forall S : set , S :e int_singletons -> int_singleton_index S :e int /\ S = {int_singleton_index S}.
+Axiom binintersect_Sing_eq_Empty_of_neq : forall x y : set , x <> y -> {x} :/\: {y} = Empty.
+Axiom int_singletons_pairwise_disjoint : pairwise_disjoint int_singletons.
+Axiom collection_has_order_at_most_1_int_singletons : collection_has_order_at_most_m_plus_one R int_singletons 0.
+Definition omega_unit_open_intervals_pos : set := {open_interval n (ordsucc n)|n :e omega}.
+Definition omega_unit_open_intervals_neg : set := {open_interval (minus_SNo (ordsucc n)) (minus_SNo n)|n :e omega}.
+Axiom omega_ordsucc_Le_of_In : forall n m : set , n :e omega -> m :e omega -> n :e m -> ordsucc n <= m.
+Axiom omega_unit_open_intervals_pos_pairwise_disjoint : pairwise_disjoint omega_unit_open_intervals_pos.
+Axiom omega_unit_open_intervals_neg_pairwise_disjoint : pairwise_disjoint omega_unit_open_intervals_neg.
+Axiom omega_unit_open_intervals_pos_neg_disjoint : forall U V : set , U :e omega_unit_open_intervals_pos -> V :e omega_unit_open_intervals_neg -> U :/\: V = Empty.
+Axiom omega_unit_open_intervals_posneg_pairwise_disjoint : pairwise_disjoint (omega_unit_open_intervals_pos :\/: omega_unit_open_intervals_neg).
+Axiom omega_unit_open_intervals_pos_Subq_rational_open_intervals_basis : omega_unit_open_intervals_pos c= rational_open_intervals_basis.
+Axiom omega_unit_open_intervals_neg_Subq_rational_open_intervals_basis : omega_unit_open_intervals_neg c= rational_open_intervals_basis.
+Axiom R_covered_by_unit_intervals_and_int_singletons : R c= Union ((omega_unit_open_intervals_pos :\/: omega_unit_open_intervals_neg) :\/: int_singletons).
+Definition int_halfshift_open_intervals : set := {open_interval (add_SNo m (minus_SNo (eps_ 1))) (add_SNo m (eps_ 1))|m :e int}.
+Axiom int_halfshift_open_intervalsE : forall I : set , I :e int_halfshift_open_intervals -> exists m :e int , I = open_interval (add_SNo m (minus_SNo (eps_ 1))) (add_SNo m (eps_ 1)).
+Definition int_halfshift_open_interval_index : set -> set := fun I : set => Eps_i (fun m : set => m :e int /\ I = open_interval (add_SNo m (minus_SNo (eps_ 1))) (add_SNo m (eps_ 1))).
+Axiom int_halfshift_open_interval_index_spec : forall I : set , I :e int_halfshift_open_intervals -> int_halfshift_open_interval_index I :e int /\ I = open_interval (add_SNo (int_halfshift_open_interval_index I) (minus_SNo (eps_ 1))) (add_SNo (int_halfshift_open_interval_index I) (eps_ 1)).
+Axiom int_unit_or_halfshift_open_intervalsE : forall I : set , I :e (int_unit_open_intervals :\/: int_halfshift_open_intervals) -> exists m :e int , I = open_interval m (add_SNo m 1) \/ I = open_interval (add_SNo m (minus_SNo (eps_ 1))) (add_SNo m (eps_ 1)).
+Definition int_unit_or_halfshift_open_interval_index : set -> set := fun I : set => Eps_i (fun m : set => m :e int /\ (I = open_interval m (add_SNo m 1) \/ I = open_interval (add_SNo m (minus_SNo (eps_ 1))) (add_SNo m (eps_ 1)))).
+Axiom int_unit_or_halfshift_open_interval_index_spec : forall I : set , I :e (int_unit_open_intervals :\/: int_halfshift_open_intervals) -> int_unit_or_halfshift_open_interval_index I :e int /\ (I = open_interval (int_unit_or_halfshift_open_interval_index I) (add_SNo (int_unit_or_halfshift_open_interval_index I) 1) \/ I = open_interval (add_SNo (int_unit_or_halfshift_open_interval_index I) (minus_SNo (eps_ 1))) (add_SNo (int_unit_or_halfshift_open_interval_index I) (eps_ 1))).
+Axiom int_halfshift_open_intervals_Subq_rational_open_intervals_basis : int_halfshift_open_intervals c= rational_open_intervals_basis.
+Axiom int_unit_and_int_halfshift_open_intervals_Subq_rational_open_intervals_basis : (int_unit_open_intervals :\/: int_halfshift_open_intervals) c= rational_open_intervals_basis.
+Axiom minus_ordsucc_plus_one_eq_minus : forall n : set , n :e omega -> add_SNo (minus_SNo (ordsucc n)) 1 = minus_SNo n.
+Axiom int_halfshift_endpoint_separation : forall m k : set , m :e int -> k :e int -> m < k -> add_SNo m (eps_ 1) <= add_SNo k (minus_SNo (eps_ 1)).
+Axiom int_Lt_imp_add_SNo_1_Le : forall m k : set , m :e int -> k :e int -> m < k -> add_SNo m 1 <= k.
+Axiom int_unit_open_intervals_disjoint_int_singletons : forall I J : set , I :e int_unit_open_intervals -> J :e int_singletons -> I :/\: J = Empty.
+Axiom int_halfshift_open_intervals_not_in_int_unit_open_intervals : forall I : set , I :e int_halfshift_open_intervals -> ~ (I :e int_unit_open_intervals).
+Axiom int_halfshift_open_intervals_pairwise_disjoint : pairwise_disjoint int_halfshift_open_intervals.
+Axiom int_halfshift_open_interval_disjoint_of_lt : forall m k : set , m :e int -> k :e int -> m < k -> open_interval (add_SNo m (minus_SNo (eps_ 1))) (add_SNo m (eps_ 1)) :/\: open_interval (add_SNo k (minus_SNo (eps_ 1))) (add_SNo k (eps_ 1)) = Empty.
+Axiom int_unit_halfshift_point_membership_imp_index_eq_or_succ : forall m k x : set , m :e int -> k :e int -> x :e open_interval m (add_SNo m 1) -> x :e open_interval (add_SNo k (minus_SNo (eps_ 1))) (add_SNo k (eps_ 1)) -> k = m \/ k = add_SNo m 1.
+Axiom int_halfshift_open_interval_open_in_R_standard_topology : forall I : set , I :e int_halfshift_open_intervals -> I :e R_standard_topology.
+Axiom int_halfshift_open_intervals_Subq_R_standard_topology : int_halfshift_open_intervals c= R_standard_topology.
+Axiom int_mem_halfshift_open_interval : forall m : set , m :e int -> m :e open_interval (add_SNo m (minus_SNo (eps_ 1))) (add_SNo m (eps_ 1)).
+Definition int_unit_or_singleton_open_neighbor : set -> set := fun S : set => if S :e int_unit_open_intervals then S else open_interval (add_SNo (int_singleton_index S) (minus_SNo (eps_ 1))) (add_SNo (int_singleton_index S) (eps_ 1)).
+Axiom int_unit_or_singleton_open_neighbor_spec : forall S : set , S :e (int_unit_open_intervals :\/: int_singletons) -> int_unit_or_singleton_open_neighbor S :e (int_unit_open_intervals :\/: int_halfshift_open_intervals) /\ S c= int_unit_or_singleton_open_neighbor S.
+Axiom int_unit_or_singleton_open_neighbor_eq_of_unit : forall S : set , S :e int_unit_open_intervals -> int_unit_or_singleton_open_neighbor S = S.
+Axiom int_unit_or_singleton_open_neighbor_eq_of_singleton : forall S : set , S :e int_singletons -> int_unit_or_singleton_open_neighbor S = open_interval (add_SNo (int_singleton_index S) (minus_SNo (eps_ 1))) (add_SNo (int_singleton_index S) (eps_ 1)).
+Axiom int_unit_or_singleton_open_neighbor_in_halfshift_open_intervals : forall S : set , S :e int_singletons -> int_unit_or_singleton_open_neighbor S :e int_halfshift_open_intervals.
+Axiom int_unit_or_singleton_open_neighbor_disjoint_of_singleton_singleton_neq : forall J K : set , J :e int_singletons -> K :e int_singletons -> int_singleton_index J <> int_singleton_index K -> int_unit_or_singleton_open_neighbor J :/\: int_unit_or_singleton_open_neighbor K = Empty.
+Axiom int_unit_or_singleton_open_neighbor_nonempty_intersection_imp_singleton_index_eq : forall J K : set , J :e int_singletons -> K :e int_singletons -> int_unit_or_singleton_open_neighbor J :/\: int_unit_or_singleton_open_neighbor K <> Empty -> int_singleton_index J = int_singleton_index K.
+Definition int_unit_or_singleton_open_neighbor_index : set -> set := fun S : set => if S :e int_unit_open_intervals then int_unit_open_interval_index S else int_singleton_index S.
+Axiom int_unit_or_singleton_open_neighbor_index_in_int : forall S : set , S :e (int_unit_open_intervals :\/: int_singletons) -> int_unit_or_singleton_open_neighbor_index S :e int.
+Axiom int_unit_or_singleton_open_neighbor_eq_open_interval_of_unit : forall S : set , S :e int_unit_open_intervals -> int_unit_or_singleton_open_neighbor S = open_interval (int_unit_open_interval_index S) (add_SNo (int_unit_open_interval_index S) 1).
+Axiom int_unit_or_singleton_open_neighbor_eq_open_interval_of_singleton : forall S : set , S :e int_singletons -> int_unit_or_singleton_open_neighbor S = open_interval (add_SNo (int_singleton_index S) (minus_SNo (eps_ 1))) (add_SNo (int_singleton_index S) (eps_ 1)).
+Axiom int_unit_or_singleton_open_neighbor_point_membership_imp_index_eq_or_succ : forall U J x : set , U :e int_unit_open_intervals -> J :e int_singletons -> x :e int_unit_or_singleton_open_neighbor U -> x :e int_unit_or_singleton_open_neighbor J -> int_singleton_index J = int_unit_open_interval_index U \/ int_singleton_index J = add_SNo (int_unit_open_interval_index U) 1.
+Axiom int_unit_or_singleton_open_neighbor_nonempty_intersection_imp_index_eq_or_succ : forall U J : set , U :e int_unit_open_intervals -> J :e int_singletons -> int_unit_or_singleton_open_neighbor U :/\: int_unit_or_singleton_open_neighbor J <> Empty -> int_singleton_index J = int_unit_open_interval_index U \/ int_singleton_index J = add_SNo (int_unit_open_interval_index U) 1.
+Axiom int_unit_or_singleton_open_neighbor_disjoint_of_unit_singleton_not_eq_or_succ : forall U J : set , U :e int_unit_open_intervals -> J :e int_singletons -> ~ (int_singleton_index J = int_unit_open_interval_index U \/ int_singleton_index J = add_SNo (int_unit_open_interval_index U) 1) -> int_unit_or_singleton_open_neighbor U :/\: int_unit_or_singleton_open_neighbor J = Empty.
+Axiom int_unit_or_singleton_open_neighbor_open_in_R_standard_topology : forall S : set , S :e (int_unit_open_intervals :\/: int_singletons) -> int_unit_or_singleton_open_neighbor S :e R_standard_topology.
+Axiom Union_int_singletons_Subq_Union_int_halfshift_open_intervals : Union int_singletons c= Union int_halfshift_open_intervals.
+Axiom R_covered_by_unit_intervals_and_int_halfshift_open_intervals : R c= Union ((omega_unit_open_intervals_pos :\/: omega_unit_open_intervals_neg) :\/: int_halfshift_open_intervals).
+Axiom omega_unit_open_intervals_binunion_eq_int_unit_open_intervals : (omega_unit_open_intervals_pos :\/: omega_unit_open_intervals_neg) = int_unit_open_intervals.
+Axiom int_unit_open_intervals_pairwise_disjoint : pairwise_disjoint int_unit_open_intervals.
+Axiom int_unit_or_halfshift_open_interval_index_eq_or_adj_of_intersection : forall I J : set , I :e (int_unit_open_intervals :\/: int_halfshift_open_intervals) -> J :e (int_unit_open_intervals :\/: int_halfshift_open_intervals) -> I :/\: J <> Empty -> (int_unit_or_halfshift_open_interval_index I = int_unit_or_halfshift_open_interval_index J \/ int_unit_or_halfshift_open_interval_index I = add_SNo (int_unit_or_halfshift_open_interval_index J) 1 \/ int_unit_or_halfshift_open_interval_index J = add_SNo (int_unit_or_halfshift_open_interval_index I) 1).
+Axiom int_unit_open_intervals_binunion_int_singletons_pairwise_disjoint : pairwise_disjoint (int_unit_open_intervals :\/: int_singletons).
+Axiom int_singletons_not_in_int_unit_open_intervals : forall S : set , S :e int_singletons -> ~ (S :e int_unit_open_intervals).
+Axiom int_unit_or_singleton_open_neighbor_nonempty_intersection_imp_index_eq_or_adj : forall A B : set , A :e (int_unit_open_intervals :\/: int_singletons) -> B :e (int_unit_open_intervals :\/: int_singletons) -> int_unit_or_singleton_open_neighbor A :/\: int_unit_or_singleton_open_neighbor B <> Empty -> int_unit_or_singleton_open_neighbor_index A = int_unit_or_singleton_open_neighbor_index B \/ (int_unit_or_singleton_open_neighbor_index A = add_SNo (int_unit_or_singleton_open_neighbor_index B) 1 \/ int_unit_or_singleton_open_neighbor_index B = add_SNo (int_unit_or_singleton_open_neighbor_index A) 1).
+Axiom int_unit_or_singleton_open_neighbor_disjoint_of_not_index_eq_or_adj : forall A B : set , A :e (int_unit_open_intervals :\/: int_singletons) -> B :e (int_unit_open_intervals :\/: int_singletons) -> ~ (int_unit_or_singleton_open_neighbor_index A = int_unit_or_singleton_open_neighbor_index B \/ (int_unit_or_singleton_open_neighbor_index A = add_SNo (int_unit_or_singleton_open_neighbor_index B) 1 \/ int_unit_or_singleton_open_neighbor_index B = add_SNo (int_unit_or_singleton_open_neighbor_index A) 1)) -> int_unit_or_singleton_open_neighbor A :/\: int_unit_or_singleton_open_neighbor B = Empty.
+Axiom R_covered_by_int_unit_open_intervals_and_int_singletons : R c= Union (int_unit_open_intervals :\/: int_singletons).
+Axiom collection_has_order_at_most_1_R_int_unit_open_intervals_and_int_singletons : collection_has_order_at_most_m_plus_one R (int_unit_open_intervals :\/: int_singletons) 0.
+Axiom int_unit_open_intervals_binunion_int_singletons_pointwise_unique : forall x : set , x :e R -> forall U V : set , U :e (int_unit_open_intervals :\/: int_singletons) -> V :e (int_unit_open_intervals :\/: int_singletons) -> x :e U -> x :e V -> U = V.
+Definition int_unit_or_singleton_cell_map : set := graph R (fun x : set => Eps_i (fun U : set => U :e (int_unit_open_intervals :\/: int_singletons) /\ x :e U)).
+Axiom int_unit_or_singleton_cell_map_spec : forall x : set , x :e R -> apply_fun int_unit_or_singleton_cell_map x :e (int_unit_open_intervals :\/: int_singletons) /\ x :e apply_fun int_unit_or_singleton_cell_map x.
+Axiom int_unit_or_singleton_cell_map_unique : forall x U : set , x :e R -> U :e (int_unit_open_intervals :\/: int_singletons) -> x :e U -> apply_fun int_unit_or_singleton_cell_map x = U.
+Definition euclidean_space_IK_assignment : set -> set -> set := fun n f => graph n (fun i : set => apply_fun int_unit_or_singleton_cell_map (apply_fun f i)).
+Definition euclidean_space_IK_cell : set -> set -> set := fun n a => {f :e euclidean_space n|forall i : set , i :e n -> apply_fun f i :e apply_fun a i}.
+Definition euclidean_space_IK_open_neighbor : set -> set -> set := fun n a => {f :e euclidean_space n|forall i : set , i :e n -> apply_fun f i :e int_unit_or_singleton_open_neighbor (apply_fun a i)}.
+Axiom euclidean_space_IK_open_neighbor_disjoint_of_coord_disjoint : forall n a b i : set , i :e n -> int_unit_or_singleton_open_neighbor (apply_fun a i) :/\: int_unit_or_singleton_open_neighbor (apply_fun b i) = Empty -> euclidean_space_IK_open_neighbor n a :/\: euclidean_space_IK_open_neighbor n b = Empty.
+Axiom euclidean_space_IK_open_neighbor_nonempty_intersection_imp_coord_index_eq_or_adj : forall n a b i : set , i :e n -> total_function_on a n (int_unit_open_intervals :\/: int_singletons) -> total_function_on b n (int_unit_open_intervals :\/: int_singletons) -> euclidean_space_IK_open_neighbor n a :/\: euclidean_space_IK_open_neighbor n b <> Empty -> int_unit_or_singleton_open_neighbor_index (apply_fun a i) = int_unit_or_singleton_open_neighbor_index (apply_fun b i) \/ (int_unit_or_singleton_open_neighbor_index (apply_fun a i) = add_SNo (int_unit_or_singleton_open_neighbor_index (apply_fun b i)) 1 \/ int_unit_or_singleton_open_neighbor_index (apply_fun b i) = add_SNo (int_unit_or_singleton_open_neighbor_index (apply_fun a i)) 1).
+Axiom euclidean_space_IK_open_neighbor_disjoint_of_coord_not_index_eq_or_adj : forall n a b i : set , i :e n -> total_function_on a n (int_unit_open_intervals :\/: int_singletons) -> total_function_on b n (int_unit_open_intervals :\/: int_singletons) -> ~ (int_unit_or_singleton_open_neighbor_index (apply_fun a i) = int_unit_or_singleton_open_neighbor_index (apply_fun b i) \/ (int_unit_or_singleton_open_neighbor_index (apply_fun a i) = add_SNo (int_unit_or_singleton_open_neighbor_index (apply_fun b i)) 1 \/ int_unit_or_singleton_open_neighbor_index (apply_fun b i) = add_SNo (int_unit_or_singleton_open_neighbor_index (apply_fun a i)) 1)) -> euclidean_space_IK_open_neighbor n a :/\: euclidean_space_IK_open_neighbor n b = Empty.
+Axiom euclidean_space_IK_cell_Subq_open_neighbor : forall n a : set , total_function_on a n (int_unit_open_intervals :\/: int_singletons) -> euclidean_space_IK_cell n a c= euclidean_space_IK_open_neighbor n a.
+Axiom euclidean_full_box_in_euclidean_topology : forall n : set , forall Ufun : set -> set , nat_p n -> (forall i : set , i :e n -> Ufun i :e R_standard_topology) -> {f :e euclidean_space n|forall i : set , i :e n -> apply_fun f i :e Ufun i} :e euclidean_topology n.
+Axiom euclidean_space_IK_open_neighbor_in_euclidean_topology : forall n a : set , nat_p n -> total_function_on a n (int_unit_open_intervals :\/: int_singletons) -> euclidean_space_IK_open_neighbor n a :e euclidean_topology n.
+Axiom euclidean_space_IK_cell_Subq_euclidean_space : forall n a : set , euclidean_space_IK_cell n a c= euclidean_space n.
+Axiom euclidean_space_IK_assignment_spec : forall n f i : set , f :e euclidean_space n -> i :e n -> apply_fun (euclidean_space_IK_assignment n f) i :e (int_unit_open_intervals :\/: int_singletons) /\ apply_fun f i :e apply_fun (euclidean_space_IK_assignment n f) i.
+Axiom euclidean_space_IK_assignment_vals_in_family : forall n f i : set , f :e euclidean_space n -> i :e n -> apply_fun (euclidean_space_IK_assignment n f) i :e (int_unit_open_intervals :\/: int_singletons).
+Axiom euclidean_space_in_IK_cell_of_assignment : forall n f : set , f :e euclidean_space n -> f :e euclidean_space_IK_cell n (euclidean_space_IK_assignment n f).
+Axiom or3_left_assoc_of_or_nested : forall P Q R : prop , P \/ (Q \/ R) -> P \/ Q \/ R.
+Axiom or3_or_nested_of_left_assoc : forall P Q R : prop , P \/ Q \/ R -> P \/ (Q \/ R).
+Axiom euclidean_space_IK_assignment_const_on_cell : forall n a f i : set , f :e euclidean_space_IK_cell n a -> (forall j : set , j :e n -> apply_fun a j :e (int_unit_open_intervals :\/: int_singletons)) -> i :e n -> apply_fun (euclidean_space_IK_assignment n f) i = apply_fun a i.
+Axiom euclidean_space_IK_assignment_const_on_assignment_cell : forall n f g i : set , f :e euclidean_space n -> g :e euclidean_space_IK_cell n (euclidean_space_IK_assignment n f) -> i :e n -> apply_fun (euclidean_space_IK_assignment n g) i = apply_fun (euclidean_space_IK_assignment n f) i.
+Definition euclidean_space_IK_assignments : set -> set := fun n => {a :e Power (setprod n (int_unit_open_intervals :\/: int_singletons))|total_function_on a n (int_unit_open_intervals :\/: int_singletons) /\ functional_graph a}.
+Axiom euclidean_space_IK_assignment_eq_of_mem_cell : forall n a f : set , a :e euclidean_space_IK_assignments n -> f :e euclidean_space_IK_cell n a -> euclidean_space_IK_assignment n f = a.
+Definition euclidean_space_IK_cells : set -> set := fun n => {euclidean_space_IK_cell n a|a :e euclidean_space_IK_assignments n}.
+Definition euclidean_space_IK_interval_coords : set -> set -> set := fun n a => {i :e n|apply_fun a i :e int_unit_open_intervals}.
+Axiom euclidean_space_IK_interval_coords_Subq : forall n a : set , euclidean_space_IK_interval_coords n a c= n.
+Definition euclidean_space_IK_cube_dimension : set -> set -> set -> prop := fun n a M => cardinality_exact (euclidean_space_IK_interval_coords n a) M.
+Definition euclidean_space_IK_cubes_dimension : set -> set -> set := fun n M => {euclidean_space_IK_cell n a|a :e euclidean_space_IK_assignments n,euclidean_space_IK_cube_dimension n a M}.
+Axiom euclidean_space_IK_cell_in_cubes_dimension : forall n a M : set , a :e euclidean_space_IK_assignments n -> euclidean_space_IK_cube_dimension n a M -> euclidean_space_IK_cell n a :e euclidean_space_IK_cubes_dimension n M.
+Axiom euclidean_space_IK_cubes_dimension_elem_Subq_euclidean_space : forall n M C : set , C :e euclidean_space_IK_cubes_dimension n M -> C c= euclidean_space n.
+Definition euclidean_space_square_metric : set -> set := fun n => uniform_metric_power_real n.
+Definition euclidean_space_square_ball : set -> set -> set -> set := fun n x eps => open_ball (euclidean_space n) (euclidean_space_square_metric n) x eps.
+Definition euclidean_space_square_box : set -> set -> set -> set := fun n x r => {f :e euclidean_space n|forall i : set , i :e n -> apply_fun f i :e open_ball R R_bounded_metric (apply_fun x i) r}.
+Axiom euclidean_space_square_box_in_euclidean_topology : forall n x r : set , nat_p n -> x :e euclidean_space n -> r :e R -> Rlt 0 r -> euclidean_space_square_box n x r :e euclidean_topology n.
+Axiom euclidean_space_square_ball_in_euclidean_topology : forall n x eps : set , nat_p n -> x :e euclidean_space n -> eps :e R -> Rlt 0 eps -> euclidean_space_square_ball n x eps :e euclidean_topology n.
+Axiom eq_subst_mem_set : forall x S T : set , x :e S -> S = T -> x :e T.
+Definition euclidean_space_IK_cube_U : set -> set -> set -> set := fun n M C => {y :e euclidean_space n|exists x eps : set , x :e C /\ eps :e R /\ Rlt 0 eps /\ (forall D : set , D :e euclidean_space_IK_cubes_dimension n M -> D <> C -> euclidean_space_square_ball n x eps :/\: D = Empty) /\ y :e euclidean_space_square_ball n x (mul_SNo (eps_ 1) eps)}.
+Axiom euclidean_space_IK_cube_U_in_euclidean_topology : forall n M C : set , nat_p n -> C :e euclidean_space_IK_cubes_dimension n M -> euclidean_space_IK_cube_U n M C :e euclidean_topology n.
+Axiom euclidean_space_IK_cube_U_disjoint_of_distinct_Mcubes : forall n M C D : set , C :e euclidean_space_IK_cubes_dimension n M -> D :e euclidean_space_IK_cubes_dimension n M -> C <> D -> euclidean_space_IK_cube_U n M C :/\: euclidean_space_IK_cube_U n M D = Empty.
+Axiom finite_subset_equip_superset_eq : forall A B : set , finite A -> A c= B -> equip B A -> A = B.
+Axiom int_eq_of_abs_diff_lt_eps_1 : forall m k : set , m :e int -> k :e int -> abs_SNo (add_SNo m (minus_SNo k)) < (eps_ 1) -> m = k.
+Axiom euclidean_space_IK_cube_point_avoid_eps_exists : forall n M C x : set , n :e omega -> C :e euclidean_space_IK_cubes_dimension n M -> x :e C -> exists eps : set , eps :e R /\ Rlt 0 eps /\ (forall D : set , D :e euclidean_space_IK_cubes_dimension n M -> D <> C -> euclidean_space_square_ball n x eps :/\: D = Empty).
+Axiom euclidean_space_IK_cube_Subq_U : forall n M C : set , n :e omega -> C :e euclidean_space_IK_cubes_dimension n M -> C c= euclidean_space_IK_cube_U n M C.
+Axiom euclidean_space_IK_interval_coords_cardinality_at_most_n : forall n a : set , n :e omega -> cardinality_at_most (euclidean_space_IK_interval_coords n a) n.
+Axiom euclidean_space_IK_cube_dimension_exists : forall n a : set , n :e omega -> exists M : set , M :e omega /\ euclidean_space_IK_cube_dimension n a M.
+Definition euclidean_space_IK_open_neighbors_interval_coords_layer : set -> set -> set := fun n S => {euclidean_space_IK_open_neighbor n a|a :e euclidean_space_IK_assignments n,euclidean_space_IK_interval_coords n a = S}.
+Axiom euclidean_space_IK_open_neighbors_interval_coords_layer_pairwise_disjoint : forall n S : set , pairwise_disjoint (euclidean_space_IK_open_neighbors_interval_coords_layer n S).
+Axiom euclidean_space_IK_interval_coords_equip_subordinal : forall n a : set , nat_p n -> a :e euclidean_space_IK_assignments n -> exists m : set , nat_p m /\ (m c= n /\ equip (euclidean_space_IK_interval_coords n a) m).
+Definition euclidean_space_IK_dim : set -> set -> set := fun n a => Eps_i (fun m : set => nat_p m /\ (m c= n /\ equip (euclidean_space_IK_interval_coords n a) m)).
+Axiom euclidean_space_IK_dim_spec : forall n a : set , nat_p n -> a :e euclidean_space_IK_assignments n -> nat_p (euclidean_space_IK_dim n a) /\ ((euclidean_space_IK_dim n a) c= n /\ equip (euclidean_space_IK_interval_coords n a) (euclidean_space_IK_dim n a)).
+Axiom pairwise_disjoint_mono_subset : forall Fam G : set , G c= Fam -> pairwise_disjoint Fam -> pairwise_disjoint G.
+Axiom nat_p_Subq_imp_in_ordsucc : forall n m : set , nat_p n -> nat_p m -> m c= n -> m :e ordsucc n.
+Definition euclidean_space_IK_cells_dim_layer : set -> set -> set := fun n m => {euclidean_space_IK_cell n a|a :e euclidean_space_IK_assignments n,euclidean_space_IK_dim n a = m}.
+Axiom euclidean_space_IK_cells_dim_layer_Subq : forall n m : set , euclidean_space_IK_cells_dim_layer n m c= euclidean_space_IK_cells n.
+Axiom euclidean_space_IK_assignment_in_assignments : forall n f : set , f :e euclidean_space n -> euclidean_space_IK_assignment n f :e euclidean_space_IK_assignments n.
+Axiom euclidean_space_IK_dim_of_point_spec : forall n f : set , nat_p n -> f :e euclidean_space n -> nat_p (euclidean_space_IK_dim n (euclidean_space_IK_assignment n f)) /\ ((euclidean_space_IK_dim n (euclidean_space_IK_assignment n f)) c= n /\ equip (euclidean_space_IK_interval_coords n (euclidean_space_IK_assignment n f)) (euclidean_space_IK_dim n (euclidean_space_IK_assignment n f))).
+Axiom euclidean_space_IK_cells_cover : forall n : set , euclidean_space n c= Union (euclidean_space_IK_cells n).
+Axiom euclidean_space_IK_cells_pairwise_disjoint : forall n : set , pairwise_disjoint (euclidean_space_IK_cells n).
+Axiom euclidean_space_IK_cells_dim_layer_pairwise_disjoint : forall n m : set , pairwise_disjoint (euclidean_space_IK_cells_dim_layer n m).
+Axiom euclidean_space_IK_cells_eq_famunion_dim_layers_omega : forall n : set , nat_p n -> euclidean_space_IK_cells n = (\/_ m :e omega , euclidean_space_IK_cells_dim_layer n m).
+Axiom euclidean_space_IK_cells_eq_famunion_dim_layers : forall n : set , nat_p n -> euclidean_space_IK_cells n = (\/_ m :e ordsucc n , euclidean_space_IK_cells_dim_layer n m).
+Definition euclidean_space_IK_stratum : set -> set -> set := fun n m => Union (euclidean_space_IK_cells_dim_layer n m).
+Axiom euclidean_space_IK_stratum_Subq_euclidean_space : forall n m : set , euclidean_space_IK_stratum n m c= euclidean_space n.
+Axiom euclidean_space_IK_strata_cover : forall n : set , nat_p n -> euclidean_space n c= (\/_ m :e ordsucc n , euclidean_space_IK_stratum n m).
+Axiom euclidean_space_IK_strata_Subq_euclidean_space : forall n : set , (\/_ m :e ordsucc n , euclidean_space_IK_stratum n m) c= euclidean_space n.
+Axiom euclidean_space_IK_strata_eq_euclidean_space : forall n : set , nat_p n -> (\/_ m :e ordsucc n , euclidean_space_IK_stratum n m) = euclidean_space n.
+Axiom collection_has_order_at_most_1_int_unit_open_intervals : collection_has_order_at_most_m_plus_one R int_unit_open_intervals 0.
+Axiom R_covered_by_int_unit_and_int_halfshift_open_intervals : R c= Union (int_unit_open_intervals :\/: int_halfshift_open_intervals).
+Definition int_unit_or_halfshift_cell_map : set := graph R (fun x : set => Eps_i (fun U : set => U :e (int_unit_open_intervals :\/: int_halfshift_open_intervals) /\ x :e U)).
+Axiom int_unit_or_halfshift_cell_map_spec : forall x : set , x :e R -> apply_fun int_unit_or_halfshift_cell_map x :e (int_unit_open_intervals :\/: int_halfshift_open_intervals) /\ x :e apply_fun int_unit_or_halfshift_cell_map x.
+Definition int_unit_or_halfshift_cell_index : set -> set := fun x : set => int_unit_or_halfshift_open_interval_index (apply_fun int_unit_or_halfshift_cell_map x).
+Axiom int_unit_or_halfshift_cell_index_spec : forall x : set , x :e R -> int_unit_or_halfshift_cell_index x :e int /\ (apply_fun int_unit_or_halfshift_cell_map x = open_interval (int_unit_or_halfshift_cell_index x) (add_SNo (int_unit_or_halfshift_cell_index x) 1) \/ apply_fun int_unit_or_halfshift_cell_map x = open_interval (add_SNo (int_unit_or_halfshift_cell_index x) (minus_SNo (eps_ 1))) (add_SNo (int_unit_or_halfshift_cell_index x) (eps_ 1))).
+Axiom int_unit_or_halfshift_cell_index_eq_or_adj_of_intersection : forall x y : set , x :e R -> y :e R -> apply_fun int_unit_or_halfshift_cell_map x :/\: apply_fun int_unit_or_halfshift_cell_map y <> Empty -> (int_unit_or_halfshift_cell_index x = int_unit_or_halfshift_cell_index y \/ int_unit_or_halfshift_cell_index x = add_SNo (int_unit_or_halfshift_cell_index y) 1 \/ int_unit_or_halfshift_cell_index y = add_SNo (int_unit_or_halfshift_cell_index x) 1).
+Definition euclidean_space_IK_assignment_open : set -> set -> set := fun n f => graph n (fun i : set => apply_fun int_unit_or_halfshift_cell_map (apply_fun f i)).
+Axiom euclidean_space_IK_assignment_open_spec : forall n f i : set , f :e euclidean_space n -> i :e n -> apply_fun (euclidean_space_IK_assignment_open n f) i :e (int_unit_open_intervals :\/: int_halfshift_open_intervals) /\ apply_fun f i :e apply_fun (euclidean_space_IK_assignment_open n f) i.
+Axiom open_cover_of_R_by_int_unit_and_int_halfshift_open_intervals : open_cover_of R R_standard_topology (int_unit_open_intervals :\/: int_halfshift_open_intervals).
+Axiom collection_has_order_at_most_2_R_int_unit_and_int_halfshift_open_intervals : collection_has_order_at_most_m_plus_one R (int_unit_open_intervals :\/: int_halfshift_open_intervals) 1.
+Axiom rectangle_set_refine_vertical_interval : forall U V t : set , V :e R_standard_topology -> t :e V -> exists a b : set , a :e R /\ b :e R /\ t :e open_interval a b /\ open_interval a b c= V /\ Rlt a t /\ Rlt t b /\ rectangle_set U (open_interval a b) c= rectangle_set U V.
+Axiom binintersect_binintersect_empty_of_right_empty : forall V1 V2 I1 I2 : set , I1 :/\: I2 = Empty -> (V1 :/\: I1) :/\: (V2 :/\: I2) = Empty.
+Axiom rectangle_set_disjoint_of_vertical_disjoint_intersections : forall U1 V1 I1 U2 V2 I2 : set , I1 :/\: I2 = Empty -> rectangle_set U1 (V1 :/\: I1) :/\: rectangle_set U2 (V2 :/\: I2) = Empty.
+Axiom binintersect_empty_of_Subq_disjoint : forall A B S1 S2 : set , A c= S1 -> B c= S2 -> S1 :/\: S2 = Empty -> A :/\: B = Empty.
+Axiom pairwise_disjoint_binintersect_fixed_left : forall Fam W : set , pairwise_disjoint Fam -> pairwise_disjoint {W :/\: S|S :e Fam}.
+Axiom rectangle_set_binintersect_setprod_vertical : forall X U V I : set , U c= X -> rectangle_set U V :/\: setprod X I = rectangle_set U (V :/\: I).
+Axiom rectangle_set_binintersect_vertical_strip : forall X U V I : set , U c= X -> rectangle_set U V :/\: rectangle_set X I = rectangle_set U (V :/\: I).
+Axiom rectangle_set_binintersect_setprod_horizontal : forall X U V H : set , V c= X -> rectangle_set U V :/\: setprod H X = rectangle_set (U :/\: H) V.
+Axiom rectangle_set_binintersect_horizontal_strip : forall X U V H : set , V c= X -> rectangle_set U V :/\: rectangle_set H X = rectangle_set (U :/\: H) V.
+Axiom rectangle_set_binintersect_same_right : forall U1 U2 V : set , rectangle_set U1 V :/\: rectangle_set U2 V = rectangle_set (U1 :/\: U2) V.
+Axiom famunion_Repl_binintersect_swap : forall RectQ StripFam : set , (\/_ W :e RectQ , {W :/\: S|S :e StripFam}) = (\/_ S :e StripFam , {W :/\: S|W :e RectQ}).
+Axiom strip_cut_family_refines_rectangles : forall RectQ StripFam Cut : set , Cut = (\/_ W :e RectQ , {W :/\: S|S :e StripFam}) -> refines_cover Cut RectQ.
+Axiom pairwise_disjoint_rectangle_set_fixed_left : forall X Fam : set , pairwise_disjoint Fam -> pairwise_disjoint {rectangle_set X I|I :e Fam}.
+Axiom pairwise_disjoint_rectangle_set_fixed_right : forall Y Fam : set , pairwise_disjoint Fam -> pairwise_disjoint {rectangle_set U Y|U :e Fam}.
+Definition div_nat_by : set -> set -> set := fun n k : set => Eps_i (fun q : set => q :e omega /\ exists r :e n , k = add_nat (mul_nat q n) r).
+Definition mod_nat_by : set -> set -> set := fun n k : set => Eps_i (fun r : set => r :e n /\ k = add_nat (mul_nat (div_nat_by n k) n) r).
+Axiom div_mod_nat_by_spec : forall n k : set , n :e omega :\: {0} -> nat_p k -> div_nat_by n k :e omega /\ mod_nat_by n k :e n /\ k = add_nat (mul_nat (div_nat_by n k) n) (mod_nat_by n k).
+Definition mod_int_by : set -> set -> set := fun n m : set => Eps_i (fun r : set => r :e n /\ exists q :e int , m = add_SNo (mul_SNo q n) r).
+Axiom mod_int_by_spec : forall n m : set , n :e omega :\: {0} -> m :e int -> mod_int_by n m :e n /\ exists q :e int , m = add_SNo (mul_SNo q n) (mod_int_by n m).
+Axiom mod_int_by_eq_common_remainder : forall n a b : set , n :e omega :\: {0} -> a :e int -> b :e int -> mod_int_by n a = mod_int_by n b -> exists r q1 q2 : set , r :e n /\ q1 :e int /\ q2 :e int /\ a = add_SNo (mul_SNo q1 n) r /\ b = add_SNo (mul_SNo q2 n) r.
+Axiom mod_int_by_eq_imp_divides_int_diff : forall N a b : set , N :e omega :\: {0} -> a :e int -> b :e int -> mod_int_by N a = mod_int_by N b -> divides_int N (add_SNo a (minus_SNo b)).
+Axiom divides_int_abs_lt_imp_eq0 : forall N D : set , N :e int -> D :e int -> 0 < N -> divides_int N D -> abs_SNo D < N -> D = 0.
+Axiom ordsucc_ordsucc_in_omega_nonzero : forall n : set , n :e omega -> ordsucc (ordsucc n) :e omega :\: {0}.
+Definition mod_int_nplus2 : set -> set -> set := fun n m : set => mod_int_by (ordsucc (ordsucc n)) m.
+Axiom mod_int_nplus2_in_nplus2 : forall n m : set , n :e omega -> m :e int -> mod_int_nplus2 n m :e ordsucc (ordsucc n).
+Axiom mod_int_nplus2_eq_imp_divides_int_diff : forall n a b : set , n :e omega -> a :e int -> b :e int -> mod_int_nplus2 n a = mod_int_nplus2 n b -> divides_int (ordsucc (ordsucc n)) (add_SNo a (minus_SNo b)).
+Axiom abs_int_diff_le1_of_eq_or_adj : forall a b : set , a :e int -> b :e int -> (a = b \/ a = add_SNo b 1 \/ b = add_SNo a 1) -> abs_SNo (add_SNo a (minus_SNo b)) <= 1.
+Axiom abs_int_unit_or_halfshift_cell_index_diff_le1_of_intersection : forall x y : set , x :e R -> y :e R -> apply_fun int_unit_or_halfshift_cell_map x :/\: apply_fun int_unit_or_halfshift_cell_map y <> Empty -> abs_SNo (add_SNo (int_unit_or_halfshift_cell_index x) (minus_SNo (int_unit_or_halfshift_cell_index y))) <= 1.
+Axiom omega_1_in_ordsucc_ordsucc : forall n : set , n :e omega -> 1 :e ordsucc (ordsucc n).
+Axiom omega_nonzero_1_in_ordsucc : forall n : set , n :e omega -> n <> 0 -> 1 :e ordsucc n.
+Axiom omega_nonzero_2_in_ordsucc_ordsucc : forall n : set , n :e omega -> n <> 0 -> 2 :e ordsucc (ordsucc n).
+Axiom mod_int_nplus2_add1_neq : forall n m : set , n :e omega -> m :e int -> mod_int_nplus2 n m <> mod_int_nplus2 n (add_SNo m 1).
+Axiom mod_int_nplus2_add2_neq_if_nNe0 : forall n m : set , n :e omega -> n <> 0 -> m :e int -> mod_int_nplus2 n m <> mod_int_nplus2 n (add_SNo m 2).
+Definition color_point_mod_nplus2 : set -> set -> set := fun n x : set => if n = 0 then if apply_fun int_unit_or_halfshift_cell_map x :e int_unit_open_intervals then 0 else 1 else if apply_fun int_unit_or_halfshift_cell_map x :e int_unit_open_intervals then mod_int_nplus2 n (int_unit_open_interval_index (apply_fun int_unit_or_halfshift_cell_map x)) else mod_int_nplus2 n (add_SNo (int_halfshift_open_interval_index (apply_fun int_unit_or_halfshift_cell_map x)) 1).
+Axiom color_point_mod_nplus2_in_nplus2 : forall n x : set , n :e omega -> x :e R -> color_point_mod_nplus2 n x :e ordsucc (ordsucc n).
+Definition sum_int_unit_or_halfshift_cell_indices : set -> set -> set := fun n f : set => nat_primrec 0 (fun k acc : set => add_SNo acc (int_unit_or_halfshift_cell_index (apply_fun f k))) n.
+Axiom sum_int_unit_or_halfshift_cell_indices_in_int_general : forall n f : set , nat_p n -> (forall i : set , i :e n -> apply_fun f i :e R) -> sum_int_unit_or_halfshift_cell_indices n f :e int.
+Axiom sum_int_unit_or_halfshift_cell_indices_in_int : forall n f : set , nat_p n -> f :e euclidean_space n -> sum_int_unit_or_halfshift_cell_indices n f :e int.
+Definition sum_int_unit_or_singleton_cell_indices : set -> set -> set := fun n a : set => nat_primrec 0 (fun k acc : set => add_SNo acc (int_unit_or_singleton_open_neighbor_index (apply_fun a k))) n.
+Axiom sum_int_unit_or_singleton_cell_indices_in_int_general : forall n a : set , nat_p n -> (forall i : set , i :e n -> apply_fun a i :e (int_unit_open_intervals :\/: int_singletons)) -> sum_int_unit_or_singleton_cell_indices n a :e int.
+Axiom sum_int_unit_or_singleton_cell_indices_in_int_of_IK_assignment : forall n f : set , nat_p n -> f :e euclidean_space n -> sum_int_unit_or_singleton_cell_indices n (euclidean_space_IK_assignment n f) :e int.
+Axiom abs_sum_int_unit_or_singleton_cell_indices_diff_le_n : forall n a b : set , n :e omega -> total_function_on a n (int_unit_open_intervals :\/: int_singletons) -> total_function_on b n (int_unit_open_intervals :\/: int_singletons) -> (forall i : set , i :e n -> int_unit_or_singleton_open_neighbor_index (apply_fun a i) = int_unit_or_singleton_open_neighbor_index (apply_fun b i) \/ int_unit_or_singleton_open_neighbor_index (apply_fun a i) = add_SNo (int_unit_or_singleton_open_neighbor_index (apply_fun b i)) 1 \/ int_unit_or_singleton_open_neighbor_index (apply_fun b i) = add_SNo (int_unit_or_singleton_open_neighbor_index (apply_fun a i)) 1) -> abs_SNo (add_SNo (sum_int_unit_or_singleton_cell_indices n a) (minus_SNo (sum_int_unit_or_singleton_cell_indices n b))) <= n.
+Axiom abs_sum_int_unit_or_singleton_cell_indices_diff_le_n_of_IK_open_neighbor_intersection : forall n a b : set , n :e omega -> total_function_on a n (int_unit_open_intervals :\/: int_singletons) -> total_function_on b n (int_unit_open_intervals :\/: int_singletons) -> euclidean_space_IK_open_neighbor n a :/\: euclidean_space_IK_open_neighbor n b <> Empty -> abs_SNo (add_SNo (sum_int_unit_or_singleton_cell_indices n a) (minus_SNo (sum_int_unit_or_singleton_cell_indices n b))) <= n.
+Definition color_point_IK_sum_strip_mod_nplus2 : set -> set -> set := fun n p : set => mod_int_nplus2 n (add_SNo (sum_int_unit_or_singleton_cell_indices n (euclidean_space_IK_assignment n (proj0 p))) (int_unit_or_halfshift_cell_index (proj1 p))).
+Axiom color_point_IK_sum_strip_mod_nplus2_in_nplus2 : forall n X p : set , n :e omega -> X = setprod (euclidean_space n) R -> p :e X -> color_point_IK_sum_strip_mod_nplus2 n p :e ordsucc (ordsucc n).
+Axiom color_point_IK_sum_strip_mod_nplus2_eq_imp_divides_total_diff : forall n X p q : set , n :e omega -> X = setprod (euclidean_space n) R -> p :e X -> q :e X -> color_point_IK_sum_strip_mod_nplus2 n p = color_point_IK_sum_strip_mod_nplus2 n q -> divides_int (ordsucc (ordsucc n)) (add_SNo (add_SNo (sum_int_unit_or_singleton_cell_indices n (euclidean_space_IK_assignment n (proj0 p))) (int_unit_or_halfshift_cell_index (proj1 p))) (minus_SNo (add_SNo (sum_int_unit_or_singleton_cell_indices n (euclidean_space_IK_assignment n (proj0 q))) (int_unit_or_halfshift_cell_index (proj1 q))))).
+Axiom open_cover_of_remove_empty_members : forall X Tx Cut : set , open_cover_of X Tx Cut -> open_cover_of X Tx {U :e Cut|U <> Empty} /\ refines_cover {U :e Cut|U <> Empty} Cut.
+Axiom rectangle_set_open_in_product_topology : forall X Tx Y Ty U V : set , topology_on X Tx -> topology_on Y Ty -> U :e Tx -> V :e Ty -> rectangle_set U V :e product_topology X Tx Y Ty.
+Axiom euclidean_topology_is_topology : forall n : set , topology_on (euclidean_space n) (euclidean_topology n).
+Axiom rectangle_set_in_product_basis_from : forall Bx By U V : set , U :e Bx -> V :e By -> rectangle_set U V :e product_basis_from Bx By.
+Axiom product_basis_from_Subq_product_topology : forall X Tx Y Ty Bx By : set , topology_on X Tx -> topology_on Y Ty -> Bx c= Tx -> By c= Ty -> product_basis_from Bx By c= product_topology X Tx Y Ty.
+Axiom product_basis_from_elem_is_rectangle_set : forall Bx By W : set , W :e product_basis_from Bx By -> exists U V : set , ((U :e Bx /\ V :e By) /\ W = rectangle_set U V).
+Definition strip_cut_Vcell : set -> set := fun p => apply_fun int_unit_or_halfshift_cell_map (proj1 p).
+Definition strip_cut_Uch : set -> set -> set -> set -> set := fun n X Cutne p => Eps_i (fun U : set => U :e Cutne /\ p :e U /\ exists U0 V0 : set , U0 :e euclidean_topology n /\ V0 :e rational_open_intervals_basis /\ U = rectangle_set U0 (V0 :/\: strip_cut_Vcell p)).
+Axiom strip_cut_Uch_in_Cutne_of_exists_rect : forall n X Cutne p : set , (exists U : set , U :e Cutne /\ p :e U /\ exists U0 V0 : set , U0 :e euclidean_topology n /\ V0 :e rational_open_intervals_basis /\ U = rectangle_set U0 (V0 :/\: strip_cut_Vcell p)) -> strip_cut_Uch n X Cutne p :e Cutne.
+Axiom strip_cut_point_in_Uch_of_exists_rect : forall n X Cutne p : set , (exists U : set , U :e Cutne /\ p :e U /\ exists U0 V0 : set , U0 :e euclidean_topology n /\ V0 :e rational_open_intervals_basis /\ U = rectangle_set U0 (V0 :/\: strip_cut_Vcell p)) -> p :e strip_cut_Uch n X Cutne p.
+Axiom strip_cut_Uch_rectangle_form_of_exists_rect : forall n X Cutne p : set , (exists U : set , U :e Cutne /\ p :e U /\ exists U0 V0 : set , U0 :e euclidean_topology n /\ V0 :e rational_open_intervals_basis /\ U = rectangle_set U0 (V0 :/\: strip_cut_Vcell p)) -> exists U0 V0 : set , U0 :e euclidean_topology n /\ V0 :e rational_open_intervals_basis /\ strip_cut_Uch n X Cutne p = rectangle_set U0 (V0 :/\: strip_cut_Vcell p).
+Definition strip_cut_Nbhd : set -> set -> set := fun n p => euclidean_space_IK_open_neighbor n (euclidean_space_IK_assignment n (proj0 p)).
+Definition strip_cut_IK_cell_of_point : set -> set -> set := fun n p => euclidean_space_IK_cell n (euclidean_space_IK_assignment n (proj0 p)).
+Axiom strip_cut_IK_cell_of_point_in_cubes_dimension_exists : forall n X p : set , n :e omega -> X = setprod (euclidean_space n) R -> p :e X -> exists M : set , M :e omega /\ strip_cut_IK_cell_of_point n p :e euclidean_space_IK_cubes_dimension n M.
+Definition strip_cut_IK_cube_dim : set -> set -> set := fun n p => Eps_i (fun M : set => M :e omega /\ euclidean_space_IK_cube_dimension n (euclidean_space_IK_assignment n (proj0 p)) M).
+Axiom strip_cut_IK_cube_dim_spec : forall n X p : set , n :e omega -> X = setprod (euclidean_space n) R -> p :e X -> strip_cut_IK_cube_dim n p :e omega /\ euclidean_space_IK_cube_dimension n (euclidean_space_IK_assignment n (proj0 p)) (strip_cut_IK_cube_dim n p).
+Definition strip_cut_IK_cube_U_of_point : set -> set -> set := fun n p => euclidean_space_IK_cube_U n (strip_cut_IK_cube_dim n p) (strip_cut_IK_cell_of_point n p).
+Axiom strip_cut_IK_cell_of_point_in_cubes_dimension_chosen : forall n X p : set , n :e omega -> X = setprod (euclidean_space n) R -> p :e X -> strip_cut_IK_cell_of_point n p :e euclidean_space_IK_cubes_dimension n (strip_cut_IK_cube_dim n p).
+Axiom strip_cut_IK_cube_U_of_point_in_euclidean_topology : forall n X p : set , n :e omega -> X = setprod (euclidean_space n) R -> p :e X -> strip_cut_IK_cube_U_of_point n p :e euclidean_topology n.
+Axiom strip_cut_IK_cube_U_of_point_disjoint_of_distinct_cells_same_dim : forall n X p q : set , n :e omega -> X = setprod (euclidean_space n) R -> p :e X -> q :e X -> strip_cut_IK_cube_dim n p = strip_cut_IK_cube_dim n q -> strip_cut_IK_cell_of_point n p <> strip_cut_IK_cell_of_point n q -> strip_cut_IK_cube_U_of_point n p :/\: strip_cut_IK_cube_U_of_point n q = Empty.
+Definition strip_cut_Box : set -> set -> set -> set -> set := fun n X Cutne p => (strip_cut_Uch n X Cutne p) :/\: rectangle_set (strip_cut_Nbhd n p) (strip_cut_Vcell p).
+Axiom strip_cut_Box_eq_of_Uch_eq_and_rect_eq : forall n X Cutne p q : set , strip_cut_Uch n X Cutne p = strip_cut_Uch n X Cutne q -> rectangle_set (strip_cut_Nbhd n p) (strip_cut_Vcell p) = rectangle_set (strip_cut_Nbhd n q) (strip_cut_Vcell q) -> strip_cut_Box n X Cutne p = strip_cut_Box n X Cutne q.
+Axiom Subq_of_eq : forall A B : set , A = B -> A c= B.
+Axiom strip_cut_Box_Subq_rectangle : forall n X Cutne p : set , strip_cut_Box n X Cutne p c= rectangle_set (strip_cut_Nbhd n p) (strip_cut_Vcell p).
+Axiom strip_cut_Box_Subq_Uch : forall n X Cutne p : set , strip_cut_Box n X Cutne p c= strip_cut_Uch n X Cutne p.
+Definition strip_cut_Box_Ucube : set -> set -> set -> set -> set := fun n X Cutne p => (strip_cut_Uch n X Cutne p) :/\: rectangle_set (strip_cut_IK_cube_U_of_point n p) (strip_cut_Vcell p).
+Axiom strip_cut_Box_Ucube_eq_of_Uch_eq_and_rect_eq : forall n X Cutne p q : set , strip_cut_Uch n X Cutne p = strip_cut_Uch n X Cutne q -> rectangle_set (strip_cut_IK_cube_U_of_point n p) (strip_cut_Vcell p) = rectangle_set (strip_cut_IK_cube_U_of_point n q) (strip_cut_Vcell q) -> strip_cut_Box_Ucube n X Cutne p = strip_cut_Box_Ucube n X Cutne q.
+Axiom strip_cut_IK_cell_of_point_Subq_IK_cube_U_of_point : forall n X p : set , n :e omega -> X = setprod (euclidean_space n) R -> p :e X -> strip_cut_IK_cell_of_point n p c= strip_cut_IK_cube_U_of_point n p.
+Axiom strip_cut_point_in_Box_Ucube : forall n X Cutne p : set , n :e omega -> X = setprod (euclidean_space n) R -> p :e X -> (exists U : set , U :e Cutne /\ p :e U /\ exists U0 V0 : set , U0 :e euclidean_topology n /\ V0 :e rational_open_intervals_basis /\ U = rectangle_set U0 (V0 :/\: strip_cut_Vcell p)) -> p :e strip_cut_Box_Ucube n X Cutne p.
+Axiom strip_cut_Box_Ucube_open_in_Tx : forall n X Cutne p : set , n :e omega -> X = setprod (euclidean_space n) R -> p :e X -> (exists U : set , U :e Cutne /\ p :e U /\ exists U0 V0 : set , U0 :e euclidean_topology n /\ V0 :e rational_open_intervals_basis /\ U = rectangle_set U0 (V0 :/\: strip_cut_Vcell p)) -> topology_on X (product_topology (euclidean_space n) (euclidean_topology n) R R_standard_topology) -> open_cover_of X (product_topology (euclidean_space n) (euclidean_topology n) R R_standard_topology) Cutne -> strip_cut_Box_Ucube n X Cutne p :e product_topology (euclidean_space n) (euclidean_topology n) R R_standard_topology.
+Axiom strip_cut_Box_Ucube_Subq_rectangle : forall n X Cutne p : set , strip_cut_Box_Ucube n X Cutne p c= rectangle_set (strip_cut_IK_cube_U_of_point n p) (strip_cut_Vcell p).
+Axiom strip_cut_Box_Ucube_Subq_Uch : forall n X Cutne p : set , strip_cut_Box_Ucube n X Cutne p c= strip_cut_Uch n X Cutne p.
+Axiom strip_cut_Box_Ucube_same_cell_disjoint_of_distinct_cells_same_dim : forall n X Cutne p q : set , n :e omega -> X = setprod (euclidean_space n) R -> p :e X -> q :e X -> strip_cut_Vcell p = strip_cut_Vcell q -> strip_cut_IK_cube_dim n p = strip_cut_IK_cube_dim n q -> strip_cut_IK_cell_of_point n p <> strip_cut_IK_cell_of_point n q -> strip_cut_Box_Ucube n X Cutne p :/\: strip_cut_Box_Ucube n X Cutne q = Empty.
+Definition strip_cut_B : set -> set -> set -> set := fun n X Cutne => {strip_cut_Box n X Cutne p|p :e X}.
+Definition strip_cut_B_Ucube : set -> set -> set -> set := fun n X Cutne => {strip_cut_Box_Ucube n X Cutne p|p :e X}.
+Definition strip_cut_pickp : set -> set -> set -> set -> set := fun n X Cutne U => Eps_i (fun p : set => p :e X /\ U = strip_cut_Box n X Cutne p).
+Definition strip_cut_pickp_Ucube : set -> set -> set -> set -> set := fun n X Cutne U => Eps_i (fun p : set => p :e X /\ U = strip_cut_Box_Ucube n X Cutne p).
+Axiom strip_cut_same_strip_cell_disjoint_gap_interval_coords_eq_nbhd_eq : forall n X Cutne p q : set , n :e omega -> X = setprod (euclidean_space n) R -> p :e X -> q :e X -> strip_cut_Vcell p = strip_cut_Vcell q -> euclidean_space_IK_interval_coords n (euclidean_space_IK_assignment n (proj0 p)) = euclidean_space_IK_interval_coords n (euclidean_space_IK_assignment n (proj0 q)) -> strip_cut_Nbhd n p = strip_cut_Nbhd n q -> strip_cut_Box n X Cutne p <> strip_cut_Box n X Cutne q -> strip_cut_Box n X Cutne p :/\: strip_cut_Box n X Cutne q = Empty.
+Axiom strip_cut_same_strip_cell_disjoint_gap_interval_coords_neq : forall n X Cutne p q : set , n :e omega -> X = setprod (euclidean_space n) R -> p :e X -> q :e X -> strip_cut_Vcell p = strip_cut_Vcell q -> euclidean_space_IK_interval_coords n (euclidean_space_IK_assignment n (proj0 p)) <> euclidean_space_IK_interval_coords n (euclidean_space_IK_assignment n (proj0 q)) -> strip_cut_Box n X Cutne p <> strip_cut_Box n X Cutne q -> strip_cut_Box n X Cutne p :/\: strip_cut_Box n X Cutne q = Empty.
+Axiom strip_cut_disjoint_colored_refinement_core : forall n X Tx RectQ StripFam Cut Cutne : set , n :e omega -> X = setprod (euclidean_space n) R -> Tx = product_topology (euclidean_space n) (euclidean_topology n) R R_standard_topology -> StripFam = ({rectangle_set (euclidean_space n) I|I :e int_unit_open_intervals} :\/: {rectangle_set (euclidean_space n) I|I :e int_halfshift_open_intervals}) -> RectQ c= product_basis_from (euclidean_topology n) rational_open_intervals_basis -> open_cover_of X Tx RectQ -> topology_on X Tx -> (forall S : set , S :e StripFam -> S :e Tx) -> (exists S0 S1 : set , StripFam = S0 :\/: S1 /\ pairwise_disjoint S0 /\ pairwise_disjoint S1) -> Cut = (\/_ W :e RectQ , {W :/\: S|S :e StripFam}) -> open_cover_of X Tx Cut -> Cutne = {U :e Cut|U <> Empty} -> open_cover_of X Tx Cutne -> exists B col : set , open_cover_of X Tx B /\ refines_cover B Cutne /\ function_on col B (ordsucc (ordsucc n)) /\ (forall U V : set , U :e B -> V :e B -> U <> V -> apply_fun col U = apply_fun col V -> U :/\: V = Empty).
+Axiom strip_cut_disjoint_colored_refinement_stub : forall n X Tx RectQ StripFam Cut : set , n :e omega -> X = setprod (euclidean_space n) R -> Tx = product_topology (euclidean_space n) (euclidean_topology n) R R_standard_topology -> StripFam = ({rectangle_set (euclidean_space n) I|I :e int_unit_open_intervals} :\/: {rectangle_set (euclidean_space n) I|I :e int_halfshift_open_intervals}) -> RectQ c= product_basis_from (euclidean_topology n) rational_open_intervals_basis -> open_cover_of X Tx RectQ -> topology_on X Tx -> (forall S : set , S :e StripFam -> S :e Tx) -> (exists S0 S1 : set , StripFam = S0 :\/: S1 /\ pairwise_disjoint S0 /\ pairwise_disjoint S1) -> Cut = (\/_ W :e RectQ , {W :/\: S|S :e StripFam}) -> open_cover_of X Tx Cut -> exists B col : set , open_cover_of X Tx B /\ refines_cover B {U :e Cut|U <> Empty} /\ function_on col B (ordsucc (ordsucc n)) /\ (forall U V : set , U :e B -> V :e B -> U <> V -> apply_fun col U = apply_fun col V -> U :/\: V = Empty).
+Axiom strip_cut_layered_refinement_layers_core_stub : forall n X Tx RectQ StripFam Cut : set , n :e omega -> X = setprod (euclidean_space n) R -> Tx = product_topology (euclidean_space n) (euclidean_topology n) R R_standard_topology -> StripFam = ({rectangle_set (euclidean_space n) I|I :e int_unit_open_intervals} :\/: {rectangle_set (euclidean_space n) I|I :e int_halfshift_open_intervals}) -> RectQ c= product_basis_from (euclidean_topology n) rational_open_intervals_basis -> open_cover_of X Tx RectQ -> topology_on X Tx -> (forall S : set , S :e StripFam -> S :e Tx) -> (exists S0 S1 : set , StripFam = S0 :\/: S1 /\ pairwise_disjoint S0 /\ pairwise_disjoint S1) -> Cut = (\/_ W :e RectQ , {W :/\: S|S :e StripFam}) -> open_cover_of X Tx Cut -> exists A : set -> set , (forall i : set , i :e ordsucc (ordsucc n) -> A i c= Power X /\ pairwise_disjoint (A i)) /\ open_cover_of X Tx (\/_ i :e ordsucc (ordsucc n) , A i) /\ refines_cover (\/_ i :e ordsucc (ordsucc n) , A i) Cut.
+Axiom strip_cut_layered_refinement_stub : forall n X Tx RectQ StripFam Cut : set , n :e omega -> X = setprod (euclidean_space n) R -> Tx = product_topology (euclidean_space n) (euclidean_topology n) R R_standard_topology -> StripFam = ({rectangle_set (euclidean_space n) I|I :e int_unit_open_intervals} :\/: {rectangle_set (euclidean_space n) I|I :e int_halfshift_open_intervals}) -> RectQ c= product_basis_from (euclidean_topology n) rational_open_intervals_basis -> open_cover_of X Tx RectQ -> topology_on X Tx -> (forall S : set , S :e StripFam -> S :e Tx) -> (exists S0 S1 : set , StripFam = S0 :\/: S1 /\ pairwise_disjoint S0 /\ pairwise_disjoint S1) -> Cut = (\/_ W :e RectQ , {W :/\: S|S :e StripFam}) -> open_cover_of X Tx Cut -> exists B col : set , open_cover_of X Tx B /\ refines_cover B Cut /\ function_on col B (ordsucc (ordsucc n)) /\ (forall U V : set , U :e B -> V :e B -> U <> V -> apply_fun col U = apply_fun col V -> U :/\: V = Empty).
+Axiom strip_cut_layered_refinement_layers : forall n X Tx RectQ StripFam Cut : set , n :e omega -> X = setprod (euclidean_space n) R -> Tx = product_topology (euclidean_space n) (euclidean_topology n) R R_standard_topology -> StripFam = ({rectangle_set (euclidean_space n) I|I :e int_unit_open_intervals} :\/: {rectangle_set (euclidean_space n) I|I :e int_halfshift_open_intervals}) -> RectQ c= product_basis_from (euclidean_topology n) rational_open_intervals_basis -> open_cover_of X Tx RectQ -> topology_on X Tx -> (forall S : set , S :e StripFam -> S :e Tx) -> (exists S0 S1 : set , StripFam = S0 :\/: S1 /\ pairwise_disjoint S0 /\ pairwise_disjoint S1) -> Cut = (\/_ W :e RectQ , {W :/\: S|S :e StripFam}) -> open_cover_of X Tx Cut -> exists A : set -> set , (forall i : set , i :e ordsucc (ordsucc n) -> A i c= Power X /\ pairwise_disjoint (A i)) /\ open_cover_of X Tx (\/_ i :e ordsucc (ordsucc n) , A i) /\ refines_cover (\/_ i :e ordsucc (ordsucc n) , A i) Cut.
+Axiom strip_cut_layered_refinement_order : forall n X Tx RectQ StripFam Cut : set , n :e omega -> X = setprod (euclidean_space n) R -> Tx = product_topology (euclidean_space n) (euclidean_topology n) R R_standard_topology -> StripFam = ({rectangle_set (euclidean_space n) I|I :e int_unit_open_intervals} :\/: {rectangle_set (euclidean_space n) I|I :e int_halfshift_open_intervals}) -> RectQ c= product_basis_from (euclidean_topology n) rational_open_intervals_basis -> open_cover_of X Tx RectQ -> topology_on X Tx -> (forall S : set , S :e StripFam -> S :e Tx) -> (exists S0 S1 : set , StripFam = S0 :\/: S1 /\ pairwise_disjoint S0 /\ pairwise_disjoint S1) -> Cut = (\/_ W :e RectQ , {W :/\: S|S :e StripFam}) -> open_cover_of X Tx Cut -> exists B : set , open_cover_of X Tx B /\ refines_cover B Cut /\ collection_has_order_at_most_m_plus_one X B (ordsucc n).
+Axiom euclidean_space_product_rational_vertical_rectangle_cover_layered_refinement : forall n RectQ : set , n :e omega -> RectQ c= product_basis_from (euclidean_topology n) rational_open_intervals_basis -> open_cover_of (setprod (euclidean_space n) R) (product_topology (euclidean_space n) (euclidean_topology n) R R_standard_topology) RectQ -> exists A : set -> set , (forall i : set , i :e ordsucc (ordsucc n) -> A i c= Power (setprod (euclidean_space n) R) /\ pairwise_disjoint (A i)) /\ open_cover_of (setprod (euclidean_space n) R) (product_topology (euclidean_space n) (euclidean_topology n) R R_standard_topology) (\/_ i :e ordsucc (ordsucc n) , A i) /\ refines_cover (\/_ i :e ordsucc (ordsucc n) , A i) RectQ.
+Axiom euclidean_space_product_rational_vertical_rectangle_cover_refinement_order : forall n RectQ : set , n :e omega -> RectQ c= product_basis_from (euclidean_topology n) rational_open_intervals_basis -> open_cover_of (setprod (euclidean_space n) R) (product_topology (euclidean_space n) (euclidean_topology n) R R_standard_topology) RectQ -> exists B : set , open_cover_of (setprod (euclidean_space n) R) (product_topology (euclidean_space n) (euclidean_topology n) R R_standard_topology) B /\ refines_cover B RectQ /\ collection_has_order_at_most_m_plus_one (setprod (euclidean_space n) R) B (ordsucc n).
+Axiom euclidean_space_product_interval_vertical_rectangle_cover_layered_refinement : forall n RectB : set , n :e omega -> RectB c= product_basis_from (euclidean_topology n) R_standard_basis -> open_cover_of (setprod (euclidean_space n) R) (product_topology (euclidean_space n) (euclidean_topology n) R R_standard_topology) RectB -> exists A : set -> set , (forall i : set , i :e ordsucc (ordsucc n) -> A i c= Power (setprod (euclidean_space n) R) /\ pairwise_disjoint (A i)) /\ open_cover_of (setprod (euclidean_space n) R) (product_topology (euclidean_space n) (euclidean_topology n) R R_standard_topology) (\/_ i :e ordsucc (ordsucc n) , A i) /\ refines_cover (\/_ i :e ordsucc (ordsucc n) , A i) RectB.
+Axiom euclidean_space_product_rectangle_cover_layered_refinement : forall n RectA : set , n :e omega -> RectA c= product_subbasis (euclidean_space n) (euclidean_topology n) R R_standard_topology -> open_cover_of (setprod (euclidean_space n) R) (product_topology (euclidean_space n) (euclidean_topology n) R R_standard_topology) RectA -> exists A : set -> set , (forall i : set , i :e ordsucc (ordsucc n) -> A i c= Power (setprod (euclidean_space n) R) /\ pairwise_disjoint (A i)) /\ open_cover_of (setprod (euclidean_space n) R) (product_topology (euclidean_space n) (euclidean_topology n) R R_standard_topology) (\/_ i :e ordsucc (ordsucc n) , A i) /\ refines_cover (\/_ i :e ordsucc (ordsucc n) , A i) RectA.
+Axiom euclidean_space_product_rectangle_cover_refinement_order : forall n RectA : set , n :e omega -> RectA c= product_subbasis (euclidean_space n) (euclidean_topology n) R R_standard_topology -> open_cover_of (setprod (euclidean_space n) R) (product_topology (euclidean_space n) (euclidean_topology n) R R_standard_topology) RectA -> exists B : set , open_cover_of (setprod (euclidean_space n) R) (product_topology (euclidean_space n) (euclidean_topology n) R R_standard_topology) B /\ refines_cover B RectA /\ collection_has_order_at_most_m_plus_one (setprod (euclidean_space n) R) B (ordsucc n).
+Axiom euclidean_space_product_with_R_cover_refinement : forall n A : set , n :e omega -> open_cover_of (setprod (euclidean_space n) R) (product_topology (euclidean_space n) (euclidean_topology n) R R_standard_topology) A -> exists B : set , open_cover_of (setprod (euclidean_space n) R) (product_topology (euclidean_space n) (euclidean_topology n) R R_standard_topology) B /\ refines_cover B A /\ collection_has_order_at_most_m_plus_one (setprod (euclidean_space n) R) B (ordsucc n).
+Axiom collection_has_order_at_most_m_plus_one_image_family_injective : forall X Y Fam n f : set , n :e omega -> Fam c= Power X -> function_on f X Y -> (forall x1 x2 : set , x1 :e X -> x2 :e X -> apply_fun f x1 = apply_fun f x2 -> x1 = x2) -> collection_has_order_at_most_m_plus_one X Fam n -> collection_has_order_at_most_m_plus_one (image_of f X) {image_of f U|U :e Fam} n.
+Axiom euclidean_space_covering_dimension_le_refinement_succ : forall n A : set , n :e omega -> open_cover_of (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n)) A -> exists B : set , open_cover_of (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n)) B /\ refines_cover B A /\ collection_has_order_at_most_m_plus_one (euclidean_space (ordsucc n)) B (ordsucc n).
+Axiom euclidean_space_covering_dimension_le_refinement : forall N A : set , N :e omega -> open_cover_of (euclidean_space N) (euclidean_topology N) A -> exists B : set , open_cover_of (euclidean_space N) (euclidean_topology N) B /\ refines_cover B A /\ collection_has_order_at_most_m_plus_one (euclidean_space N) B N.
 Axiom euclidean_space_covering_dimension_le : forall N : set , N :e omega -> covering_dimension (euclidean_space N) (euclidean_topology N) N.
+Axiom compact_manifold_dimension_le_refinement_from_finite_atlas_stub : forall X Tx m A0 Atlas : set , m_manifold X Tx m -> compact_space X Tx -> finite A0 -> open_cover_of X Tx A0 -> finite Atlas -> (forall U : set , U :e Atlas -> U :e Tx) -> X c= Union Atlas -> (forall U : set , U :e Atlas -> exists V e : set , V :e euclidean_topology m /\ homeomorphism U (subspace_topology X Tx U) V (subspace_topology (euclidean_space m) (euclidean_topology m) V) e) -> exists B : set , open_cover_of X Tx B /\ refines_cover B A0 /\ collection_has_order_at_most_m_plus_one X B m.
+Axiom compact_manifold_dimension_le_refinement_finite_stub : forall X Tx m A0 : set , m_manifold X Tx m -> compact_space X Tx -> finite A0 -> open_cover_of X Tx A0 -> exists B : set , open_cover_of X Tx B /\ refines_cover B A0 /\ collection_has_order_at_most_m_plus_one X B m.
+Axiom compact_manifold_dimension_le_refinement : forall X Tx m A : set , m_manifold X Tx m -> compact_space X Tx -> open_cover_of X Tx A -> exists B : set , open_cover_of X Tx B /\ refines_cover B A /\ collection_has_order_at_most_m_plus_one X B m.
 Axiom compact_manifold_dimension_le : forall X Tx m : set , m_manifold X Tx m -> compact_space X Tx -> covering_dimension X Tx m.
-Axiom Menger_Nobeling_embedding : forall X Tx m : set , compact_space X Tx -> metrizable X Tx -> covering_dimension X Tx m -> exists N : set , exists e : set , embedding_of X Tx (euclidean_space N) (euclidean_topology N) e.
 Axiom cardinality_at_most_mono_subset : forall S1 S2 n : set , n :e omega -> S1 c= S2 -> cardinality_at_most S2 n -> cardinality_at_most S1 n.
 Axiom cardinality_at_most_restrict_family_to_subspace_finite : forall Fam Y n : set , n :e omega -> cardinality_at_most Fam (ordsucc n) -> cardinality_at_most (restrict_family_to_subspace Fam Y) (ordsucc n).
 Axiom collection_has_order_at_most_m_plus_one_restrict_to_subspace : forall X Y Fam n : set , n :e omega -> Y c= X -> collection_has_order_at_most_m_plus_one X Fam n -> collection_has_order_at_most_m_plus_one Y (restrict_family_to_subspace Fam Y) n.
 Axiom collection_has_order_at_most_m_plus_one_mono_family : forall X Fam1 Fam2 n : set , n :e omega -> Fam1 c= Fam2 -> collection_has_order_at_most_m_plus_one X Fam2 n -> collection_has_order_at_most_m_plus_one X Fam1 n.
+Axiom covering_dimension_homeomorphism_right : forall X Tx Y Ty f n : set , homeomorphism X Tx Y Ty f -> covering_dimension X Tx n -> covering_dimension Y Ty n.
+Axiom covering_dimension_homeomorphism_left : forall X Tx Y Ty f n : set , homeomorphism X Tx Y Ty f -> covering_dimension Y Ty n -> covering_dimension X Tx n.
 Axiom dimension_closed_subspace_le : forall X Tx Y n : set , covering_dimension X Tx n -> closed_in X Tx Y -> covering_dimension Y (subspace_topology X Tx Y) n.
 Axiom dimension_union_closed_max : forall X Tx Y Z n : set , topology_on X Tx -> Y c= X -> Z c= X -> closed_in X Tx Y -> closed_in X Tx Z -> covering_dimension Y (subspace_topology X Tx Y) n -> covering_dimension Z (subspace_topology X Tx Z) n -> covering_dimension (Y :\/: Z) (subspace_topology X Tx (Y :\/: Z)) n.
 Axiom dimension_finite_union_closed_max : forall X Tx Fam n : set , topology_on X Tx -> n :e omega -> finite Fam -> (forall Y : set , Y :e Fam -> Y c= X /\ closed_in X Tx Y /\ covering_dimension Y (subspace_topology X Tx Y) n) -> covering_dimension (Union Fam) (subspace_topology X Tx (Union Fam)) n.
 Axiom compact_1_manifold_dimension_1 : forall X Tx : set , compact_space X Tx -> m_manifold X Tx (Sing Empty) -> covering_dimension X Tx (Sing Empty).
-Definition two : set := 2.
 Axiom compact_2_manifold_dimension_le_2 : forall X Tx : set , compact_space X Tx -> m_manifold X Tx two -> covering_dimension X Tx two.
+Axiom R_covering_dimension_le_1 : covering_dimension R R_standard_topology (Sing Empty).
+Axiom unit_interval_covering_dimension_le_1 : covering_dimension unit_interval unit_interval_topology (Sing Empty).
 Definition arc : set -> set -> prop := fun X Tx => exists f : set , homeomorphism unit_interval unit_interval_topology X Tx f.
 Axiom arc_is_topological_space : forall X Tx : set , arc X Tx -> topology_on X Tx.
 Definition end_points_of_arc : set -> set -> set -> set -> prop := fun X Tx p q => arc X Tx /\ p :e X /\ q :e X /\ p <> q /\ connected_space (X :\: (Sing p)) (subspace_topology X Tx (X :\: (Sing p))) /\ connected_space (X :\: (Sing q)) (subspace_topology X Tx (X :\: (Sing q))).
 Definition linear_graph : set -> set -> prop := fun G Tg => Hausdorff_space G Tg /\ exists Arcs : set , finite Arcs /\ (forall A : set , A :e Arcs -> A c= G /\ arc A (subspace_topology G Tg A)) /\ G = Union Arcs /\ (forall A B : set , A :e Arcs -> B :e Arcs -> A <> B -> exists p : set , (A :/\: B = Empty \/ A :/\: B = Sing p)).
+Axiom arc_covering_dimension_le_1 : forall X Tx : set , arc X Tx -> covering_dimension X Tx (Sing Empty).
 Axiom linear_graph_dimension_1 : forall G Tg : set , linear_graph G Tg -> covering_dimension G Tg (Sing Empty).
 Definition R3_xcoord : set -> set := fun p => p 0.
 Definition R3_ycoord : set -> set := fun p => p 1.
@@ -7766,7 +8143,8 @@ Definition affine_plane : set -> set := fun S => Eps_i (fun P : set => exists N 
 Definition k_plane : set -> set -> prop := fun k P => k :e omega /\ exists S : set , geometrically_independent S /\ finite S /\ (exists kp1 : set , kp1 = k :\/: (Sing k) /\ equip S kp1) /\ P = affine_plane S.
 Definition general_position_RN : set -> set -> prop := fun N A => N :e omega /\ A c= euclidean_space N /\ forall S : set , S c= A -> (forall Np1 : set , Np1 = N :\/: (Sing N) -> (exists f : set -> set , inj S Np1 f) -> geometrically_independent S).
 Axiom finite_set_approximation_general_position : forall N : set , forall pts : set , forall delta : set , N :e omega -> finite pts -> pts c= euclidean_space N -> delta :e R -> exists pts' : set , general_position_RN N pts' /\ finite pts' /\ equip pts pts'.
-Axiom Menger_Nobeling_embedding_full : forall X Tx m : set , compact_space X Tx -> metrizable X Tx -> covering_dimension X Tx m -> m :e omega -> exists N : set , exists e : set , N = add_nat (mul_nat two m) (Sing Empty) /\ embedding_of X Tx (euclidean_space N) (euclidean_topology N) e.
+Axiom Menger_Nobeling_embedding_exists_e_stub : forall X Tx m N : set , compact_space X Tx -> metrizable X Tx -> covering_dimension X Tx m -> m :e omega -> N = add_nat (mul_nat two m) (Sing Empty) -> exists e : set , embedding_of X Tx (euclidean_space N) (euclidean_topology N) e.
+Axiom Menger_Nobeling_embedding : forall X Tx m : set , compact_space X Tx -> metrizable X Tx -> covering_dimension X Tx m -> m :e omega -> exists N : set , exists e : set , N = add_nat (mul_nat two m) (Sing Empty) /\ embedding_of X Tx (euclidean_space N) (euclidean_topology N) e.
 Axiom compact_subspace_Rn_dimension_le : forall N X : set , N :e omega -> X c= (euclidean_space N) -> compact_space X (subspace_topology (euclidean_space N) (euclidean_topology N) X) -> covering_dimension X (subspace_topology (euclidean_space N) (euclidean_topology N) X) N.
 Axiom compact_subspace_RN_dimension_le_N : forall X N : set , N :e omega -> X c= (euclidean_space N) -> compact_space X (subspace_topology (euclidean_space N) (euclidean_topology N) X) -> covering_dimension X (subspace_topology (euclidean_space N) (euclidean_topology N) X) N.
 Axiom compact_m_manifold_dimension_le_m : forall X Tx m : set , m :e omega -> compact_space X Tx -> m_manifold X Tx m -> covering_dimension X Tx m.
@@ -7776,7 +8154,14 @@ Axiom compact_metrizable_embeds_iff_finite_dim : forall X Tx : set , compact_spa
 Definition locally_m_euclidean : set -> set -> set -> prop := fun X Tx m => m :e omega /\ topology_on X Tx /\ forall x : set , x :e X -> exists U : set , exists V : set , exists f : set , open_in X Tx U /\ x :e U /\ V c= (euclidean_space m) /\ open_in (euclidean_space m) (euclidean_topology m) V /\ homeomorphism U (subspace_topology X Tx U) V (subspace_topology (euclidean_space m) (euclidean_topology m) V) f.
 Axiom euclidean_space_Hausdorff : forall m : set , Hausdorff_space (euclidean_space m) (euclidean_topology m).
 Axiom euclidean_space_regular : forall m : set , regular_space (euclidean_space m) (euclidean_topology m).
+Axiom euclidean_open_has_closure_sub_neighborhood : forall m V y : set , m :e omega -> V c= (euclidean_space m) -> open_in (euclidean_space m) (euclidean_topology m) V -> y :e V -> exists W : set , W :e (euclidean_topology m) /\ y :e W /\ closure_of (euclidean_space m) (euclidean_topology m) W c= V.
 Axiom euclidean_space_completely_regular : forall m : set , completely_regular_space (euclidean_space m) (euclidean_topology m).
+Axiom euclidean_open_has_compact_closure_neighborhood : forall m V y : set , m :e omega -> V c= (euclidean_space m) -> open_in (euclidean_space m) (euclidean_topology m) V -> y :e V -> exists W : set , W :e (euclidean_topology m) /\ y :e W /\ closure_of (euclidean_space m) (euclidean_topology m) W c= V /\ compact_space (closure_of (euclidean_space m) (euclidean_topology m) W) (subspace_topology (euclidean_space m) (euclidean_topology m) (closure_of (euclidean_space m) (euclidean_topology m) W)).
+Axiom closure_of_compact_subspace_compact : forall X Tx A : set , Hausdorff_space X Tx -> A c= X -> compact_space A (subspace_topology X Tx A) -> compact_space (closure_of X Tx A) (subspace_topology X Tx (closure_of X Tx A)).
+Axiom compact_closure_monotone : forall X Tx A B : set , topology_on X Tx -> A c= B -> B c= X -> compact_space (closure_of X Tx B) (subspace_topology X Tx (closure_of X Tx B)) -> compact_space (closure_of X Tx A) (subspace_topology X Tx (closure_of X Tx A)).
+Axiom chart_neighborhood_has_compact_closure : forall X Tx m U V f x : set , m :e omega -> topology_on X Tx -> Hausdorff_space X Tx -> open_in X Tx U -> x :e U -> V c= (euclidean_space m) -> open_in (euclidean_space m) (euclidean_topology m) V -> homeomorphism U (subspace_topology X Tx U) V (subspace_topology (euclidean_space m) (euclidean_topology m) V) f -> exists U1 : set , U1 :e Tx /\ x :e U1 /\ compact_space (closure_of X Tx U1) (subspace_topology X Tx (closure_of X Tx U1)).
+Axiom chart_neighborhood_has_compact_neighborhood : forall X Tx m U V f x : set , m :e omega -> topology_on X Tx -> open_in X Tx U -> x :e U -> V c= (euclidean_space m) -> open_in (euclidean_space m) (euclidean_topology m) V -> homeomorphism U (subspace_topology X Tx U) V (subspace_topology (euclidean_space m) (euclidean_topology m) V) f -> exists C : set , (C c= X /\ compact_space C (subspace_topology X Tx C)) /\ exists U1 : set , U1 :e Tx /\ x :e U1 /\ U1 c= C.
+Axiom chart_neighborhood_has_compact_neighborhood_in_chart : forall X Tx m U V f x : set , m :e omega -> topology_on X Tx -> open_in X Tx U -> x :e U -> V c= (euclidean_space m) -> open_in (euclidean_space m) (euclidean_topology m) V -> homeomorphism U (subspace_topology X Tx U) V (subspace_topology (euclidean_space m) (euclidean_topology m) V) f -> exists C : set , (C c= U /\ compact_space C (subspace_topology X Tx C)) /\ exists U1 : set , U1 :e Tx /\ x :e U1 /\ U1 c= C.
 Axiom euclidean_space_metrizable : forall n : set , n :e omega -> metrizable (euclidean_space n) (euclidean_topology n).
 Axiom m_manifold_implies_locally_m_euclidean : forall X Tx m : set , m_manifold X Tx m -> locally_m_euclidean X Tx m.
 Axiom euclidean_space_T1 : forall m : set , T1_space (euclidean_space m) (euclidean_topology m).
@@ -7804,28 +8189,30 @@ Axiom ex50_R3_e1_in : ex50_R3_e1 :e euclidean_space 3.
 Axiom ex50_R3_e2_in : ex50_R3_e2 :e euclidean_space 3.
 Axiom ex50_R3_e3_in : ex50_R3_e3 :e euclidean_space 3.
 Axiom ex50_4_points_general_position_R3 : general_position_RN 3 {ex50_R3_zero,ex50_R3_e1,ex50_R3_e2,ex50_R3_e3,ex50_R3_ones}.
-Axiom ex50_5_embedding_m1_linear_graph : forall X Tx : set , covering_dimension X Tx (Sing Empty) -> compact_space X Tx -> metrizable X Tx -> exists g : set , (forall x : set , x :e X -> apply_fun g x :e (euclidean_space 3)) /\ linear_graph (apply_fun g X) R_standard_topology.
-Axiom ex50_6_locally_compact_embeds : forall X Tx m : set , m :e omega -> locally_compact X Tx -> Hausdorff_space X Tx -> second_countable_space X Tx -> (forall C : set , C c= X -> compact_space C (subspace_topology X Tx C) -> covering_dimension C (subspace_topology X Tx C) m) -> exists N : set , exists e : set , N = add_nat (mul_nat two m) (Sing Empty) /\ embedding_of X Tx (euclidean_space N) (euclidean_topology N) e /\ closed_in (euclidean_space N) (euclidean_topology N) (apply_fun e X).
-Axiom ex50_7_manifold_closed_embedding : forall X Tx m : set , m :e omega -> m_manifold X Tx m -> exists N : set , exists e : set , N = add_nat (mul_nat two m) (Sing Empty) /\ embedding_of X Tx (euclidean_space N) (euclidean_topology N) e /\ closed_in (euclidean_space N) (euclidean_topology N) (apply_fun e X).
-Definition sigma_compact : set -> set -> prop := fun X Tx => topology_on X Tx /\ exists Fam : set , countable Fam /\ (forall C : set , C :e Fam -> C c= X /\ compact_space C (subspace_topology X Tx C)) /\ X = Union Fam.
+Axiom ex50_5_embedding_m1_linear_graph : forall X Tx : set , covering_dimension X Tx (Sing Empty) -> compact_space X Tx -> metrizable X Tx -> exists g : set , (forall x : set , x :e X -> apply_fun g x :e (euclidean_space 3)) /\ linear_graph (image_of g X) R_standard_topology.
+Axiom ex50_6_locally_compact_embeds : forall X Tx m : set , m :e omega -> locally_compact X Tx -> Hausdorff_space X Tx -> second_countable_space X Tx -> (forall C : set , C c= X -> compact_space C (subspace_topology X Tx C) -> covering_dimension C (subspace_topology X Tx C) m) -> exists N : set , exists e : set , N = add_nat (mul_nat two m) (Sing Empty) /\ embedding_of X Tx (euclidean_space N) (euclidean_topology N) e /\ closed_in (euclidean_space N) (euclidean_topology N) (image_of e X).
+Axiom ex50_7_manifold_closed_embedding : forall X Tx m : set , m :e omega -> m_manifold X Tx m -> exists N : set , exists e : set , N = add_nat (mul_nat two m) (Sing Empty) /\ embedding_of X Tx (euclidean_space N) (euclidean_topology N) e /\ closed_in (euclidean_space N) (euclidean_topology N) (image_of e X).
+Definition sigma_compact : set -> set -> prop := fun X Tx => topology_on X Tx /\ exists Fam : set , countable Fam /\ (forall C : set , C :e Fam -> C c= X /\ compact_space C (subspace_topology X Tx C)) /\ X c= Union {interior_of X Tx C|C :e Fam}.
+Axiom sigma_compact_has_countable_compact_cover : forall X Tx : set , sigma_compact X Tx -> exists Fam : set , countable Fam /\ (forall C : set , C :e Fam -> C c= X /\ compact_space C (subspace_topology X Tx C)) /\ X c= Union Fam.
+Axiom compact_subspace_finite_interior_thickening : forall X Tx Fam K : set , topology_on X Tx -> Fam c= Power X -> K c= X -> compact_space K (subspace_topology X Tx K) -> K c= Union {interior_of X Tx C|C :e Fam} -> exists Fam0 : set , Fam0 c= Fam /\ finite Fam0 /\ K c= interior_of X Tx (Union Fam0).
+Axiom sigma_compact_compact_thickening : forall X Tx K : set , sigma_compact X Tx -> K c= X -> compact_space K (subspace_topology X Tx K) -> exists Kp : set , Kp c= X /\ compact_space Kp (subspace_topology X Tx Kp) /\ K c= interior_of X Tx Kp.
+Axiom sigma_compact_has_compact_sequence_cover : forall X Tx : set , sigma_compact X Tx -> exists K : set -> set , (forall n : set , n :e omega -> K n c= X /\ compact_space (K n) (subspace_topology X Tx (K n))) /\ X c= Union {K n|n :e omega}.
+Axiom exhaustion_step_sub : forall X Tx : set , forall Xn : set -> set , topology_on X Tx -> (forall n : set , n :e omega -> Xn n c= interior_of X Tx (Xn (ordsucc n))) -> forall n : set , n :e omega -> Xn n c= Xn (ordsucc n).
+Axiom exhaustion_step_sub_2 : forall X Tx : set , forall Xn : set -> set , topology_on X Tx -> (forall n : set , n :e omega -> Xn n c= interior_of X Tx (Xn (ordsucc n))) -> forall n : set , n :e omega -> Xn n c= Xn (ordsucc (ordsucc n)).
+Axiom omega_chain_mono_by_succ : forall Xn : set -> set , (forall n : set , n :e omega -> Xn n c= Xn (ordsucc n)) -> forall n : set , n :e omega -> forall m : set , m :e ordsucc n -> Xn m c= Xn n.
+Axiom nat_ordsucc_mono_in_ordsucc : forall n k : set , nat_p n -> k :e ordsucc n -> ordsucc k :e ordsucc (ordsucc n).
+Axiom sigma_compact_has_compact_exhaustion : forall X Tx : set , sigma_compact X Tx -> exists Xn : set -> set , (forall n : set , n :e omega -> Xn n c= X /\ compact_space (Xn n) (subspace_topology X Tx (Xn n))) /\ X c= Union {Xn n|n :e omega} /\ (forall n : set , n :e omega -> Xn n c= interior_of X Tx (Xn (ordsucc n))).
+Axiom sigma_compact_has_compact_exhaustion_empty0 : forall X Tx : set , sigma_compact X Tx -> exists Xn : set -> set , Xn 0 = Empty /\ ((forall n : set , n :e omega -> Xn n c= X /\ compact_space (Xn n) (subspace_topology X Tx (Xn n))) /\ X c= Union {Xn n|n :e omega} /\ (forall n : set , n :e omega -> Xn n c= interior_of X Tx (Xn (ordsucc n)))).
+Axiom ex50_8_stabilized_refinement_from_B0 : forall X Tx m A : set , forall Xn : set -> set , forall B0 : set , m :e omega -> Hausdorff_space X Tx -> topology_on X Tx -> open_cover_of X Tx A -> Xn 0 = Empty -> (forall n : set , n :e omega -> Xn n c= X /\ compact_space (Xn n) (subspace_topology X Tx (Xn n))) -> X c= Union {Xn n|n :e omega} -> (forall n : set , n :e omega -> Xn n c= interior_of X Tx (Xn (ordsucc n))) -> (forall C : set , C c= X -> compact_space C (subspace_topology X Tx C) -> covering_dimension C (subspace_topology X Tx C) m) -> open_cover_of X Tx B0 -> refines_cover B0 A -> (forall n : set , n :e omega -> forall U : set , U :e B0 -> ~ (U :/\: (Xn n) = Empty) -> U c= (Xn (ordsucc n))) -> exists B : set , open_cover_of X Tx B /\ refines_cover B A /\ collection_has_order_at_most_m_plus_one X B m.
 Axiom ex50_8_sigma_compact_dimension : forall X Tx m : set , m :e omega -> sigma_compact X Tx -> Hausdorff_space X Tx -> (forall C : set , C c= X -> compact_space C (subspace_topology X Tx C) -> covering_dimension C (subspace_topology X Tx C) m) -> covering_dimension X Tx m.
+Axiom compact_in_chart_domain_dimension_le_m : forall X Tx m U V f K : set , m :e omega -> topology_on X Tx -> U :e Tx -> V :e (euclidean_topology m) -> homeomorphism U (subspace_topology X Tx U) V (subspace_topology (euclidean_space m) (euclidean_topology m) V) f -> K c= U -> compact_space K (subspace_topology X Tx K) -> covering_dimension K (subspace_topology X Tx K) m.
+Axiom compact_subspace_of_m_manifold_dimension_le_m : forall X Tx m C : set , m :e omega -> m_manifold X Tx m -> C c= X -> compact_space C (subspace_topology X Tx C) -> covering_dimension C (subspace_topology X Tx C) m.
 Axiom ex50_9_manifold_dimension_le_m : forall X Tx m : set , m :e omega -> m_manifold X Tx m -> covering_dimension X Tx m.
 Axiom ex50_10_closed_subspace_RN_dimension : forall X N : set , N :e omega -> X c= (euclidean_space N) -> closed_in (euclidean_space N) (euclidean_topology N) X -> covering_dimension X (subspace_topology (euclidean_space N) (euclidean_topology N) X) N.
-Axiom ex50_11_embedding_characterization : forall X Tx : set , (exists N : set , exists e : set , N :e omega /\ embedding_of X Tx (euclidean_space N) (euclidean_topology N) e /\ closed_in (euclidean_space N) (euclidean_topology N) (apply_fun e X)) <-> (locally_compact X Tx /\ Hausdorff_space X Tx /\ second_countable_space X Tx /\ finite_dimensional_space X Tx).
+Axiom ex50_11_embedding_characterization : forall X Tx : set , (exists N : set , exists e : set , N :e omega /\ embedding_of X Tx (euclidean_space N) (euclidean_topology N) e /\ closed_in (euclidean_space N) (euclidean_topology N) (image_of e X)) <-> (locally_compact X Tx /\ Hausdorff_space X Tx /\ second_countable_space X Tx /\ finite_dimensional_space X Tx).
 Axiom homeomorphism_preserves_metrizable : forall X Tx Y Ty f : set , homeomorphism X Tx Y Ty f -> metrizable Y Ty -> metrizable X Tx.
-Axiom homeomorphism_preserves_second_countable : forall X Tx Y Ty f : set , homeomorphism X Tx Y Ty f -> second_countable_space Y Ty -> second_countable_space X Tx.
+Axiom homeomorphism_preserves_second_countable_late : forall X Tx Y Ty f : set , homeomorphism X Tx Y Ty f -> second_countable_space Y Ty -> second_countable_space X Tx.
 Definition locally_metrizable_space : set -> set -> prop := fun X Tx => topology_on X Tx /\ forall x : set , x :e X -> exists N : set , N :e Tx /\ x :e N /\ exists d : set , metric_on N d /\ subspace_topology X Tx N = metric_topology N d.
-Axiom closure_of_compact_subspace_compact : forall X Tx A : set , Hausdorff_space X Tx -> A c= X -> compact_space A (subspace_topology X Tx A) -> compact_space (closure_of X Tx A) (subspace_topology X Tx (closure_of X Tx A)).
-Axiom compact_closure_monotone : forall X Tx A B : set , topology_on X Tx -> A c= B -> B c= X -> compact_space (closure_of X Tx B) (subspace_topology X Tx (closure_of X Tx B)) -> compact_space (closure_of X Tx A) (subspace_topology X Tx (closure_of X Tx A)).
-Axiom R_standard_open_has_compact_closure_neighborhood : forall U x : set , U :e R_standard_topology -> x :e U -> exists W : set , W :e R_standard_topology /\ x :e W /\ closure_of R R_standard_topology W c= U /\ compact_space (closure_of R R_standard_topology W) (subspace_topology R R_standard_topology (closure_of R R_standard_topology W)).
-Axiom R_standard_topology_locally_compact : locally_compact R R_standard_topology.
-Axiom locally_compact_regular_open_has_compact_closure_neighborhood : forall X Tx U x : set , locally_compact X Tx -> regular_space X Tx -> U :e Tx -> x :e U -> exists W : set , W :e Tx /\ x :e W /\ closure_of X Tx W c= U /\ compact_space (closure_of X Tx W) (subspace_topology X Tx (closure_of X Tx W)).
-Axiom euclidean_open_has_closure_sub_neighborhood : forall m V y : set , m :e omega -> V c= (euclidean_space m) -> open_in (euclidean_space m) (euclidean_topology m) V -> y :e V -> exists W : set , W :e (euclidean_topology m) /\ y :e W /\ closure_of (euclidean_space m) (euclidean_topology m) W c= V.
-Axiom euclidean_space_open_has_compact_closure_neighborhood_global : forall m : set , m :e omega -> topology_on (euclidean_space m) (euclidean_topology m) /\ forall x : set , x :e (euclidean_space m) -> exists U : set , U :e (euclidean_topology m) /\ x :e U /\ compact_space (closure_of (euclidean_space m) (euclidean_topology m) U) (subspace_topology (euclidean_space m) (euclidean_topology m) (closure_of (euclidean_space m) (euclidean_topology m) U)).
-Axiom euclidean_space_locally_compact : forall m : set , m :e omega -> locally_compact (euclidean_space m) (euclidean_topology m).
-Axiom euclidean_open_has_compact_closure_neighborhood : forall m V y : set , m :e omega -> V c= (euclidean_space m) -> open_in (euclidean_space m) (euclidean_topology m) V -> y :e V -> exists W : set , W :e (euclidean_topology m) /\ y :e W /\ closure_of (euclidean_space m) (euclidean_topology m) W c= V /\ compact_space (closure_of (euclidean_space m) (euclidean_topology m) W) (subspace_topology (euclidean_space m) (euclidean_topology m) (closure_of (euclidean_space m) (euclidean_topology m) W)).
-Axiom chart_neighborhood_has_compact_closure : forall X Tx m U V f x : set , m :e omega -> topology_on X Tx -> Hausdorff_space X Tx -> open_in X Tx U -> x :e U -> V c= (euclidean_space m) -> open_in (euclidean_space m) (euclidean_topology m) V -> homeomorphism U (subspace_topology X Tx U) V (subspace_topology (euclidean_space m) (euclidean_topology m) V) f -> exists U1 : set , U1 :e Tx /\ x :e U1 /\ compact_space (closure_of X Tx U1) (subspace_topology X Tx (closure_of X Tx U1)).
-Axiom chart_neighborhood_has_compact_neighborhood : forall X Tx m U V f x : set , m :e omega -> topology_on X Tx -> open_in X Tx U -> x :e U -> V c= (euclidean_space m) -> open_in (euclidean_space m) (euclidean_topology m) V -> homeomorphism U (subspace_topology X Tx U) V (subspace_topology (euclidean_space m) (euclidean_topology m) V) f -> exists C : set , (C c= X /\ compact_space C (subspace_topology X Tx C)) /\ exists U1 : set , U1 :e Tx /\ x :e U1 /\ U1 c= C.
 Axiom locally_m_euclidean_implies_locally_compact : forall X Tx m : set , locally_m_euclidean X Tx m -> locally_compact X Tx.
 Axiom locally_compact_Hausdorff_regular_early : forall X Tx : set , locally_compact X Tx -> Hausdorff_space X Tx -> regular_space X Tx.
 Axiom compact_locally_m_euclidean_second_countable_early : forall X Tx m : set , locally_m_euclidean X Tx m -> compact_space X Tx -> second_countable_space X Tx.
@@ -7839,10 +8226,51 @@ Axiom supp_ex_locally_euclidean_3 : locally_m_euclidean R R_standard_topology (S
 Axiom EuclidPlane_order_topology_not_second_countable : ~ second_countable_space EuclidPlane (order_topology EuclidPlane).
 Axiom EuclidPlane_order_topology_not_m_manifold_1 : ~ m_manifold EuclidPlane (order_topology EuclidPlane) (Sing Empty).
 Axiom supp_ex_locally_euclidean_4 : locally_m_euclidean EuclidPlane (order_topology EuclidPlane) (Sing Empty) /\ metrizable EuclidPlane (order_topology EuclidPlane) /\ ~ m_manifold EuclidPlane (order_topology EuclidPlane) (Sing Empty).
-Definition long_line : set := Eps_i (fun L : set => infinite L).
 Axiom infinite_omega : infinite omega.
+Definition long_line_I0 : set := halfopen_interval_left 0 1.
+Definition long_line_raw : set := setprod S_Omega long_line_I0.
+Definition S_Omega_least : set := Eps_i (fun a0 : set => a0 :e S_Omega /\ forall s : set , s :e S_Omega -> a0 c= s).
+Axiom S_Omega_least_spec : S_Omega_least :e S_Omega /\ forall s : set , s :e S_Omega -> S_Omega_least c= s.
+Definition long_line_min : set := (S_Omega_least,0).
+Definition long_line : set := long_line_raw :\: {long_line_min}.
 Axiom long_line_infinite : infinite long_line.
-Definition long_line_topology : set := Eps_i (fun T : set => topology_on long_line T).
+Definition long_line_dict_rel : set -> set -> prop := fun p q => exists a1 t1 a2 t2 : set , p = (a1,t1) /\ q = (a2,t2) /\ (a1 :e a2 \/ (a1 = a2 /\ Rlt t1 t2)).
+Axiom long_line_elem_in_raw : forall p : set , p :e long_line -> p :e long_line_raw.
+Axiom long_line_coord0_in_S_Omega : forall p : set , p :e long_line -> p 0 :e S_Omega.
+Axiom long_line_coord1_in_I0 : forall p : set , p :e long_line -> p 1 :e long_line_I0.
+Axiom long_line_coord1_in_R : forall p : set , p :e long_line -> p 1 :e R.
+Axiom long_line_eta : forall p : set , p :e long_line -> p = (p 0,p 1).
+Axiom long_line_dict_rel_trans : forall p q r : set , p :e long_line -> q :e long_line -> r :e long_line -> long_line_dict_rel p q -> long_line_dict_rel q r -> long_line_dict_rel p r.
+Axiom long_line_dict_rel_trichotomy : forall p q : set , p :e long_line -> q :e long_line -> long_line_dict_rel p q \/ p = q \/ long_line_dict_rel q p.
+Definition long_line_open_interval : set -> set -> set := fun a b => {x :e long_line|long_line_dict_rel a x /\ long_line_dict_rel x b}.
+Definition long_line_open_ray_upper : set -> set := fun a => {x :e long_line|long_line_dict_rel a x}.
+Definition long_line_open_ray_lower : set -> set := fun b => {x :e long_line|long_line_dict_rel x b}.
+Axiom long_line_open_interval_sub : forall a b : set , long_line_open_interval a b c= long_line.
+Axiom long_line_open_ray_upper_sub : forall a : set , long_line_open_ray_upper a c= long_line.
+Axiom long_line_open_ray_lower_sub : forall b : set , long_line_open_ray_lower b c= long_line.
+Axiom long_line_open_interval_in_Power : forall a b : set , long_line_open_interval a b :e Power long_line.
+Axiom long_line_open_ray_upper_in_Power : forall a : set , long_line_open_ray_upper a :e Power long_line.
+Axiom long_line_open_ray_lower_in_Power : forall b : set , long_line_open_ray_lower b :e Power long_line.
+Definition long_line_order_topology_basis : set := (({I :e Power long_line|exists a :e long_line , exists b :e long_line , I = long_line_open_interval a b} :\/: {I :e Power long_line|exists b :e long_line , I = long_line_open_ray_lower b} :\/: {I :e Power long_line|exists a :e long_line , I = long_line_open_ray_upper a}) :\/: {long_line}).
+Axiom long_line_open_interval_in_basis : forall a b : set , a :e long_line -> b :e long_line -> long_line_open_interval a b :e long_line_order_topology_basis.
+Axiom long_line_open_ray_lower_in_basis : forall b : set , b :e long_line -> long_line_open_ray_lower b :e long_line_order_topology_basis.
+Axiom long_line_open_ray_upper_in_basis : forall a : set , a :e long_line -> long_line_open_ray_upper a :e long_line_order_topology_basis.
+Axiom long_line_order_topology_basis_sub_Power : long_line_order_topology_basis c= Power long_line.
+Axiom long_line_order_topology_basis_cases : forall I : set , I :e long_line_order_topology_basis -> (exists a :e long_line , exists b :e long_line , I = long_line_open_interval a b) \/ (exists b :e long_line , I = long_line_open_ray_lower b) \/ (exists a :e long_line , I = long_line_open_ray_upper a) \/ I = long_line.
+Axiom long_line_refine_interval_interval : forall b1 b2 x : set , (exists a :e long_line , exists b :e long_line , b1 = long_line_open_interval a b) -> (exists a :e long_line , exists b :e long_line , b2 = long_line_open_interval a b) -> x :e b1 -> x :e b2 -> exists b3 :e long_line_order_topology_basis , x :e b3 /\ b3 c= b1 :/\: b2.
+Axiom long_line_refine_interval_lower : forall b1 b2 x : set , (exists a :e long_line , exists b :e long_line , b1 = long_line_open_interval a b) -> (exists b :e long_line , b2 = long_line_open_ray_lower b) -> x :e b1 -> x :e b2 -> exists b3 :e long_line_order_topology_basis , x :e b3 /\ b3 c= b1 :/\: b2.
+Axiom long_line_refine_interval_upper : forall b1 b2 x : set , (exists a :e long_line , exists b :e long_line , b1 = long_line_open_interval a b) -> (exists a :e long_line , b2 = long_line_open_ray_upper a) -> x :e b1 -> x :e b2 -> exists b3 :e long_line_order_topology_basis , x :e b3 /\ b3 c= b1 :/\: b2.
+Axiom long_line_refine_lower_interval : forall b1 b2 x : set , (exists b :e long_line , b1 = long_line_open_ray_lower b) -> (exists a :e long_line , exists b :e long_line , b2 = long_line_open_interval a b) -> x :e b1 -> x :e b2 -> exists b3 :e long_line_order_topology_basis , x :e b3 /\ b3 c= b1 :/\: b2.
+Axiom long_line_refine_lower_lower : forall b1 b2 x : set , (exists b :e long_line , b1 = long_line_open_ray_lower b) -> (exists b :e long_line , b2 = long_line_open_ray_lower b) -> x :e b1 -> x :e b2 -> exists b3 :e long_line_order_topology_basis , x :e b3 /\ b3 c= b1 :/\: b2.
+Axiom long_line_refine_lower_upper : forall b1 b2 x : set , (exists b :e long_line , b1 = long_line_open_ray_lower b) -> (exists a :e long_line , b2 = long_line_open_ray_upper a) -> x :e b1 -> x :e b2 -> exists b3 :e long_line_order_topology_basis , x :e b3 /\ b3 c= b1 :/\: b2.
+Axiom long_line_refine_upper_interval : forall b1 b2 x : set , (exists a :e long_line , b1 = long_line_open_ray_upper a) -> (exists a :e long_line , exists b :e long_line , b2 = long_line_open_interval a b) -> x :e b1 -> x :e b2 -> exists b3 :e long_line_order_topology_basis , x :e b3 /\ b3 c= b1 :/\: b2.
+Axiom long_line_refine_upper_lower : forall b1 b2 x : set , (exists a :e long_line , b1 = long_line_open_ray_upper a) -> (exists b :e long_line , b2 = long_line_open_ray_lower b) -> x :e b1 -> x :e b2 -> exists b3 :e long_line_order_topology_basis , x :e b3 /\ b3 c= b1 :/\: b2.
+Axiom long_line_refine_upper_upper : forall b1 b2 x : set , (exists a :e long_line , b1 = long_line_open_ray_upper a) -> (exists a :e long_line , b2 = long_line_open_ray_upper a) -> x :e b1 -> x :e b2 -> exists b3 :e long_line_order_topology_basis , x :e b3 /\ b3 c= b1 :/\: b2.
+Axiom long_line_order_topology_basis_refine_nontrivial : forall b1 b2 x : set , b1 :e long_line_order_topology_basis -> b2 :e long_line_order_topology_basis -> x :e b1 -> x :e b2 -> ~ (b1 = long_line) -> ~ (b2 = long_line) -> exists b3 :e long_line_order_topology_basis , x :e b3 /\ b3 c= b1 :/\: b2.
+Definition long_line_order_topology : set := generated_topology long_line long_line_order_topology_basis.
+Axiom long_line_order_topology_basis_is_basis : basis_on long_line long_line_order_topology_basis.
+Axiom long_line_order_topology_on : topology_on long_line long_line_order_topology.
+Definition long_line_topology : set := long_line_order_topology.
 Axiom long_line_topology_on : topology_on long_line long_line_topology.
 Axiom supp_ex_locally_euclidean_5 : locally_m_euclidean long_line long_line_topology (Sing Empty) /\ normal_space long_line long_line_topology /\ ~ metrizable long_line long_line_topology.
 Axiom supp_ex_locally_euclidean_7 : forall X Tx m : set , locally_m_euclidean X Tx m -> (Hausdorff_space X Tx <-> completely_regular_space X Tx).
@@ -52432,71 +52860,6 @@ claim HbA : b :e A.
 exact (SepE2 B (fun b1:set => equip {x :e E | apply_fun p x = b1} k) b HbA).
 Qed.
 
-(** Helper: composition of two homeomorphisms is a homeomorphism **)
-Theorem homeomorphism_compose : forall A Ta B Tb C Tc f g:set,
-  homeomorphism A Ta B Tb f ->
-  homeomorphism B Tb C Tc g ->
-  homeomorphism A Ta C Tc (compose_fun A f g).
-let A Ta B Tb C Tc f g.
-assume Hf Hg.
-claim Hfcont : continuous_map A Ta B Tb f.
-{ exact (homeomorphism_continuous A Ta B Tb f Hf). }
-claim Hgcont : continuous_map B Tb C Tc g.
-{ exact (homeomorphism_continuous B Tb C Tc g Hg). }
-claim HfFun : function_on f A B.
-{ exact (continuous_map_function_on A Ta B Tb f Hfcont). }
-claim HgFun : function_on g B C.
-{ exact (continuous_map_function_on B Tb C Tc g Hgcont). }
-apply (homeomorphism_inverse_package A Ta B Tb f Hf).
-let f_inv.
-assume Hfinv.
-apply (and3E
-  (continuous_map B Tb A Ta f_inv)
-  (forall x:set, x :e A -> apply_fun f_inv (apply_fun f x) = x)
-  (forall y:set, y :e B -> apply_fun f (apply_fun f_inv y) = y)
-  Hfinv).
-assume Hfinv_cont Hf_left Hf_right.
-apply (homeomorphism_inverse_package B Tb C Tc g Hg).
-let g_inv.
-assume Hginv.
-apply (and3E
-  (continuous_map C Tc B Tb g_inv)
-  (forall x:set, x :e B -> apply_fun g_inv (apply_fun g x) = x)
-  (forall y:set, y :e C -> apply_fun g (apply_fun g_inv y) = y)
-  Hginv).
-assume Hginv_cont Hg_left Hg_right.
-claim HgInvFun : function_on g_inv C B.
-{ exact (continuous_map_function_on C Tc B Tb g_inv Hginv_cont). }
-claim HfInvFun : function_on f_inv B A.
-{ exact (continuous_map_function_on B Tb A Ta f_inv Hfinv_cont). }
-prove continuous_map A Ta C Tc (compose_fun A f g) /\
-  exists h:set, continuous_map C Tc A Ta h /\
-    (forall a:set, a :e A -> apply_fun h (apply_fun (compose_fun A f g) a) = a) /\
-    (forall c:set, c :e C -> apply_fun (compose_fun A f g) (apply_fun h c) = c).
-apply andI.
-- exact (composition_continuous A Ta B Tb C Tc f g Hfcont Hgcont).
-- witness compose_fun C g_inv f_inv.
-  apply and3I.
-  + exact (composition_continuous C Tc B Tb A Ta g_inv f_inv Hginv_cont Hfinv_cont).
-  + let a.
-    assume HaA.
-    claim HfaB : apply_fun f a :e B. { exact (HfFun a HaA). }
-    claim HgfaC : apply_fun g (apply_fun f a) :e C. { exact (HgFun (apply_fun f a) HfaB). }
-    rewrite (compose_fun_apply A f g a HaA).
-    rewrite (compose_fun_apply C g_inv f_inv (apply_fun g (apply_fun f a)) HgfaC).
-    rewrite (Hg_left (apply_fun f a) HfaB).
-    exact (Hf_left a HaA).
-  + let c.
-    assume HcC.
-    claim HginvB : apply_fun g_inv c :e B. { exact (HgInvFun c HcC). }
-    claim HfinvA : apply_fun f_inv (apply_fun g_inv c) :e A.
-    { exact (HfInvFun (apply_fun g_inv c) HginvB). }
-    rewrite (compose_fun_apply C g_inv f_inv c HcC).
-    rewrite (compose_fun_apply A f g (apply_fun f_inv (apply_fun g_inv c)) HfinvA).
-    rewrite (Hf_right (apply_fun g_inv c) HginvB).
-    exact (Hg_right c HcC).
-Qed.
-
 (** Helper: homeomorphism is preserved under pointwise equality on domain **)
 Theorem homeomorphism_congr_on : forall X Tx Y Ty f g:set,
   homeomorphism X Tx Y Ty f ->
@@ -56144,233 +56507,6 @@ Theorem covering_map_lch_base_Hausdorff_upstairs : forall E Te B Tb p:set,
 let E Te B Tb p.
 assume Hcov _ HHB.
 exact (ex53_6a_hausdorff E Te B Tb p Hcov HHB).
-Qed.
-
-(** Infrastructure: local compactness transfers backward along homeomorphisms **)
-(** Proven Bob **)
-Theorem homeomorphism_preserves_locally_compact : forall X Tx Y Ty f:set,
-  homeomorphism X Tx Y Ty f ->
-  locally_compact Y Ty ->
-  locally_compact X Tx.
-let X Tx Y Ty f.
-assume Hhome HlocY.
-claim Hcontf : continuous_map X Tx Y Ty f.
-{
-  exact (homeomorphism_continuous X Tx Y Ty f Hhome).
-}
-claim HtopX : topology_on X Tx.
-{
-  exact (continuous_map_topology_dom X Tx Y Ty f Hcontf).
-}
-claim HtopY : topology_on Y Ty.
-{
-  exact (locally_compact_topology Y Ty HlocY).
-}
-claim Hfunf : function_on f X Y.
-{
-  exact (continuous_map_function_on X Tx Y Ty f Hcontf).
-}
-claim HinvPack :
-  exists g:set,
-    continuous_map Y Ty X Tx g /\
-    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x) /\
-    (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y).
-{
-  exact (homeomorphism_inverse_package X Tx Y Ty f Hhome).
-}
-apply HinvPack.
-let g.
-assume HgPack.
-claim Hcontg : continuous_map Y Ty X Tx g.
-{
-  exact (andEL
-    (continuous_map Y Ty X Tx g)
-    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
-    (andEL
-      (continuous_map Y Ty X Tx g /\ forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
-      (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
-      HgPack)).
-}
-claim Hgf :
-  forall x:set, x :e X -> apply_fun g (apply_fun f x) = x.
-{
-  exact (andER
-    (continuous_map Y Ty X Tx g)
-    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
-    (andEL
-      (continuous_map Y Ty X Tx g /\ forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
-      (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
-      HgPack)).
-}
-claim Hfung : function_on g Y X.
-{
-  exact (continuous_map_function_on Y Ty X Tx g Hcontg).
-}
-claim Hlocal :
-  forall x:set, x :e X ->
-    exists C:set,
-      C c= X /\ compact_space C (subspace_topology X Tx C) /\
-      exists U:set, U :e Tx /\ x :e U /\ U c= C.
-{
-  let x.
-  assume HxX.
-  claim HfxY : apply_fun f x :e Y.
-  {
-    exact (Hfunf x HxX).
-  }
-  claim HlocAtY :
-    exists C:set,
-      C c= Y /\ compact_space C (subspace_topology Y Ty C) /\
-      exists U:set, U :e Ty /\ apply_fun f x :e U /\ U c= C.
-  {
-    exact (locally_compact_local Y Ty (apply_fun f x) HlocY HfxY).
-  }
-  apply HlocAtY.
-  let C.
-  assume HCpack.
-  claim HCsubY : C c= Y.
-  {
-    exact (andEL
-      (C c= Y)
-      (compact_space C (subspace_topology Y Ty C))
-      (andEL
-        (C c= Y /\ compact_space C (subspace_topology Y Ty C))
-        (exists U:set, U :e Ty /\ apply_fun f x :e U /\ U c= C)
-        HCpack)).
-  }
-  claim HCcompact : compact_space C (subspace_topology Y Ty C).
-  {
-    exact (andER
-      (C c= Y)
-      (compact_space C (subspace_topology Y Ty C))
-      (andEL
-        (C c= Y /\ compact_space C (subspace_topology Y Ty C))
-        (exists U:set, U :e Ty /\ apply_fun f x :e U /\ U c= C)
-        HCpack)).
-  }
-  claim HUpack : exists U:set, U :e Ty /\ apply_fun f x :e U /\ U c= C.
-  {
-    exact (andER
-      (C c= Y /\ compact_space C (subspace_topology Y Ty C))
-      (exists U:set, U :e Ty /\ apply_fun f x :e U /\ U c= C)
-      HCpack).
-  }
-  apply HUpack.
-  let U.
-  assume HUall.
-  claim HUopen : U :e Ty.
-  {
-    exact (andEL
-      (U :e Ty)
-      (apply_fun f x :e U)
-      (andEL
-        (U :e Ty /\ apply_fun f x :e U)
-        (U c= C)
-        HUall)).
-  }
-  claim HfxU : apply_fun f x :e U.
-  {
-    exact (andER
-      (U :e Ty)
-      (apply_fun f x :e U)
-      (andEL
-        (U :e Ty /\ apply_fun f x :e U)
-        (U c= C)
-        HUall)).
-  }
-  claim HUsubC : U c= C.
-  {
-    exact (andER
-      (U :e Ty /\ apply_fun f x :e U)
-      (U c= C)
-      HUall).
-  }
-  claim HCxSubX : image_of_fun g C c= X.
-  {
-    exact (image_of_sub_codomain g Y X C Hfung HCsubY).
-  }
-  claim HcontgOnC : continuous_map C (subspace_topology Y Ty C) X Tx g.
-  {
-    exact (continuous_on_subspace Y Ty X Tx g C HtopY HCsubY Hcontg).
-  }
-  claim HCxCompact :
-    compact_space (image_of_fun g C)
-      (subspace_topology X Tx (image_of_fun g C)).
-  {
-    exact (continuous_image_compact
-      C
-      (subspace_topology Y Ty C)
-      X
-      Tx
-      g
-      HCcompact
-      HcontgOnC).
-  }
-  claim HUxOpen : preimage_of X f U :e Tx.
-  {
-    exact (continuous_map_preimage X Tx Y Ty f Hcontf U HUopen).
-  }
-  claim HxUx : x :e preimage_of X f U.
-  {
-    exact (SepI
-      X
-      (fun z:set => apply_fun f z :e U)
-      x
-      HxX
-      HfxU).
-  }
-  claim HUxSubCx :
-    preimage_of X f U c= image_of_fun g C.
-  {
-    let z.
-    assume HzUx.
-    claim HzX : z :e X.
-    {
-      exact (SepE1 X (fun t:set => apply_fun f t :e U) z HzUx).
-    }
-    claim HfzU : apply_fun f z :e U.
-    {
-      exact (SepE2 X (fun t:set => apply_fun f t :e U) z HzUx).
-    }
-    claim HfzC : apply_fun f z :e C.
-    {
-      exact (HUsubC (apply_fun f z) HfzU).
-    }
-    claim Hgfz : apply_fun g (apply_fun f z) = z.
-    {
-      exact (Hgf z HzX).
-    }
-    claim HgfcIn : apply_fun g (apply_fun f z) :e image_of_fun g C.
-    {
-      exact (ReplI C (fun t:set => apply_fun g t) (apply_fun f z) HfzC).
-    }
-    rewrite <- Hgfz.
-    exact HgfcIn.
-  }
-  witness (image_of_fun g C).
-  apply andI.
-  * apply andI.
-    + exact HCxSubX.
-    + exact HCxCompact.
-  * witness (preimage_of X f U).
-    apply andI.
-    {
-      apply andI.
-      - exact HUxOpen.
-      - exact HxUx.
-    }
-    {
-      exact HUxSubCx.
-    }
-}
-exact (andI
-  (topology_on X Tx)
-  (forall x:set, x :e X ->
-    exists C:set,
-      C c= X /\ compact_space C (subspace_topology X Tx C) /\
-      exists U:set, U :e Tx /\ x :e U /\ U c= C)
-  HtopX
-  Hlocal).
 Qed.
 
 (** Infrastructure: open subspaces of locally compact Hausdorff spaces are locally compact **)
