@@ -211192,6 +211192,169 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Theorem graph_vertices_selected_endpoint_witness_in_selected :
+  forall X Tx Arcs Y x:set,
+  x :e graph_vertices X Tx {B :e Arcs | B c= Y} ->
+  exists A:set, A :e {B :e Arcs | B c= Y} /\
+    exists p q:set,
+      end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q).
+let X Tx Arcs Y x.
+assume HxSel.
+apply (graph_vertices_selected_endpoint_witness
+  X
+  Tx
+  Arcs
+  Y
+  x
+  HxSel).
+let A.
+assume HApack.
+claim HArcData : A :e Arcs /\ A c= Y.
+{
+  exact (andEL
+    (A :e Arcs /\ A c= Y)
+    (exists p q:set,
+      end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q))
+    HApack).
+}
+claim HpqEx :
+  exists p q:set,
+    end_points_of_arc A (subspace_topology X Tx A) p q /\
+    (x = p \/ x = q).
+{
+  exact (andER
+    (A :e Arcs /\ A c= Y)
+    (exists p q:set,
+      end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q))
+    HApack).
+}
+witness A.
+apply andI.
+- exact (SepI
+    Arcs
+    (fun B:set => B c= Y)
+    A
+    (andEL
+      (A :e Arcs)
+      (A c= Y)
+      HArcData)
+    (andER
+      (A :e Arcs)
+      (A c= Y)
+      HArcData)).
+- exact HpqEx.
+Qed.
+
+(** Proven Bob **)
+Theorem graph_vertices_selected_elem_in_Y_via_endpoint_witness :
+  forall X Tx Arcs Y x:set,
+  x :e graph_vertices X Tx {B :e Arcs | B c= Y} ->
+  x :e Y.
+let X Tx Arcs Y x.
+assume HxSel.
+apply (graph_vertices_selected_endpoint_witness
+  X
+  Tx
+  Arcs
+  Y
+  x
+  HxSel).
+let A.
+assume HApack.
+claim HArcData : A :e Arcs /\ A c= Y.
+{
+  exact (andEL
+    (A :e Arcs /\ A c= Y)
+    (exists p q:set,
+      end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q))
+    HApack).
+}
+claim HAsubY : A c= Y.
+{
+  exact (andER
+    (A :e Arcs)
+    (A c= Y)
+    HArcData).
+}
+claim HpqEx :
+  exists p q:set,
+    end_points_of_arc A (subspace_topology X Tx A) p q /\
+    (x = p \/ x = q).
+{
+  exact (andER
+    (A :e Arcs /\ A c= Y)
+    (exists p q:set,
+      end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q))
+    HApack).
+}
+apply HpqEx.
+let p.
+assume HpPack.
+apply HpPack.
+let q.
+assume HpqPack.
+claim Hend : end_points_of_arc A (subspace_topology X Tx A) p q.
+{
+  exact (andEL
+    (end_points_of_arc A (subspace_topology X Tx A) p q)
+    (x = p \/ x = q)
+    HpqPack).
+}
+claim HxEq : x = p \/ x = q.
+{
+  exact (andER
+    (end_points_of_arc A (subspace_topology X Tx A) p q)
+    (x = p \/ x = q)
+    HpqPack).
+}
+claim HpA : p :e A.
+{
+  exact (end_points_of_arc_left_in_set
+    A
+    (subspace_topology X Tx A)
+    p
+    q
+    Hend).
+}
+claim HqA : q :e A.
+{
+  exact (end_points_of_arc_right_in_set
+    A
+    (subspace_topology X Tx A)
+    p
+    q
+    Hend).
+}
+apply HxEq.
+- assume Hxp.
+  rewrite Hxp.
+  exact (HAsubY p HpA).
+- assume Hxq.
+  rewrite Hxq.
+  exact (HAsubY q HqA).
+Qed.
+
+(** Proven Bob **)
+Theorem graph_vertices_selected_elem_in_X_via_endpoint_witness :
+  forall X Tx Arcs Y x:set,
+  x :e graph_vertices X Tx {B :e Arcs | B c= Y} ->
+  x :e X.
+let X Tx Arcs Y x.
+assume HxSel.
+exact (graph_vertices_subset_X
+  X
+  Tx
+  {B :e Arcs | B c= Y}
+  x
+  HxSel).
+Qed.
+
+(** Proven Bob **)
 Theorem graph_vertices_selected_arcs_subset_X :
   forall X Tx Arcs Y:set,
   graph_vertices X Tx {B :e Arcs | B c= Y} c= X.
