@@ -210187,6 +210187,49 @@ exact (HAsubY x HxA).
 Qed.
 
 (** Proven Bob **)
+Theorem union_selected_arcs_subset_union_arcs :
+  forall Y Arcs:set,
+  Union {B :e Arcs | B c= Y} c= Union Arcs.
+let Y Arcs.
+let x.
+assume HxU.
+apply (UnionE
+  {B :e Arcs | B c= Y}
+  x
+  HxU).
+let A.
+assume HxApack.
+claim HxA : x :e A.
+{
+  exact (andEL
+    (x :e A)
+    (A :e {B :e Arcs | B c= Y})
+    HxApack).
+}
+claim HAInSel : A :e {B :e Arcs | B c= Y}.
+{
+  exact (andER
+    (x :e A)
+    (A :e {B :e Arcs | B c= Y})
+    HxApack).
+}
+claim HAArcs : A :e Arcs.
+{
+  exact (SepE1
+    Arcs
+    (fun B:set => B c= Y)
+    A
+    HAInSel).
+}
+exact (UnionI
+  Arcs
+  x
+  A
+  HxA
+  HAArcs).
+Qed.
+
+(** Proven Bob **)
 Theorem subgraph_of_selected_union_subset_Y :
   forall Y X Tx Arcs:set,
   subgraph_of Y X Tx Arcs ->
@@ -210226,6 +210269,40 @@ exact ((subgraph_of_subset
   Hsub)
   x
   HxY).
+Qed.
+
+(** Proven Bob **)
+Theorem subgraph_of_subset_union_arcs :
+  forall Y X Tx Arcs:set,
+  subgraph_of Y X Tx Arcs ->
+  Y c= Union Arcs.
+let Y X Tx Arcs.
+assume Hsub.
+let x.
+assume HxY.
+claim HYeq : Y = Union {B :e Arcs | B c= Y}.
+{
+  exact (subgraph_of_union_of_contained_arcs
+    Y
+    X
+    Tx
+    Arcs
+    Hsub).
+}
+claim HxSel : x :e Union {B :e Arcs | B c= Y}.
+{
+  exact (mem_eqR
+    x
+    Y
+    (Union {B :e Arcs | B c= Y})
+    HYeq
+    HxY).
+}
+exact ((union_selected_arcs_subset_union_arcs
+  Y
+  Arcs)
+  x
+  HxSel).
 Qed.
 
 (** Infrastructure: vertices of a linear graph **)
