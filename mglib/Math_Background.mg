@@ -184269,6 +184269,146 @@ exact (surjective_map_preimage_nonempty_iff_subset_nonempty
 Qed.
 
 (** Proven Bob **)
+Theorem surjective_map_preimage_empty_implies_subset_empty :
+  forall E X pi V:set,
+  surjective_map E X pi ->
+  V c= X ->
+  preimage_of E pi V = Empty ->
+  V = Empty.
+let E X pi V.
+assume Hsurj HVsub HpreEmpty.
+exact ((andEL
+  (preimage_of E pi V = Empty -> V = Empty)
+  (V = Empty -> preimage_of E pi V = Empty)
+  (surjective_map_preimage_empty_iff_subset_empty E X pi V Hsurj HVsub))
+  HpreEmpty).
+Qed.
+
+(** Proven Bob **)
+Theorem surjective_map_subset_empty_implies_preimage_empty :
+  forall E X pi V:set,
+  surjective_map E X pi ->
+  V c= X ->
+  V = Empty ->
+  preimage_of E pi V = Empty.
+let E X pi V.
+assume Hsurj HVsub HVempty.
+exact ((andER
+  (preimage_of E pi V = Empty -> V = Empty)
+  (V = Empty -> preimage_of E pi V = Empty)
+  (surjective_map_preimage_empty_iff_subset_empty E X pi V Hsurj HVsub))
+  HVempty).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_preimage_empty_implies_subset_empty :
+  forall E Te X pi V:set,
+  quotient_map E Te X pi ->
+  V c= X ->
+  preimage_of E pi V = Empty ->
+  V = Empty.
+let E Te X pi V.
+assume Hquot HVsub HpreEmpty.
+exact (surjective_map_preimage_empty_implies_subset_empty
+  E
+  X
+  pi
+  V
+  (quotient_map_implies_surjective_map E Te X pi Hquot)
+  HVsub
+  HpreEmpty).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_subset_empty_implies_preimage_empty :
+  forall E Te X pi V:set,
+  quotient_map E Te X pi ->
+  V c= X ->
+  V = Empty ->
+  preimage_of E pi V = Empty.
+let E Te X pi V.
+assume Hquot HVsub HVempty.
+exact (surjective_map_subset_empty_implies_preimage_empty
+  E
+  X
+  pi
+  V
+  (quotient_map_implies_surjective_map E Te X pi Hquot)
+  HVsub
+  HVempty).
+Qed.
+
+(** Proven Bob **)
+Theorem surjective_map_preimage_nonempty_implies_subset_nonempty :
+  forall E X pi V:set,
+  surjective_map E X pi ->
+  V c= X ->
+  preimage_of E pi V <> Empty ->
+  V <> Empty.
+let E X pi V.
+assume Hsurj HVsub HpreNe.
+exact ((andEL
+  (preimage_of E pi V <> Empty -> V <> Empty)
+  (V <> Empty -> preimage_of E pi V <> Empty)
+  (surjective_map_preimage_nonempty_iff_subset_nonempty E X pi V Hsurj HVsub))
+  HpreNe).
+Qed.
+
+(** Proven Bob **)
+Theorem surjective_map_subset_nonempty_implies_preimage_nonempty :
+  forall E X pi V:set,
+  surjective_map E X pi ->
+  V c= X ->
+  V <> Empty ->
+  preimage_of E pi V <> Empty.
+let E X pi V.
+assume Hsurj HVsub HVne.
+exact ((andER
+  (preimage_of E pi V <> Empty -> V <> Empty)
+  (V <> Empty -> preimage_of E pi V <> Empty)
+  (surjective_map_preimage_nonempty_iff_subset_nonempty E X pi V Hsurj HVsub))
+  HVne).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_preimage_nonempty_implies_subset_nonempty :
+  forall E Te X pi V:set,
+  quotient_map E Te X pi ->
+  V c= X ->
+  preimage_of E pi V <> Empty ->
+  V <> Empty.
+let E Te X pi V.
+assume Hquot HVsub HpreNe.
+exact (surjective_map_preimage_nonempty_implies_subset_nonempty
+  E
+  X
+  pi
+  V
+  (quotient_map_implies_surjective_map E Te X pi Hquot)
+  HVsub
+  HpreNe).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_subset_nonempty_implies_preimage_nonempty :
+  forall E Te X pi V:set,
+  quotient_map E Te X pi ->
+  V c= X ->
+  V <> Empty ->
+  preimage_of E pi V <> Empty.
+let E Te X pi V.
+assume Hquot HVsub HVne.
+exact (surjective_map_subset_nonempty_implies_preimage_nonempty
+  E
+  X
+  pi
+  V
+  (quotient_map_implies_surjective_map E Te X pi Hquot)
+  HVsub
+  HVne).
+Qed.
+
+(** Proven Bob **)
 Theorem image_of_nonempty_of_nonempty_domain :
   forall E X pi A:set,
   function_on pi E X ->
