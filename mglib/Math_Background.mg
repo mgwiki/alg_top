@@ -198923,6 +198923,246 @@ exact (exists_homeomorphism_preserves_Hausdorff_left
 Qed.
 
 (** Proven Bob **)
+Theorem homeomorphism_preserves_locally_compact_space_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  locally_compact X Tx ->
+  locally_compact Y Ty.
+let X Tx Y Ty f.
+assume Hhome HlocX.
+exact (homeomorphism_preserves_locally_compact_right
+  X Tx Y Ty f Hhome HlocX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_locally_compact_space_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  locally_compact Y Ty ->
+  locally_compact X Tx.
+let X Tx Y Ty f.
+assume Hhome HlocY.
+exact (homeomorphism_preserves_locally_compact_left
+  X Tx Y Ty f Hhome HlocY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_regular_space_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  regular_space X Tx ->
+  regular_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HregX.
+exact (homeomorphism_preserves_regular_right
+  X Tx Y Ty f Hhome HregX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_regular_space_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  regular_space Y Ty ->
+  regular_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HregY.
+exact (homeomorphism_preserves_regular_left
+  X Tx Y Ty f Hhome HregY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_normal_space_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  normal_space X Tx ->
+  normal_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HnormX.
+exact (homeomorphism_preserves_normal_right
+  X Tx Y Ty f Hhome HnormX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_normal_space_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  normal_space Y Ty ->
+  normal_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnormY.
+exact (homeomorphism_preserves_normal_left
+  X Tx Y Ty f Hhome HnormY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_completely_regular_space_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  completely_regular_space X Tx ->
+  completely_regular_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HcrX.
+exact (homeomorphism_preserves_completely_regular_right
+  X Tx Y Ty f Hhome HcrX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_completely_regular_space_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  completely_regular_space Y Ty ->
+  completely_regular_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HcrY.
+exact (homeomorphism_preserves_completely_regular_left
+  X Tx Y Ty f Hhome HcrY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_metrizable_space_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  metrizable X Tx ->
+  metrizable Y Ty.
+let X Tx Y Ty f.
+assume Hhome HmetX.
+exact (homeomorphism_preserves_metrizable_right
+  X Tx Y Ty f Hhome HmetX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_metrizable_space_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  metrizable Y Ty ->
+  metrizable X Tx.
+let X Tx Y Ty f.
+assume Hhome HmetY.
+exact (homeomorphism_preserves_metrizable_left
+  X Tx Y Ty f Hhome HmetY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_locally_compact_space_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  locally_compact X Tx ->
+  locally_compact Y Ty.
+let X Tx Y Ty.
+assume Hhex HlocX.
+exact (exists_homeomorphism_preserves_locally_compact_right
+  X Tx Y Ty Hhex HlocX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_locally_compact_space_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  locally_compact Y Ty ->
+  locally_compact X Tx.
+let X Tx Y Ty.
+assume Hhex HlocY.
+exact (exists_homeomorphism_preserves_locally_compact_left
+  X Tx Y Ty Hhex HlocY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_regular_space_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  regular_space X Tx ->
+  regular_space Y Ty.
+let X Tx Y Ty.
+assume Hhex HregX.
+exact (exists_homeomorphism_preserves_regular_right
+  X Tx Y Ty Hhex HregX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_regular_space_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  regular_space Y Ty ->
+  regular_space X Tx.
+let X Tx Y Ty.
+assume Hhex HregY.
+exact (exists_homeomorphism_preserves_regular_left
+  X Tx Y Ty Hhex HregY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_normal_space_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  normal_space X Tx ->
+  normal_space Y Ty.
+let X Tx Y Ty.
+assume Hhex HnormX.
+exact (exists_homeomorphism_preserves_normal_right
+  X Tx Y Ty Hhex HnormX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_normal_space_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  normal_space Y Ty ->
+  normal_space X Tx.
+let X Tx Y Ty.
+assume Hhex HnormY.
+exact (exists_homeomorphism_preserves_normal_left
+  X Tx Y Ty Hhex HnormY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_completely_regular_space_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  completely_regular_space X Tx ->
+  completely_regular_space Y Ty.
+let X Tx Y Ty.
+assume Hhex HcrX.
+exact (exists_homeomorphism_preserves_completely_regular_right
+  X Tx Y Ty Hhex HcrX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_completely_regular_space_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  completely_regular_space Y Ty ->
+  completely_regular_space X Tx.
+let X Tx Y Ty.
+assume Hhex HcrY.
+exact (exists_homeomorphism_preserves_completely_regular_left
+  X Tx Y Ty Hhex HcrY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_metrizable_space_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  metrizable X Tx ->
+  metrizable Y Ty.
+let X Tx Y Ty.
+assume Hhex HmetX.
+exact (exists_homeomorphism_preserves_metrizable_right
+  X Tx Y Ty Hhex HmetX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_metrizable_space_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  metrizable Y Ty ->
+  metrizable X Tx.
+let X Tx Y Ty.
+assume Hhex HmetY.
+exact (exists_homeomorphism_preserves_metrizable_left
+  X Tx Y Ty Hhex HmetY).
+Qed.
+
+(** Proven Bob **)
 Theorem homeomorphism_preserves_simply_connected_space_right :
   forall X Tx Y Ty f:set,
   homeomorphism X Tx Y Ty f ->
