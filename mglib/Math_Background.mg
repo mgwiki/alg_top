@@ -196976,6 +196976,103 @@ exact (exists_homeomorphism_reflects_not_second_countable_space
   X Tx Y Ty Hhex HnY).
 Qed.
 
+(** Compatibility aliases with explicit _space suffix for local compactness/metrizability reflection. **)
+(** Proven Bob **)
+Theorem homeomorphism_reflects_locally_compact_space :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  locally_compact Y Ty ->
+  locally_compact X Tx.
+let X Tx Y Ty f.
+assume Hhome HlocY.
+exact (homeomorphism_reflects_locally_compact
+  X Tx Y Ty f Hhome HlocY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_locally_compact_space :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  locally_compact Y Ty ->
+  locally_compact X Tx.
+let X Tx Y Ty.
+assume Hhex HlocY.
+exact (exists_homeomorphism_reflects_locally_compact
+  X Tx Y Ty Hhex HlocY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_reflects_metrizable_space :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  metrizable Y Ty ->
+  metrizable X Tx.
+let X Tx Y Ty f.
+assume Hhome HmetY.
+exact (homeomorphism_reflects_metrizable
+  X Tx Y Ty f Hhome HmetY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_metrizable_space :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  metrizable Y Ty ->
+  metrizable X Tx.
+let X Tx Y Ty.
+assume Hhex HmetY.
+exact (exists_homeomorphism_reflects_metrizable
+  X Tx Y Ty Hhex HmetY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_reflects_not_locally_compact_space :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ locally_compact Y Ty ->
+  ~ locally_compact X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_reflects_not_locally_compact
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_not_locally_compact_space :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ locally_compact Y Ty ->
+  ~ locally_compact X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (exists_homeomorphism_reflects_not_locally_compact
+  X Tx Y Ty Hhex HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_reflects_not_metrizable_space :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ metrizable Y Ty ->
+  ~ metrizable X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_reflects_not_metrizable
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_not_metrizable_space :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ metrizable Y Ty ->
+  ~ metrizable X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (exists_homeomorphism_reflects_not_metrizable
+  X Tx Y Ty Hhex HnY).
+Qed.
+
 (** Short-name compatibility aliases for regularity/normality families. **)
 (** Proven Bob **)
 Theorem homeomorphism_regular_implies :
