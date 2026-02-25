@@ -235105,6 +235105,170 @@ exact (thm84_4_forward_component_witness_from_component_obligations
 Qed.
 
 (** Proven Bob **)
+Theorem thm84_4_forward_meeting_obligation_from_component_witness_family :
+  forall T ArcsT X Tx Arcs:set,
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    exists v:set,
+      v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
+      general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+      connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
+      ~(exists n path_seq x0:set,
+          n :e omega /\ n <> 0 /\
+          reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+            ({A} :\/: ArcsT) n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0))) ->
+  forall A:set, A :e Arcs -> ~(A c= T) ->
+    exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
+let T ArcsT X Tx Arcs.
+assume HcompFam.
+let A.
+assume HA Hnsub.
+apply (HcompFam A HA Hnsub).
+let v.
+assume Hvpack.
+apply (and5E
+  (v :e graph_vertices X Tx Arcs)
+  (T :/\: A = Sing v)
+  (general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT))
+  (connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)))
+  (~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+        ({A} :\/: ArcsT) n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)))
+  Hvpack).
+assume HvVert Hmeet HglgTA HconnTA HnoloopTA.
+witness v.
+apply andI.
+- exact HvVert.
+- exact Hmeet.
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_forward_glg_obligation_from_component_witness_family :
+  forall T ArcsT X Tx Arcs:set,
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    exists v:set,
+      v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
+      general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+      connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
+      ~(exists n path_seq x0:set,
+          n :e omega /\ n <> 0 /\
+          reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+            ({A} :\/: ArcsT) n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0))) ->
+  forall A:set, A :e Arcs -> ~(A c= T) ->
+    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT).
+let T ArcsT X Tx Arcs.
+assume HcompFam.
+let A.
+assume HA Hnsub.
+apply (HcompFam A HA Hnsub).
+let v.
+assume Hvpack.
+apply (and5E
+  (v :e graph_vertices X Tx Arcs)
+  (T :/\: A = Sing v)
+  (general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT))
+  (connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)))
+  (~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+        ({A} :\/: ArcsT) n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)))
+  Hvpack).
+assume HvVert Hmeet HglgTA HconnTA HnoloopTA.
+exact HglgTA.
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_forward_connected_obligation_from_component_witness_family :
+  forall T ArcsT X Tx Arcs:set,
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    exists v:set,
+      v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
+      general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+      connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
+      ~(exists n path_seq x0:set,
+          n :e omega /\ n <> 0 /\
+          reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+            ({A} :\/: ArcsT) n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0))) ->
+  forall A:set, A :e Arcs -> ~(A c= T) ->
+    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)).
+let T ArcsT X Tx Arcs.
+assume HcompFam.
+let A.
+assume HA Hnsub.
+apply (HcompFam A HA Hnsub).
+let v.
+assume Hvpack.
+apply (and5E
+  (v :e graph_vertices X Tx Arcs)
+  (T :/\: A = Sing v)
+  (general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT))
+  (connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)))
+  (~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+        ({A} :\/: ArcsT) n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)))
+  Hvpack).
+assume HvVert Hmeet HglgTA HconnTA HnoloopTA.
+exact HconnTA.
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_forward_no_loop_obligation_from_component_witness_family :
+  forall T ArcsT X Tx Arcs:set,
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    exists v:set,
+      v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
+      general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+      connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
+      ~(exists n path_seq x0:set,
+          n :e omega /\ n <> 0 /\
+          reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+            ({A} :\/: ArcsT) n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0))) ->
+  forall A:set, A :e Arcs -> ~(A c= T) ->
+    ~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT) n path_seq x0 /\
+        (exists j:set, j :e n /\ ordsucc j /:e n /\
+          (apply_fun path_seq j) 0 1 = x0)).
+let T ArcsT X Tx Arcs.
+assume HcompFam.
+let A.
+assume HA Hnsub.
+apply (HcompFam A HA Hnsub).
+let v.
+assume Hvpack.
+apply (and5E
+  (v :e graph_vertices X Tx Arcs)
+  (T :/\: A = Sing v)
+  (general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT))
+  (connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)))
+  (~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+        ({A} :\/: ArcsT) n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)))
+  Hvpack).
+assume HvVert Hmeet HglgTA HconnTA HnoloopTA.
+exact HnoloopTA.
+Qed.
+
+(** Proven Bob **)
 Theorem thm84_4_forward_component_witness_family_from_stub_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
