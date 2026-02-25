@@ -76293,6 +76293,54 @@ exact (pairwise_disjoint_point_unique_member
   HFtzVq).
 Qed.
 
+(** Infrastructure: convert image subset statement to pointwise anchor membership **)
+(** Proven Bob **)
+Theorem image_sub_single_sheet_implies_pointwise_anchor_membership :
+  forall N Ft Vq:set,
+  image_of Ft N c= Vq ->
+  forall z:set, z :e N -> apply_fun Ft z :e Vq.
+let N Ft Vq.
+assume HimgSub.
+let z.
+assume HzN.
+exact (HimgSub
+  (apply_fun Ft z)
+  (ReplI
+    N
+    (fun x:set => apply_fun Ft x)
+    z
+    HzN)).
+Qed.
+
+(** Infrastructure: convert pointwise anchor membership to image subset statement **)
+(** Proven Bob **)
+Theorem pointwise_anchor_membership_implies_image_sub_single_sheet :
+  forall N Ft Vq:set,
+  (forall z:set, z :e N -> apply_fun Ft z :e Vq) ->
+  image_of Ft N c= Vq.
+let N Ft Vq.
+assume Hpointwise.
+let y.
+assume HyImg.
+apply (ReplE
+  N
+  (fun x:set => apply_fun Ft x)
+  y
+  HyImg).
+let z.
+assume HzPack.
+rewrite (andER
+  (z :e N)
+  (y = apply_fun Ft z)
+  HzPack).
+exact (Hpointwise
+  z
+  (andEL
+    (z :e N)
+    (y = apply_fun Ft z)
+    HzPack)).
+Qed.
+
 Theorem lemma54_2_sheet_non_switching_local :
   forall E Te B Tb p F Ft q z N U slices Vq Vz:set,
   pairwise_disjoint slices ->
@@ -78578,37 +78626,37 @@ claim HFt_54_cont :
                             HyVxz
                             Hypy).
 	                        }
-				                        claim HVxzEqVq : Vxz = Vq.
-				                        {
-				                          claim Hft54zVxz : apply_fun Ft_54 z :e Vxz.
-				                          {
-				                            rewrite Hft54zEqxz.
-				                            exact HxzVxz.
-				                          }
-				                          exact (lemma54_2_sheet_non_switching_local
-				                            E
-				                            Te
-				                            B
-				                            Tb
-				                            p
-				                            F
-				                            Ft_54
-				                            q
-				                            z
-				                            N
-				                            U
-				                            slices
-				                            Vq
-				                            Vxz
-				                            HpdSlices
-				                            HN_into_U
-				                            HqN
-				                            HzN
-				                            HFtqVq
-				                            HVqSlice
-				                            Hft54zVxz
-				                            HVxzSlice).
-				                        }
+	                        claim HVxzEqVq : Vxz = Vq.
+	                        {
+	                          claim Hft54zVxz : apply_fun Ft_54 z :e Vxz.
+	                          {
+	                            rewrite Hft54zEqxz.
+	                            exact HxzVxz.
+	                          }
+	                          exact (lemma54_2_sheet_non_switching_local
+	                            E
+	                            Te
+	                            B
+	                            Tb
+	                            p
+	                            F
+	                            Ft_54
+	                            q
+	                            z
+	                            N
+	                            U
+	                            slices
+	                            Vq
+	                            Vxz
+	                            HpdSlices
+	                            HN_into_U
+	                            HqN
+	                            HzN
+	                            HFtqVq
+	                            HVqSlice
+	                            Hft54zVxz
+	                            HVxzSlice).
+	                        }
 			                        rewrite <- HVxzEqVq.
 			                        exact HxzVxz.
 			                      }
