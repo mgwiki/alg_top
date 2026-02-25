@@ -220474,15 +220474,24 @@ apply iffI.
       Hmax).
   * (** remaining forward gap:
         maximal tree should contain all ambient vertices.
-        This is now reduced to a single extension-producing obligation
-        via `maximal_tree_all_vertices_if_noncontained_edges_meet_tree_and_extend`. **)
+        This is reduced to producing, for each noncontained edge, a
+        single-vertex intersection plus the three extension components
+        (general-linear-graph, connectedness, no reduced closed path). **)
     claim Hbridge :
       (forall A:set, A :e Arcs -> ~(A c= T) ->
-        exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
-          tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs) ->
+        exists v:set,
+          v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
+          general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+          connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
+          ~(exists n path_seq x0:set,
+              n :e omega /\ n <> 0 /\
+              reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+                ({A} :\/: ArcsT) n path_seq x0 /\
+              (exists j:set, j :e n /\ ordsucc j /:e n /\
+                (apply_fun path_seq j) 0 1 = x0))) ->
       graph_vertices X Tx Arcs c= T.
     {
-      exact (maximal_tree_all_vertices_if_noncontained_edges_meet_tree_and_extend
+      exact (maximal_tree_all_vertices_if_noncontained_edges_meet_tree_and_component_extension
         T
         ArcsT
         X
@@ -220492,14 +220501,24 @@ apply iffI.
     }
     claim Hext_goal :
       forall A:set, A :e Arcs -> ~(A c= T) ->
-      exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
-        tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs.
+      exists v:set,
+        v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
+        general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+        connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
+        ~(exists n path_seq x0:set,
+            n :e omega /\ n <> 0 /\
+            reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+              ({A} :\/: ArcsT) n path_seq x0 /\
+            (exists j:set, j :e n /\ ordsucc j /:e n /\
+              (apply_fun path_seq j) 0 1 = x0)).
     {
       (** remaining subgap:
-          produce single-vertex meeting witness and extension for each noncontained edge.
+          produce single-vertex meeting witness and all three extension components
+          for each noncontained edge.
           expected route:
-          - use graph/connected hypotheses to obtain the meeting witness,
-          - apply `lemma84_2_tree_extension` for the extension part. **)
+          - use graph/connected hypotheses to obtain the meeting witness and
+            connectedness/general-linear structure on `(T :\/: A)`,
+          - show no closed reduced edge path for the enlarged edge family. **)
       admit.
     }
     exact (Hbridge Hext_goal).
