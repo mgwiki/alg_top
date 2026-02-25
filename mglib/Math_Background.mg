@@ -234782,6 +234782,69 @@ admit.
 Admitted.
 
 (** Proven Bob **)
+Theorem thm84_4_backward_selected_arc_endpoint_close_obligation_from_subset_from_rhs :
+  forall T ArcsT T' ArcsT' X Tx Arcs:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  T c= T' ->
+  (forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T) ->
+  forall A p q:set,
+    A :e {B :e Arcs | B c= T'} ->
+    end_points_of_arc A (subspace_topology X Tx A) p q ->
+    p :e T /\ q :e T ->
+    A c= T.
+let T ArcsT T' ArcsT' X Tx Arcs.
+assume Hrhs Htree' HTsub HsubsetSel.
+let A p q.
+assume HASel Hend Hep.
+exact (HsubsetSel
+  A
+  HASel).
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_backward_selected_arc_endpoint_obligation_pair_from_subset_from_rhs :
+  forall T ArcsT T' ArcsT' X Tx Arcs:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  T c= T' ->
+  (forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T) ->
+  (forall A:set, A :e {B :e Arcs | B c= T'} ->
+    exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q) /\
+  (forall A p q:set,
+    A :e {B :e Arcs | B c= T'} ->
+    end_points_of_arc A (subspace_topology X Tx A) p q ->
+    p :e T /\ q :e T ->
+    A c= T).
+let T ArcsT T' ArcsT' X Tx Arcs.
+assume Hrhs Htree' HTsub HsubsetSel.
+apply andI.
+- exact (thm84_4_backward_selected_arc_endpoint_witness_obligation
+    T
+    ArcsT
+    T'
+    ArcsT'
+    X
+    Tx
+    Arcs
+    Hrhs
+    Htree'
+    HTsub).
+- exact (thm84_4_backward_selected_arc_endpoint_close_obligation_from_subset_from_rhs
+    T
+    ArcsT
+    T'
+    ArcsT'
+    X
+    Tx
+    Arcs
+    Hrhs
+    Htree'
+    HTsub
+    HsubsetSel).
+Qed.
+
+(** Proven Bob **)
 Theorem thm84_4_backward_selected_arc_subset_from_endpoint_obligations_from_rhs :
   forall T ArcsT T' ArcsT' X Tx Arcs:set,
   (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
