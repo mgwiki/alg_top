@@ -185454,6 +185454,89 @@ apply iffI.
 Qed.
 
 (** Proven Bob **)
+Theorem function_on_mem_image_implies_mem_codomain :
+  forall E X pi y:set,
+  function_on pi E X ->
+  y :e image_of pi E ->
+  y :e X.
+let E X pi y.
+assume Hfun HyImg.
+exact ((image_of_sub_codomain
+  pi
+  E
+  X
+  E
+  Hfun
+  (fun x:set => fun Hx:x :e E => Hx))
+  y
+  HyImg).
+Qed.
+
+(** Proven Bob **)
+Theorem function_on_not_mem_codomain_implies_not_mem_image :
+  forall E X pi y:set,
+  function_on pi E X ->
+  y /:e X ->
+  y /:e image_of pi E.
+let E X pi y.
+assume Hfun HyNotX.
+assume HyImg.
+claim HyX : y :e X.
+{
+  exact (function_on_mem_image_implies_mem_codomain
+    E
+    X
+    pi
+    y
+    Hfun
+    HyImg).
+}
+exact (HyNotX HyX).
+Qed.
+
+(** Proven Bob **)
+Theorem function_on_not_mem_codomain_implies_preimage_singleton_empty :
+  forall E X pi y:set,
+  function_on pi E X ->
+  y /:e X ->
+  preimage_of E pi (Sing y) = Empty.
+let E X pi y.
+assume Hfun HyNotX.
+exact ((andEL
+  (y /:e image_of pi E -> preimage_of E pi (Sing y) = Empty)
+  (preimage_of E pi (Sing y) = Empty -> y /:e image_of pi E)
+  (not_mem_image_iff_preimage_singleton_empty E pi y))
+  (function_on_not_mem_codomain_implies_not_mem_image
+    E
+    X
+    pi
+    y
+    Hfun
+    HyNotX)).
+Qed.
+
+(** Proven Bob **)
+Theorem function_on_not_mem_codomain_implies_no_preimage_point :
+  forall E X pi y:set,
+  function_on pi E X ->
+  y /:e X ->
+  ~ (exists x:set, x :e E /\ apply_fun pi x = y).
+let E X pi y.
+assume Hfun HyNotX.
+exact ((andER
+  (~ (exists x:set, x :e E /\ apply_fun pi x = y) -> preimage_of E pi (Sing y) = Empty)
+  (preimage_of E pi (Sing y) = Empty -> ~ (exists x:set, x :e E /\ apply_fun pi x = y))
+  (no_preimage_point_iff_preimage_singleton_empty E pi y))
+  (function_on_not_mem_codomain_implies_preimage_singleton_empty
+    E
+    X
+    pi
+    y
+    Hfun
+    HyNotX)).
+Qed.
+
+(** Proven Bob **)
 Theorem preimage_singleton_nonempty_iff_mem_image :
   forall E pi y:set,
   (preimage_of E pi (Sing y) <> Empty <-> y :e image_of pi E).
