@@ -186327,6 +186327,142 @@ exact (surjective_map_exists_preimage_point_implies_preimage_singleton_nonempty
 Qed.
 
 (** Proven Bob **)
+Theorem surjective_map_preimage_singleton_empty_iff_no_preimage_point_via_bridges :
+  forall E X pi y:set,
+  surjective_map E X pi ->
+  (preimage_of E pi (Sing y) = Empty <->
+    ~ (exists x:set, x :e E /\ apply_fun pi x = y)).
+let E X pi y.
+assume Hsurj.
+exact (surjective_map_preimage_singleton_empty_iff_no_preimage_point
+  E
+  X
+  pi
+  y
+  Hsurj).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_preimage_singleton_empty_iff_no_preimage_point_via_bridges :
+  forall E Te X pi y:set,
+  quotient_map E Te X pi ->
+  (preimage_of E pi (Sing y) = Empty <->
+    ~ (exists x:set, x :e E /\ apply_fun pi x = y)).
+let E Te X pi y.
+assume Hquot.
+exact (quotient_map_preimage_singleton_empty_iff_no_preimage_point
+  E
+  Te
+  X
+  pi
+  y
+  Hquot).
+Qed.
+
+(** Proven Bob **)
+Theorem surjective_map_preimage_singleton_nonempty_iff_exists_preimage_point_via_bridges :
+  forall E X pi y:set,
+  surjective_map E X pi ->
+  (preimage_of E pi (Sing y) <> Empty <->
+    exists x:set, x :e E /\ apply_fun pi x = y).
+let E X pi y.
+assume Hsurj.
+exact (surjective_map_preimage_singleton_nonempty_iff_exists_preimage_point
+  E
+  X
+  pi
+  y
+  Hsurj).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_preimage_singleton_nonempty_iff_exists_preimage_point_via_bridges :
+  forall E Te X pi y:set,
+  quotient_map E Te X pi ->
+  (preimage_of E pi (Sing y) <> Empty <->
+    exists x:set, x :e E /\ apply_fun pi x = y).
+let E Te X pi y.
+assume Hquot.
+exact (quotient_map_preimage_singleton_nonempty_iff_exists_preimage_point
+  E
+  Te
+  X
+  pi
+  y
+  Hquot).
+Qed.
+
+(** Proven Bob **)
+Theorem surjective_map_preimage_singleton_nonempty_implies_exists_preimage_point_via_bridges :
+  forall E X pi y:set,
+  surjective_map E X pi ->
+  preimage_of E pi (Sing y) <> Empty ->
+  exists x:set, x :e E /\ apply_fun pi x = y.
+let E X pi y.
+assume Hsurj HpreNe.
+exact (surjective_map_preimage_singleton_nonempty_implies_exists_preimage_point
+  E
+  X
+  pi
+  y
+  Hsurj
+  HpreNe).
+Qed.
+
+(** Proven Bob **)
+Theorem surjective_map_exists_preimage_point_implies_preimage_singleton_nonempty_via_bridges :
+  forall E X pi y:set,
+  surjective_map E X pi ->
+  (exists x:set, x :e E /\ apply_fun pi x = y) ->
+  preimage_of E pi (Sing y) <> Empty.
+let E X pi y.
+assume Hsurj HxPack.
+exact (surjective_map_exists_preimage_point_implies_preimage_singleton_nonempty
+  E
+  X
+  pi
+  y
+  Hsurj
+  HxPack).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_preimage_singleton_nonempty_implies_exists_preimage_point_via_bridges :
+  forall E Te X pi y:set,
+  quotient_map E Te X pi ->
+  preimage_of E pi (Sing y) <> Empty ->
+  exists x:set, x :e E /\ apply_fun pi x = y.
+let E Te X pi y.
+assume Hquot HpreNe.
+exact (quotient_map_preimage_singleton_nonempty_implies_exists_preimage_point
+  E
+  Te
+  X
+  pi
+  y
+  Hquot
+  HpreNe).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_exists_preimage_point_implies_preimage_singleton_nonempty_via_bridges :
+  forall E Te X pi y:set,
+  quotient_map E Te X pi ->
+  (exists x:set, x :e E /\ apply_fun pi x = y) ->
+  preimage_of E pi (Sing y) <> Empty.
+let E Te X pi y.
+assume Hquot HxPack.
+exact (quotient_map_exists_preimage_point_implies_preimage_singleton_nonempty
+  E
+  Te
+  X
+  pi
+  y
+  Hquot
+  HxPack).
+Qed.
+
+(** Proven Bob **)
 Theorem surjective_map_preimage_singleton_empty_iff_not_mem_codomain :
   forall E X pi y:set,
   surjective_map E X pi ->
