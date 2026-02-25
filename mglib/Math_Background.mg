@@ -210305,6 +210305,108 @@ exact ((union_selected_arcs_subset_union_arcs
   HxSel).
 Qed.
 
+(** Proven Bob **)
+Theorem subgraph_of_point_in_Y_in_selected_arc :
+  forall Y X Tx Arcs x:set,
+  subgraph_of Y X Tx Arcs ->
+  x :e Y ->
+  exists A:set, A :e {B :e Arcs | B c= Y} /\ x :e A.
+let Y X Tx Arcs x.
+assume Hsub HxY.
+claim HYeq : Y = Union {B :e Arcs | B c= Y}.
+{
+  exact (subgraph_of_union_of_contained_arcs
+    Y
+    X
+    Tx
+    Arcs
+    Hsub).
+}
+claim HxSel : x :e Union {B :e Arcs | B c= Y}.
+{
+  exact (mem_eqR
+    x
+    Y
+    (Union {B :e Arcs | B c= Y})
+    HYeq
+    HxY).
+}
+apply (UnionE
+  {B :e Arcs | B c= Y}
+  x
+  HxSel).
+let A.
+assume HxApack.
+witness A.
+apply andI.
+- exact (andER
+    (x :e A)
+    (A :e {B :e Arcs | B c= Y})
+    HxApack).
+- exact (andEL
+    (x :e A)
+    (A :e {B :e Arcs | B c= Y})
+    HxApack).
+Qed.
+
+(** Proven Bob **)
+Theorem subgraph_of_point_in_selected_arc_in_Y :
+  forall Y X Tx Arcs A x:set,
+  subgraph_of Y X Tx Arcs ->
+  A :e {B :e Arcs | B c= Y} ->
+  x :e A ->
+  x :e Y.
+let Y X Tx Arcs A x.
+assume Hsub HA HxA.
+exact ((SepE2
+  Arcs
+  (fun B:set => B c= Y)
+  A
+  HA)
+  x
+  HxA).
+Qed.
+
+(** Proven Bob **)
+Theorem subgraph_of_point_in_Y_iff_in_selected_arc :
+  forall Y X Tx Arcs x:set,
+  subgraph_of Y X Tx Arcs ->
+  (x :e Y <->
+   exists A:set, A :e {B :e Arcs | B c= Y} /\ x :e A).
+let Y X Tx Arcs x.
+assume Hsub.
+apply iffI.
+- assume HxY.
+  exact (subgraph_of_point_in_Y_in_selected_arc
+    Y
+    X
+    Tx
+    Arcs
+    x
+    Hsub
+    HxY).
+- assume HxEx.
+  apply HxEx.
+  let A.
+  assume HApack.
+  exact (subgraph_of_point_in_selected_arc_in_Y
+    Y
+    X
+    Tx
+    Arcs
+    A
+    x
+    Hsub
+    (andEL
+      (A :e {B :e Arcs | B c= Y})
+      (x :e A)
+      HApack)
+    (andER
+      (A :e {B :e Arcs | B c= Y})
+      (x :e A)
+      HApack)).
+Qed.
+
 (** Infrastructure: vertices of a linear graph **)
 Definition graph_vertices : set -> set -> set -> set :=
   fun X Tx Arcs =>
