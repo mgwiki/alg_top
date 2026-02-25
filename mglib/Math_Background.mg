@@ -1,6 +1,6 @@
 (** Balance Alice 3327 **)
 (** Balance Bob 3451 **)
-(** Balance Charlie 2038 **)
+(** Balance Charlie 2135 **)
 (** Balance Dave 1793 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -200838,8 +200838,8 @@ Admitted.
 (** neighborhood U such that inclusion i: U -> B induces the trivial homomorphism **)
 (** i_star: pi1(U,b0) -> pi1(B,b0). **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 97 **)
-(** Lock Charlie 1772071768 **)
+(** Collected Charlie 97 **)
+(** Proven Charlie **)
 Theorem lemma80_4_universal_cover_semilocal :
   forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
@@ -200853,8 +200853,867 @@ Theorem lemma80_4_universal_cover_semilocal :
             (graph U (fun x:set => x)))
           cls =
         fundamental_group_id B Tb b0).
-admit.
-Admitted.
+let E Te B Tb p.
+assume Hcov.
+assume Hsimp.
+let b0.
+assume Hb0B.
+
+claim HcovLeft :
+  continuous_map E Te B Tb p /\
+  surjective_map E B p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p /\ surjective_map E B p)
+    (forall b:set, b :e B ->
+      exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+    Hcov).
+}
+claim Hcontp : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    HcovLeft).
+}
+claim Hsurjp : surjective_map E B p.
+{
+  exact (andER
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    HcovLeft).
+}
+claim Hneigh :
+  forall b:set, b :e B ->
+    exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U.
+{
+  exact (andER
+    (continuous_map E Te B Tb p /\ surjective_map E B p)
+    (forall b:set, b :e B ->
+      exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+    Hcov).
+}
+claim HtopE : topology_on E Te.
+{
+  exact (continuous_map_topology_dom
+    E
+    Te
+    B
+    Tb
+    p
+    Hcontp).
+}
+claim HtopB : topology_on B Tb.
+{
+  exact (continuous_map_topology_cod
+    E
+    Te
+    B
+    Tb
+    p
+    Hcontp).
+}
+claim Hfunp : function_on p E B.
+{
+  exact (continuous_map_function_on
+    E
+    Te
+    B
+    Tb
+    p
+    Hcontp).
+}
+
+(** pick e0 over b0 using surjectivity of p **)
+claim HsurjSpec :
+  forall b:set, b :e B -> exists e0:set, e0 :e E /\ apply_fun p e0 = b.
+{
+  exact (andER
+    (function_on p E B)
+    (forall b:set, b :e B -> exists e0:set, e0 :e E /\ apply_fun p e0 = b)
+    Hsurjp).
+}
+apply (HsurjSpec b0 Hb0B).
+let e0.
+assume He0Pack.
+claim He0E : e0 :e E.
+{
+  exact (andEL
+    (e0 :e E)
+    (apply_fun p e0 = b0)
+    He0Pack).
+}
+claim Hpe0 : apply_fun p e0 = b0.
+{
+  exact (andER
+    (e0 :e E)
+    (apply_fun p e0 = b0)
+    He0Pack).
+}
+
+(** choose evenly covered neighborhood U of b0 **)
+apply (Hneigh b0 Hb0B).
+let U.
+assume HUPack.
+apply (and3E
+  (U :e Tb)
+  (b0 :e U)
+  (evenly_covered E Te B Tb p U)
+  HUPack).
+assume HUTb Hb0U HevenU.
+
+(** unpack evenly covered data on U **)
+claim HslicesEx :
+  exists slices:set,
+    slices c= Te /\
+    pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun x:set => apply_fun p x))).
+{
+  exact (andER
+    (U :e Tb)
+    (exists slices:set,
+      slices c= Te /\
+      pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (fun x:set => apply_fun p x))))
+    HevenU).
+}
+apply HslicesEx.
+let slices.
+assume Hslices.
+claim HslicesCore :
+  (slices c= Te /\ pairwise_disjoint slices) /\
+  Union slices = preimage_of E p U.
+{
+  exact (andEL
+    ((slices c= Te /\ pairwise_disjoint slices) /\
+      Union slices = preimage_of E p U)
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun x:set => apply_fun p x)))
+    Hslices).
+}
+claim HslicesSub : slices c= Te.
+{
+  exact (andEL
+    (slices c= Te)
+    (pairwise_disjoint slices)
+    (andEL
+      (slices c= Te /\ pairwise_disjoint slices)
+      (Union slices = preimage_of E p U)
+      HslicesCore)).
+}
+claim HunionSlices : Union slices = preimage_of E p U.
+{
+  exact (andER
+    (slices c= Te /\ pairwise_disjoint slices)
+    (Union slices = preimage_of E p U)
+    HslicesCore).
+}
+claim HhomeSlices :
+  forall V:set, V :e slices ->
+    homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+      (graph V (fun x:set => apply_fun p x)).
+{
+  exact (andER
+    ((slices c= Te /\ pairwise_disjoint slices) /\
+      Union slices = preimage_of E p U)
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun x:set => apply_fun p x)))
+    Hslices).
+}
+
+(** find the sheet V0 containing e0 **)
+claim He0PreU : e0 :e preimage_of E p U.
+{
+  claim Hpe0U : apply_fun p e0 :e U.
+  {
+    rewrite Hpe0.
+    exact Hb0U.
+  }
+  exact (SepI
+    E
+    (fun x:set => apply_fun p x :e U)
+    e0
+    He0E
+    Hpe0U).
+}
+claim He0Union : e0 :e Union slices.
+{
+  exact (mem_eqL
+    e0
+    (Union slices)
+    (preimage_of E p U)
+    HunionSlices
+    He0PreU).
+}
+claim He0SlicePack : exists V0:set, e0 :e V0 /\ V0 :e slices.
+{
+  exact (UnionE
+    slices
+    e0
+    He0Union).
+}
+apply He0SlicePack.
+let V0.
+assume HV0Pack.
+claim He0V0 : e0 :e V0.
+{
+  exact (andEL
+    (e0 :e V0)
+    (V0 :e slices)
+    HV0Pack).
+}
+claim HV0Slice : V0 :e slices.
+{
+  exact (andER
+    (e0 :e V0)
+    (V0 :e slices)
+    HV0Pack).
+}
+claim HV0Open : V0 :e Te.
+{
+  exact (HslicesSub
+    V0
+    HV0Slice).
+}
+claim HV0home :
+  homeomorphism V0 (subspace_topology E Te V0) U (subspace_topology B Tb U)
+    (graph V0 (fun x:set => apply_fun p x)).
+{
+  exact (HhomeSlices
+    V0
+    HV0Slice).
+}
+
+(** inverse section g0 : U -> V0 **)
+claim HinvPack :
+  exists g0:set,
+    continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0 /\
+    (forall x:set, x :e V0 ->
+      apply_fun g0 (apply_fun (graph V0 (fun z:set => apply_fun p z)) x) = x) /\
+    (forall y:set, y :e U ->
+      apply_fun (graph V0 (fun z:set => apply_fun p z)) (apply_fun g0 y) = y).
+{
+  exact (homeomorphism_inverse_package
+    V0
+    (subspace_topology E Te V0)
+    U
+    (subspace_topology B Tb U)
+    (graph V0 (fun x:set => apply_fun p x))
+    HV0home).
+}
+apply HinvPack.
+let g0.
+assume Hg0Pack.
+claim Hg0Cont :
+  continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0.
+{
+  exact (andEL
+    (continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0)
+    (forall x:set, x :e V0 ->
+      apply_fun g0 (apply_fun (graph V0 (fun z:set => apply_fun p z)) x) = x)
+    (andEL
+      (continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0 /\
+        (forall x:set, x :e V0 ->
+          apply_fun g0 (apply_fun (graph V0 (fun z:set => apply_fun p z)) x) = x))
+      (forall y:set, y :e U ->
+        apply_fun (graph V0 (fun z:set => apply_fun p z)) (apply_fun g0 y) = y)
+      Hg0Pack)).
+}
+claim Hg0Right :
+  forall y:set, y :e U ->
+    apply_fun (graph V0 (fun z:set => apply_fun p z)) (apply_fun g0 y) = y.
+{
+  exact (andER
+    (continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0 /\
+      (forall x:set, x :e V0 ->
+        apply_fun g0 (apply_fun (graph V0 (fun z:set => apply_fun p z)) x) = x))
+    (forall y:set, y :e U ->
+      apply_fun (graph V0 (fun z:set => apply_fun p z)) (apply_fun g0 y) = y)
+    Hg0Pack).
+}
+claim Hg0Left :
+  forall x:set, x :e V0 ->
+    apply_fun g0 (apply_fun (graph V0 (fun z:set => apply_fun p z)) x) = x.
+{
+  exact (andER
+    (continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0)
+    (forall x:set, x :e V0 ->
+      apply_fun g0 (apply_fun (graph V0 (fun z:set => apply_fun p z)) x) = x)
+    (andEL
+      (continuous_map U (subspace_topology B Tb U) V0 (subspace_topology E Te V0) g0 /\
+        (forall x:set, x :e V0 ->
+          apply_fun g0 (apply_fun (graph V0 (fun z:set => apply_fun p z)) x) = x))
+      (forall y:set, y :e U ->
+        apply_fun (graph V0 (fun z:set => apply_fun p z)) (apply_fun g0 y) = y)
+      Hg0Pack)).
+}
+claim Hg0b0 : apply_fun g0 b0 = e0.
+{
+  claim Hgraphpe0 : apply_fun (graph V0 (fun z:set => apply_fun p z)) e0 = b0.
+  {
+    rewrite (apply_fun_graph V0 (fun z:set => apply_fun p z) e0 He0V0).
+    exact Hpe0.
+  }
+  rewrite <- Hgraphpe0.
+  exact (Hg0Left
+    e0
+    He0V0).
+}
+
+(** U witnesses the semilocal condition **)
+witness U.
+apply andI.
+- apply andI.
+  + exact HUTb.
+  + exact Hb0U.
+- let cls.
+  assume Hcls.
+  set TU := subspace_topology B Tb U.
+  set incU := graph U (fun x:set => x).
+      claim HclsEq :
+        apply_fun
+          (induced_homomorphism U (subspace_topology B Tb U) b0 B Tb b0 incU)
+          cls
+        =
+        path_homotopy_class_loop B Tb b0
+          (compose_fun unit_interval (Eps_i (fun f:set => f :e cls)) incU).
+      {
+        exact (induced_homomorphism_apply
+          U
+          (subspace_topology B Tb U)
+          b0
+          B
+          Tb
+          b0
+          incU
+          cls
+          Hcls).
+      }
+      rewrite HclsEq.
+      set f := (Eps_i (fun g:set => g :e cls)).
+      claim HfLoopU : f :e loop_space U (subspace_topology B Tb U) b0.
+      {
+        exact (eps_of_fundamental_group_member_in_loop_space
+          U
+          (subspace_topology B Tb U)
+          b0
+          cls
+          Hcls).
+      }
+      claim HfLoopAtU : loop_at U (subspace_topology B Tb U) b0 f.
+      {
+        exact (loop_space_has_loop_at
+          U
+          (subspace_topology B Tb U)
+          b0
+          f
+          HfLoopU).
+      }
+      claim HfContU :
+        continuous_map unit_interval unit_interval_topology U (subspace_topology B Tb U) f.
+      {
+        exact (loop_at_continuous
+          U
+          (subspace_topology B Tb U)
+          b0
+          f
+          HfLoopAtU).
+      }
+      claim Hf0 : apply_fun f 0 = b0.
+      { exact (loop_at_at_zero U (subspace_topology B Tb U) b0 f HfLoopAtU). }
+      claim Hf1 : apply_fun f 1 = b0.
+      { exact (loop_at_at_one U (subspace_topology B Tb U) b0 f HfLoopAtU). }
+
+      (** lift f through g0 to a loop in E based at e0 **)
+      set ft0 := compose_fun unit_interval f g0.
+      claim Hft0ContV0 :
+        continuous_map unit_interval unit_interval_topology V0 (subspace_topology E Te V0) ft0.
+      {
+        exact (composition_continuous
+          unit_interval
+          unit_interval_topology
+          U
+          (subspace_topology B Tb U)
+          V0
+          (subspace_topology E Te V0)
+          f
+          g0
+          HfContU
+          Hg0Cont).
+      }
+      claim HV0subE : V0 c= E.
+      {
+        exact (topology_elem_subset
+          E
+          Te
+          V0
+          HtopE
+          HV0Open).
+      }
+      claim Hft0ContE :
+        continuous_map unit_interval unit_interval_topology E Te ft0.
+      {
+        claim HtyEq : subspace_topology E Te V0 = subspace_topology E Te V0.
+        { reflexivity. }
+        exact (continuous_map_range_expand
+          unit_interval
+          unit_interval_topology
+          V0
+          (subspace_topology E Te V0)
+          E
+          Te
+          ft0
+          Hft0ContV0
+          HV0subE
+          HtopE
+          HtyEq).
+      }
+      claim Hft00 : apply_fun ft0 0 = e0.
+      {
+        rewrite (compose_fun_apply unit_interval f g0 0 zero_in_unit_interval).
+        rewrite Hf0.
+        exact Hg0b0.
+      }
+      claim Hft01 : apply_fun ft0 1 = e0.
+      {
+        rewrite (compose_fun_apply unit_interval f g0 1 one_in_unit_interval).
+        rewrite Hf1.
+        exact Hg0b0.
+      }
+	      claim HftLoopAtE : loop_at E Te e0 ft0.
+	      {
+	        exact (loop_at_fold
+	          E
+	          Te
+          e0
+          ft0
+          (andI
+            (continuous_map unit_interval unit_interval_topology E Te ft0 /\
+              apply_fun ft0 0 = e0)
+            (apply_fun ft0 1 = e0)
+            (andI
+              (continuous_map unit_interval unit_interval_topology E Te ft0)
+              (apply_fun ft0 0 = e0)
+              Hft0ContE
+              Hft00)
+	            Hft01)).
+	      }
+	      claim HfFunOn : function_on f unit_interval U.
+	      {
+	        exact (continuous_map_function_on
+	          unit_interval
+	          unit_interval_topology
+	          U
+	          (subspace_topology B Tb U)
+	          f
+	          HfContU).
+	      }
+	      claim Hg0FunOnV0 : function_on g0 U V0.
+	      {
+	        exact (continuous_map_function_on
+	          U
+	          (subspace_topology B Tb U)
+	          V0
+	          (subspace_topology E Te V0)
+	          g0
+	          Hg0Cont).
+	      }
+	      claim Hg0FunOnE : function_on g0 U E.
+	      {
+	        let y.
+	        assume Hy.
+	        exact (HV0subE
+	          (apply_fun g0 y)
+	          (Hg0FunOnV0 y Hy)).
+	      }
+	      claim HftFunSpace : ft0 :e function_space unit_interval E.
+	      {
+	        exact (compose_fun_in_function_space
+	          unit_interval
+	          U
+	          E
+	          f
+	          g0
+	          HfFunOn
+	          Hg0FunOnE).
+	      }
+	      claim HftLoopSpace :
+	        ft0 :e loop_space E Te e0.
+	      {
+	        exact (SepI
+	          (function_space unit_interval E)
+	          (fun g:set => loop_at E Te e0 g)
+	          ft0
+	          HftFunSpace
+	          HftLoopAtE).
+	      }
+
+      (** triviality of pi1(E,e0) implies ft0 homotopic to constant loop at e0 **)
+      claim Hpi1Triv : fundamental_group E Te e0 = {fundamental_group_id E Te e0}.
+      {
+        exact (simply_connected_trivial_pi1_at_point
+          E
+          Te
+          e0
+          Hsimp
+          He0E).
+      }
+      claim HclsFtInPi1 : path_homotopy_class_loop E Te e0 ft0 :e fundamental_group E Te e0.
+      {
+        exact (path_homotopy_class_in_fundamental_group
+          E
+          Te
+          e0
+          ft0
+          HftLoopSpace).
+      }
+      claim HclsFtInSing : path_homotopy_class_loop E Te e0 ft0 :e {fundamental_group_id E Te e0}.
+      {
+        rewrite <- Hpi1Triv.
+        exact HclsFtInPi1.
+      }
+      claim HclsFtEqId : path_homotopy_class_loop E Te e0 ft0 = fundamental_group_id E Te e0.
+      {
+        exact (SingE
+          (fundamental_group_id E Te e0)
+          (path_homotopy_class_loop E Te e0 ft0)
+          HclsFtInSing).
+      }
+      claim HftInOwnClass : ft0 :e path_homotopy_class_loop E Te e0 ft0.
+      {
+        exact (loop_in_own_path_homotopy_class
+          E
+          Te
+          e0
+          ft0
+          HftLoopSpace).
+      }
+      claim HftInIdClass : ft0 :e fundamental_group_id E Te e0.
+      {
+        rewrite <- HclsFtEqId.
+        exact HftInOwnClass.
+      }
+      claim HhomConstToFt :
+        path_homotopic E Te e0 e0 (constant_path e0) ft0.
+      {
+        exact (path_homotopy_class_loop_has_homotopy
+          E
+          Te
+          e0
+          (constant_path e0)
+          ft0
+          HftInIdClass).
+      }
+      claim HhomFtToConst :
+        path_homotopic E Te e0 e0 ft0 (constant_path e0).
+      {
+        exact (Lemma_51_1_path_homotopy_sym
+          E
+          Te
+          e0
+          e0
+          (constant_path e0)
+          ft0
+          HhomConstToFt).
+      }
+
+      (** postcompose homotopy with p to get homotopy in B **)
+      claim HhomPft :
+        path_homotopic B Tb b0 b0
+          (compose_fun unit_interval ft0 p)
+          (compose_fun unit_interval (constant_path e0) p).
+      {
+        exact (path_homotopic_postcompose
+          E
+          Te
+          B
+          Tb
+          e0
+          e0
+          b0
+          b0
+          ft0
+          (constant_path e0)
+          p
+          HhomFtToConst
+          Hcontp
+          Hpe0
+          Hpe0).
+      }
+
+      (** identify p o constant(e0) with constant(b0) **)
+      set constB := constant_path b0.
+      claim HconstCompCont :
+        continuous_map unit_interval unit_interval_topology B Tb
+          (compose_fun unit_interval (constant_path e0) p).
+      {
+        exact (composition_continuous
+          unit_interval
+          unit_interval_topology
+          E
+          Te
+          B
+          Tb
+          (constant_path e0)
+          p
+          (constant_path_continuous
+            E
+            Te
+            e0
+            HtopE
+            He0E)
+          Hcontp).
+      }
+      claim HconstBCont :
+        continuous_map unit_interval unit_interval_topology B Tb constB.
+      {
+        exact (constant_path_continuous
+          B
+          Tb
+          b0
+          HtopB
+          Hb0B).
+      }
+      claim HconstComp0 : apply_fun (compose_fun unit_interval (constant_path e0) p) 0 = b0.
+      {
+        rewrite (compose_fun_apply unit_interval (constant_path e0) p 0 zero_in_unit_interval).
+        rewrite (constant_path_apply e0 0 zero_in_unit_interval).
+        exact Hpe0.
+      }
+      claim HconstComp1 : apply_fun (compose_fun unit_interval (constant_path e0) p) 1 = b0.
+      {
+        rewrite (compose_fun_apply unit_interval (constant_path e0) p 1 one_in_unit_interval).
+        rewrite (constant_path_apply e0 1 one_in_unit_interval).
+        exact Hpe0.
+      }
+      claim HconstB0 : apply_fun constB 0 = b0.
+      { exact (constant_path_at_zero b0). }
+      claim HconstB1 : apply_fun constB 1 = b0.
+      { exact (constant_path_at_one b0). }
+      claim HconstPw :
+        forall s:set, s :e unit_interval ->
+          apply_fun (compose_fun unit_interval (constant_path e0) p) s = apply_fun constB s.
+      {
+        let s.
+        assume Hs.
+        rewrite (compose_fun_apply unit_interval (constant_path e0) p s Hs).
+        rewrite (constant_path_apply e0 s Hs).
+        rewrite (constant_path_apply b0 s Hs).
+        exact Hpe0.
+      }
+      claim HhomConstComp :
+        path_homotopic B Tb b0 b0
+          (compose_fun unit_interval (constant_path e0) p)
+          constB.
+      {
+        exact (path_homotopic_of_pointwise_equal
+          B
+          Tb
+          b0
+          b0
+          (compose_fun unit_interval (constant_path e0) p)
+          constB
+          HconstCompCont
+          HconstBCont
+          HconstComp0
+          HconstComp1
+          HconstB0
+          HconstB1
+          HconstPw).
+      }
+      claim HhomPftToConstB :
+        path_homotopic B Tb b0 b0
+          (compose_fun unit_interval ft0 p)
+          constB.
+      {
+        exact (Lemma_51_1_path_homotopy_trans
+          B
+          Tb
+          b0
+          b0
+          (compose_fun unit_interval ft0 p)
+          (compose_fun unit_interval (constant_path e0) p)
+          constB
+          HhomPft
+          HhomConstComp).
+      }
+
+      (** relate inclusion loop to p o ft0 by pointwise equality **)
+      claim HUsubB : U c= B.
+      {
+        exact (topology_elem_subset
+          B
+          Tb
+          U
+          HtopB
+          HUTb).
+      }
+      claim HincCont : continuous_map U (subspace_topology B Tb U) B Tb incU.
+      {
+        exact (subspace_inclusion_continuous
+          B
+          Tb
+          U
+          HtopB
+          HUsubB).
+      }
+      claim HloopBCont :
+        continuous_map unit_interval unit_interval_topology B Tb
+          (compose_fun unit_interval f incU).
+      {
+        exact (composition_continuous
+          unit_interval
+          unit_interval_topology
+          U
+          (subspace_topology B Tb U)
+          B
+          Tb
+          f
+          incU
+          HfContU
+          HincCont).
+      }
+      claim HpftCont :
+        continuous_map unit_interval unit_interval_topology B Tb
+          (compose_fun unit_interval ft0 p).
+      {
+        exact (composition_continuous
+          unit_interval
+          unit_interval_topology
+          E
+          Te
+          B
+          Tb
+          ft0
+          p
+          Hft0ContE
+          Hcontp).
+      }
+      claim HloopB0 : apply_fun (compose_fun unit_interval f incU) 0 = b0.
+      {
+        rewrite (compose_fun_apply unit_interval f incU 0 zero_in_unit_interval).
+        rewrite Hf0.
+        exact (apply_fun_graph U (fun x:set => x) b0 Hb0U).
+      }
+      claim HloopB1 : apply_fun (compose_fun unit_interval f incU) 1 = b0.
+      {
+        rewrite (compose_fun_apply unit_interval f incU 1 one_in_unit_interval).
+        rewrite Hf1.
+        exact (apply_fun_graph U (fun x:set => x) b0 Hb0U).
+      }
+      claim Hpft0 : apply_fun (compose_fun unit_interval ft0 p) 0 = b0.
+      {
+        rewrite (compose_fun_apply unit_interval ft0 p 0 zero_in_unit_interval).
+        rewrite Hft00.
+        exact Hpe0.
+      }
+      claim Hpft1 : apply_fun (compose_fun unit_interval ft0 p) 1 = b0.
+      {
+        rewrite (compose_fun_apply unit_interval ft0 p 1 one_in_unit_interval).
+        rewrite Hft01.
+        exact Hpe0.
+      }
+      claim HpwEq :
+        forall s:set, s :e unit_interval ->
+          apply_fun (compose_fun unit_interval f incU) s =
+          apply_fun (compose_fun unit_interval ft0 p) s.
+      {
+        let s.
+        assume Hs.
+        rewrite (compose_fun_apply unit_interval f incU s Hs).
+        claim HfsU : apply_fun f s :e U.
+        {
+          exact ((continuous_map_function_on
+            unit_interval
+            unit_interval_topology
+            U
+            (subspace_topology B Tb U)
+            f
+            HfContU)
+            s
+            Hs).
+        }
+        rewrite (apply_fun_graph U (fun x:set => x) (apply_fun f s) HfsU).
+        rewrite (compose_fun_apply unit_interval ft0 p s Hs).
+        rewrite (compose_fun_apply unit_interval f g0 s Hs).
+        claim Hg0fsV0 : apply_fun g0 (apply_fun f s) :e V0.
+        {
+          exact ((continuous_map_function_on
+            U
+            (subspace_topology B Tb U)
+            V0
+            (subspace_topology E Te V0)
+            g0
+            Hg0Cont)
+            (apply_fun f s)
+            HfsU).
+        }
+	        rewrite <- (apply_fun_graph V0 (fun z:set => apply_fun p z) (apply_fun g0 (apply_fun f s)) Hg0fsV0).
+	        symmetry.
+	        exact (Hg0Right
+	          (apply_fun f s)
+	          HfsU).
+      }
+      claim HhomIncToPft :
+        path_homotopic B Tb b0 b0
+          (compose_fun unit_interval f incU)
+          (compose_fun unit_interval ft0 p).
+      {
+        exact (path_homotopic_of_pointwise_equal
+          B
+          Tb
+          b0
+          b0
+          (compose_fun unit_interval f incU)
+          (compose_fun unit_interval ft0 p)
+          HloopBCont
+          HpftCont
+          HloopB0
+          HloopB1
+          Hpft0
+          Hpft1
+          HpwEq).
+      }
+      claim HhomIncToConst :
+        path_homotopic B Tb b0 b0
+          (compose_fun unit_interval f incU)
+          constB.
+      {
+        exact (Lemma_51_1_path_homotopy_trans
+          B
+          Tb
+          b0
+          b0
+          (compose_fun unit_interval f incU)
+          (compose_fun unit_interval ft0 p)
+          constB
+          HhomIncToPft
+          HhomPftToConstB).
+      }
+      claim HclassEq :
+        path_homotopy_class_loop B Tb b0 (compose_fun unit_interval f incU)
+        =
+        path_homotopy_class_loop B Tb b0 constB.
+      {
+        exact (path_homotopy_class_loop_eq_of_path_homotopic
+          B
+          Tb
+          b0
+          (compose_fun unit_interval f incU)
+          constB
+          HhomIncToConst).
+      }
+      rewrite HclassEq.
+      reflexivity.
+Qed.
 
 (** from S79 Exercises Exercise 6 / Thm (line 4929 in algtop.tex): topological group lifting **)
 (** LATEX VERSION: Let G be a topological group with multiplication m and identity e. **)
