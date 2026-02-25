@@ -76399,6 +76399,96 @@ exact (image_sub_single_sheet_implies_sheet_equality
   HVzSlice).
 Qed.
 
+(** Proven Bob **)
+Theorem lemma54_2_sheet_non_switching_local_from_slices_witness :
+  forall N E Te B Tb p U slices F Ft q z Vq Vz:set,
+  topology_on E Te ->
+  (slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall W:set, W :e slices ->
+      homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+        (graph W (fun y:set => apply_fun p y)))) ->
+  N c= unit_square ->
+  connected_space N (subspace_topology unit_square unit_square_topology N) ->
+  continuous_map N (subspace_topology unit_square unit_square_topology N) E Te Ft ->
+  (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t)) ->
+  (forall x:set, x :e N -> apply_fun F x :e U) ->
+  q :e N ->
+  z :e N ->
+  apply_fun Ft q :e Vq ->
+  Vq :e slices ->
+  apply_fun Ft z :e Vz ->
+  Vz :e slices ->
+  Vz = Vq.
+let N E Te B Tb p U slices F Ft q z Vq Vz.
+assume HtopE Hpack HNsubSq HNconn HFtCont HcommSq HFU HqN HzN HFtqVq HVqSlice HFtzVz HVzSlice.
+claim HanchorPack :
+  exists Vqa:set,
+    apply_fun Ft q :e Vqa /\ Vqa :e slices /\
+    (forall z0 V0:set, z0 :e N ->
+      apply_fun Ft z0 :e V0 -> V0 :e slices ->
+      V0 = Vqa).
+{
+  exact (unit_square_subset_commutation_anchor_sheet_from_slices_witness
+    N
+    E
+    Te
+    B
+    Tb
+    p
+    U
+    slices
+    F
+    Ft
+    q
+    HtopE
+    Hpack
+    HNsubSq
+    HNconn
+    HFtCont
+    HcommSq
+    HFU
+    HqN).
+}
+apply HanchorPack.
+let Vqa.
+assume HVqaPack.
+claim HallEq :
+  forall z0 V0:set, z0 :e N ->
+    apply_fun Ft z0 :e V0 -> V0 :e slices ->
+    V0 = Vqa.
+{
+  exact (andER
+    (apply_fun Ft q :e Vqa /\ Vqa :e slices)
+    (forall z0 V0:set, z0 :e N ->
+      apply_fun Ft z0 :e V0 -> V0 :e slices ->
+      V0 = Vqa)
+    HVqaPack).
+}
+claim HVqEqVqa : Vq = Vqa.
+{
+  exact (HallEq
+    q
+    Vq
+    HqN
+    HFtqVq
+    HVqSlice).
+}
+claim HVzEqVqa : Vz = Vqa.
+{
+  exact (HallEq
+    z
+    Vz
+    HzN
+    HFtzVz
+    HVzSlice).
+}
+rewrite HVzEqVqa.
+rewrite <- HVqEqVqa.
+reflexivity.
+Qed.
+
 Theorem lemma54_2_sheet_non_switching_local :
   forall E Te B Tb p F Ft q z N U slices Vq Vz:set,
   pairwise_disjoint slices ->
