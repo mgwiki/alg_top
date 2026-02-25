@@ -237418,11 +237418,14 @@ claim HextA :
         (T :/\: A = Sing v)
         Hvpack).
   - claim HmeetEx : exists v0:set, v0 :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v0.
-    {
-      witness v.
-      exact Hvpack.
-    }
-    exact (lemma84_2_tree_extension
+  {
+    witness v.
+    exact Hvpack.
+  }
+  claim HglgTA :
+    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT).
+  {
+    exact (lemma84_2_tree_extension_general_linear_graph_part
       T
       ArcsT
       X
@@ -237433,6 +237436,56 @@ claim HextA :
       HA
       Hnsub
       HmeetEx).
+  }
+  claim HconnTA :
+    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)).
+  {
+    exact (lemma84_2_tree_extension_connected_part
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      A
+      Htree
+      HA
+      Hnsub
+      HmeetEx).
+  }
+  claim HnoloopTA :
+    ~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT) n path_seq x0 /\
+        (exists j:set, j :e n /\ ordsucc j /:e n /\
+          (apply_fun path_seq j) 0 1 = x0)).
+  {
+    exact (lemma84_2_tree_extension_no_closed_reduced_edge_path_part
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      A
+      Htree
+      HA
+      Hnsub
+      HmeetEx).
+  }
+  exact (lemma84_2_tree_extension_from_hypotheses_and_components
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    A
+    Htree
+    HA
+    Hnsub
+    HmeetEx
+    HglgTA
+    HconnTA
+    HnoloopTA).
 }
 exact (maximal_tree_all_vertices_if_noncontained_edges_meet_tree_and_extend
   T
@@ -237442,7 +237495,7 @@ exact (maximal_tree_all_vertices_if_noncontained_edges_meet_tree_and_extend
   Arcs
   Hmax
   HextA).
-(** blocked directly on lemma84_2_tree_extension being admitted; upgrade to Qed after that theorem is proved. **)
+(** blocked on admitted lemma84_2_tree_extension_general_linear_graph_part. **)
 Admitted.
 
 (** Proven Bob **)
