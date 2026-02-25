@@ -216518,6 +216518,62 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Theorem maximal_tree_not_subset_edge_has_outside_point_in_X :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  A :e Arcs -> ~(A c= T) ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  exists x:set, x :e X /\ x :e A /\ x /:e T.
+let T ArcsT X Tx Arcs A.
+assume Hmax HA Hnsub Hmeet.
+exact (lemma84_2_not_subset_has_outside_point_in_X
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax)
+  HA
+  Hnsub
+  Hmeet).
+Qed.
+
+(** Proven Bob **)
+Theorem maximal_tree_not_subset_edge_union_has_point_in_X_outside_original_tree :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  A :e Arcs -> ~(A c= T) ->
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  exists x:set, x :e X /\ x :e (T :\/: A) /\ x /:e T.
+let T ArcsT X Tx Arcs A.
+assume Hmax HA Hnsub Hmeet.
+exact (lemma84_2_union_has_point_in_X_outside_original_tree
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  (maximal_tree_tree_in_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Hmax)
+  HA
+  Hnsub
+  Hmeet).
+Qed.
+
+(** Proven Bob **)
 Theorem single_vertex_intersection_witness_in_both :
   forall T A v:set,
   T :/\: A = Sing v ->
