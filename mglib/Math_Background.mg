@@ -214051,6 +214051,37 @@ apply Hrpq.
 Qed.
 
 (** Proven Charlie **)
+(** helper: in an arc, removing a non-endpoint disconnects. **)
+Theorem end_points_of_arc_interior_point_disconnects :
+  forall X Tx p q z:set,
+  end_points_of_arc X Tx p q ->
+  z :e X ->
+  z <> p ->
+  z <> q ->
+  ~ connected_space (X :\: (Sing z))
+      (subspace_topology X Tx (X :\: (Sing z))).
+let X Tx p q z.
+assume Hend HzX HzNeP HzNeQ HconnZ.
+claim Hzpq : z = p \/ z = q.
+{
+  exact (end_points_of_arc_connected_complement_implies_endpoint
+    X
+    Tx
+    p
+    q
+    z
+    Hend
+    HzX
+    HconnZ).
+}
+apply Hzpq.
+- assume Heq.
+  exact (HzNeP Heq).
+- assume Heq.
+  exact (HzNeQ Heq).
+Qed.
+
+(** Proven Charlie **)
 (** helper: in a general linear graph, an arc meets other arcs only in finitely many points (in fact, at most two). **)
 Theorem general_linear_graph_arc_overlap_points_finite :
   forall X Tx Arcs E:set,
