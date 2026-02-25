@@ -192135,6 +192135,181 @@ exact (homeomorphism_metrizable_iff
   Hhome).
 Qed.
 
+(** Helper: homeomorphism preserves connectedness (reverse direction). **)
+(** Proven Bob **)
+Theorem homeomorphism_preserves_connected_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  connected_space Y Ty ->
+  connected_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HconnY.
+apply (homeomorphism_inverse_package X Tx Y Ty f Hhome).
+let g.
+assume Hgpack.
+claim HgAB :
+  continuous_map Y Ty X Tx g /\
+  (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x).
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+    Hgpack).
+}
+claim HgCont : continuous_map Y Ty X Tx g.
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g)
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+    HgAB).
+}
+claim HleftInv : forall x:set, x :e X -> apply_fun g (apply_fun f x) = x.
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g)
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+    HgAB).
+}
+claim HrightInv : forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y.
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+    Hgpack).
+}
+claim HhomeInv : homeomorphism Y Ty X Tx g.
+{
+  exact (homeomorphism_inverse_is_homeomorphism
+    X
+    Tx
+    Y
+    Ty
+    f
+    g
+    Hhome
+    HgCont
+    HleftInv
+    HrightInv).
+}
+exact (homeomorphism_preserves_connected
+  Y
+  Ty
+  X
+  Tx
+  g
+  HhomeInv
+  HconnY).
+Qed.
+
+(** Helper: connectedness is invariant under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_connected_space_iff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (connected_space X Tx <-> connected_space Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+apply iffI.
+- assume HconnX.
+  exact (homeomorphism_preserves_connected
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome
+    HconnX).
+- assume HconnY.
+  exact (homeomorphism_preserves_connected_left
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome
+    HconnY).
+Qed.
+
+(** Helper: connectedness equivalence from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_connected_space_iff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (connected_space X Tx <-> connected_space Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+apply Hhex.
+let h.
+assume Hhome.
+exact (homeomorphism_connected_space_iff
+  X
+  Tx
+  Y
+  Ty
+  h
+  Hhome).
+Qed.
+
+(** Helper: non-connectedness is invariant under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_not_connected_space_iff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ connected_space X Tx <-> ~ connected_space Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+claim Hiff :
+  connected_space X Tx <-> connected_space Y Ty.
+{
+  exact (homeomorphism_connected_space_iff
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+apply iffI.
+- assume HnX.
+  assume HconnY.
+  apply HnX.
+  exact (iffER
+    (connected_space X Tx)
+    (connected_space Y Ty)
+    Hiff
+    HconnY).
+- assume HnY.
+  assume HconnX.
+  apply HnY.
+  exact (iffEL
+    (connected_space X Tx)
+    (connected_space Y Ty)
+    Hiff
+    HconnX).
+Qed.
+
+(** Helper: non-connectedness equivalence from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_connected_space_iff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ connected_space X Tx <-> ~ connected_space Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+apply Hhex.
+let h.
+assume Hhome.
+exact (homeomorphism_not_connected_space_iff
+  X
+  Tx
+  Y
+  Ty
+  h
+  Hhome).
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
