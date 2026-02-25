@@ -205623,6 +205623,29 @@ apply andI.
         exact HidE_mem.
 Admitted. (** depends on non-proved thm82_1_existence_of_covering and thm54_6a_p_star_injective **)
 
+Theorem universal_covering_exists_of_path_lpc_semilocal_and_nonempty :
+  forall B Tb:set,
+  path_connected_space B Tb ->
+  locally_path_connected B Tb ->
+  semilocally_simply_connected B Tb ->
+  (exists b0:set, b0 :e B) ->
+  exists E Te p:set,
+    covering_map E Te B Tb p /\ simply_connected E Te.
+let B Tb.
+assume HpcB HlpcB HsemiB HbEx.
+apply HbEx.
+let b0.
+assume Hb0.
+exact (lemma82_2_basepoint_conditions_imply_universal_covering
+  B
+  Tb
+  b0
+  HpcB
+  HlpcB
+  HsemiB
+  Hb0).
+Admitted. (** depends on admitted lemma82_2_basepoint_conditions_imply_universal_covering **)
+
 (** from S82 Cor 82.2 (line 5380 in algtop.tex): universal covering existence **)
 (** LATEX VERSION: The space B has a universal covering space iff B is path connected, **)
 (** locally path connected, and semilocally simply connected. **)
