@@ -195959,6 +195959,50 @@ exact (exists_homeomorphism_not_simply_connected_of
   X Tx Y Ty Hhex HnY).
 Qed.
 
+(** Proven Bob **)
+Theorem homeomorphism_simply_connected_space_transfer :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (simply_connected X Tx <-> simply_connected Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+exact (homeomorphism_simply_connected_transfer
+  X Tx Y Ty f Hhome).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_simply_connected_space_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (simply_connected X Tx <-> simply_connected Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+exact (exists_homeomorphism_simply_connected_transfer
+  X Tx Y Ty Hhex).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_not_simply_connected_space_transfer :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ simply_connected X Tx <-> ~ simply_connected Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+exact (homeomorphism_not_simply_connected_transfer
+  X Tx Y Ty f Hhome).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_simply_connected_space_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ simply_connected X Tx <-> ~ simply_connected Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+exact (exists_homeomorphism_not_simply_connected_transfer
+  X Tx Y Ty Hhex).
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
