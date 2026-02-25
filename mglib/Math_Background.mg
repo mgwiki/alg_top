@@ -221383,6 +221383,69 @@ exact (selected_arc_obligation_subset_iff_noncontained_contradiction
   Htree').
 Qed.
 
+(** Proven Bob **)
+Theorem thm84_4_forward_component_witness_from_component_obligations :
+  forall T ArcsT X Tx Arcs A:set,
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) ->
+  connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) ->
+  ~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+        ({A} :\/: ArcsT) n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)) ->
+  exists v:set,
+    v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v /\
+    general_linear_graph (T :\/: A) (subspace_topology X Tx (T :\/: A)) ({A} :\/: ArcsT) /\
+    connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)) /\
+    ~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path (T :\/: A) (subspace_topology X Tx (T :\/: A))
+          ({A} :\/: ArcsT) n path_seq x0 /\
+        (exists j:set, j :e n /\ ordsucc j /:e n /\
+          (apply_fun path_seq j) 0 1 = x0)).
+let T ArcsT X Tx Arcs A.
+assume HmeetA HglgTA HconnTA HnoloopTA.
+apply HmeetA.
+let v.
+assume Hvpack.
+witness v.
+apply and5I.
+- exact (andEL
+    (v :e graph_vertices X Tx Arcs)
+    (T :/\: A = Sing v)
+    Hvpack).
+- exact (andER
+    (v :e graph_vertices X Tx Arcs)
+    (T :/\: A = Sing v)
+    Hvpack).
+- exact HglgTA.
+- exact HconnTA.
+- exact HnoloopTA.
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_backward_noncontained_contradiction_from_subset_from_rhs :
+  forall T ArcsT T' ArcsT' X Tx Arcs:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  T c= T' ->
+  (forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T) ->
+  forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False.
+let T ArcsT T' ArcsT' X Tx Arcs.
+assume Hrhs Htree' HTsub HsubsetSel.
+exact (selected_arc_obligation_subset_implies_noncontained_contradiction
+  T
+  T'
+  ArcsT'
+  X
+  Tx
+  Arcs
+  Htree'
+  HsubsetSel).
+Qed.
+
 Theorem thm84_4_forward_component_witness_from_split_obligations :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
