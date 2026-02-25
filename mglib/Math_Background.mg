@@ -212111,6 +212111,131 @@ exact (general_linear_graph_arc_closed_in_X
   (HFsub C HCinF)).
 Qed.
 
+(** Proven Bob **)
+(** helper: finite unions of selected arcs are closed in the subgraph topology. **)
+Theorem subgraph_of_finite_selected_union_closed :
+  forall Y X Tx Arcs F:set,
+  subgraph_of Y X Tx Arcs ->
+  F c= {B :e Arcs | B c= Y} ->
+  finite F ->
+  closed_in Y (subspace_topology X Tx Y) (Union F).
+let Y X Tx Arcs F.
+assume Hsub HFsub HfinF.
+claim Hglg : general_linear_graph X Tx Arcs.
+{
+  exact (subgraph_of_general_linear_graph
+    Y
+    X
+    Tx
+    Arcs
+    Hsub).
+}
+claim HYsub : Y c= X.
+{
+  exact (subgraph_of_subset
+    Y
+    X
+    Tx
+    Arcs
+    Hsub).
+}
+claim HFsubArcs : F c= Arcs.
+{
+  let A.
+  assume HAF.
+  exact (SepE1
+    Arcs
+    (fun B:set => B c= Y)
+    A
+    (HFsub A HAF)).
+}
+claim HclosedUF : closed_in X Tx (Union F).
+{
+  exact (general_linear_graph_finite_union_arcs_closed
+    X
+    Tx
+    Arcs
+    F
+    Hglg
+    HFsubArcs
+    HfinF).
+}
+claim HUFsubY : Union F c= Y.
+{
+  let x.
+  assume HxUF.
+  claim HxEx : exists A:set, x :e A /\ A :e F.
+  {
+    exact (UnionE
+      F
+      x
+      HxUF).
+  }
+  apply HxEx.
+  let A.
+  assume HAxF.
+  claim HxA : x :e A.
+  {
+    exact (andEL
+      (x :e A)
+      (A :e F)
+      HAxF).
+  }
+  claim HAF : A :e F.
+  {
+    exact (andER
+      (x :e A)
+      (A :e F)
+      HAxF).
+  }
+  claim HASel : A :e {B :e Arcs | B c= Y}.
+  {
+    exact (HFsub A HAF).
+  }
+  claim HAsubY : A c= Y.
+  {
+    exact (SepE2
+      Arcs
+      (fun B:set => B c= Y)
+      A
+      HASel).
+  }
+  exact (HAsubY x HxA).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (general_linear_graph_topology_on
+    X
+    Tx
+    Arcs
+    Hglg).
+}
+claim HrhsToClosed :
+  (exists C:set, closed_in X Tx C /\ Union F = C :/\: Y) ->
+  closed_in Y (subspace_topology X Tx Y) (Union F).
+{
+  exact (iffER
+    (closed_in Y (subspace_topology X Tx Y) (Union F))
+    (exists C:set, closed_in X Tx C /\ Union F = C :/\: Y)
+    (closed_in_subspace_iff_intersection
+      X
+      Tx
+      Y
+      (Union F)
+      HtopX
+      HYsub)).
+}
+apply HrhsToClosed.
+witness (Union F).
+apply andI.
+- exact HclosedUF.
+- symmetry.
+  exact (binintersect_Subq_eq_1
+    (Union F)
+    Y
+    HUFsubY).
+Qed.
+
 (** from S83 Lem 83.1 (line 5470 in algtop.tex): linear graphs are normal **)
 (** LATEX VERSION: Every linear graph X is Hausdorff; in fact, it is normal. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
