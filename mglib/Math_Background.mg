@@ -210272,6 +210272,44 @@ exact ((subgraph_of_subset
 Qed.
 
 (** Proven Bob **)
+Theorem subgraph_of_selected_union_eq_Y :
+  forall Y X Tx Arcs:set,
+  subgraph_of Y X Tx Arcs ->
+  Union {B :e Arcs | B c= Y} = Y.
+let Y X Tx Arcs.
+assume Hsub.
+set Usel := Union {B :e Arcs | B c= Y}.
+apply set_ext.
+- let x.
+  assume HxU.
+  exact ((subgraph_of_selected_union_subset_Y
+    Y
+    X
+    Tx
+    Arcs
+    Hsub)
+    x
+    HxU).
+- let x.
+  assume HxY.
+  claim HYeq : Y = Usel.
+  {
+    exact (subgraph_of_union_of_contained_arcs
+      Y
+      X
+      Tx
+      Arcs
+      Hsub).
+  }
+  exact (mem_eqR
+    x
+    Y
+    Usel
+    HYeq
+    HxY).
+Qed.
+
+(** Proven Bob **)
 Theorem subgraph_of_subset_union_arcs :
   forall Y X Tx Arcs:set,
   subgraph_of Y X Tx Arcs ->
@@ -211071,6 +211109,32 @@ exact (graph_vertices_selected_arcs_subset_union_arcs
 Qed.
 
 (** Proven Bob **)
+Theorem subgraph_of_graph_vertices_selected_subset_X :
+  forall Y X Tx Arcs:set,
+  subgraph_of Y X Tx Arcs ->
+  graph_vertices X Tx {B :e Arcs | B c= Y} c= X.
+let Y X Tx Arcs.
+assume Hsub.
+let x.
+assume HxSel.
+exact ((subgraph_of_subset
+  Y
+  X
+  Tx
+  Arcs
+  Hsub)
+  x
+  ((subgraph_of_graph_vertices_selected_subset_Y
+    Y
+    X
+    Tx
+    Arcs
+    Hsub)
+    x
+    HxSel)).
+Qed.
+
+(** Proven Bob **)
 Theorem subgraph_of_graph_vertices_selected_elem_in_Y :
   forall Y X Tx Arcs x:set,
   subgraph_of Y X Tx Arcs ->
@@ -211097,6 +211161,24 @@ Theorem subgraph_of_graph_vertices_selected_elem_in_union_arcs :
 let Y X Tx Arcs x.
 assume Hsub HxSel.
 exact ((subgraph_of_graph_vertices_selected_subset_union_arcs
+  Y
+  X
+  Tx
+  Arcs
+  Hsub)
+  x
+  HxSel).
+Qed.
+
+(** Proven Bob **)
+Theorem subgraph_of_graph_vertices_selected_elem_in_X :
+  forall Y X Tx Arcs x:set,
+  subgraph_of Y X Tx Arcs ->
+  x :e graph_vertices X Tx {B :e Arcs | B c= Y} ->
+  x :e X.
+let Y X Tx Arcs x.
+assume Hsub HxSel.
+exact ((subgraph_of_graph_vertices_selected_subset_X
   Y
   X
   Tx
