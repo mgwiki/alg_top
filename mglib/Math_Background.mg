@@ -191316,6 +191316,123 @@ apply andI.
     HnY).
 Qed.
 
+(** Helper: homeomorphism preserves second countability (forward direction). **)
+(** Proven Bob **)
+Theorem homeomorphism_preserves_second_countable_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  second_countable_space X Tx ->
+  second_countable_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HscX.
+apply (homeomorphism_inverse_package X Tx Y Ty f Hhome).
+let g.
+assume Hgpack.
+claim HgAB :
+  continuous_map Y Ty X Tx g /\
+  (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x).
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+    Hgpack).
+}
+claim HgCont : continuous_map Y Ty X Tx g.
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g)
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+    HgAB).
+}
+claim HleftInv : forall x:set, x :e X -> apply_fun g (apply_fun f x) = x.
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g)
+    (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+    HgAB).
+}
+claim HrightInv : forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y.
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g /\
+      (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+    Hgpack).
+}
+claim HhomeInv : homeomorphism Y Ty X Tx g.
+{
+  exact (homeomorphism_inverse_is_homeomorphism
+    X
+    Tx
+    Y
+    Ty
+    f
+    g
+    Hhome
+    HgCont
+    HleftInv
+    HrightInv).
+}
+exact (homeomorphism_preserves_second_countable
+  Y
+  Ty
+  X
+  Tx
+  g
+  HhomeInv
+  HscX).
+Qed.
+
+(** Helper: second countability is invariant under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_second_countable_space_iff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (second_countable_space X Tx <-> second_countable_space Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+apply iffI.
+- assume HscX.
+  exact (homeomorphism_preserves_second_countable_right
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome
+    HscX).
+- assume HscY.
+  exact (homeomorphism_preserves_second_countable
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome
+    HscY).
+Qed.
+
+(** Helper: second countability equivalence from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_second_countable_space_iff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (second_countable_space X Tx <-> second_countable_space Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+apply Hhex.
+let h.
+assume Hhome.
+exact (homeomorphism_second_countable_space_iff
+  X
+  Tx
+  Y
+  Ty
+  h
+  Hhome).
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
