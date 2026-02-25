@@ -74660,6 +74660,103 @@ exact (local_sheet_non_switching_on_unit_square_subset_from_slices_core
   HVzSlice).
 Qed.
 
+(** Infrastructure: projections from full slices witness pack **)
+(** Proven Bob **)
+Theorem slices_witness_sub :
+  forall E Te B Tb p U slices:set,
+  (slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun z:set => apply_fun p z)))) ->
+  slices c= Te.
+let E Te B Tb p U slices.
+assume Hpack.
+exact (andEL
+  (slices c= Te)
+  (pairwise_disjoint slices)
+  (andEL
+    (slices c= Te /\ pairwise_disjoint slices)
+    (Union slices = preimage_of E p U)
+    (andEL
+      (slices c= Te /\ pairwise_disjoint slices /\ Union slices = preimage_of E p U)
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (fun z:set => apply_fun p z)))
+      Hpack))).
+Qed.
+
+(** Infrastructure: pairwise disjointness from full slices witness pack **)
+(** Proven Bob **)
+Theorem slices_witness_pairwise_disjoint :
+  forall E Te B Tb p U slices:set,
+  (slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun z:set => apply_fun p z)))) ->
+  pairwise_disjoint slices.
+let E Te B Tb p U slices.
+assume Hpack.
+exact (andER
+  (slices c= Te)
+  (pairwise_disjoint slices)
+  (andEL
+    (slices c= Te /\ pairwise_disjoint slices)
+    (Union slices = preimage_of E p U)
+    (andEL
+      (slices c= Te /\ pairwise_disjoint slices /\ Union slices = preimage_of E p U)
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (fun z:set => apply_fun p z)))
+      Hpack))).
+Qed.
+
+(** Infrastructure: union-preimage equality from full slices witness pack **)
+(** Proven Bob **)
+Theorem slices_witness_union_eq_preimage :
+  forall E Te B Tb p U slices:set,
+  (slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun z:set => apply_fun p z)))) ->
+  Union slices = preimage_of E p U.
+let E Te B Tb p U slices.
+assume Hpack.
+exact (andER
+  (slices c= Te /\ pairwise_disjoint slices)
+  (Union slices = preimage_of E p U)
+  (andEL
+    (slices c= Te /\ pairwise_disjoint slices /\ Union slices = preimage_of E p U)
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun z:set => apply_fun p z)))
+    Hpack)).
+Qed.
+
+(** Infrastructure: sheet homeomorphism clause from full slices witness pack **)
+(** Proven Bob **)
+Theorem slices_witness_homeomorphism_clause :
+  forall E Te B Tb p U slices:set,
+  (slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun z:set => apply_fun p z)))) ->
+  forall V:set, V :e slices ->
+    homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+      (graph V (fun z:set => apply_fun p z)).
+let E Te B Tb p U slices.
+assume Hpack.
+exact (andER
+  (slices c= Te /\ pairwise_disjoint slices /\ Union slices = preimage_of E p U)
+  (forall V:set, V :e slices ->
+    homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+      (graph V (fun z:set => apply_fun p z)))
+  Hpack).
+Qed.
+
 Theorem lemma54_2_sheet_non_switching_local :
   forall E Te B Tb p F Ft q z N U slices Vq Vz:set,
   pairwise_disjoint slices ->
