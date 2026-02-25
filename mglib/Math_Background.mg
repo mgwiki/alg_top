@@ -219507,6 +219507,89 @@ claim HAsubT : A c= T.
 (** blocked via maximal_tree_edge_meeting_tree_forces_subset -> lemma84_2_tree_extension. **)
 Admitted.
 
+Theorem maximal_tree_all_vertices_if_noncontained_edges_meet_tree_in_single_vertex :
+  forall T ArcsT X Tx Arcs:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  (forall A:set, A :e Arcs -> ~(A c= T) ->
+    exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v) ->
+  graph_vertices X Tx Arcs c= T.
+let T ArcsT X Tx Arcs.
+assume Hmax Hmeetall.
+let x.
+assume HxVert.
+apply (xm (x :e T)).
+- assume HxT.
+  exact HxT.
+- assume HxNotT.
+  claim HAwit : exists A:set, A :e Arcs /\ ~(A c= T) /\ x :e A.
+  {
+    exact (maximal_tree_vertex_outside_yields_edge_not_subset
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      x
+      Hmax
+      HxVert
+      HxNotT).
+  }
+  apply HAwit.
+  let A.
+  assume HApack.
+  claim HAArcs : A :e Arcs.
+  {
+    exact (andEL
+      (A :e Arcs)
+      (~(A c= T))
+      (andEL
+        (A :e Arcs /\ ~(A c= T))
+        (x :e A)
+        HApack)).
+  }
+  claim Hnsub : ~(A c= T).
+  {
+    exact (andER
+      (A :e Arcs)
+      (~(A c= T))
+      (andEL
+        (A :e Arcs /\ ~(A c= T))
+        (x :e A)
+        HApack)).
+  }
+  claim HxA : x :e A.
+  {
+    exact (andER
+      (A :e Arcs /\ ~(A c= T))
+      (x :e A)
+      HApack).
+  }
+  claim Hmeet : exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
+  {
+    exact (Hmeetall
+      A
+      HAArcs
+      Hnsub).
+  }
+  exact (FalseE
+    ((maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      x
+      A
+      Hmax
+      HxVert
+      HxNotT
+      HAArcs
+      Hmeet)
+      HxA)
+    (x :e T)).
+(** blocked via maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge -> lemma84_2_tree_extension. **)
+Admitted.
+
 (** from S84 Lem 84.2 converse (line 5601 in algtop.tex): finite tree decomposition **)
 (** LATEX VERSION: If T is a finite tree with more than one edge, then T = T0 union A **)
 (** where T0 is a tree and A intersects T0 in a single vertex. **)
