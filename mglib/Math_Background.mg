@@ -192800,6 +192800,466 @@ apply andI.
     HnY).
 Qed.
 
+(** Helper: non-Hausdorffness is invariant under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_not_Hausdorff_space_iff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ Hausdorff_space X Tx <-> ~ Hausdorff_space Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+claim Hiff :
+  Hausdorff_space X Tx <-> Hausdorff_space Y Ty.
+{
+  exact (homeomorphism_Hausdorff_space_iff
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+apply iffI.
+- assume HnX.
+  assume HHY.
+  apply HnX.
+  exact (iffER
+    (Hausdorff_space X Tx)
+    (Hausdorff_space Y Ty)
+    Hiff
+    HHY).
+- assume HnY.
+  assume HHX.
+  apply HnY.
+  exact (iffEL
+    (Hausdorff_space X Tx)
+    (Hausdorff_space Y Ty)
+    Hiff
+    HHX).
+Qed.
+
+(** Helper: non-Hausdorffness equivalence from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_Hausdorff_space_iff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ Hausdorff_space X Tx <-> ~ Hausdorff_space Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+apply Hhex.
+let h.
+assume Hhome.
+exact (homeomorphism_not_Hausdorff_space_iff
+  X
+  Tx
+  Y
+  Ty
+  h
+  Hhome).
+Qed.
+
+(** Helper: non-Hausdorffness transfer implications from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_Hausdorff_space_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ Hausdorff_space X Tx -> ~ Hausdorff_space Y Ty) /\
+  (~ Hausdorff_space Y Ty -> ~ Hausdorff_space X Tx).
+let X Tx Y Ty.
+assume Hhex.
+claim Hiff :
+  (~ Hausdorff_space X Tx <-> ~ Hausdorff_space Y Ty).
+{
+  exact (exists_homeomorphism_not_Hausdorff_space_iff
+    X
+    Tx
+    Y
+    Ty
+    Hhex).
+}
+apply andI.
+- assume HnX.
+  exact (iffEL
+    (~ Hausdorff_space X Tx)
+    (~ Hausdorff_space Y Ty)
+    Hiff
+    HnX).
+- assume HnY.
+  exact (iffER
+    (~ Hausdorff_space X Tx)
+    (~ Hausdorff_space Y Ty)
+    Hiff
+    HnY).
+Qed.
+
+(** Helper: non-local-compactness is invariant under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_not_locally_compact_iff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ locally_compact X Tx <-> ~ locally_compact Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+claim Hiff :
+  locally_compact X Tx <-> locally_compact Y Ty.
+{
+  exact (homeomorphism_locally_compact_iff
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+apply iffI.
+- assume HnX.
+  assume HlocY.
+  apply HnX.
+  exact (iffER
+    (locally_compact X Tx)
+    (locally_compact Y Ty)
+    Hiff
+    HlocY).
+- assume HnY.
+  assume HlocX.
+  apply HnY.
+  exact (iffEL
+    (locally_compact X Tx)
+    (locally_compact Y Ty)
+    Hiff
+    HlocX).
+Qed.
+
+(** Helper: non-local-compactness equivalence from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_locally_compact_iff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ locally_compact X Tx <-> ~ locally_compact Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+apply Hhex.
+let h.
+assume Hhome.
+exact (homeomorphism_not_locally_compact_iff
+  X
+  Tx
+  Y
+  Ty
+  h
+  Hhome).
+Qed.
+
+(** Helper: non-local-compactness transfer implications from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_locally_compact_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ locally_compact X Tx -> ~ locally_compact Y Ty) /\
+  (~ locally_compact Y Ty -> ~ locally_compact X Tx).
+let X Tx Y Ty.
+assume Hhex.
+claim Hiff :
+  (~ locally_compact X Tx <-> ~ locally_compact Y Ty).
+{
+  exact (exists_homeomorphism_not_locally_compact_iff
+    X
+    Tx
+    Y
+    Ty
+    Hhex).
+}
+apply andI.
+- assume HnX.
+  exact (iffEL
+    (~ locally_compact X Tx)
+    (~ locally_compact Y Ty)
+    Hiff
+    HnX).
+- assume HnY.
+  exact (iffER
+    (~ locally_compact X Tx)
+    (~ locally_compact Y Ty)
+    Hiff
+    HnY).
+Qed.
+
+(** Helper: non-regularity is invariant under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_not_regular_space_iff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ regular_space X Tx <-> ~ regular_space Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+claim Hiff :
+  regular_space X Tx <-> regular_space Y Ty.
+{
+  exact (homeomorphism_regular_space_iff
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+apply iffI.
+- assume HnX.
+  assume HregY.
+  apply HnX.
+  exact (iffER
+    (regular_space X Tx)
+    (regular_space Y Ty)
+    Hiff
+    HregY).
+- assume HnY.
+  assume HregX.
+  apply HnY.
+  exact (iffEL
+    (regular_space X Tx)
+    (regular_space Y Ty)
+    Hiff
+    HregX).
+Qed.
+
+(** Helper: non-regularity equivalence from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_regular_space_iff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ regular_space X Tx <-> ~ regular_space Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+apply Hhex.
+let h.
+assume Hhome.
+exact (homeomorphism_not_regular_space_iff
+  X
+  Tx
+  Y
+  Ty
+  h
+  Hhome).
+Qed.
+
+(** Helper: non-regularity transfer implications from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_regular_space_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ regular_space X Tx -> ~ regular_space Y Ty) /\
+  (~ regular_space Y Ty -> ~ regular_space X Tx).
+let X Tx Y Ty.
+assume Hhex.
+claim Hiff :
+  (~ regular_space X Tx <-> ~ regular_space Y Ty).
+{
+  exact (exists_homeomorphism_not_regular_space_iff
+    X
+    Tx
+    Y
+    Ty
+    Hhex).
+}
+apply andI.
+- assume HnX.
+  exact (iffEL
+    (~ regular_space X Tx)
+    (~ regular_space Y Ty)
+    Hiff
+    HnX).
+- assume HnY.
+  exact (iffER
+    (~ regular_space X Tx)
+    (~ regular_space Y Ty)
+    Hiff
+    HnY).
+Qed.
+
+(** Helper: non-normality is invariant under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_not_normal_space_iff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ normal_space X Tx <-> ~ normal_space Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+claim Hiff :
+  normal_space X Tx <-> normal_space Y Ty.
+{
+  exact (homeomorphism_normal_space_iff
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+apply iffI.
+- assume HnX.
+  assume HnormY.
+  apply HnX.
+  exact (iffER
+    (normal_space X Tx)
+    (normal_space Y Ty)
+    Hiff
+    HnormY).
+- assume HnY.
+  assume HnormX.
+  apply HnY.
+  exact (iffEL
+    (normal_space X Tx)
+    (normal_space Y Ty)
+    Hiff
+    HnormX).
+Qed.
+
+(** Helper: non-normality equivalence from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_normal_space_iff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ normal_space X Tx <-> ~ normal_space Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+apply Hhex.
+let h.
+assume Hhome.
+exact (homeomorphism_not_normal_space_iff
+  X
+  Tx
+  Y
+  Ty
+  h
+  Hhome).
+Qed.
+
+(** Helper: non-normality transfer implications from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_normal_space_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ normal_space X Tx -> ~ normal_space Y Ty) /\
+  (~ normal_space Y Ty -> ~ normal_space X Tx).
+let X Tx Y Ty.
+assume Hhex.
+claim Hiff :
+  (~ normal_space X Tx <-> ~ normal_space Y Ty).
+{
+  exact (exists_homeomorphism_not_normal_space_iff
+    X
+    Tx
+    Y
+    Ty
+    Hhex).
+}
+apply andI.
+- assume HnX.
+  exact (iffEL
+    (~ normal_space X Tx)
+    (~ normal_space Y Ty)
+    Hiff
+    HnX).
+- assume HnY.
+  exact (iffER
+    (~ normal_space X Tx)
+    (~ normal_space Y Ty)
+    Hiff
+    HnY).
+Qed.
+
+(** Helper: non-complete-regularity is invariant under homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_not_completely_regular_space_iff :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  (~ completely_regular_space X Tx <-> ~ completely_regular_space Y Ty).
+let X Tx Y Ty f.
+assume Hhome.
+claim Hiff :
+  completely_regular_space X Tx <-> completely_regular_space Y Ty.
+{
+  exact (homeomorphism_completely_regular_space_iff
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+apply iffI.
+- assume HnX.
+  assume HcrY.
+  apply HnX.
+  exact (iffER
+    (completely_regular_space X Tx)
+    (completely_regular_space Y Ty)
+    Hiff
+    HcrY).
+- assume HnY.
+  assume HcrX.
+  apply HnY.
+  exact (iffEL
+    (completely_regular_space X Tx)
+    (completely_regular_space Y Ty)
+    Hiff
+    HcrX).
+Qed.
+
+(** Helper: non-complete-regularity equivalence from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_completely_regular_space_iff :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ completely_regular_space X Tx <-> ~ completely_regular_space Y Ty).
+let X Tx Y Ty.
+assume Hhex.
+apply Hhex.
+let h.
+assume Hhome.
+exact (homeomorphism_not_completely_regular_space_iff
+  X
+  Tx
+  Y
+  Ty
+  h
+  Hhome).
+Qed.
+
+(** Helper: non-complete-regularity transfer implications from existence of a homeomorphism. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_not_completely_regular_space_transfer :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  (~ completely_regular_space X Tx -> ~ completely_regular_space Y Ty) /\
+  (~ completely_regular_space Y Ty -> ~ completely_regular_space X Tx).
+let X Tx Y Ty.
+assume Hhex.
+claim Hiff :
+  (~ completely_regular_space X Tx <-> ~ completely_regular_space Y Ty).
+{
+  exact (exists_homeomorphism_not_completely_regular_space_iff
+    X
+    Tx
+    Y
+    Ty
+    Hhex).
+}
+apply andI.
+- assume HnX.
+  exact (iffEL
+    (~ completely_regular_space X Tx)
+    (~ completely_regular_space Y Ty)
+    Hiff
+    HnX).
+- assume HnY.
+  exact (iffER
+    (~ completely_regular_space X Tx)
+    (~ completely_regular_space Y Ty)
+    Hiff
+    HnY).
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
