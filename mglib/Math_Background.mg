@@ -221507,7 +221507,56 @@ Theorem thm84_4_forward_component_witness_from_split_obligations :
           ({A} :\/: ArcsT) n path_seq x0 /\
           (exists j:set, j :e n /\ ordsucc j /:e n /\
             (apply_fun path_seq j) 0 1 = x0))).
-admit.
+let T ArcsT X Tx Arcs A.
+assume Hmax HA Hnsub.
+exact (thm84_4_forward_component_witness_from_component_obligations
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  A
+  (thm84_4_forward_meeting_obligation
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    A
+    Hmax
+    HA
+    Hnsub)
+  (thm84_4_forward_glg_obligation
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    A
+    Hmax
+    HA
+    Hnsub)
+  (thm84_4_forward_connected_obligation
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    A
+    Hmax
+    HA
+    Hnsub)
+  (thm84_4_forward_no_loop_obligation
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    A
+    Hmax
+    HA
+    Hnsub)).
+(** blocked only on the four forward obligation theorems above. **)
 Admitted.
 
 (** Proven Bob **)
