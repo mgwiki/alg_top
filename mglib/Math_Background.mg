@@ -218134,6 +218134,51 @@ exact (maximal_tree_tree_extension_outside_point_contradiction
 Qed.
 
 (** Proven Bob **)
+Theorem maximal_tree_tree_extension_edge_subset_iff_no_outside_points :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  tree_in_graph (T :\/: A) ({A} :\/: ArcsT) X Tx Arcs ->
+  (A c= T <-> ~ (exists x:set, x :e A /\ x /:e T)).
+let T ArcsT X Tx Arcs A.
+assume Hmax HtreeExt.
+apply iffI.
+- assume HAsubT.
+  assume Hout.
+  apply Hout.
+  let x.
+  assume Hxpack.
+  exact ((andER
+    (x :e A)
+    (x /:e T)
+    Hxpack)
+    (HAsubT
+      x
+      (andEL
+        (x :e A)
+        (x /:e T)
+        Hxpack))).
+- assume HnoOut.
+  let x.
+  assume HxA.
+  apply (xm (x :e T)).
+  * assume HxT.
+    exact HxT.
+  * assume HxNotT.
+    claim Hout : exists y:set, y :e A /\ y /:e T.
+    {
+      witness x.
+      exact (andI
+        (x :e A)
+        (x /:e T)
+        HxA
+        HxNotT).
+    }
+    exact (FalseE
+      (HnoOut Hout)
+      (x :e T)).
+Qed.
+
+(** Proven Bob **)
 Theorem maximal_tree_noncontained_edge_tree_extension_contradiction :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
