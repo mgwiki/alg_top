@@ -205884,6 +205884,62 @@ exact (semilocally_simply_connected_nonempty_has_point_with_witness_subset
     Huniv)).
 Qed.
 
+(** Proven Bob **)
+Theorem universal_covering_has_point_and_open_neighborhood_subset :
+  forall B Tb:set,
+  (exists E Te p:set,
+    covering_map E Te B Tb p /\ simply_connected E Te) ->
+  exists b0 U:set, b0 :e B /\ U :e Tb /\ b0 :e U /\ U c= B.
+let B Tb.
+assume Huniv.
+apply (universal_covering_has_point_with_semilocal_witness_subset
+  B
+  Tb
+  Huniv).
+let b0.
+assume Hb0Pack.
+apply Hb0Pack.
+let U.
+assume Hpack.
+witness b0.
+witness U.
+exact (andEL
+  (b0 :e B /\ U :e Tb /\ b0 :e U /\ U c= B)
+  (forall cls:set,
+    cls :e fundamental_group U (subspace_topology B Tb U) b0 ->
+    apply_fun
+      (induced_homomorphism U (subspace_topology B Tb U) b0 B Tb b0
+        (graph U (fun x:set => x)))
+      cls =
+    fundamental_group_id B Tb b0)
+  Hpack).
+Qed.
+
+(** Proven Bob **)
+Theorem universal_covering_has_point_and_open_neighborhood :
+  forall B Tb:set,
+  (exists E Te p:set,
+    covering_map E Te B Tb p /\ simply_connected E Te) ->
+  exists b0 U:set, b0 :e B /\ U :e Tb /\ b0 :e U.
+let B Tb.
+assume Huniv.
+apply (universal_covering_has_point_and_open_neighborhood_subset
+  B
+  Tb
+  Huniv).
+let b0.
+assume Hb0Pack.
+apply Hb0Pack.
+let U.
+assume Hpack.
+witness b0.
+witness U.
+exact (andEL
+  (b0 :e B /\ U :e Tb /\ b0 :e U)
+  (U c= B)
+  Hpack).
+Qed.
+
 (** Infrastructure for Cor 82.2: RHS + chosen basepoint implies universal cover **)
 Theorem lemma82_2_basepoint_conditions_imply_universal_covering :
   forall B Tb b0:set,
