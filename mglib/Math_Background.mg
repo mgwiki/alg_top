@@ -226675,6 +226675,158 @@ exact (thm84_4_backward_selected_arc_subset_iff_noncontained_from_component_obli
 Qed.
 
 (** Proven Bob **)
+Theorem thm84_4_backward_noncontained_contradiction_from_component_obligation_families_via_bridges :
+  forall T ArcsT T' ArcsT' X Tx Arcs:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  T c= T' ->
+  ((tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+    forall T0 ArcsT0:set,
+      tree_in_graph T0 ArcsT0 X Tx Arcs ->
+      T c= T0 ->
+      forall A:set, A :e {B :e Arcs | B c= T0} ->
+        exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q) ->
+  ((tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+    forall T0 ArcsT0 A p q:set,
+      tree_in_graph T0 ArcsT0 X Tx Arcs ->
+      T c= T0 ->
+      A :e {B :e Arcs | B c= T0} ->
+      end_points_of_arc A (subspace_topology X Tx A) p q ->
+      p :e T /\ q :e T ->
+      A c= T) ->
+  forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False.
+let T ArcsT T' ArcsT' X Tx Arcs.
+assume Hrhs Htree' HTsub HwitFam HcloseFam.
+exact (thm84_4_backward_noncontained_contradiction_from_stub_obligation_families_via_bridges
+  T
+  ArcsT
+  T'
+  ArcsT'
+  X
+  Tx
+  Arcs
+  Hrhs
+  Htree'
+  HTsub
+  HwitFam
+  HcloseFam).
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_backward_selected_arc_subset_from_component_obligation_families_via_bridges :
+  forall T ArcsT T' ArcsT' X Tx Arcs:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  T c= T' ->
+  ((tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+    forall T0 ArcsT0:set,
+      tree_in_graph T0 ArcsT0 X Tx Arcs ->
+      T c= T0 ->
+      forall A:set, A :e {B :e Arcs | B c= T0} ->
+        exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q) ->
+  ((tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+    forall T0 ArcsT0 A p q:set,
+      tree_in_graph T0 ArcsT0 X Tx Arcs ->
+      T c= T0 ->
+      A :e {B :e Arcs | B c= T0} ->
+      end_points_of_arc A (subspace_topology X Tx A) p q ->
+      p :e T /\ q :e T ->
+      A c= T) ->
+  forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T.
+let T ArcsT T' ArcsT' X Tx Arcs.
+assume Hrhs Htree' HTsub HwitFam HcloseFam.
+exact (thm84_4_backward_selected_arc_subset_from_stub_obligation_families_via_bridges
+  T
+  ArcsT
+  T'
+  ArcsT'
+  X
+  Tx
+  Arcs
+  Hrhs
+  Htree'
+  HTsub
+  HwitFam
+  HcloseFam).
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_backward_noncontained_contradiction_from_split_obligation_families_via_bridges :
+  forall T ArcsT T' ArcsT' X Tx Arcs:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  T c= T' ->
+  ((tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+    forall T0 ArcsT0:set,
+      tree_in_graph T0 ArcsT0 X Tx Arcs ->
+      T c= T0 ->
+      forall A:set, A :e {B :e Arcs | B c= T0} ->
+        exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q) ->
+  ((tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+    forall T0 ArcsT0 A p q:set,
+      tree_in_graph T0 ArcsT0 X Tx Arcs ->
+      T c= T0 ->
+      A :e {B :e Arcs | B c= T0} ->
+      end_points_of_arc A (subspace_topology X Tx A) p q ->
+      p :e T /\ q :e T ->
+      A c= T) ->
+  forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False.
+let T ArcsT T' ArcsT' X Tx Arcs.
+assume Hrhs Htree' HTsub HwitFam HcloseFam.
+exact (thm84_4_backward_noncontained_contradiction_from_component_obligation_families_via_bridges
+  T
+  ArcsT
+  T'
+  ArcsT'
+  X
+  Tx
+  Arcs
+  Hrhs
+  Htree'
+  HTsub
+  HwitFam
+  HcloseFam).
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_backward_selected_arc_subset_from_split_obligation_families_via_bridges :
+  forall T ArcsT T' ArcsT' X Tx Arcs:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  T c= T' ->
+  ((tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+    forall T0 ArcsT0:set,
+      tree_in_graph T0 ArcsT0 X Tx Arcs ->
+      T c= T0 ->
+      forall A:set, A :e {B :e Arcs | B c= T0} ->
+        exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q) ->
+  ((tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+    forall T0 ArcsT0 A p q:set,
+      tree_in_graph T0 ArcsT0 X Tx Arcs ->
+      T c= T0 ->
+      A :e {B :e Arcs | B c= T0} ->
+      end_points_of_arc A (subspace_topology X Tx A) p q ->
+      p :e T /\ q :e T ->
+      A c= T) ->
+  forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T.
+let T ArcsT T' ArcsT' X Tx Arcs.
+assume Hrhs Htree' HTsub HwitFam HcloseFam.
+exact (thm84_4_backward_selected_arc_subset_from_component_obligation_families_via_bridges
+  T
+  ArcsT
+  T'
+  ArcsT'
+  X
+  Tx
+  Arcs
+  Hrhs
+  Htree'
+  HTsub
+  HwitFam
+  HcloseFam).
+Qed.
+
+(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_split_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
