@@ -198311,6 +198311,151 @@ exact (iffER
   HscY).
 Qed.
 
+(** Compatibility aliases with explicit _space suffix. **)
+(** Proven Bob **)
+Theorem homeomorphism_preserves_connected_space_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  connected_space X Tx ->
+  connected_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HconnX.
+exact (homeomorphism_preserves_connected_right
+  X Tx Y Ty f Hhome HconnX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_connected_space_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  connected_space Y Ty ->
+  connected_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HconnY.
+exact (homeomorphism_preserves_connected_left
+  X Tx Y Ty f Hhome HconnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_second_countable_space_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  second_countable_space X Tx ->
+  second_countable_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HscX.
+exact (homeomorphism_preserves_second_countable_right
+  X Tx Y Ty f Hhome HscX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_second_countable_space_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  second_countable_space Y Ty ->
+  second_countable_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HscY.
+exact (homeomorphism_preserves_second_countable_left
+  X Tx Y Ty f Hhome HscY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_Hausdorff_space_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  Hausdorff_space X Tx ->
+  Hausdorff_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HHX.
+exact (homeomorphism_preserves_Hausdorff_right
+  X Tx Y Ty f Hhome HHX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_Hausdorff_space_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  Hausdorff_space Y Ty ->
+  Hausdorff_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HHY.
+exact (homeomorphism_preserves_Hausdorff_left
+  X Tx Y Ty f Hhome HHY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_connected_space_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  connected_space X Tx ->
+  connected_space Y Ty.
+let X Tx Y Ty.
+assume Hhex HconnX.
+exact (exists_homeomorphism_preserves_connected_right
+  X Tx Y Ty Hhex HconnX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_connected_space_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  connected_space Y Ty ->
+  connected_space X Tx.
+let X Tx Y Ty.
+assume Hhex HconnY.
+exact (exists_homeomorphism_preserves_connected_left
+  X Tx Y Ty Hhex HconnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_second_countable_space_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  second_countable_space X Tx ->
+  second_countable_space Y Ty.
+let X Tx Y Ty.
+assume Hhex HscX.
+exact (exists_homeomorphism_preserves_second_countable_right
+  X Tx Y Ty Hhex HscX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_second_countable_space_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  second_countable_space Y Ty ->
+  second_countable_space X Tx.
+let X Tx Y Ty.
+assume Hhex HscY.
+exact (exists_homeomorphism_preserves_second_countable_left
+  X Tx Y Ty Hhex HscY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_Hausdorff_space_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  Hausdorff_space X Tx ->
+  Hausdorff_space Y Ty.
+let X Tx Y Ty.
+assume Hhex HHX.
+exact (exists_homeomorphism_preserves_Hausdorff_right
+  X Tx Y Ty Hhex HHX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_Hausdorff_space_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  Hausdorff_space Y Ty ->
+  Hausdorff_space X Tx.
+let X Tx Y Ty.
+assume Hhex HHY.
+exact (exists_homeomorphism_preserves_Hausdorff_left
+  X Tx Y Ty Hhex HHY).
+Qed.
+
 (** Side-labeled preservation aliases for negated invariants. **)
 (** Proven Bob **)
 Theorem homeomorphism_preserves_not_path_connected_space_right :
