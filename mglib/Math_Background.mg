@@ -228439,15 +228439,159 @@ claim HinterFamTA :
 	        rewrite HtopAeqTA.
 	        exact Hq.
 	      }
-	      claim HVEp :
-	        exists r:set, end_points_of_arc V
-	          (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) v r \/
-	          end_points_of_arc V
-	            (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) r v.
-	      {
-	        (** Remaining mixed-case endpoint witness for V at v. **)
-	        admit.
-	      }
+		      claim HVEp :
+		        exists r:set, end_points_of_arc V
+		          (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) v r \/
+		          end_points_of_arc V
+		            (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) r v.
+		      {
+		        claim HvV : v :e V.
+		        {
+		          exact (binintersectE2
+		            U
+		            V
+		            v
+		            HvUV).
+		        }
+		        claim HarcV_T : arc V (subspace_topology T (subspace_topology X Tx T) V).
+		        {
+		          exact (andER
+		            (V c= T)
+		            (arc V (subspace_topology T (subspace_topology X Tx T) V))
+		            (general_linear_graph_arc_data
+		              T
+		              (subspace_topology X Tx T)
+		              ArcsT
+		              V
+		              HglgT
+		              HVArcsT)).
+		        }
+		        claim HVSubTA : V c= (T :\/: A).
+		        {
+		          exact (Subq_tra
+		            V
+		            T
+		            (T :\/: A)
+		            HVSubT
+		            (binunion_Subq_1
+		              T
+		              A)).
+		        }
+		        claim HtopVeqX_fromT :
+		          subspace_topology T (subspace_topology X Tx T) V =
+		          subspace_topology X Tx V.
+		        {
+		          exact (ex16_1_subspace_transitive
+		            X
+		            Tx
+		            T
+		            V
+		            HtopX
+		            HTsubX
+		            HVSubT).
+		        }
+		        claim HtopVeqX_fromTA :
+		          subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V =
+		          subspace_topology X Tx V.
+		        {
+		          exact (ex16_1_subspace_transitive
+		            X
+		            Tx
+		            (T :\/: A)
+		            V
+		            HtopX
+		            HTAsubX
+		            HVSubTA).
+		        }
+		        claim HarcV_TA :
+		          arc V (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V).
+		        {
+		          rewrite HtopVeqX_fromTA.
+		          rewrite <- HtopVeqX_fromT.
+		          exact HarcV_T.
+		        }
+		        claim HVEp_if_data :
+		          (exists p q:set, end_points_of_arc V
+		            (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) p q) ->
+		          connected_space
+		            (V :\: (Sing v))
+		            (subspace_topology
+		              V
+		              (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V)
+		              (V :\: (Sing v))) ->
+		          exists r:set, end_points_of_arc V
+		            (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) v r \/
+		            end_points_of_arc V
+		              (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) r v.
+		        {
+		          assume Hexpq.
+		          assume HconnVminus.
+		          apply Hexpq.
+		          let p.
+		          assume Hp.
+		          apply Hp.
+		          let q.
+		          assume Hendpq.
+		          claim Hvpq : v = p \/ v = q.
+		          {
+		            exact (end_points_of_arc_connected_complement_implies_endpoint
+		              V
+		              (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V)
+		              p
+		              q
+		              v
+		              Hendpq
+		              HvV
+		              HconnVminus).
+		          }
+		          apply Hvpq.
+		          - assume Hvp.
+		            witness q.
+		            apply orIL.
+		            rewrite Hvp.
+		            exact Hendpq.
+		          - assume Hvq.
+		            witness p.
+		            apply orIR.
+		            rewrite Hvq.
+		            exact Hendpq.
+		        }
+		        claim HVEpData :
+		          (exists p q:set, end_points_of_arc V
+		            (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) p q) /\
+		          connected_space
+		            (V :\: (Sing v))
+		            (subspace_topology
+		              V
+		              (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V)
+		              (V :\: (Sing v))).
+		        {
+		          (** Remaining mixed-case local data:
+		              endpoint witness existence on V and connectedness of V\\{v}. **)
+		          admit.
+		        }
+		        exact (HVEp_if_data
+		          (andEL
+		            (exists p q:set, end_points_of_arc V
+		              (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) p q)
+		            (connected_space
+		              (V :\: (Sing v))
+		              (subspace_topology
+		                V
+		                (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V)
+		                (V :\: (Sing v))))
+			            HVEpData)
+			          (andER
+			            (exists p q:set, end_points_of_arc V
+			              (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) p q)
+		            (connected_space
+		              (V :\: (Sing v))
+		              (subspace_topology
+		                V
+			                (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V)
+			                (V :\: (Sing v))))
+			            HVEpData)).
+			      }
 	      apply orIR.
 	      witness v.
 	      apply andI.
