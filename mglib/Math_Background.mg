@@ -225041,6 +225041,35 @@ exact (tree_in_graph_selected_arc_endpoints_in_target_from_graph_vertex_cover
 Qed.
 
 (** Proven Bob **)
+Theorem thm84_4_backward_selected_arc_endpoints_in_target_from_rhs_via_bridges :
+  forall T ArcsT T' ArcsT' X Tx Arcs A p q:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  T c= T' ->
+  A :e {B :e Arcs | B c= T'} ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  p :e T /\ q :e T.
+let T ArcsT T' ArcsT' X Tx Arcs A p q.
+assume Hrhs Htree' HTsub HASel Hend.
+exact (thm84_4_backward_selected_arc_endpoints_in_target_from_rhs
+  T
+  ArcsT
+  T'
+  ArcsT'
+  X
+  Tx
+  Arcs
+  A
+  p
+  q
+  Hrhs
+  Htree'
+  HTsub
+  HASel
+  Hend).
+Qed.
+
+(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_obligations :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -225448,6 +225477,50 @@ exact (selected_arc_obligation_subset_iff_noncontained_contradiction
   Tx
   Arcs
   Htree').
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_backward_selected_arc_subset_iff_noncontained_from_rhs_via_bridges :
+  forall T ArcsT T' ArcsT' X Tx Arcs:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  T c= T' ->
+  ((forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T) <->
+   (forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False)).
+let T ArcsT T' ArcsT' X Tx Arcs.
+assume Hrhs Htree' HTsub.
+exact (thm84_4_backward_selected_arc_subset_iff_noncontained_from_rhs
+  T
+  ArcsT
+  T'
+  ArcsT'
+  X
+  Tx
+  Arcs
+  Hrhs
+  Htree'
+  HTsub).
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_backward_noncontained_contradiction_from_subset_from_rhs_via_bridges :
+  forall T ArcsT T' ArcsT' X Tx Arcs:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  T c= T' ->
+  (forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T) ->
+  forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False.
+let T ArcsT T' ArcsT' X Tx Arcs.
+assume Hrhs Htree' HTsub HsubsetSel.
+exact (selected_arc_obligation_subset_implies_noncontained_contradiction
+  T
+  T'
+  ArcsT'
+  X
+  Tx
+  Arcs
+  Htree'
+  HsubsetSel).
 Qed.
 
 (** Proven Bob **)
