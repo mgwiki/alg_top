@@ -220834,6 +220834,65 @@ exact (andI
       HTsub)).
 Qed.
 
+(** Proven Bob **)
+Theorem selected_arc_subset_from_noncontained_selected_arc_contradiction :
+  forall T T' ArcsT' X Tx Arcs:set,
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  (forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False) ->
+  (forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T).
+let T T' ArcsT' X Tx Arcs.
+assume Htree' Hcontra.
+let A.
+assume HASel.
+apply (xm (A c= T)).
+- assume HAsubT.
+  exact HAsubT.
+- assume Hnsub.
+  exact (FalseE
+    (Hcontra
+      A
+      HASel
+      Hnsub)
+    (A c= T)).
+Qed.
+
+(** Proven Bob **)
+Theorem thm84_4_backward_maximality_from_selected_arc_noncontained_contradiction :
+  forall T ArcsT X Tx Arcs:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  graph_vertices X Tx Arcs c= T ->
+  (forall T' ArcsT':set,
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' ->
+    (forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False)) ->
+  maximal_tree T ArcsT X Tx Arcs.
+let T ArcsT X Tx Arcs.
+assume Htree HVT HcontraCond.
+apply (thm84_4_backward_maximality_from_selected_arc_subset_condition
+  T
+  ArcsT
+  X
+  Tx
+  Arcs
+  Htree
+  HVT).
+let T' ArcsT'.
+assume Htree' HTsub.
+exact (selected_arc_subset_from_noncontained_selected_arc_contradiction
+  T
+  T'
+  ArcsT'
+  X
+  Tx
+  Arcs
+  Htree'
+  (HcontraCond
+    T'
+    ArcsT'
+    Htree'
+    HTsub)).
+Qed.
+
 (** from S84 Lem 84.2 converse (line 5601 in algtop.tex): finite tree decomposition **)
 (** LATEX VERSION: If T is a finite tree with more than one edge, then T = T0 union A **)
 (** where T0 is a tree and A intersects T0 in a single vertex. **)
@@ -220947,21 +221006,21 @@ apply iffI.
       (graph_vertices X Tx Arcs c= T)
       Hrhs).
   }
-  claim HallCond :
+  claim HcontraCond :
     forall T' ArcsT':set,
     tree_in_graph T' ArcsT' X Tx Arcs ->
     T c= T' ->
-    (forall A:set, A :e {B :e Arcs | B c= T'} -> A c= T).
+    (forall A:set, A :e {B :e Arcs | B c= T'} -> ~(A c= T) -> False).
   {
     let T' ArcsT'.
     assume Htree' HTsub.
     (** remaining backward subgap:
-        show every ambient edge contained in T' is contained in T,
+        show every ambient edge contained in T' cannot be noncontained in T,
         using `graph_vertices X Tx Arcs c= T` (HVT),
         edge endpoint containment, and tree/subgraph constraints. **)
     admit.
   }
-  exact (thm84_4_backward_maximality_from_selected_arc_subset_condition
+  exact (thm84_4_backward_maximality_from_selected_arc_noncontained_contradiction
     T
     ArcsT
     X
@@ -220969,7 +221028,7 @@ apply iffI.
     Arcs
     Htree
     HVT
-    HallCond).
+    HcontraCond).
 Admitted.
 
 (** from S84 Thm 84.5 (line 5631 in algtop.tex): every tree in maximal tree **)
