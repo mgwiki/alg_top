@@ -198311,6 +198311,607 @@ exact (iffER
   HscY).
 Qed.
 
+(** Side-labeled preservation aliases for negated invariants. **)
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_path_connected_space_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ path_connected_space X Tx ->
+  ~ path_connected_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HnX.
+exact (iffEL
+  (~ path_connected_space X Tx)
+  (~ path_connected_space Y Ty)
+  (homeomorphism_not_path_connected_space_iff X Tx Y Ty f Hhome)
+  HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_path_connected_space_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ path_connected_space Y Ty ->
+  ~ path_connected_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (iffER
+  (~ path_connected_space X Tx)
+  (~ path_connected_space Y Ty)
+  (homeomorphism_not_path_connected_space_iff X Tx Y Ty f Hhome)
+  HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_connected_space_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ connected_space X Tx ->
+  ~ connected_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HnX.
+exact (iffEL
+  (~ connected_space X Tx)
+  (~ connected_space Y Ty)
+  (homeomorphism_not_connected_space_iff X Tx Y Ty f Hhome)
+  HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_connected_space_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ connected_space Y Ty ->
+  ~ connected_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (iffER
+  (~ connected_space X Tx)
+  (~ connected_space Y Ty)
+  (homeomorphism_not_connected_space_iff X Tx Y Ty f Hhome)
+  HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_Hausdorff_space_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ Hausdorff_space X Tx ->
+  ~ Hausdorff_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HnX.
+exact (iffEL
+  (~ Hausdorff_space X Tx)
+  (~ Hausdorff_space Y Ty)
+  (homeomorphism_not_Hausdorff_space_iff X Tx Y Ty f Hhome)
+  HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_Hausdorff_space_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ Hausdorff_space Y Ty ->
+  ~ Hausdorff_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (iffER
+  (~ Hausdorff_space X Tx)
+  (~ Hausdorff_space Y Ty)
+  (homeomorphism_not_Hausdorff_space_iff X Tx Y Ty f Hhome)
+  HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_second_countable_space_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ second_countable_space X Tx ->
+  ~ second_countable_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HnX.
+exact (iffEL
+  (~ second_countable_space X Tx)
+  (~ second_countable_space Y Ty)
+  (homeomorphism_not_second_countable_space_iff X Tx Y Ty f Hhome)
+  HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_second_countable_space_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ second_countable_space Y Ty ->
+  ~ second_countable_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (iffER
+  (~ second_countable_space X Tx)
+  (~ second_countable_space Y Ty)
+  (homeomorphism_not_second_countable_space_iff X Tx Y Ty f Hhome)
+  HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_locally_compact_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ locally_compact X Tx ->
+  ~ locally_compact Y Ty.
+let X Tx Y Ty f.
+assume Hhome HnX.
+exact (iffEL
+  (~ locally_compact X Tx)
+  (~ locally_compact Y Ty)
+  (homeomorphism_not_locally_compact_iff X Tx Y Ty f Hhome)
+  HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_locally_compact_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ locally_compact Y Ty ->
+  ~ locally_compact X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (iffER
+  (~ locally_compact X Tx)
+  (~ locally_compact Y Ty)
+  (homeomorphism_not_locally_compact_iff X Tx Y Ty f Hhome)
+  HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_regular_space_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ regular_space X Tx ->
+  ~ regular_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HnX.
+exact (iffEL
+  (~ regular_space X Tx)
+  (~ regular_space Y Ty)
+  (homeomorphism_not_regular_space_iff X Tx Y Ty f Hhome)
+  HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_regular_space_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ regular_space Y Ty ->
+  ~ regular_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (iffER
+  (~ regular_space X Tx)
+  (~ regular_space Y Ty)
+  (homeomorphism_not_regular_space_iff X Tx Y Ty f Hhome)
+  HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_normal_space_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ normal_space X Tx ->
+  ~ normal_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HnX.
+exact (iffEL
+  (~ normal_space X Tx)
+  (~ normal_space Y Ty)
+  (homeomorphism_not_normal_space_iff X Tx Y Ty f Hhome)
+  HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_normal_space_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ normal_space Y Ty ->
+  ~ normal_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (iffER
+  (~ normal_space X Tx)
+  (~ normal_space Y Ty)
+  (homeomorphism_not_normal_space_iff X Tx Y Ty f Hhome)
+  HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_completely_regular_space_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ completely_regular_space X Tx ->
+  ~ completely_regular_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HnX.
+exact (iffEL
+  (~ completely_regular_space X Tx)
+  (~ completely_regular_space Y Ty)
+  (homeomorphism_not_completely_regular_space_iff X Tx Y Ty f Hhome)
+  HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_completely_regular_space_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ completely_regular_space Y Ty ->
+  ~ completely_regular_space X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (iffER
+  (~ completely_regular_space X Tx)
+  (~ completely_regular_space Y Ty)
+  (homeomorphism_not_completely_regular_space_iff X Tx Y Ty f Hhome)
+  HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_metrizable_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ metrizable X Tx ->
+  ~ metrizable Y Ty.
+let X Tx Y Ty f.
+assume Hhome HnX.
+exact (iffEL
+  (~ metrizable X Tx)
+  (~ metrizable Y Ty)
+  (homeomorphism_not_metrizable_iff X Tx Y Ty f Hhome)
+  HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_metrizable_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ metrizable Y Ty ->
+  ~ metrizable X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (iffER
+  (~ metrizable X Tx)
+  (~ metrizable Y Ty)
+  (homeomorphism_not_metrizable_iff X Tx Y Ty f Hhome)
+  HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_simply_connected_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ simply_connected X Tx ->
+  ~ simply_connected Y Ty.
+let X Tx Y Ty f.
+assume Hhome HnX.
+exact (iffEL
+  (~ simply_connected X Tx)
+  (~ simply_connected Y Ty)
+  (homeomorphism_not_simply_connected_iff X Tx Y Ty f Hhome)
+  HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_preserves_not_simply_connected_left :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ simply_connected Y Ty ->
+  ~ simply_connected X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (iffER
+  (~ simply_connected X Tx)
+  (~ simply_connected Y Ty)
+  (homeomorphism_not_simply_connected_iff X Tx Y Ty f Hhome)
+  HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_path_connected_space_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ path_connected_space X Tx ->
+  ~ path_connected_space Y Ty.
+let X Tx Y Ty.
+assume Hhex HnX.
+exact (iffEL
+  (~ path_connected_space X Tx)
+  (~ path_connected_space Y Ty)
+  (exists_homeomorphism_not_path_connected_space_iff X Tx Y Ty Hhex)
+  HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_path_connected_space_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ path_connected_space Y Ty ->
+  ~ path_connected_space X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (iffER
+  (~ path_connected_space X Tx)
+  (~ path_connected_space Y Ty)
+  (exists_homeomorphism_not_path_connected_space_iff X Tx Y Ty Hhex)
+  HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_connected_space_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ connected_space X Tx ->
+  ~ connected_space Y Ty.
+let X Tx Y Ty.
+assume Hhex HnX.
+exact (iffEL
+  (~ connected_space X Tx)
+  (~ connected_space Y Ty)
+  (exists_homeomorphism_not_connected_space_iff X Tx Y Ty Hhex)
+  HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_connected_space_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ connected_space Y Ty ->
+  ~ connected_space X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (iffER
+  (~ connected_space X Tx)
+  (~ connected_space Y Ty)
+  (exists_homeomorphism_not_connected_space_iff X Tx Y Ty Hhex)
+  HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_Hausdorff_space_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ Hausdorff_space X Tx ->
+  ~ Hausdorff_space Y Ty.
+let X Tx Y Ty.
+assume Hhex HnX.
+exact (iffEL
+  (~ Hausdorff_space X Tx)
+  (~ Hausdorff_space Y Ty)
+  (exists_homeomorphism_not_Hausdorff_space_iff X Tx Y Ty Hhex)
+  HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_Hausdorff_space_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ Hausdorff_space Y Ty ->
+  ~ Hausdorff_space X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (iffER
+  (~ Hausdorff_space X Tx)
+  (~ Hausdorff_space Y Ty)
+  (exists_homeomorphism_not_Hausdorff_space_iff X Tx Y Ty Hhex)
+  HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_second_countable_space_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ second_countable_space X Tx ->
+  ~ second_countable_space Y Ty.
+let X Tx Y Ty.
+assume Hhex HnX.
+exact (iffEL
+  (~ second_countable_space X Tx)
+  (~ second_countable_space Y Ty)
+  (exists_homeomorphism_not_second_countable_space_iff X Tx Y Ty Hhex)
+  HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_second_countable_space_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ second_countable_space Y Ty ->
+  ~ second_countable_space X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (iffER
+  (~ second_countable_space X Tx)
+  (~ second_countable_space Y Ty)
+  (exists_homeomorphism_not_second_countable_space_iff X Tx Y Ty Hhex)
+  HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_locally_compact_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ locally_compact X Tx ->
+  ~ locally_compact Y Ty.
+let X Tx Y Ty.
+assume Hhex HnX.
+exact (iffEL
+  (~ locally_compact X Tx)
+  (~ locally_compact Y Ty)
+  (exists_homeomorphism_not_locally_compact_iff X Tx Y Ty Hhex)
+  HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_locally_compact_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ locally_compact Y Ty ->
+  ~ locally_compact X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (iffER
+  (~ locally_compact X Tx)
+  (~ locally_compact Y Ty)
+  (exists_homeomorphism_not_locally_compact_iff X Tx Y Ty Hhex)
+  HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_regular_space_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ regular_space X Tx ->
+  ~ regular_space Y Ty.
+let X Tx Y Ty.
+assume Hhex HnX.
+exact (iffEL
+  (~ regular_space X Tx)
+  (~ regular_space Y Ty)
+  (exists_homeomorphism_not_regular_space_iff X Tx Y Ty Hhex)
+  HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_regular_space_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ regular_space Y Ty ->
+  ~ regular_space X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (iffER
+  (~ regular_space X Tx)
+  (~ regular_space Y Ty)
+  (exists_homeomorphism_not_regular_space_iff X Tx Y Ty Hhex)
+  HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_normal_space_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ normal_space X Tx ->
+  ~ normal_space Y Ty.
+let X Tx Y Ty.
+assume Hhex HnX.
+exact (iffEL
+  (~ normal_space X Tx)
+  (~ normal_space Y Ty)
+  (exists_homeomorphism_not_normal_space_iff X Tx Y Ty Hhex)
+  HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_normal_space_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ normal_space Y Ty ->
+  ~ normal_space X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (iffER
+  (~ normal_space X Tx)
+  (~ normal_space Y Ty)
+  (exists_homeomorphism_not_normal_space_iff X Tx Y Ty Hhex)
+  HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_completely_regular_space_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ completely_regular_space X Tx ->
+  ~ completely_regular_space Y Ty.
+let X Tx Y Ty.
+assume Hhex HnX.
+exact (iffEL
+  (~ completely_regular_space X Tx)
+  (~ completely_regular_space Y Ty)
+  (exists_homeomorphism_not_completely_regular_space_iff X Tx Y Ty Hhex)
+  HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_completely_regular_space_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ completely_regular_space Y Ty ->
+  ~ completely_regular_space X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (iffER
+  (~ completely_regular_space X Tx)
+  (~ completely_regular_space Y Ty)
+  (exists_homeomorphism_not_completely_regular_space_iff X Tx Y Ty Hhex)
+  HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_metrizable_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ metrizable X Tx ->
+  ~ metrizable Y Ty.
+let X Tx Y Ty.
+assume Hhex HnX.
+exact (iffEL
+  (~ metrizable X Tx)
+  (~ metrizable Y Ty)
+  (exists_homeomorphism_not_metrizable_iff X Tx Y Ty Hhex)
+  HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_metrizable_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ metrizable Y Ty ->
+  ~ metrizable X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (iffER
+  (~ metrizable X Tx)
+  (~ metrizable Y Ty)
+  (exists_homeomorphism_not_metrizable_iff X Tx Y Ty Hhex)
+  HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_simply_connected_right :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ simply_connected X Tx ->
+  ~ simply_connected Y Ty.
+let X Tx Y Ty.
+assume Hhex HnX.
+exact (iffEL
+  (~ simply_connected X Tx)
+  (~ simply_connected Y Ty)
+  (exists_homeomorphism_not_simply_connected_iff X Tx Y Ty Hhex)
+  HnX).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_preserves_not_simply_connected_left :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ simply_connected Y Ty ->
+  ~ simply_connected X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (iffER
+  (~ simply_connected X Tx)
+  (~ simply_connected Y Ty)
+  (exists_homeomorphism_not_simply_connected_iff X Tx Y Ty Hhex)
+  HnY).
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
