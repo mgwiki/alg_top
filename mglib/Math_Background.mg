@@ -186111,6 +186111,37 @@ exact (surjective_map_mem_codomain_iff_exists_preimage_point
 Qed.
 
 (** Proven Bob **)
+Theorem surjective_map_mem_codomain_iff_exists_preimage_point_via_bridges :
+  forall E X pi y:set,
+  surjective_map E X pi ->
+  (y :e X <-> exists x:set, x :e E /\ apply_fun pi x = y).
+let E X pi y.
+assume Hsurj.
+exact (surjective_map_mem_codomain_iff_exists_preimage_point
+  E
+  X
+  pi
+  y
+  Hsurj).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_mem_codomain_iff_exists_preimage_point_via_bridges :
+  forall E Te X pi y:set,
+  quotient_map E Te X pi ->
+  (y :e X <-> exists x:set, x :e E /\ apply_fun pi x = y).
+let E Te X pi y.
+assume Hquot.
+exact (quotient_map_mem_codomain_iff_exists_preimage_point
+  E
+  Te
+  X
+  pi
+  y
+  Hquot).
+Qed.
+
+(** Proven Bob **)
 Theorem surjective_map_not_mem_codomain_iff_no_preimage_point :
   forall E X pi y:set,
   surjective_map E X pi ->
@@ -186155,6 +186186,37 @@ exact (surjective_map_not_mem_codomain_iff_no_preimage_point
   pi
   y
   (quotient_map_implies_surjective_map E Te X pi Hquot)).
+Qed.
+
+(** Proven Bob **)
+Theorem surjective_map_not_mem_codomain_iff_no_preimage_point_via_bridges :
+  forall E X pi y:set,
+  surjective_map E X pi ->
+  (y /:e X <-> ~ (exists x:set, x :e E /\ apply_fun pi x = y)).
+let E X pi y.
+assume Hsurj.
+exact (surjective_map_not_mem_codomain_iff_no_preimage_point
+  E
+  X
+  pi
+  y
+  Hsurj).
+Qed.
+
+(** Proven Bob **)
+Theorem quotient_map_not_mem_codomain_iff_no_preimage_point_via_bridges :
+  forall E Te X pi y:set,
+  quotient_map E Te X pi ->
+  (y /:e X <-> ~ (exists x:set, x :e E /\ apply_fun pi x = y)).
+let E Te X pi y.
+assume Hquot.
+exact (quotient_map_not_mem_codomain_iff_no_preimage_point
+  E
+  Te
+  X
+  pi
+  y
+  Hquot).
 Qed.
 
 (** Proven Bob **)
