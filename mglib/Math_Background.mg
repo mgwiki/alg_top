@@ -195825,6 +195825,43 @@ exact (exists_homeomorphism_not_simply_connected_of
   X Tx Y Ty Hhex HnY).
 Qed.
 
+(** Compatibility aliases for simply-connected reflection names. **)
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_simply_connected :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  simply_connected Y Ty ->
+  simply_connected X Tx.
+let X Tx Y Ty.
+assume Hhex HscY.
+exact (exists_homeomorphism_reflects_simply_connected_space
+  X Tx Y Ty Hhex HscY).
+Qed.
+
+(** Proven Bob **)
+Theorem homeomorphism_reflects_not_simply_connected :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  ~ simply_connected Y Ty ->
+  ~ simply_connected X Tx.
+let X Tx Y Ty f.
+assume Hhome HnY.
+exact (homeomorphism_reflects_not_simply_connected_space
+  X Tx Y Ty f Hhome HnY).
+Qed.
+
+(** Proven Bob **)
+Theorem exists_homeomorphism_reflects_not_simply_connected :
+  forall X Tx Y Ty:set,
+  (exists h:set, homeomorphism X Tx Y Ty h) ->
+  ~ simply_connected Y Ty ->
+  ~ simply_connected X Tx.
+let X Tx Y Ty.
+assume Hhex HnY.
+exact (exists_homeomorphism_reflects_not_simply_connected_space
+  X Tx Y Ty Hhex HnY).
+Qed.
+
 (** from S80 Lem 80.1 (line 4954 in algtop.tex): path component restriction **)
 (** LATEX VERSION: Let B be path connected and locally path connected. Let p: E -> B **)
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
