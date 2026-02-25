@@ -1,6 +1,6 @@
 (** Balance Alice 3327 **)
 (** Balance Bob 3451 **)
-(** Balance Charlie 2260 **)
+(** Balance Charlie 2243 **)
 (** Balance Dave 1793 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -218781,7 +218781,8 @@ Qed.
 (** LATEX VERSION: If X is a linear graph, then X is locally path connected **)
 (** and semilocally simply connected. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 165 **)
+(** Bounty 182 **)
+(** Lock Charlie 1772113887 **)
 Theorem lemma83_3_graph_locally_path_connected :
   forall X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
