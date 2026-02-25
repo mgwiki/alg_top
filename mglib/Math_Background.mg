@@ -75468,6 +75468,77 @@ exact (slices_core_preimage_point_exists_sheet
   HFtxPre).
 Qed.
 
+(** Infrastructure: from evenly_covered data, obtain a slices family with local non-switching on N **)
+(** Proven Bob **)
+Theorem local_sheet_non_switching_on_unit_square_subset_from_evenly_covered :
+  forall N E Te B Tb p U F Ft q z:set,
+  topology_on E Te ->
+  evenly_covered E Te B Tb p U ->
+  N c= unit_square ->
+  connected_space N (subspace_topology unit_square unit_square_topology N) ->
+  continuous_map N (subspace_topology unit_square unit_square_topology N) E Te Ft ->
+  (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t)) ->
+  (forall x:set, x :e N -> apply_fun F x :e U) ->
+  q :e N ->
+  z :e N ->
+  exists slices:set,
+    (slices c= Te /\ pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall W:set, W :e slices ->
+        homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+          (graph W (fun y:set => apply_fun p y)))) /\
+    (forall Vq Vz:set,
+      apply_fun Ft q :e Vq -> Vq :e slices ->
+      apply_fun Ft z :e Vz -> Vz :e slices ->
+      Vz = Vq).
+let N E Te B Tb p U F Ft q z.
+assume HtopE Heven HNsubSq HNconn HFtCont HcommSq HFU HqN HzN.
+apply (evenly_covered_slices_witness_pack
+  E
+  Te
+  B
+  Tb
+  p
+  U
+  Heven).
+let slices.
+assume Hpack.
+witness slices.
+apply andI.
+- exact Hpack.
+- let Vq Vz.
+  assume HFtqVq HVqSlice HFtzVz HVzSlice.
+  exact (local_sheet_non_switching_on_unit_square_subset_from_slices_witness
+    N
+    E
+    Te
+    B
+    Tb
+    p
+    U
+    slices
+    F
+    Ft
+    q
+    z
+    Vq
+    Vz
+    HtopE
+    Hpack
+    HNsubSq
+    HNconn
+    HFtCont
+    HcommSq
+    HFU
+    HqN
+    HzN
+    HFtqVq
+    HVqSlice
+    HFtzVz
+    HVzSlice).
+Qed.
+
 Theorem lemma54_2_sheet_non_switching_local :
   forall E Te B Tb p F Ft q z N U slices Vq Vz:set,
   pairwise_disjoint slices ->
