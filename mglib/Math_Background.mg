@@ -73394,6 +73394,59 @@ exact (andI
   Hcomm).
 Qed.
 
+(** Proven Bob **)
+Theorem path_lift_commutes_on_subset : forall E Te B Tb p e0 f N:set,
+  covering_map E Te B Tb p ->
+  e0 :e E -> apply_fun p e0 = apply_fun f 0 ->
+  continuous_map unit_interval unit_interval_topology B Tb f ->
+  N c= unit_interval ->
+  forall x:set, x :e N ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) x) = apply_fun f x.
+let E Te B Tb p e0 f N.
+assume Hcov He0 Hstart Hfcont HNsub.
+claim Hpack :
+  continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 f) /\
+  apply_fun (path_lift E Te B Tb p e0 f) 0 = e0 /\
+  (forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t).
+{
+  exact (lemma54_1_path_lifting
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    f
+    Hcov
+    He0
+    Hstart
+    Hfcont).
+}
+claim Hcomm :
+  forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 f) /\
+     apply_fun (path_lift E Te B Tb p e0 f) 0 = e0)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t)
+    Hpack).
+}
+let x.
+assume HxN.
+exact (commutation_on_unit_interval_subset
+  N
+  p
+  f
+  (path_lift E Te B Tb p e0 f)
+  HNsub
+  Hcomm
+  x
+  HxN).
+Qed.
+
 (** from S54 Lem 54.1 uniqueness (line 728 in algtop.tex) **)
 (** LATEX VERSION: The lifting of a path is unique. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
