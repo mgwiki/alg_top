@@ -162892,8 +162892,9 @@ claim Hfwd_hom : forall alpha:set, alpha :e J ->
   group_homomorphism (apply_fun (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))) alpha) multG G' multG' (apply_fun hfam_fwd alpha).
 { let alpha. assume Halpha.
   rewrite (apply_fun_graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0)) alpha Halpha).
-  apply andI.
-  - (** function_on: apply_fun hfam_fwd alpha maps hom_image to G' **)
+  claim Hfwd_fun : function_on (apply_fun hfam_fwd alpha)
+    (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha)) G'.
+  { (** function_on: apply_fun hfam_fwd alpha maps hom_image to G' **)
     let y. assume Hy.
     apply (ReplE_impred (apply_fun Gfam alpha) (fun z:set => apply_fun (apply_fun ifam alpha) z) y Hy).
     let z. assume Hz Hyz.
@@ -162907,8 +162908,13 @@ claim Hfwd_hom : forall alpha:set, alpha :e J ->
         (forall a b:set, a :e apply_fun Gfam alpha -> b :e apply_fun Gfam alpha ->
           apply_fun (apply_fun ifam' alpha) a = apply_fun (apply_fun ifam' alpha) b -> a = b)
         (Hifam' alpha Halpha)))
-      z Hz.
-  - (** mult preservation **)
+      z Hz. }
+  claim Hfwd_mult : forall x y:set,
+    x :e homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha) ->
+    y :e homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha) ->
+    apply_fun (apply_fun hfam_fwd alpha) (apply_fun multG (x, y)) =
+      apply_fun multG' (apply_fun (apply_fun hfam_fwd alpha) x, apply_fun (apply_fun hfam_fwd alpha) y).
+  { (** mult preservation **)
     let x y. assume Hx Hy.
     (** x = ifam(a), y = ifam(b) for some a, b in Gfam alpha **)
     apply (ReplE_impred (apply_fun Gfam alpha) (fun z:set => apply_fun (apply_fun ifam alpha) z) x Hx).
@@ -162956,6 +162962,17 @@ claim Hfwd_hom : forall alpha:set, alpha :e J ->
           apply_fun (apply_fun ifam' alpha) u = apply_fun (apply_fun ifam' alpha) v -> u = v)
         (Hifam' alpha Halpha))
       a b Ha Hb). }
+  exact (andI
+    (function_on (apply_fun hfam_fwd alpha)
+      (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha)) G')
+    (forall x y:set,
+      x :e homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha) ->
+      y :e homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha) ->
+      apply_fun (apply_fun hfam_fwd alpha) (apply_fun multG (x, y)) =
+        apply_fun multG' (apply_fun (apply_fun hfam_fwd alpha) x, apply_fun (apply_fun hfam_fwd alpha) y))
+    Hfwd_fun
+    Hfwd_mult).
+}
 (** Get phi: G -> G' **)
 claim Hphi_raw : exists h:set,
   group_homomorphism G multG G' multG' h /\
@@ -250731,10 +250748,37 @@ claim HpreXAll : preimage_of unit_interval fcls X = unit_interval.
 }
 claim HpreUVCover : unit_interval = preU :\/: preV.
 {
-  rewrite <- HpreXAll.
-  rewrite <- Hcover.
-  rewrite (preimage_of_binunion unit_interval fcls U V).
-  reflexivity.
+  apply set_ext.
+  - let t.
+    assume HtI : t :e unit_interval.
+    claim HftX : apply_fun fcls t :e X.
+    { exact (HfclsFun t HtI). }
+    claim HftUV : apply_fun fcls t :e U :\/: V.
+    { rewrite <- Hcover. exact HftX. }
+    apply (binunionE U V (apply_fun fcls t) HftUV).
+    + assume HftU : apply_fun fcls t :e U.
+      apply binunionI1.
+      exact (SepI
+        unit_interval
+        (fun x:set => apply_fun fcls x :e U)
+        t
+        HtI
+        HftU).
+    + assume HftV : apply_fun fcls t :e V.
+      apply binunionI2.
+      exact (SepI
+        unit_interval
+        (fun x:set => apply_fun fcls x :e V)
+        t
+        HtI
+        HftV).
+  - let t.
+    assume HtUV : t :e preU :\/: preV.
+    apply (binunionE preU preV t HtUV).
+    + assume HtPreU : t :e preU.
+      exact (HpreUSubI t HtPreU).
+    + assume HtPreV : t :e preV.
+      exact (HpreVSubI t HtPreV).
 }
 set preA := preimage_of unit_interval fcls A.
 set preB := preimage_of unit_interval fcls B.
