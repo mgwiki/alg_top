@@ -73233,6 +73233,63 @@ exact (path_lift_from_exists_witness
     Hcov He0 Hstart Hfcont)).
 Qed.
 
+(** Proven Bob **)
+Theorem path_lift_is_lifting_of : forall E Te B Tb p e0 f:set,
+  covering_map E Te B Tb p ->
+  e0 :e E -> apply_fun p e0 = apply_fun f 0 ->
+  continuous_map unit_interval unit_interval_topology B Tb f ->
+  lifting_of unit_interval unit_interval_topology E Te B Tb p f
+    (path_lift E Te B Tb p e0 f).
+let E Te B Tb p e0 f.
+assume Hcov He0 Hstart Hfcont.
+claim Hpack :
+  continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 f) /\
+  apply_fun (path_lift E Te B Tb p e0 f) 0 = e0 /\
+  (forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t).
+{
+  exact (lemma54_1_path_lifting
+    E Te B Tb p e0 f
+    Hcov He0 Hstart Hfcont).
+}
+claim Hleft :
+  continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 f) /\
+  apply_fun (path_lift E Te B Tb p e0 f) 0 = e0.
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 f) /\
+     apply_fun (path_lift E Te B Tb p e0 f) 0 = e0)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t)
+    Hpack).
+}
+claim Hcont :
+  continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 f).
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 f))
+    (apply_fun (path_lift E Te B Tb p e0 f) 0 = e0)
+    Hleft).
+}
+claim Hcomm :
+  forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 f) /\
+     apply_fun (path_lift E Te B Tb p e0 f) 0 = e0)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t)
+    Hpack).
+}
+exact (andI
+  (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 f))
+  (forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t)
+  Hcont
+  Hcomm).
+Qed.
+
 (** from S54 Lem 54.1 uniqueness (line 728 in algtop.tex) **)
 (** LATEX VERSION: The lifting of a path is unique. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
