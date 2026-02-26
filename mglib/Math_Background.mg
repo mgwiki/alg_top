@@ -239503,13 +239503,18 @@ exact (thm84_4_vertices_implies_maximal_tree_from_obligations
   Hrhs).
 Qed.
 
-(** targeted helper obligations for thm84_4 main statement **)
-Theorem thm84_4_forward_meeting_obligation :
+(** helper: package immediate structural consequences for a noncontained edge at a maximal tree **)
+(** Proven Bob **)
+Theorem maximal_tree_noncontained_edge_basic_context :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
   A :e Arcs ->
   ~(A c= T) ->
-  exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
+  tree_in_graph T ArcsT X Tx Arcs /\
+  general_linear_graph X Tx Arcs /\
+  subgraph_of T X Tx Arcs /\
+  T c= X /\
+  A c= X.
 let T ArcsT X Tx Arcs A.
 assume Hmax HA Hnsub.
 claim Htree : tree_in_graph T ArcsT X Tx Arcs.
@@ -239563,6 +239568,63 @@ claim HAsubX : A c= X.
       A
       HglgX
       HA)).
+}
+exact (and5I
+  (tree_in_graph T ArcsT X Tx Arcs)
+  (general_linear_graph X Tx Arcs)
+  (subgraph_of T X Tx Arcs)
+  (T c= X)
+  (A c= X)
+  Htree
+  HglgX
+  HsubT
+  HTsubX
+  HAsubX).
+Qed.
+
+(** targeted helper obligations for thm84_4 main statement **)
+Theorem thm84_4_forward_meeting_obligation :
+  forall T ArcsT X Tx Arcs A:set,
+  maximal_tree T ArcsT X Tx Arcs ->
+  A :e Arcs ->
+  ~(A c= T) ->
+  exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
+let T ArcsT X Tx Arcs A.
+assume Hmax HA Hnsub.
+claim Hctx :
+  tree_in_graph T ArcsT X Tx Arcs /\
+  general_linear_graph X Tx Arcs /\
+  subgraph_of T X Tx Arcs /\
+  T c= X /\
+  A c= X.
+{
+  exact (maximal_tree_noncontained_edge_basic_context
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    A
+    Hmax
+    HA
+    Hnsub).
+}
+apply (and5E
+  (tree_in_graph T ArcsT X Tx Arcs)
+  (general_linear_graph X Tx Arcs)
+  (subgraph_of T X Tx Arcs)
+  (T c= X)
+  (A c= X)
+  Hctx).
+assume Htree HglgX HsubT HTsubX HAsubX.
+claim HTsubX_viaSub : T c= X.
+{
+  exact (subgraph_of_subset
+    T
+    X
+    Tx
+    Arcs
+    HsubT).
 }
 (** Remaining forward S84.4 gap:
     construct a single-vertex intersection witness for each noncontained edge.
