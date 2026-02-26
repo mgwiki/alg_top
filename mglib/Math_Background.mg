@@ -249161,6 +249161,223 @@ apply andI.
   exact (path_betweenI V b a beta HbetaFn Hbeta0 Hbeta1).
 Qed.
 
+(** Proven Bob **)
+Theorem lemma84_6_pi1_power_nat_closed :
+  forall X Tx a g:set,
+  topology_on X Tx ->
+  a :e X ->
+  g :e fundamental_group X Tx a ->
+  forall n:set, n :e omega ->
+    group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      g
+      n
+    :e fundamental_group X Tx a.
+let X Tx a g.
+assume Htop HaX Hg.
+claim Hgrp :
+  group_structure
+    (fundamental_group X Tx a)
+    (fundamental_group_mult X Tx a)
+    (fundamental_group_id X Tx a)
+    (fundamental_group_inv X Tx a).
+{
+  exact (fundamental_group_is_group X Tx a Htop HaX).
+}
+claim Hnat :
+  forall n:set, nat_p n ->
+    group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      g
+      n
+    :e fundamental_group X Tx a.
+{
+  apply nat_ind.
+  - claim Hpow0 :
+      group_power_nat
+        (fundamental_group_mult X Tx a)
+        (fundamental_group_id X Tx a)
+        g
+        0
+      = fundamental_group_id X Tx a.
+    {
+      exact (nat_primrec_0
+        (fundamental_group_id X Tx a)
+        (fun _ r => apply_fun (fundamental_group_mult X Tx a) (g, r))).
+    }
+    rewrite Hpow0.
+    apply (and6E
+      (function_on
+        (fundamental_group_mult X Tx a)
+        (setprod (fundamental_group X Tx a) (fundamental_group X Tx a))
+        (fundamental_group X Tx a))
+      (function_on
+        (fundamental_group_inv X Tx a)
+        (fundamental_group X Tx a)
+        (fundamental_group X Tx a))
+      (fundamental_group_id X Tx a :e fundamental_group X Tx a)
+      (forall x y z:set, x :e fundamental_group X Tx a -> y :e fundamental_group X Tx a -> z :e fundamental_group X Tx a ->
+        apply_fun (fundamental_group_mult X Tx a) (apply_fun (fundamental_group_mult X Tx a) (x, y), z)
+        = apply_fun (fundamental_group_mult X Tx a) (x, apply_fun (fundamental_group_mult X Tx a) (y, z)))
+      (forall x:set, x :e fundamental_group X Tx a ->
+        apply_fun (fundamental_group_mult X Tx a) (fundamental_group_id X Tx a, x) = x /\
+        apply_fun (fundamental_group_mult X Tx a) (x, fundamental_group_id X Tx a) = x)
+      (forall x:set, x :e fundamental_group X Tx a ->
+        apply_fun (fundamental_group_mult X Tx a) (x, apply_fun (fundamental_group_inv X Tx a) x) = fundamental_group_id X Tx a /\
+        apply_fun (fundamental_group_mult X Tx a) (apply_fun (fundamental_group_inv X Tx a) x, x) = fundamental_group_id X Tx a)
+      Hgrp).
+    assume Hm Hi He Hass Hid Hinv.
+    exact He.
+  - let n.
+    assume HnNat.
+    assume IH :
+      group_power_nat
+        (fundamental_group_mult X Tx a)
+        (fundamental_group_id X Tx a)
+        g
+        n
+      :e fundamental_group X Tx a.
+    claim HpowS :
+      group_power_nat
+        (fundamental_group_mult X Tx a)
+        (fundamental_group_id X Tx a)
+        g
+        (ordsucc n)
+      =
+      apply_fun
+        (fundamental_group_mult X Tx a)
+        (g,
+         group_power_nat
+           (fundamental_group_mult X Tx a)
+           (fundamental_group_id X Tx a)
+           g
+           n).
+    {
+      exact (nat_primrec_S
+        (fundamental_group_id X Tx a)
+        (fun _ r => apply_fun (fundamental_group_mult X Tx a) (g, r))
+        n
+        HnNat).
+    }
+    rewrite HpowS.
+    apply (and6E
+      (function_on
+        (fundamental_group_mult X Tx a)
+        (setprod (fundamental_group X Tx a) (fundamental_group X Tx a))
+        (fundamental_group X Tx a))
+      (function_on
+        (fundamental_group_inv X Tx a)
+        (fundamental_group X Tx a)
+        (fundamental_group X Tx a))
+      (fundamental_group_id X Tx a :e fundamental_group X Tx a)
+      (forall x y z:set, x :e fundamental_group X Tx a -> y :e fundamental_group X Tx a -> z :e fundamental_group X Tx a ->
+        apply_fun (fundamental_group_mult X Tx a) (apply_fun (fundamental_group_mult X Tx a) (x, y), z)
+        = apply_fun (fundamental_group_mult X Tx a) (x, apply_fun (fundamental_group_mult X Tx a) (y, z)))
+      (forall x:set, x :e fundamental_group X Tx a ->
+        apply_fun (fundamental_group_mult X Tx a) (fundamental_group_id X Tx a, x) = x /\
+        apply_fun (fundamental_group_mult X Tx a) (x, fundamental_group_id X Tx a) = x)
+      (forall x:set, x :e fundamental_group X Tx a ->
+        apply_fun (fundamental_group_mult X Tx a) (x, apply_fun (fundamental_group_inv X Tx a) x) = fundamental_group_id X Tx a /\
+        apply_fun (fundamental_group_mult X Tx a) (apply_fun (fundamental_group_inv X Tx a) x, x) = fundamental_group_id X Tx a)
+      Hgrp).
+    assume Hm Hi He Hass Hid Hinv.
+    exact (Hm
+      (g,
+       group_power_nat
+         (fundamental_group_mult X Tx a)
+         (fundamental_group_id X Tx a)
+         g
+         n)
+      (tuple_2_setprod_by_pair_Sigma
+        (fundamental_group X Tx a)
+        (fundamental_group X Tx a)
+        g
+        (group_power_nat
+          (fundamental_group_mult X Tx a)
+          (fundamental_group_id X Tx a)
+          g
+          n)
+        Hg
+        IH)).
+}
+let n.
+assume HnO.
+exact (Hnat n (omega_nat_p n HnO)).
+Qed.
+
+(** Proven Bob **)
+Theorem lemma84_6_pi1_inverse_power_nat_closed :
+  forall X Tx a g:set,
+  topology_on X Tx ->
+  a :e X ->
+  g :e fundamental_group X Tx a ->
+  forall n:set, n :e omega ->
+    group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (apply_fun (fundamental_group_inv X Tx a) g)
+      n
+    :e fundamental_group X Tx a.
+let X Tx a g.
+assume Htop HaX Hg.
+claim Hgrp :
+  group_structure
+    (fundamental_group X Tx a)
+    (fundamental_group_mult X Tx a)
+    (fundamental_group_id X Tx a)
+    (fundamental_group_inv X Tx a).
+{
+  exact (fundamental_group_is_group X Tx a Htop HaX).
+}
+claim HinvFn :
+  function_on
+    (fundamental_group_inv X Tx a)
+    (fundamental_group X Tx a)
+    (fundamental_group X Tx a).
+{
+  apply (and6E
+    (function_on
+      (fundamental_group_mult X Tx a)
+      (setprod (fundamental_group X Tx a) (fundamental_group X Tx a))
+      (fundamental_group X Tx a))
+    (function_on
+      (fundamental_group_inv X Tx a)
+      (fundamental_group X Tx a)
+      (fundamental_group X Tx a))
+    (fundamental_group_id X Tx a :e fundamental_group X Tx a)
+    (forall x y z:set, x :e fundamental_group X Tx a -> y :e fundamental_group X Tx a -> z :e fundamental_group X Tx a ->
+      apply_fun (fundamental_group_mult X Tx a) (apply_fun (fundamental_group_mult X Tx a) (x, y), z)
+      = apply_fun (fundamental_group_mult X Tx a) (x, apply_fun (fundamental_group_mult X Tx a) (y, z)))
+    (forall x:set, x :e fundamental_group X Tx a ->
+      apply_fun (fundamental_group_mult X Tx a) (fundamental_group_id X Tx a, x) = x /\
+      apply_fun (fundamental_group_mult X Tx a) (x, fundamental_group_id X Tx a) = x)
+    (forall x:set, x :e fundamental_group X Tx a ->
+      apply_fun (fundamental_group_mult X Tx a) (x, apply_fun (fundamental_group_inv X Tx a) x) = fundamental_group_id X Tx a /\
+      apply_fun (fundamental_group_mult X Tx a) (apply_fun (fundamental_group_inv X Tx a) x, x) = fundamental_group_id X Tx a)
+    Hgrp).
+  assume Hm Hi He Hass Hid Hinv.
+  exact Hi.
+}
+claim Hginv : apply_fun (fundamental_group_inv X Tx a) g :e fundamental_group X Tx a.
+{
+  exact (HinvFn g Hg).
+}
+let n.
+assume HnO.
+exact (lemma84_6_pi1_power_nat_closed
+  X
+  Tx
+  a
+  (apply_fun (fundamental_group_inv X Tx a) g)
+  Htop
+  HaX
+  Hginv
+  n
+  HnO).
+Qed.
+
 (** core bridge for S84.6: cyclic-generation conclusion from path-form hypotheses **)
 Theorem lemma84_6_core_cyclic_generation_from_path_data :
   forall X Tx U V A B a b alpha beta:set,
@@ -249191,11 +249408,132 @@ Theorem lemma84_6_core_cyclic_generation_from_path_data :
 let X Tx U V A B a b alpha beta.
 assume Htop HU HV Hcover HscU HscV HAsub HBsub Hdisj Hoverlap HAopen HBopen HpcA HpcB HaA HbB.
 assume HalphaPB HbetaPB.
+claim HUsub : U c= X.
+{
+  exact (topology_elem_subset X Tx U Htop HU).
+}
+claim HaU : a :e U.
+{
+  exact (binintersectE1 U V a (HAsub a HaA)).
+}
+claim HaX : a :e X.
+{
+  exact (HUsub a HaU).
+}
+claim HalphaCont :
+  continuous_map
+    unit_interval
+    unit_interval_topology
+    U
+    (subspace_topology X Tx U)
+    alpha.
+{
+  exact (lemma58_path_between_continuous_bridge
+    U
+    (subspace_topology X Tx U)
+    a
+    b
+    alpha
+    HalphaPB).
+}
+claim Halpha0 : apply_fun alpha 0 = a.
+{
+  exact (path_between_at_zero U a b alpha HalphaPB).
+}
+claim Halpha1 : apply_fun alpha 1 = b.
+{
+  exact (path_between_at_one U a b alpha HalphaPB).
+}
+claim HbetaCont :
+  continuous_map
+    unit_interval
+    unit_interval_topology
+    V
+    (subspace_topology X Tx V)
+    beta.
+{
+  exact (lemma58_path_between_continuous_bridge
+    V
+    (subspace_topology X Tx V)
+    b
+    a
+    beta
+    HbetaPB).
+}
+claim Hbeta0 : apply_fun beta 0 = b.
+{
+  exact (path_between_at_zero V b a beta HbetaPB).
+}
+claim Hbeta1 : apply_fun beta 1 = a.
+{
+  exact (path_between_at_one V b a beta HbetaPB).
+}
+claim HgenClsMem :
+  path_homotopy_class_loop X Tx a (path_concat alpha beta)
+  :e fundamental_group X Tx a.
+{
+  exact (lemma84_6_generator_candidate_class_in_pi1
+    X
+    Tx
+    U
+    V
+    a
+    b
+    alpha
+    beta
+    Htop
+    HU
+    HV
+    HalphaCont
+    Halpha0
+    Halpha1
+    HbetaCont
+    Hbeta0
+    Hbeta1).
+}
+claim HgenPowMem :
+  forall n:set, n :e omega ->
+    group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+      n
+    :e fundamental_group X Tx a.
+{
+  exact (lemma84_6_pi1_power_nat_closed
+    X
+    Tx
+    a
+    (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+    Htop
+    HaX
+    HgenClsMem).
+}
+claim HinvGenPowMem :
+  forall n:set, n :e omega ->
+    group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (apply_fun (fundamental_group_inv X Tx a)
+        (path_homotopy_class_loop X Tx a (path_concat alpha beta)))
+      n
+    :e fundamental_group X Tx a.
+{
+  exact (lemma84_6_pi1_inverse_power_nat_closed
+    X
+    Tx
+    a
+    (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+    Htop
+    HaX
+    HgenClsMem).
+}
 let cls.
 assume Hcls.
 (** Remaining S84.6 core gap:
     derive cyclic generation in the disconnected-overlap setting from path-form
-    data and simply-connectedness of U,V (S63-style decomposition). **)
+    data and simply-connectedness of U,V (S63-style decomposition).
+    The path/loop-membership infrastructure is now in place above. **)
 admit.
 Admitted.
 
@@ -249236,6 +249574,22 @@ Theorem lemma84_6_generator_from_edge :
 let X Tx U V A B a b alpha beta.
 assume Htop HU HV Hcover HscU HscV HAsub HBsub Hdisj Hoverlap HAopen HBopen HpcA HpcB HaA HbB.
 assume HalphaCont Halpha0 Halpha1 HbetaCont Hbeta0 Hbeta1.
+claim HUsub : U c= X.
+{
+  exact (topology_elem_subset X Tx U Htop HU).
+}
+claim HaUV : a :e U :/\: V.
+{
+  exact (HAsub a HaA).
+}
+claim HaU : a :e U.
+{
+  exact (binintersectE1 U V a (HAsub a HaA)).
+}
+claim HaX : a :e X.
+{
+  exact (HUsub a HaU).
+}
 claim HpathData : path_between U a b alpha /\ path_between V b a beta.
 {
   exact (lemma84_6_path_data_from_continuous_data
@@ -249289,6 +249643,43 @@ claim HgenClsMem :
     HbetaCont
     Hbeta0
     Hbeta1).
+}
+claim HgenPowMem :
+  forall n:set, n :e omega ->
+    group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+      n
+    :e fundamental_group X Tx a.
+{
+  exact (lemma84_6_pi1_power_nat_closed
+    X
+    Tx
+    a
+    (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+    Htop
+    HaX
+    HgenClsMem).
+}
+claim HinvGenPowMem :
+  forall n:set, n :e omega ->
+    group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (apply_fun (fundamental_group_inv X Tx a)
+        (path_homotopy_class_loop X Tx a (path_concat alpha beta)))
+      n
+    :e fundamental_group X Tx a.
+{
+  exact (lemma84_6_pi1_inverse_power_nat_closed
+    X
+    Tx
+    a
+    (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+    Htop
+    HaX
+    HgenClsMem).
 }
 exact (lemma84_6_core_cyclic_generation_from_path_data
   X
