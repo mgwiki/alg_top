@@ -9466,6 +9466,190 @@ apply andI.
     reflexivity.
 Qed.
 
+(** Helper: change left endpoint in path homotopy when endpoints agree pointwise **)
+(** Proven Bob **)
+Lemma path_homotopic_change_left_endpoint : forall X Tx x0 x1 x0' f g:set,
+  path_homotopic X Tx x0 x1 f g ->
+  apply_fun f 0 = x0' ->
+  apply_fun g 0 = x0' ->
+  path_homotopic X Tx x0' x1 f g.
+let X Tx x0 x1 x0' f g.
+assume Hhom Hf0' Hg0'.
+claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
+{
+  exact (path_homotopic_left_continuous X Tx x0 x1 f g Hhom).
+}
+claim HgCont : continuous_map unit_interval unit_interval_topology X Tx g.
+{
+  exact (path_homotopic_right_continuous X Tx x0 x1 f g Hhom).
+}
+claim Htail :
+  apply_fun f 0 = x0 /\ apply_fun f 1 = x1 /\
+  apply_fun g 0 = x0 /\ apply_fun g 1 = x1 /\
+  exists F:set,
+    continuous_map unit_square unit_square_topology X Tx F /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 0) = apply_fun f s) /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 1) = apply_fun g s) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (0, t) = x0) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (1, t) = x1).
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology X Tx f /\
+     continuous_map unit_interval unit_interval_topology X Tx g)
+    (apply_fun f 0 = x0 /\ apply_fun f 1 = x1 /\
+     apply_fun g 0 = x0 /\ apply_fun g 1 = x1 /\
+     exists F:set,
+       continuous_map unit_square unit_square_topology X Tx F /\
+       (forall s:set, s :e unit_interval ->
+         apply_fun F (s, 0) = apply_fun f s) /\
+       (forall s:set, s :e unit_interval ->
+         apply_fun F (s, 1) = apply_fun g s) /\
+       (forall t:set, t :e unit_interval ->
+         apply_fun F (0, t) = x0) /\
+       (forall t:set, t :e unit_interval ->
+         apply_fun F (1, t) = x1))
+    (path_homotopic_unfold X Tx x0 x1 f g Hhom)).
+}
+claim Hfour :
+  ((apply_fun f 0 = x0 /\ apply_fun f 1 = x1) /\ apply_fun g 0 = x0) /\
+  apply_fun g 1 = x1.
+{
+  exact (andEL
+    (((apply_fun f 0 = x0 /\ apply_fun f 1 = x1) /\ apply_fun g 0 = x0) /\
+      apply_fun g 1 = x1)
+    (exists F:set,
+      continuous_map unit_square unit_square_topology X Tx F /\
+      (forall s:set, s :e unit_interval ->
+        apply_fun F (s, 0) = apply_fun f s) /\
+      (forall s:set, s :e unit_interval ->
+        apply_fun F (s, 1) = apply_fun g s) /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun F (0, t) = x0) /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun F (1, t) = x1))
+    Htail).
+}
+claim Hthree :
+  (apply_fun f 0 = x0 /\ apply_fun f 1 = x1) /\ apply_fun g 0 = x0.
+{
+  exact (andEL
+    ((apply_fun f 0 = x0 /\ apply_fun f 1 = x1) /\ apply_fun g 0 = x0)
+    (apply_fun g 1 = x1)
+    Hfour).
+}
+claim Hfpair : apply_fun f 0 = x0 /\ apply_fun f 1 = x1.
+{
+  exact (andEL
+    (apply_fun f 0 = x0 /\ apply_fun f 1 = x1)
+    (apply_fun g 0 = x0)
+    Hthree).
+}
+claim Hf0 : apply_fun f 0 = x0.
+{
+  exact (andEL
+    (apply_fun f 0 = x0)
+    (apply_fun f 1 = x1)
+    Hfpair).
+}
+claim Hf1 : apply_fun f 1 = x1.
+{
+  exact (andER
+    (apply_fun f 0 = x0)
+    (apply_fun f 1 = x1)
+    Hfpair).
+}
+claim Hg1 : apply_fun g 1 = x1.
+{
+  exact (andER
+    ((apply_fun f 0 = x0 /\ apply_fun f 1 = x1) /\ apply_fun g 0 = x0)
+    (apply_fun g 1 = x1)
+    Hfour).
+}
+claim Hx0Eq : x0 = x0'.
+{
+  rewrite <- Hf0.
+  exact Hf0'.
+}
+prove continuous_map unit_interval unit_interval_topology X Tx f /\
+  continuous_map unit_interval unit_interval_topology X Tx g /\
+  apply_fun f 0 = x0' /\ apply_fun f 1 = x1 /\
+  apply_fun g 0 = x0' /\ apply_fun g 1 = x1 /\
+  exists F:set,
+    continuous_map unit_square unit_square_topology X Tx F /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 0) = apply_fun f s) /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 1) = apply_fun g s) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (0, t) = x0') /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (1, t) = x1).
+apply andI.
+- exact (and6I
+    (continuous_map unit_interval unit_interval_topology X Tx f)
+    (continuous_map unit_interval unit_interval_topology X Tx g)
+    (apply_fun f 0 = x0')
+    (apply_fun f 1 = x1)
+    (apply_fun g 0 = x0')
+    (apply_fun g 1 = x1)
+    HfCont
+    HgCont
+    Hf0'
+    Hf1
+    Hg0'
+    Hg1).
+- claim Hsquare :
+    exists F:set,
+      continuous_map unit_square unit_square_topology X Tx F /\
+      (forall s:set, s :e unit_interval ->
+        apply_fun F (s, 0) = apply_fun f s) /\
+      (forall s:set, s :e unit_interval ->
+        apply_fun F (s, 1) = apply_fun g s) /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun F (0, t) = x0) /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun F (1, t) = x1).
+  {
+    exact (path_homotopic_has_square_witness
+      X
+      Tx
+      x0
+      x1
+      f
+      g
+      Hhom).
+  }
+  apply Hsquare.
+  let F.
+  assume HFpack.
+  witness F.
+  apply (and5E
+    (continuous_map unit_square unit_square_topology X Tx F)
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 0) = apply_fun f s)
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 1) = apply_fun g s)
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (0, t) = x0)
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (1, t) = x1)
+    HFpack).
+  assume HFcont HFs0 HFs1 HF0t HF1t.
+  apply and5I.
+  + exact HFcont.
+  + exact HFs0.
+  + exact HFs1.
+  + let t. assume Ht.
+    rewrite (HF0t t Ht).
+    rewrite Hx0Eq.
+    reflexivity.
+  + exact HF1t.
+Qed.
+
 (** from S51 Lem 51.1 (line 125 in algtop.tex): homotopy and path homotopy are equivalence relations **)
 (** LATEX VERSION: Lem 51.1: The relations ~ and ~p are equivalence relations. **)
 
