@@ -168451,7 +168451,208 @@ apply iffI.
         group_power_nat mult e (apply_fun basis alpha) n = e))
       HaG HpowG HipowG Hnontriv).
   + (** direct_sum_of_subgroups **)
-    admit.
+    (** Key insight: generator_of says each basis(alpha) generates ALL of G, **)
+    (** so Gfam(alpha) = G for each alpha :e J. **)
+    set Gfam := graph J (fun alpha:set =>
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun basis alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun basis alpha)) (ordsucc m)))}).
+    claim HgrpG2 : group_structure G mult e inv.
+    { exact (andEL (group_structure G mult e inv)
+        (forall x y:set, x :e G -> y :e G ->
+          apply_fun mult (x, y) = apply_fun mult (y, x))
+        HabG). }
+    (** Helper: evaluate Gfam at any alpha :e J **)
+    claim HGfam_val : forall alpha:set, alpha :e J ->
+      apply_fun Gfam alpha =
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun basis alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun basis alpha)) (ordsucc m)))}.
+    { let alpha. assume Hal2 : alpha :e J.
+      exact (apply_fun_of_graph_eq Gfam J
+        (fun alpha':set =>
+          {g :e G | exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun basis alpha') n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun basis alpha')) (ordsucc m)))})
+        alpha (eq_refl Gfam) Hal2). }
+    (** G c= Gfam(alpha) for each alpha from generator_of **)
+    claim HG_sub_Gfam : forall alpha:set, alpha :e J ->
+      G c= apply_fun Gfam alpha.
+    { let alpha. assume Hal2 : alpha :e J.
+      let g. assume HgG : g :e G.
+      rewrite (HGfam_val alpha Hal2).
+      claim Hgen_alpha : generator_of G mult e inv (apply_fun basis alpha).
+      { exact (Hgen alpha Hal2). }
+      claim Hpower_exists : exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun basis alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun basis alpha)) (ordsucc m))).
+      { exact (andER
+          (apply_fun basis alpha :e G)
+          (forall g':set, g' :e G ->
+            exists n:set, n :e int /\
+              ((n :e omega /\ g' = group_power_nat mult e (apply_fun basis alpha) n) \/
+               (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+                g' = group_power_nat mult e (apply_fun inv (apply_fun basis alpha)) (ordsucc m))))
+          Hgen_alpha g HgG). }
+      exact (SepI G
+        (fun g':set => exists n:set, n :e int /\
+          ((n :e omega /\ g' = group_power_nat mult e (apply_fun basis alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g' = group_power_nat mult e (apply_fun inv (apply_fun basis alpha)) (ordsucc m))))
+        g HgG Hpower_exists). }
+    (** Gfam(alpha) c= G from Sep **)
+    claim HGfam_sub_G2 : forall alpha:set, alpha :e J ->
+      apply_fun Gfam alpha c= G.
+    { let alpha. assume Hal2 : alpha :e J.
+      let g. assume Hg : g :e apply_fun Gfam alpha.
+      claim Hg2 : g :e {g' :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g' = group_power_nat mult e (apply_fun basis alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g' = group_power_nat mult e (apply_fun inv (apply_fun basis alpha)) (ordsucc m)))}.
+      { exact (eq_subst_mem_set g (apply_fun Gfam alpha)
+          {g' :e G | exists n:set, n :e int /\
+            ((n :e omega /\ g' = group_power_nat mult e (apply_fun basis alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g' = group_power_nat mult e (apply_fun inv (apply_fun basis alpha)) (ordsucc m)))}
+          Hg (HGfam_val alpha Hal2)). }
+      exact (SepE1 G
+        (fun g':set => exists n:set, n :e int /\
+          ((n :e omega /\ g' = group_power_nat mult e (apply_fun basis alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g' = group_power_nat mult e (apply_fun inv (apply_fun basis alpha)) (ordsucc m))))
+        g Hg2). }
+    (** Gfam(alpha) = G from set_ext **)
+    claim HGfam_eq_G : forall alpha:set, alpha :e J ->
+      apply_fun Gfam alpha = G.
+    { let alpha. assume Hal2 : alpha :e J.
+      exact (set_ext (apply_fun Gfam alpha) G
+        (HGfam_sub_G2 alpha Hal2)
+        (HG_sub_Gfam alpha Hal2)). }
+    (** subgroup_of G G mult e inv (trivial: G is a subgroup of itself) **)
+    claim Hself_sub : subgroup_of G G mult e inv.
+    { apply (and6E
+        (function_on mult (setprod G G) G)
+        (function_on inv G G)
+        (e :e G)
+        (forall u v w:set, u :e G -> v :e G -> w :e G ->
+          apply_fun mult (apply_fun mult (u, v), w) = apply_fun mult (u, apply_fun mult (v, w)))
+        (forall u:set, u :e G -> apply_fun mult (e, u) = u /\ apply_fun mult (u, e) = u)
+        (forall u:set, u :e G ->
+          apply_fun mult (u, apply_fun inv u) = e /\ apply_fun mult (apply_fun inv u, u) = e)
+        HgrpG2).
+      assume HmultFn HinvFn HeG Hassoc Hid HinvLaw.
+      exact (and4I
+        (G c= G) (e :e G)
+        (forall x y:set, x :e G -> y :e G -> apply_fun mult (x, y) :e G)
+        (forall x:set, x :e G -> apply_fun inv x :e G)
+        (Subq_ref G) HeG
+        (fun x y:set => fun HxG : x :e G => fun HyG : y :e G =>
+          HmultFn (x, y) (tuple_2_setprod_by_pair_Sigma G G x y HxG HyG))
+        HinvFn). }
+    (** subgroup_of for each alpha: Gfam(alpha) = G so trivial **)
+    claim Hsub_alpha2 : forall alpha:set, alpha :e J ->
+      subgroup_of (apply_fun Gfam alpha) G mult e inv.
+    { let alpha. assume Hal2 : alpha :e J.
+      apply (and6E
+        (function_on mult (setprod G G) G)
+        (function_on inv G G)
+        (e :e G)
+        (forall u v w:set, u :e G -> v :e G -> w :e G ->
+          apply_fun mult (apply_fun mult (u, v), w) = apply_fun mult (u, apply_fun mult (v, w)))
+        (forall u:set, u :e G -> apply_fun mult (e, u) = u /\ apply_fun mult (u, e) = u)
+        (forall u:set, u :e G ->
+          apply_fun mult (u, apply_fun inv u) = e /\ apply_fun mult (apply_fun inv u, u) = e)
+        HgrpG2).
+      assume HmultFn HinvFn HeG Hassoc Hid HinvLaw.
+      exact (and4I
+        (apply_fun Gfam alpha c= G)
+        (e :e apply_fun Gfam alpha)
+        (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+          apply_fun mult (x, y) :e apply_fun Gfam alpha)
+        (forall x:set, x :e apply_fun Gfam alpha -> apply_fun inv x :e apply_fun Gfam alpha)
+        (HGfam_sub_G2 alpha Hal2)
+        (HG_sub_Gfam alpha Hal2 e HeG)
+        (fun x y:set => fun HxF : x :e apply_fun Gfam alpha =>
+          fun HyF : y :e apply_fun Gfam alpha =>
+          HG_sub_Gfam alpha Hal2 (apply_fun mult (x, y))
+            (HmultFn (x, y)
+              (tuple_2_setprod_by_pair_Sigma G G x y
+                (HGfam_sub_G2 alpha Hal2 x HxF)
+                (HGfam_sub_G2 alpha Hal2 y HyF))))
+        (fun x:set => fun HxF : x :e apply_fun Gfam alpha =>
+          HG_sub_Gfam alpha Hal2 (apply_fun inv x)
+            (HinvFn x (HGfam_sub_G2 alpha Hal2 x HxF)))). }
+    (** Now build direct_sum_of_subgroups = subgroups_generate_abelian /\ uniqueness **)
+    claim Hgeneration : forall x:set, x :e G ->
+      exists n:set, n :e omega /\ n <> 0 /\
+      exists alphas:set, function_on alphas n J /\
+      exists xs:set, function_on xs n G /\
+        (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) /\
+        (forall i j:set, i :e n -> j :e n -> i <> j ->
+          apply_fun alphas i <> apply_fun alphas j) /\
+        x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n.
+    { admit. }
+    claim Hsgab : subgroups_generate_abelian G mult e inv J Gfam.
+    { exact (and3I
+        (abelian_group G mult e inv)
+        (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv)
+        (forall x:set, x :e G ->
+          exists n:set, n :e omega /\ n <> 0 /\
+          exists alphas:set, function_on alphas n J /\
+          exists xs:set, function_on xs n G /\
+            (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) /\
+            (forall i j:set, i :e n -> j :e n -> i <> j ->
+              apply_fun alphas i <> apply_fun alphas j) /\
+            x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n)
+        HabG Hsub_alpha2 Hgeneration). }
+    claim Huniq : forall x:set, x :e G ->
+      forall n1 n2:set, n1 :e omega -> n2 :e omega -> n1 <> 0 -> n2 <> 0 ->
+      forall a1 a2:set, function_on a1 n1 J -> function_on a2 n2 J ->
+      forall x1 x2:set, function_on x1 n1 G -> function_on x2 n2 G ->
+        (forall i:set, i :e n1 -> apply_fun x1 i :e apply_fun Gfam (apply_fun a1 i)) ->
+        (forall i:set, i :e n2 -> apply_fun x2 i :e apply_fun Gfam (apply_fun a2 i)) ->
+        (forall i j:set, i :e n1 -> j :e n1 -> i <> j -> apply_fun a1 i <> apply_fun a1 j) ->
+        (forall i j:set, i :e n2 -> j :e n2 -> i <> j -> apply_fun a2 i <> apply_fun a2 j) ->
+        x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun x1 i)) n1 ->
+        x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun x2 i)) n2 ->
+        (forall alpha:set, alpha :e J ->
+          (forall i j:set, i :e n1 -> j :e n2 ->
+            apply_fun a1 i = alpha -> apply_fun a2 j = alpha ->
+            apply_fun x1 i = apply_fun x2 j) /\
+          ((exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
+           ~(exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+           forall i:set, i :e n1 -> apply_fun a1 i = alpha -> apply_fun x1 i = e) /\
+          (~(exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
+           (exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+           forall j:set, j :e n2 -> apply_fun a2 j = alpha -> apply_fun x2 j = e)).
+    { admit. }
+    exact (andI
+      (subgroups_generate_abelian G mult e inv J Gfam)
+      (forall x:set, x :e G ->
+        forall n1 n2:set, n1 :e omega -> n2 :e omega -> n1 <> 0 -> n2 <> 0 ->
+        forall a1 a2:set, function_on a1 n1 J -> function_on a2 n2 J ->
+        forall x1 x2:set, function_on x1 n1 G -> function_on x2 n2 G ->
+          (forall i:set, i :e n1 -> apply_fun x1 i :e apply_fun Gfam (apply_fun a1 i)) ->
+          (forall i:set, i :e n2 -> apply_fun x2 i :e apply_fun Gfam (apply_fun a2 i)) ->
+          (forall i j:set, i :e n1 -> j :e n1 -> i <> j -> apply_fun a1 i <> apply_fun a1 j) ->
+          (forall i j:set, i :e n2 -> j :e n2 -> i <> j -> apply_fun a2 i <> apply_fun a2 j) ->
+          x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun x1 i)) n1 ->
+          x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun x2 i)) n2 ->
+          (forall alpha:set, alpha :e J ->
+            (forall i j:set, i :e n1 -> j :e n2 ->
+              apply_fun a1 i = alpha -> apply_fun a2 j = alpha ->
+              apply_fun x1 i = apply_fun x2 j) /\
+            ((exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
+             ~(exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+             forall i:set, i :e n1 -> apply_fun a1 i = alpha -> apply_fun x1 i = e) /\
+            (~(exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
+             (exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+             forall j:set, j :e n2 -> apply_fun a2 j = alpha -> apply_fun x2 j = e)))
+      Hsgab Huniq).
 Admitted.
 
 (** from S67 Thm 67.8 (line 2689 in algtop.tex): rank is well-defined **)
