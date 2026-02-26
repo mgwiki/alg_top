@@ -64014,6 +64014,768 @@ apply andI.
     }
 Qed.
 
+(** Infrastructure: basic reflexivity of `=` for `set` (missing in the prelude). **)
+(** Proven Charlie **)
+Theorem eq_refl : forall x:set, x = x.
+let x.
+let Q.
+assume HQ.
+exact HQ.
+Qed.
+
+(** Proven Charlie **)
+(** Infrastructure: half-open intervals [0,b) and (a,1] are path connected in R. **)
+
+(** [0,b) **)
+Theorem halfopen_interval_left_in_path_connected_0 :
+  forall b:set,
+  b :e R ->
+  Rlt 0 b ->
+  path_connected_space
+    (halfopen_interval_left_in R 0 b)
+    (subspace_topology R R_standard_topology (halfopen_interval_left_in R 0 b)).
+let b.
+assume HbR H0ltb.
+set Y := halfopen_interval_left_in R 0 b.
+set TY := subspace_topology R R_standard_topology Y.
+claim HYsubR : Y c= R.
+{
+  let x.
+  assume HxY.
+  exact (SepE1
+    R
+    (fun x0:set => (x0 = 0 \/ order_rel R 0 x0) /\ order_rel R x0 b)
+    x
+    HxY).
+}
+claim HtopY : topology_on Y TY.
+{
+  exact (subspace_topology_is_topology
+    R
+    R_standard_topology
+    Y
+    R_standard_topology_is_topology
+    HYsubR).
+}
+claim H0Y : 0 :e Y.
+{
+  (** Avoid `apply` here: Megalodon `apply` matching is syntactic and won't unfold `Y`. **)
+  exact (SepI
+    R
+    (fun x0:set => (x0 = 0 \/ order_rel R 0 x0) /\ order_rel R x0 b)
+    0
+    (RltE_left 0 b H0ltb)
+    (andI
+      (0 = 0 \/ order_rel R 0 0)
+      (order_rel R 0 b)
+      (orIL (0 = 0) (order_rel R 0 0) (eq_refl 0))
+      (Rlt_implies_order_rel_R 0 b H0ltb))).
+}
+claim HpcY :
+  forall x y : set ,
+  x :e Y ->
+  y :e Y ->
+  exists p : set ,
+  path_between Y x y p /\
+  continuous_map unit_interval unit_interval_topology Y TY p.
+{
+  let x y.
+  assume HxY HyY.
+	  claim HxR : x :e R.
+	  { exact (HYsubR x HxY). }
+	  claim HyR : y :e R.
+	  { exact (HYsubR y HyY). }
+  claim HSNo_x : SNo x.
+  { exact (real_SNo x HxR). }
+  claim HSNo_y : SNo y.
+  { exact (real_SNo y HyR). }
+  set incl_I : set := graph unit_interval (fun t:set => t).
+  claim Hincl : continuous_map unit_interval unit_interval_topology R R_standard_topology incl_I.
+  { exact unit_interval_inclusion_continuous. }
+	  (** Any point z in Y is connected to 0 by the scaling path t |-> t mul z. **)
+  claim HexPath0 :
+    forall z:set, z :e Y ->
+      exists p:set,
+        path_between Y 0 z p /\
+        continuous_map unit_interval unit_interval_topology Y TY p.
+  {
+    let z.
+    assume HzY.
+    claim HzR : z :e R.
+    { exact (HYsubR z HzY). }
+    claim HSNo_z : SNo z.
+    { exact (real_SNo z HzR). }
+    claim HzProp : (z = 0 \/ order_rel R 0 z) /\ order_rel R z b.
+    {
+      exact (SepE2
+        R
+        (fun x0:set => (x0 = 0 \/ order_rel R 0 x0) /\ order_rel R x0 b)
+        z
+        HzY).
+    }
+    claim Hz0or : z = 0 \/ order_rel R 0 z.
+    { exact (andEL (z = 0 \/ order_rel R 0 z) (order_rel R z b) HzProp). }
+    claim HzltbOrd : order_rel R z b.
+    { exact (andER (z = 0 \/ order_rel R 0 z) (order_rel R z b) HzProp). }
+    claim Hzltb : Rlt z b.
+    { exact (order_rel_R_implies_Rlt z b HzltbOrd). }
+    claim HzNonneg : Rle 0 z.
+    {
+      apply Hz0or.
+      - assume Hz0.
+        rewrite Hz0.
+        exact (Rle_refl 0 real_0).
+      - assume H0ltzOrd.
+        exact (Rlt_implies_Rle 0 z (order_rel_R_implies_Rlt 0 z H0ltzOrd)).
+    }
+    set pR := compose_fun unit_interval incl_I (mul_const_fun z).
+    claim HpRCont : continuous_map unit_interval unit_interval_topology R R_standard_topology pR.
+    {
+      exact (composition_continuous
+        unit_interval
+        unit_interval_topology
+        R
+        R_standard_topology
+        R
+        R_standard_topology
+        incl_I
+        (mul_const_fun z)
+        Hincl
+        (mul_const_fun_continuous z HzR)).
+    }
+    claim HpRRange : forall t:set, t :e unit_interval -> apply_fun pR t :e Y.
+    {
+      let t.
+      assume HtI.
+      claim HtR : t :e R.
+      { exact (unit_interval_sub_R t HtI). }
+      rewrite (compose_fun_apply unit_interval incl_I (mul_const_fun z) t HtI).
+      rewrite (apply_fun_graph unit_interval (fun u:set => u) t HtI).
+      rewrite (mul_const_fun_apply z t HzR HtR).
+      claim HmulR : mul_SNo t z :e R.
+      { exact (real_mul_SNo t HtR z HzR). }
+      claim Hbounds : Rle 0 (mul_SNo t z) /\ Rle (mul_SNo t z) z.
+      { exact (unit_interval_mul_const_bounds t z HtI HzR HzNonneg). }
+      claim H0lemul : Rle 0 (mul_SNo t z).
+      { exact (andEL (Rle 0 (mul_SNo t z)) (Rle (mul_SNo t z) z) Hbounds). }
+      claim HmulLez : Rle (mul_SNo t z) z.
+      { exact (andER (Rle 0 (mul_SNo t z)) (Rle (mul_SNo t z) z) Hbounds). }
+      claim Hmultltb : Rlt (mul_SNo t z) b.
+      { exact (Rle_Rlt_tra (mul_SNo t z) z b HmulLez Hzltb). }
+      claim HmultltbOrd : order_rel R (mul_SNo t z) b.
+      { exact (Rlt_implies_order_rel_R (mul_SNo t z) b Hmultltb). }
+      claim H0or : (mul_SNo t z = 0 \/ order_rel R 0 (mul_SNo t z)).
+      {
+        apply (xm (mul_SNo t z = 0)).
+        - assume Heq.
+          exact (orIL (mul_SNo t z = 0) (order_rel R 0 (mul_SNo t z)) Heq).
+        - assume Hneq.
+          claim H0ltmul : Rlt 0 (mul_SNo t z).
+          {
+            exact (Rle_neq_implies_Rlt
+              0
+              (mul_SNo t z)
+              H0lemul
+              (neq_i_sym (mul_SNo t z) 0 Hneq)).
+          }
+          exact (orIR
+            (mul_SNo t z = 0)
+            (order_rel R 0 (mul_SNo t z))
+            (Rlt_implies_order_rel_R 0 (mul_SNo t z) H0ltmul)).
+      }
+      exact (SepI
+        R
+        (fun x0:set => (x0 = 0 \/ order_rel R 0 x0) /\ order_rel R x0 b)
+        (mul_SNo t z)
+        HmulR
+        (andI
+          (mul_SNo t z = 0 \/ order_rel R 0 (mul_SNo t z))
+          (order_rel R (mul_SNo t z) b)
+          H0or
+          HmultltbOrd)).
+    }
+    claim HpCont : continuous_map unit_interval unit_interval_topology Y TY pR.
+    {
+      exact (continuous_map_range_restrict
+        unit_interval
+        unit_interval_topology
+        R
+        R_standard_topology
+        pR
+        Y
+        HpRCont
+        HYsubR
+        HpRRange).
+    }
+    claim Hp0 : apply_fun pR 0 = 0.
+    {
+      rewrite (compose_fun_apply unit_interval incl_I (mul_const_fun z) 0 zero_in_unit_interval).
+      rewrite (apply_fun_graph unit_interval (fun u:set => u) 0 zero_in_unit_interval).
+      rewrite (mul_const_fun_apply z 0 HzR real_0).
+      exact (mul_SNo_zeroL z HSNo_z).
+    }
+    claim Hp1 : apply_fun pR 1 = z.
+    {
+      rewrite (compose_fun_apply unit_interval incl_I (mul_const_fun z) 1 one_in_unit_interval).
+      rewrite (apply_fun_graph unit_interval (fun u:set => u) 1 one_in_unit_interval).
+      rewrite (mul_const_fun_apply z 1 HzR real_1).
+      exact (mul_SNo_oneL z HSNo_z).
+    }
+    witness pR.
+    apply andI.
+    - exact (path_betweenI
+        Y
+        0
+        z
+        pR
+        (continuous_map_function_on
+          unit_interval
+          unit_interval_topology
+          Y
+          TY
+          pR
+          HpCont)
+        Hp0
+        Hp1).
+    - exact HpCont.
+  }
+  (** Build a path from x to y by concatenating x->0 and 0->y. **)
+	  apply (HexPath0 x HxY).
+	  let px.
+	  assume HpxPack.
+	  apply HpxPack.
+	  assume HpxBet HpxCont.
+	  apply (HexPath0 y HyY).
+	  let py.
+	  assume HpyPack.
+	  apply HpyPack.
+	  assume HpyBet HpyCont.
+	  set pxr := reverse_path px.
+  claim HpxrCont : continuous_map unit_interval unit_interval_topology Y TY pxr.
+  { exact (reverse_path_continuous Y TY px HpxCont). }
+	  claim Hpx0 : apply_fun px 0 = 0.
+	  { exact (path_between_at_zero Y 0 x px HpxBet). }
+	  claim Hpx1 : apply_fun px 1 = x.
+	  { exact (path_between_at_one Y 0 x px HpxBet). }
+	  claim Hpy0 : apply_fun py 0 = 0.
+	  { exact (path_between_at_zero Y 0 y py HpyBet). }
+	  claim Hpy1 : apply_fun py 1 = y.
+	  { exact (path_between_at_one Y 0 y py HpyBet). }
+  claim Hpxr0 : apply_fun pxr 0 = x.
+  { rewrite (reverse_path_at_zero px). exact Hpx1. }
+  claim Hpxr1 : apply_fun pxr 1 = 0.
+  { rewrite (reverse_path_at_one px). exact Hpx0. }
+  set p := path_concat pxr py.
+  claim HpCont : continuous_map unit_interval unit_interval_topology Y TY p.
+  {
+    exact (path_concat_continuous
+      Y
+      TY
+      x
+      0
+      y
+      pxr
+      py
+      HpxrCont
+      HpyCont
+      Hpxr0
+      Hpxr1
+      Hpy0
+      Hpy1).
+	  }
+	  witness p.
+	  apply andI.
+	  - claim HpFn : function_on p unit_interval Y.
+	    {
+	      exact (continuous_map_function_on
+	        unit_interval
+	        unit_interval_topology
+	        Y
+	        TY
+	        p
+	        HpCont).
+	    }
+	    claim Hp0 : apply_fun p 0 = x.
+	    { rewrite (path_concat_at_zero pxr py). exact Hpxr0. }
+	    claim Hp1 : apply_fun p 1 = y.
+	    { rewrite (path_concat_at_one pxr py). exact Hpy1. }
+	    exact (path_betweenI Y x y p HpFn Hp0 Hp1).
+	  - exact HpCont.
+	}
+	exact (andI
+	  (topology_on Y TY)
+	  (forall x y : set ,
+	    x :e Y ->
+	    y :e Y ->
+	    exists p : set ,
+	    path_between Y x y p /\
+	    continuous_map unit_interval unit_interval_topology Y TY p)
+	  HtopY
+	  HpcY).
+Qed.
+
+(** (a,1] **)
+(** Proven Charlie **)
+Theorem halfopen_interval_right_in_path_connected_1 :
+  forall a:set,
+  a :e R ->
+  Rlt a 1 ->
+  path_connected_space
+    (halfopen_interval_right_in R a 1)
+    (subspace_topology R R_standard_topology (halfopen_interval_right_in R a 1)).
+let a.
+assume HaR Halt1.
+set Y := halfopen_interval_right_in R a 1.
+set TY := subspace_topology R R_standard_topology Y.
+claim HYsubR : Y c= R.
+{
+  let x.
+  assume HxY.
+  exact (SepE1
+    R
+    (fun x0:set => order_rel R a x0 /\ (x0 = 1 \/ order_rel R x0 1))
+    x
+    HxY).
+}
+claim HtopY : topology_on Y TY.
+{
+  exact (subspace_topology_is_topology
+    R
+    R_standard_topology
+    Y
+    R_standard_topology_is_topology
+    HYsubR).
+}
+claim H1Y : 1 :e Y.
+{
+  exact (SepI
+    R
+    (fun x0:set => order_rel R a x0 /\ (x0 = 1 \/ order_rel R x0 1))
+    1
+    (RltE_right a 1 Halt1)
+    (andI
+      (order_rel R a 1)
+      (1 = 1 \/ order_rel R 1 1)
+      (Rlt_implies_order_rel_R a 1 Halt1)
+      (orIL (1 = 1) (order_rel R 1 1) (eq_refl 1)))).
+}
+claim HpcY :
+  forall x y : set ,
+  x :e Y ->
+  y :e Y ->
+  exists p : set ,
+  path_between Y x y p /\
+  continuous_map unit_interval unit_interval_topology Y TY p.
+{
+  let x y.
+  assume HxY HyY.
+  claim HxR : x :e R.
+  { exact (HYsubR x HxY). }
+  claim HyR : y :e R.
+  { exact (HYsubR y HyY). }
+  claim HSNo_x : SNo x.
+  { exact (real_SNo x HxR). }
+  claim HSNo_y : SNo y.
+  { exact (real_SNo y HyR). }
+  set incl_I : set := graph unit_interval (fun t:set => t).
+  claim Hincl : continuous_map unit_interval unit_interval_topology R R_standard_topology incl_I.
+  { exact unit_interval_inclusion_continuous. }
+	  (** Any point z in Y is connected to 1 by the path t |-> 1 - t mul (1-z). **)
+  claim HexPath1 :
+    forall z:set, z :e Y ->
+      exists p:set,
+        path_between Y 1 z p /\
+        continuous_map unit_interval unit_interval_topology Y TY p.
+  {
+    let z.
+    assume HzY.
+    claim HzR : z :e R.
+    { exact (HYsubR z HzY). }
+    claim HSNo_z : SNo z.
+    { exact (real_SNo z HzR). }
+    claim HzProp : order_rel R a z /\ (z = 1 \/ order_rel R z 1).
+    {
+      exact (SepE2
+        R
+        (fun x0:set => order_rel R a x0 /\ (x0 = 1 \/ order_rel R x0 1))
+        z
+        HzY).
+    }
+    claim HazOrd : order_rel R a z.
+    { exact (andEL (order_rel R a z) (z = 1 \/ order_rel R z 1) HzProp). }
+    claim Hzle1or : z = 1 \/ order_rel R z 1.
+    { exact (andER (order_rel R a z) (z = 1 \/ order_rel R z 1) HzProp). }
+    claim Haz : Rlt a z.
+    { exact (order_rel_R_implies_Rlt a z HazOrd). }
+    claim Hzle1 : Rle z 1.
+    {
+      apply Hzle1or.
+      - assume Hz1.
+        rewrite Hz1.
+        exact (Rle_refl 1 real_1).
+      - assume Hzlt1Ord.
+        exact (Rlt_implies_Rle z 1 (order_rel_R_implies_Rlt z 1 Hzlt1Ord)).
+    }
+    set d := add_SNo 1 (minus_SNo z).
+    claim HdR : d :e R.
+    { exact (real_add_SNo 1 real_1 (minus_SNo z) (real_minus_SNo z HzR)). }
+    claim HSNo_d : SNo d.
+    { exact (real_SNo d HdR). }
+    claim HdNonneg : Rle 0 d.
+    {
+      (** from z <= 1, deduce 0 <= 1 - z **)
+      claim Hm : Rle (minus_SNo 1) (minus_SNo z).
+      { exact (Rle_minus_contra z 1 Hzle1). }
+      claim Hm1R : minus_SNo 1 :e R.
+      { exact (real_minus_SNo 1 real_1). }
+      claim HmzR : minus_SNo z :e R.
+      { exact (real_minus_SNo z HzR). }
+      claim Hsum : Rle (add_SNo 1 (minus_SNo 1)) (add_SNo 1 (minus_SNo z)).
+      { exact (Rle_add_SNo_2 1 (minus_SNo 1) (minus_SNo z) real_1 Hm1R HmzR Hm). }
+	      rewrite <- (add_SNo_minus_SNo_rinv 1 SNo_1) at 1.
+	      exact Hsum.
+	    }
+	    (** Build pR : unit_interval -> R with pR(t) = 1 - t mul d. **)
+    set td := compose_fun unit_interval incl_I (mul_const_fun d).
+    claim HtdCont : continuous_map unit_interval unit_interval_topology R R_standard_topology td.
+    {
+      exact (composition_continuous
+        unit_interval
+        unit_interval_topology
+        R
+        R_standard_topology
+        R
+        R_standard_topology
+        incl_I
+        (mul_const_fun d)
+        Hincl
+        (mul_const_fun_continuous d HdR)).
+    }
+    set c1 := const_fun unit_interval 1.
+    claim Hc1Cont : continuous_map unit_interval unit_interval_topology R R_standard_topology c1.
+    {
+      exact (const_fun_continuous
+        unit_interval
+        unit_interval_topology
+        R
+        R_standard_topology
+        1
+        unit_interval_topology_on
+        R_standard_topology_is_topology
+        real_1).
+    }
+    set pR := compose_fun unit_interval (pair_map unit_interval c1 (compose_fun unit_interval td neg_fun)) add_fun_R.
+    claim HpRCont : continuous_map unit_interval unit_interval_topology R R_standard_topology pR.
+    {
+      claim HnegtdCont : continuous_map unit_interval unit_interval_topology R R_standard_topology (compose_fun unit_interval td neg_fun).
+      {
+        exact (composition_continuous
+          unit_interval
+          unit_interval_topology
+          R
+          R_standard_topology
+          R
+          R_standard_topology
+          td
+          neg_fun
+          HtdCont
+          neg_fun_continuous).
+      }
+      exact (add_two_continuous_R
+        unit_interval
+        unit_interval_topology
+        c1
+        (compose_fun unit_interval td neg_fun)
+        unit_interval_topology_on
+        Hc1Cont
+        HnegtdCont).
+    }
+    claim HpRRange : forall t:set, t :e unit_interval -> apply_fun pR t :e Y.
+    {
+      let t.
+      assume HtI.
+      claim HtR : t :e R.
+      { exact (unit_interval_sub_R t HtI). }
+	      claim HtdR : apply_fun td t :e R.
+	      {
+	        apply (continuous_map_function_on unit_interval unit_interval_topology R R_standard_topology td HtdCont t HtI).
+	      }
+	      claim Hc1tR : apply_fun c1 t :e R.
+	      {
+	        rewrite (const_family_apply unit_interval 1 t HtI).
+	        exact real_1.
+	      }
+	      claim Hpval : apply_fun pR t = add_SNo (apply_fun c1 t) (minus_SNo (apply_fun td t)).
+	      {
+	        exact (add_of_pair_map_neg_apply
+	          unit_interval
+	          c1
+	          td
+	          t
+	          HtI
+	          Hc1tR
+	          HtdR).
+	      }
+	      rewrite Hpval.
+	      rewrite (const_family_apply unit_interval 1 t HtI).
+	      claim HtdEq : apply_fun td t = mul_SNo t d.
+	      {
+	        rewrite (compose_fun_apply unit_interval incl_I (mul_const_fun d) t HtI).
+        rewrite (apply_fun_graph unit_interval (fun u:set => u) t HtI).
+        rewrite (mul_const_fun_apply d t HdR HtR).
+        reflexivity.
+      }
+      rewrite HtdEq.
+	      (** Bounds: z <= 1 - t mul d <= 1. **)
+      claim Hbounds : Rle 0 (mul_SNo t d) /\ Rle (mul_SNo t d) d.
+      { exact (unit_interval_mul_const_bounds t d HtI HdR HdNonneg). }
+      claim H0lemul : Rle 0 (mul_SNo t d).
+      { exact (andEL (Rle 0 (mul_SNo t d)) (Rle (mul_SNo t d) d) Hbounds). }
+      claim HmulLed : Rle (mul_SNo t d) d.
+      { exact (andER (Rle 0 (mul_SNo t d)) (Rle (mul_SNo t d) d) Hbounds). }
+      claim Hm1 : Rle (minus_SNo d) (minus_SNo (mul_SNo t d)).
+      { exact (Rle_minus_contra (mul_SNo t d) d HmulLed). }
+      claim HmuldR : mul_SNo t d :e R.
+      { exact (real_mul_SNo t HtR d HdR). }
+      claim HmdR : minus_SNo d :e R.
+      { exact (real_minus_SNo d HdR). }
+      claim HmmulR : minus_SNo (mul_SNo t d) :e R.
+      { exact (real_minus_SNo (mul_SNo t d) HmuldR). }
+      claim Hlow : Rle (add_SNo 1 (minus_SNo d)) (add_SNo 1 (minus_SNo (mul_SNo t d))).
+      { exact (Rle_add_SNo_2 1 (minus_SNo d) (minus_SNo (mul_SNo t d)) real_1 HmdR HmmulR Hm1). }
+	        claim Hhigh : Rle (add_SNo 1 (minus_SNo (mul_SNo t d))) 1.
+	        {
+	          claim Hn : Rle (minus_SNo (mul_SNo t d)) 0.
+	        { exact (Rle_minus_nonneg (mul_SNo t d) HmuldR (RleE_nlt 0 (mul_SNo t d) H0lemul)). }
+	          claim H0R : 0 :e R.
+	          { exact real_0. }
+	          claim Hsum : Rle (add_SNo 1 (minus_SNo (mul_SNo t d))) (add_SNo 1 0).
+	          { exact (Rle_add_SNo_2 1 (minus_SNo (mul_SNo t d)) 0 real_1 HmmulR H0R Hn). }
+	          rewrite <- (add_SNo_0R 1 SNo_1) at 3.
+	          exact Hsum.
+	        }
+	      claim Hlowz : add_SNo 1 (minus_SNo d) = z.
+	      {
+	        (** (1 - d) = z since d = 1 - z **)
+	        claim Hzsum : add_SNo d z = 1.
+	        {
+	          claim HdDef : d = add_SNo 1 (minus_SNo z).
+	          { reflexivity. }
+	          rewrite HdDef at 1.
+	          rewrite <- (add_SNo_assoc 1 (minus_SNo z) z SNo_1 (SNo_minus_SNo z HSNo_z) HSNo_z).
+	          rewrite (add_SNo_minus_SNo_linv z HSNo_z).
+	          exact (add_SNo_0R 1 SNo_1).
+	        }
+	        claim Hzsum' : add_SNo z d = 1.
+	        { exact (add_SNo_com d z HSNo_d HSNo_z (fun u v:set => u = 1) Hzsum). }
+        claim HzEq : add_SNo 1 (minus_SNo d) = z.
+        {
+          rewrite <- Hzsum' at 1.
+          rewrite (add_SNo_minus_R2 z d HSNo_z HSNo_d).
+          reflexivity.
+        }
+        exact HzEq.
+      }
+	      claim HaLtVal : order_rel R a (add_SNo 1 (minus_SNo (mul_SNo t d))).
+	      {
+	        claim Haz' : Rlt a z.
+	        { exact Haz. }
+	        claim Hztoval : Rle z (add_SNo 1 (minus_SNo (mul_SNo t d))).
+	        {
+	          rewrite <- Hlowz at 1.
+	          exact Hlow.
+	        }
+	        exact (Rlt_implies_order_rel_R a (add_SNo 1 (minus_SNo (mul_SNo t d))) (Rlt_Rle_tra a z (add_SNo 1 (minus_SNo (mul_SNo t d))) Haz' Hztoval)).
+	      }
+      claim HvalLe1 : Rle (add_SNo 1 (minus_SNo (mul_SNo t d))) 1.
+      { exact Hhigh. }
+      claim Hup : (add_SNo 1 (minus_SNo (mul_SNo t d)) = 1 \/ order_rel R (add_SNo 1 (minus_SNo (mul_SNo t d))) 1).
+      {
+        apply (xm (add_SNo 1 (minus_SNo (mul_SNo t d)) = 1)).
+        - assume Heq.
+          exact (orIL
+            (add_SNo 1 (minus_SNo (mul_SNo t d)) = 1)
+            (order_rel R (add_SNo 1 (minus_SNo (mul_SNo t d))) 1)
+            Heq).
+        - assume Hneq.
+          claim Hlt : Rlt (add_SNo 1 (minus_SNo (mul_SNo t d))) 1.
+          { exact (Rle_neq_implies_Rlt (add_SNo 1 (minus_SNo (mul_SNo t d))) 1 HvalLe1 Hneq). }
+          exact (orIR
+            (add_SNo 1 (minus_SNo (mul_SNo t d)) = 1)
+            (order_rel R (add_SNo 1 (minus_SNo (mul_SNo t d))) 1)
+            (Rlt_implies_order_rel_R (add_SNo 1 (minus_SNo (mul_SNo t d))) 1 Hlt)).
+      }
+      exact (SepI
+        R
+        (fun x0:set => order_rel R a x0 /\ (x0 = 1 \/ order_rel R x0 1))
+        (add_SNo 1 (minus_SNo (mul_SNo t d)))
+        (real_add_SNo 1 real_1 (minus_SNo (mul_SNo t d)) (real_minus_SNo (mul_SNo t d) HmuldR))
+        (andI
+          (order_rel R a (add_SNo 1 (minus_SNo (mul_SNo t d))))
+          (add_SNo 1 (minus_SNo (mul_SNo t d)) = 1 \/ order_rel R (add_SNo 1 (minus_SNo (mul_SNo t d))) 1)
+          HaLtVal
+          Hup)).
+    }
+    claim HpCont : continuous_map unit_interval unit_interval_topology Y TY pR.
+    {
+      exact (continuous_map_range_restrict
+        unit_interval
+        unit_interval_topology
+        R
+        R_standard_topology
+        pR
+        Y
+        HpRCont
+        HYsubR
+        HpRRange).
+    }
+    claim Hp0 : apply_fun pR 0 = 1.
+	    {
+	      claim H0R : 0 :e R.
+	      { exact real_0. }
+	      claim Hc10R : apply_fun c1 0 :e R.
+	      {
+	        rewrite (const_fun_apply unit_interval 1 0 zero_in_unit_interval).
+	        exact real_1.
+	      }
+	      claim Htd0R : apply_fun td 0 :e R.
+	      {
+	        apply (continuous_map_function_on unit_interval unit_interval_topology R R_standard_topology td HtdCont 0 zero_in_unit_interval).
+	      }
+	      rewrite (add_of_pair_map_neg_apply unit_interval c1 td 0 zero_in_unit_interval Hc10R Htd0R).
+	      rewrite (const_fun_apply unit_interval 1 0 zero_in_unit_interval).
+	      rewrite (compose_fun_apply unit_interval incl_I (mul_const_fun d) 0 zero_in_unit_interval).
+	      rewrite (apply_fun_graph unit_interval (fun u:set => u) 0 zero_in_unit_interval).
+      rewrite (mul_const_fun_apply d 0 HdR real_0).
+      rewrite (mul_SNo_zeroL d HSNo_d).
+      rewrite minus_SNo_0.
+      exact (add_SNo_0R 1 SNo_1).
+    }
+    claim Hp1 : apply_fun pR 1 = z.
+    {
+      claim Hc11R : apply_fun c1 1 :e R.
+      {
+        rewrite (const_fun_apply unit_interval 1 1 one_in_unit_interval).
+        exact real_1.
+      }
+      claim Htd1R : apply_fun td 1 :e R.
+      {
+        apply (continuous_map_function_on unit_interval unit_interval_topology R R_standard_topology td HtdCont 1 one_in_unit_interval).
+      }
+      rewrite (add_of_pair_map_neg_apply unit_interval c1 td 1 one_in_unit_interval Hc11R Htd1R).
+      rewrite (const_fun_apply unit_interval 1 1 one_in_unit_interval).
+      rewrite (compose_fun_apply unit_interval incl_I (mul_const_fun d) 1 one_in_unit_interval).
+      rewrite (apply_fun_graph unit_interval (fun u:set => u) 1 one_in_unit_interval).
+      rewrite (mul_const_fun_apply d 1 HdR real_1).
+      rewrite (mul_SNo_oneL d HSNo_d).
+      (** 1 - d = z **)
+      claim Hzsum : add_SNo d z = 1.
+      {
+        claim HdDef : d = add_SNo 1 (minus_SNo z).
+        { reflexivity. }
+        rewrite HdDef at 1.
+        rewrite <- (add_SNo_assoc 1 (minus_SNo z) z SNo_1 (SNo_minus_SNo z HSNo_z) HSNo_z).
+        rewrite (add_SNo_minus_SNo_linv z HSNo_z).
+        exact (add_SNo_0R 1 SNo_1).
+      }
+      claim Hzsum' : add_SNo z d = 1.
+      { exact (add_SNo_com d z HSNo_d HSNo_z (fun u v:set => u = 1) Hzsum). }
+      rewrite <- Hzsum' at 1.
+      exact (add_SNo_minus_R2 z d HSNo_z HSNo_d).
+    }
+    witness pR.
+    apply andI.
+    - exact (path_betweenI
+        Y
+        1
+        z
+        pR
+        (continuous_map_function_on
+          unit_interval
+          unit_interval_topology
+          Y
+          TY
+          pR
+          HpCont)
+        Hp0
+        Hp1).
+    - exact HpCont.
+  }
+  (** Build a path from x to y by concatenating x->1 and 1->y. **)
+	  apply (HexPath1 x HxY).
+	  let px.
+	  assume HpxPack.
+	  apply HpxPack.
+	  assume HpxBet HpxCont.
+	  apply (HexPath1 y HyY).
+	  let py.
+	  assume HpyPack.
+	  apply HpyPack.
+	  assume HpyBet HpyCont.
+  set pxr := reverse_path px.
+  claim HpxrCont : continuous_map unit_interval unit_interval_topology Y TY pxr.
+  { exact (reverse_path_continuous Y TY px HpxCont). }
+	  claim Hpx0 : apply_fun px 0 = 1.
+	  { exact (path_between_at_zero Y 1 x px HpxBet). }
+	  claim Hpx1 : apply_fun px 1 = x.
+	  { exact (path_between_at_one Y 1 x px HpxBet). }
+	  claim Hpy0 : apply_fun py 0 = 1.
+	  { exact (path_between_at_zero Y 1 y py HpyBet). }
+	  claim Hpy1 : apply_fun py 1 = y.
+	  { exact (path_between_at_one Y 1 y py HpyBet). }
+  claim Hpxr0 : apply_fun pxr 0 = x.
+  { rewrite (reverse_path_at_zero px). exact Hpx1. }
+  claim Hpxr1 : apply_fun pxr 1 = 1.
+  { rewrite (reverse_path_at_one px). exact Hpx0. }
+  set p := path_concat pxr py.
+  claim HpCont : continuous_map unit_interval unit_interval_topology Y TY p.
+  {
+    exact (path_concat_continuous
+      Y
+      TY
+      x
+      1
+      y
+      pxr
+      py
+      HpxrCont
+      HpyCont
+      Hpxr0
+      Hpxr1
+      Hpy0
+      Hpy1).
+  }
+  witness p.
+  apply andI.
+  - claim HpFn : function_on p unit_interval Y.
+    {
+      exact (continuous_map_function_on
+        unit_interval
+        unit_interval_topology
+        Y
+        TY
+        p
+        HpCont).
+    }
+    claim Hp0 : apply_fun p 0 = x.
+    { rewrite (path_concat_at_zero pxr py). exact Hpxr0. }
+    claim Hp1 : apply_fun p 1 = y.
+    { rewrite (path_concat_at_one pxr py). exact Hpy1. }
+    exact (path_betweenI Y x y p HpFn Hp0 Hp1).
+  - exact HpCont.
+}
+exact (andI
+  (topology_on Y TY)
+  (forall x y : set ,
+    x :e Y ->
+    y :e Y ->
+    exists p : set ,
+    path_between Y x y p /\
+    continuous_map unit_interval unit_interval_topology Y TY p)
+  HtopY
+  HpcY).
+Qed.
+
 (** Infrastructure: no immediate successor and predecessor in R (from density of linear continuum). **)
 (** Proven Charlie **)
 Theorem no_immediate_successor_R : forall a:set,
