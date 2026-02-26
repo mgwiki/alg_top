@@ -248136,16 +248136,6 @@ Theorem thm84_5_tree_in_maximal :
     maximal_tree T ArcsT X Tx Arcs /\ T0 c= T.
 let T0 ArcsT0 X Tx Arcs.
 assume Hglg Htree0.
-claim Hsub0 : subgraph_of T0 X Tx Arcs.
-{
-  exact (tree_in_graph_subgraph_of
-    T0
-    ArcsT0
-    X
-    Tx
-    Arcs
-    Htree0).
-}
 exact (thm84_5_maximal_tree_extension_exists
   T0
   ArcsT0
