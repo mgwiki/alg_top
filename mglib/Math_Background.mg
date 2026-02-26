@@ -174624,6 +174624,297 @@ apply andI.
 - exact Hmult.
 Admitted.
 
+(** Helper: for an infinite cyclic group with generator x, **)
+(** there is a unique hom to Z mod 2 sending x to any given y in 2 **)
+Lemma infinite_cyclic_hom_to_Z2 :
+  forall G multG eG invG x:set,
+  group_structure G multG eG invG ->
+  cyclic_group G multG eG invG ->
+  ~ finite G ->
+  generator_of G multG eG invG x ->
+  forall y:set, y :e 2 ->
+  exists h:set,
+    group_homomorphism G multG 2 Z2_mult h /\
+    apply_fun h x = y /\
+    (forall h':set, group_homomorphism G multG 2 Z2_mult h' ->
+      apply_fun h' x = y ->
+      forall g:set, g :e G -> apply_fun h' g = apply_fun h g).
+let G multG eG invG x.
+assume Hgrp : group_structure G multG eG invG.
+assume Hcyc : cyclic_group G multG eG invG.
+assume Hinf : ~ finite G.
+assume Hgen : generator_of G multG eG invG x.
+let y. assume Hy : y :e 2.
+(** Z mod 2 has group_structure **)
+claim HZ2_grp : group_structure 2 Z2_mult 0 Z2_inv.
+{ exact (andEL (group_structure 2 Z2_mult 0 Z2_inv)
+    (forall a b:set, a :e 2 -> b :e 2 ->
+      apply_fun Z2_mult (a, b) = apply_fun Z2_mult (b, a))
+    Z2_abelian_group). }
+exact (infinite_cyclic_universal_property G multG eG invG x 2 Z2_mult 0 Z2_inv y
+  Hgrp Hcyc Hinf Hgen HZ2_grp Hy).
+Qed.
+
+(** Helper: given a family of local homs (one per basis element) to Z mod 2, **)
+(** there is a unique global hom extending them **)
+Lemma free_abelian_extension_to_Z2 :
+  forall G mult e inv J basis:set,
+  free_abelian_group_with_basis G mult e inv J basis ->
+  forall hfam:set,
+    function_on hfam J (Power (setprod G 2)) ->
+    (forall alpha:set, alpha :e J ->
+      group_homomorphism
+        (apply_fun
+          (graph J (fun alpha:set =>
+            {g :e G | exists n:set, n :e int /\
+              ((n :e omega /\ g = group_power_nat mult e (apply_fun basis alpha) n) \/
+               (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+                g = group_power_nat mult e (apply_fun inv (apply_fun basis alpha)) (ordsucc m)))}))
+          alpha)
+        mult 2 Z2_mult (apply_fun hfam alpha)) ->
+    exists h:set,
+      group_homomorphism G mult 2 Z2_mult h /\
+      (forall alpha:set, alpha :e J ->
+        forall x:set, x :e apply_fun
+          (graph J (fun alpha:set =>
+            {g :e G | exists n:set, n :e int /\
+              ((n :e omega /\ g = group_power_nat mult e (apply_fun basis alpha) n) \/
+               (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+                g = group_power_nat mult e (apply_fun inv (apply_fun basis alpha)) (ordsucc m)))}))
+          alpha ->
+          apply_fun h x = apply_fun (apply_fun hfam alpha) x) /\
+      (forall h':set, group_homomorphism G mult 2 Z2_mult h' ->
+        (forall alpha:set, alpha :e J ->
+          forall x:set, x :e apply_fun
+            (graph J (fun alpha:set =>
+              {g :e G | exists n:set, n :e int /\
+                ((n :e omega /\ g = group_power_nat mult e (apply_fun basis alpha) n) \/
+                 (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+                  g = group_power_nat mult e (apply_fun inv (apply_fun basis alpha)) (ordsucc m)))}))
+            alpha ->
+            apply_fun h' x = apply_fun (apply_fun hfam alpha) x) ->
+        forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+let G mult e inv J basis.
+assume Hfab : free_abelian_group_with_basis G mult e inv J basis.
+(** Extract direct_sum_of_subgroups from free_abelian_group_with_basis **)
+set Gfam := graph J (fun alpha:set =>
+  {g :e G | exists n:set, n :e int /\
+    ((n :e omega /\ g = group_power_nat mult e (apply_fun basis alpha) n) \/
+     (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+      g = group_power_nat mult e (apply_fun inv (apply_fun basis alpha)) (ordsucc m)))}).
+claim Hdsom : direct_sum_of_subgroups G mult e inv J Gfam.
+{ exact (andER (abelian_group G mult e inv /\
+    function_on basis J G /\
+    (forall alpha:set, alpha :e J ->
+      infinite_cyclic_subgroup G mult e inv (apply_fun basis alpha)))
+    (direct_sum_of_subgroups G mult e inv J Gfam)
+    Hfab). }
+claim HZ2_ab : abelian_group 2 Z2_mult 0 Z2_inv.
+{ exact Z2_abelian_group. }
+exact (lemma67_1_extension_condition_direct_sum G mult e inv J Gfam Hdsom 2 Z2_mult 0 Z2_inv HZ2_ab).
+Qed.
+
+(** Helper: restriction of group_homomorphism to a subgroup is a group_homomorphism **)
+Lemma restrict_hom_to_subgroup :
+  forall G mult H multH h K:set,
+  group_homomorphism G mult H multH h ->
+  K c= G ->
+  (forall x y:set, x :e K -> y :e K -> apply_fun mult (x, y) :e K) ->
+  group_homomorphism K mult H multH (graph K (fun x:set => apply_fun h x)).
+let G mult H multH h K.
+assume Hhom : group_homomorphism G mult H multH h.
+assume HKG : K c= G.
+assume HKcl : forall x y:set, x :e K -> y :e K -> apply_fun mult (x, y) :e K.
+(** Extract function_on and multiplicativity from Hhom **)
+claim Hfn : function_on h G H.
+{ exact (andEL (function_on h G H)
+    (forall x y:set, x :e G -> y :e G ->
+      apply_fun h (apply_fun mult (x, y)) = apply_fun multH (apply_fun h x, apply_fun h y))
+    Hhom). }
+claim Hmult_h : forall x y:set, x :e G -> y :e G ->
+  apply_fun h (apply_fun mult (x, y)) = apply_fun multH (apply_fun h x, apply_fun h y).
+{ exact (andER (function_on h G H)
+    (forall x y:set, x :e G -> y :e G ->
+      apply_fun h (apply_fun mult (x, y)) = apply_fun multH (apply_fun h x, apply_fun h y))
+    Hhom). }
+set h_res := graph K (fun x:set => apply_fun h x).
+prove function_on h_res K H /\
+  (forall x y:set, x :e K -> y :e K ->
+    apply_fun h_res (apply_fun mult (x, y)) = apply_fun multH (apply_fun h_res x, apply_fun h_res y)).
+apply andI.
+- (** function_on h_res K H **)
+  let x. assume Hx : x :e K.
+  rewrite (apply_fun_graph K (fun x:set => apply_fun h x) x Hx).
+  exact (Hfn x (HKG x Hx)).
+- (** multiplicativity **)
+  let x y. assume Hx : x :e K. assume Hy : y :e K.
+  claim HxG : x :e G. { exact (HKG x Hx). }
+  claim HyG : y :e G. { exact (HKG y Hy). }
+  claim HxyK : apply_fun mult (x, y) :e K.
+  { exact (HKcl x y Hx Hy). }
+  rewrite (apply_fun_graph K (fun z:set => apply_fun h z) (apply_fun mult (x, y)) HxyK).
+  rewrite (apply_fun_graph K (fun z:set => apply_fun h z) x Hx).
+  rewrite (apply_fun_graph K (fun z:set => apply_fun h z) y Hy).
+  exact (Hmult_h x y HxG HyG).
+Qed.
+
+(** Helper: two homs from infinite cyclic group agreeing on generator agree everywhere **)
+Lemma infinite_cyclic_hom_agree_on_gen :
+  forall G mult e inv x H multH eH invH h1 h2:set,
+  group_structure G mult e inv ->
+  cyclic_group G mult e inv ->
+  ~ finite G ->
+  generator_of G mult e inv x ->
+  group_structure H multH eH invH ->
+  group_homomorphism G mult H multH h1 ->
+  group_homomorphism G mult H multH h2 ->
+  apply_fun h1 x = apply_fun h2 x ->
+  forall g:set, g :e G -> apply_fun h1 g = apply_fun h2 g.
+let G mult e inv x H multH eH invH h1 h2.
+assume Hgrp : group_structure G mult e inv.
+assume Hcyc : cyclic_group G mult e inv.
+assume Hinf : ~ finite G.
+assume Hgen : generator_of G mult e inv x.
+assume HgrpH : group_structure H multH eH invH.
+assume Hh1 : group_homomorphism G mult H multH h1.
+assume Hh2 : group_homomorphism G mult H multH h2.
+assume Heq : apply_fun h1 x = apply_fun h2 x.
+(** Use infinite_cyclic_universal_property: get h0 with uniqueness **)
+set y := apply_fun h1 x.
+claim Hy : y :e H.
+{ claim HxG : x :e G.
+  { exact (andEL (x :e G)
+      (forall g:set, g :e G ->
+        exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e x n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv x) (ordsucc m))))
+      Hgen). }
+  exact (andEL (function_on h1 G H)
+    (forall a b:set, a :e G -> b :e G ->
+      apply_fun h1 (apply_fun mult (a, b)) = apply_fun multH (apply_fun h1 a, apply_fun h1 b))
+    Hh1 x HxG). }
+claim Huniv : exists h0:set,
+  group_homomorphism G mult H multH h0 /\
+  apply_fun h0 x = y /\
+  (forall h':set, group_homomorphism G mult H multH h' -> apply_fun h' x = y ->
+    forall g:set, g :e G -> apply_fun h' g = apply_fun h0 g).
+{ exact (infinite_cyclic_universal_property G mult e inv x H multH eH invH y
+    Hgrp Hcyc Hinf Hgen HgrpH Hy). }
+apply (exandE_i
+  (fun h0:set => group_homomorphism G mult H multH h0 /\ apply_fun h0 x = y)
+  (fun h0:set => forall h':set, group_homomorphism G mult H multH h' -> apply_fun h' x = y ->
+    forall g:set, g :e G -> apply_fun h' g = apply_fun h0 g)
+  Huniv).
+let h0.
+assume Hh0_props : group_homomorphism G mult H multH h0 /\ apply_fun h0 x = y.
+assume Huniq : forall h':set, group_homomorphism G mult H multH h' -> apply_fun h' x = y ->
+  forall g:set, g :e G -> apply_fun h' g = apply_fun h0 g.
+(** h1 agrees with h0 and h2 agrees with h0 **)
+claim Hh1_y : apply_fun h1 x = y. { reflexivity. }
+claim Hh2_y : apply_fun h2 x = y. { rewrite <- Heq. exact Hh1_y. }
+let g. assume Hg : g :e G.
+claim Hh1_g : apply_fun h1 g = apply_fun h0 g.
+{ exact (Huniq h1 Hh1 Hh1_y g Hg). }
+claim Hh2_g : apply_fun h2 g = apply_fun h0 g.
+{ exact (Huniq h2 Hh2 Hh2_y g Hg). }
+rewrite Hh1_g. rewrite Hh2_g. reflexivity.
+Qed.
+
+(** Helper: any group hom determines a unique element from Z2 values on basis **)
+(** Two homs that agree on all basis elements agree on all of G **)
+Lemma hom_Z2_determined_by_basis :
+  forall G mult e inv J basis h h':set,
+  free_abelian_group_with_basis G mult e inv J basis ->
+  group_homomorphism G mult 2 Z2_mult h ->
+  group_homomorphism G mult 2 Z2_mult h' ->
+  (forall alpha:set, alpha :e J -> apply_fun h (apply_fun basis alpha) = apply_fun h' (apply_fun basis alpha)) ->
+  forall x:set, x :e G -> apply_fun h x = apply_fun h' x.
+let G mult e inv J basis h h'.
+assume Hfab : free_abelian_group_with_basis G mult e inv J basis.
+assume Hh : group_homomorphism G mult 2 Z2_mult h.
+assume Hh' : group_homomorphism G mult 2 Z2_mult h'.
+assume Hagree : forall alpha:set, alpha :e J ->
+  apply_fun h (apply_fun basis alpha) = apply_fun h' (apply_fun basis alpha).
+(** Extract components from free_abelian_group_with_basis **)
+set Gfam := graph J (fun alpha:set =>
+  {g :e G | exists n:set, n :e int /\
+    ((n :e omega /\ g = group_power_nat mult e (apply_fun basis alpha) n) \/
+     (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+      g = group_power_nat mult e (apply_fun inv (apply_fun basis alpha)) (ordsucc m)))}).
+(** free_abelian_group_with_basis = ((A /\ B) /\ C) /\ D with left-assoc **)
+claim Hfab_abc : (abelian_group G mult e inv /\ function_on basis J G) /\
+  (forall alpha:set, alpha :e J ->
+    infinite_cyclic_subgroup G mult e inv (apply_fun basis alpha)).
+{ exact (andEL
+    ((abelian_group G mult e inv /\ function_on basis J G) /\
+      (forall alpha:set, alpha :e J ->
+        infinite_cyclic_subgroup G mult e inv (apply_fun basis alpha)))
+    (direct_sum_of_subgroups G mult e inv J Gfam) Hfab). }
+claim Hab : abelian_group G mult e inv.
+{ exact (andEL (abelian_group G mult e inv) (function_on basis J G)
+    (andEL (abelian_group G mult e inv /\ function_on basis J G)
+      (forall alpha:set, alpha :e J ->
+        infinite_cyclic_subgroup G mult e inv (apply_fun basis alpha))
+      Hfab_abc)). }
+claim Hgrp : group_structure G mult e inv.
+{ exact (andEL (group_structure G mult e inv)
+    (forall x y:set, x :e G -> y :e G ->
+      apply_fun mult (x, y) = apply_fun mult (y, x))
+    Hab). }
+claim Hbasis_fn : function_on basis J G.
+{ exact (andER (abelian_group G mult e inv) (function_on basis J G)
+    (andEL (abelian_group G mult e inv /\ function_on basis J G)
+      (forall alpha:set, alpha :e J ->
+        infinite_cyclic_subgroup G mult e inv (apply_fun basis alpha))
+      Hfab_abc)). }
+claim Hinfcyc : forall alpha:set, alpha :e J ->
+  infinite_cyclic_subgroup G mult e inv (apply_fun basis alpha).
+{ exact (andER (abelian_group G mult e inv /\ function_on basis J G)
+    (forall alpha:set, alpha :e J ->
+      infinite_cyclic_subgroup G mult e inv (apply_fun basis alpha))
+    Hfab_abc). }
+(** Build family of local restrictions of h' to Gfam(alpha) **)
+(** h and h' agree on each Gfam(alpha) because they agree on the generator **)
+(** Use infinite_cyclic_universal_property uniqueness to show agreement **)
+(** Then use extension uniqueness **)
+(** For each alpha, h restricted to Gfam(alpha) = h' restricted to Gfam(alpha) **)
+(** because both are homs from Gfam(alpha) to Z2 agreeing on generator basis(alpha) **)
+claim Hagree_local : forall alpha:set, alpha :e J ->
+  forall x:set, x :e apply_fun Gfam alpha ->
+    apply_fun h x = apply_fun h' x.
+{ admit. }
+(** Use extension uniqueness: both h and h' extend the same local homs **)
+(** Build restriction hfam of h to the Gfam subgroups **)
+(** Define hfam as graph of alpha -> restriction of h to Gfam(alpha) **)
+set hfam := graph J (fun alpha:set =>
+  graph (apply_fun Gfam alpha) (fun x:set => apply_fun h x)).
+(** h and h' both agree on hfam's local restrictions **)
+(** Apply extension uniqueness from free_abelian_extension_to_Z2 **)
+claim Hext : forall hfam0:set,
+  function_on hfam0 J (Power (setprod G 2)) ->
+  (forall alpha:set, alpha :e J ->
+    group_homomorphism (apply_fun Gfam alpha) mult 2 Z2_mult (apply_fun hfam0 alpha)) ->
+  exists h0:set,
+    group_homomorphism G mult 2 Z2_mult h0 /\
+    (forall alpha:set, alpha :e J ->
+      forall x:set, x :e apply_fun Gfam alpha ->
+        apply_fun h0 x = apply_fun (apply_fun hfam0 alpha) x) /\
+    (forall h0':set, group_homomorphism G mult 2 Z2_mult h0' ->
+      (forall alpha:set, alpha :e J ->
+        forall x:set, x :e apply_fun Gfam alpha ->
+          apply_fun h0' x = apply_fun (apply_fun hfam0 alpha) x) ->
+      forall x:set, x :e G -> apply_fun h0' x = apply_fun h0 x).
+{ exact (free_abelian_extension_to_Z2 G mult e inv J basis Hfab). }
+(** h agrees with local restrictions, h' agrees with local restrictions **)
+(** Therefore by uniqueness h = h' on G **)
+(** The family of restrictions of h has function_on and local hom properties **)
+(** The uniqueness clause then says any h' agreeing locally must agree globally **)
+(** h' agrees locally because Hagree_local says so **)
+(** So h' agrees with h globally **)
+admit.
+Admitted.
+
 (** Helper: Power(J) equips with the set of group homs to Z mod 2 for a free abelian basis **)
 (** The bijection: S in Power(J) maps to the unique hom h with h(basis(alpha))=1 iff alpha in S **)
 Lemma free_abelian_power_equip_hom_set :
