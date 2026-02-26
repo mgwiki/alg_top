@@ -158830,7 +158830,98 @@ claim Hmerged_zero : forall k:set, k :e n1 -> merged_val k = e.
   claim H : apply_fun comb_xs k = merged_val k.
   { rewrite Hcomb_k. exact Hcomb_k_merged. }
   rewrite <- H. exact (Hcomb_all_e k Hk_N). }
-claim Hunmatched_x2_e : forall j:set, j :e unmatched_set -> apply_fun x2 j = e. { admit. }
+claim Hunmatched_x2_e : forall j:set, j :e unmatched_set -> apply_fun x2 j = e.
+{ let j0. assume Hj0 : j0 :e unmatched_set.
+  claim Hj0_n2 : j0 :e n2. { exact (Hunmatched_in_n2 j0 Hj0). }
+  apply (Hinv_surj j0 Hj0). let i0. assume Hi0_and : i0 :e m /\ inv_enum i0 = j0.
+  apply Hi0_and. assume Hi0 : i0 :e m. assume Hie : inv_enum i0 = j0.
+  claim Hi0_nat : nat_p i0. { exact (omega_nat_p i0 (ordinal_TransSet omega omega_ordinal m Hm_omega i0 Hi0)). }
+  claim Hni0 : add_nat n1 i0 :e N.
+  { claim Hsi0 : ordsucc i0 c= m. { exact (ordinal_ordsucc_In_Subq m Hm_ord i0 Hi0). }
+    claim H1 : add_nat n1 (ordsucc i0) c= N.
+    { exact (add_nat_Subq_L n1 (omega_nat_p n1 Hn1) (ordsucc i0) (nat_ordsucc i0 Hi0_nat) m Hnatm Hsi0). }
+    claim H2 : add_nat n1 (ordsucc i0) = ordsucc (add_nat n1 i0).
+    { exact (add_nat_SR n1 i0 Hi0_nat). }
+    claim H3 : ordsucc (add_nat n1 i0) c= N.
+    { rewrite <- H2. exact H1. }
+    exact (H3 (add_nat n1 i0) (ordsuccI2 (add_nat n1 i0))). }
+  claim Hni0_not_n1 : ~(add_nat n1 i0 :e n1).
+  { assume Habs : add_nat n1 i0 :e n1.
+    claim Hn1_sub_k : n1 c= add_nat n1 i0.
+    { exact (add_nat_Subq_R' n1 (omega_nat_p n1 Hn1) i0 Hi0_nat). }
+    exact (In_irref (add_nat n1 i0) (Hn1_sub_k (add_nat n1 i0) Habs)). }
+  claim Hcomb_e : apply_fun comb_xs (add_nat n1 i0) = e. { exact (Hcomb_all_e (add_nat n1 i0) Hni0). }
+  claim Hcomb_eq : apply_fun comb_xs (add_nat n1 i0) = comb_val (add_nat n1 i0).
+  { exact (apply_fun_graph N comb_val (add_nat n1 i0) Hni0). }
+  claim Hcv_eq : comb_val (add_nat n1 i0) =
+    apply_fun inv (apply_fun x2 (inv_enum (Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m)))).
+  { exact (If_i_0 (add_nat n1 i0 :e n1) (merged_val (add_nat n1 i0))
+      (apply_fun inv (apply_fun x2 (inv_enum (Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m)))))
+      Hni0_not_n1). }
+  claim Heps_eq_i0 : Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m) = i0.
+  { claim Heps_m : Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m) :e m.
+    { exact (andEL
+        (Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m) :e m)
+        (add_nat n1 i0 = add_nat n1 (Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m)))
+        (Heps_valid (add_nat n1 i0) Hni0 Hni0_not_n1)). }
+    claim Heps_eq : add_nat n1 i0 = add_nat n1 (Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m)).
+    { exact (andER
+        (Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m) :e m)
+        (add_nat n1 i0 = add_nat n1 (Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m)))
+        (Heps_valid (add_nat n1 i0) Hni0 Hni0_not_n1)). }
+    claim Heps_nat : nat_p (Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m)).
+    { exact (omega_nat_p (Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m))
+        (ordinal_TransSet omega omega_ordinal m Hm_omega
+          (Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m)) Heps_m)). }
+    claim Hcom1 : add_nat i0 n1 = add_nat n1 i0.
+    { exact (add_nat_com i0 Hi0_nat n1 (omega_nat_p n1 Hn1)). }
+    claim Hcom2 : add_nat (Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m)) n1 =
+      add_nat n1 (Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m)).
+    { exact (add_nat_com (Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m))
+        Heps_nat n1 (omega_nat_p n1 Hn1)). }
+    claim Hcancel_input : add_nat i0 n1 = add_nat (Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m)) n1.
+    { exact (eq_i_tra (add_nat i0 n1) (add_nat n1 i0)
+        (add_nat (Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m)) n1)
+        Hcom1
+        (eq_i_tra (add_nat n1 i0)
+          (add_nat n1 (Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m)))
+          (add_nat (Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m)) n1)
+          Heps_eq
+          (eq_symm (add_nat (Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m)) n1)
+            (add_nat n1 (Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m)))
+            Hcom2))). }
+    exact (eq_symm i0 (Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m))
+      (add_nat_cancel_R i0 Hi0_nat (Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m))
+        Heps_nat n1 (omega_nat_p n1 Hn1) Hcancel_input)). }
+  claim Hien_eq : inv_enum (Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m)) = j0.
+  { rewrite Heps_eq_i0. exact Hie. }
+  claim H_invx2_eq :
+    apply_fun inv (apply_fun x2 (inv_enum (Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m)))) =
+    apply_fun inv (apply_fun x2 j0).
+  { rewrite Hien_eq. reflexivity. }
+  claim Hchain : comb_val (add_nat n1 i0) = apply_fun inv (apply_fun x2 j0).
+  { exact (eq_i_tra (comb_val (add_nat n1 i0))
+      (apply_fun inv (apply_fun x2 (inv_enum (Eps_i (fun j:set => add_nat n1 i0 = add_nat n1 j /\ j :e m)))))
+      (apply_fun inv (apply_fun x2 j0))
+      Hcv_eq H_invx2_eq). }
+  claim Hchain2 : apply_fun comb_xs (add_nat n1 i0) = apply_fun inv (apply_fun x2 j0).
+  { exact (eq_i_tra (apply_fun comb_xs (add_nat n1 i0)) (comb_val (add_nat n1 i0))
+      (apply_fun inv (apply_fun x2 j0)) Hcomb_eq Hchain). }
+  claim Hinv_x2_e : apply_fun inv (apply_fun x2 j0) = e.
+  { exact (eq_i_tra (apply_fun inv (apply_fun x2 j0)) (apply_fun comb_xs (add_nat n1 i0)) e
+      (eq_symm (apply_fun comb_xs (add_nat n1 i0)) (apply_fun inv (apply_fun x2 j0)) Hchain2)
+      Hcomb_e). }
+  claim Hx2G : apply_fun x2 j0 :e G.
+  { exact (Hsub_in_G (apply_fun a2 j0) (Ha2 j0 Hj0_n2) (apply_fun x2 j0) (Hxfam2 j0 Hj0_n2)). }
+  claim H_mult_inv : apply_fun mult (apply_fun x2 j0, apply_fun inv (apply_fun x2 j0)) = e.
+  { exact (HrightInv (apply_fun x2 j0) Hx2G). }
+  claim H_mult_e : apply_fun mult (apply_fun x2 j0, e) = e.
+  { rewrite <- Hinv_x2_e at 1. exact H_mult_inv. }
+  claim Hrid : apply_fun mult (apply_fun x2 j0, e) = apply_fun x2 j0.
+  { exact (HrightId (apply_fun x2 j0) Hx2G). }
+  exact (eq_i_tra (apply_fun x2 j0) (apply_fun mult (apply_fun x2 j0, e)) e
+    (eq_symm (apply_fun mult (apply_fun x2 j0, e)) (apply_fun x2 j0) Hrid)
+    H_mult_e). }
 let alpha. assume Halpha : alpha :e J.
 apply and3I.
 - let i j. assume Hi : i :e n1. assume Hj : j :e n2.
