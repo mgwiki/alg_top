@@ -249650,6 +249650,109 @@ assume Htop HU HV Hcover HscU HscV HAsub HBsub Hdisj Hoverlap HAopen HBopen HpcA
 assume HalphaPB HbetaPB.
 assume HfclsLoop HfclsClsNe.
 assume HtU HtV HtUinV HtVinU.
+claim HaUV : a :e U :/\: V.
+{
+  exact (HAsub a HaA).
+}
+claim HaU : a :e U.
+{
+  exact (binintersectE1 U V a HaUV).
+}
+claim HaV : a :e V.
+{
+  exact (binintersectE2 U V a HaUV).
+}
+claim HUsub : U c= X.
+{
+  exact (topology_elem_subset X Tx U Htop HU).
+}
+claim HaX : a :e X.
+{
+  exact (HUsub a HaU).
+}
+claim HfclsLoopAt : loop_at X Tx a fcls.
+{
+  exact (loop_space_has_loop_at X Tx a fcls HfclsLoop).
+}
+claim HfclsCont : continuous_map unit_interval unit_interval_topology X Tx fcls.
+{
+  exact (loop_at_continuous X Tx a fcls HfclsLoopAt).
+}
+claim Hfcls0 : apply_fun fcls 0 = a.
+{
+  exact (loop_at_at_zero X Tx a fcls HfclsLoopAt).
+}
+claim Hfcls1 : apply_fun fcls 1 = a.
+{
+  exact (loop_at_at_one X Tx a fcls HfclsLoopAt).
+}
+claim HfclsFun : function_on fcls unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    fcls
+    HfclsCont).
+}
+claim HalphaOn :
+  forall s:set, s :e unit_interval -> apply_fun alpha s :e U.
+{
+  claim HalphaFn : function_on alpha unit_interval U.
+  {
+    exact (path_between_function_on U a b alpha HalphaPB).
+  }
+  let s.
+  assume HsU.
+  exact (HalphaFn s HsU).
+}
+claim HbetaOn :
+  forall s:set, s :e unit_interval -> apply_fun beta s :e V.
+{
+  claim HbetaFn : function_on beta unit_interval V.
+  {
+    exact (path_between_function_on V b a beta HbetaPB).
+  }
+  let s.
+  assume HsU.
+  exact (HbetaFn s HsU).
+}
+claim HgenPowNontrivial :
+  forall m:set, m :e omega -> m <> 0 ->
+    group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+      m <>
+    fundamental_group_id X Tx a.
+{
+  exact (thm63_1a_infinite_cyclic_subgroup
+    X
+    Tx
+    U
+    V
+    A
+    B
+    Htop
+    HU
+    HV
+    Hcover
+    HAopen
+    HBopen
+    Hoverlap
+    Hdisj
+    a
+    b
+    HaA
+    HbB
+    alpha
+    HalphaPB
+    HalphaOn
+    beta
+    HbetaPB
+    HbetaOn).
+}
 (** TODO Bob: complete S84.6 mixed-case crossing-to-power reduction.
     The arguments now have explicit crossing witnesses tU,tV with opposite-side
     membership, plus full path/simply-connected/disconnected-overlap data. **)
