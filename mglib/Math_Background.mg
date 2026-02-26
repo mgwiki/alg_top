@@ -242096,6 +242096,25 @@ exact (arc_has_end_points_of_arc
     HASel)).
 Qed.
 
+(** helper for S84.4 backward direction:
+    a selected arc of T' that has both endpoints in T must be contained in T. **)
+Theorem thm84_4_selected_arc_endpoints_in_T_imply_selected_arc_subset_contradiction :
+  forall T ArcsT T' ArcsT' X Tx Arcs A p q:set,
+  (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+  tree_in_graph T' ArcsT' X Tx Arcs ->
+  T c= T' ->
+  A :e {B :e Arcs | B c= T'} ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  p :e T /\ q :e T ->
+  ~(A c= T) -> False.
+let T ArcsT T' ArcsT' X Tx Arcs A p q.
+assume Hrhs Htree' HTsub HASel Hend Hep Hnsub.
+(** Remaining backward S84.4 contradiction bridge:
+    use tree/no-loop structure plus endpoint-in-T data to contradict noncontainment
+    of selected arc A in T. **)
+admit.
+Admitted.
+
 Theorem thm84_4_backward_selected_arc_endpoint_close_obligation :
   forall T ArcsT T' ArcsT' X Tx Arcs:set,
   (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
@@ -242118,11 +242137,24 @@ assume HASel Hend Hep.
 - assume Hnsub.
   claim HnoncontainedCore : False.
   {
-    (** Core unresolved backward endpoint-to-subset contradiction for selected arcs.
-        Missing helper (targeted to this theorem):
-        if T,T' are trees with T c= T', A in selected arcs of T', A /c= T,
-        and endpoints of A lie in T, then contradiction (cycle forced in T'). **)
-    admit.
+    exact (thm84_4_selected_arc_endpoints_in_T_imply_selected_arc_subset_contradiction
+      T
+      ArcsT
+      T'
+      ArcsT'
+      X
+      Tx
+      Arcs
+      A
+      p
+      q
+      Hrhs
+      Htree'
+      HTsub
+      HASel
+      Hend
+      Hep
+      Hnsub).
   }
   exact (FalseE
     HnoncontainedCore
