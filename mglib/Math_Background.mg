@@ -60725,6 +60725,33 @@ Definition lifting_of : set -> set -> set -> set -> set -> set -> set -> set -> 
     continuous_map X Tx E Te f_tilde /\
     (forall x:set, x :e X -> apply_fun p (apply_fun f_tilde x) = apply_fun f x).
 
+(** Proven Bob **)
+Theorem lifting_of_commutes_on_subset :
+  forall X Tx E Te B Tb p f ft N:set,
+  lifting_of X Tx E Te B Tb p f ft ->
+  N c= X ->
+  forall x:set, x :e N ->
+    apply_fun p (apply_fun ft x) = apply_fun f x.
+let X Tx E Te B Tb p f ft N.
+assume Hlift HNsub.
+claim Hcomm :
+  forall x:set, x :e X ->
+    apply_fun p (apply_fun ft x) = apply_fun f x.
+{
+  exact (andER
+    (continuous_map X Tx E Te ft)
+    (forall x:set, x :e X -> apply_fun p (apply_fun ft x) = apply_fun f x)
+    Hlift).
+}
+let x.
+assume HxN.
+claim HxX : x :e X.
+{
+  exact (HNsub x HxN).
+}
+exact (Hcomm x HxX).
+Qed.
+
 (** Infrastructure: the unique lift of a path in B starting at e0 in E **)
 (** Uses Eps_i to select the lift guaranteed by Lem 54.1 **)
 Definition path_lift : set -> set -> set -> set -> set -> set -> set -> set :=
