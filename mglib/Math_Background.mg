@@ -232042,8 +232042,59 @@ apply andI.
 	    (** split on whether b is an overlap point **)
 	    apply (xm (b :e OverX)).
 	    * assume HbOverX.
-	      (** overlap case: TODO (finite-wedge contraction); keep as stub for now **)
-	      admit.
+	      (** overlap case: build a star neighborhood around b (one open piece per incident arc). **)
+	      set IncArcs := {A :e Arcs | b :e A}.
+	      set Over := fun A0:set =>
+	        {p :e A0 | exists F:set, F :e Arcs /\ F <> A0 /\ p :e F}.
+	      set Star := fun A0:set => A0 :\: ((Over A0) :\: (Sing b)).
+	      set Ustar := Union {Star A0 | A0 :e IncArcs}.
+	      claim HbUstar : b :e Ustar.
+	      {
+	        claim HEInc : E :e IncArcs.
+	        { exact (SepI Arcs (fun A0:set => b :e A0) E HEArcs HbE). }
+		        claim HbStarE : b :e Star E.
+		        {
+			          claim HStarEeq : Star E = E :\: ((Over E) :\: (Sing b)).
+			          { reflexivity. }
+			          rewrite HStarEeq.
+		          claim HbNotBad : b /:e ((Over E) :\: (Sing b)).
+		          {
+		            assume HbBad.
+		            exact (setminusE2
+		              (Over E)
+		              (Sing b)
+		              b
+		              HbBad
+		              (SingI b)).
+		          }
+		          exact (setminusI
+		            E
+		            ((Over E) :\: (Sing b))
+		            b
+		            HbE
+		            HbNotBad).
+			        }
+	        exact (UnionI
+	          {Star A0 | A0 :e IncArcs}
+	          b
+	          (Star E)
+	          HbStarE
+	          (ReplI IncArcs (fun A0:set => Star A0) E HEInc)).
+	      }
+	      claim HUstar : Ustar :e Tx.
+	      {
+	        (** TODO: prove Ustar is open in X using general_linear_graph_coherence_open and openness of Star A in each arc. **)
+	        admit.
+	      }
+	      witness Ustar.
+	      apply andI.
+	      - apply andI.
+	        + exact HUstar.
+	        + exact HbUstar.
+	      - let cls.
+	        assume Hcls.
+	        (** TODO: prove inclusion Ustar -> X is nulhomotopic (star-shaped tree), then apply cor58_6_nulhomotopic_trivial. **)
+	        admit.
 	    * assume HbNotOverX.
 	      (** Non-overlap: U is an open neighborhood inside a contractible arc E, so inclusion U->X is nulhomotopic. **)
 	      claim HbNotOverE : b /:e OverE.
