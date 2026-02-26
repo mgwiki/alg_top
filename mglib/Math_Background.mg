@@ -252257,6 +252257,60 @@ claim H1ImageClassA : apply_fun fcls 1 :e A /\ ~(apply_fun fcls 1 :e B).
     (HpreA_imageA 1 H1PreA)
     (HpreA_implies_not_imageB 1 H1PreA)).
 }
+claim HpreUV_preA_iff_not_imageB :
+  forall t:set, t :e preU :/\: preV ->
+    (t :e preA -> ~(apply_fun fcls t :e B)) /\
+    (~(apply_fun fcls t :e B) -> t :e preA).
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  exact (andI
+    (t :e preA -> ~(apply_fun fcls t :e B))
+    (~(apply_fun fcls t :e B) -> t :e preA)
+    (HpreA_implies_not_imageB t)
+    (HpreUV_not_imageB_implies_preA t HtUV)).
+}
+claim HpreUV_preB_iff_not_imageA :
+  forall t:set, t :e preU :/\: preV ->
+    (t :e preB -> ~(apply_fun fcls t :e A)) /\
+    (~(apply_fun fcls t :e A) -> t :e preB).
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  exact (andI
+    (t :e preB -> ~(apply_fun fcls t :e A))
+    (~(apply_fun fcls t :e A) -> t :e preB)
+    (HpreB_implies_not_imageA t)
+    (HpreUV_not_imageA_implies_preB t HtUV)).
+}
+claim H0ImageA : apply_fun fcls 0 :e A.
+{
+  exact (andEL
+    (apply_fun fcls 0 :e A)
+    (~(apply_fun fcls 0 :e B))
+    H0ImageClassA).
+}
+claim H0NotImageB : ~(apply_fun fcls 0 :e B).
+{
+  exact (andER
+    (apply_fun fcls 0 :e A)
+    (~(apply_fun fcls 0 :e B))
+    H0ImageClassA).
+}
+claim H1ImageA : apply_fun fcls 1 :e A.
+{
+  exact (andEL
+    (apply_fun fcls 1 :e A)
+    (~(apply_fun fcls 1 :e B))
+    H1ImageClassA).
+}
+claim H1NotImageB : ~(apply_fun fcls 1 :e B).
+{
+  exact (andER
+    (apply_fun fcls 1 :e A)
+    (~(apply_fun fcls 1 :e B))
+    H1ImageClassA).
+}
 (** TODO Bob: prove via S63-style alternating decomposition in U cap V = A union B
     with A cap B = Empty, then identify loop class as power of [alpha.beta] or inverse power.
     Current core setup complete:
@@ -252270,7 +252324,8 @@ claim H1ImageClassA : apply_fun fcls 1 :e A /\ ~(apply_fun fcls 1 :e B).
     - two-way transport lemmas between preA/preB and preU cap preV and endpoint-side exclusions,
     - image-negation implication layer on overlap (not imageA->preB, not imageB->preA) and
       pointwise image exclusions from preA/preB,
-    - strict image classification/equivalence layer (iff bridges and endpoint image classes).
+    - strict image classification/equivalence layer (iff bridges and endpoint image classes),
+    - direct preA/preB <-> image-negation equivalence forms and endpoint image corollaries.
     Remaining: alternating crossing decomposition over U cap V = A union B (A cap B=Empty). **)
 admit.
 Admitted.
