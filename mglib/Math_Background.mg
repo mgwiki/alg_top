@@ -158510,10 +158510,165 @@ Lemma abelian_product_identity_gaps :
   (forall k:set, k :e N -> (exists j:set, j :e n /\ pos j = k) \/ f k = e) ->
   nat_primrec e (fun i r => apply_fun mult (r, f i)) N =
     nat_primrec e (fun i r => apply_fun mult (r, f (pos i))) n.
-let G mult e inv. assume Hgrp Hcomm. let f. assume Hf. let N n. assume HN Hn.
+let G mult e inv. assume Hgrp : group_structure G mult e inv.
+assume Hcomm : forall x y:set, x :e G -> y :e G -> apply_fun mult (x, y) = apply_fun mult (y, x).
+let f. assume Hf : forall i:set, f i :e G.
+let N n. assume HN : N :e omega. assume Hn : n :e omega.
+(** Extract group properties once **)
+apply (and6E
+  (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume HmultFn HinvFn HeG Hassoc Hid Hinv.
+claim HmultCl : forall x y:set, x :e G -> y :e G -> apply_fun mult (x, y) :e G.
+{ let x y. assume Hx Hy. exact (HmultFn (x, y) (tuple_2_setprod_by_pair_Sigma G G x y Hx Hy)). }
+claim HleftId : forall x:set, x :e G -> apply_fun mult (e, x) = x.
+{ let x. assume Hx. exact (andEL (apply_fun mult (e, x) = x) (apply_fun mult (x, e) = x) (Hid x Hx)). }
+claim HrightId : forall x:set, x :e G -> apply_fun mult (x, e) = x.
+{ let x. assume Hx. exact (andER (apply_fun mult (e, x) = x) (apply_fun mult (x, e) = x) (Hid x Hx)). }
+(** Proof by induction on n **)
+claim Hmain : forall n:set, nat_p n ->
+  forall g:set -> set, (forall i:set, g i :e G) ->
+  forall pos:set -> set,
+  (forall j:set, j :e n -> pos j :e N) ->
+  (forall j1 j2:set, j1 :e n -> j2 :e n -> j1 <> j2 -> pos j1 <> pos j2) ->
+  (forall k:set, k :e N -> (exists j:set, j :e n /\ pos j = k) \/ g k = e) ->
+  nat_primrec e (fun i r => apply_fun mult (r, g i)) N =
+    nat_primrec e (fun i r => apply_fun mult (r, g (pos i))) n.
+{ apply nat_ind.
+  - (** Base: n = 0 **)
+    let g. assume Hg : forall i:set, g i :e G.
+    let pos. assume _ _ Hcov0.
+    claim Hallzero : forall k:set, k :e N -> g k = e.
+    { let k. assume Hk.
+      apply (Hcov0 k Hk).
+      - assume Hex. apply Hex. let j. assume Hj.
+        apply Hj. assume Hj0 : j :e 0.
+        assume _. exact (EmptyE j Hj0 (g k = e)).
+      - assume He. exact He. }
+    claim Hprod_e : nat_primrec e (fun i r => apply_fun mult (r, g i)) N = e.
+    { claim Hprod_n : forall M:set, nat_p M -> M c= N ->
+        nat_primrec e (fun i r => apply_fun mult (r, g i)) M = e.
+      { apply nat_ind.
+        - assume _. exact (nat_primrec_0 e (fun i r => apply_fun mult (r, g i))).
+        - let k. assume Hk IHk Hksub.
+          claim Hk_N : k :e N. { exact (Hksub k (ordsuccI2 k)). }
+          claim Hksub' : k c= N. { let j. assume Hj. exact (Hksub j (ordinal_TransSet (ordsucc k) (nat_p_ordinal (ordsucc k) (nat_ordsucc k Hk)) k (ordsuccI2 k) j Hj)). }
+          claim Hstep : nat_primrec e (fun i r => apply_fun mult (r, g i)) (ordsucc k) =
+            apply_fun mult (nat_primrec e (fun i r => apply_fun mult (r, g i)) k, g k).
+          { exact (nat_primrec_S e (fun i r => apply_fun mult (r, g i)) k Hk). }
+          rewrite Hstep. rewrite (IHk Hksub'). rewrite (Hallzero k Hk_N). exact (HrightId e HeG). }
+      exact (Hprod_n N (omega_nat_p N HN) (Subq_ref N)). }
+    rewrite Hprod_e.
+    symmetry. exact (nat_primrec_0 e (fun i r => apply_fun mult (r, g (pos i)))).
+  - (** Inductive step: n -> succ n **)
+    let n. assume Hnatn : nat_p n.
+    assume IH : forall g:set -> set, (forall i:set, g i :e G) ->
+      forall pos:set -> set,
+      (forall j:set, j :e n -> pos j :e N) ->
+      (forall j1 j2:set, j1 :e n -> j2 :e n -> j1 <> j2 -> pos j1 <> pos j2) ->
+      (forall k:set, k :e N -> (exists j:set, j :e n /\ pos j = k) \/ g k = e) ->
+      nat_primrec e (fun i r => apply_fun mult (r, g i)) N =
+        nat_primrec e (fun i r => apply_fun mult (r, g (pos i))) n.
+    let g. assume Hg : forall i:set, g i :e G.
+    let pos. assume Hpos_range : forall j:set, j :e ordsucc n -> pos j :e N.
+    assume Hpos_inj : forall j1 j2:set, j1 :e ordsucc n -> j2 :e ordsucc n -> j1 <> j2 -> pos j1 <> pos j2.
+    assume Hcov : forall k:set, k :e N -> (exists j:set, j :e ordsucc n /\ pos j = k) \/ g k = e.
+    claim Hn_omega : n :e omega. { exact (nat_p_omega n Hnatn). }
+    claim Hn_in_Sn : n :e ordsucc n. { exact (ordsuccI2 n). }
+    claim Hposn_N : pos n :e N. { exact (Hpos_range n Hn_in_Sn). }
+    (** Extract pos(n) from the N-product **)
+    claim Hextract : nat_primrec e (fun i r => apply_fun mult (r, g i)) N =
+      apply_fun mult (
+        nat_primrec e (fun i r => apply_fun mult (r, If_i (i = pos n) e (g i))) N,
+        g (pos n)).
+    { exact (nat_primrec_abelian_extract G mult e inv Hgrp Hcomm g Hg N HN (pos n) Hposn_N). }
+    (** Define g_zeroed = g with pos(n) zeroed **)
+    set g_z := fun k:set => If_i (k = pos n) e (g k).
+    claim Hgz_G : forall i:set, g_z i :e G.
+    { let i. apply (xm (i = pos n)).
+      - assume Heq. claim H : g_z i = e. { exact (If_i_1 (i = pos n) e (g i) Heq). }
+        rewrite H. exact HeG.
+      - assume Hne. claim H : g_z i = g i. { exact (If_i_0 (i = pos n) e (g i) Hne). }
+        rewrite H. exact (Hg i). }
+    (** Coverage for g_z with pos restricted to n **)
+    claim Hcov_z : forall k:set, k :e N -> (exists j:set, j :e n /\ pos j = k) \/ g_z k = e.
+    { let k. assume Hk.
+      apply (xm (k = pos n)).
+      - assume Hkeq : k = pos n.
+        apply orIR.
+        prove g_z k = e.
+        exact (If_i_1 (k = pos n) e (g k) Hkeq).
+      - assume Hkne : k <> pos n.
+        claim Hgzk : g_z k = g k. { exact (If_i_0 (k = pos n) e (g k) Hkne). }
+        apply (Hcov k Hk).
+        + assume Hex. apply Hex. let j. assume Hjprop.
+          apply Hjprop. assume Hjn : j :e ordsucc n. assume Hpj : pos j = k.
+          claim Hjn_or : j :e n \/ j = n. { exact (ordsuccE n j Hjn). }
+          claim Hjne : j <> n.
+          { assume Hjeq : j = n.
+            claim Habs : pos n = k. { rewrite <- Hjeq. exact Hpj. }
+            claim Habs2 : k = pos n. { symmetry. exact Habs. }
+            exact (Hkne Habs2). }
+          claim Hjn' : j :e n.
+          { apply Hjn_or.
+            - assume H. exact H.
+            - assume H. exact (Hjne H (j :e n)). }
+          apply orIL. witness j. apply andI. exact Hjn'. exact Hpj.
+        + assume Hge : g k = e.
+          apply orIR. rewrite Hgzk. exact Hge. }
+    (** pos restricted to n: range in N **)
+    claim Hpos_range_n : forall j:set, j :e n -> pos j :e N.
+    { let j. assume Hj.
+      claim Hj_sn : j :e ordsucc n. { exact (ordinal_TransSet (ordsucc n) (nat_p_ordinal (ordsucc n) (nat_ordsucc n Hnatn)) n Hn_in_Sn j Hj). }
+      exact (Hpos_range j Hj_sn). }
+    (** pos restricted to n: injective **)
+    claim Hpos_inj_n : forall j1 j2:set, j1 :e n -> j2 :e n -> j1 <> j2 -> pos j1 <> pos j2.
+    { let j1 j2. assume Hj1 Hj2 Hne.
+      claim Hj1_sn : j1 :e ordsucc n. { exact (ordinal_TransSet (ordsucc n) (nat_p_ordinal (ordsucc n) (nat_ordsucc n Hnatn)) n Hn_in_Sn j1 Hj1). }
+      claim Hj2_sn : j2 :e ordsucc n. { exact (ordinal_TransSet (ordsucc n) (nat_p_ordinal (ordsucc n) (nat_ordsucc n Hnatn)) n Hn_in_Sn j2 Hj2). }
+      exact (Hpos_inj j1 j2 Hj1_sn Hj2_sn Hne). }
+    (** Apply IH to g_z **)
+    claim HIH : nat_primrec e (fun i r => apply_fun mult (r, g_z i)) N =
+      nat_primrec e (fun i r => apply_fun mult (r, g_z (pos i))) n.
+    { exact (IH g_z Hgz_G (fun j => pos j) Hpos_range_n Hpos_inj_n Hcov_z). }
+    (** g_z(pos(j)) = g(pos(j)) for j :e n **)
+    claim Hgz_pos : forall j:set, j :e n -> g_z (pos j) = g (pos j).
+    { let j. assume Hj.
+      claim Hj_sn : j :e ordsucc n. { exact (ordinal_TransSet (ordsucc n) (nat_p_ordinal (ordsucc n) (nat_ordsucc n Hnatn)) n Hn_in_Sn j Hj). }
+      claim Hne : j <> n. { assume Habs : j = n. exact (In_irref n (eq_subst_mem_rev j n n Habs Hj)). }
+      claim Hpos_ne : pos j <> pos n. { exact (Hpos_inj j n Hj_sn Hn_in_Sn Hne). }
+      exact (If_i_0 (pos j = pos n) e (g (pos j)) Hpos_ne). }
+    (** Convert g_z product to g product **)
+    claim Hgz_prod_eq : nat_primrec e (fun i r => apply_fun mult (r, g_z (pos i))) n =
+      nat_primrec e (fun i r => apply_fun mult (r, g (pos i))) n.
+    { apply (nat_primrec_ext e (fun i r => apply_fun mult (r, g_z (pos i))) (fun i r => apply_fun mult (r, g (pos i))) n Hn_omega).
+      let i r. assume Hi.
+      prove apply_fun mult (r, g_z (pos i)) = apply_fun mult (r, g (pos i)).
+      claim H : g_z (pos i) = g (pos i). { exact (Hgz_pos i Hi). }
+      rewrite H. reflexivity. }
+    (** Also convert N-product: g_z vs the If_i form from extract **)
+    claim Hgz_N_eq : nat_primrec e (fun i r => apply_fun mult (r, g_z i)) N =
+      nat_primrec e (fun i r => apply_fun mult (r, If_i (i = pos n) e (g i))) N.
+    { apply (nat_primrec_ext e (fun i r => apply_fun mult (r, g_z i)) (fun i r => apply_fun mult (r, If_i (i = pos n) e (g i))) N HN).
+      let i r. assume Hi.
+      prove apply_fun mult (r, g_z i) = apply_fun mult (r, If_i (i = pos n) e (g i)).
+      reflexivity. }
+    (** Chain: prod(g,N) = mult(prod(g_z,N), g(pos n)) = mult(prod(g o pos, n), g(pos n)) **)
+    rewrite Hextract.
+    rewrite <- Hgz_N_eq.
+    rewrite HIH.
+    rewrite Hgz_prod_eq.
+    symmetry.
+    exact (nat_primrec_S e (fun i r => apply_fun mult (r, g (pos i))) n Hnatn). }
+(** Apply main lemma **)
 let pos. assume Hpos_range Hpos_inj Hcoverage.
-admit.
-Admitted.
+exact (Hmain n (omega_nat_p n Hn) f Hf pos Hpos_range Hpos_inj Hcoverage).
+Qed.
 
 (** Helper: In an abelian group with subgroups satisfying zero-sum, equal products imply component equality **)
 Lemma zero_sum_component_extraction :
