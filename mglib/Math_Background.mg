@@ -249054,6 +249054,75 @@ exact (continuous_map_range_expand
   HtyEq).
 Qed.
 
+(** Proven Bob **)
+Theorem lemma84_6_generator_candidate_class_in_pi1 :
+  forall X Tx U V a b alpha beta:set,
+  topology_on X Tx ->
+  U :e Tx ->
+  V :e Tx ->
+  continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) alpha ->
+  apply_fun alpha 0 = a ->
+  apply_fun alpha 1 = b ->
+  continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) beta ->
+  apply_fun beta 0 = b ->
+  apply_fun beta 1 = a ->
+  path_homotopy_class_loop X Tx a (path_concat alpha beta) :e fundamental_group X Tx a.
+let X Tx U V a b alpha beta.
+assume Htop HU HV HalphaCont Halpha0 Halpha1 HbetaCont Hbeta0 Hbeta1.
+claim HUsub : U c= X.
+{
+  exact (topology_elem_subset X Tx U Htop HU).
+}
+claim HVsub : V c= X.
+{
+  exact (topology_elem_subset X Tx V Htop HV).
+}
+claim HalphaContX : continuous_map unit_interval unit_interval_topology X Tx alpha.
+{
+  exact (lemma84_6_continuous_subspace_path_to_ambient
+    X
+    Tx
+    U
+    alpha
+    Htop
+    HUsub
+    HalphaCont).
+}
+claim HbetaContX : continuous_map unit_interval unit_interval_topology X Tx beta.
+{
+  exact (lemma84_6_continuous_subspace_path_to_ambient
+    X
+    Tx
+    V
+    beta
+    Htop
+    HVsub
+    HbetaCont).
+}
+claim HconcatLoopMem : path_concat alpha beta :e loop_space X Tx a.
+{
+  exact (path_concat_opposite_paths_in_loop_space_s52
+    X
+    Tx
+    a
+    b
+    alpha
+    beta
+    HalphaContX
+    HbetaContX
+    Halpha0
+    Halpha1
+    Hbeta0
+    Hbeta1).
+}
+exact (path_homotopy_class_in_fundamental_group
+  X
+  Tx
+  a
+  (path_concat alpha beta)
+  HconcatLoopMem).
+Qed.
+
 (** core bridge for S84.6: cyclic-generation conclusion from path-form hypotheses **)
 Theorem lemma84_6_core_cyclic_generation_from_path_data :
   forall X Tx U V A B a b alpha beta:set,
@@ -249156,6 +249225,28 @@ claim HbetaPB : path_between V b a beta.
       HbetaCont).
   }
   exact (path_betweenI V b a beta HbetaFn Hbeta0 Hbeta1).
+}
+claim HgenClsMem :
+  path_homotopy_class_loop X Tx a (path_concat alpha beta) :e fundamental_group X Tx a.
+{
+  exact (lemma84_6_generator_candidate_class_in_pi1
+    X
+    Tx
+    U
+    V
+    a
+    b
+    alpha
+    beta
+    Htop
+    HU
+    HV
+    HalphaCont
+    Halpha0
+    Halpha1
+    HbetaCont
+    Hbeta0
+    Hbeta1).
 }
 exact (lemma84_6_core_cyclic_generation_from_path_data
   X
