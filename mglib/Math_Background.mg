@@ -249123,6 +249123,44 @@ exact (path_homotopy_class_in_fundamental_group
   HconcatLoopMem).
 Qed.
 
+(** Proven Bob **)
+Theorem lemma84_6_path_data_from_continuous_data :
+  forall X Tx U V a b alpha beta:set,
+  continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) alpha ->
+  apply_fun alpha 0 = a ->
+  apply_fun alpha 1 = b ->
+  continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) beta ->
+  apply_fun beta 0 = b ->
+  apply_fun beta 1 = a ->
+  path_between U a b alpha /\
+  path_between V b a beta.
+let X Tx U V a b alpha beta.
+assume HalphaCont Halpha0 Halpha1 HbetaCont Hbeta0 Hbeta1.
+apply andI.
+- claim HalphaFn : function_on alpha unit_interval U.
+  {
+    exact (continuous_map_function_on
+      unit_interval
+      unit_interval_topology
+      U
+      (subspace_topology X Tx U)
+      alpha
+      HalphaCont).
+  }
+  exact (path_betweenI U a b alpha HalphaFn Halpha0 Halpha1).
+- claim HbetaFn : function_on beta unit_interval V.
+  {
+    exact (continuous_map_function_on
+      unit_interval
+      unit_interval_topology
+      V
+      (subspace_topology X Tx V)
+      beta
+      HbetaCont).
+  }
+  exact (path_betweenI V b a beta HbetaFn Hbeta0 Hbeta1).
+Qed.
+
 (** core bridge for S84.6: cyclic-generation conclusion from path-form hypotheses **)
 Theorem lemma84_6_core_cyclic_generation_from_path_data :
   forall X Tx U V A B a b alpha beta:set,
@@ -249198,33 +249236,37 @@ Theorem lemma84_6_generator_from_edge :
 let X Tx U V A B a b alpha beta.
 assume Htop HU HV Hcover HscU HscV HAsub HBsub Hdisj Hoverlap HAopen HBopen HpcA HpcB HaA HbB.
 assume HalphaCont Halpha0 Halpha1 HbetaCont Hbeta0 Hbeta1.
+claim HpathData : path_between U a b alpha /\ path_between V b a beta.
+{
+  exact (lemma84_6_path_data_from_continuous_data
+    X
+    Tx
+    U
+    V
+    a
+    b
+    alpha
+    beta
+    HalphaCont
+    Halpha0
+    Halpha1
+    HbetaCont
+    Hbeta0
+    Hbeta1).
+}
 claim HalphaPB : path_between U a b alpha.
 {
-  claim HalphaFn : function_on alpha unit_interval U.
-  {
-    exact (continuous_map_function_on
-      unit_interval
-      unit_interval_topology
-      U
-      (subspace_topology X Tx U)
-      alpha
-      HalphaCont).
-  }
-  exact (path_betweenI U a b alpha HalphaFn Halpha0 Halpha1).
+  exact (andEL
+    (path_between U a b alpha)
+    (path_between V b a beta)
+    HpathData).
 }
 claim HbetaPB : path_between V b a beta.
 {
-  claim HbetaFn : function_on beta unit_interval V.
-  {
-    exact (continuous_map_function_on
-      unit_interval
-      unit_interval_topology
-      V
-      (subspace_topology X Tx V)
-      beta
-      HbetaCont).
-  }
-  exact (path_betweenI V b a beta HbetaFn Hbeta0 Hbeta1).
+  exact (andER
+    (path_between U a b alpha)
+    (path_between V b a beta)
+    HpathData).
 }
 claim HgenClsMem :
   path_homotopy_class_loop X Tx a (path_concat alpha beta) :e fundamental_group X Tx a.
