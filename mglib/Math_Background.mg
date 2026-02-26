@@ -250120,6 +250120,83 @@ claim HinvGenPowMem :
     HaX
     HgenClsMem).
 }
+claim Hpow0_gen :
+  group_power_nat
+    (fundamental_group_mult X Tx a)
+    (fundamental_group_id X Tx a)
+    (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+    0
+  = fundamental_group_id X Tx a.
+{
+  exact (nat_primrec_0
+    (fundamental_group_id X Tx a)
+    (fun _ r =>
+      apply_fun
+        (fundamental_group_mult X Tx a)
+        (path_homotopy_class_loop X Tx a (path_concat alpha beta), r))).
+}
+claim Hpow0_invgen :
+  group_power_nat
+    (fundamental_group_mult X Tx a)
+    (fundamental_group_id X Tx a)
+    (apply_fun (fundamental_group_inv X Tx a)
+      (path_homotopy_class_loop X Tx a (path_concat alpha beta)))
+    0
+  = fundamental_group_id X Tx a.
+{
+  exact (nat_primrec_0
+    (fundamental_group_id X Tx a)
+    (fun _ r =>
+      apply_fun
+        (fundamental_group_mult X Tx a)
+        (apply_fun (fundamental_group_inv X Tx a)
+          (path_homotopy_class_loop X Tx a (path_concat alpha beta)), r))).
+}
+claim Hn_nonzero_if_eq_gen_pow :
+  forall n:set, n :e omega ->
+    path_homotopy_class_loop X Tx a fcls
+    = group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+      n ->
+    n <> 0.
+{
+  let n.
+  assume HnO HclsEqPow.
+  assume Hn0 : n = 0.
+  claim HclsId :
+    path_homotopy_class_loop X Tx a fcls = fundamental_group_id X Tx a.
+  {
+    rewrite HclsEqPow.
+    rewrite Hn0.
+    exact Hpow0_gen.
+  }
+  exact (HfclsClsNe HclsId).
+}
+claim Hn_nonzero_if_eq_invgen_pow :
+  forall n:set, n :e omega ->
+    path_homotopy_class_loop X Tx a fcls
+    = group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (apply_fun (fundamental_group_inv X Tx a)
+        (path_homotopy_class_loop X Tx a (path_concat alpha beta)))
+      n ->
+    n <> 0.
+{
+  let n.
+  assume HnO HclsEqPow.
+  assume Hn0 : n = 0.
+  claim HclsId :
+    path_homotopy_class_loop X Tx a fcls = fundamental_group_id X Tx a.
+  {
+    rewrite HclsEqPow.
+    rewrite Hn0.
+    exact Hpow0_invgen.
+  }
+  exact (HfclsClsNe HclsId).
+}
 (** TODO Bob: complete S84.6 mixed-case crossing-to-power reduction.
     The arguments now have explicit crossing witnesses tU,tV with opposite-side
     membership, plus full path/simply-connected/disconnected-overlap data. **)
