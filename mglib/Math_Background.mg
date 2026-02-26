@@ -249426,6 +249426,150 @@ exact (lemma84_6_pi1_power_nat_closed
   HnO).
 Qed.
 
+(** helper for S84.6 core:
+    from a nontrivial loop representative under disconnected-overlap data,
+    derive power-of-generator normal form. **)
+Theorem lemma84_6_nonid_loop_class_power_from_crossing_data :
+  forall X Tx U V A B a b alpha beta fcls:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx -> X = U :\/: V ->
+  simply_connected U (subspace_topology X Tx U) ->
+  simply_connected V (subspace_topology X Tx V) ->
+  A c= U :/\: V -> B c= U :/\: V -> A :/\: B = Empty ->
+  (U :/\: V) = A :\/: B ->
+  A :e subspace_topology X Tx (U :/\: V) ->
+  B :e subspace_topology X Tx (U :/\: V) ->
+  path_connected_space A (subspace_topology X Tx A) ->
+  path_connected_space B (subspace_topology X Tx B) ->
+  a :e A -> b :e B ->
+  path_between U a b alpha ->
+  path_between V b a beta ->
+  fcls :e loop_space X Tx a ->
+  path_homotopy_class_loop X Tx a fcls <>
+    fundamental_group_id X Tx a ->
+  exists n:set, n :e omega /\
+    (path_homotopy_class_loop X Tx a fcls = group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (path_homotopy_class_loop X Tx a (path_concat alpha beta)) n \/
+     path_homotopy_class_loop X Tx a fcls = group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (apply_fun (fundamental_group_inv X Tx a)
+        (path_homotopy_class_loop X Tx a (path_concat alpha beta))) n).
+let X Tx U V A B a b alpha beta fcls.
+assume Htop HU HV Hcover HscU HscV HAsub HBsub Hdisj Hoverlap HAopen HBopen HpcA HpcB HaA HbB.
+assume HalphaPB HbetaPB.
+assume HfclsLoop HfclsClsNe.
+claim HaUV : a :e U :/\: V.
+{
+  exact (HAsub a HaA).
+}
+claim HaU : a :e U.
+{
+  exact (binintersectE1 U V a HaUV).
+}
+claim HaV : a :e V.
+{
+  exact (binintersectE2 U V a HaUV).
+}
+claim HUsub : U c= X.
+{
+  exact (topology_elem_subset X Tx U Htop HU).
+}
+claim HaX : a :e X.
+{
+  exact (HUsub a HaU).
+}
+claim HalphaOn :
+  forall s:set, s :e unit_interval -> apply_fun alpha s :e U.
+{
+  claim HalphaFn : function_on alpha unit_interval U.
+  {
+    exact (path_between_function_on U a b alpha HalphaPB).
+  }
+  let s.
+  assume HsU.
+  exact (HalphaFn s HsU).
+}
+claim HbetaOn :
+  forall s:set, s :e unit_interval -> apply_fun beta s :e V.
+{
+  claim HbetaFn : function_on beta unit_interval V.
+  {
+    exact (path_between_function_on V b a beta HbetaPB).
+  }
+  let s.
+  assume HsU.
+  exact (HbetaFn s HsU).
+}
+claim HalphaCont :
+  continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) alpha.
+{
+  exact (lemma58_path_between_continuous_bridge
+    U
+    (subspace_topology X Tx U)
+    a
+    b
+    alpha
+    HalphaPB).
+}
+claim Halpha0 : apply_fun alpha 0 = a.
+{
+  exact (path_between_at_zero U a b alpha HalphaPB).
+}
+claim Halpha1 : apply_fun alpha 1 = b.
+{
+  exact (path_between_at_one U a b alpha HalphaPB).
+}
+claim HbetaCont :
+  continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) beta.
+{
+  exact (lemma58_path_between_continuous_bridge
+    V
+    (subspace_topology X Tx V)
+    b
+    a
+    beta
+    HbetaPB).
+}
+claim Hbeta0 : apply_fun beta 0 = b.
+{
+  exact (path_between_at_zero V b a beta HbetaPB).
+}
+claim Hbeta1 : apply_fun beta 1 = a.
+{
+  exact (path_between_at_one V b a beta HbetaPB).
+}
+claim HgenClsMem :
+  path_homotopy_class_loop X Tx a (path_concat alpha beta)
+  :e fundamental_group X Tx a.
+{
+  exact (lemma84_6_generator_candidate_class_in_pi1
+    X
+    Tx
+    U
+    V
+    a
+    b
+    alpha
+    beta
+    Htop
+    HU
+    HV
+    HalphaCont
+    Halpha0
+    Halpha1
+    HbetaCont
+    Hbeta0
+    Hbeta1).
+}
+(** TODO Bob: bridge from nontrivial loop representative to edge-crossing normal form.
+    Needed dependency: S63-style alternating decomposition theorem specialized to
+    U∩V=A∪B (A,B disjoint path-connected pieces), then reduction to powers of [alpha.beta]. **)
+admit.
+Admitted.
+
 (** core bridge for S84.6: cyclic-generation conclusion from path-form hypotheses **)
 Theorem lemma84_6_core_cyclic_generation_from_path_data :
   forall X Tx U V A B a b alpha beta:set,
@@ -249809,9 +249953,41 @@ apply (xm (cls = fundamental_group_id X Tx a)).
   (** Remaining S84.6 core gap:
       non-identity classes: derive cyclic generation in the disconnected-overlap
       setting from path-form data and simply-connectedness of U,V
-      (S63-style decomposition), using the established nontriviality/membership
-      infrastructure above. **)
-  admit.
+      (S63-style decomposition), using helper
+      lemma84_6_nonid_loop_class_power_from_crossing_data. **)
+  rewrite HclsEqf.
+  exact (lemma84_6_nonid_loop_class_power_from_crossing_data
+    X
+    Tx
+    U
+    V
+    A
+    B
+    a
+    b
+    alpha
+    beta
+    fcls
+    Htop
+    HU
+    HV
+    Hcover
+    HscU
+    HscV
+    HAsub
+    HBsub
+    Hdisj
+    Hoverlap
+    HAopen
+    HBopen
+    HpcA
+    HpcB
+    HaA
+    HbB
+    HalphaPB
+    HbetaPB
+    HfclsLoop
+    HfclsClsNe).
 Admitted.
 
 (** from S84 Lem 84.6 (line 5643 in algtop.tex): generator from edge **)
