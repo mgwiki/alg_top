@@ -239741,51 +239741,6 @@ Theorem lemma84_2_tree_decomposition :
     tree_in_graph T0 B X Tx Arcs.
 let T ArcsT X Tx Arcs.
 assume Htree HfinArcsT HtwoArcs.
-claim HsubT : subgraph_of T X Tx Arcs.
-{
-  exact (tree_in_graph_subgraph_of
-    T
-    ArcsT
-    X
-    Tx
-    Arcs
-    Htree).
-}
-claim HglgT : general_linear_graph T (subspace_topology X Tx T) ArcsT.
-{
-  exact (tree_in_graph_general_linear_graph
-    T
-    ArcsT
-    X
-    Tx
-    Arcs
-    Htree).
-}
-claim HconnT : connected_space T (subspace_topology X Tx T).
-{
-  exact (tree_in_graph_connected
-    T
-    ArcsT
-    X
-    Tx
-    Arcs
-    Htree).
-}
-claim HnoLoopT :
-  ~(exists n path_seq x0:set,
-      n :e omega /\ n <> 0 /\
-      reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
-      (exists j:set, j :e n /\ ordsucc j /:e n /\
-        (apply_fun path_seq j) 0 1 = x0)).
-{
-  exact (tree_in_graph_no_closed_reduced_edge_path
-    T
-    ArcsT
-    X
-    Tx
-    Arcs
-    Htree).
-}
 (** Remaining S84.2-converse gap:
     choose a removable edge from finite non-singleton ArcsT, set B := ArcsT\\{A},
     prove T0 = Union B is a tree, and isolate the single-vertex intersection witness. **)
@@ -239802,31 +239757,6 @@ Theorem thm84_3_tree_simply_connected :
   simply_connected T (subspace_topology X Tx T).
 let T ArcsT X Tx Arcs.
 assume Htree.
-claim HconnT : connected_space T (subspace_topology X Tx T).
-{
-  exact (tree_in_graph_connected
-    T
-    ArcsT
-    X
-    Tx
-    Arcs
-    Htree).
-}
-claim HnoLoopT :
-  ~(exists n path_seq x0:set,
-      n :e omega /\ n <> 0 /\
-      reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
-      (exists j:set, j :e n /\ ordsucc j /:e n /\
-        (apply_fun path_seq j) 0 1 = x0)).
-{
-  exact (tree_in_graph_no_closed_reduced_edge_path
-    T
-    ArcsT
-    X
-    Tx
-    Arcs
-    Htree).
-}
 (** Remaining S84.3 gap:
     convert the no-closed-reduced-edge-path invariant (plus connectedness)
     into simply_connected for the graph topology on T. **)
@@ -240504,38 +240434,13 @@ Theorem thm84_4_forward_meeting_obligation :
   exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
 let T ArcsT X Tx Arcs A.
 assume Hmax HA Hnsub.
-claim Hctx :
-  tree_in_graph T ArcsT X Tx Arcs /\
-  general_linear_graph X Tx Arcs /\
-  subgraph_of T X Tx Arcs /\
-  T c= X /\
-  A c= X.
-{
-  exact (maximal_tree_noncontained_edge_basic_context
-    T
-    ArcsT
-    X
-    Tx
-    Arcs
-    A
-    Hmax
-    HA
-    Hnsub).
-}
-apply (and5E
-  (tree_in_graph T ArcsT X Tx Arcs)
-  (general_linear_graph X Tx Arcs)
-  (subgraph_of T X Tx Arcs)
-  (T c= X)
-  (A c= X)
-  Hctx).
-assume Htree HglgX HsubT HTsubX HAsubX.
 (** Remaining forward S84.4 gap:
     construct a single-vertex intersection witness for each noncontained edge.
     Current local context already provides:
     - tree/maximal-tree structure on T,
     - ambient graph structure,
     - A c= X.
+    (explicitly available via maximal_tree_noncontained_edge_basic_context).
     The unresolved core is to show the intersection is exactly a singleton
     graph-vertex witness. **)
 claim HmeetCore :
@@ -241137,20 +241042,6 @@ let T ArcsT T' ArcsT' X Tx Arcs.
 assume Hrhs Htree' HTsub.
 let A p q.
 assume HASel Hend Hep.
-claim Htree : tree_in_graph T ArcsT X Tx Arcs.
-{
-  exact (andEL
-    (tree_in_graph T ArcsT X Tx Arcs)
-    (graph_vertices X Tx Arcs c= T)
-    Hrhs).
-}
-claim HVT : graph_vertices X Tx Arcs c= T.
-{
-  exact (andER
-    (tree_in_graph T ArcsT X Tx Arcs)
-    (graph_vertices X Tx Arcs c= T)
-    Hrhs).
-}
 (** Remaining backward S84.4 endpoint-closure gap:
     from selected-arc endpoint placement in T, derive full selected-arc subset in T. **)
 apply (xm (A c= T)).
