@@ -250189,15 +250189,167 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun fcls t :e U)).
           Hfcls1
           HfU_inc_pw).
       }
-      (** TODO Bob: final class-equality chain:
-         rewrite Hi_star_ucls and use
-         [rep∘incU]=[f_U∘incU]=[fcls]. **)
-      admit.
+      claim Hclass_rep_eq_fU :
+        path_homotopy_class_loop X Tx a (compose_fun unit_interval rep incU)
+        = path_homotopy_class_loop X Tx a (compose_fun unit_interval f_U incU).
+      {
+        exact (path_homotopy_class_loop_eq_of_path_homotopic
+          X
+          Tx
+          a
+          (compose_fun unit_interval rep incU)
+          (compose_fun unit_interval f_U incU)
+          (Lemma_51_1_path_homotopy_sym
+            X
+            Tx
+            a
+            a
+            (compose_fun unit_interval f_U incU)
+            (compose_fun unit_interval rep incU)
+            Hpost_hom)).
+      }
+      claim Hclass_fU_eq_fcls :
+        path_homotopy_class_loop X Tx a (compose_fun unit_interval f_U incU)
+        = path_homotopy_class_loop X Tx a fcls.
+      {
+        exact (path_homotopy_class_loop_eq_of_path_homotopic
+          X
+          Tx
+          a
+          (compose_fun unit_interval f_U incU)
+          fcls
+          HfU_inc_hom_fcls).
+      }
+      rewrite Hi_star_ucls.
+      rewrite Hclass_rep_eq_fU.
+      exact Hclass_fU_eq_fcls.
     }
     (** TODO Bob:
        use Hpi1Utriv to show ucls=id_U, map via induced hom, derive class(fcls)=id_X
        contradicting HfclsClsNe; then conclude HallU_target by ex-falso. **)
-    admit.
+    set idU := fundamental_group_id U (subspace_topology X Tx U) a.
+    set idX := fundamental_group_id X Tx a.
+    claim HuclsInSing : ucls :e {idU}.
+    {
+      rewrite <- Hpi1Utriv.
+      exact HuclsMem.
+    }
+    claim HuclsEqIdU : ucls = idU.
+    {
+      exact (SingE idU ucls HuclsInSing).
+    }
+    claim HgrpU :
+      group_structure
+        (fundamental_group U (subspace_topology X Tx U) a)
+        (fundamental_group_mult U (subspace_topology X Tx U) a)
+        (fundamental_group_id U (subspace_topology X Tx U) a)
+        (fundamental_group_inv U (subspace_topology X Tx U) a).
+    {
+      exact (fundamental_group_is_group
+        U
+        (subspace_topology X Tx U)
+        a
+        HtopU
+        HaU).
+    }
+    claim HgrpX :
+      group_structure
+        (fundamental_group X Tx a)
+        (fundamental_group_mult X Tx a)
+        (fundamental_group_id X Tx a)
+        (fundamental_group_inv X Tx a).
+    {
+      exact (fundamental_group_is_group
+        X
+        Tx
+        a
+        Htop
+        HaX).
+    }
+    claim HhomI :
+      group_homomorphism
+        (fundamental_group U (subspace_topology X Tx U) a)
+        (fundamental_group_mult U (subspace_topology X Tx U) a)
+        (fundamental_group X Tx a)
+        (fundamental_group_mult X Tx a)
+        (induced_homomorphism U (subspace_topology X Tx U) a X Tx a
+          (graph U (fun x:set => x))).
+    {
+      exact (induced_homomorphism_is_homomorphism
+        U
+        (subspace_topology X Tx U)
+        a
+        X
+        Tx
+        a
+        (graph U (fun x:set => x))
+        (subspace_inclusion_continuous X Tx U Htop HUsub)
+        (apply_fun_graph U (fun x:set => x) a HaU)
+        HaU).
+    }
+    claim HimgId :
+      apply_fun (induced_homomorphism U (subspace_topology X Tx U) a X Tx a
+        (graph U (fun x:set => x))) idU
+      = idX.
+    {
+      exact (group_hom_maps_id_to_id
+        (fundamental_group U (subspace_topology X Tx U) a)
+        (fundamental_group_mult U (subspace_topology X Tx U) a)
+        (fundamental_group_id U (subspace_topology X Tx U) a)
+        (fundamental_group_inv U (subspace_topology X Tx U) a)
+        (fundamental_group X Tx a)
+        (fundamental_group_mult X Tx a)
+        (fundamental_group_id X Tx a)
+        (fundamental_group_inv X Tx a)
+        (induced_homomorphism U (subspace_topology X Tx U) a X Tx a
+          (graph U (fun x:set => x)))
+        HgrpU
+        HgrpX
+        HhomI).
+    }
+    claim HuEqIdArg :
+      apply_fun (induced_homomorphism U (subspace_topology X Tx U) a X Tx a
+        (graph U (fun x:set => x))) idU
+      = path_homotopy_class_loop X Tx a fcls.
+    {
+      rewrite <- HuclsEqIdU.
+      exact HuEq.
+    }
+    claim HclassEqImgId :
+      path_homotopy_class_loop X Tx a fcls
+      =
+      apply_fun (induced_homomorphism U (subspace_topology X Tx U) a X Tx a
+        (graph U (fun x:set => x))) idU.
+    {
+      symmetry.
+      exact HuEqIdArg.
+    }
+    claim HclassIdX :
+      path_homotopy_class_loop X Tx a fcls = idX.
+    {
+      exact (eq_i_tra
+        (path_homotopy_class_loop X Tx a fcls)
+        (apply_fun (induced_homomorphism U (subspace_topology X Tx U) a X Tx a
+          (graph U (fun x:set => x))) idU)
+        idX
+        HclassEqImgId
+        HimgId).
+    }
+    claim Hfalse : False.
+    {
+      exact (HfclsClsNe HclassIdX).
+    }
+    exact (FalseE Hfalse
+      (exists n:set, n :e omega /\
+        (path_homotopy_class_loop X Tx a fcls = group_power_nat
+          (fundamental_group_mult X Tx a)
+          (fundamental_group_id X Tx a)
+          (path_homotopy_class_loop X Tx a (path_concat alpha beta)) n \/
+         path_homotopy_class_loop X Tx a fcls = group_power_nat
+          (fundamental_group_mult X Tx a)
+          (fundamental_group_id X Tx a)
+          (apply_fun (fundamental_group_inv X Tx a)
+            (path_homotopy_class_loop X Tx a (path_concat alpha beta))) n))).
   }
   exact HallU_target.
 - assume HnotAllU : ~(forall t:set, t :e unit_interval -> apply_fun fcls t :e U).
