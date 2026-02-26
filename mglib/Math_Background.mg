@@ -249711,6 +249711,36 @@ apply (xm (cls = fundamental_group_id X Tx a)).
         0)
       HeqPow0)).
 - assume HclsNe : ~(cls = fundamental_group_id X Tx a).
+  claim Hrep :
+    exists fcls:set, fcls :e loop_space X Tx a /\
+      cls = path_homotopy_class_loop X Tx a fcls.
+  {
+    exact (fundamental_group_member_has_representative
+      X
+      Tx
+      a
+      cls
+      Hcls).
+  }
+  apply Hrep.
+  let fcls.
+  assume HfclsPack :
+    fcls :e loop_space X Tx a /\
+    cls = path_homotopy_class_loop X Tx a fcls.
+  claim HfclsLoop : fcls :e loop_space X Tx a.
+  {
+    exact (andEL
+      (fcls :e loop_space X Tx a)
+      (cls = path_homotopy_class_loop X Tx a fcls)
+      HfclsPack).
+  }
+  claim HclsEqf : cls = path_homotopy_class_loop X Tx a fcls.
+  {
+    exact (andER
+      (fcls :e loop_space X Tx a)
+      (cls = path_homotopy_class_loop X Tx a fcls)
+      HfclsPack).
+  }
   (** Remaining S84.6 core gap:
       non-identity classes: derive cyclic generation in the disconnected-overlap
       setting from path-form data and simply-connectedness of U,V
