@@ -84069,6 +84069,164 @@ Definition lifting_correspondence : set -> set -> set -> set -> set -> set -> se
       (fun cls:set =>
         apply_fun (path_lift E Te B Tb p e0 (Eps_i (fun f:set => f :e cls))) 1).
 
+(** Infrastructure: lifting correspondence lands in the fiber over p(e0) **)
+(** Proven Bob **)
+Lemma lifting_correspondence_in_fiber : forall E Te B Tb p e0 cls:set,
+  covering_map E Te B Tb p -> e0 :e E ->
+  cls :e fundamental_group B Tb (apply_fun p e0) ->
+  apply_fun (lifting_correspondence E Te B Tb p e0) cls :e
+    {x :e E | apply_fun p x = apply_fun p e0}.
+let E Te B Tb p e0 cls.
+assume Hcov He0 Hcls.
+set b0 := apply_fun p e0.
+set f := Eps_i (fun f:set => f :e cls).
+claim HfLoop : f :e loop_space B Tb b0.
+{
+  exact (eps_of_fundamental_group_member_in_loop_space
+    B
+    Tb
+    b0
+    cls
+    Hcls).
+}
+claim HfLoopAt : loop_at B Tb b0 f.
+{
+  exact (loop_space_has_loop_at
+    B
+    Tb
+    b0
+    f
+    HfLoop).
+}
+claim HfCont : continuous_map unit_interval unit_interval_topology B Tb f.
+{
+  exact (loop_at_continuous
+    B
+    Tb
+    b0
+    f
+    HfLoopAt).
+}
+claim Hf0 : apply_fun f 0 = b0.
+{
+  exact (loop_at_at_zero
+    B
+    Tb
+    b0
+    f
+    HfLoopAt).
+}
+claim Hf1 : apply_fun f 1 = b0.
+{
+  exact (loop_at_at_one
+    B
+    Tb
+    b0
+    f
+    HfLoopAt).
+}
+claim Hstart : apply_fun p e0 = apply_fun f 0.
+{
+  rewrite Hf0.
+  reflexivity.
+}
+claim HliftPack :
+  (continuous_map unit_interval unit_interval_topology E Te
+    (path_lift E Te B Tb p e0 f) /\
+   apply_fun (path_lift E Te B Tb p e0 f) 0 = e0) /\
+  (forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t).
+{
+  exact (lemma54_1_path_lifting
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    f
+    Hcov
+    He0
+    Hstart
+    HfCont).
+}
+claim HliftLeft :
+  continuous_map unit_interval unit_interval_topology E Te
+    (path_lift E Te B Tb p e0 f) /\
+  apply_fun (path_lift E Te B Tb p e0 f) 0 = e0.
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p e0 f) /\
+     apply_fun (path_lift E Te B Tb p e0 f) 0 = e0)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t)
+    HliftPack).
+}
+claim HliftCont :
+  continuous_map unit_interval unit_interval_topology E Te
+    (path_lift E Te B Tb p e0 f).
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p e0 f))
+    (apply_fun (path_lift E Te B Tb p e0 f) 0 = e0)
+    HliftLeft).
+}
+claim HliftFun :
+  function_on (path_lift E Te B Tb p e0 f) unit_interval E.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    E
+    Te
+    (path_lift E Te B Tb p e0 f)
+    HliftCont).
+}
+claim HendE : apply_fun (path_lift E Te B Tb p e0 f) 1 :e E.
+{
+  exact (HliftFun 1 one_in_unit_interval).
+}
+claim HliftComm :
+  forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p e0 f) /\
+     apply_fun (path_lift E Te B Tb p e0 f) 0 = e0)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t)
+    HliftPack).
+}
+claim HendEq :
+  apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) 1) = b0.
+{
+  rewrite (HliftComm 1 one_in_unit_interval).
+  exact Hf1.
+}
+claim HlcApply :
+  apply_fun (lifting_correspondence E Te B Tb p e0) cls =
+  apply_fun (path_lift E Te B Tb p e0 f) 1.
+{
+  exact (apply_fun_graph
+    (fundamental_group B Tb (apply_fun p e0))
+    (fun cls0:set =>
+      apply_fun (path_lift E Te B Tb p e0
+        (Eps_i (fun f0:set => f0 :e cls0))) 1)
+    cls
+    Hcls).
+}
+rewrite HlcApply.
+apply (SepI
+  E
+  (fun x:set => apply_fun p x = b0)
+  (apply_fun (path_lift E Te B Tb p e0 f) 1)
+  HendE
+  HendEq).
+Qed.
+
 (** from S54 Thm 54.4 (line 799 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be covering, p(e0) = b0. If E is path connected, **)
 (** then phi: pi_1(B,b0) -> p^{-1}(b0) is surjective. **)
@@ -95357,6 +95515,99 @@ Definition right_coset_set : set -> set -> set -> set :=
 Definition homomorphism_image : set -> set -> set :=
   fun G phi => {apply_fun phi x | x :e G}.
 
+(** Infrastructure: membership in a right coset **)
+(** Proven Bob **)
+Lemma right_coset_mem : forall mult H g x:set,
+  x :e right_coset mult H g <->
+  exists h:set, h :e H /\ x = apply_fun mult (h, g).
+let mult H g x.
+apply iffI.
+- assume Hx.
+  exact (ReplE H (fun h:set => apply_fun mult (h, g)) x Hx).
+- assume Hex.
+  apply Hex.
+  let h.
+  assume HhPack.
+  claim HhH : h :e H.
+  {
+    exact (andEL
+      (h :e H)
+      (x = apply_fun mult (h, g))
+      HhPack).
+  }
+  claim HxEq : x = apply_fun mult (h, g).
+  {
+    exact (andER
+      (h :e H)
+      (x = apply_fun mult (h, g))
+      HhPack).
+  }
+  rewrite HxEq.
+  exact (ReplI H (fun h0:set => apply_fun mult (h0, g)) h HhH).
+Qed.
+
+(** Infrastructure: membership in the set of right cosets **)
+(** Proven Bob **)
+Lemma right_coset_set_mem : forall G mult H c:set,
+  c :e right_coset_set G mult H <->
+  exists g:set, g :e G /\ c = right_coset mult H g.
+let G mult H c.
+apply iffI.
+- assume Hc.
+  exact (ReplE G (fun g:set => right_coset mult H g) c Hc).
+- assume Hex.
+  apply Hex.
+  let g.
+  assume HgPack.
+  claim HgG : g :e G.
+  {
+    exact (andEL
+      (g :e G)
+      (c = right_coset mult H g)
+      HgPack).
+  }
+  claim HcEq : c = right_coset mult H g.
+  {
+    exact (andER
+      (g :e G)
+      (c = right_coset mult H g)
+      HgPack).
+  }
+  rewrite HcEq.
+  exact (ReplI G (fun g0:set => right_coset mult H g0) g HgG).
+Qed.
+
+(** Infrastructure: membership in the image of a homomorphism **)
+(** Proven Bob **)
+Lemma homomorphism_image_mem : forall G phi y:set,
+  y :e homomorphism_image G phi <->
+  exists x:set, x :e G /\ y = apply_fun phi x.
+let G phi y.
+apply iffI.
+- assume Hy.
+  exact (ReplE G (fun x:set => apply_fun phi x) y Hy).
+- assume Hex.
+  apply Hex.
+  let x.
+  assume HxPack.
+  claim HxG : x :e G.
+  {
+    exact (andEL
+      (x :e G)
+      (y = apply_fun phi x)
+      HxPack).
+  }
+  claim HyEq : y = apply_fun phi x.
+  {
+    exact (andER
+      (x :e G)
+      (y = apply_fun phi x)
+      HxPack).
+  }
+  rewrite HyEq.
+  exact (ReplI G (fun x0:set => apply_fun phi x0) x HxG).
+Qed.
+
 (** Helper: two continuous paths that agree pointwise are path-homotopic **)
 Lemma path_homotopic_of_pointwise_equal : forall X Tx x0 x1 f g:set,
   continuous_map unit_interval unit_interval_topology X Tx f ->
@@ -96192,7 +96443,66 @@ Theorem thm54_6b_coset_correspondence : forall E Te B Tb p e0:set,
           (fundamental_group E Te e0)
           (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p)) ->
       apply_fun Phi c1 = apply_fun Phi c2 -> c1 = c2).
-admit.
+let E Te B Tb p e0.
+assume Hcov He0.
+set G := fundamental_group B Tb (apply_fun p e0).
+set mult := fundamental_group_mult B Tb (apply_fun p e0).
+set H := homomorphism_image
+  (fundamental_group E Te e0)
+  (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p).
+set cosets := right_coset_set G mult H.
+set Fib := {x :e E | apply_fun p x = apply_fun p e0}.
+set lc := lifting_correspondence E Te B Tb p e0.
+set Phi := graph cosets
+  (fun c:set => apply_fun lc (Eps_i (fun cls:set => cls :e c))).
+claim HPhiFun : function_on Phi cosets Fib.
+{
+  let c.
+  assume Hc.
+  rewrite (apply_fun_graph
+    cosets
+    (fun c0:set => apply_fun lc (Eps_i (fun cls:set => cls :e c0)))
+    c
+    Hc).
+  claim Hrep : (Eps_i (fun cls:set => cls :e c)) :e G.
+  {
+    (** TODO Bob: show right cosets are nonempty subsets of G. **)
+    admit.
+  }
+  exact (lifting_correspondence_in_fiber
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    (Eps_i (fun cls:set => cls :e c))
+    Hcov
+    He0
+    Hrep).
+}
+claim HPhiInj :
+  forall c1 c2:set,
+    c1 :e cosets ->
+    c2 :e cosets ->
+    apply_fun Phi c1 = apply_fun Phi c2 ->
+    c1 = c2.
+{
+  let c1 c2.
+  assume Hc1 Hc2 HPhiEq.
+  (** TODO Bob: use loop characterization and p-star injectivity to show cosets coincide. **)
+  admit.
+}
+witness Phi.
+exact (andI
+  (function_on Phi cosets Fib)
+  (forall c1 c2:set,
+    c1 :e cosets ->
+    c2 :e cosets ->
+    apply_fun Phi c1 = apply_fun Phi c2 ->
+    c1 = c2)
+  HPhiFun
+  HPhiInj).
 Admitted.
 
 (** from S54 Thm 54.6b surjectivity when E is path connected **)
