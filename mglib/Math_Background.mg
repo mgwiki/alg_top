@@ -249741,6 +249741,71 @@ apply (xm (cls = fundamental_group_id X Tx a)).
       (cls = path_homotopy_class_loop X Tx a fcls)
       HfclsPack).
   }
+  claim HfclsLoopAt : loop_at X Tx a fcls.
+  {
+    exact (loop_space_has_loop_at
+      X
+      Tx
+      a
+      fcls
+      HfclsLoop).
+  }
+  claim HfclsCont :
+    continuous_map
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      fcls.
+  {
+    exact (loop_at_continuous
+      X
+      Tx
+      a
+      fcls
+      HfclsLoopAt).
+  }
+  claim Hfcls0 : apply_fun fcls 0 = a.
+  {
+    exact (loop_at_at_zero
+      X
+      Tx
+      a
+      fcls
+      HfclsLoopAt).
+  }
+  claim Hfcls1 : apply_fun fcls 1 = a.
+  {
+    exact (loop_at_at_one
+      X
+      Tx
+      a
+      fcls
+      HfclsLoopAt).
+  }
+  claim HfclsFun : function_on fcls unit_interval X.
+  {
+    exact (continuous_map_function_on
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      fcls
+      HfclsCont).
+  }
+  claim HfclsClsNe :
+    path_homotopy_class_loop X Tx a fcls <>
+    fundamental_group_id X Tx a.
+  {
+    assume HfEq.
+    apply HclsNe.
+    exact (eq_i_tra
+      cls
+      (path_homotopy_class_loop X Tx a fcls)
+      (fundamental_group_id X Tx a)
+      HclsEqf
+      HfEq).
+  }
   (** Remaining S84.6 core gap:
       non-identity classes: derive cyclic generation in the disconnected-overlap
       setting from path-form data and simply-connectedness of U,V
