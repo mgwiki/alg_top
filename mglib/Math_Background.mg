@@ -230695,7 +230695,50 @@ claim HcohFamTA :
 		        (** Remaining coherence-closed transfer obligation:
 		            transfer openness of TA\\T = A\\{v} from the A-subspace to TA
 		            (equivalently, show closedness of T in TA). **)
-		        admit.
+		        claim HAminusSing_in_TA :
+		          (A :\: (Sing v)) :e subspace_topology X Tx (T :\/: A).
+		        {
+		          (** Core remaining step:
+		              lift openness of A\\{v} from the A-subspace
+		              to an ambient-open witness in TA. **)
+		          admit.
+		        }
+		        claim HTeqComp :
+		          T = (T :\/: A) :\: (A :\: (Sing v)).
+		        {
+		          claim Hdouble :
+		            (T :\/: A) :\: ((T :\/: A) :\: T) = T.
+		          {
+		            exact (setminus_setminus_eq
+		              (T :\/: A)
+		              T
+		              (binunion_Subq_1 T A)).
+		          }
+		          claim Hdouble' :
+		            (T :\/: A) :\: (A :\: (Sing v)) = T.
+		          {
+		            rewrite <- HTAminusT_eq.
+		            exact Hdouble.
+		          }
+		          symmetry.
+		          exact Hdouble'.
+		        }
+		        claim HexComp :
+		          exists U :e subspace_topology X Tx (T :\/: A),
+		            T = (T :\/: A) :\: U.
+		        {
+		          witness (A :\: (Sing v)).
+		          apply andI.
+		          - exact HAminusSing_in_TA.
+		          - exact HTeqComp.
+		        }
+		        exact (closed_inI
+		          (T :\/: A)
+		          (subspace_topology X Tx (T :\/: A))
+		          T
+		          HtopTA
+		          (binunion_Subq_1 T A)
+		          HexComp).
 		      }
 	      exact (HcDT_if_Tclosed
 	        HclosedTTA).
