@@ -239522,9 +239522,56 @@ claim Htree : tree_in_graph T ArcsT X Tx Arcs.
     Arcs
     Hmax).
 }
+claim HglgX : general_linear_graph X Tx Arcs.
+{
+  exact (tree_in_graph_general_linear_graph_X
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+claim HsubT : subgraph_of T X Tx Arcs.
+{
+  exact (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+claim HTsubX : T c= X.
+{
+  exact (subgraph_of_subset
+    T
+    X
+    Tx
+    Arcs
+    HsubT).
+}
+claim HAsubX : A c= X.
+{
+  exact (andEL
+    (A c= X)
+    (arc A (subspace_topology X Tx A))
+    (general_linear_graph_arc_data
+      X
+      Tx
+      Arcs
+      A
+      HglgX
+      HA)).
+}
 (** Remaining forward S84.4 gap:
     construct a single-vertex intersection witness for each noncontained edge.
-    This is the last missing input for the forward obligation quartet. **)
+    Current local context already provides:
+    - tree/maximal-tree structure on T,
+    - ambient graph structure,
+    - A c= X.
+    The unresolved core is to show the intersection is exactly a singleton
+    graph-vertex witness. **)
 claim HmeetCore :
   exists v:set, v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
 {
