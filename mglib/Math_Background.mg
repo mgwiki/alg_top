@@ -252518,6 +252518,130 @@ claim Hunit_interval_image_quadrichotomy :
       apply orIR.
       exact HimgClass.
 }
+claim Hunit_preU_iff_imageU :
+  forall t:set, t :e unit_interval ->
+    (t :e preU -> apply_fun fcls t :e U) /\
+    (apply_fun fcls t :e U -> t :e preU).
+{
+  let t.
+  assume HtI : t :e unit_interval.
+  exact (andI
+    (t :e preU -> apply_fun fcls t :e U)
+    (apply_fun fcls t :e U -> t :e preU)
+    (fun HtPreU => SepE2 unit_interval (fun x:set => apply_fun fcls x :e U) t HtPreU)
+    (fun HimgU => SepI
+      unit_interval
+      (fun x:set => apply_fun fcls x :e U)
+      t
+      HtI
+      HimgU)).
+}
+claim Hunit_preV_iff_imageV :
+  forall t:set, t :e unit_interval ->
+    (t :e preV -> apply_fun fcls t :e V) /\
+    (apply_fun fcls t :e V -> t :e preV).
+{
+  let t.
+  assume HtI : t :e unit_interval.
+  exact (andI
+    (t :e preV -> apply_fun fcls t :e V)
+    (apply_fun fcls t :e V -> t :e preV)
+    (fun HtPreV => SepE2 unit_interval (fun x:set => apply_fun fcls x :e V) t HtPreV)
+    (fun HimgV => SepI
+      unit_interval
+      (fun x:set => apply_fun fcls x :e V)
+      t
+      HtI
+      HimgV)).
+}
+claim Hunit_imageA_implies_preA_preUV_notPreB :
+  forall t:set, t :e unit_interval -> apply_fun fcls t :e A ->
+    (t :e preA /\ t :e preU :/\: preV) /\ ~(t :e preB).
+{
+  let t.
+  assume HtI : t :e unit_interval.
+  assume HimgA : apply_fun fcls t :e A.
+  claim HtPreA : t :e preA.
+  {
+    exact (SepI
+      unit_interval
+      (fun x:set => apply_fun fcls x :e A)
+      t
+      HtI
+      HimgA).
+  }
+  claim HtPreUV : t :e preU :/\: preV.
+  {
+    exact (HpreASubPreUV t HtPreA).
+  }
+  exact (andI
+    (t :e preA /\ t :e preU :/\: preV)
+    (~(t :e preB))
+    (andI
+      (t :e preA)
+      (t :e preU :/\: preV)
+      HtPreA
+      HtPreUV)
+    (HpreA_not_preB t HtPreA)).
+}
+claim Hunit_imageB_implies_preB_preUV_notPreA :
+  forall t:set, t :e unit_interval -> apply_fun fcls t :e B ->
+    (t :e preB /\ t :e preU :/\: preV) /\ ~(t :e preA).
+{
+  let t.
+  assume HtI : t :e unit_interval.
+  assume HimgB : apply_fun fcls t :e B.
+  claim HtPreB : t :e preB.
+  {
+    exact (SepI
+      unit_interval
+      (fun x:set => apply_fun fcls x :e B)
+      t
+      HtI
+      HimgB).
+  }
+  claim HtPreUV : t :e preU :/\: preV.
+  {
+    exact (HpreBSubPreUV t HtPreB).
+  }
+  exact (andI
+    (t :e preB /\ t :e preU :/\: preV)
+    (~(t :e preA))
+    (andI
+      (t :e preB)
+      (t :e preU :/\: preV)
+      HtPreB
+      HtPreUV)
+    (HpreB_not_preA t HtPreB)).
+}
+claim Hunit_overlap_not_imageA_iff_imageB :
+  forall t:set, t :e unit_interval -> t :e preU :/\: preV ->
+    (~(apply_fun fcls t :e A) -> apply_fun fcls t :e B) /\
+    (apply_fun fcls t :e B -> ~(apply_fun fcls t :e A)).
+{
+  let t.
+  assume HtI : t :e unit_interval.
+  assume HtUV : t :e preU :/\: preV.
+  exact (andI
+    (~(apply_fun fcls t :e A) -> apply_fun fcls t :e B)
+    (apply_fun fcls t :e B -> ~(apply_fun fcls t :e A))
+    (HpreUV_not_imageA_implies_imageB t HtUV)
+    (HpreUV_imageB_implies_not_imageA t HtUV)).
+}
+claim Hunit_overlap_not_imageB_iff_imageA :
+  forall t:set, t :e unit_interval -> t :e preU :/\: preV ->
+    (~(apply_fun fcls t :e B) -> apply_fun fcls t :e A) /\
+    (apply_fun fcls t :e A -> ~(apply_fun fcls t :e B)).
+{
+  let t.
+  assume HtI : t :e unit_interval.
+  assume HtUV : t :e preU :/\: preV.
+  exact (andI
+    (~(apply_fun fcls t :e B) -> apply_fun fcls t :e A)
+    (apply_fun fcls t :e A -> ~(apply_fun fcls t :e B))
+    (HpreUV_not_imageB_implies_imageA t HtUV)
+    (HpreUV_imageA_implies_not_imageB t HtUV)).
+}
 (** TODO Bob: prove via S63-style alternating decomposition in U cap V = A union B
     with A cap B = Empty, then identify loop class as power of [alpha.beta] or inverse power.
     Current core setup complete:
@@ -252534,7 +252658,8 @@ claim Hunit_interval_image_quadrichotomy :
     - direct image-side implication/equivalence layer on overlap (notA->B, notB->A, A->notB, B->notA),
     - strict image classification/equivalence layer (iff bridges and endpoint image classes),
     - direct preA/preB <-> image-negation equivalence forms and endpoint image corollaries,
-    - unit-interval trichotomy/quadrichotomy splitting (U-only, V-only, overlap A-side, overlap B-side).
+    - unit-interval trichotomy/quadrichotomy splitting (U-only, V-only, overlap A-side, overlap B-side),
+    - global unit-interval preimage/image equivalence lemmas and overlap-side negation<->membership forms.
     Remaining: alternating crossing decomposition over U cap V = A union B (A cap B=Empty). **)
 admit.
 Admitted.
