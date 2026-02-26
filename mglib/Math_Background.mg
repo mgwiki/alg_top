@@ -168945,7 +168945,252 @@ apply iffI.
       (** For x_i in Gfam(a_i): if a_i <> alpha, ha(x_i) = 0 **)
       claim Hha_gfam_other : forall beta:set, beta :e J -> beta <> alpha ->
         forall g:set, g :e apply_fun Gfam beta -> apply_fun ha g = 0.
-      { admit. }
+      { let beta. assume HbJ : beta :e J. assume Hbne : beta <> alpha.
+        let g. assume HgGfam : g :e apply_fun Gfam beta.
+        claim HgG : g :e G.
+        { exact (SepE1 G
+            (fun g':set => exists n:set, n :e int /\
+              ((n :e omega /\ g' = group_power_nat mult e (apply_fun basis beta) n) \/
+               (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+                g' = group_power_nat mult e (apply_fun inv (apply_fun basis beta)) (ordsucc m))))
+            g (eq_subst_mem_set g (apply_fun Gfam beta)
+              {g' :e G | exists n:set, n :e int /\
+                ((n :e omega /\ g' = group_power_nat mult e (apply_fun basis beta) n) \/
+                 (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+                  g' = group_power_nat mult e (apply_fun inv (apply_fun basis beta)) (ordsucc m)))}
+              HgGfam (HGfam_val beta HbJ))). }
+        claim Hha_b0 : apply_fun ha (apply_fun basis beta) = 0.
+        { exact (Hha_other beta HbJ Hbne). }
+        claim HbG : apply_fun basis beta :e G.
+        { exact (andEL
+            (apply_fun basis beta :e G)
+            (forall g':set, g' :e G ->
+              exists n:set, n :e int /\
+                ((n :e omega /\ g' = group_power_nat mult e (apply_fun basis beta) n) \/
+                 (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+                  g' = group_power_nat mult e (apply_fun inv (apply_fun basis beta)) (ordsucc m))))
+            (Hgen beta HbJ)). }
+        (** Extract power structure from Gfam membership **)
+        claim Hpow_ex : exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun basis beta) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun basis beta)) (ordsucc m))).
+        { exact (SepE2 G
+            (fun g':set => exists n:set, n :e int /\
+              ((n :e omega /\ g' = group_power_nat mult e (apply_fun basis beta) n) \/
+               (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+                g' = group_power_nat mult e (apply_fun inv (apply_fun basis beta)) (ordsucc m))))
+            g (eq_subst_mem_set g (apply_fun Gfam beta)
+              {g' :e G | exists n:set, n :e int /\
+                ((n :e omega /\ g' = group_power_nat mult e (apply_fun basis beta) n) \/
+                 (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+                  g' = group_power_nat mult e (apply_fun inv (apply_fun basis beta)) (ordsucc m)))}
+              HgGfam (HGfam_val beta HbJ))). }
+        apply Hpow_ex. let nn. assume Hnn_prop : nn :e int /\
+          ((nn :e omega /\ g = group_power_nat mult e (apply_fun basis beta) nn) \/
+           (exists m:set, m :e omega /\ nn = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun basis beta)) (ordsucc m))).
+        claim Hnn_disj : (nn :e omega /\ g = group_power_nat mult e (apply_fun basis beta) nn) \/
+          (exists m:set, m :e omega /\ nn = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun basis beta)) (ordsucc m)).
+        { exact (andER (nn :e int)
+            ((nn :e omega /\ g = group_power_nat mult e (apply_fun basis beta) nn) \/
+             (exists m:set, m :e omega /\ nn = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun basis beta)) (ordsucc m)))
+            Hnn_prop). }
+        apply Hnn_disj.
+        - (** Positive power case: g = basis(beta)^nn, nn :e omega **)
+          assume Hpos : nn :e omega /\ g = group_power_nat mult e (apply_fun basis beta) nn.
+          claim HnnO : nn :e omega.
+          { exact (andEL (nn :e omega)
+              (g = group_power_nat mult e (apply_fun basis beta) nn) Hpos). }
+          claim Hgeq : g = group_power_nat mult e (apply_fun basis beta) nn.
+          { exact (andER (nn :e omega)
+              (g = group_power_nat mult e (apply_fun basis beta) nn) Hpos). }
+          (** ha(g) = ha(basis(beta)^nn) = group_power_nat(int_mult, 0, ha(basis(beta)), nn) **)
+          claim Hpow_pres : apply_fun ha (group_power_nat mult e (apply_fun basis beta) nn) =
+            group_power_nat integers_group_mult 0 (apply_fun ha (apply_fun basis beta)) nn.
+          { exact (group_homomorphism_preserves_power_nat_cyclic_helper
+              G mult e inv int integers_group_mult 0 integers_group_inv
+              ha (apply_fun basis beta) nn HgrpG2 HgrpZ2 Hha_hom HbG HnnO). }
+          (** Substitute ha(basis(beta)) = 0 **)
+          claim Hpow_0 : group_power_nat integers_group_mult 0 (apply_fun ha (apply_fun basis beta)) nn =
+            group_power_nat integers_group_mult 0 0 nn.
+          { claim Hfeq4 : forall z:set, z = 0 ->
+              group_power_nat integers_group_mult 0 z nn = group_power_nat integers_group_mult 0 0 nn.
+            { let z. assume Hz : z = 0. rewrite Hz. reflexivity. }
+            exact (Hfeq4 (apply_fun ha (apply_fun basis beta)) Hha_b0). }
+          (** group_power_nat(int_mult, 0, 0, nn) = mul_SNo(0, nn) **)
+          claim Hpow_mul : group_power_nat integers_group_mult 0 0 nn = mul_SNo 0 nn.
+          { exact (integers_group_power_nat_mul_right_cyclic_helper 0 nn H0int HnnO). }
+          (** mul_SNo(0, nn) = 0 **)
+          claim Hmul_z : mul_SNo 0 nn = 0.
+          { exact (mul_SNo_zeroL nn (omega_SNo nn HnnO)). }
+          (** Chain: ha(g) = ha(basis(beta)^nn) = ... = 0 **)
+          claim Hfeq5 : forall z:set, z = group_power_nat mult e (apply_fun basis beta) nn ->
+            apply_fun ha z = apply_fun ha (group_power_nat mult e (apply_fun basis beta) nn).
+          { let z. assume Hz. rewrite Hz. reflexivity. }
+          exact (eq_i_tra (apply_fun ha g)
+            (apply_fun ha (group_power_nat mult e (apply_fun basis beta) nn)) 0
+            (Hfeq5 g Hgeq)
+            (eq_i_tra (apply_fun ha (group_power_nat mult e (apply_fun basis beta) nn))
+              (group_power_nat integers_group_mult 0 (apply_fun ha (apply_fun basis beta)) nn) 0
+              Hpow_pres
+              (eq_i_tra (group_power_nat integers_group_mult 0 (apply_fun ha (apply_fun basis beta)) nn)
+                (group_power_nat integers_group_mult 0 0 nn) 0
+                Hpow_0
+                (eq_i_tra (group_power_nat integers_group_mult 0 0 nn)
+                  (mul_SNo 0 nn) 0 Hpow_mul Hmul_z)))).
+        - (** Negative power case: g = inv(basis(beta))^(ordsucc m) **)
+          assume Hneg : exists m:set, m :e omega /\ nn = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun basis beta)) (ordsucc m).
+          apply Hneg. let mm. assume Hmm_prop : mm :e omega /\ nn = minus_SNo (ordsucc mm) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun basis beta)) (ordsucc mm).
+          claim Hmm_left : mm :e omega /\ nn = minus_SNo (ordsucc mm).
+          { exact (andEL (mm :e omega /\ nn = minus_SNo (ordsucc mm))
+              (g = group_power_nat mult e (apply_fun inv (apply_fun basis beta)) (ordsucc mm))
+              Hmm_prop). }
+          claim HmmO : mm :e omega.
+          { exact (andEL (mm :e omega) (nn = minus_SNo (ordsucc mm)) Hmm_left). }
+          claim Hgeq2 : g = group_power_nat mult e (apply_fun inv (apply_fun basis beta)) (ordsucc mm).
+          { exact (andER (mm :e omega /\ nn = minus_SNo (ordsucc mm))
+              (g = group_power_nat mult e (apply_fun inv (apply_fun basis beta)) (ordsucc mm))
+              Hmm_prop). }
+          claim HinvbG : apply_fun inv (apply_fun basis beta) :e G.
+          { apply (and6E
+              (function_on mult (setprod G G) G)
+              (function_on inv G G)
+              (e :e G)
+              (forall u v w:set, u :e G -> v :e G -> w :e G ->
+                apply_fun mult (apply_fun mult (u, v), w) = apply_fun mult (u, apply_fun mult (v, w)))
+              (forall u:set, u :e G -> apply_fun mult (e, u) = u /\ apply_fun mult (u, e) = u)
+              (forall u:set, u :e G ->
+                apply_fun mult (u, apply_fun inv u) = e /\ apply_fun mult (apply_fun inv u, u) = e)
+              HgrpG2).
+            assume _ HinvFn _ _ _ _.
+            exact (HinvFn (apply_fun basis beta) HbG). }
+          claim HsmO : ordsucc mm :e omega.
+          { exact (omega_ordsucc mm HmmO). }
+          (** ha(inv(basis(beta))) = 0 **)
+          (** First show: basis(beta) times inv(basis(beta)) = e **)
+          claim Hmult_inv_e : apply_fun mult (apply_fun basis beta, apply_fun inv (apply_fun basis beta)) = e.
+          { apply (and6E
+              (function_on mult (setprod G G) G)
+              (function_on inv G G)
+              (e :e G)
+              (forall u v w:set, u :e G -> v :e G -> w :e G ->
+                apply_fun mult (apply_fun mult (u, v), w) = apply_fun mult (u, apply_fun mult (v, w)))
+              (forall u:set, u :e G -> apply_fun mult (e, u) = u /\ apply_fun mult (u, e) = u)
+              (forall u:set, u :e G ->
+                apply_fun mult (u, apply_fun inv u) = e /\ apply_fun mult (apply_fun inv u, u) = e)
+              HgrpG2).
+            assume _ _ _ _ _ HinvLaw.
+            exact (andEL
+              (apply_fun mult (apply_fun basis beta, apply_fun inv (apply_fun basis beta)) = e)
+              (apply_fun mult (apply_fun inv (apply_fun basis beta), apply_fun basis beta) = e)
+              (HinvLaw (apply_fun basis beta) HbG)). }
+          claim Hha_mult_inv : apply_fun ha (apply_fun mult (apply_fun basis beta, apply_fun inv (apply_fun basis beta))) =
+            apply_fun integers_group_mult (apply_fun ha (apply_fun basis beta), apply_fun ha (apply_fun inv (apply_fun basis beta))).
+          { exact (Hha_mult (apply_fun basis beta) (apply_fun inv (apply_fun basis beta)) HbG HinvbG). }
+          claim Hha_inv_b : apply_fun ha (apply_fun inv (apply_fun basis beta)) = 0.
+          { (** ha(b times inv(b)) = ha(e) = 0 **)
+            (** ha(b times inv(b)) = ha(b) + ha(inv(b)) = 0 + ha(inv(b)) **)
+            claim Hfeq6 : forall z:set, z = e -> apply_fun ha z = apply_fun ha e.
+            { let z. assume Hz : z = e. rewrite Hz. reflexivity. }
+            claim Hha_prod_e : apply_fun ha (apply_fun mult (apply_fun basis beta, apply_fun inv (apply_fun basis beta))) = 0.
+            { exact (eq_i_tra
+                (apply_fun ha (apply_fun mult (apply_fun basis beta, apply_fun inv (apply_fun basis beta))))
+                (apply_fun ha e) 0
+                (Hfeq6 (apply_fun mult (apply_fun basis beta, apply_fun inv (apply_fun basis beta))) Hmult_inv_e)
+                Hha_id). }
+            (** So 0 = add_SNo(0, ha(inv(b))) **)
+            claim Hsum_eq_0 :
+              apply_fun integers_group_mult (apply_fun ha (apply_fun basis beta), apply_fun ha (apply_fun inv (apply_fun basis beta))) = 0.
+            { exact (eq_i_tra
+                (apply_fun integers_group_mult (apply_fun ha (apply_fun basis beta), apply_fun ha (apply_fun inv (apply_fun basis beta))))
+                (apply_fun ha (apply_fun mult (apply_fun basis beta, apply_fun inv (apply_fun basis beta)))) 0
+                (eq_symm
+                  (apply_fun ha (apply_fun mult (apply_fun basis beta, apply_fun inv (apply_fun basis beta))))
+                  (apply_fun integers_group_mult (apply_fun ha (apply_fun basis beta), apply_fun ha (apply_fun inv (apply_fun basis beta))))
+                  Hha_mult_inv)
+                Hha_prod_e). }
+            (** integers_group_mult (0, ha(inv(b))) = add_SNo(0, ha(inv(b))) = ha(inv(b)) **)
+            claim Hha_invb_int : apply_fun ha (apply_fun inv (apply_fun basis beta)) :e int.
+            { exact (Hha_fn (apply_fun inv (apply_fun basis beta)) HinvbG). }
+            set pair_binv := (apply_fun ha (apply_fun basis beta), apply_fun ha (apply_fun inv (apply_fun basis beta))).
+            claim Hpair_sp : pair_binv :e setprod int int.
+            { exact (tuple_2_setprod_by_pair_Sigma int int
+                (apply_fun ha (apply_fun basis beta)) (apply_fun ha (apply_fun inv (apply_fun basis beta)))
+                (Hha_fn (apply_fun basis beta) HbG) Hha_invb_int). }
+            claim Heval_raw : apply_fun integers_group_mult pair_binv =
+              add_SNo (pair_binv 0) (pair_binv 1).
+            { exact (apply_fun_graph (setprod int int)
+                (fun p:set => add_SNo (p 0) (p 1)) pair_binv Hpair_sp). }
+            claim Heval_sum : apply_fun integers_group_mult (apply_fun ha (apply_fun basis beta), apply_fun ha (apply_fun inv (apply_fun basis beta))) =
+              add_SNo (apply_fun ha (apply_fun basis beta)) (apply_fun ha (apply_fun inv (apply_fun basis beta))).
+            { rewrite Heval_raw.
+              rewrite (tuple_2_0_eq (apply_fun ha (apply_fun basis beta)) (apply_fun ha (apply_fun inv (apply_fun basis beta)))).
+              rewrite (tuple_2_1_eq (apply_fun ha (apply_fun basis beta)) (apply_fun ha (apply_fun inv (apply_fun basis beta)))).
+              reflexivity. }
+            claim Hsubst_0 : add_SNo (apply_fun ha (apply_fun basis beta)) (apply_fun ha (apply_fun inv (apply_fun basis beta))) =
+              add_SNo 0 (apply_fun ha (apply_fun inv (apply_fun basis beta))).
+            { claim Hfeq7 : forall z:set, z = 0 ->
+                add_SNo z (apply_fun ha (apply_fun inv (apply_fun basis beta))) =
+                add_SNo 0 (apply_fun ha (apply_fun inv (apply_fun basis beta))).
+              { let z. assume Hz : z = 0. rewrite Hz. reflexivity. }
+              exact (Hfeq7 (apply_fun ha (apply_fun basis beta)) Hha_b0). }
+            claim Hadd_0L : add_SNo 0 (apply_fun ha (apply_fun inv (apply_fun basis beta))) =
+              apply_fun ha (apply_fun inv (apply_fun basis beta)).
+            { exact (add_SNo_0L (apply_fun ha (apply_fun inv (apply_fun basis beta)))
+                (int_SNo (apply_fun ha (apply_fun inv (apply_fun basis beta))) Hha_invb_int)). }
+            exact (eq_i_tra (apply_fun ha (apply_fun inv (apply_fun basis beta)))
+              (add_SNo 0 (apply_fun ha (apply_fun inv (apply_fun basis beta)))) 0
+              (eq_symm (add_SNo 0 (apply_fun ha (apply_fun inv (apply_fun basis beta))))
+                (apply_fun ha (apply_fun inv (apply_fun basis beta))) Hadd_0L)
+              (eq_i_tra (add_SNo 0 (apply_fun ha (apply_fun inv (apply_fun basis beta))))
+                (add_SNo (apply_fun ha (apply_fun basis beta)) (apply_fun ha (apply_fun inv (apply_fun basis beta)))) 0
+                (eq_symm
+                  (add_SNo (apply_fun ha (apply_fun basis beta)) (apply_fun ha (apply_fun inv (apply_fun basis beta))))
+                  (add_SNo 0 (apply_fun ha (apply_fun inv (apply_fun basis beta))))
+                  Hsubst_0)
+                (eq_i_tra
+                  (add_SNo (apply_fun ha (apply_fun basis beta)) (apply_fun ha (apply_fun inv (apply_fun basis beta))))
+                  (apply_fun integers_group_mult (apply_fun ha (apply_fun basis beta), apply_fun ha (apply_fun inv (apply_fun basis beta)))) 0
+                  (eq_symm
+                    (apply_fun integers_group_mult (apply_fun ha (apply_fun basis beta), apply_fun ha (apply_fun inv (apply_fun basis beta))))
+                    (add_SNo (apply_fun ha (apply_fun basis beta)) (apply_fun ha (apply_fun inv (apply_fun basis beta))))
+                    Heval_sum)
+                  Hsum_eq_0))). }
+          (** Now: ha(inv(basis(beta))^(ordsucc mm)) **)
+          claim Hpow_pres2 : apply_fun ha (group_power_nat mult e (apply_fun inv (apply_fun basis beta)) (ordsucc mm)) =
+            group_power_nat integers_group_mult 0 (apply_fun ha (apply_fun inv (apply_fun basis beta))) (ordsucc mm).
+          { exact (group_homomorphism_preserves_power_nat_cyclic_helper
+              G mult e inv int integers_group_mult 0 integers_group_inv
+              ha (apply_fun inv (apply_fun basis beta)) (ordsucc mm) HgrpG2 HgrpZ2 Hha_hom HinvbG HsmO). }
+          claim Hpow_0b : group_power_nat integers_group_mult 0 (apply_fun ha (apply_fun inv (apply_fun basis beta))) (ordsucc mm) =
+            group_power_nat integers_group_mult 0 0 (ordsucc mm).
+          { claim Hfeq8 : forall z:set, z = 0 ->
+              group_power_nat integers_group_mult 0 z (ordsucc mm) = group_power_nat integers_group_mult 0 0 (ordsucc mm).
+            { let z. assume Hz : z = 0. rewrite Hz. reflexivity. }
+            exact (Hfeq8 (apply_fun ha (apply_fun inv (apply_fun basis beta))) Hha_inv_b). }
+          claim Hpow_mul2 : group_power_nat integers_group_mult 0 0 (ordsucc mm) = mul_SNo 0 (ordsucc mm).
+          { exact (integers_group_power_nat_mul_right_cyclic_helper 0 (ordsucc mm) H0int HsmO). }
+          claim Hmul_z2 : mul_SNo 0 (ordsucc mm) = 0.
+          { exact (mul_SNo_zeroL (ordsucc mm) (omega_SNo (ordsucc mm) HsmO)). }
+          claim Hfeq9 : forall z:set, z = group_power_nat mult e (apply_fun inv (apply_fun basis beta)) (ordsucc mm) ->
+            apply_fun ha z = apply_fun ha (group_power_nat mult e (apply_fun inv (apply_fun basis beta)) (ordsucc mm)).
+          { let z. assume Hz. rewrite Hz. reflexivity. }
+          exact (eq_i_tra (apply_fun ha g)
+            (apply_fun ha (group_power_nat mult e (apply_fun inv (apply_fun basis beta)) (ordsucc mm))) 0
+            (Hfeq9 g Hgeq2)
+            (eq_i_tra (apply_fun ha (group_power_nat mult e (apply_fun inv (apply_fun basis beta)) (ordsucc mm)))
+              (group_power_nat integers_group_mult 0 (apply_fun ha (apply_fun inv (apply_fun basis beta))) (ordsucc mm)) 0
+              Hpow_pres2
+              (eq_i_tra (group_power_nat integers_group_mult 0 (apply_fun ha (apply_fun inv (apply_fun basis beta))) (ordsucc mm))
+                (group_power_nat integers_group_mult 0 0 (ordsucc mm)) 0
+                Hpow_0b
+                (eq_i_tra (group_power_nat integers_group_mult 0 0 (ordsucc mm))
+                  (mul_SNo 0 (ordsucc mm)) 0 Hpow_mul2 Hmul_z2)))). }
       (** Step 7: For the three-part conclusion **)
       apply (and3I
         (forall i j:set, i :e n1 -> j :e n2 ->
