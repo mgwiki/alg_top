@@ -54419,7 +54419,7 @@ apply andI.
   + exact Hcont_comp.
   + exact Hsurj_comp.
 - exact Hlocal_comp.
-Admitted.
+Qed.
 
 (** from S53 Exercise 5 (line 691 in algtop.tex) **)
 (** LATEX VERSION: The map p(z) = z^n is a covering map S^1 -> S^1. **)
@@ -56889,7 +56889,7 @@ exact (andI
       exists U1:set, U1 :e Te /\ x :e U1 /\ U1 c= C)
   HtopE
   Hlocal).
-Admitted.
+Qed.
 
 (** from S53 Exercise 6a (line 692 in algtop.tex) **)
 (** LATEX VERSION: If p: E -> B is a covering map and B is locally compact Hausdorff, **)
@@ -56918,7 +56918,7 @@ exact (andI
   (Hausdorff_space E Te)
   HlocE
   HHE).
-Admitted.
+Qed.
 
 (** Infrastructure: finite subsets admit finite subfamilies from any ambient cover **)
 (** Proven Bob **)
@@ -199303,7 +199303,7 @@ exact (homeomorphism_preserves_locally_compact
   g
   HhomeInv
   HlocX).
-Admitted.
+Qed.
 
 (** Helper: local compactness is invariant under homeomorphism. **)
 (** Proven Bob **)
@@ -199332,7 +199332,7 @@ apply iffI.
     f
     Hhome
     HlocY).
-Admitted.
+Qed.
 
 (** Helper: local compactness equivalence from existence of a homeomorphism. **)
 (** Proven Bob **)
@@ -199352,7 +199352,7 @@ exact (homeomorphism_locally_compact_iff
   Ty
   h
   Hhome).
-Admitted.
+Qed.
 
 (** Helper: homeomorphism preserves regularity (forward direction). **)
 (** Proven Bob **)
@@ -200165,7 +200165,7 @@ apply andI.
     (locally_compact Y Ty)
     Hiff
     HlocY).
-Admitted.
+Qed.
 
 (** Helper: regularity transfer implications from existence of a homeomorphism. **)
 (** Proven Bob **)
@@ -200615,7 +200615,7 @@ apply iffI.
     (locally_compact Y Ty)
     Hiff
     HlocX).
-Admitted.
+Qed.
 
 (** Helper: non-local-compactness equivalence from existence of a homeomorphism. **)
 (** Proven Bob **)
@@ -200635,7 +200635,7 @@ exact (homeomorphism_not_locally_compact_iff
   Ty
   h
   Hhome).
-Admitted.
+Qed.
 
 (** Helper: non-local-compactness transfer implications from existence of a homeomorphism. **)
 (** Proven Bob **)
@@ -200669,7 +200669,7 @@ apply andI.
     (~ locally_compact Y Ty)
     Hiff
     HnY).
-Admitted.
+Qed.
 
 (** Helper: non-regularity is invariant under homeomorphism. **)
 (** Proven Bob **)
@@ -201120,7 +201120,7 @@ apply andI.
     (locally_compact Y Ty)
     Hiff
     HlocY).
-Admitted.
+Qed.
 
 (** Helper: regularity transfer implications from a homeomorphism. **)
 (** Proven Bob **)
@@ -201435,7 +201435,7 @@ apply andI.
     (~ locally_compact Y Ty)
     Hiff
     HnY).
-Admitted.
+Qed.
 
 (** Helper: non-regularity transfer implications from a homeomorphism. **)
 (** Proven Bob **)
@@ -201925,7 +201925,7 @@ let X Tx Y Ty f.
 assume Hhome HlocX.
 exact (homeomorphism_preserves_locally_compact_right
   X Tx Y Ty f Hhome HlocX).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_locally_compact_of :
@@ -201937,7 +201937,7 @@ let X Tx Y Ty f.
 assume Hhome HlocY.
 exact (homeomorphism_preserves_locally_compact
   X Tx Y Ty f Hhome HlocY).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_implies :
@@ -201952,7 +201952,7 @@ exact (iffEL
   (locally_compact Y Ty)
   (exists_homeomorphism_locally_compact_iff X Tx Y Ty Hhex)
   HlocX).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_of :
@@ -201967,7 +201967,7 @@ exact (iffER
   (locally_compact Y Ty)
   (exists_homeomorphism_locally_compact_iff X Tx Y Ty Hhex)
   HlocY).
-Admitted.
+Qed.
 
 (** Helper aliases: implication forms for regularity wrappers. **)
 (** Proven Bob **)
@@ -202148,7 +202148,7 @@ exact (iffEL
   (~ locally_compact Y Ty)
   (homeomorphism_not_locally_compact_iff X Tx Y Ty f Hhome)
   HnX).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_not_locally_compact_of :
@@ -202163,7 +202163,7 @@ exact (iffER
   (~ locally_compact Y Ty)
   (homeomorphism_not_locally_compact_iff X Tx Y Ty f Hhome)
   HnY).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_implies :
@@ -202178,7 +202178,7 @@ exact (iffEL
   (~ locally_compact Y Ty)
   (exists_homeomorphism_not_locally_compact_iff X Tx Y Ty Hhex)
   HnX).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_of :
@@ -202193,7 +202193,7 @@ exact (iffER
   (~ locally_compact Y Ty)
   (exists_homeomorphism_not_locally_compact_iff X Tx Y Ty Hhex)
   HnY).
-Admitted.
+Qed.
 
 (** Helper aliases: implication forms for negated regularity wrappers. **)
 (** Proven Bob **)
@@ -203173,7 +203173,7 @@ exact (homeomorphism_preserves_locally_compact
   f
   Hhome
   HlocY).
-Admitted.
+Qed.
 
 (** Helper aliases: reflection form for regularity under homeomorphism. **)
 (** Proven Bob **)
@@ -203329,7 +203329,7 @@ let X Tx Y Ty.
 assume Hhex HlocY.
 exact (exists_homeomorphism_locally_compact_of
   X Tx Y Ty Hhex HlocY).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_reflects_regular_space :
@@ -203402,7 +203402,7 @@ let X Tx Y Ty f.
 assume Hhome HnY.
 exact (homeomorphism_not_locally_compact_of
   X Tx Y Ty f Hhome HnY).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_reflects_not_regular_space :
@@ -203462,7 +203462,7 @@ let X Tx Y Ty.
 assume Hhex HnY.
 exact (exists_homeomorphism_not_locally_compact_of
   X Tx Y Ty Hhex HnY).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_reflects_not_regular_space :
@@ -203745,7 +203745,7 @@ let X Tx Y Ty f.
 assume Hhome HlocX.
 exact (homeomorphism_locally_compact_implies
   X Tx Y Ty f Hhome HlocX).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_locally_compact_space_of :
@@ -203757,7 +203757,7 @@ let X Tx Y Ty f.
 assume Hhome HlocY.
 exact (homeomorphism_locally_compact_of
   X Tx Y Ty f Hhome HlocY).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_space_implies :
@@ -203769,7 +203769,7 @@ let X Tx Y Ty.
 assume Hhex HlocX.
 exact (exists_homeomorphism_locally_compact_implies
   X Tx Y Ty Hhex HlocX).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_space_of :
@@ -203781,7 +203781,7 @@ let X Tx Y Ty.
 assume Hhex HlocY.
 exact (exists_homeomorphism_locally_compact_of
   X Tx Y Ty Hhex HlocY).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_metrizable_space_implies :
@@ -203841,7 +203841,7 @@ let X Tx Y Ty f.
 assume Hhome HnX.
 exact (homeomorphism_not_locally_compact_implies
   X Tx Y Ty f Hhome HnX).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_not_locally_compact_space_of :
@@ -203853,7 +203853,7 @@ let X Tx Y Ty f.
 assume Hhome HnY.
 exact (homeomorphism_not_locally_compact_of
   X Tx Y Ty f Hhome HnY).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_space_implies :
@@ -203865,7 +203865,7 @@ let X Tx Y Ty.
 assume Hhex HnX.
 exact (exists_homeomorphism_not_locally_compact_implies
   X Tx Y Ty Hhex HnX).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_space_of :
@@ -203877,7 +203877,7 @@ let X Tx Y Ty.
 assume Hhex HnY.
 exact (exists_homeomorphism_not_locally_compact_of
   X Tx Y Ty Hhex HnY).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_not_metrizable_space_implies :
@@ -203936,7 +203936,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_locally_compact_iff
   X Tx Y Ty f Hhome).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_space_iff :
@@ -203947,7 +203947,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_locally_compact_iff
   X Tx Y Ty Hhex).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_metrizable_space_iff :
@@ -203980,7 +203980,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_not_locally_compact_iff
   X Tx Y Ty f Hhome).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_space_iff :
@@ -203991,7 +203991,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_not_locally_compact_iff
   X Tx Y Ty Hhex).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_not_metrizable_space_iff :
@@ -204024,7 +204024,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_locally_compact_transfer
   X Tx Y Ty f Hhome).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_space_transfer :
@@ -204035,7 +204035,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_locally_compact_transfer
   X Tx Y Ty Hhex).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_metrizable_space_transfer :
@@ -204068,7 +204068,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_not_locally_compact_transfer
   X Tx Y Ty f Hhome).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_space_transfer :
@@ -204079,7 +204079,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_not_locally_compact_transfer
   X Tx Y Ty Hhex).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_not_metrizable_space_transfer :
@@ -205043,7 +205043,7 @@ let X Tx Y Ty f.
 assume Hhome HlocY.
 exact (homeomorphism_reflects_locally_compact
   X Tx Y Ty f Hhome HlocY).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_reflects_locally_compact_space :
@@ -205055,7 +205055,7 @@ let X Tx Y Ty.
 assume Hhex HlocY.
 exact (exists_homeomorphism_reflects_locally_compact
   X Tx Y Ty Hhex HlocY).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_reflects_metrizable_space :
@@ -205091,7 +205091,7 @@ let X Tx Y Ty f.
 assume Hhome HnY.
 exact (homeomorphism_reflects_not_locally_compact
   X Tx Y Ty f Hhome HnY).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_reflects_not_locally_compact_space :
@@ -205103,7 +205103,7 @@ let X Tx Y Ty.
 assume Hhex HnY.
 exact (exists_homeomorphism_reflects_not_locally_compact
   X Tx Y Ty Hhex HnY).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_reflects_not_metrizable_space :
@@ -205857,7 +205857,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_locally_compact_iff
   X Tx Y Ty f Hhome).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_iff_short :
@@ -205868,7 +205868,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_locally_compact_iff
   X Tx Y Ty Hhex).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_not_metrizable_iff_short :
@@ -205901,7 +205901,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_not_locally_compact_iff
   X Tx Y Ty f Hhome).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_iff_short :
@@ -205912,7 +205912,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_not_locally_compact_iff
   X Tx Y Ty Hhex).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_metrizable_transfer_short :
@@ -205945,7 +205945,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_locally_compact_transfer
   X Tx Y Ty f Hhome).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_transfer_short :
@@ -205956,7 +205956,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_locally_compact_transfer
   X Tx Y Ty Hhex).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_not_metrizable_transfer_short :
@@ -205989,7 +205989,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_not_locally_compact_transfer
   X Tx Y Ty f Hhome).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_transfer_short :
@@ -206000,7 +206000,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_not_locally_compact_transfer
   X Tx Y Ty Hhex).
-Admitted.
+Qed.
 
 (** Additional existential-preservation aliases. **)
 (** Proven Bob **)
@@ -206089,7 +206089,7 @@ exact (iffEL
   (locally_compact Y Ty)
   (exists_homeomorphism_locally_compact_iff X Tx Y Ty Hhex)
   HlocX).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_locally_compact :
@@ -206104,7 +206104,7 @@ exact (iffER
   (locally_compact Y Ty)
   (exists_homeomorphism_locally_compact_iff X Tx Y Ty Hhex)
   HlocY).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_locally_compact_left :
@@ -206116,7 +206116,7 @@ let X Tx Y Ty.
 assume Hhex HlocY.
 exact (exists_homeomorphism_preserves_locally_compact
   X Tx Y Ty Hhex HlocY).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_regular_right :
@@ -206255,7 +206255,7 @@ let X Tx Y Ty f.
 assume Hhome HlocY.
 exact (homeomorphism_preserves_locally_compact
   X Tx Y Ty f Hhome HlocY).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_regular_left :
@@ -206619,7 +206619,7 @@ let X Tx Y Ty f.
 assume Hhome HlocX.
 exact (homeomorphism_preserves_locally_compact_right
   X Tx Y Ty f Hhome HlocX).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_locally_compact_space_left :
@@ -206631,7 +206631,7 @@ let X Tx Y Ty f.
 assume Hhome HlocY.
 exact (homeomorphism_preserves_locally_compact_left
   X Tx Y Ty f Hhome HlocY).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_regular_space_right :
@@ -206739,7 +206739,7 @@ let X Tx Y Ty.
 assume Hhex HlocX.
 exact (exists_homeomorphism_preserves_locally_compact_right
   X Tx Y Ty Hhex HlocX).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_locally_compact_space_left :
@@ -206751,7 +206751,7 @@ let X Tx Y Ty.
 assume Hhex HlocY.
 exact (exists_homeomorphism_preserves_locally_compact_left
   X Tx Y Ty Hhex HlocY).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_regular_space_right :
@@ -207031,7 +207031,7 @@ exact (iffEL
   (~ locally_compact Y Ty)
   (homeomorphism_not_locally_compact_iff X Tx Y Ty f Hhome)
   HnX).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_not_locally_compact_left :
@@ -207046,7 +207046,7 @@ exact (iffER
   (~ locally_compact Y Ty)
   (homeomorphism_not_locally_compact_iff X Tx Y Ty f Hhome)
   HnY).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_not_regular_space_right :
@@ -207331,7 +207331,7 @@ exact (iffEL
   (~ locally_compact Y Ty)
   (exists_homeomorphism_not_locally_compact_iff X Tx Y Ty Hhex)
   HnX).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_not_locally_compact_left :
@@ -207346,7 +207346,7 @@ exact (iffER
   (~ locally_compact Y Ty)
   (exists_homeomorphism_not_locally_compact_iff X Tx Y Ty Hhex)
   HnY).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_not_regular_space_right :
@@ -207556,7 +207556,7 @@ let X Tx Y Ty f.
 assume Hhome HnX.
 exact (homeomorphism_preserves_not_locally_compact_right
   X Tx Y Ty f Hhome HnX).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_not_locally_compact_space_left :
@@ -207568,7 +207568,7 @@ let X Tx Y Ty f.
 assume Hhome HnY.
 exact (homeomorphism_preserves_not_locally_compact_left
   X Tx Y Ty f Hhome HnY).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_not_metrizable_space_right :
@@ -207604,7 +207604,7 @@ let X Tx Y Ty.
 assume Hhex HnX.
 exact (exists_homeomorphism_preserves_not_locally_compact_right
   X Tx Y Ty Hhex HnX).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_not_locally_compact_space_left :
@@ -207616,7 +207616,7 @@ let X Tx Y Ty.
 assume Hhex HnY.
 exact (exists_homeomorphism_preserves_not_locally_compact_left
   X Tx Y Ty Hhex HnY).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_not_metrizable_space_right :
@@ -209583,7 +209583,7 @@ apply and3I.
         rewrite (apply_fun_graph V0 (fun s:set => apply_fun r s) (apply_fun q t) HqtV0).
         rewrite <- (compose_fun_apply X q r t HtX).
         reflexivity.
-Admitted.
+Qed.
 
 (** from S80 Lem 80.2b (line 4965 in algtop.tex): if p and q covering, so is r **)
 (** LATEX VERSION: (b) If p and q are covering maps, so is r. **)
@@ -231371,7 +231371,7 @@ apply (and6I
     f
     Hhome1
     unit_interval_minus_Sing_1_connected).
-Admitted.
+Qed.
 
 (** helper: n and {n} are disjoint. **)
 (** Proven Charlie **)
@@ -233453,7 +233453,7 @@ apply (iffI
 			    (~ (exists U V:set, U :e Tx /\ V :e Tx /\ separation_of X U V))
 			    HtopX
 			    Hnosep).
-		Admitted.
+		Qed.
 
 (** helper: the tree extension union is connected whenever A meets T in a vertex **)
 (** Proven Charlie **)
