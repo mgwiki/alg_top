@@ -250682,6 +250682,28 @@ claim HpreVHasWitness : exists z:set, z :e preV.
   witness tU.
   exact HtUinPreV.
 }
+claim HpreXAll : preimage_of unit_interval fcls X = unit_interval.
+{
+  apply set_ext.
+  - let t.
+    assume HtPreX : t :e preimage_of unit_interval fcls X.
+    exact (SepE1 unit_interval (fun x:set => apply_fun fcls x :e X) t HtPreX).
+  - let t.
+    assume HtI : t :e unit_interval.
+    exact (SepI
+      unit_interval
+      (fun x:set => apply_fun fcls x :e X)
+      t
+      HtI
+      (HfclsFun t HtI)).
+}
+claim HpreUVCover : unit_interval = preU :\/: preV.
+{
+  rewrite <- HpreXAll.
+  rewrite <- Hcover.
+  rewrite (preimage_of_binunion unit_interval fcls U V).
+  reflexivity.
+}
 (** TODO Bob: complete S84.6 mixed-case crossing-to-power reduction.
     The arguments now have explicit crossing witnesses tU,tV with opposite-side
     membership, plus full path/simply-connected/disconnected-overlap data. **)
