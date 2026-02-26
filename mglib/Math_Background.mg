@@ -225016,16 +225016,198 @@ apply andI.
       exists V:set,
         V :e Tx /\ x :e V /\ V c= U /\
           path_connected_space V (subspace_topology X Tx V).
-  {
-    let x.
-    assume HxX.
-    let U.
-    assume HU HxU.
-    admit.
-  }
-  exact (andI
-    (topology_on X Tx)
-    (forall x:set, x :e X ->
+	  {
+	    let x.
+	    assume HxX.
+	    let U.
+	    assume HU HxU.
+	    (** Choose an arc E containing x. **)
+	    claim HXeqU : X = Union Arcs.
+	    { exact (general_linear_graph_union_arcs X Tx Arcs Hglg). }
+	    claim HxUArcs : x :e Union Arcs.
+	    { rewrite <- HXeqU. exact HxX. }
+	    apply (UnionE Arcs x HxUArcs).
+	    let E.
+	    assume HxEpack.
+	    claim HxE : x :e E.
+	    { exact (andEL (x :e E) (E :e Arcs) HxEpack). }
+	    claim HEArcs : E :e Arcs.
+	    { exact (andER (x :e E) (E :e Arcs) HxEpack). }
+	    claim HEd : E c= X /\ arc E (subspace_topology X Tx E).
+	    {
+	      exact (general_linear_graph_arc_data
+	        X
+	        Tx
+	        Arcs
+	        E
+	        Hglg
+	        HEArcs).
+	    }
+	    claim HEsubX : E c= X.
+	    { exact (andEL (E c= X) (arc E (subspace_topology X Tx E)) HEd). }
+	    set OverE := {p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}.
+	    set UarcE := E :\: OverE.
+	    (** Split on whether x is an overlap point for E. **)
+	    apply (xm (x :e OverE)).
+	    * assume HxOverE.
+	      (** TODO: overlap (vertex) neighborhoods are unions of small arc-neighborhoods. **)
+	      admit.
+	    * assume HxNotOverE.
+	      claim HxUarcE : x :e UarcE.
+	      { exact (setminusI E OverE x HxE HxNotOverE). }
+	      claim HUarcE : UarcE :e Tx.
+	      {
+	        exact (general_linear_graph_arc_nonoverlap_open_in_X
+	          X
+	          Tx
+	          Arcs
+	          E
+	          Hglg
+	          HEArcs).
+	      }
+	      set UE := U :/\: UarcE.
+	      claim HUE : UE :e Tx.
+	      {
+	        exact (topology_binintersect_closed
+	          X
+	          Tx
+	          U
+	          UarcE
+	          HtopX
+	          HU
+	          HUarcE).
+	      }
+	      claim HxUE : x :e UE.
+	      { exact (binintersectI U UarcE x HxU HxUarcE). }
+		      set Te := subspace_topology X Tx E.
+		      claim HUE_Te : UE :e Te.
+		      {
+		        claim HUEsubE : UE c= E.
+		        {
+		          let z.
+		          assume HzUE.
+		          exact (setminusE1
+		            E
+		            OverE
+		            z
+		            (binintersectE2 U UarcE z HzUE)).
+		        }
+		        rewrite <- (binintersect_Subq_eq_1 UE E HUEsubE).
+		        exact (subspace_topologyI
+		          X
+		          Tx
+		          E
+	          UE
+	          HUE).
+	      }
+	      (** TODO: show arcs are locally path connected via unit_interval. **)
+	      claim HlpcE : locally_path_connected E Te.
+	      { admit. }
+	      claim HexV :
+	        exists V:set,
+	          V :e Te /\ x :e V /\ V c= UE /\
+	            path_connected_space V (subspace_topology E Te V).
+	      {
+	        exact (locally_path_connected_local
+	          E
+	          Te
+	          x
+	          UE
+	          HlpcE
+	          HxE
+	          HUE_Te
+	          HxUE).
+	      }
+		      apply HexV.
+		      let V.
+		      assume HVpack.
+		      witness V.
+		      apply (and4E
+		        (V :e Te)
+		        (x :e V)
+		        (V c= UE)
+		        (path_connected_space V (subspace_topology E Te V))
+		        HVpack).
+		      assume HVTe HxV HVsubUE HVpcE.
+		      (** Upgrade openness: V :e Tx since V = V0 :/\: UarcE for some V0 :e Tx. **)
+		      claim HexV0 : exists V0:set, V0 :e Tx /\ V = V0 :/\: E.
+		      { exact (subspace_topologyE X Tx E V HVTe). }
+	      apply HexV0.
+	      let V0.
+	      assume HV0pack.
+	      claim HV0 : V0 :e Tx.
+	      { exact (andEL (V0 :e Tx) (V = V0 :/\: E) HV0pack). }
+	      claim HVe : V = V0 :/\: E.
+	      { exact (andER (V0 :e Tx) (V = V0 :/\: E) HV0pack). }
+	      claim HVsubUarcE : V c= UarcE.
+	      {
+	        let z.
+	        assume HzV.
+	        exact (binintersectE2 U UarcE z (HVsubUE z HzV)).
+	      }
+		      claim HUEsubU : UE c= U.
+		      { exact (binintersect_Subq_1 U UarcE). }
+		      claim HVsubU : V c= U.
+		      { exact (Subq_tra V UE U HVsubUE HUEsubU). }
+		      claim HVeq : V = V0 :/\: UarcE.
+		      {
+		        apply (set_ext V (V0 :/\: UarcE)).
+		        - let z.
+		          assume HzV.
+		          apply binintersectI.
+		          + claim HzVE : z :e V0 :/\: E.
+		            { exact (mem_eqR z V (V0 :/\: E) HVe HzV). }
+		            exact (binintersectE1 V0 E z HzVE).
+		          + exact (HVsubUarcE z HzV).
+		        - let z.
+		          assume HzCap.
+		          claim HzV0 : z :e V0.
+		          { exact (binintersectE1 V0 UarcE z HzCap). }
+		          claim HzUarc : z :e UarcE.
+		          { exact (binintersectE2 V0 UarcE z HzCap). }
+		          claim HzE : z :e E.
+		          { exact (setminusE1 E OverE z HzUarc). }
+		          rewrite HVe.
+		          exact (binintersectI V0 E z HzV0 HzE).
+		      }
+	      claim HV : V :e Tx.
+	      {
+	        rewrite HVeq.
+	        exact (topology_binintersect_closed
+	          X
+	          Tx
+	          V0
+	          UarcE
+	          HtopX
+	          HV0
+	          HUarcE).
+	      }
+	      (** Convert path_connected_space from the E-subspace topology to the ambient subspace topology. **)
+	      claim HVsubE : V c= E.
+	      { exact (subspace_topology_subset X Tx E V HVTe). }
+	      claim HTsub : subspace_topology E Te V = subspace_topology X Tx V.
+	      {
+	        exact (ex16_1_subspace_transitive
+	          X
+	          Tx
+	          E
+	          V
+	          HtopX
+	          HEsubX
+	          HVsubE).
+		      }
+		      apply andI.
+		      - apply andI.
+		        + apply andI.
+		          * exact HV.
+		          * exact HxV.
+		        + exact HVsubU.
+		      - rewrite <- HTsub.
+		        exact HVpcE.
+		  }
+	  exact (andI
+	    (topology_on X Tx)
+	    (forall x:set, x :e X ->
       forall U:set, U :e Tx -> x :e U ->
         exists V:set,
           V :e Tx /\ x :e V /\ V c= U /\
