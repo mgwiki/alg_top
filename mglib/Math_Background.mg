@@ -240641,6 +240641,26 @@ rewrite <- Heq.
 exact Hlpc.
 Qed.
 
+(** helper for S84.3: no closed reduced edge path in a tree should force trivial pi1 at some basepoint. **)
+Theorem thm84_3_trivial_pi1_witness_from_no_closed_reduced_edge_paths :
+  forall T ArcsT X Tx Arcs:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  ~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)) ->
+  exists x0:set, x0 :e T /\
+    fundamental_group T (subspace_topology T (subspace_topology X Tx T) T) x0 =
+      {fundamental_group_id T (subspace_topology T (subspace_topology X Tx T) T) x0}.
+let T ArcsT X Tx Arcs.
+assume Htree Hnoloop.
+(** Remaining S84.3 core bridge:
+    encode reduced-edge-path no-loop information into path-homotopy classes
+    to derive triviality of fundamental_group at some (equiv. every) basepoint. **)
+admit.
+Admitted.
+
 (** from S84 Thm 84.3 (line 5617 in algtop.tex): tree is simply connected **)
 (** LATEX VERSION: Any tree T is simply connected. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
@@ -240784,10 +240804,14 @@ claim HsimpCore :
       fundamental_group T (subspace_topology T (subspace_topology X Tx T) T) x0 =
         {fundamental_group_id T (subspace_topology T (subspace_topology X Tx T) T) x0}.
   {
-    (** Remaining S84.3 bridge:
-        derive a trivial-pi1 basepoint witness from HnoloopT
-        (no closed reduced edge paths in the tree). **)
-    admit.
+    exact (thm84_3_trivial_pi1_witness_from_no_closed_reduced_edge_paths
+      T
+      ArcsT
+      X
+      Tx
+      Arcs
+      Htree
+      HnoloopT).
   }
   claim HsimpNested :
     simply_connected T (subspace_topology T (subspace_topology X Tx T) T).
