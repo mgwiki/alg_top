@@ -252154,6 +252154,92 @@ claim HpreUV_not_imageB_implies_preA :
   }
   exact (HpreUV_imageA_implies_preA t HtUV HimgA).
 }
+claim HpreUV_not_imageA_implies_imageB :
+  forall t:set, t :e preU :/\: preV ->
+    ~(apply_fun fcls t :e A) -> apply_fun fcls t :e B.
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  assume HnotImgA : ~(apply_fun fcls t :e A).
+  claim HimgAB : apply_fun fcls t :e A :\/: B.
+  {
+    exact (HpreUV_imageAB t HtUV).
+  }
+  apply (binunionE A B (apply_fun fcls t) HimgAB).
+  - assume HimgA : apply_fun fcls t :e A.
+    exact (FalseE (HnotImgA HimgA) (apply_fun fcls t :e B)).
+  - assume HimgB : apply_fun fcls t :e B.
+    exact HimgB.
+}
+claim HpreUV_not_imageB_implies_imageA :
+  forall t:set, t :e preU :/\: preV ->
+    ~(apply_fun fcls t :e B) -> apply_fun fcls t :e A.
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  assume HnotImgB : ~(apply_fun fcls t :e B).
+  claim HimgAB : apply_fun fcls t :e A :\/: B.
+  {
+    exact (HpreUV_imageAB t HtUV).
+  }
+  apply (binunionE A B (apply_fun fcls t) HimgAB).
+  - assume HimgA : apply_fun fcls t :e A.
+    exact HimgA.
+  - assume HimgB : apply_fun fcls t :e B.
+    exact (FalseE (HnotImgB HimgB) (apply_fun fcls t :e A)).
+}
+claim HpreUV_imageA_implies_not_imageB :
+  forall t:set, t :e preU :/\: preV ->
+    apply_fun fcls t :e A -> ~(apply_fun fcls t :e B).
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  assume HimgA : apply_fun fcls t :e A.
+  claim HtPreA : t :e preA.
+  {
+    exact (HpreUV_imageA_implies_preA t HtUV HimgA).
+  }
+  exact (HpreA_implies_not_imageB t HtPreA).
+}
+claim HpreUV_imageB_implies_not_imageA :
+  forall t:set, t :e preU :/\: preV ->
+    apply_fun fcls t :e B -> ~(apply_fun fcls t :e A).
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  assume HimgB : apply_fun fcls t :e B.
+  claim HtPreB : t :e preB.
+  {
+    exact (HpreUV_imageB_implies_preB t HtUV HimgB).
+  }
+  exact (HpreB_implies_not_imageA t HtPreB).
+}
+claim HpreUV_imageA_iff_not_imageB :
+  forall t:set, t :e preU :/\: preV ->
+    (apply_fun fcls t :e A -> ~(apply_fun fcls t :e B)) /\
+    (~(apply_fun fcls t :e B) -> apply_fun fcls t :e A).
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  exact (andI
+    (apply_fun fcls t :e A -> ~(apply_fun fcls t :e B))
+    (~(apply_fun fcls t :e B) -> apply_fun fcls t :e A)
+    (HpreUV_imageA_implies_not_imageB t HtUV)
+    (HpreUV_not_imageB_implies_imageA t HtUV)).
+}
+claim HpreUV_imageB_iff_not_imageA :
+  forall t:set, t :e preU :/\: preV ->
+    (apply_fun fcls t :e B -> ~(apply_fun fcls t :e A)) /\
+    (~(apply_fun fcls t :e A) -> apply_fun fcls t :e B).
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  exact (andI
+    (apply_fun fcls t :e B -> ~(apply_fun fcls t :e A))
+    (~(apply_fun fcls t :e A) -> apply_fun fcls t :e B)
+    (HpreUV_imageB_implies_not_imageA t HtUV)
+    (HpreUV_not_imageA_implies_imageB t HtUV)).
+}
 claim HpreUV_imageA_iff_preA :
   forall t:set, t :e preU :/\: preV ->
     (apply_fun fcls t :e A -> t :e preA) /\
@@ -252325,6 +252411,7 @@ claim H1NotImageB : ~(apply_fun fcls 1 :e B).
     - two-way transport lemmas between preA/preB and preU cap preV and endpoint-side exclusions,
     - image-negation implication layer on overlap (not imageA->preB, not imageB->preA) and
       pointwise image exclusions from preA/preB,
+    - direct image-side implication/equivalence layer on overlap (notA->B, notB->A, A->notB, B->notA),
     - strict image classification/equivalence layer (iff bridges and endpoint image classes),
     - direct preA/preB <-> image-negation equivalence forms and endpoint image corollaries.
     Remaining: alternating crossing decomposition over U cap V = A union B (A cap B=Empty). **)
