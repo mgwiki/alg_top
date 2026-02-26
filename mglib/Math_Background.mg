@@ -240347,6 +240347,91 @@ assume Htree HfinArcsT HtwoArcs.
 admit.
 Admitted.
 
+(** helper for S84.3: a tree is path-connected once local path-connectedness is available on T. **)
+(** Proven Bob **)
+Theorem thm84_3_tree_path_connected_from_local_path_connected :
+  forall T ArcsT X Tx Arcs:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  locally_path_connected T (subspace_topology X Tx T) ->
+  path_connected_space T (subspace_topology T (subspace_topology X Tx T) T).
+let T ArcsT X Tx Arcs.
+assume Htree HlpcT.
+claim HtopT : topology_on T (subspace_topology X Tx T).
+{
+  exact (tree_in_graph_topology_on_T
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+claim HTopen : open_in T (subspace_topology X Tx T) T.
+{
+  exact (X_is_open
+    T
+    (subspace_topology X Tx T)
+    HtopT).
+}
+claim HconnTsub :
+  connected_space T
+    (subspace_topology T (subspace_topology X Tx T) T).
+{
+  rewrite (subspace_topology_whole
+    T
+    (subspace_topology X Tx T)
+    HtopT).
+  exact (tree_in_graph_connected
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+claim HpcSub :
+  path_connected_space T
+    (subspace_topology T (subspace_topology X Tx T) T).
+{
+  exact (ex23_connected_open_sets_path_connected
+    T
+    (subspace_topology X Tx T)
+    T
+    HlpcT
+    HTopen
+    HconnTsub).
+}
+exact HpcSub.
+Qed.
+
+(** helper for S84.3: reduce simply-connectedness to a trivial-pi1 witness at one point. **)
+(** Proven Bob **)
+Theorem thm84_3_tree_simply_connected_from_local_path_connected_and_trivial_pi1 :
+  forall T ArcsT X Tx Arcs x0:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  locally_path_connected T (subspace_topology X Tx T) ->
+  x0 :e T ->
+  fundamental_group T (subspace_topology T (subspace_topology X Tx T) T) x0 =
+    {fundamental_group_id T (subspace_topology T (subspace_topology X Tx T) T) x0} ->
+  simply_connected T (subspace_topology T (subspace_topology X Tx T) T).
+let T ArcsT X Tx Arcs x0.
+assume Htree HlpcT Hx0 Hpi1x0.
+exact (lemma59_4a_simply_connected_from_pi1_trivial_at_point
+  T
+  (subspace_topology T (subspace_topology X Tx T) T)
+  x0
+  (thm84_3_tree_path_connected_from_local_path_connected
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree
+    HlpcT)
+  Hx0
+  Hpi1x0).
+Qed.
+
 (** from S84 Thm 84.3 (line 5617 in algtop.tex): tree is simply connected **)
 (** LATEX VERSION: Any tree T is simply connected. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
@@ -240382,12 +240467,78 @@ claim HnoloopT :
     Arcs
     Htree).
 }
+claim HsimpNestedFromBridges :
+  (locally_path_connected T (subspace_topology X Tx T) /\
+   exists x0:set, x0 :e T /\
+     fundamental_group T (subspace_topology T (subspace_topology X Tx T) T) x0 =
+       {fundamental_group_id T (subspace_topology T (subspace_topology X Tx T) T) x0}) ->
+  simply_connected T (subspace_topology T (subspace_topology X Tx T) T).
+{
+  assume HbridgePack.
+  claim HlpcT : locally_path_connected T (subspace_topology X Tx T).
+  {
+    exact (andEL
+      (locally_path_connected T (subspace_topology X Tx T))
+      (exists x0:set, x0 :e T /\
+        fundamental_group T (subspace_topology T (subspace_topology X Tx T) T) x0 =
+          {fundamental_group_id T (subspace_topology T (subspace_topology X Tx T) T) x0})
+      HbridgePack).
+  }
+  claim HexPi1 :
+    exists x0:set, x0 :e T /\
+      fundamental_group T (subspace_topology T (subspace_topology X Tx T) T) x0 =
+        {fundamental_group_id T (subspace_topology T (subspace_topology X Tx T) T) x0}.
+  {
+    exact (andER
+      (locally_path_connected T (subspace_topology X Tx T))
+      (exists x0:set, x0 :e T /\
+        fundamental_group T (subspace_topology T (subspace_topology X Tx T) T) x0 =
+          {fundamental_group_id T (subspace_topology T (subspace_topology X Tx T) T) x0})
+      HbridgePack).
+  }
+  apply HexPi1.
+  let x0.
+  assume Hx0pack.
+  claim Hx0T : x0 :e T.
+  {
+    exact (andEL
+      (x0 :e T)
+      (fundamental_group T (subspace_topology T (subspace_topology X Tx T) T) x0 =
+        {fundamental_group_id T (subspace_topology T (subspace_topology X Tx T) T) x0})
+      Hx0pack).
+  }
+  claim Hpi1x0 :
+    fundamental_group T (subspace_topology T (subspace_topology X Tx T) T) x0 =
+      {fundamental_group_id T (subspace_topology T (subspace_topology X Tx T) T) x0}.
+  {
+    exact (andER
+      (x0 :e T)
+      (fundamental_group T (subspace_topology T (subspace_topology X Tx T) T) x0 =
+        {fundamental_group_id T (subspace_topology T (subspace_topology X Tx T) T) x0})
+      Hx0pack).
+  }
+  exact (thm84_3_tree_simply_connected_from_local_path_connected_and_trivial_pi1
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    x0
+    Htree
+    HlpcT
+    Hx0T
+    Hpi1x0).
+}
 claim HsimpCore :
   simply_connected T (subspace_topology X Tx T).
 {
   (** Remaining S84.3 core bridge:
-      derive triviality of pi1 from the reduced-edge-path no-loop invariant
-      for graph structure on T (using connectedness HconnT and no-loop HnoloopT). **)
+      close three explicit subgoals:
+      (1) derive local path-connectedness of T under subspace_topology X Tx T,
+      (2) derive a basepoint x0 with trivial pi1 for topology
+          subspace_topology T (subspace_topology X Tx T) T from HnoloopT,
+      (3) transfer simply_connected from the nested whole-subspace topology
+          to subspace_topology X Tx T via subspace_topology_whole. **)
   admit.
 }
 exact HsimpCore.
