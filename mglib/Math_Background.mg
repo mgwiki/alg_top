@@ -164569,13 +164569,28 @@ apply iffI.
       apply Hsub. assume Hsub_ABC _.
       apply Hsub_ABC. assume Hsub_AB _.
       apply Hsub_AB. assume Hsubset _. exact (Hsubset a Ha_sub). }
+    (** Strategy: construct merged product of length n1+n2 with all distinct alphas, **)
+    (** show it equals e, then apply Hzs to conclude each component = e. **)
+    (** The merged product combines x1(k) and inv(x2(k)) at the corresponding alphas. **)
+    (** For each alpha, the component is mult(x1(i), inv(x2(j))) if both, **)
+    (** x1(i) if only in a1, or inv(x2(j)) if only in a2. **)
     let alpha. assume Halpha : alpha :e J.
-    (** Key claim: for each k < n1 where a1(k) = alpha, x1(k) = e if alpha not in a2, **)
-    (** or x1(k) = x2(j) if a2(j) = alpha. Symmetrically for a2. **)
-    (** All three conditions follow from applying Hzs to a suitable product = e. **)
-    (** This requires merging the two representations, which is complex infrastructure. **)
-    (** For now, admit and return to fill in. **)
-    admit.
+    apply and3I.
+    - (** Condition 1: matching components equal **)
+      let i j. assume Hi : i :e n1. assume Hj : j :e n2.
+      assume Ha1i : apply_fun a1 i = alpha.
+      assume Ha2j : apply_fun a2 j = alpha.
+      admit.
+    - (** Condition 2: alpha in a1 only -> x1(i) = e **)
+      assume Hex1 : exists i:set, i :e n1 /\ apply_fun a1 i = alpha.
+      assume Hnex2 : ~(exists j:set, j :e n2 /\ apply_fun a2 j = alpha).
+      let i. assume Hi : i :e n1. assume Ha1i : apply_fun a1 i = alpha.
+      admit.
+    - (** Condition 3: alpha in a2 only -> x2(j) = e **)
+      assume Hnex1 : ~(exists i:set, i :e n1 /\ apply_fun a1 i = alpha).
+      assume Hex2 : exists j:set, j :e n2 /\ apply_fun a2 j = alpha.
+      let j. assume Hj : j :e n2. assume Ha2j : apply_fun a2 j = alpha.
+      admit.
 Admitted.
 
 (** from S67 Exercise 3 (line 2706 in algtop.tex) **)
