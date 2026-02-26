@@ -94217,6 +94217,121 @@ Definition right_coset_set : set -> set -> set -> set :=
 Definition homomorphism_image : set -> set -> set :=
   fun G phi => {apply_fun phi x | x :e G}.
 
+(** Helper: two continuous paths that agree pointwise are path-homotopic **)
+Lemma path_homotopic_of_pointwise_equal : forall X Tx x0 x1 f g:set,
+  continuous_map unit_interval unit_interval_topology X Tx f ->
+  continuous_map unit_interval unit_interval_topology X Tx g ->
+  apply_fun f 0 = x0 -> apply_fun f 1 = x1 ->
+  apply_fun g 0 = x0 -> apply_fun g 1 = x1 ->
+  (forall s:set, s :e unit_interval -> apply_fun f s = apply_fun g s) ->
+  path_homotopic X Tx x0 x1 f g.
+let X Tx x0 x1 f g.
+assume Hf : continuous_map unit_interval unit_interval_topology X Tx f.
+assume Hg : continuous_map unit_interval unit_interval_topology X Tx g.
+assume Hf0 : apply_fun f 0 = x0.
+assume Hf1 : apply_fun f 1 = x1.
+assume Hg0 : apply_fun g 0 = x0.
+assume Hg1 : apply_fun g 1 = x1.
+assume Hpw : forall s:set, s :e unit_interval -> apply_fun f s = apply_fun g s.
+prove continuous_map unit_interval unit_interval_topology X Tx f /\
+  continuous_map unit_interval unit_interval_topology X Tx g /\
+  apply_fun f 0 = x0 /\ apply_fun f 1 = x1 /\
+  apply_fun g 0 = x0 /\ apply_fun g 1 = x1 /\
+  exists F:set,
+    continuous_map unit_square unit_square_topology X Tx F /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 0) = apply_fun f s) /\
+    (forall s:set, s :e unit_interval ->
+      apply_fun F (s, 1) = apply_fun g s) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (0, t) = x0) /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun F (1, t) = x1).
+apply andI.
+- exact (and6I
+    (continuous_map unit_interval unit_interval_topology X Tx f)
+    (continuous_map unit_interval unit_interval_topology X Tx g)
+    (apply_fun f 0 = x0)
+    (apply_fun f 1 = x1)
+    (apply_fun g 0 = x0)
+    (apply_fun g 1 = x1)
+    Hf Hg Hf0 Hf1 Hg0 Hg1).
+- witness (compose_fun unit_square (projection_map1 unit_interval unit_interval) f).
+  claim Hproj1Cont :
+    continuous_map unit_square unit_square_topology
+      unit_interval unit_interval_topology (projection_map1 unit_interval unit_interval).
+  {
+    exact (andEL
+      (continuous_map unit_square unit_square_topology
+        unit_interval unit_interval_topology (projection_map1 unit_interval unit_interval))
+      (continuous_map unit_square unit_square_topology
+        unit_interval unit_interval_topology (projection_map2 unit_interval unit_interval))
+      (projection_maps_continuous
+        unit_interval unit_interval_topology
+        unit_interval unit_interval_topology
+        unit_interval_topology_on
+        unit_interval_topology_on)).
+  }
+  claim HcontF :
+    continuous_map unit_square unit_square_topology X Tx
+      (compose_fun unit_square (projection_map1 unit_interval unit_interval) f).
+  {
+    exact (composition_continuous
+      unit_square unit_square_topology
+      unit_interval unit_interval_topology
+      X Tx
+      (projection_map1 unit_interval unit_interval)
+      f
+      Hproj1Cont
+      Hf).
+  }
+  apply andI.
+  + apply andI.
+    * apply andI.
+      { apply andI.
+        - exact HcontF.
+        - let s. assume Hs : s :e unit_interval.
+          rewrite (compose_fun_apply unit_square
+            (projection_map1 unit_interval unit_interval) f (s, 0)
+            (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval
+              s 0 Hs zero_in_unit_interval)).
+          rewrite (projection1_apply unit_interval unit_interval (s, 0)
+            (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval
+              s 0 Hs zero_in_unit_interval)).
+          rewrite (tuple_2_0_eq s 0).
+          reflexivity. }
+      { let s. assume Hs : s :e unit_interval.
+        rewrite (compose_fun_apply unit_square
+          (projection_map1 unit_interval unit_interval) f (s, 1)
+          (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval
+            s 1 Hs one_in_unit_interval)).
+        rewrite (projection1_apply unit_interval unit_interval (s, 1)
+          (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval
+            s 1 Hs one_in_unit_interval)).
+        rewrite (tuple_2_0_eq s 1).
+        exact (Hpw s Hs). }
+    * let t. assume Ht : t :e unit_interval.
+      rewrite (compose_fun_apply unit_square
+        (projection_map1 unit_interval unit_interval) f (0, t)
+        (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval
+          0 t zero_in_unit_interval Ht)).
+      rewrite (projection1_apply unit_interval unit_interval (0, t)
+        (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval
+          0 t zero_in_unit_interval Ht)).
+      rewrite (tuple_2_0_eq 0 t).
+      exact Hf0.
+  + let t. assume Ht : t :e unit_interval.
+    rewrite (compose_fun_apply unit_square
+      (projection_map1 unit_interval unit_interval) f (1, t)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval
+        1 t one_in_unit_interval Ht)).
+    rewrite (projection1_apply unit_interval unit_interval (1, t)
+      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval
+        1 t one_in_unit_interval Ht)).
+    rewrite (tuple_2_0_eq 1 t).
+    exact Hf1.
+Qed.
+
 (** from S54 Thm 54.6a (line 838 in algtop.tex) **)
 (** LATEX VERSION: The homomorphism p-star: pi_1(E,e0) -> pi_1(B,b0) is a monomorphism. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
@@ -94229,7 +94344,682 @@ Theorem thm54_6a_p_star_injective : forall E Te B Tb p e0:set,
     apply_fun (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p) cls1 =
     apply_fun (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p) cls2 ->
     cls1 = cls2.
-admit.
+let E Te B Tb p e0.
+assume Hcov He0.
+let cls1 cls2.
+assume Hcls1 Hcls2 HimgEq.
+claim Hcontp : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    (andEL
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+      Hcov)).
+}
+set b0 := apply_fun p e0.
+set f1 := Eps_i (fun f:set => f :e cls1).
+set f2 := Eps_i (fun f:set => f :e cls2).
+set g1 := compose_fun unit_interval f1 p.
+set g2 := compose_fun unit_interval f2 p.
+claim Hf1Loop : f1 :e loop_space E Te e0.
+{
+  exact (eps_of_fundamental_group_member_in_loop_space
+    E Te e0 cls1 Hcls1).
+}
+claim Hf2Loop : f2 :e loop_space E Te e0.
+{
+  exact (eps_of_fundamental_group_member_in_loop_space
+    E Te e0 cls2 Hcls2).
+}
+claim Hf1LoopAt : loop_at E Te e0 f1.
+{
+  exact (loop_space_has_loop_at E Te e0 f1 Hf1Loop).
+}
+claim Hf2LoopAt : loop_at E Te e0 f2.
+{
+  exact (loop_space_has_loop_at E Te e0 f2 Hf2Loop).
+}
+claim Hf1Cont : continuous_map unit_interval unit_interval_topology E Te f1.
+{
+  exact (loop_at_continuous E Te e0 f1 Hf1LoopAt).
+}
+claim Hf2Cont : continuous_map unit_interval unit_interval_topology E Te f2.
+{
+  exact (loop_at_continuous E Te e0 f2 Hf2LoopAt).
+}
+claim Hf1_0 : apply_fun f1 0 = e0.
+{
+  exact (loop_at_at_zero E Te e0 f1 Hf1LoopAt).
+}
+claim Hf1_1 : apply_fun f1 1 = e0.
+{
+  exact (loop_at_at_one E Te e0 f1 Hf1LoopAt).
+}
+claim Hf2_0 : apply_fun f2 0 = e0.
+{
+  exact (loop_at_at_zero E Te e0 f2 Hf2LoopAt).
+}
+claim Hf2_1 : apply_fun f2 1 = e0.
+{
+  exact (loop_at_at_one E Te e0 f2 Hf2LoopAt).
+}
+claim Hb0 : apply_fun p e0 = b0.
+{
+  reflexivity.
+}
+claim Hg1Loop : g1 :e loop_space B Tb b0.
+{
+  exact (loop_space_postcompose
+    E Te e0 B Tb b0 f1 p
+    Hf1Loop Hcontp Hb0).
+}
+claim Hg2Loop : g2 :e loop_space B Tb b0.
+{
+  exact (loop_space_postcompose
+    E Te e0 B Tb b0 f2 p
+    Hf2Loop Hcontp Hb0).
+}
+claim Himg1 :
+  apply_fun (induced_homomorphism E Te e0 B Tb b0 p) cls1 =
+  path_homotopy_class_loop B Tb b0 g1.
+{
+  rewrite (induced_homomorphism_apply
+    E Te e0 B Tb b0 p cls1 Hcls1).
+  reflexivity.
+}
+claim Himg2 :
+  apply_fun (induced_homomorphism E Te e0 B Tb b0 p) cls2 =
+  path_homotopy_class_loop B Tb b0 g2.
+{
+  rewrite (induced_homomorphism_apply
+    E Te e0 B Tb b0 p cls2 Hcls2).
+  reflexivity.
+}
+claim HclassEq :
+  path_homotopy_class_loop B Tb b0 g1 =
+  path_homotopy_class_loop B Tb b0 g2.
+{
+  rewrite <- Himg1.
+  rewrite <- Himg2.
+  exact HimgEq.
+}
+claim Hg1InClass2 : g1 :e path_homotopy_class_loop B Tb b0 g2.
+{
+  exact (mem_eqR
+    g1
+    (path_homotopy_class_loop B Tb b0 g1)
+    (path_homotopy_class_loop B Tb b0 g2)
+    HclassEq
+    (loop_in_own_path_homotopy_class B Tb b0 g1 Hg1Loop)).
+}
+claim Hg2g1 : path_homotopic B Tb b0 b0 g2 g1.
+{
+  exact (path_homotopy_class_loop_has_homotopy
+    B Tb b0 g2 g1 Hg1InClass2).
+}
+claim Hg1g2 : path_homotopic B Tb b0 b0 g1 g2.
+{
+  exact (Lemma_51_1_path_homotopy_sym
+    B Tb b0 b0 g2 g1 Hg2g1).
+}
+claim HliftPack :
+  apply_fun (path_lift E Te B Tb p e0 g1) 1 =
+  apply_fun (path_lift E Te B Tb p e0 g2) 1 /\
+  path_homotopic E Te e0 (apply_fun (path_lift E Te B Tb p e0 g1) 1)
+    (path_lift E Te B Tb p e0 g1) (path_lift E Te B Tb p e0 g2).
+{
+  exact (thm54_3_homotopic_lifts
+    E Te B Tb p e0 b0 b0 g1 g2
+    Hcov
+    He0
+    Hb0
+    Hg1g2).
+}
+claim HliftHom :
+  path_homotopic E Te e0 (apply_fun (path_lift E Te B Tb p e0 g1) 1)
+    (path_lift E Te B Tb p e0 g1) (path_lift E Te B Tb p e0 g2).
+{
+  exact (andER
+    (apply_fun (path_lift E Te B Tb p e0 g1) 1 =
+      apply_fun (path_lift E Te B Tb p e0 g2) 1)
+    (path_homotopic E Te e0 (apply_fun (path_lift E Te B Tb p e0 g1) 1)
+      (path_lift E Te B Tb p e0 g1) (path_lift E Te B Tb p e0 g2))
+    HliftPack).
+}
+claim Hg1Cont : continuous_map unit_interval unit_interval_topology B Tb g1.
+{
+  exact (composition_continuous
+    unit_interval
+    unit_interval_topology
+    E
+    Te
+    B
+    Tb
+    f1
+    p
+    Hf1Cont
+    Hcontp).
+}
+claim Hg2Cont : continuous_map unit_interval unit_interval_topology B Tb g2.
+{
+  exact (composition_continuous
+    unit_interval
+    unit_interval_topology
+    E
+    Te
+    B
+    Tb
+    f2
+    p
+    Hf2Cont
+    Hcontp).
+}
+claim Hg1_0 : apply_fun g1 0 = b0.
+{
+  rewrite (compose_fun_apply unit_interval f1 p 0 zero_in_unit_interval).
+  rewrite Hf1_0.
+  reflexivity.
+}
+claim Hg2_0 : apply_fun g2 0 = b0.
+{
+  rewrite (compose_fun_apply unit_interval f2 p 0 zero_in_unit_interval).
+  rewrite Hf2_0.
+  reflexivity.
+}
+claim Hstart1 : apply_fun p e0 = apply_fun g1 0.
+{
+  rewrite Hg1_0.
+  reflexivity.
+}
+claim Hstart2 : apply_fun p e0 = apply_fun g2 0.
+{
+  rewrite Hg2_0.
+  reflexivity.
+}
+claim Hlift1Pack :
+  (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 g1) /\
+   apply_fun (path_lift E Te B Tb p e0 g1) 0 = e0) /\
+  (forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 g1) t) = apply_fun g1 t).
+{
+  exact (lemma54_1_path_lifting
+    E Te B Tb p e0 g1
+    Hcov
+    He0
+    Hstart1
+    Hg1Cont).
+}
+claim Hlift2Pack :
+  (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 g2) /\
+   apply_fun (path_lift E Te B Tb p e0 g2) 0 = e0) /\
+  (forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 g2) t) = apply_fun g2 t).
+{
+  exact (lemma54_1_path_lifting
+    E Te B Tb p e0 g2
+    Hcov
+    He0
+    Hstart2
+    Hg2Cont).
+}
+claim Hlift1Left :
+  continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 g1) /\
+  apply_fun (path_lift E Te B Tb p e0 g1) 0 = e0.
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 g1) /\
+      apply_fun (path_lift E Te B Tb p e0 g1) 0 = e0)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p e0 g1) t) = apply_fun g1 t)
+    Hlift1Pack).
+}
+claim Hlift2Left :
+  continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 g2) /\
+  apply_fun (path_lift E Te B Tb p e0 g2) 0 = e0.
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 g2) /\
+      apply_fun (path_lift E Te B Tb p e0 g2) 0 = e0)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p e0 g2) t) = apply_fun g2 t)
+    Hlift2Pack).
+}
+claim Hlift1Cont : continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 g1).
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 g1))
+    (apply_fun (path_lift E Te B Tb p e0 g1) 0 = e0)
+    Hlift1Left).
+}
+claim Hlift2Cont : continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 g2).
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 g2))
+    (apply_fun (path_lift E Te B Tb p e0 g2) 0 = e0)
+    Hlift2Left).
+}
+claim Hlift1_0 : apply_fun (path_lift E Te B Tb p e0 g1) 0 = e0.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 g1))
+    (apply_fun (path_lift E Te B Tb p e0 g1) 0 = e0)
+    Hlift1Left).
+}
+claim Hlift2_0 : apply_fun (path_lift E Te B Tb p e0 g2) 0 = e0.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 g2))
+    (apply_fun (path_lift E Te B Tb p e0 g2) 0 = e0)
+    Hlift2Left).
+}
+claim Hlift1Comm :
+  forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 g1) t) = apply_fun g1 t.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 g1) /\
+      apply_fun (path_lift E Te B Tb p e0 g1) 0 = e0)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p e0 g1) t) = apply_fun g1 t)
+    Hlift1Pack).
+}
+claim Hlift2Comm :
+  forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 g2) t) = apply_fun g2 t.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 g2) /\
+      apply_fun (path_lift E Te B Tb p e0 g2) 0 = e0)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p e0 g2) t) = apply_fun g2 t)
+    Hlift2Pack).
+}
+claim Hlift1Lifting : lifting_of unit_interval unit_interval_topology E Te B Tb p g1 f1.
+{
+  prove continuous_map unit_interval unit_interval_topology E Te f1 /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun f1 t) = apply_fun g1 t).
+  apply andI.
+  - exact Hf1Cont.
+  - let t.
+    assume Ht.
+    rewrite (compose_fun_apply unit_interval f1 p t Ht).
+    reflexivity.
+}
+claim Hlift2Lifting : lifting_of unit_interval unit_interval_topology E Te B Tb p g2 f2.
+{
+  prove continuous_map unit_interval unit_interval_topology E Te f2 /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun f2 t) = apply_fun g2 t).
+  apply andI.
+  - exact Hf2Cont.
+  - let t.
+    assume Ht.
+    rewrite (compose_fun_apply unit_interval f2 p t Ht).
+    reflexivity.
+}
+claim Hlift1Lift : lifting_of unit_interval unit_interval_topology E Te B Tb p g1
+  (path_lift E Te B Tb p e0 g1).
+{
+  exact (andI
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 g1))
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p e0 g1) t) = apply_fun g1 t)
+    Hlift1Cont
+    Hlift1Comm).
+}
+claim Hlift2Lift : lifting_of unit_interval unit_interval_topology E Te B Tb p g2
+  (path_lift E Te B Tb p e0 g2).
+{
+  exact (andI
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 g2))
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p e0 g2) t) = apply_fun g2 t)
+    Hlift2Cont
+    Hlift2Comm).
+}
+claim Hlift1Eq :
+  forall t:set, t :e unit_interval ->
+    apply_fun f1 t = apply_fun (path_lift E Te B Tb p e0 g1) t.
+{
+  exact (lemma54_1_path_lifting_unique
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    g1
+    f1
+    (path_lift E Te B Tb p e0 g1)
+    Hcov
+    He0
+    Hg1Cont
+    Hlift1Lifting
+    Hf1_0
+    Hlift1Lift
+    Hlift1_0).
+}
+claim Hlift2Eq :
+  forall t:set, t :e unit_interval ->
+    apply_fun f2 t = apply_fun (path_lift E Te B Tb p e0 g2) t.
+{
+  exact (lemma54_1_path_lifting_unique
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    g2
+    f2
+    (path_lift E Te B Tb p e0 g2)
+    Hcov
+    He0
+    Hg2Cont
+    Hlift2Lifting
+    Hf2_0
+    Hlift2Lift
+    Hlift2_0).
+}
+claim Hlift1_1 : apply_fun (path_lift E Te B Tb p e0 g1) 1 = e0.
+{
+  rewrite <- (Hlift1Eq 1 one_in_unit_interval).
+  exact Hf1_1.
+}
+claim Hlift2_1 : apply_fun (path_lift E Te B Tb p e0 g2) 1 = e0.
+{
+  rewrite <- (Hlift2Eq 1 one_in_unit_interval).
+  exact Hf2_1.
+}
+claim Hf1LiftHom : path_homotopic E Te e0 e0 f1 (path_lift E Te B Tb p e0 g1).
+{
+  exact (path_homotopic_of_pointwise_equal
+    E
+    Te
+    e0
+    e0
+    f1
+    (path_lift E Te B Tb p e0 g1)
+    Hf1Cont
+    Hlift1Cont
+    Hf1_0
+    Hf1_1
+    Hlift1_0
+    Hlift1_1
+    Hlift1Eq).
+}
+claim Hf2LiftHom : path_homotopic E Te e0 e0 f2 (path_lift E Te B Tb p e0 g2).
+{
+  exact (path_homotopic_of_pointwise_equal
+    E
+    Te
+    e0
+    e0
+    f2
+    (path_lift E Te B Tb p e0 g2)
+    Hf2Cont
+    Hlift2Cont
+    Hf2_0
+    Hf2_1
+    Hlift2_0
+    Hlift2_1
+    Hlift2Eq).
+}
+claim HliftHom0 : path_homotopic E Te e0 e0
+  (path_lift E Te B Tb p e0 g1) (path_lift E Te B Tb p e0 g2).
+{
+  prove continuous_map unit_interval unit_interval_topology E Te
+    (path_lift E Te B Tb p e0 g1) /\
+    continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p e0 g2) /\
+    apply_fun (path_lift E Te B Tb p e0 g1) 0 = e0 /\
+    apply_fun (path_lift E Te B Tb p e0 g1) 1 = e0 /\
+    apply_fun (path_lift E Te B Tb p e0 g2) 0 = e0 /\
+    apply_fun (path_lift E Te B Tb p e0 g2) 1 = e0 /\
+    exists F:set,
+      continuous_map unit_square unit_square_topology E Te F /\
+      (forall s:set, s :e unit_interval ->
+        apply_fun F (s, 0) = apply_fun (path_lift E Te B Tb p e0 g1) s) /\
+      (forall s:set, s :e unit_interval ->
+        apply_fun F (s, 1) = apply_fun (path_lift E Te B Tb p e0 g2) s) /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun F (0, t) = e0) /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun F (1, t) = e0).
+  apply andI.
+  - exact (and6I
+      (continuous_map unit_interval unit_interval_topology E Te
+        (path_lift E Te B Tb p e0 g1))
+      (continuous_map unit_interval unit_interval_topology E Te
+        (path_lift E Te B Tb p e0 g2))
+      (apply_fun (path_lift E Te B Tb p e0 g1) 0 = e0)
+      (apply_fun (path_lift E Te B Tb p e0 g1) 1 = e0)
+      (apply_fun (path_lift E Te B Tb p e0 g2) 0 = e0)
+      (apply_fun (path_lift E Te B Tb p e0 g2) 1 = e0)
+      Hlift1Cont
+      Hlift2Cont
+      Hlift1_0
+      Hlift1_1
+      Hlift2_0
+      Hlift2_1).
+  - claim Hsquare :
+      exists F:set,
+        continuous_map unit_square unit_square_topology E Te F /\
+        (forall s:set, s :e unit_interval ->
+          apply_fun F (s, 0) = apply_fun (path_lift E Te B Tb p e0 g1) s) /\
+        (forall s:set, s :e unit_interval ->
+          apply_fun F (s, 1) = apply_fun (path_lift E Te B Tb p e0 g2) s) /\
+        (forall t:set, t :e unit_interval ->
+          apply_fun F (0, t) = e0) /\
+        (forall t:set, t :e unit_interval ->
+          apply_fun F (1, t) = apply_fun (path_lift E Te B Tb p e0 g1) 1).
+    {
+      exact (path_homotopic_has_square_witness
+        E
+        Te
+        e0
+        (apply_fun (path_lift E Te B Tb p e0 g1) 1)
+        (path_lift E Te B Tb p e0 g1)
+        (path_lift E Te B Tb p e0 g2)
+        HliftHom).
+    }
+    apply Hsquare.
+    let F.
+    assume HFpack.
+    witness F.
+    apply (and5E
+      (continuous_map unit_square unit_square_topology E Te F)
+      (forall s:set, s :e unit_interval ->
+        apply_fun F (s, 0) = apply_fun (path_lift E Te B Tb p e0 g1) s)
+      (forall s:set, s :e unit_interval ->
+        apply_fun F (s, 1) = apply_fun (path_lift E Te B Tb p e0 g2) s)
+      (forall t:set, t :e unit_interval ->
+        apply_fun F (0, t) = e0)
+      (forall t:set, t :e unit_interval ->
+        apply_fun F (1, t) = apply_fun (path_lift E Te B Tb p e0 g1) 1)
+      HFpack).
+    assume HFcont HFs0 HFs1 HF0t HF1t.
+    apply and5I.
+    + exact HFcont.
+    + exact HFs0.
+    + exact HFs1.
+    + exact HF0t.
+    + let t. assume Ht.
+      rewrite (HF1t t Ht).
+      exact Hlift1_1.
+}
+claim Hlift2toF2 : path_homotopic E Te e0 e0 (path_lift E Te B Tb p e0 g2) f2.
+{
+  exact (Lemma_51_1_path_homotopy_sym
+    E Te e0 e0 f2 (path_lift E Te B Tb p e0 g2) Hf2LiftHom).
+}
+claim Hf1toLift2 :
+  path_homotopic E Te e0 e0 f1 (path_lift E Te B Tb p e0 g2).
+{
+  exact (Lemma_51_1_path_homotopy_trans
+    E Te e0 e0
+    f1
+    (path_lift E Te B Tb p e0 g1)
+    (path_lift E Te B Tb p e0 g2)
+    Hf1LiftHom
+    HliftHom0).
+}
+claim Hf1f2 : path_homotopic E Te e0 e0 f1 f2.
+{
+  exact (Lemma_51_1_path_homotopy_trans
+    E Te e0 e0
+    f1
+    (path_lift E Te B Tb p e0 g2)
+    f2
+    Hf1toLift2
+    Hlift2toF2).
+}
+claim Hclassf1f2 :
+  path_homotopy_class_loop E Te e0 f1 =
+  path_homotopy_class_loop E Te e0 f2.
+{
+  exact (path_homotopy_class_loop_eq_of_path_homotopic
+    E Te e0 f1 f2 Hf1f2).
+}
+claim Hrep1 :
+  exists f0:set, f0 :e loop_space E Te e0 /\
+    cls1 = path_homotopy_class_loop E Te e0 f0.
+{
+  exact (fundamental_group_member_has_representative
+    E Te e0 cls1 Hcls1).
+}
+claim Hrep2 :
+  exists f0:set, f0 :e loop_space E Te e0 /\
+    cls2 = path_homotopy_class_loop E Te e0 f0.
+{
+  exact (fundamental_group_member_has_representative
+    E Te e0 cls2 Hcls2).
+}
+apply Hrep1.
+let f0.
+assume Hf0Pack.
+claim Hf0Loop : f0 :e loop_space E Te e0.
+{
+  exact (andEL
+    (f0 :e loop_space E Te e0)
+    (cls1 = path_homotopy_class_loop E Te e0 f0)
+    Hf0Pack).
+}
+claim Hcls1EqF0 : cls1 = path_homotopy_class_loop E Te e0 f0.
+{
+  exact (andER
+    (f0 :e loop_space E Te e0)
+    (cls1 = path_homotopy_class_loop E Te e0 f0)
+    Hf0Pack).
+}
+claim Hf0InCls : f0 :e cls1.
+{
+  exact (mem_eqL
+    f0
+    cls1
+    (path_homotopy_class_loop E Te e0 f0)
+    Hcls1EqF0
+    (loop_in_own_path_homotopy_class E Te e0 f0 Hf0Loop)).
+}
+claim Hf1InCls : f1 :e cls1.
+{
+  exact (Eps_i_ax
+    (fun f:set => f :e cls1)
+    f0
+    Hf0InCls).
+}
+claim Hf1InClassF0 : f1 :e path_homotopy_class_loop E Te e0 f0.
+{
+  exact (mem_eqR
+    f1
+    cls1
+    (path_homotopy_class_loop E Te e0 f0)
+    Hcls1EqF0
+    Hf1InCls).
+}
+claim Hf0f1 : path_homotopic E Te e0 e0 f0 f1.
+{
+  exact (path_homotopy_class_loop_has_homotopy
+    E Te e0 f0 f1 Hf1InClassF0).
+}
+claim HclassF0F1 :
+  path_homotopy_class_loop E Te e0 f0 =
+  path_homotopy_class_loop E Te e0 f1.
+{
+  exact (path_homotopy_class_loop_eq_of_path_homotopic
+    E Te e0 f0 f1 Hf0f1).
+}
+claim Hcls1Eq : cls1 = path_homotopy_class_loop E Te e0 f1.
+{
+  rewrite <- HclassF0F1.
+  exact Hcls1EqF0.
+}
+apply Hrep2.
+let f3.
+assume Hf3Pack.
+claim Hf3Loop : f3 :e loop_space E Te e0.
+{
+  exact (andEL
+    (f3 :e loop_space E Te e0)
+    (cls2 = path_homotopy_class_loop E Te e0 f3)
+    Hf3Pack).
+}
+claim Hcls2EqF3 : cls2 = path_homotopy_class_loop E Te e0 f3.
+{
+  exact (andER
+    (f3 :e loop_space E Te e0)
+    (cls2 = path_homotopy_class_loop E Te e0 f3)
+    Hf3Pack).
+}
+claim Hf3InCls : f3 :e cls2.
+{
+  exact (mem_eqL
+    f3
+    cls2
+    (path_homotopy_class_loop E Te e0 f3)
+    Hcls2EqF3
+    (loop_in_own_path_homotopy_class E Te e0 f3 Hf3Loop)).
+}
+claim Hf2InCls : f2 :e cls2.
+{
+  exact (Eps_i_ax
+    (fun f:set => f :e cls2)
+    f3
+    Hf3InCls).
+}
+claim Hf2InClassF3 : f2 :e path_homotopy_class_loop E Te e0 f3.
+{
+  exact (mem_eqR
+    f2
+    cls2
+    (path_homotopy_class_loop E Te e0 f3)
+    Hcls2EqF3
+    Hf2InCls).
+}
+claim Hf3f2 : path_homotopic E Te e0 e0 f3 f2.
+{
+  exact (path_homotopy_class_loop_has_homotopy
+    E Te e0 f3 f2 Hf2InClassF3).
+}
+claim HclassF3F2 :
+  path_homotopy_class_loop E Te e0 f3 =
+  path_homotopy_class_loop E Te e0 f2.
+{
+  exact (path_homotopy_class_loop_eq_of_path_homotopic
+    E Te e0 f3 f2 Hf3f2).
+}
+claim Hcls2Eq : cls2 = path_homotopy_class_loop E Te e0 f2.
+{
+  rewrite <- HclassF3F2.
+  exact Hcls2EqF3.
+}
+rewrite Hcls1Eq.
+rewrite Hcls2Eq.
+exact Hclassf1f2.
 Admitted.
 
 (** from S54 Thm 54.6b (line 840 in algtop.tex) **)
@@ -129329,121 +130119,6 @@ admit.
 Admitted.
 
 (** ======================= S59 THE FUNDAMENTAL GROUP OF S^n ======================= **)
-
-(** Helper: two continuous paths that agree pointwise are path-homotopic **)
-Lemma path_homotopic_of_pointwise_equal : forall X Tx x0 x1 f g:set,
-  continuous_map unit_interval unit_interval_topology X Tx f ->
-  continuous_map unit_interval unit_interval_topology X Tx g ->
-  apply_fun f 0 = x0 -> apply_fun f 1 = x1 ->
-  apply_fun g 0 = x0 -> apply_fun g 1 = x1 ->
-  (forall s:set, s :e unit_interval -> apply_fun f s = apply_fun g s) ->
-  path_homotopic X Tx x0 x1 f g.
-let X Tx x0 x1 f g.
-assume Hf : continuous_map unit_interval unit_interval_topology X Tx f.
-assume Hg : continuous_map unit_interval unit_interval_topology X Tx g.
-assume Hf0 : apply_fun f 0 = x0.
-assume Hf1 : apply_fun f 1 = x1.
-assume Hg0 : apply_fun g 0 = x0.
-assume Hg1 : apply_fun g 1 = x1.
-assume Hpw : forall s:set, s :e unit_interval -> apply_fun f s = apply_fun g s.
-prove continuous_map unit_interval unit_interval_topology X Tx f /\
-  continuous_map unit_interval unit_interval_topology X Tx g /\
-  apply_fun f 0 = x0 /\ apply_fun f 1 = x1 /\
-  apply_fun g 0 = x0 /\ apply_fun g 1 = x1 /\
-  exists F:set,
-    continuous_map unit_square unit_square_topology X Tx F /\
-    (forall s:set, s :e unit_interval ->
-      apply_fun F (s, 0) = apply_fun f s) /\
-    (forall s:set, s :e unit_interval ->
-      apply_fun F (s, 1) = apply_fun g s) /\
-    (forall t:set, t :e unit_interval ->
-      apply_fun F (0, t) = x0) /\
-    (forall t:set, t :e unit_interval ->
-      apply_fun F (1, t) = x1).
-apply andI.
-- exact (and6I
-    (continuous_map unit_interval unit_interval_topology X Tx f)
-    (continuous_map unit_interval unit_interval_topology X Tx g)
-    (apply_fun f 0 = x0)
-    (apply_fun f 1 = x1)
-    (apply_fun g 0 = x0)
-    (apply_fun g 1 = x1)
-    Hf Hg Hf0 Hf1 Hg0 Hg1).
-- witness (compose_fun unit_square (projection_map1 unit_interval unit_interval) f).
-  claim Hproj1Cont :
-    continuous_map unit_square unit_square_topology
-      unit_interval unit_interval_topology (projection_map1 unit_interval unit_interval).
-  {
-    exact (andEL
-      (continuous_map unit_square unit_square_topology
-        unit_interval unit_interval_topology (projection_map1 unit_interval unit_interval))
-      (continuous_map unit_square unit_square_topology
-        unit_interval unit_interval_topology (projection_map2 unit_interval unit_interval))
-      (projection_maps_continuous
-        unit_interval unit_interval_topology
-        unit_interval unit_interval_topology
-        unit_interval_topology_on
-        unit_interval_topology_on)).
-  }
-  claim HcontF :
-    continuous_map unit_square unit_square_topology X Tx
-      (compose_fun unit_square (projection_map1 unit_interval unit_interval) f).
-  {
-    exact (composition_continuous
-      unit_square unit_square_topology
-      unit_interval unit_interval_topology
-      X Tx
-      (projection_map1 unit_interval unit_interval)
-      f
-      Hproj1Cont
-      Hf).
-  }
-  apply andI.
-  + apply andI.
-    * apply andI.
-      { apply andI.
-        - exact HcontF.
-        - let s. assume Hs : s :e unit_interval.
-          rewrite (compose_fun_apply unit_square
-            (projection_map1 unit_interval unit_interval) f (s, 0)
-            (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval
-              s 0 Hs zero_in_unit_interval)).
-          rewrite (projection1_apply unit_interval unit_interval (s, 0)
-            (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval
-              s 0 Hs zero_in_unit_interval)).
-          rewrite (tuple_2_0_eq s 0).
-          reflexivity. }
-      { let s. assume Hs : s :e unit_interval.
-        rewrite (compose_fun_apply unit_square
-          (projection_map1 unit_interval unit_interval) f (s, 1)
-          (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval
-            s 1 Hs one_in_unit_interval)).
-        rewrite (projection1_apply unit_interval unit_interval (s, 1)
-          (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval
-            s 1 Hs one_in_unit_interval)).
-        rewrite (tuple_2_0_eq s 1).
-        exact (Hpw s Hs). }
-    * let t. assume Ht : t :e unit_interval.
-      rewrite (compose_fun_apply unit_square
-        (projection_map1 unit_interval unit_interval) f (0, t)
-        (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval
-          0 t zero_in_unit_interval Ht)).
-      rewrite (projection1_apply unit_interval unit_interval (0, t)
-        (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval
-          0 t zero_in_unit_interval Ht)).
-      rewrite (tuple_2_0_eq 0 t).
-      exact Hf0.
-  + let t. assume Ht : t :e unit_interval.
-    rewrite (compose_fun_apply unit_square
-      (projection_map1 unit_interval unit_interval) f (1, t)
-      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval
-        1 t one_in_unit_interval Ht)).
-    rewrite (projection1_apply unit_interval unit_interval (1, t)
-      (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval
-        1 t one_in_unit_interval Ht)).
-    rewrite (tuple_2_0_eq 1 t).
-    exact Hf1.
-Qed.
 
 (** Core word construction: given ball property for a loop, produce word decomposition.
     This is the inductive heart of Munkres Thm 59.1, separated from the Lebesgue setup. **)
