@@ -226601,6 +226601,241 @@ apply andI.
         HEP)).
 Qed.
 
+(** helper: open balls in unit_interval are path connected when radius is < 1. **)
+(** Proven Charlie **)
+Theorem open_ball_unit_interval_path_connected_lt1_algtop :
+  forall x r:set,
+  x :e unit_interval ->
+  r :e R ->
+  Rlt 0 r ->
+  Rlt r 1 ->
+  path_connected_space
+    (open_ball unit_interval R_bounded_metric x r)
+    (subspace_topology
+      unit_interval
+      unit_interval_topology
+      (open_ball unit_interval R_bounded_metric x r)).
+let x r.
+assume HxI HrR Hrpos Hrlt1.
+set a := add_SNo x (minus_SNo r).
+set b := add_SNo x r.
+claim HxR : x :e R.
+{ exact (unit_interval_sub_R x HxI). }
+claim HaR : a :e R.
+{ exact (real_add_SNo x HxR (minus_SNo r) (real_minus_SNo r HrR)). }
+claim HbR : b :e R.
+{ exact (real_add_SNo x HxR r HrR). }
+set W := open_ball unit_interval R_bounded_metric x r.
+claim HWsubI : W c= unit_interval.
+{ exact (open_ball_subset_X unit_interval R_bounded_metric x r). }
+claim HTW :
+  subspace_topology unit_interval unit_interval_topology W =
+  subspace_topology R R_standard_topology W.
+{
+  exact (ex16_1_subspace_transitive
+    R
+    R_standard_topology
+    unit_interval
+    W
+    R_standard_topology_is_topology
+    unit_interval_sub_R
+    HWsubI).
+}
+rewrite HTW.
+rewrite (open_ball_unit_interval_eq_binintersect_open_interval
+  x
+  r
+  HxI
+  HrR
+  Hrpos
+  Hrlt1).
+claim H0lex : Rle 0 x.
+{ exact (unit_interval_Rle0 x HxI). }
+claim Hxle1 : Rle x 1.
+{ exact (unit_interval_Rle1 x HxI). }
+claim HxBall : x :e unit_interval :/\: open_interval a b.
+{
+  claim HmetI : metric_on unit_interval R_bounded_metric.
+  { exact R_bounded_metric_is_metric_on_unit_interval. }
+  claim Hdx0 : apply_fun R_bounded_metric (x,x) = 0.
+  {
+    apply (and5E
+      (function_on R_bounded_metric (setprod unit_interval unit_interval) R)
+      (forall u v:set, u :e unit_interval -> v :e unit_interval ->
+        apply_fun R_bounded_metric (u,v) = apply_fun R_bounded_metric (v,u))
+      (forall u:set, u :e unit_interval -> apply_fun R_bounded_metric (u,u) = 0)
+      (forall u v:set, u :e unit_interval -> v :e unit_interval ->
+        ~ (Rlt (apply_fun R_bounded_metric (u,v)) 0) /\ (apply_fun R_bounded_metric (u,v) = 0 -> u = v))
+      (forall u v w:set, u :e unit_interval -> v :e unit_interval -> w :e unit_interval ->
+        ~ (Rlt (add_SNo (apply_fun R_bounded_metric (u,v)) (apply_fun R_bounded_metric (v,w)))
+              (apply_fun R_bounded_metric (u,w))))
+      HmetI).
+    assume _ _ Hrefl _ _.
+    exact (Hrefl x HxI).
+  }
+  claim HxW : x :e W.
+  {
+    claim Hcond : Rlt (apply_fun R_bounded_metric (x,x)) r.
+    { rewrite Hdx0. exact Hrpos. }
+    exact (SepI
+      unit_interval
+      (fun y:set => Rlt (apply_fun R_bounded_metric (x,y)) r)
+      x
+      HxI
+      Hcond).
+  }
+  exact (mem_eqR
+    x
+    W
+    (unit_interval :/\: open_interval a b)
+    (open_ball_unit_interval_eq_binintersect_open_interval x r HxI HrR Hrpos Hrlt1)
+    HxW).
+}
+claim HxOab : x :e open_interval a b.
+{ exact (binintersectE2 unit_interval (open_interval a b) x HxBall). }
+claim HxPack : Rlt a x /\ Rlt x b.
+{ exact (SepE2 R (fun y:set => Rlt a y /\ Rlt y b) x HxOab). }
+claim Haltx : Rlt a x.
+{ exact (andEL (Rlt a x) (Rlt x b) HxPack). }
+claim Hxltb : Rlt x b.
+{ exact (andER (Rlt a x) (Rlt x b) HxPack). }
+claim Hablt : Rlt a b.
+{ exact (Rlt_tra a x b Haltx Hxltb). }
+claim Halt1 : Rlt a 1.
+{ exact (Rlt_Rle_tra a x 1 Haltx Hxle1). }
+claim H0ltb : Rlt 0 b.
+{ exact (Rle_Rlt_tra 0 x b H0lex Hxltb). }
+
+apply (order_rel_trichotomy_or_impred
+  R
+  a
+  0
+  simply_ordered_set_R
+  HaR
+  real_0).
+- assume Halt0Ord.
+  claim Halt0 : Rlt a 0.
+  { exact (order_rel_R_implies_Rlt a 0 Halt0Ord). }
+  apply (order_rel_trichotomy_or_impred
+    R
+    b
+    1
+    simply_ordered_set_R
+    HbR
+    real_1).
+  + assume Hblt1Ord.
+    claim Hblt1 : Rlt b 1.
+    { exact (order_rel_R_implies_Rlt b 1 Hblt1Ord). }
+	    rewrite (unit_interval_binintersect_open_interval_left_cross
+	      a b HaR HbR Halt0 H0ltb Hblt1).
+	    exact (halfopen_interval_left_in_path_connected_0 b HbR H0ltb).
+  + assume Hb1.
+    rewrite Hb1.
+    rewrite (unit_interval_binintersect_open_interval_right_boundary_cross
+      a
+      HaR
+      Halt0).
+    exact (halfopen_interval_left_in_path_connected_0
+      1
+      real_1
+      Rlt_0_1).
+  + assume H1ltbOrd.
+    claim H1ltb : Rlt 1 b.
+    { exact (order_rel_R_implies_Rlt 1 b H1ltbOrd). }
+	    rewrite (unit_interval_binintersect_open_interval_both_cross
+	      a b HaR HbR Halt0 H1ltb).
+	    exact (ex51_3b_contractible_path_connected
+	      unit_interval
+	      (subspace_topology R R_standard_topology unit_interval)
+	      ex51_3a_I_contractible).
+- assume Ha0.
+  rewrite Ha0.
+  apply (order_rel_trichotomy_or_impred
+    R
+    b
+    1
+    simply_ordered_set_R
+    HbR
+    real_1).
+  + assume Hblt1Ord.
+    claim Hblt1 : Rlt b 1.
+    { exact (order_rel_R_implies_Rlt b 1 Hblt1Ord). }
+    rewrite (unit_interval_binintersect_open_interval_left_boundary
+      b
+      HbR
+      H0ltb
+      Hblt1).
+    exact (open_interval_path_connected
+      0
+      b
+      real_0
+      HbR
+      H0ltb).
+  + assume Hb1.
+	    rewrite Hb1.
+	    rewrite unit_interval_binintersect_open_interval_0_1.
+	    exact (open_interval_path_connected
+	      0
+	      1
+	      real_0
+	      real_1
+	      Rlt_0_1).
+  + assume H1ltbOrd.
+    claim H1ltb : Rlt 1 b.
+    { exact (order_rel_R_implies_Rlt 1 b H1ltbOrd). }
+    rewrite (unit_interval_binintersect_open_interval_left_boundary_cross
+      b
+      HbR
+      H1ltb).
+    exact (halfopen_interval_right_in_path_connected_1
+      0
+      real_0
+      Rlt_0_1).
+- assume H0ltaOrd.
+  claim H0lta : Rlt 0 a.
+  { exact (order_rel_R_implies_Rlt 0 a H0ltaOrd). }
+  apply (order_rel_trichotomy_or_impred
+    R
+    b
+    1
+    simply_ordered_set_R
+    HbR
+    real_1).
+  + assume Hblt1Ord.
+    claim Hblt1 : Rlt b 1.
+    { exact (order_rel_R_implies_Rlt b 1 Hblt1Ord). }
+    rewrite (unit_interval_binintersect_open_interval_inside
+      a b HaR HbR H0lta Hblt1).
+    exact (open_interval_path_connected
+      a
+      b
+      HaR
+      HbR
+      Hablt).
+  + assume Hb1.
+    rewrite Hb1.
+    rewrite (unit_interval_binintersect_open_interval_right_boundary
+      a
+      HaR
+      H0lta
+      Halt1).
+    exact (open_interval_path_connected
+      a
+      1
+      HaR
+      real_1
+      Halt1).
+  + assume H1ltbOrd.
+    claim H1ltb : Rlt 1 b.
+    { exact (order_rel_R_implies_Rlt 1 b H1ltbOrd). }
+    rewrite (unit_interval_binintersect_open_interval_right_cross
+      a b HaR HbR H0lta Halt1 H1ltb).
+    exact (halfopen_interval_right_in_path_connected_1
+      a
+      HaR
+      Halt1).
+Qed.
+
 (** from S83 Lem 83.3 (line 5510 in algtop.tex): graph is loc path connected **)
 (** LATEX VERSION: If X is a linear graph, then X is locally path connected **)
 (** and semilocally simply connected. **)
