@@ -254497,6 +254497,222 @@ claim HtV_not_preV_implies_not_imageA_not_imageB :
         HfalseV
         (~(apply_fun fcls tV :e A) /\ ~(apply_fun fcls tV :e B))).
 }
+claim HtU_imageA_implies_preU :
+  apply_fun fcls tU :e A -> tU :e preU.
+{
+  assume HimgAU : apply_fun fcls tU :e A.
+  claim HimgA_pack :
+    (tU :e preA /\ tU :e preU :/\: preV) /\ ~(tU :e preB).
+  {
+    exact (Hunit_imageA_implies_preA_preUV_notPreB tU HtU HimgAU).
+  }
+  claim Hleft :
+    tU :e preA /\ tU :e preU :/\: preV.
+  {
+    exact (andEL
+      (tU :e preA /\ tU :e preU :/\: preV)
+      (~(tU :e preB))
+      HimgA_pack).
+  }
+  claim HtUPreUV : tU :e preU :/\: preV.
+  {
+    exact (andER
+      (tU :e preA)
+      (tU :e preU :/\: preV)
+      Hleft).
+  }
+  exact (binintersectE1 preU preV tU HtUPreUV).
+}
+claim HtU_imageB_implies_preU :
+  apply_fun fcls tU :e B -> tU :e preU.
+{
+  assume HimgBU : apply_fun fcls tU :e B.
+  claim HimgB_pack :
+    (tU :e preB /\ tU :e preU :/\: preV) /\ ~(tU :e preA).
+  {
+    exact (Hunit_imageB_implies_preB_preUV_notPreA tU HtU HimgBU).
+  }
+  claim Hleft :
+    tU :e preB /\ tU :e preU :/\: preV.
+  {
+    exact (andEL
+      (tU :e preB /\ tU :e preU :/\: preV)
+      (~(tU :e preA))
+      HimgB_pack).
+  }
+  claim HtUPreUV : tU :e preU :/\: preV.
+  {
+    exact (andER
+      (tU :e preB)
+      (tU :e preU :/\: preV)
+      Hleft).
+  }
+  exact (binintersectE1 preU preV tU HtUPreUV).
+}
+claim HtU_preU_implies_imageAB :
+  tU :e preU -> apply_fun fcls tU :e A :\/: B.
+{
+  assume HtUPreU : tU :e preU.
+  claim HtUPreUV : tU :e preU :/\: preV.
+  {
+    exact (binintersectI
+      preU
+      preV
+      tU
+      HtUPreU
+      HtUinPreV).
+  }
+  exact (HpreUV_imageAB tU HtUPreUV).
+}
+claim HtU_preU_iff_imageAB :
+  (tU :e preU <-> apply_fun fcls tU :e A :\/: B).
+{
+  apply iffI.
+  - assume HtUPreU : tU :e preU.
+    exact (HtU_preU_implies_imageAB HtUPreU).
+  - assume HimgAB : apply_fun fcls tU :e A :\/: B.
+    apply (binunionE A B (apply_fun fcls tU) HimgAB).
+    + assume HimgA : apply_fun fcls tU :e A.
+      exact (HtU_imageA_implies_preU HimgA).
+    + assume HimgB : apply_fun fcls tU :e B.
+      exact (HtU_imageB_implies_preU HimgB).
+}
+claim HtU_not_preU_iff_not_imageA_not_imageB :
+  (~(tU :e preU) <-> (~(apply_fun fcls tU :e A) /\ ~(apply_fun fcls tU :e B))).
+{
+  apply iffI.
+  - assume HnotPreUU : ~(tU :e preU).
+    exact (HtU_not_preU_implies_not_imageA_not_imageB HnotPreUU).
+  - assume HnotImgsU : ~(apply_fun fcls tU :e A) /\ ~(apply_fun fcls tU :e B).
+    assume HtUPreU : tU :e preU.
+    claim HimgAB : apply_fun fcls tU :e A :\/: B.
+    {
+      exact (iffEL
+        (tU :e preU)
+        (apply_fun fcls tU :e A :\/: B)
+        HtU_preU_iff_imageAB
+        HtUPreU).
+    }
+    apply (binunionE A B (apply_fun fcls tU) HimgAB).
+    + assume HimgA : apply_fun fcls tU :e A.
+      exact ((andEL
+        (~(apply_fun fcls tU :e A))
+        (~(apply_fun fcls tU :e B))
+        HnotImgsU) HimgA).
+    + assume HimgB : apply_fun fcls tU :e B.
+      exact ((andER
+        (~(apply_fun fcls tU :e A))
+        (~(apply_fun fcls tU :e B))
+        HnotImgsU) HimgB).
+}
+claim HtV_imageA_implies_preV :
+  apply_fun fcls tV :e A -> tV :e preV.
+{
+  assume HimgAV : apply_fun fcls tV :e A.
+  claim HimgA_pack :
+    (tV :e preA /\ tV :e preU :/\: preV) /\ ~(tV :e preB).
+  {
+    exact (Hunit_imageA_implies_preA_preUV_notPreB tV HtV HimgAV).
+  }
+  claim Hleft :
+    tV :e preA /\ tV :e preU :/\: preV.
+  {
+    exact (andEL
+      (tV :e preA /\ tV :e preU :/\: preV)
+      (~(tV :e preB))
+      HimgA_pack).
+  }
+  claim HtVPreUV : tV :e preU :/\: preV.
+  {
+    exact (andER
+      (tV :e preA)
+      (tV :e preU :/\: preV)
+      Hleft).
+  }
+  exact (binintersectE2 preU preV tV HtVPreUV).
+}
+claim HtV_imageB_implies_preV :
+  apply_fun fcls tV :e B -> tV :e preV.
+{
+  assume HimgBV : apply_fun fcls tV :e B.
+  claim HimgB_pack :
+    (tV :e preB /\ tV :e preU :/\: preV) /\ ~(tV :e preA).
+  {
+    exact (Hunit_imageB_implies_preB_preUV_notPreA tV HtV HimgBV).
+  }
+  claim Hleft :
+    tV :e preB /\ tV :e preU :/\: preV.
+  {
+    exact (andEL
+      (tV :e preB /\ tV :e preU :/\: preV)
+      (~(tV :e preA))
+      HimgB_pack).
+  }
+  claim HtVPreUV : tV :e preU :/\: preV.
+  {
+    exact (andER
+      (tV :e preB)
+      (tV :e preU :/\: preV)
+      Hleft).
+  }
+  exact (binintersectE2 preU preV tV HtVPreUV).
+}
+claim HtV_preV_implies_imageAB :
+  tV :e preV -> apply_fun fcls tV :e A :\/: B.
+{
+  assume HtVPreV : tV :e preV.
+  claim HtVPreUV : tV :e preU :/\: preV.
+  {
+    exact (binintersectI
+      preU
+      preV
+      tV
+      HtVinPreU
+      HtVPreV).
+  }
+  exact (HpreUV_imageAB tV HtVPreUV).
+}
+claim HtV_preV_iff_imageAB :
+  (tV :e preV <-> apply_fun fcls tV :e A :\/: B).
+{
+  apply iffI.
+  - assume HtVPreV : tV :e preV.
+    exact (HtV_preV_implies_imageAB HtVPreV).
+  - assume HimgAB : apply_fun fcls tV :e A :\/: B.
+    apply (binunionE A B (apply_fun fcls tV) HimgAB).
+    + assume HimgA : apply_fun fcls tV :e A.
+      exact (HtV_imageA_implies_preV HimgA).
+    + assume HimgB : apply_fun fcls tV :e B.
+      exact (HtV_imageB_implies_preV HimgB).
+}
+claim HtV_not_preV_iff_not_imageA_not_imageB :
+  (~(tV :e preV) <-> (~(apply_fun fcls tV :e A) /\ ~(apply_fun fcls tV :e B))).
+{
+  apply iffI.
+  - assume HnotPreVV : ~(tV :e preV).
+    exact (HtV_not_preV_implies_not_imageA_not_imageB HnotPreVV).
+  - assume HnotImgsV : ~(apply_fun fcls tV :e A) /\ ~(apply_fun fcls tV :e B).
+    assume HtVPreV : tV :e preV.
+    claim HimgAB : apply_fun fcls tV :e A :\/: B.
+    {
+      exact (iffEL
+        (tV :e preV)
+        (apply_fun fcls tV :e A :\/: B)
+        HtV_preV_iff_imageAB
+        HtVPreV).
+    }
+    apply (binunionE A B (apply_fun fcls tV) HimgAB).
+    + assume HimgA : apply_fun fcls tV :e A.
+      exact ((andEL
+        (~(apply_fun fcls tV :e A))
+        (~(apply_fun fcls tV :e B))
+        HnotImgsV) HimgA).
+    + assume HimgB : apply_fun fcls tV :e B.
+      exact ((andER
+        (~(apply_fun fcls tV :e A))
+        (~(apply_fun fcls tV :e B))
+        HnotImgsV) HimgB).
+}
 (** TODO Bob: prove via S63-style alternating decomposition in U cap V = A union B
     with A cap B = Empty, then identify loop class as power of [alpha.beta] or inverse power.
     Current core setup complete:
