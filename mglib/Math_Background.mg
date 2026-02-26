@@ -174880,10 +174880,140 @@ claim Hinfcyc : forall alpha:set, alpha :e J ->
 (** Then use extension uniqueness **)
 (** For each alpha, h restricted to Gfam(alpha) = h' restricted to Gfam(alpha) **)
 (** because both are homs from Gfam(alpha) to Z2 agreeing on generator basis(alpha) **)
+(** Extract direct_sum_of_subgroups to get subgroup_of for each Gfam(alpha) **)
+claim Hdsom : direct_sum_of_subgroups G mult e inv J Gfam.
+{ exact (andER ((abelian_group G mult e inv /\ function_on basis J G) /\
+    (forall alpha:set, alpha :e J ->
+      infinite_cyclic_subgroup G mult e inv (apply_fun basis alpha)))
+    (direct_sum_of_subgroups G mult e inv J Gfam) Hfab). }
+claim Hsga : subgroups_generate_abelian G mult e inv J Gfam.
+{ exact (andEL (subgroups_generate_abelian G mult e inv J Gfam)
+    (forall x:set, x :e G ->
+      forall n1 n2:set, n1 :e omega -> n2 :e omega -> n1 <> 0 -> n2 <> 0 ->
+      forall a1 a2:set, function_on a1 n1 J -> function_on a2 n2 J ->
+      forall x1 x2:set, function_on x1 n1 G -> function_on x2 n2 G ->
+        (forall i:set, i :e n1 -> apply_fun x1 i :e apply_fun Gfam (apply_fun a1 i)) ->
+        (forall i:set, i :e n2 -> apply_fun x2 i :e apply_fun Gfam (apply_fun a2 i)) ->
+        (forall i j:set, i :e n1 -> j :e n1 -> i <> j -> apply_fun a1 i <> apply_fun a1 j) ->
+        (forall i j:set, i :e n2 -> j :e n2 -> i <> j -> apply_fun a2 i <> apply_fun a2 j) ->
+        x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun x1 i)) n1 ->
+        x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun x2 i)) n2 ->
+        (forall alpha:set, alpha :e J ->
+          (forall i j:set, i :e n1 -> j :e n2 ->
+            apply_fun a1 i = alpha -> apply_fun a2 j = alpha ->
+            apply_fun x1 i = apply_fun x2 j) /\
+          ((exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
+           ~(exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+           forall i:set, i :e n1 -> apply_fun a1 i = alpha -> apply_fun x1 i = e) /\
+          (~(exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
+           (exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+           forall j:set, j :e n2 -> apply_fun a2 j = alpha -> apply_fun x2 j = e)))
+    Hdsom). }
+claim Hsubgroups : forall alpha:set, alpha :e J ->
+  subgroup_of (apply_fun Gfam alpha) G mult e inv.
+{ (** subgroups_generate_abelian = (abelian /\ subgroup_of) /\ generation **)
+  (** Hsga : (A /\ B) /\ C, need B **)
+  exact (andER (abelian_group G mult e inv)
+    (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv)
+    (andEL
+      (abelian_group G mult e inv /\
+        (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv))
+      (forall x:set, x :e G ->
+        exists n:set, n :e omega /\ n <> 0 /\
+        exists alphas:set, function_on alphas n J /\
+        exists xs:set, function_on xs n G /\
+          (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) /\
+          (forall i j:set, i :e n -> j :e n -> i <> j ->
+            apply_fun alphas i <> apply_fun alphas j) /\
+          x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n)
+      Hsga)). }
 claim Hagree_local : forall alpha:set, alpha :e J ->
   forall x:set, x :e apply_fun Gfam alpha ->
     apply_fun h x = apply_fun h' x.
-{ admit. }
+{
+  let alpha. assume Hal : alpha :e J.
+  (** Get subgroup info **)
+  claim Hsub : subgroup_of (apply_fun Gfam alpha) G mult e inv.
+  { exact (Hsubgroups alpha Hal). }
+  (** subgroup_of = ((K c= G /\ e :e K) /\ mult_closure) /\ inv_closure **)
+  claim HKG : apply_fun Gfam alpha c= G.
+  { exact (andEL (apply_fun Gfam alpha c= G) (e :e apply_fun Gfam alpha)
+      (andEL (apply_fun Gfam alpha c= G /\ e :e apply_fun Gfam alpha)
+        (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+          apply_fun mult (x, y) :e apply_fun Gfam alpha)
+        (andEL ((apply_fun Gfam alpha c= G /\ e :e apply_fun Gfam alpha) /\
+          (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+            apply_fun mult (x, y) :e apply_fun Gfam alpha))
+          (forall x:set, x :e apply_fun Gfam alpha -> apply_fun inv x :e apply_fun Gfam alpha)
+          Hsub))). }
+  claim HKcl : forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+    apply_fun mult (x, y) :e apply_fun Gfam alpha.
+  { exact (andER (apply_fun Gfam alpha c= G /\ e :e apply_fun Gfam alpha)
+      (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+        apply_fun mult (x, y) :e apply_fun Gfam alpha)
+      (andEL ((apply_fun Gfam alpha c= G /\ e :e apply_fun Gfam alpha) /\
+        (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+          apply_fun mult (x, y) :e apply_fun Gfam alpha))
+        (forall x:set, x :e apply_fun Gfam alpha -> apply_fun inv x :e apply_fun Gfam alpha)
+        Hsub)). }
+  (** Get group_structure for Gfam(alpha) **)
+  claim Hgrp_sub : group_structure (apply_fun Gfam alpha) mult e inv.
+  { exact (local_subgroup_group_structure G mult e inv (apply_fun Gfam alpha) Hgrp Hsub). }
+  (** Get generator, cyclic, non-finite **)
+  claim Hgen : generator_of (apply_fun Gfam alpha) mult e inv (apply_fun basis alpha).
+  { exact (factor_family_generator_of_helper G mult e inv J basis alpha Hgrp Hbasis_fn Hal). }
+  claim Hcyc : cyclic_group (apply_fun Gfam alpha) mult e inv.
+  { exact (factor_family_cyclic_group_helper (apply_fun Gfam alpha) mult e inv (apply_fun basis alpha) Hgrp_sub Hgen). }
+  (** Get infinite_cyclic_subgroup for Gfam(alpha) **)
+  claim Hinfcyc_sub : infinite_cyclic_subgroup (apply_fun Gfam alpha) mult e inv (apply_fun basis alpha).
+  { exact (factor_family_infinite_cyclic_helper G mult e inv J basis alpha Hgrp Hbasis_fn Hinfcyc Hal). }
+  claim Hnotfin : ~ finite (apply_fun Gfam alpha).
+  { exact (factor_family_nonfinite_helper (apply_fun Gfam alpha) mult e inv (apply_fun basis alpha)
+      Hgrp_sub Hinfcyc_sub). }
+  (** Build restrictions of h and h' to Gfam(alpha) **)
+  set h_res := graph (apply_fun Gfam alpha) (fun x:set => apply_fun h x).
+  set h'_res := graph (apply_fun Gfam alpha) (fun x:set => apply_fun h' x).
+  (** These are group homomorphisms **)
+  claim Hh_res_hom : group_homomorphism (apply_fun Gfam alpha) mult 2 Z2_mult h_res.
+  { exact (restrict_hom_to_subgroup G mult 2 Z2_mult h (apply_fun Gfam alpha) Hh HKG HKcl). }
+  claim Hh'_res_hom : group_homomorphism (apply_fun Gfam alpha) mult 2 Z2_mult h'_res.
+  { exact (restrict_hom_to_subgroup G mult 2 Z2_mult h' (apply_fun Gfam alpha) Hh' HKG HKcl). }
+  (** basis(alpha) in Gfam(alpha) **)
+  claim HbaK : apply_fun basis alpha :e apply_fun Gfam alpha.
+  { exact (andEL (apply_fun basis alpha :e apply_fun Gfam alpha)
+      (forall g:set, g :e apply_fun Gfam alpha ->
+        exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun basis alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun basis alpha)) (ordsucc m))))
+      Hgen). }
+  (** Restrictions agree on generator **)
+  claim Heq_gen : apply_fun h_res (apply_fun basis alpha) = apply_fun h'_res (apply_fun basis alpha).
+  { rewrite (apply_fun_graph (apply_fun Gfam alpha) (fun x:set => apply_fun h x) (apply_fun basis alpha) HbaK).
+    rewrite (apply_fun_graph (apply_fun Gfam alpha) (fun x:set => apply_fun h' x) (apply_fun basis alpha) HbaK).
+    exact (Hagree alpha Hal). }
+  (** Z2 has group_structure **)
+  claim HZ2_grp : group_structure 2 Z2_mult 0 Z2_inv.
+  { exact (andEL (group_structure 2 Z2_mult 0 Z2_inv)
+      (forall a b:set, a :e 2 -> b :e 2 ->
+        apply_fun Z2_mult (a, b) = apply_fun Z2_mult (b, a))
+      Z2_abelian_group). }
+  (** Apply infinite_cyclic_hom_agree_on_gen **)
+  claim Hagree_res : forall g:set, g :e apply_fun Gfam alpha ->
+    apply_fun h_res g = apply_fun h'_res g.
+  { exact (infinite_cyclic_hom_agree_on_gen
+      (apply_fun Gfam alpha) mult e inv (apply_fun basis alpha) 2 Z2_mult 0 Z2_inv
+      h_res h'_res Hgrp_sub Hcyc Hnotfin Hgen HZ2_grp Hh_res_hom Hh'_res_hom Heq_gen). }
+  (** Translate back to h and h' **)
+  let x. assume Hx : x :e apply_fun Gfam alpha.
+  claim Hhr : apply_fun h_res x = apply_fun h x.
+  { exact (apply_fun_graph (apply_fun Gfam alpha) (fun z:set => apply_fun h z) x Hx). }
+  claim Hh'r : apply_fun h'_res x = apply_fun h' x.
+  { exact (apply_fun_graph (apply_fun Gfam alpha) (fun z:set => apply_fun h' z) x Hx). }
+  claim Hres_eq : apply_fun h_res x = apply_fun h'_res x.
+  { exact (Hagree_res x Hx). }
+  rewrite <- Hhr. rewrite <- Hh'r. exact Hres_eq.
+}
 (** Use extension uniqueness: both h and h' extend the same local homs **)
 (** Build restriction hfam of h to the Gfam subgroups **)
 (** Define hfam as graph of alpha -> restriction of h to Gfam(alpha) **)
@@ -174906,14 +175036,134 @@ claim Hext : forall hfam0:set,
           apply_fun h0' x = apply_fun (apply_fun hfam0 alpha) x) ->
       forall x:set, x :e G -> apply_fun h0' x = apply_fun h0 x).
 { exact (free_abelian_extension_to_Z2 G mult e inv J basis Hfab). }
-(** h agrees with local restrictions, h' agrees with local restrictions **)
-(** Therefore by uniqueness h = h' on G **)
-(** The family of restrictions of h has function_on and local hom properties **)
-(** The uniqueness clause then says any h' agreeing locally must agree globally **)
-(** h' agrees locally because Hagree_local says so **)
-(** So h' agrees with h globally **)
-admit.
-Admitted.
+(** Show hfam has the required properties for Hext **)
+claim Hhfam_fn : function_on hfam J (Power (setprod G 2)).
+{ let alpha. assume Hal : alpha :e J.
+  (** apply_fun hfam alpha = graph Gfam(alpha) (fun x => apply_fun h x) **)
+  rewrite (apply_fun_graph J (fun a:set => graph (apply_fun Gfam a) (fun x:set => apply_fun h x)) alpha Hal).
+  apply PowerI.
+  apply (Subq_tra
+    (graph (apply_fun Gfam alpha) (fun x:set => apply_fun h x))
+    (setprod (apply_fun Gfam alpha) 2)
+    (setprod G 2)).
+  - apply graph_subset_setprod.
+    let x. assume Hx : x :e apply_fun Gfam alpha.
+    claim HxG : x :e G.
+    { exact (andEL (apply_fun Gfam alpha c= G) (e :e apply_fun Gfam alpha)
+        (andEL (apply_fun Gfam alpha c= G /\ e :e apply_fun Gfam alpha)
+          (forall a b:set, a :e apply_fun Gfam alpha -> b :e apply_fun Gfam alpha ->
+            apply_fun mult (a, b) :e apply_fun Gfam alpha)
+          (andEL ((apply_fun Gfam alpha c= G /\ e :e apply_fun Gfam alpha) /\
+            (forall a b:set, a :e apply_fun Gfam alpha -> b :e apply_fun Gfam alpha ->
+              apply_fun mult (a, b) :e apply_fun Gfam alpha))
+            (forall a:set, a :e apply_fun Gfam alpha -> apply_fun inv a :e apply_fun Gfam alpha)
+            (Hsubgroups alpha Hal))) x Hx). }
+    exact (andEL (function_on h G 2)
+      (forall a b:set, a :e G -> b :e G ->
+        apply_fun h (apply_fun mult (a, b)) = apply_fun Z2_mult (apply_fun h a, apply_fun h b))
+      Hh x HxG).
+  - exact (setprod_Subq (apply_fun Gfam alpha) 2 G 2
+      (andEL (apply_fun Gfam alpha c= G) (e :e apply_fun Gfam alpha)
+        (andEL (apply_fun Gfam alpha c= G /\ e :e apply_fun Gfam alpha)
+          (forall a b:set, a :e apply_fun Gfam alpha -> b :e apply_fun Gfam alpha ->
+            apply_fun mult (a, b) :e apply_fun Gfam alpha)
+          (andEL ((apply_fun Gfam alpha c= G /\ e :e apply_fun Gfam alpha) /\
+            (forall a b:set, a :e apply_fun Gfam alpha -> b :e apply_fun Gfam alpha ->
+              apply_fun mult (a, b) :e apply_fun Gfam alpha))
+            (forall a:set, a :e apply_fun Gfam alpha -> apply_fun inv a :e apply_fun Gfam alpha)
+            (Hsubgroups alpha Hal))))
+      (Subq_ref 2)). }
+claim Hhfam_hom : forall alpha:set, alpha :e J ->
+  group_homomorphism (apply_fun Gfam alpha) mult 2 Z2_mult (apply_fun hfam alpha).
+{ let alpha. assume Hal : alpha :e J.
+  claim Hhfam_eval : apply_fun hfam alpha = graph (apply_fun Gfam alpha) (fun x:set => apply_fun h x).
+  { exact (apply_fun_graph J (fun a:set => graph (apply_fun Gfam a) (fun x:set => apply_fun h x)) alpha Hal). }
+  rewrite Hhfam_eval.
+  claim Hsub2 : subgroup_of (apply_fun Gfam alpha) G mult e inv.
+  { exact (Hsubgroups alpha Hal). }
+  claim HKG2 : apply_fun Gfam alpha c= G.
+  { exact (andEL (apply_fun Gfam alpha c= G) (e :e apply_fun Gfam alpha)
+      (andEL (apply_fun Gfam alpha c= G /\ e :e apply_fun Gfam alpha)
+        (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+          apply_fun mult (x, y) :e apply_fun Gfam alpha)
+        (andEL ((apply_fun Gfam alpha c= G /\ e :e apply_fun Gfam alpha) /\
+          (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+            apply_fun mult (x, y) :e apply_fun Gfam alpha))
+          (forall x:set, x :e apply_fun Gfam alpha -> apply_fun inv x :e apply_fun Gfam alpha)
+          Hsub2))). }
+  claim HKcl2 : forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+    apply_fun mult (x, y) :e apply_fun Gfam alpha.
+  { exact (andER (apply_fun Gfam alpha c= G /\ e :e apply_fun Gfam alpha)
+      (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+        apply_fun mult (x, y) :e apply_fun Gfam alpha)
+      (andEL ((apply_fun Gfam alpha c= G /\ e :e apply_fun Gfam alpha) /\
+        (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+          apply_fun mult (x, y) :e apply_fun Gfam alpha))
+        (forall x:set, x :e apply_fun Gfam alpha -> apply_fun inv x :e apply_fun Gfam alpha)
+        Hsub2)). }
+  exact (restrict_hom_to_subgroup G mult 2 Z2_mult h (apply_fun Gfam alpha) Hh HKG2 HKcl2). }
+(** Apply extension theorem to get h0 with uniqueness **)
+claim Hexists : exists h0:set,
+  group_homomorphism G mult 2 Z2_mult h0 /\
+  (forall alpha:set, alpha :e J ->
+    forall x:set, x :e apply_fun Gfam alpha ->
+      apply_fun h0 x = apply_fun (apply_fun hfam alpha) x) /\
+  (forall h0':set, group_homomorphism G mult 2 Z2_mult h0' ->
+    (forall alpha:set, alpha :e J ->
+      forall x:set, x :e apply_fun Gfam alpha ->
+        apply_fun h0' x = apply_fun (apply_fun hfam alpha) x) ->
+    forall x:set, x :e G -> apply_fun h0' x = apply_fun h0 x).
+{ exact (Hext hfam Hhfam_fn Hhfam_hom). }
+apply (exandE_i
+  (fun h0:set => group_homomorphism G mult 2 Z2_mult h0 /\
+    (forall alpha:set, alpha :e J ->
+      forall x:set, x :e apply_fun Gfam alpha ->
+        apply_fun h0 x = apply_fun (apply_fun hfam alpha) x))
+  (fun h0:set => forall h0':set, group_homomorphism G mult 2 Z2_mult h0' ->
+    (forall alpha:set, alpha :e J ->
+      forall x:set, x :e apply_fun Gfam alpha ->
+        apply_fun h0' x = apply_fun (apply_fun hfam alpha) x) ->
+    forall x:set, x :e G -> apply_fun h0' x = apply_fun h0 x)
+  Hexists).
+let h0.
+assume Hh0_props : group_homomorphism G mult 2 Z2_mult h0 /\
+  (forall alpha:set, alpha :e J ->
+    forall x:set, x :e apply_fun Gfam alpha ->
+      apply_fun h0 x = apply_fun (apply_fun hfam alpha) x).
+assume Huniq : forall h0':set, group_homomorphism G mult 2 Z2_mult h0' ->
+  (forall alpha:set, alpha :e J ->
+    forall x:set, x :e apply_fun Gfam alpha ->
+      apply_fun h0' x = apply_fun (apply_fun hfam alpha) x) ->
+  forall x:set, x :e G -> apply_fun h0' x = apply_fun h0 x.
+(** h extends hfam trivially: hfam restricts h **)
+claim Hh_extends : forall alpha:set, alpha :e J ->
+  forall x:set, x :e apply_fun Gfam alpha ->
+    apply_fun h x = apply_fun (apply_fun hfam alpha) x.
+{ let alpha. assume Hal : alpha :e J. let x. assume Hx : x :e apply_fun Gfam alpha.
+  claim Hhfam_eval : apply_fun hfam alpha = graph (apply_fun Gfam alpha) (fun z:set => apply_fun h z).
+  { exact (apply_fun_graph J (fun a:set => graph (apply_fun Gfam a) (fun z:set => apply_fun h z)) alpha Hal). }
+  rewrite Hhfam_eval.
+  exact (eq_symm
+    (apply_fun (graph (apply_fun Gfam alpha) (fun z:set => apply_fun h z)) x)
+    (apply_fun h x)
+    (apply_fun_graph (apply_fun Gfam alpha) (fun z:set => apply_fun h z) x Hx)). }
+(** h' extends hfam: because Hagree_local says apply_fun h' x = apply_fun h x **)
+claim Hh'_extends : forall alpha:set, alpha :e J ->
+  forall x:set, x :e apply_fun Gfam alpha ->
+    apply_fun h' x = apply_fun (apply_fun hfam alpha) x.
+{ let alpha. assume Hal : alpha :e J. let x. assume Hx : x :e apply_fun Gfam alpha.
+  claim Hhl : apply_fun h x = apply_fun h' x.
+  { exact (Hagree_local alpha Hal x Hx). }
+  rewrite <- Hhl.
+  exact (Hh_extends alpha Hal x Hx). }
+(** By uniqueness: h = h0 and h' = h0 on G, hence h = h' **)
+let x. assume Hx : x :e G.
+claim Hh_h0 : apply_fun h x = apply_fun h0 x.
+{ exact (Huniq h Hh Hh_extends x Hx). }
+claim Hh'_h0 : apply_fun h' x = apply_fun h0 x.
+{ exact (Huniq h' Hh' Hh'_extends x Hx). }
+rewrite Hh_h0. rewrite Hh'_h0. reflexivity.
+Qed.
 
 (** Helper: Power(J) equips with the set of group homs to Z mod 2 for a free abelian basis **)
 (** The bijection: S in Power(J) maps to the unique hom h with h(basis(alpha))=1 iff alpha in S **)
