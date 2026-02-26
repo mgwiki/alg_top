@@ -158314,6 +158314,60 @@ let n. assume Hn : n :e omega.
 exact (Hnat n (omega_nat_p n Hn)).
 Qed.
 
+(** Helper: In an abelian group with subgroups satisfying zero-sum, equal products imply component equality **)
+Lemma zero_sum_component_extraction :
+  forall G mult e inv J Gfam:set,
+  abelian_group G mult e inv ->
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv) ->
+  (forall n:set, n :e omega -> n <> 0 ->
+    forall alphas:set, function_on alphas n J ->
+    (forall i j:set, i :e n -> j :e n -> i <> j -> apply_fun alphas i <> apply_fun alphas j) ->
+    forall xs:set, function_on xs n G ->
+    (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) ->
+    nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n = e ->
+    (forall i:set, i :e n -> apply_fun xs i = e)) ->
+  forall n1 n2:set, n1 :e omega -> n2 :e omega -> n1 <> 0 -> n2 <> 0 ->
+  forall a1 a2:set, function_on a1 n1 J -> function_on a2 n2 J ->
+  forall x1 x2:set, function_on x1 n1 G -> function_on x2 n2 G ->
+  (forall i:set, i :e n1 -> apply_fun x1 i :e apply_fun Gfam (apply_fun a1 i)) ->
+  (forall i:set, i :e n2 -> apply_fun x2 i :e apply_fun Gfam (apply_fun a2 i)) ->
+  (forall i j:set, i :e n1 -> j :e n1 -> i <> j -> apply_fun a1 i <> apply_fun a1 j) ->
+  (forall i j:set, i :e n2 -> j :e n2 -> i <> j -> apply_fun a2 i <> apply_fun a2 j) ->
+  nat_primrec e (fun i r => apply_fun mult (r, apply_fun x1 i)) n1 =
+    nat_primrec e (fun i r => apply_fun mult (r, apply_fun x2 i)) n2 ->
+  forall alpha:set, alpha :e J ->
+  (forall i j:set, i :e n1 -> j :e n2 ->
+    apply_fun a1 i = alpha -> apply_fun a2 j = alpha ->
+    apply_fun x1 i = apply_fun x2 j) /\
+  ((exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
+   ~(exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+   forall i:set, i :e n1 -> apply_fun a1 i = alpha -> apply_fun x1 i = e) /\
+  (~(exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
+   (exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+   forall j:set, j :e n2 -> apply_fun a2 j = alpha -> apply_fun x2 j = e).
+let G mult e inv J Gfam.
+assume HabG : abelian_group G mult e inv.
+assume HsubGfam : forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv.
+assume Hzs : forall n:set, n :e omega -> n <> 0 ->
+    forall alphas:set, function_on alphas n J ->
+    (forall i j:set, i :e n -> j :e n -> i <> j -> apply_fun alphas i <> apply_fun alphas j) ->
+    forall xs:set, function_on xs n G ->
+    (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) ->
+    nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n = e ->
+    (forall i:set, i :e n -> apply_fun xs i = e).
+let n1 n2. assume Hn1 : n1 :e omega. assume Hn2 : n2 :e omega.
+assume Hne1 : n1 <> 0. assume Hne2 : n2 <> 0.
+let a1 a2. assume Ha1 : function_on a1 n1 J. assume Ha2 : function_on a2 n2 J.
+let x1 x2. assume Hx1 : function_on x1 n1 G. assume Hx2 : function_on x2 n2 G.
+assume Hxfam1 : forall i:set, i :e n1 -> apply_fun x1 i :e apply_fun Gfam (apply_fun a1 i).
+assume Hxfam2 : forall i:set, i :e n2 -> apply_fun x2 i :e apply_fun Gfam (apply_fun a2 i).
+assume Hinj1 : forall i j:set, i :e n1 -> j :e n1 -> i <> j -> apply_fun a1 i <> apply_fun a1 j.
+assume Hinj2 : forall i j:set, i :e n2 -> j :e n2 -> i <> j -> apply_fun a2 i <> apply_fun a2 j.
+assume Hprodeq : nat_primrec e (fun i r => apply_fun mult (r, apply_fun x1 i)) n1 =
+    nat_primrec e (fun i r => apply_fun mult (r, apply_fun x2 i)) n2.
+admit.
+Admitted.
+
 (** Helper: existence of extension homomorphism for direct sum (admitted) **)
 Lemma direct_sum_hom_existence :
   forall G multG eG invG J Gfam H multH eH invH hfam:set,
@@ -165654,28 +165708,13 @@ apply iffI.
       apply Hsub. assume Hsub_ABC _.
       apply Hsub_ABC. assume Hsub_AB _.
       apply Hsub_AB. assume Hsubset _. exact (Hsubset a Ha_sub). }
-    (** Strategy: construct merged product of length n1+n2 with all distinct alphas, **)
-    (** show it equals e, then apply Hzs to conclude each component = e. **)
-    (** The merged product combines x1(k) and inv(x2(k)) at the corresponding alphas. **)
-    (** For each alpha, the component is mult(x1(i), inv(x2(j))) if both, **)
-    (** x1(i) if only in a1, or inv(x2(j)) if only in a2. **)
-    let alpha. assume Halpha : alpha :e J.
-    apply and3I.
-    - (** Condition 1: matching components equal **)
-      let i j. assume Hi : i :e n1. assume Hj : j :e n2.
-      assume Ha1i : apply_fun a1 i = alpha.
-      assume Ha2j : apply_fun a2 j = alpha.
-      admit.
-    - (** Condition 2: alpha in a1 only -> x1(i) = e **)
-      assume Hex1 : exists i:set, i :e n1 /\ apply_fun a1 i = alpha.
-      assume Hnex2 : ~(exists j:set, j :e n2 /\ apply_fun a2 j = alpha).
-      let i. assume Hi : i :e n1. assume Ha1i : apply_fun a1 i = alpha.
-      admit.
-    - (** Condition 3: alpha in a2 only -> x2(j) = e **)
-      assume Hnex1 : ~(exists i:set, i :e n1 /\ apply_fun a1 i = alpha).
-      assume Hex2 : exists j:set, j :e n2 /\ apply_fun a2 j = alpha.
-      let j. assume Hj : j :e n2. assume Ha2j : apply_fun a2 j = alpha.
-      admit.
+    (** Use zero_sum_component_extraction helper **)
+    claim Hprodeq : nat_primrec e (fun i r => apply_fun mult (r, apply_fun x1 i)) n1 =
+      nat_primrec e (fun i r => apply_fun mult (r, apply_fun x2 i)) n2.
+    { rewrite <- Hrep1. rewrite <- Hrep2. reflexivity. }
+    exact (zero_sum_component_extraction G mult e inv J Gfam HabG HsubGfam Hzs
+      n1 n2 Hn1 Hn2 Hne1 Hne2 a1 a2 Ha1 Ha2 x1 x2 Hx1 Hx2
+      Hxfam1 Hxfam2 Hinj1 Hinj2 Hprodeq).
 Admitted.
 
 (** from S67 Exercise 3 (line 2706 in algtop.tex) **)
