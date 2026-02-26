@@ -233438,7 +233438,408 @@ apply andI.
 	          nulhomotopic Ustar (subspace_topology X Tx Ustar) X Tx h.
 	        {
 	          (** TODO: contract the star neighborhood to b (tree-like neighborhood). **)
-	          admit.
+	          claim HnulRaw :
+	            exists y0:set,
+	              y0 :e X /\
+	              homotopic_maps
+	                Ustar
+	                (subspace_topology X Tx Ustar)
+	                X
+	                Tx
+	                h
+	                (const_fun Ustar y0).
+	          {
+	            witness b.
+	            apply andI.
+	            - exact HbX.
+	            - (** It suffices to exhibit a homotopy from inclusion h to the constant map at b. **)
+	              claim HtopUstar :
+	                topology_on Ustar (subspace_topology X Tx Ustar).
+	              {
+	                exact (subspace_topology_is_topology
+	                  X
+	                  Tx
+	                  Ustar
+	                  HtopX
+	                  HUsubX).
+	              }
+		              claim HconstCont :
+		                continuous_map Ustar (subspace_topology X Tx Ustar) X Tx (const_fun Ustar b).
+		              {
+		                exact (const_fun_continuous
+		                  Ustar
+		                  (subspace_topology X Tx Ustar)
+		                  X
+		                  Tx
+		                  b
+		                  HtopUstar
+		                  HtopX
+		                  HbX).
+		              }
+		              claim HhomRaw :
+		                ((continuous_map
+		                  Ustar
+		                  (subspace_topology X Tx Ustar)
+		                  X
+		                  Tx
+		                  h /\
+		                  continuous_map
+		                    Ustar
+		                    (subspace_topology X Tx Ustar)
+		                    X
+		                    Tx
+		                    (const_fun Ustar b)) /\
+		                exists F:set,
+		                  continuous_map (setprod Ustar unit_interval)
+		                    (product_topology Ustar (subspace_topology X Tx Ustar)
+		                      unit_interval unit_interval_topology)
+		                    X Tx F /\
+		                  (forall x:set, x :e Ustar ->
+		                    apply_fun F (x, 0) = apply_fun h x) /\
+		                  (forall x:set, x :e Ustar ->
+		                    apply_fun F (x, 1) = apply_fun (const_fun Ustar b) x)).
+		              {
+		                apply andI.
+		                - apply andI.
+		                  + exact HcontUX.
+		                  + exact HconstCont.
+		                - (** Remaining: build a continuous homotopy F: Ustar x I -> X with endpoints h and const(b). **)
+		                  (** Local per-arc contractions are easy since each arc is contractible. **)
+		                  claim HexPerArc :
+		                    forall A0:set, A0 :e IncArcs ->
+		                      exists FA0:set,
+		                        continuous_map (setprod (Star A0) unit_interval)
+		                          (product_topology (Star A0)
+		                            (subspace_topology X Tx (Star A0))
+		                            unit_interval unit_interval_topology)
+		                          X Tx FA0 /\
+		                        (forall x:set, x :e (Star A0) ->
+		                          apply_fun FA0 (x, 0) = x) /\
+		                        (forall x:set, x :e (Star A0) ->
+		                          apply_fun FA0 (x, 1) = b).
+		                  {
+		                    let A0.
+		                    assume HA0Inc.
+		                    claim HA0Arcs : A0 :e Arcs.
+		                    {
+		                      exact (SepE1
+		                        Arcs
+		                        (fun A1:set => b :e A1)
+		                        A0
+		                        HA0Inc).
+		                    }
+		                    claim HbA0 : b :e A0.
+		                    {
+		                      exact (SepE2
+		                        Arcs
+		                        (fun A1:set => b :e A1)
+		                        A0
+		                        HA0Inc).
+		                    }
+		                    set TA0 := subspace_topology X Tx A0.
+		                    set TSA0 := subspace_topology X Tx (Star A0).
+		                    (** A0 is an arc, hence contractible. **)
+		                    claim HA0dat : A0 c= X /\ arc A0 TA0.
+		                    {
+		                      exact (general_linear_graph_arc_data
+		                        X
+		                        Tx
+		                        Arcs
+		                        A0
+		                        Hglg
+		                        HA0Arcs).
+		                    }
+		                    claim HA0subX : A0 c= X.
+		                    { exact (andEL (A0 c= X) (arc A0 TA0) HA0dat). }
+		                    claim HarcA0 : arc A0 TA0.
+		                    { exact (andER (A0 c= X) (arc A0 TA0) HA0dat). }
+		                    claim HcA0 : contractible_space A0 TA0.
+		                    { exact (arc_contractible_space A0 TA0 HarcA0). }
+		                    (** Inclusion i: Star(A0) -> A0 is continuous (via subspace transitivity). **)
+		                    claim HStarSubA0 : (Star A0) c= A0.
+		                    {
+		                      let x.
+		                      assume HxS.
+		                      exact (setminusE1 A0 ((Over A0) :\: (Sing b)) x HxS).
+		                    }
+		                    claim HTsub :
+		                      subspace_topology A0 TA0 (Star A0) =
+		                      subspace_topology X Tx (Star A0).
+		                    {
+		                      exact (ex16_1_subspace_transitive
+		                        X
+		                        Tx
+		                        A0
+		                        (Star A0)
+		                        HtopX
+		                        HA0subX
+		                        HStarSubA0).
+		                    }
+		                    set iSA0A0 := graph (Star A0) (fun x:set => x).
+		                    claim HiSA0A0 :
+		                      continuous_map (Star A0) TSA0 A0 TA0 iSA0A0.
+		                    {
+		                      rewrite <- HTsub.
+		                      exact (subspace_inclusion_continuous
+		                        A0
+		                        TA0
+		                        (Star A0)
+		                        (subspace_topology_is_topology
+		                          X
+		                          Tx
+		                          A0
+		                          HtopX
+		                          HA0subX)
+		                        HStarSubA0).
+		                    }
+		                    (** Constant map to b into A0 is continuous. **)
+		                    claim HtopSA0 : topology_on (Star A0) TSA0.
+		                    {
+		                      exact (subspace_topology_is_topology
+		                        X
+		                        Tx
+		                        (Star A0)
+		                        HtopX
+		                        (Subq_tra (Star A0) A0 X HStarSubA0 HA0subX)).
+		                    }
+		                    claim HconstSA0 :
+		                      continuous_map (Star A0) TSA0 A0 TA0 (const_fun (Star A0) b).
+		                    {
+		                      exact (const_fun_continuous
+		                        (Star A0)
+		                        TSA0
+		                        A0
+		                        TA0
+		                        b
+		                        HtopSA0
+		                        (subspace_topology_is_topology
+		                          X
+		                          Tx
+		                          A0
+		                          HtopX
+		                          HA0subX)
+		                        HbA0).
+		                    }
+		                    (** Homotopy in A0 from inclusion to constant, then compose with inclusion A0->X. **)
+		                    claim HhomSA0 :
+		                      homotopic_maps (Star A0) TSA0 A0 TA0 iSA0A0 (const_fun (Star A0) b).
+		                    {
+		                      exact (ex51_3c_contractible_codomain
+		                        (Star A0)
+		                        TSA0
+		                        A0
+		                        TA0
+		                        iSA0A0
+		                        (const_fun (Star A0) b)
+		                        HcA0
+		                        HiSA0A0
+		                        HconstSA0).
+		                    }
+		                    apply (homotopic_maps_has_witness
+		                      (Star A0)
+		                      TSA0
+		                      A0
+		                      TA0
+		                      iSA0A0
+		                      (const_fun (Star A0) b)
+		                      HhomSA0).
+		                    let G.
+		                    assume HGpack.
+		                    (** Extract witness G and endpoints, then compose with A0 inclusion into X. **)
+		                    apply (and3E
+		                      (continuous_map
+		                        (setprod (Star A0) unit_interval)
+		                        (product_topology (Star A0) TSA0 unit_interval unit_interval_topology)
+		                        A0
+		                        TA0
+		                        G)
+		                      (forall x:set, x :e (Star A0) ->
+		                        apply_fun G (x, 0) = apply_fun iSA0A0 x)
+		                      (forall x:set, x :e (Star A0) ->
+		                        apply_fun G (x, 1) = apply_fun (const_fun (Star A0) b) x)
+		                      HGpack).
+		                    assume HGCont HG0 HG1.
+		                    set iA0X := graph A0 (fun x:set => x).
+		                    claim HiA0X :
+		                      continuous_map A0 TA0 X Tx iA0X.
+		                    {
+		                      exact (subspace_inclusion_continuous
+		                        X
+		                        Tx
+		                        A0
+		                        HtopX
+		                        HA0subX).
+		                    }
+		                    claim HFA0Cont :
+		                      continuous_map (setprod (Star A0) unit_interval)
+		                        (product_topology (Star A0) TSA0 unit_interval unit_interval_topology)
+		                        X Tx (compose_fun (setprod (Star A0) unit_interval) G iA0X).
+		                    {
+		                      exact (composition_continuous
+		                        (setprod (Star A0) unit_interval)
+		                        (product_topology (Star A0) TSA0 unit_interval unit_interval_topology)
+		                        A0
+		                        TA0
+		                        X
+		                        Tx
+		                        G
+		                        iA0X
+		                        HGCont
+		                        HiA0X).
+		                    }
+		                    witness (compose_fun (setprod (Star A0) unit_interval) G iA0X).
+		                    apply andI.
+		                    - apply andI.
+		                      + exact HFA0Cont.
+		                      + let x.
+		                        assume HxS.
+		                        claim Hx0 :
+		                          (x, 0) :e setprod (Star A0) unit_interval.
+		                        {
+		                          exact (tuple_2_setprod_by_pair_Sigma
+		                            (Star A0)
+		                            unit_interval
+		                            x
+		                            0
+		                            HxS
+		                            zero_in_unit_interval).
+		                        }
+		                        claim Hcomp0 :
+		                          apply_fun
+		                            (compose_fun (setprod (Star A0) unit_interval) G iA0X)
+		                            (x, 0)
+		                          =
+		                          apply_fun iA0X (apply_fun G (x, 0)).
+		                        {
+		                          exact (compose_fun_apply
+		                            (setprod (Star A0) unit_interval)
+		                            G
+		                            iA0X
+		                            (x, 0)
+		                            Hx0).
+		                        }
+		                        claim HGx0A0 : apply_fun G (x, 0) :e A0.
+		                        {
+		                          exact (continuous_map_function_on
+		                            (setprod (Star A0) unit_interval)
+		                            (product_topology (Star A0) TSA0 unit_interval unit_interval_topology)
+		                            A0
+		                            TA0
+		                            G
+		                            HGCont
+		                            (x, 0)
+		                            Hx0).
+		                        }
+		                        claim HidA0X0 :
+		                          apply_fun iA0X (apply_fun G (x, 0)) =
+		                          apply_fun G (x, 0).
+		                        {
+		                          exact (apply_fun_graph
+		                            A0
+		                            (fun y:set => y)
+		                            (apply_fun G (x, 0))
+		                            HGx0A0).
+		                        }
+		                        claim HG0' : apply_fun G (x, 0) = x.
+		                        {
+		                          exact (eq_i_tra
+		                            (apply_fun G (x, 0))
+		                            (apply_fun iSA0A0 x)
+		                            x
+		                            (HG0 x HxS)
+		                            (apply_fun_graph (Star A0) (fun y:set => y) x HxS)).
+		                        }
+		                        exact (eq_i_tra
+		                          (apply_fun
+		                            (compose_fun (setprod (Star A0) unit_interval) G iA0X)
+		                            (x, 0))
+		                          (apply_fun iA0X (apply_fun G (x, 0)))
+		                          x
+		                          Hcomp0
+		                          (eq_i_tra
+		                            (apply_fun iA0X (apply_fun G (x, 0)))
+		                            (apply_fun G (x, 0))
+		                            x
+		                            HidA0X0
+		                            HG0')).
+		                    - let x.
+		                      assume HxS.
+		                      claim Hx1 :
+		                        (x, 1) :e setprod (Star A0) unit_interval.
+		                      {
+		                        exact (tuple_2_setprod_by_pair_Sigma
+		                          (Star A0)
+		                          unit_interval
+		                          x
+		                          1
+		                          HxS
+		                          one_in_unit_interval).
+		                      }
+		                      claim Hcomp1 :
+		                        apply_fun
+		                          (compose_fun (setprod (Star A0) unit_interval) G iA0X)
+		                          (x, 1)
+		                        =
+		                        apply_fun iA0X (apply_fun G (x, 1)).
+		                      {
+		                        exact (compose_fun_apply
+		                          (setprod (Star A0) unit_interval)
+		                          G
+		                          iA0X
+		                          (x, 1)
+		                          Hx1).
+		                      }
+		                      claim HGx1A0 : apply_fun G (x, 1) :e A0.
+		                      {
+		                        exact (continuous_map_function_on
+		                          (setprod (Star A0) unit_interval)
+		                          (product_topology (Star A0) TSA0 unit_interval unit_interval_topology)
+		                          A0
+		                          TA0
+		                          G
+		                          HGCont
+		                          (x, 1)
+		                          Hx1).
+		                      }
+		                      claim HidA0X1 :
+		                        apply_fun iA0X (apply_fun G (x, 1)) =
+		                        apply_fun G (x, 1).
+		                      {
+		                        exact (apply_fun_graph
+		                          A0
+		                          (fun y:set => y)
+		                          (apply_fun G (x, 1))
+		                          HGx1A0).
+		                      }
+		                      claim HG1' : apply_fun G (x, 1) = b.
+		                      {
+		                        exact (eq_i_tra
+		                          (apply_fun G (x, 1))
+		                          (apply_fun (const_fun (Star A0) b) x)
+		                          b
+		                          (HG1 x HxS)
+		                          (const_fun_apply (Star A0) b x HxS)).
+		                      }
+		                      exact (eq_i_tra
+		                        (apply_fun
+		                          (compose_fun (setprod (Star A0) unit_interval) G iA0X)
+		                          (x, 1))
+		                        (apply_fun iA0X (apply_fun G (x, 1)))
+		                        b
+		                        Hcomp1
+		                        (eq_i_tra
+		                          (apply_fun iA0X (apply_fun G (x, 1)))
+		                          (apply_fun G (x, 1))
+		                          b
+		                          HidA0X1
+		                          HG1')).
+		                  }
+		                  (** TODO: glue the per-arc homotopies (FA0) into a global homotopy on Ustar. **)
+		                  admit.
+		              }
+		              exact HhomRaw.
+		          }
+		          exact HnulRaw.
 	        }
 	        (** TODO: finish via cor58_6_nulhomotopic_trivial once the nulhomotopy is constructed. **)
 	        claim Hhb : apply_fun h b = b.
