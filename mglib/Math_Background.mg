@@ -250892,6 +250892,36 @@ claim H1PreA : 1 :e preA.
     one_in_unit_interval
     Hf1A).
 }
+claim HaNotB : ~(a :e B).
+{
+  assume HaB : a :e B.
+  claim HaAB : a :e A :/\: B.
+  {
+    exact (binintersectI A B a HaA HaB).
+  }
+  rewrite Hdisj in HaAB.
+  exact (EmptyE a HaAB).
+}
+claim H0NotPreB : ~(0 :e preB).
+{
+  assume H0PreB : 0 :e preB.
+  claim Hf0B : apply_fun fcls 0 :e B.
+  {
+    exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e B) 0 H0PreB).
+  }
+  rewrite Hfcls0 in Hf0B.
+  exact (HaNotB Hf0B).
+}
+claim H1NotPreB : ~(1 :e preB).
+{
+  assume H1PreB : 1 :e preB.
+  claim Hf1B : apply_fun fcls 1 :e B.
+  {
+    exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e B) 1 H1PreB).
+  }
+  rewrite Hfcls1 in Hf1B.
+  exact (HaNotB Hf1B).
+}
 (** TODO Bob: complete S84.6 mixed-case crossing-to-power reduction.
     The arguments now have explicit crossing witnesses tU,tV with opposite-side
     membership, plus full path/simply-connected/disconnected-overlap data. **)
