@@ -228986,9 +228986,179 @@ apply (iffI
 		          x
 		          Hglg
 		          HxV).
-		    }
-		    (** Next steps: show ReachV is closed under moving along an oriented edge, build the corresponding clopen union Reach, and contradict connectedness if y /:e ReachV. **)
-		    admit.
+			    }
+			    (** Next steps: show ReachV is closed under moving along an oriented edge, build the corresponding clopen union Reach, and contradict connectedness if y /:e ReachV. **)
+			    set ReachArcs :=
+			      {A :e Arcs |
+			        exists p q:set,
+			          end_points_of_arc A (subspace_topology X Tx A) p q /\
+			          p :e ReachV}.
+			    set Reach := Union ReachArcs.
+
+			    (** If we can reach one endpoint of an arc, we can reach the other endpoint by appending that edge. **)
+			    claim HReachV_step :
+			      forall A p q:set,
+			      A :e Arcs ->
+			      end_points_of_arc A (subspace_topology X Tx A) p q ->
+			      p :e ReachV ->
+			      q :e ReachV.
+			    {
+			      let A p q.
+			      assume HAArcs Hendpq HpReach.
+			      claim HpPack :
+			        exists n path_seq:set,
+			          edge_path X Tx Arcs n path_seq x /\
+			          n <> 0 /\
+			          (exists j:set, j :e n /\ ordsucc j /:e n /\
+			            (apply_fun path_seq j) 0 1 = p).
+			      {
+			        exact (SepE2
+			          (graph_vertices X Tx Arcs)
+			          (fun v:set =>
+			            exists n path_seq:set,
+			              edge_path X Tx Arcs n path_seq x /\
+			              n <> 0 /\
+			              (exists j:set, j :e n /\ ordsucc j /:e n /\
+			                (apply_fun path_seq j) 0 1 = v))
+			          p
+			          HpReach).
+			      }
+			      apply HpPack.
+			      let n.
+			      assume HnPack.
+			      apply HnPack.
+			      let path_seq.
+			      assume HpPack2.
+			      claim Hepn0 : edge_path X Tx Arcs n path_seq x /\ n <> 0.
+			      {
+			        exact (andEL
+			          (edge_path X Tx Arcs n path_seq x /\ n <> 0)
+			          (exists j:set, j :e n /\ ordsucc j /:e n /\
+			            (apply_fun path_seq j) 0 1 = p)
+			          HpPack2).
+			      }
+			      claim Hep : edge_path X Tx Arcs n path_seq x.
+			      { exact (andEL (edge_path X Tx Arcs n path_seq x) (n <> 0) Hepn0). }
+			      claim Hn0 : n <> 0.
+			      { exact (andER (edge_path X Tx Arcs n path_seq x) (n <> 0) Hepn0). }
+			      claim Hexj :
+			        exists j:set, j :e n /\ ordsucc j /:e n /\
+			          (apply_fun path_seq j) 0 1 = p.
+			      {
+			        exact (andER
+			          (edge_path X Tx Arcs n path_seq x /\ n <> 0)
+			          (exists j:set, j :e n /\ ordsucc j /:e n /\
+			            (apply_fun path_seq j) 0 1 = p)
+			          HpPack2).
+			      }
+			      apply Hexj.
+			      let j.
+			      assume HjPack.
+			      claim Hj12 : j :e n /\ ordsucc j /:e n.
+			      {
+			        exact (andEL
+			          (j :e n /\ ordsucc j /:e n)
+			          ((apply_fun path_seq j) 0 1 = p)
+			          HjPack).
+			      }
+			      claim HjIn : j :e n.
+			      { exact (andEL (j :e n) (ordsucc j /:e n) Hj12). }
+			      claim HsjNot : ordsucc j /:e n.
+			      { exact (andER (j :e n) (ordsucc j /:e n) Hj12). }
+			      claim Hfinj : (apply_fun path_seq j) 0 1 = p.
+			      {
+			        exact (andER
+			          (j :e n /\ ordsucc j /:e n)
+			          ((apply_fun path_seq j) 0 1 = p)
+			          HjPack).
+			      }
+
+			      claim Hori : oriented_edge X Tx Arcs A p q.
+			      {
+			        exact (andI
+			          (A :e Arcs)
+			          (end_points_of_arc A (subspace_topology X Tx A) p q)
+			          HAArcs
+			          Hendpq).
+			      }
+
+			      set seq2 :=
+			        (graph n (fun i:set => apply_fun path_seq i)) :\/:
+			        (graph {n} (fun _:set => ((p, q), A))).
+			      claim Hep2 : edge_path X Tx Arcs (ordsucc n) seq2 x.
+			      {
+			        exact (edge_path_append_oriented_edge
+			          X Tx Arcs n path_seq x j A p q
+			          Hglg
+			          Hep
+			          HjIn
+			          HsjNot
+			          Hfinj
+			          Hori).
+			      }
+
+			      claim HqVtx : q :e graph_vertices X Tx Arcs.
+			      {
+			        exact (graph_vertices_intro_from_endpoint_right
+			          X Tx Arcs A p q
+			          Hglg
+			          HAArcs
+			          Hendpq).
+			      }
+			      apply (SepI
+			        (graph_vertices X Tx Arcs)
+			        (fun v:set =>
+			          exists n0 path_seq0:set,
+			            edge_path X Tx Arcs n0 path_seq0 x /\
+			            n0 <> 0 /\
+			            (exists j0:set, j0 :e n0 /\ ordsucc j0 /:e n0 /\
+			              (apply_fun path_seq0 j0) 0 1 = v))
+			        q).
+			      - exact HqVtx.
+			      - witness (ordsucc n).
+			        witness seq2.
+			        apply andI.
+			        + apply andI.
+			          * exact Hep2.
+			          * exact (neq_ordsucc_0 n).
+			        + witness n.
+			          apply andI.
+			          * apply andI.
+			            { exact (ordsuccI2 n). }
+			            { assume Hbad. exact (In_irref (ordsucc n) Hbad). }
+			          * claim Happ : apply_fun seq2 n = ((p, q), A).
+			            {
+			              exact (apply_fun_edge_path_append_at_n
+			                X Tx Arcs n path_seq x j A p q
+			                Hglg
+			                Hep
+			                HjIn
+			                HsjNot
+			                Hfinj
+			                Hori).
+			            }
+			            rewrite Happ.
+			            rewrite (tuple_2_0_eq (p, q) A).
+			            rewrite tuple_2_1_eq.
+			            reflexivity.
+			    }
+
+			    (** If y is already reachable, unpack the witness and we're done. Otherwise, build a nontrivial clopen Reach to contradict connectedness. **)
+			    apply (xm (y :e ReachV)).
+			    - assume HyReachV.
+			      exact (SepE2
+			        (graph_vertices X Tx Arcs)
+			        (fun v:set =>
+			          exists n path_seq:set,
+			            edge_path X Tx Arcs n path_seq x /\
+			            n <> 0 /\
+			            (exists j:set, j :e n /\ ordsucc j /:e n /\
+			              (apply_fun path_seq j) 0 1 = v))
+			        y
+			        HyReachV).
+			    - assume HyNotReachV.
+			      (** Remaining: clopen Reach argument to derive a contradiction. **)
+			      admit.
 	- (** <- direction (edge paths -> connected). **)
 	  assume Hpaths.
 	  claim HtopX : topology_on X Tx.
