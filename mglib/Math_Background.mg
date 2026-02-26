@@ -249753,6 +249753,114 @@ claim HgenPowNontrivial :
     HbetaPB
     HbetaOn).
 }
+claim HalphaCont :
+  continuous_map
+    unit_interval
+    unit_interval_topology
+    U
+    (subspace_topology X Tx U)
+    alpha.
+{
+  exact (lemma58_path_between_continuous_bridge
+    U
+    (subspace_topology X Tx U)
+    a
+    b
+    alpha
+    HalphaPB).
+}
+claim Halpha0 : apply_fun alpha 0 = a.
+{
+  exact (path_between_at_zero U a b alpha HalphaPB).
+}
+claim Halpha1 : apply_fun alpha 1 = b.
+{
+  exact (path_between_at_one U a b alpha HalphaPB).
+}
+claim HbetaCont :
+  continuous_map
+    unit_interval
+    unit_interval_topology
+    V
+    (subspace_topology X Tx V)
+    beta.
+{
+  exact (lemma58_path_between_continuous_bridge
+    V
+    (subspace_topology X Tx V)
+    b
+    a
+    beta
+    HbetaPB).
+}
+claim Hbeta0 : apply_fun beta 0 = b.
+{
+  exact (path_between_at_zero V b a beta HbetaPB).
+}
+claim Hbeta1 : apply_fun beta 1 = a.
+{
+  exact (path_between_at_one V b a beta HbetaPB).
+}
+claim HgenClsMem :
+  path_homotopy_class_loop X Tx a (path_concat alpha beta)
+  :e fundamental_group X Tx a.
+{
+  exact (lemma84_6_generator_candidate_class_in_pi1
+    X
+    Tx
+    U
+    V
+    a
+    b
+    alpha
+    beta
+    Htop
+    HU
+    HV
+    HalphaCont
+    Halpha0
+    Halpha1
+    HbetaCont
+    Hbeta0
+    Hbeta1).
+}
+claim HgenPowMem :
+  forall n:set, n :e omega ->
+    group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+      n
+    :e fundamental_group X Tx a.
+{
+  exact (lemma84_6_pi1_power_nat_closed
+    X
+    Tx
+    a
+    (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+    Htop
+    HaX
+    HgenClsMem).
+}
+claim HinvGenPowMem :
+  forall n:set, n :e omega ->
+    group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (apply_fun (fundamental_group_inv X Tx a)
+        (path_homotopy_class_loop X Tx a (path_concat alpha beta)))
+      n
+    :e fundamental_group X Tx a.
+{
+  exact (lemma84_6_pi1_inverse_power_nat_closed
+    X
+    Tx
+    a
+    (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+    Htop
+    HaX
+    HgenClsMem).
+}
 (** TODO Bob: complete S84.6 mixed-case crossing-to-power reduction.
     The arguments now have explicit crossing witnesses tU,tV with opposite-side
     membership, plus full path/simply-connected/disconnected-overlap data. **)
