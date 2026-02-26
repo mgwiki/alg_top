@@ -250527,8 +250527,192 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun fcls t :e U)).
           (graph V (fun x:set => x))) vcls
         = path_homotopy_class_loop X Tx a fcls.
       {
-        (** TODO Bob: symmetric equality chain as in HallU/HuEq. **)
-        admit.
+        claim Hj_star_vcls :
+          apply_fun (induced_homomorphism V (subspace_topology X Tx V) a X Tx a
+            (graph V (fun x:set => x))) vcls
+          = path_homotopy_class_loop X Tx a
+              (compose_fun unit_interval
+                (Eps_i (fun g:set => g :e vcls))
+                (graph V (fun x:set => x))).
+        {
+          exact (induced_homomorphism_apply
+            V
+            (subspace_topology X Tx V)
+            a
+            X
+            Tx
+            a
+            (graph V (fun x:set => x))
+            vcls
+            HvclsMem).
+        }
+        set repV := Eps_i (fun g:set => g :e vcls).
+        set incV := graph V (fun x:set => x).
+        claim HfV_in_vcls : f_V :e vcls.
+        {
+          exact (loop_in_own_class_early
+            V
+            (subspace_topology X Tx V)
+            a
+            f_V
+            HtopV
+            Hf_V_loop).
+        }
+        claim HrepV_in_vcls : repV :e vcls.
+        {
+          exact (Eps_i_ax (fun g:set => g :e vcls) f_V HfV_in_vcls).
+        }
+        claim HrepV_loop : repV :e loop_space V (subspace_topology X Tx V) a.
+        {
+          exact (path_homotopy_class_loop_in_loop_space
+            V
+            (subspace_topology X Tx V)
+            a
+            f_V
+            repV
+            HrepV_in_vcls).
+        }
+        claim HrepV_loop_at : loop_at V (subspace_topology X Tx V) a repV.
+        {
+          exact (loop_space_has_loop_at
+            V
+            (subspace_topology X Tx V)
+            a
+            repV
+            HrepV_loop).
+        }
+        claim Hfg_hom_V : path_homotopic V (subspace_topology X Tx V) a a f_V repV.
+        {
+          exact (path_homotopy_class_loop_has_homotopy
+            V
+            (subspace_topology X Tx V)
+            a
+            f_V
+            repV
+            HrepV_in_vcls).
+        }
+        claim HincContV : continuous_map V (subspace_topology X Tx V) X Tx incV.
+        {
+          exact (subspace_inclusion_continuous X Tx V Htop HVsub).
+        }
+        claim HincVa : apply_fun incV a = a.
+        {
+          exact (apply_fun_graph V (fun x:set => x) a HaV).
+        }
+        claim Hpost_hom_V : path_homotopic X Tx a a
+          (compose_fun unit_interval f_V incV)
+          (compose_fun unit_interval repV incV).
+        {
+          exact (path_homotopic_postcompose
+            V
+            (subspace_topology X Tx V)
+            X
+            Tx
+            a
+            a
+            a
+            a
+            f_V
+            repV
+            incV
+            Hfg_hom_V
+            HincContV
+            HincVa
+            HincVa).
+        }
+        claim HfV_inc_cont :
+          continuous_map unit_interval unit_interval_topology X Tx
+            (compose_fun unit_interval f_V incV).
+        {
+          exact (composition_continuous
+            unit_interval
+            unit_interval_topology
+            V
+            (subspace_topology X Tx V)
+            X
+            Tx
+            f_V
+            incV
+            Hf_V_cont
+            HincContV).
+        }
+        claim HfV_inc_pw : forall t:set, t :e unit_interval ->
+          apply_fun (compose_fun unit_interval f_V incV) t = apply_fun fcls t.
+        {
+          let t.
+          assume Ht.
+          rewrite (compose_fun_apply unit_interval f_V incV t Ht).
+          claim HfVt_in_V : apply_fun f_V t :e V.
+          {
+            rewrite (Hf_V_apply t Ht).
+            exact (HallV t Ht).
+          }
+          rewrite (apply_fun_graph V (fun x:set => x) (apply_fun f_V t) HfVt_in_V).
+          exact (Hf_V_apply t Ht).
+        }
+        claim HfV_inc_0 : apply_fun (compose_fun unit_interval f_V incV) 0 = a.
+        {
+          rewrite (HfV_inc_pw 0 zero_in_unit_interval).
+          exact Hfcls0.
+        }
+        claim HfV_inc_1 : apply_fun (compose_fun unit_interval f_V incV) 1 = a.
+        {
+          rewrite (HfV_inc_pw 1 one_in_unit_interval).
+          exact Hfcls1.
+        }
+        claim HfV_inc_hom_fcls : path_homotopic X Tx a a
+          (compose_fun unit_interval f_V incV)
+          fcls.
+        {
+          exact (path_homotopic_of_pointwise_equal
+            X
+            Tx
+            a
+            a
+            (compose_fun unit_interval f_V incV)
+            fcls
+            HfV_inc_cont
+            HfclsCont
+            HfV_inc_0
+            HfV_inc_1
+            Hfcls0
+            Hfcls1
+            HfV_inc_pw).
+        }
+        claim Hclass_repV_eq_fV :
+          path_homotopy_class_loop X Tx a (compose_fun unit_interval repV incV)
+          = path_homotopy_class_loop X Tx a (compose_fun unit_interval f_V incV).
+        {
+          exact (path_homotopy_class_loop_eq_of_path_homotopic
+            X
+            Tx
+            a
+            (compose_fun unit_interval repV incV)
+            (compose_fun unit_interval f_V incV)
+            (Lemma_51_1_path_homotopy_sym
+              X
+              Tx
+              a
+              a
+              (compose_fun unit_interval f_V incV)
+              (compose_fun unit_interval repV incV)
+              Hpost_hom_V)).
+        }
+        claim Hclass_fV_eq_fcls :
+          path_homotopy_class_loop X Tx a (compose_fun unit_interval f_V incV)
+          = path_homotopy_class_loop X Tx a fcls.
+        {
+          exact (path_homotopy_class_loop_eq_of_path_homotopic
+            X
+            Tx
+            a
+            (compose_fun unit_interval f_V incV)
+            fcls
+            HfV_inc_hom_fcls).
+        }
+        rewrite Hj_star_vcls.
+        rewrite Hclass_repV_eq_fV.
+        exact Hclass_fV_eq_fcls.
       }
       set idV := fundamental_group_id V (subspace_topology X Tx V) a.
       set idX := fundamental_group_id X Tx a.
