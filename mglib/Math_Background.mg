@@ -250955,6 +250955,100 @@ claim HpreUV_imageAB :
     Hoverlap
     HimgUV).
 }
+claim HpreUV_notA_implies_B :
+  forall t:set, t :e preU :/\: preV ->
+    ~(t :e preA) -> t :e preB.
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  assume HnotA : ~(t :e preA).
+  claim HtAB : t :e preA :\/: preB.
+  {
+    exact (HpreUV_to_preAB t HtUV).
+  }
+  apply (binunionE preA preB t HtAB).
+  - assume HtA : t :e preA.
+    exact (FalseE (HnotA HtA) (t :e preB)).
+  - assume HtB : t :e preB.
+    exact HtB.
+}
+claim HpreUV_notB_implies_A :
+  forall t:set, t :e preU :/\: preV ->
+    ~(t :e preB) -> t :e preA.
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  assume HnotB : ~(t :e preB).
+  claim HtAB : t :e preA :\/: preB.
+  {
+    exact (HpreUV_to_preAB t HtUV).
+  }
+  apply (binunionE preA preB t HtAB).
+  - assume HtA : t :e preA.
+    exact HtA.
+  - assume HtB : t :e preB.
+    exact (FalseE (HnotB HtB) (t :e preA)).
+}
+claim H0ClassA : 0 :e preA /\ ~(0 :e preB).
+{
+  exact (andI
+    (0 :e preA)
+    (~(0 :e preB))
+    H0PreA
+    H0NotPreB).
+}
+claim H1ClassA : 1 :e preA /\ ~(1 :e preB).
+{
+  exact (andI
+    (1 :e preA)
+    (~(1 :e preB))
+    H1PreA
+    H1NotPreB).
+}
+claim HpreUV_imageA_implies_preA :
+  forall t:set, t :e preU :/\: preV ->
+    apply_fun fcls t :e A -> t :e preA.
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  assume HimgA : apply_fun fcls t :e A.
+  claim HtPreU : t :e preU.
+  {
+    exact (binintersectE1 preU preV t HtUV).
+  }
+  claim HtI : t :e unit_interval.
+  {
+    exact (SepE1 unit_interval (fun x:set => apply_fun fcls x :e U) t HtPreU).
+  }
+  exact (SepI
+    unit_interval
+    (fun x:set => apply_fun fcls x :e A)
+    t
+    HtI
+    HimgA).
+}
+claim HpreUV_imageB_implies_preB :
+  forall t:set, t :e preU :/\: preV ->
+    apply_fun fcls t :e B -> t :e preB.
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  assume HimgB : apply_fun fcls t :e B.
+  claim HtPreV : t :e preV.
+  {
+    exact (binintersectE2 preU preV t HtUV).
+  }
+  claim HtI : t :e unit_interval.
+  {
+    exact (SepE1 unit_interval (fun x:set => apply_fun fcls x :e V) t HtPreV).
+  }
+  exact (SepI
+    unit_interval
+    (fun x:set => apply_fun fcls x :e B)
+    t
+    HtI
+    HimgB).
+}
 (** TODO Bob: prove via S63-style alternating decomposition in U cap V = A union B
     with A cap B = Empty, then identify loop class as power of [alpha.beta] or inverse power.
     Current core setup complete:
@@ -250963,7 +251057,8 @@ claim HpreUV_imageAB :
     - mixed crossing preimage-open/nonempty structure in unit interval,
     - global preimage cover unit_interval = preU union preV,
     - lifted overlap decomposition preU cap preV = preA union preB, disjointness/classification,
-    - image-side overlap classification for points in preU cap preV.
+    - image-side overlap classification for points in preU cap preV,
+    - explicit overlap implication lemmas (notA->B, notB->A, imageA->preA, imageB->preB).
     Remaining: alternating crossing decomposition over U cap V = A union B (A cap B=Empty). **)
 admit.
 Admitted.
