@@ -73650,6 +73650,220 @@ exact (Eps_i_ax
   HFt).
 Qed.
 
+(** Proven Bob **)
+Theorem unit_square_coords_in : forall p:set,
+  p :e unit_square -> p 0 :e unit_interval /\ p 1 :e unit_interval.
+let p.
+assume Hp.
+claim HpProd : p :e setprod unit_interval unit_interval.
+{
+  exact Hp.
+}
+claim HpEta : p = (p 0, p 1).
+{
+  exact (setprod_eta unit_interval unit_interval p HpProd).
+}
+claim Hp0Sing : p 0 :e {p 0}.
+{
+  exact (SingI (p 0)).
+}
+claim Hp1Sing : p 1 :e {p 1}.
+{
+  exact (SingI (p 1)).
+}
+claim HpairIn : (p 0, p 1) :e setprod {p 0} {p 1}.
+{
+  exact (tuple_2_setprod_by_pair_Sigma
+    {p 0}
+    {p 1}
+    (p 0)
+    (p 1)
+    Hp0Sing
+    Hp1Sing).
+}
+claim HpInPair : p :e setprod {p 0} {p 1}.
+{
+  rewrite HpEta.
+  rewrite tuple_2_0_eq.
+  rewrite tuple_2_1_eq.
+  exact HpairIn.
+}
+apply (setprod_elem_decompose unit_interval unit_interval p HpProd).
+let x.
+assume HxPack.
+claim HxI : x :e unit_interval.
+{
+  exact (andEL
+    (x :e unit_interval)
+    (exists y:set, y :e unit_interval /\ p :e setprod {x} {y})
+    HxPack).
+}
+claim HyExists : exists y:set, y :e unit_interval /\ p :e setprod {x} {y}.
+{
+  exact (andER
+    (x :e unit_interval)
+    (exists y:set, y :e unit_interval /\ p :e setprod {x} {y})
+    HxPack).
+}
+apply HyExists.
+let y.
+assume HyPack.
+claim HyI : y :e unit_interval.
+{
+  exact (andEL
+    (y :e unit_interval)
+    (p :e setprod {x} {y})
+    HyPack).
+}
+claim Hpxy : p :e setprod {x} {y}.
+{
+  exact (andER
+    (y :e unit_interval)
+    (p :e setprod {x} {y})
+    HyPack).
+}
+claim HxyIn : x :e {p 0} /\ y :e {p 1}.
+{
+  exact (setprod_coords_in
+    x
+    y
+    {p 0}
+    {p 1}
+    p
+    Hpxy
+    HpInPair).
+}
+claim HxEq : x = p 0.
+{
+  exact (singleton_elem
+    x
+    (p 0)
+    (andEL
+      (x :e {p 0})
+      (y :e {p 1})
+      HxyIn)).
+}
+claim HyEq : y = p 1.
+{
+  exact (singleton_elem
+    y
+    (p 1)
+    (andER
+      (x :e {p 0})
+      (y :e {p 1})
+      HxyIn)).
+}
+claim Hp0I : p 0 :e unit_interval.
+{
+  rewrite <- HxEq.
+  exact HxI.
+}
+claim Hp1I : p 1 :e unit_interval.
+{
+  rewrite <- HyEq.
+  exact HyI.
+}
+exact (andI
+  (p 0 :e unit_interval)
+  (p 1 :e unit_interval)
+  Hp0I
+  Hp1I).
+Qed.
+
+(** Proven Bob **)
+Theorem homotopy_lift_is_lifting_of_from_exists : forall E Te B Tb p e0 F:set,
+  (exists Ft:set,
+    continuous_map unit_square unit_square_topology E Te Ft /\
+    apply_fun Ft (0, 0) = e0 /\
+    (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+      apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t))) ->
+  lifting_of unit_square unit_square_topology E Te B Tb p F
+    (homotopy_lift E Te B Tb p e0 F).
+let E Te B Tb p e0 F.
+assume Hex.
+claim Hpack :
+  continuous_map unit_square unit_square_topology E Te (homotopy_lift E Te B Tb p e0 F) /\
+  apply_fun (homotopy_lift E Te B Tb p e0 F) (0, 0) = e0 /\
+  (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun (homotopy_lift E Te B Tb p e0 F) (s, t)) = apply_fun F (s, t)).
+{
+  exact (homotopy_lift_from_exists_witness
+    E Te B Tb p e0 F
+    Hex).
+}
+claim Hleft :
+  continuous_map unit_square unit_square_topology E Te (homotopy_lift E Te B Tb p e0 F) /\
+  apply_fun (homotopy_lift E Te B Tb p e0 F) (0, 0) = e0.
+{
+  exact (andEL
+    (continuous_map unit_square unit_square_topology E Te (homotopy_lift E Te B Tb p e0 F) /\
+     apply_fun (homotopy_lift E Te B Tb p e0 F) (0, 0) = e0)
+    (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+      apply_fun p (apply_fun (homotopy_lift E Te B Tb p e0 F) (s, t)) = apply_fun F (s, t))
+    Hpack).
+}
+claim Hcont :
+  continuous_map unit_square unit_square_topology E Te (homotopy_lift E Te B Tb p e0 F).
+{
+  exact (andEL
+    (continuous_map unit_square unit_square_topology E Te (homotopy_lift E Te B Tb p e0 F))
+    (apply_fun (homotopy_lift E Te B Tb p e0 F) (0, 0) = e0)
+    Hleft).
+}
+claim Hcomm :
+  forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun (homotopy_lift E Te B Tb p e0 F) (s, t)) = apply_fun F (s, t).
+{
+  exact (andER
+    (continuous_map unit_square unit_square_topology E Te (homotopy_lift E Te B Tb p e0 F) /\
+     apply_fun (homotopy_lift E Te B Tb p e0 F) (0, 0) = e0)
+    (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+      apply_fun p (apply_fun (homotopy_lift E Te B Tb p e0 F) (s, t)) = apply_fun F (s, t))
+    Hpack).
+}
+claim Hlift :
+  forall x:set, x :e unit_square ->
+    apply_fun p (apply_fun (homotopy_lift E Te B Tb p e0 F) x) = apply_fun F x.
+{
+  let x.
+  assume HxSq.
+  claim Hcoords : x 0 :e unit_interval /\ x 1 :e unit_interval.
+  {
+    exact (unit_square_coords_in x HxSq).
+  }
+  claim Hx0 : x 0 :e unit_interval.
+  {
+    exact (andEL
+      (x 0 :e unit_interval)
+      (x 1 :e unit_interval)
+      Hcoords).
+  }
+  claim Hx1 : x 1 :e unit_interval.
+  {
+    exact (andER
+      (x 0 :e unit_interval)
+      (x 1 :e unit_interval)
+      Hcoords).
+  }
+  claim HxEq : x = (x 0, x 1).
+  {
+    exact (setprod_eta unit_interval unit_interval x HxSq).
+  }
+  rewrite HxEq.
+  exact (Hcomm
+    (x 0)
+    (x 1)
+    Hx0
+    Hx1).
+}
+exact (andI
+  (continuous_map unit_square unit_square_topology E Te (homotopy_lift E Te B Tb p e0 F))
+  (forall x:set, x :e unit_square ->
+    apply_fun p (apply_fun (homotopy_lift E Te B Tb p e0 F) x) = apply_fun F x)
+  Hcont
+  Hlift).
+Qed.
+
 (** Infrastructure: connectedness of the L-shaped boundary C=(0xI) U (Ix0) of I^2 **)
 (** Proven Bob **)
 Theorem lemma54_2_boundary_C_connected :
@@ -81982,7 +82196,7 @@ exact (homotopy_lift_from_exists_witness
   e0
   F
   Hex).
-Admitted.
+ Admitted.
 
 (** from S54 Lem 54.2 path homotopy preservation (line 783 in algtop.tex) **)
 (** LATEX VERSION: If F is a path homotopy, then the lift F_tilde is also a path homotopy. **)
@@ -82534,7 +82748,7 @@ exact (andI
   (forall t:set, t :e unit_interval -> apply_fun Ft (1, t) = e1)
   HleftConst
   HrightConst).
-Admitted.
+ Admitted.
 
 (** from S54 Thm 54.3 (line 785 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be covering, p(e0) = b0. Let f and g be paths in B **)
@@ -83484,7 +83698,7 @@ apply andI.
       reflexivity.
     * exact HleftEdgeE0.
     * exact HrightEdgeFF1.
-Admitted.
+ Admitted.
 
 (** from S54 Definition (line 791 in algtop.tex) **)
 (** LATEX VERSION: The lifting correspondence phi: pi_1(B,b0) -> p^{-1}(b0) maps **)
