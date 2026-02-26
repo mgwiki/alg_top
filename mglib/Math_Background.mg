@@ -162972,10 +162972,14 @@ claim Hphi_transfer : forall alpha:set, alpha :e J ->
 witness phi.
 apply and3I.
 - (** group_isomorphism G multG G' multG' phi **)
-  apply andI.
-  + exact Hphi_hom.
-  + (** bijection: need inverse via G' -> G **)
-    admit.
+  claim Hphi_bij : bijection G G' phi.
+  { (** bijection: need inverse via G' -> G **)
+    admit. }
+  exact (andI
+    (group_homomorphism G multG G' multG' phi)
+    (bijection G G' phi)
+    Hphi_hom
+    Hphi_bij).
 - (** extension property **)
   exact Hphi_transfer.
 - (** uniqueness **)
