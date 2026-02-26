@@ -248233,6 +248233,20 @@ exact (thm84_4_maximal_tree_all_vertices_from_stub_obligation_families
       Hep)).
 Admitted.
 
+(** helper for S84.5: existence of maximal tree extension for a given tree T0 in X. **)
+Theorem thm84_5_maximal_tree_extension_exists :
+  forall T0 ArcsT0 X Tx Arcs:set,
+  general_linear_graph X Tx Arcs ->
+  tree_in_graph T0 ArcsT0 X Tx Arcs ->
+  exists T ArcsT:set, maximal_tree T ArcsT X Tx Arcs /\ T0 c= T.
+let T0 ArcsT0 X Tx Arcs.
+assume Hglg Htree0.
+(** Remaining S84.5 core existence gap:
+    construct a maximal tree extending T0 (typically via a maximal-extension
+    principle such as Zorn over tree extensions ordered by inclusion). **)
+admit.
+Admitted.
+
 (** from S84 Thm 84.5 (line 5631 in algtop.tex): every tree in maximal tree **)
 (** LATEX VERSION: If X is a linear graph, every tree T0 in X is contained **)
 (** in a maximal tree in X. **)
@@ -248256,15 +248270,14 @@ claim Hsub0 : subgraph_of T0 X Tx Arcs.
     Arcs
     Htree0).
 }
-claim HexMaxExt :
-  exists T ArcsT:set, maximal_tree T ArcsT X Tx Arcs /\ T0 c= T.
-{
-  (** Remaining S84.5 core existence gap:
-      construct a maximal tree extending T0 (typically via a maximal-extension
-      principle such as Zorn over tree extensions ordered by inclusion). **)
-  admit.
-}
-exact HexMaxExt.
+exact (thm84_5_maximal_tree_extension_exists
+  T0
+  ArcsT0
+  X
+  Tx
+  Arcs
+  Hglg
+  Htree0).
 Admitted.
 
 (** from S84 Lem 84.6 (line 5643 in algtop.tex): generator from edge **)
