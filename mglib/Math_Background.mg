@@ -96122,6 +96122,341 @@ apply set_ext.
   + reflexivity.
 Qed.
 
+(** Infrastructure: coset equality characterized by membership of representative **)
+(** Proven Bob **)
+Lemma right_coset_eq_iff_member : forall G mult e inv H g1 g2:set,
+  group_structure G mult e inv ->
+  H c= G ->
+  (forall a b:set, a :e H -> b :e H -> apply_fun mult (a, b) :e H) ->
+  (forall a:set, a :e H -> apply_fun inv a :e H) ->
+  e :e H ->
+  g1 :e G ->
+  g2 :e G ->
+  (g2 :e right_coset mult H g1 <->
+    right_coset mult H g2 = right_coset mult H g1).
+let G mult e inv H g1 g2.
+assume Hgrp HsubG Hclosed HinvH HeH Hg1G Hg2G.
+apply iffI.
+- assume Hg2in.
+  claim Hex : exists h0:set, h0 :e H /\ g2 = apply_fun mult (h0, g1).
+  {
+    exact (iffEL
+      (g2 :e right_coset mult H g1)
+      (exists h0:set, h0 :e H /\ g2 = apply_fun mult (h0, g1))
+      (right_coset_mem mult H g1 g2)
+      Hg2in).
+  }
+  apply Hex.
+  let h0.
+  assume Hh0Pack.
+  claim Hh0H : h0 :e H.
+  {
+    exact (andEL
+      (h0 :e H)
+      (g2 = apply_fun mult (h0, g1))
+      Hh0Pack).
+  }
+  claim Hg2Eq : g2 = apply_fun mult (h0, g1).
+  {
+    exact (andER
+      (h0 :e H)
+      (g2 = apply_fun mult (h0, g1))
+      Hh0Pack).
+  }
+  rewrite Hg2Eq.
+  exact (right_coset_eq_of_left_mul
+    G
+    mult
+    e
+    inv
+    H
+    h0
+    g1
+    Hgrp
+    HsubG
+    Hclosed
+    HinvH
+    Hh0H
+    Hg1G).
+- assume HcosetEq.
+  claim Hself : g2 :e right_coset mult H g2.
+  {
+    apply (iffER
+      (g2 :e right_coset mult H g2)
+      (exists h:set, h :e H /\ g2 = apply_fun mult (h, g2))
+      (right_coset_mem mult H g2 g2)).
+    witness e.
+    apply andI.
+    + exact HeH.
+    + claim HidL : apply_fun mult (e, g2) = g2.
+      {
+        apply (and6E
+          (function_on mult (setprod G G) G)
+          (function_on inv G G)
+          (e :e G)
+          (forall a b c:set, a :e G -> b :e G -> c :e G ->
+            apply_fun mult (apply_fun mult (a, b), c) =
+            apply_fun mult (a, apply_fun mult (b, c)))
+          (forall a:set, a :e G ->
+            apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+          (forall a:set, a :e G ->
+            apply_fun mult (a, apply_fun inv a) = e /\
+            apply_fun mult (apply_fun inv a, a) = e)
+          Hgrp).
+        assume Hm Hinv He Hassoc Hid HinvLaw.
+        exact (andEL
+          (apply_fun mult (e, g2) = g2)
+          (apply_fun mult (g2, e) = g2)
+          (Hid g2 Hg2G)).
+      }
+      symmetry.
+      exact HidL.
+  }
+  rewrite <- HcosetEq.
+  exact Hself.
+Qed.
+
+(** Infrastructure: membership implies product with inverse lies in H **)
+(** Proven Bob **)
+Lemma right_coset_member_implies_mul_inv_in_H : forall G mult e inv H g1 g2:set,
+  group_structure G mult e inv ->
+  H c= G ->
+  (forall a b:set, a :e H -> b :e H -> apply_fun mult (a, b) :e H) ->
+  (forall a:set, a :e H -> apply_fun inv a :e H) ->
+  g1 :e G ->
+  g2 :e G ->
+  g2 :e right_coset mult H g1 ->
+  apply_fun mult (g2, apply_fun inv g1) :e H.
+let G mult e inv H g1 g2.
+assume Hgrp HsubG Hclosed HinvH Hg1G Hg2G Hg2in.
+claim Hex : exists h:set, h :e H /\ g2 = apply_fun mult (h, g1).
+{
+  exact (iffEL
+    (g2 :e right_coset mult H g1)
+    (exists h:set, h :e H /\ g2 = apply_fun mult (h, g1))
+    (right_coset_mem mult H g1 g2)
+    Hg2in).
+}
+apply Hex.
+let h.
+assume HhPack.
+claim HhH : h :e H.
+{
+  exact (andEL
+    (h :e H)
+    (g2 = apply_fun mult (h, g1))
+    HhPack).
+}
+claim Hg2Eq : g2 = apply_fun mult (h, g1).
+{
+  exact (andER
+    (h :e H)
+    (g2 = apply_fun mult (h, g1))
+    HhPack).
+}
+claim HhG : h :e G.
+{ exact (HsubG h HhH). }
+claim HinvG1 : apply_fun inv g1 :e G.
+{
+  apply (and6E
+    (function_on mult (setprod G G) G)
+    (function_on inv G G)
+    (e :e G)
+    (forall a b c:set, a :e G -> b :e G -> c :e G ->
+      apply_fun mult (apply_fun mult (a, b), c) =
+      apply_fun mult (a, apply_fun mult (b, c)))
+    (forall a:set, a :e G ->
+      apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+    (forall a:set, a :e G ->
+      apply_fun mult (a, apply_fun inv a) = e /\
+      apply_fun mult (apply_fun inv a, a) = e)
+    Hgrp).
+  assume Hm Hinv He Hassoc Hid HinvLaw.
+  exact (Hinv g1 Hg1G).
+}
+claim Hassoc :
+  apply_fun mult (g2, apply_fun inv g1) =
+  apply_fun mult (h, apply_fun mult (g1, apply_fun inv g1)).
+{
+  apply (and6E
+    (function_on mult (setprod G G) G)
+    (function_on inv G G)
+    (e :e G)
+    (forall a b c:set, a :e G -> b :e G -> c :e G ->
+      apply_fun mult (apply_fun mult (a, b), c) =
+      apply_fun mult (a, apply_fun mult (b, c)))
+    (forall a:set, a :e G ->
+      apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+    (forall a:set, a :e G ->
+      apply_fun mult (a, apply_fun inv a) = e /\
+      apply_fun mult (apply_fun inv a, a) = e)
+    Hgrp).
+  assume Hm Hinv He Hassoc Hid HinvLaw.
+  rewrite Hg2Eq.
+  exact (Hassoc h g1 (apply_fun inv g1) HhG Hg1G HinvG1).
+}
+claim HinvLaw :
+  apply_fun mult (g1, apply_fun inv g1) = e.
+{
+  apply (and6E
+    (function_on mult (setprod G G) G)
+    (function_on inv G G)
+    (e :e G)
+    (forall a b c:set, a :e G -> b :e G -> c :e G ->
+      apply_fun mult (apply_fun mult (a, b), c) =
+      apply_fun mult (a, apply_fun mult (b, c)))
+    (forall a:set, a :e G ->
+      apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+    (forall a:set, a :e G ->
+      apply_fun mult (a, apply_fun inv a) = e /\
+      apply_fun mult (apply_fun inv a, a) = e)
+    Hgrp).
+  assume Hm Hinv He Hassoc Hid HinvLaw.
+  exact (andEL
+    (apply_fun mult (g1, apply_fun inv g1) = e)
+    (apply_fun mult (apply_fun inv g1, g1) = e)
+    (HinvLaw g1 Hg1G)).
+}
+claim HidR : apply_fun mult (h, e) = h.
+{
+  apply (and6E
+    (function_on mult (setprod G G) G)
+    (function_on inv G G)
+    (e :e G)
+    (forall a b c:set, a :e G -> b :e G -> c :e G ->
+      apply_fun mult (apply_fun mult (a, b), c) =
+      apply_fun mult (a, apply_fun mult (b, c)))
+    (forall a:set, a :e G ->
+      apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+    (forall a:set, a :e G ->
+      apply_fun mult (a, apply_fun inv a) = e /\
+      apply_fun mult (apply_fun inv a, a) = e)
+    Hgrp).
+  assume Hm Hinv He Hassoc Hid HinvLaw.
+  exact (andER
+    (apply_fun mult (e, h) = h)
+    (apply_fun mult (h, e) = h)
+    (Hid h HhG)).
+}
+rewrite Hassoc.
+rewrite HinvLaw.
+rewrite HidR.
+exact HhH.
+Qed.
+
+(** Infrastructure: product with inverse in H gives coset equality **)
+(** Proven Bob **)
+Lemma right_coset_eq_of_mul_inv_in_H : forall G mult e inv H g1 g2:set,
+  group_structure G mult e inv ->
+  H c= G ->
+  (forall a b:set, a :e H -> b :e H -> apply_fun mult (a, b) :e H) ->
+  (forall a:set, a :e H -> apply_fun inv a :e H) ->
+  e :e H ->
+  g1 :e G ->
+  g2 :e G ->
+  apply_fun mult (g2, apply_fun inv g1) :e H ->
+  right_coset mult H g2 = right_coset mult H g1.
+let G mult e inv H g1 g2.
+assume Hgrp HsubG Hclosed HinvH HeH Hg1G Hg2G HmulInv.
+claim Hg2in : g2 :e right_coset mult H g1.
+{
+  apply (iffER
+    (g2 :e right_coset mult H g1)
+    (exists h:set, h :e H /\ g2 = apply_fun mult (h, g1))
+    (right_coset_mem mult H g1 g2)).
+  witness (apply_fun mult (g2, apply_fun inv g1)).
+  apply andI.
+  - exact HmulInv.
+  - claim Hassoc :
+      apply_fun mult (apply_fun mult (g2, apply_fun inv g1), g1) =
+      apply_fun mult (g2, apply_fun mult (apply_fun inv g1, g1)).
+    {
+      apply (and6E
+        (function_on mult (setprod G G) G)
+        (function_on inv G G)
+        (e :e G)
+        (forall a b c:set, a :e G -> b :e G -> c :e G ->
+          apply_fun mult (apply_fun mult (a, b), c) =
+          apply_fun mult (a, apply_fun mult (b, c)))
+        (forall a:set, a :e G ->
+          apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+        (forall a:set, a :e G ->
+          apply_fun mult (a, apply_fun inv a) = e /\
+          apply_fun mult (apply_fun inv a, a) = e)
+        Hgrp).
+      assume Hm Hinv He Hassoc Hid HinvLaw.
+      exact (Hassoc g2 (apply_fun inv g1) g1 Hg2G
+        (Hinv g1 Hg1G) Hg1G).
+    }
+    claim HinvLaw :
+      apply_fun mult (apply_fun inv g1, g1) = e.
+    {
+      apply (and6E
+        (function_on mult (setprod G G) G)
+        (function_on inv G G)
+        (e :e G)
+        (forall a b c:set, a :e G -> b :e G -> c :e G ->
+          apply_fun mult (apply_fun mult (a, b), c) =
+          apply_fun mult (a, apply_fun mult (b, c)))
+        (forall a:set, a :e G ->
+          apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+        (forall a:set, a :e G ->
+          apply_fun mult (a, apply_fun inv a) = e /\
+          apply_fun mult (apply_fun inv a, a) = e)
+        Hgrp).
+      assume Hm Hinv He Hassoc Hid HinvLaw.
+      exact (andER
+        (apply_fun mult (g1, apply_fun inv g1) = e)
+        (apply_fun mult (apply_fun inv g1, g1) = e)
+        (HinvLaw g1 Hg1G)).
+    }
+    claim HidR : apply_fun mult (g2, e) = g2.
+    {
+      apply (and6E
+        (function_on mult (setprod G G) G)
+        (function_on inv G G)
+        (e :e G)
+        (forall a b c:set, a :e G -> b :e G -> c :e G ->
+          apply_fun mult (apply_fun mult (a, b), c) =
+          apply_fun mult (a, apply_fun mult (b, c)))
+        (forall a:set, a :e G ->
+          apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+        (forall a:set, a :e G ->
+          apply_fun mult (a, apply_fun inv a) = e /\
+          apply_fun mult (apply_fun inv a, a) = e)
+        Hgrp).
+      assume Hm Hinv He Hassoc Hid HinvLaw.
+      exact (andER
+        (apply_fun mult (e, g2) = g2)
+        (apply_fun mult (g2, e) = g2)
+        (Hid g2 Hg2G)).
+    }
+    rewrite Hassoc.
+    rewrite HinvLaw.
+    rewrite HidR.
+    reflexivity.
+}
+exact (iffEL
+  (g2 :e right_coset mult H g1)
+  (right_coset mult H g2 = right_coset mult H g1)
+  (right_coset_eq_iff_member
+    G
+    mult
+    e
+    inv
+    H
+    g1
+    g2
+    Hgrp
+    HsubG
+    Hclosed
+    HinvH
+    HeH
+    Hg1G
+    Hg2G)
+  Hg2in).
+Qed.
+
 (** Helper: two continuous paths that agree pointwise are path-homotopic **)
 Lemma path_homotopic_of_pointwise_equal : forall X Tx x0 x1 f g:set,
   continuous_map unit_interval unit_interval_topology X Tx f ->
@@ -97197,6 +97532,40 @@ claim HeInH : fundamental_group_id B Tb b0 :e H.
   - symmetry.
     exact HphiId.
 }
+claim HclosedH :
+  forall a b:set, a :e H -> b :e H -> apply_fun mult (a, b) :e H.
+{
+  exact (homomorphism_image_closed_mult
+    (fundamental_group E Te e0)
+    (fundamental_group_mult E Te e0)
+    (fundamental_group_id E Te e0)
+    (fundamental_group_inv E Te e0)
+    G
+    mult
+    (fundamental_group_id B Tb b0)
+    (fundamental_group_inv B Tb b0)
+    (induced_homomorphism E Te e0 B Tb b0 p)
+    HgrpE
+    HgrpG
+    HphiHom).
+}
+claim HinvH :
+  forall a:set, a :e H -> apply_fun (fundamental_group_inv B Tb b0) a :e H.
+{
+  exact (homomorphism_image_closed_inv
+    (fundamental_group E Te e0)
+    (fundamental_group_mult E Te e0)
+    (fundamental_group_id E Te e0)
+    (fundamental_group_inv E Te e0)
+    G
+    mult
+    (fundamental_group_id B Tb b0)
+    (fundamental_group_inv B Tb b0)
+    (induced_homomorphism E Te e0 B Tb b0 p)
+    HgrpE
+    HgrpG
+    HphiHom).
+}
 claim HPhiFun : function_on Phi cosets Fib.
 {
   let c.
@@ -97315,8 +97684,416 @@ claim HPhiInj :
 {
   let c1 c2.
   assume Hc1 Hc2 HPhiEq.
-  (** TODO Bob: use loop characterization and p-star injectivity to show cosets coincide. **)
-  admit.
+  set g1 := Eps_i (fun cls:set => cls :e c1).
+  set g2 := Eps_i (fun cls:set => cls :e c2).
+  claim Hg1G : g1 :e G.
+  {
+    claim HcosetRep :
+      exists g:set, g :e G /\ c1 = right_coset mult H g.
+    {
+      exact (iffEL
+        (c1 :e right_coset_set G mult H)
+        (exists g:set, g :e G /\ c1 = right_coset mult H g)
+        (right_coset_set_mem G mult H c1)
+        Hc1).
+    }
+    apply HcosetRep.
+    let g.
+    assume HgPack.
+    claim HgG : g :e G.
+    {
+      exact (andEL
+        (g :e G)
+        (c1 = right_coset mult H g)
+        HgPack).
+    }
+    claim HcEq : c1 = right_coset mult H g.
+    {
+      exact (andER
+        (g :e G)
+        (c1 = right_coset mult H g)
+        HgPack).
+    }
+    claim HcSubG : c1 c= G.
+    {
+      rewrite HcEq.
+      exact (right_coset_subset
+        G
+        mult
+        H
+        g
+        HmultFun
+        HsubG
+        HgG).
+    }
+    claim HginC : g :e c1.
+    {
+      rewrite HcEq.
+      apply (iffER
+        (g :e right_coset mult H g)
+        (exists h:set, h :e H /\ g = apply_fun mult (h, g))
+        (right_coset_mem mult H g g)).
+      witness (fundamental_group_id B Tb b0).
+      apply andI.
+      - exact HeInH.
+      - claim HmultIdL : g = apply_fun mult (fundamental_group_id B Tb b0, g).
+        {
+          apply (and6E
+            (function_on mult (setprod G G) G)
+            (function_on (fundamental_group_inv B Tb b0) G G)
+            ((fundamental_group_id B Tb b0) :e G)
+            (forall x y z:set, x :e G -> y :e G -> z :e G ->
+              apply_fun mult (apply_fun mult (x, y), z) =
+              apply_fun mult (x, apply_fun mult (y, z)))
+            (forall x:set, x :e G ->
+              apply_fun mult (fundamental_group_id B Tb b0, x) = x /\
+              apply_fun mult (x, fundamental_group_id B Tb b0) = x)
+            (forall x:set, x :e G ->
+              apply_fun mult (x, apply_fun (fundamental_group_inv B Tb b0) x) =
+                fundamental_group_id B Tb b0 /\
+              apply_fun mult (apply_fun (fundamental_group_inv B Tb b0) x, x) =
+                fundamental_group_id B Tb b0)
+            HgrpG).
+          assume Hm Hinv He Hassoc Hid HinvLaw.
+          symmetry.
+          exact (andEL
+            (apply_fun mult (fundamental_group_id B Tb b0, g) = g)
+            (apply_fun mult (g, fundamental_group_id B Tb b0) = g)
+            (Hid g HgG)).
+        }
+        exact HmultIdL.
+    }
+    claim HEpsInC : g1 :e c1.
+    {
+      exact (Eps_i_ax
+        (fun cls:set => cls :e c1)
+        g
+        HginC).
+    }
+    exact (HcSubG g1 HEpsInC).
+  }
+  claim Hg2G : g2 :e G.
+  {
+    claim HcosetRep :
+      exists g:set, g :e G /\ c2 = right_coset mult H g.
+    {
+      exact (iffEL
+        (c2 :e right_coset_set G mult H)
+        (exists g:set, g :e G /\ c2 = right_coset mult H g)
+        (right_coset_set_mem G mult H c2)
+        Hc2).
+    }
+    apply HcosetRep.
+    let g.
+    assume HgPack.
+    claim HgG : g :e G.
+    {
+      exact (andEL
+        (g :e G)
+        (c2 = right_coset mult H g)
+        HgPack).
+    }
+    claim HcEq : c2 = right_coset mult H g.
+    {
+      exact (andER
+        (g :e G)
+        (c2 = right_coset mult H g)
+        HgPack).
+    }
+    claim HcSubG : c2 c= G.
+    {
+      rewrite HcEq.
+      exact (right_coset_subset
+        G
+        mult
+        H
+        g
+        HmultFun
+        HsubG
+        HgG).
+    }
+    claim HginC : g :e c2.
+    {
+      rewrite HcEq.
+      apply (iffER
+        (g :e right_coset mult H g)
+        (exists h:set, h :e H /\ g = apply_fun mult (h, g))
+        (right_coset_mem mult H g g)).
+      witness (fundamental_group_id B Tb b0).
+      apply andI.
+      - exact HeInH.
+      - claim HmultIdL : g = apply_fun mult (fundamental_group_id B Tb b0, g).
+        {
+          apply (and6E
+            (function_on mult (setprod G G) G)
+            (function_on (fundamental_group_inv B Tb b0) G G)
+            ((fundamental_group_id B Tb b0) :e G)
+            (forall x y z:set, x :e G -> y :e G -> z :e G ->
+              apply_fun mult (apply_fun mult (x, y), z) =
+              apply_fun mult (x, apply_fun mult (y, z)))
+            (forall x:set, x :e G ->
+              apply_fun mult (fundamental_group_id B Tb b0, x) = x /\
+              apply_fun mult (x, fundamental_group_id B Tb b0) = x)
+            (forall x:set, x :e G ->
+              apply_fun mult (x, apply_fun (fundamental_group_inv B Tb b0) x) =
+                fundamental_group_id B Tb b0 /\
+              apply_fun mult (apply_fun (fundamental_group_inv B Tb b0) x, x) =
+                fundamental_group_id B Tb b0)
+            HgrpG).
+          assume Hm Hinv He Hassoc Hid HinvLaw.
+          symmetry.
+          exact (andEL
+            (apply_fun mult (fundamental_group_id B Tb b0, g) = g)
+            (apply_fun mult (g, fundamental_group_id B Tb b0) = g)
+            (Hid g HgG)).
+        }
+        exact HmultIdL.
+    }
+    claim HEpsInC : g2 :e c2.
+    {
+      exact (Eps_i_ax
+        (fun cls:set => cls :e c2)
+        g
+        HginC).
+    }
+    exact (HcSubG g2 HEpsInC).
+  }
+  claim Hc1Eq : c1 = right_coset mult H g1.
+  {
+    claim HcosetRep :
+      exists g:set, g :e G /\ c1 = right_coset mult H g.
+    {
+      exact (iffEL
+        (c1 :e right_coset_set G mult H)
+        (exists g:set, g :e G /\ c1 = right_coset mult H g)
+        (right_coset_set_mem G mult H c1)
+        Hc1).
+    }
+    apply HcosetRep.
+    let g.
+    assume HgPack.
+    claim HgG : g :e G.
+    {
+      exact (andEL
+        (g :e G)
+        (c1 = right_coset mult H g)
+        HgPack).
+    }
+    claim HcEq : c1 = right_coset mult H g.
+    {
+      exact (andER
+        (g :e G)
+        (c1 = right_coset mult H g)
+        HgPack).
+    }
+    claim HginC : g :e c1.
+    {
+      rewrite HcEq.
+      apply (iffER
+        (g :e right_coset mult H g)
+        (exists h:set, h :e H /\ g = apply_fun mult (h, g))
+        (right_coset_mem mult H g g)).
+      witness (fundamental_group_id B Tb b0).
+      apply andI.
+      - exact HeInH.
+      - claim HmultIdL : g = apply_fun mult (fundamental_group_id B Tb b0, g).
+        {
+          apply (and6E
+            (function_on mult (setprod G G) G)
+            (function_on (fundamental_group_inv B Tb b0) G G)
+            ((fundamental_group_id B Tb b0) :e G)
+            (forall x y z:set, x :e G -> y :e G -> z :e G ->
+              apply_fun mult (apply_fun mult (x, y), z) =
+              apply_fun mult (x, apply_fun mult (y, z)))
+            (forall x:set, x :e G ->
+              apply_fun mult (fundamental_group_id B Tb b0, x) = x /\
+              apply_fun mult (x, fundamental_group_id B Tb b0) = x)
+            (forall x:set, x :e G ->
+              apply_fun mult (x, apply_fun (fundamental_group_inv B Tb b0) x) =
+                fundamental_group_id B Tb b0 /\
+              apply_fun mult (apply_fun (fundamental_group_inv B Tb b0) x, x) =
+                fundamental_group_id B Tb b0)
+            HgrpG).
+          assume Hm Hinv He Hassoc Hid HinvLaw.
+          symmetry.
+          exact (andEL
+            (apply_fun mult (fundamental_group_id B Tb b0, g) = g)
+            (apply_fun mult (g, fundamental_group_id B Tb b0) = g)
+            (Hid g HgG)).
+        }
+        exact HmultIdL.
+    }
+    claim Hg1inC : g1 :e c1.
+    {
+      exact (Eps_i_ax
+        (fun cls:set => cls :e c1)
+        g
+        HginC).
+    }
+    claim Hg1inCoset : g1 :e right_coset mult H g.
+    {
+      rewrite <- HcEq.
+      exact Hg1inC.
+    }
+    claim HcosetEq :
+      right_coset mult H g1 = right_coset mult H g.
+    {
+      exact (iffEL
+        (g1 :e right_coset mult H g)
+        (right_coset mult H g1 = right_coset mult H g)
+        (right_coset_eq_iff_member
+          G
+          mult
+          (fundamental_group_id B Tb b0)
+          (fundamental_group_inv B Tb b0)
+          H
+          g
+          g1
+          HgrpG
+          HsubG
+          HclosedH
+          HinvH
+          HeInH
+          HgG
+          Hg1G)
+        Hg1inCoset).
+    }
+    rewrite HcosetEq.
+    exact HcEq.
+  }
+  claim Hc2Eq : c2 = right_coset mult H g2.
+  {
+    claim HcosetRep :
+      exists g:set, g :e G /\ c2 = right_coset mult H g.
+    {
+      exact (iffEL
+        (c2 :e right_coset_set G mult H)
+        (exists g:set, g :e G /\ c2 = right_coset mult H g)
+        (right_coset_set_mem G mult H c2)
+        Hc2).
+    }
+    apply HcosetRep.
+    let g.
+    assume HgPack.
+    claim HgG : g :e G.
+    {
+      exact (andEL
+        (g :e G)
+        (c2 = right_coset mult H g)
+        HgPack).
+    }
+    claim HcEq : c2 = right_coset mult H g.
+    {
+      exact (andER
+        (g :e G)
+        (c2 = right_coset mult H g)
+        HgPack).
+    }
+    claim HginC : g :e c2.
+    {
+      rewrite HcEq.
+      apply (iffER
+        (g :e right_coset mult H g)
+        (exists h:set, h :e H /\ g = apply_fun mult (h, g))
+        (right_coset_mem mult H g g)).
+      witness (fundamental_group_id B Tb b0).
+      apply andI.
+      - exact HeInH.
+      - claim HmultIdL : g = apply_fun mult (fundamental_group_id B Tb b0, g).
+        {
+          apply (and6E
+            (function_on mult (setprod G G) G)
+            (function_on (fundamental_group_inv B Tb b0) G G)
+            ((fundamental_group_id B Tb b0) :e G)
+            (forall x y z:set, x :e G -> y :e G -> z :e G ->
+              apply_fun mult (apply_fun mult (x, y), z) =
+              apply_fun mult (x, apply_fun mult (y, z)))
+            (forall x:set, x :e G ->
+              apply_fun mult (fundamental_group_id B Tb b0, x) = x /\
+              apply_fun mult (x, fundamental_group_id B Tb b0) = x)
+            (forall x:set, x :e G ->
+              apply_fun mult (x, apply_fun (fundamental_group_inv B Tb b0) x) =
+                fundamental_group_id B Tb b0 /\
+              apply_fun mult (apply_fun (fundamental_group_inv B Tb b0) x, x) =
+                fundamental_group_id B Tb b0)
+            HgrpG).
+          assume Hm Hinv He Hassoc Hid HinvLaw.
+          symmetry.
+          exact (andEL
+            (apply_fun mult (fundamental_group_id B Tb b0, g) = g)
+            (apply_fun mult (g, fundamental_group_id B Tb b0) = g)
+            (Hid g HgG)).
+        }
+        exact HmultIdL.
+    }
+    claim Hg2inC : g2 :e c2.
+    {
+      exact (Eps_i_ax
+        (fun cls:set => cls :e c2)
+        g
+        HginC).
+    }
+    claim Hg2inCoset : g2 :e right_coset mult H g.
+    {
+      rewrite <- HcEq.
+      exact Hg2inC.
+    }
+    claim HcosetEq :
+      right_coset mult H g2 = right_coset mult H g.
+    {
+      exact (iffEL
+        (g2 :e right_coset mult H g)
+        (right_coset mult H g2 = right_coset mult H g)
+        (right_coset_eq_iff_member
+          G
+          mult
+          (fundamental_group_id B Tb b0)
+          (fundamental_group_inv B Tb b0)
+          H
+          g
+          g2
+          HgrpG
+          HsubG
+          HclosedH
+          HinvH
+          HeInH
+          HgG
+          Hg2G)
+        Hg2inCoset).
+    }
+    rewrite HcosetEq.
+    exact HcEq.
+  }
+  claim HmulInvInH :
+    apply_fun mult (g2, apply_fun (fundamental_group_inv B Tb b0) g1) :e H.
+  {
+    (** TODO Bob: use lifting correspondence equality and loop characterization to show g2 mul g1^{-1} lies in H. **)
+    admit.
+  }
+  claim HcosetEq :
+    right_coset mult H g2 = right_coset mult H g1.
+  {
+    exact (right_coset_eq_of_mul_inv_in_H
+    G
+    mult
+    (fundamental_group_id B Tb b0)
+    (fundamental_group_inv B Tb b0)
+    H
+    g1
+    g2
+    HgrpG
+    HsubG
+    HclosedH
+    HinvH
+    HeInH
+    Hg1G
+    Hg2G
+    HmulInvInH).
+  }
+  rewrite Hc1Eq.
+  rewrite Hc2Eq.
+  symmetry.
+  exact HcosetEq.
 }
 witness Phi.
 exact (andI
@@ -97362,6 +98139,19 @@ Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
       (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
   <->
   apply_fun (path_lift E Te B Tb p e0 f) 1 = e0.
+admit.
+Admitted.
+
+(** Infrastructure: loop characterization under covering assumptions **)
+Lemma thm54_6c_loop_characterization_assumptions : forall E Te B Tb p e0 f:set,
+  covering_map E Te B Tb p -> e0 :e E ->
+  loop_at B Tb (apply_fun p e0) f ->
+  ((path_homotopy_class_loop B Tb (apply_fun p e0) f :e
+     homomorphism_image
+       (fundamental_group E Te e0)
+       (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
+   <->
+   apply_fun (path_lift E Te B Tb p e0 f) 1 = e0).
 admit.
 Admitted.
 
