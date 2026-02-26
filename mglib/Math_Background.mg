@@ -95686,9 +95686,440 @@ claim HhG : h :e G.
 {
   exact (HsubG h HhH).
 }
-rewrite HxEq.
-exact (HmultFun (h, g)
-  (tuple_2_setprod_by_pair_Sigma G G h g HhG HgG)).
+  rewrite HxEq.
+  exact (HmultFun (h, g)
+    (tuple_2_setprod_by_pair_Sigma G G h g HhG HgG)).
+Qed.
+
+(** Infrastructure: homomorphism image closed under multiplication **)
+(** Proven Bob **)
+Lemma homomorphism_image_closed_mult :
+  forall G mult e inv H multH eH invH phi:set,
+  group_structure G mult e inv ->
+  group_structure H multH eH invH ->
+  group_homomorphism G mult H multH phi ->
+  forall a b:set,
+    a :e homomorphism_image G phi ->
+    b :e homomorphism_image G phi ->
+    apply_fun multH (a, b) :e homomorphism_image G phi.
+let G mult e inv H multH eH invH phi.
+assume HgrpG HgrpH Hhom.
+let a b.
+assume Ha Hb.
+claim HexA : exists x:set, x :e G /\ a = apply_fun phi x.
+{
+  exact (iffEL
+    (a :e homomorphism_image G phi)
+    (exists x:set, x :e G /\ a = apply_fun phi x)
+    (homomorphism_image_mem G phi a)
+    Ha).
+}
+claim HexB : exists y:set, y :e G /\ b = apply_fun phi y.
+{
+  exact (iffEL
+    (b :e homomorphism_image G phi)
+    (exists y:set, y :e G /\ b = apply_fun phi y)
+    (homomorphism_image_mem G phi b)
+    Hb).
+}
+apply HexA.
+let x.
+assume HxPack.
+apply HexB.
+let y.
+assume HyPack.
+claim HxG : x :e G.
+{
+  exact (andEL
+    (x :e G)
+    (a = apply_fun phi x)
+    HxPack).
+}
+claim HaEq : a = apply_fun phi x.
+{
+  exact (andER
+    (x :e G)
+    (a = apply_fun phi x)
+    HxPack).
+}
+claim HyG : y :e G.
+{
+  exact (andEL
+    (y :e G)
+    (b = apply_fun phi y)
+    HyPack).
+}
+claim HbEq : b = apply_fun phi y.
+{
+  exact (andER
+    (y :e G)
+    (b = apply_fun phi y)
+    HyPack).
+}
+claim HmultG : apply_fun mult (x, y) :e G.
+{
+  apply (and6E
+    (function_on mult (setprod G G) G)
+    (function_on inv G G)
+    (e :e G)
+    (forall u v w:set, u :e G -> v :e G -> w :e G ->
+      apply_fun mult (apply_fun mult (u, v), w) =
+      apply_fun mult (u, apply_fun mult (v, w)))
+    (forall u:set, u :e G ->
+      apply_fun mult (e, u) = u /\ apply_fun mult (u, e) = u)
+    (forall u:set, u :e G ->
+      apply_fun mult (u, apply_fun inv u) = e /\
+      apply_fun mult (apply_fun inv u, u) = e)
+    HgrpG).
+  assume Hm Hinv He Hassoc Hid HinvLaw.
+  exact (Hm (x, y)
+    (tuple_2_setprod_by_pair_Sigma G G x y HxG HyG)).
+}
+claim HphiMult :
+  apply_fun phi (apply_fun mult (x, y)) =
+  apply_fun multH (apply_fun phi x, apply_fun phi y).
+{
+  exact (group_homomorphism_mult_rule
+    G
+    mult
+    H
+    multH
+    phi
+    x
+    y
+    Hhom
+    HxG
+    HyG).
+}
+apply (iffER
+  (apply_fun multH (a, b) :e homomorphism_image G phi)
+  (exists z:set, z :e G /\ apply_fun multH (a, b) = apply_fun phi z)
+  (homomorphism_image_mem G phi (apply_fun multH (a, b)))).
+witness (apply_fun mult (x, y)).
+apply andI.
+- exact HmultG.
+- rewrite HaEq.
+  rewrite HbEq.
+  symmetry.
+  exact HphiMult.
+Qed.
+
+(** Infrastructure: homomorphism image closed under inverse **)
+(** Proven Bob **)
+Lemma homomorphism_image_closed_inv :
+  forall G mult e inv H multH eH invH phi:set,
+  group_structure G mult e inv ->
+  group_structure H multH eH invH ->
+  group_homomorphism G mult H multH phi ->
+  forall a:set,
+    a :e homomorphism_image G phi ->
+    apply_fun invH a :e homomorphism_image G phi.
+let G mult e inv H multH eH invH phi.
+assume HgrpG HgrpH Hhom.
+let a.
+assume Ha.
+claim HexA : exists x:set, x :e G /\ a = apply_fun phi x.
+{
+  exact (iffEL
+    (a :e homomorphism_image G phi)
+    (exists x:set, x :e G /\ a = apply_fun phi x)
+    (homomorphism_image_mem G phi a)
+    Ha).
+}
+apply HexA.
+let x.
+assume HxPack.
+claim HxG : x :e G.
+{
+  exact (andEL
+    (x :e G)
+    (a = apply_fun phi x)
+    HxPack).
+}
+claim HaEq : a = apply_fun phi x.
+{
+  exact (andER
+    (x :e G)
+    (a = apply_fun phi x)
+    HxPack).
+}
+claim HinvxG : apply_fun inv x :e G.
+{
+  apply (and6E
+    (function_on mult (setprod G G) G)
+    (function_on inv G G)
+    (e :e G)
+    (forall u v w:set, u :e G -> v :e G -> w :e G ->
+      apply_fun mult (apply_fun mult (u, v), w) =
+      apply_fun mult (u, apply_fun mult (v, w)))
+    (forall u:set, u :e G ->
+      apply_fun mult (e, u) = u /\ apply_fun mult (u, e) = u)
+    (forall u:set, u :e G ->
+      apply_fun mult (u, apply_fun inv u) = e /\
+      apply_fun mult (apply_fun inv u, u) = e)
+    HgrpG).
+  assume Hm Hinv He Hassoc Hid HinvLaw.
+  exact (Hinv x HxG).
+}
+claim HphiInv :
+  apply_fun phi (apply_fun inv x) = apply_fun invH (apply_fun phi x).
+{
+  exact (group_hom_sends_inverse_cyclic_helper
+    G
+    mult
+    e
+    inv
+    H
+    multH
+    eH
+    invH
+    phi
+    HgrpG
+    HgrpH
+    Hhom
+    x
+    HxG).
+}
+apply (iffER
+  (apply_fun invH a :e homomorphism_image G phi)
+  (exists z:set, z :e G /\ apply_fun invH a = apply_fun phi z)
+  (homomorphism_image_mem G phi (apply_fun invH a))).
+witness (apply_fun inv x).
+apply andI.
+- exact HinvxG.
+- rewrite HaEq.
+  symmetry.
+  exact HphiInv.
+Qed.
+
+(** Infrastructure: right coset equality after left-multiplying representative by H **)
+(** Proven Bob **)
+Lemma right_coset_eq_of_left_mul : forall G mult e inv H h0 g:set,
+  group_structure G mult e inv ->
+  H c= G ->
+  (forall a b:set, a :e H -> b :e H -> apply_fun mult (a, b) :e H) ->
+  (forall a:set, a :e H -> apply_fun inv a :e H) ->
+  h0 :e H ->
+  g :e G ->
+  right_coset mult H (apply_fun mult (h0, g)) = right_coset mult H g.
+let G mult e inv H h0 g.
+assume Hgrp HsubG Hclosed HinvH Hh0H HgG.
+apply set_ext.
+- let x.
+  assume Hx.
+  claim Hex : exists h:set, h :e H /\ x = apply_fun mult (h, apply_fun mult (h0, g)).
+  {
+    exact (iffEL
+      (x :e right_coset mult H (apply_fun mult (h0, g)))
+      (exists h:set, h :e H /\ x = apply_fun mult (h, apply_fun mult (h0, g)))
+      (right_coset_mem mult H (apply_fun mult (h0, g)) x)
+      Hx).
+  }
+  apply Hex.
+  let h.
+  assume HhPack.
+  claim HhH : h :e H.
+  {
+    exact (andEL
+      (h :e H)
+      (x = apply_fun mult (h, apply_fun mult (h0, g)))
+      HhPack).
+  }
+  claim HxEq : x = apply_fun mult (h, apply_fun mult (h0, g)).
+  {
+    exact (andER
+      (h :e H)
+      (x = apply_fun mult (h, apply_fun mult (h0, g)))
+      HhPack).
+  }
+  claim HhG : h :e G.
+  { exact (HsubG h HhH). }
+  claim Hh0G : h0 :e G.
+  { exact (HsubG h0 Hh0H). }
+  claim Hhh0H : apply_fun mult (h, h0) :e H.
+  { exact (Hclosed h h0 HhH Hh0H). }
+  claim Hhh0G : apply_fun mult (h, h0) :e G.
+  { exact (HsubG (apply_fun mult (h, h0)) Hhh0H). }
+  claim Hassoc :
+    apply_fun mult (apply_fun mult (h, h0), g) =
+    apply_fun mult (h, apply_fun mult (h0, g)).
+  {
+    apply (and6E
+      (function_on mult (setprod G G) G)
+      (function_on inv G G)
+      (e :e G)
+      (forall a b c:set, a :e G -> b :e G -> c :e G ->
+        apply_fun mult (apply_fun mult (a, b), c) =
+        apply_fun mult (a, apply_fun mult (b, c)))
+      (forall a:set, a :e G ->
+        apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+      (forall a:set, a :e G ->
+        apply_fun mult (a, apply_fun inv a) = e /\
+        apply_fun mult (apply_fun inv a, a) = e)
+      Hgrp).
+    assume Hm Hinv He Hassoc Hid HinvLaw.
+    exact (Hassoc h h0 g HhG Hh0G HgG).
+  }
+  rewrite HxEq.
+  rewrite <- Hassoc.
+  apply (iffER
+    (apply_fun mult (apply_fun mult (h, h0), g) :e right_coset mult H g)
+    (exists h1:set, h1 :e H /\
+      apply_fun mult (apply_fun mult (h, h0), g) = apply_fun mult (h1, g))
+    (right_coset_mem mult H g (apply_fun mult (apply_fun mult (h, h0), g)))).
+  witness (apply_fun mult (h, h0)).
+  apply andI.
+  + exact Hhh0H.
+  + reflexivity.
+- let x.
+  assume Hx.
+  claim Hex : exists h:set, h :e H /\ x = apply_fun mult (h, g).
+  {
+    exact (iffEL
+      (x :e right_coset mult H g)
+      (exists h:set, h :e H /\ x = apply_fun mult (h, g))
+      (right_coset_mem mult H g x)
+      Hx).
+  }
+  apply Hex.
+  let h.
+  assume HhPack.
+  claim HhH : h :e H.
+  {
+    exact (andEL
+      (h :e H)
+      (x = apply_fun mult (h, g))
+      HhPack).
+  }
+  claim HxEq : x = apply_fun mult (h, g).
+  {
+    exact (andER
+      (h :e H)
+      (x = apply_fun mult (h, g))
+      HhPack).
+  }
+  claim HhG : h :e G.
+  { exact (HsubG h HhH). }
+  claim Hh0G : h0 :e G.
+  { exact (HsubG h0 Hh0H). }
+  claim Hinvh0H : apply_fun inv h0 :e H.
+  { exact (HinvH h0 Hh0H). }
+  claim Hinvh0G : apply_fun inv h0 :e G.
+  { exact (HsubG (apply_fun inv h0) Hinvh0H). }
+  claim Hh' : apply_fun mult (h, apply_fun inv h0) :e H.
+  { exact (Hclosed h (apply_fun inv h0) HhH Hinvh0H). }
+  claim Hh'G : apply_fun mult (h, apply_fun inv h0) :e G.
+  { exact (HsubG (apply_fun mult (h, apply_fun inv h0)) Hh'). }
+  claim Hassoc1 :
+    apply_fun mult (apply_fun mult (h, apply_fun inv h0), apply_fun mult (h0, g)) =
+    apply_fun mult (h, apply_fun mult (apply_fun inv h0, apply_fun mult (h0, g))).
+  {
+    apply (and6E
+      (function_on mult (setprod G G) G)
+      (function_on inv G G)
+      (e :e G)
+      (forall a b c:set, a :e G -> b :e G -> c :e G ->
+        apply_fun mult (apply_fun mult (a, b), c) =
+        apply_fun mult (a, apply_fun mult (b, c)))
+      (forall a:set, a :e G ->
+        apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+      (forall a:set, a :e G ->
+        apply_fun mult (a, apply_fun inv a) = e /\
+        apply_fun mult (apply_fun inv a, a) = e)
+      Hgrp).
+    assume Hm Hinv He Hassoc Hid HinvLaw.
+    exact (Hassoc h (apply_fun inv h0) (apply_fun mult (h0, g))
+      HhG Hinvh0G
+      (Hm (h0, g) (tuple_2_setprod_by_pair_Sigma G G h0 g Hh0G HgG))).
+  }
+  claim Hassoc2 :
+    apply_fun mult (apply_fun inv h0, apply_fun mult (h0, g)) =
+    apply_fun mult (apply_fun mult (apply_fun inv h0, h0), g).
+  {
+    apply (and6E
+      (function_on mult (setprod G G) G)
+      (function_on inv G G)
+      (e :e G)
+      (forall a b c:set, a :e G -> b :e G -> c :e G ->
+        apply_fun mult (apply_fun mult (a, b), c) =
+        apply_fun mult (a, apply_fun mult (b, c)))
+      (forall a:set, a :e G ->
+        apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+      (forall a:set, a :e G ->
+        apply_fun mult (a, apply_fun inv a) = e /\
+        apply_fun mult (apply_fun inv a, a) = e)
+      Hgrp).
+    assume Hm Hinv He Hassoc Hid HinvLaw.
+    symmetry.
+    exact (Hassoc (apply_fun inv h0) h0 g Hinvh0G Hh0G HgG).
+  }
+  claim HinvLaw :
+    apply_fun mult (apply_fun inv h0, h0) = e.
+  {
+    apply (and6E
+      (function_on mult (setprod G G) G)
+      (function_on inv G G)
+      (e :e G)
+      (forall a b c:set, a :e G -> b :e G -> c :e G ->
+        apply_fun mult (apply_fun mult (a, b), c) =
+        apply_fun mult (a, apply_fun mult (b, c)))
+      (forall a:set, a :e G ->
+        apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+      (forall a:set, a :e G ->
+        apply_fun mult (a, apply_fun inv a) = e /\
+        apply_fun mult (apply_fun inv a, a) = e)
+      Hgrp).
+    assume Hm Hinv He Hassoc Hid HinvLaw.
+    exact (andER
+      (apply_fun mult (h0, apply_fun inv h0) = e)
+      (apply_fun mult (apply_fun inv h0, h0) = e)
+      (HinvLaw h0 Hh0G)).
+  }
+  claim HidL : apply_fun mult (e, g) = g.
+  {
+    apply (and6E
+      (function_on mult (setprod G G) G)
+      (function_on inv G G)
+      (e :e G)
+      (forall a b c:set, a :e G -> b :e G -> c :e G ->
+        apply_fun mult (apply_fun mult (a, b), c) =
+        apply_fun mult (a, apply_fun mult (b, c)))
+      (forall a:set, a :e G ->
+        apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+      (forall a:set, a :e G ->
+        apply_fun mult (a, apply_fun inv a) = e /\
+        apply_fun mult (apply_fun inv a, a) = e)
+      Hgrp).
+    assume Hm Hinv He Hassoc Hid HinvLaw.
+    exact (andEL
+      (apply_fun mult (e, g) = g)
+      (apply_fun mult (g, e) = g)
+      (Hid g HgG)).
+  }
+  claim Hrewrite :
+    apply_fun mult (apply_fun mult (h, apply_fun inv h0), apply_fun mult (h0, g)) =
+    apply_fun mult (h, g).
+  {
+    rewrite Hassoc1.
+    rewrite Hassoc2.
+    rewrite HinvLaw.
+    rewrite HidL.
+    reflexivity.
+  }
+  rewrite HxEq.
+  rewrite <- Hrewrite.
+  apply (iffER
+    (apply_fun mult (apply_fun mult (h, apply_fun inv h0), apply_fun mult (h0, g))
+      :e right_coset mult H (apply_fun mult (h0, g)))
+    (exists h1:set, h1 :e H /\
+      apply_fun mult (apply_fun mult (h, apply_fun inv h0), apply_fun mult (h0, g)) =
+        apply_fun mult (h1, apply_fun mult (h0, g)))
+    (right_coset_mem mult H (apply_fun mult (h0, g))
+      (apply_fun mult (apply_fun mult (h, apply_fun inv h0), apply_fun mult (h0, g))))).
+  witness (apply_fun mult (h, apply_fun inv h0)).
+  apply andI.
+  + exact Hh'.
+  + reflexivity.
 Qed.
 
 (** Helper: two continuous paths that agree pointwise are path-homotopic **)
