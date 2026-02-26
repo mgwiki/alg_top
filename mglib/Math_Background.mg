@@ -251334,10 +251334,6 @@ claim HpreUV_imageB_implies_preB :
     t
     HtI
     HimgB).
-=======
-  { exact (eq_subst_mem_rev (apply_fun fcls 1) a B Hfcls1 Hf1B). }
-  exact (HaNotB HaB).
->>>>>>> fcc1e7ce8 (Fix: replace unsupported rewrite-in steps in S84.6 mixed case (bck363))
 }
 exact (lemma84_6_mixed_crossing_power_reduction_core
   X
