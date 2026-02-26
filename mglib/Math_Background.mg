@@ -167093,8 +167093,193 @@ Lemma factor_family_nonfinite_helper :
   group_structure G mult e inv ->
   infinite_cyclic_subgroup G mult e inv a ->
   ~ finite G.
-admit.
-Admitted.
+let G mult e inv a.
+assume Hgrp : group_structure G mult e inv.
+assume Hinf : infinite_cyclic_subgroup G mult e inv a.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume HmultFn HinvFn HeG HassocG HidG HinvG.
+apply (and4E
+  (a :e G)
+  (forall n:set, n :e omega -> group_power_nat mult e a n :e G)
+  (forall m:set, m :e omega -> group_power_nat mult e (apply_fun inv a) (ordsucc m) :e G)
+  (~(exists n:set, n :e omega /\ n <> 0 /\ group_power_nat mult e a n = e))
+  Hinf).
+assume HaG HpowInG HpowInvInG Hnontriv.
+(** Left cancellation for a **)
+claim Hleft_cancel : forall u v:set, u :e G -> v :e G ->
+  apply_fun mult (a, u) = apply_fun mult (a, v) -> u = v.
+{ let u v. assume HuG : u :e G. assume HvG : v :e G.
+  assume Haeq : apply_fun mult (a, u) = apply_fun mult (a, v).
+  claim HaInvG : apply_fun inv a :e G. { exact (HinvFn a HaG). }
+  claim HinvAA : apply_fun mult (apply_fun inv a, a) = e.
+  { exact (andER (apply_fun mult (a, apply_fun inv a) = e)
+      (apply_fun mult (apply_fun inv a, a) = e) (HinvG a HaG)). }
+  claim HauG : apply_fun mult (a, u) :e G.
+  { exact (HmultFn (a, u) (tuple_2_setprod_by_pair_Sigma G G a u HaG HuG)). }
+  claim Heu : apply_fun mult (e, u) = u.
+  { exact (andEL (apply_fun mult (e, u) = u) (apply_fun mult (u, e) = u) (HidG u HuG)). }
+  claim Hev : apply_fun mult (e, v) = v.
+  { exact (andEL (apply_fun mult (e, v) = v) (apply_fun mult (v, e) = v) (HidG v HvG)). }
+  claim Hstep_u : apply_fun mult (apply_fun inv a, apply_fun mult (a, u)) = u.
+  { claim Hassoc_u : apply_fun mult (apply_fun mult (apply_fun inv a, a), u) =
+      apply_fun mult (apply_fun inv a, apply_fun mult (a, u)).
+    { exact (HassocG (apply_fun inv a) a u HaInvG HaG HuG). }
+    claim Hmid_u : apply_fun mult (apply_fun mult (apply_fun inv a, a), u) = apply_fun mult (e, u).
+    { rewrite HinvAA. reflexivity. }
+    exact (eq_i_tra
+      (apply_fun mult (apply_fun inv a, apply_fun mult (a, u)))
+      (apply_fun mult (apply_fun mult (apply_fun inv a, a), u))
+      u
+      (eq_symm
+        (apply_fun mult (apply_fun mult (apply_fun inv a, a), u))
+        (apply_fun mult (apply_fun inv a, apply_fun mult (a, u)))
+        Hassoc_u)
+      (eq_i_tra
+        (apply_fun mult (apply_fun mult (apply_fun inv a, a), u))
+        (apply_fun mult (e, u))
+        u Hmid_u Heu)). }
+  claim Hstep_v : apply_fun mult (apply_fun inv a, apply_fun mult (a, v)) = v.
+  { claim Hassoc_v : apply_fun mult (apply_fun mult (apply_fun inv a, a), v) =
+      apply_fun mult (apply_fun inv a, apply_fun mult (a, v)).
+    { exact (HassocG (apply_fun inv a) a v HaInvG HaG HvG). }
+    claim Hmid_v : apply_fun mult (apply_fun mult (apply_fun inv a, a), v) = apply_fun mult (e, v).
+    { rewrite HinvAA. reflexivity. }
+    exact (eq_i_tra
+      (apply_fun mult (apply_fun inv a, apply_fun mult (a, v)))
+      (apply_fun mult (apply_fun mult (apply_fun inv a, a), v))
+      v
+      (eq_symm
+        (apply_fun mult (apply_fun mult (apply_fun inv a, a), v))
+        (apply_fun mult (apply_fun inv a, apply_fun mult (a, v)))
+        Hassoc_v)
+      (eq_i_tra
+        (apply_fun mult (apply_fun mult (apply_fun inv a, a), v))
+        (apply_fun mult (e, v))
+        v Hmid_v Hev)). }
+  claim Hstep_eq : apply_fun mult (apply_fun inv a, apply_fun mult (a, u)) =
+    apply_fun mult (apply_fun inv a, apply_fun mult (a, v)).
+  { claim Hrew : apply_fun mult (a, u) = apply_fun mult (a, v). { exact Haeq. }
+    rewrite Hrew. reflexivity. }
+  exact (eq_i_tra u
+    (apply_fun mult (apply_fun inv a, apply_fun mult (a, u)))
+    v
+    (eq_symm (apply_fun mult (apply_fun inv a, apply_fun mult (a, u))) u Hstep_u)
+    (eq_i_tra
+      (apply_fun mult (apply_fun inv a, apply_fun mult (a, u)))
+      (apply_fun mult (apply_fun inv a, apply_fun mult (a, v)))
+      v Hstep_eq Hstep_v)). }
+(** Power succession and base **)
+claim HpowS : forall k:set, nat_p k ->
+  group_power_nat mult e a (ordsucc k) = apply_fun mult (a, group_power_nat mult e a k).
+{ let k. assume Hk. exact (nat_primrec_S e (fun _ r:set => apply_fun mult (a, r)) k Hk). }
+claim Hpow0 : group_power_nat mult e a 0 = e.
+{ exact (nat_primrec_0 e (fun _ r:set => apply_fun mult (a, r))). }
+(** Power injectivity by nat_ind on m **)
+claim Hpow_inj : forall m:set, nat_p m -> forall n:set, nat_p n ->
+  group_power_nat mult e a m = group_power_nat mult e a n -> m = n.
+{ apply nat_ind.
+  - (** Base: m = 0 **)
+    let n. assume Hn : nat_p n.
+    assume Heq : group_power_nat mult e a 0 = group_power_nat mult e a n.
+    apply (nat_inv n Hn).
+    + assume Hn0 : n = 0. exact (eq_symm n 0 Hn0).
+    + assume HnS : exists n':set, nat_p n' /\ n = ordsucc n'.
+      apply HnS. let n'. assume Hn'p : nat_p n' /\ n = ordsucc n'.
+      claim Hn'nat : nat_p n'. { exact (andEL (nat_p n') (n = ordsucc n') Hn'p). }
+      claim Hneq : n = ordsucc n'. { exact (andER (nat_p n') (n = ordsucc n') Hn'p). }
+      claim Hpow_n_e : group_power_nat mult e a n = e.
+      { exact (eq_i_tra (group_power_nat mult e a n) (group_power_nat mult e a 0) e
+          (eq_symm (group_power_nat mult e a 0) (group_power_nat mult e a n) Heq) Hpow0). }
+      claim HnO : n :e omega. { exact (nat_p_omega n Hn). }
+      claim Hn_ne0 : n <> 0. { rewrite Hneq. assume Habs : ordsucc n' = 0.
+        exact (EmptyE n' (mem_eqR n' (ordsucc n') 0 Habs (ordsuccI2 n'))). }
+      prove False. apply Hnontriv.
+      witness n. exact (and3I (n :e omega) (n <> 0)
+        (group_power_nat mult e a n = e) HnO Hn_ne0 Hpow_n_e).
+  - (** Step: m = ordsucc m' **)
+    let m'. assume Hm'nat : nat_p m'.
+    assume IH : forall n:set, nat_p n ->
+      group_power_nat mult e a m' = group_power_nat mult e a n -> m' = n.
+    let n. assume Hn : nat_p n.
+    assume Heq : group_power_nat mult e a (ordsucc m') = group_power_nat mult e a n.
+    apply (nat_inv n Hn).
+    + (** n = 0 **)
+      assume Hn0 : n = 0.
+      claim Hpow_sm_e : group_power_nat mult e a (ordsucc m') = e.
+      { claim Heq2 : group_power_nat mult e a (ordsucc m') = group_power_nat mult e a 0.
+        { rewrite <- Hn0. exact Heq. }
+        exact (eq_i_tra (group_power_nat mult e a (ordsucc m'))
+          (group_power_nat mult e a 0) e Heq2 Hpow0). }
+      claim HsmO : ordsucc m' :e omega.
+      { exact (omega_ordsucc m' (nat_p_omega m' Hm'nat)). }
+      claim Hsm_ne0 : ordsucc m' <> 0.
+      { assume Habs : ordsucc m' = 0.
+        exact (EmptyE m' (mem_eqR m' (ordsucc m') 0 Habs (ordsuccI2 m'))). }
+      prove False. apply Hnontriv.
+      witness (ordsucc m'). exact (and3I (ordsucc m' :e omega) (ordsucc m' <> 0)
+        (group_power_nat mult e a (ordsucc m') = e) HsmO Hsm_ne0 Hpow_sm_e).
+    + (** n = ordsucc n' **)
+      assume HnS : exists n':set, nat_p n' /\ n = ordsucc n'.
+      apply HnS. let n'. assume Hn'p : nat_p n' /\ n = ordsucc n'.
+      claim Hn'nat : nat_p n'. { exact (andEL (nat_p n') (n = ordsucc n') Hn'p). }
+      claim Hneq : n = ordsucc n'. { exact (andER (nat_p n') (n = ordsucc n') Hn'p). }
+      (** a mult a^m' = a mult a^n' **)
+      claim Heq2 : apply_fun mult (a, group_power_nat mult e a m') =
+        apply_fun mult (a, group_power_nat mult e a n').
+      { claim Hlhs : group_power_nat mult e a (ordsucc m') =
+          apply_fun mult (a, group_power_nat mult e a m').
+        { exact (HpowS m' Hm'nat). }
+        claim Hrhs : group_power_nat mult e a (ordsucc n') =
+          apply_fun mult (a, group_power_nat mult e a n').
+        { exact (HpowS n' Hn'nat). }
+        claim Heq_sn : group_power_nat mult e a (ordsucc m') =
+          group_power_nat mult e a (ordsucc n').
+        { rewrite <- Hneq. exact Heq. }
+        exact (eq_i_tra
+          (apply_fun mult (a, group_power_nat mult e a m'))
+          (group_power_nat mult e a (ordsucc m'))
+          (apply_fun mult (a, group_power_nat mult e a n'))
+          (eq_symm (group_power_nat mult e a (ordsucc m'))
+            (apply_fun mult (a, group_power_nat mult e a m')) Hlhs)
+          (eq_i_tra
+            (group_power_nat mult e a (ordsucc m'))
+            (group_power_nat mult e a (ordsucc n'))
+            (apply_fun mult (a, group_power_nat mult e a n'))
+            Heq_sn Hrhs)). }
+      (** By left cancellation, a^m' = a^n' **)
+      claim Hm'O : m' :e omega. { exact (nat_p_omega m' Hm'nat). }
+      claim Hn'O : n' :e omega. { exact (nat_p_omega n' Hn'nat). }
+      claim Heq3 : group_power_nat mult e a m' = group_power_nat mult e a n'.
+      { exact (Hleft_cancel
+          (group_power_nat mult e a m') (group_power_nat mult e a n')
+          (HpowInG m' Hm'O) (HpowInG n' Hn'O) Heq2). }
+      claim Hm'n' : m' = n'. { exact (IH n' Hn'nat Heq3). }
+      rewrite Hneq. rewrite Hm'n'. reflexivity. }
+(** Build injection from omega to G **)
+claim HinjPow : inj omega G (fun n:set => group_power_nat mult e a n).
+{ apply (andI
+    (forall u:set, u :e omega -> group_power_nat mult e a u :e G)
+    (forall u:set, u :e omega -> forall v:set, v :e omega ->
+      group_power_nat mult e a u = group_power_nat mult e a v -> u = v)).
+  - exact HpowInG.
+  - let u. assume Hu : u :e omega. let v. assume Hv : v :e omega.
+    exact (Hpow_inj u (omega_nat_p u Hu) v (omega_nat_p v Hv)). }
+(** G is infinite **)
+claim Hatleast : exists f : set -> set, inj omega G f.
+{ witness (fun n:set => group_power_nat mult e a n). exact HinjPow. }
+claim Hinfinite : infinite G.
+{ exact (atleastp_omega_infinite G Hatleast). }
+exact Hinfinite.
+Qed.
 
 (** from S67 Lem 67.7 (line 2683 in algtop.tex): extension condition for free abelian groups **)
 (** LATEX VERSION: G is a free abelian group with basis {a_alpha} iff for any abelian **)
