@@ -163057,6 +163057,19 @@ let n. assume Hn : n :e omega.
 exact (Hnat n (omega_nat_p n Hn)).
 Qed.
 
+(** Infrastructure: if ifam is an injective group homomorphism from (Gfam, multfam) to (G, multG), **)
+(** and the image of ifam is a subgroup of (G, multG), then multfam is closed on Gfam. **)
+(** Moved here so lemma67_5 can use it. **)
+Theorem injective_homomorphism_source_closure :
+  forall Ga multa G multG eG invG ifam:set,
+  group_homomorphism Ga multa G multG ifam ->
+  (forall x y:set, x :e Ga -> y :e Ga -> apply_fun ifam x = apply_fun ifam y -> x = y) ->
+  subgroup_of (homomorphism_image Ga ifam) G multG eG invG ->
+  forall a b:set, a :e Ga -> b :e Ga ->
+    apply_fun multa (a, b) :e Ga.
+admit.
+Admitted.
+
 (** from S67 Lem 67.5 (line 2660 in algtop.tex): extension condition for external direct sums **)
 (** LATEX VERSION: If each i_alpha is a monomorphism and G is the direct sum of i_alpha(G_alpha), **)
 (** then given any abelian group H and homomorphisms h_alpha: G_alpha -> H, there exists a unique **)
@@ -163375,7 +163388,13 @@ claim Hhbar_hom : forall alpha:set, alpha :e J ->
       { claim Hifam_m12_sym : apply_fun multG (u, v) = apply_fun (apply_fun ifam alpha) (apply_fun (apply_fun multfam alpha) (y1, y2)).
         { symmetry. exact Hifam_m12. }
         claim Hm12_here : apply_fun (apply_fun multfam alpha) (y1, y2) :e apply_fun Gfam alpha.
-        { admit. }
+        { claim Hsubgrp_hom_img : subgroup_of (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha)) G multG eG invG.
+          { rewrite <- (Hgfam_eval alpha Hal). exact (Hsubgrp alpha Hal). }
+          exact (injective_homomorphism_source_closure
+            (apply_fun Gfam alpha) (apply_fun multfam alpha)
+            G multG eG invG (apply_fun ifam alpha)
+            (Hifam_hom_all alpha Hal) (Hifam_inj_all alpha Hal)
+            Hsubgrp_hom_img y1 y2 Hy1 Hy2). }
         exact (Hifam_inj_all alpha Hal (preim alpha (apply_fun multG (u, v)))
           (apply_fun (apply_fun multfam alpha) (y1, y2)) Hpmuv_in
           Hm12_here
@@ -163815,18 +163834,6 @@ apply andI.
     exact (apply_fun_graph (apply_fun Gfam alpha) (fun z1:set =>
       apply_fun (apply_fun hfam' alpha) (apply_fun (apply_fun ifam alpha) z1)) z' Hz'Gfam).
 Qed.
-
-(** Infrastructure: if ifam is an injective group homomorphism from (Gfam, multfam) to (G, multG), **)
-(** and the image of ifam is a subgroup of (G, multG), then multfam is closed on Gfam. **)
-Theorem injective_homomorphism_source_closure :
-  forall Ga multa G multG eG invG ifam:set,
-  group_homomorphism Ga multa G multG ifam ->
-  (forall x y:set, x :e Ga -> y :e Ga -> apply_fun ifam x = apply_fun ifam y -> x = y) ->
-  subgroup_of (homomorphism_image Ga ifam) G multG eG invG ->
-  forall a b:set, a :e Ga -> b :e Ga ->
-    apply_fun multa (a, b) :e Ga.
-admit.
-Admitted.
 
 (** from S67 Thm 67.6 (line 2671 in algtop.tex): uniqueness of direct sums **)
 (** LATEX VERSION: If G and G' are both external direct sums of {G_alpha} via **)
