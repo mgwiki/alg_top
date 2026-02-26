@@ -249692,11 +249692,93 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun fcls t :e U)).
         (apply_fun (fundamental_group_inv X Tx a)
           (path_homotopy_class_loop X Tx a (path_concat alpha beta))) n).
   {
+    claim HtopU : topology_on U (subspace_topology X Tx U).
+    {
+      exact (subspace_topology_is_topology X Tx U Htop HUsub).
+    }
+    claim HfclsContU :
+      continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) fcls.
+    {
+      exact (continuous_map_range_restrict
+        unit_interval
+        unit_interval_topology
+        X
+        Tx
+        fcls
+        U
+        HfclsCont
+        HUsub
+        HallU).
+    }
+    set f_U := graph unit_interval (fun t:set => apply_fun fcls t).
+    claim Hf_U_total : f_U :e total_function_space unit_interval U.
+    {
+      exact (graph_in_total_function_space
+        unit_interval
+        U
+        (fun t:set => apply_fun fcls t)
+        HallU).
+    }
+    claim Hf_U_fun : f_U :e function_space unit_interval U.
+    {
+      exact (total_function_space_sub_function_space unit_interval U f_U Hf_U_total).
+    }
+    claim Hf_U_apply : forall t:set, t :e unit_interval -> apply_fun f_U t = apply_fun fcls t.
+    {
+      let t. assume Ht.
+      exact (apply_fun_graph unit_interval (fun t':set => apply_fun fcls t') t Ht).
+    }
+    claim Hf_U_0 : apply_fun f_U 0 = a.
+    {
+      rewrite (Hf_U_apply 0 zero_in_unit_interval).
+      exact Hfcls0.
+    }
+    claim Hf_U_1 : apply_fun f_U 1 = a.
+    {
+      rewrite (Hf_U_apply 1 one_in_unit_interval).
+      exact Hfcls1.
+    }
+    claim Hf_U_loop_at : loop_at U (subspace_topology X Tx U) a f_U.
+    {
+      prove (continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) f_U /\
+        apply_fun f_U 0 = a) /\
+        apply_fun f_U 1 = a.
+      apply andI.
+      - apply andI.
+        + admit.
+        + exact Hf_U_0.
+      - exact Hf_U_1.
+    }
+    claim Hf_U_loop : f_U :e loop_space U (subspace_topology X Tx U) a.
+    {
+      exact (SepI
+        (function_space unit_interval U)
+        (fun g:set => loop_at U (subspace_topology X Tx U) a g)
+        f_U
+        Hf_U_fun
+        Hf_U_loop_at).
+    }
+    set ucls := path_homotopy_class_loop U (subspace_topology X Tx U) a f_U.
+    claim HuclsMem : ucls :e fundamental_group U (subspace_topology X Tx U) a.
+    {
+      exact (path_homotopy_class_in_fundamental_group
+        U
+        (subspace_topology X Tx U)
+        a
+        f_U
+        Hf_U_loop).
+    }
+    claim HuEq :
+      apply_fun (induced_homomorphism U (subspace_topology X Tx U) a X Tx a
+        (graph U (fun x:set => x))) ucls
+      = path_homotopy_class_loop X Tx a fcls.
+    {
+      (** TODO Bob: finish equality chain as in loop_lebesgue_decomposition/HloopInU_istar. **)
+      admit.
+    }
     (** TODO Bob:
-       show HallU contradicts HfclsClsNe using:
-       - Hpi1Utriv (ucls = id in pi1(U,a))
-       - inclusion-induced hom sends identity to identity in pi1(X,a)
-       then derive target by contradiction (ex-falso). **)
+       use Hpi1Utriv to show ucls=id_U, map via induced hom, derive class(fcls)=id_X
+       contradicting HfclsClsNe; then conclude HallU_target by ex-falso. **)
     admit.
   }
   exact HallU_target.
