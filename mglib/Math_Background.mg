@@ -249611,6 +249611,51 @@ exact (lemma84_6_pi1_power_nat_closed
   HnO).
 Qed.
 
+(** helper for S84.6 mixed case:
+    once explicit crossing witnesses are extracted, reduce to generator-power normal form. **)
+Theorem lemma84_6_mixed_crossing_power_form :
+  forall X Tx U V A B a b alpha beta fcls tU tV:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx -> X = U :\/: V ->
+  simply_connected U (subspace_topology X Tx U) ->
+  simply_connected V (subspace_topology X Tx V) ->
+  A c= U :/\: V -> B c= U :/\: V -> A :/\: B = Empty ->
+  (U :/\: V) = A :\/: B ->
+  A :e subspace_topology X Tx (U :/\: V) ->
+  B :e subspace_topology X Tx (U :/\: V) ->
+  path_connected_space A (subspace_topology X Tx A) ->
+  path_connected_space B (subspace_topology X Tx B) ->
+  a :e A -> b :e B ->
+  path_between U a b alpha ->
+  path_between V b a beta ->
+  fcls :e loop_space X Tx a ->
+  path_homotopy_class_loop X Tx a fcls <>
+    fundamental_group_id X Tx a ->
+  tU :e unit_interval ->
+  tV :e unit_interval ->
+  apply_fun fcls tU :e V ->
+  apply_fun fcls tV :e U ->
+  exists n:set, n :e omega /\
+    (path_homotopy_class_loop X Tx a fcls = group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (path_homotopy_class_loop X Tx a (path_concat alpha beta)) n \/
+     path_homotopy_class_loop X Tx a fcls = group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (apply_fun (fundamental_group_inv X Tx a)
+        (path_homotopy_class_loop X Tx a (path_concat alpha beta))) n).
+let X Tx U V A B a b alpha beta fcls tU tV.
+assume Htop HU HV Hcover HscU HscV HAsub HBsub Hdisj Hoverlap HAopen HBopen HpcA HpcB HaA HbB.
+assume HalphaPB HbetaPB.
+assume HfclsLoop HfclsClsNe.
+assume HtU HtV HtUinV HtVinU.
+(** TODO Bob: complete S84.6 mixed-case crossing-to-power reduction.
+    The arguments now have explicit crossing witnesses tU,tV with opposite-side
+    membership, plus full path/simply-connected/disconnected-overlap data. **)
+admit.
+Admitted.
+
 (** helper for S84.6 core:
     from a nontrivial loop representative under disconnected-overlap data,
     derive power-of-generator normal form. **)
@@ -250939,10 +250984,44 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun fcls t :e U)).
       - assume HtVV : apply_fun fcls tV :e V.
         exact (FalseE (HtVnotV HtVV) (apply_fun fcls tV :e U)).
     }
-    (** TODO Bob:
-       use Hfcls_tU_V and Hfcls_tV_U as crossing witnesses to build the
-       alternating decomposition and conclude power form. **)
-    admit.
+    exact (lemma84_6_mixed_crossing_power_form
+      X
+      Tx
+      U
+      V
+      A
+      B
+      a
+      b
+      alpha
+      beta
+      fcls
+      tU
+      tV
+      Htop
+      HU
+      HV
+      Hcover
+      HscU
+      HscV
+      HAsub
+      HBsub
+      Hdisj
+      Hoverlap
+      HAopen
+      HBopen
+      HpcA
+      HpcB
+      HaA
+      HbB
+      HalphaPB
+      HbetaPB
+      HfclsLoop
+      HfclsClsNe
+      HtU
+      HtV
+      Hfcls_tU_V
+      Hfcls_tV_U).
 (** TODO Bob: bridge from nontrivial loop representative to edge-crossing normal form.
     Needed dependency: S63-style alternating decomposition theorem specialized to
     U∩V=A∪B (A,B disjoint path-connected pieces), then reduction to powers of [alpha.beta]. **)
