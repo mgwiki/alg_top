@@ -250269,6 +250269,44 @@ claim H0PreV : 0 :e preV.
     zero_in_unit_interval
     Hf0V).
 }
+claim H1PreU : 1 :e preU.
+{
+  claim Hf1U : apply_fun fcls 1 :e U.
+  {
+    rewrite Hfcls1.
+    exact HaU.
+  }
+  exact (SepI
+    unit_interval
+    (fun x:set => apply_fun fcls x :e U)
+    1
+    one_in_unit_interval
+    Hf1U).
+}
+claim H1PreV : 1 :e preV.
+{
+  claim Hf1V : apply_fun fcls 1 :e V.
+  {
+    rewrite Hfcls1.
+    exact HaV.
+  }
+  exact (SepI
+    unit_interval
+    (fun x:set => apply_fun fcls x :e V)
+    1
+    one_in_unit_interval
+    Hf1V).
+}
+claim HpreUHasWitness : exists z:set, z :e preU.
+{
+  witness tV.
+  exact HtVinPreU.
+}
+claim HpreVHasWitness : exists z:set, z :e preV.
+{
+  witness tU.
+  exact HtUinPreV.
+}
 (** TODO Bob: complete S84.6 mixed-case crossing-to-power reduction.
     The arguments now have explicit crossing witnesses tU,tV with opposite-side
     membership, plus full path/simply-connected/disconnected-overlap data. **)
