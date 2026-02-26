@@ -251198,6 +251198,103 @@ claim H1ClassA : 1 :e preA /\ ~(1 :e preB).
     H1PreA
     H1NotPreB).
 }
+claim HpreA_imageA :
+  forall t:set, t :e preA -> apply_fun fcls t :e A.
+{
+  let t.
+  assume HtPreA.
+  exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e A) t HtPreA).
+}
+claim HpreB_imageB :
+  forall t:set, t :e preB -> apply_fun fcls t :e B.
+{
+  let t.
+  assume HtPreB.
+  exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e B) t HtPreB).
+}
+claim HpreUV_imageUV :
+  forall t:set, t :e preU :/\: preV -> apply_fun fcls t :e U :/\: V.
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  claim HtPreU : t :e preU.
+  {
+    exact (binintersectE1 preU preV t HtUV).
+  }
+  claim HtPreV : t :e preV.
+  {
+    exact (binintersectE2 preU preV t HtUV).
+  }
+  claim HimgU : apply_fun fcls t :e U.
+  {
+    exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e U) t HtPreU).
+  }
+  claim HimgV : apply_fun fcls t :e V.
+  {
+    exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e V) t HtPreV).
+  }
+  exact (binintersectI U V (apply_fun fcls t) HimgU HimgV).
+}
+claim HpreUV_imageAB :
+  forall t:set, t :e preU :/\: preV -> apply_fun fcls t :e A :\/: B.
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  claim HimgUV : apply_fun fcls t :e U :/\: V.
+  {
+    exact (HpreUV_imageUV t HtUV).
+  }
+  exact (mem_eqR
+    (apply_fun fcls t)
+    (U :/\: V)
+    (A :\/: B)
+    Hoverlap
+    HimgUV).
+}
+claim HpreUV_imageA_implies_preA :
+  forall t:set, t :e preU :/\: preV ->
+    apply_fun fcls t :e A -> t :e preA.
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  assume HimgA : apply_fun fcls t :e A.
+  claim HtPreU : t :e preU.
+  {
+    exact (binintersectE1 preU preV t HtUV).
+  }
+  claim HtI : t :e unit_interval.
+  {
+    exact (SepE1 unit_interval (fun x:set => apply_fun fcls x :e U) t HtPreU).
+  }
+  exact (SepI
+    unit_interval
+    (fun x:set => apply_fun fcls x :e A)
+    t
+    HtI
+    HimgA).
+}
+claim HpreUV_imageB_implies_preB :
+  forall t:set, t :e preU :/\: preV ->
+    apply_fun fcls t :e B -> t :e preB.
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  assume HimgB : apply_fun fcls t :e B.
+  claim HtPreV : t :e preV.
+  {
+    exact (binintersectE2 preU preV t HtUV).
+  }
+  claim HtI : t :e unit_interval.
+  {
+    exact (SepE1 unit_interval (fun x:set => apply_fun fcls x :e V) t HtPreV).
+  }
+  exact (SepI
+    unit_interval
+    (fun x:set => apply_fun fcls x :e B)
+    t
+    HtI
+    HimgB).
+}
 (** TODO Bob: complete S84.6 mixed-case crossing-to-power reduction.
     The arguments now have explicit crossing witnesses tU,tV with opposite-side
     membership, plus full path/simply-connected/disconnected-overlap data. **)
