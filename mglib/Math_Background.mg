@@ -163816,6 +163816,18 @@ apply andI.
       apply_fun (apply_fun hfam' alpha) (apply_fun (apply_fun ifam alpha) z1)) z' Hz'Gfam).
 Qed.
 
+(** Infrastructure: if ifam is an injective group homomorphism from (Gfam, multfam) to (G, multG), **)
+(** and the image of ifam is a subgroup of (G, multG), then multfam is closed on Gfam. **)
+Theorem injective_homomorphism_source_closure :
+  forall Ga multa G multG eG invG ifam:set,
+  group_homomorphism Ga multa G multG ifam ->
+  (forall x y:set, x :e Ga -> y :e Ga -> apply_fun ifam x = apply_fun ifam y -> x = y) ->
+  subgroup_of (homomorphism_image Ga ifam) G multG eG invG ->
+  forall a b:set, a :e Ga -> b :e Ga ->
+    apply_fun multa (a, b) :e Ga.
+admit.
+Admitted.
+
 (** from S67 Thm 67.6 (line 2671 in algtop.tex): uniqueness of direct sums **)
 (** LATEX VERSION: If G and G' are both external direct sums of {G_alpha} via **)
 (** i_alpha and i'_alpha respectively, then there is a unique isomorphism **)
@@ -164054,7 +164066,70 @@ claim Hfwd_hom : forall alpha:set, alpha :e J ->
     (** and the image is closed under multG, so multfam(a,b) must map into Gfam. **)
     (** We admit this closure fact. **)
     claim Hmult_closed : apply_fun (apply_fun multfam alpha) (a, b) :e apply_fun Gfam alpha.
-    { admit. }
+    { claim Hifam_hom_al : group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha).
+      { exact (andEL
+          (group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha))
+          (forall u v:set, u :e apply_fun Gfam alpha -> v :e apply_fun Gfam alpha ->
+            apply_fun (apply_fun ifam alpha) u = apply_fun (apply_fun ifam alpha) v -> u = v)
+          (Hifam alpha Halpha)). }
+      claim Hifam_inj_al : forall u v:set, u :e apply_fun Gfam alpha -> v :e apply_fun Gfam alpha ->
+        apply_fun (apply_fun ifam alpha) u = apply_fun (apply_fun ifam alpha) v -> u = v.
+      { exact (andER
+          (group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha))
+          (forall u v:set, u :e apply_fun Gfam alpha -> v :e apply_fun Gfam alpha ->
+            apply_fun (apply_fun ifam alpha) u = apply_fun (apply_fun ifam alpha) v -> u = v)
+          (Hifam alpha Halpha)). }
+      claim Hsga : subgroups_generate_abelian G multG eG invG J
+        (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))).
+      { exact (andEL
+          (subgroups_generate_abelian G multG eG invG J
+            (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))))
+          (forall x:set, x :e G ->
+            forall n1 n2:set, n1 :e omega -> n2 :e omega -> n1 <> 0 -> n2 <> 0 ->
+            forall a1 a2:set, function_on a1 n1 J -> function_on a2 n2 J ->
+            forall x1 x2:set, function_on x1 n1 G -> function_on x2 n2 G ->
+              (forall i:set, i :e n1 -> apply_fun x1 i :e apply_fun (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))) (apply_fun a1 i)) ->
+              (forall i:set, i :e n2 -> apply_fun x2 i :e apply_fun (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))) (apply_fun a2 i)) ->
+              (forall i j:set, i :e n1 -> j :e n1 -> i <> j -> apply_fun a1 i <> apply_fun a1 j) ->
+              (forall i j:set, i :e n2 -> j :e n2 -> i <> j -> apply_fun a2 i <> apply_fun a2 j) ->
+              x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x1 i)) n1 ->
+              x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x2 i)) n2 ->
+              (forall alpha0:set, alpha0 :e J ->
+                (forall i j:set, i :e n1 -> j :e n2 ->
+                  apply_fun a1 i = alpha0 -> apply_fun a2 j = alpha0 ->
+                  apply_fun x1 i = apply_fun x2 j) /\
+                ((exists i:set, i :e n1 /\ apply_fun a1 i = alpha0) ->
+                 ~(exists j:set, j :e n2 /\ apply_fun a2 j = alpha0) ->
+                 forall i:set, i :e n1 -> apply_fun a1 i = alpha0 -> apply_fun x1 i = eG) /\
+                (~(exists i:set, i :e n1 /\ apply_fun a1 i = alpha0) ->
+                 (exists j:set, j :e n2 /\ apply_fun a2 j = alpha0) ->
+                 forall j:set, j :e n2 -> apply_fun a2 j = alpha0 -> apply_fun x2 j = eG)))
+          HdsG). }
+      claim Hsubgrps : forall alpha0:set, alpha0 :e J ->
+        subgroup_of (apply_fun (graph J (fun al:set => homomorphism_image (apply_fun Gfam al) (apply_fun ifam al))) alpha0) G multG eG invG.
+      { apply (and3E
+          (abelian_group G multG eG invG)
+          (forall alpha0:set, alpha0 :e J ->
+            subgroup_of (apply_fun (graph J (fun al:set => homomorphism_image (apply_fun Gfam al) (apply_fun ifam al))) alpha0) G multG eG invG)
+          (forall x:set, x :e G ->
+            exists n:set, n :e omega /\ n <> 0 /\
+            exists alphas:set, function_on alphas n J /\
+            exists xs:set, function_on xs n G /\
+              (forall i:set, i :e n -> apply_fun xs i :e apply_fun (graph J (fun al:set => homomorphism_image (apply_fun Gfam al) (apply_fun ifam al))) (apply_fun alphas i)) /\
+              (forall i j:set, i :e n -> j :e n -> i <> j ->
+                apply_fun alphas i <> apply_fun alphas j) /\
+              x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+          Hsga).
+        assume _ Hsub _. exact Hsub. }
+      claim Hsubgrp_al : subgroup_of (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha)) G multG eG invG.
+      { claim Heq : apply_fun (graph J (fun al:set => homomorphism_image (apply_fun Gfam al) (apply_fun ifam al))) alpha =
+          homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha).
+        { exact (apply_fun_graph J (fun al:set => homomorphism_image (apply_fun Gfam al) (apply_fun ifam al)) alpha Halpha). }
+        rewrite <- Heq. exact (Hsubgrps alpha Halpha). }
+      exact (injective_homomorphism_source_closure
+        (apply_fun Gfam alpha) (apply_fun multfam alpha)
+        G multG eG invG (apply_fun ifam alpha)
+        Hifam_hom_al Hifam_inj_al Hsubgrp_al a b Ha Hb). }
     rewrite (Hfwd_apply alpha (apply_fun (apply_fun multfam alpha) (a, b)) Halpha Hmult_closed).
     (** RHS: multG'(hfam_fwd(ifam(a)), hfam_fwd(ifam(b))) = multG'(ifam'(a), ifam'(b)) **)
     rewrite (Hfwd_apply alpha a Halpha Ha).
@@ -175614,7 +175689,37 @@ claim HGfam_mult_cl : forall alpha:set, alpha :e J ->
   forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
     apply_fun (apply_fun multfam alpha) (x, y) :e apply_fun Gfam alpha.
 { let alpha. assume Hal. let x y. assume Hx Hy.
-  admit. }
+  claim Hifam_hom_al : group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha).
+  { exact (Hifam_hom alpha Hal). }
+  claim Hifam_inj_al : forall u v:set, u :e apply_fun Gfam alpha -> v :e apply_fun Gfam alpha ->
+    apply_fun (apply_fun ifam alpha) u = apply_fun (apply_fun ifam alpha) v -> u = v.
+  { exact (Hifam_inj alpha Hal). }
+  claim Hfp_sub : forall alpha0:set, alpha0 :e J ->
+    subgroup_of (apply_fun ImageFam alpha0) G multG eG invG.
+  { apply (and5E
+      (group_structure G multG eG invG)
+      (forall alpha0:set, alpha0 :e J -> subgroup_of (apply_fun ImageFam alpha0) G multG eG invG)
+      (forall alpha0 beta:set, alpha0 :e J -> beta :e J -> alpha0 <> beta ->
+        forall z:set, z :e apply_fun ImageFam alpha0 -> z :e apply_fun ImageFam beta -> z = eG)
+      (subgroups_generate G multG eG invG J ImageFam)
+      (forall z:set, z :e G -> z <> eG ->
+        exists n xs:set,
+          reduced_word J ImageFam efam_int n xs /\ n <> 0 /\
+          word_product multG eG xs n = z /\
+          (forall n' xs':set,
+            reduced_word J ImageFam efam_int n' xs' -> n' <> 0 ->
+            word_product multG eG xs' n' = z ->
+            n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
+      Hfp).
+    assume _ Hsub _ _ _. exact Hsub. }
+  claim Hsubgrp_al : subgroup_of (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha)) G multG eG invG.
+  { claim Heq : apply_fun ImageFam alpha = homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha).
+    { exact (HIF_eval alpha Hal). }
+    rewrite <- Heq. exact (Hfp_sub alpha Hal). }
+  exact (injective_homomorphism_source_closure
+    (apply_fun Gfam alpha) (apply_fun multfam alpha)
+    G multG eG invG (apply_fun ifam alpha)
+    Hifam_hom_al Hifam_inj_al Hsubgrp_al x y Hx Hy). }
 (** Prove kfam(alpha) is a group_homomorphism from ImageFam(alpha) with multG to H with multH **)
 claim Hkfam_hom : forall alpha:set, alpha :e J ->
   group_homomorphism (apply_fun ImageFam alpha) multG H multH (apply_fun kfam alpha).
