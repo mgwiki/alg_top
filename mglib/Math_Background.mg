@@ -227124,14 +227124,1799 @@ apply andI.
 	    set OverE := {p :e E | exists F:set, F :e Arcs /\ F <> E /\ p :e F}.
 	    set UarcE := E :\: OverE.
 	    (** Split on whether x is an overlap point for E. **)
-	    apply (xm (x :e OverE)).
-	    * assume HxOverE.
-	      (** TODO: overlap (vertex) neighborhoods are unions of small arc-neighborhoods. **)
-	      admit.
-	    * assume HxNotOverE.
-	      claim HxUarcE : x :e UarcE.
-	      { exact (setminusI E OverE x HxE HxNotOverE). }
-	      claim HUarcE : UarcE :e Tx.
+		    apply (xm (x :e OverE)).
+		    * assume HxOverE.
+		      (** Overlap point: build a star neighborhood by taking, for each arc through x, a small open path connected piece. **)
+		      set IncArcs := {A :e Arcs | x :e A}.
+		      claim HEInc : E :e IncArcs.
+		      { exact (SepI Arcs (fun A0:set => x :e A0) E HEArcs HxE). }
+		      claim HIncNe : IncArcs <> Empty.
+		      {
+		        assume Hempty.
+		        exact (EmptyE
+		          E
+		          (mem_eqR
+		            E
+		            IncArcs
+		            Empty
+		            Hempty
+		            HEInc)).
+		      }
+		      set Over := fun A0:set =>
+		        {p :e A0 | exists F:set, F :e Arcs /\ F <> A0 /\ p :e F}.
+		      claim HexSmallInArc :
+		        forall A0:set, A0 :e Arcs -> x :e A0 ->
+		          exists V0:set,
+		            V0 :e (subspace_topology X Tx A0) /\
+		            x :e V0 /\
+		            V0 c= U /\
+		            V0 c= (A0 :\: ((Over A0) :\: (Sing x))) /\
+		            path_connected_space V0 (subspace_topology X Tx V0).
+		      {
+		        let A0.
+		        assume HA0Arcs HxA0.
+		        set TA0 := subspace_topology X Tx A0.
+		        claim HA0dat : A0 c= X /\ arc A0 TA0.
+		        {
+		          exact (general_linear_graph_arc_data
+		            X
+		            Tx
+		            Arcs
+		            A0
+		            Hglg
+		            HA0Arcs).
+		        }
+		        claim HA0subX : A0 c= X.
+		        { exact (andEL (A0 c= X) (arc A0 TA0) HA0dat). }
+		        claim HarcA0 : arc A0 TA0.
+		        { exact (andER (A0 c= X) (arc A0 TA0) HA0dat). }
+		        claim HtopA0 : topology_on A0 TA0.
+		        { exact (subspace_topology_is_topology X Tx A0 HtopX HA0subX). }
+		        set OverA0 := Over A0.
+		        set BadA0 := OverA0 :\: (Sing x).
+		        claim HfinOverA0 : finite OverA0.
+		        {
+		          exact (general_linear_graph_arc_overlap_points_finite
+		            X
+		            Tx
+		            Arcs
+		            A0
+		            Hglg
+		            HA0Arcs).
+		        }
+		        claim HsubBad : BadA0 c= OverA0.
+		        { exact (setminus_Subq OverA0 (Sing x)). }
+		        claim HfinBad : finite BadA0.
+		        { exact (Subq_finite OverA0 HfinOverA0 BadA0 HsubBad). }
+		        claim HHausA0 : Hausdorff_space A0 TA0.
+		        { exact (arc_Hausdorff_space A0 TA0 HarcA0). }
+		        claim HBadSubA0 : BadA0 c= A0.
+		        {
+		          let y.
+		          assume HyBad.
+		          exact (SepE1
+		            A0
+		            (fun p0:set => exists F:set, F :e Arcs /\ F <> A0 /\ p0 :e F)
+		            y
+		            (setminusE1 OverA0 (Sing x) y HyBad)).
+		        }
+		        claim HclosedBad :
+		          closed_in A0 TA0 BadA0.
+		        {
+		          exact (finite_sets_closed_in_Hausdorff
+		            A0
+		            TA0
+		            HHausA0
+		            BadA0
+		            HBadSubA0
+		            HfinBad).
+		        }
+		        set StarA0 := A0 :\: BadA0.
+		        claim HStarOpen : open_in A0 TA0 StarA0.
+		        { exact (open_of_closed_complement A0 TA0 BadA0 HclosedBad). }
+		        claim HStarTA0 : StarA0 :e TA0.
+		        { exact (andER (topology_on A0 TA0) (StarA0 :e TA0) HStarOpen). }
+		        claim HUcapA0 : (U :/\: A0) :e TA0.
+		        { exact (subspace_topologyI X Tx A0 U HU). }
+		        set UA0 := (U :/\: A0) :/\: StarA0.
+		        claim HUA0 : UA0 :e TA0.
+		        {
+		          exact (topology_binintersect_closed
+		            A0
+		            TA0
+		            (U :/\: A0)
+		            StarA0
+		            HtopA0
+		            HUcapA0
+		            HStarTA0).
+		        }
+			        claim HxStarA0 : x :e StarA0.
+			        {
+			          claim HxNotBad : x /:e BadA0.
+			          {
+			            assume HxBad.
+			            exact (setminusE2 OverA0 (Sing x) x HxBad (SingI x)).
+			          }
+			          exact (setminusI A0 BadA0 x HxA0 HxNotBad).
+			        }
+		        claim HxUA0 : x :e UA0.
+		        {
+		          apply binintersectI.
+		          - exact (binintersectI U A0 x HxU HxA0).
+		          - exact HxStarA0.
+		        }
+		        (** Now refine UA0 using the arc homeomorphism to unit_interval. **)
+		        apply HarcA0.
+		        let f.
+		        assume Hhomef : homeomorphism unit_interval unit_interval_topology A0 TA0 f.
+		        claim HfCont : continuous_map unit_interval unit_interval_topology A0 TA0 f.
+		        { exact (homeomorphism_continuous unit_interval unit_interval_topology A0 TA0 f Hhomef). }
+		        claim Hexg :
+		          exists g:set,
+		            continuous_map A0 TA0 unit_interval unit_interval_topology g /\
+		            (forall u:set, u :e unit_interval -> apply_fun g (apply_fun f u) = u) /\
+		            (forall y:set, y :e A0 -> apply_fun f (apply_fun g y) = y).
+		        { exact (homeomorphism_inverse_package unit_interval unit_interval_topology A0 TA0 f Hhomef). }
+		        apply Hexg.
+		        let g.
+		        assume Hgpack.
+		        apply (and3E
+		          (continuous_map A0 TA0 unit_interval unit_interval_topology g)
+		          (forall u:set, u :e unit_interval -> apply_fun g (apply_fun f u) = u)
+		          (forall y:set, y :e A0 -> apply_fun f (apply_fun g y) = y)
+		          Hgpack).
+		        assume HgCont HgIdL HfIdR.
+		        set t := apply_fun g x.
+		        set W0 := preimage_of unit_interval f UA0.
+		        claim HW0open : W0 :e unit_interval_topology.
+		        {
+		          exact (continuous_map_preimage
+		            unit_interval
+		            unit_interval_topology
+		            A0
+		            TA0
+		            f
+		            HfCont
+		            UA0
+		            HUA0).
+		        }
+		        claim HtI : t :e unit_interval.
+		        {
+		          claim HgFn : function_on g A0 unit_interval.
+		          { exact (continuous_map_function_on A0 TA0 unit_interval unit_interval_topology g HgCont). }
+		          exact (HgFn x HxA0).
+		        }
+		        claim Hft : apply_fun f t = x.
+		        { exact (HfIdR x HxA0). }
+		        claim HtW0 : t :e W0.
+		        {
+		          claim HftUA0 : apply_fun f t :e UA0.
+		          { rewrite Hft. exact HxUA0. }
+		          exact (SepI
+		            unit_interval
+		            (fun u:set => apply_fun f u :e UA0)
+		            t
+		            HtI
+		            HftUA0).
+		        }
+		        apply (xm (t = 0 \/ t = 1)).
+		        - assume HtEnd.
+		          claim HexW :
+		            exists W:set,
+		              W :e unit_interval_topology /\
+		              t :e W /\ W c= W0 /\
+		              path_connected_space W (subspace_topology unit_interval unit_interval_topology W).
+		          {
+		            apply HtEnd.
+		            + assume Ht0.
+		              set V1 := ambient_open_of_subspace_open
+		                R
+		                R_standard_topology
+		                unit_interval
+		                W0.
+		              claim HV1pack : V1 :e R_standard_topology /\ W0 = V1 :/\: unit_interval.
+		              { exact (ambient_open_of_subspace_open_spec
+		                R
+		                R_standard_topology
+		                unit_interval
+		                W0
+		                HW0open). }
+		              claim HV1open : V1 :e R_standard_topology.
+		              { exact (andEL (V1 :e R_standard_topology) (W0 = V1 :/\: unit_interval) HV1pack). }
+		              claim HW0eq : W0 = V1 :/\: unit_interval.
+		              { exact (andER (V1 :e R_standard_topology) (W0 = V1 :/\: unit_interval) HV1pack). }
+		              claim HtV1' : t :e V1 :/\: unit_interval.
+		              { rewrite <- HW0eq. exact HtW0. }
+		              claim HtV1 : t :e V1.
+		              { exact (binintersectE1 V1 unit_interval t HtV1'). }
+		              claim Hexab :
+		                exists a b:set,
+		                  a :e R /\ b :e R /\ t :e open_interval a b /\
+		                  open_interval a b c= V1 /\ Rlt a t /\ Rlt t b.
+		              { exact (R_standard_open_refine_interval V1 t HV1open HtV1). }
+		              apply Hexab.
+		              let a.
+		              assume Hexb.
+		              apply Hexb.
+		              let b.
+		              assume Habpack.
+		              claim HabL :
+		                (((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= V1) /\ Rlt a t.
+		              { exact (andEL
+		                ((((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= V1) /\ Rlt a t)
+		                (Rlt t b)
+		                Habpack). }
+		              claim Htltb : Rlt t b.
+		              { exact (andER
+		                ((((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= V1) /\ Rlt a t)
+		                (Rlt t b)
+		                Habpack). }
+		              claim HabM :
+		                ((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= V1.
+		              { exact (andEL
+		                (((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= V1)
+		                (Rlt a t)
+		                HabL). }
+		              claim Halt : Rlt a t.
+		              { exact (andER
+		                (((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= V1)
+		                (Rlt a t)
+		                HabL). }
+		              claim HabABt : (a :e R /\ b :e R) /\ t :e open_interval a b.
+		              { exact (andEL
+		                ((a :e R /\ b :e R) /\ t :e open_interval a b)
+		                (open_interval a b c= V1)
+		                HabM). }
+		              claim HOabSubV1 : open_interval a b c= V1.
+		              { exact (andER
+		                ((a :e R /\ b :e R) /\ t :e open_interval a b)
+		                (open_interval a b c= V1)
+		                HabM). }
+		              claim HabAB : a :e R /\ b :e R.
+		              { exact (andEL
+		                (a :e R /\ b :e R)
+		                (t :e open_interval a b)
+		                HabABt). }
+		              claim HtOab : t :e open_interval a b.
+		              { exact (andER
+		                (a :e R /\ b :e R)
+		                (t :e open_interval a b)
+		                HabABt). }
+		              claim HaR : a :e R.
+		              { exact (andEL (a :e R) (b :e R) HabAB). }
+		              claim HbR : b :e R.
+		              { exact (andER (a :e R) (b :e R) HabAB). }
+		              claim Halt0 : Rlt a 0.
+		              { rewrite <- Ht0. exact Halt. }
+		              claim H0ltb : Rlt 0 b.
+		              { rewrite <- Ht0. exact Htltb. }
+		              claim Hablt : Rlt a b.
+		              { exact (Rlt_tra a 0 b Halt0 H0ltb). }
+		              set W := unit_interval :/\: open_interval a b.
+		              claim HWsubI : W c= unit_interval.
+		              { exact (binintersect_Subq_1 unit_interval (open_interval a b)). }
+		              claim HWopenR : open_interval a b :e R_standard_topology.
+		              { exact (open_interval_in_R_standard_topology a b Hablt). }
+		              claim HWopenI' : (open_interval a b :/\: unit_interval) :e unit_interval_topology.
+		              { exact (subspace_topologyI R R_standard_topology unit_interval (open_interval a b) HWopenR). }
+		              claim HWcom : W = open_interval a b :/\: unit_interval.
+		              { exact (binintersect_com unit_interval (open_interval a b)). }
+		              claim HWopenI : W :e unit_interval_topology.
+		              { exact (eq_subst_mem W (open_interval a b :/\: unit_interval) unit_interval_topology HWcom HWopenI'). }
+		              claim HtW : t :e W.
+		              { exact (binintersectI unit_interval (open_interval a b) t HtI HtOab). }
+		              claim HWsubW0 : W c= W0.
+		              {
+		                let u.
+		                assume HuW.
+		                claim HuI : u :e unit_interval.
+		                { exact (binintersectE1 unit_interval (open_interval a b) u HuW). }
+		                claim HuO : u :e open_interval a b.
+		                { exact (binintersectE2 unit_interval (open_interval a b) u HuW). }
+		                claim HuV1 : u :e V1.
+		                { exact (HOabSubV1 u HuO). }
+		                claim HuCap : u :e V1 :/\: unit_interval.
+		                { exact (binintersectI V1 unit_interval u HuV1 HuI). }
+		                claim HW0eq' : V1 :/\: unit_interval = W0.
+		                { symmetry. exact HW0eq. }
+		                exact (mem_eqR u (V1 :/\: unit_interval) W0 HW0eq' HuCap).
+		              }
+		              claim HTW :
+		                subspace_topology unit_interval unit_interval_topology W =
+		                subspace_topology R R_standard_topology W.
+		              {
+		                exact (ex16_1_subspace_transitive
+		                  R
+		                  R_standard_topology
+		                  unit_interval
+		                  W
+		                  R_standard_topology_is_topology
+		                  unit_interval_sub_R
+		                  HWsubI).
+		              }
+				              claim HpcW : path_connected_space W (subspace_topology unit_interval unit_interval_topology W).
+				              {
+				                rewrite HTW.
+				                apply (order_rel_trichotomy_or_impred
+				                  R
+				                  b
+				                  1
+				                  simply_ordered_set_R
+				                  HbR
+				                  real_1).
+				                - assume Hblt1Ord.
+				                  claim Hblt1 : Rlt b 1.
+				                  { exact (order_rel_R_implies_Rlt b 1 Hblt1Ord). }
+				                  rewrite (unit_interval_binintersect_open_interval_left_cross
+				                    a b HaR HbR Halt0 H0ltb Hblt1).
+				                  exact (halfopen_interval_left_in_path_connected_0
+				                    b
+				                    HbR
+				                    H0ltb).
+				                - assume Hb1.
+				                  rewrite Hb1.
+				                  rewrite (unit_interval_binintersect_open_interval_right_boundary_cross
+				                    a
+				                    HaR
+				                    Halt0).
+				                  exact (halfopen_interval_left_in_path_connected_0
+				                    1
+				                    real_1
+				                    Rlt_0_1).
+				                - assume H1ltbOrd.
+				                  claim H1ltb : Rlt 1 b.
+				                  { exact (order_rel_R_implies_Rlt 1 b H1ltbOrd). }
+				                  rewrite (unit_interval_binintersect_open_interval_both_cross
+				                    a b HaR HbR Halt0 H1ltb).
+				                  exact (ex51_3b_contractible_path_connected
+				                    unit_interval
+				                    (subspace_topology R R_standard_topology unit_interval)
+				                    ex51_3a_I_contractible).
+				              }
+		              witness W.
+		              apply andI.
+		              - apply andI.
+		                + apply andI.
+		                  * exact HWopenI.
+		                  * exact HtW.
+		                + exact HWsubW0.
+		              - exact HpcW.
+		            + assume Ht1.
+		              set V1 := ambient_open_of_subspace_open
+		                R
+		                R_standard_topology
+		                unit_interval
+		                W0.
+		              claim HV1pack : V1 :e R_standard_topology /\ W0 = V1 :/\: unit_interval.
+		              { exact (ambient_open_of_subspace_open_spec
+		                R
+		                R_standard_topology
+		                unit_interval
+		                W0
+		                HW0open). }
+		              claim HV1open : V1 :e R_standard_topology.
+		              { exact (andEL (V1 :e R_standard_topology) (W0 = V1 :/\: unit_interval) HV1pack). }
+		              claim HW0eq : W0 = V1 :/\: unit_interval.
+		              { exact (andER (V1 :e R_standard_topology) (W0 = V1 :/\: unit_interval) HV1pack). }
+		              claim HtV1' : t :e V1 :/\: unit_interval.
+		              { rewrite <- HW0eq. exact HtW0. }
+		              claim HtV1 : t :e V1.
+		              { exact (binintersectE1 V1 unit_interval t HtV1'). }
+		              claim Hexab :
+		                exists a b:set,
+		                  a :e R /\ b :e R /\ t :e open_interval a b /\
+		                  open_interval a b c= V1 /\ Rlt a t /\ Rlt t b.
+		              { exact (R_standard_open_refine_interval V1 t HV1open HtV1). }
+		              apply Hexab.
+		              let a.
+		              assume Hexb.
+		              apply Hexb.
+		              let b.
+		              assume Habpack.
+		              claim HabL :
+		                (((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= V1) /\ Rlt a t.
+		              { exact (andEL
+		                ((((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= V1) /\ Rlt a t)
+		                (Rlt t b)
+		                Habpack). }
+		              claim Htltb : Rlt t b.
+		              { exact (andER
+		                ((((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= V1) /\ Rlt a t)
+		                (Rlt t b)
+		                Habpack). }
+		              claim HabM :
+		                ((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= V1.
+		              { exact (andEL
+		                (((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= V1)
+		                (Rlt a t)
+		                HabL). }
+		              claim Halt : Rlt a t.
+		              { exact (andER
+		                (((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= V1)
+		                (Rlt a t)
+		                HabL). }
+		              claim HabABt : (a :e R /\ b :e R) /\ t :e open_interval a b.
+		              { exact (andEL
+		                ((a :e R /\ b :e R) /\ t :e open_interval a b)
+		                (open_interval a b c= V1)
+		                HabM). }
+		              claim HOabSubV1 : open_interval a b c= V1.
+		              { exact (andER
+		                ((a :e R /\ b :e R) /\ t :e open_interval a b)
+		                (open_interval a b c= V1)
+		                HabM). }
+		              claim HabAB : a :e R /\ b :e R.
+		              { exact (andEL
+		                (a :e R /\ b :e R)
+		                (t :e open_interval a b)
+		                HabABt). }
+		              claim HtOab : t :e open_interval a b.
+		              { exact (andER
+		                (a :e R /\ b :e R)
+		                (t :e open_interval a b)
+		                HabABt). }
+		              claim HaR : a :e R.
+		              { exact (andEL (a :e R) (b :e R) HabAB). }
+		              claim HbR : b :e R.
+		              { exact (andER (a :e R) (b :e R) HabAB). }
+			              claim Halt1 : Rlt a 1.
+			              { rewrite <- Ht1. exact Halt. }
+			              claim H1ltb : Rlt 1 b.
+			              { rewrite <- Ht1. exact Htltb. }
+		              claim Hablt : Rlt a b.
+		              { exact (Rlt_tra a 1 b Halt1 H1ltb). }
+		              set W := unit_interval :/\: open_interval a b.
+		              claim HWsubI : W c= unit_interval.
+		              { exact (binintersect_Subq_1 unit_interval (open_interval a b)). }
+		              claim HWopenR : open_interval a b :e R_standard_topology.
+		              { exact (open_interval_in_R_standard_topology a b Hablt). }
+		              claim HWopenI' : (open_interval a b :/\: unit_interval) :e unit_interval_topology.
+		              { exact (subspace_topologyI R R_standard_topology unit_interval (open_interval a b) HWopenR). }
+		              claim HWcom : W = open_interval a b :/\: unit_interval.
+		              { exact (binintersect_com unit_interval (open_interval a b)). }
+		              claim HWopenI : W :e unit_interval_topology.
+		              { exact (eq_subst_mem W (open_interval a b :/\: unit_interval) unit_interval_topology HWcom HWopenI'). }
+		              claim HtW : t :e W.
+		              { exact (binintersectI unit_interval (open_interval a b) t HtI HtOab). }
+		              claim HWsubW0 : W c= W0.
+		              {
+		                let u.
+		                assume HuW.
+		                claim HuI : u :e unit_interval.
+		                { exact (binintersectE1 unit_interval (open_interval a b) u HuW). }
+		                claim HuO : u :e open_interval a b.
+		                { exact (binintersectE2 unit_interval (open_interval a b) u HuW). }
+		                claim HuV1 : u :e V1.
+		                { exact (HOabSubV1 u HuO). }
+		                claim HuCap : u :e V1 :/\: unit_interval.
+		                { exact (binintersectI V1 unit_interval u HuV1 HuI). }
+		                claim HW0eq' : V1 :/\: unit_interval = W0.
+		                { symmetry. exact HW0eq. }
+		                exact (mem_eqR u (V1 :/\: unit_interval) W0 HW0eq' HuCap).
+		              }
+		              claim HTW :
+		                subspace_topology unit_interval unit_interval_topology W =
+		                subspace_topology R R_standard_topology W.
+		              {
+		                exact (ex16_1_subspace_transitive
+		                  R
+		                  R_standard_topology
+		                  unit_interval
+		                  W
+		                  R_standard_topology_is_topology
+		                  unit_interval_sub_R
+		                  HWsubI).
+		              }
+				              claim HpcW : path_connected_space W (subspace_topology unit_interval unit_interval_topology W).
+				              {
+				                rewrite HTW.
+				                apply (order_rel_trichotomy_or_impred
+				                  R
+				                  a
+				                  0
+				                  simply_ordered_set_R
+				                  HaR
+				                  real_0).
+				                - assume Halt0Ord.
+				                  claim Halt0 : Rlt a 0.
+				                  { exact (order_rel_R_implies_Rlt a 0 Halt0Ord). }
+				                  rewrite (unit_interval_binintersect_open_interval_both_cross
+				                    a b HaR HbR Halt0 H1ltb).
+				                  exact (ex51_3b_contractible_path_connected
+				                    unit_interval
+				                    (subspace_topology R R_standard_topology unit_interval)
+				                    ex51_3a_I_contractible).
+				                - assume Ha0.
+				                  rewrite Ha0.
+				                  rewrite (unit_interval_binintersect_open_interval_left_boundary_cross
+				                    b
+				                    HbR
+				                    H1ltb).
+				                  exact (halfopen_interval_right_in_path_connected_1
+				                    0
+				                    real_0
+				                    Rlt_0_1).
+				                - assume H0ltaOrd.
+				                  claim H0lta : Rlt 0 a.
+				                  { exact (order_rel_R_implies_Rlt 0 a H0ltaOrd). }
+				                  rewrite (unit_interval_binintersect_open_interval_right_cross
+				                    a b HaR HbR H0lta Halt1 H1ltb).
+				                  exact (halfopen_interval_right_in_path_connected_1
+				                    a
+				                    HaR
+				                    Halt1).
+				              }
+		              witness W.
+		              apply andI.
+		              - apply andI.
+		                + apply andI.
+		                  * exact HWopenI.
+		                  * exact HtW.
+		                + exact HWsubW0.
+		              - exact HpcW.
+		          }
+		          apply HexW.
+		          let W.
+		          assume HWpack.
+		          apply (and4E
+		            (W :e unit_interval_topology)
+		            (t :e W)
+		            (W c= W0)
+		            (path_connected_space W (subspace_topology unit_interval unit_interval_topology W))
+		            HWpack).
+		          assume HWopenI HtW HWsubW0 HpcW.
+			          set V0 := image_of f W.
+			          claim HV0subA0 : V0 c= A0.
+			          {
+			            claim HWsubI : W c= unit_interval.
+			            {
+			              exact (Subq_tra
+			                W
+			                W0
+			                unit_interval
+			                HWsubW0
+			                (Sep_Subq
+			                  unit_interval
+			                  (fun u:set => apply_fun f u :e UA0))).
+			            }
+			            exact (image_of_sub_codomain
+			              f
+			              unit_interval
+			              A0
+			              W
+			              (continuous_map_function_on unit_interval unit_interval_topology A0 TA0 f HfCont)
+			              HWsubI).
+			          }
+		          claim HV0subUA0 : V0 c= UA0.
+		          {
+		            let y.
+		            assume HyV0.
+		            apply (ReplE W (fun u:set => apply_fun f u) y HyV0).
+			            let u.
+			            assume HuPack.
+			            claim HuW : u :e W.
+			            { exact (andEL (u :e W) (y = apply_fun f u) HuPack). }
+			            claim HyEq : y = apply_fun f u.
+			            { exact (andER (u :e W) (y = apply_fun f u) HuPack). }
+			            claim HuW0 : u :e W0.
+			            { exact (HWsubW0 u HuW). }
+			            claim HfuUA0 : apply_fun f u :e UA0.
+			            { exact (SepE2 unit_interval (fun v:set => apply_fun f v :e UA0) u HuW0). }
+			            rewrite HyEq.
+			            exact HfuUA0.
+		          }
+		          claim HV0TeA0 : V0 :e TA0.
+		          {
+		            exact (homeomorphism_image_open
+		              unit_interval
+		              unit_interval_topology
+		              A0
+		              TA0
+		              f
+		              W
+		              Hhomef
+		              HWopenI).
+		          }
+		          claim HxV0 : x :e V0.
+		          {
+		            rewrite <- Hft.
+		            exact (ReplI W (fun u:set => apply_fun f u) t HtW).
+		          }
+			          claim HhomeW :
+			            homeomorphism W (subspace_topology unit_interval unit_interval_topology W)
+			              V0 (subspace_topology A0 TA0 V0)
+			              f.
+			          {
+			            claim HWsubI : W c= unit_interval.
+			            {
+			              exact (Subq_tra
+			                W
+			                W0
+			                unit_interval
+			                HWsubW0
+			                (Sep_Subq
+			                  unit_interval
+			                  (fun u:set => apply_fun f u :e UA0))).
+			            }
+			            exact (homeomorphism_restrict_to_image_of_subset
+			              unit_interval
+			              unit_interval_topology
+			              A0
+			              TA0
+			              f
+			              W
+			              Hhomef
+			              HWsubI).
+			          }
+		          claim HV0pcA0 : path_connected_space V0 (subspace_topology A0 TA0 V0).
+		          {
+			            exact (homeomorphism_preserves_path_connected_space_right
+			              W
+			              (subspace_topology unit_interval unit_interval_topology W)
+			              V0
+			              (subspace_topology A0 TA0 V0)
+			              f
+			              HhomeW
+			              HpcW).
+			          }
+		          claim HV0subX : V0 c= X.
+		          { exact (Subq_tra V0 A0 X HV0subA0 HA0subX). }
+		          claim HTsub :
+		            subspace_topology A0 TA0 V0 = subspace_topology X Tx V0.
+		          {
+		            exact (ex16_1_subspace_transitive
+		              X
+		              Tx
+		              A0
+		              V0
+		              HtopX
+		              HA0subX
+		              (subspace_topology_subset X Tx A0 V0 HV0TeA0)).
+		          }
+			          claim HV0pcX : path_connected_space V0 (subspace_topology X Tx V0).
+			          { rewrite <- HTsub. exact HV0pcA0. }
+			          witness V0.
+			          apply andI.
+			          - apply andI.
+			            + apply andI.
+			              * apply andI.
+			                { exact HV0TeA0. }
+			                { exact HxV0. }
+			              * let y.
+			                assume HyV0.
+			                exact (binintersectE1
+			                  U
+			                  A0
+			                  y
+			                  (binintersectE1 (U :/\: A0) StarA0 y (HV0subUA0 y HyV0))).
+			            + let y.
+			              assume HyV0.
+			              exact (binintersectE2
+			                (U :/\: A0)
+			                StarA0
+			                y
+			                (HV0subUA0 y HyV0)).
+			          - exact HV0pcX.
+		        - assume HtNotEnd.
+		          claim HexW :
+		            exists W:set,
+		              W :e unit_interval_topology /\
+		              t :e W /\ W c= W0 /\
+		              path_connected_space W (subspace_topology unit_interval unit_interval_topology W).
+		          {
+		            set V1 := ambient_open_of_subspace_open
+		              R
+		              R_standard_topology
+		              unit_interval
+		              W0.
+		            claim HV1pack : V1 :e R_standard_topology /\ W0 = V1 :/\: unit_interval.
+		            { exact (ambient_open_of_subspace_open_spec
+		              R
+		              R_standard_topology
+		              unit_interval
+		              W0
+		              HW0open). }
+		            claim HV1open : V1 :e R_standard_topology.
+		            { exact (andEL (V1 :e R_standard_topology) (W0 = V1 :/\: unit_interval) HV1pack). }
+		            claim HW0eq : W0 = V1 :/\: unit_interval.
+		            { exact (andER (V1 :e R_standard_topology) (W0 = V1 :/\: unit_interval) HV1pack). }
+		            claim HtV1' : t :e V1 :/\: unit_interval.
+		            { rewrite <- HW0eq. exact HtW0. }
+		            claim HtV1 : t :e V1.
+		            { exact (binintersectE1 V1 unit_interval t HtV1'). }
+		            claim HtNot0 : t <> 0.
+		            {
+		              assume Ht0.
+		              apply HtNotEnd.
+		              exact (orIL (t = 0) (t = 1) Ht0).
+		            }
+		            claim HtNot1 : t <> 1.
+		            {
+		              assume Ht1.
+		              apply HtNotEnd.
+		              exact (orIR (t = 0) (t = 1) Ht1).
+			            }
+			            claim HtO01 : t :e open_interval 0 1.
+			            {
+			              claim HtR : t :e R.
+			              { exact (unit_interval_sub_R t HtI). }
+			              claim H0ltt : Rlt 0 t.
+			              {
+			                apply (xm (Rlt 0 t)).
+			                - assume H0lt. exact H0lt.
+			                - assume Hn0lt.
+			                  claim HtGe0 : ~ (Rlt t 0).
+			                  {
+			                    exact (andEL
+			                      (~ (Rlt t 0))
+			                      (~ (Rlt 1 t))
+			                      (SepE2 R (fun y:set => ~ (Rlt y 0) /\ ~ (Rlt 1 y)) t HtI)).
+			                  }
+			                  claim Ht0 : t = 0.
+			                  { exact (R_eq_of_not_Rlt t 0 HtR real_0 HtGe0 Hn0lt). }
+			                  exact (FalseE (HtNot0 Ht0) (Rlt 0 t)).
+			              }
+			              claim Htlt1 : Rlt t 1.
+			              {
+			                apply (xm (Rlt t 1)).
+			                - assume Hlt. exact Hlt.
+			                - assume Hnlt.
+			                  claim H1GEt : ~ (Rlt 1 t).
+			                  {
+			                    exact (andER
+			                      (~ (Rlt t 0))
+			                      (~ (Rlt 1 t))
+			                      (SepE2 R (fun y:set => ~ (Rlt y 0) /\ ~ (Rlt 1 y)) t HtI)).
+			                  }
+			                  claim Ht1 : t = 1.
+			                  {
+			                    exact (R_eq_of_not_Rlt
+			                      t
+			                      1
+			                      HtR
+			                      real_1
+			                      Hnlt
+			                      H1GEt).
+			                  }
+			                  exact (FalseE (HtNot1 Ht1) (Rlt t 1)).
+			              }
+			              exact (SepI
+			                R
+			                (fun y:set => Rlt 0 y /\ Rlt y 1)
+			                t
+			                HtR
+			                (andI (Rlt 0 t) (Rlt t 1) H0ltt Htlt1)).
+			            }
+		            set Vint := V1 :/\: open_interval 0 1.
+		            claim HVintOpen : Vint :e R_standard_topology.
+		            {
+		              exact (topology_binintersect_closed
+		                R
+		                R_standard_topology
+		                V1
+		                (open_interval 0 1)
+		                R_standard_topology_is_topology
+		                HV1open
+		                (open_interval_in_R_standard_topology 0 1 Rlt_0_1)).
+		            }
+		            claim HtVint : t :e Vint.
+		            { exact (binintersectI V1 (open_interval 0 1) t HtV1 HtO01). }
+		            claim Hexab :
+		              exists a b:set,
+		                a :e R /\ b :e R /\ t :e open_interval a b /\
+		                open_interval a b c= Vint /\ Rlt a t /\ Rlt t b.
+		            { exact (R_standard_open_refine_interval Vint t HVintOpen HtVint). }
+		            apply Hexab.
+		            let a.
+		            assume Hexb.
+		            apply Hexb.
+			            let b.
+			            assume Habpack.
+			            claim HabL :
+			              (((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= Vint) /\ Rlt a t.
+			            { exact (andEL
+			              ((((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= Vint) /\ Rlt a t)
+			              (Rlt t b)
+			              Habpack). }
+			            claim Htltb : Rlt t b.
+			            { exact (andER
+			              ((((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= Vint) /\ Rlt a t)
+			              (Rlt t b)
+			              Habpack). }
+			            claim HabM :
+			              ((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= Vint.
+			            { exact (andEL
+			              (((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= Vint)
+			              (Rlt a t)
+			              HabL). }
+			            claim Halt : Rlt a t.
+			            { exact (andER
+			              (((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= Vint)
+			              (Rlt a t)
+			              HabL). }
+		            claim HabABt : (a :e R /\ b :e R) /\ t :e open_interval a b.
+		            { exact (andEL ((a :e R /\ b :e R) /\ t :e open_interval a b) (open_interval a b c= Vint) HabM). }
+		            claim HabAB : a :e R /\ b :e R.
+		            { exact (andEL (a :e R /\ b :e R) (t :e open_interval a b) HabABt). }
+		            claim HtOab : t :e open_interval a b.
+		            { exact (andER (a :e R /\ b :e R) (t :e open_interval a b) HabABt). }
+		            claim HOabSubVint : open_interval a b c= Vint.
+		            { exact (andER ((a :e R /\ b :e R) /\ t :e open_interval a b) (open_interval a b c= Vint) HabM). }
+		            claim HaR : a :e R.
+		            { exact (andEL (a :e R) (b :e R) HabAB). }
+		            claim HbR : b :e R.
+		            { exact (andER (a :e R) (b :e R) HabAB). }
+		            claim Hablt : Rlt a b.
+		            { exact (Rlt_tra a t b Halt Htltb). }
+		            set W := unit_interval :/\: open_interval a b.
+		            claim HWsubI : W c= unit_interval.
+		            { exact (binintersect_Subq_1 unit_interval (open_interval a b)). }
+		            claim HWopenR : open_interval a b :e R_standard_topology.
+		            { exact (open_interval_in_R_standard_topology a b Hablt). }
+		            claim HWopenI' : (open_interval a b :/\: unit_interval) :e unit_interval_topology.
+		            { exact (subspace_topologyI R R_standard_topology unit_interval (open_interval a b) HWopenR). }
+		            claim HWcom : W = open_interval a b :/\: unit_interval.
+		            { exact (binintersect_com unit_interval (open_interval a b)). }
+		            claim HWopenI : W :e unit_interval_topology.
+		            { exact (eq_subst_mem W (open_interval a b :/\: unit_interval) unit_interval_topology HWcom HWopenI'). }
+		            claim HtW : t :e W.
+		            { exact (binintersectI unit_interval (open_interval a b) t HtI HtOab). }
+		            claim HWsubW0 : W c= W0.
+		            {
+		              let u.
+		              assume HuW.
+		              claim HuI : u :e unit_interval.
+		              { exact (binintersectE1 unit_interval (open_interval a b) u HuW). }
+		              claim HuO : u :e open_interval a b.
+		              { exact (binintersectE2 unit_interval (open_interval a b) u HuW). }
+		              claim HuVint : u :e Vint.
+		              { exact (HOabSubVint u HuO). }
+		              claim HuV1 : u :e V1.
+		              { exact (binintersectE1 V1 (open_interval 0 1) u HuVint). }
+		              claim HuCap : u :e V1 :/\: unit_interval.
+		              { exact (binintersectI V1 unit_interval u HuV1 HuI). }
+		              claim HW0eq' : V1 :/\: unit_interval = W0.
+		              { symmetry. exact HW0eq. }
+		              exact (mem_eqR u (V1 :/\: unit_interval) W0 HW0eq' HuCap).
+		            }
+		            claim HTW :
+		              subspace_topology unit_interval unit_interval_topology W =
+		              subspace_topology R R_standard_topology W.
+		            {
+		              exact (ex16_1_subspace_transitive
+		                R
+		                R_standard_topology
+		                unit_interval
+		                W
+		                R_standard_topology_is_topology
+		                unit_interval_sub_R
+		                HWsubI).
+			            }
+			            claim HpcW : path_connected_space W (subspace_topology unit_interval unit_interval_topology W).
+			            {
+			              rewrite HTW.
+			              claim HOabSubI : open_interval a b c= unit_interval.
+			              {
+			                let y.
+			                assume HyOab.
+			                claim HyVint : y :e Vint.
+			                { exact (HOabSubVint y HyOab). }
+			                claim HyO01 : y :e open_interval 0 1.
+			                { exact (binintersectE2 V1 (open_interval 0 1) y HyVint). }
+			                exact (open_interval_0_1_Subq_unit_interval y HyO01).
+			              }
+			              claim HWintEq : unit_interval :/\: open_interval a b = open_interval a b.
+			              {
+			                apply set_ext.
+			                - let y.
+			                  assume HyInt.
+			                  exact (binintersectE2 unit_interval (open_interval a b) y HyInt).
+			                - let y.
+			                  assume HyOab.
+			                  exact (binintersectI
+			                    unit_interval
+			                    (open_interval a b)
+			                    y
+			                    (HOabSubI y HyOab)
+			                    HyOab).
+			              }
+			              rewrite HWintEq.
+			              exact (open_interval_path_connected a b HaR HbR Hablt).
+			            }
+			            witness W.
+			            apply andI.
+			            - apply andI.
+			              + apply andI.
+			                * exact HWopenI.
+			                * exact HtW.
+			              + exact HWsubW0.
+			            - exact HpcW.
+		          }
+		          apply HexW.
+		          let W.
+		          assume HWpack.
+		          apply (and4E
+		            (W :e unit_interval_topology)
+		            (t :e W)
+		            (W c= W0)
+		            (path_connected_space W (subspace_topology unit_interval unit_interval_topology W))
+		            HWpack).
+		          assume HWopenI HtW HWsubW0 HpcW.
+		          set V0 := image_of f W.
+		          claim HV0TeA0 : V0 :e TA0.
+		          {
+		            exact (homeomorphism_image_open
+		              unit_interval
+		              unit_interval_topology
+		              A0
+		              TA0
+		              f
+		              W
+		              Hhomef
+		              HWopenI).
+		          }
+		              claim HxV0 : x :e V0.
+		              {
+		                rewrite <- Hft.
+		                exact (ReplI W (fun u:set => apply_fun f u) t HtW).
+		              }
+		          claim HV0subUA0 : V0 c= UA0.
+		          {
+		            let y.
+		            assume HyV0.
+		            apply (ReplE W (fun u:set => apply_fun f u) y HyV0).
+			            let u.
+			            assume HuPack.
+			            claim HuW : u :e W.
+			            { exact (andEL (u :e W) (y = apply_fun f u) HuPack). }
+			            claim HyEq : y = apply_fun f u.
+			            { exact (andER (u :e W) (y = apply_fun f u) HuPack). }
+			            claim HuW0 : u :e W0.
+			            { exact (HWsubW0 u HuW). }
+			            claim HfuUA0 : apply_fun f u :e UA0.
+			            { exact (SepE2 unit_interval (fun v:set => apply_fun f v :e UA0) u HuW0). }
+			            rewrite HyEq.
+			            exact HfuUA0.
+		          }
+			          claim HhomeW :
+			            homeomorphism W (subspace_topology unit_interval unit_interval_topology W)
+			              V0 (subspace_topology A0 TA0 V0)
+			              f.
+			          {
+			            claim HWsubI : W c= unit_interval.
+			            {
+			              exact (Subq_tra
+			                W
+			                W0
+			                unit_interval
+			                HWsubW0
+			                (Sep_Subq
+			                  unit_interval
+			                  (fun u:set => apply_fun f u :e UA0))).
+			            }
+			            exact (homeomorphism_restrict_to_image_of_subset
+			              unit_interval
+			              unit_interval_topology
+			              A0
+			              TA0
+			              f
+			              W
+			              Hhomef
+			              HWsubI).
+			          }
+		          claim HV0pcA0 : path_connected_space V0 (subspace_topology A0 TA0 V0).
+		          {
+			            exact (homeomorphism_preserves_path_connected_space_right
+			              W
+			              (subspace_topology unit_interval unit_interval_topology W)
+			              V0
+			              (subspace_topology A0 TA0 V0)
+			              f
+			              HhomeW
+			              HpcW).
+			          }
+		          claim HTsub :
+		            subspace_topology A0 TA0 V0 = subspace_topology X Tx V0.
+		          {
+		            exact (ex16_1_subspace_transitive
+		              X
+		              Tx
+		              A0
+		              V0
+		              HtopX
+		              HA0subX
+		              (subspace_topology_subset X Tx A0 V0 HV0TeA0)).
+		          }
+			          claim HV0pcX : path_connected_space V0 (subspace_topology X Tx V0).
+			          { rewrite <- HTsub. exact HV0pcA0. }
+			          witness V0.
+			          apply andI.
+			          - apply andI.
+			            + apply andI.
+			              * apply andI.
+			                { exact HV0TeA0. }
+			                { exact HxV0. }
+			              * let y.
+			                assume HyV0.
+			                exact (binintersectE1
+			                  U
+			                  A0
+			                  y
+			                  (binintersectE1 (U :/\: A0) StarA0 y (HV0subUA0 y HyV0))).
+			            + let y.
+			              assume HyV0.
+			              exact (binintersectE2
+			                (U :/\: A0)
+			                StarA0
+			                y
+			                (HV0subUA0 y HyV0)).
+			          - exact HV0pcX.
+		      }
+		      set pickV := fun A0:set =>
+		        Eps_i (fun V0:set =>
+		          V0 :e (subspace_topology X Tx A0) /\
+		          x :e V0 /\
+		          V0 c= U /\
+		          V0 c= (A0 :\: ((Over A0) :\: (Sing x))) /\
+		          path_connected_space V0 (subspace_topology X Tx V0)).
+		      set Vfam := {pickV A0|A0 :e IncArcs}.
+		      set V := Union Vfam.
+		      claim HpickSpec :
+		        forall A0:set, A0 :e IncArcs ->
+		          pickV A0 :e (subspace_topology X Tx A0) /\
+		          x :e pickV A0 /\
+		          pickV A0 c= U /\
+		          pickV A0 c= (A0 :\: ((Over A0) :\: (Sing x))) /\
+		          path_connected_space (pickV A0) (subspace_topology X Tx (pickV A0)).
+		      {
+		        let A0.
+		        assume HA0Inc.
+		        claim HA0Arcs : A0 :e Arcs.
+		        { exact (SepE1 Arcs (fun A1:set => x :e A1) A0 HA0Inc). }
+		        claim HxA0 : x :e A0.
+		        { exact (SepE2 Arcs (fun A1:set => x :e A1) A0 HA0Inc). }
+			        claim HexV0 :
+			          exists V0:set,
+			            V0 :e (subspace_topology X Tx A0) /\
+			            x :e V0 /\
+			            V0 c= U /\
+			            V0 c= (A0 :\: ((Over A0) :\: (Sing x))) /\
+			            path_connected_space V0 (subspace_topology X Tx V0).
+			        { exact (HexSmallInArc A0 HA0Arcs HxA0). }
+			        apply HexV0.
+			        let V0.
+			        assume HV0pack.
+			        exact (Eps_i_ax
+			          (fun V1:set =>
+			            V1 :e (subspace_topology X Tx A0) /\
+			            x :e V1 /\
+			            V1 c= U /\
+			            V1 c= (A0 :\: ((Over A0) :\: (Sing x))) /\
+			            path_connected_space V1 (subspace_topology X Tx V1))
+			          V0
+			          HV0pack).
+			      }
+		      claim HVsubU : V c= U.
+		      {
+		        let y.
+		        assume HyV.
+		        apply (UnionE Vfam y HyV).
+		        let V0.
+		        assume HyPack.
+		        claim HyV0 : y :e V0.
+		        { exact (andEL (y :e V0) (V0 :e Vfam) HyPack). }
+		        claim HV0Fam : V0 :e Vfam.
+		        { exact (andER (y :e V0) (V0 :e Vfam) HyPack). }
+		        apply (ReplE IncArcs (fun A0:set => pickV A0) V0 HV0Fam).
+		        let A0.
+		        assume HA0Pack.
+		        claim HA0Inc : A0 :e IncArcs.
+		        { exact (andEL (A0 :e IncArcs) (V0 = pickV A0) HA0Pack). }
+			        claim HV0eq : V0 = pickV A0.
+			        { exact (andER (A0 :e IncArcs) (V0 = pickV A0) HA0Pack). }
+			        claim HpickSubU : pickV A0 c= U.
+			        {
+			          exact (andER
+			            (pickV A0 :e (subspace_topology X Tx A0) /\ x :e pickV A0)
+			            (pickV A0 c= U)
+			            (andEL
+			              ((pickV A0 :e (subspace_topology X Tx A0) /\ x :e pickV A0) /\ pickV A0 c= U)
+			              (pickV A0 c= (A0 :\: ((Over A0) :\: (Sing x))))
+			              (andEL
+			                (((pickV A0 :e (subspace_topology X Tx A0) /\ x :e pickV A0) /\ pickV A0 c= U) /\
+			                 pickV A0 c= (A0 :\: ((Over A0) :\: (Sing x))))
+			                (path_connected_space (pickV A0) (subspace_topology X Tx (pickV A0)))
+			                (HpickSpec A0 HA0Inc)))).
+			        }
+			        claim HyPick : y :e pickV A0.
+			        { exact (mem_eqR y V0 (pickV A0) HV0eq HyV0). }
+			        exact (HpickSubU y HyPick).
+			      }
+		      claim HUsubX : U c= X.
+		      { exact (topology_elem_subset X Tx U HtopX HU). }
+		      claim HVsubX : V c= X.
+		      { exact (Subq_tra V U X HVsubU HUsubX). }
+		      claim HxV : x :e V.
+		      {
+			        claim HxPickE : x :e pickV E.
+			        {
+			          exact (andER
+			            (pickV E :e (subspace_topology X Tx E))
+			            (x :e pickV E)
+			            (andEL
+			              (pickV E :e (subspace_topology X Tx E) /\ x :e pickV E)
+			              (pickV E c= U)
+			              (andEL
+			                ((pickV E :e (subspace_topology X Tx E) /\ x :e pickV E) /\ pickV E c= U)
+			                (pickV E c= (E :\: ((Over E) :\: (Sing x))))
+			                (andEL
+			                  (((pickV E :e (subspace_topology X Tx E) /\ x :e pickV E) /\ pickV E c= U) /\
+			                   pickV E c= (E :\: ((Over E) :\: (Sing x))))
+			                  (path_connected_space (pickV E) (subspace_topology X Tx (pickV E)))
+			                  (HpickSpec E HEInc))))).
+			        }
+			        exact (UnionI
+			          Vfam
+			          x
+			          (pickV E)
+			          HxPickE
+			          (ReplI IncArcs (fun A0:set => pickV A0) E HEInc)).
+			      }
+		      claim HopenV :
+		        open_in X Tx V.
+		      {
+		        claim HcohV :
+		          (open_in X Tx V <->
+		           (forall A0:set, A0 :e Arcs ->
+		             open_in A0 (subspace_topology X Tx A0) (V :/\: A0))).
+			        {
+			          exact (general_linear_graph_coherence_open
+			            X
+			            Tx
+			            Arcs
+			            V
+			            Hglg
+			            HVsubX).
+			        }
+			        apply ((andER
+			          (open_in X Tx V ->
+			            (forall A0:set, A0 :e Arcs ->
+			              open_in A0 (subspace_topology X Tx A0) (V :/\: A0)))
+			          ((forall A0:set, A0 :e Arcs ->
+			              open_in A0 (subspace_topology X Tx A0) (V :/\: A0)) ->
+			            open_in X Tx V)
+			          HcohV)).
+		        let A0.
+		        assume HA0Arcs.
+		        apply (xm (x :e A0)).
+		        + assume HxA0.
+		          claim HA0Inc : A0 :e IncArcs.
+		          { exact (SepI Arcs (fun A1:set => x :e A1) A0 HA0Arcs HxA0). }
+		          claim HtopA0 : topology_on A0 (subspace_topology X Tx A0).
+		          {
+		            exact (subspace_topology_is_topology
+		              X
+		              Tx
+		              A0
+		              HtopX
+		              (andEL
+		                (A0 c= X)
+		                (arc A0 (subspace_topology X Tx A0))
+		                (general_linear_graph_arc_data X Tx Arcs A0 Hglg HA0Arcs))).
+		          }
+		          claim HcapEq : V :/\: A0 = pickV A0.
+		          {
+		            apply (set_ext (V :/\: A0) (pickV A0)).
+		            - let y.
+		              assume HyCap.
+		              claim HyV : y :e V.
+		              { exact (binintersectE1 V A0 y HyCap). }
+		              claim HyA0 : y :e A0.
+		              { exact (binintersectE2 V A0 y HyCap). }
+		              apply (UnionE Vfam y HyV).
+		              let V0.
+		              assume HyPack.
+		              claim HyV0 : y :e V0.
+		              { exact (andEL (y :e V0) (V0 :e Vfam) HyPack). }
+		              claim HV0Fam : V0 :e Vfam.
+		              { exact (andER (y :e V0) (V0 :e Vfam) HyPack). }
+		              apply (ReplE IncArcs (fun A1:set => pickV A1) V0 HV0Fam).
+		              let A1.
+		              assume HA1Pack.
+		              claim HA1Inc : A1 :e IncArcs.
+		              { exact (andEL (A1 :e IncArcs) (V0 = pickV A1) HA1Pack). }
+		              claim HV0eq : V0 = pickV A1.
+		              { exact (andER (A1 :e IncArcs) (V0 = pickV A1) HA1Pack). }
+		              claim HyPickA1 : y :e pickV A1.
+		              { rewrite <- HV0eq. exact HyV0. }
+			              claim HyA1 : y :e A1.
+			              {
+			                exact (subspace_topology_subset X Tx A1 (pickV A1)
+			                  (andEL
+			                    (pickV A1 :e (subspace_topology X Tx A1))
+			                    (x :e pickV A1)
+			                    (andEL
+			                      (pickV A1 :e (subspace_topology X Tx A1) /\ x :e pickV A1)
+			                      (pickV A1 c= U)
+			                      (andEL
+			                        ((pickV A1 :e (subspace_topology X Tx A1) /\ x :e pickV A1) /\ pickV A1 c= U)
+			                        (pickV A1 c= (A1 :\: ((Over A1) :\: (Sing x))))
+			                        (andEL
+			                          (((pickV A1 :e (subspace_topology X Tx A1) /\ x :e pickV A1) /\ pickV A1 c= U) /\
+			                           pickV A1 c= (A1 :\: ((Over A1) :\: (Sing x))))
+			                          (path_connected_space (pickV A1) (subspace_topology X Tx (pickV A1)))
+			                          (HpickSpec A1 HA1Inc)))))
+			                  y
+			                  HyPickA1).
+			              }
+		              apply (xm (A1 = A0)).
+		              * assume HA1eq.
+		                rewrite <- HA1eq.
+		                exact HyPickA1.
+		              * assume HA1ne.
+			                claim Hcase :
+			                  A0 :/\: A1 = Empty \/
+			                  (exists p:set, A0 :/\: A1 = Sing p /\
+			                    (exists q:set, end_points_of_arc A0 (subspace_topology X Tx A0) p q \/
+			                                   end_points_of_arc A0 (subspace_topology X Tx A0) q p) /\
+			                    (exists r:set, end_points_of_arc A1 (subspace_topology X Tx A1) p r \/
+			                                   end_points_of_arc A1 (subspace_topology X Tx A1) r p)).
+			                {
+			                  claim HA0neA1 : A0 <> A1.
+			                  {
+			                    assume Heq.
+			                    exact (HA1ne (eq_symm A0 A1 Heq)).
+			                  }
+			                  exact (general_linear_graph_arc_intersection_case
+			                    X
+			                    Tx
+			                    Arcs
+			                    A0
+			                    A1
+			                    Hglg
+			                    HA0Arcs
+			                    (SepE1 Arcs (fun A2:set => x :e A2) A1 HA1Inc)
+			                    HA0neA1).
+			                }
+			                apply Hcase.
+			                { assume Hemp.
+			                  exact (FalseE
+			                    (EmptyE x (mem_eqR x (A0 :/\: A1) Empty Hemp (binintersectI A0 A1 x HxA0 (SepE2 Arcs (fun A2:set => x :e A2) A1 HA1Inc)))))
+			                    (y :e pickV A0). }
+			                assume HpEx.
+			                apply HpEx.
+			                let p.
+			                assume HpPack.
+		                claim Hsing : A0 :/\: A1 = Sing p.
+		                {
+		                  exact (andEL
+		                    (A0 :/\: A1 = Sing p)
+		                    (exists q:set, end_points_of_arc A0 (subspace_topology X Tx A0) p q \/
+		                                   end_points_of_arc A0 (subspace_topology X Tx A0) q p)
+		                    (andEL
+		                      ((A0 :/\: A1 = Sing p) /\
+		                       (exists q:set, end_points_of_arc A0 (subspace_topology X Tx A0) p q \/
+		                                      end_points_of_arc A0 (subspace_topology X Tx A0) q p))
+		                      (exists r:set, end_points_of_arc A1 (subspace_topology X Tx A1) p r \/
+		                                     end_points_of_arc A1 (subspace_topology X Tx A1) r p)
+		                      HpPack)).
+		                }
+		                claim HxIn : x :e A0 :/\: A1.
+		                { exact (binintersectI A0 A1 x HxA0 (SepE2 Arcs (fun A2:set => x :e A2) A1 HA1Inc)). }
+		                claim Hpeq : p = x.
+		                {
+		                  symmetry.
+		                  exact (SingE p x (mem_eqR x (A0 :/\: A1) (Sing p) Hsing HxIn)).
+		                }
+		                claim HyEqx : y = x.
+		                {
+		                  rewrite <- Hpeq.
+		                  exact (SingE p y
+		                    (mem_eqR y (A0 :/\: A1) (Sing p) Hsing (binintersectI A0 A1 y HyA0 HyA1))).
+			                }
+			                rewrite HyEqx.
+			                exact (andER
+			                  (pickV A0 :e (subspace_topology X Tx A0))
+			                  (x :e pickV A0)
+			                  (andEL
+			                    (pickV A0 :e (subspace_topology X Tx A0) /\ x :e pickV A0)
+			                    (pickV A0 c= U)
+			                    (andEL
+			                      ((pickV A0 :e (subspace_topology X Tx A0) /\ x :e pickV A0) /\ pickV A0 c= U)
+			                      (pickV A0 c= (A0 :\: ((Over A0) :\: (Sing x))))
+			                      (andEL
+			                        (((pickV A0 :e (subspace_topology X Tx A0) /\ x :e pickV A0) /\ pickV A0 c= U) /\
+			                         pickV A0 c= (A0 :\: ((Over A0) :\: (Sing x))))
+			                        (path_connected_space (pickV A0) (subspace_topology X Tx (pickV A0)))
+			                        (HpickSpec A0 HA0Inc))))).
+			            - let y.
+			              assume HyPick.
+			              apply binintersectI.
+			              + apply (UnionI Vfam y (pickV A0)).
+		                * exact HyPick.
+		                * exact (ReplI IncArcs (fun A1:set => pickV A1) A0 HA0Inc).
+			              + exact (subspace_topology_subset X Tx A0 (pickV A0)
+			                  (andEL
+			                    (pickV A0 :e (subspace_topology X Tx A0))
+			                    (x :e pickV A0)
+			                    (andEL
+			                      (pickV A0 :e (subspace_topology X Tx A0) /\ x :e pickV A0)
+			                      (pickV A0 c= U)
+			                      (andEL
+			                        ((pickV A0 :e (subspace_topology X Tx A0) /\ x :e pickV A0) /\ pickV A0 c= U)
+			                        (pickV A0 c= (A0 :\: ((Over A0) :\: (Sing x))))
+			                        (andEL
+			                          (((pickV A0 :e (subspace_topology X Tx A0) /\ x :e pickV A0) /\ pickV A0 c= U) /\
+			                           pickV A0 c= (A0 :\: ((Over A0) :\: (Sing x))))
+			                          (path_connected_space (pickV A0) (subspace_topology X Tx (pickV A0)))
+			                          (HpickSpec A0 HA0Inc)))))
+			                  y
+			                  HyPick).
+			          }
+			          claim HpickOpenA0 : pickV A0 :e (subspace_topology X Tx A0).
+			          {
+			            exact (andEL
+			              (pickV A0 :e (subspace_topology X Tx A0))
+			              (x :e pickV A0)
+			              (andEL
+			                (pickV A0 :e (subspace_topology X Tx A0) /\ x :e pickV A0)
+			                (pickV A0 c= U)
+			                (andEL
+			                  ((pickV A0 :e (subspace_topology X Tx A0) /\ x :e pickV A0) /\ pickV A0 c= U)
+			                  (pickV A0 c= (A0 :\: ((Over A0) :\: (Sing x))))
+			                  (andEL
+			                    (((pickV A0 :e (subspace_topology X Tx A0) /\ x :e pickV A0) /\ pickV A0 c= U) /\
+			                     pickV A0 c= (A0 :\: ((Over A0) :\: (Sing x))))
+			                    (path_connected_space (pickV A0) (subspace_topology X Tx (pickV A0)))
+			                    (HpickSpec A0 HA0Inc))))).
+			          }
+			          exact (open_inI
+			            A0
+			            (subspace_topology X Tx A0)
+			            (V :/\: A0)
+			            HtopA0
+			            (eq_subst_mem
+			              (V :/\: A0)
+			              (pickV A0)
+			              (subspace_topology X Tx A0)
+			              HcapEq
+			              HpickOpenA0)).
+			        + assume HxNotA0.
+			          claim HtopA0 : topology_on A0 (subspace_topology X Tx A0).
+			          {
+			            exact (subspace_topology_is_topology
+			              X
+			              Tx
+			              A0
+			              HtopX
+			              (andEL
+			                (A0 c= X)
+			                (arc A0 (subspace_topology X Tx A0))
+			                (general_linear_graph_arc_data X Tx Arcs A0 Hglg HA0Arcs))).
+			          }
+			          claim HcapEmpty : V :/\: A0 = Empty.
+			          {
+			            apply (set_ext (V :/\: A0) Empty).
+			            - let y.
+			              assume HyCap.
+			              claim HyV : y :e V.
+			              { exact (binintersectE1 V A0 y HyCap). }
+			              claim HyA0 : y :e A0.
+			              { exact (binintersectE2 V A0 y HyCap). }
+			              apply (UnionE Vfam y HyV).
+			              let V0.
+			              assume HyPack.
+			              claim HyV0 : y :e V0.
+			              { exact (andEL (y :e V0) (V0 :e Vfam) HyPack). }
+			              claim HV0Fam : V0 :e Vfam.
+			              { exact (andER (y :e V0) (V0 :e Vfam) HyPack). }
+			              apply (ReplE IncArcs (fun A1:set => pickV A1) V0 HV0Fam).
+			              let A1.
+			              assume HA1Pack.
+			              claim HA1Inc : A1 :e IncArcs.
+			              { exact (andEL (A1 :e IncArcs) (V0 = pickV A1) HA1Pack). }
+			              claim HV0eq : V0 = pickV A1.
+			              { exact (andER (A1 :e IncArcs) (V0 = pickV A1) HA1Pack). }
+			              claim HyPick : y :e pickV A1.
+			              { exact (mem_eqR y V0 (pickV A1) HV0eq HyV0). }
+			              claim HxA1 : x :e A1.
+			              { exact (SepE2 Arcs (fun A2:set => x :e A2) A1 HA1Inc). }
+			              claim HA0neA1 : A0 <> A1.
+			              {
+			                assume Heq.
+			                apply HxNotA0.
+			                rewrite Heq.
+			                exact HxA1.
+			              }
+			              claim HsubStar : pickV A1 c= (A1 :\: ((Over A1) :\: (Sing x))).
+			              {
+			                exact (andER
+			                  ((pickV A1 :e (subspace_topology X Tx A1) /\ x :e pickV A1) /\ pickV A1 c= U)
+			                  (pickV A1 c= (A1 :\: ((Over A1) :\: (Sing x))))
+			                  (andEL
+			                    (((pickV A1 :e (subspace_topology X Tx A1) /\ x :e pickV A1) /\ pickV A1 c= U) /\
+			                     pickV A1 c= (A1 :\: ((Over A1) :\: (Sing x))))
+			                    (path_connected_space (pickV A1) (subspace_topology X Tx (pickV A1)))
+			                    (HpickSpec A1 HA1Inc))).
+			              }
+			              claim HyStar : y :e (A1 :\: ((Over A1) :\: (Sing x))).
+			              { exact (HsubStar y HyPick). }
+			              claim HyA1 : y :e A1.
+			              { exact (setminusE1 A1 ((Over A1) :\: (Sing x)) y HyStar). }
+			              claim HyNotBad : y /:e ((Over A1) :\: (Sing x)).
+			              { exact (setminusE2 A1 ((Over A1) :\: (Sing x)) y HyStar). }
+			              claim HyOver : y :e Over A1.
+			              {
+			                claim HexF :
+			                  exists F:set, F :e Arcs /\ F <> A1 /\ y :e F.
+			                {
+			                  witness A0.
+			                  apply andI.
+			                  - apply andI.
+			                    + exact HA0Arcs.
+			                    + exact HA0neA1.
+			                  - exact HyA0.
+			                }
+			                exact (SepI
+			                  A1
+			                  (fun p0:set => exists F:set, F :e Arcs /\ F <> A1 /\ p0 :e F)
+			                  y
+			                  HyA1
+			                  HexF).
+			              }
+			              claim HyEqx : y = x.
+			              {
+			                apply (xm (y = x)).
+			                - assume Heq. exact Heq.
+			                - assume Hne.
+			                  claim HyNotSing : y /:e Sing x.
+			                  {
+			                    assume HySing.
+			                    exact (Hne (SingE x y HySing)).
+			                  }
+			                  claim HyBad : y :e (Over A1) :\: (Sing x).
+			                  { exact (setminusI (Over A1) (Sing x) y HyOver HyNotSing). }
+			                  exact (FalseE (HyNotBad HyBad) (y = x)).
+			              }
+			              claim HxA0' : x :e A0.
+			              { exact (eq_subst_mem x y A0 (eq_symm y x HyEqx) HyA0). }
+			              exact (FalseE (HxNotA0 HxA0') (y :e Empty)).
+			            - let y.
+			              assume HyE.
+			              exact (FalseE (EmptyE y HyE) (y :e V :/\: A0)).
+			          }
+			          exact (open_inI
+			            A0
+			            (subspace_topology X Tx A0)
+			            (V :/\: A0)
+			            HtopA0
+			            (eq_subst_mem
+			              (V :/\: A0)
+			              Empty
+			              (subspace_topology X Tx A0)
+			              HcapEmpty
+			              (topology_has_empty A0 (subspace_topology X Tx A0) HtopA0))).
+			      }
+		      claim HV : V :e Tx.
+		      {
+		        exact (andER (topology_on X Tx) (V :e Tx) HopenV).
+		      }
+		      (** Path connectedness of V by concatenating paths through x. **)
+			      claim HpcV : path_connected_space V (subspace_topology X Tx V).
+			      {
+			        claim HtopV : topology_on V (subspace_topology X Tx V).
+			        { exact (subspace_topology_is_topology X Tx V HtopX HVsubX). }
+			        apply (andI
+			          (topology_on V (subspace_topology X Tx V))
+			          (forall y z : set , y :e V -> z :e V ->
+			            exists p : set , path_between V y z p /\
+			              continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) p)).
+			        - exact HtopV.
+			        - let y z.
+			          assume HyV : y :e V.
+			          assume HzV : z :e V.
+			          apply (UnionE Vfam y HyV).
+		          let Vy.
+		          assume HyPack.
+		          claim HyVy : y :e Vy.
+		          { exact (andEL (y :e Vy) (Vy :e Vfam) HyPack). }
+		          claim HVyFam : Vy :e Vfam.
+		          { exact (andER (y :e Vy) (Vy :e Vfam) HyPack). }
+		          apply (ReplE IncArcs (fun A0:set => pickV A0) Vy HVyFam).
+		          let Ay.
+		          assume HAyPack.
+		          claim HAyInc : Ay :e IncArcs.
+		          { exact (andEL (Ay :e IncArcs) (Vy = pickV Ay) HAyPack). }
+		          claim HVyEq : Vy = pickV Ay.
+		          { exact (andER (Ay :e IncArcs) (Vy = pickV Ay) HAyPack). }
+		          claim HyPick : y :e pickV Ay.
+		          { rewrite <- HVyEq. exact HyVy. }
+		          apply (UnionE Vfam z HzV).
+		          let Vz.
+		          assume HzPack.
+		          claim HzVz : z :e Vz.
+		          { exact (andEL (z :e Vz) (Vz :e Vfam) HzPack). }
+		          claim HVzFam : Vz :e Vfam.
+		          { exact (andER (z :e Vz) (Vz :e Vfam) HzPack). }
+		          apply (ReplE IncArcs (fun A0:set => pickV A0) Vz HVzFam).
+		          let Az.
+		          assume HAzPack.
+		          claim HAzInc : Az :e IncArcs.
+		          { exact (andEL (Az :e IncArcs) (Vz = pickV Az) HAzPack). }
+		          claim HVzEq : Vz = pickV Az.
+		          { exact (andER (Az :e IncArcs) (Vz = pickV Az) HAzPack). }
+			          claim HzPick : z :e pickV Az.
+			          { rewrite <- HVzEq. exact HzVz. }
+			          claim HxPickAy : x :e pickV Ay.
+			          {
+			            exact (andER
+			              (pickV Ay :e (subspace_topology X Tx Ay))
+			              (x :e pickV Ay)
+			              (andEL
+			                (pickV Ay :e (subspace_topology X Tx Ay) /\ x :e pickV Ay)
+			                (pickV Ay c= U)
+			                (andEL
+			                  ((pickV Ay :e (subspace_topology X Tx Ay) /\ x :e pickV Ay) /\ pickV Ay c= U)
+			                  (pickV Ay c= (Ay :\: ((Over Ay) :\: (Sing x))))
+			                  (andEL
+			                    (((pickV Ay :e (subspace_topology X Tx Ay) /\ x :e pickV Ay) /\ pickV Ay c= U) /\
+			                     pickV Ay c= (Ay :\: ((Over Ay) :\: (Sing x))))
+			                    (path_connected_space (pickV Ay) (subspace_topology X Tx (pickV Ay)))
+			                    (HpickSpec Ay HAyInc))))).
+			          }
+			          claim HxPickAz : x :e pickV Az.
+			          {
+			            exact (andER
+			              (pickV Az :e (subspace_topology X Tx Az))
+			              (x :e pickV Az)
+			              (andEL
+			                (pickV Az :e (subspace_topology X Tx Az) /\ x :e pickV Az)
+			                (pickV Az c= U)
+			                (andEL
+			                  ((pickV Az :e (subspace_topology X Tx Az) /\ x :e pickV Az) /\ pickV Az c= U)
+			                  (pickV Az c= (Az :\: ((Over Az) :\: (Sing x))))
+			                  (andEL
+			                    (((pickV Az :e (subspace_topology X Tx Az) /\ x :e pickV Az) /\ pickV Az c= U) /\
+			                     pickV Az c= (Az :\: ((Over Az) :\: (Sing x))))
+			                    (path_connected_space (pickV Az) (subspace_topology X Tx (pickV Az)))
+			                    (HpickSpec Az HAzInc))))).
+			          }
+			          claim HpcAy : path_connected_space (pickV Ay) (subspace_topology X Tx (pickV Ay)).
+			          {
+			            exact (andER
+			              (((pickV Ay :e (subspace_topology X Tx Ay) /\ x :e pickV Ay) /\ pickV Ay c= U) /\
+			               pickV Ay c= (Ay :\: ((Over Ay) :\: (Sing x))))
+			              (path_connected_space (pickV Ay) (subspace_topology X Tx (pickV Ay)))
+			              (HpickSpec Ay HAyInc)).
+			          }
+			          claim HpcAz : path_connected_space (pickV Az) (subspace_topology X Tx (pickV Az)).
+			          {
+			            exact (andER
+			              (((pickV Az :e (subspace_topology X Tx Az) /\ x :e pickV Az) /\ pickV Az c= U) /\
+			               pickV Az c= (Az :\: ((Over Az) :\: (Sing x))))
+			              (path_connected_space (pickV Az) (subspace_topology X Tx (pickV Az)))
+			              (HpickSpec Az HAzInc)).
+			          }
+		          claim Hpyx :
+		            exists p1:set,
+		              path_between (pickV Ay) y x p1 /\
+		              continuous_map unit_interval unit_interval_topology (pickV Ay) (subspace_topology X Tx (pickV Ay)) p1.
+		          { exact (path_connected_space_paths (pickV Ay) (subspace_topology X Tx (pickV Ay)) y x HpcAy HyPick HxPickAy). }
+		          claim Hpxz :
+		            exists p2:set,
+		              path_between (pickV Az) x z p2 /\
+		              continuous_map unit_interval unit_interval_topology (pickV Az) (subspace_topology X Tx (pickV Az)) p2.
+		          { exact (path_connected_space_paths (pickV Az) (subspace_topology X Tx (pickV Az)) x z HpcAz HxPickAz HzPick). }
+		          apply Hpyx.
+		          let p1.
+		          assume Hp1Pack.
+		          apply Hpxz.
+		          let p2.
+		          assume Hp2Pack.
+		          claim Hp1Path : path_between (pickV Ay) y x p1.
+		          { exact (andEL (path_between (pickV Ay) y x p1) (continuous_map unit_interval unit_interval_topology (pickV Ay) (subspace_topology X Tx (pickV Ay)) p1) Hp1Pack). }
+		          claim Hp1Cont : continuous_map unit_interval unit_interval_topology (pickV Ay) (subspace_topology X Tx (pickV Ay)) p1.
+		          { exact (andER (path_between (pickV Ay) y x p1) (continuous_map unit_interval unit_interval_topology (pickV Ay) (subspace_topology X Tx (pickV Ay)) p1) Hp1Pack). }
+		          claim Hp2Path : path_between (pickV Az) x z p2.
+		          { exact (andEL (path_between (pickV Az) x z p2) (continuous_map unit_interval unit_interval_topology (pickV Az) (subspace_topology X Tx (pickV Az)) p2) Hp2Pack). }
+		          claim Hp2Cont : continuous_map unit_interval unit_interval_topology (pickV Az) (subspace_topology X Tx (pickV Az)) p2.
+		          { exact (andER (path_between (pickV Az) x z p2) (continuous_map unit_interval unit_interval_topology (pickV Az) (subspace_topology X Tx (pickV Az)) p2) Hp2Pack). }
+		          claim Hp1FnV : function_on p1 unit_interval V.
+		          {
+		            let s.
+		            assume HsI.
+		            claim Hp1Fn : function_on p1 unit_interval (pickV Ay).
+		            { exact (path_between_function_on (pickV Ay) y x p1 Hp1Path). }
+		            claim Hps : apply_fun p1 s :e pickV Ay.
+		            { exact (Hp1Fn s HsI). }
+		            claim Hsub : pickV Ay c= V.
+		            {
+		              let u.
+		              assume Hu.
+		              apply (UnionI Vfam u (pickV Ay)).
+		              - exact Hu.
+		              - exact (ReplI IncArcs (fun A0:set => pickV A0) Ay HAyInc).
+		            }
+		            exact (Hsub (apply_fun p1 s) Hps).
+		          }
+		          claim Hp2FnV : function_on p2 unit_interval V.
+		          {
+		            let s.
+		            assume HsI.
+		            claim Hp2Fn : function_on p2 unit_interval (pickV Az).
+		            { exact (path_between_function_on (pickV Az) x z p2 Hp2Path). }
+		            claim Hps : apply_fun p2 s :e pickV Az.
+		            { exact (Hp2Fn s HsI). }
+		            claim Hsub : pickV Az c= V.
+		            {
+		              let u.
+		              assume Hu.
+		              apply (UnionI Vfam u (pickV Az)).
+		              - exact Hu.
+		              - exact (ReplI IncArcs (fun A0:set => pickV A0) Az HAzInc).
+		            }
+		            exact (Hsub (apply_fun p2 s) Hps).
+		          }
+			          set p := path_concat p1 p2.
+			          claim HpPath : path_between V y z p.
+			          {
+				            apply (path_betweenI V y z p).
+				            - claim Hjoin : apply_fun p1 1 = apply_fun p2 0.
+				              {
+				                rewrite (path_between_at_one (pickV Ay) y x p1 Hp1Path).
+				                rewrite (path_between_at_zero (pickV Az) x z p2 Hp2Path).
+				                reflexivity.
+				              }
+				              let s.
+				              assume HsI.
+				              claim HsLR : s :e unit_interval_left_half :\/: unit_interval_right_half.
+				              {
+				                exact (mem_eqL
+				                  s
+				                  (unit_interval_left_half :\/: unit_interval_right_half)
+				                  unit_interval
+				                  unit_interval_halves_cover
+				                  HsI).
+				              }
+				              apply (binunionE unit_interval_left_half unit_interval_right_half s HsLR).
+				              + assume HsLH.
+				                rewrite (path_concat_apply_left p1 p2 s Hjoin HsLH).
+				                claim H2sI : mul_SNo 2 s :e unit_interval.
+				                {
+				                  claim H2sI' : apply_fun double_map_left_half s :e unit_interval.
+				                  { exact (double_map_function_on s HsLH). }
+				                  exact (eq_subst_mem
+				                    (mul_SNo 2 s)
+				                    (apply_fun double_map_left_half s)
+				                    unit_interval
+				                    (eq_symm
+				                      (apply_fun double_map_left_half s)
+				                      (mul_SNo 2 s)
+				                      (double_map_apply s HsLH))
+				                    H2sI').
+				                }
+				                exact (Hp1FnV (mul_SNo 2 s) H2sI).
+				              + assume HsRH.
+				                rewrite (path_concat_apply_right p1 p2 s Hjoin HsRH).
+				                claim H2sM1I : add_SNo (mul_SNo 2 s) (minus_SNo 1) :e unit_interval.
+				                {
+				                  claim H2sM1I' : apply_fun double_minus_one_map_right_half s :e unit_interval.
+				                  { exact (double_minus_one_map_function_on s HsRH). }
+				                  exact (eq_subst_mem
+				                    (add_SNo (mul_SNo 2 s) (minus_SNo 1))
+				                    (apply_fun double_minus_one_map_right_half s)
+				                    unit_interval
+				                    (eq_symm
+				                      (apply_fun double_minus_one_map_right_half s)
+				                      (add_SNo (mul_SNo 2 s) (minus_SNo 1))
+				                      (double_minus_one_map_apply s HsRH))
+				                    H2sM1I').
+				                }
+				                exact (Hp2FnV (add_SNo (mul_SNo 2 s) (minus_SNo 1)) H2sM1I).
+				            - rewrite (path_concat_at_zero p1 p2).
+				              exact (path_between_at_zero (pickV Ay) y x p1 Hp1Path).
+				            - rewrite (path_concat_at_one p1 p2).
+			              exact (path_between_at_one (pickV Az) x z p2 Hp2Path).
+			          }
+		          claim HpContX : continuous_map unit_interval unit_interval_topology X Tx p.
+		          {
+			            claim Hp1ContX : continuous_map unit_interval unit_interval_topology X Tx p1.
+			            {
+			              claim HTy : subspace_topology X Tx (pickV Ay) = subspace_topology X Tx (pickV Ay).
+			              { reflexivity. }
+				              exact (continuous_map_range_expand
+				                unit_interval
+				                unit_interval_topology
+				                (pickV Ay)
+			                (subspace_topology X Tx (pickV Ay))
+			                X
+			                Tx
+			                p1
+			                Hp1Cont
+			                (Subq_tra (pickV Ay) U X
+			                  (andER
+			                    (pickV Ay :e (subspace_topology X Tx Ay) /\ x :e pickV Ay)
+			                    (pickV Ay c= U)
+			                    (andEL
+			                      ((pickV Ay :e (subspace_topology X Tx Ay) /\ x :e pickV Ay) /\ pickV Ay c= U)
+			                      (pickV Ay c= (Ay :\: ((Over Ay) :\: (Sing x))))
+			                      (andEL
+			                        (((pickV Ay :e (subspace_topology X Tx Ay) /\ x :e pickV Ay) /\ pickV Ay c= U) /\
+			                         pickV Ay c= (Ay :\: ((Over Ay) :\: (Sing x))))
+			                        (path_connected_space (pickV Ay) (subspace_topology X Tx (pickV Ay)))
+				                        (HpickSpec Ay HAyInc))))
+					                  HUsubX)
+					                HtopX
+						                HTy).
+			            }
+			            claim Hp2ContX : continuous_map unit_interval unit_interval_topology X Tx p2.
+			            {
+			              claim HTy : subspace_topology X Tx (pickV Az) = subspace_topology X Tx (pickV Az).
+			              { reflexivity. }
+				              exact (continuous_map_range_expand
+				                unit_interval
+				                unit_interval_topology
+				                (pickV Az)
+			                (subspace_topology X Tx (pickV Az))
+			                X
+			                Tx
+			                p2
+			                Hp2Cont
+			                (Subq_tra (pickV Az) U X
+			                  (andER
+			                    (pickV Az :e (subspace_topology X Tx Az) /\ x :e pickV Az)
+			                    (pickV Az c= U)
+			                    (andEL
+			                      ((pickV Az :e (subspace_topology X Tx Az) /\ x :e pickV Az) /\ pickV Az c= U)
+			                      (pickV Az c= (Az :\: ((Over Az) :\: (Sing x))))
+			                      (andEL
+			                        (((pickV Az :e (subspace_topology X Tx Az) /\ x :e pickV Az) /\ pickV Az c= U) /\
+			                         pickV Az c= (Az :\: ((Over Az) :\: (Sing x))))
+			                        (path_connected_space (pickV Az) (subspace_topology X Tx (pickV Az)))
+				                        (HpickSpec Az HAzInc))))
+				                  HUsubX)
+				                HtopX
+				                HTy).
+			            }
+		            exact (path_concat_continuous X Tx y x z p1 p2
+		              Hp1ContX
+		              Hp2ContX
+		              (path_between_at_zero (pickV Ay) y x p1 Hp1Path)
+		              (path_between_at_one (pickV Ay) y x p1 Hp1Path)
+		              (path_between_at_zero (pickV Az) x z p2 Hp2Path)
+		              (path_between_at_one (pickV Az) x z p2 Hp2Path)).
+		          }
+		          claim HpContV : continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) p.
+		          {
+		            exact (continuous_map_range_restrict
+		              unit_interval
+		              unit_interval_topology
+		              X
+		              Tx
+			              p
+			              V
+			              HpContX
+			              HVsubX
+			              (fun s:set => fun HsI:s :e unit_interval =>
+			                (path_between_function_on V y z p HpPath) s HsI)).
+			          }
+		          witness p.
+		          apply andI.
+		          - exact HpPath.
+		          - exact HpContV.
+		      }
+		      witness V.
+		      apply andI.
+		      - apply andI.
+		        + apply andI.
+		          * exact HV.
+		          * exact HxV.
+		        + exact HVsubU.
+		      - exact HpcV.
+		    * assume HxNotOverE.
+		      claim HxUarcE : x :e UarcE.
+		      { exact (setminusI E OverE x HxE HxNotOverE). }
+		      claim HUarcE : UarcE :e Tx.
 	      {
 	        exact (general_linear_graph_arc_nonoverlap_open_in_X
 	          X
