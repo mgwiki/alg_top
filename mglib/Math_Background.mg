@@ -60752,6 +60752,29 @@ claim HxX : x :e X.
 exact (Hcomm x HxX).
 Qed.
 
+(** Proven Bob **)
+Theorem lifting_of_function_on :
+  forall X Tx E Te B Tb p f ft:set,
+  lifting_of X Tx E Te B Tb p f ft ->
+  function_on ft X E.
+let X Tx E Te B Tb p f ft.
+assume Hlift.
+claim Hcont : continuous_map X Tx E Te ft.
+{
+  exact (andEL
+    (continuous_map X Tx E Te ft)
+    (forall x:set, x :e X -> apply_fun p (apply_fun ft x) = apply_fun f x)
+    Hlift).
+}
+exact (continuous_map_function_on
+  X
+  Tx
+  E
+  Te
+  ft
+  Hcont).
+Qed.
+
 (** Infrastructure: the unique lift of a path in B starting at e0 in E **)
 (** Uses Eps_i to select the lift guaranteed by Lem 54.1 **)
 Definition path_lift : set -> set -> set -> set -> set -> set -> set -> set :=
