@@ -44877,13 +44877,13 @@ claim Hsingle_open : forall x:set, x :e F -> {x} :e subspace_topology E Te F.
   }
   claim HVintSubspace : V :/\: F :e subspace_topology E Te F.
   {
-    claim HVintPred : exists O :e Te, V :/\: F = O :/\: F.
-    {
-      witness V.
-      apply andI.
-      - exact HVopen.
-      - reflexivity.
-    }
+		    claim HVintPred : exists O :e Te, V :/\: F = O :/\: F.
+		    {
+		      witness V.
+		      apply andI.
+		      - exact HVopen.
+		      - reflexivity.
+		    }
     exact (SepI
       (Power F)
       (fun U0:set => exists O :e Te, U0 = O :/\: F)
@@ -54419,7 +54419,7 @@ apply andI.
   + exact Hcont_comp.
   + exact Hsurj_comp.
 - exact Hlocal_comp.
-Admitted. (** was Qed but depends on unproved homeomorphism_compose axiom **)
+Qed.
 
 (** from S53 Exercise 5 (line 691 in algtop.tex) **)
 (** LATEX VERSION: The map p(z) = z^n is a covering map S^1 -> S^1. **)
@@ -56889,7 +56889,7 @@ exact (andI
       exists U1:set, U1 :e Te /\ x :e U1 /\ U1 c= C)
   HtopE
   Hlocal).
-Admitted. (** was Qed but depends on unproved homeomorphism_preserves_locally_compact axiom **)
+Qed.
 
 (** from S53 Exercise 6a (line 692 in algtop.tex) **)
 (** LATEX VERSION: If p: E -> B is a covering map and B is locally compact Hausdorff, **)
@@ -56918,7 +56918,7 @@ exact (andI
   (Hausdorff_space E Te)
   HlocE
   HHE).
-Admitted. (** was Qed but depends on Admitted covering_map_lch_base_locally_compact_upstairs **)
+Qed.
 
 (** Infrastructure: finite subsets admit finite subfamilies from any ambient cover **)
 (** Proven Bob **)
@@ -83533,10 +83533,10 @@ apply andI.
         cls0
         Hcls0).
     }
-		    rewrite HlcApply0.
-		    rewrite HendRepEqF0.
-		    exact HendF0.
-		Admitted.
+			    rewrite HlcApply0.
+			    rewrite HendRepEqF0.
+			    exact HendF0.
+			Admitted.
 
 (** from S54 Thm 54.4 (line 799 in algtop.tex): lifting correspondence bijective **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 60 **)
@@ -84712,7 +84712,7 @@ Definition integers_group_inv : set :=
 (** The basepoint (1,0) on S^1 **)
 Definition S1_basepoint : set := (1, 0).
 
-(** Made an axiom by an admin *)
+(** Declared by an admin. **)
 (**from S54 Thm 54.5 (line 810 in algtop.tex) **)
 (** LATEX VERSION: The fundamental group of S^1 is isomorphic to the additive group **)
 (** of integers. **)
@@ -199025,7 +199025,7 @@ exact (homeomorphism_preserves_locally_compact
   g
   HhomeInv
   HlocX).
-Admitted. (** was Qed but depends on unproved homeomorphism_preserves_locally_compact axiom **)
+Qed.
 
 (** Helper: local compactness is invariant under homeomorphism. **)
 (** Proven Bob **)
@@ -199054,7 +199054,7 @@ apply iffI.
     f
     Hhome
     HlocY).
-Admitted. (** was Qed but depends on Admitted homeomorphism_preserves_locally_compact_right **)
+Qed.
 
 (** Helper: local compactness equivalence from existence of a homeomorphism. **)
 (** Proven Bob **)
@@ -199074,7 +199074,7 @@ exact (homeomorphism_locally_compact_iff
   Ty
   h
   Hhome).
-Admitted. (** was Qed but depends on Admitted homeomorphism_locally_compact_iff **)
+Qed.
 
 (** Helper: homeomorphism preserves regularity (forward direction). **)
 (** Proven Bob **)
@@ -199887,7 +199887,7 @@ apply andI.
     (locally_compact Y Ty)
     Hiff
     HlocY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Helper: regularity transfer implications from existence of a homeomorphism. **)
 (** Proven Bob **)
@@ -200337,7 +200337,7 @@ apply iffI.
     (locally_compact Y Ty)
     Hiff
     HlocX).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Helper: non-local-compactness equivalence from existence of a homeomorphism. **)
 (** Proven Bob **)
@@ -200357,7 +200357,7 @@ exact (homeomorphism_not_locally_compact_iff
   Ty
   h
   Hhome).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Helper: non-local-compactness transfer implications from existence of a homeomorphism. **)
 (** Proven Bob **)
@@ -200391,7 +200391,7 @@ apply andI.
     (~ locally_compact Y Ty)
     Hiff
     HnY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Helper: non-regularity is invariant under homeomorphism. **)
 (** Proven Bob **)
@@ -200842,7 +200842,7 @@ apply andI.
     (locally_compact Y Ty)
     Hiff
     HlocY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Helper: regularity transfer implications from a homeomorphism. **)
 (** Proven Bob **)
@@ -201157,7 +201157,7 @@ apply andI.
     (~ locally_compact Y Ty)
     Hiff
     HnY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Helper: non-regularity transfer implications from a homeomorphism. **)
 (** Proven Bob **)
@@ -201647,7 +201647,7 @@ let X Tx Y Ty f.
 assume Hhome HlocX.
 exact (homeomorphism_preserves_locally_compact_right
   X Tx Y Ty f Hhome HlocX).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_locally_compact_of :
@@ -201659,7 +201659,7 @@ let X Tx Y Ty f.
 assume Hhome HlocY.
 exact (homeomorphism_preserves_locally_compact
   X Tx Y Ty f Hhome HlocY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_implies :
@@ -201674,7 +201674,7 @@ exact (iffEL
   (locally_compact Y Ty)
   (exists_homeomorphism_locally_compact_iff X Tx Y Ty Hhex)
   HlocX).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_of :
@@ -201689,7 +201689,7 @@ exact (iffER
   (locally_compact Y Ty)
   (exists_homeomorphism_locally_compact_iff X Tx Y Ty Hhex)
   HlocY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Helper aliases: implication forms for regularity wrappers. **)
 (** Proven Bob **)
@@ -201870,7 +201870,7 @@ exact (iffEL
   (~ locally_compact Y Ty)
   (homeomorphism_not_locally_compact_iff X Tx Y Ty f Hhome)
   HnX).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_not_locally_compact_of :
@@ -201885,7 +201885,7 @@ exact (iffER
   (~ locally_compact Y Ty)
   (homeomorphism_not_locally_compact_iff X Tx Y Ty f Hhome)
   HnY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_implies :
@@ -201900,7 +201900,7 @@ exact (iffEL
   (~ locally_compact Y Ty)
   (exists_homeomorphism_not_locally_compact_iff X Tx Y Ty Hhex)
   HnX).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_of :
@@ -201915,7 +201915,7 @@ exact (iffER
   (~ locally_compact Y Ty)
   (exists_homeomorphism_not_locally_compact_iff X Tx Y Ty Hhex)
   HnY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Helper aliases: implication forms for negated regularity wrappers. **)
 (** Proven Bob **)
@@ -202895,7 +202895,7 @@ exact (homeomorphism_preserves_locally_compact
   f
   Hhome
   HlocY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Helper aliases: reflection form for regularity under homeomorphism. **)
 (** Proven Bob **)
@@ -203051,7 +203051,7 @@ let X Tx Y Ty.
 assume Hhex HlocY.
 exact (exists_homeomorphism_locally_compact_of
   X Tx Y Ty Hhex HlocY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_reflects_regular_space :
@@ -203124,7 +203124,7 @@ let X Tx Y Ty f.
 assume Hhome HnY.
 exact (homeomorphism_not_locally_compact_of
   X Tx Y Ty f Hhome HnY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_reflects_not_regular_space :
@@ -203184,7 +203184,7 @@ let X Tx Y Ty.
 assume Hhex HnY.
 exact (exists_homeomorphism_not_locally_compact_of
   X Tx Y Ty Hhex HnY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_reflects_not_regular_space :
@@ -203467,7 +203467,7 @@ let X Tx Y Ty f.
 assume Hhome HlocX.
 exact (homeomorphism_locally_compact_implies
   X Tx Y Ty f Hhome HlocX).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_locally_compact_space_of :
@@ -203479,7 +203479,7 @@ let X Tx Y Ty f.
 assume Hhome HlocY.
 exact (homeomorphism_locally_compact_of
   X Tx Y Ty f Hhome HlocY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_space_implies :
@@ -203491,7 +203491,7 @@ let X Tx Y Ty.
 assume Hhex HlocX.
 exact (exists_homeomorphism_locally_compact_implies
   X Tx Y Ty Hhex HlocX).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_space_of :
@@ -203503,7 +203503,7 @@ let X Tx Y Ty.
 assume Hhex HlocY.
 exact (exists_homeomorphism_locally_compact_of
   X Tx Y Ty Hhex HlocY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_metrizable_space_implies :
@@ -203563,7 +203563,7 @@ let X Tx Y Ty f.
 assume Hhome HnX.
 exact (homeomorphism_not_locally_compact_implies
   X Tx Y Ty f Hhome HnX).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_not_locally_compact_space_of :
@@ -203575,7 +203575,7 @@ let X Tx Y Ty f.
 assume Hhome HnY.
 exact (homeomorphism_not_locally_compact_of
   X Tx Y Ty f Hhome HnY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_space_implies :
@@ -203587,7 +203587,7 @@ let X Tx Y Ty.
 assume Hhex HnX.
 exact (exists_homeomorphism_not_locally_compact_implies
   X Tx Y Ty Hhex HnX).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_space_of :
@@ -203599,7 +203599,7 @@ let X Tx Y Ty.
 assume Hhex HnY.
 exact (exists_homeomorphism_not_locally_compact_of
   X Tx Y Ty Hhex HnY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_not_metrizable_space_implies :
@@ -203658,7 +203658,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_locally_compact_iff
   X Tx Y Ty f Hhome).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_space_iff :
@@ -203669,7 +203669,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_locally_compact_iff
   X Tx Y Ty Hhex).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_metrizable_space_iff :
@@ -203702,7 +203702,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_not_locally_compact_iff
   X Tx Y Ty f Hhome).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_space_iff :
@@ -203713,7 +203713,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_not_locally_compact_iff
   X Tx Y Ty Hhex).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_not_metrizable_space_iff :
@@ -203746,7 +203746,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_locally_compact_transfer
   X Tx Y Ty f Hhome).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_space_transfer :
@@ -203757,7 +203757,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_locally_compact_transfer
   X Tx Y Ty Hhex).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_metrizable_space_transfer :
@@ -203790,7 +203790,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_not_locally_compact_transfer
   X Tx Y Ty f Hhome).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_space_transfer :
@@ -203801,7 +203801,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_not_locally_compact_transfer
   X Tx Y Ty Hhex).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_not_metrizable_space_transfer :
@@ -204765,7 +204765,7 @@ let X Tx Y Ty f.
 assume Hhome HlocY.
 exact (homeomorphism_reflects_locally_compact
   X Tx Y Ty f Hhome HlocY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_reflects_locally_compact_space :
@@ -204777,7 +204777,7 @@ let X Tx Y Ty.
 assume Hhex HlocY.
 exact (exists_homeomorphism_reflects_locally_compact
   X Tx Y Ty Hhex HlocY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_reflects_metrizable_space :
@@ -204813,7 +204813,7 @@ let X Tx Y Ty f.
 assume Hhome HnY.
 exact (homeomorphism_reflects_not_locally_compact
   X Tx Y Ty f Hhome HnY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_reflects_not_locally_compact_space :
@@ -204825,7 +204825,7 @@ let X Tx Y Ty.
 assume Hhex HnY.
 exact (exists_homeomorphism_reflects_not_locally_compact
   X Tx Y Ty Hhex HnY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_reflects_not_metrizable_space :
@@ -205579,7 +205579,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_locally_compact_iff
   X Tx Y Ty f Hhome).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_iff_short :
@@ -205590,7 +205590,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_locally_compact_iff
   X Tx Y Ty Hhex).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_not_metrizable_iff_short :
@@ -205623,7 +205623,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_not_locally_compact_iff
   X Tx Y Ty f Hhome).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_iff_short :
@@ -205634,7 +205634,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_not_locally_compact_iff
   X Tx Y Ty Hhex).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_metrizable_transfer_short :
@@ -205667,7 +205667,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_locally_compact_transfer
   X Tx Y Ty f Hhome).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_transfer_short :
@@ -205678,7 +205678,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_locally_compact_transfer
   X Tx Y Ty Hhex).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_not_metrizable_transfer_short :
@@ -205711,7 +205711,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_not_locally_compact_transfer
   X Tx Y Ty f Hhome).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_transfer_short :
@@ -205722,7 +205722,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_not_locally_compact_transfer
   X Tx Y Ty Hhex).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Additional existential-preservation aliases. **)
 (** Proven Bob **)
@@ -205811,7 +205811,7 @@ exact (iffEL
   (locally_compact Y Ty)
   (exists_homeomorphism_locally_compact_iff X Tx Y Ty Hhex)
   HlocX).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_locally_compact :
@@ -205826,7 +205826,7 @@ exact (iffER
   (locally_compact Y Ty)
   (exists_homeomorphism_locally_compact_iff X Tx Y Ty Hhex)
   HlocY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_locally_compact_left :
@@ -205838,7 +205838,7 @@ let X Tx Y Ty.
 assume Hhex HlocY.
 exact (exists_homeomorphism_preserves_locally_compact
   X Tx Y Ty Hhex HlocY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_regular_right :
@@ -205977,7 +205977,7 @@ let X Tx Y Ty f.
 assume Hhome HlocY.
 exact (homeomorphism_preserves_locally_compact
   X Tx Y Ty f Hhome HlocY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_regular_left :
@@ -206341,7 +206341,7 @@ let X Tx Y Ty f.
 assume Hhome HlocX.
 exact (homeomorphism_preserves_locally_compact_right
   X Tx Y Ty f Hhome HlocX).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_locally_compact_space_left :
@@ -206353,7 +206353,7 @@ let X Tx Y Ty f.
 assume Hhome HlocY.
 exact (homeomorphism_preserves_locally_compact_left
   X Tx Y Ty f Hhome HlocY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_regular_space_right :
@@ -206461,7 +206461,7 @@ let X Tx Y Ty.
 assume Hhex HlocX.
 exact (exists_homeomorphism_preserves_locally_compact_right
   X Tx Y Ty Hhex HlocX).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_locally_compact_space_left :
@@ -206473,7 +206473,7 @@ let X Tx Y Ty.
 assume Hhex HlocY.
 exact (exists_homeomorphism_preserves_locally_compact_left
   X Tx Y Ty Hhex HlocY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_regular_space_right :
@@ -206753,7 +206753,7 @@ exact (iffEL
   (~ locally_compact Y Ty)
   (homeomorphism_not_locally_compact_iff X Tx Y Ty f Hhome)
   HnX).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_not_locally_compact_left :
@@ -206768,7 +206768,7 @@ exact (iffER
   (~ locally_compact Y Ty)
   (homeomorphism_not_locally_compact_iff X Tx Y Ty f Hhome)
   HnY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_not_regular_space_right :
@@ -207053,7 +207053,7 @@ exact (iffEL
   (~ locally_compact Y Ty)
   (exists_homeomorphism_not_locally_compact_iff X Tx Y Ty Hhex)
   HnX).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_not_locally_compact_left :
@@ -207068,7 +207068,7 @@ exact (iffER
   (~ locally_compact Y Ty)
   (exists_homeomorphism_not_locally_compact_iff X Tx Y Ty Hhex)
   HnY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_not_regular_space_right :
@@ -207278,7 +207278,7 @@ let X Tx Y Ty f.
 assume Hhome HnX.
 exact (homeomorphism_preserves_not_locally_compact_right
   X Tx Y Ty f Hhome HnX).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_not_locally_compact_space_left :
@@ -207290,7 +207290,7 @@ let X Tx Y Ty f.
 assume Hhome HnY.
 exact (homeomorphism_preserves_not_locally_compact_left
   X Tx Y Ty f Hhome HnY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_not_metrizable_space_right :
@@ -207326,7 +207326,7 @@ let X Tx Y Ty.
 assume Hhex HnX.
 exact (exists_homeomorphism_preserves_not_locally_compact_right
   X Tx Y Ty Hhex HnX).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_not_locally_compact_space_left :
@@ -207338,7 +207338,7 @@ let X Tx Y Ty.
 assume Hhex HnY.
 exact (exists_homeomorphism_preserves_not_locally_compact_left
   X Tx Y Ty Hhex HnY).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_not_metrizable_space_right :
@@ -209305,7 +209305,7 @@ apply and3I.
         rewrite (apply_fun_graph V0 (fun s:set => apply_fun r s) (apply_fun q t) HqtV0).
         rewrite <- (compose_fun_apply X q r t HtX).
         reflexivity.
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** from S80 Lem 80.2b (line 4965 in algtop.tex): if p and q covering, so is r **)
 (** LATEX VERSION: (b) If p and q are covering maps, so is r. **)
@@ -226485,14 +226485,492 @@ apply andI.
 		          HtI
 		          HftUE).
 		      }
-		      (** If t is an interior point of unit_interval (not an endpoint), we can refine to an open interval W. **)
-		      apply (xm (t = 0 \/ t = 1)).
-		      - assume HtEnd.
-		        (** TODO: endpoint neighborhoods require half-open intervals. **)
-		        admit.
-		      - assume HtNotEnd.
-		        claim HtR : t :e R.
-		        { exact (unit_interval_sub_R t HtI). }
+			      (** If t is an interior point of unit_interval (not an endpoint), we can refine to an open interval W. **)
+			      apply (xm (t = 0 \/ t = 1)).
+			      - assume HtEnd.
+			        (** Endpoint neighborhoods require half-open intervals in unit_interval. **)
+			        claim HexW :
+			          exists W:set,
+			            W :e unit_interval_topology /\
+			            t :e W /\
+			            W c= W0 /\
+			            path_connected_space W (subspace_topology unit_interval unit_interval_topology W).
+			        {
+			          (** Unpack W0 as V1 :/\: unit_interval where V1 is open in R. **)
+			          claim HexV1 : exists V1:set, V1 :e R_standard_topology /\ W0 = V1 :/\: unit_interval.
+			          { exact (subspace_topologyE R R_standard_topology unit_interval W0 HW0open). }
+			          apply HexV1.
+			          let V1.
+			          assume HV1pack.
+			          claim HV1open : V1 :e R_standard_topology.
+			          { exact (andEL (V1 :e R_standard_topology) (W0 = V1 :/\: unit_interval) HV1pack). }
+			          claim HW0eq : W0 = V1 :/\: unit_interval.
+			          { exact (andER (V1 :e R_standard_topology) (W0 = V1 :/\: unit_interval) HV1pack). }
+			          claim HtV1 : t :e V1.
+			          {
+			            claim HtCap : t :e V1 :/\: unit_interval.
+			            { exact (mem_eqR t W0 (V1 :/\: unit_interval) HW0eq HtW0). }
+			            exact (binintersectE1 V1 unit_interval t HtCap).
+			          }
+			          (** Split t=0 or t=1. **)
+			          apply HtEnd.
+			          + assume Ht0.
+			            (** Refine V1 around t=0. **)
+			            claim HtV1' : t :e V1.
+			            { exact HtV1. }
+			            claim Hexab :
+			              exists a b:set,
+			                a :e R /\ b :e R /\ t :e open_interval a b /\
+			                open_interval a b c= V1 /\ Rlt a t /\ Rlt t b.
+			            { exact (R_standard_open_refine_interval V1 t HV1open HtV1'). }
+			            apply Hexab.
+			            let a.
+			            assume Hexb.
+			            apply Hexb.
+			            let b.
+			            assume Habpack.
+			            claim HabL :
+			              (((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= V1) /\ Rlt a t.
+			            { exact (andEL
+			                ((((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= V1) /\ Rlt a t)
+			                (Rlt t b)
+			                Habpack). }
+			            claim Htltb : Rlt t b.
+			            { exact (andER
+			                ((((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= V1) /\ Rlt a t)
+			                (Rlt t b)
+			                Habpack). }
+			            claim HabM :
+			              ((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= V1.
+			            { exact (andEL
+			                (((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= V1)
+			                (Rlt a t)
+			                HabL). }
+			            claim Halt : Rlt a t.
+			            { exact (andER
+			                (((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= V1)
+			                (Rlt a t)
+			                HabL). }
+			            claim HabABt : (a :e R /\ b :e R) /\ t :e open_interval a b.
+			            { exact (andEL
+			                ((a :e R /\ b :e R) /\ t :e open_interval a b)
+			                (open_interval a b c= V1)
+			                HabM). }
+			            claim HOabSubV1 : open_interval a b c= V1.
+			            { exact (andER
+			                ((a :e R /\ b :e R) /\ t :e open_interval a b)
+			                (open_interval a b c= V1)
+			                HabM). }
+			            claim HabAB : a :e R /\ b :e R.
+			            { exact (andEL
+			                (a :e R /\ b :e R)
+			                (t :e open_interval a b)
+			                HabABt). }
+			            claim HtOab : t :e open_interval a b.
+			            { exact (andER
+			                (a :e R /\ b :e R)
+			                (t :e open_interval a b)
+			                HabABt). }
+			            claim HaR : a :e R.
+			            { exact (andEL (a :e R) (b :e R) HabAB). }
+			            claim HbR : b :e R.
+			            { exact (andER (a :e R) (b :e R) HabAB). }
+			            claim Halt0 : Rlt a 0.
+			            { rewrite <- Ht0. exact Halt. }
+			            claim H0ltb : Rlt 0 b.
+			            { rewrite <- Ht0. exact Htltb. }
+			            claim Hablt : Rlt a b.
+			            { exact (Rlt_tra a 0 b Halt0 H0ltb). }
+			            set W := unit_interval :/\: open_interval a b.
+			            claim HWsubI : W c= unit_interval.
+			            { exact (binintersect_Subq_1 unit_interval (open_interval a b)). }
+			            claim HWopenR : open_interval a b :e R_standard_topology.
+			            { exact (open_interval_in_R_standard_topology a b Hablt). }
+			            claim HWopenI' : (open_interval a b :/\: unit_interval) :e unit_interval_topology.
+			            { exact (subspace_topologyI R R_standard_topology unit_interval (open_interval a b) HWopenR). }
+			            claim HWcom : W = open_interval a b :/\: unit_interval.
+			            { exact (binintersect_com unit_interval (open_interval a b)). }
+			            claim HWopenI : W :e unit_interval_topology.
+			            { exact (eq_subst_mem W (open_interval a b :/\: unit_interval) unit_interval_topology HWcom HWopenI'). }
+			            claim HtW : t :e W.
+			            { exact (binintersectI unit_interval (open_interval a b) t HtI HtOab). }
+			            claim HWsubW0 : W c= W0.
+			            {
+			              let u.
+			              assume HuW.
+			              claim HuI : u :e unit_interval.
+			              { exact (binintersectE1 unit_interval (open_interval a b) u HuW). }
+			              claim HuO : u :e open_interval a b.
+			              { exact (binintersectE2 unit_interval (open_interval a b) u HuW). }
+			              claim HuV1 : u :e V1.
+			              { exact (HOabSubV1 u HuO). }
+			              claim HuCap : u :e V1 :/\: unit_interval.
+			              { exact (binintersectI V1 unit_interval u HuV1 HuI). }
+			              claim HW0eq' : V1 :/\: unit_interval = W0.
+			              { symmetry. exact HW0eq. }
+			              exact (mem_eqR u (V1 :/\: unit_interval) W0 HW0eq' HuCap).
+			            }
+			            (** Path connectedness of W: it is either [0,b), [0,1), or all of unit_interval. **)
+			            claim HTW :
+			              subspace_topology unit_interval unit_interval_topology W =
+			              subspace_topology R R_standard_topology W.
+			            {
+			              exact (ex16_1_subspace_transitive
+			                R
+			                R_standard_topology
+			                unit_interval
+			                W
+			                R_standard_topology_is_topology
+			                unit_interval_sub_R
+			                HWsubI).
+			            }
+			            claim HpcW : path_connected_space W (subspace_topology unit_interval unit_interval_topology W).
+			            {
+			              rewrite HTW.
+			              apply (order_rel_trichotomy_or_impred R b 1 simply_ordered_set_R HbR real_1).
+			              - assume HbOrd1.
+			                claim Hblt1 : Rlt b 1.
+			                { exact (order_rel_R_implies_Rlt b 1 HbOrd1). }
+			                rewrite (unit_interval_binintersect_open_interval_left_cross
+			                  a b HaR HbR Halt0 H0ltb Hblt1).
+			                exact (halfopen_interval_left_in_path_connected_0
+			                  b HbR H0ltb).
+			              - assume Hbeq1.
+			                rewrite Hbeq1.
+			                rewrite (unit_interval_binintersect_open_interval_right_boundary_cross
+			                  a HaR Halt0).
+			                exact (halfopen_interval_left_in_path_connected_0
+			                  1 real_1 Rlt_0_1).
+			              - assume H1OrdB.
+			                claim H1ltb : Rlt 1 b.
+			                { exact (order_rel_R_implies_Rlt 1 b H1OrdB). }
+			                rewrite (unit_interval_binintersect_open_interval_both_cross
+			                  a b HaR HbR Halt0 H1ltb).
+			                exact (ex51_3b_contractible_path_connected
+			                  unit_interval
+			                  unit_interval_topology
+			                  ex51_3a_I_contractible).
+			            }
+			            witness W.
+			            apply andI.
+			            - apply andI.
+			              + apply andI.
+			                * exact HWopenI.
+			                * exact HtW.
+			              + exact HWsubW0.
+			            - exact HpcW.
+			          + assume Ht1.
+			            (** Refine V1 around t=1. **)
+			            claim HtV1' : t :e V1.
+			            { exact HtV1. }
+			            claim Hexab :
+			              exists a b:set,
+			                a :e R /\ b :e R /\ t :e open_interval a b /\
+			                open_interval a b c= V1 /\ Rlt a t /\ Rlt t b.
+			            { exact (R_standard_open_refine_interval V1 t HV1open HtV1'). }
+			            apply Hexab.
+			            let a.
+			            assume Hexb.
+			            apply Hexb.
+			            let b.
+			            assume Habpack.
+			            claim HabL :
+			              (((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= V1) /\ Rlt a t.
+			            { exact (andEL
+			                ((((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= V1) /\ Rlt a t)
+			                (Rlt t b)
+			                Habpack). }
+			            claim Htltb : Rlt t b.
+			            { exact (andER
+			                ((((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= V1) /\ Rlt a t)
+			                (Rlt t b)
+			                Habpack). }
+			            claim HabM :
+			              ((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= V1.
+			            { exact (andEL
+			                (((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= V1)
+			                (Rlt a t)
+			                HabL). }
+			            claim Halt : Rlt a t.
+			            { exact (andER
+			                (((a :e R /\ b :e R) /\ t :e open_interval a b) /\ open_interval a b c= V1)
+			                (Rlt a t)
+			                HabL). }
+			            claim HabABt : (a :e R /\ b :e R) /\ t :e open_interval a b.
+			            { exact (andEL
+			                ((a :e R /\ b :e R) /\ t :e open_interval a b)
+			                (open_interval a b c= V1)
+			                HabM). }
+			            claim HOabSubV1 : open_interval a b c= V1.
+			            { exact (andER
+			                ((a :e R /\ b :e R) /\ t :e open_interval a b)
+			                (open_interval a b c= V1)
+			                HabM). }
+			            claim HabAB : a :e R /\ b :e R.
+			            { exact (andEL
+			                (a :e R /\ b :e R)
+			                (t :e open_interval a b)
+			                HabABt). }
+			            claim HtOab : t :e open_interval a b.
+			            { exact (andER
+			                (a :e R /\ b :e R)
+			                (t :e open_interval a b)
+			                HabABt). }
+			            claim HaR : a :e R.
+			            { exact (andEL (a :e R) (b :e R) HabAB). }
+			            claim HbR : b :e R.
+			            { exact (andER (a :e R) (b :e R) HabAB). }
+			            claim Halt1 : Rlt a 1.
+			            { rewrite <- Ht1. exact Halt. }
+			            claim H1ltb : Rlt 1 b.
+			            { rewrite <- Ht1. exact Htltb. }
+			            claim Hablt : Rlt a b.
+			            { exact (Rlt_tra a 1 b Halt1 H1ltb). }
+			            set W := unit_interval :/\: open_interval a b.
+			            claim HWsubI : W c= unit_interval.
+			            { exact (binintersect_Subq_1 unit_interval (open_interval a b)). }
+			            claim HWopenR : open_interval a b :e R_standard_topology.
+			            { exact (open_interval_in_R_standard_topology a b Hablt). }
+			            claim HWopenI' : (open_interval a b :/\: unit_interval) :e unit_interval_topology.
+			            { exact (subspace_topologyI R R_standard_topology unit_interval (open_interval a b) HWopenR). }
+			            claim HWcom : W = open_interval a b :/\: unit_interval.
+			            { exact (binintersect_com unit_interval (open_interval a b)). }
+			            claim HWopenI : W :e unit_interval_topology.
+			            { exact (eq_subst_mem W (open_interval a b :/\: unit_interval) unit_interval_topology HWcom HWopenI'). }
+			            claim HtW : t :e W.
+			            { exact (binintersectI unit_interval (open_interval a b) t HtI HtOab). }
+			            claim HWsubW0 : W c= W0.
+			            {
+			              let u.
+			              assume HuW.
+			              claim HuI : u :e unit_interval.
+			              { exact (binintersectE1 unit_interval (open_interval a b) u HuW). }
+			              claim HuO : u :e open_interval a b.
+			              { exact (binintersectE2 unit_interval (open_interval a b) u HuW). }
+			              claim HuV1 : u :e V1.
+			              { exact (HOabSubV1 u HuO). }
+			              claim HuCap : u :e V1 :/\: unit_interval.
+			              { exact (binintersectI V1 unit_interval u HuV1 HuI). }
+			              claim HW0eq' : V1 :/\: unit_interval = W0.
+			              { symmetry. exact HW0eq. }
+			              exact (mem_eqR u (V1 :/\: unit_interval) W0 HW0eq' HuCap).
+			            }
+			            (** Path connectedness of W: it is (a,1], (0,1], or all of unit_interval. **)
+			            claim HTW :
+			              subspace_topology unit_interval unit_interval_topology W =
+			              subspace_topology R R_standard_topology W.
+			            {
+			              exact (ex16_1_subspace_transitive
+			                R
+			                R_standard_topology
+			                unit_interval
+			                W
+			                R_standard_topology_is_topology
+			                unit_interval_sub_R
+			                HWsubI).
+			            }
+			            claim HpcW : path_connected_space W (subspace_topology unit_interval unit_interval_topology W).
+			            {
+			              rewrite HTW.
+			              apply (order_rel_trichotomy_or_impred R a 0 simply_ordered_set_R HaR real_0).
+			              - assume HaOrd0.
+			                claim Halt0 : Rlt a 0.
+			                { exact (order_rel_R_implies_Rlt a 0 HaOrd0). }
+			                rewrite (unit_interval_binintersect_open_interval_both_cross
+			                  a b HaR HbR Halt0 H1ltb).
+			                exact (ex51_3b_contractible_path_connected
+			                  unit_interval
+			                  unit_interval_topology
+			                  ex51_3a_I_contractible).
+			              - assume Haeq0.
+			                rewrite Haeq0.
+			                rewrite (unit_interval_binintersect_open_interval_left_boundary_cross
+			                  b HbR H1ltb).
+			                exact (halfopen_interval_right_in_path_connected_1
+			                  0 real_0 Rlt_0_1).
+			              - assume H0OrdA.
+			                claim H0lta : Rlt 0 a.
+			                { exact (order_rel_R_implies_Rlt 0 a H0OrdA). }
+			                rewrite (unit_interval_binintersect_open_interval_right_cross
+			                  a b HaR HbR H0lta Halt1 H1ltb).
+			                exact (halfopen_interval_right_in_path_connected_1
+			                  a HaR Halt1).
+			            }
+			            witness W.
+			            apply andI.
+			            - apply andI.
+			              + apply andI.
+			                * exact HWopenI.
+			                * exact HtW.
+			              + exact HWsubW0.
+			            - exact HpcW.
+			        }
+			        apply HexW.
+			        let W.
+			        assume HWpack.
+			        apply (and4E
+			          (W :e unit_interval_topology)
+			          (t :e W)
+			          (W c= W0)
+			          (path_connected_space W (subspace_topology unit_interval unit_interval_topology W))
+			          HWpack).
+			        assume HWopenI HtW HWsubW0 HpcW.
+			        set V := image_of f W.
+				        claim HVTe : V :e Te.
+				        {
+				          exact (homeomorphism_image_open
+				            unit_interval
+				            unit_interval_topology
+				            E
+				            Te
+				            f
+				            W
+				            Hhomef
+				            HWopenI).
+				        }
+				        claim HxV : x :e V.
+				        {
+				          apply (exists_preimage_point_of_subset_implies_mem_image_of_subset
+				            W
+				            f
+				            x).
+				          witness t.
+				          apply andI.
+				          - exact HtW.
+				          - exact Hft.
+				        }
+					        claim HWsubI0 : W c= unit_interval.
+					        {
+					          exact (topology_elem_subset
+					            unit_interval
+					            unit_interval_topology
+					            W
+					            unit_interval_topology_on
+					            HWopenI).
+					        }
+				        claim HVsubUE : V c= UE.
+				        {
+				          let y.
+				          assume HyV.
+				          apply (mem_image_of_subset_implies_exists_preimage_point W f y HyV).
+				          let u.
+				          assume Hupack.
+				          claim HuW : u :e W.
+				          { exact (andEL (u :e W) (apply_fun f u = y) Hupack). }
+				          claim Hfuy : apply_fun f u = y.
+				          { exact (andER (u :e W) (apply_fun f u = y) Hupack). }
+				          claim HuW0 : u :e W0.
+				          { exact (HWsubW0 u HuW). }
+				          claim HfuUE : apply_fun f u :e UE.
+				          { exact (SepE2 unit_interval (fun s:set => apply_fun f s :e UE) u HuW0). }
+				          exact (eq_subst_mem_rev (apply_fun f u) y UE Hfuy HfuUE).
+				        }
+			        (** Path connectedness transfers along the restricted homeomorphism. **)
+				        claim HhomeW :
+				          homeomorphism W (subspace_topology unit_interval unit_interval_topology W)
+				            V (subspace_topology E Te V) f.
+				        {
+				          exact (homeomorphism_restrict_to_image_of_subset
+				            unit_interval
+				            unit_interval_topology
+				            E
+				            Te
+				            f
+				            W
+				            Hhomef
+				            HWsubI0).
+				        }
+				        claim HVpcE : path_connected_space V (subspace_topology E Te V).
+				        {
+				          exact (homeomorphism_preserves_path_connected_space_right
+				            W
+				            (subspace_topology unit_interval unit_interval_topology W)
+				            V
+				            (subspace_topology E Te V)
+				            f
+				            HhomeW
+				            HpcW).
+				        }
+			        witness V.
+			      (** Upgrade openness: V :e Tx since V = V0 :/\: UarcE for some V0 :e Tx. **)
+			      claim HexV0 : exists V0:set, V0 :e Tx /\ V = V0 :/\: E.
+			      { exact (subspace_topologyE X Tx E V HVTe). }
+			      apply HexV0.
+		      let V0.
+		      assume HV0pack.
+		      claim HV0 : V0 :e Tx.
+		      { exact (andEL (V0 :e Tx) (V = V0 :/\: E) HV0pack). }
+		      claim HVe : V = V0 :/\: E.
+		      { exact (andER (V0 :e Tx) (V = V0 :/\: E) HV0pack). }
+		      claim HVsubUarcE : V c= UarcE.
+		      {
+		        let z.
+		        assume HzV.
+		        exact (binintersectE2 U UarcE z (HVsubUE z HzV)).
+		      }
+			      claim HUEsubU : UE c= U.
+			      { exact (binintersect_Subq_1 U UarcE). }
+			      claim HVsubU : V c= U.
+			      { exact (Subq_tra V UE U HVsubUE HUEsubU). }
+			      claim HVeq : V = V0 :/\: UarcE.
+			      {
+			        apply (set_ext V (V0 :/\: UarcE)).
+			        - let z.
+			          assume HzV.
+			          apply binintersectI.
+			          + claim HzVE : z :e V0 :/\: E.
+			            { exact (mem_eqR z V (V0 :/\: E) HVe HzV). }
+			            exact (binintersectE1 V0 E z HzVE).
+			          + exact (HVsubUarcE z HzV).
+			        - let z.
+			          assume HzCap.
+			          claim HzV0 : z :e V0.
+			          { exact (binintersectE1 V0 UarcE z HzCap). }
+			          claim HzUarc : z :e UarcE.
+			          { exact (binintersectE2 V0 UarcE z HzCap). }
+			          claim HzE : z :e E.
+			          { exact (setminusE1 E OverE z HzUarc). }
+			          rewrite HVe.
+			          exact (binintersectI V0 E z HzV0 HzE).
+			      }
+		      claim HV : V :e Tx.
+		      {
+		        rewrite HVeq.
+		        exact (topology_binintersect_closed
+		          X
+		          Tx
+		          V0
+		          UarcE
+		          HtopX
+		          HV0
+		          HUarcE).
+		      }
+		      claim HVsubU : V c= U.
+		      { exact HVsubU. }
+			      claim HVsubE : V c= E.
+			      { exact (subspace_topology_subset X Tx E V HVTe). }
+				      claim HTsub : subspace_topology E Te V = subspace_topology X Tx V.
+				      {
+				        exact (ex16_1_subspace_transitive
+				          X
+				          Tx
+				          E
+				          V
+				          HtopX
+				          HEsubX
+				          HVsubE).
+				      }
+				      apply andI.
+			      - apply andI.
+			        + apply andI.
+			          * exact HV.
+			          * exact HxV.
+			        + exact HVsubU.
+			      - rewrite <- HTsub.
+			        exact HVpcE.
+			      - assume HtNotEnd.
+			        claim HtR : t :e R.
+			        { exact (unit_interval_sub_R t HtI). }
 		        claim HtInW0 : t :e W0.
 		        { exact HtW0. }
 		        (** Unpack W0 as V1 :/\: unit_interval where V1 is open in R. **)
@@ -230380,7 +230858,7 @@ apply (and6I
     f
     Hhome1
     unit_interval_minus_Sing_1_connected).
-Admitted. (** was Qed but depends on non-proved axiom chain **)
+Qed.
 
 (** helper: n and {n} are disjoint. **)
 (** Proven Charlie **)
@@ -232457,12 +232935,12 @@ apply (iffI
 	    { rewrite <- HUVempty. exact Hy0UV. }
 	    exact (EmptyE y0 Hy0Empty).
 	  }
-		  exact (andI
-		    (topology_on X Tx)
-		    (~ (exists U V:set, U :e Tx /\ V :e Tx /\ separation_of X U V))
-		    HtopX
-		    Hnosep).
-	Admitted. (** was Qed but depends on non-proved axiom chain **)
+			  exact (andI
+			    (topology_on X Tx)
+			    (~ (exists U V:set, U :e Tx /\ V :e Tx /\ separation_of X U V))
+			    HtopX
+			    Hnosep).
+		Qed.
 
 (** helper: the tree extension union is connected whenever A meets T in a vertex **)
 (** Proven Charlie **)
