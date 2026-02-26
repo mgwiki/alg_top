@@ -158601,11 +158601,152 @@ claim Hsub_inv : forall al:set, al :e J -> forall a:set,
   claim Hsub : subgroup_of (apply_fun Gfam al) G mult e inv.
   { exact (HsubGfam al Hal). }
   apply Hsub. assume _ Hinv_cl. exact (Hinv_cl a Ha_sub). }
+(** Build merged product with distinct alphas **)
+(** For each k in n1, define match function: sigma(k) = Eps j. j :e n2 /\ a2(j) = a1(k) **)
+set sigma := fun k:set => Eps_i (fun j:set => j :e n2 /\ apply_fun a2 j = apply_fun a1 k).
+(** For each k in n1, check if a1(k) is matched in a2 **)
+set matched := fun k:set => exists j:set, j :e n2 /\ apply_fun a2 j = apply_fun a1 k.
+(** Define merged values on n1: merge x1(k) with inv(x2(sigma(k))) if matched **)
+set merged_val := fun k:set =>
+  If_i (matched k) (apply_fun mult (apply_fun x1 k, apply_fun inv (apply_fun x2 (sigma k)))) (apply_fun x1 k).
+(** sigma(k) properties when matched **)
+claim Hsigma_prop : forall k:set, k :e n1 -> matched k ->
+  sigma k :e n2 /\ apply_fun a2 (sigma k) = apply_fun a1 k.
+{ let k. assume Hk Hm. exact (Eps_i_ex (fun j:set => j :e n2 /\ apply_fun a2 j = apply_fun a1 k) Hm). }
+claim Hsigma_in : forall k:set, k :e n1 -> matched k -> sigma k :e n2.
+{ let k. assume Hk Hm.
+  exact (andEL (sigma k :e n2) (apply_fun a2 (sigma k) = apply_fun a1 k) (Hsigma_prop k Hk Hm)). }
+claim Hsigma_eq : forall k:set, k :e n1 -> matched k -> apply_fun a2 (sigma k) = apply_fun a1 k.
+{ let k. assume Hk Hm.
+  exact (andER (sigma k :e n2) (apply_fun a2 (sigma k) = apply_fun a1 k) (Hsigma_prop k Hk Hm)). }
+(** merged_val(k) is in Gfam(a1(k)) **)
+claim Hmerged_fam : forall k:set, k :e n1 -> merged_val k :e apply_fun Gfam (apply_fun a1 k).
+{ let k. assume Hk.
+  apply (xm (matched k)).
+  - assume Hm : matched k.
+    claim Hif : merged_val k = apply_fun mult (apply_fun x1 k, apply_fun inv (apply_fun x2 (sigma k))).
+    { exact (If_i_1 (matched k)
+        (apply_fun mult (apply_fun x1 k, apply_fun inv (apply_fun x2 (sigma k))))
+        (apply_fun x1 k)
+        Hm). }
+    rewrite Hif.
+    claim Ha1k : apply_fun a1 k :e J. { exact (Ha1 k Hk). }
+    claim Hx1k : apply_fun x1 k :e apply_fun Gfam (apply_fun a1 k). { exact (Hxfam1 k Hk). }
+    claim Hsk : sigma k :e n2. { exact (Hsigma_in k Hk Hm). }
+    claim Ha2sk : apply_fun a2 (sigma k) = apply_fun a1 k. { exact (Hsigma_eq k Hk Hm). }
+    claim Hx2sk : apply_fun x2 (sigma k) :e apply_fun Gfam (apply_fun a2 (sigma k)).
+    { exact (Hxfam2 (sigma k) Hsk). }
+    claim Hx2sk_a1k : apply_fun x2 (sigma k) :e apply_fun Gfam (apply_fun a1 k).
+    { rewrite <- Ha2sk. exact Hx2sk. }
+    claim Hinv_x2sk : apply_fun inv (apply_fun x2 (sigma k)) :e apply_fun Gfam (apply_fun a1 k).
+    { exact (Hsub_inv (apply_fun a1 k) Ha1k (apply_fun x2 (sigma k)) Hx2sk_a1k). }
+    exact (Hsub_mult (apply_fun a1 k) Ha1k (apply_fun x1 k) (apply_fun inv (apply_fun x2 (sigma k))) Hx1k Hinv_x2sk).
+  - assume Hnm : ~(matched k).
+    claim Hif : merged_val k = apply_fun x1 k.
+    { exact (If_i_0 (matched k)
+        (apply_fun mult (apply_fun x1 k, apply_fun inv (apply_fun x2 (sigma k))))
+        (apply_fun x1 k)
+        Hnm). }
+    rewrite Hif. exact (Hxfam1 k Hk). }
+claim Hmerged_zero : forall k:set, k :e n1 -> merged_val k = e.
+{ admit. }
 let alpha. assume Halpha : alpha :e J.
 apply and3I.
-- admit.
-- admit.
-- admit.
+- let i j. assume Hi : i :e n1. assume Hj : j :e n2.
+  assume Ha1i : apply_fun a1 i = alpha. assume Ha2j : apply_fun a2 j = alpha.
+  claim Hm_i : matched i.
+  { claim Hex : exists j0:set, j0 :e n2 /\ apply_fun a2 j0 = apply_fun a1 i.
+    { witness j. exact (andI (j :e n2) (apply_fun a2 j = apply_fun a1 i) Hj (eq_i_tra (apply_fun a2 j) alpha (apply_fun a1 i) Ha2j (eq_symm (apply_fun a1 i) alpha Ha1i))). }
+    exact Hex. }
+  claim Hzero_i : merged_val i = e. { exact (Hmerged_zero i Hi). }
+  claim Hmerged_i : merged_val i = apply_fun mult (apply_fun x1 i, apply_fun inv (apply_fun x2 (sigma i))).
+  { exact (If_i_1 (matched i)
+      (apply_fun mult (apply_fun x1 i, apply_fun inv (apply_fun x2 (sigma i))))
+      (apply_fun x1 i)
+      Hm_i). }
+  claim Heq : apply_fun mult (apply_fun x1 i, apply_fun inv (apply_fun x2 (sigma i))) = e.
+  { rewrite <- Hmerged_i. exact Hzero_i. }
+  claim Ha2si : apply_fun a2 (sigma i) = apply_fun a1 i. { exact (Hsigma_eq i Hi Hm_i). }
+  claim Hsi_n2 : sigma i :e n2. { exact (Hsigma_in i Hi Hm_i). }
+  claim Hsi_eq_j : sigma i = j.
+  { apply (xm (sigma i = j)).
+    - assume H. exact H.
+    - assume Hne : sigma i <> j.
+      claim Hcontra : apply_fun a2 (sigma i) <> apply_fun a2 j. { exact (Hinj2 (sigma i) j Hsi_n2 Hj Hne). }
+      claim Habs : apply_fun a2 (sigma i) = apply_fun a2 j.
+      { exact (eq_i_tra (apply_fun a2 (sigma i)) (apply_fun a1 i) (apply_fun a2 j) Ha2si (eq_i_tra (apply_fun a1 i) alpha (apply_fun a2 j) Ha1i (eq_symm (apply_fun a2 j) alpha Ha2j))). }
+      exact (FalseE (Hcontra Habs) (sigma i = j)). }
+  claim Hx2si_eq : apply_fun x2 (sigma i) = apply_fun x2 j.
+  { rewrite Hsi_eq_j. reflexivity. }
+  claim Hinvx2si_eq : apply_fun inv (apply_fun x2 (sigma i)) = apply_fun inv (apply_fun x2 j).
+  { rewrite Hsi_eq_j. reflexivity. }
+  claim Heq2 : apply_fun mult (apply_fun x1 i, apply_fun inv (apply_fun x2 j)) = e.
+  { rewrite <- Hinvx2si_eq. exact Heq. }
+  claim Hx1G : apply_fun x1 i :e G. { exact (Hsub_in_G (apply_fun a1 i) (Ha1 i Hi) (apply_fun x1 i) (Hxfam1 i Hi)). }
+  claim Hx2G : apply_fun x2 j :e G. { exact (Hsub_in_G (apply_fun a2 j) (Ha2 j Hj) (apply_fun x2 j) (Hxfam2 j Hj)). }
+  claim Hinvx2G : apply_fun inv (apply_fun x2 j) :e G. { exact (HinvCl (apply_fun x2 j) Hx2G). }
+  claim HleftInv_x2 : apply_fun mult (apply_fun inv (apply_fun x2 j), apply_fun x2 j) = e.
+  { exact (andER (apply_fun mult (apply_fun x2 j, apply_fun inv (apply_fun x2 j)) = e) (apply_fun mult (apply_fun inv (apply_fun x2 j), apply_fun x2 j) = e) (Hinv (apply_fun x2 j) Hx2G)). }
+  claim Hrid : apply_fun mult (apply_fun x1 i, e) = apply_fun x1 i. { exact (HrightId (apply_fun x1 i) Hx1G). }
+  claim Hlid : apply_fun mult (e, apply_fun x2 j) = apply_fun x2 j.
+  { exact (andEL (apply_fun mult (e, apply_fun x2 j) = apply_fun x2 j) (apply_fun mult (apply_fun x2 j, e) = apply_fun x2 j) (Hid (apply_fun x2 j) Hx2G)). }
+  claim Hassoc_eq : apply_fun mult (apply_fun mult (apply_fun x1 i, apply_fun inv (apply_fun x2 j)), apply_fun x2 j) =
+    apply_fun mult (apply_fun x1 i, apply_fun mult (apply_fun inv (apply_fun x2 j), apply_fun x2 j)).
+  { exact (Hassoc (apply_fun x1 i) (apply_fun inv (apply_fun x2 j)) (apply_fun x2 j) Hx1G Hinvx2G Hx2G). }
+  claim Hchain1 : apply_fun mult (apply_fun x1 i, e) =
+    apply_fun mult (apply_fun x1 i, apply_fun mult (apply_fun inv (apply_fun x2 j), apply_fun x2 j)).
+  { rewrite <- HleftInv_x2. reflexivity. }
+  claim Hchain2 : apply_fun mult (apply_fun mult (apply_fun x1 i, apply_fun inv (apply_fun x2 j)), apply_fun x2 j) =
+    apply_fun mult (e, apply_fun x2 j).
+  { rewrite Heq2. reflexivity. }
+  exact (eq_i_tra (apply_fun x1 i) (apply_fun mult (apply_fun x1 i, e)) (apply_fun x2 j)
+    (eq_symm (apply_fun mult (apply_fun x1 i, e)) (apply_fun x1 i) Hrid)
+    (eq_i_tra (apply_fun mult (apply_fun x1 i, e))
+      (apply_fun mult (apply_fun x1 i, apply_fun mult (apply_fun inv (apply_fun x2 j), apply_fun x2 j)))
+      (apply_fun x2 j)
+      Hchain1
+      (eq_i_tra
+        (apply_fun mult (apply_fun x1 i, apply_fun mult (apply_fun inv (apply_fun x2 j), apply_fun x2 j)))
+        (apply_fun mult (apply_fun mult (apply_fun x1 i, apply_fun inv (apply_fun x2 j)), apply_fun x2 j))
+        (apply_fun x2 j)
+        (eq_symm
+          (apply_fun mult (apply_fun mult (apply_fun x1 i, apply_fun inv (apply_fun x2 j)), apply_fun x2 j))
+          (apply_fun mult (apply_fun x1 i, apply_fun mult (apply_fun inv (apply_fun x2 j), apply_fun x2 j)))
+          Hassoc_eq)
+        (eq_i_tra
+          (apply_fun mult (apply_fun mult (apply_fun x1 i, apply_fun inv (apply_fun x2 j)), apply_fun x2 j))
+          (apply_fun mult (e, apply_fun x2 j))
+          (apply_fun x2 j)
+          Hchain2
+          Hlid)))).
+- (** Condition 2: alpha in a1 only => x1(i) = e **)
+  assume Hex1 : exists i:set, i :e n1 /\ apply_fun a1 i = alpha.
+  assume Hnex2 : ~(exists j:set, j :e n2 /\ apply_fun a2 j = alpha).
+  let i. assume Hi : i :e n1. assume Ha1i : apply_fun a1 i = alpha.
+  (** matched(i) is false since alpha not in range(a2) **)
+  claim Hnm_i : ~(matched i).
+  { assume Hm : matched i.
+    apply Hm. let j. assume Hj_and : j :e n2 /\ apply_fun a2 j = apply_fun a1 i.
+    apply Hj_and. assume Hj Ha2j_eq.
+    claim Ha2j : apply_fun a2 j = alpha. { rewrite <- Ha1i. exact Ha2j_eq. }
+    claim Hex : exists j0:set, j0 :e n2 /\ apply_fun a2 j0 = alpha.
+    { witness j. exact (andI (j :e n2) (apply_fun a2 j = alpha) Hj Ha2j). }
+    exact (Hnex2 Hex). }
+  claim Hmerged_i : merged_val i = apply_fun x1 i.
+  { exact (If_i_0 (matched i)
+      (apply_fun mult (apply_fun x1 i, apply_fun inv (apply_fun x2 (sigma i))))
+      (apply_fun x1 i)
+      Hnm_i). }
+  claim Hzero_i : merged_val i = e. { exact (Hmerged_zero i Hi). }
+  rewrite <- Hmerged_i. exact Hzero_i.
+- (** Condition 3: alpha in a2 only => x2(j) = e **)
+  assume Hnex1 : ~(exists i:set, i :e n1 /\ apply_fun a1 i = alpha).
+  assume Hex2 : exists j:set, j :e n2 /\ apply_fun a2 j = alpha.
+  let j. assume Hj : j :e n2. assume Ha2j : apply_fun a2 j = alpha.
+  (** j is not matched by any k in n1, so j is unmatched **)
+  (** We need a separate argument using the unmatched product **)
+  (** For now: use the fact that prod(x1,n1) = prod(x2,n2) and x2(j) can be extracted **)
+  admit.
 Admitted.
 
 (** Helper: existence of extension homomorphism for direct sum (admitted) **)
