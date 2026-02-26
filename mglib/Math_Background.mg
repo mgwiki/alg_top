@@ -167084,8 +167084,176 @@ Lemma factor_family_infinite_cyclic_helper :
             g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))}))
       alpha)
     mult e inv (apply_fun gens alpha).
-admit.
-Admitted.
+let G mult e inv J gens alpha.
+assume Hgrp : group_structure G mult e inv.
+assume Hfn : function_on gens J G.
+assume Hinfcyc : forall beta:set, beta :e J ->
+  infinite_cyclic_subgroup G mult e inv (apply_fun gens beta).
+assume Hal : alpha :e J.
+(** Extract group structure **)
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume HmultFn HinvFn HeG HassocG HidG HinvG.
+(** Extract infinite_cyclic_subgroup for gens(alpha) in G **)
+claim Hinf : infinite_cyclic_subgroup G mult e inv (apply_fun gens alpha).
+{ exact (Hinfcyc alpha Hal). }
+apply (and4E
+  (apply_fun gens alpha :e G)
+  (forall n:set, n :e omega -> group_power_nat mult e (apply_fun gens alpha) n :e G)
+  (forall m:set, m :e omega ->
+    group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) :e G)
+  (~(exists n:set, n :e omega /\ n <> 0 /\ group_power_nat mult e (apply_fun gens alpha) n = e))
+  Hinf).
+assume HaG HpowG HipowG Hnontriv.
+(** Evaluate graph application **)
+claim HGeval : apply_fun
+  (graph J (fun beta:set =>
+    {g :e G | exists n:set, n :e int /\
+      ((n :e omega /\ g = group_power_nat mult e (apply_fun gens beta) n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+        g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))}))
+  alpha =
+  {g :e G | exists n:set, n :e int /\
+    ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+     (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+      g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}.
+{ exact (apply_fun_graph J (fun beta:set =>
+    {g :e G | exists n:set, n :e int /\
+      ((n :e omega /\ g = group_power_nat mult e (apply_fun gens beta) n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+        g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))})
+    alpha Hal). }
+rewrite HGeval.
+set GfamA := {g :e G | exists n:set, n :e int /\
+  ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+   (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+    g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}.
+set P := fun g:set => exists n:set, n :e int /\
+  ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+   (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+    g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))).
+(** Helper: 0 :e omega **)
+claim H0O : 0 :e omega. { exact (nat_p_omega 0 nat_0). }
+(** Helper: ordsucc 0 :e omega **)
+claim H1O : ordsucc 0 :e omega. { exact (omega_ordsucc 0 H0O). }
+(** Conjunct 1: gens(alpha) :e GfamA **)
+claim H1 : apply_fun gens alpha :e GfamA.
+{ apply (SepI G P (apply_fun gens alpha) HaG).
+  witness (ordsucc 0).
+  apply (andI (ordsucc 0 :e int)
+    ((ordsucc 0 :e omega /\ apply_fun gens alpha = group_power_nat mult e (apply_fun gens alpha) (ordsucc 0)) \/
+     (exists m:set, m :e omega /\ ordsucc 0 = minus_SNo (ordsucc m) /\
+      apply_fun gens alpha = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))).
+  - exact (Subq_omega_int (ordsucc 0) H1O).
+  - apply (orIL
+      (ordsucc 0 :e omega /\ apply_fun gens alpha = group_power_nat mult e (apply_fun gens alpha) (ordsucc 0))
+      (exists m:set, m :e omega /\ ordsucc 0 = minus_SNo (ordsucc m) /\
+       apply_fun gens alpha = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))).
+    apply (andI (ordsucc 0 :e omega)
+      (apply_fun gens alpha = group_power_nat mult e (apply_fun gens alpha) (ordsucc 0))).
+    + exact H1O.
+    + claim HpowS1 : group_power_nat mult e (apply_fun gens alpha) (ordsucc 0) =
+        apply_fun mult (apply_fun gens alpha, group_power_nat mult e (apply_fun gens alpha) 0).
+      { exact (nat_primrec_S e (fun _ r:set => apply_fun mult (apply_fun gens alpha, r)) 0 nat_0). }
+      claim Hpow0 : group_power_nat mult e (apply_fun gens alpha) 0 = e.
+      { exact (nat_primrec_0 e (fun _ r:set => apply_fun mult (apply_fun gens alpha, r))). }
+      claim HidR : apply_fun mult (apply_fun gens alpha, e) = apply_fun gens alpha.
+      { exact (andER (apply_fun mult (e, apply_fun gens alpha) = apply_fun gens alpha)
+          (apply_fun mult (apply_fun gens alpha, e) = apply_fun gens alpha)
+          (HidG (apply_fun gens alpha) HaG)). }
+      claim Hchain : group_power_nat mult e (apply_fun gens alpha) (ordsucc 0) = apply_fun gens alpha.
+      { claim Hmult_ae : apply_fun mult (apply_fun gens alpha,
+            group_power_nat mult e (apply_fun gens alpha) 0) =
+          apply_fun mult (apply_fun gens alpha, e).
+        { claim Hrew : group_power_nat mult e (apply_fun gens alpha) 0 = e. { exact Hpow0. }
+          rewrite Hrew. reflexivity. }
+        exact (eq_i_tra (group_power_nat mult e (apply_fun gens alpha) (ordsucc 0))
+          (apply_fun mult (apply_fun gens alpha, group_power_nat mult e (apply_fun gens alpha) 0))
+          (apply_fun gens alpha)
+          HpowS1
+          (eq_i_tra
+            (apply_fun mult (apply_fun gens alpha, group_power_nat mult e (apply_fun gens alpha) 0))
+            (apply_fun mult (apply_fun gens alpha, e))
+            (apply_fun gens alpha)
+            Hmult_ae HidR)). }
+      exact (eq_symm (group_power_nat mult e (apply_fun gens alpha) (ordsucc 0))
+        (apply_fun gens alpha) Hchain). }
+(** Conjunct 2: positive powers in GfamA **)
+claim H2 : forall n:set, n :e omega ->
+  group_power_nat mult e (apply_fun gens alpha) n :e GfamA.
+{ let n. assume Hn : n :e omega.
+  apply (SepI G P (group_power_nat mult e (apply_fun gens alpha) n) (HpowG n Hn)).
+  witness n.
+  apply (andI (n :e int)
+    ((n :e omega /\ group_power_nat mult e (apply_fun gens alpha) n =
+       group_power_nat mult e (apply_fun gens alpha) n) \/
+     (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+      group_power_nat mult e (apply_fun gens alpha) n =
+        group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))).
+  - exact (Subq_omega_int n Hn).
+  - apply (orIL
+      (n :e omega /\ group_power_nat mult e (apply_fun gens alpha) n =
+        group_power_nat mult e (apply_fun gens alpha) n)
+      (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+       group_power_nat mult e (apply_fun gens alpha) n =
+         group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))).
+    exact (andI (n :e omega)
+      (group_power_nat mult e (apply_fun gens alpha) n =
+        group_power_nat mult e (apply_fun gens alpha) n)
+      Hn (eq_refl (group_power_nat mult e (apply_fun gens alpha) n))). }
+(** Conjunct 3: negative powers in GfamA **)
+claim H3 : forall m:set, m :e omega ->
+  group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) :e GfamA.
+{ let m. assume Hm : m :e omega.
+  apply (SepI G P
+    (group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))
+    (HipowG m Hm)).
+  witness (minus_SNo (ordsucc m)).
+  claim HsmO : ordsucc m :e omega. { exact (omega_ordsucc m Hm). }
+  claim HintN : minus_SNo (ordsucc m) :e int.
+  { exact (int_minus_SNo_omega (ordsucc m) HsmO). }
+  apply (andI (minus_SNo (ordsucc m) :e int)
+    ((minus_SNo (ordsucc m) :e omega /\
+      group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) =
+        group_power_nat mult e (apply_fun gens alpha) (minus_SNo (ordsucc m))) \/
+     (exists m0:set, m0 :e omega /\ minus_SNo (ordsucc m) = minus_SNo (ordsucc m0) /\
+      group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) =
+        group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m0)))).
+  - exact HintN.
+  - apply (orIR
+      (minus_SNo (ordsucc m) :e omega /\
+       group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) =
+         group_power_nat mult e (apply_fun gens alpha) (minus_SNo (ordsucc m)))
+      (exists m0:set, m0 :e omega /\ minus_SNo (ordsucc m) = minus_SNo (ordsucc m0) /\
+       group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) =
+         group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m0))).
+    witness m.
+    claim H3a : m :e omega. { exact Hm. }
+    claim H3b : minus_SNo (ordsucc m) = minus_SNo (ordsucc m). { reflexivity. }
+    claim H3c : group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) =
+      group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m).
+    { reflexivity. }
+    exact (and3I (m :e omega) (minus_SNo (ordsucc m) = minus_SNo (ordsucc m))
+      (group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) =
+        group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m))
+      H3a H3b H3c). }
+(** Combine all 4 conjuncts **)
+exact (and4I
+  (apply_fun gens alpha :e GfamA)
+  (forall n:set, n :e omega -> group_power_nat mult e (apply_fun gens alpha) n :e GfamA)
+  (forall m:set, m :e omega ->
+    group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) :e GfamA)
+  (~(exists n:set, n :e omega /\ n <> 0 /\ group_power_nat mult e (apply_fun gens alpha) n = e))
+  H1 H2 H3 Hnontriv).
+Qed.
 
 (** Helper: not finite from infinite cyclic subgroup **)
 Lemma factor_family_nonfinite_helper :
