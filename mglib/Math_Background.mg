@@ -233102,7 +233102,87 @@ apply andI.
 	          admit.
 	        }
 	        (** TODO: finish via cor58_6_nulhomotopic_trivial once the nulhomotopy is constructed. **)
-	        admit.
+	        claim Hhb : apply_fun h b = b.
+	        { exact (apply_fun_graph Ustar (fun x:set => x) b HbUstar). }
+	        claim Htriv :
+	          apply_fun
+	            (induced_homomorphism Ustar (subspace_topology X Tx Ustar) b
+	              X Tx b h)
+	            cls =
+	          fundamental_group_id X Tx b.
+	        {
+	          claim H0 :
+	            apply_fun
+	              (induced_homomorphism Ustar (subspace_topology X Tx Ustar) b
+	                X Tx (apply_fun h b) h)
+	              cls =
+	            fundamental_group_id X Tx (apply_fun h b).
+	          {
+	            exact (cor58_6_nulhomotopic_trivial
+	              Ustar
+	              (subspace_topology X Tx Ustar)
+	              X
+	              Tx
+	              h
+	              b
+	              HcontUX
+	              HbUstar
+	              Hnul
+	              cls
+	              Hcls).
+	          }
+	          claim HL :
+	            apply_fun
+	              (induced_homomorphism Ustar (subspace_topology X Tx Ustar) b
+	                X Tx (apply_fun h b) h)
+	              cls =
+	            apply_fun
+	              (induced_homomorphism Ustar (subspace_topology X Tx Ustar) b
+	                X Tx b h)
+	              cls.
+	          { rewrite Hhb. reflexivity. }
+	          claim HR :
+	            fundamental_group_id X Tx (apply_fun h b) =
+	            fundamental_group_id X Tx b.
+	          { rewrite Hhb. reflexivity. }
+	          claim Hmid :
+	            apply_fun
+	              (induced_homomorphism Ustar (subspace_topology X Tx Ustar) b
+	                X Tx (apply_fun h b) h)
+	              cls =
+	            fundamental_group_id X Tx b.
+	          { exact (eq_i_tra
+	              (apply_fun
+	                (induced_homomorphism Ustar (subspace_topology X Tx Ustar) b
+	                  X Tx (apply_fun h b) h)
+	                cls)
+	              (fundamental_group_id X Tx (apply_fun h b))
+	              (fundamental_group_id X Tx b)
+	              H0
+	              HR). }
+	          exact (eq_i_tra
+	            (apply_fun
+	              (induced_homomorphism Ustar (subspace_topology X Tx Ustar) b
+	                X Tx b h)
+	              cls)
+	            (apply_fun
+	              (induced_homomorphism Ustar (subspace_topology X Tx Ustar) b
+	                X Tx (apply_fun h b) h)
+	              cls)
+	            (fundamental_group_id X Tx b)
+	            (eq_symm
+	              (apply_fun
+	                (induced_homomorphism Ustar (subspace_topology X Tx Ustar) b
+	                  X Tx (apply_fun h b) h)
+	                cls)
+	              (apply_fun
+	                (induced_homomorphism Ustar (subspace_topology X Tx Ustar) b
+	                  X Tx b h)
+	                cls)
+	              HL)
+	            Hmid).
+	        }
+	        exact Htriv.
 	    * assume HbNotOverX.
 	      (** Non-overlap: U is an open neighborhood inside a contractible arc E, so inclusion U->X is nulhomotopic. **)
 	      claim HbNotOverE : b /:e OverE.
