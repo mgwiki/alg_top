@@ -239617,15 +239617,6 @@ apply (and5E
   (A c= X)
   Hctx).
 assume Htree HglgX HsubT HTsubX HAsubX.
-claim HTsubX_viaSub : T c= X.
-{
-  exact (subgraph_of_subset
-    T
-    X
-    Tx
-    Arcs
-    HsubT).
-}
 (** Remaining forward S84.4 gap:
     construct a single-vertex intersection witness for each noncontained edge.
     Current local context already provides:
