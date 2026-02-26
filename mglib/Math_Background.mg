@@ -250298,8 +250298,342 @@ Theorem lemma84_6_mixed_crossing_power_reduction_core :
       (fundamental_group_id X Tx a)
       (apply_fun (fundamental_group_inv X Tx a)
         (path_homotopy_class_loop X Tx a (path_concat alpha beta))) n).
+let X Tx U V A B a b alpha beta fcls tU tV.
+assume Htop HU HV Hcover HscU HscV HAsub HBsub Hdisj Hoverlap HAopen HBopen HpcA HpcB HaA HbB.
+assume HalphaPB HbetaPB.
+assume HfclsLoop HfclsClsNe.
+assume HtU HtV HtUinV HtVinU.
+claim HaUV : a :e U :/\: V.
+{
+  exact (HAsub a HaA).
+}
+claim HaU : a :e U.
+{
+  exact (binintersectE1 U V a HaUV).
+}
+claim HaV : a :e V.
+{
+  exact (binintersectE2 U V a HaUV).
+}
+claim HUsub : U c= X.
+{
+  exact (topology_elem_subset X Tx U Htop HU).
+}
+claim HaX : a :e X.
+{
+  exact (HUsub a HaU).
+}
+claim HfclsLoopAt : loop_at X Tx a fcls.
+{
+  exact (loop_space_has_loop_at X Tx a fcls HfclsLoop).
+}
+claim HfclsCont : continuous_map unit_interval unit_interval_topology X Tx fcls.
+{
+  exact (loop_at_continuous X Tx a fcls HfclsLoopAt).
+}
+claim Hfcls0 : apply_fun fcls 0 = a.
+{
+  exact (loop_at_at_zero X Tx a fcls HfclsLoopAt).
+}
+claim Hfcls1 : apply_fun fcls 1 = a.
+{
+  exact (loop_at_at_one X Tx a fcls HfclsLoopAt).
+}
+claim HfclsFun : function_on fcls unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    fcls
+    HfclsCont).
+}
+claim HalphaOn :
+  forall s:set, s :e unit_interval -> apply_fun alpha s :e U.
+{
+  claim HalphaFn : function_on alpha unit_interval U.
+  {
+    exact (path_between_function_on U a b alpha HalphaPB).
+  }
+  let s.
+  assume HsU.
+  exact (HalphaFn s HsU).
+}
+claim HbetaOn :
+  forall s:set, s :e unit_interval -> apply_fun beta s :e V.
+{
+  claim HbetaFn : function_on beta unit_interval V.
+  {
+    exact (path_between_function_on V b a beta HbetaPB).
+  }
+  let s.
+  assume HsU.
+  exact (HbetaFn s HsU).
+}
+claim HalphaCont :
+  continuous_map
+    unit_interval
+    unit_interval_topology
+    U
+    (subspace_topology X Tx U)
+    alpha.
+{
+  exact (lemma58_path_between_continuous_bridge
+    U
+    (subspace_topology X Tx U)
+    a
+    b
+    alpha
+    HalphaPB).
+}
+claim Halpha0 : apply_fun alpha 0 = a.
+{
+  exact (path_between_at_zero U a b alpha HalphaPB).
+}
+claim Halpha1 : apply_fun alpha 1 = b.
+{
+  exact (path_between_at_one U a b alpha HalphaPB).
+}
+claim HbetaCont :
+  continuous_map
+    unit_interval
+    unit_interval_topology
+    V
+    (subspace_topology X Tx V)
+    beta.
+{
+  exact (lemma58_path_between_continuous_bridge
+    V
+    (subspace_topology X Tx V)
+    b
+    a
+    beta
+    HbetaPB).
+}
+claim Hbeta0 : apply_fun beta 0 = b.
+{
+  exact (path_between_at_zero V b a beta HbetaPB).
+}
+claim Hbeta1 : apply_fun beta 1 = a.
+{
+  exact (path_between_at_one V b a beta HbetaPB).
+}
+claim HgenClsMem :
+  path_homotopy_class_loop X Tx a (path_concat alpha beta)
+  :e fundamental_group X Tx a.
+{
+  exact (lemma84_6_generator_candidate_class_in_pi1
+    X
+    Tx
+    U
+    V
+    a
+    b
+    alpha
+    beta
+    Htop
+    HU
+    HV
+    HalphaCont
+    Halpha0
+    Halpha1
+    HbetaCont
+    Hbeta0
+    Hbeta1).
+}
+claim HgenPowMem :
+  forall n:set, n :e omega ->
+    group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+      n
+    :e fundamental_group X Tx a.
+{
+  exact (lemma84_6_pi1_power_nat_closed
+    X
+    Tx
+    a
+    (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+    Htop
+    HaX
+    HgenClsMem).
+}
+claim HinvGenPowMem :
+  forall n:set, n :e omega ->
+    group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (apply_fun (fundamental_group_inv X Tx a)
+        (path_homotopy_class_loop X Tx a (path_concat alpha beta)))
+      n
+    :e fundamental_group X Tx a.
+{
+  exact (lemma84_6_pi1_inverse_power_nat_closed
+    X
+    Tx
+    a
+    (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+    Htop
+    HaX
+    HgenClsMem).
+}
+set preU := preimage_of unit_interval fcls U.
+set preV := preimage_of unit_interval fcls V.
+claim HpreUOpen : preU :e unit_interval_topology.
+{
+  exact (continuous_map_preimage
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    fcls
+    HfclsCont
+    U
+    HU).
+}
+claim HpreVOpen : preV :e unit_interval_topology.
+{
+  exact (continuous_map_preimage
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    fcls
+    HfclsCont
+    V
+    HV).
+}
+claim HtUinPreV : tU :e preV.
+{
+  exact (SepI
+    unit_interval
+    (fun x:set => apply_fun fcls x :e V)
+    tU
+    HtU
+    HtUinV).
+}
+claim HtVinPreU : tV :e preU.
+{
+  exact (SepI
+    unit_interval
+    (fun x:set => apply_fun fcls x :e U)
+    tV
+    HtV
+    HtVinU).
+}
+claim HpreUNonempty : preU <> Empty.
+{
+  exact (elem_implies_nonempty preU tV HtVinPreU).
+}
+claim HpreVNonempty : preV <> Empty.
+{
+  exact (elem_implies_nonempty preV tU HtUinPreV).
+}
+claim H0PreU : 0 :e preU.
+{
+  claim Hf0U : apply_fun fcls 0 :e U.
+  {
+    rewrite Hfcls0.
+    exact HaU.
+  }
+  exact (SepI
+    unit_interval
+    (fun x:set => apply_fun fcls x :e U)
+    0
+    zero_in_unit_interval
+    Hf0U).
+}
+claim H0PreV : 0 :e preV.
+{
+  claim Hf0V : apply_fun fcls 0 :e V.
+  {
+    rewrite Hfcls0.
+    exact HaV.
+  }
+  exact (SepI
+    unit_interval
+    (fun x:set => apply_fun fcls x :e V)
+    0
+    zero_in_unit_interval
+    Hf0V).
+}
+claim H1PreU : 1 :e preU.
+{
+  claim Hf1U : apply_fun fcls 1 :e U.
+  {
+    rewrite Hfcls1.
+    exact HaU.
+  }
+  exact (SepI
+    unit_interval
+    (fun x:set => apply_fun fcls x :e U)
+    1
+    one_in_unit_interval
+    Hf1U).
+}
+claim H1PreV : 1 :e preV.
+{
+  claim Hf1V : apply_fun fcls 1 :e V.
+  {
+    rewrite Hfcls1.
+    exact HaV.
+  }
+  exact (SepI
+    unit_interval
+    (fun x:set => apply_fun fcls x :e V)
+    1
+    one_in_unit_interval
+    Hf1V).
+}
+claim HpreUVCover : unit_interval = preU :\/: preV.
+{
+  apply set_ext.
+  - let t.
+    assume HtI : t :e unit_interval.
+    claim HftX : apply_fun fcls t :e X.
+    {
+      exact (HfclsFun t HtI).
+    }
+    claim HftUV : apply_fun fcls t :e U :\/: V.
+    {
+      rewrite <- Hcover.
+      exact HftX.
+    }
+    apply (binunionE U V (apply_fun fcls t) HftUV).
+    + assume HftU : apply_fun fcls t :e U.
+      apply binunionI1.
+      exact (SepI
+        unit_interval
+        (fun x:set => apply_fun fcls x :e U)
+        t
+        HtI
+        HftU).
+    + assume HftV : apply_fun fcls t :e V.
+      apply binunionI2.
+      exact (SepI
+        unit_interval
+        (fun x:set => apply_fun fcls x :e V)
+        t
+        HtI
+        HftV).
+  - let t.
+    assume HtUV : t :e preU :\/: preV.
+    apply (binunionE preU preV t HtUV).
+    + assume HtPreU : t :e preU.
+      exact (SepE1 unit_interval (fun x:set => apply_fun fcls x :e U) t HtPreU).
+    + assume HtPreV : t :e preV.
+      exact (SepE1 unit_interval (fun x:set => apply_fun fcls x :e V) t HtPreV).
+}
 (** TODO Bob: prove via S63-style alternating decomposition in U cap V = A union B
-    with A cap B = Empty, then identify loop class as power of [alpha.beta] or inverse power. **)
+    with A cap B = Empty, then identify loop class as power of [alpha.beta] or inverse power.
+    Current core setup complete:
+    - loop continuity/function-on and endpoint anchoring,
+    - generator candidate class + omega-power closure (direct/inverse),
+    - mixed crossing preimage-open/nonempty structure in unit interval,
+    - global preimage cover unit_interval = preU union preV.
+    Remaining: alternating crossing decomposition over U cap V = A union B (A cap B=Empty). **)
 admit.
 Admitted.
 
