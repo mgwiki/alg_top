@@ -249609,6 +249609,28 @@ claim HfclsClsMem :
     fcls
     HfclsLoop).
 }
+claim Hpi1Utriv :
+  fundamental_group U (subspace_topology X Tx U) a =
+  {fundamental_group_id U (subspace_topology X Tx U) a}.
+{
+  exact (simply_connected_trivial_pi1_at_point
+    U
+    (subspace_topology X Tx U)
+    a
+    HscU
+    HaU).
+}
+claim Hpi1Vtriv :
+  fundamental_group V (subspace_topology X Tx V) a =
+  {fundamental_group_id V (subspace_topology X Tx V) a}.
+{
+  exact (simply_connected_trivial_pi1_at_point
+    V
+    (subspace_topology X Tx V)
+    a
+    HscV
+    HaV).
+}
 (** TODO Bob: bridge from nontrivial loop representative to edge-crossing normal form.
     Needed dependency: S63-style alternating decomposition theorem specialized to
     U∩V=A∪B (A,B disjoint path-connected pieces), then reduction to powers of [alpha.beta]. **)
