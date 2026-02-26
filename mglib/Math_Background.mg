@@ -249032,6 +249032,11 @@ Admitted.
 (** U cap V = A union B disjoint open path-connected. alpha path in U from a to b, **)
 (** beta path in V from b to a. Then [alpha . beta] generates pi1(X,a). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 180 **)
+(** from S84 Lem 84.6 (line 5643 in algtop.tex): generator from edge **)
+(** LATEX VERSION: Suppose X = U union V, U, V open, simply connected. **)
+(** U cap V = A union B disjoint open path-connected. alpha path in U from a to b, **)
+(** beta path in V from b to a. Then [alpha . beta] generates pi1(X,a). **)
+(** EFFORT: 15 lines textbook, difficulty 6/10, USD 180 **)
 (** Bounty 198 **)
 Theorem lemma84_6_generator_from_edge :
   forall X Tx U V A B a b alpha beta:set,
@@ -249061,6 +249066,40 @@ Theorem lemma84_6_generator_from_edge :
         (fundamental_group_id X Tx a)
         (apply_fun (fundamental_group_inv X Tx a)
           (path_homotopy_class_loop X Tx a (path_concat alpha beta))) n).
+let X Tx U V A B a b alpha beta.
+assume Htop HU HV Hcover HscU HscV HAsub HBsub Hdisj Hoverlap HAopen HBopen HpcA HpcB HaA HbB.
+assume HalphaCont Halpha0 Halpha1 HbetaCont Hbeta0 Hbeta1.
+claim HalphaPB : path_between U a b alpha.
+{
+  claim HalphaFn : function_on alpha unit_interval U.
+  {
+    exact (continuous_map_function_on
+      unit_interval
+      unit_interval_topology
+      U
+      (subspace_topology X Tx U)
+      alpha
+      HalphaCont).
+  }
+  exact (path_betweenI U a b alpha HalphaFn Halpha0 Halpha1).
+}
+claim HbetaPB : path_between V b a beta.
+{
+  claim HbetaFn : function_on beta unit_interval V.
+  {
+    exact (continuous_map_function_on
+      unit_interval
+      unit_interval_topology
+      V
+      (subspace_topology X Tx V)
+      beta
+      HbetaCont).
+  }
+  exact (path_betweenI V b a beta HbetaFn Hbeta0 Hbeta1).
+}
+(** Remaining S84.6 core gap:
+    from the path-form data HalphaPB/HbetaPB and two-component overlap hypotheses,
+    derive cyclic generation of pi1(X,a) by [alpha.beta] (S63-style argument). **)
 admit.
 Admitted.
 
