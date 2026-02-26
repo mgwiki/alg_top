@@ -169254,9 +169254,113 @@ apply iffI.
               Hgr_step)). }
         exact (Hind n1 (omega_nat_p n1 Hn1O) (ordsuccI2 n1)). }
       (** Similarly for decomposition 2 **)
-      claim Hha_prod2 : apply_fun ha (nat_primrec e (fun i r => apply_fun mult (r, apply_fun x2 i)) n2) =
-        nat_primrec 0 (fun i r => add_SNo r (apply_fun ha (apply_fun x2 i))) n2.
-      { admit. }
+      set f2 := fun i:set => fun r:set => apply_fun mult (r, apply_fun x2 i).
+      set g2 := fun i:set => fun r:set => add_SNo r (apply_fun ha (apply_fun x2 i)).
+      claim Hn2_ord : ordinal n2. { exact (nat_p_ordinal n2 (omega_nat_p n2 Hn2O)). }
+      claim Hn2_trans : TransSet n2. { exact (ordinal_TransSet n2 Hn2_ord). }
+      claim Hsk_to_k2 : forall k:set, ordsucc k :e ordsucc n2 -> k :e n2.
+      { let k. assume Hsk : ordsucc k :e ordsucc n2.
+        apply (ordsuccE n2 (ordsucc k) Hsk).
+        - assume Hsk_n : ordsucc k :e n2.
+          exact (Hn2_trans (ordsucc k) Hsk_n k (ordsuccI2 k)).
+        - assume Hsk_eq : ordsucc k = n2.
+          exact (eq_subst_mem_set k (ordsucc k) n2 (ordsuccI2 k) Hsk_eq). }
+      claim Hk_to_sk2 : forall k:set, k :e n2 -> k :e ordsucc n2.
+      { let k. assume Hk : k :e n2. exact (ordsuccI1 n2 k Hk). }
+      claim Hprod2_inG : forall k:set, nat_p k -> k :e ordsucc n2 ->
+        nat_primrec e f2 k :e G.
+      { apply (nat_ind (fun k => k :e ordsucc n2 -> nat_primrec e f2 k :e G)).
+        - assume _ : 0 :e ordsucc n2.
+          exact (eq_subst_mem (nat_primrec e f2 0) e G (nat_primrec_0 e f2) HeG2).
+        - let k. assume HkNP : nat_p k.
+          assume IH : k :e ordsucc n2 -> nat_primrec e f2 k :e G.
+          assume HskN : ordsucc k :e ordsucc n2.
+          claim HkN : k :e n2. { exact (Hsk_to_k2 k HskN). }
+          claim HprevG : nat_primrec e f2 k :e G. { exact (IH (Hk_to_sk2 k HkN)). }
+          claim Hx2kG : apply_fun x2 k :e G. { exact (Hx2_fn k HkN). }
+          exact (eq_subst_mem (nat_primrec e f2 (ordsucc k))
+            (apply_fun mult (nat_primrec e f2 k, apply_fun x2 k)) G
+            (nat_primrec_S e f2 k HkNP)
+            (HmultFn2 (nat_primrec e f2 k, apply_fun x2 k)
+              (tuple_2_setprod_by_pair_Sigma G G
+                (nat_primrec e f2 k) (apply_fun x2 k) HprevG Hx2kG))). }
+      claim Hha_prod2 : apply_fun ha (nat_primrec e f2 n2) =
+        nat_primrec 0 g2 n2.
+      { claim Hind2 : forall k:set, nat_p k -> k :e ordsucc n2 ->
+          apply_fun ha (nat_primrec e f2 k) = nat_primrec 0 g2 k.
+        { apply (nat_ind (fun k => k :e ordsucc n2 ->
+            apply_fun ha (nat_primrec e f2 k) = nat_primrec 0 g2 k)).
+          - assume _ : 0 :e ordsucc n2.
+            claim Hfeq_ha3 : forall z:set, z = e -> apply_fun ha z = apply_fun ha e.
+            { let z. assume Hz : z = e. rewrite Hz. reflexivity. }
+            exact (eq_i_tra (apply_fun ha (nat_primrec e f2 0))
+              0 (nat_primrec 0 g2 0)
+              (eq_i_tra (apply_fun ha (nat_primrec e f2 0)) (apply_fun ha e) 0
+                (Hfeq_ha3 (nat_primrec e f2 0) (nat_primrec_0 e f2))
+                Hha_id)
+              (eq_symm (nat_primrec 0 g2 0) 0 (nat_primrec_0 0 g2))).
+          - let k. assume HkNP3 : nat_p k.
+            assume IH2 : k :e ordsucc n2 -> apply_fun ha (nat_primrec e f2 k) = nat_primrec 0 g2 k.
+            assume HskN2 : ordsucc k :e ordsucc n2.
+            claim HkN3 : k :e n2. { exact (Hsk_to_k2 k HskN2). }
+            claim HkO4 : k :e ordsucc n2. { exact (Hk_to_sk2 k HkN3). }
+            claim HprevG2 : nat_primrec e f2 k :e G. { exact (Hprod2_inG k HkNP3 HkO4). }
+            claim Hx2kG2 : apply_fun x2 k :e G. { exact (Hx2_fn k HkN3). }
+            claim Hpr_step2 : nat_primrec e f2 (ordsucc k) =
+              apply_fun mult (nat_primrec e f2 k, apply_fun x2 k).
+            { exact (nat_primrec_S e f2 k HkNP3). }
+            claim Hha_step1b : apply_fun ha (nat_primrec e f2 (ordsucc k)) =
+              apply_fun ha (apply_fun mult (nat_primrec e f2 k, apply_fun x2 k)).
+            { claim Hfeq : forall z:set, z = apply_fun mult (nat_primrec e f2 k, apply_fun x2 k) ->
+                apply_fun ha z = apply_fun ha (apply_fun mult (nat_primrec e f2 k, apply_fun x2 k)).
+              { let z. assume Hz. rewrite Hz. reflexivity. }
+              exact (Hfeq (nat_primrec e f2 (ordsucc k)) Hpr_step2). }
+            claim Hha_step2b :
+              apply_fun ha (apply_fun mult (nat_primrec e f2 k, apply_fun x2 k)) =
+              apply_fun integers_group_mult (apply_fun ha (nat_primrec e f2 k), apply_fun ha (apply_fun x2 k)).
+            { exact (Hha_mult (nat_primrec e f2 k) (apply_fun x2 k) HprevG2 Hx2kG2). }
+            set pair_step2 := (apply_fun ha (nat_primrec e f2 k), apply_fun ha (apply_fun x2 k)).
+            claim Heval_step2b : apply_fun integers_group_mult pair_step2 =
+              add_SNo (apply_fun ha (nat_primrec e f2 k)) (apply_fun ha (apply_fun x2 k)).
+            { claim Hraw : apply_fun integers_group_mult pair_step2 = add_SNo (pair_step2 0) (pair_step2 1).
+              { exact (apply_fun_graph (setprod int int) (fun p:set => add_SNo (p 0) (p 1)) pair_step2
+                  (tuple_2_setprod_by_pair_Sigma int int
+                    (apply_fun ha (nat_primrec e f2 k)) (apply_fun ha (apply_fun x2 k))
+                    (Hha_fn (nat_primrec e f2 k) HprevG2) (Hha_fn (apply_fun x2 k) Hx2kG2))). }
+              rewrite Hraw.
+              rewrite (tuple_2_0_eq (apply_fun ha (nat_primrec e f2 k)) (apply_fun ha (apply_fun x2 k))).
+              rewrite (tuple_2_1_eq (apply_fun ha (nat_primrec e f2 k)) (apply_fun ha (apply_fun x2 k))).
+              reflexivity. }
+            claim HIH2 : apply_fun ha (nat_primrec e f2 k) = nat_primrec 0 g2 k.
+            { exact (IH2 HkO4). }
+            claim Hsubst_ih2 : add_SNo (apply_fun ha (nat_primrec e f2 k)) (apply_fun ha (apply_fun x2 k)) =
+              add_SNo (nat_primrec 0 g2 k) (apply_fun ha (apply_fun x2 k)).
+            { claim Hfeq2 : forall z:set, z = nat_primrec 0 g2 k ->
+                add_SNo z (apply_fun ha (apply_fun x2 k)) = add_SNo (nat_primrec 0 g2 k) (apply_fun ha (apply_fun x2 k)).
+              { let z. assume Hz. rewrite Hz. reflexivity. }
+              exact (Hfeq2 (apply_fun ha (nat_primrec e f2 k)) HIH2). }
+            claim Hgr_step2 : nat_primrec 0 g2 (ordsucc k) =
+              add_SNo (nat_primrec 0 g2 k) (apply_fun ha (apply_fun x2 k)).
+            { exact (nat_primrec_S 0 g2 k HkNP3). }
+            exact (eq_i_tra (apply_fun ha (nat_primrec e f2 (ordsucc k)))
+              (add_SNo (nat_primrec 0 g2 k) (apply_fun ha (apply_fun x2 k)))
+              (nat_primrec 0 g2 (ordsucc k))
+              (eq_i_tra (apply_fun ha (nat_primrec e f2 (ordsucc k)))
+                (apply_fun ha (apply_fun mult (nat_primrec e f2 k, apply_fun x2 k)))
+                (add_SNo (nat_primrec 0 g2 k) (apply_fun ha (apply_fun x2 k)))
+                Hha_step1b
+                (eq_i_tra (apply_fun ha (apply_fun mult (nat_primrec e f2 k, apply_fun x2 k)))
+                  (apply_fun integers_group_mult (apply_fun ha (nat_primrec e f2 k), apply_fun ha (apply_fun x2 k)))
+                  (add_SNo (nat_primrec 0 g2 k) (apply_fun ha (apply_fun x2 k)))
+                  Hha_step2b
+                  (eq_i_tra (apply_fun integers_group_mult (apply_fun ha (nat_primrec e f2 k), apply_fun ha (apply_fun x2 k)))
+                    (add_SNo (apply_fun ha (nat_primrec e f2 k)) (apply_fun ha (apply_fun x2 k)))
+                    (add_SNo (nat_primrec 0 g2 k) (apply_fun ha (apply_fun x2 k)))
+                    Heval_step2b Hsubst_ih2)))
+              (eq_symm (nat_primrec 0 g2 (ordsucc k))
+                (add_SNo (nat_primrec 0 g2 k) (apply_fun ha (apply_fun x2 k)))
+                Hgr_step2)). }
+        exact (Hind2 n2 (omega_nat_p n2 Hn2O) (ordsuccI2 n2)). }
       (** Step 6: ha on elements of Gfam **)
       (** For x_i in Gfam(a_i): if a_i = alpha, ha(x_i) is the exponent **)
       (** For x_i in Gfam(a_i): if a_i <> alpha, ha(x_i) = 0 **)
