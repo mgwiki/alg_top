@@ -228635,6 +228635,105 @@ exact (Hausdorff_singletons_closed
   HvA).
 Qed.
 
+(** Proven Bob **)
+Theorem setminus_eq_from_intersection_singleton :
+  forall T A v:set,
+  T :/\: A = Sing v ->
+  A :\: T = A :\: (Sing v).
+let T A v.
+assume Hcap.
+apply set_ext.
+- let x.
+  assume Hx.
+  apply setminusI.
+  + exact (setminusE1
+      A
+      T
+      x
+      Hx).
+  + assume HxSing.
+    claim HxEqv : x = v.
+    {
+      exact (SingE
+        v
+        x
+        HxSing).
+    }
+    claim HxA : x :e A.
+    {
+      exact (setminusE1
+        A
+        T
+        x
+        Hx).
+    }
+    claim HvT : v :e T.
+    {
+      claim HvCap : v :e T :/\: A.
+      {
+        rewrite Hcap.
+        exact (SingI v).
+      }
+      exact (binintersectE1
+        T
+        A
+        v
+        HvCap).
+    }
+    claim HxT : x :e T.
+    {
+      rewrite HxEqv.
+      exact HvT.
+    }
+    exact ((setminusE2
+      A
+      T
+      x
+      Hx)
+      HxT).
+- let x.
+  assume Hx.
+  apply setminusI.
+  + exact (setminusE1
+      A
+      (Sing v)
+      x
+      Hx).
+  + assume HxT.
+    claim HxA : x :e A.
+    {
+      exact (setminusE1
+        A
+        (Sing v)
+        x
+        Hx).
+    }
+    claim HxCap : x :e T :/\: A.
+    {
+      exact (binintersectI
+        T
+        A
+        x
+        HxT
+        HxA).
+    }
+    claim HxSing : x :e Sing v.
+    {
+      exact (mem_eqR
+        x
+        (T :/\: A)
+        (Sing v)
+        Hcap
+        HxCap).
+    }
+    exact ((setminusE2
+      A
+      (Sing v)
+      x
+      Hx)
+      HxSing).
+Qed.
+
 (** helper: general linear graph structure on the tree extension union **)
 Theorem lemma84_2_tree_extension_general_linear_graph_part :
   forall T ArcsT X Tx Arcs A:set,
@@ -230376,6 +230475,120 @@ claim HcohFamTA :
 		      claim HclosedTTA :
 		        closed_in (T :\/: A) (subspace_topology X Tx (T :\/: A)) T.
 		      {
+		        claim HTAminusT_eq :
+		          (T :\/: A) :\: T = A :\: (Sing v).
+		        {
+		          apply set_ext.
+		          - let x.
+		            assume Hx.
+		            claim HxTA : x :e (T :\/: A).
+		            {
+		              exact (setminusE1
+		                (T :\/: A)
+		                T
+		                x
+		                Hx).
+		            }
+		            claim HxNotT : x /:e T.
+		            {
+		              exact (setminusE2
+		                (T :\/: A)
+		                T
+		                x
+		                Hx).
+		            }
+		            apply (binunionE
+		              T
+		              A
+		              x
+		              HxTA).
+		            + assume HxT.
+		              exact (FalseE
+		                (HxNotT HxT)
+		                (x :e A :\: (Sing v))).
+		            + assume HxA.
+		              apply (setminusI
+		                A
+		                (Sing v)
+		                x
+		                HxA).
+		              assume HxSing.
+		              claim HxEqv : x = v.
+		              {
+		                exact (SingE
+		                  v
+		                  x
+		                  HxSing).
+		              }
+		              claim HvT : v :e T.
+		              {
+		                claim HvCap : v :e T :/\: A.
+		                {
+		                  rewrite HcapEq.
+		                  exact (SingI v).
+		                }
+		                exact (binintersectE1
+		                  T
+		                  A
+		                  v
+		                  HvCap).
+		              }
+		              claim HvNotT : v /:e T.
+		              {
+		                assume HvInT.
+		                claim HxInT : x :e T.
+		                {
+		                  rewrite HxEqv.
+		                  exact HvInT.
+		                }
+		                exact (HxNotT HxInT).
+		              }
+		              exact (HvNotT HvT).
+		          - let x.
+		            assume Hx.
+		            claim HxA : x :e A.
+		            {
+		              exact (setminusE1
+		                A
+		                (Sing v)
+		                x
+		                Hx).
+		            }
+		            apply (setminusI
+		              (T :\/: A)
+		              T
+		              x
+		              (binunionI2
+		                T
+		                A
+		                x
+		                HxA)).
+		            assume HxT.
+		            claim HxCap : x :e T :/\: A.
+		            {
+		              exact (binintersectI
+		                T
+		                A
+		                x
+		                HxT
+		                HxA).
+		            }
+		            claim HxSing : x :e Sing v.
+		            {
+		              exact (mem_eqR
+		                x
+		                (T :/\: A)
+		                (Sing v)
+		                HcapEq
+		                HxCap).
+		            }
+		            exact ((setminusE2
+		              A
+		              (Sing v)
+		              x
+		              Hx)
+		              HxSing).
+		        }
 		        claim HclosedCapA_on_A :
 		          closed_in A
 		            (subspace_topology X Tx A)
@@ -230413,9 +230626,79 @@ claim HcohFamTA :
 		          rewrite HtopAeqTA.
 		          exact HclosedCapA_on_A.
 		        }
+		        claim HAminusSing_open_on_A :
+		          open_in A
+		            (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) A)
+		            (A :\: (Sing v)).
+		        {
+		          claim HoneptA :
+		            one_point_sets_closed A (subspace_topology X Tx A).
+		          {
+		            exact (Hausdorff_one_point_sets_closed
+		              A
+		              (subspace_topology X Tx A)
+		              (arc_Hausdorff_space
+		                A
+		                (subspace_topology X Tx A)
+		                (andER
+		                  (A c= X)
+		                  (arc A (subspace_topology X Tx A))
+		                  (general_linear_graph_arc_data
+		                    X
+		                    Tx
+		                    Arcs
+		                    A
+		                    HglgX
+		                    HA)))).
+		          }
+		          claim HtopAeqTA :
+		            subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) A =
+		            subspace_topology X Tx A.
+		          {
+		            exact (ex16_1_subspace_transitive
+		              X
+		              Tx
+		              (T :\/: A)
+		              A
+		              HtopX
+		              HTAsubX
+		              HAsubTA).
+		          }
+		          rewrite HtopAeqTA.
+		          claim HtopA : topology_on A (subspace_topology X Tx A).
+		          {
+		            exact (andEL
+		              (topology_on A (subspace_topology X Tx A))
+		              (forall x:set, x :e A -> closed_in A (subspace_topology X Tx A) (Sing x))
+		              HoneptA).
+		          }
+		          claim HclosedSingA : closed_in A (subspace_topology X Tx A) (Sing v).
+		          {
+		            exact ((andER
+		              (topology_on A (subspace_topology X Tx A))
+		              (forall x:set, x :e A -> closed_in A (subspace_topology X Tx A) (Sing x))
+		              HoneptA)
+		              v
+		              HvA).
+		          }
+		          exact (andEL
+		            (open_in A (subspace_topology X Tx A) (A :\: (Sing v)))
+		            (closed_in A (subspace_topology X Tx A) ((Sing v) :\: A))
+		            (ex17_4_open_minus_closed_and_closed_minus_open
+		              A
+		              (subspace_topology X Tx A)
+		              A
+		              (Sing v)
+		              HtopA
+		              (X_is_open
+		                A
+		                (subspace_topology X Tx A)
+		                HtopA)
+		              HclosedSingA)).
+		        }
 		        (** Remaining coherence-closed transfer obligation:
-		            lift closedness of T:/\:A on A and trivial closedness on ArcsT-members
-		            to closed_in (T:\/:A) ... T. **)
+		            transfer openness of TA\\T = A\\{v} from the A-subspace to TA
+		            (equivalently, show closedness of T in TA). **)
 		        admit.
 		      }
 	      exact (HcDT_if_Tclosed
