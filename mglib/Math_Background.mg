@@ -228937,8 +228937,58 @@ apply (iffI
       n <> 0 /\
       (exists j:set, j :e n /\ ordsucc j /:e n /\
         (apply_fun path_seq j) 0 1 = y))).
-- (** -> direction (connected -> edge paths): to be completed. **)
-  admit.
+	- (** -> direction (connected -> edge paths): to be completed. **)
+	  assume Hconn.
+	  let x y.
+	  assume HxV HyV.
+	  apply (xm (x = y)).
+	  + assume Hxy.
+	    rewrite <- Hxy.
+	    exact (graph_vertex_has_edge_path_to_self
+	      X
+	      Tx
+	      Arcs
+	      x
+	      Hglg
+	      HxV).
+		  + assume Hxny.
+		    (** Remaining case x <> y: will be proved via a clopen reachability subset argument. **)
+		    claim HtopX : topology_on X Tx.
+		    {
+		      exact (andEL
+		        (topology_on X Tx)
+		        (~ (exists U V:set, U :e Tx /\ V :e Tx /\ separation_of X U V))
+		        Hconn).
+		    }
+		    set ReachV :=
+		      {v :e graph_vertices X Tx Arcs |
+		        exists n path_seq:set,
+		          edge_path X Tx Arcs n path_seq x /\
+		          n <> 0 /\
+		          (exists j:set, j :e n /\ ordsucc j /:e n /\
+		            (apply_fun path_seq j) 0 1 = v)}.
+		    claim HxReachV : x :e ReachV.
+		    {
+		      apply (SepI
+		        (graph_vertices X Tx Arcs)
+		        (fun v:set =>
+		          exists n path_seq:set,
+		            edge_path X Tx Arcs n path_seq x /\
+		            n <> 0 /\
+		            (exists j:set, j :e n /\ ordsucc j /:e n /\
+		              (apply_fun path_seq j) 0 1 = v))
+		        x).
+		      - exact HxV.
+		      - exact (graph_vertex_has_edge_path_to_self
+		          X
+		          Tx
+		          Arcs
+		          x
+		          Hglg
+		          HxV).
+		    }
+		    (** Next steps: show ReachV is closed under moving along an oriented edge, build the corresponding clopen union Reach, and contradict connectedness if y /:e ReachV. **)
+		    admit.
 	- (** <- direction (edge paths -> connected). **)
 	  assume Hpaths.
 	  claim HtopX : topology_on X Tx.
