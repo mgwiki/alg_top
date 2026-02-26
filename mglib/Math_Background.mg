@@ -228024,6 +228024,895 @@ exact (tree_in_graph_selected_arc_endpoint_right_vertex
   Hend).
 Qed.
 
+(** helper: end_points_of_arc is symmetric in its endpoints. **)
+(** Proven Charlie **)
+Theorem end_points_of_arc_sym :
+  forall X Tx p q:set,
+  end_points_of_arc X Tx p q ->
+  end_points_of_arc X Tx q p.
+let X Tx p q.
+assume Hend.
+apply (and6E
+  (arc X Tx)
+  (p :e X)
+  (q :e X)
+  (p <> q)
+  (connected_space (X :\: (Sing p)) (subspace_topology X Tx (X :\: (Sing p))))
+  (connected_space (X :\: (Sing q)) (subspace_topology X Tx (X :\: (Sing q))))
+  Hend).
+assume Harc HpX HqX Hneq Hconnp Hconnq.
+exact (and6I
+  (arc X Tx)
+  (q :e X)
+  (p :e X)
+  (q <> p)
+  (connected_space (X :\: (Sing q)) (subspace_topology X Tx (X :\: (Sing q))))
+  (connected_space (X :\: (Sing p)) (subspace_topology X Tx (X :\: (Sing p))))
+  Harc
+  HqX
+  HpX
+  (neq_i_sym p q Hneq)
+  Hconnq
+  Hconnp).
+Qed.
+
+(** helper: arcs are connected (via homeomorphism to unit_interval). **)
+(** Proven Charlie **)
+Theorem arc_connected_space :
+  forall X Tx:set,
+  arc X Tx ->
+  connected_space X Tx.
+let X Tx.
+assume Harc.
+apply Harc.
+let f.
+assume Hhome.
+exact (homeomorphism_preserves_connected
+  unit_interval
+  unit_interval_topology
+  X
+  Tx
+  f
+  Hhome
+  unit_interval_connected).
+Qed.
+
+(** helper: any arc has endpoints in the sense of end_points_of_arc. **)
+(** (This is duplicated later in the file under a different name, but is needed here.) **)
+(** Proven Charlie **)
+Theorem arc_has_end_points_of_arc_early :
+  forall X Tx:set,
+  arc X Tx ->
+  exists p q:set, end_points_of_arc X Tx p q.
+let X Tx.
+assume Harc.
+apply Harc.
+let f.
+assume Hhome.
+claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
+{
+  exact (homeomorphism_continuous
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    f
+    Hhome).
+}
+claim HfFun : function_on f unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    f
+    HfCont).
+}
+witness (apply_fun f 0).
+witness (apply_fun f 1).
+apply (and6I
+  (arc X Tx)
+  (apply_fun f 0 :e X)
+  (apply_fun f 1 :e X)
+  (apply_fun f 0 <> apply_fun f 1)
+  (connected_space (X :\: (Sing (apply_fun f 0)))
+    (subspace_topology X Tx (X :\: (Sing (apply_fun f 0)))))
+  (connected_space (X :\: (Sing (apply_fun f 1)))
+    (subspace_topology X Tx (X :\: (Sing (apply_fun f 1)))))).
+- exact Harc.
+- exact (HfFun 0 zero_in_unit_interval).
+- exact (HfFun 1 one_in_unit_interval).
+- assume Heq.
+  exact (neq_0_1
+    (homeomorphism_injective
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      f
+      Hhome
+      0
+      1
+      zero_in_unit_interval
+      one_in_unit_interval
+      Heq)).
+- (** Connectedness of X \\ {f 0} via the restriction of f to unit_interval \\ {0}. **)
+  set C0 := unit_interval :\: (Sing 0).
+  claim HC0sub : C0 c= unit_interval.
+  { exact (setminus_Subq unit_interval (Sing 0)). }
+  claim Hhome0 :
+    homeomorphism C0
+      (subspace_topology unit_interval unit_interval_topology C0)
+      (image_of f C0)
+      (subspace_topology X Tx (image_of f C0))
+      f.
+  {
+    exact (homeomorphism_restrict_to_image_of_subset
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      f
+      C0
+      Hhome
+      HC0sub).
+  }
+  claim Himg0 :
+    image_of f C0 = X :\: (Sing (apply_fun f 0)).
+  {
+    apply (set_ext
+      (image_of f C0)
+      (X :\: (Sing (apply_fun f 0)))).
+    - let y.
+      assume HyImg.
+      apply (ReplE_impred
+        C0
+        (fun t:set => apply_fun f t)
+        y
+        HyImg).
+      let t.
+      assume HtC0 Heq.
+      claim HtI : t :e unit_interval.
+      {
+        exact (andEL
+          (t :e unit_interval)
+          (t /:e Sing 0)
+          (setminusE unit_interval (Sing 0) t HtC0)).
+      }
+      claim HtNe0 : t /:e Sing 0.
+      {
+        exact (andER
+          (t :e unit_interval)
+          (t /:e Sing 0)
+          (setminusE unit_interval (Sing 0) t HtC0)).
+      }
+      claim HyX : y :e X.
+      {
+        rewrite Heq.
+        exact (HfFun t HtI).
+      }
+      apply (setminusI
+        X
+        (Sing (apply_fun f 0))
+        y
+        HyX).
+      assume HySing.
+      claim HyEq : y = apply_fun f 0.
+      { exact (SingE (apply_fun f 0) y HySing). }
+      claim HtEq0 : t = 0.
+      {
+        apply (homeomorphism_injective
+          unit_interval
+          unit_interval_topology
+          X
+          Tx
+          f
+          Hhome
+          t
+          0
+          HtI
+          zero_in_unit_interval).
+        rewrite <- Heq.
+        exact HyEq.
+      }
+      exact (HtNe0 (eq_subst_mem t 0 (Sing 0) HtEq0 (SingI 0))).
+    - let y.
+      assume HyM.
+      claim HyX : y :e X.
+      {
+        exact (andEL
+          (y :e X)
+          (y /:e Sing (apply_fun f 0))
+          (setminusE X (Sing (apply_fun f 0)) y HyM)).
+      }
+      claim HyNe : y /:e Sing (apply_fun f 0).
+      {
+        exact (andER
+          (y :e X)
+          (y /:e Sing (apply_fun f 0))
+          (setminusE X (Sing (apply_fun f 0)) y HyM)).
+      }
+      claim HinvPack :
+        exists g:set,
+          continuous_map X Tx unit_interval unit_interval_topology g /\
+          (forall t0:set, t0 :e unit_interval -> apply_fun g (apply_fun f t0) = t0) /\
+          (forall y0:set, y0 :e X -> apply_fun f (apply_fun g y0) = y0).
+      {
+        exact (homeomorphism_inverse_package
+          unit_interval
+          unit_interval_topology
+          X
+          Tx
+          f
+          Hhome).
+      }
+      apply HinvPack.
+      let g.
+      assume HgPack.
+      claim HgLeft :
+        continuous_map X Tx unit_interval unit_interval_topology g /\
+        (forall t0:set, t0 :e unit_interval -> apply_fun g (apply_fun f t0) = t0).
+      {
+        exact (andEL
+          (continuous_map X Tx unit_interval unit_interval_topology g /\
+           (forall t0:set, t0 :e unit_interval -> apply_fun g (apply_fun f t0) = t0))
+          (forall y0:set, y0 :e X -> apply_fun f (apply_fun g y0) = y0)
+          HgPack).
+      }
+      claim HgCont : continuous_map X Tx unit_interval unit_interval_topology g.
+      {
+        exact (andEL
+          (continuous_map X Tx unit_interval unit_interval_topology g)
+          (forall t0:set, t0 :e unit_interval -> apply_fun g (apply_fun f t0) = t0)
+          HgLeft).
+      }
+      claim HgFun : function_on g X unit_interval.
+      {
+        exact (continuous_map_function_on
+          X
+          Tx
+          unit_interval
+          unit_interval_topology
+          g
+          HgCont).
+      }
+      claim Hfg : forall y0:set, y0 :e X -> apply_fun f (apply_fun g y0) = y0.
+      {
+        exact (andER
+          (continuous_map X Tx unit_interval unit_interval_topology g /\
+           (forall t0:set, t0 :e unit_interval -> apply_fun g (apply_fun f t0) = t0))
+          (forall y0:set, y0 :e X -> apply_fun f (apply_fun g y0) = y0)
+          HgPack).
+      }
+      set t := apply_fun g y.
+      claim HtI : t :e unit_interval.
+      { exact (HgFun y HyX). }
+      claim HtNe0 : t /:e Sing 0.
+      {
+        assume HtSing.
+        claim HtEq0 : t = 0.
+        { exact (SingE 0 t HtSing). }
+        claim HyEq0 : y = apply_fun f 0.
+        {
+          rewrite <- (Hfg y HyX).
+          rewrite HtEq0.
+          reflexivity.
+        }
+        exact (HyNe (eq_subst_mem y (apply_fun f 0) (Sing (apply_fun f 0)) HyEq0 (SingI (apply_fun f 0)))).
+      }
+      claim HtC0 : t :e C0.
+      {
+        exact (setminusI
+          unit_interval
+          (Sing 0)
+          t
+          HtI
+          HtNe0).
+      }
+      rewrite <- (Hfg y HyX).
+      exact (ReplI
+        C0
+        (fun t0:set => apply_fun f t0)
+        t
+        HtC0).
+  }
+  rewrite <- Himg0.
+  exact (homeomorphism_preserves_connected
+    C0
+    (subspace_topology unit_interval unit_interval_topology C0)
+    (image_of f C0)
+    (subspace_topology X Tx (image_of f C0))
+    f
+    Hhome0
+    unit_interval_minus_Sing_0_connected).
+- (** Connectedness of X \\ {f 1} via the restriction of f to unit_interval \\ {1}. **)
+  set C1 := unit_interval :\: (Sing 1).
+  claim HC1sub : C1 c= unit_interval.
+  { exact (setminus_Subq unit_interval (Sing 1)). }
+  claim Hhome1 :
+    homeomorphism C1
+      (subspace_topology unit_interval unit_interval_topology C1)
+      (image_of f C1)
+      (subspace_topology X Tx (image_of f C1))
+      f.
+  {
+    exact (homeomorphism_restrict_to_image_of_subset
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      f
+      C1
+      Hhome
+      HC1sub).
+  }
+  claim Himg1 :
+    image_of f C1 = X :\: (Sing (apply_fun f 1)).
+  {
+    apply (set_ext
+      (image_of f C1)
+      (X :\: (Sing (apply_fun f 1)))).
+    - let y.
+      assume HyImg.
+      apply (ReplE_impred
+        C1
+        (fun t:set => apply_fun f t)
+        y
+        HyImg).
+      let t.
+      assume HtC1 Heq.
+      claim HtI : t :e unit_interval.
+      {
+        exact (andEL
+          (t :e unit_interval)
+          (t /:e Sing 1)
+          (setminusE unit_interval (Sing 1) t HtC1)).
+      }
+      claim HtNe1 : t /:e Sing 1.
+      {
+        exact (andER
+          (t :e unit_interval)
+          (t /:e Sing 1)
+          (setminusE unit_interval (Sing 1) t HtC1)).
+      }
+      claim HyX : y :e X.
+      {
+        rewrite Heq.
+        exact (HfFun t HtI).
+      }
+      apply (setminusI
+        X
+        (Sing (apply_fun f 1))
+        y
+        HyX).
+      assume HySing.
+      claim HyEq : y = apply_fun f 1.
+      { exact (SingE (apply_fun f 1) y HySing). }
+      claim HtEq1 : t = 1.
+      {
+        apply (homeomorphism_injective
+          unit_interval
+          unit_interval_topology
+          X
+          Tx
+          f
+          Hhome
+          t
+          1
+          HtI
+          one_in_unit_interval).
+        rewrite <- Heq.
+        exact HyEq.
+      }
+      exact (HtNe1 (eq_subst_mem t 1 (Sing 1) HtEq1 (SingI 1))).
+    - let y.
+      assume HyM.
+      claim HyX : y :e X.
+      {
+        exact (andEL
+          (y :e X)
+          (y /:e Sing (apply_fun f 1))
+          (setminusE X (Sing (apply_fun f 1)) y HyM)).
+      }
+      claim HyNe : y /:e Sing (apply_fun f 1).
+      {
+        exact (andER
+          (y :e X)
+          (y /:e Sing (apply_fun f 1))
+          (setminusE X (Sing (apply_fun f 1)) y HyM)).
+      }
+      claim HinvPack :
+        exists g:set,
+          continuous_map X Tx unit_interval unit_interval_topology g /\
+          (forall t0:set, t0 :e unit_interval -> apply_fun g (apply_fun f t0) = t0) /\
+          (forall y0:set, y0 :e X -> apply_fun f (apply_fun g y0) = y0).
+      {
+        exact (homeomorphism_inverse_package
+          unit_interval
+          unit_interval_topology
+          X
+          Tx
+          f
+          Hhome).
+      }
+      apply HinvPack.
+      let g.
+      assume HgPack.
+      claim HgLeft :
+        continuous_map X Tx unit_interval unit_interval_topology g /\
+        (forall t0:set, t0 :e unit_interval -> apply_fun g (apply_fun f t0) = t0).
+      {
+        exact (andEL
+          (continuous_map X Tx unit_interval unit_interval_topology g /\
+           (forall t0:set, t0 :e unit_interval -> apply_fun g (apply_fun f t0) = t0))
+          (forall y0:set, y0 :e X -> apply_fun f (apply_fun g y0) = y0)
+          HgPack).
+      }
+      claim HgCont : continuous_map X Tx unit_interval unit_interval_topology g.
+      {
+        exact (andEL
+          (continuous_map X Tx unit_interval unit_interval_topology g)
+          (forall t0:set, t0 :e unit_interval -> apply_fun g (apply_fun f t0) = t0)
+          HgLeft).
+      }
+      claim HgFun : function_on g X unit_interval.
+      {
+        exact (continuous_map_function_on
+          X
+          Tx
+          unit_interval
+          unit_interval_topology
+          g
+          HgCont).
+      }
+      claim Hfg : forall y0:set, y0 :e X -> apply_fun f (apply_fun g y0) = y0.
+      {
+        exact (andER
+          (continuous_map X Tx unit_interval unit_interval_topology g /\
+           (forall t0:set, t0 :e unit_interval -> apply_fun g (apply_fun f t0) = t0))
+          (forall y0:set, y0 :e X -> apply_fun f (apply_fun g y0) = y0)
+          HgPack).
+      }
+      set t := apply_fun g y.
+      claim HtI : t :e unit_interval.
+      { exact (HgFun y HyX). }
+      claim HtNe1 : t /:e Sing 1.
+      {
+        assume HtSing.
+        claim HtEq1 : t = 1.
+        { exact (SingE 1 t HtSing). }
+        claim HyEq1 : y = apply_fun f 1.
+        {
+          rewrite <- (Hfg y HyX).
+          rewrite HtEq1.
+          reflexivity.
+        }
+        exact (HyNe (eq_subst_mem y (apply_fun f 1) (Sing (apply_fun f 1)) HyEq1 (SingI (apply_fun f 1)))).
+      }
+      claim HtC1 : t :e C1.
+      {
+        exact (setminusI
+          unit_interval
+          (Sing 1)
+          t
+          HtI
+          HtNe1).
+      }
+      rewrite <- (Hfg y HyX).
+      exact (ReplI
+        C1
+        (fun t0:set => apply_fun f t0)
+        t
+        HtC1).
+  }
+  rewrite <- Himg1.
+  exact (homeomorphism_preserves_connected
+    C1
+    (subspace_topology unit_interval unit_interval_topology C1)
+    (image_of f C1)
+    (subspace_topology X Tx (image_of f C1))
+    f
+    Hhome1
+    unit_interval_minus_Sing_1_connected).
+Qed.
+
+(** helper: n and {n} are disjoint. **)
+(** Proven Charlie **)
+Theorem binintersect_self_Sing_empty :
+  forall n:set,
+  n :/\: {n} = Empty.
+let n.
+apply (set_ext (n :/\: {n}) Empty).
+- let x.
+  assume Hx.
+  claim HxPair : x :e n /\ x :e {n}.
+  { exact (binintersectE n {n} x Hx). }
+  claim HxN : x :e n.
+  { exact (andEL (x :e n) (x :e {n}) HxPair). }
+  claim HxEq : x = n.
+  { exact (SingE n x (andER (x :e n) (x :e {n}) HxPair)). }
+  claim HnInN : n :e n.
+  { exact (eq_subst_mem_rev x n n HxEq HxN). }
+  exact (FalseE (In_irref n HnInN) (x :e Empty)).
+- let x.
+  assume HxE.
+  exact (FalseE (EmptyE x HxE) (x :e n :/\: {n})).
+Qed.
+
+(** helper: the appended index n in the standard append construction evaluates to the appended edge. **)
+(** Proven Charlie **)
+Theorem apply_fun_edge_path_append_at_n :
+  forall X Tx Arcs n path_seq x0 j A p q:set,
+  general_linear_graph X Tx Arcs ->
+  edge_path X Tx Arcs n path_seq x0 ->
+  j :e n ->
+  ordsucc j /:e n ->
+  (apply_fun path_seq j) 0 1 = p ->
+  oriented_edge X Tx Arcs A p q ->
+  apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n
+  = ((p, q), A).
+let X Tx Arcs n path_seq x0 j A p q.
+assume Hglg Hep HjIn HsjNot Hfinj Hori.
+claim HdisjDom : n :/\: {n} = Empty.
+{ exact (binintersect_self_Sing_empty n). }
+claim HdomLeft :
+  graph_domain_subset (graph n (fun i:set => apply_fun path_seq i)) n.
+{ exact (graph_domain_subset_graph n (fun i:set => apply_fun path_seq i)). }
+claim HdomRight :
+  graph_domain_subset (graph {n} (fun _:set => ((p, q), A))) {n}.
+{ exact (graph_domain_subset_graph {n} (fun _:set => ((p, q), A))). }
+claim HtotLeft :
+  total_function_on (graph n (fun i:set => apply_fun path_seq i))
+    n (setprod (setprod X X) (Power X)).
+{
+  exact (total_function_on_graph
+    n
+    (setprod (setprod X X) (Power X))
+    (fun i:set => apply_fun path_seq i)
+    (fun i Hi =>
+      (edge_path_function_on X Tx Arcs n path_seq x0 Hep) i Hi)).
+}
+claim HAArcs : A :e Arcs.
+{ exact (oriented_edge_in_arcs X Tx Arcs A p q Hori). }
+claim Hend : end_points_of_arc A (subspace_topology X Tx A) p q.
+{ exact (oriented_edge_endpoints X Tx Arcs A p q Hori). }
+claim HAsubX : A c= X.
+{
+  exact (andEL
+    (A c= X)
+    (arc A (subspace_topology X Tx A))
+    (general_linear_graph_arc_data X Tx Arcs A Hglg HAArcs)).
+}
+claim HpX : p :e X.
+{
+  exact (HAsubX
+    p
+    (end_points_of_arc_left_in_set
+      A
+      (subspace_topology X Tx A)
+      p
+      q
+      Hend)).
+}
+claim HqX : q :e X.
+{
+  exact (HAsubX
+    q
+    (end_points_of_arc_right_in_set
+      A
+      (subspace_topology X Tx A)
+      p
+      q
+      Hend)).
+}
+claim HtotRight :
+  total_function_on (graph {n} (fun _:set => ((p, q), A)))
+    {n} (setprod (setprod X X) (Power X)).
+{
+  exact (total_function_on_graph
+    {n}
+    (setprod (setprod X X) (Power X))
+    (fun _:set => ((p, q), A))
+    (fun z Hz =>
+      tuple_2_setprod_by_pair_Sigma
+        (setprod X X)
+        (Power X)
+        (p, q)
+        A
+        (tuple_2_setprod_by_pair_Sigma
+          X
+          X
+          p
+          q
+          HpX
+          HqX)
+        (PowerI
+          X
+          A
+          HAsubX))).
+}
+claim HfunLeft : functional_graph (graph n (fun i:set => apply_fun path_seq i)).
+{ exact (functional_graph_graph n (fun i:set => apply_fun path_seq i)). }
+claim HfunRight : functional_graph (graph {n} (fun _:set => ((p, q), A))).
+{ exact (functional_graph_graph {n} (fun _:set => ((p, q), A))). }
+claim HnIn : n :e {n}.
+{ exact (SingI n). }
+rewrite (apply_fun_union_right
+  n
+  {n}
+  (setprod (setprod X X) (Power X))
+  (graph n (fun i:set => apply_fun path_seq i))
+  (graph {n} (fun _:set => ((p, q), A)))
+  n
+  HdisjDom
+  HdomLeft
+  HdomRight
+  HtotLeft
+  HtotRight
+  HfunLeft
+  HfunRight
+  HnIn).
+rewrite (apply_fun_graph {n} (fun _:set => ((p, q), A)) n (SingI n)).
+reflexivity.
+Qed.
+
+(** helper: for any graph vertex x there is a nontrivial edge_path from x to x. **)
+(** Proven Charlie **)
+Theorem graph_vertex_has_edge_path_to_self :
+  forall X Tx Arcs x:set,
+  general_linear_graph X Tx Arcs ->
+  x :e graph_vertices X Tx Arcs ->
+  exists n path_seq:set, edge_path X Tx Arcs n path_seq x /\
+    n <> 0 /\
+    (exists j:set, j :e n /\ ordsucc j /:e n /\
+      (apply_fun path_seq j) 0 1 = x).
+let X Tx Arcs x.
+assume Hglg HxV.
+claim HxWit : exists A:set, A :e Arcs /\
+  exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+    (x = p \/ x = q).
+{
+  exact (graph_vertices_has_endpoint_witness
+    X Tx Arcs x HxV).
+}
+apply HxWit.
+let A.
+assume HApack.
+claim HAArcs : A :e Arcs.
+{
+  exact (andEL
+    (A :e Arcs)
+    (exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q))
+    HApack).
+}
+claim HendPack :
+  exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+    (x = p \/ x = q).
+{
+  exact (andER
+    (A :e Arcs)
+    (exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q))
+    HApack).
+}
+apply HendPack.
+let p.
+assume HpPack.
+apply HpPack.
+let q.
+assume HpqPack.
+claim Hend : end_points_of_arc A (subspace_topology X Tx A) p q.
+{
+  exact (andEL
+    (end_points_of_arc A (subspace_topology X Tx A) p q)
+    (x = p \/ x = q)
+    HpqPack).
+}
+claim HxEq : x = p \/ x = q.
+{
+  exact (andER
+    (end_points_of_arc A (subspace_topology X Tx A) p q)
+    (x = p \/ x = q)
+    HpqPack).
+}
+	apply (xm (x = p)).
+	- assume Hxp.
+	  set w := q.
+	  claim Hori1 : oriented_edge X Tx Arcs A x w.
+	  {
+	    claim Hendxw : end_points_of_arc A (subspace_topology X Tx A) x w.
+	    { rewrite Hxp. exact Hend. }
+	    exact (andI
+	      (A :e Arcs)
+	      (end_points_of_arc A (subspace_topology X Tx A) x w)
+	      HAArcs
+	      Hendxw).
+	  }
+	  claim Hep1 :
+	    edge_path X Tx Arcs (ordsucc 0)
+	      (graph (ordsucc 0) (fun _:set => ((x, w), A)))
+	      x.
+	  {
+	    exact (edge_path_1_from_oriented_edge
+	      X Tx Arcs A x w Hglg Hori1).
+	  }
+	  claim Hfin0 : (apply_fun (graph (ordsucc 0) (fun _:set => ((x, w), A))) 0) 0 1 = w.
+	  {
+	    rewrite (apply_fun_graph (ordsucc 0) (fun _:set => ((x, w), A)) 0 (ordsuccI2 0)).
+	    rewrite (tuple_2_0_eq (x, w) A).
+	    rewrite tuple_2_1_eq.
+	    reflexivity.
+	  }
+	  claim Hori2 : oriented_edge X Tx Arcs A w x.
+	  {
+	    claim Hendwx : end_points_of_arc A (subspace_topology X Tx A) w x.
+	    {
+	      claim Hendwp : end_points_of_arc A (subspace_topology X Tx A) w p.
+	      {
+	        exact (end_points_of_arc_sym
+	          A
+	          (subspace_topology X Tx A)
+	          p
+	          w
+	          Hend).
+	      }
+	      rewrite Hxp.
+	      exact Hendwp.
+	    }
+	    exact (andI
+	      (A :e Arcs)
+	      (end_points_of_arc A (subspace_topology X Tx A) w x)
+      HAArcs
+      Hendwx).
+  }
+  set n := ordsucc 0.
+  set path_seq := graph n (fun _:set => ((x, w), A)).
+  set seq2 :=
+    (graph n (fun i:set => apply_fun path_seq i)) :\/:
+    (graph {n} (fun _:set => ((w, x), A))).
+	  claim Hep2 : edge_path X Tx Arcs (ordsucc n) seq2 x.
+	  {
+	    exact (edge_path_append_oriented_edge
+	      X Tx Arcs n path_seq x 0 A w x
+	      Hglg
+	      Hep1
+	      (ordsuccI2 0)
+	      (In_irref (ordsucc 0))
+	      Hfin0
+	      Hori2).
+	  }
+	  witness (ordsucc n).
+	  witness seq2.
+	  apply andI.
+	  + apply andI.
+	    * exact Hep2.
+	    * exact (neq_ordsucc_0 n).
+	  + witness n.
+	    apply andI.
+	    * apply andI.
+	      { exact (ordsuccI2 n). }
+	      { assume Hbad. exact (In_irref (ordsucc n) Hbad). }
+	    * claim Happ : apply_fun seq2 n = ((w, x), A).
+	      {
+	        exact (apply_fun_edge_path_append_at_n
+	          X Tx Arcs n path_seq x 0 A w x
+	          Hglg
+	          Hep1
+	          (ordsuccI2 0)
+	          (In_irref (ordsucc 0))
+	          Hfin0
+	          Hori2).
+	      }
+	      rewrite Happ.
+	      rewrite (tuple_2_0_eq (w, x) A).
+	      rewrite tuple_2_1_eq.
+	      reflexivity.
+	- assume Hxnp.
+	  (** x = q case: swap roles of p and q. **)
+	  claim Hxq : x = q.
+	  {
+	    apply HxEq.
+	    - assume Hxp0.
+	      exact (FalseE (Hxnp Hxp0) (x = q)).
+	    - assume Hxq0.
+	      exact Hxq0.
+	  }
+  set w := p.
+	  claim Hori1 : oriented_edge X Tx Arcs A x w.
+	  {
+	    claim Hendxw : end_points_of_arc A (subspace_topology X Tx A) x w.
+	    {
+	      rewrite Hxq.
+	      exact (end_points_of_arc_sym
+	        A
+	        (subspace_topology X Tx A)
+	        p
+	        q
+	        Hend).
+	    }
+	    exact (andI
+	      (A :e Arcs)
+	      (end_points_of_arc A (subspace_topology X Tx A) x w)
+      HAArcs
+      Hendxw).
+  }
+	  claim Hep1 :
+	    edge_path X Tx Arcs (ordsucc 0)
+	      (graph (ordsucc 0) (fun _:set => ((x, w), A)))
+	      x.
+	  {
+	    exact (edge_path_1_from_oriented_edge
+	      X Tx Arcs A x w Hglg Hori1).
+	  }
+	  claim Hfin0 : (apply_fun (graph (ordsucc 0) (fun _:set => ((x, w), A))) 0) 0 1 = w.
+	  {
+	    rewrite (apply_fun_graph (ordsucc 0) (fun _:set => ((x, w), A)) 0 (ordsuccI2 0)).
+	    rewrite (tuple_2_0_eq (x, w) A).
+	    rewrite tuple_2_1_eq.
+	    reflexivity.
+	  }
+	  claim Hori2 : oriented_edge X Tx Arcs A w x.
+	  {
+	    claim Hendwx : end_points_of_arc A (subspace_topology X Tx A) w x.
+	    {
+	      rewrite Hxq.
+	      exact Hend.
+	    }
+	    exact (andI
+	      (A :e Arcs)
+	      (end_points_of_arc A (subspace_topology X Tx A) w x)
+	      HAArcs
+      Hendwx).
+  }
+  set n := ordsucc 0.
+  set path_seq := graph n (fun _:set => ((x, w), A)).
+  set seq2 :=
+    (graph n (fun i:set => apply_fun path_seq i)) :\/:
+    (graph {n} (fun _:set => ((w, x), A))).
+	  claim Hep2 : edge_path X Tx Arcs (ordsucc n) seq2 x.
+	  {
+	    exact (edge_path_append_oriented_edge
+	      X Tx Arcs n path_seq x 0 A w x
+	      Hglg
+	      Hep1
+	      (ordsuccI2 0)
+	      (In_irref (ordsucc 0))
+	      Hfin0
+	      Hori2).
+	  }
+	  witness (ordsucc n).
+	  witness seq2.
+	  apply andI.
+	  + apply andI.
+	    * exact Hep2.
+	    * exact (neq_ordsucc_0 n).
+	  + witness n.
+	    apply andI.
+	    * apply andI.
+	      { exact (ordsuccI2 n). }
+	      { assume Hbad. exact (In_irref (ordsucc n) Hbad). }
+	    * claim Happ : apply_fun seq2 n = ((w, x), A).
+	      {
+	        exact (apply_fun_edge_path_append_at_n
+	          X Tx Arcs n path_seq x 0 A w x
+	          Hglg
+	          Hep1
+	          (ordsuccI2 0)
+	          (In_irref (ordsucc 0))
+	          Hfin0
+	          Hori2).
+	      }
+	      rewrite Happ.
+	      rewrite (tuple_2_0_eq (w, x) A).
+	      rewrite tuple_2_1_eq.
+	      reflexivity.
+Qed.
+
 (** from S84 Lem 84.1 (line 5563 in algtop.tex): connected iff edge paths **)
 (** LATEX VERSION: A graph X is connected iff every pair of vertices can be **)
 (** joined by an edge path. **)
@@ -228039,7 +228928,31 @@ Theorem lemma84_1_connected_iff_edge_paths :
        n <> 0 /\
        (exists j:set, j :e n /\ ordsucc j /:e n /\
          (apply_fun path_seq j) 0 1 = y))).
-admit.
+let X Tx Arcs.
+assume Hglg.
+apply (iffI
+  (connected_space X Tx)
+  (forall x y:set, x :e graph_vertices X Tx Arcs -> y :e graph_vertices X Tx Arcs ->
+    exists n path_seq:set, edge_path X Tx Arcs n path_seq x /\
+      n <> 0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = y))).
+- (** -> direction (connected -> edge paths): to be completed. **)
+  admit.
+- (** <- direction (edge paths -> connected). **)
+  assume Hpaths.
+  claim HtopX : topology_on X Tx.
+  { exact (general_linear_graph_topology_on X Tx Arcs Hglg). }
+  claim Hnosep : ~ (exists U V:set, U :e Tx /\ V :e Tx /\ separation_of X U V).
+  {
+    (** To be completed. **)
+    admit.
+  }
+  exact (andI
+    (topology_on X Tx)
+    (~ (exists U V:set, U :e Tx /\ V :e Tx /\ separation_of X U V))
+    HtopX
+    Hnosep).
 Admitted.
 
 (** helper: the tree extension union is connected whenever A meets T in a vertex **)
