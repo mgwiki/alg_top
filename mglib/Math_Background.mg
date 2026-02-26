@@ -159271,7 +159271,433 @@ claim Hcomb_prod_e : nat_primrec e (fun i r => apply_fun mult (r, apply_fun comb
   claim HinvPx1 : apply_fun inv Px1 :e G. { exact (HinvCl Px1 HPx1_G). }
   (** The rearrangement: mult(Pg1, P2) = inv(Px1) **)
   claim Hrearr : apply_fun mult (Pg1, P2) = apply_fun inv Px1.
-  { admit. }
+  {
+  (** Step 1: Define combined function h **)
+  set h := fun k:set => If_i (k :e n1) (safe_g1 k) (safe_cv k).
+  claim Hh_G : forall i:set, h i :e G.
+  { let i. apply (xm (i :e n1)).
+    - assume Hi. claim Hq : h i = safe_g1 i. { exact (If_i_1 (i :e n1) (safe_g1 i) (safe_cv i) Hi). }
+      rewrite Hq. exact (Hsafe_g1_G i).
+    - assume Hni. claim Hq : h i = safe_cv i. { exact (If_i_0 (i :e n1) (safe_g1 i) (safe_cv i) Hni). }
+      rewrite Hq. exact (Hsafe_G i). }
+  (** Step 2: mult(Pg1, P2) = prod(h, N) **)
+  claim Hn1i_not_in_n1 : forall i:set, nat_p i -> ~(add_nat n1 i :e n1).
+  { let i. assume Hi_nat Habs.
+    claim Hsub : n1 c= add_nat n1 i. { exact (add_nat_Subq_R' n1 (omega_nat_p n1 Hn1) i Hi_nat). }
+    exact (In_irref (add_nat n1 i) (Hsub (add_nat n1 i) Habs)). }
+  claim Hprod_h_n1 : nat_primrec e (fun i r => apply_fun mult (r, h i)) n1 =
+    nat_primrec e (fun i r => apply_fun mult (r, safe_g1 i)) n1.
+  { apply (nat_primrec_ext e (fun i r => apply_fun mult (r, h i)) (fun i r => apply_fun mult (r, safe_g1 i)) n1 Hn1).
+    let i r. assume Hi.
+    prove apply_fun mult (r, h i) = apply_fun mult (r, safe_g1 i).
+    claim Hq : h i = safe_g1 i. { exact (If_i_1 (i :e n1) (safe_g1 i) (safe_cv i) Hi). }
+    rewrite Hq. reflexivity. }
+  claim Hprod_h_tail_eq :
+    nat_primrec e (fun i r => apply_fun mult (r, h (add_nat n1 i))) m =
+    nat_primrec e (fun i r => apply_fun mult (r, safe_cv (add_nat n1 i))) m.
+  { apply (nat_primrec_ext e (fun i r => apply_fun mult (r, h (add_nat n1 i))) (fun i r => apply_fun mult (r, safe_cv (add_nat n1 i))) m Hm_omega).
+    let i r. assume Hi.
+    prove apply_fun mult (r, h (add_nat n1 i)) = apply_fun mult (r, safe_cv (add_nat n1 i)).
+    claim Hi_nat : nat_p i. { exact (omega_nat_p i (ordinal_TransSet omega omega_ordinal m Hm_omega i Hi)). }
+    claim Hni : ~(add_nat n1 i :e n1). { exact (Hn1i_not_in_n1 i Hi_nat). }
+    claim Hq : h (add_nat n1 i) = safe_cv (add_nat n1 i).
+    { exact (If_i_0 (add_nat n1 i :e n1) (safe_g1 (add_nat n1 i)) (safe_cv (add_nat n1 i)) Hni). }
+    rewrite Hq. reflexivity. }
+  claim Hconcat : nat_primrec e (fun i r => apply_fun mult (r, h i)) N =
+    apply_fun mult (
+      nat_primrec e (fun i r => apply_fun mult (r, h i)) n1,
+      nat_primrec e (fun i r => apply_fun mult (r, h (add_nat n1 i))) m).
+  { exact (nat_primrec_product_concat G mult e inv HgrpG h Hh_G n1 Hn1 m Hm_omega). }
+  claim Hprod_h_eq : nat_primrec e (fun i r => apply_fun mult (r, h i)) N =
+    apply_fun mult (Pg1, P2).
+  { rewrite Hconcat. rewrite Hprod_h_n1. rewrite Hprod_h_tail_eq. reflexivity. }
+  (** Step 3: Define pos : n2 -> N for the rearrangement **)
+  (** For j :e n2: if j is in range of sigma (matched), pos(j) = k where sigma(k)=j **)
+  (** otherwise pos(j) = n1 + inv(m, inv_enum)(j) **)
+  set matched_in_n2 := fun j:set => exists k:set, k :e n1 /\ matched k /\ sigma k = j.
+  set sigma_inv := fun j:set => Eps_i (fun k:set => k :e n1 /\ matched k /\ sigma k = j).
+  set inv_enum_inv := fun j:set => Eps_i (fun i:set => i :e m /\ inv_enum i = j).
+  set pos := fun j:set => If_i (matched_in_n2 j) (sigma_inv j) (add_nat n1 (inv_enum_inv j)).
+  (** Step 4: Verify pos properties **)
+  (** For matched j, sigma_inv gives back the k **)
+  claim Hsigma_inv_prop : forall j:set, j :e n2 -> matched_in_n2 j ->
+    sigma_inv j :e n1 /\ matched (sigma_inv j) /\ sigma (sigma_inv j) = j.
+  { let j. assume Hj Hmj. exact (Eps_i_ex (fun k:set => k :e n1 /\ matched k /\ sigma k = j) Hmj). }
+  (** For unmatched j, it must be in unmatched_set **)
+  claim Hunmatched_n2 : forall j:set, j :e n2 -> ~(matched_in_n2 j) -> j :e unmatched_set.
+  { let j. assume Hj Hnm.
+    apply (SepI n2 (fun j0:set => forall k:set, k :e n1 -> apply_fun a2 j0 <> apply_fun a1 k) j Hj).
+    let k. assume Hk.
+    assume Habs : apply_fun a2 j = apply_fun a1 k.
+    claim Hmatched_k : matched k.
+    { prove exists j0:set, j0 :e n2 /\ apply_fun a2 j0 = apply_fun a1 k.
+      witness j. apply andI. exact Hj. exact Habs. }
+    claim Hsig_j : sigma k = j.
+    { claim Hsk_n2 : sigma k :e n2. { exact (Hsigma_in k Hk Hmatched_k). }
+      claim Ha2_sk : apply_fun a2 (sigma k) = apply_fun a1 k. { exact (Hsigma_eq k Hk Hmatched_k). }
+      claim Ha2_eq : apply_fun a2 (sigma k) = apply_fun a2 j.
+      { rewrite Ha2_sk. symmetry. exact Habs. }
+      apply (xm (sigma k = j)).
+      - assume H. exact H.
+      - assume Hne.
+        claim Hcontra : apply_fun a2 (sigma k) <> apply_fun a2 j. { exact (Hinj2 (sigma k) j Hsk_n2 Hj Hne). }
+        exact (Hcontra Ha2_eq (sigma k = j)). }
+    claim Hmn2 : matched_in_n2 j.
+    { prove exists k0:set, k0 :e n1 /\ matched k0 /\ sigma k0 = j.
+      witness k. apply andI.
+      - apply andI. exact Hk. exact Hmatched_k.
+      - exact Hsig_j. }
+    exact (Hnm Hmn2). }
+  (** inv_enum_inv properties for unmatched j **)
+  claim Hinv_enum_inv_prop : forall j:set, j :e unmatched_set ->
+    inv_enum_inv j :e m /\ inv_enum (inv_enum_inv j) = j.
+  { let j. assume Hj.
+    claim Hj_n2 : j :e n2. { exact (Hunmatched_sub j Hj). }
+    apply (Hinv_surj j Hj). let i0. assume Hprop.
+    apply Hprop. assume Hi0 : i0 :e m. assume Hie : inv_enum i0 = j.
+    claim Hex : exists i:set, i :e m /\ inv_enum i = j. { witness i0. apply andI. exact Hi0. exact Hie. }
+    exact (Eps_i_ex (fun i:set => i :e m /\ inv_enum i = j) Hex). }
+  (** pos range: pos(j) :e N **)
+  claim Hpos_range : forall j:set, j :e n2 -> pos j :e N.
+  { let j. assume Hj.
+    apply (xm (matched_in_n2 j)).
+    - assume Hm.
+      claim Hposj : pos j = sigma_inv j. { exact (If_i_1 (matched_in_n2 j) (sigma_inv j) (add_nat n1 (inv_enum_inv j)) Hm). }
+      rewrite Hposj.
+      claim Hprop : sigma_inv j :e n1 /\ matched (sigma_inv j) /\ sigma (sigma_inv j) = j.
+      { exact (Hsigma_inv_prop j Hj Hm). }
+      claim Hprop_L : sigma_inv j :e n1 /\ matched (sigma_inv j).
+      { exact (andEL (sigma_inv j :e n1 /\ matched (sigma_inv j)) (sigma (sigma_inv j) = j) Hprop). }
+      claim Hk_n1 : sigma_inv j :e n1.
+      { exact (andEL (sigma_inv j :e n1) (matched (sigma_inv j)) Hprop_L). }
+      exact (Hn1_sub_N (sigma_inv j) Hk_n1).
+    - assume Hnm.
+      claim Hposj : pos j = add_nat n1 (inv_enum_inv j). { exact (If_i_0 (matched_in_n2 j) (sigma_inv j) (add_nat n1 (inv_enum_inv j)) Hnm). }
+      rewrite Hposj.
+      claim Hj_U : j :e unmatched_set. { exact (Hunmatched_n2 j Hj Hnm). }
+      claim Hprop : inv_enum_inv j :e m /\ inv_enum (inv_enum_inv j) = j.
+      { exact (Hinv_enum_inv_prop j Hj_U). }
+      claim Hi_m : inv_enum_inv j :e m. { exact (andEL (inv_enum_inv j :e m) (inv_enum (inv_enum_inv j) = j) Hprop). }
+      claim Hi_nat : nat_p (inv_enum_inv j). { exact (omega_nat_p (inv_enum_inv j) (ordinal_TransSet omega omega_ordinal m Hm_omega (inv_enum_inv j) Hi_m)). }
+      claim Hsi : ordsucc (inv_enum_inv j) c= m. { exact (ordinal_ordsucc_In_Subq m Hm_ord (inv_enum_inv j) Hi_m). }
+      claim H1 : add_nat n1 (ordsucc (inv_enum_inv j)) c= N.
+      { exact (add_nat_Subq_L n1 (omega_nat_p n1 Hn1) (ordsucc (inv_enum_inv j)) (nat_ordsucc (inv_enum_inv j) Hi_nat) m Hnatm Hsi). }
+      claim H2 : add_nat n1 (ordsucc (inv_enum_inv j)) = ordsucc (add_nat n1 (inv_enum_inv j)).
+      { exact (add_nat_SR n1 (inv_enum_inv j) Hi_nat). }
+      claim H3 : ordsucc (add_nat n1 (inv_enum_inv j)) c= N. { rewrite <- H2. exact H1. }
+      exact (H3 (add_nat n1 (inv_enum_inv j)) (ordsuccI2 (add_nat n1 (inv_enum_inv j)))). }
+  (** h(pos(j)) = inv(x2(j)) for j :e n2 **)
+  claim Hh_pos : forall j:set, j :e n2 -> h (pos j) = apply_fun inv (apply_fun x2 j).
+  { let j. assume Hj.
+    apply (xm (matched_in_n2 j)).
+    - assume Hm.
+      claim Hposj : pos j = sigma_inv j. { exact (If_i_1 (matched_in_n2 j) (sigma_inv j) (add_nat n1 (inv_enum_inv j)) Hm). }
+      rewrite Hposj.
+      claim Hprop : sigma_inv j :e n1 /\ matched (sigma_inv j) /\ sigma (sigma_inv j) = j.
+      { exact (Hsigma_inv_prop j Hj Hm). }
+      set k := sigma_inv j.
+      claim Hprop_L : k :e n1 /\ matched k.
+      { exact (andEL (k :e n1 /\ matched k) (sigma k = j) Hprop). }
+      claim Hk_n1 : k :e n1. { exact (andEL (k :e n1) (matched k) Hprop_L). }
+      claim Hmatched_k : matched k. { exact (andER (k :e n1) (matched k) Hprop_L). }
+      claim Hsig_eq : sigma k = j.
+      { exact (andER (k :e n1 /\ matched k) (sigma k = j) Hprop). }
+      (** h(k) = safe_g1(k) since k :e n1 **)
+      claim Hh_k : h k = safe_g1 k. { exact (If_i_1 (k :e n1) (safe_g1 k) (safe_cv k) Hk_n1). }
+      (** safe_g1(k) = inv(x2(sigma(k))) since matched **)
+      claim Hsg1_k : safe_g1 k = If_i (matched k) (apply_fun inv (apply_fun x2 (sigma k))) e.
+      { exact (If_i_1 (k :e n1) (If_i (matched k) (apply_fun inv (apply_fun x2 (sigma k))) e) e Hk_n1). }
+      claim Hsg1_m : safe_g1 k = apply_fun inv (apply_fun x2 (sigma k)).
+      { rewrite Hsg1_k. exact (If_i_1 (matched k) (apply_fun inv (apply_fun x2 (sigma k))) e Hmatched_k). }
+      rewrite Hh_k. rewrite Hsg1_m. rewrite Hsig_eq. reflexivity.
+    - assume Hnm.
+      claim Hposj : pos j = add_nat n1 (inv_enum_inv j). { exact (If_i_0 (matched_in_n2 j) (sigma_inv j) (add_nat n1 (inv_enum_inv j)) Hnm). }
+      rewrite Hposj.
+      claim Hj_U : j :e unmatched_set. { exact (Hunmatched_n2 j Hj Hnm). }
+      claim Hprop : inv_enum_inv j :e m /\ inv_enum (inv_enum_inv j) = j.
+      { exact (Hinv_enum_inv_prop j Hj_U). }
+      claim Hi_m : inv_enum_inv j :e m.
+      { exact (andEL (inv_enum_inv j :e m) (inv_enum (inv_enum_inv j) = j) Hprop). }
+      claim Hinv_eq : inv_enum (inv_enum_inv j) = j.
+      { exact (andER (inv_enum_inv j :e m) (inv_enum (inv_enum_inv j) = j) Hprop). }
+      set ii := inv_enum_inv j.
+      claim Hii_nat : nat_p ii. { exact (omega_nat_p ii (ordinal_TransSet omega omega_ordinal m Hm_omega ii Hi_m)). }
+      claim Hni : ~(add_nat n1 ii :e n1). { exact (Hn1i_not_in_n1 ii Hii_nat). }
+      (** h(n1+ii) = safe_cv(n1+ii) since n1+ii not in n1 **)
+      claim Hh_v : h (add_nat n1 ii) = safe_cv (add_nat n1 ii).
+      { exact (If_i_0 (add_nat n1 ii :e n1) (safe_g1 (add_nat n1 ii)) (safe_cv (add_nat n1 ii)) Hni). }
+      (** safe_cv(n1+ii) = comb_val(n1+ii) since n1+ii :e N **)
+      claim Hni_N : add_nat n1 ii :e N.
+      { claim H : pos j :e N. { exact (Hpos_range j Hj). }
+        claim Hposj_rev : add_nat n1 ii = pos j. { symmetry. exact Hposj. }
+        exact (eq_subst_mem (add_nat n1 ii) (pos j) N Hposj_rev H). }
+      claim Hscv : safe_cv (add_nat n1 ii) = comb_val (add_nat n1 ii).
+      { exact (If_i_1 (add_nat n1 ii :e N) (comb_val (add_nat n1 ii)) e Hni_N). }
+      (** comb_val(n1+ii) = inv(x2(inv_enum(Eps_i(...)))) **)
+      claim Hcv : comb_val (add_nat n1 ii) =
+        apply_fun inv (apply_fun x2 (inv_enum (Eps_i (fun j0:set => add_nat n1 ii = add_nat n1 j0 /\ j0 :e m)))).
+      { exact (If_i_0 (add_nat n1 ii :e n1) (merged_val (add_nat n1 ii))
+          (apply_fun inv (apply_fun x2 (inv_enum (Eps_i (fun j0:set => add_nat n1 ii = add_nat n1 j0 /\ j0 :e m)))))
+          Hni). }
+      (** Eps_i selects ii itself **)
+      claim Heps_ii : Eps_i (fun j0:set => add_nat n1 ii = add_nat n1 j0 /\ j0 :e m) = ii.
+      { claim Hex : exists j0:set, add_nat n1 ii = add_nat n1 j0 /\ j0 :e m.
+        { witness ii. apply andI. reflexivity. exact Hi_m. }
+        claim Hprop2 : add_nat n1 ii = add_nat n1 (Eps_i (fun j0:set => add_nat n1 ii = add_nat n1 j0 /\ j0 :e m)) /\
+          Eps_i (fun j0:set => add_nat n1 ii = add_nat n1 j0 /\ j0 :e m) :e m.
+        { exact (Eps_i_ex (fun j0:set => add_nat n1 ii = add_nat n1 j0 /\ j0 :e m) Hex). }
+        set eps := Eps_i (fun j0:set => add_nat n1 ii = add_nat n1 j0 /\ j0 :e m).
+        claim Hadd_eq : add_nat n1 ii = add_nat n1 eps.
+        { exact (andEL (add_nat n1 ii = add_nat n1 eps) (eps :e m) Hprop2). }
+        claim Heps_m : eps :e m.
+        { exact (andER (add_nat n1 ii = add_nat n1 eps) (eps :e m) Hprop2). }
+        claim Heps_nat : nat_p eps. { exact (omega_nat_p eps (ordinal_TransSet omega omega_ordinal m Hm_omega eps Heps_m)). }
+        claim Hn1_nat : nat_p n1. { exact (omega_nat_p n1 Hn1). }
+        claim Hcom1 : add_nat ii n1 = add_nat n1 ii. { exact (add_nat_com ii Hii_nat n1 Hn1_nat). }
+        claim Hcom2 : add_nat eps n1 = add_nat n1 eps. { exact (add_nat_com eps Heps_nat n1 Hn1_nat). }
+        claim Hadd_eq2 : add_nat ii n1 = add_nat eps n1.
+        { rewrite Hcom1. rewrite Hcom2. exact Hadd_eq. }
+        claim Hresult : ii = eps. { exact (add_nat_cancel_R ii Hii_nat eps Heps_nat n1 Hn1_nat Hadd_eq2). }
+        symmetry. exact Hresult. }
+      (** Chain: h(n1+ii) = safe_cv(n1+ii) = comb_val(n1+ii) = inv(x2(inv_enum(eps))) = inv(x2(inv_enum(ii))) = inv(x2(j)) **)
+      claim Hstep1 : h (add_nat n1 ii) = comb_val (add_nat n1 ii).
+      { rewrite Hh_v. exact Hscv. }
+      claim Hstep2 : comb_val (add_nat n1 ii) = apply_fun inv (apply_fun x2 (inv_enum ii)).
+      { claim Heps_eq : inv_enum (Eps_i (fun j0:set => add_nat n1 ii = add_nat n1 j0 /\ j0 :e m)) = inv_enum ii.
+        { rewrite Heps_ii. reflexivity. }
+        rewrite Hcv. rewrite Heps_eq. reflexivity. }
+      claim Hstep3 : apply_fun inv (apply_fun x2 (inv_enum ii)) = apply_fun inv (apply_fun x2 j).
+      { rewrite Hinv_eq. reflexivity. }
+      rewrite Hstep1. rewrite Hstep2. exact Hstep3. }
+  (** pos injectivity **)
+  claim Hpos_inj : forall j1 j2:set, j1 :e n2 -> j2 :e n2 -> j1 <> j2 -> pos j1 <> pos j2.
+  { let j1 j2. assume Hj1 Hj2 Hne.
+    assume Habs : pos j1 = pos j2.
+    (** Case analysis on matched_in_n2 for j1 and j2 **)
+    apply (xm (matched_in_n2 j1)).
+    - assume Hm1.
+      claim Hp1 : pos j1 = sigma_inv j1. { exact (If_i_1 (matched_in_n2 j1) (sigma_inv j1) (add_nat n1 (inv_enum_inv j1)) Hm1). }
+      claim Hprop1 : sigma_inv j1 :e n1 /\ matched (sigma_inv j1) /\ sigma (sigma_inv j1) = j1.
+      { exact (Hsigma_inv_prop j1 Hj1 Hm1). }
+      claim Hk1_n1 : sigma_inv j1 :e n1.
+      { exact (andEL (sigma_inv j1 :e n1) (matched (sigma_inv j1))
+          (andEL (sigma_inv j1 :e n1 /\ matched (sigma_inv j1)) (sigma (sigma_inv j1) = j1) Hprop1)). }
+      apply (xm (matched_in_n2 j2)).
+      + assume Hm2.
+        claim Hp2 : pos j2 = sigma_inv j2. { exact (If_i_1 (matched_in_n2 j2) (sigma_inv j2) (add_nat n1 (inv_enum_inv j2)) Hm2). }
+        claim Hprop2 : sigma_inv j2 :e n1 /\ matched (sigma_inv j2) /\ sigma (sigma_inv j2) = j2.
+        { exact (Hsigma_inv_prop j2 Hj2 Hm2). }
+        claim Hsig_j1 : sigma (sigma_inv j1) = j1.
+        { exact (andER (sigma_inv j1 :e n1 /\ matched (sigma_inv j1)) (sigma (sigma_inv j1) = j1) Hprop1). }
+        claim Hsig_j2 : sigma (sigma_inv j2) = j2.
+        { exact (andER (sigma_inv j2 :e n1 /\ matched (sigma_inv j2)) (sigma (sigma_inv j2) = j2) Hprop2). }
+        claim Hk_eq : sigma_inv j1 = sigma_inv j2.
+        { claim H1 : sigma_inv j1 = pos j1. { symmetry. exact Hp1. }
+          claim H2 : pos j2 = sigma_inv j2. { exact Hp2. }
+          exact (eq_i_tra (sigma_inv j1) (pos j1) (sigma_inv j2)
+            H1 (eq_i_tra (pos j1) (pos j2) (sigma_inv j2) Habs H2)). }
+        claim Hj_eq : j1 = j2. { rewrite <- Hsig_j1. rewrite <- Hsig_j2. rewrite Hk_eq. reflexivity. }
+        exact (Hne Hj_eq).
+      + assume Hnm2.
+        (** j1 matched, j2 unmatched: pos j1 in n1 but pos j2 >= n1, contradiction **)
+        claim Hp2 : pos j2 = add_nat n1 (inv_enum_inv j2). { exact (If_i_0 (matched_in_n2 j2) (sigma_inv j2) (add_nat n1 (inv_enum_inv j2)) Hnm2). }
+        claim Hj2_U : j2 :e unmatched_set. { exact (Hunmatched_n2 j2 Hj2 Hnm2). }
+        claim Hprop2 : inv_enum_inv j2 :e m /\ inv_enum (inv_enum_inv j2) = j2.
+        { exact (Hinv_enum_inv_prop j2 Hj2_U). }
+        claim Hii2_nat : nat_p (inv_enum_inv j2). { exact (omega_nat_p (inv_enum_inv j2) (ordinal_TransSet omega omega_ordinal m Hm_omega (inv_enum_inv j2) (andEL (inv_enum_inv j2 :e m) (inv_enum (inv_enum_inv j2) = j2) Hprop2))). }
+        claim Hpos2_not_n1 : ~(add_nat n1 (inv_enum_inv j2) :e n1). { exact (Hn1i_not_in_n1 (inv_enum_inv j2) Hii2_nat). }
+        claim Hpos1_in_n1 : sigma_inv j1 :e n1. { exact Hk1_n1. }
+        claim Habs2 : sigma_inv j1 = add_nat n1 (inv_enum_inv j2).
+        { claim H1 : sigma_inv j1 = pos j1. { symmetry. exact Hp1. }
+          exact (eq_i_tra (sigma_inv j1) (pos j1) (add_nat n1 (inv_enum_inv j2))
+            H1 (eq_i_tra (pos j1) (pos j2) (add_nat n1 (inv_enum_inv j2)) Habs Hp2)). }
+        claim Habs3 : add_nat n1 (inv_enum_inv j2) :e n1.
+        { exact (eq_subst_mem_rev (sigma_inv j1) (add_nat n1 (inv_enum_inv j2)) n1 Habs2 Hpos1_in_n1). }
+        exact (Hpos2_not_n1 Habs3).
+    - assume Hnm1.
+      claim Hp1 : pos j1 = add_nat n1 (inv_enum_inv j1). { exact (If_i_0 (matched_in_n2 j1) (sigma_inv j1) (add_nat n1 (inv_enum_inv j1)) Hnm1). }
+      claim Hj1_U : j1 :e unmatched_set. { exact (Hunmatched_n2 j1 Hj1 Hnm1). }
+      claim Hprop1 : inv_enum_inv j1 :e m /\ inv_enum (inv_enum_inv j1) = j1.
+      { exact (Hinv_enum_inv_prop j1 Hj1_U). }
+      claim Hii1_nat : nat_p (inv_enum_inv j1). { exact (omega_nat_p (inv_enum_inv j1) (ordinal_TransSet omega omega_ordinal m Hm_omega (inv_enum_inv j1) (andEL (inv_enum_inv j1 :e m) (inv_enum (inv_enum_inv j1) = j1) Hprop1))). }
+      apply (xm (matched_in_n2 j2)).
+      + assume Hm2.
+        claim Hp2 : pos j2 = sigma_inv j2. { exact (If_i_1 (matched_in_n2 j2) (sigma_inv j2) (add_nat n1 (inv_enum_inv j2)) Hm2). }
+        claim Hprop2 : sigma_inv j2 :e n1 /\ matched (sigma_inv j2) /\ sigma (sigma_inv j2) = j2.
+        { exact (Hsigma_inv_prop j2 Hj2 Hm2). }
+        claim Hk2_n1 : sigma_inv j2 :e n1.
+        { exact (andEL (sigma_inv j2 :e n1) (matched (sigma_inv j2))
+            (andEL (sigma_inv j2 :e n1 /\ matched (sigma_inv j2)) (sigma (sigma_inv j2) = j2) Hprop2)). }
+        claim Hpos1_not_n1 : ~(add_nat n1 (inv_enum_inv j1) :e n1). { exact (Hn1i_not_in_n1 (inv_enum_inv j1) Hii1_nat). }
+        claim Habs2 : add_nat n1 (inv_enum_inv j1) = sigma_inv j2.
+        { claim H1 : add_nat n1 (inv_enum_inv j1) = pos j1. { symmetry. exact Hp1. }
+          exact (eq_i_tra (add_nat n1 (inv_enum_inv j1)) (pos j1) (sigma_inv j2)
+            H1 (eq_i_tra (pos j1) (pos j2) (sigma_inv j2) Habs Hp2)). }
+        claim Habs3 : add_nat n1 (inv_enum_inv j1) :e n1.
+        { exact (eq_subst_mem (add_nat n1 (inv_enum_inv j1)) (sigma_inv j2) n1 Habs2 Hk2_n1). }
+        exact (Hpos1_not_n1 Habs3).
+      + assume Hnm2.
+        claim Hp2 : pos j2 = add_nat n1 (inv_enum_inv j2). { exact (If_i_0 (matched_in_n2 j2) (sigma_inv j2) (add_nat n1 (inv_enum_inv j2)) Hnm2). }
+        claim Hj2_U : j2 :e unmatched_set. { exact (Hunmatched_n2 j2 Hj2 Hnm2). }
+        claim Hprop2 : inv_enum_inv j2 :e m /\ inv_enum (inv_enum_inv j2) = j2.
+        { exact (Hinv_enum_inv_prop j2 Hj2_U). }
+        claim Hii2_nat : nat_p (inv_enum_inv j2). { exact (omega_nat_p (inv_enum_inv j2) (ordinal_TransSet omega omega_ordinal m Hm_omega (inv_enum_inv j2) (andEL (inv_enum_inv j2 :e m) (inv_enum (inv_enum_inv j2) = j2) Hprop2))). }
+        claim Hadd_eq : add_nat n1 (inv_enum_inv j1) = add_nat n1 (inv_enum_inv j2).
+        { claim H1 : add_nat n1 (inv_enum_inv j1) = pos j1. { symmetry. exact Hp1. }
+          exact (eq_i_tra (add_nat n1 (inv_enum_inv j1)) (pos j1) (add_nat n1 (inv_enum_inv j2))
+            H1 (eq_i_tra (pos j1) (pos j2) (add_nat n1 (inv_enum_inv j2)) Habs Hp2)). }
+        claim Hn1_nat : nat_p n1. { exact (omega_nat_p n1 Hn1). }
+        claim Hcom1 : add_nat (inv_enum_inv j1) n1 = add_nat n1 (inv_enum_inv j1). { exact (add_nat_com (inv_enum_inv j1) Hii1_nat n1 Hn1_nat). }
+        claim Hcom2 : add_nat (inv_enum_inv j2) n1 = add_nat n1 (inv_enum_inv j2). { exact (add_nat_com (inv_enum_inv j2) Hii2_nat n1 Hn1_nat). }
+        claim Hadd_eq2 : add_nat (inv_enum_inv j1) n1 = add_nat (inv_enum_inv j2) n1.
+        { rewrite Hcom1. rewrite Hcom2. exact Hadd_eq. }
+        claim Hii_eq : inv_enum_inv j1 = inv_enum_inv j2.
+        { exact (add_nat_cancel_R (inv_enum_inv j1) Hii1_nat (inv_enum_inv j2) Hii2_nat n1 Hn1_nat Hadd_eq2). }
+        claim Hinv_j1 : inv_enum (inv_enum_inv j1) = j1.
+        { exact (andER (inv_enum_inv j1 :e m) (inv_enum (inv_enum_inv j1) = j1) Hprop1). }
+        claim Hinv_j2 : inv_enum (inv_enum_inv j2) = j2.
+        { exact (andER (inv_enum_inv j2 :e m) (inv_enum (inv_enum_inv j2) = j2) Hprop2). }
+        claim Hj_eq : j1 = j2. { rewrite <- Hinv_j1. rewrite <- Hinv_j2. rewrite Hii_eq. reflexivity. }
+        exact (Hne Hj_eq). }
+  (** Coverage: for k :e N, either exists j :e n2 with pos(j) = k, or h(k) = e **)
+  claim Hcoverage : forall k:set, k :e N -> (exists j:set, j :e n2 /\ pos j = k) \/ h k = e.
+  { let k. assume Hk.
+    apply (xm (k :e n1)).
+    - assume Hk_n1 : k :e n1.
+      claim Hh_k : h k = safe_g1 k. { exact (If_i_1 (k :e n1) (safe_g1 k) (safe_cv k) Hk_n1). }
+      apply (xm (matched k)).
+      + assume Hmk : matched k.
+        (** sigma(k) :e n2, and pos(sigma(k)) = k **)
+        claim Hsk_n2 : sigma k :e n2. { exact (Hsigma_in k Hk_n1 Hmk). }
+        claim Hmn2_sk : matched_in_n2 (sigma k).
+        { prove exists k0:set, k0 :e n1 /\ matched k0 /\ sigma k0 = sigma k.
+          witness k. apply andI.
+          - apply andI. exact Hk_n1. exact Hmk.
+          - reflexivity. }
+        claim Hpos_sk : pos (sigma k) = sigma_inv (sigma k).
+        { exact (If_i_1 (matched_in_n2 (sigma k)) (sigma_inv (sigma k)) (add_nat n1 (inv_enum_inv (sigma k))) Hmn2_sk). }
+        claim Hsinv_prop : sigma_inv (sigma k) :e n1 /\ matched (sigma_inv (sigma k)) /\ sigma (sigma_inv (sigma k)) = sigma k.
+        { exact (Hsigma_inv_prop (sigma k) Hsk_n2 Hmn2_sk). }
+        (** sigma_inv(sigma(k)) = k by injectivity **)
+        claim Hsinv_L : sigma_inv (sigma k) :e n1 /\ matched (sigma_inv (sigma k)).
+        { exact (andEL (sigma_inv (sigma k) :e n1 /\ matched (sigma_inv (sigma k))) (sigma (sigma_inv (sigma k)) = sigma k) Hsinv_prop). }
+        claim Hsinv_n1 : sigma_inv (sigma k) :e n1.
+        { exact (andEL (sigma_inv (sigma k) :e n1) (matched (sigma_inv (sigma k))) Hsinv_L). }
+        claim Hsinv_matched : matched (sigma_inv (sigma k)).
+        { exact (andER (sigma_inv (sigma k) :e n1) (matched (sigma_inv (sigma k))) Hsinv_L). }
+        claim Hsig_sinv : sigma (sigma_inv (sigma k)) = sigma k.
+        { exact (andER (sigma_inv (sigma k) :e n1 /\ matched (sigma_inv (sigma k))) (sigma (sigma_inv (sigma k)) = sigma k) Hsinv_prop). }
+        (** a2(sigma(sigma_inv(sigma k))) = a1(sigma_inv(sigma k)) and a2(sigma(k)) = a1(k) **)
+        claim Ha2_sinv : apply_fun a2 (sigma (sigma_inv (sigma k))) = apply_fun a1 (sigma_inv (sigma k)).
+        { exact (Hsigma_eq (sigma_inv (sigma k)) Hsinv_n1 Hsinv_matched). }
+        claim Ha2_k : apply_fun a2 (sigma k) = apply_fun a1 k.
+        { exact (Hsigma_eq k Hk_n1 Hmk). }
+        claim Ha1_eq : apply_fun a1 (sigma_inv (sigma k)) = apply_fun a1 k.
+        { rewrite <- Ha2_sinv. rewrite Hsig_sinv. exact Ha2_k. }
+        claim Hsinv_eq_k : sigma_inv (sigma k) = k.
+        { apply dneg. assume Hne.
+          claim Hcontra : apply_fun a1 (sigma_inv (sigma k)) <> apply_fun a1 k.
+          { exact (Hinj1 (sigma_inv (sigma k)) k Hsinv_n1 Hk_n1 Hne). }
+          exact (Hcontra Ha1_eq). }
+        apply orIL. witness (sigma k). apply andI. exact Hsk_n2.
+        rewrite Hpos_sk. exact Hsinv_eq_k.
+      + assume Hnmk : ~(matched k).
+        (** h(k) = safe_g1(k) = e **)
+        apply orIR. rewrite Hh_k.
+        claim Hsg1_k : safe_g1 k = If_i (matched k) (apply_fun inv (apply_fun x2 (sigma k))) e.
+        { exact (If_i_1 (k :e n1) (If_i (matched k) (apply_fun inv (apply_fun x2 (sigma k))) e) e Hk_n1). }
+        rewrite Hsg1_k.
+        exact (If_i_0 (matched k) (apply_fun inv (apply_fun x2 (sigma k))) e Hnmk).
+    - assume Hk_not_n1 : ~(k :e n1).
+      (** k = n1 + i for some i :e m **)
+      claim Hdecomp : exists i:set, i :e m /\ k = add_nat n1 i. { exact (Hdecomp k Hk Hk_not_n1). }
+      apply Hdecomp. let i0. assume Hprop.
+      apply Hprop. assume Hi0_m : i0 :e m. assume Hk_eq : k = add_nat n1 i0.
+      (** inv_enum(i0) :e unmatched_set c= n2 **)
+      claim Hinv_n2 : inv_enum i0 :e n2. { exact (Hinv_in_n2 i0 Hi0_m). }
+      claim Hinv_U : inv_enum i0 :e unmatched_set. { exact (Hinv_in_U i0 Hi0_m). }
+      claim Hnm_j : ~(matched_in_n2 (inv_enum i0)).
+      { assume Habs. apply Habs. let k0. assume Hk0prop. apply Hk0prop.
+        assume Hk0_left : k0 :e n1 /\ matched k0. assume Hsig_eq : sigma k0 = inv_enum i0.
+        claim Hk0_n1 : k0 :e n1. { exact (andEL (k0 :e n1) (matched k0) Hk0_left). }
+        claim Hmk0 : matched k0. { exact (andER (k0 :e n1) (matched k0) Hk0_left). }
+        claim Ha2_eq : apply_fun a2 (sigma k0) = apply_fun a1 k0. { exact (Hsigma_eq k0 Hk0_n1 Hmk0). }
+        claim Ha2_inv : apply_fun a2 (inv_enum i0) = apply_fun a1 k0. { rewrite <- Hsig_eq. exact Ha2_eq. }
+        claim Hunm : forall kk:set, kk :e n1 -> apply_fun a2 (inv_enum i0) <> apply_fun a1 kk.
+        { exact (Hinv_unmatched i0 Hi0_m). }
+        exact (Hunm k0 Hk0_n1 Ha2_inv). }
+      claim Hpos_inv : pos (inv_enum i0) = add_nat n1 (inv_enum_inv (inv_enum i0)).
+      { exact (If_i_0 (matched_in_n2 (inv_enum i0)) (sigma_inv (inv_enum i0)) (add_nat n1 (inv_enum_inv (inv_enum i0))) Hnm_j). }
+      (** inv_enum_inv(inv_enum(i0)) = i0 **)
+      claim Hiei_prop : inv_enum_inv (inv_enum i0) :e m /\ inv_enum (inv_enum_inv (inv_enum i0)) = inv_enum i0.
+      { exact (Hinv_enum_inv_prop (inv_enum i0) Hinv_U). }
+      claim Hiei_m : inv_enum_inv (inv_enum i0) :e m.
+      { exact (andEL (inv_enum_inv (inv_enum i0) :e m) (inv_enum (inv_enum_inv (inv_enum i0)) = inv_enum i0) Hiei_prop). }
+      claim Hinv_eq2 : inv_enum (inv_enum_inv (inv_enum i0)) = inv_enum i0.
+      { exact (andER (inv_enum_inv (inv_enum i0) :e m) (inv_enum (inv_enum_inv (inv_enum i0)) = inv_enum i0) Hiei_prop). }
+      (** From inv_enum(inv_enum_inv(inv_enum(i0))) = inv_enum(i0), by injectivity, inv_enum_inv(inv_enum(i0)) = i0 **)
+      claim Hiei_eq : inv_enum_inv (inv_enum i0) = i0.
+      { exact (Hinv_inj (inv_enum_inv (inv_enum i0)) Hiei_m i0 Hi0_m Hinv_eq2). }
+      claim Hpos_k : pos (inv_enum i0) = add_nat n1 i0.
+      { rewrite Hpos_inv. rewrite Hiei_eq. reflexivity. }
+      apply orIL. witness (inv_enum i0). apply andI. exact Hinv_n2.
+      rewrite Hpos_k. symmetry. exact Hk_eq. }
+  (** Step 5: Apply abelian_product_identity_gaps **)
+  claim Hrearr_eq : nat_primrec e (fun i r => apply_fun mult (r, h i)) N =
+    nat_primrec e (fun i r => apply_fun mult (r, h (pos i))) n2.
+  { exact (abelian_product_identity_gaps G mult e inv HgrpG HcommG h Hh_G N n2 HN_omega Hn2 pos Hpos_range Hpos_inj Hcoverage). }
+  (** Convert h(pos(j)) product to inv(x2(j)) product **)
+  claim Hprod_conv :
+    nat_primrec e (fun i r => apply_fun mult (r, h (pos i))) n2 =
+    nat_primrec e (fun i r => apply_fun mult (r, apply_fun inv (apply_fun x2 i))) n2.
+  { apply (nat_primrec_ext e (fun i r => apply_fun mult (r, h (pos i))) (fun i r => apply_fun mult (r, apply_fun inv (apply_fun x2 i))) n2 Hn2).
+    let i r. assume Hi.
+    claim Hhp : h (pos i) = apply_fun inv (apply_fun x2 i). { exact (Hh_pos i Hi). }
+    prove apply_fun mult (r, h (pos i)) = apply_fun mult (r, apply_fun inv (apply_fun x2 i)).
+    rewrite Hhp. reflexivity. }
+  (** prod(inv(x2), n2) = inv(prod(x2, n2)) **)
+  set safe_x2 := fun i:set => If_i (i :e n2) (apply_fun x2 i) e.
+  claim Hsafe_x2_G : forall i:set, safe_x2 i :e G.
+  { let i. apply (xm (i :e n2)).
+    - assume Hi. claim H : safe_x2 i = apply_fun x2 i. { exact (If_i_1 (i :e n2) (apply_fun x2 i) e Hi). }
+      rewrite H. exact (Hsub_in_G (apply_fun a2 i) (Ha2 i Hi) (apply_fun x2 i) (Hxfam2 i Hi)).
+    - assume Hni. claim H : safe_x2 i = e. { exact (If_i_0 (i :e n2) (apply_fun x2 i) e Hni). }
+      rewrite H. exact HeG. }
+  claim Hsafe_x2_eq : forall i:set, i :e n2 -> safe_x2 i = apply_fun x2 i.
+  { let i. assume Hi. exact (If_i_1 (i :e n2) (apply_fun x2 i) e Hi). }
+  claim Hprod_safe_x2 :
+    nat_primrec e (fun i r => apply_fun mult (r, safe_x2 i)) n2 =
+    nat_primrec e (fun i r => apply_fun mult (r, apply_fun x2 i)) n2.
+  { apply (nat_primrec_ext e (fun i r => apply_fun mult (r, safe_x2 i)) (fun i r => apply_fun mult (r, apply_fun x2 i)) n2 Hn2).
+    let i r. assume Hi.
+    claim Hsx : safe_x2 i = apply_fun x2 i. { exact (Hsafe_x2_eq i Hi). }
+    prove apply_fun mult (r, safe_x2 i) = apply_fun mult (r, apply_fun x2 i).
+    rewrite Hsx. reflexivity. }
+  claim Hprod_safe_inv_x2 :
+    nat_primrec e (fun i r => apply_fun mult (r, apply_fun inv (safe_x2 i))) n2 =
+    nat_primrec e (fun i r => apply_fun mult (r, apply_fun inv (apply_fun x2 i))) n2.
+  { apply (nat_primrec_ext e (fun i r => apply_fun mult (r, apply_fun inv (safe_x2 i))) (fun i r => apply_fun mult (r, apply_fun inv (apply_fun x2 i))) n2 Hn2).
+    let i r. assume Hi.
+    claim Hsx : safe_x2 i = apply_fun x2 i. { exact (Hsafe_x2_eq i Hi). }
+    prove apply_fun mult (r, apply_fun inv (safe_x2 i)) = apply_fun mult (r, apply_fun inv (apply_fun x2 i)).
+    rewrite Hsx. reflexivity. }
+  claim Hinv_dist_safe :
+    apply_fun inv (nat_primrec e (fun i r => apply_fun mult (r, safe_x2 i)) n2) =
+    nat_primrec e (fun i r => apply_fun mult (r, apply_fun inv (safe_x2 i))) n2.
+  { exact (nat_primrec_abelian_inv_distribute G mult e inv HgrpG HcommG safe_x2 Hsafe_x2_G n2 Hn2). }
+  claim Hinv_dist :
+    nat_primrec e (fun i r => apply_fun mult (r, apply_fun inv (apply_fun x2 i))) n2 =
+    apply_fun inv (nat_primrec e (fun i r => apply_fun mult (r, apply_fun x2 i)) n2).
+  { rewrite <- Hprod_safe_inv_x2. rewrite <- Hinv_dist_safe. rewrite Hprod_safe_x2. reflexivity. }
+  (** inv(Px2) = inv(Px1) by Hprodeq **)
+  claim Hprodeq_inv : apply_fun inv Px2 = apply_fun inv Px1.
+  { claim H : Px1 = Px2. { exact Hprodeq. }
+    rewrite <- H. reflexivity. }
+  (** Chain everything **)
+  claim Hchain : apply_fun mult (Pg1, P2) = apply_fun inv Px1.
+  { rewrite <- Hprod_h_eq. rewrite Hrearr_eq. rewrite Hprod_conv. rewrite Hinv_dist. exact Hprodeq_inv. }
+  exact Hchain.
+  }
   (** Combine: P = mult(Px1, mult(Pg1, P2)) = mult(Px1, inv(Px1)) = e **)
   claim HP1_eq2 :
     nat_primrec e (fun i r => apply_fun mult (r, safe_cv i)) n1 = apply_fun mult (Px1, Pg1).
@@ -159501,7 +159927,7 @@ apply and3I.
     - exact Hk.
     - exact (eq_i_tra (apply_fun a1 k) (apply_fun a2 j) alpha (eq_symm (apply_fun a2 j) (apply_fun a1 k) Heq) Ha2j). }
   exact (Hunmatched_x2_e j Hj_unmatched).
-Admitted.
+Qed.
 
 (** Helper: existence of extension homomorphism for direct sum (admitted) **)
 Lemma direct_sum_hom_existence :
