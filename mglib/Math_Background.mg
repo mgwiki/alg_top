@@ -249631,6 +249631,53 @@ claim Hpi1Vtriv :
     HscV
     HaV).
 }
+claim HfclsLoopAt : loop_at X Tx a fcls.
+{
+  exact (loop_space_has_loop_at
+    X
+    Tx
+    a
+    fcls
+    HfclsLoop).
+}
+claim HfclsCont :
+  continuous_map unit_interval unit_interval_topology X Tx fcls.
+{
+  exact (loop_at_continuous
+    X
+    Tx
+    a
+    fcls
+    HfclsLoopAt).
+}
+claim Hfcls0 : apply_fun fcls 0 = a.
+{
+  exact (loop_at_at_zero
+    X
+    Tx
+    a
+    fcls
+    HfclsLoopAt).
+}
+claim Hfcls1 : apply_fun fcls 1 = a.
+{
+  exact (loop_at_at_one
+    X
+    Tx
+    a
+    fcls
+    HfclsLoopAt).
+}
+claim HfclsFun : function_on fcls unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    fcls
+    HfclsCont).
+}
 (** TODO Bob: bridge from nontrivial loop representative to edge-crossing normal form.
     Needed dependency: S63-style alternating decomposition theorem specialized to
     U∩V=A∪B (A,B disjoint path-connected pieces), then reduction to powers of [alpha.beta]. **)
