@@ -167268,62 +167268,223 @@ apply iffI.
         apply_fun h' (apply_fun basis alpha) = apply_fun ys alpha ->
         forall g:set, g :e (apply_fun Gfam alpha) -> apply_fun h' g = apply_fun halpha g)
       Hprop). }
-  (** Build the family hfam **)
-  set hfam := graph J (fun alpha:set =>
+  (** Abbreviation for the Eps_i selection **)
+  set phi_raw := fun alpha:set =>
     Eps_i (fun halpha:set =>
       group_homomorphism (apply_fun Gfam alpha) mult H multH halpha /\
-      apply_fun halpha (apply_fun basis alpha) = apply_fun ys alpha)).
-  (** Helper: apply_fun hfam alpha equals the Eps_i **)
-  claim Hhfam_eq : forall alpha:set, alpha :e J ->
-    apply_fun hfam alpha = Eps_i (fun halpha:set =>
-      group_homomorphism (apply_fun Gfam alpha) mult H multH halpha /\
       apply_fun halpha (apply_fun basis alpha) = apply_fun ys alpha).
+  (** Build hfam as graph-wrapped Eps_i for Power membership **)
+  set hfam := graph J (fun alpha:set =>
+    graph (apply_fun Gfam alpha) (fun x:set => apply_fun (phi_raw alpha) x)).
+  (** Raw Eps_i properties **)
+  claim Hhfam_raw : forall alpha:set, alpha :e J ->
+    group_homomorphism (apply_fun Gfam alpha) mult H multH (phi_raw alpha) /\
+    apply_fun (phi_raw alpha) (apply_fun basis alpha) = apply_fun ys alpha.
   { let alpha. assume Hal2 : alpha :e J.
-    claim Hhfam_def : hfam = graph J (fun alpha':set =>
-      Eps_i (fun halpha:set =>
-        group_homomorphism (apply_fun Gfam alpha') mult H multH halpha /\
-        apply_fun halpha (apply_fun basis alpha') = apply_fun ys alpha')).
-    { reflexivity. }
-    exact (apply_fun_of_graph_eq hfam J
-      (fun alpha':set =>
-        Eps_i (fun halpha:set =>
-          group_homomorphism (apply_fun Gfam alpha') mult H multH halpha /\
-          apply_fun halpha (apply_fun basis alpha') = apply_fun ys alpha'))
-      alpha Hhfam_def Hal2). }
-  (** Helper: the Eps_i gives both properties **)
-  claim Hhfam_prop : forall alpha:set, alpha :e J ->
-    group_homomorphism (apply_fun Gfam alpha) mult H multH (apply_fun hfam alpha) /\
-    apply_fun (apply_fun hfam alpha) (apply_fun basis alpha) = apply_fun ys alpha.
-  { let alpha. assume Hal2 : alpha :e J.
-    claim Heps : (fun halpha:set =>
-      group_homomorphism (apply_fun Gfam alpha) mult H multH halpha /\
-      apply_fun halpha (apply_fun basis alpha) = apply_fun ys alpha)
-      (Eps_i (fun halpha:set =>
+    exact (Eps_i_ex
+      (fun halpha:set =>
         group_homomorphism (apply_fun Gfam alpha) mult H multH halpha /\
-        apply_fun halpha (apply_fun basis alpha) = apply_fun ys alpha)).
-    { exact (Eps_i_ex
-        (fun halpha:set =>
-          group_homomorphism (apply_fun Gfam alpha) mult H multH halpha /\
-          apply_fun halpha (apply_fun basis alpha) = apply_fun ys alpha)
-        (Hhalpha_exists alpha Hal2)). }
-    rewrite (Hhfam_eq alpha Hal2).
-    exact Heps. }
+        apply_fun halpha (apply_fun basis alpha) = apply_fun ys alpha)
+      (Hhalpha_exists alpha Hal2)). }
+  (** Double graph evaluation **)
+  claim Hhfam_eval : forall alpha:set, alpha :e J ->
+    forall x:set, x :e apply_fun Gfam alpha ->
+      apply_fun (apply_fun hfam alpha) x = apply_fun (phi_raw alpha) x.
+  { let alpha. assume Hal2 : alpha :e J.
+    let x. assume Hx : x :e apply_fun Gfam alpha.
+    claim Hhfam_def : hfam = graph J (fun alpha':set =>
+      graph (apply_fun Gfam alpha') (fun z:set => apply_fun (phi_raw alpha') z)).
+    { reflexivity. }
+    claim Houter : apply_fun hfam alpha =
+      graph (apply_fun Gfam alpha) (fun z:set => apply_fun (phi_raw alpha) z).
+    { exact (apply_fun_of_graph_eq hfam J
+        (fun alpha':set => graph (apply_fun Gfam alpha') (fun z:set => apply_fun (phi_raw alpha') z))
+        alpha Hhfam_def Hal2). }
+    rewrite Houter.
+    exact (apply_fun_graph (apply_fun Gfam alpha)
+      (fun z:set => apply_fun (phi_raw alpha) z) x Hx). }
+  (** Subgroup inclusion **)
+  claim HGfam_sub_G : forall alpha:set, alpha :e J -> apply_fun Gfam alpha c= G.
+  { let alpha. assume Hal2 : alpha :e J.
+    exact (andEL
+      (apply_fun Gfam alpha c= G)
+      (e :e apply_fun Gfam alpha)
+      (andEL
+        (apply_fun Gfam alpha c= G /\ e :e apply_fun Gfam alpha)
+        (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+          apply_fun mult (x, y) :e apply_fun Gfam alpha)
+        (andEL
+          ((apply_fun Gfam alpha c= G /\ e :e apply_fun Gfam alpha) /\
+           (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+             apply_fun mult (x, y) :e apply_fun Gfam alpha))
+          (forall x:set, x :e apply_fun Gfam alpha -> apply_fun inv x :e apply_fun Gfam alpha)
+          (Hsub_alpha alpha Hal2)))). }
+  (** Basis element is in Gfam **)
+  claim Hba_in_Gfam : forall alpha:set, alpha :e J ->
+    apply_fun basis alpha :e apply_fun Gfam alpha.
+  { let alpha. assume Hal2 : alpha :e J.
+    claim HGfam_def : Gfam = graph J (fun alpha':set =>
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun basis alpha') n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun basis alpha')) (ordsucc m)))}).
+    { reflexivity. }
+    claim HGfam_val : apply_fun Gfam alpha =
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun basis alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun basis alpha)) (ordsucc m)))}.
+    { exact (apply_fun_of_graph_eq Gfam J
+        (fun alpha':set =>
+          {g :e G | exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun basis alpha') n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun basis alpha')) (ordsucc m)))})
+        alpha HGfam_def Hal2). }
+    rewrite HGfam_val.
+    set ba := apply_fun basis alpha.
+    claim Hba_G : ba :e G.
+    { exact (Hbasis_fn alpha Hal2). }
+    apply (SepI G
+      (fun g:set => exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e ba n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv ba) (ordsucc m))))
+      ba Hba_G).
+    claim H1omega : ordsucc 0 :e omega.
+    { exact (omega_ordsucc 0 (nat_p_omega 0 nat_0)). }
+    witness (ordsucc 0).
+    apply andI.
+    - exact (Subq_omega_int (ordsucc 0) H1omega).
+    - apply orIL.
+      apply andI.
+      + exact H1omega.
+      + claim HS1 : group_power_nat mult e ba (ordsucc 0) =
+          apply_fun mult (ba, group_power_nat mult e ba 0).
+        { exact (nat_primrec_S e (fun _ r => apply_fun mult (ba, r)) 0 nat_0). }
+        claim H0e : group_power_nat mult e ba 0 = e.
+        { exact (nat_primrec_0 e (fun _ r => apply_fun mult (ba, r))). }
+        apply (and6E
+          (function_on mult (setprod G G) G)
+          (function_on inv G G)
+          (e :e G)
+          (forall u v w:set, u :e G -> v :e G -> w :e G ->
+            apply_fun mult (apply_fun mult (u, v), w) = apply_fun mult (u, apply_fun mult (v, w)))
+          (forall u:set, u :e G -> apply_fun mult (e, u) = u /\ apply_fun mult (u, e) = u)
+          (forall u:set, u :e G ->
+            apply_fun mult (u, apply_fun inv u) = e /\ apply_fun mult (apply_fun inv u, u) = e)
+          HgrpG).
+        assume HmultFn HinvFn HeG Hassoc Hid HinvLaw.
+        claim Hright_id : apply_fun mult (ba, e) = ba.
+        { exact (andER (apply_fun mult (e, ba) = ba) (apply_fun mult (ba, e) = ba) (Hid ba Hba_G)). }
+        claim Hpow1 : group_power_nat mult e ba (ordsucc 0) = ba.
+        { claim Hstep : group_power_nat mult e ba (ordsucc 0) = apply_fun mult (ba, e).
+          { claim Hstep2 : apply_fun mult (ba, group_power_nat mult e ba 0) = apply_fun mult (ba, e).
+            { rewrite H0e. reflexivity. }
+            exact (eq_i_tra
+              (group_power_nat mult e ba (ordsucc 0))
+              (apply_fun mult (ba, group_power_nat mult e ba 0))
+              (apply_fun mult (ba, e))
+              HS1 Hstep2). }
+          exact (eq_i_tra
+            (group_power_nat mult e ba (ordsucc 0))
+            (apply_fun mult (ba, e))
+            ba Hstep Hright_id). }
+        exact (eq_symm (group_power_nat mult e ba (ordsucc 0)) ba Hpow1). }
+  (** function_on hfam for Power membership **)
   claim Hhfam_fn : function_on hfam J (Power (setprod G H)).
-  { admit. }
+  { let alpha. assume Hal2 : alpha :e J.
+    claim Houter2 : apply_fun hfam alpha =
+      graph (apply_fun Gfam alpha) (fun z:set => apply_fun (phi_raw alpha) z).
+    { claim Hhfam_def : hfam = graph J (fun alpha':set =>
+        graph (apply_fun Gfam alpha') (fun z:set => apply_fun (phi_raw alpha') z)).
+      { reflexivity. }
+      exact (apply_fun_of_graph_eq hfam J
+        (fun alpha':set => graph (apply_fun Gfam alpha') (fun z:set => apply_fun (phi_raw alpha') z))
+        alpha Hhfam_def Hal2). }
+    claim Hfn_raw : function_on (phi_raw alpha) (apply_fun Gfam alpha) H.
+    { exact (andEL
+        (function_on (phi_raw alpha) (apply_fun Gfam alpha) H)
+        (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+          apply_fun (phi_raw alpha) (apply_fun mult (x, y)) =
+          apply_fun multH (apply_fun (phi_raw alpha) x, apply_fun (phi_raw alpha) y))
+        (andEL
+          (group_homomorphism (apply_fun Gfam alpha) mult H multH (phi_raw alpha))
+          (apply_fun (phi_raw alpha) (apply_fun basis alpha) = apply_fun ys alpha)
+          (Hhfam_raw alpha Hal2))). }
+    rewrite Houter2.
+    apply PowerI.
+    apply (Subq_tra
+      (graph (apply_fun Gfam alpha) (fun z:set => apply_fun (phi_raw alpha) z))
+      (setprod (apply_fun Gfam alpha) H)
+      (setprod G H)).
+    - apply graph_subset_setprod.
+      let z. assume Hz : z :e apply_fun Gfam alpha.
+      exact (Hfn_raw z Hz).
+    - exact (setprod_Subq (apply_fun Gfam alpha) H G H
+        (HGfam_sub_G alpha Hal2) (Subq_ref H)). }
+  (** Subgroup multiplication closure **)
+  claim HGfam_mult_cl : forall alpha:set, alpha :e J ->
+    forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+      apply_fun mult (x, y) :e apply_fun Gfam alpha.
+  { let alpha. assume Hal2 : alpha :e J.
+    exact (andER
+      (apply_fun Gfam alpha c= G /\ e :e apply_fun Gfam alpha)
+      (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+        apply_fun mult (x, y) :e apply_fun Gfam alpha)
+      (andEL
+        ((apply_fun Gfam alpha c= G /\ e :e apply_fun Gfam alpha) /\
+         (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+           apply_fun mult (x, y) :e apply_fun Gfam alpha))
+        (forall x:set, x :e apply_fun Gfam alpha -> apply_fun inv x :e apply_fun Gfam alpha)
+        (Hsub_alpha alpha Hal2))). }
+  (** group_homomorphism for wrapped hfam **)
   claim Hhfam_hom : forall alpha:set, alpha :e J ->
     group_homomorphism (apply_fun Gfam alpha) mult H multH (apply_fun hfam alpha).
   { let alpha. assume Hal2 : alpha :e J.
-    exact (andEL
-      (group_homomorphism (apply_fun Gfam alpha) mult H multH (apply_fun hfam alpha))
-      (apply_fun (apply_fun hfam alpha) (apply_fun basis alpha) = apply_fun ys alpha)
-      (Hhfam_prop alpha Hal2)). }
+    claim Hphi_hom : group_homomorphism (apply_fun Gfam alpha) mult H multH (phi_raw alpha).
+    { exact (andEL
+        (group_homomorphism (apply_fun Gfam alpha) mult H multH (phi_raw alpha))
+        (apply_fun (phi_raw alpha) (apply_fun basis alpha) = apply_fun ys alpha)
+        (Hhfam_raw alpha Hal2)). }
+    claim Hphi_fn : function_on (phi_raw alpha) (apply_fun Gfam alpha) H.
+    { exact (andEL
+        (function_on (phi_raw alpha) (apply_fun Gfam alpha) H)
+        (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+          apply_fun (phi_raw alpha) (apply_fun mult (x, y)) =
+          apply_fun multH (apply_fun (phi_raw alpha) x, apply_fun (phi_raw alpha) y))
+        Hphi_hom). }
+    claim Hphi_mult : forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+      apply_fun (phi_raw alpha) (apply_fun mult (x, y)) =
+      apply_fun multH (apply_fun (phi_raw alpha) x, apply_fun (phi_raw alpha) y).
+    { exact (andER
+        (function_on (phi_raw alpha) (apply_fun Gfam alpha) H)
+        (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+          apply_fun (phi_raw alpha) (apply_fun mult (x, y)) =
+          apply_fun multH (apply_fun (phi_raw alpha) x, apply_fun (phi_raw alpha) y))
+        Hphi_hom). }
+    apply (andI
+      (function_on (apply_fun hfam alpha) (apply_fun Gfam alpha) H)
+      (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+        apply_fun (apply_fun hfam alpha) (apply_fun mult (x, y)) =
+        apply_fun multH (apply_fun (apply_fun hfam alpha) x, apply_fun (apply_fun hfam alpha) y))).
+    - let x. assume Hx : x :e apply_fun Gfam alpha.
+      rewrite (Hhfam_eval alpha Hal2 x Hx).
+      exact (Hphi_fn x Hx).
+    - let x y. assume Hx : x :e apply_fun Gfam alpha. assume Hy : y :e apply_fun Gfam alpha.
+      rewrite (Hhfam_eval alpha Hal2 (apply_fun mult (x, y)) (HGfam_mult_cl alpha Hal2 x y Hx Hy)).
+      rewrite (Hhfam_eval alpha Hal2 x Hx).
+      rewrite (Hhfam_eval alpha Hal2 y Hy).
+      exact (Hphi_mult x y Hx Hy). }
+  (** Basis equation for wrapped hfam **)
   claim Hhfam_basis : forall alpha:set, alpha :e J ->
     apply_fun (apply_fun hfam alpha) (apply_fun basis alpha) = apply_fun ys alpha.
   { let alpha. assume Hal2 : alpha :e J.
+    rewrite (Hhfam_eval alpha Hal2 (apply_fun basis alpha) (Hba_in_Gfam alpha Hal2)).
     exact (andER
-      (group_homomorphism (apply_fun Gfam alpha) mult H multH (apply_fun hfam alpha))
-      (apply_fun (apply_fun hfam alpha) (apply_fun basis alpha) = apply_fun ys alpha)
-      (Hhfam_prop alpha Hal2)). }
+      (group_homomorphism (apply_fun Gfam alpha) mult H multH (phi_raw alpha))
+      (apply_fun (phi_raw alpha) (apply_fun basis alpha) = apply_fun ys alpha)
+      (Hhfam_raw alpha Hal2)). }
   (** Apply lemma67_1 to get h **)
   claim Hlem67_1 : exists h:set,
     group_homomorphism G mult H multH h /\
@@ -167396,80 +167557,8 @@ apply iffI.
   - (** h(basis(alpha)) = ys(alpha) **)
     let alpha. assume Hal : alpha :e J.
     (** basis(alpha) is in Gfam(alpha), so h(basis(alpha)) = hfam(alpha)(basis(alpha)) = ys(alpha) **)
-    claim Hba_in_Gfam : apply_fun basis alpha :e apply_fun Gfam alpha.
-    { claim HGfam_def : Gfam = graph J (fun alpha':set =>
-        {g :e G | exists n:set, n :e int /\
-          ((n :e omega /\ g = group_power_nat mult e (apply_fun basis alpha') n) \/
-           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
-            g = group_power_nat mult e (apply_fun inv (apply_fun basis alpha')) (ordsucc m)))}).
-      { reflexivity. }
-      claim HGfam_val : apply_fun Gfam alpha =
-        {g :e G | exists n:set, n :e int /\
-          ((n :e omega /\ g = group_power_nat mult e (apply_fun basis alpha) n) \/
-           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
-            g = group_power_nat mult e (apply_fun inv (apply_fun basis alpha)) (ordsucc m)))}.
-      { exact (apply_fun_of_graph_eq Gfam J
-          (fun alpha':set =>
-            {g :e G | exists n:set, n :e int /\
-              ((n :e omega /\ g = group_power_nat mult e (apply_fun basis alpha') n) \/
-               (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
-                g = group_power_nat mult e (apply_fun inv (apply_fun basis alpha')) (ordsucc m)))})
-          alpha HGfam_def Hal). }
-      rewrite HGfam_val.
-      set ba := apply_fun basis alpha.
-      claim Hba_G : ba :e G.
-      { exact (Hbasis_fn alpha Hal). }
-      apply (SepI G
-        (fun g:set => exists n:set, n :e int /\
-          ((n :e omega /\ g = group_power_nat mult e ba n) \/
-           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
-            g = group_power_nat mult e (apply_fun inv ba) (ordsucc m))))
-        ba Hba_G).
-      (** Show ba = ba^1, i.e. exists n=1 with the left disjunct **)
-      claim H1omega : ordsucc 0 :e omega.
-      { exact (omega_ordsucc 0 (nat_p_omega 0 nat_0)). }
-      witness (ordsucc 0).
-      apply andI.
-      - exact (Subq_omega_int (ordsucc 0) H1omega).
-      - apply orIL.
-        apply andI.
-        + exact H1omega.
-        + (** ba = group_power_nat mult e ba 1 **)
-          claim HS1 : group_power_nat mult e ba (ordsucc 0) =
-            apply_fun mult (ba, group_power_nat mult e ba 0).
-          { exact (nat_primrec_S e (fun _ r => apply_fun mult (ba, r)) 0 nat_0). }
-          claim H0e : group_power_nat mult e ba 0 = e.
-          { exact (nat_primrec_0 e (fun _ r => apply_fun mult (ba, r))). }
-          (** group_power_nat mult e ba 1 = mult(ba, e) = ba **)
-          apply (and6E
-            (function_on mult (setprod G G) G)
-            (function_on inv G G)
-            (e :e G)
-            (forall u v w:set, u :e G -> v :e G -> w :e G ->
-              apply_fun mult (apply_fun mult (u, v), w) = apply_fun mult (u, apply_fun mult (v, w)))
-            (forall u:set, u :e G -> apply_fun mult (e, u) = u /\ apply_fun mult (u, e) = u)
-            (forall u:set, u :e G ->
-              apply_fun mult (u, apply_fun inv u) = e /\ apply_fun mult (apply_fun inv u, u) = e)
-            HgrpG).
-          assume HmultFn HinvFn HeG Hassoc Hid HinvLaw.
-          claim Hright_id : apply_fun mult (ba, e) = ba.
-          { exact (andER (apply_fun mult (e, ba) = ba) (apply_fun mult (ba, e) = ba) (Hid ba Hba_G)). }
-          claim Hpow1 : group_power_nat mult e ba (ordsucc 0) = ba.
-          { claim Hstep : group_power_nat mult e ba (ordsucc 0) = apply_fun mult (ba, e).
-            { claim Hstep2 : apply_fun mult (ba, group_power_nat mult e ba 0) = apply_fun mult (ba, e).
-              { rewrite H0e. reflexivity. }
-              exact (eq_i_tra
-                (group_power_nat mult e ba (ordsucc 0))
-                (apply_fun mult (ba, group_power_nat mult e ba 0))
-                (apply_fun mult (ba, e))
-                HS1 Hstep2). }
-            exact (eq_i_tra
-              (group_power_nat mult e ba (ordsucc 0))
-              (apply_fun mult (ba, e))
-              ba Hstep Hright_id). }
-          exact (eq_symm (group_power_nat mult e ba (ordsucc 0)) ba Hpow1). }
     claim Hstep1 : apply_fun h (apply_fun basis alpha) = apply_fun (apply_fun hfam alpha) (apply_fun basis alpha).
-    { exact (Hh_ext alpha Hal (apply_fun basis alpha) Hba_in_Gfam). }
+    { exact (Hh_ext alpha Hal (apply_fun basis alpha) (Hba_in_Gfam alpha Hal)). }
     claim Hstep2 : apply_fun (apply_fun hfam alpha) (apply_fun basis alpha) = apply_fun ys alpha.
     { exact (Hhfam_basis alpha Hal). }
     exact (eq_i_tra
