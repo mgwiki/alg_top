@@ -230405,11 +230405,15 @@ claim HinterFamTA :
 		              (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) v r \/
 		              end_points_of_arc V
 		                (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) r v.
-		          {
-		            (** Remaining mixed-case endpoint-at-v obligation on V.
-		                Intended route: derive endpoint-at-v from HarcV_TA plus HvV. **)
-		            admit.
-		          }
+			          {
+			            (** Remaining mixed-case endpoint-at-v obligation on V.
+			                Intended route: derive endpoint-at-v from HarcV_TA plus HvV.
+			                Missing helper (likely sufficient):
+			                forall E Te z:set, arc E Te -> z :e E ->
+			                  (exists q:set, end_points_of_arc E Te z q \/
+			                    end_points_of_arc E Te q z). **)
+			            admit.
+			          }
 		          claim HVEpExists :
 		            exists p q:set, end_points_of_arc V
 		              (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) p q.
@@ -231613,7 +231617,10 @@ claim HcohFamTA :
 		        {
 		          (** Core remaining step:
 		              lift openness of A\\{v} from the A-subspace
-		              to an ambient-open witness in TA. **)
+		              to an ambient-open witness in TA.
+		              Practical missing bridge:
+		              if U = (TA :\\: T), then U :e subspace_topology X Tx TA
+		              directly from setminus-subspace constructor over TA. **)
 		          admit.
 		        }
 		        claim HTeqComp :
@@ -241044,13 +241051,16 @@ let A p q.
 assume HASel Hend Hep.
 (** Remaining backward S84.4 endpoint-closure gap:
     from selected-arc endpoint placement in T, derive full selected-arc subset in T. **)
-apply (xm (A c= T)).
+  apply (xm (A c= T)).
 - assume Hsub.
   exact Hsub.
 - assume Hnsub.
   claim HnoncontainedCore : False.
   {
-    (** Core unresolved backward endpoint-to-subset contradiction for selected arcs. **)
+    (** Core unresolved backward endpoint-to-subset contradiction for selected arcs.
+        Missing helper (targeted to this theorem):
+        if T,T' are trees with T c= T', A in selected arcs of T', A /c= T,
+        and endpoints of A lie in T, then contradiction (cycle forced in T'). **)
     admit.
   }
   exact (FalseE
