@@ -158547,7 +158547,65 @@ assume Hinj1 : forall i j:set, i :e n1 -> j :e n1 -> i <> j -> apply_fun a1 i <>
 assume Hinj2 : forall i j:set, i :e n2 -> j :e n2 -> i <> j -> apply_fun a2 i <> apply_fun a2 j.
 assume Hprodeq : nat_primrec e (fun i r => apply_fun mult (r, apply_fun x1 i)) n1 =
     nat_primrec e (fun i r => apply_fun mult (r, apply_fun x2 i)) n2.
-admit.
+(** Extract group structure **)
+claim HgrpG : group_structure G mult e inv.
+{ exact (andEL (group_structure G mult e inv)
+    (forall x y:set, x :e G -> y :e G -> apply_fun mult (x, y) = apply_fun mult (y, x)) HabG). }
+claim HcommG : forall x y:set, x :e G -> y :e G -> apply_fun mult (x, y) = apply_fun mult (y, x).
+{ exact (andER (group_structure G mult e inv)
+    (forall x y:set, x :e G -> y :e G -> apply_fun mult (x, y) = apply_fun mult (y, x)) HabG). }
+apply (and6E
+  (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  HgrpG).
+assume HmultFn HinvFn HeG Hassoc Hid Hinv.
+claim HmultCl : forall a b:set, a :e G -> b :e G -> apply_fun mult (a, b) :e G.
+{ let a b. assume Ha Hb.
+  exact (HmultFn (a, b) (tuple_2_setprod_by_pair_Sigma G G a b Ha Hb)). }
+claim HinvCl : forall a:set, a :e G -> apply_fun inv a :e G.
+{ let a. assume Ha. exact (HinvFn a Ha). }
+claim HrightId : forall x:set, x :e G -> apply_fun mult (x, e) = x.
+{ let x. assume Hx. exact (andER (apply_fun mult (e, x) = x) (apply_fun mult (x, e) = x) (Hid x Hx)). }
+claim HrightInv : forall x:set, x :e G -> apply_fun mult (x, apply_fun inv x) = e.
+{ let x. assume Hx. exact (andEL (apply_fun mult (x, apply_fun inv x) = e) (apply_fun mult (apply_fun inv x, x) = e) (Hinv x Hx)). }
+claim Hsub_in_G : forall al:set, al :e J -> forall a:set,
+  a :e apply_fun Gfam al -> a :e G.
+{ let al. assume Hal. let a. assume Ha.
+  claim Hsub : subgroup_of (apply_fun Gfam al) G mult e inv.
+  { exact (HsubGfam al Hal). }
+  apply Hsub. assume Hsub_ABC _.
+  apply Hsub_ABC. assume Hsub_AB _.
+  apply Hsub_AB. assume Hsubset _. exact (Hsubset a Ha). }
+claim He_in_sub : forall al:set, al :e J -> e :e apply_fun Gfam al.
+{ let al. assume Hal.
+  claim Hsub : subgroup_of (apply_fun Gfam al) G mult e inv.
+  { exact (HsubGfam al Hal). }
+  apply Hsub. assume Hsub_ABC _.
+  apply Hsub_ABC. assume Hsub_AB _.
+  apply Hsub_AB. assume _ He_sub. exact He_sub. }
+claim Hsub_mult : forall al:set, al :e J -> forall a b:set,
+  a :e apply_fun Gfam al -> b :e apply_fun Gfam al ->
+  apply_fun mult (a, b) :e apply_fun Gfam al.
+{ let al. assume Hal. let a b. assume Ha Hb.
+  claim Hsub : subgroup_of (apply_fun Gfam al) G mult e inv.
+  { exact (HsubGfam al Hal). }
+  apply Hsub. assume Hsub_ABC _.
+  apply Hsub_ABC. assume _ Hmcl. exact (Hmcl a b Ha Hb). }
+claim Hsub_inv : forall al:set, al :e J -> forall a:set,
+  a :e apply_fun Gfam al -> apply_fun inv a :e apply_fun Gfam al.
+{ let al. assume Hal. let a. assume Ha_sub.
+  claim Hsub : subgroup_of (apply_fun Gfam al) G mult e inv.
+  { exact (HsubGfam al Hal). }
+  apply Hsub. assume _ Hinv_cl. exact (Hinv_cl a Ha_sub). }
+let alpha. assume Halpha : alpha :e J.
+apply and3I.
+- admit.
+- admit.
+- admit.
 Admitted.
 
 (** Helper: existence of extension homomorphism for direct sum (admitted) **)
