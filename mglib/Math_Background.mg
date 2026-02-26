@@ -250976,8 +250976,12 @@ claim HaNotB : ~(a :e B).
   {
     exact (binintersectI A B a HaA HaB).
   }
-  rewrite Hdisj in HaAB.
-  exact (EmptyE a HaAB).
+  claim HaEmpty : a :e Empty.
+  {
+    rewrite <- Hdisj.
+    exact HaAB.
+  }
+  exact (EmptyE a HaEmpty).
 }
 claim H0NotPreB : ~(0 :e preB).
 {
@@ -250986,8 +250990,12 @@ claim H0NotPreB : ~(0 :e preB).
   {
     exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e B) 0 H0PreB).
   }
-  rewrite Hfcls0 in Hf0B.
-  exact (HaNotB Hf0B).
+  claim HaB : a :e B.
+  {
+    rewrite <- Hfcls0.
+    exact Hf0B.
+  }
+  exact (HaNotB HaB).
 }
 claim H1NotPreB : ~(1 :e preB).
 {
@@ -250996,8 +251004,12 @@ claim H1NotPreB : ~(1 :e preB).
   {
     exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e B) 1 H1PreB).
   }
-  rewrite Hfcls1 in Hf1B.
-  exact (HaNotB Hf1B).
+  claim HaB : a :e B.
+  {
+    rewrite <- Hfcls1.
+    exact Hf1B.
+  }
+  exact (HaNotB HaB).
 }
 (** TODO Bob: complete S84.6 mixed-case crossing-to-power reduction.
     The arguments now have explicit crossing witnesses tU,tV with opposite-side
