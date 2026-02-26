@@ -251375,6 +251375,158 @@ exact (lemma84_6_mixed_crossing_power_reduction_core
   HtVinU).
 Admitted.
 
+(** helper for S84.6 mixed branch:
+    if a loop representative is not entirely in U and not entirely in V,
+    extract explicit unit-interval witness parameters where it hits V and U respectively. **)
+(** Proven Bob **)
+Theorem lemma84_6_crossing_witnesses_from_not_all :
+  forall X Tx U V a fcls:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx -> X = U :\/: V ->
+  fcls :e loop_space X Tx a ->
+  ~(forall t:set, t :e unit_interval -> apply_fun fcls t :e U) ->
+  ~(forall t:set, t :e unit_interval -> apply_fun fcls t :e V) ->
+  exists tU:set, tU :e unit_interval /\
+    (apply_fun fcls tU :e V /\
+      exists tV:set, tV :e unit_interval /\ apply_fun fcls tV :e U).
+let X Tx U V a fcls.
+assume Htop HU HV Hcover HfclsLoop HnotAllU HnotAllV.
+claim HfclsLoopAt : loop_at X Tx a fcls.
+{
+  exact (loop_space_has_loop_at X Tx a fcls HfclsLoop).
+}
+claim HfclsCont : continuous_map unit_interval unit_interval_topology X Tx fcls.
+{
+  exact (loop_at_continuous X Tx a fcls HfclsLoopAt).
+}
+claim HfclsFun : function_on fcls unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    fcls
+    HfclsCont).
+}
+claim HnotAllU_wit :
+  exists tU:set, tU :e unit_interval /\ ~(apply_fun fcls tU :e U).
+{
+  apply (not_all_ex_demorgan_i
+    (fun t:set => t :e unit_interval -> apply_fun fcls t :e U)
+    HnotAllU).
+  let tU.
+  assume HtUNotImp : ~(tU :e unit_interval -> apply_fun fcls tU :e U).
+  witness tU.
+  exact (not_imp
+    (tU :e unit_interval)
+    (apply_fun fcls tU :e U)
+    HtUNotImp).
+}
+claim HnotAllV_wit :
+  exists tV:set, tV :e unit_interval /\ ~(apply_fun fcls tV :e V).
+{
+  apply (not_all_ex_demorgan_i
+    (fun t:set => t :e unit_interval -> apply_fun fcls t :e V)
+    HnotAllV).
+  let tV.
+  assume HtVNotImp : ~(tV :e unit_interval -> apply_fun fcls tV :e V).
+  witness tV.
+  exact (not_imp
+    (tV :e unit_interval)
+    (apply_fun fcls tV :e V)
+    HtVNotImp).
+}
+apply HnotAllU_wit.
+let tU.
+assume HtUPack : tU :e unit_interval /\ ~(apply_fun fcls tU :e U).
+claim HtU : tU :e unit_interval.
+{
+  exact (andEL
+    (tU :e unit_interval)
+    (~(apply_fun fcls tU :e U))
+    HtUPack).
+}
+claim HtUnotU : ~(apply_fun fcls tU :e U).
+{
+  exact (andER
+    (tU :e unit_interval)
+    (~(apply_fun fcls tU :e U))
+    HtUPack).
+}
+claim Hfcls_tU_X : apply_fun fcls tU :e X.
+{
+  exact (HfclsFun tU HtU).
+}
+claim Hfcls_tU_V : apply_fun fcls tU :e V.
+{
+  claim Hfcls_tU_UV : apply_fun fcls tU :e U :\/: V.
+  {
+    rewrite <- Hcover.
+    exact Hfcls_tU_X.
+  }
+  apply (binunionE U V (apply_fun fcls tU) Hfcls_tU_UV).
+  - assume HtUU : apply_fun fcls tU :e U.
+    exact (FalseE (HtUnotU HtUU) (apply_fun fcls tU :e V)).
+  - assume HtUV : apply_fun fcls tU :e V.
+    exact HtUV.
+}
+apply HnotAllV_wit.
+let tV.
+assume HtVPack : tV :e unit_interval /\ ~(apply_fun fcls tV :e V).
+claim HtV : tV :e unit_interval.
+{
+  exact (andEL
+    (tV :e unit_interval)
+    (~(apply_fun fcls tV :e V))
+    HtVPack).
+}
+claim HtVnotV : ~(apply_fun fcls tV :e V).
+{
+  exact (andER
+    (tV :e unit_interval)
+    (~(apply_fun fcls tV :e V))
+    HtVPack).
+}
+claim Hfcls_tV_X : apply_fun fcls tV :e X.
+{
+  exact (HfclsFun tV HtV).
+}
+claim Hfcls_tV_U : apply_fun fcls tV :e U.
+{
+  claim Hfcls_tV_UV : apply_fun fcls tV :e U :\/: V.
+  {
+    rewrite <- Hcover.
+    exact Hfcls_tV_X.
+  }
+  apply (binunionE U V (apply_fun fcls tV) Hfcls_tV_UV).
+  - assume HtVU : apply_fun fcls tV :e U.
+    exact HtVU.
+  - assume HtVV : apply_fun fcls tV :e V.
+    exact (FalseE (HtVnotV HtVV) (apply_fun fcls tV :e U)).
+}
+witness tU.
+claim HexTV : exists tV:set, tV :e unit_interval /\ apply_fun fcls tV :e U.
+{
+  witness tV.
+  exact (andI
+    (tV :e unit_interval)
+    (apply_fun fcls tV :e U)
+    HtV
+    Hfcls_tV_U).
+}
+exact (andI
+  (tU :e unit_interval)
+  (apply_fun fcls tU :e V /\
+    exists tV:set, tV :e unit_interval /\ apply_fun fcls tV :e U)
+  HtU
+  (andI
+    (apply_fun fcls tU :e V)
+    (exists tV:set, tV :e unit_interval /\ apply_fun fcls tV :e U)
+    Hfcls_tU_V
+    HexTV)).
+Qed.
+
 (** helper for S84.6 core:
     from a nontrivial loop representative under disconnected-overlap data,
     derive power-of-generator normal form. **)
@@ -252607,101 +252759,75 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun fcls t :e U)).
     (** TODO Bob:
        mixed case (not all-U and not all-V): perform crossing decomposition
        and reduce class to powers of [alpha.beta]. **)
-    claim HnotAllU_wit :
-      exists tU:set, tU :e unit_interval /\ ~(apply_fun fcls tU :e U).
+    claim HcrossWit :
+      exists tU:set, tU :e unit_interval /\
+        (apply_fun fcls tU :e V /\
+          exists tV:set, tV :e unit_interval /\ apply_fun fcls tV :e U).
     {
-      apply (not_all_ex_demorgan_i
-        (fun t:set => t :e unit_interval -> apply_fun fcls t :e U)
-        HnotAllU).
-      let tU.
-      assume HtUNotImp : ~(tU :e unit_interval -> apply_fun fcls tU :e U).
-      witness tU.
-      exact (not_imp
-        (tU :e unit_interval)
-        (apply_fun fcls tU :e U)
-        HtUNotImp).
-    }
-    claim HnotAllV_wit :
-      exists tV:set, tV :e unit_interval /\ ~(apply_fun fcls tV :e V).
-    {
-      apply (not_all_ex_demorgan_i
-        (fun t:set => t :e unit_interval -> apply_fun fcls t :e V)
+      exact (lemma84_6_crossing_witnesses_from_not_all
+        X
+        Tx
+        U
+        V
+        a
+        fcls
+        Htop
+        HU
+        HV
+        Hcover
+        HfclsLoop
+        HnotAllU
         HnotAllV).
-      let tV.
-      assume HtVNotImp : ~(tV :e unit_interval -> apply_fun fcls tV :e V).
-      witness tV.
-      exact (not_imp
-        (tV :e unit_interval)
-        (apply_fun fcls tV :e V)
-        HtVNotImp).
     }
-    apply HnotAllU_wit.
+    apply HcrossWit.
     let tU.
-    assume HtUPack : tU :e unit_interval /\ ~(apply_fun fcls tU :e U).
+    assume HtUPack : tU :e unit_interval /\
+      (apply_fun fcls tU :e V /\
+        exists tV:set, tV :e unit_interval /\ apply_fun fcls tV :e U).
     claim HtU : tU :e unit_interval.
     {
       exact (andEL
         (tU :e unit_interval)
-        (~(apply_fun fcls tU :e U))
+        (apply_fun fcls tU :e V /\
+          exists tV:set, tV :e unit_interval /\ apply_fun fcls tV :e U)
         HtUPack).
     }
-    claim HtUnotU : ~(apply_fun fcls tU :e U).
+    claim HtUPackR :
+      apply_fun fcls tU :e V /\
+      exists tV:set, tV :e unit_interval /\ apply_fun fcls tV :e U.
     {
       exact (andER
         (tU :e unit_interval)
-        (~(apply_fun fcls tU :e U))
+        (apply_fun fcls tU :e V /\
+          exists tV:set, tV :e unit_interval /\ apply_fun fcls tV :e U)
         HtUPack).
-    }
-    claim Hfcls_tU_X : apply_fun fcls tU :e X.
-    {
-      exact (HfclsFun tU HtU).
     }
     claim Hfcls_tU_V : apply_fun fcls tU :e V.
     {
-      claim Hfcls_tU_UV : apply_fun fcls tU :e U :\/: V.
-      {
-        rewrite <- Hcover.
-        exact Hfcls_tU_X.
-      }
-      apply (binunionE U V (apply_fun fcls tU) Hfcls_tU_UV).
-      - assume HtUU : apply_fun fcls tU :e U.
-        exact (FalseE (HtUnotU HtUU) (apply_fun fcls tU :e V)).
-      - assume HtUV : apply_fun fcls tU :e V.
-        exact HtUV.
+      exact (andEL
+        (apply_fun fcls tU :e V)
+        (exists tV:set, tV :e unit_interval /\ apply_fun fcls tV :e U)
+        HtUPackR).
     }
-    apply HnotAllV_wit.
+    apply (andER
+      (apply_fun fcls tU :e V)
+      (exists tV:set, tV :e unit_interval /\ apply_fun fcls tV :e U)
+      HtUPackR).
     let tV.
-    assume HtVPack : tV :e unit_interval /\ ~(apply_fun fcls tV :e V).
+    assume HtVPack : tV :e unit_interval /\ apply_fun fcls tV :e U.
     claim HtV : tV :e unit_interval.
     {
       exact (andEL
         (tV :e unit_interval)
-        (~(apply_fun fcls tV :e V))
+        (apply_fun fcls tV :e U)
         HtVPack).
-    }
-    claim HtVnotV : ~(apply_fun fcls tV :e V).
-    {
-      exact (andER
-        (tV :e unit_interval)
-        (~(apply_fun fcls tV :e V))
-        HtVPack).
-    }
-    claim Hfcls_tV_X : apply_fun fcls tV :e X.
-    {
-      exact (HfclsFun tV HtV).
     }
     claim Hfcls_tV_U : apply_fun fcls tV :e U.
     {
-      claim Hfcls_tV_UV : apply_fun fcls tV :e U :\/: V.
-      {
-        rewrite <- Hcover.
-        exact Hfcls_tV_X.
-      }
-      apply (binunionE U V (apply_fun fcls tV) Hfcls_tV_UV).
-      - assume HtVU : apply_fun fcls tV :e U.
-        exact HtVU.
-      - assume HtVV : apply_fun fcls tV :e V.
-        exact (FalseE (HtVnotV HtVV) (apply_fun fcls tV :e U)).
+      exact (andER
+        (tV :e unit_interval)
+        (apply_fun fcls tV :e U)
+        HtVPack).
     }
     exact (lemma84_6_mixed_crossing_power_form
       X
