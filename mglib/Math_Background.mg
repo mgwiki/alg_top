@@ -251049,6 +251049,84 @@ claim HpreUV_imageB_implies_preB :
     HtI
     HimgB).
 }
+claim HpreAB_to_preUV :
+  forall t:set, t :e preA :\/: preB -> t :e preU :/\: preV.
+{
+  let t.
+  assume HtAB : t :e preA :\/: preB.
+  rewrite HpreUVSplitAB.
+  exact HtAB.
+}
+claim HpreA_in_preUV :
+  forall t:set, t :e preA -> t :e preU :/\: preV.
+{
+  let t.
+  assume HtPreA.
+  exact (HpreASubPreUV t HtPreA).
+}
+claim HpreB_in_preUV :
+  forall t:set, t :e preB -> t :e preU :/\: preV.
+{
+  let t.
+  assume HtPreB.
+  exact (HpreBSubPreUV t HtPreB).
+}
+claim HpreA_in_preU :
+  forall t:set, t :e preA -> t :e preU.
+{
+  let t.
+  assume HtPreA.
+  exact (binintersectE1 preU preV t (HpreA_in_preUV t HtPreA)).
+}
+claim HpreA_in_preV :
+  forall t:set, t :e preA -> t :e preV.
+{
+  let t.
+  assume HtPreA.
+  exact (binintersectE2 preU preV t (HpreA_in_preUV t HtPreA)).
+}
+claim HpreB_in_preU :
+  forall t:set, t :e preB -> t :e preU.
+{
+  let t.
+  assume HtPreB.
+  exact (binintersectE1 preU preV t (HpreB_in_preUV t HtPreB)).
+}
+claim HpreB_in_preV :
+  forall t:set, t :e preB -> t :e preV.
+{
+  let t.
+  assume HtPreB.
+  exact (binintersectE2 preU preV t (HpreB_in_preUV t HtPreB)).
+}
+claim HpreA_imageA :
+  forall t:set, t :e preA -> apply_fun fcls t :e A.
+{
+  let t.
+  assume HtPreA.
+  exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e A) t HtPreA).
+}
+claim HpreB_imageB :
+  forall t:set, t :e preB -> apply_fun fcls t :e B.
+{
+  let t.
+  assume HtPreB.
+  exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e B) t HtPreB).
+}
+claim HpreBNoEndpoints :
+  ~(0 :e preB) /\ ~(1 :e preB).
+{
+  exact (andI
+    (~(0 :e preB))
+    (~(1 :e preB))
+    H0NotPreB
+    H1NotPreB).
+}
+claim HpreABSplitUV : preA :\/: preB = preU :/\: preV.
+{
+  symmetry.
+  exact HpreUVSplitAB.
+}
 (** TODO Bob: prove via S63-style alternating decomposition in U cap V = A union B
     with A cap B = Empty, then identify loop class as power of [alpha.beta] or inverse power.
     Current core setup complete:
@@ -251058,7 +251136,8 @@ claim HpreUV_imageB_implies_preB :
     - global preimage cover unit_interval = preU union preV,
     - lifted overlap decomposition preU cap preV = preA union preB, disjointness/classification,
     - image-side overlap classification for points in preU cap preV,
-    - explicit overlap implication lemmas (notA->B, notB->A, imageA->preA, imageB->preB).
+    - explicit overlap implication lemmas (notA->B, notB->A, imageA->preA, imageB->preB),
+    - two-way transport lemmas between preA/preB and preU cap preV and endpoint-side exclusions.
     Remaining: alternating crossing decomposition over U cap V = A union B (A cap B=Empty). **)
 admit.
 Admitted.
