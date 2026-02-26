@@ -82556,7 +82556,7 @@ exact (homotopy_lift_from_exists_witness
   e0
   F
   Hex).
- Admitted.
+Admitted.
 
 (** from S54 Lem 54.2 path homotopy preservation (line 783 in algtop.tex) **)
 (** LATEX VERSION: If F is a path homotopy, then the lift F_tilde is also a path homotopy. **)
@@ -99072,6 +99072,283 @@ Theorem thm54_6b_coset_correspondence_surjective : forall E Te B Tb p e0:set,
       {x :e E | apply_fun p x = apply_fun p e0}
       Phi.
 admit.
+Admitted.
+
+(** Infrastructure: loop characterization (forward direction) **)
+Lemma thm54_6c_loop_characterization_forward : forall E Te B Tb p e0 f:set,
+  covering_map E Te B Tb p -> e0 :e E ->
+  loop_at B Tb (apply_fun p e0) f ->
+  path_homotopy_class_loop B Tb (apply_fun p e0) f :e
+    homomorphism_image
+      (fundamental_group E Te e0)
+      (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p) ->
+  apply_fun (path_lift E Te B Tb p e0 f) 1 = e0.
+let E Te B Tb p e0 f.
+assume Hcov He0 Hloop Himg.
+set b0 := apply_fun p e0.
+claim Hcontp : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    (andEL
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+      Hcov)).
+}
+claim HimgEx :
+  exists cls:set, cls :e fundamental_group E Te e0 /\
+    path_homotopy_class_loop B Tb b0 f =
+    apply_fun (induced_homomorphism E Te e0 B Tb b0 p) cls.
+{
+  exact (iffEL
+    (path_homotopy_class_loop B Tb b0 f :e
+      homomorphism_image
+        (fundamental_group E Te e0)
+        (induced_homomorphism E Te e0 B Tb b0 p))
+    (exists cls:set, cls :e fundamental_group E Te e0 /\
+      path_homotopy_class_loop B Tb b0 f =
+      apply_fun (induced_homomorphism E Te e0 B Tb b0 p) cls)
+    (homomorphism_image_mem
+      (fundamental_group E Te e0)
+      (induced_homomorphism E Te e0 B Tb b0 p)
+      (path_homotopy_class_loop B Tb b0 f))
+    Himg).
+}
+apply HimgEx.
+let cls.
+assume HclsPack.
+claim Hcls : cls :e fundamental_group E Te e0.
+{
+  exact (andEL
+    (cls :e fundamental_group E Te e0)
+    (path_homotopy_class_loop B Tb b0 f =
+      apply_fun (induced_homomorphism E Te e0 B Tb b0 p) cls)
+    HclsPack).
+}
+claim HimgEq :
+  path_homotopy_class_loop B Tb b0 f =
+  apply_fun (induced_homomorphism E Te e0 B Tb b0 p) cls.
+{
+  exact (andER
+    (cls :e fundamental_group E Te e0)
+    (path_homotopy_class_loop B Tb b0 f =
+      apply_fun (induced_homomorphism E Te e0 B Tb b0 p) cls)
+    HclsPack).
+}
+set g := Eps_i (fun h:set => h :e cls).
+claim HgLoop : g :e loop_space E Te e0.
+{
+  exact (eps_of_fundamental_group_member_in_loop_space
+    E Te e0 cls Hcls).
+}
+claim HgLoopAt : loop_at E Te e0 g.
+{
+  exact (loop_space_has_loop_at E Te e0 g HgLoop).
+}
+claim HgCont : continuous_map unit_interval unit_interval_topology E Te g.
+{
+  exact (loop_at_continuous E Te e0 g HgLoopAt).
+}
+claim Hg0 : apply_fun g 0 = e0.
+{
+  exact (loop_at_at_zero E Te e0 g HgLoopAt).
+}
+claim Hg1 : apply_fun g 1 = e0.
+{
+  exact (loop_at_at_one E Te e0 g HgLoopAt).
+}
+set pg := compose_fun unit_interval g p.
+claim Hb0 : apply_fun p e0 = b0.
+{ reflexivity. }
+claim HpgLoop : pg :e loop_space B Tb b0.
+{
+  exact (loop_space_postcompose
+    E Te e0 B Tb b0 g p
+    HgLoop Hcontp Hb0).
+}
+claim Hind :
+  apply_fun (induced_homomorphism E Te e0 B Tb b0 p) cls =
+  path_homotopy_class_loop B Tb b0 pg.
+{
+  rewrite (induced_homomorphism_apply
+    E Te e0 B Tb b0 p cls Hcls).
+  reflexivity.
+}
+claim HclassEq :
+  path_homotopy_class_loop B Tb b0 f =
+  path_homotopy_class_loop B Tb b0 pg.
+{
+  rewrite HimgEq.
+  exact Hind.
+}
+claim HpgInOwn :
+  pg :e path_homotopy_class_loop B Tb b0 pg.
+{
+  exact (loop_in_own_path_homotopy_class B Tb b0 pg HpgLoop).
+}
+claim HpgInClassF :
+  pg :e path_homotopy_class_loop B Tb b0 f.
+{
+  exact (mem_eqR
+    pg
+    (path_homotopy_class_loop B Tb b0 pg)
+    (path_homotopy_class_loop B Tb b0 f)
+    (eq_symm
+      (path_homotopy_class_loop B Tb b0 f)
+      (path_homotopy_class_loop B Tb b0 pg)
+      HclassEq)
+    HpgInOwn).
+}
+claim Hhom : path_homotopic B Tb b0 b0 f pg.
+{
+  exact (path_homotopy_class_loop_has_homotopy
+    B Tb b0 f pg HpgInClassF).
+}
+claim HliftPack :
+  apply_fun (path_lift E Te B Tb p e0 f) 1 =
+  apply_fun (path_lift E Te B Tb p e0 pg) 1 /\
+  path_homotopic E Te e0
+    (apply_fun (path_lift E Te B Tb p e0 f) 1)
+    (path_lift E Te B Tb p e0 f) (path_lift E Te B Tb p e0 pg).
+{
+  exact (thm54_3_homotopic_lifts
+    E Te B Tb p e0 b0 b0 f pg
+    Hcov
+    He0
+    Hb0
+    Hhom).
+}
+claim HpgCont : continuous_map unit_interval unit_interval_topology B Tb pg.
+{
+  exact (composition_continuous
+    unit_interval
+    unit_interval_topology
+    E
+    Te
+    B
+    Tb
+    g
+    p
+    HgCont
+    Hcontp).
+}
+claim Hpg0 : apply_fun pg 0 = b0.
+{
+  rewrite (compose_fun_apply unit_interval g p 0 zero_in_unit_interval).
+  rewrite Hg0.
+  exact Hb0.
+}
+claim HstartPg : apply_fun p e0 = apply_fun pg 0.
+{
+  rewrite Hpg0.
+  reflexivity.
+}
+claim HpgLifting : lifting_of unit_interval unit_interval_topology E Te B Tb p pg g.
+{
+  prove continuous_map unit_interval unit_interval_topology E Te g /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun g t) = apply_fun pg t).
+  apply andI.
+  - exact HgCont.
+  - let t.
+    assume Ht.
+    rewrite (compose_fun_apply unit_interval g p t Ht).
+    reflexivity.
+}
+claim HpgLiftPack :
+  (continuous_map unit_interval unit_interval_topology E Te
+    (path_lift E Te B Tb p e0 pg) /\
+   apply_fun (path_lift E Te B Tb p e0 pg) 0 = e0) /\
+  (forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 pg) t) = apply_fun pg t).
+{
+  exact (lemma54_1_path_lifting
+    E Te B Tb p e0 pg
+    Hcov
+    He0
+    HstartPg
+    HpgCont).
+}
+claim HpgLiftLeft :
+  continuous_map unit_interval unit_interval_topology E Te
+    (path_lift E Te B Tb p e0 pg) /\
+  apply_fun (path_lift E Te B Tb p e0 pg) 0 = e0.
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p e0 pg) /\
+     apply_fun (path_lift E Te B Tb p e0 pg) 0 = e0)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p e0 pg) t) = apply_fun pg t)
+    HpgLiftPack).
+}
+claim HpgLift0 : apply_fun (path_lift E Te B Tb p e0 pg) 0 = e0.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p e0 pg))
+    (apply_fun (path_lift E Te B Tb p e0 pg) 0 = e0)
+    HpgLiftLeft).
+}
+claim HpgLiftEq :
+  forall t:set, t :e unit_interval ->
+    apply_fun (path_lift E Te B Tb p e0 pg) t = apply_fun g t.
+{
+  exact (lemma54_1_path_lifting_unique
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    pg
+    (path_lift E Te B Tb p e0 pg)
+    g
+    Hcov
+    He0
+    HpgCont
+    (andI
+      (continuous_map unit_interval unit_interval_topology E Te
+        (path_lift E Te B Tb p e0 pg))
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun (path_lift E Te B Tb p e0 pg) t) = apply_fun pg t)
+      (andEL
+        (continuous_map unit_interval unit_interval_topology E Te
+          (path_lift E Te B Tb p e0 pg))
+        (apply_fun (path_lift E Te B Tb p e0 pg) 0 = e0)
+        HpgLiftLeft)
+      (andER
+        (continuous_map unit_interval unit_interval_topology E Te
+          (path_lift E Te B Tb p e0 pg) /\
+         apply_fun (path_lift E Te B Tb p e0 pg) 0 = e0)
+        (forall t:set, t :e unit_interval ->
+          apply_fun p (apply_fun (path_lift E Te B Tb p e0 pg) t) = apply_fun pg t)
+        HpgLiftPack))
+    HpgLift0
+    HpgLifting
+    Hg0).
+}
+claim HpgEnd : apply_fun (path_lift E Te B Tb p e0 pg) 1 = e0.
+{
+  rewrite (HpgLiftEq 1 one_in_unit_interval).
+  exact Hg1.
+}
+claim HendEq :
+  apply_fun (path_lift E Te B Tb p e0 f) 1 =
+  apply_fun (path_lift E Te B Tb p e0 pg) 1.
+{
+  exact (andEL
+    (apply_fun (path_lift E Te B Tb p e0 f) 1 =
+      apply_fun (path_lift E Te B Tb p e0 pg) 1)
+    (path_homotopic E Te e0
+      (apply_fun (path_lift E Te B Tb p e0 f) 1)
+      (path_lift E Te B Tb p e0 f) (path_lift E Te B Tb p e0 pg))
+    HliftPack).
+}
+rewrite HendEq.
+exact HpgEnd.
 Admitted.
 
 (** from S54 Thm 54.6c (line 847 in algtop.tex) **)
