@@ -60762,6 +60762,83 @@ exact (Eps_i_ax
   Hft).
 Qed.
 
+(** Infrastructure: commutation on subsets of unit_interval **)
+(** Proven Bob **)
+Theorem commutation_on_unit_interval_subset :
+  forall N p f ft:set,
+  N c= unit_interval ->
+  (forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun ft t) = apply_fun f t) ->
+  forall x:set, x :e N ->
+    apply_fun p (apply_fun ft x) = apply_fun f x.
+let N p f ft.
+assume HNsub Hcomm.
+let x.
+assume HxN.
+claim HxI : x :e unit_interval.
+{
+  exact (HNsub
+    x
+    HxN).
+}
+exact (Hcomm
+  x
+  HxI).
+Qed.
+
+(** Proven Bob **)
+Theorem path_lift_commutes_on_subset_from_exists :
+  forall E Te B Tb p e0 f N:set,
+  (exists ft:set,
+    continuous_map unit_interval unit_interval_topology E Te ft /\
+    apply_fun ft 0 = e0 /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun ft t) = apply_fun f t)) ->
+  N c= unit_interval ->
+  forall x:set, x :e N ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) x) = apply_fun f x.
+let E Te B Tb p e0 f N.
+assume Hex HNsub.
+claim Hpack :
+  continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 f) /\
+  apply_fun (path_lift E Te B Tb p e0 f) 0 = e0 /\
+  (forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t).
+{
+  exact (path_lift_from_exists_witness
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    f
+    Hex).
+}
+claim Hcomm :
+  forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 f) /\
+     apply_fun (path_lift E Te B Tb p e0 f) 0 = e0)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t)
+    Hpack).
+}
+let x.
+assume HxN.
+exact (commutation_on_unit_interval_subset
+  N
+  p
+  f
+  (path_lift E Te B Tb p e0 f)
+  HNsub
+  Hcomm
+  x
+  HxN).
+Qed.
+
 (** Infrastructure: two lifts that agree at one time agree on a neighborhood of that time **)
 (** Proven Bob **)
 Theorem covering_map_lifts_equal_on_local_neighborhood :
