@@ -249516,6 +249516,28 @@ claim Hbeta1 : apply_fun beta 1 = a.
 {
   exact (path_between_at_one V b a beta HbetaPB).
 }
+claim HalphaOn :
+  forall s:set, s :e unit_interval -> apply_fun alpha s :e U.
+{
+  claim HalphaFn : function_on alpha unit_interval U.
+  {
+    exact (path_between_function_on U a b alpha HalphaPB).
+  }
+  let s.
+  assume HsU.
+  exact (HalphaFn s HsU).
+}
+claim HbetaOn :
+  forall s:set, s :e unit_interval -> apply_fun beta s :e V.
+{
+  claim HbetaFn : function_on beta unit_interval V.
+  {
+    exact (path_between_function_on V b a beta HbetaPB).
+  }
+  let s.
+  assume HsU.
+  exact (HbetaFn s HsU).
+}
 claim HgenClsMem :
   path_homotopy_class_loop X Tx a (path_concat alpha beta)
   :e fundamental_group X Tx a.
@@ -249575,6 +249597,41 @@ claim HinvGenPowMem :
     Htop
     HaX
     HgenClsMem).
+}
+claim HgenPowNontrivial :
+  forall m:set, m :e omega -> m <> 0 ->
+    group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+      m <>
+    fundamental_group_id X Tx a.
+{
+  exact (thm63_1a_infinite_cyclic_subgroup
+    X
+    Tx
+    U
+    V
+    A
+    B
+    Htop
+    HU
+    HV
+    Hcover
+    HAopen
+    HBopen
+    Hoverlap
+    Hdisj
+    a
+    b
+    HaA
+    HbB
+    alpha
+    HalphaPB
+    HalphaOn
+    beta
+    HbetaPB
+    HbetaOn).
 }
 let cls.
 assume Hcls.
