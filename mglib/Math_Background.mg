@@ -249564,6 +249564,51 @@ claim HgenClsMem :
     Hbeta0
     Hbeta1).
 }
+claim HgenPowNontrivial :
+  forall m:set, m :e omega -> m <> 0 ->
+    group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+      m <>
+    fundamental_group_id X Tx a.
+{
+  exact (thm63_1a_infinite_cyclic_subgroup
+    X
+    Tx
+    U
+    V
+    A
+    B
+    Htop
+    HU
+    HV
+    Hcover
+    HAopen
+    HBopen
+    Hoverlap
+    Hdisj
+    a
+    b
+    HaA
+    HbB
+    alpha
+    HalphaPB
+    HalphaOn
+    beta
+    HbetaPB
+    HbetaOn).
+}
+claim HfclsClsMem :
+  path_homotopy_class_loop X Tx a fcls :e fundamental_group X Tx a.
+{
+  exact (path_homotopy_class_in_fundamental_group
+    X
+    Tx
+    a
+    fcls
+    HfclsLoop).
+}
 (** TODO Bob: bridge from nontrivial loop representative to edge-crossing normal form.
     Needed dependency: S63-style alternating decomposition theorem specialized to
     U∩V=A∪B (A,B disjoint path-connected pieces), then reduction to powers of [alpha.beta]. **)
