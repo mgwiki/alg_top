@@ -251405,6 +251405,16 @@ claim HpreVNonempty : preV <> Empty.
 {
   exact (elem_implies_nonempty preV tU HtUinPreV).
 }
+claim HpreUHasWitness : exists z:set, z :e preU.
+{
+  witness tV.
+  exact HtVinPreU.
+}
+claim HpreVHasWitness : exists z:set, z :e preV.
+{
+  witness tU.
+  exact HtUinPreV.
+}
 claim H0PreU : 0 :e preU.
 {
   claim Hf0U : apply_fun fcls 0 :e U.
@@ -251461,6 +251471,33 @@ claim H1PreV : 1 :e preV.
     one_in_unit_interval
     Hf1V).
 }
+claim HpreUSubI : preU c= unit_interval.
+{
+  let x.
+  assume HxPreU : x :e preU.
+  exact (SepE1 unit_interval (fun y:set => apply_fun fcls y :e U) x HxPreU).
+}
+claim HpreVSubI : preV c= unit_interval.
+{
+  let x.
+  assume HxPreV : x :e preV.
+  exact (SepE1 unit_interval (fun y:set => apply_fun fcls y :e V) x HxPreV).
+}
+claim HpreXAll : preimage_of unit_interval fcls X = unit_interval.
+{
+  apply set_ext.
+  - let t.
+    assume HtPreX : t :e preimage_of unit_interval fcls X.
+    exact (SepE1 unit_interval (fun x:set => apply_fun fcls x :e X) t HtPreX).
+  - let t.
+    assume HtI : t :e unit_interval.
+    exact (SepI
+      unit_interval
+      (fun x:set => apply_fun fcls x :e X)
+      t
+      HtI
+      (HfclsFun t HtI)).
+}
 claim HpreUVCover : unit_interval = preU :\/: preV.
 {
   apply set_ext.
@@ -251496,9 +251533,9 @@ claim HpreUVCover : unit_interval = preU :\/: preV.
     assume HtUV : t :e preU :\/: preV.
     apply (binunionE preU preV t HtUV).
     + assume HtPreU : t :e preU.
-      exact (SepE1 unit_interval (fun x:set => apply_fun fcls x :e U) t HtPreU).
+      exact (HpreUSubI t HtPreU).
     + assume HtPreV : t :e preV.
-      exact (SepE1 unit_interval (fun x:set => apply_fun fcls x :e V) t HtPreV).
+      exact (HpreVSubI t HtPreV).
 }
 claim H0PreUV : 0 :e preU :/\: preV.
 {
@@ -251508,8 +251545,24 @@ claim H1PreUV : 1 :e preU :/\: preV.
 {
   exact (binintersectI preU preV 1 H1PreU H1PreV).
 }
+claim HpreUVNonempty : preU :/\: preV <> Empty.
+{
+  exact (elem_implies_nonempty (preU :/\: preV) 0 H0PreUV).
+}
 set preA := preimage_of unit_interval fcls A.
 set preB := preimage_of unit_interval fcls B.
+claim HpreASubI : preA c= unit_interval.
+{
+  let x.
+  assume HxPreA : x :e preA.
+  exact (SepE1 unit_interval (fun y:set => apply_fun fcls y :e A) x HxPreA).
+}
+claim HpreBSubI : preB c= unit_interval.
+{
+  let x.
+  assume HxPreB : x :e preB.
+  exact (SepE1 unit_interval (fun y:set => apply_fun fcls y :e B) x HxPreB).
+}
 claim HpreUVInterEq : preU :/\: preV = preimage_of unit_interval fcls (U :/\: V).
 {
   rewrite (preimage_of_binintersect unit_interval fcls U V).
@@ -251687,6 +251740,15 @@ claim H1PreA : 1 :e preA.
     1
     one_in_unit_interval
     Hf1A).
+}
+claim HpreAHasWitness : exists z:set, z :e preA.
+{
+  witness 0.
+  exact H0PreA.
+}
+claim HpreANonempty : preA <> Empty.
+{
+  exact (elem_implies_nonempty preA 0 H0PreA).
 }
 claim H0PreAB : 0 :e preA :\/: preB.
 {
