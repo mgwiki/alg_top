@@ -250800,6 +250800,18 @@ claim HpreABDisj : preA :/\: preB = Empty.
   rewrite Hdisj.
   exact (preimage_of_Empty unit_interval fcls).
 }
+claim HpreASubI : preA c= unit_interval.
+{
+  let x.
+  assume HxPreA : x :e preA.
+  exact (SepE1 unit_interval (fun y:set => apply_fun fcls y :e A) x HxPreA).
+}
+claim HpreBSubI : preB c= unit_interval.
+{
+  let x.
+  assume HxPreB : x :e preB.
+  exact (SepE1 unit_interval (fun y:set => apply_fun fcls y :e B) x HxPreB).
+}
 claim HpreASubPreU : preA c= preU.
 {
   let x.
@@ -250854,6 +250866,14 @@ claim HpreASubPreV : preA c= preV.
     HxI
     HfxV).
 }
+claim HpreASubPreUV : preA c= preU :/\: preV.
+{
+  let x.
+  assume HxPreA : x :e preA.
+  exact (binintersectI preU preV x
+    (HpreASubPreU x HxPreA)
+    (HpreASubPreV x HxPreA)).
+}
 claim HpreBSubPreU : preB c= preU.
 {
   let x.
@@ -250907,6 +250927,19 @@ claim HpreBSubPreV : preB c= preV.
     x
     HxI
     HfxV).
+}
+claim HpreBSubPreUV : preB c= preU :/\: preV.
+{
+  let x.
+  assume HxPreB : x :e preB.
+  exact (binintersectI preU preV x
+    (HpreBSubPreU x HxPreB)
+    (HpreBSubPreV x HxPreB)).
+}
+claim HpreABSplitUV : preA :\/: preB = preU :/\: preV.
+{
+  symmetry.
+  exact HpreUVSplitAB.
 }
 claim H0PreA : 0 :e preA.
 {
