@@ -251049,41 +251049,41 @@ claim HaNotB : ~(a :e B).
   claim HaAB : a :e A :/\: B.
   {
     exact (binintersectI A B a HaA HaB).
-  }
-  claim HaEmpty : a :e Empty.
-  {
-    rewrite <- Hdisj.
-    exact HaAB.
-  }
-  exact (EmptyE a HaEmpty).
-}
+	  }
+	  claim HaEmpty : a :e Empty.
+	  {
+	    rewrite <- Hdisj.
+	    exact HaAB.
+	  }
+	  exact (EmptyE a HaEmpty).
+	}
 claim H0NotPreB : ~(0 :e preB).
 {
   assume H0PreB : 0 :e preB.
   claim Hf0B : apply_fun fcls 0 :e B.
   {
     exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e B) 0 H0PreB).
-  }
-  claim HaB : a :e B.
-  {
-    rewrite <- Hfcls0.
-    exact Hf0B.
-  }
-  exact (HaNotB HaB).
-}
+	  }
+	  claim HaB : a :e B.
+	  {
+	    rewrite <- Hfcls0.
+	    exact Hf0B.
+	  }
+	  exact (HaNotB HaB).
+	}
 claim H1NotPreB : ~(1 :e preB).
 {
   assume H1PreB : 1 :e preB.
   claim Hf1B : apply_fun fcls 1 :e B.
   {
     exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e B) 1 H1PreB).
-  }
-  claim HaB : a :e B.
-  {
-    rewrite <- Hfcls1.
-    exact Hf1B.
-  }
-  exact (HaNotB HaB).
+	  }
+	  claim HaB : a :e B.
+	  {
+	    rewrite <- Hfcls1.
+	    exact Hf1B.
+	  }
+	  exact (HaNotB HaB).
 }
 claim HpreBNoEndpoints :
   ~(0 :e preB) /\ ~(1 :e preB).
@@ -251334,6 +251334,10 @@ claim HpreUV_imageB_implies_preB :
     t
     HtI
     HimgB).
+=======
+  { exact (eq_subst_mem_rev (apply_fun fcls 1) a B Hfcls1 Hf1B). }
+  exact (HaNotB HaB).
+>>>>>>> fcc1e7ce8 (Fix: replace unsupported rewrite-in steps in S84.6 mixed case (bck363))
 }
 exact (lemma84_6_mixed_crossing_power_reduction_core
   X
