@@ -249054,6 +249054,44 @@ exact (continuous_map_range_expand
   HtyEq).
 Qed.
 
+(** core bridge for S84.6: cyclic-generation conclusion from path-form hypotheses **)
+Theorem lemma84_6_core_cyclic_generation_from_path_data :
+  forall X Tx U V A B a b alpha beta:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx -> X = U :\/: V ->
+  simply_connected U (subspace_topology X Tx U) ->
+  simply_connected V (subspace_topology X Tx V) ->
+  A c= U :/\: V -> B c= U :/\: V -> A :/\: B = Empty ->
+  (U :/\: V) = A :\/: B ->
+  A :e subspace_topology X Tx (U :/\: V) ->
+  B :e subspace_topology X Tx (U :/\: V) ->
+  path_connected_space A (subspace_topology X Tx A) ->
+  path_connected_space B (subspace_topology X Tx B) ->
+  a :e A -> b :e B ->
+  path_between U a b alpha ->
+  path_between V b a beta ->
+  forall cls:set, cls :e fundamental_group X Tx a ->
+    exists n:set, n :e omega /\
+      (cls = group_power_nat
+        (fundamental_group_mult X Tx a)
+        (fundamental_group_id X Tx a)
+        (path_homotopy_class_loop X Tx a (path_concat alpha beta)) n \/
+       cls = group_power_nat
+        (fundamental_group_mult X Tx a)
+        (fundamental_group_id X Tx a)
+        (apply_fun (fundamental_group_inv X Tx a)
+          (path_homotopy_class_loop X Tx a (path_concat alpha beta))) n).
+let X Tx U V A B a b alpha beta.
+assume Htop HU HV Hcover HscU HscV HAsub HBsub Hdisj Hoverlap HAopen HBopen HpcA HpcB HaA HbB.
+assume HalphaPB HbetaPB.
+let cls.
+assume Hcls.
+(** Remaining S84.6 core gap:
+    derive cyclic generation in the disconnected-overlap setting from path-form
+    data and simply-connectedness of U,V (S63-style decomposition). **)
+admit.
+Admitted.
+
 (** from S84 Lem 84.6 (line 5643 in algtop.tex): generator from edge **)
 (** LATEX VERSION: Suppose X = U union V, U, V open, simply connected. **)
 (** U cap V = A union B disjoint open path-connected. alpha path in U from a to b, **)
@@ -249091,14 +249129,6 @@ Theorem lemma84_6_generator_from_edge :
 let X Tx U V A B a b alpha beta.
 assume Htop HU HV Hcover HscU HscV HAsub HBsub Hdisj Hoverlap HAopen HBopen HpcA HpcB HaA HbB.
 assume HalphaCont Halpha0 Halpha1 HbetaCont Hbeta0 Hbeta1.
-claim HUsub : U c= X.
-{
-  exact (topology_elem_subset X Tx U Htop HU).
-}
-claim HVsub : V c= X.
-{
-  exact (topology_elem_subset X Tx V Htop HV).
-}
 claim HalphaPB : path_between U a b alpha.
 {
   claim HalphaFn : function_on alpha unit_interval U.
@@ -249127,86 +249157,35 @@ claim HbetaPB : path_between V b a beta.
   }
   exact (path_betweenI V b a beta HbetaFn Hbeta0 Hbeta1).
 }
-claim HalphaContX : continuous_map unit_interval unit_interval_topology X Tx alpha.
-{
-  exact (lemma84_6_continuous_subspace_path_to_ambient
-    X
-    Tx
-    U
-    alpha
-    Htop
-    HUsub
-    HalphaCont).
-}
-claim HbetaContX : continuous_map unit_interval unit_interval_topology X Tx beta.
-{
-  exact (lemma84_6_continuous_subspace_path_to_ambient
-    X
-    Tx
-    V
-    beta
-    Htop
-    HVsub
-    HbetaCont).
-}
-claim HconcatContX : continuous_map unit_interval unit_interval_topology X Tx (path_concat alpha beta).
-{
-  exact (path_concat_continuous
-    X
-    Tx
-    a
-    b
-    a
-    alpha
-    beta
-    HalphaContX
-    HbetaContX
-    Halpha0
-    Halpha1
-    Hbeta0
-    Hbeta1).
-}
-claim HloopConcat : loop_at X Tx a (path_concat alpha beta).
-{
-  apply (loop_at_fold X Tx a (path_concat alpha beta)).
-  apply andI.
-  - apply andI.
-    + exact HconcatContX.
-    + rewrite (path_concat_at_zero alpha beta).
-      exact Halpha0.
-  - rewrite (path_concat_at_one alpha beta).
-    exact Hbeta1.
-}
-claim HconcatLoopMem : path_concat alpha beta :e loop_space X Tx a.
-{
-  exact (path_concat_opposite_paths_in_loop_space_s52
-    X
-    Tx
-    a
-    b
-    alpha
-    beta
-    HalphaContX
-    HbetaContX
-    Halpha0
-    Halpha1
-    Hbeta0
-    Hbeta1).
-}
-claim HgenClsMem :
-  path_homotopy_class_loop X Tx a (path_concat alpha beta) :e fundamental_group X Tx a.
-{
-  exact (path_homotopy_class_in_fundamental_group
-    X
-    Tx
-    a
-    (path_concat alpha beta)
-    HconcatLoopMem).
-}
-(** Remaining S84.6 core gap:
-    from the path-form data HalphaPB/HbetaPB and two-component overlap hypotheses,
-    derive cyclic generation of pi1(X,a) by [alpha.beta] (S63-style argument). **)
-admit.
+exact (lemma84_6_core_cyclic_generation_from_path_data
+  X
+  Tx
+  U
+  V
+  A
+  B
+  a
+  b
+  alpha
+  beta
+  Htop
+  HU
+  HV
+  Hcover
+  HscU
+  HscV
+  HAsub
+  HBsub
+  Hdisj
+  Hoverlap
+  HAopen
+  HBopen
+  HpcA
+  HpcB
+  HaA
+  HbB
+  HalphaPB
+  HbetaPB).
 Admitted.
 
 (** from S84 Thm 84.7 (line 5663 in algtop.tex): pi1 of graph is free **)
