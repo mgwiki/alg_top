@@ -249027,11 +249027,33 @@ exact (thm84_5_maximal_tree_extension_exists
   Htree0).
 Admitted.
 
-(** from S84 Lem 84.6 (line 5643 in algtop.tex): generator from edge **)
-(** LATEX VERSION: Suppose X = U union V, U, V open, simply connected. **)
-(** U cap V = A union B disjoint open path-connected. alpha path in U from a to b, **)
-(** beta path in V from b to a. Then [alpha . beta] generates pi1(X,a). **)
-(** EFFORT: 15 lines textbook, difficulty 6/10, USD 180 **)
+(** Proven Bob **)
+Theorem lemma84_6_continuous_subspace_path_to_ambient :
+  forall X Tx Y f:set,
+  topology_on X Tx ->
+  Y c= X ->
+  continuous_map unit_interval unit_interval_topology Y (subspace_topology X Tx Y) f ->
+  continuous_map unit_interval unit_interval_topology X Tx f.
+let X Tx Y f.
+assume Htop Hsub Hcont.
+claim HtyEq : subspace_topology X Tx Y = subspace_topology X Tx Y.
+{
+  reflexivity.
+}
+exact (continuous_map_range_expand
+  unit_interval
+  unit_interval_topology
+  Y
+  (subspace_topology X Tx Y)
+  X
+  Tx
+  f
+  Hcont
+  Hsub
+  Htop
+  HtyEq).
+Qed.
+
 (** from S84 Lem 84.6 (line 5643 in algtop.tex): generator from edge **)
 (** LATEX VERSION: Suppose X = U union V, U, V open, simply connected. **)
 (** U cap V = A union B disjoint open path-connected. alpha path in U from a to b, **)
@@ -249069,6 +249091,14 @@ Theorem lemma84_6_generator_from_edge :
 let X Tx U V A B a b alpha beta.
 assume Htop HU HV Hcover HscU HscV HAsub HBsub Hdisj Hoverlap HAopen HBopen HpcA HpcB HaA HbB.
 assume HalphaCont Halpha0 Halpha1 HbetaCont Hbeta0 Hbeta1.
+claim HUsub : U c= X.
+{
+  exact (topology_elem_subset X Tx U Htop HU).
+}
+claim HVsub : V c= X.
+{
+  exact (topology_elem_subset X Tx V Htop HV).
+}
 claim HalphaPB : path_between U a b alpha.
 {
   claim HalphaFn : function_on alpha unit_interval U.
@@ -249096,6 +249126,56 @@ claim HbetaPB : path_between V b a beta.
       HbetaCont).
   }
   exact (path_betweenI V b a beta HbetaFn Hbeta0 Hbeta1).
+}
+claim HalphaContX : continuous_map unit_interval unit_interval_topology X Tx alpha.
+{
+  exact (lemma84_6_continuous_subspace_path_to_ambient
+    X
+    Tx
+    U
+    alpha
+    Htop
+    HUsub
+    HalphaCont).
+}
+claim HbetaContX : continuous_map unit_interval unit_interval_topology X Tx beta.
+{
+  exact (lemma84_6_continuous_subspace_path_to_ambient
+    X
+    Tx
+    V
+    beta
+    Htop
+    HVsub
+    HbetaCont).
+}
+claim HconcatContX : continuous_map unit_interval unit_interval_topology X Tx (path_concat alpha beta).
+{
+  exact (path_concat_continuous
+    X
+    Tx
+    a
+    b
+    a
+    alpha
+    beta
+    HalphaContX
+    HbetaContX
+    Halpha0
+    Halpha1
+    Hbeta0
+    Hbeta1).
+}
+claim HloopConcat : loop_at X Tx a (path_concat alpha beta).
+{
+  apply (loop_at_fold X Tx a (path_concat alpha beta)).
+  apply andI.
+  - apply andI.
+    + exact HconcatContX.
+    + rewrite (path_concat_at_zero alpha beta).
+      exact Halpha0.
+  - rewrite (path_concat_at_one alpha beta).
+    exact Hbeta1.
 }
 (** Remaining S84.6 core gap:
     from the path-form data HalphaPB/HbetaPB and two-component overlap hypotheses,
