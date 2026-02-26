@@ -250942,6 +250942,22 @@ claim HpreABSplitUV : preA :\/: preB = preU :/\: preV.
   symmetry.
   exact HpreUVSplitAB.
 }
+claim HpreUV_to_preAB :
+  forall t:set, t :e preU :/\: preV -> t :e preA :\/: preB.
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  rewrite <- HpreUVSplitAB.
+  exact HtUV.
+}
+claim HpreAB_to_preUV :
+  forall t:set, t :e preA :\/: preB -> t :e preU :/\: preV.
+{
+  let t.
+  assume HtAB : t :e preA :\/: preB.
+  rewrite HpreUVSplitAB.
+  exact HtAB.
+}
 claim H0PreA : 0 :e preA.
 {
   claim Hf0A : apply_fun fcls 0 :e A.
@@ -250978,6 +250994,14 @@ claim HpreAHasWitness : exists z:set, z :e preA.
 claim HpreANonempty : preA <> Empty.
 {
   exact (elem_implies_nonempty preA 0 H0PreA).
+}
+claim H0PreAB : 0 :e preA :\/: preB.
+{
+  exact (HpreUV_to_preAB 0 H0PreUV).
+}
+claim H1PreAB : 1 :e preA :\/: preB.
+{
+  exact (HpreUV_to_preAB 1 H1PreUV).
 }
 claim HaNotB : ~(a :e B).
 {
