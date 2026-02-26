@@ -174085,6 +174085,249 @@ apply (nat_ind (fun k1 => forall k2:set, nat_p k2 ->
     rewrite Hn_m. reflexivity.
 Qed.
 
+(** Z mod 2 group operations for rank counting **)
+Definition Z2_mult : set := graph (setprod 2 2) (fun p:set => if p 0 = p 1 then 0 else 1).
+Definition Z2_inv : set := graph 2 (fun x:set => x).
+
+(** Helper: case analysis on elements of 2 = {0, 1} **)
+(** Proven Alice **)
+Lemma in_2_cases : forall x:set, x :e 2 -> x = 0 \/ x = 1.
+let x. assume Hx : x :e 2.
+apply (ordsuccE 1 x Hx).
+- assume Hx1 : x :e 1.
+  apply (ordsuccE 0 x Hx1).
+  + assume Hx0 : x :e 0. exact (EmptyE x Hx0 (x = 0 \/ x = 1)).
+  + assume Hxeq : x = 0. exact (orIL (x = 0) (x = 1) Hxeq).
+- assume Hxeq : x = 1. exact (orIR (x = 0) (x = 1) Hxeq).
+Qed.
+
+(** Helper: Z2_mult evaluation at concrete pairs **)
+(** Proven Alice **)
+Lemma Z2_mult_eval : forall a b:set, a :e 2 -> b :e 2 ->
+  apply_fun Z2_mult (a, b) = (if a = b then 0 else 1).
+let a b. assume Ha : a :e 2. assume Hb : b :e 2.
+claim Hab : (a, b) :e setprod 2 2.
+{ exact (tuple_2_setprod_by_pair_Sigma 2 2 a b Ha Hb). }
+rewrite (apply_fun_graph (setprod 2 2)
+  (fun p:set => if p 0 = p 1 then 0 else 1) (a, b) Hab).
+rewrite tuple_2_0_eq.
+rewrite tuple_2_1_eq.
+reflexivity.
+Qed.
+
+(** Helper: Z2_inv evaluation **)
+(** Proven Alice **)
+Lemma Z2_inv_eval : forall x:set, x :e 2 ->
+  apply_fun Z2_inv x = x.
+let x. assume Hx : x :e 2.
+exact (apply_fun_graph 2 (fun y:set => y) x Hx).
+Qed.
+
+(** Z2_mult on specific pairs **)
+(** Proven Alice **)
+Lemma Z2_mult_0_0 : apply_fun Z2_mult (0, 0) = 0.
+claim H : apply_fun Z2_mult (0, 0) = (if 0 = 0 then 0 else 1).
+{ exact (Z2_mult_eval 0 0 In_0_2 In_0_2). }
+rewrite H.
+claim Hrefl : 0 = 0. { reflexivity. }
+exact (If_i_1 (0 = 0) 0 1 Hrefl).
+Qed.
+
+(** Proven Alice **)
+Lemma Z2_mult_0_1 : apply_fun Z2_mult (0, 1) = 1.
+claim H : apply_fun Z2_mult (0, 1) = (if 0 = 1 then 0 else 1).
+{ exact (Z2_mult_eval 0 1 In_0_2 In_1_2). }
+rewrite H.
+exact (If_i_0 (0 = 1) 0 1 neq_0_1).
+Qed.
+
+(** Proven Alice **)
+Lemma Z2_mult_1_0 : apply_fun Z2_mult (1, 0) = 1.
+claim H : apply_fun Z2_mult (1, 0) = (if 1 = 0 then 0 else 1).
+{ exact (Z2_mult_eval 1 0 In_1_2 In_0_2). }
+rewrite H.
+exact (If_i_0 (1 = 0) 0 1 neq_1_0).
+Qed.
+
+(** Proven Alice **)
+Lemma Z2_mult_1_1 : apply_fun Z2_mult (1, 1) = 0.
+claim H : apply_fun Z2_mult (1, 1) = (if 1 = 1 then 0 else 1).
+{ exact (Z2_mult_eval 1 1 In_1_2 In_1_2). }
+rewrite H.
+claim Hrefl : 1 = 1. { reflexivity. }
+exact (If_i_1 (1 = 1) 0 1 Hrefl).
+Qed.
+
+(** Z mod 2 is an abelian group **)
+(** Proven Alice **)
+Lemma Z2_abelian_group : abelian_group 2 Z2_mult 0 Z2_inv.
+prove group_structure 2 Z2_mult 0 Z2_inv /\
+  (forall x y:set, x :e 2 -> y :e 2 ->
+    apply_fun Z2_mult (x, y) = apply_fun Z2_mult (y, x)).
+apply andI.
+- (** group_structure 2 Z2_mult 0 Z2_inv **)
+  prove function_on Z2_mult (setprod 2 2) 2 /\
+    function_on Z2_inv 2 2 /\
+    0 :e 2 /\
+    (forall x y z:set, x :e 2 -> y :e 2 -> z :e 2 ->
+      apply_fun Z2_mult (apply_fun Z2_mult (x, y), z) = apply_fun Z2_mult (x, apply_fun Z2_mult (y, z))) /\
+    (forall x:set, x :e 2 -> apply_fun Z2_mult (0, x) = x /\ apply_fun Z2_mult (x, 0) = x) /\
+    (forall x:set, x :e 2 ->
+      apply_fun Z2_mult (x, apply_fun Z2_inv x) = 0 /\ apply_fun Z2_mult (apply_fun Z2_inv x, x) = 0).
+  apply and6I.
+  + (** function_on Z2_mult (setprod 2 2) 2 **)
+    let p. assume Hp : p :e setprod 2 2.
+    claim Hpeq : p = (p 0, p 1). { exact (setprod_eta 2 2 p Hp). }
+    claim Ha : p 0 :e 2. { exact (ap0_Sigma 2 (fun _:set => 2) p Hp). }
+    claim Hb : p 1 :e 2. { exact (ap1_Sigma 2 (fun _:set => 2) p Hp). }
+    set a := p 0. set b := p 1.
+    rewrite Hpeq.
+    rewrite (Z2_mult_eval a b Ha Hb).
+    apply (in_2_cases a Ha).
+    - assume Haeq : a = 0.
+      apply (in_2_cases b Hb).
+      * assume Hbeq : b = 0. rewrite Haeq. rewrite Hbeq.
+        claim Hif : (if 0 = 0 then 0 else 1) = 0.
+        { claim Hrefl : 0 = 0. { reflexivity. } exact (If_i_1 (0 = 0) 0 1 Hrefl). }
+        rewrite Hif. exact In_0_2.
+      * assume Hbeq : b = 1. rewrite Haeq. rewrite Hbeq.
+        claim Hif : (if 0 = 1 then 0 else 1) = 1.
+        { exact (If_i_0 (0 = 1) 0 1 neq_0_1). }
+        rewrite Hif. exact In_1_2.
+    - assume Haeq : a = 1.
+      apply (in_2_cases b Hb).
+      * assume Hbeq : b = 0. rewrite Haeq. rewrite Hbeq.
+        claim Hif : (if 1 = 0 then 0 else 1) = 1.
+        { exact (If_i_0 (1 = 0) 0 1 neq_1_0). }
+        rewrite Hif. exact In_1_2.
+      * assume Hbeq : b = 1. rewrite Haeq. rewrite Hbeq.
+        claim Hif : (if 1 = 1 then 0 else 1) = 0.
+        { claim Hrefl : 1 = 1. { reflexivity. } exact (If_i_1 (1 = 1) 0 1 Hrefl). }
+        rewrite Hif. exact In_0_2.
+  + (** function_on Z2_inv 2 2 **)
+    let x. assume Hx : x :e 2.
+    rewrite (apply_fun_graph 2 (fun y:set => y) x Hx).
+    exact Hx.
+  + (** 0 :e 2 **)
+    exact In_0_2.
+  + (** associativity **)
+    let x y z.
+    assume Hx : x :e 2. assume Hy : y :e 2. assume Hz : z :e 2.
+    apply (in_2_cases x Hx).
+    - assume Hxeq : x = 0. rewrite Hxeq.
+      apply (in_2_cases y Hy).
+      * assume Hyeq : y = 0. rewrite Hyeq.
+        apply (in_2_cases z Hz).
+        { assume Hzeq : z = 0. rewrite Hzeq.
+          claim HL : apply_fun Z2_mult (apply_fun Z2_mult (0, 0), 0) = 0.
+          { rewrite Z2_mult_0_0. exact Z2_mult_0_0. }
+          claim HR : apply_fun Z2_mult (0, apply_fun Z2_mult (0, 0)) = 0.
+          { rewrite Z2_mult_0_0. exact Z2_mult_0_0. }
+          exact (eq_i_tra (apply_fun Z2_mult (apply_fun Z2_mult (0, 0), 0)) 0
+            (apply_fun Z2_mult (0, apply_fun Z2_mult (0, 0))) HL (eq_symm (apply_fun Z2_mult (0, apply_fun Z2_mult (0, 0))) 0 HR)). }
+        { assume Hzeq : z = 1. rewrite Hzeq.
+          claim HL : apply_fun Z2_mult (apply_fun Z2_mult (0, 0), 1) = 1.
+          { rewrite Z2_mult_0_0. exact Z2_mult_0_1. }
+          claim HR : apply_fun Z2_mult (0, apply_fun Z2_mult (0, 1)) = 1.
+          { rewrite Z2_mult_0_1. exact Z2_mult_0_1. }
+          exact (eq_i_tra (apply_fun Z2_mult (apply_fun Z2_mult (0, 0), 1)) 1
+            (apply_fun Z2_mult (0, apply_fun Z2_mult (0, 1))) HL (eq_symm (apply_fun Z2_mult (0, apply_fun Z2_mult (0, 1))) 1 HR)). }
+      * assume Hyeq : y = 1. rewrite Hyeq.
+        apply (in_2_cases z Hz).
+        { assume Hzeq : z = 0. rewrite Hzeq.
+          claim HL : apply_fun Z2_mult (apply_fun Z2_mult (0, 1), 0) = 1.
+          { rewrite Z2_mult_0_1. exact Z2_mult_1_0. }
+          claim HR : apply_fun Z2_mult (0, apply_fun Z2_mult (1, 0)) = 1.
+          { rewrite Z2_mult_1_0. exact Z2_mult_0_1. }
+          exact (eq_i_tra (apply_fun Z2_mult (apply_fun Z2_mult (0, 1), 0)) 1
+            (apply_fun Z2_mult (0, apply_fun Z2_mult (1, 0))) HL (eq_symm (apply_fun Z2_mult (0, apply_fun Z2_mult (1, 0))) 1 HR)). }
+        { assume Hzeq : z = 1. rewrite Hzeq.
+          claim HL : apply_fun Z2_mult (apply_fun Z2_mult (0, 1), 1) = 0.
+          { rewrite Z2_mult_0_1. exact Z2_mult_1_1. }
+          claim HR : apply_fun Z2_mult (0, apply_fun Z2_mult (1, 1)) = 0.
+          { rewrite Z2_mult_1_1. exact Z2_mult_0_0. }
+          exact (eq_i_tra (apply_fun Z2_mult (apply_fun Z2_mult (0, 1), 1)) 0
+            (apply_fun Z2_mult (0, apply_fun Z2_mult (1, 1))) HL (eq_symm (apply_fun Z2_mult (0, apply_fun Z2_mult (1, 1))) 0 HR)). }
+    - assume Hxeq : x = 1. rewrite Hxeq.
+      apply (in_2_cases y Hy).
+      * assume Hyeq : y = 0. rewrite Hyeq.
+        apply (in_2_cases z Hz).
+        { assume Hzeq : z = 0. rewrite Hzeq.
+          claim HL : apply_fun Z2_mult (apply_fun Z2_mult (1, 0), 0) = 1.
+          { rewrite Z2_mult_1_0. exact Z2_mult_1_0. }
+          claim HR : apply_fun Z2_mult (1, apply_fun Z2_mult (0, 0)) = 1.
+          { rewrite Z2_mult_0_0. exact Z2_mult_1_0. }
+          exact (eq_i_tra (apply_fun Z2_mult (apply_fun Z2_mult (1, 0), 0)) 1
+            (apply_fun Z2_mult (1, apply_fun Z2_mult (0, 0))) HL (eq_symm (apply_fun Z2_mult (1, apply_fun Z2_mult (0, 0))) 1 HR)). }
+        { assume Hzeq : z = 1. rewrite Hzeq.
+          claim HL : apply_fun Z2_mult (apply_fun Z2_mult (1, 0), 1) = 0.
+          { rewrite Z2_mult_1_0. exact Z2_mult_1_1. }
+          claim HR : apply_fun Z2_mult (1, apply_fun Z2_mult (0, 1)) = 0.
+          { rewrite Z2_mult_0_1. exact Z2_mult_1_1. }
+          exact (eq_i_tra (apply_fun Z2_mult (apply_fun Z2_mult (1, 0), 1)) 0
+            (apply_fun Z2_mult (1, apply_fun Z2_mult (0, 1))) HL (eq_symm (apply_fun Z2_mult (1, apply_fun Z2_mult (0, 1))) 0 HR)). }
+      * assume Hyeq : y = 1. rewrite Hyeq.
+        apply (in_2_cases z Hz).
+        { assume Hzeq : z = 0. rewrite Hzeq.
+          claim HL : apply_fun Z2_mult (apply_fun Z2_mult (1, 1), 0) = 0.
+          { rewrite Z2_mult_1_1. exact Z2_mult_0_0. }
+          claim HR : apply_fun Z2_mult (1, apply_fun Z2_mult (1, 0)) = 0.
+          { rewrite Z2_mult_1_0. exact Z2_mult_1_1. }
+          exact (eq_i_tra (apply_fun Z2_mult (apply_fun Z2_mult (1, 1), 0)) 0
+            (apply_fun Z2_mult (1, apply_fun Z2_mult (1, 0))) HL (eq_symm (apply_fun Z2_mult (1, apply_fun Z2_mult (1, 0))) 0 HR)). }
+        { assume Hzeq : z = 1. rewrite Hzeq.
+          claim HL : apply_fun Z2_mult (apply_fun Z2_mult (1, 1), 1) = 1.
+          { rewrite Z2_mult_1_1. exact Z2_mult_0_1. }
+          claim HR : apply_fun Z2_mult (1, apply_fun Z2_mult (1, 1)) = 1.
+          { rewrite Z2_mult_1_1. exact Z2_mult_1_0. }
+          exact (eq_i_tra (apply_fun Z2_mult (apply_fun Z2_mult (1, 1), 1)) 1
+            (apply_fun Z2_mult (1, apply_fun Z2_mult (1, 1))) HL (eq_symm (apply_fun Z2_mult (1, apply_fun Z2_mult (1, 1))) 1 HR)). }
+  + (** identity **)
+    let x. assume Hx : x :e 2.
+    apply (in_2_cases x Hx).
+    - assume Hxeq : x = 0. rewrite Hxeq. apply andI.
+      * exact Z2_mult_0_0.
+      * exact Z2_mult_0_0.
+    - assume Hxeq : x = 1. rewrite Hxeq. apply andI.
+      * exact Z2_mult_0_1.
+      * exact Z2_mult_1_0.
+  + (** inverse **)
+    let x. assume Hx : x :e 2.
+    rewrite (Z2_inv_eval x Hx).
+    apply (in_2_cases x Hx).
+    - assume Hxeq : x = 0. rewrite Hxeq. apply andI.
+      * exact Z2_mult_0_0.
+      * exact Z2_mult_0_0.
+    - assume Hxeq : x = 1. rewrite Hxeq. apply andI.
+      * exact Z2_mult_1_1.
+      * exact Z2_mult_1_1.
+- (** commutativity **)
+  let x y. assume Hx : x :e 2. assume Hy : y :e 2.
+  apply (in_2_cases x Hx).
+  - assume Hxeq : x = 0. rewrite Hxeq.
+    apply (in_2_cases y Hy).
+    * assume Hyeq : y = 0. rewrite Hyeq. reflexivity.
+    * assume Hyeq : y = 1. rewrite Hyeq. rewrite Z2_mult_0_1. rewrite Z2_mult_1_0. reflexivity.
+  - assume Hxeq : x = 1. rewrite Hxeq.
+    apply (in_2_cases y Hy).
+    * assume Hyeq : y = 0. rewrite Hyeq. rewrite Z2_mult_1_0. rewrite Z2_mult_0_1. reflexivity.
+    * assume Hyeq : y = 1. rewrite Hyeq. reflexivity.
+Qed.
+
+(** Key helper for rank: equip Power J with set of group homs G to Z mod 2 **)
+(** For free abelian group with basis J, every hom G to Z mod 2 is determined **)
+(** by the values on the basis, giving equip Power J with Hom(G, Z mod 2) **)
+Lemma free_abelian_power_equip_hom_count :
+  forall G mult e inv J basis:set,
+  free_abelian_group_with_basis G mult e inv J basis ->
+  finite J ->
+  forall J2 basis2:set,
+  free_abelian_group_with_basis G mult e inv J2 basis2 ->
+  finite J2 ->
+  equip (Power J) (Power J2).
+admit.
+Admitted.
+
 (** from S67 Thm 67.8 (line 2689 in algtop.tex): rank is well-defined **)
 (** LATEX VERSION: If G is a free abelian group with basis {a_1,...,a_n}, **)
 (** then n is uniquely determined by G. **)
