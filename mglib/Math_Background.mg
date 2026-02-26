@@ -167485,7 +167485,70 @@ apply iffI.
     claim Hh'_ext : forall alpha:set, alpha :e J ->
       forall y:set, y :e apply_fun Gfam alpha ->
         apply_fun h' y = apply_fun (apply_fun hfam alpha) y.
-    { admit. }
+    { let alpha. assume Hal3 : alpha :e J.
+      (** Get group structure and generator for Gfam(alpha) **)
+      claim Hgrp_sub3 : group_structure (apply_fun Gfam alpha) mult e inv.
+      { exact (local_subgroup_group_structure G mult e inv (apply_fun Gfam alpha)
+          HgrpG (Hsub_alpha alpha Hal3)). }
+      claim Hgen_sub3 : generator_of (apply_fun Gfam alpha) mult e inv (apply_fun basis alpha).
+      { exact (factor_family_generator_of_helper G mult e inv J basis alpha
+          HgrpG Hbasis_fn Hal3). }
+      (** Show h' restricted to Gfam(alpha) is a group_homomorphism **)
+      claim Hh'_sub : group_homomorphism (apply_fun Gfam alpha) mult H multH h'.
+      { claim Hh'_fn_G : function_on h' G H.
+        { exact (andEL
+            (function_on h' G H)
+            (forall x y:set, x :e G -> y :e G ->
+              apply_fun h' (apply_fun mult (x, y)) = apply_fun multH (apply_fun h' x, apply_fun h' y))
+            Hh'_hom). }
+        claim Hh'_mult : forall x y:set, x :e G -> y :e G ->
+          apply_fun h' (apply_fun mult (x, y)) = apply_fun multH (apply_fun h' x, apply_fun h' y).
+        { exact (andER
+            (function_on h' G H)
+            (forall x y:set, x :e G -> y :e G ->
+              apply_fun h' (apply_fun mult (x, y)) = apply_fun multH (apply_fun h' x, apply_fun h' y))
+            Hh'_hom). }
+        claim HGfam_sub_G : apply_fun Gfam alpha c= G.
+        { exact (andEL
+            (apply_fun Gfam alpha c= G)
+            (e :e apply_fun Gfam alpha)
+            (andEL
+              (apply_fun Gfam alpha c= G /\ e :e apply_fun Gfam alpha)
+              (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+                apply_fun mult (x, y) :e apply_fun Gfam alpha)
+              (andEL
+                ((apply_fun Gfam alpha c= G /\ e :e apply_fun Gfam alpha) /\
+                 (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+                   apply_fun mult (x, y) :e apply_fun Gfam alpha))
+                (forall x:set, x :e apply_fun Gfam alpha -> apply_fun inv x :e apply_fun Gfam alpha)
+                (Hsub_alpha alpha Hal3)))). }
+        apply (andI
+          (function_on h' (apply_fun Gfam alpha) H)
+          (forall x y:set, x :e (apply_fun Gfam alpha) -> y :e (apply_fun Gfam alpha) ->
+            apply_fun h' (apply_fun mult (x, y)) = apply_fun multH (apply_fun h' x, apply_fun h' y))).
+        - let z. assume Hz : z :e apply_fun Gfam alpha.
+          exact (Hh'_fn_G z (HGfam_sub_G z Hz)).
+        - let u v. assume Hu : u :e apply_fun Gfam alpha. assume Hv : v :e apply_fun Gfam alpha.
+          exact (Hh'_mult u v (HGfam_sub_G u Hu) (HGfam_sub_G v Hv)). }
+      (** h' and hfam(alpha) agree on basis(alpha) **)
+      claim Hagree : apply_fun h' (apply_fun basis alpha) = apply_fun (apply_fun hfam alpha) (apply_fun basis alpha).
+      { claim Hstep_a : apply_fun h' (apply_fun basis alpha) = apply_fun ys alpha.
+        { exact (Hh'_basis alpha Hal3). }
+        claim Hstep_b : apply_fun (apply_fun hfam alpha) (apply_fun basis alpha) = apply_fun ys alpha.
+        { exact (Hhfam_basis alpha Hal3). }
+        exact (eq_i_tra
+          (apply_fun h' (apply_fun basis alpha))
+          (apply_fun ys alpha)
+          (apply_fun (apply_fun hfam alpha) (apply_fun basis alpha))
+          Hstep_a (eq_symm
+            (apply_fun (apply_fun hfam alpha) (apply_fun basis alpha))
+            (apply_fun ys alpha) Hstep_b)). }
+      (** Apply: two homomorphisms from cyclic group agreeing on generator agree everywhere **)
+      exact (group_homomorphisms_equal_if_agree_on_generator_cyclic_helper
+        (apply_fun Gfam alpha) mult e inv (apply_fun basis alpha)
+        H multH eH invH h' (apply_fun hfam alpha)
+        Hgrp_sub3 Hgen_sub3 HgrpH Hh'_sub (Hhfam_hom alpha Hal3)
+        Hagree). }
     exact (Hh_uniq h' Hh'_hom Hh'_ext x Hx).
 - (** Backward: universal property -> free_abelian_group_with_basis **)
   admit.
