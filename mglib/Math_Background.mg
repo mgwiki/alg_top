@@ -252153,6 +252153,110 @@ claim HpreUV_not_imageB_implies_preA :
   }
   exact (HpreUV_imageA_implies_preA t HtUV HimgA).
 }
+claim HpreUV_imageA_iff_preA :
+  forall t:set, t :e preU :/\: preV ->
+    (apply_fun fcls t :e A -> t :e preA) /\
+    (t :e preA -> apply_fun fcls t :e A).
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  apply andI.
+  - assume HimgA : apply_fun fcls t :e A.
+    exact (HpreUV_imageA_implies_preA t HtUV HimgA).
+  - assume HtPreA : t :e preA.
+    exact (HpreA_imageA t HtPreA).
+}
+claim HpreUV_imageB_iff_preB :
+  forall t:set, t :e preU :/\: preV ->
+    (apply_fun fcls t :e B -> t :e preB) /\
+    (t :e preB -> apply_fun fcls t :e B).
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  apply andI.
+  - assume HimgB : apply_fun fcls t :e B.
+    exact (HpreUV_imageB_implies_preB t HtUV HimgB).
+  - assume HtPreB : t :e preB.
+    exact (HpreB_imageB t HtPreB).
+}
+claim HpreUV_not_imageA_iff_preB :
+  forall t:set, t :e preU :/\: preV ->
+    (~(apply_fun fcls t :e A) -> t :e preB) /\
+    (t :e preB -> ~(apply_fun fcls t :e A)).
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  apply andI.
+  - assume HnotImgA : ~(apply_fun fcls t :e A).
+    exact (HpreUV_not_imageA_implies_preB t HtUV HnotImgA).
+  - assume HtPreB : t :e preB.
+    exact (HpreB_implies_not_imageA t HtPreB).
+}
+claim HpreUV_not_imageB_iff_preA :
+  forall t:set, t :e preU :/\: preV ->
+    (~(apply_fun fcls t :e B) -> t :e preA) /\
+    (t :e preA -> ~(apply_fun fcls t :e B)).
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  apply andI.
+  - assume HnotImgB : ~(apply_fun fcls t :e B).
+    exact (HpreUV_not_imageB_implies_preA t HtUV HnotImgB).
+  - assume HtPreA : t :e preA.
+    exact (HpreA_implies_not_imageB t HtPreA).
+}
+claim HpreUV_image_classify_strict :
+  forall t:set, t :e preU :/\: preV ->
+    (apply_fun fcls t :e A /\ ~(apply_fun fcls t :e B)) \/
+    (apply_fun fcls t :e B /\ ~(apply_fun fcls t :e A)).
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  claim Hcls : (t :e preA /\ ~(t :e preB)) \/
+    (t :e preB /\ ~(t :e preA)).
+  {
+    exact (HpreUV_classify t HtUV).
+  }
+  apply Hcls.
+  - assume Hleft : t :e preA /\ ~(t :e preB).
+    claim HtPreA : t :e preA.
+    {
+      exact (andEL (t :e preA) (~(t :e preB)) Hleft).
+    }
+    apply orIL.
+    exact (andI
+      (apply_fun fcls t :e A)
+      (~(apply_fun fcls t :e B))
+      (HpreA_imageA t HtPreA)
+      (HpreA_implies_not_imageB t HtPreA)).
+  - assume Hright : t :e preB /\ ~(t :e preA).
+    claim HtPreB : t :e preB.
+    {
+      exact (andEL (t :e preB) (~(t :e preA)) Hright).
+    }
+    apply orIR.
+    exact (andI
+      (apply_fun fcls t :e B)
+      (~(apply_fun fcls t :e A))
+      (HpreB_imageB t HtPreB)
+      (HpreB_implies_not_imageA t HtPreB)).
+}
+claim H0ImageClassA : apply_fun fcls 0 :e A /\ ~(apply_fun fcls 0 :e B).
+{
+  exact (andI
+    (apply_fun fcls 0 :e A)
+    (~(apply_fun fcls 0 :e B))
+    (HpreA_imageA 0 H0PreA)
+    (HpreA_implies_not_imageB 0 H0PreA)).
+}
+claim H1ImageClassA : apply_fun fcls 1 :e A /\ ~(apply_fun fcls 1 :e B).
+{
+  exact (andI
+    (apply_fun fcls 1 :e A)
+    (~(apply_fun fcls 1 :e B))
+    (HpreA_imageA 1 H1PreA)
+    (HpreA_implies_not_imageB 1 H1PreA)).
+}
 (** TODO Bob: prove via S63-style alternating decomposition in U cap V = A union B
     with A cap B = Empty, then identify loop class as power of [alpha.beta] or inverse power.
     Current core setup complete:
@@ -252165,7 +252269,8 @@ claim HpreUV_not_imageB_implies_preA :
     - explicit overlap implication lemmas (notA->B, notB->A, imageA->preA, imageB->preB),
     - two-way transport lemmas between preA/preB and preU cap preV and endpoint-side exclusions,
     - image-negation implication layer on overlap (not imageA->preB, not imageB->preA) and
-      pointwise image exclusions from preA/preB.
+      pointwise image exclusions from preA/preB,
+    - strict image classification/equivalence layer (iff bridges and endpoint image classes).
     Remaining: alternating crossing decomposition over U cap V = A union B (A cap B=Empty). **)
 admit.
 Admitted.
