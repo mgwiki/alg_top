@@ -240602,6 +240602,45 @@ exact (lemma59_4a_simply_connected_from_pi1_trivial_at_point
   Hpi1x0).
 Qed.
 
+(** helper for S84.3: simply_connected is invariant under definitional equality of topologies. **)
+(** Proven Bob **)
+Theorem simply_connected_topology_eq_transport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  simply_connected X T1 ->
+  simply_connected X T2.
+let X T1 T2.
+assume Heq Hsimp.
+rewrite <- Heq.
+exact Hsimp.
+Qed.
+
+(** helper for S84.3: path_connected_space is invariant under definitional equality of topologies. **)
+(** Proven Bob **)
+Theorem path_connected_space_topology_eq_transport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  path_connected_space X T1 ->
+  path_connected_space X T2.
+let X T1 T2.
+assume Heq Hpc.
+rewrite <- Heq.
+exact Hpc.
+Qed.
+
+(** helper for S84.3: locally_path_connected is invariant under definitional equality of topologies. **)
+(** Proven Bob **)
+Theorem locally_path_connected_topology_eq_transport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  locally_path_connected X T1 ->
+  locally_path_connected X T2.
+let X T1 T2.
+assume Heq Hlpc.
+rewrite <- Heq.
+exact Hlpc.
+Qed.
+
 (** from S84 Thm 84.3 (line 5617 in algtop.tex): tree is simply connected **)
 (** LATEX VERSION: Any tree T is simply connected. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
@@ -240699,16 +240738,36 @@ claim HsimpNestedFromBridges :
     Hx0T
     Hpi1x0).
 }
+claim HsimpFromNested :
+  simply_connected T (subspace_topology T (subspace_topology X Tx T) T) ->
+  simply_connected T (subspace_topology X Tx T).
+{
+  assume HsimpNested.
+  exact (simply_connected_topology_eq_transport
+    T
+    (subspace_topology T (subspace_topology X Tx T) T)
+    (subspace_topology X Tx T)
+    (subspace_topology_whole
+      T
+      (subspace_topology X Tx T)
+      (tree_in_graph_topology_on_T
+        T
+        ArcsT
+        X
+        Tx
+        Arcs
+        Htree))
+    HsimpNested).
+}
 claim HsimpCore :
   simply_connected T (subspace_topology X Tx T).
 {
   (** Remaining S84.3 core bridge:
-      close three explicit subgoals:
+      close two explicit subgoals:
       (1) derive local path-connectedness of T under subspace_topology X Tx T,
       (2) derive a basepoint x0 with trivial pi1 for topology
-          subspace_topology T (subspace_topology X Tx T) T from HnoloopT,
-      (3) transfer simply_connected from the nested whole-subspace topology
-          to subspace_topology X Tx T via subspace_topology_whole. **)
+          subspace_topology T (subspace_topology X Tx T) T from HnoloopT.
+      (Transfer from nested topology is now handled by HsimpFromNested.) **)
   admit.
 }
 exact HsimpCore.
