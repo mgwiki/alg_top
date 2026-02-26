@@ -249177,6 +249177,32 @@ claim HloopConcat : loop_at X Tx a (path_concat alpha beta).
   - rewrite (path_concat_at_one alpha beta).
     exact Hbeta1.
 }
+claim HconcatLoopMem : path_concat alpha beta :e loop_space X Tx a.
+{
+  exact (path_concat_opposite_paths_in_loop_space_s52
+    X
+    Tx
+    a
+    b
+    alpha
+    beta
+    HalphaContX
+    HbetaContX
+    Halpha0
+    Halpha1
+    Hbeta0
+    Hbeta1).
+}
+claim HgenClsMem :
+  path_homotopy_class_loop X Tx a (path_concat alpha beta) :e fundamental_group X Tx a.
+{
+  exact (path_homotopy_class_in_fundamental_group
+    X
+    Tx
+    a
+    (path_concat alpha beta)
+    HconcatLoopMem).
+}
 (** Remaining S84.6 core gap:
     from the path-form data HalphaPB/HbetaPB and two-component overlap hypotheses,
     derive cyclic generation of pi1(X,a) by [alpha.beta] (S63-style argument). **)
