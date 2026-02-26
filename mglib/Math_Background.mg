@@ -167993,7 +167993,116 @@ apply iffI.
         Hagree). }
     exact (Hh_uniq h' Hh'_hom Hh'_ext x Hx).
 - (** Backward: universal property -> free_abelian_group_with_basis **)
-  admit.
+  assume Hback : forall H multH eH invH:set,
+    abelian_group H multH eH invH ->
+    forall ys:set, function_on ys J H ->
+      exists h:set,
+        group_homomorphism G mult H multH h /\
+        (forall alpha:set, alpha :e J ->
+          apply_fun h (apply_fun basis alpha) = apply_fun ys alpha) /\
+        (forall h':set, group_homomorphism G mult H multH h' ->
+          (forall alpha:set, alpha :e J ->
+            apply_fun h' (apply_fun basis alpha) = apply_fun ys alpha) ->
+          forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+  (** free_abelian_group_with_basis = ((abelian /\ fn) /\ infcyc) /\ direct_sum **)
+  apply (and4I
+    (abelian_group G mult e inv)
+    (function_on basis J G)
+    (forall alpha:set, alpha :e J ->
+      infinite_cyclic_subgroup G mult e inv (apply_fun basis alpha))
+    (direct_sum_of_subgroups G mult e inv J
+      (graph J (fun alpha:set =>
+        {g :e G | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun basis alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun basis alpha)) (ordsucc m)))})))).
+  + exact HabG.
+  + exact Hbasis_fn.
+  + (** infinite_cyclic_subgroup for each generator **)
+    let alpha. assume Hal : alpha :e J.
+    claim Hgena : generator_of G mult e inv (apply_fun basis alpha).
+    { exact (Hgen alpha Hal). }
+    (** From generator_of: basis(alpha) :e G and all elements are integer powers **)
+    claim HaG : apply_fun basis alpha :e G.
+    { exact (andEL
+        (apply_fun basis alpha :e G)
+        (forall g:set, g :e G ->
+          exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun basis alpha) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun basis alpha)) (ordsucc m))))
+        Hgena). }
+    (** Extract group structure for power membership **)
+    claim HgrpG : group_structure G mult e inv.
+    { exact (andEL (group_structure G mult e inv)
+        (forall x y:set, x :e G -> y :e G ->
+          apply_fun mult (x, y) = apply_fun mult (y, x))
+        HabG). }
+    (** Power closure: general helper - any b :e G has b^n :e G **)
+    claim Hpow_cl_gen : forall b:set, b :e G -> forall n:set, n :e omega ->
+      group_power_nat mult e b n :e G.
+    { let b. assume HbG : b :e G.
+      apply (and6E
+        (function_on mult (setprod G G) G)
+        (function_on inv G G)
+        (e :e G)
+        (forall u v w:set, u :e G -> v :e G -> w :e G ->
+          apply_fun mult (apply_fun mult (u, v), w) = apply_fun mult (u, apply_fun mult (v, w)))
+        (forall u:set, u :e G -> apply_fun mult (e, u) = u /\ apply_fun mult (u, e) = u)
+        (forall u:set, u :e G ->
+          apply_fun mult (u, apply_fun inv u) = e /\ apply_fun mult (apply_fun inv u, u) = e)
+        HgrpG).
+      assume HmultFn HinvFn HeG Hassoc Hid HinvLaw.
+      let n. assume Hn : n :e omega.
+      apply (nat_ind (fun k:set => group_power_nat mult e b k :e G)).
+      - exact (eq_subst_mem (group_power_nat mult e b 0) e G
+          (nat_primrec_0 e (fun _ r => apply_fun mult (b, r))) HeG).
+      - let k. assume Hk : nat_p k. assume IH : group_power_nat mult e b k :e G.
+        exact (eq_subst_mem
+          (group_power_nat mult e b (ordsucc k))
+          (apply_fun mult (b, group_power_nat mult e b k))
+          G
+          (nat_primrec_S e (fun _ r => apply_fun mult (b, r)) k Hk)
+          (HmultFn (b, group_power_nat mult e b k)
+            (tuple_2_setprod_by_pair_Sigma G G b (group_power_nat mult e b k) HbG IH))).
+      - exact (omega_nat_p n Hn). }
+    (** Power closure: positive powers in G **)
+    claim HpowG : forall n:set, n :e omega ->
+      group_power_nat mult e (apply_fun basis alpha) n :e G.
+    { exact (Hpow_cl_gen (apply_fun basis alpha) HaG). }
+    (** Power closure: negative powers in G **)
+    claim Hinv_aG : apply_fun inv (apply_fun basis alpha) :e G.
+    { apply (and6E
+        (function_on mult (setprod G G) G)
+        (function_on inv G G)
+        (e :e G)
+        (forall u v w:set, u :e G -> v :e G -> w :e G ->
+          apply_fun mult (apply_fun mult (u, v), w) = apply_fun mult (u, apply_fun mult (v, w)))
+        (forall u:set, u :e G -> apply_fun mult (e, u) = u /\ apply_fun mult (u, e) = u)
+        (forall u:set, u :e G ->
+          apply_fun mult (u, apply_fun inv u) = e /\ apply_fun mult (apply_fun inv u, u) = e)
+        HgrpG).
+      assume HmultFn HinvFn HeG Hassoc Hid HinvLaw.
+      exact (HinvFn (apply_fun basis alpha) HaG). }
+    claim HipowG : forall m:set, m :e omega ->
+      group_power_nat mult e (apply_fun inv (apply_fun basis alpha)) (ordsucc m) :e G.
+    { let m. assume Hm : m :e omega.
+      exact (Hpow_cl_gen (apply_fun inv (apply_fun basis alpha)) Hinv_aG
+        (ordsucc m) (omega_ordsucc m Hm)). }
+    (** The hard part: show no nontrivial positive power = e **)
+    claim Hnontriv : ~(exists n:set, n :e omega /\ n <> 0 /\
+      group_power_nat mult e (apply_fun basis alpha) n = e).
+    { admit. }
+    exact (and4I
+      (apply_fun basis alpha :e G)
+      (forall n:set, n :e omega -> group_power_nat mult e (apply_fun basis alpha) n :e G)
+      (forall m:set, m :e omega ->
+        group_power_nat mult e (apply_fun inv (apply_fun basis alpha)) (ordsucc m) :e G)
+      (~(exists n:set, n :e omega /\ n <> 0 /\
+        group_power_nat mult e (apply_fun basis alpha) n = e))
+      HaG HpowG HipowG Hnontriv).
+  + (** direct_sum_of_subgroups **)
+    admit.
 Admitted.
 
 (** from S67 Thm 67.8 (line 2689 in algtop.tex): rank is well-defined **)
