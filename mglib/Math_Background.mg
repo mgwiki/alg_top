@@ -220760,6 +220760,273 @@ exact (homeomorphism_preserves_normal_right
 Qed.
 
 (** Proven Charlie **)
+(** helper: homeomorphisms preserve contractibility on the right. **)
+Theorem homeomorphism_preserves_contractible_right :
+  forall X Tx Y Ty f:set,
+  homeomorphism X Tx Y Ty f ->
+  contractible_space X Tx ->
+  contractible_space Y Ty.
+let X Tx Y Ty f.
+assume Hhome HcX.
+claim HtopX : topology_on X Tx.
+{
+  exact (andEL
+    (topology_on X Tx)
+    (nulhomotopic X Tx X Tx (graph X (fun x:set => x)))
+    HcX).
+}
+claim HtopY : topology_on Y Ty.
+{
+  exact (homeomorphism_topology_right
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome).
+}
+claim HfCont : continuous_map X Tx Y Ty f.
+{ exact (homeomorphism_continuous X Tx Y Ty f Hhome). }
+claim Hexg :
+  exists g:set,
+    continuous_map Y Ty X Tx g /\
+    (forall u:set, u :e X -> apply_fun g (apply_fun f u) = u) /\
+    (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y).
+{ exact (homeomorphism_inverse_package X Tx Y Ty f Hhome). }
+apply Hexg.
+let g.
+assume Hgpack.
+apply (and3E
+  (continuous_map Y Ty X Tx g)
+  (forall u:set, u :e X -> apply_fun g (apply_fun f u) = u)
+  (forall y:set, y :e Y -> apply_fun f (apply_fun g y) = y)
+  Hgpack).
+assume HgCont HgIdL HfIdR.
+(** Use contractibility of X to homotope g to a constant in X, then compose with f to get id_Y homotopic to a constant. **)
+claim HnulX : nulhomotopic X Tx X Tx (graph X (fun x:set => x)).
+{
+  exact (andER
+    (topology_on X Tx)
+    (nulhomotopic X Tx X Tx (graph X (fun x:set => x)))
+    HcX).
+}
+apply HnulX.
+let x0.
+assume Hx0pack.
+claim Hx0X : x0 :e X.
+{
+  exact (andEL
+    (x0 :e X)
+    (homotopic_maps X Tx X Tx (graph X (fun x:set => x)) (const_fun X x0))
+    Hx0pack).
+}
+set y0 := apply_fun f x0.
+claim Hy0Y : y0 :e Y.
+{
+  exact (continuous_map_function_on
+    X
+    Tx
+    Y
+    Ty
+    f
+    HfCont
+    x0
+    Hx0X).
+}
+claim HconstX :
+  continuous_map Y Ty X Tx (const_fun Y x0).
+{
+  exact (const_fun_continuous
+    Y
+    Ty
+    X
+    Tx
+    x0
+    HtopY
+    HtopX
+    Hx0X).
+}
+claim Hhom_g :
+  homotopic_maps Y Ty X Tx g (const_fun Y x0).
+{
+  exact (ex51_3c_contractible_codomain
+    Y
+    Ty
+    X
+    Tx
+    g
+    (const_fun Y x0)
+    HcX
+    HgCont
+    HconstX).
+}
+claim Hf_refl :
+  homotopic_maps X Tx Y Ty f f.
+{
+  exact (Lemma_51_1_homotopy_refl
+    X
+    Tx
+    Y
+    Ty
+    f
+    HfCont).
+}
+claim Hhom_fg :
+  homotopic_maps Y Ty Y Ty (compose_fun Y g f) (compose_fun Y (const_fun Y x0) f).
+{
+  exact (ex51_1_composition_homotopic
+    Y
+    Ty
+    X
+    Tx
+    Y
+    Ty
+    g
+    (const_fun Y x0)
+    f
+    f
+    Hhom_g
+    Hf_refl).
+}
+claim Hcomp_const :
+  compose_fun Y (const_fun Y x0) f = const_fun Y y0.
+{
+  apply (total_function_space_extensional
+    Y
+    Y
+    (compose_fun Y (const_fun Y x0) f)
+    (const_fun Y y0)).
+  - claim HconstFun : function_on (const_fun Y x0) Y X.
+    {
+      exact (total_function_on_function_on
+        (const_fun Y x0)
+        Y
+        X
+        (const_fun_total_function_on Y X x0 Hx0X)).
+    }
+    claim HfFun : function_on f X Y.
+    { exact (continuous_map_function_on X Tx Y Ty f HfCont). }
+    exact (compose_fun_in_total_function_space
+      Y
+      X
+      Y
+      (const_fun Y x0)
+      f
+      HconstFun
+      HfFun).
+  - exact (graph_in_total_function_space
+      Y
+      Y
+      (fun _:set => y0)
+      (fun y Hy => Hy0Y)).
+  - let y.
+    assume Hy : y :e Y.
+    rewrite (compose_fun_apply
+      Y
+      (const_fun Y x0)
+      f
+      y
+      Hy).
+    rewrite (const_fun_apply
+      Y
+      x0
+      y
+      Hy).
+    rewrite (const_fun_apply
+      Y
+      y0
+      y
+      Hy).
+    reflexivity.
+}
+claim Hhom_fg' :
+  homotopic_maps Y Ty Y Ty (compose_fun Y g f) (const_fun Y y0).
+{
+  rewrite <- Hcomp_const.
+  exact Hhom_fg.
+}
+claim HidY :
+  compose_fun Y g f = graph Y (fun y:set => y).
+{
+  apply (total_function_space_extensional
+    Y
+    Y
+    (compose_fun Y g f)
+    (graph Y (fun y:set => y))).
+  - claim HgFun : function_on g Y X.
+    { exact (continuous_map_function_on Y Ty X Tx g HgCont). }
+    claim HfFun : function_on f X Y.
+    { exact (continuous_map_function_on X Tx Y Ty f HfCont). }
+    exact (compose_fun_in_total_function_space
+      Y
+      X
+      Y
+      g
+      f
+      HgFun
+      HfFun).
+  - exact (graph_in_total_function_space
+      Y
+      Y
+      (fun y:set => y)
+      (fun y Hy => Hy)).
+  - let y.
+    assume Hy : y :e Y.
+    rewrite (compose_fun_apply
+      Y
+      g
+      f
+      y
+      Hy).
+    rewrite (HfIdR y Hy).
+    rewrite (apply_fun_graph Y (fun y0:set => y0) y Hy).
+    reflexivity.
+}
+claim HconstY :
+  homotopic_maps Y Ty Y Ty (graph Y (fun y:set => y)) (const_fun Y y0).
+{
+  rewrite <- HidY.
+  exact Hhom_fg'.
+}
+claim HnulY :
+  nulhomotopic Y Ty Y Ty (graph Y (fun y:set => y)).
+{
+  prove exists y0':set, y0' :e Y /\
+    homotopic_maps Y Ty Y Ty (graph Y (fun y:set => y)) (const_fun Y y0').
+  witness y0.
+  apply andI.
+  - exact Hy0Y.
+  - exact HconstY.
+}
+exact (andI
+  (topology_on Y Ty)
+  (nulhomotopic Y Ty Y Ty (graph Y (fun y:set => y)))
+  HtopY
+  HnulY).
+Qed.
+
+(** Proven Charlie **)
+(** helper: arcs are contractible. **)
+Theorem arc_contractible_space :
+  forall A Ta:set,
+  arc A Ta ->
+  contractible_space A Ta.
+let A Ta.
+assume Harc.
+apply Harc.
+let f.
+assume Hhome : homeomorphism unit_interval unit_interval_topology A Ta f.
+exact (homeomorphism_preserves_contractible_right
+  unit_interval
+  unit_interval_topology
+  A
+  Ta
+  f
+  Hhome
+  ex51_3a_I_contractible).
+Qed.
+
+(** Proven Charlie **)
 (** helper: general linear graphs are T1 (one-point sets are closed). **)
 Theorem general_linear_graph_one_point_sets_closed :
   forall X Tx Arcs:set,
