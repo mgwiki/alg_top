@@ -158815,7 +158815,147 @@ claim Hcval_fam : forall k:set, k :e N -> comb_val k :e apply_fun Gfam (comb_alp
       (Hxfam2 (inv_enum (Eps_i (fun j:set => k = add_nat n1 j /\ j :e m))) Hien)). }
 claim Hcomb_fam : forall i:set, i :e N -> apply_fun comb_xs i :e apply_fun Gfam (apply_fun comb_alphas i).
 { admit. }
-claim Hcomb_inj : forall i j:set, i :e N -> j :e N -> i <> j -> apply_fun comb_alphas i <> apply_fun comb_alphas j. { admit. }
+claim Hcalpha_inj : forall i j:set, i :e N -> j :e N -> i <> j -> comb_alpha i <> comb_alpha j.
+{ let i j. assume Hi : i :e N. assume Hj : j :e N. assume Hne : i <> j.
+  apply (xm (i :e n1)).
+  - assume Hin1 : i :e n1.
+    claim Hcai : comb_alpha i = apply_fun a1 i.
+    { exact (If_i_1 (i :e n1) (apply_fun a1 i)
+        (apply_fun a2 (inv_enum (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m)))) Hin1). }
+    apply (xm (j :e n1)).
+    + assume Hjn1 : j :e n1.
+      claim Hcaj : comb_alpha j = apply_fun a1 j.
+      { exact (If_i_1 (j :e n1) (apply_fun a1 j)
+          (apply_fun a2 (inv_enum (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m)))) Hjn1). }
+      assume Heq : comb_alpha i = comb_alpha j.
+      claim Ha_eq : apply_fun a1 i = apply_fun a1 j.
+      { exact (eq_i_tra (apply_fun a1 i) (comb_alpha i) (apply_fun a1 j)
+          (eq_symm (comb_alpha i) (apply_fun a1 i) Hcai)
+          (eq_i_tra (comb_alpha i) (comb_alpha j) (apply_fun a1 j) Heq Hcaj)). }
+      exact (Hinj1 i j Hin1 Hjn1 Hne Ha_eq).
+    + assume Hjnn : ~(j :e n1).
+      claim Hcaj : comb_alpha j = apply_fun a2 (inv_enum (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m))).
+      { exact (If_i_0 (j :e n1) (apply_fun a1 j)
+          (apply_fun a2 (inv_enum (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m)))) Hjnn). }
+      claim Hepsj : Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m) :e m.
+      { exact (andEL
+          (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m) :e m)
+          (j = add_nat n1 (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m)))
+          (Heps_valid j Hj Hjnn)). }
+      claim Hinv_ej_U : inv_enum (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m)) :e unmatched_set.
+      { exact (Hinv_in_U (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m)) Hepsj). }
+      assume Heq : comb_alpha i = comb_alpha j.
+      claim Ha_eq : apply_fun a1 i =
+        apply_fun a2 (inv_enum (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m))).
+      { exact (eq_i_tra (apply_fun a1 i) (comb_alpha i)
+          (apply_fun a2 (inv_enum (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m))))
+          (eq_symm (comb_alpha i) (apply_fun a1 i) Hcai)
+          (eq_i_tra (comb_alpha i) (comb_alpha j)
+            (apply_fun a2 (inv_enum (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m)))) Heq Hcaj)). }
+      exact (Hunmatched_prop (inv_enum (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m)))
+        Hinv_ej_U i Hin1
+        (eq_symm (apply_fun a1 i)
+          (apply_fun a2 (inv_enum (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m)))) Ha_eq)).
+  - assume Hinn : ~(i :e n1).
+    claim Hcai : comb_alpha i = apply_fun a2 (inv_enum (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m))).
+    { exact (If_i_0 (i :e n1) (apply_fun a1 i)
+        (apply_fun a2 (inv_enum (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m)))) Hinn). }
+    claim Hepsi : Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m) :e m.
+    { exact (andEL
+        (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m) :e m)
+        (i = add_nat n1 (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m)))
+        (Heps_valid i Hi Hinn)). }
+    apply (xm (j :e n1)).
+    + assume Hjn1 : j :e n1.
+      claim Hcaj : comb_alpha j = apply_fun a1 j.
+      { exact (If_i_1 (j :e n1) (apply_fun a1 j)
+          (apply_fun a2 (inv_enum (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m)))) Hjn1). }
+      claim Hinv_ei_U : inv_enum (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m)) :e unmatched_set.
+      { exact (Hinv_in_U (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m)) Hepsi). }
+      assume Heq : comb_alpha i = comb_alpha j.
+      claim Ha_eq : apply_fun a2 (inv_enum (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m))) = apply_fun a1 j.
+      { exact (eq_i_tra
+          (apply_fun a2 (inv_enum (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m))))
+          (comb_alpha i) (apply_fun a1 j)
+          (eq_symm (comb_alpha i)
+            (apply_fun a2 (inv_enum (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m)))) Hcai)
+          (eq_i_tra (comb_alpha i) (comb_alpha j) (apply_fun a1 j) Heq Hcaj)). }
+      exact (Hunmatched_prop (inv_enum (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m)))
+        Hinv_ei_U j Hjn1 Ha_eq).
+    + assume Hjnn : ~(j :e n1).
+      claim Hcaj : comb_alpha j = apply_fun a2 (inv_enum (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m))).
+      { exact (If_i_0 (j :e n1) (apply_fun a1 j)
+          (apply_fun a2 (inv_enum (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m)))) Hjnn). }
+      claim Hepsj : Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m) :e m.
+      { exact (andEL
+          (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m) :e m)
+          (j = add_nat n1 (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m)))
+          (Heps_valid j Hj Hjnn)). }
+      assume Heq : comb_alpha i = comb_alpha j.
+      claim Ha_eq : apply_fun a2 (inv_enum (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m))) =
+        apply_fun a2 (inv_enum (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m))).
+      { exact (eq_i_tra
+          (apply_fun a2 (inv_enum (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m))))
+          (comb_alpha i)
+          (apply_fun a2 (inv_enum (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m))))
+          (eq_symm (comb_alpha i)
+            (apply_fun a2 (inv_enum (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m)))) Hcai)
+          (eq_i_tra (comb_alpha i) (comb_alpha j)
+            (apply_fun a2 (inv_enum (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m)))) Heq Hcaj)). }
+      claim Hinv_ei_n2 : inv_enum (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m)) :e n2.
+      { exact (Hinv_in_n2 (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m)) Hepsi). }
+      claim Hinv_ej_n2 : inv_enum (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m)) :e n2.
+      { exact (Hinv_in_n2 (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m)) Hepsj). }
+      claim Hepsi_eq : i = add_nat n1 (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m)).
+      { exact (andER
+          (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m) :e m)
+          (i = add_nat n1 (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m)))
+          (Heps_valid i Hi Hinn)). }
+      claim Hepsj_eq : j = add_nat n1 (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m)).
+      { exact (andER
+          (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m) :e m)
+          (j = add_nat n1 (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m)))
+          (Heps_valid j Hj Hjnn)). }
+      claim Heps_ne : Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m) <>
+        Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m).
+      { assume Habs : Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m) =
+          Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m).
+        claim Hn1eq : add_nat n1 (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m)) =
+          add_nat n1 (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m)).
+        { rewrite Habs. reflexivity. }
+        claim Hij : i = j.
+        { exact (eq_i_tra i (add_nat n1 (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m))) j
+            Hepsi_eq
+            (eq_i_tra (add_nat n1 (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m)))
+              (add_nat n1 (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m))) j
+              Hn1eq
+              (eq_symm j (add_nat n1 (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m))) Hepsj_eq))). }
+        exact (Hne Hij). }
+      claim Hinv_ne : inv_enum (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m)) <>
+        inv_enum (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m)).
+      { assume Habs : inv_enum (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m)) =
+          inv_enum (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m)).
+        claim Heps_eq_ij : Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m) =
+          Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m).
+        { exact (Hinv_inj
+            (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m)) Hepsi
+            (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m)) Hepsj Habs). }
+        exact (Heps_ne Heps_eq_ij). }
+      exact (Hinj2
+        (inv_enum (Eps_i (fun j0:set => i = add_nat n1 j0 /\ j0 :e m)))
+        (inv_enum (Eps_i (fun j0:set => j = add_nat n1 j0 /\ j0 :e m)))
+        Hinv_ei_n2 Hinv_ej_n2 Hinv_ne Ha_eq). }
+claim Hcomb_inj : forall i j:set, i :e N -> j :e N -> i <> j -> apply_fun comb_alphas i <> apply_fun comb_alphas j.
+{ let i j. assume Hi Hj Hne.
+  claim Hca_inj : comb_alpha i <> comb_alpha j. { exact (Hcalpha_inj i j Hi Hj Hne). }
+  assume Heq : apply_fun comb_alphas i = apply_fun comb_alphas j.
+  claim Hei : apply_fun comb_alphas i = comb_alpha i. { exact (apply_fun_graph N comb_alpha i Hi). }
+  claim Hej : apply_fun comb_alphas j = comb_alpha j. { exact (apply_fun_graph N comb_alpha j Hj). }
+  claim Hca_eq : comb_alpha i = comb_alpha j.
+  { exact (eq_i_tra (comb_alpha i) (apply_fun comb_alphas i) (comb_alpha j)
+      (eq_symm (apply_fun comb_alphas i) (comb_alpha i) Hei)
+      (eq_i_tra (apply_fun comb_alphas i) (apply_fun comb_alphas j) (comb_alpha j) Heq Hej)). }
+  exact (Hca_inj Hca_eq). }
 claim Hcomb_prod_e : nat_primrec e (fun i r => apply_fun mult (r, apply_fun comb_xs i)) N = e. { admit. }
 claim Hcomb_all_e : forall i:set, i :e N -> apply_fun comb_xs i = e.
 { exact (Hzs N HN_omega HN_ne comb_alphas Hcomb_alphas_fn Hcomb_inj comb_xs Hcomb_vals_fn Hcomb_fam Hcomb_prod_e). }
