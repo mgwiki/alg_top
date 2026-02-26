@@ -252398,6 +252398,126 @@ claim H1NotImageB : ~(apply_fun fcls 1 :e B).
     (~(apply_fun fcls 1 :e B))
     H1ImageClassA).
 }
+claim Hunit_not_preU_implies_preV :
+  forall t:set, t :e unit_interval -> ~(t :e preU) -> t :e preV.
+{
+  let t.
+  assume HtI : t :e unit_interval.
+  assume HnotPreU : ~(t :e preU).
+  claim HtUV : t :e preU :\/: preV.
+  {
+    rewrite <- HpreUVCover.
+    exact HtI.
+  }
+  apply (binunionE preU preV t HtUV).
+  - assume HtPreU : t :e preU.
+    exact (FalseE (HnotPreU HtPreU) (t :e preV)).
+  - assume HtPreV : t :e preV.
+    exact HtPreV.
+}
+claim Hunit_not_preV_implies_preU :
+  forall t:set, t :e unit_interval -> ~(t :e preV) -> t :e preU.
+{
+  let t.
+  assume HtI : t :e unit_interval.
+  assume HnotPreV : ~(t :e preV).
+  claim HtUV : t :e preU :\/: preV.
+  {
+    rewrite <- HpreUVCover.
+    exact HtI.
+  }
+  apply (binunionE preU preV t HtUV).
+  - assume HtPreU : t :e preU.
+    exact HtPreU.
+  - assume HtPreV : t :e preV.
+    exact (FalseE (HnotPreV HtPreV) (t :e preU)).
+}
+claim Hunit_interval_preUV_trichotomy :
+  forall t:set, t :e unit_interval ->
+    (t :e preU /\ ~(t :e preV)) \/
+    ((t :e preV /\ ~(t :e preU)) \/
+      (t :e preU /\ t :e preV)).
+{
+  let t.
+  assume HtI : t :e unit_interval.
+  apply (xm (t :e preU)).
+  - assume HtPreU : t :e preU.
+    apply (xm (t :e preV)).
+    + assume HtPreV : t :e preV.
+      apply orIR.
+      apply orIR.
+      exact (andI
+        (t :e preU)
+        (t :e preV)
+        HtPreU
+        HtPreV).
+    + assume HnotPreV : ~(t :e preV).
+      apply orIL.
+      exact (andI
+        (t :e preU)
+        (~(t :e preV))
+        HtPreU
+        HnotPreV).
+  - assume HnotPreU : ~(t :e preU).
+    claim HtPreV : t :e preV.
+    {
+      exact (Hunit_not_preU_implies_preV t HtI HnotPreU).
+    }
+    apply orIR.
+    apply orIL.
+    exact (andI
+      (t :e preV)
+      (~(t :e preU))
+      HtPreV
+      HnotPreU).
+}
+claim Hunit_interval_image_quadrichotomy :
+  forall t:set, t :e unit_interval ->
+    (t :e preU /\ ~(t :e preV)) \/
+    ((t :e preV /\ ~(t :e preU)) \/
+      ((apply_fun fcls t :e A /\ ~(apply_fun fcls t :e B)) \/
+       (apply_fun fcls t :e B /\ ~(apply_fun fcls t :e A)))).
+{
+  let t.
+  assume HtI : t :e unit_interval.
+  claim Htri : (t :e preU /\ ~(t :e preV)) \/
+    ((t :e preV /\ ~(t :e preU)) \/
+      (t :e preU /\ t :e preV)).
+  {
+    exact (Hunit_interval_preUV_trichotomy t HtI).
+  }
+  apply Htri.
+  - assume Hleft : t :e preU /\ ~(t :e preV).
+    apply orIL.
+    exact Hleft.
+  - assume Hright :
+      (t :e preV /\ ~(t :e preU)) \/
+      (t :e preU /\ t :e preV).
+    apply Hright.
+    + assume Hedge : t :e preV /\ ~(t :e preU).
+      apply orIR.
+      apply orIL.
+      exact Hedge.
+    + assume Hover : t :e preU /\ t :e preV.
+      claim HtUV : t :e preU :/\: preV.
+      {
+        exact (binintersectI
+          preU
+          preV
+          t
+          (andEL (t :e preU) (t :e preV) Hover)
+          (andER (t :e preU) (t :e preV) Hover)).
+      }
+      claim HimgClass :
+        (apply_fun fcls t :e A /\ ~(apply_fun fcls t :e B)) \/
+        (apply_fun fcls t :e B /\ ~(apply_fun fcls t :e A)).
+      {
+        exact (HpreUV_image_classify_strict t HtUV).
+      }
+      apply orIR.
+      apply orIR.
+      exact HimgClass.
+}
 (** TODO Bob: prove via S63-style alternating decomposition in U cap V = A union B
     with A cap B = Empty, then identify loop class as power of [alpha.beta] or inverse power.
     Current core setup complete:
@@ -252413,7 +252533,8 @@ claim H1NotImageB : ~(apply_fun fcls 1 :e B).
       pointwise image exclusions from preA/preB,
     - direct image-side implication/equivalence layer on overlap (notA->B, notB->A, A->notB, B->notA),
     - strict image classification/equivalence layer (iff bridges and endpoint image classes),
-    - direct preA/preB <-> image-negation equivalence forms and endpoint image corollaries.
+    - direct preA/preB <-> image-negation equivalence forms and endpoint image corollaries,
+    - unit-interval trichotomy/quadrichotomy splitting (U-only, V-only, overlap A-side, overlap B-side).
     Remaining: alternating crossing decomposition over U cap V = A union B (A cap B=Empty). **)
 admit.
 Admitted.
