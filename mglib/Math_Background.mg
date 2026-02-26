@@ -158814,7 +158814,15 @@ claim Hcval_fam : forall k:set, k :e N -> comb_val k :e apply_fun Gfam (comb_alp
       (apply_fun x2 (inv_enum (Eps_i (fun j:set => k = add_nat n1 j /\ j :e m))))
       (Hxfam2 (inv_enum (Eps_i (fun j:set => k = add_nat n1 j /\ j :e m))) Hien)). }
 claim Hcomb_fam : forall i:set, i :e N -> apply_fun comb_xs i :e apply_fun Gfam (apply_fun comb_alphas i).
-{ admit. }
+{ let k. assume Hk : k :e N.
+  claim Hcxs_def : comb_xs = graph N comb_val. { reflexivity. }
+  claim Hval_eq : apply_fun comb_xs k = comb_val k.
+  { exact (apply_fun_of_graph_eq comb_xs N comb_val k Hcxs_def Hk). }
+  claim Hcalphas_def : comb_alphas = graph N comb_alpha. { reflexivity. }
+  claim Halpha_eq : apply_fun comb_alphas k = comb_alpha k.
+  { exact (apply_fun_of_graph_eq comb_alphas N comb_alpha k Hcalphas_def Hk). }
+  rewrite Hval_eq. rewrite Halpha_eq.
+  exact (Hcval_fam k Hk). }
 claim Hcalpha_inj : forall i j:set, i :e N -> j :e N -> i <> j -> comb_alpha i <> comb_alpha j.
 { let i j. assume Hi : i :e N. assume Hj : j :e N. assume Hne : i <> j.
   apply (xm (i :e n1)).
