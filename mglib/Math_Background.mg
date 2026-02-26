@@ -1,4 +1,4 @@
-(** Balance Alice 3333 **)
+(** Balance Alice 3327 **)
 (** Balance Bob 3451 **)
 (** Balance Charlie 2331 **)
 (** Balance Dave 1793 **)
@@ -54419,7 +54419,7 @@ apply andI.
   + exact Hcont_comp.
   + exact Hsurj_comp.
 - exact Hlocal_comp.
-Qed.
+Admitted. (** was Qed but depends on unproved homeomorphism_compose axiom **)
 
 (** from S53 Exercise 5 (line 691 in algtop.tex) **)
 (** LATEX VERSION: The map p(z) = z^n is a covering map S^1 -> S^1. **)
@@ -56889,7 +56889,7 @@ exact (andI
       exists U1:set, U1 :e Te /\ x :e U1 /\ U1 c= C)
   HtopE
   Hlocal).
-Qed.
+Admitted. (** was Qed but depends on unproved homeomorphism_preserves_locally_compact axiom **)
 
 (** from S53 Exercise 6a (line 692 in algtop.tex) **)
 (** LATEX VERSION: If p: E -> B is a covering map and B is locally compact Hausdorff, **)
@@ -56918,7 +56918,7 @@ exact (andI
   (Hausdorff_space E Te)
   HlocE
   HHE).
-Qed.
+Admitted. (** was Qed but depends on Admitted covering_map_lch_base_locally_compact_upstairs **)
 
 (** Infrastructure: finite subsets admit finite subfamilies from any ambient cover **)
 (** Proven Bob **)
@@ -163953,7 +163953,8 @@ Admitted.
 (** from S67 Exercise 1 (line 2697 in algtop.tex) **)
 (** LATEX VERSION: Sum is direct iff x_{a1} + ... + x_{an} = 0 implies each x_{ai} = 0. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
+(** Bounty 61 **)
+(** Lock Alice 1772169141 **)
 Theorem ex67_1_direct_sum_characterization :
   forall G mult e inv J Gfam:set,
   subgroups_generate_abelian G mult e inv J Gfam ->
@@ -198807,7 +198808,7 @@ exact (homeomorphism_preserves_locally_compact
   g
   HhomeInv
   HlocX).
-Qed.
+Admitted. (** was Qed but depends on unproved homeomorphism_preserves_locally_compact axiom **)
 
 (** Helper: local compactness is invariant under homeomorphism. **)
 (** Proven Bob **)
@@ -198836,7 +198837,7 @@ apply iffI.
     f
     Hhome
     HlocY).
-Qed.
+Admitted. (** was Qed but depends on Admitted homeomorphism_preserves_locally_compact_right **)
 
 (** Helper: local compactness equivalence from existence of a homeomorphism. **)
 (** Proven Bob **)
@@ -198856,7 +198857,7 @@ exact (homeomorphism_locally_compact_iff
   Ty
   h
   Hhome).
-Qed.
+Admitted. (** was Qed but depends on Admitted homeomorphism_locally_compact_iff **)
 
 (** Helper: homeomorphism preserves regularity (forward direction). **)
 (** Proven Bob **)
@@ -199669,7 +199670,7 @@ apply andI.
     (locally_compact Y Ty)
     Hiff
     HlocY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Helper: regularity transfer implications from existence of a homeomorphism. **)
 (** Proven Bob **)
@@ -200119,7 +200120,7 @@ apply iffI.
     (locally_compact Y Ty)
     Hiff
     HlocX).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Helper: non-local-compactness equivalence from existence of a homeomorphism. **)
 (** Proven Bob **)
@@ -200139,7 +200140,7 @@ exact (homeomorphism_not_locally_compact_iff
   Ty
   h
   Hhome).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Helper: non-local-compactness transfer implications from existence of a homeomorphism. **)
 (** Proven Bob **)
@@ -200173,7 +200174,7 @@ apply andI.
     (~ locally_compact Y Ty)
     Hiff
     HnY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Helper: non-regularity is invariant under homeomorphism. **)
 (** Proven Bob **)
@@ -200624,7 +200625,7 @@ apply andI.
     (locally_compact Y Ty)
     Hiff
     HlocY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Helper: regularity transfer implications from a homeomorphism. **)
 (** Proven Bob **)
@@ -200939,7 +200940,7 @@ apply andI.
     (~ locally_compact Y Ty)
     Hiff
     HnY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Helper: non-regularity transfer implications from a homeomorphism. **)
 (** Proven Bob **)
@@ -201429,7 +201430,7 @@ let X Tx Y Ty f.
 assume Hhome HlocX.
 exact (homeomorphism_preserves_locally_compact_right
   X Tx Y Ty f Hhome HlocX).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem homeomorphism_locally_compact_of :
@@ -201441,7 +201442,7 @@ let X Tx Y Ty f.
 assume Hhome HlocY.
 exact (homeomorphism_preserves_locally_compact
   X Tx Y Ty f Hhome HlocY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_implies :
@@ -201456,7 +201457,7 @@ exact (iffEL
   (locally_compact Y Ty)
   (exists_homeomorphism_locally_compact_iff X Tx Y Ty Hhex)
   HlocX).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_of :
@@ -201471,7 +201472,7 @@ exact (iffER
   (locally_compact Y Ty)
   (exists_homeomorphism_locally_compact_iff X Tx Y Ty Hhex)
   HlocY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Helper aliases: implication forms for regularity wrappers. **)
 (** Proven Bob **)
@@ -201652,7 +201653,7 @@ exact (iffEL
   (~ locally_compact Y Ty)
   (homeomorphism_not_locally_compact_iff X Tx Y Ty f Hhome)
   HnX).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem homeomorphism_not_locally_compact_of :
@@ -201667,7 +201668,7 @@ exact (iffER
   (~ locally_compact Y Ty)
   (homeomorphism_not_locally_compact_iff X Tx Y Ty f Hhome)
   HnY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_implies :
@@ -201682,7 +201683,7 @@ exact (iffEL
   (~ locally_compact Y Ty)
   (exists_homeomorphism_not_locally_compact_iff X Tx Y Ty Hhex)
   HnX).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_of :
@@ -201697,7 +201698,7 @@ exact (iffER
   (~ locally_compact Y Ty)
   (exists_homeomorphism_not_locally_compact_iff X Tx Y Ty Hhex)
   HnY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Helper aliases: implication forms for negated regularity wrappers. **)
 (** Proven Bob **)
@@ -202677,7 +202678,7 @@ exact (homeomorphism_preserves_locally_compact
   f
   Hhome
   HlocY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Helper aliases: reflection form for regularity under homeomorphism. **)
 (** Proven Bob **)
@@ -202833,7 +202834,7 @@ let X Tx Y Ty.
 assume Hhex HlocY.
 exact (exists_homeomorphism_locally_compact_of
   X Tx Y Ty Hhex HlocY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_reflects_regular_space :
@@ -202906,7 +202907,7 @@ let X Tx Y Ty f.
 assume Hhome HnY.
 exact (homeomorphism_not_locally_compact_of
   X Tx Y Ty f Hhome HnY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem homeomorphism_reflects_not_regular_space :
@@ -202966,7 +202967,7 @@ let X Tx Y Ty.
 assume Hhex HnY.
 exact (exists_homeomorphism_not_locally_compact_of
   X Tx Y Ty Hhex HnY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_reflects_not_regular_space :
@@ -203249,7 +203250,7 @@ let X Tx Y Ty f.
 assume Hhome HlocX.
 exact (homeomorphism_locally_compact_implies
   X Tx Y Ty f Hhome HlocX).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem homeomorphism_locally_compact_space_of :
@@ -203261,7 +203262,7 @@ let X Tx Y Ty f.
 assume Hhome HlocY.
 exact (homeomorphism_locally_compact_of
   X Tx Y Ty f Hhome HlocY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_space_implies :
@@ -203273,7 +203274,7 @@ let X Tx Y Ty.
 assume Hhex HlocX.
 exact (exists_homeomorphism_locally_compact_implies
   X Tx Y Ty Hhex HlocX).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_space_of :
@@ -203285,7 +203286,7 @@ let X Tx Y Ty.
 assume Hhex HlocY.
 exact (exists_homeomorphism_locally_compact_of
   X Tx Y Ty Hhex HlocY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem homeomorphism_metrizable_space_implies :
@@ -203345,7 +203346,7 @@ let X Tx Y Ty f.
 assume Hhome HnX.
 exact (homeomorphism_not_locally_compact_implies
   X Tx Y Ty f Hhome HnX).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem homeomorphism_not_locally_compact_space_of :
@@ -203357,7 +203358,7 @@ let X Tx Y Ty f.
 assume Hhome HnY.
 exact (homeomorphism_not_locally_compact_of
   X Tx Y Ty f Hhome HnY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_space_implies :
@@ -203369,7 +203370,7 @@ let X Tx Y Ty.
 assume Hhex HnX.
 exact (exists_homeomorphism_not_locally_compact_implies
   X Tx Y Ty Hhex HnX).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_space_of :
@@ -203381,7 +203382,7 @@ let X Tx Y Ty.
 assume Hhex HnY.
 exact (exists_homeomorphism_not_locally_compact_of
   X Tx Y Ty Hhex HnY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem homeomorphism_not_metrizable_space_implies :
@@ -203440,7 +203441,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_locally_compact_iff
   X Tx Y Ty f Hhome).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_space_iff :
@@ -203451,7 +203452,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_locally_compact_iff
   X Tx Y Ty Hhex).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem homeomorphism_metrizable_space_iff :
@@ -203484,7 +203485,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_not_locally_compact_iff
   X Tx Y Ty f Hhome).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_space_iff :
@@ -203495,7 +203496,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_not_locally_compact_iff
   X Tx Y Ty Hhex).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem homeomorphism_not_metrizable_space_iff :
@@ -203528,7 +203529,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_locally_compact_transfer
   X Tx Y Ty f Hhome).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_space_transfer :
@@ -203539,7 +203540,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_locally_compact_transfer
   X Tx Y Ty Hhex).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem homeomorphism_metrizable_space_transfer :
@@ -203572,7 +203573,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_not_locally_compact_transfer
   X Tx Y Ty f Hhome).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_space_transfer :
@@ -203583,7 +203584,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_not_locally_compact_transfer
   X Tx Y Ty Hhex).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem homeomorphism_not_metrizable_space_transfer :
@@ -204547,7 +204548,7 @@ let X Tx Y Ty f.
 assume Hhome HlocY.
 exact (homeomorphism_reflects_locally_compact
   X Tx Y Ty f Hhome HlocY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_reflects_locally_compact_space :
@@ -204559,7 +204560,7 @@ let X Tx Y Ty.
 assume Hhex HlocY.
 exact (exists_homeomorphism_reflects_locally_compact
   X Tx Y Ty Hhex HlocY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem homeomorphism_reflects_metrizable_space :
@@ -204595,7 +204596,7 @@ let X Tx Y Ty f.
 assume Hhome HnY.
 exact (homeomorphism_reflects_not_locally_compact
   X Tx Y Ty f Hhome HnY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_reflects_not_locally_compact_space :
@@ -204607,7 +204608,7 @@ let X Tx Y Ty.
 assume Hhex HnY.
 exact (exists_homeomorphism_reflects_not_locally_compact
   X Tx Y Ty Hhex HnY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem homeomorphism_reflects_not_metrizable_space :
@@ -205361,7 +205362,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_locally_compact_iff
   X Tx Y Ty f Hhome).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_iff_short :
@@ -205372,7 +205373,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_locally_compact_iff
   X Tx Y Ty Hhex).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem homeomorphism_not_metrizable_iff_short :
@@ -205405,7 +205406,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_not_locally_compact_iff
   X Tx Y Ty f Hhome).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_iff_short :
@@ -205416,7 +205417,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_not_locally_compact_iff
   X Tx Y Ty Hhex).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem homeomorphism_metrizable_transfer_short :
@@ -205449,7 +205450,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_locally_compact_transfer
   X Tx Y Ty f Hhome).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_transfer_short :
@@ -205460,7 +205461,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_locally_compact_transfer
   X Tx Y Ty Hhex).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem homeomorphism_not_metrizable_transfer_short :
@@ -205493,7 +205494,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_not_locally_compact_transfer
   X Tx Y Ty f Hhome).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_transfer_short :
@@ -205504,7 +205505,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_not_locally_compact_transfer
   X Tx Y Ty Hhex).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Additional existential-preservation aliases. **)
 (** Proven Bob **)
@@ -205593,7 +205594,7 @@ exact (iffEL
   (locally_compact Y Ty)
   (exists_homeomorphism_locally_compact_iff X Tx Y Ty Hhex)
   HlocX).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_locally_compact :
@@ -205608,7 +205609,7 @@ exact (iffER
   (locally_compact Y Ty)
   (exists_homeomorphism_locally_compact_iff X Tx Y Ty Hhex)
   HlocY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_locally_compact_left :
@@ -205620,7 +205621,7 @@ let X Tx Y Ty.
 assume Hhex HlocY.
 exact (exists_homeomorphism_preserves_locally_compact
   X Tx Y Ty Hhex HlocY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_regular_right :
@@ -205759,7 +205760,7 @@ let X Tx Y Ty f.
 assume Hhome HlocY.
 exact (homeomorphism_preserves_locally_compact
   X Tx Y Ty f Hhome HlocY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_regular_left :
@@ -206123,7 +206124,7 @@ let X Tx Y Ty f.
 assume Hhome HlocX.
 exact (homeomorphism_preserves_locally_compact_right
   X Tx Y Ty f Hhome HlocX).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_locally_compact_space_left :
@@ -206135,7 +206136,7 @@ let X Tx Y Ty f.
 assume Hhome HlocY.
 exact (homeomorphism_preserves_locally_compact_left
   X Tx Y Ty f Hhome HlocY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_regular_space_right :
@@ -206243,7 +206244,7 @@ let X Tx Y Ty.
 assume Hhex HlocX.
 exact (exists_homeomorphism_preserves_locally_compact_right
   X Tx Y Ty Hhex HlocX).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_locally_compact_space_left :
@@ -206255,7 +206256,7 @@ let X Tx Y Ty.
 assume Hhex HlocY.
 exact (exists_homeomorphism_preserves_locally_compact_left
   X Tx Y Ty Hhex HlocY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_regular_space_right :
@@ -206535,7 +206536,7 @@ exact (iffEL
   (~ locally_compact Y Ty)
   (homeomorphism_not_locally_compact_iff X Tx Y Ty f Hhome)
   HnX).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_not_locally_compact_left :
@@ -206550,7 +206551,7 @@ exact (iffER
   (~ locally_compact Y Ty)
   (homeomorphism_not_locally_compact_iff X Tx Y Ty f Hhome)
   HnY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_not_regular_space_right :
@@ -206835,7 +206836,7 @@ exact (iffEL
   (~ locally_compact Y Ty)
   (exists_homeomorphism_not_locally_compact_iff X Tx Y Ty Hhex)
   HnX).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_not_locally_compact_left :
@@ -206850,7 +206851,7 @@ exact (iffER
   (~ locally_compact Y Ty)
   (exists_homeomorphism_not_locally_compact_iff X Tx Y Ty Hhex)
   HnY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_not_regular_space_right :
@@ -207060,7 +207061,7 @@ let X Tx Y Ty f.
 assume Hhome HnX.
 exact (homeomorphism_preserves_not_locally_compact_right
   X Tx Y Ty f Hhome HnX).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_not_locally_compact_space_left :
@@ -207072,7 +207073,7 @@ let X Tx Y Ty f.
 assume Hhome HnY.
 exact (homeomorphism_preserves_not_locally_compact_left
   X Tx Y Ty f Hhome HnY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_not_metrizable_space_right :
@@ -207108,7 +207109,7 @@ let X Tx Y Ty.
 assume Hhex HnX.
 exact (exists_homeomorphism_preserves_not_locally_compact_right
   X Tx Y Ty Hhex HnX).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_not_locally_compact_space_left :
@@ -207120,7 +207121,7 @@ let X Tx Y Ty.
 assume Hhex HnY.
 exact (exists_homeomorphism_preserves_not_locally_compact_left
   X Tx Y Ty Hhex HnY).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_not_metrizable_space_right :
@@ -209087,7 +209088,7 @@ apply and3I.
         rewrite (apply_fun_graph V0 (fun s:set => apply_fun r s) (apply_fun q t) HqtV0).
         rewrite <- (compose_fun_apply X q r t HtX).
         reflexivity.
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** from S80 Lem 80.2b (line 4965 in algtop.tex): if p and q covering, so is r **)
 (** LATEX VERSION: (b) If p and q are covering maps, so is r. **)
@@ -230162,7 +230163,7 @@ apply (and6I
     f
     Hhome1
     unit_interval_minus_Sing_1_connected).
-Qed.
+Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** helper: n and {n} are disjoint. **)
 (** Proven Charlie **)
@@ -232244,7 +232245,7 @@ apply (iffI
 		    (~ (exists U V:set, U :e Tx /\ V :e Tx /\ separation_of X U V))
 		    HtopX
 		    Hnosep).
-	Qed.
+	Admitted. (** was Qed but depends on non-proved axiom chain **)
 
 (** helper: the tree extension union is connected whenever A meets T in a vertex **)
 (** Proven Charlie **)
