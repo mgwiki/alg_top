@@ -158496,6 +158496,25 @@ let n. assume Hn : n :e omega.
 exact (Hnat n (omega_nat_p n Hn)).
 Qed.
 
+(** Helper: In abelian group, product with identity gaps equals product of non-identity terms **)
+Lemma abelian_product_identity_gaps :
+  forall G mult e inv:set,
+  group_structure G mult e inv ->
+  (forall x y:set, x :e G -> y :e G -> apply_fun mult (x, y) = apply_fun mult (y, x)) ->
+  forall f:set -> set,
+  (forall i:set, f i :e G) ->
+  forall N n:set, N :e omega -> n :e omega ->
+  forall pos:set -> set,
+  (forall j:set, j :e n -> pos j :e N) ->
+  (forall j1 j2:set, j1 :e n -> j2 :e n -> j1 <> j2 -> pos j1 <> pos j2) ->
+  (forall k:set, k :e N -> (exists j:set, j :e n /\ pos j = k) \/ f k = e) ->
+  nat_primrec e (fun i r => apply_fun mult (r, f i)) N =
+    nat_primrec e (fun i r => apply_fun mult (r, f (pos i))) n.
+let G mult e inv. assume Hgrp Hcomm. let f. assume Hf. let N n. assume HN Hn.
+let pos. assume Hpos_range Hpos_inj Hcoverage.
+admit.
+Admitted.
+
 (** Helper: In an abelian group with subgroups satisfying zero-sum, equal products imply component equality **)
 Lemma zero_sum_component_extraction :
   forall G mult e inv J Gfam:set,
@@ -158964,7 +158983,164 @@ claim Hcomb_inj : forall i j:set, i :e N -> j :e N -> i <> j -> apply_fun comb_a
       (eq_symm (apply_fun comb_alphas i) (comb_alpha i) Hei)
       (eq_i_tra (apply_fun comb_alphas i) (apply_fun comb_alphas j) (comb_alpha j) Heq Hej)). }
   exact (Hca_inj Hca_eq). }
-claim Hcomb_prod_e : nat_primrec e (fun i r => apply_fun mult (r, apply_fun comb_xs i)) N = e. { admit. }
+claim Hcomb_prod_e : nat_primrec e (fun i r => apply_fun mult (r, apply_fun comb_xs i)) N = e.
+{
+  (** Define globally-G version of comb_val **)
+  set safe_cv := fun k:set => If_i (k :e N) (comb_val k) e.
+  claim Hsafe_G : forall i:set, safe_cv i :e G.
+  { let i. apply (xm (i :e N)).
+    - assume Hi. claim H : safe_cv i = comb_val i. { exact (If_i_1 (i :e N) (comb_val i) e Hi). }
+      rewrite H. exact (Hcval_G i Hi).
+    - assume Hni. claim H : safe_cv i = e. { exact (If_i_0 (i :e N) (comb_val i) e Hni). }
+      rewrite H. exact HeG. }
+  (** Convert product to safe_cv **)
+  claim Hprod_eq_safe : nat_primrec e (fun i r => apply_fun mult (r, apply_fun comb_xs i)) N =
+    nat_primrec e (fun i r => apply_fun mult (r, safe_cv i)) N.
+  { apply (nat_primrec_ext e (fun i r => apply_fun mult (r, apply_fun comb_xs i)) (fun i r => apply_fun mult (r, safe_cv i)) N HN_omega).
+    let i r. assume Hi : i :e N.
+    claim Hcxs_def : comb_xs = graph N comb_val. { reflexivity. }
+    claim Hvi : apply_fun comb_xs i = comb_val i.
+    { exact (apply_fun_of_graph_eq comb_xs N comb_val i Hcxs_def Hi). }
+    claim Hsi : safe_cv i = comb_val i. { exact (If_i_1 (i :e N) (comb_val i) e Hi). }
+    prove apply_fun mult (r, apply_fun comb_xs i) = apply_fun mult (r, safe_cv i).
+    rewrite Hvi. rewrite <- Hsi. reflexivity. }
+  (** Split using product_concat **)
+  claim Hsplit : nat_primrec e (fun i r => apply_fun mult (r, safe_cv i)) N =
+    apply_fun mult (
+      nat_primrec e (fun i r => apply_fun mult (r, safe_cv i)) n1,
+      nat_primrec e (fun i r => apply_fun mult (r, safe_cv (add_nat n1 i))) m).
+  { exact (nat_primrec_product_concat G mult e inv HgrpG safe_cv Hsafe_G n1 Hn1 m Hm_omega). }
+  (** Define safe x1 and g1 **)
+  set safe_x1 := fun k:set => If_i (k :e n1) (apply_fun x1 k) e.
+  set safe_g1 := fun k:set => If_i (k :e n1) (If_i (matched k) (apply_fun inv (apply_fun x2 (sigma k))) e) e.
+  claim Hsafe_x1_G : forall i:set, safe_x1 i :e G.
+  { let i. apply (xm (i :e n1)).
+    - assume Hi. claim H : safe_x1 i = apply_fun x1 i. { exact (If_i_1 (i :e n1) (apply_fun x1 i) e Hi). }
+      rewrite H. exact (Hsub_in_G (apply_fun a1 i) (Ha1 i Hi) (apply_fun x1 i) (Hxfam1 i Hi)).
+    - assume Hni. claim H : safe_x1 i = e. { exact (If_i_0 (i :e n1) (apply_fun x1 i) e Hni). }
+      rewrite H. exact HeG. }
+  claim Hsafe_g1_G : forall i:set, safe_g1 i :e G.
+  { let i. apply (xm (i :e n1)).
+    - assume Hi.
+      claim H1 : safe_g1 i = If_i (matched i) (apply_fun inv (apply_fun x2 (sigma i))) e.
+      { exact (If_i_1 (i :e n1) (If_i (matched i) (apply_fun inv (apply_fun x2 (sigma i))) e) e Hi). }
+      rewrite H1.
+      apply (xm (matched i)).
+      + assume Hm.
+        claim H2 : If_i (matched i) (apply_fun inv (apply_fun x2 (sigma i))) e =
+          apply_fun inv (apply_fun x2 (sigma i)).
+        { exact (If_i_1 (matched i) (apply_fun inv (apply_fun x2 (sigma i))) e Hm). }
+        rewrite H2.
+        exact (HinvCl (apply_fun x2 (sigma i))
+          (Hsub_in_G (apply_fun a2 (sigma i)) (Ha2 (sigma i) (Hsigma_in i Hi Hm))
+            (apply_fun x2 (sigma i)) (Hxfam2 (sigma i) (Hsigma_in i Hi Hm)))).
+      + assume Hnm.
+        claim H2 : If_i (matched i) (apply_fun inv (apply_fun x2 (sigma i))) e = e.
+        { exact (If_i_0 (matched i) (apply_fun inv (apply_fun x2 (sigma i))) e Hnm). }
+        rewrite H2. exact HeG.
+    - assume Hni.
+      claim H : safe_g1 i = e.
+      { exact (If_i_0 (i :e n1) (If_i (matched i) (apply_fun inv (apply_fun x2 (sigma i))) e) e Hni). }
+      rewrite H. exact HeG. }
+  (** Show safe_cv = mult(safe_x1, safe_g1) on n1 **)
+  claim Hsafe_cv_split : forall k:set, k :e n1 ->
+    safe_cv k = apply_fun mult (safe_x1 k, safe_g1 k).
+  { let k. assume Hk : k :e n1.
+    claim Hk_N : k :e N. { exact (Hn1_sub_N k Hk). }
+    claim Hscv : safe_cv k = comb_val k. { exact (If_i_1 (k :e N) (comb_val k) e Hk_N). }
+    claim Hcv : comb_val k = merged_val k.
+    { exact (If_i_1 (k :e n1) (merged_val k)
+        (apply_fun inv (apply_fun x2 (inv_enum (Eps_i (fun j:set => k = add_nat n1 j /\ j :e m))))) Hk). }
+    claim Hsx1 : safe_x1 k = apply_fun x1 k. { exact (If_i_1 (k :e n1) (apply_fun x1 k) e Hk). }
+    claim Hsg1o : safe_g1 k = If_i (matched k) (apply_fun inv (apply_fun x2 (sigma k))) e.
+    { exact (If_i_1 (k :e n1) (If_i (matched k) (apply_fun inv (apply_fun x2 (sigma k))) e) e Hk). }
+    apply (xm (matched k)).
+    - assume Hm : matched k.
+      claim Hmv : merged_val k = apply_fun mult (apply_fun x1 k, apply_fun inv (apply_fun x2 (sigma k))).
+      { exact (If_i_1 (matched k) (apply_fun mult (apply_fun x1 k, apply_fun inv (apply_fun x2 (sigma k))))
+          (apply_fun x1 k) Hm). }
+      claim Hsg1 : safe_g1 k = apply_fun inv (apply_fun x2 (sigma k)).
+      { rewrite Hsg1o. exact (If_i_1 (matched k) (apply_fun inv (apply_fun x2 (sigma k))) e Hm). }
+      rewrite Hscv. rewrite Hcv. rewrite Hmv. rewrite Hsx1. rewrite Hsg1. reflexivity.
+    - assume Hnm : ~(matched k).
+      claim Hmv : merged_val k = apply_fun x1 k.
+      { exact (If_i_0 (matched k) (apply_fun mult (apply_fun x1 k, apply_fun inv (apply_fun x2 (sigma k))))
+          (apply_fun x1 k) Hnm). }
+      claim Hsg1 : safe_g1 k = e.
+      { rewrite Hsg1o. exact (If_i_0 (matched k) (apply_fun inv (apply_fun x2 (sigma k))) e Hnm). }
+      claim Hx1_G : apply_fun x1 k :e G.
+      { exact (Hsub_in_G (apply_fun a1 k) (Ha1 k Hk) (apply_fun x1 k) (Hxfam1 k Hk)). }
+      rewrite Hscv. rewrite Hcv. rewrite Hmv. rewrite Hsx1. rewrite Hsg1.
+      symmetry. exact (HrightId (apply_fun x1 k) Hx1_G). }
+  (** Split P1 using abelian_product_split **)
+  claim HP1_split :
+    nat_primrec e (fun i r => apply_fun mult (r, safe_cv i)) n1 =
+    apply_fun mult (
+      nat_primrec e (fun i r => apply_fun mult (r, safe_x1 i)) n1,
+      nat_primrec e (fun i r => apply_fun mult (r, safe_g1 i)) n1).
+  { claim HP1_conv :
+      nat_primrec e (fun i r => apply_fun mult (r, safe_cv i)) n1 =
+      nat_primrec e (fun i r => apply_fun mult (r, apply_fun mult (safe_x1 i, safe_g1 i))) n1.
+    { apply (nat_primrec_ext e (fun i r => apply_fun mult (r, safe_cv i)) (fun i r => apply_fun mult (r, apply_fun mult (safe_x1 i, safe_g1 i))) n1 Hn1).
+      let i r. assume Hi.
+      claim Heq : safe_cv i = apply_fun mult (safe_x1 i, safe_g1 i). { exact (Hsafe_cv_split i Hi). }
+      prove apply_fun mult (r, safe_cv i) = apply_fun mult (r, apply_fun mult (safe_x1 i, safe_g1 i)).
+      rewrite Heq. reflexivity. }
+    rewrite HP1_conv.
+    exact (nat_primrec_abelian_product_split G mult e inv HgrpG HcommG
+      safe_x1 safe_g1 Hsafe_x1_G Hsafe_g1_G n1 Hn1). }
+  (** Convert safe_x1 product to original x1 product **)
+  claim HPx1_conv :
+    nat_primrec e (fun i r => apply_fun mult (r, safe_x1 i)) n1 =
+    nat_primrec e (fun i r => apply_fun mult (r, apply_fun x1 i)) n1.
+  { apply (nat_primrec_ext e (fun i r => apply_fun mult (r, safe_x1 i)) (fun i r => apply_fun mult (r, apply_fun x1 i)) n1 Hn1).
+    let i r. assume Hi.
+    claim H : safe_x1 i = apply_fun x1 i. { exact (If_i_1 (i :e n1) (apply_fun x1 i) e Hi). }
+    prove apply_fun mult (r, safe_x1 i) = apply_fun mult (r, apply_fun x1 i).
+    rewrite H. reflexivity. }
+  (** Group membership **)
+  set Px1 := nat_primrec e (fun i r => apply_fun mult (r, apply_fun x1 i)) n1.
+  set Px2 := nat_primrec e (fun i r => apply_fun mult (r, apply_fun x2 i)) n2.
+  set Pg1 := nat_primrec e (fun i r => apply_fun mult (r, safe_g1 i)) n1.
+  set P2 := nat_primrec e (fun i r => apply_fun mult (r, safe_cv (add_nat n1 i))) m.
+  claim HPx1_G : Px1 :e G.
+  { claim H : nat_primrec e (fun i r => apply_fun mult (r, safe_x1 i)) n1 :e G.
+    { exact (local_nat_primrec_in_group G mult e HmultFn HeG safe_x1 Hsafe_x1_G n1 Hn1). }
+    exact (eq_subst_mem_rev
+      (nat_primrec e (fun i r => apply_fun mult (r, safe_x1 i)) n1) Px1 G HPx1_conv H). }
+  claim HPg1_G : Pg1 :e G.
+  { exact (local_nat_primrec_in_group G mult e HmultFn HeG safe_g1 Hsafe_g1_G n1 Hn1). }
+  claim HP2_G : P2 :e G.
+  { exact (local_nat_primrec_in_group G mult e HmultFn HeG
+      (fun i => safe_cv (add_nat n1 i)) (fun i => Hsafe_G (add_nat n1 i)) m Hm_omega). }
+  claim HinvPx1 : apply_fun inv Px1 :e G. { exact (HinvCl Px1 HPx1_G). }
+  (** The rearrangement: mult(Pg1, P2) = inv(Px1) **)
+  claim Hrearr : apply_fun mult (Pg1, P2) = apply_fun inv Px1.
+  { admit. }
+  (** Combine: P = mult(Px1, mult(Pg1, P2)) = mult(Px1, inv(Px1)) = e **)
+  claim HP1_eq2 :
+    nat_primrec e (fun i r => apply_fun mult (r, safe_cv i)) n1 = apply_fun mult (Px1, Pg1).
+  { rewrite HP1_split. rewrite HPx1_conv. reflexivity. }
+  claim Hprod_eq2 :
+    nat_primrec e (fun i r => apply_fun mult (r, safe_cv i)) N = apply_fun mult (apply_fun mult (Px1, Pg1), P2).
+  { rewrite Hsplit. rewrite HP1_eq2. reflexivity. }
+  claim Hassoc_step : apply_fun mult (apply_fun mult (Px1, Pg1), P2) =
+    apply_fun mult (Px1, apply_fun mult (Pg1, P2)).
+  { exact (Hassoc Px1 Pg1 P2 HPx1_G HPg1_G HP2_G). }
+  claim Hprod_eq3 :
+    nat_primrec e (fun i r => apply_fun mult (r, safe_cv i)) N =
+    apply_fun mult (Px1, apply_fun mult (Pg1, P2)).
+  { rewrite Hprod_eq2. exact Hassoc_step. }
+  claim Hprod_eq4 :
+    nat_primrec e (fun i r => apply_fun mult (r, safe_cv i)) N =
+    apply_fun mult (Px1, apply_fun inv Px1).
+  { rewrite Hprod_eq3. rewrite Hrearr. reflexivity. }
+  claim Hrinv : apply_fun mult (Px1, apply_fun inv Px1) = e.
+  { exact (HrightInv Px1 HPx1_G). }
+  claim Hresult : nat_primrec e (fun i r => apply_fun mult (r, safe_cv i)) N = e.
+  { rewrite Hprod_eq4. exact Hrinv. }
+  rewrite Hprod_eq_safe. exact Hresult.
+}
 claim Hcomb_all_e : forall i:set, i :e N -> apply_fun comb_xs i = e.
 { exact (Hzs N HN_omega HN_ne comb_alphas Hcomb_alphas_fn Hcomb_inj comb_xs Hcomb_vals_fn Hcomb_fam Hcomb_prod_e). }
 claim Hmerged_zero : forall k:set, k :e n1 -> merged_val k = e.
