@@ -1,4 +1,4 @@
-(** Balance Alice 3327 **)
+(** Balance Alice 3296 **)
 (** Balance Bob 3451 **)
 (** Balance Charlie 2331 **)
 (** Balance Dave 1793 **)
@@ -162713,7 +162713,8 @@ Qed.
 (** i_alpha and i'_alpha respectively, then there is a unique isomorphism **)
 (** phi: G -> G' such that phi o i_alpha = i'_alpha. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 107 **)
+(** Bounty 118 **)
+(** Lock Alice 1772158527 **)
 Theorem thm67_6_uniqueness_direct_sum :
   forall J Gfam multfam G multG eG invG ifam G' multG' eG' invG' ifam':set,
   abelian_group G multG eG invG ->
@@ -162775,7 +162776,8 @@ Definition free_abelian_group_with_basis : set -> set -> set -> set -> set -> se
 (** group H and any family {y_alpha} of elements of H, there is a unique homomorphism **)
 (** h: G -> H with h(a_alpha) = y_alpha. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 97 **)
+(** Bounty 107 **)
+(** Lock Alice 1772158527 **)
 Theorem lemma67_7_extension_free_abelian :
   forall G mult e inv J basis:set,
   abelian_group G mult e inv ->
@@ -162801,7 +162803,8 @@ Admitted.
 (** LATEX VERSION: If G is a free abelian group with basis {a_1,...,a_n}, **)
 (** then n is uniquely determined by G. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 97 **)
+(** Bounty 107 **)
+(** Lock Alice 1772158527 **)
 Theorem thm67_8_rank_well_defined :
   forall G mult e inv n1 n2 basis1 basis2:set,
   free_abelian_group_with_basis G mult e inv n1 basis1 ->
