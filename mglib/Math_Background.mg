@@ -232224,8 +232224,395 @@ apply andI.
 	      }
 	      claim HUstar : Ustar :e Tx.
 	      {
-	        (** TODO: prove Ustar is open in X using general_linear_graph_coherence_open and openness of Star A in each arc. **)
-	        admit.
+	        claim HUstarSubX : Ustar c= X.
+	        {
+	          let z.
+	          assume HzU.
+	          apply (UnionE
+	            {Star A0 | A0 :e IncArcs}
+	            z
+	            HzU).
+	          let S.
+	          assume HzPack.
+	          claim HzS : z :e S.
+	          { exact (andEL (z :e S) (S :e {Star A0 | A0 :e IncArcs}) HzPack). }
+	          claim HSfam : S :e {Star A0 | A0 :e IncArcs}.
+	          { exact (andER (z :e S) (S :e {Star A0 | A0 :e IncArcs}) HzPack). }
+	          apply (ReplE IncArcs (fun A0:set => Star A0) S HSfam).
+	          let A0.
+	          assume HA0Pack.
+	          claim HA0Inc : A0 :e IncArcs.
+	          { exact (andEL (A0 :e IncArcs) (S = Star A0) HA0Pack). }
+	          claim HSeq : S = Star A0.
+	          { exact (andER (A0 :e IncArcs) (S = Star A0) HA0Pack). }
+	          claim HzStarA0 : z :e Star A0.
+	          { rewrite <- HSeq. exact HzS. }
+	          claim HzA0 : z :e A0.
+	          { exact (setminusE1 A0 ((Over A0) :\: (Sing b)) z HzStarA0). }
+	          claim HA0Arcs : A0 :e Arcs.
+	          {
+	            exact (SepE1
+	              Arcs
+	              (fun A1:set => b :e A1)
+	              A0
+	              HA0Inc).
+	          }
+	          claim HA0dat : A0 c= X /\ arc A0 (subspace_topology X Tx A0).
+	          {
+	            exact (general_linear_graph_arc_data
+	              X
+	              Tx
+	              Arcs
+	              A0
+	              Hglg
+	              HA0Arcs).
+	          }
+	          claim HA0subX : A0 c= X.
+	          { exact (andEL (A0 c= X) (arc A0 (subspace_topology X Tx A0)) HA0dat). }
+	          exact (HA0subX z HzA0).
+	        }
+	        claim HUstarOpen : open_in X Tx Ustar.
+	        {
+	          claim Himp :
+	            (forall A:set, A :e Arcs ->
+	              open_in A (subspace_topology X Tx A) (Ustar :/\: A)) ->
+	            open_in X Tx Ustar.
+		          {
+		            claim Hiff :
+		              open_in X Tx Ustar <->
+		              (forall A:set, A :e Arcs ->
+		                open_in A (subspace_topology X Tx A) (Ustar :/\: A)).
+		            {
+		              exact (general_linear_graph_coherence_open
+		                X
+		                Tx
+		                Arcs
+		                Ustar
+		                Hglg
+		                HUstarSubX).
+		            }
+		            exact (andER
+		              (open_in X Tx Ustar ->
+		                (forall A:set, A :e Arcs ->
+		                  open_in A (subspace_topology X Tx A) (Ustar :/\: A)))
+		              ((forall A:set, A :e Arcs ->
+		                  open_in A (subspace_topology X Tx A) (Ustar :/\: A)) ->
+		                open_in X Tx Ustar)
+		              Hiff).
+		          }
+	          apply Himp.
+	          let A.
+	          assume HAArcs.
+	          set TA := subspace_topology X Tx A.
+	          claim HAdat : A c= X /\ arc A TA.
+	          {
+	            exact (general_linear_graph_arc_data
+	              X
+	              Tx
+	              Arcs
+	              A
+	              Hglg
+	              HAArcs).
+	          }
+	          claim HAsubX : A c= X.
+	          { exact (andEL (A c= X) (arc A TA) HAdat). }
+	          claim HarcA : arc A TA.
+	          { exact (andER (A c= X) (arc A TA) HAdat). }
+	          claim HtopA : topology_on A TA.
+	          { exact (subspace_topology_is_topology X Tx A HtopX HAsubX). }
+	          apply (xm (b :e A)).
+	          - assume HbA.
+	            claim HAInc : A :e IncArcs.
+	            { exact (SepI Arcs (fun A0:set => b :e A0) A HAArcs HbA). }
+	            claim HcapEq : (Ustar :/\: A) = Star A.
+	            {
+	              apply (set_ext (Ustar :/\: A) (Star A)).
+	              - let z.
+	                assume HzCap.
+	                claim HzU : z :e Ustar.
+	                { exact (binintersectE1 Ustar A z HzCap). }
+	                claim HzA : z :e A.
+	                { exact (binintersectE2 Ustar A z HzCap). }
+	                apply (UnionE
+	                  {Star A0 | A0 :e IncArcs}
+	                  z
+	                  HzU).
+	                let S.
+	                assume HzPack.
+	                claim HzS : z :e S.
+	                { exact (andEL (z :e S) (S :e {Star A0 | A0 :e IncArcs}) HzPack). }
+	                claim HSfam : S :e {Star A0 | A0 :e IncArcs}.
+	                { exact (andER (z :e S) (S :e {Star A0 | A0 :e IncArcs}) HzPack). }
+	                apply (ReplE IncArcs (fun A0:set => Star A0) S HSfam).
+	                let A0.
+	                assume HA0Pack.
+	                claim HA0Inc : A0 :e IncArcs.
+	                { exact (andEL (A0 :e IncArcs) (S = Star A0) HA0Pack). }
+	                claim HSeq : S = Star A0.
+	                { exact (andER (A0 :e IncArcs) (S = Star A0) HA0Pack). }
+	                claim HzStarA0 : z :e Star A0.
+	                { rewrite <- HSeq. exact HzS. }
+	                apply (xm (A0 = A)).
+	                + assume Heq.
+	                  rewrite <- Heq.
+	                  exact HzStarA0.
+	                + assume Hneq.
+	                  claim HA0Arcs : A0 :e Arcs.
+	                  {
+	                    exact (SepE1
+	                      Arcs
+	                      (fun A1:set => b :e A1)
+	                      A0
+	                      HA0Inc).
+	                  }
+	                  claim HbA0 : b :e A0.
+	                  {
+	                    exact (SepE2
+	                      Arcs
+	                      (fun A1:set => b :e A1)
+	                      A0
+	                      HA0Inc).
+	                  }
+	                  claim Hcase :
+	                    A0 :/\: A = Empty \/
+	                    (exists p:set, A0 :/\: A = Sing p /\
+	                      (exists q:set, end_points_of_arc A0 (subspace_topology X Tx A0) p q \/
+	                                     end_points_of_arc A0 (subspace_topology X Tx A0) q p) /\
+	                      (exists r:set, end_points_of_arc A (subspace_topology X Tx A) p r \/
+	                                     end_points_of_arc A (subspace_topology X Tx A) r p)).
+	                  {
+	                    exact (general_linear_graph_arc_intersection_case
+	                      X
+	                      Tx
+	                      Arcs
+	                      A0
+	                      A
+	                      Hglg
+	                      HA0Arcs
+	                      HAArcs
+	                      Hneq).
+	                  }
+	                  apply Hcase.
+	                  * assume HinterEmpty.
+	                    claim HbInter : b :e A0 :/\: A.
+	                    {
+	                      exact (binintersectI
+	                        A0
+	                        A
+	                        b
+	                        HbA0
+	                        HbA).
+	                    }
+	                    claim HbEmp : b :e Empty.
+	                    {
+	                      exact (mem_eqR
+	                        b
+	                        (A0 :/\: A)
+	                        Empty
+	                        HinterEmpty
+	                        HbInter).
+	                    }
+	                    claim Hfalse : False.
+	                    { exact (EmptyE b HbEmp). }
+	                    exact (FalseE Hfalse (z :e Star A)).
+	                  * assume HexP.
+	                    apply HexP.
+	                    let p.
+	                    assume HpPack.
+	                    apply (and3E
+	                      (A0 :/\: A = Sing p)
+	                      (exists q:set, end_points_of_arc A0 (subspace_topology X Tx A0) p q \/
+	                                     end_points_of_arc A0 (subspace_topology X Tx A0) q p)
+	                      (exists r:set, end_points_of_arc A (subspace_topology X Tx A) p r \/
+	                                     end_points_of_arc A (subspace_topology X Tx A) r p)
+	                      HpPack).
+	                    assume HinterEq Hend0 HendA.
+	                    claim HzA0 : z :e A0.
+	                    { exact (setminusE1 A0 ((Over A0) :\: (Sing b)) z HzStarA0). }
+	                    claim HzInter : z :e A0 :/\: A.
+	                    { exact (binintersectI A0 A z HzA0 HzA). }
+	                    claim HzSing : z :e Sing p.
+	                    { exact (mem_eqR z (A0 :/\: A) (Sing p) HinterEq HzInter). }
+	                    claim HzEqP : z = p.
+	                    { exact (SingE p z HzSing). }
+	                    claim HbInter : b :e A0 :/\: A.
+	                    { exact (binintersectI A0 A b HbA0 HbA). }
+	                    claim HbSing : b :e Sing p.
+	                    { exact (mem_eqR b (A0 :/\: A) (Sing p) HinterEq HbInter). }
+	                    claim HbEqP : b = p.
+	                    { exact (SingE p b HbSing). }
+	                    claim HzEqB : z = b.
+	                    { rewrite HzEqP. exact (eq_symm b p HbEqP). }
+	                    claim HbStarA : b :e Star A.
+	                    {
+	                      claim HbNotBad : b /:e ((Over A) :\: (Sing b)).
+	                      {
+	                        assume HbBad.
+	                        exact (setminusE2
+	                          (Over A)
+	                          (Sing b)
+	                          b
+	                          HbBad
+	                          (SingI b)).
+	                      }
+	                      exact (setminusI
+	                        A
+	                        ((Over A) :\: (Sing b))
+	                        b
+	                        HbA
+	                        HbNotBad).
+	                    }
+	                    rewrite HzEqB.
+	                    exact HbStarA.
+	              - let z.
+	                assume HzStar.
+	                claim HzA : z :e A.
+	                { exact (setminusE1 A ((Over A) :\: (Sing b)) z HzStar). }
+	                claim HzU : z :e Ustar.
+	                {
+	                  exact (UnionI
+	                    {Star A0 | A0 :e IncArcs}
+	                    z
+	                    (Star A)
+	                    HzStar
+	                    (ReplI IncArcs (fun A0:set => Star A0) A HAInc)).
+	                }
+	                exact (binintersectI Ustar A z HzU HzA).
+	            }
+	            rewrite HcapEq.
+	            set OverA := Over A.
+	            set BadA := OverA :\: (Sing b).
+	            claim HfinOverA : finite OverA.
+	            {
+	              exact (general_linear_graph_arc_overlap_points_finite
+	                X
+	                Tx
+	                Arcs
+	                A
+	                Hglg
+	                HAArcs).
+	            }
+	            claim HsubBad : BadA c= OverA.
+	            { exact (setminus_Subq OverA (Sing b)). }
+	            claim HfinBad : finite BadA.
+	            { exact (Subq_finite OverA HfinOverA BadA HsubBad). }
+	            claim HHausA : Hausdorff_space A TA.
+	            { exact (arc_Hausdorff_space A TA HarcA). }
+	            claim HBadSubA : BadA c= A.
+	            {
+	              let y.
+	              assume HyBad.
+	              exact (SepE1
+	                A
+	                (fun p0:set => exists F:set, F :e Arcs /\ F <> A /\ p0 :e F)
+	                y
+	                (setminusE1 OverA (Sing b) y HyBad)).
+	            }
+	            claim HclosedBad : closed_in A TA BadA.
+	            {
+	              exact (finite_sets_closed_in_Hausdorff
+	                A
+	                TA
+	                HHausA
+	                BadA
+	                HBadSubA
+	                HfinBad).
+	            }
+	            exact (open_of_closed_complement A TA BadA HclosedBad).
+	          - assume HbNotA.
+	            claim HcapEq : (Ustar :/\: A) = Empty.
+	            {
+	              apply (set_ext (Ustar :/\: A) Empty).
+	              - let z.
+	                assume HzCap.
+	                claim HzU : z :e Ustar.
+	                { exact (binintersectE1 Ustar A z HzCap). }
+	                claim HzA : z :e A.
+	                { exact (binintersectE2 Ustar A z HzCap). }
+	                apply (UnionE
+	                  {Star A0 | A0 :e IncArcs}
+	                  z
+	                  HzU).
+	                let S.
+	                assume HzPack.
+	                claim HzS : z :e S.
+	                { exact (andEL (z :e S) (S :e {Star A0 | A0 :e IncArcs}) HzPack). }
+	                claim HSfam : S :e {Star A0 | A0 :e IncArcs}.
+	                { exact (andER (z :e S) (S :e {Star A0 | A0 :e IncArcs}) HzPack). }
+	                apply (ReplE IncArcs (fun A0:set => Star A0) S HSfam).
+	                let A0.
+	                assume HA0Pack.
+	                claim HA0Inc : A0 :e IncArcs.
+	                { exact (andEL (A0 :e IncArcs) (S = Star A0) HA0Pack). }
+	                claim HSeq : S = Star A0.
+	                { exact (andER (A0 :e IncArcs) (S = Star A0) HA0Pack). }
+	                claim HzStarA0 : z :e Star A0.
+	                { rewrite <- HSeq. exact HzS. }
+	                claim HzA0 : z :e A0.
+	                { exact (setminusE1 A0 ((Over A0) :\: (Sing b)) z HzStarA0). }
+	                claim HbA0 : b :e A0.
+	                {
+	                  exact (SepE2
+	                    Arcs
+	                    (fun A1:set => b :e A1)
+	                    A0
+	                    HA0Inc).
+	                }
+	                claim HA0neqA : A0 <> A.
+	                {
+	                  assume Heq.
+	                  claim HbA : b :e A.
+	                  { rewrite <- Heq. exact HbA0. }
+	                  exact (HbNotA HbA).
+	                }
+			                claim HzOverA0 : z :e (Over A0).
+			                {
+			                  claim HOverEq :
+			                    (Over A0) =
+			                    {p :e A0 | exists F:set, F :e Arcs /\ F <> A0 /\ p :e F}.
+			                  { reflexivity. }
+			                  rewrite HOverEq.
+			                  apply (SepI
+			                    A0
+			                    (fun p0:set => exists F:set, F :e Arcs /\ F <> A0 /\ p0 :e F)
+			                    z
+			                    HzA0).
+			                  witness A.
+			                  apply andI.
+			                  - apply andI.
+			                    + exact HAArcs.
+			                    + exact (neq_i_sym A0 A HA0neqA).
+			                  - exact HzA.
+			                }
+		                claim HzNotSing : z /:e Sing b.
+		                {
+		                  assume HzSing.
+		                  claim HzEq : z = b.
+		                  { exact (SingE b z HzSing). }
+		                  claim HbA : b :e A.
+		                  { exact (eq_subst_mem b z A (eq_symm z b HzEq) HzA). }
+		                  exact (HbNotA HbA).
+		                }
+	                claim HzBad : z :e ((Over A0) :\: (Sing b)).
+	                { exact (setminusI (Over A0) (Sing b) z HzOverA0 HzNotSing). }
+	                claim HzNotBad : z /:e ((Over A0) :\: (Sing b)).
+	                { exact (setminusE2 A0 ((Over A0) :\: (Sing b)) z HzStarA0). }
+	                claim Hfalse : False.
+	                { exact (HzNotBad HzBad). }
+	                exact (FalseE Hfalse (z :e Empty)).
+	              - let z.
+	                assume HzE : z :e Empty.
+	                claim Hfalse : False.
+	                { exact (EmptyE z HzE). }
+	                exact (FalseE Hfalse (z :e Ustar :/\: A)).
+	            }
+	            rewrite HcapEq.
+	            exact (Empty_is_open A TA HtopA).
+	        }
+		        exact (andER
+		          (topology_on X Tx)
+		          (Ustar :e Tx)
+		          HUstarOpen).
 	      }
 	      witness Ustar.
 	      apply andI.
