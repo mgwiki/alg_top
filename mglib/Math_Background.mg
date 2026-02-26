@@ -250263,6 +250263,46 @@ exact (lemma84_6_pi1_power_nat_closed
   HnO).
 Qed.
 
+(** core unresolved S84.6 mixed-case reduction:
+    from explicit opposite-side crossing witnesses for a nontrivial loop class,
+    derive power normal form against [alpha.beta]. **)
+Theorem lemma84_6_mixed_crossing_power_reduction_core :
+  forall X Tx U V A B a b alpha beta fcls tU tV:set,
+  topology_on X Tx ->
+  U :e Tx -> V :e Tx -> X = U :\/: V ->
+  simply_connected U (subspace_topology X Tx U) ->
+  simply_connected V (subspace_topology X Tx V) ->
+  A c= U :/\: V -> B c= U :/\: V -> A :/\: B = Empty ->
+  (U :/\: V) = A :\/: B ->
+  A :e subspace_topology X Tx (U :/\: V) ->
+  B :e subspace_topology X Tx (U :/\: V) ->
+  path_connected_space A (subspace_topology X Tx A) ->
+  path_connected_space B (subspace_topology X Tx B) ->
+  a :e A -> b :e B ->
+  path_between U a b alpha ->
+  path_between V b a beta ->
+  fcls :e loop_space X Tx a ->
+  path_homotopy_class_loop X Tx a fcls <>
+    fundamental_group_id X Tx a ->
+  tU :e unit_interval ->
+  tV :e unit_interval ->
+  apply_fun fcls tU :e V ->
+  apply_fun fcls tV :e U ->
+  exists n:set, n :e omega /\
+    (path_homotopy_class_loop X Tx a fcls = group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (path_homotopy_class_loop X Tx a (path_concat alpha beta)) n \/
+     path_homotopy_class_loop X Tx a fcls = group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (apply_fun (fundamental_group_inv X Tx a)
+        (path_homotopy_class_loop X Tx a (path_concat alpha beta))) n).
+(** TODO Bob: prove via S63-style alternating decomposition in U cap V = A union B
+    with A cap B = Empty, then identify loop class as power of [alpha.beta] or inverse power. **)
+admit.
+Admitted.
+
 (** helper for S84.6 mixed case:
     once explicit crossing witnesses are extracted, reduce to generator-power normal form. **)
 Theorem lemma84_6_mixed_crossing_power_form :
@@ -251295,10 +251335,44 @@ claim HpreUV_imageB_implies_preB :
     HtI
     HimgB).
 }
-(** TODO Bob: complete S84.6 mixed-case crossing-to-power reduction.
-    The arguments now have explicit crossing witnesses tU,tV with opposite-side
-    membership, plus full path/simply-connected/disconnected-overlap data. **)
-admit.
+exact (lemma84_6_mixed_crossing_power_reduction_core
+  X
+  Tx
+  U
+  V
+  A
+  B
+  a
+  b
+  alpha
+  beta
+  fcls
+  tU
+  tV
+  Htop
+  HU
+  HV
+  Hcover
+  HscU
+  HscV
+  HAsub
+  HBsub
+  Hdisj
+  Hoverlap
+  HAopen
+  HBopen
+  HpcA
+  HpcB
+  HaA
+  HbB
+  HalphaPB
+  HbetaPB
+  HfclsLoop
+  HfclsClsNe
+  HtU
+  HtV
+  HtUinV
+  HtVinU).
 Admitted.
 
 (** helper for S84.6 core:
@@ -252667,9 +252741,6 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun fcls t :e U)).
       HtV
       Hfcls_tU_V
       Hfcls_tV_U).
-(** TODO Bob: bridge from nontrivial loop representative to edge-crossing normal form.
-    Needed dependency: S63-style alternating decomposition theorem specialized to
-    U∩V=A∪B (A,B disjoint path-connected pieces), then reduction to powers of [alpha.beta]. **)
 Admitted.
 
 (** core bridge for S84.6: cyclic-generation conclusion from path-form hypotheses **)
