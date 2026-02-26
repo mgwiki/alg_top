@@ -170645,7 +170645,237 @@ apply iffI.
          (exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
          forall j:set, j :e n2 -> apply_fun a2 j = alpha -> apply_fun x2 j = e)).
       - (** Part 1: Both decompositions have alpha - components agree **)
-        admit.
+        let i. let j. assume HiN : i :e n1. assume HjN : j :e n2.
+        assume Hai : apply_fun a1 i = alpha. assume Haj : apply_fun a2 j = alpha.
+        (** Get ha(x1(i)) via extraction from sum1 **)
+        claim Hother1 : forall k:set, k :e n1 -> k <> i -> apply_fun ha (apply_fun x1 k) = 0.
+        { let k. assume HkN : k :e n1. assume Hkne : k <> i.
+          claim Ha1k_ne : apply_fun a1 k <> alpha.
+          { assume Habs : apply_fun a1 k = alpha.
+            claim Habs2 : apply_fun a1 k = apply_fun a1 i.
+            { exact (eq_i_tra (apply_fun a1 k) alpha (apply_fun a1 i) Habs (eq_symm (apply_fun a1 i) alpha Hai)). }
+            exact (Ha1_inj k i HkN HiN Hkne Habs2). }
+          exact (Hother_zero1 k HkN Ha1k_ne). }
+        claim Hsum1_eq : nat_primrec 0 g1 n1 = apply_fun ha (apply_fun x1 i).
+        { exact (Hextract1 i HiN Hother1). }
+        (** Get ha(x2(j)) via extraction from sum2 **)
+        claim Hother2 : forall k:set, k :e n2 -> k <> j -> apply_fun ha (apply_fun x2 k) = 0.
+        { let k. assume HkN : k :e n2. assume Hkne : k <> j.
+          claim Ha2k_ne : apply_fun a2 k <> alpha.
+          { assume Habs : apply_fun a2 k = alpha.
+            claim Habs2 : apply_fun a2 k = apply_fun a2 j.
+            { exact (eq_i_tra (apply_fun a2 k) alpha (apply_fun a2 j) Habs (eq_symm (apply_fun a2 j) alpha Haj)). }
+            exact (Ha2_inj k j HkN HjN Hkne Habs2). }
+          exact (Hother_zero2 k HkN Ha2k_ne). }
+        claim Hsum2_eq : nat_primrec 0 g2 n2 = apply_fun ha (apply_fun x2 j).
+        { exact (Hextract2 j HjN Hother2). }
+        (** Derive ha(x1(i)) = ha(x2(j)) via Hsums_eq **)
+        claim Hhaeq : apply_fun ha (apply_fun x1 i) = apply_fun ha (apply_fun x2 j).
+        { exact (eq_i_tra (apply_fun ha (apply_fun x1 i)) (nat_primrec 0 g1 n1) (apply_fun ha (apply_fun x2 j))
+            (eq_symm (nat_primrec 0 g1 n1) (apply_fun ha (apply_fun x1 i)) Hsum1_eq)
+            (eq_i_tra (nat_primrec 0 g1 n1) (nat_primrec 0 g2 n2) (apply_fun ha (apply_fun x2 j))
+              Hsums_eq Hsum2_eq)). }
+        (** Subgroup closure: get x1(i), x2(j) in Gfam(alpha), then inv, mult **)
+        claim Hxi_gfam : apply_fun x1 i :e apply_fun Gfam alpha.
+        { claim Hfeq_gfam : forall z:set, z = alpha -> apply_fun Gfam z = apply_fun Gfam alpha.
+          { let z. assume Hz. rewrite Hz. reflexivity. }
+          exact (eq_subst_mem_set (apply_fun x1 i) (apply_fun Gfam (apply_fun a1 i))
+            (apply_fun Gfam alpha) (Hx1_in i HiN) (Hfeq_gfam (apply_fun a1 i) Hai)). }
+        claim Hxj_gfam : apply_fun x2 j :e apply_fun Gfam alpha.
+        { claim Hfeq_gfam2 : forall z:set, z = alpha -> apply_fun Gfam z = apply_fun Gfam alpha.
+          { let z. assume Hz. rewrite Hz. reflexivity. }
+          exact (eq_subst_mem_set (apply_fun x2 j) (apply_fun Gfam (apply_fun a2 j))
+            (apply_fun Gfam alpha) (Hx2_in j HjN) (Hfeq_gfam2 (apply_fun a2 j) Haj)). }
+        claim Hsub_al : subgroup_of (apply_fun Gfam alpha) G mult e inv. { exact (Hsub_alpha2 alpha HalJ). }
+        (** Extract inv closure from subgroup_of **)
+        claim Hinv_cl : forall x':set, x' :e apply_fun Gfam alpha -> apply_fun inv x' :e apply_fun Gfam alpha.
+        { exact (andER
+            ((apply_fun Gfam alpha c= G /\ e :e apply_fun Gfam alpha) /\
+             (forall x' y':set, x' :e apply_fun Gfam alpha -> y' :e apply_fun Gfam alpha ->
+               apply_fun mult (x', y') :e apply_fun Gfam alpha))
+            (forall x':set, x' :e apply_fun Gfam alpha -> apply_fun inv x' :e apply_fun Gfam alpha)
+            Hsub_al). }
+        claim Hmult_cl : forall x' y':set, x' :e apply_fun Gfam alpha -> y' :e apply_fun Gfam alpha ->
+          apply_fun mult (x', y') :e apply_fun Gfam alpha.
+        { exact (andER
+            (apply_fun Gfam alpha c= G /\ e :e apply_fun Gfam alpha)
+            (forall x' y':set, x' :e apply_fun Gfam alpha -> y' :e apply_fun Gfam alpha ->
+              apply_fun mult (x', y') :e apply_fun Gfam alpha)
+            (andEL
+              ((apply_fun Gfam alpha c= G /\ e :e apply_fun Gfam alpha) /\
+               (forall x' y':set, x' :e apply_fun Gfam alpha -> y' :e apply_fun Gfam alpha ->
+                 apply_fun mult (x', y') :e apply_fun Gfam alpha))
+              (forall x':set, x' :e apply_fun Gfam alpha -> apply_fun inv x' :e apply_fun Gfam alpha)
+              Hsub_al)). }
+        claim Hinv_xj_gfam : apply_fun inv (apply_fun x2 j) :e apply_fun Gfam alpha.
+        { exact (Hinv_cl (apply_fun x2 j) Hxj_gfam). }
+        claim Hprod_gfam : apply_fun mult (apply_fun x1 i, apply_fun inv (apply_fun x2 j)) :e apply_fun Gfam alpha.
+        { exact (Hmult_cl (apply_fun x1 i) (apply_fun inv (apply_fun x2 j)) Hxi_gfam Hinv_xj_gfam). }
+        (** Membership in G **)
+        claim Hxi_G : apply_fun x1 i :e G. { exact (Hx1_fn i HiN). }
+        claim Hxj_G : apply_fun x2 j :e G. { exact (Hx2_fn j HjN). }
+        claim Hinv_xj_G : apply_fun inv (apply_fun x2 j) :e G.
+        { apply (and6E
+            (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+            (forall u v w:set, u :e G -> v :e G -> w :e G ->
+              apply_fun mult (apply_fun mult (u, v), w) = apply_fun mult (u, apply_fun mult (v, w)))
+            (forall u:set, u :e G -> apply_fun mult (e, u) = u /\ apply_fun mult (u, e) = u)
+            (forall u:set, u :e G ->
+              apply_fun mult (u, apply_fun inv u) = e /\ apply_fun mult (apply_fun inv u, u) = e)
+            HgrpG2).
+          assume _ HinvFn _ _ _ _. exact (HinvFn (apply_fun x2 j) Hxj_G). }
+        (** ha(mult(x1(i), inv(x2(j)))) = integers_group_mult(ha(x1(i)), ha(inv(x2(j)))) **)
+        claim Hha_prod : apply_fun ha (apply_fun mult (apply_fun x1 i, apply_fun inv (apply_fun x2 j))) =
+          apply_fun integers_group_mult (apply_fun ha (apply_fun x1 i), apply_fun ha (apply_fun inv (apply_fun x2 j))).
+        { exact (Hha_mult (apply_fun x1 i) (apply_fun inv (apply_fun x2 j)) Hxi_G Hinv_xj_G). }
+        (** ha(inv(x2(j))) = integers_group_inv(ha(x2(j))) = minus_SNo(ha(x2(j))) **)
+        claim Hha_inv_xj_raw : apply_fun ha (apply_fun inv (apply_fun x2 j)) =
+          apply_fun integers_group_inv (apply_fun ha (apply_fun x2 j)).
+        { exact (group_hom_sends_inverse_cyclic_helper G mult e inv int integers_group_mult 0 integers_group_inv
+            ha HgrpG2 HgrpZ2 Hha_hom (apply_fun x2 j) Hxj_G). }
+        claim Hha_xj_int : apply_fun ha (apply_fun x2 j) :e int. { exact (Hha_fn (apply_fun x2 j) Hxj_G). }
+        claim Hha_inv_eval : apply_fun integers_group_inv (apply_fun ha (apply_fun x2 j)) =
+          minus_SNo (apply_fun ha (apply_fun x2 j)).
+        { exact (apply_fun_graph int (fun n:set => minus_SNo n) (apply_fun ha (apply_fun x2 j)) Hha_xj_int). }
+        claim Hha_inv_xj : apply_fun ha (apply_fun inv (apply_fun x2 j)) = minus_SNo (apply_fun ha (apply_fun x2 j)).
+        { exact (eq_i_tra
+            (apply_fun ha (apply_fun inv (apply_fun x2 j)))
+            (apply_fun integers_group_inv (apply_fun ha (apply_fun x2 j)))
+            (minus_SNo (apply_fun ha (apply_fun x2 j)))
+            Hha_inv_xj_raw Hha_inv_eval). }
+        (** Evaluate integers_group_mult(ha(x1(i)), ha(inv(x2(j)))) = add_SNo(...) **)
+        claim Hha_xi_int : apply_fun ha (apply_fun x1 i) :e int. { exact (Hha_fn (apply_fun x1 i) Hxi_G). }
+        claim Hha_inv_xj_int : apply_fun ha (apply_fun inv (apply_fun x2 j)) :e int.
+        { exact (Hha_fn (apply_fun inv (apply_fun x2 j)) Hinv_xj_G). }
+        set pair_ij := (apply_fun ha (apply_fun x1 i), apply_fun ha (apply_fun inv (apply_fun x2 j))).
+        claim Hpair_sp : pair_ij :e setprod int int.
+        { exact (tuple_2_setprod_by_pair_Sigma int int
+            (apply_fun ha (apply_fun x1 i)) (apply_fun ha (apply_fun inv (apply_fun x2 j)))
+            Hha_xi_int Hha_inv_xj_int). }
+        claim Heval_ij : apply_fun integers_group_mult pair_ij = add_SNo (pair_ij 0) (pair_ij 1).
+        { exact (apply_fun_graph (setprod int int) (fun p:set => add_SNo (p 0) (p 1)) pair_ij Hpair_sp). }
+        claim Heval_sum : apply_fun integers_group_mult (apply_fun ha (apply_fun x1 i), apply_fun ha (apply_fun inv (apply_fun x2 j))) =
+          add_SNo (apply_fun ha (apply_fun x1 i)) (apply_fun ha (apply_fun inv (apply_fun x2 j))).
+        { rewrite Heval_ij.
+          rewrite (tuple_2_0_eq (apply_fun ha (apply_fun x1 i)) (apply_fun ha (apply_fun inv (apply_fun x2 j)))).
+          rewrite (tuple_2_1_eq (apply_fun ha (apply_fun x1 i)) (apply_fun ha (apply_fun inv (apply_fun x2 j)))).
+          reflexivity. }
+        (** Substitute ha(inv(x2(j))) = minus_SNo(ha(x2(j))) **)
+        claim Hsum_subst : add_SNo (apply_fun ha (apply_fun x1 i)) (apply_fun ha (apply_fun inv (apply_fun x2 j))) =
+          add_SNo (apply_fun ha (apply_fun x1 i)) (minus_SNo (apply_fun ha (apply_fun x2 j))).
+        { claim Hfeq_sub : forall z:set, z = minus_SNo (apply_fun ha (apply_fun x2 j)) ->
+            add_SNo (apply_fun ha (apply_fun x1 i)) z =
+            add_SNo (apply_fun ha (apply_fun x1 i)) (minus_SNo (apply_fun ha (apply_fun x2 j))).
+          { let z. assume Hz. rewrite Hz. reflexivity. }
+          exact (Hfeq_sub (apply_fun ha (apply_fun inv (apply_fun x2 j))) Hha_inv_xj). }
+        (** Substitute ha(x1(i)) = ha(x2(j)) **)
+        claim Hsum_subst2 : add_SNo (apply_fun ha (apply_fun x1 i)) (minus_SNo (apply_fun ha (apply_fun x2 j))) =
+          add_SNo (apply_fun ha (apply_fun x2 j)) (minus_SNo (apply_fun ha (apply_fun x2 j))).
+        { claim Hfeq_sub2 : forall z:set, z = apply_fun ha (apply_fun x2 j) ->
+            add_SNo z (minus_SNo (apply_fun ha (apply_fun x2 j))) =
+            add_SNo (apply_fun ha (apply_fun x2 j)) (minus_SNo (apply_fun ha (apply_fun x2 j))).
+          { let z. assume Hz. rewrite Hz. reflexivity. }
+          exact (Hfeq_sub2 (apply_fun ha (apply_fun x1 i)) Hhaeq). }
+        (** ha(x2(j)) + (-ha(x2(j))) = 0 **)
+        claim Hha_xj_SNo : SNo (apply_fun ha (apply_fun x2 j)). { exact (int_SNo (apply_fun ha (apply_fun x2 j)) Hha_xj_int). }
+        claim Hrinv : add_SNo (apply_fun ha (apply_fun x2 j)) (minus_SNo (apply_fun ha (apply_fun x2 j))) = 0.
+        { exact (add_SNo_minus_SNo_rinv (apply_fun ha (apply_fun x2 j)) Hha_xj_SNo). }
+        (** Chain: ha(prod) = 0 **)
+        claim Hha_prod_0 : apply_fun ha (apply_fun mult (apply_fun x1 i, apply_fun inv (apply_fun x2 j))) = 0.
+        { exact (eq_i_tra
+            (apply_fun ha (apply_fun mult (apply_fun x1 i, apply_fun inv (apply_fun x2 j))))
+            (apply_fun integers_group_mult (apply_fun ha (apply_fun x1 i), apply_fun ha (apply_fun inv (apply_fun x2 j))))
+            0
+            Hha_prod
+            (eq_i_tra
+              (apply_fun integers_group_mult (apply_fun ha (apply_fun x1 i), apply_fun ha (apply_fun inv (apply_fun x2 j))))
+              (add_SNo (apply_fun ha (apply_fun x1 i)) (apply_fun ha (apply_fun inv (apply_fun x2 j))))
+              0
+              Heval_sum
+              (eq_i_tra
+                (add_SNo (apply_fun ha (apply_fun x1 i)) (apply_fun ha (apply_fun inv (apply_fun x2 j))))
+                (add_SNo (apply_fun ha (apply_fun x1 i)) (minus_SNo (apply_fun ha (apply_fun x2 j))))
+                0
+                Hsum_subst
+                (eq_i_tra
+                  (add_SNo (apply_fun ha (apply_fun x1 i)) (minus_SNo (apply_fun ha (apply_fun x2 j))))
+                  (add_SNo (apply_fun ha (apply_fun x2 j)) (minus_SNo (apply_fun ha (apply_fun x2 j))))
+                  0
+                  Hsum_subst2 Hrinv)))). }
+        (** Apply Hha_gfam_alpha_zero: prod = e **)
+        claim Hprod_e : apply_fun mult (apply_fun x1 i, apply_fun inv (apply_fun x2 j)) = e.
+        { exact (Hha_gfam_alpha_zero (apply_fun mult (apply_fun x1 i, apply_fun inv (apply_fun x2 j))) Hprod_gfam Hha_prod_0). }
+        (** From x1(i) times inv(x2(j)) = e, derive x1(i) = x2(j) **)
+        (** Strategy: x1(i) = x1(i) times e = x1(i) times (inv(x2(j)) times x2(j)) **)
+        (**   = (x1(i) times inv(x2(j))) times x2(j) = e times x2(j) = x2(j) **)
+        apply (and6E
+          (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+          (forall u v w:set, u :e G -> v :e G -> w :e G ->
+            apply_fun mult (apply_fun mult (u, v), w) = apply_fun mult (u, apply_fun mult (v, w)))
+          (forall u:set, u :e G -> apply_fun mult (e, u) = u /\ apply_fun mult (u, e) = u)
+          (forall u:set, u :e G ->
+            apply_fun mult (u, apply_fun inv u) = e /\ apply_fun mult (apply_fun inv u, u) = e)
+          HgrpG2).
+        assume _ _ HeG Hassoc Hid Hinv_law.
+        claim Hinv_left : apply_fun mult (apply_fun inv (apply_fun x2 j), apply_fun x2 j) = e.
+        { exact (andER
+            (apply_fun mult (apply_fun x2 j, apply_fun inv (apply_fun x2 j)) = e)
+            (apply_fun mult (apply_fun inv (apply_fun x2 j), apply_fun x2 j) = e)
+            (Hinv_law (apply_fun x2 j) Hxj_G)). }
+        claim Hid_right : apply_fun mult (apply_fun x1 i, e) = apply_fun x1 i.
+        { exact (andER
+            (apply_fun mult (e, apply_fun x1 i) = apply_fun x1 i)
+            (apply_fun mult (apply_fun x1 i, e) = apply_fun x1 i)
+            (Hid (apply_fun x1 i) Hxi_G)). }
+        claim Hid_left : apply_fun mult (e, apply_fun x2 j) = apply_fun x2 j.
+        { exact (andEL
+            (apply_fun mult (e, apply_fun x2 j) = apply_fun x2 j)
+            (apply_fun mult (apply_fun x2 j, e) = apply_fun x2 j)
+            (Hid (apply_fun x2 j) Hxj_G)). }
+        claim Hassoc_step : apply_fun mult (apply_fun mult (apply_fun x1 i, apply_fun inv (apply_fun x2 j)), apply_fun x2 j) =
+          apply_fun mult (apply_fun x1 i, apply_fun mult (apply_fun inv (apply_fun x2 j), apply_fun x2 j)).
+        { exact (Hassoc (apply_fun x1 i) (apply_fun inv (apply_fun x2 j)) (apply_fun x2 j) Hxi_G Hinv_xj_G Hxj_G). }
+        (** LHS chain: (x1(i) times inv(x2(j))) times x2(j) = e times x2(j) = x2(j) **)
+        claim Hfeq_prod : forall z:set, z = e ->
+          apply_fun mult (z, apply_fun x2 j) = apply_fun mult (e, apply_fun x2 j).
+        { let z. assume Hz. rewrite Hz. reflexivity. }
+        claim Hlhs : apply_fun mult (apply_fun mult (apply_fun x1 i, apply_fun inv (apply_fun x2 j)), apply_fun x2 j) =
+          apply_fun x2 j.
+        { exact (eq_i_tra
+            (apply_fun mult (apply_fun mult (apply_fun x1 i, apply_fun inv (apply_fun x2 j)), apply_fun x2 j))
+            (apply_fun mult (e, apply_fun x2 j))
+            (apply_fun x2 j)
+            (Hfeq_prod (apply_fun mult (apply_fun x1 i, apply_fun inv (apply_fun x2 j))) Hprod_e)
+            Hid_left). }
+        (** RHS chain: x1(i) times (inv(x2(j)) times x2(j)) = x1(i) times e = x1(i) **)
+        claim Hfeq_inv : forall z:set, z = e ->
+          apply_fun mult (apply_fun x1 i, z) = apply_fun mult (apply_fun x1 i, e).
+        { let z. assume Hz. rewrite Hz. reflexivity. }
+        claim Hrhs : apply_fun mult (apply_fun x1 i, apply_fun mult (apply_fun inv (apply_fun x2 j), apply_fun x2 j)) =
+          apply_fun x1 i.
+        { exact (eq_i_tra
+            (apply_fun mult (apply_fun x1 i, apply_fun mult (apply_fun inv (apply_fun x2 j), apply_fun x2 j)))
+            (apply_fun mult (apply_fun x1 i, e))
+            (apply_fun x1 i)
+            (Hfeq_inv (apply_fun mult (apply_fun inv (apply_fun x2 j), apply_fun x2 j)) Hinv_left)
+            Hid_right). }
+        (** Combine: x1(i) = RHS = assoc = LHS = x2(j) **)
+        exact (eq_i_tra (apply_fun x1 i)
+          (apply_fun mult (apply_fun x1 i, apply_fun mult (apply_fun inv (apply_fun x2 j), apply_fun x2 j)))
+          (apply_fun x2 j)
+          (eq_symm
+            (apply_fun mult (apply_fun x1 i, apply_fun mult (apply_fun inv (apply_fun x2 j), apply_fun x2 j)))
+            (apply_fun x1 i)
+            Hrhs)
+          (eq_i_tra
+            (apply_fun mult (apply_fun x1 i, apply_fun mult (apply_fun inv (apply_fun x2 j), apply_fun x2 j)))
+            (apply_fun mult (apply_fun mult (apply_fun x1 i, apply_fun inv (apply_fun x2 j)), apply_fun x2 j))
+            (apply_fun x2 j)
+            (eq_symm
+              (apply_fun mult (apply_fun mult (apply_fun x1 i, apply_fun inv (apply_fun x2 j)), apply_fun x2 j))
+              (apply_fun mult (apply_fun x1 i, apply_fun mult (apply_fun inv (apply_fun x2 j), apply_fun x2 j)))
+              Hassoc_step)
+            Hlhs)).
       - (** Part 2: alpha in decomp 1, not in decomp 2 - component is e **)
         assume _ : exists i:set, i :e n1 /\ apply_fun a1 i = alpha.
         assume Hnoalpha2 : ~(exists j:set, j :e n2 /\ apply_fun a2 j = alpha).
