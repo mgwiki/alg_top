@@ -254181,6 +254181,322 @@ claim Hunit_interval_image_quadrichotomy_refined :
       apply orIR.
       exact Hov.
 }
+claim HtU_refined_cases :
+  ((tU :e preV /\ ~(tU :e preU)) /\
+    (~(apply_fun fcls tU :e A) /\ ~(apply_fun fcls tU :e B))) \/
+  ((apply_fun fcls tU :e A /\ ~(apply_fun fcls tU :e B)) \/
+   (apply_fun fcls tU :e B /\ ~(apply_fun fcls tU :e A))).
+{
+  claim HquadU :
+    ((tU :e preU /\ ~(tU :e preV)) /\
+      (~(apply_fun fcls tU :e A) /\ ~(apply_fun fcls tU :e B))) \/
+    (((tU :e preV /\ ~(tU :e preU)) /\
+      (~(apply_fun fcls tU :e A) /\ ~(apply_fun fcls tU :e B))) \/
+      ((apply_fun fcls tU :e A /\ ~(apply_fun fcls tU :e B)) \/
+       (apply_fun fcls tU :e B /\ ~(apply_fun fcls tU :e A)))).
+  {
+    exact (Hunit_interval_image_quadrichotomy_refined tU HtU).
+  }
+  apply HquadU.
+  - assume HUonlyU :
+      (tU :e preU /\ ~(tU :e preV)) /\
+      (~(apply_fun fcls tU :e A) /\ ~(apply_fun fcls tU :e B)).
+    claim HprePartU : tU :e preU /\ ~(tU :e preV).
+    {
+      exact (andEL
+        (tU :e preU /\ ~(tU :e preV))
+        (~(apply_fun fcls tU :e A) /\ ~(apply_fun fcls tU :e B))
+        HUonlyU).
+    }
+    claim HnotPreVU : ~(tU :e preV).
+    {
+      exact (andER
+        (tU :e preU)
+        (~(tU :e preV))
+        HprePartU).
+    }
+    claim HfalseU : False.
+    {
+      exact (HnotPreVU HtUinPreV).
+    }
+    exact (FalseE
+      HfalseU
+      (((tU :e preV /\ ~(tU :e preU)) /\
+        (~(apply_fun fcls tU :e A) /\ ~(apply_fun fcls tU :e B))) \/
+       ((apply_fun fcls tU :e A /\ ~(apply_fun fcls tU :e B)) \/
+        (apply_fun fcls tU :e B /\ ~(apply_fun fcls tU :e A))))).
+  - assume HrestU :
+      ((tU :e preV /\ ~(tU :e preU)) /\
+        (~(apply_fun fcls tU :e A) /\ ~(apply_fun fcls tU :e B))) \/
+      ((apply_fun fcls tU :e A /\ ~(apply_fun fcls tU :e B)) \/
+       (apply_fun fcls tU :e B /\ ~(apply_fun fcls tU :e A))).
+    exact HrestU.
+}
+claim HtV_refined_cases :
+  ((tV :e preU /\ ~(tV :e preV)) /\
+    (~(apply_fun fcls tV :e A) /\ ~(apply_fun fcls tV :e B))) \/
+  ((apply_fun fcls tV :e A /\ ~(apply_fun fcls tV :e B)) \/
+   (apply_fun fcls tV :e B /\ ~(apply_fun fcls tV :e A))).
+{
+  claim HquadV :
+    ((tV :e preU /\ ~(tV :e preV)) /\
+      (~(apply_fun fcls tV :e A) /\ ~(apply_fun fcls tV :e B))) \/
+    (((tV :e preV /\ ~(tV :e preU)) /\
+      (~(apply_fun fcls tV :e A) /\ ~(apply_fun fcls tV :e B))) \/
+      ((apply_fun fcls tV :e A /\ ~(apply_fun fcls tV :e B)) \/
+       (apply_fun fcls tV :e B /\ ~(apply_fun fcls tV :e A)))).
+  {
+    exact (Hunit_interval_image_quadrichotomy_refined tV HtV).
+  }
+  apply HquadV.
+  - assume HUonlyV :
+      (tV :e preU /\ ~(tV :e preV)) /\
+      (~(apply_fun fcls tV :e A) /\ ~(apply_fun fcls tV :e B)).
+    apply orIL.
+    exact HUonlyV.
+  - assume HrestV :
+      ((tV :e preV /\ ~(tV :e preU)) /\
+        (~(apply_fun fcls tV :e A) /\ ~(apply_fun fcls tV :e B))) \/
+      ((apply_fun fcls tV :e A /\ ~(apply_fun fcls tV :e B)) \/
+       (apply_fun fcls tV :e B /\ ~(apply_fun fcls tV :e A))).
+    apply HrestV.
+    + assume HVonlyV :
+        (tV :e preV /\ ~(tV :e preU)) /\
+        (~(apply_fun fcls tV :e A) /\ ~(apply_fun fcls tV :e B)).
+      claim HprePartV : tV :e preV /\ ~(tV :e preU).
+      {
+        exact (andEL
+          (tV :e preV /\ ~(tV :e preU))
+          (~(apply_fun fcls tV :e A) /\ ~(apply_fun fcls tV :e B))
+          HVonlyV).
+      }
+      claim HnotPreUV : ~(tV :e preU).
+      {
+        exact (andER
+          (tV :e preV)
+          (~(tV :e preU))
+          HprePartV).
+      }
+      claim HfalseV : False.
+      {
+        exact (HnotPreUV HtVinPreU).
+      }
+      exact (FalseE
+        HfalseV
+        (((tV :e preU /\ ~(tV :e preV)) /\
+          (~(apply_fun fcls tV :e A) /\ ~(apply_fun fcls tV :e B))) \/
+         ((apply_fun fcls tV :e A /\ ~(apply_fun fcls tV :e B)) \/
+          (apply_fun fcls tV :e B /\ ~(apply_fun fcls tV :e A))))).
+    + assume HovV :
+        (apply_fun fcls tV :e A /\ ~(apply_fun fcls tV :e B)) \/
+        (apply_fun fcls tV :e B /\ ~(apply_fun fcls tV :e A)).
+      apply orIR.
+      exact HovV.
+}
+claim HtU_not_preU_implies_not_imageA_not_imageB :
+  ~(tU :e preU) ->
+  ~(apply_fun fcls tU :e A) /\ ~(apply_fun fcls tU :e B).
+{
+  assume HnotPreUU : ~(tU :e preU).
+  claim HcaseU :
+    ((tU :e preV /\ ~(tU :e preU)) /\
+      (~(apply_fun fcls tU :e A) /\ ~(apply_fun fcls tU :e B))) \/
+    ((apply_fun fcls tU :e A /\ ~(apply_fun fcls tU :e B)) \/
+     (apply_fun fcls tU :e B /\ ~(apply_fun fcls tU :e A))).
+  {
+    exact HtU_refined_cases.
+  }
+  apply HcaseU.
+  - assume HVonlyU :
+      (tU :e preV /\ ~(tU :e preU)) /\
+      (~(apply_fun fcls tU :e A) /\ ~(apply_fun fcls tU :e B)).
+    exact (andER
+      (tU :e preV /\ ~(tU :e preU))
+      (~(apply_fun fcls tU :e A) /\ ~(apply_fun fcls tU :e B))
+      HVonlyU).
+  - assume HovU :
+      (apply_fun fcls tU :e A /\ ~(apply_fun fcls tU :e B)) \/
+      (apply_fun fcls tU :e B /\ ~(apply_fun fcls tU :e A)).
+    apply HovU.
+    + assume HimgAU : apply_fun fcls tU :e A /\ ~(apply_fun fcls tU :e B).
+      claim HimgA_U : apply_fun fcls tU :e A.
+      {
+        exact (andEL
+          (apply_fun fcls tU :e A)
+          (~(apply_fun fcls tU :e B))
+          HimgAU).
+      }
+      claim HimgA_pack :
+        (tU :e preA /\ tU :e preU :/\: preV) /\ ~(tU :e preB).
+      {
+        exact (Hunit_imageA_implies_preA_preUV_notPreB tU HtU HimgA_U).
+      }
+      claim HtUPreUV_A : tU :e preA /\ tU :e preU :/\: preV.
+      {
+        exact (andEL
+          (tU :e preA /\ tU :e preU :/\: preV)
+          (~(tU :e preB))
+          HimgA_pack).
+      }
+      claim HtUPreUV_A2 : tU :e preU :/\: preV.
+      {
+        exact (andER
+          (tU :e preA)
+          (tU :e preU :/\: preV)
+          HtUPreUV_A).
+      }
+      claim HtUPreU_A : tU :e preU.
+      {
+        exact (binintersectE1 preU preV tU HtUPreUV_A2).
+      }
+      claim HfalseU : False.
+      {
+        exact (HnotPreUU HtUPreU_A).
+      }
+      exact (FalseE
+        HfalseU
+        (~(apply_fun fcls tU :e A) /\ ~(apply_fun fcls tU :e B))).
+    + assume HimgBU : apply_fun fcls tU :e B /\ ~(apply_fun fcls tU :e A).
+      claim HimgB_U : apply_fun fcls tU :e B.
+      {
+        exact (andEL
+          (apply_fun fcls tU :e B)
+          (~(apply_fun fcls tU :e A))
+          HimgBU).
+      }
+      claim HimgB_pack :
+        (tU :e preB /\ tU :e preU :/\: preV) /\ ~(tU :e preA).
+      {
+        exact (Hunit_imageB_implies_preB_preUV_notPreA tU HtU HimgB_U).
+      }
+      claim HtUPreUV_B : tU :e preB /\ tU :e preU :/\: preV.
+      {
+        exact (andEL
+          (tU :e preB /\ tU :e preU :/\: preV)
+          (~(tU :e preA))
+          HimgB_pack).
+      }
+      claim HtUPreUV_B2 : tU :e preU :/\: preV.
+      {
+        exact (andER
+          (tU :e preB)
+          (tU :e preU :/\: preV)
+          HtUPreUV_B).
+      }
+      claim HtUPreU_B : tU :e preU.
+      {
+        exact (binintersectE1 preU preV tU HtUPreUV_B2).
+      }
+      claim HfalseU : False.
+      {
+        exact (HnotPreUU HtUPreU_B).
+      }
+      exact (FalseE
+        HfalseU
+        (~(apply_fun fcls tU :e A) /\ ~(apply_fun fcls tU :e B))).
+}
+claim HtV_not_preV_implies_not_imageA_not_imageB :
+  ~(tV :e preV) ->
+  ~(apply_fun fcls tV :e A) /\ ~(apply_fun fcls tV :e B).
+{
+  assume HnotPreVV : ~(tV :e preV).
+  claim HcaseV :
+    ((tV :e preU /\ ~(tV :e preV)) /\
+      (~(apply_fun fcls tV :e A) /\ ~(apply_fun fcls tV :e B))) \/
+    ((apply_fun fcls tV :e A /\ ~(apply_fun fcls tV :e B)) \/
+     (apply_fun fcls tV :e B /\ ~(apply_fun fcls tV :e A))).
+  {
+    exact HtV_refined_cases.
+  }
+  apply HcaseV.
+  - assume HUonlyV :
+      (tV :e preU /\ ~(tV :e preV)) /\
+      (~(apply_fun fcls tV :e A) /\ ~(apply_fun fcls tV :e B)).
+    exact (andER
+      (tV :e preU /\ ~(tV :e preV))
+      (~(apply_fun fcls tV :e A) /\ ~(apply_fun fcls tV :e B))
+      HUonlyV).
+  - assume HovV :
+      (apply_fun fcls tV :e A /\ ~(apply_fun fcls tV :e B)) \/
+      (apply_fun fcls tV :e B /\ ~(apply_fun fcls tV :e A)).
+    apply HovV.
+    + assume HimgAV : apply_fun fcls tV :e A /\ ~(apply_fun fcls tV :e B).
+      claim HimgA_V : apply_fun fcls tV :e A.
+      {
+        exact (andEL
+          (apply_fun fcls tV :e A)
+          (~(apply_fun fcls tV :e B))
+          HimgAV).
+      }
+      claim HimgA_packV :
+        (tV :e preA /\ tV :e preU :/\: preV) /\ ~(tV :e preB).
+      {
+        exact (Hunit_imageA_implies_preA_preUV_notPreB tV HtV HimgA_V).
+      }
+      claim HtVPreUV_A : tV :e preA /\ tV :e preU :/\: preV.
+      {
+        exact (andEL
+          (tV :e preA /\ tV :e preU :/\: preV)
+          (~(tV :e preB))
+          HimgA_packV).
+      }
+      claim HtVPreUV_A2 : tV :e preU :/\: preV.
+      {
+        exact (andER
+          (tV :e preA)
+          (tV :e preU :/\: preV)
+          HtVPreUV_A).
+      }
+      claim HtVPreV_A : tV :e preV.
+      {
+        exact (binintersectE2 preU preV tV HtVPreUV_A2).
+      }
+      claim HfalseV : False.
+      {
+        exact (HnotPreVV HtVPreV_A).
+      }
+      exact (FalseE
+        HfalseV
+        (~(apply_fun fcls tV :e A) /\ ~(apply_fun fcls tV :e B))).
+    + assume HimgBV : apply_fun fcls tV :e B /\ ~(apply_fun fcls tV :e A).
+      claim HimgB_V : apply_fun fcls tV :e B.
+      {
+        exact (andEL
+          (apply_fun fcls tV :e B)
+          (~(apply_fun fcls tV :e A))
+          HimgBV).
+      }
+      claim HimgB_packV :
+        (tV :e preB /\ tV :e preU :/\: preV) /\ ~(tV :e preA).
+      {
+        exact (Hunit_imageB_implies_preB_preUV_notPreA tV HtV HimgB_V).
+      }
+      claim HtVPreUV_B : tV :e preB /\ tV :e preU :/\: preV.
+      {
+        exact (andEL
+          (tV :e preB /\ tV :e preU :/\: preV)
+          (~(tV :e preA))
+          HimgB_packV).
+      }
+      claim HtVPreUV_B2 : tV :e preU :/\: preV.
+      {
+        exact (andER
+          (tV :e preB)
+          (tV :e preU :/\: preV)
+          HtVPreUV_B).
+      }
+      claim HtVPreV_B : tV :e preV.
+      {
+        exact (binintersectE2 preU preV tV HtVPreUV_B2).
+      }
+      claim HfalseV : False.
+      {
+        exact (HnotPreVV HtVPreV_B).
+      }
+      exact (FalseE
+        HfalseV
+        (~(apply_fun fcls tV :e A) /\ ~(apply_fun fcls tV :e B))).
+}
 (** TODO Bob: prove via S63-style alternating decomposition in U cap V = A union B
     with A cap B = Empty, then identify loop class as power of [alpha.beta] or inverse power.
     Current core setup complete:
@@ -254199,7 +254515,8 @@ claim Hunit_interval_image_quadrichotomy_refined :
     - direct preA/preB <-> image-negation equivalence forms and endpoint image corollaries,
     - unit-interval trichotomy/quadrichotomy splitting (U-only, V-only, overlap A-side, overlap B-side),
     - global unit-interval preimage/image equivalence lemmas and overlap-side negation<->membership forms,
-    - refined quadrichotomy: outside overlap (U-only/V-only) implies no A/B-image hits.
+    - refined quadrichotomy: outside overlap (U-only/V-only) implies no A/B-image hits,
+    - witness-point case splits for tU/tV with derived no-A/no-B implications in non-overlap branches.
     Remaining: alternating crossing decomposition over U cap V = A union B (A cap B=Empty). **)
 admit.
 Admitted.
