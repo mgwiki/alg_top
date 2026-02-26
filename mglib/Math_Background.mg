@@ -1,4 +1,4 @@
-(** Balance Alice 3327 **)
+(** Balance Alice 3388 **)
 (** Balance Bob 3451 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
@@ -158497,6 +158497,7 @@ exact (Hnat n (omega_nat_p n Hn)).
 Qed.
 
 (** Helper: In abelian group, product with identity gaps equals product of non-identity terms **)
+(** Proven Alice **)
 Lemma abelian_product_identity_gaps :
   forall G mult e inv:set,
   group_structure G mult e inv ->
@@ -158671,6 +158672,7 @@ exact (Hmain n (omega_nat_p n Hn) f Hf pos Hpos_range Hpos_inj Hcoverage).
 Qed.
 
 (** Helper: In an abelian group with subgroups satisfying zero-sum, equal products imply component equality **)
+(** Proven Alice **)
 Lemma zero_sum_component_extraction :
   forall G mult e inv J Gfam:set,
   abelian_group G mult e inv ->
@@ -166998,8 +167000,8 @@ Admitted.
 (** from S67 Exercise 1 (line 2697 in algtop.tex) **)
 (** LATEX VERSION: Sum is direct iff x_{a1} + ... + x_{an} = 0 implies each x_{ai} = 0. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 61 **)
-(** Lock Alice 1772169141 **)
+(** Collected Alice 61 **)
+(** Proven Alice **)
 Theorem ex67_1_direct_sum_characterization :
   forall G mult e inv J Gfam:set,
   subgroups_generate_abelian G mult e inv J Gfam ->
@@ -167276,7 +167278,7 @@ apply iffI.
     exact (zero_sum_component_extraction G mult e inv J Gfam HabG HsubGfam Hzs
       n1 n2 Hn1 Hn2 Hne1 Hne2 a1 a2 Ha1 Ha2 x1 x2 Hx1 Hx2
       Hxfam1 Hxfam2 Hinj1 Hinj2 Hprodeq).
-Admitted.
+Qed.
 
 (** from S67 Exercise 3 (line 2706 in algtop.tex) **)
 (** LATEX VERSION: If G is free abelian with basis {x, y}, then {2x+3y, x-y} is also a basis. **)
