@@ -250969,6 +250969,15 @@ claim H1PreA : 1 :e preA.
     one_in_unit_interval
     Hf1A).
 }
+claim HpreAHasWitness : exists z:set, z :e preA.
+{
+  witness 0.
+  exact H0PreA.
+}
+claim HpreANonempty : preA <> Empty.
+{
+  exact (elem_implies_nonempty preA 0 H0PreA).
+}
 claim HaNotB : ~(a :e B).
 {
   assume HaB : a :e B.
@@ -251010,6 +251019,15 @@ claim H1NotPreB : ~(1 :e preB).
     exact Hf1B.
   }
   exact (HaNotB HaB).
+}
+claim HpreBNoEndpoints :
+  ~(0 :e preB) /\ ~(1 :e preB).
+{
+  exact (andI
+    (~(0 :e preB))
+    (~(1 :e preB))
+    H0NotPreB
+    H1NotPreB).
 }
 (** TODO Bob: complete S84.6 mixed-case crossing-to-power reduction.
     The arguments now have explicit crossing witnesses tU,tV with opposite-side
