@@ -158648,8 +158648,60 @@ claim Hmerged_fam : forall k:set, k :e n1 -> merged_val k :e apply_fun Gfam (app
         (apply_fun x1 k)
         Hnm). }
     rewrite Hif. exact (Hxfam1 k Hk). }
+set unmatched_set := Sep n2 (fun j:set => forall k:set, k :e n1 -> apply_fun a2 j <> apply_fun a1 k).
+claim Hunmatched_sub : unmatched_set c= n2.
+{ let j. assume Hj. exact (SepE1 n2 (fun j0:set => forall k:set, k :e n1 -> apply_fun a2 j0 <> apply_fun a1 k) j Hj). }
+claim Hunmatched_prop : forall j:set, j :e unmatched_set -> forall k:set, k :e n1 -> apply_fun a2 j <> apply_fun a1 k.
+{ let j. assume Hj. exact (SepE2 n2 (fun j0:set => forall k:set, k :e n1 -> apply_fun a2 j0 <> apply_fun a1 k) j Hj). }
+claim Hunmatched_in_n2 : forall j:set, j :e unmatched_set -> j :e n2.
+{ let j. assume Hj. exact (Hunmatched_sub j Hj). }
+claim Hnat_n2 : nat_p n2. { exact (omega_nat_p n2 Hn2). }
+claim Hexenum : exists m:set, nat_p m /\ (m c= n2 /\ equip unmatched_set m).
+{ exact (finite_ordinal_subset_equip_subordinal n2 unmatched_set Hnat_n2 Hunmatched_sub). }
+apply Hexenum. let m. assume Hexenum_prop.
+apply Hexenum_prop. assume Hnatm Hrest.
+apply Hrest. assume Hmsub Hequip.
+claim Hm_omega : m :e omega. { exact (nat_p_omega m Hnatm). }
+claim Hequip_sym : equip m unmatched_set. { exact (equip_sym unmatched_set m Hequip). }
+apply Hequip_sym. let inv_enum. assume Hinv_bij : bij m unmatched_set inv_enum.
+apply Hinv_bij. assume Hinv_range_inj Hinv_surj.
+apply Hinv_range_inj. assume Hinv_range Hinv_inj.
+claim Hinv_in_U : forall i:set, i :e m -> inv_enum i :e unmatched_set.
+{ let i. assume Hi. exact (Hinv_range i Hi). }
+claim Hinv_in_n2 : forall i:set, i :e m -> inv_enum i :e n2.
+{ let i. assume Hi. exact (Hunmatched_in_n2 (inv_enum i) (Hinv_in_U i Hi)). }
+claim Hinv_unmatched : forall i:set, i :e m -> forall k:set, k :e n1 -> apply_fun a2 (inv_enum i) <> apply_fun a1 k.
+{ let i. assume Hi. exact (Hunmatched_prop (inv_enum i) (Hinv_in_U i Hi)). }
+set N := add_nat n1 m.
+claim HN_omega : N :e omega. { exact (nat_p_omega N (add_nat_p n1 (omega_nat_p n1 Hn1) m Hnatm)). }
+claim HN_ne : N <> 0.
+{ assume HN0 : N = 0.
+  claim Hn1_0 : n1 = 0. { admit. }
+  exact (Hne1 Hn1_0). }
+set comb_val := fun k:set =>
+  If_i (k :e n1) (merged_val k) (apply_fun inv (apply_fun x2 (inv_enum (Eps_i (fun j:set => k = add_nat n1 j /\ j :e m))))).
+set comb_alpha := fun k:set =>
+  If_i (k :e n1) (apply_fun a1 k) (apply_fun a2 (inv_enum (Eps_i (fun j:set => k = add_nat n1 j /\ j :e m)))).
+set comb_xs := graph N comb_val.
+set comb_alphas := graph N comb_alpha.
+claim Hcomb_vals_fn : function_on comb_xs N G. { admit. }
+claim Hcomb_alphas_fn : function_on comb_alphas N J. { admit. }
+claim Hcomb_fam : forall i:set, i :e N -> apply_fun comb_xs i :e apply_fun Gfam (apply_fun comb_alphas i). { admit. }
+claim Hcomb_inj : forall i j:set, i :e N -> j :e N -> i <> j -> apply_fun comb_alphas i <> apply_fun comb_alphas j. { admit. }
+claim Hcomb_prod_e : nat_primrec e (fun i r => apply_fun mult (r, apply_fun comb_xs i)) N = e. { admit. }
+claim Hcomb_all_e : forall i:set, i :e N -> apply_fun comb_xs i = e.
+{ exact (Hzs N HN_omega HN_ne comb_alphas Hcomb_alphas_fn Hcomb_inj comb_xs Hcomb_vals_fn Hcomb_fam Hcomb_prod_e). }
 claim Hmerged_zero : forall k:set, k :e n1 -> merged_val k = e.
-{ admit. }
+{ let k. assume Hk : k :e n1.
+  claim Hk_N : k :e N. { admit. }
+  claim Hcomb_k : apply_fun comb_xs k = comb_val k.
+  { exact (apply_fun_graph N comb_val k Hk_N). }
+  claim Hcomb_k_merged : comb_val k = merged_val k.
+  { exact (If_i_1 (k :e n1) (merged_val k) (apply_fun inv (apply_fun x2 (inv_enum (Eps_i (fun j:set => k = add_nat n1 j /\ j :e m))))) Hk). }
+  claim H : apply_fun comb_xs k = merged_val k.
+  { rewrite Hcomb_k. exact Hcomb_k_merged. }
+  rewrite <- H. exact (Hcomb_all_e k Hk_N). }
+claim Hunmatched_x2_e : forall j:set, j :e unmatched_set -> apply_fun x2 j = e. { admit. }
 let alpha. assume Halpha : alpha :e J.
 apply and3I.
 - let i j. assume Hi : i :e n1. assume Hj : j :e n2.
@@ -158743,10 +158795,13 @@ apply and3I.
   assume Hnex1 : ~(exists i:set, i :e n1 /\ apply_fun a1 i = alpha).
   assume Hex2 : exists j:set, j :e n2 /\ apply_fun a2 j = alpha.
   let j. assume Hj : j :e n2. assume Ha2j : apply_fun a2 j = alpha.
-  (** j is not matched by any k in n1, so j is unmatched **)
-  (** We need a separate argument using the unmatched product **)
-  (** For now: use the fact that prod(x1,n1) = prod(x2,n2) and x2(j) can be extracted **)
-  admit.
+  claim Hj_unmatched : j :e unmatched_set.
+  { apply (SepI n2 (fun j0:set => forall k:set, k :e n1 -> apply_fun a2 j0 <> apply_fun a1 k) j Hj).
+    let k. assume Hk : k :e n1. assume Heq : apply_fun a2 j = apply_fun a1 k.
+    apply Hnex1. witness k. apply andI.
+    - exact Hk.
+    - exact (eq_i_tra (apply_fun a1 k) (apply_fun a2 j) alpha (eq_symm (apply_fun a2 j) (apply_fun a1 k) Heq) Ha2j). }
+  exact (Hunmatched_x2_e j Hj_unmatched).
 Admitted.
 
 (** Helper: existence of extension homomorphism for direct sum (admitted) **)
