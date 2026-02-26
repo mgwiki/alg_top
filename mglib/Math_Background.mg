@@ -250682,6 +250682,26 @@ claim HpreVHasWitness : exists z:set, z :e preV.
   witness tU.
   exact HtUinPreV.
 }
+claim HpreUNonempty : preU <> Empty.
+{
+  exact (elem_implies_nonempty preU tV HtVinPreU).
+}
+claim HpreVNonempty : preV <> Empty.
+{
+  exact (elem_implies_nonempty preV tU HtUinPreV).
+}
+claim HpreUSubI : preU c= unit_interval.
+{
+  let x.
+  assume HxPreU : x :e preU.
+  exact (SepE1 unit_interval (fun y:set => apply_fun fcls y :e U) x HxPreU).
+}
+claim HpreVSubI : preV c= unit_interval.
+{
+  let x.
+  assume HxPreV : x :e preV.
+  exact (SepE1 unit_interval (fun y:set => apply_fun fcls y :e V) x HxPreV).
+}
 claim HpreXAll : preimage_of unit_interval fcls X = unit_interval.
 {
   apply set_ext.
