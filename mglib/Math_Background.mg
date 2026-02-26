@@ -1,6 +1,6 @@
 (** Balance Alice 3327 **)
 (** Balance Bob 3451 **)
-(** Balance Charlie 2234 **)
+(** Balance Charlie 2331 **)
 (** Balance Dave 1793 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -35117,7 +35117,7 @@ apply andI.
 - apply andI.
   + exact Hseg_cont_A.
   + exact Hseg_at_0.
-- exact Hseg_at_1.
+	- exact Hseg_at_1.
 Admitted.
 
 (** from S52 Exercise 1b (line 496 in algtop.tex) **)
@@ -228917,8 +228917,8 @@ Qed.
 (** LATEX VERSION: A graph X is connected iff every pair of vertices can be **)
 (** joined by an edge path. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 97 **)
-(** Lock Charlie 1772142647 **)
+(** Collected Charlie 97 **)
+(** Proven Charlie **)
 Theorem lemma84_1_connected_iff_edge_paths :
   forall X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -230592,12 +230592,12 @@ apply (iffI
 	    { rewrite <- HUVempty. exact Hy0UV. }
 	    exact (EmptyE y0 Hy0Empty).
 	  }
-	  exact (andI
-	    (topology_on X Tx)
-	    (~ (exists U V:set, U :e Tx /\ V :e Tx /\ separation_of X U V))
-	    HtopX
-	    Hnosep).
-Admitted.
+		  exact (andI
+		    (topology_on X Tx)
+		    (~ (exists U V:set, U :e Tx /\ V :e Tx /\ separation_of X U V))
+		    HtopX
+		    Hnosep).
+	Qed.
 
 (** helper: the tree extension union is connected whenever A meets T in a vertex **)
 (** Proven Charlie **)
