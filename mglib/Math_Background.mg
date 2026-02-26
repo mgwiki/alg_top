@@ -75742,6 +75742,59 @@ exact (HcommSq
   Hx1I).
 Qed.
 
+(** Proven Bob **)
+Theorem homotopy_lift_commutes_on_subset_from_exists :
+  forall E Te B Tb p e0 F N:set,
+  (exists Ft:set,
+    continuous_map unit_square unit_square_topology E Te Ft /\
+    apply_fun Ft (0, 0) = e0 /\
+    (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+      apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t))) ->
+  N c= unit_square ->
+  forall x:set, x :e N ->
+    apply_fun p (apply_fun (homotopy_lift E Te B Tb p e0 F) x) = apply_fun F x.
+let E Te B Tb p e0 F N.
+assume Hex HNsub.
+claim Hpack :
+  continuous_map unit_square unit_square_topology E Te (homotopy_lift E Te B Tb p e0 F) /\
+  apply_fun (homotopy_lift E Te B Tb p e0 F) (0, 0) = e0 /\
+  (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun (homotopy_lift E Te B Tb p e0 F) (s, t)) = apply_fun F (s, t)).
+{
+  exact (homotopy_lift_from_exists_witness
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    F
+    Hex).
+}
+claim Hcomm :
+  forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun (homotopy_lift E Te B Tb p e0 F) (s, t)) = apply_fun F (s, t).
+{
+  exact (andER
+    (continuous_map unit_square unit_square_topology E Te (homotopy_lift E Te B Tb p e0 F) /\
+     apply_fun (homotopy_lift E Te B Tb p e0 F) (0, 0) = e0)
+    (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+      apply_fun p (apply_fun (homotopy_lift E Te B Tb p e0 F) (s, t)) = apply_fun F (s, t))
+    Hpack).
+}
+let x.
+assume HxN.
+exact (commutation_on_unit_square_subset
+  N
+  p
+  F
+  (homotopy_lift E Te B Tb p e0 F)
+  HNsub
+  Hcomm
+  x
+  HxN).
+Qed.
+
 (** Infrastructure: image of a lift lies in the evenly-covered sheet union when it commutes over U **)
 (** Proven Bob **)
 Theorem image_of_lift_subset_union_sheets_from_commutation :
