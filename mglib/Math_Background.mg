@@ -251054,6 +251054,73 @@ claim HpreBNoEndpoints :
     H0NotPreB
     H1NotPreB).
 }
+claim HpreA_not_preB :
+  forall t:set, t :e preA -> ~(t :e preB).
+{
+  let t.
+  assume HtPreA.
+  assume HtPreB.
+  claim HtAB : t :e preA :/\: preB.
+  {
+    exact (binintersectI preA preB t HtPreA HtPreB).
+  }
+  claim HtEmpty : t :e Empty.
+  {
+    rewrite <- HpreABDisj.
+    exact HtAB.
+  }
+  exact (EmptyE t HtEmpty).
+}
+claim HpreB_not_preA :
+  forall t:set, t :e preB -> ~(t :e preA).
+{
+  let t.
+  assume HtPreB.
+  assume HtPreA.
+  exact ((HpreA_not_preB t HtPreA) HtPreB).
+}
+claim HpreA_in_preUV :
+  forall t:set, t :e preA -> t :e preU :/\: preV.
+{
+  let t.
+  assume HtPreA.
+  exact (HpreASubPreUV t HtPreA).
+}
+claim HpreB_in_preUV :
+  forall t:set, t :e preB -> t :e preU :/\: preV.
+{
+  let t.
+  assume HtPreB.
+  exact (HpreBSubPreUV t HtPreB).
+}
+claim HpreA_in_preU :
+  forall t:set, t :e preA -> t :e preU.
+{
+  let t.
+  assume HtPreA.
+  exact (binintersectE1 preU preV t (HpreA_in_preUV t HtPreA)).
+}
+claim HpreA_in_preV :
+  forall t:set, t :e preA -> t :e preV.
+{
+  let t.
+  assume HtPreA.
+  exact (binintersectE2 preU preV t (HpreA_in_preUV t HtPreA)).
+}
+claim HpreB_in_preU :
+  forall t:set, t :e preB -> t :e preU.
+{
+  let t.
+  assume HtPreB.
+  exact (binintersectE1 preU preV t (HpreB_in_preUV t HtPreB)).
+}
+claim HpreB_in_preV :
+  forall t:set, t :e preB -> t :e preV.
+{
+  let t.
+  assume HtPreB.
+  exact (binintersectE2 preU preV t (HpreB_in_preUV t HtPreB)).
+}
 (** TODO Bob: complete S84.6 mixed-case crossing-to-power reduction.
     The arguments now have explicit crossing witnesses tU,tV with opposite-side
     membership, plus full path/simply-connected/disconnected-overlap data. **)
