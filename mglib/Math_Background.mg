@@ -250626,13 +250626,344 @@ claim HpreUVCover : unit_interval = preU :\/: preV.
     + assume HtPreV : t :e preV.
       exact (SepE1 unit_interval (fun x:set => apply_fun fcls x :e V) t HtPreV).
 }
+claim H0PreUV : 0 :e preU :/\: preV.
+{
+  exact (binintersectI preU preV 0 H0PreU H0PreV).
+}
+claim H1PreUV : 1 :e preU :/\: preV.
+{
+  exact (binintersectI preU preV 1 H1PreU H1PreV).
+}
+set preA := preimage_of unit_interval fcls A.
+set preB := preimage_of unit_interval fcls B.
+claim HpreUVInterEq : preU :/\: preV = preimage_of unit_interval fcls (U :/\: V).
+{
+  rewrite (preimage_of_binintersect unit_interval fcls U V).
+  reflexivity.
+}
+claim HpreUVSplitAB : preU :/\: preV = preA :\/: preB.
+{
+  rewrite HpreUVInterEq.
+  rewrite Hoverlap.
+  rewrite (preimage_of_binunion unit_interval fcls A B).
+  reflexivity.
+}
+claim HpreABDisj : preA :/\: preB = Empty.
+{
+  rewrite <- (preimage_of_binintersect unit_interval fcls A B).
+  rewrite Hdisj.
+  exact (preimage_of_Empty unit_interval fcls).
+}
+claim HpreASubPreU : preA c= preU.
+{
+  let x.
+  assume HxPreA : x :e preA.
+  claim HxI : x :e unit_interval.
+  {
+    exact (SepE1 unit_interval (fun y:set => apply_fun fcls y :e A) x HxPreA).
+  }
+  claim HfxA : apply_fun fcls x :e A.
+  {
+    exact (SepE2 unit_interval (fun y:set => apply_fun fcls y :e A) x HxPreA).
+  }
+  claim HfxUV : apply_fun fcls x :e U :/\: V.
+  {
+    exact (HAsub (apply_fun fcls x) HfxA).
+  }
+  claim HfxU : apply_fun fcls x :e U.
+  {
+    exact (binintersectE1 U V (apply_fun fcls x) HfxUV).
+  }
+  exact (SepI
+    unit_interval
+    (fun y:set => apply_fun fcls y :e U)
+    x
+    HxI
+    HfxU).
+}
+claim HpreASubPreV : preA c= preV.
+{
+  let x.
+  assume HxPreA : x :e preA.
+  claim HxI : x :e unit_interval.
+  {
+    exact (SepE1 unit_interval (fun y:set => apply_fun fcls y :e A) x HxPreA).
+  }
+  claim HfxA : apply_fun fcls x :e A.
+  {
+    exact (SepE2 unit_interval (fun y:set => apply_fun fcls y :e A) x HxPreA).
+  }
+  claim HfxUV : apply_fun fcls x :e U :/\: V.
+  {
+    exact (HAsub (apply_fun fcls x) HfxA).
+  }
+  claim HfxV : apply_fun fcls x :e V.
+  {
+    exact (binintersectE2 U V (apply_fun fcls x) HfxUV).
+  }
+  exact (SepI
+    unit_interval
+    (fun y:set => apply_fun fcls y :e V)
+    x
+    HxI
+    HfxV).
+}
+claim HpreASubPreUV : preA c= preU :/\: preV.
+{
+  let x.
+  assume HxPreA : x :e preA.
+  exact (binintersectI preU preV x
+    (HpreASubPreU x HxPreA)
+    (HpreASubPreV x HxPreA)).
+}
+claim HpreBSubPreU : preB c= preU.
+{
+  let x.
+  assume HxPreB : x :e preB.
+  claim HxI : x :e unit_interval.
+  {
+    exact (SepE1 unit_interval (fun y:set => apply_fun fcls y :e B) x HxPreB).
+  }
+  claim HfxB : apply_fun fcls x :e B.
+  {
+    exact (SepE2 unit_interval (fun y:set => apply_fun fcls y :e B) x HxPreB).
+  }
+  claim HfxUV : apply_fun fcls x :e U :/\: V.
+  {
+    exact (HBsub (apply_fun fcls x) HfxB).
+  }
+  claim HfxU : apply_fun fcls x :e U.
+  {
+    exact (binintersectE1 U V (apply_fun fcls x) HfxUV).
+  }
+  exact (SepI
+    unit_interval
+    (fun y:set => apply_fun fcls y :e U)
+    x
+    HxI
+    HfxU).
+}
+claim HpreBSubPreV : preB c= preV.
+{
+  let x.
+  assume HxPreB : x :e preB.
+  claim HxI : x :e unit_interval.
+  {
+    exact (SepE1 unit_interval (fun y:set => apply_fun fcls y :e B) x HxPreB).
+  }
+  claim HfxB : apply_fun fcls x :e B.
+  {
+    exact (SepE2 unit_interval (fun y:set => apply_fun fcls y :e B) x HxPreB).
+  }
+  claim HfxUV : apply_fun fcls x :e U :/\: V.
+  {
+    exact (HBsub (apply_fun fcls x) HfxB).
+  }
+  claim HfxV : apply_fun fcls x :e V.
+  {
+    exact (binintersectE2 U V (apply_fun fcls x) HfxUV).
+  }
+  exact (SepI
+    unit_interval
+    (fun y:set => apply_fun fcls y :e V)
+    x
+    HxI
+    HfxV).
+}
+claim HpreBSubPreUV : preB c= preU :/\: preV.
+{
+  let x.
+  assume HxPreB : x :e preB.
+  exact (binintersectI preU preV x
+    (HpreBSubPreU x HxPreB)
+    (HpreBSubPreV x HxPreB)).
+}
+claim HpreUV_to_preAB :
+  forall t:set, t :e preU :/\: preV -> t :e preA :\/: preB.
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  rewrite <- HpreUVSplitAB.
+  exact HtUV.
+}
+claim H0PreA : 0 :e preA.
+{
+  claim Hf0A : apply_fun fcls 0 :e A.
+  {
+    rewrite Hfcls0.
+    exact HaA.
+  }
+  exact (SepI
+    unit_interval
+    (fun x:set => apply_fun fcls x :e A)
+    0
+    zero_in_unit_interval
+    Hf0A).
+}
+claim H1PreA : 1 :e preA.
+{
+  claim Hf1A : apply_fun fcls 1 :e A.
+  {
+    rewrite Hfcls1.
+    exact HaA.
+  }
+  exact (SepI
+    unit_interval
+    (fun x:set => apply_fun fcls x :e A)
+    1
+    one_in_unit_interval
+    Hf1A).
+}
+claim H0PreAB : 0 :e preA :\/: preB.
+{
+  exact (HpreUV_to_preAB 0 H0PreUV).
+}
+claim H1PreAB : 1 :e preA :\/: preB.
+{
+  exact (HpreUV_to_preAB 1 H1PreUV).
+}
+claim HaNotB : ~(a :e B).
+{
+  assume HaB : a :e B.
+  claim HaAB : a :e A :/\: B.
+  {
+    exact (binintersectI A B a HaA HaB).
+  }
+  claim HaEmpty : a :e Empty.
+  {
+    rewrite <- Hdisj.
+    exact HaAB.
+  }
+  exact (EmptyE a HaEmpty).
+}
+claim H0NotPreB : ~(0 :e preB).
+{
+  assume H0PreB : 0 :e preB.
+  claim Hf0B : apply_fun fcls 0 :e B.
+  {
+    exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e B) 0 H0PreB).
+  }
+  claim HaB : a :e B.
+  {
+    rewrite <- Hfcls0.
+    exact Hf0B.
+  }
+  exact (HaNotB HaB).
+}
+claim H1NotPreB : ~(1 :e preB).
+{
+  assume H1PreB : 1 :e preB.
+  claim Hf1B : apply_fun fcls 1 :e B.
+  {
+    exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e B) 1 H1PreB).
+  }
+  claim HaB : a :e B.
+  {
+    rewrite <- Hfcls1.
+    exact Hf1B.
+  }
+  exact (HaNotB HaB).
+}
+claim HpreA_not_preB :
+  forall t:set, t :e preA -> ~(t :e preB).
+{
+  let t.
+  assume HtPreA.
+  assume HtPreB.
+  claim HtAB : t :e preA :/\: preB.
+  {
+    exact (binintersectI preA preB t HtPreA HtPreB).
+  }
+  claim HtEmpty : t :e Empty.
+  {
+    rewrite <- HpreABDisj.
+    exact HtAB.
+  }
+  exact (EmptyE t HtEmpty).
+}
+claim HpreB_not_preA :
+  forall t:set, t :e preB -> ~(t :e preA).
+{
+  let t.
+  assume HtPreB.
+  assume HtPreA.
+  exact ((HpreA_not_preB t HtPreA) HtPreB).
+}
+claim HpreUV_classify :
+  forall t:set, t :e preU :/\: preV ->
+    (t :e preA /\ ~(t :e preB)) \/
+    (t :e preB /\ ~(t :e preA)).
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  claim HtAB : t :e preA :\/: preB.
+  {
+    exact (HpreUV_to_preAB t HtUV).
+  }
+  apply (binunionE preA preB t HtAB).
+  - assume HtA : t :e preA.
+    apply orIL.
+    exact (andI
+      (t :e preA)
+      (~(t :e preB))
+      HtA
+      (HpreA_not_preB t HtA)).
+  - assume HtB : t :e preB.
+    apply orIR.
+    exact (andI
+      (t :e preB)
+      (~(t :e preA))
+      HtB
+      (HpreB_not_preA t HtB)).
+}
+claim HpreUV_imageUV :
+  forall t:set, t :e preU :/\: preV -> apply_fun fcls t :e U :/\: V.
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  claim HtPreU : t :e preU.
+  {
+    exact (binintersectE1 preU preV t HtUV).
+  }
+  claim HtPreV : t :e preV.
+  {
+    exact (binintersectE2 preU preV t HtUV).
+  }
+  claim HimgU : apply_fun fcls t :e U.
+  {
+    exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e U) t HtPreU).
+  }
+  claim HimgV : apply_fun fcls t :e V.
+  {
+    exact (SepE2 unit_interval (fun x:set => apply_fun fcls x :e V) t HtPreV).
+  }
+  exact (binintersectI U V (apply_fun fcls t) HimgU HimgV).
+}
+claim HpreUV_imageAB :
+  forall t:set, t :e preU :/\: preV -> apply_fun fcls t :e A :\/: B.
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  claim HimgUV : apply_fun fcls t :e U :/\: V.
+  {
+    exact (HpreUV_imageUV t HtUV).
+  }
+  exact (mem_eqR
+    (apply_fun fcls t)
+    (U :/\: V)
+    (A :\/: B)
+    Hoverlap
+    HimgUV).
+}
 (** TODO Bob: prove via S63-style alternating decomposition in U cap V = A union B
     with A cap B = Empty, then identify loop class as power of [alpha.beta] or inverse power.
     Current core setup complete:
     - loop continuity/function-on and endpoint anchoring,
     - generator candidate class + omega-power closure (direct/inverse),
     - mixed crossing preimage-open/nonempty structure in unit interval,
-    - global preimage cover unit_interval = preU union preV.
+    - global preimage cover unit_interval = preU union preV,
+    - lifted overlap decomposition preU cap preV = preA union preB, disjointness/classification,
+    - image-side overlap classification for points in preU cap preV.
     Remaining: alternating crossing decomposition over U cap V = A union B (A cap B=Empty). **)
 admit.
 Admitted.
