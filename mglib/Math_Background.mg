@@ -228636,6 +228636,26 @@ exact (Hausdorff_singletons_closed
 Qed.
 
 (** Proven Bob **)
+Theorem one_point_sets_closed_open_complement_singleton :
+  forall X Tx x:set,
+  one_point_sets_closed X Tx ->
+  x :e X ->
+  open_in X Tx (X :\: (Sing x)).
+let X Tx x.
+assume Honept Hx.
+exact (open_of_closed_complement
+  X
+  Tx
+  (Sing x)
+  ((andER
+    (topology_on X Tx)
+    (forall y:set, y :e X -> closed_in X Tx (Sing y))
+    Honept)
+    x
+    Hx)).
+Qed.
+
+(** Proven Bob **)
 Theorem setminus_eq_from_intersection_singleton :
   forall T A v:set,
   T :/\: A = Sing v ->
@@ -230665,36 +230685,12 @@ claim HcohFamTA :
 		              HAsubTA).
 		          }
 		          rewrite HtopAeqTA.
-		          claim HtopA : topology_on A (subspace_topology X Tx A).
-		          {
-		            exact (andEL
-		              (topology_on A (subspace_topology X Tx A))
-		              (forall x:set, x :e A -> closed_in A (subspace_topology X Tx A) (Sing x))
-		              HoneptA).
-		          }
-		          claim HclosedSingA : closed_in A (subspace_topology X Tx A) (Sing v).
-		          {
-		            exact ((andER
-		              (topology_on A (subspace_topology X Tx A))
-		              (forall x:set, x :e A -> closed_in A (subspace_topology X Tx A) (Sing x))
-		              HoneptA)
-		              v
-		              HvA).
-		          }
-		          exact (andEL
-		            (open_in A (subspace_topology X Tx A) (A :\: (Sing v)))
-		            (closed_in A (subspace_topology X Tx A) ((Sing v) :\: A))
-		            (ex17_4_open_minus_closed_and_closed_minus_open
-		              A
-		              (subspace_topology X Tx A)
-		              A
-		              (Sing v)
-		              HtopA
-		              (X_is_open
-		                A
-		                (subspace_topology X Tx A)
-		                HtopA)
-		              HclosedSingA)).
+		          exact (one_point_sets_closed_open_complement_singleton
+		            A
+		            (subspace_topology X Tx A)
+		            v
+		            HoneptA
+		            HvA).
 		        }
 		        (** Remaining coherence-closed transfer obligation:
 		            transfer openness of TA\\T = A\\{v} from the A-subspace to TA
