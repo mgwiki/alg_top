@@ -251241,6 +251241,118 @@ claim HinvGenPowMem :
     HaX
     HgenClsMem).
 }
+claim HgenPowNontrivial :
+  forall m:set, m :e omega -> m <> 0 ->
+    group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+      m <>
+    fundamental_group_id X Tx a.
+{
+  exact (thm63_1a_infinite_cyclic_subgroup
+    X
+    Tx
+    U
+    V
+    A
+    B
+    Htop
+    HU
+    HV
+    Hcover
+    HAopen
+    HBopen
+    Hoverlap
+    Hdisj
+    a
+    b
+    HaA
+    HbB
+    alpha
+    HalphaPB
+    HalphaOn
+    beta
+    HbetaPB
+    HbetaOn).
+}
+claim Hpow0_gen :
+  group_power_nat
+    (fundamental_group_mult X Tx a)
+    (fundamental_group_id X Tx a)
+    (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+    0
+  = fundamental_group_id X Tx a.
+{
+  exact (nat_primrec_0
+    (fundamental_group_id X Tx a)
+    (fun _ r =>
+      apply_fun
+        (fundamental_group_mult X Tx a)
+        (path_homotopy_class_loop X Tx a (path_concat alpha beta), r))).
+}
+claim Hpow0_invgen :
+  group_power_nat
+    (fundamental_group_mult X Tx a)
+    (fundamental_group_id X Tx a)
+    (apply_fun (fundamental_group_inv X Tx a)
+      (path_homotopy_class_loop X Tx a (path_concat alpha beta)))
+    0
+  = fundamental_group_id X Tx a.
+{
+  exact (nat_primrec_0
+    (fundamental_group_id X Tx a)
+    (fun _ r =>
+      apply_fun
+        (fundamental_group_mult X Tx a)
+        (apply_fun (fundamental_group_inv X Tx a)
+          (path_homotopy_class_loop X Tx a (path_concat alpha beta)), r))).
+}
+claim Hn_nonzero_if_eq_gen_pow :
+  forall n:set, n :e omega ->
+    path_homotopy_class_loop X Tx a fcls
+    = group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+      n ->
+    n <> 0.
+{
+  let n.
+  assume HnO HclsEqPow.
+  assume Hn0 : n = 0.
+  claim HclsId :
+    path_homotopy_class_loop X Tx a fcls = fundamental_group_id X Tx a.
+  {
+    rewrite HclsEqPow.
+    rewrite Hn0.
+    exact Hpow0_gen.
+  }
+  exact (HfclsClsNe HclsId).
+}
+claim Hn_nonzero_if_eq_invgen_pow :
+  forall n:set, n :e omega ->
+    path_homotopy_class_loop X Tx a fcls
+    = group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (apply_fun (fundamental_group_inv X Tx a)
+        (path_homotopy_class_loop X Tx a (path_concat alpha beta)))
+      n ->
+    n <> 0.
+{
+  let n.
+  assume HnO HclsEqPow.
+  assume Hn0 : n = 0.
+  claim HclsId :
+    path_homotopy_class_loop X Tx a fcls = fundamental_group_id X Tx a.
+  {
+    rewrite HclsEqPow.
+    rewrite Hn0.
+    exact Hpow0_invgen.
+  }
+  exact (HfclsClsNe HclsId).
+}
 set preU := preimage_of unit_interval fcls U.
 set preV := preimage_of unit_interval fcls V.
 claim HpreUOpen : preU :e unit_interval_topology.
