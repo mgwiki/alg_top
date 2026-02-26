@@ -250750,6 +250750,120 @@ claim HpreUVSplitAB : preU :/\: preV = preA :\/: preB.
   rewrite (preimage_of_binunion unit_interval fcls A B).
   reflexivity.
 }
+claim HpreABDisj : preA :/\: preB = Empty.
+{
+  rewrite <- (preimage_of_binintersect unit_interval fcls A B).
+  rewrite Hdisj.
+  exact (preimage_of_Empty unit_interval fcls).
+}
+claim HpreASubPreU : preA c= preU.
+{
+  let x.
+  assume HxPreA : x :e preA.
+  claim HxI : x :e unit_interval.
+  {
+    exact (SepE1 unit_interval (fun y:set => apply_fun fcls y :e A) x HxPreA).
+  }
+  claim HfxA : apply_fun fcls x :e A.
+  {
+    exact (SepE2 unit_interval (fun y:set => apply_fun fcls y :e A) x HxPreA).
+  }
+  claim HfxUV : apply_fun fcls x :e U :/\: V.
+  {
+    exact (HAsub (apply_fun fcls x) HfxA).
+  }
+  claim HfxU : apply_fun fcls x :e U.
+  {
+    exact (binintersectE1 U V (apply_fun fcls x) HfxUV).
+  }
+  exact (SepI
+    unit_interval
+    (fun y:set => apply_fun fcls y :e U)
+    x
+    HxI
+    HfxU).
+}
+claim HpreASubPreV : preA c= preV.
+{
+  let x.
+  assume HxPreA : x :e preA.
+  claim HxI : x :e unit_interval.
+  {
+    exact (SepE1 unit_interval (fun y:set => apply_fun fcls y :e A) x HxPreA).
+  }
+  claim HfxA : apply_fun fcls x :e A.
+  {
+    exact (SepE2 unit_interval (fun y:set => apply_fun fcls y :e A) x HxPreA).
+  }
+  claim HfxUV : apply_fun fcls x :e U :/\: V.
+  {
+    exact (HAsub (apply_fun fcls x) HfxA).
+  }
+  claim HfxV : apply_fun fcls x :e V.
+  {
+    exact (binintersectE2 U V (apply_fun fcls x) HfxUV).
+  }
+  exact (SepI
+    unit_interval
+    (fun y:set => apply_fun fcls y :e V)
+    x
+    HxI
+    HfxV).
+}
+claim HpreBSubPreU : preB c= preU.
+{
+  let x.
+  assume HxPreB : x :e preB.
+  claim HxI : x :e unit_interval.
+  {
+    exact (SepE1 unit_interval (fun y:set => apply_fun fcls y :e B) x HxPreB).
+  }
+  claim HfxB : apply_fun fcls x :e B.
+  {
+    exact (SepE2 unit_interval (fun y:set => apply_fun fcls y :e B) x HxPreB).
+  }
+  claim HfxUV : apply_fun fcls x :e U :/\: V.
+  {
+    exact (HBsub (apply_fun fcls x) HfxB).
+  }
+  claim HfxU : apply_fun fcls x :e U.
+  {
+    exact (binintersectE1 U V (apply_fun fcls x) HfxUV).
+  }
+  exact (SepI
+    unit_interval
+    (fun y:set => apply_fun fcls y :e U)
+    x
+    HxI
+    HfxU).
+}
+claim HpreBSubPreV : preB c= preV.
+{
+  let x.
+  assume HxPreB : x :e preB.
+  claim HxI : x :e unit_interval.
+  {
+    exact (SepE1 unit_interval (fun y:set => apply_fun fcls y :e B) x HxPreB).
+  }
+  claim HfxB : apply_fun fcls x :e B.
+  {
+    exact (SepE2 unit_interval (fun y:set => apply_fun fcls y :e B) x HxPreB).
+  }
+  claim HfxUV : apply_fun fcls x :e U :/\: V.
+  {
+    exact (HBsub (apply_fun fcls x) HfxB).
+  }
+  claim HfxV : apply_fun fcls x :e V.
+  {
+    exact (binintersectE2 U V (apply_fun fcls x) HfxUV).
+  }
+  exact (SepI
+    unit_interval
+    (fun y:set => apply_fun fcls y :e V)
+    x
+    HxI
+    HfxV).
+}
 claim H0PreA : 0 :e preA.
 {
   claim Hf0A : apply_fun fcls 0 :e A.
