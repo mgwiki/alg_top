@@ -157294,6 +157294,237 @@ let n. assume Hn : n :e omega.
 exact (Hnat n (omega_nat_p n Hn)).
 Qed.
 
+(** Helper: in abelian group, product of pairwise products splits **)
+(** prod(f(i) x g(i)) = prod(f(i)) x prod(g(i)) **)
+Lemma nat_primrec_abelian_product_split :
+  forall G mult e inv:set,
+  group_structure G mult e inv ->
+  (forall x y:set, x :e G -> y :e G -> apply_fun mult (x, y) = apply_fun mult (y, x)) ->
+  forall f g:set -> set,
+  (forall i:set, f i :e G) ->
+  (forall i:set, g i :e G) ->
+  forall n:set, n :e omega ->
+  nat_primrec e (fun i r => apply_fun mult (r, apply_fun mult (f i, g i))) n =
+    apply_fun mult (
+      nat_primrec e (fun i r => apply_fun mult (r, f i)) n,
+      nat_primrec e (fun i r => apply_fun mult (r, g i)) n).
+let G mult e inv.
+assume Hgrp : group_structure G mult e inv.
+assume Hcomm : forall x y:set, x :e G -> y :e G -> apply_fun mult (x, y) = apply_fun mult (y, x).
+let f g.
+assume Hf : forall i:set, f i :e G.
+assume Hg : forall i:set, g i :e G.
+(** Extract group properties **)
+apply (and6E
+  (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume HmultFn HinvFn HeG Hassoc Hid Hinv.
+claim HmultCl : forall x y:set, x :e G -> y :e G -> apply_fun mult (x, y) :e G.
+{ let x y. assume Hx Hy.
+  exact (HmultFn (x, y) (tuple_2_setprod_by_pair_Sigma G G x y Hx Hy)). }
+claim HleftId : forall x:set, x :e G -> apply_fun mult (e, x) = x.
+{ let x. assume Hx. exact (andEL (apply_fun mult (e, x) = x) (apply_fun mult (x, e) = x) (Hid x Hx)). }
+claim HrightId : forall x:set, x :e G -> apply_fun mult (x, e) = x.
+{ let x. assume Hx. exact (andER (apply_fun mult (e, x) = x) (apply_fun mult (x, e) = x) (Hid x Hx)). }
+claim Hfg : forall i:set, apply_fun mult (f i, g i) :e G.
+{ let i. exact (HmultCl (f i) (g i) (Hf i) (Hg i)). }
+claim Hprod_fg_G : forall n0:set, n0 :e omega ->
+  nat_primrec e (fun i r => apply_fun mult (r, apply_fun mult (f i, g i))) n0 :e G.
+{ exact (local_nat_primrec_in_group G mult e HmultFn HeG (fun i => apply_fun mult (f i, g i)) Hfg). }
+claim Hprod_f_G : forall n0:set, n0 :e omega ->
+  nat_primrec e (fun i r => apply_fun mult (r, f i)) n0 :e G.
+{ exact (local_nat_primrec_in_group G mult e HmultFn HeG f Hf). }
+claim Hprod_g_G : forall n0:set, n0 :e omega ->
+  nat_primrec e (fun i r => apply_fun mult (r, g i)) n0 :e G.
+{ exact (local_nat_primrec_in_group G mult e HmultFn HeG g Hg). }
+(** Proof by induction **)
+claim Hnat : forall n0:set, nat_p n0 ->
+  nat_primrec e (fun i r => apply_fun mult (r, apply_fun mult (f i, g i))) n0 =
+    apply_fun mult (
+      nat_primrec e (fun i r => apply_fun mult (r, f i)) n0,
+      nat_primrec e (fun i r => apply_fun mult (r, g i)) n0).
+{ apply nat_ind.
+  - (** Base case n=0 **)
+    prove nat_primrec e (fun i r => apply_fun mult (r, apply_fun mult (f i, g i))) 0 =
+      apply_fun mult (
+        nat_primrec e (fun i r => apply_fun mult (r, f i)) 0,
+        nat_primrec e (fun i r => apply_fun mult (r, g i)) 0).
+    rewrite (nat_primrec_0 e (fun i r => apply_fun mult (r, apply_fun mult (f i, g i)))).
+    rewrite (nat_primrec_0 e (fun i r => apply_fun mult (r, f i))).
+    rewrite (nat_primrec_0 e (fun i r => apply_fun mult (r, g i))).
+    prove e = apply_fun mult (e, e).
+    symmetry. exact (HleftId e HeG).
+  - (** Step case **)
+    let k. assume Hk : nat_p k.
+    assume IH : nat_primrec e (fun i r => apply_fun mult (r, apply_fun mult (f i, g i))) k =
+      apply_fun mult (
+        nat_primrec e (fun i r => apply_fun mult (r, f i)) k,
+        nat_primrec e (fun i r => apply_fun mult (r, g i)) k).
+    prove nat_primrec e (fun i r => apply_fun mult (r, apply_fun mult (f i, g i))) (ordsucc k) =
+      apply_fun mult (
+        nat_primrec e (fun i r => apply_fun mult (r, f i)) (ordsucc k),
+        nat_primrec e (fun i r => apply_fun mult (r, g i)) (ordsucc k)).
+    rewrite (nat_primrec_S e (fun i r => apply_fun mult (r, apply_fun mult (f i, g i))) k Hk).
+    rewrite (nat_primrec_S e (fun i r => apply_fun mult (r, f i)) k Hk).
+    rewrite (nat_primrec_S e (fun i r => apply_fun mult (r, g i)) k Hk).
+    rewrite IH.
+    claim HPf : nat_primrec e (fun i r => apply_fun mult (r, f i)) k :e G.
+    { exact (Hprod_f_G k (nat_p_omega k Hk)). }
+    claim HPg : nat_primrec e (fun i r => apply_fun mult (r, g i)) k :e G.
+    { exact (Hprod_g_G k (nat_p_omega k Hk)). }
+    claim Hfk : f k :e G. { exact (Hf k). }
+    claim Hgk : g k :e G. { exact (Hg k). }
+    (** mult(mult(Pf, Pg), mult(fk, gk)) **)
+    (** = mult(Pf, mult(Pg, mult(fk, gk))) by assoc **)
+    (** = mult(Pf, mult(fk, mult(Pg, gk))) by comm(Pg, fk) + assoc **)
+    (** = mult(mult(Pf, fk), mult(Pg, gk)) by assoc **)
+    claim Hstep1 : apply_fun mult (apply_fun mult (
+        nat_primrec e (fun i r => apply_fun mult (r, f i)) k,
+        nat_primrec e (fun i r => apply_fun mult (r, g i)) k),
+      apply_fun mult (f k, g k)) =
+      apply_fun mult (
+        nat_primrec e (fun i r => apply_fun mult (r, f i)) k,
+        apply_fun mult (
+          nat_primrec e (fun i r => apply_fun mult (r, g i)) k,
+          apply_fun mult (f k, g k))).
+    { exact (Hassoc
+        (nat_primrec e (fun i r => apply_fun mult (r, f i)) k)
+        (nat_primrec e (fun i r => apply_fun mult (r, g i)) k)
+        (apply_fun mult (f k, g k))
+        HPf HPg (HmultCl (f k) (g k) Hfk Hgk)). }
+    claim Hstep2 : apply_fun mult (
+        nat_primrec e (fun i r => apply_fun mult (r, g i)) k,
+        apply_fun mult (f k, g k)) =
+      apply_fun mult (f k, apply_fun mult (
+        nat_primrec e (fun i r => apply_fun mult (r, g i)) k, g k)).
+    { (** Pg x (fk x gk) = Pg x fk x gk = fk x Pg x gk = fk x (Pg x gk) **)
+      claim H2a : apply_fun mult (
+          nat_primrec e (fun i r => apply_fun mult (r, g i)) k,
+          apply_fun mult (f k, g k)) =
+        apply_fun mult (apply_fun mult (
+          nat_primrec e (fun i r => apply_fun mult (r, g i)) k, f k), g k).
+      { symmetry. exact (Hassoc
+          (nat_primrec e (fun i r => apply_fun mult (r, g i)) k)
+          (f k) (g k) HPg Hfk Hgk). }
+      claim H2b : apply_fun mult (
+          nat_primrec e (fun i r => apply_fun mult (r, g i)) k, f k) =
+        apply_fun mult (f k,
+          nat_primrec e (fun i r => apply_fun mult (r, g i)) k).
+      { exact (Hcomm
+          (nat_primrec e (fun i r => apply_fun mult (r, g i)) k)
+          (f k) HPg Hfk). }
+      claim H2c : apply_fun mult (apply_fun mult (f k,
+          nat_primrec e (fun i r => apply_fun mult (r, g i)) k), g k) =
+        apply_fun mult (f k, apply_fun mult (
+          nat_primrec e (fun i r => apply_fun mult (r, g i)) k, g k)).
+      { exact (Hassoc (f k)
+          (nat_primrec e (fun i r => apply_fun mult (r, g i)) k)
+          (g k) Hfk HPg Hgk). }
+      rewrite H2a. rewrite H2b. exact H2c. }
+    claim Hstep3 : apply_fun mult (
+        nat_primrec e (fun i r => apply_fun mult (r, f i)) k,
+        apply_fun mult (f k, apply_fun mult (
+          nat_primrec e (fun i r => apply_fun mult (r, g i)) k, g k))) =
+      apply_fun mult (apply_fun mult (
+        nat_primrec e (fun i r => apply_fun mult (r, f i)) k, f k),
+        apply_fun mult (
+          nat_primrec e (fun i r => apply_fun mult (r, g i)) k, g k)).
+    { symmetry. exact (Hassoc
+        (nat_primrec e (fun i r => apply_fun mult (r, f i)) k)
+        (f k)
+        (apply_fun mult (nat_primrec e (fun i r => apply_fun mult (r, g i)) k, g k))
+        HPf Hfk (HmultCl
+          (nat_primrec e (fun i r => apply_fun mult (r, g i)) k)
+          (g k) HPg Hgk)). }
+    rewrite Hstep1. rewrite Hstep2. exact Hstep3.
+}
+let n. assume Hn : n :e omega.
+exact (Hnat n (omega_nat_p n Hn)).
+Qed.
+
+(** Helper: product of f over n1+n2 = product of f over n1 times product of shifted f over n2 **)
+Lemma nat_primrec_product_concat :
+  forall G mult e inv:set,
+  group_structure G mult e inv ->
+  forall f:set -> set,
+  (forall i:set, f i :e G) ->
+  forall n1:set, n1 :e omega ->
+  forall n2:set, n2 :e omega ->
+  nat_primrec e (fun i r => apply_fun mult (r, f i)) (add_nat n1 n2) =
+    apply_fun mult (
+      nat_primrec e (fun i r => apply_fun mult (r, f i)) n1,
+      nat_primrec e (fun i r => apply_fun mult (r, f (add_nat n1 i))) n2).
+let G mult e inv.
+assume Hgrp : group_structure G mult e inv.
+let f. assume Hf : forall i:set, f i :e G.
+let n1. assume Hn1 : n1 :e omega.
+(** Extract group properties **)
+apply (and6E
+  (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume HmultFn HinvFn HeG Hassoc Hid Hinv.
+claim HmultCl : forall x y:set, x :e G -> y :e G -> apply_fun mult (x, y) :e G.
+{ let x y. assume Hx Hy.
+  exact (HmultFn (x, y) (tuple_2_setprod_by_pair_Sigma G G x y Hx Hy)). }
+claim HrightId : forall x:set, x :e G -> apply_fun mult (x, e) = x.
+{ let x. assume Hx. exact (andER (apply_fun mult (e, x) = x) (apply_fun mult (x, e) = x) (Hid x Hx)). }
+claim Hprod_G : forall g:set -> set, (forall i:set, g i :e G) ->
+  forall m:set, m :e omega -> nat_primrec e (fun i r => apply_fun mult (r, g i)) m :e G.
+{ let g. assume Hg. exact (local_nat_primrec_in_group G mult e HmultFn HeG g Hg). }
+claim Hn1p : nat_p n1. { exact (omega_nat_p n1 Hn1). }
+(** Proof by induction on n2 **)
+claim Hnat : forall n2:set, nat_p n2 ->
+  nat_primrec e (fun i r => apply_fun mult (r, f i)) (add_nat n1 n2) =
+    apply_fun mult (
+      nat_primrec e (fun i r => apply_fun mult (r, f i)) n1,
+      nat_primrec e (fun i r => apply_fun mult (r, f (add_nat n1 i))) n2).
+{ apply nat_ind.
+  - (** Base case n2 = 0 **)
+    prove nat_primrec e (fun i r => apply_fun mult (r, f i)) (add_nat n1 0) =
+      apply_fun mult (
+        nat_primrec e (fun i r => apply_fun mult (r, f i)) n1,
+        nat_primrec e (fun i r => apply_fun mult (r, f (add_nat n1 i))) 0).
+    rewrite (add_nat_0R n1).
+    rewrite (nat_primrec_0 e (fun i r => apply_fun mult (r, f (add_nat n1 i)))).
+    symmetry. exact (HrightId (nat_primrec e (fun i r => apply_fun mult (r, f i)) n1)
+      (Hprod_G f Hf n1 Hn1)).
+  - (** Step case **)
+    let k. assume Hk : nat_p k.
+    assume IH : nat_primrec e (fun i r => apply_fun mult (r, f i)) (add_nat n1 k) =
+      apply_fun mult (
+        nat_primrec e (fun i r => apply_fun mult (r, f i)) n1,
+        nat_primrec e (fun i r => apply_fun mult (r, f (add_nat n1 i))) k).
+    prove nat_primrec e (fun i r => apply_fun mult (r, f i)) (add_nat n1 (ordsucc k)) =
+      apply_fun mult (
+        nat_primrec e (fun i r => apply_fun mult (r, f i)) n1,
+        nat_primrec e (fun i r => apply_fun mult (r, f (add_nat n1 i))) (ordsucc k)).
+    rewrite (add_nat_SR n1 k Hk).
+    claim Hn1k : nat_p (add_nat n1 k). { exact (add_nat_p n1 Hn1p k Hk). }
+    rewrite (nat_primrec_S e (fun i r => apply_fun mult (r, f i)) (add_nat n1 k) Hn1k).
+    rewrite (nat_primrec_S e (fun i r => apply_fun mult (r, f (add_nat n1 i))) k Hk).
+    rewrite IH.
+    set P1 := nat_primrec e (fun i r => apply_fun mult (r, f i)) n1.
+    set Pk := nat_primrec e (fun i r => apply_fun mult (r, f (add_nat n1 i))) k.
+    claim HP1 : P1 :e G. { exact (Hprod_G f Hf n1 Hn1). }
+    claim HPk : Pk :e G.
+    { exact (Hprod_G (fun i => f (add_nat n1 i)) (fun i => Hf (add_nat n1 i)) k (nat_p_omega k Hk)). }
+    claim Hfnk : f (add_nat n1 k) :e G. { exact (Hf (add_nat n1 k)). }
+    exact (Hassoc P1 Pk (f (add_nat n1 k)) HP1 HPk Hfnk).
+}
+let n2. assume Hn2 : n2 :e omega.
+exact (Hnat n2 (omega_nat_p n2 Hn2)).
+Qed.
+
 (** Helper: existence of extension homomorphism for direct sum (admitted) **)
 Lemma direct_sum_hom_existence :
   forall G multG eG invG J Gfam H multH eH invH hfam:set,
