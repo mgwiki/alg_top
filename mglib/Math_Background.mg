@@ -249635,11 +249635,88 @@ claim HgenPowNontrivial :
 }
 let cls.
 assume Hcls.
-(** Remaining S84.6 core gap:
-    derive cyclic generation in the disconnected-overlap setting from path-form
-    data and simply-connectedness of U,V (S63-style decomposition).
-    The path/loop-membership infrastructure is now in place above. **)
-admit.
+apply (xm (cls = fundamental_group_id X Tx a)).
+- assume HclsId : cls = fundamental_group_id X Tx a.
+  witness 0.
+  claim HeqPow0 :
+    cls = group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+      0.
+  {
+    claim Hpow0 :
+      group_power_nat
+        (fundamental_group_mult X Tx a)
+        (fundamental_group_id X Tx a)
+        (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+        0
+      = fundamental_group_id X Tx a.
+    {
+      exact (nat_primrec_0
+        (fundamental_group_id X Tx a)
+        (fun _ r =>
+          apply_fun
+            (fundamental_group_mult X Tx a)
+            (path_homotopy_class_loop X Tx a (path_concat alpha beta), r))).
+    }
+    claim Hpow0sym :
+      (fundamental_group_id X Tx a)
+      =
+      group_power_nat
+        (fundamental_group_mult X Tx a)
+        (fundamental_group_id X Tx a)
+        (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+        0.
+    {
+      symmetry.
+      exact Hpow0.
+    }
+    exact (eq_i_tra
+      cls
+      (fundamental_group_id X Tx a)
+      (group_power_nat
+        (fundamental_group_mult X Tx a)
+        (fundamental_group_id X Tx a)
+        (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+        0)
+      HclsId
+      Hpow0sym).
+  }
+  exact (andI
+    (0 :e omega)
+    (cls = group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+      0 \/
+     cls = group_power_nat
+      (fundamental_group_mult X Tx a)
+      (fundamental_group_id X Tx a)
+      (apply_fun (fundamental_group_inv X Tx a)
+        (path_homotopy_class_loop X Tx a (path_concat alpha beta)))
+      0)
+    (nat_p_omega 0 nat_0)
+    (orIL
+      (cls = group_power_nat
+        (fundamental_group_mult X Tx a)
+        (fundamental_group_id X Tx a)
+        (path_homotopy_class_loop X Tx a (path_concat alpha beta))
+        0)
+      (cls = group_power_nat
+        (fundamental_group_mult X Tx a)
+        (fundamental_group_id X Tx a)
+        (apply_fun (fundamental_group_inv X Tx a)
+          (path_homotopy_class_loop X Tx a (path_concat alpha beta)))
+        0)
+      HeqPow0)).
+- assume HclsNe : ~(cls = fundamental_group_id X Tx a).
+  (** Remaining S84.6 core gap:
+      non-identity classes: derive cyclic generation in the disconnected-overlap
+      setting from path-form data and simply-connectedness of U,V
+      (S63-style decomposition), using the established nontriviality/membership
+      infrastructure above. **)
+  admit.
 Admitted.
 
 (** from S84 Lem 84.6 (line 5643 in algtop.tex): generator from edge **)
