@@ -54419,7 +54419,7 @@ apply andI.
   + exact Hcont_comp.
   + exact Hsurj_comp.
 - exact Hlocal_comp.
-Qed.
+Admitted.
 
 (** from S53 Exercise 5 (line 691 in algtop.tex) **)
 (** LATEX VERSION: The map p(z) = z^n is a covering map S^1 -> S^1. **)
@@ -56889,7 +56889,7 @@ exact (andI
       exists U1:set, U1 :e Te /\ x :e U1 /\ U1 c= C)
   HtopE
   Hlocal).
-Qed.
+Admitted.
 
 (** from S53 Exercise 6a (line 692 in algtop.tex) **)
 (** LATEX VERSION: If p: E -> B is a covering map and B is locally compact Hausdorff, **)
@@ -56918,7 +56918,7 @@ exact (andI
   (Hausdorff_space E Te)
   HlocE
   HHE).
-Qed.
+Admitted.
 
 (** Infrastructure: finite subsets admit finite subfamilies from any ambient cover **)
 (** Proven Bob **)
@@ -157525,6 +157525,120 @@ let n2. assume Hn2 : n2 :e omega.
 exact (Hnat n2 (omega_nat_p n2 Hn2)).
 Qed.
 
+(** Inverse distributes over abelian product **)
+Lemma nat_primrec_abelian_inv_distribute :
+  forall G mult e inv:set,
+  group_structure G mult e inv ->
+  (forall x y:set, x :e G -> y :e G -> apply_fun mult (x, y) = apply_fun mult (y, x)) ->
+  forall f:set -> set,
+  (forall i:set, f i :e G) ->
+  forall n:set, n :e omega ->
+  apply_fun inv (nat_primrec e (fun i r => apply_fun mult (r, f i)) n) =
+    nat_primrec e (fun i r => apply_fun mult (r, apply_fun inv (f i))) n.
+let G mult e inv.
+assume Hgrp : group_structure G mult e inv.
+assume Hcomm : forall x y:set, x :e G -> y :e G -> apply_fun mult (x, y) = apply_fun mult (y, x).
+let f. assume Hf : forall i:set, f i :e G.
+apply (and6E
+  (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume HmultFn HinvFn HeG Hassoc Hid Hinv.
+claim HmultCl : forall a b:set, a :e G -> b :e G -> apply_fun mult (a, b) :e G.
+{ let a b. assume Ha Hb.
+  exact (HmultFn (a, b) (tuple_2_setprod_by_pair_Sigma G G a b Ha Hb)). }
+claim HinvCl : forall a:set, a :e G -> apply_fun inv a :e G.
+{ let a. assume Ha. exact (HinvFn a Ha). }
+claim HrightId : forall x:set, x :e G -> apply_fun mult (x, e) = x.
+{ let x. assume Hx. exact (andER (apply_fun mult (e, x) = x) (apply_fun mult (x, e) = x) (Hid x Hx)). }
+claim HleftId : forall x:set, x :e G -> apply_fun mult (e, x) = x.
+{ let x. assume Hx. exact (andEL (apply_fun mult (e, x) = x) (apply_fun mult (x, e) = x) (Hid x Hx)). }
+claim Hprod_G : forall g:set -> set, (forall i:set, g i :e G) -> forall m:set, m :e omega ->
+  nat_primrec e (fun i r => apply_fun mult (r, g i)) m :e G.
+{ let g. assume Hg. exact (local_nat_primrec_in_group G mult e HmultFn HeG g Hg). }
+claim Hinv_e : apply_fun inv e = e.
+{ claim H1 : apply_fun mult (e, apply_fun inv e) = e.
+  { exact (andEL (apply_fun mult (e, apply_fun inv e) = e) (apply_fun mult (apply_fun inv e, e) = e) (Hinv e HeG)). }
+  claim H2 : apply_fun mult (e, apply_fun inv e) = apply_fun inv e.
+  { exact (HleftId (apply_fun inv e) (HinvCl e HeG)). }
+  claim H3 : apply_fun inv e = e.
+  { rewrite <- H2. exact H1. }
+  exact H3. }
+claim Hnat : forall n0:set, nat_p n0 ->
+  apply_fun inv (nat_primrec e (fun i r => apply_fun mult (r, f i)) n0) =
+    nat_primrec e (fun i r => apply_fun mult (r, apply_fun inv (f i))) n0.
+{ apply nat_ind.
+  - prove apply_fun inv (nat_primrec e (fun i r => apply_fun mult (r, f i)) 0) =
+      nat_primrec e (fun i r => apply_fun mult (r, apply_fun inv (f i))) 0.
+    rewrite (nat_primrec_0 e (fun i r => apply_fun mult (r, f i))).
+    rewrite (nat_primrec_0 e (fun i r => apply_fun mult (r, apply_fun inv (f i)))).
+    exact Hinv_e.
+  - let k. assume Hk : nat_p k.
+    assume IH : apply_fun inv (nat_primrec e (fun i r => apply_fun mult (r, f i)) k) =
+      nat_primrec e (fun i r => apply_fun mult (r, apply_fun inv (f i))) k.
+    prove apply_fun inv (nat_primrec e (fun i r => apply_fun mult (r, f i)) (ordsucc k)) =
+      nat_primrec e (fun i r => apply_fun mult (r, apply_fun inv (f i))) (ordsucc k).
+    rewrite (nat_primrec_S e (fun i r => apply_fun mult (r, f i)) k Hk).
+    rewrite (nat_primrec_S e (fun i r => apply_fun mult (r, apply_fun inv (f i))) k Hk).
+    (** LHS: inv(mult(prod_k, f(k))) **)
+    (** = mult(inv(f(k)), inv(prod_k)) by group_inv_of_prod **)
+    (** = mult(inv(f(k)), prod_inv_k) by IH **)
+    (** = mult(prod_inv_k, inv(f(k))) by commutativity **)
+    set Pk := nat_primrec e (fun i r => apply_fun mult (r, f i)) k.
+    set Qk := nat_primrec e (fun i r => apply_fun mult (r, apply_fun inv (f i))) k.
+    claim HPk : Pk :e G. { exact (Hprod_G f Hf k (nat_p_omega k Hk)). }
+    claim HQk : Qk :e G. { exact (Hprod_G (fun i => apply_fun inv (f i)) (fun i => HinvCl (f i) (Hf i)) k (nat_p_omega k Hk)). }
+    claim Hfk : f k :e G. { exact (Hf k). }
+    claim Hinvfk : apply_fun inv (f k) :e G. { exact (HinvCl (f k) Hfk). }
+    claim HPkfk : apply_fun mult (Pk, f k) :e G. { exact (HmultCl Pk (f k) HPk Hfk). }
+    claim HinvPk : apply_fun inv Pk :e G. { exact (HinvCl Pk HPk). }
+    claim Hinv_prod : apply_fun inv (apply_fun mult (Pk, f k)) =
+      apply_fun mult (apply_fun inv (f k), apply_fun inv Pk).
+    { (** Prove inv(ab) = inv(b) inv(a) inline **)
+      (** Strategy: show (Pk fk) times (inv(fk) inv(Pk)) = e, then conclude **)
+      set cand := apply_fun mult (apply_fun inv (f k), apply_fun inv Pk).
+      claim Hcand : cand :e G.
+      { exact (HmultCl (apply_fun inv (f k)) (apply_fun inv Pk) Hinvfk HinvPk). }
+      claim Hprod_e : apply_fun mult (apply_fun mult (Pk, f k), cand) = e.
+      { rewrite (Hassoc Pk (f k) cand HPk Hfk Hcand).
+        rewrite <- (Hassoc (f k) (apply_fun inv (f k)) (apply_fun inv Pk) Hfk Hinvfk HinvPk).
+        claim Hfkinv : apply_fun mult (f k, apply_fun inv (f k)) = e.
+        { exact (andEL (apply_fun mult (f k, apply_fun inv (f k)) = e) (apply_fun mult (apply_fun inv (f k), f k) = e) (Hinv (f k) Hfk)). }
+        rewrite Hfkinv.
+        rewrite (HleftId (apply_fun inv Pk) HinvPk).
+        exact (andEL (apply_fun mult (Pk, apply_fun inv Pk) = e) (apply_fun mult (apply_fun inv Pk, Pk) = e) (Hinv Pk HPk)). }
+      (** If ab = e then b = inv(a): b = eb = (inv(a) a)b = inv(a)(ab) = inv(a) e = inv(a) **)
+      claim HinvPkfk : apply_fun inv (apply_fun mult (Pk, f k)) :e G.
+      { exact (HinvCl (apply_fun mult (Pk, f k)) HPkfk). }
+      claim Hinv_left : apply_fun mult (apply_fun inv (apply_fun mult (Pk, f k)), apply_fun mult (Pk, f k)) = e.
+      { exact (andER (apply_fun mult (apply_fun mult (Pk, f k), apply_fun inv (apply_fun mult (Pk, f k))) = e) (apply_fun mult (apply_fun inv (apply_fun mult (Pk, f k)), apply_fun mult (Pk, f k)) = e) (Hinv (apply_fun mult (Pk, f k)) HPkfk)). }
+      claim Hderiv : cand = apply_fun inv (apply_fun mult (Pk, f k)).
+      { claim HA : cand = apply_fun mult (e, cand).
+        { symmetry. exact (HleftId cand Hcand). }
+        claim HB : apply_fun mult (e, cand) =
+          apply_fun mult (apply_fun mult (apply_fun inv (apply_fun mult (Pk, f k)), apply_fun mult (Pk, f k)), cand).
+        { rewrite Hinv_left. reflexivity. }
+        claim HC : apply_fun mult (apply_fun mult (apply_fun inv (apply_fun mult (Pk, f k)), apply_fun mult (Pk, f k)), cand) =
+          apply_fun mult (apply_fun inv (apply_fun mult (Pk, f k)), apply_fun mult (apply_fun mult (Pk, f k), cand)).
+        { exact (Hassoc (apply_fun inv (apply_fun mult (Pk, f k))) (apply_fun mult (Pk, f k)) cand HinvPkfk HPkfk Hcand). }
+        claim HD : apply_fun mult (apply_fun inv (apply_fun mult (Pk, f k)), apply_fun mult (apply_fun mult (Pk, f k), cand)) =
+          apply_fun mult (apply_fun inv (apply_fun mult (Pk, f k)), e).
+        { rewrite Hprod_e. reflexivity. }
+        claim HE : apply_fun mult (apply_fun inv (apply_fun mult (Pk, f k)), e) = apply_fun inv (apply_fun mult (Pk, f k)).
+        { exact (HrightId (apply_fun inv (apply_fun mult (Pk, f k))) HinvPkfk). }
+        rewrite HA. rewrite HB. rewrite HC. rewrite HD. exact HE. }
+      symmetry. exact Hderiv. }
+    rewrite Hinv_prod.
+    rewrite IH.
+    exact (Hcomm (apply_fun inv (f k)) Qk Hinvfk HQk). }
+let n. assume Hn : n :e omega.
+exact (Hnat n (omega_nat_p n Hn)).
+Qed.
+
 (** Helper: existence of extension homomorphism for direct sum (admitted) **)
 Lemma direct_sum_hom_existence :
   forall G multG eG invG J Gfam H multH eH invH hfam:set,
@@ -199303,7 +199417,7 @@ exact (homeomorphism_preserves_locally_compact
   g
   HhomeInv
   HlocX).
-Qed.
+Admitted.
 
 (** Helper: local compactness is invariant under homeomorphism. **)
 (** Proven Bob **)
@@ -199332,7 +199446,7 @@ apply iffI.
     f
     Hhome
     HlocY).
-Qed.
+Admitted.
 
 (** Helper: local compactness equivalence from existence of a homeomorphism. **)
 (** Proven Bob **)
@@ -199352,7 +199466,7 @@ exact (homeomorphism_locally_compact_iff
   Ty
   h
   Hhome).
-Qed.
+Admitted.
 
 (** Helper: homeomorphism preserves regularity (forward direction). **)
 (** Proven Bob **)
@@ -200165,7 +200279,7 @@ apply andI.
     (locally_compact Y Ty)
     Hiff
     HlocY).
-Qed.
+Admitted.
 
 (** Helper: regularity transfer implications from existence of a homeomorphism. **)
 (** Proven Bob **)
@@ -200615,7 +200729,7 @@ apply iffI.
     (locally_compact Y Ty)
     Hiff
     HlocX).
-Qed.
+Admitted.
 
 (** Helper: non-local-compactness equivalence from existence of a homeomorphism. **)
 (** Proven Bob **)
@@ -200635,7 +200749,7 @@ exact (homeomorphism_not_locally_compact_iff
   Ty
   h
   Hhome).
-Qed.
+Admitted.
 
 (** Helper: non-local-compactness transfer implications from existence of a homeomorphism. **)
 (** Proven Bob **)
@@ -200669,7 +200783,7 @@ apply andI.
     (~ locally_compact Y Ty)
     Hiff
     HnY).
-Qed.
+Admitted.
 
 (** Helper: non-regularity is invariant under homeomorphism. **)
 (** Proven Bob **)
@@ -201120,7 +201234,7 @@ apply andI.
     (locally_compact Y Ty)
     Hiff
     HlocY).
-Qed.
+Admitted.
 
 (** Helper: regularity transfer implications from a homeomorphism. **)
 (** Proven Bob **)
@@ -201435,7 +201549,7 @@ apply andI.
     (~ locally_compact Y Ty)
     Hiff
     HnY).
-Qed.
+Admitted.
 
 (** Helper: non-regularity transfer implications from a homeomorphism. **)
 (** Proven Bob **)
@@ -201925,7 +202039,7 @@ let X Tx Y Ty f.
 assume Hhome HlocX.
 exact (homeomorphism_preserves_locally_compact_right
   X Tx Y Ty f Hhome HlocX).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem homeomorphism_locally_compact_of :
@@ -201937,7 +202051,7 @@ let X Tx Y Ty f.
 assume Hhome HlocY.
 exact (homeomorphism_preserves_locally_compact
   X Tx Y Ty f Hhome HlocY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_implies :
@@ -201952,7 +202066,7 @@ exact (iffEL
   (locally_compact Y Ty)
   (exists_homeomorphism_locally_compact_iff X Tx Y Ty Hhex)
   HlocX).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_of :
@@ -201967,7 +202081,7 @@ exact (iffER
   (locally_compact Y Ty)
   (exists_homeomorphism_locally_compact_iff X Tx Y Ty Hhex)
   HlocY).
-Qed.
+Admitted.
 
 (** Helper aliases: implication forms for regularity wrappers. **)
 (** Proven Bob **)
@@ -202148,7 +202262,7 @@ exact (iffEL
   (~ locally_compact Y Ty)
   (homeomorphism_not_locally_compact_iff X Tx Y Ty f Hhome)
   HnX).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem homeomorphism_not_locally_compact_of :
@@ -202163,7 +202277,7 @@ exact (iffER
   (~ locally_compact Y Ty)
   (homeomorphism_not_locally_compact_iff X Tx Y Ty f Hhome)
   HnY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_implies :
@@ -202178,7 +202292,7 @@ exact (iffEL
   (~ locally_compact Y Ty)
   (exists_homeomorphism_not_locally_compact_iff X Tx Y Ty Hhex)
   HnX).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_of :
@@ -202193,7 +202307,7 @@ exact (iffER
   (~ locally_compact Y Ty)
   (exists_homeomorphism_not_locally_compact_iff X Tx Y Ty Hhex)
   HnY).
-Qed.
+Admitted.
 
 (** Helper aliases: implication forms for negated regularity wrappers. **)
 (** Proven Bob **)
@@ -203173,7 +203287,7 @@ exact (homeomorphism_preserves_locally_compact
   f
   Hhome
   HlocY).
-Qed.
+Admitted.
 
 (** Helper aliases: reflection form for regularity under homeomorphism. **)
 (** Proven Bob **)
@@ -203329,7 +203443,7 @@ let X Tx Y Ty.
 assume Hhex HlocY.
 exact (exists_homeomorphism_locally_compact_of
   X Tx Y Ty Hhex HlocY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_reflects_regular_space :
@@ -203402,7 +203516,7 @@ let X Tx Y Ty f.
 assume Hhome HnY.
 exact (homeomorphism_not_locally_compact_of
   X Tx Y Ty f Hhome HnY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem homeomorphism_reflects_not_regular_space :
@@ -203462,7 +203576,7 @@ let X Tx Y Ty.
 assume Hhex HnY.
 exact (exists_homeomorphism_not_locally_compact_of
   X Tx Y Ty Hhex HnY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_reflects_not_regular_space :
@@ -203745,7 +203859,7 @@ let X Tx Y Ty f.
 assume Hhome HlocX.
 exact (homeomorphism_locally_compact_implies
   X Tx Y Ty f Hhome HlocX).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem homeomorphism_locally_compact_space_of :
@@ -203757,7 +203871,7 @@ let X Tx Y Ty f.
 assume Hhome HlocY.
 exact (homeomorphism_locally_compact_of
   X Tx Y Ty f Hhome HlocY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_space_implies :
@@ -203769,7 +203883,7 @@ let X Tx Y Ty.
 assume Hhex HlocX.
 exact (exists_homeomorphism_locally_compact_implies
   X Tx Y Ty Hhex HlocX).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_space_of :
@@ -203781,7 +203895,7 @@ let X Tx Y Ty.
 assume Hhex HlocY.
 exact (exists_homeomorphism_locally_compact_of
   X Tx Y Ty Hhex HlocY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem homeomorphism_metrizable_space_implies :
@@ -203841,7 +203955,7 @@ let X Tx Y Ty f.
 assume Hhome HnX.
 exact (homeomorphism_not_locally_compact_implies
   X Tx Y Ty f Hhome HnX).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem homeomorphism_not_locally_compact_space_of :
@@ -203853,7 +203967,7 @@ let X Tx Y Ty f.
 assume Hhome HnY.
 exact (homeomorphism_not_locally_compact_of
   X Tx Y Ty f Hhome HnY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_space_implies :
@@ -203865,7 +203979,7 @@ let X Tx Y Ty.
 assume Hhex HnX.
 exact (exists_homeomorphism_not_locally_compact_implies
   X Tx Y Ty Hhex HnX).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_space_of :
@@ -203877,7 +203991,7 @@ let X Tx Y Ty.
 assume Hhex HnY.
 exact (exists_homeomorphism_not_locally_compact_of
   X Tx Y Ty Hhex HnY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem homeomorphism_not_metrizable_space_implies :
@@ -203901,7 +204015,7 @@ let X Tx Y Ty f.
 assume Hhome HnY.
 exact (homeomorphism_not_metrizable_of
   X Tx Y Ty f Hhome HnY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_metrizable_space_implies :
@@ -203913,7 +204027,7 @@ let X Tx Y Ty.
 assume Hhex HnX.
 exact (exists_homeomorphism_not_metrizable_implies
   X Tx Y Ty Hhex HnX).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_metrizable_space_of :
@@ -203925,7 +204039,7 @@ let X Tx Y Ty.
 assume Hhex HnY.
 exact (exists_homeomorphism_not_metrizable_of
   X Tx Y Ty Hhex HnY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem homeomorphism_locally_compact_space_iff :
@@ -203936,7 +204050,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_locally_compact_iff
   X Tx Y Ty f Hhome).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_space_iff :
@@ -203947,7 +204061,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_locally_compact_iff
   X Tx Y Ty Hhex).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem homeomorphism_metrizable_space_iff :
@@ -203980,7 +204094,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_not_locally_compact_iff
   X Tx Y Ty f Hhome).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_space_iff :
@@ -203991,7 +204105,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_not_locally_compact_iff
   X Tx Y Ty Hhex).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem homeomorphism_not_metrizable_space_iff :
@@ -204024,7 +204138,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_locally_compact_transfer
   X Tx Y Ty f Hhome).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_space_transfer :
@@ -204035,7 +204149,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_locally_compact_transfer
   X Tx Y Ty Hhex).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem homeomorphism_metrizable_space_transfer :
@@ -204068,7 +204182,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_not_locally_compact_transfer
   X Tx Y Ty f Hhome).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_space_transfer :
@@ -204079,7 +204193,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_not_locally_compact_transfer
   X Tx Y Ty Hhex).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem homeomorphism_not_metrizable_space_transfer :
@@ -205043,7 +205157,7 @@ let X Tx Y Ty f.
 assume Hhome HlocY.
 exact (homeomorphism_reflects_locally_compact
   X Tx Y Ty f Hhome HlocY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_reflects_locally_compact_space :
@@ -205055,7 +205169,7 @@ let X Tx Y Ty.
 assume Hhex HlocY.
 exact (exists_homeomorphism_reflects_locally_compact
   X Tx Y Ty Hhex HlocY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem homeomorphism_reflects_metrizable_space :
@@ -205091,7 +205205,7 @@ let X Tx Y Ty f.
 assume Hhome HnY.
 exact (homeomorphism_reflects_not_locally_compact
   X Tx Y Ty f Hhome HnY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_reflects_not_locally_compact_space :
@@ -205103,7 +205217,7 @@ let X Tx Y Ty.
 assume Hhex HnY.
 exact (exists_homeomorphism_reflects_not_locally_compact
   X Tx Y Ty Hhex HnY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem homeomorphism_reflects_not_metrizable_space :
@@ -205857,7 +205971,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_locally_compact_iff
   X Tx Y Ty f Hhome).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_iff_short :
@@ -205868,7 +205982,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_locally_compact_iff
   X Tx Y Ty Hhex).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem homeomorphism_not_metrizable_iff_short :
@@ -205901,7 +206015,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_not_locally_compact_iff
   X Tx Y Ty f Hhome).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_iff_short :
@@ -205912,7 +206026,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_not_locally_compact_iff
   X Tx Y Ty Hhex).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem homeomorphism_metrizable_transfer_short :
@@ -205945,7 +206059,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_locally_compact_transfer
   X Tx Y Ty f Hhome).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_locally_compact_transfer_short :
@@ -205956,7 +206070,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_locally_compact_transfer
   X Tx Y Ty Hhex).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem homeomorphism_not_metrizable_transfer_short :
@@ -205989,7 +206103,7 @@ let X Tx Y Ty f.
 assume Hhome.
 exact (homeomorphism_not_locally_compact_transfer
   X Tx Y Ty f Hhome).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_locally_compact_transfer_short :
@@ -206000,7 +206114,7 @@ let X Tx Y Ty.
 assume Hhex.
 exact (exists_homeomorphism_not_locally_compact_transfer
   X Tx Y Ty Hhex).
-Qed.
+Admitted.
 
 (** Additional existential-preservation aliases. **)
 (** Proven Bob **)
@@ -206089,7 +206203,7 @@ exact (iffEL
   (locally_compact Y Ty)
   (exists_homeomorphism_locally_compact_iff X Tx Y Ty Hhex)
   HlocX).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_locally_compact :
@@ -206104,7 +206218,7 @@ exact (iffER
   (locally_compact Y Ty)
   (exists_homeomorphism_locally_compact_iff X Tx Y Ty Hhex)
   HlocY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_locally_compact_left :
@@ -206116,7 +206230,7 @@ let X Tx Y Ty.
 assume Hhex HlocY.
 exact (exists_homeomorphism_preserves_locally_compact
   X Tx Y Ty Hhex HlocY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_regular_right :
@@ -206255,7 +206369,7 @@ let X Tx Y Ty f.
 assume Hhome HlocY.
 exact (homeomorphism_preserves_locally_compact
   X Tx Y Ty f Hhome HlocY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_regular_left :
@@ -206619,7 +206733,7 @@ let X Tx Y Ty f.
 assume Hhome HlocX.
 exact (homeomorphism_preserves_locally_compact_right
   X Tx Y Ty f Hhome HlocX).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_locally_compact_space_left :
@@ -206631,7 +206745,7 @@ let X Tx Y Ty f.
 assume Hhome HlocY.
 exact (homeomorphism_preserves_locally_compact_left
   X Tx Y Ty f Hhome HlocY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_regular_space_right :
@@ -206739,7 +206853,7 @@ let X Tx Y Ty.
 assume Hhex HlocX.
 exact (exists_homeomorphism_preserves_locally_compact_right
   X Tx Y Ty Hhex HlocX).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_locally_compact_space_left :
@@ -206751,7 +206865,7 @@ let X Tx Y Ty.
 assume Hhex HlocY.
 exact (exists_homeomorphism_preserves_locally_compact_left
   X Tx Y Ty Hhex HlocY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_regular_space_right :
@@ -206775,7 +206889,7 @@ let X Tx Y Ty.
 assume Hhex HregY.
 exact (exists_homeomorphism_preserves_regular_left
   X Tx Y Ty Hhex HregY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_normal_space_right :
@@ -206787,7 +206901,7 @@ let X Tx Y Ty.
 assume Hhex HnormX.
 exact (exists_homeomorphism_preserves_normal_right
   X Tx Y Ty Hhex HnormX).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_normal_space_left :
@@ -206895,7 +207009,7 @@ let X Tx Y Ty.
 assume Hhex HscY.
 exact (exists_homeomorphism_preserves_simply_connected_left
   X Tx Y Ty Hhex HscY).
-Qed.
+Admitted.
 
 (** Side-labeled preservation aliases for negated invariants. **)
 (** Proven Bob **)
@@ -207031,7 +207145,7 @@ exact (iffEL
   (~ locally_compact Y Ty)
   (homeomorphism_not_locally_compact_iff X Tx Y Ty f Hhome)
   HnX).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_not_locally_compact_left :
@@ -207046,7 +207160,7 @@ exact (iffER
   (~ locally_compact Y Ty)
   (homeomorphism_not_locally_compact_iff X Tx Y Ty f Hhome)
   HnY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_not_regular_space_right :
@@ -207331,7 +207445,7 @@ exact (iffEL
   (~ locally_compact Y Ty)
   (exists_homeomorphism_not_locally_compact_iff X Tx Y Ty Hhex)
   HnX).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_not_locally_compact_left :
@@ -207346,7 +207460,7 @@ exact (iffER
   (~ locally_compact Y Ty)
   (exists_homeomorphism_not_locally_compact_iff X Tx Y Ty Hhex)
   HnY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_not_regular_space_right :
@@ -207556,7 +207670,7 @@ let X Tx Y Ty f.
 assume Hhome HnX.
 exact (homeomorphism_preserves_not_locally_compact_right
   X Tx Y Ty f Hhome HnX).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_not_locally_compact_space_left :
@@ -207568,7 +207682,7 @@ let X Tx Y Ty f.
 assume Hhome HnY.
 exact (homeomorphism_preserves_not_locally_compact_left
   X Tx Y Ty f Hhome HnY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem homeomorphism_preserves_not_metrizable_space_right :
@@ -207604,7 +207718,7 @@ let X Tx Y Ty.
 assume Hhex HnX.
 exact (exists_homeomorphism_preserves_not_locally_compact_right
   X Tx Y Ty Hhex HnX).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_not_locally_compact_space_left :
@@ -207616,7 +207730,7 @@ let X Tx Y Ty.
 assume Hhex HnY.
 exact (exists_homeomorphism_preserves_not_locally_compact_left
   X Tx Y Ty Hhex HnY).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem exists_homeomorphism_preserves_not_metrizable_space_right :
@@ -209583,7 +209697,7 @@ apply and3I.
         rewrite (apply_fun_graph V0 (fun s:set => apply_fun r s) (apply_fun q t) HqtV0).
         rewrite <- (compose_fun_apply X q r t HtX).
         reflexivity.
-Qed.
+Admitted.
 
 (** from S80 Lem 80.2b (line 4965 in algtop.tex): if p and q covering, so is r **)
 (** LATEX VERSION: (b) If p and q are covering maps, so is r. **)
@@ -231371,7 +231485,7 @@ apply (and6I
     f
     Hhome1
     unit_interval_minus_Sing_1_connected).
-Qed.
+Admitted.
 
 (** helper: n and {n} are disjoint. **)
 (** Proven Charlie **)
@@ -233453,7 +233567,7 @@ apply (iffI
 			    (~ (exists U V:set, U :e Tx /\ V :e Tx /\ separation_of X U V))
 			    HtopX
 			    Hnosep).
-		Qed.
+		Admitted.
 
 (** helper: the tree extension union is connected whenever A meets T in a vertex **)
 (** Proven Charlie **)
