@@ -168783,7 +168783,186 @@ apply iffI.
           (~(exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
            (exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
            forall j:set, j :e n2 -> apply_fun a2 j = alpha -> apply_fun x2 j = e)).
-    { admit. }
+    { let x. assume HxG : x :e G.
+      let n1 n2. assume Hn1O : n1 :e omega. assume Hn2O : n2 :e omega.
+      assume Hn1ne : n1 <> 0. assume Hn2ne : n2 <> 0.
+      let a1 a2. assume Ha1_fn : function_on a1 n1 J. assume Ha2_fn : function_on a2 n2 J.
+      let x1 x2. assume Hx1_fn : function_on x1 n1 G. assume Hx2_fn : function_on x2 n2 G.
+      assume Hx1_in : forall i:set, i :e n1 -> apply_fun x1 i :e apply_fun Gfam (apply_fun a1 i).
+      assume Hx2_in : forall i:set, i :e n2 -> apply_fun x2 i :e apply_fun Gfam (apply_fun a2 i).
+      assume Ha1_inj : forall i j:set, i :e n1 -> j :e n1 -> i <> j -> apply_fun a1 i <> apply_fun a1 j.
+      assume Ha2_inj : forall i j:set, i :e n2 -> j :e n2 -> i <> j -> apply_fun a2 i <> apply_fun a2 j.
+      assume Hprod1 : x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun x1 i)) n1.
+      assume Hprod2 : x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun x2 i)) n2.
+      let alpha. assume HalJ : alpha :e J.
+      (** For each alpha, build projection h_alpha : G -> Z with h_alpha(basis(alpha)) = 1, h_alpha(basis(beta)) = 0 **)
+      (** Step 1: Setup Z as abelian group **)
+      claim HgrpZ2 : group_structure int integers_group_mult 0 integers_group_inv.
+      { exact integers_group_is_group_cyclic_helper. }
+      claim HcommZ2 : forall u v:set, u :e int -> v :e int ->
+        apply_fun integers_group_mult (u, v) = apply_fun integers_group_mult (v, u).
+      { let u. let v. assume HuI : u :e int. assume HvI : v :e int.
+        claim Huv_sp : (u, v) :e setprod int int.
+        { exact (tuple_2_setprod_by_pair_Sigma int int u v HuI HvI). }
+        claim Hvu_sp : (v, u) :e setprod int int.
+        { exact (tuple_2_setprod_by_pair_Sigma int int v u HvI HuI). }
+        claim Heval_uv : apply_fun integers_group_mult (u, v) = add_SNo ((u, v) 0) ((u, v) 1).
+        { exact (apply_fun_graph (setprod int int)
+            (fun p:set => add_SNo (p 0) (p 1)) (u, v) Huv_sp). }
+        claim Heval_vu : apply_fun integers_group_mult (v, u) = add_SNo ((v, u) 0) ((v, u) 1).
+        { exact (apply_fun_graph (setprod int int)
+            (fun p:set => add_SNo (p 0) (p 1)) (v, u) Hvu_sp). }
+        rewrite Heval_uv. rewrite Heval_vu.
+        rewrite (tuple_2_0_eq u v). rewrite (tuple_2_1_eq u v).
+        rewrite (tuple_2_0_eq v u). rewrite (tuple_2_1_eq v u).
+        exact (add_SNo_com u v (int_SNo u HuI) (int_SNo v HvI)). }
+      claim HabZ2 : abelian_group int integers_group_mult 0 integers_group_inv.
+      { exact (andI (group_structure int integers_group_mult 0 integers_group_inv)
+          (forall u v:set, u :e int -> v :e int ->
+            apply_fun integers_group_mult (u, v) = apply_fun integers_group_mult (v, u))
+          HgrpZ2 HcommZ2). }
+      claim H0int : 0 :e int.
+      { exact (Subq_omega_int 0 (nat_p_omega 0 nat_0)). }
+      claim H1int2 : 1 :e int.
+      { exact (Subq_omega_int 1 (omega_ordsucc 0 (nat_p_omega 0 nat_0))). }
+      (** Step 2: Build selective projection ys_alpha **)
+      set ys_alpha := graph J (fun beta:set => if beta = alpha then 1 else 0).
+      claim Hys_alpha_fn : function_on ys_alpha J int.
+      { let beta. assume HbJ : beta :e J.
+        claim Heval_beta : apply_fun ys_alpha beta = (if beta = alpha then 1 else 0).
+        { exact (apply_fun_graph J (fun beta':set => if beta' = alpha then 1 else 0)
+            beta HbJ). }
+        apply (If_i_or (beta = alpha) 1 0).
+        - assume Hcase1 : (if beta = alpha then 1 else 0) = 1.
+          exact (eq_subst_mem (apply_fun ys_alpha beta) 1 int
+            (eq_i_tra (apply_fun ys_alpha beta) (if beta = alpha then 1 else 0) 1
+              Heval_beta Hcase1)
+            H1int2).
+        - assume Hcase0 : (if beta = alpha then 1 else 0) = 0.
+          exact (eq_subst_mem (apply_fun ys_alpha beta) 0 int
+            (eq_i_tra (apply_fun ys_alpha beta) (if beta = alpha then 1 else 0) 0
+              Heval_beta Hcase0)
+            H0int). }
+      (** Step 3: Apply universal property to get h_alpha : G -> Z **)
+      claim Hha_ex : exists ha:set,
+        group_homomorphism G mult int integers_group_mult ha /\
+        (forall beta:set, beta :e J ->
+          apply_fun ha (apply_fun basis beta) = apply_fun ys_alpha beta) /\
+        (forall ha':set, group_homomorphism G mult int integers_group_mult ha' ->
+          (forall beta:set, beta :e J ->
+            apply_fun ha' (apply_fun basis beta) = apply_fun ys_alpha beta) ->
+          forall y:set, y :e G -> apply_fun ha' y = apply_fun ha y).
+      { exact (Hback int integers_group_mult 0 integers_group_inv HabZ2 ys_alpha Hys_alpha_fn). }
+      apply Hha_ex. let ha. assume Hha_prop :
+        group_homomorphism G mult int integers_group_mult ha /\
+        (forall beta:set, beta :e J ->
+          apply_fun ha (apply_fun basis beta) = apply_fun ys_alpha beta) /\
+        (forall ha':set, group_homomorphism G mult int integers_group_mult ha' ->
+          (forall beta:set, beta :e J ->
+            apply_fun ha' (apply_fun basis beta) = apply_fun ys_alpha beta) ->
+          forall y:set, y :e G -> apply_fun ha' y = apply_fun ha y).
+      claim Hha_left : group_homomorphism G mult int integers_group_mult ha /\
+        (forall beta:set, beta :e J ->
+          apply_fun ha (apply_fun basis beta) = apply_fun ys_alpha beta).
+      { exact (andEL
+          (group_homomorphism G mult int integers_group_mult ha /\
+           (forall beta:set, beta :e J ->
+             apply_fun ha (apply_fun basis beta) = apply_fun ys_alpha beta))
+          (forall ha':set, group_homomorphism G mult int integers_group_mult ha' ->
+            (forall beta:set, beta :e J ->
+              apply_fun ha' (apply_fun basis beta) = apply_fun ys_alpha beta) ->
+            forall y:set, y :e G -> apply_fun ha' y = apply_fun ha y)
+          Hha_prop). }
+      claim Hha_hom : group_homomorphism G mult int integers_group_mult ha.
+      { exact (andEL
+          (group_homomorphism G mult int integers_group_mult ha)
+          (forall beta:set, beta :e J ->
+            apply_fun ha (apply_fun basis beta) = apply_fun ys_alpha beta)
+          Hha_left). }
+      claim Hha_basis : forall beta:set, beta :e J ->
+        apply_fun ha (apply_fun basis beta) = apply_fun ys_alpha beta.
+      { exact (andER
+          (group_homomorphism G mult int integers_group_mult ha)
+          (forall beta:set, beta :e J ->
+            apply_fun ha (apply_fun basis beta) = apply_fun ys_alpha beta)
+          Hha_left). }
+      claim Hha_id : apply_fun ha e = 0.
+      { exact (group_hom_sends_identity_cyclic_helper
+          G mult e inv int integers_group_mult 0 integers_group_inv ha
+          HgrpG2 HgrpZ2 Hha_hom). }
+      claim Hha_fn : function_on ha G int.
+      { exact (andEL (function_on ha G int)
+          (forall u v:set, u :e G -> v :e G ->
+            apply_fun ha (apply_fun mult (u, v)) =
+            apply_fun integers_group_mult (apply_fun ha u, apply_fun ha v))
+          Hha_hom). }
+      claim Hha_mult : forall u v:set, u :e G -> v :e G ->
+        apply_fun ha (apply_fun mult (u, v)) =
+        apply_fun integers_group_mult (apply_fun ha u, apply_fun ha v).
+      { exact (andER (function_on ha G int)
+          (forall u v:set, u :e G -> v :e G ->
+            apply_fun ha (apply_fun mult (u, v)) =
+            apply_fun integers_group_mult (apply_fun ha u, apply_fun ha v))
+          Hha_hom). }
+      (** Step 4: ha(basis(alpha)) = 1, ha(basis(beta)) = 0 for beta <> alpha **)
+      claim Hha_alpha : apply_fun ha (apply_fun basis alpha) = 1.
+      { claim Heval : apply_fun ys_alpha alpha =
+          if alpha = alpha then 1 else 0.
+        { exact (apply_fun_graph J
+            (fun beta:set => if beta = alpha then 1 else 0) alpha HalJ). }
+        claim Hif_eq : (if alpha = alpha then 1 else 0) = 1.
+        { exact (If_i_1 (alpha = alpha) 1 0 (eq_refl alpha)). }
+        exact (eq_i_tra (apply_fun ha (apply_fun basis alpha))
+          (apply_fun ys_alpha alpha) 1
+          (Hha_basis alpha HalJ) (eq_i_tra (apply_fun ys_alpha alpha)
+            (if alpha = alpha then 1 else 0) 1 Heval Hif_eq)). }
+      claim Hha_other : forall beta:set, beta :e J -> beta <> alpha ->
+        apply_fun ha (apply_fun basis beta) = 0.
+      { let beta. assume HbJ : beta :e J. assume Hneq : beta <> alpha.
+        claim Heval : apply_fun ys_alpha beta =
+          if beta = alpha then 1 else 0.
+        { exact (apply_fun_graph J
+            (fun beta':set => if beta' = alpha then 1 else 0) beta HbJ). }
+        claim Hif_eq : (if beta = alpha then 1 else 0) = 0.
+        { exact (If_i_0 (beta = alpha) 1 0 Hneq). }
+        exact (eq_i_tra (apply_fun ha (apply_fun basis beta))
+          (apply_fun ys_alpha beta) 0
+          (Hha_basis beta HbJ) (eq_i_tra (apply_fun ys_alpha beta)
+            (if beta = alpha then 1 else 0) 0 Heval Hif_eq)). }
+      (** Step 5: ha distributes over nat_primrec products **)
+      (** ha(nat_primrec e f n) = nat_primrec 0 g n where g i r = add_SNo(r, ha(f_val i)) **)
+      (** We prove this by induction on n **)
+      (** First, for decomposition 1: ha(x) = sum of ha(x1_i) **)
+      claim Hha_prod1 : apply_fun ha (nat_primrec e (fun i r => apply_fun mult (r, apply_fun x1 i)) n1) =
+        nat_primrec 0 (fun i r => add_SNo r (apply_fun ha (apply_fun x1 i))) n1.
+      { admit. }
+      (** Similarly for decomposition 2 **)
+      claim Hha_prod2 : apply_fun ha (nat_primrec e (fun i r => apply_fun mult (r, apply_fun x2 i)) n2) =
+        nat_primrec 0 (fun i r => add_SNo r (apply_fun ha (apply_fun x2 i))) n2.
+      { admit. }
+      (** Step 6: ha on elements of Gfam **)
+      (** For x_i in Gfam(a_i): if a_i = alpha, ha(x_i) is the exponent **)
+      (** For x_i in Gfam(a_i): if a_i <> alpha, ha(x_i) = 0 **)
+      claim Hha_gfam_other : forall beta:set, beta :e J -> beta <> alpha ->
+        forall g:set, g :e apply_fun Gfam beta -> apply_fun ha g = 0.
+      { admit. }
+      (** Step 7: For the three-part conclusion **)
+      apply (and3I
+        (forall i j:set, i :e n1 -> j :e n2 ->
+          apply_fun a1 i = alpha -> apply_fun a2 j = alpha ->
+          apply_fun x1 i = apply_fun x2 j)
+        ((exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
+         ~(exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+         forall i:set, i :e n1 -> apply_fun a1 i = alpha -> apply_fun x1 i = e)
+        (~(exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
+         (exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+         forall j:set, j :e n2 -> apply_fun a2 j = alpha -> apply_fun x2 j = e)).
+      - (** Part 1: Both decompositions have alpha - components agree **)
+        admit.
+      - (** Part 2: alpha in decomp 1, not in decomp 2 - component is e **)
+        admit.
+      - (** Part 3: alpha in decomp 2, not in decomp 1 - component is e **)
+        admit. }
     exact (andI
       (subgroups_generate_abelian G mult e inv J Gfam)
       (forall x:set, x :e G ->
