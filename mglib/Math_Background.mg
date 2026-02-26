@@ -250736,6 +250736,48 @@ claim HpreUVCover : unit_interval = preU :\/: preV.
   rewrite (preimage_of_binunion unit_interval fcls U V).
   reflexivity.
 }
+set preA := preimage_of unit_interval fcls A.
+set preB := preimage_of unit_interval fcls B.
+claim HpreUVInterEq : preU :/\: preV = preimage_of unit_interval fcls (U :/\: V).
+{
+  rewrite (preimage_of_binintersect unit_interval fcls U V).
+  reflexivity.
+}
+claim HpreUVSplitAB : preU :/\: preV = preA :\/: preB.
+{
+  rewrite HpreUVInterEq.
+  rewrite Hoverlap.
+  rewrite (preimage_of_binunion unit_interval fcls A B).
+  reflexivity.
+}
+claim H0PreA : 0 :e preA.
+{
+  claim Hf0A : apply_fun fcls 0 :e A.
+  {
+    rewrite Hfcls0.
+    exact HaA.
+  }
+  exact (SepI
+    unit_interval
+    (fun x:set => apply_fun fcls x :e A)
+    0
+    zero_in_unit_interval
+    Hf0A).
+}
+claim H1PreA : 1 :e preA.
+{
+  claim Hf1A : apply_fun fcls 1 :e A.
+  {
+    rewrite Hfcls1.
+    exact HaA.
+  }
+  exact (SepI
+    unit_interval
+    (fun x:set => apply_fun fcls x :e A)
+    1
+    one_in_unit_interval
+    Hf1A).
+}
 (** TODO Bob: complete S84.6 mixed-case crossing-to-power reduction.
     The arguments now have explicit crossing witnesses tU,tV with opposite-side
     membership, plus full path/simply-connected/disconnected-overlap data. **)
