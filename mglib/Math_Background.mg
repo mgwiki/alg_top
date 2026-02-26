@@ -166926,6 +166926,176 @@ Definition free_abelian_group_with_basis : set -> set -> set -> set -> set -> se
            (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
             g = group_power_nat mult e (apply_fun inv (apply_fun basis alpha)) (ordsucc m)))})).
 
+(** Helper: generator_of for Gfam(alpha) factor family **)
+Lemma factor_family_generator_of_helper :
+  forall G mult e inv J gens alpha:set,
+  group_structure G mult e inv ->
+  function_on gens J G ->
+  alpha :e J ->
+  generator_of
+    (apply_fun
+      (graph J (fun beta:set =>
+        {g :e G | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens beta) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))}))
+      alpha)
+    mult e inv (apply_fun gens alpha).
+let G mult e inv J gens alpha.
+assume Hgrp : group_structure G mult e inv.
+assume Hgens : function_on gens J G.
+assume Hal : alpha :e J.
+set GfamL := graph J (fun beta:set =>
+  {g :e G | exists n:set, n :e int /\
+    ((n :e omega /\ g = group_power_nat mult e (apply_fun gens beta) n) \/
+     (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+      g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))}).
+set a := apply_fun gens alpha.
+claim HaG : a :e G.
+{ exact (Hgens alpha Hal). }
+claim HGfamL_def : GfamL = graph J (fun beta:set =>
+  {g :e G | exists n:set, n :e int /\
+    ((n :e omega /\ g = group_power_nat mult e (apply_fun gens beta) n) \/
+     (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+      g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))}).
+{ reflexivity. }
+claim HGfamL_val : apply_fun GfamL alpha =
+  {g :e G | exists n:set, n :e int /\
+    ((n :e omega /\ g = group_power_nat mult e a n) \/
+     (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+      g = group_power_nat mult e (apply_fun inv a) (ordsucc m)))}.
+{ exact (apply_fun_of_graph_eq GfamL J
+    (fun beta:set =>
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens beta) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))})
+    alpha HGfamL_def Hal). }
+apply (andI
+  (a :e apply_fun GfamL alpha)
+  (forall g:set, g :e apply_fun GfamL alpha ->
+    exists n:set, n :e int /\
+      ((n :e omega /\ g = group_power_nat mult e a n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+        g = group_power_nat mult e (apply_fun inv a) (ordsucc m))))).
+- (** a :e GfamL(alpha) **)
+  rewrite HGfamL_val.
+  apply (SepI G
+    (fun g:set => exists n:set, n :e int /\
+      ((n :e omega /\ g = group_power_nat mult e a n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+        g = group_power_nat mult e (apply_fun inv a) (ordsucc m))))
+    a HaG).
+  claim H1omega : ordsucc 0 :e omega.
+  { exact (omega_ordsucc 0 (nat_p_omega 0 nat_0)). }
+  witness (ordsucc 0). apply andI.
+  + exact (Subq_omega_int (ordsucc 0) H1omega).
+  + apply orIL.
+    claim Hpow1_eq : a = group_power_nat mult e a (ordsucc 0).
+    { claim HS1 : group_power_nat mult e a (ordsucc 0) =
+        apply_fun mult (a, group_power_nat mult e a 0).
+      { exact (nat_primrec_S e (fun _ r => apply_fun mult (a, r)) 0 nat_0). }
+      claim H0e : group_power_nat mult e a 0 = e.
+      { exact (nat_primrec_0 e (fun _ r => apply_fun mult (a, r))). }
+      apply (and6E
+        (function_on mult (setprod G G) G)
+        (function_on inv G G)
+        (e :e G)
+        (forall u v w:set, u :e G -> v :e G -> w :e G ->
+          apply_fun mult (apply_fun mult (u, v), w) = apply_fun mult (u, apply_fun mult (v, w)))
+        (forall u:set, u :e G -> apply_fun mult (e, u) = u /\ apply_fun mult (u, e) = u)
+        (forall u:set, u :e G ->
+          apply_fun mult (u, apply_fun inv u) = e /\ apply_fun mult (apply_fun inv u, u) = e)
+        Hgrp).
+      assume HmultFn HinvFn HeG Hassoc Hid HinvLaw.
+      claim Hright_id : apply_fun mult (a, e) = a.
+      { exact (andER (apply_fun mult (e, a) = a) (apply_fun mult (a, e) = a) (Hid a HaG)). }
+      claim Hpow1 : group_power_nat mult e a (ordsucc 0) = a.
+      { claim Hstep : group_power_nat mult e a (ordsucc 0) = apply_fun mult (a, e).
+        { claim Hstep2 : apply_fun mult (a, group_power_nat mult e a 0) = apply_fun mult (a, e).
+          { rewrite H0e. reflexivity. }
+          exact (eq_i_tra
+            (group_power_nat mult e a (ordsucc 0))
+            (apply_fun mult (a, group_power_nat mult e a 0))
+            (apply_fun mult (a, e)) HS1 Hstep2). }
+        exact (eq_i_tra
+          (group_power_nat mult e a (ordsucc 0))
+          (apply_fun mult (a, e)) a Hstep Hright_id). }
+      exact (eq_symm (group_power_nat mult e a (ordsucc 0)) a Hpow1). }
+    exact (andI (ordsucc 0 :e omega) (a = group_power_nat mult e a (ordsucc 0))
+      H1omega Hpow1_eq).
+- (** forall g :e GfamL(alpha), g is a power of a **)
+  let g. assume Hg : g :e apply_fun GfamL alpha.
+  claim Hg2 : g :e {g :e G | exists n:set, n :e int /\
+    ((n :e omega /\ g = group_power_nat mult e a n) \/
+     (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+      g = group_power_nat mult e (apply_fun inv a) (ordsucc m)))}.
+  { rewrite <- HGfamL_val. exact Hg. }
+  apply (SepE G
+    (fun g:set => exists n:set, n :e int /\
+      ((n :e omega /\ g = group_power_nat mult e a n) \/
+       (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+        g = group_power_nat mult e (apply_fun inv a) (ordsucc m))))
+    g Hg2).
+  assume HgG : g :e G.
+  assume Hpow : exists n:set, n :e int /\
+    ((n :e omega /\ g = group_power_nat mult e a n) \/
+     (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+      g = group_power_nat mult e (apply_fun inv a) (ordsucc m))).
+  exact Hpow.
+Qed.
+
+(** Helper: cyclic_group for factor family from generator_of **)
+Lemma factor_family_cyclic_group_helper :
+  forall G mult e inv x:set,
+  group_structure G mult e inv ->
+  generator_of G mult e inv x ->
+  cyclic_group G mult e inv.
+let G mult e inv x.
+assume Hgrp : group_structure G mult e inv.
+assume Hgen : generator_of G mult e inv x.
+apply (andI
+  (group_structure G mult e inv)
+  (exists x:set, x :e G /\
+    forall g:set, g :e G ->
+      exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e x n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv x) (ordsucc m))))).
+- exact Hgrp.
+- witness x.
+  exact Hgen.
+Qed.
+
+(** Helper: infinite cyclic subgroup of factor family implies not finite **)
+Lemma factor_family_infinite_cyclic_helper :
+  forall G mult e inv J gens alpha:set,
+  group_structure G mult e inv ->
+  function_on gens J G ->
+  (forall beta:set, beta :e J ->
+    infinite_cyclic_subgroup G mult e inv (apply_fun gens beta)) ->
+  alpha :e J ->
+  infinite_cyclic_subgroup
+    (apply_fun
+      (graph J (fun beta:set =>
+        {g :e G | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e (apply_fun gens beta) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e (apply_fun inv (apply_fun gens beta)) (ordsucc m)))}))
+      alpha)
+    mult e inv (apply_fun gens alpha).
+admit.
+Admitted.
+
+(** Helper: not finite from infinite cyclic subgroup **)
+Lemma factor_family_nonfinite_helper :
+  forall G mult e inv a:set,
+  group_structure G mult e inv ->
+  infinite_cyclic_subgroup G mult e inv a ->
+  ~ finite G.
+admit.
+Admitted.
+
 (** from S67 Lem 67.7 (line 2683 in algtop.tex): extension condition for free abelian groups **)
 (** LATEX VERSION: G is a free abelian group with basis {a_alpha} iff for any abelian **)
 (** group H and any family {y_alpha} of elements of H, there is a unique homomorphism **)
@@ -167053,7 +167223,51 @@ apply iffI.
     exists halpha:set,
       group_homomorphism (apply_fun Gfam alpha) mult H multH halpha /\
       apply_fun halpha (apply_fun basis alpha) = apply_fun ys alpha.
-  { admit. }
+  { let alpha. assume Hal2 : alpha :e J.
+    (** Step 1: group_structure for Gfam(alpha) **)
+    claim Hgrp_sub : group_structure (apply_fun Gfam alpha) mult e inv.
+    { exact (local_subgroup_group_structure G mult e inv (apply_fun Gfam alpha)
+        HgrpG (Hsub_alpha alpha Hal2)). }
+    (** Step 2: generator_of for basis(alpha) in Gfam(alpha) **)
+    claim Hgen_sub : generator_of (apply_fun Gfam alpha) mult e inv (apply_fun basis alpha).
+    { exact (factor_family_generator_of_helper G mult e inv J basis alpha
+        HgrpG Hbasis_fn Hal2). }
+    (** Step 3: cyclic_group for Gfam(alpha) **)
+    claim Hcyc_sub : cyclic_group (apply_fun Gfam alpha) mult e inv.
+    { exact (factor_family_cyclic_group_helper
+        (apply_fun Gfam alpha) mult e inv (apply_fun basis alpha) Hgrp_sub Hgen_sub). }
+    (** Step 4: infinite_cyclic_subgroup for Gfam(alpha) **)
+    claim Hinfcyc_sub : infinite_cyclic_subgroup (apply_fun Gfam alpha) mult e inv (apply_fun basis alpha).
+    { exact (factor_family_infinite_cyclic_helper G mult e inv J basis alpha
+        HgrpG Hbasis_fn Hinfcyc Hal2). }
+    (** Step 5: ~ finite Gfam(alpha) **)
+    claim Hnotfin : ~ finite (apply_fun Gfam alpha).
+    { exact (factor_family_nonfinite_helper (apply_fun Gfam alpha) mult e inv
+        (apply_fun basis alpha) Hgrp_sub Hinfcyc_sub). }
+    (** Step 6: ys(alpha) :e H **)
+    claim Hys_al : apply_fun ys alpha :e H.
+    { exact (Hys alpha Hal2). }
+    (** Step 7: Apply infinite_cyclic_universal_property **)
+    claim Hicup : exists halpha:set,
+      group_homomorphism (apply_fun Gfam alpha) mult H multH halpha /\
+      apply_fun halpha (apply_fun basis alpha) = apply_fun ys alpha /\
+      (forall h':set, group_homomorphism (apply_fun Gfam alpha) mult H multH h' ->
+        apply_fun h' (apply_fun basis alpha) = apply_fun ys alpha ->
+        forall g:set, g :e (apply_fun Gfam alpha) -> apply_fun h' g = apply_fun halpha g).
+    { exact (infinite_cyclic_universal_property
+        (apply_fun Gfam alpha) mult e inv (apply_fun basis alpha)
+        H multH eH invH (apply_fun ys alpha)
+        Hgrp_sub Hcyc_sub Hnotfin Hgen_sub HgrpH Hys_al). }
+    (** Extract just hom /\ basis_eq from the 3-fold conjunction **)
+    apply Hicup. let halpha. assume Hprop.
+    witness halpha.
+    exact (andEL
+      (group_homomorphism (apply_fun Gfam alpha) mult H multH halpha /\
+       apply_fun halpha (apply_fun basis alpha) = apply_fun ys alpha)
+      (forall h':set, group_homomorphism (apply_fun Gfam alpha) mult H multH h' ->
+        apply_fun h' (apply_fun basis alpha) = apply_fun ys alpha ->
+        forall g:set, g :e (apply_fun Gfam alpha) -> apply_fun h' g = apply_fun halpha g)
+      Hprop). }
   (** Build the family hfam **)
   set hfam := graph J (fun alpha:set =>
     Eps_i (fun halpha:set =>
