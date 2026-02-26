@@ -232676,7 +232676,72 @@ apply andI.
 	        + exact HbUstar.
 	      - let cls.
 	        assume Hcls.
-	        (** TODO: prove inclusion Ustar -> X is nulhomotopic (star-shaped tree), then apply cor58_6_nulhomotopic_trivial. **)
+	        (** Reduce to nulhomotopy of the inclusion map Ustar -> X. **)
+	        claim HUsubX : Ustar c= X.
+	        {
+	          let z.
+	          assume HzU.
+	          apply (UnionE
+	            {Star A0 | A0 :e IncArcs}
+	            z
+	            HzU).
+	          let S.
+	          assume HzPack.
+	          claim HzS : z :e S.
+	          { exact (andEL (z :e S) (S :e {Star A0 | A0 :e IncArcs}) HzPack). }
+	          claim HSfam : S :e {Star A0 | A0 :e IncArcs}.
+	          { exact (andER (z :e S) (S :e {Star A0 | A0 :e IncArcs}) HzPack). }
+	          apply (ReplE IncArcs (fun A0:set => Star A0) S HSfam).
+	          let A0.
+	          assume HA0Pack.
+	          claim HA0Inc : A0 :e IncArcs.
+	          { exact (andEL (A0 :e IncArcs) (S = Star A0) HA0Pack). }
+	          claim HSeq : S = Star A0.
+	          { exact (andER (A0 :e IncArcs) (S = Star A0) HA0Pack). }
+	          claim HzStarA0 : z :e Star A0.
+	          { rewrite <- HSeq. exact HzS. }
+	          claim HzA0 : z :e A0.
+	          { exact (setminusE1 A0 ((Over A0) :\: (Sing b)) z HzStarA0). }
+	          claim HA0Arcs : A0 :e Arcs.
+	          {
+	            exact (SepE1
+	              Arcs
+	              (fun A1:set => b :e A1)
+	              A0
+	              HA0Inc).
+	          }
+	          claim HA0dat : A0 c= X /\ arc A0 (subspace_topology X Tx A0).
+	          {
+	            exact (general_linear_graph_arc_data
+	              X
+	              Tx
+	              Arcs
+	              A0
+	              Hglg
+	              HA0Arcs).
+	          }
+	          claim HA0subX : A0 c= X.
+	          { exact (andEL (A0 c= X) (arc A0 (subspace_topology X Tx A0)) HA0dat). }
+	          exact (HA0subX z HzA0).
+	        }
+	        set h := graph Ustar (fun x:set => x).
+	        claim HcontUX :
+	          continuous_map Ustar (subspace_topology X Tx Ustar) X Tx h.
+	        {
+	          exact (subspace_inclusion_continuous
+	            X
+	            Tx
+	            Ustar
+	            HtopX
+	            HUsubX).
+	        }
+	        claim Hnul :
+	          nulhomotopic Ustar (subspace_topology X Tx Ustar) X Tx h.
+	        {
+	          (** TODO: contract the star neighborhood to b (tree-like neighborhood). **)
+	          admit.
+	        }
+	        (** TODO: finish via cor58_6_nulhomotopic_trivial once the nulhomotopy is constructed. **)
 	        admit.
 	    * assume HbNotOverX.
 	      (** Non-overlap: U is an open neighborhood inside a contractible arc E, so inclusion U->X is nulhomotopic. **)
