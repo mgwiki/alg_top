@@ -251121,6 +251121,83 @@ claim HpreB_in_preV :
   assume HtPreB.
   exact (binintersectE2 preU preV t (HpreB_in_preUV t HtPreB)).
 }
+claim HpreUV_classify :
+  forall t:set, t :e preU :/\: preV ->
+    (t :e preA /\ ~(t :e preB)) \/
+    (t :e preB /\ ~(t :e preA)).
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  claim HtAB : t :e preA :\/: preB.
+  {
+    exact (HpreUV_to_preAB t HtUV).
+  }
+  apply (binunionE preA preB t HtAB).
+  - assume HtA : t :e preA.
+    apply orIL.
+    exact (andI
+      (t :e preA)
+      (~(t :e preB))
+      HtA
+      (HpreA_not_preB t HtA)).
+  - assume HtB : t :e preB.
+    apply orIR.
+    exact (andI
+      (t :e preB)
+      (~(t :e preA))
+      HtB
+      (HpreB_not_preA t HtB)).
+}
+claim HpreUV_notA_implies_B :
+  forall t:set, t :e preU :/\: preV ->
+    ~(t :e preA) -> t :e preB.
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  assume HnotA : ~(t :e preA).
+  claim HtAB : t :e preA :\/: preB.
+  {
+    exact (HpreUV_to_preAB t HtUV).
+  }
+  apply (binunionE preA preB t HtAB).
+  - assume HtA : t :e preA.
+    exact (FalseE (HnotA HtA) (t :e preB)).
+  - assume HtB : t :e preB.
+    exact HtB.
+}
+claim HpreUV_notB_implies_A :
+  forall t:set, t :e preU :/\: preV ->
+    ~(t :e preB) -> t :e preA.
+{
+  let t.
+  assume HtUV : t :e preU :/\: preV.
+  assume HnotB : ~(t :e preB).
+  claim HtAB : t :e preA :\/: preB.
+  {
+    exact (HpreUV_to_preAB t HtUV).
+  }
+  apply (binunionE preA preB t HtAB).
+  - assume HtA : t :e preA.
+    exact HtA.
+  - assume HtB : t :e preB.
+    exact (FalseE (HnotB HtB) (t :e preA)).
+}
+claim H0ClassA : 0 :e preA /\ ~(0 :e preB).
+{
+  exact (andI
+    (0 :e preA)
+    (~(0 :e preB))
+    H0PreA
+    H0NotPreB).
+}
+claim H1ClassA : 1 :e preA /\ ~(1 :e preB).
+{
+  exact (andI
+    (1 :e preA)
+    (~(1 :e preB))
+    H1PreA
+    H1NotPreB).
+}
 (** TODO Bob: complete S84.6 mixed-case crossing-to-power reduction.
     The arguments now have explicit crossing witnesses tU,tV with opposite-side
     membership, plus full path/simply-connected/disconnected-overlap data. **)
