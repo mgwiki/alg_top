@@ -250197,6 +250197,78 @@ claim Hn_nonzero_if_eq_invgen_pow :
   }
   exact (HfclsClsNe HclsId).
 }
+set preU := preimage_of unit_interval fcls U.
+set preV := preimage_of unit_interval fcls V.
+claim HpreUOpen : preU :e unit_interval_topology.
+{
+  exact (continuous_map_preimage
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    fcls
+    HfclsCont
+    U
+    HU).
+}
+claim HpreVOpen : preV :e unit_interval_topology.
+{
+  exact (continuous_map_preimage
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    fcls
+    HfclsCont
+    V
+    HV).
+}
+claim HtUinPreV : tU :e preV.
+{
+  exact (SepI
+    unit_interval
+    (fun x:set => apply_fun fcls x :e V)
+    tU
+    HtU
+    HtUinV).
+}
+claim HtVinPreU : tV :e preU.
+{
+  exact (SepI
+    unit_interval
+    (fun x:set => apply_fun fcls x :e U)
+    tV
+    HtV
+    HtVinU).
+}
+claim H0PreU : 0 :e preU.
+{
+  claim Hf0U : apply_fun fcls 0 :e U.
+  {
+    rewrite Hfcls0.
+    exact HaU.
+  }
+  exact (SepI
+    unit_interval
+    (fun x:set => apply_fun fcls x :e U)
+    0
+    zero_in_unit_interval
+    Hf0U).
+}
+claim H0PreV : 0 :e preV.
+{
+  claim Hf0V : apply_fun fcls 0 :e V.
+  {
+    rewrite Hfcls0.
+    exact HaV.
+  }
+  exact (SepI
+    unit_interval
+    (fun x:set => apply_fun fcls x :e V)
+    0
+    zero_in_unit_interval
+    Hf0V).
+}
 (** TODO Bob: complete S84.6 mixed-case crossing-to-power reduction.
     The arguments now have explicit crossing witnesses tU,tV with opposite-side
     membership, plus full path/simply-connected/disconnected-overlap data. **)
