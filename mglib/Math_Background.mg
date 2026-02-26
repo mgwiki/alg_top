@@ -250843,6 +250843,105 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun fcls t :e U)).
     (** TODO Bob:
        mixed case (not all-U and not all-V): perform crossing decomposition
        and reduce class to powers of [alpha.beta]. **)
+    claim HnotAllU_wit :
+      exists tU:set, tU :e unit_interval /\ ~(apply_fun fcls tU :e U).
+    {
+      apply (not_all_ex_demorgan_i
+        (fun t:set => t :e unit_interval -> apply_fun fcls t :e U)
+        HnotAllU).
+      let tU.
+      assume HtUNotImp : ~(tU :e unit_interval -> apply_fun fcls tU :e U).
+      witness tU.
+      exact (not_imp
+        (tU :e unit_interval)
+        (apply_fun fcls tU :e U)
+        HtUNotImp).
+    }
+    claim HnotAllV_wit :
+      exists tV:set, tV :e unit_interval /\ ~(apply_fun fcls tV :e V).
+    {
+      apply (not_all_ex_demorgan_i
+        (fun t:set => t :e unit_interval -> apply_fun fcls t :e V)
+        HnotAllV).
+      let tV.
+      assume HtVNotImp : ~(tV :e unit_interval -> apply_fun fcls tV :e V).
+      witness tV.
+      exact (not_imp
+        (tV :e unit_interval)
+        (apply_fun fcls tV :e V)
+        HtVNotImp).
+    }
+    apply HnotAllU_wit.
+    let tU.
+    assume HtUPack : tU :e unit_interval /\ ~(apply_fun fcls tU :e U).
+    claim HtU : tU :e unit_interval.
+    {
+      exact (andEL
+        (tU :e unit_interval)
+        (~(apply_fun fcls tU :e U))
+        HtUPack).
+    }
+    claim HtUnotU : ~(apply_fun fcls tU :e U).
+    {
+      exact (andER
+        (tU :e unit_interval)
+        (~(apply_fun fcls tU :e U))
+        HtUPack).
+    }
+    claim Hfcls_tU_X : apply_fun fcls tU :e X.
+    {
+      exact (HfclsFun tU HtU).
+    }
+    claim Hfcls_tU_V : apply_fun fcls tU :e V.
+    {
+      claim Hfcls_tU_UV : apply_fun fcls tU :e U :\/: V.
+      {
+        rewrite <- Hcover.
+        exact Hfcls_tU_X.
+      }
+      apply (binunionE U V (apply_fun fcls tU) Hfcls_tU_UV).
+      - assume HtUU : apply_fun fcls tU :e U.
+        exact (FalseE (HtUnotU HtUU) (apply_fun fcls tU :e V)).
+      - assume HtUV : apply_fun fcls tU :e V.
+        exact HtUV.
+    }
+    apply HnotAllV_wit.
+    let tV.
+    assume HtVPack : tV :e unit_interval /\ ~(apply_fun fcls tV :e V).
+    claim HtV : tV :e unit_interval.
+    {
+      exact (andEL
+        (tV :e unit_interval)
+        (~(apply_fun fcls tV :e V))
+        HtVPack).
+    }
+    claim HtVnotV : ~(apply_fun fcls tV :e V).
+    {
+      exact (andER
+        (tV :e unit_interval)
+        (~(apply_fun fcls tV :e V))
+        HtVPack).
+    }
+    claim Hfcls_tV_X : apply_fun fcls tV :e X.
+    {
+      exact (HfclsFun tV HtV).
+    }
+    claim Hfcls_tV_U : apply_fun fcls tV :e U.
+    {
+      claim Hfcls_tV_UV : apply_fun fcls tV :e U :\/: V.
+      {
+        rewrite <- Hcover.
+        exact Hfcls_tV_X.
+      }
+      apply (binunionE U V (apply_fun fcls tV) Hfcls_tV_UV).
+      - assume HtVU : apply_fun fcls tV :e U.
+        exact HtVU.
+      - assume HtVV : apply_fun fcls tV :e V.
+        exact (FalseE (HtVnotV HtVV) (apply_fun fcls tV :e U)).
+    }
+    (** TODO Bob:
+       use Hfcls_tU_V and Hfcls_tV_U as crossing witnesses to build the
+       alternating decomposition and conclude power form. **)
     admit.
 (** TODO Bob: bridge from nontrivial loop representative to edge-crossing normal form.
     Needed dependency: S63-style alternating decomposition theorem specialized to
