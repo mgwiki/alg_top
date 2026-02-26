@@ -249678,10 +249678,56 @@ claim HfclsFun : function_on fcls unit_interval X.
     fcls
     HfclsCont).
 }
+apply (xm (forall t:set, t :e unit_interval -> apply_fun fcls t :e U)).
+- assume HallU : forall t:set, t :e unit_interval -> apply_fun fcls t :e U.
+  claim HallU_target :
+    exists n:set, n :e omega /\
+      (path_homotopy_class_loop X Tx a fcls = group_power_nat
+        (fundamental_group_mult X Tx a)
+        (fundamental_group_id X Tx a)
+        (path_homotopy_class_loop X Tx a (path_concat alpha beta)) n \/
+       path_homotopy_class_loop X Tx a fcls = group_power_nat
+        (fundamental_group_mult X Tx a)
+        (fundamental_group_id X Tx a)
+        (apply_fun (fundamental_group_inv X Tx a)
+          (path_homotopy_class_loop X Tx a (path_concat alpha beta))) n).
+  {
+    (** TODO Bob:
+       show HallU contradicts HfclsClsNe using:
+       - Hpi1Utriv (ucls = id in pi1(U,a))
+       - inclusion-induced hom sends identity to identity in pi1(X,a)
+       then derive target by contradiction (ex-falso). **)
+    admit.
+  }
+  exact HallU_target.
+- assume HnotAllU : ~(forall t:set, t :e unit_interval -> apply_fun fcls t :e U).
+  apply (xm (forall t:set, t :e unit_interval -> apply_fun fcls t :e V)).
+  + assume HallV : forall t:set, t :e unit_interval -> apply_fun fcls t :e V.
+    claim HallV_target :
+      exists n:set, n :e omega /\
+        (path_homotopy_class_loop X Tx a fcls = group_power_nat
+          (fundamental_group_mult X Tx a)
+          (fundamental_group_id X Tx a)
+          (path_homotopy_class_loop X Tx a (path_concat alpha beta)) n \/
+         path_homotopy_class_loop X Tx a fcls = group_power_nat
+          (fundamental_group_mult X Tx a)
+          (fundamental_group_id X Tx a)
+          (apply_fun (fundamental_group_inv X Tx a)
+            (path_homotopy_class_loop X Tx a (path_concat alpha beta))) n).
+    {
+      (** TODO Bob:
+         symmetric to HallU case using Hpi1Vtriv and inclusion from V. **)
+      admit.
+    }
+    exact HallV_target.
+  + assume HnotAllV : ~(forall t:set, t :e unit_interval -> apply_fun fcls t :e V).
+    (** TODO Bob:
+       mixed case (not all-U and not all-V): perform crossing decomposition
+       and reduce class to powers of [alpha.beta]. **)
+    admit.
 (** TODO Bob: bridge from nontrivial loop representative to edge-crossing normal form.
     Needed dependency: S63-style alternating decomposition theorem specialized to
     U∩V=A∪B (A,B disjoint path-connected pieces), then reduction to powers of [alpha.beta]. **)
-admit.
 Admitted.
 
 (** core bridge for S84.6: cyclic-generation conclusion from path-form hypotheses **)
