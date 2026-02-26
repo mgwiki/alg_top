@@ -225004,7 +225004,55 @@ Theorem lemma83_3_graph_locally_path_connected :
   forall X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
   locally_path_connected X Tx /\ semilocally_simply_connected X Tx.
-admit.
+let X Tx Arcs.
+assume Hglg.
+claim HtopX : topology_on X Tx.
+{ exact (general_linear_graph_topology_on X Tx Arcs Hglg). }
+apply andI.
+- (** locally_path_connected: reduce to a neighborhood path-connectedness witness. **)
+  claim Hlocal :
+    forall x:set, x :e X ->
+    forall U:set, U :e Tx -> x :e U ->
+      exists V:set,
+        V :e Tx /\ x :e V /\ V c= U /\
+          path_connected_space V (subspace_topology X Tx V).
+  {
+    let x.
+    assume HxX.
+    let U.
+    assume HU HxU.
+    admit.
+  }
+  exact (andI
+    (topology_on X Tx)
+    (forall x:set, x :e X ->
+      forall U:set, U :e Tx -> x :e U ->
+        exists V:set,
+          V :e Tx /\ x :e V /\ V c= U /\
+            path_connected_space V (subspace_topology X Tx V))
+    HtopX
+    Hlocal).
+- (** semilocally_simply_connected: reduce to a neighborhood with trivial induced pi1. **)
+  claim Hsemi_local :
+    forall b:set, b :e X ->
+      exists U:set, U :e Tx /\ b :e U /\
+        (forall cls:set,
+          cls :e fundamental_group U (subspace_topology X Tx U) b ->
+          apply_fun
+            (induced_homomorphism U (subspace_topology X Tx U) b X Tx b
+              (graph U (fun x:set => x)))
+            cls =
+          fundamental_group_id X Tx b).
+  {
+    let b.
+    assume HbX.
+    admit.
+  }
+  exact (semilocally_simply_connected_intro
+    X
+    Tx
+    HtopX
+    Hsemi_local).
 Admitted.
 
 (** from S83 Thm 83.4 (line 5530 in algtop.tex): covering of graph is graph **)
