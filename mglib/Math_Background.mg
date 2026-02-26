@@ -174314,18 +174314,110 @@ apply andI.
     * assume Hyeq : y = 1. rewrite Hyeq. reflexivity.
 Qed.
 
-(** Key helper for rank: equip Power J with set of group homs G to Z mod 2 **)
-(** For free abelian group with basis J, every hom G to Z mod 2 is determined **)
-(** by the values on the basis, giving equip Power J with Hom(G, Z mod 2) **)
-Lemma free_abelian_power_equip_hom_count :
+(** Set of group homomorphisms from G to H **)
+Definition group_hom_set : set -> set -> set -> set -> set :=
+  fun G mult H multH =>
+    {h :e function_space G H | forall x y:set, x :e G -> y :e G ->
+      apply_fun h (apply_fun mult (x, y)) = apply_fun multH (apply_fun h x, apply_fun h y)}.
+
+(** Helper: every group hom in group_hom_set satisfies group_homomorphism **)
+Lemma group_hom_set_is_hom : forall G mult H multH h:set,
+  h :e group_hom_set G mult H multH ->
+  group_homomorphism G mult H multH h.
+let G mult H multH h.
+assume Hh : h :e group_hom_set G mult H multH.
+claim HhFS : h :e function_space G H.
+{ exact (SepE1 (function_space G H)
+    (fun h:set => forall x y:set, x :e G -> y :e G ->
+      apply_fun h (apply_fun mult (x, y)) = apply_fun multH (apply_fun h x, apply_fun h y))
+    h Hh). }
+claim Hmult : forall x y:set, x :e G -> y :e G ->
+  apply_fun h (apply_fun mult (x, y)) = apply_fun multH (apply_fun h x, apply_fun h y).
+{ exact (SepE2 (function_space G H)
+    (fun h:set => forall x y:set, x :e G -> y :e G ->
+      apply_fun h (apply_fun mult (x, y)) = apply_fun multH (apply_fun h x, apply_fun h y))
+    h Hh). }
+claim HfnOn : function_on h G H.
+{ admit. }
+prove function_on h G H /\
+  (forall x y:set, x :e G -> y :e G ->
+    apply_fun h (apply_fun mult (x, y)) = apply_fun multH (apply_fun h x, apply_fun h y)).
+apply andI.
+- exact HfnOn.
+- exact Hmult.
+Admitted.
+
+(** Helper: Power(J) equips with the set of group homs to Z mod 2 for a free abelian basis **)
+(** The bijection: S in Power(J) maps to the unique hom h with h(basis(alpha))=1 iff alpha in S **)
+Lemma free_abelian_power_equip_hom_set :
+  forall G mult e inv J basis:set,
+  free_abelian_group_with_basis G mult e inv J basis ->
+  equip (Power J) (group_hom_set G mult 2 Z2_mult).
+admit.
+Admitted.
+
+(** Key helper for rank: two finite bases of the same free abelian group are equip **)
+(** Strategy: both Power(J) and Power(J2) are equip to group_hom_set G mult 2 Z2_mult **)
+Lemma free_abelian_bases_equip :
   forall G mult e inv J basis:set,
   free_abelian_group_with_basis G mult e inv J basis ->
   finite J ->
   forall J2 basis2:set,
   free_abelian_group_with_basis G mult e inv J2 basis2 ->
   finite J2 ->
-  equip (Power J) (Power J2).
-admit.
+  equip J J2.
+let G mult e inv J basis.
+assume Hfab1 : free_abelian_group_with_basis G mult e inv J basis.
+assume Hfin1 : finite J.
+let J2 basis2.
+assume Hfab2 : free_abelian_group_with_basis G mult e inv J2 basis2.
+assume Hfin2 : finite J2.
+(** Extract k1, k2 from finiteness **)
+claim Hex1 : exists k1:set, k1 :e omega /\ equip J k1.
+{ exact Hfin1. }
+apply (exandE_i (fun k:set => k :e omega) (fun k:set => equip J k) Hex1).
+let k1. assume Hk1w : k1 :e omega. assume Heq1 : equip J k1.
+claim Hex2 : exists k2:set, k2 :e omega /\ equip J2 k2.
+{ exact Hfin2. }
+apply (exandE_i (fun k:set => k :e omega) (fun k:set => equip J2 k) Hex2).
+let k2. assume Hk2w : k2 :e omega. assume Heq2 : equip J2 k2.
+claim Hk1_nat : nat_p k1. { exact (omega_nat_p k1 Hk1w). }
+claim Hk2_nat : nat_p k2. { exact (omega_nat_p k2 Hk2w). }
+(** Both Power sets equip to Hom set **)
+set HomSet := group_hom_set G mult 2 Z2_mult.
+claim HPJ_Hom : equip (Power J) HomSet.
+{ exact (free_abelian_power_equip_hom_set G mult e inv J basis Hfab1). }
+claim HPJ2_Hom : equip (Power J2) HomSet.
+{ exact (free_abelian_power_equip_hom_set G mult e inv J2 basis2 Hfab2). }
+(** equip (Power J) (Power J2) by transitivity **)
+claim HPow_eq : equip (Power J) (Power J2).
+{ exact (equip_tra (Power J) HomSet (Power J2) HPJ_Hom
+    (equip_sym (Power J2) HomSet HPJ2_Hom)). }
+(** Power sets equip to 2^k **)
+claim HPow1 : equip (Power J) (exp_nat 2 k1).
+{ exact (equip_finite_Power k1 Hk1_nat J Heq1). }
+claim HPow2 : equip (Power J2) (exp_nat 2 k2).
+{ exact (equip_finite_Power k2 Hk2_nat J2 Heq2). }
+(** 2^k1 equip 2^k2 **)
+claim Hexp_eq : equip (exp_nat 2 k1) (exp_nat 2 k2).
+{ exact (equip_tra (exp_nat 2 k1) (Power J) (exp_nat 2 k2)
+    (equip_sym (Power J) (exp_nat 2 k1) HPow1)
+    (equip_tra (Power J) (Power J2) (exp_nat 2 k2) HPow_eq HPow2)). }
+(** Both exp_nat 2 k in omega **)
+claim H2k1w : exp_nat 2 k1 :e omega.
+{ exact (nat_p_omega (exp_nat 2 k1) (exp_nat_p 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0)) k1 Hk1_nat)). }
+claim H2k2w : exp_nat 2 k2 :e omega.
+{ exact (nat_p_omega (exp_nat 2 k2) (exp_nat_p 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0)) k2 Hk2_nat)). }
+claim Hord_eq : exp_nat 2 k1 = exp_nat 2 k2.
+{ exact (equip_omega_eq (exp_nat 2 k1) (exp_nat 2 k2) H2k1w H2k2w Hexp_eq). }
+claim Hk_eq : k1 = k2.
+{ exact (exp_nat_2_injective k1 Hk1_nat k2 Hk2_nat Hord_eq). }
+(** equip J J2 via transitivity: J equip k1 = k2 equip J2 **)
+claim Hk2_J2 : equip k2 J2.
+{ exact (equip_sym J2 k2 Heq2). }
+claim Hk1_J2 : equip k1 J2.
+{ rewrite Hk_eq. exact Hk2_J2. }
+exact (equip_tra J k1 J2 Heq1 Hk1_J2).
 Admitted.
 
 (** from S67 Thm 67.8 (line 2689 in algtop.tex): rank is well-defined **)
@@ -174345,54 +174437,7 @@ assume Hfab1 : free_abelian_group_with_basis G mult e inv n1 basis1.
 assume Hfab2 : free_abelian_group_with_basis G mult e inv n2 basis2.
 assume Hfin1 : finite n1.
 assume Hfin2 : finite n2.
-(** Get k1 k2 from finiteness: n1 equip k1, n2 equip k2 **)
-claim Hex1 : exists k1:set, k1 :e omega /\ equip n1 k1.
-{ exact Hfin1. }
-apply (exandE_i
-  (fun k1:set => k1 :e omega)
-  (fun k1:set => equip n1 k1)
-  Hex1).
-let k1. assume Hk1w : k1 :e omega. assume Heq1 : equip n1 k1.
-claim Hex2 : exists k2:set, k2 :e omega /\ equip n2 k2.
-{ exact Hfin2. }
-apply (exandE_i
-  (fun k2:set => k2 :e omega)
-  (fun k2:set => equip n2 k2)
-  Hex2).
-let k2. assume Hk2w : k2 :e omega. assume Heq2 : equip n2 k2.
-claim Hk1_nat : nat_p k1. { exact (omega_nat_p k1 Hk1w). }
-claim Hk2_nat : nat_p k2. { exact (omega_nat_p k2 Hk2w). }
-(** Power sets are equipotent to 2^k **)
-claim HPow1 : equip (Power n1) (exp_nat 2 k1).
-{ exact (equip_finite_Power k1 Hk1_nat n1 Heq1). }
-claim HPow2 : equip (Power n2) (exp_nat 2 k2).
-{ exact (equip_finite_Power k2 Hk2_nat n2 Heq2). }
-(** Key claim: equip (Power n1) (Power n2) via the group structure **)
-(** Strategy: both Power(n_i) biject with G/2G via subset products **)
-claim Hkey : equip (Power n1) (Power n2).
-{ admit. }
-(** From equip(Power n1, Power n2) derive equip(2^k1, 2^k2) **)
-claim HPow_eq : equip (exp_nat 2 k1) (exp_nat 2 k2).
-{ exact (equip_tra (exp_nat 2 k1) (Power n1) (exp_nat 2 k2)
-    (equip_sym (Power n1) (exp_nat 2 k1) HPow1)
-    (equip_tra (Power n1) (Power n2) (exp_nat 2 k2) Hkey HPow2)). }
-(** 2^k1 = 2^k2 since both in omega **)
-claim H2k1_omega : exp_nat 2 k1 :e omega.
-{ exact (nat_p_omega (exp_nat 2 k1) (exp_nat_p 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0)) k1 Hk1_nat)). }
-claim H2k2_omega : exp_nat 2 k2 :e omega.
-{ exact (nat_p_omega (exp_nat 2 k2) (exp_nat_p 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0)) k2 Hk2_nat)). }
-claim Hpow_eq_ord : exp_nat 2 k1 = exp_nat 2 k2.
-{ exact (equip_omega_eq (exp_nat 2 k1) (exp_nat 2 k2) H2k1_omega H2k2_omega HPow_eq). }
-(** k1 = k2 by injectivity of 2^n **)
-claim Hk_eq : k1 = k2.
-{ exact (exp_nat_2_injective k1 Hk1_nat k2 Hk2_nat Hpow_eq_ord). }
-(** equip n1 n2 by transitivity **)
-claim Hfinal : equip k1 n2.
-{
-  rewrite Hk_eq.
-  exact (equip_sym n2 k2 Heq2).
-}
-exact (equip_tra n1 k1 n2 Heq1 Hfinal).
+exact (free_abelian_bases_equip G mult e inv n1 basis1 Hfab1 Hfin1 n2 basis2 Hfab2 Hfin2).
 Admitted.
 
 (** from S67 Definition (line 2693 in algtop.tex): rank of a free abelian group **)
