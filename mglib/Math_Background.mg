@@ -250702,6 +250702,18 @@ claim HpreVSubI : preV c= unit_interval.
   assume HxPreV : x :e preV.
   exact (SepE1 unit_interval (fun y:set => apply_fun fcls y :e V) x HxPreV).
 }
+claim H0PreUV : 0 :e preU :/\: preV.
+{
+  exact (binintersectI preU preV 0 H0PreU H0PreV).
+}
+claim H1PreUV : 1 :e preU :/\: preV.
+{
+  exact (binintersectI preU preV 1 H1PreU H1PreV).
+}
+claim HpreUVNonempty : preU :/\: preV <> Empty.
+{
+  exact (elem_implies_nonempty (preU :/\: preV) 0 H0PreUV).
+}
 claim HpreXAll : preimage_of unit_interval fcls X = unit_interval.
 {
   apply set_ext.
