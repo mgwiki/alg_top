@@ -162743,7 +162743,266 @@ Theorem thm67_6_uniqueness_direct_sum :
           apply_fun phi' (apply_fun (apply_fun ifam alpha) x) =
             apply_fun (apply_fun ifam' alpha) x) ->
       forall x:set, x :e G -> apply_fun phi' x = apply_fun phi x).
-admit.
+let J Gfam multfam G multG eG invG ifam G' multG' eG' invG' ifam'.
+assume HabG HabG' Hifam Hifam' HdsG HdsG'.
+(** Universal property from direct sum of G **)
+claim HupG : forall H multH eH invH:set,
+    abelian_group H multH eH invH ->
+    forall hfam:set, function_on hfam J (Power (setprod G H)) ->
+      (forall alpha:set, alpha :e J ->
+        group_homomorphism (apply_fun (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))) alpha) multG H multH (apply_fun hfam alpha)) ->
+      exists h:set,
+        group_homomorphism G multG H multH h /\
+        (forall alpha:set, alpha :e J ->
+          forall x:set, x :e apply_fun (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))) alpha ->
+            apply_fun h x = apply_fun (apply_fun hfam alpha) x) /\
+        (forall h':set, group_homomorphism G multG H multH h' ->
+          (forall alpha:set, alpha :e J ->
+            forall x:set, x :e apply_fun (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))) alpha ->
+              apply_fun h' x = apply_fun (apply_fun hfam alpha) x) ->
+          forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+{ exact (lemma67_1_extension_condition_direct_sum G multG eG invG J
+    (graph J (fun alpha:set => homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha)))
+    HdsG). }
+(** Key Eps_i property: picking preimage under injective ifam_alpha **)
+claim Heps_ifam : forall alpha x:set, alpha :e J -> x :e apply_fun Gfam alpha ->
+  Eps_i (fun z:set => z :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) z = apply_fun (apply_fun ifam alpha) x) = x.
+{
+  let alpha x. assume Halpha Hx.
+  claim Hwitness : x :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) x = apply_fun (apply_fun ifam alpha) x.
+  { apply andI. exact Hx. reflexivity. }
+  claim Hz : (Eps_i (fun z:set => z :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) z = apply_fun (apply_fun ifam alpha) x)) :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) (Eps_i (fun z:set => z :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) z = apply_fun (apply_fun ifam alpha) x)) = apply_fun (apply_fun ifam alpha) x.
+  { exact (Eps_i_ax (fun z:set => z :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) z = apply_fun (apply_fun ifam alpha) x) x Hwitness). }
+  exact (andER
+    (group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha))
+    (forall a b:set, a :e apply_fun Gfam alpha -> b :e apply_fun Gfam alpha ->
+      apply_fun (apply_fun ifam alpha) a = apply_fun (apply_fun ifam alpha) b -> a = b)
+    (Hifam alpha Halpha)
+    (Eps_i (fun z:set => z :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) z = apply_fun (apply_fun ifam alpha) x))
+    x
+    (andEL
+      ((Eps_i (fun z:set => z :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) z = apply_fun (apply_fun ifam alpha) x)) :e apply_fun Gfam alpha)
+      (apply_fun (apply_fun ifam alpha) (Eps_i (fun z:set => z :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) z = apply_fun (apply_fun ifam alpha) x)) = apply_fun (apply_fun ifam alpha) x)
+      Hz)
+    Hx
+    (andER
+      ((Eps_i (fun z:set => z :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) z = apply_fun (apply_fun ifam alpha) x)) :e apply_fun Gfam alpha)
+      (apply_fun (apply_fun ifam alpha) (Eps_i (fun z:set => z :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) z = apply_fun (apply_fun ifam alpha) x)) = apply_fun (apply_fun ifam alpha) x)
+      Hz)).
+}
+(** Define transfer map: for each alpha, maps image(ifam_alpha) to G' **)
+set hfam_fwd : set := graph J (fun alpha:set =>
+  graph (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))
+    (fun y:set => apply_fun (apply_fun ifam' alpha)
+      (Eps_i (fun x:set => x :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) x = y)))).
+(** Transfer map acts as ifam'_alpha o ifam_alpha^{-1} on image elements **)
+claim Hfwd_apply : forall alpha x:set, alpha :e J -> x :e apply_fun Gfam alpha ->
+  apply_fun (apply_fun hfam_fwd alpha)
+    (apply_fun (apply_fun ifam alpha) x) =
+  apply_fun (apply_fun ifam' alpha) x.
+{
+  let alpha x. assume Halpha Hx.
+  claim Hrew : apply_fun (apply_fun hfam_fwd alpha)
+    (apply_fun (apply_fun ifam alpha) x) =
+    apply_fun (apply_fun ifam' alpha)
+      (Eps_i (fun z:set => z :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) z = apply_fun (apply_fun ifam alpha) x)).
+  { claim Hix_in_img : apply_fun (apply_fun ifam alpha) x :e homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha).
+    { exact (ReplI (apply_fun Gfam alpha) (fun z:set => apply_fun (apply_fun ifam alpha) z) x Hx). }
+    claim Hstep_outer : apply_fun (apply_fun hfam_fwd alpha)
+      (apply_fun (apply_fun ifam alpha) x) =
+      apply_fun (graph (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))
+        (fun y:set => apply_fun (apply_fun ifam' alpha)
+          (Eps_i (fun z:set => z :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) z = y))))
+      (apply_fun (apply_fun ifam alpha) x).
+    { exact (apply_fun_apply_fun_graph J
+        (fun alpha0:set =>
+          graph (homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))
+            (fun y:set => apply_fun (apply_fun ifam' alpha0)
+              (Eps_i (fun z:set => z :e apply_fun Gfam alpha0 /\ apply_fun (apply_fun ifam alpha0) z = y))))
+        alpha (apply_fun (apply_fun ifam alpha) x) Halpha). }
+    rewrite Hstep_outer.
+    exact (apply_fun_graph (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))
+      (fun y:set => apply_fun (apply_fun ifam' alpha)
+        (Eps_i (fun z:set => z :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) z = y)))
+      (apply_fun (apply_fun ifam alpha) x) Hix_in_img). }
+  rewrite Hrew.
+  rewrite (Heps_ifam alpha x Halpha Hx).
+  reflexivity.
+}
+(** The remaining parts are admitted for now while we test compilation **)
+(** hfam_fwd satisfies function_on and homomorphism requirements **)
+claim Hfwd_fn : function_on hfam_fwd J (Power (setprod G G')).
+{ let alpha. assume Halpha.
+  rewrite (apply_fun_graph J (fun alpha0:set =>
+    graph (homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))
+      (fun y:set => apply_fun (apply_fun ifam' alpha0)
+        (Eps_i (fun z:set => z :e apply_fun Gfam alpha0 /\ apply_fun (apply_fun ifam alpha0) z = y))))
+    alpha Halpha).
+  apply PowerI.
+  claim Himg_sub_G : homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha) c= G.
+  { let y. assume Hy.
+    apply (ReplE_impred (apply_fun Gfam alpha) (fun z:set => apply_fun (apply_fun ifam alpha) z) y Hy).
+    let z. assume Hz Hyz.
+    rewrite Hyz.
+    exact (andEL (function_on (apply_fun ifam alpha) (apply_fun Gfam alpha) G)
+      (forall u v:set, u :e apply_fun Gfam alpha -> v :e apply_fun Gfam alpha ->
+        apply_fun (apply_fun ifam alpha) (apply_fun (apply_fun multfam alpha) (u, v)) = apply_fun multG (apply_fun (apply_fun ifam alpha) u, apply_fun (apply_fun ifam alpha) v))
+      (andEL
+        (group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha))
+        (forall a b:set, a :e apply_fun Gfam alpha -> b :e apply_fun Gfam alpha ->
+          apply_fun (apply_fun ifam alpha) a = apply_fun (apply_fun ifam alpha) b -> a = b)
+        (Hifam alpha Halpha)))
+      z Hz. }
+  claim Hvals_in_G' : forall y:set, y :e homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha) ->
+    apply_fun (apply_fun ifam' alpha)
+      (Eps_i (fun z:set => z :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) z = y)) :e G'.
+  { let y. assume Hy.
+    apply (ReplE_impred (apply_fun Gfam alpha) (fun z:set => apply_fun (apply_fun ifam alpha) z) y Hy).
+    let z. assume Hz Hyz.
+    claim Hwitness : z :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) z = y.
+    { apply andI. exact Hz. symmetry. exact Hyz. }
+    claim Heps_mem : (Eps_i (fun w:set => w :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) w = y)) :e apply_fun Gfam alpha.
+    { exact (andEL
+        ((Eps_i (fun w:set => w :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) w = y)) :e apply_fun Gfam alpha)
+        (apply_fun (apply_fun ifam alpha) (Eps_i (fun w:set => w :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) w = y)) = y)
+        (Eps_i_ax (fun w:set => w :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) w = y) z Hwitness)). }
+    exact (andEL (function_on (apply_fun ifam' alpha) (apply_fun Gfam alpha) G')
+      (forall u v:set, u :e apply_fun Gfam alpha -> v :e apply_fun Gfam alpha ->
+        apply_fun (apply_fun ifam' alpha) (apply_fun (apply_fun multfam alpha) (u, v)) = apply_fun multG' (apply_fun (apply_fun ifam' alpha) u, apply_fun (apply_fun ifam' alpha) v))
+      (andEL
+        (group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G' multG' (apply_fun ifam' alpha))
+        (forall a b:set, a :e apply_fun Gfam alpha -> b :e apply_fun Gfam alpha ->
+          apply_fun (apply_fun ifam' alpha) a = apply_fun (apply_fun ifam' alpha) b -> a = b)
+        (Hifam' alpha Halpha)))
+      (Eps_i (fun w:set => w :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) w = y))
+      Heps_mem. }
+  exact (Subq_tra
+    (graph (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha))
+      (fun y:set => apply_fun (apply_fun ifam' alpha)
+        (Eps_i (fun z:set => z :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) z = y))))
+    (setprod (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha)) G')
+    (setprod G G')
+    (graph_subset_setprod (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha)) G'
+      (fun y:set => apply_fun (apply_fun ifam' alpha)
+        (Eps_i (fun z:set => z :e apply_fun Gfam alpha /\ apply_fun (apply_fun ifam alpha) z = y)))
+      Hvals_in_G')
+    (setprod_Subq (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha)) G' G G'
+      Himg_sub_G (Subq_ref G'))). }
+claim Hfwd_hom : forall alpha:set, alpha :e J ->
+  group_homomorphism (apply_fun (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))) alpha) multG G' multG' (apply_fun hfam_fwd alpha).
+{ admit. }
+(** Get phi: G -> G' **)
+claim Hphi_raw : exists h:set,
+  group_homomorphism G multG G' multG' h /\
+  (forall alpha:set, alpha :e J ->
+    forall x:set, x :e apply_fun (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))) alpha ->
+      apply_fun h x = apply_fun (apply_fun hfam_fwd alpha) x) /\
+  (forall h':set, group_homomorphism G multG G' multG' h' ->
+    (forall alpha:set, alpha :e J ->
+      forall x:set, x :e apply_fun (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))) alpha ->
+        apply_fun h' x = apply_fun (apply_fun hfam_fwd alpha) x) ->
+    forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+{ exact (HupG G' multG' eG' invG' HabG' hfam_fwd Hfwd_fn Hfwd_hom). }
+apply Hphi_raw.
+let phi. assume Hphi_all.
+(** Extract components of Hphi_all **)
+claim Hphi_hom : group_homomorphism G multG G' multG' phi.
+{ apply (and3E
+    (group_homomorphism G multG G' multG' phi)
+    (forall alpha:set, alpha :e J ->
+      forall x:set, x :e apply_fun (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))) alpha ->
+        apply_fun phi x = apply_fun (apply_fun hfam_fwd alpha) x)
+    (forall h':set, group_homomorphism G multG G' multG' h' ->
+      (forall alpha:set, alpha :e J ->
+        forall x:set, x :e apply_fun (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))) alpha ->
+          apply_fun h' x = apply_fun (apply_fun hfam_fwd alpha) x) ->
+      forall x:set, x :e G -> apply_fun h' x = apply_fun phi x)
+    Hphi_all).
+  assume H1 _ _. exact H1. }
+claim Hphi_ext : forall alpha:set, alpha :e J ->
+  forall x:set, x :e apply_fun (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))) alpha ->
+    apply_fun phi x = apply_fun (apply_fun hfam_fwd alpha) x.
+{ apply (and3E
+    (group_homomorphism G multG G' multG' phi)
+    (forall alpha:set, alpha :e J ->
+      forall x:set, x :e apply_fun (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))) alpha ->
+        apply_fun phi x = apply_fun (apply_fun hfam_fwd alpha) x)
+    (forall h':set, group_homomorphism G multG G' multG' h' ->
+      (forall alpha:set, alpha :e J ->
+        forall x:set, x :e apply_fun (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))) alpha ->
+          apply_fun h' x = apply_fun (apply_fun hfam_fwd alpha) x) ->
+      forall x:set, x :e G -> apply_fun h' x = apply_fun phi x)
+    Hphi_all).
+  assume _ H2 _. exact H2. }
+claim Hphi_uniq : forall h':set, group_homomorphism G multG G' multG' h' ->
+  (forall alpha:set, alpha :e J ->
+    forall x:set, x :e apply_fun (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))) alpha ->
+      apply_fun h' x = apply_fun (apply_fun hfam_fwd alpha) x) ->
+  forall x:set, x :e G -> apply_fun h' x = apply_fun phi x.
+{ apply (and3E
+    (group_homomorphism G multG G' multG' phi)
+    (forall alpha:set, alpha :e J ->
+      forall x:set, x :e apply_fun (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))) alpha ->
+        apply_fun phi x = apply_fun (apply_fun hfam_fwd alpha) x)
+    (forall h':set, group_homomorphism G multG G' multG' h' ->
+      (forall alpha:set, alpha :e J ->
+        forall x:set, x :e apply_fun (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))) alpha ->
+          apply_fun h' x = apply_fun (apply_fun hfam_fwd alpha) x) ->
+      forall x:set, x :e G -> apply_fun h' x = apply_fun phi x)
+    Hphi_all).
+  assume _ _ H3. exact H3. }
+(** phi sends ifam_alpha(x) to ifam'_alpha(x) **)
+claim Hphi_transfer : forall alpha:set, alpha :e J ->
+  forall x:set, x :e apply_fun Gfam alpha ->
+    apply_fun phi (apply_fun (apply_fun ifam alpha) x) =
+    apply_fun (apply_fun ifam' alpha) x.
+{
+  let alpha. assume Halpha.
+  let x. assume Hx.
+  claim Hix_in_sub : apply_fun (apply_fun ifam alpha) x :e apply_fun (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))) alpha.
+  { rewrite (apply_fun_graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0)) alpha Halpha).
+    exact (ReplI (apply_fun Gfam alpha) (fun z:set => apply_fun (apply_fun ifam alpha) z) x Hx). }
+  claim Hstep1 : apply_fun phi (apply_fun (apply_fun ifam alpha) x) =
+    apply_fun (apply_fun hfam_fwd alpha) (apply_fun (apply_fun ifam alpha) x).
+  { exact (Hphi_ext alpha Halpha (apply_fun (apply_fun ifam alpha) x) Hix_in_sub). }
+  rewrite Hstep1.
+  exact (Hfwd_apply alpha x Halpha Hx).
+}
+(** Witness phi and prove the three conjuncts **)
+witness phi.
+apply and3I.
+- (** group_isomorphism G multG G' multG' phi **)
+  apply andI.
+  + exact Hphi_hom.
+  + (** bijection: need inverse via G' -> G **)
+    admit.
+- (** extension property **)
+  exact Hphi_transfer.
+- (** uniqueness **)
+  let phi'. assume Hphi'_iso Hphi'_ext.
+  claim Hphi'_hom : group_homomorphism G multG G' multG' phi'.
+  { exact (andEL
+      (group_homomorphism G multG G' multG' phi')
+      (bijection G G' phi')
+      Hphi'_iso). }
+  claim Hphi'_ext_sub : forall alpha:set, alpha :e J ->
+    forall x:set, x :e apply_fun (graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0))) alpha ->
+      apply_fun phi' x = apply_fun (apply_fun hfam_fwd alpha) x.
+  { let alpha. assume Halpha.
+    let y. assume Hy_in.
+    claim Hy_in_img : y :e homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha).
+    { rewrite <- (apply_fun_graph J (fun alpha0:set => homomorphism_image (apply_fun Gfam alpha0) (apply_fun ifam alpha0)) alpha Halpha).
+      exact Hy_in. }
+    apply (ReplE_impred (apply_fun Gfam alpha) (fun z:set => apply_fun (apply_fun ifam alpha) z) y Hy_in_img).
+    let z. assume Hz Hyz.
+    claim Hphi'y : apply_fun phi' y = apply_fun (apply_fun ifam' alpha) z.
+    { rewrite Hyz. exact (Hphi'_ext alpha Halpha z Hz). }
+    claim Hfwdy : apply_fun (apply_fun hfam_fwd alpha) y = apply_fun (apply_fun ifam' alpha) z.
+    { rewrite Hyz. exact (Hfwd_apply alpha z Halpha Hz). }
+    claim Hfwdy_sym : apply_fun (apply_fun ifam' alpha) z = apply_fun (apply_fun hfam_fwd alpha) y.
+    { symmetry. exact Hfwdy. }
+    exact (eq_i_tra (apply_fun phi' y) (apply_fun (apply_fun ifam' alpha) z) (apply_fun (apply_fun hfam_fwd alpha) y) Hphi'y Hfwdy_sym). }
+  exact (Hphi_uniq phi' Hphi'_hom Hphi'_ext_sub).
 Admitted.
 
 (** Infrastructure: infinite cyclic subgroup generated by an element **)
