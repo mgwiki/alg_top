@@ -172259,6 +172259,92 @@ apply iffI.
       Hsgab Huniq).
 Admitted.
 
+Infix * 355 right := mul_nat.
+
+(** Helper: 2k is never 1 for natural k **)
+(** Proven Alice **)
+Lemma two_mul_nat_neq_one : forall k:set, nat_p k -> 2 * k = 1 -> False.
+apply (nat_ind (fun k:set => 2 * k = 1 -> False)).
+- assume Heq : 2 * 0 = 1.
+  exact (neq_ordsucc_0 0 (eq_i_tra 1 (2 * 0) 0 (eq_symm (2 * 0) 1 Heq) (mul_nat_0R 2))).
+- let n. assume Hn : nat_p n. assume _ : 2 * n = 1 -> False.
+  assume Heq : 2 * ordsucc n = 1.
+  claim H2n_nat : nat_p (2 * n). { exact (mul_nat_p 2 nat_2 n Hn). }
+  claim H2kval : 2 * ordsucc n = ordsucc (ordsucc (add_nat 0 (2 * n))).
+  {
+    rewrite (mul_nat_SR 2 n Hn).
+    rewrite (add_nat_SL 1 nat_1 (2 * n) H2n_nat).
+    rewrite (add_nat_SL 0 nat_0 (2 * n) H2n_nat).
+    reflexivity.
+  }
+  exact (neq_0_ordsucc (add_nat 0 (2 * n)) (ordsucc_inj 0 (ordsucc (add_nat 0 (2 * n)))
+    (eq_i_tra 1 (2 * ordsucc n) (ordsucc (ordsucc (add_nat 0 (2 * n))))
+      (eq_symm (2 * ordsucc n) 1 Heq) H2kval))).
+Qed.
+
+(** Helper: 2^n is injective on natural numbers **)
+(** Proven Alice **)
+Lemma exp_nat_2_injective :
+  forall k1:set, nat_p k1 -> forall k2:set, nat_p k2 ->
+  exp_nat 2 k1 = exp_nat 2 k2 -> k1 = k2.
+apply (nat_ind (fun k1 => forall k2:set, nat_p k2 ->
+  exp_nat 2 k1 = exp_nat 2 k2 -> k1 = k2)).
+(** Base case: k1 = 0 **)
+- apply (nat_ind (fun k2 => exp_nat 2 0 = exp_nat 2 k2 -> 0 = k2)).
+  + assume _. reflexivity.
+  + let m. assume Hm : nat_p m. assume _ : exp_nat 2 0 = exp_nat 2 m -> 0 = m.
+    assume Heq : exp_nat 2 0 = exp_nat 2 (ordsucc m).
+    claim H20 : exp_nat 2 0 = 1. { exact (exp_nat_0 2). }
+    claim H2S : exp_nat 2 (ordsucc m) = 2 * exp_nat 2 m.
+    { exact (exp_nat_S 2 m Hm). }
+    claim H2mnat : nat_p (exp_nat 2 m). { exact (exp_nat_p 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0)) m Hm). }
+    claim Habs : 1 = 2 * exp_nat 2 m.
+    { exact (eq_i_tra 1 (exp_nat 2 0) (2 * exp_nat 2 m)
+        (eq_symm (exp_nat 2 0) 1 H20) (eq_i_tra (exp_nat 2 0) (exp_nat 2 (ordsucc m)) (2 * exp_nat 2 m) Heq H2S)). }
+    exact (FalseE (two_mul_nat_neq_one (exp_nat 2 m) H2mnat (eq_symm 1 (2 * exp_nat 2 m) Habs)) (0 = ordsucc m)).
+(** Inductive step: k1 = ordsucc n **)
+- let n. assume Hn : nat_p n.
+  assume IH : forall k2:set, nat_p k2 -> exp_nat 2 n = exp_nat 2 k2 -> n = k2.
+  apply (nat_ind (fun k2 => exp_nat 2 (ordsucc n) = exp_nat 2 k2 -> ordsucc n = k2)).
+  + assume Heq : exp_nat 2 (ordsucc n) = exp_nat 2 0.
+    claim H2Sn : exp_nat 2 (ordsucc n) = 2 * exp_nat 2 n.
+    { exact (exp_nat_S 2 n Hn). }
+    claim H20 : exp_nat 2 0 = 1. { exact (exp_nat_0 2). }
+    claim H2n_nat : nat_p (exp_nat 2 n). { exact (exp_nat_p 2 nat_2 n Hn). }
+    claim H2n1 : 2 * exp_nat 2 n = 1.
+    { exact (eq_i_tra (2 * exp_nat 2 n) (exp_nat 2 (ordsucc n)) 1
+        (eq_symm (exp_nat 2 (ordsucc n)) (2 * exp_nat 2 n) H2Sn)
+        (eq_i_tra (exp_nat 2 (ordsucc n)) (exp_nat 2 0) 1 Heq H20)). }
+    exact (FalseE (two_mul_nat_neq_one (exp_nat 2 n) H2n_nat H2n1) (ordsucc n = 0)).
+  + let m. assume Hm : nat_p m.
+    assume _ : exp_nat 2 (ordsucc n) = exp_nat 2 m -> ordsucc n = m.
+    assume Heq : exp_nat 2 (ordsucc n) = exp_nat 2 (ordsucc m).
+    claim H2Sn : exp_nat 2 (ordsucc n) = 2 * exp_nat 2 n.
+    { exact (exp_nat_S 2 n Hn). }
+    claim H2Sm : exp_nat 2 (ordsucc m) = 2 * exp_nat 2 m.
+    { exact (exp_nat_S 2 m Hm). }
+    claim Hprod_eq : 2 * exp_nat 2 n = 2 * exp_nat 2 m.
+    { exact (eq_i_tra (2 * exp_nat 2 n) (exp_nat 2 (ordsucc n)) (2 * exp_nat 2 m)
+        (eq_symm (exp_nat 2 (ordsucc n)) (2 * exp_nat 2 n) H2Sn)
+        (eq_i_tra (exp_nat 2 (ordsucc n)) (exp_nat 2 (ordsucc m)) (2 * exp_nat 2 m) Heq H2Sm)). }
+    claim H2n_nat : nat_p (exp_nat 2 n). { exact (exp_nat_p 2 nat_2 n Hn). }
+    claim H2m_nat : nat_p (exp_nat 2 m). { exact (exp_nat_p 2 nat_2 m Hm). }
+    claim Hcom_n : exp_nat 2 n * 2 = 2 * exp_nat 2 n.
+    { exact (mul_nat_com (exp_nat 2 n) H2n_nat 2 nat_2). }
+    claim Hcom_m : 2 * exp_nat 2 m = exp_nat 2 m * 2.
+    { exact (mul_nat_com 2 nat_2 (exp_nat 2 m) H2m_nat). }
+    claim Hprod_eq2 : exp_nat 2 n * 2 = exp_nat 2 m * 2.
+    { exact (eq_i_tra (exp_nat 2 n * 2) (2 * exp_nat 2 n) (exp_nat 2 m * 2)
+        Hcom_n
+        (eq_i_tra (2 * exp_nat 2 n) (2 * exp_nat 2 m) (exp_nat 2 m * 2)
+          Hprod_eq Hcom_m)). }
+    claim Hinner : exp_nat 2 n = exp_nat 2 m.
+    { exact (mul_nat_2_inj_global (exp_nat 2 n) (exp_nat 2 m) H2n_nat H2m_nat Hprod_eq2). }
+    claim Hn_m : n = m.
+    { exact (IH m Hm Hinner). }
+    rewrite Hn_m. reflexivity.
+Qed.
+
 (** from S67 Thm 67.8 (line 2689 in algtop.tex): rank is well-defined **)
 (** LATEX VERSION: If G is a free abelian group with basis {a_1,...,a_n}, **)
 (** then n is uniquely determined by G. **)
@@ -172271,7 +172357,59 @@ Theorem thm67_8_rank_well_defined :
   free_abelian_group_with_basis G mult e inv n2 basis2 ->
   finite n1 -> finite n2 ->
   equip n1 n2.
-admit.
+let G mult e inv n1 n2 basis1 basis2.
+assume Hfab1 : free_abelian_group_with_basis G mult e inv n1 basis1.
+assume Hfab2 : free_abelian_group_with_basis G mult e inv n2 basis2.
+assume Hfin1 : finite n1.
+assume Hfin2 : finite n2.
+(** Get k1 k2 from finiteness: n1 equip k1, n2 equip k2 **)
+claim Hex1 : exists k1:set, k1 :e omega /\ equip n1 k1.
+{ exact Hfin1. }
+apply (exandE_i
+  (fun k1:set => k1 :e omega)
+  (fun k1:set => equip n1 k1)
+  Hex1).
+let k1. assume Hk1w : k1 :e omega. assume Heq1 : equip n1 k1.
+claim Hex2 : exists k2:set, k2 :e omega /\ equip n2 k2.
+{ exact Hfin2. }
+apply (exandE_i
+  (fun k2:set => k2 :e omega)
+  (fun k2:set => equip n2 k2)
+  Hex2).
+let k2. assume Hk2w : k2 :e omega. assume Heq2 : equip n2 k2.
+claim Hk1_nat : nat_p k1. { exact (omega_nat_p k1 Hk1w). }
+claim Hk2_nat : nat_p k2. { exact (omega_nat_p k2 Hk2w). }
+(** Power sets are equipotent to 2^k **)
+claim HPow1 : equip (Power n1) (exp_nat 2 k1).
+{ exact (equip_finite_Power k1 Hk1_nat n1 Heq1). }
+claim HPow2 : equip (Power n2) (exp_nat 2 k2).
+{ exact (equip_finite_Power k2 Hk2_nat n2 Heq2). }
+(** Key claim: equip (Power n1) (Power n2) via the group structure **)
+(** Strategy: both Power(n_i) biject with G/2G via subset products **)
+claim Hkey : equip (Power n1) (Power n2).
+{ admit. }
+(** From equip(Power n1, Power n2) derive equip(2^k1, 2^k2) **)
+claim HPow_eq : equip (exp_nat 2 k1) (exp_nat 2 k2).
+{ exact (equip_tra (exp_nat 2 k1) (Power n1) (exp_nat 2 k2)
+    (equip_sym (Power n1) (exp_nat 2 k1) HPow1)
+    (equip_tra (Power n1) (Power n2) (exp_nat 2 k2) Hkey HPow2)). }
+(** 2^k1 = 2^k2 since both in omega **)
+claim H2k1_omega : exp_nat 2 k1 :e omega.
+{ exact (nat_p_omega (exp_nat 2 k1) (exp_nat_p 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0)) k1 Hk1_nat)). }
+claim H2k2_omega : exp_nat 2 k2 :e omega.
+{ exact (nat_p_omega (exp_nat 2 k2) (exp_nat_p 2 (nat_ordsucc 1 (nat_ordsucc 0 nat_0)) k2 Hk2_nat)). }
+claim Hpow_eq_ord : exp_nat 2 k1 = exp_nat 2 k2.
+{ exact (equip_omega_eq (exp_nat 2 k1) (exp_nat 2 k2) H2k1_omega H2k2_omega HPow_eq). }
+(** k1 = k2 by injectivity of 2^n **)
+claim Hk_eq : k1 = k2.
+{ exact (exp_nat_2_injective k1 Hk1_nat k2 Hk2_nat Hpow_eq_ord). }
+(** equip n1 n2 by transitivity **)
+claim Hfinal : equip k1 n2.
+{
+  rewrite Hk_eq.
+  exact (equip_sym n2 k2 Heq2).
+}
+exact (equip_tra n1 k1 n2 Heq1 Hfinal).
 Admitted.
 
 (** from S67 Definition (line 2693 in algtop.tex): rank of a free abelian group **)
