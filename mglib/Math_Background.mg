@@ -60789,6 +60789,65 @@ exact (Eps_i_ax
   Hft).
 Qed.
 
+(** Proven Bob **)
+Theorem path_lift_is_lifting_of_from_exists : forall E Te B Tb p e0 f:set,
+  (exists ft:set,
+    continuous_map unit_interval unit_interval_topology E Te ft /\
+    apply_fun ft 0 = e0 /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun ft t) = apply_fun f t)) ->
+  lifting_of unit_interval unit_interval_topology E Te B Tb p f
+    (path_lift E Te B Tb p e0 f).
+let E Te B Tb p e0 f.
+assume Hex.
+claim Hpack :
+  continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 f) /\
+  apply_fun (path_lift E Te B Tb p e0 f) 0 = e0 /\
+  (forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t).
+{
+  exact (path_lift_from_exists_witness
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    f
+    Hex).
+}
+claim Hcont :
+  continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 f).
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 f))
+    (apply_fun (path_lift E Te B Tb p e0 f) 0 = e0)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 f) /\
+       apply_fun (path_lift E Te B Tb p e0 f) 0 = e0)
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t)
+      Hpack)).
+}
+claim Hcomm :
+  forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 f) /\
+     apply_fun (path_lift E Te B Tb p e0 f) 0 = e0)
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t)
+    Hpack).
+}
+exact (andI
+  (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 f))
+  (forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t)
+  Hcont
+  Hcomm).
+Qed.
+
 (** Infrastructure: commutation on subsets of unit_interval **)
 (** Proven Bob **)
 Theorem commutation_on_unit_interval_subset :
