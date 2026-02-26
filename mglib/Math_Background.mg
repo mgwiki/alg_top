@@ -76080,6 +76080,74 @@ exact (mem_eqL
   Hpre).
 Qed.
 
+(** Proven Bob **)
+Theorem image_of_lift_subset_union_sheets_from_lifting_of :
+  forall X Tx E Te B Tb p f ft N U slices:set,
+  lifting_of X Tx E Te B Tb p f ft ->
+  N c= X ->
+  (forall x:set, x :e N -> apply_fun f x :e U) ->
+  Union slices = preimage_of E p U ->
+  image_of ft N c= Union slices.
+let X Tx E Te B Tb p f ft N U slices.
+assume Hlift HNsub HFU Hunion.
+claim HftCont :
+  continuous_map X Tx E Te ft.
+{
+  exact (andEL
+    (continuous_map X Tx E Te ft)
+    (forall x:set, x :e X -> apply_fun p (apply_fun ft x) = apply_fun f x)
+    Hlift).
+}
+claim HftFunX : function_on ft X E.
+{
+  exact (continuous_map_function_on
+    X
+    Tx
+    E
+    Te
+    ft
+    HftCont).
+}
+claim HftFunN : function_on ft N E.
+{
+  let x.
+  assume HxN.
+  exact (HftFunX
+    x
+    (HNsub x HxN)).
+}
+claim HcommN :
+  forall x:set, x :e N -> apply_fun p (apply_fun ft x) = apply_fun f x.
+{
+  exact (lifting_of_commutes_on_subset
+    X
+    Tx
+    E
+    Te
+    B
+    Tb
+    p
+    f
+    ft
+    N
+    Hlift
+    HNsub).
+}
+exact (image_of_lift_subset_union_sheets_from_commutation
+  E
+  B
+  p
+  f
+  ft
+  N
+  U
+  slices
+  HftFunN
+  HcommN
+  HFU
+  Hunion).
+Qed.
+
 (** Infrastructure: local sheet non-switching criterion with connectedness and commutation hypotheses **)
 (** Proven Bob **)
 Theorem local_sheet_non_switching_from_connected_commuting_lift :
