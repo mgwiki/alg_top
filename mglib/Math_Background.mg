@@ -240803,7 +240803,6 @@ Qed.
 (** edge, then T = T0 union A where T0 is a tree and A intersects T0 in one vertex. **)
 (** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
 (** Bounty 242 **)
-(** Lock Charlie 1772106313 **)
 Theorem lemma84_2_tree_extension :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -240878,16 +240877,16 @@ Theorem lemma84_2_tree_extension :
 		    Hnsub
 		    Hmeet).
 		}
-		exact (tree_in_graph_intro
-		  (T :\/: A)
-		  ({A} :\/: ArcsT)
-		  X
-		  Tx
-		  Arcs
-		  HsubTA
-		  HglgTA
-		  HconnTA
-		  HnoloopTA).
+			exact (tree_in_graph_intro
+			  (T :\/: A)
+			  ({A} :\/: ArcsT)
+			  X
+			  Tx
+			  Arcs
+			  HsubTA
+			  HglgTA
+			  HconnTA
+			  HnoloopTA).
 Admitted.
 
 (** Proven Bob **)
@@ -257243,7 +257242,6 @@ Admitted.
 (** has free generators in bijection with edges of X not in T. **)
 (** EFFORT: 35 lines textbook, difficulty 8/10, USD 560 **)
 (** Bounty 678 **)
-(** Lock Charlie 1772105582 **)
 Theorem thm84_7_pi1_graph_is_free :
   forall X Tx Arcs T ArcsT x0:set,
   general_linear_graph X Tx Arcs ->
