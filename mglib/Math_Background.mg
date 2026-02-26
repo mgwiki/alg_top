@@ -230407,11 +230407,11 @@ claim HinterFamTA :
 		                (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) r v.
 			          {
 			            (** Remaining mixed-case endpoint-at-v obligation on V.
-			                Intended route: derive endpoint-at-v from HarcV_TA plus HvV.
-			                Missing helper (likely sufficient):
-			                forall E Te z:set, arc E Te -> z :e E ->
-			                  (exists q:set, end_points_of_arc E Te z q \/
-			                    end_points_of_arc E Te q z). **)
+			                Attempted route via general_linear_graph_arc_intersection_case
+			                on ambient X reduces this to two concrete bridges:
+			                (1) lift V :e ArcsT to V :e Arcs from tree_in_graph context,
+			                (2) transport endpoint witness at the singleton intersection point.
+			                With (1), intersection-case gives endpoint-at-v directly. **)
 			            admit.
 			          }
 		          claim HVEpExists :
