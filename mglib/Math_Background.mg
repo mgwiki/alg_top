@@ -240307,10 +240307,40 @@ Theorem thm84_3_tree_simply_connected :
   simply_connected T (subspace_topology X Tx T).
 let T ArcsT X Tx Arcs.
 assume Htree.
-(** Remaining S84.3 gap:
-    convert the no-closed-reduced-edge-path invariant (plus connectedness)
-    into simply_connected for the graph topology on T. **)
-admit.
+claim HconnT : connected_space T (subspace_topology X Tx T).
+{
+  exact (tree_in_graph_connected
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+claim HnoloopT :
+  ~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)).
+{
+  exact (tree_in_graph_no_closed_reduced_edge_path
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+claim HsimpCore :
+  simply_connected T (subspace_topology X Tx T).
+{
+  (** Remaining S84.3 core bridge:
+      derive triviality of pi1 from the reduced-edge-path no-loop invariant
+      for graph structure on T (using connectedness HconnT and no-loop HnoloopT). **)
+  admit.
+}
+exact HsimpCore.
 Admitted.
 
 (** Proven Bob **)
@@ -247497,7 +247527,27 @@ Theorem thm84_5_tree_in_maximal :
   tree_in_graph T0 ArcsT0 X Tx Arcs ->
   exists T ArcsT:set,
     maximal_tree T ArcsT X Tx Arcs /\ T0 c= T.
-admit.
+let T0 ArcsT0 X Tx Arcs.
+assume Hglg Htree0.
+claim Hsub0 : subgraph_of T0 X Tx Arcs.
+{
+  exact (tree_in_graph_subgraph_of
+    T0
+    ArcsT0
+    X
+    Tx
+    Arcs
+    Htree0).
+}
+claim HexMaxExt :
+  exists T ArcsT:set, maximal_tree T ArcsT X Tx Arcs /\ T0 c= T.
+{
+  (** Remaining S84.5 core existence gap:
+      construct a maximal tree extending T0 (typically via a maximal-extension
+      principle such as Zorn over tree extensions ordered by inclusion). **)
+  admit.
+}
+exact HexMaxExt.
 Admitted.
 
 (** from S84 Lem 84.6 (line 5643 in algtop.tex): generator from edge **)
