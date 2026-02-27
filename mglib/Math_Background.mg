@@ -177924,6 +177924,86 @@ Theorem injective_homomorphism_source_closure :
   subgroup_of (homomorphism_image Ga ifam) G multG eG invG ->
   forall a b:set, a :e Ga -> b :e Ga ->
     apply_fun multa (a, b) :e Ga.
+let Ga multa G multG eG invG ifam.
+assume Hhom Hinj Hsub.
+let a b. assume Ha Hb.
+set Himg := homomorphism_image Ga ifam.
+claim HimgMulClosed :
+  forall x y:set, x :e Himg -> y :e Himg -> apply_fun multG (x, y) :e Himg.
+{
+  apply (and4E
+    (Himg c= G)
+    (eG :e Himg)
+    (forall x y:set, x :e Himg -> y :e Himg -> apply_fun multG (x, y) :e Himg)
+    (forall x:set, x :e Himg -> apply_fun invG x :e Himg)
+    Hsub).
+  assume _ _ Hmul _.
+  exact Hmul.
+}
+claim HaImg : apply_fun ifam a :e Himg.
+{
+  exact (homomorphism_image_intro Ga ifam a Ha).
+}
+claim HbImg : apply_fun ifam b :e Himg.
+{
+  exact (homomorphism_image_intro Ga ifam b Hb).
+}
+claim HmultImg :
+  apply_fun multG (apply_fun ifam a, apply_fun ifam b) :e Himg.
+{
+  exact (HimgMulClosed
+    (apply_fun ifam a)
+    (apply_fun ifam b)
+    HaImg
+    HbImg).
+}
+claim HexC :
+  exists c:set, c :e Ga /\
+    apply_fun multG (apply_fun ifam a, apply_fun ifam b) = apply_fun ifam c.
+{
+  exact (iffEL
+    (apply_fun multG (apply_fun ifam a, apply_fun ifam b) :e Himg)
+    (exists c:set, c :e Ga /\
+      apply_fun multG (apply_fun ifam a, apply_fun ifam b) = apply_fun ifam c)
+    (homomorphism_image_mem Ga ifam (apply_fun multG (apply_fun ifam a, apply_fun ifam b)))
+    HmultImg).
+}
+apply HexC.
+let c.
+assume HcPack.
+claim HcG : c :e Ga.
+{
+  exact (andEL
+    (c :e Ga)
+    (apply_fun multG (apply_fun ifam a, apply_fun ifam b) = apply_fun ifam c)
+    HcPack).
+}
+claim HcEq :
+  apply_fun multG (apply_fun ifam a, apply_fun ifam b) = apply_fun ifam c.
+{
+  exact (andER
+    (c :e Ga)
+    (apply_fun multG (apply_fun ifam a, apply_fun ifam b) = apply_fun ifam c)
+    HcPack).
+}
+claim HhomEq :
+  apply_fun ifam (apply_fun multa (a, b)) =
+  apply_fun multG (apply_fun ifam a, apply_fun ifam b).
+{
+  exact (group_homomorphism_mult_rule
+    Ga
+    multa
+    G
+    multG
+    ifam
+    a
+    b
+    Hhom
+    Ha
+    Hb).
+}
+(** TODO Bob: to finish, need a domain-closure assumption for multa on Ga or
+    a lemma making injectivity usable to conclude apply_fun multa (a,b) :e Ga. **)
 admit.
 Admitted.
 
