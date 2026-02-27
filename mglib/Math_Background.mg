@@ -162075,6 +162075,48 @@ assume HHG HeH HmHcl HinvH.
 exact (HinvH x Hx).
 Qed.
 
+(** Proven Bob **)
+Lemma subgroup_of_mem_in_G :
+  forall H G mult e inv x:set,
+  subgroup_of H G mult e inv ->
+  x :e H -> x :e G.
+let H G mult e inv x.
+assume Hsub Hx.
+exact ((subgroup_of_subset H G mult e inv Hsub) x Hx).
+Qed.
+
+(** Proven Bob **)
+Lemma subgroup_of_unit_in_G :
+  forall H G mult e inv:set,
+  subgroup_of H G mult e inv -> e :e G.
+let H G mult e inv.
+assume Hsub.
+exact ((subgroup_of_subset H G mult e inv Hsub) e
+  (subgroup_of_unit H G mult e inv Hsub)).
+Qed.
+
+(** Proven Bob **)
+Lemma subgroup_of_mult_closed_in_G :
+  forall H G mult e inv x y:set,
+  subgroup_of H G mult e inv ->
+  x :e H -> y :e H -> apply_fun mult (x, y) :e G.
+let H G mult e inv x y.
+assume Hsub Hx Hy.
+exact ((subgroup_of_subset H G mult e inv Hsub) (apply_fun mult (x, y))
+  (subgroup_of_mult_closed H G mult e inv x y Hsub Hx Hy)).
+Qed.
+
+(** Proven Bob **)
+Lemma subgroup_of_inv_closed_in_G :
+  forall H G mult e inv x:set,
+  subgroup_of H G mult e inv ->
+  x :e H -> apply_fun inv x :e G.
+let H G mult e inv x.
+assume Hsub Hx.
+exact ((subgroup_of_subset H G mult e inv Hsub) (apply_fun inv x)
+  (subgroup_of_inv_closed H G mult e inv x Hsub Hx)).
+Qed.
+
 (** Infrastructure: a family of subgroups generates an abelian group G **)
 (** Each x in G can be written as a finite sum of elements from the G_alpha **)
 Definition subgroups_generate_abelian : set -> set -> set -> set -> set -> set -> prop :=
