@@ -186150,6 +186150,98 @@ Definition word_product : set -> set -> set -> set -> set :=
   fun mult e xs n =>
     nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n.
 
+(** Infrastructure: reduced word of length 1 **)
+(** Proven Bob **)
+Theorem reduced_word_singleton : forall J Gfam efam alpha x:set,
+  alpha :e J ->
+  x :e apply_fun Gfam alpha ->
+  x <> apply_fun efam alpha ->
+  reduced_word J Gfam efam 1 (graph 1 (fun _:set => x)).
+let J Gfam efam alpha x.
+assume Hal HxG Hxne.
+prove 1 :e omega /\
+  (forall i:set, i :e 1 ->
+    exists a:set, a :e J /\
+      apply_fun (graph 1 (fun _:set => x)) i :e apply_fun Gfam a /\
+      apply_fun (graph 1 (fun _:set => x)) i <> apply_fun efam a) /\
+  (forall i:set, i :e 1 -> ordsucc i :e 1 ->
+    forall a b:set, a :e J -> b :e J ->
+      apply_fun (graph 1 (fun _:set => x)) i :e apply_fun Gfam a ->
+      apply_fun (graph 1 (fun _:set => x)) (ordsucc i) :e apply_fun Gfam b ->
+      a <> b).
+apply and3I.
+- exact (nat_p_omega 1 (nat_ordsucc 0 nat_0)).
+- let i.
+  assume Hi.
+  apply (cases_1
+    i
+    Hi
+    (fun j:set =>
+      exists a:set, a :e J /\
+        apply_fun (graph 1 (fun _:set => x)) j :e apply_fun Gfam a /\
+        apply_fun (graph 1 (fun _:set => x)) j <> apply_fun efam a)).
+  prove exists a:set, a :e J /\
+    apply_fun (graph 1 (fun _:set => x)) 0 :e apply_fun Gfam a /\
+    apply_fun (graph 1 (fun _:set => x)) 0 <> apply_fun efam a.
+  witness alpha.
+  apply and3I.
+  + exact Hal.
+  + rewrite (apply_fun_graph 1 (fun _:set => x) 0 (ordsuccI2 0)).
+    exact HxG.
+  + rewrite (apply_fun_graph 1 (fun _:set => x) 0 (ordsuccI2 0)).
+    exact Hxne.
+- let i.
+  assume Hi Hsi.
+  let a b.
+  assume HaJ HbJ Hia Hib.
+  apply (ordsuccE
+    0
+    i
+    Hi).
+  + assume H0.
+    exact (FalseE
+      (EmptyE i H0)
+      (a <> b)).
+  + assume Hi0.
+    claim Heq : ordsucc i = 1.
+    {
+      rewrite Hi0.
+      exact ordsucc_0_eq_1_nat.
+    }
+    claim H1in1 : 1 :e 1.
+    {
+      exact (eq_subst_mem_rev
+        (ordsucc i)
+        1
+        1
+        Heq
+        Hsi).
+    }
+    exact (FalseE
+      (In_irref 1 H1in1)
+      (a <> b)).
+Qed.
+
+(** Infrastructure: word_product of a singleton word **)
+(** Proven Bob **)
+Theorem word_product_singleton : forall mult e x:set,
+  word_product mult e (graph 1 (fun _:set => x)) 1 = apply_fun mult (e, x).
+let mult e x.
+prove nat_primrec e (fun i r => apply_fun mult (r, apply_fun (graph 1 (fun _:set => x)) i)) 1 =
+  apply_fun mult (e, x).
+rewrite <- ordsucc_0_eq_1_nat.
+rewrite (nat_primrec_S
+  e
+  (fun i r => apply_fun mult (r, apply_fun (graph 1 (fun _:set => x)) i))
+  0
+  nat_0).
+rewrite (nat_primrec_0
+  e
+  (fun i r => apply_fun mult (r, apply_fun (graph 1 (fun _:set => x)) i))).
+rewrite (apply_fun_graph 1 (fun _:set => x) 0 (ordsuccI2 0)).
+reflexivity.
+Qed.
+
 (** from S68 Definition (line 2742 in algtop.tex): free product of subgroups **)
 (** LATEX VERSION: G is the free product of {G_alpha} if G_alpha cap G_beta = {1} **)
 (** for alpha <> beta, the G_alpha generate G, and each x in G has a unique **)
