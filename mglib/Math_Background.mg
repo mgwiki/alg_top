@@ -162257,6 +162257,33 @@ Definition normal_subgroup : set -> set -> set -> set -> set -> prop :=
     (forall n g:set, n :e N -> g :e G ->
       apply_fun mult (apply_fun mult (g, n), apply_fun inv g) :e N).
 
+(** Proven Bob **)
+Lemma normal_subgroup_subgroup :
+  forall N G mult e inv:set,
+  normal_subgroup N G mult e inv ->
+  subgroup_of N G mult e inv.
+let N G mult e inv.
+assume Hn.
+exact (andEL (subgroup_of N G mult e inv)
+  (forall n g:set, n :e N -> g :e G ->
+    apply_fun mult (apply_fun mult (g, n), apply_fun inv g) :e N)
+  Hn).
+Qed.
+
+(** Proven Bob **)
+Lemma normal_subgroup_conj_closed :
+  forall N G mult e inv n g:set,
+  normal_subgroup N G mult e inv ->
+  n :e N -> g :e G ->
+  apply_fun mult (apply_fun mult (g, n), apply_fun inv g) :e N.
+let N G mult e inv n g.
+assume Hn HnN HgG.
+exact (andER (subgroup_of N G mult e inv)
+  (forall n g:set, n :e N -> g :e G ->
+    apply_fun mult (apply_fun mult (g, n), apply_fun inv g) :e N)
+  Hn n g HnN HgG).
+Qed.
+
 (** Infrastructure: quotient group G/N where N is normal **)
 (** Elements are left cosets gN = {g.n : n in N} **)
 Definition left_coset : set -> set -> set -> set :=
