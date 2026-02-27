@@ -51757,6 +51757,15 @@ exact (UnionI
   HVFam2).
 Qed.
 
+(** Infrastructure: the union of the rest is contained in the union **)
+(** Proven Bob **)
+Theorem union_rest_sub_union : forall Fam V:set,
+  Union (Fam :\: {V}) c= Union Fam.
+let Fam V.
+apply (union_subfamily_sub_union (Fam :\: {V}) Fam).
+exact (setminus_Subq Fam {V}).
+Qed.
+
 
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
