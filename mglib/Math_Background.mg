@@ -1,4 +1,4 @@
-(** Balance Alice 3495 **)
+(** Balance Alice 3397 **)
 (** Balance Bob 3530 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
@@ -19204,7 +19204,8 @@ Qed.
 (** from S51 Ex 1 (line 150 in algtop.tex): straight-line homotopy **)
 (** LATEX VERSION: In any convex subspace A of Rn, any two paths f,g from x0 to x1 are path homotopic via F(x,t)=(1-t)f(x)+tg(x). **)
 (** EFFORT: 5 lines textbook, difficulty 5/10, USD 80 **)
-(** Bounty 97 **)
+(** Bounty 107 **)
+(** Lock Alice 1772288205 **)
 Theorem Example_51_1_convex_paths_homotopic : forall A Ta x0 x1 f g:set,
   A c= R -> convex_in R A ->
   topology_on A Ta ->
@@ -251024,8 +251025,920 @@ apply andI.
 		                          HidA0X1
 		                          HG1')).
 		                  }
-		                  (** TODO: glue the per-arc homotopies (FA0) into a global homotopy on Ustar. **)
-		                  admit.
+		                  (** Step A: b is an endpoint of each incident arc. **)
+		                  claim HbEndpArc :
+		                    forall A0:set, A0 :e IncArcs ->
+		                      exists q:set,
+		                        end_points_of_arc A0 (subspace_topology X Tx A0) b q \/
+		                        end_points_of_arc A0 (subspace_topology X Tx A0) q b.
+		                  {
+		                    let A0. assume HA0Inc.
+		                    claim HA0Arcs : A0 :e Arcs.
+		                    { exact (SepE1 Arcs (fun A1:set => b :e A1) A0 HA0Inc). }
+		                    claim HbA0 : b :e A0.
+		                    { exact (SepE2 Arcs (fun A1:set => b :e A1) A0 HA0Inc). }
+		                    (** From HbOverX, b is in two distinct arcs. **)
+		                    claim HbOvDat :
+		                      exists E0:set, E0 :e Arcs /\
+		                        exists F0:set, F0 :e Arcs /\ F0 <> E0 /\ b :e E0 /\ b :e F0.
+		                    {
+		                      exact (SepE2 X
+		                        (fun p:set => exists E0:set, E0 :e Arcs /\
+		                          exists F0:set, F0 :e Arcs /\ F0 <> E0 /\ p :e E0 /\ p :e F0)
+		                        b HbOverX).
+		                    }
+		                    apply HbOvDat.
+		                    let E0. assume HE0pack.
+		                    claim HE0Arcs : E0 :e Arcs.
+		                    { exact (andEL (E0 :e Arcs) (exists F0:set, F0 :e Arcs /\ F0 <> E0 /\ b :e E0 /\ b :e F0) HE0pack). }
+		                    apply (andER (E0 :e Arcs) (exists F0:set, F0 :e Arcs /\ F0 <> E0 /\ b :e E0 /\ b :e F0) HE0pack).
+		                    let F0. assume HF0pack.
+		                    apply (and4E (F0 :e Arcs) (F0 <> E0) (b :e E0) (b :e F0) HF0pack).
+		                    assume HF0Arcs HF0neE0 HbE0 HbF0.
+		                    (** Find an arc different from A0 that contains b. **)
+		                    apply (xm (A0 = E0)).
+		                    - assume HA0eqE0.
+		                      (** A0 = E0, so use F0 (which is different from E0 = A0). **)
+		                      claim HF0neA0 : F0 <> A0.
+		                      { rewrite HA0eqE0. exact HF0neE0. }
+		                      claim HA0neF0 : A0 <> F0.
+		                      { assume Heq. exact (HF0neA0 (eq_symm A0 F0 Heq)). }
+		                      claim HbInter : b :e A0 :/\: F0.
+		                      { exact (binintersectI A0 F0 b HbA0 HbF0). }
+		                      claim HinterNE : A0 :/\: F0 <> Empty.
+		                      { assume Hemp. exact (EmptyE b (eq_subst_mem_set b (A0 :/\: F0) Empty HbInter Hemp)). }
+		                      apply (general_linear_graph_arc_intersection_case X Tx Arcs A0 F0 Hglg HA0Arcs HF0Arcs HA0neF0).
+		                      + assume HinterEmpty.
+		                        exact (FalseE (HinterNE HinterEmpty)
+		                          (exists q:set, end_points_of_arc A0 (subspace_topology X Tx A0) b q \/
+		                            end_points_of_arc A0 (subspace_topology X Tx A0) q b)).
+		                      + assume HinterSing.
+		                        apply HinterSing. let p. assume Hppack.
+		                        apply (and3E
+		                          (A0 :/\: F0 = Sing p)
+		                          (exists q:set, end_points_of_arc A0 (subspace_topology X Tx A0) p q \/
+		                            end_points_of_arc A0 (subspace_topology X Tx A0) q p)
+		                          (exists r:set, end_points_of_arc F0 (subspace_topology X Tx F0) p r \/
+		                            end_points_of_arc F0 (subspace_topology X Tx F0) r p)
+		                          Hppack).
+		                        assume HinterEq HpEndA0 _.
+		                        claim HbEqP : b = p.
+		                        { exact (SingE p b (eq_subst_mem_set b (A0 :/\: F0) (Sing p) HbInter HinterEq)). }
+		                        rewrite HbEqP.
+		                        exact HpEndA0.
+		                    - assume HA0neE0.
+		                      (** A0 <> E0, use E0 directly. **)
+		                      claim HbInter : b :e A0 :/\: E0.
+		                      { exact (binintersectI A0 E0 b HbA0 HbE0). }
+		                      claim HinterNE : A0 :/\: E0 <> Empty.
+		                      { assume Hemp. exact (EmptyE b (eq_subst_mem_set b (A0 :/\: E0) Empty HbInter Hemp)). }
+		                      apply (general_linear_graph_arc_intersection_case X Tx Arcs A0 E0 Hglg HA0Arcs HE0Arcs HA0neE0).
+		                      + assume HinterEmpty.
+		                        exact (FalseE (HinterNE HinterEmpty)
+		                          (exists q:set, end_points_of_arc A0 (subspace_topology X Tx A0) b q \/
+		                            end_points_of_arc A0 (subspace_topology X Tx A0) q b)).
+		                      + assume HinterSing.
+		                        apply HinterSing. let p. assume Hppack.
+		                        apply (and3E
+		                          (A0 :/\: E0 = Sing p)
+		                          (exists q:set, end_points_of_arc A0 (subspace_topology X Tx A0) p q \/
+		                            end_points_of_arc A0 (subspace_topology X Tx A0) q p)
+		                          (exists r:set, end_points_of_arc E0 (subspace_topology X Tx E0) p r \/
+		                            end_points_of_arc E0 (subspace_topology X Tx E0) r p)
+		                          Hppack).
+		                        assume HinterEq HpEndA0 _.
+		                        claim HbEqP : b = p.
+		                        { exact (SingE p b (eq_subst_mem_set b (A0 :/\: E0) (Sing p) HbInter HinterEq)). }
+		                        rewrite HbEqP.
+		                        exact HpEndA0.
+		                  }
+		                  (** Step B: Build b-fixing per-arc homotopies. **)
+		                  claim HexPerArcFixB :
+		                    forall A0:set, A0 :e IncArcs ->
+		                      exists GA0:set,
+		                        continuous_map (setprod (Star A0) unit_interval)
+		                          (product_topology (Star A0) (subspace_topology X Tx (Star A0))
+		                            unit_interval unit_interval_topology)
+		                          X Tx GA0 /\
+		                        (forall x:set, x :e Star A0 -> apply_fun GA0 (x, 0) = x) /\
+		                        (forall x:set, x :e Star A0 -> apply_fun GA0 (x, 1) = b) /\
+		                        (forall t:set, t :e unit_interval -> apply_fun GA0 (b, t) = b).
+		                  {
+		                    let A0. assume HA0Inc.
+		                    claim HA0Arcs : A0 :e Arcs.
+		                    { exact (SepE1 Arcs (fun A1:set => b :e A1) A0 HA0Inc). }
+		                    claim HbA0 : b :e A0.
+		                    { exact (SepE2 Arcs (fun A1:set => b :e A1) A0 HA0Inc). }
+		                    set TA0 := subspace_topology X Tx A0.
+		                    claim HA0dat : A0 c= X /\ arc A0 TA0.
+		                    { exact (general_linear_graph_arc_data X Tx Arcs A0 Hglg HA0Arcs). }
+		                    claim HA0subX : A0 c= X.
+		                    { exact (andEL (A0 c= X) (arc A0 TA0) HA0dat). }
+		                    claim HarcA0 : arc A0 TA0.
+		                    { exact (andER (A0 c= X) (arc A0 TA0) HA0dat). }
+		                    claim HStarSubA0 : (Star A0) c= A0.
+		                    {
+		                      let x. assume HxS.
+		                      exact (setminusE1 A0 ((Over A0) :\: (Sing b)) x HxS).
+		                    }
+		                    claim HbStarA0 : b :e Star A0.
+		                    {
+		                      claim HbNotBad : b /:e ((Over A0) :\: (Sing b)).
+		                      {
+		                        assume HbBad.
+		                        exact (setminusE2 (Over A0) (Sing b) b HbBad (SingI b)).
+		                      }
+		                      exact (setminusI A0 ((Over A0) :\: (Sing b)) b HbA0 HbNotBad).
+		                    }
+		                    set TSA0 := subspace_topology X Tx (Star A0).
+		                    claim HTsub :
+		                      subspace_topology A0 TA0 (Star A0) =
+		                      subspace_topology X Tx (Star A0).
+		                    {
+		                      exact (ex16_1_subspace_transitive X Tx A0 (Star A0)
+		                        HtopX HA0subX HStarSubA0).
+		                    }
+		                    (** Get connected complement of b in A0 (b is an endpoint). **)
+		                    claim HbConnCompl :
+		                      connected_space (A0 :\: (Sing b))
+		                        (subspace_topology A0 TA0 (A0 :\: (Sing b))).
+		                    {
+		                      apply (HbEndpArc A0 HA0Inc).
+		                      let q. assume Hcase.
+		                      apply Hcase.
+		                      - assume Hbq.
+		                        (** end_points_of_arc A0 TA0 b q: 5th component is connected(A0\{b}) **)
+		                        apply (and6E (arc A0 TA0) (b :e A0) (q :e A0) (b <> q)
+		                          (connected_space (A0 :\: (Sing b)) (subspace_topology A0 TA0 (A0 :\: (Sing b))))
+		                          (connected_space (A0 :\: (Sing q)) (subspace_topology A0 TA0 (A0 :\: (Sing q))))
+		                          Hbq).
+		                        assume _ _ _ _ HconnB _.
+		                        exact HconnB.
+		                      - assume Hqb.
+		                        (** end_points_of_arc A0 TA0 q b: 6th component is connected(A0\{b}) **)
+		                        apply (and6E (arc A0 TA0) (q :e A0) (b :e A0) (q <> b)
+		                          (connected_space (A0 :\: (Sing q)) (subspace_topology A0 TA0 (A0 :\: (Sing q))))
+		                          (connected_space (A0 :\: (Sing b)) (subspace_topology A0 TA0 (A0 :\: (Sing b))))
+		                          Hqb).
+		                        assume _ _ _ _ _ HconnB.
+		                        exact HconnB.
+		                    }
+		                    (** Open the arc to get homeomorphism phi: I -> A0. **)
+		                    apply HarcA0.
+		                    let phi. assume Hphihome.
+		                    (** b = phi(0) or b = phi(1). **)
+		                    claim HbPhi01 : b = apply_fun phi 0 \/ b = apply_fun phi 1.
+		                    {
+		                      exact (homeomorphism_unit_interval_connected_complement_implies_endpoint
+		                        A0 TA0 phi b Hphihome HbA0 HbConnCompl).
+		                    }
+		                    (** Get inverse psi. **)
+		                    apply (homeomorphism_inverse_package
+		                      unit_interval unit_interval_topology A0 TA0 phi Hphihome).
+		                    let psi.
+		                    assume Hpsipack.
+		                    apply (and3E
+		                      (continuous_map A0 TA0 unit_interval unit_interval_topology psi)
+		                      (forall x:set, x :e unit_interval -> apply_fun psi (apply_fun phi x) = x)
+		                      (forall y:set, y :e A0 -> apply_fun phi (apply_fun psi y) = y)
+		                      Hpsipack).
+		                    assume HpsiCont HpsiL HpsiR.
+		                    (** Continuity of phi. **)
+		                    claim HphiCont : continuous_map unit_interval unit_interval_topology A0 TA0 phi.
+		                    { exact (homeomorphism_continuous unit_interval unit_interval_topology A0 TA0 phi Hphihome). }
+		                    (** psi on Star(A0) is continuous (via subspace). **)
+		                    claim HpsiStarCont :
+		                      continuous_map (Star A0) TSA0 unit_interval unit_interval_topology psi.
+		                    {
+		                      rewrite <- HTsub.
+		                      exact (continuous_on_subspace_rule A0 TA0 unit_interval unit_interval_topology psi (Star A0)
+		                        (subspace_topology_is_topology X Tx A0 HtopX HA0subX)
+		                        unit_interval_topology_on
+		                        HStarSubA0
+		                        HpsiCont).
+		                    }
+		                    (** Inclusion Star(A0) -> A0 -> X. **)
+		                    claim HiA0X :
+		                      continuous_map A0 TA0 X Tx (graph A0 (fun x:set => x)).
+		                    {
+		                      exact (subspace_inclusion_continuous X Tx A0 HtopX HA0subX).
+		                    }
+		                    (** Build the composed homotopy in each case. **)
+		                    apply HbPhi01.
+		                    - assume Hbphi0.
+		                      (** Case b = phi(0). Use unit_interval_homotopy_to_0_fixed. **)
+		                      apply unit_interval_homotopy_to_0_fixed.
+		                      let H0. assume HH0pack.
+		                      apply (and4E
+		                        (continuous_map unit_square unit_square_topology unit_interval unit_interval_topology H0)
+		                        (forall s:set, s :e unit_interval -> apply_fun H0 (s, 0) = s)
+		                        (forall s:set, s :e unit_interval -> apply_fun H0 (s, 1) = 0)
+		                        (forall t:set, t :e unit_interval -> apply_fun H0 (0, t) = 0)
+		                        HH0pack).
+		                      assume HH0Cont HH0s0 HH0s1 HH00t.
+		                      (** Build the chain: Star(A0) x I --(psi x id)--> I x I --H0--> I --phi--> A0 --incl--> X **)
+		                      set D0 := setprod (Star A0) unit_interval.
+		                      set TD0 := product_topology (Star A0) TSA0 unit_interval unit_interval_topology.
+		                      set psi_proj1 := compose_fun D0 (projection_map1 (Star A0) unit_interval) psi.
+		                      set psi_x_id := pair_map D0 psi_proj1 (projection_map2 (Star A0) unit_interval).
+		                      set H0_comp := compose_fun D0 psi_x_id H0.
+		                      set phi_H0 := compose_fun D0 H0_comp phi.
+		                      set GA0 := compose_fun D0 phi_H0 (graph A0 (fun x:set => x)).
+		                      (** GA0 maps Star(A0) x I -> X. **)
+		                      (** GA0(x,t) = iA0X(phi(H0(psi(x), t))) = phi(H0(psi(x), t)). **)
+		                      claim HtopTSA0 : topology_on (Star A0) TSA0.
+		                      { exact (subspace_topology_is_topology X Tx (Star A0) HtopX
+		                          (Subq_tra (Star A0) A0 X HStarSubA0 HA0subX)). }
+		                      claim Hproj1Cont :
+		                        continuous_map D0 TD0 (Star A0) TSA0 (projection_map1 (Star A0) unit_interval).
+		                      { exact (projection1_continuous_in_product (Star A0) TSA0 unit_interval unit_interval_topology
+		                          HtopTSA0 unit_interval_topology_on). }
+		                      claim Hproj2Cont :
+		                        continuous_map D0 TD0 unit_interval unit_interval_topology (projection_map2 (Star A0) unit_interval).
+		                      { exact (projection2_continuous_in_product (Star A0) TSA0 unit_interval unit_interval_topology
+		                          HtopTSA0 unit_interval_topology_on). }
+		                      claim HpsiProj1Cont :
+		                        continuous_map D0 TD0 unit_interval unit_interval_topology psi_proj1.
+		                      { exact (composition_continuous D0 TD0 (Star A0) TSA0 unit_interval unit_interval_topology
+		                          (projection_map1 (Star A0) unit_interval) psi Hproj1Cont HpsiStarCont). }
+		                      claim HpsiXidCont :
+		                        continuous_map D0 TD0 unit_square unit_square_topology psi_x_id.
+		                      { exact (maps_into_products D0 TD0 unit_interval unit_interval_topology
+		                          unit_interval unit_interval_topology psi_proj1 (projection_map2 (Star A0) unit_interval)
+		                          HpsiProj1Cont Hproj2Cont). }
+		                      claim HH0compCont :
+		                        continuous_map D0 TD0 unit_interval unit_interval_topology H0_comp.
+		                      { exact (composition_continuous D0 TD0 unit_square unit_square_topology
+		                          unit_interval unit_interval_topology psi_x_id H0 HpsiXidCont HH0Cont). }
+		                      claim HphiH0Cont :
+		                        continuous_map D0 TD0 A0 TA0 phi_H0.
+		                      { exact (composition_continuous D0 TD0 unit_interval unit_interval_topology
+		                          A0 TA0 H0_comp phi HH0compCont HphiCont). }
+		                      claim HGA0Cont :
+		                        continuous_map D0 TD0 X Tx GA0.
+		                      { exact (composition_continuous D0 TD0 A0 TA0 X Tx phi_H0 (graph A0 (fun x:set => x))
+		                          HphiH0Cont HiA0X). }
+		                      witness GA0.
+		                      apply andI.
+		                      - apply andI.
+		                        + apply andI.
+		                          * exact HGA0Cont.
+		                          * (** GA0(x, 0) = x **)
+		                            let x. assume HxStar.
+		                            claim Hx0D0 : (x, 0) :e D0.
+		                            { exact (tuple_2_setprod_by_pair_Sigma (Star A0) unit_interval x 0 HxStar zero_in_unit_interval). }
+		                            claim HxA0 : x :e A0. { exact (HStarSubA0 x HxStar). }
+		                            claim HpsiX : apply_fun psi x :e unit_interval.
+		                            { exact (continuous_map_function_on A0 TA0 unit_interval unit_interval_topology psi HpsiCont x HxA0). }
+		                            claim HphiH0inA0 : apply_fun phi_H0 (x, 0) :e A0.
+		                            { exact (continuous_map_function_on D0 TD0 A0 TA0 phi_H0 HphiH0Cont (x, 0) Hx0D0). }
+		                            (** GA0 = compose D0 phi_H0 (graph A0 id): GA0(x,0) = (graph A0 id)(phi_H0(x,0)) = phi_H0(x,0) **)
+		                            claim Hred1 : apply_fun GA0 (x, 0) = apply_fun phi_H0 (x, 0).
+		                            {
+		                              exact (eq_i_tra
+		                                (apply_fun GA0 (x, 0))
+		                                (apply_fun (graph A0 (fun z:set => z)) (apply_fun phi_H0 (x, 0)))
+		                                (apply_fun phi_H0 (x, 0))
+		                                (compose_fun_apply D0 phi_H0 (graph A0 (fun z:set => z)) (x, 0) Hx0D0)
+		                                (apply_fun_graph A0 (fun z:set => z) (apply_fun phi_H0 (x, 0)) HphiH0inA0)).
+		                            }
+		                            (** phi_H0 = compose D0 H0_comp phi: phi_H0(x,0) = phi(H0_comp(x,0)) **)
+		                            claim Hred2 : apply_fun phi_H0 (x, 0) = apply_fun phi (apply_fun H0_comp (x, 0)).
+		                            { exact (compose_fun_apply D0 H0_comp phi (x, 0) Hx0D0). }
+		                            (** H0_comp = compose D0 psi_x_id H0: H0_comp(x,0) = H0(psi_x_id(x,0)) **)
+		                            claim Hred3 : apply_fun H0_comp (x, 0) = apply_fun H0 (apply_fun psi_x_id (x, 0)).
+		                            { exact (compose_fun_apply D0 psi_x_id H0 (x, 0) Hx0D0). }
+		                            (** psi_x_id = pair_map: psi_x_id(x,0) = (psi_proj1(x,0), proj2(x,0)) **)
+		                            claim Hred4 : apply_fun psi_x_id (x, 0) =
+		                              (apply_fun psi_proj1 (x, 0), apply_fun (projection_map2 (Star A0) unit_interval) (x, 0)).
+		                            { exact (pair_map_apply D0 unit_interval unit_interval psi_proj1 (projection_map2 (Star A0) unit_interval) (x, 0) Hx0D0). }
+		                            (** psi_proj1(x,0) = psi(proj1(x,0)) = psi(x) **)
+		                            claim Hred5a : apply_fun psi_proj1 (x, 0) = apply_fun psi (apply_fun (projection_map1 (Star A0) unit_interval) (x, 0)).
+		                            { exact (compose_fun_apply D0 (projection_map1 (Star A0) unit_interval) psi (x, 0) Hx0D0). }
+		                            claim Hred5b : apply_fun (projection_map1 (Star A0) unit_interval) (x, 0) = x.
+		                            {
+		                              exact (eq_i_tra
+		                                (apply_fun (projection_map1 (Star A0) unit_interval) (x, 0))
+		                                ((x, 0) 0)
+		                                x
+		                                (projection1_apply (Star A0) unit_interval (x, 0) Hx0D0)
+		                                (tuple_2_0_eq x 0)).
+		                            }
+		                            claim Hpsi_proj1_val : apply_fun psi_proj1 (x, 0) = apply_fun psi x.
+		                            { rewrite Hred5a. rewrite Hred5b. reflexivity. }
+		                            (** proj2(x,0) = 0 **)
+		                            claim Hproj2_val : apply_fun (projection_map2 (Star A0) unit_interval) (x, 0) = 0.
+		                            {
+		                              exact (eq_i_tra
+		                                (apply_fun (projection_map2 (Star A0) unit_interval) (x, 0))
+		                                ((x, 0) 1)
+		                                0
+		                                (projection2_apply (Star A0) unit_interval (x, 0) Hx0D0)
+		                                (tuple_2_1_eq x 0)).
+		                            }
+		                            (** Combine: H0(psi(x), 0) = psi(x) **)
+		                            claim HH0_val : apply_fun H0 (apply_fun psi x, 0) = apply_fun psi x.
+		                            { exact (HH0s0 (apply_fun psi x) HpsiX). }
+		                            (** phi(psi(x)) = x **)
+		                            claim HphiPsi : apply_fun phi (apply_fun psi x) = x.
+		                            { exact (HpsiR x HxA0). }
+		                            (** Chain: GA0(x,0) = phi_H0(x,0) = phi(H0_comp(x,0)) = phi(H0(psi_id(x,0))) **)
+		                            (** = phi(H0(psi(x),0)) = phi(psi(x)) = x **)
+		                            claim Hpsi_id_eq : apply_fun psi_x_id (x, 0) = (apply_fun psi x, 0).
+		                            { rewrite Hred4. rewrite Hpsi_proj1_val. rewrite Hproj2_val. reflexivity. }
+		                            claim HH0_eq : apply_fun H0_comp (x, 0) = apply_fun psi x.
+		                            { rewrite Hred3. rewrite Hpsi_id_eq. exact HH0_val. }
+		                            claim Hphi_eq : apply_fun phi_H0 (x, 0) = x.
+		                            { rewrite Hred2. rewrite HH0_eq. exact HphiPsi. }
+		                            rewrite Hred1.
+		                            exact Hphi_eq.
+		                        + (** GA0(x, 1) = b **)
+		                          let x. assume HxStar.
+		                          claim Hx1D0 : (x, 1) :e D0.
+		                          { exact (tuple_2_setprod_by_pair_Sigma (Star A0) unit_interval x 1 HxStar one_in_unit_interval). }
+		                          claim HxA0 : x :e A0. { exact (HStarSubA0 x HxStar). }
+		                          claim HpsiX : apply_fun psi x :e unit_interval.
+		                          { exact (continuous_map_function_on A0 TA0 unit_interval unit_interval_topology psi HpsiCont x HxA0). }
+		                          claim HphiH0inA0 : apply_fun phi_H0 (x, 1) :e A0.
+		                          { exact (continuous_map_function_on D0 TD0 A0 TA0 phi_H0 HphiH0Cont (x, 1) Hx1D0). }
+		                          claim Hred1b : apply_fun GA0 (x, 1) = apply_fun phi_H0 (x, 1).
+		                          {
+		                            exact (eq_i_tra
+		                              (apply_fun GA0 (x, 1))
+		                              (apply_fun (graph A0 (fun z:set => z)) (apply_fun phi_H0 (x, 1)))
+		                              (apply_fun phi_H0 (x, 1))
+		                              (compose_fun_apply D0 phi_H0 (graph A0 (fun z:set => z)) (x, 1) Hx1D0)
+		                              (apply_fun_graph A0 (fun z:set => z) (apply_fun phi_H0 (x, 1)) HphiH0inA0)).
+		                          }
+		                          claim Hred2b : apply_fun phi_H0 (x, 1) = apply_fun phi (apply_fun H0_comp (x, 1)).
+		                          { exact (compose_fun_apply D0 H0_comp phi (x, 1) Hx1D0). }
+		                          claim Hred3b : apply_fun H0_comp (x, 1) = apply_fun H0 (apply_fun psi_x_id (x, 1)).
+		                          { exact (compose_fun_apply D0 psi_x_id H0 (x, 1) Hx1D0). }
+		                          claim Hred4b : apply_fun psi_x_id (x, 1) =
+		                            (apply_fun psi_proj1 (x, 1), apply_fun (projection_map2 (Star A0) unit_interval) (x, 1)).
+		                          { exact (pair_map_apply D0 unit_interval unit_interval psi_proj1 (projection_map2 (Star A0) unit_interval) (x, 1) Hx1D0). }
+		                          claim Hred5a1 : apply_fun psi_proj1 (x, 1) = apply_fun psi (apply_fun (projection_map1 (Star A0) unit_interval) (x, 1)).
+		                          { exact (compose_fun_apply D0 (projection_map1 (Star A0) unit_interval) psi (x, 1) Hx1D0). }
+		                          claim Hred5b1 : apply_fun (projection_map1 (Star A0) unit_interval) (x, 1) = x.
+		                          {
+		                            exact (eq_i_tra
+		                              (apply_fun (projection_map1 (Star A0) unit_interval) (x, 1))
+		                              ((x, 1) 0)
+		                              x
+		                              (projection1_apply (Star A0) unit_interval (x, 1) Hx1D0)
+		                              (tuple_2_0_eq x 1)).
+		                          }
+		                          claim Hpsi_proj1_val1 : apply_fun psi_proj1 (x, 1) = apply_fun psi x.
+		                          { rewrite Hred5a1. rewrite Hred5b1. reflexivity. }
+		                          claim Hproj2_val1 : apply_fun (projection_map2 (Star A0) unit_interval) (x, 1) = 1.
+		                          {
+		                            exact (eq_i_tra
+		                              (apply_fun (projection_map2 (Star A0) unit_interval) (x, 1))
+		                              ((x, 1) 1)
+		                              1
+		                              (projection2_apply (Star A0) unit_interval (x, 1) Hx1D0)
+		                              (tuple_2_1_eq x 1)).
+		                          }
+		                          (** H0(psi(x), 1) = 0 **)
+		                          claim HH0_val1 : apply_fun H0 (apply_fun psi x, 1) = 0.
+		                          { exact (HH0s1 (apply_fun psi x) HpsiX). }
+		                          (** phi(0) = b **)
+		                          claim Hphi0b : apply_fun phi 0 = b.
+		                          { symmetry. exact Hbphi0. }
+		                          claim Hpsi_id_eq1 : apply_fun psi_x_id (x, 1) = (apply_fun psi x, 1).
+		                          { rewrite Hred4b. rewrite Hpsi_proj1_val1. rewrite Hproj2_val1. reflexivity. }
+		                          claim HH0_eq1 : apply_fun H0_comp (x, 1) = 0.
+		                          { rewrite Hred3b. rewrite Hpsi_id_eq1. exact HH0_val1. }
+		                          claim Hphi_eq1 : apply_fun phi_H0 (x, 1) = b.
+		                          { rewrite Hred2b. rewrite HH0_eq1. exact Hphi0b. }
+		                          rewrite Hred1b. exact Hphi_eq1.
+		                      - (** GA0(b, t) = b **)
+		                        let t. assume HtI.
+		                        claim HbtD0 : (b, t) :e D0.
+		                        { exact (tuple_2_setprod_by_pair_Sigma (Star A0) unit_interval b t HbStarA0 HtI). }
+		                        claim HphiH0bt : apply_fun phi_H0 (b, t) :e A0.
+		                        { exact (continuous_map_function_on D0 TD0 A0 TA0 phi_H0 HphiH0Cont (b, t) HbtD0). }
+		                        claim Hred1c : apply_fun GA0 (b, t) = apply_fun phi_H0 (b, t).
+		                        {
+		                          exact (eq_i_tra
+		                            (apply_fun GA0 (b, t))
+		                            (apply_fun (graph A0 (fun z:set => z)) (apply_fun phi_H0 (b, t)))
+		                            (apply_fun phi_H0 (b, t))
+		                            (compose_fun_apply D0 phi_H0 (graph A0 (fun z:set => z)) (b, t) HbtD0)
+		                            (apply_fun_graph A0 (fun z:set => z) (apply_fun phi_H0 (b, t)) HphiH0bt)).
+		                        }
+		                        claim Hred2c : apply_fun phi_H0 (b, t) = apply_fun phi (apply_fun H0_comp (b, t)).
+		                        { exact (compose_fun_apply D0 H0_comp phi (b, t) HbtD0). }
+		                        claim Hred3c : apply_fun H0_comp (b, t) = apply_fun H0 (apply_fun psi_x_id (b, t)).
+		                        { exact (compose_fun_apply D0 psi_x_id H0 (b, t) HbtD0). }
+		                        claim Hred4c : apply_fun psi_x_id (b, t) =
+		                          (apply_fun psi_proj1 (b, t), apply_fun (projection_map2 (Star A0) unit_interval) (b, t)).
+		                        { exact (pair_map_apply D0 unit_interval unit_interval psi_proj1 (projection_map2 (Star A0) unit_interval) (b, t) HbtD0). }
+		                        claim Hred5ac : apply_fun psi_proj1 (b, t) = apply_fun psi (apply_fun (projection_map1 (Star A0) unit_interval) (b, t)).
+		                        { exact (compose_fun_apply D0 (projection_map1 (Star A0) unit_interval) psi (b, t) HbtD0). }
+		                        claim Hred5bc : apply_fun (projection_map1 (Star A0) unit_interval) (b, t) = b.
+		                        {
+		                          exact (eq_i_tra
+		                            (apply_fun (projection_map1 (Star A0) unit_interval) (b, t))
+		                            ((b, t) 0)
+		                            b
+		                            (projection1_apply (Star A0) unit_interval (b, t) HbtD0)
+		                            (tuple_2_0_eq b t)).
+		                        }
+		                        claim Hpsi_proj1_valc : apply_fun psi_proj1 (b, t) = apply_fun psi b.
+		                        { rewrite Hred5ac. rewrite Hred5bc. reflexivity. }
+		                        claim Hproj2_valc : apply_fun (projection_map2 (Star A0) unit_interval) (b, t) = t.
+		                        {
+		                          exact (eq_i_tra
+		                            (apply_fun (projection_map2 (Star A0) unit_interval) (b, t))
+		                            ((b, t) 1)
+		                            t
+		                            (projection2_apply (Star A0) unit_interval (b, t) HbtD0)
+		                            (tuple_2_1_eq b t)).
+		                        }
+		                        (** psi(b) = psi(phi(0)) = 0 **)
+		                        claim Hpsib : apply_fun psi b = 0.
+		                        { rewrite Hbphi0. exact (HpsiL 0 zero_in_unit_interval). }
+		                        (** H0(0, t) = 0 **)
+		                        claim HH0_valc : apply_fun H0 (0, t) = 0.
+		                        { exact (HH00t t HtI). }
+		                        claim Hphi0b : apply_fun phi 0 = b.
+		                        { symmetry. exact Hbphi0. }
+		                        claim Hpsi_id_eqc : apply_fun psi_x_id (b, t) = (0, t).
+		                        { rewrite Hred4c. rewrite Hpsi_proj1_valc. rewrite Hproj2_valc. rewrite Hpsib. reflexivity. }
+		                        claim HH0_eqc : apply_fun H0_comp (b, t) = 0.
+		                        { rewrite Hred3c. rewrite Hpsi_id_eqc. exact HH0_valc. }
+		                        claim Hphi_eqc : apply_fun phi_H0 (b, t) = b.
+		                        { rewrite Hred2c. rewrite HH0_eqc. exact Hphi0b. }
+		                        rewrite Hred1c. exact Hphi_eqc.
+		                    - assume Hbphi1.
+		                      (** Case b = phi(1). Use unit_interval_homotopy_to_1_fixed. **)
+		                      apply unit_interval_homotopy_to_1_fixed.
+		                      let H1. assume HH1pack.
+		                      apply (and4E
+		                        (continuous_map unit_square unit_square_topology unit_interval unit_interval_topology H1)
+		                        (forall s:set, s :e unit_interval -> apply_fun H1 (s, 0) = s)
+		                        (forall s:set, s :e unit_interval -> apply_fun H1 (s, 1) = 1)
+		                        (forall t:set, t :e unit_interval -> apply_fun H1 (1, t) = 1)
+		                        HH1pack).
+		                      assume HH1Cont HH1s0 HH1s1 HH11t.
+		                      set D1 := setprod (Star A0) unit_interval.
+		                      set TD1 := product_topology (Star A0) TSA0 unit_interval unit_interval_topology.
+		                      set psi_proj1b := compose_fun D1 (projection_map1 (Star A0) unit_interval) psi.
+		                      set psi_x_id1 := pair_map D1 psi_proj1b (projection_map2 (Star A0) unit_interval).
+		                      set H1_comp := compose_fun D1 psi_x_id1 H1.
+		                      set phi_H1 := compose_fun D1 H1_comp phi.
+		                      set GA1 := compose_fun D1 phi_H1 (graph A0 (fun x:set => x)).
+		                      claim HtopTSA0b : topology_on (Star A0) TSA0.
+		                      { exact (subspace_topology_is_topology X Tx (Star A0) HtopX
+		                          (Subq_tra (Star A0) A0 X HStarSubA0 HA0subX)). }
+		                      claim Hproj1Contb :
+		                        continuous_map D1 TD1 (Star A0) TSA0 (projection_map1 (Star A0) unit_interval).
+		                      { exact (projection1_continuous_in_product (Star A0) TSA0 unit_interval unit_interval_topology
+		                          HtopTSA0b unit_interval_topology_on). }
+		                      claim Hproj2Contb :
+		                        continuous_map D1 TD1 unit_interval unit_interval_topology (projection_map2 (Star A0) unit_interval).
+		                      { exact (projection2_continuous_in_product (Star A0) TSA0 unit_interval unit_interval_topology
+		                          HtopTSA0b unit_interval_topology_on). }
+		                      claim HpsiProj1Contb :
+		                        continuous_map D1 TD1 unit_interval unit_interval_topology psi_proj1b.
+		                      { exact (composition_continuous D1 TD1 (Star A0) TSA0 unit_interval unit_interval_topology
+		                          (projection_map1 (Star A0) unit_interval) psi Hproj1Contb HpsiStarCont). }
+		                      claim HpsiXidCont1 :
+		                        continuous_map D1 TD1 unit_square unit_square_topology psi_x_id1.
+		                      { exact (maps_into_products D1 TD1 unit_interval unit_interval_topology
+		                          unit_interval unit_interval_topology psi_proj1b (projection_map2 (Star A0) unit_interval)
+		                          HpsiProj1Contb Hproj2Contb). }
+		                      claim HH1compCont :
+		                        continuous_map D1 TD1 unit_interval unit_interval_topology H1_comp.
+		                      { exact (composition_continuous D1 TD1 unit_square unit_square_topology
+		                          unit_interval unit_interval_topology psi_x_id1 H1 HpsiXidCont1 HH1Cont). }
+		                      claim HphiH1Cont :
+		                        continuous_map D1 TD1 A0 TA0 phi_H1.
+		                      { exact (composition_continuous D1 TD1 unit_interval unit_interval_topology
+		                          A0 TA0 H1_comp phi HH1compCont HphiCont). }
+		                      claim HGA1Cont :
+		                        continuous_map D1 TD1 X Tx GA1.
+		                      { exact (composition_continuous D1 TD1 A0 TA0 X Tx phi_H1 (graph A0 (fun x:set => x))
+		                          HphiH1Cont HiA0X). }
+		                      witness GA1.
+		                      apply andI.
+		                      - apply andI.
+		                        + apply andI.
+		                          * exact HGA1Cont.
+		                          * (** GA1(x, 0) = x **)
+		                            let x. assume HxStar.
+		                            claim Hx0D1 : (x, 0) :e D1.
+		                            { exact (tuple_2_setprod_by_pair_Sigma (Star A0) unit_interval x 0 HxStar zero_in_unit_interval). }
+		                            claim HxA0 : x :e A0. { exact (HStarSubA0 x HxStar). }
+		                            claim HpsiX : apply_fun psi x :e unit_interval.
+		                            { exact (continuous_map_function_on A0 TA0 unit_interval unit_interval_topology psi HpsiCont x HxA0). }
+		                            claim HphiH1inA0 : apply_fun phi_H1 (x, 0) :e A0.
+		                            { exact (continuous_map_function_on D1 TD1 A0 TA0 phi_H1 HphiH1Cont (x, 0) Hx0D1). }
+		                            claim Hr1 : apply_fun GA1 (x, 0) = apply_fun phi_H1 (x, 0).
+		                            {
+		                              exact (eq_i_tra
+		                                (apply_fun GA1 (x, 0))
+		                                (apply_fun (graph A0 (fun z:set => z)) (apply_fun phi_H1 (x, 0)))
+		                                (apply_fun phi_H1 (x, 0))
+		                                (compose_fun_apply D1 phi_H1 (graph A0 (fun z:set => z)) (x, 0) Hx0D1)
+		                                (apply_fun_graph A0 (fun z:set => z) (apply_fun phi_H1 (x, 0)) HphiH1inA0)).
+		                            }
+		                            claim Hr2 : apply_fun phi_H1 (x, 0) = apply_fun phi (apply_fun H1_comp (x, 0)).
+		                            { exact (compose_fun_apply D1 H1_comp phi (x, 0) Hx0D1). }
+		                            claim Hr3 : apply_fun H1_comp (x, 0) = apply_fun H1 (apply_fun psi_x_id1 (x, 0)).
+		                            { exact (compose_fun_apply D1 psi_x_id1 H1 (x, 0) Hx0D1). }
+		                            claim Hr4 : apply_fun psi_x_id1 (x, 0) =
+		                              (apply_fun psi_proj1b (x, 0), apply_fun (projection_map2 (Star A0) unit_interval) (x, 0)).
+		                            { exact (pair_map_apply D1 unit_interval unit_interval psi_proj1b (projection_map2 (Star A0) unit_interval) (x, 0) Hx0D1). }
+		                            claim Hr5a : apply_fun psi_proj1b (x, 0) = apply_fun psi (apply_fun (projection_map1 (Star A0) unit_interval) (x, 0)).
+		                            { exact (compose_fun_apply D1 (projection_map1 (Star A0) unit_interval) psi (x, 0) Hx0D1). }
+		                            claim Hr5b : apply_fun (projection_map1 (Star A0) unit_interval) (x, 0) = x.
+		                            {
+		                              exact (eq_i_tra
+		                                (apply_fun (projection_map1 (Star A0) unit_interval) (x, 0))
+		                                ((x, 0) 0) x
+		                                (projection1_apply (Star A0) unit_interval (x, 0) Hx0D1)
+		                                (tuple_2_0_eq x 0)).
+		                            }
+		                            claim Hpv1 : apply_fun psi_proj1b (x, 0) = apply_fun psi x.
+		                            { rewrite Hr5a. rewrite Hr5b. reflexivity. }
+		                            claim Hpv2 : apply_fun (projection_map2 (Star A0) unit_interval) (x, 0) = 0.
+		                            {
+		                              exact (eq_i_tra
+		                                (apply_fun (projection_map2 (Star A0) unit_interval) (x, 0))
+		                                ((x, 0) 1) 0
+		                                (projection2_apply (Star A0) unit_interval (x, 0) Hx0D1)
+		                                (tuple_2_1_eq x 0)).
+		                            }
+		                            claim Hpe : apply_fun psi_x_id1 (x, 0) = (apply_fun psi x, 0).
+		                            { rewrite Hr4. rewrite Hpv1. rewrite Hpv2. reflexivity. }
+		                            claim Hhe : apply_fun H1_comp (x, 0) = apply_fun psi x.
+		                            { rewrite Hr3. rewrite Hpe. exact (HH1s0 (apply_fun psi x) HpsiX). }
+		                            claim Hfe : apply_fun phi_H1 (x, 0) = x.
+		                            { rewrite Hr2. rewrite Hhe. exact (HpsiR x HxA0). }
+		                            rewrite Hr1. exact Hfe.
+		                        + (** GA1(x, 1) = b **)
+		                          let x. assume HxStar.
+		                          claim Hx1D1 : (x, 1) :e D1.
+		                          { exact (tuple_2_setprod_by_pair_Sigma (Star A0) unit_interval x 1 HxStar one_in_unit_interval). }
+		                          claim HxA0 : x :e A0. { exact (HStarSubA0 x HxStar). }
+		                          claim HpsiX : apply_fun psi x :e unit_interval.
+		                          { exact (continuous_map_function_on A0 TA0 unit_interval unit_interval_topology psi HpsiCont x HxA0). }
+		                          claim HphiH1inA0 : apply_fun phi_H1 (x, 1) :e A0.
+		                          { exact (continuous_map_function_on D1 TD1 A0 TA0 phi_H1 HphiH1Cont (x, 1) Hx1D1). }
+		                          claim Hr1 : apply_fun GA1 (x, 1) = apply_fun phi_H1 (x, 1).
+		                          {
+		                            exact (eq_i_tra
+		                              (apply_fun GA1 (x, 1))
+		                              (apply_fun (graph A0 (fun z:set => z)) (apply_fun phi_H1 (x, 1)))
+		                              (apply_fun phi_H1 (x, 1))
+		                              (compose_fun_apply D1 phi_H1 (graph A0 (fun z:set => z)) (x, 1) Hx1D1)
+		                              (apply_fun_graph A0 (fun z:set => z) (apply_fun phi_H1 (x, 1)) HphiH1inA0)).
+		                          }
+		                          claim Hr2 : apply_fun phi_H1 (x, 1) = apply_fun phi (apply_fun H1_comp (x, 1)).
+		                          { exact (compose_fun_apply D1 H1_comp phi (x, 1) Hx1D1). }
+		                          claim Hr3 : apply_fun H1_comp (x, 1) = apply_fun H1 (apply_fun psi_x_id1 (x, 1)).
+		                          { exact (compose_fun_apply D1 psi_x_id1 H1 (x, 1) Hx1D1). }
+		                          claim Hr4 : apply_fun psi_x_id1 (x, 1) =
+		                            (apply_fun psi_proj1b (x, 1), apply_fun (projection_map2 (Star A0) unit_interval) (x, 1)).
+		                          { exact (pair_map_apply D1 unit_interval unit_interval psi_proj1b (projection_map2 (Star A0) unit_interval) (x, 1) Hx1D1). }
+		                          claim Hr5a : apply_fun psi_proj1b (x, 1) = apply_fun psi (apply_fun (projection_map1 (Star A0) unit_interval) (x, 1)).
+		                          { exact (compose_fun_apply D1 (projection_map1 (Star A0) unit_interval) psi (x, 1) Hx1D1). }
+		                          claim Hr5b : apply_fun (projection_map1 (Star A0) unit_interval) (x, 1) = x.
+		                          {
+		                            exact (eq_i_tra
+		                              (apply_fun (projection_map1 (Star A0) unit_interval) (x, 1))
+		                              ((x, 1) 0) x
+		                              (projection1_apply (Star A0) unit_interval (x, 1) Hx1D1)
+		                              (tuple_2_0_eq x 1)).
+		                          }
+		                          claim Hpv1 : apply_fun psi_proj1b (x, 1) = apply_fun psi x.
+		                          { rewrite Hr5a. rewrite Hr5b. reflexivity. }
+		                          claim Hpv2 : apply_fun (projection_map2 (Star A0) unit_interval) (x, 1) = 1.
+		                          {
+		                            exact (eq_i_tra
+		                              (apply_fun (projection_map2 (Star A0) unit_interval) (x, 1))
+		                              ((x, 1) 1) 1
+		                              (projection2_apply (Star A0) unit_interval (x, 1) Hx1D1)
+		                              (tuple_2_1_eq x 1)).
+		                          }
+		                          claim Hpe : apply_fun psi_x_id1 (x, 1) = (apply_fun psi x, 1).
+		                          { rewrite Hr4. rewrite Hpv1. rewrite Hpv2. reflexivity. }
+		                          claim Hhe : apply_fun H1_comp (x, 1) = 1.
+		                          { rewrite Hr3. rewrite Hpe. exact (HH1s1 (apply_fun psi x) HpsiX). }
+		                          claim Hphi1b : apply_fun phi 1 = b.
+		                          { symmetry. exact Hbphi1. }
+		                          claim Hfe : apply_fun phi_H1 (x, 1) = b.
+		                          { rewrite Hr2. rewrite Hhe. exact Hphi1b. }
+		                          rewrite Hr1. exact Hfe.
+		                      - (** GA1(b, t) = b **)
+		                        let t. assume HtI.
+		                        claim HbtD1 : (b, t) :e D1.
+		                        { exact (tuple_2_setprod_by_pair_Sigma (Star A0) unit_interval b t HbStarA0 HtI). }
+		                        claim HphiH1bt : apply_fun phi_H1 (b, t) :e A0.
+		                        { exact (continuous_map_function_on D1 TD1 A0 TA0 phi_H1 HphiH1Cont (b, t) HbtD1). }
+		                        claim Hr1 : apply_fun GA1 (b, t) = apply_fun phi_H1 (b, t).
+		                        {
+		                          exact (eq_i_tra
+		                            (apply_fun GA1 (b, t))
+		                            (apply_fun (graph A0 (fun z:set => z)) (apply_fun phi_H1 (b, t)))
+		                            (apply_fun phi_H1 (b, t))
+		                            (compose_fun_apply D1 phi_H1 (graph A0 (fun z:set => z)) (b, t) HbtD1)
+		                            (apply_fun_graph A0 (fun z:set => z) (apply_fun phi_H1 (b, t)) HphiH1bt)).
+		                        }
+		                        claim Hr2 : apply_fun phi_H1 (b, t) = apply_fun phi (apply_fun H1_comp (b, t)).
+		                        { exact (compose_fun_apply D1 H1_comp phi (b, t) HbtD1). }
+		                        claim Hr3 : apply_fun H1_comp (b, t) = apply_fun H1 (apply_fun psi_x_id1 (b, t)).
+		                        { exact (compose_fun_apply D1 psi_x_id1 H1 (b, t) HbtD1). }
+		                        claim Hr4 : apply_fun psi_x_id1 (b, t) =
+		                          (apply_fun psi_proj1b (b, t), apply_fun (projection_map2 (Star A0) unit_interval) (b, t)).
+		                        { exact (pair_map_apply D1 unit_interval unit_interval psi_proj1b (projection_map2 (Star A0) unit_interval) (b, t) HbtD1). }
+		                        claim Hr5a : apply_fun psi_proj1b (b, t) = apply_fun psi (apply_fun (projection_map1 (Star A0) unit_interval) (b, t)).
+		                        { exact (compose_fun_apply D1 (projection_map1 (Star A0) unit_interval) psi (b, t) HbtD1). }
+		                        claim Hr5b : apply_fun (projection_map1 (Star A0) unit_interval) (b, t) = b.
+		                        {
+		                          exact (eq_i_tra
+		                            (apply_fun (projection_map1 (Star A0) unit_interval) (b, t))
+		                            ((b, t) 0) b
+		                            (projection1_apply (Star A0) unit_interval (b, t) HbtD1)
+		                            (tuple_2_0_eq b t)).
+		                        }
+		                        claim Hpvc : apply_fun psi_proj1b (b, t) = apply_fun psi b.
+		                        { rewrite Hr5a. rewrite Hr5b. reflexivity. }
+		                        claim Hpv2c : apply_fun (projection_map2 (Star A0) unit_interval) (b, t) = t.
+		                        {
+		                          exact (eq_i_tra
+		                            (apply_fun (projection_map2 (Star A0) unit_interval) (b, t))
+		                            ((b, t) 1) t
+		                            (projection2_apply (Star A0) unit_interval (b, t) HbtD1)
+		                            (tuple_2_1_eq b t)).
+		                        }
+		                        claim Hpsib : apply_fun psi b = 1.
+		                        { rewrite Hbphi1. exact (HpsiL 1 one_in_unit_interval). }
+		                        claim Hpec : apply_fun psi_x_id1 (b, t) = (1, t).
+		                        { rewrite Hr4. rewrite Hpvc. rewrite Hpv2c. rewrite Hpsib. reflexivity. }
+		                        claim Hhec : apply_fun H1_comp (b, t) = 1.
+		                        { rewrite Hr3. rewrite Hpec. exact (HH11t t HtI). }
+		                        claim Hphi1b : apply_fun phi 1 = b.
+		                        { symmetry. exact Hbphi1. }
+		                        claim Hfec : apply_fun phi_H1 (b, t) = b.
+		                        { rewrite Hr2. rewrite Hhec. exact Hphi1b. }
+		                        rewrite Hr1. exact Hfec.
+		                  }
+		                  (** Step C: Global homotopy -- glue per-arc homotopies. **)
+		                  set chooseG := fun A0:set =>
+		                    Eps_i (fun GA0:set =>
+		                      continuous_map (setprod (Star A0) unit_interval)
+		                        (product_topology (Star A0) (subspace_topology X Tx (Star A0))
+		                          unit_interval unit_interval_topology)
+		                        X Tx GA0 /\
+		                      (forall x:set, x :e Star A0 -> apply_fun GA0 (x, 0) = x) /\
+		                      (forall x:set, x :e Star A0 -> apply_fun GA0 (x, 1) = b) /\
+		                      (forall t:set, t :e unit_interval -> apply_fun GA0 (b, t) = b)).
+		                  claim HchooseG : forall A0:set, A0 :e IncArcs ->
+		                    continuous_map (setprod (Star A0) unit_interval)
+		                      (product_topology (Star A0) (subspace_topology X Tx (Star A0))
+		                        unit_interval unit_interval_topology)
+		                      X Tx (chooseG A0) /\
+		                    (forall x:set, x :e Star A0 -> apply_fun (chooseG A0) (x, 0) = x) /\
+		                    (forall x:set, x :e Star A0 -> apply_fun (chooseG A0) (x, 1) = b) /\
+		                    (forall t:set, t :e unit_interval -> apply_fun (chooseG A0) (b, t) = b).
+		                  {
+		                    let A0. assume HA0Inc.
+		                    apply (HexPerArcFixB A0 HA0Inc).
+		                    let GA0. assume HGA0.
+		                    exact (Eps_i_ax
+		                      (fun GA1:set =>
+		                        continuous_map (setprod (Star A0) unit_interval)
+		                          (product_topology (Star A0) (subspace_topology X Tx (Star A0))
+		                            unit_interval unit_interval_topology)
+		                          X Tx GA1 /\
+		                        (forall x:set, x :e Star A0 -> apply_fun GA1 (x, 0) = x) /\
+		                        (forall x:set, x :e Star A0 -> apply_fun GA1 (x, 1) = b) /\
+		                        (forall t:set, t :e unit_interval -> apply_fun GA1 (b, t) = b))
+		                      GA0 HGA0).
+		                  }
+		                  (** For each x in Ustar, pick an incident arc containing x. **)
+		                  set arcOf := fun x:set =>
+		                    Eps_i (fun A0:set => A0 :e IncArcs /\ x :e Star A0).
+		                  claim HarcOfSpec : forall x:set, x :e Ustar ->
+		                    arcOf x :e IncArcs /\ x :e Star (arcOf x).
+		                  {
+		                    let x. assume HxU.
+		                    (** x :e Ustar = Union {Star A0 | A0 :e IncArcs}. **)
+		                    apply (UnionE {Star A0 | A0 :e IncArcs} x HxU).
+		                    let S. assume HxSpack.
+		                    claim HxS : x :e S.
+		                    { exact (andEL (x :e S) (S :e {Star A0 | A0 :e IncArcs}) HxSpack). }
+		                    claim HSfam : S :e {Star A0 | A0 :e IncArcs}.
+		                    { exact (andER (x :e S) (S :e {Star A0 | A0 :e IncArcs}) HxSpack). }
+		                    apply (ReplE IncArcs (fun A0:set => Star A0) S HSfam).
+		                    let A0. assume HA0pack.
+		                    claim HA0Inc : A0 :e IncArcs.
+		                    { exact (andEL (A0 :e IncArcs) (S = Star A0) HA0pack). }
+		                    claim HSeq : S = Star A0.
+		                    { exact (andER (A0 :e IncArcs) (S = Star A0) HA0pack). }
+		                    claim HxStarA0 : x :e Star A0.
+		                    { rewrite <- HSeq. exact HxS. }
+		                    exact (Eps_i_ax
+		                      (fun A1:set => A1 :e IncArcs /\ x :e Star A1)
+		                      A0
+		                      (andI (A0 :e IncArcs) (x :e Star A0) HA0Inc HxStarA0)).
+		                  }
+		                  (** Define the global homotopy F. **)
+		                  set TUstar := subspace_topology X Tx Ustar.
+		                  set TProd := product_topology Ustar TUstar unit_interval unit_interval_topology.
+		                  set F := graph (setprod Ustar unit_interval)
+		                    (fun p:set => apply_fun (chooseG (arcOf (p 0))) p).
+		                  witness F.
+		                  (** F maps into X: need function_on F (setprod Ustar unit_interval) X. **)
+		                  claim HFfunX : forall p:set, p :e setprod Ustar unit_interval ->
+		                    apply_fun (chooseG (arcOf (p 0))) p :e X.
+		                  {
+		                    let p. assume HpD.
+		                    claim Hp0U : p 0 :e Ustar.
+		                    {
+		                      claim Hp0s : proj0 p :e Ustar.
+		                      { exact (proj0_Sigma Ustar (fun _ :set => unit_interval) p HpD). }
+		                      rewrite <- (proj0_ap_0 p). exact Hp0s.
+		                    }
+		                    claim Hp1I : p 1 :e unit_interval.
+		                    {
+		                      claim Hp1s : proj1 p :e unit_interval.
+		                      { exact (proj1_Sigma Ustar (fun _ :set => unit_interval) p HpD). }
+		                      rewrite <- (proj1_ap_1 p). exact Hp1s.
+		                    }
+		                    claim Harc : arcOf (p 0) :e IncArcs /\ p 0 :e Star (arcOf (p 0)).
+		                    { exact (HarcOfSpec (p 0) Hp0U). }
+		                    claim HarcInc : arcOf (p 0) :e IncArcs.
+		                    { exact (andEL (arcOf (p 0) :e IncArcs) (p 0 :e Star (arcOf (p 0))) Harc). }
+		                    claim Hp0Star : p 0 :e Star (arcOf (p 0)).
+		                    { exact (andER (arcOf (p 0) :e IncArcs) (p 0 :e Star (arcOf (p 0))) Harc). }
+		                    claim HcGdat : continuous_map (setprod (Star (arcOf (p 0))) unit_interval)
+		                      (product_topology (Star (arcOf (p 0)))
+		                        (subspace_topology X Tx (Star (arcOf (p 0))))
+		                        unit_interval unit_interval_topology)
+		                      X Tx (chooseG (arcOf (p 0))) /\
+		                      (forall x:set, x :e Star (arcOf (p 0)) ->
+		                        apply_fun (chooseG (arcOf (p 0))) (x, 0) = x) /\
+		                      (forall x:set, x :e Star (arcOf (p 0)) ->
+		                        apply_fun (chooseG (arcOf (p 0))) (x, 1) = b) /\
+		                      (forall t:set, t :e unit_interval ->
+		                        apply_fun (chooseG (arcOf (p 0))) (b, t) = b).
+		                    { exact (HchooseG (arcOf (p 0)) HarcInc). }
+		                    apply (and4E
+		                      (continuous_map (setprod (Star (arcOf (p 0))) unit_interval)
+		                        (product_topology (Star (arcOf (p 0)))
+		                          (subspace_topology X Tx (Star (arcOf (p 0))))
+		                          unit_interval unit_interval_topology)
+		                        X Tx (chooseG (arcOf (p 0))))
+		                      (forall x:set, x :e Star (arcOf (p 0)) ->
+		                        apply_fun (chooseG (arcOf (p 0))) (x, 0) = x)
+		                      (forall x:set, x :e Star (arcOf (p 0)) ->
+		                        apply_fun (chooseG (arcOf (p 0))) (x, 1) = b)
+		                      (forall t:set, t :e unit_interval ->
+		                        apply_fun (chooseG (arcOf (p 0))) (b, t) = b)
+		                      HcGdat).
+		                    assume HcGcont _ _ _.
+		                    claim HpInDom : p :e setprod (Star (arcOf (p 0))) unit_interval.
+		                    {
+		                      claim Hpeta : p = (p 0, p 1).
+		                      { exact (setprod_eta Ustar unit_interval p HpD). }
+		                      rewrite Hpeta. rewrite tuple_2_0_eq.
+		                      exact (tuple_2_setprod_by_pair_Sigma
+		                        (Star (arcOf (p 0))) unit_interval
+		                        (p 0) (p 1) Hp0Star Hp1I).
+		                    }
+		                    exact (continuous_map_function_on
+		                      (setprod (Star (arcOf (p 0))) unit_interval)
+		                      (product_topology (Star (arcOf (p 0)))
+		                        (subspace_topology X Tx (Star (arcOf (p 0))))
+		                        unit_interval unit_interval_topology)
+		                      X Tx (chooseG (arcOf (p 0))) HcGcont p HpInDom).
+		                  }
+		                  claim HFval : forall p:set, p :e setprod Ustar unit_interval ->
+		                    apply_fun F p = apply_fun (chooseG (arcOf (p 0))) p.
+		                  {
+		                    let p. assume HpD.
+		                    exact (apply_fun_graph
+		                      (setprod Ustar unit_interval)
+		                      (fun q:set => apply_fun (chooseG (arcOf (q 0))) q)
+		                      p HpD).
+		                  }
+		                  apply andI.
+		                  - apply andI.
+		                    + (** Continuity of F on Ustar x I -> X. **)
+		                      (** Strategy: for each V :e Tx, preimage is open in product topology. **)
+		                      (** For x <> b: use per-arc continuity on open Star(A0) \ {b}. **)
+		                      (** For x = b: use tube lemma + coherence. **)
+		                      admit.
+		                    + (** F(x, 0) = h(x) = x. **)
+		                      let x. assume HxU.
+		                      claim Hx0D : (x, 0) :e setprod Ustar unit_interval.
+		                      {
+		                        exact (tuple_2_setprod_by_pair_Sigma Ustar unit_interval
+		                          x 0 HxU zero_in_unit_interval).
+		                      }
+		                      claim HFx0 : apply_fun F (x, 0) =
+		                        apply_fun (chooseG (arcOf ((x, 0) 0))) (x, 0).
+		                      { exact (HFval (x, 0) Hx0D). }
+		                      claim Hcoord0 : (x, 0) 0 = x.
+		                      { exact (tuple_2_0_eq x 0). }
+		                      claim HarcX : arcOf x :e IncArcs /\ x :e Star (arcOf x).
+		                      { exact (HarcOfSpec x HxU). }
+		                      claim HxStar : x :e Star (arcOf x).
+		                      { exact (andER (arcOf x :e IncArcs) (x :e Star (arcOf x)) HarcX). }
+		                      claim HarcInc : arcOf x :e IncArcs.
+		                      { exact (andEL (arcOf x :e IncArcs) (x :e Star (arcOf x)) HarcX). }
+		                      claim HcG4 :
+		                        continuous_map (setprod (Star (arcOf x)) unit_interval)
+		                          (product_topology (Star (arcOf x))
+		                            (subspace_topology X Tx (Star (arcOf x)))
+		                            unit_interval unit_interval_topology)
+		                          X Tx (chooseG (arcOf x)) /\
+		                        (forall y:set, y :e Star (arcOf x) ->
+		                          apply_fun (chooseG (arcOf x)) (y, 0) = y) /\
+		                        (forall y:set, y :e Star (arcOf x) ->
+		                          apply_fun (chooseG (arcOf x)) (y, 1) = b) /\
+		                        (forall t:set, t :e unit_interval ->
+		                          apply_fun (chooseG (arcOf x)) (b, t) = b).
+		                      { exact (HchooseG (arcOf x) HarcInc). }
+		                      apply (and4E
+		                        (continuous_map (setprod (Star (arcOf x)) unit_interval)
+		                          (product_topology (Star (arcOf x))
+		                            (subspace_topology X Tx (Star (arcOf x)))
+		                            unit_interval unit_interval_topology)
+		                          X Tx (chooseG (arcOf x)))
+		                        (forall y:set, y :e Star (arcOf x) ->
+		                          apply_fun (chooseG (arcOf x)) (y, 0) = y)
+		                        (forall y:set, y :e Star (arcOf x) ->
+		                          apply_fun (chooseG (arcOf x)) (y, 1) = b)
+		                        (forall t:set, t :e unit_interval ->
+		                          apply_fun (chooseG (arcOf x)) (b, t) = b)
+		                        HcG4).
+		                      assume _ HcG0 _ _.
+		                      claim Hval : apply_fun (chooseG (arcOf x)) (x, 0) = x.
+		                      { exact (HcG0 x HxStar). }
+		                      claim Hstep : apply_fun F (x, 0) =
+		                        apply_fun (chooseG (arcOf x)) (x, 0).
+		                      { rewrite HFx0. rewrite Hcoord0. reflexivity. }
+		                      claim Hhval : apply_fun h x = x.
+		                      { exact (apply_fun_graph Ustar (fun y:set => y) x HxU). }
+		                      rewrite Hstep. rewrite Hval. rewrite Hhval. reflexivity.
+		                  - (** F(x, 1) = const_fun Ustar b x = b. **)
+		                    let x. assume HxU.
+		                    claim Hx1D : (x, 1) :e setprod Ustar unit_interval.
+		                    {
+		                      exact (tuple_2_setprod_by_pair_Sigma Ustar unit_interval
+		                        x 1 HxU one_in_unit_interval).
+		                    }
+		                    claim HFx1 : apply_fun F (x, 1) =
+		                      apply_fun (chooseG (arcOf ((x, 1) 0))) (x, 1).
+		                    { exact (HFval (x, 1) Hx1D). }
+		                    claim Hcoord0 : (x, 1) 0 = x.
+		                    { exact (tuple_2_0_eq x 1). }
+		                    claim HarcX : arcOf x :e IncArcs /\ x :e Star (arcOf x).
+		                    { exact (HarcOfSpec x HxU). }
+		                    claim HxStar : x :e Star (arcOf x).
+		                    { exact (andER (arcOf x :e IncArcs) (x :e Star (arcOf x)) HarcX). }
+		                    claim HarcInc : arcOf x :e IncArcs.
+		                    { exact (andEL (arcOf x :e IncArcs) (x :e Star (arcOf x)) HarcX). }
+		                    claim HcG4 :
+		                      continuous_map (setprod (Star (arcOf x)) unit_interval)
+		                        (product_topology (Star (arcOf x))
+		                          (subspace_topology X Tx (Star (arcOf x)))
+		                          unit_interval unit_interval_topology)
+		                        X Tx (chooseG (arcOf x)) /\
+		                      (forall y:set, y :e Star (arcOf x) ->
+		                        apply_fun (chooseG (arcOf x)) (y, 0) = y) /\
+		                      (forall y:set, y :e Star (arcOf x) ->
+		                        apply_fun (chooseG (arcOf x)) (y, 1) = b) /\
+		                      (forall t:set, t :e unit_interval ->
+		                        apply_fun (chooseG (arcOf x)) (b, t) = b).
+		                    { exact (HchooseG (arcOf x) HarcInc). }
+		                    apply (and4E
+		                      (continuous_map (setprod (Star (arcOf x)) unit_interval)
+		                        (product_topology (Star (arcOf x))
+		                          (subspace_topology X Tx (Star (arcOf x)))
+		                          unit_interval unit_interval_topology)
+		                        X Tx (chooseG (arcOf x)))
+		                      (forall y:set, y :e Star (arcOf x) ->
+		                        apply_fun (chooseG (arcOf x)) (y, 0) = y)
+		                      (forall y:set, y :e Star (arcOf x) ->
+		                        apply_fun (chooseG (arcOf x)) (y, 1) = b)
+		                      (forall t:set, t :e unit_interval ->
+		                        apply_fun (chooseG (arcOf x)) (b, t) = b)
+		                      HcG4).
+		                    assume _ _ HcG1 _.
+		                    claim Hval : apply_fun (chooseG (arcOf x)) (x, 1) = b.
+		                    { exact (HcG1 x HxStar). }
+		                    claim Hstep : apply_fun F (x, 1) =
+		                      apply_fun (chooseG (arcOf x)) (x, 1).
+		                    { rewrite HFx1. rewrite Hcoord0. reflexivity. }
+		                    claim Hcval : apply_fun (const_fun Ustar b) x = b.
+		                    { exact (const_fun_apply Ustar b x HxU). }
+		                    rewrite Hstep. rewrite Hval. rewrite Hcval. reflexivity.
 		              }
 		              exact HhomRaw.
 		          }
@@ -282389,7 +283302,8 @@ Admitted.
 (** U cap V = A union B disjoint open path-connected. alpha path in U from a to b, **)
 (** beta path in V from b to a. Then [alpha . beta] generates pi1(X,a). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 180 **)
-(** Bounty 198 **)
+(** Bounty 218 **)
+(** Lock Alice 1772288205 **)
 Theorem lemma84_6_generator_from_edge :
   forall X Tx U V A B a b alpha beta:set,
   topology_on X Tx ->
@@ -282564,7 +283478,8 @@ Admitted.
 (** a nontrivial free group. If T is a maximal tree in X, the fundamental group **)
 (** has free generators in bijection with edges of X not in T. **)
 (** EFFORT: 35 lines textbook, difficulty 8/10, USD 560 **)
-(** Bounty 678 **)
+(** Bounty 746 **)
+(** Lock Alice 1772288205 **)
 Theorem thm84_7_pi1_graph_is_free :
   forall X Tx Arcs T ArcsT x0:set,
   general_linear_graph X Tx Arcs ->
