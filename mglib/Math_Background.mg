@@ -162117,6 +162117,66 @@ exact ((subgroup_of_subset H G mult e inv Hsub) (apply_fun inv x)
   (subgroup_of_inv_closed H G mult e inv x Hsub Hx)).
 Qed.
 
+(** Proven Bob **)
+Lemma subgroup_of_refl :
+  forall G mult e inv:set,
+  group_structure G mult e inv ->
+  subgroup_of G G mult e inv.
+let G mult e inv.
+assume Hgrp.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume HmultFn HinvFn HeG HassocG HidG HinvG.
+apply (and4I
+  (G c= G)
+  (e :e G)
+  (forall x y:set, x :e G -> y :e G -> apply_fun mult (x, y) :e G)
+  (forall x:set, x :e G -> apply_fun inv x :e G)).
+- let x. assume Hx. exact Hx.
+- exact HeG.
+- let x y. assume Hx Hy.
+  exact (HmultFn (x, y) (tuple_2_setprod_by_pair_Sigma G G x y Hx Hy)).
+- let x. assume Hx.
+  exact (HinvFn x Hx).
+Qed.
+
+(** Proven Bob **)
+Lemma subgroup_of_trans :
+  forall H K G mult e inv:set,
+  subgroup_of H K mult e inv ->
+  subgroup_of K G mult e inv ->
+  subgroup_of H G mult e inv.
+let H K G mult e inv.
+assume HsubHK HsubKG.
+apply (and4E
+  (H c= K)
+  (e :e H)
+  (forall x y:set, x :e H -> y :e H -> apply_fun mult (x, y) :e H)
+  (forall x:set, x :e H -> apply_fun inv x :e H)
+  HsubHK).
+assume HHK HeH HmHcl HinvH.
+claim HKG : K c= G.
+{ exact (subgroup_of_subset K G mult e inv HsubKG). }
+apply (and4I
+  (H c= G)
+  (e :e H)
+  (forall x y:set, x :e H -> y :e H -> apply_fun mult (x, y) :e H)
+  (forall x:set, x :e H -> apply_fun inv x :e H)).
+- let x. assume Hx.
+  exact (HKG x (HHK x Hx)).
+- exact HeH.
+- exact HmHcl.
+- exact HinvH.
+Qed.
+
 (** Infrastructure: a family of subgroups generates an abelian group G **)
 (** Each x in G can be written as a finite sum of elements from the G_alpha **)
 Definition subgroups_generate_abelian : set -> set -> set -> set -> set -> set -> prop :=
