@@ -51268,6 +51268,122 @@ apply iffI.
     HFamSub).
 Qed.
 
+(** Infrastructure: in a pairwise disjoint family, a member is disjoint from the union of the rest **)
+(** Proven Bob **)
+Theorem pairwise_disjoint_member_union_rest_empty : forall Fam V:set,
+  pairwise_disjoint Fam ->
+  V :e Fam ->
+  V :/\: Union (Fam :\: {V}) = Empty.
+let Fam V.
+assume Hpd HVFam.
+apply Empty_eq.
+let x.
+assume HxInt.
+claim HxV : x :e V.
+{
+  exact (binintersectE1
+    V
+    (Union (Fam :\: {V}))
+    x
+    HxInt).
+}
+claim HxUnion : x :e Union (Fam :\: {V}).
+{
+  exact (binintersectE2
+    V
+    (Union (Fam :\: {V}))
+    x
+    HxInt).
+}
+apply (UnionE
+  (Fam :\: {V})
+  x
+  HxUnion).
+let W.
+assume HxPack.
+claim HxW : x :e W.
+{
+  exact (andEL
+    (x :e W)
+    (W :e Fam :\: {V})
+    HxPack).
+}
+claim HWrest : W :e Fam :\: {V}.
+{
+  exact (andER
+    (x :e W)
+    (W :e Fam :\: {V})
+    HxPack).
+}
+claim HWFam : W :e Fam.
+{
+  exact (setminusE1
+    Fam
+    {V}
+    W
+    HWrest).
+}
+claim HWneqV : W <> V.
+{
+  claim HWnotSing : W /:e {V}.
+  {
+    exact (setminusE2
+      Fam
+      {V}
+      W
+      HWrest).
+  }
+  assume HW0.
+  claim HWSing : W :e {V}.
+  {
+    rewrite HW0.
+    exact (SingI V).
+  }
+  exact (HWnotSing HWSing).
+}
+claim HVneqW : V <> W.
+{
+  assume HVW.
+  claim HW0 : W = V.
+  {
+    rewrite HVW.
+    reflexivity.
+  }
+  exact (HWneqV HW0).
+}
+claim Hdisj : V :/\: W = Empty.
+{
+  exact (Hpd
+    V
+    W
+    HVFam
+    HWFam
+    HVneqW).
+}
+claim HxVW : x :e V :/\: W.
+{
+  exact (binintersectI
+    V
+    W
+    x
+    HxV
+    HxW).
+}
+claim HxE : x :e Empty.
+{
+  exact (mem_eqR
+    x
+    (V :/\: W)
+    Empty
+    Hdisj
+    HxVW).
+}
+exact (EmptyE
+  x
+  HxE
+  False).
+Qed.
+
 
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
