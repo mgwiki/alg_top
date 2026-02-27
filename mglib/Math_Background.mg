@@ -162223,6 +162223,33 @@ Definition direct_sum_of_subgroups : set -> set -> set -> set -> set -> set -> p
 Definition kernel_of : set -> set -> set -> set :=
   fun G e phi => {x :e G | apply_fun phi x = e}.
 
+(** Proven Bob **)
+Lemma kernel_of_subset :
+  forall G e phi:set,
+  kernel_of G e phi c= G.
+let G e phi.
+let x. assume Hx.
+exact (SepE1 G (fun y:set => apply_fun phi y = e) x Hx).
+Qed.
+
+(** Proven Bob **)
+Lemma kernel_of_mem_in_G :
+  forall G e phi x:set,
+  x :e kernel_of G e phi -> x :e G.
+let G e phi x.
+assume Hx.
+exact (SepE1 G (fun y:set => apply_fun phi y = e) x Hx).
+Qed.
+
+(** Proven Bob **)
+Lemma kernel_of_mem_eq :
+  forall G e phi x:set,
+  x :e kernel_of G e phi -> apply_fun phi x = e.
+let G e phi x.
+assume Hx.
+exact (SepE2 G (fun y:set => apply_fun phi y = e) x Hx).
+Qed.
+
 (** Infrastructure: normal subgroup **)
 Definition normal_subgroup : set -> set -> set -> set -> set -> prop :=
   fun N G mult e inv =>
