@@ -162008,6 +162008,73 @@ Definition subgroup_of : set -> set -> set -> set -> set -> prop :=
     (forall x y:set, x :e H -> y :e H -> apply_fun mult (x, y) :e H) /\
     (forall x:set, x :e H -> apply_fun inv x :e H).
 
+(** Helper lemmas: subgroup components **)
+(** Proven Bob **)
+Lemma subgroup_of_subset :
+  forall H G mult e inv:set,
+  subgroup_of H G mult e inv -> H c= G.
+let H G mult e inv.
+assume Hsub.
+apply (and4E
+  (H c= G)
+  (e :e H)
+  (forall x y:set, x :e H -> y :e H -> apply_fun mult (x, y) :e H)
+  (forall x:set, x :e H -> apply_fun inv x :e H)
+  Hsub).
+assume HHG HeH HmHcl HinvH.
+exact HHG.
+Qed.
+
+(** Proven Bob **)
+Lemma subgroup_of_unit :
+  forall H G mult e inv:set,
+  subgroup_of H G mult e inv -> e :e H.
+let H G mult e inv.
+assume Hsub.
+apply (and4E
+  (H c= G)
+  (e :e H)
+  (forall x y:set, x :e H -> y :e H -> apply_fun mult (x, y) :e H)
+  (forall x:set, x :e H -> apply_fun inv x :e H)
+  Hsub).
+assume HHG HeH HmHcl HinvH.
+exact HeH.
+Qed.
+
+(** Proven Bob **)
+Lemma subgroup_of_mult_closed :
+  forall H G mult e inv x y:set,
+  subgroup_of H G mult e inv ->
+  x :e H -> y :e H -> apply_fun mult (x, y) :e H.
+let H G mult e inv x y.
+assume Hsub Hx Hy.
+apply (and4E
+  (H c= G)
+  (e :e H)
+  (forall x y:set, x :e H -> y :e H -> apply_fun mult (x, y) :e H)
+  (forall x:set, x :e H -> apply_fun inv x :e H)
+  Hsub).
+assume HHG HeH HmHcl HinvH.
+exact (HmHcl x y Hx Hy).
+Qed.
+
+(** Proven Bob **)
+Lemma subgroup_of_inv_closed :
+  forall H G mult e inv x:set,
+  subgroup_of H G mult e inv ->
+  x :e H -> apply_fun inv x :e H.
+let H G mult e inv x.
+assume Hsub Hx.
+apply (and4E
+  (H c= G)
+  (e :e H)
+  (forall x y:set, x :e H -> y :e H -> apply_fun mult (x, y) :e H)
+  (forall x:set, x :e H -> apply_fun inv x :e H)
+  Hsub).
+assume HHG HeH HmHcl HinvH.
+exact (HinvH x Hx).
+Qed.
+
 (** Infrastructure: a family of subgroups generates an abelian group G **)
 (** Each x in G can be written as a finite sum of elements from the G_alpha **)
 Definition subgroups_generate_abelian : set -> set -> set -> set -> set -> set -> prop :=
