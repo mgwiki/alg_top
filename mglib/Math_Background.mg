@@ -60775,6 +60775,33 @@ exact (continuous_map_function_on
   Hcont).
 Qed.
 
+(** Proven Bob **)
+Theorem lifting_of_continuous :
+  forall X Tx E Te B Tb p f ft:set,
+  lifting_of X Tx E Te B Tb p f ft ->
+  continuous_map X Tx E Te ft.
+let X Tx E Te B Tb p f ft.
+assume Hlift.
+exact (andEL
+  (continuous_map X Tx E Te ft)
+  (forall x:set, x :e X -> apply_fun p (apply_fun ft x) = apply_fun f x)
+  Hlift).
+Qed.
+
+(** Proven Bob **)
+Theorem lifting_of_commutes :
+  forall X Tx E Te B Tb p f ft:set,
+  lifting_of X Tx E Te B Tb p f ft ->
+  forall x:set, x :e X ->
+    apply_fun p (apply_fun ft x) = apply_fun f x.
+let X Tx E Te B Tb p f ft.
+assume Hlift.
+exact (andER
+  (continuous_map X Tx E Te ft)
+  (forall x:set, x :e X -> apply_fun p (apply_fun ft x) = apply_fun f x)
+  Hlift).
+Qed.
+
 (** Infrastructure: the unique lift of a path in B starting at e0 in E **)
 (** Uses Eps_i to select the lift guaranteed by Lem 54.1 **)
 Definition path_lift : set -> set -> set -> set -> set -> set -> set -> set :=
