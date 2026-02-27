@@ -162432,6 +162432,44 @@ claim HajK : apply_fun a2 j :e K. { exact (Ha2 j Hj). }
 exact (disjoint_elements_neq J K (apply_fun a1 i) (apply_fun a2 j) Hinter HaiJ HajK).
 Qed.
 
+(** Proven Bob **)
+Lemma function_on_binunion_cases :
+  forall J K X f x:set,
+  function_on f X (J :\/: K) ->
+  x :e X ->
+  apply_fun f x :e J \/ apply_fun f x :e K.
+let J K X f x.
+assume Hf Hx.
+claim HfxJK : apply_fun f x :e J :\/: K. { exact (Hf x Hx). }
+exact (binunionE J K (apply_fun f x) HfxJK).
+Qed.
+
+(** Proven Bob **)
+Lemma function_on_binunion_left_not_right :
+  forall J K X f x:set,
+  J :/\: K = Empty ->
+  function_on f X (J :\/: K) ->
+  x :e X ->
+  apply_fun f x :e J ->
+  apply_fun f x /:e K.
+let J K X f x.
+assume Hinter Hf Hx HfxJ.
+exact (binintersect_empty_left_not_right J K (apply_fun f x) Hinter HfxJ).
+Qed.
+
+(** Proven Bob **)
+Lemma function_on_binunion_right_not_left :
+  forall J K X f x:set,
+  J :/\: K = Empty ->
+  function_on f X (J :\/: K) ->
+  x :e X ->
+  apply_fun f x :e K ->
+  apply_fun f x /:e J.
+let J K X f x.
+assume Hinter Hf Hx HfxK.
+exact (binintersect_empty_right_not_left J K (apply_fun f x) Hinter HfxK).
+Qed.
+
 (** Infrastructure: kernel of a group homomorphism **)
 Definition kernel_of : set -> set -> set -> set :=
   fun G e phi => {x :e G | apply_fun phi x = e}.
