@@ -165113,6 +165113,21 @@ Definition subgroups_generate_abelian : set -> set -> set -> set -> set -> set -
           apply_fun alphas i <> apply_fun alphas j) /\
         x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n).
 
+(** Infrastructure: function_on into Empty forces empty domain **)
+(** Proven Bob **)
+Lemma function_on_codomain_empty_domain_empty : forall f X:set,
+  function_on f X Empty -> X = Empty.
+let f X.
+assume Hf.
+apply xm (X = Empty).
+- assume HX. exact HX.
+- assume Hne.
+  apply (nonempty_has_element X Hne).
+  let x.
+  assume Hx.
+  exact (EmptyE (apply_fun f x) (Hf x Hx) (X = Empty)).
+Qed.
+
 (** Proven Bob **)
 Lemma subgroups_generate_abelian_is_abelian :
   forall G mult e inv J Gfam:set,
