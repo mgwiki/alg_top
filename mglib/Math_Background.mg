@@ -81080,6 +81080,25 @@ claim HFt_54_cont :
           (Union slices = preimage_of E p U)
           HslicesCore).
       }
+      claim HtopSq_local : topology_on unit_square unit_square_topology.
+      {
+        exact (product_topology_is_topology
+          unit_interval
+          unit_interval_topology
+          unit_interval
+          unit_interval_topology
+          unit_interval_topology_on
+          unit_interval_topology_on).
+      }
+      claim HNsubSq : N c= unit_square.
+      {
+        exact (topology_elem_subset
+          unit_square
+          unit_square_topology
+          N
+          HtopSq_local
+          HNopenN).
+      }
       claim HqN : q :e N.
       {
         exact (andER
@@ -82534,7 +82553,7 @@ exact (andI
     HFt_54_cont
     HFt_54_00)
   HFt_54_comm).
-Admitted.
+Admitted. (** depends on admitted lemma54_2_sheet_non_switching_local **)
 
 (** from S54 Lem 54.2 (line 730 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map; p(e0) = b0. Let F: I x I -> B be **)
@@ -82583,7 +82602,7 @@ exact (homotopy_lift_from_exists_witness
   e0
   F
   Hex).
-Admitted.
+Admitted. (** depends on admitted lemma54_2_homotopy_lifting_exists **)
 
 (** from S54 Lem 54.2 path homotopy preservation (line 783 in algtop.tex) **)
 (** LATEX VERSION: If F is a path homotopy, then the lift F_tilde is also a path homotopy. **)
@@ -83135,7 +83154,7 @@ exact (andI
   (forall t:set, t :e unit_interval -> apply_fun Ft (1, t) = e1)
   HleftConst
   HrightConst).
- Admitted.
+Admitted.
 
 (** from S54 Thm 54.3 (line 785 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be covering, p(e0) = b0. Let f and g be paths in B **)
@@ -84086,7 +84105,7 @@ apply andI.
       reflexivity.
     * exact HleftEdgeE0.
     * exact HrightEdgeFF1.
- Admitted.
+Admitted.
 
 (** from S54 Definition (line 791 in algtop.tex) **)
 (** LATEX VERSION: The lifting correspondence phi: pi_1(B,b0) -> p^{-1}(b0) maps **)
@@ -84862,7 +84881,7 @@ apply andI.
 			    rewrite HlcApply0.
 			    rewrite HendRepEqF0.
 			    exact HendF0.
-			Admitted.
+Admitted. (** depends on admitted thm54_3_homotopic_lifts **)
 
 (** from S54 Thm 54.4 (line 799 in algtop.tex): lifting correspondence bijective **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 60 **)
@@ -101441,7 +101460,7 @@ claim HendEq :
 }
 rewrite HendEq.
 exact HpgEnd.
-Admitted.
+Admitted. (** depends on admitted thm54_3_homotopic_lifts **)
 
 
 (** Infrastructure: loop characterization equivalence (parenthesized) **)
@@ -101478,12 +101497,12 @@ apply iffI.
     Tb
     p
     e0
-    f
-    Hcov
-    He0
-    Hloop
-    Hend).
-Admitted.
+  f
+  Hcov
+  He0
+  Hloop
+  Hend).
+Admitted. (** depends on admitted thm54_6c_loop_characterization_forward/backward **)
 
 (** from S54 Thm 54.6c (line 847 in algtop.tex) **)
 (** LATEX VERSION: [f] in H iff f lifts to a loop in E based at e0. **)
@@ -101499,7 +101518,7 @@ Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
   <->
   apply_fun (path_lift E Te B Tb p e0 f) 1 = e0.
 admit.
-Admitted.
+Admitted. (** depends on admitted thm54_6c_loop_characterization_equiv **)
 
 (** Infrastructure: loop characterization under covering assumptions **)
 Lemma thm54_6c_loop_characterization_assumptions : forall E Te B Tb p e0 f:set,
@@ -101524,7 +101543,7 @@ exact (thm54_6c_loop_characterization_equiv
   Hcov
   He0
   Hloop).
-Admitted.
+Admitted. (** depends on admitted thm54_6c_loop_characterization_equiv **)
 
 (** from S54 Exercise 3 (line 871 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be covering. If alpha and beta are paths in B with **)
@@ -102311,7 +102330,7 @@ claim Hx2x1 : x2 = x1.
 }
 symmetry.
 exact Hx2x1.
-Admitted.
+Admitted. (** depends on admitted thm54_3_homotopic_lifts **)
 
 (** from S54 Exercise 8 (line 893 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map with E path connected. **)
@@ -105281,10 +105300,10 @@ apply (xm
     exact (He1Ne0
       He1e0).
   }
-		  exact (FalseE
-		    Hfalse
-		    (exists cls:set, cls :e G /\ cls <> idG)).
-		Admitted.
+  exact (FalseE
+    Hfalse
+    (exists cls:set, cls :e G /\ cls <> idG)).
+Admitted. (** depends on admitted thm54_4_lifting_correspondence_bijective **)
 
  (** Proven Bob **)
 Theorem s54_pi1_S1_nontrivial_from_two_lifts : forall e0 e1:set,
@@ -206899,7 +206918,7 @@ exact (thm67_8_rank_well_defined
   Hfab2
   Hfin1
   Hfin2).
-Admitted.
+Admitted. (** depends on admitted thm69_4_abelianization_free_group **)
 
 (** from S69 Cor 69.5 (line 3129 in algtop.tex): number of free generators is well-defined **)
 (** LATEX VERSION: If G is a free group with n free generators, then any system of **)
@@ -246739,7 +246758,6 @@ Qed.
 (** and semilocally simply connected. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 201 **)
-(** Lock Charlie 1772198794 **)
 Theorem lemma83_3_graph_locally_path_connected :
   forall X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
