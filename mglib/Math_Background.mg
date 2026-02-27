@@ -162470,6 +162470,19 @@ assume Hinter Hf Hx HfxK.
 exact (binintersect_empty_right_not_left J K (apply_fun f x) Hinter HfxK).
 Qed.
 
+(** Proven Bob **)
+Lemma disjoint_fun_values_neq_same_domain :
+  forall J K n a i j:set,
+  J :/\: K = Empty ->
+  function_on a n (J :\/: K) ->
+  i :e n -> j :e n ->
+  apply_fun a i :e J -> apply_fun a j :e K ->
+  apply_fun a i <> apply_fun a j.
+let J K n a i j.
+assume Hinter Ha Hi Hj Hai Haj.
+exact (disjoint_elements_neq J K (apply_fun a i) (apply_fun a j) Hinter Hai Haj).
+Qed.
+
 (** Infrastructure: kernel of a group homomorphism **)
 Definition kernel_of : set -> set -> set -> set :=
   fun G e phi => {x :e G | apply_fun phi x = e}.
