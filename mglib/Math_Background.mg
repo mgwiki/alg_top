@@ -254806,7 +254806,131 @@ set ArcsE := {B :e Power E |
 witness ArcsE.
 apply andI.
 - (** Part 1: general_linear_graph E Te ArcsE **)
-  admit.
+  prove topology_on E Te /\
+    (forall A0:set, A0 :e ArcsE -> A0 c= E /\ arc A0 (subspace_topology E Te A0)) /\
+    E = Union ArcsE /\
+    (forall A0 B0:set, A0 :e ArcsE -> B0 :e ArcsE -> A0 <> B0 ->
+      A0 :/\: B0 = Empty \/
+      (exists p0:set, A0 :/\: B0 = Sing p0 /\
+        (exists q:set, end_points_of_arc A0 (subspace_topology E Te A0) p0 q \/
+                       end_points_of_arc A0 (subspace_topology E Te A0) q p0) /\
+        (exists r:set, end_points_of_arc B0 (subspace_topology E Te B0) p0 r \/
+                       end_points_of_arc B0 (subspace_topology E Te B0) r p0))) /\
+    (forall C:set, C c= E ->
+      (closed_in E Te C <->
+       (forall A0:set, A0 :e ArcsE ->
+         closed_in A0 (subspace_topology E Te A0) (C :/\: A0)))).
+  (** Structure: ((((C1 /\ C2) /\ C3) /\ C4) /\ C5) due to left-assoc **)
+  apply andI.
+  + (** Left: (((C1 /\ C2) /\ C3) /\ C4) **)
+    apply andI.
+    * (** Left: ((C1 /\ C2) /\ C3) **)
+      apply andI.
+      { (** Left: C1 /\ C2 **)
+        apply andI.
+        - (** C1: topology_on E Te **)
+          exact HtopE.
+        - (** C2: each arc in ArcsE is subset of E and is an arc **)
+          let A0. assume HA0ArcsE.
+          claim HA0data : A0 :e Power E /\
+            (exists A1:set, A1 :e Arcs /\
+             exists x1:set, x1 :e preimage_of E p A1 /\
+             A0 = path_component_of (preimage_of E p A1)
+               (subspace_topology E Te (preimage_of E p A1)) x1).
+          { exact (SepE (Power E)
+              (fun B0:set => exists A1:set, A1 :e Arcs /\
+                exists x1:set, x1 :e preimage_of E p A1 /\
+                B0 = path_component_of (preimage_of E p A1)
+                  (subspace_topology E Te (preimage_of E p A1)) x1)
+              A0 HA0ArcsE). }
+          claim HA0subE : A0 c= E.
+          { exact (PowerE E A0
+              (andEL (A0 :e Power E)
+                (exists A1:set, A1 :e Arcs /\
+                 exists x1:set, x1 :e preimage_of E p A1 /\
+                 A0 = path_component_of (preimage_of E p A1)
+                   (subspace_topology E Te (preimage_of E p A1)) x1)
+                HA0data)). }
+          apply andI.
+          + exact HA0subE.
+          + (** arc A0 (subspace_topology E Te A0): use homeomorphism to arc A **)
+            admit. }
+      { (** C3: E = Union ArcsE **)
+        apply set_ext.
+        - (** E c= Union ArcsE **)
+          let e. assume HeE.
+          claim HpeX : apply_fun p e :e X.
+          { exact (Hfon e HeE). }
+          claim HpeUnion : apply_fun p e :e Union Arcs.
+          { rewrite <- HXeqUnion. exact HpeX. }
+          claim HexA : exists A1:set, apply_fun p e :e A1 /\ A1 :e Arcs.
+          { exact (UnionE Arcs (apply_fun p e) HpeUnion). }
+          apply HexA. let A1. assume HA1pack.
+          claim HpeA1 : apply_fun p e :e A1.
+          { exact (andEL (apply_fun p e :e A1) (A1 :e Arcs) HA1pack). }
+          claim HA1arcs : A1 :e Arcs.
+          { exact (andER (apply_fun p e :e A1) (A1 :e Arcs) HA1pack). }
+          claim Hepre : e :e preimage_of E p A1.
+          { prove e :e {x1 :e E | apply_fun p x1 :e A1}.
+            apply SepI. exact HeE. prove apply_fun p e :e A1. exact HpeA1. }
+          set Te_A1 := subspace_topology E Te (preimage_of E p A1).
+          claim HpreSubE3 : preimage_of E p A1 c= E.
+          { exact (Sep_Subq E (fun x1:set => apply_fun p x1 :e A1)). }
+          claim HtopPre3 : topology_on (preimage_of E p A1) Te_A1.
+          { exact (subspace_topology_is_topology E Te (preimage_of E p A1) HtopE HpreSubE3). }
+          set B_e := path_component_of (preimage_of E p A1) Te_A1 e.
+          claim He_in_B : e :e B_e.
+          { exact (path_component_reflexive (preimage_of E p A1) Te_A1 e HtopPre3 Hepre). }
+          claim HBe_sub_pre : B_e c= preimage_of E p A1.
+          { exact (Sep_Subq (preimage_of E p A1)
+              (fun y0:set => exists q:set,
+                function_on q unit_interval (preimage_of E p A1) /\
+                continuous_map unit_interval unit_interval_topology
+                  (preimage_of E p A1) Te_A1 q /\
+                apply_fun q 0 = e /\ apply_fun q 1 = y0)). }
+          claim HBe_sub_E : B_e c= E.
+          { let z. assume Hz. exact (HpreSubE3 z (HBe_sub_pre z Hz)). }
+          claim HBe_in_PowE : B_e :e Power E.
+          { exact (PowerI E B_e HBe_sub_E). }
+          claim HBe_in_ArcsE : B_e :e ArcsE.
+          { prove B_e :e {B1 :e Power E |
+              exists A2:set, A2 :e Arcs /\
+              exists x2:set, x2 :e preimage_of E p A2 /\
+              B1 = path_component_of (preimage_of E p A2)
+                (subspace_topology E Te (preimage_of E p A2)) x2}.
+            apply SepI.
+            - exact HBe_in_PowE.
+            - prove exists A2:set, A2 :e Arcs /\
+                exists x2:set, x2 :e preimage_of E p A2 /\
+                B_e = path_component_of (preimage_of E p A2)
+                  (subspace_topology E Te (preimage_of E p A2)) x2.
+              witness A1. apply andI. exact HA1arcs.
+              witness e. apply andI. exact Hepre.
+              reflexivity. }
+          exact (UnionI ArcsE e B_e He_in_B HBe_in_ArcsE).
+        - (** Union ArcsE c= E **)
+          let e. assume HeUnion.
+          claim HexB : exists B1:set, e :e B1 /\ B1 :e ArcsE.
+          { exact (UnionE ArcsE e HeUnion). }
+          apply HexB. let B1. assume HB1pack.
+          claim HeB1 : e :e B1.
+          { exact (andEL (e :e B1) (B1 :e ArcsE) HB1pack). }
+          claim HB1ArcsE : B1 :e ArcsE.
+          { exact (andER (e :e B1) (B1 :e ArcsE) HB1pack). }
+          claim HB1PowE : B1 :e Power E.
+          { exact (SepE1 (Power E)
+              (fun B0:set => exists A1:set, A1 :e Arcs /\
+                exists x1:set, x1 :e preimage_of E p A1 /\
+                B0 = path_component_of (preimage_of E p A1)
+                  (subspace_topology E Te (preimage_of E p A1)) x1)
+              B1 HB1ArcsE). }
+          claim HB1subE : B1 c= E.
+          { exact (PowerE E B1 HB1PowE). }
+          exact (HB1subE e HeB1). }
+    * (** C4: intersection condition **)
+      admit.
+  + (** C5: coherence condition **)
+    admit.
 - (** Part 2: Each B in ArcsE has the required properties **)
   let B.
   assume HBinArcsE.
