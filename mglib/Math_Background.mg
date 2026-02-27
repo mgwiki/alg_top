@@ -186145,6 +186145,56 @@ Definition reduced_word : set -> set -> set -> set -> set -> prop :=
         apply_fun xs (ordsucc i) :e apply_fun Gfam beta ->
         alpha <> beta).
 
+(** Infrastructure: entries of a reduced word lie in G **)
+(** Proven Bob **)
+Theorem reduced_word_in_G : forall G mult e inv J Gfam efam n xs:set,
+  (forall alpha:set, alpha :e J ->
+    subgroup_of (apply_fun Gfam alpha) G mult e inv) ->
+  reduced_word J Gfam efam n xs ->
+  forall i:set, i :e n -> apply_fun xs i :e G.
+let G mult e inv J Gfam efam n xs.
+assume Hsub Hred.
+apply (and3E
+  (n :e omega)
+  (forall i:set, i :e n ->
+    exists alpha:set, alpha :e J /\
+      apply_fun xs i :e apply_fun Gfam alpha /\
+      apply_fun xs i <> apply_fun efam alpha)
+  (forall i:set, i :e n -> ordsucc i :e n ->
+    forall alpha beta:set, alpha :e J -> beta :e J ->
+      apply_fun xs i :e apply_fun Gfam alpha ->
+      apply_fun xs (ordsucc i) :e apply_fun Gfam beta ->
+      alpha <> beta)
+  Hred).
+assume _ Helem _.
+let i.
+assume Hi.
+apply (Helem
+  i
+  Hi).
+let alpha.
+assume Halpha_pack.
+apply (and3E
+  (alpha :e J)
+  (apply_fun xs i :e apply_fun Gfam alpha)
+  (apply_fun xs i <> apply_fun efam alpha)
+  Halpha_pack).
+assume HalphaJ HxGalpha _.
+apply (and4E
+  (apply_fun Gfam alpha c= G)
+  (e :e apply_fun Gfam alpha)
+  (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+    apply_fun mult (x, y) :e apply_fun Gfam alpha)
+  (forall x:set, x :e apply_fun Gfam alpha -> apply_fun inv x :e apply_fun Gfam alpha)
+  (Hsub
+    alpha
+    HalphaJ)).
+assume HsubGal _ _ _.
+exact (HsubGal
+  (apply_fun xs i)
+  HxGalpha).
+Qed.
+
 (** Infrastructure: the product represented by a word of length n **)
 Definition word_product : set -> set -> set -> set -> set :=
   fun mult e xs n =>
