@@ -254726,6 +254726,34 @@ exact (homeomorphism_preserves_path_connected_space_right
   unit_interval_path_connected).
 Qed.
 
+(** Infrastructure: unit interval is simply connected **)
+(** Uses: [0,1] is convex in R, hence star convex, hence simply connected **)
+Theorem unit_interval_simply_connected :
+  simply_connected unit_interval unit_interval_topology.
+admit.
+Admitted.
+
+(** Infrastructure: arcs are simply connected (homeomorphic to [0,1]) **)
+Theorem arc_simply_connected : forall A Ta:set,
+  arc A Ta -> simply_connected A Ta.
+let A Ta.
+assume Harc.
+claim Hex : exists f:set, homeomorphism unit_interval unit_interval_topology A Ta f.
+{ exact Harc. }
+apply Hex.
+let f.
+assume Hf.
+exact (homeomorphism_preserves_simply_connected
+  unit_interval unit_interval_topology A Ta f Hf
+  unit_interval_simply_connected).
+Admitted. (** depends on admitted unit_interval_simply_connected **)
+
+(** Infrastructure: arcs are locally path connected (homeomorphic to [0,1]) **)
+Theorem arc_locally_path_connected : forall A Ta:set,
+  arc A Ta -> locally_path_connected A Ta.
+admit.
+Admitted.
+
 (** from S83 Thm 83.4 (line 5530 in algtop.tex): covering of graph is graph **)
 (** LATEX VERSION: Let p: E -> X be a covering map where X is a linear graph. **)
 (** If A_alpha is an edge of X and B is a path component of p^{-1}(A_alpha), **)
@@ -254885,7 +254913,176 @@ apply andI.
         (preimage_of E p A) (subspace_topology E Te (preimage_of E p A)) x0
         HtopPre Hx0pre).
   + (** homeomorphism B ... A ... (graph B ...) **)
-    admit.
+    (** Re-derive infrastructure for this bullet **)
+    claim HpreSubE2 : preimage_of E p A c= E.
+    { exact (Sep_Subq E (fun x1:set => apply_fun p x1 :e A)). }
+    claim HtopPre2 : topology_on (preimage_of E p A) (subspace_topology E Te (preimage_of E p A)).
+    { exact (subspace_topology_is_topology E Te (preimage_of E p A) HtopE HpreSubE2). }
+    claim HsubEq2 : subspace_topology (preimage_of E p A)
+      (subspace_topology E Te (preimage_of E p A)) B
+      = subspace_topology E Te B.
+    { exact (subspace_topology_transitive_weak E Te (preimage_of E p A) B HBsubPre). }
+    set Te_pre := subspace_topology E Te (preimage_of E p A).
+    set Ta := subspace_topology X Tx A.
+    set pA := graph (preimage_of E p A) (fun x1:set => apply_fun p x1).
+    (** Step 1: Covering map on preimage via thm53_2 **)
+    claim Hcov_pre : covering_map (preimage_of E p A) Te_pre A Ta pA.
+    { exact (thm53_2_subspace_covering E Te X Tx p A Hcov HAsubX). }
+    (** Step 2: A is path connected and locally path connected **)
+    claim HApc : path_connected_space A Ta.
+    { exact (arc_path_connected A Ta HAarc). }
+    claim HAlpc : locally_path_connected A Ta.
+    { exact (arc_locally_path_connected A Ta HAarc). }
+    (** Step 3: x0 is in B **)
+    claim Hx0B : x0 :e B.
+    { rewrite HBeq.
+      exact (path_component_reflexive (preimage_of E p A) Te_pre x0 HtopPre2 Hx0pre). }
+    (** Step 4: B is nonempty **)
+    claim HBne : B <> Empty.
+    { assume Habs.
+      claim Hfalse : x0 :e Empty.
+      { rewrite <- Habs. exact Hx0B. }
+      exact (EmptyE x0 Hfalse). }
+    (** Step 5: B is path connected in preimage subspace **)
+    claim HBpc_pre : path_connected_space B
+      (subspace_topology (preimage_of E p A) Te_pre B).
+    { rewrite HBeq.
+      exact (path_component_of_is_path_connected
+        (preimage_of E p A) Te_pre x0 HtopPre2 Hx0pre). }
+    (** Step 6: Maximality - path component closed under paths **)
+    claim HBmax : forall x1:set, x1 :e preimage_of E p A ->
+      (exists y1:set, y1 :e B /\ exists gamma1:set,
+        continuous_map unit_interval unit_interval_topology
+          (preimage_of E p A) Te_pre gamma1 /\
+        apply_fun gamma1 0 = x1 /\ apply_fun gamma1 1 = y1) ->
+      x1 :e B.
+    {
+      let x1. assume Hx1pre. assume Hex1.
+      apply Hex1. let y1. assume Hy1pack.
+      claim Hy1B : y1 :e B.
+      { exact (andEL (y1 :e B)
+          (exists gamma1:set,
+            continuous_map unit_interval unit_interval_topology
+              (preimage_of E p A) Te_pre gamma1 /\
+            apply_fun gamma1 0 = x1 /\ apply_fun gamma1 1 = y1)
+          Hy1pack). }
+      claim Hexgamma : exists gamma1:set,
+        continuous_map unit_interval unit_interval_topology
+          (preimage_of E p A) Te_pre gamma1 /\
+        apply_fun gamma1 0 = x1 /\ apply_fun gamma1 1 = y1.
+      { exact (andER (y1 :e B)
+          (exists gamma1:set,
+            continuous_map unit_interval unit_interval_topology
+              (preimage_of E p A) Te_pre gamma1 /\
+            apply_fun gamma1 0 = x1 /\ apply_fun gamma1 1 = y1)
+          Hy1pack). }
+      apply Hexgamma. let gamma1. assume Hgamma1.
+      claim Hg1AB : continuous_map unit_interval unit_interval_topology
+        (preimage_of E p A) Te_pre gamma1 /\ apply_fun gamma1 0 = x1.
+      { exact (andEL
+          (continuous_map unit_interval unit_interval_topology
+            (preimage_of E p A) Te_pre gamma1 /\ apply_fun gamma1 0 = x1)
+          (apply_fun gamma1 1 = y1)
+          Hgamma1). }
+      claim Hg1cont : continuous_map unit_interval unit_interval_topology
+        (preimage_of E p A) Te_pre gamma1.
+      { exact (andEL
+          (continuous_map unit_interval unit_interval_topology
+            (preimage_of E p A) Te_pre gamma1)
+          (apply_fun gamma1 0 = x1)
+          Hg1AB). }
+      claim Hg10 : apply_fun gamma1 0 = x1.
+      { exact (andER
+          (continuous_map unit_interval unit_interval_topology
+            (preimage_of E p A) Te_pre gamma1)
+          (apply_fun gamma1 0 = x1)
+          Hg1AB). }
+      claim Hg11 : apply_fun gamma1 1 = y1.
+      { exact (andER
+          (continuous_map unit_interval unit_interval_topology
+            (preimage_of E p A) Te_pre gamma1 /\ apply_fun gamma1 0 = x1)
+          (apply_fun gamma1 1 = y1)
+          Hgamma1). }
+      claim Hg1fon : function_on gamma1 unit_interval (preimage_of E p A).
+      { exact (continuous_map_function_on unit_interval unit_interval_topology
+          (preimage_of E p A) Te_pre gamma1 Hg1cont). }
+      claim Hy1pre : y1 :e preimage_of E p A.
+      { exact (HBsubPre y1 Hy1B). }
+      (** y1 in path_component_of x1 **)
+      claim Hy1_pc_x1 : y1 :e path_component_of (preimage_of E p A) Te_pre x1.
+      {
+        prove y1 :e {y0 :e preimage_of E p A | exists q:set,
+          function_on q unit_interval (preimage_of E p A) /\
+          continuous_map unit_interval unit_interval_topology
+            (preimage_of E p A) Te_pre q /\
+          apply_fun q 0 = x1 /\ apply_fun q 1 = y0}.
+        apply SepI.
+        - exact Hy1pre.
+        - prove exists q:set,
+            function_on q unit_interval (preimage_of E p A) /\
+            continuous_map unit_interval unit_interval_topology
+              (preimage_of E p A) Te_pre q /\
+            apply_fun q 0 = x1 /\ apply_fun q 1 = y1.
+          witness gamma1.
+          apply andI.
+          + apply andI.
+            * exact (andI
+                (function_on gamma1 unit_interval (preimage_of E p A))
+                (continuous_map unit_interval unit_interval_topology
+                  (preimage_of E p A) Te_pre gamma1)
+                Hg1fon Hg1cont).
+            * exact Hg10.
+          + exact Hg11.
+      }
+      (** By symmetry: x1 in path_component_of y1 **)
+      claim Hx1_pc_y1 : x1 :e path_component_of (preimage_of E p A) Te_pre y1.
+      { exact (path_component_symmetric_axiom
+          (preimage_of E p A) Te_pre x1 y1 HtopPre2 Hx1pre Hy1pre Hy1_pc_x1). }
+      (** y1 in path_component_of x0 (= B) **)
+      claim Hy1_pc_x0 : y1 :e path_component_of (preimage_of E p A) Te_pre x0.
+      { rewrite <- HBeq. exact Hy1B. }
+      (** By transitivity: x1 in path_component_of x0 = B **)
+      rewrite HBeq.
+      exact (path_component_transitive_axiom
+        (preimage_of E p A) Te_pre x0 y1 x1 HtopPre2 Hx0pre Hy1pre Hx1pre
+        Hy1_pc_x0 Hx1_pc_y1).
+    }
+    (** Step 7: Covering map from B to A via lemma80_1 **)
+    claim Hcov_B_raw : covering_map B
+      (subspace_topology (preimage_of E p A) Te_pre B) A Ta
+      (graph B (fun x1:set => apply_fun pA x1)).
+    { exact (lemma80_1_path_component_covering
+        (preimage_of E p A) Te_pre A Ta pA
+        Hcov_pre HApc HAlpc
+        B HBsubPre HBne HBpc_pre HBmax). }
+    (** Step 8: Graph equality **)
+    claim Hgraph_eq : graph B (fun x1:set => apply_fun pA x1)
+      = graph B (fun x1:set => apply_fun p x1).
+    {
+      apply (graph_extensional B
+        (fun x1:set => apply_fun pA x1)
+        (fun x1:set => apply_fun p x1)).
+      let a. assume HaB.
+      exact (apply_fun_graph (preimage_of E p A)
+        (fun x1:set => apply_fun p x1) a (HBsubPre a HaB)).
+    }
+    (** Step 9: Covering map with correct topology and map **)
+    claim Hcov_B : covering_map B (subspace_topology E Te B) A Ta
+      (graph B (fun x1:set => apply_fun p x1)).
+    { rewrite <- Hgraph_eq. rewrite <- HsubEq2. exact Hcov_B_raw. }
+    (** Step 10: B is path connected **)
+    claim HBpc : path_connected_space B (subspace_topology E Te B).
+    { rewrite <- HsubEq2. rewrite HBeq.
+      exact (path_component_of_is_path_connected
+        (preimage_of E p A) Te_pre x0 HtopPre2 Hx0pre). }
+    (** Step 11: A is simply connected **)
+    claim HAsc : simply_connected A Ta.
+    { exact (arc_simply_connected A Ta HAarc). }
+    (** Step 12: Homeomorphism via ex54_8 **)
+    exact (ex54_8_simply_connected_base_homeomorphism
+      B (subspace_topology E Te B) A Ta
+      (graph B (fun x1:set => apply_fun p x1))
+      Hcov_B HBpc HAsc).
 Admitted.
 
 (** from S83 Exercise 2 (line 5547 in algtop.tex) **)
