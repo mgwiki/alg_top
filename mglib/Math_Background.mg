@@ -255406,8 +255406,107 @@ Theorem homeomorphism_complement_connected :
     (subspace_topology Y Ty (Y :\: Sing y)) ->
   connected_space (X :\: Sing x)
     (subspace_topology X Tx (X :\: Sing x)).
-admit.
-Admitted.
+let X Tx Y Ty f x y.
+assume Hhomeo : homeomorphism X Tx Y Ty f.
+assume HxX : x :e X.
+assume Hfxy : apply_fun f x = y.
+assume HYconn : connected_space (Y :\: Sing y)
+  (subspace_topology Y Ty (Y :\: Sing y)).
+(** Get inverse g with properties **)
+claim HinvPkg : exists g:set, continuous_map Y Ty X Tx g /\
+  (forall x0:set, x0 :e X -> apply_fun g (apply_fun f x0) = x0) /\
+  (forall y0:set, y0 :e Y -> apply_fun f (apply_fun g y0) = y0).
+{ exact (homeomorphism_inverse_package X Tx Y Ty f Hhomeo). }
+apply HinvPkg. let g. assume HgPack.
+claim HgAB : continuous_map Y Ty X Tx g /\
+  (forall x0:set, x0 :e X -> apply_fun g (apply_fun f x0) = x0).
+{ exact (andEL
+    (continuous_map Y Ty X Tx g /\
+     (forall x0:set, x0 :e X -> apply_fun g (apply_fun f x0) = x0))
+    (forall y0:set, y0 :e Y -> apply_fun f (apply_fun g y0) = y0)
+    HgPack). }
+claim Hgcont : continuous_map Y Ty X Tx g.
+{ exact (andEL (continuous_map Y Ty X Tx g)
+    (forall x0:set, x0 :e X -> apply_fun g (apply_fun f x0) = x0) HgAB). }
+claim Hgf : forall x0:set, x0 :e X -> apply_fun g (apply_fun f x0) = x0.
+{ exact (andER (continuous_map Y Ty X Tx g)
+    (forall x0:set, x0 :e X -> apply_fun g (apply_fun f x0) = x0) HgAB). }
+claim Hfg : forall y0:set, y0 :e Y -> apply_fun f (apply_fun g y0) = y0.
+{ exact (andER
+    (continuous_map Y Ty X Tx g /\
+     (forall x0:set, x0 :e X -> apply_fun g (apply_fun f x0) = x0))
+    (forall y0:set, y0 :e Y -> apply_fun f (apply_fun g y0) = y0) HgPack). }
+claim HgFun : function_on g Y X.
+{ exact (continuous_map_function_on Y Ty X Tx g Hgcont). }
+claim HfFun : function_on f X Y.
+{ exact (continuous_map_function_on X Tx Y Ty f
+    (homeomorphism_continuous X Tx Y Ty f Hhomeo)). }
+(** Build homeomorphism Y Ty X Tx g **)
+claim Hghomeo : homeomorphism Y Ty X Tx g.
+{ prove continuous_map Y Ty X Tx g /\ exists h:set,
+    continuous_map X Tx Y Ty h /\
+    (forall y0:set, y0 :e Y -> apply_fun h (apply_fun g y0) = y0) /\
+    (forall x0:set, x0 :e X -> apply_fun g (apply_fun h x0) = x0).
+  apply andI.
+  - exact Hgcont.
+  - witness f. apply andI.
+    - apply andI.
+      - exact (homeomorphism_continuous X Tx Y Ty f Hhomeo).
+      - exact Hfg.
+    - exact Hgf. }
+(** Restrict g to Y \ {y} **)
+claim HYysubY : Y :\: Sing y c= Y. { exact (setminus_Subq Y (Sing y)). }
+claim Hgrestrict : homeomorphism (Y :\: Sing y) (subspace_topology Y Ty (Y :\: Sing y))
+  (image_of g (Y :\: Sing y)) (subspace_topology X Tx (image_of g (Y :\: Sing y))) g.
+{ exact (homeomorphism_restrict_to_image_of_subset Y Ty X Tx g (Y :\: Sing y) Hghomeo HYysubY). }
+(** Show image_of g (Y \ {y}) = X \ {x} **)
+claim Himage_eq : image_of g (Y :\: Sing y) = X :\: Sing x.
+{ apply set_ext.
+  - let z. assume Hz : z :e image_of g (Y :\: Sing y).
+    apply (ReplE (Y :\: Sing y) (fun t:set => apply_fun g t) z Hz).
+    let t. assume HtData : t :e Y :\: Sing y /\ z = apply_fun g t.
+    claim HtYy : t :e Y :\: Sing y.
+    { exact (andEL (t :e Y :\: Sing y) (z = apply_fun g t) HtData). }
+    claim Hzeq : z = apply_fun g t.
+    { exact (andER (t :e Y :\: Sing y) (z = apply_fun g t) HtData). }
+    claim HtY : t :e Y. { exact (setminusE1 Y (Sing y) t HtYy). }
+    claim Htney : t /:e Sing y. { exact (setminusE2 Y (Sing y) t HtYy). }
+    claim HzX : z :e X. { rewrite Hzeq. exact (HgFun t HtY). }
+    apply setminusI.
+    - exact HzX.
+    - assume HzSing : z :e Sing x.
+      claim Hzx : z = x. { exact (SingE x z HzSing). }
+      claim Hgtx : apply_fun g t = x. { rewrite <- Hzx. symmetry. exact Hzeq. }
+      claim Hfgt : apply_fun f (apply_fun g t) = t. { exact (Hfg t HtY). }
+      claim Hfxt : apply_fun f x = t. { rewrite <- Hgtx. exact Hfgt. }
+      claim Hty : t = y. { rewrite <- Hfxy. symmetry. exact Hfxt. }
+      apply Htney. rewrite Hty. exact (SingI y).
+  - let z. assume Hz : z :e X :\: Sing x.
+    claim HzX : z :e X. { exact (setminusE1 X (Sing x) z Hz). }
+    claim Hznex : z /:e Sing x. { exact (setminusE2 X (Sing x) z Hz). }
+    claim HfzY : apply_fun f z :e Y. { exact (HfFun z HzX). }
+    claim HfzneySing : apply_fun f z /:e Sing y.
+    { assume HfzSing : apply_fun f z :e Sing y.
+      claim Hfzy : apply_fun f z = y. { exact (SingE y (apply_fun f z) HfzSing). }
+      claim Hfzeqfx : apply_fun f z = apply_fun f x. { rewrite Hfzy. symmetry. exact Hfxy. }
+      claim Hzx : z = x.
+      { exact (homeomorphism_injective X Tx Y Ty f Hhomeo z x HzX HxX Hfzeqfx). }
+      apply Hznex. rewrite Hzx. exact (SingI x). }
+    claim HfzYy : apply_fun f z :e Y :\: Sing y.
+    { exact (setminusI Y (Sing y) (apply_fun f z) HfzY HfzneySing). }
+    claim Hgfz : apply_fun g (apply_fun f z) = z. { exact (Hgf z HzX). }
+    rewrite <- Hgfz.
+    exact (ReplI (Y :\: Sing y) (fun t:set => apply_fun g t) (apply_fun f z) HfzYy). }
+(** Rewrite to get homeomorphism with X \ {x} **)
+claim Hgrestrict2 : homeomorphism (Y :\: Sing y) (subspace_topology Y Ty (Y :\: Sing y))
+  (X :\: Sing x) (subspace_topology X Tx (X :\: Sing x)) g.
+{ rewrite <- Himage_eq. exact Hgrestrict. }
+(** Apply connectedness preservation **)
+exact (homeomorphism_preserves_connected
+  (Y :\: Sing y) (subspace_topology Y Ty (Y :\: Sing y))
+  (X :\: Sing x) (subspace_topology X Tx (X :\: Sing x))
+  g Hgrestrict2 HYconn).
+Qed.
 
 (** Helper: every arc has end points. **)
 (** (This is proved later as arc_has_end_points_of_arc_early but needed here.) **)
