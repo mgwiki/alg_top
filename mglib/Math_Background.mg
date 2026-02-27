@@ -1,4 +1,4 @@
-(** Balance Alice 3388 **)
+(** Balance Alice 3495 **)
 (** Balance Bob 3451 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
@@ -176061,7 +176061,7 @@ apply andI.
     claim Hif_val : (if alpha :e S then 1 else 0) = 0.
     { exact (If_i_0 (alpha :e S) 1 0 HnS). }
     rewrite Hh_eq. rewrite Hhfam_eq. rewrite Heps_val. exact Hif_val.
-Admitted.
+Qed.
 
 (** Helper: injection from Power(J) to Power(J2) using Hom-counting **)
 (** For each S in Power(J), construct the unique hom h_S, then restrict to J2 **)
@@ -176096,13 +176096,222 @@ apply andI.
       (forall alpha:set, alpha :e J -> ~(alpha :e S) -> apply_fun h (apply_fun basis alpha) = 0)))
     (apply_fun basis2 beta) = 1)).
 - (** f is injective **)
-  let S. assume HS : S :e Power J.
-  let T. assume HT : T :e Power J.
+  let S. assume HS : S :e Power J. let T. assume HT : T :e Power J.
   assume Heq : f S = f T.
-  (** S and T determine the same restriction to J2, hence the same hom **)
-  (** The hom determines S and T uniquely, so S = T **)
-  admit.
-Admitted.
+  claim HSJ : S c= J. { exact (PowerE J S HS). }
+  claim HTJ : T c= J. { exact (PowerE J T HT). }
+  (** Get Eps_i specs for h_S and h_T **)
+  set h_S := Eps_i (fun h:set =>
+    group_homomorphism G mult 2 Z2_mult h /\
+    (forall alpha:set, alpha :e S -> apply_fun h (apply_fun basis alpha) = 1) /\
+    (forall alpha:set, alpha :e J -> ~(alpha :e S) -> apply_fun h (apply_fun basis alpha) = 0)).
+  set h_T := Eps_i (fun h:set =>
+    group_homomorphism G mult 2 Z2_mult h /\
+    (forall alpha:set, alpha :e T -> apply_fun h (apply_fun basis alpha) = 1) /\
+    (forall alpha:set, alpha :e J -> ~(alpha :e T) -> apply_fun h (apply_fun basis alpha) = 0)).
+  claim Hh_S_exists : exists h:set,
+    group_homomorphism G mult 2 Z2_mult h /\
+    (forall alpha:set, alpha :e S -> apply_fun h (apply_fun basis alpha) = 1) /\
+    (forall alpha:set, alpha :e J -> ~(alpha :e S) -> apply_fun h (apply_fun basis alpha) = 0).
+  { exact (free_abelian_hom_from_subset G mult e inv J basis S Hfab1 HSJ). }
+  claim Hh_T_exists : exists h:set,
+    group_homomorphism G mult 2 Z2_mult h /\
+    (forall alpha:set, alpha :e T -> apply_fun h (apply_fun basis alpha) = 1) /\
+    (forall alpha:set, alpha :e J -> ~(alpha :e T) -> apply_fun h (apply_fun basis alpha) = 0).
+  { exact (free_abelian_hom_from_subset G mult e inv J basis T Hfab1 HTJ). }
+  claim Hh_S_spec : group_homomorphism G mult 2 Z2_mult h_S /\
+    (forall alpha:set, alpha :e S -> apply_fun h_S (apply_fun basis alpha) = 1) /\
+    (forall alpha:set, alpha :e J -> ~(alpha :e S) -> apply_fun h_S (apply_fun basis alpha) = 0).
+  { apply Hh_S_exists. let h. assume Hh.
+    exact (Eps_i_ax
+      (fun h:set =>
+        group_homomorphism G mult 2 Z2_mult h /\
+        (forall alpha:set, alpha :e S -> apply_fun h (apply_fun basis alpha) = 1) /\
+        (forall alpha:set, alpha :e J -> ~(alpha :e S) -> apply_fun h (apply_fun basis alpha) = 0))
+      h Hh). }
+  claim Hh_T_spec : group_homomorphism G mult 2 Z2_mult h_T /\
+    (forall alpha:set, alpha :e T -> apply_fun h_T (apply_fun basis alpha) = 1) /\
+    (forall alpha:set, alpha :e J -> ~(alpha :e T) -> apply_fun h_T (apply_fun basis alpha) = 0).
+  { apply Hh_T_exists. let h. assume Hh.
+    exact (Eps_i_ax
+      (fun h:set =>
+        group_homomorphism G mult 2 Z2_mult h /\
+        (forall alpha:set, alpha :e T -> apply_fun h (apply_fun basis alpha) = 1) /\
+        (forall alpha:set, alpha :e J -> ~(alpha :e T) -> apply_fun h (apply_fun basis alpha) = 0))
+      h Hh). }
+  (** Extract components of h_S_spec: left-assoc (A /\ B) /\ C **)
+  claim HhS_hom : group_homomorphism G mult 2 Z2_mult h_S.
+  { exact (andEL (group_homomorphism G mult 2 Z2_mult h_S)
+      (forall alpha:set, alpha :e S -> apply_fun h_S (apply_fun basis alpha) = 1)
+      (andEL (group_homomorphism G mult 2 Z2_mult h_S /\
+        (forall alpha:set, alpha :e S -> apply_fun h_S (apply_fun basis alpha) = 1))
+        (forall alpha:set, alpha :e J -> ~(alpha :e S) -> apply_fun h_S (apply_fun basis alpha) = 0)
+        Hh_S_spec)). }
+  claim HhS_in : forall alpha:set, alpha :e S -> apply_fun h_S (apply_fun basis alpha) = 1.
+  { exact (andER (group_homomorphism G mult 2 Z2_mult h_S)
+      (forall alpha:set, alpha :e S -> apply_fun h_S (apply_fun basis alpha) = 1)
+      (andEL (group_homomorphism G mult 2 Z2_mult h_S /\
+        (forall alpha:set, alpha :e S -> apply_fun h_S (apply_fun basis alpha) = 1))
+        (forall alpha:set, alpha :e J -> ~(alpha :e S) -> apply_fun h_S (apply_fun basis alpha) = 0)
+        Hh_S_spec)). }
+  claim HhS_out : forall alpha:set, alpha :e J -> ~(alpha :e S) -> apply_fun h_S (apply_fun basis alpha) = 0.
+  { exact (andER (group_homomorphism G mult 2 Z2_mult h_S /\
+      (forall alpha:set, alpha :e S -> apply_fun h_S (apply_fun basis alpha) = 1))
+      (forall alpha:set, alpha :e J -> ~(alpha :e S) -> apply_fun h_S (apply_fun basis alpha) = 0)
+      Hh_S_spec). }
+  claim HhT_hom : group_homomorphism G mult 2 Z2_mult h_T.
+  { exact (andEL (group_homomorphism G mult 2 Z2_mult h_T)
+      (forall alpha:set, alpha :e T -> apply_fun h_T (apply_fun basis alpha) = 1)
+      (andEL (group_homomorphism G mult 2 Z2_mult h_T /\
+        (forall alpha:set, alpha :e T -> apply_fun h_T (apply_fun basis alpha) = 1))
+        (forall alpha:set, alpha :e J -> ~(alpha :e T) -> apply_fun h_T (apply_fun basis alpha) = 0)
+        Hh_T_spec)). }
+  claim HhT_in : forall alpha:set, alpha :e T -> apply_fun h_T (apply_fun basis alpha) = 1.
+  { exact (andER (group_homomorphism G mult 2 Z2_mult h_T)
+      (forall alpha:set, alpha :e T -> apply_fun h_T (apply_fun basis alpha) = 1)
+      (andEL (group_homomorphism G mult 2 Z2_mult h_T /\
+        (forall alpha:set, alpha :e T -> apply_fun h_T (apply_fun basis alpha) = 1))
+        (forall alpha:set, alpha :e J -> ~(alpha :e T) -> apply_fun h_T (apply_fun basis alpha) = 0)
+        Hh_T_spec)). }
+  claim HhT_out : forall alpha:set, alpha :e J -> ~(alpha :e T) -> apply_fun h_T (apply_fun basis alpha) = 0.
+  { exact (andER (group_homomorphism G mult 2 Z2_mult h_T /\
+      (forall alpha:set, alpha :e T -> apply_fun h_T (apply_fun basis alpha) = 1))
+      (forall alpha:set, alpha :e J -> ~(alpha :e T) -> apply_fun h_T (apply_fun basis alpha) = 0)
+      Hh_T_spec). }
+  (** Extract function_on for h_S and h_T to get values in 2 **)
+  claim HhS_fn : function_on h_S G 2.
+  { exact (andEL (function_on h_S G 2)
+      (forall x y:set, x :e G -> y :e G ->
+        apply_fun h_S (apply_fun mult (x, y)) = apply_fun Z2_mult (apply_fun h_S x, apply_fun h_S y))
+      HhS_hom). }
+  claim HhT_fn : function_on h_T G 2.
+  { exact (andEL (function_on h_T G 2)
+      (forall x y:set, x :e G -> y :e G ->
+        apply_fun h_T (apply_fun mult (x, y)) = apply_fun Z2_mult (apply_fun h_T x, apply_fun h_T y))
+      HhT_hom). }
+  (** Extract basis function_on from Hfab1 **)
+  claim Hfab1_abc : (abelian_group G mult e inv /\ function_on basis J G) /\
+    (forall alpha0:set, alpha0 :e J ->
+      infinite_cyclic_subgroup G mult e inv (apply_fun basis alpha0)).
+  { exact (andEL
+      ((abelian_group G mult e inv /\ function_on basis J G) /\
+        (forall alpha0:set, alpha0 :e J ->
+          infinite_cyclic_subgroup G mult e inv (apply_fun basis alpha0)))
+      (direct_sum_of_subgroups G mult e inv J
+        (graph J (fun alpha0:set =>
+          {g :e G | exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun basis alpha0) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun basis alpha0)) (ordsucc m)))})))
+      Hfab1). }
+  claim Hbasis_fn : function_on basis J G.
+  { exact (andER (abelian_group G mult e inv) (function_on basis J G)
+      (andEL (abelian_group G mult e inv /\ function_on basis J G)
+        (forall alpha0:set, alpha0 :e J ->
+          infinite_cyclic_subgroup G mult e inv (apply_fun basis alpha0))
+        Hfab1_abc)). }
+  (** Extract basis2 function_on **)
+  claim Hfab2_abc : (abelian_group G mult e inv /\ function_on basis2 J2 G) /\
+    (forall beta:set, beta :e J2 ->
+      infinite_cyclic_subgroup G mult e inv (apply_fun basis2 beta)).
+  { exact (andEL
+      ((abelian_group G mult e inv /\ function_on basis2 J2 G) /\
+        (forall beta:set, beta :e J2 ->
+          infinite_cyclic_subgroup G mult e inv (apply_fun basis2 beta)))
+      (direct_sum_of_subgroups G mult e inv J2
+        (graph J2 (fun beta:set =>
+          {g :e G | exists n:set, n :e int /\
+            ((n :e omega /\ g = group_power_nat mult e (apply_fun basis2 beta) n) \/
+             (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+              g = group_power_nat mult e (apply_fun inv (apply_fun basis2 beta)) (ordsucc m)))})))
+      Hfab2). }
+  claim Hbasis2_fn : function_on basis2 J2 G.
+  { exact (andER (abelian_group G mult e inv) (function_on basis2 J2 G)
+      (andEL (abelian_group G mult e inv /\ function_on basis2 J2 G)
+        (forall beta:set, beta :e J2 ->
+          infinite_cyclic_subgroup G mult e inv (apply_fun basis2 beta))
+        Hfab2_abc)). }
+  (** From f S = f T, show h_S and h_T agree on all basis2(beta) **)
+  claim Hagree_basis2 : forall beta:set, beta :e J2 ->
+    apply_fun h_S (apply_fun basis2 beta) = apply_fun h_T (apply_fun basis2 beta).
+  { let beta. assume Hb : beta :e J2.
+    claim Hb2G : apply_fun basis2 beta :e G.
+    { exact (Hbasis2_fn beta Hb). }
+    claim HhS_val2 : apply_fun h_S (apply_fun basis2 beta) :e 2.
+    { exact (HhS_fn (apply_fun basis2 beta) Hb2G). }
+    claim HhT_val2 : apply_fun h_T (apply_fun basis2 beta) :e 2.
+    { exact (HhT_fn (apply_fun basis2 beta) Hb2G). }
+    (** Case analysis on both h_S and h_T values, using in_2_cases **)
+    (** Both are in {0,1}. If equal, done. If not, derive contradiction from f S = f T **)
+    apply (in_2_cases (apply_fun h_S (apply_fun basis2 beta)) HhS_val2).
+    - assume HhS0 : apply_fun h_S (apply_fun basis2 beta) = 0.
+      apply (in_2_cases (apply_fun h_T (apply_fun basis2 beta)) HhT_val2).
+      + assume HhT0 : apply_fun h_T (apply_fun basis2 beta) = 0.
+        rewrite HhS0. rewrite HhT0. reflexivity.
+      + assume HhT1 : apply_fun h_T (apply_fun basis2 beta) = 1.
+        (** beta :e f T via SepI, then beta :e f S via Heq, but h_S = 0 contradiction **)
+        claim Hb_fT : beta :e Sep J2 (fun b:set => apply_fun h_T (apply_fun basis2 b) = 1).
+        { exact (SepI J2 (fun b:set => apply_fun h_T (apply_fun basis2 b) = 1) beta Hb HhT1). }
+        claim Hb_fS : beta :e f S.
+        { rewrite Heq. exact Hb_fT. }
+        claim HhS1 : apply_fun h_S (apply_fun basis2 beta) = 1.
+        { exact (SepE2 J2 (fun b:set => apply_fun h_S (apply_fun basis2 b) = 1) beta Hb_fS). }
+        claim Hcontra : 1 = 0. { rewrite <- HhS1. exact HhS0. }
+        exact (neq_1_0 Hcontra (apply_fun h_S (apply_fun basis2 beta) = apply_fun h_T (apply_fun basis2 beta))).
+    - assume HhS1 : apply_fun h_S (apply_fun basis2 beta) = 1.
+      apply (in_2_cases (apply_fun h_T (apply_fun basis2 beta)) HhT_val2).
+      + assume HhT0 : apply_fun h_T (apply_fun basis2 beta) = 0.
+        claim Hb_fS : beta :e Sep J2 (fun b:set => apply_fun h_S (apply_fun basis2 b) = 1).
+        { exact (SepI J2 (fun b:set => apply_fun h_S (apply_fun basis2 b) = 1) beta Hb HhS1). }
+        claim Hb_fT : beta :e f T.
+        { rewrite <- Heq. exact Hb_fS. }
+        claim HhT1 : apply_fun h_T (apply_fun basis2 beta) = 1.
+        { exact (SepE2 J2 (fun b:set => apply_fun h_T (apply_fun basis2 b) = 1) beta Hb_fT). }
+        claim Hcontra : 1 = 0. { rewrite <- HhT1. exact HhT0. }
+        exact (neq_1_0 Hcontra (apply_fun h_S (apply_fun basis2 beta) = apply_fun h_T (apply_fun basis2 beta))).
+      + assume HhT1 : apply_fun h_T (apply_fun basis2 beta) = 1.
+        rewrite HhS1. rewrite HhT1. reflexivity. }
+  (** By hom_Z2_determined_by_basis: h_S and h_T agree on all of G **)
+  claim Hagree_all : forall x:set, x :e G -> apply_fun h_S x = apply_fun h_T x.
+  { exact (hom_Z2_determined_by_basis G mult e inv J2 basis2 h_S h_T
+      Hfab2 HhS_hom HhT_hom Hagree_basis2). }
+  (** S = T by set extensionality **)
+  apply set_ext.
+  - (** S c= T **)
+    let alpha. assume HaS : alpha :e S.
+    claim Hal : alpha :e J. { exact (HSJ alpha HaS). }
+    claim HbG : apply_fun basis alpha :e G.
+    { exact (Hbasis_fn alpha Hal). }
+    (** h_S(basis(alpha)) = 1, h_T(basis(alpha)) = 1, so alpha in T **)
+    claim HhS_ba : apply_fun h_S (apply_fun basis alpha) = 1.
+    { exact (HhS_in alpha HaS). }
+    claim HhT_ba : apply_fun h_T (apply_fun basis alpha) = 1.
+    { rewrite <- (Hagree_all (apply_fun basis alpha) HbG). exact HhS_ba. }
+    (** If alpha not in T, then h_T(basis(alpha)) = 0, contradiction **)
+    apply (xm (alpha :e T)).
+    + assume HaT : alpha :e T. exact HaT.
+    + assume HnT : ~(alpha :e T).
+      claim HhT_ba0 : apply_fun h_T (apply_fun basis alpha) = 0.
+      { exact (HhT_out alpha Hal HnT). }
+      claim Hcontra : 1 = 0. { rewrite <- HhT_ba. exact HhT_ba0. }
+      exact (neq_1_0 Hcontra (alpha :e T)).
+  - (** T c= S **)
+    let alpha. assume HaT : alpha :e T.
+    claim Hal : alpha :e J. { exact (HTJ alpha HaT). }
+    claim HbG : apply_fun basis alpha :e G.
+    { exact (Hbasis_fn alpha Hal). }
+    claim HhT_ba : apply_fun h_T (apply_fun basis alpha) = 1.
+    { exact (HhT_in alpha HaT). }
+    claim HhS_ba : apply_fun h_S (apply_fun basis alpha) = 1.
+    { rewrite (Hagree_all (apply_fun basis alpha) HbG). exact HhT_ba. }
+    apply (xm (alpha :e S)).
+    + assume HaS : alpha :e S. exact HaS.
+    + assume HnS : ~(alpha :e S).
+      claim HhS_ba0 : apply_fun h_S (apply_fun basis alpha) = 0.
+      { exact (HhS_out alpha Hal HnS). }
+      claim Hcontra : 1 = 0. { rewrite <- HhS_ba. exact HhS_ba0. }
+      exact (neq_1_0 Hcontra (alpha :e S)).
+Qed.
 
 (** Key helper for rank: two finite bases of the same free abelian group are equip **)
 (** Strategy: both Power(J) and Power(J2) are equip to group_hom_set G mult 2 Z2_mult **)
@@ -176182,14 +176391,14 @@ claim Hk2_J2 : equip k2 J2.
 claim Hk1_J2 : equip k1 J2.
 { rewrite Hk_eq. exact Hk2_J2. }
 exact (equip_tra J k1 J2 Heq1 Hk1_J2).
-Admitted.
+Qed.
 
 (** from S67 Thm 67.8 (line 2689 in algtop.tex): rank is well-defined **)
 (** LATEX VERSION: If G is a free abelian group with basis {a_1,...,a_n}, **)
 (** then n is uniquely determined by G. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 107 **)
-(** Lock Alice 1772158527 **)
+(** Collected Alice 107 **)
+(** Proven Alice **)
 Theorem thm67_8_rank_well_defined :
   forall G mult e inv n1 n2 basis1 basis2:set,
   free_abelian_group_with_basis G mult e inv n1 basis1 ->
@@ -176202,7 +176411,7 @@ assume Hfab2 : free_abelian_group_with_basis G mult e inv n2 basis2.
 assume Hfin1 : finite n1.
 assume Hfin2 : finite n2.
 exact (free_abelian_bases_equip G mult e inv n1 basis1 Hfab1 Hfin1 n2 basis2 Hfab2 Hfin2).
-Admitted.
+Qed.
 
 (** from S67 Definition (line 2693 in algtop.tex): rank of a free abelian group **)
 (** LATEX VERSION: If G is a free abelian group with a finite basis, the number of **)
