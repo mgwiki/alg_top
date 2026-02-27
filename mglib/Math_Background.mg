@@ -254698,6 +254698,28 @@ exact (homeomorphism_preserves_path_connected_space_right
   unit_interval_path_connected).
 Qed.
 
+(** Infrastructure: unit interval is simply connected **)
+(** Uses: [0,1] is convex in R, hence star convex, hence simply connected **)
+Theorem unit_interval_simply_connected :
+  simply_connected unit_interval unit_interval_topology.
+admit.
+Admitted.
+
+(** Infrastructure: arcs are simply connected (homeomorphic to [0,1]) **)
+Theorem arc_simply_connected : forall A Ta:set,
+  arc A Ta -> simply_connected A Ta.
+let A Ta.
+assume Harc.
+claim Hex : exists f:set, homeomorphism unit_interval unit_interval_topology A Ta f.
+{ exact Harc. }
+apply Hex.
+let f.
+assume Hf.
+exact (homeomorphism_preserves_simply_connected
+  unit_interval unit_interval_topology A Ta f Hf
+  unit_interval_simply_connected).
+Admitted. (** depends on admitted unit_interval_simply_connected **)
+
 (** from S83 Thm 83.4 (line 5530 in algtop.tex): covering of graph is graph **)
 (** LATEX VERSION: Let p: E -> X be a covering map where X is a linear graph. **)
 (** If A_alpha is an edge of X and B is a path component of p^{-1}(A_alpha), **)
