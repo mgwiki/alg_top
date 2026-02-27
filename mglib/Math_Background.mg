@@ -162192,6 +162192,83 @@ Definition subgroups_generate_abelian : set -> set -> set -> set -> set -> set -
           apply_fun alphas i <> apply_fun alphas j) /\
         x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n).
 
+(** Proven Bob **)
+Lemma subgroups_generate_abelian_is_abelian :
+  forall G mult e inv J Gfam:set,
+  subgroups_generate_abelian G mult e inv J Gfam ->
+  abelian_group G mult e inv.
+let G mult e inv J Gfam.
+assume HsGA.
+apply (and3E
+  (abelian_group G mult e inv)
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv)
+  (forall x:set, x :e G ->
+    exists n:set, n :e omega /\ n <> 0 /\
+    exists alphas:set, function_on alphas n J /\
+    exists xs:set, function_on xs n G /\
+      (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) /\
+      (forall i j:set, i :e n -> j :e n -> i <> j ->
+        apply_fun alphas i <> apply_fun alphas j) /\
+      x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n)
+  HsGA).
+assume HabG _ _.
+exact HabG.
+Qed.
+
+(** Proven Bob **)
+Lemma subgroups_generate_abelian_subgroup :
+  forall G mult e inv J Gfam alpha:set,
+  subgroups_generate_abelian G mult e inv J Gfam ->
+  alpha :e J ->
+  subgroup_of (apply_fun Gfam alpha) G mult e inv.
+let G mult e inv J Gfam alpha.
+assume HsGA Hal.
+apply (and3E
+  (abelian_group G mult e inv)
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv)
+  (forall x:set, x :e G ->
+    exists n:set, n :e omega /\ n <> 0 /\
+    exists alphas:set, function_on alphas n J /\
+    exists xs:set, function_on xs n G /\
+      (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) /\
+      (forall i j:set, i :e n -> j :e n -> i <> j ->
+        apply_fun alphas i <> apply_fun alphas j) /\
+      x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n)
+  HsGA).
+assume _ Hsub _.
+exact (Hsub alpha Hal).
+Qed.
+
+(** Proven Bob **)
+Lemma subgroups_generate_abelian_generation :
+  forall G mult e inv J Gfam x:set,
+  subgroups_generate_abelian G mult e inv J Gfam ->
+  x :e G ->
+  exists n:set, n :e omega /\ n <> 0 /\
+  exists alphas:set, function_on alphas n J /\
+  exists xs:set, function_on xs n G /\
+    (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) /\
+    (forall i j:set, i :e n -> j :e n -> i <> j ->
+      apply_fun alphas i <> apply_fun alphas j) /\
+    x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n.
+let G mult e inv J Gfam x.
+assume HsGA Hx.
+apply (and3E
+  (abelian_group G mult e inv)
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv)
+  (forall x:set, x :e G ->
+    exists n:set, n :e omega /\ n <> 0 /\
+    exists alphas:set, function_on alphas n J /\
+    exists xs:set, function_on xs n G /\
+      (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) /\
+      (forall i j:set, i :e n -> j :e n -> i <> j ->
+        apply_fun alphas i <> apply_fun alphas j) /\
+      x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n)
+  HsGA).
+assume _ _ Hgen.
+exact (Hgen x Hx).
+Qed.
+
 (** from S67 Definition (line 2597-2604 in algtop.tex): direct sum of subgroups **)
 (** LATEX VERSION: G is the direct sum of the groups G_alpha if G_alpha generate G **)
 (** and for each x in G, the expression x = sum x_alpha is unique. **)
@@ -162218,6 +162295,38 @@ Definition direct_sum_of_subgroups : set -> set -> set -> set -> set -> set -> p
           (~(exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
            (exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
            forall j:set, j :e n2 -> apply_fun a2 j = alpha -> apply_fun x2 j = e))).
+
+(** Proven Bob **)
+Lemma direct_sum_of_subgroups_subgroups_generate_abelian :
+  forall G mult e inv J Gfam:set,
+  direct_sum_of_subgroups G mult e inv J Gfam ->
+  subgroups_generate_abelian G mult e inv J Gfam.
+let G mult e inv J Gfam.
+assume Hds.
+exact (andEL
+  (subgroups_generate_abelian G mult e inv J Gfam)
+  (forall x:set, x :e G ->
+    forall n1 n2:set, n1 :e omega -> n2 :e omega -> n1 <> 0 -> n2 <> 0 ->
+    forall a1 a2:set, function_on a1 n1 J -> function_on a2 n2 J ->
+    forall x1 x2:set, function_on x1 n1 G -> function_on x2 n2 G ->
+      (forall i:set, i :e n1 -> apply_fun x1 i :e apply_fun Gfam (apply_fun a1 i)) ->
+      (forall i:set, i :e n2 -> apply_fun x2 i :e apply_fun Gfam (apply_fun a2 i)) ->
+      (forall i j:set, i :e n1 -> j :e n1 -> i <> j -> apply_fun a1 i <> apply_fun a1 j) ->
+      (forall i j:set, i :e n2 -> j :e n2 -> i <> j -> apply_fun a2 i <> apply_fun a2 j) ->
+      x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun x1 i)) n1 ->
+      x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun x2 i)) n2 ->
+      (forall alpha:set, alpha :e J ->
+        (forall i j:set, i :e n1 -> j :e n2 ->
+          apply_fun a1 i = alpha -> apply_fun a2 j = alpha ->
+          apply_fun x1 i = apply_fun x2 j) /\
+        ((exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
+         ~(exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+         forall i:set, i :e n1 -> apply_fun a1 i = alpha -> apply_fun x1 i = e) /\
+        (~(exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
+         (exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+         forall j:set, j :e n2 -> apply_fun a2 j = alpha -> apply_fun x2 j = e)))
+  Hds).
+Qed.
 
 (** Infrastructure: kernel of a group homomorphism **)
 Definition kernel_of : set -> set -> set -> set :=
