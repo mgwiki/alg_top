@@ -81120,8 +81120,36 @@ Theorem lemma54_2_sheet_non_switching_local :
   Vz :e slices ->
   Vz = Vq.
 Admitted.
-(** TODO Bob: this local non-switching statement currently lacks hypotheses tying Ft values to a connected image in Union slices.
+(** TODO: this local non-switching statement currently lacks hypotheses tying Ft values to a connected image in Union slices.
     Intended bridge is via connected_image_sheet_non_switching_in_pairwise_disjoint_union once continuity and image-subset data are threaded in. **)
+
+(** Proven Alice **)
+Theorem lemma54_2_sheet_non_switching_local_connected :
+  forall E Te N TN Ft slices q z Vq Vz:set,
+  topology_on E Te ->
+  slices c= Te ->
+  pairwise_disjoint slices ->
+  connected_space N TN ->
+  continuous_map N TN E Te Ft ->
+  (forall w:set, w :e N -> apply_fun Ft w :e Union slices) ->
+  q :e N ->
+  z :e N ->
+  apply_fun Ft q :e Vq ->
+  Vq :e slices ->
+  apply_fun Ft z :e Vz ->
+  Vz :e slices ->
+  Vz = Vq.
+let E Te N TN Ft slices q z Vq Vz.
+assume HtopE HslicesSub HpdSlices HNconn HFtcont HFtInSlices HqN HzN HFtqVq HVqSlice HFtzVz HVzSlice.
+claim HimgSub : image_of Ft N c= Union slices.
+{
+  exact (ReplE' N (fun x:set => apply_fun Ft x) (fun y:set => y :e Union slices) HFtInSlices).
+}
+exact (connected_image_sheet_non_switching_in_pairwise_disjoint_union
+  N TN E Te slices Ft q z Vq Vz
+  HtopE HslicesSub HpdSlices HNconn HFtcont HimgSub
+  HqN HzN HFtqVq HVqSlice HFtzVz HVzSlice).
+Qed.
 
 (** Infrastructure: existence package for homotopy lifting in Lem 54.2 **)
 Theorem lemma54_2_homotopy_lifting_exists : forall E Te B Tb p e0 F:set,
@@ -83412,13 +83440,13 @@ claim HFt_54_cont :
                             HyVxz
                             Hypy).
 	                        }
-	                        claim HVxzEqVq : Vxz = Vq.
-	                        {
 	                          claim Hft54zVxz : apply_fun Ft_54 z :e Vxz.
 	                          {
 	                            rewrite Hft54zEqxz.
 	                            exact HxzVxz.
 	                          }
+	                        claim HVxzEqVq : Vxz = Vq.
+	                        {
 	                          exact (lemma54_2_sheet_non_switching_local
 	                            E
 	                            Te
