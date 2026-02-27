@@ -255341,14 +255341,120 @@ apply andI.
   assume Hpz_pack.
   (** Concatenate py (y->x) with pz (x->z) to get path y->z **)
   set gamma := path_concat py pz.
+  (** Unpack Hpy_pack: ((fon /\ cont) /\ py0=y) /\ py1=x **)
+  claim Hpy1 : apply_fun py 1 = x.
+  { exact (andER
+      ((function_on py unit_interval X /\
+        continuous_map unit_interval unit_interval_topology X Tx py) /\
+       apply_fun py 0 = y)
+      (apply_fun py 1 = x)
+      Hpy_pack). }
+  claim Hpy_left : (function_on py unit_interval X /\
+    continuous_map unit_interval unit_interval_topology X Tx py) /\
+    apply_fun py 0 = y.
+  { exact (andEL
+      ((function_on py unit_interval X /\
+        continuous_map unit_interval unit_interval_topology X Tx py) /\
+       apply_fun py 0 = y)
+      (apply_fun py 1 = x)
+      Hpy_pack). }
+  claim Hpy0 : apply_fun py 0 = y.
+  { exact (andER
+      (function_on py unit_interval X /\
+       continuous_map unit_interval unit_interval_topology X Tx py)
+      (apply_fun py 0 = y) Hpy_left). }
+  claim Hpy_cont : continuous_map unit_interval unit_interval_topology X Tx py.
+  { exact (andER (function_on py unit_interval X)
+      (continuous_map unit_interval unit_interval_topology X Tx py)
+      (andEL (function_on py unit_interval X /\
+              continuous_map unit_interval unit_interval_topology X Tx py)
+             (apply_fun py 0 = y) Hpy_left)). }
+  (** Unpack Hpz_pack: ((fon /\ cont) /\ pz0=x) /\ pz1=z **)
+  claim Hpz1 : apply_fun pz 1 = z.
+  { exact (andER
+      ((function_on pz unit_interval X /\
+        continuous_map unit_interval unit_interval_topology X Tx pz) /\
+       apply_fun pz 0 = x)
+      (apply_fun pz 1 = z)
+      Hpz_pack). }
+  claim Hpz_left : (function_on pz unit_interval X /\
+    continuous_map unit_interval unit_interval_topology X Tx pz) /\
+    apply_fun pz 0 = x.
+  { exact (andEL
+      ((function_on pz unit_interval X /\
+        continuous_map unit_interval unit_interval_topology X Tx pz) /\
+       apply_fun pz 0 = x)
+      (apply_fun pz 1 = z)
+      Hpz_pack). }
+  claim Hpz0 : apply_fun pz 0 = x.
+  { exact (andER
+      (function_on pz unit_interval X /\
+       continuous_map unit_interval unit_interval_topology X Tx pz)
+      (apply_fun pz 0 = x) Hpz_left). }
+  claim Hpz_cont : continuous_map unit_interval unit_interval_topology X Tx pz.
+  { exact (andER (function_on pz unit_interval X)
+      (continuous_map unit_interval unit_interval_topology X Tx pz)
+      (andEL (function_on pz unit_interval X /\
+              continuous_map unit_interval unit_interval_topology X Tx pz)
+             (apply_fun pz 0 = x) Hpz_left)). }
+  (** gamma is continuous [0,1] -> X **)
+  claim Hgamma_cont : continuous_map unit_interval unit_interval_topology X Tx gamma.
+  { exact (path_concat_continuous X Tx y x z py pz Hpy_cont Hpz_cont Hpy0 Hpy1 Hpz0 Hpz1). }
+  claim Hgamma_fon_X : function_on gamma unit_interval X.
+  { exact (continuous_map_function_on unit_interval unit_interval_topology X Tx gamma Hgamma_cont). }
+  (** Image V = image_of gamma [0,1] is path connected and contained in B **)
+  set V := image_of gamma unit_interval.
+  claim HVsubX : V c= X.
+  { exact (image_of_sub_codomain gamma unit_interval X unit_interval Hgamma_fon_X (Subq_ref unit_interval)). }
+  claim Hgamma_into_V : forall t:set, t :e unit_interval -> apply_fun gamma t :e V.
+  { let t. assume Ht.
+    exact (ReplI unit_interval (fun s:set => apply_fun gamma s) t Ht). }
+  claim Hgamma_V_cont : continuous_map unit_interval unit_interval_topology
+    V (subspace_topology X Tx V) gamma.
+  { exact (continuous_map_range_restrict unit_interval unit_interval_topology
+      X Tx gamma V Hgamma_cont HVsubX Hgamma_into_V). }
+  claim Hgamma_surj : forall v:set, v :e V ->
+    exists t:set, t :e unit_interval /\ apply_fun gamma t = v.
+  { let v. assume Hv.
+    apply (ReplE unit_interval (fun s:set => apply_fun gamma s) v Hv).
+    let t. assume Hdata : t :e unit_interval /\ v = apply_fun gamma t.
+    witness t. apply andI.
+    - exact (andEL (t :e unit_interval) (v = apply_fun gamma t) Hdata).
+    - symmetry.
+      exact (andER (t :e unit_interval) (v = apply_fun gamma t) Hdata). }
+  claim HVpc : path_connected_space V (subspace_topology X Tx V).
+  { exact (continuous_image_path_connected
+      unit_interval unit_interval_topology
+      V (subspace_topology X Tx V) gamma
+      unit_interval_path_connected Hgamma_V_cont Hgamma_surj). }
+  (** y is in V: y = gamma(0) **)
+  claim Hg0 : apply_fun gamma 0 = y.
+  { rewrite (path_concat_at_zero py pz). exact Hpy0. }
+  claim HyV : y :e V.
+  { rewrite <- Hg0. exact (Hgamma_into_V 0 zero_in_unit_interval). }
+  (** For any w in V, w is in path_component_of X Tx y, hence in B **)
+  claim HVsubB : forall w:set, w :e V -> w :e B.
+  { let w. assume HwV : w :e V.
+    claim HwX : w :e X. { exact (HVsubX w HwV). }
+    claim HwPCy : w :e path_component_of X Tx y.
+    { exact (subspace_path_connected_implies_in_path_component
+        X Tx V y w HtopX HVsubX HVpc HyV HwV). }
+    exact (path_component_transitive_axiom X Tx x y w HtopX HxX HyX HwX HyB HwPCy). }
+  (** function_on gamma [0,1] B **)
+  claim Hgamma_fon_B : function_on gamma unit_interval B.
+  { let t. assume Ht. exact (HVsubB (apply_fun gamma t) (Hgamma_into_V t Ht)). }
+  (** gamma(1) = z **)
+  claim Hg1 : apply_fun gamma 1 = z.
+  { rewrite (path_concat_at_one py pz). exact Hpz1. }
   witness gamma.
   apply andI.
   + (** path_between B y z gamma **)
-    (** need: function_on gamma [0,1] B, gamma(0)=y, gamma(1)=z **)
-    admit.
+    prove function_on gamma unit_interval B /\ apply_fun gamma 0 = y /\ apply_fun gamma 1 = z.
+    apply andI. apply andI. exact Hgamma_fon_B. exact Hg0. exact Hg1.
   + (** continuous_map unit_interval unit_interval_topology B (subspace_topology X Tx B) gamma **)
-    admit.
-Admitted.
+    exact (continuous_map_range_restrict unit_interval unit_interval_topology
+      X Tx gamma B Hgamma_cont HBsubX Hgamma_fon_B).
+Qed.
 
 (** Infrastructure: arcs are path connected **)
 (** Proven Alice **)
