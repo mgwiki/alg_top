@@ -50838,6 +50838,36 @@ apply xm (Y = Empty).
   exact (FalseE Hcontra (Y = Empty)).
 Qed.
 
+(** If the domain is empty iff the codomain is empty under a homeomorphism **)
+(** Proven Bob **)
+Theorem homeomorphism_empty_domain_iff_empty_codomain :
+  forall X Tx Y Ty f:set,
+    homeomorphism X Tx Y Ty f ->
+    (X = Empty <-> Y = Empty).
+let X Tx Y Ty f.
+assume Hhome.
+apply iffI.
+- assume HXempty.
+  exact (homeomorphism_empty_domain_implies_empty_codomain
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome
+    HXempty).
+- assume HYempty.
+  exact (homeomorphism_empty_codomain_implies_empty_domain
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome
+    HYempty).
+Qed.
+
+
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
 (** then the partition of p^{-1}(U) into slices is unique. **)
