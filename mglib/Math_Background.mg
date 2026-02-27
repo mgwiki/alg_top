@@ -186195,6 +186195,34 @@ exact (HsubGal
   HxGalpha).
 Qed.
 
+(** Infrastructure: reduced word element packing **)
+(** Proven Bob **)
+Theorem reduced_word_elem : forall J Gfam efam n xs i:set,
+  reduced_word J Gfam efam n xs ->
+  i :e n ->
+  exists alpha:set, alpha :e J /\
+    apply_fun xs i :e apply_fun Gfam alpha /\
+    apply_fun xs i <> apply_fun efam alpha.
+let J Gfam efam n xs i.
+assume Hred Hi.
+apply (and3E
+  (n :e omega)
+  (forall j:set, j :e n ->
+    exists alpha:set, alpha :e J /\
+      apply_fun xs j :e apply_fun Gfam alpha /\
+      apply_fun xs j <> apply_fun efam alpha)
+  (forall j:set, j :e n -> ordsucc j :e n ->
+    forall alpha beta:set, alpha :e J -> beta :e J ->
+      apply_fun xs j :e apply_fun Gfam alpha ->
+      apply_fun xs (ordsucc j) :e apply_fun Gfam beta ->
+      alpha <> beta)
+  Hred).
+assume _ Helem _.
+exact (Helem
+  i
+  Hi).
+Qed.
+
 (** Infrastructure: the product represented by a word of length n **)
 Definition word_product : set -> set -> set -> set -> set :=
   fun mult e xs n =>
