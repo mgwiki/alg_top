@@ -177078,10 +177078,7 @@ apply andI.
                 + (** (fn_on /\ xs_in_Gi) **)
                   apply andI.
                   * (** function_on xs 1 G **)
-                    let i. assume Hi : i :e 1.
-                    claim Hev : apply_fun (graph 1 (fun _ => eG)) i = eG.
-                    { exact (apply_fun_graph 1 (fun _ => eG) i Hi). }
-                    rewrite Hev. exact HeG_G.
+                    exact (graph_const_function_on 1 G eG HeG_G).
                   * (** xs i :e Gimages(alphas i) **)
                     let i. assume Hi : i :e 1.
                     claim Hai : apply_fun (graph 1 (fun _ => alpha0)) i = alpha0.
