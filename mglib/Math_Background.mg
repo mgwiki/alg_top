@@ -1,5 +1,5 @@
 (** Balance Alice 3495 **)
-(** Balance Bob 3451 **)
+(** Balance Bob 3506 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
 
@@ -168167,7 +168167,8 @@ Qed.
 (** G2 = direct sum H_beta (beta in K) with J,K disjoint, then G = direct sum H_gamma **)
 (** for gamma in J union K. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
+(** Collected Bob 55 **)
+(** Proven Bob **)
 Theorem cor67_2_associativity_direct_sum :
   forall G multG eG invG G1 G2 J K Hfam:set,
   abelian_group G multG eG invG ->
@@ -171493,7 +171494,7 @@ apply andI.
           rewrite Hpos2j_eq. reflexivity. }
         exact (eq_i_tra (apply_fun x2 j) (apply_fun x2K j1) eG
           (eq_symm (apply_fun x2K j1) (apply_fun x2 j) Hx2K_j1_eq) Hx2K_j1).
-Admitted.
+Qed.
 
 (** from S67 Cor 67.3 (line 2639 in algtop.tex): quotient by direct summand **)
 (** LATEX VERSION: If G = G1 + G2, then G/G2 is isomorphic to G1. **)
