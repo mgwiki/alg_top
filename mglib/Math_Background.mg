@@ -50983,6 +50983,66 @@ apply iffI.
   + exact (Subq_Empty (Union Fam)).
 Qed.
 
+(** Infrastructure: nonempty family with empty union is the singleton {Empty} **)
+(** Proven Bob **)
+Theorem union_empty_nonempty_family_eq_singleton_empty : forall Fam:set,
+  Fam <> Empty ->
+  Union Fam = Empty ->
+  Fam = {Empty}.
+let Fam.
+assume HFamNe HUnionE.
+claim HexV : exists V:set, V :e Fam.
+{
+  exact (nonempty_has_element
+    Fam
+    HFamNe).
+}
+apply HexV.
+let V0.
+assume HV0Fam.
+claim HV0E : V0 = Empty.
+{
+  exact (union_empty_member_empty
+    Fam
+    V0
+    HV0Fam
+    HUnionE).
+}
+claim HFamSub : Fam c= {Empty}.
+{
+  let V.
+  assume HVFam.
+  claim HVE : V = Empty.
+  {
+    exact (union_empty_member_empty
+      Fam
+      V
+      HVFam
+      HUnionE).
+  }
+  rewrite HVE.
+  exact (SingI Empty).
+}
+claim HsingSub : {Empty} c= Fam.
+{
+  let V.
+  assume HVsing.
+  claim HVeq : V = Empty.
+  {
+    exact (SingE
+      Empty
+      V
+      HVsing).
+  }
+  rewrite HVeq.
+  rewrite <- HV0E.
+  exact HV0Fam.
+}
+apply set_ext.
+- exact HFamSub.
+- exact HsingSub.
+Qed.
+
 
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
