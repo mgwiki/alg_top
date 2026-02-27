@@ -186278,6 +186278,87 @@ exact (andEL
     HxG)).
 Qed.
 
+(** Infrastructure: word_product stays in a group (group_structure version) **)
+(** Proven Bob **)
+Theorem word_product_in_G_group : forall G mult e inv n xs:set,
+  group_structure G mult e inv ->
+  nat_p n ->
+  (forall i:set, i :e n -> apply_fun xs i :e G) ->
+  word_product mult e xs n :e G.
+let G mult e inv n xs.
+assume Hgrp Hn_nat HxsG.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume HmultF _ HeG _ _ _.
+claim HwpG : forall k:set, nat_p k ->
+  forall ys:set, (forall i:set, i :e k -> apply_fun ys i :e G) ->
+    word_product mult e ys k :e G.
+{
+  apply (nat_ind
+    (fun k:set =>
+      forall ys:set, (forall i:set, i :e k -> apply_fun ys i :e G) ->
+        word_product mult e ys k :e G)).
+  - let ys.
+    assume _.
+    claim Hwp0 : word_product mult e ys 0 = e.
+    {
+      exact (nat_primrec_0
+        e
+        (fun i r => apply_fun mult (r, apply_fun ys i))).
+    }
+    rewrite Hwp0.
+    exact HeG.
+  - let k.
+    assume Hk_nat IH.
+    let ys.
+    assume HysG.
+    claim HwpS : word_product mult e ys (ordsucc k) =
+      apply_fun mult (word_product mult e ys k, apply_fun ys k).
+    {
+      exact (nat_primrec_S
+        e
+        (fun i r => apply_fun mult (r, apply_fun ys i))
+        k
+        Hk_nat).
+    }
+    claim Hwp_k_G : word_product mult e ys k :e G.
+    {
+      exact (IH
+        ys
+        (fun i Hi => HysG i (ordsuccI1 k i Hi))).
+    }
+    claim Hys_k_G : apply_fun ys k :e G.
+    {
+      exact (HysG
+        k
+        (ordsuccI2 k)).
+    }
+    rewrite HwpS.
+    exact (HmultF
+      (word_product mult e ys k, apply_fun ys k)
+      (tuple_2_setprod_by_pair_Sigma
+        G
+        G
+        (word_product mult e ys k)
+        (apply_fun ys k)
+        Hwp_k_G
+        Hys_k_G)).
+}
+exact (HwpG
+  n
+  Hn_nat
+  xs
+  HxsG).
+Qed.
+
 (** Infrastructure: word_product of length 2 **)
 (** Proven Bob **)
 Theorem word_product_two : forall mult e xs:set,
