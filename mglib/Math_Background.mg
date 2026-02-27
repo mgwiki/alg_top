@@ -255572,14 +255572,120 @@ apply andI.
   assume Hpz_pack.
   (** Concatenate py (y->x) with pz (x->z) to get path y->z **)
   set gamma := path_concat py pz.
+  (** Unpack Hpy_pack: ((fon /\ cont) /\ py0=y) /\ py1=x **)
+  claim Hpy1 : apply_fun py 1 = x.
+  { exact (andER
+      ((function_on py unit_interval X /\
+        continuous_map unit_interval unit_interval_topology X Tx py) /\
+       apply_fun py 0 = y)
+      (apply_fun py 1 = x)
+      Hpy_pack). }
+  claim Hpy_left : (function_on py unit_interval X /\
+    continuous_map unit_interval unit_interval_topology X Tx py) /\
+    apply_fun py 0 = y.
+  { exact (andEL
+      ((function_on py unit_interval X /\
+        continuous_map unit_interval unit_interval_topology X Tx py) /\
+       apply_fun py 0 = y)
+      (apply_fun py 1 = x)
+      Hpy_pack). }
+  claim Hpy0 : apply_fun py 0 = y.
+  { exact (andER
+      (function_on py unit_interval X /\
+       continuous_map unit_interval unit_interval_topology X Tx py)
+      (apply_fun py 0 = y) Hpy_left). }
+  claim Hpy_cont : continuous_map unit_interval unit_interval_topology X Tx py.
+  { exact (andER (function_on py unit_interval X)
+      (continuous_map unit_interval unit_interval_topology X Tx py)
+      (andEL (function_on py unit_interval X /\
+              continuous_map unit_interval unit_interval_topology X Tx py)
+             (apply_fun py 0 = y) Hpy_left)). }
+  (** Unpack Hpz_pack: ((fon /\ cont) /\ pz0=x) /\ pz1=z **)
+  claim Hpz1 : apply_fun pz 1 = z.
+  { exact (andER
+      ((function_on pz unit_interval X /\
+        continuous_map unit_interval unit_interval_topology X Tx pz) /\
+       apply_fun pz 0 = x)
+      (apply_fun pz 1 = z)
+      Hpz_pack). }
+  claim Hpz_left : (function_on pz unit_interval X /\
+    continuous_map unit_interval unit_interval_topology X Tx pz) /\
+    apply_fun pz 0 = x.
+  { exact (andEL
+      ((function_on pz unit_interval X /\
+        continuous_map unit_interval unit_interval_topology X Tx pz) /\
+       apply_fun pz 0 = x)
+      (apply_fun pz 1 = z)
+      Hpz_pack). }
+  claim Hpz0 : apply_fun pz 0 = x.
+  { exact (andER
+      (function_on pz unit_interval X /\
+       continuous_map unit_interval unit_interval_topology X Tx pz)
+      (apply_fun pz 0 = x) Hpz_left). }
+  claim Hpz_cont : continuous_map unit_interval unit_interval_topology X Tx pz.
+  { exact (andER (function_on pz unit_interval X)
+      (continuous_map unit_interval unit_interval_topology X Tx pz)
+      (andEL (function_on pz unit_interval X /\
+              continuous_map unit_interval unit_interval_topology X Tx pz)
+             (apply_fun pz 0 = x) Hpz_left)). }
+  (** gamma is continuous [0,1] -> X **)
+  claim Hgamma_cont : continuous_map unit_interval unit_interval_topology X Tx gamma.
+  { exact (path_concat_continuous X Tx y x z py pz Hpy_cont Hpz_cont Hpy0 Hpy1 Hpz0 Hpz1). }
+  claim Hgamma_fon_X : function_on gamma unit_interval X.
+  { exact (continuous_map_function_on unit_interval unit_interval_topology X Tx gamma Hgamma_cont). }
+  (** Image V = image_of gamma [0,1] is path connected and contained in B **)
+  set V := image_of gamma unit_interval.
+  claim HVsubX : V c= X.
+  { exact (image_of_sub_codomain gamma unit_interval X unit_interval Hgamma_fon_X (Subq_ref unit_interval)). }
+  claim Hgamma_into_V : forall t:set, t :e unit_interval -> apply_fun gamma t :e V.
+  { let t. assume Ht.
+    exact (ReplI unit_interval (fun s:set => apply_fun gamma s) t Ht). }
+  claim Hgamma_V_cont : continuous_map unit_interval unit_interval_topology
+    V (subspace_topology X Tx V) gamma.
+  { exact (continuous_map_range_restrict unit_interval unit_interval_topology
+      X Tx gamma V Hgamma_cont HVsubX Hgamma_into_V). }
+  claim Hgamma_surj : forall v:set, v :e V ->
+    exists t:set, t :e unit_interval /\ apply_fun gamma t = v.
+  { let v. assume Hv.
+    apply (ReplE unit_interval (fun s:set => apply_fun gamma s) v Hv).
+    let t. assume Hdata : t :e unit_interval /\ v = apply_fun gamma t.
+    witness t. apply andI.
+    - exact (andEL (t :e unit_interval) (v = apply_fun gamma t) Hdata).
+    - symmetry.
+      exact (andER (t :e unit_interval) (v = apply_fun gamma t) Hdata). }
+  claim HVpc : path_connected_space V (subspace_topology X Tx V).
+  { exact (continuous_image_path_connected
+      unit_interval unit_interval_topology
+      V (subspace_topology X Tx V) gamma
+      unit_interval_path_connected Hgamma_V_cont Hgamma_surj). }
+  (** y is in V: y = gamma(0) **)
+  claim Hg0 : apply_fun gamma 0 = y.
+  { rewrite (path_concat_at_zero py pz). exact Hpy0. }
+  claim HyV : y :e V.
+  { rewrite <- Hg0. exact (Hgamma_into_V 0 zero_in_unit_interval). }
+  (** For any w in V, w is in path_component_of X Tx y, hence in B **)
+  claim HVsubB : forall w:set, w :e V -> w :e B.
+  { let w. assume HwV : w :e V.
+    claim HwX : w :e X. { exact (HVsubX w HwV). }
+    claim HwPCy : w :e path_component_of X Tx y.
+    { exact (subspace_path_connected_implies_in_path_component
+        X Tx V y w HtopX HVsubX HVpc HyV HwV). }
+    exact (path_component_transitive_axiom X Tx x y w HtopX HxX HyX HwX HyB HwPCy). }
+  (** function_on gamma [0,1] B **)
+  claim Hgamma_fon_B : function_on gamma unit_interval B.
+  { let t. assume Ht. exact (HVsubB (apply_fun gamma t) (Hgamma_into_V t Ht)). }
+  (** gamma(1) = z **)
+  claim Hg1 : apply_fun gamma 1 = z.
+  { rewrite (path_concat_at_one py pz). exact Hpz1. }
   witness gamma.
   apply andI.
   + (** path_between B y z gamma **)
-    (** need: function_on gamma [0,1] B, gamma(0)=y, gamma(1)=z **)
-    admit.
+    prove function_on gamma unit_interval B /\ apply_fun gamma 0 = y /\ apply_fun gamma 1 = z.
+    apply andI. apply andI. exact Hgamma_fon_B. exact Hg0. exact Hg1.
   + (** continuous_map unit_interval unit_interval_topology B (subspace_topology X Tx B) gamma **)
-    admit.
-Admitted.
+    exact (continuous_map_range_restrict unit_interval unit_interval_topology
+      X Tx gamma B Hgamma_cont HBsubX Hgamma_fon_B).
+Qed.
 
 (** Infrastructure: arcs are path connected **)
 (** Proven Alice **)
@@ -255637,8 +255743,107 @@ Theorem homeomorphism_complement_connected :
     (subspace_topology Y Ty (Y :\: Sing y)) ->
   connected_space (X :\: Sing x)
     (subspace_topology X Tx (X :\: Sing x)).
-admit.
-Admitted.
+let X Tx Y Ty f x y.
+assume Hhomeo : homeomorphism X Tx Y Ty f.
+assume HxX : x :e X.
+assume Hfxy : apply_fun f x = y.
+assume HYconn : connected_space (Y :\: Sing y)
+  (subspace_topology Y Ty (Y :\: Sing y)).
+(** Get inverse g with properties **)
+claim HinvPkg : exists g:set, continuous_map Y Ty X Tx g /\
+  (forall x0:set, x0 :e X -> apply_fun g (apply_fun f x0) = x0) /\
+  (forall y0:set, y0 :e Y -> apply_fun f (apply_fun g y0) = y0).
+{ exact (homeomorphism_inverse_package X Tx Y Ty f Hhomeo). }
+apply HinvPkg. let g. assume HgPack.
+claim HgAB : continuous_map Y Ty X Tx g /\
+  (forall x0:set, x0 :e X -> apply_fun g (apply_fun f x0) = x0).
+{ exact (andEL
+    (continuous_map Y Ty X Tx g /\
+     (forall x0:set, x0 :e X -> apply_fun g (apply_fun f x0) = x0))
+    (forall y0:set, y0 :e Y -> apply_fun f (apply_fun g y0) = y0)
+    HgPack). }
+claim Hgcont : continuous_map Y Ty X Tx g.
+{ exact (andEL (continuous_map Y Ty X Tx g)
+    (forall x0:set, x0 :e X -> apply_fun g (apply_fun f x0) = x0) HgAB). }
+claim Hgf : forall x0:set, x0 :e X -> apply_fun g (apply_fun f x0) = x0.
+{ exact (andER (continuous_map Y Ty X Tx g)
+    (forall x0:set, x0 :e X -> apply_fun g (apply_fun f x0) = x0) HgAB). }
+claim Hfg : forall y0:set, y0 :e Y -> apply_fun f (apply_fun g y0) = y0.
+{ exact (andER
+    (continuous_map Y Ty X Tx g /\
+     (forall x0:set, x0 :e X -> apply_fun g (apply_fun f x0) = x0))
+    (forall y0:set, y0 :e Y -> apply_fun f (apply_fun g y0) = y0) HgPack). }
+claim HgFun : function_on g Y X.
+{ exact (continuous_map_function_on Y Ty X Tx g Hgcont). }
+claim HfFun : function_on f X Y.
+{ exact (continuous_map_function_on X Tx Y Ty f
+    (homeomorphism_continuous X Tx Y Ty f Hhomeo)). }
+(** Build homeomorphism Y Ty X Tx g **)
+claim Hghomeo : homeomorphism Y Ty X Tx g.
+{ prove continuous_map Y Ty X Tx g /\ exists h:set,
+    continuous_map X Tx Y Ty h /\
+    (forall y0:set, y0 :e Y -> apply_fun h (apply_fun g y0) = y0) /\
+    (forall x0:set, x0 :e X -> apply_fun g (apply_fun h x0) = x0).
+  apply andI.
+  - exact Hgcont.
+  - witness f. apply andI.
+    - apply andI.
+      - exact (homeomorphism_continuous X Tx Y Ty f Hhomeo).
+      - exact Hfg.
+    - exact Hgf. }
+(** Restrict g to Y \ {y} **)
+claim HYysubY : Y :\: Sing y c= Y. { exact (setminus_Subq Y (Sing y)). }
+claim Hgrestrict : homeomorphism (Y :\: Sing y) (subspace_topology Y Ty (Y :\: Sing y))
+  (image_of g (Y :\: Sing y)) (subspace_topology X Tx (image_of g (Y :\: Sing y))) g.
+{ exact (homeomorphism_restrict_to_image_of_subset Y Ty X Tx g (Y :\: Sing y) Hghomeo HYysubY). }
+(** Show image_of g (Y \ {y}) = X \ {x} **)
+claim Himage_eq : image_of g (Y :\: Sing y) = X :\: Sing x.
+{ apply set_ext.
+  - let z. assume Hz : z :e image_of g (Y :\: Sing y).
+    apply (ReplE (Y :\: Sing y) (fun t:set => apply_fun g t) z Hz).
+    let t. assume HtData : t :e Y :\: Sing y /\ z = apply_fun g t.
+    claim HtYy : t :e Y :\: Sing y.
+    { exact (andEL (t :e Y :\: Sing y) (z = apply_fun g t) HtData). }
+    claim Hzeq : z = apply_fun g t.
+    { exact (andER (t :e Y :\: Sing y) (z = apply_fun g t) HtData). }
+    claim HtY : t :e Y. { exact (setminusE1 Y (Sing y) t HtYy). }
+    claim Htney : t /:e Sing y. { exact (setminusE2 Y (Sing y) t HtYy). }
+    claim HzX : z :e X. { rewrite Hzeq. exact (HgFun t HtY). }
+    apply setminusI.
+    - exact HzX.
+    - assume HzSing : z :e Sing x.
+      claim Hzx : z = x. { exact (SingE x z HzSing). }
+      claim Hgtx : apply_fun g t = x. { rewrite <- Hzx. symmetry. exact Hzeq. }
+      claim Hfgt : apply_fun f (apply_fun g t) = t. { exact (Hfg t HtY). }
+      claim Hfxt : apply_fun f x = t. { rewrite <- Hgtx. exact Hfgt. }
+      claim Hty : t = y. { rewrite <- Hfxy. symmetry. exact Hfxt. }
+      apply Htney. rewrite Hty. exact (SingI y).
+  - let z. assume Hz : z :e X :\: Sing x.
+    claim HzX : z :e X. { exact (setminusE1 X (Sing x) z Hz). }
+    claim Hznex : z /:e Sing x. { exact (setminusE2 X (Sing x) z Hz). }
+    claim HfzY : apply_fun f z :e Y. { exact (HfFun z HzX). }
+    claim HfzneySing : apply_fun f z /:e Sing y.
+    { assume HfzSing : apply_fun f z :e Sing y.
+      claim Hfzy : apply_fun f z = y. { exact (SingE y (apply_fun f z) HfzSing). }
+      claim Hfzeqfx : apply_fun f z = apply_fun f x. { rewrite Hfzy. symmetry. exact Hfxy. }
+      claim Hzx : z = x.
+      { exact (homeomorphism_injective X Tx Y Ty f Hhomeo z x HzX HxX Hfzeqfx). }
+      apply Hznex. rewrite Hzx. exact (SingI x). }
+    claim HfzYy : apply_fun f z :e Y :\: Sing y.
+    { exact (setminusI Y (Sing y) (apply_fun f z) HfzY HfzneySing). }
+    claim Hgfz : apply_fun g (apply_fun f z) = z. { exact (Hgf z HzX). }
+    rewrite <- Hgfz.
+    exact (ReplI (Y :\: Sing y) (fun t:set => apply_fun g t) (apply_fun f z) HfzYy). }
+(** Rewrite to get homeomorphism with X \ {x} **)
+claim Hgrestrict2 : homeomorphism (Y :\: Sing y) (subspace_topology Y Ty (Y :\: Sing y))
+  (X :\: Sing x) (subspace_topology X Tx (X :\: Sing x)) g.
+{ rewrite <- Himage_eq. exact Hgrestrict. }
+(** Apply connectedness preservation **)
+exact (homeomorphism_preserves_connected
+  (Y :\: Sing y) (subspace_topology Y Ty (Y :\: Sing y))
+  (X :\: Sing x) (subspace_topology X Tx (X :\: Sing x))
+  g Hgrestrict2 HYconn).
+Qed.
 
 (** Helper: every arc has end points. **)
 (** (This is proved later as arc_has_end_points_of_arc_early but needed here.) **)
@@ -255646,6 +255851,26 @@ Theorem arc_has_end_points_of_arc_pre :
   forall X Tx:set,
   arc X Tx ->
   exists p q:set, end_points_of_arc X Tx p q.
+admit.
+Admitted.
+
+(** Helper: backward direction of coherence for covering graphs. **)
+(** If X has general_linear_graph structure and p: E -> X is a covering map, **)
+(** then the lifted arcs ArcsE give coherent topology on E (backward direction): **)
+(** if C cap A0 is closed in A0 for all A0 in ArcsE, then C is closed in E. **)
+Theorem covering_coherent_backward :
+  forall X Tx Arcs E Te p ArcsE C:set,
+  general_linear_graph X Tx Arcs ->
+  covering_map E Te X Tx p ->
+  ArcsE = {B :e Power E |
+    exists A:set, A :e Arcs /\
+    exists x:set, x :e preimage_of E p A /\
+    B = path_component_of (preimage_of E p A)
+      (subspace_topology E Te (preimage_of E p A)) x} ->
+  C c= E ->
+  (forall A0:set, A0 :e ArcsE ->
+    closed_in A0 (subspace_topology E Te A0) (C :/\: A0)) ->
+  closed_in E Te C.
 admit.
 Admitted.
 
@@ -256923,7 +257148,34 @@ apply andI.
             - assume He0bp2 : e0 = bp2.
               witness bp1. apply orIR. rewrite He0bp2. exact Hendpts_B. }
   + (** C5: coherence condition **)
-    admit.
+    let C0.
+    assume HC0subE : C0 c= E.
+    apply iffI.
+    - (** Forward: closed_in E Te C0 -> all intersections closed **)
+      assume HC0closed : closed_in E Te C0.
+      let A0.
+      assume HA0inArcsE : A0 :e ArcsE.
+      claim HA0subE : A0 c= E.
+      { exact (PowerE E A0
+          (SepE1 (Power E)
+            (fun B0:set => exists A:set, A :e Arcs /\
+              exists x:set, x :e preimage_of E p A /\
+              B0 = path_component_of (preimage_of E p A)
+                (subspace_topology E Te (preimage_of E p A)) x)
+            A0 HA0inArcsE)). }
+      apply (iffER
+        (closed_in A0 (subspace_topology E Te A0) (C0 :/\: A0))
+        (exists C1:set, closed_in E Te C1 /\ C0 :/\: A0 = C1 :/\: A0)
+        (closed_in_subspace_iff_intersection E Te A0 (C0 :/\: A0) HtopE HA0subE)).
+      witness C0.
+      apply andI.
+      - exact HC0closed.
+      - reflexivity.
+    - (** Backward: all intersections closed -> closed_in E Te C0 **)
+      assume HAllClosed : forall A0:set, A0 :e ArcsE ->
+        closed_in A0 (subspace_topology E Te A0) (C0 :/\: A0).
+      exact (covering_coherent_backward X Tx Arcs E Te p ArcsE C0
+        Hglg Hcov (eq_refl ArcsE) HC0subE HAllClosed).
 - (** Part 2: Each B in ArcsE has the required properties **)
   let B.
   assume HBinArcsE.
