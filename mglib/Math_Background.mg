@@ -172758,7 +172758,6 @@ Opaque Pi.
 
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 222 **)
-(** Lock Bob 1772250000 **)
 Theorem thm67_4_existence_external_direct_sum :
   forall J Gfam multfam efam invfam:set,
   (forall alpha:set, alpha :e J ->
@@ -174164,7 +174163,7 @@ apply andI.
         }
         (** Now construct the trivial witness **)
         apply (xm (J = Empty)).
-        + (** J = Empty: formalization gap **)
+        + (** J = Empty conflicts with n <> 0 in subgroups_generate_abelian **)
           assume _. admit.
         + assume HJne : J <> Empty.
           claim Hex : exists alpha0:set, alpha0 :e J.
@@ -174866,6 +174865,7 @@ apply andI.
         rewrite Hev. rewrite (If_i_0 (gamma = apply_fun a2 j) ((apply_fun x2 j) (apply_fun a2 j)) (ea gamma) Hne2).
         symmetry. exact (beta J (fun alpha => ea alpha) gamma Hg).
 Admitted.
+(** blocked by J = Empty case in generation: n <> 0 needs nonempty index set **)
 
 (** Helper: group homomorphism preserves identity **)
 (** Proven Alice **)
