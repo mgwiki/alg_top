@@ -183071,6 +183071,7 @@ Definition group_hom_set : set -> set -> set -> set -> set :=
       apply_fun h (apply_fun mult (x, y)) = apply_fun multH (apply_fun h x, apply_fun h y)}.
 
 (** Helper: every group hom in group_hom_set satisfies group_homomorphism **)
+(** Proven Bob **)
 Lemma group_hom_set_is_hom : forall G mult H multH h:set,
   h :e group_hom_set G mult H multH ->
   group_homomorphism G mult H multH h.
@@ -183088,14 +183089,14 @@ claim Hmult : forall x y:set, x :e G -> y :e G ->
       apply_fun h (apply_fun mult (x, y)) = apply_fun multH (apply_fun h x, apply_fun h y))
     h Hh). }
 claim HfnOn : function_on h G H.
-{ admit. }
+{ exact (function_on_of_function_space h G H HhFS). }
 prove function_on h G H /\
   (forall x y:set, x :e G -> y :e G ->
     apply_fun h (apply_fun mult (x, y)) = apply_fun multH (apply_fun h x, apply_fun h y)).
 apply andI.
 - exact HfnOn.
 - exact Hmult.
-Admitted.
+Qed.
 
 (** Helper: for an infinite cyclic group with generator x, **)
 (** there is a unique hom to Z mod 2 sending x to any given y in 2 **)
