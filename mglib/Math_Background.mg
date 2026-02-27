@@ -1,5 +1,5 @@
 (** Balance Alice 3495 **)
-(** Balance Bob 3500 **)
+(** Balance Bob 3561 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
 
@@ -171499,8 +171499,8 @@ Qed.
 (** from S67 Cor 67.3 (line 2639 in algtop.tex): quotient by direct summand **)
 (** LATEX VERSION: If G = G1 + G2, then G/G2 is isomorphic to G1. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 61 **)
-(** Lock Bob 1772246743 **)
+(** Collected Bob 61 **)
+(** Proven Bob **)
 Theorem cor67_3_quotient_by_summand :
   forall G multG eG invG G1 G2:set,
   abelian_group G multG eG invG ->
@@ -172099,6 +172099,203 @@ claim Hrep_own_coset : forall g:set, g :e G -> g :e left_coset multG g G2.
     (fun n:set => apply_fun multG (g, n))
     eG
     HeG_G2). }
+(** Helper: for normal G2, left multiplication by G2 does not change left cosets. **)
+claim Hleft_coset_left_mult_normal_preserves :
+  forall g c:set, g :e G -> c :e G2 ->
+    left_coset multG (apply_fun multG (c, g)) G2 = left_coset multG g G2.
+{ let g c. assume HgG HcC.
+  claim HsubC : subgroup_of G2 G multG eG invG.
+  { exact HsubG2_sub. }
+  claim HconjC :
+    forall t g0:set, t :e G2 -> g0 :e G ->
+      apply_fun multG (apply_fun multG (g0, t), apply_fun invG g0) :e G2.
+  { exact (andER
+      (subgroup_of G2 G multG eG invG)
+      (forall t g0:set, t :e G2 -> g0 :e G ->
+        apply_fun multG (apply_fun multG (g0, t), apply_fun invG g0) :e G2)
+      HnormalG2). }
+  apply (and4E
+    (G2 c= G)
+    (eG :e G2)
+    (forall x y:set, x :e G2 -> y :e G2 -> apply_fun multG (x, y) :e G2)
+    (forall x:set, x :e G2 -> apply_fun invG x :e G2)
+    HsubC).
+  assume HCsub HeC HmulC HinvC.
+  claim HinvGg : apply_fun invG g :e G.
+  { apply (and6E
+      (function_on multG (setprod G G) G)
+      (function_on invG G G)
+      (eG :e G)
+      (forall x y z:set, x :e G -> y :e G -> z :e G ->
+        apply_fun multG (apply_fun multG (x, y), z) = apply_fun multG (x, apply_fun multG (y, z)))
+      (forall x:set, x :e G -> apply_fun multG (eG, x) = x /\ apply_fun multG (x, eG) = x)
+      (forall x:set, x :e G ->
+        apply_fun multG (x, apply_fun invG x) = eG /\ apply_fun multG (apply_fun invG x, x) = eG)
+      HgrpG).
+    assume _ HinvG_fn _ _ _ _.
+    exact (HinvG_fn g HgG). }
+  claim HinvInvGg : apply_fun invG (apply_fun invG g) :e G.
+  { apply (and6E
+      (function_on multG (setprod G G) G)
+      (function_on invG G G)
+      (eG :e G)
+      (forall x y z:set, x :e G -> y :e G -> z :e G ->
+        apply_fun multG (apply_fun multG (x, y), z) = apply_fun multG (x, apply_fun multG (y, z)))
+      (forall x:set, x :e G -> apply_fun multG (eG, x) = x /\ apply_fun multG (x, eG) = x)
+      (forall x:set, x :e G ->
+        apply_fun multG (x, apply_fun invG x) = eG /\ apply_fun multG (apply_fun invG x, x) = eG)
+      HgrpG).
+    assume _ HinvG_fn _ _ _ _.
+    exact (HinvG_fn (apply_fun invG g) HinvGg). }
+  claim HcG : c :e G.
+  { exact (HCsub c HcC). }
+  claim HkC :
+    apply_fun multG
+      (apply_fun multG (apply_fun invG g, c), apply_fun invG (apply_fun invG g)) :e G2.
+  { exact (HconjC c (apply_fun invG g) HcC HinvGg). }
+  claim HkRepr :
+    apply_fun multG (c, g) =
+    apply_fun multG
+      (g,
+        apply_fun multG
+          (apply_fun multG (apply_fun invG g, c), apply_fun invG (apply_fun invG g))).
+  { apply (and6E
+      (function_on multG (setprod G G) G)
+      (function_on invG G G)
+      (eG :e G)
+      (forall x y z:set, x :e G -> y :e G -> z :e G ->
+        apply_fun multG (apply_fun multG (x, y), z) = apply_fun multG (x, apply_fun multG (y, z)))
+      (forall x:set, x :e G -> apply_fun multG (eG, x) = x /\ apply_fun multG (x, eG) = x)
+      (forall x:set, x :e G ->
+        apply_fun multG (x, apply_fun invG x) = eG /\ apply_fun multG (apply_fun invG x, x) = eG)
+      HgrpG).
+    assume HmultG HinvG HeG HassocG HidG HinvLawG.
+    claim HinvInvEq : apply_fun invG (apply_fun invG g) = g.
+    { exact (group_inv_inv
+        G multG invG eG g HmultG HinvG HeG HassocG HidG HinvLawG HgG). }
+    claim HinvGcG : apply_fun multG (apply_fun invG g, c) :e G.
+    { exact (HmultG
+        (apply_fun invG g, c)
+        (tuple_2_setprod_by_pair_Sigma G G (apply_fun invG g) c HinvGg HcG)). }
+    claim HcgG : apply_fun multG (c, g) :e G.
+    { exact (HmultG
+        (c, g)
+        (tuple_2_setprod_by_pair_Sigma G G c g HcG HgG)). }
+    rewrite <- (HassocG
+      g
+      (apply_fun multG (apply_fun invG g, c))
+      (apply_fun invG (apply_fun invG g))
+      HgG
+      HinvGcG
+      HinvInvGg).
+    rewrite <- (HassocG g (apply_fun invG g) c HgG HinvGg HcG).
+    rewrite (andEL
+      (apply_fun multG (g, apply_fun invG g) = eG)
+      (apply_fun multG (apply_fun invG g, g) = eG)
+      (HinvLawG g HgG)).
+    rewrite (andEL
+      (apply_fun multG (eG, c) = c)
+      (apply_fun multG (c, eG) = c)
+      (HidG c HcG)).
+    rewrite HinvInvEq.
+    reflexivity. }
+  rewrite HkRepr.
+  exact (Hleft_coset_right_mult
+    g
+    (apply_fun multG
+      (apply_fun multG (apply_fun invG g, c), apply_fun invG (apply_fun invG g)))
+    HgG
+    HkC). }
+(** Helper: with normal G2, c.g belongs to gG2. **)
+claim Hnormal_left_mult_in_left_coset :
+  forall g c:set, g :e G -> c :e G2 ->
+    apply_fun multG (c, g) :e left_coset multG g G2.
+{ let g c. assume HgG HcC.
+  rewrite <- (Hleft_coset_left_mult_normal_preserves g c HgG HcC).
+  claim HcG : c :e G.
+  { exact (subgroup_of_mem_in_G G2 G multG eG invG c HsubG2 HcC). }
+  claim HcgG : apply_fun multG (c, g) :e G.
+  { apply (and6E
+      (function_on multG (setprod G G) G)
+      (function_on invG G G)
+      (eG :e G)
+      (forall x y z:set, x :e G -> y :e G -> z :e G ->
+        apply_fun multG (apply_fun multG (x, y), z) = apply_fun multG (x, apply_fun multG (y, z)))
+      (forall x:set, x :e G -> apply_fun multG (eG, x) = x /\ apply_fun multG (x, eG) = x)
+      (forall x:set, x :e G ->
+        apply_fun multG (x, apply_fun invG x) = eG /\ apply_fun multG (apply_fun invG x, x) = eG)
+      HgrpG).
+    assume HmultG HinvG HeG HassocG HidG HinvLawG.
+    exact (HmultG
+      (c, g)
+      (tuple_2_setprod_by_pair_Sigma G G c g HcG HgG)). }
+  exact (Hrep_own_coset (apply_fun multG (c, g)) HcgG). }
+(** Helper: for normal G2, inserting a G2-factor in the middle preserves the left coset. **)
+claim Hleft_coset_middle_subgroup_factor_normal :
+  forall x y c:set, x :e G -> y :e G -> c :e G2 ->
+    left_coset multG (apply_fun multG (apply_fun multG (x, c), y)) G2 =
+    left_coset multG (apply_fun multG (x, y)) G2.
+{ let x y c. assume HxG HyG HcC.
+  claim HsubC : subgroup_of G2 G multG eG invG.
+  { exact HsubG2_sub. }
+  apply (and6E
+    (function_on multG (setprod G G) G)
+    (function_on invG G G)
+    (eG :e G)
+    (forall a b d:set, a :e G -> b :e G -> d :e G ->
+      apply_fun multG (apply_fun multG (a, b), d) = apply_fun multG (a, apply_fun multG (b, d)))
+    (forall a:set, a :e G -> apply_fun multG (eG, a) = a /\ apply_fun multG (a, eG) = a)
+    (forall a:set, a :e G ->
+      apply_fun multG (a, apply_fun invG a) = eG /\ apply_fun multG (apply_fun invG a, a) = eG)
+    HgrpG).
+  assume HmultG HinvG HeG HassocG HidG HinvLawG.
+  apply (and4E
+    (G2 c= G)
+    (eG :e G2)
+    (forall u v:set, u :e G2 -> v :e G2 -> apply_fun multG (u, v) :e G2)
+    (forall u:set, u :e G2 -> apply_fun invG u :e G2)
+    HsubC).
+  assume HCsub HeC HmulC HinvC.
+  claim HcG : c :e G.
+  { exact (HCsub c HcC). }
+  claim HxyG : apply_fun multG (x, y) :e G.
+  { exact (HmultG
+      (x, y)
+      (tuple_2_setprod_by_pair_Sigma G G x y HxG HyG)). }
+  claim HcyInYCoset : apply_fun multG (c, y) :e left_coset multG y G2.
+  { exact (Hnormal_left_mult_in_left_coset y c HyG HcC). }
+  apply (ReplE
+    G2
+    (fun n:set => apply_fun multG (y, n))
+    (apply_fun multG (c, y))
+    HcyInYCoset).
+  let n.
+  assume HnPack : n :e G2 /\ apply_fun multG (c, y) = apply_fun multG (y, n).
+  claim HnC : n :e G2.
+  { exact (andEL
+      (n :e G2)
+      (apply_fun multG (c, y) = apply_fun multG (y, n))
+      HnPack). }
+  claim HcyEqYn : apply_fun multG (c, y) = apply_fun multG (y, n).
+  { exact (andER
+      (n :e G2)
+      (apply_fun multG (c, y) = apply_fun multG (y, n))
+      HnPack). }
+  claim HnG : n :e G.
+  { exact (HCsub n HnC). }
+  claim HxcyEqXyn :
+    apply_fun multG (apply_fun multG (x, c), y) =
+    apply_fun multG (apply_fun multG (x, y), n).
+  { rewrite (HassocG x c y HxG HcG HyG).
+    rewrite HcyEqYn.
+    rewrite <- (HassocG x y n HxG HyG HnG).
+    reflexivity. }
+  rewrite HxcyEqXyn.
+  exact (Hleft_coset_right_mult
+    (apply_fun multG (x, y))
+    n
+    HxyG
+    HnC). }
 (** Each coset has a unique representative in G1 **)
 claim Hcoset_rep : forall c:set, c :e Q -> exists g1:set, g1 :e G1 /\ c = left_coset multG g1 G2.
 { let c. assume HcQ.
@@ -172218,7 +172415,199 @@ claim Hquot_mult_coset :
   forall x y:set, x :e G -> y :e G ->
     apply_fun multQ (left_coset multG x G2, left_coset multG y G2) =
     left_coset multG (apply_fun multG (x, y)) G2.
-{ admit. }
+{ let x y. assume HxG HyG.
+  claim HsubC : subgroup_of G2 G multG eG invG.
+  { exact HsubG2_sub. }
+  claim HxQ : left_coset multG x G2 :e Q.
+  { exact (ReplI
+      G
+      (fun g0:set => left_coset multG g0 G2)
+      x
+      HxG). }
+  claim HyQ : left_coset multG y G2 :e Q.
+  { exact (ReplI
+      G
+      (fun g0:set => left_coset multG g0 G2)
+      y
+      HyG). }
+  claim HpairQ :
+    (left_coset multG x G2, left_coset multG y G2) :e
+    setprod Q Q.
+  { exact (tuple_2_setprod_by_pair_Sigma
+      Q
+      Q
+      (left_coset multG x G2)
+      (left_coset multG y G2)
+      HxQ
+      HyQ). }
+  claim HqmultDef :
+    multQ =
+    graph (setprod Q Q)
+      (fun p:set =>
+        left_coset multG
+          (apply_fun multG
+            (Eps_i (fun g:set => g :e G /\ p 0 = left_coset multG g G2),
+             Eps_i (fun g:set => g :e G /\ p 1 = left_coset multG g G2)))
+          G2).
+  { reflexivity. }
+  rewrite HqmultDef.
+  rewrite (apply_fun_graph
+    (setprod Q Q)
+    (fun p:set =>
+      left_coset multG
+        (apply_fun multG
+          (Eps_i (fun g:set => g :e G /\ p 0 = left_coset multG g G2),
+           Eps_i (fun g:set => g :e G /\ p 1 = left_coset multG g G2)))
+        G2)
+    (left_coset multG x G2, left_coset multG y G2)
+    HpairQ).
+  rewrite tuple_2_0_eq.
+  rewrite tuple_2_1_eq.
+  set epsx := Eps_i (fun g:set => g :e G /\ left_coset multG x G2 = left_coset multG g G2).
+  set epsy := Eps_i (fun g:set => g :e G /\ left_coset multG y G2 = left_coset multG g G2).
+  claim HexX : exists g:set, g :e G /\ left_coset multG x G2 = left_coset multG g G2.
+  { witness x. apply andI.
+    - exact HxG.
+    - reflexivity. }
+  claim HexY : exists g:set, g :e G /\ left_coset multG y G2 = left_coset multG g G2.
+  { witness y. apply andI.
+    - exact HyG.
+    - reflexivity. }
+  claim HepsxPack : epsx :e G /\ left_coset multG x G2 = left_coset multG epsx G2.
+  { exact (Eps_i_ex
+      (fun g:set => g :e G /\ left_coset multG x G2 = left_coset multG g G2)
+      HexX). }
+  claim HepsyPack : epsy :e G /\ left_coset multG y G2 = left_coset multG epsy G2.
+  { exact (Eps_i_ex
+      (fun g:set => g :e G /\ left_coset multG y G2 = left_coset multG g G2)
+      HexY). }
+  claim HepsxG : epsx :e G.
+  { exact (andEL
+      (epsx :e G)
+      (left_coset multG x G2 = left_coset multG epsx G2)
+      HepsxPack). }
+  claim HepsyG : epsy :e G.
+  { exact (andEL
+      (epsy :e G)
+      (left_coset multG y G2 = left_coset multG epsy G2)
+      HepsyPack). }
+  claim HepsxEq : left_coset multG x G2 = left_coset multG epsx G2.
+  { exact (andER
+      (epsx :e G)
+      (left_coset multG x G2 = left_coset multG epsx G2)
+      HepsxPack). }
+  claim HepsyEq : left_coset multG y G2 = left_coset multG epsy G2.
+  { exact (andER
+      (epsy :e G)
+      (left_coset multG y G2 = left_coset multG epsy G2)
+      HepsyPack). }
+  claim HepsxInOwn : epsx :e left_coset multG epsx G2.
+  { exact (Hrep_own_coset epsx HepsxG). }
+  claim HepsyInOwn : epsy :e left_coset multG epsy G2.
+  { exact (Hrep_own_coset epsy HepsyG). }
+  claim HepsxInX : epsx :e left_coset multG x G2.
+  { exact (mem_eqL
+      epsx
+      (left_coset multG x G2)
+      (left_coset multG epsx G2)
+      HepsxEq
+      HepsxInOwn). }
+  claim HepsyInY : epsy :e left_coset multG y G2.
+  { exact (mem_eqL
+      epsy
+      (left_coset multG y G2)
+      (left_coset multG epsy G2)
+      HepsyEq
+      HepsyInOwn). }
+  apply (ReplE
+    G2
+    (fun n:set => apply_fun multG (x, n))
+    epsx
+    HepsxInX).
+  let c1.
+  assume Hc1Pack : c1 :e G2 /\ epsx = apply_fun multG (x, c1).
+  apply (ReplE
+    G2
+    (fun n:set => apply_fun multG (y, n))
+    epsy
+    HepsyInY).
+  let c2.
+  assume Hc2Pack : c2 :e G2 /\ epsy = apply_fun multG (y, c2).
+  claim Hc1C : c1 :e G2.
+  { exact (andEL
+      (c1 :e G2)
+      (epsx = apply_fun multG (x, c1))
+      Hc1Pack). }
+  claim Hc2C : c2 :e G2.
+  { exact (andEL
+      (c2 :e G2)
+      (epsy = apply_fun multG (y, c2))
+      Hc2Pack). }
+  claim HepsxDef : epsx = apply_fun multG (x, c1).
+  { exact (andER
+      (c1 :e G2)
+      (epsx = apply_fun multG (x, c1))
+      Hc1Pack). }
+  claim HepsyDef : epsy = apply_fun multG (y, c2).
+  { exact (andER
+      (c2 :e G2)
+      (epsy = apply_fun multG (y, c2))
+      Hc2Pack). }
+  apply (and6E
+    (function_on multG (setprod G G) G)
+    (function_on invG G G)
+    (eG :e G)
+    (forall a b d:set, a :e G -> b :e G -> d :e G ->
+      apply_fun multG (apply_fun multG (a, b), d) = apply_fun multG (a, apply_fun multG (b, d)))
+    (forall a:set, a :e G -> apply_fun multG (eG, a) = a /\ apply_fun multG (a, eG) = a)
+    (forall a:set, a :e G ->
+      apply_fun multG (a, apply_fun invG a) = eG /\ apply_fun multG (apply_fun invG a, a) = eG)
+    HgrpG).
+  assume HmultG HinvG HeG HassocG HidG HinvLawG.
+  apply (and4E
+    (G2 c= G)
+    (eG :e G2)
+    (forall u v:set, u :e G2 -> v :e G2 -> apply_fun multG (u, v) :e G2)
+    (forall u:set, u :e G2 -> apply_fun invG u :e G2)
+    HsubC).
+  assume HCsub HeC HmulC HinvC.
+  claim Hc1G : c1 :e G.
+  { exact (HCsub c1 Hc1C). }
+  claim Hc2G : c2 :e G.
+  { exact (HCsub c2 Hc2C). }
+  claim Hxc1G : apply_fun multG (x, c1) :e G.
+  { exact (HmultG
+      (x, c1)
+      (tuple_2_setprod_by_pair_Sigma G G x c1 HxG Hc1G)). }
+  claim Hyc2G : apply_fun multG (y, c2) :e G.
+  { exact (HmultG
+      (y, c2)
+      (tuple_2_setprod_by_pair_Sigma G G y c2 HyG Hc2G)). }
+  claim HxcyG : apply_fun multG (apply_fun multG (x, c1), y) :e G.
+  { exact (HmultG
+      (apply_fun multG (x, c1), y)
+      (tuple_2_setprod_by_pair_Sigma G G (apply_fun multG (x, c1)) y Hxc1G HyG)). }
+  rewrite HepsxDef.
+  rewrite HepsyDef.
+  rewrite <- (HassocG
+    (apply_fun multG (x, c1))
+    y
+    c2
+    Hxc1G
+    HyG
+    Hc2G).
+  rewrite (Hleft_coset_right_mult
+    (apply_fun multG (apply_fun multG (x, c1), y))
+    c2
+    HxcyG
+    Hc2C).
+  exact (Hleft_coset_middle_subgroup_factor_normal
+    x
+    y
+    c1
+    HxG
+    HyG
+    Hc1C). }
 (** Define phi using the unique G1 representative of each coset **)
 set phi := graph Q (fun c:set => Eps_i (fun g1:set => g1 :e G1 /\ c = left_coset multG g1 G2)).
 claim Hphi_fn : function_on phi Q G1.
@@ -172293,14 +172682,41 @@ claim Hphi_hom : group_homomorphism Q multQ G1 multG phi.
       (subgroup_of_mem_in_G G1 G multG eG invG (apply_fun phi c1) HsubG1 (Hphi_fn c1 Hc1Q))
       (subgroup_of_mem_in_G G1 G multG eG invG (apply_fun phi c2) HsubG1 (Hphi_fn c2 Hc2Q))). }
 claim Hphi_bij : bijection Q G1 phi.
-{ admit. }
+{ apply (andI
+    (function_on phi Q G1)
+    (forall y:set, y :e G1 ->
+      exists x:set, x :e Q /\
+        apply_fun phi x = y /\
+        (forall x':set, x' :e Q -> apply_fun phi x' = y -> x' = x))).
+  - exact Hphi_fn.
+  - let y. assume HyG1.
+    set c := left_coset multG y G2.
+    claim HcQ : c :e Q.
+    { exact (ReplI G (fun g0:set => left_coset multG g0 G2) y
+        (subgroup_of_mem_in_G G1 G multG eG invG y HsubG1 HyG1)). }
+    claim Hc_def : c = left_coset multG y G2. { reflexivity. }
+    witness c.
+    apply andI.
+    - claim Hphi_c : apply_fun phi c = y.
+      { claim Hc_rep : c = left_coset multG (apply_fun phi c) G2.
+        { exact (Hphi_rep c HcQ). }
+        apply (Hcoset_rep_unique (apply_fun phi c) y (Hphi_fn c HcQ) HyG1).
+        rewrite <- Hc_rep. exact Hc_def. }
+      exact (andI (c :e Q) (apply_fun phi c = y) HcQ Hphi_c).
+    - let c'. assume Hc'Q Hphi_eq.
+      claim Hc'rep : c' = left_coset multG (apply_fun phi c') G2.
+      { exact (Hphi_rep c' Hc'Q). }
+      claim Hc'_eq : c' = left_coset multG y G2.
+      { rewrite Hc'rep. rewrite Hphi_eq. reflexivity. }
+      exact (eq_i_tra c' (left_coset multG y G2) c Hc'_eq
+        (eq_symm c (left_coset multG y G2) Hc_def)). }
 witness phi.
 apply (andI
   (group_homomorphism Q multQ G1 multG phi)
   (bijection Q G1 phi)).
 - exact Hphi_hom.
 - exact Hphi_bij.
-Admitted.
+Qed.
 
 (** from S67 Definition (line 2644 in algtop.tex): external direct sum **)
 (** LATEX VERSION: G is the external direct sum of groups G_alpha relative to **)
