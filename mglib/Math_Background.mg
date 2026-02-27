@@ -51682,6 +51682,40 @@ apply set_ext.
       HWFam).
 Qed.
 
+(** Infrastructure: a member equals its intersection with the union **)
+(** Proven Bob **)
+Theorem union_member_intersect_eq : forall Fam V:set,
+  V :e Fam ->
+  Union Fam :/\: V = V.
+let Fam V.
+assume HVFam.
+apply set_ext.
+- let z.
+  assume HzInt.
+  exact (binintersectE2
+    (Union Fam)
+    V
+    z
+    HzInt).
+- let z.
+  assume HzV.
+  claim HzUnion : z :e Union Fam.
+  {
+    exact (UnionI
+      Fam
+      z
+      V
+      HzV
+      HVFam).
+  }
+  exact (binintersectI
+    (Union Fam)
+    V
+    z
+    HzUnion
+    HzV).
+Qed.
+
 (** Infrastructure: union is monotone with respect to subfamilies **)
 (** Proven Bob **)
 Theorem union_subfamily_sub_union : forall Fam1 Fam2:set,
