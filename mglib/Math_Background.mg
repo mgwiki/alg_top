@@ -254462,6 +254462,30 @@ apply andI.
     Hsemi_local).
 Qed.
 
+(** Infrastructure: unit interval is path connected (from contractibility) **)
+(** Proven Alice **)
+Theorem unit_interval_path_connected :
+  path_connected_space unit_interval unit_interval_topology.
+exact (ex51_3b_contractible_path_connected
+  unit_interval unit_interval_topology ex51_3a_I_contractible).
+Qed.
+
+(** Infrastructure: arcs are path connected **)
+(** Proven Alice **)
+Theorem arc_path_connected : forall X Tx:set,
+  arc X Tx -> path_connected_space X Tx.
+let X Tx.
+assume Harc.
+claim Hex : exists f:set, homeomorphism unit_interval unit_interval_topology X Tx f.
+{ exact Harc. }
+apply Hex.
+let f.
+assume Hf.
+exact (homeomorphism_preserves_path_connected_space_right
+  unit_interval unit_interval_topology X Tx f Hf
+  unit_interval_path_connected).
+Qed.
+
 (** from S83 Thm 83.4 (line 5530 in algtop.tex): covering of graph is graph **)
 (** LATEX VERSION: Let p: E -> X be a covering map where X is a linear graph. **)
 (** If A_alpha is an edge of X and B is a path component of p^{-1}(A_alpha), **)
@@ -254482,7 +254506,133 @@ Theorem thm83_4_covering_of_graph_is_graph :
         path_connected_space B (subspace_topology E Te B) /\
         homeomorphism B (subspace_topology E Te B) A (subspace_topology X Tx A)
             (graph B (fun x:set => apply_fun p x))).
-admit.
+let X Tx Arcs E Te p.
+assume Hglg Hcov.
+(** Basic setup from hypotheses **)
+claim HtopX : topology_on X Tx.
+{ exact (general_linear_graph_topology_on X Tx Arcs Hglg). }
+claim Hcovpair : continuous_map E Te X Tx p /\ surjective_map E X p.
+{
+  exact (andEL
+    (continuous_map E Te X Tx p /\ surjective_map E X p)
+    (forall b:set, b :e X ->
+      exists U:set, U :e Tx /\ b :e U /\ evenly_covered E Te X Tx p U)
+    Hcov).
+}
+claim Hcont : continuous_map E Te X Tx p.
+{ exact (andEL (continuous_map E Te X Tx p) (surjective_map E X p) Hcovpair). }
+claim Hsurj : surjective_map E X p.
+{ exact (andER (continuous_map E Te X Tx p) (surjective_map E X p) Hcovpair). }
+claim HtopE : topology_on E Te.
+{ exact (continuous_map_topology_dom E Te X Tx p Hcont). }
+claim Hfon : function_on p E X.
+{ exact (continuous_map_function_on E Te X Tx p Hcont). }
+claim HXeqUnion : X = Union Arcs.
+{ exact (general_linear_graph_union_arcs X Tx Arcs Hglg). }
+(** Define ArcsE as the set of path components of preimages of arcs **)
+set ArcsE := {B :e Power E |
+  exists A:set, A :e Arcs /\
+  exists x:set, x :e preimage_of E p A /\
+  B = path_component_of (preimage_of E p A)
+    (subspace_topology E Te (preimage_of E p A)) x}.
+witness ArcsE.
+apply andI.
+- (** Part 1: general_linear_graph E Te ArcsE **)
+  admit.
+- (** Part 2: Each B in ArcsE has the required properties **)
+  let B.
+  assume HBinArcsE.
+  claim HBdata : B :e Power E /\
+    (exists A:set, A :e Arcs /\
+     exists x:set, x :e preimage_of E p A /\
+     B = path_component_of (preimage_of E p A)
+       (subspace_topology E Te (preimage_of E p A)) x).
+  { exact (SepE (Power E)
+      (fun B0:set => exists A:set, A :e Arcs /\
+        exists x:set, x :e preimage_of E p A /\
+        B0 = path_component_of (preimage_of E p A)
+          (subspace_topology E Te (preimage_of E p A)) x)
+      B HBinArcsE). }
+  claim HBsubE : B c= E.
+  { exact (PowerE E B
+      (andEL
+        (B :e Power E)
+        (exists A:set, A :e Arcs /\
+         exists x:set, x :e preimage_of E p A /\
+         B = path_component_of (preimage_of E p A)
+           (subspace_topology E Te (preimage_of E p A)) x)
+        HBdata)). }
+  claim HBex : exists A:set, A :e Arcs /\
+    exists x:set, x :e preimage_of E p A /\
+    B = path_component_of (preimage_of E p A)
+      (subspace_topology E Te (preimage_of E p A)) x.
+  { exact (andER
+      (B :e Power E)
+      (exists A:set, A :e Arcs /\
+       exists x:set, x :e preimage_of E p A /\
+       B = path_component_of (preimage_of E p A)
+         (subspace_topology E Te (preimage_of E p A)) x)
+      HBdata). }
+  apply HBex.
+  let A.
+  assume HApack.
+  claim HAarcs : A :e Arcs.
+  { exact (andEL (A :e Arcs)
+      (exists x:set, x :e preimage_of E p A /\
+       B = path_component_of (preimage_of E p A)
+         (subspace_topology E Te (preimage_of E p A)) x)
+      HApack). }
+  claim HApack2 : exists x:set, x :e preimage_of E p A /\
+    B = path_component_of (preimage_of E p A)
+      (subspace_topology E Te (preimage_of E p A)) x.
+  { exact (andER (A :e Arcs)
+      (exists x:set, x :e preimage_of E p A /\
+       B = path_component_of (preimage_of E p A)
+         (subspace_topology E Te (preimage_of E p A)) x)
+      HApack). }
+  apply HApack2.
+  let x0.
+  assume Hx0pack.
+  claim Hx0pre : x0 :e preimage_of E p A.
+  { exact (andEL (x0 :e preimage_of E p A)
+      (B = path_component_of (preimage_of E p A)
+        (subspace_topology E Te (preimage_of E p A)) x0)
+      Hx0pack). }
+  claim HBeq : B = path_component_of (preimage_of E p A)
+    (subspace_topology E Te (preimage_of E p A)) x0.
+  { exact (andER (x0 :e preimage_of E p A)
+      (B = path_component_of (preimage_of E p A)
+        (subspace_topology E Te (preimage_of E p A)) x0)
+      Hx0pack). }
+  claim HArcData : A c= X /\ arc A (subspace_topology X Tx A).
+  { exact (general_linear_graph_arc_data X Tx Arcs A Hglg HAarcs). }
+  claim HAsubX : A c= X.
+  { exact (andEL (A c= X) (arc A (subspace_topology X Tx A)) HArcData). }
+  claim HAarc : arc A (subspace_topology X Tx A).
+  { exact (andER (A c= X) (arc A (subspace_topology X Tx A)) HArcData). }
+  witness A.
+  (** Goal: ((A :e Arcs /\ B c= preimage_of E p A) /\ path_connected_space B ...) /\ homeomorphism B ... **)
+  claim HBsubPre : B c= preimage_of E p A.
+  {
+    rewrite HBeq.
+    let y.
+    assume Hy.
+    exact (SepE1 (preimage_of E p A)
+      (fun y0:set => exists q:set,
+        function_on q unit_interval (preimage_of E p A) /\
+        continuous_map unit_interval unit_interval_topology
+          (preimage_of E p A) (subspace_topology E Te (preimage_of E p A)) q /\
+        apply_fun q 0 = x0 /\ apply_fun q 1 = y0)
+      y Hy).
+  }
+  apply andI.
+  + (** ((A :e Arcs /\ B c= preimage_of E p A) /\ path_connected_space B ...) **)
+    apply andI.
+    * exact (andI (A :e Arcs) (B c= preimage_of E p A) HAarcs HBsubPre).
+    * (** path_connected_space B (subspace_topology E Te B) **)
+      admit.
+  + (** homeomorphism B ... A ... (graph B ...) **)
+    admit.
 Admitted.
 
 (** from S83 Exercise 2 (line 5547 in algtop.tex) **)
