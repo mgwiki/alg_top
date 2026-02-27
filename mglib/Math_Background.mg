@@ -1,5 +1,5 @@
 (** Balance Alice 3495 **)
-(** Balance Bob 3540 **)
+(** Balance Bob 3530 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
 
@@ -4879,7 +4879,7 @@ Axiom comparable_topologies_on_topology2 : forall X T1 T2 : set , comparable_top
 Axiom comparable_topologies_on_comparable : forall X T1 T2 : set , comparable_topologies_on X T1 T2 -> comparable_topologies T1 T2.
 Definition topology_eq : set -> set -> set -> prop := fun X T1 T2 => topology_on X T1 /\ topology_on X T2 /\ T1 = T2.
 Axiom topology_eq_sym : forall X T1 T2 : set , topology_eq X T1 T2 -> topology_eq X T2 T1.
-Axiom topology_eq_trans : forall X T1 T2 T3 : set , topology_eq X T1 T2 -> topology_eq X T2 T3 -> topology_eq X T1 T3.
+Axiom topology_eq_i_tra : forall X T1 T2 T3 : set , topology_eq X T1 T2 -> topology_eq X T2 T3 -> topology_eq X T1 T3.
 Axiom topology_eq_refl : forall X T : set , topology_on X T -> topology_eq X T T.
 Definition strictly_finer_than : set -> set -> prop := fun T' T => finer_than T' T /\ ~ finer_than T T'.
 Definition strictly_coarser_than : set -> set -> prop := fun T' T => coarser_than T' T /\ ~ coarser_than T T'.
@@ -83117,7 +83117,8 @@ exact (andI
 (** If f and g are path homotopic, then f_tilde and g_tilde end at the same point **)
 (** and are path homotopic. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 97 **)
+(** Bounty 107 **)
+(** Lock Bob 1772257084 **)
 Theorem thm54_3_homotopic_lifts : forall E Te B Tb p e0 b0 b1 f g:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = b0 ->
@@ -100279,8 +100280,850 @@ claim HgLoopAt : loop_at B Tb b0 g.
       claim HlcMult :
         apply_fun lc (apply_fun mult (h, cls)) = apply_fun lc cls.
       {
-        (** TODO: show lifting_correspondence is constant on cosets using loop characterization + homotopic lifts. **)
-        admit.
+        (** Step 1: represent h as induced homomorphism image of a loop in E **)
+        claim HhEx :
+          exists clsE:set, clsE :e fundamental_group E Te e0 /\
+            h = apply_fun (induced_homomorphism E Te e0 B Tb b0 p) clsE.
+        {
+          exact (iffEL
+            (h :e H)
+            (exists x:set, x :e fundamental_group E Te e0 /\
+              h = apply_fun (induced_homomorphism E Te e0 B Tb b0 p) x)
+            (homomorphism_image_mem
+              (fundamental_group E Te e0)
+              (induced_homomorphism E Te e0 B Tb b0 p)
+              h)
+            HhH).
+        }
+        apply HhEx.
+        let clsE.
+        assume HclsEPack.
+        claim HclsE : clsE :e fundamental_group E Te e0.
+        {
+          exact (andEL
+            (clsE :e fundamental_group E Te e0)
+            (h = apply_fun (induced_homomorphism E Te e0 B Tb b0 p) clsE)
+            HclsEPack).
+        }
+        claim HhEqImg :
+          h = apply_fun (induced_homomorphism E Te e0 B Tb b0 p) clsE.
+        {
+          exact (andER
+            (clsE :e fundamental_group E Te e0)
+            (h = apply_fun (induced_homomorphism E Te e0 B Tb b0 p) clsE)
+            HclsEPack).
+        }
+        set k := Eps_i (fun f0:set => f0 :e clsE).
+        claim HkLoop : k :e loop_space E Te e0.
+        {
+          exact (eps_of_fundamental_group_member_in_loop_space
+            E
+            Te
+            e0
+            clsE
+            HclsE).
+        }
+        claim HkLoopAt : loop_at E Te e0 k.
+        {
+          exact (loop_space_has_loop_at
+            E
+            Te
+            e0
+            k
+            HkLoop).
+        }
+        claim HkCont :
+          continuous_map unit_interval unit_interval_topology E Te k.
+        {
+          exact (loop_at_continuous
+            E
+            Te
+            e0
+            k
+            HkLoopAt).
+        }
+        claim Hk0 : apply_fun k 0 = e0.
+        {
+          exact (loop_at_at_zero
+            E
+            Te
+            e0
+            k
+            HkLoopAt).
+        }
+        claim Hk1 : apply_fun k 1 = e0.
+        {
+          exact (loop_at_at_one
+            E
+            Te
+            e0
+            k
+            HkLoopAt).
+        }
+        claim HkFun : function_on k unit_interval E.
+        {
+          exact (continuous_map_function_on
+            unit_interval
+            unit_interval_topology
+            E
+            Te
+            k
+            HkCont).
+        }
+        set pk := compose_fun unit_interval k p.
+        claim HpkCont :
+          continuous_map unit_interval unit_interval_topology B Tb pk.
+        {
+          exact (composition_continuous
+            unit_interval
+            unit_interval_topology
+            E
+            Te
+            B
+            Tb
+            k
+            p
+            HkCont
+            Hcontp).
+        }
+        claim Hpk0 : apply_fun pk 0 = b0.
+        {
+          rewrite (compose_fun_apply unit_interval k p 0 zero_in_unit_interval).
+          rewrite Hk0.
+          reflexivity.
+        }
+        claim Hpk1 : apply_fun pk 1 = b0.
+        {
+          rewrite (compose_fun_apply unit_interval k p 1 one_in_unit_interval).
+          rewrite Hk1.
+          reflexivity.
+        }
+        claim HpkLoopAt : loop_at B Tb b0 pk.
+        {
+          apply (loop_at_fold B Tb b0 pk).
+          apply andI.
+          - apply andI.
+            + exact HpkCont.
+            + exact Hpk0.
+          - exact Hpk1.
+        }
+        claim HpkFS : pk :e function_space unit_interval B.
+        {
+          exact (compose_fun_in_function_space
+            unit_interval
+            E
+            B
+            k
+            p
+            HkFun
+            Hpfun).
+        }
+        claim HpkLoop : pk :e loop_space B Tb b0.
+        {
+          exact (SepI
+            (function_space unit_interval B)
+            (fun h0:set => loop_at B Tb b0 h0)
+            pk
+            HpkFS
+            HpkLoopAt).
+        }
+        claim Hind :
+          apply_fun (induced_homomorphism E Te e0 B Tb b0 p) clsE =
+          path_homotopy_class_loop B Tb b0 pk.
+        {
+          rewrite (induced_homomorphism_apply
+            E
+            Te
+            e0
+            B
+            Tb
+            b0
+            p
+            clsE
+            HclsE).
+          reflexivity.
+        }
+        claim HhEq :
+          h = path_homotopy_class_loop B Tb b0 pk.
+        {
+          rewrite HhEqImg.
+          exact Hind.
+        }
+        (** Step 2: relate hrep/rep to pk/g and use concatenation well-definedness **)
+        set hrep := Eps_i (fun f0:set => f0 :e h).
+        set rep := Eps_i (fun f0:set => f0 :e cls).
+        claim HhrepLoop : hrep :e loop_space B Tb b0.
+        {
+          exact (eps_of_fundamental_group_member_in_loop_space
+            B
+            Tb
+            b0
+            h
+            HhG).
+        }
+        claim HrepLoop : rep :e loop_space B Tb b0.
+        {
+          exact (eps_of_fundamental_group_member_in_loop_space
+            B
+            Tb
+            b0
+            cls
+            HclsG).
+        }
+        claim HpkInH : pk :e h.
+        {
+          rewrite HhEq.
+          exact (loop_in_own_path_homotopy_class
+            B
+            Tb
+            b0
+            pk
+            HpkLoop).
+        }
+        claim HhrepInH : hrep :e h.
+        {
+          exact (Eps_i_ax
+            (fun f0:set => f0 :e h)
+            pk
+            HpkInH).
+        }
+        claim HhrepInClassPk :
+          hrep :e path_homotopy_class_loop B Tb b0 pk.
+        {
+          rewrite <- HhEq.
+          exact HhrepInH.
+        }
+        claim HpkHomHrep : path_homotopic B Tb b0 b0 pk hrep.
+        {
+          exact (path_homotopy_class_loop_has_homotopy
+            B
+            Tb
+            b0
+            pk
+            hrep
+            HhrepInClassPk).
+        }
+        claim HhrepHomPk : path_homotopic B Tb b0 b0 hrep pk.
+        {
+          exact (Lemma_51_1_path_homotopy_sym
+            B
+            Tb
+            b0
+            b0
+            pk
+            hrep
+            HpkHomHrep).
+        }
+        claim HgInCls : g :e cls.
+        {
+          rewrite (eq_refl (path_homotopy_class_loop B Tb b0 g)).
+          exact (loop_in_own_path_homotopy_class
+            B
+            Tb
+            b0
+            g
+            HgLoop).
+        }
+        claim HrepInCls : rep :e cls.
+        {
+          exact (Eps_i_ax
+            (fun f0:set => f0 :e cls)
+            g
+            HgInCls).
+        }
+        claim HrepInClassG : rep :e path_homotopy_class_loop B Tb b0 g.
+        {
+          rewrite <- (eq_refl (path_homotopy_class_loop B Tb b0 g)).
+          exact HrepInCls.
+        }
+        claim HgHomRep : path_homotopic B Tb b0 b0 g rep.
+        {
+          exact (path_homotopy_class_loop_has_homotopy
+            B
+            Tb
+            b0
+            g
+            rep
+            HrepInClassG).
+        }
+        claim HrepHomG : path_homotopic B Tb b0 b0 rep g.
+        {
+          exact (Lemma_51_1_path_homotopy_sym
+            B
+            Tb
+            b0
+            b0
+            g
+            rep
+            HgHomRep).
+        }
+        claim HconcatHom :
+          path_homotopic B Tb b0 b0
+            (path_concat hrep rep) (path_concat pk g).
+        {
+          exact (path_concat_well_defined_on_classes
+            B
+            Tb
+            b0
+            b0
+            b0
+            hrep
+            pk
+            rep
+            g
+            HhrepHomPk
+            HrepHomG).
+        }
+        claim HconcatLiftPack :
+          apply_fun (path_lift E Te B Tb p e0 (path_concat hrep rep)) 1 =
+          apply_fun (path_lift E Te B Tb p e0 (path_concat pk g)) 1 /\
+          path_homotopic E Te e0
+            (apply_fun (path_lift E Te B Tb p e0 (path_concat hrep rep)) 1)
+            (path_lift E Te B Tb p e0 (path_concat hrep rep))
+            (path_lift E Te B Tb p e0 (path_concat pk g)).
+        {
+          exact (thm54_3_homotopic_lifts
+            E
+            Te
+            B
+            Tb
+            p
+            e0
+            b0
+            b0
+            (path_concat hrep rep)
+            (path_concat pk g)
+            Hcov
+            He0
+            (fun P H => H)
+            HconcatHom).
+        }
+        claim HconcatEndEq :
+          apply_fun (path_lift E Te B Tb p e0 (path_concat hrep rep)) 1 =
+          apply_fun (path_lift E Te B Tb p e0 (path_concat pk g)) 1.
+        {
+          exact (andEL
+            (apply_fun (path_lift E Te B Tb p e0 (path_concat hrep rep)) 1 =
+              apply_fun (path_lift E Te B Tb p e0 (path_concat pk g)) 1)
+            (path_homotopic E Te e0
+              (apply_fun (path_lift E Te B Tb p e0 (path_concat hrep rep)) 1)
+              (path_lift E Te B Tb p e0 (path_concat hrep rep))
+              (path_lift E Te B Tb p e0 (path_concat pk g)))
+            HconcatLiftPack).
+        }
+        (** Step 3: compute endpoint of lift of path_concat pk g **)
+        claim HpkLifting :
+          lifting_of unit_interval unit_interval_topology E Te B Tb p pk k.
+        {
+          exact (andI
+            (continuous_map unit_interval unit_interval_topology E Te k)
+            (forall t:set, t :e unit_interval ->
+              apply_fun p (apply_fun k t) = apply_fun pk t)
+            HkCont
+            (fun t Ht =>
+              eq_symm
+                (apply_fun pk t)
+                (apply_fun p (apply_fun k t))
+                (compose_fun_apply unit_interval k p t Ht))).
+        }
+        claim Hb0def : apply_fun p e0 = b0.
+        {
+          reflexivity.
+        }
+        claim HpkLiftPack :
+          (continuous_map unit_interval unit_interval_topology E Te
+            (path_lift E Te B Tb p e0 pk) /\
+           apply_fun (path_lift E Te B Tb p e0 pk) 0 = e0) /\
+          (forall t:set, t :e unit_interval ->
+            apply_fun p (apply_fun (path_lift E Te B Tb p e0 pk) t) = apply_fun pk t).
+        {
+          exact (lemma54_1_path_lifting
+            E Te B Tb p e0 pk
+            Hcov
+            He0
+            (eq_i_tra
+              (apply_fun p e0)
+              b0
+              (apply_fun pk 0)
+              Hb0def
+              (eq_symm (apply_fun pk 0) b0 Hpk0))
+            HpkCont).
+        }
+        claim HpkLiftLeft :
+          continuous_map unit_interval unit_interval_topology E Te
+            (path_lift E Te B Tb p e0 pk) /\
+          apply_fun (path_lift E Te B Tb p e0 pk) 0 = e0.
+        {
+          exact (andEL
+            (continuous_map unit_interval unit_interval_topology E Te
+              (path_lift E Te B Tb p e0 pk) /\
+             apply_fun (path_lift E Te B Tb p e0 pk) 0 = e0)
+            (forall t:set, t :e unit_interval ->
+              apply_fun p (apply_fun (path_lift E Te B Tb p e0 pk) t) = apply_fun pk t)
+            HpkLiftPack).
+        }
+        claim HpkLiftCont :
+          continuous_map unit_interval unit_interval_topology E Te
+            (path_lift E Te B Tb p e0 pk).
+        {
+          exact (andEL
+            (continuous_map unit_interval unit_interval_topology E Te
+              (path_lift E Te B Tb p e0 pk))
+            (apply_fun (path_lift E Te B Tb p e0 pk) 0 = e0)
+            HpkLiftLeft).
+        }
+        claim HpkLift0 :
+          apply_fun (path_lift E Te B Tb p e0 pk) 0 = e0.
+        {
+          exact (andER
+            (continuous_map unit_interval unit_interval_topology E Te
+              (path_lift E Te B Tb p e0 pk))
+            (apply_fun (path_lift E Te B Tb p e0 pk) 0 = e0)
+            HpkLiftLeft).
+        }
+        claim HpkLiftEq :
+          forall t:set, t :e unit_interval ->
+            apply_fun (path_lift E Te B Tb p e0 pk) t = apply_fun k t.
+        {
+          exact (lemma54_1_path_lifting_unique
+            E
+            Te
+            B
+            Tb
+            p
+            e0
+            pk
+            (path_lift E Te B Tb p e0 pk)
+            k
+            Hcov
+            He0
+            HpkCont
+            (andI
+              (continuous_map unit_interval unit_interval_topology E Te
+                (path_lift E Te B Tb p e0 pk))
+              (forall t:set, t :e unit_interval ->
+                apply_fun p (apply_fun (path_lift E Te B Tb p e0 pk) t) = apply_fun pk t)
+              HpkLiftCont
+              (andER
+                (continuous_map unit_interval unit_interval_topology E Te
+                  (path_lift E Te B Tb p e0 pk) /\
+                 apply_fun (path_lift E Te B Tb p e0 pk) 0 = e0)
+                (forall t:set, t :e unit_interval ->
+                  apply_fun p (apply_fun (path_lift E Te B Tb p e0 pk) t) = apply_fun pk t)
+                HpkLiftPack))
+            HpkLift0
+            HpkLifting
+            Hk0).
+        }
+        set kf := path_concat k f.
+        claim HkfCont :
+          continuous_map unit_interval unit_interval_topology E Te kf.
+        {
+          exact (path_concat_continuous
+            E
+            Te
+            e0
+            e0
+            y
+            k
+            f
+            HkCont
+            HfCont
+            Hk0
+            Hk1
+            Hf0
+            Hf1).
+        }
+        claim HkComm :
+          forall t:set, t :e unit_interval ->
+            apply_fun p (apply_fun k t) = apply_fun pk t.
+        {
+          let t.
+          assume Ht.
+          rewrite (compose_fun_apply unit_interval k p t Ht).
+          reflexivity.
+        }
+        claim HkfComm :
+          forall t:set, t :e unit_interval ->
+            apply_fun p (apply_fun kf t) = apply_fun (path_concat pk g) t.
+        {
+          let t.
+          assume Ht.
+          claim HtUnion :
+            t :e unit_interval_left_half :\/: unit_interval_right_half.
+          {
+            rewrite unit_interval_halves_cover.
+            exact Ht.
+          }
+          apply (binunionE
+            unit_interval_left_half
+            unit_interval_right_half
+            t
+            HtUnion).
+          - assume HtL.
+            claim Ht2 : mul_SNo 2 t :e unit_interval.
+            {
+              claim HdoubleOn :
+                function_on double_map_left_half unit_interval_left_half unit_interval.
+              { exact double_map_function_on. }
+              claim Ht2' : apply_fun double_map_left_half t :e unit_interval.
+              { exact (HdoubleOn t HtL). }
+              rewrite <- (double_map_apply t HtL).
+              exact Ht2'.
+            }
+            rewrite (path_concat_apply_left
+              k
+              f
+              t
+              (eq_i_tra
+                (apply_fun k 1)
+                e0
+                (apply_fun f 0)
+                Hk1
+                (eq_symm (apply_fun f 0) e0 Hf0))
+              HtL).
+            rewrite (path_concat_apply_left
+              pk
+              g
+              t
+              (eq_i_tra
+                (apply_fun pk 1)
+                b0
+                (apply_fun g 0)
+                Hpk1
+                (eq_symm (apply_fun g 0) b0 Hg0))
+              HtL).
+            rewrite (HkComm (mul_SNo 2 t) Ht2).
+            reflexivity.
+          - assume HtR.
+            claim Ht2 :
+              add_SNo (mul_SNo 2 t) (minus_SNo 1) :e unit_interval.
+            {
+              claim HdoubleOn :
+                function_on double_minus_one_map_right_half
+                  unit_interval_right_half unit_interval.
+              { exact double_minus_one_map_function_on. }
+              claim Ht2' :
+                apply_fun double_minus_one_map_right_half t :e unit_interval.
+              { exact (HdoubleOn t HtR). }
+              rewrite <- (double_minus_one_map_apply t HtR).
+              exact Ht2'.
+            }
+            rewrite (path_concat_apply_right
+              k
+              f
+              t
+              (eq_i_tra
+                (apply_fun k 1)
+                e0
+                (apply_fun f 0)
+                Hk1
+                (eq_symm (apply_fun f 0) e0 Hf0))
+              HtR).
+            rewrite (path_concat_apply_right
+              pk
+              g
+              t
+              (eq_i_tra
+                (apply_fun pk 1)
+                b0
+                (apply_fun g 0)
+                Hpk1
+                (eq_symm (apply_fun g 0) b0 Hg0))
+              HtR).
+            rewrite (HfComm
+              (add_SNo (mul_SNo 2 t) (minus_SNo 1))
+              Ht2).
+            reflexivity.
+        }
+        claim HkfLifting :
+          lifting_of unit_interval unit_interval_topology E Te B Tb p
+            (path_concat pk g)
+            kf.
+        {
+          exact (andI
+            (continuous_map unit_interval unit_interval_topology E Te kf)
+            (forall t:set, t :e unit_interval ->
+              apply_fun p (apply_fun kf t) = apply_fun (path_concat pk g) t)
+            HkfCont
+            HkfComm).
+        }
+        claim HstartConcat : apply_fun p e0 = apply_fun (path_concat pk g) 0.
+        {
+          rewrite (path_concat_at_zero pk g).
+          exact (eq_i_tra
+            (apply_fun p e0)
+            b0
+            (apply_fun pk 0)
+            Hb0def
+            (eq_symm (apply_fun pk 0) b0 Hpk0)).
+        }
+        claim HconcatCont :
+          continuous_map unit_interval unit_interval_topology B Tb (path_concat pk g).
+        {
+          exact (path_concat_continuous
+            B
+            Tb
+            b0
+            b0
+            b0
+            pk
+            g
+            HpkCont
+            HgCont
+            Hpk0
+            Hpk1
+            Hg0
+            Hg1).
+        }
+        claim HconcatPack :
+          (continuous_map unit_interval unit_interval_topology E Te
+            (path_lift E Te B Tb p e0 (path_concat pk g)) /\
+           apply_fun (path_lift E Te B Tb p e0 (path_concat pk g)) 0 = e0) /\
+          (forall t:set, t :e unit_interval ->
+            apply_fun p (apply_fun (path_lift E Te B Tb p e0 (path_concat pk g)) t) =
+            apply_fun (path_concat pk g) t).
+        {
+          exact (lemma54_1_path_lifting
+            E Te B Tb p e0 (path_concat pk g)
+            Hcov
+            He0
+            HstartConcat
+            HconcatCont).
+        }
+        claim HconcatLeft :
+          continuous_map unit_interval unit_interval_topology E Te
+            (path_lift E Te B Tb p e0 (path_concat pk g)) /\
+          apply_fun (path_lift E Te B Tb p e0 (path_concat pk g)) 0 = e0.
+        {
+          exact (andEL
+            (continuous_map unit_interval unit_interval_topology E Te
+              (path_lift E Te B Tb p e0 (path_concat pk g)) /\
+             apply_fun (path_lift E Te B Tb p e0 (path_concat pk g)) 0 = e0)
+            (forall t:set, t :e unit_interval ->
+              apply_fun p (apply_fun (path_lift E Te B Tb p e0 (path_concat pk g)) t) =
+              apply_fun (path_concat pk g) t)
+            HconcatPack).
+        }
+        claim HconcatLiftCont :
+          continuous_map unit_interval unit_interval_topology E Te
+            (path_lift E Te B Tb p e0 (path_concat pk g)).
+        {
+          exact (andEL
+            (continuous_map unit_interval unit_interval_topology E Te
+              (path_lift E Te B Tb p e0 (path_concat pk g)))
+            (apply_fun (path_lift E Te B Tb p e0 (path_concat pk g)) 0 = e0)
+            HconcatLeft).
+        }
+        claim Hconcat0 :
+          apply_fun (path_lift E Te B Tb p e0 (path_concat pk g)) 0 = e0.
+        {
+          exact (andER
+            (continuous_map unit_interval unit_interval_topology E Te
+              (path_lift E Te B Tb p e0 (path_concat pk g)))
+            (apply_fun (path_lift E Te B Tb p e0 (path_concat pk g)) 0 = e0)
+            HconcatLeft).
+        }
+        claim HconcatLiftEq :
+          forall t:set, t :e unit_interval ->
+            apply_fun (path_lift E Te B Tb p e0 (path_concat pk g)) t =
+            apply_fun kf t.
+        {
+          exact (lemma54_1_path_lifting_unique
+            E
+            Te
+            B
+            Tb
+            p
+            e0
+            (path_concat pk g)
+            (path_lift E Te B Tb p e0 (path_concat pk g))
+            kf
+            Hcov
+            He0
+            HconcatCont
+            (andI
+              (continuous_map unit_interval unit_interval_topology E Te
+                (path_lift E Te B Tb p e0 (path_concat pk g)))
+              (forall t:set, t :e unit_interval ->
+                apply_fun p (apply_fun (path_lift E Te B Tb p e0 (path_concat pk g)) t) =
+                apply_fun (path_concat pk g) t)
+              HconcatLiftCont
+              (andER
+                (continuous_map unit_interval unit_interval_topology E Te
+                  (path_lift E Te B Tb p e0 (path_concat pk g)) /\
+                 apply_fun (path_lift E Te B Tb p e0 (path_concat pk g)) 0 = e0)
+                (forall t:set, t :e unit_interval ->
+                  apply_fun p (apply_fun (path_lift E Te B Tb p e0 (path_concat pk g)) t) =
+                  apply_fun (path_concat pk g) t)
+                HconcatPack))
+            Hconcat0
+            HkfLifting
+            (eq_i_tra
+              (apply_fun (path_concat k f) 0)
+              (apply_fun k 0)
+              e0
+              (path_concat_at_zero k f)
+              Hk0)).
+        }
+        claim HconcatEnd :
+          apply_fun (path_lift E Te B Tb p e0 (path_concat pk g)) 1 = y.
+        {
+          rewrite (HconcatLiftEq 1 one_in_unit_interval).
+          rewrite (path_concat_at_one k f).
+          exact Hf1.
+        }
+        (** Step 4: relate lc on h_mult_cls to path_concat hrep rep **)
+        set cls_mult := apply_fun mult (h, cls).
+        set rep_mult := Eps_i (fun f0:set => f0 :e cls_mult).
+        claim HlcMultApply :
+          apply_fun lc cls_mult =
+          apply_fun (path_lift E Te B Tb p e0 rep_mult) 1.
+        {
+          exact (apply_fun_graph
+            G
+            (fun cls0:set =>
+              apply_fun (path_lift E Te B Tb p e0
+                (Eps_i (fun f0:set => f0 :e cls0))) 1)
+            cls_mult
+            HmultG).
+        }
+        claim HhclsPair : (h, cls) :e setprod G G.
+        {
+          exact (tuple_2_setprod_by_pair_Sigma G G h cls HhG HclsG).
+        }
+        claim HmultClassEq :
+          cls_mult =
+          path_homotopy_class_loop B Tb b0 (path_concat hrep rep).
+        {
+          rewrite (fundamental_group_mult_apply
+            B
+            Tb
+            b0
+            (h, cls)
+            HhclsPair).
+          rewrite tuple_2_0_eq.
+          rewrite tuple_2_1_eq.
+          reflexivity.
+        }
+        claim HconcatLoop :
+          path_concat hrep rep :e loop_space B Tb b0.
+        {
+          exact (path_concat_preserves_loop_space
+            B
+            Tb
+            b0
+            hrep
+            rep
+            HhrepLoop
+            HrepLoop).
+        }
+        claim HconcatInClass : path_concat hrep rep :e cls_mult.
+        {
+          rewrite HmultClassEq.
+          exact (loop_in_own_path_homotopy_class
+            B
+            Tb
+            b0
+            (path_concat hrep rep)
+            HconcatLoop).
+        }
+        claim HrepMultIn : rep_mult :e cls_mult.
+        {
+          exact (Eps_i_ax
+            (fun f0:set => f0 :e cls_mult)
+            (path_concat hrep rep)
+            HconcatInClass).
+        }
+        claim HrepMultInClass :
+          rep_mult :e path_homotopy_class_loop B Tb b0 (path_concat hrep rep).
+        {
+          rewrite <- HmultClassEq.
+          exact HrepMultIn.
+        }
+        claim HrepMultHom :
+          path_homotopic B Tb b0 b0 (path_concat hrep rep) rep_mult.
+        {
+          exact (path_homotopy_class_loop_has_homotopy
+            B
+            Tb
+            b0
+            (path_concat hrep rep)
+            rep_mult
+            HrepMultInClass).
+        }
+        claim HrepMultLiftPack :
+          apply_fun (path_lift E Te B Tb p e0 (path_concat hrep rep)) 1 =
+          apply_fun (path_lift E Te B Tb p e0 rep_mult) 1 /\
+          path_homotopic E Te e0
+            (apply_fun (path_lift E Te B Tb p e0 (path_concat hrep rep)) 1)
+            (path_lift E Te B Tb p e0 (path_concat hrep rep))
+            (path_lift E Te B Tb p e0 rep_mult).
+        {
+          exact (thm54_3_homotopic_lifts
+            E
+            Te
+            B
+            Tb
+            p
+            e0
+            b0
+            b0
+            (path_concat hrep rep)
+            rep_mult
+            Hcov
+            He0
+            (fun P H => H)
+            HrepMultHom).
+        }
+        claim HrepMultEndEq :
+          apply_fun (path_lift E Te B Tb p e0 (path_concat hrep rep)) 1 =
+          apply_fun (path_lift E Te B Tb p e0 rep_mult) 1.
+        {
+          exact (andEL
+            (apply_fun (path_lift E Te B Tb p e0 (path_concat hrep rep)) 1 =
+              apply_fun (path_lift E Te B Tb p e0 rep_mult) 1)
+            (path_homotopic E Te e0
+              (apply_fun (path_lift E Te B Tb p e0 (path_concat hrep rep)) 1)
+              (path_lift E Te B Tb p e0 (path_concat hrep rep))
+              (path_lift E Te B Tb p e0 rep_mult))
+            HrepMultLiftPack).
+        }
+        claim HlcMultToConcat :
+          apply_fun lc cls_mult =
+          apply_fun (path_lift E Te B Tb p e0 (path_concat hrep rep)) 1.
+        {
+          exact (eq_i_tra
+            (apply_fun lc cls_mult)
+            (apply_fun (path_lift E Te B Tb p e0 rep_mult) 1)
+            (apply_fun (path_lift E Te B Tb p e0 (path_concat hrep rep)) 1)
+            HlcMultApply
+            (eq_symm
+              (apply_fun (path_lift E Te B Tb p e0 (path_concat hrep rep)) 1)
+              (apply_fun (path_lift E Te B Tb p e0 rep_mult) 1)
+              HrepMultEndEq)).
+        }
+        claim HlcMultToY : apply_fun lc cls_mult = y.
+        {
+          exact (eq_i_tra
+            (apply_fun lc cls_mult)
+            (apply_fun (path_lift E Te B Tb p e0 (path_concat hrep rep)) 1)
+            y
+            HlcMultToConcat
+            (eq_i_tra
+              (apply_fun (path_lift E Te B Tb p e0 (path_concat hrep rep)) 1)
+              (apply_fun (path_lift E Te B Tb p e0 (path_concat pk g)) 1)
+              y
+              HconcatEndEq
+              HconcatEnd)).
+        }
+        (** Step 5: conclude lc mult = lc cls **)
+        exact (eq_i_tra
+          (apply_fun lc cls_mult)
+          y
+          (apply_fun lc cls)
+          HlcMultToY
+          (eq_symm (apply_fun lc cls) y HlcCls)).
       }
       rewrite Hcls0Eq.
       exact HlcMult.
@@ -266555,6 +267398,45 @@ Qed.
 (** helper for S84.3: locally_path_connected is invariant under definitional equality of topologies. **)
 (** Proven Bob **)
 Theorem locally_path_connected_topology_eq_transport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  locally_path_connected X T1 ->
+  locally_path_connected X T2.
+let X T1 T2.
+assume Heq Hlpc.
+rewrite <- Heq.
+exact Hlpc.
+Qed.
+
+(** helper for S84.3: simply_connected is invariant under definitional equality of topologies. **)
+(** Proven Bob **)
+Theorem simply_connected_topology_eq_i_traport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  simply_connected X T1 ->
+  simply_connected X T2.
+let X T1 T2.
+assume Heq Hsimp.
+rewrite <- Heq.
+exact Hsimp.
+Qed.
+
+(** helper for S84.3: path_connected_space is invariant under definitional equality of topologies. **)
+(** Proven Bob **)
+Theorem path_connected_space_topology_eq_i_traport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  path_connected_space X T1 ->
+  path_connected_space X T2.
+let X T1 T2.
+assume Heq Hpc.
+rewrite <- Heq.
+exact Hpc.
+Qed.
+
+(** helper for S84.3: locally_path_connected is invariant under definitional equality of topologies. **)
+(** Proven Bob **)
+Theorem locally_path_connected_topology_eq_i_traport :
   forall X T1 T2:set,
   T1 = T2 ->
   locally_path_connected X T1 ->
