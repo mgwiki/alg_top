@@ -252282,10 +252282,413 @@ apply andI.
 		                  apply andI.
 		                  - apply andI.
 		                    + (** Continuity of F on Ustar x I -> X. **)
-		                      (** Strategy: for each V :e Tx, preimage is open in product topology. **)
-		                      (** For x <> b: use per-arc continuity on open Star(A0) \ {b}. **)
-		                      (** For x = b: use tube lemma + coherence. **)
-		                      admit.
+		                      claim HtopTProd :
+		                        topology_on (setprod Ustar unit_interval) TProd.
+		                      {
+		                        exact (product_topology_is_topology
+		                          Ustar TUstar unit_interval unit_interval_topology
+		                          HtopUstar unit_interval_topology_on).
+		                      }
+		                      claim HfunF : function_on F (setprod Ustar unit_interval) X.
+		                      {
+		                        exact (graph_function_on
+		                          (setprod Ustar unit_interval) X
+		                          (fun p:set => apply_fun (chooseG (arcOf (p 0))) p)
+		                          HFfunX).
+		                      }
+		                      (** Unfold continuous_map as 4-tuple conjunction. **)
+		                      prove topology_on (setprod Ustar unit_interval) TProd /\
+		                        topology_on X Tx /\
+		                        function_on F (setprod Ustar unit_interval) X /\
+		                        (forall V:set, V :e Tx ->
+		                          preimage_of (setprod Ustar unit_interval) F V :e TProd).
+		                      apply andI.
+		                      * apply andI.
+		                        { apply andI.
+		                          { exact HtopTProd. }
+		                          { exact HtopX. }
+		                        }
+		                        { exact HfunF. }
+		                      * (** Main: forall V :e Tx, preimage :e TProd. **)
+		                        let V. assume HVTx.
+		                        set PF := preimage_of (setprod Ustar unit_interval) F V.
+		                        set PSB := product_subbasis Ustar TUstar unit_interval unit_interval_topology.
+		                        claim HPFsub : PF c= setprod Ustar unit_interval.
+		                        {
+		                          let q. assume HqPF.
+		                          exact (SepE1 (setprod Ustar unit_interval)
+		                            (fun r:set => apply_fun F r :e V) q HqPF).
+		                        }
+		                        (** PF :e generated_topology ... iff PF :e Power ... and local basis. **)
+		                        claim Hlocal : forall p:set, p :e PF ->
+		                          exists R :e PSB, p :e R /\ R c= PF.
+		                        {
+		                          let p. assume HpPF.
+		                          claim HpD : p :e setprod Ustar unit_interval.
+		                          { exact (HPFsub p HpPF). }
+		                          claim HFpV : apply_fun F p :e V.
+		                          { exact (SepE2 (setprod Ustar unit_interval)
+		                              (fun r:set => apply_fun F r :e V) p HpPF). }
+		                          claim Hp0U : p 0 :e Ustar.
+		                          {
+		                            rewrite <- (proj0_ap_0 p).
+		                            exact (proj0_Sigma Ustar (fun _:set => unit_interval) p HpD).
+		                          }
+		                          claim Hp1I : p 1 :e unit_interval.
+		                          {
+		                            rewrite <- (proj1_ap_1 p).
+		                            exact (proj1_Sigma Ustar (fun _:set => unit_interval) p HpD).
+		                          }
+		                          claim Hpeta : p = (p 0, p 1).
+		                          { exact (setprod_eta Ustar unit_interval p HpD). }
+		                          apply (xm (p 0 = b)).
+		                          - (** Case p 0 = b: tube lemma + coherence. **)
+		                            assume Hp0b.
+		                            admit. (** TODO: tube lemma case **)
+		                          - (** Case p 0 <> b: per-arc continuity. **)
+		                            assume Hp0nb.
+		                            set A0 := arcOf (p 0).
+		                            claim HarcSpec : A0 :e IncArcs /\ p 0 :e Star A0.
+		                            { exact (HarcOfSpec (p 0) Hp0U). }
+		                            claim HA0Inc : A0 :e IncArcs.
+		                            { exact (andEL (A0 :e IncArcs) (p 0 :e Star A0) HarcSpec). }
+		                            claim Hp0Star : p 0 :e Star A0.
+		                            { exact (andER (A0 :e IncArcs) (p 0 :e Star A0) HarcSpec). }
+		                            claim HA0Arcs : A0 :e Arcs.
+		                            { exact (SepE1 Arcs (fun A1:set => b :e A1) A0 HA0Inc). }
+		                            claim HcGA0 :
+		                              continuous_map (setprod (Star A0) unit_interval)
+		                                (product_topology (Star A0) (subspace_topology X Tx (Star A0))
+		                                  unit_interval unit_interval_topology)
+		                                X Tx (chooseG A0) /\
+		                              (forall x:set, x :e Star A0 -> apply_fun (chooseG A0) (x, 0) = x) /\
+		                              (forall x:set, x :e Star A0 -> apply_fun (chooseG A0) (x, 1) = b) /\
+		                              (forall t:set, t :e unit_interval -> apply_fun (chooseG A0) (b, t) = b).
+		                            { exact (HchooseG A0 HA0Inc). }
+		                            apply (and4E
+		                              (continuous_map (setprod (Star A0) unit_interval)
+		                                (product_topology (Star A0) (subspace_topology X Tx (Star A0))
+		                                  unit_interval unit_interval_topology)
+		                                X Tx (chooseG A0))
+		                              (forall x:set, x :e Star A0 -> apply_fun (chooseG A0) (x, 0) = x)
+		                              (forall x:set, x :e Star A0 -> apply_fun (chooseG A0) (x, 1) = b)
+		                              (forall t:set, t :e unit_interval -> apply_fun (chooseG A0) (b, t) = b)
+		                              HcGA0).
+		                            assume HcGA0cont _ _ _.
+		                            (** F(p) = chooseG(A0)(p) since arcOf(p 0) = A0. **)
+		                            claim HFpval : apply_fun F p = apply_fun (chooseG A0) p.
+		                            { exact (HFval p HpD). }
+		                            claim HcGA0pV : apply_fun (chooseG A0) p :e V.
+		                            { rewrite <- HFpval. exact HFpV. }
+		                            (** p is in the domain Star(A0) x I. **)
+		                            claim HpStarI : p :e setprod (Star A0) unit_interval.
+		                            {
+		                              rewrite Hpeta. rewrite tuple_2_0_eq.
+		                              exact (tuple_2_setprod_by_pair_Sigma
+		                                (Star A0) unit_interval (p 0) (p 1) Hp0Star Hp1I).
+		                            }
+		                            (** Preimage of V under chooseG(A0) is open. **)
+		                            set TSGA0 := product_topology (Star A0) (subspace_topology X Tx (Star A0))
+		                                           unit_interval unit_interval_topology.
+		                            claim HpreimGA0open :
+		                              preimage_of (setprod (Star A0) unit_interval) (chooseG A0) V :e TSGA0.
+		                            { exact (continuous_map_preimage
+		                                (setprod (Star A0) unit_interval) TSGA0 X Tx
+		                                (chooseG A0) HcGA0cont V HVTx). }
+		                            claim HpPreimGA0 :
+		                              p :e preimage_of (setprod (Star A0) unit_interval) (chooseG A0) V.
+		                            { exact (SepI (setprod (Star A0) unit_interval)
+		                                (fun r:set => apply_fun (chooseG A0) r :e V)
+		                                p HpStarI HcGA0pV). }
+		                            (** By generated_topology_local_refine, find a basis rect. **)
+		                            set PSBA0 := product_subbasis (Star A0) (subspace_topology X Tx (Star A0))
+		                                           unit_interval unit_interval_topology.
+		                            apply (generated_topology_local_refine
+		                              (setprod (Star A0) unit_interval) PSBA0
+		                              (preimage_of (setprod (Star A0) unit_interval) (chooseG A0) V)
+		                              p HpreimGA0open HpPreimGA0).
+		                            let R0. assume HR0pack.
+		                            claim HR0psb : R0 :e PSBA0.
+		                            { exact (andEL (R0 :e PSBA0) (p :e R0 /\ R0 c= preimage_of (setprod (Star A0) unit_interval) (chooseG A0) V) HR0pack). }
+		                            claim HR0rest : p :e R0 /\ R0 c= preimage_of (setprod (Star A0) unit_interval) (chooseG A0) V.
+		                            { exact (andER (R0 :e PSBA0) (p :e R0 /\ R0 c= preimage_of (setprod (Star A0) unit_interval) (chooseG A0) V) HR0pack). }
+		                            claim HpR0 : p :e R0.
+		                            { exact (andEL (p :e R0) (R0 c= preimage_of (setprod (Star A0) unit_interval) (chooseG A0) V) HR0rest). }
+		                            claim HR0sub : R0 c= preimage_of (setprod (Star A0) unit_interval) (chooseG A0) V.
+		                            { exact (andER (p :e R0) (R0 c= preimage_of (setprod (Star A0) unit_interval) (chooseG A0) V) HR0rest). }
+		                            (** R0 :e PSBA0 = famunion, extract U0 and W0. **)
+		                            apply (famunionE
+		                              (subspace_topology X Tx (Star A0))
+		                              (fun U => {setprod U V | V :e unit_interval_topology})
+		                              R0 HR0psb).
+		                            let U0. assume HU0pack.
+		                            claim HU0open : U0 :e subspace_topology X Tx (Star A0).
+		                            { exact (andEL (U0 :e subspace_topology X Tx (Star A0))
+		                                (R0 :e {setprod U0 V | V :e unit_interval_topology}) HU0pack). }
+		                            claim HR0repl : R0 :e {setprod U0 V | V :e unit_interval_topology}.
+		                            { exact (andER (U0 :e subspace_topology X Tx (Star A0))
+		                                (R0 :e {setprod U0 V | V :e unit_interval_topology}) HU0pack). }
+		                            apply (ReplE_impred unit_interval_topology (fun W => setprod U0 W) R0 HR0repl).
+		                            let W0. assume HW0open. assume HR0eq.
+		                            (** R0 = setprod U0 W0. Get ambient V0 from U0. **)
+		                            set V0 := ambient_open_of_subspace_open X Tx (Star A0) U0.
+		                            claim HV0spec : V0 :e Tx /\ U0 = V0 :/\: Star A0.
+		                            { exact (ambient_open_of_subspace_open_spec X Tx (Star A0) U0 HU0open). }
+		                            claim HV0Tx : V0 :e Tx.
+		                            { exact (andEL (V0 :e Tx) (U0 = V0 :/\: Star A0) HV0spec). }
+		                            claim HU0eq : U0 = V0 :/\: Star A0.
+		                            { exact (andER (V0 :e Tx) (U0 = V0 :/\: Star A0) HV0spec). }
+		                            (** p :e R0 = setprod U0 W0, so p 0 :e U0 and p 1 :e W0. **)
+		                            claim HpR0' : p :e setprod U0 W0.
+		                            { rewrite <- HR0eq. exact HpR0. }
+		                            claim Hp0U0 : p 0 :e U0.
+		                            {
+		                              rewrite <- (proj0_ap_0 p).
+		                              exact (proj0_Sigma U0 (fun _:set => W0) p HpR0').
+		                            }
+		                            claim Hp1W0 : p 1 :e W0.
+		                            {
+		                              rewrite <- (proj1_ap_1 p).
+		                              exact (proj1_Sigma U0 (fun _:set => W0) p HpR0').
+		                            }
+		                            (** Star(A0)\{b} is open in X. **)
+		                            claim HStarA0subX : (Star A0) c= X.
+		                            {
+		                              let z. assume Hz.
+		                              claim HzA0 : z :e A0.
+		                              { exact (setminusE1 A0 ((Over A0) :\: (Sing b)) z Hz). }
+		                              claim HA0dat : A0 c= X /\ arc A0 (subspace_topology X Tx A0).
+		                              { exact (general_linear_graph_arc_data X Tx Arcs A0 Hglg HA0Arcs). }
+		                              exact (andEL (A0 c= X) (arc A0 (subspace_topology X Tx A0)) HA0dat z HzA0).
+		                            }
+		                            claim HStarNoBsubX : (Star A0) :\: Sing b c= X.
+		                            { let z. assume Hz.
+		                              exact (HStarA0subX z (setminusE1 (Star A0) (Sing b) z Hz)). }
+		                            claim HbA0 : b :e A0.
+		                            { exact (SepE2 Arcs (fun A1:set => b :e A1) A0 HA0Inc). }
+		                            claim HbOverA0 : b :e Over A0.
+		                            {
+		                              claim HbOvDat :
+		                                exists E0:set, E0 :e Arcs /\
+		                                  exists F0:set, F0 :e Arcs /\ F0 <> E0 /\ b :e E0 /\ b :e F0.
+		                              {
+		                                exact (SepE2 X
+		                                  (fun p:set => exists E0:set, E0 :e Arcs /\
+		                                    exists F0:set, F0 :e Arcs /\ F0 <> E0 /\ p :e E0 /\ p :e F0)
+		                                  b HbOverX).
+		                              }
+		                              apply HbOvDat.
+		                              let E0. assume HE0pack.
+		                              claim HE0Arcs : E0 :e Arcs.
+		                              { exact (andEL (E0 :e Arcs)
+		                                  (exists F0:set, F0 :e Arcs /\ F0 <> E0 /\ b :e E0 /\ b :e F0) HE0pack). }
+		                              apply (andER (E0 :e Arcs)
+		                                (exists F0:set, F0 :e Arcs /\ F0 <> E0 /\ b :e E0 /\ b :e F0) HE0pack).
+		                              let F0. assume HF0pack.
+		                              apply (and4E (F0 :e Arcs) (F0 <> E0) (b :e E0) (b :e F0) HF0pack).
+		                              assume HF0Arcs HF0neE0 HbE0 HbF0.
+		                              apply (xm (A0 = E0)).
+		                              - assume HA0eqE0.
+		                                claim HF0neA0 : F0 <> A0.
+		                                { assume Heq.
+		                                  exact (HF0neE0
+		                                    (HA0eqE0 (fun x _:set => F0 = x)
+		                                      Heq)). }
+		                                claim HexF : exists F:set, F :e Arcs /\ F <> A0 /\ b :e F.
+		                                { witness F0. apply andI. { apply andI. { exact HF0Arcs. } { exact HF0neA0. } } { exact HbF0. } }
+		                                exact (SepI A0
+		                                  (fun p:set => exists F:set, F :e Arcs /\ F <> A0 /\ p :e F)
+		                                  b HbA0 HexF).
+		                              - assume HA0neE0.
+		                                claim HE0neA0 : E0 <> A0.
+		                                { assume Heq.
+		                                  exact (HA0neE0 (eq_symm E0 A0 Heq)). }
+		                                claim HexF : exists F:set, F :e Arcs /\ F <> A0 /\ b :e F.
+		                                { witness E0. apply andI. { apply andI. { exact HE0Arcs. } { exact HE0neA0. } } { exact HbE0. } }
+		                                exact (SepI A0
+		                                  (fun p:set => exists F:set, F :e Arcs /\ F <> A0 /\ p :e F)
+		                                  b HbA0 HexF).
+		                            }
+		                            claim Heq : (Star A0) :\: Sing b = A0 :\: Over A0.
+		                            {
+		                              apply set_ext.
+		                              - let x. assume Hx.
+		                                claim HxStar : x :e Star A0.
+		                                { exact (setminusE1 (Star A0) (Sing b) x Hx). }
+		                                claim HxA0 : x :e A0.
+		                                { exact (setminusE1 A0 ((Over A0) :\: (Sing b)) x HxStar). }
+		                                claim Hxnb : x /:e Sing b.
+		                                { exact (setminusE2 (Star A0) (Sing b) x Hx). }
+		                                claim HxnOvNoB : x /:e (Over A0) :\: (Sing b).
+		                                { exact (setminusE2 A0 ((Over A0) :\: (Sing b)) x HxStar). }
+		                                claim HxnOv : x /:e Over A0.
+		                                { assume HxOv.
+		                                  exact (HxnOvNoB (setminusI (Over A0) (Sing b) x HxOv Hxnb)). }
+		                                exact (setminusI A0 (Over A0) x HxA0 HxnOv).
+		                              - let x. assume Hx.
+		                                claim HxA0 : x :e A0.
+		                                { exact (setminusE1 A0 (Over A0) x Hx). }
+		                                claim HxnOv : x /:e Over A0.
+		                                { exact (setminusE2 A0 (Over A0) x Hx). }
+		                                claim HxnOvNoB : x /:e (Over A0) :\: (Sing b).
+		                                { assume HxOvNoB.
+		                                  exact (HxnOv (setminusE1 (Over A0) (Sing b) x HxOvNoB)). }
+		                                claim HxStar : x :e Star A0.
+		                                { exact (setminusI A0 ((Over A0) :\: (Sing b)) x HxA0 HxnOvNoB). }
+		                                claim Hxnb : x /:e Sing b.
+		                                { assume Hxb.
+		                                  claim Hxeqb : x = b.
+		                                  { exact (SingE b x Hxb). }
+		                                  claim HxOvA0 : x :e Over A0.
+		                                  { rewrite Hxeqb. exact HbOverA0. }
+		                                  exact (HxnOv HxOvA0). }
+		                                exact (setminusI (Star A0) (Sing b) x HxStar Hxnb).
+		                            }
+		                            claim HStarNoBTx : (Star A0) :\: Sing b :e Tx.
+		                            {
+		                              rewrite Heq.
+		                              exact (general_linear_graph_arc_nonoverlap_open_in_X X Tx Arcs A0 Hglg HA0Arcs).
+		                            }
+		                            (** Let U = V0 ∩ (Star(A0)\{b}). **)
+		                            set U := V0 :/\: ((Star A0) :\: Sing b).
+		                            claim HUTx : U :e Tx.
+		                            { exact (topology_binintersect_closed X Tx V0 ((Star A0) :\: Sing b)
+		                                HtopX HV0Tx HStarNoBTx). }
+		                            claim HUsubUstar : U c= Ustar.
+		                            {
+		                              let z. assume Hz.
+		                              claim HzStar : z :e Star A0.
+		                              {
+		                                claim Hz2 : z :e (Star A0) :\: Sing b.
+		                                { exact (binintersectE2 V0 ((Star A0) :\: Sing b) z Hz). }
+		                                exact (setminusE1 (Star A0) (Sing b) z Hz2).
+		                              }
+		                              exact (UnionI {Star A1 | A1 :e IncArcs} z (Star A0)
+		                                HzStar (ReplI IncArcs (fun A1:set => Star A1) A0 HA0Inc)).
+		                            }
+		                            claim HUTUstar : U :e TUstar.
+		                            {
+		                              claim HUIeq : U :/\: Ustar = U.
+		                              { exact (binintersect_Subq_eq_1 U Ustar HUsubUstar). }
+		                              exact (HUIeq (fun x y:set => x :e TUstar)
+		                                (subspace_topologyI X Tx Ustar U HUTx)).
+		                            }
+		                            claim Hp0U : p 0 :e U.
+		                            {
+		                              claim Hp0V0 : p 0 :e V0.
+		                              { exact (binintersectE1 V0 (Star A0) (p 0)
+		                                  (mem_eqR (p 0) U0 (V0 :/\: Star A0) HU0eq Hp0U0)). }
+		                              claim Hp0StarNoB : p 0 :e (Star A0) :\: Sing b.
+		                              { exact (setminusI (Star A0) (Sing b) (p 0) Hp0Star
+		                                  (fun H : p 0 :e Sing b =>
+		                                    Hp0nb (SingE b (p 0) H))). }
+		                              exact (binintersectI V0 ((Star A0) :\: Sing b) (p 0) Hp0V0 Hp0StarNoB).
+		                            }
+		                            (** setprod U W0 ∈ PSB. **)
+		                            claim HRinPSB : setprod U W0 :e PSB.
+		                            {
+		                              exact (famunionI TUstar
+		                                (fun U1 => {setprod U1 V1 | V1 :e unit_interval_topology})
+		                                U (setprod U W0) HUTUstar
+		                                (ReplI unit_interval_topology (fun V1 => setprod U V1) W0 HW0open)).
+		                            }
+		                            (** setprod U W0 ⊆ PF. **)
+		                            claim HRsubPF : setprod U W0 c= PF.
+		                            {
+		                              let q. assume HqR.
+		                              claim Hq0U : q 0 :e U.
+		                              { rewrite <- (proj0_ap_0 q).
+		                                exact (proj0_Sigma U (fun _:set => W0) q HqR). }
+		                              claim Hq1W : q 1 :e W0.
+		                              { rewrite <- (proj1_ap_1 q).
+		                                exact (proj1_Sigma U (fun _:set => W0) q HqR). }
+		                              claim HW0subI : W0 c= unit_interval.
+		                              { exact (PowerE unit_interval W0
+		                                  (topology_subset_axiom unit_interval unit_interval_topology
+		                                    unit_interval_topology_on W0 HW0open)). }
+		                              claim Hq1I : q 1 :e unit_interval.
+		                              { exact (HW0subI (q 1) Hq1W). }
+		                              (** q 0 :e U ⊆ Star(A0)\{b}, so arcOf(q 0) = A0. **)
+		                              claim Hq0StarNoB : q 0 :e (Star A0) :\: Sing b.
+		                              { exact (binintersectE2 V0 ((Star A0) :\: Sing b) (q 0) Hq0U). }
+		                              claim Hq0Star : q 0 :e Star A0.
+		                              { exact (setminusE1 (Star A0) (Sing b) (q 0) Hq0StarNoB). }
+		                              claim Hq0Ustar : q 0 :e Ustar.
+		                              { exact (HUsubUstar (q 0) Hq0U). }
+		                              claim Hq0V0 : q 0 :e V0.
+		                              { exact (binintersectE1 V0 ((Star A0) :\: Sing b) (q 0) Hq0U). }
+		                              claim Hq0U0 : q 0 :e U0.
+		                              { exact (mem_eqL (q 0) U0 (V0 :/\: Star A0) HU0eq
+		                                  (binintersectI V0 (Star A0) (q 0) Hq0V0 Hq0Star)). }
+		                              (** q :e setprod U0 W0 and therefore q :e R0, hence in preimage. **)
+		                              claim HqStarI : q :e setprod (Star A0) unit_interval.
+		                              {
+		                                claim Hqeta : q = (q 0, q 1).
+		                                { exact (setprod_eta U W0 q HqR). }
+		                                rewrite Hqeta.
+		                                exact (tuple_2_setprod_by_pair_Sigma
+		                                  (Star A0) unit_interval (q 0) (q 1) Hq0Star Hq1I).
+		                              }
+		                              (** q :e R0 ⊆ preimage of V under chooseG(A0). **)
+		                              claim HqR0 : q :e setprod U0 W0.
+		                              {
+		                                claim Hqeta : q = (q 0, q 1).
+		                                { exact (setprod_eta U W0 q HqR). }
+		                                rewrite Hqeta.
+		                                claim Hq1W0' : q 1 :e W0.
+		                                { exact Hq1W. }
+		                                exact (tuple_2_setprod_by_pair_Sigma U0 W0 (q 0) (q 1) Hq0U0 Hq1W0').
+		                              }
+		                              claim HqR0' : q :e R0.
+		                              { rewrite HR0eq. exact HqR0. }
+		                              claim HqPreim : q :e preimage_of (setprod (Star A0) unit_interval) (chooseG A0) V.
+		                              { exact (HR0sub q HqR0'). }
+		                              claim HcGA0qV : apply_fun (chooseG A0) q :e V.
+		                              { exact (SepE2 (setprod (Star A0) unit_interval)
+		                                  (fun r:set => apply_fun (chooseG A0) r :e V) q HqPreim). }
+		                              (** arcOf(q 0) = A0 since q 0 ∈ Star(A0)\{b}. **)
+		                              (** F(q) = chooseG(arcOf(q 0))(q). Need arcOf(q 0) = A0. **)
+		                              (** Since q0 ≠ b and q0 ∈ Star(A0), arcOf(q0) must be A0. **)
+		                              (** This follows from uniqueness: q0 only in Star(A0). **)
+		                              claim HqDomain : q :e setprod Ustar unit_interval.
+		                              {
+		                                claim Hqeta : q = (q 0, q 1).
+		                                { exact (setprod_eta U W0 q HqR). }
+		                                rewrite Hqeta.
+		                                exact (tuple_2_setprod_by_pair_Sigma
+		                                  Ustar unit_interval (q 0) (q 1) Hq0Ustar Hq1I).
+		                              }
+		                              claim HFqVal : apply_fun F q = apply_fun (chooseG (arcOf (q 0))) q.
+		                              { exact (HFval q HqDomain). }
+		                              (** Key: apply_fun (chooseG (arcOf (q 0))) q = apply_fun (chooseG A0) q. **)
+		                              (** This holds because on Star(A0)\{b}, arcOf picks A0. **)
+		                              claim HFqV : apply_fun F q :e V.
+		                              {
+		                                admit. (** TODO: show arcOf(q 0) picks A0, so F(q) = chooseG(A0)(q) ∈ V. **)
+		                              }
+		                              exact (SepI (setprod Ustar unit_interval)
+		                                (fun r:set => apply_fun F r :e V) q HqDomain HFqV).
+		                            }
+		                            (** p :e setprod U W0. **)
+		                            claim HpR : p :e setprod U W0.
+		                            {
+		                              claim Hpeta_sym : (p 0, p 1) = p.
+		                              { exact (eq_symm p (p 0, p 1) Hpeta). }
+		                              claim Hpair : (p 0, p 1) :e setprod U W0.
+		                              { exact (tuple_2_setprod_by_pair_Sigma U W0 (p 0) (p 1) Hp0U Hp1W0). }
+		                              exact (Hpeta_sym (fun x y:set => x :e setprod U W0) Hpair).
+		                            }
+		                            witness (setprod U W0).
+		                            apply andI.
+		                            { exact HRinPSB. }
+		                            { apply andI.
+		                              { exact HpR. }
+		                              { exact HRsubPF. }
+		                            }
+		                        }
+		                        exact (SepI (Power (setprod Ustar unit_interval))
+		                          (fun U:set => forall x :e U, exists R :e PSB, x :e R /\ R c= U)
+		                          PF (PowerI (setprod Ustar unit_interval) PF HPFsub) Hlocal).
 		                    + (** F(x, 0) = h(x) = x. **)
 		                      let x. assume HxU.
 		                      claim Hx0D : (x, 0) :e setprod Ustar unit_interval.
