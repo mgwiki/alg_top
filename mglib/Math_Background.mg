@@ -255418,6 +255418,26 @@ Theorem arc_has_end_points_of_arc_pre :
 admit.
 Admitted.
 
+(** Helper: backward direction of coherence for covering graphs. **)
+(** If X has general_linear_graph structure and p: E -> X is a covering map, **)
+(** then the lifted arcs ArcsE give coherent topology on E (backward direction): **)
+(** if C cap A0 is closed in A0 for all A0 in ArcsE, then C is closed in E. **)
+Theorem covering_coherent_backward :
+  forall X Tx Arcs E Te p ArcsE C:set,
+  general_linear_graph X Tx Arcs ->
+  covering_map E Te X Tx p ->
+  ArcsE = {B :e Power E |
+    exists A:set, A :e Arcs /\
+    exists x:set, x :e preimage_of E p A /\
+    B = path_component_of (preimage_of E p A)
+      (subspace_topology E Te (preimage_of E p A)) x} ->
+  C c= E ->
+  (forall A0:set, A0 :e ArcsE ->
+    closed_in A0 (subspace_topology E Te A0) (C :/\: A0)) ->
+  closed_in E Te C.
+admit.
+Admitted.
+
 (** from S83 Thm 83.4 (line 5530 in algtop.tex): covering of graph is graph **)
 (** LATEX VERSION: Let p: E -> X be a covering map where X is a linear graph. **)
 (** If A_alpha is an edge of X and B is a path component of p^{-1}(A_alpha), **)
@@ -256692,7 +256712,34 @@ apply andI.
             - assume He0bp2 : e0 = bp2.
               witness bp1. apply orIR. rewrite He0bp2. exact Hendpts_B. }
   + (** C5: coherence condition **)
-    admit.
+    let C0.
+    assume HC0subE : C0 c= E.
+    apply iffI.
+    - (** Forward: closed_in E Te C0 -> all intersections closed **)
+      assume HC0closed : closed_in E Te C0.
+      let A0.
+      assume HA0inArcsE : A0 :e ArcsE.
+      claim HA0subE : A0 c= E.
+      { exact (PowerE E A0
+          (SepE1 (Power E)
+            (fun B0:set => exists A:set, A :e Arcs /\
+              exists x:set, x :e preimage_of E p A /\
+              B0 = path_component_of (preimage_of E p A)
+                (subspace_topology E Te (preimage_of E p A)) x)
+            A0 HA0inArcsE)). }
+      apply (iffER
+        (closed_in A0 (subspace_topology E Te A0) (C0 :/\: A0))
+        (exists C1:set, closed_in E Te C1 /\ C0 :/\: A0 = C1 :/\: A0)
+        (closed_in_subspace_iff_intersection E Te A0 (C0 :/\: A0) HtopE HA0subE)).
+      witness C0.
+      apply andI.
+      - exact HC0closed.
+      - reflexivity.
+    - (** Backward: all intersections closed -> closed_in E Te C0 **)
+      assume HAllClosed : forall A0:set, A0 :e ArcsE ->
+        closed_in A0 (subspace_topology E Te A0) (C0 :/\: A0).
+      exact (covering_coherent_backward X Tx Arcs E Te p ArcsE C0
+        Hglg Hcov (eq_refl ArcsE) HC0subE HAllClosed).
 - (** Part 2: Each B in ArcsE has the required properties **)
   let B.
   assume HBinArcsE.
