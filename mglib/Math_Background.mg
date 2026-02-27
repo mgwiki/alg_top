@@ -162369,6 +162369,42 @@ exact (subgroups_generate_abelian_generation G mult e inv J Gfam x
   (direct_sum_of_subgroups_subgroups_generate_abelian G mult e inv J Gfam Hds) Hx).
 Qed.
 
+(** Proven Bob **)
+Lemma binintersect_empty_no_common :
+  forall J K a:set,
+  J :/\: K = Empty ->
+  a :e J -> a :e K -> False.
+let J K a.
+assume Hinter HaJ HaK.
+claim HaJK : a :e J :/\: K.
+{ exact (binintersectI J K a HaJ HaK). }
+claim HaEmpty : a :e Empty.
+{ exact (eq_subst_mem_set a (J :/\: K) Empty HaJK Hinter). }
+exact (EmptyE a HaEmpty).
+Qed.
+
+(** Proven Bob **)
+Lemma binintersect_empty_left_not_right :
+  forall J K a:set,
+  J :/\: K = Empty ->
+  a :e J -> a /:e K.
+let J K a.
+assume Hinter HaJ.
+assume HaK.
+exact (binintersect_empty_no_common J K a Hinter HaJ HaK).
+Qed.
+
+(** Proven Bob **)
+Lemma binintersect_empty_right_not_left :
+  forall J K a:set,
+  J :/\: K = Empty ->
+  a :e K -> a /:e J.
+let J K a.
+assume Hinter HaK.
+assume HaJ.
+exact (binintersect_empty_no_common J K a Hinter HaJ HaK).
+Qed.
+
 (** Infrastructure: kernel of a group homomorphism **)
 Definition kernel_of : set -> set -> set -> set :=
   fun G e phi => {x :e G | apply_fun phi x = e}.
