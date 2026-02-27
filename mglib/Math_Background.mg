@@ -255394,6 +255394,30 @@ Theorem arc_locally_path_connected : forall A Ta:set,
 admit.
 Admitted.
 
+(** Helper: homeomorphism preserves connected complements of singletons (backward). **)
+(** If f: X -> Y is a homeomorphism and f(x) has connected complement in Y, **)
+(** then x has connected complement in X. **)
+Theorem homeomorphism_complement_connected :
+  forall X Tx Y Ty f x y:set,
+  homeomorphism X Tx Y Ty f ->
+  x :e X ->
+  apply_fun f x = y ->
+  connected_space (Y :\: Sing y)
+    (subspace_topology Y Ty (Y :\: Sing y)) ->
+  connected_space (X :\: Sing x)
+    (subspace_topology X Tx (X :\: Sing x)).
+admit.
+Admitted.
+
+(** Helper: every arc has end points. **)
+(** (This is proved later as arc_has_end_points_of_arc_early but needed here.) **)
+Theorem arc_has_end_points_of_arc_pre :
+  forall X Tx:set,
+  arc X Tx ->
+  exists p q:set, end_points_of_arc X Tx p q.
+admit.
+Admitted.
+
 (** from S83 Thm 83.4 (line 5530 in algtop.tex): covering of graph is graph **)
 (** LATEX VERSION: Let p: E -> X be a covering map where X is a linear graph. **)
 (** If A_alpha is an edge of X and B is a path component of p^{-1}(A_alpha), **)
@@ -256301,9 +256325,372 @@ apply andI.
                   rewrite Heeq.
                   exact (binintersectI A0 B0 e0 He0A0 He0B0). }
               (** e0 is endpoint of A0 **)
-              admit. }
+              (** Re-derive covering homeomorphism with explicit topology names **)
+              set Ta1ep := subspace_topology X Tx A1.
+              set Te_pre1ep := subspace_topology E Te (preimage_of E p A1).
+              set pA1ep := graph (preimage_of E p A1) (fun x3:set => apply_fun p x3).
+              claim Hcov_pre1ep : covering_map (preimage_of E p A1) Te_pre1ep A1 Ta1ep pA1ep.
+              { exact (thm53_2_subspace_covering E Te X Tx p A1 Hcov HA1subX). }
+              claim HA1pc_ep : path_connected_space A1 Ta1ep. { exact (arc_path_connected A1 Ta1ep HA1arc). }
+              claim HA1lpc_ep : locally_path_connected A1 Ta1ep. { exact (arc_locally_path_connected A1 Ta1ep HA1arc). }
+              claim HA1sc_ep : simply_connected A1 Ta1ep. { exact (arc_simply_connected A1 Ta1ep HA1arc). }
+              claim HA0pc_ep : path_connected_space A0 (subspace_topology (preimage_of E p A1) Te_pre1ep A0).
+              { rewrite HA0eq.
+                exact (path_component_of_is_path_connected
+                  (preimage_of E p A1) Te_pre1ep x1 Htop_pre1 Hx1pre). }
+              claim HA0ne_ep : A0 <> Empty.
+              { assume Habs.
+                claim Hx1Empty : x1 :e Empty.
+                { rewrite <- Habs. rewrite HA0eq.
+                  exact (path_component_reflexive (preimage_of E p A1) Te_pre1ep x1 Htop_pre1 Hx1pre). }
+                exact (EmptyE x1 Hx1Empty). }
+              claim HA0max_ep : forall x3:set, x3 :e preimage_of E p A1 ->
+                (exists y3:set, y3 :e A0 /\ exists gamma3:set,
+                  continuous_map unit_interval unit_interval_topology
+                    (preimage_of E p A1) Te_pre1ep gamma3 /\
+                  apply_fun gamma3 0 = x3 /\ apply_fun gamma3 1 = y3) ->
+                x3 :e A0.
+              {
+                let x3. assume Hx3pre. assume Hex3.
+                apply Hex3. let y3. assume Hy3pack.
+                claim Hy3A0 : y3 :e A0.
+                { exact (andEL (y3 :e A0)
+                    (exists gamma3:set,
+                      continuous_map unit_interval unit_interval_topology
+                        (preimage_of E p A1) Te_pre1ep gamma3 /\
+                      apply_fun gamma3 0 = x3 /\ apply_fun gamma3 1 = y3)
+                    Hy3pack). }
+                claim Hexg3 : exists gamma3:set,
+                  continuous_map unit_interval unit_interval_topology
+                    (preimage_of E p A1) Te_pre1ep gamma3 /\
+                  apply_fun gamma3 0 = x3 /\ apply_fun gamma3 1 = y3.
+                { exact (andER (y3 :e A0)
+                    (exists gamma3:set,
+                      continuous_map unit_interval unit_interval_topology
+                        (preimage_of E p A1) Te_pre1ep gamma3 /\
+                      apply_fun gamma3 0 = x3 /\ apply_fun gamma3 1 = y3)
+                    Hy3pack). }
+                apply Hexg3. let gamma3. assume Hg3.
+                claim Hg3AB : continuous_map unit_interval unit_interval_topology
+                  (preimage_of E p A1) Te_pre1ep gamma3 /\ apply_fun gamma3 0 = x3.
+                { exact (andEL
+                    (continuous_map unit_interval unit_interval_topology
+                      (preimage_of E p A1) Te_pre1ep gamma3 /\ apply_fun gamma3 0 = x3)
+                    (apply_fun gamma3 1 = y3) Hg3). }
+                claim Hg3cont : continuous_map unit_interval unit_interval_topology
+                  (preimage_of E p A1) Te_pre1ep gamma3.
+                { exact (andEL
+                    (continuous_map unit_interval unit_interval_topology
+                      (preimage_of E p A1) Te_pre1ep gamma3)
+                    (apply_fun gamma3 0 = x3) Hg3AB). }
+                claim Hg3fon : function_on gamma3 unit_interval (preimage_of E p A1).
+                { exact (continuous_map_function_on unit_interval unit_interval_topology
+                    (preimage_of E p A1) Te_pre1ep gamma3 Hg3cont). }
+                claim Hg30 : apply_fun gamma3 0 = x3.
+                { exact (andER
+                    (continuous_map unit_interval unit_interval_topology
+                      (preimage_of E p A1) Te_pre1ep gamma3)
+                    (apply_fun gamma3 0 = x3) Hg3AB). }
+                claim Hg31 : apply_fun gamma3 1 = y3.
+                { exact (andER
+                    (continuous_map unit_interval unit_interval_topology
+                      (preimage_of E p A1) Te_pre1ep gamma3 /\ apply_fun gamma3 0 = x3)
+                    (apply_fun gamma3 1 = y3) Hg3). }
+                claim Hy3pre : y3 :e preimage_of E p A1. { exact (HA0subPre1 y3 Hy3A0). }
+                claim Hy3_pc_x3 : y3 :e path_component_of (preimage_of E p A1) Te_pre1ep x3.
+                {
+                  prove y3 :e {y0 :e preimage_of E p A1 | exists q:set,
+                    function_on q unit_interval (preimage_of E p A1) /\
+                    continuous_map unit_interval unit_interval_topology
+                      (preimage_of E p A1) Te_pre1ep q /\
+                    apply_fun q 0 = x3 /\ apply_fun q 1 = y0}.
+                  apply SepI.
+                  - exact Hy3pre.
+                  - prove exists q:set,
+                      function_on q unit_interval (preimage_of E p A1) /\
+                      continuous_map unit_interval unit_interval_topology
+                        (preimage_of E p A1) Te_pre1ep q /\
+                      apply_fun q 0 = x3 /\ apply_fun q 1 = y3.
+                    witness gamma3.
+                    apply andI.
+                    + apply andI.
+                      * exact (andI
+                          (function_on gamma3 unit_interval (preimage_of E p A1))
+                          (continuous_map unit_interval unit_interval_topology
+                            (preimage_of E p A1) Te_pre1ep gamma3)
+                          Hg3fon Hg3cont).
+                      * exact Hg30.
+                    + exact Hg31.
+                }
+                claim Hx3_pc_y3 : x3 :e path_component_of (preimage_of E p A1) Te_pre1ep y3.
+                { exact (path_component_symmetric_axiom
+                    (preimage_of E p A1) Te_pre1ep x3 y3 Htop_pre1 Hx3pre Hy3pre Hy3_pc_x3). }
+                claim Hy3_pc_x1 : y3 :e path_component_of (preimage_of E p A1) Te_pre1ep x1.
+                { rewrite <- HA0eq. exact Hy3A0. }
+                rewrite HA0eq.
+                exact (path_component_transitive_axiom
+                  (preimage_of E p A1) Te_pre1ep x1 y3 x3 Htop_pre1 Hx1pre Hy3pre Hx3pre
+                  Hy3_pc_x1 Hx3_pc_y3).
+              }
+              claim Hcov_A0_ep_raw : covering_map A0
+                (subspace_topology (preimage_of E p A1) Te_pre1ep A0)
+                A1 Ta1ep (graph A0 (fun x3:set => apply_fun pA1ep x3)).
+              { exact (lemma80_1_path_component_covering
+                  (preimage_of E p A1) Te_pre1ep A1 Ta1ep pA1ep
+                  Hcov_pre1ep HA1pc_ep HA1lpc_ep
+                  A0 HA0subPre1 HA0ne_ep HA0pc_ep HA0max_ep). }
+              claim Hgraph_eq1ep : graph A0 (fun x3 => apply_fun pA1ep x3) = graph A0 (fun x3 => apply_fun p x3).
+              { apply (graph_extensional A0 (fun x3 => apply_fun pA1ep x3) (fun x3 => apply_fun p x3)).
+                let a. assume HaA0.
+                exact (apply_fun_graph (preimage_of E p A1) (fun x3 => apply_fun p x3) a (HA0subPre1 a HaA0)). }
+              claim HsubEq1ep : subspace_topology (preimage_of E p A1) Te_pre1ep A0 = subspace_topology E Te A0.
+              { exact (subspace_topology_transitive_weak E Te (preimage_of E p A1) A0 HA0subPre1). }
+              claim Hcov_A0_ep : covering_map A0 (subspace_topology E Te A0) A1 Ta1ep (graph A0 (fun x3 => apply_fun p x3)).
+              { rewrite <- Hgraph_eq1ep. rewrite <- HsubEq1ep. exact Hcov_A0_ep_raw. }
+              claim HA0pc2_ep : path_connected_space A0 (subspace_topology E Te A0).
+              { rewrite <- HsubEq1ep. exact HA0pc_ep. }
+              claim Hhomeo_A0_ep : homeomorphism A0 (subspace_topology E Te A0) A1 Ta1ep (graph A0 (fun x3 => apply_fun p x3)).
+              { exact (ex54_8_simply_connected_base_homeomorphism A0 (subspace_topology E Te A0) A1 Ta1ep
+                  (graph A0 (fun x3 => apply_fun p x3)) Hcov_A0_ep HA0pc2_ep HA1sc_ep). }
+              (** Now we have the homeomorphism. Use it + HsEndA1 to identify e0 as endpoint **)
+              (** s has connected complement in A1 **)
+              apply HsEndA1. let q1A. assume Hq1A.
+              claim HsConnComp : connected_space (A1 :\: Sing s)
+                (subspace_topology A1 Ta1ep (A1 :\: Sing s)).
+              { apply Hq1A.
+                - assume Hend_sq : end_points_of_arc A1 Ta1ep s q1A.
+                  apply (and6E (arc A1 Ta1ep) (s :e A1) (q1A :e A1) (s <> q1A)
+                    (connected_space (A1 :\: Sing s) (subspace_topology A1 Ta1ep (A1 :\: Sing s)))
+                    (connected_space (A1 :\: Sing q1A) (subspace_topology A1 Ta1ep (A1 :\: Sing q1A)))
+                    Hend_sq).
+                  assume Harc1 Hs1 Hq1 Hneq1 Hconns Hconnq. exact Hconns.
+                - assume Hend_qs : end_points_of_arc A1 Ta1ep q1A s.
+                  apply (and6E (arc A1 Ta1ep) (q1A :e A1) (s :e A1) (q1A <> s)
+                    (connected_space (A1 :\: Sing q1A) (subspace_topology A1 Ta1ep (A1 :\: Sing q1A)))
+                    (connected_space (A1 :\: Sing s) (subspace_topology A1 Ta1ep (A1 :\: Sing s)))
+                    Hend_qs).
+                  assume Harc1 Hq1 Hs1 Hneq1 Hconnq Hconns. exact Hconns. }
+              claim HsA1 : s :e A1.
+              { rewrite <- Hpe0.
+                exact (SepE2 E (fun x => apply_fun p x :e A1) e0
+                    (HA0subPre1 e0 He0A0)). }
+              (** e0 has connected complement in A0 via homeomorphism_complement_connected **)
+              claim Hgraph_e0_s : apply_fun (graph A0 (fun x3 => apply_fun p x3)) e0 = s.
+              { rewrite (apply_fun_graph A0 (fun x3 => apply_fun p x3) e0 He0A0). exact Hpe0. }
+              claim He0_conn_comp : connected_space (A0 :\: Sing e0)
+                (subspace_topology A0 (subspace_topology E Te A0) (A0 :\: Sing e0)).
+              { exact (homeomorphism_complement_connected
+                  A0 (subspace_topology E Te A0) A1 Ta1ep
+                  (graph A0 (fun x3 => apply_fun p x3)) e0 s
+                  Hhomeo_A0_ep He0A0 Hgraph_e0_s HsConnComp). }
+              (** A0 is an arc **)
+              claim HA0arc_ep : arc A0 (subspace_topology E Te A0).
+              { prove exists f:set, homeomorphism unit_interval unit_interval_topology
+                  A0 (subspace_topology E Te A0) f.
+                claim HinvEx2 : exists pinv2:set,
+                  homeomorphism A1 Ta1ep A0 (subspace_topology E Te A0) pinv2.
+                { exact (homeomorphism_inverse_is_homeomorphism_variant
+                    A0 (subspace_topology E Te A0) A1 Ta1ep
+                    (graph A0 (fun x3 => apply_fun p x3)) Hhomeo_A0_ep). }
+                apply HinvEx2. let pinv2. assume Hpinv2.
+                apply HA1arc. let hA1ep. assume HhA1ep.
+                witness (compose_fun unit_interval hA1ep pinv2).
+                exact (homeomorphism_compose unit_interval unit_interval_topology
+                  A1 Ta1ep A0 (subspace_topology E Te A0) hA1ep pinv2 HhA1ep Hpinv2). }
+              (** e0 is endpoint of A0: get endpoints, show e0 is one of them **)
+              claim Hendpts_A0 : exists ep1 ep2:set, end_points_of_arc A0 (subspace_topology E Te A0) ep1 ep2.
+              { exact (arc_has_end_points_of_arc_pre A0 (subspace_topology E Te A0) HA0arc_ep). }
+              apply Hendpts_A0. let ep1. assume Hep1ex. apply Hep1ex. let ep2. assume Hendpts.
+              claim He0_eq_ep : e0 = ep1 \/ e0 = ep2.
+              { exact (end_points_of_arc_connected_complement_implies_endpoint
+                  A0 (subspace_topology E Te A0) ep1 ep2 e0 Hendpts He0A0 He0_conn_comp). }
+              apply He0_eq_ep.
+              - assume He0ep1 : e0 = ep1.
+                witness ep2. apply orIL. rewrite He0ep1. exact Hendpts.
+              - assume He0ep2 : e0 = ep2.
+                witness ep1. apply orIR. rewrite He0ep2. exact Hendpts. }
             (** e0 is endpoint of B0 **)
-            admit. }
+            (** Re-derive covering homeomorphism for B0 -> A2 **)
+            set Ta2ep := subspace_topology X Tx A2.
+            set Te_pre2ep := subspace_topology E Te (preimage_of E p A2).
+            set pA2ep := graph (preimage_of E p A2) (fun x3:set => apply_fun p x3).
+            claim Hcov_pre2ep : covering_map (preimage_of E p A2) Te_pre2ep A2 Ta2ep pA2ep.
+            { exact (thm53_2_subspace_covering E Te X Tx p A2 Hcov HA2subX). }
+            claim HA2pc_ep : path_connected_space A2 Ta2ep. { exact (arc_path_connected A2 Ta2ep HA2arc). }
+            claim HA2lpc_ep : locally_path_connected A2 Ta2ep. { exact (arc_locally_path_connected A2 Ta2ep HA2arc). }
+            claim HA2sc_ep : simply_connected A2 Ta2ep. { exact (arc_simply_connected A2 Ta2ep HA2arc). }
+            claim HB0pc_ep : path_connected_space B0 (subspace_topology (preimage_of E p A2) Te_pre2ep B0).
+            { rewrite HB0eq.
+              exact (path_component_of_is_path_connected
+                (preimage_of E p A2) Te_pre2ep x2 Htop_pre2 Hx2pre). }
+            claim HB0ne_ep : B0 <> Empty.
+            { assume Habs.
+              claim Hx2Empty : x2 :e Empty.
+              { rewrite <- Habs. rewrite HB0eq.
+                exact (path_component_reflexive (preimage_of E p A2) Te_pre2ep x2 Htop_pre2 Hx2pre). }
+              exact (EmptyE x2 Hx2Empty). }
+            (** B0 maximality in path-exists form **)
+            claim HB0max_ep : forall x3:set, x3 :e preimage_of E p A2 ->
+              (exists y3:set, y3 :e B0 /\ exists gamma3:set,
+                continuous_map unit_interval unit_interval_topology
+                  (preimage_of E p A2) Te_pre2ep gamma3 /\
+                apply_fun gamma3 0 = x3 /\ apply_fun gamma3 1 = y3) ->
+              x3 :e B0.
+            {
+              let x3. assume Hx3pre. assume Hex3.
+              apply Hex3. let y3. assume Hy3pack.
+              claim Hy3B0 : y3 :e B0.
+              { exact (andEL (y3 :e B0)
+                  (exists gamma3:set,
+                    continuous_map unit_interval unit_interval_topology
+                      (preimage_of E p A2) Te_pre2ep gamma3 /\
+                    apply_fun gamma3 0 = x3 /\ apply_fun gamma3 1 = y3)
+                  Hy3pack). }
+              claim Hexg3 : exists gamma3:set,
+                continuous_map unit_interval unit_interval_topology
+                  (preimage_of E p A2) Te_pre2ep gamma3 /\
+                apply_fun gamma3 0 = x3 /\ apply_fun gamma3 1 = y3.
+              { exact (andER (y3 :e B0)
+                  (exists gamma3:set,
+                    continuous_map unit_interval unit_interval_topology
+                      (preimage_of E p A2) Te_pre2ep gamma3 /\
+                    apply_fun gamma3 0 = x3 /\ apply_fun gamma3 1 = y3)
+                  Hy3pack). }
+              apply Hexg3. let gamma3. assume Hg3.
+              claim Hg3AB : continuous_map unit_interval unit_interval_topology
+                (preimage_of E p A2) Te_pre2ep gamma3 /\ apply_fun gamma3 0 = x3.
+              { exact (andEL
+                  (continuous_map unit_interval unit_interval_topology
+                    (preimage_of E p A2) Te_pre2ep gamma3 /\ apply_fun gamma3 0 = x3)
+                  (apply_fun gamma3 1 = y3) Hg3). }
+              claim Hg3cont : continuous_map unit_interval unit_interval_topology
+                (preimage_of E p A2) Te_pre2ep gamma3.
+              { exact (andEL
+                  (continuous_map unit_interval unit_interval_topology
+                    (preimage_of E p A2) Te_pre2ep gamma3)
+                  (apply_fun gamma3 0 = x3) Hg3AB). }
+              claim Hg3fon : function_on gamma3 unit_interval (preimage_of E p A2).
+              { exact (continuous_map_function_on unit_interval unit_interval_topology
+                  (preimage_of E p A2) Te_pre2ep gamma3 Hg3cont). }
+              claim Hg30 : apply_fun gamma3 0 = x3.
+              { exact (andER
+                  (continuous_map unit_interval unit_interval_topology
+                    (preimage_of E p A2) Te_pre2ep gamma3)
+                  (apply_fun gamma3 0 = x3) Hg3AB). }
+              claim Hg31 : apply_fun gamma3 1 = y3.
+              { exact (andER
+                  (continuous_map unit_interval unit_interval_topology
+                    (preimage_of E p A2) Te_pre2ep gamma3 /\ apply_fun gamma3 0 = x3)
+                  (apply_fun gamma3 1 = y3) Hg3). }
+              claim Hy3pre : y3 :e preimage_of E p A2.
+              { exact (HB0subPre2 y3 Hy3B0). }
+              claim Hy3_pc_x3 : y3 :e path_component_of (preimage_of E p A2) Te_pre2ep x3.
+              {
+                prove y3 :e {y0 :e preimage_of E p A2 | exists q:set,
+                  function_on q unit_interval (preimage_of E p A2) /\
+                  continuous_map unit_interval unit_interval_topology
+                    (preimage_of E p A2) Te_pre2ep q /\
+                  apply_fun q 0 = x3 /\ apply_fun q 1 = y0}.
+                apply SepI.
+                - exact Hy3pre.
+                - prove exists q:set,
+                    function_on q unit_interval (preimage_of E p A2) /\
+                    continuous_map unit_interval unit_interval_topology
+                      (preimage_of E p A2) Te_pre2ep q /\
+                    apply_fun q 0 = x3 /\ apply_fun q 1 = y3.
+                  witness gamma3.
+                  apply andI.
+                  + apply andI.
+                    * exact (andI
+                        (function_on gamma3 unit_interval (preimage_of E p A2))
+                        (continuous_map unit_interval unit_interval_topology
+                          (preimage_of E p A2) Te_pre2ep gamma3)
+                        Hg3fon Hg3cont).
+                    * exact Hg30.
+                  + exact Hg31.
+              }
+              claim Hx3_pc_y3 : x3 :e path_component_of (preimage_of E p A2) Te_pre2ep y3.
+              { exact (path_component_symmetric_axiom
+                  (preimage_of E p A2) Te_pre2ep x3 y3 Htop_pre2 Hx3pre Hy3pre Hy3_pc_x3). }
+              claim Hy3_pc_x2 : y3 :e path_component_of (preimage_of E p A2) Te_pre2ep x2.
+              { rewrite <- HB0eq. exact Hy3B0. }
+              rewrite HB0eq.
+              exact (path_component_transitive_axiom
+                (preimage_of E p A2) Te_pre2ep x2 y3 x3 Htop_pre2 Hx2pre Hy3pre Hx3pre
+                Hy3_pc_x2 Hx3_pc_y3).
+            }
+            claim Hcov_B0_raw : covering_map B0
+              (subspace_topology (preimage_of E p A2) Te_pre2ep B0)
+              A2 Ta2ep (graph B0 (fun x3:set => apply_fun pA2ep x3)).
+            { exact (lemma80_1_path_component_covering
+                (preimage_of E p A2) Te_pre2ep A2 Ta2ep pA2ep
+                Hcov_pre2ep HA2pc_ep HA2lpc_ep
+                B0 HB0subPre2 HB0ne_ep HB0pc_ep HB0max_ep). }
+            claim Hgraph_eq2ep : graph B0 (fun x3 => apply_fun pA2ep x3) = graph B0 (fun x3 => apply_fun p x3).
+            { apply (graph_extensional B0 (fun x3 => apply_fun pA2ep x3) (fun x3 => apply_fun p x3)).
+              let a. assume HaB0.
+              exact (apply_fun_graph (preimage_of E p A2) (fun x3 => apply_fun p x3) a (HB0subPre2 a HaB0)). }
+            claim HsubEq2ep : subspace_topology (preimage_of E p A2) Te_pre2ep B0 = subspace_topology E Te B0.
+            { exact (subspace_topology_transitive_weak E Te (preimage_of E p A2) B0 HB0subPre2). }
+            claim Hcov_B0_ep : covering_map B0 (subspace_topology E Te B0) A2 Ta2ep (graph B0 (fun x3 => apply_fun p x3)).
+            { rewrite <- Hgraph_eq2ep. rewrite <- HsubEq2ep. exact Hcov_B0_raw. }
+            claim HB0pc2_ep : path_connected_space B0 (subspace_topology E Te B0).
+            { rewrite <- HsubEq2ep. exact HB0pc_ep. }
+            claim Hhomeo_B0_ep : homeomorphism B0 (subspace_topology E Te B0) A2 Ta2ep (graph B0 (fun x3 => apply_fun p x3)).
+            { exact (ex54_8_simply_connected_base_homeomorphism B0 (subspace_topology E Te B0) A2 Ta2ep
+                (graph B0 (fun x3 => apply_fun p x3)) Hcov_B0_ep HB0pc2_ep HA2sc_ep). }
+            (** s has connected complement in A2 **)
+            apply HsEndA2. let r1A. assume Hr1A.
+            claim HsConnCompA2 : connected_space (A2 :\: Sing s)
+              (subspace_topology A2 Ta2ep (A2 :\: Sing s)).
+            { apply Hr1A.
+              - assume Hend_sr : end_points_of_arc A2 Ta2ep s r1A.
+                apply (and6E (arc A2 Ta2ep) (s :e A2) (r1A :e A2) (s <> r1A)
+                  (connected_space (A2 :\: Sing s) (subspace_topology A2 Ta2ep (A2 :\: Sing s)))
+                  (connected_space (A2 :\: Sing r1A) (subspace_topology A2 Ta2ep (A2 :\: Sing r1A)))
+                  Hend_sr).
+                assume Harc2 Hs2 Hr2 Hneq2 Hconns Hconnr. exact Hconns.
+              - assume Hend_rs : end_points_of_arc A2 Ta2ep r1A s.
+                apply (and6E (arc A2 Ta2ep) (r1A :e A2) (s :e A2) (r1A <> s)
+                  (connected_space (A2 :\: Sing r1A) (subspace_topology A2 Ta2ep (A2 :\: Sing r1A)))
+                  (connected_space (A2 :\: Sing s) (subspace_topology A2 Ta2ep (A2 :\: Sing s)))
+                  Hend_rs).
+                assume Harc2 Hr2 Hs2 Hneq2 Hconnr Hconns. exact Hconns. }
+            (** e0 has connected complement in B0 **)
+            claim Hgraph_e0_s_B : apply_fun (graph B0 (fun x3 => apply_fun p x3)) e0 = s.
+            { rewrite (apply_fun_graph B0 (fun x3 => apply_fun p x3) e0 He0B0). exact Hpe0. }
+            claim He0_conn_comp_B : connected_space (B0 :\: Sing e0)
+              (subspace_topology B0 (subspace_topology E Te B0) (B0 :\: Sing e0)).
+            { exact (homeomorphism_complement_connected
+                B0 (subspace_topology E Te B0) A2 Ta2ep
+                (graph B0 (fun x3 => apply_fun p x3)) e0 s
+                Hhomeo_B0_ep He0B0 Hgraph_e0_s_B HsConnCompA2). }
+            (** B0 is an arc **)
+            claim HB0arc_ep : arc B0 (subspace_topology E Te B0).
+            { prove exists f:set, homeomorphism unit_interval unit_interval_topology
+                B0 (subspace_topology E Te B0) f.
+              claim HinvExB : exists pinvB:set,
+                homeomorphism A2 Ta2ep B0 (subspace_topology E Te B0) pinvB.
+              { exact (homeomorphism_inverse_is_homeomorphism_variant
+                  B0 (subspace_topology E Te B0) A2 Ta2ep
+                  (graph B0 (fun x3 => apply_fun p x3)) Hhomeo_B0_ep). }
+              apply HinvExB. let pinvB. assume HpinvB.
+              apply HA2arc. let hA2ep. assume HhA2ep.
+              witness (compose_fun unit_interval hA2ep pinvB).
+              exact (homeomorphism_compose unit_interval unit_interval_topology
+                A2 Ta2ep B0 (subspace_topology E Te B0) hA2ep pinvB HhA2ep HpinvB). }
+            (** e0 is endpoint of B0: get endpoints, show e0 is one of them **)
+            claim Hendpts_B0 : exists bp1 bp2:set, end_points_of_arc B0 (subspace_topology E Te B0) bp1 bp2.
+            { exact (arc_has_end_points_of_arc_pre B0 (subspace_topology E Te B0) HB0arc_ep). }
+            apply Hendpts_B0. let bp1. assume Hbp1ex. apply Hbp1ex. let bp2. assume Hendpts_B.
+            claim He0_eq_bp : e0 = bp1 \/ e0 = bp2.
+            { exact (end_points_of_arc_connected_complement_implies_endpoint
+                B0 (subspace_topology E Te B0) bp1 bp2 e0 Hendpts_B He0B0 He0_conn_comp_B). }
+            apply He0_eq_bp.
+            - assume He0bp1 : e0 = bp1.
+              witness bp2. apply orIL. rewrite He0bp1. exact Hendpts_B.
+            - assume He0bp2 : e0 = bp2.
+              witness bp1. apply orIR. rewrite He0bp2. exact Hendpts_B. }
   + (** C5: coherence condition **)
     admit.
 - (** Part 2: Each B in ArcsE has the required properties **)
