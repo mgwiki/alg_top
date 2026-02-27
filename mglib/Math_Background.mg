@@ -165141,6 +165141,12 @@ Definition subgroups_generate_abelian : set -> set -> set -> set -> set -> set -
           apply_fun alphas i <> apply_fun alphas j) /\
         x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n).
 
+(** Infrastructure: zero is the empty set **)
+(** Proven Bob **)
+Lemma zero_eq_empty : 0 = Empty.
+reflexivity.
+Qed.
+
 (** Infrastructure: function_on into Empty forces empty domain **)
 (** Proven Bob **)
 Lemma function_on_codomain_empty_domain_empty : forall f X:set,
@@ -165154,6 +165160,114 @@ apply xm (X = Empty).
   let x.
   assume Hx.
   exact (EmptyE (apply_fun f x) (Hf x Hx) (X = Empty)).
+Qed.
+
+(** Infrastructure: generated family forces nonempty index set **)
+(** Proven Bob **)
+Lemma subgroups_generate_abelian_index_nonempty :
+  forall G mult e inv J Gfam:set,
+  subgroups_generate_abelian G mult e inv J Gfam ->
+  G <> Empty ->
+  J <> Empty.
+let G mult e inv J Gfam.
+assume HsGA HneG.
+apply xm (J = Empty).
+- assume HJ.
+  apply (nonempty_has_element G HneG).
+  let x.
+  assume HxG.
+  claim Hgen :
+    forall x0:set, x0 :e G ->
+      exists n:set, n :e omega /\ n <> 0 /\
+      exists alphas:set, function_on alphas n J /\
+      exists xs:set, function_on xs n G /\
+        (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) /\
+        (forall i j:set, i :e n -> j :e n -> i <> j ->
+          apply_fun alphas i <> apply_fun alphas j) /\
+        x0 = nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n.
+  {
+    apply (and3E
+      (abelian_group G mult e inv)
+      (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv)
+      (forall x0:set, x0 :e G ->
+        exists n:set, n :e omega /\ n <> 0 /\
+        exists alphas:set, function_on alphas n J /\
+        exists xs:set, function_on xs n G /\
+          (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) /\
+          (forall i j:set, i :e n -> j :e n -> i <> j ->
+            apply_fun alphas i <> apply_fun alphas j) /\
+          x0 = nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n)
+      HsGA).
+    assume _ _ Hgen0.
+    exact Hgen0.
+  }
+  apply (Hgen x HxG).
+  let n.
+  assume HnPack.
+  claim HnPair : n :e omega /\ n <> 0.
+  {
+    exact (andEL
+      (n :e omega /\ n <> 0)
+      (exists alphas:set, function_on alphas n J /\
+        exists xs:set, function_on xs n G /\
+          (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) /\
+          (forall i j:set, i :e n -> j :e n -> i <> j ->
+            apply_fun alphas i <> apply_fun alphas j) /\
+          x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n)
+      HnPack).
+  }
+  claim HnNonzero : n <> 0.
+  {
+    exact (andER
+      (n :e omega)
+      (n <> 0)
+      HnPair).
+  }
+  apply (andER
+    (n :e omega /\ n <> 0)
+    (exists alphas:set, function_on alphas n J /\
+      exists xs:set, function_on xs n G /\
+        (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) /\
+        (forall i j:set, i :e n -> j :e n -> i <> j ->
+          apply_fun alphas i <> apply_fun alphas j) /\
+        x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n)
+    HnPack).
+  let alphas.
+  assume HalphasPack.
+  claim HalphasFun : function_on alphas n J.
+  {
+    exact (andEL
+      (function_on alphas n J)
+      (exists xs:set, function_on xs n G /\
+        (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) /\
+        (forall i j:set, i :e n -> j :e n -> i <> j ->
+          apply_fun alphas i <> apply_fun alphas j) /\
+        x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n)
+      HalphasPack).
+  }
+  claim HalphasEmpty : function_on alphas n Empty.
+  {
+    let x.
+    assume HxN.
+    exact (eq_subst_mem_set
+      (apply_fun alphas x)
+      J
+      Empty
+      (HalphasFun x HxN)
+      HJ).
+  }
+  claim HnEmpty : n = Empty.
+  {
+    exact (function_on_codomain_empty_domain_empty alphas n HalphasEmpty).
+  }
+  claim HnZero : n = 0.
+  {
+    rewrite HnEmpty.
+    exact (eq_symm 0 Empty zero_eq_empty).
+  }
+  exact (FalseE (HnNonzero HnZero) (J <> Empty)).
+- assume HJne.
+  exact HJne.
 Qed.
 
 (** Proven Bob **)
