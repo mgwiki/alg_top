@@ -254854,7 +254854,78 @@ apply andI.
           apply andI.
           + exact HA0subE.
           + (** arc A0 (subspace_topology E Te A0): use homeomorphism to arc A **)
-            admit. }
+            (** Extract existential data: A1 arc and x1 basepoint **)
+            claim HA0ex : exists A1:set, A1 :e Arcs /\
+              exists x1:set, x1 :e preimage_of E p A1 /\
+              A0 = path_component_of (preimage_of E p A1)
+                (subspace_topology E Te (preimage_of E p A1)) x1.
+            { exact (andER (A0 :e Power E)
+                (exists A1:set, A1 :e Arcs /\
+                 exists x1:set, x1 :e preimage_of E p A1 /\
+                 A0 = path_component_of (preimage_of E p A1)
+                   (subspace_topology E Te (preimage_of E p A1)) x1)
+                HA0data). }
+            apply HA0ex. let A1. assume HA1pack.
+            claim HA1arcs : A1 :e Arcs.
+            { exact (andEL (A1 :e Arcs)
+                (exists x1:set, x1 :e preimage_of E p A1 /\
+                 A0 = path_component_of (preimage_of E p A1)
+                   (subspace_topology E Te (preimage_of E p A1)) x1)
+                HA1pack). }
+            claim HA1ex2 : exists x1:set, x1 :e preimage_of E p A1 /\
+              A0 = path_component_of (preimage_of E p A1)
+                (subspace_topology E Te (preimage_of E p A1)) x1.
+            { exact (andER (A1 :e Arcs)
+                (exists x1:set, x1 :e preimage_of E p A1 /\
+                 A0 = path_component_of (preimage_of E p A1)
+                   (subspace_topology E Te (preimage_of E p A1)) x1)
+                HA1pack). }
+            apply HA1ex2. let x1. assume Hx1pack.
+            claim Hx1pre : x1 :e preimage_of E p A1.
+            { exact (andEL (x1 :e preimage_of E p A1)
+                (A0 = path_component_of (preimage_of E p A1)
+                  (subspace_topology E Te (preimage_of E p A1)) x1)
+                Hx1pack). }
+            claim HA0eq : A0 = path_component_of (preimage_of E p A1)
+              (subspace_topology E Te (preimage_of E p A1)) x1.
+            { exact (andER (x1 :e preimage_of E p A1)
+                (A0 = path_component_of (preimage_of E p A1)
+                  (subspace_topology E Te (preimage_of E p A1)) x1)
+                Hx1pack). }
+            (** A1 is an arc **)
+            claim HA1arcdata : A1 c= X /\ arc A1 (subspace_topology X Tx A1).
+            { exact (general_linear_graph_arc_data X Tx Arcs A1 Hglg HA1arcs). }
+            claim HA1arc : arc A1 (subspace_topology X Tx A1).
+            { exact (andER (A1 c= X) (arc A1 (subspace_topology X Tx A1)) HA1arcdata). }
+            claim HA1subX : A1 c= X.
+            { exact (andEL (A1 c= X) (arc A1 (subspace_topology X Tx A1)) HA1arcdata). }
+            (** p|_{A0}: A0 -> A1 is a homeomorphism (same chain as Part 2) **)
+            (** via thm53_2 + lemma80_1 + ex54_8 **)
+            claim Hhomeo_A0_A1 : homeomorphism A0 (subspace_topology E Te A0)
+              A1 (subspace_topology X Tx A1)
+              (graph A0 (fun x2:set => apply_fun p x2)).
+            { admit. }
+            (** Get inverse: A1 -> A0 **)
+            claim HinvEx : exists g:set, homeomorphism
+              A1 (subspace_topology X Tx A1)
+              A0 (subspace_topology E Te A0) g.
+            { exact (homeomorphism_inverse_is_homeomorphism_variant
+                A0 (subspace_topology E Te A0)
+                A1 (subspace_topology X Tx A1)
+                (graph A0 (fun x2:set => apply_fun p x2))
+                Hhomeo_A0_A1). }
+            apply HinvEx. let pinv. assume Hpinv.
+            (** A1 is an arc: get h: [0,1] -> A1 **)
+            apply HA1arc. let h. assume Hh.
+            (** Compose h with pinv: [0,1] -> A1 -> A0 **)
+            prove exists f:set, homeomorphism unit_interval unit_interval_topology
+              A0 (subspace_topology E Te A0) f.
+            witness (compose_fun unit_interval h pinv).
+            exact (homeomorphism_compose
+              unit_interval unit_interval_topology
+              A1 (subspace_topology X Tx A1)
+              A0 (subspace_topology E Te A0)
+              h pinv Hh Hpinv). }
       { (** C3: E = Union ArcsE **)
         apply set_ext.
         - (** E c= Union ArcsE **)
