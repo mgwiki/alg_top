@@ -162316,7 +162316,7 @@ exact (andEL
       x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun x1 i)) n1 ->
       x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun x2 i)) n2 ->
       (forall alpha:set, alpha :e J ->
-        (forall i j:set, i :e n1 -> j :e n2 ->
+      (forall i j:set, i :e n1 -> j :e n2 ->
           apply_fun a1 i = alpha -> apply_fun a2 j = alpha ->
           apply_fun x1 i = apply_fun x2 j) /\
         ((exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
@@ -162326,6 +162326,29 @@ exact (andEL
          (exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
          forall j:set, j :e n2 -> apply_fun a2 j = alpha -> apply_fun x2 j = e)))
   Hds).
+Qed.
+
+(** Proven Bob **)
+Lemma direct_sum_of_subgroups_is_abelian :
+  forall G mult e inv J Gfam:set,
+  direct_sum_of_subgroups G mult e inv J Gfam ->
+  abelian_group G mult e inv.
+let G mult e inv J Gfam.
+assume Hds.
+exact (subgroups_generate_abelian_is_abelian G mult e inv J Gfam
+  (direct_sum_of_subgroups_subgroups_generate_abelian G mult e inv J Gfam Hds)).
+Qed.
+
+(** Proven Bob **)
+Lemma direct_sum_of_subgroups_subgroup :
+  forall G mult e inv J Gfam alpha:set,
+  direct_sum_of_subgroups G mult e inv J Gfam ->
+  alpha :e J ->
+  subgroup_of (apply_fun Gfam alpha) G mult e inv.
+let G mult e inv J Gfam alpha.
+assume Hds Hal.
+exact (subgroups_generate_abelian_subgroup G mult e inv J Gfam alpha
+  (direct_sum_of_subgroups_subgroups_generate_abelian G mult e inv J Gfam Hds) Hal).
 Qed.
 
 (** Infrastructure: kernel of a group homomorphism **)
