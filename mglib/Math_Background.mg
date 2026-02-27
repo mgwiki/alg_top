@@ -50727,6 +50727,37 @@ exact (elem_implies_nonempty
   HfxY).
 Qed.
 
+(** If the codomain is empty under a homeomorphism, then the domain is empty **)
+(** Proven Bob **)
+Theorem homeomorphism_empty_codomain_implies_empty_domain :
+  forall X Tx Y Ty f:set,
+    homeomorphism X Tx Y Ty f ->
+    Y = Empty ->
+    X = Empty.
+let X Tx Y Ty f.
+assume Hhome HYempty.
+apply xm (X = Empty).
+- assume HXeq.
+  exact HXeq.
+- assume HXne.
+  claim HYne : Y <> Empty.
+  {
+    exact (homeomorphism_codomain_nonempty_of_domain_nonempty
+      X
+      Tx
+      Y
+      Ty
+      f
+      Hhome
+      HXne).
+  }
+  claim Hcontra : False.
+  {
+    exact (HYne HYempty).
+  }
+  exact (FalseE Hcontra (X = Empty)).
+Qed.
+
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
 (** then the partition of p^{-1}(U) into slices is unique. **)
