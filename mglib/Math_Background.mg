@@ -167949,7 +167949,72 @@ Theorem cor67_2_associativity_direct_sum :
   direct_sum_of_subgroups G2 multG eG invG K
     (graph K (fun beta:set => apply_fun Hfam beta)) ->
   direct_sum_of_subgroups G multG eG invG (J :\/: K) Hfam.
-admit.
+let G multG eG invG G1 G2 J K Hfam.
+assume HabG : abelian_group G multG eG invG.
+assume HsubG1 : subgroup_of G1 G multG eG invG.
+assume HsubG2 : subgroup_of G2 G multG eG invG.
+assume HdsG12 : direct_sum_of_subgroups G multG eG invG (UPair 0 1)
+  (graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2)).
+assume HJKdisj : J :/\: K = Empty.
+assume HdsG1 : direct_sum_of_subgroups G1 multG eG invG J
+  (graph J (fun alpha:set => apply_fun Hfam alpha)).
+assume HdsG2 : direct_sum_of_subgroups G2 multG eG invG K
+  (graph K (fun beta:set => apply_fun Hfam beta)).
+prove direct_sum_of_subgroups G multG eG invG (J :\/: K) Hfam.
+prove (subgroups_generate_abelian G multG eG invG (J :\/: K) Hfam /\
+  (forall x:set, x :e G ->
+    forall n1 n2:set, n1 :e omega -> n2 :e omega -> n1 <> 0 -> n2 <> 0 ->
+    forall a1 a2:set, function_on a1 n1 (J :\/: K) -> function_on a2 n2 (J :\/: K) ->
+    forall x1 x2:set, function_on x1 n1 G -> function_on x2 n2 G ->
+      (forall i:set, i :e n1 -> apply_fun x1 i :e apply_fun Hfam (apply_fun a1 i)) ->
+      (forall i:set, i :e n2 -> apply_fun x2 i :e apply_fun Hfam (apply_fun a2 i)) ->
+      (forall i j:set, i :e n1 -> j :e n1 -> i <> j -> apply_fun a1 i <> apply_fun a1 j) ->
+      (forall i j:set, i :e n2 -> j :e n2 -> i <> j -> apply_fun a2 i <> apply_fun a2 j) ->
+      x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x1 i)) n1 ->
+      x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x2 i)) n2 ->
+      (forall alpha:set, alpha :e (J :\/: K) ->
+        (forall i j:set, i :e n1 -> j :e n2 ->
+          apply_fun a1 i = alpha -> apply_fun a2 j = alpha ->
+          apply_fun x1 i = apply_fun x2 j) /\
+        ((exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
+         ~(exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+         forall i:set, i :e n1 -> apply_fun a1 i = alpha -> apply_fun x1 i = eG) /\
+        (~(exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
+         (exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+         forall j:set, j :e n2 -> apply_fun a2 j = alpha -> apply_fun x2 j = eG)))).
+apply andI.
+- (** subgroups_generate_abelian **)
+  prove subgroups_generate_abelian G multG eG invG (J :\/: K) Hfam.
+  prove (abelian_group G multG eG invG /\
+    (forall alpha:set, alpha :e (J :\/: K) -> subgroup_of (apply_fun Hfam alpha) G multG eG invG) /\
+    (forall x:set, x :e G ->
+      exists n:set, n :e omega /\ n <> 0 /\
+      exists alphas:set, function_on alphas n (J :\/: K) /\
+      exists xs:set, function_on xs n G /\
+        (forall i:set, i :e n -> apply_fun xs i :e apply_fun Hfam (apply_fun alphas i)) /\
+        (forall i j:set, i :e n -> j :e n -> i <> j ->
+          apply_fun alphas i <> apply_fun alphas j) /\
+        x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)).
+  apply and3I.
+  + exact HabG.
+  + let alpha. assume Hal : alpha :e J :\/: K.
+    apply (binunionE J K alpha Hal).
+    * assume HalJ : alpha :e J.
+      claim Hsub_alpha_G1 : subgroup_of (apply_fun Hfam alpha) G1 multG eG invG.
+      { rewrite <- (apply_fun_graph J (fun a => apply_fun Hfam a) alpha HalJ).
+        exact (direct_sum_of_subgroups_subgroup G1 multG eG invG J
+          (graph J (fun a:set => apply_fun Hfam a)) alpha HdsG1 HalJ). }
+      exact (subgroup_of_trans (apply_fun Hfam alpha) G1 G multG eG invG Hsub_alpha_G1 HsubG1).
+    * assume HalK : alpha :e K.
+      claim Hsub_alpha_G2 : subgroup_of (apply_fun Hfam alpha) G2 multG eG invG.
+      { rewrite <- (apply_fun_graph K (fun b => apply_fun Hfam b) alpha HalK).
+        exact (direct_sum_of_subgroups_subgroup G2 multG eG invG K
+          (graph K (fun b:set => apply_fun Hfam b)) alpha HdsG2 HalK). }
+      exact (subgroup_of_trans (apply_fun Hfam alpha) G2 G multG eG invG Hsub_alpha_G2 HsubG2).
+  + (** generation: expand G via G1+G2 and each Gi via Hfam; J,K disjoint **)
+    admit.
+- (** uniqueness: inherited from G1,G2 and disjointness **)
+  admit.
 Admitted.
 
 (** from S67 Cor 67.3 (line 2639 in algtop.tex): quotient by direct summand **)
