@@ -186529,6 +186529,159 @@ exact (eq_i_tra
     HidR_invx0)).
 Qed.
 
+(** Infrastructure: if a 2-word multiplies to e, first element is inverse **)
+(** Proven Bob **)
+Theorem word_product_two_eq_inv_left : forall G mult e inv xs:set,
+  group_structure G mult e inv ->
+  (forall i:set, i :e 2 -> apply_fun xs i :e G) ->
+  word_product mult e xs 2 = e ->
+  apply_fun xs 0 = apply_fun inv (apply_fun xs 1).
+let G mult e inv xs.
+assume Hgrp HxsG Hwp_e.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume HmultF HinvF HeG HassocG HidG HinvG.
+set x0 := apply_fun xs 0.
+set x1 := apply_fun xs 1.
+claim Hx0G : x0 :e G.
+{
+  exact (HxsG
+    0
+    In_0_2).
+}
+claim Hx1G : x1 :e G.
+{
+  exact (HxsG
+    1
+    In_1_2).
+}
+claim Hprod : word_product mult e xs 2 = apply_fun mult (x0, x1).
+{
+  exact (word_product_two_group
+    G
+    mult
+    e
+    inv
+    xs
+    Hgrp
+    HxsG).
+}
+claim Hmul_eq_e : apply_fun mult (x0, x1) = e.
+{
+  rewrite <- Hprod.
+  exact Hwp_e.
+}
+claim Hassoc_step :
+  apply_fun mult (apply_fun mult (x0, x1), apply_fun inv x1) =
+  apply_fun mult (x0, apply_fun mult (x1, apply_fun inv x1)).
+{
+  exact (HassocG
+    x0
+    x1
+    (apply_fun inv x1)
+    Hx0G
+    Hx1G
+    (HinvF
+      x1
+      Hx1G)).
+}
+claim Hrinv : apply_fun mult (x1, apply_fun inv x1) = e.
+{
+  exact (andEL
+    (apply_fun mult (x1, apply_fun inv x1) = e)
+    (apply_fun mult (apply_fun inv x1, x1) = e)
+    (HinvG
+      x1
+      Hx1G)).
+}
+claim HidR_x0 : apply_fun mult (x0, e) = x0.
+{
+  exact (andER
+    (apply_fun mult (e, x0) = x0)
+    (apply_fun mult (x0, e) = x0)
+    (HidG
+      x0
+      Hx0G)).
+}
+claim HidL_invx1 : apply_fun mult (e, apply_fun inv x1) = apply_fun inv x1.
+{
+  exact (andEL
+    (apply_fun mult (e, apply_fun inv x1) = apply_fun inv x1)
+    (apply_fun mult (apply_fun inv x1, e) = apply_fun inv x1)
+    (HidG
+      (apply_fun inv x1)
+      (HinvF
+        x1
+        Hx1G))).
+}
+claim Hlhs : apply_fun mult (apply_fun mult (x0, x1), apply_fun inv x1) =
+  apply_fun mult (e, apply_fun inv x1).
+{
+  rewrite Hmul_eq_e.
+  reflexivity.
+}
+claim Hrhs : apply_fun mult (x0, apply_fun mult (x1, apply_fun inv x1)) =
+  apply_fun mult (x0, e).
+{
+  rewrite Hrinv.
+  reflexivity.
+}
+claim Hx0_eq : x0 = apply_fun mult (apply_fun mult (x0, x1), apply_fun inv x1).
+{
+  claim Hx0_eq1 : x0 = apply_fun mult (x0, e).
+  {
+    symmetry.
+    exact HidR_x0.
+  }
+  claim Hx0_eq2 : apply_fun mult (x0, e) =
+    apply_fun mult (x0, apply_fun mult (x1, apply_fun inv x1)).
+  {
+    symmetry.
+    exact Hrhs.
+  }
+  claim Hx0_eq3 : apply_fun mult (x0, apply_fun mult (x1, apply_fun inv x1)) =
+    apply_fun mult (apply_fun mult (x0, x1), apply_fun inv x1).
+  {
+    symmetry.
+    exact Hassoc_step.
+  }
+  exact (eq_i_tra
+    x0
+    (apply_fun mult (x0, e))
+    (apply_fun mult (apply_fun mult (x0, x1), apply_fun inv x1))
+    Hx0_eq1
+    (eq_i_tra
+      (apply_fun mult (x0, e))
+      (apply_fun mult (x0, apply_fun mult (x1, apply_fun inv x1)))
+      (apply_fun mult (apply_fun mult (x0, x1), apply_fun inv x1))
+      Hx0_eq2
+      Hx0_eq3)).
+}
+claim Hx0_invx1 : x0 = apply_fun mult (e, apply_fun inv x1).
+{
+  exact (eq_i_tra
+    x0
+    (apply_fun mult (apply_fun mult (x0, x1), apply_fun inv x1))
+    (apply_fun mult (e, apply_fun inv x1))
+    Hx0_eq
+    Hlhs).
+}
+exact (eq_i_tra
+  x0
+  (apply_fun mult (e, apply_fun inv x1))
+  (apply_fun inv x1)
+  Hx0_invx1
+  HidL_invx1).
+Qed.
+
 (** from S68 Definition (line 2742 in algtop.tex): free product of subgroups **)
 (** LATEX VERSION: G is the free product of {G_alpha} if G_alpha cap G_beta = {1} **)
 (** for alpha <> beta, the G_alpha generate G, and each x in G has a unique **)
