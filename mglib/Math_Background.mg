@@ -51043,6 +51043,27 @@ apply set_ext.
 - exact HsingSub.
 Qed.
 
+(** Infrastructure: empty union implies family subset of {Empty} **)
+(** Proven Bob **)
+Theorem union_empty_family_sub_singleton_empty : forall Fam:set,
+  Union Fam = Empty ->
+  Fam c= {Empty}.
+let Fam.
+assume HUnionE.
+let V.
+assume HVFam.
+claim HVE : V = Empty.
+{
+  exact (union_empty_member_empty
+    Fam
+    V
+    HVFam
+    HUnionE).
+}
+rewrite HVE.
+exact (SingI Empty).
+Qed.
+
 
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
