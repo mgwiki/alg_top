@@ -45084,6 +45084,49 @@ apply andI.
 
 Qed.
 
+(** Infrastructure: evenly covered open subsets under covering_map assumptions **)
+(** Proven Bob **)
+Lemma evenly_covered_open_subset_from_covering_map : forall E Te B Tb p U W:set,
+  covering_map E Te B Tb p ->
+  evenly_covered E Te B Tb p U -> W :e Tb -> W c= U ->
+  evenly_covered E Te B Tb p W.
+let E Te B Tb p U W.
+assume Hcov Heven HW HWsub.
+claim Hcontp : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    (andEL
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists U0:set, U0 :e Tb /\ b :e U0 /\ evenly_covered E Te B Tb p U0)
+      Hcov)).
+}
+claim HtopE : topology_on E Te.
+{
+  exact (continuous_map_topology_dom
+    E
+    Te
+    B
+    Tb
+    p
+    Hcontp).
+}
+exact (evenly_covered_open_subset_top
+  E
+  Te
+  B
+  Tb
+  p
+  U
+  W
+  HtopE
+  Heven
+  HW
+  HWsub).
+Qed.
+
 
 (** from S53 text (line 545 in algtop.tex) **)
 (** LATEX VERSION: If p: E -> B is a covering map, then for each b in B **)
