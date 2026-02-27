@@ -254515,6 +254515,81 @@ exact (ex51_3b_contractible_path_connected
   unit_interval unit_interval_topology ex51_3a_I_contractible).
 Qed.
 
+(** Infrastructure: path components are path connected **)
+(** This is a standard topological fact: the path component of x consists
+    of all points reachable from x by a path, so any two points in it
+    are connected through x. **)
+Theorem path_component_of_is_path_connected : forall X Tx x:set,
+  topology_on X Tx -> x :e X ->
+  path_connected_space (path_component_of X Tx x)
+    (subspace_topology X Tx (path_component_of X Tx x)).
+let X Tx x.
+assume HtopX HxX.
+set B := path_component_of X Tx x.
+claim HBsubX : B c= X.
+{ exact (Sep_Subq X (fun y0:set => exists q:set,
+    function_on q unit_interval X /\
+    continuous_map unit_interval unit_interval_topology X Tx q /\
+    apply_fun q 0 = x /\ apply_fun q 1 = y0)). }
+claim HtopB : topology_on B (subspace_topology X Tx B).
+{ exact (subspace_topology_is_topology X Tx B HtopX HBsubX). }
+claim HxB : x :e B.
+{ exact (path_component_reflexive X Tx x HtopX HxX). }
+prove topology_on B (subspace_topology X Tx B) /\
+  forall y0 z0:set, y0 :e B -> z0 :e B ->
+    exists p:set, path_between B y0 z0 p /\
+    continuous_map unit_interval unit_interval_topology B (subspace_topology X Tx B) p.
+apply andI.
+- exact HtopB.
+- let y z.
+  assume HyB HzB.
+  (** y :e B means there is a path from x to y in X **)
+  claim HxPCy : x :e path_component_of X Tx y.
+  { exact (path_component_symmetric_axiom X Tx x y HtopX HxX
+      (HBsubX y HyB) HyB). }
+  (** So there is a path from y to x in X **)
+  claim HyX : y :e X. { exact (HBsubX y HyB). }
+  claim HzX : z :e X. { exact (HBsubX z HzB). }
+  claim HxPCy_data : exists py:set,
+    function_on py unit_interval X /\
+    continuous_map unit_interval unit_interval_topology X Tx py /\
+    apply_fun py 0 = y /\ apply_fun py 1 = x.
+  {
+    exact (SepE2 X (fun y0:set => exists q:set,
+      function_on q unit_interval X /\
+      continuous_map unit_interval unit_interval_topology X Tx q /\
+      apply_fun q 0 = y /\ apply_fun q 1 = y0)
+      x HxPCy).
+  }
+  (** z :e B means there is a path from x to z in X **)
+  claim HzPC_data : exists pz:set,
+    function_on pz unit_interval X /\
+    continuous_map unit_interval unit_interval_topology X Tx pz /\
+    apply_fun pz 0 = x /\ apply_fun pz 1 = z.
+  {
+    exact (SepE2 X (fun y0:set => exists q:set,
+      function_on q unit_interval X /\
+      continuous_map unit_interval unit_interval_topology X Tx q /\
+      apply_fun q 0 = x /\ apply_fun q 1 = y0)
+      z HzB).
+  }
+  apply HxPCy_data.
+  let py.
+  assume Hpy_pack.
+  apply HzPC_data.
+  let pz.
+  assume Hpz_pack.
+  (** Concatenate py (y->x) with pz (x->z) to get path y->z **)
+  set gamma := path_concat py pz.
+  witness gamma.
+  apply andI.
+  + (** path_between B y z gamma **)
+    (** need: function_on gamma [0,1] B, gamma(0)=y, gamma(1)=z **)
+    admit.
+  + (** continuous_map unit_interval unit_interval_topology B (subspace_topology X Tx B) gamma **)
+    admit.
+Admitted.
+
 (** Infrastructure: arcs are path connected **)
 (** Proven Alice **)
 Theorem arc_path_connected : forall X Tx:set,
