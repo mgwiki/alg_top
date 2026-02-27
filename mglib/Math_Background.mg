@@ -51552,6 +51552,136 @@ apply set_ext.
     HzNotV).
 Qed.
 
+(** Infrastructure: union of a family decomposes as member union union-of-rest **)
+(** Proven Bob **)
+Theorem union_member_union_rest : forall Fam V:set,
+  V :e Fam ->
+  Union Fam = V :\/: Union (Fam :\: {V}).
+let Fam V.
+assume HVFam.
+apply set_ext.
+- let z.
+  assume HzUnion.
+  apply (UnionE
+    Fam
+    z
+    HzUnion).
+  let W.
+  assume Hpack.
+  claim HzW : z :e W.
+  {
+    exact (andEL
+      (z :e W)
+      (W :e Fam)
+      Hpack).
+  }
+  claim HWFam : W :e Fam.
+  {
+    exact (andER
+      (z :e W)
+      (W :e Fam)
+      Hpack).
+  }
+  apply xm (W = V).
+  + assume HWV.
+    claim HzV : z :e V.
+    {
+      rewrite <- HWV.
+      exact HzW.
+    }
+    exact (binunionI1
+      V
+      (Union (Fam :\: {V}))
+      z
+      HzV).
+  + assume HWneq.
+    claim HWnotSing : W /:e {V}.
+    {
+      assume HWsing.
+      claim HWV : W = V.
+      {
+        exact (SingE
+          V
+          W
+          HWsing).
+      }
+      exact (HWneq
+        HWV).
+    }
+    claim HWrest : W :e Fam :\: {V}.
+    {
+      exact (setminusI
+        Fam
+        {V}
+        W
+        HWFam
+        HWnotSing).
+    }
+    claim HzRest : z :e Union (Fam :\: {V}).
+    {
+      exact (UnionI
+        (Fam :\: {V})
+        z
+        W
+        HzW
+        HWrest).
+    }
+    exact (binunionI2
+      V
+      (Union (Fam :\: {V}))
+      z
+      HzRest).
+- let z.
+  assume HzUnion.
+  apply (binunionE
+    V
+    (Union (Fam :\: {V}))
+    z
+    HzUnion).
+  + assume HzV.
+    exact (UnionI
+      Fam
+      z
+      V
+      HzV
+      HVFam).
+  + assume HzRest.
+    apply (UnionE
+      (Fam :\: {V})
+      z
+      HzRest).
+    let W.
+    assume Hpack.
+    claim HzW : z :e W.
+    {
+      exact (andEL
+        (z :e W)
+        (W :e Fam :\: {V})
+        Hpack).
+    }
+    claim HWrest : W :e Fam :\: {V}.
+    {
+      exact (andER
+        (z :e W)
+        (W :e Fam :\: {V})
+        Hpack).
+    }
+    claim HWFam : W :e Fam.
+    {
+      exact (setminusE1
+        Fam
+        {V}
+        W
+        HWrest).
+    }
+    exact (UnionI
+      Fam
+      z
+      W
+      HzW
+      HWFam).
+Qed.
+
 (** Infrastructure: union is monotone with respect to subfamilies **)
 (** Proven Bob **)
 Theorem union_subfamily_sub_union : forall Fam1 Fam2:set,
