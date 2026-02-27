@@ -255612,7 +255612,508 @@ apply andI.
           { exact (PowerE E B1 HB1PowE). }
           exact (HB1subE e HeB1). }
     * (** C4: intersection condition **)
-      admit.
+      let A0 B0.
+      assume HA0ArcsE2 HB0ArcsE2 HA0neqB0.
+      (** Extract A0's data: A1, x1 **)
+      claim HA0data2 : A0 :e Power E /\
+        (exists A1:set, A1 :e Arcs /\
+         exists x1:set, x1 :e preimage_of E p A1 /\
+         A0 = path_component_of (preimage_of E p A1)
+           (subspace_topology E Te (preimage_of E p A1)) x1).
+      { exact (SepE (Power E)
+          (fun B0:set => exists A1:set, A1 :e Arcs /\
+            exists x1:set, x1 :e preimage_of E p A1 /\
+            B0 = path_component_of (preimage_of E p A1)
+              (subspace_topology E Te (preimage_of E p A1)) x1)
+          A0 HA0ArcsE2). }
+      claim HA0ex : exists A1:set, A1 :e Arcs /\
+        exists x1:set, x1 :e preimage_of E p A1 /\
+        A0 = path_component_of (preimage_of E p A1)
+          (subspace_topology E Te (preimage_of E p A1)) x1.
+      { exact (andER (A0 :e Power E)
+          (exists A1:set, A1 :e Arcs /\
+           exists x1:set, x1 :e preimage_of E p A1 /\
+           A0 = path_component_of (preimage_of E p A1)
+             (subspace_topology E Te (preimage_of E p A1)) x1)
+          HA0data2). }
+      apply HA0ex. let A1. assume HA1pack.
+      claim HA1Arcs : A1 :e Arcs.
+      { exact (andEL (A1 :e Arcs)
+          (exists x1:set, x1 :e preimage_of E p A1 /\
+           A0 = path_component_of (preimage_of E p A1)
+             (subspace_topology E Te (preimage_of E p A1)) x1)
+          HA1pack). }
+      apply (andER (A1 :e Arcs)
+        (exists x1:set, x1 :e preimage_of E p A1 /\
+         A0 = path_component_of (preimage_of E p A1)
+           (subspace_topology E Te (preimage_of E p A1)) x1)
+        HA1pack). let x1. assume Hx1pack.
+      claim Hx1pre : x1 :e preimage_of E p A1.
+      { exact (andEL (x1 :e preimage_of E p A1)
+          (A0 = path_component_of (preimage_of E p A1)
+             (subspace_topology E Te (preimage_of E p A1)) x1)
+          Hx1pack). }
+      claim HA0eq : A0 = path_component_of (preimage_of E p A1)
+        (subspace_topology E Te (preimage_of E p A1)) x1.
+      { exact (andER (x1 :e preimage_of E p A1)
+          (A0 = path_component_of (preimage_of E p A1)
+             (subspace_topology E Te (preimage_of E p A1)) x1)
+          Hx1pack). }
+      (** Extract B0's data: A2, x2 **)
+      claim HB0data2 : B0 :e Power E /\
+        (exists A2:set, A2 :e Arcs /\
+         exists x2:set, x2 :e preimage_of E p A2 /\
+         B0 = path_component_of (preimage_of E p A2)
+           (subspace_topology E Te (preimage_of E p A2)) x2).
+      { exact (SepE (Power E)
+          (fun B1:set => exists A2:set, A2 :e Arcs /\
+            exists x2:set, x2 :e preimage_of E p A2 /\
+            B1 = path_component_of (preimage_of E p A2)
+              (subspace_topology E Te (preimage_of E p A2)) x2)
+          B0 HB0ArcsE2). }
+      claim HB0ex : exists A2:set, A2 :e Arcs /\
+        exists x2:set, x2 :e preimage_of E p A2 /\
+        B0 = path_component_of (preimage_of E p A2)
+          (subspace_topology E Te (preimage_of E p A2)) x2.
+      { exact (andER (B0 :e Power E)
+          (exists A2:set, A2 :e Arcs /\
+           exists x2:set, x2 :e preimage_of E p A2 /\
+           B0 = path_component_of (preimage_of E p A2)
+             (subspace_topology E Te (preimage_of E p A2)) x2)
+          HB0data2). }
+      apply HB0ex. let A2. assume HA2pack.
+      claim HA2Arcs : A2 :e Arcs.
+      { exact (andEL (A2 :e Arcs)
+          (exists x2:set, x2 :e preimage_of E p A2 /\
+           B0 = path_component_of (preimage_of E p A2)
+             (subspace_topology E Te (preimage_of E p A2)) x2)
+          HA2pack). }
+      apply (andER (A2 :e Arcs)
+        (exists x2:set, x2 :e preimage_of E p A2 /\
+         B0 = path_component_of (preimage_of E p A2)
+           (subspace_topology E Te (preimage_of E p A2)) x2)
+        HA2pack). let x2. assume Hx2pack.
+      claim Hx2pre : x2 :e preimage_of E p A2.
+      { exact (andEL (x2 :e preimage_of E p A2)
+          (B0 = path_component_of (preimage_of E p A2)
+             (subspace_topology E Te (preimage_of E p A2)) x2)
+          Hx2pack). }
+      claim HB0eq : B0 = path_component_of (preimage_of E p A2)
+        (subspace_topology E Te (preimage_of E p A2)) x2.
+      { exact (andER (x2 :e preimage_of E p A2)
+          (B0 = path_component_of (preimage_of E p A2)
+             (subspace_topology E Te (preimage_of E p A2)) x2)
+          Hx2pack). }
+      (** Subset claims **)
+      claim HA0subE : A0 c= E.
+      { exact (PowerE E A0
+          (andEL (A0 :e Power E)
+            (exists A1x:set, A1x :e Arcs /\
+             exists x1x:set, x1x :e preimage_of E p A1x /\
+             A0 = path_component_of (preimage_of E p A1x)
+               (subspace_topology E Te (preimage_of E p A1x)) x1x)
+            HA0data2)). }
+      claim HB0subE : B0 c= E.
+      { exact (PowerE E B0
+          (andEL (B0 :e Power E)
+            (exists A2x:set, A2x :e Arcs /\
+             exists x2x:set, x2x :e preimage_of E p A2x /\
+             B0 = path_component_of (preimage_of E p A2x)
+               (subspace_topology E Te (preimage_of E p A2x)) x2x)
+            HB0data2)). }
+      claim HA1data : A1 c= X /\ arc A1 (subspace_topology X Tx A1).
+      { exact (general_linear_graph_arc_data X Tx Arcs A1 Hglg HA1Arcs). }
+      claim HA2data : A2 c= X /\ arc A2 (subspace_topology X Tx A2).
+      { exact (general_linear_graph_arc_data X Tx Arcs A2 Hglg HA2Arcs). }
+      claim HA1subX : A1 c= X.
+      { exact (andEL (A1 c= X) (arc A1 (subspace_topology X Tx A1)) HA1data). }
+      claim HA2subX : A2 c= X.
+      { exact (andEL (A2 c= X) (arc A2 (subspace_topology X Tx A2)) HA2data). }
+      claim HA1arc : arc A1 (subspace_topology X Tx A1).
+      { exact (andER (A1 c= X) (arc A1 (subspace_topology X Tx A1)) HA1data). }
+      claim HA2arc : arc A2 (subspace_topology X Tx A2).
+      { exact (andER (A2 c= X) (arc A2 (subspace_topology X Tx A2)) HA2data). }
+      (** Preimage subset claims **)
+      claim Hpre1subE : preimage_of E p A1 c= E.
+      { let e. assume He. exact (SepE1 E (fun x => apply_fun p x :e A1) e He). }
+      claim Hpre2subE : preimage_of E p A2 c= E.
+      { let e. assume He. exact (SepE1 E (fun x => apply_fun p x :e A2) e He). }
+      claim Htop_pre1 : topology_on (preimage_of E p A1)
+        (subspace_topology E Te (preimage_of E p A1)).
+      { exact (subspace_topology_is_topology E Te (preimage_of E p A1) HtopE Hpre1subE). }
+      claim Htop_pre2 : topology_on (preimage_of E p A2)
+        (subspace_topology E Te (preimage_of E p A2)).
+      { exact (subspace_topology_is_topology E Te (preimage_of E p A2) HtopE Hpre2subE). }
+      (** Case split on A1 = A2 **)
+      apply (xm (A1 = A2)).
+      { (** Case A1 = A2: path components of same preimage must be equal or disjoint **)
+        assume HA1eqA2 : A1 = A2.
+        apply orIL.
+        (** Show A0 :/\: B0 = Empty **)
+        apply set_ext.
+        - let e. assume He.
+          claim HeA0 : e :e A0.
+          { exact (binintersectE1 A0 B0 e He). }
+          claim HeB0 : e :e B0.
+          { exact (binintersectE2 A0 B0 e He). }
+          (** e is in both path components of pre(A1) **)
+          claim HePC1 : e :e path_component_of (preimage_of E p A1)
+            (subspace_topology E Te (preimage_of E p A1)) x1.
+          { rewrite <- HA0eq. exact HeA0. }
+          claim Hepre1 : e :e preimage_of E p A1.
+          { exact (SepE1 (preimage_of E p A1)
+              (fun y => exists q:set, function_on q unit_interval (preimage_of E p A1) /\
+                continuous_map unit_interval unit_interval_topology
+                  (preimage_of E p A1) (subspace_topology E Te (preimage_of E p A1)) q /\
+                apply_fun q 0 = x1 /\ apply_fun q 1 = y) e HePC1). }
+          claim HB0eq2 : B0 = path_component_of (preimage_of E p A1)
+            (subspace_topology E Te (preimage_of E p A1)) x2.
+          { rewrite HA1eqA2. exact HB0eq. }
+          claim HePC2 : e :e path_component_of (preimage_of E p A1)
+            (subspace_topology E Te (preimage_of E p A1)) x2.
+          { rewrite <- HB0eq2. exact HeB0. }
+          (** By symmetry + transitivity: x2 in PC(x1) **)
+          claim Hx1pre1 : x1 :e preimage_of E p A1.
+          { exact Hx1pre. }
+          claim Hx2pre1 : x2 :e preimage_of E p A1.
+          { rewrite HA1eqA2. exact Hx2pre. }
+          claim Hx1_PC_e : x1 :e path_component_of (preimage_of E p A1)
+            (subspace_topology E Te (preimage_of E p A1)) e.
+          { exact (path_component_symmetric_axiom
+              (preimage_of E p A1)
+              (subspace_topology E Te (preimage_of E p A1))
+              x1 e Htop_pre1 Hx1pre1 Hepre1 HePC1). }
+          claim Hx2_PC_e : x2 :e path_component_of (preimage_of E p A1)
+            (subspace_topology E Te (preimage_of E p A1)) e.
+          { exact (path_component_symmetric_axiom
+              (preimage_of E p A1)
+              (subspace_topology E Te (preimage_of E p A1))
+              x2 e Htop_pre1 Hx2pre1 Hepre1 HePC2). }
+          claim Hx2_PC_x1 : x2 :e path_component_of (preimage_of E p A1)
+            (subspace_topology E Te (preimage_of E p A1)) x1.
+          { exact (path_component_transitive_axiom
+              (preimage_of E p A1)
+              (subspace_topology E Te (preimage_of E p A1))
+              x1 e x2 Htop_pre1 Hx1pre1 Hepre1 Hx2pre1 HePC1 Hx2_PC_e). }
+          (** Now show B0 c= A0 **)
+          claim HB0subA0 : B0 c= A0.
+          { let z. assume HzB0.
+            claim HzPC2 : z :e path_component_of (preimage_of E p A1)
+              (subspace_topology E Te (preimage_of E p A1)) x2.
+            { rewrite <- HB0eq2. exact HzB0. }
+            claim Hzpre1 : z :e preimage_of E p A1.
+            { exact (SepE1 (preimage_of E p A1)
+                (fun y => exists q:set, function_on q unit_interval (preimage_of E p A1) /\
+                  continuous_map unit_interval unit_interval_topology
+                    (preimage_of E p A1) (subspace_topology E Te (preimage_of E p A1)) q /\
+                  apply_fun q 0 = x2 /\ apply_fun q 1 = y) z HzPC2). }
+            rewrite HA0eq.
+            exact (path_component_transitive_axiom
+              (preimage_of E p A1)
+              (subspace_topology E Te (preimage_of E p A1))
+              x1 x2 z Htop_pre1 Hx1pre1 Hx2pre1 Hzpre1 Hx2_PC_x1 HzPC2). }
+          claim HA0subB0 : A0 c= B0.
+          { claim Hx1_PC_x2 : x1 :e path_component_of (preimage_of E p A1)
+              (subspace_topology E Te (preimage_of E p A1)) x2.
+            { exact (path_component_symmetric_axiom
+                (preimage_of E p A1)
+                (subspace_topology E Te (preimage_of E p A1))
+                x1 x2 Htop_pre1 Hx1pre1 Hx2pre1 Hx2_PC_x1). }
+            let z. assume HzA0.
+            claim HzPC1 : z :e path_component_of (preimage_of E p A1)
+              (subspace_topology E Te (preimage_of E p A1)) x1.
+            { rewrite <- HA0eq. exact HzA0. }
+            claim Hzpre1 : z :e preimage_of E p A1.
+            { exact (SepE1 (preimage_of E p A1)
+                (fun y => exists q:set, function_on q unit_interval (preimage_of E p A1) /\
+                  continuous_map unit_interval unit_interval_topology
+                    (preimage_of E p A1) (subspace_topology E Te (preimage_of E p A1)) q /\
+                  apply_fun q 0 = x1 /\ apply_fun q 1 = y) z HzPC1). }
+            rewrite HB0eq2.
+            exact (path_component_transitive_axiom
+              (preimage_of E p A1)
+              (subspace_topology E Te (preimage_of E p A1))
+              x2 x1 z Htop_pre1 Hx2pre1 Hx1pre1 Hzpre1 Hx1_PC_x2 HzPC1). }
+          (** A0 = B0, contradiction **)
+          claim HA0eqB0 : A0 = B0.
+          { exact (set_ext A0 B0 HA0subB0 HB0subA0). }
+          exact (FalseE (HA0neqB0 HA0eqB0) (e :e Empty)).
+        - let e. assume He. exact (FalseE (EmptyE e He) (e :e A0 :/\: B0)). }
+      { (** Case A1 <> A2 **)
+        assume HA1neqA2 : A1 <> A2.
+        (** Use original graph intersection condition **)
+        claim Hinter : A1 :/\: A2 = Empty \/
+          (exists s:set, A1 :/\: A2 = Sing s /\
+            (exists q:set, end_points_of_arc A1 (subspace_topology X Tx A1) s q \/
+                           end_points_of_arc A1 (subspace_topology X Tx A1) q s) /\
+            (exists r:set, end_points_of_arc A2 (subspace_topology X Tx A2) s r \/
+                           end_points_of_arc A2 (subspace_topology X Tx A2) r s)).
+        { exact (general_linear_graph_arc_intersection_case X Tx Arcs A1 A2 Hglg HA1Arcs HA2Arcs HA1neqA2). }
+        (** A0 c= pre(A1) and B0 c= pre(A2) **)
+        claim HA0subPre1 : A0 c= preimage_of E p A1.
+        { rewrite HA0eq. let z. assume Hz.
+          exact (SepE1 (preimage_of E p A1)
+            (fun y => exists q:set, function_on q unit_interval (preimage_of E p A1) /\
+              continuous_map unit_interval unit_interval_topology
+                (preimage_of E p A1) (subspace_topology E Te (preimage_of E p A1)) q /\
+              apply_fun q 0 = x1 /\ apply_fun q 1 = y) z Hz). }
+        claim HB0subPre2 : B0 c= preimage_of E p A2.
+        { rewrite HB0eq. let z. assume Hz.
+          exact (SepE1 (preimage_of E p A2)
+            (fun y => exists q:set, function_on q unit_interval (preimage_of E p A2) /\
+              continuous_map unit_interval unit_interval_topology
+                (preimage_of E p A2) (subspace_topology E Te (preimage_of E p A2)) q /\
+              apply_fun q 0 = x2 /\ apply_fun q 1 = y) z Hz). }
+        (** A0 :/\: B0 c= pre(A1) :/\: pre(A2) = pre(A1 :/\: A2) **)
+        claim HintSubPre : A0 :/\: B0 c= preimage_of E p (A1 :/\: A2).
+        { let e. assume He.
+          claim HeA0 : e :e A0. { exact (binintersectE1 A0 B0 e He). }
+          claim HeB0 : e :e B0. { exact (binintersectE2 A0 B0 e He). }
+          rewrite (preimage_of_binintersect E p A1 A2).
+          exact (binintersectI (preimage_of E p A1) (preimage_of E p A2) e
+            (HA0subPre1 e HeA0) (HB0subPre2 e HeB0)). }
+        apply Hinter.
+        - (** Sub-case: A1 :/\: A2 = Empty **)
+          assume HinterEmpty : A1 :/\: A2 = Empty.
+          apply orIL.
+          apply set_ext.
+          + let e. assume He.
+            claim Hepre : e :e preimage_of E p (A1 :/\: A2).
+            { exact (HintSubPre e He). }
+            claim Hepre2 : e :e preimage_of E p Empty.
+            { rewrite <- HinterEmpty. exact Hepre. }
+            claim Hepre3 : e :e Empty.
+            { rewrite <- (preimage_of_Empty E p). exact Hepre2. }
+            exact Hepre3.
+          + let e. assume He. exact (FalseE (EmptyE e He) (e :e A0 :/\: B0)).
+        - (** Sub-case: A1 :/\: A2 = {s} with s an endpoint of both **)
+          assume HinterSing.
+          apply HinterSing. let s. assume Hspack.
+          (** Hspack : (EQ /\ ENDA1) /\ ENDA2  (left-assoc) **)
+          claim HsLeftPack : (A1 :/\: A2 = Sing s) /\
+              (exists q:set, end_points_of_arc A1 (subspace_topology X Tx A1) s q \/
+                             end_points_of_arc A1 (subspace_topology X Tx A1) q s).
+          { exact (andEL
+              ((A1 :/\: A2 = Sing s) /\
+               (exists q:set, end_points_of_arc A1 (subspace_topology X Tx A1) s q \/
+                              end_points_of_arc A1 (subspace_topology X Tx A1) q s))
+              (exists r:set, end_points_of_arc A2 (subspace_topology X Tx A2) s r \/
+                             end_points_of_arc A2 (subspace_topology X Tx A2) r s)
+              Hspack). }
+          claim HinterEq : A1 :/\: A2 = Sing s.
+          { exact (andEL (A1 :/\: A2 = Sing s)
+              (exists q:set, end_points_of_arc A1 (subspace_topology X Tx A1) s q \/
+                             end_points_of_arc A1 (subspace_topology X Tx A1) q s)
+              HsLeftPack). }
+          claim HsEndA1 : exists q:set, end_points_of_arc A1 (subspace_topology X Tx A1) s q \/
+                           end_points_of_arc A1 (subspace_topology X Tx A1) q s.
+          { exact (andER (A1 :/\: A2 = Sing s)
+              (exists q:set, end_points_of_arc A1 (subspace_topology X Tx A1) s q \/
+                             end_points_of_arc A1 (subspace_topology X Tx A1) q s)
+              HsLeftPack). }
+          claim HsEndA2 : exists r:set, end_points_of_arc A2 (subspace_topology X Tx A2) s r \/
+                           end_points_of_arc A2 (subspace_topology X Tx A2) r s.
+          { exact (andER
+              ((A1 :/\: A2 = Sing s) /\
+               (exists q:set, end_points_of_arc A1 (subspace_topology X Tx A1) s q \/
+                              end_points_of_arc A1 (subspace_topology X Tx A1) q s))
+              (exists r:set, end_points_of_arc A2 (subspace_topology X Tx A2) s r \/
+                             end_points_of_arc A2 (subspace_topology X Tx A2) r s)
+              Hspack). }
+          (** Any e in A0 :/\: B0 must map to s **)
+          claim Hmap_to_s : forall e:set, e :e A0 :/\: B0 -> apply_fun p e = s.
+          { let e. assume He.
+            claim Hepre : e :e preimage_of E p (A1 :/\: A2).
+            { exact (HintSubPre e He). }
+            claim HepreSing : e :e preimage_of E p (Sing s).
+            { rewrite <- HinterEq. exact Hepre. }
+            claim HeE : e :e E.
+            { exact (HA0subE e (binintersectE1 A0 B0 e He)). }
+            claim HpeInSing : apply_fun p e :e Sing s.
+            { exact (SepE2 E (fun x => apply_fun p x :e Sing s) e HepreSing). }
+            exact (SingE s (apply_fun p e) HpeInSing). }
+          (** Case split: A0 :/\: B0 = Empty or nonempty **)
+          apply (xm (A0 :/\: B0 = Empty)).
+          + assume HintEmpty. apply orIL. exact HintEmpty.
+          + assume HintNonempty.
+            apply orIR.
+            (** Get a witness e0 in A0 :/\: B0 **)
+            claim HexE0 : exists e0:set, e0 :e A0 :/\: B0.
+            { apply (xm (exists e0:set, e0 :e A0 :/\: B0)).
+              - assume H. exact H.
+              - assume H.
+                claim Hempty : A0 :/\: B0 = Empty.
+                { apply set_ext.
+                  - let z. assume Hz. apply H. witness z. exact Hz.
+                  - let z. assume Hz. exact (FalseE (EmptyE z Hz) (z :e A0 :/\: B0)). }
+                exact (HintNonempty Hempty (exists e0:set, e0 :e A0 :/\: B0)). }
+            apply HexE0. let e0. assume He0int.
+            claim He0A0 : e0 :e A0. { exact (binintersectE1 A0 B0 e0 He0int). }
+            claim He0B0 : e0 :e B0. { exact (binintersectE2 A0 B0 e0 He0int). }
+            claim He0E : e0 :e E. { exact (HA0subE e0 He0A0). }
+            claim Hpe0 : apply_fun p e0 = s. { exact (Hmap_to_s e0 He0int). }
+            witness e0.
+            apply andI.
+            { apply andI.
+              { (** A0 :/\: B0 = Sing e0 **)
+                apply set_ext.
+                - let e. assume He.
+                  claim HeA0 : e :e A0. { exact (binintersectE1 A0 B0 e He). }
+                  claim HeB0 : e :e B0. { exact (binintersectE2 A0 B0 e He). }
+                  claim HeE : e :e E. { exact (HA0subE e HeA0). }
+                  claim Hpe : apply_fun p e = s. { exact (Hmap_to_s e He). }
+                  (** e and e0 both in A0 with same image s under p **)
+                  (** Need: p|A0 is injective (from homeomorphism via covering chain) **)
+                  (** Derive covering homeomorphism for A0 **)
+                  set Te_pre1c := subspace_topology E Te (preimage_of E p A1).
+                  set Ta1c := subspace_topology X Tx A1.
+                  set pA1c := graph (preimage_of E p A1) (fun x3:set => apply_fun p x3).
+                  claim Hcov_pre1c : covering_map (preimage_of E p A1) Te_pre1c A1 Ta1c pA1c.
+                  { exact (thm53_2_subspace_covering E Te X Tx p A1 Hcov HA1subX). }
+                  claim HA1pc : path_connected_space A1 Ta1c. { exact (arc_path_connected A1 Ta1c HA1arc). }
+                  claim HA1lpc : locally_path_connected A1 Ta1c. { exact (arc_locally_path_connected A1 Ta1c HA1arc). }
+                  claim HA1sc : simply_connected A1 Ta1c. { exact (arc_simply_connected A1 Ta1c HA1arc). }
+                  claim HA0pc : path_connected_space A0 (subspace_topology (preimage_of E p A1) Te_pre1c A0).
+                  { rewrite HA0eq.
+                    exact (path_component_of_is_path_connected
+                      (preimage_of E p A1) Te_pre1c x1 Htop_pre1 Hx1pre). }
+                  claim Hx1A0 : x1 :e A0.
+                  { rewrite HA0eq.
+                    exact (path_component_reflexive (preimage_of E p A1) Te_pre1c x1 Htop_pre1 Hx1pre). }
+                  claim HA0ne : A0 <> Empty.
+                  { assume Habs.
+                    claim Hx1Empty : x1 :e Empty. { rewrite <- Habs. exact Hx1A0. }
+                    exact (EmptyE x1 Hx1Empty). }
+                  (** A0 is maximal (path-exists form required by lemma80_1) **)
+                  claim HA0max : forall x3:set, x3 :e preimage_of E p A1 ->
+                    (exists y3:set, y3 :e A0 /\ exists gamma3:set,
+                      continuous_map unit_interval unit_interval_topology
+                        (preimage_of E p A1) Te_pre1c gamma3 /\
+                      apply_fun gamma3 0 = x3 /\ apply_fun gamma3 1 = y3) ->
+                    x3 :e A0.
+                  {
+                    let x3. assume Hx3pre. assume Hex3.
+                    apply Hex3. let y3. assume Hy3pack.
+                    claim Hy3A0 : y3 :e A0.
+                    { exact (andEL (y3 :e A0)
+                        (exists gamma3:set,
+                          continuous_map unit_interval unit_interval_topology
+                            (preimage_of E p A1) Te_pre1c gamma3 /\
+                          apply_fun gamma3 0 = x3 /\ apply_fun gamma3 1 = y3)
+                        Hy3pack). }
+                    claim Hexg3 : exists gamma3:set,
+                      continuous_map unit_interval unit_interval_topology
+                        (preimage_of E p A1) Te_pre1c gamma3 /\
+                      apply_fun gamma3 0 = x3 /\ apply_fun gamma3 1 = y3.
+                    { exact (andER (y3 :e A0)
+                        (exists gamma3:set,
+                          continuous_map unit_interval unit_interval_topology
+                            (preimage_of E p A1) Te_pre1c gamma3 /\
+                          apply_fun gamma3 0 = x3 /\ apply_fun gamma3 1 = y3)
+                        Hy3pack). }
+                    apply Hexg3. let gamma3. assume Hg3.
+                    claim Hg3AB : continuous_map unit_interval unit_interval_topology
+                      (preimage_of E p A1) Te_pre1c gamma3 /\ apply_fun gamma3 0 = x3.
+                    { exact (andEL
+                        (continuous_map unit_interval unit_interval_topology
+                          (preimage_of E p A1) Te_pre1c gamma3 /\ apply_fun gamma3 0 = x3)
+                        (apply_fun gamma3 1 = y3) Hg3). }
+                    claim Hg3cont : continuous_map unit_interval unit_interval_topology
+                      (preimage_of E p A1) Te_pre1c gamma3.
+                    { exact (andEL
+                        (continuous_map unit_interval unit_interval_topology
+                          (preimage_of E p A1) Te_pre1c gamma3)
+                        (apply_fun gamma3 0 = x3) Hg3AB). }
+                    claim Hg3fon : function_on gamma3 unit_interval (preimage_of E p A1).
+                    { exact (continuous_map_function_on unit_interval unit_interval_topology
+                        (preimage_of E p A1) Te_pre1c gamma3 Hg3cont). }
+                    claim Hg30 : apply_fun gamma3 0 = x3.
+                    { exact (andER
+                        (continuous_map unit_interval unit_interval_topology
+                          (preimage_of E p A1) Te_pre1c gamma3)
+                        (apply_fun gamma3 0 = x3) Hg3AB). }
+                    claim Hg31 : apply_fun gamma3 1 = y3.
+                    { exact (andER
+                        (continuous_map unit_interval unit_interval_topology
+                          (preimage_of E p A1) Te_pre1c gamma3 /\ apply_fun gamma3 0 = x3)
+                        (apply_fun gamma3 1 = y3) Hg3). }
+                    claim Hy3pre : y3 :e preimage_of E p A1.
+                    { exact (HA0subPre1 y3 Hy3A0). }
+                    claim Hy3_pc_x3 : y3 :e path_component_of (preimage_of E p A1) Te_pre1c x3.
+                    {
+                      prove y3 :e {y0 :e preimage_of E p A1 | exists q:set,
+                        function_on q unit_interval (preimage_of E p A1) /\
+                        continuous_map unit_interval unit_interval_topology
+                          (preimage_of E p A1) Te_pre1c q /\
+                        apply_fun q 0 = x3 /\ apply_fun q 1 = y0}.
+                      apply SepI.
+                      - exact Hy3pre.
+                      - prove exists q:set,
+                          function_on q unit_interval (preimage_of E p A1) /\
+                          continuous_map unit_interval unit_interval_topology
+                            (preimage_of E p A1) Te_pre1c q /\
+                          apply_fun q 0 = x3 /\ apply_fun q 1 = y3.
+                        witness gamma3.
+                        apply andI.
+                        + apply andI.
+                          * exact (andI
+                              (function_on gamma3 unit_interval (preimage_of E p A1))
+                              (continuous_map unit_interval unit_interval_topology
+                                (preimage_of E p A1) Te_pre1c gamma3)
+                              Hg3fon Hg3cont).
+                          * exact Hg30.
+                        + exact Hg31.
+                    }
+                    claim Hx3_pc_y3 : x3 :e path_component_of (preimage_of E p A1) Te_pre1c y3.
+                    { exact (path_component_symmetric_axiom
+                        (preimage_of E p A1) Te_pre1c x3 y3 Htop_pre1 Hx3pre Hy3pre Hy3_pc_x3). }
+                    claim Hy3_pc_x1 : y3 :e path_component_of (preimage_of E p A1) Te_pre1c x1.
+                    { rewrite <- HA0eq. exact Hy3A0. }
+                    rewrite HA0eq.
+                    exact (path_component_transitive_axiom
+                      (preimage_of E p A1) Te_pre1c x1 y3 x3 Htop_pre1 Hx1pre Hy3pre Hx3pre
+                      Hy3_pc_x1 Hx3_pc_y3).
+                  }
+                  claim Hcov_A0_raw : covering_map A0
+                    (subspace_topology (preimage_of E p A1) Te_pre1c A0)
+                    A1 Ta1c (graph A0 (fun x3:set => apply_fun pA1c x3)).
+                  { exact (lemma80_1_path_component_covering
+                      (preimage_of E p A1) Te_pre1c A1 Ta1c pA1c
+                      Hcov_pre1c HA1pc HA1lpc
+                      A0 HA0subPre1 HA0ne HA0pc HA0max). }
+                  claim Hgraph_eq1c : graph A0 (fun x3 => apply_fun pA1c x3) = graph A0 (fun x3 => apply_fun p x3).
+                  { apply (graph_extensional A0 (fun x3 => apply_fun pA1c x3) (fun x3 => apply_fun p x3)).
+                    let a. assume HaA0.
+                    exact (apply_fun_graph (preimage_of E p A1) (fun x3 => apply_fun p x3) a (HA0subPre1 a HaA0)). }
+                  claim HsubEq1c : subspace_topology (preimage_of E p A1) Te_pre1c A0 = subspace_topology E Te A0.
+                  { exact (subspace_topology_transitive_weak E Te (preimage_of E p A1) A0 HA0subPre1). }
+                  claim Hcov_A0c : covering_map A0 (subspace_topology E Te A0) A1 Ta1c (graph A0 (fun x3 => apply_fun p x3)).
+                  { rewrite <- Hgraph_eq1c. rewrite <- HsubEq1c. exact Hcov_A0_raw. }
+                  claim HA0pc2 : path_connected_space A0 (subspace_topology E Te A0).
+                  { rewrite <- HsubEq1c. exact HA0pc. }
+                  claim Hhomeo_A0c : homeomorphism A0 (subspace_topology E Te A0) A1 Ta1c (graph A0 (fun x3 => apply_fun p x3)).
+                  { exact (ex54_8_simply_connected_base_homeomorphism A0 (subspace_topology E Te A0) A1 Ta1c
+                      (graph A0 (fun x3 => apply_fun p x3)) Hcov_A0c HA0pc2 HA1sc). }
+                  (** Now use injectivity **)
+                  claim Hepre1 : e :e preimage_of E p A1. { exact (HA0subPre1 e HeA0). }
+                  claim He0pre1 : e0 :e preimage_of E p A1. { exact (HA0subPre1 e0 He0A0). }
+                  claim Hpe_eq_pe0 : apply_fun (graph A0 (fun x3 => apply_fun p x3)) e =
+                    apply_fun (graph A0 (fun x3 => apply_fun p x3)) e0.
+                  { rewrite (apply_fun_graph A0 (fun x3 => apply_fun p x3) e HeA0).
+                    rewrite (apply_fun_graph A0 (fun x3 => apply_fun p x3) e0 He0A0).
+                    rewrite Hpe. rewrite Hpe0. reflexivity. }
+                  claim Heeq : e = e0.
+                  { exact (homeomorphism_injective A0 (subspace_topology E Te A0) A1 Ta1c
+                      (graph A0 (fun x3 => apply_fun p x3)) Hhomeo_A0c e e0 HeA0 He0A0 Hpe_eq_pe0). }
+                  rewrite Heeq. exact (SingI e0).
+                - let e. assume He.
+                  claim Heeq : e = e0. { exact (SingE e0 e He). }
+                  rewrite Heeq.
+                  exact (binintersectI A0 B0 e0 He0A0 He0B0). }
+              (** e0 is endpoint of A0 **)
+              admit. }
+            (** e0 is endpoint of B0 **)
+            admit. }
   + (** C5: coherence condition **)
     admit.
 - (** Part 2: Each B in ArcsE has the required properties **)
