@@ -186317,6 +186317,75 @@ rewrite (andEL
 reflexivity.
 Qed.
 
+(** Infrastructure: word_product of [x,y] in a group **)
+(** Proven Bob **)
+Theorem word_product_two_graph_group : forall G mult e inv x y:set,
+  group_structure G mult e inv ->
+  x :e G -> y :e G ->
+  word_product mult e (graph 2 (fun i:set => If_i (i = 0) x y)) 2 =
+    apply_fun mult (x, y).
+let G mult e inv x y.
+assume Hgrp HxG HyG.
+set xs := graph 2 (fun i:set => If_i (i = 0) x y).
+claim Hxs0 : apply_fun xs 0 = x.
+{
+  claim H00 : 0 = 0.
+  { reflexivity. }
+  rewrite (apply_fun_graph 2 (fun i:set => If_i (i = 0) x y) 0 In_0_2).
+  exact (If_i_1
+    (0 = 0)
+    x
+    y
+    H00).
+}
+claim Hxs1 : apply_fun xs 1 = y.
+{
+  rewrite (apply_fun_graph 2 (fun i:set => If_i (i = 0) x y) 1 In_1_2).
+  exact (If_i_0
+    (1 = 0)
+    x
+    y
+    neq_1_0).
+}
+claim HxsG : forall i:set, i :e 2 -> apply_fun xs i :e G.
+{
+  let i.
+  assume Hi.
+  apply (cases_2
+    i
+    Hi
+    (fun j:set => apply_fun xs j :e G)).
+  - exact (eq_subst_mem
+      (apply_fun xs 0)
+      x
+      G
+      Hxs0
+      HxG).
+  - exact (eq_subst_mem
+      (apply_fun xs 1)
+      y
+      G
+      Hxs1
+      HyG).
+}
+claim Hwp : word_product mult e xs 2 =
+  apply_fun mult (apply_fun xs 0, apply_fun xs 1).
+{
+  exact (word_product_two_group
+    G
+    mult
+    e
+    inv
+    xs
+    Hgrp
+    HxsG).
+}
+rewrite Hwp.
+rewrite Hxs0.
+rewrite Hxs1.
+reflexivity.
+Qed.
+
 (** from S68 Definition (line 2742 in algtop.tex): free product of subgroups **)
 (** LATEX VERSION: G is the free product of {G_alpha} if G_alpha cap G_beta = {1} **)
 (** for alpha <> beta, the G_alpha generate G, and each x in G has a unique **)
