@@ -51384,6 +51384,174 @@ exact (EmptyE
   False).
 Qed.
 
+(** Infrastructure: in a pairwise disjoint family, removing one member from the union **)
+(** gives the union of the rest **)
+(** Proven Bob **)
+Theorem pairwise_disjoint_union_remove_member : forall Fam V:set,
+  pairwise_disjoint Fam ->
+  V :e Fam ->
+  Union Fam :\: V = Union (Fam :\: {V}).
+let Fam V.
+assume Hpd HVFam.
+apply set_ext.
+- let z.
+  assume Hz.
+  claim HzUnion : z :e Union Fam.
+  {
+    exact (setminusE1
+      (Union Fam)
+      V
+      z
+      Hz).
+  }
+  claim HzNotV : z /:e V.
+  {
+    exact (setminusE2
+      (Union Fam)
+      V
+      z
+      Hz).
+  }
+  apply (UnionE
+    Fam
+    z
+    HzUnion).
+  let W.
+  assume Hpack.
+  claim HzW : z :e W.
+  {
+    exact (andEL
+      (z :e W)
+      (W :e Fam)
+      Hpack).
+  }
+  claim HWFam : W :e Fam.
+  {
+    exact (andER
+      (z :e W)
+      (W :e Fam)
+      Hpack).
+  }
+  apply xm (W = V).
+  + assume HWV.
+    claim HzV : z :e V.
+    {
+      rewrite <- HWV.
+      exact HzW.
+    }
+    exact (FalseE
+      (HzNotV HzV)
+      (z :e Union (Fam :\: {V}))).
+  + assume HWneq.
+    claim HWnotSing : W /:e {V}.
+    {
+      assume HWsing.
+      claim HWV : W = V.
+      {
+        exact (SingE
+          V
+          W
+          HWsing).
+      }
+      exact (HWneq
+        HWV).
+    }
+    claim HWrest : W :e Fam :\: {V}.
+    {
+      exact (setminusI
+        Fam
+        {V}
+        W
+        HWFam
+        HWnotSing).
+    }
+    exact (UnionI
+      (Fam :\: {V})
+      z
+      W
+      HzW
+      HWrest).
+- let z.
+  assume Hz.
+  claim HzUnionRest : z :e Union (Fam :\: {V}).
+  {
+    exact Hz.
+  }
+  apply (UnionE
+    (Fam :\: {V})
+    z
+    HzUnionRest).
+  let W.
+  assume Hpack.
+  claim HzW : z :e W.
+  {
+    exact (andEL
+      (z :e W)
+      (W :e Fam :\: {V})
+      Hpack).
+  }
+  claim HWrest : W :e Fam :\: {V}.
+  {
+    exact (andER
+      (z :e W)
+      (W :e Fam :\: {V})
+      Hpack).
+  }
+  claim HWFam : W :e Fam.
+  {
+    exact (setminusE1
+      Fam
+      {V}
+      W
+      HWrest).
+  }
+  claim HzUnion : z :e Union Fam.
+  {
+    exact (UnionI
+      Fam
+      z
+      W
+      HzW
+      HWFam).
+  }
+  claim HzNotV : z /:e V.
+  {
+    assume HzV.
+    claim HzInt : z :e V :/\: Union (Fam :\: {V}).
+    {
+      exact (binintersectI
+        V
+        (Union (Fam :\: {V}))
+        z
+        HzV
+        HzUnionRest).
+    }
+    claim HzE : z :e Empty.
+    {
+      exact (mem_eqR
+        z
+        (V :/\: Union (Fam :\: {V}))
+        Empty
+        (pairwise_disjoint_member_union_rest_empty
+          Fam
+          V
+          Hpd
+          HVFam)
+        HzInt).
+    }
+    exact (EmptyE
+      z
+      HzE
+      False).
+  }
+  exact (setminusI
+    (Union Fam)
+    V
+    z
+    HzUnion
+    HzNotV).
+Qed.
+
 (** Infrastructure: union is monotone with respect to subfamilies **)
 (** Proven Bob **)
 Theorem union_subfamily_sub_union : forall Fam1 Fam2:set,
