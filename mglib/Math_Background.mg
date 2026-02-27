@@ -25834,7 +25834,7 @@ apply set_ext.
     x0
     (constant_path x0)
     HconstInLoop).
-  Admitted.
+Admitted.
 
 (** from S52 Definition (line 374 in algtop.tex): the alpha-hat map for change of basepoint **)
 (** LATEX VERSION: Let alpha be a path from x0 to x1. Define alpha-hat: pi1(X,x0) -> pi1(X,x1) by alpha-hat([f]) = [alpha-bar] . [f] . [alpha]. **)
@@ -51062,6 +51062,81 @@ claim HVE : V = Empty.
 }
 rewrite HVE.
 exact (SingI Empty).
+Qed.
+
+(** Infrastructure: nonempty union yields a nonempty member **)
+(** Proven Bob **)
+Theorem union_nonempty_has_member_nonempty : forall Fam:set,
+  Union Fam <> Empty ->
+  exists V:set, V :e Fam /\ V <> Empty.
+let Fam.
+assume HUnionNe.
+claim Hex : exists x:set, x :e Union Fam.
+{
+  exact (nonempty_has_element
+    (Union Fam)
+    HUnionNe).
+}
+apply Hex.
+let x.
+assume HxUnion.
+apply (UnionE Fam x HxUnion).
+let V.
+assume HVpack.
+claim HxV : x :e V.
+{
+  exact (andEL
+    (x :e V)
+    (V :e Fam)
+    HVpack).
+}
+claim HVFam : V :e Fam.
+{
+  exact (andER
+    (x :e V)
+    (V :e Fam)
+    HVpack).
+}
+claim HVne : V <> Empty.
+{
+  exact (elem_implies_nonempty
+    V
+    x
+    HxV).
+}
+witness V.
+apply andI.
+- exact HVFam.
+- exact HVne.
+Qed.
+
+(** Infrastructure: nonempty union implies family nonempty **)
+(** Proven Bob **)
+Theorem union_nonempty_implies_family_nonempty : forall Fam:set,
+  Union Fam <> Empty ->
+  Fam <> Empty.
+let Fam.
+assume HUnionNe.
+claim Hex : exists V:set, V :e Fam /\ V <> Empty.
+{
+  exact (union_nonempty_has_member_nonempty
+    Fam
+    HUnionNe).
+}
+apply Hex.
+let V.
+assume HVpack.
+claim HVFam : V :e Fam.
+{
+  exact (andEL
+    (V :e Fam)
+    (V <> Empty)
+    HVpack).
+}
+exact (elem_implies_nonempty
+  Fam
+  V
+  HVFam).
 Qed.
 
 
