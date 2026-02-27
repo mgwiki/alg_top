@@ -51252,6 +51252,22 @@ apply xm (Fam = Empty).
   exact (orIR (Fam = Empty) (Fam = {Empty}) HFamEq).
 Qed.
 
+(** Infrastructure: union empty iff family is subset of {Empty} **)
+(** Proven Bob **)
+Theorem union_empty_iff_family_sub_singleton_empty : forall Fam:set,
+  (Union Fam = Empty <-> Fam c= {Empty}).
+let Fam.
+apply iffI.
+- assume HUnionE.
+  exact (union_empty_family_sub_singleton_empty
+    Fam
+    HUnionE).
+- assume HFamSub.
+  exact (union_family_sub_singleton_empty_implies_union_empty
+    Fam
+    HFamSub).
+Qed.
+
 
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
