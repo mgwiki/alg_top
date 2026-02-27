@@ -162555,6 +162555,43 @@ apply and4I.
   exact (Hsurj k HkS).
 Qed.
 
+(** Proven Bob **)
+(** Helper: enumerate subset with range in the subset **)
+Lemma subset_equip_pos_range :
+  forall n S:set, n :e omega -> S c= n ->
+  exists m:set, exists pos:set -> set,
+    m :e omega /\
+    (forall i:set, i :e m -> pos i :e S) /\
+    (forall i j:set, i :e m -> j :e m -> i <> j -> pos i <> pos j) /\
+    (forall k:set, k :e S -> exists i:set, i :e m /\ pos i = k).
+let n S.
+assume Hn Hsub.
+claim Hnatn : nat_p n. { exact (omega_nat_p n Hn). }
+claim Hex : exists m:set, nat_p m /\ (m c= n /\ equip S m).
+{ exact (finite_ordinal_subset_equip_subordinal n S Hnatn Hsub). }
+apply Hex. let m. assume Hmprop.
+apply Hmprop. assume Hnatm Hrest.
+apply Hrest. assume Hmsub Hequip.
+claim Hequip_sym : equip m S. { exact (equip_sym S m Hequip). }
+witness m.
+apply Hequip_sym. let pos. assume Hbij : bij m S pos.
+apply (bijE m S pos Hbij).
+assume Hrange Hinj Hsurj.
+witness pos.
+apply and4I.
+- exact (nat_p_omega m Hnatm).
+- (** range in S **)
+  let i. assume Hi.
+  exact (Hrange i Hi).
+- (** injective **)
+  let i j. assume Hi Hj Hne.
+  assume Heq : pos i = pos j.
+  exact (Hne (Hinj i Hi j Hj Heq)).
+- (** coverage of S **)
+  let k. assume HkS.
+  exact (Hsurj k HkS).
+Qed.
+
 (** Infrastructure: kernel of a group homomorphism **)
 Definition kernel_of : set -> set -> set -> set :=
   fun G e phi => {x :e G | apply_fun phi x = e}.
@@ -169709,31 +169746,31 @@ apply andI.
     claim HJsub2 : Jset2 c= n2.
     { let i. assume Hi. exact (SepE1 n2 (fun i0:set => apply_fun a2 i0 :e J) i Hi). }
     claim Hpos1_ex : exists m1:set, exists pos1:set -> set,
-      m1 :e omega /\ (forall i:set, i :e m1 -> pos1 i :e n1) /\
+      m1 :e omega /\ (forall i:set, i :e m1 -> pos1 i :e Jset1) /\
       (forall i j:set, i :e m1 -> j :e m1 -> i <> j -> pos1 i <> pos1 j) /\
-      (forall k:set, k :e n1 -> k :e Jset1 -> exists i:set, i :e m1 /\ pos1 i = k).
-    { exact (subset_equip_pos n1 Jset1 Hn1 HJsub1). }
+      (forall k:set, k :e Jset1 -> exists i:set, i :e m1 /\ pos1 i = k).
+    { exact (subset_equip_pos_range n1 Jset1 Hn1 HJsub1). }
     apply Hpos1_ex. let m1. assume Hpos1_pack.
     apply Hpos1_pack. let pos1. assume Hpos1_pack2.
     apply (and4E
       (m1 :e omega)
-      (forall i:set, i :e m1 -> pos1 i :e n1)
+      (forall i:set, i :e m1 -> pos1 i :e Jset1)
       (forall i j:set, i :e m1 -> j :e m1 -> i <> j -> pos1 i <> pos1 j)
-      (forall k:set, k :e n1 -> k :e Jset1 -> exists i:set, i :e m1 /\ pos1 i = k)
+      (forall k:set, k :e Jset1 -> exists i:set, i :e m1 /\ pos1 i = k)
       Hpos1_pack2).
     assume Hm1_om Hpos1_fn Hpos1_inj Hpos1_cov.
     claim Hpos2_ex : exists m2:set, exists pos2:set -> set,
-      m2 :e omega /\ (forall i:set, i :e m2 -> pos2 i :e n2) /\
+      m2 :e omega /\ (forall i:set, i :e m2 -> pos2 i :e Jset2) /\
       (forall i j:set, i :e m2 -> j :e m2 -> i <> j -> pos2 i <> pos2 j) /\
-      (forall k:set, k :e n2 -> k :e Jset2 -> exists i:set, i :e m2 /\ pos2 i = k).
-    { exact (subset_equip_pos n2 Jset2 Hn2 HJsub2). }
+      (forall k:set, k :e Jset2 -> exists i:set, i :e m2 /\ pos2 i = k).
+    { exact (subset_equip_pos_range n2 Jset2 Hn2 HJsub2). }
     apply Hpos2_ex. let m2. assume Hpos2_pack.
     apply Hpos2_pack. let pos2. assume Hpos2_pack2.
     apply (and4E
       (m2 :e omega)
-      (forall i:set, i :e m2 -> pos2 i :e n2)
+      (forall i:set, i :e m2 -> pos2 i :e Jset2)
       (forall i j:set, i :e m2 -> j :e m2 -> i <> j -> pos2 i <> pos2 j)
-      (forall k:set, k :e n2 -> k :e Jset2 -> exists i:set, i :e m2 /\ pos2 i = k)
+      (forall k:set, k :e Jset2 -> exists i:set, i :e m2 /\ pos2 i = k)
       Hpos2_pack2).
     assume Hm2_om Hpos2_fn Hpos2_inj Hpos2_cov.
     set a1J := graph m1 (fun i:set => apply_fun a1 (pos1 i)).
@@ -169741,7 +169778,14 @@ apply andI.
     set x1J := graph m1 (fun i:set => apply_fun x1 (pos1 i)).
     set x2J := graph m2 (fun i:set => apply_fun x2 (pos2 i)).
     claim Ha1J_fn : function_on a1J m1 J.
-    { admit. }
+    { let i. assume Hi.
+      claim HpiJ : pos1 i :e Jset1.
+      { exact (Hpos1_fn i Hi). }
+      claim Ha1pos : apply_fun a1 (pos1 i) :e J.
+      { exact (SepE2 n1 (fun i0:set => apply_fun a1 i0 :e J) (pos1 i) HpiJ). }
+      exact (eq_subst_mem (apply_fun a1J i) (apply_fun a1 (pos1 i)) J
+        (apply_fun_graph m1 (fun i0:set => apply_fun a1 (pos1 i0)) i Hi)
+        Ha1pos). }
     (** TODO: continue building representations, apply zero_sum_component_extraction, and handle K-case **)
     admit.
   + (** alpha in K, symmetric to J-case **)
