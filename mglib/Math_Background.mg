@@ -186242,6 +186242,32 @@ rewrite (apply_fun_graph 1 (fun _:set => x) 0 (ordsuccI2 0)).
 reflexivity.
 Qed.
 
+(** Infrastructure: word_product of length 2 **)
+(** Proven Bob **)
+Theorem word_product_two : forall mult e xs:set,
+  word_product mult e xs 2 =
+    apply_fun mult (apply_fun mult (e, apply_fun xs 0), apply_fun xs 1).
+let mult e xs.
+prove nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) 2 =
+  apply_fun mult (apply_fun mult (e, apply_fun xs 0), apply_fun xs 1).
+rewrite <- ordsucc_1_eq_2_nat.
+rewrite (nat_primrec_S
+  e
+  (fun i r => apply_fun mult (r, apply_fun xs i))
+  1
+  nat_1).
+rewrite <- ordsucc_0_eq_1_nat.
+rewrite (nat_primrec_S
+  e
+  (fun i r => apply_fun mult (r, apply_fun xs i))
+  0
+  nat_0).
+rewrite (nat_primrec_0
+  e
+  (fun i r => apply_fun mult (r, apply_fun xs i))).
+reflexivity.
+Qed.
+
 (** from S68 Definition (line 2742 in algtop.tex): free product of subgroups **)
 (** LATEX VERSION: G is the free product of {G_alpha} if G_alpha cap G_beta = {1} **)
 (** for alpha <> beta, the G_alpha generate G, and each x in G has a unique **)
@@ -190041,7 +190067,9 @@ apply (nat_inv nw Hnw_nat).
                     exact (Hnie_ne_1
                       Hnie_eq_1).
                   }
-                  admit.
+                  admit. (** TODO: need lemma to build a reduced word of length nie for xie0
+                      from the Hinv_eq_efam branch (likely via inverse/shifted word),
+                      contradicting Hxie0_uniq_len1/Hnie_ne_1. **)
                 }
               + assume Hinv_ne_efam.
                 set ie := apply_fun invG (apply_fun efam al).
