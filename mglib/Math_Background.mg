@@ -51182,6 +51182,76 @@ apply iffI.
     (andER (V :e Fam) (V <> Empty) HVpack)).
 Qed.
 
+(** Infrastructure: family subset {Empty} has empty union **)
+(** Proven Bob **)
+Theorem union_family_sub_singleton_empty_implies_union_empty : forall Fam:set,
+  Fam c= {Empty} ->
+  Union Fam = Empty.
+let Fam.
+assume HFamSub.
+apply set_ext.
+- let x.
+  assume HxUnion.
+  apply (UnionE
+    Fam
+    x
+    HxUnion).
+  let V.
+  assume HxPack.
+  claim HxV : x :e V.
+  {
+    exact (andEL
+      (x :e V)
+      (V :e Fam)
+      HxPack).
+  }
+  claim HVFam : V :e Fam.
+  {
+    exact (andER
+      (x :e V)
+      (V :e Fam)
+      HxPack).
+  }
+  claim HVeq : V = Empty.
+  {
+    exact (SingE
+      Empty
+      V
+      (HFamSub V HVFam)).
+  }
+  claim HxE : x :e Empty.
+  {
+    rewrite <- HVeq.
+    exact HxV.
+  }
+  exact (EmptyE
+    x
+    HxE
+    (x :e Empty)).
+- exact (Subq_Empty (Union Fam)).
+Qed.
+
+(** Infrastructure: empty union implies family is Empty or {Empty} **)
+(** Proven Bob **)
+Theorem union_empty_family_eq_empty_or_singleton : forall Fam:set,
+  Union Fam = Empty ->
+  Fam = Empty \/ Fam = {Empty}.
+let Fam.
+assume HUnionE.
+apply xm (Fam = Empty).
+- assume HFamE.
+  exact (orIL (Fam = Empty) (Fam = {Empty}) HFamE).
+- assume HFamNe.
+  claim HFamEq : Fam = {Empty}.
+  {
+    exact (union_empty_nonempty_family_eq_singleton_empty
+      Fam
+      HFamNe
+      HUnionE).
+  }
+  exact (orIR (Fam = Empty) (Fam = {Empty}) HFamEq).
+Qed.
+
 
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
