@@ -51140,6 +51140,48 @@ exact (elem_implies_nonempty
   HVFam).
 Qed.
 
+(** Infrastructure: nonempty member implies union nonempty **)
+(** Proven Bob **)
+Theorem union_member_nonempty_implies_union_nonempty : forall Fam V:set,
+  V :e Fam ->
+  V <> Empty ->
+  Union Fam <> Empty.
+let Fam V.
+assume HVFam HVne.
+assume HUnionE.
+claim HVE : V = Empty.
+{
+  exact (union_empty_member_empty
+    Fam
+    V
+    HVFam
+    HUnionE).
+}
+exact (HVne HVE).
+Qed.
+
+(** Infrastructure: union nonempty iff a nonempty member exists **)
+(** Proven Bob **)
+Theorem union_nonempty_iff_exists_nonempty_member : forall Fam:set,
+  (Union Fam <> Empty <->
+   exists V:set, V :e Fam /\ V <> Empty).
+let Fam.
+apply iffI.
+- assume HUnionNe.
+  exact (union_nonempty_has_member_nonempty
+    Fam
+    HUnionNe).
+- assume Hex.
+  apply Hex.
+  let V.
+  assume HVpack.
+  exact (union_member_nonempty_implies_union_nonempty
+    Fam
+    V
+    (andEL (V :e Fam) (V <> Empty) HVpack)
+    (andER (V :e Fam) (V <> Empty) HVpack)).
+Qed.
+
 
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
