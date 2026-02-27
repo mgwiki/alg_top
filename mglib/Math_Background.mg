@@ -76051,6 +76051,85 @@ exact (HcommSq
   Hx1I).
 Qed.
 
+(** Infrastructure: image of a commuting lift stays in the preimage of U **)
+(** Proven Bob **)
+Theorem image_of_commuting_lift_subset_preimage :
+  forall N E Te B Tb p F Ft U:set,
+  N c= unit_square ->
+  continuous_map N (subspace_topology unit_square unit_square_topology N) E Te Ft ->
+  (forall s t:set, s :e unit_interval -> t :e unit_interval ->
+    apply_fun p (apply_fun Ft (s, t)) = apply_fun F (s, t)) ->
+  (forall x:set, x :e N -> apply_fun F x :e U) ->
+  image_of Ft N c= preimage_of E p U.
+let N E Te B Tb p F Ft U.
+assume HNsubSq HFtCont HcommSq HFU.
+let y.
+assume HyImg.
+apply (ReplE
+  N
+  (fun x:set => apply_fun Ft x)
+  y
+  HyImg).
+let x.
+assume HxPack.
+claim HxN : x :e N.
+{
+  exact (andEL
+    (x :e N)
+    (y = apply_fun Ft x)
+    HxPack).
+}
+claim HyEq : y = apply_fun Ft x.
+{
+  exact (andER
+    (x :e N)
+    (y = apply_fun Ft x)
+    HxPack).
+}
+claim HFtFun : function_on Ft N E.
+{
+  exact (continuous_map_function_on
+    N
+    (subspace_topology unit_square unit_square_topology N)
+    E
+    Te
+    Ft
+    HFtCont).
+}
+claim HFtxE : apply_fun Ft x :e E.
+{
+  exact (HFtFun x HxN).
+}
+claim HpFxEq : apply_fun p (apply_fun Ft x) = apply_fun F x.
+{
+  exact (commutation_on_unit_square_subset
+    N
+    p
+    F
+    Ft
+    HNsubSq
+    HcommSq
+    x
+    HxN).
+}
+claim HFxU : apply_fun F x :e U.
+{
+  exact (HFU x HxN).
+}
+claim HpFxU : apply_fun p (apply_fun Ft x) :e U.
+{
+  rewrite HpFxEq.
+  exact HFxU.
+}
+rewrite HyEq.
+exact (SepI
+  E
+  (fun z:set => apply_fun p z :e U)
+  (apply_fun Ft x)
+  HFtxE
+  HpFxU).
+Qed.
+
 (** Proven Bob **)
 Theorem homotopy_lift_commutes_on_subset_from_exists :
   forall E Te B Tb p e0 F N:set,
