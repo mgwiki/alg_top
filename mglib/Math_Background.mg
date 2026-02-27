@@ -186223,6 +186223,80 @@ exact (Helem
   Hi).
 Qed.
 
+(** Infrastructure: reduced words cannot have identity adjacent to another entry **)
+(** Proven Bob **)
+Lemma reduced_word_no_eG_adjacent : forall G mult e inv J Gfam efam n xs i:set,
+  group_structure G mult e inv ->
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv) ->
+  reduced_word J Gfam efam n xs ->
+  i :e n -> ordsucc i :e n ->
+  apply_fun xs i = e -> False.
+let G mult e inv J Gfam efam n xs i.
+assume Hgrp Hsub Hred Hi Hsi Hxsi_e.
+apply (and3E
+  (n :e omega)
+  (forall j:set, j :e n ->
+    exists alpha:set, alpha :e J /\
+      apply_fun xs j :e apply_fun Gfam alpha /\
+      apply_fun xs j <> apply_fun efam alpha)
+  (forall j:set, j :e n -> ordsucc j :e n ->
+    forall alpha beta:set, alpha :e J -> beta :e J ->
+      apply_fun xs j :e apply_fun Gfam alpha ->
+      apply_fun xs (ordsucc j) :e apply_fun Gfam beta ->
+      alpha <> beta)
+  Hred).
+assume _ Helem Hadj.
+apply (Helem
+  (ordsucc i)
+  Hsi).
+let beta.
+assume Hbeta_pack.
+apply (and3E
+  (beta :e J)
+  (apply_fun xs (ordsucc i) :e apply_fun Gfam beta)
+  (apply_fun xs (ordsucc i) <> apply_fun efam beta)
+  Hbeta_pack).
+assume HbetaJ Hxsi1_Gb _.
+claim He_in_Gb : e :e apply_fun Gfam beta.
+{
+  apply (and4E
+    (apply_fun Gfam beta c= G)
+    (e :e apply_fun Gfam beta)
+    (forall x y:set, x :e apply_fun Gfam beta -> y :e apply_fun Gfam beta ->
+      apply_fun mult (x, y) :e apply_fun Gfam beta)
+    (forall x:set, x :e apply_fun Gfam beta -> apply_fun inv x :e apply_fun Gfam beta)
+    (Hsub
+      beta
+      HbetaJ)).
+  assume _ He _ _.
+  exact He.
+}
+claim Hxsi_Gb : apply_fun xs i :e apply_fun Gfam beta.
+{
+  rewrite Hxsi_e.
+  exact He_in_Gb.
+}
+claim Hbeta_ne : beta <> beta.
+{
+  exact (Hadj
+    i
+    Hi
+    Hsi
+    beta
+    beta
+    HbetaJ
+    HbetaJ
+    Hxsi_Gb
+    Hxsi1_Gb).
+}
+claim Hbeta_eq : beta = beta.
+{
+  reflexivity.
+}
+exact (Hbeta_ne
+  Hbeta_eq).
+Qed.
+
 (** Infrastructure: the product represented by a word of length n **)
 Definition word_product : set -> set -> set -> set -> set :=
   fun mult e xs n =>
@@ -186926,6 +187000,163 @@ apply (xm (alpha = beta)).
   exact (FalseE
     (Hx_ne Hx_e)
     (alpha = beta)).
+Qed.
+
+(** Infrastructure: reduced word for two nontrivial elements from distinct subgroups **)
+(** Proven Bob **)
+Theorem reduced_word_two_graph_disjoint : forall G mult e inv J Gfam efam alpha beta x y:set,
+  (forall a b:set, a :e J -> b :e J -> a <> b ->
+    forall z:set, z :e apply_fun Gfam a -> z :e apply_fun Gfam b -> z = e) ->
+  alpha :e J -> beta :e J -> alpha <> beta ->
+  x :e apply_fun Gfam alpha -> x <> e -> x <> apply_fun efam alpha ->
+  y :e apply_fun Gfam beta -> y <> e -> y <> apply_fun efam beta ->
+  reduced_word J Gfam efam 2 (graph 2 (fun i:set => If_i (i = 0) x y)).
+let G mult e inv J Gfam efam alpha beta x y.
+assume Hdisjoint Hal Hbe Hneq.
+assume HxGalpha Hx_ne_e Hx_ne_efam.
+assume HyGbeta Hy_ne_e Hy_ne_efam.
+set xs := graph 2 (fun i:set => If_i (i = 0) x y).
+claim Hxs0 : apply_fun xs 0 = x.
+{
+  claim H00 : 0 = 0.
+  { reflexivity. }
+  rewrite (apply_fun_graph 2 (fun i:set => If_i (i = 0) x y) 0 In_0_2).
+  exact (If_i_1
+    (0 = 0)
+    x
+    y
+    H00).
+}
+claim Hxs1 : apply_fun xs 1 = y.
+{
+  rewrite (apply_fun_graph 2 (fun i:set => If_i (i = 0) x y) 1 In_1_2).
+  exact (If_i_0
+    (1 = 0)
+    x
+    y
+    neq_1_0).
+}
+prove 2 :e omega /\
+  (forall i:set, i :e 2 ->
+    exists a:set, a :e J /\
+      apply_fun xs i :e apply_fun Gfam a /\
+      apply_fun xs i <> apply_fun efam a) /\
+  (forall i:set, i :e 2 -> ordsucc i :e 2 ->
+    forall a b:set, a :e J -> b :e J ->
+      apply_fun xs i :e apply_fun Gfam a ->
+      apply_fun xs (ordsucc i) :e apply_fun Gfam b ->
+      a <> b).
+apply and3I.
+- exact (nat_p_omega 2 nat_2).
+- let i.
+  assume Hi.
+  apply (cases_2
+    i
+    Hi
+    (fun j:set =>
+      exists a:set, a :e J /\
+        apply_fun xs j :e apply_fun Gfam a /\
+        apply_fun xs j <> apply_fun efam a)).
+  + prove exists a:set, a :e J /\
+      apply_fun xs 0 :e apply_fun Gfam a /\
+      apply_fun xs 0 <> apply_fun efam a.
+    witness alpha.
+    apply and3I.
+    * exact Hal.
+    * rewrite Hxs0.
+      exact HxGalpha.
+    * rewrite Hxs0.
+      exact Hx_ne_efam.
+  + prove exists a:set, a :e J /\
+      apply_fun xs 1 :e apply_fun Gfam a /\
+      apply_fun xs 1 <> apply_fun efam a.
+    witness beta.
+    apply and3I.
+    * exact Hbe.
+    * rewrite Hxs1.
+      exact HyGbeta.
+    * rewrite Hxs1.
+      exact Hy_ne_efam.
+- let i.
+  assume Hi Hsi.
+  let a b.
+  assume HaJ HbJ Hxi Hxsi.
+  claim Hcase_i0 : ordsucc 0 :e 2 ->
+    apply_fun xs 0 :e apply_fun Gfam a ->
+    apply_fun xs (ordsucc 0) :e apply_fun Gfam b ->
+    a <> b.
+  {
+    assume Hs0 Hx0a Hx1b.
+    claim HxGa : x :e apply_fun Gfam a.
+    {
+      rewrite <- Hxs0.
+      exact Hx0a.
+    }
+    claim HyGb : y :e apply_fun Gfam b.
+    {
+      rewrite <- Hxs1.
+      exact Hx1b.
+    }
+    claim Halpha_eq_a : alpha = a.
+    {
+      exact (disjoint_subgroups_label_unique
+        G mult e inv J Gfam alpha a x
+        Hdisjoint
+        Hal
+        HaJ
+        HxGalpha
+        HxGa
+        Hx_ne_e).
+    }
+    claim Ha_eq_alpha : a = alpha.
+    {
+      symmetry.
+      exact Halpha_eq_a.
+    }
+    claim Hbeta_eq_b : beta = b.
+    {
+      exact (disjoint_subgroups_label_unique
+        G mult e inv J Gfam beta b y
+        Hdisjoint
+        Hbe
+        HbJ
+        HyGbeta
+        HyGb
+        Hy_ne_e).
+    }
+    claim Hb_eq_beta : b = beta.
+    {
+      symmetry.
+      exact Hbeta_eq_b.
+    }
+    rewrite Ha_eq_alpha.
+    rewrite Hb_eq_beta.
+    exact Hneq.
+  }
+  claim Hcase_i1 : ordsucc 1 :e 2 ->
+    apply_fun xs 1 :e apply_fun Gfam a ->
+    apply_fun xs (ordsucc 1) :e apply_fun Gfam b ->
+    a <> b.
+  {
+    assume Hs1 _ _.
+    claim H2in2 : 2 :e 2.
+    { rewrite <- ordsucc_1_eq_2_nat. exact Hs1. }
+    exact (FalseE
+      (In_irref 2 H2in2)
+      (a <> b)).
+  }
+  exact (cases_2
+    i
+    Hi
+    (fun j:set => ordsucc j :e 2 ->
+      apply_fun xs j :e apply_fun Gfam a ->
+      apply_fun xs (ordsucc j) :e apply_fun Gfam b ->
+      a <> b)
+    Hcase_i0
+    Hcase_i1
+    Hsi
+    Hxi
+    Hxsi).
 Qed.
 
 (** Infrastructure: the least normal subgroup of G containing a subset S **)
