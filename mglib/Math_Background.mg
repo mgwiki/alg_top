@@ -186242,6 +186242,42 @@ rewrite (apply_fun_graph 1 (fun _:set => x) 0 (ordsuccI2 0)).
 reflexivity.
 Qed.
 
+(** Infrastructure: word_product of a singleton in a group **)
+(** Proven Bob **)
+Theorem word_product_singleton_group : forall G mult e inv x:set,
+  group_structure G mult e inv ->
+  x :e G ->
+  word_product mult e (graph 1 (fun _:set => x)) 1 = x.
+let G mult e inv x.
+assume Hgrp HxG.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume _ _ HeG _ HidG _.
+claim Hwp :
+  word_product mult e (graph 1 (fun _:set => x)) 1 = apply_fun mult (e, x).
+{
+  exact (word_product_singleton
+    mult
+    e
+    x).
+}
+rewrite Hwp.
+exact (andEL
+  (apply_fun mult (e, x) = x)
+  (apply_fun mult (x, e) = x)
+  (HidG
+    x
+    HxG)).
+Qed.
+
 (** Infrastructure: word_product of length 2 **)
 (** Proven Bob **)
 Theorem word_product_two : forall mult e xs:set,
