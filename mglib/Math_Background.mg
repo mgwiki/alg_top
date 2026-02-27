@@ -254750,7 +254750,20 @@ apply andI.
     apply andI.
     * exact (andI (A :e Arcs) (B c= preimage_of E p A) HAarcs HBsubPre).
     * (** path_connected_space B (subspace_topology E Te B) **)
-      admit.
+      claim HpreSubE : preimage_of E p A c= E.
+      { exact (Sep_Subq E (fun x1:set => apply_fun p x1 :e A)). }
+      claim HtopPre : topology_on (preimage_of E p A) (subspace_topology E Te (preimage_of E p A)).
+      { exact (subspace_topology_is_topology E Te (preimage_of E p A) HtopE HpreSubE). }
+      claim HsubEq : subspace_topology (preimage_of E p A)
+        (subspace_topology E Te (preimage_of E p A)) B
+        = subspace_topology E Te B.
+      { exact (subspace_topology_transitive_weak E Te (preimage_of E p A) B HBsubPre). }
+      prove path_connected_space B (subspace_topology E Te B).
+      rewrite <- HsubEq.
+      rewrite HBeq.
+      exact (path_component_of_is_path_connected
+        (preimage_of E p A) (subspace_topology E Te (preimage_of E p A)) x0
+        HtopPre Hx0pre).
   + (** homeomorphism B ... A ... (graph B ...) **)
     admit.
 Admitted.
