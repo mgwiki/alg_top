@@ -162405,6 +162405,33 @@ assume HaJ.
 exact (binintersect_empty_no_common J K a Hinter HaJ HaK).
 Qed.
 
+(** Proven Bob **)
+Lemma disjoint_elements_neq :
+  forall J K a b:set,
+  J :/\: K = Empty ->
+  a :e J -> b :e K -> a <> b.
+let J K a b.
+assume Hinter HaJ HbK.
+assume Heq : a = b.
+claim HaK : a :e K. { rewrite Heq. exact HbK. }
+exact (binintersect_empty_no_common J K a Hinter HaJ HaK).
+Qed.
+
+(** Proven Bob **)
+Lemma disjoint_fun_values_neq :
+  forall J K n m a1 a2 i j:set,
+  J :/\: K = Empty ->
+  function_on a1 n J ->
+  function_on a2 m K ->
+  i :e n -> j :e m ->
+  apply_fun a1 i <> apply_fun a2 j.
+let J K n m a1 a2 i j.
+assume Hinter Ha1 Ha2 Hi Hj.
+claim HaiJ : apply_fun a1 i :e J. { exact (Ha1 i Hi). }
+claim HajK : apply_fun a2 j :e K. { exact (Ha2 j Hj). }
+exact (disjoint_elements_neq J K (apply_fun a1 i) (apply_fun a2 j) Hinter HaiJ HajK).
+Qed.
+
 (** Infrastructure: kernel of a group homomorphism **)
 Definition kernel_of : set -> set -> set -> set :=
   fun G e phi => {x :e G | apply_fun phi x = e}.
