@@ -186268,6 +186268,55 @@ rewrite (nat_primrec_0
 reflexivity.
 Qed.
 
+(** Infrastructure: word_product of length 2 in a group **)
+(** Proven Bob **)
+Theorem word_product_two_group : forall G mult e inv xs:set,
+  group_structure G mult e inv ->
+  (forall i:set, i :e 2 -> apply_fun xs i :e G) ->
+  word_product mult e xs 2 = apply_fun mult (apply_fun xs 0, apply_fun xs 1).
+let G mult e inv xs.
+assume Hgrp HxsG.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume HmultF HinvF HeG Hassoc HidG HinvG.
+claim Hxs0_G : apply_fun xs 0 :e G.
+{
+  exact (HxsG
+    0
+    In_0_2).
+}
+claim Hxs1_G : apply_fun xs 1 :e G.
+{
+  exact (HxsG
+    1
+    In_1_2).
+}
+claim Hwp2 : word_product mult e xs 2 =
+  apply_fun mult (apply_fun mult (e, apply_fun xs 0), apply_fun xs 1).
+{
+  exact (word_product_two
+    mult
+    e
+    xs).
+}
+rewrite Hwp2.
+rewrite (andEL
+  (apply_fun mult (e, apply_fun xs 0) = apply_fun xs 0)
+  (apply_fun mult (apply_fun xs 0, e) = apply_fun xs 0)
+  (HidG
+    (apply_fun xs 0)
+    Hxs0_G)).
+reflexivity.
+Qed.
+
 (** from S68 Definition (line 2742 in algtop.tex): free product of subgroups **)
 (** LATEX VERSION: G is the free product of {G_alpha} if G_alpha cap G_beta = {1} **)
 (** for alpha <> beta, the G_alpha generate G, and each x in G has a unique **)
