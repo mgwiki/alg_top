@@ -169943,15 +169943,6 @@ apply andI.
     claim HsGA1 : subgroups_generate_abelian G1 multG eG invG J (graph J (fun a:set => apply_fun Hfam a)).
     { exact (direct_sum_of_subgroups_subgroups_generate_abelian G1 multG eG invG J
         (graph J (fun a:set => apply_fun Hfam a)) HdsG1). }
-    claim Hiff1 : direct_sum_of_subgroups G1 multG eG invG J (graph J (fun a:set => apply_fun Hfam a)) <->
-      (forall n:set, n :e omega -> n <> 0 ->
-        forall alphas:set, function_on alphas n J ->
-        (forall i j:set, i :e n -> j :e n -> i <> j -> apply_fun alphas i <> apply_fun alphas j) ->
-        forall xs:set, function_on xs n G1 ->
-        (forall i:set, i :e n -> apply_fun xs i :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) (apply_fun alphas i)) ->
-        nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n = eG ->
-        (forall i:set, i :e n -> apply_fun xs i = eG)).
-    { admit. }
     claim HzsJ : forall n:set, n :e omega -> n <> 0 ->
         forall alphas:set, function_on alphas n J ->
         (forall i j:set, i :e n -> j :e n -> i <> j -> apply_fun alphas i <> apply_fun alphas j) ->
@@ -169959,16 +169950,151 @@ apply andI.
         (forall i:set, i :e n -> apply_fun xs i :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) (apply_fun alphas i)) ->
         nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n = eG ->
         (forall i:set, i :e n -> apply_fun xs i = eG).
-    { exact (iffEL
-        (direct_sum_of_subgroups G1 multG eG invG J (graph J (fun a:set => apply_fun Hfam a)))
-        (forall n:set, n :e omega -> n <> 0 ->
-          forall alphas:set, function_on alphas n J ->
-          (forall i j:set, i :e n -> j :e n -> i <> j -> apply_fun alphas i <> apply_fun alphas j) ->
-          forall xs:set, function_on xs n G1 ->
-          (forall i:set, i :e n -> apply_fun xs i :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) (apply_fun alphas i)) ->
-          nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n = eG ->
-          (forall i:set, i :e n -> apply_fun xs i = eG))
-        Hiff1 HdsG1). }
+    { let n. assume Hn Hn0.
+      let alphas. assume Halphas Hinj.
+      let xs. assume Hxs Hxfam Hprod.
+      set x2 := graph n (fun i:set => eG).
+      claim Hx2_fn : function_on x2 n G1.
+      { let i. assume Hi.
+        rewrite (apply_fun_graph n (fun i0:set => eG) i Hi).
+        exact HeG_G1. }
+      claim Hx2_fam :
+        forall i:set, i :e n ->
+          apply_fun x2 i :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) (apply_fun alphas i).
+      { let i. assume Hi.
+        claim Hal_i : apply_fun alphas i :e J.
+        { exact (Halphas i Hi). }
+        claim Hsub : subgroup_of (apply_fun Hfam (apply_fun alphas i)) G1 multG eG invG.
+        { exact (Hsub_J_G1 (apply_fun alphas i) Hal_i). }
+        claim He_sub : eG :e apply_fun Hfam (apply_fun alphas i).
+        { exact (subgroup_of_unit (apply_fun Hfam (apply_fun alphas i)) G1 multG eG invG Hsub). }
+        rewrite (apply_fun_graph n (fun i0:set => eG) i Hi).
+        rewrite (apply_fun_graph J (fun a:set => apply_fun Hfam a) (apply_fun alphas i) Hal_i).
+        exact He_sub. }
+      claim HabG1 : abelian_group G1 multG eG invG.
+      { exact (direct_sum_of_subgroups_is_abelian G1 multG eG invG J
+          (graph J (fun a:set => apply_fun Hfam a)) HdsG1). }
+      claim HgrpG1 : group_structure G1 multG eG invG.
+      { exact (andEL
+          (group_structure G1 multG eG invG)
+          (forall x y:set, x :e G1 -> y :e G1 -> apply_fun multG (x, y) = apply_fun multG (y, x))
+          HabG1). }
+      apply (and6E
+        (function_on multG (setprod G1 G1) G1) (function_on invG G1 G1) (eG :e G1)
+        (forall x y z:set, x :e G1 -> y :e G1 -> z :e G1 ->
+          apply_fun multG (apply_fun multG (x, y), z) = apply_fun multG (x, apply_fun multG (y, z)))
+        (forall x:set, x :e G1 -> apply_fun multG (eG, x) = x /\ apply_fun multG (x, eG) = x)
+        (forall x:set, x :e G1 ->
+          apply_fun multG (x, apply_fun invG x) = eG /\ apply_fun multG (apply_fun invG x, x) = eG)
+        HgrpG1).
+      assume HmultG1_fn HinvG1_fn HeG1 Hassoc1 Hid1 Hinv1.
+      claim HrightId1 : forall x:set, x :e G1 -> apply_fun multG (x, eG) = x.
+      { let x. assume Hx.
+        exact (andER (apply_fun multG (eG, x) = x) (apply_fun multG (x, eG) = x) (Hid1 x Hx)). }
+      claim Hprod2 : nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x2 i)) n = eG.
+      { apply (nat_primrec_all_e G1 multG eG HmultG1_fn HeG1 HrightId1 x2 n Hn).
+        - let i. assume Hi.
+          rewrite (apply_fun_graph n (fun i0:set => eG) i Hi).
+          exact HeG1.
+        - let i. assume Hi.
+          rewrite (apply_fun_graph n (fun i0:set => eG) i Hi).
+          reflexivity. }
+      claim Hprod_sym :
+        eG = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n.
+      { exact (eq_symm
+          (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+          eG Hprod). }
+      claim Hprod2_sym :
+        eG = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x2 i)) n.
+      { exact (eq_symm
+          (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x2 i)) n)
+          eG Hprod2). }
+      claim HuniqG1 :
+        forall x:set, x :e G1 ->
+          forall n1 n2:set, n1 :e omega -> n2 :e omega -> n1 <> 0 -> n2 <> 0 ->
+          forall a1 a2:set, function_on a1 n1 J -> function_on a2 n2 J ->
+          forall x1 x2:set, function_on x1 n1 G1 -> function_on x2 n2 G1 ->
+            (forall i:set, i :e n1 ->
+              apply_fun x1 i :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) (apply_fun a1 i)) ->
+            (forall i:set, i :e n2 ->
+              apply_fun x2 i :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) (apply_fun a2 i)) ->
+            (forall i j:set, i :e n1 -> j :e n1 -> i <> j -> apply_fun a1 i <> apply_fun a1 j) ->
+            (forall i j:set, i :e n2 -> j :e n2 -> i <> j -> apply_fun a2 i <> apply_fun a2 j) ->
+            x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x1 i)) n1 ->
+            x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x2 i)) n2 ->
+            (forall alpha:set, alpha :e J ->
+              (forall i j:set, i :e n1 -> j :e n2 ->
+                apply_fun a1 i = alpha -> apply_fun a2 j = alpha ->
+                apply_fun x1 i = apply_fun x2 j) /\
+              ((exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
+               ~(exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+               forall i:set, i :e n1 -> apply_fun a1 i = alpha -> apply_fun x1 i = eG) /\
+              (~(exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
+               (exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+               forall j:set, j :e n2 -> apply_fun a2 j = alpha -> apply_fun x2 j = eG)).
+      { exact (andER
+          (subgroups_generate_abelian G1 multG eG invG J (graph J (fun a:set => apply_fun Hfam a)))
+          (forall x:set, x :e G1 ->
+            forall n1 n2:set, n1 :e omega -> n2 :e omega -> n1 <> 0 -> n2 <> 0 ->
+            forall a1 a2:set, function_on a1 n1 J -> function_on a2 n2 J ->
+            forall x1 x2:set, function_on x1 n1 G1 -> function_on x2 n2 G1 ->
+              (forall i:set, i :e n1 ->
+                apply_fun x1 i :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) (apply_fun a1 i)) ->
+              (forall i:set, i :e n2 ->
+                apply_fun x2 i :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) (apply_fun a2 i)) ->
+              (forall i j:set, i :e n1 -> j :e n1 -> i <> j -> apply_fun a1 i <> apply_fun a1 j) ->
+              (forall i j:set, i :e n2 -> j :e n2 -> i <> j -> apply_fun a2 i <> apply_fun a2 j) ->
+              x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x1 i)) n1 ->
+              x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x2 i)) n2 ->
+              (forall alpha:set, alpha :e J ->
+                (forall i j:set, i :e n1 -> j :e n2 ->
+                  apply_fun a1 i = alpha -> apply_fun a2 j = alpha ->
+                  apply_fun x1 i = apply_fun x2 j) /\
+                ((exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
+                 ~(exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+                 forall i:set, i :e n1 -> apply_fun a1 i = alpha -> apply_fun x1 i = eG) /\
+                (~(exists i:set, i :e n1 /\ apply_fun a1 i = alpha) ->
+                 (exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+                 forall j:set, j :e n2 -> apply_fun a2 j = alpha -> apply_fun x2 j = eG)))
+          HdsG1). }
+      let i. assume Hi.
+      set alpha0 := apply_fun alphas i.
+      claim Halpha0 : alpha0 :e J.
+      { exact (Halphas i Hi). }
+      claim Huniq_i :
+        (forall i0 j0:set, i0 :e n -> j0 :e n ->
+          apply_fun alphas i0 = alpha0 -> apply_fun alphas j0 = alpha0 ->
+          apply_fun xs i0 = apply_fun x2 j0) /\
+        ((exists i0:set, i0 :e n /\ apply_fun alphas i0 = alpha0) ->
+         ~(exists j0:set, j0 :e n /\ apply_fun alphas j0 = alpha0) ->
+         forall i0:set, i0 :e n -> apply_fun alphas i0 = alpha0 -> apply_fun xs i0 = eG) /\
+        (~(exists i0:set, i0 :e n /\ apply_fun alphas i0 = alpha0) ->
+         (exists j0:set, j0 :e n /\ apply_fun alphas j0 = alpha0) ->
+         forall j0:set, j0 :e n -> apply_fun alphas j0 = alpha0 -> apply_fun x2 j0 = eG).
+      { exact (HuniqG1 eG HeG_G1 n n Hn Hn Hn0 Hn0 alphas alphas Halphas Halphas xs x2
+          Hxs Hx2_fn Hxfam Hx2_fam Hinj Hinj Hprod_sym Hprod2_sym alpha0 Halpha0). }
+      apply (and3E
+        (forall i0 j0:set, i0 :e n -> j0 :e n ->
+          apply_fun alphas i0 = alpha0 -> apply_fun alphas j0 = alpha0 ->
+          apply_fun xs i0 = apply_fun x2 j0)
+        ((exists i0:set, i0 :e n /\ apply_fun alphas i0 = alpha0) ->
+         ~(exists j0:set, j0 :e n /\ apply_fun alphas j0 = alpha0) ->
+         forall i0:set, i0 :e n -> apply_fun alphas i0 = alpha0 -> apply_fun xs i0 = eG)
+        (~(exists i0:set, i0 :e n /\ apply_fun alphas i0 = alpha0) ->
+         (exists j0:set, j0 :e n /\ apply_fun alphas j0 = alpha0) ->
+         forall j0:set, j0 :e n -> apply_fun alphas j0 = alpha0 -> apply_fun x2 j0 = eG)
+        Huniq_i).
+      assume Hc1 Hc2 Hc3.
+      claim Ha_i : apply_fun alphas i = alpha0.
+      { reflexivity. }
+      claim Hx2i : apply_fun x2 i = eG.
+      { rewrite (apply_fun_graph n (fun i0:set => eG) i Hi). reflexivity. }
+      exact (eq_i_tra
+        (apply_fun xs i)
+        (apply_fun x2 i)
+        eG
+        (Hc1 i i Hi Hi Ha_i Ha_i)
+        Hx2i). }
     (** Define J-index sets and positions **)
     set Jset1 := Sep n1 (fun i:set => apply_fun a1 i :e J).
     set Jset2 := Sep n2 (fun i:set => apply_fun a2 i :e J).
@@ -170122,6 +170248,136 @@ apply andI.
         rewrite <- (apply_fun_graph m2 (fun i0:set => apply_fun a2 (pos2 i0)) j Hj).
         exact Heq. }
       exact (Hinj2 (pos2 i) (pos2 j) Hi_n2 Hj_n2 Hposneq Ha2eq). }
+    (** Relate Pf1, Pf2 to J-restricted products **)
+    claim HabG1 : abelian_group G1 multG eG invG.
+    { exact (direct_sum_of_subgroups_is_abelian G1 multG eG invG J
+        (graph J (fun a:set => apply_fun Hfam a)) HdsG1). }
+    claim HgrpG1 : group_structure G1 multG eG invG.
+    { exact (andEL
+        (group_structure G1 multG eG invG)
+        (forall x y:set, x :e G1 -> y :e G1 -> apply_fun multG (x, y) = apply_fun multG (y, x))
+        HabG1). }
+    claim HcommG1 : forall x y:set, x :e G1 -> y :e G1 ->
+      apply_fun multG (x, y) = apply_fun multG (y, x).
+    { exact (andER
+        (group_structure G1 multG eG invG)
+        (forall x y:set, x :e G1 -> y :e G1 -> apply_fun multG (x, y) = apply_fun multG (y, x))
+        HabG1). }
+    claim Hpos1_n1 : forall i:set, i :e m1 -> pos1 i :e n1.
+    { let i. assume Hi. exact (HJsub1 (pos1 i) (Hpos1_fn i Hi)). }
+    claim Hpos2_n2 : forall i:set, i :e m2 -> pos2 i :e n2.
+    { let i. assume Hi. exact (HJsub2 (pos2 i) (Hpos2_fn i Hi)). }
+    claim Hcov1 : forall k:set, k :e n1 ->
+      (exists i:set, i :e m1 /\ pos1 i = k) \/ f1 k = eG.
+    { let k. assume Hk.
+      apply (xm (apply_fun a1 k :e J)).
+      - assume HakJ.
+        apply orIL.
+        claim HkJ : k :e Jset1.
+        { exact (SepI n1 (fun i0:set => apply_fun a1 i0 :e J) k Hk HakJ). }
+        exact (Hpos1_cov k HkJ).
+      - assume HakJc.
+        apply orIR.
+        claim Hf1k_outer : f1 k =
+          If_i (apply_fun a1 k :e J) (apply_fun x1 k) eG.
+        { exact (If_i_1 (k :e n1)
+            (If_i (apply_fun a1 k :e J) (apply_fun x1 k) eG) eG Hk). }
+        rewrite Hf1k_outer.
+        exact (If_i_0 (apply_fun a1 k :e J) (apply_fun x1 k) eG HakJc). }
+    claim Hcov2 : forall k:set, k :e n2 ->
+      (exists i:set, i :e m2 /\ pos2 i = k) \/ f2 k = eG.
+    { let k. assume Hk.
+      apply (xm (apply_fun a2 k :e J)).
+      - assume HakJ.
+        apply orIL.
+        claim HkJ : k :e Jset2.
+        { exact (SepI n2 (fun i0:set => apply_fun a2 i0 :e J) k Hk HakJ). }
+        exact (Hpos2_cov k HkJ).
+      - assume HakJc.
+        apply orIR.
+        claim Hf2k_outer : f2 k =
+          If_i (apply_fun a2 k :e J) (apply_fun x2 k) eG.
+        { exact (If_i_1 (k :e n2)
+            (If_i (apply_fun a2 k :e J) (apply_fun x2 k) eG) eG Hk). }
+        rewrite Hf2k_outer.
+        exact (If_i_0 (apply_fun a2 k :e J) (apply_fun x2 k) eG HakJc). }
+    claim HPf1_pos :
+      nat_primrec eG (fun i r => apply_fun multG (r, f1 i)) n1 =
+      nat_primrec eG (fun i r => apply_fun multG (r, f1 (pos1 i))) m1.
+    { exact (abelian_product_identity_gaps G1 multG eG invG HgrpG1 HcommG1 f1 Hf1_G1
+        n1 m1 Hn1 Hm1_om pos1 Hpos1_n1 Hpos1_inj Hcov1). }
+    claim HPf2_pos :
+      nat_primrec eG (fun i r => apply_fun multG (r, f2 i)) n2 =
+      nat_primrec eG (fun i r => apply_fun multG (r, f2 (pos2 i))) m2.
+    { exact (abelian_product_identity_gaps G1 multG eG invG HgrpG1 HcommG1 f2 Hf2_G1
+        n2 m2 Hn2 Hm2_om pos2 Hpos2_n2 Hpos2_inj Hcov2). }
+    claim Hf1pos_eq : forall i:set, i :e m1 ->
+      f1 (pos1 i) = apply_fun x1 (pos1 i).
+    { let i. assume Hi.
+      claim HpiJ : pos1 i :e Jset1. { exact (Hpos1_fn i Hi). }
+      claim Hpos1_in : pos1 i :e n1. { exact (HJsub1 (pos1 i) HpiJ). }
+      claim Ha1pos : apply_fun a1 (pos1 i) :e J.
+      { exact (SepE2 n1 (fun i0:set => apply_fun a1 i0 :e J) (pos1 i) HpiJ). }
+      claim Hf1pos_outer : f1 (pos1 i) =
+        If_i (apply_fun a1 (pos1 i) :e J) (apply_fun x1 (pos1 i)) eG.
+      { exact (If_i_1 (pos1 i :e n1)
+          (If_i (apply_fun a1 (pos1 i) :e J) (apply_fun x1 (pos1 i)) eG) eG Hpos1_in). }
+      rewrite Hf1pos_outer.
+      exact (If_i_1 (apply_fun a1 (pos1 i) :e J) (apply_fun x1 (pos1 i)) eG Ha1pos). }
+    claim Hf2pos_eq : forall i:set, i :e m2 ->
+      f2 (pos2 i) = apply_fun x2 (pos2 i).
+    { let i. assume Hi.
+      claim HpiJ : pos2 i :e Jset2. { exact (Hpos2_fn i Hi). }
+      claim Hpos2_in : pos2 i :e n2. { exact (HJsub2 (pos2 i) HpiJ). }
+      claim Ha2pos : apply_fun a2 (pos2 i) :e J.
+      { exact (SepE2 n2 (fun i0:set => apply_fun a2 i0 :e J) (pos2 i) HpiJ). }
+      claim Hf2pos_outer : f2 (pos2 i) =
+        If_i (apply_fun a2 (pos2 i) :e J) (apply_fun x2 (pos2 i)) eG.
+      { exact (If_i_1 (pos2 i :e n2)
+          (If_i (apply_fun a2 (pos2 i) :e J) (apply_fun x2 (pos2 i)) eG) eG Hpos2_in). }
+      rewrite Hf2pos_outer.
+      exact (If_i_1 (apply_fun a2 (pos2 i) :e J) (apply_fun x2 (pos2 i)) eG Ha2pos). }
+    claim HPf1_eq :
+      Pf1 = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x1J i)) m1.
+    { apply (eq_i_tra
+        Pf1
+        (nat_primrec eG (fun i r => apply_fun multG (r, f1 (pos1 i))) m1)
+        (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x1J i)) m1)
+        HPf1_pos).
+      apply (nat_primrec_ext eG
+        (fun i r => apply_fun multG (r, f1 (pos1 i)))
+        (fun i r => apply_fun multG (r, apply_fun x1J i)) m1 Hm1_om).
+      let i r. assume Hi.
+      rewrite (Hf1pos_eq i Hi).
+      rewrite (apply_fun_graph m1 (fun i0:set => apply_fun x1 (pos1 i0)) i Hi).
+      reflexivity. }
+    claim HPf2_eq :
+      Pf2 = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x2J i)) m2.
+    { apply (eq_i_tra
+        Pf2
+        (nat_primrec eG (fun i r => apply_fun multG (r, f2 (pos2 i))) m2)
+        (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x2J i)) m2)
+        HPf2_pos).
+      apply (nat_primrec_ext eG
+        (fun i r => apply_fun multG (r, f2 (pos2 i)))
+        (fun i r => apply_fun multG (r, apply_fun x2J i)) m2 Hm2_om).
+      let i r. assume Hi.
+      rewrite (Hf2pos_eq i Hi).
+      rewrite (apply_fun_graph m2 (fun i0:set => apply_fun x2 (pos2 i0)) i Hi).
+      reflexivity. }
+    claim HprodJ_eq :
+      nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x1J i)) m1 =
+      nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x2J i)) m2.
+    { apply (eq_i_tra
+        (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x1J i)) m1)
+        Pf1
+        (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x2J i)) m2)
+        (eq_symm Pf1
+          (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x1J i)) m1)
+          HPf1_eq)
+        (eq_i_tra Pf1 Pf2
+          (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun x2J i)) m2)
+          HPf_eq HPf2_eq)). }
     (** TODO: continue building representations, apply zero_sum_component_extraction, and handle K-case **)
     admit.
   + (** alpha in K, symmetric to J-case **)
