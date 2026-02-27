@@ -1,4 +1,4 @@
-(** Balance Alice 3598 **)
+(** Balance Alice 3551 **)
 (** Balance Bob 3530 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
@@ -254313,7 +254313,8 @@ Qed.
 (** then p maps B homeomorphically onto A_alpha. Furthermore, E is a linear graph **)
 (** with path components of p^{-1}(A_alpha) as its edges. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 420 **)
-(** Bounty 462 **)
+(** Bounty 509 **)
+(** Lock Alice 1772305806 **)
 Theorem thm83_4_covering_of_graph_is_graph :
   forall X Tx Arcs E Te p:set,
   general_linear_graph X Tx Arcs ->
