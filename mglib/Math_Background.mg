@@ -96817,6 +96817,15 @@ apply iffI.
   exact (ReplI G (fun x0:set => apply_fun phi x0) x HxG).
 Qed.
 
+(** Infrastructure: elements map into homomorphism image **)
+(** Proven Bob **)
+Lemma homomorphism_image_intro : forall G phi x:set,
+  x :e G -> apply_fun phi x :e homomorphism_image G phi.
+let G phi x.
+assume HxG.
+exact (ReplI G (fun x0:set => apply_fun phi x0) x HxG).
+Qed.
+
 (** Infrastructure: homomorphism image is a subset of the codomain **)
 (** Proven Bob **)
 Lemma homomorphism_image_sub : forall G H phi:set,
