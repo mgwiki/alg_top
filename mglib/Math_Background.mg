@@ -108961,6 +108961,16 @@ exact (total_function_on_function_on
     Hg)).
 Qed.
 
+(** helper: constant graph is function_on **)
+(** Proven Bob **)
+Lemma graph_const_function_on : forall A Y c:set,
+  c :e Y -> function_on (graph A (fun _:set => c)) A Y.
+let A Y c.
+assume Hc.
+apply (graph_function_on A Y (fun _:set => c)).
+let a. assume Ha. exact Hc.
+Qed.
+
 Theorem s55_continuous_descends_to_quotient_topology :
   forall X Tx Y q Z Tz g:set,
     function_on q X Y ->
@@ -177061,11 +177071,7 @@ apply andI.
             + prove 1 <> 0. exact (neq_ordsucc_0 0).
           - witness (graph 1 (fun _ => alpha0)). apply andI.
             + (** function_on alphas 1 J **)
-              prove function_on (graph 1 (fun _ => alpha0)) 1 J.
-              let i. assume Hi : i :e 1.
-              claim Hev : apply_fun (graph 1 (fun _ => alpha0)) i = alpha0.
-              { exact (apply_fun_graph 1 (fun _ => alpha0) i Hi). }
-              rewrite Hev. exact Halpha0.
+              exact (graph_const_function_on 1 J alpha0 Halpha0).
             + witness (graph 1 (fun _ => eG)). apply andI.
               - (** ((fn_on /\ xs_in_Gi) /\ injectivity) **)
                 apply andI.
