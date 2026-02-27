@@ -162351,6 +162351,24 @@ exact (subgroups_generate_abelian_subgroup G mult e inv J Gfam alpha
   (direct_sum_of_subgroups_subgroups_generate_abelian G mult e inv J Gfam Hds) Hal).
 Qed.
 
+(** Proven Bob **)
+Lemma direct_sum_of_subgroups_generation :
+  forall G mult e inv J Gfam x:set,
+  direct_sum_of_subgroups G mult e inv J Gfam ->
+  x :e G ->
+  exists n:set, n :e omega /\ n <> 0 /\
+  exists alphas:set, function_on alphas n J /\
+  exists xs:set, function_on xs n G /\
+    (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) /\
+    (forall i j:set, i :e n -> j :e n -> i <> j ->
+      apply_fun alphas i <> apply_fun alphas j) /\
+    x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n.
+let G mult e inv J Gfam x.
+assume Hds Hx.
+exact (subgroups_generate_abelian_generation G mult e inv J Gfam x
+  (direct_sum_of_subgroups_subgroups_generate_abelian G mult e inv J Gfam Hds) Hx).
+Qed.
+
 (** Infrastructure: kernel of a group homomorphism **)
 Definition kernel_of : set -> set -> set -> set :=
   fun G e phi => {x :e G | apply_fun phi x = e}.
