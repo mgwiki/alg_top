@@ -50896,6 +50896,39 @@ apply iffI.
     HYne).
 Qed.
 
+(** Infrastructure: if the union is empty, every member is empty **)
+(** Proven Bob **)
+Theorem union_empty_member_empty : forall Fam V:set,
+  V :e Fam ->
+  Union Fam = Empty ->
+  V = Empty.
+let Fam V.
+assume HVFam HUnionEmpty.
+claim HVsubEmpty : V c= Empty.
+{
+  let x.
+  assume HxV.
+  claim HxUnion : x :e Union Fam.
+  {
+    exact (UnionI
+      Fam
+      x
+      V
+      HxV
+      HVFam).
+  }
+  claim HxEmpty : x :e Empty.
+  {
+    rewrite <- HUnionEmpty.
+    exact HxUnion.
+  }
+  exact HxEmpty.
+}
+apply set_ext.
+- exact HVsubEmpty.
+- exact (Subq_Empty V).
+Qed.
+
 
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
