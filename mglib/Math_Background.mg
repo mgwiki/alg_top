@@ -99459,7 +99459,7 @@ exact (andI
     c1 = c2)
   HPhiFun
   HPhiInj).
-Admitted.
+Admitted. (** depends on admitted thm54_3_homotopic_lifts **)
 
 (** from S54 Thm 54.6b surjectivity when E is path connected **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 40 **)
@@ -99477,7 +99477,505 @@ Theorem thm54_6b_coset_correspondence_surjective : forall E Te B Tb p e0:set,
           (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p)))
       {x :e E | apply_fun p x = apply_fun p e0}
       Phi.
-admit.
+let E Te B Tb p e0.
+assume Hcov He0 HpcE.
+set G := fundamental_group B Tb (apply_fun p e0).
+set mult := fundamental_group_mult B Tb (apply_fun p e0).
+set H := homomorphism_image
+  (fundamental_group E Te e0)
+  (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p).
+set cosets := right_coset_set G mult H.
+set Fib := {x :e E | apply_fun p x = apply_fun p e0}.
+set lc := lifting_correspondence E Te B Tb p e0.
+set Phi := graph cosets
+  (fun c:set => apply_fun lc (Eps_i (fun cls:set => cls :e c))).
+set b0 := apply_fun p e0.
+claim Hcontp : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    (andEL
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+      Hcov)).
+}
+claim Hpfun : function_on p E B.
+{
+  exact (continuous_map_function_on
+    E
+    Te
+    B
+    Tb
+    p
+    Hcontp).
+}
+claim HtopE : topology_on E Te.
+{
+  exact (continuous_map_topology_dom
+    E
+    Te
+    B
+    Tb
+    p
+    Hcontp).
+}
+claim HtopB : topology_on B Tb.
+{
+  exact (continuous_map_topology_cod
+    E
+    Te
+    B
+    Tb
+    p
+    Hcontp).
+}
+claim Hb0B : b0 :e B.
+{
+  exact (Hpfun e0 He0).
+}
+claim HgrpE :
+  group_structure
+    (fundamental_group E Te e0)
+    (fundamental_group_mult E Te e0)
+    (fundamental_group_id E Te e0)
+    (fundamental_group_inv E Te e0).
+{
+  exact (fundamental_group_is_group
+    E
+    Te
+    e0
+    HtopE
+    He0).
+}
+claim HgrpG :
+  group_structure
+    G
+    mult
+    (fundamental_group_id B Tb b0)
+    (fundamental_group_inv B Tb b0).
+{
+  exact (fundamental_group_is_group
+    B
+    Tb
+    b0
+    HtopB
+    Hb0B).
+}
+claim HmultFun :
+  function_on mult (setprod G G) G.
+{
+  apply (and6E
+    (function_on mult (setprod G G) G)
+    (function_on (fundamental_group_inv B Tb b0) G G)
+    ((fundamental_group_id B Tb b0) :e G)
+    (forall x y z:set, x :e G -> y :e G -> z :e G ->
+      apply_fun mult (apply_fun mult (x, y), z) =
+      apply_fun mult (x, apply_fun mult (y, z)))
+    (forall x:set, x :e G ->
+      apply_fun mult (fundamental_group_id B Tb b0, x) = x /\
+      apply_fun mult (x, fundamental_group_id B Tb b0) = x)
+    (forall x:set, x :e G ->
+      apply_fun mult (x, apply_fun (fundamental_group_inv B Tb b0) x) =
+        fundamental_group_id B Tb b0 /\
+      apply_fun mult (apply_fun (fundamental_group_inv B Tb b0) x, x) =
+        fundamental_group_id B Tb b0)
+    HgrpG).
+  assume Hm Hinv He Hassoc Hid HinvLaw.
+  exact Hm.
+}
+claim HphiHom :
+  group_homomorphism
+    (fundamental_group E Te e0)
+    (fundamental_group_mult E Te e0)
+    G
+    mult
+    (induced_homomorphism E Te e0 B Tb b0 p).
+{
+  exact (induced_homomorphism_is_homomorphism
+    E
+    Te
+    e0
+    B
+    Tb
+    b0
+    p
+    Hcontp
+    (eq_refl b0)
+    He0).
+}
+claim HphiFun :
+  function_on
+    (induced_homomorphism E Te e0 B Tb b0 p)
+    (fundamental_group E Te e0)
+    G.
+{
+  exact (group_homomorphism_function_on
+    (fundamental_group E Te e0)
+    (fundamental_group_mult E Te e0)
+    G
+    mult
+    (induced_homomorphism E Te e0 B Tb b0 p)
+    HphiHom).
+}
+claim HsubG : H c= G.
+{
+  exact (homomorphism_image_sub
+    (fundamental_group E Te e0)
+    G
+    (induced_homomorphism E Te e0 B Tb b0 p)
+    HphiFun).
+}
+claim HeE :
+  fundamental_group_id E Te e0 :e fundamental_group E Te e0.
+{
+  apply (and6E
+    (function_on (fundamental_group_mult E Te e0)
+      (setprod (fundamental_group E Te e0) (fundamental_group E Te e0))
+      (fundamental_group E Te e0))
+    (function_on (fundamental_group_inv E Te e0)
+      (fundamental_group E Te e0)
+      (fundamental_group E Te e0))
+    ((fundamental_group_id E Te e0) :e fundamental_group E Te e0)
+    (forall x y z:set, x :e fundamental_group E Te e0 ->
+      y :e fundamental_group E Te e0 -> z :e fundamental_group E Te e0 ->
+      apply_fun (fundamental_group_mult E Te e0)
+        (apply_fun (fundamental_group_mult E Te e0) (x, y), z) =
+      apply_fun (fundamental_group_mult E Te e0)
+        (x, apply_fun (fundamental_group_mult E Te e0) (y, z)))
+    (forall x:set, x :e fundamental_group E Te e0 ->
+      apply_fun (fundamental_group_mult E Te e0)
+        (fundamental_group_id E Te e0, x) = x /\
+      apply_fun (fundamental_group_mult E Te e0)
+        (x, fundamental_group_id E Te e0) = x)
+    (forall x:set, x :e fundamental_group E Te e0 ->
+      apply_fun (fundamental_group_mult E Te e0)
+        (x, apply_fun (fundamental_group_inv E Te e0) x) =
+        fundamental_group_id E Te e0 /\
+      apply_fun (fundamental_group_mult E Te e0)
+        (apply_fun (fundamental_group_inv E Te e0) x, x) =
+        fundamental_group_id E Te e0)
+    HgrpE).
+  assume Hm Hinv He Hassoc Hid HinvLaw.
+  exact He.
+}
+claim HphiId :
+  apply_fun (induced_homomorphism E Te e0 B Tb b0 p)
+    (fundamental_group_id E Te e0)
+  = fundamental_group_id B Tb b0.
+{
+  exact (group_hom_sends_identity_cyclic_helper
+    (fundamental_group E Te e0)
+    (fundamental_group_mult E Te e0)
+    (fundamental_group_id E Te e0)
+    (fundamental_group_inv E Te e0)
+    G
+    mult
+    (fundamental_group_id B Tb b0)
+    (fundamental_group_inv B Tb b0)
+    (induced_homomorphism E Te e0 B Tb b0 p)
+    HgrpE
+    HgrpG
+    HphiHom).
+}
+claim HeInH : fundamental_group_id B Tb b0 :e H.
+{
+  apply (iffER
+    (fundamental_group_id B Tb b0 :e H)
+    (exists x:set, x :e fundamental_group E Te e0 /\
+      fundamental_group_id B Tb b0 =
+        apply_fun (induced_homomorphism E Te e0 B Tb b0 p) x)
+    (homomorphism_image_mem (fundamental_group E Te e0)
+      (induced_homomorphism E Te e0 B Tb b0 p)
+      (fundamental_group_id B Tb b0))).
+  witness (fundamental_group_id E Te e0).
+  apply andI.
+  - exact HeE.
+  - symmetry.
+    exact HphiId.
+}
+claim HPhiFun : function_on Phi cosets Fib.
+{
+  let c.
+  assume Hc.
+  rewrite (apply_fun_graph
+    cosets
+    (fun c0:set => apply_fun lc (Eps_i (fun cls:set => cls :e c0)))
+    c
+    Hc).
+  claim Hrep : (Eps_i (fun cls:set => cls :e c)) :e G.
+  {
+    claim HcosetRep :
+      exists g:set, g :e G /\ c = right_coset mult H g.
+    {
+      exact (iffEL
+        (c :e right_coset_set G mult H)
+        (exists g:set, g :e G /\ c = right_coset mult H g)
+        (right_coset_set_mem G mult H c)
+        Hc).
+    }
+    apply HcosetRep.
+    let g.
+    assume HgPack.
+    claim HgG : g :e G.
+    {
+      exact (andEL
+        (g :e G)
+        (c = right_coset mult H g)
+        HgPack).
+    }
+    claim HcEq : c = right_coset mult H g.
+    {
+      exact (andER
+        (g :e G)
+        (c = right_coset mult H g)
+        HgPack).
+    }
+    claim HcSubG : c c= G.
+    {
+      rewrite HcEq.
+      exact (right_coset_subset
+        G
+        mult
+        H
+        g
+        HmultFun
+        HsubG
+        HgG).
+    }
+    claim HmultIdL : g = apply_fun mult (fundamental_group_id B Tb b0, g).
+    {
+      apply (and6E
+        (function_on mult (setprod G G) G)
+        (function_on (fundamental_group_inv B Tb b0) G G)
+        ((fundamental_group_id B Tb b0) :e G)
+        (forall x y z:set, x :e G -> y :e G -> z :e G ->
+          apply_fun mult (apply_fun mult (x, y), z) =
+          apply_fun mult (x, apply_fun mult (y, z)))
+        (forall x:set, x :e G ->
+          apply_fun mult (fundamental_group_id B Tb b0, x) = x /\
+          apply_fun mult (x, fundamental_group_id B Tb b0) = x)
+        (forall x:set, x :e G ->
+          apply_fun mult (x, apply_fun (fundamental_group_inv B Tb b0) x) =
+            fundamental_group_id B Tb b0 /\
+          apply_fun mult (apply_fun (fundamental_group_inv B Tb b0) x, x) =
+            fundamental_group_id B Tb b0)
+        HgrpG).
+      assume Hm Hinv He Hassoc Hid HinvLaw.
+      symmetry.
+      exact (andEL
+        (apply_fun mult (fundamental_group_id B Tb b0, g) = g)
+        (apply_fun mult (g, fundamental_group_id B Tb b0) = g)
+        (Hid g HgG)).
+    }
+    claim HginC : g :e c.
+    {
+      rewrite HcEq.
+      apply (iffER
+        (g :e right_coset mult H g)
+        (exists h:set, h :e H /\ g = apply_fun mult (h, g))
+        (right_coset_mem mult H g g)).
+      witness (fundamental_group_id B Tb b0).
+      apply andI.
+      - exact HeInH.
+      - exact HmultIdL.
+    }
+    claim HEpsInC : (Eps_i (fun cls:set => cls :e c)) :e c.
+    {
+      exact (Eps_i_ax
+        (fun cls:set => cls :e c)
+        g
+        HginC).
+    }
+    exact (HcSubG
+      (Eps_i (fun cls:set => cls :e c))
+      HEpsInC).
+  }
+  exact (lifting_correspondence_in_fiber
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    (Eps_i (fun cls:set => cls :e c))
+    Hcov
+    He0
+    Hrep).
+}
+claim HPhiSurj :
+  forall y:set, y :e Fib ->
+    exists c:set, c :e cosets /\ apply_fun Phi c = y.
+{
+  let y.
+  assume HyFib.
+  claim HyE : y :e E.
+  {
+    exact (SepE1
+      E
+      (fun x:set => apply_fun p x = b0)
+      y
+      HyFib).
+  }
+  claim Hpy : apply_fun p y = b0.
+  {
+    exact (SepE2
+      E
+      (fun x:set => apply_fun p x = b0)
+      y
+      HyFib).
+  }
+  claim Hpath :
+    exists f:set, path_between E e0 y f /\
+      continuous_map unit_interval unit_interval_topology E Te f.
+  {
+    exact (path_connected_space_paths
+      E
+      Te
+      e0
+      y
+      HpcE
+      He0
+      HyE).
+  }
+  apply Hpath.
+  let f.
+  assume HfPack.
+  claim HfBetween : path_between E e0 y f.
+  {
+    exact (andEL
+      (path_between E e0 y f)
+      (continuous_map unit_interval unit_interval_topology E Te f)
+      HfPack).
+  }
+  claim HfCont : continuous_map unit_interval unit_interval_topology E Te f.
+  {
+    exact (andER
+      (path_between E e0 y f)
+      (continuous_map unit_interval unit_interval_topology E Te f)
+      HfPack).
+  }
+  claim HfPair :
+    function_on f unit_interval E /\ apply_fun f 0 = e0.
+  {
+    exact (andEL
+      (function_on f unit_interval E /\ apply_fun f 0 = e0)
+      (apply_fun f 1 = y)
+      HfBetween).
+  }
+  claim HfFun : function_on f unit_interval E.
+  {
+    exact (andEL
+      (function_on f unit_interval E)
+      (apply_fun f 0 = e0)
+      HfPair).
+  }
+  claim Hf0 : apply_fun f 0 = e0.
+  {
+    exact (andER
+      (function_on f unit_interval E)
+      (apply_fun f 0 = e0)
+      HfPair).
+  }
+  claim Hf1 : apply_fun f 1 = y.
+  {
+    exact (andER
+      (function_on f unit_interval E /\ apply_fun f 0 = e0)
+      (apply_fun f 1 = y)
+      HfBetween).
+  }
+  set g := compose_fun unit_interval f p.
+  claim HgCont : continuous_map unit_interval unit_interval_topology B Tb g.
+  {
+    exact (composition_continuous
+      unit_interval
+      unit_interval_topology
+      E
+      Te
+      B
+      Tb
+      f
+      p
+      HfCont
+      Hcontp).
+  }
+  claim Hg0 : apply_fun g 0 = b0.
+  {
+    rewrite (compose_fun_apply unit_interval f p 0 zero_in_unit_interval).
+    rewrite Hf0.
+    reflexivity.
+  }
+  claim Hg1 : apply_fun g 1 = b0.
+  {
+    rewrite (compose_fun_apply unit_interval f p 1 one_in_unit_interval).
+    rewrite Hf1.
+    rewrite Hpy.
+    reflexivity.
+  }
+claim HgLoopAt : loop_at B Tb b0 g.
+{
+  apply (loop_at_fold B Tb b0 g).
+  apply andI.
+  - apply andI.
+    + exact HgCont.
+    + exact Hg0.
+  - exact Hg1.
+}
+  claim HgFS : g :e function_space unit_interval B.
+  {
+    exact (compose_fun_in_function_space
+      unit_interval
+      E
+      B
+      f
+      p
+      HfFun
+      Hpfun).
+  }
+  claim HgLoop : g :e loop_space B Tb b0.
+  {
+    exact (SepI
+      (function_space unit_interval B)
+      (fun h:set => loop_at B Tb b0 h)
+      g
+      HgFS
+      HgLoopAt).
+  }
+  set cls := path_homotopy_class_loop B Tb b0 g.
+  claim HclsG : cls :e G.
+  {
+    exact (path_homotopy_class_in_fundamental_group
+      B
+      Tb
+      b0
+      g
+      HgLoop).
+  }
+  set c := right_coset mult H cls.
+  claim HcCoset : c :e cosets.
+  {
+    apply (iffER
+      (c :e right_coset_set G mult H)
+      (exists g0:set, g0 :e G /\ c = right_coset mult H g0)
+      (right_coset_set_mem G mult H c)).
+    witness cls.
+    apply andI.
+    - exact HclsG.
+    - reflexivity.
+  }
+  witness c.
+  apply andI.
+  - exact HcCoset.
+  - (** TODO: show lifting_correspondence is constant on cosets; use loop characterization + homotopic lifts. **)
+    admit.
+}
+witness Phi.
+exact (andI
+  (function_on Phi cosets Fib)
+  (forall y:set, y :e Fib -> exists c:set, c :e cosets /\ apply_fun Phi c = y)
+  HPhiFun
+  HPhiSurj).
 Admitted.
 
 (** Infrastructure: loop characterization (forward direction) **)
@@ -193087,7 +193585,7 @@ witness h. apply and3I.
         (apply_fun (apply_fun kfam alpha) (apply_fun (apply_fun ifam alpha) z))
         Hstep1 Hstep2_sym). }
   exact (Hh_unique h' Hh'_hom Hh'_kfam x HxG).
-Admitted.
+Admitted. (** depends on admitted lemma68_1_extension_condition_free_product **)
 
 (** from S68 Thm 68.4 (line 2946 in algtop.tex): uniqueness of free products **)
 (** LATEX VERSION: If G and G' are both external free products of {G_alpha} via **)
