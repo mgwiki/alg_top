@@ -165270,6 +165270,51 @@ apply xm (J = Empty).
   exact HJne.
 Qed.
 
+(** Infrastructure: generated family forces nonempty index set (no extra hypothesis) **)
+(** Proven Bob **)
+Lemma subgroups_generate_abelian_index_nonempty_strong :
+  forall G mult e inv J Gfam:set,
+  subgroups_generate_abelian G mult e inv J Gfam ->
+  J <> Empty.
+let G mult e inv J Gfam.
+assume HsGA.
+apply (and3E
+  (abelian_group G mult e inv)
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv)
+  (forall x:set, x :e G ->
+    exists n:set, n :e omega /\ n <> 0 /\
+    exists alphas:set, function_on alphas n J /\
+    exists xs:set, function_on xs n G /\
+      (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) /\
+      (forall i j:set, i :e n -> j :e n -> i <> j ->
+        apply_fun alphas i <> apply_fun alphas j) /\
+      x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n)
+  HsGA).
+assume HabG _ _.
+claim HgrpG : group_structure G mult e inv.
+{ exact (andEL
+    (group_structure G mult e inv)
+    (forall x y:set, x :e G -> y :e G -> apply_fun mult (x, y) = apply_fun mult (y, x))
+    HabG). }
+claim HeG : e :e G.
+{
+  apply (and6E
+    (function_on mult (setprod G G) G)
+    (function_on inv G G)
+    (e :e G)
+    (forall x y z:set, x :e G -> y :e G -> z :e G ->
+      apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+    (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+    (forall x:set, x :e G ->
+      apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+    HgrpG).
+  assume _ _ He _ _ _. exact He.
+}
+claim HneG : G <> Empty.
+{ exact (elem_implies_nonempty G e HeG). }
+exact (subgroups_generate_abelian_index_nonempty G mult e inv J Gfam HsGA HneG).
+Qed.
+
 (** Proven Bob **)
 Lemma subgroups_generate_abelian_is_abelian :
   forall G mult e inv J Gfam:set,
