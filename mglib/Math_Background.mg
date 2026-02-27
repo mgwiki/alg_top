@@ -170153,6 +170153,33 @@ Theorem injective_homomorphism_source_closure :
 admit.
 Admitted.
 
+(** Stronger version: closure when source has group structure **)
+(** Proven Alice **)
+Theorem group_source_mult_closure :
+  forall Ga multa ea inva:set,
+  group_structure Ga multa ea inva ->
+  forall a b:set, a :e Ga -> b :e Ga ->
+    apply_fun multa (a, b) :e Ga.
+let Ga multa ea inva.
+assume Hgrp : group_structure Ga multa ea inva.
+let a b. assume Ha : a :e Ga. assume Hb : b :e Ga.
+apply (and6E
+  (function_on multa (setprod Ga Ga) Ga)
+  (function_on inva Ga Ga)
+  (ea :e Ga)
+  (forall x y z:set, x :e Ga -> y :e Ga -> z :e Ga ->
+    apply_fun multa (apply_fun multa (x, y), z) = apply_fun multa (x, apply_fun multa (y, z)))
+  (forall x:set, x :e Ga -> apply_fun multa (ea, x) = x /\ apply_fun multa (x, ea) = x)
+  (forall x:set, x :e Ga ->
+    apply_fun multa (x, apply_fun inva x) = ea /\ apply_fun multa (apply_fun inva x, x) = ea)
+  Hgrp).
+assume Hmult_fn : function_on multa (setprod Ga Ga) Ga.
+assume _ _ _ _ _.
+claim Hab_in : (a, b) :e setprod Ga Ga.
+{ exact (tuple_2_setprod_by_pair_Sigma Ga Ga a b Ha Hb). }
+exact (Hmult_fn (a, b) Hab_in).
+Qed.
+
 (** from S67 Lem 67.5 (line 2660 in algtop.tex): extension condition for external direct sums **)
 (** LATEX VERSION: If each i_alpha is a monomorphism and G is the direct sum of i_alpha(G_alpha), **)
 (** then given any abelian group H and homomorphisms h_alpha: G_alpha -> H, there exists a unique **)
