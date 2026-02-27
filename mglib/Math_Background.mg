@@ -186819,6 +186819,37 @@ Definition free_product_of_subgroups : set -> set -> set -> set -> set -> set ->
           word_product mult e xs' n' = x ->
           n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))).
 
+(** Infrastructure: disjointness implies label uniqueness for nontrivial elements **)
+(** Proven Bob **)
+Theorem disjoint_subgroups_label_unique : forall G mult e inv J Gfam alpha beta x:set,
+  (forall a b:set, a :e J -> b :e J -> a <> b ->
+    forall y:set, y :e apply_fun Gfam a -> y :e apply_fun Gfam b -> y = e) ->
+  alpha :e J -> beta :e J ->
+  x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x <> e ->
+  alpha = beta.
+let G mult e inv J Gfam alpha beta x.
+assume Hdisjoint Halpha Hbeta HxGa HxGb Hx_ne.
+apply (xm (alpha = beta)).
+- assume Halpha_eq.
+  exact Halpha_eq.
+- assume Halpha_ne.
+  claim Hx_e : x = e.
+  {
+    exact (Hdisjoint
+      alpha
+      beta
+      Halpha
+      Hbeta
+      Halpha_ne
+      x
+      HxGa
+      HxGb).
+  }
+  exact (FalseE
+    (Hx_ne Hx_e)
+    (alpha = beta)).
+Qed.
+
 (** Infrastructure: the least normal subgroup of G containing a subset S **)
 Definition least_normal_subgroup : set -> set -> set -> set -> set -> set :=
   fun G mult e inv S =>
