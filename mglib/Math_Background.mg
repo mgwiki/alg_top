@@ -162177,6 +162177,41 @@ apply (and4I
 - exact HinvH.
 Qed.
 
+(** Proven Bob **)
+Lemma subgroup_nat_primrec_closed :
+  forall H G mult e inv:set,
+  subgroup_of H G mult e inv ->
+  forall f:set -> set,
+  (forall i:set, f i :e H) ->
+  forall n:set, n :e omega ->
+  nat_primrec e (fun i r => apply_fun mult (r, f i)) n :e H.
+let H G mult e inv.
+assume Hsub.
+apply (and4E
+  (H c= G)
+  (e :e H)
+  (forall x y:set, x :e H -> y :e H -> apply_fun mult (x, y) :e H)
+  (forall x:set, x :e H -> apply_fun inv x :e H)
+  Hsub).
+assume _ HeH HmHcl _.
+let f. assume Hf.
+claim Hnat : forall n:set, nat_p n ->
+  nat_primrec e (fun i r => apply_fun mult (r, f i)) n :e H.
+{ apply nat_ind.
+  - prove nat_primrec e (fun i r => apply_fun mult (r, f i)) 0 :e H.
+    rewrite (nat_primrec_0 e (fun i r => apply_fun mult (r, f i))).
+    exact HeH.
+  - let k. assume Hk : nat_p k.
+    assume IH : nat_primrec e (fun i r => apply_fun mult (r, f i)) k :e H.
+    prove nat_primrec e (fun i r => apply_fun mult (r, f i)) (ordsucc k) :e H.
+    rewrite (nat_primrec_S e (fun i r => apply_fun mult (r, f i)) k Hk).
+    exact (HmHcl
+      (nat_primrec e (fun i r => apply_fun mult (r, f i)) k)
+      (f k) IH (Hf k)). }
+let n. assume Hn.
+exact (Hnat n (omega_nat_p n Hn)).
+Qed.
+
 (** Infrastructure: a family of subgroups generates an abelian group G **)
 (** Each x in G can be written as a finite sum of elements from the G_alpha **)
 Definition subgroups_generate_abelian : set -> set -> set -> set -> set -> set -> prop :=
