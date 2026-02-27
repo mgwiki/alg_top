@@ -50758,6 +50758,86 @@ apply xm (X = Empty).
   exact (FalseE Hcontra (X = Empty)).
 Qed.
 
+(** If the domain is empty under a homeomorphism, then the codomain is empty **)
+(** Proven Bob **)
+Theorem homeomorphism_empty_domain_implies_empty_codomain :
+  forall X Tx Y Ty f:set,
+    homeomorphism X Tx Y Ty f ->
+    X = Empty ->
+    Y = Empty.
+let X Tx Y Ty f.
+assume Hhome HXempty.
+apply xm (Y = Empty).
+- assume HYe.
+  exact HYe.
+- assume HYne.
+  claim Hcontra : False.
+  {
+    claim HYex : exists y:set, y :e Y.
+    {
+      exact (nonempty_has_element
+        Y
+        HYne).
+    }
+    apply HYex.
+    let y.
+    assume HyY.
+    claim HinvPack :
+      exists g:set,
+        continuous_map Y Ty X Tx g /\
+        (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x) /\
+        (forall y0:set, y0 :e Y -> apply_fun f (apply_fun g y0) = y0).
+    {
+      exact (homeomorphism_inverse_package
+        X
+        Tx
+        Y
+        Ty
+        f
+        Hhome).
+    }
+    apply HinvPack.
+    let g.
+    assume HgPack.
+    claim HgCont : continuous_map Y Ty X Tx g.
+    {
+      exact (andEL
+        (continuous_map Y Ty X Tx g)
+        (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x)
+        (andEL
+          (continuous_map Y Ty X Tx g /\
+           (forall x:set, x :e X -> apply_fun g (apply_fun f x) = x))
+          (forall y0:set, y0 :e Y -> apply_fun f (apply_fun g y0) = y0)
+          HgPack)).
+    }
+    claim HgFun : function_on g Y X.
+    {
+      exact (continuous_map_function_on
+        Y
+        Ty
+        X
+        Tx
+        g
+        HgCont).
+    }
+    claim HgyX : apply_fun g y :e X.
+    {
+      exact (HgFun
+        y
+        HyY).
+    }
+    claim HgyE : apply_fun g y :e Empty.
+    {
+      rewrite <- HXempty.
+      exact HgyX.
+    }
+    exact (EmptyE
+      (apply_fun g y)
+      HgyE).
+  }
+  exact (FalseE Hcontra (Y = Empty)).
+Qed.
+
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
 (** then the partition of p^{-1}(U) into slices is unique. **)
