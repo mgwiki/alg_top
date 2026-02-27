@@ -50867,6 +50867,35 @@ apply iffI.
     HYempty).
 Qed.
 
+(** If the domain is nonempty iff the codomain is nonempty under a homeomorphism **)
+(** Proven Bob **)
+Theorem homeomorphism_nonempty_iff :
+  forall X Tx Y Ty f:set,
+    homeomorphism X Tx Y Ty f ->
+    (X <> Empty <-> Y <> Empty).
+let X Tx Y Ty f.
+assume Hhome.
+apply iffI.
+- assume HXne.
+  exact (homeomorphism_codomain_nonempty_of_domain_nonempty
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome
+    HXne).
+- assume HYne.
+  exact (homeomorphism_domain_nonempty_of_codomain_nonempty
+    X
+    Tx
+    Y
+    Ty
+    f
+    Hhome
+    HYne).
+Qed.
+
 
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
