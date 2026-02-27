@@ -1,5 +1,5 @@
 (** Balance Alice 3495 **)
-(** Balance Bob 3561 **)
+(** Balance Bob 3540 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
 
@@ -172757,7 +172757,8 @@ Qed.
 Opaque Pi.
 
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 201 **)
+(** Bounty 222 **)
+(** Lock Bob 1772250000 **)
 Theorem thm67_4_existence_external_direct_sum :
   forall J Gfam multfam efam invfam:set,
   (forall alpha:set, alpha :e J ->
