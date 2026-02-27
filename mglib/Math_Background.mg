@@ -51384,6 +51384,47 @@ exact (EmptyE
   False).
 Qed.
 
+(** Infrastructure: union is monotone with respect to subfamilies **)
+(** Proven Bob **)
+Theorem union_subfamily_sub_union : forall Fam1 Fam2:set,
+  Fam1 c= Fam2 ->
+  Union Fam1 c= Union Fam2.
+let Fam1 Fam2.
+assume Hsub.
+let x.
+assume HxUnion.
+apply (UnionE
+  Fam1
+  x
+  HxUnion).
+let V.
+assume HxPack.
+claim HxV : x :e V.
+{
+  exact (andEL
+    (x :e V)
+    (V :e Fam1)
+    HxPack).
+}
+claim HVFam1 : V :e Fam1.
+{
+  exact (andER
+    (x :e V)
+    (V :e Fam1)
+    HxPack).
+}
+claim HVFam2 : V :e Fam2.
+{
+  exact (Hsub V HVFam1).
+}
+exact (UnionI
+  Fam2
+  x
+  V
+  HxV
+  HVFam2).
+Qed.
+
 
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
