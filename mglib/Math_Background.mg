@@ -186297,6 +186297,80 @@ exact (Hbeta_ne
   Hbeta_eq).
 Qed.
 
+(** Infrastructure: reduced words cannot have identity as a successor entry **)
+(** Proven Bob **)
+Lemma reduced_word_no_eG_adjacent_right : forall G mult e inv J Gfam efam n xs i:set,
+  group_structure G mult e inv ->
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv) ->
+  reduced_word J Gfam efam n xs ->
+  i :e n -> ordsucc i :e n ->
+  apply_fun xs (ordsucc i) = e -> False.
+let G mult e inv J Gfam efam n xs i.
+assume Hgrp Hsub Hred Hi Hsi Hxsi1_e.
+apply (and3E
+  (n :e omega)
+  (forall j:set, j :e n ->
+    exists alpha:set, alpha :e J /\
+      apply_fun xs j :e apply_fun Gfam alpha /\
+      apply_fun xs j <> apply_fun efam alpha)
+  (forall j:set, j :e n -> ordsucc j :e n ->
+    forall alpha beta:set, alpha :e J -> beta :e J ->
+      apply_fun xs j :e apply_fun Gfam alpha ->
+      apply_fun xs (ordsucc j) :e apply_fun Gfam beta ->
+      alpha <> beta)
+  Hred).
+assume _ Helem Hadj.
+apply (Helem
+  i
+  Hi).
+let alpha.
+assume Halpha_pack.
+apply (and3E
+  (alpha :e J)
+  (apply_fun xs i :e apply_fun Gfam alpha)
+  (apply_fun xs i <> apply_fun efam alpha)
+  Halpha_pack).
+assume HalphaJ Hxsi_Ga _.
+claim He_in_Ga : e :e apply_fun Gfam alpha.
+{
+  apply (and4E
+    (apply_fun Gfam alpha c= G)
+    (e :e apply_fun Gfam alpha)
+    (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+      apply_fun mult (x, y) :e apply_fun Gfam alpha)
+    (forall x:set, x :e apply_fun Gfam alpha -> apply_fun inv x :e apply_fun Gfam alpha)
+    (Hsub
+      alpha
+      HalphaJ)).
+  assume _ He _ _.
+  exact He.
+}
+claim Hxsi1_Ga : apply_fun xs (ordsucc i) :e apply_fun Gfam alpha.
+{
+  rewrite Hxsi1_e.
+  exact He_in_Ga.
+}
+claim Halpha_ne : alpha <> alpha.
+{
+  exact (Hadj
+    i
+    Hi
+    Hsi
+    alpha
+    alpha
+    HalphaJ
+    HalphaJ
+    Hxsi_Ga
+    Hxsi1_Ga).
+}
+claim Halpha_eq : alpha = alpha.
+{
+  reflexivity.
+}
+exact (Halpha_ne
+  Halpha_eq).
+Qed.
+
 (** Infrastructure: the product represented by a word of length n **)
 Definition word_product : set -> set -> set -> set -> set :=
   fun mult e xs n =>
