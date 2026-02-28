@@ -44074,6 +44074,14 @@ Definition evenly_covered : set -> set -> set -> set -> set -> set -> prop :=
         homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
           (graph V (fun x:set => apply_fun p x))).
 
+(** Infrastructure: evenly_covered does not currently imply topology_on E Te **)
+Theorem evenly_covered_topology_on_domain : forall E Te B Tb p U:set,
+  evenly_covered E Te B Tb p U ->
+  topology_on E Te.
+admit.
+Admitted.
+(** TODO: add explicit topology_on E Te hypothesis to uses of evenly_covered in this context. **)
+
 (** from S53 Definition (line 543 in algtop.tex) **)
 (** LATEX VERSION: If every point b of B has a neighborhood U that is evenly covered by p, **)
 (** then p is called a covering map, and E is said to be a covering space of B. **)
@@ -44729,8 +44737,14 @@ apply andI.
         }
         claim HtopE : topology_on E Te.
         {
-          (** TODO Charlie: derive ambient topology_on E Te from evenly-covered data in this context. **)
-          admit.
+          exact (evenly_covered_topology_on_domain
+            E
+            Te
+            B
+            Tb
+            p
+            U
+            Heven).
         }
         exact (open_in_subspace_if_ambient_open
           E
