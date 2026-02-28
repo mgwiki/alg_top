@@ -247009,6 +247009,91 @@ exact (UnionI Arcs x A HxA HAArcs).
 Qed.
 
 (** Proven Bob **)
+Theorem graph_vertices_subset_union_arcs_basic :
+  forall X Tx Arcs:set,
+  graph_vertices X Tx Arcs c= Union Arcs.
+let X Tx Arcs.
+let x.
+assume HxV.
+claim HxW :
+  exists A:set, A :e Arcs /\
+    exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q).
+{
+  exact (graph_vertices_has_endpoint_witness
+    X
+    Tx
+    Arcs
+    x
+    HxV).
+}
+apply HxW.
+let A.
+assume HApack.
+claim HAArcs : A :e Arcs.
+{
+  exact (andEL
+    (A :e Arcs)
+    (exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q))
+    HApack).
+}
+claim HpqEx :
+  exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+    (x = p \/ x = q).
+{
+  exact (andER
+    (A :e Arcs)
+    (exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q))
+    HApack).
+}
+apply HpqEx.
+let p.
+assume HpPack.
+apply HpPack.
+let q.
+assume HpqPack.
+claim Hend : end_points_of_arc A (subspace_topology X Tx A) p q.
+{
+  exact (andEL
+    (end_points_of_arc A (subspace_topology X Tx A) p q)
+    (x = p \/ x = q)
+    HpqPack).
+}
+claim HxEq : x = p \/ x = q.
+{
+  exact (andER
+    (end_points_of_arc A (subspace_topology X Tx A) p q)
+    (x = p \/ x = q)
+    HpqPack).
+}
+apply HxEq.
+- assume Hxp.
+  rewrite Hxp.
+  exact (arc_endpoint_left_in_union_arcs
+    X
+    Tx
+    Arcs
+    A
+    p
+    q
+    HAArcs
+    Hend).
+- assume Hxq.
+  rewrite Hxq.
+  exact (arc_endpoint_right_in_union_arcs
+    X
+    Tx
+    Arcs
+    A
+    p
+    q
+    HAArcs
+    Hend).
+Qed.
+
+(** Proven Bob **)
 Theorem graph_vertices_subset_union_arcs :
   forall X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
