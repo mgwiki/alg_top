@@ -255925,8 +255925,438 @@ Theorem arc_has_end_points_of_arc_pre :
   forall X Tx:set,
   arc X Tx ->
   exists p q:set, end_points_of_arc X Tx p q.
-admit.
-Admitted.
+let X Tx.
+assume Harc.
+apply Harc.
+let f.
+assume Hhome.
+claim HfCont : continuous_map unit_interval unit_interval_topology X Tx f.
+{
+  exact (homeomorphism_continuous
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    f
+    Hhome).
+}
+claim HfFun : function_on f unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    f
+    HfCont).
+}
+witness (apply_fun f 0).
+witness (apply_fun f 1).
+apply (and6I
+  (arc X Tx)
+  (apply_fun f 0 :e X)
+  (apply_fun f 1 :e X)
+  (apply_fun f 0 <> apply_fun f 1)
+  (connected_space (X :\: (Sing (apply_fun f 0)))
+    (subspace_topology X Tx (X :\: (Sing (apply_fun f 0)))))
+  (connected_space (X :\: (Sing (apply_fun f 1)))
+    (subspace_topology X Tx (X :\: (Sing (apply_fun f 1)))))).
+- exact Harc.
+- exact (HfFun 0 zero_in_unit_interval).
+- exact (HfFun 1 one_in_unit_interval).
+- assume Heq.
+  exact (neq_0_1
+    (homeomorphism_injective
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      f
+      Hhome
+      0
+      1
+      zero_in_unit_interval
+      one_in_unit_interval
+      Heq)).
+- (** Connectedness of X \\ {f 0} via the restriction of f to unit_interval \\ {0}. **)
+  set C0 := unit_interval :\: (Sing 0).
+  claim HC0sub : C0 c= unit_interval.
+  { exact (setminus_Subq unit_interval (Sing 0)). }
+  claim Hhome0 :
+    homeomorphism C0
+      (subspace_topology unit_interval unit_interval_topology C0)
+      (image_of f C0)
+      (subspace_topology X Tx (image_of f C0))
+      f.
+  {
+    exact (homeomorphism_restrict_to_image_of_subset
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      f
+      C0
+      Hhome
+      HC0sub).
+  }
+  claim Himg0 :
+    image_of f C0 = X :\: (Sing (apply_fun f 0)).
+  {
+    apply (set_ext
+      (image_of f C0)
+      (X :\: (Sing (apply_fun f 0)))).
+    - let y.
+      assume HyImg.
+      apply (ReplE_impred
+        C0
+        (fun t:set => apply_fun f t)
+        y
+        HyImg).
+      let t.
+      assume HtC0 Heq.
+      claim HtI : t :e unit_interval.
+      {
+        exact (andEL
+          (t :e unit_interval)
+          (t /:e Sing 0)
+          (setminusE unit_interval (Sing 0) t HtC0)).
+      }
+      claim HtNe0 : t /:e Sing 0.
+      {
+        exact (andER
+          (t :e unit_interval)
+          (t /:e Sing 0)
+          (setminusE unit_interval (Sing 0) t HtC0)).
+      }
+      claim HyX : y :e X.
+      {
+        rewrite Heq.
+        exact (HfFun t HtI).
+      }
+      apply (setminusI
+        X
+        (Sing (apply_fun f 0))
+        y
+        HyX).
+      assume HySing.
+      claim HyEq : y = apply_fun f 0.
+      { exact (SingE (apply_fun f 0) y HySing). }
+      claim HtEq0 : t = 0.
+      {
+        apply (homeomorphism_injective
+          unit_interval
+          unit_interval_topology
+          X
+          Tx
+          f
+          Hhome
+          t
+          0
+          HtI
+          zero_in_unit_interval).
+        rewrite <- Heq.
+        exact HyEq.
+      }
+      exact (HtNe0 (eq_subst_mem t 0 (Sing 0) HtEq0 (SingI 0))).
+    - let y.
+      assume HyM.
+      claim HyX : y :e X.
+      {
+        exact (andEL
+          (y :e X)
+          (y /:e Sing (apply_fun f 0))
+          (setminusE X (Sing (apply_fun f 0)) y HyM)).
+      }
+      claim HyNe : y /:e Sing (apply_fun f 0).
+      {
+        exact (andER
+          (y :e X)
+          (y /:e Sing (apply_fun f 0))
+          (setminusE X (Sing (apply_fun f 0)) y HyM)).
+      }
+      claim HinvPack :
+        exists g:set,
+          continuous_map X Tx unit_interval unit_interval_topology g /\
+          (forall t0:set, t0 :e unit_interval -> apply_fun g (apply_fun f t0) = t0) /\
+          (forall y0:set, y0 :e X -> apply_fun f (apply_fun g y0) = y0).
+      {
+        exact (homeomorphism_inverse_package
+          unit_interval
+          unit_interval_topology
+          X
+          Tx
+          f
+          Hhome).
+      }
+      apply HinvPack.
+      let g.
+      assume HgPack.
+      claim HgLeft :
+        continuous_map X Tx unit_interval unit_interval_topology g /\
+        (forall t0:set, t0 :e unit_interval -> apply_fun g (apply_fun f t0) = t0).
+      {
+        exact (andEL
+          (continuous_map X Tx unit_interval unit_interval_topology g /\
+           (forall t0:set, t0 :e unit_interval -> apply_fun g (apply_fun f t0) = t0))
+          (forall y0:set, y0 :e X -> apply_fun f (apply_fun g y0) = y0)
+          HgPack).
+      }
+      claim HgCont : continuous_map X Tx unit_interval unit_interval_topology g.
+      {
+        exact (andEL
+          (continuous_map X Tx unit_interval unit_interval_topology g)
+          (forall t0:set, t0 :e unit_interval -> apply_fun g (apply_fun f t0) = t0)
+          HgLeft).
+      }
+      claim HgFun : function_on g X unit_interval.
+      {
+        exact (continuous_map_function_on
+          X
+          Tx
+          unit_interval
+          unit_interval_topology
+          g
+          HgCont).
+      }
+      claim Hfg : forall y0:set, y0 :e X -> apply_fun f (apply_fun g y0) = y0.
+      {
+        exact (andER
+          (continuous_map X Tx unit_interval unit_interval_topology g /\
+           (forall t0:set, t0 :e unit_interval -> apply_fun g (apply_fun f t0) = t0))
+          (forall y0:set, y0 :e X -> apply_fun f (apply_fun g y0) = y0)
+          HgPack).
+      }
+      set t := apply_fun g y.
+      claim HtI : t :e unit_interval.
+      { exact (HgFun y HyX). }
+      claim HtNe0 : t /:e Sing 0.
+      {
+        assume HtSing.
+        claim HtEq0 : t = 0.
+        { exact (SingE 0 t HtSing). }
+        claim HyEq0 : y = apply_fun f 0.
+        {
+          rewrite <- (Hfg y HyX).
+          rewrite HtEq0.
+          reflexivity.
+        }
+        exact (HyNe (eq_subst_mem y (apply_fun f 0) (Sing (apply_fun f 0)) HyEq0 (SingI (apply_fun f 0)))).
+      }
+      claim HtC0 : t :e C0.
+      {
+        exact (setminusI
+          unit_interval
+          (Sing 0)
+          t
+          HtI
+          HtNe0).
+      }
+      rewrite <- (Hfg y HyX).
+      exact (ReplI
+        C0
+        (fun t0:set => apply_fun f t0)
+        t
+        HtC0).
+  }
+  rewrite <- Himg0.
+  exact (homeomorphism_preserves_connected
+    C0
+    (subspace_topology unit_interval unit_interval_topology C0)
+    (image_of f C0)
+    (subspace_topology X Tx (image_of f C0))
+    f
+    Hhome0
+    unit_interval_minus_Sing_0_connected).
+- (** Connectedness of X \\ {f 1} via the restriction of f to unit_interval \\ {1}. **)
+  set C1 := unit_interval :\: (Sing 1).
+  claim HC1sub : C1 c= unit_interval.
+  { exact (setminus_Subq unit_interval (Sing 1)). }
+  claim Hhome1 :
+    homeomorphism C1
+      (subspace_topology unit_interval unit_interval_topology C1)
+      (image_of f C1)
+      (subspace_topology X Tx (image_of f C1))
+      f.
+  {
+    exact (homeomorphism_restrict_to_image_of_subset
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      f
+      C1
+      Hhome
+      HC1sub).
+  }
+  claim Himg1 :
+    image_of f C1 = X :\: (Sing (apply_fun f 1)).
+  {
+    apply (set_ext
+      (image_of f C1)
+      (X :\: (Sing (apply_fun f 1)))).
+    - let y.
+      assume HyImg.
+      apply (ReplE_impred
+        C1
+        (fun t:set => apply_fun f t)
+        y
+        HyImg).
+      let t.
+      assume HtC1 Heq.
+      claim HtI : t :e unit_interval.
+      {
+        exact (andEL
+          (t :e unit_interval)
+          (t /:e Sing 1)
+          (setminusE unit_interval (Sing 1) t HtC1)).
+      }
+      claim HtNe1 : t /:e Sing 1.
+      {
+        exact (andER
+          (t :e unit_interval)
+          (t /:e Sing 1)
+          (setminusE unit_interval (Sing 1) t HtC1)).
+      }
+      claim HyX : y :e X.
+      {
+        rewrite Heq.
+        exact (HfFun t HtI).
+      }
+      apply (setminusI
+        X
+        (Sing (apply_fun f 1))
+        y
+        HyX).
+      assume HySing.
+      claim HyEq : y = apply_fun f 1.
+      { exact (SingE (apply_fun f 1) y HySing). }
+      claim HtEq1 : t = 1.
+      {
+        apply (homeomorphism_injective
+          unit_interval
+          unit_interval_topology
+          X
+          Tx
+          f
+          Hhome
+          t
+          1
+          HtI
+          one_in_unit_interval).
+        rewrite <- Heq.
+        exact HyEq.
+      }
+      exact (HtNe1 (eq_subst_mem t 1 (Sing 1) HtEq1 (SingI 1))).
+    - let y.
+      assume HyM.
+      claim HyX : y :e X.
+      {
+        exact (andEL
+          (y :e X)
+          (y /:e Sing (apply_fun f 1))
+          (setminusE X (Sing (apply_fun f 1)) y HyM)).
+      }
+      claim HyNe : y /:e Sing (apply_fun f 1).
+      {
+        exact (andER
+          (y :e X)
+          (y /:e Sing (apply_fun f 1))
+          (setminusE X (Sing (apply_fun f 1)) y HyM)).
+      }
+      claim HinvPack :
+        exists g:set,
+          continuous_map X Tx unit_interval unit_interval_topology g /\
+          (forall t0:set, t0 :e unit_interval -> apply_fun g (apply_fun f t0) = t0) /\
+          (forall y0:set, y0 :e X -> apply_fun f (apply_fun g y0) = y0).
+      {
+        exact (homeomorphism_inverse_package
+          unit_interval
+          unit_interval_topology
+          X
+          Tx
+          f
+          Hhome).
+      }
+      apply HinvPack.
+      let g.
+      assume HgPack.
+      claim HgLeft :
+        continuous_map X Tx unit_interval unit_interval_topology g /\
+        (forall t0:set, t0 :e unit_interval -> apply_fun g (apply_fun f t0) = t0).
+      {
+        exact (andEL
+          (continuous_map X Tx unit_interval unit_interval_topology g /\
+           (forall t0:set, t0 :e unit_interval -> apply_fun g (apply_fun f t0) = t0))
+          (forall y0:set, y0 :e X -> apply_fun f (apply_fun g y0) = y0)
+          HgPack).
+      }
+      claim HgCont : continuous_map X Tx unit_interval unit_interval_topology g.
+      {
+        exact (andEL
+          (continuous_map X Tx unit_interval unit_interval_topology g)
+          (forall t0:set, t0 :e unit_interval -> apply_fun g (apply_fun f t0) = t0)
+          HgLeft).
+      }
+      claim HgFun : function_on g X unit_interval.
+      {
+        exact (continuous_map_function_on
+          X
+          Tx
+          unit_interval
+          unit_interval_topology
+          g
+          HgCont).
+      }
+      claim Hfg : forall y0:set, y0 :e X -> apply_fun f (apply_fun g y0) = y0.
+      {
+        exact (andER
+          (continuous_map X Tx unit_interval unit_interval_topology g /\
+           (forall t0:set, t0 :e unit_interval -> apply_fun g (apply_fun f t0) = t0))
+          (forall y0:set, y0 :e X -> apply_fun f (apply_fun g y0) = y0)
+          HgPack).
+      }
+      set t := apply_fun g y.
+      claim HtI : t :e unit_interval.
+      { exact (HgFun y HyX). }
+      claim HtNe1 : t /:e Sing 1.
+      {
+        assume HtSing.
+        claim HtEq1 : t = 1.
+        { exact (SingE 1 t HtSing). }
+        claim HyEq1 : y = apply_fun f 1.
+        {
+          rewrite <- (Hfg y HyX).
+          rewrite HtEq1.
+          reflexivity.
+        }
+        exact (HyNe (eq_subst_mem y (apply_fun f 1) (Sing (apply_fun f 1)) HyEq1 (SingI (apply_fun f 1)))).
+      }
+      claim HtC1 : t :e C1.
+      {
+        exact (setminusI
+          unit_interval
+          (Sing 1)
+          t
+          HtI
+          HtNe1).
+      }
+      rewrite <- (Hfg y HyX).
+      exact (ReplI
+        C1
+        (fun t0:set => apply_fun f t0)
+        t
+        HtC1).
+  }
+  rewrite <- Himg1.
+  exact (homeomorphism_preserves_connected
+    C1
+    (subspace_topology unit_interval unit_interval_topology C1)
+    (image_of f C1)
+    (subspace_topology X Tx (image_of f C1))
+    f
+    Hhome1
+    unit_interval_minus_Sing_1_connected).
+Qed.
 
 (** Helper: backward direction of coherence for covering graphs. **)
 (** If X has general_linear_graph structure and p: E -> X is a covering map, **)
