@@ -266889,6 +266889,52 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Theorem edge_path_index_initial_vertex_in_union_arcs_basic :
+  forall X Tx Arcs n path_seq x0 i:set,
+  edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  (apply_fun path_seq i) 0 0 :e Union Arcs.
+let X Tx Arcs n path_seq x0 i.
+assume Hep Hi.
+exact (andEL
+  ((apply_fun path_seq i) 0 0 :e Union Arcs)
+  ((apply_fun path_seq i) 0 1 :e Union Arcs)
+  (edge_path_index_endpoints_in_union_arcs_basic
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    i
+    Hep
+    Hi)).
+Qed.
+
+(** Proven Bob **)
+Theorem edge_path_index_final_vertex_in_union_arcs_basic :
+  forall X Tx Arcs n path_seq x0 i:set,
+  edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  (apply_fun path_seq i) 0 1 :e Union Arcs.
+let X Tx Arcs n path_seq x0 i.
+assume Hep Hi.
+exact (andER
+  ((apply_fun path_seq i) 0 0 :e Union Arcs)
+  ((apply_fun path_seq i) 0 1 :e Union Arcs)
+  (edge_path_index_endpoints_in_union_arcs_basic
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    i
+    Hep
+    Hi)).
+Qed.
+
+(** Proven Bob **)
 Theorem reduced_edge_path_edge_path :
   forall X Tx Arcs n path_seq x0:set,
   reduced_edge_path X Tx Arcs n path_seq x0 ->
@@ -267179,6 +267225,52 @@ exact (edge_path_index_endpoints_in_union_arcs_basic
   i
   (reduced_edge_path_edge_path X Tx Arcs n path_seq x0 Hred)
   Hi).
+Qed.
+
+(** Proven Bob **)
+Theorem reduced_edge_path_index_initial_vertex_in_union_arcs_basic :
+  forall X Tx Arcs n path_seq x0 i:set,
+  reduced_edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  (apply_fun path_seq i) 0 0 :e Union Arcs.
+let X Tx Arcs n path_seq x0 i.
+assume Hred Hi.
+exact (andEL
+  ((apply_fun path_seq i) 0 0 :e Union Arcs)
+  ((apply_fun path_seq i) 0 1 :e Union Arcs)
+  (reduced_edge_path_index_endpoints_in_union_arcs_basic
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    i
+    Hred
+    Hi)).
+Qed.
+
+(** Proven Bob **)
+Theorem reduced_edge_path_index_final_vertex_in_union_arcs_basic :
+  forall X Tx Arcs n path_seq x0 i:set,
+  reduced_edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  (apply_fun path_seq i) 0 1 :e Union Arcs.
+let X Tx Arcs n path_seq x0 i.
+assume Hred Hi.
+exact (andER
+  ((apply_fun path_seq i) 0 0 :e Union Arcs)
+  ((apply_fun path_seq i) 0 1 :e Union Arcs)
+  (reduced_edge_path_index_endpoints_in_union_arcs_basic
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    i
+    Hred
+    Hi)).
 Qed.
 
 (** Proven Bob **)
