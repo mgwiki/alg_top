@@ -166254,6 +166254,30 @@ exact (subgroups_generate_abelian_generation G mult e inv J Gfam x
 Qed.
 
 (** Proven Bob **)
+Lemma direct_sum_of_subgroups_index_nonempty :
+  forall G mult e inv J Gfam:set,
+  direct_sum_of_subgroups G mult e inv J Gfam ->
+  J <> Empty.
+let G mult e inv J Gfam.
+assume Hds.
+exact (subgroups_generate_abelian_index_nonempty_strong
+  G
+  mult
+  e
+  inv
+  J
+  Gfam
+  (direct_sum_of_subgroups_subgroups_generate_abelian
+    G
+    mult
+    e
+    inv
+    J
+    Gfam
+    Hds)).
+Qed.
+
+(** Proven Bob **)
 Lemma binintersect_empty_no_common :
   forall J K a:set,
   J :/\: K = Empty ->
