@@ -178537,7 +178537,6 @@ Opaque Pi.
 
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
 (** Bounty 245 **)
-(** Lock Bob 1772307000 **)
 Theorem thm67_4_existence_external_direct_sum :
   forall J Gfam multfam efam invfam:set,
   (forall alpha:set, alpha :e J ->
@@ -179938,26 +179937,7 @@ apply andI.
       - (** supp f = Empty: f = eG **)
         assume Hsupp_empty : supp f = Empty.
         claim Hf_eG : f = eG.
-        { apply G_ext.
-          - exact Hf.
-          - exact HeG_G.
-          - let gamma. assume Hg : gamma :e J.
-            claim Hfg : f gamma :e Ga gamma. { exact (HG_ap f Hf gamma Hg). }
-            claim HeGg : eG gamma = ea gamma. { exact (beta J ea gamma Hg). }
-            claim Hf_not_in_supp : gamma /:e supp f.
-            { rewrite Hsupp_empty. exact (EmptyE gamma). }
-            claim Hfg_eq : f gamma = ea gamma.
-            { apply (xm (f gamma = ea gamma)).
-              - assume H. exact H.
-              - assume Hne : f gamma <> ea gamma.
-                claim Hin : gamma :e supp f.
-                { prove gamma :e {alpha :e J | f alpha <> ea alpha}.
-                  exact (SepI J (fun alpha => f alpha <> ea alpha) gamma Hg Hne). }
-                exact (FalseE (Hf_not_in_supp Hin) (f gamma = ea gamma)).
-            }
-            prove f gamma = eG gamma.
-            rewrite HeGg. exact Hfg_eq.
-        }
+        { exact (G_support_empty_eq_eG f Hf Hsupp_empty). }
         (** Now construct the trivial witness **)
         apply (xm (J = Empty)).
         + (** J = Empty conflicts with n <> 0 in subgroups_generate_abelian **)
