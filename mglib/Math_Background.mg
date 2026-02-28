@@ -178542,6 +178542,53 @@ exact (PowerE
     f
     HfPi)).
 Qed.
+
+(** Infrastructure: Sigma over empty index is empty **)
+(** Proven Bob **)
+Lemma Sigma_empty_eq : forall Y:set->set,
+  (Sigma_ x :e Empty, Y x) = Empty.
+let Y.
+apply set_ext.
+- let z. assume Hz : z :e (Sigma_ x :e Empty, Y x).
+  claim Hz0 : proj0 z :e Empty.
+  { exact (proj0_Sigma Empty Y z Hz). }
+  exact (FalseE (EmptyE (proj0 z) Hz0) (z :e Empty)).
+- let z. assume Hz : z :e Empty.
+  exact (FalseE (EmptyE z Hz) (z :e (Sigma_ x :e Empty, Y x))).
+Qed.
+
+(** Infrastructure: Pi over empty index is singleton {Empty} **)
+(** Proven Bob **)
+Lemma Pi_empty_eq_singleton : forall Y:set->set,
+  (Pi_ x :e Empty, Y x) = {Empty}.
+let Y.
+apply set_ext.
+- let f. assume Hf : f :e (Pi_ x :e Empty, Y x).
+  claim HfPow : f :e Power (Sigma_ x :e Empty, Union (Y x)).
+  { exact (SepE1
+      (Power (Sigma_ x :e Empty, Union (Y x)))
+      (fun g:set => forall x :e Empty, g x :e Y x)
+      f
+      Hf). }
+  claim HfSubSigma : f c= (Sigma_ x :e Empty, Union (Y x)).
+  { exact (PowerE (Sigma_ x :e Empty, Union (Y x)) f HfPow). }
+  claim HSigma : (Sigma_ x :e Empty, Union (Y x)) = Empty.
+  { exact (Sigma_empty_eq (fun x:set => Union (Y x))). }
+  claim HfSub : f c= Empty.
+  { let z. assume Hz : z :e f.
+    claim HzSigma : z :e (Sigma_ x :e Empty, Union (Y x)). { exact (HfSubSigma z Hz). }
+    exact (eq_subst_mem_set z (Sigma_ x :e Empty, Union (Y x)) Empty HzSigma HSigma). }
+  claim HfEmpty : f = Empty. { exact (Empty_Subq_eq f HfSub). }
+  rewrite HfEmpty. exact (SingI Empty).
+- let f. assume Hf : f :e {Empty}.
+  claim HfEmpty : f = Empty. { exact (singleton_elem f Empty Hf). }
+  rewrite HfEmpty.
+  prove Empty :e {g :e Power (Sigma_ x :e Empty, Union (Y x)) | forall x :e Empty, g x :e Y x}.
+  apply (SepI (Power (Sigma_ x :e Empty, Union (Y x))) (fun g:set => forall x :e Empty, g x :e Y x) Empty).
+  + exact (Empty_In_Power (Sigma_ x :e Empty, Union (Y x))).
+  + let x. assume Hx : x :e Empty.
+    exact (FalseE (EmptyE x Hx) (ap Empty x :e Y x)).
+Qed.
 Opaque Pi.
 
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
