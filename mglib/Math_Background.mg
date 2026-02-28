@@ -84579,6 +84579,82 @@ exact (connected_lift_stays_in_anchored_sheet
 Qed.
 
 (** Proven Bob **)
+(** Infrastructure: image of a path lift on a connected subinterval lies in the anchored sheet **)
+Lemma path_lift_image_subset_anchored_sheet_on_subset :
+  forall E Te B Tb p U slices V0 f e0 N x0:set,
+  covering_map E Te B Tb p ->
+  e0 :e E -> apply_fun p e0 = apply_fun f 0 ->
+  continuous_map unit_interval unit_interval_topology B Tb f ->
+  N c= unit_interval ->
+  connected_space N (subspace_topology unit_interval unit_interval_topology N) ->
+  (forall t:set, t :e N -> apply_fun f t :e U) ->
+  topology_on E Te ->
+  slices c= Te ->
+  pairwise_disjoint slices ->
+  Union slices = preimage_of E p U ->
+  V0 :e slices ->
+  x0 :e N ->
+  apply_fun (path_lift E Te B Tb p e0 f) x0 :e V0 ->
+  image_of (path_lift E Te B Tb p e0 f) N c= V0.
+let E Te B Tb p U slices V0 f e0 N x0.
+assume Hcov He0 Hstart Hfcont HNsub HNconn HfU HtopE HslicesSub HpdSlices Hunion HV0Slice Hx0N Hft0V0.
+let y.
+assume HyImg.
+apply (ReplE
+  N
+  (fun t:set => apply_fun (path_lift E Te B Tb p e0 f) t)
+  y
+  HyImg).
+let t.
+assume HtPack.
+claim HtN : t :e N.
+{
+  exact (andEL
+    (t :e N)
+    (y = apply_fun (path_lift E Te B Tb p e0 f) t)
+    HtPack).
+}
+claim HyEq :
+  y = apply_fun (path_lift E Te B Tb p e0 f) t.
+{
+  exact (andER
+    (t :e N)
+    (y = apply_fun (path_lift E Te B Tb p e0 f) t)
+    HtPack).
+}
+rewrite HyEq.
+exact (path_lift_stays_in_anchored_sheet_on_subset
+  E
+  Te
+  B
+  Tb
+  p
+  U
+  slices
+  V0
+  f
+  e0
+  N
+  x0
+  Hcov
+  He0
+  Hstart
+  Hfcont
+  HNsub
+  HNconn
+  HfU
+  HtopE
+  HslicesSub
+  HpdSlices
+  Hunion
+  HV0Slice
+  Hx0N
+  Hft0V0
+  t
+  HtN).
+Qed.
+
+(** Proven Bob **)
 (** Infrastructure: image of a path lift lies in the anchored sheet **)
 Lemma path_lift_image_subset_anchored_sheet :
   forall E Te B Tb p U slices V0 f ft x0:set,
