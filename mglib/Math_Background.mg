@@ -271951,6 +271951,94 @@ apply andI.
     HpqV).
 Qed.
 
+(** helper: appended edge start vertex lies in graph_vertices. **)
+(** Proven Bob **)
+Theorem edge_path_append_oriented_edge_start_vertex_in_graph_vertices :
+  forall X Tx Arcs n path_seq x0 j A p q:set,
+  general_linear_graph X Tx Arcs ->
+  edge_path X Tx Arcs n path_seq x0 ->
+  j :e n ->
+  ordsucc j /:e n ->
+  (apply_fun path_seq j) 0 1 = p ->
+  oriented_edge X Tx Arcs A p q ->
+  (apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 0 :e graph_vertices X Tx Arcs.
+let X Tx Arcs n path_seq x0 j A p q.
+assume Hglg Hep HjIn HsjNot Hfinj Hori.
+exact (andEL
+  ((apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 0 :e graph_vertices X Tx Arcs)
+  ((apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 1 :e graph_vertices X Tx Arcs)
+  (edge_path_append_oriented_edge_endpoints_in_graph_vertices
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    j
+    A
+    p
+    q
+    Hglg
+    Hep
+    HjIn
+    HsjNot
+    Hfinj
+    Hori)).
+Qed.
+
+(** helper: appended edge end vertex lies in graph_vertices. **)
+(** Proven Bob **)
+Theorem edge_path_append_oriented_edge_end_vertex_in_graph_vertices :
+  forall X Tx Arcs n path_seq x0 j A p q:set,
+  general_linear_graph X Tx Arcs ->
+  edge_path X Tx Arcs n path_seq x0 ->
+  j :e n ->
+  ordsucc j /:e n ->
+  (apply_fun path_seq j) 0 1 = p ->
+  oriented_edge X Tx Arcs A p q ->
+  (apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 1 :e graph_vertices X Tx Arcs.
+let X Tx Arcs n path_seq x0 j A p q.
+assume Hglg Hep HjIn HsjNot Hfinj Hori.
+exact (andER
+  ((apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 0 :e graph_vertices X Tx Arcs)
+  ((apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 1 :e graph_vertices X Tx Arcs)
+  (edge_path_append_oriented_edge_endpoints_in_graph_vertices
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    j
+    A
+    p
+    q
+    Hglg
+    Hep
+    HjIn
+    HsjNot
+    Hfinj
+    Hori)).
+Qed.
+
 (** helper: for any graph vertex x there is a nontrivial edge_path from x to x. **)
 (** Proven Charlie **)
 Theorem graph_vertex_has_edge_path_to_self :
