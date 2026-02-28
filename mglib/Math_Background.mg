@@ -220905,7 +220905,222 @@ Theorem thm75_1_abelianize_quotient_commute :
         (Repl N (fun x:set =>
           apply_fun (quotient_projection F multF (commutator_subgroup F multF eF invF)) x)))
       phi.
-admit.
+let F multF eF invF N.
+assume HgrpF : group_structure F multF eF invF.
+assume HnormN : normal_subgroup N F multF eF invF.
+(** Abbreviations for quotient of F by N **)
+set GN := quotient_group_set F multF N.
+set mN := quotient_group_mult F multF N.
+set eN := quotient_group_id F multF eF N.
+set iN := quotient_group_inv F multF invF N.
+(** Abbreviations for commutator subgroup of F **)
+set CommF := commutator_subgroup F multF eF invF.
+(** Abbreviations for abelianization F/[F,F] **)
+set GA := quotient_group_set F multF CommF.
+set mA := quotient_group_mult F multF CommF.
+set eA := quotient_group_id F multF eF CommF.
+set iA := quotient_group_inv F multF invF CommF.
+(** Commutator subgroup of F/N **)
+set CommFN := commutator_subgroup GN mN eN iN.
+(** Image of N under abelianization projection **)
+set piN := Repl N (fun x:set =>
+  apply_fun (quotient_projection F multF CommF) x).
+(** LHS = (F/N)/[F/N, F/N] **)
+set LHS := quotient_group_set GN mN CommFN.
+set mLHS := quotient_group_mult GN mN CommFN.
+(** RHS = (F/[F,F])/piN **)
+set RHS := quotient_group_set GA mA piN.
+set mRHS := quotient_group_mult GA mA piN.
+(** Step 1: Group structure of F/N **)
+claim HgrpGN : group_structure GN mN eN iN.
+{ exact (quotient_group_structure F multF eF invF N HgrpF HnormN). }
+(** Step 2: Properties of commutator subgroup of F **)
+claim Hlem69F_12 : normal_subgroup CommF F multF eF invF /\
+  abelian_group GA mA eA iA.
+{ exact (andEL
+    (normal_subgroup CommF F multF eF invF /\ abelian_group GA mA eA iA)
+    (forall H multH eH invH h:set,
+      abelian_group H multH eH invH ->
+      group_homomorphism F multF H multH h ->
+      CommF c= kernel_of F eH h)
+    (lemma69_3_commutator_subgroup F multF eF invF HgrpF)). }
+claim HnormCommF : normal_subgroup CommF F multF eF invF.
+{ exact (andEL
+    (normal_subgroup CommF F multF eF invF)
+    (abelian_group GA mA eA iA)
+    Hlem69F_12). }
+claim HabelGA : abelian_group GA mA eA iA.
+{ exact (andER
+    (normal_subgroup CommF F multF eF invF)
+    (abelian_group GA mA eA iA)
+    Hlem69F_12). }
+claim HgrpGA : group_structure GA mA eA iA.
+{ exact (andEL
+    (group_structure GA mA eA iA)
+    (forall x y:set, x :e GA -> y :e GA ->
+      apply_fun mA (x, y) = apply_fun mA (y, x))
+    HabelGA). }
+(** Step 3: CommFN is normal in GN **)
+claim Hlem69GN_12 : normal_subgroup CommFN GN mN eN iN /\
+  abelian_group LHS mLHS
+    (quotient_group_id GN mN eN CommFN)
+    (quotient_group_inv GN mN iN CommFN).
+{ exact (andEL
+    (normal_subgroup CommFN GN mN eN iN /\
+     abelian_group LHS mLHS
+       (quotient_group_id GN mN eN CommFN)
+       (quotient_group_inv GN mN iN CommFN))
+    (forall H multH eH invH h:set,
+      abelian_group H multH eH invH ->
+      group_homomorphism GN mN H multH h ->
+      CommFN c= kernel_of GN eH h)
+    (lemma69_3_commutator_subgroup GN mN eN iN HgrpGN)). }
+claim HnormCommFN : normal_subgroup CommFN GN mN eN iN.
+{ exact (andEL
+    (normal_subgroup CommFN GN mN eN iN)
+    (abelian_group LHS mLHS
+      (quotient_group_id GN mN eN CommFN)
+      (quotient_group_inv GN mN iN CommFN))
+    Hlem69GN_12). }
+(** Step 4: Construct the isomorphism phi: LHS -> RHS **)
+set phi := graph LHS (fun d:set =>
+  left_coset mA
+    (left_coset multF
+      (Eps_i (fun f:set => f :e F /\
+        left_coset mN (left_coset multF f N) CommFN = d))
+      CommF)
+    piN).
+(** Helper: Eps_i picks a valid representative for each d in LHS **)
+claim Heps_valid : forall d:set, d :e LHS ->
+  (Eps_i (fun f:set => f :e F /\
+    left_coset mN (left_coset multF f N) CommFN = d)) :e F /\
+  left_coset mN
+    (left_coset multF
+      (Eps_i (fun f:set => f :e F /\
+        left_coset mN (left_coset multF f N) CommFN = d))
+      N)
+    CommFN = d.
+{ let d. assume Hd : d :e LHS.
+  apply (ReplE_impred GN (fun c => left_coset mN c CommFN) d Hd).
+  let c. assume HcGN : c :e GN. assume Hd_eq : d = left_coset mN c CommFN.
+  apply (ReplE_impred F (fun g => left_coset multF g N) c HcGN).
+  let g. assume HgF : g :e F. assume Hc_eq : c = left_coset multF g N.
+  claim Hg_witness : g :e F /\
+    left_coset mN (left_coset multF g N) CommFN = d.
+  { apply andI.
+    - exact HgF.
+    - rewrite <- Hc_eq. symmetry. exact Hd_eq. }
+  exact (Eps_i_ax
+    (fun f:set => f :e F /\
+      left_coset mN (left_coset multF f N) CommFN = d)
+    g Hg_witness). }
+(** Extract individual properties **)
+claim Heps_F : forall d:set, d :e LHS ->
+  (Eps_i (fun f:set => f :e F /\
+    left_coset mN (left_coset multF f N) CommFN = d)) :e F.
+{ let d. assume Hd.
+  exact (andEL
+    ((Eps_i (fun f:set => f :e F /\
+      left_coset mN (left_coset multF f N) CommFN = d)) :e F)
+    (left_coset mN
+      (left_coset multF
+        (Eps_i (fun f:set => f :e F /\
+          left_coset mN (left_coset multF f N) CommFN = d))
+        N)
+      CommFN = d)
+    (Heps_valid d Hd)). }
+claim Heps_eq : forall d:set, d :e LHS ->
+  left_coset mN
+    (left_coset multF
+      (Eps_i (fun f:set => f :e F /\
+        left_coset mN (left_coset multF f N) CommFN = d))
+      N)
+    CommFN = d.
+{ let d. assume Hd.
+  exact (andER
+    ((Eps_i (fun f:set => f :e F /\
+      left_coset mN (left_coset multF f N) CommFN = d)) :e F)
+    (left_coset mN
+      (left_coset multF
+        (Eps_i (fun f:set => f :e F /\
+          left_coset mN (left_coset multF f N) CommFN = d))
+        N)
+      CommFN = d)
+    (Heps_valid d Hd)). }
+(** Helper: phi computation **)
+claim Hphi_compute : forall d:set, d :e LHS ->
+  apply_fun phi d =
+  left_coset mA
+    (left_coset multF
+      (Eps_i (fun f:set => f :e F /\
+        left_coset mN (left_coset multF f N) CommFN = d))
+      CommF)
+    piN.
+{ let d. assume Hd : d :e LHS.
+  claim Hphi_graph : phi = graph LHS (fun d':set =>
+    left_coset mA
+      (left_coset multF
+        (Eps_i (fun f:set => f :e F /\
+          left_coset mN (left_coset multF f N) CommFN = d'))
+        CommF)
+      piN).
+  { reflexivity. }
+  exact (apply_fun_of_graph_eq phi LHS
+    (fun d':set =>
+      left_coset mA
+        (left_coset multF
+          (Eps_i (fun f:set => f :e F /\
+            left_coset mN (left_coset multF f N) CommFN = d'))
+          CommF)
+        piN)
+    d Hphi_graph Hd). }
+(** Helper: phi maps LHS to RHS **)
+claim Hfn_on : function_on phi LHS RHS.
+{ let d. assume Hd : d :e LHS.
+  rewrite (Hphi_compute d Hd).
+  claim Hf_in_F : (Eps_i (fun f:set => f :e F /\
+    left_coset mN (left_coset multF f N) CommFN = d)) :e F.
+  { exact (Heps_F d Hd). }
+  claim HfCommF_in_GA : left_coset multF
+    (Eps_i (fun f:set => f :e F /\
+      left_coset mN (left_coset multF f N) CommFN = d))
+    CommF :e GA.
+  { exact (ReplI F (fun g => left_coset multF g CommF)
+      (Eps_i (fun f:set => f :e F /\
+        left_coset mN (left_coset multF f N) CommFN = d))
+      Hf_in_F). }
+  exact (ReplI GA (fun c => left_coset mA c piN)
+    (left_coset multF
+      (Eps_i (fun f:set => f :e F /\
+        left_coset mN (left_coset multF f N) CommFN = d))
+      CommF)
+    HfCommF_in_GA). }
+(** Step 5: Prove the group isomorphism **)
+witness phi.
+(** group_isomorphism = group_homomorphism /\ bijection **)
+apply (andI
+  (group_homomorphism LHS mLHS RHS mRHS phi)
+  (bijection LHS RHS phi)).
+- (** group_homomorphism LHS mLHS RHS mRHS phi **)
+  apply (andI
+    (function_on phi LHS RHS)
+    (forall x y:set, x :e LHS -> y :e LHS ->
+      apply_fun phi (apply_fun mLHS (x, y)) =
+      apply_fun mRHS (apply_fun phi x, apply_fun phi y))).
+  + (** function_on phi LHS RHS **)
+    exact Hfn_on.
+  + (** mult rule **)
+    admit.
+- (** bijection LHS RHS phi **)
+  apply (andI
+    (function_on phi LHS RHS)
+    (forall y:set, y :e RHS ->
+      exists x:set, x :e LHS /\ apply_fun phi x = y /\
+        (forall x':set, x' :e LHS -> apply_fun phi x' = y -> x' = x))).
+  + (** function_on phi LHS RHS **)
+    exact Hfn_on.
+  + (** unique preimage **)
+    admit.
 Admitted.
 
 (** from S75 Cor 75.2 (line 4083 in algtop.tex): for free groups **)
