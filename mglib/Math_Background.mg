@@ -179060,6 +179060,245 @@ claim Hab_in : (a, b) :e setprod Ga Ga.
 exact (Hmult_fn (a, b) Hab_in).
 Qed.
 
+(** Infrastructure: homomorphism image is a subgroup **)
+(** Proven Bob **)
+Lemma homomorphism_image_subgroup_of :
+  forall G mult e inv H multH eH invH phi:set,
+  group_structure G mult e inv ->
+  group_structure H multH eH invH ->
+  group_homomorphism G mult H multH phi ->
+  subgroup_of (homomorphism_image G phi) H multH eH invH.
+let G mult e inv H multH eH invH phi.
+assume HgrpG HgrpH Hphi.
+set Himg := homomorphism_image G phi.
+claim HphiFun : function_on phi G H.
+{
+  exact (group_homomorphism_function_on G mult H multH phi Hphi).
+}
+prove (homomorphism_image G phi) c= H /\
+  eH :e Himg /\
+  (forall x y:set, x :e Himg -> y :e Himg -> apply_fun multH (x, y) :e Himg) /\
+  (forall x:set, x :e Himg -> apply_fun invH x :e Himg).
+apply (and4I
+  ((homomorphism_image G phi) c= H)
+  (eH :e Himg)
+  (forall x y:set, x :e Himg -> y :e Himg -> apply_fun multH (x, y) :e Himg)
+  (forall x:set, x :e Himg -> apply_fun invH x :e Himg)).
++ (** image subset of H **)
+  exact (homomorphism_image_sub G H phi HphiFun).
++ (** eH in image **)
+  claim HeG : e :e G.
+  {
+    apply (and6E
+      (function_on mult (setprod G G) G)
+      (function_on inv G G)
+      (e :e G)
+      (forall x y z:set, x :e G -> y :e G -> z :e G ->
+        apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+      (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+      (forall x:set, x :e G ->
+        apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+      HgrpG).
+    assume _ _ He _ _ _. exact He.
+  }
+  claim Hphi_e : apply_fun phi e = eH.
+  {
+    exact (group_hom_preserves_identity
+      G mult e inv H multH eH invH phi HgrpG HgrpH Hphi).
+  }
+  rewrite <- Hphi_e.
+  exact (homomorphism_image_intro G phi e HeG).
++ (** mult closure in image **)
+  let x y. assume Hx : x :e Himg. assume Hy : y :e Himg.
+  claim Hex1 : exists a:set, a :e G /\ x = apply_fun phi a.
+  {
+    exact (iffEL
+      (x :e homomorphism_image G phi)
+      (exists a:set, a :e G /\ x = apply_fun phi a)
+      (homomorphism_image_mem G phi x)
+      Hx).
+  }
+  apply Hex1.
+  let a. assume HxPack.
+  claim HaG : a :e G.
+  { exact (andEL (a :e G) (x = apply_fun phi a) HxPack). }
+  claim HxEq : x = apply_fun phi a.
+  { exact (andER (a :e G) (x = apply_fun phi a) HxPack). }
+  claim Hex2 : exists b:set, b :e G /\ y = apply_fun phi b.
+  {
+    exact (iffEL
+      (y :e homomorphism_image G phi)
+      (exists b:set, b :e G /\ y = apply_fun phi b)
+      (homomorphism_image_mem G phi y)
+      Hy).
+  }
+  apply Hex2.
+  let b. assume HyPack.
+  claim HbG : b :e G.
+  { exact (andEL (b :e G) (y = apply_fun phi b) HyPack). }
+  claim HyEq : y = apply_fun phi b.
+  { exact (andER (b :e G) (y = apply_fun phi b) HyPack). }
+  claim HabG : apply_fun mult (a, b) :e G.
+  {
+    exact (group_source_mult_closure G mult e inv HgrpG a b HaG HbG).
+  }
+  claim Hmult_eq :
+    apply_fun multH (x, y) = apply_fun phi (apply_fun mult (a, b)).
+  {
+    rewrite HxEq. rewrite HyEq.
+    symmetry.
+    exact (group_homomorphism_mult_rule
+      G mult H multH phi a b Hphi HaG HbG).
+  }
+  rewrite Hmult_eq.
+  exact (homomorphism_image_intro G phi (apply_fun mult (a, b)) HabG).
++ (** inverse closure in image **)
+  let x. assume Hx : x :e Himg.
+  claim Hex : exists a:set, a :e G /\ x = apply_fun phi a.
+  {
+    exact (iffEL
+      (x :e homomorphism_image G phi)
+      (exists a:set, a :e G /\ x = apply_fun phi a)
+      (homomorphism_image_mem G phi x)
+      Hx).
+  }
+  apply Hex.
+  let a. assume HxPack.
+  claim HaG : a :e G.
+  { exact (andEL (a :e G) (x = apply_fun phi a) HxPack). }
+  claim HxEq : x = apply_fun phi a.
+  { exact (andER (a :e G) (x = apply_fun phi a) HxPack). }
+  apply (and6E
+    (function_on multH (setprod H H) H)
+    (function_on invH H H)
+    (eH :e H)
+    (forall x y z:set, x :e H -> y :e H -> z :e H ->
+      apply_fun multH (apply_fun multH (x, y), z) = apply_fun multH (x, apply_fun multH (y, z)))
+    (forall x:set, x :e H -> apply_fun multH (eH, x) = x /\ apply_fun multH (x, eH) = x)
+    (forall x:set, x :e H ->
+      apply_fun multH (x, apply_fun invH x) = eH /\ apply_fun multH (apply_fun invH x, x) = eH)
+    HgrpH).
+  assume HmultH_fn HinvH_fn HeHH HassocH HidH HinvH_law.
+  claim HxH : x :e H.
+  {
+    rewrite HxEq.
+    exact (HphiFun a HaG).
+  }
+  claim Hinv_aG : apply_fun inv a :e G.
+  {
+    apply (and6E
+      (function_on mult (setprod G G) G)
+      (function_on inv G G)
+      (e :e G)
+      (forall x y z:set, x :e G -> y :e G -> z :e G ->
+        apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+      (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+      (forall x:set, x :e G ->
+        apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+      HgrpG).
+    assume _ HinvFn _ _ _ _. exact (HinvFn a HaG).
+  }
+  claim Hphi_inv_a_H : apply_fun phi (apply_fun inv a) :e H.
+  { exact (HphiFun (apply_fun inv a) Hinv_aG). }
+  (** inverse law in G **)
+  claim HinvG_right : apply_fun mult (a, apply_fun inv a) = e.
+  {
+    apply (and6E
+      (function_on mult (setprod G G) G)
+      (function_on inv G G)
+      (e :e G)
+      (forall x y z:set, x :e G -> y :e G -> z :e G ->
+        apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+      (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+      (forall x:set, x :e G ->
+        apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+      HgrpG).
+    assume _ _ _ _ _ HinvLaw.
+    exact (andEL
+      (apply_fun mult (a, apply_fun inv a) = e)
+      (apply_fun mult (apply_fun inv a, a) = e)
+      (HinvLaw a HaG)).
+  }
+  claim HinvG_left : apply_fun mult (apply_fun inv a, a) = e.
+  {
+    apply (and6E
+      (function_on mult (setprod G G) G)
+      (function_on inv G G)
+      (e :e G)
+      (forall x y z:set, x :e G -> y :e G -> z :e G ->
+        apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+      (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+      (forall x:set, x :e G ->
+        apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+      HgrpG).
+    assume _ _ _ _ _ HinvLaw.
+    exact (andER
+      (apply_fun mult (a, apply_fun inv a) = e)
+      (apply_fun mult (apply_fun inv a, a) = e)
+      (HinvLaw a HaG)).
+  }
+  (** phi(inv a) is inverse of x = phi a **)
+  claim Hphi_e : apply_fun phi e = eH.
+  {
+    exact (group_hom_preserves_identity
+      G mult e inv H multH eH invH phi HgrpG HgrpH Hphi).
+  }
+  claim Hright_inv :
+    apply_fun multH (x, apply_fun phi (apply_fun inv a)) = eH.
+  {
+    rewrite HxEq.
+    rewrite <- (group_homomorphism_mult_rule
+      G mult H multH phi a (apply_fun inv a) Hphi HaG Hinv_aG).
+    rewrite HinvG_right.
+    exact Hphi_e.
+  }
+  claim Hleft_inv :
+    apply_fun multH (apply_fun phi (apply_fun inv a), x) = eH.
+  {
+    rewrite HxEq.
+    rewrite <- (group_homomorphism_mult_rule
+      G mult H multH phi (apply_fun inv a) a Hphi Hinv_aG HaG).
+    rewrite HinvG_left.
+    exact Hphi_e.
+  }
+  claim HinvH_x_in_H : apply_fun invH x :e H.
+  { exact (HinvH_fn x HxH). }
+  (** derive phi(inv a) = invH x using left inverse law **)
+  claim HrightIdH : forall y:set, y :e H -> apply_fun multH (y, eH) = y.
+  { let y. assume Hy.
+    exact (andER
+      (apply_fun multH (eH, y) = y)
+      (apply_fun multH (y, eH) = y)
+      (HidH y Hy)). }
+  claim HleftIdH : forall y:set, y :e H -> apply_fun multH (eH, y) = y.
+  { let y. assume Hy.
+    exact (andEL
+      (apply_fun multH (eH, y) = y)
+      (apply_fun multH (y, eH) = y)
+      (HidH y Hy)). }
+  claim HinvH_right_x : apply_fun multH (x, apply_fun invH x) = eH.
+  { exact (andEL
+      (apply_fun multH (x, apply_fun invH x) = eH)
+      (apply_fun multH (apply_fun invH x, x) = eH)
+      (HinvH_law x HxH)). }
+  claim Hphi_inv_eq : apply_fun phi (apply_fun inv a) = apply_fun invH x.
+  {
+    (** z = phi(inv a); show z = invH x **)
+    set z := apply_fun phi (apply_fun inv a).
+    claim HzH : z :e H. { exact Hphi_inv_a_H. }
+    claim Hzx_e : apply_fun multH (z, x) = eH.
+    { exact Hleft_inv. }
+    rewrite <- (HrightIdH z HzH).
+    rewrite <- HinvH_right_x.
+    rewrite <- (HassocH z x (apply_fun invH x) HzH HxH HinvH_x_in_H).
+    rewrite Hzx_e.
+    rewrite (HleftIdH (apply_fun invH x) HinvH_x_in_H).
+    reflexivity.
+  }
+  rewrite <- Hphi_inv_eq.
+  exact (homomorphism_image_intro G phi (apply_fun inv a) Hinv_aG).
+Qed.
+
 (** from S67 Lem 67.5 (line 2660 in algtop.tex): extension condition for external direct sums **)
 (** LATEX VERSION: If each i_alpha is a monomorphism and G is the direct sum of i_alpha(G_alpha), **)
 (** then given any abelian group H and homomorphisms h_alpha: G_alpha -> H, there exists a unique **)
