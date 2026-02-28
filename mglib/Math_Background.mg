@@ -33432,6 +33432,296 @@ rewrite <- HclsEqEps.
 reflexivity.
 Qed.
 
+(** Proven Bob **)
+Theorem basepoint_change_map_identity_on_id : forall X Tx x0 x1 alpha:set,
+  topology_on X Tx ->
+  continuous_map unit_interval unit_interval_topology X Tx alpha ->
+  apply_fun alpha 0 = x0 -> apply_fun alpha 1 = x1 ->
+  apply_fun (basepoint_change_map X Tx x0 x1 alpha)
+    (fundamental_group_id X Tx x0)
+  = fundamental_group_id X Tx x1.
+let X Tx x0 x1 alpha.
+assume HtopX HalphaCont Halpha0 Halpha1.
+claim HalphaFun : function_on alpha unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    alpha
+    HalphaCont).
+}
+claim Hx0X : x0 :e X.
+{
+  rewrite <- Halpha0.
+  exact (HalphaFun 0 zero_in_unit_interval).
+}
+claim Hx1X : x1 :e X.
+{
+  rewrite <- Halpha1.
+  exact (HalphaFun 1 one_in_unit_interval).
+}
+claim HconstLoop : loop_at X Tx x0 (constant_path x0).
+{
+  exact (loop_at_constant_path
+    X
+    Tx
+    x0
+    HtopX
+    Hx0X).
+}
+claim HconstFS : (constant_path x0) :e function_space unit_interval X.
+{
+  exact (graph_in_function_space
+    unit_interval
+    X
+    (fun t:set => x0)
+    (fun t Ht => Hx0X)).
+}
+claim HconstInLoop : (constant_path x0) :e loop_space X Tx x0.
+{
+  exact (SepI
+    (function_space unit_interval X)
+    (fun g:set => loop_at X Tx x0 g)
+    (constant_path x0)
+    HconstFS
+    HconstLoop).
+}
+claim Hid0Def :
+  fundamental_group_id X Tx x0
+  = path_homotopy_class_loop X Tx x0 (constant_path x0).
+{
+  reflexivity.
+}
+set eps := Eps_i (fun g:set =>
+  g :e path_homotopy_class_loop X Tx x0 (constant_path x0)).
+claim HepsDef :
+  eps = Eps_i (fun g:set =>
+    g :e path_homotopy_class_loop X Tx x0 (constant_path x0)).
+{
+  reflexivity.
+}
+rewrite Hid0Def.
+rewrite (basepoint_change_map_apply_on_loop_class
+  X
+  Tx
+  x0
+  x1
+  alpha
+  (constant_path x0)
+  HconstInLoop).
+rewrite <- HepsDef.
+claim HepsInClass : eps :e path_homotopy_class_loop X Tx x0 (constant_path x0).
+{
+  exact (Eps_i_ax
+    (fun g:set => g :e path_homotopy_class_loop X Tx x0 (constant_path x0))
+    (constant_path x0)
+    (loop_in_own_path_homotopy_class
+      X
+      Tx
+      x0
+      (constant_path x0)
+      HconstInLoop)).
+}
+claim HepsHom0 : path_homotopic X Tx x0 x0 (constant_path x0) eps.
+{
+  exact (path_homotopy_class_loop_has_homotopy
+    X
+    Tx
+    x0
+    (constant_path x0)
+    eps
+    HepsInClass).
+}
+claim HepsHom : path_homotopic X Tx x0 x0 eps (constant_path x0).
+{
+  exact (Lemma_51_1_path_homotopy_sym
+    X
+    Tx
+    x0
+    x0
+    (constant_path x0)
+    eps
+    HepsHom0).
+}
+claim HalphaRefl : path_homotopic X Tx x0 x1 alpha alpha.
+{
+  exact (Lemma_51_1_path_homotopy_refl
+    X
+    Tx
+    x0
+    x1
+    alpha
+    HalphaCont
+    Halpha0
+    Halpha1).
+}
+claim Hconcat_eps :
+  path_homotopic X Tx x0 x1 (path_concat eps alpha)
+    (path_concat (constant_path x0) alpha).
+{
+  exact (path_concat_well_defined_on_classes
+    X
+    Tx
+    x0
+    x0
+    x1
+    eps
+    (constant_path x0)
+    alpha
+    alpha
+    HepsHom
+    HalphaRefl).
+}
+claim HrevCont :
+  continuous_map unit_interval unit_interval_topology X Tx (reverse_path alpha).
+{
+  exact (reverse_path_continuous X Tx alpha HalphaCont).
+}
+claim Hrev0 : apply_fun (reverse_path alpha) 0 = x1.
+{
+  rewrite (reverse_path_at_zero alpha).
+  exact Halpha1.
+}
+claim Hrev1 : apply_fun (reverse_path alpha) 1 = x0.
+{
+  rewrite (reverse_path_at_one alpha).
+  exact Halpha0.
+}
+claim HrevRefl :
+  path_homotopic X Tx x1 x0 (reverse_path alpha) (reverse_path alpha).
+{
+  exact (Lemma_51_1_path_homotopy_refl
+    X
+    Tx
+    x1
+    x0
+    (reverse_path alpha)
+    HrevCont
+    Hrev0
+    Hrev1).
+}
+claim Houter :
+  path_homotopic X Tx x1 x1
+    (path_concat (reverse_path alpha) (path_concat eps alpha))
+    (path_concat (reverse_path alpha) (path_concat (constant_path x0) alpha)).
+{
+  exact (path_concat_well_defined_on_classes
+    X
+    Tx
+    x1
+    x0
+    x1
+    (reverse_path alpha)
+    (reverse_path alpha)
+    (path_concat eps alpha)
+    (path_concat (constant_path x0) alpha)
+    HrevRefl
+    Hconcat_eps).
+}
+claim HleftId :
+  path_homotopic X Tx x0 x1 (path_concat (constant_path x0) alpha) alpha.
+{
+  exact (Theorem_51_2_left_identity
+    X
+    Tx
+    x0
+    x1
+    alpha
+    HalphaCont
+    Halpha0
+    Halpha1
+    Hx0X).
+}
+claim Houter2 :
+  path_homotopic X Tx x1 x1
+    (path_concat (reverse_path alpha) (path_concat (constant_path x0) alpha))
+    (path_concat (reverse_path alpha) alpha).
+{
+  exact (path_concat_well_defined_on_classes
+    X
+    Tx
+    x1
+    x0
+    x1
+    (reverse_path alpha)
+    (reverse_path alpha)
+    (path_concat (constant_path x0) alpha)
+    alpha
+    HrevRefl
+    HleftId).
+}
+claim Hinv :
+  path_homotopic X Tx x1 x1 (path_concat (reverse_path alpha) alpha)
+    (constant_path x1).
+{
+  exact (Theorem_51_2_left_inverse
+    X
+    Tx
+    x0
+    x1
+    alpha
+    HalphaCont
+    Halpha0
+    Halpha1).
+}
+claim Hmid :
+  path_homotopic X Tx x1 x1
+    (path_concat (reverse_path alpha) (path_concat eps alpha))
+    (path_concat (reverse_path alpha) alpha).
+{
+  exact (Lemma_51_1_path_homotopy_trans
+    X
+    Tx
+    x1
+    x1
+    (path_concat (reverse_path alpha) (path_concat eps alpha))
+    (path_concat (reverse_path alpha) (path_concat (constant_path x0) alpha))
+    (path_concat (reverse_path alpha) alpha)
+    Houter
+    Houter2).
+}
+claim HfinalHom :
+  path_homotopic X Tx x1 x1
+    (path_concat (reverse_path alpha) (path_concat eps alpha))
+    (constant_path x1).
+{
+  exact (Lemma_51_1_path_homotopy_trans
+    X
+    Tx
+    x1
+    x1
+    (path_concat (reverse_path alpha) (path_concat eps alpha))
+    (path_concat (reverse_path alpha) alpha)
+    (constant_path x1)
+    Hmid
+    Hinv).
+}
+claim HclassEq :
+  path_homotopy_class_loop X Tx x1
+    (path_concat (reverse_path alpha) (path_concat eps alpha))
+  = path_homotopy_class_loop X Tx x1 (constant_path x1).
+{
+  exact (path_homotopy_class_loop_eq_of_path_homotopic
+    X
+    Tx
+    x1
+    (path_concat (reverse_path alpha) (path_concat eps alpha))
+    (constant_path x1)
+    HfinalHom).
+}
+claim HidDef :
+  fundamental_group_id X Tx x1
+  = path_homotopy_class_loop X Tx x1 (constant_path x1).
+{
+  reflexivity.
+}
+rewrite HclassEq.
+rewrite <- HidDef.
+reflexivity.
+Qed.
+
 (** Infrastructure: postcomposition carries loops to loops at image basepoint **)
 (** Proven Bob **)
 Theorem loop_space_postcompose : forall X Tx x0 Y Ty y0 f h:set,
