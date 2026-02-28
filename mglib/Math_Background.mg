@@ -191809,6 +191809,83 @@ apply (nat_inv nw Hnw_nat).
                     rewrite <- Hwp_shift_m.
                     exact Hwp_ie_succ.
                   }
+                  claim Hxs_suf_in_G : forall i:set, i :e m -> apply_fun xs_suf_ie i :e G.
+                  {
+                    let i.
+                    assume Hi_m.
+                    claim Hsi_sm : ordsucc i :e ordsucc m.
+                    {
+                      exact (nat_ordsucc_in_ordsucc
+                        m
+                        Hm_nat
+                        i
+                        Hi_m).
+                    }
+                    rewrite (apply_fun_graph
+                      m
+                      (fun j:set => apply_fun xie (ordsucc j))
+                      i
+                      Hi_m).
+                    exact (Hxie_in_G
+                      (ordsucc i)
+                      Hsi_sm).
+                  }
+                  claim Hwp_suf_G : word_product multG eG xs_suf_ie m :e G.
+                  {
+                    exact (word_product_in_G_group
+                      G
+                      multG
+                      eG
+                      invG
+                      m
+                      xs_suf_ie
+                      Hgrp
+                      Hm_nat
+                      Hxs_suf_in_G).
+                  }
+                  claim Hwp_suf_ne_eG : word_product multG eG xs_suf_ie m <> eG.
+                  {
+                    assume Hwp_suf_eG.
+                    claim Hmult_xie0_eG : apply_fun multG (apply_fun xie 0, eG) = ie.
+                    {
+                      rewrite <- Hwp_suf_eG.
+                      exact Hxie0_wp_suf.
+                    }
+                    claim HidR_xie0 : apply_fun multG (apply_fun xie 0, eG) = apply_fun xie 0.
+                    {
+                      exact (andER
+                        (apply_fun multG (eG, apply_fun xie 0) = apply_fun xie 0)
+                        (apply_fun multG (apply_fun xie 0, eG) = apply_fun xie 0)
+                        (HidG
+                          (apply_fun xie 0)
+                          Hxie0_G)).
+                    }
+                    claim Hxie0_eq_ie : apply_fun xie 0 = ie.
+                    {
+                      claim HidR_xie0_sym : apply_fun xie 0 = apply_fun multG (apply_fun xie 0, eG).
+                      {
+                        symmetry.
+                        exact HidR_xie0.
+                      }
+                      exact (eq_i_tra
+                        (apply_fun xie 0)
+                        (apply_fun multG (apply_fun xie 0, eG))
+                        ie
+                        HidR_xie0_sym
+                        Hmult_xie0_eG).
+                    }
+                    claim Hxie0_efam : apply_fun xie 0 = apply_fun efam al.
+                    {
+                      exact (eq_i_tra
+                        (apply_fun xie 0)
+                        ie
+                        (apply_fun efam al)
+                        Hxie0_eq_ie
+                        Hie_eq_efam).
+                    }
+                    exact (Hxie0_ne_efam_al
+                      Hxie0_efam).
+                  }
                   admit. (** TODO: use Hred_suf_ie and Hxie0_wp_suf to build a reduced word of length nie for xie0,
                       contradicting Hxie0_uniq_len1/Hnie_ne_1. **)
                 }
