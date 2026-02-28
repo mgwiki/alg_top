@@ -266015,6 +266015,46 @@ exact (arc_endpoints_in_union_arcs
 Qed.
 
 (** Proven Bob **)
+Theorem oriented_edge_initial_in_union_arcs_basic :
+  forall X Tx Arcs A ini fin:set,
+  oriented_edge X Tx Arcs A ini fin ->
+  ini :e Union Arcs.
+let X Tx Arcs A ini fin.
+assume Hori.
+exact (andEL
+  (ini :e Union Arcs)
+  (fin :e Union Arcs)
+  (oriented_edge_endpoints_in_union_arcs_basic
+    X
+    Tx
+    Arcs
+    A
+    ini
+    fin
+    Hori)).
+Qed.
+
+(** Proven Bob **)
+Theorem oriented_edge_final_in_union_arcs_basic :
+  forall X Tx Arcs A ini fin:set,
+  oriented_edge X Tx Arcs A ini fin ->
+  fin :e Union Arcs.
+let X Tx Arcs A ini fin.
+assume Hori.
+exact (andER
+  (ini :e Union Arcs)
+  (fin :e Union Arcs)
+  (oriented_edge_endpoints_in_union_arcs_basic
+    X
+    Tx
+    Arcs
+    A
+    ini
+    fin
+    Hori)).
+Qed.
+
+(** Proven Bob **)
 Theorem edge_path_n_in_omega :
   forall X Tx Arcs n path_seq x0:set,
   edge_path X Tx Arcs n path_seq x0 ->
