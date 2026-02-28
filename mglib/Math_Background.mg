@@ -78607,6 +78607,308 @@ rewrite <- (product_subspace_topology
 exact HconnProd.
 Qed.
 
+(** Infrastructure: product of two path connected spaces is path connected **)
+(** Proven Bob **)
+Theorem finite_product_path_connected :
+  forall X Tx Y Ty:set,
+  path_connected_space X Tx ->
+  path_connected_space Y Ty ->
+  path_connected_space (setprod X Y) (product_topology X Tx Y Ty).
+let X Tx Y Ty.
+assume HpcX HpcY.
+claim HtopX : topology_on X Tx.
+{
+  exact (path_connected_space_topology
+    X
+    Tx
+    HpcX).
+}
+claim HtopY : topology_on Y Ty.
+{
+  exact (path_connected_space_topology
+    Y
+    Ty
+    HpcY).
+}
+claim HtopProd :
+  topology_on (setprod X Y) (product_topology X Tx Y Ty).
+{
+  exact (product_topology_is_topology
+    X
+    Tx
+    Y
+    Ty
+    HtopX
+    HtopY).
+}
+claim HpcProd :
+  forall x y : set,
+  x :e setprod X Y ->
+  y :e setprod X Y ->
+  exists p : set,
+    path_between (setprod X Y) x y p /\
+    continuous_map unit_interval unit_interval_topology (setprod X Y)
+      (product_topology X Tx Y Ty) p.
+{
+  let x.
+  let y.
+  assume Hx Hy.
+  claim Hx0 : x 0 :e X.
+  {
+    exact (ap0_Sigma
+      X
+      (fun _ : set => Y)
+      x
+      Hx).
+  }
+  claim Hx1 : x 1 :e Y.
+  {
+    exact (ap1_Sigma
+      X
+      (fun _ : set => Y)
+      x
+      Hx).
+  }
+  claim Hy0 : y 0 :e X.
+  {
+    exact (ap0_Sigma
+      X
+      (fun _ : set => Y)
+      y
+      Hy).
+  }
+  claim Hy1 : y 1 :e Y.
+  {
+    exact (ap1_Sigma
+      X
+      (fun _ : set => Y)
+      y
+      Hy).
+  }
+  claim Hxeta : x = (x 0, x 1).
+  {
+    exact (setprod_eta
+      X
+      Y
+      x
+      Hx).
+  }
+  claim Hyeta : y = (y 0, y 1).
+  {
+    exact (setprod_eta
+      X
+      Y
+      y
+      Hy).
+  }
+  claim HpxEx :
+    exists px:set,
+      path_between X (x 0) (y 0) px /\
+      continuous_map unit_interval unit_interval_topology X Tx px.
+  {
+    exact (path_connected_space_paths
+      X
+      Tx
+      (x 0)
+      (y 0)
+      HpcX
+      Hx0
+      Hy0).
+  }
+  claim HpyEx :
+    exists py:set,
+      path_between Y (x 1) (y 1) py /\
+      continuous_map unit_interval unit_interval_topology Y Ty py.
+  {
+    exact (path_connected_space_paths
+      Y
+      Ty
+      (x 1)
+      (y 1)
+      HpcY
+      Hx1
+      Hy1).
+  }
+  set px := Eps_i (fun p:set =>
+    path_between X (x 0) (y 0) p /\
+    continuous_map unit_interval unit_interval_topology X Tx p).
+  set py := Eps_i (fun p:set =>
+    path_between Y (x 1) (y 1) p /\
+    continuous_map unit_interval unit_interval_topology Y Ty p).
+  claim HpxPack :
+    path_between X (x 0) (y 0) px /\
+    continuous_map unit_interval unit_interval_topology X Tx px.
+  {
+    exact (Eps_i_ex
+      (fun p:set =>
+        path_between X (x 0) (y 0) p /\
+        continuous_map unit_interval unit_interval_topology X Tx p)
+      HpxEx).
+  }
+  claim HpyPack :
+    path_between Y (x 1) (y 1) py /\
+    continuous_map unit_interval unit_interval_topology Y Ty py.
+  {
+    exact (Eps_i_ex
+      (fun p:set =>
+        path_between Y (x 1) (y 1) p /\
+        continuous_map unit_interval unit_interval_topology Y Ty p)
+      HpyEx).
+  }
+  claim HpxPath : path_between X (x 0) (y 0) px.
+  {
+    exact (andEL
+      (path_between X (x 0) (y 0) px)
+      (continuous_map unit_interval unit_interval_topology X Tx px)
+      HpxPack).
+  }
+  claim HpxCont : continuous_map unit_interval unit_interval_topology X Tx px.
+  {
+    exact (andER
+      (path_between X (x 0) (y 0) px)
+      (continuous_map unit_interval unit_interval_topology X Tx px)
+      HpxPack).
+  }
+  claim HpyPath : path_between Y (x 1) (y 1) py.
+  {
+    exact (andEL
+      (path_between Y (x 1) (y 1) py)
+      (continuous_map unit_interval unit_interval_topology Y Ty py)
+      HpyPack).
+  }
+  claim HpyCont : continuous_map unit_interval unit_interval_topology Y Ty py.
+  {
+    exact (andER
+      (path_between Y (x 1) (y 1) py)
+      (continuous_map unit_interval unit_interval_topology Y Ty py)
+      HpyPack).
+  }
+  set r := pair_map unit_interval px py.
+  claim HrCont :
+    continuous_map unit_interval unit_interval_topology (setprod X Y)
+      (product_topology X Tx Y Ty) r.
+  {
+    exact (maps_into_products
+      unit_interval
+      unit_interval_topology
+      X
+      Tx
+      Y
+      Ty
+      px
+      py
+      HpxCont
+      HpyCont).
+  }
+  claim HrFun : function_on r unit_interval (setprod X Y).
+  {
+    exact (continuous_map_function_on
+      unit_interval
+      unit_interval_topology
+      (setprod X Y)
+      (product_topology X Tx Y Ty)
+      r
+      HrCont).
+  }
+  claim Hr0 : apply_fun r 0 = x.
+  {
+    rewrite (pair_map_apply
+      unit_interval
+      X
+      Y
+      px
+      py
+      0
+      zero_in_unit_interval).
+    claim Hpx0 : apply_fun px 0 = x 0.
+    {
+      exact (path_between_at_zero
+        X
+        (x 0)
+        (y 0)
+        px
+        HpxPath).
+    }
+    claim Hpy0 : apply_fun py 0 = x 1.
+    {
+      exact (path_between_at_zero
+        Y
+        (x 1)
+        (y 1)
+        py
+        HpyPath).
+    }
+    rewrite Hpx0.
+    rewrite Hpy0.
+    rewrite <- Hxeta.
+    reflexivity.
+  }
+  claim Hr1 : apply_fun r 1 = y.
+  {
+    rewrite (pair_map_apply
+      unit_interval
+      X
+      Y
+      px
+      py
+      1
+      one_in_unit_interval).
+    claim Hpx1 : apply_fun px 1 = y 0.
+    {
+      exact (path_between_at_one
+        X
+        (x 0)
+        (y 0)
+        px
+        HpxPath).
+    }
+    claim Hpy1 : apply_fun py 1 = y 1.
+    {
+      exact (path_between_at_one
+        Y
+        (x 1)
+        (y 1)
+        py
+        HpyPath).
+    }
+    rewrite Hpx1.
+    rewrite Hpy1.
+    rewrite <- Hyeta.
+    reflexivity.
+  }
+  witness r.
+  claim HrPath : path_between (setprod X Y) x y r.
+  {
+    exact (andI
+      (function_on r unit_interval (setprod X Y) /\ apply_fun r 0 = x)
+      (apply_fun r 1 = y)
+      (andI
+        (function_on r unit_interval (setprod X Y))
+        (apply_fun r 0 = x)
+        HrFun
+        Hr0)
+      Hr1).
+  }
+  exact (andI
+    (path_between (setprod X Y) x y r)
+    (continuous_map unit_interval unit_interval_topology (setprod X Y)
+      (product_topology X Tx Y Ty) r)
+    HrPath
+    HrCont).
+}
+exact (andI
+  (topology_on (setprod X Y) (product_topology X Tx Y Ty))
+  (forall x y : set,
+    x :e setprod X Y ->
+    y :e setprod X Y ->
+    exists p : set,
+      path_between (setprod X Y) x y p /\
+      continuous_map unit_interval unit_interval_topology (setprod X Y)
+        (product_topology X Tx Y Ty) p)
+  HtopProd
+  HpcProd).
+Qed.
+
 (** Infrastructure: any open neighborhood in the unit square contains an open connected neighborhood **)
 (** Proven Charlie **)
 Theorem unit_square_open_neighborhood_contains_connected_open_subset :
