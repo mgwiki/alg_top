@@ -186557,6 +186557,151 @@ apply (nat_inv
       Hxsk_e).
 Qed.
 
+(** Infrastructure: prefix of reduced word is reduced **)
+(** Proven Bob **)
+Lemma reduced_word_prefix : forall J Gfam efam n xs m:set,
+  reduced_word J Gfam efam n xs ->
+  m :e n ->
+  reduced_word J Gfam efam m (graph m (fun i:set => apply_fun xs i)).
+let J Gfam efam n xs m.
+assume Hred Hm_n.
+apply (and3E
+  (n :e omega)
+  (forall i:set, i :e n ->
+    exists alpha:set, alpha :e J /\
+      apply_fun xs i :e apply_fun Gfam alpha /\
+      apply_fun xs i <> apply_fun efam alpha)
+  (forall i:set, i :e n -> ordsucc i :e n ->
+    forall alpha beta:set, alpha :e J -> beta :e J ->
+      apply_fun xs i :e apply_fun Gfam alpha ->
+      apply_fun xs (ordsucc i) :e apply_fun Gfam beta ->
+      alpha <> beta)
+  Hred).
+assume Hn_omega Helem Hadj.
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_omega).
+}
+claim Hn_ord : ordinal n.
+{
+  exact (nat_p_ordinal
+    n
+    Hn_nat).
+}
+claim Hm_sub : m c= n.
+{
+  exact (ordinal_TransSet
+    n
+    Hn_ord
+    m
+    Hm_n).
+}
+prove m :e omega /\
+  (forall i:set, i :e m ->
+    exists alpha:set, alpha :e J /\
+      apply_fun (graph m (fun j:set => apply_fun xs j)) i :e apply_fun Gfam alpha /\
+      apply_fun (graph m (fun j:set => apply_fun xs j)) i <> apply_fun efam alpha) /\
+  (forall i:set, i :e m -> ordsucc i :e m ->
+    forall alpha beta:set, alpha :e J -> beta :e J ->
+      apply_fun (graph m (fun j:set => apply_fun xs j)) i :e apply_fun Gfam alpha ->
+      apply_fun (graph m (fun j:set => apply_fun xs j)) (ordsucc i) :e apply_fun Gfam beta ->
+      alpha <> beta).
+apply and3I.
+- claim Hm_omega : m :e omega.
+  {
+    claim Hn_sub : n c= omega.
+    {
+      exact (omega_TransSet
+        n
+        Hn_omega).
+    }
+    exact (Hn_sub
+      m
+      Hm_n).
+  }
+  exact Hm_omega.
+- let i.
+  assume Hi_m.
+  claim Hi_n : i :e n.
+  {
+    exact (Hm_sub
+      i
+      Hi_m).
+  }
+  apply (Helem
+    i
+    Hi_n).
+  let alpha.
+  assume Halpha_pack.
+  apply (and3E
+    (alpha :e J)
+    (apply_fun xs i :e apply_fun Gfam alpha)
+    (apply_fun xs i <> apply_fun efam alpha)
+    Halpha_pack).
+  assume HalphaJ Hxsi_Ga Hxsi_ne.
+  witness alpha.
+  apply and3I.
+  + exact HalphaJ.
+  + rewrite (apply_fun_graph
+      m
+      (fun j:set => apply_fun xs j)
+      i
+      Hi_m).
+    exact Hxsi_Ga.
+  + rewrite (apply_fun_graph
+      m
+      (fun j:set => apply_fun xs j)
+      i
+      Hi_m).
+    exact Hxsi_ne.
+- let i.
+  assume Hi_m Hsi_m.
+  let alpha beta.
+  assume HaJ HbJ Hia Hib.
+  claim Hi_n : i :e n.
+  {
+    exact (Hm_sub
+      i
+      Hi_m).
+  }
+  claim Hsi_n : ordsucc i :e n.
+  {
+    exact (Hm_sub
+      (ordsucc i)
+      Hsi_m).
+  }
+  claim Hxsi : apply_fun xs i :e apply_fun Gfam alpha.
+  {
+    rewrite <- (apply_fun_graph
+      m
+      (fun j:set => apply_fun xs j)
+      i
+      Hi_m).
+    exact Hia.
+  }
+  claim Hxsi1 : apply_fun xs (ordsucc i) :e apply_fun Gfam beta.
+  {
+    rewrite <- (apply_fun_graph
+      m
+      (fun j:set => apply_fun xs j)
+      (ordsucc i)
+      Hsi_m).
+    exact Hib.
+  }
+  exact (Hadj
+    i
+    Hi_n
+    Hsi_n
+    alpha
+    beta
+    HaJ
+    HbJ
+    Hxsi
+    Hxsi1).
+Qed.
+
 (** Infrastructure: the product represented by a word of length n **)
 Definition word_product : set -> set -> set -> set -> set :=
   fun mult e xs n =>
