@@ -52500,6 +52500,12 @@ apply set_ext.
   exact (UnionI {A} x A HxA (SingI A)).
 Qed.
 
+(** Infrastructure: union of {Empty} is Empty **)
+(** Proven Bob **)
+Theorem Union_singleton_empty_eq : Union {Empty} = Empty.
+exact (Union_singleton_eq Empty).
+Qed.
+
 (** Infrastructure: nonempty family with empty union is the singleton {Empty} **)
 (** Proven Bob **)
 Theorem union_empty_nonempty_family_eq_singleton_empty : forall Fam:set,
