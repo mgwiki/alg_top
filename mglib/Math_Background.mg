@@ -246433,6 +246433,38 @@ exact (SepI
 Qed.
 
 (** Proven Bob **)
+Theorem graph_vertices_intro_from_endpoint_pair :
+  forall X Tx Arcs A p q:set,
+  general_linear_graph X Tx Arcs ->
+  A :e Arcs ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  p :e graph_vertices X Tx Arcs /\ q :e graph_vertices X Tx Arcs.
+let X Tx Arcs A p q.
+assume Hglg HA Hend.
+apply andI.
+- exact (graph_vertices_intro_from_endpoint_left
+    X
+    Tx
+    Arcs
+    A
+    p
+    q
+    Hglg
+    HA
+    Hend).
+- exact (graph_vertices_intro_from_endpoint_right
+    X
+    Tx
+    Arcs
+    A
+    p
+    q
+    Hglg
+    HA
+    Hend).
+Qed.
+
+(** Proven Bob **)
 Theorem general_linear_graph_intersection_point_is_vertex :
   forall X Tx Arcs A B x:set,
   general_linear_graph X Tx Arcs ->
