@@ -271244,6 +271244,43 @@ apply (xm (B c= Y)).
     HHausB (Y :/\: B) HYBsubB HYBfinite).
 Qed.
 
+(** helper: arcs of tree are arcs of ambient GLG **)
+(** This follows from uniqueness of GLG arc decomposition:
+    subgraph_of T X Tx Arcs gives T = Union {B :e Arcs | B c= T},
+    general_linear_graph T TxT ArcsT gives T = Union ArcsT,
+    and these decompositions must agree since arcs in a GLG are maximal. **)
+Theorem tree_in_graph_arc_in_ambient_arcs :
+  forall T ArcsT X Tx Arcs V:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  V :e ArcsT ->
+  V :e Arcs.
+let T ArcsT X Tx Arcs V.
+assume Htree HV.
+claim HglgT : general_linear_graph T (subspace_topology X Tx T) ArcsT.
+{ exact (tree_in_graph_general_linear_graph T ArcsT X Tx Arcs Htree). }
+claim HglgX : general_linear_graph X Tx Arcs.
+{ exact (tree_in_graph_general_linear_graph_X T ArcsT X Tx Arcs Htree). }
+claim HsubT : subgraph_of T X Tx Arcs.
+{ exact (tree_in_graph_subgraph_of T ArcsT X Tx Arcs Htree). }
+claim HVsubT : V c= T.
+{ exact (andEL (V c= T) (arc V (subspace_topology T (subspace_topology X Tx T) V))
+    (general_linear_graph_arc_data T (subspace_topology X Tx T) ArcsT V HglgT HV)). }
+claim HTsubX : T c= X. { exact (tree_in_graph_subset_X T ArcsT X Tx Arcs Htree). }
+claim HVsubX : V c= X. { exact (Subq_tra V T X HVsubT HTsubX). }
+claim HtopX : topology_on X Tx. { exact (general_linear_graph_topology_on X Tx Arcs HglgX). }
+claim HtopVeq : subspace_topology T (subspace_topology X Tx T) V = subspace_topology X Tx V.
+{ exact (ex16_1_subspace_transitive X Tx T V HtopX HTsubX HVsubT). }
+claim HarcV : arc V (subspace_topology X Tx V).
+{ rewrite <- HtopVeq.
+  exact (andER (V c= T) (arc V (subspace_topology T (subspace_topology X Tx T) V))
+    (general_linear_graph_arc_data T (subspace_topology X Tx T) ArcsT V HglgT HV)). }
+(** V is an arc in X. We need to show V :e Arcs.
+    Every point of V is in T, and T = Union {B :e Arcs | B c= T}.
+    Each such B that overlaps V shares at most a single endpoint (in the ambient GLG).
+    The arc V must equal one of these B, by the uniqueness of arc decomposition. **)
+admit.
+Admitted.
+
 (** helper: general linear graph structure on the tree extension union **)
 Theorem lemma84_2_tree_extension_general_linear_graph_part :
   forall T ArcsT X Tx Arcs A:set,
@@ -271983,13 +272020,84 @@ claim HinterFamTA :
 		              end_points_of_arc V
 		                (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) r v.
 			          {
-			            (** Remaining mixed-case endpoint-at-v obligation on V.
-			                Attempted route via general_linear_graph_arc_intersection_case
-			                on ambient X reduces this to two concrete bridges:
-			                (1) lift V :e ArcsT to V :e Arcs from tree_in_graph context,
-			                (2) transport endpoint witness at the singleton intersection point.
-			                With (1), intersection-case gives endpoint-at-v directly. **)
-			            admit.
+			            (** Lift V :e ArcsT to V :e Arcs, then use arc intersection **)
+			            claim HVArcs : V :e Arcs.
+			            { exact (tree_in_graph_arc_in_ambient_arcs T ArcsT X Tx Arcs V Htree HVArcsT). }
+			            claim Hint : V :/\: A = Empty \/
+			              (exists p0:set, V :/\: A = Sing p0 /\
+			                (exists q0:set, end_points_of_arc V (subspace_topology X Tx V) p0 q0 \/
+			                               end_points_of_arc V (subspace_topology X Tx V) q0 p0) /\
+			                (exists r0:set, end_points_of_arc A (subspace_topology X Tx A) p0 r0 \/
+			                               end_points_of_arc A (subspace_topology X Tx A) r0 p0)).
+			            { exact (general_linear_graph_arc_intersection_case X Tx Arcs V A HglgX HVArcs HA HVneqA). }
+			            claim HvVA : v :e V :/\: A.
+			            { exact (binintersectI V A v HvV HvA). }
+			            claim HVAsubSing : V :/\: A c= Sing v.
+			            { let x. assume Hx.
+			              claim HxT : x :e T. { exact (HVSubT x (binintersectE1 V A x Hx)). }
+			              claim HxA : x :e A. { exact (binintersectE2 V A x Hx). }
+			              exact (eq_subst_mem_set x (T :/\: A) (Sing v) (binintersectI T A x HxT HxA) HcapEq). }
+			            apply Hint.
+			            + assume HVAempty : V :/\: A = Empty.
+			              exact (EmptyE v (eq_subst_mem_set v (V :/\: A) Empty HvVA HVAempty)
+			                (exists r:set, end_points_of_arc V
+			                  (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) v r \/
+			                  end_points_of_arc V
+			                    (subspace_topology (T :\/: A) (subspace_topology X Tx (T :\/: A)) V) r v)).
+			            + assume Hex0 : exists p0:set, V :/\: A = Sing p0 /\
+			                (exists q0:set, end_points_of_arc V (subspace_topology X Tx V) p0 q0 \/
+			                               end_points_of_arc V (subspace_topology X Tx V) q0 p0) /\
+			                (exists r0:set, end_points_of_arc A (subspace_topology X Tx A) p0 r0 \/
+			                               end_points_of_arc A (subspace_topology X Tx A) r0 p0).
+			              apply Hex0. let p0.
+			              assume Hp0data : V :/\: A = Sing p0 /\
+			                (exists q0:set, end_points_of_arc V (subspace_topology X Tx V) p0 q0 \/
+			                               end_points_of_arc V (subspace_topology X Tx V) q0 p0) /\
+			                (exists r0:set, end_points_of_arc A (subspace_topology X Tx A) p0 r0 \/
+			                               end_points_of_arc A (subspace_topology X Tx A) r0 p0).
+			              (** p0 = v since V :/\: A = Sing p0 = Sing v **)
+			              claim HVAeqSingp0 : V :/\: A = Sing p0.
+			              { exact (andEL (V :/\: A = Sing p0)
+			                  (exists q0:set, end_points_of_arc V (subspace_topology X Tx V) p0 q0 \/
+			                                 end_points_of_arc V (subspace_topology X Tx V) q0 p0)
+			                  (andEL (V :/\: A = Sing p0 /\
+			                    (exists q0:set, end_points_of_arc V (subspace_topology X Tx V) p0 q0 \/
+			                                   end_points_of_arc V (subspace_topology X Tx V) q0 p0))
+			                    (exists r0:set, end_points_of_arc A (subspace_topology X Tx A) p0 r0 \/
+			                                   end_points_of_arc A (subspace_topology X Tx A) r0 p0)
+			                    Hp0data)). }
+			              claim Hp0eqv : p0 = v.
+			              { claim Hp0_in_VA : p0 :e V :/\: A.
+			                { exact (eq_subst_mem_set p0 (Sing p0) (V :/\: A) (SingI p0)
+			                    (eq_symm (V :/\: A) (Sing p0) HVAeqSingp0)). }
+			                exact (SingE v p0 (HVAsubSing p0 Hp0_in_VA)). }
+			              claim HVEpP0 : exists q0:set,
+			                end_points_of_arc V (subspace_topology X Tx V) p0 q0 \/
+			                end_points_of_arc V (subspace_topology X Tx V) q0 p0.
+			              { exact (andER (V :/\: A = Sing p0)
+			                  (exists q0:set, end_points_of_arc V (subspace_topology X Tx V) p0 q0 \/
+			                                 end_points_of_arc V (subspace_topology X Tx V) q0 p0)
+			                  (andEL (V :/\: A = Sing p0 /\
+			                    (exists q0:set, end_points_of_arc V (subspace_topology X Tx V) p0 q0 \/
+			                                   end_points_of_arc V (subspace_topology X Tx V) q0 p0))
+			                    (exists r0:set, end_points_of_arc A (subspace_topology X Tx A) p0 r0 \/
+			                                   end_points_of_arc A (subspace_topology X Tx A) r0 p0)
+			                    Hp0data)). }
+			              (** Transport from X-subspace to TA-subspace and replace p0 with v **)
+			              apply HVEpP0. let q0.
+			              assume Hq0cases : end_points_of_arc V (subspace_topology X Tx V) p0 q0 \/
+			                                end_points_of_arc V (subspace_topology X Tx V) q0 p0.
+			              rewrite HtopVeqX_fromTA.
+			              witness q0.
+			              apply Hq0cases.
+			              - assume Hcl : end_points_of_arc V (subspace_topology X Tx V) p0 q0.
+			                apply orIL.
+			                rewrite <- Hp0eqv.
+			                exact Hcl.
+			              - assume Hcr : end_points_of_arc V (subspace_topology X Tx V) q0 p0.
+			                apply orIR.
+			                rewrite <- Hp0eqv.
+			                exact Hcr.
 			          }
 		          claim HVEpExists :
 		            exists p q:set, end_points_of_arc V
