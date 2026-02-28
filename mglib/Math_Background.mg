@@ -258596,6 +258596,7 @@ Qed.
 (** If X has general_linear_graph structure and p: E -> X is a covering map, **)
 (** then the lifted arcs ArcsE give coherent topology on E (backward direction): **)
 (** if C cap A0 is closed in A0 for all A0 in ArcsE, then C is closed in E. **)
+(** Proven Alice **)
 Theorem covering_coherent_backward :
   forall X Tx Arcs E Te p ArcsE C:set,
   general_linear_graph X Tx Arcs ->
@@ -258798,11 +258799,654 @@ claim HEC_open : E :\: C :e Te.
       set f := graph Sx (fun z:set => apply_fun p z).
       (** Now we construct W ∈ Te with e ∈ W ⊂ E\C **)
       (** Strategy: show Sx\C is open in E using base coherence **)
-      (** For each A ∈ Arcs, show complement of C in Sx∩p^{-1}(A) is open **)
-      (** using local path-connectivity of arcs and path component argument **)
-      (** Then by coherence of X, Ue\p(C∩Sx) is open in X **)
-      (** and Sx\C = preimage of Ue\p(C∩Sx) under p|_Sx **)
-      admit.
+      claim HfCont : continuous_map Sx (subspace_topology E Te Sx) Ue (subspace_topology X Tx Ue) f.
+      { exact (homeomorphism_continuous Sx (subspace_topology E Te Sx) Ue (subspace_topology X Tx Ue) f HSxHome). }
+      claim HfFunSx : function_on f Sx Ue.
+      { exact (continuous_map_function_on Sx (subspace_topology E Te Sx) Ue (subspace_topology X Tx Ue) f HfCont). }
+      claim HpeUe : apply_fun p e :e Ue.
+      { exact (andER (Ue :e Tx) (apply_fun p e :e Ue)
+          (andEL (Ue :e Tx /\ apply_fun p e :e Ue) (slices c= Te) HpairSub)). }
+      claim HSxsubE : Sx c= E.
+      { let z. assume HzSx.
+        claim HzPreUe : z :e preimage_of E p Ue.
+        { rewrite <- HunionSlices. exact (UnionI slices z Sx HzSx HSxSlice). }
+        exact (SepE1 E (fun x:set => apply_fun p x :e Ue) z HzPreUe). }
+      claim HUesubX : Ue c= X.
+      { exact (topology_elem_subset X Tx Ue HtopX HUeTx). }
+      claim HfEqP : forall z:set, z :e Sx -> apply_fun f z = apply_fun p z.
+      { let z. assume HzSx.
+        exact (apply_fun_graph Sx (fun z0:set => apply_fun p z0) z HzSx). }
+      (** Define D = image of C ∩ Sx in Ue **)
+      set D := image_of f (C :/\: Sx).
+      claim HDsubUe : D c= Ue.
+      { let y. assume HyD.
+        apply (ReplE_impred (C :/\: Sx) (fun z:set => apply_fun f z) y HyD).
+        let z. assume HzCS HyEq.
+        claim HzSx : z :e Sx. { exact (binintersectE2 C Sx z HzCS). }
+        rewrite HyEq.
+        exact (HfFunSx z HzSx). }
+      claim HUeDsubX : Ue :\: D c= X.
+      { let y. assume Hy. exact (HUesubX y (setminusE1 Ue D y Hy)). }
+      (** Show Ue \ D is open in X via coherence **)
+      claim HUeD_open : Ue :\: D :e Tx.
+      {
+        claim Hcoh : (open_in X Tx (Ue :\: D) <->
+          (forall A0:set, A0 :e Arcs ->
+            open_in A0 (subspace_topology X Tx A0) ((Ue :\: D) :/\: A0))).
+        { exact (general_linear_graph_coherence_open X Tx Arcs (Ue :\: D) Hglg HUeDsubX). }
+        claim Hrhs : forall A0:set, A0 :e Arcs ->
+          open_in A0 (subspace_topology X Tx A0) ((Ue :\: D) :/\: A0).
+        {
+          let A0. assume HA0Arcs.
+          set Ta0 := subspace_topology X Tx A0.
+          claim HA0dat : A0 c= X /\ arc A0 Ta0.
+          { exact (general_linear_graph_arc_data X Tx Arcs A0 Hglg HA0Arcs). }
+          claim HA0subX : A0 c= X.
+          { exact (andEL (A0 c= X) (arc A0 Ta0) HA0dat). }
+          claim HA0arc : arc A0 Ta0. { exact (andER (A0 c= X) (arc A0 Ta0) HA0dat). }
+          claim HtopA0 : topology_on A0 Ta0.
+          { exact (subspace_topology_is_topology X Tx A0 HtopX HA0subX). }
+          claim HA0lpc : locally_path_connected A0 Ta0.
+          { exact (arc_locally_path_connected A0 Ta0 HA0arc). }
+          (** Ue ∩ A0 is open in A0 **)
+          claim HUeA0open : Ue :/\: A0 :e Ta0.
+          { exact (subspace_topologyI X Tx A0 Ue HUeTx). }
+          (** SA0 = Sx ∩ p^{-1}(A0) **)
+          set SA0 := Sx :/\: preimage_of E p A0.
+          claim HSA0sub : SA0 c= Sx.
+          { exact (binintersect_Subq_1 Sx (preimage_of E p A0)). }
+          (** Restrict homeomorphism to SA0 **)
+          claim HimgSA0 : image_of f SA0 = Ue :/\: A0.
+          {
+            apply set_ext.
+            - let y. assume HyImg.
+              apply (ReplE_impred SA0 (fun z:set => apply_fun f z) y HyImg).
+              let z. assume HzSA0 HyEq.
+              claim HzSx : z :e Sx. { exact (binintersectE1 Sx (preimage_of E p A0) z HzSA0). }
+              claim HzPre : z :e preimage_of E p A0.
+              { exact (binintersectE2 Sx (preimage_of E p A0) z HzSA0). }
+              claim HpzA0 : apply_fun p z :e A0.
+              { exact (SepE2 E (fun x:set => apply_fun p x :e A0) z HzPre). }
+              rewrite HyEq. rewrite (HfEqP z HzSx).
+              claim HpzUe : apply_fun p z :e Ue.
+              { rewrite <- (HfEqP z HzSx). exact (HfFunSx z HzSx). }
+              exact (binintersectI Ue A0 (apply_fun p z) HpzUe HpzA0).
+            - let y. assume HyUA.
+              claim HyUe : y :e Ue. { exact (binintersectE1 Ue A0 y HyUA). }
+              claim HyA0 : y :e A0. { exact (binintersectE2 Ue A0 y HyUA). }
+              (** y ∈ Ue, get preimage under p|Sx **)
+              claim HinvPack :
+                exists g:set,
+                  continuous_map Ue (subspace_topology X Tx Ue) Sx (subspace_topology E Te Sx) g /\
+                  (forall t0:set, t0 :e Sx -> apply_fun g (apply_fun f t0) = t0) /\
+                  (forall y0:set, y0 :e Ue -> apply_fun f (apply_fun g y0) = y0).
+              { exact (homeomorphism_inverse_package
+                  Sx (subspace_topology E Te Sx) Ue (subspace_topology X Tx Ue) f HSxHome). }
+              apply HinvPack. let g. assume HgPack.
+              claim Hfg : forall y0:set, y0 :e Ue -> apply_fun f (apply_fun g y0) = y0.
+              { exact (andER
+                  (continuous_map Ue (subspace_topology X Tx Ue) Sx (subspace_topology E Te Sx) g /\
+                   (forall t0:set, t0 :e Sx -> apply_fun g (apply_fun f t0) = t0))
+                  (forall y0:set, y0 :e Ue -> apply_fun f (apply_fun g y0) = y0)
+                  HgPack). }
+              claim HgCont : continuous_map Ue (subspace_topology X Tx Ue) Sx (subspace_topology E Te Sx) g.
+              { exact (andEL
+                  (continuous_map Ue (subspace_topology X Tx Ue) Sx (subspace_topology E Te Sx) g)
+                  (forall t0:set, t0 :e Sx -> apply_fun g (apply_fun f t0) = t0)
+                  (andEL
+                    (continuous_map Ue (subspace_topology X Tx Ue) Sx (subspace_topology E Te Sx) g /\
+                     (forall t0:set, t0 :e Sx -> apply_fun g (apply_fun f t0) = t0))
+                    (forall y0:set, y0 :e Ue -> apply_fun f (apply_fun g y0) = y0)
+                    HgPack)). }
+              claim HgFun : function_on g Ue Sx.
+              { exact (continuous_map_function_on
+                  Ue (subspace_topology X Tx Ue) Sx (subspace_topology E Te Sx) g HgCont). }
+              set z := apply_fun g y.
+              claim HzSx : z :e Sx. { exact (HgFun y HyUe). }
+              claim HfzEq : apply_fun f z = y. { exact (Hfg y HyUe). }
+              claim HfpEq : apply_fun f z = apply_fun p z. { exact (HfEqP z HzSx). }
+              claim HpzEq : apply_fun p z = y.
+              { rewrite <- HfpEq. exact HfzEq. }
+              claim HpzA0 : apply_fun p z :e A0. { rewrite HpzEq. exact HyA0. }
+              claim HzE : z :e E. { exact (HSxsubE z HzSx). }
+              claim HzPre : z :e preimage_of E p A0.
+              { exact (SepI E (fun x:set => apply_fun p x :e A0) z HzE HpzA0). }
+              claim HzSA0 : z :e SA0.
+              { exact (binintersectI Sx (preimage_of E p A0) z HzSx HzPre). }
+              rewrite <- HfzEq.
+              exact (ReplI SA0 (fun z0:set => apply_fun f z0) z HzSA0).
+          }
+          (** Restrict homeomorphism to SA0 -> image_of f SA0, then rewrite to Ue ∩ A0 **)
+          claim HhomeSA0raw :
+            homeomorphism SA0 (subspace_topology Sx (subspace_topology E Te Sx) SA0)
+              (image_of f SA0) (subspace_topology Ue (subspace_topology X Tx Ue) (image_of f SA0)) f.
+          { exact (homeomorphism_restrict_to_image_of_subset
+              Sx (subspace_topology E Te Sx) Ue (subspace_topology X Tx Ue) f SA0
+              HSxHome HSA0sub). }
+          (** Rewrite subspace topologies via transitivity **)
+          claim HtopSA0eq : subspace_topology Sx (subspace_topology E Te Sx) SA0 =
+            subspace_topology E Te SA0.
+          { exact (subspace_topology_transitive_weak E Te Sx SA0 HSA0sub). }
+          claim HtopUeA0eq : subspace_topology Ue (subspace_topology X Tx Ue) (Ue :/\: A0) =
+            subspace_topology X Tx (Ue :/\: A0).
+          { exact (subspace_topology_transitive_weak X Tx Ue (Ue :/\: A0)
+              (binintersect_Subq_1 Ue A0)). }
+          (** Show C ∩ SA0 is closed in SA0 by path component argument **)
+          claim HCSAclosed : closed_in SA0 (subspace_topology E Te SA0) (C :/\: SA0).
+          {
+            (** Show SA0 \ C is open in SA0, then complement is closed **)
+            (** SA0 \ C = SA0 \ (C ∩ SA0), complement of C ∩ SA0 **)
+            claim HSA0subE : SA0 c= E.
+            { let z. assume Hz. exact (HSxsubE z (HSA0sub z Hz)). }
+            claim HtopSA0 : topology_on SA0 (subspace_topology E Te SA0).
+            { exact (subspace_topology_is_topology E Te SA0 HtopE HSA0subE). }
+            claim HCSAsub : C :/\: SA0 c= SA0.
+            { exact (binintersect_Subq_2 C SA0). }
+            (** Show complement is open: SA0 \ (C ∩ SA0) ∈ sub E Te SA0 **)
+            (** For each y in SA0 \ C, find open nbhd in SA0 avoiding C **)
+            set OFam := {W :e subspace_topology E Te SA0 | W c= SA0 :\: (C :/\: SA0)}.
+            claim HOFamSub : OFam c= subspace_topology E Te SA0.
+            { exact (Sep_Subq (subspace_topology E Te SA0) (fun W:set => W c= SA0 :\: (C :/\: SA0))). }
+            claim HUnionOFam : Union OFam = SA0 :\: (C :/\: SA0).
+            {
+              apply set_ext.
+              - let z. assume Hz.
+                apply (UnionE OFam z Hz). let W. assume HWpack.
+                claim HzW : z :e W. { exact (andEL (z :e W) (W :e OFam) HWpack). }
+                claim HWOFam : W :e OFam. { exact (andER (z :e W) (W :e OFam) HWpack). }
+                exact (SepE2 (subspace_topology E Te SA0) (fun W0:set => W0 c= SA0 :\: (C :/\: SA0)) W HWOFam z HzW).
+              - let y. assume HySAC.
+                claim HySA0 : y :e SA0.
+                { exact (setminusE1 SA0 (C :/\: SA0) y HySAC). }
+                claim HyNC : y /:e C.
+                { assume HyC.
+                  exact (setminusE2 SA0 (C :/\: SA0) y HySAC
+                    (binintersectI C SA0 y HyC HySA0)). }
+                claim HySx : y :e Sx. { exact (HSA0sub y HySA0). }
+                claim HyE : y :e E. { exact (HSxsubE y HySx). }
+                claim HyPre : y :e preimage_of E p A0.
+                { exact (binintersectE2 Sx (preimage_of E p A0) y HySA0). }
+                claim HpyA0 : apply_fun p y :e A0.
+                { exact (SepE2 E (fun x:set => apply_fun p x :e A0) y HyPre). }
+                claim HpyUe : apply_fun p y :e Ue.
+                { rewrite <- (HfEqP y HySx). exact (HfFunSx y HySx). }
+                claim HpyUA : apply_fun p y :e Ue :/\: A0.
+                { exact (binintersectI Ue A0 (apply_fun p y) HpyUe HpyA0). }
+                (** A0 is locally path connected, get path-connected V with p(y) ∈ V ⊂ Ue ∩ A0 **)
+                apply (locally_path_connected_local A0 Ta0 (apply_fun p y) (Ue :/\: A0)
+                  HA0lpc HpyA0 HUeA0open HpyUA).
+                let V. assume HVpack.
+                (** HVpack : ((V ∈ Ta0 /\ p(y) ∈ V) /\ V ⊂ Ue∩A0) /\ path_connected ... **)
+                claim HVpc : path_connected_space V (subspace_topology A0 Ta0 V).
+                { exact (andER
+                    ((V :e Ta0 /\ apply_fun p y :e V) /\ V c= Ue :/\: A0)
+                    (path_connected_space V (subspace_topology A0 Ta0 V))
+                    HVpack). }
+                claim HVprefix : (V :e Ta0 /\ apply_fun p y :e V) /\ V c= Ue :/\: A0.
+                { exact (andEL
+                    ((V :e Ta0 /\ apply_fun p y :e V) /\ V c= Ue :/\: A0)
+                    (path_connected_space V (subspace_topology A0 Ta0 V))
+                    HVpack). }
+                claim HVsubUA : V c= Ue :/\: A0.
+                { exact (andER (V :e Ta0 /\ apply_fun p y :e V) (V c= Ue :/\: A0)
+                    HVprefix). }
+                claim HVpair : V :e Ta0 /\ apply_fun p y :e V.
+                { exact (andEL (V :e Ta0 /\ apply_fun p y :e V) (V c= Ue :/\: A0)
+                    HVprefix). }
+                claim HVTa0 : V :e Ta0.
+                { exact (andEL (V :e Ta0) (apply_fun p y :e V) HVpair). }
+                claim HpyV : apply_fun p y :e V.
+                { exact (andER (V :e Ta0) (apply_fun p y :e V) HVpair). }
+                claim HVsubA0 : V c= A0.
+                { let z. assume HzV. exact (binintersectE2 Ue A0 z (HVsubUA z HzV)). }
+                claim HVsubUe : V c= Ue.
+                { let z. assume HzV. exact (binintersectE1 Ue A0 z (HVsubUA z HzV)). }
+                (** V = V0 ∩ A0 for some V0 ∈ Tx **)
+                apply (subspace_topologyE X Tx A0 V HVTa0). let V0. assume HV0pack.
+                claim HV0Tx : V0 :e Tx.
+                { exact (andEL (V0 :e Tx) (V = V0 :/\: A0) HV0pack). }
+                claim HVeqV0A : V = V0 :/\: A0.
+                { exact (andER (V0 :e Tx) (V = V0 :/\: A0) HV0pack). }
+                (** Preimage of V under p|Sx = {z ∈ SA0 | p(z) ∈ V} **)
+                (** This subset is path-connected and contained in a single path component of p^{-1}(A0) **)
+                set PV := {z :e SA0 | apply_fun p z :e V}.
+                claim HPVsubSA0 : PV c= SA0. { exact (Sep_Subq SA0 (fun z:set => apply_fun p z :e V)). }
+                claim HPVsubPre : PV c= preimage_of E p A0.
+                { let z. assume HzPV.
+                  exact (binintersectE2 Sx (preimage_of E p A0) z
+                    (HPVsubSA0 z HzPV)). }
+                claim HyPV : y :e PV.
+                { exact (SepI SA0 (fun z:set => apply_fun p z :e V) y HySA0 HpyV). }
+                (** PV is path-connected subset of preimage_of E p A0 **)
+                (** Hence PV lies in the path component of y in preimage_of E p A0 **)
+                set pA0 := preimage_of E p A0.
+                set TpA0 := subspace_topology E Te pA0.
+                claim HpA0subE : pA0 c= E.
+                { exact (Sep_Subq E (fun x:set => apply_fun p x :e A0)). }
+                claim HtopPA0 : topology_on pA0 TpA0.
+                { exact (subspace_topology_is_topology E Te pA0 HtopE HpA0subE). }
+                (** PV is path-connected in TpA0 subspace **)
+                (** Since PV maps homeomorphically to V which is path-connected **)
+                (** We need path_connected_space PV (sub pA0 TpA0 PV) **)
+                (** PV ⊂ SA0 ⊂ pA0, and PV maps to V via p|Sx, V is path-connected **)
+                (** For now, use the path component argument directly **)
+                (** Get the path component B' of y in pA0 **)
+                set By := path_component_of pA0 TpA0 y.
+                claim HyBy : y :e By.
+                { exact (path_component_reflexive pA0 TpA0 y HtopPA0
+                    (binintersectE2 Sx pA0 y HySA0)). }
+                claim HBysubPre : By c= pA0.
+                { exact (Sep_Subq pA0 (fun z:set => exists q:set,
+                    function_on q unit_interval pA0 /\
+                    continuous_map unit_interval unit_interval_topology pA0 TpA0 q /\
+                    apply_fun q 0 = y /\ apply_fun q 1 = z)). }
+                claim HBysubE : By c= E.
+                { let z. assume Hz. exact (HpA0subE z (HBysubPre z Hz)). }
+                (** By ∈ ArcsE **)
+                claim HByArcsE : By :e ArcsE.
+                { rewrite HArcsEdef.
+                  apply (SepI (Power E)
+                    (fun B0:set => exists A00:set, A00 :e Arcs /\
+                      exists x:set, x :e preimage_of E p A00 /\
+                      B0 = path_component_of (preimage_of E p A00)
+                        (subspace_topology E Te (preimage_of E p A00)) x)
+                    By (PowerI E By HBysubE)).
+                  witness A0. apply andI. - exact HA0Arcs.
+                  - witness y. apply andI.
+                    + exact (binintersectE2 Sx pA0 y HySA0).
+                    + reflexivity. }
+                (** C ∩ By is closed in By **)
+                claim HCByclosed : closed_in By (subspace_topology E Te By) (C :/\: By).
+                { exact (HAllClosed By HByArcsE). }
+                (** y ∈ By \ C, get open G' with By\(C∩By) = G'∩By **)
+                claim HyByC : y :e By :\: (C :/\: By).
+                { apply (setminusI By (C :/\: By) y HyBy).
+                  assume HyCBy. exact (HyNC (binintersectE1 C By y HyCBy)). }
+                claim HByCopen : By :\: (C :/\: By) :e subspace_topology E Te By.
+                { exact (andER
+                    (topology_on By (subspace_topology E Te By))
+                    (By :\: (C :/\: By) :e subspace_topology E Te By)
+                    (open_of_closed_complement By (subspace_topology E Te By) (C :/\: By) HCByclosed)). }
+                apply (subspace_topologyE E Te By (By :\: (C :/\: By)) HByCopen).
+                let Gy. assume HGypack.
+                claim HGyTe : Gy :e Te.
+                { exact (andEL (Gy :e Te) (By :\: (C :/\: By) = Gy :/\: By) HGypack). }
+                claim HByCeqGy : By :\: (C :/\: By) = Gy :/\: By.
+                { exact (andER (Gy :e Te) (By :\: (C :/\: By) = Gy :/\: By) HGypack). }
+                claim HyGy : y :e Gy.
+                { claim HyGyBy : y :e Gy :/\: By.
+                  { rewrite <- HByCeqGy. exact HyByC. }
+                  exact (binintersectE1 Gy By y HyGyBy). }
+                (** Now PV ∩ Gy is open in SA0 and avoids C **)
+                (** First need V0 ∩ Gy ∩ Sx is open in Te **)
+                claim HpreV0 : preimage_of E p V0 :e Te.
+                { exact (continuous_map_preimage E Te X Tx p HpCont V0 HV0Tx). }
+                set Wy := preimage_of E p V0 :/\: Sx :/\: Gy.
+                claim HWyTe : Wy :e Te.
+                { exact (topology_binintersect_closed E Te
+                    (preimage_of E p V0 :/\: Sx) Gy HtopE
+                    (topology_binintersect_closed E Te (preimage_of E p V0) Sx HtopE HpreV0 HSxTe)
+                    HGyTe). }
+                (** Wy ∩ SA0 is what we want, but actually Wy ∩ pA0 gives SA0 restriction **)
+                (** Actually we want a set in subspace_topology E Te SA0 **)
+                (** Wy ∈ Te, so Wy ∩ SA0 ∈ sub E Te SA0 **)
+                claim HWySA0 : Wy :/\: SA0 :e subspace_topology E Te SA0.
+                { exact (subspace_topologyI E Te SA0 Wy HWyTe). }
+                (** y ∈ Wy ∩ SA0 **)
+                claim HyWy : y :e Wy.
+                { claim HpyV0A : apply_fun p y :e V0 :/\: A0.
+                  { rewrite <- HVeqV0A. exact HpyV. }
+                  claim HpyV0 : apply_fun p y :e V0.
+                  { exact (binintersectE1 V0 A0 (apply_fun p y) HpyV0A). }
+                  claim HyPreV0 : y :e preimage_of E p V0.
+                  { exact (SepI E (fun x:set => apply_fun p x :e V0) y HyE HpyV0). }
+                  exact (binintersectI (preimage_of E p V0 :/\: Sx) Gy y
+                    (binintersectI (preimage_of E p V0) Sx y HyPreV0 HySx) HyGy). }
+                claim HyWySA : y :e Wy :/\: SA0. { exact (binintersectI Wy SA0 y HyWy HySA0). }
+                (** Wy ∩ SA0 ⊂ SA0 \ (C ∩ SA0) **)
+                claim HWySAsub : Wy :/\: SA0 c= SA0 :\: (C :/\: SA0).
+                { let z. assume HzWS.
+                  claim HzWy : z :e Wy. { exact (binintersectE1 Wy SA0 z HzWS). }
+                  claim HzSA0 : z :e SA0. { exact (binintersectE2 Wy SA0 z HzWS). }
+                  claim HzSx : z :e Sx. { exact (HSA0sub z HzSA0). }
+                  claim HzPreV0Sx : z :e preimage_of E p V0 :/\: Sx.
+                  { exact (binintersectE1 (preimage_of E p V0 :/\: Sx) Gy z HzWy). }
+                  claim HzGy : z :e Gy.
+                  { exact (binintersectE2 (preimage_of E p V0 :/\: Sx) Gy z HzWy). }
+                  claim HzPreV0 : z :e preimage_of E p V0.
+                  { exact (binintersectE1 (preimage_of E p V0) Sx z HzPreV0Sx). }
+                  claim HpzV0 : apply_fun p z :e V0.
+                  { exact (SepE2 E (fun x:set => apply_fun p x :e V0) z HzPreV0). }
+                  claim HzPre : z :e preimage_of E p A0.
+                  { exact (binintersectE2 Sx pA0 z HzSA0). }
+                  claim HpzA0 : apply_fun p z :e A0.
+                  { exact (SepE2 E (fun x:set => apply_fun p x :e A0) z HzPre). }
+                  (** p(z) ∈ V = V0 ∩ A0, so z maps to V under p|Sx **)
+                  claim HpzV : apply_fun p z :e V.
+                  { rewrite HVeqV0A. exact (binintersectI V0 A0 (apply_fun p z) HpzV0 HpzA0). }
+                  claim HzPV : z :e PV.
+                  { exact (SepI SA0 (fun z0:set => apply_fun p z0 :e V) z HzSA0 HpzV). }
+                  (** z ∈ PV ⊂ pA0, PV path-connected, y ∈ PV, so z ∈ By **)
+                  (** Use subspace_path_connected_implies_in_path_component **)
+                  (** Need PV path-connected in pA0 subspace **)
+                  (** PV maps homeomorphically to V which is path-connected **)
+                  (** For this, we use that PV = preimage of V under p|SA0 homeomorphism **)
+                  (** and homeomorphism preserves path connectivity **)
+                  claim HPVsubPre2 : PV c= pA0.
+                  { let w. assume HwPV.
+                    exact (binintersectE2 Sx pA0 w (HPVsubSA0 w HwPV)). }
+                  claim HPVpc : path_connected_space PV (subspace_topology pA0 TpA0 PV).
+                  {
+                    (** PV ⊂ SA0 ⊂ Sx, restrict homeomorphism to PV **)
+                    claim HPVsubSx : PV c= Sx.
+                    { let w. assume HwPV. exact (HSA0sub w (HPVsubSA0 w HwPV)). }
+                    (** Show image_of f PV = V **)
+                    claim HimgPV : image_of f PV = V.
+                    {
+                      apply set_ext.
+                      - let v. assume HvImg.
+                        apply (ReplE_impred PV (fun w:set => apply_fun f w) v HvImg).
+                        let w. assume HwPV HvEq.
+                        claim HwSx2 : w :e Sx. { exact (HSA0sub w (HPVsubSA0 w HwPV)). }
+                        claim HpwV : apply_fun p w :e V.
+                        { exact (SepE2 SA0 (fun z0:set => apply_fun p z0 :e V) w HwPV). }
+                        rewrite HvEq. rewrite (HfEqP w HwSx2). exact HpwV.
+                      - let v. assume HvV.
+                        claim HvUe : v :e Ue. { exact (HVsubUe v HvV). }
+                        claim HvA0 : v :e A0. { exact (HVsubA0 v HvV). }
+                        (** Get preimage of v under f using inverse **)
+                        claim HinvPack2 :
+                          exists g:set,
+                            continuous_map Ue (subspace_topology X Tx Ue) Sx (subspace_topology E Te Sx) g /\
+                            (forall t0:set, t0 :e Sx -> apply_fun g (apply_fun f t0) = t0) /\
+                            (forall y0:set, y0 :e Ue -> apply_fun f (apply_fun g y0) = y0).
+                        { exact (homeomorphism_inverse_package
+                            Sx (subspace_topology E Te Sx) Ue (subspace_topology X Tx Ue) f HSxHome). }
+                        apply HinvPack2. let g2. assume Hg2Pack.
+                        claim Hfg2 : forall y0:set, y0 :e Ue -> apply_fun f (apply_fun g2 y0) = y0.
+                        { exact (andER
+                            (continuous_map Ue (subspace_topology X Tx Ue) Sx (subspace_topology E Te Sx) g2 /\
+                             (forall t0:set, t0 :e Sx -> apply_fun g2 (apply_fun f t0) = t0))
+                            (forall y0:set, y0 :e Ue -> apply_fun f (apply_fun g2 y0) = y0)
+                            Hg2Pack). }
+                        claim Hg2Cont : continuous_map Ue (subspace_topology X Tx Ue) Sx (subspace_topology E Te Sx) g2.
+                        { exact (andEL
+                            (continuous_map Ue (subspace_topology X Tx Ue) Sx (subspace_topology E Te Sx) g2)
+                            (forall t0:set, t0 :e Sx -> apply_fun g2 (apply_fun f t0) = t0)
+                            (andEL
+                              (continuous_map Ue (subspace_topology X Tx Ue) Sx (subspace_topology E Te Sx) g2 /\
+                               (forall t0:set, t0 :e Sx -> apply_fun g2 (apply_fun f t0) = t0))
+                              (forall y0:set, y0 :e Ue -> apply_fun f (apply_fun g2 y0) = y0)
+                              Hg2Pack)). }
+                        claim Hg2Fun : function_on g2 Ue Sx.
+                        { exact (continuous_map_function_on
+                            Ue (subspace_topology X Tx Ue) Sx (subspace_topology E Te Sx) g2 Hg2Cont). }
+                        set w := apply_fun g2 v.
+                        claim HwSx2 : w :e Sx. { exact (Hg2Fun v HvUe). }
+                        claim HfwEq2 : apply_fun f w = v. { exact (Hfg2 v HvUe). }
+                        claim HpwEq : apply_fun p w = v.
+                        { rewrite <- (HfEqP w HwSx2). exact HfwEq2. }
+                        claim HwE : w :e E. { exact (HSxsubE w HwSx2). }
+                        claim HpwA0 : apply_fun p w :e A0. { rewrite HpwEq. exact HvA0. }
+                        claim HwPre : w :e preimage_of E p A0.
+                        { exact (SepI E (fun x:set => apply_fun p x :e A0) w HwE HpwA0). }
+                        claim HwSA0 : w :e SA0.
+                        { exact (binintersectI Sx (preimage_of E p A0) w HwSx2 HwPre). }
+                        claim HpwV : apply_fun p w :e V. { rewrite HpwEq. exact HvV. }
+                        claim HwPV : w :e PV.
+                        { exact (SepI SA0 (fun z0:set => apply_fun p z0 :e V) w HwSA0 HpwV). }
+                        rewrite <- HfwEq2.
+                        exact (ReplI PV (fun w0:set => apply_fun f w0) w HwPV).
+                    }
+                    (** Get homeomorphism PV -> V via restriction **)
+                    claim HhomePVraw :
+                      homeomorphism PV (subspace_topology Sx (subspace_topology E Te Sx) PV)
+                        (image_of f PV) (subspace_topology Ue (subspace_topology X Tx Ue) (image_of f PV)) f.
+                    { exact (homeomorphism_restrict_to_image_of_subset
+                        Sx (subspace_topology E Te Sx) Ue (subspace_topology X Tx Ue) f PV
+                        HSxHome HPVsubSx). }
+                    (** Rewrite topologies via transitivity **)
+                    claim HtopPVsx : subspace_topology Sx (subspace_topology E Te Sx) PV =
+                      subspace_topology E Te PV.
+                    { exact (subspace_topology_transitive_weak E Te Sx PV HPVsubSx). }
+                    claim HtopPVpa0 : subspace_topology pA0 TpA0 PV =
+                      subspace_topology E Te PV.
+                    { exact (subspace_topology_transitive_weak E Te pA0 PV HPVsubPre2). }
+                    claim HtopVue : subspace_topology Ue (subspace_topology X Tx Ue) V =
+                      subspace_topology X Tx V.
+                    { exact (subspace_topology_transitive_weak X Tx Ue V HVsubUe). }
+                    claim HtopVa0 : subspace_topology A0 Ta0 V =
+                      subspace_topology X Tx V.
+                    { exact (subspace_topology_transitive_weak X Tx A0 V HVsubA0). }
+                    (** Rewrite goal topology, then use homeomorphism **)
+                    rewrite HtopPVpa0. rewrite <- HtopPVsx.
+                    (** Goal: path_connected_space PV (sub Sx (sub E Te Sx) PV) **)
+                    (** Show image is path-connected, then transfer back **)
+                    claim HimgPVpc : path_connected_space (image_of f PV)
+                      (subspace_topology Ue (subspace_topology X Tx Ue) (image_of f PV)).
+                    {
+                      rewrite HimgPV.
+                      rewrite HtopVue.
+                      rewrite <- HtopVa0.
+                      exact HVpc.
+                    }
+                    exact (homeomorphism_preserves_path_connected_space_left
+                      PV (subspace_topology Sx (subspace_topology E Te Sx) PV)
+                      (image_of f PV) (subspace_topology Ue (subspace_topology X Tx Ue) (image_of f PV))
+                      f HhomePVraw HimgPVpc).
+                  }
+                  claim HzBy : z :e By.
+                  { exact (subspace_path_connected_implies_in_path_component
+                      pA0 TpA0 PV y z HtopPA0 HPVsubPre2 HPVpc HyPV HzPV). }
+                  (** z ∈ Gy ∩ By = By \ (C ∩ By), so z ∉ C **)
+                  claim HzGyBy : z :e Gy :/\: By. { exact (binintersectI Gy By z HzGy HzBy). }
+                  claim HzByC : z :e By :\: (C :/\: By).
+                  { rewrite HByCeqGy. exact HzGyBy. }
+                  claim HzNC : z /:e C.
+                  { assume HzC. exact (setminusE2 By (C :/\: By) z HzByC
+                      (binintersectI C By z HzC HzBy)). }
+                  apply (setminusI SA0 (C :/\: SA0) z HzSA0).
+                  assume HzCSA. exact (HzNC (binintersectE1 C SA0 z HzCSA)). }
+                (** Now Wy ∩ SA0 ∈ OFam **)
+                apply (UnionI OFam y (Wy :/\: SA0)).
+                + exact HyWySA.
+                + exact (SepI (subspace_topology E Te SA0)
+                    (fun W:set => W c= SA0 :\: (C :/\: SA0))
+                    (Wy :/\: SA0) HWySA0 HWySAsub).
+            }
+            claim HUnionOFamOpen : Union OFam :e subspace_topology E Te SA0.
+            { exact (topology_union_closed SA0 (subspace_topology E Te SA0) OFam HtopSA0 HOFamSub). }
+            claim HSACopen : SA0 :\: (C :/\: SA0) :e subspace_topology E Te SA0.
+            { rewrite <- HUnionOFam. exact HUnionOFamOpen. }
+            claim HsmEq : SA0 :\: (SA0 :\: (C :/\: SA0)) = C :/\: SA0.
+            { exact (setminus_setminus_eq SA0 (C :/\: SA0) HCSAsub). }
+            rewrite <- HsmEq.
+            exact (closed_of_open_complement SA0 (subspace_topology E Te SA0) (SA0 :\: (C :/\: SA0))
+              HtopSA0 HSACopen).
+          }
+          (** D ∩ A0 closed in Ue ∩ A0 via homeomorphism **)
+          claim HDimgCSA : image_of f (C :/\: SA0) = D :/\: A0.
+          {
+            apply set_ext.
+            - let y. assume HyImg.
+              apply (ReplE_impred (C :/\: SA0) (fun z:set => apply_fun f z) y HyImg).
+              let z. assume HzCSA HyEq.
+              claim HzC : z :e C. { exact (binintersectE1 C SA0 z HzCSA). }
+              claim HzSA0 : z :e SA0. { exact (binintersectE2 C SA0 z HzCSA). }
+              claim HzSx : z :e Sx. { exact (HSA0sub z HzSA0). }
+              claim HpzA0 : apply_fun p z :e A0.
+              { exact (SepE2 E (fun x:set => apply_fun p x :e A0) z
+                  (binintersectE2 Sx (preimage_of E p A0) z HzSA0)). }
+              claim HzCS : z :e C :/\: Sx. { exact (binintersectI C Sx z HzC HzSx). }
+              rewrite HyEq. rewrite (HfEqP z HzSx).
+              apply (binintersectI (image_of f (C :/\: Sx)) A0 (apply_fun p z)).
+              + rewrite <- (HfEqP z HzSx).
+                exact (ReplI (C :/\: Sx) (fun z0:set => apply_fun f z0) z HzCS).
+              + exact HpzA0.
+            - let y. assume HyDA.
+              claim HyD : y :e D. { exact (binintersectE1 (image_of f (C :/\: Sx)) A0 y HyDA). }
+              claim HyA0 : y :e A0. { exact (binintersectE2 (image_of f (C :/\: Sx)) A0 y HyDA). }
+              apply (ReplE_impred (C :/\: Sx) (fun z:set => apply_fun f z) y HyD).
+              let z. assume HzCS HyEq.
+              claim HzC : z :e C. { exact (binintersectE1 C Sx z HzCS). }
+              claim HzSx : z :e Sx. { exact (binintersectE2 C Sx z HzCS). }
+              claim HzE : z :e E. { exact (HSxsubE z HzSx). }
+              claim HfpEq2 : apply_fun f z = apply_fun p z. { exact (HfEqP z HzSx). }
+              claim HpzA0 : apply_fun p z :e A0.
+              { rewrite <- HfpEq2. rewrite <- HyEq. exact HyA0. }
+              claim HzPre : z :e preimage_of E p A0.
+              { exact (SepI E (fun x:set => apply_fun p x :e A0) z HzE HpzA0). }
+              claim HzSA0 : z :e SA0. { exact (binintersectI Sx (preimage_of E p A0) z HzSx HzPre). }
+              claim HzCSA : z :e C :/\: SA0. { exact (binintersectI C SA0 z HzC HzSA0). }
+              rewrite HyEq.
+              exact (ReplI (C :/\: SA0) (fun z0:set => apply_fun f z0) z HzCSA).
+          }
+          (** Use homeomorphism_image_closed to transfer closedness **)
+          claim HhomeSA0r :
+            homeomorphism SA0 (subspace_topology E Te SA0)
+              (Ue :/\: A0) (subspace_topology X Tx (Ue :/\: A0)) f.
+          { rewrite <- HtopSA0eq. rewrite <- HtopUeA0eq.
+            rewrite <- HimgSA0.
+            exact (homeomorphism_restrict_to_image_of_subset
+              Sx (subspace_topology E Te Sx) Ue (subspace_topology X Tx Ue) f SA0
+              HSxHome HSA0sub). }
+          claim HDA0closed : closed_in (Ue :/\: A0) (subspace_topology X Tx (Ue :/\: A0)) (D :/\: A0).
+          { rewrite <- HDimgCSA.
+            exact (homeomorphism_image_closed
+              SA0 (subspace_topology E Te SA0) (Ue :/\: A0) (subspace_topology X Tx (Ue :/\: A0))
+              f (C :/\: SA0) HhomeSA0r HCSAclosed). }
+          (** (Ue\D) ∩ A0 = (Ue ∩ A0) \ (D ∩ A0) is open in Ue ∩ A0 **)
+          claim HsetEq : (Ue :\: D) :/\: A0 = (Ue :/\: A0) :\: (D :/\: A0).
+          {
+            apply set_ext.
+            - let z. assume Hz.
+              claim HzUeD : z :e Ue :\: D. { exact (binintersectE1 (Ue :\: D) A0 z Hz). }
+              claim HzA0 : z :e A0. { exact (binintersectE2 (Ue :\: D) A0 z Hz). }
+              claim HzUe : z :e Ue. { exact (setminusE1 Ue D z HzUeD). }
+              claim HzND : z /:e D. { exact (setminusE2 Ue D z HzUeD). }
+              apply (setminusI (Ue :/\: A0) (D :/\: A0) z (binintersectI Ue A0 z HzUe HzA0)).
+              assume HzDA.
+              exact (HzND (binintersectE1 D A0 z HzDA)).
+            - let z. assume Hz.
+              claim HzUA : z :e Ue :/\: A0. { exact (setminusE1 (Ue :/\: A0) (D :/\: A0) z Hz). }
+              claim HzNDA : z /:e D :/\: A0. { exact (setminusE2 (Ue :/\: A0) (D :/\: A0) z Hz). }
+              claim HzUe : z :e Ue. { exact (binintersectE1 Ue A0 z HzUA). }
+              claim HzA0 : z :e A0. { exact (binintersectE2 Ue A0 z HzUA). }
+              claim HzND : z /:e D.
+              { assume HzD. exact (HzNDA (binintersectI D A0 z HzD HzA0)). }
+              exact (binintersectI (Ue :\: D) A0 z (setminusI Ue D z HzUe HzND) HzA0).
+          }
+          claim HopenUeA0 : open_in (Ue :/\: A0) (subspace_topology X Tx (Ue :/\: A0))
+            ((Ue :/\: A0) :\: (D :/\: A0)).
+          { exact (open_of_closed_complement (Ue :/\: A0) (subspace_topology X Tx (Ue :/\: A0))
+              (D :/\: A0) HDA0closed). }
+          (** Extract membership: (Ue∩A0)\(D∩A0) ∈ sub X Tx (Ue∩A0) **)
+          claim HmemUeA0 : (Ue :/\: A0) :\: (D :/\: A0) :e subspace_topology X Tx (Ue :/\: A0).
+          { exact (andER
+              (topology_on (Ue :/\: A0) (subspace_topology X Tx (Ue :/\: A0)))
+              ((Ue :/\: A0) :\: (D :/\: A0) :e subspace_topology X Tx (Ue :/\: A0))
+              HopenUeA0). }
+          (** Rewrite: sub X Tx (Ue∩A0) = sub A0 Ta0 (Ue∩A0) **)
+          claim HsubEq : subspace_topology X Tx (Ue :/\: A0) =
+            subspace_topology A0 Ta0 (Ue :/\: A0).
+          { symmetry.
+            exact (subspace_topology_transitive_weak X Tx A0 (Ue :/\: A0)
+              (binintersect_Subq_2 Ue A0)). }
+          (** Promote to open in A0 **)
+          claim HmemA0sub : (Ue :/\: A0) :\: (D :/\: A0) :e subspace_topology A0 Ta0 (Ue :/\: A0).
+          { rewrite <- HsubEq. exact HmemUeA0. }
+          claim HsubUeA0 : (Ue :/\: A0) :\: (D :/\: A0) c= Ue :/\: A0.
+          { exact (setminus_Subq (Ue :/\: A0) (D :/\: A0)). }
+          claim HopenInA0 : (Ue :/\: A0) :\: (D :/\: A0) :e Ta0.
+          { exact (open_in_subspace_if_ambient_open A0 Ta0 (Ue :/\: A0)
+              ((Ue :/\: A0) :\: (D :/\: A0))
+              HtopA0 HUeA0open HsubUeA0
+              (andI
+                (topology_on (Ue :/\: A0) (subspace_topology A0 Ta0 (Ue :/\: A0)))
+                ((Ue :/\: A0) :\: (D :/\: A0) :e subspace_topology A0 Ta0 (Ue :/\: A0))
+                (subspace_topology_is_topology A0 Ta0 (Ue :/\: A0) HtopA0
+                  (binintersect_Subq_2 Ue A0))
+                HmemA0sub)). }
+          (** Now rewrite the set equation **)
+          rewrite HsetEq.
+          exact (andI (topology_on A0 Ta0) ((Ue :/\: A0) :\: (D :/\: A0) :e Ta0)
+            HtopA0 HopenInA0).
+        }
+        exact (andER (topology_on X Tx) ((Ue :\: D) :e Tx)
+          (iffER (open_in X Tx (Ue :\: D))
+            (forall A0:set, A0 :e Arcs ->
+              open_in A0 (subspace_topology X Tx A0) ((Ue :\: D) :/\: A0))
+            Hcoh Hrhs)).
+      }
+      (** Sx \ C = preimage_of E p (Ue\D) ∩ Sx **)
+      claim HSxC_eq : Sx :\: C = preimage_of E p (Ue :\: D) :/\: Sx.
+      {
+        apply set_ext.
+        - let z. assume Hz.
+          claim HzSx : z :e Sx. { exact (setminusE1 Sx C z Hz). }
+          claim HzNC : z /:e C. { exact (setminusE2 Sx C z Hz). }
+          claim HzE : z :e E. { exact (HSxsubE z HzSx). }
+          claim HpzUe : apply_fun p z :e Ue.
+          { rewrite <- (HfEqP z HzSx). exact (HfFunSx z HzSx). }
+          claim HpzND : apply_fun p z /:e D.
+          { assume HpzD.
+            apply (ReplE_impred (C :/\: Sx) (fun z0:set => apply_fun f z0)
+              (apply_fun p z) HpzD).
+            let w. assume HwCS HwEq.
+            claim HwSx : w :e Sx. { exact (binintersectE2 C Sx w HwCS). }
+            claim HwC : w :e C. { exact (binintersectE1 C Sx w HwCS). }
+            (** HwEq : apply_fun p z = apply_fun f w **)
+            claim HfwEq : apply_fun f w = apply_fun p z.
+            { symmetry. exact HwEq. }
+            claim HfwPw : apply_fun f w = apply_fun p w. { exact (HfEqP w HwSx). }
+            claim HfzPz : apply_fun f z = apply_fun p z. { exact (HfEqP z HzSx). }
+            claim HfwfzEq : apply_fun f w = apply_fun f z.
+            { rewrite HfwEq. symmetry. exact HfzPz. }
+            claim HwEqz : w = z.
+            { exact (homeomorphism_injective Sx (subspace_topology E Te Sx)
+                Ue (subspace_topology X Tx Ue) f HSxHome w z HwSx HzSx HfwfzEq). }
+            exact (HzNC (eq_subst_mem_rev w z C HwEqz HwC)). }
+          claim HpzUeD : apply_fun p z :e Ue :\: D.
+          { exact (setminusI Ue D (apply_fun p z) HpzUe HpzND). }
+          claim HzPre : z :e preimage_of E p (Ue :\: D).
+          { exact (SepI E (fun x:set => apply_fun p x :e Ue :\: D) z HzE HpzUeD). }
+          exact (binintersectI (preimage_of E p (Ue :\: D)) Sx z HzPre HzSx).
+        - let z. assume Hz.
+          claim HzPre : z :e preimage_of E p (Ue :\: D).
+          { exact (binintersectE1 (preimage_of E p (Ue :\: D)) Sx z Hz). }
+          claim HzSx : z :e Sx.
+          { exact (binintersectE2 (preimage_of E p (Ue :\: D)) Sx z Hz). }
+          claim HpzUeD : apply_fun p z :e Ue :\: D.
+          { exact (SepE2 E (fun x:set => apply_fun p x :e Ue :\: D) z HzPre). }
+          claim HpzND : apply_fun p z /:e D.
+          { exact (setminusE2 Ue D (apply_fun p z) HpzUeD). }
+          claim HzNC : z /:e C.
+          { assume HzC.
+            claim HzCS : z :e C :/\: Sx. { exact (binintersectI C Sx z HzC HzSx). }
+            claim HpzD : apply_fun p z :e D.
+            { rewrite <- (HfEqP z HzSx).
+              exact (ReplI (C :/\: Sx) (fun z0:set => apply_fun f z0) z HzCS). }
+            exact (HpzND HpzD). }
+          exact (setminusI Sx C z HzSx HzNC).
+      }
+      (** Sx \ C is open in E **)
+      claim HSxMinusC_open : Sx :\: C :e Te.
+      { rewrite HSxC_eq.
+        exact (topology_binintersect_closed E Te
+          (preimage_of E p (Ue :\: D)) Sx HtopE
+          (continuous_map_preimage E Te X Tx p HpCont (Ue :\: D) HUeD_open)
+          HSxTe). }
+      (** e ∈ Sx\C **)
+      claim HeSxC : e :e Sx :\: C.
+      { exact (setminusI Sx C e HeSx HeNC). }
+      (** Sx\C ⊂ E\C **)
+      claim HSxCsub : Sx :\: C c= E :\: C.
+      { let z. assume Hz.
+        exact (setminusI E C z (HSxsubE z (setminusE1 Sx C z Hz)) (setminusE2 Sx C z Hz)). }
+      (** Conclude e ∈ Union Fam **)
+      apply (UnionI Fam e (Sx :\: C)).
+      - exact HeSxC.
+      - exact (SepI Te (fun W:set => W c= E :\: C) (Sx :\: C) HSxMinusC_open HSxCsub).
   }
   rewrite <- HUnionFam.
   exact (topology_union_closed E Te Fam HtopE HFamSub).
@@ -258815,7 +259459,7 @@ claim HCeq : C = E :\: (E :\: C).
 }
 rewrite HCeq.
 exact (closed_of_open_complement E Te (E :\: C) HtopE HEC_open).
-Admitted.
+Qed.
 
 (** from S83 Thm 83.4 (line 5530 in algtop.tex): covering of graph is graph **)
 (** LATEX VERSION: Let p: E -> X be a covering map where X is a linear graph. **)
