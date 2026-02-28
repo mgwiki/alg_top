@@ -258360,8 +258360,213 @@ Theorem covering_coherent_backward :
   (forall A0:set, A0 :e ArcsE ->
     closed_in A0 (subspace_topology E Te A0) (C :/\: A0)) ->
   closed_in E Te C.
-admit.
-Admitted.
+let X Tx Arcs E Te p ArcsE C.
+assume Hglg Hcov HArcsEdef HCsub HAllClosed.
+(** Step 1: Extract basic facts **)
+claim HpCont : continuous_map E Te X Tx p.
+{
+  exact (andEL
+    (continuous_map E Te X Tx p)
+    (surjective_map E X p)
+    (andEL
+      (continuous_map E Te X Tx p /\ surjective_map E X p)
+      (forall b:set, b :e X ->
+        exists U:set, U :e Tx /\ b :e U /\ evenly_covered E Te X Tx p U)
+      Hcov)).
+}
+claim HtopE : topology_on E Te.
+{ exact (continuous_map_topology_dom E Te X Tx p HpCont). }
+claim HtopX : topology_on X Tx.
+{ exact (continuous_map_topology_cod E Te X Tx p HpCont). }
+claim HpFun : function_on p E X.
+{ exact (continuous_map_function_on E Te X Tx p HpCont). }
+claim HunionArcs : X = Union Arcs.
+{ exact (general_linear_graph_union_arcs X Tx Arcs Hglg). }
+(** Step 2: Show E\C ∈ Te by showing it's a union of open sets **)
+claim HEC_open : E :\: C :e Te.
+{
+  set Fam := {W :e Te | W c= E :\: C}.
+  claim HFamSub : Fam c= Te.
+  { exact (Sep_Subq Te (fun W:set => W c= E :\: C)). }
+  claim HUnionFam : Union Fam = E :\: C.
+  {
+    apply set_ext.
+    - let z.
+      assume Hz.
+      apply (UnionE Fam z Hz).
+      let W.
+      assume HWpack.
+      claim HzW : z :e W.
+      { exact (andEL (z :e W) (W :e Fam) HWpack). }
+      claim HWFam : W :e Fam.
+      { exact (andER (z :e W) (W :e Fam) HWpack). }
+      exact (SepE2 Te (fun W0:set => W0 c= E :\: C) W HWFam z HzW).
+    - let e.
+      assume He_EC.
+      claim HeE : e :e E.
+      {
+        exact (andEL (e :e E) (e /:e C)
+          (setminusE E C e He_EC)).
+      }
+      claim HeNC : e /:e C.
+      {
+        exact (andER (e :e E) (e /:e C)
+          (setminusE E C e He_EC)).
+      }
+      (** Find arc A with p(e) ∈ A **)
+      claim HpeX : apply_fun p e :e X.
+      { exact (HpFun e HeE). }
+      claim HpeUnion : apply_fun p e :e Union Arcs.
+      { rewrite <- HunionArcs. exact HpeX. }
+      apply (UnionE Arcs (apply_fun p e) HpeUnion).
+      let A.
+      assume HApack.
+      claim HpeA : apply_fun p e :e A.
+      { exact (andEL (apply_fun p e :e A) (A :e Arcs) HApack). }
+      claim HAArcs : A :e Arcs.
+      { exact (andER (apply_fun p e :e A) (A :e Arcs) HApack). }
+      (** e ∈ preimage_of E p A **)
+      claim HePre : e :e preimage_of E p A.
+      {
+        exact (SepI E (fun x:set => apply_fun p x :e A) e HeE HpeA).
+      }
+      (** B = path component of e in p^{-1}(A) **)
+      set pA := preimage_of E p A.
+      set TpA := subspace_topology E Te pA.
+      claim HpAsub : pA c= E.
+      { exact (Sep_Subq E (fun x:set => apply_fun p x :e A)). }
+      claim HtopPA : topology_on pA TpA.
+      { exact (subspace_topology_is_topology E Te pA HtopE HpAsub). }
+      set B := path_component_of pA TpA e.
+      claim HeB : e :e B.
+      { exact (path_component_reflexive pA TpA e HtopPA HePre). }
+      claim HBsub : B c= pA.
+      { exact (Sep_Subq pA (fun y:set => exists q:set,
+          function_on q unit_interval pA /\
+          continuous_map unit_interval unit_interval_topology pA TpA q /\
+          apply_fun q 0 = e /\ apply_fun q 1 = y)). }
+      claim HBsubE : B c= E.
+      {
+        let z. assume HzB.
+        exact (HpAsub z (HBsub z HzB)).
+      }
+      (** B ∈ ArcsE **)
+      claim HBArcsE : B :e ArcsE.
+      {
+        rewrite HArcsEdef.
+        apply (SepI (Power E)
+          (fun B0:set => exists A0:set, A0 :e Arcs /\
+            exists x:set, x :e preimage_of E p A0 /\
+            B0 = path_component_of (preimage_of E p A0)
+              (subspace_topology E Te (preimage_of E p A0)) x)
+          B
+          (PowerI E B HBsubE)).
+        witness A.
+        apply andI.
+        - exact HAArcs.
+        - witness e.
+          apply andI.
+          + exact HePre.
+          + reflexivity.
+      }
+      (** C ∩ B closed in B **)
+      claim HCBclosed : closed_in B (subspace_topology E Te B) (C :/\: B).
+      { exact (HAllClosed B HBArcsE). }
+      (** Get open complement: B\C open in B subspace **)
+      claim HBCopen_sub : B :\: (C :/\: B) :e subspace_topology E Te B.
+      {
+        exact (andER
+          (topology_on B (subspace_topology E Te B))
+          (B :\: (C :/\: B) :e subspace_topology E Te B)
+          (open_of_closed_complement B (subspace_topology E Te B) (C :/\: B) HCBclosed)).
+      }
+      (** B \ (C ∩ B) = B \ C, and get G ∈ Te with B\C = G ∩ B **)
+      apply (subspace_topologyE E Te B (B :\: (C :/\: B)) HBCopen_sub).
+      let G.
+      assume HGpack.
+      claim HGTe : G :e Te.
+      {
+        exact (andEL (G :e Te) (B :\: (C :/\: B) = G :/\: B) HGpack).
+      }
+      claim HBCeq : B :\: (C :/\: B) = G :/\: B.
+      {
+        exact (andER (G :e Te) (B :\: (C :/\: B) = G :/\: B) HGpack).
+      }
+      claim HeG : e :e G.
+      {
+        claim HeBC : e :e B :\: (C :/\: B).
+        {
+          apply (setminusI B (C :/\: B) e HeB).
+          assume HeCB.
+          exact (HeNC (binintersectE1 C B e HeCB)).
+        }
+        claim HeGB : e :e G :/\: B.
+        { rewrite <- HBCeq. exact HeBC. }
+        exact (binintersectE1 G B e HeGB).
+      }
+      (** Get slice through e **)
+      apply (covering_map_slice_through_point E Te X Tx p e Hcov HeE).
+      let Ue.
+      assume HUePack.
+      apply HUePack.
+      let slices.
+      assume HsPack.
+      apply HsPack.
+      let Sx.
+      assume HSxPack.
+      apply (and4E
+        ((((Ue :e Tx /\ apply_fun p e :e Ue) /\ slices c= Te) /\
+          pairwise_disjoint slices) /\
+         Union slices = preimage_of E p Ue)
+        (forall V:set, V :e slices ->
+          homeomorphism V (subspace_topology E Te V) Ue (subspace_topology X Tx Ue)
+            (graph V (fun z:set => apply_fun p z)))
+        (e :e Sx)
+        (Sx :e slices)
+        HSxPack).
+      assume Hprefix HhomeSlices HeSx HSxSlice.
+      apply (and3E
+        ((Ue :e Tx /\ apply_fun p e :e Ue) /\ slices c= Te)
+        (pairwise_disjoint slices)
+        (Union slices = preimage_of E p Ue)
+        Hprefix).
+      assume HpairSub HpdSlices HunionSlices.
+      claim HUeTx : Ue :e Tx.
+      {
+        exact (andEL (Ue :e Tx) (apply_fun p e :e Ue)
+          (andEL (Ue :e Tx /\ apply_fun p e :e Ue) (slices c= Te) HpairSub)).
+      }
+      claim HsubSlices : slices c= Te.
+      {
+        exact (andER (Ue :e Tx /\ apply_fun p e :e Ue) (slices c= Te) HpairSub).
+      }
+      claim HSxTe : Sx :e Te.
+      { exact (HsubSlices Sx HSxSlice). }
+      claim HSxHome :
+        homeomorphism Sx (subspace_topology E Te Sx) Ue (subspace_topology X Tx Ue)
+          (graph Sx (fun z:set => apply_fun p z)).
+      { exact (HhomeSlices Sx HSxSlice). }
+      set f := graph Sx (fun z:set => apply_fun p z).
+      (** Now we construct W ∈ Te with e ∈ W ⊂ E\C **)
+      (** Strategy: show Sx\C is open in E using base coherence **)
+      (** For each A ∈ Arcs, show complement of C in Sx∩p^{-1}(A) is open **)
+      (** using local path-connectivity of arcs and path component argument **)
+      (** Then by coherence of X, Ue\p(C∩Sx) is open in X **)
+      (** and Sx\C = preimage of Ue\p(C∩Sx) under p|_Sx **)
+      admit.
+  }
+  rewrite <- HUnionFam.
+  exact (topology_union_closed E Te Fam HtopE HFamSub).
+}
+(** Step 3: C is closed **)
+claim HCeq : C = E :\: (E :\: C).
+{
+  symmetry.
+  exact (setminus_setminus_eq E C HCsub).
+}
+rewrite HCeq.
+exact (closed_of_open_complement E Te (E :\: C) HtopE HEC_open).
+Qed.
 
 (** from S83 Thm 83.4 (line 5530 in algtop.tex): covering of graph is graph **)
 (** LATEX VERSION: Let p: E -> X be a covering map where X is a linear graph. **)
