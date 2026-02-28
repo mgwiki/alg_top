@@ -74940,6 +74940,62 @@ exact (SepI
   HpxU).
 Qed.
 
+(** Proven Bob **)
+(** Infrastructure: image of path lift lies in preimage over target subset **)
+Theorem path_lift_image_subset_preimage_on_subset :
+  forall E Te B Tb p e0 f N U:set,
+  covering_map E Te B Tb p ->
+  e0 :e E -> apply_fun p e0 = apply_fun f 0 ->
+  continuous_map unit_interval unit_interval_topology B Tb f ->
+  N c= unit_interval ->
+  (forall x:set, x :e N -> apply_fun f x :e U) ->
+  image_of (path_lift E Te B Tb p e0 f) N c= preimage_of E p U.
+let E Te B Tb p e0 f N U.
+assume Hcov He0 Hstart Hfcont HNsub HfU.
+let y.
+assume HyImg.
+apply (ReplE
+  N
+  (fun x:set => apply_fun (path_lift E Te B Tb p e0 f) x)
+  y
+  HyImg).
+let x.
+assume HxPack.
+claim HxN : x :e N.
+{
+  exact (andEL
+    (x :e N)
+    (y = apply_fun (path_lift E Te B Tb p e0 f) x)
+    HxPack).
+}
+claim HyEq : y = apply_fun (path_lift E Te B Tb p e0 f) x.
+{
+  exact (andER
+    (x :e N)
+    (y = apply_fun (path_lift E Te B Tb p e0 f) x)
+    HxPack).
+}
+rewrite HyEq.
+exact (path_lift_pointwise_in_preimage_on_subset
+  E
+  Te
+  B
+  Tb
+  p
+  e0
+  f
+  N
+  U
+  Hcov
+  He0
+  Hstart
+  Hfcont
+  HNsub
+  HfU
+  x
+  HxN).
+Qed.
+
 (** from S54 Lem 54.1 uniqueness (line 728 in algtop.tex) **)
 (** LATEX VERSION: The lifting of a path is unique. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
