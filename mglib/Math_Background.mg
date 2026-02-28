@@ -52560,6 +52560,27 @@ apply set_ext.
 - exact HsingSub.
 Qed.
 
+(** Infrastructure: empty union implies family is Empty or {Empty} **)
+(** Proven Bob **)
+Theorem union_empty_family_empty_or_singleton_empty : forall Fam:set,
+  Union Fam = Empty ->
+  Fam = Empty \/ Fam = {Empty}.
+let Fam.
+assume HUnionE.
+apply xm (Fam = Empty).
+- assume HFamE.
+  exact (orIL (Fam = Empty) (Fam = {Empty}) HFamE).
+- assume HFamNe.
+  claim HFamSing : Fam = {Empty}.
+  {
+    exact (union_empty_nonempty_family_eq_singleton_empty
+      Fam
+      HFamNe
+      HUnionE).
+  }
+  exact (orIR (Fam = Empty) (Fam = {Empty}) HFamSing).
+Qed.
+
 (** Infrastructure: empty union implies family subset of {Empty} **)
 (** Proven Bob **)
 Theorem union_empty_family_sub_singleton_empty : forall Fam:set,
