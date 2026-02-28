@@ -79432,6 +79432,20 @@ exact (Hpointwise
     HzPack)).
 Qed.
 
+(** Infrastructure: element of a slice lies in the union of slices **)
+(** Proven Bob **)
+Lemma slice_member_in_union : forall slices V x:set,
+  V :e slices -> x :e V -> x :e Union slices.
+let slices V x.
+assume HV Hx.
+exact (UnionI
+  slices
+  x
+  V
+  Hx
+  HV).
+Qed.
+
 (** Proven Bob **)
 Theorem lemma54_2_sheet_non_switching_local_from_anchor_membership :
   forall Ft q z N slices Vq Vz:set,
@@ -83440,37 +83454,37 @@ claim HFt_54_cont :
                             HyVxz
                             Hypy).
 	                        }
-	                          claim Hft54zVxz : apply_fun Ft_54 z :e Vxz.
-	                          {
-	                            rewrite Hft54zEqxz.
-	                            exact HxzVxz.
-	                          }
-	                        claim HVxzEqVq : Vxz = Vq.
-	                        {
-	                          exact (lemma54_2_sheet_non_switching_local
-	                            E
-	                            Te
-	                            B
-	                            Tb
-	                            p
-	                            F
-	                            Ft_54
-	                            q
-	                            z
-	                            N
-	                            U
-	                            slices
-	                            Vq
-	                            Vxz
-	                            HpdSlices
-	                            HN_into_U
-	                            HqN
-	                            HzN
-	                            HFtqVq
-	                            HVqSlice
-	                            Hft54zVxz
-	                            HVxzSlice).
-	                        }
+                          claim Hft54zVxz : apply_fun Ft_54 z :e Vxz.
+                          {
+                            rewrite Hft54zEqxz.
+                            exact HxzVxz.
+                          }
+                          claim HVxzEqVq : Vxz = Vq.
+                          {
+                            exact (lemma54_2_sheet_non_switching_local
+                              E
+                              Te
+                              B
+                              Tb
+                              p
+                              F
+                              Ft_54
+                              q
+                              z
+                              N
+                              U
+                              slices
+                              Vq
+                              Vxz
+                              HpdSlices
+                              HN_into_U
+                              HqN
+                              HzN
+                              HFtqVq
+                              HVqSlice
+                              Hft54zVxz
+                              HVxzSlice).
+                          }
 			                        rewrite <- HVxzEqVq.
 			                        exact HxzVxz.
 			                      }
@@ -83741,7 +83755,7 @@ exact (andI
     (continuous_map unit_square unit_square_topology E Te Ft_54)
     (apply_fun Ft_54 (0, 0) = e0)
     HFt_54_cont
-    HFt_54_00)
+  HFt_54_00)
   HFt_54_comm).
 Admitted. (** depends on admitted lemma54_2_sheet_non_switching_local **)
 
