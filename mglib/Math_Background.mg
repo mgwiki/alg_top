@@ -87344,6 +87344,148 @@ claim Hconst :
 exact (Hconst 1 one_in_unit_interval).
 Qed.
 
+(** Infrastructure: path_lift of a constant path is pointwise constant **)
+(** Proven Bob **)
+Lemma path_lift_constant_path_is_constant : forall E Te B Tb p e0 b0 t:set,
+  covering_map E Te B Tb p ->
+  e0 :e E ->
+  b0 :e B ->
+  apply_fun p e0 = b0 ->
+  t :e unit_interval ->
+  apply_fun (path_lift E Te B Tb p e0 (constant_path b0)) t = e0.
+let E Te B Tb p e0 b0 t.
+assume Hcov He0 Hb0 Hpe0 Ht.
+claim Hcontp : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    (andEL
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+      Hcov)).
+}
+claim HtopB : topology_on B Tb.
+{
+  exact (continuous_map_topology_cod E Te B Tb p Hcontp).
+}
+claim HcCont : continuous_map unit_interval unit_interval_topology B Tb (constant_path b0).
+{
+  exact (constant_path_continuous
+    B
+    Tb
+    b0
+    HtopB
+    Hb0).
+}
+claim Hstart :
+  apply_fun p e0 = apply_fun (constant_path b0) 0.
+{
+  rewrite (constant_path_apply b0 0 zero_in_unit_interval).
+  exact Hpe0.
+}
+claim Hpack :
+  continuous_map unit_interval unit_interval_topology E Te
+    (path_lift E Te B Tb p e0 (constant_path b0)) /\
+  apply_fun (path_lift E Te B Tb p e0 (constant_path b0)) 0 = e0 /\
+  (forall s:set, s :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 (constant_path b0)) s)
+      = apply_fun (constant_path b0) s).
+{
+  exact (lemma54_1_path_lifting
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    (constant_path b0)
+    Hcov
+    He0
+    Hstart
+    HcCont).
+}
+claim Hleft :
+  continuous_map unit_interval unit_interval_topology E Te
+    (path_lift E Te B Tb p e0 (constant_path b0)) /\
+  apply_fun (path_lift E Te B Tb p e0 (constant_path b0)) 0 = e0.
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p e0 (constant_path b0)) /\
+     apply_fun (path_lift E Te B Tb p e0 (constant_path b0)) 0 = e0)
+    (forall s:set, s :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p e0 (constant_path b0)) s)
+        = apply_fun (constant_path b0) s)
+    Hpack).
+}
+claim Hcont :
+  continuous_map unit_interval unit_interval_topology E Te
+    (path_lift E Te B Tb p e0 (constant_path b0)).
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p e0 (constant_path b0)))
+    (apply_fun (path_lift E Te B Tb p e0 (constant_path b0)) 0 = e0)
+    Hleft).
+}
+claim Hcomm :
+  forall s:set, s :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 (constant_path b0)) s)
+      = apply_fun (constant_path b0) s.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p e0 (constant_path b0)) /\
+     apply_fun (path_lift E Te B Tb p e0 (constant_path b0)) 0 = e0)
+    (forall s:set, s :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p e0 (constant_path b0)) s)
+        = apply_fun (constant_path b0) s)
+    Hpack).
+}
+claim Hlift :
+  lifting_of unit_interval unit_interval_topology E Te B Tb p
+    (constant_path b0)
+    (path_lift E Te B Tb p e0 (constant_path b0)).
+{
+  exact (andI
+    (continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p e0 (constant_path b0)))
+    (forall s:set, s :e unit_interval ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p e0 (constant_path b0)) s)
+        = apply_fun (constant_path b0) s)
+    Hcont
+    Hcomm).
+}
+claim Hft0 :
+  apply_fun (path_lift E Te B Tb p e0 (constant_path b0)) 0 = e0.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology E Te
+      (path_lift E Te B Tb p e0 (constant_path b0)))
+    (apply_fun (path_lift E Te B Tb p e0 (constant_path b0)) 0 = e0)
+    Hleft).
+}
+exact (constant_path_lift_is_constant
+  E
+  Te
+  B
+  Tb
+  p
+  e0
+  b0
+  (path_lift E Te B Tb p e0 (constant_path b0))
+  Hcov
+  He0
+  Hb0
+  Hpe0
+  Hlift
+  Hft0
+  t
+  Ht).
+Qed.
+
 (** from S54 Lem 54.2 path homotopy preservation (line 783 in algtop.tex) **)
 (** LATEX VERSION: If F is a path homotopy, then the lift F_tilde is also a path homotopy. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
