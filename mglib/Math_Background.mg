@@ -20313,6 +20313,7 @@ exact (and7I
   Hg1
   HexistsF).
 Admitted.
+(** TODO: need Ta = subspace_topology R R_standard_topology A (or a different continuity lemma) to remove this admit. **)
 
 (** S51 Exercises **)
 
