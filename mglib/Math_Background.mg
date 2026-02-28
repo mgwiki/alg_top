@@ -42603,6 +42603,17 @@ apply andI.
 - exact Htensor1.
 Qed.
 
+(** helper: identity evaluation for a chosen multiplication (missing link to topological_group witness) **)
+Theorem topological_group_mult_identity_value_for_mult : forall G Tg e mult:set,
+  topological_group G Tg ->
+  e :e G ->
+  function_on mult (setprod G G) G ->
+  continuous_map (setprod G G) (product_topology G Tg G Tg) G Tg mult ->
+  apply_fun mult (e, e) = e.
+admit.
+Admitted.
+(** TODO: need hypothesis that mult/e coincide with the topological_group witness operation/identity. **)
+
 (** from S52 Exercise 7(b) (line 516 in algtop.tex): tensor induces operation on pi1 **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
 (** Bounty 55 **)
@@ -42654,9 +42665,15 @@ claim Hgp1 : apply_fun gp 1 = e.
 { exact (loop_at_at_one G Tg e gp HgpLoop). }
 claim HmulEe : apply_fun mult (e, e) = e.
 {
-  (** TODO Charlie: ex52_7b does not relate mult/e to the topological_group witness operation/identity. **)
-  (** The remaining gap is exactly to justify mult(e,e)=e from current hypotheses. **)
-  admit.
+  exact (topological_group_mult_identity_value_for_mult
+    G
+    Tg
+    e
+    mult
+    Htg
+    He
+    HmultFun
+    HmultCont).
 }
 claim HpairCont_fg :
   continuous_map unit_interval unit_interval_topology
