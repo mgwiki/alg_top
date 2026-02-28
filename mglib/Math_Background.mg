@@ -266308,6 +266308,40 @@ exact HAArcs.
 Qed.
 
 (** Proven Bob **)
+Theorem edge_path_index_arc_subset_X :
+  forall X Tx Arcs n path_seq x0 i:set,
+  general_linear_graph X Tx Arcs ->
+  edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  (apply_fun path_seq i) 1 c= X.
+let X Tx Arcs n path_seq x0 i.
+assume Hglg Hep Hi.
+claim HA : (apply_fun path_seq i) 1 :e Arcs.
+{
+  exact (edge_path_index_arc_in_arcs_at_1
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    i
+    Hep
+    Hi).
+}
+exact (andEL
+  (((apply_fun path_seq i) 1) c= X)
+  (arc ((apply_fun path_seq i) 1) (subspace_topology X Tx ((apply_fun path_seq i) 1)))
+  (general_linear_graph_arc_data
+    X
+    Tx
+    Arcs
+    ((apply_fun path_seq i) 1)
+    Hglg
+    HA)).
+Qed.
+
+(** Proven Bob **)
 Theorem edge_path_index_arc_subset_union_arcs :
   forall X Tx Arcs n path_seq x0 i:set,
   edge_path X Tx Arcs n path_seq x0 ->
@@ -267308,6 +267342,28 @@ exact (edge_path_index_arc_in_arcs_at_1
   path_seq
   x0
   i
+  (reduced_edge_path_edge_path X Tx Arcs n path_seq x0 Hred)
+  Hi).
+Qed.
+
+(** Proven Bob **)
+Theorem reduced_edge_path_index_arc_subset_X :
+  forall X Tx Arcs n path_seq x0 i:set,
+  general_linear_graph X Tx Arcs ->
+  reduced_edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  (apply_fun path_seq i) 1 c= X.
+let X Tx Arcs n path_seq x0 i.
+assume Hglg Hred Hi.
+exact (edge_path_index_arc_subset_X
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  i
+  Hglg
   (reduced_edge_path_edge_path X Tx Arcs n path_seq x0 Hred)
   Hi).
 Qed.
