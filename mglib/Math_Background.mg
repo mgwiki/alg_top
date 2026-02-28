@@ -179023,6 +179023,23 @@ claim G_ext : forall f g:set, f :e G -> g :e G ->
     rewrite <- Hpair_eq.
     exact (apE f (proj0 z) (proj1 z) Hproj1_f).
 }
+claim G_support_empty_eq_eG : forall f:set, f :e G -> supp f = Empty -> f = eG.
+{
+  let f. assume Hf Hsupp.
+  apply (G_ext f eG Hf HeG_G).
+  let alpha. assume Hal : alpha :e J.
+  apply (xm (f alpha = ea alpha)).
+  - assume Heq.
+    claim HeGbeta : eG alpha = ea alpha.
+    { exact (beta J (fun alpha => ea alpha) alpha Hal). }
+    rewrite HeGbeta. exact Heq.
+  - assume Hne.
+    claim HalSupp : alpha :e supp f.
+    { exact (SepI J (fun alpha => f alpha <> ea alpha) alpha Hal Hne). }
+    claim HalEmpty : alpha :e Empty.
+    { exact (eq_subst_mem_set alpha (supp f) Empty HalSupp Hsupp). }
+    exact (FalseE (EmptyE alpha HalEmpty) (f alpha = eG alpha)).
+}
 claim Habel_G : abelian_group G multG eG invG.
 {
   prove group_structure G multG eG invG /\
@@ -265526,7 +265543,6 @@ Qed.
 (** with path components of p^{-1}(A_alpha) as its edges. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 420 **)
 (** Bounty 509 **)
-(** Lock Alice 1772305806 **)
 Theorem thm83_4_covering_of_graph_is_graph :
   forall X Tx Arcs E Te p:set,
   general_linear_graph X Tx Arcs ->
