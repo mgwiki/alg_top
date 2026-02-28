@@ -1,4 +1,4 @@
-(** Balance Alice 3782 **)
+(** Balance Alice 3771 **)
 (** Balance Bob 3507 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
@@ -245899,7 +245899,8 @@ Admitted.
 (** LATEX VERSION: Let p: E -> X be a covering map such that pi_1(X, x_0) is countable. **)
 (** If X is regular with a countable basis, so is E. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
+(** Bounty 121 **)
+(** Lock Alice 1772388000 **)
 Theorem supp_ex_3_covering_inherits_regular_second_countable :
   forall E Te X Tx p x0:set,
   covering_map E Te X Tx p ->
