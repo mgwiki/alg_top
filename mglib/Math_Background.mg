@@ -244804,6 +244804,8 @@ apply (xm (A = B)).
 Qed.
 
 (** Proven Bob **)
+
+(** Proven Bob **)
 Theorem general_linear_graph_coherence_closed :
   forall X Tx Arcs C:set,
   general_linear_graph X Tx Arcs ->
@@ -246428,6 +246430,112 @@ exact (SepI
   q
   HqX
   HqPred).
+Qed.
+
+(** Proven Bob **)
+Theorem general_linear_graph_intersection_point_is_vertex :
+  forall X Tx Arcs A B x:set,
+  general_linear_graph X Tx Arcs ->
+  A :e Arcs ->
+  B :e Arcs ->
+  A <> B ->
+  x :e A ->
+  x :e B ->
+  x :e graph_vertices X Tx Arcs.
+let X Tx Arcs A B x.
+assume Hglg HA HB Hneq HxA HxB.
+claim Hcase :
+  A :/\: B = Empty \/
+  (exists p:set, A :/\: B = Sing p /\
+    (exists q:set, end_points_of_arc A (subspace_topology X Tx A) p q \/
+                   end_points_of_arc A (subspace_topology X Tx A) q p) /\
+    (exists r:set, end_points_of_arc B (subspace_topology X Tx B) p r \/
+                   end_points_of_arc B (subspace_topology X Tx B) r p)).
+{
+  exact (general_linear_graph_arc_intersection_case
+    X
+    Tx
+    Arcs
+    A
+    B
+    Hglg
+    HA
+    HB
+    Hneq).
+}
+apply Hcase.
+- assume Hem.
+  claim HxInter : x :e A :/\: B.
+  { exact (binintersectI A B x HxA HxB). }
+  claim HxEmpty : x :e Empty.
+  { exact (mem_eqR x (A :/\: B) Empty Hem HxInter). }
+  exact (FalseE (EmptyE x HxEmpty) (x :e graph_vertices X Tx Arcs)).
+- assume Hex.
+  apply Hex. let p.
+  assume HpPack.
+  claim HcapEq : A :/\: B = Sing p.
+  {
+    exact (andEL
+      (A :/\: B = Sing p)
+      (exists q:set, end_points_of_arc A (subspace_topology X Tx A) p q \/
+                     end_points_of_arc A (subspace_topology X Tx A) q p)
+      (andEL
+        (A :/\: B = Sing p /\
+         (exists q:set, end_points_of_arc A (subspace_topology X Tx A) p q \/
+                        end_points_of_arc A (subspace_topology X Tx A) q p))
+        (exists r:set, end_points_of_arc B (subspace_topology X Tx B) p r \/
+                       end_points_of_arc B (subspace_topology X Tx B) r p)
+        HpPack)).
+  }
+  claim HpA :
+    exists q:set, end_points_of_arc A (subspace_topology X Tx A) p q \/
+                   end_points_of_arc A (subspace_topology X Tx A) q p.
+  {
+    exact (andER
+      (A :/\: B = Sing p)
+      (exists q:set, end_points_of_arc A (subspace_topology X Tx A) p q \/
+                     end_points_of_arc A (subspace_topology X Tx A) q p)
+      (andEL
+        (A :/\: B = Sing p /\
+         (exists q:set, end_points_of_arc A (subspace_topology X Tx A) p q \/
+                        end_points_of_arc A (subspace_topology X Tx A) q p))
+        (exists r:set, end_points_of_arc B (subspace_topology X Tx B) p r \/
+                       end_points_of_arc B (subspace_topology X Tx B) r p)
+        HpPack)).
+  }
+  claim HxSing : x :e Sing p.
+  {
+    exact (mem_eqR x (A :/\: B) (Sing p) HcapEq (binintersectI A B x HxA HxB)).
+  }
+  claim Hxeq : x = p. { exact (SingE p x HxSing). }
+  apply HpA.
+  let q.
+  assume Hpq.
+  apply Hpq.
+  * assume Hend.
+    rewrite Hxeq.
+    exact (graph_vertices_intro_from_endpoint_left
+      X
+      Tx
+      Arcs
+      A
+      p
+      q
+      Hglg
+      HA
+      Hend).
+  * assume Hend.
+    rewrite Hxeq.
+    exact (graph_vertices_intro_from_endpoint_right
+      X
+      Tx
+      Arcs
+      A
+      q
+      p
+      Hglg
+      HA
+      Hend).
 Qed.
 
 (** Proven Bob **)
