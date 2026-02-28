@@ -47726,8 +47726,13 @@ claim Hcont :
 claim Hsurj :
   surjective_map R S1 p.
 {
-  (** TODO Bob: prove every point on S1 has a real-angle preimage under p. **)
-  admit.
+  prove function_on p R S1 /\
+    forall y:set, y :e S1 -> exists x:set, x :e R /\ apply_fun p x = y.
+  apply andI.
+  - exact covering_map_R_S1_function_on.
+  - let y. assume HyS1.
+    (** TODO Bob: prove every point on S1 has a real-angle preimage under p. **)
+    admit.
 }
 claim Heven :
   forall b:set, b :e S1 ->
