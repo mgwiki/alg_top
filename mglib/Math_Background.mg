@@ -270552,6 +270552,96 @@ rewrite <- HtopVeq.
 exact Hend.
 Qed.
 
+(** helper: endpoints of a tree arc lie in T. **)
+(** Proven Bob **)
+Theorem tree_in_graph_arc_endpoint_left_in_T :
+  forall T ArcsT X Tx Arcs V p q:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  V :e ArcsT ->
+  end_points_of_arc V (subspace_topology T (subspace_topology X Tx T) V) p q ->
+  p :e T.
+let T ArcsT X Tx Arcs V p q.
+assume Htree HV Hend.
+claim HglgT : general_linear_graph T (subspace_topology X Tx T) ArcsT.
+{
+  exact (tree_in_graph_general_linear_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+claim HVsubT : V c= T.
+{
+  exact (andEL
+    (V c= T)
+    (arc V (subspace_topology T (subspace_topology X Tx T) V))
+    (general_linear_graph_arc_data
+      T
+      (subspace_topology X Tx T)
+      ArcsT
+      V
+      HglgT
+      HV)).
+}
+claim HpV : p :e V.
+{
+  exact (end_points_of_arc_left_in_set
+    V
+    (subspace_topology T (subspace_topology X Tx T) V)
+    p
+    q
+    Hend).
+}
+exact (HVsubT p HpV).
+Qed.
+
+(** helper: right endpoint of a tree arc lies in T. **)
+(** Proven Bob **)
+Theorem tree_in_graph_arc_endpoint_right_in_T :
+  forall T ArcsT X Tx Arcs V p q:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  V :e ArcsT ->
+  end_points_of_arc V (subspace_topology T (subspace_topology X Tx T) V) p q ->
+  q :e T.
+let T ArcsT X Tx Arcs V p q.
+assume Htree HV Hend.
+claim HglgT : general_linear_graph T (subspace_topology X Tx T) ArcsT.
+{
+  exact (tree_in_graph_general_linear_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+claim HVsubT : V c= T.
+{
+  exact (andEL
+    (V c= T)
+    (arc V (subspace_topology T (subspace_topology X Tx T) V))
+    (general_linear_graph_arc_data
+      T
+      (subspace_topology X Tx T)
+      ArcsT
+      V
+      HglgT
+      HV)).
+}
+claim HqV : q :e V.
+{
+  exact (end_points_of_arc_right_in_set
+    V
+    (subspace_topology T (subspace_topology X Tx T) V)
+    p
+    q
+    Hend).
+}
+exact (HVsubT q HqV).
+Qed.
+
 (** Proven Bob **)
 Theorem maximal_tree_subset_union_arcs :
   forall T ArcsT X Tx Arcs:set,
