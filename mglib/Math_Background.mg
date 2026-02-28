@@ -265307,6 +265307,140 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Theorem edge_path_index_initial_vertex_in_X :
+  forall X Tx Arcs n path_seq x0 i:set,
+  general_linear_graph X Tx Arcs ->
+  edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  (apply_fun path_seq i) 0 0 :e X.
+let X Tx Arcs n path_seq x0 i.
+assume Hglg Hep Hi.
+apply (edge_path_index_decomposition_endpoints_in_X
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  i
+  Hglg
+  Hep
+  Hi).
+let A.
+assume HA.
+apply HA.
+let ini.
+assume Hini.
+apply Hini.
+let fin.
+assume Hfin.
+claim Hleft :
+  (apply_fun path_seq i = ((ini, fin), A) /\
+    oriented_edge X Tx Arcs A ini fin) /\
+  ini :e X.
+{
+  exact (andEL
+    ((apply_fun path_seq i = ((ini, fin), A) /\
+      oriented_edge X Tx Arcs A ini fin) /\ ini :e X)
+    (fin :e X)
+    Hfin).
+}
+claim Hdec :
+  apply_fun path_seq i = ((ini, fin), A) /\
+  oriented_edge X Tx Arcs A ini fin.
+{
+  exact (andEL
+    (apply_fun path_seq i = ((ini, fin), A) /\
+      oriented_edge X Tx Arcs A ini fin)
+    (ini :e X)
+    Hleft).
+}
+claim Heq : apply_fun path_seq i = ((ini, fin), A).
+{ exact (andEL
+    (apply_fun path_seq i = ((ini, fin), A))
+    (oriented_edge X Tx Arcs A ini fin)
+    Hdec). }
+claim HiniX : ini :e X.
+{ exact (andER
+    (apply_fun path_seq i = ((ini, fin), A) /\
+      oriented_edge X Tx Arcs A ini fin)
+    (ini :e X)
+    Hleft). }
+rewrite Heq.
+rewrite (tuple_2_0_eq (ini, fin) A).
+rewrite (tuple_2_0_eq ini fin).
+exact HiniX.
+Qed.
+
+(** Proven Bob **)
+Theorem edge_path_index_final_vertex_in_X :
+  forall X Tx Arcs n path_seq x0 i:set,
+  general_linear_graph X Tx Arcs ->
+  edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  (apply_fun path_seq i) 0 1 :e X.
+let X Tx Arcs n path_seq x0 i.
+assume Hglg Hep Hi.
+apply (edge_path_index_decomposition_endpoints_in_X
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  i
+  Hglg
+  Hep
+  Hi).
+let A.
+assume HA.
+apply HA.
+let ini.
+assume Hini.
+apply Hini.
+let fin.
+assume Hfin.
+claim Hleft :
+  (apply_fun path_seq i = ((ini, fin), A) /\
+    oriented_edge X Tx Arcs A ini fin) /\
+  ini :e X.
+{
+  exact (andEL
+    ((apply_fun path_seq i = ((ini, fin), A) /\
+      oriented_edge X Tx Arcs A ini fin) /\ ini :e X)
+    (fin :e X)
+    Hfin).
+}
+claim Hdec :
+  apply_fun path_seq i = ((ini, fin), A) /\
+  oriented_edge X Tx Arcs A ini fin.
+{
+  exact (andEL
+    (apply_fun path_seq i = ((ini, fin), A) /\
+      oriented_edge X Tx Arcs A ini fin)
+    (ini :e X)
+    Hleft).
+}
+claim Heq : apply_fun path_seq i = ((ini, fin), A).
+{ exact (andEL
+    (apply_fun path_seq i = ((ini, fin), A))
+    (oriented_edge X Tx Arcs A ini fin)
+    Hdec). }
+claim HfinX : fin :e X.
+{
+  exact (andER
+    ((apply_fun path_seq i = ((ini, fin), A) /\
+      oriented_edge X Tx Arcs A ini fin) /\ ini :e X)
+    (fin :e X)
+    Hfin).
+}
+rewrite Heq.
+rewrite (tuple_2_0_eq (ini, fin) A).
+rewrite (tuple_2_1_eq ini fin).
+exact HfinX.
+Qed.
+
+(** Proven Bob **)
 Theorem reduced_edge_path_edge_path :
   forall X Tx Arcs n path_seq x0:set,
   reduced_edge_path X Tx Arcs n path_seq x0 ->
