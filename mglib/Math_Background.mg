@@ -187736,6 +187736,271 @@ exact (eq_i_tra
   HidL_invx1).
 Qed.
 
+(** Infrastructure: left cancellation in a group **)
+(** Proven Bob **)
+Theorem group_left_cancel : forall G mult e inv x y z:set,
+  group_structure G mult e inv ->
+  x :e G -> y :e G -> z :e G ->
+  apply_fun mult (x, y) = apply_fun mult (x, z) ->
+  y = z.
+let G mult e inv x y z.
+assume Hgrp HxG HyG HzG Hxy.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  Hgrp).
+assume HmultF HinvF HeG HassocG HidG HinvG.
+claim HinvxG : apply_fun inv x :e G.
+{
+  exact (HinvF
+    x
+    HxG).
+}
+claim Hassoc_xy :
+  apply_fun mult (apply_fun mult (apply_fun inv x, x), y) =
+  apply_fun mult (apply_fun inv x, apply_fun mult (x, y)).
+{
+  exact (HassocG
+    (apply_fun inv x)
+    x
+    y
+    HinvxG
+    HxG
+    HyG).
+}
+claim Hassoc_xz :
+  apply_fun mult (apply_fun mult (apply_fun inv x, x), z) =
+  apply_fun mult (apply_fun inv x, apply_fun mult (x, z)).
+{
+  exact (HassocG
+    (apply_fun inv x)
+    x
+    z
+    HinvxG
+    HxG
+    HzG).
+}
+claim Hassoc_xz_sym :
+  apply_fun mult (apply_fun inv x, apply_fun mult (x, z)) =
+  apply_fun mult (apply_fun mult (apply_fun inv x, x), z).
+{
+  symmetry.
+  exact Hassoc_xz.
+}
+claim Hlinv : apply_fun mult (apply_fun inv x, x) = e.
+{
+  exact (andER
+    (apply_fun mult (x, apply_fun inv x) = e)
+    (apply_fun mult (apply_fun inv x, x) = e)
+    (HinvG
+      x
+      HxG)).
+}
+claim HidL_y : apply_fun mult (e, y) = y.
+{
+  exact (andEL
+    (apply_fun mult (e, y) = y)
+    (apply_fun mult (y, e) = y)
+    (HidG
+      y
+      HyG)).
+}
+claim HidL_y_sym : y = apply_fun mult (e, y).
+{
+  symmetry.
+  exact HidL_y.
+}
+claim HidL_z : apply_fun mult (e, z) = z.
+{
+  exact (andEL
+    (apply_fun mult (e, z) = z)
+    (apply_fun mult (z, e) = z)
+    (HidG
+      z
+      HzG)).
+}
+claim Hstep1 :
+  apply_fun mult (apply_fun inv x, apply_fun mult (x, y)) =
+  apply_fun mult (apply_fun inv x, apply_fun mult (x, z)).
+{
+  rewrite Hxy.
+  reflexivity.
+}
+claim Hstep2 :
+  apply_fun mult (apply_fun mult (apply_fun inv x, x), y) =
+  apply_fun mult (apply_fun mult (apply_fun inv x, x), z).
+{
+  exact (eq_i_tra
+    (apply_fun mult (apply_fun mult (apply_fun inv x, x), y))
+    (apply_fun mult (apply_fun inv x, apply_fun mult (x, y)))
+    (apply_fun mult (apply_fun mult (apply_fun inv x, x), z))
+    Hassoc_xy
+    (eq_i_tra
+      (apply_fun mult (apply_fun inv x, apply_fun mult (x, y)))
+      (apply_fun mult (apply_fun inv x, apply_fun mult (x, z)))
+      (apply_fun mult (apply_fun mult (apply_fun inv x, x), z))
+      Hstep1
+      (eq_i_tra
+        (apply_fun mult (apply_fun inv x, apply_fun mult (x, z)))
+        (apply_fun mult (apply_fun mult (apply_fun inv x, x), z))
+        (apply_fun mult (apply_fun mult (apply_fun inv x, x), z))
+        Hassoc_xz_sym
+        (eq_refl (apply_fun mult (apply_fun mult (apply_fun inv x, x), z)))))).
+}
+claim Hstep3 : apply_fun mult (e, y) = apply_fun mult (e, z).
+{
+  rewrite <- Hlinv.
+  exact Hstep2.
+}
+exact (eq_i_tra
+  y
+  (apply_fun mult (e, y))
+  z
+  HidL_y_sym
+  (eq_i_tra
+    (apply_fun mult (e, y))
+    (apply_fun mult (e, z))
+    z
+    Hstep3
+    HidL_z)).
+Qed.
+
+(** Infrastructure: right cancellation in a group **)
+(** Proven Bob **)
+Theorem group_right_cancel : forall G mult e inv x y z:set,
+  group_structure G mult e inv ->
+  x :e G -> y :e G -> z :e G ->
+  apply_fun mult (y, x) = apply_fun mult (z, x) ->
+  y = z.
+let G mult e inv x y z.
+assume Hgrp HxG HyG HzG Hyx.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  Hgrp).
+assume HmultF HinvF HeG HassocG HidG HinvG.
+claim HinvxG : apply_fun inv x :e G.
+{
+  exact (HinvF
+    x
+    HxG).
+}
+claim Hassoc_yx :
+  apply_fun mult (apply_fun mult (y, x), apply_fun inv x) =
+  apply_fun mult (y, apply_fun mult (x, apply_fun inv x)).
+{
+  exact (HassocG
+    y
+    x
+    (apply_fun inv x)
+    HyG
+    HxG
+    HinvxG).
+}
+claim Hassoc_yx_sym :
+  apply_fun mult (y, apply_fun mult (x, apply_fun inv x)) =
+  apply_fun mult (apply_fun mult (y, x), apply_fun inv x).
+{
+  symmetry.
+  exact Hassoc_yx.
+}
+claim Hassoc_zx :
+  apply_fun mult (apply_fun mult (z, x), apply_fun inv x) =
+  apply_fun mult (z, apply_fun mult (x, apply_fun inv x)).
+{
+  exact (HassocG
+    z
+    x
+    (apply_fun inv x)
+    HzG
+    HxG
+    HinvxG).
+}
+claim Hrinv : apply_fun mult (x, apply_fun inv x) = e.
+{
+  exact (andEL
+    (apply_fun mult (x, apply_fun inv x) = e)
+    (apply_fun mult (apply_fun inv x, x) = e)
+    (HinvG
+      x
+      HxG)).
+}
+claim HidR_y : apply_fun mult (y, e) = y.
+{
+  exact (andER
+    (apply_fun mult (e, y) = y)
+    (apply_fun mult (y, e) = y)
+    (HidG
+      y
+      HyG)).
+}
+claim HidR_y_sym : y = apply_fun mult (y, e).
+{
+  symmetry.
+  exact HidR_y.
+}
+claim HidR_z : apply_fun mult (z, e) = z.
+{
+  exact (andER
+    (apply_fun mult (e, z) = z)
+    (apply_fun mult (z, e) = z)
+    (HidG
+      z
+      HzG)).
+}
+claim Hstep1 :
+  apply_fun mult (apply_fun mult (y, x), apply_fun inv x) =
+  apply_fun mult (apply_fun mult (z, x), apply_fun inv x).
+{
+  rewrite Hyx.
+  reflexivity.
+}
+claim Hstep2 :
+  apply_fun mult (y, apply_fun mult (x, apply_fun inv x)) =
+  apply_fun mult (z, apply_fun mult (x, apply_fun inv x)).
+{
+  exact (eq_i_tra
+    (apply_fun mult (y, apply_fun mult (x, apply_fun inv x)))
+    (apply_fun mult (apply_fun mult (y, x), apply_fun inv x))
+    (apply_fun mult (z, apply_fun mult (x, apply_fun inv x)))
+    Hassoc_yx_sym
+    (eq_i_tra
+      (apply_fun mult (apply_fun mult (y, x), apply_fun inv x))
+      (apply_fun mult (apply_fun mult (z, x), apply_fun inv x))
+      (apply_fun mult (z, apply_fun mult (x, apply_fun inv x)))
+      Hstep1
+      Hassoc_zx)).
+}
+claim Hstep3 : apply_fun mult (y, e) = apply_fun mult (z, e).
+{
+  rewrite <- Hrinv.
+  exact Hstep2.
+}
+exact (eq_i_tra
+  y
+  (apply_fun mult (y, e))
+  z
+  HidR_y_sym
+  (eq_i_tra
+    (apply_fun mult (y, e))
+    (apply_fun mult (z, e))
+    z
+    Hstep3
+    HidR_z)).
+Qed.
+
 (** from S68 Definition (line 2742 in algtop.tex): free product of subgroups **)
 (** LATEX VERSION: G is the free product of {G_alpha} if G_alpha cap G_beta = {1} **)
 (** for alpha <> beta, the G_alpha generate G, and each x in G has a unique **)
