@@ -52464,6 +52464,42 @@ apply iffI.
   + exact (Subq_Empty (Union Fam)).
 Qed.
 
+(** Infrastructure: union of a singleton family **)
+(** Proven Bob **)
+Theorem Union_singleton_eq : forall A:set,
+  Union {A} = A.
+let A.
+apply set_ext.
+- let x.
+  assume HxUnion.
+  apply (UnionE {A} x HxUnion).
+  let V.
+  assume HVpack.
+  claim HxV : x :e V.
+  {
+    exact (andEL
+      (x :e V)
+      (V :e {A})
+      HVpack).
+  }
+  claim HVsing : V :e {A}.
+  {
+    exact (andER
+      (x :e V)
+      (V :e {A})
+      HVpack).
+  }
+  claim HVeq : V = A.
+  {
+    exact (SingE A V HVsing).
+  }
+  rewrite <- HVeq.
+  exact HxV.
+- let x.
+  assume HxA.
+  exact (UnionI {A} x A HxA (SingI A)).
+Qed.
+
 (** Infrastructure: nonempty family with empty union is the singleton {Empty} **)
 (** Proven Bob **)
 Theorem union_empty_nonempty_family_eq_singleton_empty : forall Fam:set,
