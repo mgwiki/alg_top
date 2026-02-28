@@ -33194,6 +33194,244 @@ exact (path_homotopy_class_loop_in_loop_space
   HepsInClassf).
 Qed.
 
+(** Proven Bob **)
+(** Infrastructure: basepoint change along constant path is identity **)
+Theorem basepoint_change_map_constant_path_identity : forall X Tx x0 cls:set,
+  topology_on X Tx ->
+  x0 :e X ->
+  cls :e fundamental_group X Tx x0 ->
+  apply_fun (basepoint_change_map X Tx x0 x0 (constant_path x0)) cls = cls.
+let X Tx x0 cls.
+assume HtopX Hx0 Hcls.
+set eps := Eps_i (fun f:set => f :e cls).
+claim HepsLoop : eps :e loop_space X Tx x0.
+{ exact (eps_of_fundamental_group_member_in_loop_space X Tx x0 cls Hcls). }
+claim HepsLoopAt : loop_at X Tx x0 eps.
+{ exact (loop_space_has_loop_at X Tx x0 eps HepsLoop). }
+claim HepsCont : continuous_map unit_interval unit_interval_topology X Tx eps.
+{ exact (loop_at_continuous X Tx x0 eps HepsLoopAt). }
+claim Heps0 : apply_fun eps 0 = x0.
+{ exact (loop_at_at_zero X Tx x0 eps HepsLoopAt). }
+claim Heps1 : apply_fun eps 1 = x0.
+{ exact (loop_at_at_one X Tx x0 eps HepsLoopAt). }
+claim HconstCont : continuous_map unit_interval unit_interval_topology X Tx (constant_path x0).
+{ exact (constant_path_continuous X Tx x0 HtopX Hx0). }
+claim HrevConstEq : reverse_path (constant_path x0) = constant_path x0.
+{
+  apply (total_function_space_extensional
+    unit_interval
+    X
+    (reverse_path (constant_path x0))
+    (constant_path x0)).
+  - claim HconstFun : function_on (constant_path x0) unit_interval X.
+    {
+      exact (continuous_map_function_on
+        unit_interval
+        unit_interval_topology
+        X
+        Tx
+        (constant_path x0)
+        HconstCont).
+    }
+    exact (compose_fun_in_total_function_space
+      unit_interval
+      unit_interval
+      X
+      flip_unit_interval
+      (constant_path x0)
+      flip_unit_interval_function_on
+      HconstFun).
+  - exact (graph_in_total_function_space
+      unit_interval
+      X
+      (fun t:set => x0)
+      (fun t Ht => Hx0)).
+  - let t.
+    assume Ht.
+    rewrite (reverse_path_apply (constant_path x0) t Ht).
+    rewrite (constant_path_apply
+      x0
+      (apply_fun flip_unit_interval t)
+      (flip_unit_interval_function_on t Ht)).
+    rewrite (constant_path_apply x0 t Ht).
+    reflexivity.
+}
+rewrite (basepoint_change_map_apply
+  X
+  Tx
+  x0
+  x0
+  (constant_path x0)
+  cls
+  Hcls).
+rewrite HrevConstEq.
+set eps_const := path_concat eps (constant_path x0).
+claim HepsConstCont : continuous_map unit_interval unit_interval_topology X Tx eps_const.
+{
+  exact (path_concat_continuous
+    X
+    Tx
+    x0
+    x0
+    x0
+    eps
+    (constant_path x0)
+    HepsCont
+    HconstCont
+    Heps0
+    Heps1
+    (constant_path_at_zero x0)
+    (constant_path_at_one x0)).
+}
+claim HepsConst0 : apply_fun eps_const 0 = x0.
+{
+  rewrite (path_concat_at_zero eps (constant_path x0)).
+  exact Heps0.
+}
+claim HepsConst1 : apply_fun eps_const 1 = x0.
+{
+  rewrite (path_concat_at_one eps (constant_path x0)).
+  exact (constant_path_at_one x0).
+}
+claim HrightId : path_homotopic X Tx x0 x0 eps_const eps.
+{
+  exact (Theorem_51_2_right_identity
+    X
+    Tx
+    x0
+    x0
+    eps
+    HepsCont
+    Heps0
+    Heps1
+    Hx0).
+}
+claim HleftId : path_homotopic X Tx x0 x0 (path_concat (constant_path x0) eps_const) eps_const.
+{
+  exact (Theorem_51_2_left_identity
+    X
+    Tx
+    x0
+    x0
+    eps_const
+    HepsConstCont
+    HepsConst0
+    HepsConst1
+    Hx0).
+}
+claim HconcatHom : path_homotopic X Tx x0 x0 (path_concat (constant_path x0) eps_const) eps.
+{
+  exact (Lemma_51_1_path_homotopy_trans
+    X
+    Tx
+    x0
+    x0
+    (path_concat (constant_path x0) eps_const)
+    eps_const
+    eps
+    HleftId
+    HrightId).
+}
+claim HconcatClass :
+  path_homotopy_class_loop X Tx x0 (path_concat (constant_path x0) eps_const)
+  = path_homotopy_class_loop X Tx x0 eps.
+{
+  exact (path_homotopy_class_loop_eq_of_path_homotopic
+    X
+    Tx
+    x0
+    (path_concat (constant_path x0) eps_const)
+    eps
+    HconcatHom).
+}
+claim HclsEqEps : cls = path_homotopy_class_loop X Tx x0 eps.
+{
+  claim Hrep : exists f:set, f :e loop_space X Tx x0 /\
+    cls = path_homotopy_class_loop X Tx x0 f.
+  {
+    exact (fundamental_group_member_has_representative
+      X
+      Tx
+      x0
+      cls
+      Hcls).
+  }
+  apply Hrep.
+  let f.
+  assume HfPack.
+  claim HfLoop : f :e loop_space X Tx x0.
+  {
+    exact (andEL
+      (f :e loop_space X Tx x0)
+      (cls = path_homotopy_class_loop X Tx x0 f)
+      HfPack).
+  }
+  claim HclsEqf : cls = path_homotopy_class_loop X Tx x0 f.
+  {
+    exact (andER
+      (f :e loop_space X Tx x0)
+      (cls = path_homotopy_class_loop X Tx x0 f)
+      HfPack).
+  }
+  claim HfInCls : f :e cls.
+  {
+    exact (mem_eqL
+      f
+      cls
+      (path_homotopy_class_loop X Tx x0 f)
+      HclsEqf
+      (loop_in_own_path_homotopy_class X Tx x0 f HfLoop)).
+  }
+  claim HepsInCls : eps :e cls.
+  {
+    exact (Eps_i_ax
+      (fun g:set => g :e cls)
+      f
+      HfInCls).
+  }
+  claim HepsInClassf : eps :e path_homotopy_class_loop X Tx x0 f.
+  {
+    exact (mem_eqR
+      eps
+      cls
+      (path_homotopy_class_loop X Tx x0 f)
+      HclsEqf
+      HepsInCls).
+  }
+  claim HfHomEps : path_homotopic X Tx x0 x0 f eps.
+  {
+    exact (path_homotopy_class_loop_has_homotopy
+      X
+      Tx
+      x0
+      f
+      eps
+      HepsInClassf).
+  }
+  claim HclassEq :
+    path_homotopy_class_loop X Tx x0 f
+    = path_homotopy_class_loop X Tx x0 eps.
+  {
+    exact (path_homotopy_class_loop_eq_of_path_homotopic
+      X
+      Tx
+      x0
+      f
+      eps
+      HfHomEps).
+  }
+  exact (eq_i_tra
+    cls
+    (path_homotopy_class_loop X Tx x0 f)
+    (path_homotopy_class_loop X Tx x0 eps)
+    HclsEqf
+    HclassEq).
+}
+rewrite HconcatClass.
+rewrite <- HclsEqEps.
+reflexivity.
+Qed.
+
 (** Infrastructure: postcomposition carries loops to loops at image basepoint **)
 (** Proven Bob **)
 Theorem loop_space_postcompose : forall X Tx x0 Y Ty y0 f h:set,
