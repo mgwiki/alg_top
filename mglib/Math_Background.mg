@@ -266215,6 +266215,51 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Theorem edge_path_index_arc_subset_union_arcs_at_1 :
+  forall X Tx Arcs n path_seq x0 i:set,
+  edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  (apply_fun path_seq i) 1 c= Union Arcs.
+let X Tx Arcs n path_seq x0 i.
+assume Hep Hi.
+apply (edge_path_index_arc_subset_union_arcs
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  i
+  Hep
+  Hi).
+let A.
+assume HA.
+apply HA.
+let ini.
+assume Hini.
+apply Hini.
+let fin.
+assume Hfin.
+claim Heq : apply_fun path_seq i = ((ini, fin), A).
+{
+  exact (andEL
+    (apply_fun path_seq i = ((ini, fin), A))
+    (A c= Union Arcs)
+    Hfin).
+}
+claim Hsub : A c= Union Arcs.
+{
+  exact (andER
+    (apply_fun path_seq i = ((ini, fin), A))
+    (A c= Union Arcs)
+    Hfin).
+}
+rewrite Heq.
+rewrite (tuple_2_1_eq (ini, fin) A).
+exact Hsub.
+Qed.
+
+(** Proven Bob **)
 Theorem edge_path_start_vertex :
   forall X Tx Arcs n path_seq x0:set,
   edge_path X Tx Arcs n path_seq x0 ->
@@ -267023,6 +267068,26 @@ Theorem reduced_edge_path_index_arc_subset_union_arcs :
 let X Tx Arcs n path_seq x0 i.
 assume Hred Hi.
 exact (edge_path_index_arc_subset_union_arcs
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  i
+  (reduced_edge_path_edge_path X Tx Arcs n path_seq x0 Hred)
+  Hi).
+Qed.
+
+(** Proven Bob **)
+Theorem reduced_edge_path_index_arc_subset_union_arcs_at_1 :
+  forall X Tx Arcs n path_seq x0 i:set,
+  reduced_edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  (apply_fun path_seq i) 1 c= Union Arcs.
+let X Tx Arcs n path_seq x0 i.
+assume Hred Hi.
+exact (edge_path_index_arc_subset_union_arcs_at_1
   X
   Tx
   Arcs
