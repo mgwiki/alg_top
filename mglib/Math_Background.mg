@@ -19396,7 +19396,6 @@ Qed.
 (** LATEX VERSION: In any convex subspace A of Rn, any two paths f,g from x0 to x1 are path homotopic via F(x,t)=(1-t)f(x)+tg(x). **)
 (** EFFORT: 5 lines textbook, difficulty 5/10, USD 80 **)
 (** Bounty 107 **)
-(** Lock Alice 1772288205 **)
 Theorem Example_51_1_convex_paths_homotopic : forall A Ta x0 x1 f g:set,
   A c= R -> convex_in R A ->
   topology_on A Ta ->
@@ -299648,7 +299647,6 @@ Admitted.
 (** beta path in V from b to a. Then [alpha . beta] generates pi1(X,a). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 180 **)
 (** Bounty 218 **)
-(** Lock Alice 1772288205 **)
 Theorem lemma84_6_generator_from_edge :
   forall X Tx U V A B a b alpha beta:set,
   topology_on X Tx ->
@@ -299824,7 +299822,6 @@ Admitted.
 (** has free generators in bijection with edges of X not in T. **)
 (** EFFORT: 35 lines textbook, difficulty 8/10, USD 560 **)
 (** Bounty 746 **)
-(** Lock Alice 1772288205 **)
 Theorem thm84_7_pi1_graph_is_free :
   forall X Tx Arcs T ArcsT x0:set,
   general_linear_graph X Tx Arcs ->
