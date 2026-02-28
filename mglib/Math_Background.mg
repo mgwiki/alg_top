@@ -1,4 +1,4 @@
-(** Balance Alice 3551 **)
+(** Balance Alice 3529 **)
 (** Balance Bob 3507 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
@@ -220553,7 +220553,8 @@ Definition first_homology_inv : set -> set -> set -> set :=
 (** LATEX VERSION: Let F be a group, N normal subgroup, q: F -> F/N projection. **)
 (** p: F -> F/[F,F] induces iso phi: q(F)/[q(F),q(F)] -> p(F)/p(N). **)
 (** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
-(** Bounty 220 **)
+(** Bounty 242 **)
+(** Lock Alice 1772338321 **)
 Theorem thm75_1_abelianize_quotient_commute :
   forall F multF eF invF N:set,
   group_structure F multF eF invF ->
