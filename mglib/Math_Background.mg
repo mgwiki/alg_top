@@ -270642,6 +270642,82 @@ claim HqV : q :e V.
 exact (HVsubT q HqV).
 Qed.
 
+(** helper: left endpoint of a tree arc lies in X. **)
+(** Proven Bob **)
+Theorem tree_in_graph_arc_endpoint_left_in_X :
+  forall T ArcsT X Tx Arcs V p q:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  V :e ArcsT ->
+  end_points_of_arc V (subspace_topology T (subspace_topology X Tx T) V) p q ->
+  p :e X.
+let T ArcsT X Tx Arcs V p q.
+assume Htree HV Hend.
+claim HpT : p :e T.
+{
+  exact (tree_in_graph_arc_endpoint_left_in_T
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    V
+    p
+    q
+    Htree
+    HV
+    Hend).
+}
+claim HTsubX : T c= X.
+{
+  exact (tree_in_graph_subset_X
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+exact (HTsubX p HpT).
+Qed.
+
+(** helper: right endpoint of a tree arc lies in X. **)
+(** Proven Bob **)
+Theorem tree_in_graph_arc_endpoint_right_in_X :
+  forall T ArcsT X Tx Arcs V p q:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  V :e ArcsT ->
+  end_points_of_arc V (subspace_topology T (subspace_topology X Tx T) V) p q ->
+  q :e X.
+let T ArcsT X Tx Arcs V p q.
+assume Htree HV Hend.
+claim HqT : q :e T.
+{
+  exact (tree_in_graph_arc_endpoint_right_in_T
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    V
+    p
+    q
+    Htree
+    HV
+    Hend).
+}
+claim HTsubX : T c= X.
+{
+  exact (tree_in_graph_subset_X
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+exact (HTsubX q HqT).
+Qed.
+
 (** Proven Bob **)
 Theorem maximal_tree_subset_union_arcs :
   forall T ArcsT X Tx Arcs:set,
