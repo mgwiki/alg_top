@@ -271886,6 +271886,71 @@ apply andI.
   exact (andER (p :e Union Arcs) (q :e Union Arcs) HpqU).
 Qed.
 
+(** helper: appended edge endpoints lie in graph_vertices. **)
+(** Proven Bob **)
+Theorem edge_path_append_oriented_edge_endpoints_in_graph_vertices :
+  forall X Tx Arcs n path_seq x0 j A p q:set,
+  general_linear_graph X Tx Arcs ->
+  edge_path X Tx Arcs n path_seq x0 ->
+  j :e n ->
+  ordsucc j /:e n ->
+  (apply_fun path_seq j) 0 1 = p ->
+  oriented_edge X Tx Arcs A p q ->
+  (apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 0 :e graph_vertices X Tx Arcs /\
+  (apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 1 :e graph_vertices X Tx Arcs.
+let X Tx Arcs n path_seq x0 j A p q.
+assume Hglg Hep HjIn HsjNot Hfinj Hori.
+claim Happ :
+  apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n
+  = ((p, q), A).
+{
+  exact (apply_fun_edge_path_append_at_n
+    X Tx Arcs n path_seq x0 j A p q
+    Hglg
+    Hep
+    HjIn
+    HsjNot
+    Hfinj
+    Hori).
+}
+claim HpqV : p :e graph_vertices X Tx Arcs /\ q :e graph_vertices X Tx Arcs.
+{
+  exact (oriented_edge_endpoints_in_graph_vertices
+    X
+    Tx
+    Arcs
+    A
+    p
+    q
+    Hglg
+    Hori).
+}
+apply andI.
+- rewrite Happ.
+  rewrite (tuple_2_0_eq (p, q) A).
+  rewrite (tuple_2_0_eq p q).
+  exact (andEL
+    (p :e graph_vertices X Tx Arcs)
+    (q :e graph_vertices X Tx Arcs)
+    HpqV).
+- rewrite Happ.
+  rewrite (tuple_2_0_eq (p, q) A).
+  rewrite tuple_2_1_eq.
+  exact (andER
+    (p :e graph_vertices X Tx Arcs)
+    (q :e graph_vertices X Tx Arcs)
+    HpqV).
+Qed.
+
 (** helper: for any graph vertex x there is a nontrivial edge_path from x to x. **)
 (** Proven Charlie **)
 Theorem graph_vertex_has_edge_path_to_self :
