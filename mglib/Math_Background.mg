@@ -19201,6 +19201,197 @@ exact (and7I
   Hreparam_hom).
 Qed.
 
+(** Helper: convex_in R A implies the convex combination property **)
+(** Proven Alice **)
+Theorem convex_in_R_combination : forall A a b t:set,
+  convex_in R A ->
+  a :e A -> b :e A ->
+  t :e unit_interval ->
+  add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b) :e A.
+let A a b t.
+assume Hconv HaA HbA Ht.
+claim HAsubR : A c= R. { exact (convex_in_subset R A Hconv). }
+claim HaR : a :e R. { exact (HAsubR a HaA). }
+claim HbR : b :e R. { exact (HAsubR b HbA). }
+claim HtR : t :e R. { exact (unit_interval_sub_R t Ht). }
+claim HSNoa : SNo a. { exact (real_SNo a HaR). }
+claim HSNob : SNo b. { exact (real_SNo b HbR). }
+claim HSNot : SNo t. { exact (real_SNo t HtR). }
+claim HSNomt : SNo (minus_SNo t). { exact (SNo_minus_SNo t HSNot). }
+claim HSNo1mt : SNo (add_SNo 1 (minus_SNo t)). { exact (SNo_add_SNo 1 (minus_SNo t) SNo_1 HSNomt). }
+claim HSNo_left : SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a).
+{ exact (SNo_mul_SNo (add_SNo 1 (minus_SNo t)) a HSNo1mt HSNoa). }
+claim HSNo_right : SNo (mul_SNo t b).
+{ exact (SNo_mul_SNo t b HSNot HSNob). }
+claim HSNo_result : SNo (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)).
+{ exact (SNo_add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b) HSNo_left HSNo_right). }
+claim HtLe0 : SNoLe 0 t.
+{ exact (SNoLe_of_Rle 0 t (unit_interval_Rle0 t Ht)). }
+claim HtLe1 : SNoLe t 1.
+{ exact (SNoLe_of_Rle t 1 (unit_interval_Rle1 t Ht)). }
+(** Case split on t = 0 or 0 < t **)
+apply (SNoLeE 0 t SNo_0 HSNot HtLe0).
+- (** Case 0 < t **)
+  assume H0ltt : SNoLt 0 t.
+  (** Case split on t = 1 or t < 1 **)
+  apply (SNoLeE t 1 HSNot SNo_1 HtLe1).
+  + (** Case t < 1, so 0 < t < 1 **)
+    assume Htlt1 : SNoLt t 1.
+    claim H1mtPos : SNoLt 0 (add_SNo 1 (minus_SNo t)).
+    {
+      claim Htmtis0 : add_SNo t (minus_SNo t) = 0.
+      { exact (add_SNo_minus_SNo_rinv t HSNot). }
+      exact (Htmtis0 (fun z _ => SNoLt z (add_SNo 1 (minus_SNo t)))
+        (add_SNo_Lt1 t (minus_SNo t) 1 HSNot HSNomt SNo_1 Htlt1)).
+    }
+    (** Case split on a < b, a = b, or b < a **)
+    apply (SNoLt_trichotomy_or_impred a b HSNoa HSNob).
+    * (** Case a < b **)
+      assume Haltb : SNoLt a b.
+      claim HRltab : Rlt a b.
+      { exact (RltI a b HaR HbR Haltb). }
+      (** Show result is in order_interval R a b, hence in A **)
+      claim Hresult_in_R : add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b) :e R.
+      { exact (real_add_SNo
+          (mul_SNo (add_SNo 1 (minus_SNo t)) a)
+          (real_mul_SNo (add_SNo 1 (minus_SNo t)) (real_add_SNo 1 real_1 (minus_SNo t) (real_minus_SNo t HtR)) a HaR)
+          (mul_SNo t b)
+          (real_mul_SNo t HtR b HbR)). }
+      (** Need: a < (1-t)a + tb and (1-t)a + tb < b **)
+      (** a = (1-t)a + ta, so a < (1-t)a + tb iff ta < tb iff a < b (since t > 0) **)
+      claim HltLeft : SNoLt a (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)).
+      {
+        claim Hstep1 : add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t a) = a.
+        {
+          rewrite <- (mul_SNo_distrR (add_SNo 1 (minus_SNo t)) t a HSNo1mt HSNot HSNoa).
+          rewrite (add_SNo_minus_R2' 1 t SNo_1 HSNot).
+          exact (mul_SNo_oneL a HSNoa).
+        }
+        claim Hstep2 : SNoLt (mul_SNo t a) (mul_SNo t b).
+        { exact (pos_mul_SNo_Lt t a b HSNot H0ltt HSNoa HSNob Haltb). }
+        claim Hstep3 : SNoLt
+          (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t a))
+          (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)).
+        { exact (add_SNo_Lt2 (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t a) (mul_SNo t b) HSNo_left (SNo_mul_SNo t a HSNot HSNoa) (SNo_mul_SNo t b HSNot HSNob) Hstep2). }
+        exact (Hstep1 (fun z _ => SNoLt z (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b))) Hstep3).
+      }
+      claim HltRight : SNoLt (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)) b.
+      {
+        claim Hstep1 : add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) b) (mul_SNo t b) = b.
+        {
+          rewrite <- (mul_SNo_distrR (add_SNo 1 (minus_SNo t)) t b HSNo1mt HSNot HSNob).
+          rewrite (add_SNo_minus_R2' 1 t SNo_1 HSNot).
+          exact (mul_SNo_oneL b HSNob).
+        }
+        claim Hstep2 : SNoLt (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo (add_SNo 1 (minus_SNo t)) b).
+        { exact (pos_mul_SNo_Lt (add_SNo 1 (minus_SNo t)) a b HSNo1mt H1mtPos HSNoa HSNob Haltb). }
+        claim Hstep3 : SNoLt
+          (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b))
+          (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) b) (mul_SNo t b)).
+        { exact (add_SNo_Lt1 (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b) (mul_SNo (add_SNo 1 (minus_SNo t)) b) HSNo_left HSNo_right (SNo_mul_SNo (add_SNo 1 (minus_SNo t)) b HSNo1mt HSNob) Hstep2). }
+        exact (Hstep1 (fun z _ => SNoLt (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)) z) Hstep3).
+      }
+      claim HRlt_left : Rlt a (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)).
+      { exact (RltI a (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)) HaR Hresult_in_R HltLeft). }
+      claim HRlt_right : Rlt (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)) b.
+      { exact (RltI (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)) b Hresult_in_R HbR HltRight). }
+      claim Hin_oi : add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b) :e order_interval R a b.
+      {
+        exact (SepI R (fun x:set => order_rel R a x /\ order_rel R x b)
+          (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b))
+          Hresult_in_R
+          (andI (order_rel R a (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)))
+                (order_rel R (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)) b)
+                (Rlt_implies_order_rel_R a (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)) HRlt_left)
+                (Rlt_implies_order_rel_R (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)) b HRlt_right))).
+      }
+      exact (convex_in_interval_property R A Hconv a b HaA HbA
+        (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)) Hin_oi).
+    * (** Case a = b **)
+      assume Haeqb : a = b.
+      rewrite <- Haeqb.
+      rewrite <- (mul_SNo_distrR (add_SNo 1 (minus_SNo t)) t a HSNo1mt HSNot HSNoa).
+      rewrite (add_SNo_minus_R2' 1 t SNo_1 HSNot).
+      rewrite (mul_SNo_oneL a HSNoa).
+      exact HaA.
+    * (** Case b < a **)
+      assume Hblta : SNoLt b a.
+      claim HRltba : Rlt b a.
+      { exact (RltI b a HbR HaR Hblta). }
+      claim Hresult_in_R : add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b) :e R.
+      { exact (real_add_SNo
+          (mul_SNo (add_SNo 1 (minus_SNo t)) a)
+          (real_mul_SNo (add_SNo 1 (minus_SNo t)) (real_add_SNo 1 real_1 (minus_SNo t) (real_minus_SNo t HtR)) a HaR)
+          (mul_SNo t b)
+          (real_mul_SNo t HtR b HbR)). }
+      (** b < (1-t)a + tb < a **)
+      claim HltRight : SNoLt (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)) a.
+      {
+        claim Hstep1 : add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t a) = a.
+        {
+          rewrite <- (mul_SNo_distrR (add_SNo 1 (minus_SNo t)) t a HSNo1mt HSNot HSNoa).
+          rewrite (add_SNo_minus_R2' 1 t SNo_1 HSNot).
+          exact (mul_SNo_oneL a HSNoa).
+        }
+        claim Hstep2 : SNoLt (mul_SNo t b) (mul_SNo t a).
+        { exact (pos_mul_SNo_Lt t b a HSNot H0ltt HSNob HSNoa Hblta). }
+        claim Hstep3 : SNoLt
+          (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b))
+          (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t a)).
+        { exact (add_SNo_Lt2 (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b) (mul_SNo t a) HSNo_left (SNo_mul_SNo t b HSNot HSNob) (SNo_mul_SNo t a HSNot HSNoa) Hstep2). }
+        exact (Hstep1 (fun z _ => SNoLt (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)) z) Hstep3).
+      }
+      claim HltLeft : SNoLt b (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)).
+      {
+        claim Hstep1 : add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) b) (mul_SNo t b) = b.
+        {
+          rewrite <- (mul_SNo_distrR (add_SNo 1 (minus_SNo t)) t b HSNo1mt HSNot HSNob).
+          rewrite (add_SNo_minus_R2' 1 t SNo_1 HSNot).
+          exact (mul_SNo_oneL b HSNob).
+        }
+        claim Hstep2 : SNoLt (mul_SNo (add_SNo 1 (minus_SNo t)) b) (mul_SNo (add_SNo 1 (minus_SNo t)) a).
+        { exact (pos_mul_SNo_Lt (add_SNo 1 (minus_SNo t)) b a HSNo1mt H1mtPos HSNob HSNoa Hblta). }
+        claim Hstep3 : SNoLt
+          (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) b) (mul_SNo t b))
+          (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)).
+        { exact (add_SNo_Lt1 (mul_SNo (add_SNo 1 (minus_SNo t)) b) (mul_SNo t b) (mul_SNo (add_SNo 1 (minus_SNo t)) a) (SNo_mul_SNo (add_SNo 1 (minus_SNo t)) b HSNo1mt HSNob) HSNo_right (SNo_mul_SNo (add_SNo 1 (minus_SNo t)) a HSNo1mt HSNoa) Hstep2). }
+        exact (Hstep1 (fun z _ => SNoLt z (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b))) Hstep3).
+      }
+      claim HRlt_left : Rlt b (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)).
+      { exact (RltI b (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)) HbR Hresult_in_R HltLeft). }
+      claim HRlt_right : Rlt (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)) a.
+      { exact (RltI (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)) a Hresult_in_R HaR HltRight). }
+      claim Hin_oi : add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b) :e order_interval R b a.
+      {
+        exact (SepI R (fun x:set => order_rel R b x /\ order_rel R x a)
+          (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b))
+          Hresult_in_R
+          (andI (order_rel R b (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)))
+                (order_rel R (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)) a)
+                (Rlt_implies_order_rel_R b (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)) HRlt_left)
+                (Rlt_implies_order_rel_R (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)) a HRlt_right))).
+      }
+      exact (convex_in_interval_property R A Hconv b a HbA HaA
+        (add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a) (mul_SNo t b)) Hin_oi).
+  + (** Case t = 1 **)
+    assume Hteq1 : t = 1.
+    rewrite Hteq1.
+    rewrite (add_SNo_minus_SNo_rinv 1 SNo_1).
+    rewrite (mul_SNo_zeroL a HSNoa).
+    rewrite (add_SNo_0L (mul_SNo 1 b) (SNo_mul_SNo 1 b SNo_1 HSNob)).
+    rewrite (mul_SNo_oneL b HSNob).
+    exact HbA.
+- (** Case 0 = t **)
+  assume Hteq0 : 0 = t.
+  rewrite <- Hteq0.
+  rewrite minus_SNo_0.
+  rewrite (add_SNo_0R 1 SNo_1).
+  rewrite (mul_SNo_oneL a HSNoa).
+  rewrite (mul_SNo_zeroL b HSNob).
+  rewrite (add_SNo_0R a HSNoa).
+  exact HaA.
+Qed.
+
 (** from S51 Ex 1 (line 150 in algtop.tex): straight-line homotopy **)
 (** LATEX VERSION: In any convex subspace A of Rn, any two paths f,g from x0 to x1 are path homotopic via F(x,t)=(1-t)f(x)+tg(x). **)
 (** EFFORT: 5 lines textbook, difficulty 5/10, USD 80 **)
@@ -19380,7 +19571,82 @@ claim HFraw_spec :
     (** Fraw maps into A by convexity **)
     claim HFraw_in_A : forall x:set, x :e unit_square -> apply_fun Fraw x :e A.
     { let x. assume Hx.
-      admit. }
+      claim Hs_ui : x 0 :e unit_interval.
+      { exact (ap0_Sigma unit_interval (fun _ : set => unit_interval) x Hx). }
+      claim Ht_ui : x 1 :e unit_interval.
+      { exact (ap1_Sigma unit_interval (fun _ : set => unit_interval) x Hx). }
+      claim HfsR : apply_fun f (x 0) :e R.
+      { exact (HAsubR (apply_fun f (x 0)) (HfOnA (x 0) Hs_ui)). }
+      claim HgsR : apply_fun g (x 0) :e R.
+      { exact (HAsubR (apply_fun g (x 0)) (HgOnA (x 0) Hs_ui)). }
+      claim HfsqVal : apply_fun f_sq x = apply_fun f (x 0).
+      { rewrite (compose_fun_apply unit_square s_coord f x Hx).
+        rewrite (projection1_apply unit_interval unit_interval x Hx).
+        reflexivity. }
+      claim HgsqVal : apply_fun g_sq x = apply_fun g (x 0).
+      { rewrite (compose_fun_apply unit_square s_coord g x Hx).
+        rewrite (projection1_apply unit_interval unit_interval x Hx).
+        reflexivity. }
+      claim HomtVal : apply_fun one_minus_t x = add_SNo 1 (minus_SNo (x 1)).
+      { rewrite (compose_fun_apply unit_square t_coord flip_unit_interval x Hx).
+        rewrite (projection2_apply unit_interval unit_interval x Hx).
+        exact (flip_unit_interval_apply (x 1) Ht_ui). }
+      claim HtVal : apply_fun t_coord x = x 1.
+      { rewrite (projection2_apply unit_interval unit_interval x Hx).
+        reflexivity. }
+      claim HomtR : apply_fun one_minus_t x :e R.
+      { rewrite HomtVal. exact (real_add_SNo 1 real_1 (minus_SNo (x 1)) (real_minus_SNo (x 1) (unit_interval_sub_R (x 1) Ht_ui))). }
+      claim HtR2 : apply_fun t_coord x :e R.
+      { rewrite HtVal. exact (unit_interval_sub_R (x 1) Ht_ui). }
+      claim HfsqR : apply_fun f_sq x :e R.
+      { exact ((eq_symm (apply_fun f_sq x) (apply_fun f (x 0)) HfsqVal) (fun z _ => z :e R) HfsR). }
+      claim HgsqR : apply_fun g_sq x :e R.
+      { exact ((eq_symm (apply_fun g_sq x) (apply_fun g (x 0)) HgsqVal) (fun z _ => z :e R) HgsR). }
+      claim HleftVal : apply_fun left_term x = mul_SNo (apply_fun f (x 0)) (add_SNo 1 (minus_SNo (x 1))).
+      { rewrite (compose_fun_apply unit_square (pair_map unit_square f_sq one_minus_t) mul_fun_R x Hx).
+        claim HpmVal : apply_fun (pair_map unit_square f_sq one_minus_t) x = (apply_fun f_sq x, apply_fun one_minus_t x).
+        { exact (pair_map_apply unit_square R R f_sq one_minus_t x Hx). }
+        rewrite HpmVal.
+        claim HpairInRR : (apply_fun f_sq x, apply_fun one_minus_t x) :e setprod R R.
+        { exact (tuple_2_setprod_by_pair_Sigma R R (apply_fun f_sq x) (apply_fun one_minus_t x)
+            HfsqR HomtR). }
+        rewrite (mul_fun_R_apply (apply_fun f_sq x, apply_fun one_minus_t x) HpairInRR).
+        rewrite tuple_2_0_eq. rewrite tuple_2_1_eq.
+        rewrite HfsqVal. rewrite HomtVal. reflexivity. }
+      claim HrightVal : apply_fun right_term x = mul_SNo (apply_fun g (x 0)) (x 1).
+      { rewrite (compose_fun_apply unit_square (pair_map unit_square g_sq t_coord) mul_fun_R x Hx).
+        claim HpmVal : apply_fun (pair_map unit_square g_sq t_coord) x = (apply_fun g_sq x, apply_fun t_coord x).
+        { exact (pair_map_apply unit_square R R g_sq t_coord x Hx). }
+        rewrite HpmVal.
+        claim HpairInRR : (apply_fun g_sq x, apply_fun t_coord x) :e setprod R R.
+        { exact (tuple_2_setprod_by_pair_Sigma R R (apply_fun g_sq x) (apply_fun t_coord x)
+            HgsqR HtR2). }
+        rewrite (mul_fun_R_apply (apply_fun g_sq x, apply_fun t_coord x) HpairInRR).
+        rewrite tuple_2_0_eq. rewrite tuple_2_1_eq.
+        rewrite HgsqVal. rewrite HtVal. reflexivity. }
+      claim HleftR : apply_fun left_term x :e R.
+      { rewrite HleftVal. exact (real_mul_SNo (apply_fun f (x 0)) HfsR (add_SNo 1 (minus_SNo (x 1))) (real_add_SNo 1 real_1 (minus_SNo (x 1)) (real_minus_SNo (x 1) (unit_interval_sub_R (x 1) Ht_ui)))). }
+      claim HrightR : apply_fun right_term x :e R.
+      { rewrite HrightVal. exact (real_mul_SNo (apply_fun g (x 0)) HgsR (x 1) (unit_interval_sub_R (x 1) Ht_ui)). }
+      rewrite (compose_fun_apply unit_square (pair_map unit_square left_term right_term) add_fun_R x Hx).
+      claim HpmVal2 : apply_fun (pair_map unit_square left_term right_term) x = (apply_fun left_term x, apply_fun right_term x).
+      { exact (pair_map_apply unit_square R R left_term right_term x Hx). }
+      rewrite HpmVal2.
+      claim HpairInRR2 : (apply_fun left_term x, apply_fun right_term x) :e setprod R R.
+      { exact (tuple_2_setprod_by_pair_Sigma R R (apply_fun left_term x) (apply_fun right_term x) HleftR HrightR). }
+      rewrite (add_fun_R_apply (apply_fun left_term x, apply_fun right_term x) HpairInRR2).
+      rewrite tuple_2_0_eq. rewrite tuple_2_1_eq.
+      rewrite HleftVal. rewrite HrightVal.
+      claim HSNo_fs : SNo (apply_fun f (x 0)). { exact (real_SNo (apply_fun f (x 0)) HfsR). }
+      claim HSNo_gs : SNo (apply_fun g (x 0)). { exact (real_SNo (apply_fun g (x 0)) HgsR). }
+      claim HSNo_1mt : SNo (add_SNo 1 (minus_SNo (x 1))).
+      { exact (SNo_add_SNo 1 (minus_SNo (x 1)) SNo_1 (SNo_minus_SNo (x 1) (real_SNo (x 1) (unit_interval_sub_R (x 1) Ht_ui)))). }
+      claim HSNo_t : SNo (x 1). { exact (real_SNo (x 1) (unit_interval_sub_R (x 1) Ht_ui)). }
+      rewrite (mul_SNo_com (apply_fun f (x 0)) (add_SNo 1 (minus_SNo (x 1))) HSNo_fs HSNo_1mt).
+      rewrite (mul_SNo_com (apply_fun g (x 0)) (x 1) HSNo_gs HSNo_t).
+      exact (convex_in_R_combination A (apply_fun f (x 0)) (apply_fun g (x 0)) (x 1)
+        Hconv (HfOnA (x 0) Hs_ui) (HgOnA (x 0) Hs_ui) Ht_ui).
+    }
     (** Restrict to subspace topology on A **)
     claim HFraw_sub : continuous_map unit_square unit_square_topology A
       (subspace_topology R R_standard_topology A) Fraw.
