@@ -266260,6 +266260,29 @@ exact Hsub.
 Qed.
 
 (** Proven Bob **)
+Theorem edge_path_index_arc_point_in_union_arcs :
+  forall X Tx Arcs n path_seq x0 i x:set,
+  edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  x :e (apply_fun path_seq i) 1 ->
+  x :e Union Arcs.
+let X Tx Arcs n path_seq x0 i x.
+assume Hep Hi Hx.
+exact (edge_path_index_arc_subset_union_arcs_at_1
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  i
+  Hep
+  Hi
+  x
+  Hx).
+Qed.
+
+(** Proven Bob **)
 Theorem edge_path_start_vertex :
   forall X Tx Arcs n path_seq x0:set,
   edge_path X Tx Arcs n path_seq x0 ->
@@ -267097,6 +267120,29 @@ exact (edge_path_index_arc_subset_union_arcs_at_1
   i
   (reduced_edge_path_edge_path X Tx Arcs n path_seq x0 Hred)
   Hi).
+Qed.
+
+(** Proven Bob **)
+Theorem reduced_edge_path_index_arc_point_in_union_arcs :
+  forall X Tx Arcs n path_seq x0 i x:set,
+  reduced_edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  x :e (apply_fun path_seq i) 1 ->
+  x :e Union Arcs.
+let X Tx Arcs n path_seq x0 i x.
+assume Hred Hi Hx.
+exact (reduced_edge_path_index_arc_subset_union_arcs_at_1
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  i
+  Hred
+  Hi
+  x
+  Hx).
 Qed.
 
 (** Proven Bob **)
