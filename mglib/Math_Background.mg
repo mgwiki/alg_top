@@ -265989,6 +265989,32 @@ exact (andI
 Qed.
 
 (** Proven Bob **)
+Theorem oriented_edge_endpoints_in_union_arcs_basic :
+  forall X Tx Arcs A ini fin:set,
+  oriented_edge X Tx Arcs A ini fin ->
+  ini :e Union Arcs /\ fin :e Union Arcs.
+let X Tx Arcs A ini fin.
+assume Hori.
+claim HA : A :e Arcs.
+{
+  exact (oriented_edge_in_arcs X Tx Arcs A ini fin Hori).
+}
+claim Hend : end_points_of_arc A (subspace_topology X Tx A) ini fin.
+{
+  exact (oriented_edge_endpoints X Tx Arcs A ini fin Hori).
+}
+exact (arc_endpoints_in_union_arcs
+  X
+  Tx
+  Arcs
+  A
+  ini
+  fin
+  HA
+  Hend).
+Qed.
+
+(** Proven Bob **)
 Theorem edge_path_n_in_omega :
   forall X Tx Arcs n path_seq x0:set,
   edge_path X Tx Arcs n path_seq x0 ->
