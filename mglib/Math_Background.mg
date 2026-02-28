@@ -272056,6 +272056,81 @@ apply andI.
     HpqU).
 Qed.
 
+(** helper: appended edge endpoints equal p,q and lie in X. **)
+(** Proven Bob **)
+Theorem edge_path_append_oriented_edge_endpoints_eq_pq_in_X :
+  forall X Tx Arcs n path_seq x0 j A p q:set,
+  general_linear_graph X Tx Arcs ->
+  edge_path X Tx Arcs n path_seq x0 ->
+  j :e n ->
+  ordsucc j /:e n ->
+  (apply_fun path_seq j) 0 1 = p ->
+  oriented_edge X Tx Arcs A p q ->
+  (apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 0 = p /\
+  (apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 1 = q /\
+  p :e X /\
+  q :e X.
+let X Tx Arcs n path_seq x0 j A p q.
+assume Hglg Hep HjIn HsjNot Hfinj Hori.
+claim HpqEq :
+  (apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 0 = p /\
+  (apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 1 = q.
+{
+  exact (edge_path_append_oriented_edge_endpoints_eq_pq
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    j
+    A
+    p
+    q
+    Hglg
+    Hep
+    HjIn
+    HsjNot
+    Hfinj
+    Hori).
+}
+claim HpqX : p :e X /\ q :e X.
+{
+  exact (oriented_edge_endpoints_in_X
+    X
+    Tx
+    Arcs
+    A
+    p
+    q
+    Hglg
+    Hori).
+}
+apply andI.
+- apply andI.
+  + exact HpqEq.
+  + exact (andEL
+      (p :e X)
+      (q :e X)
+      HpqX).
+- exact (andER
+    (p :e X)
+    (q :e X)
+    HpqX).
+Qed.
+
 (** helper: appended edge endpoints lie in X. **)
 (** Proven Bob **)
 Theorem edge_path_append_oriented_edge_endpoints_in_X :
