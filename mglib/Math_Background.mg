@@ -266342,6 +266342,31 @@ exact (andEL
 Qed.
 
 (** Proven Bob **)
+Theorem edge_path_index_arc_point_in_X :
+  forall X Tx Arcs n path_seq x0 i x:set,
+  general_linear_graph X Tx Arcs ->
+  edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  x :e (apply_fun path_seq i) 1 ->
+  x :e X.
+let X Tx Arcs n path_seq x0 i x.
+assume Hglg Hep Hi Hx.
+exact (edge_path_index_arc_subset_X
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  i
+  Hglg
+  Hep
+  Hi
+  x
+  Hx).
+Qed.
+
+(** Proven Bob **)
 Theorem edge_path_index_arc_subset_union_arcs :
   forall X Tx Arcs n path_seq x0 i:set,
   edge_path X Tx Arcs n path_seq x0 ->
@@ -266930,6 +266955,43 @@ exact HfinX.
 Qed.
 
 (** Proven Bob **)
+Theorem edge_path_index_endpoints_in_X :
+  forall X Tx Arcs n path_seq x0 i:set,
+  general_linear_graph X Tx Arcs ->
+  edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  (apply_fun path_seq i) 0 0 :e X /\
+  (apply_fun path_seq i) 0 1 :e X.
+let X Tx Arcs n path_seq x0 i.
+assume Hglg Hep Hi.
+exact (andI
+  ((apply_fun path_seq i) 0 0 :e X)
+  ((apply_fun path_seq i) 0 1 :e X)
+  (edge_path_index_initial_vertex_in_X
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    i
+    Hglg
+    Hep
+    Hi)
+  (edge_path_index_final_vertex_in_X
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    i
+    Hglg
+    Hep
+    Hi)).
+Qed.
+
+(** Proven Bob **)
 Theorem edge_path_index_initial_vertex_in_graph_vertices :
   forall X Tx Arcs n path_seq x0 i:set,
   general_linear_graph X Tx Arcs ->
@@ -267369,6 +267431,31 @@ exact (edge_path_index_arc_subset_X
 Qed.
 
 (** Proven Bob **)
+Theorem reduced_edge_path_index_arc_point_in_X :
+  forall X Tx Arcs n path_seq x0 i x:set,
+  general_linear_graph X Tx Arcs ->
+  reduced_edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  x :e (apply_fun path_seq i) 1 ->
+  x :e X.
+let X Tx Arcs n path_seq x0 i x.
+assume Hglg Hred Hi Hx.
+exact (edge_path_index_arc_point_in_X
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  i
+  x
+  Hglg
+  (reduced_edge_path_edge_path X Tx Arcs n path_seq x0 Hred)
+  Hi
+  Hx).
+Qed.
+
+(** Proven Bob **)
 Theorem reduced_edge_path_index_arc_subset_union_arcs :
   forall X Tx Arcs n path_seq x0 i:set,
   reduced_edge_path X Tx Arcs n path_seq x0 ->
@@ -267465,6 +267552,29 @@ Theorem reduced_edge_path_index_final_vertex_in_X :
 let X Tx Arcs n path_seq x0 i.
 assume Hglg Hred Hi.
 exact (edge_path_index_final_vertex_in_X
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  i
+  Hglg
+  (reduced_edge_path_edge_path X Tx Arcs n path_seq x0 Hred)
+  Hi).
+Qed.
+
+(** Proven Bob **)
+Theorem reduced_edge_path_index_endpoints_in_X :
+  forall X Tx Arcs n path_seq x0 i:set,
+  general_linear_graph X Tx Arcs ->
+  reduced_edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  (apply_fun path_seq i) 0 0 :e X /\
+  (apply_fun path_seq i) 0 1 :e X.
+let X Tx Arcs n path_seq x0 i.
+assume Hglg Hred Hi.
+exact (edge_path_index_endpoints_in_X
   X
   Tx
   Arcs
