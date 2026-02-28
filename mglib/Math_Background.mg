@@ -44130,6 +44130,59 @@ claim Hcont : continuous_map E Te B Tb p.
 exact (continuous_map_topology_cod E Te B Tb p Hcont).
 Qed.
 
+(** Proven Bob **)
+Theorem covering_map_continuous : forall E Te B Tb p:set,
+  covering_map E Te B Tb p -> continuous_map E Te B Tb p.
+let E Te B Tb p.
+assume Hcov.
+claim Hpair : continuous_map E Te B Tb p /\ surjective_map E B p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p /\ surjective_map E B p)
+    (forall b:set, b :e B ->
+      exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+    Hcov).
+}
+exact (andEL
+  (continuous_map E Te B Tb p)
+  (surjective_map E B p)
+  Hpair).
+Qed.
+
+(** Proven Bob **)
+Theorem covering_map_surjective : forall E Te B Tb p:set,
+  covering_map E Te B Tb p -> surjective_map E B p.
+let E Te B Tb p.
+assume Hcov.
+claim Hpair : continuous_map E Te B Tb p /\ surjective_map E B p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p /\ surjective_map E B p)
+    (forall b:set, b :e B ->
+      exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+    Hcov).
+}
+exact (andER
+  (continuous_map E Te B Tb p)
+  (surjective_map E B p)
+  Hpair).
+Qed.
+
+(** Proven Bob **)
+Theorem covering_map_evenly_covered : forall E Te B Tb p b:set,
+  covering_map E Te B Tb p -> b :e B ->
+  exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U.
+let E Te B Tb p b.
+assume Hcov Hb.
+exact (andER
+  (continuous_map E Te B Tb p /\ surjective_map E B p)
+  (forall b0:set, b0 :e B ->
+    exists U:set, U :e Tb /\ b0 :e U /\ evenly_covered E Te B Tb p U)
+  Hcov
+  b
+  Hb).
+Qed.
+
 (** Infrastructure: transitivity of subspace topology under subset (no topology_on hypothesis needed) **)
 (** Proven Charlie **)
 Theorem subspace_topology_transitive_weak : forall X Tx Y A:set,
