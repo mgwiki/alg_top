@@ -83850,6 +83850,54 @@ exact (homotopy_lift_from_exists_witness
   Hex).
 Admitted. (** depends on admitted lemma54_2_homotopy_lifting_exists **)
 
+(** Proven Bob **)
+(** Infrastructure: a path lift into an evenly covered union stays in the anchored sheet **)
+Lemma path_lift_stays_in_anchored_sheet : forall E Te B Tb p U slices V0 f ft x0:set,
+  topology_on E Te ->
+  slices c= Te ->
+  pairwise_disjoint slices ->
+  Union slices = preimage_of E p U ->
+  continuous_map unit_interval unit_interval_topology E Te ft ->
+  (forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun ft t) = apply_fun f t) ->
+  (forall t:set, t :e unit_interval -> apply_fun f t :e U) ->
+  V0 :e slices ->
+  x0 :e unit_interval ->
+  apply_fun ft x0 :e V0 ->
+  forall t:set, t :e unit_interval -> apply_fun ft t :e V0.
+let E Te B Tb p U slices V0 f ft x0.
+assume HtopE HslicesSub HpdSlices Hunion HftCont Hcomm HfU HV0Slice Hx0I Hft0V0.
+let t.
+assume Ht.
+exact (connected_lift_stays_in_anchored_sheet
+  E
+  Te
+  B
+  Tb
+  p
+  U
+  slices
+  V0
+  unit_interval
+  unit_interval_topology
+  f
+  ft
+  x0
+  HtopE
+  HslicesSub
+  HpdSlices
+  Hunion
+  unit_interval_connected
+  HftCont
+  (fun x Hx => Hcomm x Hx)
+  (fun x Hx => HfU x Hx)
+  HV0Slice
+  Hx0I
+  Hft0V0
+  t
+  Ht).
+Qed.
+
 (** from S54 Lem 54.2 path homotopy preservation (line 783 in algtop.tex) **)
 (** LATEX VERSION: If F is a path homotopy, then the lift F_tilde is also a path homotopy. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
@@ -103923,7 +103971,7 @@ apply andI.
       y
       Hbij
       HyB).
-Admitted.
+Admitted. (** depends on admitted ex54_8_covering_injective **)
 
 (** ======================= S55 RETRACTIONS AND FIXED POINTS ======================= **)
 
