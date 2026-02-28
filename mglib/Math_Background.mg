@@ -46999,6 +46999,26 @@ Definition covering_map_R_S1 : set :=
     (apply_fun cos_real (mul_SNo two_pi x),
      apply_fun sin_real (mul_SNo two_pi x))).
 
+(** Helper: 9-way conjunction elimination **)
+(** Proven Alice **)
+Theorem and9E : forall A1 A2 A3 A4 A5 A6 A7 A8 A9:prop,
+  A1 /\ A2 /\ A3 /\ A4 /\ A5 /\ A6 /\ A7 /\ A8 /\ A9 ->
+  forall p:prop,
+  (A1 -> A2 -> A3 -> A4 -> A5 -> A6 -> A7 -> A8 -> A9 -> p) -> p.
+let A1 A2 A3 A4 A5 A6 A7 A8 A9.
+assume H9 : A1 /\ A2 /\ A3 /\ A4 /\ A5 /\ A6 /\ A7 /\ A8 /\ A9.
+let p. assume Hf : A1 -> A2 -> A3 -> A4 -> A5 -> A6 -> A7 -> A8 -> A9 -> p.
+claim H89 : A9. { exact (andER (A1 /\ A2 /\ A3 /\ A4 /\ A5 /\ A6 /\ A7 /\ A8) A9 H9). }
+claim H8 : A1 /\ A2 /\ A3 /\ A4 /\ A5 /\ A6 /\ A7 /\ A8.
+{ exact (andEL (A1 /\ A2 /\ A3 /\ A4 /\ A5 /\ A6 /\ A7 /\ A8) A9 H9). }
+claim H88 : A8. { exact (andER (A1 /\ A2 /\ A3 /\ A4 /\ A5 /\ A6 /\ A7) A8 H8). }
+claim H7 : A1 /\ A2 /\ A3 /\ A4 /\ A5 /\ A6 /\ A7.
+{ exact (andEL (A1 /\ A2 /\ A3 /\ A4 /\ A5 /\ A6 /\ A7) A8 H8). }
+apply (and7E A1 A2 A3 A4 A5 A6 A7 H7).
+assume HA1 HA2 HA3 HA4 HA5 HA6 HA7.
+exact (Hf HA1 HA2 HA3 HA4 HA5 HA6 HA7 H88 H89).
+Qed.
+
 (** Extraction: cos/sin pair satisfies characterizing predicate **)
 (** This is the key axiom that extracts trig function properties from Eps_i. **)
 (** Proving this requires showing existence of trig functions (power series or ODE), **)
@@ -47066,47 +47086,227 @@ Admitted.
 (** Individual extraction theorems for cos/sin **)
 (** All follow from cos_sin_pair_data by conjunction elimination **)
 Theorem cos_real_function_on : function_on cos_real R R.
-admit. (** follows from cos_sin_pair_data, component 1 **)
+apply (and9E
+  (function_on cos_real R R)
+  (function_on sin_real R R)
+  (continuous_map R R_standard_topology R R_standard_topology cos_real)
+  (continuous_map R R_standard_topology R R_standard_topology sin_real)
+  (apply_fun cos_real 0 = 1)
+  (apply_fun sin_real 0 = 0)
+  (forall x:set, x :e R ->
+    add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real x))
+            (mul_SNo (apply_fun sin_real x) (apply_fun sin_real x)) = 1)
+  (forall x y:set, x :e R -> y :e R ->
+    apply_fun cos_real (add_SNo x y) =
+      add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real y))
+              (minus_SNo (mul_SNo (apply_fun sin_real x) (apply_fun sin_real y))))
+  (forall x y:set, x :e R -> y :e R ->
+    apply_fun sin_real (add_SNo x y) =
+      add_SNo (mul_SNo (apply_fun sin_real x) (apply_fun cos_real y))
+              (mul_SNo (apply_fun cos_real x) (apply_fun sin_real y)))
+  cos_sin_pair_data).
+assume H1 _ _ _ _ _ _ _ _.
+exact H1.
 Admitted.
 
 Theorem sin_real_function_on : function_on sin_real R R.
-admit. (** follows from cos_sin_pair_data, component 2 **)
+apply (and9E
+  (function_on cos_real R R)
+  (function_on sin_real R R)
+  (continuous_map R R_standard_topology R R_standard_topology cos_real)
+  (continuous_map R R_standard_topology R R_standard_topology sin_real)
+  (apply_fun cos_real 0 = 1)
+  (apply_fun sin_real 0 = 0)
+  (forall x:set, x :e R ->
+    add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real x))
+            (mul_SNo (apply_fun sin_real x) (apply_fun sin_real x)) = 1)
+  (forall x y:set, x :e R -> y :e R ->
+    apply_fun cos_real (add_SNo x y) =
+      add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real y))
+              (minus_SNo (mul_SNo (apply_fun sin_real x) (apply_fun sin_real y))))
+  (forall x y:set, x :e R -> y :e R ->
+    apply_fun sin_real (add_SNo x y) =
+      add_SNo (mul_SNo (apply_fun sin_real x) (apply_fun cos_real y))
+              (mul_SNo (apply_fun cos_real x) (apply_fun sin_real y)))
+  cos_sin_pair_data).
+assume _ H2 _ _ _ _ _ _ _.
+exact H2.
 Admitted.
 
 Theorem cos_real_continuous : continuous_map R R_standard_topology R R_standard_topology cos_real.
-admit. (** follows from cos_sin_pair_data, component 3 **)
+apply (and9E
+  (function_on cos_real R R)
+  (function_on sin_real R R)
+  (continuous_map R R_standard_topology R R_standard_topology cos_real)
+  (continuous_map R R_standard_topology R R_standard_topology sin_real)
+  (apply_fun cos_real 0 = 1)
+  (apply_fun sin_real 0 = 0)
+  (forall x:set, x :e R ->
+    add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real x))
+            (mul_SNo (apply_fun sin_real x) (apply_fun sin_real x)) = 1)
+  (forall x y:set, x :e R -> y :e R ->
+    apply_fun cos_real (add_SNo x y) =
+      add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real y))
+              (minus_SNo (mul_SNo (apply_fun sin_real x) (apply_fun sin_real y))))
+  (forall x y:set, x :e R -> y :e R ->
+    apply_fun sin_real (add_SNo x y) =
+      add_SNo (mul_SNo (apply_fun sin_real x) (apply_fun cos_real y))
+              (mul_SNo (apply_fun cos_real x) (apply_fun sin_real y)))
+  cos_sin_pair_data).
+assume _ _ H3 _ _ _ _ _ _.
+exact H3.
 Admitted.
 
 Theorem sin_real_continuous : continuous_map R R_standard_topology R R_standard_topology sin_real.
-admit. (** follows from cos_sin_pair_data, component 4 **)
+apply (and9E
+  (function_on cos_real R R)
+  (function_on sin_real R R)
+  (continuous_map R R_standard_topology R R_standard_topology cos_real)
+  (continuous_map R R_standard_topology R R_standard_topology sin_real)
+  (apply_fun cos_real 0 = 1)
+  (apply_fun sin_real 0 = 0)
+  (forall x:set, x :e R ->
+    add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real x))
+            (mul_SNo (apply_fun sin_real x) (apply_fun sin_real x)) = 1)
+  (forall x y:set, x :e R -> y :e R ->
+    apply_fun cos_real (add_SNo x y) =
+      add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real y))
+              (minus_SNo (mul_SNo (apply_fun sin_real x) (apply_fun sin_real y))))
+  (forall x y:set, x :e R -> y :e R ->
+    apply_fun sin_real (add_SNo x y) =
+      add_SNo (mul_SNo (apply_fun sin_real x) (apply_fun cos_real y))
+              (mul_SNo (apply_fun cos_real x) (apply_fun sin_real y)))
+  cos_sin_pair_data).
+assume _ _ _ H4 _ _ _ _ _.
+exact H4.
 Admitted.
 
 Theorem cos_zero : apply_fun cos_real 0 = 1.
-admit. (** follows from cos_sin_pair_data, component 5 **)
+apply (and9E
+  (function_on cos_real R R)
+  (function_on sin_real R R)
+  (continuous_map R R_standard_topology R R_standard_topology cos_real)
+  (continuous_map R R_standard_topology R R_standard_topology sin_real)
+  (apply_fun cos_real 0 = 1)
+  (apply_fun sin_real 0 = 0)
+  (forall x:set, x :e R ->
+    add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real x))
+            (mul_SNo (apply_fun sin_real x) (apply_fun sin_real x)) = 1)
+  (forall x y:set, x :e R -> y :e R ->
+    apply_fun cos_real (add_SNo x y) =
+      add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real y))
+              (minus_SNo (mul_SNo (apply_fun sin_real x) (apply_fun sin_real y))))
+  (forall x y:set, x :e R -> y :e R ->
+    apply_fun sin_real (add_SNo x y) =
+      add_SNo (mul_SNo (apply_fun sin_real x) (apply_fun cos_real y))
+              (mul_SNo (apply_fun cos_real x) (apply_fun sin_real y)))
+  cos_sin_pair_data).
+assume _ _ _ _ H5 _ _ _ _.
+exact H5.
 Admitted.
 
 Theorem sin_zero : apply_fun sin_real 0 = 0.
-admit. (** follows from cos_sin_pair_data, component 6 **)
+apply (and9E
+  (function_on cos_real R R)
+  (function_on sin_real R R)
+  (continuous_map R R_standard_topology R R_standard_topology cos_real)
+  (continuous_map R R_standard_topology R R_standard_topology sin_real)
+  (apply_fun cos_real 0 = 1)
+  (apply_fun sin_real 0 = 0)
+  (forall x:set, x :e R ->
+    add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real x))
+            (mul_SNo (apply_fun sin_real x) (apply_fun sin_real x)) = 1)
+  (forall x y:set, x :e R -> y :e R ->
+    apply_fun cos_real (add_SNo x y) =
+      add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real y))
+              (minus_SNo (mul_SNo (apply_fun sin_real x) (apply_fun sin_real y))))
+  (forall x y:set, x :e R -> y :e R ->
+    apply_fun sin_real (add_SNo x y) =
+      add_SNo (mul_SNo (apply_fun sin_real x) (apply_fun cos_real y))
+              (mul_SNo (apply_fun cos_real x) (apply_fun sin_real y)))
+  cos_sin_pair_data).
+assume _ _ _ _ _ H6 _ _ _.
+exact H6.
 Admitted.
 
 Theorem cos_sin_pythagorean : forall x:set, x :e R ->
   add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real x))
           (mul_SNo (apply_fun sin_real x) (apply_fun sin_real x)) = 1.
-admit. (** follows from cos_sin_pair_data, component 7 **)
+apply (and9E
+  (function_on cos_real R R)
+  (function_on sin_real R R)
+  (continuous_map R R_standard_topology R R_standard_topology cos_real)
+  (continuous_map R R_standard_topology R R_standard_topology sin_real)
+  (apply_fun cos_real 0 = 1)
+  (apply_fun sin_real 0 = 0)
+  (forall x:set, x :e R ->
+    add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real x))
+            (mul_SNo (apply_fun sin_real x) (apply_fun sin_real x)) = 1)
+  (forall x y:set, x :e R -> y :e R ->
+    apply_fun cos_real (add_SNo x y) =
+      add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real y))
+              (minus_SNo (mul_SNo (apply_fun sin_real x) (apply_fun sin_real y))))
+  (forall x y:set, x :e R -> y :e R ->
+    apply_fun sin_real (add_SNo x y) =
+      add_SNo (mul_SNo (apply_fun sin_real x) (apply_fun cos_real y))
+              (mul_SNo (apply_fun cos_real x) (apply_fun sin_real y)))
+  cos_sin_pair_data).
+assume _ _ _ _ _ _ H7 _ _.
+exact H7.
 Admitted.
 
 Theorem cos_addition : forall x y:set, x :e R -> y :e R ->
   apply_fun cos_real (add_SNo x y) =
     add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real y))
             (minus_SNo (mul_SNo (apply_fun sin_real x) (apply_fun sin_real y))).
-admit. (** follows from cos_sin_pair_data, component 8 **)
+apply (and9E
+  (function_on cos_real R R)
+  (function_on sin_real R R)
+  (continuous_map R R_standard_topology R R_standard_topology cos_real)
+  (continuous_map R R_standard_topology R R_standard_topology sin_real)
+  (apply_fun cos_real 0 = 1)
+  (apply_fun sin_real 0 = 0)
+  (forall x:set, x :e R ->
+    add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real x))
+            (mul_SNo (apply_fun sin_real x) (apply_fun sin_real x)) = 1)
+  (forall x y:set, x :e R -> y :e R ->
+    apply_fun cos_real (add_SNo x y) =
+      add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real y))
+              (minus_SNo (mul_SNo (apply_fun sin_real x) (apply_fun sin_real y))))
+  (forall x y:set, x :e R -> y :e R ->
+    apply_fun sin_real (add_SNo x y) =
+      add_SNo (mul_SNo (apply_fun sin_real x) (apply_fun cos_real y))
+              (mul_SNo (apply_fun cos_real x) (apply_fun sin_real y)))
+  cos_sin_pair_data).
+assume _ _ _ _ _ _ _ H8 _.
+exact H8.
 Admitted.
 
 Theorem sin_addition : forall x y:set, x :e R -> y :e R ->
   apply_fun sin_real (add_SNo x y) =
     add_SNo (mul_SNo (apply_fun sin_real x) (apply_fun cos_real y))
             (mul_SNo (apply_fun cos_real x) (apply_fun sin_real y)).
-admit. (** follows from cos_sin_pair_data, component 9 **)
+apply (and9E
+  (function_on cos_real R R)
+  (function_on sin_real R R)
+  (continuous_map R R_standard_topology R R_standard_topology cos_real)
+  (continuous_map R R_standard_topology R R_standard_topology sin_real)
+  (apply_fun cos_real 0 = 1)
+  (apply_fun sin_real 0 = 0)
+  (forall x:set, x :e R ->
+    add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real x))
+            (mul_SNo (apply_fun sin_real x) (apply_fun sin_real x)) = 1)
+  (forall x y:set, x :e R -> y :e R ->
+    apply_fun cos_real (add_SNo x y) =
+      add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real y))
+              (minus_SNo (mul_SNo (apply_fun sin_real x) (apply_fun sin_real y))))
+  (forall x y:set, x :e R -> y :e R ->
+    apply_fun sin_real (add_SNo x y) =
+      add_SNo (mul_SNo (apply_fun sin_real x) (apply_fun cos_real y))
+              (mul_SNo (apply_fun cos_real x) (apply_fun sin_real y)))
+  cos_sin_pair_data).
+assume _ _ _ _ _ _ _ _ H9.
+exact H9.
 Admitted.
 
 (** Pi extraction theorems **)
