@@ -79426,10 +79426,24 @@ rewrite (andER
   HzPack).
 exact (Hpointwise
   z
-  (andEL
-    (z :e N)
-    (y = apply_fun Ft z)
-    HzPack)).
+    (andEL
+      (z :e N)
+      (y = apply_fun Ft z)
+      HzPack)).
+Qed.
+
+(** Infrastructure: pointwise membership in a union gives image subset **)
+(** Proven Bob **)
+Theorem pointwise_in_union_implies_image_sub_union : forall N Ft slices:set,
+  (forall x:set, x :e N -> apply_fun Ft x :e Union slices) ->
+  image_of Ft N c= Union slices.
+let N Ft slices.
+assume Hpointwise.
+exact (ReplE'
+  N
+  (fun x:set => apply_fun Ft x)
+  (fun y:set => y :e Union slices)
+  Hpointwise).
 Qed.
 
 (** Infrastructure: element of a slice lies in the union of slices **)
