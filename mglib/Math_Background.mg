@@ -84596,6 +84596,39 @@ claim HFt_54_cont :
           HFt54FunSq
           HNsubSq).
       }
+      claim HFt54IntoUnionSlices :
+        forall w:set, w :e N -> apply_fun Ft_54 w :e Union slices.
+      {
+        let w.
+        assume HwN : w :e N.
+        claim HwSq : w :e unit_square.
+        { exact (HNsubSq w HwN). }
+        claim Hw0I : w 0 :e unit_interval.
+        { exact (ap0_Sigma unit_interval (fun _ : set => unit_interval) w HwSq). }
+        claim Hw1I : w 1 :e unit_interval.
+        { exact (ap1_Sigma unit_interval (fun _ : set => unit_interval) w HwSq). }
+        claim HFt54wE : apply_fun Ft_54 w :e E.
+        { exact (HFt54FunN w HwN). }
+        claim HpFt54wEqFw : apply_fun p (apply_fun Ft_54 w) = apply_fun F w.
+        {
+          claim Hweta : w = (w 0, w 1).
+          { exact (setprod_eta unit_interval unit_interval w HwSq). }
+          rewrite Hweta.
+          exact (HFt_54_comm (w 0) (w 1) Hw0I Hw1I).
+        }
+        claim HFwU : apply_fun F w :e U.
+        { exact (HN_into_U w HwN). }
+        claim HpFt54wU : apply_fun p (apply_fun Ft_54 w) :e U.
+        { rewrite HpFt54wEqFw. exact HFwU. }
+        claim HFt54wPreU : apply_fun Ft_54 w :e preimage_of E p U.
+        { exact (SepI E (fun x:set => apply_fun p x :e U) (apply_fun Ft_54 w) HFt54wE HpFt54wU). }
+        exact (mem_eqL
+          (apply_fun Ft_54 w)
+          (Union slices)
+          (preimage_of E p U)
+          HslicesUnion
+          HFt54wPreU).
+      }
       claim HFtEqOnN :
         forall z:set, z :e N -> apply_fun Ft_local_N z = apply_fun Ft_54 z.
       {
