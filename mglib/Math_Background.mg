@@ -270786,6 +270786,70 @@ claim HVsubU : V c= Union Arcs.
 exact (HVsubU q HqV).
 Qed.
 
+(** helper: left endpoint of a tree arc is a vertex in the tree graph. **)
+(** Proven Bob **)
+Theorem tree_in_graph_arc_endpoint_left_vertex_T :
+  forall T ArcsT X Tx Arcs V p q:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  V :e ArcsT ->
+  end_points_of_arc V (subspace_topology T (subspace_topology X Tx T) V) p q ->
+  p :e graph_vertices T (subspace_topology X Tx T) ArcsT.
+let T ArcsT X Tx Arcs V p q.
+assume Htree HV Hend.
+claim HglgT : general_linear_graph T (subspace_topology X Tx T) ArcsT.
+{
+  exact (tree_in_graph_general_linear_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+exact (graph_vertices_intro_from_endpoint_left
+  T
+  (subspace_topology X Tx T)
+  ArcsT
+  V
+  p
+  q
+  HglgT
+  HV
+  Hend).
+Qed.
+
+(** helper: right endpoint of a tree arc is a vertex in the tree graph. **)
+(** Proven Bob **)
+Theorem tree_in_graph_arc_endpoint_right_vertex_T :
+  forall T ArcsT X Tx Arcs V p q:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  V :e ArcsT ->
+  end_points_of_arc V (subspace_topology T (subspace_topology X Tx T) V) p q ->
+  q :e graph_vertices T (subspace_topology X Tx T) ArcsT.
+let T ArcsT X Tx Arcs V p q.
+assume Htree HV Hend.
+claim HglgT : general_linear_graph T (subspace_topology X Tx T) ArcsT.
+{
+  exact (tree_in_graph_general_linear_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+exact (graph_vertices_intro_from_endpoint_right
+  T
+  (subspace_topology X Tx T)
+  ArcsT
+  V
+  p
+  q
+  HglgT
+  HV
+  Hend).
+Qed.
+
 (** Proven Bob **)
 Theorem maximal_tree_subset_union_arcs :
   forall T ArcsT X Tx Arcs:set,
