@@ -186371,6 +186371,192 @@ exact (Halpha_ne
   Halpha_eq).
 Qed.
 
+(** Infrastructure: reduced words of length >=2 have no identity entries **)
+(** Proven Bob **)
+Lemma reduced_word_no_eG_all : forall G mult e inv J Gfam efam n xs:set,
+  group_structure G mult e inv ->
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv) ->
+  reduced_word J Gfam efam n xs ->
+  n <> 0 -> n <> 1 ->
+  forall i:set, i :e n -> apply_fun xs i <> e.
+let G mult e inv J Gfam efam n xs.
+assume Hgrp Hsub Hred Hn_ne0 Hn_ne1.
+claim Hn_omega : n :e omega.
+{
+  apply (and3E
+    (n :e omega)
+    (forall i:set, i :e n ->
+      exists alpha:set, alpha :e J /\
+        apply_fun xs i :e apply_fun Gfam alpha /\
+        apply_fun xs i <> apply_fun efam alpha)
+    (forall i:set, i :e n -> ordsucc i :e n ->
+      forall alpha beta:set, alpha :e J -> beta :e J ->
+        apply_fun xs i :e apply_fun Gfam alpha ->
+        apply_fun xs (ordsucc i) :e apply_fun Gfam beta ->
+        alpha <> beta)
+    Hred).
+  assume Hn _ _.
+  exact Hn.
+}
+claim Hn_nat : nat_p n.
+{
+  exact (omega_nat_p
+    n
+    Hn_omega).
+}
+apply (nat_inv
+  n
+  Hn_nat).
+- assume Hn0.
+  exact (FalseE
+    (Hn_ne0 Hn0)
+    (forall i:set, i :e n -> apply_fun xs i <> e)).
+- assume Hm_ex.
+  apply Hm_ex.
+  let m.
+  assume Hm_pack.
+  claim Hm_nat : nat_p m.
+  {
+    exact (andEL
+      (nat_p m)
+      (n = ordsucc m)
+      Hm_pack).
+  }
+  claim Hn_eq : n = ordsucc m.
+  {
+    exact (andER
+      (nat_p m)
+      (n = ordsucc m)
+      Hm_pack).
+  }
+  claim Hm_ne0 : m <> 0.
+  {
+    assume Hm0.
+    claim Hn1 : n = 1.
+    {
+      rewrite Hn_eq.
+      rewrite Hm0.
+      reflexivity.
+    }
+    exact (Hn_ne1
+      Hn1).
+  }
+  let i.
+  assume Hi_n.
+  apply (ordsuccE
+    m
+    i
+    (eq_subst_mem_set
+      i
+      n
+      (ordsucc m)
+      Hi_n
+      Hn_eq)).
+  + assume Hi_m.
+    assume Hxsi_e.
+    claim Hsi_n : ordsucc i :e n.
+    {
+      rewrite Hn_eq.
+      exact (nat_ordsucc_in_ordsucc
+        m
+        Hm_nat
+        i
+        Hi_m).
+    }
+    exact (reduced_word_no_eG_adjacent
+      G
+      mult
+      e
+      inv
+      J
+      Gfam
+      efam
+      n
+      xs
+      i
+      Hgrp
+      Hsub
+      Hred
+      Hi_n
+      Hsi_n
+      Hxsi_e).
+  + assume Hi_eq_m.
+    assume Hxsi_e.
+    claim Hm_succ_ex : exists k:set, nat_p k /\ m = ordsucc k.
+    {
+      apply (nat_inv
+        m
+        Hm_nat).
+      - assume Hm0.
+        exact (FalseE
+          (Hm_ne0 Hm0)
+          (exists k:set, nat_p k /\ m = ordsucc k)).
+      - assume Hk_ex.
+        exact Hk_ex.
+    }
+    apply Hm_succ_ex.
+    let k.
+    assume Hk_pack.
+    claim Hk_nat : nat_p k.
+    {
+      exact (andEL
+        (nat_p k)
+        (m = ordsucc k)
+        Hk_pack).
+    }
+    claim Hm_succ : m = ordsucc k.
+    {
+      exact (andER
+        (nat_p k)
+        (m = ordsucc k)
+        Hk_pack).
+    }
+    claim Hk_n : k :e n.
+    {
+      rewrite Hn_eq.
+      rewrite Hm_succ.
+      exact (ordsuccI1
+        (ordsucc k)
+        k
+        (ordsuccI2 k)).
+    }
+    claim Hsk_n : ordsucc k :e n.
+    {
+      rewrite Hn_eq.
+      rewrite Hm_succ.
+      exact (ordsuccI2
+        (ordsucc k)).
+    }
+    claim Hsk_eq_i : ordsucc k = i.
+    {
+      rewrite Hi_eq_m.
+      symmetry.
+      exact Hm_succ.
+    }
+    claim Hxsk_e : apply_fun xs (ordsucc k) = e.
+    {
+      rewrite Hsk_eq_i.
+      exact Hxsi_e.
+    }
+    exact (reduced_word_no_eG_adjacent_right
+      G
+      mult
+      e
+      inv
+      J
+      Gfam
+      efam
+      n
+      xs
+      k
+      Hgrp
+      Hsub
+      Hred
+      Hk_n
+      Hsk_n
+      Hxsk_e).
+Qed.
+
 (** Infrastructure: the product represented by a word of length n **)
 Definition word_product : set -> set -> set -> set -> set :=
   fun mult e xs n =>
