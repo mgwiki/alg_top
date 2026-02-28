@@ -1,4 +1,4 @@
-(** Balance Alice 3815 **)
+(** Balance Alice 3936 **)
 (** Balance Bob 3507 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
@@ -106853,20 +106853,7 @@ Definition product_group_mult : set -> set -> set -> set -> set :=
         (apply_fun mult1 ((p 0) 0, (p 1) 0),
          apply_fun mult2 ((p 0) 1, (p 1) 1))).
 
-(** from S54 Exercise 7 (line 892 in algtop.tex) **)
-(** LATEX VERSION: The fundamental group of the torus is isomorphic to Z x Z. **)
-(** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 121 **)
-(** Lock Alice 1772400085 **)
-Theorem ex54_7_pi1_torus : exists phi:set,
-  group_isomorphism
-    (fundamental_group torus torus_topology (S1_basepoint, S1_basepoint))
-    (fundamental_group_mult torus torus_topology (S1_basepoint, S1_basepoint))
-    (setprod int int)
-    (product_group_mult int integers_group_mult int integers_group_mult)
-    phi.
-admit.
-Admitted.
+(** ex54_7_pi1_torus moved to S60 section (after thm60_1_pi1_product) where it uses the proved theorem directly **)
 
 (** Infrastructure: injectivity of covering map when total space is path connected and base is simply connected **)
 Theorem ex54_8_covering_injective : forall E Te B Tb p:set,
@@ -166557,7 +166544,360 @@ Qed.
 
 (** from S60 Cor 60.2 (line 1683 in algtop.tex) **)
 (** LATEX VERSION: pi_1(torus) isomorphic to Z x Z. **)
-(** Already stated as ex54_7_pi1_torus above. **)
+(** Collected Alice 121 **)
+(** Proven Alice **)
+Theorem ex54_7_pi1_torus : exists phi:set,
+  group_isomorphism
+    (fundamental_group torus torus_topology (S1_basepoint, S1_basepoint))
+    (fundamental_group_mult torus torus_topology (S1_basepoint, S1_basepoint))
+    (setprod int int)
+    (product_group_mult int integers_group_mult int integers_group_mult)
+    phi.
+(** Step 1: Basic topology facts **)
+claim HtopR2 : topology_on (setprod R R) R2_topology.
+{
+  exact (product_topology_is_topology R R_standard_topology R R_standard_topology
+    R_standard_topology_is_topology R_standard_topology_is_topology).
+}
+claim HS1subR2 : S1 c= setprod R R.
+{ exact (Sep_Subq (setprod R R) (fun p:set => add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) = 1)). }
+claim HtopS1 : topology_on S1 S1_topology.
+{ exact (subspace_topology_is_topology (setprod R R) R2_topology S1 HtopR2 HS1subR2). }
+claim Hb0raw : (1, 0) :e S1.
+{
+  apply (SepI (setprod R R)
+    (fun p:set => add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) = 1) (1, 0)).
+  - exact (tuple_2_setprod_by_pair_Sigma R R 1 0 real_1 real_0).
+  - rewrite tuple_2_0_eq at 1. rewrite tuple_2_0_eq at 1.
+    rewrite tuple_2_1_eq at 1. rewrite tuple_2_1_eq at 1.
+    rewrite (mul_SNo_oneR 1 SNo_1) at 1.
+    rewrite (mul_SNo_zeroR 0 SNo_0) at 1.
+    exact (add_SNo_0R 1 SNo_1).
+}
+claim Hb0S1 : S1_basepoint :e S1. { exact Hb0raw. }
+claim HtopT : topology_on torus torus_topology.
+{ exact (product_topology_is_topology S1 S1_topology S1 S1_topology HtopS1 HtopS1). }
+claim Hbase : (S1_basepoint, S1_basepoint) :e torus.
+{ exact (tuple_2_setprod_by_pair_Sigma S1 S1 S1_basepoint S1_basepoint Hb0S1 Hb0S1). }
+(** Step 2: Get product decomposition from thm60_1 **)
+set pi1_S1 := fundamental_group S1 S1_topology S1_basepoint.
+set mult_S1 := fundamental_group_mult S1 S1_topology S1_basepoint.
+set id_S1 := fundamental_group_id S1 S1_topology S1_basepoint.
+set inv_S1 := fundamental_group_inv S1 S1_topology S1_basepoint.
+set pi1_T := fundamental_group torus torus_topology (S1_basepoint, S1_basepoint).
+set mult_T := fundamental_group_mult torus torus_topology (S1_basepoint, S1_basepoint).
+set id_T := fundamental_group_id torus torus_topology (S1_basepoint, S1_basepoint).
+set inv_T := fundamental_group_inv torus torus_topology (S1_basepoint, S1_basepoint).
+claim Hgrp_S1 : group_structure pi1_S1 mult_S1 id_S1 inv_S1.
+{ exact (fundamental_group_is_group S1 S1_topology S1_basepoint HtopS1 Hb0S1). }
+claim Hgrp_T : group_structure pi1_T mult_T id_T inv_T.
+{ exact (fundamental_group_is_group torus torus_topology (S1_basepoint, S1_basepoint) HtopT Hbase). }
+claim HmultS1_fn : function_on mult_S1 (setprod pi1_S1 pi1_S1) pi1_S1.
+{
+  apply (and6E
+    (function_on mult_S1 (setprod pi1_S1 pi1_S1) pi1_S1)
+    (function_on inv_S1 pi1_S1 pi1_S1) (id_S1 :e pi1_S1)
+    (forall x y z:set, x :e pi1_S1 -> y :e pi1_S1 -> z :e pi1_S1 ->
+      apply_fun mult_S1 (apply_fun mult_S1 (x, y), z) = apply_fun mult_S1 (x, apply_fun mult_S1 (y, z)))
+    (forall x:set, x :e pi1_S1 -> apply_fun mult_S1 (id_S1, x) = x /\ apply_fun mult_S1 (x, id_S1) = x)
+    (forall x:set, x :e pi1_S1 ->
+      apply_fun mult_S1 (x, apply_fun inv_S1 x) = id_S1 /\ apply_fun mult_S1 (apply_fun inv_S1 x, x) = id_S1)
+    Hgrp_S1).
+  assume Hm Hi He Ha Hid Hinv. exact Hm.
+}
+set phi_prod := Eps_i (fun phi:set =>
+  group_isomorphism pi1_T mult_T
+    (setprod pi1_S1 pi1_S1)
+    (product_group_mult pi1_S1 mult_S1 pi1_S1 mult_S1)
+    phi).
+claim Hprod_iso : group_isomorphism pi1_T mult_T
+  (setprod pi1_S1 pi1_S1) (product_group_mult pi1_S1 mult_S1 pi1_S1 mult_S1) phi_prod.
+{
+  exact (Eps_i_ex
+    (fun phi:set => group_isomorphism pi1_T mult_T
+      (setprod pi1_S1 pi1_S1) (product_group_mult pi1_S1 mult_S1 pi1_S1 mult_S1) phi)
+    (thm60_1_pi1_product S1 S1_topology S1_basepoint S1 S1_topology S1_basepoint
+      HtopS1 HtopS1 Hb0S1 Hb0S1)).
+}
+claim Hprod_hom : group_homomorphism pi1_T mult_T
+  (setprod pi1_S1 pi1_S1) (product_group_mult pi1_S1 mult_S1 pi1_S1 mult_S1) phi_prod.
+{ exact (group_isomorphism_homomorphism pi1_T mult_T
+    (setprod pi1_S1 pi1_S1) (product_group_mult pi1_S1 mult_S1 pi1_S1 mult_S1)
+    phi_prod Hprod_iso). }
+claim Hprod_bij : bijection pi1_T (setprod pi1_S1 pi1_S1) phi_prod.
+{ exact (group_isomorphism_bijection pi1_T mult_T
+    (setprod pi1_S1 pi1_S1) (product_group_mult pi1_S1 mult_S1 pi1_S1 mult_S1)
+    phi_prod Hprod_iso). }
+claim Hprod_fn : function_on phi_prod pi1_T (setprod pi1_S1 pi1_S1).
+{ exact (group_homomorphism_function_on pi1_T mult_T
+    (setprod pi1_S1 pi1_S1) (product_group_mult pi1_S1 mult_S1 pi1_S1 mult_S1)
+    phi_prod Hprod_hom). }
+(** Step 3: Get circle isomorphism from thm54_5 **)
+set phi_c := Eps_i (fun phi:set =>
+  group_isomorphism pi1_S1 mult_S1 int integers_group_mult phi).
+claim Hc_iso : group_isomorphism pi1_S1 mult_S1 int integers_group_mult phi_c.
+{
+  exact (Eps_i_ex
+    (fun phi:set => group_isomorphism pi1_S1 mult_S1 int integers_group_mult phi)
+    thm54_5_pi1_circle).
+}
+claim Hc_hom : group_homomorphism pi1_S1 mult_S1 int integers_group_mult phi_c.
+{ exact (group_isomorphism_homomorphism pi1_S1 mult_S1 int integers_group_mult phi_c Hc_iso). }
+claim Hc_bij : bijection pi1_S1 int phi_c.
+{ exact (group_isomorphism_bijection pi1_S1 mult_S1 int integers_group_mult phi_c Hc_iso). }
+claim Hc_fn : function_on phi_c pi1_S1 int.
+{ exact (group_homomorphism_function_on pi1_S1 mult_S1 int integers_group_mult phi_c Hc_hom). }
+(** Step 4: Construct product map phi_pair : pi1_S1 x pi1_S1 -> Z x Z **)
+set phi_pair_fn := fun p:set => (apply_fun phi_c (p 0), apply_fun phi_c (p 1)).
+set phi_pair := graph (setprod pi1_S1 pi1_S1) phi_pair_fn.
+(** Step 5: Prove phi_pair is a bijection **)
+claim Hpair_bij_raw : bij (setprod pi1_S1 pi1_S1) (setprod int int) phi_pair_fn.
+{
+  apply bijI.
+  - (** images in target **)
+    let u. assume Hu : u :e setprod pi1_S1 pi1_S1.
+    claim Hu0 : u 0 :e pi1_S1. { exact (ap0_Sigma pi1_S1 (fun _ => pi1_S1) u Hu). }
+    claim Hu1 : u 1 :e pi1_S1. { exact (ap1_Sigma pi1_S1 (fun _ => pi1_S1) u Hu). }
+    exact (tuple_2_setprod_by_pair_Sigma int int
+      (apply_fun phi_c (u 0)) (apply_fun phi_c (u 1)) (Hc_fn (u 0) Hu0) (Hc_fn (u 1) Hu1)).
+  - (** injectivity **)
+    let u. assume Hu : u :e setprod pi1_S1 pi1_S1.
+    let v. assume Hv : v :e setprod pi1_S1 pi1_S1.
+    assume Heq : phi_pair_fn u = phi_pair_fn v.
+    prove u = v.
+    claim Hu0 : u 0 :e pi1_S1. { exact (ap0_Sigma pi1_S1 (fun _ => pi1_S1) u Hu). }
+    claim Hu1 : u 1 :e pi1_S1. { exact (ap1_Sigma pi1_S1 (fun _ => pi1_S1) u Hu). }
+    claim Hv0 : v 0 :e pi1_S1. { exact (ap0_Sigma pi1_S1 (fun _ => pi1_S1) v Hv). }
+    claim Hv1 : v 1 :e pi1_S1. { exact (ap1_Sigma pi1_S1 (fun _ => pi1_S1) v Hv). }
+    claim Htmp0 : phi_pair_fn u 0 = phi_pair_fn v 0.
+    { rewrite Heq. reflexivity. }
+    claim Htmp1 : phi_pair_fn u 1 = phi_pair_fn v 1.
+    { rewrite Heq. reflexivity. }
+    claim H0eq : apply_fun phi_c (u 0) = apply_fun phi_c (v 0).
+    {
+      transitivity ((apply_fun phi_c (u 0), apply_fun phi_c (u 1)) 0).
+      - symmetry. exact (tuple_2_0_eq (apply_fun phi_c (u 0)) (apply_fun phi_c (u 1))).
+      - transitivity ((apply_fun phi_c (v 0), apply_fun phi_c (v 1)) 0).
+        + exact Htmp0.
+        + exact (tuple_2_0_eq (apply_fun phi_c (v 0)) (apply_fun phi_c (v 1))).
+    }
+    claim H1eq : apply_fun phi_c (u 1) = apply_fun phi_c (v 1).
+    {
+      transitivity ((apply_fun phi_c (u 0), apply_fun phi_c (u 1)) 1).
+      - symmetry. exact (tuple_2_1_eq (apply_fun phi_c (u 0)) (apply_fun phi_c (u 1))).
+      - transitivity ((apply_fun phi_c (v 0), apply_fun phi_c (v 1)) 1).
+        + exact Htmp1.
+        + exact (tuple_2_1_eq (apply_fun phi_c (v 0)) (apply_fun phi_c (v 1))).
+    }
+    claim Hc0 : u 0 = v 0.
+    { exact (bijection_inj pi1_S1 int phi_c (u 0) (v 0) Hc_bij Hu0 Hv0 H0eq). }
+    claim Hc1 : u 1 = v 1.
+    { exact (bijection_inj pi1_S1 int phi_c (u 1) (v 1) Hc_bij Hu1 Hv1 H1eq). }
+    rewrite (setprod_eta pi1_S1 pi1_S1 u Hu).
+    rewrite (setprod_eta pi1_S1 pi1_S1 v Hv).
+    rewrite Hc0. rewrite Hc1. reflexivity.
+  - (** surjectivity **)
+    let w. assume Hw : w :e setprod int int.
+    claim Hw0 : w 0 :e int. { exact (ap0_Sigma int (fun _ => int) w Hw). }
+    claim Hw1 : w 1 :e int. { exact (ap1_Sigma int (fun _ => int) w Hw). }
+    apply (bijection_surj pi1_S1 int phi_c (w 0) Hc_bij Hw0).
+    let a. assume Ha_conj : a :e pi1_S1 /\ apply_fun phi_c a = w 0.
+    claim Ha : a :e pi1_S1.
+    { exact (andEL (a :e pi1_S1) (apply_fun phi_c a = w 0) Ha_conj). }
+    claim Haw0 : apply_fun phi_c a = w 0.
+    { exact (andER (a :e pi1_S1) (apply_fun phi_c a = w 0) Ha_conj). }
+    apply (bijection_surj pi1_S1 int phi_c (w 1) Hc_bij Hw1).
+    let b. assume Hb_conj : b :e pi1_S1 /\ apply_fun phi_c b = w 1.
+    claim Hb : b :e pi1_S1.
+    { exact (andEL (b :e pi1_S1) (apply_fun phi_c b = w 1) Hb_conj). }
+    claim Hbw1 : apply_fun phi_c b = w 1.
+    { exact (andER (b :e pi1_S1) (apply_fun phi_c b = w 1) Hb_conj). }
+    witness (a, b).
+    prove (a, b) :e setprod pi1_S1 pi1_S1 /\ phi_pair_fn (a, b) = w.
+    apply andI.
+    + exact (tuple_2_setprod_by_pair_Sigma pi1_S1 pi1_S1 a b Ha Hb).
+    + prove (apply_fun phi_c ((a, b) 0), apply_fun phi_c ((a, b) 1)) = w.
+      rewrite tuple_2_0_eq. rewrite tuple_2_1_eq.
+      rewrite Haw0. rewrite Hbw1.
+      symmetry. exact (setprod_eta int int w Hw).
+}
+claim Hpair_bij : bijection (setprod pi1_S1 pi1_S1) (setprod int int) phi_pair.
+{ exact (bijection_graph_of_bij (setprod pi1_S1 pi1_S1) (setprod int int) phi_pair_fn Hpair_bij_raw). }
+(** Step 6: Prove phi_pair is a group homomorphism **)
+claim Hpair_fn : function_on phi_pair (setprod pi1_S1 pi1_S1) (setprod int int).
+{
+  prove function_on phi_pair (setprod pi1_S1 pi1_S1) (setprod int int).
+  exact (andEL
+    (function_on phi_pair (setprod pi1_S1 pi1_S1) (setprod int int))
+    (forall y:set, y :e setprod int int ->
+      exists x:set, x :e setprod pi1_S1 pi1_S1 /\
+        apply_fun phi_pair x = y /\
+        (forall x':set, x' :e setprod pi1_S1 pi1_S1 -> apply_fun phi_pair x' = y -> x' = x))
+    Hpair_bij).
+}
+claim Hpair_hom : group_homomorphism
+  (setprod pi1_S1 pi1_S1) (product_group_mult pi1_S1 mult_S1 pi1_S1 mult_S1)
+  (setprod int int) (product_group_mult int integers_group_mult int integers_group_mult)
+  phi_pair.
+{
+  prove function_on phi_pair (setprod pi1_S1 pi1_S1) (setprod int int) /\
+    (forall x y:set, x :e setprod pi1_S1 pi1_S1 -> y :e setprod pi1_S1 pi1_S1 ->
+      apply_fun phi_pair (apply_fun (product_group_mult pi1_S1 mult_S1 pi1_S1 mult_S1) (x, y))
+      = apply_fun (product_group_mult int integers_group_mult int integers_group_mult)
+          (apply_fun phi_pair x, apply_fun phi_pair y)).
+  apply andI.
+  - exact Hpair_fn.
+  - let x y. assume Hx : x :e setprod pi1_S1 pi1_S1.
+    assume Hy : y :e setprod pi1_S1 pi1_S1.
+    claim Hx0 : x 0 :e pi1_S1. { exact (ap0_Sigma pi1_S1 (fun _ => pi1_S1) x Hx). }
+    claim Hx1 : x 1 :e pi1_S1. { exact (ap1_Sigma pi1_S1 (fun _ => pi1_S1) x Hx). }
+    claim Hy0 : y 0 :e pi1_S1. { exact (ap0_Sigma pi1_S1 (fun _ => pi1_S1) y Hy). }
+    claim Hy1 : y 1 :e pi1_S1. { exact (ap1_Sigma pi1_S1 (fun _ => pi1_S1) y Hy). }
+    claim Hxy : (x, y) :e setprod (setprod pi1_S1 pi1_S1) (setprod pi1_S1 pi1_S1).
+    { exact (tuple_2_setprod_by_pair_Sigma (setprod pi1_S1 pi1_S1) (setprod pi1_S1 pi1_S1) x y Hx Hy). }
+    claim Hm0 : apply_fun mult_S1 (x 0, y 0) :e pi1_S1.
+    {
+      claim Hpair : (x 0, y 0) :e setprod pi1_S1 pi1_S1.
+      { exact (tuple_2_setprod_by_pair_Sigma pi1_S1 pi1_S1 (x 0) (y 0) Hx0 Hy0). }
+      exact (HmultS1_fn (x 0, y 0) Hpair).
+    }
+    claim Hm1 : apply_fun mult_S1 (x 1, y 1) :e pi1_S1.
+    {
+      claim Hpair : (x 1, y 1) :e setprod pi1_S1 pi1_S1.
+      { exact (tuple_2_setprod_by_pair_Sigma pi1_S1 pi1_S1 (x 1) (y 1) Hx1 Hy1). }
+      exact (HmultS1_fn (x 1, y 1) Hpair).
+    }
+    claim Hmult_res : apply_fun mult_S1 (x 0, y 0) :e pi1_S1 /\ apply_fun mult_S1 (x 1, y 1) :e pi1_S1.
+    { apply andI. exact Hm0. exact Hm1. }
+    claim Hmult_prod_in : (apply_fun mult_S1 (x 0, y 0), apply_fun mult_S1 (x 1, y 1)) :e setprod pi1_S1 pi1_S1.
+    { exact (tuple_2_setprod_by_pair_Sigma pi1_S1 pi1_S1
+        (apply_fun mult_S1 (x 0, y 0)) (apply_fun mult_S1 (x 1, y 1)) Hm0 Hm1). }
+    (** Compute LHS: apply_fun phi_pair (apply_fun (product_group_mult ...) (x, y)) **)
+    claim Hprod_mult_compute :
+      apply_fun (product_group_mult pi1_S1 mult_S1 pi1_S1 mult_S1) (x, y)
+      = (apply_fun mult_S1 (x 0, y 0), apply_fun mult_S1 (x 1, y 1)).
+    {
+      prove apply_fun (graph (setprod (setprod pi1_S1 pi1_S1) (setprod pi1_S1 pi1_S1))
+        (fun p:set => (apply_fun mult_S1 ((p 0) 0, (p 1) 0),
+                       apply_fun mult_S1 ((p 0) 1, (p 1) 1)))) (x, y)
+        = (apply_fun mult_S1 (x 0, y 0), apply_fun mult_S1 (x 1, y 1)).
+      rewrite (apply_fun_graph (setprod (setprod pi1_S1 pi1_S1) (setprod pi1_S1 pi1_S1))
+        (fun p:set => (apply_fun mult_S1 ((p 0) 0, (p 1) 0),
+                       apply_fun mult_S1 ((p 0) 1, (p 1) 1)))
+        (x, y) Hxy).
+      rewrite (tuple_2_0_eq x y).
+      rewrite (tuple_2_1_eq x y).
+      exact (fun P H => H).
+    }
+    rewrite Hprod_mult_compute.
+    rewrite (apply_fun_graph (setprod pi1_S1 pi1_S1) phi_pair_fn
+      (apply_fun mult_S1 (x 0, y 0), apply_fun mult_S1 (x 1, y 1)) Hmult_prod_in).
+    prove (apply_fun phi_c ((apply_fun mult_S1 (x 0, y 0), apply_fun mult_S1 (x 1, y 1)) 0),
+           apply_fun phi_c ((apply_fun mult_S1 (x 0, y 0), apply_fun mult_S1 (x 1, y 1)) 1))
+      = apply_fun (product_group_mult int integers_group_mult int integers_group_mult)
+          (apply_fun phi_pair x, apply_fun phi_pair y).
+    rewrite (tuple_2_0_eq (apply_fun mult_S1 (x 0, y 0)) (apply_fun mult_S1 (x 1, y 1))).
+    rewrite (tuple_2_1_eq (apply_fun mult_S1 (x 0, y 0)) (apply_fun mult_S1 (x 1, y 1))).
+    (** Use homomorphism rule on phi_c **)
+    rewrite (group_homomorphism_mult_rule pi1_S1 mult_S1 int integers_group_mult phi_c (x 0) (y 0) Hc_hom Hx0 Hy0).
+    rewrite (group_homomorphism_mult_rule pi1_S1 mult_S1 int integers_group_mult phi_c (x 1) (y 1) Hc_hom Hx1 Hy1).
+    (** Compute RHS **)
+    rewrite (apply_fun_graph (setprod pi1_S1 pi1_S1) phi_pair_fn x Hx).
+    rewrite (apply_fun_graph (setprod pi1_S1 pi1_S1) phi_pair_fn y Hy).
+    prove (apply_fun integers_group_mult (apply_fun phi_c (x 0), apply_fun phi_c (y 0)),
+           apply_fun integers_group_mult (apply_fun phi_c (x 1), apply_fun phi_c (y 1)))
+      = apply_fun (product_group_mult int integers_group_mult int integers_group_mult)
+          ((apply_fun phi_c (x 0), apply_fun phi_c (x 1)),
+           (apply_fun phi_c (y 0), apply_fun phi_c (y 1))).
+    claim Hcx0 : apply_fun phi_c (x 0) :e int. { exact (Hc_fn (x 0) Hx0). }
+    claim Hcx1 : apply_fun phi_c (x 1) :e int. { exact (Hc_fn (x 1) Hx1). }
+    claim Hcy0 : apply_fun phi_c (y 0) :e int. { exact (Hc_fn (y 0) Hy0). }
+    claim Hcy1 : apply_fun phi_c (y 1) :e int. { exact (Hc_fn (y 1) Hy1). }
+    claim Hphi_x : (apply_fun phi_c (x 0), apply_fun phi_c (x 1)) :e setprod int int.
+    { exact (tuple_2_setprod_by_pair_Sigma int int
+        (apply_fun phi_c (x 0)) (apply_fun phi_c (x 1)) Hcx0 Hcx1). }
+    claim Hphi_y : (apply_fun phi_c (y 0), apply_fun phi_c (y 1)) :e setprod int int.
+    { exact (tuple_2_setprod_by_pair_Sigma int int
+        (apply_fun phi_c (y 0)) (apply_fun phi_c (y 1)) Hcy0 Hcy1). }
+    claim Hphi_xy_pair :
+      ((apply_fun phi_c (x 0), apply_fun phi_c (x 1)),
+       (apply_fun phi_c (y 0), apply_fun phi_c (y 1)))
+      :e setprod (setprod int int) (setprod int int).
+    { exact (tuple_2_setprod_by_pair_Sigma (setprod int int) (setprod int int)
+        (apply_fun phi_c (x 0), apply_fun phi_c (x 1))
+        (apply_fun phi_c (y 0), apply_fun phi_c (y 1))
+        Hphi_x Hphi_y). }
+    claim Hcompute_rhs :
+      apply_fun (product_group_mult int integers_group_mult int integers_group_mult)
+        ((apply_fun phi_c (x 0), apply_fun phi_c (x 1)),
+         (apply_fun phi_c (y 0), apply_fun phi_c (y 1)))
+      = (apply_fun integers_group_mult (apply_fun phi_c (x 0), apply_fun phi_c (y 0)),
+         apply_fun integers_group_mult (apply_fun phi_c (x 1), apply_fun phi_c (y 1))).
+    {
+      set cx0 := apply_fun phi_c (x 0).
+      set cx1 := apply_fun phi_c (x 1).
+      set cy0 := apply_fun phi_c (y 0).
+      set cy1 := apply_fun phi_c (y 1).
+      prove apply_fun (graph (setprod (setprod int int) (setprod int int))
+        (fun p:set => (apply_fun integers_group_mult ((p 0) 0, (p 1) 0),
+                       apply_fun integers_group_mult ((p 0) 1, (p 1) 1))))
+        ((cx0, cx1), (cy0, cy1))
+        = (apply_fun integers_group_mult (cx0, cy0),
+           apply_fun integers_group_mult (cx1, cy1)).
+      rewrite (apply_fun_graph (setprod (setprod int int) (setprod int int))
+        (fun p:set => (apply_fun integers_group_mult ((p 0) 0, (p 1) 0),
+                       apply_fun integers_group_mult ((p 0) 1, (p 1) 1)))
+        ((cx0, cx1), (cy0, cy1))
+        Hphi_xy_pair).
+      claim E00 : ((cx0, cx1), (cy0, cy1)) 0 0 = cx0.
+      {
+        claim E00a : ((cx0, cx1), (cy0, cy1)) 0 = (cx0, cx1).
+        { exact (tuple_2_0_eq (cx0, cx1) (cy0, cy1)). }
+        rewrite E00a. exact (tuple_2_0_eq cx0 cx1).
+      }
+      claim E10 : ((cx0, cx1), (cy0, cy1)) 1 0 = cy0.
+      {
+        claim E10a : ((cx0, cx1), (cy0, cy1)) 1 = (cy0, cy1).
+        { exact (tuple_2_1_eq (cx0, cx1) (cy0, cy1)). }
+        rewrite E10a. exact (tuple_2_0_eq cy0 cy1).
+      }
+      claim E01 : ((cx0, cx1), (cy0, cy1)) 0 1 = cx1.
+      {
+        claim E01a : ((cx0, cx1), (cy0, cy1)) 0 = (cx0, cx1).
+        { exact (tuple_2_0_eq (cx0, cx1) (cy0, cy1)). }
+        rewrite E01a. exact (tuple_2_1_eq cx0 cx1).
+      }
+      claim E11 : ((cx0, cx1), (cy0, cy1)) 1 1 = cy1.
+      {
+        claim E11a : ((cx0, cx1), (cy0, cy1)) 1 = (cy0, cy1).
+        { exact (tuple_2_1_eq (cx0, cx1) (cy0, cy1)). }
+        rewrite E11a. exact (tuple_2_1_eq cy0 cy1).
+      }
+      rewrite E00. rewrite E10. rewrite E01. rewrite E11.
+      exact (fun P H => H).
+    }
+    symmetry. exact Hcompute_rhs.
+}
+(** Step 7: Compose to get final isomorphism **)
+set phi_final := compose_fun pi1_T phi_prod phi_pair.
+witness phi_final.
+prove group_isomorphism pi1_T mult_T (setprod int int)
+  (product_group_mult int integers_group_mult int integers_group_mult) phi_final.
+prove group_homomorphism pi1_T mult_T (setprod int int)
+  (product_group_mult int integers_group_mult int integers_group_mult) phi_final /\
+  bijection pi1_T (setprod int int) phi_final.
+apply andI.
+- (** group homomorphism via composition **)
+  exact (group_homomorphism_compose_cyclic_helper
+    pi1_T mult_T id_T inv_T
+    (setprod pi1_S1 pi1_S1) (product_group_mult pi1_S1 mult_S1 pi1_S1 mult_S1)
+    (setprod int int) (product_group_mult int integers_group_mult int integers_group_mult)
+    phi_prod phi_pair
+    Hgrp_T Hprod_hom Hpair_hom).
+- (** bijection via composition **)
+  exact (bijection_compose_fun pi1_T (setprod pi1_S1 pi1_S1) (setprod int int)
+    phi_prod phi_pair Hprod_bij Hpair_bij).
+Qed.
 
 (** from S60 Definition (line 1687 in algtop.tex) **)
 (** LATEX VERSION: The projective plane P^2 is the quotient space obtained **)
