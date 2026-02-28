@@ -79929,6 +79929,138 @@ exact (commuting_lift_pointwise_in_preimage
   HxN).
 Qed.
 
+(** Infrastructure: lifting_of gives pointwise preimage membership on subsets **)
+(** Proven Bob **)
+Theorem lifting_of_pointwise_in_preimage_on_subset :
+  forall X Tx E Te B Tb p f ft N U:set,
+  lifting_of X Tx E Te B Tb p f ft ->
+  N c= X ->
+  (forall x:set, x :e N -> apply_fun f x :e U) ->
+  forall x:set, x :e N -> apply_fun ft x :e preimage_of E p U.
+let X Tx E Te B Tb p f ft N U.
+assume Hlift HNsub HFU.
+claim HfunX : function_on ft X E.
+{
+  exact (lifting_of_function_on
+    X
+    Tx
+    E
+    Te
+    B
+    Tb
+    p
+    f
+    ft
+    Hlift).
+}
+claim HfunN : function_on ft N E.
+{
+  exact (function_on_restrict_dom
+    ft
+    X
+    N
+    E
+    HfunX
+    HNsub).
+}
+claim HcommN :
+  forall x:set, x :e N -> apply_fun p (apply_fun ft x) = apply_fun f x.
+{
+  exact (lifting_of_commutes_on_subset
+    X
+    Tx
+    E
+    Te
+    B
+    Tb
+    p
+    f
+    ft
+    N
+    Hlift
+    HNsub).
+}
+let x.
+assume HxN.
+exact (commuting_lift_pointwise_in_preimage
+  N
+  E
+  B
+  p
+  U
+  f
+  ft
+  HfunN
+  HcommN
+  HFU
+  x
+  HxN).
+Qed.
+
+(** Infrastructure: lifting_of gives image subset preimage on subsets **)
+(** Proven Bob **)
+Theorem lifting_of_image_subset_preimage_on_subset :
+  forall X Tx E Te B Tb p f ft N U:set,
+  lifting_of X Tx E Te B Tb p f ft ->
+  N c= X ->
+  (forall x:set, x :e N -> apply_fun f x :e U) ->
+  image_of ft N c= preimage_of E p U.
+let X Tx E Te B Tb p f ft N U.
+assume Hlift HNsub HFU.
+claim HfunX : function_on ft X E.
+{
+  exact (lifting_of_function_on
+    X
+    Tx
+    E
+    Te
+    B
+    Tb
+    p
+    f
+    ft
+    Hlift).
+}
+claim HfunN : function_on ft N E.
+{
+  exact (function_on_restrict_dom
+    ft
+    X
+    N
+    E
+    HfunX
+    HNsub).
+}
+claim HcommN :
+  forall x:set, x :e N -> apply_fun p (apply_fun ft x) = apply_fun f x.
+{
+  exact (lifting_of_commutes_on_subset
+    X
+    Tx
+    E
+    Te
+    B
+    Tb
+    p
+    f
+    ft
+    N
+    Hlift
+    HNsub).
+}
+exact (commuting_lift_image_subset_preimage
+  N
+  E
+  B
+  p
+  U
+  f
+  ft
+  HfunN
+  HcommN
+  HFU).
+Qed.
+
 (** Infrastructure: element of a slice lies in the union of slices **)
 (** Proven Bob **)
 Lemma slice_member_in_union : forall slices V x:set,
