@@ -1,4 +1,4 @@
-(** Balance Alice 3721 **)
+(** Balance Alice 3782 **)
 (** Balance Bob 3507 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
@@ -223057,13 +223057,165 @@ apply (andI
       rewrite <- Hgx_eq. exact Hsame_LHS_x.
 Qed.
 
+(** Helper: least_normal_subgroup has the expected properties **)
+(** Proven Alice **)
+Lemma least_normal_subgroup_props :
+  forall G mult e inv S:set,
+  group_structure G mult e inv ->
+  S c= G ->
+  normal_subgroup (least_normal_subgroup G mult e inv S) G mult e inv /\
+  S c= (least_normal_subgroup G mult e inv S) /\
+  (forall N':set, normal_subgroup N' G mult e inv -> S c= N' ->
+    (least_normal_subgroup G mult e inv S) c= N').
+let G mult e inv S.
+assume HgrpG : group_structure G mult e inv.
+assume HSsubG : S c= G.
+(** Construct the intersection of all normal subgroups containing S **)
+set I := {g :e G | forall M:set, normal_subgroup M G mult e inv -> S c= M -> g :e M}.
+(** Extract group structure components **)
+claim HmultF : function_on mult (setprod G G) G.
+{ apply (and6E
+    (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+    (forall a b c:set, a :e G -> b :e G -> c :e G ->
+      apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+    (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+    (forall a:set, a :e G ->
+      apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+    HgrpG).
+  assume Hmult _ _ _ _ _. exact Hmult. }
+claim HinvF : function_on inv G G.
+{ apply (and6E
+    (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+    (forall a b c:set, a :e G -> b :e G -> c :e G ->
+      apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+    (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+    (forall a:set, a :e G ->
+      apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+    HgrpG).
+  assume _ Hinv _ _ _ _. exact Hinv. }
+claim HeG : e :e G.
+{ apply (and6E
+    (function_on mult (setprod G G) G) (function_on inv G G) (e :e G)
+    (forall a b c:set, a :e G -> b :e G -> c :e G ->
+      apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+    (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+    (forall a:set, a :e G ->
+      apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+    HgrpG).
+  assume _ _ He _ _ _. exact He. }
+claim HinvG : forall x:set, x :e G -> apply_fun inv x :e G.
+{ let x. assume HxG. exact (HinvF x HxG). }
+claim HmultG : forall x y:set, x :e G -> y :e G -> apply_fun mult (x, y) :e G.
+{ let x y. assume HxG HyG.
+  exact (HmultF (x, y) (tuple_2_setprod_by_pair_Sigma G G x y HxG HyG)). }
+(** I is a subset of G **)
+claim HIsubG : I c= G.
+{ let g. assume HgI : g :e I. exact (SepE1 G (fun g:set => forall M:set, normal_subgroup M G mult e inv -> S c= M -> g :e M) g HgI). }
+(** S subset of I **)
+claim HSsubI : S c= I.
+{ let s. assume HsS : s :e S.
+  exact (SepI G (fun g:set => forall M:set, normal_subgroup M G mult e inv -> S c= M -> g :e M)
+    s (HSsubG s HsS)
+    (fun M:set => fun HnormM : normal_subgroup M G mult e inv =>
+      fun HSsubM : S c= M => HSsubM s HsS)). }
+(** e in I **)
+claim HeI : e :e I.
+{ exact (SepI G (fun g:set => forall M:set, normal_subgroup M G mult e inv -> S c= M -> g :e M)
+    e HeG
+    (fun M:set => fun HnormM : normal_subgroup M G mult e inv =>
+      fun HSsubM : S c= M =>
+        subgroup_of_unit M G mult e inv
+          (normal_subgroup_subgroup M G mult e inv HnormM))). }
+(** I closed under mult **)
+claim HImult : forall x y:set, x :e I -> y :e I -> apply_fun mult (x, y) :e I.
+{ let x y. assume HxI : x :e I. assume HyI : y :e I.
+  claim HxG : x :e G. { exact (HIsubG x HxI). }
+  claim HyG : y :e G. { exact (HIsubG y HyI). }
+  claim Hx_prop : forall M:set, normal_subgroup M G mult e inv -> S c= M -> x :e M.
+  { exact (SepE2 G (fun g:set => forall M:set, normal_subgroup M G mult e inv -> S c= M -> g :e M) x HxI). }
+  claim Hy_prop : forall M:set, normal_subgroup M G mult e inv -> S c= M -> y :e M.
+  { exact (SepE2 G (fun g:set => forall M:set, normal_subgroup M G mult e inv -> S c= M -> g :e M) y HyI). }
+  exact (SepI G (fun g:set => forall M:set, normal_subgroup M G mult e inv -> S c= M -> g :e M)
+    (apply_fun mult (x, y)) (HmultG x y HxG HyG)
+    (fun M:set => fun HnormM : normal_subgroup M G mult e inv =>
+      fun HSsubM : S c= M =>
+        subgroup_of_mult_closed M G mult e inv x y
+          (normal_subgroup_subgroup M G mult e inv HnormM)
+          (Hx_prop M HnormM HSsubM) (Hy_prop M HnormM HSsubM))). }
+(** I closed under inv **)
+claim HIinv : forall x:set, x :e I -> apply_fun inv x :e I.
+{ let x. assume HxI : x :e I.
+  claim HxG : x :e G. { exact (HIsubG x HxI). }
+  claim Hx_prop : forall M:set, normal_subgroup M G mult e inv -> S c= M -> x :e M.
+  { exact (SepE2 G (fun g:set => forall M:set, normal_subgroup M G mult e inv -> S c= M -> g :e M) x HxI). }
+  exact (SepI G (fun g:set => forall M:set, normal_subgroup M G mult e inv -> S c= M -> g :e M)
+    (apply_fun inv x) (HinvG x HxG)
+    (fun M:set => fun HnormM : normal_subgroup M G mult e inv =>
+      fun HSsubM : S c= M =>
+        subgroup_of_inv_closed M G mult e inv x
+          (normal_subgroup_subgroup M G mult e inv HnormM)
+          (Hx_prop M HnormM HSsubM))). }
+(** I is a subgroup of G **)
+claim HsubI : subgroup_of I G mult e inv.
+{ exact (and4I (I c= G) (e :e I)
+    (forall x y:set, x :e I -> y :e I -> apply_fun mult (x, y) :e I)
+    (forall x:set, x :e I -> apply_fun inv x :e I)
+    HIsubG HeI HImult HIinv). }
+(** I is closed under conjugation **)
+claim HIconj : forall n g:set, n :e I -> g :e G ->
+  apply_fun mult (apply_fun mult (g, n), apply_fun inv g) :e I.
+{ let n g. assume HnI : n :e I. assume HgG : g :e G.
+  claim HnG : n :e G. { exact (HIsubG n HnI). }
+  claim Hn_prop : forall M:set, normal_subgroup M G mult e inv -> S c= M -> n :e M.
+  { exact (SepE2 G (fun g:set => forall M:set, normal_subgroup M G mult e inv -> S c= M -> g :e M) n HnI). }
+  claim Hconj_in_G : apply_fun mult (apply_fun mult (g, n), apply_fun inv g) :e G.
+  { exact (HmultG (apply_fun mult (g, n)) (apply_fun inv g)
+      (HmultG g n HgG HnG) (HinvG g HgG)). }
+  exact (SepI G (fun h:set => forall M:set, normal_subgroup M G mult e inv -> S c= M -> h :e M)
+    (apply_fun mult (apply_fun mult (g, n), apply_fun inv g)) Hconj_in_G
+    (fun M:set => fun HnormM : normal_subgroup M G mult e inv =>
+      fun HSsubM : S c= M =>
+        normal_subgroup_conj_closed M G mult e inv
+          n g HnormM (Hn_prop M HnormM HSsubM) HgG)). }
+(** I is normal in G **)
+claim HnormI : normal_subgroup I G mult e inv.
+{ exact (andI (subgroup_of I G mult e inv)
+    (forall n g:set, n :e I -> g :e G ->
+      apply_fun mult (apply_fun mult (g, n), apply_fun inv g) :e I)
+    HsubI HIconj). }
+(** Minimality **)
+claim Hminimal : forall N':set, normal_subgroup N' G mult e inv -> S c= N' -> I c= N'.
+{ let N'. assume HnormN' : normal_subgroup N' G mult e inv.
+  assume HSsubN' : S c= N'.
+  let g. assume HgI : g :e I.
+  exact (SepE2 G (fun h:set => forall M:set, normal_subgroup M G mult e inv -> S c= M -> h :e M)
+    g HgI N' HnormN' HSsubN'). }
+(** Existence witness for Eps_i **)
+claim Hex : exists N:set,
+  normal_subgroup N G mult e inv /\
+  S c= N /\
+  (forall N':set, normal_subgroup N' G mult e inv -> S c= N' -> N c= N').
+{ witness I. exact (and3I
+    (normal_subgroup I G mult e inv)
+    (S c= I)
+    (forall N':set, normal_subgroup N' G mult e inv -> S c= N' -> I c= N')
+    HnormI HSsubI Hminimal). }
+(** Apply Eps_i_ex **)
+exact (Eps_i_ex
+  (fun N:set =>
+    normal_subgroup N G mult e inv /\
+    S c= N /\
+    (forall N':set, normal_subgroup N' G mult e inv -> S c= N' -> N c= N'))
+  Hex).
+Qed.
+
 (** from S75 Cor 75.2 (line 4083 in algtop.tex): for free groups **)
 (** LATEX VERSION: Let F be free with generators alpha1,...,alphan; **)
 (** N least normal subgroup containing x; G = F/N. Then G/[G,G] iso **)
 (** F/[F,F] mod subgroup generated by p(x). **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 61 **)
-(** Lock Alice 1772345030 **)
+(** Collected Alice 61 **)
+(** Proven Alice **)
 Theorem cor75_2_free_group_abelianization :
   forall F multF eF invF n gens x:set,
   free_group_with_generators F multF eF invF n gens ->
@@ -223096,8 +223248,76 @@ Theorem cor75_2_free_group_abelianization :
               apply_fun (quotient_projection F multF
                 (commutator_subgroup F multF eF invF)) y)))
         phi.
-admit.
-Admitted.
+let F multF eF invF n gens x.
+assume Hfree : free_group_with_generators F multF eF invF n gens.
+assume HxF : x :e F.
+let G multG eG invG.
+assume HG : G = quotient_group_set F multF (least_normal_subgroup F multF eF invF (UPair x x)).
+assume HmultG : multG = quotient_group_mult F multF (least_normal_subgroup F multF eF invF (UPair x x)).
+assume HeG : eG = quotient_group_id F multF eF (least_normal_subgroup F multF eF invF (UPair x x)).
+assume HinvG : invG = quotient_group_inv F multF invF (least_normal_subgroup F multF eF invF (UPair x x)).
+set N := least_normal_subgroup F multF eF invF (UPair x x).
+(** Extract group_structure from free_group_with_generators **)
+claim HgrpF : group_structure F multF eF invF.
+{ apply (and4E
+    (group_structure F multF eF invF)
+    (function_on gens n F)
+    (forall alpha:set, alpha :e n ->
+      infinite_cyclic_subgroup F multF eF invF (apply_fun gens alpha))
+    (free_product_of_subgroups F multF eF invF n
+      (graph n (fun alpha:set =>
+        {g :e F | exists m:set, m :e int /\
+          ((m :e omega /\ g = group_power_nat multF eF (apply_fun gens alpha) m) \/
+           (exists k:set, k :e omega /\ m = minus_SNo (ordsucc k) /\
+            g = group_power_nat multF eF (apply_fun invF (apply_fun gens alpha)) (ordsucc k)))}))
+      (graph n (fun alpha:set => eF)))
+    Hfree).
+  assume Hgrp _ _ _. exact Hgrp. }
+(** {x} subset of F **)
+claim HSsubF : UPair x x c= F.
+{ let s. assume HsS : s :e UPair x x.
+  apply (UPairE s x x HsS).
+  - assume Hsx : s = x. rewrite Hsx. exact HxF.
+  - assume Hsx : s = x. rewrite Hsx. exact HxF. }
+(** N is a normal subgroup **)
+claim Hprops : normal_subgroup N F multF eF invF /\
+  UPair x x c= N /\
+  (forall N':set, normal_subgroup N' F multF eF invF -> UPair x x c= N' -> N c= N').
+{ exact (least_normal_subgroup_props F multF eF invF (UPair x x) HgrpF HSsubF). }
+claim HnormN : normal_subgroup N F multF eF invF.
+{ exact (andEL (normal_subgroup N F multF eF invF)
+    (UPair x x c= N)
+    (andEL
+      (normal_subgroup N F multF eF invF /\ UPair x x c= N)
+      (forall N':set, normal_subgroup N' F multF eF invF -> UPair x x c= N' -> N c= N')
+      Hprops)). }
+(** Apply thm75_1 **)
+claim Hiso : exists phi:set,
+  group_isomorphism
+    (quotient_group_set (quotient_group_set F multF N) (quotient_group_mult F multF N)
+      (commutator_subgroup (quotient_group_set F multF N) (quotient_group_mult F multF N)
+        (quotient_group_id F multF eF N) (quotient_group_inv F multF invF N)))
+    (quotient_group_mult (quotient_group_set F multF N) (quotient_group_mult F multF N)
+      (commutator_subgroup (quotient_group_set F multF N) (quotient_group_mult F multF N)
+        (quotient_group_id F multF eF N) (quotient_group_inv F multF invF N)))
+    (quotient_group_set
+      (quotient_group_set F multF (commutator_subgroup F multF eF invF))
+      (quotient_group_mult F multF (commutator_subgroup F multF eF invF))
+      (Repl N (fun y:set =>
+        apply_fun (quotient_projection F multF (commutator_subgroup F multF eF invF)) y)))
+    (quotient_group_mult
+      (quotient_group_set F multF (commutator_subgroup F multF eF invF))
+      (quotient_group_mult F multF (commutator_subgroup F multF eF invF))
+      (Repl N (fun y:set =>
+        apply_fun (quotient_projection F multF (commutator_subgroup F multF eF invF)) y)))
+    phi.
+{ exact (thm75_1_abelianize_quotient_commute F multF eF invF N HgrpF HnormN). }
+(** Rewrite G = F/N etc. to match conclusion **)
+apply Hiso. let phi. assume Hphi.
+witness phi.
+rewrite HG. rewrite HmultG. rewrite HeG. rewrite HinvG.
+exact Hphi.
+Qed.
 
 (** from S75 Thm 75.3 (line 4087 in algtop.tex): H1 of n-fold torus **)
 (** LATEX VERSION: If X is the n-fold torus, H1(X) is free abelian of rank 2n. **)
