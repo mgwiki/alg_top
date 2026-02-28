@@ -87486,6 +87486,32 @@ exact (constant_path_lift_is_constant
   Ht).
 Qed.
 
+(** Infrastructure: endpoint of path_lift for constant path **)
+(** Proven Bob **)
+Lemma path_lift_constant_path_at_one : forall E Te B Tb p e0 b0:set,
+  covering_map E Te B Tb p ->
+  e0 :e E ->
+  b0 :e B ->
+  apply_fun p e0 = b0 ->
+  apply_fun (path_lift E Te B Tb p e0 (constant_path b0)) 1 = e0.
+let E Te B Tb p e0 b0.
+assume Hcov He0 Hb0 Hpe0.
+exact (path_lift_constant_path_is_constant
+  E
+  Te
+  B
+  Tb
+  p
+  e0
+  b0
+  1
+  Hcov
+  He0
+  Hb0
+  Hpe0
+  one_in_unit_interval).
+Qed.
+
 (** from S54 Lem 54.2 path homotopy preservation (line 783 in algtop.tex) **)
 (** LATEX VERSION: If F is a path homotopy, then the lift F_tilde is also a path homotopy. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
