@@ -266597,6 +266597,38 @@ exact (edge_path_index_decomposition_endpoints_in_X
   Hi).
 Qed.
 
+(** Proven Bob **)
+Theorem reduced_edge_path_index_decomposition_endpoints_in_graph_vertices :
+  forall X Tx Arcs n path_seq x0 i:set,
+  general_linear_graph X Tx Arcs ->
+  reduced_edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  exists A ini fin:set,
+    apply_fun path_seq i = ((ini, fin), A) /\
+    oriented_edge X Tx Arcs A ini fin /\
+    ini :e graph_vertices X Tx Arcs /\ fin :e graph_vertices X Tx Arcs.
+let X Tx Arcs n path_seq x0 i.
+assume Hglg Hred Hi.
+exact (edge_path_index_decomposition_endpoints_in_graph_vertices
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  i
+  Hglg
+  (reduced_edge_path_edge_path
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    Hred)
+  Hi).
+Qed.
+
 (** helper: the empty sequence is an edge path of length 0. **)
 (** Proven Charlie **)
 Theorem edge_path_0_empty :
