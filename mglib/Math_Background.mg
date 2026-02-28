@@ -79464,6 +79464,32 @@ exact (HimgSub
     HxN)).
 Qed.
 
+(** Infrastructure: image subset of preimage implies pointwise image in U **)
+(** Proven Bob **)
+Theorem image_sub_preimage_implies_pointwise_pimage : forall N E p U Ft:set,
+  image_of Ft N c= preimage_of E p U ->
+  forall x:set, x :e N -> apply_fun p (apply_fun Ft x) :e U.
+let N E p U Ft.
+assume HimgSub.
+let x.
+assume HxN.
+claim Hpre : apply_fun Ft x :e preimage_of E p U.
+{
+  exact (HimgSub
+    (apply_fun Ft x)
+    (ReplI
+      N
+      (fun y:set => apply_fun Ft y)
+      x
+      HxN)).
+}
+exact (SepE2
+  E
+  (fun z:set => apply_fun p z :e U)
+  (apply_fun Ft x)
+  Hpre).
+Qed.
+
 (** Infrastructure: element of a slice lies in the union of slices **)
 (** Proven Bob **)
 Lemma slice_member_in_union : forall slices V x:set,
