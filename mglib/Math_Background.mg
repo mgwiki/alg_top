@@ -267161,6 +267161,27 @@ exact (andI
 Qed.
 
 (** Proven Bob **)
+Theorem reduced_edge_path_index_endpoints_in_union_arcs_basic :
+  forall X Tx Arcs n path_seq x0 i:set,
+  reduced_edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  (apply_fun path_seq i) 0 0 :e Union Arcs /\
+  (apply_fun path_seq i) 0 1 :e Union Arcs.
+let X Tx Arcs n path_seq x0 i.
+assume Hred Hi.
+exact (edge_path_index_endpoints_in_union_arcs_basic
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  i
+  (reduced_edge_path_edge_path X Tx Arcs n path_seq x0 Hred)
+  Hi).
+Qed.
+
+(** Proven Bob **)
 Theorem reduced_edge_path_no_backtrack :
   forall X Tx Arcs n path_seq x0 i:set,
   reduced_edge_path X Tx Arcs n path_seq x0 ->
