@@ -46999,6 +46999,181 @@ Definition covering_map_R_S1 : set :=
     (apply_fun cos_real (mul_SNo two_pi x),
      apply_fun sin_real (mul_SNo two_pi x))).
 
+(** Extraction: cos/sin pair satisfies characterizing predicate **)
+(** This is the key axiom that extracts trig function properties from Eps_i. **)
+(** Proving this requires showing existence of trig functions (power series or ODE), **)
+(** which is a standard real analysis result. **)
+Theorem cos_sin_pair_exists :
+  exists p:set,
+  function_on (p 0) R R /\ function_on (p 1) R R /\
+  continuous_map R R_standard_topology R R_standard_topology (p 0) /\
+  continuous_map R R_standard_topology R R_standard_topology (p 1) /\
+  apply_fun (p 0) 0 = 1 /\
+  apply_fun (p 1) 0 = 0 /\
+  (forall x:set, x :e R ->
+    add_SNo (mul_SNo (apply_fun (p 0) x) (apply_fun (p 0) x))
+            (mul_SNo (apply_fun (p 1) x) (apply_fun (p 1) x)) = 1) /\
+  (forall x y:set, x :e R -> y :e R ->
+    apply_fun (p 0) (add_SNo x y) =
+      add_SNo (mul_SNo (apply_fun (p 0) x) (apply_fun (p 0) y))
+              (minus_SNo (mul_SNo (apply_fun (p 1) x) (apply_fun (p 1) y)))) /\
+  (forall x y:set, x :e R -> y :e R ->
+    apply_fun (p 1) (add_SNo x y) =
+      add_SNo (mul_SNo (apply_fun (p 1) x) (apply_fun (p 0) y))
+              (mul_SNo (apply_fun (p 0) x) (apply_fun (p 1) y))).
+admit.
+Admitted.
+
+(** Extract all cos/sin properties at once from Eps_i **)
+Theorem cos_sin_pair_data :
+  function_on cos_real R R /\ function_on sin_real R R /\
+  continuous_map R R_standard_topology R R_standard_topology cos_real /\
+  continuous_map R R_standard_topology R R_standard_topology sin_real /\
+  apply_fun cos_real 0 = 1 /\
+  apply_fun sin_real 0 = 0 /\
+  (forall x:set, x :e R ->
+    add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real x))
+            (mul_SNo (apply_fun sin_real x) (apply_fun sin_real x)) = 1) /\
+  (forall x y:set, x :e R -> y :e R ->
+    apply_fun cos_real (add_SNo x y) =
+      add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real y))
+              (minus_SNo (mul_SNo (apply_fun sin_real x) (apply_fun sin_real y)))) /\
+  (forall x y:set, x :e R -> y :e R ->
+    apply_fun sin_real (add_SNo x y) =
+      add_SNo (mul_SNo (apply_fun sin_real x) (apply_fun cos_real y))
+              (mul_SNo (apply_fun cos_real x) (apply_fun sin_real y))).
+exact (Eps_i_ex
+  (fun p:set =>
+    function_on (p 0) R R /\ function_on (p 1) R R /\
+    continuous_map R R_standard_topology R R_standard_topology (p 0) /\
+    continuous_map R R_standard_topology R R_standard_topology (p 1) /\
+    apply_fun (p 0) 0 = 1 /\
+    apply_fun (p 1) 0 = 0 /\
+    (forall x:set, x :e R ->
+      add_SNo (mul_SNo (apply_fun (p 0) x) (apply_fun (p 0) x))
+              (mul_SNo (apply_fun (p 1) x) (apply_fun (p 1) x)) = 1) /\
+    (forall x y:set, x :e R -> y :e R ->
+      apply_fun (p 0) (add_SNo x y) =
+        add_SNo (mul_SNo (apply_fun (p 0) x) (apply_fun (p 0) y))
+                (minus_SNo (mul_SNo (apply_fun (p 1) x) (apply_fun (p 1) y)))) /\
+    (forall x y:set, x :e R -> y :e R ->
+      apply_fun (p 1) (add_SNo x y) =
+        add_SNo (mul_SNo (apply_fun (p 1) x) (apply_fun (p 0) y))
+                (mul_SNo (apply_fun (p 0) x) (apply_fun (p 1) y))))
+  cos_sin_pair_exists).
+Admitted.
+
+(** Individual extraction theorems for cos/sin **)
+(** All follow from cos_sin_pair_data by conjunction elimination **)
+Theorem cos_real_function_on : function_on cos_real R R.
+admit. (** follows from cos_sin_pair_data, component 1 **)
+Admitted.
+
+Theorem sin_real_function_on : function_on sin_real R R.
+admit. (** follows from cos_sin_pair_data, component 2 **)
+Admitted.
+
+Theorem cos_real_continuous : continuous_map R R_standard_topology R R_standard_topology cos_real.
+admit. (** follows from cos_sin_pair_data, component 3 **)
+Admitted.
+
+Theorem sin_real_continuous : continuous_map R R_standard_topology R R_standard_topology sin_real.
+admit. (** follows from cos_sin_pair_data, component 4 **)
+Admitted.
+
+Theorem cos_zero : apply_fun cos_real 0 = 1.
+admit. (** follows from cos_sin_pair_data, component 5 **)
+Admitted.
+
+Theorem sin_zero : apply_fun sin_real 0 = 0.
+admit. (** follows from cos_sin_pair_data, component 6 **)
+Admitted.
+
+Theorem cos_sin_pythagorean : forall x:set, x :e R ->
+  add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real x))
+          (mul_SNo (apply_fun sin_real x) (apply_fun sin_real x)) = 1.
+admit. (** follows from cos_sin_pair_data, component 7 **)
+Admitted.
+
+Theorem cos_addition : forall x y:set, x :e R -> y :e R ->
+  apply_fun cos_real (add_SNo x y) =
+    add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real y))
+            (minus_SNo (mul_SNo (apply_fun sin_real x) (apply_fun sin_real y))).
+admit. (** follows from cos_sin_pair_data, component 8 **)
+Admitted.
+
+Theorem sin_addition : forall x y:set, x :e R -> y :e R ->
+  apply_fun sin_real (add_SNo x y) =
+    add_SNo (mul_SNo (apply_fun sin_real x) (apply_fun cos_real y))
+            (mul_SNo (apply_fun cos_real x) (apply_fun sin_real y)).
+admit. (** follows from cos_sin_pair_data, component 9 **)
+Admitted.
+
+(** Pi extraction theorems **)
+Theorem pi_real_exists :
+  exists p:set, p :e R /\ Rlt 0 p /\
+  apply_fun cos_real p = minus_SNo 1 /\
+  apply_fun sin_real p = 0 /\
+  (forall x:set, x :e R -> Rlt 0 x -> Rlt x p ->
+    Rlt 0 (apply_fun sin_real x)).
+admit. (** existence of pi: smallest positive zero of cos with sin positive on (0,pi) **)
+Admitted.
+
+Theorem pi_real_in_R : pi_real :e R.
+admit. (** from pi_real_exists **)
+Admitted.
+
+Theorem pi_real_positive : Rlt 0 pi_real.
+admit. (** from pi_real_exists **)
+Admitted.
+
+Theorem cos_pi : apply_fun cos_real pi_real = minus_SNo 1.
+admit. (** from pi_real_exists **)
+Admitted.
+
+Theorem sin_pi : apply_fun sin_real pi_real = 0.
+admit. (** from pi_real_exists **)
+Admitted.
+
+Theorem two_pi_in_R : two_pi :e R.
+admit. (** two_pi = pi_real + pi_real, sum of reals **)
+Admitted.
+
+Theorem two_pi_positive : Rlt 0 two_pi.
+admit. (** two_pi = 2 times pi > 0 **)
+Admitted.
+
+(** Key trig identities for covering map **)
+Theorem cos_two_pi : apply_fun cos_real two_pi = 1.
+admit. (** cos(2pi) = cos(pi+pi) = 1 by addition formula **)
+Admitted.
+
+Theorem sin_two_pi : apply_fun sin_real two_pi = 0.
+admit. (** sin(2pi) = sin(pi+pi) = 0 by addition formula **)
+Admitted.
+
+(** Periodicity **)
+Theorem cos_periodic : forall x:set, x :e R ->
+  apply_fun cos_real (add_SNo x two_pi) = apply_fun cos_real x.
+admit. (** from cos_addition, cos_two_pi, sin_two_pi **)
+Admitted.
+
+Theorem sin_periodic : forall x:set, x :e R ->
+  apply_fun sin_real (add_SNo x two_pi) = apply_fun sin_real x.
+admit. (** from sin_addition, cos_two_pi, sin_two_pi **)
+Admitted.
+
+(** Covering map helper: p(x) is on S1 **)
+Theorem covering_map_R_S1_on_S1 : forall x:set, x :e R ->
+  apply_fun covering_map_R_S1 x :e S1.
+admit. (** cos^2(2pi x) + sin^2(2pi x) = 1, so (cos(2pi x), sin(2pi x)) in S1 **)
+Admitted.
+
+(** Covering map helper: p is a function from R to S1 **)
+Theorem covering_map_R_S1_function_on : function_on covering_map_R_S1 R S1.
+admit. (** from covering_map_R_S1_on_S1 and the graph definition **)
+Admitted.
+
 (** from S53 Thm 53.1 (line 553 in algtop.tex) **)
 (** LATEX VERSION: The map p: R -> S^1 given by p(x) = (cos 2pi x, sin 2pi x) **)
 (** is a covering map. **)
