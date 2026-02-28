@@ -52506,6 +52506,17 @@ Theorem Union_singleton_empty_eq : Union {Empty} = Empty.
 exact (Union_singleton_eq Empty).
 Qed.
 
+(** Infrastructure: union of a pair equals binunion **)
+(** Proven Bob **)
+Theorem Union_pair_eq_binunion : forall A B:set,
+  Union {A,B} = A :\/: B.
+let A B.
+exact (eq_symm
+  (A :\/: B)
+  (Union {A,B})
+  (binunion_eq_Union_pair A B)).
+Qed.
+
 (** Infrastructure: nonempty family with empty union is the singleton {Empty} **)
 (** Proven Bob **)
 Theorem union_empty_nonempty_family_eq_singleton_empty : forall Fam:set,
