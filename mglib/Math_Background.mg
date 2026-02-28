@@ -221095,6 +221095,20 @@ claim Hfn_on : function_on phi LHS RHS.
         left_coset mN (left_coset multF f N) CommFN = d))
       CommF)
     HfCommF_in_GA). }
+(** Well-definedness: same LHS coset implies same RHS coset **)
+claim Hwd : forall f1 f2:set, f1 :e F -> f2 :e F ->
+  left_coset mN (left_coset multF f1 N) CommFN =
+  left_coset mN (left_coset multF f2 N) CommFN ->
+  left_coset mA (left_coset multF f1 CommF) piN =
+  left_coset mA (left_coset multF f2 CommF) piN.
+{ admit. }
+(** Well-definedness converse: same RHS coset implies same LHS coset **)
+claim Hwd_conv : forall f1 f2:set, f1 :e F -> f2 :e F ->
+  left_coset mA (left_coset multF f1 CommF) piN =
+  left_coset mA (left_coset multF f2 CommF) piN ->
+  left_coset mN (left_coset multF f1 N) CommFN =
+  left_coset mN (left_coset multF f2 N) CommFN.
+{ admit. }
 (** Step 5: Prove the group isomorphism **)
 witness phi.
 (** group_isomorphism = group_homomorphism /\ bijection **)
@@ -221119,8 +221133,72 @@ apply (andI
         (forall x':set, x' :e LHS -> apply_fun phi x' = y -> x' = x))).
   + (** function_on phi LHS RHS **)
     exact Hfn_on.
-  + (** unique preimage **)
-    admit.
+  + (** unique preimage: surjectivity + injectivity **)
+    let r. assume Hr : r :e RHS.
+    (** r in RHS = {left_coset mA c piN | c in GA} **)
+    apply (ReplE_impred GA (fun c => left_coset mA c piN) r Hr).
+    let c0. assume Hc0GA : c0 :e GA. assume Hr_eq : r = left_coset mA c0 piN.
+    (** c0 in GA = {left_coset multF g CommF | g in F} **)
+    apply (ReplE_impred F (fun g => left_coset multF g CommF) c0 Hc0GA).
+    let g0. assume Hg0F : g0 :e F. assume Hc0_eq : c0 = left_coset multF g0 CommF.
+    (** Take d0 = left_coset mN (left_coset multF g0 N) CommFN as preimage **)
+    set d0 := left_coset mN (left_coset multF g0 N) CommFN.
+    claim Hg0N_in_GN : left_coset multF g0 N :e GN.
+    { exact (ReplI F (fun g => left_coset multF g N) g0 Hg0F). }
+    claim Hd0_in_LHS : d0 :e LHS.
+    { exact (ReplI GN (fun c => left_coset mN c CommFN)
+        (left_coset multF g0 N) Hg0N_in_GN). }
+    (** Shared claims for d0 **)
+    set g0' := Eps_i (fun f:set => f :e F /\
+      left_coset mN (left_coset multF f N) CommFN = d0).
+    claim Hg0'F : g0' :e F. { exact (Heps_F d0 Hd0_in_LHS). }
+    claim Hg0'_eq : left_coset mN (left_coset multF g0' N) CommFN = d0.
+    { exact (Heps_eq d0 Hd0_in_LHS). }
+    claim Hg0_eq_d0 : left_coset mN (left_coset multF g0 N) CommFN = d0.
+    { reflexivity. }
+    claim Hsame_LHS0 : left_coset mN (left_coset multF g0' N) CommFN =
+      left_coset mN (left_coset multF g0 N) CommFN.
+    { rewrite Hg0'_eq. symmetry. exact Hg0_eq_d0. }
+    claim Hsame_RHS0 : left_coset mA (left_coset multF g0' CommF) piN =
+      left_coset mA (left_coset multF g0 CommF) piN.
+    { exact (Hwd g0' g0 Hg0'F Hg0F Hsame_LHS0). }
+    claim Hphi_d0_r : apply_fun phi d0 = r.
+    { rewrite (Hphi_compute d0 Hd0_in_LHS).
+      rewrite Hsame_RHS0.
+      rewrite <- Hc0_eq. symmetry. exact Hr_eq. }
+    witness d0.
+    apply (and3I (d0 :e LHS) (apply_fun phi d0 = r)
+      (forall x':set, x' :e LHS -> apply_fun phi x' = r -> x' = d0)).
+    - exact Hd0_in_LHS.
+    - exact Hphi_d0_r.
+    - (** Uniqueness: if phi(x') = r then x' = d0 **)
+      let x'. assume Hx'LHS : x' :e LHS.
+      assume Hphi_x' : apply_fun phi x' = r.
+      set gx := Eps_i (fun f:set => f :e F /\
+        left_coset mN (left_coset multF f N) CommFN = x').
+      claim HgxF : gx :e F. { exact (Heps_F x' Hx'LHS). }
+      claim Hgx_eq : left_coset mN (left_coset multF gx N) CommFN = x'.
+      { exact (Heps_eq x' Hx'LHS). }
+      (** phi(x') = left_coset mA (gx CommF) piN **)
+      claim Hphi_x'_eq : apply_fun phi x' =
+        left_coset mA (left_coset multF gx CommF) piN.
+      { exact (Hphi_compute x' Hx'LHS). }
+      (** phi(d0) = left_coset mA (g0 CommF) piN **)
+      claim Hphi_d0_eq : apply_fun phi d0 =
+        left_coset mA (left_coset multF g0 CommF) piN.
+      { rewrite (Hphi_compute d0 Hd0_in_LHS).
+        exact Hsame_RHS0. }
+      (** gx CommF piN = g0 CommF piN **)
+      claim Hsame_RHS_x : left_coset mA (left_coset multF gx CommF) piN =
+        left_coset mA (left_coset multF g0 CommF) piN.
+      { rewrite <- Hphi_x'_eq. rewrite <- Hphi_d0_eq.
+        rewrite Hphi_x'. symmetry. exact Hphi_d0_r. }
+      (** By Hwd_conv: gx and g0 give same LHS coset **)
+      claim Hsame_LHS_x : left_coset mN (left_coset multF gx N) CommFN =
+        left_coset mN (left_coset multF g0 N) CommFN.
+      { exact (Hwd_conv gx g0 HgxF Hg0F Hsame_RHS_x). }
+      (** x' = gx coset = g0 coset = d0 **)
+      rewrite <- Hgx_eq. exact Hsame_LHS_x.
 Admitted.
 
 (** from S75 Cor 75.2 (line 4083 in algtop.tex): for free groups **)
