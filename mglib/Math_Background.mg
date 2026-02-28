@@ -266606,6 +266606,80 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Theorem edge_path_index_decomposition_endpoints_in_union_arcs_basic :
+  forall X Tx Arcs n path_seq x0 i:set,
+  edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  exists A ini fin:set,
+    apply_fun path_seq i = ((ini, fin), A) /\
+    oriented_edge X Tx Arcs A ini fin /\
+    ini :e Union Arcs /\ fin :e Union Arcs.
+let X Tx Arcs n path_seq x0 i.
+assume Hep Hi.
+apply (edge_path_edge_decomposition
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  i
+  Hep
+  Hi).
+let A.
+assume HA.
+apply HA.
+let ini.
+assume Hini.
+apply Hini.
+let fin.
+assume Hfin.
+claim Hdec :
+  apply_fun path_seq i = ((ini, fin), A) /\
+  oriented_edge X Tx Arcs A ini fin.
+{
+  exact Hfin.
+}
+claim Hori : oriented_edge X Tx Arcs A ini fin.
+{
+  exact (andER
+    (apply_fun path_seq i = ((ini, fin), A))
+    (oriented_edge X Tx Arcs A ini fin)
+    Hdec).
+}
+claim HendU : ini :e Union Arcs /\ fin :e Union Arcs.
+{
+  exact (oriented_edge_endpoints_in_union_arcs_basic
+    X
+    Tx
+    Arcs
+    A
+    ini
+    fin
+    Hori).
+}
+witness A.
+witness ini.
+witness fin.
+apply andI.
+- apply andI.
+  + apply andI.
+    * exact (andEL
+        (apply_fun path_seq i = ((ini, fin), A))
+        (oriented_edge X Tx Arcs A ini fin)
+        Hdec).
+    * exact Hori.
+  + exact (andEL
+      (ini :e Union Arcs)
+      (fin :e Union Arcs)
+      HendU).
+- exact (andER
+    (ini :e Union Arcs)
+    (fin :e Union Arcs)
+    HendU).
+Qed.
+
+(** Proven Bob **)
 Theorem edge_path_index_initial_vertex_in_X :
   forall X Tx Arcs n path_seq x0 i:set,
   general_linear_graph X Tx Arcs ->
@@ -267720,6 +267794,36 @@ exact (edge_path_index_decomposition_endpoints_in_union_arcs
   x0
   i
   Hglg
+  (reduced_edge_path_edge_path
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    Hred)
+  Hi).
+Qed.
+
+(** Proven Bob **)
+Theorem reduced_edge_path_index_decomposition_endpoints_in_union_arcs_basic :
+  forall X Tx Arcs n path_seq x0 i:set,
+  reduced_edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  exists A ini fin:set,
+    apply_fun path_seq i = ((ini, fin), A) /\
+    oriented_edge X Tx Arcs A ini fin /\
+    ini :e Union Arcs /\ fin :e Union Arcs.
+let X Tx Arcs n path_seq x0 i.
+assume Hred Hi.
+exact (edge_path_index_decomposition_endpoints_in_union_arcs_basic
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  i
   (reduced_edge_path_edge_path
     X
     Tx
