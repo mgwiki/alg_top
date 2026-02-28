@@ -207134,6 +207134,112 @@ claim Hnat :
 exact (Hnat n (omega_nat_p n HnO)).
 Qed.
 
+(** Proven Bob **)
+Theorem basepoint_change_map_preserves_power_nat :
+  forall X Tx x0 x1 alpha cls n:set,
+  topology_on X Tx ->
+  continuous_map unit_interval unit_interval_topology X Tx alpha ->
+  apply_fun alpha 0 = x0 -> apply_fun alpha 1 = x1 ->
+  cls :e fundamental_group X Tx x0 ->
+  n :e omega ->
+  apply_fun (basepoint_change_map X Tx x0 x1 alpha)
+    (group_power_nat
+      (fundamental_group_mult X Tx x0)
+      (fundamental_group_id X Tx x0)
+      cls
+      n)
+  =
+  group_power_nat
+    (fundamental_group_mult X Tx x1)
+    (fundamental_group_id X Tx x1)
+    (apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls)
+    n.
+let X Tx x0 x1 alpha cls n.
+assume HtopX HalphaCont Halpha0 Halpha1 Hcls HnO.
+claim HalphaFun : function_on alpha unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    alpha
+    HalphaCont).
+}
+claim Hx0X : x0 :e X.
+{
+  rewrite <- Halpha0.
+  exact (HalphaFun 0 zero_in_unit_interval).
+}
+claim Hx1X : x1 :e X.
+{
+  rewrite <- Halpha1.
+  exact (HalphaFun 1 one_in_unit_interval).
+}
+claim Hgrp0 :
+  group_structure
+    (fundamental_group X Tx x0)
+    (fundamental_group_mult X Tx x0)
+    (fundamental_group_id X Tx x0)
+    (fundamental_group_inv X Tx x0).
+{
+  exact (fundamental_group_is_group
+    X
+    Tx
+    x0
+    HtopX
+    Hx0X).
+}
+claim Hgrp1 :
+  group_structure
+    (fundamental_group X Tx x1)
+    (fundamental_group_mult X Tx x1)
+    (fundamental_group_id X Tx x1)
+    (fundamental_group_inv X Tx x1).
+{
+  exact (fundamental_group_is_group
+    X
+    Tx
+    x1
+    HtopX
+    Hx1X).
+}
+claim Hhom :
+  group_homomorphism
+    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+    (fundamental_group X Tx x1) (fundamental_group_mult X Tx x1)
+    (basepoint_change_map X Tx x0 x1 alpha).
+{
+  exact (lemma52_1_basepoint_change_homomorphism
+    X
+    Tx
+    x0
+    x1
+    alpha
+    HtopX
+    HalphaCont
+    Halpha0
+    Halpha1).
+}
+exact (group_homomorphism_preserves_power_nat
+  (fundamental_group X Tx x0)
+  (fundamental_group_mult X Tx x0)
+  (fundamental_group_id X Tx x0)
+  (fundamental_group_inv X Tx x0)
+  (fundamental_group X Tx x1)
+  (fundamental_group_mult X Tx x1)
+  (fundamental_group_id X Tx x1)
+  (fundamental_group_inv X Tx x1)
+  (basepoint_change_map X Tx x0 x1 alpha)
+  cls
+  n
+  Hgrp0
+  Hgrp1
+  Hhom
+  Hcls
+  HnO).
+Qed.
+
 (** Helper: integers under surreal addition form a group. **)
 (** Proven Bob **)
 Theorem integers_group_is_group :
