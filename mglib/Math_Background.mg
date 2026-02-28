@@ -268694,6 +268694,44 @@ rewrite (apply_fun_graph n (fun k:set => apply_fun path_seq k) i Hi).
 reflexivity.
 Qed.
 
+(** helper: final vertex of the appended edge is q in the append construction. **)
+(** Proven Bob **)
+Theorem edge_path_append_oriented_edge_end_vertex :
+  forall X Tx Arcs n path_seq x0 j A p q:set,
+  general_linear_graph X Tx Arcs ->
+  edge_path X Tx Arcs n path_seq x0 ->
+  j :e n ->
+  ordsucc j /:e n ->
+  (apply_fun path_seq j) 0 1 = p ->
+  oriented_edge X Tx Arcs A p q ->
+  (apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 1 = q.
+let X Tx Arcs n path_seq x0 j A p q.
+assume Hglg Hep HjIn HsjNot Hfinj Hori.
+claim Happ :
+  apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n
+  = ((p, q), A).
+{
+  exact (apply_fun_edge_path_append_at_n
+    X Tx Arcs n path_seq x0 j A p q
+    Hglg
+    Hep
+    HjIn
+    HsjNot
+    Hfinj
+    Hori).
+}
+rewrite Happ.
+rewrite (tuple_2_0_eq (p, q) A).
+rewrite tuple_2_1_eq.
+reflexivity.
+Qed.
+
 (** helper: for any graph vertex x there is a nontrivial edge_path from x to x. **)
 (** Proven Charlie **)
 Theorem graph_vertex_has_edge_path_to_self :
