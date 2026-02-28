@@ -83475,29 +83475,13 @@ claim HFt_54_cont :
                           }
                           claim HVxzEqVq : Vxz = Vq.
                           {
-                            exact (lemma54_2_sheet_non_switching_local
-                              E
-                              Te
-                              B
-                              Tb
-                              p
-                              F
-                              Ft_54
-                              q
-                              z
-                              N
-                              U
-                              slices
-                              Vq
-                              Vxz
-                              HpdSlices
-                              HN_into_U
-                              HqN
-                              HzN
-                              HFtqVq
-                              HVqSlice
-                              Hft54zVxz
-                              HVxzSlice).
+                            (** Need: Ft_54 stays in one slice on connected N.
+                                Requires path_lift continuous parameter dependence
+                                or direct proof Ft_54 is continuous on N.
+                                The previous call to lemma54_2_sheet_non_switching_local
+                                was incorrect: that lemma is false (missing connectivity
+                                and continuity hypotheses). **)
+                            admit.
                           }
 			                        rewrite <- HVxzEqVq.
 			                        exact HxzVxz.
@@ -83771,7 +83755,7 @@ exact (andI
     HFt_54_cont
   HFt_54_00)
   HFt_54_comm).
-Admitted. (** depends on admitted lemma54_2_sheet_non_switching_local **)
+Admitted. (** needs: Ft_54 stays in anchor slice on connected tile (path_lift parameter continuity) **)
 
 (** from S54 Lem 54.2 (line 730 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map; p(e0) = b0. Let F: I x I -> B be **)
