@@ -265960,6 +265960,28 @@ exact (andEL
 Qed.
 
 (** Proven Bob **)
+Theorem reduced_edge_path_index_arc_in_arcs :
+  forall X Tx Arcs n path_seq x0 i:set,
+  reduced_edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  exists A ini fin:set,
+    apply_fun path_seq i = ((ini, fin), A) /\
+    A :e Arcs.
+let X Tx Arcs n path_seq x0 i.
+assume Hred Hi.
+exact (edge_path_index_arc_in_arcs
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  i
+  (reduced_edge_path_edge_path X Tx Arcs n path_seq x0 Hred)
+  Hi).
+Qed.
+
+(** Proven Bob **)
 Theorem reduced_edge_path_index_initial_vertex_in_X :
   forall X Tx Arcs n path_seq x0 i:set,
   general_linear_graph X Tx Arcs ->
