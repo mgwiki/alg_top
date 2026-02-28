@@ -191723,8 +191723,93 @@ apply (nat_inv nw Hnw_nat).
                     exact (Hnie_ne_1
                       Hnie_eq_1).
                   }
-                  admit. (** TODO: need lemma to build a reduced word of length nie for xie0
-                      from the Hinv_eq_efam branch (likely via inverse/shifted word),
+                  claim Hnie_eq : nie = ordsucc m.
+                  {
+                    claim Hnie_eq_nw : nie = nw.
+                    {
+                      symmetry.
+                      exact Hnw_eq_nie.
+                    }
+                    exact (eq_i_tra
+                      nie
+                      nw
+                      (ordsucc m)
+                      Hnie_eq_nw
+                      Hnw_eq).
+                  }
+                  claim Hred_ie_succ : reduced_word J Gfam efam (ordsucc m) xie.
+                  {
+                    rewrite <- Hnie_eq.
+                    exact Hred_ie_eq.
+                  }
+                  set xs_suf_ie := graph m (fun i:set => apply_fun xie (ordsucc i)).
+                  claim Hred_suf_ie : reduced_word J Gfam efam m xs_suf_ie.
+                  {
+                    exact (reduced_word_suffix
+                      J
+                      Gfam
+                      efam
+                      m
+                      xie
+                      Hred_ie_succ).
+                  }
+                  claim Hxie_in_G : forall i:set, i :e ordsucc m -> apply_fun xie i :e G.
+                  {
+                    let i.
+                    assume Hi_sm.
+                    claim Hi_nie : i :e nie.
+                    {
+                      rewrite Hnie_eq.
+                      exact Hi_sm.
+                    }
+                    exact (reduced_word_in_G
+                      G
+                      multG
+                      eG
+                      invG
+                      J
+                      Gfam
+                      efam
+                      nie
+                      xie
+                      Hsub
+                      Hred_ie_eq
+                      i
+                      Hi_nie).
+                  }
+                  claim Hm_sm : m :e ordsucc m.
+                  {
+                    exact (ordsuccI2
+                      m).
+                  }
+                  claim Hwp_shift_m : word_product multG eG xie (ordsucc m) =
+                    apply_fun multG (apply_fun xie 0, word_product multG eG xs_suf_ie m).
+                  {
+                    exact (word_product_shift_first
+                      G
+                      multG
+                      eG
+                      invG
+                      m
+                      xie
+                      Hgrp
+                      Hm_nat
+                      Hxie_in_G
+                      m
+                      Hm_nat
+                      Hm_sm).
+                  }
+                  claim Hwp_ie_succ : word_product multG eG xie (ordsucc m) = ie.
+                  {
+                    rewrite <- Hnie_eq.
+                    exact Hwp_ie_eq.
+                  }
+                  claim Hxie0_wp_suf : apply_fun multG (apply_fun xie 0, word_product multG eG xs_suf_ie m) = ie.
+                  {
+                    rewrite <- Hwp_shift_m.
+                    exact Hwp_ie_succ.
+                  }
+                  admit. (** TODO: use Hred_suf_ie and Hxie0_wp_suf to build a reduced word of length nie for xie0,
                       contradicting Hxie0_uniq_len1/Hnie_ne_1. **)
                 }
               + assume Hinv_ne_efam.
