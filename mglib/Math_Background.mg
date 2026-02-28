@@ -256248,8 +256248,299 @@ Qed.
 (** Uses: [0,1] is convex in R, hence star convex, hence simply connected **)
 Theorem unit_interval_simply_connected :
   simply_connected unit_interval unit_interval_topology.
-admit.
-Admitted.
+claim HpcI : path_connected_space unit_interval unit_interval_topology.
+{ exact unit_interval_path_connected. }
+claim Hpi1triv :
+  fundamental_group unit_interval unit_interval_topology 0 =
+  {fundamental_group_id unit_interval unit_interval_topology 0}.
+{
+  apply set_ext.
+  - let cls.
+    assume Hcls : cls :e fundamental_group unit_interval unit_interval_topology 0.
+    claim Hrep :
+      exists f:set, f :e loop_space unit_interval unit_interval_topology 0 /\
+        cls = path_homotopy_class_loop unit_interval unit_interval_topology 0 f.
+    { exact (fundamental_group_member_has_representative unit_interval unit_interval_topology 0 cls Hcls). }
+    apply Hrep.
+    let f.
+    assume HfPack.
+    claim HfLoop : f :e loop_space unit_interval unit_interval_topology 0.
+    {
+      exact (andEL
+        (f :e loop_space unit_interval unit_interval_topology 0)
+        (cls = path_homotopy_class_loop unit_interval unit_interval_topology 0 f)
+        HfPack).
+    }
+    claim HclsEqF : cls = path_homotopy_class_loop unit_interval unit_interval_topology 0 f.
+    {
+      exact (andER
+        (f :e loop_space unit_interval unit_interval_topology 0)
+        (cls = path_homotopy_class_loop unit_interval unit_interval_topology 0 f)
+        HfPack).
+    }
+    claim HfLoopAt : loop_at unit_interval unit_interval_topology 0 f.
+    { exact (loop_space_has_loop_at unit_interval unit_interval_topology 0 f HfLoop). }
+    claim Hfcont : continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology f.
+    { exact (loop_at_continuous unit_interval unit_interval_topology 0 f HfLoopAt). }
+    claim Hf0 : apply_fun f 0 = 0.
+    { exact (loop_at_at_zero unit_interval unit_interval_topology 0 f HfLoopAt). }
+    claim Hf1 : apply_fun f 1 = 0.
+    { exact (loop_at_at_one unit_interval unit_interval_topology 0 f HfLoopAt). }
+    claim HfOnI : forall s:set, s :e unit_interval -> apply_fun f s :e unit_interval.
+    { exact (continuous_map_function_on unit_interval unit_interval_topology unit_interval unit_interval_topology f Hfcont). }
+    claim HtopSq : topology_on unit_square unit_square_topology.
+    {
+      exact (product_topology_is_topology unit_interval unit_interval_topology unit_interval unit_interval_topology
+        unit_interval_topology_on unit_interval_topology_on).
+    }
+    set s_coord := projection_map1 unit_interval unit_interval.
+    set t_coord := projection_map2 unit_interval unit_interval.
+    claim HprojPack :
+      continuous_map unit_square unit_square_topology unit_interval unit_interval_topology s_coord /\
+      continuous_map unit_square unit_square_topology unit_interval unit_interval_topology t_coord.
+    {
+      exact (projection_maps_continuous
+        unit_interval unit_interval_topology unit_interval unit_interval_topology
+        unit_interval_topology_on unit_interval_topology_on).
+    }
+    claim HsCont :
+      continuous_map unit_square unit_square_topology unit_interval unit_interval_topology s_coord.
+    {
+      exact (andEL
+        (continuous_map unit_square unit_square_topology unit_interval unit_interval_topology s_coord)
+        (continuous_map unit_square unit_square_topology unit_interval unit_interval_topology t_coord)
+        HprojPack).
+    }
+    claim HtCont :
+      continuous_map unit_square unit_square_topology unit_interval unit_interval_topology t_coord.
+    {
+      exact (andER
+        (continuous_map unit_square unit_square_topology unit_interval unit_interval_topology s_coord)
+        (continuous_map unit_square unit_square_topology unit_interval unit_interval_topology t_coord)
+        HprojPack).
+    }
+    set one_minus_t := compose_fun unit_square t_coord flip_unit_interval.
+    claim HomtCont :
+      continuous_map unit_square unit_square_topology unit_interval unit_interval_topology one_minus_t.
+    {
+      exact (composition_continuous
+        unit_square unit_square_topology unit_interval unit_interval_topology unit_interval unit_interval_topology
+        t_coord flip_unit_interval HtCont flip_unit_interval_continuous).
+    }
+    set f_sq := compose_fun unit_square s_coord f.
+    claim HfSqCont :
+      continuous_map unit_square unit_square_topology unit_interval unit_interval_topology f_sq.
+    {
+      exact (composition_continuous
+        unit_square unit_square_topology unit_interval unit_interval_topology unit_interval unit_interval_topology
+        s_coord f HsCont Hfcont).
+    }
+    set Fhom := compose_fun unit_square (pair_map unit_square one_minus_t f_sq) mul_fun_R.
+    claim HFcont :
+      continuous_map unit_square unit_square_topology unit_interval unit_interval_topology Fhom.
+    {
+      exact (mul_two_continuous_unit_interval
+        unit_square unit_square_topology one_minus_t f_sq HtopSq HomtCont HfSqCont).
+    }
+    claim HFs0 : forall s:set, s :e unit_interval ->
+      apply_fun Fhom (s, 0) = apply_fun f s.
+    {
+      let s. assume Hs.
+      claim Hs0Sq : (s, 0) :e unit_square.
+      { exact (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 0 Hs zero_in_unit_interval). }
+      claim HomtR : apply_fun one_minus_t (s, 0) :e R.
+      {
+        rewrite (compose_fun_apply unit_square t_coord flip_unit_interval (s, 0) Hs0Sq).
+        rewrite (projection2_apply unit_interval unit_interval (s, 0) Hs0Sq).
+        rewrite tuple_2_1_eq. rewrite flip_unit_interval_at_0. exact real_1.
+      }
+      claim HfSqR : apply_fun f_sq (s, 0) :e R.
+      {
+        rewrite (compose_fun_apply unit_square s_coord f (s, 0) Hs0Sq).
+        rewrite (projection1_apply unit_interval unit_interval (s, 0) Hs0Sq).
+        rewrite tuple_2_0_eq. exact (unit_interval_sub_R (apply_fun f s) (HfOnI s Hs)).
+      }
+      rewrite (mul_of_pair_map_apply unit_square one_minus_t f_sq (s, 0) Hs0Sq HomtR HfSqR).
+      rewrite (compose_fun_apply unit_square t_coord flip_unit_interval (s, 0) Hs0Sq).
+      rewrite (projection2_apply unit_interval unit_interval (s, 0) Hs0Sq).
+      rewrite tuple_2_1_eq. rewrite flip_unit_interval_at_0.
+      rewrite (compose_fun_apply unit_square s_coord f (s, 0) Hs0Sq).
+      rewrite (projection1_apply unit_interval unit_interval (s, 0) Hs0Sq).
+      rewrite tuple_2_0_eq.
+      exact (mul_SNo_oneL (apply_fun f s)
+        (real_SNo (apply_fun f s) (unit_interval_sub_R (apply_fun f s) (HfOnI s Hs)))).
+    }
+    claim HFs1 : forall s:set, s :e unit_interval ->
+      apply_fun Fhom (s, 1) = apply_fun (constant_path 0) s.
+    {
+      let s. assume Hs.
+      claim Hs1Sq : (s, 1) :e unit_square.
+      { exact (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval s 1 Hs one_in_unit_interval). }
+      claim HomtR : apply_fun one_minus_t (s, 1) :e R.
+      {
+        rewrite (compose_fun_apply unit_square t_coord flip_unit_interval (s, 1) Hs1Sq).
+        rewrite (projection2_apply unit_interval unit_interval (s, 1) Hs1Sq).
+        rewrite tuple_2_1_eq. rewrite flip_unit_interval_at_1. exact real_0.
+      }
+      claim HfSqR : apply_fun f_sq (s, 1) :e R.
+      {
+        rewrite (compose_fun_apply unit_square s_coord f (s, 1) Hs1Sq).
+        rewrite (projection1_apply unit_interval unit_interval (s, 1) Hs1Sq).
+        rewrite tuple_2_0_eq. exact (unit_interval_sub_R (apply_fun f s) (HfOnI s Hs)).
+      }
+      rewrite (mul_of_pair_map_apply unit_square one_minus_t f_sq (s, 1) Hs1Sq HomtR HfSqR).
+      rewrite (compose_fun_apply unit_square t_coord flip_unit_interval (s, 1) Hs1Sq).
+      rewrite (projection2_apply unit_interval unit_interval (s, 1) Hs1Sq).
+      rewrite tuple_2_1_eq. rewrite flip_unit_interval_at_1.
+      rewrite (compose_fun_apply unit_square s_coord f (s, 1) Hs1Sq).
+      rewrite (projection1_apply unit_interval unit_interval (s, 1) Hs1Sq).
+      rewrite tuple_2_0_eq.
+      rewrite (mul_SNo_zeroL (apply_fun f s)
+        (real_SNo (apply_fun f s) (unit_interval_sub_R (apply_fun f s) (HfOnI s Hs)))).
+      rewrite (constant_path_apply 0 s Hs).
+      reflexivity.
+    }
+    claim HF0t : forall t:set, t :e unit_interval -> apply_fun Fhom (0, t) = 0.
+    {
+      let t. assume Ht.
+      claim H0tSq : (0, t) :e unit_square.
+      { exact (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 0 t zero_in_unit_interval Ht). }
+      claim HomtR : apply_fun one_minus_t (0, t) :e R.
+      {
+        rewrite (compose_fun_apply unit_square t_coord flip_unit_interval (0, t) H0tSq).
+        rewrite (projection2_apply unit_interval unit_interval (0, t) H0tSq).
+        rewrite tuple_2_1_eq.
+        exact (unit_interval_sub_R (apply_fun flip_unit_interval t) (flip_unit_interval_function_on t Ht)).
+      }
+      claim HfSqR : apply_fun f_sq (0, t) :e R.
+      {
+        rewrite (compose_fun_apply unit_square s_coord f (0, t) H0tSq).
+        rewrite (projection1_apply unit_interval unit_interval (0, t) H0tSq).
+        rewrite tuple_2_0_eq. rewrite Hf0. exact real_0.
+      }
+      rewrite (mul_of_pair_map_apply unit_square one_minus_t f_sq (0, t) H0tSq HomtR HfSqR).
+      rewrite (compose_fun_apply unit_square t_coord flip_unit_interval (0, t) H0tSq).
+      rewrite (projection2_apply unit_interval unit_interval (0, t) H0tSq).
+      rewrite tuple_2_1_eq.
+      rewrite (compose_fun_apply unit_square s_coord f (0, t) H0tSq).
+      rewrite (projection1_apply unit_interval unit_interval (0, t) H0tSq).
+      rewrite tuple_2_0_eq. rewrite Hf0.
+      exact (mul_SNo_zeroR (apply_fun flip_unit_interval t)
+        (real_SNo (apply_fun flip_unit_interval t)
+          (unit_interval_sub_R (apply_fun flip_unit_interval t) (flip_unit_interval_function_on t Ht)))).
+    }
+    claim HF1t : forall t:set, t :e unit_interval -> apply_fun Fhom (1, t) = 0.
+    {
+      let t. assume Ht.
+      claim H1tSq : (1, t) :e unit_square.
+      { exact (tuple_2_setprod_by_pair_Sigma unit_interval unit_interval 1 t one_in_unit_interval Ht). }
+      claim HomtR : apply_fun one_minus_t (1, t) :e R.
+      {
+        rewrite (compose_fun_apply unit_square t_coord flip_unit_interval (1, t) H1tSq).
+        rewrite (projection2_apply unit_interval unit_interval (1, t) H1tSq).
+        rewrite tuple_2_1_eq.
+        exact (unit_interval_sub_R (apply_fun flip_unit_interval t) (flip_unit_interval_function_on t Ht)).
+      }
+      claim HfSqR : apply_fun f_sq (1, t) :e R.
+      {
+        rewrite (compose_fun_apply unit_square s_coord f (1, t) H1tSq).
+        rewrite (projection1_apply unit_interval unit_interval (1, t) H1tSq).
+        rewrite tuple_2_0_eq. rewrite Hf1. exact real_0.
+      }
+      rewrite (mul_of_pair_map_apply unit_square one_minus_t f_sq (1, t) H1tSq HomtR HfSqR).
+      rewrite (compose_fun_apply unit_square t_coord flip_unit_interval (1, t) H1tSq).
+      rewrite (projection2_apply unit_interval unit_interval (1, t) H1tSq).
+      rewrite tuple_2_1_eq.
+      rewrite (compose_fun_apply unit_square s_coord f (1, t) H1tSq).
+      rewrite (projection1_apply unit_interval unit_interval (1, t) H1tSq).
+      rewrite tuple_2_0_eq. rewrite Hf1.
+      exact (mul_SNo_zeroR (apply_fun flip_unit_interval t)
+        (real_SNo (apply_fun flip_unit_interval t)
+          (unit_interval_sub_R (apply_fun flip_unit_interval t) (flip_unit_interval_function_on t Ht)))).
+    }
+    claim HconstCont :
+      continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (constant_path 0).
+    { exact (constant_path_continuous unit_interval unit_interval_topology 0 unit_interval_topology_on zero_in_unit_interval). }
+    claim HexistsF :
+      exists F:set,
+        continuous_map unit_square unit_square_topology unit_interval unit_interval_topology F /\
+        (forall s:set, s :e unit_interval -> apply_fun F (s, 0) = apply_fun f s) /\
+        (forall s:set, s :e unit_interval -> apply_fun F (s, 1) = apply_fun (constant_path 0) s) /\
+        (forall t:set, t :e unit_interval -> apply_fun F (0, t) = 0) /\
+        (forall t:set, t :e unit_interval -> apply_fun F (1, t) = 0).
+    {
+      witness Fhom.
+      exact (and5I
+        (continuous_map unit_square unit_square_topology unit_interval unit_interval_topology Fhom)
+        (forall s:set, s :e unit_interval -> apply_fun Fhom (s, 0) = apply_fun f s)
+        (forall s:set, s :e unit_interval -> apply_fun Fhom (s, 1) = apply_fun (constant_path 0) s)
+        (forall t:set, t :e unit_interval -> apply_fun Fhom (0, t) = 0)
+        (forall t:set, t :e unit_interval -> apply_fun Fhom (1, t) = 0)
+        HFcont HFs0 HFs1 HF0t HF1t).
+    }
+    claim HfConst : path_homotopic unit_interval unit_interval_topology 0 0 f (constant_path 0).
+    {
+      exact (and7I
+        (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology f)
+        (continuous_map unit_interval unit_interval_topology unit_interval unit_interval_topology (constant_path 0))
+        (apply_fun f 0 = 0)
+        (apply_fun f 1 = 0)
+        (apply_fun (constant_path 0) 0 = 0)
+        (apply_fun (constant_path 0) 1 = 0)
+        (exists F:set,
+          continuous_map unit_square unit_square_topology unit_interval unit_interval_topology F /\
+          (forall s:set, s :e unit_interval -> apply_fun F (s, 0) = apply_fun f s) /\
+          (forall s:set, s :e unit_interval -> apply_fun F (s, 1) = apply_fun (constant_path 0) s) /\
+          (forall t:set, t :e unit_interval -> apply_fun F (0, t) = 0) /\
+          (forall t:set, t :e unit_interval -> apply_fun F (1, t) = 0))
+        Hfcont HconstCont Hf0 Hf1
+        (constant_path_at_zero 0) (constant_path_at_one 0) HexistsF).
+    }
+    claim HclassEq :
+      path_homotopy_class_loop unit_interval unit_interval_topology 0 f =
+      path_homotopy_class_loop unit_interval unit_interval_topology 0 (constant_path 0).
+    { exact (path_homotopy_class_loop_eq_of_path_homotopic unit_interval unit_interval_topology 0 f (constant_path 0) HfConst). }
+    claim HclsEqId : cls = fundamental_group_id unit_interval unit_interval_topology 0.
+    { rewrite HclsEqF. rewrite HclassEq. reflexivity. }
+    rewrite HclsEqId.
+    exact (SingI (fundamental_group_id unit_interval unit_interval_topology 0)).
+  - let cls.
+    assume Hcls : cls :e Sing (fundamental_group_id unit_interval unit_interval_topology 0).
+    claim HclsEq : cls = fundamental_group_id unit_interval unit_interval_topology 0.
+    { exact (SingE (fundamental_group_id unit_interval unit_interval_topology 0) cls Hcls). }
+    rewrite HclsEq.
+    claim HconstLoop : loop_at unit_interval unit_interval_topology 0 (constant_path 0).
+    { exact (loop_at_constant_path unit_interval unit_interval_topology 0 unit_interval_topology_on zero_in_unit_interval). }
+    claim HconstFS : (constant_path 0) :e function_space unit_interval unit_interval.
+    { exact (graph_in_function_space unit_interval unit_interval (fun t:set => 0) (fun t Ht => zero_in_unit_interval)). }
+    claim HconstInLS : (constant_path 0) :e loop_space unit_interval unit_interval_topology 0.
+    {
+      exact (SepI
+        (function_space unit_interval unit_interval)
+        (fun g:set => loop_at unit_interval unit_interval_topology 0 g)
+        (constant_path 0) HconstFS HconstLoop).
+    }
+    exact (path_homotopy_class_in_fundamental_group unit_interval unit_interval_topology 0 (constant_path 0) HconstInLS).
+}
+claim HscWit :
+  exists x0:set, x0 :e unit_interval /\
+    fundamental_group unit_interval unit_interval_topology x0 =
+    {fundamental_group_id unit_interval unit_interval_topology x0}.
+{
+  witness 0.
+  exact (andI
+    (0 :e unit_interval)
+    (fundamental_group unit_interval unit_interval_topology 0 =
+      {fundamental_group_id unit_interval unit_interval_topology 0})
+    zero_in_unit_interval Hpi1triv).
+}
+exact (andI
+  (path_connected_space unit_interval unit_interval_topology)
+  (exists x0:set, x0 :e unit_interval /\
+    fundamental_group unit_interval unit_interval_topology x0 =
+    {fundamental_group_id unit_interval unit_interval_topology x0})
+  HpcI HscWit).
+Qed.
 
 (** Infrastructure: arcs are simply connected (homeomorphic to [0,1]) **)
 Theorem arc_simply_connected : forall A Ta:set,
@@ -256264,7 +256555,7 @@ assume Hf.
 exact (homeomorphism_preserves_simply_connected
   unit_interval unit_interval_topology A Ta f Hf
   unit_interval_simply_connected).
-Admitted. (** depends on admitted unit_interval_simply_connected **)
+Qed.
 
 (** Infrastructure: arcs are locally path connected (homeomorphic to [0,1]) **)
 Theorem arc_locally_path_connected : forall A Ta:set,
