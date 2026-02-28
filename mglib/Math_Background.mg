@@ -268575,6 +268575,125 @@ rewrite (apply_fun_graph {n} (fun _:set => ((p, q), A)) n (SingI n)).
 reflexivity.
 Qed.
 
+(** helper: indices i in n evaluate to the original path_seq in the append construction. **)
+(** Proven Bob **)
+Theorem apply_fun_edge_path_append_at_i :
+  forall X Tx Arcs n path_seq x0 j A p q i:set,
+  general_linear_graph X Tx Arcs ->
+  edge_path X Tx Arcs n path_seq x0 ->
+  j :e n ->
+  ordsucc j /:e n ->
+  (apply_fun path_seq j) 0 1 = p ->
+  oriented_edge X Tx Arcs A p q ->
+  i :e n ->
+  apply_fun
+    ((graph n (fun k:set => apply_fun path_seq k)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    i
+  = apply_fun path_seq i.
+let X Tx Arcs n path_seq x0 j A p q i.
+assume Hglg Hep HjIn HsjNot Hfinj Hori Hi.
+claim HdisjDom : n :/\: {n} = Empty.
+{ exact (binintersect_self_Sing_empty n). }
+claim HdomLeft :
+  graph_domain_subset (graph n (fun k:set => apply_fun path_seq k)) n.
+{ exact (graph_domain_subset_graph n (fun k:set => apply_fun path_seq k)). }
+claim HdomRight :
+  graph_domain_subset (graph {n} (fun _:set => ((p, q), A))) {n}.
+{ exact (graph_domain_subset_graph {n} (fun _:set => ((p, q), A))). }
+claim HtotLeft :
+  total_function_on (graph n (fun k:set => apply_fun path_seq k))
+    n (setprod (setprod X X) (Power X)).
+{
+  exact (total_function_on_graph
+    n
+    (setprod (setprod X X) (Power X))
+    (fun k:set => apply_fun path_seq k)
+    (fun k Hk =>
+      (edge_path_function_on X Tx Arcs n path_seq x0 Hep) k Hk)).
+}
+claim HAArcs : A :e Arcs.
+{ exact (oriented_edge_in_arcs X Tx Arcs A p q Hori). }
+claim Hend : end_points_of_arc A (subspace_topology X Tx A) p q.
+{ exact (oriented_edge_endpoints X Tx Arcs A p q Hori). }
+claim HAsubX : A c= X.
+{
+  exact (andEL
+    (A c= X)
+    (arc A (subspace_topology X Tx A))
+    (general_linear_graph_arc_data X Tx Arcs A Hglg HAArcs)).
+}
+claim HpX : p :e X.
+{
+  exact (HAsubX
+    p
+    (end_points_of_arc_left_in_set
+      A
+      (subspace_topology X Tx A)
+      p
+      q
+      Hend)).
+}
+claim HqX : q :e X.
+{
+  exact (HAsubX
+    q
+    (end_points_of_arc_right_in_set
+      A
+      (subspace_topology X Tx A)
+      p
+      q
+      Hend)).
+}
+claim HtotRight :
+  total_function_on (graph {n} (fun _:set => ((p, q), A)))
+    {n} (setprod (setprod X X) (Power X)).
+{
+  exact (total_function_on_graph
+    {n}
+    (setprod (setprod X X) (Power X))
+    (fun _:set => ((p, q), A))
+    (fun z Hz =>
+      tuple_2_setprod_by_pair_Sigma
+        (setprod X X)
+        (Power X)
+        (p, q)
+        A
+        (tuple_2_setprod_by_pair_Sigma
+          X
+          X
+          p
+          q
+          HpX
+          HqX)
+        (PowerI
+          X
+          A
+          HAsubX))).
+}
+claim HfunLeft : functional_graph (graph n (fun k:set => apply_fun path_seq k)).
+{ exact (functional_graph_graph n (fun k:set => apply_fun path_seq k)). }
+claim HfunRight : functional_graph (graph {n} (fun _:set => ((p, q), A))).
+{ exact (functional_graph_graph {n} (fun _:set => ((p, q), A))). }
+rewrite (apply_fun_union_left
+  n
+  {n}
+  (setprod (setprod X X) (Power X))
+  (graph n (fun k:set => apply_fun path_seq k))
+  (graph {n} (fun _:set => ((p, q), A)))
+  i
+  HdisjDom
+  HdomLeft
+  HdomRight
+  HtotLeft
+  HtotRight
+  HfunLeft
+  HfunRight
+  Hi).
+rewrite (apply_fun_graph n (fun k:set => apply_fun path_seq k) i Hi).
+reflexivity.
+Qed.
+
 (** helper: for any graph vertex x there is a nontrivial edge_path from x to x. **)
 (** Proven Charlie **)
 Theorem graph_vertex_has_edge_path_to_self :
