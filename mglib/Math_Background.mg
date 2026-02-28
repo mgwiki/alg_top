@@ -246319,6 +246319,87 @@ exact HqX.
 Qed.
 
 (** Proven Bob **)
+Theorem arc_endpoint_left_in_union_arcs :
+  forall X Tx Arcs A p q:set,
+  A :e Arcs ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  p :e Union Arcs.
+let X Tx Arcs A p q.
+assume HA Hend.
+claim HpA : p :e A.
+{
+  exact (end_points_of_arc_left_in_set
+    A
+    (subspace_topology X Tx A)
+    p
+    q
+    Hend).
+}
+exact (UnionI
+  Arcs
+  p
+  A
+  HpA
+  HA).
+Qed.
+
+(** Proven Bob **)
+Theorem arc_endpoint_right_in_union_arcs :
+  forall X Tx Arcs A p q:set,
+  A :e Arcs ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  q :e Union Arcs.
+let X Tx Arcs A p q.
+assume HA Hend.
+claim HqA : q :e A.
+{
+  exact (end_points_of_arc_right_in_set
+    A
+    (subspace_topology X Tx A)
+    p
+    q
+    Hend).
+}
+exact (UnionI
+  Arcs
+  q
+  A
+  HqA
+  HA).
+Qed.
+
+(** Proven Bob **)
+Theorem arc_endpoints_in_union_arcs :
+  forall X Tx Arcs A p q:set,
+  A :e Arcs ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  p :e Union Arcs /\ q :e Union Arcs.
+let X Tx Arcs A p q.
+assume HA Hend.
+exact (andI
+  (p :e Union Arcs)
+  (q :e Union Arcs)
+  (arc_endpoint_left_in_union_arcs
+    X
+    Tx
+    Arcs
+    A
+    p
+    q
+    HA
+    Hend)
+  (arc_endpoint_right_in_union_arcs
+    X
+    Tx
+    Arcs
+    A
+    p
+    q
+    HA
+    Hend)).
+Qed.
+
+(** Proven Bob **)
 Theorem graph_vertices_intro_from_endpoint_left :
   forall X Tx Arcs A p q:set,
   general_linear_graph X Tx Arcs ->
