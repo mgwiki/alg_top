@@ -187052,6 +187052,250 @@ exact (HwpG
   HxsG).
 Qed.
 
+(** Infrastructure: shift word_product by splitting the first element **)
+(** Proven Bob **)
+Lemma word_product_shift_first : forall G mult e inv m xs:set,
+  group_structure G mult e inv ->
+  nat_p m ->
+  (forall i:set, i :e ordsucc m -> apply_fun xs i :e G) ->
+  let xs_suf := graph m (fun i:set => apply_fun xs (ordsucc i)) in
+  forall k:set, nat_p k -> k :e ordsucc m ->
+    word_product mult e xs (ordsucc k) =
+      apply_fun mult (apply_fun xs 0, word_product mult e xs_suf k).
+let G mult e inv m xs.
+assume Hgrp Hm_nat HxsG.
+set xs_suf := graph m (fun i:set => apply_fun xs (ordsucc i)).
+claim Hxs_suf_val : forall i:set, i :e m ->
+  apply_fun xs_suf i = apply_fun xs (ordsucc i).
+{
+  let i.
+  assume Hi.
+  exact (apply_fun_graph
+    m
+    (fun i0:set => apply_fun xs (ordsucc i0))
+    i
+    Hi).
+}
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume HmultF _ HeG HassocG HidG _.
+claim Hxs0_G : apply_fun xs 0 :e G.
+{
+  exact (HxsG
+    0
+    (nat_0_in_ordsucc
+      m
+      Hm_nat)).
+}
+claim Hwp_shift : forall k:set, nat_p k -> k :e ordsucc m ->
+  word_product mult e xs (ordsucc k) =
+    apply_fun mult (apply_fun xs 0, word_product mult e xs_suf k).
+{
+  apply nat_ind.
+  - assume H0_sm.
+    claim Hwp_xs_1 : word_product mult e xs (ordsucc 0) =
+      apply_fun mult (word_product mult e xs 0, apply_fun xs 0).
+    {
+      exact (nat_primrec_S
+        e
+        (fun i r => apply_fun mult (r, apply_fun xs i))
+        0
+        nat_0).
+    }
+    claim Hwp_xs_0 : word_product mult e xs 0 = e.
+    {
+      exact (nat_primrec_0
+        e
+        (fun i r => apply_fun mult (r, apply_fun xs i))).
+    }
+    claim Hwp_suf_0 : word_product mult e xs_suf 0 = e.
+    {
+      exact (nat_primrec_0
+        e
+        (fun i r => apply_fun mult (r, apply_fun xs_suf i))).
+    }
+    claim Hlhs : word_product mult e xs (ordsucc 0) = apply_fun xs 0.
+    {
+      claim HidLxs0 : apply_fun mult (e, apply_fun xs 0) = apply_fun xs 0.
+      {
+        exact (andEL
+          (apply_fun mult (e, apply_fun xs 0) = apply_fun xs 0)
+          (apply_fun mult (apply_fun xs 0, e) = apply_fun xs 0)
+          (HidG
+            (apply_fun xs 0)
+            Hxs0_G)).
+      }
+      rewrite Hwp_xs_1.
+      rewrite Hwp_xs_0.
+      exact HidLxs0.
+    }
+    claim Hrhs : apply_fun mult (apply_fun xs 0, word_product mult e xs_suf 0) =
+      apply_fun xs 0.
+    {
+      claim HidRxs0 : apply_fun mult (apply_fun xs 0, e) = apply_fun xs 0.
+      {
+        exact (andER
+          (apply_fun mult (e, apply_fun xs 0) = apply_fun xs 0)
+          (apply_fun mult (apply_fun xs 0, e) = apply_fun xs 0)
+          (HidG
+            (apply_fun xs 0)
+            Hxs0_G)).
+      }
+      rewrite Hwp_suf_0.
+      exact HidRxs0.
+    }
+    claim Hrhs_sym : apply_fun xs 0 =
+      apply_fun mult (apply_fun xs 0, word_product mult e xs_suf 0).
+    {
+      symmetry.
+      exact Hrhs.
+    }
+    exact (eq_i_tra
+      (word_product mult e xs (ordsucc 0))
+      (apply_fun xs 0)
+      (apply_fun mult (apply_fun xs 0, word_product mult e xs_suf 0))
+      Hlhs
+      Hrhs_sym).
+  - let k.
+    assume Hk_nat IH.
+    assume Hsk_sm.
+    claim Hk_sm : k :e ordsucc m.
+    {
+      exact (ordsuccI1
+        m
+        k
+        (nat_ordsucc_trans
+          m
+          Hm_nat
+          (ordsucc k)
+          Hsk_sm
+          k
+          (ordsuccI2 k))).
+    }
+    claim Hk_m : k :e m.
+    {
+      exact (nat_ordsucc_trans
+        m
+        Hm_nat
+        (ordsucc k)
+        Hsk_sm
+        k
+        (ordsuccI2 k)).
+    }
+    claim Hk_IH : word_product mult e xs (ordsucc k) =
+      apply_fun mult (apply_fun xs 0, word_product mult e xs_suf k).
+    {
+      exact (IH
+        Hk_sm).
+    }
+    claim Hsk_nat : nat_p (ordsucc k).
+    {
+      exact (nat_ordsucc
+        k
+        Hk_nat).
+    }
+    claim HwpS_xs : word_product mult e xs (ordsucc (ordsucc k)) =
+      apply_fun mult (word_product mult e xs (ordsucc k), apply_fun xs (ordsucc k)).
+    {
+      exact (nat_primrec_S
+        e
+        (fun i r => apply_fun mult (r, apply_fun xs i))
+        (ordsucc k)
+        Hsk_nat).
+    }
+    claim HwpS_suf : word_product mult e xs_suf (ordsucc k) =
+      apply_fun mult (word_product mult e xs_suf k, apply_fun xs_suf k).
+    {
+      exact (nat_primrec_S
+        e
+        (fun i r => apply_fun mult (r, apply_fun xs_suf i))
+        k
+        Hk_nat).
+    }
+    claim Hsuf_k : apply_fun xs_suf k = apply_fun xs (ordsucc k).
+    {
+      exact (Hxs_suf_val
+        k
+        Hk_m).
+    }
+    claim Hwp_suf_k_G : word_product mult e xs_suf k :e G.
+    {
+      apply (word_product_in_G_group
+        G
+        mult
+        e
+        inv
+        k
+        xs_suf
+        Hgrp
+        Hk_nat).
+      let i.
+      assume Hi.
+      claim Hi_m : i :e m.
+      {
+        exact (nat_trans
+          m
+          Hm_nat
+          k
+          Hk_m
+          i
+          Hi).
+      }
+      claim Hsuf_i : apply_fun xs_suf i = apply_fun xs (ordsucc i).
+      {
+        exact (Hxs_suf_val
+          i
+          Hi_m).
+      }
+      claim Hsi_sm : ordsucc i :e ordsucc m.
+      {
+        exact (nat_ordsucc_in_ordsucc
+          m
+          Hm_nat
+          i
+          Hi_m).
+      }
+      rewrite Hsuf_i.
+      exact (HxsG
+        (ordsucc i)
+        Hsi_sm).
+    }
+    claim Hxsk_G : apply_fun xs (ordsucc k) :e G.
+    {
+      exact (HxsG
+        (ordsucc k)
+        Hsk_sm).
+    }
+    claim Hassoc_step :
+      apply_fun mult (apply_fun mult (apply_fun xs 0, word_product mult e xs_suf k), apply_fun xs (ordsucc k)) =
+      apply_fun mult (apply_fun xs 0, apply_fun mult (word_product mult e xs_suf k, apply_fun xs (ordsucc k))).
+    {
+      exact (HassocG
+        (apply_fun xs 0)
+        (word_product mult e xs_suf k)
+        (apply_fun xs (ordsucc k))
+        Hxs0_G
+        Hwp_suf_k_G
+        Hxsk_G).
+    }
+    rewrite HwpS_xs.
+    rewrite Hk_IH.
+    rewrite Hassoc_step.
+    rewrite <- Hsuf_k.
+    rewrite <- HwpS_suf.
+    reflexivity.
+}
+exact Hwp_shift.
+Qed.
+
 (** Infrastructure: word_product of length 2 **)
 (** Proven Bob **)
 Theorem word_product_two : forall mult e xs:set,
