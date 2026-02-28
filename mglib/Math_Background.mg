@@ -47145,22 +47145,78 @@ Admitted.
 
 (** Key trig identities for covering map **)
 Theorem cos_two_pi : apply_fun cos_real two_pi = 1.
-admit. (** cos(2pi) = cos(pi+pi) = 1 by addition formula **)
+(** cos(2pi) = cos(pi+pi) = cos(pi)cos(pi) - sin(pi)sin(pi) = 1 **)
+claim HpiR : pi_real :e R. { exact pi_real_in_R. }
+claim HpiSNo : SNo pi_real. { exact (real_SNo pi_real HpiR). }
+claim Hcospi : apply_fun cos_real pi_real = minus_SNo 1. { exact cos_pi. }
+claim Hsinpi : apply_fun sin_real pi_real = 0. { exact sin_pi. }
+claim Hstep1 : apply_fun cos_real two_pi =
+  add_SNo (mul_SNo (apply_fun cos_real pi_real) (apply_fun cos_real pi_real))
+          (minus_SNo (mul_SNo (apply_fun sin_real pi_real) (apply_fun sin_real pi_real))).
+{ exact (cos_addition pi_real pi_real HpiR HpiR). }
+rewrite Hstep1.
+rewrite Hcospi.
+rewrite Hsinpi.
+rewrite (mul_SNo_minus_minus 1 1 SNo_1 SNo_1).
+rewrite (mul_SNo_zeroR 0 SNo_0).
+rewrite minus_SNo_0.
+rewrite (mul_SNo_oneR 1 SNo_1).
+exact (add_SNo_0R 1 SNo_1).
 Admitted.
 
 Theorem sin_two_pi : apply_fun sin_real two_pi = 0.
-admit. (** sin(2pi) = sin(pi+pi) = 0 by addition formula **)
+(** sin(2pi) = sin(pi+pi) = sin(pi)cos(pi) + cos(pi)sin(pi) = 0 **)
+claim HpiR : pi_real :e R. { exact pi_real_in_R. }
+claim Hcospi : apply_fun cos_real pi_real = minus_SNo 1. { exact cos_pi. }
+claim Hsinpi : apply_fun sin_real pi_real = 0. { exact sin_pi. }
+claim Hstep1 : apply_fun sin_real two_pi =
+  add_SNo (mul_SNo (apply_fun sin_real pi_real) (apply_fun cos_real pi_real))
+          (mul_SNo (apply_fun cos_real pi_real) (apply_fun sin_real pi_real)).
+{ exact (sin_addition pi_real pi_real HpiR HpiR). }
+rewrite Hstep1.
+rewrite Hcospi.
+rewrite Hsinpi.
+rewrite (mul_SNo_zeroL (minus_SNo 1) (SNo_minus_SNo 1 SNo_1)).
+rewrite (mul_SNo_zeroR (minus_SNo 1) (SNo_minus_SNo 1 SNo_1)).
+exact (add_SNo_0R 0 SNo_0).
 Admitted.
 
 (** Periodicity **)
 Theorem cos_periodic : forall x:set, x :e R ->
   apply_fun cos_real (add_SNo x two_pi) = apply_fun cos_real x.
-admit. (** from cos_addition, cos_two_pi, sin_two_pi **)
+(** cos(x+2pi) = cos(x)cos(2pi) - sin(x)sin(2pi) = cos(x)1 - sin(x)0 = cos(x) **)
+let x. assume HxR : x :e R.
+claim HcosxSNo : SNo (apply_fun cos_real x). { exact (real_SNo (apply_fun cos_real x) (cos_real_function_on x HxR)). }
+claim HsinxSNo : SNo (apply_fun sin_real x). { exact (real_SNo (apply_fun sin_real x) (sin_real_function_on x HxR)). }
+claim Hstep1 : apply_fun cos_real (add_SNo x two_pi) =
+  add_SNo (mul_SNo (apply_fun cos_real x) (apply_fun cos_real two_pi))
+          (minus_SNo (mul_SNo (apply_fun sin_real x) (apply_fun sin_real two_pi))).
+{ exact (cos_addition x two_pi HxR two_pi_in_R). }
+rewrite Hstep1.
+rewrite cos_two_pi.
+rewrite sin_two_pi.
+rewrite (mul_SNo_oneR (apply_fun cos_real x) HcosxSNo).
+rewrite (mul_SNo_zeroR (apply_fun sin_real x) HsinxSNo).
+rewrite minus_SNo_0.
+exact (add_SNo_0R (apply_fun cos_real x) HcosxSNo).
 Admitted.
 
 Theorem sin_periodic : forall x:set, x :e R ->
   apply_fun sin_real (add_SNo x two_pi) = apply_fun sin_real x.
-admit. (** from sin_addition, cos_two_pi, sin_two_pi **)
+(** sin(x+2pi) = sin(x)cos(2pi) + cos(x)sin(2pi) = sin(x)1 + cos(x)0 = sin(x) **)
+let x. assume HxR : x :e R.
+claim HcosxSNo : SNo (apply_fun cos_real x). { exact (real_SNo (apply_fun cos_real x) (cos_real_function_on x HxR)). }
+claim HsinxSNo : SNo (apply_fun sin_real x). { exact (real_SNo (apply_fun sin_real x) (sin_real_function_on x HxR)). }
+claim Hstep1 : apply_fun sin_real (add_SNo x two_pi) =
+  add_SNo (mul_SNo (apply_fun sin_real x) (apply_fun cos_real two_pi))
+          (mul_SNo (apply_fun cos_real x) (apply_fun sin_real two_pi)).
+{ exact (sin_addition x two_pi HxR two_pi_in_R). }
+rewrite Hstep1.
+rewrite cos_two_pi.
+rewrite sin_two_pi.
+rewrite (mul_SNo_oneR (apply_fun sin_real x) HsinxSNo).
+rewrite (mul_SNo_zeroR (apply_fun cos_real x) HcosxSNo).
+exact (add_SNo_0R (apply_fun sin_real x) HsinxSNo).
 Admitted.
 
 (** Covering map helper: p(x) is on S1 **)
