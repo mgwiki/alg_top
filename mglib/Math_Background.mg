@@ -47534,6 +47534,19 @@ let x. assume HxR : x :e R.
 exact (covering_map_R_S1_on_S1 x HxR).
 Admitted.
 
+(** Infrastructure: surjectivity of the standard covering map R -> S1 **)
+Theorem covering_map_R_S1_surjective : surjective_map R S1 covering_map_R_S1.
+admit.
+Admitted.
+
+(** Infrastructure: evenly covered neighborhoods for the standard covering map **)
+Theorem covering_map_R_S1_evenly_covered : forall b:set, b :e S1 ->
+  exists U:set, U :e S1_topology /\ b :e U /\
+    evenly_covered R R_standard_topology S1 S1_topology covering_map_R_S1 U.
+let b. assume HbS1.
+admit.
+Admitted.
+
 (** from S53 Thm 53.1 (line 553 in algtop.tex) **)
 (** LATEX VERSION: The map p: R -> S^1 given by p(x) = (cos 2pi x, sin 2pi x) **)
 (** is a covering map. **)
@@ -47726,21 +47739,14 @@ claim Hcont :
 claim Hsurj :
   surjective_map R S1 p.
 {
-  prove function_on p R S1 /\
-    forall y:set, y :e S1 -> exists x:set, x :e R /\ apply_fun p x = y.
-  apply andI.
-  - exact covering_map_R_S1_function_on.
-  - let y. assume HyS1.
-    (** TODO Bob: prove every point on S1 has a real-angle preimage under p. **)
-    admit.
+  exact covering_map_R_S1_surjective.
 }
 claim Heven :
   forall b:set, b :e S1 ->
     exists U:set, U :e S1_topology /\ b :e U /\
       evenly_covered R R_standard_topology S1 S1_topology p U.
 {
-  (** TODO Bob: construct evenly covered arcs on S1 and inverse branches on R. **)
-  admit.
+  exact (covering_map_R_S1_evenly_covered).
 }
 exact (andI
   (continuous_map R R_standard_topology S1 S1_topology p /\
