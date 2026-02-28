@@ -270204,6 +270204,56 @@ exact (mem_eqR
   (HTsubX x HxT)).
 Qed.
 
+(** helper: arcs of a tree lie in the ambient Union Arcs **)
+(** Proven Bob **)
+Theorem tree_in_graph_arc_subset_union_arcs :
+  forall T ArcsT X Tx Arcs V:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  V :e ArcsT ->
+  V c= Union Arcs.
+let T ArcsT X Tx Arcs V.
+assume Htree HV.
+claim HglgT : general_linear_graph T (subspace_topology X Tx T) ArcsT.
+{
+  exact (tree_in_graph_general_linear_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+claim HVsubT : V c= T.
+{
+  exact (andEL
+    (V c= T)
+    (arc V (subspace_topology T (subspace_topology X Tx T) V))
+    (general_linear_graph_arc_data
+      T
+      (subspace_topology X Tx T)
+      ArcsT
+      V
+      HglgT
+      HV)).
+}
+claim HTsubU : T c= Union Arcs.
+{
+  exact (tree_in_graph_subset_union_arcs
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+exact (Subq_tra
+  V
+  T
+  (Union Arcs)
+  HVsubT
+  HTsubU).
+Qed.
+
 (** Proven Bob **)
 Theorem maximal_tree_subset_union_arcs :
   forall T ArcsT X Tx Arcs:set,
