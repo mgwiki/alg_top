@@ -186843,6 +186843,21 @@ Definition word_product : set -> set -> set -> set -> set :=
   fun mult e xs n =>
     nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n.
 
+(** Infrastructure: word product at successor length **)
+(** Proven Bob **)
+Lemma word_product_succ : forall mult e xs n:set,
+  nat_p n ->
+  word_product mult e xs (ordsucc n) =
+    apply_fun mult (word_product mult e xs n, apply_fun xs n).
+let mult e xs n.
+assume Hn.
+exact (nat_primrec_S
+  e
+  (fun i r => apply_fun mult (r, apply_fun xs i))
+  n
+  Hn).
+Qed.
+
 (** Infrastructure: reduced word of length 1 **)
 (** Proven Bob **)
 Theorem reduced_word_singleton : forall J Gfam efam alpha x:set,
