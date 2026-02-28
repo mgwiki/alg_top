@@ -269950,6 +269950,27 @@ exact (subgraph_of_union_of_contained_arcs
     Htree)).
 Qed.
 
+(** helper: the tree equals the union of its arc family ArcsT. **)
+(** Proven Bob **)
+Theorem tree_in_graph_union_arcsT :
+  forall T ArcsT X Tx Arcs:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  T = Union ArcsT.
+let T ArcsT X Tx Arcs.
+assume Htree.
+exact (general_linear_graph_union_arcs
+  T
+  (subspace_topology X Tx T)
+  ArcsT
+  (tree_in_graph_general_linear_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree)).
+Qed.
+
 (** Proven Bob **)
 Theorem tree_in_graph_selected_arc_in_arcs :
   forall T ArcsT X Tx Arcs A:set,
