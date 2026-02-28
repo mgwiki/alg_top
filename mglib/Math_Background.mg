@@ -265614,6 +265614,75 @@ apply (and5I
      (apply_fun (graph (ordsucc 0) (fun _:set => ((ini, fin), A))) (ordsucc i)) 0 0)).
 Qed.
 
+(** helper: build a length-1 reduced edge path from an oriented edge. **)
+(** Proven Bob **)
+Theorem reduced_edge_path_1_from_oriented_edge :
+  forall X Tx Arcs A ini fin:set,
+  general_linear_graph X Tx Arcs ->
+  oriented_edge X Tx Arcs A ini fin ->
+  reduced_edge_path X Tx Arcs (ordsucc 0)
+    (graph (ordsucc 0) (fun _:set => ((ini, fin), A))) ini.
+let X Tx Arcs A ini fin.
+assume Hglg Hori.
+set seq := graph (ordsucc 0) (fun _:set => ((ini, fin), A)).
+claim Hep :
+  edge_path X Tx Arcs (ordsucc 0)
+    seq ini.
+{
+  exact (edge_path_1_from_oriented_edge
+    X
+    Tx
+    Arcs
+    A
+    ini
+    fin
+    Hglg
+    Hori).
+}
+claim Hnoback :
+  forall i:set, i :e ordsucc 0 -> ordsucc i :e ordsucc 0 ->
+    ((apply_fun seq i) 1 = (apply_fun seq (ordsucc i)) 1 /\
+      (apply_fun seq i) 0 0 = (apply_fun seq (ordsucc i)) 0 1 /\
+      (apply_fun seq i) 0 1 = (apply_fun seq (ordsucc i)) 0 0) -> False.
+{
+  let i.
+  assume Hi His.
+  assume Hbad.
+  claim HiEq : i = 0.
+  {
+    apply (ordsuccE 0 i Hi).
+    * assume Hi0.
+      exact (FalseE (EmptyE i Hi0) (i = 0)).
+    * assume Hi0.
+      exact Hi0.
+  }
+  claim HordEq : ordsucc i = ordsucc 0.
+  {
+    rewrite HiEq.
+    reflexivity.
+  }
+  claim HbadIn : ordsucc 0 :e ordsucc 0.
+  {
+    exact (eq_subst_mem_rev
+      (ordsucc i)
+      (ordsucc 0)
+      (ordsucc 0)
+      HordEq
+      His).
+  }
+  exact (In_irref (ordsucc 0) HbadIn).
+}
+exact (andI
+  (edge_path X Tx Arcs (ordsucc 0)
+    seq ini)
+  (forall i:set, i :e ordsucc 0 -> ordsucc i :e ordsucc 0 ->
+    ((apply_fun seq i) 1 = (apply_fun seq (ordsucc i)) 1 /\
+      (apply_fun seq i) 0 0 = (apply_fun seq (ordsucc i)) 0 1 /\
+      (apply_fun seq i) 0 1 = (apply_fun seq (ordsucc i)) 0 0) -> False)
+  Hep
+  Hnoback).
+Qed.
+
 (** helper: append an oriented edge at the end of an edge path. **)
 (** The last vertex is specified by a final index j with ordsucc j /:e n. **)
 (** Proven Charlie **)
