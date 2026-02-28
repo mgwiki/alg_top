@@ -180326,6 +180326,18 @@ claim Hinfinite : infinite G.
 exact Hinfinite.
 Qed.
 
+(** Proven Bob **)
+(** Infrastructure: constant graph is a function_on **)
+Theorem function_on_graph_const : forall A Y c:set,
+  c :e Y ->
+  function_on (graph A (fun _ : set => c)) A Y.
+let A Y c.
+assume Hc.
+let x. assume Hx : x :e A.
+rewrite (apply_fun_graph A (fun _ : set => c) x Hx).
+exact Hc.
+Qed.
+
 (** from S67 Lem 67.7 (line 2683 in algtop.tex): extension condition for free abelian groups **)
 (** LATEX VERSION: G is a free abelian group with basis {a_alpha} iff for any abelian **)
 (** group H and any family {y_alpha} of elements of H, there is a unique homomorphism **)
@@ -181302,9 +181314,7 @@ apply iffI.
       - set alphas := graph (ordsucc 0) (fun _ : set => alpha0).
         witness alphas.
         apply andI.
-        * let i. assume Hi : i :e ordsucc 0.
-          rewrite (apply_fun_graph (ordsucc 0) (fun _ : set => alpha0) i Hi).
-          exact Hal0.
+        * exact (function_on_graph_const (ordsucc 0) J alpha0 Hal0).
         * set xs := graph (ordsucc 0) (fun _ : set => x).
           witness xs.
           apply (and4I
@@ -181314,9 +181324,7 @@ apply iffI.
             (forall i j:set, i :e (ordsucc 0) -> j :e (ordsucc 0) -> i <> j ->
               apply_fun alphas i <> apply_fun alphas j)
             (x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) (ordsucc 0))).
-          - let i. assume Hi : i :e (ordsucc 0).
-            rewrite (apply_fun_graph (ordsucc 0) (fun _ : set => x) i Hi).
-            exact HxG.
+          - exact (function_on_graph_const (ordsucc 0) G x HxG).
           - let i. assume Hi : i :e (ordsucc 0).
             claim Halpha0 : apply_fun alphas i = alpha0.
             { exact (apply_fun_graph (ordsucc 0) (fun _ : set => alpha0) i Hi). }
