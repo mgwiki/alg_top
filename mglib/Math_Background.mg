@@ -222394,8 +222394,128 @@ apply (andI
       apply_fun mRHS (apply_fun phi x, apply_fun phi y))).
   + (** function_on phi LHS RHS **)
     exact Hfn_on.
-  + (** mult rule **)
-    admit.
+  + (** mult rule: phi(mLHS(x,y)) = mRHS(phi(x), phi(y)) **)
+    let x y. assume HxLHS : x :e LHS. assume HyLHS : y :e LHS.
+    (** Extract representatives fx, fy in F **)
+    apply (ReplE_impred GN (fun c => left_coset mN c CommFN) x HxLHS).
+    let cx. assume HcxGN : cx :e GN. assume Hx_eq : x = left_coset mN cx CommFN.
+    apply (ReplE_impred F (fun g => left_coset multF g N) cx HcxGN).
+    let fx. assume HfxF : fx :e F. assume Hcx_eq : cx = left_coset multF fx N.
+    apply (ReplE_impred GN (fun c => left_coset mN c CommFN) y HyLHS).
+    let cy. assume HcyGN : cy :e GN. assume Hy_eq : y = left_coset mN cy CommFN.
+    apply (ReplE_impred F (fun g => left_coset multF g N) cy HcyGN).
+    let fy. assume HfyF : fy :e F. assume Hcy_eq : cy = left_coset multF fy N.
+    set fxN := left_coset multF fx N.
+    set fyN := left_coset multF fy N.
+    claim HfxN_GN : fxN :e GN. { exact (ReplI F (fun g => left_coset multF g N) fx HfxF). }
+    claim HfyN_GN : fyN :e GN. { exact (ReplI F (fun g => left_coset multF g N) fy HfyF). }
+    claim Hx_eq2 : x = left_coset mN fxN CommFN. { rewrite Hx_eq. rewrite Hcx_eq. reflexivity. }
+    claim Hy_eq2 : y = left_coset mN fyN CommFN. { rewrite Hy_eq. rewrite Hcy_eq. reflexivity. }
+    claim HfxyF : apply_fun multF (fx, fy) :e F.
+    { apply (and6E
+        (function_on multF (setprod F F) F) (function_on invF F F) (eF :e F)
+        (forall a b c0:set, a :e F -> b :e F -> c0 :e F ->
+          apply_fun multF (apply_fun multF (a, b), c0) = apply_fun multF (a, apply_fun multF (b, c0)))
+        (forall a:set, a :e F -> apply_fun multF (eF, a) = a /\ apply_fun multF (a, eF) = a)
+        (forall a:set, a :e F ->
+          apply_fun multF (a, apply_fun invF a) = eF /\ apply_fun multF (apply_fun invF a, a) = eF)
+        HgrpF).
+      assume HmFn _ _ _ _ _.
+      exact (HmFn (fx, fy) (tuple_2_setprod_by_pair_Sigma F F fx fy HfxF HfyF)). }
+    set fxyN := left_coset multF (apply_fun multF (fx, fy)) N.
+    claim HfxyN_GN : fxyN :e GN.
+    { exact (ReplI F (fun g => left_coset multF g N) (apply_fun multF (fx, fy)) HfxyF). }
+    claim HmN_eq : apply_fun mN (fxN, fyN) = fxyN.
+    { exact (quotient_group_mult_on_left_coset_representatives F multF eF invF N fx fy
+        HgrpF HnormN HfxF HfyF). }
+    claim HmLHS_eq : apply_fun mLHS (x, y) =
+      left_coset mN (apply_fun mN (fxN, fyN)) CommFN.
+    { claim Hgen : forall g1 g2:set, g1 :e GN -> g2 :e GN ->
+        left_coset mN g1 CommFN = x -> left_coset mN g2 CommFN = y ->
+        apply_fun mLHS (x, y) =
+        left_coset mN (apply_fun mN (g1, g2)) CommFN.
+      { let g1 g2. assume Hg1GN : g1 :e GN. assume Hg2GN : g2 :e GN.
+        assume Hg1eq : left_coset mN g1 CommFN = x.
+        assume Hg2eq : left_coset mN g2 CommFN = y.
+        rewrite <- Hg1eq. rewrite <- Hg2eq.
+        exact (quotient_group_mult_on_left_coset_representatives GN mN eN iN CommFN g1 g2
+          HgrpGN HnormCommFN Hg1GN Hg2GN). }
+      exact (Hgen fxN fyN HfxN_GN HfyN_GN
+        (eq_symm x (left_coset mN fxN CommFN) Hx_eq2)
+        (eq_symm y (left_coset mN fyN CommFN) Hy_eq2)). }
+    claim HmLHS_eq2 : apply_fun mLHS (x, y) =
+      left_coset mN fxyN CommFN.
+    { rewrite HmLHS_eq. rewrite HmN_eq. reflexivity. }
+    claim HmLHS_in_LHS : apply_fun mLHS (x, y) :e LHS.
+    { rewrite HmLHS_eq2.
+      exact (ReplI GN (fun c => left_coset mN c CommFN) fxyN HfxyN_GN). }
+    (** phi values via Hphi_compute and Hwd **)
+    claim Hphi_x : apply_fun phi x = left_coset mA (left_coset multF
+      (Eps_i (fun f:set => f :e F /\ left_coset mN (left_coset multF f N) CommFN = x)) CommF) piN.
+    { exact (Hphi_compute x HxLHS). }
+    claim Hphi_y : apply_fun phi y = left_coset mA (left_coset multF
+      (Eps_i (fun f:set => f :e F /\ left_coset mN (left_coset multF f N) CommFN = y)) CommF) piN.
+    { exact (Hphi_compute y HyLHS). }
+    claim Hphi_xy : apply_fun phi (apply_fun mLHS (x, y)) =
+      left_coset mA (left_coset multF
+        (Eps_i (fun f:set => f :e F /\ left_coset mN (left_coset multF f N) CommFN = apply_fun mLHS (x, y))) CommF) piN.
+    { exact (Hphi_compute (apply_fun mLHS (x, y)) HmLHS_in_LHS). }
+    (** Eps_i reps have same LHS cosets as fx, fy, fxy **)
+    claim Hepsx_same_LHS : left_coset mN (left_coset multF
+      (Eps_i (fun f:set => f :e F /\ left_coset mN (left_coset multF f N) CommFN = x)) N) CommFN =
+      left_coset mN fxN CommFN.
+    { rewrite (Heps_eq x HxLHS). exact Hx_eq2. }
+    claim Hepsy_same_LHS : left_coset mN (left_coset multF
+      (Eps_i (fun f:set => f :e F /\ left_coset mN (left_coset multF f N) CommFN = y)) N) CommFN =
+      left_coset mN fyN CommFN.
+    { rewrite (Heps_eq y HyLHS). exact Hy_eq2. }
+    claim Hepsxy_same_LHS : left_coset mN (left_coset multF
+      (Eps_i (fun f:set => f :e F /\ left_coset mN (left_coset multF f N) CommFN = apply_fun mLHS (x, y))) N) CommFN =
+      left_coset mN fxyN CommFN.
+    { rewrite (Heps_eq (apply_fun mLHS (x, y)) HmLHS_in_LHS). exact HmLHS_eq2. }
+    (** By Hwd: same LHS coset -> same RHS coset **)
+    claim Hepsx_same_RHS : left_coset mA (left_coset multF
+      (Eps_i (fun f:set => f :e F /\ left_coset mN (left_coset multF f N) CommFN = x)) CommF) piN =
+      left_coset mA (left_coset multF fx CommF) piN.
+    { exact (Hwd
+        (Eps_i (fun f:set => f :e F /\ left_coset mN (left_coset multF f N) CommFN = x))
+        fx (Heps_F x HxLHS) HfxF Hepsx_same_LHS). }
+    claim Hepsy_same_RHS : left_coset mA (left_coset multF
+      (Eps_i (fun f:set => f :e F /\ left_coset mN (left_coset multF f N) CommFN = y)) CommF) piN =
+      left_coset mA (left_coset multF fy CommF) piN.
+    { exact (Hwd
+        (Eps_i (fun f:set => f :e F /\ left_coset mN (left_coset multF f N) CommFN = y))
+        fy (Heps_F y HyLHS) HfyF Hepsy_same_LHS). }
+    claim Hepsxy_same_RHS : left_coset mA (left_coset multF
+      (Eps_i (fun f:set => f :e F /\ left_coset mN (left_coset multF f N) CommFN = apply_fun mLHS (x, y))) CommF) piN =
+      left_coset mA (left_coset multF (apply_fun multF (fx, fy)) CommF) piN.
+    { exact (Hwd
+        (Eps_i (fun f:set => f :e F /\ left_coset mN (left_coset multF f N) CommFN = apply_fun mLHS (x, y)))
+        (apply_fun multF (fx, fy)) (Heps_F (apply_fun mLHS (x, y)) HmLHS_in_LHS) HfxyF Hepsxy_same_LHS). }
+    (** CommF quotient mult: mA(fx CommF, fy CommF) = fxy CommF **)
+    claim HmA_CommF : apply_fun mA (left_coset multF fx CommF, left_coset multF fy CommF) =
+      left_coset multF (apply_fun multF (fx, fy)) CommF.
+    { exact (quotient_group_mult_on_left_coset_representatives F multF eF invF CommF fx fy
+        HgrpF HnormCommF HfxF HfyF). }
+    claim HfxCommF_GA : left_coset multF fx CommF :e GA.
+    { exact (ReplI F (fun g => left_coset multF g CommF) fx HfxF). }
+    claim HfyCommF_GA : left_coset multF fy CommF :e GA.
+    { exact (ReplI F (fun g => left_coset multF g CommF) fy HfyF). }
+    (** mRHS on piN-cosets **)
+    claim HmRHS_piN : apply_fun mRHS
+      (left_coset mA (left_coset multF fx CommF) piN,
+       left_coset mA (left_coset multF fy CommF) piN) =
+      left_coset mA (apply_fun mA (left_coset multF fx CommF, left_coset multF fy CommF)) piN.
+    { exact (quotient_group_mult_on_left_coset_representatives GA mA eA iA piN
+        (left_coset multF fx CommF) (left_coset multF fy CommF)
+        HgrpGA HnormPiN HfxCommF_GA HfyCommF_GA). }
+    (** Final chain **)
+    rewrite Hphi_xy. rewrite Hepsxy_same_RHS.
+    rewrite <- HmA_CommF.
+    rewrite <- HmRHS_piN.
+    rewrite <- Hepsx_same_RHS. rewrite <- Hepsy_same_RHS.
+    rewrite <- Hphi_x. rewrite <- Hphi_y.
+    reflexivity.
 - (** bijection LHS RHS phi **)
   apply (andI
     (function_on phi LHS RHS)
