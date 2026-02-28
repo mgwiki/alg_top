@@ -167829,6 +167829,15 @@ apply xm (X = Empty).
   exact (EmptyE (apply_fun f x) (Hf x Hx) (X = Empty)).
 Qed.
 
+(** Infrastructure: function_on with empty domain is always true **)
+(** Proven Bob **)
+Lemma function_on_empty_domain : forall f Y:set,
+  function_on f Empty Y.
+let f Y.
+let x. assume Hx : x :e Empty.
+exact (FalseE (EmptyE x Hx) (apply_fun f x :e Y)).
+Qed.
+
 (** Infrastructure: generated family forces nonempty index set **)
 (** Proven Bob **)
 Lemma subgroups_generate_abelian_index_nonempty :
