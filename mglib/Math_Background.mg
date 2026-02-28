@@ -19396,7 +19396,6 @@ Qed.
 (** LATEX VERSION: In any convex subspace A of Rn, any two paths f,g from x0 to x1 are path homotopic via F(x,t)=(1-t)f(x)+tg(x). **)
 (** EFFORT: 5 lines textbook, difficulty 5/10, USD 80 **)
 (** Bounty 107 **)
-(** Lock Alice 1772288205 **)
 Theorem Example_51_1_convex_paths_homotopic : forall A Ta x0 x1 f g:set,
   A c= R -> convex_in R A ->
   topology_on A Ta ->
@@ -20313,7 +20312,7 @@ exact (and7I
   Hg0
   Hg1
   HexistsF).
-Admitted. (** has admit at line 18346 **)
+Admitted.
 
 (** S51 Exercises **)
 
@@ -271768,6 +271767,63 @@ rewrite (tuple_2_0_eq p q).
 reflexivity.
 Qed.
 
+(** helper: appended edge endpoints are exactly p and q. **)
+(** Proven Bob **)
+Theorem edge_path_append_oriented_edge_endpoints_eq_pq :
+  forall X Tx Arcs n path_seq x0 j A p q:set,
+  general_linear_graph X Tx Arcs ->
+  edge_path X Tx Arcs n path_seq x0 ->
+  j :e n ->
+  ordsucc j /:e n ->
+  (apply_fun path_seq j) 0 1 = p ->
+  oriented_edge X Tx Arcs A p q ->
+  (apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 0 = p /\
+  (apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 1 = q.
+let X Tx Arcs n path_seq x0 j A p q.
+assume Hglg Hep HjIn HsjNot Hfinj Hori.
+apply andI.
+- exact (edge_path_append_oriented_edge_start_vertex
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    j
+    A
+    p
+    q
+    Hglg
+    Hep
+    HjIn
+    HsjNot
+    Hfinj
+    Hori).
+- exact (edge_path_append_oriented_edge_end_vertex
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    j
+    A
+    p
+    q
+    Hglg
+    Hep
+    HjIn
+    HsjNot
+    Hfinj
+    Hori).
+Qed.
+
 (** helper: appended edge endpoints lie in X. **)
 (** Proven Bob **)
 Theorem edge_path_append_oriented_edge_endpoints_in_X :
@@ -271827,6 +271883,94 @@ apply andI.
   exact (andER (p :e X) (q :e X) HpqX).
 Qed.
 
+(** helper: appended edge start vertex lies in X. **)
+(** Proven Bob **)
+Theorem edge_path_append_oriented_edge_start_vertex_in_X :
+  forall X Tx Arcs n path_seq x0 j A p q:set,
+  general_linear_graph X Tx Arcs ->
+  edge_path X Tx Arcs n path_seq x0 ->
+  j :e n ->
+  ordsucc j /:e n ->
+  (apply_fun path_seq j) 0 1 = p ->
+  oriented_edge X Tx Arcs A p q ->
+  (apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 0 :e X.
+let X Tx Arcs n path_seq x0 j A p q.
+assume Hglg Hep HjIn HsjNot Hfinj Hori.
+exact (andEL
+  ((apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 0 :e X)
+  ((apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 1 :e X)
+  (edge_path_append_oriented_edge_endpoints_in_X
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    j
+    A
+    p
+    q
+    Hglg
+    Hep
+    HjIn
+    HsjNot
+    Hfinj
+    Hori)).
+Qed.
+
+(** helper: appended edge end vertex lies in X. **)
+(** Proven Bob **)
+Theorem edge_path_append_oriented_edge_end_vertex_in_X :
+  forall X Tx Arcs n path_seq x0 j A p q:set,
+  general_linear_graph X Tx Arcs ->
+  edge_path X Tx Arcs n path_seq x0 ->
+  j :e n ->
+  ordsucc j /:e n ->
+  (apply_fun path_seq j) 0 1 = p ->
+  oriented_edge X Tx Arcs A p q ->
+  (apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 1 :e X.
+let X Tx Arcs n path_seq x0 j A p q.
+assume Hglg Hep HjIn HsjNot Hfinj Hori.
+exact (andER
+  ((apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 0 :e X)
+  ((apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 1 :e X)
+  (edge_path_append_oriented_edge_endpoints_in_X
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    j
+    A
+    p
+    q
+    Hglg
+    Hep
+    HjIn
+    HsjNot
+    Hfinj
+    Hori)).
+Qed.
+
 (** helper: appended edge endpoints lie in Union Arcs. **)
 (** Proven Bob **)
 Theorem edge_path_append_oriented_edge_endpoints_in_union_arcs :
@@ -271884,6 +272028,94 @@ apply andI.
   rewrite (tuple_2_0_eq (p, q) A).
   rewrite tuple_2_1_eq.
   exact (andER (p :e Union Arcs) (q :e Union Arcs) HpqU).
+Qed.
+
+(** helper: appended edge start vertex lies in Union Arcs. **)
+(** Proven Bob **)
+Theorem edge_path_append_oriented_edge_start_vertex_in_union_arcs :
+  forall X Tx Arcs n path_seq x0 j A p q:set,
+  general_linear_graph X Tx Arcs ->
+  edge_path X Tx Arcs n path_seq x0 ->
+  j :e n ->
+  ordsucc j /:e n ->
+  (apply_fun path_seq j) 0 1 = p ->
+  oriented_edge X Tx Arcs A p q ->
+  (apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 0 :e Union Arcs.
+let X Tx Arcs n path_seq x0 j A p q.
+assume Hglg Hep HjIn HsjNot Hfinj Hori.
+exact (andEL
+  ((apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 0 :e Union Arcs)
+  ((apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 1 :e Union Arcs)
+  (edge_path_append_oriented_edge_endpoints_in_union_arcs
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    j
+    A
+    p
+    q
+    Hglg
+    Hep
+    HjIn
+    HsjNot
+    Hfinj
+    Hori)).
+Qed.
+
+(** helper: appended edge end vertex lies in Union Arcs. **)
+(** Proven Bob **)
+Theorem edge_path_append_oriented_edge_end_vertex_in_union_arcs :
+  forall X Tx Arcs n path_seq x0 j A p q:set,
+  general_linear_graph X Tx Arcs ->
+  edge_path X Tx Arcs n path_seq x0 ->
+  j :e n ->
+  ordsucc j /:e n ->
+  (apply_fun path_seq j) 0 1 = p ->
+  oriented_edge X Tx Arcs A p q ->
+  (apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 1 :e Union Arcs.
+let X Tx Arcs n path_seq x0 j A p q.
+assume Hglg Hep HjIn HsjNot Hfinj Hori.
+exact (andER
+  ((apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 0 :e Union Arcs)
+  ((apply_fun
+    ((graph n (fun i:set => apply_fun path_seq i)) :\/:
+     (graph {n} (fun _:set => ((p, q), A))))
+    n) 0 1 :e Union Arcs)
+  (edge_path_append_oriented_edge_endpoints_in_union_arcs
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    j
+    A
+    p
+    q
+    Hglg
+    Hep
+    HjIn
+    HsjNot
+    Hfinj
+    Hori)).
 Qed.
 
 (** helper: appended edge endpoints lie in graph_vertices. **)
@@ -299648,7 +299880,6 @@ Admitted.
 (** beta path in V from b to a. Then [alpha . beta] generates pi1(X,a). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 180 **)
 (** Bounty 218 **)
-(** Lock Alice 1772288205 **)
 Theorem lemma84_6_generator_from_edge :
   forall X Tx U V A B a b alpha beta:set,
   topology_on X Tx ->
@@ -299824,7 +300055,6 @@ Admitted.
 (** has free generators in bijection with edges of X not in T. **)
 (** EFFORT: 35 lines textbook, difficulty 8/10, USD 560 **)
 (** Bounty 746 **)
-(** Lock Alice 1772288205 **)
 Theorem thm84_7_pi1_graph_is_free :
   forall X Tx Arcs T ArcsT x0:set,
   general_linear_graph X Tx Arcs ->
