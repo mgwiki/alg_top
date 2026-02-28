@@ -87215,6 +87215,101 @@ exact (path_lift_stays_in_anchored_sheet
   HtI).
 Qed.
 
+(** Infrastructure: lift of a constant path is constant (covering map case) **)
+(** Proven Bob **)
+Theorem constant_path_lift_is_constant : forall E Te B Tb p e0 b0 ft:set,
+  covering_map E Te B Tb p ->
+  e0 :e E ->
+  b0 :e B ->
+  apply_fun p e0 = b0 ->
+  lifting_of unit_interval unit_interval_topology E Te B Tb p (constant_path b0) ft ->
+  apply_fun ft 0 = e0 ->
+  forall t:set, t :e unit_interval -> apply_fun ft t = e0.
+let E Te B Tb p e0 b0 ft.
+assume Hcov He0 Hb0 Hpe0 Hlift Hft0.
+claim Hcontp : continuous_map E Te B Tb p.
+{
+  exact (andEL
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    (andEL
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+      Hcov)).
+}
+claim HtopE : topology_on E Te.
+{
+  exact (continuous_map_topology_dom E Te B Tb p Hcontp).
+}
+claim HtopB : topology_on B Tb.
+{
+  exact (continuous_map_topology_cod E Te B Tb p Hcontp).
+}
+claim Hconstb0Cont : continuous_map unit_interval unit_interval_topology B Tb (constant_path b0).
+{
+  exact (constant_path_continuous
+    B
+    Tb
+    b0
+    HtopB
+    Hb0).
+}
+claim Hconste0Cont : continuous_map unit_interval unit_interval_topology E Te (constant_path e0).
+{
+  exact (constant_path_continuous
+    E
+    Te
+    e0
+    HtopE
+    He0).
+}
+claim Hconste0Comm :
+  forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (constant_path e0) t) = apply_fun (constant_path b0) t.
+{
+  let t.
+  assume Ht.
+  rewrite (constant_path_apply e0 t Ht).
+  rewrite Hpe0.
+  rewrite (constant_path_apply b0 t Ht).
+  reflexivity.
+}
+claim Hconste0Lift :
+  lifting_of unit_interval unit_interval_topology E Te B Tb p (constant_path b0) (constant_path e0).
+{
+  exact (andI
+    (continuous_map unit_interval unit_interval_topology E Te (constant_path e0))
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun (constant_path e0) t) = apply_fun (constant_path b0) t)
+    Hconste0Cont
+    Hconste0Comm).
+}
+let t.
+assume Ht.
+rewrite (lemma54_1_path_lifting_unique
+  E
+  Te
+  B
+  Tb
+  p
+  e0
+  (constant_path b0)
+  ft
+  (constant_path e0)
+  Hcov
+  He0
+  Hconstb0Cont
+  Hlift
+  Hft0
+  Hconste0Lift
+  (constant_path_at_zero e0)
+  t
+  Ht).
+rewrite (constant_path_apply e0 t Ht).
+reflexivity.
+Qed.
+
 (** from S54 Lem 54.2 path homotopy preservation (line 783 in algtop.tex) **)
 (** LATEX VERSION: If F is a path homotopy, then the lift F_tilde is also a path homotopy. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
