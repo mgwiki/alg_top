@@ -1,4 +1,4 @@
-(** Balance Alice 3826 **)
+(** Balance Alice 3815 **)
 (** Balance Bob 3507 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
@@ -106291,7 +106291,8 @@ Definition product_group_mult : set -> set -> set -> set -> set :=
 (** from S54 Exercise 7 (line 892 in algtop.tex) **)
 (** LATEX VERSION: The fundamental group of the torus is isomorphic to Z x Z. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 110 **)
+(** Bounty 121 **)
+(** Lock Alice 1772400085 **)
 Theorem ex54_7_pi1_torus : exists phi:set,
   group_isomorphism
     (fundamental_group torus torus_topology (S1_basepoint, S1_basepoint))
