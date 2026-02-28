@@ -194946,7 +194946,89 @@ apply (nat_inv nw Hnw_nat).
                       exact (Hxie0_not_Gal Hxie0_Gal).
                     }
                   * assume Hxiem_not_Gal.
-                    admit. (** TODO Case B: xie(m) not in Gfam(al) **)
+                    (** Case B: xie(m) not in Gfam(al) **)
+                    (** Strategy: word_product_succ gives mult(p, xie(m)) = efam(al).
+                        Case split on p = eG: if so, xie(m) = efam(al) in Gfam(al), contradiction. **)
+                    claim Hwp_succ_step : word_product multG eG xie (ordsucc m) =
+                      apply_fun multG (word_product multG eG xie m, apply_fun xie m).
+                    {
+                      exact (word_product_succ multG eG xie m Hm_nat).
+                    }
+                    claim Hwp_m_xiem_efam : apply_fun multG (word_product multG eG xie m, apply_fun xie m) = apply_fun efam al.
+                    {
+                      claim H_succ_ie : word_product multG eG xie (ordsucc m) = apply_fun efam al.
+                      {
+                        exact (eq_i_tra
+                          (word_product multG eG xie (ordsucc m))
+                          ie
+                          (apply_fun efam al)
+                          Hwp_ie_succ
+                          Hie_eq_efam).
+                      }
+                      claim H_step_sym : apply_fun multG (word_product multG eG xie m, apply_fun xie m) =
+                        word_product multG eG xie (ordsucc m).
+                      {
+                        symmetry.
+                        exact Hwp_succ_step.
+                      }
+                      exact (eq_i_tra
+                        (apply_fun multG (word_product multG eG xie m, apply_fun xie m))
+                        (word_product multG eG xie (ordsucc m))
+                        (apply_fun efam al)
+                        H_step_sym
+                        H_succ_ie).
+                    }
+                    set p_B := word_product multG eG xie m.
+                    claim Hxiem_G : apply_fun xie m :e G.
+                    {
+                      exact (Hxie_in_G m Hm_sm).
+                    }
+                    apply (xm (p_B = eG)).
+                    {
+                      assume Hp_eG.
+                      (** p = eG: mult(eG, xie(m)) = efam(al), so xie(m) = efam(al) **)
+                      claim HidL_xiem : apply_fun multG (eG, apply_fun xie m) = apply_fun xie m.
+                      {
+                        exact (andEL
+                          (apply_fun multG (eG, apply_fun xie m) = apply_fun xie m)
+                          (apply_fun multG (apply_fun xie m, eG) = apply_fun xie m)
+                          (HidG (apply_fun xie m) Hxiem_G)).
+                      }
+                      claim Hmult_eG_eq : apply_fun multG (eG, apply_fun xie m) = apply_fun efam al.
+                      {
+                        claim Hrewr : apply_fun multG (p_B, apply_fun xie m) = apply_fun efam al.
+                        {
+                          exact Hwp_m_xiem_efam.
+                        }
+                        rewrite <- Hp_eG.
+                        exact Hrewr.
+                      }
+                      claim Hxiem_eq_efam : apply_fun xie m = apply_fun efam al.
+                      {
+                        claim Hsym : apply_fun xie m = apply_fun multG (eG, apply_fun xie m).
+                        {
+                          symmetry.
+                          exact HidL_xiem.
+                        }
+                        exact (eq_i_tra
+                          (apply_fun xie m)
+                          (apply_fun multG (eG, apply_fun xie m))
+                          (apply_fun efam al)
+                          Hsym
+                          Hmult_eG_eq).
+                      }
+                      claim Hxiem_Gal : apply_fun xie m :e apply_fun Gfam al.
+                      {
+                        rewrite Hxiem_eq_efam.
+                        exact Hefam_Gal.
+                      }
+                      exact (Hxiem_not_Gal Hxiem_Gal).
+                    }
+                    {
+                      assume Hp_ne_eG.
+                      (** TODO Case B subcase p != eG: prefix product is nontrivial **)
+                      admit.
+                    }
                 }
               + assume Hinv_ne_efam.
                 set ie := apply_fun invG (apply_fun efam al).
