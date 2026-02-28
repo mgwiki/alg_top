@@ -84489,6 +84489,96 @@ exact (connected_lift_stays_in_anchored_sheet
 Qed.
 
 (** Proven Bob **)
+(** Infrastructure: a path lift stays in the anchored sheet on a connected subinterval **)
+Lemma path_lift_stays_in_anchored_sheet_on_subset :
+  forall E Te B Tb p U slices V0 f e0 N x0:set,
+  covering_map E Te B Tb p ->
+  e0 :e E -> apply_fun p e0 = apply_fun f 0 ->
+  continuous_map unit_interval unit_interval_topology B Tb f ->
+  N c= unit_interval ->
+  connected_space N (subspace_topology unit_interval unit_interval_topology N) ->
+  (forall t:set, t :e N -> apply_fun f t :e U) ->
+  topology_on E Te ->
+  slices c= Te ->
+  pairwise_disjoint slices ->
+  Union slices = preimage_of E p U ->
+  V0 :e slices ->
+  x0 :e N ->
+  apply_fun (path_lift E Te B Tb p e0 f) x0 :e V0 ->
+  forall t:set, t :e N ->
+    apply_fun (path_lift E Te B Tb p e0 f) t :e V0.
+let E Te B Tb p U slices V0 f e0 N x0.
+assume Hcov He0 Hstart Hfcont HNsub HNconn HfU HtopE HslicesSub HpdSlices Hunion HV0Slice Hx0N Hft0V0.
+claim HftCont :
+  continuous_map N (subspace_topology unit_interval unit_interval_topology N) E Te
+    (path_lift E Te B Tb p e0 f).
+{
+  exact (path_lift_continuous_on_subset
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    f
+    N
+    Hcov
+    He0
+    Hstart
+    Hfcont
+    HNsub).
+}
+claim Hcomm :
+  forall t:set, t :e N ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t.
+{
+  exact (path_lift_commutes_on_subset
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    f
+    N
+    Hcov
+    He0
+    Hstart
+    Hfcont
+    HNsub).
+}
+let t.
+assume Ht.
+exact (connected_lift_stays_in_anchored_sheet
+  E
+  Te
+  B
+  Tb
+  p
+  U
+  slices
+  V0
+  N
+  (subspace_topology unit_interval unit_interval_topology N)
+  f
+  (path_lift E Te B Tb p e0 f)
+  x0
+  HtopE
+  HslicesSub
+  HpdSlices
+  Hunion
+  HNconn
+  HftCont
+  (fun x Hx => Hcomm x Hx)
+  (fun x Hx => HfU x Hx)
+  HV0Slice
+  Hx0N
+  Hft0V0
+  t
+  Ht).
+Qed.
+
+(** Proven Bob **)
 (** Infrastructure: image of a path lift lies in the anchored sheet **)
 Lemma path_lift_image_subset_anchored_sheet :
   forall E Te B Tb p U slices V0 f ft x0:set,
