@@ -74639,6 +74639,61 @@ exact (commutation_on_unit_interval_subset
   HxN).
 Qed.
 
+(** Proven Bob **)
+(** Infrastructure: path lifts remain continuous on subintervals **)
+Theorem path_lift_continuous_on_subset : forall E Te B Tb p e0 f N:set,
+  covering_map E Te B Tb p ->
+  e0 :e E -> apply_fun p e0 = apply_fun f 0 ->
+  continuous_map unit_interval unit_interval_topology B Tb f ->
+  N c= unit_interval ->
+  continuous_map N (subspace_topology unit_interval unit_interval_topology N) E Te
+    (path_lift E Te B Tb p e0 f).
+let E Te B Tb p e0 f N.
+assume Hcov He0 Hstart Hfcont HNsub.
+claim HliftPack :
+  continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 f) /\
+  apply_fun (path_lift E Te B Tb p e0 f) 0 = e0 /\
+  (forall t:set, t :e unit_interval ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t).
+{
+  exact (lemma54_1_path_lifting
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    f
+    Hcov
+    He0
+    Hstart
+    Hfcont).
+}
+claim Hcont :
+  continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 f).
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 f))
+    (apply_fun (path_lift E Te B Tb p e0 f) 0 = e0)
+    (andEL
+      (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e0 f) /\
+       apply_fun (path_lift E Te B Tb p e0 f) 0 = e0)
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) t) = apply_fun f t)
+      HliftPack)).
+}
+exact (continuous_on_subspace
+  unit_interval
+  unit_interval_topology
+  E
+  Te
+  (path_lift E Te B Tb p e0 f)
+  N
+  unit_interval_topology_on
+  HNsub
+  Hcont).
+Qed.
+
 (** from S54 Lem 54.1 uniqueness (line 728 in algtop.tex) **)
 (** LATEX VERSION: The lifting of a path is unique. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
@@ -84526,7 +84581,6 @@ Admitted.
 (** and are path homotopic. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 107 **)
-(** Lock Bob 1772257084 **)
 Theorem thm54_3_homotopic_lifts : forall E Te B Tb p e0 b0 b1 f g:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = b0 ->
