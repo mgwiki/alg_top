@@ -44183,6 +44183,18 @@ exact (andER
   Hb).
 Qed.
 
+(** Proven Bob **)
+Theorem covering_map_function_on : forall E Te B Tb p:set,
+  covering_map E Te B Tb p -> function_on p E B.
+let E Te B Tb p.
+assume Hcov.
+claim Hcont : continuous_map E Te B Tb p.
+{
+  exact (covering_map_continuous E Te B Tb p Hcov).
+}
+exact (continuous_map_function_on E Te B Tb p Hcont).
+Qed.
+
 (** Infrastructure: transitivity of subspace topology under subset (no topology_on hypothesis needed) **)
 (** Proven Charlie **)
 Theorem subspace_topology_transitive_weak : forall X Tx Y A:set,
