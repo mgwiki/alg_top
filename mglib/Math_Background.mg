@@ -47320,27 +47320,109 @@ admit. (** existence of pi: smallest positive zero of cos with sin positive on (
 Admitted.
 
 Theorem pi_real_in_R : pi_real :e R.
-admit. (** from pi_real_exists **)
+claim Hdata : pi_real :e R /\ Rlt 0 pi_real /\
+  apply_fun cos_real pi_real = minus_SNo 1 /\
+  apply_fun sin_real pi_real = 0 /\
+  (forall x:set, x :e R -> Rlt 0 x -> Rlt x pi_real ->
+    Rlt 0 (apply_fun sin_real x)).
+{ exact (Eps_i_ex (fun p:set =>
+    p :e R /\ Rlt 0 p /\
+    apply_fun cos_real p = minus_SNo 1 /\
+    apply_fun sin_real p = 0 /\
+    (forall x:set, x :e R -> Rlt 0 x -> Rlt x p ->
+      Rlt 0 (apply_fun sin_real x)))
+    pi_real_exists). }
+apply (and5E
+  (pi_real :e R) (Rlt 0 pi_real)
+  (apply_fun cos_real pi_real = minus_SNo 1)
+  (apply_fun sin_real pi_real = 0)
+  (forall x:set, x :e R -> Rlt 0 x -> Rlt x pi_real ->
+    Rlt 0 (apply_fun sin_real x))
+  Hdata).
+assume H1 _ _ _ _.
+exact H1.
 Admitted.
 
 Theorem pi_real_positive : Rlt 0 pi_real.
-admit. (** from pi_real_exists **)
+claim Hdata : pi_real :e R /\ Rlt 0 pi_real /\
+  apply_fun cos_real pi_real = minus_SNo 1 /\
+  apply_fun sin_real pi_real = 0 /\
+  (forall x:set, x :e R -> Rlt 0 x -> Rlt x pi_real ->
+    Rlt 0 (apply_fun sin_real x)).
+{ exact (Eps_i_ex (fun p:set =>
+    p :e R /\ Rlt 0 p /\
+    apply_fun cos_real p = minus_SNo 1 /\
+    apply_fun sin_real p = 0 /\
+    (forall x:set, x :e R -> Rlt 0 x -> Rlt x p ->
+      Rlt 0 (apply_fun sin_real x)))
+    pi_real_exists). }
+apply (and5E
+  (pi_real :e R) (Rlt 0 pi_real)
+  (apply_fun cos_real pi_real = minus_SNo 1)
+  (apply_fun sin_real pi_real = 0)
+  (forall x:set, x :e R -> Rlt 0 x -> Rlt x pi_real ->
+    Rlt 0 (apply_fun sin_real x))
+  Hdata).
+assume _ H2 _ _ _.
+exact H2.
 Admitted.
 
 Theorem cos_pi : apply_fun cos_real pi_real = minus_SNo 1.
-admit. (** from pi_real_exists **)
+claim Hdata : pi_real :e R /\ Rlt 0 pi_real /\
+  apply_fun cos_real pi_real = minus_SNo 1 /\
+  apply_fun sin_real pi_real = 0 /\
+  (forall x:set, x :e R -> Rlt 0 x -> Rlt x pi_real ->
+    Rlt 0 (apply_fun sin_real x)).
+{ exact (Eps_i_ex (fun p:set =>
+    p :e R /\ Rlt 0 p /\
+    apply_fun cos_real p = minus_SNo 1 /\
+    apply_fun sin_real p = 0 /\
+    (forall x:set, x :e R -> Rlt 0 x -> Rlt x p ->
+      Rlt 0 (apply_fun sin_real x)))
+    pi_real_exists). }
+apply (and5E
+  (pi_real :e R) (Rlt 0 pi_real)
+  (apply_fun cos_real pi_real = minus_SNo 1)
+  (apply_fun sin_real pi_real = 0)
+  (forall x:set, x :e R -> Rlt 0 x -> Rlt x pi_real ->
+    Rlt 0 (apply_fun sin_real x))
+  Hdata).
+assume _ _ H3 _ _.
+exact H3.
 Admitted.
 
 Theorem sin_pi : apply_fun sin_real pi_real = 0.
-admit. (** from pi_real_exists **)
+claim Hdata : pi_real :e R /\ Rlt 0 pi_real /\
+  apply_fun cos_real pi_real = minus_SNo 1 /\
+  apply_fun sin_real pi_real = 0 /\
+  (forall x:set, x :e R -> Rlt 0 x -> Rlt x pi_real ->
+    Rlt 0 (apply_fun sin_real x)).
+{ exact (Eps_i_ex (fun p:set =>
+    p :e R /\ Rlt 0 p /\
+    apply_fun cos_real p = minus_SNo 1 /\
+    apply_fun sin_real p = 0 /\
+    (forall x:set, x :e R -> Rlt 0 x -> Rlt x p ->
+      Rlt 0 (apply_fun sin_real x)))
+    pi_real_exists). }
+apply (and5E
+  (pi_real :e R) (Rlt 0 pi_real)
+  (apply_fun cos_real pi_real = minus_SNo 1)
+  (apply_fun sin_real pi_real = 0)
+  (forall x:set, x :e R -> Rlt 0 x -> Rlt x pi_real ->
+    Rlt 0 (apply_fun sin_real x))
+  Hdata).
+assume _ _ _ H4 _.
+exact H4.
 Admitted.
 
 Theorem two_pi_in_R : two_pi :e R.
-admit. (** two_pi = pi_real + pi_real, sum of reals **)
+exact (real_add_SNo pi_real pi_real_in_R pi_real pi_real_in_R).
 Admitted.
 
 Theorem two_pi_positive : Rlt 0 two_pi.
-admit. (** two_pi = 2 times pi > 0 **)
+claim H0 : add_SNo 0 0 = 0. { exact (add_SNo_0L 0 SNo_0). }
+rewrite <- H0.
+exact (Rlt_add_SNo 0 pi_real 0 pi_real pi_real_positive pi_real_positive).
 Admitted.
 
 (** Key trig identities for covering map **)
@@ -47422,12 +47504,33 @@ Admitted.
 (** Covering map helper: p(x) is on S1 **)
 Theorem covering_map_R_S1_on_S1 : forall x:set, x :e R ->
   apply_fun covering_map_R_S1 x :e S1.
-admit. (** cos^2(2pi x) + sin^2(2pi x) = 1, so (cos(2pi x), sin(2pi x)) in S1 **)
+let x. assume HxR : x :e R.
+set cx := apply_fun cos_real (mul_SNo two_pi x).
+set sx := apply_fun sin_real (mul_SNo two_pi x).
+claim HtpxR : mul_SNo two_pi x :e R.
+{ exact (real_mul_SNo two_pi two_pi_in_R x HxR). }
+claim HcxR : cx :e R. { exact (cos_real_function_on (mul_SNo two_pi x) HtpxR). }
+claim HsxR : sx :e R. { exact (sin_real_function_on (mul_SNo two_pi x) HtpxR). }
+claim Hgraph : apply_fun covering_map_R_S1 x = (cx, sx).
+{ exact (apply_fun_graph R
+    (fun t:set => (apply_fun cos_real (mul_SNo two_pi t), apply_fun sin_real (mul_SNo two_pi t)))
+    x HxR). }
+rewrite Hgraph.
+claim HpairRR : (cx, sx) :e setprod R R.
+{ exact (tuple_2_setprod_by_pair_Sigma R R cx sx HcxR HsxR). }
+claim Hpyth : add_SNo (mul_SNo ((cx, sx) 0) ((cx, sx) 0))
+                       (mul_SNo ((cx, sx) 1) ((cx, sx) 1)) = 1.
+{ rewrite tuple_2_0_eq. rewrite tuple_2_1_eq.
+  exact (cos_sin_pythagorean (mul_SNo two_pi x) HtpxR). }
+exact (SepI (setprod R R)
+  (fun p:set => add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) = 1)
+  (cx, sx) HpairRR Hpyth).
 Admitted.
 
 (** Covering map helper: p is a function from R to S1 **)
 Theorem covering_map_R_S1_function_on : function_on covering_map_R_S1 R S1.
-admit. (** from covering_map_R_S1_on_S1 and the graph definition **)
+let x. assume HxR : x :e R.
+exact (covering_map_R_S1_on_S1 x HxR).
 Admitted.
 
 (** from S53 Thm 53.1 (line 553 in algtop.tex) **)
