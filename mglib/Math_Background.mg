@@ -247766,6 +247766,22 @@ exact (graph_vertices_subset_union_arcs_basic
 Qed.
 
 (** Proven Bob **)
+Theorem graph_vertices_selected_elem_in_union_arcs_basic :
+  forall X Tx Arcs Y x:set,
+  x :e graph_vertices X Tx {B :e Arcs | B c= Y} ->
+  x :e Union Arcs.
+let X Tx Arcs Y x.
+assume HxSel.
+exact ((graph_vertices_selected_arcs_subset_union_arcs_basic
+  X
+  Tx
+  Arcs
+  Y)
+  x
+  HxSel).
+Qed.
+
+(** Proven Bob **)
 Theorem subgraph_of_graph_vertices_selected_subset_Y :
   forall Y X Tx Arcs:set,
   subgraph_of Y X Tx Arcs ->
