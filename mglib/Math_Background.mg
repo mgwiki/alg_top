@@ -80061,6 +80061,25 @@ exact (commuting_lift_image_subset_preimage
   HFU).
 Qed.
 
+(** Infrastructure: image subset of preimage transfers to union of slices **)
+(** Proven Bob **)
+Theorem image_sub_preimage_implies_image_sub_union :
+  forall N E p U slices Ft:set,
+  image_of Ft N c= preimage_of E p U ->
+  Union slices = preimage_of E p U ->
+  image_of Ft N c= Union slices.
+let N E p U slices Ft.
+assume HimgSub Hunion.
+let y.
+assume HyImg.
+exact (mem_eqL
+  y
+  (Union slices)
+  (preimage_of E p U)
+  Hunion
+  (HimgSub y HyImg)).
+Qed.
+
 (** Infrastructure: element of a slice lies in the union of slices **)
 (** Proven Bob **)
 Lemma slice_member_in_union : forall slices V x:set,
