@@ -170883,7 +170883,7 @@ apply and3I.
   exact (Hunmatched_x2_e j Hj_unmatched).
 Qed.
 
-(** Helper: existence of extension homomorphism for direct sum (admitted) **)
+(** Helper: existence of extension homomorphism for direct sum **)
 Lemma direct_sum_hom_existence :
   forall G multG eG invG J Gfam H multH eH invH hfam:set,
   direct_sum_of_subgroups G multG eG invG J Gfam ->
