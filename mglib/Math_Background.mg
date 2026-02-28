@@ -52517,6 +52517,28 @@ exact (eq_symm
   (binunion_eq_Union_pair A B)).
 Qed.
 
+(** Infrastructure: binunion is commutative **)
+(** Proven Bob **)
+Theorem binunion_comm : forall A B:set,
+  A :\/: B = B :\/: A.
+let A B.
+apply set_ext.
+- let x.
+  assume Hx.
+  apply (binunionE A B x Hx).
+  * assume HxA.
+    exact (binunionI2 B A x HxA).
+  * assume HxB.
+    exact (binunionI1 B A x HxB).
+- let x.
+  assume Hx.
+  apply (binunionE B A x Hx).
+  * assume HxB.
+    exact (binunionI2 A B x HxB).
+  * assume HxA.
+    exact (binunionI1 A B x HxA).
+Qed.
+
 (** Infrastructure: nonempty family with empty union is the singleton {Empty} **)
 (** Proven Bob **)
 Theorem union_empty_nonempty_family_eq_singleton_empty : forall Fam:set,
