@@ -246706,6 +246706,62 @@ exact (graph_vertices_intro_from_endpoint_right
 Qed.
 
 (** Proven Bob **)
+Theorem subgraph_of_selected_arc_endpoint_left_in_union_arcs :
+  forall Y X Tx Arcs A p q:set,
+  subgraph_of Y X Tx Arcs ->
+  A :e {B :e Arcs | B c= Y} ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  p :e Union Arcs.
+let Y X Tx Arcs A p q.
+assume Hsub HA Hend.
+claim HAArcs : A :e Arcs.
+{
+  exact (SepE1
+    Arcs
+    (fun B:set => B c= Y)
+    A
+    HA).
+}
+exact (arc_endpoint_left_in_union_arcs
+  X
+  Tx
+  Arcs
+  A
+  p
+  q
+  HAArcs
+  Hend).
+Qed.
+
+(** Proven Bob **)
+Theorem subgraph_of_selected_arc_endpoint_right_in_union_arcs :
+  forall Y X Tx Arcs A p q:set,
+  subgraph_of Y X Tx Arcs ->
+  A :e {B :e Arcs | B c= Y} ->
+  end_points_of_arc A (subspace_topology X Tx A) p q ->
+  q :e Union Arcs.
+let Y X Tx Arcs A p q.
+assume Hsub HA Hend.
+claim HAArcs : A :e Arcs.
+{
+  exact (SepE1
+    Arcs
+    (fun B:set => B c= Y)
+    A
+    HA).
+}
+exact (arc_endpoint_right_in_union_arcs
+  X
+  Tx
+  Arcs
+  A
+  p
+  q
+  HAArcs
+  Hend).
+Qed.
+
+(** Proven Bob **)
 Theorem graph_vertices_subset_X :
   forall X Tx Arcs:set,
   graph_vertices X Tx Arcs c= X.
