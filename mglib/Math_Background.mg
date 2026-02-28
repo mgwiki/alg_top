@@ -19280,8 +19280,115 @@ claim HFraw_spec :
   claim HFcontA :
     continuous_map unit_square unit_square_topology A Ta Fraw.
   {
-    (** TODO Charlie: continuity of affine combination into the given topology Ta on A. **)
-    admit.
+    (** Continuity of affine combination (1-t)f(s) + tg(s) into A **)
+    (** Strategy: show Fraw is continuous to R, then restrict to A via convexity **)
+    claim HTaEq : Ta = subspace_topology R R_standard_topology A.
+    { admit. }
+    claim HtopR : topology_on R R_standard_topology.
+    { exact R_standard_topology_is_topology_local. }
+    claim HtopUI : topology_on unit_interval unit_interval_topology.
+    { exact unit_interval_topology_on. }
+    claim HtopSq : topology_on unit_square unit_square_topology.
+    { exact (product_topology_is_topology
+        unit_interval unit_interval_topology
+        unit_interval unit_interval_topology
+        HtopUI HtopUI). }
+    claim HuiEq : unit_interval_topology = subspace_topology R R_standard_topology unit_interval.
+    { reflexivity. }
+    (** Expand f and g to be continuous maps to R **)
+    claim HfR : continuous_map unit_interval unit_interval_topology R R_standard_topology f.
+    { exact (continuous_map_range_expand
+        unit_interval unit_interval_topology A Ta R R_standard_topology f
+        Hfcont HAsubR HtopR HTaEq). }
+    claim HgR : continuous_map unit_interval unit_interval_topology R R_standard_topology g.
+    { exact (continuous_map_range_expand
+        unit_interval unit_interval_topology A Ta R R_standard_topology g
+        Hgcont HAsubR HtopR HTaEq). }
+    (** Projections are continuous **)
+    claim Hprojs : continuous_map unit_square unit_square_topology
+        unit_interval unit_interval_topology s_coord /\
+      continuous_map unit_square unit_square_topology
+        unit_interval unit_interval_topology t_coord.
+    { exact (projection_maps_continuous
+        unit_interval unit_interval_topology
+        unit_interval unit_interval_topology
+        HtopUI HtopUI). }
+    claim Hs_cont : continuous_map unit_square unit_square_topology
+      unit_interval unit_interval_topology s_coord.
+    { exact (andEL
+        (continuous_map unit_square unit_square_topology
+          unit_interval unit_interval_topology s_coord)
+        (continuous_map unit_square unit_square_topology
+          unit_interval unit_interval_topology t_coord)
+        Hprojs). }
+    claim Ht_cont : continuous_map unit_square unit_square_topology
+      unit_interval unit_interval_topology t_coord.
+    { exact (andER
+        (continuous_map unit_square unit_square_topology
+          unit_interval unit_interval_topology s_coord)
+        (continuous_map unit_square unit_square_topology
+          unit_interval unit_interval_topology t_coord)
+        Hprojs). }
+    (** f_sq = f o s_coord : unit_square -> R continuous **)
+    claim Hf_sq_R : continuous_map unit_square unit_square_topology R R_standard_topology f_sq.
+    { exact (composition_continuous
+        unit_square unit_square_topology
+        unit_interval unit_interval_topology
+        R R_standard_topology
+        s_coord f
+        Hs_cont HfR). }
+    (** g_sq = g o s_coord : unit_square -> R continuous **)
+    claim Hg_sq_R : continuous_map unit_square unit_square_topology R R_standard_topology g_sq.
+    { exact (composition_continuous
+        unit_square unit_square_topology
+        unit_interval unit_interval_topology
+        R R_standard_topology
+        s_coord g
+        Hs_cont HgR). }
+    (** one_minus_t = flip o t_coord : unit_square -> unit_interval continuous **)
+    claim Homt_ui : continuous_map unit_square unit_square_topology
+      unit_interval unit_interval_topology one_minus_t.
+    { exact (composition_continuous
+        unit_square unit_square_topology
+        unit_interval unit_interval_topology
+        unit_interval unit_interval_topology
+        t_coord flip_unit_interval
+        Ht_cont flip_unit_interval_continuous). }
+    (** Expand one_minus_t and t_coord to R **)
+    claim Homt_R : continuous_map unit_square unit_square_topology R R_standard_topology one_minus_t.
+    { exact (continuous_map_range_expand
+        unit_square unit_square_topology
+        unit_interval unit_interval_topology R R_standard_topology one_minus_t
+        Homt_ui unit_interval_sub_R HtopR HuiEq). }
+    claim Ht_R : continuous_map unit_square unit_square_topology R R_standard_topology t_coord.
+    { exact (continuous_map_range_expand
+        unit_square unit_square_topology
+        unit_interval unit_interval_topology R R_standard_topology t_coord
+        Ht_cont unit_interval_sub_R HtopR HuiEq). }
+    (** left_term = (1-t)f(s) : unit_square -> R continuous **)
+    claim Hleft_R : continuous_map unit_square unit_square_topology R R_standard_topology left_term.
+    { exact (mul_two_continuous_R unit_square unit_square_topology
+        f_sq one_minus_t HtopSq Hf_sq_R Homt_R). }
+    (** right_term = t times g(s) : unit_square -> R continuous **)
+    claim Hright_R : continuous_map unit_square unit_square_topology R R_standard_topology right_term.
+    { exact (mul_two_continuous_R unit_square unit_square_topology
+        g_sq t_coord HtopSq Hg_sq_R Ht_R). }
+    (** Fraw = left_term + right_term : unit_square -> R continuous **)
+    claim HFraw_R : continuous_map unit_square unit_square_topology R R_standard_topology Fraw.
+    { exact (add_two_continuous_R unit_square unit_square_topology
+        left_term right_term HtopSq Hleft_R Hright_R). }
+    (** Fraw maps into A by convexity **)
+    claim HFraw_in_A : forall x:set, x :e unit_square -> apply_fun Fraw x :e A.
+    { let x. assume Hx.
+      admit. }
+    (** Restrict to subspace topology on A **)
+    claim HFraw_sub : continuous_map unit_square unit_square_topology A
+      (subspace_topology R R_standard_topology A) Fraw.
+    { exact (continuous_map_range_restrict
+        unit_square unit_square_topology R R_standard_topology Fraw A
+        HFraw_R HAsubR HFraw_in_A). }
+    rewrite HTaEq.
+    exact HFraw_sub.
   }
   claim HFs0 :
     forall s:set, s :e unit_interval ->
