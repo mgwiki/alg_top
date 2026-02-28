@@ -79446,6 +79446,24 @@ exact (ReplE'
   Hpointwise).
 Qed.
 
+(** Infrastructure: image subset in a union gives pointwise membership **)
+(** Proven Bob **)
+Theorem image_sub_union_implies_pointwise_in_union : forall N Ft slices:set,
+  image_of Ft N c= Union slices ->
+  forall x:set, x :e N -> apply_fun Ft x :e Union slices.
+let N Ft slices.
+assume HimgSub.
+let x.
+assume HxN.
+exact (HimgSub
+  (apply_fun Ft x)
+  (ReplI
+    N
+    (fun y:set => apply_fun Ft y)
+    x
+    HxN)).
+Qed.
+
 (** Infrastructure: element of a slice lies in the union of slices **)
 (** Proven Bob **)
 Lemma slice_member_in_union : forall slices V x:set,
