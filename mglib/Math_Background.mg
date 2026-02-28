@@ -244731,6 +244731,79 @@ exact (Hinter A B HA HB Hneq).
 Qed.
 
 (** Proven Bob **)
+Theorem general_linear_graph_arcs_equal_if_intersect_two_points :
+  forall X Tx Arcs A B p q:set,
+  general_linear_graph X Tx Arcs ->
+  A :e Arcs ->
+  B :e Arcs ->
+  p :e A -> p :e B ->
+  q :e A -> q :e B ->
+  p <> q ->
+  A = B.
+let X Tx Arcs A B p q.
+assume Hglg HA HB HpA HpB HqA HqB Hpq.
+apply (xm (A = B)).
+- assume Heq. exact Heq.
+- assume Hneq.
+  claim Hcase :
+    A :/\: B = Empty \/
+    (exists r:set, A :/\: B = Sing r /\
+      (exists s:set, end_points_of_arc A (subspace_topology X Tx A) r s \/
+                     end_points_of_arc A (subspace_topology X Tx A) s r) /\
+      (exists t:set, end_points_of_arc B (subspace_topology X Tx B) r t \/
+                     end_points_of_arc B (subspace_topology X Tx B) t r)).
+  {
+    exact (general_linear_graph_arc_intersection_case
+      X
+      Tx
+      Arcs
+      A
+      B
+      Hglg
+      HA
+      HB
+      Hneq).
+  }
+  apply Hcase.
+  * assume Hem.
+    claim HpInter : p :e A :/\: B.
+    { exact (binintersectI A B p HpA HpB). }
+    claim HpEmpty : p :e Empty.
+    { exact (mem_eqR p (A :/\: B) Empty Hem HpInter). }
+    exact (FalseE (EmptyE p HpEmpty) (A = B)).
+  * assume Hex.
+    apply Hex. let r.
+    assume Hrpack.
+    claim HcapEq : A :/\: B = Sing r.
+    {
+      exact (andEL
+        (A :/\: B = Sing r)
+        (exists s:set, end_points_of_arc A (subspace_topology X Tx A) r s \/
+                       end_points_of_arc A (subspace_topology X Tx A) s r)
+        (andEL
+          (A :/\: B = Sing r /\
+           (exists s:set, end_points_of_arc A (subspace_topology X Tx A) r s \/
+                          end_points_of_arc A (subspace_topology X Tx A) s r))
+          (exists t:set, end_points_of_arc B (subspace_topology X Tx B) r t \/
+                         end_points_of_arc B (subspace_topology X Tx B) t r)
+          Hrpack)).
+    }
+    claim HpSing : p :e Sing r.
+    {
+      exact (mem_eqR p (A :/\: B) (Sing r) HcapEq (binintersectI A B p HpA HpB)).
+    }
+    claim HqSing : q :e Sing r.
+    {
+      exact (mem_eqR q (A :/\: B) (Sing r) HcapEq (binintersectI A B q HqA HqB)).
+    }
+    claim Hpeq : p = r. { exact (SingE r p HpSing). }
+    claim Hqeq : q = r. { exact (SingE r q HqSing). }
+    claim Hpqeq : p = q.
+    { rewrite Hpeq. rewrite Hqeq. reflexivity. }
+    exact (FalseE (Hpq Hpqeq) (A = B)).
+Qed.
+
+(** Proven Bob **)
 Theorem general_linear_graph_coherence_closed :
   forall X Tx Arcs C:set,
   general_linear_graph X Tx Arcs ->
