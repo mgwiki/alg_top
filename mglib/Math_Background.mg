@@ -267971,6 +267971,27 @@ exact (and6I
   Hconnp).
 Qed.
 
+(** helper: oriented_edge is symmetric by swapping endpoints. **)
+(** Proven Bob **)
+Theorem oriented_edge_sym :
+  forall X Tx Arcs A ini fin:set,
+  oriented_edge X Tx Arcs A ini fin ->
+  oriented_edge X Tx Arcs A fin ini.
+let X Tx Arcs A ini fin.
+assume Hori.
+claim HAArcs : A :e Arcs.
+{ exact (oriented_edge_in_arcs X Tx Arcs A ini fin Hori). }
+claim Hend : end_points_of_arc A (subspace_topology X Tx A) ini fin.
+{ exact (oriented_edge_endpoints X Tx Arcs A ini fin Hori). }
+claim Hendsym : end_points_of_arc A (subspace_topology X Tx A) fin ini.
+{ exact (end_points_of_arc_sym A (subspace_topology X Tx A) ini fin Hend). }
+exact (andI
+  (A :e Arcs)
+  (end_points_of_arc A (subspace_topology X Tx A) fin ini)
+  HAArcs
+  Hendsym).
+Qed.
+
 (** helper: arcs are connected (via homeomorphism to unit_interval). **)
 (** Proven Charlie **)
 Theorem arc_connected_space :
