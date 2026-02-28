@@ -247124,6 +247124,43 @@ exact (graph_vertices_elem_in_union_arcs
 Qed.
 
 (** Proven Bob **)
+Theorem general_linear_graph_intersection_point_in_union_arcs :
+  forall X Tx Arcs A B x:set,
+  general_linear_graph X Tx Arcs ->
+  A :e Arcs ->
+  B :e Arcs ->
+  A <> B ->
+  x :e A ->
+  x :e B ->
+  x :e Union Arcs.
+let X Tx Arcs A B x.
+assume Hglg HA HB Hneq HxA HxB.
+claim HxV : x :e graph_vertices X Tx Arcs.
+{
+  exact (general_linear_graph_intersection_point_is_vertex
+    X
+    Tx
+    Arcs
+    A
+    B
+    x
+    Hglg
+    HA
+    HB
+    Hneq
+    HxA
+    HxB).
+}
+exact (graph_vertices_subset_union_arcs
+  X
+  Tx
+  Arcs
+  Hglg
+  x
+  HxV).
+Qed.
+
+(** Proven Bob **)
 Theorem graph_vertices_selected_arcs_subset_Y :
   forall X Tx Arcs Y:set,
   graph_vertices X Tx {B :e Arcs | B c= Y} c= Y.
