@@ -265633,6 +265633,19 @@ exact (andEL
 Qed.
 
 (** Proven Bob **)
+Theorem oriented_edge_subset_union_arcs :
+  forall X Tx Arcs A ini fin:set,
+  oriented_edge X Tx Arcs A ini fin ->
+  A c= Union Arcs.
+let X Tx Arcs A ini fin.
+assume Hori.
+exact (arc_in_union_arcs
+  Arcs
+  A
+  (oriented_edge_in_arcs X Tx Arcs A ini fin Hori)).
+Qed.
+
+(** Proven Bob **)
 Theorem oriented_edge_endpoints :
   forall X Tx Arcs A ini fin:set,
   oriented_edge X Tx Arcs A ini fin ->
