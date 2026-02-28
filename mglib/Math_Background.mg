@@ -179039,6 +179039,25 @@ claim G_support_empty_eq_eG : forall f:set, f :e G -> supp f = Empty -> f = eG.
     { exact (eq_subst_mem_set alpha (supp f) Empty HalSupp Hsupp). }
     exact (FalseE (EmptyE alpha HalEmpty) (f alpha = eG alpha)).
 }
+claim G_if_J_empty : J = Empty -> G = {eG}.
+{
+  assume HJ.
+  apply set_ext.
+  - let f. assume Hf : f :e G.
+    claim Hsupp : supp f = Empty.
+    {
+      apply Empty_Subq_eq.
+      let alpha. assume Hal : alpha :e supp f.
+      claim HalJ : alpha :e J.
+      { exact (SepE1 J (fun alpha => f alpha <> ea alpha) alpha Hal). }
+      exact (eq_subst_mem_set alpha J Empty HalJ HJ).
+    }
+    claim HfeG : f = eG. { exact (G_support_empty_eq_eG f Hf Hsupp). }
+    rewrite HfeG. exact (SingI eG).
+  - let f. assume Hf : f :e {eG}.
+    claim HfeG : f = eG. { exact (singleton_elem f eG Hf). }
+    rewrite HfeG. exact HeG_G.
+}
 claim Habel_G : abelian_group G multG eG invG.
 {
   prove group_structure G multG eG invG /\
