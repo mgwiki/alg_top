@@ -74752,6 +74752,69 @@ exact (andI
   Hcomm).
 Qed.
 
+(** Proven Bob **)
+(** Infrastructure: restrict a lifting_of to a subspace **)
+Theorem lifting_of_on_subset : forall X Tx E Te B Tb p f ft N:set,
+  lifting_of X Tx E Te B Tb p f ft ->
+  N c= X ->
+  lifting_of N (subspace_topology X Tx N) E Te B Tb p f ft.
+let X Tx E Te B Tb p f ft N.
+assume Hlift HNsub.
+claim HcontX : continuous_map X Tx E Te ft.
+{
+  exact (andEL
+    (continuous_map X Tx E Te ft)
+    (forall x:set, x :e X -> apply_fun p (apply_fun ft x) = apply_fun f x)
+    Hlift).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (continuous_map_topology_dom
+    X
+    Tx
+    E
+    Te
+    ft
+    HcontX).
+}
+claim HcontN :
+  continuous_map N (subspace_topology X Tx N) E Te ft.
+{
+  exact (continuous_on_subspace
+    X
+    Tx
+    E
+    Te
+    ft
+    N
+    HtopX
+    HNsub
+    HcontX).
+}
+claim HcommN :
+  forall x:set, x :e N -> apply_fun p (apply_fun ft x) = apply_fun f x.
+{
+  exact (lifting_of_commutes_on_subset
+    X
+    Tx
+    E
+    Te
+    B
+    Tb
+    p
+    f
+    ft
+    N
+    Hlift
+    HNsub).
+}
+exact (andI
+  (continuous_map N (subspace_topology X Tx N) E Te ft)
+  (forall x:set, x :e N -> apply_fun p (apply_fun ft x) = apply_fun f x)
+  HcontN
+  HcommN).
+Qed.
+
 (** from S54 Lem 54.1 uniqueness (line 728 in algtop.tex) **)
 (** LATEX VERSION: The lifting of a path is unique. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
