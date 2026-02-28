@@ -47545,8 +47545,183 @@ set p := covering_map_R_S1.
 claim Hcont :
   continuous_map R R_standard_topology S1 S1_topology p.
 {
-  (** TODO Bob: prove continuity of x |-> (cos(2pi x), sin(2pi x)). **)
-  admit.
+  claim HtopR : topology_on R R_standard_topology.
+  { exact R_standard_topology_is_topology_local. }
+  claim HtwoPiR : two_pi :e R.
+  { exact two_pi_in_R. }
+  set idR := graph R (fun x:set => x).
+  claim HidCont : continuous_map R R_standard_topology R R_standard_topology idR.
+  { exact (identity_continuous R R_standard_topology HtopR). }
+  claim HconstTwoPi :
+    continuous_map R R_standard_topology R R_standard_topology (const_fun R two_pi).
+  {
+    exact (const_fun_continuous
+      R R_standard_topology
+      R R_standard_topology
+      two_pi
+      HtopR
+      R_standard_topology_is_topology_local
+      HtwoPiR).
+  }
+  set mul_two_pi := compose_fun R (pair_map R (const_fun R two_pi) idR) mul_fun_R.
+  claim HmulTwoPiCont :
+    continuous_map R R_standard_topology R R_standard_topology mul_two_pi.
+  {
+    exact (mul_two_continuous_R
+      R
+      R_standard_topology
+      (const_fun R two_pi)
+      idR
+      HtopR
+      HconstTwoPi
+      HidCont).
+  }
+  claim HcosCont : continuous_map R R_standard_topology R R_standard_topology cos_real.
+  { exact cos_real_continuous. }
+  claim HsinCont : continuous_map R R_standard_topology R R_standard_topology sin_real.
+  { exact sin_real_continuous. }
+  set cos_comp := compose_fun R mul_two_pi cos_real.
+  set sin_comp := compose_fun R mul_two_pi sin_real.
+  claim HcosCompCont :
+    continuous_map R R_standard_topology R R_standard_topology cos_comp.
+  {
+    exact (composition_continuous
+      R R_standard_topology
+      R R_standard_topology
+      R R_standard_topology
+      mul_two_pi cos_real
+      HmulTwoPiCont HcosCont).
+  }
+  claim HsinCompCont :
+    continuous_map R R_standard_topology R R_standard_topology sin_comp.
+  {
+    exact (composition_continuous
+      R R_standard_topology
+      R R_standard_topology
+      R R_standard_topology
+      mul_two_pi sin_real
+      HmulTwoPiCont HsinCont).
+  }
+  claim HpairCont :
+    continuous_map R R_standard_topology (setprod R R) R2_topology
+      (pair_map R cos_comp sin_comp).
+  {
+    exact (maps_into_products
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      R
+      R_standard_topology
+      cos_comp
+      sin_comp
+      HcosCompCont
+      HsinCompCont).
+  }
+  claim HpFun : function_on p R (setprod R R).
+  {
+    claim HpTot : total_function_on p R (setprod R R).
+    {
+      apply (total_function_on_graph
+        R
+        (setprod R R)
+        (fun x:set =>
+          (apply_fun cos_real (mul_SNo two_pi x),
+           apply_fun sin_real (mul_SNo two_pi x)))).
+      let x. assume HxR.
+      claim HmulR : mul_SNo two_pi x :e R.
+      { exact (real_mul_SNo two_pi HtwoPiR x HxR). }
+      claim HcosR : apply_fun cos_real (mul_SNo two_pi x) :e R.
+      { exact (cos_real_function_on (mul_SNo two_pi x) HmulR). }
+      claim HsinR : apply_fun sin_real (mul_SNo two_pi x) :e R.
+      { exact (sin_real_function_on (mul_SNo two_pi x) HmulR). }
+      exact (tuple_2_setprod_by_pair_Sigma
+        R
+        R
+        (apply_fun cos_real (mul_SNo two_pi x))
+        (apply_fun sin_real (mul_SNo two_pi x))
+        HcosR
+        HsinR).
+    }
+    exact (total_function_on_function_on p R (setprod R R) HpTot).
+  }
+  claim HpEq : forall x:set, x :e R ->
+    apply_fun (pair_map R cos_comp sin_comp) x = apply_fun p x.
+  {
+    let x. assume HxR.
+    claim HconstVal : apply_fun (const_fun R two_pi) x :e R.
+    {
+      rewrite (const_fun_apply R two_pi x HxR).
+      exact HtwoPiR.
+    }
+    claim HidVal : apply_fun idR x :e R.
+    {
+      rewrite (apply_fun_graph R (fun t:set => t) x HxR).
+      exact HxR.
+    }
+    claim HmulVal : apply_fun mul_two_pi x = mul_SNo two_pi x.
+    {
+      rewrite (mul_of_pair_map_apply
+        R
+        (const_fun R two_pi)
+        idR
+        x
+        HxR
+        HconstVal
+        HidVal).
+      rewrite (const_fun_apply R two_pi x HxR).
+      rewrite (apply_fun_graph R (fun t:set => t) x HxR).
+      reflexivity.
+    }
+    rewrite (pair_map_apply R R R cos_comp sin_comp x HxR).
+    rewrite (compose_fun_apply R mul_two_pi cos_real x HxR).
+    rewrite (compose_fun_apply R mul_two_pi sin_real x HxR).
+    rewrite HmulVal.
+    rewrite (apply_fun_graph
+      R
+      (fun t:set =>
+        (apply_fun cos_real (mul_SNo two_pi t),
+         apply_fun sin_real (mul_SNo two_pi t)))
+      x
+      HxR).
+    reflexivity.
+  }
+  claim HpContR2 :
+    continuous_map R R_standard_topology (setprod R R) R2_topology p.
+  {
+    exact (continuous_map_congr_on
+      R
+      R_standard_topology
+      (setprod R R)
+      R2_topology
+      (pair_map R cos_comp sin_comp)
+      p
+      HpairCont
+      HpFun
+      HpEq).
+  }
+  claim HS1sub : S1 c= setprod R R.
+  {
+    exact (Sep_Subq
+      (setprod R R)
+      (fun p:set =>
+        add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) = 1)).
+  }
+  claim HpRange : forall x:set, x :e R -> apply_fun p x :e S1.
+  {
+    let x. assume HxR.
+    exact (covering_map_R_S1_on_S1 x HxR).
+  }
+  exact (continuous_map_range_restrict
+    R
+    R_standard_topology
+    (setprod R R)
+    R2_topology
+    p
+    S1
+    HpContR2
+    HS1sub
+    HpRange).
 }
 claim Hsurj :
   surjective_map R S1 p.
