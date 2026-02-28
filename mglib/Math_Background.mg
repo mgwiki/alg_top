@@ -1,4 +1,4 @@
-(** Balance Alice 3529 **)
+(** Balance Alice 3771 **)
 (** Balance Bob 3507 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
@@ -221575,8 +221575,8 @@ Definition first_homology_inv : set -> set -> set -> set :=
 (** LATEX VERSION: Let F be a group, N normal subgroup, q: F -> F/N projection. **)
 (** p: F -> F/[F,F] induces iso phi: q(F)/[q(F),q(F)] -> p(F)/p(N). **)
 (** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
-(** Bounty 242 **)
-(** Lock Alice 1772338321 **)
+(** Collected Alice 242 **)
+(** Proven Alice **)
 Theorem thm75_1_abelianize_quotient_commute :
   forall F multF eF invF N:set,
   group_structure F multF eF invF ->
@@ -222398,7 +222398,286 @@ claim Hwd_conv : forall f1 f2:set, f1 :e F -> f2 :e F ->
   left_coset mA (left_coset multF f2 CommF) piN ->
   left_coset mN (left_coset multF f1 N) CommFN =
   left_coset mN (left_coset multF f2 N) CommFN.
-{ admit. }
+{ let f1 f2. assume Hf1F : f1 :e F. assume Hf2F : f2 :e F.
+  assume Hpicoset_eq : left_coset mA (left_coset multF f1 CommF) piN =
+    left_coset mA (left_coset multF f2 CommF) piN.
+  claim HsubCommFN : subgroup_of CommFN GN mN eN iN.
+  { exact (andEL
+      (subgroup_of CommFN GN mN eN iN)
+      (forall n0 g:set, n0 :e CommFN -> g :e GN ->
+        apply_fun mN (apply_fun mN (g, n0), apply_fun iN g) :e CommFN)
+      HnormCommFN). }
+  claim Hf1CommF_GA : left_coset multF f1 CommF :e GA.
+  { exact (ReplI F (fun g => left_coset multF g CommF) f1 Hf1F). }
+  claim Hf2CommF_GA : left_coset multF f2 CommF :e GA.
+  { exact (ReplI F (fun g => left_coset multF g CommF) f2 Hf2F). }
+  (** f1 CommF is in f2 CommF piN-coset **)
+  claim HidGA_right : apply_fun mA (left_coset multF f1 CommF, eA) = left_coset multF f1 CommF.
+  { apply (and6E
+      (function_on mA (setprod GA GA) GA) (function_on iA GA GA) (eA :e GA)
+      (forall a b c0:set, a :e GA -> b :e GA -> c0 :e GA ->
+        apply_fun mA (apply_fun mA (a, b), c0) = apply_fun mA (a, apply_fun mA (b, c0)))
+      (forall a:set, a :e GA -> apply_fun mA (eA, a) = a /\ apply_fun mA (a, eA) = a)
+      (forall a:set, a :e GA ->
+        apply_fun mA (a, apply_fun iA a) = eA /\ apply_fun mA (apply_fun iA a, a) = eA)
+      HgrpGA).
+    assume _ _ _ _ HidA _.
+    exact (andER
+      (apply_fun mA (eA, left_coset multF f1 CommF) = left_coset multF f1 CommF)
+      (apply_fun mA (left_coset multF f1 CommF, eA) = left_coset multF f1 CommF)
+      (HidA (left_coset multF f1 CommF) Hf1CommF_GA)). }
+  claim Hf1_self_piN : left_coset multF f1 CommF :e
+    left_coset mA (left_coset multF f1 CommF) piN.
+  { exact (self_in_left_coset mA eA piN (left_coset multF f1 CommF) HeA_in_piN
+      HidGA_right). }
+  claim Hf1_in_f2piN : left_coset multF f1 CommF :e
+    left_coset mA (left_coset multF f2 CommF) piN.
+  { exact (eq_subst_mem_set (left_coset multF f1 CommF)
+      (left_coset mA (left_coset multF f1 CommF) piN)
+      (left_coset mA (left_coset multF f2 CommF) piN)
+      Hf1_self_piN Hpicoset_eq). }
+  (** Extract p in piN with f1 CommF = mA(f2 CommF, p) **)
+  apply (ReplE_impred piN (fun p0:set => apply_fun mA (left_coset multF f2 CommF, p0))
+    (left_coset multF f1 CommF) Hf1_in_f2piN).
+  let p. assume HpPiN : p :e piN.
+  assume Hf1_eq_f2p : left_coset multF f1 CommF = apply_fun mA (left_coset multF f2 CommF, p).
+  (** p = n CommF for some n in N **)
+  apply (ReplE_impred N (fun n0:set => apply_fun (quotient_projection F multF CommF) n0) p HpPiN).
+  let n. assume HnN : n :e N.
+  assume Hp_eq : p = apply_fun (quotient_projection F multF CommF) n.
+  claim HnF : n :e F. { exact (HNsubF n HnN). }
+  claim Hproj_n : apply_fun (quotient_projection F multF CommF) n = left_coset multF n CommF.
+  { exact (apply_fun_of_graph_eq (quotient_projection F multF CommF) F
+      (fun g:set => left_coset multF g CommF) n
+      (eq_refl (quotient_projection F multF CommF)) HnF). }
+  claim Hp_eq2 : p = left_coset multF n CommF. { rewrite Hp_eq. exact Hproj_n. }
+  (** f1 CommF = mA(f2 CommF, n CommF) = (f2 n) CommF **)
+  claim HmA_f2_n : apply_fun mA (left_coset multF f2 CommF, left_coset multF n CommF) =
+    left_coset multF (apply_fun multF (f2, n)) CommF.
+  { exact (quotient_group_mult_on_left_coset_representatives F multF eF invF CommF f2 n
+      HgrpF HnormCommF Hf2F HnF). }
+  claim Hf1CommF_eq : left_coset multF f1 CommF = left_coset multF (apply_fun multF (f2, n)) CommF.
+  { rewrite Hf1_eq_f2p. rewrite Hp_eq2. exact HmA_f2_n. }
+  (** f2 n in F **)
+  claim Hf2nF : apply_fun multF (f2, n) :e F.
+  { apply (and6E
+      (function_on multF (setprod F F) F) (function_on invF F F) (eF :e F)
+      (forall a b c0:set, a :e F -> b :e F -> c0 :e F ->
+        apply_fun multF (apply_fun multF (a, b), c0) = apply_fun multF (a, apply_fun multF (b, c0)))
+      (forall a:set, a :e F -> apply_fun multF (eF, a) = a /\ apply_fun multF (a, eF) = a)
+      (forall a:set, a :e F ->
+        apply_fun multF (a, apply_fun invF a) = eF /\ apply_fun multF (apply_fun invF a, a) = eF)
+      HgrpF).
+    assume HmFn _ _ _ _ _.
+    exact (HmFn (f2, n) (tuple_2_setprod_by_pair_Sigma F F f2 n Hf2F HnF)). }
+  claim HsubCommF : subgroup_of CommF F multF eF invF.
+  { exact (andEL
+      (subgroup_of CommF F multF eF invF)
+      (forall n0 g:set, n0 :e CommF -> g :e F ->
+        apply_fun multF (apply_fun multF (g, n0), apply_fun invF g) :e CommF)
+      HnormCommF). }
+  (** f1 is in (f2 n) CommF coset => extract c in CommF: f1 = (f2 n) c **)
+  claim Hf1_in_f2nCommF : f1 :e left_coset multF (apply_fun multF (f2, n)) CommF.
+  { claim HeF_in_CommF : eF :e CommF.
+    { apply (and4E (CommF c= F) (eF :e CommF)
+        (forall x y:set, x :e CommF -> y :e CommF -> apply_fun multF (x, y) :e CommF)
+        (forall x:set, x :e CommF -> apply_fun invF x :e CommF)
+        HsubCommF).
+      assume _ HeF _ _. exact HeF. }
+    claim HidF_right : apply_fun multF (f1, eF) = f1.
+    { apply (and6E
+        (function_on multF (setprod F F) F) (function_on invF F F) (eF :e F)
+        (forall a b c0:set, a :e F -> b :e F -> c0 :e F ->
+          apply_fun multF (apply_fun multF (a, b), c0) = apply_fun multF (a, apply_fun multF (b, c0)))
+        (forall a:set, a :e F -> apply_fun multF (eF, a) = a /\ apply_fun multF (a, eF) = a)
+        (forall a:set, a :e F ->
+          apply_fun multF (a, apply_fun invF a) = eF /\ apply_fun multF (apply_fun invF a, a) = eF)
+        HgrpF).
+      assume _ _ _ _ HidF _.
+      exact (andER (apply_fun multF (eF, f1) = f1) (apply_fun multF (f1, eF) = f1)
+        (HidF f1 Hf1F)). }
+    claim Hf1_in_f1CommF : f1 :e left_coset multF f1 CommF.
+    { exact (self_in_left_coset multF eF CommF f1 HeF_in_CommF HidF_right). }
+    exact (eq_subst_mem_set f1
+      (left_coset multF f1 CommF)
+      (left_coset multF (apply_fun multF (f2, n)) CommF)
+      Hf1_in_f1CommF Hf1CommF_eq). }
+  apply (ReplE_impred CommF (fun c0:set => apply_fun multF (apply_fun multF (f2, n), c0))
+    f1 Hf1_in_f2nCommF).
+  let c. assume HcCommF : c :e CommF.
+  assume Hf1_eq_f2nc : f1 = apply_fun multF (apply_fun multF (f2, n), c).
+  claim HCommFsubF : CommF c= F.
+  { apply (and4E (CommF c= F) (eF :e CommF)
+      (forall x y:set, x :e CommF -> y :e CommF -> apply_fun multF (x, y) :e CommF)
+      (forall x:set, x :e CommF -> apply_fun invF x :e CommF)
+      HsubCommF).
+    assume HsubF _ _ _. exact HsubF. }
+  claim HcF : c :e F. { exact (HCommFsubF c HcCommF). }
+  (** f1 N = mN(multF(f2,n) N, c N) **)
+  claim Hf1N_eq : left_coset multF f1 N =
+    apply_fun mN (left_coset multF (apply_fun multF (f2, n)) N, left_coset multF c N).
+  { claim Hgen : forall g1 g2:set, g1 :e F -> g2 :e F ->
+      apply_fun multF (g1, g2) = f1 ->
+      left_coset multF f1 N =
+      apply_fun mN (left_coset multF g1 N, left_coset multF g2 N).
+    { let g1 g2. assume Hg1F : g1 :e F. assume Hg2F : g2 :e F.
+      assume Heq : apply_fun multF (g1, g2) = f1.
+      rewrite <- Heq.
+      symmetry. exact (quotient_group_mult_on_left_coset_representatives F multF eF invF N g1 g2
+        HgrpF HnormN Hg1F Hg2F). }
+    exact (Hgen (apply_fun multF (f2, n)) c Hf2nF HcF
+      (eq_symm f1 (apply_fun multF (apply_fun multF (f2, n), c)) Hf1_eq_f2nc)). }
+  (** (f2 n) N = f2 N (since n in N) **)
+  claim Hf2nN_eq : left_coset multF (apply_fun multF (f2, n)) N = left_coset multF f2 N.
+  { claim HmN_eq : apply_fun mN (left_coset multF f2 N, left_coset multF n N) =
+      left_coset multF (apply_fun multF (f2, n)) N.
+    { exact (quotient_group_mult_on_left_coset_representatives F multF eF invF N f2 n
+        HgrpF HnormN Hf2F HnF). }
+    claim Hn_coset_eq_N : left_coset multF n N = N.
+    { exact (subgroup_member_implies_left_coset_eq_subgroup F multF eF invF N
+        n HgrpF HsubN HnN). }
+    claim HeN_eq_N : eN = N.
+    { exact (subgroup_member_implies_left_coset_eq_subgroup F multF eF invF N
+        eF HgrpF HsubN HeF_in_N). }
+    claim HnN_eq_eN : left_coset multF n N = eN.
+    { rewrite Hn_coset_eq_N. symmetry. exact HeN_eq_N. }
+    claim Hf2N_GN : left_coset multF f2 N :e GN.
+    { exact (ReplI F (fun g => left_coset multF g N) f2 Hf2F). }
+    claim HidGN_right_f2 : apply_fun mN (left_coset multF f2 N, eN) = left_coset multF f2 N.
+    { apply (and6E
+        (function_on mN (setprod GN GN) GN) (function_on iN GN GN) (eN :e GN)
+        (forall a b c0:set, a :e GN -> b :e GN -> c0 :e GN ->
+          apply_fun mN (apply_fun mN (a, b), c0) = apply_fun mN (a, apply_fun mN (b, c0)))
+        (forall a:set, a :e GN -> apply_fun mN (eN, a) = a /\ apply_fun mN (a, eN) = a)
+        (forall a:set, a :e GN ->
+          apply_fun mN (a, apply_fun iN a) = eN /\ apply_fun mN (apply_fun iN a, a) = eN)
+        HgrpGN).
+      assume _ _ _ _ HidGN _.
+      exact (andER
+        (apply_fun mN (eN, left_coset multF f2 N) = left_coset multF f2 N)
+        (apply_fun mN (left_coset multF f2 N, eN) = left_coset multF f2 N)
+        (HidGN (left_coset multF f2 N) Hf2N_GN)). }
+    symmetry. rewrite <- HmN_eq. rewrite HnN_eq_eN. symmetry. exact HidGN_right_f2. }
+  (** f1 N = mN(f2 N, c N) **)
+  claim Hf1N_eq2 : left_coset multF f1 N = apply_fun mN (left_coset multF f2 N, left_coset multF c N).
+  { rewrite Hf1N_eq. rewrite Hf2nN_eq. reflexivity. }
+  (** Now need: c N in CommFN **)
+  (** The composition F -> GN -> GN/CommFN = LHS is a group homomorphism **)
+  (** Its kernel contains CommF (by lemma69_3 universal property) since LHS is abelian **)
+  claim HprojN_hom : group_homomorphism F multF GN mN (quotient_projection F multF N).
+  { exact (quotient_projection_group_homomorphism F multF eF invF N HgrpF HnormN). }
+  claim HprojCommFN_hom : group_homomorphism GN mN LHS mLHS (quotient_projection GN mN CommFN).
+  { exact (quotient_projection_group_homomorphism GN mN eN iN CommFN HgrpGN HnormCommFN). }
+  (** Compose: h = proj_CommFN o proj_N : F -> LHS **)
+  claim Hcompose_hom : group_homomorphism F multF LHS mLHS
+    (compose_fun F (quotient_projection F multF N) (quotient_projection GN mN CommFN)).
+  { exact (group_homomorphism_compose_cyclic_helper F multF eF invF GN mN LHS mLHS
+      (quotient_projection F multF N) (quotient_projection GN mN CommFN)
+      HgrpF HprojN_hom HprojCommFN_hom). }
+  (** LHS is abelian, so by universal property: CommF subset kernel of this composition **)
+  claim Hlem69_univ_F : forall H multH eH0 invH h:set,
+    abelian_group H multH eH0 invH ->
+    group_homomorphism F multF H multH h ->
+    CommF c= kernel_of F eH0 h.
+  { exact (andER
+      (normal_subgroup CommF F multF eF invF /\ abelian_group GA mA eA iA)
+      (forall H multH eH0 invH h:set,
+        abelian_group H multH eH0 invH ->
+        group_homomorphism F multF H multH h ->
+        CommF c= kernel_of F eH0 h)
+      (lemma69_3_commutator_subgroup F multF eF invF HgrpF)). }
+  claim HCommF_ker : CommF c= kernel_of F eLHS
+    (compose_fun F (quotient_projection F multF N) (quotient_projection GN mN CommFN)).
+  { exact (Hlem69_univ_F LHS mLHS eLHS iLHS
+      (compose_fun F (quotient_projection F multF N) (quotient_projection GN mN CommFN))
+      HabelLHS Hcompose_hom). }
+  (** c in CommF implies c in kernel, so h(c) = eLHS **)
+  claim Hc_ker : c :e kernel_of F eLHS
+    (compose_fun F (quotient_projection F multF N) (quotient_projection GN mN CommFN)).
+  { exact (HCommF_ker c HcCommF). }
+  claim Hh_c_eq_eLHS : apply_fun
+    (compose_fun F (quotient_projection F multF N) (quotient_projection GN mN CommFN)) c = eLHS.
+  { exact (kernel_of_mem_eq F eLHS
+      (compose_fun F (quotient_projection F multF N) (quotient_projection GN mN CommFN))
+      c Hc_ker). }
+  (** h(c) = proj_CommFN(proj_N(c)) = proj_CommFN(c N) = c N CommFN **)
+  claim HprojN_c : apply_fun (quotient_projection F multF N) c = left_coset multF c N.
+  { exact (apply_fun_of_graph_eq (quotient_projection F multF N) F
+      (fun g:set => left_coset multF g N) c
+      (eq_refl (quotient_projection F multF N)) HcF). }
+  claim HcN_GN : left_coset multF c N :e GN.
+  { exact (ReplI F (fun g => left_coset multF g N) c HcF). }
+  claim HprojCommFN_cN : apply_fun (quotient_projection GN mN CommFN) (left_coset multF c N) =
+    left_coset mN (left_coset multF c N) CommFN.
+  { exact (apply_fun_of_graph_eq (quotient_projection GN mN CommFN) GN
+      (fun g:set => left_coset mN g CommFN) (left_coset multF c N)
+      (eq_refl (quotient_projection GN mN CommFN)) HcN_GN). }
+  claim Hcompose_c : apply_fun
+    (compose_fun F (quotient_projection F multF N) (quotient_projection GN mN CommFN)) c =
+    left_coset mN (left_coset multF c N) CommFN.
+  { rewrite (compose_fun_apply F (quotient_projection F multF N) (quotient_projection GN mN CommFN) c HcF).
+    rewrite HprojN_c. exact HprojCommFN_cN. }
+  (** c N CommFN = eLHS **)
+  claim HcN_CommFN_eq : left_coset mN (left_coset multF c N) CommFN = eLHS.
+  { rewrite <- Hcompose_c. exact Hh_c_eq_eLHS. }
+  (** eLHS = CommFN (since eN in CommFN) **)
+  claim HeN_in_CommFN : eN :e CommFN.
+  { apply (and4E (CommFN c= GN) (eN :e CommFN)
+      (forall x y:set, x :e CommFN -> y :e CommFN -> apply_fun mN (x, y) :e CommFN)
+      (forall x:set, x :e CommFN -> apply_fun iN x :e CommFN)
+      HsubCommFN).
+    assume _ HeN _ _. exact HeN. }
+  claim HeLHS_eq_CommFN : eLHS = CommFN.
+  { exact (subgroup_member_implies_left_coset_eq_subgroup GN mN eN iN CommFN
+      eN HgrpGN HsubCommFN HeN_in_CommFN). }
+  claim HcN_CommFN_eq2 : left_coset mN (left_coset multF c N) CommFN = CommFN.
+  { rewrite HcN_CommFN_eq. exact HeLHS_eq_CommFN. }
+  (** c N in CommFN (since c N CommFN = CommFN, by left_coset_eq_subgroup_implies_member) **)
+  claim HcN_in_CommFN : left_coset multF c N :e CommFN.
+  { exact (left_coset_eq_subgroup_implies_member GN mN eN iN CommFN
+      (left_coset multF c N) HgrpGN HsubCommFN HcN_GN HcN_CommFN_eq2). }
+  (** Now: f1 N = mN(f2 N, c N) with c N in CommFN **)
+  (** So f1 N in left_coset mN (f2 N) CommFN **)
+  claim Hf1N_in_f2N_CommFN : left_coset multF f1 N :e
+    left_coset mN (left_coset multF f2 N) CommFN.
+  { rewrite Hf1N_eq2. exact (ReplI CommFN
+      (fun c0:set => apply_fun mN (left_coset multF f2 N, c0))
+      (left_coset multF c N) HcN_in_CommFN). }
+  (** Use quotient arithmetic to conclude coset equality **)
+  claim Hf2N_GN : left_coset multF f2 N :e GN.
+  { exact (ReplI F (fun g => left_coset multF g N) f2 Hf2F). }
+  claim Hquot_mult_eq : apply_fun mLHS (left_coset mN (left_coset multF f2 N) CommFN,
+    left_coset mN (left_coset multF c N) CommFN) =
+    left_coset mN (apply_fun mN (left_coset multF f2 N, left_coset multF c N)) CommFN.
+  { exact (quotient_group_mult_on_left_coset_representatives GN mN eN iN CommFN
+      (left_coset multF f2 N) (left_coset multF c N) HgrpGN HnormCommFN Hf2N_GN HcN_GN). }
+  claim HidLHS_right : apply_fun mLHS (left_coset mN (left_coset multF f2 N) CommFN, eLHS) =
+    left_coset mN (left_coset multF f2 N) CommFN.
+  { claim Hf2N_CommFN_LHS : left_coset mN (left_coset multF f2 N) CommFN :e LHS.
+    { exact (ReplI GN (fun c0 => left_coset mN c0 CommFN) (left_coset multF f2 N) Hf2N_GN). }
+    apply (and6E
+      (function_on mLHS (setprod LHS LHS) LHS) (function_on iLHS LHS LHS) (eLHS :e LHS)
+      (forall a b c0:set, a :e LHS -> b :e LHS -> c0 :e LHS ->
+        apply_fun mLHS (apply_fun mLHS (a, b), c0) = apply_fun mLHS (a, apply_fun mLHS (b, c0)))
+      (forall a:set, a :e LHS -> apply_fun mLHS (eLHS, a) = a /\ apply_fun mLHS (a, eLHS) = a)
+      (forall a:set, a :e LHS ->
+        apply_fun mLHS (a, apply_fun iLHS a) = eLHS /\ apply_fun mLHS (apply_fun iLHS a, a) = eLHS)
+      HgrpLHS).
+    assume _ _ _ _ HidLHS _.
+    exact (andER
+      (apply_fun mLHS (eLHS, left_coset mN (left_coset multF f2 N) CommFN) =
+       left_coset mN (left_coset multF f2 N) CommFN)
+      (apply_fun mLHS (left_coset mN (left_coset multF f2 N) CommFN, eLHS) =
+       left_coset mN (left_coset multF f2 N) CommFN)
+      (HidLHS (left_coset mN (left_coset multF f2 N) CommFN) Hf2N_CommFN_LHS)). }
+  (** Final chain **)
+  rewrite Hf1N_eq2.
+  symmetry. rewrite <- Hquot_mult_eq.
+  rewrite HcN_CommFN_eq.
+  exact (eq_symm
+    (apply_fun mLHS (left_coset mN (left_coset multF f2 N) CommFN, eLHS))
+    (left_coset mN (left_coset multF f2 N) CommFN)
+    HidLHS_right). }
 (** Step 5: Prove the group isomorphism **)
 witness phi.
 (** group_isomorphism = group_homomorphism /\ bijection **)
@@ -222609,7 +222888,7 @@ apply (andI
       { exact (Hwd_conv gx g0 HgxF Hg0F Hsame_RHS_x). }
       (** x' = gx coset = g0 coset = d0 **)
       rewrite <- Hgx_eq. exact Hsame_LHS_x.
-Admitted.
+Qed.
 
 (** from S75 Cor 75.2 (line 4083 in algtop.tex): for free groups **)
 (** LATEX VERSION: Let F be free with generators alpha1,...,alphan; **)
