@@ -87310,6 +87310,40 @@ rewrite (constant_path_apply e0 t Ht).
 reflexivity.
 Qed.
 
+(** Infrastructure: constant path lifts stay fixed at t=1 **)
+(** Proven Bob **)
+Lemma constant_path_lift_at_one : forall E Te B Tb p e0 b0 ft:set,
+  covering_map E Te B Tb p ->
+  e0 :e E ->
+  b0 :e B ->
+  apply_fun p e0 = b0 ->
+  lifting_of unit_interval unit_interval_topology E Te B Tb p (constant_path b0) ft ->
+  apply_fun ft 0 = e0 ->
+  apply_fun ft 1 = e0.
+let E Te B Tb p e0 b0 ft.
+assume Hcov He0 Hb0 Hpe0 Hlift Hft0.
+claim Hconst :
+  forall t:set, t :e unit_interval -> apply_fun ft t = e0.
+{
+  exact (constant_path_lift_is_constant
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    b0
+    ft
+    Hcov
+    He0
+    Hb0
+    Hpe0
+    Hlift
+    Hft0).
+}
+exact (Hconst 1 one_in_unit_interval).
+Qed.
+
 (** from S54 Lem 54.2 path homotopy preservation (line 783 in algtop.tex) **)
 (** LATEX VERSION: If F is a path homotopy, then the lift F_tilde is also a path homotopy. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
