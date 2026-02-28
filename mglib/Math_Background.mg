@@ -270804,6 +270804,200 @@ apply set_ext.
       HxSing).
 Qed.
 
+(** helper: any subgraph of a GLG is closed in the ambient space **)
+(** Proven Alice **)
+Theorem subgraph_closed_in_ambient :
+  forall Y X Tx Arcs:set,
+  subgraph_of Y X Tx Arcs ->
+  closed_in X Tx Y.
+let Y X Tx Arcs.
+assume Hsub : subgraph_of Y X Tx Arcs.
+claim HglgX : general_linear_graph X Tx Arcs.
+{ exact (subgraph_of_general_linear_graph Y X Tx Arcs Hsub). }
+claim HYsubX : Y c= X.
+{ exact (subgraph_of_subset Y X Tx Arcs Hsub). }
+claim HtopX : topology_on X Tx.
+{ exact (general_linear_graph_topology_on X Tx Arcs HglgX). }
+claim HYeqUnion : Y = Union {A :e Arcs | A c= Y}.
+{ apply (and3E
+    (general_linear_graph X Tx Arcs) (Y c= X) (Y = Union {A :e Arcs | A c= Y})
+    Hsub).
+  assume _ _ Heq. exact Heq. }
+claim Hcoh : closed_in X Tx Y <->
+  (forall B:set, B :e Arcs ->
+    closed_in B (subspace_topology X Tx B) (Y :/\: B)).
+{ exact (general_linear_graph_coherence_closed X Tx Arcs Y HglgX HYsubX). }
+apply (iffER
+  (closed_in X Tx Y)
+  (forall B:set, B :e Arcs -> closed_in B (subspace_topology X Tx B) (Y :/\: B))
+  Hcoh).
+let B. assume HBArcs : B :e Arcs.
+claim HBdata : B c= X /\ arc B (subspace_topology X Tx B).
+{ exact (general_linear_graph_arc_data X Tx Arcs B HglgX HBArcs). }
+claim HBsubX : B c= X.
+{ exact (andEL (B c= X) (arc B (subspace_topology X Tx B)) HBdata). }
+claim HarcB : arc B (subspace_topology X Tx B).
+{ exact (andER (B c= X) (arc B (subspace_topology X Tx B)) HBdata). }
+claim HHausB : Hausdorff_space B (subspace_topology X Tx B).
+{ exact (arc_Hausdorff_space B (subspace_topology X Tx B) HarcB). }
+claim HYBsubB : Y :/\: B c= B.
+{ let x. assume Hx. exact (binintersectE2 Y B x Hx). }
+apply (xm (B c= Y)).
+- assume HBsubY : B c= Y.
+  claim HYBEqB : Y :/\: B = B.
+  { apply set_ext.
+    - let x. assume Hx. exact (binintersectE2 Y B x Hx).
+    - let x. assume HxB.
+      exact (binintersectI Y B x (HBsubY x HxB) HxB). }
+  rewrite HYBEqB.
+  exact (X_is_closed B (subspace_topology X Tx B)
+    (subspace_topology_is_topology X Tx B HtopX HBsubX)).
+- assume HBnotsubY : ~(B c= Y).
+  claim HYBfinite : finite (Y :/\: B).
+  { claim HYBsubEndpts :
+      forall x:set, x :e Y :/\: B ->
+        exists V:set, V :e {A :e Arcs | A c= Y} /\ x :e V /\ x :e B.
+    { let x. assume Hx.
+      claim HxY : x :e Y. { exact (binintersectE1 Y B x Hx). }
+      claim HxB : x :e B. { exact (binintersectE2 Y B x Hx). }
+      claim HxUnion : x :e Union {A :e Arcs | A c= Y}.
+      { exact (eq_subst_mem_set x Y (Union {A :e Arcs | A c= Y}) HxY HYeqUnion). }
+      apply (UnionE_impred {A :e Arcs | A c= Y} x HxUnion).
+      let V. assume HxV : x :e V.
+      assume HVsel : V :e {A :e Arcs | A c= Y}.
+      witness V. apply and3I.
+      - exact HVsel.
+      - exact HxV.
+      - exact HxB. }
+    (** Get endpoints p0, q0 of B **)
+    claim HBEndpts : exists p q:set, end_points_of_arc B (subspace_topology X Tx B) p q.
+    { exact (arc_has_end_points_of_arc_early B (subspace_topology X Tx B) HarcB). }
+    apply HBEndpts. let p0. assume HBEndpts2.
+    apply HBEndpts2. let q0. assume Hendp0q0 : end_points_of_arc B (subspace_topology X Tx B) p0 q0.
+    (** Y :/\: B c= UPair p0 q0 **)
+    claim HYBsubUPair : Y :/\: B c= UPair p0 q0.
+    { let x. assume HxYB : x :e Y :/\: B.
+      apply (HYBsubEndpts x HxYB).
+      let V. assume HVdata : V :e {A :e Arcs | A c= Y} /\ x :e V /\ x :e B.
+      claim HVsel : V :e {A :e Arcs | A c= Y}.
+      { exact (andEL
+          (V :e {A :e Arcs | A c= Y})
+          (x :e V)
+          (andEL (V :e {A :e Arcs | A c= Y} /\ x :e V) (x :e B) HVdata)). }
+      claim HxV : x :e V.
+      { exact (andER
+          (V :e {A :e Arcs | A c= Y})
+          (x :e V)
+          (andEL (V :e {A :e Arcs | A c= Y} /\ x :e V) (x :e B) HVdata)). }
+      claim HxB : x :e B.
+      { exact (andER (V :e {A :e Arcs | A c= Y} /\ x :e V) (x :e B) HVdata). }
+      (** Extract V :e Arcs and V c= Y from Sep **)
+      claim HVArcs : V :e Arcs.
+      { exact (andEL (V :e Arcs) (V c= Y) (SepE Arcs (fun A => A c= Y) V HVsel)). }
+      claim HVsubY : V c= Y.
+      { exact (andER (V :e Arcs) (V c= Y) (SepE Arcs (fun A => A c= Y) V HVsel)). }
+      (** V <> B because V c= Y but B is not c= Y **)
+      claim HVneB : V <> B.
+      { assume HVeqB : V = B.
+        apply HBnotsubY.
+        let z. assume HzB : z :e B.
+        exact (HVsubY z (eq_subst_mem_set z B V HzB (eq_symm V B HVeqB))). }
+      (** By arc intersection: V :/\: B = Empty or Sing p **)
+      apply (general_linear_graph_arc_intersection_case X Tx Arcs V B HglgX HVArcs HBArcs HVneB).
+      + (** Case V :/\: B = Empty: contradiction since x :e V :/\: B **)
+        assume HVBempty : V :/\: B = Empty.
+        claim HxVB : x :e V :/\: B. { exact (binintersectI V B x HxV HxB). }
+        exact (EmptyE x (eq_subst_mem_set x (V :/\: B) Empty HxVB HVBempty)
+          (x :e UPair p0 q0)).
+      + (** Case exists p, V :/\: B = Sing p and p is endpoint of both **)
+        assume Hex : exists p:set, V :/\: B = Sing p /\
+          (exists q:set, end_points_of_arc V (subspace_topology X Tx V) p q \/
+                         end_points_of_arc V (subspace_topology X Tx V) q p) /\
+          (exists r:set, end_points_of_arc B (subspace_topology X Tx B) p r \/
+                         end_points_of_arc B (subspace_topology X Tx B) r p).
+        apply Hex. let p.
+        assume Hpdata : V :/\: B = Sing p /\
+          (exists q:set, end_points_of_arc V (subspace_topology X Tx V) p q \/
+                         end_points_of_arc V (subspace_topology X Tx V) q p) /\
+          (exists r:set, end_points_of_arc B (subspace_topology X Tx B) p r \/
+                         end_points_of_arc B (subspace_topology X Tx B) r p).
+        (** Hpdata : ((A /\ B) /\ C) where A=VB=Singp, B=exists q..., C=exists r... **)
+        claim HVBeqSingp : V :/\: B = Sing p.
+        { exact (andEL (V :/\: B = Sing p)
+            (exists q:set, end_points_of_arc V (subspace_topology X Tx V) p q \/
+                           end_points_of_arc V (subspace_topology X Tx V) q p)
+            (andEL
+              (V :/\: B = Sing p /\
+               (exists q:set, end_points_of_arc V (subspace_topology X Tx V) p q \/
+                             end_points_of_arc V (subspace_topology X Tx V) q p))
+              (exists r:set, end_points_of_arc B (subspace_topology X Tx B) p r \/
+                           end_points_of_arc B (subspace_topology X Tx B) r p)
+              Hpdata)). }
+        (** x :e Sing p, so x = p **)
+        claim HxVB : x :e V :/\: B. { exact (binintersectI V B x HxV HxB). }
+        claim HxSingp : x :e Sing p.
+        { exact (eq_subst_mem_set x (V :/\: B) (Sing p) HxVB HVBeqSingp). }
+        claim Hxeqp : x = p. { exact (SingE p x HxSingp). }
+        (** p is endpoint of B: extract from Hpdata **)
+        claim HpEndB : exists r:set, end_points_of_arc B (subspace_topology X Tx B) p r \/
+                         end_points_of_arc B (subspace_topology X Tx B) r p.
+        { exact (andER
+            (V :/\: B = Sing p /\
+             (exists q:set, end_points_of_arc V (subspace_topology X Tx V) p q \/
+                           end_points_of_arc V (subspace_topology X Tx V) q p))
+            (exists r:set, end_points_of_arc B (subspace_topology X Tx B) p r \/
+                           end_points_of_arc B (subspace_topology X Tx B) r p)
+            Hpdata). }
+        (** Extract p :e B and connected_space (B :\: Sing p) ... **)
+        claim HpB : p :e B.
+        { apply HpEndB. let r.
+          assume Hcases : end_points_of_arc B (subspace_topology X Tx B) p r \/
+                          end_points_of_arc B (subspace_topology X Tx B) r p.
+          apply Hcases.
+          - assume H : end_points_of_arc B (subspace_topology X Tx B) p r.
+            exact (end_points_of_arc_left_in_set B (subspace_topology X Tx B) p r H).
+          - assume H : end_points_of_arc B (subspace_topology X Tx B) r p.
+            exact (end_points_of_arc_right_in_set B (subspace_topology X Tx B) r p H). }
+        claim HpConn : connected_space (B :\: (Sing p))
+          (subspace_topology B (subspace_topology X Tx B) (B :\: (Sing p))).
+        { apply HpEndB. let r.
+          assume Hcases : end_points_of_arc B (subspace_topology X Tx B) p r \/
+                          end_points_of_arc B (subspace_topology X Tx B) r p.
+          apply Hcases.
+          - assume H : end_points_of_arc B (subspace_topology X Tx B) p r.
+            apply (and6E
+              (arc B (subspace_topology X Tx B))
+              (p :e B) (r :e B) (p <> r)
+              (connected_space (B :\: (Sing p))
+                (subspace_topology B (subspace_topology X Tx B) (B :\: (Sing p))))
+              (connected_space (B :\: (Sing r))
+                (subspace_topology B (subspace_topology X Tx B) (B :\: (Sing r))))
+              H).
+            assume _ _ _ _ HconnP _. exact HconnP.
+          - assume H : end_points_of_arc B (subspace_topology X Tx B) r p.
+            apply (and6E
+              (arc B (subspace_topology X Tx B))
+              (r :e B) (p :e B) (r <> p)
+              (connected_space (B :\: (Sing r))
+                (subspace_topology B (subspace_topology X Tx B) (B :\: (Sing r))))
+              (connected_space (B :\: (Sing p))
+                (subspace_topology B (subspace_topology X Tx B) (B :\: (Sing p))))
+              H).
+            assume _ _ _ _ _ HconnP. exact HconnP. }
+        (** By end_points_of_arc_connected_complement_implies_endpoint: p = p0 \/ p = q0 **)
+        claim Hpeq : p = p0 \/ p = q0.
+        { exact (end_points_of_arc_connected_complement_implies_endpoint
+            B (subspace_topology X Tx B) p0 q0 p Hendp0q0 HpB HpConn). }
+        (** x = p and p = p0 \/ p = q0, so x :e UPair p0 q0 **)
+        rewrite Hxeqp.
+        apply Hpeq.
+        - assume Hpp0 : p = p0. rewrite Hpp0. exact (UPairI1 p0 q0).
+        - assume Hpq0 : p = q0. rewrite Hpq0. exact (UPairI2 p0 q0). }
+    exact (Subq_finite (UPair p0 q0) (finite_UPair p0 q0) (Y :/\: B) HYBsubUPair). }
+  exact (finite_sets_closed_in_Hausdorff B (subspace_topology X Tx B)
+    HHausB (Y :/\: B) HYBsubB HYBfinite).
+Qed.
+
 (** helper: general linear graph structure on the tree extension union **)
 Theorem lemma84_2_tree_extension_general_linear_graph_part :
   forall T ArcsT X Tx Arcs A:set,
