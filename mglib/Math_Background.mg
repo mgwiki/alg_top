@@ -161902,6 +161902,41 @@ Definition abelian_group : set -> set -> set -> set -> prop :=
     (forall x y:set, x :e G -> y :e G ->
       apply_fun mult (x, y) = apply_fun mult (y, x)).
 
+(** Helper: abelian group has underlying group structure **)
+(** Proven Bob **)
+Lemma abelian_group_implies_group_structure :
+  forall G mult e inv:set,
+  abelian_group G mult e inv ->
+  group_structure G mult e inv.
+let G mult e inv.
+assume Hab.
+exact (andEL
+  (group_structure G mult e inv)
+  (forall x y:set, x :e G -> y :e G ->
+    apply_fun mult (x, y) = apply_fun mult (y, x))
+  Hab).
+Qed.
+
+(** Helper: commutativity in an abelian group **)
+(** Proven Bob **)
+Lemma abelian_group_commutative :
+  forall G mult e inv x y:set,
+  abelian_group G mult e inv ->
+  x :e G -> y :e G ->
+  apply_fun mult (x, y) = apply_fun mult (y, x).
+let G mult e inv x y.
+assume Hab Hx Hy.
+exact (andER
+  (group_structure G mult e inv)
+  (forall x y:set, x :e G -> y :e G ->
+    apply_fun mult (x, y) = apply_fun mult (y, x))
+  Hab
+  x
+  y
+  Hx
+  Hy).
+Qed.
+
 (** from S60 Thm 60.1 (line 1639 in algtop.tex) **)
 (** LATEX VERSION: pi_1(X x Y, x0 x y0) is isomorphic with pi_1(X, x0) x pi_1(Y, y0). **)
 (** EFFORT: 20 lines textbook, difficulty 5/10, USD 200 **)
