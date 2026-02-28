@@ -246319,6 +246319,18 @@ exact HqX.
 Qed.
 
 (** Proven Bob **)
+Theorem arc_in_union_arcs :
+  forall Arcs A:set,
+  A :e Arcs ->
+  A c= Union Arcs.
+let Arcs A.
+assume HA.
+let x.
+assume HxA.
+exact (UnionI Arcs x A HxA HA).
+Qed.
+
+(** Proven Bob **)
 Theorem arc_endpoint_left_in_union_arcs :
   forall X Tx Arcs A p q:set,
   A :e Arcs ->
