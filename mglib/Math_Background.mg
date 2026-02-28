@@ -188001,6 +188001,205 @@ exact (eq_i_tra
     HidR_z)).
 Qed.
 
+(** Infrastructure: solve for the suffix product via left cancellation **)
+(** Proven Bob **)
+Lemma word_product_suffix_by_cancel : forall G mult e inv m xs:set,
+  group_structure G mult e inv ->
+  nat_p m ->
+  (forall i:set, i :e ordsucc m -> apply_fun xs i :e G) ->
+  let xs_suf := graph m (fun i:set => apply_fun xs (ordsucc i)) in
+  word_product mult e xs_suf m =
+    apply_fun mult (apply_fun inv (apply_fun xs 0), word_product mult e xs (ordsucc m)).
+let G mult e inv m xs.
+assume Hgrp Hm_nat HxsG.
+set xs_suf := graph m (fun i:set => apply_fun xs (ordsucc i)).
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume HmultF HinvF HeG HassocG HidG HinvG.
+claim Hx0_G : apply_fun xs 0 :e G.
+{
+  exact (HxsG
+    0
+    (nat_0_in_ordsucc
+      m
+      Hm_nat)).
+}
+claim Hinvx0_G : apply_fun inv (apply_fun xs 0) :e G.
+{
+  exact (HinvF
+    (apply_fun xs 0)
+    Hx0_G).
+}
+claim Hxs_suf_in_G : forall i:set, i :e m -> apply_fun xs_suf i :e G.
+{
+  let i.
+  assume Hi_m.
+  claim Hsi_sm : ordsucc i :e ordsucc m.
+  {
+    exact (nat_ordsucc_in_ordsucc
+      m
+      Hm_nat
+      i
+      Hi_m).
+  }
+  rewrite (apply_fun_graph
+    m
+    (fun j:set => apply_fun xs (ordsucc j))
+    i
+    Hi_m).
+  exact (HxsG
+    (ordsucc i)
+    Hsi_sm).
+}
+claim Hwp_suf_G : word_product mult e xs_suf m :e G.
+{
+  exact (word_product_in_G_group
+    G
+    mult
+    e
+    inv
+    m
+    xs_suf
+    Hgrp
+    Hm_nat
+    Hxs_suf_in_G).
+}
+claim Hsm_nat : nat_p (ordsucc m).
+{
+  exact (nat_ordsucc
+    m
+    Hm_nat).
+}
+claim Hwp_sm_G : word_product mult e xs (ordsucc m) :e G.
+{
+  exact (word_product_in_G_group
+    G
+    mult
+    e
+    inv
+    (ordsucc m)
+    xs
+    Hgrp
+    Hsm_nat
+    HxsG).
+}
+claim Hwp_shift_m : word_product mult e xs (ordsucc m) =
+  apply_fun mult (apply_fun xs 0, word_product mult e xs_suf m).
+{
+  exact (word_product_shift_first
+    G
+    mult
+    e
+    inv
+    m
+    xs
+    Hgrp
+    Hm_nat
+    HxsG
+    m
+    Hm_nat
+    (ordsuccI2 m)).
+}
+claim Hassoc_step :
+  apply_fun mult (apply_fun xs 0, apply_fun mult (apply_fun inv (apply_fun xs 0), word_product mult e xs (ordsucc m))) =
+  apply_fun mult (apply_fun mult (apply_fun xs 0, apply_fun inv (apply_fun xs 0)), word_product mult e xs (ordsucc m)).
+{
+  symmetry.
+  exact (HassocG
+    (apply_fun xs 0)
+    (apply_fun inv (apply_fun xs 0))
+    (word_product mult e xs (ordsucc m))
+    Hx0_G
+    Hinvx0_G
+    Hwp_sm_G).
+}
+claim Hlinv : apply_fun mult (apply_fun xs 0, apply_fun inv (apply_fun xs 0)) = e.
+{
+  exact (andEL
+    (apply_fun mult (apply_fun xs 0, apply_fun inv (apply_fun xs 0)) = e)
+    (apply_fun mult (apply_fun inv (apply_fun xs 0), apply_fun xs 0) = e)
+    (HinvG
+      (apply_fun xs 0)
+      Hx0_G)).
+}
+claim HidL_wp : apply_fun mult (e, word_product mult e xs (ordsucc m)) =
+  word_product mult e xs (ordsucc m).
+{
+  exact (andEL
+    (apply_fun mult (e, word_product mult e xs (ordsucc m)) = word_product mult e xs (ordsucc m))
+    (apply_fun mult (word_product mult e xs (ordsucc m), e) = word_product mult e xs (ordsucc m))
+    (HidG
+      (word_product mult e xs (ordsucc m))
+      Hwp_sm_G)).
+}
+claim Hrhs_eq :
+  apply_fun mult (apply_fun xs 0, apply_fun mult (apply_fun inv (apply_fun xs 0), word_product mult e xs (ordsucc m))) =
+  word_product mult e xs (ordsucc m).
+{
+  rewrite Hassoc_step.
+  rewrite Hlinv.
+  exact HidL_wp.
+}
+claim Hrhs_eq_sym :
+  word_product mult e xs (ordsucc m) =
+  apply_fun mult (apply_fun xs 0, apply_fun mult (apply_fun inv (apply_fun xs 0), word_product mult e xs (ordsucc m))).
+{
+  symmetry.
+  exact Hrhs_eq.
+}
+claim Hlhs_eq :
+  apply_fun mult (apply_fun xs 0, word_product mult e xs_suf m) =
+  word_product mult e xs (ordsucc m).
+{
+  symmetry.
+  exact Hwp_shift_m.
+}
+claim Hlhs_rhs :
+  apply_fun mult (apply_fun xs 0, word_product mult e xs_suf m) =
+  apply_fun mult (apply_fun xs 0, apply_fun mult (apply_fun inv (apply_fun xs 0), word_product mult e xs (ordsucc m))).
+{
+  exact (eq_i_tra
+    (apply_fun mult (apply_fun xs 0, word_product mult e xs_suf m))
+    (word_product mult e xs (ordsucc m))
+    (apply_fun mult (apply_fun xs 0, apply_fun mult (apply_fun inv (apply_fun xs 0), word_product mult e xs (ordsucc m))))
+    Hlhs_eq
+    Hrhs_eq_sym).
+}
+claim Hz_G : apply_fun mult (apply_fun inv (apply_fun xs 0), word_product mult e xs (ordsucc m)) :e G.
+{
+  exact (HmultF
+    (apply_fun inv (apply_fun xs 0), word_product mult e xs (ordsucc m))
+    (tuple_2_setprod_by_pair_Sigma
+      G
+      G
+      (apply_fun inv (apply_fun xs 0))
+      (word_product mult e xs (ordsucc m))
+      Hinvx0_G
+      Hwp_sm_G)).
+}
+exact (group_left_cancel
+  G
+  mult
+  e
+  inv
+  (apply_fun xs 0)
+  (word_product mult e xs_suf m)
+  (apply_fun mult (apply_fun inv (apply_fun xs 0), word_product mult e xs (ordsucc m)))
+  Hgrp
+  Hx0_G
+  Hwp_suf_G
+  Hz_G
+  Hlhs_rhs).
+Qed.
+
 (** from S68 Definition (line 2742 in algtop.tex): free product of subgroups **)
 (** LATEX VERSION: G is the free product of {G_alpha} if G_alpha cap G_beta = {1} **)
 (** for alpha <> beta, the G_alpha generate G, and each x in G has a unique **)
