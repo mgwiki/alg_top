@@ -270718,6 +270718,74 @@ claim HTsubX : T c= X.
 exact (HTsubX q HqT).
 Qed.
 
+(** helper: left endpoint of a tree arc lies in Union Arcs. **)
+(** Proven Bob **)
+Theorem tree_in_graph_arc_endpoint_left_in_union_arcs :
+  forall T ArcsT X Tx Arcs V p q:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  V :e ArcsT ->
+  end_points_of_arc V (subspace_topology T (subspace_topology X Tx T) V) p q ->
+  p :e Union Arcs.
+let T ArcsT X Tx Arcs V p q.
+assume Htree HV Hend.
+claim HpV : p :e V.
+{
+  exact (end_points_of_arc_left_in_set
+    V
+    (subspace_topology T (subspace_topology X Tx T) V)
+    p
+    q
+    Hend).
+}
+claim HVsubU : V c= Union Arcs.
+{
+  exact (tree_in_graph_arc_subset_union_arcs
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    V
+    Htree
+    HV).
+}
+exact (HVsubU p HpV).
+Qed.
+
+(** helper: right endpoint of a tree arc lies in Union Arcs. **)
+(** Proven Bob **)
+Theorem tree_in_graph_arc_endpoint_right_in_union_arcs :
+  forall T ArcsT X Tx Arcs V p q:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  V :e ArcsT ->
+  end_points_of_arc V (subspace_topology T (subspace_topology X Tx T) V) p q ->
+  q :e Union Arcs.
+let T ArcsT X Tx Arcs V p q.
+assume Htree HV Hend.
+claim HqV : q :e V.
+{
+  exact (end_points_of_arc_right_in_set
+    V
+    (subspace_topology T (subspace_topology X Tx T) V)
+    p
+    q
+    Hend).
+}
+claim HVsubU : V c= Union Arcs.
+{
+  exact (tree_in_graph_arc_subset_union_arcs
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    V
+    Htree
+    HV).
+}
+exact (HVsubU q HqV).
+Qed.
+
 (** Proven Bob **)
 Theorem maximal_tree_subset_union_arcs :
   forall T ArcsT X Tx Arcs:set,
