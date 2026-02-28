@@ -265121,6 +265121,54 @@ exact (HAcX
 Qed.
 
 (** Proven Bob **)
+Theorem oriented_edge_initial_vertex_in_graph_vertices :
+  forall X Tx Arcs A ini fin:set,
+  general_linear_graph X Tx Arcs ->
+  oriented_edge X Tx Arcs A ini fin ->
+  ini :e graph_vertices X Tx Arcs.
+let X Tx Arcs A ini fin.
+assume Hglg Hori.
+claim HAArcs : A :e Arcs.
+{ exact (oriented_edge_in_arcs X Tx Arcs A ini fin Hori). }
+claim Hend : end_points_of_arc A (subspace_topology X Tx A) ini fin.
+{ exact (oriented_edge_endpoints X Tx Arcs A ini fin Hori). }
+exact (graph_vertices_intro_from_endpoint_left
+  X
+  Tx
+  Arcs
+  A
+  ini
+  fin
+  Hglg
+  HAArcs
+  Hend).
+Qed.
+
+(** Proven Bob **)
+Theorem oriented_edge_final_vertex_in_graph_vertices :
+  forall X Tx Arcs A ini fin:set,
+  general_linear_graph X Tx Arcs ->
+  oriented_edge X Tx Arcs A ini fin ->
+  fin :e graph_vertices X Tx Arcs.
+let X Tx Arcs A ini fin.
+assume Hglg Hori.
+claim HAArcs : A :e Arcs.
+{ exact (oriented_edge_in_arcs X Tx Arcs A ini fin Hori). }
+claim Hend : end_points_of_arc A (subspace_topology X Tx A) ini fin.
+{ exact (oriented_edge_endpoints X Tx Arcs A ini fin Hori). }
+exact (graph_vertices_intro_from_endpoint_right
+  X
+  Tx
+  Arcs
+  A
+  ini
+  fin
+  Hglg
+  HAArcs
+  Hend).
+Qed.
+
+(** Proven Bob **)
 Theorem edge_path_n_in_omega :
   forall X Tx Arcs n path_seq x0:set,
   edge_path X Tx Arcs n path_seq x0 ->
