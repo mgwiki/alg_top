@@ -194563,8 +194563,391 @@ apply (nat_inv nw Hnw_nat).
                     rewrite Hwp_ie_succ.
                     reflexivity.
                   }
-                  admit. (** TODO: use Hred_suf_ie and Hxie0_wp_suf to build a reduced word of length nie for xie0,
-                      contradicting Hxie0_uniq_len1/Hnie_ne_1. **)
+                  (** Case split on xie(m) in Gfam(al) **)
+                  apply (xm (apply_fun xie m :e apply_fun Gfam al)).
+                  * assume Hxiem_Gal.
+                    (** xie(m) in Gfam(al): prefix argument **)
+                    claim Hm_in_nie : m :e nie.
+                    {
+                      rewrite Hnie_eq.
+                      exact Hm_sm.
+                    }
+                    claim Hxiem_ne_ie : apply_fun xie m <> ie.
+                    {
+                      exact (Hxie_ne_ie_all
+                        m
+                        Hm_in_nie).
+                    }
+                    (** Build prefix reduced word: reduced_word J Gfam efam m xie **)
+                    claim Hred_prefix : reduced_word J Gfam efam m xie.
+                    {
+                      apply (and3E
+                        (ordsucc m :e omega)
+                        (forall i:set, i :e ordsucc m ->
+                          exists alpha:set, alpha :e J /\
+                            apply_fun xie i :e apply_fun Gfam alpha /\
+                            apply_fun xie i <> apply_fun efam alpha)
+                        (forall i:set, i :e ordsucc m -> ordsucc i :e ordsucc m ->
+                          forall a b:set, a :e J -> b :e J ->
+                            apply_fun xie i :e apply_fun Gfam a ->
+                            apply_fun xie (ordsucc i) :e apply_fun Gfam b ->
+                            a <> b)
+                        Hred_ie_succ).
+                      assume Hsm_omega Helem_sm Hadj_sm.
+                      prove m :e omega /\
+                        (forall i:set, i :e m ->
+                          exists alpha:set, alpha :e J /\
+                            apply_fun xie i :e apply_fun Gfam alpha /\
+                            apply_fun xie i <> apply_fun efam alpha) /\
+                        (forall i:set, i :e m -> ordsucc i :e m ->
+                          forall a b:set, a :e J -> b :e J ->
+                            apply_fun xie i :e apply_fun Gfam a ->
+                            apply_fun xie (ordsucc i) :e apply_fun Gfam b ->
+                            a <> b).
+                      apply and3I.
+                      - exact (nat_p_omega m Hm_nat).
+                      - let i.
+                        assume Hi_m.
+                        exact (Helem_sm i (ordsuccI1 m i Hi_m)).
+                      - let i.
+                        assume Hi_m Hsi_m.
+                        exact (Hadj_sm i (ordsuccI1 m i Hi_m) (ordsuccI1 m (ordsucc i) Hsi_m)).
+                    }
+                    (** Prefix product = mult(ie, inv(xie(m))) **)
+                    claim Hwp_prefix_eq : word_product multG eG xie m =
+                      apply_fun multG (ie, apply_fun invG (apply_fun xie m)).
+                    {
+                      claim Hwp_raw : word_product multG eG xie m =
+                        apply_fun multG (word_product multG eG xie (ordsucc m), apply_fun invG (apply_fun xie m)).
+                      {
+                        exact (word_product_prefix_by_cancel
+                          G
+                          multG
+                          eG
+                          invG
+                          m
+                          xie
+                          Hgrp
+                          Hm_nat
+                          Hxie_in_G).
+                      }
+                      rewrite Hwp_raw.
+                      rewrite Hwp_ie_succ.
+                      reflexivity.
+                    }
+                    (** inv(xie(m)) in Gfam(al) by subgroup closure **)
+                    claim Hinv_xiem_Gal : apply_fun invG (apply_fun xie m) :e apply_fun Gfam al.
+                    {
+                      apply (and4E
+                        (apply_fun Gfam al c= G)
+                        (eG :e apply_fun Gfam al)
+                        (forall x y:set, x :e apply_fun Gfam al -> y :e apply_fun Gfam al ->
+                          apply_fun multG (x, y) :e apply_fun Gfam al)
+                        (forall x:set, x :e apply_fun Gfam al -> apply_fun invG x :e apply_fun Gfam al)
+                        (Hsub al Hal)).
+                      assume _ _ _ Hinv_cl.
+                      exact (Hinv_cl (apply_fun xie m) Hxiem_Gal).
+                    }
+                    (** wp(xie, m) in Gfam(al) by subgroup closure **)
+                    claim Hwp_m_Gal : word_product multG eG xie m :e apply_fun Gfam al.
+                    {
+                      apply (and4E
+                        (apply_fun Gfam al c= G)
+                        (eG :e apply_fun Gfam al)
+                        (forall x y:set, x :e apply_fun Gfam al -> y :e apply_fun Gfam al ->
+                          apply_fun multG (x, y) :e apply_fun Gfam al)
+                        (forall x:set, x :e apply_fun Gfam al -> apply_fun invG x :e apply_fun Gfam al)
+                        (Hsub al Hal)).
+                      assume _ _ Hmult_cl _.
+                      rewrite Hwp_prefix_eq.
+                      exact (Hmult_cl ie (apply_fun invG (apply_fun xie m)) Hie_Gal Hinv_xiem_Gal).
+                    }
+                    (** wp(xie, m) <> eG (if eG then ie = xie(m), contradicting xie(m) <> ie) **)
+                    claim Hwp_m_ne_eG : word_product multG eG xie m <> eG.
+                    {
+                      assume Hwp_eG.
+                      claim Hie_eq_xiem : ie = apply_fun xie m.
+                      {
+                        claim Hwp_eq2 : apply_fun multG (ie, apply_fun invG (apply_fun xie m)) = eG.
+                        {
+                          rewrite <- Hwp_prefix_eq.
+                          exact Hwp_eG.
+                        }
+                        claim Hxiem_G : apply_fun xie m :e G.
+                        {
+                          exact (Hxie_in_G m Hm_sm).
+                        }
+                        claim Hinv_xiem_G : apply_fun invG (apply_fun xie m) :e G.
+                        {
+                          exact (HinvGF (apply_fun xie m) Hxiem_G).
+                        }
+                        claim Hie_mult_inv : apply_fun multG (ie, apply_fun invG (apply_fun xie m)) = eG.
+                        {
+                          exact Hwp_eq2.
+                        }
+                        claim Hrinv : apply_fun multG (apply_fun invG (apply_fun xie m), apply_fun xie m) = eG.
+                        {
+                          exact (andER
+                            (apply_fun multG (apply_fun xie m, apply_fun invG (apply_fun xie m)) = eG)
+                            (apply_fun multG (apply_fun invG (apply_fun xie m), apply_fun xie m) = eG)
+                            (HinvG (apply_fun xie m) Hxiem_G)).
+                        }
+                        claim HidR_ie : apply_fun multG (ie, eG) = ie.
+                        {
+                          exact (andER
+                            (apply_fun multG (eG, ie) = ie)
+                            (apply_fun multG (ie, eG) = ie)
+                            (HidG ie Hie_G)).
+                        }
+                        claim Hstep1 : apply_fun multG (ie, apply_fun multG (apply_fun invG (apply_fun xie m), apply_fun xie m)) = ie.
+                        {
+                          rewrite Hrinv.
+                          exact HidR_ie.
+                        }
+                        claim Hassoc_step : apply_fun multG (apply_fun multG (ie, apply_fun invG (apply_fun xie m)), apply_fun xie m) =
+                          apply_fun multG (ie, apply_fun multG (apply_fun invG (apply_fun xie m), apply_fun xie m)).
+                        {
+                          exact (HassocG ie (apply_fun invG (apply_fun xie m)) (apply_fun xie m) Hie_G Hinv_xiem_G Hxiem_G).
+                        }
+                        claim Hstep2 : apply_fun multG (apply_fun multG (ie, apply_fun invG (apply_fun xie m)), apply_fun xie m) = ie.
+                        {
+                          rewrite Hassoc_step.
+                          exact Hstep1.
+                        }
+                        claim Hstep3 : apply_fun multG (eG, apply_fun xie m) = ie.
+                        {
+                          rewrite <- Hie_mult_inv.
+                          exact Hstep2.
+                        }
+                        claim HidL_xiem : apply_fun multG (eG, apply_fun xie m) = apply_fun xie m.
+                        {
+                          exact (andEL
+                            (apply_fun multG (eG, apply_fun xie m) = apply_fun xie m)
+                            (apply_fun multG (apply_fun xie m, eG) = apply_fun xie m)
+                            (HidG (apply_fun xie m) Hxiem_G)).
+                        }
+                        claim Hxiem_eq_ie : apply_fun xie m = ie.
+                        {
+                          claim Hsym : apply_fun xie m = apply_fun multG (eG, apply_fun xie m).
+                          {
+                            symmetry.
+                            exact HidL_xiem.
+                          }
+                          exact (eq_i_tra (apply_fun xie m) (apply_fun multG (eG, apply_fun xie m)) ie Hsym Hstep3).
+                        }
+                        symmetry.
+                        exact Hxiem_eq_ie.
+                      }
+                      claim Hxiem_eq_ie : apply_fun xie m = ie.
+                      {
+                        symmetry.
+                        exact Hie_eq_xiem.
+                      }
+                      exact (Hxiem_ne_ie Hxiem_eq_ie).
+                    }
+                    (** Case split on wp(xie, m) = ie **)
+                    apply (xm (word_product multG eG xie m = ie)).
+                    {
+                      assume Hwp_m_ie.
+                      (** prefix product = ie: use uniqueness to get nie = m, contradiction **)
+                      claim Hnie_eq_m : nie = m.
+                      {
+                        exact (andEL
+                          (nie = m)
+                          (forall i:set, i :e nie -> apply_fun xie i = apply_fun xie i)
+                          (Huniq_ie_eq
+                            m
+                            xie
+                            Hred_prefix
+                            Hm_ne0
+                            Hwp_m_ie)).
+                      }
+                      claim Hsm_eq_m : ordsucc m = m.
+                      {
+                        claim Hsm_eq_nie : ordsucc m = nie.
+                        {
+                          symmetry.
+                          exact Hnie_eq.
+                        }
+                        exact (eq_i_tra (ordsucc m) nie m Hsm_eq_nie Hnie_eq_m).
+                      }
+                      claim Hsm_subq_m : ordsucc m c= m.
+                      {
+                        rewrite Hsm_eq_m.
+                        exact (Subq_ref m).
+                      }
+                      exact (ordsucc_not_Subq_self m Hsm_subq_m).
+                    }
+                    {
+                      assume Hwp_m_ne_ie.
+                      (** prefix product <> ie = efam(al): use singleton word + uniqueness **)
+                      claim Hwp_m_ne_efam_al : word_product multG eG xie m <> apply_fun efam al.
+                      {
+                        assume Hwp_efam.
+                        claim Hwp_ie2 : word_product multG eG xie m = ie.
+                        {
+                          rewrite Hie_eq_efam.
+                          exact Hwp_efam.
+                        }
+                        exact (Hwp_m_ne_ie Hwp_ie2).
+                      }
+                      (** wp(xie, m) in G **)
+                      claim Hwp_m_G : word_product multG eG xie m :e G.
+                      {
+                        apply (and4E
+                          (apply_fun Gfam al c= G)
+                          (eG :e apply_fun Gfam al)
+                          (forall x y:set, x :e apply_fun Gfam al -> y :e apply_fun Gfam al ->
+                            apply_fun multG (x, y) :e apply_fun Gfam al)
+                          (forall x:set, x :e apply_fun Gfam al -> apply_fun invG x :e apply_fun Gfam al)
+                          (Hsub al Hal)).
+                        assume HsubGal _ _ _.
+                        exact (HsubGal (word_product multG eG xie m) Hwp_m_Gal).
+                      }
+                      (** Apply Huniq to get unique representation of wp(xie, m) **)
+                      apply (Huniq
+                        (word_product multG eG xie m)
+                        Hwp_m_G
+                        Hwp_m_ne_eG).
+                      let np.
+                      assume Hnp_ex.
+                      apply Hnp_ex.
+                      let xp.
+                      assume Hp_comb.
+                      apply (and4E
+                        (reduced_word J Gfam efam np xp)
+                        (np <> 0)
+                        (word_product multG eG xp np = word_product multG eG xie m)
+                        (forall n' xs':set,
+                          reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+                          word_product multG eG xs' n' = word_product multG eG xie m ->
+                          np = n' /\ (forall i:set, i :e np -> apply_fun xp i = apply_fun xs' i))
+                        Hp_comb).
+                      assume Hred_p Hnp_ne0 Hwp_p Huniq_p.
+                      (** Singleton [wp(xie,m)] is a reduced word of length 1 **)
+                      set p := word_product multG eG xie m.
+                      claim Hred_singleton : reduced_word J Gfam efam 1 (graph 1 (fun _:set => p)).
+                      {
+                        exact (reduced_word_singleton
+                          J Gfam efam al p
+                          Hal
+                          Hwp_m_Gal
+                          Hwp_m_ne_efam_al).
+                      }
+                      claim Hwp_singleton : word_product multG eG (graph 1 (fun _:set => p)) 1 = p.
+                      {
+                        exact (word_product_singleton_group
+                          G multG eG invG p
+                          Hgrp
+                          Hwp_m_G).
+                      }
+                      (** From singleton: np = 1 **)
+                      claim Hnp_eq_1 : np = 1.
+                      {
+                        exact (andEL
+                          (np = 1)
+                          (forall i:set, i :e np -> apply_fun xp i = apply_fun (graph 1 (fun _:set => p)) i)
+                          (Huniq_p
+                            1
+                            (graph 1 (fun _:set => p))
+                            Hred_singleton
+                            (fun H10 : 1 = 0 => EmptyE 0 (eq_subst_mem_set 0 1 0 (ordsuccI2 0) H10))
+                            Hwp_singleton)).
+                      }
+                      (** From prefix: np = m and xp agrees with xie **)
+                      claim Hnp_m_pack : np = m /\ (forall i:set, i :e np -> apply_fun xp i = apply_fun xie i).
+                      {
+                        exact (Huniq_p
+                          m
+                          xie
+                          Hred_prefix
+                          Hm_ne0
+                          (eq_refl p)).
+                      }
+                      claim Hnp_eq_m : np = m.
+                      {
+                        exact (andEL
+                          (np = m)
+                          (forall i:set, i :e np -> apply_fun xp i = apply_fun xie i)
+                          Hnp_m_pack).
+                      }
+                      claim Hxp_eq_xie : forall i:set, i :e np -> apply_fun xp i = apply_fun xie i.
+                      {
+                        exact (andER
+                          (np = m)
+                          (forall i:set, i :e np -> apply_fun xp i = apply_fun xie i)
+                          Hnp_m_pack).
+                      }
+                      (** Hence m = 1 **)
+                      claim Hm_eq_1 : m = 1.
+                      {
+                        claim Hm_eq_np : m = np.
+                        {
+                          symmetry.
+                          exact Hnp_eq_m.
+                        }
+                        exact (eq_i_tra m np 1 Hm_eq_np Hnp_eq_1).
+                      }
+                      (** xp(0) = p (from singleton) **)
+                      claim Hnp_1_pack : np = 1 /\ (forall i:set, i :e np -> apply_fun xp i = apply_fun (graph 1 (fun _:set => p)) i).
+                      {
+                        exact (Huniq_p
+                          1
+                          (graph 1 (fun _:set => p))
+                          Hred_singleton
+                          (fun H10 : 1 = 0 => EmptyE 0 (eq_subst_mem_set 0 1 0 (ordsuccI2 0) H10))
+                          Hwp_singleton).
+                      }
+                      claim Hxp_eq_singleton : forall i:set, i :e np -> apply_fun xp i = apply_fun (graph 1 (fun _:set => p)) i.
+                      {
+                        exact (andER
+                          (np = 1)
+                          (forall i:set, i :e np -> apply_fun xp i = apply_fun (graph 1 (fun _:set => p)) i)
+                          Hnp_1_pack).
+                      }
+                      (** 0 :e np **)
+                      claim H0_in_np : 0 :e np.
+                      {
+                        rewrite Hnp_eq_1.
+                        exact (ordsuccI2 0).
+                      }
+                      (** xp(0) = p **)
+                      claim Hxp0_eq_p : apply_fun xp 0 = p.
+                      {
+                        claim Hxp0_graph : apply_fun xp 0 = apply_fun (graph 1 (fun _:set => p)) 0.
+                        {
+                          exact (Hxp_eq_singleton 0 H0_in_np).
+                        }
+                        claim Hgraph0 : apply_fun (graph 1 (fun _:set => p)) 0 = p.
+                        {
+                          exact (apply_fun_graph 1 (fun _:set => p) 0 (ordsuccI2 0)).
+                        }
+                        exact (eq_i_tra (apply_fun xp 0) (apply_fun (graph 1 (fun _:set => p)) 0) p Hxp0_graph Hgraph0).
+                      }
+                      (** xp(0) = xie(0) **)
+                      claim Hxp0_eq_xie0 : apply_fun xp 0 = apply_fun xie 0.
+                      {
+                        exact (Hxp_eq_xie 0 H0_in_np).
+                      }
+                      (** xie(0) = p in Gfam(al) **)
+                      claim Hxie0_eq_p : apply_fun xie 0 = p.
+                      {
+                        claim Hsym : apply_fun xie 0 = apply_fun xp 0.
+                        {
+                          symmetry.
+                          exact Hxp0_eq_xie0.
+                        }
+                        exact (eq_i_tra (apply_fun xie 0) (apply_fun xp 0) p Hsym Hxp0_eq_p).
+                      }
+                      claim Hxie0_Gal : apply_fun xie 0 :e apply_fun Gfam al.
+                      {
+                        rewrite Hxie0_eq_p.
+                        exact Hwp_m_Gal.
+                      }
+                      exact (Hxie0_not_Gal Hxie0_Gal).
+                    }
+                  * assume Hxiem_not_Gal.
+                    admit. (** TODO Case B: xie(m) not in Gfam(al) **)
                 }
               + assume Hinv_ne_efam.
                 set ie := apply_fun invG (apply_fun efam al).
