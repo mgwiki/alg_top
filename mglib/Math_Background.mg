@@ -265435,6 +265435,37 @@ exact (graph_vertices_intro_from_endpoint_right
 Qed.
 
 (** Proven Bob **)
+Theorem oriented_edge_endpoints_in_graph_vertices :
+  forall X Tx Arcs A ini fin:set,
+  general_linear_graph X Tx Arcs ->
+  oriented_edge X Tx Arcs A ini fin ->
+  ini :e graph_vertices X Tx Arcs /\ fin :e graph_vertices X Tx Arcs.
+let X Tx Arcs A ini fin.
+assume Hglg Hori.
+exact (andI
+  (ini :e graph_vertices X Tx Arcs)
+  (fin :e graph_vertices X Tx Arcs)
+  (oriented_edge_initial_vertex_in_graph_vertices
+    X
+    Tx
+    Arcs
+    A
+    ini
+    fin
+    Hglg
+    Hori)
+  (oriented_edge_final_vertex_in_graph_vertices
+    X
+    Tx
+    Arcs
+    A
+    ini
+    fin
+    Hglg
+    Hori)).
+Qed.
+
+(** Proven Bob **)
 Theorem edge_path_n_in_omega :
   forall X Tx Arcs n path_seq x0:set,
   edge_path X Tx Arcs n path_seq x0 ->
