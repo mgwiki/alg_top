@@ -192350,6 +192350,28 @@ apply (nat_inv nw Hnw_nat).
                     exact (Hxie0_ne_efam_al
                       Hxie0_efam).
                   }
+                  claim Hwp_suf_eq_inv : word_product multG eG xs_suf_ie m =
+                    apply_fun multG (apply_fun invG (apply_fun xie 0), ie).
+                  {
+                    claim Hwp_suf_raw :
+                      word_product multG eG xs_suf_ie m =
+                      apply_fun multG (apply_fun invG (apply_fun xie 0), word_product multG eG xie (ordsucc m)).
+                    {
+                      exact (word_product_suffix_by_cancel
+                        G
+                        multG
+                        eG
+                        invG
+                        m
+                        xie
+                        Hgrp
+                        Hm_nat
+                        Hxie_in_G).
+                    }
+                    rewrite Hwp_suf_raw.
+                    rewrite Hwp_ie_succ.
+                    reflexivity.
+                  }
                   admit. (** TODO: use Hred_suf_ie and Hxie0_wp_suf to build a reduced word of length nie for xie0,
                       contradicting Hxie0_uniq_len1/Hnie_ne_1. **)
                 }
