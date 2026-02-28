@@ -265755,6 +265755,112 @@ exact HfinX.
 Qed.
 
 (** Proven Bob **)
+Theorem edge_path_index_initial_vertex_in_graph_vertices :
+  forall X Tx Arcs n path_seq x0 i:set,
+  general_linear_graph X Tx Arcs ->
+  edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  (apply_fun path_seq i) 0 0 :e graph_vertices X Tx Arcs.
+let X Tx Arcs n path_seq x0 i.
+assume Hglg Hep Hi.
+apply (edge_path_edge_decomposition
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  i
+  Hep
+  Hi).
+let A.
+assume HA.
+apply HA.
+let ini.
+assume Hini.
+apply Hini.
+let fin.
+assume Hfin.
+claim Heq : apply_fun path_seq i = ((ini, fin), A).
+{ exact (andEL
+    (apply_fun path_seq i = ((ini, fin), A))
+    (oriented_edge X Tx Arcs A ini fin)
+    Hfin). }
+claim Hori : oriented_edge X Tx Arcs A ini fin.
+{ exact (andER
+    (apply_fun path_seq i = ((ini, fin), A))
+    (oriented_edge X Tx Arcs A ini fin)
+    Hfin). }
+claim HiniV : ini :e graph_vertices X Tx Arcs.
+{ exact (oriented_edge_initial_vertex_in_graph_vertices
+    X
+    Tx
+    Arcs
+    A
+    ini
+    fin
+    Hglg
+    Hori). }
+rewrite Heq.
+rewrite (tuple_2_0_eq (ini, fin) A).
+rewrite (tuple_2_0_eq ini fin).
+exact HiniV.
+Qed.
+
+(** Proven Bob **)
+Theorem edge_path_index_final_vertex_in_graph_vertices :
+  forall X Tx Arcs n path_seq x0 i:set,
+  general_linear_graph X Tx Arcs ->
+  edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  (apply_fun path_seq i) 0 1 :e graph_vertices X Tx Arcs.
+let X Tx Arcs n path_seq x0 i.
+assume Hglg Hep Hi.
+apply (edge_path_edge_decomposition
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  i
+  Hep
+  Hi).
+let A.
+assume HA.
+apply HA.
+let ini.
+assume Hini.
+apply Hini.
+let fin.
+assume Hfin.
+claim Heq : apply_fun path_seq i = ((ini, fin), A).
+{ exact (andEL
+    (apply_fun path_seq i = ((ini, fin), A))
+    (oriented_edge X Tx Arcs A ini fin)
+    Hfin). }
+claim Hori : oriented_edge X Tx Arcs A ini fin.
+{ exact (andER
+    (apply_fun path_seq i = ((ini, fin), A))
+    (oriented_edge X Tx Arcs A ini fin)
+    Hfin). }
+claim HfinV : fin :e graph_vertices X Tx Arcs.
+{ exact (oriented_edge_final_vertex_in_graph_vertices
+    X
+    Tx
+    Arcs
+    A
+    ini
+    fin
+    Hglg
+    Hori). }
+rewrite Heq.
+rewrite (tuple_2_0_eq (ini, fin) A).
+rewrite (tuple_2_1_eq ini fin).
+exact HfinV.
+Qed.
+
+(** Proven Bob **)
 Theorem reduced_edge_path_edge_path :
   forall X Tx Arcs n path_seq x0:set,
   reduced_edge_path X Tx Arcs n path_seq x0 ->
@@ -265802,6 +265908,50 @@ Theorem reduced_edge_path_index_final_vertex_in_X :
 let X Tx Arcs n path_seq x0 i.
 assume Hglg Hred Hi.
 exact (edge_path_index_final_vertex_in_X
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  i
+  Hglg
+  (reduced_edge_path_edge_path X Tx Arcs n path_seq x0 Hred)
+  Hi).
+Qed.
+
+(** Proven Bob **)
+Theorem reduced_edge_path_index_initial_vertex_in_graph_vertices :
+  forall X Tx Arcs n path_seq x0 i:set,
+  general_linear_graph X Tx Arcs ->
+  reduced_edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  (apply_fun path_seq i) 0 0 :e graph_vertices X Tx Arcs.
+let X Tx Arcs n path_seq x0 i.
+assume Hglg Hred Hi.
+exact (edge_path_index_initial_vertex_in_graph_vertices
+  X
+  Tx
+  Arcs
+  n
+  path_seq
+  x0
+  i
+  Hglg
+  (reduced_edge_path_edge_path X Tx Arcs n path_seq x0 Hred)
+  Hi).
+Qed.
+
+(** Proven Bob **)
+Theorem reduced_edge_path_index_final_vertex_in_graph_vertices :
+  forall X Tx Arcs n path_seq x0 i:set,
+  general_linear_graph X Tx Arcs ->
+  reduced_edge_path X Tx Arcs n path_seq x0 ->
+  i :e n ->
+  (apply_fun path_seq i) 0 1 :e graph_vertices X Tx Arcs.
+let X Tx Arcs n path_seq x0 i.
+assume Hglg Hred Hi.
+exact (edge_path_index_final_vertex_in_graph_vertices
   X
   Tx
   Arcs
