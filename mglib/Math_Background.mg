@@ -208664,6 +208664,101 @@ exact (group_left_inv_solve H multH invH eH (apply_fun invH (apply_fun h x)) (ap
   HmultH_fn HinvH_fn HeH HassocH HidH HinvH HinvH_hx_in_H Hhinvx_in_H Hcond).
 Qed.
 
+(** Proven Bob **)
+Theorem basepoint_change_map_preserves_inverse : forall X Tx x0 x1 alpha cls:set,
+  topology_on X Tx ->
+  continuous_map unit_interval unit_interval_topology X Tx alpha ->
+  apply_fun alpha 0 = x0 -> apply_fun alpha 1 = x1 ->
+  cls :e fundamental_group X Tx x0 ->
+  apply_fun (basepoint_change_map X Tx x0 x1 alpha)
+    (apply_fun (fundamental_group_inv X Tx x0) cls)
+  =
+  apply_fun (fundamental_group_inv X Tx x1)
+    (apply_fun (basepoint_change_map X Tx x0 x1 alpha) cls).
+let X Tx x0 x1 alpha cls.
+assume HtopX HalphaCont Halpha0 Halpha1 Hcls.
+claim HalphaFun : function_on alpha unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    alpha
+    HalphaCont).
+}
+claim Hx0X : x0 :e X.
+{
+  rewrite <- Halpha0.
+  exact (HalphaFun 0 zero_in_unit_interval).
+}
+claim Hx1X : x1 :e X.
+{
+  rewrite <- Halpha1.
+  exact (HalphaFun 1 one_in_unit_interval).
+}
+claim Hgrp0 :
+  group_structure
+    (fundamental_group X Tx x0)
+    (fundamental_group_mult X Tx x0)
+    (fundamental_group_id X Tx x0)
+    (fundamental_group_inv X Tx x0).
+{
+  exact (fundamental_group_is_group
+    X
+    Tx
+    x0
+    HtopX
+    Hx0X).
+}
+claim Hgrp1 :
+  group_structure
+    (fundamental_group X Tx x1)
+    (fundamental_group_mult X Tx x1)
+    (fundamental_group_id X Tx x1)
+    (fundamental_group_inv X Tx x1).
+{
+  exact (fundamental_group_is_group
+    X
+    Tx
+    x1
+    HtopX
+    Hx1X).
+}
+claim Hhom :
+  group_homomorphism
+    (fundamental_group X Tx x0) (fundamental_group_mult X Tx x0)
+    (fundamental_group X Tx x1) (fundamental_group_mult X Tx x1)
+    (basepoint_change_map X Tx x0 x1 alpha).
+{
+  exact (lemma52_1_basepoint_change_homomorphism
+    X
+    Tx
+    x0
+    x1
+    alpha
+    HtopX
+    HalphaCont
+    Halpha0
+    Halpha1).
+}
+exact (group_hom_sends_inverse
+  (fundamental_group X Tx x0)
+  (fundamental_group_mult X Tx x0)
+  (fundamental_group_id X Tx x0)
+  (fundamental_group_inv X Tx x0)
+  (fundamental_group X Tx x1)
+  (fundamental_group_mult X Tx x1)
+  (fundamental_group_id X Tx x1)
+  (fundamental_group_inv X Tx x1)
+  (basepoint_change_map X Tx x0 x1 alpha)
+  Hgrp0
+  Hgrp1
+  Hhom
+  cls
+  Hcls).
+Qed.
+
 (** Predicate: x is in every subgroup containing all commutators **)
 Definition comm_closure_pred : set -> set -> set -> set -> set -> prop :=
   fun G mult e inv x =>
