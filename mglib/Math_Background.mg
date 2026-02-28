@@ -74815,6 +74815,49 @@ exact (andI
   HcommN).
 Qed.
 
+(** Proven Bob **)
+(** Infrastructure: restrict path_lift-is-lifting_of from existence to a subinterval **)
+Theorem path_lift_is_lifting_of_on_subset_from_exists :
+  forall E Te B Tb p e0 f N:set,
+  (exists ft:set,
+    continuous_map unit_interval unit_interval_topology E Te ft /\
+    apply_fun ft 0 = e0 /\
+    (forall t:set, t :e unit_interval ->
+      apply_fun p (apply_fun ft t) = apply_fun f t)) ->
+  N c= unit_interval ->
+  lifting_of N (subspace_topology unit_interval unit_interval_topology N) E Te B Tb p f
+    (path_lift E Te B Tb p e0 f).
+let E Te B Tb p e0 f N.
+assume Hex HNsub.
+claim HliftI :
+  lifting_of unit_interval unit_interval_topology E Te B Tb p f
+    (path_lift E Te B Tb p e0 f).
+{
+  exact (path_lift_is_lifting_of_from_exists
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    f
+    Hex).
+}
+exact (lifting_of_on_subset
+  unit_interval
+  unit_interval_topology
+  E
+  Te
+  B
+  Tb
+  p
+  f
+  (path_lift E Te B Tb p e0 f)
+  N
+  HliftI
+  HNsub).
+Qed.
+
 (** from S54 Lem 54.1 uniqueness (line 728 in algtop.tex) **)
 (** LATEX VERSION: The lifting of a path is unique. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
