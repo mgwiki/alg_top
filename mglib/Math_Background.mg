@@ -127536,7 +127536,48 @@ Theorem thm56_1_fundamental_theorem_of_algebra : forall n a:set,
   function_on a n (setprod R R) ->
   exists z:set, z :e setprod R R /\
     monic_poly_eval a n z = (0, 0).
-admit.
+let n a.
+assume Hn : n :e omega.
+assume Hn0 : n <> 0.
+assume Ha : function_on a n (setprod R R).
+(** Proof by contradiction: assume p has no root **)
+apply (dneg (exists z:set, z :e setprod R R /\ monic_poly_eval a n z = (0, 0))).
+assume Hnoroot : ~(exists z:set, z :e setprod R R /\ monic_poly_eval a n z = (0, 0)).
+(** Step 1: p(z) != 0 for all z in C **)
+claim Hpnonzero : forall z:set, z :e setprod R R ->
+  monic_poly_eval a n z <> (0, 0).
+{
+  let z. assume Hz Heq.
+  apply Hnoroot. witness z.
+  exact (andI (z :e setprod R R) (monic_poly_eval a n z = (0, 0)) Hz Heq).
+}
+(** Step 2: The power map z -> z^n composed with inclusion S1 -> R2 minus origin
+    is nulhomotopic (follows from no-root assumption via homotopy argument).
+    Strategy: f_c(z) = p(cz) gives a homotopy from constant map f_0 = p(0)
+    to f_C for any C. For large C, f_C is homotopic to z -> C^n z^n.
+    Rescaling shows z -> z^n is nulhomotopic in R2 minus origin. **)
+set power_map_R2 := graph S1 (fun z:set => complex_power_R2 z n).
+claim Hpower_nul : nulhomotopic S1 S1_topology
+  R2_minus_origin R2_minus_origin_topology power_map_R2.
+{
+  (** Key analytical step: build the homotopy chain
+      const = f_0 ~ f_C ~ (z -> C^n z^n) ~ (z -> z^n)
+      using the no-root hypothesis to stay in R2 minus origin. **)
+  admit.
+}
+(** Step 3: But the power map z -> z^n is NOT nulhomotopic in R2 minus origin.
+    This follows because z^n restricted to S1 has degree n != 0,
+    and the inclusion S1 -> R2 minus origin induces a pi1 isomorphism.
+    In particular, for n = 1 this is cor55_4a. For general n,
+    z^n factors as (inclusion) o (self-map of S1 of degree n),
+    and degree n maps are not nulhomotopic. **)
+claim Hpower_not_nul : ~(nulhomotopic S1 S1_topology
+  R2_minus_origin R2_minus_origin_topology power_map_R2).
+{
+  (** Key topological step: z^n has nonzero degree, so not nulhomotopic. **)
+  admit.
+}
+exact (Hpower_not_nul Hpower_nul).
 Admitted.
 
 (** from S56 Exercise 1 (line 1167 in algtop.tex) **)
