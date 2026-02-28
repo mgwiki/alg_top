@@ -272946,13 +272946,57 @@ claim HcohFamTA :
 		        claim HAminusSing_in_TA :
 		          (A :\: (Sing v)) :e subspace_topology X Tx (T :\/: A).
 		        {
-		          (** Core remaining step:
-		              lift openness of A\\{v} from the A-subspace
-		              to an ambient-open witness in TA.
-		              Practical missing bridge:
-		              if U = (TA :\\: T), then U :e subspace_topology X Tx TA
-		              directly from setminus-subspace constructor over TA. **)
-		          admit.
+		          (** T is closed in X by subgraph_closed_in_ambient **)
+		          claim HclosedT : closed_in X Tx T.
+		          { exact (subgraph_closed_in_ambient T X Tx Arcs HsubT). }
+		          claim HopenXmT : open_in X Tx (X :\: T).
+		          { exact (open_of_closed_complement X Tx T HclosedT). }
+		          claim HXmT_in_Tx : (X :\: T) :e Tx.
+		          { exact (andER (topology_on X Tx) ((X :\: T) :e Tx) HopenXmT). }
+		          (** (X :\: T) :/\: (T :\/: A) = A :\: (Sing v) **)
+		          claim Heq_sets : (X :\: T) :/\: (T :\/: A) = A :\: (Sing v).
+		          { apply set_ext.
+		            - let x. assume Hx.
+		              claim HxXmT : x :e X :\: T.
+		              { exact (binintersectE1 (X :\: T) (T :\/: A) x Hx). }
+		              claim HxTA : x :e T :\/: A.
+		              { exact (binintersectE2 (X :\: T) (T :\/: A) x Hx). }
+		              claim HxX : x :e X.
+		              { exact (andEL (x :e X) (x /:e T) (setminusE X T x HxXmT)). }
+		              claim HxnotT : x /:e T.
+		              { exact (andER (x :e X) (x /:e T) (setminusE X T x HxXmT)). }
+		              claim HxA : x :e A.
+		              { apply (binunionE T A x HxTA).
+		                - assume HxT. exact (HxnotT HxT (x :e A)).
+		                - assume HxA. exact HxA. }
+		              claim HxnotSingv : x /:e Sing v.
+		              { assume HxSingv : x :e Sing v.
+		                claim Hxeqv : x = v. { exact (SingE v x HxSingv). }
+		                claim HvT : v :e T.
+		                { claim HvCap : v :e T :/\: A.
+		                  { exact (eq_subst_mem_set v (Sing v) (T :/\: A)
+		                      (SingI v) (eq_symm (T :/\: A) (Sing v) HcapEq)). }
+		                  exact (binintersectE1 T A v HvCap). }
+		                exact (HxnotT (eq_subst_mem x v T Hxeqv HvT)). }
+		              exact (setminusI A (Sing v) x HxA HxnotSingv).
+		            - let x. assume Hx.
+		              claim HxA : x :e A.
+		              { exact (andEL (x :e A) (x /:e Sing v) (setminusE A (Sing v) x Hx)). }
+		              claim HxnotSingv : x /:e Sing v.
+		              { exact (andER (x :e A) (x /:e Sing v) (setminusE A (Sing v) x Hx)). }
+		              claim HxnotT : x /:e T.
+		              { assume HxT : x :e T.
+		                claim HxCap : x :e T :/\: A.
+		                { exact (binintersectI T A x HxT HxA). }
+		                claim HxSingv : x :e Sing v.
+		                { exact (eq_subst_mem_set x (T :/\: A) (Sing v) HxCap HcapEq). }
+		                exact (HxnotSingv HxSingv). }
+		              claim HxX : x :e X. { exact (HAsubX x HxA). }
+		              exact (binintersectI (X :\: T) (T :\/: A) x
+		                (setminusI X T x HxX HxnotT)
+		                (binunionI2 T A x HxA)). }
+		          rewrite <- Heq_sets.
+		          exact (subspace_topologyI X Tx (T :\/: A) (X :\: T) HXmT_in_Tx).
 		        }
 		        claim HTeqComp :
 		          T = (T :\/: A) :\: (A :\: (Sing v)).
