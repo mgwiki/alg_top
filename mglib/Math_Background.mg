@@ -1,4 +1,4 @@
-(** Balance Alice 3771 **)
+(** Balance Alice 3826 **)
 (** Balance Bob 3507 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
@@ -59557,7 +59557,8 @@ Qed.
 (** LATEX VERSION: If p: E -> B is a covering map and B is completely regular, **)
 (** then E is completely regular. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
+(** Collected Alice 55 **)
+(** Proven Alice **)
 Theorem ex53_6a_completely_regular : forall E Te B Tb p:set,
   covering_map E Te B Tb p -> completely_regular_space B Tb ->
   completely_regular_space E Te.
@@ -59630,11 +59631,255 @@ claim HsepGoal :
       HFclosed
       HxNotF).
   }
-  (** Remaining gap:
-      combine regular separation upstairs with a local trivialization around x
-      and complete-regular separation on the base to build a global separator
-      f:E->R with f(x)=0 and f|F=1. **)
-  admit.
+  (** Unpack Hloc existentials **)
+  apply Hloc.
+  let Vb. assume HVbPack.
+  apply HVbPack.
+  let slices. assume HsPack.
+  apply HsPack.
+  let Ux. assume Hpack.
+  claim HlocMain :
+    Ux :e Te /\ x :e Ux /\ Vb :e Tb /\
+      homeomorphism Ux (subspace_topology E Te Ux) Vb (subspace_topology B Tb Vb)
+        (graph Ux (fun z:set => apply_fun p z)).
+  {
+    exact (andEL
+      (Ux :e Te /\ x :e Ux /\ Vb :e Tb /\
+        homeomorphism Ux (subspace_topology E Te Ux) Vb (subspace_topology B Tb Vb)
+          (graph Ux (fun z:set => apply_fun p z)))
+      (slices c= Te /\ pairwise_disjoint slices /\
+        Union slices = preimage_of E p Vb /\ Ux :e slices /\
+        (forall V:set, V :e slices ->
+          homeomorphism V (subspace_topology E Te V) Vb (subspace_topology B Tb Vb)
+            (graph V (fun z:set => apply_fun p z))))
+      Hpack).
+  }
+  apply (and4E
+    (Ux :e Te) (x :e Ux) (Vb :e Tb)
+    (homeomorphism Ux (subspace_topology E Te Ux) Vb (subspace_topology B Tb Vb)
+      (graph Ux (fun z:set => apply_fun p z)))
+    HlocMain).
+  assume HUxTe HxUx HVbTb Hhome.
+  (** Unpack HsepReg existentials **)
+  apply HsepReg.
+  let U0. assume HU0Pack.
+  apply HU0Pack.
+  let V0. assume HsepAll.
+  apply (and5E
+    (U0 :e Te) (V0 :e Te) (x :e U0) (F c= V0) (U0 :/\: V0 = Empty)
+    HsepAll).
+  assume HU0Te HV0Te HxU0 HFV0 HU0V0disj.
+  (** W = U0 ∩ Ux is open, contains x **)
+  claim HWopen : U0 :/\: Ux :e Te.
+  { exact (topology_binintersect_closed E Te U0 Ux HtopE HU0Te HUxTe). }
+  claim HxW : x :e U0 :/\: Ux.
+  { exact (binintersectI U0 Ux x HxU0 HxUx). }
+  (** Shrink W using regularity **)
+  claim Hshrink : exists W1:set, W1 :e Te /\ x :e W1 /\ closure_of E Te W1 c= U0 :/\: Ux.
+  { exact (regular_space_open_nbhd_closure_sub E Te (U0 :/\: Ux) x HregE HWopen HxW). }
+  apply Hshrink.
+  let W1. assume HW1spec.
+  apply (and3E (W1 :e Te) (x :e W1) (closure_of E Te W1 c= U0 :/\: Ux) HW1spec).
+  assume HW1Te HxW1 HclW1sub.
+  (** Subset facts **)
+  claim HW1subE : W1 c= E.
+  { exact (topology_elem_subset E Te W1 HtopE HW1Te). }
+  claim HUxsubE : Ux c= E.
+  { exact (topology_elem_subset E Te Ux HtopE HUxTe). }
+  claim HW1subUx : W1 c= Ux.
+  { let z. assume Hz.
+    exact (binintersectE2 U0 Ux z
+      (HclW1sub z (subset_of_closure E Te W1 HtopE HW1subE z Hz))). }
+  claim HclW1subUx : closure_of E Te W1 c= Ux.
+  { let z. assume Hz.
+    exact (binintersectE2 U0 Ux z (HclW1sub z Hz)). }
+  (** Ux is completely regular **)
+  claim HtopB : topology_on B Tb.
+  { exact (continuous_map_topology_cod E Te B Tb p Hcont). }
+  claim HVbSubB : Vb c= B.
+  { exact (topology_elem_subset B Tb Vb HtopB HVbTb). }
+  claim HCRVb : completely_regular_space Vb (subspace_topology B Tb Vb).
+  {
+    exact ((andEL
+      (forall Y:set, Y c= B -> completely_regular_space B Tb ->
+        completely_regular_space Y (subspace_topology B Tb Y))
+      (forall I Xi:set, completely_regular_spaces_family I Xi ->
+        completely_regular_space (product_space I Xi) (product_topology_full I Xi))
+      (completely_regular_subspace_product B Tb HtopB))
+      Vb HVbSubB HcompB).
+  }
+  claim HCRUx : completely_regular_space Ux (subspace_topology E Te Ux).
+  {
+    exact (homeomorphism_preserves_completely_regular
+      Ux (subspace_topology E Te Ux)
+      Vb (subspace_topology B Tb Vb)
+      (graph Ux (fun z:set => apply_fun p z))
+      Hhome HCRVb).
+  }
+  (** W1 is open in subspace topology of Ux **)
+  claim HtopUx : topology_on Ux (subspace_topology E Te Ux).
+  { exact (subspace_topology_is_topology E Te Ux HtopE HUxsubE). }
+  claim HW1inSubTopo : W1 :e subspace_topology E Te Ux.
+  {
+    claim Hint : W1 :/\: Ux = W1.
+    { exact (binintersect_Subq_eq_1 W1 Ux HW1subUx). }
+    rewrite <- Hint.
+    exact (subspace_topologyI E Te Ux W1 HW1Te).
+  }
+  (** Ux \ W1 is closed in subspace of Ux **)
+  claim HUxW1closed : closed_in Ux (subspace_topology E Te Ux) (Ux :\: W1).
+  { exact (closed_of_open_complement Ux (subspace_topology E Te Ux) W1 HtopUx HW1inSubTopo). }
+  (** x is not in Ux \ W1 **)
+  claim HxNotUxW1 : x /:e Ux :\: W1.
+  { assume Habs. exact (setminusE2 Ux W1 x Habs HxW1). }
+  (** Apply CR of Ux to separate x from Ux \ W1 **)
+  claim HCRUx_sep :
+    forall x0:set, x0 :e Ux ->
+    forall F0:set, closed_in Ux (subspace_topology E Te Ux) F0 -> x0 /:e F0 ->
+      exists f0:set, continuous_map Ux (subspace_topology E Te Ux) R R_standard_topology f0 /\
+        apply_fun f0 x0 = 0 /\
+        forall y:set, y :e F0 -> apply_fun f0 y = 1.
+  {
+    exact (andER
+      (one_point_sets_closed Ux (subspace_topology E Te Ux))
+      (forall x0:set, x0 :e Ux ->
+        forall F0:set, closed_in Ux (subspace_topology E Te Ux) F0 -> x0 /:e F0 ->
+          exists f0:set, continuous_map Ux (subspace_topology E Te Ux) R R_standard_topology f0 /\
+            apply_fun f0 x0 = 0 /\
+            forall y:set, y :e F0 -> apply_fun f0 y = 1)
+      (andER
+        (topology_on Ux (subspace_topology E Te Ux))
+        (one_point_sets_closed Ux (subspace_topology E Te Ux) /\
+          forall x0:set, x0 :e Ux ->
+            forall F0:set, closed_in Ux (subspace_topology E Te Ux) F0 -> x0 /:e F0 ->
+              exists f0:set, continuous_map Ux (subspace_topology E Te Ux) R R_standard_topology f0 /\
+                apply_fun f0 x0 = 0 /\
+                forall y:set, y :e F0 -> apply_fun f0 y = 1)
+        HCRUx)).
+  }
+  claim Hfsub_ex : exists f_sub:set,
+    continuous_map Ux (subspace_topology E Te Ux) R R_standard_topology f_sub /\
+    apply_fun f_sub x = 0 /\
+    forall y:set, y :e Ux :\: W1 -> apply_fun f_sub y = 1.
+  { exact (HCRUx_sep x HxUx (Ux :\: W1) HUxW1closed HxNotUxW1). }
+  apply Hfsub_ex.
+  let f_sub. assume Hfsub_all.
+  apply (and3E
+    (continuous_map Ux (subspace_topology E Te Ux) R R_standard_topology f_sub)
+    (apply_fun f_sub x = 0)
+    (forall y:set, y :e Ux :\: W1 -> apply_fun f_sub y = 1)
+    Hfsub_all).
+  assume Hfsub_cont Hfsub_x0 Hfsub_1.
+  (** Pasting lemma setup: A = closure(W1), B = E \ W1 **)
+  claim HclW1_closed : closed_in E Te (closure_of E Te W1).
+  { exact (closure_is_closed E Te W1 HtopE HW1subE). }
+  claim HEW1_closed : closed_in E Te (E :\: W1).
+  { exact (closed_of_open_complement E Te W1 HtopE HW1Te). }
+  claim HclW1subE : closure_of E Te W1 c= E.
+  { exact (closure_in_space E Te W1 HtopE). }
+  claim Hcover : closure_of E Te W1 :\/: (E :\: W1) = E.
+  {
+    apply set_ext.
+    - let z. assume Hz.
+      apply (binunionE (closure_of E Te W1) (E :\: W1) z Hz).
+      + assume Hz1. exact (HclW1subE z Hz1).
+      + assume Hz2. exact (setminusE1 E W1 z Hz2).
+    - let z. assume Hz.
+      apply (xm (z :e W1)).
+      + assume HzW1. apply binunionI1.
+        exact (subset_of_closure E Te W1 HtopE HW1subE z HzW1).
+      + assume HznotW1. apply binunionI2.
+        exact (setminusI E W1 z Hz HznotW1).
+  }
+  (** Restrict f_sub to closure(W1) via subspace transitivity **)
+  claim Hfsub_on_cl : continuous_map (closure_of E Te W1)
+    (subspace_topology Ux (subspace_topology E Te Ux) (closure_of E Te W1))
+    R R_standard_topology f_sub.
+  { exact (continuous_on_subspace
+      Ux (subspace_topology E Te Ux) R R_standard_topology f_sub
+      (closure_of E Te W1) HtopUx HclW1subUx Hfsub_cont). }
+  claim Hsub_trans : subspace_topology Ux (subspace_topology E Te Ux) (closure_of E Te W1)
+    = subspace_topology E Te (closure_of E Te W1).
+  { exact (ex16_1_subspace_transitive E Te Ux (closure_of E Te W1)
+      HtopE HUxsubE HclW1subUx). }
+  claim Hfsub_on_cl_E : continuous_map (closure_of E Te W1)
+    (subspace_topology E Te (closure_of E Te W1))
+    R R_standard_topology f_sub.
+  { rewrite <- Hsub_trans. exact Hfsub_on_cl. }
+  (** Constant 1 function on E \ W1 **)
+  claim HtopR : topology_on R R_standard_topology.
+  { exact R_standard_topology_is_topology. }
+  claim HEW1subE : E :\: W1 c= E.
+  { let z. assume Hz. exact (setminusE1 E W1 z Hz). }
+  claim HtopEW1 : topology_on (E :\: W1) (subspace_topology E Te (E :\: W1)).
+  { exact (subspace_topology_is_topology E Te (E :\: W1) HtopE HEW1subE). }
+  claim Hconst_cont : continuous_map (E :\: W1)
+    (subspace_topology E Te (E :\: W1))
+    R R_standard_topology (const_fun (E :\: W1) 1).
+  { exact (const_fun_continuous (E :\: W1) (subspace_topology E Te (E :\: W1))
+      R R_standard_topology 1 HtopEW1 HtopR real_1). }
+  (** Agreement on intersection: closure(W1) ∩ (E \ W1) **)
+  claim Hagree : forall z:set, z :e closure_of E Te W1 :/\: (E :\: W1) ->
+    apply_fun f_sub z = apply_fun (const_fun (E :\: W1) 1) z.
+  {
+    let z. assume Hz.
+    claim HzCl : z :e closure_of E Te W1.
+    { exact (binintersectE1 (closure_of E Te W1) (E :\: W1) z Hz). }
+    claim HzEW1 : z :e E :\: W1.
+    { exact (binintersectE2 (closure_of E Te W1) (E :\: W1) z Hz). }
+    claim HzNotW1 : z /:e W1.
+    { exact (setminusE2 E W1 z HzEW1). }
+    claim HzUx : z :e Ux.
+    { exact (HclW1subUx z HzCl). }
+    claim HzUxW1 : z :e Ux :\: W1.
+    { exact (setminusI Ux W1 z HzUx HzNotW1). }
+    rewrite (Hfsub_1 z HzUxW1).
+    rewrite (const_fun_apply (E :\: W1) 1 z HzEW1).
+    reflexivity.
+  }
+  (** Apply pasting lemma **)
+  claim Hpaste : exists h:set, continuous_map E Te R R_standard_topology h /\
+    ((forall z:set, z :e closure_of E Te W1 -> apply_fun h z = apply_fun f_sub z) /\
+     (forall z:set, z :e E :\: W1 -> apply_fun h z = apply_fun (const_fun (E :\: W1) 1) z)).
+  { exact (pasting_lemma E (closure_of E Te W1) (E :\: W1) R Te R_standard_topology
+      f_sub (const_fun (E :\: W1) 1)
+      HtopE HclW1_closed HEW1_closed Hcover
+      Hfsub_on_cl_E Hconst_cont Hagree). }
+  apply Hpaste.
+  let h. assume Hh_all.
+  apply Hh_all. assume Hh_cont HhAB.
+  apply HhAB. assume HhA HhB.
+  (** Witness h and verify properties **)
+  witness h.
+  apply and3I.
+  - exact Hh_cont.
+  - (** h(x) = f_sub(x) = 0 **)
+    claim HxCl : x :e closure_of E Te W1.
+    { exact (subset_of_closure E Te W1 HtopE HW1subE x HxW1). }
+    rewrite (HhA x HxCl).
+    exact Hfsub_x0.
+  - (** h(y) = 1 for y in F **)
+    let y. assume HyF.
+    claim HyV0 : y :e V0.
+    { exact (HFV0 y HyF). }
+    claim HyE : y :e E.
+    { exact (closed_in_subset E Te F HFclosed y HyF). }
+    claim HyNotW1 : y /:e W1.
+    {
+      assume HyW1.
+      claim HyU0 : y :e U0.
+      { exact (binintersectE1 U0 Ux y
+          (HclW1sub y (subset_of_closure E Te W1 HtopE HW1subE y HyW1))). }
+      claim HyU0V0 : y :e U0 :/\: V0.
+      { exact (binintersectI U0 V0 y HyU0 HyV0). }
+      claim Habs : y :e Empty.
+      { rewrite <- HU0V0disj. exact HyU0V0. }
+      exact (EmptyE y Habs).
+    }
+    claim HyEW1 : y :e E :\: W1.
+    { exact (setminusI E W1 y HyE HyNotW1). }
+    rewrite (HhB y HyEW1).
+    exact (const_fun_apply (E :\: W1) 1 y HyEW1).
 }
 exact (andI
   (topology_on E Te)
@@ -59654,7 +59899,7 @@ exact (andI
           forall y:set, y :e F -> apply_fun f y = 1)
     HoneptE
     HsepGoal)).
-Admitted.
+Qed.
 
 (** Infrastructure: Hausdorff transfer for covering maps with Hausdorff base **)
 (** Proven Bob **)
