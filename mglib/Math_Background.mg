@@ -188367,6 +188367,73 @@ exact (group_right_cancel
   Hlhs_eq).
 Qed.
 
+(** Infrastructure: inverse of non-efam element not efam when efam is involutive **)
+(** Proven Bob **)
+Lemma inv_not_efam_if_invol : forall G mult e inv J Gfam efam alpha x:set,
+  group_structure G mult e inv ->
+  (forall a:set, a :e J -> subgroup_of (apply_fun Gfam a) G mult e inv) ->
+  alpha :e J ->
+  x :e apply_fun Gfam alpha ->
+  x <> apply_fun efam alpha ->
+  apply_fun inv (apply_fun efam alpha) = apply_fun efam alpha ->
+  apply_fun inv x <> apply_fun efam alpha.
+let G mult e inv J Gfam efam alpha x.
+assume Hgrp Hsub Halpha HxGalpha Hx_ne Hinv_efam.
+assume Hinvx_eq.
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall a b c:set, a :e G -> b :e G -> c :e G ->
+    apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+  (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+  (forall a:set, a :e G ->
+    apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+  Hgrp).
+assume HmultF HinvF HeG HassocG HidG HinvG.
+claim HxG : x :e G.
+{
+  apply (and4E
+    (apply_fun Gfam alpha c= G)
+    (e :e apply_fun Gfam alpha)
+    (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
+      apply_fun mult (x, y) :e apply_fun Gfam alpha)
+    (forall x:set, x :e apply_fun Gfam alpha -> apply_fun inv x :e apply_fun Gfam alpha)
+    (Hsub
+      alpha
+      Halpha)).
+  assume HsubGal _ _ _.
+  exact (HsubGal
+    x
+    HxGalpha).
+}
+claim Hinv_inv_x : apply_fun inv (apply_fun inv x) = x.
+{
+  exact (group_inv_inv
+    G
+    mult
+    inv
+    e
+    x
+    HmultF
+    HinvF
+    HeG
+    HassocG
+    HidG
+    HinvG
+    HxG).
+}
+claim Hx_eq_efam : x = apply_fun efam alpha.
+{
+  rewrite <- Hinv_inv_x.
+  rewrite Hinvx_eq.
+  rewrite Hinv_efam.
+  reflexivity.
+}
+exact (Hx_ne
+  Hx_eq_efam).
+Qed.
+
 (** from S68 Definition (line 2742 in algtop.tex): free product of subgroups **)
 (** LATEX VERSION: G is the free product of {G_alpha} if G_alpha cap G_beta = {1} **)
 (** for alpha <> beta, the G_alpha generate G, and each x in G has a unique **)
