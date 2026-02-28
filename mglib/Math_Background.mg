@@ -47535,14 +47535,18 @@ exact (covering_map_R_S1_on_S1 x HxR).
 Admitted.
 
 (** Infrastructure: surjectivity of the standard covering map R -> S1 **)
+Theorem S1_point_has_angle : forall y:set, y :e S1 ->
+  exists x:set, x :e R /\ apply_fun covering_map_R_S1 x = y.
+admit.
+Admitted.
+
 Theorem covering_map_R_S1_surjective : surjective_map R S1 covering_map_R_S1.
 prove function_on covering_map_R_S1 R S1 /\
   forall y:set, y :e S1 -> exists x:set, x :e R /\ apply_fun covering_map_R_S1 x = y.
 apply andI.
 - exact covering_map_R_S1_function_on.
 - let y. assume HyS1.
-  (** TODO Bob: prove every point on S1 has a real-angle preimage under p. **)
-  admit.
+  exact (S1_point_has_angle y HyS1).
 Admitted.
 
 (** Infrastructure: evenly covered neighborhoods for the standard covering map **)
