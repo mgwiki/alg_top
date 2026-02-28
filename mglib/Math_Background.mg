@@ -270384,6 +270384,96 @@ exact (Subq_tra
   HTsubX).
 Qed.
 
+(** helper: arcs of a tree are arcs in the ambient topology. **)
+(** Proven Bob **)
+Theorem tree_in_graph_arc_is_arc_in_X :
+  forall T ArcsT X Tx Arcs V:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  V :e ArcsT ->
+  arc V (subspace_topology X Tx V).
+let T ArcsT X Tx Arcs V.
+assume Htree HV.
+claim HglgT : general_linear_graph T (subspace_topology X Tx T) ArcsT.
+{
+  exact (tree_in_graph_general_linear_graph
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+claim HglgX : general_linear_graph X Tx Arcs.
+{
+  exact (tree_in_graph_general_linear_graph_X
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (general_linear_graph_topology_on
+    X
+    Tx
+    Arcs
+    HglgX).
+}
+claim HTsubX : T c= X.
+{
+  exact (tree_in_graph_subset_X
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
+claim HVsubT : V c= T.
+{
+  exact (andEL
+    (V c= T)
+    (arc V (subspace_topology T (subspace_topology X Tx T) V))
+    (general_linear_graph_arc_data
+      T
+      (subspace_topology X Tx T)
+      ArcsT
+      V
+      HglgT
+      HV)).
+}
+claim HarcT : arc V (subspace_topology T (subspace_topology X Tx T) V).
+{
+  exact (andER
+    (V c= T)
+    (arc V (subspace_topology T (subspace_topology X Tx T) V))
+    (general_linear_graph_arc_data
+      T
+      (subspace_topology X Tx T)
+      ArcsT
+      V
+      HglgT
+      HV)).
+}
+claim HtopVeq :
+  subspace_topology T (subspace_topology X Tx T) V =
+  subspace_topology X Tx V.
+{
+  exact (ex16_1_subspace_transitive
+    X
+    Tx
+    T
+    V
+    HtopX
+    HTsubX
+    HVsubT).
+}
+rewrite <- HtopVeq.
+exact HarcT.
+Qed.
+
 (** Proven Bob **)
 Theorem maximal_tree_subset_union_arcs :
   forall T ArcsT X Tx Arcs:set,
