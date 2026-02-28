@@ -265600,6 +265600,37 @@ exact (HAcX
 Qed.
 
 (** Proven Bob **)
+Theorem oriented_edge_endpoints_in_X :
+  forall X Tx Arcs A ini fin:set,
+  general_linear_graph X Tx Arcs ->
+  oriented_edge X Tx Arcs A ini fin ->
+  ini :e X /\ fin :e X.
+let X Tx Arcs A ini fin.
+assume Hglg Hori.
+exact (andI
+  (ini :e X)
+  (fin :e X)
+  (oriented_edge_initial_in_X
+    X
+    Tx
+    Arcs
+    A
+    ini
+    fin
+    Hglg
+    Hori)
+  (oriented_edge_final_in_X
+    X
+    Tx
+    Arcs
+    A
+    ini
+    fin
+    Hglg
+    Hori)).
+Qed.
+
+(** Proven Bob **)
 Theorem oriented_edge_initial_vertex_in_graph_vertices :
   forall X Tx Arcs A ini fin:set,
   general_linear_graph X Tx Arcs ->
