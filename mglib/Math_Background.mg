@@ -74858,6 +74858,88 @@ exact (lifting_of_on_subset
   HNsub).
 Qed.
 
+(** Proven Bob **)
+(** Infrastructure: path lift points lie in preimage over target subset **)
+Theorem path_lift_pointwise_in_preimage_on_subset :
+  forall E Te B Tb p e0 f N U:set,
+  covering_map E Te B Tb p ->
+  e0 :e E -> apply_fun p e0 = apply_fun f 0 ->
+  continuous_map unit_interval unit_interval_topology B Tb f ->
+  N c= unit_interval ->
+  (forall x:set, x :e N -> apply_fun f x :e U) ->
+  forall x:set, x :e N ->
+    apply_fun (path_lift E Te B Tb p e0 f) x :e preimage_of E p U.
+let E Te B Tb p e0 f N U.
+assume Hcov He0 Hstart Hfcont HNsub HfU.
+claim HcontN :
+  continuous_map N (subspace_topology unit_interval unit_interval_topology N) E Te
+    (path_lift E Te B Tb p e0 f).
+{
+  exact (path_lift_continuous_on_subset
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    f
+    N
+    Hcov
+    He0
+    Hstart
+    Hfcont
+    HNsub).
+}
+claim HfunN : function_on (path_lift E Te B Tb p e0 f) N E.
+{
+  exact (continuous_map_function_on
+    N
+    (subspace_topology unit_interval unit_interval_topology N)
+    E
+    Te
+    (path_lift E Te B Tb p e0 f)
+    HcontN).
+}
+claim HcommN :
+  forall x:set, x :e N ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) x) = apply_fun f x.
+{
+  exact (path_lift_commutes_on_subset
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    f
+    N
+    Hcov
+    He0
+    Hstart
+    Hfcont
+    HNsub).
+}
+let x.
+assume HxN.
+claim HxE : apply_fun (path_lift E Te B Tb p e0 f) x :e E.
+{
+  exact (HfunN
+    x
+    HxN).
+}
+claim HpxU : apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) x) :e U.
+{
+  rewrite (HcommN x HxN).
+  exact (HfU x HxN).
+}
+exact (SepI
+  E
+  (fun z:set => apply_fun p z :e U)
+  (apply_fun (path_lift E Te B Tb p e0 f) x)
+  HxE
+  HpxU).
+Qed.
+
 (** from S54 Lem 54.1 uniqueness (line 728 in algtop.tex) **)
 (** LATEX VERSION: The lifting of a path is unique. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
