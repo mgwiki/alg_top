@@ -269971,6 +269971,128 @@ exact (general_linear_graph_union_arcs
     Htree)).
 Qed.
 
+(** helper: any tree arc is contained in Union ArcsT. **)
+(** Proven Bob **)
+Theorem tree_in_graph_arc_subset_union_arcsT :
+  forall T ArcsT X Tx Arcs V:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  V :e ArcsT ->
+  V c= Union ArcsT.
+let T ArcsT X Tx Arcs V.
+assume Htree HV.
+exact (arc_in_union_arcs
+  ArcsT
+  V
+  HV).
+Qed.
+
+(** helper: left endpoint of a tree arc lies in Union ArcsT. **)
+(** Proven Bob **)
+Theorem tree_in_graph_arc_endpoint_left_in_union_arcsT :
+  forall T ArcsT X Tx Arcs V p q:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  V :e ArcsT ->
+  end_points_of_arc V (subspace_topology T (subspace_topology X Tx T) V) p q ->
+  p :e Union ArcsT.
+let T ArcsT X Tx Arcs V p q.
+assume Htree HV Hend.
+claim HpV : p :e V.
+{
+  exact (end_points_of_arc_left_in_set
+    V
+    (subspace_topology T (subspace_topology X Tx T) V)
+    p
+    q
+    Hend).
+}
+claim HVsub : V c= Union ArcsT.
+{
+  exact (tree_in_graph_arc_subset_union_arcsT
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    V
+    Htree
+    HV).
+}
+exact (HVsub p HpV).
+Qed.
+
+(** helper: right endpoint of a tree arc lies in Union ArcsT. **)
+(** Proven Bob **)
+Theorem tree_in_graph_arc_endpoint_right_in_union_arcsT :
+  forall T ArcsT X Tx Arcs V p q:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  V :e ArcsT ->
+  end_points_of_arc V (subspace_topology T (subspace_topology X Tx T) V) p q ->
+  q :e Union ArcsT.
+let T ArcsT X Tx Arcs V p q.
+assume Htree HV Hend.
+claim HqV : q :e V.
+{
+  exact (end_points_of_arc_right_in_set
+    V
+    (subspace_topology T (subspace_topology X Tx T) V)
+    p
+    q
+    Hend).
+}
+claim HVsub : V c= Union ArcsT.
+{
+  exact (tree_in_graph_arc_subset_union_arcsT
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    V
+    Htree
+    HV).
+}
+exact (HVsub q HqV).
+Qed.
+
+(** helper: endpoints of a tree arc lie in Union ArcsT. **)
+(** Proven Bob **)
+Theorem tree_in_graph_arc_endpoints_in_union_arcsT :
+  forall T ArcsT X Tx Arcs V p q:set,
+  tree_in_graph T ArcsT X Tx Arcs ->
+  V :e ArcsT ->
+  end_points_of_arc V (subspace_topology T (subspace_topology X Tx T) V) p q ->
+  p :e Union ArcsT /\ q :e Union ArcsT.
+let T ArcsT X Tx Arcs V p q.
+assume Htree HV Hend.
+exact (andI
+  (p :e Union ArcsT)
+  (q :e Union ArcsT)
+  (tree_in_graph_arc_endpoint_left_in_union_arcsT
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    V
+    p
+    q
+    Htree
+    HV
+    Hend)
+  (tree_in_graph_arc_endpoint_right_in_union_arcsT
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    V
+    p
+    q
+    Htree
+    HV
+    Hend)).
+Qed.
+
 (** Proven Bob **)
 Theorem tree_in_graph_selected_arc_in_arcs :
   forall T ArcsT X Tx Arcs A:set,
