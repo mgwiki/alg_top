@@ -256801,11 +256801,346 @@ exact (homeomorphism_preserves_simply_connected
   unit_interval_simply_connected).
 Qed.
 
+(** Unit interval is locally path connected (via metric ball argument) **)
+(** Proven Alice **)
+Theorem unit_interval_locally_path_connected :
+  locally_path_connected unit_interval unit_interval_topology.
+claim HtopI : topology_on unit_interval unit_interval_topology.
+{ exact unit_interval_topology_on. }
+claim Hlocal : forall x:set, x :e unit_interval -> forall U:set, U :e unit_interval_topology -> x :e U ->
+  exists V:set, V :e unit_interval_topology /\ x :e V /\ V c= U /\
+    path_connected_space V (subspace_topology unit_interval unit_interval_topology V).
+{
+  let x.
+  assume HxI : x :e unit_interval.
+  let U.
+  assume HU : U :e unit_interval_topology.
+  assume HxU : x :e U.
+  claim Hmetric : metric_on unit_interval R_bounded_metric.
+  { exact R_bounded_metric_is_metric_on_unit_interval. }
+  claim HUmetric : U :e metric_topology unit_interval R_bounded_metric.
+  { rewrite metric_topology_unit_interval_eq_I_topology. exact HU. }
+  claim Hball : exists r:set, r :e R /\ Rlt 0 r /\ open_ball unit_interval R_bounded_metric x r c= U /\ Rlt r 1.
+  {
+    exact (metric_topology_neighborhood_contains_ball_bounded
+      unit_interval
+      R_bounded_metric
+      x
+      U
+      1
+      Hmetric
+      HxI
+      HUmetric
+      HxU
+      real_1
+      Rlt_0_1).
+  }
+  apply Hball.
+  let r.
+  assume HrPack.
+  claim Hrlt1 : Rlt r 1.
+  {
+    exact (andER
+      ((r :e R /\ Rlt 0 r) /\ open_ball unit_interval R_bounded_metric x r c= U)
+      (Rlt r 1)
+      HrPack).
+  }
+  claim HrCore : (r :e R /\ Rlt 0 r) /\ open_ball unit_interval R_bounded_metric x r c= U.
+  {
+    exact (andEL
+      ((r :e R /\ Rlt 0 r) /\ open_ball unit_interval R_bounded_metric x r c= U)
+      (Rlt r 1)
+      HrPack).
+  }
+  claim Hballsub : open_ball unit_interval R_bounded_metric x r c= U.
+  {
+    exact (andER
+      (r :e R /\ Rlt 0 r)
+      (open_ball unit_interval R_bounded_metric x r c= U)
+      HrCore).
+  }
+  claim HrR_pos : r :e R /\ Rlt 0 r.
+  {
+    exact (andEL
+      (r :e R /\ Rlt 0 r)
+      (open_ball unit_interval R_bounded_metric x r c= U)
+      HrCore).
+  }
+  claim HrR : r :e R.
+  {
+    exact (andEL
+      (r :e R)
+      (Rlt 0 r)
+      HrR_pos).
+  }
+  claim Hrpos : Rlt 0 r.
+  {
+    exact (andER
+      (r :e R)
+      (Rlt 0 r)
+      HrR_pos).
+  }
+  set V := open_ball unit_interval R_bounded_metric x r.
+  claim HVopen : V :e metric_topology unit_interval R_bounded_metric.
+  {
+    exact (open_ball_in_metric_topology
+      unit_interval
+      R_bounded_metric
+      x
+      r
+      Hmetric
+      HxI
+      Hrpos).
+  }
+  claim HVinTx : V :e unit_interval_topology.
+  {
+    rewrite <- metric_topology_unit_interval_eq_I_topology.
+    exact HVopen.
+  }
+  claim HxV : x :e V.
+  {
+    exact (center_in_open_ball
+      unit_interval
+      R_bounded_metric
+      x
+      r
+      Hmetric
+      HxI
+      Hrpos).
+  }
+  claim HVpc : path_connected_space V (subspace_topology unit_interval unit_interval_topology V).
+  {
+    exact (open_ball_unit_interval_path_connected_lt1_algtop
+      x
+      r
+      HxI
+      HrR
+      Hrpos
+      Hrlt1).
+  }
+  witness V.
+  exact (and4I
+    (V :e unit_interval_topology)
+    (x :e V)
+    (V c= U)
+    (path_connected_space V (subspace_topology unit_interval unit_interval_topology V))
+    HVinTx
+    HxV
+    Hballsub
+    HVpc).
+}
+exact (andI
+  (topology_on unit_interval unit_interval_topology)
+  (forall x:set, x :e unit_interval -> forall U:set, U :e unit_interval_topology -> x :e U ->
+    exists V:set, V :e unit_interval_topology /\ x :e V /\ V c= U /\
+      path_connected_space V (subspace_topology unit_interval unit_interval_topology V))
+  HtopI
+  Hlocal).
+Qed.
+
 (** Infrastructure: arcs are locally path connected (homeomorphic to [0,1]) **)
+(** Proven Alice **)
 Theorem arc_locally_path_connected : forall A Ta:set,
   arc A Ta -> locally_path_connected A Ta.
-admit.
-Admitted.
+let A Ta.
+assume Harc.
+claim Hex : exists f:set, homeomorphism unit_interval unit_interval_topology A Ta f.
+{ exact Harc. }
+apply Hex.
+let f.
+assume Hhome : homeomorphism unit_interval unit_interval_topology A Ta f.
+claim HfCont : continuous_map unit_interval unit_interval_topology A Ta f.
+{ exact (homeomorphism_continuous unit_interval unit_interval_topology A Ta f Hhome). }
+claim HfFun : function_on f unit_interval A.
+{ exact (continuous_map_function_on unit_interval unit_interval_topology A Ta f HfCont). }
+claim HtopA : topology_on A Ta.
+{ exact (continuous_map_topology_cod unit_interval unit_interval_topology A Ta f HfCont). }
+claim HinvPack : exists g:set,
+  continuous_map A Ta unit_interval unit_interval_topology g /\
+  (forall x:set, x :e unit_interval -> apply_fun g (apply_fun f x) = x) /\
+  (forall y:set, y :e A -> apply_fun f (apply_fun g y) = y).
+{ exact (homeomorphism_inverse_package unit_interval unit_interval_topology A Ta f Hhome). }
+apply HinvPack.
+let g.
+assume HgPack.
+claim HgAB :
+  continuous_map A Ta unit_interval unit_interval_topology g /\
+  (forall x:set, x :e unit_interval -> apply_fun g (apply_fun f x) = x).
+{
+  exact (andEL
+    (continuous_map A Ta unit_interval unit_interval_topology g /\
+     (forall x:set, x :e unit_interval -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e A -> apply_fun f (apply_fun g y) = y)
+    HgPack).
+}
+claim HgCont : continuous_map A Ta unit_interval unit_interval_topology g.
+{
+  exact (andEL
+    (continuous_map A Ta unit_interval unit_interval_topology g)
+    (forall x:set, x :e unit_interval -> apply_fun g (apply_fun f x) = x)
+    HgAB).
+}
+claim Hgf : forall x:set, x :e unit_interval -> apply_fun g (apply_fun f x) = x.
+{
+  exact (andER
+    (continuous_map A Ta unit_interval unit_interval_topology g)
+    (forall x:set, x :e unit_interval -> apply_fun g (apply_fun f x) = x)
+    HgAB).
+}
+claim Hfg : forall y:set, y :e A -> apply_fun f (apply_fun g y) = y.
+{
+  exact (andER
+    (continuous_map A Ta unit_interval unit_interval_topology g /\
+     (forall x:set, x :e unit_interval -> apply_fun g (apply_fun f x) = x))
+    (forall y:set, y :e A -> apply_fun f (apply_fun g y) = y)
+    HgPack).
+}
+claim HgFun : function_on g A unit_interval.
+{ exact (continuous_map_function_on A Ta unit_interval unit_interval_topology g HgCont). }
+claim HtopI_loc : topology_on A Ta.
+{ exact HtopA. }
+claim Hlocal : forall y:set, y :e A -> forall U:set, U :e Ta -> y :e U ->
+  exists V:set, V :e Ta /\ y :e V /\ V c= U /\
+    path_connected_space V (subspace_topology A Ta V).
+{
+  let y.
+  assume HyA : y :e A.
+  let U.
+  assume HUopen : U :e Ta.
+  assume HyU : y :e U.
+  set x := apply_fun g y.
+  claim HxI : x :e unit_interval.
+  { exact (HgFun y HyA). }
+  claim Hfxy : apply_fun f x = y.
+  { exact (Hfg y HyA). }
+  claim HW : preimage_of unit_interval f U :e unit_interval_topology.
+  { exact (continuous_map_preimage unit_interval unit_interval_topology A Ta f HfCont U HUopen). }
+  claim HxW : x :e preimage_of unit_interval f U.
+  {
+    exact (SepI
+      unit_interval
+      (fun z:set => apply_fun f z :e U)
+      x
+      HxI
+      (eq_subst_mem (apply_fun f x) y U Hfxy HyU)).
+  }
+  claim HlpcI : locally_path_connected unit_interval unit_interval_topology.
+  { exact unit_interval_locally_path_connected. }
+  claim HVex : exists V':set, V' :e unit_interval_topology /\ x :e V' /\ V' c= preimage_of unit_interval f U /\ path_connected_space V' (subspace_topology unit_interval unit_interval_topology V').
+  {
+    exact (locally_path_connected_local
+      unit_interval unit_interval_topology x (preimage_of unit_interval f U)
+      HlpcI HxI HW HxW).
+  }
+  apply HVex.
+  let V'.
+  assume HV'Pack.
+  claim HV'pc : path_connected_space V' (subspace_topology unit_interval unit_interval_topology V').
+  {
+    exact (andER
+      ((V' :e unit_interval_topology /\ x :e V') /\ V' c= preimage_of unit_interval f U)
+      (path_connected_space V' (subspace_topology unit_interval unit_interval_topology V'))
+      HV'Pack).
+  }
+  claim HV'Core : (V' :e unit_interval_topology /\ x :e V') /\ V' c= preimage_of unit_interval f U.
+  {
+    exact (andEL
+      ((V' :e unit_interval_topology /\ x :e V') /\ V' c= preimage_of unit_interval f U)
+      (path_connected_space V' (subspace_topology unit_interval unit_interval_topology V'))
+      HV'Pack).
+  }
+  claim HV'subW : V' c= preimage_of unit_interval f U.
+  {
+    exact (andER
+      (V' :e unit_interval_topology /\ x :e V')
+      (V' c= preimage_of unit_interval f U)
+      HV'Core).
+  }
+  claim HV'open_x : V' :e unit_interval_topology /\ x :e V'.
+  {
+    exact (andEL
+      (V' :e unit_interval_topology /\ x :e V')
+      (V' c= preimage_of unit_interval f U)
+      HV'Core).
+  }
+  claim HV'open : V' :e unit_interval_topology.
+  {
+    exact (andEL
+      (V' :e unit_interval_topology)
+      (x :e V')
+      HV'open_x).
+  }
+  claim HxV' : x :e V'.
+  {
+    exact (andER
+      (V' :e unit_interval_topology)
+      (x :e V')
+      HV'open_x).
+  }
+  set V := image_of f V'.
+  claim HV'subI : V' c= unit_interval.
+  { exact (topology_elem_subset unit_interval unit_interval_topology V' unit_interval_topology_on HV'open). }
+  claim HVopen : V :e Ta.
+  { exact (homeomorphism_image_open unit_interval unit_interval_topology A Ta f V' Hhome HV'open). }
+  claim HyV : y :e V.
+  {
+    rewrite <- Hfxy.
+    exact (ReplI V' (fun z:set => apply_fun f z) x HxV').
+  }
+  claim HVsubU : V c= U.
+  {
+    let z.
+    assume HzV : z :e V.
+    apply (ReplE_impred V' (fun w:set => apply_fun f w) z HzV).
+    let w.
+    assume HwV' : w :e V'.
+    assume Hzeq : z = apply_fun f w.
+    claim HwW : w :e preimage_of unit_interval f U.
+    { exact (HV'subW w HwV'). }
+    claim HfwU : apply_fun f w :e U.
+    {
+      exact (SepE2
+        unit_interval
+        (fun z0:set => apply_fun f z0 :e U)
+        w
+        HwW).
+    }
+    rewrite Hzeq.
+    exact HfwU.
+  }
+  claim HVpc : path_connected_space V (subspace_topology A Ta V).
+  {
+    claim Hhome_restr :
+      homeomorphism V' (subspace_topology unit_interval unit_interval_topology V')
+        V (subspace_topology A Ta V) f.
+    {
+      exact (homeomorphism_restrict_to_image_of_subset
+        unit_interval unit_interval_topology A Ta f V' Hhome HV'subI).
+    }
+    exact (homeomorphism_preserves_path_connected_space_right
+      V' (subspace_topology unit_interval unit_interval_topology V')
+      V (subspace_topology A Ta V) f
+      Hhome_restr HV'pc).
+  }
+  witness V.
+  exact (and4I
+    (V :e Ta)
+    (y :e V)
+    (V c= U)
+    (path_connected_space V (subspace_topology A Ta V))
+    HVopen
+    HyV
+    HVsubU
+    HVpc).
+}
+exact (andI
+  (topology_on A Ta)
+  (forall y:set, y :e A -> forall U:set, U :e Ta -> y :e U ->
+    exists V:set, V :e Ta /\ y :e V /\ V c= U /\
+      path_connected_space V (subspace_topology A Ta V))
+  HtopA
+  Hlocal).
+Qed.
 
 (** Helper: homeomorphism preserves connected complements of singletons (backward). **)
 (** If f: X -> Y is a homeomorphism and f(x) has connected complement in Y, **)
