@@ -245921,6 +245921,53 @@ exact (SepE1
   HA).
 Qed.
 
+(** helper: selected arc is an arc in the ambient family (no subgraph hypothesis). **)
+(** Proven Bob **)
+Theorem selected_arc_in_arcs :
+  forall Arcs Y A:set,
+  A :e {B :e Arcs | B c= Y} ->
+  A :e Arcs.
+let Arcs Y A.
+assume HA.
+exact (SepE1
+  Arcs
+  (fun B:set => B c= Y)
+  A
+  HA).
+Qed.
+
+(** helper: selected arc is contained in the selector set. **)
+(** Proven Bob **)
+Theorem selected_arc_subset_Y :
+  forall Arcs Y A:set,
+  A :e {B :e Arcs | B c= Y} ->
+  A c= Y.
+let Arcs Y A.
+assume HA.
+exact (SepE2
+  Arcs
+  (fun B:set => B c= Y)
+  A
+  HA).
+Qed.
+
+(** helper: arc in Arcs contained in Y is a selected arc. **)
+(** Proven Bob **)
+Theorem arc_in_arcs_subset_Y_in_selected :
+  forall Arcs Y A:set,
+  A :e Arcs ->
+  A c= Y ->
+  A :e {B :e Arcs | B c= Y}.
+let Arcs Y A.
+assume HA Hsub.
+exact (SepI
+  Arcs
+  (fun B:set => B c= Y)
+  A
+  HA
+  Hsub).
+Qed.
+
 (** Proven Bob **)
 Theorem subgraph_of_selected_arc_subset_Y :
   forall Y X Tx Arcs A:set,
