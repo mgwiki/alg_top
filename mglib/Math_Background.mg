@@ -74694,6 +74694,64 @@ exact (continuous_on_subspace
   Hcont).
 Qed.
 
+(** Proven Bob **)
+(** Infrastructure: path lifts restrict to liftings on subintervals **)
+Theorem path_lift_lifting_of_on_subset : forall E Te B Tb p e0 f N:set,
+  covering_map E Te B Tb p ->
+  e0 :e E -> apply_fun p e0 = apply_fun f 0 ->
+  continuous_map unit_interval unit_interval_topology B Tb f ->
+  N c= unit_interval ->
+  lifting_of N (subspace_topology unit_interval unit_interval_topology N)
+    E Te B Tb p f (path_lift E Te B Tb p e0 f).
+let E Te B Tb p e0 f N.
+assume Hcov He0 Hstart Hfcont HNsub.
+claim Hcont :
+  continuous_map N (subspace_topology unit_interval unit_interval_topology N) E Te
+    (path_lift E Te B Tb p e0 f).
+{
+  exact (path_lift_continuous_on_subset
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    f
+    N
+    Hcov
+    He0
+    Hstart
+    Hfcont
+    HNsub).
+}
+claim Hcomm :
+  forall x:set, x :e N ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) x) = apply_fun f x.
+{
+  exact (path_lift_commutes_on_subset
+    E
+    Te
+    B
+    Tb
+    p
+    e0
+    f
+    N
+    Hcov
+    He0
+    Hstart
+    Hfcont
+    HNsub).
+}
+exact (andI
+  (continuous_map N (subspace_topology unit_interval unit_interval_topology N) E Te
+    (path_lift E Te B Tb p e0 f))
+  (forall x:set, x :e N ->
+    apply_fun p (apply_fun (path_lift E Te B Tb p e0 f) x) = apply_fun f x)
+  Hcont
+  Hcomm).
+Qed.
+
 (** from S54 Lem 54.1 uniqueness (line 728 in algtop.tex) **)
 (** LATEX VERSION: The lifting of a path is unique. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
