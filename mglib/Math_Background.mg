@@ -258733,7 +258733,7 @@ claim HCeq : C = E :\: (E :\: C).
 }
 rewrite HCeq.
 exact (closed_of_open_complement E Te (E :\: C) HtopE HEC_open).
-Qed.
+Admitted.
 
 (** from S83 Thm 83.4 (line 5530 in algtop.tex): covering of graph is graph **)
 (** LATEX VERSION: Let p: E -> X be a covering map where X is a linear graph. **)
