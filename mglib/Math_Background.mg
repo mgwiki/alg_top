@@ -79847,6 +79847,88 @@ exact (SepE2
   Hpre).
 Qed.
 
+(** Infrastructure: commutation and target inclusion give pointwise preimage membership **)
+(** Proven Bob **)
+Theorem commuting_lift_pointwise_in_preimage :
+  forall N E B p U F Ft:set,
+  function_on Ft N E ->
+  (forall x:set, x :e N ->
+    apply_fun p (apply_fun Ft x) = apply_fun F x) ->
+  (forall x:set, x :e N -> apply_fun F x :e U) ->
+  forall x:set, x :e N -> apply_fun Ft x :e preimage_of E p U.
+let N E B p U F Ft.
+assume Hfun Hcomm HFU.
+let x.
+assume HxN.
+claim HxE : apply_fun Ft x :e E.
+{
+  exact (Hfun
+    x
+    HxN).
+}
+claim HpxU : apply_fun p (apply_fun Ft x) :e U.
+{
+  rewrite (Hcomm x HxN).
+  exact (HFU x HxN).
+}
+exact (SepI
+  E
+  (fun z:set => apply_fun p z :e U)
+  (apply_fun Ft x)
+  HxE
+  HpxU).
+Qed.
+
+(** Infrastructure: commutation and target inclusion give image subset of preimage **)
+(** Proven Bob **)
+Theorem commuting_lift_image_subset_preimage :
+  forall N E B p U F Ft:set,
+  function_on Ft N E ->
+  (forall x:set, x :e N ->
+    apply_fun p (apply_fun Ft x) = apply_fun F x) ->
+  (forall x:set, x :e N -> apply_fun F x :e U) ->
+  image_of Ft N c= preimage_of E p U.
+let N E B p U F Ft.
+assume Hfun Hcomm HFU.
+let y.
+assume HyImg.
+apply (ReplE
+  N
+  (fun x:set => apply_fun Ft x)
+  y
+  HyImg).
+let x.
+assume HxPack.
+claim HxN : x :e N.
+{
+  exact (andEL
+    (x :e N)
+    (y = apply_fun Ft x)
+    HxPack).
+}
+claim HyEq : y = apply_fun Ft x.
+{
+  exact (andER
+    (x :e N)
+    (y = apply_fun Ft x)
+    HxPack).
+}
+rewrite HyEq.
+exact (commuting_lift_pointwise_in_preimage
+  N
+  E
+  B
+  p
+  U
+  F
+  Ft
+  Hfun
+  Hcomm
+  HFU
+  x
+  HxN).
+Qed.
+
 (** Infrastructure: element of a slice lies in the union of slices **)
 (** Proven Bob **)
 Lemma slice_member_in_union : forall slices V x:set,
