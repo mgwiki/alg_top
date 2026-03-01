@@ -56098,6 +56098,24 @@ claim HxNotB : x /:e B.
 exact (HxNotB HxB).
 Qed.
 
+(** Infrastructure: intersecting two setminus parts **)
+(** Proven Bob **)
+Theorem binintersect_setminus_eq_setminus_binunion : forall A B C:set,
+  (A :\: B) :/\: (A :\: C) = A :\: (B :\/: C).
+let A B C.
+rewrite (setminus_binunion_eq_binintersect A B C).
+reflexivity.
+Qed.
+
+(** Infrastructure: union of two setminus parts **)
+(** Proven Bob **)
+Theorem binunion_setminus_eq_setminus_binintersect : forall A B C:set,
+  (A :\: B) :\/: (A :\: C) = A :\: (B :/\: C).
+let A B C.
+rewrite (setminus_binintersect_eq_binunion A B C).
+reflexivity.
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
