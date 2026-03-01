@@ -84,6 +84,111 @@ Rules:
 
 --------------------------------------------------------
 
+NOTICE ID: 1772355632
+Created: 1772355632
+Status: PROPOSED
+
+Refers to Commit:
+  bbc6696568135e41f95c628e5ebba66c28984d3a
+
+Target:
+  Line: 26951-26954
+  Name: Example_52_1_convex_trivial_pi1 (Theorem)
+
+Problem:
+  The statement allows an arbitrary topology_on A Ta. The proof
+  (and the geometry of straight-line homotopies in R) requires the
+  subspace topology on A. With an arbitrary Ta, continuity of the
+  straight-line homotopy into (A, Ta) is unprovable, and the theorem
+  remains admitted. This is the same gap as Example_51_1.
+
+Proposed Replacement:
+  Theorem Example_52_1_convex_trivial_pi1 : forall A x0:set,
+    A c= R -> convex_in R A ->
+    x0 :e A ->
+    fundamental_group A (subspace_topology R R_standard_topology A) x0 =
+      {fundamental_group_id A (subspace_topology R R_standard_topology A) x0}.
+
+Proposed by: Bob
+
+Discussion:
+  - 1772355632 | Bob: The convex straight-line contraction is
+    continuous into R and hence into A with the subspace topology.
+    Arbitrary Ta makes continuity unavailable.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+--------------------------------------------------------
+
+NOTICE ID: 1772355631
+Created: 1772355631
+Status: PROPOSED
+
+Refers to Commit:
+  bbc6696568135e41f95c628e5ebba66c28984d3a
+
+Target:
+  Line: 37147-37155
+  Name: star_convex_segment_continuous (Theorem)
+
+Problem:
+  The statement allows an arbitrary topology_on A Ta, but the proof
+  constructs the segment as a map into R and requires the subspace
+  topology on A to conclude continuity into (A, Ta). With arbitrary
+  Ta, continuity is unprovable; the proof currently admits this step.
+
+Proposed Replacement:
+  Theorem star_convex_segment_continuous : forall A a0 a:set,
+    star_convex A a0 ->
+    a :e A ->
+    exists seg:set,
+      continuous_map unit_interval unit_interval_topology A
+        (subspace_topology R R_standard_topology A) seg /\
+      apply_fun seg 0 = a0 /\
+      apply_fun seg 1 = a.
+
+Proposed by: Bob
+
+Discussion:
+  - 1772355631 | Bob: The segment is continuous into R and thus into A
+    with the subspace topology. Arbitrary Ta makes this unprovable.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+--------------------------------------------------------
+
 NOTICE ID: 1772355212
 Created: 1772355212
 Status: PROPOSED
