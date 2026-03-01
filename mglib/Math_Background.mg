@@ -200416,8 +200416,632 @@ apply (nat_inv nw Hnw_nat).
                     }
                     {
                       assume Hp_ne_eG.
-                      (** TODO Case B subcase p != eG: prefix product is nontrivial **)
-                      admit.
+                      (** Case B subcase p != eG: derive contradiction via triple concatenation **)
+                      (** Extract subgroup label for xie(m) **)
+                      claim Hm_in_sm : m :e ordsucc m.
+                      {
+                        exact (ordsuccI2 m).
+                      }
+                      claim Hm_in_nie : m :e nie.
+                      {
+                        rewrite Hnie_eq.
+                        exact Hm_in_sm.
+                      }
+                      claim Hxiem_elem : exists alpha:set, alpha :e J /\
+                        apply_fun xie m :e apply_fun Gfam alpha /\
+                        apply_fun xie m <> apply_fun efam alpha.
+                      {
+                        apply (and3E
+                          (ordsucc m :e omega)
+                          (forall i:set, i :e ordsucc m ->
+                            exists alpha:set, alpha :e J /\
+                              apply_fun xie i :e apply_fun Gfam alpha /\
+                              apply_fun xie i <> apply_fun efam alpha)
+                          (forall i:set, i :e ordsucc m -> ordsucc i :e ordsucc m ->
+                            forall a b:set, a :e J -> b :e J ->
+                              apply_fun xie i :e apply_fun Gfam a ->
+                              apply_fun xie (ordsucc i) :e apply_fun Gfam b ->
+                              a <> b)
+                          Hred_ie_succ).
+                        assume _ Helem_sm _.
+                        exact (Helem_sm m Hm_in_sm).
+                      }
+                      apply Hxiem_elem.
+                      let alpha_m.
+                      assume Hxiem_pack.
+                      apply (and3E
+                        (alpha_m :e J)
+                        (apply_fun xie m :e apply_fun Gfam alpha_m)
+                        (apply_fun xie m <> apply_fun efam alpha_m)
+                        Hxiem_pack).
+                      assume Ham_J Hxiem_Gam Hxiem_ne_eam.
+                      (** Extract subgroup label for xie(0) **)
+                      claim H0_in_sm : 0 :e ordsucc m.
+                      {
+                        exact (nat_0_in_ordsucc m Hm_nat).
+                      }
+                      claim Hxie0_elem : exists alpha:set, alpha :e J /\
+                        apply_fun xie 0 :e apply_fun Gfam alpha /\
+                        apply_fun xie 0 <> apply_fun efam alpha.
+                      {
+                        apply (and3E
+                          (ordsucc m :e omega)
+                          (forall i:set, i :e ordsucc m ->
+                            exists alpha:set, alpha :e J /\
+                              apply_fun xie i :e apply_fun Gfam alpha /\
+                              apply_fun xie i <> apply_fun efam alpha)
+                          (forall i:set, i :e ordsucc m -> ordsucc i :e ordsucc m ->
+                            forall a b:set, a :e J -> b :e J ->
+                              apply_fun xie i :e apply_fun Gfam a ->
+                              apply_fun xie (ordsucc i) :e apply_fun Gfam b ->
+                              a <> b)
+                          Hred_ie_succ).
+                        assume _ Helem_sm _.
+                        exact (Helem_sm 0 H0_in_sm).
+                      }
+                      apply Hxie0_elem.
+                      let alpha_0.
+                      assume Hxie0_pack.
+                      apply (and3E
+                        (alpha_0 :e J)
+                        (apply_fun xie 0 :e apply_fun Gfam alpha_0)
+                        (apply_fun xie 0 <> apply_fun efam alpha_0)
+                        Hxie0_pack).
+                      assume Ha0_J Hxie0_Ga0 Hxie0_ne_ea0.
+                      (** alpha_m != al since xie(m) not in Gfam(al) **)
+                      claim Ham_ne_al : alpha_m <> al.
+                      {
+                        assume Ham_eq_al.
+                        claim Hxiem_Gal : apply_fun xie m :e apply_fun Gfam al.
+                        {
+                          rewrite <- Ham_eq_al.
+                          exact Hxiem_Gam.
+                        }
+                        exact (Hxiem_not_Gal Hxiem_Gal).
+                      }
+                      (** alpha_0 != al since xie(0) not in Gfam(al) **)
+                      claim Ha0_ne_al : alpha_0 <> al.
+                      {
+                        assume Ha0_eq_al.
+                        claim Hxie0_Gal : apply_fun xie 0 :e apply_fun Gfam al.
+                        {
+                          rewrite <- Ha0_eq_al.
+                          exact Hxie0_Ga0.
+                        }
+                        exact (Hxie0_not_Gal Hxie0_Gal).
+                      }
+                      (** Case split: alpha_m = alpha_0 or not **)
+                      apply (xm (alpha_m = alpha_0)).
+                      {
+                        assume Ham_eq_a0.
+                        (** Case 2b: alpha_m = alpha_0, need merged triple **)
+                        admit.
+                      }
+                      {
+                        assume Ham_ne_a0.
+                        (** Case 2a: alpha_m != alpha_0 **)
+                        (** Build tw = xie ++ xie ++ [xie(0)] of length 2 x add_nat sm 1 **)
+                        (** Product = mult(ie squared, xie(0)) = xie(0) **)
+                        (** By Hxie0_uniq_len1: length 1 = 2m+3, contradiction **)
+                        set sm := ordsucc m.
+                        claim Hsm_nat : nat_p sm.
+                        {
+                          exact (nat_ordsucc m Hm_nat).
+                        }
+                        set dsm := add_nat sm sm.
+                        claim Hdsm_nat : nat_p dsm.
+                        {
+                          exact (add_nat_p sm Hsm_nat sm Hsm_nat).
+                        }
+                        set len := ordsucc dsm.
+                        claim Hlen_nat : nat_p len.
+                        {
+                          exact (nat_ordsucc dsm Hdsm_nat).
+                        }
+                        claim Hlen_ne0 : len <> 0.
+                        {
+                          exact (neq_ordsucc_0 dsm).
+                        }
+                        (** Cyclic index: maps i to i mod sm **)
+                        set cyc := fun i:set => nat_primrec 0 (fun j r:set => if ordsucc r :e sm then ordsucc r else 0) i.
+                        (** cyc(0) = 0 **)
+                        claim Hcyc_0 : cyc 0 = 0.
+                        {
+                          exact (nat_primrec_0 0 (fun j r:set => if ordsucc r :e sm then ordsucc r else 0)).
+                        }
+                        (** cyc(ordsucc i) = if ordsucc(cyc i) in sm then ordsucc(cyc i) else 0 **)
+                        claim Hcyc_S : forall i:set, nat_p i ->
+                          cyc (ordsucc i) = (if ordsucc (cyc i) :e sm then ordsucc (cyc i) else 0).
+                        {
+                          let i.
+                          assume Hi_nat.
+                          exact (nat_primrec_S 0 (fun j r:set => if ordsucc r :e sm then ordsucc r else 0) i Hi_nat).
+                        }
+                        (** cyc(i) in sm for all nat_p i **)
+                        claim Hcyc_in_sm : forall i:set, nat_p i -> cyc i :e sm.
+                        {
+                          apply nat_ind.
+                          - rewrite Hcyc_0.
+                            exact (nat_0_in_ordsucc m Hm_nat).
+                          - let k. assume Hk_nat.
+                            assume IH : cyc k :e sm.
+                            rewrite (Hcyc_S k Hk_nat).
+                            apply (xm (ordsucc (cyc k) :e sm)).
+                            + assume Hin.
+                              rewrite (If_i_1 (ordsucc (cyc k) :e sm) (ordsucc (cyc k)) 0 Hin).
+                              exact Hin.
+                            + assume Hnotin.
+                              rewrite (If_i_0 (ordsucc (cyc k) :e sm) (ordsucc (cyc k)) 0 Hnotin).
+                              exact (nat_0_in_ordsucc m Hm_nat).
+                        }
+                        (** cyc(i) = i for i in sm **)
+                        claim Hcyc_id : forall i:set, nat_p i -> i :e sm -> cyc i = i.
+                        {
+                          apply nat_ind.
+                          - assume _.
+                            exact Hcyc_0.
+                          - let k. assume Hk_nat.
+                            assume IH : k :e sm -> cyc k = k.
+                            assume Hsk_sm : ordsucc k :e sm.
+                            claim Hk_sm : k :e sm.
+                            {
+                              exact (nat_trans sm Hsm_nat (ordsucc k) Hsk_sm k (ordsuccI2 k)).
+                            }
+                            claim Hcyc_k_eq : cyc k = k.
+                            {
+                              exact (IH Hk_sm).
+                            }
+                            claim Hstep : cyc (ordsucc k) =
+                              (if ordsucc (cyc k) :e sm then ordsucc (cyc k) else 0).
+                            {
+                              exact (Hcyc_S k Hk_nat).
+                            }
+                            claim Hsk_cond : ordsucc (cyc k) :e sm.
+                            {
+                              rewrite Hcyc_k_eq.
+                              exact Hsk_sm.
+                            }
+                            claim Hif_val : (if ordsucc (cyc k) :e sm then ordsucc (cyc k) else 0) = ordsucc (cyc k).
+                            {
+                              exact (If_i_1 (ordsucc (cyc k) :e sm) (ordsucc (cyc k)) 0 Hsk_cond).
+                            }
+                            claim Hcyc_sk_eq : cyc (ordsucc k) = ordsucc (cyc k).
+                            {
+                              exact (eq_i_tra (cyc (ordsucc k))
+                                (if ordsucc (cyc k) :e sm then ordsucc (cyc k) else 0)
+                                (ordsucc (cyc k))
+                                Hstep Hif_val).
+                            }
+                            rewrite Hcyc_sk_eq.
+                            rewrite Hcyc_k_eq.
+                            reflexivity.
+                        }
+                        (** cyc(sm) = 0 because ordsucc m not in ordsucc m **)
+                        claim Hcyc_sm : cyc sm = 0.
+                        {
+                          claim Hstep : cyc sm =
+                            (if ordsucc (cyc m) :e sm then ordsucc (cyc m) else 0).
+                          {
+                            exact (Hcyc_S m Hm_nat).
+                          }
+                          claim Hcyc_m_eq : cyc m = m.
+                          {
+                            exact (Hcyc_id m Hm_nat (ordsuccI2 m)).
+                          }
+                          claim Hsm_notin : ordsucc (cyc m) :e sm -> False.
+                          {
+                            rewrite Hcyc_m_eq.
+                            exact (In_irref sm).
+                          }
+                          claim Hif_val : (if ordsucc (cyc m) :e sm then ordsucc (cyc m) else 0) = 0.
+                          {
+                            exact (If_i_0 (ordsucc (cyc m) :e sm) (ordsucc (cyc m)) 0 Hsm_notin).
+                          }
+                          exact (eq_i_tra (cyc sm)
+                            (if ordsucc (cyc m) :e sm then ordsucc (cyc m) else 0)
+                            0
+                            Hstep Hif_val).
+                        }
+                        (** Build the triple word **)
+                        set tw := graph len (fun i:set => apply_fun xie (cyc i)).
+                        (** tw(i) = xie(cyc(i)) for i in len **)
+                        claim Htw_val : forall i:set, i :e len ->
+                          apply_fun tw i = apply_fun xie (cyc i).
+                        {
+                          let i. assume Hi.
+                          exact (apply_fun_graph len (fun i0:set => apply_fun xie (cyc i0)) i Hi).
+                        }
+                        (** sm in dsm **)
+                        claim Hsm_in_dsm : sm :e dsm.
+                        {
+                          claim H0_in_sm2 : 0 :e sm.
+                          {
+                            exact (nat_0_in_ordsucc m Hm_nat).
+                          }
+                          claim H0sm_in : add_nat 0 sm :e add_nat sm sm.
+                          {
+                            exact (add_nat_In_R sm Hsm_nat 0 H0_in_sm2 sm Hsm_nat).
+                          }
+                          claim H0sm_eq : add_nat 0 sm = sm.
+                          {
+                            exact (add_nat_0L sm Hsm_nat).
+                          }
+                          exact (eq_subst_mem_rev (add_nat 0 sm) sm dsm H0sm_eq H0sm_in).
+                        }
+                        (** i in sm implies i in len **)
+                        claim Hsm_sub_len : forall i:set, i :e sm -> i :e len.
+                        {
+                          let i. assume Hi.
+                          claim Hi_dsm : i :e dsm.
+                          {
+                            exact (nat_trans dsm Hdsm_nat sm Hsm_in_dsm i Hi).
+                          }
+                          exact (ordsuccI1 dsm i Hi_dsm).
+                        }
+                        (** Word product of tw over sm = ie **)
+                        (** tw(i) = xie(i) for i in sm **)
+                        claim Htw_eq_xie : forall i:set, i :e sm -> apply_fun tw i = apply_fun xie i.
+                        {
+                          let i. assume Hi.
+                          rewrite (Htw_val i (Hsm_sub_len i Hi)).
+                          rewrite (Hcyc_id i (nat_p_trans sm Hsm_nat i Hi) Hi).
+                          reflexivity.
+                        }
+                        (** wp agree lemma inline: wp(tw, k) = wp(xie, k) for k <= sm **)
+                        claim Hwp_agree_ind : forall k:set, nat_p k -> k :e ordsucc sm ->
+                          word_product multG eG tw k = word_product multG eG xie k.
+                        {
+                          apply nat_ind.
+                          - assume _.
+                            claim Hwp0_tw : word_product multG eG tw 0 = eG.
+                            {
+                              exact (nat_primrec_0 eG (fun i r => apply_fun multG (r, apply_fun tw i))).
+                            }
+                            claim Hwp0_xie : word_product multG eG xie 0 = eG.
+                            {
+                              exact (nat_primrec_0 eG (fun i r => apply_fun multG (r, apply_fun xie i))).
+                            }
+                            rewrite Hwp0_tw. rewrite Hwp0_xie. reflexivity.
+                          - let k. assume Hk_nat.
+                            assume IH : k :e ordsucc sm -> word_product multG eG tw k = word_product multG eG xie k.
+                            assume Hsk_ssm : ordsucc k :e ordsucc sm.
+                            claim Hk_sm : k :e sm.
+                            {
+                              claim Hsk_sm_or : ordsucc k :e sm \/ ordsucc k = sm.
+                              {
+                                exact (ordsuccE sm (ordsucc k) Hsk_ssm).
+                              }
+                              apply Hsk_sm_or.
+                              - assume Hsk_sm.
+                                exact (nat_trans sm Hsm_nat (ordsucc k) Hsk_sm k (ordsuccI2 k)).
+                              - assume Hsk_eq_sm.
+                                claim Hk_eq_m : k = m.
+                                {
+                                  exact (ordsucc_inj k m Hsk_eq_sm).
+                                }
+                                rewrite Hk_eq_m.
+                                exact (ordsuccI2 m).
+                            }
+                            claim Hk_ssm : k :e ordsucc sm.
+                            {
+                              exact (ordsuccI1 sm k Hk_sm).
+                            }
+                            claim IH_k : word_product multG eG tw k = word_product multG eG xie k.
+                            {
+                              exact (IH Hk_ssm).
+                            }
+                            claim Hwp_tw_sk : word_product multG eG tw (ordsucc k) =
+                              apply_fun multG (word_product multG eG tw k, apply_fun tw k).
+                            {
+                              exact (word_product_succ multG eG tw k Hk_nat).
+                            }
+                            claim Hwp_xie_sk : word_product multG eG xie (ordsucc k) =
+                              apply_fun multG (word_product multG eG xie k, apply_fun xie k).
+                            {
+                              exact (word_product_succ multG eG xie k Hk_nat).
+                            }
+                            rewrite Hwp_tw_sk.
+                            rewrite IH_k.
+                            rewrite (Htw_eq_xie k Hk_sm).
+                            symmetry.
+                            exact Hwp_xie_sk.
+                        }
+                        claim Hwp_tw_sm : word_product multG eG tw sm = ie.
+                        {
+                          claim Hsm_ssm : sm :e ordsucc sm.
+                          {
+                            exact (ordsuccI2 sm).
+                          }
+                          claim Hwp_eq : word_product multG eG tw sm = word_product multG eG xie sm.
+                          {
+                            exact (Hwp_agree_ind sm Hsm_nat Hsm_ssm).
+                          }
+                          exact (eq_i_tra (word_product multG eG tw sm) (word_product multG eG xie sm) ie Hwp_eq Hwp_ie_succ).
+                        }
+                        (** inv(ie) = ie **)
+                        claim Hinv_ie_eq_ie : apply_fun invG ie = ie.
+                        {
+                          prove apply_fun invG ie = ie.
+                          rewrite Hie_eq_efam.
+                          exact Hinv_eq_efam.
+                        }
+                        (** ie^2 = eG **)
+                        claim Hie_sq_eG : apply_fun multG (ie, ie) = eG.
+                        {
+                          claim Hie_inv_ie : apply_fun multG (ie, apply_fun invG ie) = eG.
+                          {
+                            exact (andEL
+                              (apply_fun multG (ie, apply_fun invG ie) = eG)
+                              (apply_fun multG (apply_fun invG ie, ie) = eG)
+                              (HinvG ie Hie_G)).
+                          }
+                          claim Hpair_eq : (ie, ie) = (ie, apply_fun invG ie).
+                          {
+                            rewrite Hinv_ie_eq_ie.
+                            reflexivity.
+                          }
+                          rewrite Hpair_eq.
+                          exact Hie_inv_ie.
+                        }
+                        (** cyc(add_nat sm k) = k for k in sm (second cycle) **)
+                        claim Hcyc_second : forall k:set, nat_p k -> k :e sm -> cyc (add_nat sm k) = k.
+                        {
+                          apply nat_ind.
+                          - assume _.
+                            claim Hsm0 : add_nat sm 0 = sm.
+                            {
+                              exact (add_nat_0R sm).
+                            }
+                            rewrite Hsm0.
+                            exact Hcyc_sm.
+                          - let j. assume Hj_nat.
+                            assume IH : j :e sm -> cyc (add_nat sm j) = j.
+                            assume Hsj_sm : ordsucc j :e sm.
+                            claim Hj_sm : j :e sm.
+                            {
+                              exact (nat_trans sm Hsm_nat (ordsucc j) Hsj_sm j (ordsuccI2 j)).
+                            }
+                            claim Hcyc_smj : cyc (add_nat sm j) = j.
+                            {
+                              exact (IH Hj_sm).
+                            }
+                            claim Hsmj_nat : nat_p (add_nat sm j).
+                            {
+                              exact (add_nat_p sm Hsm_nat j (nat_p_trans sm Hsm_nat j Hj_sm)).
+                            }
+                            claim Hsmsj : add_nat sm (ordsucc j) = ordsucc (add_nat sm j).
+                            {
+                              exact (add_nat_SR sm j (nat_p_trans sm Hsm_nat j Hj_sm)).
+                            }
+                            claim Hstep2 : cyc (ordsucc (add_nat sm j)) =
+                              (if ordsucc (cyc (add_nat sm j)) :e sm then ordsucc (cyc (add_nat sm j)) else 0).
+                            {
+                              exact (Hcyc_S (add_nat sm j) Hsmj_nat).
+                            }
+                            claim Hsk_cond2 : ordsucc (cyc (add_nat sm j)) :e sm.
+                            {
+                              rewrite Hcyc_smj.
+                              exact Hsj_sm.
+                            }
+                            claim Hif_val2 : (if ordsucc (cyc (add_nat sm j)) :e sm then ordsucc (cyc (add_nat sm j)) else 0) =
+                              ordsucc (cyc (add_nat sm j)).
+                            {
+                              exact (If_i_1 (ordsucc (cyc (add_nat sm j)) :e sm) (ordsucc (cyc (add_nat sm j))) 0 Hsk_cond2).
+                            }
+                            claim Hcyc_step : cyc (ordsucc (add_nat sm j)) = ordsucc (cyc (add_nat sm j)).
+                            {
+                              exact (eq_i_tra (cyc (ordsucc (add_nat sm j)))
+                                (if ordsucc (cyc (add_nat sm j)) :e sm then ordsucc (cyc (add_nat sm j)) else 0)
+                                (ordsucc (cyc (add_nat sm j)))
+                                Hstep2 Hif_val2).
+                            }
+                            rewrite Hsmsj.
+                            rewrite Hcyc_step.
+                            rewrite Hcyc_smj.
+                            reflexivity.
+                        }
+                        (** cyc(dsm) = 0 **)
+                        claim Hcyc_dsm : cyc dsm = 0.
+                        {
+                          claim Hsmsm : add_nat sm sm = ordsucc (add_nat sm m).
+                          {
+                            exact (add_nat_SR sm m Hm_nat).
+                          }
+                          claim Hsmm_nat : nat_p (add_nat sm m).
+                          {
+                            exact (add_nat_p sm Hsm_nat m Hm_nat).
+                          }
+                          claim Hcyc_smm : cyc (add_nat sm m) = m.
+                          {
+                            exact (Hcyc_second m Hm_nat (ordsuccI2 m)).
+                          }
+                          claim Hstep3 : cyc (ordsucc (add_nat sm m)) =
+                            (if ordsucc (cyc (add_nat sm m)) :e sm then ordsucc (cyc (add_nat sm m)) else 0).
+                          {
+                            exact (Hcyc_S (add_nat sm m) Hsmm_nat).
+                          }
+                          claim Hsm_notin3 : ordsucc (cyc (add_nat sm m)) :e sm -> False.
+                          {
+                            rewrite Hcyc_smm.
+                            exact (In_irref sm).
+                          }
+                          claim Hif_val3 : (if ordsucc (cyc (add_nat sm m)) :e sm then ordsucc (cyc (add_nat sm m)) else 0) = 0.
+                          {
+                            exact (If_i_0 (ordsucc (cyc (add_nat sm m)) :e sm) (ordsucc (cyc (add_nat sm m))) 0 Hsm_notin3).
+                          }
+                          claim Hcyc_ssmm : cyc (ordsucc (add_nat sm m)) = 0.
+                          {
+                            exact (eq_i_tra (cyc (ordsucc (add_nat sm m)))
+                              (if ordsucc (cyc (add_nat sm m)) :e sm then ordsucc (cyc (add_nat sm m)) else 0)
+                              0
+                              Hstep3 Hif_val3).
+                          }
+                          rewrite Hsmsm.
+                          exact Hcyc_ssmm.
+                        }
+                        (** tw(dsm) = xie(0) **)
+                        claim Hdsm_in_len : dsm :e len.
+                        {
+                          exact (ordsuccI2 dsm).
+                        }
+                        claim Htw_dsm : apply_fun tw dsm = apply_fun xie 0.
+                        {
+                          rewrite (Htw_val dsm Hdsm_in_len).
+                          rewrite Hcyc_dsm.
+                          reflexivity.
+                        }
+                        (** Word product of second copy: wp(tw, sm+k) = mult(ie, wp(xie, k)) **)
+                        claim Hwp_tw_second : forall k:set, nat_p k -> k :e ordsucc sm ->
+                          (forall j:set, j :e k -> add_nat sm j :e len) ->
+                          word_product multG eG tw (add_nat sm k) = apply_fun multG (ie, word_product multG eG xie k).
+                        {
+                          apply nat_ind.
+                          - assume _ _.
+                            rewrite (add_nat_0R sm).
+                            claim Hwp_xie_0 : word_product multG eG xie 0 = eG.
+                            {
+                              exact (nat_primrec_0 eG (fun i r => apply_fun multG (r, apply_fun xie i))).
+                            }
+                            rewrite Hwp_xie_0.
+                            claim Hie_eG : apply_fun multG (ie, eG) = ie.
+                            {
+                              exact (andER
+                                (apply_fun multG (eG, ie) = ie)
+                                (apply_fun multG (ie, eG) = ie)
+                                (HidG ie Hie_G)).
+                            }
+                            rewrite Hie_eG.
+                            exact Hwp_tw_sm.
+                          - let j. assume Hj_nat.
+                            assume IH : j :e ordsucc sm ->
+                              (forall j0:set, j0 :e j -> add_nat sm j0 :e len) ->
+                              word_product multG eG tw (add_nat sm j) = apply_fun multG (ie, word_product multG eG xie j).
+                            assume Hsj_ssm : ordsucc j :e ordsucc sm.
+                            assume Hsmj_len : forall j0:set, j0 :e ordsucc j -> add_nat sm j0 :e len.
+                            claim Hj_sm : j :e sm.
+                            {
+                              apply (ordsuccE sm (ordsucc j) Hsj_ssm).
+                              - assume Hsj_sm.
+                                exact (nat_trans sm Hsm_nat (ordsucc j) Hsj_sm j (ordsuccI2 j)).
+                              - assume Hsj_eq_sm.
+                                claim Hj_eq_m : j = m. { exact (ordsucc_inj j m Hsj_eq_sm). }
+                                rewrite Hj_eq_m. exact (ordsuccI2 m).
+                            }
+                            claim Hj_len_cond : forall j0:set, j0 :e j -> add_nat sm j0 :e len.
+                            {
+                              let j0. assume Hj0.
+                              exact (Hsmj_len j0 (ordsuccI1 j j0 Hj0)).
+                            }
+                            claim Hj_ssm : j :e ordsucc sm.
+                            {
+                              exact (ordsuccI1 sm j Hj_sm).
+                            }
+                            claim IH_applied : word_product multG eG tw (add_nat sm j) =
+                              apply_fun multG (ie, word_product multG eG xie j).
+                            {
+                              exact (IH Hj_ssm Hj_len_cond).
+                            }
+                            claim Hsmsj : add_nat sm (ordsucc j) = ordsucc (add_nat sm j).
+                            {
+                              exact (add_nat_SR sm j (nat_p_trans sm Hsm_nat j Hj_sm)).
+                            }
+                            rewrite Hsmsj.
+                            claim Hsmj_nat : nat_p (add_nat sm j).
+                            {
+                              exact (add_nat_p sm Hsm_nat j (nat_p_trans sm Hsm_nat j Hj_sm)).
+                            }
+                            claim Hwp_step : word_product multG eG tw (ordsucc (add_nat sm j)) =
+                              apply_fun multG (word_product multG eG tw (add_nat sm j), apply_fun tw (add_nat sm j)).
+                            {
+                              exact (word_product_succ multG eG tw (add_nat sm j) Hsmj_nat).
+                            }
+                            rewrite Hwp_step.
+                            rewrite IH_applied.
+                            (** tw(add_nat sm j) = xie(j) **)
+                            claim Hsmj_in_len : add_nat sm j :e len.
+                            {
+                              exact (Hsmj_len j (ordsuccI2 j)).
+                            }
+                            claim Htw_smj : apply_fun tw (add_nat sm j) = apply_fun xie j.
+                            {
+                              rewrite (Htw_val (add_nat sm j) Hsmj_in_len).
+                              rewrite (Hcyc_second j (nat_p_trans sm Hsm_nat j Hj_sm) Hj_sm).
+                              reflexivity.
+                            }
+                            rewrite Htw_smj.
+                            (** mult(mult(ie, wp(xie,j)), xie(j)) = mult(ie, wp(xie, ordsucc j)) **)
+                            claim Hwp_xie_sj : word_product multG eG xie (ordsucc j) =
+                              apply_fun multG (word_product multG eG xie j, apply_fun xie j).
+                            {
+                              exact (word_product_succ multG eG xie j (nat_p_trans sm Hsm_nat j Hj_sm)).
+                            }
+                            claim Hie_G2 : ie :e G. { exact Hie_G. }
+                            claim Hwpj_G : word_product multG eG xie j :e G.
+                            {
+                              claim Hxie_in_G_j : forall i:set, i :e j -> apply_fun xie i :e G.
+                              {
+                                let i. assume Hi.
+                                exact (Hxie_in_G i (nat_trans sm Hsm_nat j Hj_sm i Hi)).
+                              }
+                              exact (word_product_in_G_group G multG eG invG j xie Hgrp
+                                (nat_p_trans sm Hsm_nat j Hj_sm)
+                                Hxie_in_G_j).
+                            }
+                            claim Hxiej_G : apply_fun xie j :e G.
+                            {
+                              exact (Hxie_in_G j Hj_sm).
+                            }
+                            claim Hassoc_step : apply_fun multG (apply_fun multG (ie, word_product multG eG xie j), apply_fun xie j) =
+                              apply_fun multG (ie, apply_fun multG (word_product multG eG xie j, apply_fun xie j)).
+                            {
+                              exact (HassocG ie (word_product multG eG xie j) (apply_fun xie j) Hie_G2 Hwpj_G Hxiej_G).
+                            }
+                            rewrite Hassoc_step.
+                            rewrite <- Hwp_xie_sj.
+                            reflexivity.
+                        }
+                        (** wp(tw, dsm) = mult(ie, ie) = eG **)
+                        claim Hsm_sm_cond : forall j:set, j :e sm -> add_nat sm j :e len.
+                        {
+                          let j. assume Hj.
+                          claim Hsmj : add_nat sm j :e add_nat sm sm.
+                          {
+                            exact (add_nat_In_L sm Hsm_nat sm Hsm_nat j Hj).
+                          }
+                          exact (ordsuccI1 dsm (add_nat sm j) Hsmj).
+                        }
+                        claim Hwp_tw_dsm : word_product multG eG tw dsm = eG.
+                        {
+                          claim Hdsm_eq2 : dsm = add_nat sm sm. { reflexivity. }
+                          claim Hwp_dsm_eq : word_product multG eG tw dsm =
+                            apply_fun multG (ie, word_product multG eG xie sm).
+                          {
+                            exact (Hwp_tw_second sm Hsm_nat (ordsuccI2 sm) Hsm_sm_cond).
+                          }
+                          rewrite Hwp_dsm_eq.
+                          rewrite Hwp_ie_succ.
+                          exact Hie_sq_eG.
+                        }
+                        (** wp(tw, len) = xie(0) **)
+                        claim Hwp_tw_len : word_product multG eG tw len = apply_fun xie 0.
+                        {
+                          claim Hwp_step : word_product multG eG tw len =
+                            apply_fun multG (word_product multG eG tw dsm, apply_fun tw dsm).
+                          {
+                            exact (word_product_succ multG eG tw dsm Hdsm_nat).
+                          }
+                          rewrite Hwp_step.
+                          rewrite Hwp_tw_dsm.
+                          rewrite Htw_dsm.
+                          exact (andEL
+                            (apply_fun multG (eG, apply_fun xie 0) = apply_fun xie 0)
+                            (apply_fun multG (apply_fun xie 0, eG) = apply_fun xie 0)
+                            (HidG (apply_fun xie 0) Hxie0_G)).
+                        }
+                        (** tw is a reduced word **)
+                        (** For now, admit and compile-check the structure **)
+                        admit.
+                      }
                     }
                 }
               + assume Hinv_ne_efam.
