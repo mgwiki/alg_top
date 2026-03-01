@@ -56202,6 +56202,77 @@ apply set_ext.
         HxRest).
 Qed.
 
+(** Infrastructure: (A\\B) union B equals A union B **)
+(** Proven Bob **)
+Theorem binunion_setminus_left_eq : forall A B:set,
+  (A :\: B) :\/: B = A :\/: B.
+let A B.
+apply set_ext.
+- let x.
+  assume Hx.
+  apply (binunionE
+    (A :\: B)
+    B
+    x
+    Hx).
+  + assume HxRest.
+    claim HxA : x :e A.
+    {
+      exact (setminusE1
+        A
+        B
+        x
+        HxRest).
+    }
+    exact (binunionI1
+      A
+      B
+      x
+      HxA).
+  + assume HxB.
+    exact (binunionI2
+      A
+      B
+      x
+      HxB).
+- let x.
+  assume Hx.
+  apply (binunionE
+    A
+    B
+    x
+    Hx).
+  + assume HxA.
+    apply xm (x :e B).
+    * assume HxB.
+      exact (binunionI2
+        (A :\: B)
+        B
+        x
+        HxB).
+    * assume HxNotB.
+      claim HxRest : x :e A :\: B.
+      {
+        exact (setminusI
+          A
+          B
+          x
+          HxA
+          HxNotB).
+      }
+      exact (binunionI1
+        (A :\: B)
+        B
+        x
+        HxRest).
+  + assume HxB.
+    exact (binunionI2
+      (A :\: B)
+      B
+      x
+      HxB).
+Qed.
+
 
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
