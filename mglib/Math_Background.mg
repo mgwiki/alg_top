@@ -128092,6 +128092,44 @@ Definition Bn_closed : set -> set := fun n =>
 Definition Bn_closed_topology : set -> set := fun n =>
   subspace_topology (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n)) (Bn_closed n).
 
+(** Infrastructure: points on S^n lie in the closed unit ball **)
+(** Proven Bob **)
+Lemma Sn_subset_Bn_closed : forall n x:set,
+  x :e Sn n -> x :e Bn_closed n.
+let n x.
+assume HxSn.
+claim HxEu : x :e euclidean_space (ordsucc n).
+{
+  exact (SepE1
+    (euclidean_space (ordsucc n))
+    (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+    x
+    HxSn).
+}
+claim Hnorm : euclidean_norm_sq (ordsucc n) x = 1.
+{
+  exact (SepE2
+    (euclidean_space (ordsucc n))
+    (fun v:set => euclidean_norm_sq (ordsucc n) v = 1)
+    x
+    HxSn).
+}
+claim Hdef :
+  Bn_closed n =
+  {v :e euclidean_space (ordsucc n) | ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v))}.
+{
+  reflexivity.
+}
+rewrite Hdef.
+apply (SepI
+  (euclidean_space (ordsucc n))
+  (fun v:set => ~(Rlt 1 (euclidean_norm_sq (ordsucc n) v)))
+  x
+  HxEu).
+rewrite Hnorm.
+exact (not_Rlt_refl 1 real_1).
+Qed.
+
 (** Infrastructure: R^n minus the origin (nonzero vectors) **)
 Definition Rn_minus_origin : set -> set := fun n =>
   {v :e euclidean_space n | ~(forall i:set, i :e n -> apply_fun v i = 0)}.
