@@ -55165,6 +55165,88 @@ apply xm (x :e A).
   + exact (Subq_Empty A).
 Qed.
 
+(** Infrastructure: removing a singleton is Empty iff the set is a subset of that singleton **)
+(** Proven Bob **)
+Theorem setminus_singleton_empty_iff_subset_singleton : forall A x:set,
+  (A :\: {x} = Empty <-> A c= {x}).
+let A x.
+apply iffI.
+- assume HdiffE.
+  let y.
+  assume HyA.
+  apply xm (y = x).
+  + assume Hyx.
+    rewrite Hyx.
+    exact (SingI x).
+  + assume Hyneq.
+    claim HyNotSing : y /:e {x}.
+    {
+      assume HySing.
+      claim Hyx : y = x.
+      {
+        exact (SingE
+          x
+          y
+          HySing).
+      }
+      exact (Hyneq Hyx).
+    }
+    claim HyRest : y :e A :\: {x}.
+    {
+      exact (setminusI
+        A
+        {x}
+        y
+        HyA
+        HyNotSing).
+    }
+    claim HyE : y :e Empty.
+    {
+      exact (mem_eqR
+        y
+        (A :\: {x})
+        Empty
+        HdiffE
+        HyRest).
+    }
+    exact (FalseE
+      (EmptyE
+        y
+        HyE
+        False)
+      (y :e {x})).
+- assume Hsub.
+  apply set_ext.
+  + let y.
+    assume HyRest.
+    claim HyA : y :e A.
+    {
+      exact (setminusE1
+        A
+        {x}
+        y
+        HyRest).
+    }
+    claim HyNotSing : y /:e {x}.
+    {
+      exact (setminusE2
+        A
+        {x}
+        y
+        HyRest).
+    }
+    claim HySing : y :e {x}.
+    {
+      exact (Hsub
+        y
+        HyA).
+    }
+    exact (FalseE
+      (HyNotSing HySing)
+      (y :e Empty)).
+  + exact (Subq_Empty (A :\: {x})).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
