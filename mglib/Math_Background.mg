@@ -24743,6 +24743,19 @@ Definition group_isomorphism : set -> set -> set -> set -> set -> prop :=
     bijection G1 G2 phi.
 
 (** Proven Bob **)
+Theorem group_isomorphism_intro : forall G1 mult1 G2 mult2 phi:set,
+  group_homomorphism G1 mult1 G2 mult2 phi ->
+  bijection G1 G2 phi ->
+  group_isomorphism G1 mult1 G2 mult2 phi.
+let G1 mult1 G2 mult2 phi.
+assume Hhom Hbij.
+exact (andI
+  (group_homomorphism G1 mult1 G2 mult2 phi)
+  (bijection G1 G2 phi)
+  Hhom Hbij).
+Qed.
+
+(** Proven Bob **)
 Theorem group_isomorphism_homomorphism : forall G1 mult1 G2 mult2 phi:set,
   group_isomorphism G1 mult1 G2 mult2 phi ->
   group_homomorphism G1 mult1 G2 mult2 phi.
@@ -111125,6 +111138,23 @@ Definition product_group_mult : set -> set -> set -> set -> set :=
       (fun p:set =>
         (apply_fun mult1 ((p 0) 0, (p 1) 0),
          apply_fun mult2 ((p 0) 1, (p 1) 1))).
+
+(** Proven Bob **)
+Theorem product_group_mult_apply : forall G1 mult1 G2 mult2 p:set,
+  p :e setprod (setprod G1 G2) (setprod G1 G2) ->
+  apply_fun (product_group_mult G1 mult1 G2 mult2) p =
+    (apply_fun mult1 ((p 0) 0, (p 1) 0),
+     apply_fun mult2 ((p 0) 1, (p 1) 1)).
+let G1 mult1 G2 mult2 p.
+assume Hp.
+exact (apply_fun_graph
+  (setprod (setprod G1 G2) (setprod G1 G2))
+  (fun r:set =>
+    (apply_fun mult1 ((r 0) 0, (r 1) 0),
+     apply_fun mult2 ((r 0) 1, (r 1) 1)))
+  p
+  Hp).
+Qed.
 
 (** ex54_7_pi1_torus moved to S60 section (after thm60_1_pi1_product) where it uses the proved theorem directly **)
 
