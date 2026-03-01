@@ -1,0 +1,30 @@
+CHANGES1295 - Restored direct_sum_hom_existence proof (2432 lines)
+
+Starting from bck1294 (297,541 lines):
+1. Restored direct_sum_hom_existence proof body from upstream (2448 lines original)
+2. Applied definition change fixes:
+   - rep_pred local definition: removed (pack 0) <> 0 conjunct (7->6 conjuncts)
+   - Restored (pack 0) :e omega that was accidentally removed with ne0 line
+   - Changed all and7E -> and6E (25 occurrences)
+   - Changed all and7I -> and6I (5 occurrences)
+   - Removed ne0 bullets from and6I blocks (4 locations)
+   - Removed <> 0 /\ from prove blocks (4 locations)
+   - Fixed xm case assume: claim Hk_ne0 { admit } -> assume Hk_ne0 (from xm split)
+   - Fixed Hny_first extraction (was claiming omega /\ ne0, now just omega)
+   - Added admitted claim Hn1_ne for Hind call (n1 <> 0 needed for induction)
+   - Removed ne-related variables from assume lines
+3. Proof compiles with admits (Admitted status preserved)
+
+Result: 299,959 lines, compiles cleanly.
+
+Remaining admits in direct_sum_hom_existence:
+- Hn_ne : n <> 0 (unused, line 183)
+- Hk_ne0 : k <> 0 (used in IH calls, line 693) - fixable by handling k=0 case separately
+- Hn1_ne : n1 <> 0 (used in Hind call) - fixable by xm case split
+- Hny_ne : ny <> 0 (unused, line 2035)
+- admit at line 1118 (TODO: fix reflexivity after definition change)
+
+Still gutted proofs to restore:
+- cor67_2_associativity_direct_sum (3326L)
+- cor67_3_quotient_by_summand (1216L)
+- ex67_4b_free_abelian_no_torsion (702L)
