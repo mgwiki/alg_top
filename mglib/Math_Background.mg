@@ -284813,6 +284813,7 @@ apply (iffI
 		Qed.
 
 (** helper: the tree extension union is connected whenever A meets T in a vertex **)
+(** Proven Bob **)
 Theorem lemma84_2_tree_extension_connected_part :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -284942,8 +284943,9 @@ exact (union_connected_common_point
   HsubFam
   HconnFam
   Hcommon).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem lemma84_2_tree_extension_from_components :
   forall T ArcsT X Tx Arcs A:set,
   subgraph_of (T :\/: A) X Tx Arcs ->
@@ -284968,7 +284970,7 @@ exact (tree_in_graph_intro
   HglgTA
   HconnTA
   HnoloopTA).
-Admitted.
+Qed.
 
 Theorem lemma84_2_tree_extension_iff_components :
   forall T ArcsT X Tx Arcs A:set,
@@ -295965,6 +295967,7 @@ exact HpcSub.
 Qed.
 
 (** helper for S84.3: reduce simply-connectedness to a trivial-pi1 witness at one point. **)
+(** Proven Bob **)
 Theorem thm84_3_tree_simply_connected_from_local_path_connected_and_trivial_pi1 :
   forall T ArcsT X Tx Arcs x0:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -295989,7 +295992,7 @@ exact (lemma59_4a_simply_connected_from_pi1_trivial_at_point
     HlpcT)
   Hx0
   Hpi1x0).
-Admitted.
+Qed.
 
 (** helper for S84.3: simply_connected is invariant under definitional equality of topologies. **)
 (** Proven Bob **)
