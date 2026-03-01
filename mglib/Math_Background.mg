@@ -91023,7 +91023,8 @@ claim HFt_54_cont :
                           }
                           claim HVxzEqVq : Vxz = Vq.
                           {
-                            (** upstream bug: HNcontFt used inside its own proof block; using admit **)
+                            (** upstream bug: HNcontFt used inside its own proof block; need a non-circular
+                                argument that Ft_54 maps N into Vq (or a continuity-free sheet non-switching). **)
                             admit.
                           }
 			                        rewrite <- HVxzEqVq.
