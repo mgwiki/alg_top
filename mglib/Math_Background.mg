@@ -107265,7 +107265,7 @@ apply andI.
   }
   rewrite Hind.
   exact HclassEq.
-Admitted.
+Qed.
 (** from S54 Thm 54.6b (line 840 in algtop.tex) **)
 (** LATEX VERSION: Let H = p-star(pi_1(E,e0)). The lifting correspondence induces **)
 (** an injective map Phi: pi_1(B,b0)/H -> p^{-1}(b0), bijective if E is path connected. **)
