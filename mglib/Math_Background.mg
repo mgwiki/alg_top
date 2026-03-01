@@ -285107,6 +285107,7 @@ exact (lemma84_2_tree_extension_iff_components
     HA)).
 Qed.
 
+(** Proven Bob **)
 Theorem lemma84_2_tree_extension_components_pack_from_hypotheses_and_tree :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -285145,8 +285146,9 @@ exact (iffEL
     Hnsub
     Hmeet)
   HtreeExt).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem lemma84_2_tree_extension_no_closed_reduced_edge_path_from_hypotheses_and_tree :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -285182,8 +285184,9 @@ exact (andER
     Hnsub
     Hmeet
     HtreeExt)).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem lemma84_2_tree_extension_general_linear_graph_from_hypotheses_and_tree :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -285217,8 +285220,9 @@ exact (andEL
       Hnsub
       Hmeet
       HtreeExt))).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem lemma84_2_tree_extension_connected_from_hypotheses_and_tree :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -285252,7 +285256,7 @@ exact (andER
       Hnsub
       Hmeet
       HtreeExt))).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem lemma84_2_tree_extension_from_hypotheses_and_components :
@@ -293326,6 +293330,7 @@ exact (maximal_tree_single_vertex_edge_tree_extension_contradiction
   Hmeet).
 Qed.
 
+(** Proven Bob **)
 Theorem maximal_tree_single_vertex_noncontained_edge_component_extension_iff_false :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -293419,8 +293424,9 @@ apply iffI.
            ({A} :\/: ArcsT) n path_seq x0 /\
          (exists j:set, j :e n /\ ordsucc j /:e n /\
            (apply_fun path_seq j) 0 1 = x0)))).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem maximal_tree_single_vertex_edge_component_extension_forces_subset :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -293457,8 +293463,9 @@ apply (xm (A c= T)).
       HconnTA
       HnoloopTA)
     (A c= T)).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem maximal_tree_single_vertex_vertex_outside_not_in_edge_from_component_extension :
   forall T ArcsT X Tx Arcs x A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -293498,7 +293505,7 @@ exact (HxNotT
   (HAsubT
     x
     HxA)).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem maximal_tree_single_vertex_edge_tree_extension_forces_edge_subset :
