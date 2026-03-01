@@ -8929,6 +8929,24 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Theorem nulhomotopic_value_in_space : forall X Tx Y Ty f x:set,
+  nulhomotopic X Tx Y Ty f ->
+  x :e X ->
+  apply_fun f x :e Y.
+let X Tx Y Ty f x.
+assume Hnul Hx.
+claim Hcont : continuous_map X Tx Y Ty f.
+{
+  exact (nulhomotopic_continuous X Tx Y Ty f Hnul).
+}
+claim Hfun : function_on f X Y.
+{
+  exact (continuous_map_function_on X Tx Y Ty f Hcont).
+}
+exact (Hfun x Hx).
+Qed.
+
+(** Proven Bob **)
 Theorem homotopic_maps_topology_dom : forall X Tx Y Ty f f':set,
   homotopic_maps X Tx Y Ty f f' -> topology_on X Tx.
 let X Tx Y Ty f f'.
