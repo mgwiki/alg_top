@@ -200914,8 +200914,97 @@ apply (nat_inv nw Hnw_nat).
                       apply (xm (alpha_m = alpha_0)).
                       {
                         assume Ham_eq_a0.
-                        (** Case 2b: alpha_m = alpha_0, need merged triple **)
-                        admit.
+                        (** Case 2b: alpha_m = alpha_0 **)
+                        (** Extract adjacency from Hred_ie_succ **)
+                        apply (and3E
+                          (ordsucc m :e omega)
+                          (forall i:set, i :e ordsucc m ->
+                            exists alpha:set, alpha :e J /\
+                              apply_fun xie i :e apply_fun Gfam alpha /\
+                              apply_fun xie i <> apply_fun efam alpha)
+                          (forall i:set, i :e ordsucc m -> ordsucc i :e ordsucc m ->
+                            forall a b:set, a :e J -> b :e J ->
+                              apply_fun xie i :e apply_fun Gfam a ->
+                              apply_fun xie (ordsucc i) :e apply_fun Gfam b ->
+                              a <> b)
+                          Hred_ie_succ).
+                        assume _ Helem_ie Hadj_ie.
+                        (** m <> 0: if m = 0 then p_B = wp(xie, 0) = eG, contradicting Hp_ne_eG **)
+                        claim Hm_ne0 : m <> 0.
+                        {
+                          assume Hm0.
+                          claim Hp_eG : p_B = eG.
+                          {
+                            rewrite Hm0.
+                            exact (nat_primrec_0 eG (fun i r => apply_fun multG (r, apply_fun xie i))).
+                          }
+                          exact (Hp_ne_eG Hp_eG).
+                        }
+                        (** 0 :e m since m <> 0 and nat_p m **)
+                        claim H0_in_m : 0 :e m.
+                        {
+                          apply (nat_inv m Hm_nat).
+                          + assume Hm0. exact (FalseE (Hm_ne0 Hm0) (0 :e m)).
+                          + assume Hex. apply Hex. let x. assume Hxp.
+                            claim Hm_eq_sx : m = ordsucc x.
+                            { exact (andER (nat_p x) (m = ordsucc x) Hxp). }
+                            claim Hx_nat : nat_p x.
+                            { exact (andEL (nat_p x) (m = ordsucc x) Hxp). }
+                            rewrite Hm_eq_sx.
+                            exact (nat_0_in_ordsucc x Hx_nat).
+                        }
+                        (** 1 :e ordsucc m since 0 :e m **)
+                        claim H1_in_sm : ordsucc 0 :e ordsucc m.
+                        {
+                          exact (nat_ordsucc_in_ordsucc m Hm_nat 0 H0_in_m).
+                        }
+                        (** Get subgroup label for xie(1) **)
+                        claim Hxie1_elem : exists alpha:set, alpha :e J /\
+                          apply_fun xie (ordsucc 0) :e apply_fun Gfam alpha /\
+                          apply_fun xie (ordsucc 0) <> apply_fun efam alpha.
+                        {
+                          exact (Helem_ie (ordsucc 0) H1_in_sm).
+                        }
+                        (** Adjacency at position 0: alpha_0 <> alpha_1 **)
+                        claim Hadj_0 : forall a b:set, a :e J -> b :e J ->
+                          apply_fun xie 0 :e apply_fun Gfam a ->
+                          apply_fun xie (ordsucc 0) :e apply_fun Gfam b ->
+                          a <> b.
+                        {
+                          exact (Hadj_ie 0 H0_in_sm H1_in_sm).
+                        }
+                        (** Case split: m = ordsucc 0 (m=1) or m >= 2 **)
+                        apply (xm (m = ordsucc 0)).
+                        {
+                          assume Hm_eq_1.
+                          (** m = 1: alpha_m = alpha_1, so alpha_1 = alpha_0. But adjacency gives alpha_0 <> alpha_1. **)
+                          (** xie(m) = xie(1) **)
+                          claim Hxiem_eq_xie1 : apply_fun xie m = apply_fun xie (ordsucc 0).
+                          {
+                            rewrite Hm_eq_1. reflexivity.
+                          }
+                          (** alpha_m labels xie(m) = xie(1), so xie(1) :e Gfam(alpha_m) **)
+                          claim Hxie1_Gam : apply_fun xie (ordsucc 0) :e apply_fun Gfam alpha_m.
+                          {
+                            rewrite <- Hxiem_eq_xie1. exact Hxiem_Gam.
+                          }
+                          (** From adjacency: alpha_0 <> alpha_m **)
+                          claim Ha0_ne_am : alpha_0 <> alpha_m.
+                          {
+                            exact (Hadj_0 alpha_0 alpha_m Ha0_J Ham_J Hxie0_Ga0 Hxie1_Gam).
+                          }
+                          (** But Ham_eq_a0 says alpha_m = alpha_0 **)
+                          claim Ham_eq_a0_sym : alpha_0 = alpha_m.
+                          {
+                            symmetry. exact Ham_eq_a0.
+                          }
+                          exact (Ha0_ne_am Ham_eq_a0_sym).
+                        }
+                        {
+                          assume Hm_ne_1.
+                          (** m >= 2: build merged word for xie(0) **)
+                          admit.
+                        }
                       }
                       {
                         assume Ham_ne_a0.
