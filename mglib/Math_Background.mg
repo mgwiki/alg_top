@@ -55360,6 +55360,38 @@ claim HxA : x :e A.
 exact (HxNotA HxA).
 Qed.
 
+(** Infrastructure: intersection with singleton equals singleton iff point is in the set **)
+(** Proven Bob **)
+Theorem binintersect_singleton_eq_singleton_iff_mem : forall A x:set,
+  (A :/\: {x} = {x} <-> x :e A).
+let A x.
+apply iffI.
+- assume Hcap.
+  claim HxSing : x :e {x}.
+  {
+    exact (SingI x).
+  }
+  claim HxInt : x :e A :/\: {x}.
+  {
+    exact (mem_eqL
+      x
+      (A :/\: {x})
+      {x}
+      Hcap
+      HxSing).
+  }
+  exact (binintersectE1
+    A
+    {x}
+    x
+    HxInt).
+- assume HxA.
+  exact (binintersect_singleton_eq_singleton_of_mem
+    A
+    x
+    HxA).
+Qed.
+
 (** Infrastructure: singleton intersection empty iff point not in the set **)
 (** Proven Bob **)
 Theorem binintersect_singleton_empty_iff_not_mem : forall A x:set,
