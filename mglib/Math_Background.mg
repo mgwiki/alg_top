@@ -24713,6 +24713,39 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Theorem loop_at_function_on : forall X Tx x0 f:set,
+  loop_at X Tx x0 f ->
+  function_on f unit_interval X.
+let X Tx x0 f.
+assume Hloop.
+claim Hcont : continuous_map unit_interval unit_interval_topology X Tx f.
+{
+  exact (loop_at_continuous X Tx x0 f Hloop).
+}
+exact (continuous_map_function_on
+  unit_interval
+  unit_interval_topology
+  X
+  Tx
+  f
+  Hcont).
+Qed.
+
+(** Proven Bob **)
+Theorem loop_at_value_in_space : forall X Tx x0 f t:set,
+  loop_at X Tx x0 f ->
+  t :e unit_interval ->
+  apply_fun f t :e X.
+let X Tx x0 f t.
+assume Hloop Ht.
+claim Hfun : function_on f unit_interval X.
+{
+  exact (loop_at_function_on X Tx x0 f Hloop).
+}
+exact (Hfun t Ht).
+Qed.
+
+(** Proven Bob **)
 Theorem loop_at_constant_path : forall X Tx x0:set,
   topology_on X Tx ->
   x0 :e X ->
