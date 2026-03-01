@@ -55848,6 +55848,28 @@ rewrite (binintersect_com A (B :\: A)).
 exact (setminus_intersect_removed_empty B A).
 Qed.
 
+(** Infrastructure: subtracting a superset from an intersection is empty (right) **)
+(** Proven Bob **)
+Theorem setminus_binintersect_right_empty : forall A B:set,
+  (A :/\: B) :\: B = Empty.
+let A B.
+exact (setminus_sub_empty
+  (A :/\: B)
+  B
+  (binintersect_Subq_2 A B)).
+Qed.
+
+(** Infrastructure: subtracting a superset from an intersection is empty (left) **)
+(** Proven Bob **)
+Theorem setminus_binintersect_left_empty : forall A B:set,
+  (A :/\: B) :\: A = Empty.
+let A B.
+exact (setminus_sub_empty
+  (A :/\: B)
+  A
+  (binintersect_Subq_1 A B)).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
