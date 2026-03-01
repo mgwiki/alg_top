@@ -55397,6 +55397,81 @@ apply iffI.
     HxNotA).
 Qed.
 
+(** Infrastructure: removing a singleton removes exactly that point from the set **)
+(** Proven Bob **)
+Theorem setminus_singleton_eq_setminus_point : forall A x:set,
+  A :\: {x} = Sep A (fun y:set => y <> x).
+let A x.
+apply set_ext.
+- let y.
+  assume HyRest.
+  claim HyA : y :e A.
+  {
+    exact (setminusE1
+      A
+      {x}
+      y
+      HyRest).
+  }
+  claim Hyneq : y <> x.
+  {
+    assume Hyx.
+    claim HySing : y :e {x}.
+    {
+      rewrite Hyx.
+      exact (SingI x).
+    }
+    exact ((setminusE2
+      A
+      {x}
+      y
+      HyRest)
+      HySing).
+  }
+  exact (SepI
+    A
+    (fun z:set => z <> x)
+    y
+    HyA
+    Hyneq).
+- let y.
+  assume HySep.
+  claim HyA : y :e A.
+  {
+    exact (SepE1
+      A
+      (fun z:set => z <> x)
+      y
+      HySep).
+  }
+  claim Hyneq : y <> x.
+  {
+    exact (SepE2
+      A
+      (fun z:set => z <> x)
+      y
+      HySep).
+  }
+  claim HyNotSing : y /:e {x}.
+  {
+    assume HySing.
+    claim Hyx : y = x.
+    {
+      exact (SingE
+        x
+        y
+        HySing).
+    }
+    exact (Hyneq Hyx).
+  }
+  exact (setminusI
+    A
+    {x}
+    y
+    HyA
+    HyNotSing).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
