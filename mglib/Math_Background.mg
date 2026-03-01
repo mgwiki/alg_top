@@ -1,5 +1,5 @@
 (** Balance Alice 3927 **)
-(** Balance Bob 3507 **)
+(** Balance Bob 3562 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
 
@@ -26947,7 +26947,8 @@ Qed.
 (** from S52 Ex 1 (line 365 in algtop.tex): pi1(Rn, x0) is trivial **)
 (** LATEX VERSION: pi1(Rn, x0) is the trivial group. More generally, if X is any convex subset of Rn, then pi1(X, x0) is trivial. **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
+(** Collected Bob 55 **)
+(** Proven Bob **)
 Theorem Example_52_1_convex_trivial_pi1 : forall A Ta x0:set,
   A c= R -> convex_in R A ->
   topology_on A Ta -> x0 :e A ->
@@ -27132,7 +27133,7 @@ apply set_ext.
     x0
     (constant_path x0)
     HconstInLoop).
-Admitted.
+Qed.
 
 (** from S52 Definition (line 374 in algtop.tex): the alpha-hat map for change of basepoint **)
 (** LATEX VERSION: Let alpha be a path from x0 to x1. Define alpha-hat: pi1(X,x0) -> pi1(X,x1) by alpha-hat([f]) = [alpha-bar] . [f] . [alpha]. **)
