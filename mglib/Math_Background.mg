@@ -55606,6 +55606,44 @@ apply iffI.
     Hnot).
 Qed.
 
+(** Infrastructure: subset implies setminus is empty **)
+(** Proven Bob **)
+Theorem setminus_sub_empty : forall A B:set,
+  A c= B ->
+  A :\: B = Empty.
+let A B.
+assume Hsub.
+apply set_ext.
+- let x.
+  assume Hx.
+  claim HxA : x :e A.
+  {
+    exact (setminusE1
+      A
+      B
+      x
+      Hx).
+  }
+  claim HxB : x :e B.
+  {
+    exact (Hsub
+      x
+      HxA).
+  }
+  claim HxNotB : x /:e B.
+  {
+    exact (setminusE2
+      A
+      B
+      x
+      Hx).
+  }
+  exact (FalseE
+    (HxNotB HxB)
+    (x :e Empty)).
+- exact (Subq_Empty (A :\: B)).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
