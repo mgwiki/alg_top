@@ -55701,6 +55701,17 @@ apply iffI.
     Hsub).
 Qed.
 
+(** Infrastructure: setminus a set from itself is Empty **)
+(** Proven Bob **)
+Theorem setminus_self_empty : forall A:set,
+  A :\: A = Empty.
+let A.
+exact (setminus_sub_empty
+  A
+  A
+  (fun x Hx => Hx)).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
