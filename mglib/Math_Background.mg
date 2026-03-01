@@ -9733,6 +9733,42 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Theorem path_homotopic_left_value_in_space : forall X Tx x0 x1 f f' s:set,
+  path_homotopic X Tx x0 x1 f f' ->
+  s :e unit_interval ->
+  apply_fun f s :e X.
+let X Tx x0 x1 f f' s.
+assume Hhom Hs.
+claim Hfun :
+  function_on f unit_interval X /\ function_on f' unit_interval X.
+{
+  exact (path_homotopic_function_on_data X Tx x0 x1 f f' Hhom).
+}
+exact ((andEL
+  (function_on f unit_interval X)
+  (function_on f' unit_interval X)
+  Hfun) s Hs).
+Qed.
+
+(** Proven Bob **)
+Theorem path_homotopic_right_value_in_space : forall X Tx x0 x1 f f' s:set,
+  path_homotopic X Tx x0 x1 f f' ->
+  s :e unit_interval ->
+  apply_fun f' s :e X.
+let X Tx x0 x1 f f' s.
+assume Hhom Hs.
+claim Hfun :
+  function_on f unit_interval X /\ function_on f' unit_interval X.
+{
+  exact (path_homotopic_function_on_data X Tx x0 x1 f f' Hhom).
+}
+exact ((andER
+  (function_on f unit_interval X)
+  (function_on f' unit_interval X)
+  Hfun) s Hs).
+Qed.
+
+(** Proven Bob **)
 Theorem path_homotopic_has_square_witness : forall X Tx x0 x1 f f':set,
   path_homotopic X Tx x0 x1 f f' ->
   exists F:set,
