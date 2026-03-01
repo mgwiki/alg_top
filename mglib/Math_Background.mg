@@ -55165,6 +55165,21 @@ apply xm (x :e A).
   + exact (Subq_Empty A).
 Qed.
 
+(** Infrastructure: singleton subset iff point is in the set **)
+(** Proven Bob **)
+Theorem singleton_subset_iff_mem : forall A x:set,
+  ({x} c= A <-> x :e A).
+let A x.
+apply iffI.
+- assume Hsub.
+  exact (Hsub x (SingI x)).
+- assume HxA.
+  exact (singleton_subset
+    x
+    A
+    HxA).
+Qed.
+
 (** Infrastructure: removing a singleton is Empty iff the set is a subset of that singleton **)
 (** Proven Bob **)
 Theorem setminus_singleton_empty_iff_subset_singleton : forall A x:set,
