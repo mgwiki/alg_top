@@ -55929,6 +55929,16 @@ apply set_ext.
       HVFam).
 Qed.
 
+(** Infrastructure: union with a singleton family **)
+(** Proven Bob **)
+Theorem union_binunion_singleton_eq : forall Fam V:set,
+  Union (Fam :\/: {V}) = (Union Fam) :\/: V.
+let Fam V.
+rewrite (union_union_families Fam {V}).
+rewrite (Union_singleton_eq V).
+reflexivity.
+Qed.
+
 
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
