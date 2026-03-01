@@ -56965,6 +56965,43 @@ apply set_ext.
     HxC).
 Qed.
 
+(** Infrastructure: binunion is idempotent **)
+(** Proven Bob **)
+Theorem binunion_idem : forall A:set,
+  A :\/: A = A.
+let A.
+apply set_ext.
+- let x.
+  assume HxUnion.
+  apply (binunionE
+    A
+    A
+    x
+    HxUnion).
+  + assume HxA.
+    exact HxA.
+  + assume HxA.
+    exact HxA.
+- let x.
+  assume HxA.
+  exact (binunionI1
+    A
+    A
+    x
+    HxA).
+Qed.
+
+(** Infrastructure: binintersect is idempotent **)
+(** Proven Bob **)
+Theorem binintersect_idem : forall A:set,
+  A :/\: A = A.
+let A.
+exact (binintersect_Subq_eq_1
+  A
+  A
+  (fun x Hx => Hx)).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
