@@ -1,5 +1,5 @@
 (** Balance Alice 3927 **)
-(** Balance Bob 4553 **)
+(** Balance Bob 4586 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
 
@@ -143697,7 +143697,8 @@ Qed.
 
 (** from S58 Exercise 2(d) (line 1480 in algtop.tex): infinite cylinder pi1 **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
+(** Collected Bob 33 **)
+(** Proven Bob **)
 Theorem ex58_2d_infinite_cylinder_pi1 : forall x0:set,
   x0 :e setprod S1 R ->
   exists phi:set,
@@ -143709,8 +143710,396 @@ Theorem ex58_2d_infinite_cylinder_pi1 : forall x0:set,
       (fundamental_group S1 S1_topology (x0 0))
       (fundamental_group_mult S1 S1_topology (x0 0))
       phi.
-admit.
-Admitted.
+let x0.
+assume Hx0.
+set xS1 := x0 0.
+set xR := x0 1.
+set Tprod := product_topology S1 S1_topology R R_standard_topology.
+set pi1Prod := fundamental_group (setprod S1 R) Tprod x0.
+set multProd := fundamental_group_mult (setprod S1 R) Tprod x0.
+set pi1S := fundamental_group S1 S1_topology xS1.
+set multS := fundamental_group_mult S1 S1_topology xS1.
+set pi1R := fundamental_group R R_standard_topology xR.
+set multR := fundamental_group_mult R R_standard_topology xR.
+claim Hx0eq : x0 = (xS1, xR).
+{
+  apply (Sigma_E S1 (fun _ :set => R) x0 Hx0).
+  let a. assume HaS1.
+  let b. assume HbR.
+  assume Hx0pair : x0 = (a, b).
+  rewrite Hx0pair.
+  rewrite tuple_2_0_eq.
+  rewrite tuple_2_1_eq.
+  reflexivity.
+}
+rewrite Hx0eq.
+claim HxS1 : xS1 :e S1.
+{
+  exact (ap0_Sigma S1 (fun _ :set => R) x0 Hx0).
+}
+claim HxR : xR :e R.
+{
+  exact (ap1_Sigma S1 (fun _ :set => R) x0 Hx0).
+}
+claim HtopR2 : topology_on (setprod R R) R2_topology.
+{
+  exact (product_topology_is_topology R R_standard_topology R R_standard_topology
+    R_standard_topology_is_topology R_standard_topology_is_topology).
+}
+claim HS1subR2 : S1 c= setprod R R.
+{
+  exact (Sep_Subq (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) = 1)).
+}
+claim HtopS1 : topology_on S1 S1_topology.
+{
+  exact (subspace_topology_is_topology
+    (setprod R R)
+    R2_topology
+    S1
+    HtopR2
+    HS1subR2).
+}
+claim HtopProd : topology_on (setprod S1 R) Tprod.
+{
+  exact (product_topology_is_topology
+    S1
+    S1_topology
+    R
+    R_standard_topology
+    HtopS1
+    R_standard_topology_is_topology).
+}
+claim Hpi1R_triv :
+  pi1R = {fundamental_group_id R R_standard_topology xR}.
+{
+  exact (simply_connected_trivial_pi1_at_point
+    R
+    R_standard_topology
+    xR
+    simply_connected_R_standard
+    HxR).
+}
+claim Hprod_iso :
+  exists phi_prod:set,
+    group_isomorphism
+      (fundamental_group (setprod S1 R) Tprod (xS1, xR))
+      (fundamental_group_mult (setprod S1 R) Tprod (xS1, xR))
+      (setprod pi1S pi1R)
+      (product_group_mult pi1S multS pi1R multR)
+      phi_prod.
+{
+  exact (thm60_1_pi1_product
+    S1
+    S1_topology
+    xS1
+    R
+    R_standard_topology
+    xR
+    HtopS1
+    R_standard_topology_is_topology
+    HxS1
+    HxR).
+}
+apply Hprod_iso.
+let phi_prod.
+assume Hphi_prod.
+set proj := projection_map1 pi1S pi1R.
+claim HgrpS :
+  group_structure pi1S multS
+    (fundamental_group_id S1 S1_topology xS1)
+    (fundamental_group_inv S1 S1_topology xS1).
+{
+  exact (fundamental_group_is_group S1 S1_topology xS1 HtopS1 HxS1).
+}
+claim HgrpR :
+  group_structure pi1R multR
+    (fundamental_group_id R R_standard_topology xR)
+    (fundamental_group_inv R R_standard_topology xR).
+{
+  exact (fundamental_group_is_group
+    R
+    R_standard_topology
+    xR
+    R_standard_topology_is_topology
+    HxR).
+}
+claim HprojHom :
+  group_homomorphism
+    (setprod pi1S pi1R)
+    (product_group_mult pi1S multS pi1R multR)
+    pi1S
+    multS
+    proj.
+{
+  apply andI.
+  - (** function_on proj **)
+    let p. assume Hp : p :e setprod pi1S pi1R.
+    claim Hp0 : p 0 :e pi1S.
+    {
+      exact (ap0_Sigma pi1S (fun _ :set => pi1R) p Hp).
+    }
+    rewrite (projection1_apply pi1S pi1R p Hp).
+    exact Hp0.
+  - (** multiplicativity **)
+    let p q.
+    assume Hp : p :e setprod pi1S pi1R.
+    assume Hq : q :e setprod pi1S pi1R.
+    claim Hp0 : p 0 :e pi1S.
+    {
+      exact (ap0_Sigma pi1S (fun _ :set => pi1R) p Hp).
+    }
+    claim Hq0 : q 0 :e pi1S.
+    {
+      exact (ap0_Sigma pi1S (fun _ :set => pi1R) q Hq).
+    }
+    claim Hp1 : p 1 :e pi1R.
+    {
+      exact (ap1_Sigma pi1S (fun _ :set => pi1R) p Hp).
+    }
+    claim Hq1 : q 1 :e pi1R.
+    {
+      exact (ap1_Sigma pi1S (fun _ :set => pi1R) q Hq).
+    }
+    claim HmultS_fn : function_on multS (setprod pi1S pi1S) pi1S.
+    {
+      apply (and6E
+        (function_on multS (setprod pi1S pi1S) pi1S)
+        (function_on (fundamental_group_inv S1 S1_topology xS1) pi1S pi1S)
+        ((fundamental_group_id S1 S1_topology xS1) :e pi1S)
+        (forall x y z:set, x :e pi1S -> y :e pi1S -> z :e pi1S ->
+          apply_fun multS (apply_fun multS (x, y), z) =
+            apply_fun multS (x, apply_fun multS (y, z)))
+        (forall x:set, x :e pi1S ->
+          apply_fun multS (fundamental_group_id S1 S1_topology xS1, x) = x /\
+          apply_fun multS (x, fundamental_group_id S1 S1_topology xS1) = x)
+        (forall x:set, x :e pi1S ->
+          apply_fun multS (x, apply_fun (fundamental_group_inv S1 S1_topology xS1) x) =
+            fundamental_group_id S1 S1_topology xS1 /\
+          apply_fun multS (apply_fun (fundamental_group_inv S1 S1_topology xS1) x, x) =
+            fundamental_group_id S1 S1_topology xS1)
+        HgrpS).
+      assume Hm _ _ _ _ _. exact Hm.
+    }
+    claim HmultR_fn : function_on multR (setprod pi1R pi1R) pi1R.
+    {
+      apply (and6E
+        (function_on multR (setprod pi1R pi1R) pi1R)
+        (function_on (fundamental_group_inv R R_standard_topology xR) pi1R pi1R)
+        ((fundamental_group_id R R_standard_topology xR) :e pi1R)
+        (forall x y z:set, x :e pi1R -> y :e pi1R -> z :e pi1R ->
+          apply_fun multR (apply_fun multR (x, y), z) =
+            apply_fun multR (x, apply_fun multR (y, z)))
+        (forall x:set, x :e pi1R ->
+          apply_fun multR (fundamental_group_id R R_standard_topology xR, x) = x /\
+          apply_fun multR (x, fundamental_group_id R R_standard_topology xR) = x)
+        (forall x:set, x :e pi1R ->
+          apply_fun multR (x, apply_fun (fundamental_group_inv R R_standard_topology xR) x) =
+            fundamental_group_id R R_standard_topology xR /\
+          apply_fun multR (apply_fun (fundamental_group_inv R R_standard_topology xR) x, x) =
+            fundamental_group_id R R_standard_topology xR)
+        HgrpR).
+      assume Hm _ _ _ _ _. exact Hm.
+    }
+    claim Hpq : (p, q) :e setprod (setprod pi1S pi1R) (setprod pi1S pi1R).
+    {
+      exact (tuple_2_setprod_by_pair_Sigma
+        (setprod pi1S pi1R)
+        (setprod pi1S pi1R)
+        p
+        q
+        Hp
+        Hq).
+    }
+    rewrite (apply_fun_graph
+      (setprod (setprod pi1S pi1R) (setprod pi1S pi1R))
+      (fun r:set =>
+        (apply_fun multS ((r 0) 0, (r 1) 0),
+         apply_fun multR ((r 0) 1, (r 1) 1)))
+      (p, q)
+      Hpq).
+    rewrite (tuple_2_0_eq p q).
+    rewrite (tuple_2_1_eq p q).
+    claim Hmultpair_in :
+      (apply_fun multS (p 0, q 0), apply_fun multR (p 1, q 1))
+      :e setprod pi1S pi1R.
+    {
+      claim Hp0q0 : (p 0, q 0) :e setprod pi1S pi1S.
+      { exact (tuple_2_setprod_by_pair_Sigma pi1S pi1S (p 0) (q 0) Hp0 Hq0). }
+      claim Hp1q1 : (p 1, q 1) :e setprod pi1R pi1R.
+      { exact (tuple_2_setprod_by_pair_Sigma pi1R pi1R (p 1) (q 1) Hp1 Hq1). }
+      claim HmultS_in : apply_fun multS (p 0, q 0) :e pi1S.
+      { exact (HmultS_fn (p 0, q 0) Hp0q0). }
+      claim HmultR_in : apply_fun multR (p 1, q 1) :e pi1R.
+      { exact (HmultR_fn (p 1, q 1) Hp1q1). }
+      exact (tuple_2_setprod_by_pair_Sigma pi1S pi1R
+        (apply_fun multS (p 0, q 0))
+        (apply_fun multR (p 1, q 1))
+        HmultS_in
+        HmultR_in).
+    }
+    rewrite (projection1_apply
+      pi1S
+      pi1R
+      (apply_fun multS (p 0, q 0), apply_fun multR (p 1, q 1))
+      Hmultpair_in).
+    rewrite (projection1_apply pi1S pi1R p Hp).
+    rewrite (projection1_apply pi1S pi1R q Hq).
+    reflexivity.
+}
+claim HprojBij : bijection (setprod pi1S pi1R) pi1S proj.
+{
+  apply andI.
+  - exact (group_homomorphism_function_on
+      (setprod pi1S pi1R)
+      (product_group_mult pi1S multS pi1R multR)
+      pi1S
+      multS
+      proj
+      HprojHom).
+  - let y.
+    assume Hy : y :e pi1S.
+    set idR := fundamental_group_id R R_standard_topology xR.
+    claim HidR_mem : idR :e pi1R.
+    {
+      rewrite Hpi1R_triv.
+      exact (SingI idR).
+    }
+    witness (y, idR).
+    apply andI.
+    + exact (tuple_2_setprod_by_pair_Sigma pi1S pi1R y idR Hy HidR_mem).
+    + apply andI.
+      * rewrite (projection1_apply pi1S pi1R (y, idR)
+          (tuple_2_setprod_by_pair_Sigma pi1S pi1R y idR Hy HidR_mem)).
+        rewrite tuple_2_0_eq.
+        reflexivity.
+      * let x'. assume Hx' : x' :e setprod pi1S pi1R.
+        assume Hprojx' : apply_fun proj x' = y.
+        claim Hx'0 : x' 0 = y.
+        {
+          rewrite <- (projection1_apply pi1S pi1R x' Hx').
+          exact Hprojx'.
+        }
+        claim Hx'1_mem : x' 1 :e pi1R.
+        { exact (ap1_Sigma pi1S (fun _ :set => pi1R) x' Hx'). }
+        claim Hx'1 : x' 1 = idR.
+        {
+          rewrite Hpi1R_triv in Hx'1_mem.
+          exact (SingE idR (x' 1) Hx'1_mem).
+        }
+        apply (Sigma_E pi1S (fun _ :set => pi1R) x' Hx').
+        let a. assume Ha.
+        let b. assume Hb.
+        assume Hx'pair : x' = (a, b).
+        rewrite Hx'pair.
+        apply (tuple_2_ext a b y idR).
+        - claim Ha0 : a = x' 0.
+          { rewrite Hx'pair. rewrite tuple_2_0_eq. reflexivity. }
+          rewrite Ha0. exact Hx'0.
+        - claim Hb1 : b = x' 1.
+          { rewrite Hx'pair. rewrite tuple_2_1_eq. reflexivity. }
+          rewrite Hb1. exact Hx'1.
+}
+claim HprojIso :
+  group_isomorphism
+    (setprod pi1S pi1R)
+    (product_group_mult pi1S multS pi1R multR)
+    pi1S
+    multS
+    proj.
+{
+  apply andI.
+  - exact HprojHom.
+  - exact HprojBij.
+}
+set phi := compose_fun
+  (fundamental_group (setprod S1 R) Tprod (xS1, xR))
+  phi_prod
+  proj.
+claim Hphi_hom :
+  group_homomorphism
+    (fundamental_group (setprod S1 R) Tprod (xS1, xR))
+    (fundamental_group_mult (setprod S1 R) Tprod (xS1, xR))
+    pi1S
+    multS
+    phi.
+{
+  claim HgrpProd :
+    group_structure
+      (fundamental_group (setprod S1 R) Tprod (xS1, xR))
+      (fundamental_group_mult (setprod S1 R) Tprod (xS1, xR))
+      (fundamental_group_id (setprod S1 R) Tprod (xS1, xR))
+      (fundamental_group_inv (setprod S1 R) Tprod (xS1, xR)).
+  {
+    claim Hxpair : (xS1, xR) :e setprod S1 R.
+    { exact (tuple_2_setprod_by_pair_Sigma S1 R xS1 xR HxS1 HxR). }
+    exact (fundamental_group_is_group
+      (setprod S1 R)
+      Tprod
+      (xS1, xR)
+      HtopProd
+      Hxpair).
+  }
+  exact (group_homomorphism_compose_cyclic_helper
+    (fundamental_group (setprod S1 R) Tprod (xS1, xR))
+    (fundamental_group_mult (setprod S1 R) Tprod (xS1, xR))
+    (fundamental_group_id (setprod S1 R) Tprod (xS1, xR))
+    (fundamental_group_inv (setprod S1 R) Tprod (xS1, xR))
+    (setprod pi1S pi1R)
+    (product_group_mult pi1S multS pi1R multR)
+    pi1S
+    multS
+    phi_prod
+    proj
+    HgrpProd
+    (group_isomorphism_homomorphism
+      (fundamental_group (setprod S1 R) Tprod (xS1, xR))
+      (fundamental_group_mult (setprod S1 R) Tprod (xS1, xR))
+      (setprod pi1S pi1R)
+      (product_group_mult pi1S multS pi1R multR)
+      phi_prod
+      Hphi_prod)
+    (group_isomorphism_homomorphism
+      (setprod pi1S pi1R)
+      (product_group_mult pi1S multS pi1R multR)
+      pi1S
+      multS
+      proj
+      HprojIso)).
+}
+claim Hphi_bij :
+  bijection
+    (fundamental_group (setprod S1 R) Tprod (xS1, xR))
+    pi1S
+    phi.
+{
+  exact (bijection_compose_fun
+    (fundamental_group (setprod S1 R) Tprod (xS1, xR))
+    (setprod pi1S pi1R)
+    pi1S
+    phi_prod
+    proj
+    (group_isomorphism_bijection
+      (fundamental_group (setprod S1 R) Tprod (xS1, xR))
+      (fundamental_group_mult (setprod S1 R) Tprod (xS1, xR))
+      (setprod pi1S pi1R)
+      (product_group_mult pi1S multS pi1R multR)
+      phi_prod
+      Hphi_prod)
+    (group_isomorphism_bijection
+      (setprod pi1S pi1R)
+      (product_group_mult pi1S multS pi1R multR)
+      pi1S
+      multS
+      proj
+      HprojIso)).
+}
+witness phi.
+apply andI.
+- exact Hphi_hom.
+- exact Hphi_bij.
+Qed.
 
 (** from S58 Exercise 2(e) (line 1481 in algtop.tex): R^3 with nonneg axes deleted pi1 **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
