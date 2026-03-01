@@ -57048,6 +57048,24 @@ apply set_ext.
       HxA)).
 Qed.
 
+(** Infrastructure: binunion absorbs binintersect (right) **)
+(** Proven Bob **)
+Theorem binunion_absorb_right : forall A B:set,
+  (A :/\: B) :\/: A = A.
+let A B.
+rewrite (binunion_comm (A :/\: B) A).
+exact (binunion_absorb_left A B).
+Qed.
+
+(** Infrastructure: binintersect absorbs binunion (right) **)
+(** Proven Bob **)
+Theorem binintersect_absorb_right : forall A B:set,
+  (A :\/: B) :/\: A = A.
+let A B.
+rewrite (binintersect_com (A :\/: B) A).
+exact (binintersect_absorb_left A B).
+Qed.
+
 (** Infrastructure: binintersect is idempotent **)
 (** Proven Bob **)
 Theorem binintersect_idem : forall A:set,
