@@ -253389,6 +253389,7 @@ exact (andI
 Qed.
 
 (** Helper: finite star-refinement in the compact Hausdorff second-countable case. **)
+(** Proven Bob **)
 Theorem supp_ex_1b_compact_Hausdorff_star_refinement_with_second_countable :
   forall X Tx:set,
   compact_space X Tx ->
@@ -253962,7 +253963,7 @@ apply andI.
       HrefBA)
     HstarPair).
 - exact HfinB.
-Admitted.
+Qed.
 
 (** from Supplementary Exercises Exercise 1b (line 5394 in algtop.tex): compact Hausdorff star refinement **)
 (** LATEX VERSION: If X is compact Hausdorff, then for any open covering A, there exists **)
@@ -285066,6 +285067,7 @@ apply iffI.
     Hnoloop).
 Qed.
 
+(** Proven Bob **)
 Theorem lemma84_2_tree_extension_iff_components_from_hypotheses :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -285101,9 +285103,9 @@ exact (lemma84_2_tree_extension_iff_components
       X
       Tx
       Arcs
-      Htree)
+  Htree)
     HA)).
-Admitted.
+Qed.
 
 Theorem lemma84_2_tree_extension_components_pack_from_hypotheses_and_tree :
   forall T ArcsT X Tx Arcs A:set,
@@ -288146,6 +288148,7 @@ apply (binunionE {A} ArcsT E HEfam).
 Qed.
 
 (** helper: no closed reduced edge path appears after attaching A along a single vertex **)
+(** Proven Bob **)
 Theorem lemma84_2_tree_extension_no_closed_reduced_edge_path_part :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -292343,7 +292346,7 @@ assume HnOm HnNe0 Hred Hclosed.
 		    Hred
 		    HnoAedges
 		    Hclosed).
-		Admitted.
+		Qed.
 
 (** Proven Bob **)
 Theorem lemma84_2_not_subset_has_outside_point :
@@ -293146,6 +293149,7 @@ apply iffI.
     (x :e A)).
 Qed.
 
+(** Proven Bob **)
 Theorem maximal_tree_single_vertex_outside_in_extension_edge_iff_false :
   forall T ArcsT X Tx Arcs x A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -293178,7 +293182,7 @@ apply iffI.
   exact (FalseE
     HFalse
     (x :e A)).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem maximal_tree_noncontained_edge_tree_extension_contradiction :
@@ -293263,6 +293267,7 @@ exact (maximal_tree_noncontained_edge_tree_extension_contradiction
   Hnsub).
 Qed.
 
+(** Proven Bob **)
 Theorem maximal_tree_single_vertex_noncontained_edge_component_extension_contradiction :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -293319,7 +293324,7 @@ exact (maximal_tree_single_vertex_edge_tree_extension_contradiction
   HA
   Hnsub
   Hmeet).
-Admitted.
+Qed.
 
 Theorem maximal_tree_single_vertex_noncontained_edge_component_extension_iff_false :
   forall T ArcsT X Tx Arcs A:set,
@@ -294009,6 +294014,7 @@ apply and5I.
 - exact HtreeExt.
 Qed.
 
+(** Proven Bob **)
 Theorem maximal_tree_all_vertices_if_noncontained_edges_meet_tree_and_component_extension :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -294106,7 +294112,7 @@ apply andI.
     HglgTA
     HconnTA
     HnoloopTA).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem not_subset_implies_right_union_neq :
@@ -294475,6 +294481,7 @@ apply (xm (A c= T)).
 (** blocked on admitted lemma84_2_tree_extension_general_linear_graph_part. **)
 Admitted.
 
+(** Proven Bob **)
 Theorem maximal_tree_edge_meeting_tree_forces_subset_from_component_obligations :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -294526,7 +294533,7 @@ exact (lemma84_2_tree_extension_from_hypotheses_and_components
   HglgTA
   HconnTA
   HnoloopTA).
-Admitted.
+Qed.
 
 Theorem maximal_tree_edge_meeting_tree_forces_subset_from_component_obligation_families :
   forall T ArcsT X Tx Arcs A:set,
@@ -294730,6 +294737,7 @@ exact (HxNotT
   (HAsub x HxA)).
 Qed.
 
+(** Proven Bob **)
 Theorem maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge_from_extension_obligation :
   forall T ArcsT X Tx Arcs x A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -294764,7 +294772,7 @@ exact (outside_set_not_in_subset
   HxNotT
   HAsubT
   HxA).
-Admitted.
+Qed.
 
 Theorem maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge_from_component_obligations :
   forall T ArcsT X Tx Arcs x A:set,
@@ -295094,6 +295102,7 @@ apply andI.
    HmeetEx).
 Qed.
 
+(** Proven Bob **)
 Theorem maximal_tree_all_vertices_if_noncontained_edges_meet_tree_in_single_vertex_and_component_extension_obligations :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -295147,7 +295156,7 @@ exact (lemma84_2_tree_extension_from_hypotheses_and_components
   (HglgOb A HA Hnsub)
   (HconnOb A HA Hnsub)
   (HnoloopOb A HA Hnsub)).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem graph_vertices_subset_T_arc_endpoint_left_in_T :
@@ -297612,6 +297621,7 @@ exact (HsubsetSel
   HASel).
 Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_backward_selected_arc_endpoint_obligation_pair_from_subset_from_rhs :
   forall T ArcsT T' ArcsT' X Tx Arcs:set,
   (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
@@ -297651,7 +297661,7 @@ apply andI.
     Htree'
     HTsub
     HsubsetSel).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem thm84_4_backward_selected_arc_subset_from_endpoint_obligations_from_rhs :
@@ -298566,6 +298576,7 @@ assume HvVert Hmeet HglgTA HconnTA HnoloopTA.
 exact HnoloopTA.
 Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_forward_obligation_families_from_component_witness_family :
   forall T ArcsT X Tx Arcs:set,
   (forall A:set, A :e Arcs -> ~(A c= T) ->
@@ -298603,8 +298614,9 @@ apply and4I.
     T ArcsT X Tx Arcs HcompFam).
 - exact (thm84_4_forward_no_loop_obligation_from_component_witness_family
     T ArcsT X Tx Arcs HcompFam).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_forward_stub_obligation_families_from_component_witness_family :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -298647,7 +298659,7 @@ apply and4I.
 - let A. assume Hmax' HA Hnsub.
   exact ((thm84_4_forward_no_loop_obligation_from_component_witness_family
     T ArcsT X Tx Arcs HcompFam) A HA Hnsub).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem thm84_4_forward_component_witness_family_from_stub_obligation_families :
@@ -298945,6 +298957,7 @@ exact (thm84_4_forward_vertices_from_split_obligations
   HnoloopOb).
 Admitted.
 
+(** Proven Bob **)
 Theorem thm84_4_forward_tree_extension_obligation_family_from_component_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -298988,7 +299001,7 @@ exact (lemma84_2_tree_extension_from_hypotheses_and_components
   (HglgFam A HA Hnsub)
   (HconnFam A HA Hnsub)
   (HnoloopFam A HA Hnsub)).
-Admitted.
+Qed.
 
 Theorem thm84_4_forward_tree_extension_obligation_family_from_stub_component_obligation_families :
   forall T ArcsT X Tx Arcs:set,
