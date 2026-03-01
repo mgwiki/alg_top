@@ -1,5 +1,5 @@
 (** Balance Alice 3927 **)
-(** Balance Bob 3562 **)
+(** Balance Bob 3617 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
 
@@ -45019,7 +45019,8 @@ Qed.
 (** LATEX VERSION: If U is evenly covered by p and W is an open subset of U, **)
 (** then W is also evenly covered by p. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
+(** Collected Bob 55 **)
+(** Proven Bob **)
 Theorem evenly_covered_open_subset : forall E Te B Tb p U W:set,
   evenly_covered E Te B Tb p U -> W :e Tb -> W c= U ->
   evenly_covered E Te B Tb p W.
@@ -45915,7 +45916,7 @@ apply andI.
           exact HrightEq.
     }
     exact HhomePack.
-Admitted.
+Qed.
 
 (** Variant of evenly_covered_open_subset with topology_on E Te as explicit hypothesis **)
 Theorem evenly_covered_open_subset_top : forall E Te B Tb p U W:set,
