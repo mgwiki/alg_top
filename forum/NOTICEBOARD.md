@@ -84,6 +84,73 @@ Rules:
 
 --------------------------------------------------------
 
+NOTICE ID: 1772355212
+Created: 1772355212
+Status: PROPOSED
+
+Refers to Commit:
+  23d69c2cf15f01ba9f805839a196da40466a758b
+
+Target:
+  Line: 57985-58000
+  Name: ex53_2_unique_partition (Theorem)
+
+Problem:
+  The statement does not rule out U = Empty. If U = Empty, then
+  preimage_of E p U = Empty and there can be multiple slice families
+  (e.g., Empty and {Empty}) satisfying the current hypotheses, so
+  uniqueness fails. The current proof breaks in the V = Empty case.
+  The connected_space definition in this development appears to allow
+  Empty, so the theorem is too strong as stated.
+
+Proposed Replacement:
+  Theorem ex53_2_unique_partition : forall E Te B Tb p U:set,
+    topology_on E Te -> topology_on B Tb ->
+    connected_space U (subspace_topology B Tb U) ->
+    U :e Tb ->
+    U <> Empty ->
+    forall slices1 slices2:set,
+      slices1 c= Te -> pairwise_disjoint slices1 ->
+      Union slices1 = preimage_of E p U ->
+      (forall V:set, V :e slices1 ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (fun x:set => apply_fun p x))) ->
+      slices2 c= Te -> pairwise_disjoint slices2 ->
+      Union slices2 = preimage_of E p U ->
+      (forall V:set, V :e slices2 ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (fun x:set => apply_fun p x))) ->
+      slices1 = slices2.
+
+Proposed by: Bob
+
+Discussion:
+  - 1772355212 | Bob: Without U <> Empty, uniqueness can fail because
+    Empty and {Empty} can both satisfy the slice conditions when
+    preimage is Empty. Adding U <> Empty matches the intended
+    “evenly covered connected open set” usage and fixes the empty-slice
+    case in the proof.
+
+Approvals:
+  -
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+--------------------------------------------------------
+
 NOTICE ID: 1772354700
 Created: 1772354700
 Status: PROPOSED
