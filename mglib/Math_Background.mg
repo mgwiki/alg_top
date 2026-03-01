@@ -56539,6 +56539,63 @@ apply set_ext.
       HxRest)).
 Qed.
 
+(** Infrastructure: if A\\B = A then A and B are disjoint **)
+(** Proven Bob **)
+Theorem binintersect_empty_if_setminus_eq_left : forall A B:set,
+  A :\: B = A ->
+  A :/\: B = Empty.
+let A B.
+assume Heq.
+apply Empty_eq.
+let x.
+assume HxInt.
+claim HxA : x :e A.
+{
+  exact (binintersectE1
+    A
+    B
+    x
+    HxInt).
+}
+claim HxB : x :e B.
+{
+  exact (binintersectE2
+    A
+    B
+    x
+    HxInt).
+}
+claim HxRest : x :e A :\: B.
+{
+  exact (mem_eqL
+    x
+    (A :\: B)
+    A
+    Heq
+    HxA).
+}
+claim HxNotB : x /:e B.
+{
+  exact (setminusE2
+    A
+    B
+    x
+    HxRest).
+}
+exact (HxNotB HxB).
+Qed.
+
+(** Infrastructure: A\\B = A iff A and B are disjoint **)
+(** Proven Bob **)
+Theorem setminus_eq_left_iff_binintersect_empty : forall A B:set,
+  A :\: B = A <->
+  A :/\: B = Empty.
+let A B.
+apply iffI.
+- exact (binintersect_empty_if_setminus_eq_left A B).
+- exact (setminus_eq_if_binintersect_empty A B).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
