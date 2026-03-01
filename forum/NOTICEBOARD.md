@@ -82,6 +82,127 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772361663
+Created: 1772361663
+Status: PROPOSED
+
+Refers to Commit:
+  c8ae3f4ab
+
+Target:
+  Line: 169256
+  Name: lemma59_4a_path_connected_pieces_from_data (Theorem)
+
+Problem:
+  The statement concludes that U and V are path connected from triviality
+  of the induced maps and path-connectedness of U ∩ V. These hypotheses
+  do not imply that U or V are path connected; the proof is stuck at this
+  exact gap. The statement is therefore too strong.
+
+Proposed Replacement:
+  Theorem lemma59_4a_path_connected_pieces_from_data : forall X Tx U V x0:set,
+    topology_on X Tx ->
+    U :e Tx -> V :e Tx ->
+    X = U :\/: V ->
+    x0 :e U :/\: V ->
+    path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
+    (forall cls:set,
+      cls :e fundamental_group U (subspace_topology X Tx U) x0 ->
+      apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+        (graph U (fun x:set => x))) cls = fundamental_group_id X Tx x0) ->
+    (forall cls:set,
+      cls :e fundamental_group V (subspace_topology X Tx V) x0 ->
+      apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+        (graph V (fun x:set => x))) cls = fundamental_group_id X Tx x0) ->
+    path_connected_space U (subspace_topology X Tx U) ->
+    path_connected_space V (subspace_topology X Tx V) ->
+    path_connected_space U (subspace_topology X Tx U) /\
+    path_connected_space V (subspace_topology X Tx V).
+
+Proposed by: Bob
+
+Discussion:
+  - 1772361663 | Bob: Triviality of i* and j* plus path-connectedness of
+    U ∩ V does not force U or V to be path connected. Adding explicit
+    path-connectedness hypotheses makes the lemma correct and usable.
+
+Approvals:
+  -
+  - 1772361663 | Bob: YES
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+--------------------------------------------------------
+
+NOTICE ID: 1772361662
+Created: 1772361662
+Status: PROPOSED
+
+Refers to Commit:
+  c8ae3f4ab
+
+Target:
+  Line: 166934
+  Name: lemma59_1_wedge_pieces_open_from_data (Theorem)
+
+Problem:
+  The statement tries to derive A :e Tx and B :e Tx (openness in X)
+  from homeomorphisms A ≅ S^2 and B ≅ S^2 with the subspace topologies
+  plus A ∩ B = {x0}. These hypotheses do not imply that A or B is open
+  in X; the proof is blocked at this exact gap.
+
+Proposed Replacement:
+  Theorem lemma59_1_wedge_pieces_open_from_data : forall X Tx x0 A B fA fB:set,
+    topology_on X Tx ->
+    X = A :\/: B ->
+    A :/\: B = Sing x0 ->
+    homeomorphism A (subspace_topology X Tx A) (Sn 2) (Sn_topology 2) fA ->
+    homeomorphism B (subspace_topology X Tx B) (Sn 2) (Sn_topology 2) fB ->
+    A :e Tx ->
+    B :e Tx ->
+    A :e Tx /\ B :e Tx.
+
+Proposed by: Bob
+
+Discussion:
+  - 1772361662 | Bob: A homeomorphism to S^2 using the subspace topology
+    does not imply A or B is open in X. Adding explicit openness
+    hypotheses matches how the lemma is used later (to feed cor59_2).
+
+Approvals:
+  -
+  - 1772361662 | Bob: YES
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+--------------------------------------------------------
+
 NOTICE ID: 1772358892
 Created: 1772358892
 Status: SENT TO ADMIN
