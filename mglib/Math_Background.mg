@@ -201242,8 +201242,230 @@ apply (nat_inv nw Hnw_nat).
                             (HidG (apply_fun xie 0) Hxie0_G)).
                         }
                         (** tw is a reduced word **)
-                        (** For now, admit and compile-check the structure **)
-                        admit.
+                        claim Htw_redw : reduced_word J Gfam efam len tw.
+                        {
+                          apply (and3E
+                            (ordsucc m :e omega)
+                            (forall i:set, i :e ordsucc m ->
+                              exists alpha:set, alpha :e J /\
+                                apply_fun xie i :e apply_fun Gfam alpha /\
+                                apply_fun xie i <> apply_fun efam alpha)
+                            (forall i:set, i :e ordsucc m -> ordsucc i :e ordsucc m ->
+                              forall a b:set, a :e J -> b :e J ->
+                                apply_fun xie i :e apply_fun Gfam a ->
+                                apply_fun xie (ordsucc i) :e apply_fun Gfam b ->
+                                a <> b)
+                            Hred_ie_succ).
+                          assume _ Helem_sm2 Hadj_sm2.
+                          prove len :e omega /\
+                            (forall i:set, i :e len ->
+                              exists alpha:set, alpha :e J /\
+                                apply_fun tw i :e apply_fun Gfam alpha /\
+                                apply_fun tw i <> apply_fun efam alpha) /\
+                            (forall i:set, i :e len -> ordsucc i :e len ->
+                              forall a b:set, a :e J -> b :e J ->
+                                apply_fun tw i :e apply_fun Gfam a ->
+                                apply_fun tw (ordsucc i) :e apply_fun Gfam b ->
+                                a <> b).
+                          apply and3I.
+                          - exact (nat_p_omega len Hlen_nat).
+                          - (** Entry condition **)
+                            let i. assume Hi_len.
+                            claim Hi_nat : nat_p i. { exact (nat_p_trans len Hlen_nat i Hi_len). }
+                            claim Hci_sm : cyc i :e sm. { exact (Hcyc_in_sm i Hi_nat). }
+                            claim Htw_i_eq : apply_fun tw i = apply_fun xie (cyc i). { exact (Htw_val i Hi_len). }
+                            claim Hxie_entry : exists alpha:set, alpha :e J /\
+                              apply_fun xie (cyc i) :e apply_fun Gfam alpha /\
+                              apply_fun xie (cyc i) <> apply_fun efam alpha.
+                            { exact (Helem_sm2 (cyc i) Hci_sm). }
+                            apply Hxie_entry.
+                            let alpha_ci.
+                            assume Hpack.
+                            apply (and3E
+                              (alpha_ci :e J)
+                              (apply_fun xie (cyc i) :e apply_fun Gfam alpha_ci)
+                              (apply_fun xie (cyc i) <> apply_fun efam alpha_ci)
+                              Hpack).
+                            assume Hci_J Hxie_Ga Hxie_ne.
+                            witness alpha_ci.
+                            apply and3I.
+                            + exact Hci_J.
+                            + rewrite Htw_i_eq. exact Hxie_Ga.
+                            + assume Htw_eq_ea.
+                              claim Hxie_eq_ea : apply_fun xie (cyc i) = apply_fun efam alpha_ci.
+                              { rewrite <- Htw_i_eq. exact Htw_eq_ea. }
+                              exact (Hxie_ne Hxie_eq_ea).
+                          - (** Adjacency condition **)
+                            let i. assume Hi_len Hsi_len.
+                            let a b. assume Ha_J Hb_J.
+                            assume Htwi_Ga Htws_Gb.
+                            claim Hi_nat : nat_p i. { exact (nat_p_trans len Hlen_nat i Hi_len). }
+                            claim Hci_sm : cyc i :e sm. { exact (Hcyc_in_sm i Hi_nat). }
+                            (** Rewrite tw entries to xie(cyc(.)) **)
+                            claim Hxieci_Ga : apply_fun xie (cyc i) :e apply_fun Gfam a.
+                            {
+                              rewrite <- (Htw_val i Hi_len).
+                              exact Htwi_Ga.
+                            }
+                            claim Hxiecsi_Gb : apply_fun xie (cyc (ordsucc i)) :e apply_fun Gfam b.
+                            {
+                              rewrite <- (Htw_val (ordsucc i) Hsi_len).
+                              exact Htws_Gb.
+                            }
+                            (** Case split: junction or not **)
+                            apply (xm (ordsucc (cyc i) :e sm)).
+                            + assume Hsci_sm : ordsucc (cyc i) :e sm.
+                              (** Non-junction: cyc(ordsucc i) = ordsucc(cyc i) **)
+                              claim Hcsi_eq : cyc (ordsucc i) = ordsucc (cyc i).
+                              {
+                                claim Hstep : cyc (ordsucc i) = (if ordsucc (cyc i) :e sm then ordsucc (cyc i) else 0).
+                                { exact (Hcyc_S i Hi_nat). }
+                                claim Hif_val : (if ordsucc (cyc i) :e sm then ordsucc (cyc i) else 0) = ordsucc (cyc i).
+                                { exact (If_i_1 (ordsucc (cyc i) :e sm) (ordsucc (cyc i)) 0 Hsci_sm). }
+                                exact (eq_i_tra (cyc (ordsucc i))
+                                  (if ordsucc (cyc i) :e sm then ordsucc (cyc i) else 0)
+                                  (ordsucc (cyc i))
+                                  Hstep Hif_val).
+                              }
+                              claim Hxie_sci_Gb : apply_fun xie (ordsucc (cyc i)) :e apply_fun Gfam b.
+                              {
+                                rewrite <- Hcsi_eq.
+                                exact Hxiecsi_Gb.
+                              }
+                              exact (Hadj_sm2 (cyc i) Hci_sm Hsci_sm a b Ha_J Hb_J Hxieci_Ga Hxie_sci_Gb).
+                            + assume Hsci_notsm : ordsucc (cyc i) :e sm -> False.
+                              (** Junction: cyc i = m, cyc(ordsucc i) = 0 **)
+                              (** First show cyc i = m **)
+                              claim Hci_eq_m : cyc i = m.
+                              {
+                                apply (ordsuccE m (cyc i) Hci_sm).
+                                * assume Hci_m : cyc i :e m.
+                                  claim Hsci_sm_fact : ordsucc (cyc i) :e sm.
+                                  { exact (nat_ordsucc_in_ordsucc m Hm_nat (cyc i) Hci_m). }
+                                  exact (FalseE
+                                    (Hsci_notsm Hsci_sm_fact)
+                                    (cyc i = m)).
+                                * assume Hci_m_eq.
+                                  exact Hci_m_eq.
+                              }
+                              (** cyc(ordsucc i) = 0 **)
+                              claim Hcsi_eq_0 : cyc (ordsucc i) = 0.
+                              {
+                                claim Hstep : cyc (ordsucc i) = (if ordsucc (cyc i) :e sm then ordsucc (cyc i) else 0).
+                                { exact (Hcyc_S i Hi_nat). }
+                                claim Hif_val : (if ordsucc (cyc i) :e sm then ordsucc (cyc i) else 0) = 0.
+                                { exact (If_i_0 (ordsucc (cyc i) :e sm) (ordsucc (cyc i)) 0 Hsci_notsm). }
+                                exact (eq_i_tra (cyc (ordsucc i))
+                                  (if ordsucc (cyc i) :e sm then ordsucc (cyc i) else 0)
+                                  0
+                                  Hstep Hif_val).
+                              }
+                              (** xie(m) :e Gfam(a) **)
+                              claim Hxiem_Ga : apply_fun xie m :e apply_fun Gfam a.
+                              {
+                                rewrite <- Hci_eq_m.
+                                exact Hxieci_Ga.
+                              }
+                              (** xie(0) :e Gfam(b) **)
+                              claim Hxie0_Gb : apply_fun xie 0 :e apply_fun Gfam b.
+                              {
+                                rewrite <- Hcsi_eq_0.
+                                exact Hxiecsi_Gb.
+                              }
+                              (** xie(m) <> eG **)
+                              claim Hxiem_ne_eG : apply_fun xie m <> eG.
+                              {
+                                assume Hxiem_eG.
+                                claim HeG_Gal : eG :e apply_fun Gfam al.
+                                {
+                                  apply (and4E
+                                    (apply_fun Gfam al c= G)
+                                    (eG :e apply_fun Gfam al)
+                                    (forall x y:set, x :e apply_fun Gfam al -> y :e apply_fun Gfam al ->
+                                      apply_fun multG (x, y) :e apply_fun Gfam al)
+                                    (forall x:set, x :e apply_fun Gfam al -> apply_fun invG x :e apply_fun Gfam al)
+                                    (Hsub al Hal)).
+                                  assume _ HeG_inner _ _.
+                                  exact HeG_inner.
+                                }
+                                claim Hxiem_Gal : apply_fun xie m :e apply_fun Gfam al.
+                                {
+                                  rewrite Hxiem_eG.
+                                  exact HeG_Gal.
+                                }
+                                exact (Hxiem_not_Gal Hxiem_Gal).
+                              }
+                              (** a = alpha_m by disjoint label uniqueness **)
+                              claim Ha_eq_am : a = alpha_m.
+                              {
+                                symmetry.
+                                exact (disjoint_subgroups_label_unique
+                                  G multG eG invG J Gfam
+                                  alpha_m a (apply_fun xie m)
+                                  Hdisjoint
+                                  Ham_J Ha_J
+                                  Hxiem_Gam Hxiem_Ga
+                                  Hxiem_ne_eG).
+                              }
+                              (** b = alpha_0 by disjoint label uniqueness **)
+                              claim Hb_eq_a0 : b = alpha_0.
+                              {
+                                symmetry.
+                                exact (disjoint_subgroups_label_unique
+                                  G multG eG invG J Gfam
+                                  alpha_0 b (apply_fun xie 0)
+                                  Hdisjoint
+                                  Ha0_J Hb_J
+                                  Hxie0_Ga0 Hxie0_Gb
+                                  Hxie0_ne_eG).
+                              }
+                              (** a <> b since alpha_m <> alpha_0 **)
+                              assume Hab_eq.
+                              claim Ham_eq_a0 : alpha_m = alpha_0.
+                              {
+                                rewrite <- Ha_eq_am.
+                                rewrite <- Hb_eq_a0.
+                                exact Hab_eq.
+                              }
+                              exact (Ham_ne_a0 Ham_eq_a0).
+                        }
+                        (** Apply Hxie0_uniq_len1 to get 1 = len **)
+                        claim Hlen_eq_1 : 1 = len.
+                        {
+                          exact (Hxie0_uniq_len1 len tw Htw_redw Hlen_ne0 Hwp_tw_len).
+                        }
+                        (** dsm <> 0 **)
+                        claim Hdsm_ne0 : dsm <> 0.
+                        {
+                          assume Hdsm_0.
+                          claim Hsm_empty : sm :e 0.
+                          {
+                            rewrite <- Hdsm_0.
+                            exact Hsm_in_dsm.
+                          }
+                          exact (EmptyE sm Hsm_empty).
+                        }
+                        (** len <> 1 **)
+                        claim Hlen_ne1 : len <> 1.
+                        {
+                          assume Hlen_1.
+                          claim Hlen_s0 : len = ordsucc 0.
+                          {
+                            rewrite ordsucc_0_eq_1_nat.
+                            exact Hlen_1.
+                          }
+                          claim Hdsm_0 : dsm = 0.
+                          {
+                            exact (ordsucc_inj dsm 0 Hlen_s0).
+                          }
+                          exact (Hdsm_ne0 Hdsm_0).
+                        }
+                        claim Hlen_eq_1_sym : len = 1.
+                        {
+                          symmetry.
+                          exact Hlen_eq_1.
+                        }
+                        exact (Hlen_ne1 Hlen_eq_1_sym).
                       }
                     }
                 }
