@@ -45216,6 +45216,95 @@ apply (and6I
 Qed.
 
 (** Proven Bob **)
+Theorem covering_map_slices_nonempty : forall E Te B Tb p U slices b:set,
+  covering_map E Te B Tb p ->
+  b :e B -> b :e U ->
+  Union slices = preimage_of E p U ->
+  exists V:set, V :e slices /\ V <> Empty.
+let E Te B Tb p U slices b.
+assume Hcov HbB HbU Hunion.
+claim Hexe : exists e:set, e :e E /\ apply_fun p e = b.
+{
+  exact (covering_map_surjective_value
+    E
+    Te
+    B
+    Tb
+    p
+    b
+    Hcov
+    HbB).
+}
+apply Hexe.
+let e.
+assume Hepack.
+claim HeE : e :e E.
+{
+  exact (andEL
+    (e :e E)
+    (apply_fun p e = b)
+    Hepack).
+}
+claim Hpeb : apply_fun p e = b.
+{
+  exact (andER
+    (e :e E)
+    (apply_fun p e = b)
+    Hepack).
+}
+claim HePreU : e :e preimage_of E p U.
+{
+  claim HpeU : apply_fun p e :e U.
+  {
+    rewrite Hpeb.
+    exact HbU.
+  }
+  exact (SepI
+    E
+    (fun x:set => apply_fun p x :e U)
+    e
+    HeE
+    HpeU).
+}
+claim HeUnion : e :e Union slices.
+{
+  exact (mem_eqL
+    e
+    (Union slices)
+    (preimage_of E p U)
+    Hunion
+    HePreU).
+}
+apply (UnionE slices e HeUnion).
+let V.
+assume Hpack.
+claim HeV : e :e V.
+{
+  exact (andEL
+    (e :e V)
+    (V :e slices)
+    Hpack).
+}
+claim HVslices : V :e slices.
+{
+  exact (andER
+    (e :e V)
+    (V :e slices)
+    Hpack).
+}
+witness V.
+apply andI.
+- exact HVslices.
+- assume HVempty.
+  claim HeEmpty : e :e Empty.
+  {
+    rewrite <- HVempty.
+    exact HeV.
+  }
+  exact (EmptyE e HeEmpty).
+Qed.
+
+(** Proven Bob **)
 Theorem covering_map_function_on : forall E Te B Tb p:set,
   covering_map E Te B Tb p -> function_on p E B.
 let E Te B Tb p.
