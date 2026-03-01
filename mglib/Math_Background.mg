@@ -54993,6 +54993,139 @@ apply set_ext.
 - exact (Subq_Empty (Union (Fam :\: {V}))).
 Qed.
 
+(** Infrastructure: in a pairwise disjoint family, the union of the rest is union minus the member **)
+(** Proven Bob **)
+Theorem union_rest_eq_union_setminus_member : forall Fam V:set,
+  pairwise_disjoint Fam ->
+  V :e Fam ->
+  Union (Fam :\: {V}) = (Union Fam) :\: V.
+let Fam V.
+assume Hpd HVFam.
+apply set_ext.
+- let x.
+  assume HxRest.
+  claim HxUnion : x :e Union Fam.
+  {
+    exact (union_rest_sub_union
+      Fam
+      V
+      x
+      HxRest).
+  }
+  claim HxNotV : x /:e V.
+  {
+    assume HxV.
+    claim HxInt : x :e V :/\: Union (Fam :\: {V}).
+    {
+      exact (binintersectI
+        V
+        (Union (Fam :\: {V}))
+        x
+        HxV
+        HxRest).
+    }
+    claim HinterEmpty : V :/\: Union (Fam :\: {V}) = Empty.
+    {
+      exact (pairwise_disjoint_member_union_rest_empty
+        Fam
+        V
+        Hpd
+        HVFam).
+    }
+    claim HxE : x :e Empty.
+    {
+      exact (mem_eqR
+        x
+        (V :/\: Union (Fam :\: {V}))
+        Empty
+        HinterEmpty
+        HxInt).
+    }
+    exact (EmptyE x HxE False).
+  }
+  exact (setminusI
+    (Union Fam)
+    V
+    x
+    HxUnion
+    HxNotV).
+- let x.
+  assume HxMinus.
+  claim HxUnion : x :e Union Fam.
+  {
+    exact (setminusE1
+      (Union Fam)
+      V
+      x
+      HxMinus).
+  }
+  claim HxNotV : x /:e V.
+  {
+    exact (setminusE2
+      (Union Fam)
+      V
+      x
+      HxMinus).
+  }
+  apply (UnionE
+    Fam
+    x
+    HxUnion).
+  let W.
+  assume Hpack.
+  claim HxW : x :e W.
+  {
+    exact (andEL
+      (x :e W)
+      (W :e Fam)
+      Hpack).
+  }
+  claim HWFam : W :e Fam.
+  {
+    exact (andER
+      (x :e W)
+      (W :e Fam)
+      Hpack).
+  }
+  claim HWneq : W <> V.
+  {
+    assume HWeq.
+    claim HxV : x :e V.
+    {
+      rewrite <- HWeq.
+      exact HxW.
+    }
+    exact (HxNotV HxV).
+  }
+  claim HWnotSing : W /:e {V}.
+  {
+    assume HWSing.
+    claim HWeq : W = V.
+    {
+      exact (SingE
+        V
+        W
+        HWSing).
+    }
+    exact (HWneq HWeq).
+  }
+  claim HWrest : W :e Fam :\: {V}.
+  {
+    exact (setminusI
+      Fam
+      {V}
+      W
+      HWFam
+      HWnotSing).
+  }
+  exact (UnionI
+    (Fam :\: {V})
+    x
+    W
+    HxW
+    HWrest).
+Qed.
+
 
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
