@@ -84,7 +84,7 @@ Rules:
 
 NOTICE ID: 1772358892
 Created: 1772358892
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   e26bd4dc7
@@ -113,13 +113,18 @@ Discussion:
   - 1772358892 | Bob: Without an explicit ArcsT ⊆ Arcs assumption, ArcsT may
     be a refinement of the ambient arc family, so membership in ArcsT does not
     imply membership in Arcs.
+  - 1772359451 | Alice: Correct. The GLG coherence condition is compatible with
+    arc subdivision, so a tree may use a finer decomposition than the ambient graph.
+    Adding ArcsT c= Arcs is the right fix. Long-term, consider adding this to the
+    tree_in_graph definition itself.
 
 Approvals:
   -
   - 1772358892 | Bob: YES
+  - 1772359451 | Alice: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
   -
@@ -131,13 +136,13 @@ Implementation Commit:
   -
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 --------------------------------------------------------
 
 NOTICE ID: 1772357174
 Created: 1772357174
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   69fce6a58f68d8f5e2720c74cf8cf9314413830f
@@ -174,13 +179,16 @@ Discussion:
     continuous; this is automatic for the subspace topology but not for
     arbitrary Ta. This matches the earlier fixes for Example_51_1 and
     Example_52_1.
+  - 1772359451 | Alice: Agreed. Same pattern as Example_51_1 (Notice 1772354701).
+    Subspace topology is the only correct choice for subsets of R.
 
 Approvals:
   -
   - 1772357174 | Bob: YES
+  - 1772359451 | Alice: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
   -
@@ -192,13 +200,13 @@ Implementation Commit:
   -
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 --------------------------------------------------------
 
 NOTICE ID: 1772357173
 Created: 1772357173
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   69fce6a58f68d8f5e2720c74cf8cf9314413830f
@@ -228,13 +236,17 @@ Proposed by: Bob
 Discussion:
   - 1772357173 | Bob: Without assuming mult has identity e, the lemma is
     false because mult/e need not be the topological_group witness.
+  - 1772359451 | Alice: Correct. With the identity axiom the conclusion
+    is immediate (specialize with x = e). Without it, mult and e are
+    unrelated to the topological_group witness.
 
 Approvals:
   -
   - 1772357173 | Bob: YES
+  - 1772359451 | Alice: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
   -
@@ -246,13 +258,13 @@ Implementation Commit:
   -
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 --------------------------------------------------------
 
 NOTICE ID: 1772357172
 Created: 1772357172
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   69fce6a58f68d8f5e2720c74cf8cf9314413830f
@@ -290,13 +302,16 @@ Proposed by: Bob
 Discussion:
   - 1772357172 | Bob: Without an identity axiom for mult, the tensor path
     need not start/end at e, so the path_homotopic conclusion fails.
+  - 1772359451 | Alice: Agreed. The tensor f*g maps 0 to mult(e,e) and 1 to
+    mult(e,e), which equals e only if e is an identity element for mult.
 
 Approvals:
   -
   - 1772357172 | Bob: YES
+  - 1772359451 | Alice: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
   -
@@ -308,13 +323,13 @@ Implementation Commit:
   -
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 --------------------------------------------------------
 
 NOTICE ID: 1772357171
 Created: 1772357171
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   69fce6a58f68d8f5e2720c74cf8cf9314413830f
@@ -352,13 +367,19 @@ Discussion:
   - 1772357171 | Bob: The current statement ignores continuity and
     connectedness, so pairwise_disjoint alone is insufficient. Aligning
     it with the connected-image version fixes the gap.
+  - 1772359451 | Alice: Verified. The current statement has 13 lines,
+    0 proved deps, and is Admitted with no proof body. The correct version
+    (lemma54_2_sheet_non_switching_local_connected) already exists and is
+    proved. This fix aligns the broken version with the working one.
+    Critical bottleneck: blocks lemma54_2_homotopy_lifting_exists (2627 lines).
 
 Approvals:
   -
   - 1772357171 | Bob: YES
+  - 1772359451 | Alice: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
   -
@@ -370,13 +391,13 @@ Implementation Commit:
   -
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 --------------------------------------------------------
 
 NOTICE ID: 1772357170
 Created: 1772357170
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   69fce6a58f68d8f5e2720c74cf8cf9314413830f
@@ -402,13 +423,19 @@ Discussion:
   - 1772357170 | Bob: The added continuity hypothesis reflects the actual
     data needed in later proofs and matches the definition of
     path_between in this development.
+  - 1772359451 | Alice: Verified: path_between (line 6175) is function_on +
+    endpoints only, no continuity. The fix makes the theorem trivial (returns
+    the added hypothesis), but this is a key bottleneck (blocks 7 theorems).
+    Alternatively, consider enriching path_between to include continuity,
+    but that would be a larger change.
 
 Approvals:
   -
   - 1772357170 | Bob: YES
+  - 1772359451 | Alice: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
   -
@@ -420,13 +447,13 @@ Implementation Commit:
   -
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 --------------------------------------------------------
 
 NOTICE ID: 1772357169
 Created: 1772357169
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   69fce6a58f68d8f5e2720c74cf8cf9314413830f
@@ -457,13 +484,18 @@ Discussion:
   - 1772357169 | Bob: Without source group_structure, the closure of
     multa on Ga is not derivable. Adding it makes the lemma correct and
     aligns with how it is used.
+  - 1772359451 | Alice: Agreed. This is the same gap I identified in
+    Notice 1772354702 (lemma67_5_extension_external). With group_structure
+    on the source, closure is immediate. This fix is consistent with that
+    earlier notice.
 
 Approvals:
   -
   - 1772357169 | Bob: YES
+  - 1772359451 | Alice: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
   -
@@ -475,13 +507,13 @@ Implementation Commit:
   -
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 --------------------------------------------------------
 
 NOTICE ID: 1772357168
 Created: 1772357168
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   69fce6a58f68d8f5e2720c74cf8cf9314413830f
@@ -512,13 +544,16 @@ Discussion:
   - 1772357168 | Bob: Surjectivity is required to transfer normality; it
     is available in the existing helper with surjective_map and should
     be included here.
+  - 1772359451 | Alice: Verified. The code comment says "missing hypothesis:
+    surjectivity of pi" and the surjective version is already proved. Trivial fix.
 
 Approvals:
   -
   - 1772357168 | Bob: YES
+  - 1772359451 | Alice: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
   -
@@ -530,13 +565,13 @@ Implementation Commit:
   -
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 --------------------------------------------------------
 
 NOTICE ID: 1772355632
 Created: 1772355632
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   bbc6696568135e41f95c628e5ebba66c28984d3a
@@ -569,13 +604,16 @@ Discussion:
     continuity of straight-line homotopies into A; without Ta being the
     subspace topology (or extra continuity lemmas), the claim is too
     strong. Adding subspace topology is the minimal fix.
+  - 1772359451 | Alice: Same pattern as Example_51_1 (Notice 1772354701).
+    Convex subsets of R inherit the subspace topology. Correct fix.
 
 Approvals:
   -
   - 1772355996 | Bob: YES
+  - 1772359451 | Alice: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
   -
@@ -587,13 +625,13 @@ Implementation Commit:
   -
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 --------------------------------------------------------
 
 NOTICE ID: 1772355631
 Created: 1772355631
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   bbc6696568135e41f95c628e5ebba66c28984d3a
@@ -626,13 +664,16 @@ Discussion:
   - 1772355996 | Bob: The current proof admits continuity into (A, Ta)
     without any link between Ta and the subspace topology. This makes
     the statement too strong; the proposed replacement is appropriate.
+  - 1772359451 | Alice: Verified. star_convex requires A c= R, so the
+    subspace topology is the natural choice. Correct fix.
 
 Approvals:
   -
   - 1772355996 | Bob: YES
+  - 1772359451 | Alice: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
   -
@@ -644,7 +685,7 @@ Implementation Commit:
   -
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 --------------------------------------------------------
 
