@@ -9422,6 +9422,30 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Theorem path_between_endpoint_data : forall X x0 x1 p:set,
+  path_between X x0 x1 p ->
+  apply_fun p 0 = x0 /\ apply_fun p 1 = x1.
+let X x0 x1 p.
+assume Hp.
+apply andI.
+- exact (path_between_at_zero X x0 x1 p Hp).
+- exact (path_between_at_one X x0 x1 p Hp).
+Qed.
+
+(** Proven Bob **)
+Theorem path_between_data : forall X x0 x1 p:set,
+  path_between X x0 x1 p ->
+  function_on p unit_interval X /\ apply_fun p 0 = x0 /\ apply_fun p 1 = x1.
+let X x0 x1 p.
+assume Hp.
+apply andI.
+- apply andI.
+  + exact (path_between_function_on X x0 x1 p Hp).
+  + exact (path_between_at_zero X x0 x1 p Hp).
+- exact (path_between_at_one X x0 x1 p Hp).
+Qed.
+
+(** Proven Bob **)
 Theorem path_homotopic_has_square_witness : forall X Tx x0 x1 f f':set,
   path_homotopic X Tx x0 x1 f f' ->
   exists F:set,
