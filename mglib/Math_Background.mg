@@ -9712,6 +9712,25 @@ exact (Hfun t Ht).
 Qed.
 
 (** Proven Bob **)
+Theorem path_between_endpoints_eq : forall X x0 p:set,
+  path_between X x0 x0 p ->
+  apply_fun p 0 = apply_fun p 1.
+let X x0 p.
+assume Hp.
+claim H0 : apply_fun p 0 = x0.
+{
+  exact (path_between_at_zero X x0 x0 p Hp).
+}
+claim H1 : apply_fun p 1 = x0.
+{
+  exact (path_between_at_one X x0 x0 p Hp).
+}
+rewrite H0.
+rewrite H1.
+reflexivity.
+Qed.
+
+(** Proven Bob **)
 Theorem path_connected_space_has_path_between : forall X Tx x y:set,
   path_connected_space X Tx ->
   x :e X -> y :e X ->
