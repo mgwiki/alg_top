@@ -1,5 +1,5 @@
 (** Balance Alice 3927 **)
-(** Balance Bob 4676 **)
+(** Balance Bob 5439 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
 
@@ -115194,6 +115194,7 @@ exact (FalseE
 Qed.
 
 (** S54 helper: any covering map R->S1 forces a nontrivial fiber if S1 is compact. **)
+(** Proven Bob **)
 Theorem s54_two_distinct_lifts_if_S1_compact_of_covering :
   forall p:set,
     covering_map R R_standard_topology S1 S1_topology p ->
@@ -115368,13 +115369,13 @@ apply (xm (exists e0 e1:set,
     exact (R_standard_topology_not_compact
       HcompR).
   }
-  exact (FalseE
-    Hfalse
-    (exists e0 e1:set,
-      e0 :e R /\ e1 :e R /\
-      apply_fun p e1 = apply_fun p e0 /\
-      e1 <> e0)).
-Admitted.
+exact (FalseE
+  Hfalse
+  (exists e0 e1:set,
+    e0 :e R /\ e1 :e R /\
+    apply_fun p e1 = apply_fun p e0 /\
+    e1 <> e0)).
+Qed.
 
 Theorem s54_two_distinct_lifts_if_S1_compact :
   compact_space S1 S1_topology ->
@@ -245332,7 +245333,8 @@ Qed.
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
 (** then the restriction p0: E0 -> B is a covering map. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Bounty 182 **)
+(** Collected Bob 182 **)
+(** Proven Bob **)
 Theorem lemma80_1_path_component_covering :
   forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
@@ -245986,13 +245988,14 @@ exact (andI
     Hcontp0
     Hsurjp0)
   Hcoverp0).
-Admitted.
+Qed.
 
 (** from S80 Lem 80.2a (line 4962 in algtop.tex): if p and r covering, so is q **)
 (** LATEX VERSION: Let p = r o q with p: X -> Z, q: X -> Y, r: Y -> Z. **)
 (** (a) If p and r are covering maps, so is q. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 242 **)
+(** Collected Bob 242 **)
+(** Proven Bob **)
 Theorem lemma80_2a_covering_composition :
   forall X Tx Y Ty Z Tz q r:set,
   path_connected_space X Tx -> locally_path_connected X Tx ->
@@ -246880,12 +246883,13 @@ apply and3I.
         rewrite (apply_fun_graph V0 (fun s:set => apply_fun r s) (apply_fun q t) HqtV0).
         rewrite <- (compose_fun_apply X q r t HtX).
         reflexivity.
-Admitted.
+Qed.
 
 (** from S80 Lem 80.2b (line 4965 in algtop.tex): if p and q covering, so is r **)
 (** LATEX VERSION: (b) If p and q are covering maps, so is r. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 280 **)
-(** Bounty 339 **)
+(** Collected Bob 339 **)
+(** Proven Bob **)
 Theorem lemma80_2b_covering_composition :
   forall X Tx Y Ty Z Tz q r:set,
   path_connected_space X Tx -> locally_path_connected X Tx ->
@@ -248092,7 +248096,7 @@ apply and3I.
           HrHome
           HgraphFun
           Hagree).
-Admitted.
+Qed.
 
 (** from S80 Thm 80.3 (line 4983 in algtop.tex): universal covering covers everything **)
 (** LATEX VERSION: Let p: E -> B be covering with E simply connected. Given any **)
