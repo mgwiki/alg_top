@@ -56341,6 +56341,115 @@ apply set_ext.
     HxNotC).
 Qed.
 
+(** Infrastructure: intersection with setminus (right) **)
+(** Proven Bob **)
+Theorem binintersect_setminus_right_distrib : forall A B C:set,
+  (A :\: B) :/\: C = (A :/\: C) :\: B.
+let A B C.
+apply set_ext.
+- let x.
+  assume HxInt.
+  claim HxRest : x :e A :\: B.
+  {
+    exact (binintersectE1
+      (A :\: B)
+      C
+      x
+      HxInt).
+  }
+  claim HxC : x :e C.
+  {
+    exact (binintersectE2
+      (A :\: B)
+      C
+      x
+      HxInt).
+  }
+  claim HxA : x :e A.
+  {
+    exact (setminusE1
+      A
+      B
+      x
+      HxRest).
+  }
+  claim HxNotB : x /:e B.
+  {
+    exact (setminusE2
+      A
+      B
+      x
+      HxRest).
+  }
+  exact (setminusI
+    (A :/\: C)
+    B
+    x
+    (binintersectI
+      A
+      C
+      x
+      HxA
+      HxC)
+    HxNotB).
+- let x.
+  assume HxRest.
+  claim HxInt : x :e A :/\: C.
+  {
+    exact (setminusE1
+      (A :/\: C)
+      B
+      x
+      HxRest).
+  }
+  claim HxNotB : x /:e B.
+  {
+    exact (setminusE2
+      (A :/\: C)
+      B
+      x
+      HxRest).
+  }
+  claim HxA : x :e A.
+  {
+    exact (binintersectE1
+      A
+      C
+      x
+      HxInt).
+  }
+  claim HxC : x :e C.
+  {
+    exact (binintersectE2
+      A
+      C
+      x
+      HxInt).
+  }
+  exact (binintersectI
+    (A :\: B)
+    C
+    x
+    (setminusI
+      A
+      B
+      x
+      HxA
+      HxNotB)
+    HxC).
+Qed.
+
+(** Infrastructure: intersection with setminus (left) **)
+(** Proven Bob **)
+Theorem binintersect_setminus_left_distrib : forall A B C:set,
+  A :/\: (B :\: C) = (A :/\: B) :\: C.
+let A B C.
+rewrite (binintersect_com A (B :\: C)).
+rewrite (binintersect_setminus_right_distrib B C A).
+rewrite (binintersect_com B A).
+reflexivity.
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
