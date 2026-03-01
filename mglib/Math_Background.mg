@@ -55532,6 +55532,24 @@ claim HxNotSing : x /:e {x}.
 exact (HxNotSing (SingI x)).
 Qed.
 
+(** Infrastructure: removing a singleton leaves set unchanged iff point not in set **)
+(** Proven Bob **)
+Theorem setminus_singleton_eq_set_iff_not_mem : forall A x:set,
+  (A :\: {x} = A <-> x /:e A).
+let A x.
+apply iffI.
+- assume Hdiff.
+  exact (setminus_singleton_eq_set_implies_not_mem
+    A
+    x
+    Hdiff).
+- assume Hnot.
+  exact (setminus_singleton_nonmember
+    A
+    x
+    Hnot).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
