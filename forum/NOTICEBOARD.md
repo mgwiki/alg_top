@@ -82,6 +82,68 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772368914
+Created: 1772368914
+Status: PROPOSED
+
+Refers to Commit:
+  d9c88746ef7f5694e3d2ebeef21843674d6988fe
+
+Target:
+  Line: 278888
+  Name: tree_in_graph (Definition)
+
+Problem:
+  As defined, ArcsT is any GLG arc decomposition of T and need not be
+  related to the ambient Arcs. Then the lemma
+  tree_in_graph_arc_in_ambient_arcs (line 285618) is false: e.g. take X
+  an arc with Arcs = {X}, let T = X, and let ArcsT split X into two arcs
+  meeting at a point. T is a subgraph and GLG with ArcsT, but an element
+  of ArcsT is not in Arcs. This blocks proofs that use V :e ArcsT to apply
+  general_linear_graph_arc_intersection_case in X.
+
+Proposed Replacement:
+  Definition tree_in_graph : set -> set -> set -> set -> set -> prop :=
+    fun T ArcsT X Tx Arcs =>
+      subgraph_of T X Tx Arcs /\
+      ArcsT = {A :e Arcs | A c= T} /\
+      general_linear_graph T (subspace_topology X Tx T) ArcsT /\
+      connected_space T (subspace_topology X Tx T) /\
+      ~(exists n path_seq x0:set,
+          n :e omega /\ n <> 0 /\
+          reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0)).
+
+Proposed by: Bob
+
+Discussion:
+  - 1772368914 | Bob: This aligns the definition with the intended notion
+    “T is a subgraph with its edges inherited from X” and makes
+    tree_in_graph_arc_in_ambient_arcs provable. Without this constraint,
+    ArcsT may refine ambient arcs and the lemma fails.
+
+Approvals:
+  -
+  - 1772368914 | Bob: YES
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+--------------------------------------------------------
+
 NOTICE ID: 1772361663
 Created: 1772361663
 Status: PROPOSED

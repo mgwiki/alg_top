@@ -210895,7 +210895,33 @@ Theorem lemma68_9_least_normal_generated_by_conjugates :
   subgroups_generate N mult e inv
     (Sing conjugates)
     (graph (Sing conjugates) (fun q:set => conjugates)).
-admit.
+let G mult e inv S.
+assume Hgrp HSsub.
+set N := least_normal_subgroup G mult e inv S.
+set conjugates := Union (Repl G (fun c:set =>
+  Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c)))).
+set Gfam := graph (Sing conjugates) (fun q:set => conjugates).
+apply (andI
+  (group_structure N mult e inv)
+  ((forall alpha:set, alpha :e Sing conjugates ->
+      subgroup_of (apply_fun Gfam alpha) N mult e inv) /\
+   (forall x:set, x :e N ->
+      x = e \/
+      exists n:set, n :e omega /\ n <> 0 /\
+      exists xs:set, function_on xs n N /\
+        (forall i:set, i :e n ->
+          exists alpha:set, alpha :e Sing conjugates /\
+            apply_fun xs i :e apply_fun Gfam alpha) /\
+        x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n))).
+- (** TODO: group_structure of N should follow from least_normal_subgroup properties. **)
+  admit.
+- apply andI.
+  + let alpha. assume Hal : alpha :e Sing conjugates.
+    (** TODO: need subgroup_of conjugates in N; conjugates is not generally a subgroup. **)
+    admit.
+  + let x. assume Hx : x :e N.
+    (** TODO: generation of N by conjugates (normal closure); needs proper subgroup family formulation. **)
+    admit.
 Admitted.
 
 (** Helper: in a free product, mult(a,b) <> e when a in G1\{e} and b in G2\{e} **)
@@ -234003,6 +234029,524 @@ exact (Eps_i_ex
     S c= N /\
     (forall N':set, normal_subgroup N' G mult e inv -> S c= N' -> N c= N'))
   Hex).
+Qed.
+
+(** Helper: least_normal_subgroup is normal **)
+(** Proven Bob **)
+Lemma least_normal_subgroup_normal :
+  forall G mult e inv S:set,
+  group_structure G mult e inv ->
+  S c= G ->
+  normal_subgroup (least_normal_subgroup G mult e inv S) G mult e inv.
+let G mult e inv S.
+assume Hgrp HSsub.
+apply (and3E
+  (normal_subgroup (least_normal_subgroup G mult e inv S) G mult e inv)
+  (S c= (least_normal_subgroup G mult e inv S))
+  (forall N':set, normal_subgroup N' G mult e inv -> S c= N' ->
+    (least_normal_subgroup G mult e inv S) c= N')
+  (least_normal_subgroup_props G mult e inv S Hgrp HSsub)).
+assume Hnorm _ _.
+exact Hnorm.
+Qed.
+
+(** Helper: S is contained in least_normal_subgroup **)
+(** Proven Bob **)
+Lemma least_normal_subgroup_contains :
+  forall G mult e inv S:set,
+  group_structure G mult e inv ->
+  S c= G ->
+  S c= (least_normal_subgroup G mult e inv S).
+let G mult e inv S.
+assume Hgrp HSsub.
+apply (and3E
+  (normal_subgroup (least_normal_subgroup G mult e inv S) G mult e inv)
+  (S c= (least_normal_subgroup G mult e inv S))
+  (forall N':set, normal_subgroup N' G mult e inv -> S c= N' ->
+    (least_normal_subgroup G mult e inv S) c= N')
+  (least_normal_subgroup_props G mult e inv S Hgrp HSsub)).
+assume _ Hsub _.
+exact Hsub.
+Qed.
+
+(** Helper: least_normal_subgroup is minimal **)
+(** Proven Bob **)
+Lemma least_normal_subgroup_minimal :
+  forall G mult e inv S N':set,
+  group_structure G mult e inv ->
+  S c= G ->
+  normal_subgroup N' G mult e inv ->
+  S c= N' ->
+  (least_normal_subgroup G mult e inv S) c= N'.
+let G mult e inv S N'.
+assume Hgrp HSsub Hnorm HScN.
+apply (and3E
+  (normal_subgroup (least_normal_subgroup G mult e inv S) G mult e inv)
+  (S c= (least_normal_subgroup G mult e inv S))
+  (forall N'':set, normal_subgroup N'' G mult e inv -> S c= N'' ->
+    (least_normal_subgroup G mult e inv S) c= N'')
+  (least_normal_subgroup_props G mult e inv S Hgrp HSsub)).
+assume _ _ Hmin.
+exact (Hmin N' Hnorm HScN).
+Qed.
+
+(** Helper: conjugates of elements of S lie in least_normal_subgroup **)
+(** Proven Bob **)
+Lemma least_normal_subgroup_contains_conjugates :
+  forall G mult e inv S c t:set,
+  group_structure G mult e inv ->
+  S c= G ->
+  c :e G ->
+  t :e S ->
+  let N := least_normal_subgroup G mult e inv S in
+  apply_fun mult (apply_fun mult (c, t), apply_fun inv c) :e N.
+let G mult e inv S c t.
+assume Hgrp HSsub HcG HtS.
+set N := least_normal_subgroup G mult e inv S.
+claim HSsubN : S c= N.
+{
+  exact (least_normal_subgroup_contains G mult e inv S Hgrp HSsub).
+}
+claim HtN : t :e N.
+{
+  exact (HSsubN t HtS).
+}
+claim HnormN : normal_subgroup N G mult e inv.
+{
+  exact (least_normal_subgroup_normal G mult e inv S Hgrp HSsub).
+}
+exact (normal_subgroup_conj_closed N G mult e inv t c HnormN HtN HcG).
+Qed.
+
+(** Helper: the conjugates set is contained in least_normal_subgroup **)
+(** Proven Bob **)
+Lemma least_normal_subgroup_conjugates_subset :
+  forall G mult e inv S:set,
+  group_structure G mult e inv ->
+  S c= G ->
+  let N := least_normal_subgroup G mult e inv S in
+  let conjugates := Union (Repl G (fun c:set =>
+    Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c)))) in
+  conjugates c= N.
+let G mult e inv S.
+assume Hgrp HSsub.
+set N := least_normal_subgroup G mult e inv S.
+set conjugates := Union (Repl G (fun c:set =>
+  Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c)))).
+let x. assume Hx : x :e conjugates.
+apply (UnionE
+  (Repl G (fun c:set =>
+    Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c))))
+  x
+  Hx).
+let C.
+assume HCpack.
+claim HxC : x :e C.
+{
+  exact (andEL
+    (x :e C)
+    (C :e Repl G (fun c:set =>
+      Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c))))
+    HCpack).
+}
+claim HCIn : C :e Repl G (fun c:set =>
+  Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c))).
+{
+  exact (andER
+    (x :e C)
+    (C :e Repl G (fun c:set =>
+      Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c))))
+    HCpack).
+}
+apply (ReplE
+  G
+  (fun c:set =>
+    Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c)))
+  C
+  HCIn).
+let c.
+assume HcPack.
+claim HcG : c :e G.
+{
+  exact (andEL
+    (c :e G)
+    (C = Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c)))
+    HcPack).
+}
+claim HCeq : C = Repl S (fun t:set =>
+  apply_fun mult (apply_fun mult (c, t), apply_fun inv c)).
+{
+  exact (andER
+    (c :e G)
+    (C = Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c)))
+    HcPack).
+}
+claim HxC' : x :e Repl S (fun t:set =>
+  apply_fun mult (apply_fun mult (c, t), apply_fun inv c)).
+{
+  exact (eq_subst_mem_set
+    x
+    C
+    (Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c)))
+    HxC
+    HCeq).
+}
+apply (ReplE
+  S
+  (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c))
+  x
+  HxC').
+let t.
+assume HtPack.
+claim HtS : t :e S.
+{
+  exact (andEL
+    (t :e S)
+    (x = apply_fun mult (apply_fun mult (c, t), apply_fun inv c))
+    HtPack).
+}
+claim HxEq : x = apply_fun mult (apply_fun mult (c, t), apply_fun inv c).
+{
+  exact (andER
+    (t :e S)
+    (x = apply_fun mult (apply_fun mult (c, t), apply_fun inv c))
+    HtPack).
+}
+rewrite HxEq.
+exact (least_normal_subgroup_contains_conjugates
+  G mult e inv S c t Hgrp HSsub HcG HtS).
+Qed.
+
+(** Helper: S is contained in the conjugates set (via c = e) **)
+(** Proven Bob **)
+Lemma conjugates_contains_S :
+  forall G mult e inv S:set,
+  group_structure G mult e inv ->
+  S c= G ->
+  let conjugates := Union (Repl G (fun c:set =>
+    Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c)))) in
+  S c= conjugates.
+let G mult e inv S.
+assume Hgrp HSsub.
+set conjugates := Union (Repl G (fun c:set =>
+  Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c)))).
+apply (and6E
+  (function_on mult (setprod G G) G)
+  (function_on inv G G)
+  (e :e G)
+  (forall x y z:set, x :e G -> y :e G -> z :e G ->
+    apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+  (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+  (forall x:set, x :e G ->
+    apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+  Hgrp).
+assume HmultF HinvF HeG Hassoc Hid Hinv.
+let t. assume HtS : t :e S.
+claim HtG : t :e G. { exact (HSsub t HtS). }
+claim Hinv_e_G : apply_fun inv e :e G.
+{
+  exact (HinvF e HeG).
+}
+claim Hleft_id_inv_e :
+  apply_fun mult (e, apply_fun inv e) = apply_fun inv e.
+{
+  exact (andEL
+    (apply_fun mult (e, apply_fun inv e) = apply_fun inv e)
+    (apply_fun mult (apply_fun inv e, e) = apply_fun inv e)
+    (Hid (apply_fun inv e) Hinv_e_G)).
+}
+claim Hmult_e_inv_e :
+  apply_fun mult (e, apply_fun inv e) = e.
+{
+  exact (andEL
+    (apply_fun mult (e, apply_fun inv e) = e)
+    (apply_fun mult (apply_fun inv e, e) = e)
+    (Hinv e HeG)).
+}
+claim Hinv_e_eq : apply_fun inv e = e.
+{
+  exact (eq_i_tra
+    (apply_fun inv e)
+    (apply_fun mult (e, apply_fun inv e))
+    e
+    (eq_symm
+      (apply_fun mult (e, apply_fun inv e))
+      (apply_fun inv e)
+      Hleft_id_inv_e)
+    Hmult_e_inv_e).
+}
+claim Hmult_e_t : apply_fun mult (e, t) = t.
+{
+  exact (andEL
+    (apply_fun mult (e, t) = t)
+    (apply_fun mult (t, e) = t)
+    (Hid t HtG)).
+}
+claim Hmult_t_e : apply_fun mult (t, e) = t.
+{
+  exact (andER
+    (apply_fun mult (e, t) = t)
+    (apply_fun mult (t, e) = t)
+    (Hid t HtG)).
+}
+set C := Repl S (fun u:set =>
+  apply_fun mult (apply_fun mult (e, u), apply_fun inv e)).
+claim HCIn : C :e Repl G (fun c:set =>
+  Repl S (fun u:set => apply_fun mult (apply_fun mult (c, u), apply_fun inv c))).
+{
+  exact (ReplI
+    G
+    (fun c:set => Repl S (fun u:set => apply_fun mult (apply_fun mult (c, u), apply_fun inv c)))
+    e
+    HeG).
+}
+claim HftC :
+  apply_fun mult (apply_fun mult (e, t), apply_fun inv e) :e C.
+{
+  exact (ReplI
+    S
+    (fun u:set => apply_fun mult (apply_fun mult (e, u), apply_fun inv e))
+    t
+    HtS).
+}
+claim HftEq :
+  apply_fun mult (apply_fun mult (e, t), apply_fun inv e) = t.
+{
+  rewrite Hmult_e_t.
+  rewrite Hinv_e_eq.
+  exact Hmult_t_e.
+}
+claim HtC : t :e C.
+{
+  exact (eq_subst_mem
+    t
+    (apply_fun mult (apply_fun mult (e, t), apply_fun inv e))
+    C
+    (eq_symm
+      (apply_fun mult (apply_fun mult (e, t), apply_fun inv e))
+      t
+      HftEq)
+    HftC).
+}
+exact (UnionI
+  (Repl G (fun c:set =>
+    Repl S (fun u:set => apply_fun mult (apply_fun mult (c, u), apply_fun inv c))))
+  t
+  C
+  HtC
+  HCIn).
+Qed.
+
+(** Helper: normal subgroup containing S contains all conjugates of S **)
+(** Proven Bob **)
+Lemma normal_subgroup_contains_conjugates :
+  forall G mult e inv N S c t:set,
+  normal_subgroup N G mult e inv ->
+  S c= N ->
+  c :e G ->
+  t :e S ->
+  apply_fun mult (apply_fun mult (c, t), apply_fun inv c) :e N.
+let G mult e inv N S c t.
+assume Hnorm HSsub HcG HtS.
+claim HtN : t :e N.
+{
+  exact (HSsub t HtS).
+}
+exact (normal_subgroup_conj_closed N G mult e inv t c Hnorm HtN HcG).
+Qed.
+
+(** Helper: conjugates subset any normal subgroup containing S **)
+(** Proven Bob **)
+Lemma conjugates_subset_normal_subgroup :
+  forall G mult e inv N S:set,
+  normal_subgroup N G mult e inv ->
+  S c= N ->
+  let conjugates := Union (Repl G (fun c:set =>
+    Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c)))) in
+  conjugates c= N.
+let G mult e inv N S.
+assume Hnorm HSsub.
+set conjugates := Union (Repl G (fun c:set =>
+  Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c)))).
+let x. assume Hx : x :e conjugates.
+apply (UnionE
+  (Repl G (fun c:set =>
+    Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c))))
+  x
+  Hx).
+let C.
+assume HCpack.
+claim HxC : x :e C.
+{
+  exact (andEL
+    (x :e C)
+    (C :e Repl G (fun c:set =>
+      Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c))))
+    HCpack).
+}
+claim HCIn : C :e Repl G (fun c:set =>
+  Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c))).
+{
+  exact (andER
+    (x :e C)
+    (C :e Repl G (fun c:set =>
+      Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c))))
+    HCpack).
+}
+apply (ReplE
+  G
+  (fun c:set =>
+    Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c)))
+  C
+  HCIn).
+let c.
+assume HcPack.
+claim HcG : c :e G.
+{
+  exact (andEL
+    (c :e G)
+    (C = Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c)))
+    HcPack).
+}
+claim HCeq : C = Repl S (fun t:set =>
+  apply_fun mult (apply_fun mult (c, t), apply_fun inv c)).
+{
+  exact (andER
+    (c :e G)
+    (C = Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c)))
+    HcPack).
+}
+claim HxC' : x :e Repl S (fun t:set =>
+  apply_fun mult (apply_fun mult (c, t), apply_fun inv c)).
+{
+  exact (eq_subst_mem_set
+    x
+    C
+    (Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c)))
+    HxC
+    HCeq).
+}
+apply (ReplE
+  S
+  (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c))
+  x
+  HxC').
+let t.
+assume HtPack.
+claim HtS : t :e S.
+{
+  exact (andEL
+    (t :e S)
+    (x = apply_fun mult (apply_fun mult (c, t), apply_fun inv c))
+    HtPack).
+}
+claim HxEq : x = apply_fun mult (apply_fun mult (c, t), apply_fun inv c).
+{
+  exact (andER
+    (t :e S)
+    (x = apply_fun mult (apply_fun mult (c, t), apply_fun inv c))
+    HtPack).
+}
+rewrite HxEq.
+exact (normal_subgroup_contains_conjugates
+  G mult e inv N S c t Hnorm HSsub HcG HtS).
+Qed.
+
+(** Helper: a group is normal in itself **)
+(** Proven Bob **)
+Lemma normal_subgroup_refl :
+  forall G mult e inv:set,
+  group_structure G mult e inv ->
+  normal_subgroup G G mult e inv.
+let G mult e inv.
+assume Hgrp.
+prove subgroup_of G G mult e inv /\
+  (forall n g:set, n :e G -> g :e G ->
+    apply_fun mult (apply_fun mult (g, n), apply_fun inv g) :e G).
+apply andI.
+- exact (subgroup_of_refl G mult e inv Hgrp).
+- let n g. assume HnG HgG.
+  apply (and6E
+    (function_on mult (setprod G G) G)
+    (function_on inv G G)
+    (e :e G)
+    (forall x y z:set, x :e G -> y :e G -> z :e G ->
+      apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+    (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+    (forall x:set, x :e G ->
+      apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+    Hgrp).
+  assume HmultF HinvF HeG Hassoc Hid Hinv.
+  claim HgnG : apply_fun mult (g, n) :e G.
+  { exact (HmultF (g, n)
+      (tuple_2_setprod_by_pair_Sigma G G g n HgG HnG)). }
+  claim HinvG : apply_fun inv g :e G.
+  { exact (HinvF g HgG). }
+  exact (HmultF (apply_fun mult (g, n), apply_fun inv g)
+    (tuple_2_setprod_by_pair_Sigma G G
+      (apply_fun mult (g, n)) (apply_fun inv g) HgnG HinvG)).
+Qed.
+
+(** Helper: conjugates subset G when S c= G **)
+(** Proven Bob **)
+Lemma conjugates_subset_G :
+  forall G mult e inv S:set,
+  group_structure G mult e inv ->
+  S c= G ->
+  let conjugates := Union (Repl G (fun c:set =>
+    Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c)))) in
+  conjugates c= G.
+let G mult e inv S.
+assume Hgrp HSsub.
+set conjugates := Union (Repl G (fun c:set =>
+  Repl S (fun t:set => apply_fun mult (apply_fun mult (c, t), apply_fun inv c)))).
+exact (conjugates_subset_normal_subgroup
+  G
+  mult
+  e
+  inv
+  G
+  S
+  (normal_subgroup_refl G mult e inv Hgrp)
+  HSsub).
+Qed.
+
+
+(** Helper: least_normal_subgroup is a subgroup **)
+(** Proven Bob **)
+Lemma least_normal_subgroup_subgroup :
+  forall G mult e inv S:set,
+  group_structure G mult e inv ->
+  S c= G ->
+  subgroup_of (least_normal_subgroup G mult e inv S) G mult e inv.
+let G mult e inv S.
+assume Hgrp HSsub.
+exact (normal_subgroup_subgroup
+  (least_normal_subgroup G mult e inv S)
+  G
+  mult
+  e
+  inv
+  (least_normal_subgroup_normal G mult e inv S Hgrp HSsub)).
+Qed.
+
+(** Helper: least_normal_subgroup inherits group_structure **)
+(** Proven Bob **)
+Lemma least_normal_subgroup_group_structure :
+  forall G mult e inv S:set,
+  group_structure G mult e inv ->
+  S c= G ->
+  group_structure (least_normal_subgroup G mult e inv S) mult e inv.
+let G mult e inv S.
+assume Hgrp HSsub.
+exact (local_subgroup_group_structure
+  G
+  mult
+  e
+  inv
+  (least_normal_subgroup G mult e inv S)
+  Hgrp
+  (least_normal_subgroup_subgroup G mult e inv S Hgrp HSsub)).
 Qed.
 
 (** from S75 Cor 75.2 (line 4083 in algtop.tex): for free groups **)
