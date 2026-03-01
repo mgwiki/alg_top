@@ -1,5 +1,5 @@
 (** Balance Alice 3927 **)
-(** Balance Bob 3617 **)
+(** Balance Bob 3507 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
 
@@ -26947,8 +26947,7 @@ Qed.
 (** from S52 Ex 1 (line 365 in algtop.tex): pi1(Rn, x0) is trivial **)
 (** LATEX VERSION: pi1(Rn, x0) is the trivial group. More generally, if X is any convex subset of Rn, then pi1(X, x0) is trivial. **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Bob 55 **)
-(** Proven Bob **)
+(** Bounty 55 **)
 Theorem Example_52_1_convex_trivial_pi1 : forall A Ta x0:set,
   A c= R -> convex_in R A ->
   topology_on A Ta -> x0 :e A ->
@@ -45162,39 +45161,58 @@ claim HUopen : U :e Tb.
 {
   exact (andEL
     (U :e Tb)
-    (b :e U /\ evenly_covered E Te B Tb p U)
-    HUpack).
+    (b :e U)
+    (andEL
+      (U :e Tb /\ b :e U)
+      (evenly_covered E Te B Tb p U)
+      HUpack)).
 }
 claim HbU : b :e U.
 {
-  exact (andEL
+  exact (andER
+    (U :e Tb)
     (b :e U)
-    (evenly_covered E Te B Tb p U)
-    (andER
-      (U :e Tb)
-      (b :e U /\ evenly_covered E Te B Tb p U)
+    (andEL
+      (U :e Tb /\ b :e U)
+      (evenly_covered E Te B Tb p U)
       HUpack)).
 }
 claim HevenU : evenly_covered E Te B Tb p U.
 {
   exact (andER
-    (b :e U)
+    (U :e Tb /\ b :e U)
     (evenly_covered E Te B Tb p U)
-    (andER
-      (U :e Tb)
-      (b :e U /\ evenly_covered E Te B Tb p U)
-      HUpack)).
+    HUpack).
 }
 apply (evenly_covered_slices E Te B Tb p U HevenU).
 let slices.
 assume Hslices.
+apply (and4E
+  (slices c= Te)
+  (pairwise_disjoint slices)
+  (Union slices = preimage_of E p U)
+  (forall V:set, V :e slices ->
+    homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+      (graph V (fun x:set => apply_fun p x)))
+  Hslices).
+assume Hsub Hpd Hunion Hhome.
 witness U.
 witness slices.
-apply andI.
+apply (and6I
+  (U :e Tb)
+  (b :e U)
+  (slices c= Te)
+  (pairwise_disjoint slices)
+  (Union slices = preimage_of E p U)
+  (forall V:set, V :e slices ->
+    homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+      (graph V (fun x:set => apply_fun p x)))).
 - exact HUopen.
-- apply andI.
-  + exact HbU.
-  + exact Hslices.
+- exact HbU.
+- exact Hsub.
+- exact Hpd.
+- exact Hunion.
+- exact Hhome.
 Qed.
 
 (** Proven Bob **)
@@ -45406,8 +45424,7 @@ Qed.
 (** LATEX VERSION: If U is evenly covered by p and W is an open subset of U, **)
 (** then W is also evenly covered by p. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Bob 55 **)
-(** Proven Bob **)
+(** Bounty 55 **)
 Theorem evenly_covered_open_subset : forall E Te B Tb p U W:set,
   evenly_covered E Te B Tb p U -> W :e Tb -> W c= U ->
   evenly_covered E Te B Tb p W.
