@@ -9006,6 +9006,20 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Theorem continuous_map_value_in_space : forall X Tx Y Ty f x:set,
+  continuous_map X Tx Y Ty f ->
+  x :e X ->
+  apply_fun f x :e Y.
+let X Tx Y Ty f x.
+assume Hcont Hx.
+claim Hfun : function_on f X Y.
+{
+  exact (continuous_map_function_on X Tx Y Ty f Hcont).
+}
+exact (Hfun x Hx).
+Qed.
+
+(** Proven Bob **)
 Theorem homotopic_maps_left_value_in_space : forall X Tx Y Ty f f' x:set,
   homotopic_maps X Tx Y Ty f f' ->
   x :e X ->
