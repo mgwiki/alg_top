@@ -8988,6 +8988,40 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Theorem homotopic_maps_left_value_in_space : forall X Tx Y Ty f f' x:set,
+  homotopic_maps X Tx Y Ty f f' ->
+  x :e X ->
+  apply_fun f x :e Y.
+let X Tx Y Ty f f' x.
+assume Hhom Hx.
+claim Hfun : function_on f X Y /\ function_on f' X Y.
+{
+  exact (homotopic_maps_function_on_data X Tx Y Ty f f' Hhom).
+}
+exact ((andEL
+  (function_on f X Y)
+  (function_on f' X Y)
+  Hfun) x Hx).
+Qed.
+
+(** Proven Bob **)
+Theorem homotopic_maps_right_value_in_space : forall X Tx Y Ty f f' x:set,
+  homotopic_maps X Tx Y Ty f f' ->
+  x :e X ->
+  apply_fun f' x :e Y.
+let X Tx Y Ty f f' x.
+assume Hhom Hx.
+claim Hfun : function_on f X Y /\ function_on f' X Y.
+{
+  exact (homotopic_maps_function_on_data X Tx Y Ty f f' Hhom).
+}
+exact ((andER
+  (function_on f X Y)
+  (function_on f' X Y)
+  Hfun) x Hx).
+Qed.
+
+(** Proven Bob **)
 Theorem homotopic_maps_has_witness : forall X Tx Y Ty f f':set,
   homotopic_maps X Tx Y Ty f f' ->
   exists F:set,
