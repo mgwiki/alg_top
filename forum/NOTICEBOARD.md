@@ -856,6 +856,10 @@ Discussion:
     preimage is Empty. Adding U <> Empty matches the intended
     “evenly covered connected open set” usage and fixes the empty-slice
     case in the proof.
+  - 1772362209 | Codex: Alternative fix would be to strengthen the
+    partition/slice-family convention to require nonempty families, but
+    that would be a broader library change; U <> Empty is the minimal
+    local patch.
 
 Approvals:
   -
