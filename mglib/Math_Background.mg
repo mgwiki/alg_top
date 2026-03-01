@@ -55787,6 +55787,58 @@ rewrite (binintersect_com A (A :\: B)).
 exact (setminus_intersect_left_eq A B).
 Qed.
 
+(** Infrastructure: setminus plus intersection recovers the set **)
+(** Proven Bob **)
+Theorem binunion_setminus_binintersect_eq : forall A B:set,
+  (A :\: B) :\/: (A :/\: B) = A.
+let A B.
+apply set_ext.
+- let x.
+  assume HxUnion.
+  apply (binunionE
+    (A :\: B)
+    (A :/\: B)
+    x
+    HxUnion).
+  + assume HxRest.
+    exact (setminusE1
+      A
+      B
+      x
+      HxRest).
+  + assume HxInt.
+    exact (binintersectE1
+      A
+      B
+      x
+      HxInt).
+- let x.
+  assume HxA.
+  apply xm (x :e B).
+  + assume HxB.
+    exact (binunionI2
+      (A :\: B)
+      (A :/\: B)
+      x
+      (binintersectI
+        A
+        B
+        x
+        HxA
+        HxB)).
+  + assume HxNotB.
+    exact (binunionI1
+      (A :\: B)
+      (A :/\: B)
+      x
+      (setminusI
+        A
+        B
+        x
+        HxA
+        HxNotB)).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
