@@ -55247,6 +55247,41 @@ apply iffI.
   + exact (Subq_Empty (A :\: {x})).
 Qed.
 
+(** Infrastructure: the rest is disjoint from the singleton **)
+(** Proven Bob **)
+Theorem setminus_singleton_intersect_singleton_empty : forall A x:set,
+  (A :\: {x}) :/\: {x} = Empty.
+let A x.
+apply Empty_eq.
+let y.
+assume HyInt.
+claim HyRest : y :e A :\: {x}.
+{
+  exact (binintersectE1
+    (A :\: {x})
+    {x}
+    y
+    HyInt).
+}
+claim HySing : y :e {x}.
+{
+  exact (binintersectE2
+    (A :\: {x})
+    {x}
+    y
+    HyInt).
+}
+claim HyNotSing : y /:e {x}.
+{
+  exact (setminusE2
+    A
+    {x}
+    y
+    HyRest).
+}
+exact (HyNotSing HySing).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
