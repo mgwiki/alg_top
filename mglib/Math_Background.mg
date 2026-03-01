@@ -55839,6 +55839,15 @@ apply set_ext.
         HxNotB)).
 Qed.
 
+(** Infrastructure: intersecting with a setminus is empty **)
+(** Proven Bob **)
+Theorem binintersect_setminus_removed_empty : forall A B:set,
+  A :/\: (B :\: A) = Empty.
+let A B.
+rewrite (binintersect_com A (B :\: A)).
+exact (setminus_intersect_removed_empty B A).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
