@@ -55569,6 +55569,25 @@ claim HxNotSing : x /:e {x}.
 exact (HxNotSing (SingI x)).
 Qed.
 
+(** Infrastructure: removing a singleton removes the point itself **)
+(** Proven Bob **)
+Theorem setminus_singleton_not_mem : forall A x:set,
+  x :e A ->
+  x /:e A :\: {x}.
+let A x.
+assume HxA.
+assume HxRest.
+claim HxNotSing : x /:e {x}.
+{
+  exact (setminusE2
+    A
+    {x}
+    x
+    HxRest).
+}
+exact (HxNotSing (SingI x)).
+Qed.
+
 (** Infrastructure: removing a singleton leaves set unchanged iff point not in set **)
 (** Proven Bob **)
 Theorem setminus_singleton_eq_set_iff_not_mem : forall A x:set,
