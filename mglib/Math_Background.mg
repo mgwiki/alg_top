@@ -57057,6 +57057,45 @@ rewrite (binunion_comm (A :/\: B) A).
 exact (binunion_absorb_left A B).
 Qed.
 
+(** Infrastructure: union with a superset (right) **)
+(** Proven Bob **)
+Theorem binunion_sub_eq_right : forall A B:set,
+  A c= B ->
+  A :\/: B = B.
+let A B.
+assume Hsub.
+apply set_ext.
+- let x.
+  assume HxUnion.
+  apply (binunionE
+    A
+    B
+    x
+    HxUnion).
+  + assume HxA.
+    exact (Hsub x HxA).
+  + assume HxB.
+    exact HxB.
+- let x.
+  assume HxB.
+  exact (binunionI2
+    A
+    B
+    x
+    HxB).
+Qed.
+
+(** Infrastructure: union with a superset (left) **)
+(** Proven Bob **)
+Theorem binunion_sub_eq_left : forall A B:set,
+  A c= B ->
+  B :\/: A = B.
+let A B.
+assume Hsub.
+rewrite (binunion_comm B A).
+exact (binunion_sub_eq_right A B Hsub).
+Qed.
+
 (** Infrastructure: binintersect absorbs binunion (right) **)
 (** Proven Bob **)
 Theorem binintersect_absorb_right : forall A B:set,
