@@ -296290,6 +296290,7 @@ claim HsimpCore :
 exact HsimpCore.
 Admitted.
 
+(** Proven Bob **)
 Theorem thm84_4_forward_vertices_from_component_obligation :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -296326,8 +296327,9 @@ apply (xm (x :e T)).
       HxVert
       HxNotT)
     (x :e T)).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_forward_vertices_from_component_obligation_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -296353,7 +296355,7 @@ exact (thm84_4_forward_vertices_from_component_obligation
   Arcs
   Hmax
   HfwdOb).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem thm84_4_backward_maximality_from_component_obligation :
@@ -296582,6 +296584,7 @@ exact (thm84_4_backward_selected_arc_endpoints_in_target_from_rhs
   Hend).
 Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_obligations :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -296663,8 +296666,9 @@ apply iffI.
     HVT
     (HgwdOb
       Hrhs)).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_obligations :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -296705,8 +296709,9 @@ exact (iffEL
     HfwdOb
     HgwdOb)
   Hmax).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_obligations :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -296747,8 +296752,9 @@ exact (iffER
     HfwdOb
     HgwdOb)
   Hrhs).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_obligations_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -296785,8 +296791,9 @@ exact (thm84_4_maximal_tree_all_vertices_from_obligations
   Hconn
   HfwdOb
   HgwdOb).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_obligations_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -296824,8 +296831,9 @@ exact (thm84_4_maximal_tree_implies_vertices_from_obligations
   HfwdOb
   HgwdOb
   Hmax).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_obligations_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -296863,7 +296871,7 @@ exact (thm84_4_vertices_implies_maximal_tree_from_obligations
   HfwdOb
   HgwdOb
   Hrhs).
-Admitted.
+Qed.
 
 (** helper: package immediate structural consequences for a noncontained edge at a maximal tree **)
 (** Proven Bob **)
