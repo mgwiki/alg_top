@@ -54816,6 +54816,23 @@ apply set_ext.
       HWFam).
 Qed.
 
+(** Infrastructure: union equals union of rest with the member **)
+(** Proven Bob **)
+Theorem union_rest_union_member : forall Fam V:set,
+  V :e Fam ->
+  Union (Fam :\: {V}) :\/: V = Union Fam.
+let Fam V.
+assume HVFam.
+rewrite (binunion_comm (Union (Fam :\: {V})) V).
+exact (eq_symm
+  (Union Fam)
+  (V :\/: Union (Fam :\: {V}))
+  (union_member_union_rest
+    Fam
+    V
+    HVFam)).
+Qed.
+
 (** Infrastructure: a member equals its intersection with the union **)
 (** Proven Bob **)
 Theorem union_member_intersect_eq : forall Fam V:set,
