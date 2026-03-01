@@ -45147,6 +45147,61 @@ exact (andER
 Qed.
 
 (** Proven Bob **)
+Theorem covering_map_evenly_covered_slices : forall E Te B Tb p b:set,
+  covering_map E Te B Tb p -> b :e B ->
+  exists U slices:set,
+    U :e Tb /\ b :e U /\
+    slices c= Te /\
+    pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun x:set => apply_fun p x))).
+let E Te B Tb p b.
+assume Hcov Hb.
+apply (covering_map_evenly_covered E Te B Tb p b Hcov Hb).
+let U.
+assume HUpack.
+claim HUopen : U :e Tb.
+{
+  exact (andEL
+    (U :e Tb)
+    (b :e U /\ evenly_covered E Te B Tb p U)
+    HUpack).
+}
+claim HbU : b :e U.
+{
+  exact (andEL
+    (b :e U)
+    (evenly_covered E Te B Tb p U)
+    (andER
+      (U :e Tb)
+      (b :e U /\ evenly_covered E Te B Tb p U)
+      HUpack)).
+}
+claim HevenU : evenly_covered E Te B Tb p U.
+{
+  exact (andER
+    (b :e U)
+    (evenly_covered E Te B Tb p U)
+    (andER
+      (U :e Tb)
+      (b :e U /\ evenly_covered E Te B Tb p U)
+      HUpack)).
+}
+apply (evenly_covered_slices E Te B Tb p U HevenU).
+let slices.
+assume Hslices.
+witness U.
+witness slices.
+apply andI.
+- exact HUopen.
+- apply andI.
+  + exact HbU.
+  + exact Hslices.
+Qed.
+
+(** Proven Bob **)
 Theorem covering_map_function_on : forall E Te B Tb p:set,
   covering_map E Te B Tb p -> function_on p E B.
 let E Te B Tb p.
