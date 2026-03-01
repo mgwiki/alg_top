@@ -55976,6 +55976,16 @@ rewrite (Union_singleton_eq V).
 reflexivity.
 Qed.
 
+(** Infrastructure: union with {Empty} does not change the union **)
+(** Proven Bob **)
+Theorem union_binunion_singleton_empty_eq : forall Fam:set,
+  Union (Fam :\/: {Empty}) = Union Fam.
+let Fam.
+rewrite (union_binunion_singleton_eq Fam Empty).
+rewrite (binunion_idr (Union Fam)).
+reflexivity.
+Qed.
+
 (** Infrastructure: binunion with a singleton already in the set **)
 (** Proven Bob **)
 Theorem binunion_singleton_eq_of_mem : forall A x:set,
