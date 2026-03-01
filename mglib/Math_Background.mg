@@ -54959,6 +54959,72 @@ apply set_ext.
     HyNotSing).
 Qed.
 
+(** Infrastructure: a set splits into a member and the rest **)
+(** Proven Bob **)
+Theorem setminus_singleton_member_decompose : forall A x:set,
+  x :e A ->
+  A = (A :\: {x}) :\/: {x}.
+let A x.
+assume HxA.
+apply set_ext.
+- let y.
+  assume HyA.
+  apply xm (y = x).
+  + assume Hyx.
+    rewrite Hyx.
+    exact (binunionI2
+      (A :\: {x})
+      {x}
+      x
+      (SingI x)).
+  + assume Hyneq.
+    claim HyNotSing : y /:e {x}.
+    {
+      assume HySing.
+      claim Hyx : y = x.
+      {
+        exact (SingE
+          x
+          y
+          HySing).
+      }
+      exact (Hyneq Hyx).
+    }
+    exact (binunionI1
+      (A :\: {x})
+      {x}
+      y
+      (setminusI
+        A
+        {x}
+        y
+        HyA
+        HyNotSing)).
+- let y.
+  assume HyUnion.
+  apply (binunionE
+    (A :\: {x})
+    {x}
+    y
+    HyUnion).
+  + assume HyRest.
+    exact (setminusE1
+      A
+      {x}
+      y
+      HyRest).
+  + assume HySing.
+    claim Hyx : y = x.
+    {
+      exact (SingE
+        x
+        y
+        HySing).
+    }
+    rewrite Hyx.
+    exact HxA.
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
