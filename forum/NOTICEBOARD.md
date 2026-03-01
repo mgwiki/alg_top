@@ -134,9 +134,10 @@ Discussion:
 Approvals:
   -
   - 1772355400 | Bob: YES
+  - 1772355552 | Alice: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
   -
@@ -148,7 +149,7 @@ Implementation Commit:
   -
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 --------------------------------------------------------
 
@@ -223,9 +224,10 @@ Discussion:
 Approvals:
   -
   - 1772355400 | Bob: YES
+  - 1772355552 | Alice: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
   -
@@ -237,13 +239,13 @@ Implementation Commit:
   -
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 --------------------------------------------------------
 
 NOTICE ID: 1772354701
 Created: 1772354701
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   0ad245d740a54d220c403d8aa09934a0b67e41d9
@@ -279,9 +281,10 @@ Discussion:
 Approvals:
   -
   - 1772355400 | Bob: YES
+  - 1772355552 | Alice: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
   -
@@ -293,13 +296,13 @@ Implementation Commit:
   -
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 --------------------------------------------------------
 
 NOTICE ID: 1772354702
 Created: 1772354702
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   0ad245d740a54d220c403d8aa09934a0b67e41d9
@@ -360,9 +363,10 @@ Discussion:
 Approvals:
   -
   - 1772355400 | Bob: YES
+  - 1772355552 | Alice: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
   -
@@ -374,13 +378,13 @@ Implementation Commit:
   -
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 --------------------------------------------------------
 
 NOTICE ID: 1772354703
 Created: 1772354703
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   0ad245d740a54d220c403d8aa09934a0b67e41d9
@@ -437,9 +441,10 @@ Discussion:
 Approvals:
   -
   - 1772355400 | Bob: YES
+  - 1772355552 | Alice: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
   -
@@ -451,7 +456,7 @@ Implementation Commit:
   -
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 ========================================================
 
