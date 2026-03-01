@@ -54942,6 +54942,17 @@ apply set_ext.
     HyNotSing).
 Qed.
 
+(** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
+(** Proven Bob **)
+Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
+  V /:e Fam ->
+  Union (Fam :\: {V}) = Union Fam.
+let Fam V.
+assume Hnot.
+rewrite (setminus_singleton_nonmember Fam V Hnot).
+reflexivity.
+Qed.
+
 (** Infrastructure: a family splits into its member and the rest **)
 (** Proven Bob **)
 Theorem family_decompose_member_union_rest : forall Fam V:set,
