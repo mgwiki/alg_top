@@ -114508,6 +114508,7 @@ exact (andI
   HscWit).
 Qed.
 
+(** Proven Bob **)
 Theorem s54_pi1_nontrivial_from_two_fiber_points : forall E Te B Tb p e0 e1:set,
   covering_map E Te B Tb p ->
   simply_connected E Te ->
@@ -114685,7 +114686,7 @@ apply (xm
   exact (FalseE
     Hfalse
     (exists cls:set, cls :e G /\ cls <> idG)).
-Admitted. (** depends on admitted thm54_4_lifting_correspondence_bijective **)
+Qed.
 
  (** Proven Bob **)
 Theorem s54_pi1_S1_nontrivial_from_two_lifts : forall e0 e1:set,
