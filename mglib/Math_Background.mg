@@ -9663,6 +9663,41 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Theorem path_homotopic_function_on_data : forall X Tx x0 x1 f f':set,
+  path_homotopic X Tx x0 x1 f f' ->
+  function_on f unit_interval X /\ function_on f' unit_interval X.
+let X Tx x0 x1 f f'.
+assume Hhom.
+claim Hcont :
+  continuous_map unit_interval unit_interval_topology X Tx f /\
+  continuous_map unit_interval unit_interval_topology X Tx f'.
+{
+  exact (path_homotopic_continuity_data X Tx x0 x1 f f' Hhom).
+}
+apply andI.
+- exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    f
+    (andEL
+      (continuous_map unit_interval unit_interval_topology X Tx f)
+      (continuous_map unit_interval unit_interval_topology X Tx f')
+      Hcont)).
+- exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    f'
+    (andER
+      (continuous_map unit_interval unit_interval_topology X Tx f)
+      (continuous_map unit_interval unit_interval_topology X Tx f')
+      Hcont)).
+Qed.
+
+(** Proven Bob **)
 Theorem path_homotopic_has_square_witness : forall X Tx x0 x1 f f':set,
   path_homotopic X Tx x0 x1 f f' ->
   exists F:set,
