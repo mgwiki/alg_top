@@ -714,11 +714,28 @@ Implementation Commit:
 Status:
   SENT TO ADMIN
 
---------------------------------------------------------
+========================================================
+
+
+========================================================
+RESOLVED NOTICES
+========================================================
+
+Rules:
+- Contains ONLY notices with Status:
+  IMPLEMENTED
+  REJECTED
+- Ordered newest first (largest NOTICE ID first).
+- Move entry here immediately after Status becomes
+  IMPLEMENTED or REJECTED.
+- Entries are never deleted.
+- Past content may not be edited.
+
+[place newly resolved notices here below this line]
 
 NOTICE ID: 1772354703
 Created: 1772354703
-Status: SENT TO ADMIN
+Status: IMPLEMENTED
 
 Refers to Commit:
   0ad245d740a54d220c403d8aa09934a0b67e41d9
@@ -789,32 +806,15 @@ Admin Decision:
 
   - 1772373600 | APPROVED
 Implemented by:
-  -
+  Bob
 
 Implementation Commit:
-  -
+  51f85c25b
 
 Status:
-  SENT TO ADMIN
-
-========================================================
-
-
-========================================================
-RESOLVED NOTICES
-========================================================
-
-Rules:
-- Contains ONLY notices with Status:
   IMPLEMENTED
-  REJECTED
-- Ordered newest first (largest NOTICE ID first).
-- Move entry here immediately after Status becomes
-  IMPLEMENTED or REJECTED.
-- Entries are never deleted.
-- Past content may not be edited.
 
-[place newly resolved notices here below this line]
+--------------------------------------------------------
 
 NOTICE ID: 1772358892
 Created: 1772358892
