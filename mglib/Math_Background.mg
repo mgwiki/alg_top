@@ -9367,6 +9367,38 @@ exact (andER
 Qed.
 
 (** Proven Bob **)
+Theorem path_homotopic_endpoint_data : forall X Tx x0 x1 f f':set,
+  path_homotopic X Tx x0 x1 f f' ->
+  apply_fun f 0 = x0 /\ apply_fun f 1 = x1 /\
+  apply_fun f' 0 = x0 /\ apply_fun f' 1 = x1.
+let X Tx x0 x1 f f'.
+assume Hhom.
+claim Hf0 : apply_fun f 0 = x0.
+{
+  exact (path_homotopic_left_start X Tx x0 x1 f f' Hhom).
+}
+claim Hf1 : apply_fun f 1 = x1.
+{
+  exact (path_homotopic_left_end X Tx x0 x1 f f' Hhom).
+}
+claim Hf'0 : apply_fun f' 0 = x0.
+{
+  exact (path_homotopic_right_start X Tx x0 x1 f f' Hhom).
+}
+claim Hf'1 : apply_fun f' 1 = x1.
+{
+  exact (path_homotopic_right_end X Tx x0 x1 f f' Hhom).
+}
+apply andI.
+- apply andI.
+  + apply andI.
+    * exact Hf0.
+    * exact Hf1.
+  + exact Hf'0.
+- exact Hf'1.
+Qed.
+
+(** Proven Bob **)
 Theorem path_homotopic_has_square_witness : forall X Tx x0 x1 f f':set,
   path_homotopic X Tx x0 x1 f f' ->
   exists F:set,
