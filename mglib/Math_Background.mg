@@ -128145,6 +128145,34 @@ exact (andEL
   Hout).
 Qed.
 
+(** Proven Bob **)
+Lemma points_directly_inward_Rn_scale : forall n v x:set,
+  points_directly_inward_Rn n v x ->
+  exists a:set, a :e R /\ Rlt 0 a /\
+    apply_fun v x = Rn_scalar_mult (ordsucc n) (minus_SNo a) x.
+let n v x.
+assume Hin.
+exact (andER
+  (x :e Sn n)
+  (exists a:set, a :e R /\ Rlt 0 a /\
+    apply_fun v x = Rn_scalar_mult (ordsucc n) (minus_SNo a) x)
+  Hin).
+Qed.
+
+(** Proven Bob **)
+Lemma points_directly_outward_Rn_scale : forall n v x:set,
+  points_directly_outward_Rn n v x ->
+  exists a:set, a :e R /\ Rlt 0 a /\
+    apply_fun v x = Rn_scalar_mult (ordsucc n) a x.
+let n v x.
+assume Hout.
+exact (andER
+  (x :e Sn n)
+  (exists a:set, a :e R /\ Rlt 0 a /\
+    apply_fun v x = Rn_scalar_mult (ordsucc n) a x)
+  Hout).
+Qed.
+
 (** from S55 Exercise 4(a) (line 1046 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, the identity map i: S^n -> S^n is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
