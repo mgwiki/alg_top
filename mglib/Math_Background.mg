@@ -55360,6 +55360,43 @@ claim HxA : x :e A.
 exact (HxNotA HxA).
 Qed.
 
+(** Infrastructure: singleton intersection empty iff point not in the set **)
+(** Proven Bob **)
+Theorem binintersect_singleton_empty_iff_not_mem : forall A x:set,
+  (A :/\: {x} = Empty <-> x /:e A).
+let A x.
+apply iffI.
+- assume HcapE.
+  assume HxA.
+  claim HxInt : x :e A :/\: {x}.
+  {
+    exact (binintersectI
+      A
+      {x}
+      x
+      HxA
+      (SingI x)).
+  }
+  claim HxE : x :e Empty.
+  {
+    exact (mem_eqR
+      x
+      (A :/\: {x})
+      Empty
+      HcapE
+      HxInt).
+  }
+  exact (EmptyE
+    x
+    HxE
+    False).
+- assume HxNotA.
+  exact (binintersect_singleton_eq_empty_of_not_mem
+    A
+    x
+    HxNotA).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
