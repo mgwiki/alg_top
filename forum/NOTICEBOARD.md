@@ -115,9 +115,14 @@ Discussion:
   - 1772355632 | Bob: The convex straight-line contraction is
     continuous into R and hence into A with the subspace topology.
     Arbitrary Ta makes continuity unavailable.
+  - 1772355996 | Bob: I checked the statement and the proof relies on
+    continuity of straight-line homotopies into A; without Ta being the
+    subspace topology (or extra continuity lemmas), the claim is too
+    strong. Adding subspace topology is the minimal fix.
 
 Approvals:
   -
+  - 1772355996 | Bob: YES
 
 Result:
   PROPOSED
@@ -168,9 +173,13 @@ Proposed by: Bob
 Discussion:
   - 1772355631 | Bob: The segment is continuous into R and thus into A
     with the subspace topology. Arbitrary Ta makes this unprovable.
+  - 1772355996 | Bob: The current proof admits continuity into (A, Ta)
+    without any link between Ta and the subspace topology. This makes
+    the statement too strong; the proposed replacement is appropriate.
 
 Approvals:
   -
+  - 1772355996 | Bob: YES
 
 Result:
   PROPOSED
