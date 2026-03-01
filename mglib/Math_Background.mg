@@ -1,4 +1,4 @@
-(** Balance Alice 3936 **)
+(** Balance Alice 3927 **)
 (** Balance Bob 3562 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
@@ -289483,7 +289483,8 @@ Qed.
 (** LATEX VERSION: If T is a finite tree with more than one edge, then T = T0 union A **)
 (** where T0 is a tree and A intersects T0 in a single vertex. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 88 **)
+(** Bounty 97 **)
+(** Lock Alice 1772416030 **)
 Theorem lemma84_2_tree_decomposition :
   forall T ArcsT X Tx Arcs:set,
   tree_in_graph T ArcsT X Tx Arcs ->
