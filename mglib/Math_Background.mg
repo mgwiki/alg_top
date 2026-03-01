@@ -24915,6 +24915,20 @@ exact (continuous_map_function_on
   Hcont).
 Qed.
 
+(** Proven Bob **)
+Theorem loop_space_value_in_space : forall X Tx x0 f t:set,
+  f :e loop_space X Tx x0 ->
+  t :e unit_interval ->
+  apply_fun f t :e X.
+let X Tx x0 f t.
+assume Hf Ht.
+claim Hfun : function_on f unit_interval X.
+{
+  exact (loop_space_function_on X Tx x0 f Hf).
+}
+exact (Hfun t Ht).
+Qed.
+
 (** helper: the path homotopy equivalence class of a loop **)
 Definition path_homotopy_class_loop : set -> set -> set -> set -> set :=
   fun X Tx x0 f =>
@@ -24944,6 +24958,19 @@ exact (SepE2
   (fun h:set => path_homotopic X Tx x0 x0 f h)
   g
   Hg).
+Qed.
+
+(** Proven Bob **)
+Theorem path_homotopy_class_loop_in_function_space : forall X Tx x0 f g:set,
+  g :e path_homotopy_class_loop X Tx x0 f ->
+  g :e function_space unit_interval X.
+let X Tx x0 f g.
+assume Hg.
+claim HgLoop : g :e loop_space X Tx x0.
+{
+  exact (path_homotopy_class_loop_in_loop_space X Tx x0 f g Hg).
+}
+exact (loop_space_in_function_space X Tx x0 g HgLoop).
 Qed.
 
 (** Proven Bob **)
@@ -25007,6 +25034,20 @@ claim HgLoop : g :e loop_space X Tx x0.
   exact (path_homotopy_class_loop_in_loop_space X Tx x0 f g Hg).
 }
 exact (loop_space_function_on X Tx x0 g HgLoop).
+Qed.
+
+(** Proven Bob **)
+Theorem path_homotopy_class_loop_value_in_space : forall X Tx x0 f g t:set,
+  g :e path_homotopy_class_loop X Tx x0 f ->
+  t :e unit_interval ->
+  apply_fun g t :e X.
+let X Tx x0 f g t.
+assume Hg Ht.
+claim Hfun : function_on g unit_interval X.
+{
+  exact (path_homotopy_class_loop_function_on X Tx x0 f g Hg).
+}
+exact (Hfun t Ht).
 Qed.
 
 (** Infrastructure: path-homotopic loops define the same path-homotopy class **)
