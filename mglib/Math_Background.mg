@@ -295483,6 +295483,7 @@ exact (lemma84_2_tree_extension_from_hypotheses_and_components
   HnoloopTA).
 Qed.
 
+(** Proven Bob **)
 Theorem maximal_tree_edge_meeting_tree_forces_subset_from_component_obligation_families :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -295520,8 +295521,9 @@ apply (xm (A c= T)).
     (HglgFam A HA Hnsub)
     (HconnFam A HA Hnsub)
     (HnoloopFam A HA Hnsub)).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem maximal_tree_edge_meeting_tree_forces_subset_from_stub_obligation_families :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -295555,7 +295557,7 @@ exact (maximal_tree_edge_meeting_tree_forces_subset_from_component_obligation_fa
   (fun A0 HA0 Hnsub0 => HglgStub A0 Hmax HA0 Hnsub0)
   (fun A0 HA0 Hnsub0 => HconnStub A0 Hmax HA0 Hnsub0)
   (fun A0 HA0 Hnsub0 => HnoloopStub A0 Hmax HA0 Hnsub0)).
-Admitted.
+Qed.
 
 Theorem maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge :
   forall T ArcsT X Tx Arcs x A:set,
