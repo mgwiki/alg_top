@@ -186693,7 +186693,21 @@ apply andI.
         (** Now construct the trivial witness **)
         apply (xm (J = Empty)).
         + (** J = Empty: use n = 0 witness **)
-          assume HJemp : J = Empty. admit.
+          assume HJemp : J = Empty.
+          witness 0. apply andI.
+          - exact (nat_p_omega 0 nat_0).
+          - witness Empty. apply andI.
+            + prove function_on Empty 0 J. let x. assume Hx : x :e 0. exact (FalseE (EmptyE x Hx) (apply_fun Empty x :e J)).
+            + witness Empty. apply andI.
+              * apply andI.
+                + apply andI.
+                  - prove function_on Empty 0 G. let x. assume Hx : x :e 0. exact (FalseE (EmptyE x Hx) (apply_fun Empty x :e G)).
+                  - let i. assume Hi : i :e 0. exact (FalseE (EmptyE i Hi) (apply_fun Empty i :e apply_fun Gimages (apply_fun Empty i))).
+                + let i j. assume Hi : i :e 0. assume Hj : j :e 0. assume Hne : i <> j. exact (FalseE (EmptyE i Hi) (apply_fun Empty i <> apply_fun Empty j)).
+              * prove f = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun Empty i)) 0.
+                rewrite Hf_eG.
+                symmetry.
+                exact (nat_primrec_0 eG (fun i r => apply_fun multG (r, apply_fun Empty i))).
         + assume HJne : J <> Empty.
           claim Hex : exists alpha0:set, alpha0 :e J.
           { apply (xm (exists alpha0:set, alpha0 :e J)).
