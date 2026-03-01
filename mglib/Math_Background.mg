@@ -44346,6 +44346,7 @@ apply and7I.
 Qed.
 
 (** helper: ex52_7b with explicit identity law on mult **)
+(** Proven Bob **)
 Theorem ex52_7b_tensor_induces_operation_with_identity : forall G Tg:set,
   topological_group G Tg ->
   forall e mult:set,
@@ -44457,7 +44458,7 @@ exact (Lemma_51_1_path_homotopy_trans
   tensor_fpgp
   Htensor_to_concatp
   Hconcatp_to_tensorp).
-Admitted.
+Qed.
 
 (** helper for ex52_7d: reverse direction of ex52_7c **)
 (** path_concat g f ~ tensor(f,g) using the alternative decomposition **)
