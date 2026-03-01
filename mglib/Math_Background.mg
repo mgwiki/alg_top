@@ -37166,6 +37166,7 @@ Qed.
 
 (** Helper: star-convex line segment from a0 to a is continuous and stays in A **)
 (** NOTICE 1772355631: replaced arbitrary Ta with subspace_topology per admin approval **)
+(** Proven Bob **)
 Theorem star_convex_segment_continuous : forall A a0 a:set,
   star_convex A a0 ->
   a :e A ->
@@ -37447,7 +37448,16 @@ claim Hseg_cont_A : continuous_map unit_interval unit_interval_topology A (subsp
       Ht).
     exact (Hseg_range t Ht).
   }
-  admit.
+  exact (continuous_map_range_restrict
+    unit_interval
+    unit_interval_topology
+    R
+    R_standard_topology
+    seg
+    A
+    HsegContR
+    HAsubR
+    HsegIntoA).
 }
 claim Ha0SNo : SNo a0. { exact (real_SNo a0 Ha0R). }
 claim HaSNo : SNo a. { exact (real_SNo a HaR). }
@@ -37480,7 +37490,7 @@ apply andI.
   + exact Hseg_cont_A.
   + exact Hseg_at_0.
 	- exact Hseg_at_1.
-Admitted.
+Qed.
 
 (** from S52 Exercise 1b (line 496 in algtop.tex) **)
 (** LATEX VERSION: If A is star convex, A is simply connected. **)
