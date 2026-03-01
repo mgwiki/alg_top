@@ -298801,6 +298801,7 @@ exact (thm84_4_forward_component_witness_from_component_obligations
   HnoloopTA).
 Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_forward_component_witness_from_meeting_and_tree_extension_obligation_family :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -298891,10 +298892,11 @@ exact (thm84_4_forward_component_witness_from_component_obligations
     Htree
     HA
     Hnsub
-    Hmeet
-    HtreeExt)).
-Admitted.
+  Hmeet
+  HtreeExt)).
+Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_forward_vertices_from_meeting_and_tree_extension_obligation_family :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -298927,8 +298929,9 @@ exact (thm84_4_forward_component_witness_from_meeting_and_tree_extension_obligat
   A
   HA
   Hnsub).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_forward_component_witness_from_stub_meeting_and_tree_extension_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -298959,8 +298962,9 @@ exact (thm84_4_forward_component_witness_from_meeting_and_tree_extension_obligat
   Hmax
   (fun A HA Hnsub => HmeetStub A Hmax HA Hnsub)
   (fun A HA Hnsub Hmeet => HextStub A Hmax HA Hnsub Hmeet)).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_forward_vertices_from_stub_meeting_and_tree_extension_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -298981,7 +298985,7 @@ exact (thm84_4_forward_vertices_from_meeting_and_tree_extension_obligation_famil
   Hmax
   (fun A HA Hnsub => HmeetStub A Hmax HA Hnsub)
   (fun A HA Hnsub Hmeet => HextStub A Hmax HA Hnsub Hmeet)).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem thm84_4_backward_noncontained_contradiction_from_subset_from_rhs :
