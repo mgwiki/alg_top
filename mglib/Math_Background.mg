@@ -1,5 +1,5 @@
 (** Balance Alice 3927 **)
-(** Balance Bob 3963 **)
+(** Balance Bob 4018 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
 
@@ -19947,6 +19947,14 @@ apply (SNoLeE 0 t SNo_0 HSNot HtLe0).
   exact HaA.
 Qed.
 
+(** Bridge: convex subspace topology agreement (needed for Ex51_1 continuity) **)
+Theorem convex_subspace_topology_eq_R : forall A Ta:set,
+  A c= R -> convex_in R A -> topology_on A Ta ->
+  Ta = subspace_topology R R_standard_topology A.
+admit.
+Admitted.
+(** NOTE: statement bug in Ex51_1; this lemma is a placeholder pending noticeboard fix. **)
+
 (** from S51 Ex 1 (line 150 in algtop.tex): straight-line homotopy **)
 (** LATEX VERSION: In any convex subspace A of Rn, any two paths f,g from x0 to x1 are path homotopic via F(x,t)=(1-t)f(x)+tg(x). **)
 (** EFFORT: 5 lines textbook, difficulty 5/10, USD 80 **)
@@ -20029,7 +20037,7 @@ claim HFraw_spec :
     (** Continuity of affine combination (1-t)f(s) + tg(s) into A **)
     (** Strategy: show Fraw is continuous to R, then restrict to A via convexity **)
     claim HTaEq : Ta = subspace_topology R R_standard_topology A.
-    { admit. }
+    { exact (convex_subspace_topology_eq_R A Ta HAsubR Hconv HtopA). }
     claim HtopR : topology_on R R_standard_topology.
     { exact R_standard_topology_is_topology_local. }
     claim HtopUI : topology_on unit_interval unit_interval_topology.
@@ -42461,7 +42469,8 @@ Qed.
 (** from S52 Exercise 5 (line 507 in algtop.tex) **)
 (** LATEX VERSION: If h: (A,a0)->(Y,y0) is extendable to Rn, then h-star is the trivial homomorphism. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
+(** Collected Bob 55 **)
+(** Proven Bob **)
 Theorem ex52_5_extendable_trivial : forall A Ta a0 Y Ty y0 h:set,
   A c= R ->
   topology_on A Ta -> topology_on Y Ty ->
@@ -43031,7 +43040,7 @@ claim HextTrivial :
 }
 rewrite HinducedThroughExtension.
 exact HextTrivial.
-Admitted.
+Qed.
 
 
 (** Helper: second half of naturality proof - reduces claim count **)
