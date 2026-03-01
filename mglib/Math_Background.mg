@@ -55712,6 +55712,41 @@ exact (setminus_sub_empty
   (fun x Hx => Hx)).
 Qed.
 
+(** Infrastructure: setminus is disjoint from the removed set **)
+(** Proven Bob **)
+Theorem setminus_intersect_removed_empty : forall A B:set,
+  (A :\: B) :/\: B = Empty.
+let A B.
+apply Empty_eq.
+let x.
+assume HxInt.
+claim HxRest : x :e A :\: B.
+{
+  exact (binintersectE1
+    (A :\: B)
+    B
+    x
+    HxInt).
+}
+claim HxB : x :e B.
+{
+  exact (binintersectE2
+    (A :\: B)
+    B
+    x
+    HxInt).
+}
+claim HxNotB : x /:e B.
+{
+  exact (setminusE2
+    A
+    B
+    x
+    HxRest).
+}
+exact (HxNotB HxB).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
