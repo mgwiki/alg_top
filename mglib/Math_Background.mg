@@ -128108,6 +128108,33 @@ Definition Rn_scalar_mult : set -> set -> set -> set := fun n lam v =>
 Definition Rn_negate : set -> set -> set := fun n v =>
   graph n (fun i:set => minus_SNo (apply_fun v i)).
 
+(** Infrastructure: coordinate access for scalar multiplication and negation **)
+(** Proven Bob **)
+Lemma Rn_scalar_mult_apply : forall n lam v i:set,
+  i :e n ->
+  apply_fun (Rn_scalar_mult n lam v) i = mul_SNo lam (apply_fun v i).
+let n lam v i.
+assume Hi.
+exact (apply_fun_graph
+  n
+  (fun j:set => mul_SNo lam (apply_fun v j))
+  i
+  Hi).
+Qed.
+
+(** Proven Bob **)
+Lemma Rn_negate_apply : forall n v i:set,
+  i :e n ->
+  apply_fun (Rn_negate n v) i = minus_SNo (apply_fun v i).
+let n v i.
+assume Hi.
+exact (apply_fun_graph
+  n
+  (fun j:set => minus_SNo (apply_fun v j))
+  i
+  Hi).
+Qed.
+
 (** Infrastructure: vector field on B^{n+1} "points directly inward" at x in S^n **)
 Definition points_directly_inward_Rn : set -> set -> set -> prop := fun n v x =>
   x :e Sn n /\
