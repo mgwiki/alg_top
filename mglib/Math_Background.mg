@@ -55953,6 +55953,18 @@ apply set_ext.
         HxC)).
 Qed.
 
+(** Infrastructure: intersection distributes over union (right) **)
+(** Proven Bob **)
+Theorem binintersect_binunion_distrib_right : forall A B C:set,
+  (A :\/: B) :/\: C = (A :/\: C) :\/: (B :/\: C).
+let A B C.
+rewrite (binintersect_com (A :\/: B) C).
+rewrite (binintersect_binunion_distrib_left C A B).
+rewrite (binintersect_com C A).
+rewrite (binintersect_com C B).
+reflexivity.
+Qed.
+
 (** Infrastructure: intersecting with a setminus is empty **)
 (** Proven Bob **)
 Theorem binintersect_setminus_removed_empty : forall A B:set,
