@@ -8785,6 +8785,16 @@ Definition nulhomotopic : set -> set -> set -> set -> set -> prop :=
     exists y0:set, y0 :e Y /\
       homotopic_maps X Tx Y Ty f (const_fun X y0).
 
+(** Proven Bob **)
+Theorem nulhomotopic_unfold : forall X Tx Y Ty f:set,
+  nulhomotopic X Tx Y Ty f ->
+  exists y0:set, y0 :e Y /\
+    homotopic_maps X Tx Y Ty f (const_fun X y0).
+let X Tx Y Ty f.
+assume H.
+exact H.
+Qed.
+
 (** from S51 Definition (line 104 in algtop.tex): path homotopy **)
 (** LATEX VERSION: Two paths f and f' mapping I into X are path homotopic if they have the same initial point x0 and final point x1, and there is a continuous map F: I x I -> X with F(s,0)=f(s), F(s,1)=f'(s), F(0,t)=x0, F(1,t)=x1. **)
 Definition path_homotopic : set -> set -> set -> set -> set -> set -> prop :=
