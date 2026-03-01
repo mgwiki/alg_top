@@ -9698,6 +9698,23 @@ exact (Hfun t Ht).
 Qed.
 
 (** Proven Bob **)
+Theorem path_connected_space_has_path_between : forall X Tx x y:set,
+  path_connected_space X Tx ->
+  x :e X -> y :e X ->
+  exists p:set, path_between X x y p.
+let X Tx x y.
+assume Hpc Hx Hy.
+apply (path_connected_space_paths X Tx x y Hpc Hx Hy).
+let p.
+assume HpPack.
+witness p.
+exact (andEL
+  (path_between X x y p)
+  (continuous_map unit_interval unit_interval_topology X Tx p)
+  HpPack).
+Qed.
+
+(** Proven Bob **)
 Theorem path_homotopic_endpoints_in_space : forall X Tx x0 x1 f f':set,
   path_homotopic X Tx x0 x1 f f' ->
   x0 :e X /\ x1 :e X.
