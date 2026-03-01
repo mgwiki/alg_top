@@ -1,5 +1,5 @@
 (** Balance Alice 3927 **)
-(** Balance Bob 3286 **)
+(** Balance Bob 3282 **)
 (** Balance Charlie 1549 **)
 (** Balance Dave 1672 **)
 
@@ -174144,7 +174144,7 @@ Definition free_homotopy_loops : set -> set -> set -> set -> set -> prop :=
 (** from S66 Lem 66.1(a) (line 2501 in algtop.tex) **)
 (** LATEX VERSION: If f_bar is the reverse of f, then n(f_bar, a) = -n(f,a). **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
+(** Bounty 37 **)
 Theorem lemma66_1a_reverse_winding : forall f a:set,
   loop_at (setprod R R) R2_topology (apply_fun f 0) f ->
   a :e setprod R R -> ~(a :e image_of f unit_interval) ->
@@ -211574,6 +211574,159 @@ Theorem cor68_8_quotient_by_factor :
     group_isomorphism
       (quotient_group_set G multG N) (quotient_group_mult G multG N)
       G2 multG phi.
+let G multG eG invG G1 G2.
+assume Hfp.
+set Gfam := graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2).
+set efam := graph (UPair 0 1) (fun i:set => eG).
+set N := least_normal_subgroup G multG eG invG G1.
+set Q := quotient_group_set G multG N.
+set multQ := quotient_group_mult G multG N.
+claim HgrpG : group_structure G multG eG invG.
+{
+  apply (and5E
+    (group_structure G multG eG invG)
+    (forall alpha:set, alpha :e UPair 0 1 ->
+      subgroup_of (apply_fun Gfam alpha) G multG eG invG)
+    (forall alpha beta:set, alpha :e UPair 0 1 -> beta :e UPair 0 1 -> alpha <> beta ->
+      forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x = eG)
+    (subgroups_generate G multG eG invG (UPair 0 1) Gfam)
+    (forall x:set, x :e G -> x <> eG ->
+      exists n xs:set,
+        reduced_word (UPair 0 1) Gfam efam n xs /\ n <> 0 /\
+        word_product multG eG xs n = x /\
+        (forall n' xs':set,
+          reduced_word (UPair 0 1) Gfam efam n' xs' -> n' <> 0 ->
+          word_product multG eG xs' n' = x ->
+          n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))))
+    Hfp).
+  assume H1 H2 H3 H4 H5.
+  exact H1.
+}
+claim Hsubfam :
+  forall alpha:set, alpha :e UPair 0 1 ->
+    subgroup_of (apply_fun Gfam alpha) G multG eG invG.
+{
+  apply (and5E
+    (group_structure G multG eG invG)
+    (forall alpha:set, alpha :e UPair 0 1 ->
+      subgroup_of (apply_fun Gfam alpha) G multG eG invG)
+    (forall alpha beta:set, alpha :e UPair 0 1 -> beta :e UPair 0 1 -> alpha <> beta ->
+      forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x = eG)
+    (subgroups_generate G multG eG invG (UPair 0 1) Gfam)
+    (forall x:set, x :e G -> x <> eG ->
+      exists n xs:set,
+        reduced_word (UPair 0 1) Gfam efam n xs /\ n <> 0 /\
+        word_product multG eG xs n = x /\
+        (forall n' xs':set,
+          reduced_word (UPair 0 1) Gfam efam n' xs' -> n' <> 0 ->
+          word_product multG eG xs' n' = x ->
+          n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i))))
+    Hfp).
+  assume H1 H2 H3 H4 H5.
+  exact H2.
+}
+claim HGfam0 : apply_fun Gfam 0 = G1.
+{
+  rewrite (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2) 0 (UPairI1 0 1)).
+  exact (If_i_1 (0 = 0) G1 G2 (eq_refl 0)).
+}
+claim HGfam1 : apply_fun Gfam 1 = G2.
+{
+  rewrite (apply_fun_graph (UPair 0 1) (fun i:set => if i = 0 then G1 else G2) 1 (UPairI2 0 1)).
+  exact (If_i_0 (1 = 0) G1 G2 neq_1_0).
+}
+claim HsubG1 : subgroup_of G1 G multG eG invG.
+{
+  rewrite <- HGfam0.
+  exact (Hsubfam 0 (UPairI1 0 1)).
+}
+claim HsubG2 : subgroup_of G2 G multG eG invG.
+{
+  rewrite <- HGfam1.
+  exact (Hsubfam 1 (UPairI2 0 1)).
+}
+claim HG1subG : G1 c= G.
+{ exact (subgroup_of_subset G1 G multG eG invG HsubG1). }
+claim HG2subG : G2 c= G.
+{ exact (subgroup_of_subset G2 G multG eG invG HsubG2). }
+claim HNprops :
+  normal_subgroup N G multG eG invG /\
+  G1 c= N /\
+  (forall N':set, normal_subgroup N' G multG eG invG -> G1 c= N' -> N c= N').
+{
+  exact (least_normal_subgroup_props
+    G
+    multG
+    eG
+    invG
+    G1
+    HgrpG
+    HG1subG).
+}
+claim HnormalN : normal_subgroup N G multG eG invG.
+{
+  exact (andEL
+    (normal_subgroup N G multG eG invG)
+    (G1 c= N /\
+     (forall N':set, normal_subgroup N' G multG eG invG -> G1 c= N' -> N c= N'))
+    HNprops).
+}
+set psi := graph G2 (fun x:set => left_coset multG x N).
+claim HpsiHom : group_homomorphism G2 multG Q multQ psi.
+{
+  apply andI.
+  - apply (total_function_on_function_on psi G2 Q).
+    apply (total_function_on_graph G2 Q).
+    let x. assume HxG2.
+    exact (ReplI
+      G
+      (fun g:set => left_coset multG g N)
+      x
+      (HG2subG x HxG2)).
+  - let x y.
+    assume HxG2 HyG2.
+    claim HxG : x :e G. { exact (HG2subG x HxG2). }
+    claim HyG : y :e G. { exact (HG2subG y HyG2). }
+    claim HxyG2 : apply_fun multG (x, y) :e G2.
+    {
+      exact (subgroup_of_mult_closed
+        G2
+        G
+        multG
+        eG
+        invG
+        x
+        y
+        HsubG2
+        HxG2
+        HyG2).
+    }
+    claim Hpsi_x : apply_fun psi x = left_coset multG x N.
+    { exact (apply_fun_graph G2 (fun z:set => left_coset multG z N) x HxG2). }
+    claim Hpsi_y : apply_fun psi y = left_coset multG y N.
+    { exact (apply_fun_graph G2 (fun z:set => left_coset multG z N) y HyG2). }
+    claim Hpsi_xy : apply_fun psi (apply_fun multG (x, y)) =
+      left_coset multG (apply_fun multG (x, y)) N.
+    { exact (apply_fun_graph G2 (fun z:set => left_coset multG z N)
+        (apply_fun multG (x, y)) HxyG2). }
+    rewrite Hpsi_x.
+    rewrite Hpsi_y.
+    rewrite Hpsi_xy.
+    exact (quotient_group_mult_on_left_coset_representatives
+      G
+      multG
+      eG
+      invG
+      N
+      x
+      y
+      HgrpG
+      HnormalN
+      HxG
+      HyG).
+}
+(** TODO: show psi is bijection (every coset has a unique representative in G2),
+    then set phi as the inverse bijection and transfer homomorphism structure. **)
 admit.
 Admitted.
 
