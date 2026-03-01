@@ -1,7 +1,7 @@
 (** Balance Alice 3927 **)
-(** Balance Bob 4586 **)
-(** Balance Charlie 2312 **)
-(** Balance Dave 1793 **)
+(** Balance Bob 3286 **)
+(** Balance Charlie 1549 **)
+(** Balance Dave 1672 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -19958,8 +19958,7 @@ Admitted.
 (** from S51 Ex 1 (line 150 in algtop.tex): straight-line homotopy **)
 (** LATEX VERSION: In any convex subspace A of Rn, any two paths f,g from x0 to x1 are path homotopic via F(x,t)=(1-t)f(x)+tg(x). **)
 (** EFFORT: 5 lines textbook, difficulty 5/10, USD 80 **)
-(** Collected Bob 107 **)
-(** Proven Bob **)
+(** Bounty 107 **)
 Theorem Example_51_1_convex_paths_homotopic : forall A Ta x0 x1 f g:set,
   A c= R -> convex_in R A ->
   topology_on A Ta ->
@@ -26955,8 +26954,7 @@ Qed.
 (** from S52 Ex 1 (line 365 in algtop.tex): pi1(Rn, x0) is trivial **)
 (** LATEX VERSION: pi1(Rn, x0) is the trivial group. More generally, if X is any convex subset of Rn, then pi1(X, x0) is trivial. **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Bob 55 **)
-(** Proven Bob **)
+(** Bounty 55 **)
 Theorem Example_52_1_convex_trivial_pi1 : forall A Ta x0:set,
   A c= R -> convex_in R A ->
   topology_on A Ta -> x0 :e A ->
@@ -42427,8 +42425,7 @@ Qed.
 (** from S52 Exercise 5 (line 507 in algtop.tex) **)
 (** LATEX VERSION: If h: (A,a0)->(Y,y0) is extendable to Rn, then h-star is the trivial homomorphism. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Bob 55 **)
-(** Proven Bob **)
+(** Bounty 55 **)
 Theorem ex52_5_extendable_trivial : forall A Ta a0 Y Ty y0 h:set,
   A c= R ->
   topology_on A Ta -> topology_on Y Ty ->
@@ -44316,7 +44313,6 @@ apply and7I.
 Qed.
 
 (** helper: ex52_7b with explicit identity law on mult **)
-(** Proven Charlie **)
 Theorem ex52_7b_tensor_induces_operation_with_identity : forall G Tg:set,
   topological_group G Tg ->
   forall e mult:set,
@@ -47272,7 +47268,6 @@ apply andI.
 Admitted.
 
 (** Variant: if p is a covering map, then evenly_covered_open_subset holds without extra topology_on input **)
-(** Proven Bob **)
 Theorem evenly_covered_open_subset_covering_map : forall E Te B Tb p U W:set,
   covering_map E Te B Tb p ->
   evenly_covered E Te B Tb p U -> W :e Tb -> W c= U ->
@@ -47298,7 +47293,6 @@ exact (evenly_covered_open_subset_top
 Admitted.
 
 (** Infrastructure: evenly covered open subsets under covering_map assumptions **)
-(** Proven Bob **)
 Lemma evenly_covered_open_subset_from_covering_map : forall E Te B Tb p U W:set,
   covering_map E Te B Tb p ->
   evenly_covered E Te B Tb p U -> W :e Tb -> W c= U ->
@@ -60682,8 +60676,7 @@ Qed.
 (** LATEX VERSION: Let q: X -> Y and r: Y -> Z be covering maps; **)
 (** if r^{-1}(z) is finite for each z in Z, then r o q is a covering map. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Collected Dave 121 **)
-(** Proven Dave **)
+(** Bounty 121 **)
 Theorem ex53_4_composition_covering : forall X Tx Y Ty Z Tz q r:set,
   covering_map X Tx Y Ty q -> covering_map Y Ty Z Tz r ->
   (forall z:set, z :e Z -> finite {y :e Y | apply_fun r y = z}) ->
@@ -86824,7 +86817,6 @@ exact (UnionI
   HV).
 Qed.
 
-(** Proven Bob **)
 Theorem lemma54_2_sheet_non_switching_local_from_anchor_membership :
   forall Ft q z N slices Vq Vz:set,
   pairwise_disjoint slices ->
@@ -86853,7 +86845,6 @@ exact (pointwise_anchor_sheet_implies_sheet_equality
   HVzSlice).
 Admitted.
 
-(** Proven Bob **)
 Theorem lemma54_2_sheet_non_switching_local_from_image_subset :
   forall Ft q z N slices Vq Vz:set,
   pairwise_disjoint slices ->
@@ -86882,7 +86873,6 @@ exact (image_sub_single_sheet_implies_sheet_equality
   HVzSlice).
 Admitted.
 
-(** Proven Bob **)
 Theorem lemma54_2_sheet_non_switching_local_from_slices_witness :
   forall N E Te B Tb p U slices F Ft q z Vq Vz:set,
   topology_on E Te ->
@@ -87346,7 +87336,6 @@ apply andI.
     HVzPack).
 Qed.
 
-(** Proven Bob **)
 Theorem lemma54_2_sheet_non_switching_family_from_evenly_covered :
   forall N E Te B Tb p U F Ft q z:set,
   topology_on E Te ->
@@ -87928,7 +87917,6 @@ apply andI.
 - reflexivity.
 Qed.
 
-(** Proven Bob **)
 Theorem lemma54_2_sheet_non_switching_local_from_slices_witness_via_eq_data :
   forall N E Te B Tb p U slices F Ft q z Vq Vz:set,
   topology_on E Te ->
@@ -88090,7 +88078,6 @@ rewrite <- HVqEqVq0.
 reflexivity.
 Admitted.
 
-(** Proven Bob **)
 Theorem lemma54_2_sheet_non_switching_local_strong_from_slices_witness :
   forall N E Te B Tb p U slices F Ft q z Vq Vz:set,
   topology_on E Te ->
@@ -88515,7 +88502,6 @@ Admitted.
 (** TODO: this local non-switching statement currently lacks hypotheses tying Ft values to a connected image in Union slices.
     Intended bridge is via connected_image_sheet_non_switching_in_pairwise_disjoint_union once continuity and image-subset data are threaded in. **)
 
-(** Proven Alice **)
 Theorem lemma54_2_sheet_non_switching_local_connected :
   forall E Te N TN Ft slices q z Vq Vz:set,
   topology_on E Te ->
@@ -88544,7 +88530,6 @@ exact (connected_image_sheet_non_switching_in_pairwise_disjoint_union
 Admitted.
 
 (** Infrastructure: existence package for homotopy lifting in Lem 54.2 **)
-(** Proven Bob **)
 Theorem lemma54_2_homotopy_lifting_exists : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun F (0, 0) ->
@@ -91178,8 +91163,7 @@ Admitted. (** upstream bug: HNcontFt used inside its own proof block **)
 (** continuous with F(0,0) = b0. There is a unique lifting F_tilde: I x I -> E with **)
 (** F_tilde(0,0) = e0. If F is a path homotopy, then F_tilde is a path homotopy. **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 200 **)
-(** Collected Bob 294 **)
-(** Proven Bob **)
+(** Bounty 294 **)
 Theorem lemma54_2_homotopy_lifting : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun F (0, 0) ->
@@ -91923,8 +91907,7 @@ Qed.
 (** from S54 Lem 54.2 path homotopy preservation (line 783 in algtop.tex) **)
 (** LATEX VERSION: If F is a path homotopy, then the lift F_tilde is also a path homotopy. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Bob 55 **)
-(** Proven Bob **)
+(** Bounty 55 **)
 Theorem lemma54_2_path_homotopy_preserved : forall E Te B Tb p e0 F x0 x1:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun F (0, 0) ->
@@ -92480,8 +92463,7 @@ Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
 (** If f and g are path homotopic, then f_tilde and g_tilde end at the same point **)
 (** and are path homotopic. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Bob 107 **)
-(** Proven Bob **)
+(** Bounty 107 **)
 Theorem thm54_3_homotopic_lifts : forall E Te B Tb p e0 b0 b1 f g:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = b0 ->
@@ -93596,8 +93578,7 @@ Qed.
 (** then phi: pi_1(B,b0) -> p^{-1}(b0) is surjective. **)
 (** If E is simply connected, phi is bijective. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Collected Bob 107 **)
-(** Proven Bob **)
+(** Bounty 107 **)
 Theorem thm54_4_lifting_correspondence_surjective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   path_connected_space E Te ->
@@ -94203,8 +94184,7 @@ Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
 
 (** from S54 Thm 54.4 (line 799 in algtop.tex): lifting correspondence bijective **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 60 **)
-(** Collected Bob 73 **)
-(** Proven Bob **)
+(** Bounty 73 **)
 Theorem thm54_4_lifting_correspondence_bijective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   simply_connected E Te ->
@@ -106162,8 +106142,7 @@ Qed.
 (** from S54 Thm 54.6a (line 838 in algtop.tex) **)
 (** LATEX VERSION: The homomorphism p-star: pi_1(E,e0) -> pi_1(B,b0) is a monomorphism. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Collected Bob 73 **)
-(** Proven Bob **)
+(** Bounty 73 **)
 Theorem thm54_6a_p_star_injective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   forall cls1 cls2:set,
@@ -106850,7 +106829,6 @@ rewrite Hcls2Eq.
 exact Hclassf1f2.
 Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
 
-(** Proven Bob **)
 (** Infrastructure: loop characterization (backward direction) **)
 Lemma thm54_6c_loop_characterization_backward : forall E Te B Tb p e0 f:set,
   covering_map E Te B Tb p -> e0 :e E ->
@@ -107258,8 +107236,7 @@ Admitted.
 (** LATEX VERSION: Let H = p-star(pi_1(E,e0)). The lifting correspondence induces **)
 (** an injective map Phi: pi_1(B,b0)/H -> p^{-1}(b0), bijective if E is path connected. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Collected Bob 220 **)
-(** Proven Bob **)
+(** Bounty 220 **)
 Theorem thm54_6b_coset_correspondence : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   exists Phi:set,
@@ -108840,8 +108817,7 @@ Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
 
 (** from S54 Thm 54.6b surjectivity when E is path connected **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 40 **)
-(** Collected Bob 44 **)
-(** Proven Bob **)
+(** Bounty 44 **)
 Theorem thm54_6b_coset_correspondence_surjective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   path_connected_space E Te ->
@@ -110517,7 +110493,6 @@ exact (andI
 Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
 
 (** Infrastructure: loop characterization (forward direction) **)
-(** Proven Bob **)
 Lemma thm54_6c_loop_characterization_forward : forall E Te B Tb p e0 f:set,
   covering_map E Te B Tb p -> e0 :e E ->
   loop_at B Tb (apply_fun p e0) f ->
@@ -110796,7 +110771,6 @@ Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
 
 
 (** Infrastructure: loop characterization equivalence (parenthesized) **)
-(** Proven Bob **)
 Lemma thm54_6c_loop_characterization_equiv : forall E Te B Tb p e0 f:set,
   covering_map E Te B Tb p -> e0 :e E ->
   loop_at B Tb (apply_fun p e0) f ->
@@ -110840,8 +110814,7 @@ Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
 (** from S54 Thm 54.6c (line 847 in algtop.tex) **)
 (** LATEX VERSION: [f] in H iff f lifts to a loop in E based at e0. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Bob 55 **)
-(** Proven Bob **)
+(** Bounty 55 **)
 Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
   covering_map E Te B Tb p -> e0 :e E ->
   loop_at B Tb (apply_fun p e0) f ->
@@ -110855,7 +110828,6 @@ admit.
 Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
 
 (** Infrastructure: loop characterization under covering assumptions **)
-(** Proven Bob **)
 Lemma thm54_6c_loop_characterization_assumptions : forall E Te B Tb p e0 f:set,
   covering_map E Te B Tb p -> e0 :e E ->
   loop_at B Tb (apply_fun p e0) f ->
@@ -111157,7 +111129,6 @@ Definition product_group_mult : set -> set -> set -> set -> set :=
 (** ex54_7_pi1_torus moved to S60 section (after thm60_1_pi1_product) where it uses the proved theorem directly **)
 
 (** Infrastructure: injectivity of covering map when total space is path connected and base is simply connected **)
-(** Proven Bob **)
 Theorem ex54_8_covering_injective : forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
   path_connected_space E Te ->
@@ -111660,8 +111631,7 @@ Admitted. (** cascade: depends on admitted lemma54_2_homotopy_lifting_exists **)
 (** LATEX VERSION: Let p: E -> B be a covering map with E path connected. **)
 (** If B is simply connected, then p is a homeomorphism. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Bob 55 **)
-(** Proven Bob **)
+(** Bounty 55 **)
 Theorem ex54_8_simply_connected_base_homeomorphism : forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
   path_connected_space E Te ->
@@ -114460,7 +114430,6 @@ exact (andI
   HscWit).
 Qed.
 
-(** Proven Bob **)
 Theorem s54_pi1_nontrivial_from_two_fiber_points : forall E Te B Tb p e0 e1:set,
   covering_map E Te B Tb p ->
   simply_connected E Te ->
@@ -115133,7 +115102,6 @@ exact (FalseE
 Qed.
 
 (** S54 helper: any covering map R->S1 forces a nontrivial fiber if S1 is compact. **)
-(** Proven Charlie **)
 Theorem s54_two_distinct_lifts_if_S1_compact_of_covering :
   forall p:set,
     covering_map R R_standard_topology S1 S1_topology p ->
@@ -143214,8 +143182,396 @@ Theorem ex58_2c_cylinder_pi1 : forall x0:set,
       (fundamental_group S1 S1_topology (x0 0))
       (fundamental_group_mult S1 S1_topology (x0 0))
       phi.
-admit.
-Admitted.
+let x0.
+assume Hx0.
+set xS1 := x0 0.
+set xI := x0 1.
+set Tprod := product_topology S1 S1_topology unit_interval unit_interval_topology.
+set pi1Prod := fundamental_group (setprod S1 unit_interval) Tprod x0.
+set multProd := fundamental_group_mult (setprod S1 unit_interval) Tprod x0.
+set pi1S := fundamental_group S1 S1_topology xS1.
+set multS := fundamental_group_mult S1 S1_topology xS1.
+set pi1I := fundamental_group unit_interval unit_interval_topology xI.
+set multI := fundamental_group_mult unit_interval unit_interval_topology xI.
+claim Hx0eq : x0 = (xS1, xI).
+{
+  apply (Sigma_E S1 (fun _ :set => unit_interval) x0 Hx0).
+  let a. assume HaS1.
+  let b. assume HbI.
+  assume Hx0pair : x0 = (a, b).
+  rewrite Hx0pair.
+  rewrite tuple_2_0_eq.
+  rewrite tuple_2_1_eq.
+  reflexivity.
+}
+rewrite Hx0eq.
+claim HxS1 : xS1 :e S1.
+{
+  exact (ap0_Sigma S1 (fun _ :set => unit_interval) x0 Hx0).
+}
+claim HxI : xI :e unit_interval.
+{
+  exact (ap1_Sigma S1 (fun _ :set => unit_interval) x0 Hx0).
+}
+claim HtopR2 : topology_on (setprod R R) R2_topology.
+{
+  exact (product_topology_is_topology R R_standard_topology R R_standard_topology
+    R_standard_topology_is_topology R_standard_topology_is_topology).
+}
+claim HS1subR2 : S1 c= setprod R R.
+{
+  exact (Sep_Subq (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) = 1)).
+}
+claim HtopS1 : topology_on S1 S1_topology.
+{
+  exact (subspace_topology_is_topology
+    (setprod R R)
+    R2_topology
+    S1
+    HtopR2
+    HS1subR2).
+}
+claim HtopProd : topology_on (setprod S1 unit_interval) Tprod.
+{
+  exact (product_topology_is_topology
+    S1
+    S1_topology
+    unit_interval
+    unit_interval_topology
+    HtopS1
+    unit_interval_topology_on).
+}
+claim Hpi1I_triv :
+  pi1I = {fundamental_group_id unit_interval unit_interval_topology xI}.
+{
+  exact (simply_connected_trivial_pi1_at_point
+    unit_interval
+    unit_interval_topology
+    xI
+    unit_interval_simply_connected
+    HxI).
+}
+claim Hprod_iso :
+  exists phi_prod:set,
+    group_isomorphism
+      (fundamental_group (setprod S1 unit_interval) Tprod (xS1, xI))
+      (fundamental_group_mult (setprod S1 unit_interval) Tprod (xS1, xI))
+      (setprod pi1S pi1I)
+      (product_group_mult pi1S multS pi1I multI)
+      phi_prod.
+{
+  exact (thm60_1_pi1_product
+    S1
+    S1_topology
+    xS1
+    unit_interval
+    unit_interval_topology
+    xI
+    HtopS1
+    unit_interval_topology_on
+    HxS1
+    HxI).
+}
+apply Hprod_iso.
+let phi_prod.
+assume Hphi_prod.
+set proj := projection_map1 pi1S pi1I.
+claim HgrpS :
+  group_structure pi1S multS
+    (fundamental_group_id S1 S1_topology xS1)
+    (fundamental_group_inv S1 S1_topology xS1).
+{
+  exact (fundamental_group_is_group S1 S1_topology xS1 HtopS1 HxS1).
+}
+claim HgrpI :
+  group_structure pi1I multI
+    (fundamental_group_id unit_interval unit_interval_topology xI)
+    (fundamental_group_inv unit_interval unit_interval_topology xI).
+{
+  exact (fundamental_group_is_group
+    unit_interval
+    unit_interval_topology
+    xI
+    unit_interval_topology_on
+    HxI).
+}
+claim HprojHom :
+  group_homomorphism
+    (setprod pi1S pi1I)
+    (product_group_mult pi1S multS pi1I multI)
+    pi1S
+    multS
+    proj.
+{
+  apply andI.
+  - (** function_on proj **)
+    let p. assume Hp : p :e setprod pi1S pi1I.
+    claim Hp0 : p 0 :e pi1S.
+    {
+      exact (ap0_Sigma pi1S (fun _ :set => pi1I) p Hp).
+    }
+    rewrite (projection1_apply pi1S pi1I p Hp).
+    exact Hp0.
+  - (** multiplicativity **)
+    let p q.
+    assume Hp : p :e setprod pi1S pi1I.
+    assume Hq : q :e setprod pi1S pi1I.
+    claim Hp0 : p 0 :e pi1S.
+    {
+      exact (ap0_Sigma pi1S (fun _ :set => pi1I) p Hp).
+    }
+    claim Hq0 : q 0 :e pi1S.
+    {
+      exact (ap0_Sigma pi1S (fun _ :set => pi1I) q Hq).
+    }
+    claim Hp1 : p 1 :e pi1I.
+    {
+      exact (ap1_Sigma pi1S (fun _ :set => pi1I) p Hp).
+    }
+    claim Hq1 : q 1 :e pi1I.
+    {
+      exact (ap1_Sigma pi1S (fun _ :set => pi1I) q Hq).
+    }
+    claim HmultS_fn : function_on multS (setprod pi1S pi1S) pi1S.
+    {
+      apply (and6E
+        (function_on multS (setprod pi1S pi1S) pi1S)
+        (function_on (fundamental_group_inv S1 S1_topology xS1) pi1S pi1S)
+        ((fundamental_group_id S1 S1_topology xS1) :e pi1S)
+        (forall x y z:set, x :e pi1S -> y :e pi1S -> z :e pi1S ->
+          apply_fun multS (apply_fun multS (x, y), z) =
+            apply_fun multS (x, apply_fun multS (y, z)))
+        (forall x:set, x :e pi1S ->
+          apply_fun multS (fundamental_group_id S1 S1_topology xS1, x) = x /\
+          apply_fun multS (x, fundamental_group_id S1 S1_topology xS1) = x)
+        (forall x:set, x :e pi1S ->
+          apply_fun multS (x, apply_fun (fundamental_group_inv S1 S1_topology xS1) x) =
+            fundamental_group_id S1 S1_topology xS1 /\
+          apply_fun multS (apply_fun (fundamental_group_inv S1 S1_topology xS1) x, x) =
+            fundamental_group_id S1 S1_topology xS1)
+        HgrpS).
+      assume Hm _ _ _ _ _. exact Hm.
+    }
+    claim HmultI_fn : function_on multI (setprod pi1I pi1I) pi1I.
+    {
+      apply (and6E
+        (function_on multI (setprod pi1I pi1I) pi1I)
+        (function_on (fundamental_group_inv unit_interval unit_interval_topology xI) pi1I pi1I)
+        ((fundamental_group_id unit_interval unit_interval_topology xI) :e pi1I)
+        (forall x y z:set, x :e pi1I -> y :e pi1I -> z :e pi1I ->
+          apply_fun multI (apply_fun multI (x, y), z) =
+            apply_fun multI (x, apply_fun multI (y, z)))
+        (forall x:set, x :e pi1I ->
+          apply_fun multI (fundamental_group_id unit_interval unit_interval_topology xI, x) = x /\
+          apply_fun multI (x, fundamental_group_id unit_interval unit_interval_topology xI) = x)
+        (forall x:set, x :e pi1I ->
+          apply_fun multI (x, apply_fun (fundamental_group_inv unit_interval unit_interval_topology xI) x) =
+            fundamental_group_id unit_interval unit_interval_topology xI /\
+          apply_fun multI (apply_fun (fundamental_group_inv unit_interval unit_interval_topology xI) x, x) =
+            fundamental_group_id unit_interval unit_interval_topology xI)
+        HgrpI).
+      assume Hm _ _ _ _ _. exact Hm.
+    }
+    claim Hpq : (p, q) :e setprod (setprod pi1S pi1I) (setprod pi1S pi1I).
+    {
+      exact (tuple_2_setprod_by_pair_Sigma
+        (setprod pi1S pi1I)
+        (setprod pi1S pi1I)
+        p
+        q
+        Hp
+        Hq).
+    }
+    rewrite (apply_fun_graph
+      (setprod (setprod pi1S pi1I) (setprod pi1S pi1I))
+      (fun r:set =>
+        (apply_fun multS ((r 0) 0, (r 1) 0),
+         apply_fun multI ((r 0) 1, (r 1) 1)))
+      (p, q)
+      Hpq).
+    rewrite (tuple_2_0_eq p q).
+    rewrite (tuple_2_1_eq p q).
+    claim Hmultpair_in :
+      (apply_fun multS (p 0, q 0), apply_fun multI (p 1, q 1))
+      :e setprod pi1S pi1I.
+    {
+      claim Hp0q0 : (p 0, q 0) :e setprod pi1S pi1S.
+      { exact (tuple_2_setprod_by_pair_Sigma pi1S pi1S (p 0) (q 0) Hp0 Hq0). }
+      claim Hp1q1 : (p 1, q 1) :e setprod pi1I pi1I.
+      { exact (tuple_2_setprod_by_pair_Sigma pi1I pi1I (p 1) (q 1) Hp1 Hq1). }
+      claim HmultS_in : apply_fun multS (p 0, q 0) :e pi1S.
+      { exact (HmultS_fn (p 0, q 0) Hp0q0). }
+      claim HmultI_in : apply_fun multI (p 1, q 1) :e pi1I.
+      { exact (HmultI_fn (p 1, q 1) Hp1q1). }
+      exact (tuple_2_setprod_by_pair_Sigma pi1S pi1I
+        (apply_fun multS (p 0, q 0))
+        (apply_fun multI (p 1, q 1))
+        HmultS_in
+        HmultI_in).
+    }
+    rewrite (projection1_apply
+      pi1S
+      pi1I
+      (apply_fun multS (p 0, q 0), apply_fun multI (p 1, q 1))
+      Hmultpair_in).
+    rewrite (projection1_apply pi1S pi1I p Hp).
+    rewrite (projection1_apply pi1S pi1I q Hq).
+    reflexivity.
+}
+claim HprojBij : bijection (setprod pi1S pi1I) pi1S proj.
+{
+  apply andI.
+  - exact (group_homomorphism_function_on
+      (setprod pi1S pi1I)
+      (product_group_mult pi1S multS pi1I multI)
+      pi1S
+      multS
+      proj
+      HprojHom).
+  - let y.
+    assume Hy : y :e pi1S.
+    set idI := fundamental_group_id unit_interval unit_interval_topology xI.
+    claim HidI_mem : idI :e pi1I.
+    {
+      rewrite Hpi1I_triv.
+      exact (SingI idI).
+    }
+    witness (y, idI).
+    apply andI.
+    + exact (tuple_2_setprod_by_pair_Sigma pi1S pi1I y idI Hy HidI_mem).
+    + apply andI.
+      * rewrite (projection1_apply pi1S pi1I (y, idI)
+          (tuple_2_setprod_by_pair_Sigma pi1S pi1I y idI Hy HidI_mem)).
+        rewrite tuple_2_0_eq.
+        reflexivity.
+      * let x'. assume Hx' : x' :e setprod pi1S pi1I.
+        assume Hprojx' : apply_fun proj x' = y.
+        claim Hx'0 : x' 0 = y.
+        {
+          rewrite <- (projection1_apply pi1S pi1I x' Hx').
+          exact Hprojx'.
+        }
+        claim Hx'1_mem : x' 1 :e pi1I.
+        { exact (ap1_Sigma pi1S (fun _ :set => pi1I) x' Hx'). }
+        claim Hx'1 : x' 1 = idI.
+        {
+          rewrite Hpi1I_triv in Hx'1_mem.
+          exact (SingE idI (x' 1) Hx'1_mem).
+        }
+        apply (Sigma_E pi1S (fun _ :set => pi1I) x' Hx').
+        let a. assume Ha.
+        let b. assume Hb.
+        assume Hx'pair : x' = (a, b).
+        rewrite Hx'pair.
+        apply (tuple_2_ext a b y idI).
+        - claim Ha0 : a = x' 0.
+          { rewrite Hx'pair. rewrite tuple_2_0_eq. reflexivity. }
+          rewrite Ha0. exact Hx'0.
+        - claim Hb1 : b = x' 1.
+          { rewrite Hx'pair. rewrite tuple_2_1_eq. reflexivity. }
+          rewrite Hb1. exact Hx'1.
+}
+claim HprojIso :
+  group_isomorphism
+    (setprod pi1S pi1I)
+    (product_group_mult pi1S multS pi1I multI)
+    pi1S
+    multS
+    proj.
+{
+  apply andI.
+  - exact HprojHom.
+  - exact HprojBij.
+}
+set phi := compose_fun
+  (fundamental_group (setprod S1 unit_interval) Tprod (xS1, xI))
+  phi_prod
+  proj.
+claim Hphi_hom :
+  group_homomorphism
+    (fundamental_group (setprod S1 unit_interval) Tprod (xS1, xI))
+    (fundamental_group_mult (setprod S1 unit_interval) Tprod (xS1, xI))
+    pi1S
+    multS
+    phi.
+{
+  claim HgrpProd :
+    group_structure
+      (fundamental_group (setprod S1 unit_interval) Tprod (xS1, xI))
+      (fundamental_group_mult (setprod S1 unit_interval) Tprod (xS1, xI))
+      (fundamental_group_id (setprod S1 unit_interval) Tprod (xS1, xI))
+      (fundamental_group_inv (setprod S1 unit_interval) Tprod (xS1, xI)).
+  {
+    claim Hxpair : (xS1, xI) :e setprod S1 unit_interval.
+    { exact (tuple_2_setprod_by_pair_Sigma S1 unit_interval xS1 xI HxS1 HxI). }
+    exact (fundamental_group_is_group
+      (setprod S1 unit_interval)
+      Tprod
+      (xS1, xI)
+      HtopProd
+      Hxpair).
+  }
+  exact (group_homomorphism_compose_cyclic_helper
+    (fundamental_group (setprod S1 unit_interval) Tprod (xS1, xI))
+    (fundamental_group_mult (setprod S1 unit_interval) Tprod (xS1, xI))
+    (fundamental_group_id (setprod S1 unit_interval) Tprod (xS1, xI))
+    (fundamental_group_inv (setprod S1 unit_interval) Tprod (xS1, xI))
+    (setprod pi1S pi1I)
+    (product_group_mult pi1S multS pi1I multI)
+    pi1S
+    multS
+    phi_prod
+    proj
+    HgrpProd
+    (group_isomorphism_homomorphism
+      (fundamental_group (setprod S1 unit_interval) Tprod (xS1, xI))
+      (fundamental_group_mult (setprod S1 unit_interval) Tprod (xS1, xI))
+      (setprod pi1S pi1I)
+      (product_group_mult pi1S multS pi1I multI)
+      phi_prod
+      Hphi_prod)
+    (group_isomorphism_homomorphism
+      (setprod pi1S pi1I)
+      (product_group_mult pi1S multS pi1I multI)
+      pi1S
+      multS
+      proj
+      HprojIso)).
+}
+claim Hphi_bij :
+  bijection
+    (fundamental_group (setprod S1 unit_interval) Tprod (xS1, xI))
+    pi1S
+    phi.
+{
+  exact (bijection_compose_fun
+    (fundamental_group (setprod S1 unit_interval) Tprod (xS1, xI))
+    (setprod pi1S pi1I)
+    pi1S
+    phi_prod
+    proj
+    (group_isomorphism_bijection
+      (fundamental_group (setprod S1 unit_interval) Tprod (xS1, xI))
+      (fundamental_group_mult (setprod S1 unit_interval) Tprod (xS1, xI))
+      (setprod pi1S pi1I)
+      (product_group_mult pi1S multS pi1I multI)
+      phi_prod
+      Hphi_prod)
+    (group_isomorphism_bijection
+      (setprod pi1S pi1I)
+      (product_group_mult pi1S multS pi1I multI)
+      pi1S
+      multS
+      proj
+      HprojIso)).
+}
+witness phi.
+apply andI.
+- exact Hphi_hom.
+- exact Hphi_bij.
+Qed.
 
 (** from S58 Exercise 2(d) (line 1480 in algtop.tex): infinite cylinder pi1 **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
@@ -143232,8 +143588,396 @@ Theorem ex58_2d_infinite_cylinder_pi1 : forall x0:set,
       (fundamental_group S1 S1_topology (x0 0))
       (fundamental_group_mult S1 S1_topology (x0 0))
       phi.
-admit.
-Admitted.
+let x0.
+assume Hx0.
+set xS1 := x0 0.
+set xR := x0 1.
+set Tprod := product_topology S1 S1_topology R R_standard_topology.
+set pi1Prod := fundamental_group (setprod S1 R) Tprod x0.
+set multProd := fundamental_group_mult (setprod S1 R) Tprod x0.
+set pi1S := fundamental_group S1 S1_topology xS1.
+set multS := fundamental_group_mult S1 S1_topology xS1.
+set pi1R := fundamental_group R R_standard_topology xR.
+set multR := fundamental_group_mult R R_standard_topology xR.
+claim Hx0eq : x0 = (xS1, xR).
+{
+  apply (Sigma_E S1 (fun _ :set => R) x0 Hx0).
+  let a. assume HaS1.
+  let b. assume HbR.
+  assume Hx0pair : x0 = (a, b).
+  rewrite Hx0pair.
+  rewrite tuple_2_0_eq.
+  rewrite tuple_2_1_eq.
+  reflexivity.
+}
+rewrite Hx0eq.
+claim HxS1 : xS1 :e S1.
+{
+  exact (ap0_Sigma S1 (fun _ :set => R) x0 Hx0).
+}
+claim HxR : xR :e R.
+{
+  exact (ap1_Sigma S1 (fun _ :set => R) x0 Hx0).
+}
+claim HtopR2 : topology_on (setprod R R) R2_topology.
+{
+  exact (product_topology_is_topology R R_standard_topology R R_standard_topology
+    R_standard_topology_is_topology R_standard_topology_is_topology).
+}
+claim HS1subR2 : S1 c= setprod R R.
+{
+  exact (Sep_Subq (setprod R R)
+    (fun p:set =>
+      add_SNo (mul_SNo (p 0) (p 0)) (mul_SNo (p 1) (p 1)) = 1)).
+}
+claim HtopS1 : topology_on S1 S1_topology.
+{
+  exact (subspace_topology_is_topology
+    (setprod R R)
+    R2_topology
+    S1
+    HtopR2
+    HS1subR2).
+}
+claim HtopProd : topology_on (setprod S1 R) Tprod.
+{
+  exact (product_topology_is_topology
+    S1
+    S1_topology
+    R
+    R_standard_topology
+    HtopS1
+    R_standard_topology_is_topology).
+}
+claim Hpi1R_triv :
+  pi1R = {fundamental_group_id R R_standard_topology xR}.
+{
+  exact (simply_connected_trivial_pi1_at_point
+    R
+    R_standard_topology
+    xR
+    simply_connected_R_standard
+    HxR).
+}
+claim Hprod_iso :
+  exists phi_prod:set,
+    group_isomorphism
+      (fundamental_group (setprod S1 R) Tprod (xS1, xR))
+      (fundamental_group_mult (setprod S1 R) Tprod (xS1, xR))
+      (setprod pi1S pi1R)
+      (product_group_mult pi1S multS pi1R multR)
+      phi_prod.
+{
+  exact (thm60_1_pi1_product
+    S1
+    S1_topology
+    xS1
+    R
+    R_standard_topology
+    xR
+    HtopS1
+    R_standard_topology_is_topology
+    HxS1
+    HxR).
+}
+apply Hprod_iso.
+let phi_prod.
+assume Hphi_prod.
+set proj := projection_map1 pi1S pi1R.
+claim HgrpS :
+  group_structure pi1S multS
+    (fundamental_group_id S1 S1_topology xS1)
+    (fundamental_group_inv S1 S1_topology xS1).
+{
+  exact (fundamental_group_is_group S1 S1_topology xS1 HtopS1 HxS1).
+}
+claim HgrpR :
+  group_structure pi1R multR
+    (fundamental_group_id R R_standard_topology xR)
+    (fundamental_group_inv R R_standard_topology xR).
+{
+  exact (fundamental_group_is_group
+    R
+    R_standard_topology
+    xR
+    R_standard_topology_is_topology
+    HxR).
+}
+claim HprojHom :
+  group_homomorphism
+    (setprod pi1S pi1R)
+    (product_group_mult pi1S multS pi1R multR)
+    pi1S
+    multS
+    proj.
+{
+  apply andI.
+  - (** function_on proj **)
+    let p. assume Hp : p :e setprod pi1S pi1R.
+    claim Hp0 : p 0 :e pi1S.
+    {
+      exact (ap0_Sigma pi1S (fun _ :set => pi1R) p Hp).
+    }
+    rewrite (projection1_apply pi1S pi1R p Hp).
+    exact Hp0.
+  - (** multiplicativity **)
+    let p q.
+    assume Hp : p :e setprod pi1S pi1R.
+    assume Hq : q :e setprod pi1S pi1R.
+    claim Hp0 : p 0 :e pi1S.
+    {
+      exact (ap0_Sigma pi1S (fun _ :set => pi1R) p Hp).
+    }
+    claim Hq0 : q 0 :e pi1S.
+    {
+      exact (ap0_Sigma pi1S (fun _ :set => pi1R) q Hq).
+    }
+    claim Hp1 : p 1 :e pi1R.
+    {
+      exact (ap1_Sigma pi1S (fun _ :set => pi1R) p Hp).
+    }
+    claim Hq1 : q 1 :e pi1R.
+    {
+      exact (ap1_Sigma pi1S (fun _ :set => pi1R) q Hq).
+    }
+    claim HmultS_fn : function_on multS (setprod pi1S pi1S) pi1S.
+    {
+      apply (and6E
+        (function_on multS (setprod pi1S pi1S) pi1S)
+        (function_on (fundamental_group_inv S1 S1_topology xS1) pi1S pi1S)
+        ((fundamental_group_id S1 S1_topology xS1) :e pi1S)
+        (forall x y z:set, x :e pi1S -> y :e pi1S -> z :e pi1S ->
+          apply_fun multS (apply_fun multS (x, y), z) =
+            apply_fun multS (x, apply_fun multS (y, z)))
+        (forall x:set, x :e pi1S ->
+          apply_fun multS (fundamental_group_id S1 S1_topology xS1, x) = x /\
+          apply_fun multS (x, fundamental_group_id S1 S1_topology xS1) = x)
+        (forall x:set, x :e pi1S ->
+          apply_fun multS (x, apply_fun (fundamental_group_inv S1 S1_topology xS1) x) =
+            fundamental_group_id S1 S1_topology xS1 /\
+          apply_fun multS (apply_fun (fundamental_group_inv S1 S1_topology xS1) x, x) =
+            fundamental_group_id S1 S1_topology xS1)
+        HgrpS).
+      assume Hm _ _ _ _ _. exact Hm.
+    }
+    claim HmultR_fn : function_on multR (setprod pi1R pi1R) pi1R.
+    {
+      apply (and6E
+        (function_on multR (setprod pi1R pi1R) pi1R)
+        (function_on (fundamental_group_inv R R_standard_topology xR) pi1R pi1R)
+        ((fundamental_group_id R R_standard_topology xR) :e pi1R)
+        (forall x y z:set, x :e pi1R -> y :e pi1R -> z :e pi1R ->
+          apply_fun multR (apply_fun multR (x, y), z) =
+            apply_fun multR (x, apply_fun multR (y, z)))
+        (forall x:set, x :e pi1R ->
+          apply_fun multR (fundamental_group_id R R_standard_topology xR, x) = x /\
+          apply_fun multR (x, fundamental_group_id R R_standard_topology xR) = x)
+        (forall x:set, x :e pi1R ->
+          apply_fun multR (x, apply_fun (fundamental_group_inv R R_standard_topology xR) x) =
+            fundamental_group_id R R_standard_topology xR /\
+          apply_fun multR (apply_fun (fundamental_group_inv R R_standard_topology xR) x, x) =
+            fundamental_group_id R R_standard_topology xR)
+        HgrpR).
+      assume Hm _ _ _ _ _. exact Hm.
+    }
+    claim Hpq : (p, q) :e setprod (setprod pi1S pi1R) (setprod pi1S pi1R).
+    {
+      exact (tuple_2_setprod_by_pair_Sigma
+        (setprod pi1S pi1R)
+        (setprod pi1S pi1R)
+        p
+        q
+        Hp
+        Hq).
+    }
+    rewrite (apply_fun_graph
+      (setprod (setprod pi1S pi1R) (setprod pi1S pi1R))
+      (fun r:set =>
+        (apply_fun multS ((r 0) 0, (r 1) 0),
+         apply_fun multR ((r 0) 1, (r 1) 1)))
+      (p, q)
+      Hpq).
+    rewrite (tuple_2_0_eq p q).
+    rewrite (tuple_2_1_eq p q).
+    claim Hmultpair_in :
+      (apply_fun multS (p 0, q 0), apply_fun multR (p 1, q 1))
+      :e setprod pi1S pi1R.
+    {
+      claim Hp0q0 : (p 0, q 0) :e setprod pi1S pi1S.
+      { exact (tuple_2_setprod_by_pair_Sigma pi1S pi1S (p 0) (q 0) Hp0 Hq0). }
+      claim Hp1q1 : (p 1, q 1) :e setprod pi1R pi1R.
+      { exact (tuple_2_setprod_by_pair_Sigma pi1R pi1R (p 1) (q 1) Hp1 Hq1). }
+      claim HmultS_in : apply_fun multS (p 0, q 0) :e pi1S.
+      { exact (HmultS_fn (p 0, q 0) Hp0q0). }
+      claim HmultR_in : apply_fun multR (p 1, q 1) :e pi1R.
+      { exact (HmultR_fn (p 1, q 1) Hp1q1). }
+      exact (tuple_2_setprod_by_pair_Sigma pi1S pi1R
+        (apply_fun multS (p 0, q 0))
+        (apply_fun multR (p 1, q 1))
+        HmultS_in
+        HmultR_in).
+    }
+    rewrite (projection1_apply
+      pi1S
+      pi1R
+      (apply_fun multS (p 0, q 0), apply_fun multR (p 1, q 1))
+      Hmultpair_in).
+    rewrite (projection1_apply pi1S pi1R p Hp).
+    rewrite (projection1_apply pi1S pi1R q Hq).
+    reflexivity.
+}
+claim HprojBij : bijection (setprod pi1S pi1R) pi1S proj.
+{
+  apply andI.
+  - exact (group_homomorphism_function_on
+      (setprod pi1S pi1R)
+      (product_group_mult pi1S multS pi1R multR)
+      pi1S
+      multS
+      proj
+      HprojHom).
+  - let y.
+    assume Hy : y :e pi1S.
+    set idR := fundamental_group_id R R_standard_topology xR.
+    claim HidR_mem : idR :e pi1R.
+    {
+      rewrite Hpi1R_triv.
+      exact (SingI idR).
+    }
+    witness (y, idR).
+    apply andI.
+    + exact (tuple_2_setprod_by_pair_Sigma pi1S pi1R y idR Hy HidR_mem).
+    + apply andI.
+      * rewrite (projection1_apply pi1S pi1R (y, idR)
+          (tuple_2_setprod_by_pair_Sigma pi1S pi1R y idR Hy HidR_mem)).
+        rewrite tuple_2_0_eq.
+        reflexivity.
+      * let x'. assume Hx' : x' :e setprod pi1S pi1R.
+        assume Hprojx' : apply_fun proj x' = y.
+        claim Hx'0 : x' 0 = y.
+        {
+          rewrite <- (projection1_apply pi1S pi1R x' Hx').
+          exact Hprojx'.
+        }
+        claim Hx'1_mem : x' 1 :e pi1R.
+        { exact (ap1_Sigma pi1S (fun _ :set => pi1R) x' Hx'). }
+        claim Hx'1 : x' 1 = idR.
+        {
+          rewrite Hpi1R_triv in Hx'1_mem.
+          exact (SingE idR (x' 1) Hx'1_mem).
+        }
+        apply (Sigma_E pi1S (fun _ :set => pi1R) x' Hx').
+        let a. assume Ha.
+        let b. assume Hb.
+        assume Hx'pair : x' = (a, b).
+        rewrite Hx'pair.
+        apply (tuple_2_ext a b y idR).
+        - claim Ha0 : a = x' 0.
+          { rewrite Hx'pair. rewrite tuple_2_0_eq. reflexivity. }
+          rewrite Ha0. exact Hx'0.
+        - claim Hb1 : b = x' 1.
+          { rewrite Hx'pair. rewrite tuple_2_1_eq. reflexivity. }
+          rewrite Hb1. exact Hx'1.
+}
+claim HprojIso :
+  group_isomorphism
+    (setprod pi1S pi1R)
+    (product_group_mult pi1S multS pi1R multR)
+    pi1S
+    multS
+    proj.
+{
+  apply andI.
+  - exact HprojHom.
+  - exact HprojBij.
+}
+set phi := compose_fun
+  (fundamental_group (setprod S1 R) Tprod (xS1, xR))
+  phi_prod
+  proj.
+claim Hphi_hom :
+  group_homomorphism
+    (fundamental_group (setprod S1 R) Tprod (xS1, xR))
+    (fundamental_group_mult (setprod S1 R) Tprod (xS1, xR))
+    pi1S
+    multS
+    phi.
+{
+  claim HgrpProd :
+    group_structure
+      (fundamental_group (setprod S1 R) Tprod (xS1, xR))
+      (fundamental_group_mult (setprod S1 R) Tprod (xS1, xR))
+      (fundamental_group_id (setprod S1 R) Tprod (xS1, xR))
+      (fundamental_group_inv (setprod S1 R) Tprod (xS1, xR)).
+  {
+    claim Hxpair : (xS1, xR) :e setprod S1 R.
+    { exact (tuple_2_setprod_by_pair_Sigma S1 R xS1 xR HxS1 HxR). }
+    exact (fundamental_group_is_group
+      (setprod S1 R)
+      Tprod
+      (xS1, xR)
+      HtopProd
+      Hxpair).
+  }
+  exact (group_homomorphism_compose_cyclic_helper
+    (fundamental_group (setprod S1 R) Tprod (xS1, xR))
+    (fundamental_group_mult (setprod S1 R) Tprod (xS1, xR))
+    (fundamental_group_id (setprod S1 R) Tprod (xS1, xR))
+    (fundamental_group_inv (setprod S1 R) Tprod (xS1, xR))
+    (setprod pi1S pi1R)
+    (product_group_mult pi1S multS pi1R multR)
+    pi1S
+    multS
+    phi_prod
+    proj
+    HgrpProd
+    (group_isomorphism_homomorphism
+      (fundamental_group (setprod S1 R) Tprod (xS1, xR))
+      (fundamental_group_mult (setprod S1 R) Tprod (xS1, xR))
+      (setprod pi1S pi1R)
+      (product_group_mult pi1S multS pi1R multR)
+      phi_prod
+      Hphi_prod)
+    (group_isomorphism_homomorphism
+      (setprod pi1S pi1R)
+      (product_group_mult pi1S multS pi1R multR)
+      pi1S
+      multS
+      proj
+      HprojIso)).
+}
+claim Hphi_bij :
+  bijection
+    (fundamental_group (setprod S1 R) Tprod (xS1, xR))
+    pi1S
+    phi.
+{
+  exact (bijection_compose_fun
+    (fundamental_group (setprod S1 R) Tprod (xS1, xR))
+    (setprod pi1S pi1R)
+    pi1S
+    phi_prod
+    proj
+    (group_isomorphism_bijection
+      (fundamental_group (setprod S1 R) Tprod (xS1, xR))
+      (fundamental_group_mult (setprod S1 R) Tprod (xS1, xR))
+      (setprod pi1S pi1R)
+      (product_group_mult pi1S multS pi1R multR)
+      phi_prod
+      Hphi_prod)
+    (group_isomorphism_bijection
+      (setprod pi1S pi1R)
+      (product_group_mult pi1S multS pi1R multR)
+      pi1S
+      multS
+      proj
+      HprojIso)).
+}
+witness phi.
+apply andI.
+- exact Hphi_hom.
+- exact Hphi_bij.
+Qed.
 
 (** from S58 Exercise 2(e) (line 1481 in algtop.tex): R^3 with nonneg axes deleted pi1 **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
@@ -171997,7 +172741,6 @@ exact (projective_plane_map_covering_from_evenly_covered
   (projective_plane_local_evenly_covered_from_pointwise HpointEven)).
 Qed.
 
-(** Proven Charlie **)
 Theorem thm60_3_projective_plane_surface_covering_from_evenly_covered_parts :
   m_manifold projective_plane projective_plane_topology 2 ->
   compact_space (Sn 2) (Sn_topology 2) ->
@@ -172020,7 +172763,6 @@ exact (and3I
   (projective_plane_map_covering_from_evenly_covered HlocalEven)).
 Admitted.
 
-(** Proven Charlie **)
 Theorem thm60_3_projective_plane_surface_covering_from_pointwise_evenly_covered_parts :
   m_manifold projective_plane projective_plane_topology 2 ->
   compact_space (Sn 2) (Sn_topology 2) ->
@@ -172040,7 +172782,6 @@ exact (thm60_3_projective_plane_surface_covering_from_evenly_covered_parts
   (projective_plane_local_evenly_covered_from_pointwise HpointEven)).
 Admitted.
 
-(** Proven Charlie **)
 Theorem thm60_3_projective_plane_surface_covering_from_parts :
   m_manifold projective_plane projective_plane_topology 2 ->
   compact_space (Sn 2) (Sn_topology 2) ->
@@ -231513,7 +232254,6 @@ Theorem closed_quotient_map_preserves_normality_helper :
 admit.
 Admitted.
 
-(** Proven Bob **)
 Theorem closed_quotient_map_preserves_normality_helper_from_quotient_map :
   forall E Te X Tx pi:set,
   quotient_map E Te X pi ->
@@ -231615,7 +232355,6 @@ exact (closed_quotient_map_preserves_normality_from_quotient_map
   HclosedImg).
 Qed.
 
-(** Proven Bob **)
 Theorem closed_quotient_map_preserves_normality_helper_from_quotient_map_via_bridges :
   forall E Te X Tx pi:set,
   quotient_map E Te X pi ->
@@ -231641,7 +232380,6 @@ exact (closed_quotient_map_preserves_normality_helper_from_quotient_map
   HpreimOpen).
 Admitted.
 
-(** Proven Bob **)
 Theorem lemma73_3_closed_quotient_normal_with_surjective :
   forall E Te X Tx pi:set,
   topology_on E Te -> topology_on X Tx ->
@@ -231668,7 +232406,6 @@ exact (closed_quotient_map_preserves_normality_with_surjective
   Hsurj).
 Admitted.
 
-(** Proven Bob **)
 Theorem lemma73_3_closed_quotient_normal_from_surjective_map :
   forall E Te X Tx pi:set,
   topology_on E Te -> topology_on X Tx ->
@@ -231695,7 +232432,6 @@ exact (closed_quotient_map_preserves_normality_from_surjective_map
   HsurjMap).
 Admitted.
 
-(** Proven Bob **)
 Theorem lemma73_3_closed_quotient_normal_from_quotient_map :
   forall E Te X Tx pi:set,
   quotient_map E Te X pi ->
@@ -231721,7 +232457,6 @@ exact (closed_quotient_map_preserves_normality_helper_from_quotient_map
   HpreimOpen).
 Admitted.
 
-(** Proven Bob **)
 Theorem lemma73_3_closed_quotient_normal_with_surjective_via_bridges :
   forall E Te X Tx pi:set,
   topology_on E Te -> topology_on X Tx ->
@@ -231748,7 +232483,6 @@ exact (lemma73_3_closed_quotient_normal_with_surjective
   Hsurj).
 Admitted.
 
-(** Proven Bob **)
 Theorem lemma73_3_closed_quotient_normal_from_surjective_map_via_bridges :
   forall E Te X Tx pi:set,
   topology_on E Te -> topology_on X Tx ->
@@ -231775,7 +232509,6 @@ exact (lemma73_3_closed_quotient_normal_from_surjective_map
   HsurjMap).
 Admitted.
 
-(** Proven Bob **)
 Theorem lemma73_3_closed_quotient_normal_from_quotient_map_via_bridges :
   forall E Te X Tx pi:set,
   quotient_map E Te X pi ->
@@ -245139,8 +245872,7 @@ Qed.
 (** be a covering map (E not required path connected). If E0 is a path component of E, **)
 (** then the restriction p0: E0 -> B is a covering map. **)
 (** EFFORT: 15 lines textbook, difficulty 5/10, USD 150 **)
-(** Collected Charlie 182 **)
-(** Proven Charlie **)
+(** Bounty 182 **)
 Theorem lemma80_1_path_component_covering :
   forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
@@ -245800,8 +246532,7 @@ Admitted.
 (** LATEX VERSION: Let p = r o q with p: X -> Z, q: X -> Y, r: Y -> Z. **)
 (** (a) If p and r are covering maps, so is q. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Collected Charlie 242 **)
-(** Proven Charlie **)
+(** Bounty 242 **)
 Theorem lemma80_2a_covering_composition :
   forall X Tx Y Ty Z Tz q r:set,
   path_connected_space X Tx -> locally_path_connected X Tx ->
@@ -246694,8 +247425,7 @@ Admitted.
 (** from S80 Lem 80.2b (line 4965 in algtop.tex): if p and q covering, so is r **)
 (** LATEX VERSION: (b) If p and q are covering maps, so is r. **)
 (** EFFORT: 20 lines textbook, difficulty 7/10, USD 280 **)
-(** Collected Charlie 339 **)
-(** Proven Charlie **)
+(** Bounty 339 **)
 Theorem lemma80_2b_covering_composition :
   forall X Tx Y Ty Z Tz q r:set,
   path_connected_space X Tx -> locally_path_connected X Tx ->
@@ -284611,7 +285341,6 @@ apply (iffI
 		Qed.
 
 (** helper: the tree extension union is connected whenever A meets T in a vertex **)
-(** Proven Charlie **)
 Theorem lemma84_2_tree_extension_connected_part :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -284743,7 +285472,6 @@ exact (union_connected_common_point
   Hcommon).
 Admitted.
 
-(** Proven Bob **)
 Theorem lemma84_2_tree_extension_from_components :
   forall T ArcsT X Tx Arcs A:set,
   subgraph_of (T :\/: A) X Tx Arcs ->
@@ -284770,7 +285498,6 @@ exact (tree_in_graph_intro
   HnoloopTA).
 Admitted.
 
-(** Proven Bob **)
 Theorem lemma84_2_tree_extension_iff_components :
   forall T ArcsT X Tx Arcs A:set,
   subgraph_of (T :\/: A) X Tx Arcs ->
@@ -284864,7 +285591,6 @@ apply iffI.
     Hnoloop).
 Admitted.
 
-(** Proven Bob **)
 Theorem lemma84_2_tree_extension_iff_components_from_hypotheses :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -284904,7 +285630,6 @@ exact (lemma84_2_tree_extension_iff_components
     HA)).
 Admitted.
 
-(** Proven Bob **)
 Theorem lemma84_2_tree_extension_components_pack_from_hypotheses_and_tree :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -284945,7 +285670,6 @@ exact (iffEL
   HtreeExt).
 Admitted.
 
-(** Proven Bob **)
 Theorem lemma84_2_tree_extension_no_closed_reduced_edge_path_from_hypotheses_and_tree :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -284983,7 +285707,6 @@ exact (andER
     HtreeExt)).
 Admitted.
 
-(** Proven Bob **)
 Theorem lemma84_2_tree_extension_general_linear_graph_from_hypotheses_and_tree :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -285019,7 +285742,6 @@ exact (andEL
       HtreeExt))).
 Admitted.
 
-(** Proven Bob **)
 Theorem lemma84_2_tree_extension_connected_from_hypotheses_and_tree :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -285055,7 +285777,6 @@ exact (andER
       HtreeExt))).
 Admitted.
 
-(** Proven Bob **)
 Theorem lemma84_2_tree_extension_from_hypotheses_and_components :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -285098,7 +285819,6 @@ exact (lemma84_2_tree_extension_from_components
   HnoloopTA).
 Admitted.
 
-(** Proven Bob **)
 Theorem lemma84_2_tree_extension_subgraph_part :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -287740,7 +288460,6 @@ exact (and5I
   HcohFamTA).
 Admitted.
 
-(** Proven Charlie **)
 (** helper: if A meets T exactly at v and v is a graph vertex, then A has a second endpoint outside T. **)
 Theorem lemma84_2_tree_extension_attaching_arc_has_endpoint_outside_T :
   forall T ArcsT X Tx Arcs A v:set,
@@ -287949,7 +288668,6 @@ apply (binunionE {A} ArcsT E HEfam).
 Qed.
 
 (** helper: no closed reduced edge path appears after attaching A along a single vertex **)
-(** Proven Charlie **)
 Theorem lemma84_2_tree_extension_no_closed_reduced_edge_path_part :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -292896,7 +293614,6 @@ exact (maximal_tree_tree_extension_edge_excludes_outside_points
   HxNotT).
 Qed.
 
-(** Proven Bob **)
 Theorem maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge_if_extension :
   forall T ArcsT X Tx Arcs x A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -292950,7 +293667,6 @@ apply iffI.
     (x :e A)).
 Qed.
 
-(** Proven Bob **)
 Theorem maximal_tree_single_vertex_outside_in_extension_edge_iff_false :
   forall T ArcsT X Tx Arcs x A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -293068,7 +293784,6 @@ exact (maximal_tree_noncontained_edge_tree_extension_contradiction
   Hnsub).
 Qed.
 
-(** Proven Bob **)
 Theorem maximal_tree_single_vertex_noncontained_edge_component_extension_contradiction :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -293127,7 +293842,6 @@ exact (maximal_tree_single_vertex_edge_tree_extension_contradiction
   Hmeet).
 Admitted.
 
-(** Proven Bob **)
 Theorem maximal_tree_single_vertex_noncontained_edge_component_extension_iff_false :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -293223,7 +293937,6 @@ apply iffI.
            (apply_fun path_seq j) 0 1 = x0)))).
 Admitted.
 
-(** Proven Bob **)
 Theorem maximal_tree_single_vertex_edge_component_extension_forces_subset :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -293262,7 +293975,6 @@ apply (xm (A c= T)).
     (A c= T)).
 Admitted.
 
-(** Proven Bob **)
 Theorem maximal_tree_single_vertex_vertex_outside_not_in_edge_from_component_extension :
   forall T ArcsT X Tx Arcs x A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -293520,7 +294232,6 @@ apply (xm (x :e T)).
     (x :e T)).
 Qed.
 
-(** Proven Bob **)
 Theorem maximal_tree_all_vertices_if_outside_vertex_has_single_vertex_component_extension_edge :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -293584,7 +294295,6 @@ apply (xm (x :e T)).
     (x :e T)).
 Admitted.
 
-(** Proven Bob **)
 Theorem maximal_tree_outside_vertex_component_extension_contradiction_from_noncontained_edges :
   forall T ArcsT X Tx Arcs x:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -293820,7 +294530,6 @@ apply and5I.
 - exact HtreeExt.
 Qed.
 
-(** Proven Bob **)
 Theorem maximal_tree_all_vertices_if_noncontained_edges_meet_tree_and_component_extension :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -294159,7 +294868,6 @@ exact (mem_eqR
   HxUnion).
 Qed.
 
-(** Proven Bob **)
 Theorem maximal_tree_edge_meeting_tree_forces_subset_from_extension_obligation :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -294287,7 +294995,6 @@ apply (xm (A c= T)).
 (** blocked on admitted lemma84_2_tree_extension_general_linear_graph_part. **)
 Admitted.
 
-(** Proven Bob **)
 Theorem maximal_tree_edge_meeting_tree_forces_subset_from_component_obligations :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -294341,7 +295048,6 @@ exact (lemma84_2_tree_extension_from_hypotheses_and_components
   HnoloopTA).
 Admitted.
 
-(** Proven Bob **)
 Theorem maximal_tree_edge_meeting_tree_forces_subset_from_component_obligation_families :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -294381,7 +295087,6 @@ apply (xm (A c= T)).
     (HnoloopFam A HA Hnsub)).
 Admitted.
 
-(** Proven Bob **)
 Theorem maximal_tree_edge_meeting_tree_forces_subset_from_stub_obligation_families :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -294545,7 +295250,6 @@ exact (HxNotT
   (HAsub x HxA)).
 Qed.
 
-(** Proven Bob **)
 Theorem maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge_from_extension_obligation :
   forall T ArcsT X Tx Arcs x A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -294582,7 +295286,6 @@ exact (outside_set_not_in_subset
   HxA).
 Admitted.
 
-(** Proven Bob **)
 Theorem maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge_from_component_obligations :
   forall T ArcsT X Tx Arcs x A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -294641,7 +295344,6 @@ exact (lemma84_2_tree_extension_from_hypotheses_and_components
   HnoloopTA).
 Admitted.
 
-(** Proven Bob **)
 Theorem maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge_from_component_obligation_families :
   forall T ArcsT X Tx Arcs x A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -294691,7 +295393,6 @@ apply (xm (A c= T)).
   (HnoloopFam A HA Hnsub)).
 Admitted.
 
-(** Proven Bob **)
 Theorem maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge_from_stub_obligation_families :
   forall T ArcsT X Tx Arcs x A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -294859,7 +295560,6 @@ exact (maximal_tree_all_vertices_if_noncontained_edges_meet_tree_and_extend
 (** blocked on admitted lemma84_2_tree_extension_general_linear_graph_part. **)
 Admitted.
 
-(** Proven Bob **)
 Theorem maximal_tree_all_vertices_if_noncontained_edges_meet_tree_in_single_vertex_and_extension_obligation :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -294913,7 +295613,6 @@ apply andI.
     HmeetEx).
 Admitted.
 
-(** Proven Bob **)
 Theorem maximal_tree_all_vertices_if_noncontained_edges_meet_tree_in_single_vertex_and_component_extension_obligations :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -295794,7 +296493,6 @@ exact HpcSub.
 Qed.
 
 (** helper for S84.3: reduce simply-connectedness to a trivial-pi1 witness at one point. **)
-(** Proven Bob **)
 Theorem thm84_3_tree_simply_connected_from_local_path_connected_and_trivial_pi1 :
   forall T ArcsT X Tx Arcs x0:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -296089,7 +296787,6 @@ claim HsimpCore :
 exact HsimpCore.
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_vertices_from_component_obligation :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -296128,7 +296825,6 @@ apply (xm (x :e T)).
     (x :e T)).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_vertices_from_component_obligation_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -296383,7 +297079,6 @@ exact (thm84_4_backward_selected_arc_endpoints_in_target_from_rhs
   Hend).
 Qed.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_obligations :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -296467,7 +297162,6 @@ apply iffI.
       Hrhs)).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_obligations :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -296510,7 +297204,6 @@ exact (iffEL
   Hmax).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_obligations :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -296553,7 +297246,6 @@ exact (iffER
   Hrhs).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_obligations_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -296592,7 +297284,6 @@ exact (thm84_4_maximal_tree_all_vertices_from_obligations
   HgwdOb).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_obligations_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -296632,7 +297323,6 @@ exact (thm84_4_maximal_tree_implies_vertices_from_obligations
   Hmax).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_obligations_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -297419,7 +298109,6 @@ assume HASel Hend Hep.
     (A c= T)).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_backward_selected_arc_endpoint_close_obligation_from_subset_from_rhs :
   forall T ArcsT T' ArcsT' X Tx Arcs:set,
   (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
@@ -297440,7 +298129,6 @@ exact (HsubsetSel
   HASel).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_backward_selected_arc_endpoint_obligation_pair_from_subset_from_rhs :
   forall T ArcsT T' ArcsT' X Tx Arcs:set,
   (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
@@ -297661,7 +298349,6 @@ exact (thm84_4_forward_component_witness_from_component_obligations
   HnoloopTA).
 Qed.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_component_witness_from_meeting_and_tree_extension_obligation_family :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -297756,7 +298443,6 @@ exact (thm84_4_forward_component_witness_from_component_obligations
     HtreeExt)).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_vertices_from_meeting_and_tree_extension_obligation_family :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -297791,7 +298477,6 @@ exact (thm84_4_forward_component_witness_from_meeting_and_tree_extension_obligat
   Hnsub).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_component_witness_from_stub_meeting_and_tree_extension_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -297824,7 +298509,6 @@ exact (thm84_4_forward_component_witness_from_meeting_and_tree_extension_obligat
   (fun A HA Hnsub Hmeet => HextStub A Hmax HA Hnsub Hmeet)).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_vertices_from_stub_meeting_and_tree_extension_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -298235,7 +298919,6 @@ exact (thm84_4_forward_component_witness_from_component_obligations
   (HnoloopFam A HA Hnsub)).
 Qed.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_meeting_obligation_from_component_witness_family :
   forall T ArcsT X Tx Arcs:set,
   (forall A:set, A :e Arcs -> ~(A c= T) ->
@@ -298277,7 +298960,6 @@ apply andI.
 - exact Hmeet.
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_glg_obligation_from_component_witness_family :
   forall T ArcsT X Tx Arcs:set,
   (forall A:set, A :e Arcs -> ~(A c= T) ->
@@ -298316,7 +298998,6 @@ assume HvVert Hmeet HglgTA HconnTA HnoloopTA.
 exact HglgTA.
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_connected_obligation_from_component_witness_family :
   forall T ArcsT X Tx Arcs:set,
   (forall A:set, A :e Arcs -> ~(A c= T) ->
@@ -298355,7 +299036,6 @@ assume HvVert Hmeet HglgTA HconnTA HnoloopTA.
 exact HconnTA.
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_no_loop_obligation_from_component_witness_family :
   forall T ArcsT X Tx Arcs:set,
   (forall A:set, A :e Arcs -> ~(A c= T) ->
@@ -298399,7 +299079,6 @@ assume HvVert Hmeet HglgTA HconnTA HnoloopTA.
 exact HnoloopTA.
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_obligation_families_from_component_witness_family :
   forall T ArcsT X Tx Arcs:set,
   (forall A:set, A :e Arcs -> ~(A c= T) ->
@@ -298439,7 +299118,6 @@ apply and4I.
     T ArcsT X Tx Arcs HcompFam).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_stub_obligation_families_from_component_witness_family :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -298707,7 +299385,6 @@ exact (thm84_4_forward_component_witness_from_stub_obligation_families
   HnoloopStub).
 Qed.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_vertices_from_split_obligations :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -298749,7 +299426,6 @@ exact (thm84_4_forward_component_witness_from_component_obligations
   (HnoloopOb A HA Hnsub)).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_vertices_from_split_obligations_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -298782,7 +299458,6 @@ exact (thm84_4_forward_vertices_from_split_obligations
   HnoloopOb).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_tree_extension_obligation_family_from_component_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -298828,7 +299503,6 @@ exact (lemma84_2_tree_extension_from_hypotheses_and_components
   (HnoloopFam A HA Hnsub)).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_tree_extension_obligation_family_from_stub_component_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -298863,7 +299537,6 @@ exact (thm84_4_forward_tree_extension_obligation_family_from_component_obligatio
   (fun A HA Hnsub => HnoloopStub A Hmax HA Hnsub)).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_component_witness_from_meeting_and_tree_extension_obligation_family_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -298896,7 +299569,6 @@ exact (thm84_4_forward_component_witness_from_meeting_and_tree_extension_obligat
   HextFam).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_component_witness_from_stub_meeting_and_tree_extension_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -298929,7 +299601,6 @@ exact (thm84_4_forward_component_witness_from_stub_meeting_and_tree_extension_ob
   HextStub).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_tree_extension_obligation_family_from_component_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -298964,7 +299635,6 @@ exact (thm84_4_forward_tree_extension_obligation_family_from_component_obligatio
   HnoloopFam).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_tree_extension_obligation_family_from_stub_component_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -298999,7 +299669,6 @@ exact (thm84_4_forward_tree_extension_obligation_family_from_stub_component_obli
   HnoloopStub).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_vertices_from_component_obligation_families_via_meeting_and_tree_extension :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -299040,7 +299709,6 @@ exact (thm84_4_forward_vertices_from_meeting_and_tree_extension_obligation_famil
     HnoloopFam)).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_vertices_from_stub_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -299073,7 +299741,6 @@ exact (thm84_4_forward_vertices_from_split_obligations
   (fun A HA Hnsub => HnoloopStub A Hmax HA Hnsub)).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_vertices_from_stub_component_obligation_families_via_meeting_and_tree_extension :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -299119,7 +299786,6 @@ exact (thm84_4_forward_vertices_from_stub_meeting_and_tree_extension_obligation_
       Hmeet))).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_vertices_from_meeting_and_tree_extension_obligation_family_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -299142,7 +299808,6 @@ exact (thm84_4_forward_vertices_from_meeting_and_tree_extension_obligation_famil
   HextFam).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_vertices_from_stub_meeting_and_tree_extension_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -299165,7 +299830,6 @@ exact (thm84_4_forward_vertices_from_stub_meeting_and_tree_extension_obligation_
   HextStub).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_vertices_from_component_obligation_families_via_meeting_and_tree_extension_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -299198,7 +299862,6 @@ exact (thm84_4_forward_vertices_from_component_obligation_families_via_meeting_a
   HnoloopFam).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_vertices_from_stub_component_obligation_families_via_meeting_and_tree_extension_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -299231,7 +299894,6 @@ exact (thm84_4_forward_vertices_from_stub_component_obligation_families_via_meet
   HnoloopStub).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_stub_component_obligation_families_via_meeting_and_tree_extension :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -299336,7 +299998,6 @@ apply (thm84_4_maximal_tree_all_vertices_from_obligations
         Hep)).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_stub_component_obligation_families_via_meeting_and_tree_extension :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -299392,7 +300053,6 @@ exact (iffEL
   Hmax).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_stub_component_obligation_families_via_meeting_and_tree_extension :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -299448,7 +300108,6 @@ exact (iffER
   Hrhs).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_stub_component_obligation_families_via_meeting_and_tree_extension_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -299501,7 +300160,6 @@ exact (thm84_4_maximal_tree_all_vertices_from_stub_component_obligation_families
   HcloseStub).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_stub_component_obligation_families_via_meeting_and_tree_extension_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -299554,7 +300212,6 @@ exact (thm84_4_maximal_tree_implies_vertices_from_stub_component_obligation_fami
   Hmax).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_stub_component_obligation_families_via_meeting_and_tree_extension_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -300425,7 +301082,6 @@ exact (thm84_4_backward_selected_arc_subset_from_component_obligation_families_v
   HcloseFam).
 Qed.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_split_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -300519,7 +301175,6 @@ apply (thm84_4_maximal_tree_all_vertices_from_obligations
       Hep)).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_meeting_and_tree_extension_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -300601,7 +301256,6 @@ apply (thm84_4_maximal_tree_all_vertices_from_obligations
         Hep)).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_stub_meeting_and_tree_extension_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -300666,7 +301320,6 @@ apply (thm84_4_maximal_tree_all_vertices_from_obligations
     HcloseStub).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_meeting_and_tree_extension_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -300712,7 +301365,6 @@ exact (iffEL
   Hmax).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_meeting_and_tree_extension_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -300758,7 +301410,6 @@ exact (iffER
   Hrhs).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_stub_meeting_and_tree_extension_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -300804,7 +301455,6 @@ exact (iffEL
   Hmax).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_stub_meeting_and_tree_extension_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -300850,7 +301500,6 @@ exact (iffER
   Hrhs).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_meeting_and_tree_extension_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -300893,7 +301542,6 @@ exact (thm84_4_maximal_tree_all_vertices_from_meeting_and_tree_extension_obligat
   HcloseFam).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_meeting_and_tree_extension_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -300936,7 +301584,6 @@ exact (thm84_4_maximal_tree_implies_vertices_from_meeting_and_tree_extension_obl
   Hmax).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_meeting_and_tree_extension_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -300979,7 +301626,6 @@ exact (thm84_4_vertices_implies_maximal_tree_from_meeting_and_tree_extension_obl
   Hrhs).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_stub_meeting_and_tree_extension_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -301022,7 +301668,6 @@ exact (thm84_4_maximal_tree_all_vertices_from_stub_meeting_and_tree_extension_ob
   HcloseStub).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_stub_meeting_and_tree_extension_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -301065,7 +301710,6 @@ exact (thm84_4_maximal_tree_implies_vertices_from_stub_meeting_and_tree_extensio
   Hmax).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_stub_meeting_and_tree_extension_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -301108,7 +301752,6 @@ exact (thm84_4_vertices_implies_maximal_tree_from_stub_meeting_and_tree_extensio
   Hrhs).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_component_obligation_families_via_meeting_and_tree_extension :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -301161,7 +301804,6 @@ exact (thm84_4_maximal_tree_all_vertices_from_split_obligation_families
   HcloseFam).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_component_obligation_families_via_meeting_and_tree_extension :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -301217,7 +301859,6 @@ exact (iffEL
   Hmax).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_component_obligation_families_via_meeting_and_tree_extension :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -301273,7 +301914,6 @@ exact (iffER
   Hrhs).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_component_obligation_families_via_meeting_and_tree_extension_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -301326,7 +301966,6 @@ exact (thm84_4_maximal_tree_all_vertices_from_component_obligation_families_via_
   HcloseFam).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_component_obligation_families_via_meeting_and_tree_extension_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -301379,7 +302018,6 @@ exact (thm84_4_maximal_tree_implies_vertices_from_component_obligation_families_
   Hmax).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_component_obligation_families_via_meeting_and_tree_extension_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -301432,7 +302070,6 @@ exact (thm84_4_vertices_implies_maximal_tree_from_component_obligation_families_
   Hrhs).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_split_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -301488,7 +302125,6 @@ exact (iffEL
   Hmax).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_split_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -301544,7 +302180,6 @@ exact (iffER
   Hrhs).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_split_obligation_families_via_meeting_and_tree_extension :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -301597,7 +302232,6 @@ exact (thm84_4_maximal_tree_all_vertices_from_component_obligation_families_via_
   HcloseFam).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_split_obligation_families_via_meeting_and_tree_extension :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -301650,7 +302284,6 @@ exact (thm84_4_maximal_tree_implies_vertices_from_component_obligation_families_
   Hmax).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_split_obligation_families_via_meeting_and_tree_extension :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -301703,7 +302336,6 @@ exact (thm84_4_vertices_implies_maximal_tree_from_component_obligation_families_
   Hrhs).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_split_obligation_families_via_meeting_and_tree_extension_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -301756,7 +302388,6 @@ exact (thm84_4_maximal_tree_all_vertices_from_split_obligation_families_via_meet
   HcloseFam).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_split_obligation_families_via_meeting_and_tree_extension_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -301809,7 +302440,6 @@ exact (thm84_4_maximal_tree_implies_vertices_from_split_obligation_families_via_
   Hmax).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_split_obligation_families_via_meeting_and_tree_extension_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -301862,7 +302492,6 @@ exact (thm84_4_vertices_implies_maximal_tree_from_split_obligation_families_via_
   Hrhs).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_stub_obligation_families_via_meeting_and_tree_extension :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -301915,7 +302544,6 @@ exact (thm84_4_maximal_tree_all_vertices_from_stub_component_obligation_families
   HcloseStub).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_stub_obligation_families_via_meeting_and_tree_extension :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -301968,7 +302596,6 @@ exact (thm84_4_maximal_tree_implies_vertices_from_stub_component_obligation_fami
   Hmax).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_stub_obligation_families_via_meeting_and_tree_extension :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -302021,7 +302648,6 @@ exact (thm84_4_vertices_implies_maximal_tree_from_stub_component_obligation_fami
   Hrhs).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_stub_obligation_families_via_meeting_and_tree_extension_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -302074,7 +302700,6 @@ exact (thm84_4_maximal_tree_all_vertices_from_stub_obligation_families_via_meeti
   HcloseStub).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_stub_obligation_families_via_meeting_and_tree_extension_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -302127,7 +302752,6 @@ exact (thm84_4_maximal_tree_implies_vertices_from_stub_obligation_families_via_m
   Hmax).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_stub_obligation_families_via_meeting_and_tree_extension_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -302180,7 +302804,6 @@ exact (thm84_4_vertices_implies_maximal_tree_from_stub_obligation_families_via_m
   Hrhs).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_vertices_from_component_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -302213,7 +302836,6 @@ exact (thm84_4_forward_vertices_from_component_obligation_families_via_meeting_a
   HnoloopFam).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_vertices_from_split_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -302246,7 +302868,6 @@ exact (thm84_4_forward_vertices_from_component_obligation_families_via_bridges
   HnoloopOb).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_vertices_from_stub_component_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -302279,7 +302900,6 @@ exact (thm84_4_forward_vertices_from_stub_component_obligation_families_via_meet
   HnoloopStub).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_forward_vertices_from_stub_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -302312,7 +302932,6 @@ exact (thm84_4_forward_vertices_from_stub_component_obligation_families_via_brid
   HnoloopStub).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_stub_component_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -302365,7 +302984,6 @@ exact (thm84_4_maximal_tree_all_vertices_from_stub_component_obligation_families
   HcloseStub).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_stub_component_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -302418,7 +303036,6 @@ exact (thm84_4_maximal_tree_implies_vertices_from_stub_component_obligation_fami
   Hmax).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_stub_component_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -302471,7 +303088,6 @@ exact (thm84_4_vertices_implies_maximal_tree_from_stub_component_obligation_fami
   Hrhs).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_component_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -302524,7 +303140,6 @@ exact (thm84_4_maximal_tree_all_vertices_from_component_obligation_families_via_
   HcloseFam).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_component_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -302580,7 +303195,6 @@ exact (iffEL
   Hmax).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_component_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -302636,7 +303250,6 @@ exact (iffER
   Hrhs).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_split_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -302689,7 +303302,6 @@ exact (thm84_4_maximal_tree_all_vertices_from_component_obligation_families_via_
   HcloseFam).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_split_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -302745,7 +303357,6 @@ exact (iffEL
   Hmax).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_split_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -302801,7 +303412,6 @@ exact (iffER
   Hrhs).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_stub_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -302876,7 +303486,6 @@ apply (thm84_4_maximal_tree_all_vertices_from_obligations
     HcloseStub).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_stub_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -302970,7 +303579,6 @@ apply (thm84_4_maximal_tree_all_vertices_from_obligations
         Hep)).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_stub_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -303026,7 +303634,6 @@ exact (iffEL
   Hmax).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_stub_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -303082,7 +303689,6 @@ exact (iffER
   Hrhs).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_stub_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -303138,7 +303744,6 @@ exact (iffEL
   Hmax).
 Admitted.
 
-(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_stub_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
