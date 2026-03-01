@@ -1,5 +1,5 @@
 (** Balance Alice 3927 **)
-(** Balance Bob 4410 **)
+(** Balance Bob 4465 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
 
@@ -110862,6 +110862,7 @@ Qed.
 
 
 (** Infrastructure: loop characterization equivalence (parenthesized) **)
+(** Proven Bob **)
 Lemma thm54_6c_loop_characterization_equiv : forall E Te B Tb p e0 f:set,
   covering_map E Te B Tb p -> e0 :e E ->
   loop_at B Tb (apply_fun p e0) f ->
@@ -110900,12 +110901,13 @@ apply iffI.
   He0
   Hloop
   Hend).
-Admitted. (** depends on admitted thm54_6c_loop_characterization_forward/backward **)
+Qed.
 
 (** from S54 Thm 54.6c (line 847 in algtop.tex) **)
 (** LATEX VERSION: [f] in H iff f lifts to a loop in E based at e0. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
+(** Collected Bob 55 **)
+(** Proven Bob **)
 Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
   covering_map E Te B Tb p -> e0 :e E ->
   loop_at B Tb (apply_fun p e0) f ->
@@ -110915,10 +110917,23 @@ Theorem thm54_6c_loop_characterization : forall E Te B Tb p e0 f:set,
       (induced_homomorphism E Te e0 B Tb (apply_fun p e0) p))
   <->
   apply_fun (path_lift E Te B Tb p e0 f) 1 = e0.
-admit.
-Admitted. (** depends on admitted thm54_6c_loop_characterization_equiv **)
+let E Te B Tb p e0 f.
+assume Hcov He0 Hloop.
+exact (thm54_6c_loop_characterization_equiv
+  E
+  Te
+  B
+  Tb
+  p
+  e0
+  f
+  Hcov
+  He0
+  Hloop).
+Qed.
 
 (** Infrastructure: loop characterization under covering assumptions **)
+(** Proven Bob **)
 Lemma thm54_6c_loop_characterization_assumptions : forall E Te B Tb p e0 f:set,
   covering_map E Te B Tb p -> e0 :e E ->
   loop_at B Tb (apply_fun p e0) f ->
@@ -110941,7 +110956,7 @@ exact (thm54_6c_loop_characterization_equiv
   Hcov
   He0
   Hloop).
-Admitted. (** depends on admitted thm54_6c_loop_characterization_equiv **)
+Qed.
 
 (** from S54 Exercise 3 (line 871 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be covering. If alpha and beta are paths in B with **)
