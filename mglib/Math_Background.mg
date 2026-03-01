@@ -222125,6 +222125,120 @@ exact (left_coset_right_mult_subgroup_preserves
 Qed.
 
 (** Proven Bob **)
+(** Helper: for normal C, right multiplication preserves left coset equality. **)
+Theorem left_coset_eq_right_mult_normal_preserves :
+  forall G mult e inv C a b c:set,
+  group_structure G mult e inv ->
+  normal_subgroup C G mult e inv ->
+  a :e G -> b :e G -> c :e G ->
+  left_coset mult a C = left_coset mult b C ->
+  left_coset mult (apply_fun mult (a, c)) C =
+  left_coset mult (apply_fun mult (b, c)) C.
+let G mult e inv C a b c.
+assume Hgrp : group_structure G mult e inv.
+assume HnormalC : normal_subgroup C G mult e inv.
+assume HaG : a :e G.
+assume HbG : b :e G.
+assume HcG : c :e G.
+assume HcosEq : left_coset mult a C = left_coset mult b C.
+claim HsubC : subgroup_of C G mult e inv.
+{ exact (normal_subgroup_subgroup C G mult e inv HnormalC). }
+claim HaInb : a :e left_coset mult b C.
+{
+  rewrite <- HcosEq.
+  exact (representative_in_own_left_coset G mult e inv C a Hgrp HsubC HaG).
+}
+apply (ReplE C (fun n:set => apply_fun mult (b, n)) a HaInb).
+let n. assume HnPack.
+apply HnPack.
+assume HnC Haeq.
+claim HinvbG : apply_fun inv b :e G.
+{ exact (group_inverse_closed_in_group G mult e inv b Hgrp HbG). }
+claim Hinvb_a_eq_n : apply_fun mult (apply_fun inv b, a) = n.
+{
+  apply (and6E
+    (function_on mult (setprod G G) G)
+    (function_on inv G G)
+    (e :e G)
+    (forall x y z:set, x :e G -> y :e G -> z :e G ->
+      apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+    (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+    (forall x:set, x :e G ->
+      apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+    Hgrp).
+  assume HmultG HinvG HeG HassocG HidG HinvLawG.
+  rewrite Haeq.
+  rewrite <- (HassocG (apply_fun inv b) b n HinvbG HbG (subgroup_of_mem_in_G C G mult e inv n HsubC HnC)).
+  rewrite (andER
+    (apply_fun mult (b, apply_fun inv b) = e)
+    (apply_fun mult (apply_fun inv b, b) = e)
+    (HinvLawG b HbG)).
+  exact (andEL
+    (apply_fun mult (e, n) = n)
+    (apply_fun mult (n, e) = n)
+    (HidG n (subgroup_of_mem_in_G C G mult e inv n HsubC HnC))).
+}
+claim Hinvbc_eq : apply_fun inv (apply_fun mult (b, c)) =
+  apply_fun mult (apply_fun inv c, apply_fun inv b).
+{
+  exact (group_inv_of_prod G mult e inv Hgrp b c HbG HcG).
+}
+claim Hinvbc_ac_in_C :
+  apply_fun mult (apply_fun inv (apply_fun mult (b, c)), apply_fun mult (a, c)) :e C.
+{
+  apply (and6E
+    (function_on mult (setprod G G) G)
+    (function_on inv G G)
+    (e :e G)
+    (forall x y z:set, x :e G -> y :e G -> z :e G ->
+      apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+    (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+    (forall x:set, x :e G ->
+      apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+    Hgrp).
+  assume HmultG HinvG HeG HassocG HidG HinvLawG.
+  rewrite Hinvbc_eq.
+  rewrite Haeq.
+  rewrite (HassocG (apply_fun inv c) (apply_fun inv b) (apply_fun mult (b, n))
+    (group_inverse_closed_in_group G mult e inv c Hgrp HcG)
+    HinvbG
+    (group_mult_closed_in_group G mult e inv b n Hgrp HbG
+      (subgroup_of_mem_in_G C G mult e inv n HsubC HnC))).
+  rewrite <- (HassocG (apply_fun inv b) b n HinvbG HbG (subgroup_of_mem_in_G C G mult e inv n HsubC HnC)).
+  rewrite (andER
+    (apply_fun mult (b, apply_fun inv b) = e)
+    (apply_fun mult (apply_fun inv b, b) = e)
+    (HinvLawG b HbG)).
+  rewrite (andEL
+    (apply_fun mult (e, n) = n)
+    (apply_fun mult (n, e) = n)
+    (HidG n (subgroup_of_mem_in_G C G mult e inv n HsubC HnC))).
+  exact (andER
+    (subgroup_of C G mult e inv)
+    (forall n g:set, n :e C -> g :e G ->
+      apply_fun mult (apply_fun mult (g, n), apply_fun inv g) :e C)
+    HnormalC
+    n
+    (apply_fun inv c)
+    HnC
+    (group_inverse_closed_in_group G mult e inv c Hgrp HcG)).
+}
+exact (left_coset_eq_from_N_mem
+  G
+  mult
+  e
+  inv
+  C
+  Hgrp
+  HsubC
+  (apply_fun mult (a, c))
+  (apply_fun mult (b, c))
+  (group_mult_closed_in_group G mult e inv a c Hgrp HaG HcG)
+  (group_mult_closed_in_group G mult e inv b c Hgrp HbG HcG)
+  Hinvbc_ac_in_C).
+Qed.
+
+(** Proven Bob **)
 (** Helper: quotient multiplication on principal left cosets matches multiplication of representatives. **)
 Theorem quotient_group_mult_on_left_coset_representatives :
   forall G mult e inv C x y:set,
