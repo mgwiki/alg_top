@@ -212003,6 +212003,203 @@ claim Hpsi_surj : forall q:set, q :e Q -> exists x:set, x :e G2 /\ apply_fun psi
       rewrite (apply_fun_graph G2 (fun x:set => left_coset multG x N) g2 Hg2G2).
       rewrite Hqeq. rewrite Hword. rewrite <- HcosEq. reflexivity.
 }
+(** Build a homomorphism h: G -> G that is trivial on G1 and identity on G2. **)
+set hfam := graph (UPair 0 1) (fun i:set =>
+  if i = 0 then graph G1 (fun _:set => eG) else graph G2 (fun x:set => x)).
+claim Hhfam0 : apply_fun hfam 0 = graph G1 (fun _:set => eG).
+{
+  rewrite (apply_fun_graph (UPair 0 1)
+    (fun i:set => if i = 0 then graph G1 (fun _:set => eG) else graph G2 (fun x:set => x))
+    0 (UPairI1 0 1)).
+  exact (If_i_1 (0 = 0) (graph G1 (fun _:set => eG)) (graph G2 (fun x:set => x)) (eq_refl 0)).
+}
+claim Hhfam1 : apply_fun hfam 1 = graph G2 (fun x:set => x).
+{
+  rewrite (apply_fun_graph (UPair 0 1)
+    (fun i:set => if i = 0 then graph G1 (fun _:set => eG) else graph G2 (fun x:set => x))
+    1 (UPairI2 0 1)).
+  exact (If_i_0 (1 = 0) (graph G1 (fun _:set => eG)) (graph G2 (fun x:set => x)) neq_1_0).
+}
+claim Hhfam_hom : forall alpha:set, alpha :e UPair 0 1 ->
+  group_homomorphism (apply_fun Gfam alpha) multG G multG (apply_fun hfam alpha).
+{
+  let alpha. assume Halpha.
+  apply (UPairE alpha 0 1 Halpha).
+  - assume Halpha0.
+    rewrite Halpha0. rewrite HGfam0. rewrite Hhfam0.
+    prove function_on (graph G1 (fun _:set => eG)) G1 G /\
+      (forall x y:set, x :e G1 -> y :e G1 ->
+        apply_fun (graph G1 (fun _:set => eG)) (apply_fun multG (x, y)) =
+        apply_fun multG (apply_fun (graph G1 (fun _:set => eG)) x,
+                         apply_fun (graph G1 (fun _:set => eG)) y)).
+    apply andI.
+    + let x. assume HxG1.
+      claim HeG_G1 : eG :e G1. { exact (subgroup_of_unit G1 G multG eG invG HsubG1). }
+      claim HeG_G : eG :e G. { exact (HG1subG eG HeG_G1). }
+      rewrite (apply_fun_graph G1 (fun _:set => eG) x HxG1). exact HeG_G.
+    + let x y. assume HxG1 HyG1.
+      claim HxyG1 : apply_fun multG (x, y) :e G1.
+      { exact (subgroup_of_mult_closed
+          G1
+          G
+          multG
+          eG
+          invG
+          x
+          y
+          HsubG1
+          HxG1
+          HyG1). }
+      rewrite (apply_fun_graph G1 (fun _:set => eG) (apply_fun multG (x, y)) HxyG1).
+      rewrite (apply_fun_graph G1 (fun _:set => eG) x HxG1).
+      rewrite (apply_fun_graph G1 (fun _:set => eG) y HyG1).
+      apply (and6E
+        (function_on multG (setprod G G) G)
+        (function_on invG G G)
+        (eG :e G)
+        (forall u v w:set, u :e G -> v :e G -> w :e G ->
+          apply_fun multG (apply_fun multG (u, v), w) = apply_fun multG (u, apply_fun multG (v, w)))
+        (forall u:set, u :e G -> apply_fun multG (eG, u) = u /\ apply_fun multG (u, eG) = u)
+        (forall u:set, u :e G ->
+          apply_fun multG (u, apply_fun invG u) = eG /\ apply_fun multG (apply_fun invG u, u) = eG)
+        HgrpG).
+      assume _ _ HeG HassocG HidG _.
+      exact (andEL
+        (apply_fun multG (eG, eG) = eG)
+        (apply_fun multG (eG, eG) = eG)
+        (HidG eG HeG)).
+  - assume Halpha1.
+    rewrite Halpha1. rewrite HGfam1. rewrite Hhfam1.
+    prove function_on (graph G2 (fun x:set => x)) G2 G /\
+      (forall x y:set, x :e G2 -> y :e G2 ->
+        apply_fun (graph G2 (fun x:set => x)) (apply_fun multG (x, y)) =
+        apply_fun multG (apply_fun (graph G2 (fun x:set => x)) x,
+                         apply_fun (graph G2 (fun x:set => x)) y)).
+    apply andI.
+    + let x. assume HxG2.
+      rewrite (apply_fun_graph G2 (fun z:set => z) x HxG2).
+      exact (HG2subG x HxG2).
+    + let x y. assume HxG2 HyG2.
+      claim HxyG2 : apply_fun multG (x, y) :e G2.
+      { exact (subgroup_of_mult_closed
+          G2
+          G
+          multG
+          eG
+          invG
+          x
+          y
+          HsubG2
+          HxG2
+          HyG2). }
+      rewrite (apply_fun_graph G2 (fun z:set => z) (apply_fun multG (x, y)) HxyG2).
+      rewrite (apply_fun_graph G2 (fun z:set => z) x HxG2).
+      rewrite (apply_fun_graph G2 (fun z:set => z) y HyG2).
+      reflexivity.
+}
+claim Hext_h : exists h:set,
+  group_homomorphism G multG G multG h /\
+  (forall alpha:set, alpha :e UPair 0 1 ->
+    forall x:set, x :e apply_fun Gfam alpha ->
+      apply_fun h x = apply_fun (apply_fun hfam alpha) x) /\
+  (forall h':set, group_homomorphism G multG G multG h' ->
+    (forall alpha:set, alpha :e UPair 0 1 ->
+      forall x:set, x :e apply_fun Gfam alpha ->
+        apply_fun h' x = apply_fun (apply_fun hfam alpha) x) ->
+    forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
+{
+  exact (lemma68_1_extension_condition_free_product
+    G
+    multG
+    eG
+    invG
+    (UPair 0 1)
+    Gfam
+    efam
+    Hfp
+    G
+    multG
+    eG
+    invG
+    HgrpG
+    hfam
+    Hhfam_hom).
+}
+apply Hext_h.
+let h. assume Hhpack.
+apply (and3E
+  (group_homomorphism G multG G multG h)
+  (forall alpha:set, alpha :e UPair 0 1 ->
+    forall x:set, x :e apply_fun Gfam alpha ->
+      apply_fun h x = apply_fun (apply_fun hfam alpha) x)
+  (forall h':set, group_homomorphism G multG G multG h' ->
+    (forall alpha:set, alpha :e UPair 0 1 ->
+      forall x:set, x :e apply_fun Gfam alpha ->
+        apply_fun h' x = apply_fun (apply_fun hfam alpha) x) ->
+    forall x:set, x :e G -> apply_fun h' x = apply_fun h x)
+  Hhpack).
+assume Hh_hom Hh_ext Hh_uniq.
+claim Hh_on_G1 : forall x:set, x :e G1 -> apply_fun h x = eG.
+{
+  let x. assume HxG1.
+  claim HxGfam0 : x :e apply_fun Gfam 0. { rewrite HGfam0. exact HxG1. }
+  claim Hx_eq : apply_fun h x = apply_fun (apply_fun hfam 0) x.
+  { exact (Hh_ext 0 (UPairI1 0 1) x HxGfam0). }
+  rewrite Hhfam0 in Hx_eq.
+  rewrite (apply_fun_graph G1 (fun _:set => eG) x HxG1) in Hx_eq.
+  exact Hx_eq.
+}
+claim Hh_on_G2 : forall x:set, x :e G2 -> apply_fun h x = x.
+{
+  let x. assume HxG2.
+  claim HxGfam1 : x :e apply_fun Gfam 1. { rewrite HGfam1. exact HxG2. }
+  claim Hx_eq : apply_fun h x = apply_fun (apply_fun hfam 1) x.
+  { exact (Hh_ext 1 (UPairI2 0 1) x HxGfam1). }
+  rewrite Hhfam1 in Hx_eq.
+  rewrite (apply_fun_graph G2 (fun z:set => z) x HxG2) in Hx_eq.
+  exact Hx_eq.
+}
+set K := kernel_of G eG h.
+claim HnormalK : normal_subgroup K G multG eG invG.
+{
+  exact (kernel_is_normal_subgroup_aux
+    G
+    multG
+    eG
+    invG
+    G
+    multG
+    eG
+    invG
+    h
+    HgrpG
+    HgrpG
+    Hh_hom).
+}
+claim HG1subK : G1 c= K.
+{
+  let x. assume HxG1.
+  apply (SepI G (fun y:set => apply_fun h y = eG) x (HG1subG x HxG1)).
+  exact (Hh_on_G1 x HxG1).
+}
+claim HNmin : forall N':set, normal_subgroup N' G multG eG invG -> G1 c= N' -> N c= N'.
+{
+  exact (andER
+    (normal_subgroup N G multG eG invG)
+    (G1 c= N /\
+     (forall N':set, normal_subgroup N' G multG eG invG -> G1 c= N' -> N c= N'))
+    HNprops).
+}
+claim HNsubK : N c= K.
+{ exact (HNmin K HnormalK HG1subK). }
+claim Hcap_trivial : forall x:set, x :e G2 -> x :e N -> x = eG.
+{
+  let x. assume HxG2 HxN.
+  claim HxK : x :e K. { exact (HNsubK x HxN). }
+  claim Hhx_eq : apply_fun h x = eG. { exact (kernel_of_mem_eq G eG h x HxK). }
+  claim Hhx_id : apply_fun h x = x. { exact (Hh_on_G2 x HxG2). }
+  rewrite <- Hhx_id. exact Hhx_eq.
+}
 (** TODO: show psi has a unique preimage for each coset (N cap G2 = {e}),
     then set phi as the inverse bijection and transfer homomorphism structure. **)
 admit.
@@ -219959,6 +220156,75 @@ apply (and4I
     { exact (andEL (apply_fun multH (eH, apply_fun invH eH) = apply_fun invH eH) (apply_fun multH (apply_fun invH eH, eH) = apply_fun invH eH) (HidH (apply_fun invH eH) HinvH_eH_in_H)). }
     rewrite <- H2. exact H1. }
   exact (SepI G (fun x => apply_fun h x = eH) (apply_fun inv x) Hinvx_in_G Hpred_invx).
+Qed.
+
+(** Infrastructure: kernel of group hom is a normal subgroup **)
+(** Proven Bob **)
+Lemma kernel_is_normal_subgroup_aux :
+  forall G mult e inv H multH eH invH h:set,
+  group_structure G mult e inv ->
+  group_structure H multH eH invH ->
+  group_homomorphism G mult H multH h ->
+  normal_subgroup (kernel_of G eH h) G mult e inv.
+let G mult e inv H multH eH invH h.
+assume HgrpG HgrpH Hhom.
+apply andI.
+- exact (kernel_is_subgroup_aux G mult e inv H multH eH invH h HgrpG HgrpH Hhom).
+- let n g. assume HnK HgG.
+  claim HnG : n :e G. { exact (kernel_of_mem_in_G G eH h n HnK). }
+  claim HinvG : apply_fun inv g :e G.
+  { exact (group_inverse_closed_in_group G mult e inv g HgrpG HgG). }
+  claim HgnG : apply_fun mult (g, n) :e G.
+  { exact (group_mult_closed_in_group G mult e inv g n HgrpG HgG HnG). }
+  claim HgninvG : apply_fun mult (apply_fun mult (g, n), apply_fun inv g) :e G.
+  { exact (group_mult_closed_in_group G mult e inv (apply_fun mult (g, n)) (apply_fun inv g)
+      HgrpG HgnG HinvG). }
+  claim Hhn_eq : apply_fun h n = eH.
+  { exact (kernel_of_mem_eq G eH h n HnK). }
+  claim Hhginv : apply_fun h (apply_fun inv g) = apply_fun invH (apply_fun h g).
+  { exact (group_hom_sends_inverse G mult e inv H multH eH invH h HgrpG HgrpH Hhom g HgG). }
+  claim Hh_gn : apply_fun h (apply_fun mult (g, n)) =
+    apply_fun multH (apply_fun h g, apply_fun h n).
+  { exact (group_homomorphism_mult_rule G mult H multH h g n Hhom HgG HnG). }
+  claim Hh_gninv : apply_fun h (apply_fun mult (apply_fun mult (g, n), apply_fun inv g)) =
+    apply_fun multH (apply_fun h (apply_fun mult (g, n)), apply_fun h (apply_fun inv g)).
+  { exact (group_homomorphism_mult_rule G mult H multH h (apply_fun mult (g, n)) (apply_fun inv g)
+      Hhom HgnG HinvG). }
+  apply (and6E
+    (function_on multH (setprod H H) H)
+    (function_on invH H H)
+    (eH :e H)
+    (forall a b c:set, a :e H -> b :e H -> c :e H ->
+      apply_fun multH (apply_fun multH (a, b), c) = apply_fun multH (a, apply_fun multH (b, c)))
+    (forall a:set, a :e H -> apply_fun multH (eH, a) = a /\ apply_fun multH (a, eH) = a)
+    (forall a:set, a :e H ->
+      apply_fun multH (a, apply_fun invH a) = eH /\ apply_fun multH (apply_fun invH a, a) = eH)
+    HgrpH).
+  assume _ _ HeH HassocH HidH HinvH.
+  claim Hhfn : function_on h G H.
+  { exact (group_homomorphism_function_on G mult H multH h Hhom). }
+  claim HhgH : apply_fun h g :e H. { exact (Hhfn g HgG). }
+  claim HhidR : apply_fun multH (apply_fun h g, eH) = apply_fun h g.
+  { exact (andER
+      (apply_fun multH (eH, apply_fun h g) = apply_fun h g)
+      (apply_fun multH (apply_fun h g, eH) = apply_fun h g)
+      (HidH (apply_fun h g) HhgH)). }
+  claim HinvR : apply_fun multH (apply_fun h g, apply_fun invH (apply_fun h g)) = eH.
+  { exact (andEL
+      (apply_fun multH (apply_fun h g, apply_fun invH (apply_fun h g)) = eH)
+      (apply_fun multH (apply_fun invH (apply_fun h g), apply_fun h g) = eH)
+      (HinvH (apply_fun h g) HhgH)). }
+  claim Hh_gninv_eq : apply_fun h (apply_fun mult (apply_fun mult (g, n), apply_fun inv g)) = eH.
+  {
+    rewrite Hh_gninv.
+    rewrite Hh_gn.
+    rewrite Hhn_eq.
+    rewrite Hhginv.
+    rewrite HhidR.
+    exact HinvR.
+  }
+  exact (SepI G (fun x => apply_fun h x = eH)
+    (apply_fun mult (apply_fun mult (g, n), apply_fun inv g)) HgninvG Hh_gninv_eq).
 Qed.
 
 (** Infrastructure: commutator subgroup satisfies its defining properties **)
