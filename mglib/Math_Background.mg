@@ -24812,6 +24812,85 @@ exact (SepE2
   Hf).
 Qed.
 
+(** Proven Bob **)
+Theorem loop_space_continuous : forall X Tx x0 f:set,
+  f :e loop_space X Tx x0 ->
+  continuous_map unit_interval unit_interval_topology X Tx f.
+let X Tx x0 f.
+assume Hf.
+claim Hloop : loop_at X Tx x0 f.
+{
+  exact (loop_space_has_loop_at X Tx x0 f Hf).
+}
+exact (loop_at_continuous X Tx x0 f Hloop).
+Qed.
+
+(** Proven Bob **)
+Theorem loop_space_endpoint_data : forall X Tx x0 f:set,
+  f :e loop_space X Tx x0 ->
+  apply_fun f 0 = x0 /\ apply_fun f 1 = x0.
+let X Tx x0 f.
+assume Hf.
+claim Hloop : loop_at X Tx x0 f.
+{
+  exact (loop_space_has_loop_at X Tx x0 f Hf).
+}
+claim Hpair :
+  (continuous_map unit_interval unit_interval_topology X Tx f /\
+   apply_fun f 0 = x0) /\
+  apply_fun f 1 = x0.
+{
+  exact (loop_at_unfold X Tx x0 f Hloop).
+}
+claim Hcontpair :
+  continuous_map unit_interval unit_interval_topology X Tx f /\
+  apply_fun f 0 = x0.
+{
+  exact (andEL
+    (continuous_map unit_interval unit_interval_topology X Tx f /\
+     apply_fun f 0 = x0)
+    (apply_fun f 1 = x0)
+    Hpair).
+}
+claim Hstart : apply_fun f 0 = x0.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology X Tx f)
+    (apply_fun f 0 = x0)
+    Hcontpair).
+}
+claim Hend : apply_fun f 1 = x0.
+{
+  exact (andER
+    (continuous_map unit_interval unit_interval_topology X Tx f /\
+     apply_fun f 0 = x0)
+    (apply_fun f 1 = x0)
+    Hpair).
+}
+apply andI.
+- exact Hstart.
+- exact Hend.
+Qed.
+
+(** Proven Bob **)
+Theorem loop_space_function_on : forall X Tx x0 f:set,
+  f :e loop_space X Tx x0 ->
+  function_on f unit_interval X.
+let X Tx x0 f.
+assume Hf.
+claim Hcont : continuous_map unit_interval unit_interval_topology X Tx f.
+{
+  exact (loop_space_continuous X Tx x0 f Hf).
+}
+exact (continuous_map_function_on
+  unit_interval
+  unit_interval_topology
+  X
+  Tx
+  f
+  Hcont).
+Qed.
+
 (** helper: the path homotopy equivalence class of a loop **)
 Definition path_homotopy_class_loop : set -> set -> set -> set -> set :=
   fun X Tx x0 f =>
