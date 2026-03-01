@@ -9514,6 +9514,39 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Theorem path_homotopic_endpoints_in_space : forall X Tx x0 x1 f f':set,
+  path_homotopic X Tx x0 x1 f f' ->
+  x0 :e X /\ x1 :e X.
+let X Tx x0 x1 f f'.
+assume Hhom.
+claim Hfcont : continuous_map unit_interval unit_interval_topology X Tx f.
+{
+  exact (path_homotopic_left_continuous X Tx x0 x1 f f' Hhom).
+}
+claim Hfun : function_on f unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    f
+    Hfcont).
+}
+claim Hend : apply_fun f 0 = x0 /\ apply_fun f 1 = x1.
+{
+  apply andI.
+  - exact (path_homotopic_left_start X Tx x0 x1 f f' Hhom).
+  - exact (path_homotopic_left_end X Tx x0 x1 f f' Hhom).
+}
+apply andI.
+- rewrite <- (andEL (apply_fun f 0 = x0) (apply_fun f 1 = x1) Hend).
+  exact (Hfun 0 zero_in_unit_interval).
+- rewrite <- (andER (apply_fun f 0 = x0) (apply_fun f 1 = x1) Hend).
+  exact (Hfun 1 one_in_unit_interval).
+Qed.
+
+(** Proven Bob **)
 Theorem path_homotopic_has_square_witness : forall X Tx x0 x1 f f':set,
   path_homotopic X Tx x0 x1 f f' ->
   exists F:set,
