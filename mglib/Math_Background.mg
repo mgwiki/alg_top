@@ -43469,6 +43469,7 @@ apply andI.
 Qed.
 
 (** helper: identity evaluation for a chosen multiplication (missing link to topological_group witness) **)
+(** Proven Bob **)
 Theorem topological_group_mult_identity_value_for_mult : forall G Tg e mult:set,
   topological_group G Tg ->
   e :e G ->
@@ -43476,8 +43477,17 @@ Theorem topological_group_mult_identity_value_for_mult : forall G Tg e mult:set,
   continuous_map (setprod G G) (product_topology G Tg G Tg) G Tg mult ->
   (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x) ->
   apply_fun mult (e, e) = e.
-admit.
-Admitted.
+let G Tg e mult.
+assume HtopG He HmultFun HmultCont HmulEe.
+claim HmulEe_e : apply_fun mult (e, e) = e /\ apply_fun mult (e, e) = e.
+{
+  exact (HmulEe e He).
+}
+exact (andEL
+  (apply_fun mult (e, e) = e)
+  (apply_fun mult (e, e) = e)
+  HmulEe_e).
+Qed.
 
 (** from S52 Exercise 7(b) (line 516 in algtop.tex): tensor induces operation on pi1 **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
