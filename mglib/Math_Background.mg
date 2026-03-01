@@ -8815,6 +8815,17 @@ exact (andER
 Qed.
 
 (** Proven Bob **)
+Theorem homotopic_maps_continuity_data : forall X Tx Y Ty f f':set,
+  homotopic_maps X Tx Y Ty f f' ->
+  continuous_map X Tx Y Ty f /\ continuous_map X Tx Y Ty f'.
+let X Tx Y Ty f f'.
+assume Hhom.
+apply andI.
+- exact (homotopic_maps_left_continuous X Tx Y Ty f f' Hhom).
+- exact (homotopic_maps_right_continuous X Tx Y Ty f f' Hhom).
+Qed.
+
+(** Proven Bob **)
 Theorem homotopic_maps_has_witness : forall X Tx Y Ty f f':set,
   homotopic_maps X Tx Y Ty f f' ->
   exists F:set,
