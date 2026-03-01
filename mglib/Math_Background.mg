@@ -55126,6 +55126,148 @@ apply set_ext.
     HWrest).
 Qed.
 
+(** Infrastructure: union of two families is union of unions **)
+(** Proven Bob **)
+Theorem union_union_families : forall Fam1 Fam2:set,
+  Union (Fam1 :\/: Fam2) = (Union Fam1) :\/: (Union Fam2).
+let Fam1 Fam2.
+apply set_ext.
+- let x.
+  assume HxUnion.
+  apply (UnionE
+    (Fam1 :\/: Fam2)
+    x
+    HxUnion).
+  let V.
+  assume Hpack.
+  claim HxV : x :e V.
+  {
+    exact (andEL
+      (x :e V)
+      (V :e Fam1 :\/: Fam2)
+      Hpack).
+  }
+  claim HVFam : V :e Fam1 :\/: Fam2.
+  {
+    exact (andER
+      (x :e V)
+      (V :e Fam1 :\/: Fam2)
+      Hpack).
+  }
+  apply (binunionE
+    Fam1
+    Fam2
+    V
+    HVFam).
+  + assume HVFam1.
+    claim HxUnion1 : x :e Union Fam1.
+    {
+      exact (UnionI
+        Fam1
+        x
+        V
+        HxV
+        HVFam1).
+    }
+    exact (binunionI1
+      (Union Fam1)
+      (Union Fam2)
+      x
+      HxUnion1).
+  + assume HVFam2.
+    claim HxUnion2 : x :e Union Fam2.
+    {
+      exact (UnionI
+        Fam2
+        x
+        V
+        HxV
+        HVFam2).
+    }
+    exact (binunionI2
+      (Union Fam1)
+      (Union Fam2)
+      x
+      HxUnion2).
+- let x.
+  assume HxUnion.
+  apply (binunionE
+    (Union Fam1)
+    (Union Fam2)
+    x
+    HxUnion).
+  + assume HxU1.
+    apply (UnionE
+      Fam1
+      x
+      HxU1).
+    let V.
+    assume Hpack.
+    claim HxV : x :e V.
+    {
+      exact (andEL
+        (x :e V)
+        (V :e Fam1)
+        Hpack).
+    }
+    claim HVFam1 : V :e Fam1.
+    {
+      exact (andER
+        (x :e V)
+        (V :e Fam1)
+        Hpack).
+    }
+    claim HVFam : V :e Fam1 :\/: Fam2.
+    {
+      exact (binunionI1
+        Fam1
+        Fam2
+        V
+        HVFam1).
+    }
+    exact (UnionI
+      (Fam1 :\/: Fam2)
+      x
+      V
+      HxV
+      HVFam).
+  + assume HxU2.
+    apply (UnionE
+      Fam2
+      x
+      HxU2).
+    let V.
+    assume Hpack.
+    claim HxV : x :e V.
+    {
+      exact (andEL
+        (x :e V)
+        (V :e Fam2)
+        Hpack).
+    }
+    claim HVFam2 : V :e Fam2.
+    {
+      exact (andER
+        (x :e V)
+        (V :e Fam2)
+        Hpack).
+    }
+    claim HVFam : V :e Fam1 :\/: Fam2.
+    {
+      exact (binunionI2
+        Fam1
+        Fam2
+        V
+        HVFam2).
+    }
+    exact (UnionI
+      (Fam1 :\/: Fam2)
+      x
+      V
+      HxV
+      HVFam).
+Qed.
+
 
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
