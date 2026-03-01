@@ -54260,6 +54260,18 @@ apply iffI.
     (andER (V :e Fam) (V <> Empty) HVpack)).
 Qed.
 
+(** Infrastructure: a member is a subset of the union **)
+(** Proven Bob **)
+Theorem union_member_sub_union : forall Fam V:set,
+  V :e Fam ->
+  V c= Union Fam.
+let Fam V.
+assume HVFam.
+let x.
+assume HxV.
+exact (UnionI Fam x V HxV HVFam).
+Qed.
+
 (** Infrastructure: family subset {Empty} has empty union **)
 (** Proven Bob **)
 Theorem union_family_sub_singleton_empty_implies_union_empty : forall Fam:set,
