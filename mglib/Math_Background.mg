@@ -1,7 +1,7 @@
 (** Balance Alice 3927 **)
-(** Balance Bob 3315 **)
-(** Balance Charlie 1549 **)
-(** Balance Dave 1672 **)
+(** Balance Bob 4615 **)
+(** Balance Charlie 2312 **)
+(** Balance Dave 1793 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
