@@ -55747,6 +55747,37 @@ claim HxNotB : x /:e B.
 exact (HxNotB HxB).
 Qed.
 
+(** Infrastructure: intersecting setminus with original set gives setminus **)
+(** Proven Bob **)
+Theorem setminus_intersect_left_eq : forall A B:set,
+  (A :\: B) :/\: A = A :\: B.
+let A B.
+apply set_ext.
+- let x.
+  assume HxInt.
+  exact (binintersectE1
+    (A :\: B)
+    A
+    x
+    HxInt).
+- let x.
+  assume HxRest.
+  claim HxA : x :e A.
+  {
+    exact (setminusE1
+      A
+      B
+      x
+      HxRest).
+  }
+  exact (binintersectI
+    (A :\: B)
+    A
+    x
+    HxRest
+    HxA).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
