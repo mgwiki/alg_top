@@ -57096,6 +57096,42 @@ rewrite (binunion_comm B A).
 exact (binunion_sub_eq_right A B Hsub).
 Qed.
 
+(** Infrastructure: intersection with a subset (right) **)
+(** Proven Bob **)
+Theorem binintersect_sub_eq_right : forall A B:set,
+  A c= B ->
+  A :/\: B = A.
+let A B.
+assume Hsub.
+apply set_ext.
+- let x.
+  assume HxInt.
+  exact (binintersectE1
+    A
+    B
+    x
+    HxInt).
+- let x.
+  assume HxA.
+  exact (binintersectI
+    A
+    B
+    x
+    HxA
+    (Hsub x HxA)).
+Qed.
+
+(** Infrastructure: intersection with a subset (left) **)
+(** Proven Bob **)
+Theorem binintersect_sub_eq_left : forall A B:set,
+  A c= B ->
+  B :/\: A = A.
+let A B.
+assume Hsub.
+rewrite (binintersect_com B A).
+exact (binintersect_sub_eq_right A B Hsub).
+Qed.
+
 (** Infrastructure: binintersect absorbs binunion (right) **)
 (** Proven Bob **)
 Theorem binintersect_absorb_right : forall A B:set,
