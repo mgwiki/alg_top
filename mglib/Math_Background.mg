@@ -55939,6 +55939,56 @@ rewrite (Union_singleton_eq V).
 reflexivity.
 Qed.
 
+(** Infrastructure: binunion with a singleton already in the set **)
+(** Proven Bob **)
+Theorem binunion_singleton_eq_of_mem : forall A x:set,
+  x :e A ->
+  {x} :\/: A = A.
+let A x.
+assume HxA.
+apply set_ext.
+- let y.
+  assume Hy.
+  apply (binunionE
+    {x}
+    A
+    y
+    Hy).
+  + assume HySing.
+    claim Hyx : y = x.
+    {
+      exact (SingE
+        x
+        y
+        HySing).
+    }
+    rewrite Hyx.
+    exact HxA.
+  + assume HyA.
+    exact HyA.
+- let y.
+  assume HyA.
+  exact (binunionI2
+    {x}
+    A
+    y
+    HyA).
+Qed.
+
+(** Infrastructure: binunion with a singleton already in the set (right) **)
+(** Proven Bob **)
+Theorem binunion_singleton_eq_of_mem_right : forall A x:set,
+  x :e A ->
+  A :\/: {x} = A.
+let A x.
+assume HxA.
+rewrite (binunion_comm A {x}).
+exact (binunion_singleton_eq_of_mem
+  A
+  x
+  HxA).
+Qed.
+
 
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
@@ -131875,7 +131925,6 @@ Definition monic_poly_eval : set -> set -> set -> set := fun a n z =>
 (** LATEX VERSION: A polynomial equation x^n + a_{n-1} x^{n-1} + ... + a_0 = 0 of degree n > 0 with real or complex coefficients has at least one root. **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 400 **)
 (** Bounty 484 **)
-(** Lock Alice 1772345030 **)
 Theorem thm56_1_fundamental_theorem_of_algebra : forall n a:set,
   n :e omega -> n <> 0 ->
   function_on a n (setprod R R) ->
