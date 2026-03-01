@@ -55392,6 +55392,17 @@ apply iffI.
     HxA).
 Qed.
 
+(** Infrastructure: singleton on the left, equality iff point in set **)
+(** Proven Bob **)
+Theorem binintersect_singleton_eq_singleton_iff_mem_left : forall A x:set,
+  ({x} :/\: A = {x} <-> x :e A).
+let A x.
+rewrite (binintersect_com {x} A).
+exact (binintersect_singleton_eq_singleton_iff_mem
+  A
+  x).
+Qed.
+
 (** Infrastructure: singleton intersection empty iff point not in the set **)
 (** Proven Bob **)
 Theorem binintersect_singleton_empty_iff_not_mem : forall A x:set,
@@ -55427,6 +55438,17 @@ apply iffI.
     A
     x
     HxNotA).
+Qed.
+
+(** Infrastructure: singleton on the left, empty iff point not in set **)
+(** Proven Bob **)
+Theorem binintersect_singleton_empty_iff_not_mem_left : forall A x:set,
+  ({x} :/\: A = Empty <-> x /:e A).
+let A x.
+rewrite (binintersect_com {x} A).
+exact (binintersect_singleton_empty_iff_not_mem
+  A
+  x).
 Qed.
 
 (** Infrastructure: removing a singleton removes exactly that point from the set **)
