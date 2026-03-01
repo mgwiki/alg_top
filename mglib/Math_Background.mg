@@ -110583,6 +110583,7 @@ exact (andI
 Qed.
 
 (** Infrastructure: loop characterization (forward direction) **)
+(** Proven Bob **)
 Lemma thm54_6c_loop_characterization_forward : forall E Te B Tb p e0 f:set,
   covering_map E Te B Tb p -> e0 :e E ->
   loop_at B Tb (apply_fun p e0) f ->
@@ -110857,7 +110858,7 @@ claim HendEq :
 }
 rewrite HendEq.
 exact HpgEnd.
-Admitted. (** depends on admitted thm54_3_homotopic_lifts **)
+Qed.
 
 
 (** Infrastructure: loop characterization equivalence (parenthesized) **)
