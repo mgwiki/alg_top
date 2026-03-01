@@ -55683,6 +55683,24 @@ apply xm (x :e B).
     (x :e B)).
 Qed.
 
+(** Infrastructure: setminus empty iff subset **)
+(** Proven Bob **)
+Theorem setminus_empty_iff_sub : forall A B:set,
+  (A :\: B = Empty <-> A c= B).
+let A B.
+apply iffI.
+- assume HdiffE.
+  exact (setminus_empty_implies_sub
+    A
+    B
+    HdiffE).
+- assume Hsub.
+  exact (setminus_sub_empty
+    A
+    B
+    Hsub).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
