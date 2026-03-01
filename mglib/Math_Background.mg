@@ -1,5 +1,5 @@
 (** Balance Alice 3927 **)
-(** Balance Bob 5439 **)
+(** Balance Bob 5494 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
 
@@ -43501,7 +43501,8 @@ Qed.
 
 (** from S52 Exercise 7(b) (line 516 in algtop.tex): tensor induces operation on pi1 **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
+(** Collected Bob 55 **)
+(** Proven Bob **)
 Theorem ex52_7b_tensor_induces_operation : forall G Tg:set,
   topological_group G Tg ->
   forall e mult:set,
@@ -44011,7 +44012,7 @@ apply and7I.
   + exact HHs1.
   + exact HH0t.
   + exact HH1t.
-Admitted.
+Qed.
 
 (** from S52 Exercise 7(c) (line 516 in algtop.tex): star and tensor agree on pi1 **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 120 **)
