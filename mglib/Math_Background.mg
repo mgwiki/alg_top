@@ -113559,6 +113559,15 @@ exact (andI
   HnulB2).
 Qed.
 
+(** B2 is path connected (from contractibility) **)
+(** Proven Bob **)
+Theorem B2_path_connected : path_connected_space B2 B2_topology.
+exact (ex51_3b_contractible_path_connected
+  B2
+  B2_topology
+  B2_contractible).
+Qed.
+
 (** Proven Charlie **)
 Theorem inclusion_S1_B2_nulhomotopic :
   nulhomotopic S1 S1_topology B2 B2_topology
