@@ -54900,6 +54900,72 @@ apply (union_subfamily_sub_union (Fam :\: {V}) Fam).
 exact (setminus_Subq Fam {V}).
 Qed.
 
+(** Infrastructure: a family splits into its member and the rest **)
+(** Proven Bob **)
+Theorem family_decompose_member_union_rest : forall Fam V:set,
+  V :e Fam ->
+  Fam = (Fam :\: {V}) :\/: {V}.
+let Fam V.
+assume HVFam.
+apply set_ext.
+- let x.
+  assume HxFam.
+  apply xm (x = V).
+  + assume HxV.
+    rewrite HxV.
+    exact (binunionI2
+      (Fam :\: {V})
+      {V}
+      V
+      (SingI V)).
+  + assume Hxneq.
+    claim HxnotSing : x /:e {V}.
+    {
+      assume HxSing.
+      claim HxV : x = V.
+      {
+        exact (SingE
+          V
+          x
+          HxSing).
+      }
+      exact (Hxneq HxV).
+    }
+    exact (binunionI1
+      (Fam :\: {V})
+      {V}
+      x
+      (setminusI
+        Fam
+        {V}
+        x
+        HxFam
+        HxnotSing)).
+- let x.
+  assume HxUnion.
+  apply (binunionE
+    (Fam :\: {V})
+    {V}
+    x
+    HxUnion).
+  + assume HxRest.
+    exact (setminusE1
+      Fam
+      {V}
+      x
+      HxRest).
+  + assume HxSing.
+    claim HxV : x = V.
+    {
+      exact (SingE
+        V
+        x
+        HxSing).
+    }
+    rewrite HxV.
+    exact HVFam.
+Qed.
+
 (** Infrastructure: if the union is empty, the union of the rest is empty **)
 (** Proven Bob **)
 Theorem union_rest_empty_if_union_empty : forall Fam V:set,
