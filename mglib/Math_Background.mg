@@ -8953,6 +8953,41 @@ exact (continuous_map_topology_cod X Tx Y Ty f Hfcont).
 Qed.
 
 (** Proven Bob **)
+Theorem homotopic_maps_function_on_data : forall X Tx Y Ty f f':set,
+  homotopic_maps X Tx Y Ty f f' ->
+  function_on f X Y /\ function_on f' X Y.
+let X Tx Y Ty f f'.
+assume Hhom.
+claim Hcont :
+  continuous_map X Tx Y Ty f /\
+  continuous_map X Tx Y Ty f'.
+{
+  exact (homotopic_maps_continuity_data X Tx Y Ty f f' Hhom).
+}
+apply andI.
+- exact (continuous_map_function_on
+    X
+    Tx
+    Y
+    Ty
+    f
+    (andEL
+      (continuous_map X Tx Y Ty f)
+      (continuous_map X Tx Y Ty f')
+      Hcont)).
+- exact (continuous_map_function_on
+    X
+    Tx
+    Y
+    Ty
+    f'
+    (andER
+      (continuous_map X Tx Y Ty f)
+      (continuous_map X Tx Y Ty f')
+      Hcont)).
+Qed.
+
+(** Proven Bob **)
 Theorem homotopic_maps_has_witness : forall X Tx Y Ty f f':set,
   homotopic_maps X Tx Y Ty f f' ->
   exists F:set,
