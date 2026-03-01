@@ -294783,6 +294783,7 @@ exact (outside_set_not_in_subset
   HxA).
 Qed.
 
+(** Proven Bob **)
 Theorem maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge_from_component_obligations :
   forall T ArcsT X Tx Arcs x A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -294839,8 +294840,9 @@ exact (lemma84_2_tree_extension_from_hypotheses_and_components
   HglgTA
   HconnTA
   HnoloopTA).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge_from_component_obligation_families :
   forall T ArcsT X Tx Arcs x A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -294888,8 +294890,9 @@ apply (xm (A c= T)).
     (HglgFam A HA Hnsub)
   (HconnFam A HA Hnsub)
   (HnoloopFam A HA Hnsub)).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge_from_stub_obligation_families :
   forall T ArcsT X Tx Arcs x A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -294928,7 +294931,7 @@ exact (maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge_from_com
   (fun A0 HA0 Hnsub0 => HglgStub A0 Hmax HA0 Hnsub0)
   (fun A0 HA0 Hnsub0 => HconnStub A0 Hmax HA0 Hnsub0)
   (fun A0 HA0 Hnsub0 => HnoloopStub A0 Hmax HA0 Hnsub0)).
-Admitted.
+Qed.
 
 Theorem maximal_tree_all_vertices_if_noncontained_edges_meet_tree_in_single_vertex :
   forall T ArcsT X Tx Arcs:set,
