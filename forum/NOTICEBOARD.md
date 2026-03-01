@@ -273,66 +273,6 @@ Status:
 
 --------------------------------------------------------
 
-NOTICE ID: 1772358892
-Created: 1772358892
-Status: SENT TO ADMIN
-
-Refers to Commit:
-  e26bd4dc7
-
-Target:
-  Line: 284969
-  Name: tree_in_graph_arc_in_ambient_arcs (Theorem)
-
-Problem:
-  tree_in_graph places no relation between ArcsT and Arcs beyond T being a
-  subgraph of X. The general_linear_graph arc decomposition is not unique:
-  arcs may be subdivided while preserving the definition, so V :e ArcsT does
-  not imply V :e Arcs. The lemma is therefore unprovable as stated.
-
-Proposed Replacement:
-  Theorem tree_in_graph_arc_in_ambient_arcs :
-    forall T ArcsT X Tx Arcs V:set,
-    tree_in_graph T ArcsT X Tx Arcs ->
-    ArcsT c= Arcs ->
-    V :e ArcsT ->
-    V :e Arcs.
-
-Proposed by: Bob
-
-Discussion:
-  - 1772377200 | admin1: Subset hypothesis ArcsT ⊆ Arcs is required to justify ambient arc extraction.
-  - 1772358892 | Bob: Without an explicit ArcsT ⊆ Arcs assumption, ArcsT may
-    be a refinement of the ambient arc family, so membership in ArcsT does not
-    imply membership in Arcs.
-  - 1772359451 | Alice: Correct. The GLG coherence condition is compatible with
-    arc subdivision, so a tree may use a finer decomposition than the ambient graph.
-    Adding ArcsT c= Arcs is the right fix. Long-term, consider adding this to the
-    tree_in_graph definition itself.
-
-Approvals:
-  -
-  - 1772358892 | Bob: YES
-  - 1772359451 | Alice: YES
-
-Result:
-  SENT TO ADMIN
-
-Admin Decision:
-  -
-
-  - 1772373600 | APPROVED
-Implemented by:
-  -
-
-Implementation Commit:
-  -
-
-Status:
-  SENT TO ADMIN
-
---------------------------------------------------------
-
 NOTICE ID: 1772357174
 Created: 1772357174
 Status: SENT TO ADMIN
@@ -379,133 +319,6 @@ Discussion:
 Approvals:
   -
   - 1772357174 | Bob: YES
-  - 1772359451 | Alice: YES
-
-Result:
-  SENT TO ADMIN
-
-Admin Decision:
-  -
-
-  - 1772373600 | APPROVED
-Implemented by:
-  -
-
-Implementation Commit:
-  -
-
-Status:
-  SENT TO ADMIN
-
---------------------------------------------------------
-
-NOTICE ID: 1772357173
-Created: 1772357173
-Status: SENT TO ADMIN
-
-Refers to Commit:
-  69fce6a58f68d8f5e2720c74cf8cf9314413830f
-
-Target:
-  Line: 43493-43498
-  Name: topological_group_mult_identity_value_for_mult (Theorem)
-
-Problem:
-  The statement derives mult(e,e)=e from topological_group and the
-  continuity of an arbitrary mult. But the given mult/e are not tied to
-  the topological_group witness operation/identity, so the conclusion is
-  unprovable. An explicit identity hypothesis for mult is needed.
-
-Proposed Replacement:
-  Theorem topological_group_mult_identity_value_for_mult : forall G Tg e mult:set,
-    topological_group G Tg ->
-    e :e G ->
-    function_on mult (setprod G G) G ->
-    continuous_map (setprod G G) (product_topology G Tg G Tg) G Tg mult ->
-    (forall x:set, x :e G -> apply_fun mult (e, x) = x /\
-      apply_fun mult (x, e) = x) ->
-    apply_fun mult (e, e) = e.
-
-Proposed by: Bob
-
-Discussion:
-  - 1772377200 | admin1: Identity law for the explicit (mult,e) pair is used but not assumed.
-  - 1772357173 | Bob: Without assuming mult has identity e, the lemma is
-    false because mult/e need not be the topological_group witness.
-  - 1772359451 | Alice: Correct. With the identity axiom the conclusion
-    is immediate (specialize with x = e). Without it, mult and e are
-    unrelated to the topological_group witness.
-
-Approvals:
-  -
-  - 1772357173 | Bob: YES
-  - 1772359451 | Alice: YES
-
-Result:
-  SENT TO ADMIN
-
-Admin Decision:
-  -
-
-  - 1772373600 | APPROVED
-Implemented by:
-  -
-
-Implementation Commit:
-  -
-
-Status:
-  SENT TO ADMIN
-
---------------------------------------------------------
-
-NOTICE ID: 1772357172
-Created: 1772357172
-Status: SENT TO ADMIN
-
-Refers to Commit:
-  69fce6a58f68d8f5e2720c74cf8cf9314413830f
-
-Target:
-  Line: 43506-43519
-  Name: ex52_7b_tensor_induces_operation (Theorem)
-
-Problem:
-  The proof needs mult(e,e)=e to show the tensor of loops is based at e.
-  The current hypotheses only give continuity of mult and e :e G, which
-  do not imply that e is an identity for mult. The statement is too
-  strong as written.
-
-Proposed Replacement:
-  Theorem ex52_7b_tensor_induces_operation : forall G Tg:set,
-    topological_group G Tg ->
-    forall e mult:set,
-    e :e G ->
-    function_on mult (setprod G G) G ->
-    continuous_map (setprod G G) (product_topology G Tg G Tg) G Tg mult ->
-    (forall x:set, x :e G -> apply_fun mult (e, x) = x /\
-      apply_fun mult (x, e) = x) ->
-    forall f f' g g':set,
-      loop_at G Tg e f -> loop_at G Tg e g ->
-      loop_at G Tg e f' -> loop_at G Tg e g' ->
-      path_homotopic G Tg e e f f' ->
-      path_homotopic G Tg e e g g' ->
-      path_homotopic G Tg e e
-        (graph unit_interval (fun s:set => apply_fun mult (apply_fun f s, apply_fun g s)))
-        (graph unit_interval (fun s:set => apply_fun mult (apply_fun f' s, apply_fun g' s))).
-
-Proposed by: Bob
-
-Discussion:
-  - 1772377200 | admin1: Same identity omission as above; required for correctness.
-  - 1772357172 | Bob: Without an identity axiom for mult, the tensor path
-    need not start/end at e, so the path_homotopic conclusion fails.
-  - 1772359451 | Alice: Agreed. The tensor f*g maps 0 to mult(e,e) and 1 to
-    mult(e,e), which equals e only if e is an identity element for mult.
-
-Approvals:
-  -
-  - 1772357172 | Bob: YES
   - 1772359451 | Alice: YES
 
 Result:
@@ -596,186 +409,6 @@ Status:
 
 --------------------------------------------------------
 
-NOTICE ID: 1772357170
-Created: 1772357170
-Status: SENT TO ADMIN
-
-Refers to Commit:
-  69fce6a58f68d8f5e2720c74cf8cf9314413830f
-
-Target:
-  Line: 137534-137536
-  Name: lemma58_path_between_continuous_bridge (Theorem)
-
-Problem:
-  path_between only requires function_on and endpoint conditions; it
-  does not include continuity. Therefore the lemma claiming continuity
-  from path_between is unprovable without an extra hypothesis.
-
-Proposed Replacement:
-  Theorem lemma58_path_between_continuous_bridge : forall X Tx x0 x1 alpha:set,
-    path_between X x0 x1 alpha ->
-    continuous_map unit_interval unit_interval_topology X Tx alpha ->
-    continuous_map unit_interval unit_interval_topology X Tx alpha.
-
-Proposed by: Bob
-
-Discussion:
-  - 1772377200 | admin1: path_between lacks continuity; bridge lemma acceptable as compatibility shim.
-  - 1772357170 | Bob: The added continuity hypothesis reflects the actual
-    data needed in later proofs and matches the definition of
-    path_between in this development.
-  - 1772359451 | Alice: Verified: path_between (line 6175) is function_on +
-    endpoints only, no continuity. The fix makes the theorem trivial (returns
-    the added hypothesis), but this is a key bottleneck (blocks 7 theorems).
-    Alternatively, consider enriching path_between to include continuity,
-    but that would be a larger change.
-
-Approvals:
-  -
-  - 1772357170 | Bob: YES
-  - 1772359451 | Alice: YES
-
-Result:
-  SENT TO ADMIN
-
-Admin Decision:
-  -
-
-  - 1772373600 | APPROVED
-Implemented by:
-  -
-
-Implementation Commit:
-  -
-
-Status:
-  SENT TO ADMIN
-
---------------------------------------------------------
-
-NOTICE ID: 1772357169
-Created: 1772357169
-Status: SENT TO ADMIN
-
-Refers to Commit:
-  69fce6a58f68d8f5e2720c74cf8cf9314413830f
-
-Target:
-  Line: 186946-186952
-  Name: injective_homomorphism_source_closure (Theorem)
-
-Problem:
-  group_homomorphism does not assume that multa is closed on Ga. The
-  current statement tries to deduce closure in Ga from injectivity and a
-  subgroup hypothesis on the image, which is insufficient. A source
-  group-structure (or equivalent closure hypothesis) is needed.
-
-Proposed Replacement:
-  Theorem injective_homomorphism_source_closure :
-    forall Ga multa ea inva G multG eG invG ifam:set,
-    group_structure Ga multa ea inva ->
-    group_homomorphism Ga multa G multG ifam ->
-    (forall x y:set, x :e Ga -> y :e Ga -> apply_fun ifam x = apply_fun ifam y -> x = y) ->
-    subgroup_of (homomorphism_image Ga ifam) G multG eG invG ->
-    forall a b:set, a :e Ga -> b :e Ga ->
-      apply_fun multa (a, b) :e Ga.
-
-Proposed by: Bob
-
-Discussion:
-  - 1772377200 | admin1: Closure of source cannot be derived from weak homomorphism definition alone.
-  - 1772357169 | Bob: Without source group_structure, the closure of
-    multa on Ga is not derivable. Adding it makes the lemma correct and
-    aligns with how it is used.
-  - 1772359451 | Alice: Agreed. This is the same gap I identified in
-    Notice 1772354702 (lemma67_5_extension_external). With group_structure
-    on the source, closure is immediate. This fix is consistent with that
-    earlier notice.
-
-Approvals:
-  -
-  - 1772357169 | Bob: YES
-  - 1772359451 | Alice: YES
-
-Result:
-  SENT TO ADMIN
-
-Admin Decision:
-  -
-
-  - 1772373600 | APPROVED
-Implemented by:
-  -
-
-Implementation Commit:
-  -
-
-Status:
-  SENT TO ADMIN
-
---------------------------------------------------------
-
-NOTICE ID: 1772357168
-Created: 1772357168
-Status: SENT TO ADMIN
-
-Refers to Commit:
-  69fce6a58f68d8f5e2720c74cf8cf9314413830f
-
-Target:
-  Line: 231467-231474
-  Name: closed_quotient_map_preserves_normality_helper (Theorem)
-
-Problem:
-  The statement omits surjectivity of pi, but the proof relies on it.
-  This is explicitly noted in the admitted proof comment and the
-  corresponding surjective version is already proved.
-
-Proposed Replacement:
-  Theorem closed_quotient_map_preserves_normality_helper :
-    forall E Te X Tx pi:set,
-    topology_on E Te -> topology_on X Tx ->
-    normal_space E Te ->
-    continuous_map E Te X Tx pi ->
-    (forall C:set, closed_in E Te C -> closed_in X Tx (image_of pi C)) ->
-    (forall V:set, V :e Tx -> {x :e E | apply_fun pi x :e V} :e Te) ->
-    surjective_map E X pi ->
-    normal_space X Tx.
-
-Proposed by: Bob
-
-Discussion:
-  - 1772377200 | admin1: Surjectivity is used in proof of normality preservation.
-  - 1772357168 | Bob: Surjectivity is required to transfer normality; it
-    is available in the existing helper with surjective_map and should
-    be included here.
-  - 1772359451 | Alice: Verified. The code comment says "missing hypothesis:
-    surjectivity of pi" and the surjective version is already proved. Trivial fix.
-
-Approvals:
-  -
-  - 1772357168 | Bob: YES
-  - 1772359451 | Alice: YES
-
-Result:
-  SENT TO ADMIN
-
-Admin Decision:
-  -
-
-  - 1772373600 | APPROVED
-Implemented by:
-  -
-
-Implementation Commit:
-  -
-
-Status:
-  SENT TO ADMIN
-
---------------------------------------------------------
-
 NOTICE ID: 1772355632
 Created: 1772355632
 Status: SENT TO ADMIN
@@ -819,143 +452,6 @@ Approvals:
   -
   - 1772355996 | Bob: YES
   - 1772359451 | Alice: YES
-
-Result:
-  SENT TO ADMIN
-
-Admin Decision:
-  -
-
-  - 1772373600 | APPROVED
-Implemented by:
-  -
-
-Implementation Commit:
-  -
-
-Status:
-  SENT TO ADMIN
-
---------------------------------------------------------
-
-NOTICE ID: 1772355631
-Created: 1772355631
-Status: SENT TO ADMIN
-
-Refers to Commit:
-  bbc6696568135e41f95c628e5ebba66c28984d3a
-
-Target:
-  Line: 37147-37155
-  Name: star_convex_segment_continuous (Theorem)
-
-Problem:
-  The statement allows an arbitrary topology_on A Ta, but the proof
-  constructs the segment as a map into R and requires the subspace
-  topology on A to conclude continuity into (A, Ta). With arbitrary
-  Ta, continuity is unprovable; the proof currently admits this step.
-
-Proposed Replacement:
-  Theorem star_convex_segment_continuous : forall A a0 a:set,
-    star_convex A a0 ->
-    a :e A ->
-    exists seg:set,
-      continuous_map unit_interval unit_interval_topology A
-        (subspace_topology R R_standard_topology A) seg /\
-      apply_fun seg 0 = a0 /\
-      apply_fun seg 1 = a.
-
-Proposed by: Bob
-
-Discussion:
-  - 1772377200 | admin1: Segment continuity relies on correct induced topology.
-  - 1772355631 | Bob: The segment is continuous into R and thus into A
-    with the subspace topology. Arbitrary Ta makes this unprovable.
-  - 1772355996 | Bob: The current proof admits continuity into (A, Ta)
-    without any link between Ta and the subspace topology. This makes
-    the statement too strong; the proposed replacement is appropriate.
-  - 1772359451 | Alice: Verified. star_convex requires A c= R, so the
-    subspace topology is the natural choice. Correct fix.
-
-Approvals:
-  -
-  - 1772355996 | Bob: YES
-  - 1772359451 | Alice: YES
-
-Result:
-  SENT TO ADMIN
-
-Admin Decision:
-  -
-
-  - 1772373600 | APPROVED
-Implemented by:
-  -
-
-Implementation Commit:
-  -
-
-Status:
-  SENT TO ADMIN
-
---------------------------------------------------------
-
-NOTICE ID: 1772355212
-Created: 1772355212
-Status: PROPOSED
-
-Refers to Commit:
-  23d69c2cf15f01ba9f805839a196da40466a758b
-
-Target:
-  Line: 57985-58000
-  Name: ex53_2_unique_partition (Theorem)
-
-Problem:
-  The statement does not rule out U = Empty. If U = Empty, then
-  preimage_of E p U = Empty and there can be multiple slice families
-  (e.g., Empty and {Empty}) satisfying the current hypotheses, so
-  uniqueness fails. The current proof breaks in the V = Empty case.
-  The connected_space definition in this development appears to allow
-  Empty, so the theorem is too strong as stated.
-
-Proposed Replacement:
-  Theorem ex53_2_unique_partition : forall E Te B Tb p U:set,
-    topology_on E Te -> topology_on B Tb ->
-    connected_space U (subspace_topology B Tb U) ->
-    U :e Tb ->
-    U <> Empty ->
-    forall slices1 slices2:set,
-      slices1 c= Te -> pairwise_disjoint slices1 ->
-      Union slices1 = preimage_of E p U ->
-      (forall V:set, V :e slices1 ->
-        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
-          (graph V (fun x:set => apply_fun p x))) ->
-      slices2 c= Te -> pairwise_disjoint slices2 ->
-      Union slices2 = preimage_of E p U ->
-      (forall V:set, V :e slices2 ->
-        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
-          (graph V (fun x:set => apply_fun p x))) ->
-      slices1 = slices2.
-
-Proposed by: Bob
-
-Discussion:
-  - 1772377200 | admin1: Empty set is connected under current definition; uniqueness needs nonempty hypothesis.
-  - 1772355212 | Bob: Without U <> Empty, uniqueness can fail because
-    Empty and {Empty} can both satisfy the slice conditions when
-    preimage is Empty. Adding U <> Empty matches the intended
-    “evenly covered connected open set” usage and fixes the empty-slice
-    case in the proof.
-  - 1772362209 | Bob: Alternative fix would be to strengthen the
-    partition/slice-family convention to require nonempty families, but
-    that would be a broader library change; U <> Empty is the minimal
-    local patch.
-
-Approvals:
-  -
-  - 1772355400 | Bob: YES
-  - 1772355552 | Alice: YES
 
 Result:
   SENT TO ADMIN
@@ -1318,6 +814,518 @@ Rules:
 - Past content may not be edited.
 
 [place newly resolved notices here below this line]
+
+NOTICE ID: 1772358892
+Created: 1772358892
+Status: IMPLEMENTED
+
+Refers to Commit:
+  e26bd4dc7
+
+Target:
+  Line: 284969
+  Name: tree_in_graph_arc_in_ambient_arcs (Theorem)
+
+Problem:
+  tree_in_graph places no relation between ArcsT and Arcs beyond T being a
+  subgraph of X. The general_linear_graph arc decomposition is not unique:
+  arcs may be subdivided while preserving the definition, so V :e ArcsT does
+  not imply V :e Arcs. The lemma is therefore unprovable as stated.
+
+Proposed Replacement:
+  Theorem tree_in_graph_arc_in_ambient_arcs :
+    forall T ArcsT X Tx Arcs V:set,
+    tree_in_graph T ArcsT X Tx Arcs ->
+    ArcsT c= Arcs ->
+    V :e ArcsT ->
+    V :e Arcs.
+
+Proposed by: Bob
+
+Discussion:
+  - 1772377200 | admin1: Subset hypothesis ArcsT ⊆ Arcs is required to justify ambient arc extraction.
+  - 1772358892 | Bob: Without an explicit ArcsT ⊆ Arcs assumption, ArcsT may
+    be a refinement of the ambient arc family, so membership in ArcsT does not
+    imply membership in Arcs.
+  - 1772359451 | Alice: Correct. The GLG coherence condition is compatible with
+    arc subdivision, so a tree may use a finer decomposition than the ambient graph.
+    Adding ArcsT c= Arcs is the right fix. Long-term, consider adding this to the
+    tree_in_graph definition itself.
+  - 1772377601 | Alice: Implemented per admin approval.
+
+Approvals:
+  -
+  - 1772358892 | Bob: YES
+  - 1772359451 | Alice: YES
+
+Result:
+  SENT TO ADMIN
+
+Admin Decision:
+  -
+
+  - 1772373600 | APPROVED
+Implemented by:
+  Alice
+
+Implementation Commit:
+  -
+
+Status:
+  IMPLEMENTED
+
+--------------------------------------------------------
+
+NOTICE ID: 1772357173
+Created: 1772357173
+Status: IMPLEMENTED
+
+Refers to Commit:
+  69fce6a58f68d8f5e2720c74cf8cf9314413830f
+
+Target:
+  Line: 43493-43498
+  Name: topological_group_mult_identity_value_for_mult (Theorem)
+
+Problem:
+  The statement derives mult(e,e)=e from topological_group and the
+  continuity of an arbitrary mult. But the given mult/e are not tied to
+  the topological_group witness operation/identity, so the conclusion is
+  unprovable. An explicit identity hypothesis for mult is needed.
+
+Proposed Replacement:
+  Theorem topological_group_mult_identity_value_for_mult : forall G Tg e mult:set,
+    topological_group G Tg ->
+    e :e G ->
+    function_on mult (setprod G G) G ->
+    continuous_map (setprod G G) (product_topology G Tg G Tg) G Tg mult ->
+    (forall x:set, x :e G -> apply_fun mult (e, x) = x /\
+      apply_fun mult (x, e) = x) ->
+    apply_fun mult (e, e) = e.
+
+Proposed by: Bob
+
+Discussion:
+  - 1772377200 | admin1: Identity law for the explicit (mult,e) pair is used but not assumed.
+  - 1772357173 | Bob: Without assuming mult has identity e, the lemma is
+    false because mult/e need not be the topological_group witness.
+  - 1772359451 | Alice: Correct. With the identity axiom the conclusion
+    is immediate (specialize with x = e). Without it, mult and e are
+    unrelated to the topological_group witness.
+  - 1772377601 | Alice: Implemented per admin approval.
+
+Approvals:
+  -
+  - 1772357173 | Bob: YES
+  - 1772359451 | Alice: YES
+
+Result:
+  SENT TO ADMIN
+
+Admin Decision:
+  -
+
+  - 1772373600 | APPROVED
+Implemented by:
+  Alice
+
+Implementation Commit:
+  -
+
+Status:
+  IMPLEMENTED
+
+--------------------------------------------------------
+
+NOTICE ID: 1772357172
+Created: 1772357172
+Status: IMPLEMENTED
+
+Refers to Commit:
+  69fce6a58f68d8f5e2720c74cf8cf9314413830f
+
+Target:
+  Line: 43506-43519
+  Name: ex52_7b_tensor_induces_operation (Theorem)
+
+Problem:
+  The proof needs mult(e,e)=e to show the tensor of loops is based at e.
+  The current hypotheses only give continuity of mult and e :e G, which
+  do not imply that e is an identity for mult. The statement is too
+  strong as written.
+
+Proposed Replacement:
+  Theorem ex52_7b_tensor_induces_operation : forall G Tg:set,
+    topological_group G Tg ->
+    forall e mult:set,
+    e :e G ->
+    function_on mult (setprod G G) G ->
+    continuous_map (setprod G G) (product_topology G Tg G Tg) G Tg mult ->
+    (forall x:set, x :e G -> apply_fun mult (e, x) = x /\
+      apply_fun mult (x, e) = x) ->
+    forall f f' g g':set,
+      loop_at G Tg e f -> loop_at G Tg e g ->
+      loop_at G Tg e f' -> loop_at G Tg e g' ->
+      path_homotopic G Tg e e f f' ->
+      path_homotopic G Tg e e g g' ->
+      path_homotopic G Tg e e
+        (graph unit_interval (fun s:set => apply_fun mult (apply_fun f s, apply_fun g s)))
+        (graph unit_interval (fun s:set => apply_fun mult (apply_fun f' s, apply_fun g' s))).
+
+Proposed by: Bob
+
+Discussion:
+  - 1772377200 | admin1: Same identity omission as above; required for correctness.
+  - 1772357172 | Bob: Without an identity axiom for mult, the tensor path
+    need not start/end at e, so the path_homotopic conclusion fails.
+  - 1772359451 | Alice: Agreed. The tensor f*g maps 0 to mult(e,e) and 1 to
+    mult(e,e), which equals e only if e is an identity element for mult.
+  - 1772377601 | Alice: Implemented per admin approval.
+
+Approvals:
+  -
+  - 1772357172 | Bob: YES
+  - 1772359451 | Alice: YES
+
+Result:
+  SENT TO ADMIN
+
+Admin Decision:
+  -
+
+  - 1772373600 | APPROVED
+Implemented by:
+  Alice
+
+Implementation Commit:
+  -
+
+Status:
+  IMPLEMENTED
+
+--------------------------------------------------------
+
+NOTICE ID: 1772357170
+Created: 1772357170
+Status: IMPLEMENTED
+
+Refers to Commit:
+  69fce6a58f68d8f5e2720c74cf8cf9314413830f
+
+Target:
+  Line: 137534-137536
+  Name: lemma58_path_between_continuous_bridge (Theorem)
+
+Problem:
+  path_between only requires function_on and endpoint conditions; it
+  does not include continuity. Therefore the lemma claiming continuity
+  from path_between is unprovable without an extra hypothesis.
+
+Proposed Replacement:
+  Theorem lemma58_path_between_continuous_bridge : forall X Tx x0 x1 alpha:set,
+    path_between X x0 x1 alpha ->
+    continuous_map unit_interval unit_interval_topology X Tx alpha ->
+    continuous_map unit_interval unit_interval_topology X Tx alpha.
+
+Proposed by: Bob
+
+Discussion:
+  - 1772377200 | admin1: path_between lacks continuity; bridge lemma acceptable as compatibility shim.
+  - 1772357170 | Bob: The added continuity hypothesis reflects the actual
+    data needed in later proofs and matches the definition of
+    path_between in this development.
+  - 1772359451 | Alice: Verified: path_between (line 6175) is function_on +
+    endpoints only, no continuity. The fix makes the theorem trivial (returns
+    the added hypothesis), but this is a key bottleneck (blocks 7 theorems).
+    Alternatively, consider enriching path_between to include continuity,
+    but that would be a larger change.
+  - 1772377601 | Alice: Implemented per admin approval.
+
+Approvals:
+  -
+  - 1772357170 | Bob: YES
+  - 1772359451 | Alice: YES
+
+Result:
+  SENT TO ADMIN
+
+Admin Decision:
+  -
+
+  - 1772373600 | APPROVED
+Implemented by:
+  Alice
+
+Implementation Commit:
+  -
+
+Status:
+  IMPLEMENTED
+
+--------------------------------------------------------
+
+NOTICE ID: 1772357169
+Created: 1772357169
+Status: IMPLEMENTED
+
+Refers to Commit:
+  69fce6a58f68d8f5e2720c74cf8cf9314413830f
+
+Target:
+  Line: 186946-186952
+  Name: injective_homomorphism_source_closure (Theorem)
+
+Problem:
+  group_homomorphism does not assume that multa is closed on Ga. The
+  current statement tries to deduce closure in Ga from injectivity and a
+  subgroup hypothesis on the image, which is insufficient. A source
+  group-structure (or equivalent closure hypothesis) is needed.
+
+Proposed Replacement:
+  Theorem injective_homomorphism_source_closure :
+    forall Ga multa ea inva G multG eG invG ifam:set,
+    group_structure Ga multa ea inva ->
+    group_homomorphism Ga multa G multG ifam ->
+    (forall x y:set, x :e Ga -> y :e Ga -> apply_fun ifam x = apply_fun ifam y -> x = y) ->
+    subgroup_of (homomorphism_image Ga ifam) G multG eG invG ->
+    forall a b:set, a :e Ga -> b :e Ga ->
+      apply_fun multa (a, b) :e Ga.
+
+Proposed by: Bob
+
+Discussion:
+  - 1772377200 | admin1: Closure of source cannot be derived from weak homomorphism definition alone.
+  - 1772357169 | Bob: Without source group_structure, the closure of
+    multa on Ga is not derivable. Adding it makes the lemma correct and
+    aligns with how it is used.
+  - 1772359451 | Alice: Agreed. This is the same gap I identified in
+    Notice 1772354702 (lemma67_5_extension_external). With group_structure
+    on the source, closure is immediate. This fix is consistent with that
+    earlier notice.
+  - 1772377601 | Alice: Implemented per admin approval.
+
+Approvals:
+  -
+  - 1772357169 | Bob: YES
+  - 1772359451 | Alice: YES
+
+Result:
+  SENT TO ADMIN
+
+Admin Decision:
+  -
+
+  - 1772373600 | APPROVED
+Implemented by:
+  Alice
+
+Implementation Commit:
+  -
+
+Status:
+  IMPLEMENTED
+
+--------------------------------------------------------
+
+NOTICE ID: 1772357168
+Created: 1772357168
+Status: IMPLEMENTED
+
+Refers to Commit:
+  69fce6a58f68d8f5e2720c74cf8cf9314413830f
+
+Target:
+  Line: 231467-231474
+  Name: closed_quotient_map_preserves_normality_helper (Theorem)
+
+Problem:
+  The statement omits surjectivity of pi, but the proof relies on it.
+  This is explicitly noted in the admitted proof comment and the
+  corresponding surjective version is already proved.
+
+Proposed Replacement:
+  Theorem closed_quotient_map_preserves_normality_helper :
+    forall E Te X Tx pi:set,
+    topology_on E Te -> topology_on X Tx ->
+    normal_space E Te ->
+    continuous_map E Te X Tx pi ->
+    (forall C:set, closed_in E Te C -> closed_in X Tx (image_of pi C)) ->
+    (forall V:set, V :e Tx -> {x :e E | apply_fun pi x :e V} :e Te) ->
+    surjective_map E X pi ->
+    normal_space X Tx.
+
+Proposed by: Bob
+
+Discussion:
+  - 1772377200 | admin1: Surjectivity is used in proof of normality preservation.
+  - 1772357168 | Bob: Surjectivity is required to transfer normality; it
+    is available in the existing helper with surjective_map and should
+    be included here.
+  - 1772359451 | Alice: Verified. The code comment says "missing hypothesis:
+    surjectivity of pi" and the surjective version is already proved. Trivial fix.
+  - 1772377601 | Alice: Implemented per admin approval.
+
+Approvals:
+  -
+  - 1772357168 | Bob: YES
+  - 1772359451 | Alice: YES
+
+Result:
+  SENT TO ADMIN
+
+Admin Decision:
+  -
+
+  - 1772373600 | APPROVED
+Implemented by:
+  Alice
+
+Implementation Commit:
+  -
+
+Status:
+  IMPLEMENTED
+
+--------------------------------------------------------
+
+NOTICE ID: 1772355631
+Created: 1772355631
+Status: IMPLEMENTED
+
+Refers to Commit:
+  bbc6696568135e41f95c628e5ebba66c28984d3a
+
+Target:
+  Line: 37147-37155
+  Name: star_convex_segment_continuous (Theorem)
+
+Problem:
+  The statement allows an arbitrary topology_on A Ta, but the proof
+  constructs the segment as a map into R and requires the subspace
+  topology on A to conclude continuity into (A, Ta). With arbitrary
+  Ta, continuity is unprovable; the proof currently admits this step.
+
+Proposed Replacement:
+  Theorem star_convex_segment_continuous : forall A a0 a:set,
+    star_convex A a0 ->
+    a :e A ->
+    exists seg:set,
+      continuous_map unit_interval unit_interval_topology A
+        (subspace_topology R R_standard_topology A) seg /\
+      apply_fun seg 0 = a0 /\
+      apply_fun seg 1 = a.
+
+Proposed by: Bob
+
+Discussion:
+  - 1772377200 | admin1: Segment continuity relies on correct induced topology.
+  - 1772355631 | Bob: The segment is continuous into R and thus into A
+    with the subspace topology. Arbitrary Ta makes this unprovable.
+  - 1772355996 | Bob: The current proof admits continuity into (A, Ta)
+    without any link between Ta and the subspace topology. This makes
+    the statement too strong; the proposed replacement is appropriate.
+  - 1772359451 | Alice: Verified. star_convex requires A c= R, so the
+    subspace topology is the natural choice. Correct fix.
+  - 1772377601 | Alice: Implemented per admin approval.
+
+Approvals:
+  -
+  - 1772355996 | Bob: YES
+  - 1772359451 | Alice: YES
+
+Result:
+  SENT TO ADMIN
+
+Admin Decision:
+  -
+
+  - 1772373600 | APPROVED
+Implemented by:
+  Alice
+
+Implementation Commit:
+  -
+
+Status:
+  IMPLEMENTED
+
+--------------------------------------------------------
+
+NOTICE ID: 1772355212
+Created: 1772355212
+Status: IMPLEMENTED
+
+Refers to Commit:
+  23d69c2cf15f01ba9f805839a196da40466a758b
+
+Target:
+  Line: 57985-58000
+  Name: ex53_2_unique_partition (Theorem)
+
+Problem:
+  The statement does not rule out U = Empty. If U = Empty, then
+  preimage_of E p U = Empty and there can be multiple slice families
+  (e.g., Empty and {Empty}) satisfying the current hypotheses, so
+  uniqueness fails. The current proof breaks in the V = Empty case.
+  The connected_space definition in this development appears to allow
+  Empty, so the theorem is too strong as stated.
+
+Proposed Replacement:
+  Theorem ex53_2_unique_partition : forall E Te B Tb p U:set,
+    topology_on E Te -> topology_on B Tb ->
+    connected_space U (subspace_topology B Tb U) ->
+    U :e Tb ->
+    U <> Empty ->
+    forall slices1 slices2:set,
+      slices1 c= Te -> pairwise_disjoint slices1 ->
+      Union slices1 = preimage_of E p U ->
+      (forall V:set, V :e slices1 ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (fun x:set => apply_fun p x))) ->
+      slices2 c= Te -> pairwise_disjoint slices2 ->
+      Union slices2 = preimage_of E p U ->
+      (forall V:set, V :e slices2 ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (fun x:set => apply_fun p x))) ->
+      slices1 = slices2.
+
+Proposed by: Bob
+
+Discussion:
+  - 1772377200 | admin1: Empty set is connected under current definition; uniqueness needs nonempty hypothesis.
+  - 1772355212 | Bob: Without U <> Empty, uniqueness can fail because
+    Empty and {Empty} can both satisfy the slice conditions when
+    preimage is Empty. Adding U <> Empty matches the intended
+    "evenly covered connected open set" usage and fixes the empty-slice
+    case in the proof.
+  - 1772362209 | Bob: Alternative fix would be to strengthen the
+    partition/slice-family convention to require nonempty families, but
+    that would be a broader library change; U <> Empty is the minimal
+    local patch.
+  - 1772377601 | Alice: Implemented per admin approval.
+
+Approvals:
+  -
+  - 1772355400 | Bob: YES
+  - 1772355552 | Alice: YES
+
+Result:
+  SENT TO ADMIN
+
+Admin Decision:
+  -
+
+  - 1772373600 | APPROVED
+Implemented by:
+  Alice
+
+Implementation Commit:
+  -
+
+Status:
+  IMPLEMENTED
+
+--------------------------------------------------------
 ========================================================
 
 
