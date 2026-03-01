@@ -8744,6 +8744,40 @@ Definition homotopic_maps : set -> set -> set -> set -> set -> set -> prop :=
       (forall x:set, x :e X ->
         apply_fun F (x, 1) = apply_fun f' x).
 
+(** Proven Bob **)
+Theorem homotopic_maps_unfold : forall X Tx Y Ty f f':set,
+  homotopic_maps X Tx Y Ty f f' ->
+  (continuous_map X Tx Y Ty f /\
+   continuous_map X Tx Y Ty f') /\
+  exists F:set,
+    continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology)
+      Y Ty F /\
+    (forall x:set, x :e X -> apply_fun F (x, 0) = apply_fun f x) /\
+    (forall x:set, x :e X -> apply_fun F (x, 1) = apply_fun f' x).
+let X Tx Y Ty f f'.
+assume H.
+apply andI.
+- exact (andEL
+    (continuous_map X Tx Y Ty f /\ continuous_map X Tx Y Ty f')
+    (exists F:set,
+      continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        Y Ty F /\
+      (forall x:set, x :e X -> apply_fun F (x, 0) = apply_fun f x) /\
+      (forall x:set, x :e X -> apply_fun F (x, 1) = apply_fun f' x))
+    H).
+- exact (andER
+    (continuous_map X Tx Y Ty f /\ continuous_map X Tx Y Ty f')
+    (exists F:set,
+      continuous_map (setprod X unit_interval)
+        (product_topology X Tx unit_interval unit_interval_topology)
+        Y Ty F /\
+      (forall x:set, x :e X -> apply_fun F (x, 0) = apply_fun f x) /\
+      (forall x:set, x :e X -> apply_fun F (x, 1) = apply_fun f' x))
+    H).
+Qed.
+
 (** from S51 Definition (line 96 in algtop.tex): nulhomotopic map **)
 (** LATEX VERSION: If f is homotopic to f' and f' is a constant map, we say that f is nulhomotopic. **)
 Definition nulhomotopic : set -> set -> set -> set -> set -> prop :=
