@@ -56131,6 +56131,77 @@ exact (binunion_singleton_neq_of_not_mem_right
   HeqR).
 Qed.
 
+(** Infrastructure: A union (B\\A) equals A union B **)
+(** Proven Bob **)
+Theorem binunion_setminus_right_eq : forall A B:set,
+  A :\/: (B :\: A) = A :\/: B.
+let A B.
+apply set_ext.
+- let x.
+  assume Hx.
+  apply (binunionE
+    A
+    (B :\: A)
+    x
+    Hx).
+  + assume HxA.
+    exact (binunionI1
+      A
+      B
+      x
+      HxA).
+  + assume HxRest.
+    claim HxB : x :e B.
+    {
+      exact (setminusE1
+        B
+        A
+        x
+        HxRest).
+    }
+    exact (binunionI2
+      A
+      B
+      x
+      HxB).
+- let x.
+  assume Hx.
+  apply (binunionE
+    A
+    B
+    x
+    Hx).
+  + assume HxA.
+    exact (binunionI1
+      A
+      (B :\: A)
+      x
+      HxA).
+  + assume HxB.
+    apply xm (x :e A).
+    * assume HxA.
+      exact (binunionI1
+        A
+        (B :\: A)
+        x
+        HxA).
+    * assume HxNotA.
+      claim HxRest : x :e B :\: A.
+      {
+        exact (setminusI
+          B
+          A
+          x
+          HxB
+          HxNotA).
+      }
+      exact (binunionI2
+        A
+        (B :\: A)
+        x
+        HxRest).
+Qed.
+
 
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
