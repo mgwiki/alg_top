@@ -9610,6 +9610,20 @@ exact (continuous_map_topology_cod
 Qed.
 
 (** Proven Bob **)
+Theorem path_homotopic_basic_data : forall X Tx x0 x1 f f':set,
+  path_homotopic X Tx x0 x1 f f' ->
+  (continuous_map unit_interval unit_interval_topology X Tx f /\
+   continuous_map unit_interval unit_interval_topology X Tx f') /\
+  (apply_fun f 0 = x0 /\ apply_fun f 1 = x1 /\
+   apply_fun f' 0 = x0 /\ apply_fun f' 1 = x1).
+let X Tx x0 x1 f f'.
+assume Hhom.
+apply andI.
+- exact (path_homotopic_continuity_data X Tx x0 x1 f f' Hhom).
+- exact (path_homotopic_endpoint_data X Tx x0 x1 f f' Hhom).
+Qed.
+
+(** Proven Bob **)
 Theorem path_homotopic_has_square_witness : forall X Tx x0 x1 f f':set,
   path_homotopic X Tx x0 x1 f f' ->
   exists F:set,
