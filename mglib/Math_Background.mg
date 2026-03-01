@@ -56450,6 +56450,47 @@ rewrite (binintersect_com B A).
 reflexivity.
 Qed.
 
+(** Infrastructure: setminus is monotone in the left argument **)
+(** Proven Bob **)
+Theorem setminus_left_mono : forall A B C:set,
+  A c= B ->
+  A :\: C c= B :\: C.
+let A B C.
+assume Hsub.
+let x.
+assume HxRest.
+exact (setminusI
+  B
+  C
+  x
+  (Hsub x (setminusE1 A C x HxRest))
+  (setminusE2 A C x HxRest)).
+Qed.
+
+(** Infrastructure: setminus is antitone in the right argument **)
+(** Proven Bob **)
+Theorem setminus_right_mono : forall A B C:set,
+  B c= C ->
+  A :\: C c= A :\: B.
+let A B C.
+assume Hsub.
+let x.
+assume HxRest.
+apply setminusI.
+- exact (setminusE1
+    A
+    C
+    x
+    HxRest).
+- assume HxB.
+  exact (setminusE2
+    A
+    C
+    x
+    HxRest
+    (Hsub x HxB)).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
