@@ -44953,6 +44953,7 @@ Qed.
 (** disjoint open sets (slices) V_alpha in E, each mapped homeomorphically onto U by p. **)
 Definition evenly_covered : set -> set -> set -> set -> set -> set -> prop :=
   fun E Te B Tb p U =>
+    topology_on E Te /\
     U :e Tb /\
     exists slices:set,
       slices c= Te /\
@@ -44968,16 +44969,23 @@ Theorem evenly_covered_open : forall E Te B Tb p U:set,
   evenly_covered E Te B Tb p U -> U :e Tb.
 let E Te B Tb p U.
 assume Heven.
-exact (andEL
+claim HtopU : topology_on E Te /\ U :e Tb.
+{
+  exact (andEL
+    (topology_on E Te /\ U :e Tb)
+    (exists slices:set,
+      slices c= Te /\
+      pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (fun x:set => apply_fun p x))))
+    Heven).
+}
+exact (andER
+  (topology_on E Te)
   (U :e Tb)
-  (exists slices:set,
-    slices c= Te /\
-    pairwise_disjoint slices /\
-    Union slices = preimage_of E p U /\
-    (forall V:set, V :e slices ->
-      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
-        (graph V (fun x:set => apply_fun p x))))
-  Heven).
+  HtopU).
 Qed.
 
 (** Proven Bob **)
@@ -44993,7 +45001,7 @@ Theorem evenly_covered_slices : forall E Te B Tb p U:set,
 let E Te B Tb p U.
 assume Heven.
 exact (andER
-  (U :e Tb)
+  (topology_on E Te /\ U :e Tb)
   (exists slices:set,
     slices c= Te /\
     pairwise_disjoint slices /\
@@ -45004,13 +45012,30 @@ exact (andER
   Heven).
 Qed.
 
-(** Infrastructure: evenly_covered does not currently imply topology_on E Te **)
+(** Proven Bob **)
 Theorem evenly_covered_topology_on_domain : forall E Te B Tb p U:set,
   evenly_covered E Te B Tb p U ->
   topology_on E Te.
-admit.
-Admitted.
-(** TODO: add explicit topology_on E Te hypothesis to uses of evenly_covered in this context. **)
+let E Te B Tb p U.
+assume Heven.
+claim HtopU : topology_on E Te /\ U :e Tb.
+{
+  exact (andEL
+    (topology_on E Te /\ U :e Tb)
+    (exists slices:set,
+      slices c= Te /\
+      pairwise_disjoint slices /\
+      Union slices = preimage_of E p U /\
+      (forall V:set, V :e slices ->
+        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+          (graph V (fun x:set => apply_fun p x))))
+    Heven).
+}
+exact (andEL
+  (topology_on E Te)
+  (U :e Tb)
+  HtopU).
+Qed.
 
 (** from S53 Definition (line 543 in algtop.tex) **)
 (** LATEX VERSION: If every point b of B has a neighborhood U that is evenly covered by p, **)
@@ -45521,6 +45546,17 @@ Theorem evenly_covered_open_subset : forall E Te B Tb p U W:set,
   evenly_covered E Te B Tb p W.
 let E Te B Tb p U W.
 assume Heven HW HWsub.
+claim HtopE : topology_on E Te.
+{
+  exact (evenly_covered_topology_on_domain
+    E
+    Te
+    B
+    Tb
+    p
+    U
+    Heven).
+}
 claim HslicesEx : exists slices:set,
   slices c= Te /\
   pairwise_disjoint slices /\
@@ -45530,7 +45566,7 @@ claim HslicesEx : exists slices:set,
       (graph V (apply_fun p))).
 {
   exact (andER
-    (U :e Tb)
+    (topology_on E Te /\ U :e Tb)
     (exists slices:set,
       slices c= Te /\
       pairwise_disjoint slices /\
@@ -45540,7 +45576,7 @@ claim HslicesEx : exists slices:set,
           (graph V (apply_fun p))))
     Heven).
 }
-prove W :e Tb /\
+prove (topology_on E Te /\ W :e Tb) /\
   exists slices:set,
     slices c= Te /\
     pairwise_disjoint slices /\
@@ -45549,7 +45585,9 @@ prove W :e Tb /\
       homeomorphism V (subspace_topology E Te V) W (subspace_topology B Tb W)
         (graph V (apply_fun p))).
 apply andI.
-- exact HW.
+- apply andI.
+  + exact HtopE.
+  + exact HW.
 - claim HslicesPack : exists slices:set,
     slices c= Te /\
     pairwise_disjoint slices /\
@@ -46429,7 +46467,7 @@ claim HslicesEx : exists slices:set,
       (graph V (apply_fun p))).
 {
   exact (andER
-    (U :e Tb)
+    (topology_on E Te /\ U :e Tb)
     (exists slices:set,
       slices c= Te /\
       pairwise_disjoint slices /\
@@ -46439,7 +46477,7 @@ claim HslicesEx : exists slices:set,
           (graph V (apply_fun p))))
     Heven).
 }
-prove W :e Tb /\
+prove (topology_on E Te /\ W :e Tb) /\
   exists slices:set,
     slices c= Te /\
     pairwise_disjoint slices /\
@@ -46448,7 +46486,9 @@ prove W :e Tb /\
       homeomorphism V (subspace_topology E Te V) W (subspace_topology B Tb W)
         (graph V (apply_fun p))).
 apply andI.
-- exact HW.
+- apply andI.
+  + exact HtopE.
+  + exact HW.
 - claim HslicesPack : exists slices:set,
     slices c= Te /\
     pairwise_disjoint slices /\
@@ -47459,7 +47499,7 @@ claim Hsingle_open : forall x:set, x :e F -> {x} :e subspace_topology E Te F.
           (graph V (fun z:set => apply_fun p z))).
   {
     exact (andER
-      (U :e Tb)
+      (topology_on E Te /\ U :e Tb)
       (exists slices:set,
         slices c= Te /\
         pairwise_disjoint slices /\
@@ -47843,7 +47883,7 @@ apply andI.
               (graph V (apply_fun p))).
         {
           exact (andER
-            (Vx :e Tb)
+            (topology_on E Te /\ Vx :e Tb)
             (exists slices:set,
               slices c= Te /\
               pairwise_disjoint slices /\
@@ -48149,7 +48189,7 @@ claim HslicesEx : exists slices:set,
       (graph V (fun x:set => apply_fun p x))).
 {
   exact (andER
-    (W :e Tb)
+    (topology_on E Te /\ W :e Tb)
     (exists slices:set,
       slices c= Te /\
       pairwise_disjoint slices /\
@@ -49284,7 +49324,8 @@ apply andI.
   + apply andI.
     * exact (subspace_topologyI B Tb B0 U HUtb).
     * exact (binintersectI U B0 b HbU Hb0).
-  + prove U0 :e subspace_topology B Tb B0 /\
+    + prove (topology_on E0 (subspace_topology E Te E0) /\
+        U0 :e subspace_topology B Tb B0) /\
       exists slices0:set,
         slices0 c= subspace_topology E Te E0 /\
         pairwise_disjoint slices0 /\
@@ -49294,7 +49335,9 @@ apply andI.
             U0 (subspace_topology B0 (subspace_topology B Tb B0) U0)
             (graph V0 (fun x:set => apply_fun p0 x))).
     apply andI.
-    * exact (subspace_topologyI B Tb B0 U HUtb).
+    * apply andI.
+      - exact (subspace_topology_is_topology E Te E0 HtopE HE0subE).
+      - exact (subspace_topologyI B Tb B0 U HUtb).
     * claim HslicesEx : exists slices:set,
         slices c= Te /\
         pairwise_disjoint slices /\
@@ -49304,7 +49347,7 @@ apply andI.
             (graph V (fun x:set => apply_fun p x))).
       {
         exact (andER
-          (U :e Tb)
+          (topology_on E Te /\ U :e Tb)
           (exists slices:set,
             slices c= Te /\
             pairwise_disjoint slices /\
@@ -50690,7 +50733,8 @@ claim HlocalProd :
       }
       rewrite HbbEta.
       exact HbbPair.
-  - prove W :e product_topology B Tb B' Tb' /\
+  - prove (topology_on (setprod E E') (product_topology E Te E' Te') /\
+      W :e product_topology B Tb B' Tb') /\
       exists slices2:set,
         slices2 c= product_topology E Te E' Te' /\
         pairwise_disjoint slices2 /\
@@ -50703,7 +50747,9 @@ claim HlocalProd :
             (subspace_topology (setprod B B') (product_topology B Tb B' Tb') W)
             (graph S (fun x:set => apply_fun (product_of_maps E E' p p') x))).
     apply andI.
-    + claim HbasisSub :
+    + apply andI.
+      * exact (product_topology_is_topology E Te E' Te' HtopE HtopE').
+      * claim HbasisSub :
         basis_on (setprod B B') (product_subbasis B Tb B' Tb').
       {
         exact (product_subbasis_is_basis B Tb B' Tb' HtopB HtopB').
@@ -50731,8 +50777,8 @@ claim HlocalProd :
           HbasisSub
           HrectSub).
       }
-      rewrite <- (rectangle_set_def U U').
-      exact HrectOpen.
+        rewrite <- (rectangle_set_def U U').
+        exact HrectOpen.
     + claim HslicesEx : exists slices:set,
         slices c= Te /\
         pairwise_disjoint slices /\
@@ -50742,7 +50788,7 @@ claim HlocalProd :
             (graph V (fun x:set => apply_fun p x))).
       {
         exact (andER
-          (U :e Tb)
+          (topology_on E Te /\ U :e Tb)
           (exists slices:set,
             slices c= Te /\
             pairwise_disjoint slices /\
@@ -50816,7 +50862,7 @@ claim HlocalProd :
             (graph V' (fun x:set => apply_fun p' x))).
       {
         exact (andER
-          (U' :e Tb')
+          (topology_on E' Te' /\ U' :e Tb')
           (exists slices':set,
             slices' c= Te' /\
             pairwise_disjoint slices' /\
@@ -52703,7 +52749,8 @@ claim Hlocal :
         Tx
         HtopX).
     + exact HbX.
-  - prove X :e Tx /\
+  - prove (topology_on (setprod X Y) (product_topology X Tx Y (discrete_topology Y)) /\
+      X :e Tx) /\
       exists slices:set,
         slices c= (product_topology X Tx Y (discrete_topology Y)) /\
         pairwise_disjoint slices /\
@@ -52717,10 +52764,18 @@ claim Hlocal :
             (subspace_topology X Tx X)
             (graph V (fun x:set => apply_fun (projection1 X Y) x))).
     apply andI.
-    + exact (topology_has_X
-        X
-        Tx
-        HtopX).
+    + apply andI.
+      * exact (product_topology_is_topology
+          X
+          Tx
+          Y
+          (discrete_topology Y)
+          HtopX
+          (discrete_topology_on Y)).
+      * exact (topology_has_X
+          X
+          Tx
+          HtopX).
     + set slices := ex53_1_slice_family X Y.
       claim HslicesDef : slices = ex53_1_slice_family X Y.
       {
@@ -60466,7 +60521,7 @@ claim HAopenIn : open_in B Tb A.
         homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
           (graph V (apply_fun p))).
   {
-    exact (andER (U :e Tb) (exists slices:set, slices c= Te /\ pairwise_disjoint slices /\ Union slices = preimage_of E p U /\ (forall V:set, V :e slices -> homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U) (graph V (apply_fun p)))) Heven).
+    exact (andER (topology_on E Te /\ U :e Tb) (exists slices:set, slices c= Te /\ pairwise_disjoint slices /\ Union slices = preimage_of E p U /\ (forall V:set, V :e slices -> homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U) (graph V (apply_fun p)))) Heven).
   }
   apply HslicesEx.
   let slices.
@@ -60590,7 +60645,7 @@ claim HcompAopenIn : open_in B Tb (B :\: A).
         homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
           (graph V (apply_fun p))).
   {
-    exact (andER (U :e Tb) (exists slices:set, slices c= Te /\ pairwise_disjoint slices /\ Union slices = preimage_of E p U /\ (forall V:set, V :e slices -> homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U) (graph V (apply_fun p)))) Heven).
+    exact (andER (topology_on E Te /\ U :e Tb) (exists slices:set, slices c= Te /\ pairwise_disjoint slices /\ Union slices = preimage_of E p U /\ (forall V:set, V :e slices -> homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U) (graph V (apply_fun p)))) Heven).
   }
   apply HslicesEx.
   let slices.
@@ -60784,6 +60839,10 @@ claim Hsurjq : surjective_map X Y q.
     (surjective_map X Y q)
     Hqpair).
 }
+claim HtopX : topology_on X Tx.
+{
+  exact (covering_map_topology_on_domain X Tx Y Ty q Hcovq).
+}
 claim Hqlocal :
   forall y:set, y :e Y ->
     exists Uq:set, Uq :e Ty /\ y :e Uq /\ evenly_covered X Tx Y Ty q Uq.
@@ -60968,7 +61027,7 @@ claim Hlocal_comp :
         (graph V (apply_fun r))).
   {
     exact (andER
-      (Ur :e Tz)
+      (topology_on Y Ty /\ Ur :e Tz)
       (exists slicesr:set,
         slicesr c= Ty /\
         pairwise_disjoint slicesr /\
@@ -61631,7 +61690,7 @@ claim Hlocal_comp :
             homeomorphism V (subspace_topology X Tx V) (Vy' y) (subspace_topology Y Ty (Vy' y))
               (graph V (fun x:set => apply_fun q x))).
       {
-        exact (andER (Vy' y :e Ty)
+        exact (andER (topology_on X Tx /\ Vy' y :e Ty)
           (exists slices:set,
             slices c= Tx /\
             pairwise_disjoint slices /\
@@ -62228,7 +62287,7 @@ claim Hlocal_comp :
         HhomeComp HfunFinal HagreeOnS).
     }
     (** Conclude evenly_covered **)
-    prove U' :e Tz /\
+    prove (topology_on X Tx /\ U' :e Tz) /\
       exists slices:set,
         slices c= Tx /\
         pairwise_disjoint slices /\
@@ -62237,7 +62296,9 @@ claim Hlocal_comp :
           homeomorphism V (subspace_topology X Tx V) U' (subspace_topology Z Tz U')
             (graph V (fun x:set => apply_fun (compose_fun X q r) x))).
     apply andI.
-    - exact HU'Open.
+    - apply andI.
+      + exact HtopX.
+      + exact HU'Open.
     - witness total_slices.
       apply and4I.
       + exact HtotSub.
@@ -62366,7 +62427,7 @@ claim HHausE :
             (graph V (fun z:set => apply_fun p z))).
     {
       exact (andER
-        (U :e Tb)
+        (topology_on E Te /\ U :e Tb)
         (exists slices:set,
           slices c= Te /\
           pairwise_disjoint slices /\
@@ -62965,7 +63026,7 @@ claim HexSlices :
         (graph V (fun z:set => apply_fun p z))).
 {
   exact (andER
-    (Ue :e Tb)
+    (topology_on E Te /\ Ue :e Tb)
     (exists slices:set,
       slices c= Te /\
       pairwise_disjoint slices /\
@@ -66750,7 +66811,7 @@ claim Hsubcover :
               (graph V (fun z:set => apply_fun p z))).
       {
         exact (andER
-          (U0 :e Tb)
+          (topology_on E Te /\ U0 :e Tb)
           (exists slices:set,
             slices c= Te /\
             pairwise_disjoint slices /\
@@ -76642,16 +76703,7 @@ claim HtopE : topology_on E Te.
 }
 claim HUopen : U :e Tb.
 {
-  exact (andEL
-    (U :e Tb)
-    (exists slices:set,
-      slices c= Te /\
-      pairwise_disjoint slices /\
-      Union slices = preimage_of E p U /\
-      (forall V:set, V :e slices ->
-        homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
-          (graph V (fun x:set => apply_fun p x))))
-    Heven).
+  exact (evenly_covered_open E Te B Tb p U Heven).
 }
 claim HslicesPack :
   exists slices:set,
@@ -76663,7 +76715,7 @@ claim HslicesPack :
         (graph V (fun x:set => apply_fun p x))).
 {
   exact (andER
-    (U :e Tb)
+    (topology_on E Te /\ U :e Tb)
     (exists slices:set,
       slices c= Te /\
       pairwise_disjoint slices /\
@@ -84796,7 +84848,7 @@ claim HslicesEx :
         (graph V (fun z:set => apply_fun p z))).
 {
   exact (andER
-    (U :e Tb)
+    (topology_on E Te /\ U :e Tb)
     (exists slices:set,
       slices c= Te /\
       pairwise_disjoint slices /\
@@ -85240,7 +85292,7 @@ Theorem evenly_covered_slices_witness_pack :
 let E Te B Tb p U.
 assume Heven.
 exact (andER
-  (U :e Tb)
+  (topology_on E Te /\ U :e Tb)
   (exists slices:set,
     slices c= Te /\ pairwise_disjoint slices /\
       Union slices = preimage_of E p U /\
@@ -89706,7 +89758,7 @@ claim HFt_54_cont :
               (graph V (fun z:set => apply_fun p z))).
       {
         exact (andER
-          (U :e Tb)
+          (topology_on E Te /\ U :e Tb)
           (exists slices:set,
             slices c= Te /\
             pairwise_disjoint slices /\
@@ -246358,6 +246410,10 @@ claim HtopE : topology_on E Te.
 { exact (continuous_map_topology_dom E Te B Tb p Hcont). }
 claim HtopB : topology_on B Tb.
 { exact (continuous_map_topology_cod E Te B Tb p Hcont). }
+claim HtopE0 : topology_on E0 Te0.
+{
+  exact (subspace_topology_is_topology E Te E0 HtopE HE0subE).
+}
 claim Hfunp : function_on p E B.
 { exact (continuous_map_function_on E Te B Tb p Hcont). }
 
@@ -246545,7 +246601,7 @@ claim Hcoverp0 :
         (graph V (apply_fun p))).
   {
     exact (andER
-      (W :e Tb)
+      (topology_on E Te /\ W :e Tb)
       (exists slices:set,
         slices c= Te /\
         pairwise_disjoint slices /\
@@ -246665,7 +246721,7 @@ claim Hcoverp0 :
     + exact HWt.
     + exact HbW.
   - (** show W is evenly covered by the restricted map p0 **)
-    prove W :e Tb /\
+    prove (topology_on E0 Te0 /\ W :e Tb) /\
       exists S0:set,
         S0 c= Te0 /\
         pairwise_disjoint S0 /\
@@ -246674,7 +246730,9 @@ claim Hcoverp0 :
           homeomorphism V (subspace_topology E0 Te0 V) W (subspace_topology B Tb W)
             (graph V (apply_fun p0))).
     apply andI.
-    * exact HWt.
+    * apply andI.
+      + exact HtopE0.
+      + exact HWt.
     * witness slices0.
         apply and4I.
         - (** slices0 c= Te0 **)
@@ -247241,16 +247299,7 @@ apply and3I.
 
   (** Unpack evenly covered data for r over U1 **)
   claim HU1Tz' : U1 :e Tz.
-  { exact (andEL
-      (U1 :e Tz)
-      (exists slices:set,
-        slices c= Ty /\
-        pairwise_disjoint slices /\
-        Union slices = preimage_of Y r U1 /\
-        (forall V:set, V :e slices ->
-          homeomorphism V (subspace_topology Y Ty V) U1 (subspace_topology Z Tz U1)
-            (graph V (fun x:set => apply_fun r x))))
-      HevenrU1). }
+  { exact (evenly_covered_open Y Ty Z Tz r U1 HevenrU1). }
   claim HslicesREx :
     exists slicesR:set,
       slicesR c= Ty /\
@@ -247261,7 +247310,7 @@ apply and3I.
           (graph V (fun x:set => apply_fun r x))).
   {
     exact (andER
-      (U1 :e Tz)
+      (topology_on Y Ty /\ U1 :e Tz)
       (exists slices:set,
         slices c= Ty /\
         pairwise_disjoint slices /\
@@ -247317,7 +247366,7 @@ apply and3I.
           (graph W (fun x:set => apply_fun p x))).
   {
     exact (andER
-      (U1 :e Tz)
+      (topology_on X Tx /\ U1 :e Tz)
       (exists slices:set,
         slices c= Tx /\
         pairwise_disjoint slices /\
@@ -247346,7 +247395,7 @@ apply and3I.
   - exact HV0Ty.
   - exact HyV0.
   - (** evenly_covered X Tx Y Ty q V0 **)
-    prove V0 :e Ty /\
+    prove (topology_on X Tx /\ V0 :e Ty) /\
       exists slicesQ:set,
         slicesQ c= Tx /\
         pairwise_disjoint slicesQ /\
@@ -247355,7 +247404,9 @@ apply and3I.
           homeomorphism W (subspace_topology X Tx W) V0 (subspace_topology Y Ty V0)
             (graph W (fun x:set => apply_fun q x))).
     apply andI.
-    + exact HV0Ty.
+    + apply andI.
+      * exact HtopX.
+      * exact HV0Ty.
     + set slicesQ :=
         {W :e slicesP |
           exists x0:set, x0 :e W /\ apply_fun q x0 :e V0}.
@@ -247963,7 +248014,7 @@ apply and3I.
           (graph W (fun x:set => apply_fun p x))).
   {
     exact (andER
-      (U1 :e Tz)
+      (topology_on X Tx /\ U1 :e Tz)
       (exists slices:set,
         slices c= Tx /\
         pairwise_disjoint slices /\
@@ -247991,7 +248042,7 @@ apply and3I.
   - exact HU1Tz.
   - exact HzU1.
   - (** evenly_covered Y Ty Z Tz r U1 **)
-    prove U1 :e Tz /\
+    prove (topology_on Y Ty /\ U1 :e Tz) /\
       exists slicesR:set,
         slicesR c= Ty /\
         pairwise_disjoint slicesR /\
@@ -248000,7 +248051,9 @@ apply and3I.
           homeomorphism V (subspace_topology Y Ty V) U1 (subspace_topology Z Tz U1)
             (graph V (fun y0:set => apply_fun r y0))).
     apply andI.
-    + exact HU1Tz.
+    + apply andI.
+      * exact HtopY.
+      * exact HU1Tz.
     + set slicesR := {image_of q W | W :e slicesP}.
       witness slicesR.
       apply and4I.
@@ -249225,7 +249278,7 @@ claim HslicesEx :
         (graph V (fun x:set => apply_fun p x))).
 {
   exact (andER
-    (U :e Tb)
+    (topology_on E Te /\ U :e Tb)
     (exists slices:set,
       slices c= Te /\
       pairwise_disjoint slices /\
