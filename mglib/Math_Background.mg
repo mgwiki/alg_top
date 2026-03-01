@@ -53649,6 +53649,38 @@ exact (elem_implies_nonempty
   HgyX).
 Qed.
 
+(** Proven Bob **)
+(** Infrastructure: slices are nonempty when U is nonempty **)
+Theorem evenly_covered_slice_nonempty_from_slices : forall E Te B Tb p U slices V:set,
+  U <> Empty ->
+  slices c= Te /\ pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall W:set, W :e slices ->
+      homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+        (graph W (fun x:set => apply_fun p x))) ->
+  V :e slices ->
+  V <> Empty.
+let E Te B Tb p U slices V.
+assume HUne Hpack HVslice.
+apply (and4E
+  (slices c= Te)
+  (pairwise_disjoint slices)
+  (Union slices = preimage_of E p U)
+  (forall W:set, W :e slices ->
+    homeomorphism W (subspace_topology E Te W) U (subspace_topology B Tb U)
+      (graph W (fun x:set => apply_fun p x)))
+  Hpack).
+assume _ _ _ Hhome.
+exact (homeomorphism_domain_nonempty_of_codomain_nonempty
+  V
+  (subspace_topology E Te V)
+  U
+  (subspace_topology B Tb U)
+  (graph V (fun x:set => apply_fun p x))
+  (Hhome V HVslice)
+  HUne).
+Qed.
+
 (** Helper: homeomorphism has nonempty codomain whenever domain is nonempty. **)
 (** Proven Charlie **)
 Theorem homeomorphism_codomain_nonempty_of_domain_nonempty :
