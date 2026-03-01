@@ -47299,7 +47299,7 @@ apply andI.
     }
     exact HhomePack.
 
-Admitted.
+Qed.
 
 (** Variant: if p is a covering map, then evenly_covered_open_subset holds without extra topology_on input **)
 Theorem evenly_covered_open_subset_covering_map : forall E Te B Tb p U W:set,
@@ -47324,7 +47324,7 @@ exact (evenly_covered_open_subset_top
   Heven
   HW
   HWsub).
-Admitted.
+Qed.
 
 (** Infrastructure: evenly covered open subsets under covering_map assumptions **)
 Lemma evenly_covered_open_subset_from_covering_map : forall E Te B Tb p U W:set,
@@ -47366,7 +47366,7 @@ exact (evenly_covered_open_subset_top
   Heven
   HW
   HWsub).
-Admitted.
+Qed.
 
 
 (** from S53 text (line 545 in algtop.tex) **)
