@@ -128312,6 +128312,140 @@ exact (andER
   Hout).
 Qed.
 
+(** Proven Bob **)
+Lemma points_directly_inward_Rn_on_Bn_closed : forall n v x:set,
+  points_directly_inward_Rn n v x -> x :e Bn_closed n.
+let n v x.
+assume Hin.
+exact (Sn_subset_Bn_closed
+  n
+  x
+  (points_directly_inward_Rn_on_Sn n v x Hin)).
+Qed.
+
+(** Proven Bob **)
+Lemma points_directly_outward_Rn_on_Bn_closed : forall n v x:set,
+  points_directly_outward_Rn n v x -> x :e Bn_closed n.
+let n v x.
+assume Hout.
+exact (Sn_subset_Bn_closed
+  n
+  x
+  (points_directly_outward_Rn_on_Sn n v x Hout)).
+Qed.
+
+(** Proven Bob **)
+Lemma points_directly_inward_Rn_vector_in_euclidean : forall n v x:set,
+  points_directly_inward_Rn n v x ->
+  apply_fun v x :e euclidean_space (ordsucc n).
+let n v x.
+assume Hin.
+claim HxSn : x :e Sn n.
+{
+  exact (points_directly_inward_Rn_on_Sn n v x Hin).
+}
+claim HxEu : x :e euclidean_space (ordsucc n).
+{
+  exact (SepE1
+    (euclidean_space (ordsucc n))
+    (fun v0:set => euclidean_norm_sq (ordsucc n) v0 = 1)
+    x
+    HxSn).
+}
+claim Hscale :
+  exists a:set, a :e R /\ Rlt 0 a /\
+    apply_fun v x = Rn_scalar_mult (ordsucc n) (minus_SNo a) x.
+{
+  exact (points_directly_inward_Rn_scale n v x Hin).
+}
+apply Hscale.
+let a.
+assume HaPack.
+claim HaR : a :e R.
+{
+  exact (andEL
+    (a :e R)
+    (Rlt 0 a)
+    (andEL
+      (a :e R /\ Rlt 0 a)
+      (apply_fun v x = Rn_scalar_mult (ordsucc n) (minus_SNo a) x)
+      HaPack)).
+}
+claim HlamR : minus_SNo a :e R.
+{
+  exact (real_minus_SNo a HaR).
+}
+claim HvEq :
+  apply_fun v x = Rn_scalar_mult (ordsucc n) (minus_SNo a) x.
+{
+  exact (andER
+    (a :e R /\ Rlt 0 a)
+    (apply_fun v x = Rn_scalar_mult (ordsucc n) (minus_SNo a) x)
+    HaPack).
+}
+rewrite HvEq.
+exact (Rn_scalar_mult_in_euclidean_space
+  (ordsucc n)
+  (minus_SNo a)
+  x
+  HxEu
+  HlamR).
+Qed.
+
+(** Proven Bob **)
+Lemma points_directly_outward_Rn_vector_in_euclidean : forall n v x:set,
+  points_directly_outward_Rn n v x ->
+  apply_fun v x :e euclidean_space (ordsucc n).
+let n v x.
+assume Hout.
+claim HxSn : x :e Sn n.
+{
+  exact (points_directly_outward_Rn_on_Sn n v x Hout).
+}
+claim HxEu : x :e euclidean_space (ordsucc n).
+{
+  exact (SepE1
+    (euclidean_space (ordsucc n))
+    (fun v0:set => euclidean_norm_sq (ordsucc n) v0 = 1)
+    x
+    HxSn).
+}
+claim Hscale :
+  exists a:set, a :e R /\ Rlt 0 a /\
+    apply_fun v x = Rn_scalar_mult (ordsucc n) a x.
+{
+  exact (points_directly_outward_Rn_scale n v x Hout).
+}
+apply Hscale.
+let a.
+assume HaPack.
+claim HaR : a :e R.
+{
+  exact (andEL
+    (a :e R)
+    (Rlt 0 a)
+    (andEL
+      (a :e R /\ Rlt 0 a)
+      (apply_fun v x = Rn_scalar_mult (ordsucc n) a x)
+      HaPack)).
+}
+claim HvEq :
+  apply_fun v x = Rn_scalar_mult (ordsucc n) a x.
+{
+  exact (andER
+    (a :e R /\ Rlt 0 a)
+    (apply_fun v x = Rn_scalar_mult (ordsucc n) a x)
+    HaPack).
+}
+rewrite HvEq.
+exact (Rn_scalar_mult_in_euclidean_space
+  (ordsucc n)
+  a
+  x
+  HxEu
+  HaR).
+Qed.
+
 (** from S55 Exercise 4(a) (line 1046 in algtop.tex) **)
 (** LATEX VERSION: Given no retraction B^{n+1} -> S^n, the identity map i: S^n -> S^n is not nulhomotopic. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
