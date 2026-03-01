@@ -296954,10 +296954,93 @@ Theorem lemma84_2_tree_decomposition :
     tree_in_graph T0 B X Tx Arcs.
 let T ArcsT X Tx Arcs.
 assume Htree HfinArcsT HtwoArcs.
-(** Remaining S84.2-converse gap:
-    choose a removable edge from finite non-singleton ArcsT, set B := ArcsT\\{A},
-    prove T0 = Union B is a tree, and isolate the single-vertex intersection witness. **)
-admit.
+(** Proof strategy: find a leaf arc (one endpoint not shared with any other arc).
+    Remove it; the remainder is a tree intersecting the removed arc at one vertex. **)
+claim HglgT : general_linear_graph T (subspace_topology X Tx T) ArcsT.
+{ exact (tree_in_graph_general_linear_graph T ArcsT X Tx Arcs Htree). }
+claim HconnT : connected_space T (subspace_topology X Tx T).
+{ exact (tree_in_graph_connected T ArcsT X Tx Arcs Htree). }
+claim HsubT : subgraph_of T X Tx Arcs.
+{ exact (tree_in_graph_subgraph_of T ArcsT X Tx Arcs Htree). }
+claim HglgX : general_linear_graph X Tx Arcs.
+{ exact (tree_in_graph_general_linear_graph_X T ArcsT X Tx Arcs Htree). }
+claim HTeqUnion : T = Union ArcsT.
+{ exact (general_linear_graph_union_arcs T (subspace_topology X Tx T) ArcsT HglgT). }
+claim Hnoloop :
+  ~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)).
+{ exact (tree_in_graph_no_closed_reduced_edge_path T ArcsT X Tx Arcs Htree). }
+(** Key claim: existence of a leaf arc in a finite tree with >=2 arcs.
+    A leaf arc is one where one endpoint belongs to no other arc in ArcsT. **)
+claim Hleaf : exists A:set, A :e ArcsT /\
+  exists p q:set, end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) p q /\
+    ~(exists C:set, C :e ArcsT /\ C <> A /\ p :e C).
+{
+  (** Leaf existence: In a finite acyclic connected graph with >=2 arcs,
+      not every endpoint can be shared. Proof by contradiction + finiteness. **)
+  admit.
+}
+apply Hleaf.
+let A. assume HleafPack.
+claim HAT : A :e ArcsT.
+{ exact (andEL
+    (A :e ArcsT)
+    (exists p q:set, end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) p q /\
+      ~(exists C:set, C :e ArcsT /\ C <> A /\ p :e C))
+    HleafPack). }
+claim HleafData :
+  exists p q:set, end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) p q /\
+    ~(exists C:set, C :e ArcsT /\ C <> A /\ p :e C).
+{ exact (andER
+    (A :e ArcsT)
+    (exists p q:set, end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) p q /\
+      ~(exists C:set, C :e ArcsT /\ C <> A /\ p :e C))
+    HleafPack). }
+apply HleafData.
+let p. assume HpPack.
+apply HpPack.
+let q. assume HpqPack.
+claim Hepaq : end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) p q.
+{ exact (andEL
+    (end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) p q)
+    (~(exists C:set, C :e ArcsT /\ C <> A /\ p :e C))
+    HpqPack). }
+claim Hpfree : ~(exists C:set, C :e ArcsT /\ C <> A /\ p :e C).
+{ exact (andER
+    (end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) p q)
+    (~(exists C:set, C :e ArcsT /\ C <> A /\ p :e C))
+    HpqPack). }
+set B := ArcsT :\: Sing A.
+witness A.
+witness B.
+prove A :e ArcsT /\ B = ArcsT :\: Sing A /\
+  let T0 := Union B in
+  (exists v:set, v :e graph_vertices X Tx Arcs /\ T0 :/\: A = Sing v) /\
+  tree_in_graph T0 B X Tx Arcs.
+apply andI.
+- (** First conjunct: A :e ArcsT /\ B = ArcsT :\: Sing A **)
+  apply andI.
+  + exact HAT.
+  + reflexivity.
+- (** Second conjunct: (exists v, ...) /\ tree_in_graph (Union B) B X Tx Arcs **)
+  apply andI.
+  + (** Union B ∩ A = {q}: the non-free endpoint q is the unique intersection point **)
+    claim HqVertex : q :e graph_vertices X Tx Arcs.
+    { admit. (** q is an endpoint of arc A in ArcsT c= Arcs, so q is a graph vertex **) }
+    claim HmeetSingQ : Union B :/\: A = Sing q.
+    { admit. (** p is free (not in any other arc), q is shared,
+                 arcs intersect only at endpoints, so Union(ArcsT\{A}) ∩ A = {q} **) }
+    witness q.
+    exact (andI
+      (q :e graph_vertices X Tx Arcs)
+      (Union B :/\: A = Sing q)
+      HqVertex
+      HmeetSingQ).
+  + (** tree_in_graph (Union B) B X Tx Arcs **)
+    admit.
 Admitted.
 
 (** helper for S84.3: a tree is path-connected once local path-connectedness is available on T. **)
