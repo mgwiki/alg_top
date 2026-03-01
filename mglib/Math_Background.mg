@@ -211725,7 +211725,285 @@ claim HpsiHom : group_homomorphism G2 multG Q multQ psi.
       HxG
       HyG).
 }
-(** TODO: show psi is bijection (every coset has a unique representative in G2),
+claim HG1subN : G1 c= N.
+{
+  exact (andEL
+    (G1 c= N)
+    (forall N':set, normal_subgroup N' G multG eG invG -> G1 c= N' -> N c= N')
+    (andER
+      (normal_subgroup N G multG eG invG)
+      (G1 c= N /\
+       (forall N':set, normal_subgroup N' G multG eG invG -> G1 c= N' -> N c= N'))
+      HNprops)).
+}
+claim HsubN : subgroup_of N G multG eG invG.
+{ exact (normal_subgroup_subgroup N G multG eG invG HnormalN). }
+claim Hword_coset_G2 :
+  forall n xs:set,
+  n :e omega ->
+  function_on xs n G ->
+  (forall i:set, i :e n ->
+    exists alpha:set, alpha :e UPair 0 1 /\ apply_fun xs i :e apply_fun Gfam alpha) ->
+  exists g2:set, g2 :e G2 /\
+    left_coset multG (word_product multG eG xs n) N = left_coset multG g2 N.
+{
+  let n. assume HnO.
+  claim Hn_nat : nat_p n. { exact (omega_nat_p n HnO). }
+  claim Hnat :
+    forall m:set, nat_p m ->
+    forall xs:set,
+      function_on xs m G ->
+      (forall i:set, i :e m ->
+        exists alpha:set, alpha :e UPair 0 1 /\ apply_fun xs i :e apply_fun Gfam alpha) ->
+      exists g2:set, g2 :e G2 /\
+        left_coset multG (word_product multG eG xs m) N = left_coset multG g2 N.
+  {
+    apply (nat_ind
+      (fun m:set =>
+        forall xs:set,
+          function_on xs m G ->
+          (forall i:set, i :e m ->
+            exists alpha:set, alpha :e UPair 0 1 /\ apply_fun xs i :e apply_fun Gfam alpha) ->
+          exists g2:set, g2 :e G2 /\
+            left_coset multG (word_product multG eG xs m) N = left_coset multG g2 N)).
+    - let xs. assume HxsF HxsMem.
+      witness eG. apply andI.
+      + exact (subgroup_of_unit G2 G multG eG invG HsubG2).
+      + rewrite (nat_primrec_0 eG (fun i r => apply_fun multG (r, apply_fun xs i))).
+        reflexivity.
+    - let m. assume Hm_nat IH.
+      let xs. assume HxsF HxsMem.
+      claim HxsF_m : function_on xs m G.
+      { exact (function_on_subdomain xs (ordsucc m) G m HxsF (ordsuccI1 m)). }
+      claim HxsMem_m : forall i:set, i :e m ->
+        exists alpha:set, alpha :e UPair 0 1 /\ apply_fun xs i :e apply_fun Gfam alpha.
+      { let i. assume Hi. exact (HxsMem i (ordsuccI1 m i Hi)). }
+      claim IHpack : exists g2:set, g2 :e G2 /\
+        left_coset multG (word_product multG eG xs m) N = left_coset multG g2 N.
+      { exact (IH xs HxsF_m HxsMem_m). }
+      apply IHpack.
+      let g2. assume Hg2pack.
+      claim Hg2G2 : g2 :e G2.
+      { exact (andEL
+          (g2 :e G2)
+          (left_coset multG (word_product multG eG xs m) N = left_coset multG g2 N)
+          Hg2pack). }
+      claim HcosEq_m : left_coset multG (word_product multG eG xs m) N = left_coset multG g2 N.
+      { exact (andER
+          (g2 :e G2)
+          (left_coset multG (word_product multG eG xs m) N = left_coset multG g2 N)
+          Hg2pack). }
+      claim Hxm_cases : apply_fun xs m :e G1 \/ apply_fun xs m :e G2.
+      {
+        apply (HxsMem m (ordsuccI2 m)).
+        let alpha. assume Halpha_pack.
+        claim Halpha : alpha :e UPair 0 1.
+        { exact (andEL
+            (alpha :e UPair 0 1)
+            (apply_fun xs m :e apply_fun Gfam alpha)
+            Halpha_pack). }
+        claim Hx_in : apply_fun xs m :e apply_fun Gfam alpha.
+        { exact (andER
+            (alpha :e UPair 0 1)
+            (apply_fun xs m :e apply_fun Gfam alpha)
+            Halpha_pack). }
+        apply (UPairE alpha 0 1 Halpha).
+        - assume Halpha0 : alpha = 0.
+          apply orIL. rewrite Halpha0 in Hx_in. rewrite HGfam0 in Hx_in. exact Hx_in.
+        - assume Halpha1 : alpha = 1.
+          apply orIR. rewrite Halpha1 in Hx_in. rewrite HGfam1 in Hx_in. exact Hx_in.
+      }
+      claim HxsG_m : forall i:set, i :e m -> apply_fun xs i :e G.
+      {
+        let i. assume Hi.
+        apply (HxsMem_m i Hi).
+        let alpha. assume Halpha_pack.
+        claim Halpha : alpha :e UPair 0 1.
+        { exact (andEL
+            (alpha :e UPair 0 1)
+            (apply_fun xs i :e apply_fun Gfam alpha)
+            Halpha_pack). }
+        claim Hx_in : apply_fun xs i :e apply_fun Gfam alpha.
+        { exact (andER
+            (alpha :e UPair 0 1)
+            (apply_fun xs i :e apply_fun Gfam alpha)
+            Halpha_pack). }
+        apply (UPairE alpha 0 1 Halpha).
+        - assume Halpha0 : alpha = 0.
+          rewrite Halpha0 in Hx_in. rewrite HGfam0 in Hx_in.
+          exact (HG1subG (apply_fun xs i) Hx_in).
+        - assume Halpha1 : alpha = 1.
+          rewrite Halpha1 in Hx_in. rewrite HGfam1 in Hx_in.
+          exact (HG2subG (apply_fun xs i) Hx_in).
+      }
+      claim Hwp_m_G : word_product multG eG xs m :e G.
+      { exact (word_product_in_G_group G multG eG invG m xs HgrpG Hm_nat HxsG_m). }
+      apply Hxm_cases.
+      - assume HxmG1 : apply_fun xs m :e G1.
+        claim HxmN : apply_fun xs m :e N.
+        { exact (HG1subN (apply_fun xs m) HxmG1). }
+        witness g2. apply andI.
+        + exact Hg2G2.
+        + claim Hwp_succ : word_product multG eG xs (ordsucc m) =
+            apply_fun multG (word_product multG eG xs m, apply_fun xs m).
+          { exact (word_product_succ multG eG xs m Hm_nat). }
+          rewrite Hwp_succ.
+          rewrite (left_coset_right_mult_subgroup_preserves
+            G
+            multG
+            eG
+            invG
+            N
+            (word_product multG eG xs m)
+            (apply_fun xs m)
+            HgrpG
+            HsubN
+            Hwp_m_G
+            HxmN).
+          exact HcosEq_m.
+      - assume HxmG2 : apply_fun xs m :e G2.
+        claim HxmG : apply_fun xs m :e G.
+        { exact (HG2subG (apply_fun xs m) HxmG2). }
+        claim Hg2G : g2 :e G. { exact (HG2subG g2 Hg2G2). }
+        claim HprodG2 : apply_fun multG (g2, apply_fun xs m) :e G2.
+        { exact (subgroup_of_mult_closed
+            G2
+            G
+            multG
+            eG
+            invG
+            g2
+            (apply_fun xs m)
+            HsubG2
+            Hg2G2
+            HxmG2). }
+        witness (apply_fun multG (g2, apply_fun xs m)). apply andI.
+        + exact HprodG2.
+        + claim Hwp_succ : word_product multG eG xs (ordsucc m) =
+            apply_fun multG (word_product multG eG xs m, apply_fun xs m).
+          { exact (word_product_succ multG eG xs m Hm_nat). }
+          rewrite Hwp_succ.
+          rewrite (left_coset_eq_right_mult_normal_preserves
+            G
+            multG
+            eG
+            invG
+            N
+            (word_product multG eG xs m)
+            g2
+            (apply_fun xs m)
+            HgrpG
+            HnormalN
+            Hwp_m_G
+            Hg2G
+            HxmG
+            HcosEq_m).
+          reflexivity.
+  }
+  exact (Hnat n Hn_nat).
+}
+claim Hpsi_surj : forall q:set, q :e Q -> exists x:set, x :e G2 /\ apply_fun psi x = q.
+{
+  let q. assume Hq.
+  apply (ReplE G (fun g:set => left_coset multG g N) q Hq).
+  let g. assume HgG Hqeq.
+  claim Hgen0 : subgroups_generate G multG eG invG (UPair 0 1) Gfam.
+  {
+    apply (and5E
+      (group_structure G multG eG invG)
+      (forall alpha:set, alpha :e UPair 0 1 ->
+        subgroup_of (apply_fun Gfam alpha) G multG eG invG)
+      (forall alpha beta:set, alpha :e UPair 0 1 -> beta :e UPair 0 1 -> alpha <> beta ->
+        forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x = eG)
+      (subgroups_generate G multG eG invG (UPair 0 1) Gfam)
+      (forall x:set, x :e G -> x <> eG ->
+        exists n xs:set,
+          reduced_word (UPair 0 1) Gfam efam n xs /\ n <> 0 /\
+          word_product multG eG xs n = x /\
+          (forall n' xs':set,
+            reduced_word (UPair 0 1) Gfam efam n' xs' -> n' <> 0 ->
+            word_product multG eG xs' n' = x ->
+            n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
+      Hfp).
+    assume H1 H2 H3 H4 H5. exact H4.
+  }
+  claim Hgen :
+    forall x:set, x :e G ->
+      x = eG \/
+      exists n:set, n :e omega /\ n <> 0 /\
+      exists xs:set, function_on xs n G /\
+        (forall i:set, i :e n ->
+          exists alpha:set, alpha :e UPair 0 1 /\ apply_fun xs i :e apply_fun Gfam alpha) /\
+        x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n.
+  {
+    apply (and3E
+      (group_structure G multG eG invG)
+      (forall alpha:set, alpha :e UPair 0 1 ->
+        subgroup_of (apply_fun Gfam alpha) G multG eG invG)
+      (forall x:set, x :e G ->
+        x = eG \/
+        exists n:set, n :e omega /\ n <> 0 /\
+        exists xs:set, function_on xs n G /\
+          (forall i:set, i :e n ->
+            exists alpha:set, alpha :e UPair 0 1 /\ apply_fun xs i :e apply_fun Gfam alpha) /\
+          x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+      Hgen0).
+    assume H1 H2 H3. exact H3.
+  }
+  apply (Hgen g HgG).
+  - assume Hgeq : g = eG.
+    witness eG. apply andI.
+    + exact (subgroup_of_unit G2 G multG eG invG HsubG2).
+    + rewrite (apply_fun_graph G2 (fun x:set => left_coset multG x N) eG
+        (subgroup_of_unit G2 G multG eG invG HsubG2)).
+      rewrite Hqeq. rewrite Hgeq. reflexivity.
+  - let n. assume Hn_pack.
+    apply (and3E
+      (n :e omega)
+      (n <> 0)
+      (exists xs:set, function_on xs n G /\
+        (forall i:set, i :e n ->
+          exists alpha:set, alpha :e UPair 0 1 /\ apply_fun xs i :e apply_fun Gfam alpha) /\
+        g = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+      Hn_pack).
+    assume HnO _ Hxs_pack.
+    apply (Hxs_pack).
+    let xs. assume Hxs_pack2.
+    apply (and3E
+      (function_on xs n G)
+      (forall i:set, i :e n ->
+        exists alpha:set, alpha :e UPair 0 1 /\ apply_fun xs i :e apply_fun Gfam alpha)
+      (g = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+      Hxs_pack2).
+    assume HxsF HxsMem Hgeq.
+    claim Hword : g = word_product multG eG xs n.
+    {
+      exact Hgeq.
+    }
+    claim Hcos : exists g2:set, g2 :e G2 /\
+      left_coset multG (word_product multG eG xs n) N = left_coset multG g2 N.
+    { exact (Hword_coset_G2 n xs HnO HxsF HxsMem). }
+    apply Hcos.
+    let g2. assume Hg2pack.
+    witness g2. apply andI.
+    + exact (andEL
+        (g2 :e G2)
+        (left_coset multG (word_product multG eG xs n) N = left_coset multG g2 N)
+        Hg2pack).
+    + claim Hg2G2 : g2 :e G2.
+      { exact (andEL
+          (g2 :e G2)
+          (left_coset multG (word_product multG eG xs n) N = left_coset multG g2 N)
+          Hg2pack). }
+      claim HcosEq : left_coset multG (word_product multG eG xs n) N = left_coset multG g2 N.
+      { exact (andER
+          (g2 :e G2)
+          (left_coset multG (word_product multG eG xs n) N = left_coset multG g2 N)
+          Hg2pack). }
+      rewrite (apply_fun_graph G2 (fun x:set => left_coset multG x N) g2 Hg2G2).
+      rewrite Hqeq. rewrite Hword. rewrite <- HcosEq. reflexivity.
+}
+(** TODO: show psi has a unique preimage for each coset (N cap G2 = {e}),
     then set phi as the inverse bijection and transfer homomorphism structure. **)
 admit.
 Admitted.
