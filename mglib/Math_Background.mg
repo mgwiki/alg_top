@@ -1,5 +1,5 @@
 (** Balance Alice 3927 **)
-(** Balance Bob 3562 **)
+(** Balance Bob 3963 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
 
@@ -19950,7 +19950,8 @@ Qed.
 (** from S51 Ex 1 (line 150 in algtop.tex): straight-line homotopy **)
 (** LATEX VERSION: In any convex subspace A of Rn, any two paths f,g from x0 to x1 are path homotopic via F(x,t)=(1-t)f(x)+tg(x). **)
 (** EFFORT: 5 lines textbook, difficulty 5/10, USD 80 **)
-(** Bounty 107 **)
+(** Collected Bob 107 **)
+(** Proven Bob **)
 Theorem Example_51_1_convex_paths_homotopic : forall A Ta x0 x1 f g:set,
   A c= R -> convex_in R A ->
   topology_on A Ta ->
@@ -20867,7 +20868,7 @@ exact (and7I
   Hg0
   Hg1
   HexistsF).
-Admitted.
+Qed.
 (** TODO: need Ta = subspace_topology R R_standard_topology A (or a different continuity lemma) to remove this admit. **)
 
 (** S51 Exercises **)
@@ -88573,6 +88574,7 @@ exact (connected_image_sheet_non_switching_in_pairwise_disjoint_union
 Qed.
 
 (** Infrastructure: existence package for homotopy lifting in Lem 54.2 **)
+(** Proven Bob **)
 Theorem lemma54_2_homotopy_lifting_exists : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun F (0, 0) ->
@@ -90899,25 +90901,54 @@ claim HFt_54_cont :
                             rewrite Hft54zEqxz.
                             exact HxzVxz.
                           }
+                          claim HFt54CommN :
+                            forall x:set, x :e N ->
+                              apply_fun p (apply_fun Ft_54 x) = apply_fun F x.
+                          {
+                            let x.
+                            assume HxN.
+                            claim HxSq : x :e unit_square.
+                            { exact (HNsubSq x HxN). }
+                            claim Hx0I : x 0 :e unit_interval.
+                            { exact (ap0_Sigma
+                                unit_interval
+                                (fun _ : set => unit_interval)
+                                x
+                                HxSq). }
+                            claim Hx1I : x 1 :e unit_interval.
+                            { exact (ap1_Sigma
+                                unit_interval
+                                (fun _ : set => unit_interval)
+                                x
+                                HxSq). }
+                            rewrite (setprod_eta unit_interval unit_interval x HxSq).
+                            exact (HFt_54_comm (x 0) (x 1) Hx0I Hx1I).
+                          }
                           claim HVxzEqVq : Vxz = Vq.
                           {
-                            exact (lemma54_2_sheet_non_switching_local
+                            exact (local_sheet_non_switching_from_connected_commuting_lift
+                              N
+                              (subspace_topology unit_square unit_square_topology N)
                               E
                               Te
                               B
-                              Tb
                               p
                               F
                               Ft_54
-                              q
-                              z
-                              N
                               U
                               slices
+                              q
+                              z
                               Vq
                               Vxz
+                              HtopE
+                              HslicesSub
                               HpdSlices
+                              HNconnN
+                              HNcontFt
+                              HFt54CommN
                               HN_into_U
+                              HslicesUnion
                               HqN
                               HzN
                               HFtqVq
@@ -91197,14 +91228,15 @@ exact (andI
     HFt_54_cont
   HFt_54_00)
   HFt_54_comm).
-Admitted. (** depends on admitted lemma54_2_sheet_non_switching_local **)
+Qed.
 
 (** from S54 Lem 54.2 (line 730 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map; p(e0) = b0. Let F: I x I -> B be **)
 (** continuous with F(0,0) = b0. There is a unique lifting F_tilde: I x I -> E with **)
 (** F_tilde(0,0) = e0. If F is a path homotopy, then F_tilde is a path homotopy. **)
 (** EFFORT: 20 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 294 **)
+(** Collected Bob 294 **)
+(** Proven Bob **)
 Theorem lemma54_2_homotopy_lifting : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun F (0, 0) ->
@@ -91246,7 +91278,7 @@ exact (homotopy_lift_from_exists_witness
   e0
   F
   Hex).
-Admitted. (** depends on admitted lemma54_2_homotopy_lifting_exists **)
+Qed.
 
 (** Proven Bob **)
 (** Infrastructure: a path lift into an evenly covered union stays in the anchored sheet **)
