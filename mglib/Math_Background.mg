@@ -177086,7 +177086,6 @@ claim Hrep_exists : forall g:set, g :e G -> exists pack:set, rep_pred g pack.
         (forall i j:set, i :e n -> j :e n -> i <> j -> apply_fun alphas i <> apply_fun alphas j) /\
         g = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
       Hn_pack). }
-  claim Hn_ne : n <> 0. { admit. }
   claim Hex_alphas : exists alphas:set, function_on alphas n J /\ exists xs:set, function_on xs n G /\
     (forall i:set, i :e n -> apply_fun xs i :e apply_fun Gfam (apply_fun alphas i)) /\
     (forall i j:set, i :e n -> j :e n -> i <> j -> apply_fun alphas i <> apply_fun alphas j) /\
@@ -178937,7 +178936,6 @@ apply andI.
           y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs_y i)) ny)
         Hny_pack). }
     claim HnyNP : nat_p ny. { exact (omega_nat_p ny HnyO). }
-    claim Hny_ne : ny <> 0. { admit. }
     claim Hny_ex : exists alphas:set, function_on alphas ny J /\ exists xs_y:set, function_on xs_y ny G /\
         (forall i:set, i :e ny -> apply_fun xs_y i :e apply_fun Gfam (apply_fun alphas i)) /\
         (forall i j:set, i :e ny -> j :e ny -> i <> j ->
@@ -218549,8 +218547,68 @@ Lemma kernel_is_normal_subgroup_aux :
   group_structure H multH eH invH ->
   group_homomorphism G mult H multH h ->
   normal_subgroup (kernel_of G eH h) G mult e inv.
-admit.
-Admitted.
+let G mult e inv H multH eH invH h.
+assume HgrpG HgrpH Hhom.
+apply (andI (subgroup_of (kernel_of G eH h) G mult e inv)
+  (forall n g:set, n :e kernel_of G eH h -> g :e G ->
+    apply_fun mult (apply_fun mult (g, n), apply_fun inv g) :e kernel_of G eH h)).
+- exact (kernel_is_subgroup_aux G mult e inv H multH eH invH h HgrpG HgrpH Hhom).
+- let n g. assume HnK HgG.
+  claim HnG : n :e G. { exact (kernel_of_mem_in_G G eH h n HnK). }
+  claim HinvG : apply_fun inv g :e G.
+  { exact (group_inverse_closed_in_group G mult e inv g HgrpG HgG). }
+  claim HgnG : apply_fun mult (g, n) :e G.
+  { exact (group_source_mult_closure G mult e inv HgrpG g n HgG HnG). }
+  claim HgninvG : apply_fun mult (apply_fun mult (g, n), apply_fun inv g) :e G.
+  { exact (group_source_mult_closure G mult e inv HgrpG (apply_fun mult (g, n)) (apply_fun inv g)
+      HgnG HinvG). }
+  claim Hhn_eq : apply_fun h n = eH.
+  { exact (kernel_of_mem_eq G eH h n HnK). }
+  claim Hhginv : apply_fun h (apply_fun inv g) = apply_fun invH (apply_fun h g).
+  { exact (group_hom_sends_inverse G mult e inv H multH eH invH h HgrpG HgrpH Hhom g HgG). }
+  claim Hh_gn : apply_fun h (apply_fun mult (g, n)) =
+    apply_fun multH (apply_fun h g, apply_fun h n).
+  { exact (group_homomorphism_mult_rule G mult H multH h g n Hhom HgG HnG). }
+  claim Hh_gninv : apply_fun h (apply_fun mult (apply_fun mult (g, n), apply_fun inv g)) =
+    apply_fun multH (apply_fun h (apply_fun mult (g, n)), apply_fun h (apply_fun inv g)).
+  { exact (group_homomorphism_mult_rule G mult H multH h (apply_fun mult (g, n)) (apply_fun inv g)
+      Hhom HgnG HinvG). }
+  apply (and6E
+    (function_on multH (setprod H H) H)
+    (function_on invH H H)
+    (eH :e H)
+    (forall a b c:set, a :e H -> b :e H -> c :e H ->
+      apply_fun multH (apply_fun multH (a, b), c) = apply_fun multH (a, apply_fun multH (b, c)))
+    (forall a:set, a :e H -> apply_fun multH (eH, a) = a /\ apply_fun multH (a, eH) = a)
+    (forall a:set, a :e H ->
+      apply_fun multH (a, apply_fun invH a) = eH /\ apply_fun multH (apply_fun invH a, a) = eH)
+    HgrpH).
+  assume _ _ HeH HassocH HidH HinvH.
+  claim Hhfn : function_on h G H.
+  { exact (group_homomorphism_function_on G mult H multH h Hhom). }
+  claim HhgH : apply_fun h g :e H. { exact (Hhfn g HgG). }
+  claim HhidR : apply_fun multH (apply_fun h g, eH) = apply_fun h g.
+  { exact (andER
+      (apply_fun multH (eH, apply_fun h g) = apply_fun h g)
+      (apply_fun multH (apply_fun h g, eH) = apply_fun h g)
+      (HidH (apply_fun h g) HhgH)). }
+  claim HinvR : apply_fun multH (apply_fun h g, apply_fun invH (apply_fun h g)) = eH.
+  { exact (andEL
+      (apply_fun multH (apply_fun h g, apply_fun invH (apply_fun h g)) = eH)
+      (apply_fun multH (apply_fun invH (apply_fun h g), apply_fun h g) = eH)
+      (HinvH (apply_fun h g) HhgH)). }
+  claim Hh_gninv_eq : apply_fun h (apply_fun mult (apply_fun mult (g, n), apply_fun inv g)) = eH.
+  {
+    rewrite Hh_gninv.
+    rewrite Hh_gn.
+    rewrite Hhn_eq.
+    rewrite Hhginv.
+    rewrite HhidR.
+    exact HinvR.
+  }
+  exact (SepI G (fun x => apply_fun h x = eH)
+    (apply_fun mult (apply_fun mult (g, n), apply_fun inv g)) HgninvG Hh_gninv_eq).
+Qed.
 
 (** Infrastructure: commutator subgroup satisfies its defining properties **)
 (** Proven Dave **)
