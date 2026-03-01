@@ -24858,6 +24858,21 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Theorem path_between_continuous_loop_at : forall X Tx x0 p:set,
+  path_between X x0 x0 p ->
+  continuous_map unit_interval unit_interval_topology X Tx p ->
+  loop_at X Tx x0 p.
+let X Tx x0 p.
+assume Hp Hcont.
+apply (loop_at_fold X Tx x0 p).
+apply andI.
+- apply andI.
+  + exact Hcont.
+  + exact (path_between_at_zero X x0 x0 p Hp).
+- exact (path_between_at_one X x0 x0 p Hp).
+Qed.
+
+(** Proven Bob **)
 Theorem loop_at_function_on : forall X Tx x0 f:set,
   loop_at X Tx x0 f ->
   function_on f unit_interval X.
