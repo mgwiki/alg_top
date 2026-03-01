@@ -54321,6 +54321,38 @@ apply set_ext.
 - exact (Subq_Empty (Union Fam)).
 Qed.
 
+(** Infrastructure: union empty iff all members are empty **)
+(** Proven Bob **)
+Theorem union_empty_iff_all_members_empty : forall Fam:set,
+  (Union Fam = Empty <->
+   (forall V:set, V :e Fam -> V = Empty)).
+let Fam.
+apply iffI.
+- assume HUnionE.
+  let V.
+  assume HVFam.
+  exact (union_empty_member_empty
+    Fam
+    V
+    HVFam
+    HUnionE).
+- assume Hall.
+  claim HFamSub : Fam c= {Empty}.
+  {
+    let V.
+    assume HVFam.
+    claim HVeq : V = Empty.
+    {
+      exact (Hall V HVFam).
+    }
+    rewrite HVeq.
+    exact (SingI Empty).
+  }
+  exact (union_family_sub_singleton_empty_implies_union_empty
+    Fam
+    HFamSub).
+Qed.
+
 (** Infrastructure: empty union implies family is Empty or {Empty} **)
 (** Proven Bob **)
 Theorem union_empty_family_eq_empty_or_singleton : forall Fam:set,
