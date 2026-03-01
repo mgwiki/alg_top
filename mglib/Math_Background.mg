@@ -303613,6 +303613,7 @@ exact (thm84_4_vertices_implies_maximal_tree_from_stub_component_obligation_fami
   Hrhs).
 Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_component_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -303663,8 +303664,9 @@ exact (thm84_4_maximal_tree_all_vertices_from_component_obligation_families_via_
   HnoloopOb
   HwitFam
   HcloseFam).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_component_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -303718,8 +303720,9 @@ exact (iffEL
     HwitFam
     HcloseFam)
   Hmax).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_component_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -303773,8 +303776,9 @@ exact (iffER
     HwitFam
     HcloseFam)
   Hrhs).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_split_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -303825,8 +303829,9 @@ exact (thm84_4_maximal_tree_all_vertices_from_component_obligation_families_via_
   HnoloopOb
   HwitFam
   HcloseFam).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_split_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -303880,8 +303885,9 @@ exact (iffEL
     HwitFam
     HcloseFam)
   Hmax).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_split_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -303935,8 +303941,9 @@ exact (iffER
     HwitFam
     HcloseFam)
   Hrhs).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_stub_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -304009,8 +304016,9 @@ apply (thm84_4_maximal_tree_all_vertices_from_obligations
     HTsub
     HwitStub
     HcloseStub).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_maximal_tree_all_vertices_from_stub_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -304102,8 +304110,9 @@ apply (thm84_4_maximal_tree_all_vertices_from_obligations
         HA
         Hend
         Hep)).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_stub_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -304157,8 +304166,9 @@ exact (iffEL
     HwitStub
     HcloseStub)
   Hmax).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_stub_obligation_families :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -304212,8 +304222,9 @@ exact (iffER
     HwitStub
     HcloseStub)
   Hrhs).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_maximal_tree_implies_vertices_from_stub_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -304267,8 +304278,9 @@ exact (iffEL
     HwitStub
     HcloseStub)
   Hmax).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_vertices_implies_maximal_tree_from_stub_obligation_families_via_bridges :
   forall T ArcsT X Tx Arcs:set,
   general_linear_graph X Tx Arcs ->
@@ -304322,7 +304334,7 @@ exact (iffER
     HwitStub
     HcloseStub)
   Hrhs).
-Admitted.
+Qed.
 
 (** from S84 Thm 84.4 (line 5625 in algtop.tex): maximal tree contains all vertices **)
 (** LATEX VERSION: Let X be a connected graph. A tree T in X is maximal iff it **)
