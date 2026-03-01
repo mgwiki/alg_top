@@ -24948,6 +24948,19 @@ exact (SepE1
 Qed.
 
 (** Proven Bob **)
+Theorem path_homotopy_class_loop_has_loop_at : forall X Tx x0 f g:set,
+  g :e path_homotopy_class_loop X Tx x0 f ->
+  loop_at X Tx x0 g.
+let X Tx x0 f g.
+assume Hg.
+claim HgLoop : g :e loop_space X Tx x0.
+{
+  exact (path_homotopy_class_loop_in_loop_space X Tx x0 f g Hg).
+}
+exact (loop_space_has_loop_at X Tx x0 g HgLoop).
+Qed.
+
+(** Proven Bob **)
 Theorem path_homotopy_class_loop_has_homotopy : forall X Tx x0 f g:set,
   g :e path_homotopy_class_loop X Tx x0 f ->
   path_homotopic X Tx x0 x0 f g.
