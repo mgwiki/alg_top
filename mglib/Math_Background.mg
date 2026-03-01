@@ -55778,6 +55778,15 @@ apply set_ext.
     HxA).
 Qed.
 
+(** Infrastructure: intersecting original set with setminus gives setminus **)
+(** Proven Bob **)
+Theorem setminus_intersect_right_eq : forall A B:set,
+  A :/\: (A :\: B) = A :\: B.
+let A B.
+rewrite (binintersect_com A (A :\: B)).
+exact (setminus_intersect_left_eq A B).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
