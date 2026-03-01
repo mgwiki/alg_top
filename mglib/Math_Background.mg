@@ -56501,6 +56501,44 @@ assume Hsub.
 exact (setminus_sub_empty A B Hsub).
 Qed.
 
+(** Infrastructure: Empty setminus is Empty **)
+(** Proven Bob **)
+Theorem setminus_Empty_left : forall A:set,
+  Empty :\: A = Empty.
+let A.
+apply Empty_eq.
+let x.
+assume HxRest.
+exact (EmptyE x (setminusE1 Empty A x HxRest) False).
+Qed.
+
+(** Infrastructure: removing the same set twice is idempotent **)
+(** Proven Bob **)
+Theorem setminus_setminus_right_id : forall A B:set,
+  (A :\: B) :\: B = A :\: B.
+let A B.
+apply set_ext.
+- let x.
+  assume HxRest.
+  exact (setminusE1
+    (A :\: B)
+    B
+    x
+    HxRest).
+- let x.
+  assume HxRest.
+  exact (setminusI
+    (A :\: B)
+    B
+    x
+    HxRest
+    (setminusE2
+      A
+      B
+      x
+      HxRest)).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
