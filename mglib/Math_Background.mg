@@ -24922,6 +24922,45 @@ exact (SepE2
   Hg).
 Qed.
 
+(** Proven Bob **)
+Theorem path_homotopy_class_loop_continuous : forall X Tx x0 f g:set,
+  g :e path_homotopy_class_loop X Tx x0 f ->
+  continuous_map unit_interval unit_interval_topology X Tx g.
+let X Tx x0 f g.
+assume Hg.
+claim HgLoop : g :e loop_space X Tx x0.
+{
+  exact (path_homotopy_class_loop_in_loop_space X Tx x0 f g Hg).
+}
+exact (loop_space_continuous X Tx x0 g HgLoop).
+Qed.
+
+(** Proven Bob **)
+Theorem path_homotopy_class_loop_endpoint_data : forall X Tx x0 f g:set,
+  g :e path_homotopy_class_loop X Tx x0 f ->
+  apply_fun g 0 = x0 /\ apply_fun g 1 = x0.
+let X Tx x0 f g.
+assume Hg.
+claim HgLoop : g :e loop_space X Tx x0.
+{
+  exact (path_homotopy_class_loop_in_loop_space X Tx x0 f g Hg).
+}
+exact (loop_space_endpoint_data X Tx x0 g HgLoop).
+Qed.
+
+(** Proven Bob **)
+Theorem path_homotopy_class_loop_function_on : forall X Tx x0 f g:set,
+  g :e path_homotopy_class_loop X Tx x0 f ->
+  function_on g unit_interval X.
+let X Tx x0 f g.
+assume Hg.
+claim HgLoop : g :e loop_space X Tx x0.
+{
+  exact (path_homotopy_class_loop_in_loop_space X Tx x0 f g Hg).
+}
+exact (loop_space_function_on X Tx x0 g HgLoop).
+Qed.
+
 (** Infrastructure: path-homotopic loops define the same path-homotopy class **)
 (** Proven Bob **)
 Theorem path_homotopy_class_loop_eq_of_path_homotopic :
