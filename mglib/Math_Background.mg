@@ -9490,6 +9490,30 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Theorem path_between_endpoints_in_space : forall X x0 x1 p:set,
+  path_between X x0 x1 p -> x0 :e X /\ x1 :e X.
+let X x0 x1 p.
+assume Hp.
+claim Hfun : function_on p unit_interval X.
+{
+  exact (path_between_function_on X x0 x1 p Hp).
+}
+claim H0 : apply_fun p 0 = x0.
+{
+  exact (path_between_at_zero X x0 x1 p Hp).
+}
+claim H1 : apply_fun p 1 = x1.
+{
+  exact (path_between_at_one X x0 x1 p Hp).
+}
+apply andI.
+- rewrite <- H0.
+  exact (Hfun 0 zero_in_unit_interval).
+- rewrite <- H1.
+  exact (Hfun 1 one_in_unit_interval).
+Qed.
+
+(** Proven Bob **)
 Theorem path_homotopic_has_square_witness : forall X Tx x0 x1 f f':set,
   path_homotopic X Tx x0 x1 f f' ->
   exists F:set,
