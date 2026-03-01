@@ -44516,6 +44516,17 @@ exact (continuous_map_topology_cod E Te B Tb p Hcont).
 Qed.
 
 (** Proven Bob **)
+Theorem covering_map_topology_pack : forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  topology_on E Te /\ topology_on B Tb.
+let E Te B Tb p.
+assume Hcov.
+apply andI.
+- exact (covering_map_topology_on_domain E Te B Tb p Hcov).
+- exact (covering_map_topology_on_codomain E Te B Tb p Hcov).
+Qed.
+
+(** Proven Bob **)
 Theorem covering_map_continuous : forall E Te B Tb p:set,
   covering_map E Te B Tb p -> continuous_map E Te B Tb p.
 let E Te B Tb p.
