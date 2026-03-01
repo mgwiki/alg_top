@@ -133,6 +133,7 @@ Discussion:
 
 Approvals:
   -
+  - 1772355400 | Bob: YES
 
 Result:
   PROPOSED
@@ -221,6 +222,7 @@ Discussion:
 
 Approvals:
   -
+  - 1772355400 | Bob: YES
 
 Result:
   PROPOSED
@@ -276,6 +278,7 @@ Discussion:
 
 Approvals:
   -
+  - 1772355400 | Bob: YES
 
 Result:
   PROPOSED
@@ -356,6 +359,7 @@ Discussion:
 
 Approvals:
   -
+  - 1772355400 | Bob: YES
 
 Result:
   PROPOSED
@@ -432,6 +436,7 @@ Discussion:
 
 Approvals:
   -
+  - 1772355400 | Bob: YES
 
 Result:
   PROPOSED
