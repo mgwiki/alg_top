@@ -56037,6 +56037,24 @@ apply set_ext.
     exact (EmptyE x HxE False).
 Qed.
 
+(** Infrastructure: disjointness implies B\\A = B **)
+(** Proven Bob **)
+Theorem setminus_eq_if_binintersect_empty_right : forall A B:set,
+  A :/\: B = Empty ->
+  B :\: A = B.
+let A B.
+assume Hempty.
+claim Hempty' : B :/\: A = Empty.
+{
+  rewrite (binintersect_com B A).
+  exact Hempty.
+}
+exact (setminus_eq_if_binintersect_empty
+  B
+  A
+  Hempty').
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
