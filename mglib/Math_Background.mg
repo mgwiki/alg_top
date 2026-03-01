@@ -9591,6 +9591,25 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Theorem path_homotopic_topology_dom : forall X Tx x0 x1 f f':set,
+  path_homotopic X Tx x0 x1 f f' ->
+  topology_on X Tx.
+let X Tx x0 x1 f f'.
+assume Hhom.
+claim Hfcont : continuous_map unit_interval unit_interval_topology X Tx f.
+{
+  exact (path_homotopic_left_continuous X Tx x0 x1 f f' Hhom).
+}
+exact (continuous_map_topology_cod
+  unit_interval
+  unit_interval_topology
+  X
+  Tx
+  f
+  Hfcont).
+Qed.
+
+(** Proven Bob **)
 Theorem path_homotopic_has_square_witness : forall X Tx x0 x1 f f':set,
   path_homotopic X Tx x0 x1 f f' ->
   exists F:set,
