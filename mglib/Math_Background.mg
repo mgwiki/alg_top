@@ -24879,6 +24879,24 @@ exact (Hfun t Ht).
 Qed.
 
 (** Proven Bob **)
+Theorem loop_at_basepoint_in_space : forall X Tx x0 f:set,
+  loop_at X Tx x0 f ->
+  x0 :e X.
+let X Tx x0 f.
+assume Hloop.
+claim H0X : apply_fun f 0 :e X.
+{
+  exact (loop_at_value_in_space X Tx x0 f 0 Hloop zero_in_unit_interval).
+}
+claim H0eq : apply_fun f 0 = x0.
+{
+  exact (loop_at_at_zero X Tx x0 f Hloop).
+}
+rewrite <- H0eq.
+exact H0X.
+Qed.
+
+(** Proven Bob **)
 Theorem loop_at_endpoints_eq : forall X Tx x0 f:set,
   loop_at X Tx x0 f ->
   apply_fun f 0 = apply_fun f 1.
@@ -25101,6 +25119,19 @@ reflexivity.
 Qed.
 
 (** Proven Bob **)
+Theorem loop_space_basepoint_in_space : forall X Tx x0 f:set,
+  f :e loop_space X Tx x0 ->
+  x0 :e X.
+let X Tx x0 f.
+assume Hf.
+claim Hloop : loop_at X Tx x0 f.
+{
+  exact (loop_space_has_loop_at X Tx x0 f Hf).
+}
+exact (loop_at_basepoint_in_space X Tx x0 f Hloop).
+Qed.
+
+(** Proven Bob **)
 Theorem loop_space_function_on : forall X Tx x0 f:set,
   f :e loop_space X Tx x0 ->
   function_on f unit_interval X.
@@ -25257,6 +25288,19 @@ claim H1 : apply_fun g 1 = x0.
 rewrite H0.
 rewrite H1.
 reflexivity.
+Qed.
+
+(** Proven Bob **)
+Theorem path_homotopy_class_loop_basepoint_in_space : forall X Tx x0 f g:set,
+  g :e path_homotopy_class_loop X Tx x0 f ->
+  x0 :e X.
+let X Tx x0 f g.
+assume Hg.
+claim HgLoop : g :e loop_space X Tx x0.
+{
+  exact (path_homotopy_class_loop_in_loop_space X Tx x0 f g Hg).
+}
+exact (loop_space_basepoint_in_space X Tx x0 g HgLoop).
 Qed.
 
 (** Proven Bob **)
