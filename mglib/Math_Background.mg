@@ -8870,6 +8870,26 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Theorem nulhomotopic_continuous : forall X Tx Y Ty f:set,
+  nulhomotopic X Tx Y Ty f ->
+  continuous_map X Tx Y Ty f.
+let X Tx Y Ty f.
+assume Hnul.
+apply (nulhomotopic_unfold X Tx Y Ty f Hnul).
+let y0.
+assume Hy0pack.
+claim Hhom :
+  homotopic_maps X Tx Y Ty f (const_fun X y0).
+{
+  exact (andER
+    (y0 :e Y)
+    (homotopic_maps X Tx Y Ty f (const_fun X y0))
+    Hy0pack).
+}
+exact (homotopic_maps_left_continuous X Tx Y Ty f (const_fun X y0) Hhom).
+Qed.
+
+(** Proven Bob **)
 Theorem homotopic_maps_has_witness : forall X Tx Y Ty f f':set,
   homotopic_maps X Tx Y Ty f f' ->
   exists F:set,
