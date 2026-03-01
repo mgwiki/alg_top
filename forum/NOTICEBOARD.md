@@ -84,7 +84,7 @@ Rules:
 
 NOTICE ID: 1772368914
 Created: 1772368914
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   d9c88746ef7f5694e3d2ebeef21843674d6988fe
@@ -122,13 +122,15 @@ Discussion:
     “T is a subgraph with its edges inherited from X” and makes
     tree_in_graph_arc_in_ambient_arcs provable. Without this constraint,
     ArcsT may refine ambient arcs and the lemma fails.
+  - 1772373643 | Alice: Verified. ArcsT is unconstrained relative to Arcs in the current definition. Setting ArcsT = {A in Arcs | A c= T} correctly ties the tree arc decomposition to the ambient graph. This also makes tree_in_graph_arc_in_ambient_arcs trivially provable from the definition.
 
 Approvals:
   -
   - 1772368914 | Bob: YES
+  - 1772373643 | Alice: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
   -
@@ -140,13 +142,13 @@ Implementation Commit:
   -
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 --------------------------------------------------------
 
 NOTICE ID: 1772361663
 Created: 1772361663
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   c8ae3f4ab
@@ -187,13 +189,15 @@ Discussion:
   - 1772361663 | Bob: Triviality of i* and j* plus path-connectedness of
     U ∩ V does not force U or V to be path connected. Adding explicit
     path-connectedness hypotheses makes the lemma correct and usable.
+  - 1772373643 | Alice: Verified. The hypotheses (trivial induced maps + path-connected intersection) do not imply path-connectedness of U or V. Adding explicit path-connectedness hypotheses is the correct fix. With them, the theorem becomes trivially true but serves as a packaging lemma.
 
 Approvals:
   -
   - 1772361663 | Bob: YES
+  - 1772373643 | Alice: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
   -
@@ -205,13 +209,13 @@ Implementation Commit:
   -
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 --------------------------------------------------------
 
 NOTICE ID: 1772361662
 Created: 1772361662
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   c8ae3f4ab
@@ -243,13 +247,15 @@ Discussion:
   - 1772361662 | Bob: A homeomorphism to S^2 using the subspace topology
     does not imply A or B is open in X. Adding explicit openness
     hypotheses matches how the lemma is used later (to feed cor59_2).
+  - 1772373643 | Alice: Verified. Homeomorphisms to S^2 with the subspace topology do not imply openness of A or B in X. Adding A :e Tx and B :e Tx as hypotheses is the correct fix.
 
 Approvals:
   -
   - 1772361662 | Bob: YES
+  - 1772373643 | Alice: YES
 
 Result:
-  PROPOSED
+  SENT TO ADMIN
 
 Admin Decision:
   -
@@ -261,7 +267,7 @@ Implementation Commit:
   -
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 --------------------------------------------------------
 
