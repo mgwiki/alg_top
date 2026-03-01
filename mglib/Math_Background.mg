@@ -1,5 +1,5 @@
 (** Balance Alice 3927 **)
-(** Balance Bob 4073 **)
+(** Balance Bob 4146 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
 
@@ -106228,7 +106228,8 @@ Qed.
 (** from S54 Thm 54.6a (line 838 in algtop.tex) **)
 (** LATEX VERSION: The homomorphism p-star: pi_1(E,e0) -> pi_1(B,b0) is a monomorphism. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 73 **)
+(** Collected Bob 73 **)
+(** Proven Bob **)
 Theorem thm54_6a_p_star_injective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   forall cls1 cls2:set,
@@ -106913,7 +106914,7 @@ claim Hcls2Eq : cls2 = path_homotopy_class_loop E Te e0 f2.
 rewrite Hcls1Eq.
 rewrite Hcls2Eq.
 exact Hclassf1f2.
-Admitted.
+Qed.
 
 (** Proven Bob **)
 (** Infrastructure: loop characterization (backward direction) **)
