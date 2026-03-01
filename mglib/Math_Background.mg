@@ -55996,6 +55996,47 @@ exact (setminus_sub_empty
   (binintersect_Subq_1 A B)).
 Qed.
 
+(** Infrastructure: if A and B are disjoint, subtracting B from A yields A **)
+(** Proven Bob **)
+Theorem setminus_eq_if_binintersect_empty : forall A B:set,
+  A :/\: B = Empty ->
+  A :\: B = A.
+let A B.
+assume Hempty.
+apply set_ext.
+- let x.
+  assume HxRest.
+  exact (setminusE1
+    A
+    B
+    x
+    HxRest).
+- let x.
+  assume HxA.
+  apply setminusI.
+  + exact HxA.
+  + assume HxB.
+    claim HxInt : x :e A :/\: B.
+    {
+      exact (binintersectI
+        A
+        B
+        x
+        HxA
+        HxB).
+    }
+    claim HxE : x :e Empty.
+    {
+      exact (mem_eqR
+        x
+        (A :/\: B)
+        Empty
+        Hempty
+        HxInt).
+    }
+    exact (EmptyE x HxE False).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
