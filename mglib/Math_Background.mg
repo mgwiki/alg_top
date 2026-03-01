@@ -215940,7 +215940,7 @@ exact (closed_quotient_map_preserves_normality_with_surjective
   Hclosed
   HpreimOpen
   Hsurj).
-Admitted.
+Qed.
 
 Theorem lemma73_3_closed_quotient_normal_from_surjective_map :
   forall E Te X Tx pi:set,
@@ -215966,7 +215966,7 @@ exact (closed_quotient_map_preserves_normality_from_surjective_map
   Hclosed
   HpreimOpen
   HsurjMap).
-Admitted.
+Qed.
 
 Theorem lemma73_3_closed_quotient_normal_from_quotient_map :
   forall E Te X Tx pi:set,
@@ -216017,7 +216017,7 @@ exact (lemma73_3_closed_quotient_normal_with_surjective
   Hclosed
   HpreimOpen
   Hsurj).
-Admitted.
+Qed.
 
 Theorem lemma73_3_closed_quotient_normal_from_surjective_map_via_bridges :
   forall E Te X Tx pi:set,
@@ -216043,7 +216043,7 @@ exact (lemma73_3_closed_quotient_normal_from_surjective_map
   Hclosed
   HpreimOpen
   HsurjMap).
-Admitted.
+Qed.
 
 Theorem lemma73_3_closed_quotient_normal_from_quotient_map_via_bridges :
   forall E Te X Tx pi:set,
