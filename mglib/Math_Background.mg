@@ -1,5 +1,5 @@
-(** Balance Alice 3927 **)
-(** Balance Bob 5494 **)
+(** Balance Alice 4103 **)
+(** Balance Bob 5439 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
 
@@ -43501,8 +43501,8 @@ Qed.
 
 (** from S52 Exercise 7(b) (line 516 in algtop.tex): tensor induces operation on pi1 **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Collected Bob 55 **)
-(** Proven Bob **)
+(** Collected Alice 55 **)
+(** Proven Alice **)
 Theorem ex52_7b_tensor_induces_operation : forall G Tg:set,
   topological_group G Tg ->
   forall e mult:set,
@@ -60752,7 +60752,8 @@ Qed.
 (** LATEX VERSION: Let q: X -> Y and r: Y -> Z be covering maps; **)
 (** if r^{-1}(z) is finite for each z in Z, then r o q is a covering map. **)
 (** EFFORT: 8 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 121 **)
+(** Collected Alice 121 **)
+(** Proven Alice **)
 Theorem ex53_4_composition_covering : forall X Tx Y Ty Z Tz q r:set,
   covering_map X Tx Y Ty q -> covering_map Y Ty Z Tz r ->
   (forall z:set, z :e Z -> finite {y :e Y | apply_fun r y = z}) ->
@@ -62263,7 +62264,7 @@ apply andI.
   + exact Hcont_comp.
   + exact Hsurj_comp.
 - exact Hlocal_comp.
-Admitted.
+Qed.
 
 (** from S53 Exercise 5 (line 691 in algtop.tex) **)
 (** LATEX VERSION: The map p(z) = z^n is a covering map S^1 -> S^1. **)
