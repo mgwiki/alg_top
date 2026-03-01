@@ -128135,6 +128135,80 @@ exact (apply_fun_graph
   Hi).
 Qed.
 
+(** Proven Bob **)
+Lemma Rn_scalar_mult_in_euclidean_space : forall n lam v:set,
+  v :e euclidean_space n ->
+  lam :e R ->
+  Rn_scalar_mult n lam v :e euclidean_space n.
+let n lam v.
+assume Hv Hlam.
+claim Hdef :
+  Rn_scalar_mult n lam v =
+  graph n (fun i:set => mul_SNo lam (apply_fun v i)).
+{
+  reflexivity.
+}
+rewrite Hdef.
+claim Heu :
+  euclidean_space n = product_space n (const_space_family n R R_standard_topology).
+{
+  reflexivity.
+}
+rewrite Heu.
+apply (product_space_graphI
+  n
+  (const_space_family n R R_standard_topology)
+  (fun i:set => mul_SNo lam (apply_fun v i))).
+let i.
+assume Hi.
+rewrite (space_family_set_const_space_family
+  n
+  R
+  R_standard_topology
+  i
+  Hi).
+exact (real_mul_SNo
+  lam
+  Hlam
+  (apply_fun v i)
+  (euclidean_space_coord_in_R n v i Hv Hi)).
+Qed.
+
+(** Proven Bob **)
+Lemma Rn_negate_in_euclidean_space : forall n v:set,
+  v :e euclidean_space n ->
+  Rn_negate n v :e euclidean_space n.
+let n v.
+assume Hv.
+claim Hdef :
+  Rn_negate n v = graph n (fun i:set => minus_SNo (apply_fun v i)).
+{
+  reflexivity.
+}
+rewrite Hdef.
+claim Heu :
+  euclidean_space n = product_space n (const_space_family n R R_standard_topology).
+{
+  reflexivity.
+}
+rewrite Heu.
+apply (product_space_graphI
+  n
+  (const_space_family n R R_standard_topology)
+  (fun i:set => minus_SNo (apply_fun v i))).
+let i.
+assume Hi.
+rewrite (space_family_set_const_space_family
+  n
+  R
+  R_standard_topology
+  i
+  Hi).
+exact (real_minus_SNo
+  (apply_fun v i)
+  (euclidean_space_coord_in_R n v i Hv Hi)).
+Qed.
+
 (** Infrastructure: vector field on B^{n+1} "points directly inward" at x in S^n **)
 Definition points_directly_inward_Rn : set -> set -> set -> prop := fun n v x =>
   x :e Sn n /\
