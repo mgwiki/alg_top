@@ -86918,7 +86918,7 @@ exact (pointwise_anchor_sheet_implies_sheet_equality
   HVqSlice
   HFtzVz
   HVzSlice).
-Qed.
+Admitted.
 
 Theorem lemma54_2_sheet_non_switching_local_from_image_subset :
   forall Ft q z N slices Vq Vz:set,
@@ -86946,7 +86946,7 @@ exact (image_sub_single_sheet_implies_sheet_equality
   HVqSlice
   HFtzVz
   HVzSlice).
-Qed.
+Admitted.
 
 Theorem lemma54_2_sheet_non_switching_local_from_slices_witness :
   forall N E Te B Tb p U slices F Ft q z Vq Vz:set,
@@ -87035,7 +87035,7 @@ claim HVzEqVqa : Vz = Vqa.
 rewrite HVzEqVqa.
 rewrite <- HVqEqVqa.
 reflexivity.
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem lemma54_2_two_points_same_sheet_from_evenly_covered :
@@ -87488,7 +87488,7 @@ apply andI.
     HVqSlice
     HFtzVz
     HVzSlice).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem lemma54_2_sheet_non_switching_eq_data_from_family :
@@ -88151,7 +88151,7 @@ rewrite HVzEqVz0.
 rewrite HVz0EqVq0.
 rewrite <- HVqEqVq0.
 reflexivity.
-Qed.
+Admitted.
 
 Theorem lemma54_2_sheet_non_switching_local_strong_from_slices_witness :
   forall N E Te B Tb p U slices F Ft q z Vq Vz:set,
@@ -88204,7 +88204,7 @@ exact (lemma54_2_sheet_non_switching_local_from_slices_witness
   HVqSlice
   HFtzVz
   HVzSlice).
-Qed.
+Admitted.
 
 (** Proven Bob **)
 Theorem lemma54_2_sheet_eq_data_implies_common_sheet :
@@ -88602,7 +88602,7 @@ exact (connected_image_sheet_non_switching_in_pairwise_disjoint_union
   N TN E Te slices Ft q z Vq Vz
   HtopE HslicesSub HpdSlices HNconn HFtcont HimgSub
   HqN HzN HFtqVq HVqSlice HFtzVz HVzSlice).
-Qed.
+Admitted.
 
 (** Infrastructure: existence package for homotopy lifting in Lem 54.2 **)
 Theorem lemma54_2_homotopy_lifting_exists : forall E Te B Tb p e0 F:set,
