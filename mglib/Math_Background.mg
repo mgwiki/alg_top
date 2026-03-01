@@ -8890,6 +8890,32 @@ exact (homotopic_maps_left_continuous X Tx Y Ty f (const_fun X y0) Hhom).
 Qed.
 
 (** Proven Bob **)
+Theorem nulhomotopic_topology_dom : forall X Tx Y Ty f:set,
+  nulhomotopic X Tx Y Ty f ->
+  topology_on X Tx.
+let X Tx Y Ty f.
+assume Hnul.
+claim Hcont : continuous_map X Tx Y Ty f.
+{
+  exact (nulhomotopic_continuous X Tx Y Ty f Hnul).
+}
+exact (continuous_map_topology_dom X Tx Y Ty f Hcont).
+Qed.
+
+(** Proven Bob **)
+Theorem nulhomotopic_topology_cod : forall X Tx Y Ty f:set,
+  nulhomotopic X Tx Y Ty f ->
+  topology_on Y Ty.
+let X Tx Y Ty f.
+assume Hnul.
+claim Hcont : continuous_map X Tx Y Ty f.
+{
+  exact (nulhomotopic_continuous X Tx Y Ty f Hnul).
+}
+exact (continuous_map_topology_cod X Tx Y Ty f Hcont).
+Qed.
+
+(** Proven Bob **)
 Theorem homotopic_maps_topology_dom : forall X Tx Y Ty f f':set,
   homotopic_maps X Tx Y Ty f f' -> topology_on X Tx.
 let X Tx Y Ty f f'.
