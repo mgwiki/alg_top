@@ -56596,6 +56596,30 @@ apply iffI.
 - exact (setminus_eq_if_binintersect_empty A B).
 Qed.
 
+(** Infrastructure: B\\A = B iff A and B are disjoint **)
+(** Proven Bob **)
+Theorem setminus_eq_right_iff_binintersect_empty : forall A B:set,
+  B :\: A = B <->
+  A :/\: B = Empty.
+let A B.
+apply iffI.
+- assume Heq.
+  claim Hempty : B :/\: A = Empty.
+  {
+    exact (binintersect_empty_if_setminus_eq_left
+      B
+      A
+      Heq).
+  }
+  rewrite (binintersect_com A B).
+  exact Hempty.
+- assume Hempty.
+  exact (setminus_eq_if_binintersect_empty_right
+    A
+    B
+    Hempty).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
