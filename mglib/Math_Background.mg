@@ -56620,6 +56620,124 @@ apply iffI.
     Hempty).
 Qed.
 
+(** Infrastructure: symmetric difference as setminus of intersection **)
+(** Proven Bob **)
+Theorem binunion_setminus_symm_eq_setminus_binintersect : forall A B:set,
+  (A :\: B) :\/: (B :\: A) = (A :\/: B) :\: (A :/\: B).
+let A B.
+apply set_ext.
+- let x.
+  assume HxUnion.
+  apply (binunionE
+    (A :\: B)
+    (B :\: A)
+    x
+    HxUnion).
+  + assume HxAB.
+    claim HxA : x :e A.
+    {
+      exact (setminusE1
+        A
+        B
+        x
+        HxAB).
+    }
+    claim HxNotB : x /:e B.
+    {
+      exact (setminusE2
+        A
+        B
+        x
+        HxAB).
+    }
+    exact (setminusI
+      (A :\/: B)
+      (A :/\: B)
+      x
+      (binunionI1
+        A
+        B
+        x
+        HxA)
+      (fun HxInt =>
+        HxNotB (binintersectE2 A B x HxInt))).
+  + assume HxBA.
+    claim HxB : x :e B.
+    {
+      exact (setminusE1
+        B
+        A
+        x
+        HxBA).
+    }
+    claim HxNotA : x /:e A.
+    {
+      exact (setminusE2
+        B
+        A
+        x
+        HxBA).
+    }
+    exact (setminusI
+      (A :\/: B)
+      (A :/\: B)
+      x
+      (binunionI2
+        A
+        B
+        x
+        HxB)
+      (fun HxInt =>
+        HxNotA (binintersectE1 A B x HxInt))).
+- let x.
+  assume HxRest.
+  claim HxUnion : x :e A :\/: B.
+  {
+    exact (setminusE1
+      (A :\/: B)
+      (A :/\: B)
+      x
+      HxRest).
+  }
+  claim HxNotInt : x /:e A :/\: B.
+  {
+    exact (setminusE2
+      (A :\/: B)
+      (A :/\: B)
+      x
+      HxRest).
+  }
+  apply (binunionE
+    A
+    B
+    x
+    HxUnion).
+  + assume HxA.
+    exact (binunionI1
+      (A :\: B)
+      (B :\: A)
+      x
+      (setminusI
+        A
+        B
+        x
+        HxA
+        (fun HxB =>
+          HxNotInt (binintersectI A B x HxA HxB)))).
+  + assume HxB.
+    exact (binunionI2
+      (A :\: B)
+      (B :\: A)
+      x
+      (setminusI
+        B
+        A
+        x
+        HxB
+        (fun HxA =>
+          HxNotInt (binintersectI A B x HxA HxB)))).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
