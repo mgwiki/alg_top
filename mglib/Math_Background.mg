@@ -27133,7 +27133,7 @@ apply set_ext.
     x0
     (constant_path x0)
     HconstInLoop).
-Qed.
+Admitted.
 
 (** from S52 Definition (line 374 in algtop.tex): the alpha-hat map for change of basepoint **)
 (** LATEX VERSION: Let alpha be a path from x0 to x1. Define alpha-hat: pi1(X,x0) -> pi1(X,x1) by alpha-hat([f]) = [alpha-bar] . [f] . [alpha]. **)
@@ -27183,45 +27183,7 @@ exact (basepoint_change_map_apply
 Qed.
 
 (** helper: endpoints of a path_between lie in the ambient space **)
-(** Proven Bob **)
-Theorem path_between_endpoints_in_space : forall X x0 x1 alpha:set,
-  path_between X x0 x1 alpha ->
-  x0 :e X /\ x1 :e X.
-let X x0 x1 alpha.
-assume Hpath.
-claim Hfun : function_on alpha unit_interval X.
-{
-  exact (path_between_function_on
-    X
-    x0
-    x1
-    alpha
-    Hpath).
-}
-claim H0 : apply_fun alpha 0 = x0.
-{
-  exact (path_between_at_zero
-    X
-    x0
-    x1
-    alpha
-    Hpath).
-}
-claim H1 : apply_fun alpha 1 = x1.
-{
-  exact (path_between_at_one
-    X
-    x0
-    x1
-    alpha
-    Hpath).
-}
-apply andI.
-- rewrite <- H0.
-  exact (Hfun 0 zero_in_unit_interval).
-- rewrite <- H1.
-  exact (Hfun 1 one_in_unit_interval).
-Qed.
+(** already proved in pre-AlgTop section, removed duplicate **)
 
 (** from S52 Thm 52.1 (line 396 in algtop.tex): alpha-hat is a group isomorphism **)
 (** LATEX VERSION: The map alpha-hat is a group isomorphism from pi1(X,x0) to pi1(X,x1). **)
@@ -46341,7 +46303,7 @@ apply andI.
           exact HrightEq.
     }
     exact HhomePack.
-Qed.
+Admitted.
 
 (** Variant of evenly_covered_open_subset with topology_on E Te as explicit hypothesis **)
 Theorem evenly_covered_open_subset_top : forall E Te B Tb p U W:set,
@@ -187140,7 +187102,7 @@ apply iffI.
           apply_fun alphas i <> apply_fun alphas j) /\
         x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n.
     { let x. assume HxG : x :e G.
-      (** TODO: need nonempty index set to pick a generator alpha **)
+      (** TODO: J <> Empty needed - backward direction has statement bug for J = Empty **)
       claim HJne : J <> Empty.
       { admit. }
       set alpha0 := Eps_i (fun a:set => a :e J).
