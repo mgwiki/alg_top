@@ -54900,6 +54900,48 @@ apply (union_subfamily_sub_union (Fam :\: {V}) Fam).
 exact (setminus_Subq Fam {V}).
 Qed.
 
+(** Infrastructure: removing a nonmember singleton does not change a set **)
+(** Proven Bob **)
+Theorem setminus_singleton_nonmember : forall A x:set,
+  x /:e A ->
+  A :\: {x} = A.
+let A x.
+assume HxNotA.
+apply set_ext.
+- let y.
+  assume Hy.
+  exact (setminusE1
+    A
+    {x}
+    y
+    Hy).
+- let y.
+  assume HyA.
+  claim HyNotSing : y /:e {x}.
+  {
+    assume HySing.
+    claim Hyx : y = x.
+    {
+      exact (SingE
+        x
+        y
+        HySing).
+    }
+    claim HxA : x :e A.
+    {
+      rewrite <- Hyx.
+      exact HyA.
+    }
+    exact (HxNotA HxA).
+  }
+  exact (setminusI
+    A
+    {x}
+    y
+    HyA
+    HyNotSing).
+Qed.
+
 (** Infrastructure: a family splits into its member and the rest **)
 (** Proven Bob **)
 Theorem family_decompose_member_union_rest : forall Fam V:set,
