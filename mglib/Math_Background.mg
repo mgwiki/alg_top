@@ -1,5 +1,5 @@
 (** Balance Alice 3927 **)
-(** Balance Bob 4018 **)
+(** Balance Bob 4073 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
 
@@ -91989,7 +91989,8 @@ Qed.
 (** from S54 Lem 54.2 path homotopy preservation (line 783 in algtop.tex) **)
 (** LATEX VERSION: If F is a path homotopy, then the lift F_tilde is also a path homotopy. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
+(** Collected Bob 55 **)
+(** Proven Bob **)
 Theorem lemma54_2_path_homotopy_preserved : forall E Te B Tb p e0 F x0 x1:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = apply_fun F (0, 0) ->
@@ -92536,7 +92537,7 @@ exact (andI
   (forall t:set, t :e unit_interval -> apply_fun Ft (1, t) = e1)
   HleftConst
   HrightConst).
-Admitted.
+Qed.
 
 (** from S54 Thm 54.3 (line 785 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be covering, p(e0) = b0. Let f and g be paths in B **)
@@ -92545,7 +92546,8 @@ Admitted.
 (** If f and g are path homotopic, then f_tilde and g_tilde end at the same point **)
 (** and are path homotopic. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 107 **)
+(** Collected Bob 107 **)
+(** Proven Bob **)
 Theorem thm54_3_homotopic_lifts : forall E Te B Tb p e0 b0 b1 f g:set,
   covering_map E Te B Tb p ->
   e0 :e E -> apply_fun p e0 = b0 ->
@@ -93486,7 +93488,7 @@ apply andI.
       reflexivity.
     * exact HleftEdgeE0.
     * exact HrightEdgeFF1.
-Admitted.
+Qed.
 
 (** from S54 Definition (line 791 in algtop.tex) **)
 (** LATEX VERSION: The lifting correspondence phi: pi_1(B,b0) -> p^{-1}(b0) maps **)
@@ -93660,7 +93662,8 @@ Qed.
 (** then phi: pi_1(B,b0) -> p^{-1}(b0) is surjective. **)
 (** If E is simply connected, phi is bijective. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 107 **)
+(** Collected Bob 107 **)
+(** Proven Bob **)
 Theorem thm54_4_lifting_correspondence_surjective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   path_connected_space E Te ->
@@ -94262,11 +94265,12 @@ apply andI.
 			    rewrite HlcApply0.
 			    rewrite HendRepEqF0.
 			    exact HendF0.
-Admitted. (** depends on admitted thm54_3_homotopic_lifts **)
+Qed.
 
 (** from S54 Thm 54.4 (line 799 in algtop.tex): lifting correspondence bijective **)
 (** EFFORT: 6 lines textbook, difficulty 4/10, USD 60 **)
-(** Bounty 73 **)
+(** Collected Bob 73 **)
+(** Proven Bob **)
 Theorem thm54_4_lifting_correspondence_bijective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   simply_connected E Te ->
@@ -95424,7 +95428,7 @@ exact (andI
       (forall x':set, x' :e G -> apply_fun lc x' = y -> x' = x))
   Hfun
   Huniq).
-Admitted.
+Qed.
 
 (** Infrastructure: the additive group of integers **)
 (** Multiplication is addition of surreal numbers restricted to int **)
