@@ -55282,6 +55282,84 @@ claim HyNotSing : y /:e {x}.
 exact (HyNotSing HySing).
 Qed.
 
+(** Infrastructure: intersection with a singleton when the point is in the set **)
+(** Proven Bob **)
+Theorem binintersect_singleton_eq_singleton_of_mem : forall A x:set,
+  x :e A ->
+  A :/\: {x} = {x}.
+let A x.
+assume HxA.
+apply set_ext.
+- let y.
+  assume HyInt.
+  exact (binintersectE2
+    A
+    {x}
+    y
+    HyInt).
+- let y.
+  assume HySing.
+  claim Hyx : y = x.
+  {
+    exact (SingE
+      x
+      y
+      HySing).
+  }
+  claim HyA : y :e A.
+  {
+    rewrite Hyx.
+    exact HxA.
+  }
+  exact (binintersectI
+    A
+    {x}
+    y
+    HyA
+    HySing).
+Qed.
+
+(** Infrastructure: intersection with a singleton when the point is not in the set **)
+(** Proven Bob **)
+Theorem binintersect_singleton_eq_empty_of_not_mem : forall A x:set,
+  x /:e A ->
+  A :/\: {x} = Empty.
+let A x.
+assume HxNotA.
+apply Empty_eq.
+let y.
+assume HyInt.
+claim HyA : y :e A.
+{
+  exact (binintersectE1
+    A
+    {x}
+    y
+    HyInt).
+}
+claim HySing : y :e {x}.
+{
+  exact (binintersectE2
+    A
+    {x}
+    y
+    HyInt).
+}
+claim Hyx : y = x.
+{
+  exact (SingE
+    x
+    y
+    HySing).
+}
+claim HxA : x :e A.
+{
+  rewrite <- Hyx.
+  exact HyA.
+}
+exact (HxNotA HxA).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
