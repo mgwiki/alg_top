@@ -82,6 +82,403 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772357174
+Created: 1772357174
+Status: PROPOSED
+
+Refers to Commit:
+  69fce6a58f68d8f5e2720c74cf8cf9314413830f
+
+Target:
+  Line: 42463-42471
+  Name: ex52_5_extendable_trivial (Theorem)
+
+Problem:
+  The statement allows an arbitrary topology Ta on A. The proof needs
+  the inclusion i: A -> R to be continuous, which requires A to carry
+  the subspace topology from R (or an equivalent continuity hypothesis).
+  With arbitrary Ta, the key continuity step is unprovable.
+
+Proposed Replacement:
+  Theorem ex52_5_extendable_trivial : forall A a0 Y Ty y0 h:set,
+    A c= R ->
+    topology_on Y Ty ->
+    continuous_map A (subspace_topology R R_standard_topology A) Y Ty h ->
+    apply_fun h a0 = y0 -> a0 :e A ->
+    (exists H:set, continuous_map R R_standard_topology Y Ty H /\
+      (forall a:set, a :e A -> apply_fun H a = apply_fun h a)) ->
+    forall cls:set,
+      cls :e fundamental_group A (subspace_topology R R_standard_topology A) a0 ->
+      apply_fun
+        (induced_homomorphism A (subspace_topology R R_standard_topology A) a0 Y Ty y0 h)
+        cls
+      = fundamental_group_id Y Ty y0.
+
+Proposed by: Bob
+
+Discussion:
+  - 1772357174 | Bob: The proof needs the inclusion A -> R to be
+    continuous; this is automatic for the subspace topology but not for
+    arbitrary Ta. This matches the earlier fixes for Example_51_1 and
+    Example_52_1.
+
+Approvals:
+  -
+  - 1772357174 | Bob: YES
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+--------------------------------------------------------
+
+NOTICE ID: 1772357173
+Created: 1772357173
+Status: PROPOSED
+
+Refers to Commit:
+  69fce6a58f68d8f5e2720c74cf8cf9314413830f
+
+Target:
+  Line: 43493-43498
+  Name: topological_group_mult_identity_value_for_mult (Theorem)
+
+Problem:
+  The statement derives mult(e,e)=e from topological_group and the
+  continuity of an arbitrary mult. But the given mult/e are not tied to
+  the topological_group witness operation/identity, so the conclusion is
+  unprovable. An explicit identity hypothesis for mult is needed.
+
+Proposed Replacement:
+  Theorem topological_group_mult_identity_value_for_mult : forall G Tg e mult:set,
+    topological_group G Tg ->
+    e :e G ->
+    function_on mult (setprod G G) G ->
+    continuous_map (setprod G G) (product_topology G Tg G Tg) G Tg mult ->
+    (forall x:set, x :e G -> apply_fun mult (e, x) = x /\
+      apply_fun mult (x, e) = x) ->
+    apply_fun mult (e, e) = e.
+
+Proposed by: Bob
+
+Discussion:
+  - 1772357173 | Bob: Without assuming mult has identity e, the lemma is
+    false because mult/e need not be the topological_group witness.
+
+Approvals:
+  -
+  - 1772357173 | Bob: YES
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+--------------------------------------------------------
+
+NOTICE ID: 1772357172
+Created: 1772357172
+Status: PROPOSED
+
+Refers to Commit:
+  69fce6a58f68d8f5e2720c74cf8cf9314413830f
+
+Target:
+  Line: 43506-43519
+  Name: ex52_7b_tensor_induces_operation (Theorem)
+
+Problem:
+  The proof needs mult(e,e)=e to show the tensor of loops is based at e.
+  The current hypotheses only give continuity of mult and e :e G, which
+  do not imply that e is an identity for mult. The statement is too
+  strong as written.
+
+Proposed Replacement:
+  Theorem ex52_7b_tensor_induces_operation : forall G Tg:set,
+    topological_group G Tg ->
+    forall e mult:set,
+    e :e G ->
+    function_on mult (setprod G G) G ->
+    continuous_map (setprod G G) (product_topology G Tg G Tg) G Tg mult ->
+    (forall x:set, x :e G -> apply_fun mult (e, x) = x /\
+      apply_fun mult (x, e) = x) ->
+    forall f f' g g':set,
+      loop_at G Tg e f -> loop_at G Tg e g ->
+      loop_at G Tg e f' -> loop_at G Tg e g' ->
+      path_homotopic G Tg e e f f' ->
+      path_homotopic G Tg e e g g' ->
+      path_homotopic G Tg e e
+        (graph unit_interval (fun s:set => apply_fun mult (apply_fun f s, apply_fun g s)))
+        (graph unit_interval (fun s:set => apply_fun mult (apply_fun f' s, apply_fun g' s))).
+
+Proposed by: Bob
+
+Discussion:
+  - 1772357172 | Bob: Without an identity axiom for mult, the tensor path
+    need not start/end at e, so the path_homotopic conclusion fails.
+
+Approvals:
+  -
+  - 1772357172 | Bob: YES
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+--------------------------------------------------------
+
+NOTICE ID: 1772357171
+Created: 1772357171
+Status: PROPOSED
+
+Refers to Commit:
+  69fce6a58f68d8f5e2720c74cf8cf9314413830f
+
+Target:
+  Line: 88530-88540
+  Name: lemma54_2_sheet_non_switching_local (Theorem)
+
+Problem:
+  The statement has no hypotheses connecting Ft to a connected image in
+  Union slices, so the conclusion Vz = Vq is generally false. A correct
+  version with the needed hypotheses already exists as
+  lemma54_2_sheet_non_switching_local_connected.
+
+Proposed Replacement:
+  Theorem lemma54_2_sheet_non_switching_local :
+    forall E Te N TN Ft slices q z Vq Vz:set,
+    topology_on E Te ->
+    slices c= Te ->
+    pairwise_disjoint slices ->
+    connected_space N TN ->
+    continuous_map N TN E Te Ft ->
+    (forall w:set, w :e N -> apply_fun Ft w :e Union slices) ->
+    q :e N ->
+    z :e N ->
+    apply_fun Ft q :e Vq ->
+    Vq :e slices ->
+    apply_fun Ft z :e Vz ->
+    Vz :e slices ->
+    Vz = Vq.
+
+Proposed by: Bob
+
+Discussion:
+  - 1772357171 | Bob: The current statement ignores continuity and
+    connectedness, so pairwise_disjoint alone is insufficient. Aligning
+    it with the connected-image version fixes the gap.
+
+Approvals:
+  -
+  - 1772357171 | Bob: YES
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+--------------------------------------------------------
+
+NOTICE ID: 1772357170
+Created: 1772357170
+Status: PROPOSED
+
+Refers to Commit:
+  69fce6a58f68d8f5e2720c74cf8cf9314413830f
+
+Target:
+  Line: 137534-137536
+  Name: lemma58_path_between_continuous_bridge (Theorem)
+
+Problem:
+  path_between only requires function_on and endpoint conditions; it
+  does not include continuity. Therefore the lemma claiming continuity
+  from path_between is unprovable without an extra hypothesis.
+
+Proposed Replacement:
+  Theorem lemma58_path_between_continuous_bridge : forall X Tx x0 x1 alpha:set,
+    path_between X x0 x1 alpha ->
+    continuous_map unit_interval unit_interval_topology X Tx alpha ->
+    continuous_map unit_interval unit_interval_topology X Tx alpha.
+
+Proposed by: Bob
+
+Discussion:
+  - 1772357170 | Bob: The added continuity hypothesis reflects the actual
+    data needed in later proofs and matches the definition of
+    path_between in this development.
+
+Approvals:
+  -
+  - 1772357170 | Bob: YES
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+--------------------------------------------------------
+
+NOTICE ID: 1772357169
+Created: 1772357169
+Status: PROPOSED
+
+Refers to Commit:
+  69fce6a58f68d8f5e2720c74cf8cf9314413830f
+
+Target:
+  Line: 186946-186952
+  Name: injective_homomorphism_source_closure (Theorem)
+
+Problem:
+  group_homomorphism does not assume that multa is closed on Ga. The
+  current statement tries to deduce closure in Ga from injectivity and a
+  subgroup hypothesis on the image, which is insufficient. A source
+  group-structure (or equivalent closure hypothesis) is needed.
+
+Proposed Replacement:
+  Theorem injective_homomorphism_source_closure :
+    forall Ga multa ea inva G multG eG invG ifam:set,
+    group_structure Ga multa ea inva ->
+    group_homomorphism Ga multa G multG ifam ->
+    (forall x y:set, x :e Ga -> y :e Ga -> apply_fun ifam x = apply_fun ifam y -> x = y) ->
+    subgroup_of (homomorphism_image Ga ifam) G multG eG invG ->
+    forall a b:set, a :e Ga -> b :e Ga ->
+      apply_fun multa (a, b) :e Ga.
+
+Proposed by: Bob
+
+Discussion:
+  - 1772357169 | Bob: Without source group_structure, the closure of
+    multa on Ga is not derivable. Adding it makes the lemma correct and
+    aligns with how it is used.
+
+Approvals:
+  -
+  - 1772357169 | Bob: YES
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+--------------------------------------------------------
+
+NOTICE ID: 1772357168
+Created: 1772357168
+Status: PROPOSED
+
+Refers to Commit:
+  69fce6a58f68d8f5e2720c74cf8cf9314413830f
+
+Target:
+  Line: 231467-231474
+  Name: closed_quotient_map_preserves_normality_helper (Theorem)
+
+Problem:
+  The statement omits surjectivity of pi, but the proof relies on it.
+  This is explicitly noted in the admitted proof comment and the
+  corresponding surjective version is already proved.
+
+Proposed Replacement:
+  Theorem closed_quotient_map_preserves_normality_helper :
+    forall E Te X Tx pi:set,
+    topology_on E Te -> topology_on X Tx ->
+    normal_space E Te ->
+    continuous_map E Te X Tx pi ->
+    (forall C:set, closed_in E Te C -> closed_in X Tx (image_of pi C)) ->
+    (forall V:set, V :e Tx -> {x :e E | apply_fun pi x :e V} :e Te) ->
+    surjective_map E X pi ->
+    normal_space X Tx.
+
+Proposed by: Bob
+
+Discussion:
+  - 1772357168 | Bob: Surjectivity is required to transfer normality; it
+    is available in the existing helper with surjective_map and should
+    be included here.
+
+Approvals:
+  -
+  - 1772357168 | Bob: YES
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
 --------------------------------------------------------
 
 NOTICE ID: 1772355632
