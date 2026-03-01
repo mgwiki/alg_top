@@ -55113,6 +55113,58 @@ apply xm (x :e A).
   + exact (Subq_Empty A).
 Qed.
 
+(** Infrastructure: a subset of a singleton is Empty or that singleton **)
+(** Proven Bob **)
+Theorem subset_singleton_eq_empty_or_singleton : forall A x:set,
+  A c= {x} ->
+  A = Empty \/ A = {x}.
+let A x.
+assume Hsub.
+apply xm (x :e A).
+- assume HxA.
+  apply orIR.
+  apply set_ext.
+  + let y.
+    assume HyA.
+    exact (Hsub y HyA).
+  + let y.
+    assume HySing.
+    claim Hyx : y = x.
+    {
+      exact (SingE
+        x
+        y
+        HySing).
+    }
+    rewrite Hyx.
+    exact HxA.
+- assume HxNotA.
+  apply orIL.
+  apply set_ext.
+  + let y.
+    assume HyA.
+    claim HySing : y :e {x}.
+    {
+      exact (Hsub y HyA).
+    }
+    claim Hyx : y = x.
+    {
+      exact (SingE
+        x
+        y
+        HySing).
+    }
+    claim HxA : x :e A.
+    {
+      rewrite <- Hyx.
+      exact HyA.
+    }
+    exact (FalseE
+      (HxNotA HxA)
+      (y :e Empty)).
+  + exact (Subq_Empty A).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
