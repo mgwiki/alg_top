@@ -82,6 +82,59 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772358892
+Created: 1772358892
+Status: PROPOSED
+
+Refers to Commit:
+  e26bd4dc7
+
+Target:
+  Line: 284969
+  Name: tree_in_graph_arc_in_ambient_arcs (Theorem)
+
+Problem:
+  tree_in_graph places no relation between ArcsT and Arcs beyond T being a
+  subgraph of X. The general_linear_graph arc decomposition is not unique:
+  arcs may be subdivided while preserving the definition, so V :e ArcsT does
+  not imply V :e Arcs. The lemma is therefore unprovable as stated.
+
+Proposed Replacement:
+  Theorem tree_in_graph_arc_in_ambient_arcs :
+    forall T ArcsT X Tx Arcs V:set,
+    tree_in_graph T ArcsT X Tx Arcs ->
+    ArcsT c= Arcs ->
+    V :e ArcsT ->
+    V :e Arcs.
+
+Proposed by: Bob
+
+Discussion:
+  - 1772358892 | Bob: Without an explicit ArcsT ⊆ Arcs assumption, ArcsT may
+    be a refinement of the ambient arc family, so membership in ArcsT does not
+    imply membership in Arcs.
+
+Approvals:
+  -
+  - 1772358892 | Bob: YES
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+--------------------------------------------------------
+
 NOTICE ID: 1772357174
 Created: 1772357174
 Status: PROPOSED
