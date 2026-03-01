@@ -46165,6 +46165,32 @@ apply andI.
 
 Qed.
 
+(** Variant: if p is a covering map, then evenly_covered_open_subset holds without extra topology_on input **)
+(** Proven Bob **)
+Theorem evenly_covered_open_subset_covering_map : forall E Te B Tb p U W:set,
+  covering_map E Te B Tb p ->
+  evenly_covered E Te B Tb p U -> W :e Tb -> W c= U ->
+  evenly_covered E Te B Tb p W.
+let E Te B Tb p U W.
+assume Hcov Heven HW HWsub.
+claim HtopE : topology_on E Te.
+{
+  exact (covering_map_topology_on_domain E Te B Tb p Hcov).
+}
+exact (evenly_covered_open_subset_top
+  E
+  Te
+  B
+  Tb
+  p
+  U
+  W
+  HtopE
+  Heven
+  HW
+  HWsub).
+Qed.
+
 (** Infrastructure: evenly covered open subsets under covering_map assumptions **)
 (** Proven Bob **)
 Lemma evenly_covered_open_subset_from_covering_map : forall E Te B Tb p U W:set,
