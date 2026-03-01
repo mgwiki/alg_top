@@ -44983,6 +44983,30 @@ exact (andEL
   Heven).
 Qed.
 
+(** Proven Bob **)
+Theorem evenly_covered_slices : forall E Te B Tb p U:set,
+  evenly_covered E Te B Tb p U ->
+  exists slices:set,
+    slices c= Te /\
+    pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun x:set => apply_fun p x))).
+let E Te B Tb p U.
+assume Heven.
+exact (andER
+  (U :e Tb)
+  (exists slices:set,
+    slices c= Te /\
+    pairwise_disjoint slices /\
+    Union slices = preimage_of E p U /\
+    (forall V:set, V :e slices ->
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun x:set => apply_fun p x))))
+  Heven).
+Qed.
+
 (** Infrastructure: evenly_covered does not currently imply topology_on E Te **)
 Theorem evenly_covered_topology_on_domain : forall E Te B Tb p U:set,
   evenly_covered E Te B Tb p U ->
