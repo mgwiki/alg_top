@@ -293723,6 +293723,7 @@ apply (xm (x :e T)).
     (x :e T)).
 Qed.
 
+(** Proven Bob **)
 Theorem maximal_tree_all_vertices_if_outside_vertex_has_single_vertex_component_extension_edge :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -293784,8 +293785,9 @@ apply (xm (x :e T)).
       HconnTA
       HnoloopTA)
     (x :e T)).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem maximal_tree_outside_vertex_component_extension_contradiction_from_noncontained_edges :
   forall T ArcsT X Tx Arcs x:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -293897,7 +293899,7 @@ exact (maximal_tree_single_vertex_noncontained_edge_component_extension_contradi
   HglgTA
   HconnTA
   HnoloopTA).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem maximal_tree_all_vertices_if_noncontained_edges_meet_tree_and_extend :
