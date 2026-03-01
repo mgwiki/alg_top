@@ -1,5 +1,5 @@
 (** Balance Alice 3927 **)
-(** Balance Bob 4465 **)
+(** Balance Bob 4520 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
 
@@ -111235,6 +111235,7 @@ Definition product_group_mult : set -> set -> set -> set -> set :=
 (** ex54_7_pi1_torus moved to S60 section (after thm60_1_pi1_product) where it uses the proved theorem directly **)
 
 (** Infrastructure: injectivity of covering map when total space is path connected and base is simply connected **)
+(** Proven Bob **)
 Theorem ex54_8_covering_injective : forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
   path_connected_space E Te ->
@@ -111731,13 +111732,14 @@ claim Hx2x1 : x2 = x1.
 }
 symmetry.
 exact Hx2x1.
-Admitted. (** depends on admitted thm54_3_homotopic_lifts **)
+Qed.
 
 (** from S54 Exercise 8 (line 893 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map with E path connected. **)
 (** If B is simply connected, then p is a homeomorphism. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
+(** Collected Bob 55 **)
+(** Proven Bob **)
 Theorem ex54_8_simply_connected_base_homeomorphism : forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
   path_connected_space E Te ->
@@ -112069,7 +112071,7 @@ apply andI.
       y
       Hbij
       HyB).
-Admitted. (** depends on admitted ex54_8_covering_injective **)
+Qed.
 
 (** ======================= S55 RETRACTIONS AND FIXED POINTS ======================= **)
 
