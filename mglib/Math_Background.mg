@@ -24873,6 +24873,30 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Theorem loop_space_start : forall X Tx x0 f:set,
+  f :e loop_space X Tx x0 ->
+  apply_fun f 0 = x0.
+let X Tx x0 f.
+assume Hf.
+exact (andEL
+  (apply_fun f 0 = x0)
+  (apply_fun f 1 = x0)
+  (loop_space_endpoint_data X Tx x0 f Hf)).
+Qed.
+
+(** Proven Bob **)
+Theorem loop_space_end : forall X Tx x0 f:set,
+  f :e loop_space X Tx x0 ->
+  apply_fun f 1 = x0.
+let X Tx x0 f.
+assume Hf.
+exact (andER
+  (apply_fun f 0 = x0)
+  (apply_fun f 1 = x0)
+  (loop_space_endpoint_data X Tx x0 f Hf)).
+Qed.
+
+(** Proven Bob **)
 Theorem loop_space_function_on : forall X Tx x0 f:set,
   f :e loop_space X Tx x0 ->
   function_on f unit_interval X.
@@ -24946,6 +24970,30 @@ claim HgLoop : g :e loop_space X Tx x0.
   exact (path_homotopy_class_loop_in_loop_space X Tx x0 f g Hg).
 }
 exact (loop_space_endpoint_data X Tx x0 g HgLoop).
+Qed.
+
+(** Proven Bob **)
+Theorem path_homotopy_class_loop_start : forall X Tx x0 f g:set,
+  g :e path_homotopy_class_loop X Tx x0 f ->
+  apply_fun g 0 = x0.
+let X Tx x0 f g.
+assume Hg.
+exact (andEL
+  (apply_fun g 0 = x0)
+  (apply_fun g 1 = x0)
+  (path_homotopy_class_loop_endpoint_data X Tx x0 f g Hg)).
+Qed.
+
+(** Proven Bob **)
+Theorem path_homotopy_class_loop_end : forall X Tx x0 f g:set,
+  g :e path_homotopy_class_loop X Tx x0 f ->
+  apply_fun g 1 = x0.
+let X Tx x0 f g.
+assume Hg.
+exact (andER
+  (apply_fun g 0 = x0)
+  (apply_fun g 1 = x0)
+  (path_homotopy_class_loop_endpoint_data X Tx x0 f g Hg)).
 Qed.
 
 (** Proven Bob **)
