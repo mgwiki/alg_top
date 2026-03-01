@@ -57077,6 +57077,103 @@ exact (binintersect_Subq_eq_1
   (fun x Hx => Hx)).
 Qed.
 
+(** Infrastructure: binunion and binintersect commutation in 3 terms **)
+(** Proven Bob **)
+Theorem binunion_binintersect_comm : forall A B C:set,
+  A :\/: (B :/\: C) = (A :\/: B) :/\: (A :\/: C).
+let A B C.
+apply set_ext.
+- let x.
+  assume HxUnion.
+  apply (binunionE
+    A
+    (B :/\: C)
+    x
+    HxUnion).
+  + assume HxA.
+    exact (binintersectI
+      (A :\/: B)
+      (A :\/: C)
+      x
+      (binunionI1 A B x HxA)
+      (binunionI1 A C x HxA)).
+  + assume HxBC.
+    claim HxB : x :e B.
+    {
+      exact (binintersectE1 B C x HxBC).
+    }
+    claim HxC : x :e C.
+    {
+      exact (binintersectE2 B C x HxBC).
+    }
+    exact (binintersectI
+      (A :\/: B)
+      (A :\/: C)
+      x
+      (binunionI2 A B x HxB)
+      (binunionI2 A C x HxC)).
+- let x.
+  assume HxInt.
+  claim HxAB : x :e A :\/: B.
+  {
+    exact (binintersectE1
+      (A :\/: B)
+      (A :\/: C)
+      x
+      HxInt).
+  }
+  claim HxAC : x :e A :\/: C.
+  {
+    exact (binintersectE2
+      (A :\/: B)
+      (A :\/: C)
+      x
+      HxInt).
+  }
+  apply (binunionE
+    A
+    B
+    x
+    HxAB).
+  + assume HxA.
+    exact (binunionI1
+      A
+      (B :/\: C)
+      x
+      HxA).
+  + assume HxB.
+    apply (binunionE
+      A
+      C
+      x
+      HxAC).
+    * assume HxA.
+      exact (binunionI1
+        A
+        (B :/\: C)
+        x
+        HxA).
+    * assume HxC.
+      exact (binunionI2
+        A
+        (B :/\: C)
+        x
+        (binintersectI
+          B
+          C
+          x
+          HxB
+          HxC)).
+Qed.
+
+(** Infrastructure: binintersect and binunion commutation in 3 terms **)
+(** Proven Bob **)
+Theorem binintersect_binunion_comm : forall A B C:set,
+  A :/\: (B :\/: C) = (A :/\: B) :\/: (A :/\: C).
+let A B C.
+exact (binintersect_binunion_distrib_left A B C).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
