@@ -221061,8 +221061,125 @@ Theorem left_coset_eq_right_mult_normal_preserves :
   left_coset mult a C = left_coset mult b C ->
   left_coset mult (apply_fun mult (a, c)) C =
   left_coset mult (apply_fun mult (b, c)) C.
-admit.
-Admitted.
+let G mult e inv C a b c.
+assume Hgrp : group_structure G mult e inv.
+assume HnormalC : normal_subgroup C G mult e inv.
+assume HaG : a :e G.
+assume HbG : b :e G.
+assume HcG : c :e G.
+assume HcosEq : left_coset mult a C = left_coset mult b C.
+claim HsubC : subgroup_of C G mult e inv.
+{ exact (normal_subgroup_subgroup C G mult e inv HnormalC). }
+claim HaInb : a :e left_coset mult b C.
+{
+  rewrite <- HcosEq.
+  exact (representative_in_own_left_coset G mult e inv C a Hgrp HsubC HaG).
+}
+apply (ReplE C (fun n:set => apply_fun mult (b, n)) a HaInb).
+let n. assume HnPack.
+apply HnPack.
+assume HnC : n :e C.
+assume Haeq : a = apply_fun mult (b, n).
+claim HnG : n :e G.
+{ exact (subgroup_of_mem_in_G C G mult e inv n HsubC HnC). }
+claim HinvbG : apply_fun inv b :e G.
+{ exact (group_inverse_closed_in_group G mult e inv b Hgrp HbG). }
+claim HinvcG : apply_fun inv c :e G.
+{ exact (group_inverse_closed_in_group G mult e inv c Hgrp HcG). }
+claim HbnG : apply_fun mult (b, n) :e G.
+{ exact (group_source_mult_closure G mult e inv Hgrp b n HbG HnG). }
+claim HbcG : apply_fun mult (b, c) :e G.
+{ exact (group_source_mult_closure G mult e inv Hgrp b c HbG HcG). }
+claim HacG : apply_fun mult (a, c) :e G.
+{ exact (group_source_mult_closure G mult e inv Hgrp a c HaG HcG). }
+claim HinvbcG : apply_fun inv (apply_fun mult (b, c)) :e G.
+{ exact (group_inverse_closed_in_group G mult e inv (apply_fun mult (b, c)) Hgrp HbcG). }
+claim HinvcbinvG : apply_fun mult (apply_fun inv c, apply_fun inv b) :e G.
+{ exact (group_source_mult_closure G mult e inv Hgrp (apply_fun inv c) (apply_fun inv b) HinvcG HinvbG). }
+claim HbncG : apply_fun mult (apply_fun mult (b, n), c) :e G.
+{ exact (group_source_mult_closure G mult e inv Hgrp (apply_fun mult (b, n)) c HbnG HcG). }
+claim Hinvbc_ac_in_C :
+  apply_fun mult (apply_fun inv (apply_fun mult (b, c)), apply_fun mult (a, c)) :e C.
+{
+  apply (and6E
+    (function_on mult (setprod G G) G)
+    (function_on inv G G)
+    (e :e G)
+    (forall x y z:set, x :e G -> y :e G -> z :e G ->
+      apply_fun mult (apply_fun mult (x, y), z) = apply_fun mult (x, apply_fun mult (y, z)))
+    (forall x:set, x :e G -> apply_fun mult (e, x) = x /\ apply_fun mult (x, e) = x)
+    (forall x:set, x :e G ->
+      apply_fun mult (x, apply_fun inv x) = e /\ apply_fun mult (apply_fun inv x, x) = e)
+    Hgrp).
+  assume HmultG HinvG HeG HassocG HidG HinvLawG.
+  rewrite (group_inv_of_prod G mult e inv Hgrp b c HbG HcG).
+  rewrite Haeq.
+  rewrite <- (HassocG (apply_fun mult (apply_fun inv c, apply_fun inv b)) (apply_fun mult (b, n)) c HinvcbinvG HbnG HcG).
+  rewrite (HassocG (apply_fun inv c) (apply_fun inv b) (apply_fun mult (b, n)) HinvcG HinvbG HbnG).
+  rewrite <- (HassocG (apply_fun inv b) b n HinvbG HbG HnG).
+  rewrite (andER
+    (apply_fun mult (b, apply_fun inv b) = e)
+    (apply_fun mult (apply_fun inv b, b) = e)
+    (HinvLawG b HbG)).
+  rewrite (andEL
+    (apply_fun mult (e, n) = n)
+    (apply_fun mult (n, e) = n)
+    (HidG n HnG)).
+  claim HinvinvcG : apply_fun inv (apply_fun inv c) :e G.
+  { exact (group_inverse_closed_in_group G mult e inv (apply_fun inv c) Hgrp HinvcG). }
+  claim Hinvc_invinvc : apply_fun mult (apply_fun inv c, apply_fun inv (apply_fun inv c)) = e.
+  { exact (andEL
+      (apply_fun mult (apply_fun inv c, apply_fun inv (apply_fun inv c)) = e)
+      (apply_fun mult (apply_fun inv (apply_fun inv c), apply_fun inv c) = e)
+      (HinvLawG (apply_fun inv c) HinvcG)). }
+  claim Hinvc_c : apply_fun mult (apply_fun inv c, c) = e.
+  { exact (andER
+      (apply_fun mult (c, apply_fun inv c) = e)
+      (apply_fun mult (apply_fun inv c, c) = e)
+      (HinvLawG c HcG)). }
+  claim Hdoubleinv : apply_fun inv (apply_fun inv c) = c.
+  {
+    claim Heq_combined : apply_fun mult (apply_fun inv c, apply_fun inv (apply_fun inv c)) =
+      apply_fun mult (apply_fun inv c, c).
+    {
+      rewrite Hinvc_invinvc.
+      rewrite Hinvc_c.
+      reflexivity.
+    }
+    exact (group_left_cancel G mult e inv (apply_fun inv c) (apply_fun inv (apply_fun inv c)) c Hgrp HinvcG HinvinvcG HcG Heq_combined).
+  }
+  claim Hconj : apply_fun mult (apply_fun mult (apply_fun inv c, n), apply_fun inv (apply_fun inv c)) :e C.
+  {
+    exact (andER
+      (subgroup_of C G mult e inv)
+      (forall t g:set, t :e C -> g :e G ->
+        apply_fun mult (apply_fun mult (g, t), apply_fun inv g) :e C)
+      HnormalC
+      n
+      (apply_fun inv c)
+      HnC
+      HinvcG).
+  }
+  claim Heq_terms : apply_fun mult (apply_fun mult (apply_fun inv c, n), apply_fun inv (apply_fun inv c)) =
+    apply_fun mult (apply_fun mult (apply_fun inv c, n), c).
+  { rewrite Hdoubleinv. reflexivity. }
+  rewrite <- Heq_terms.
+  exact Hconj.
+}
+exact (left_coset_eq_from_N_mem
+  G
+  mult
+  e
+  inv
+  C
+  Hgrp
+  HsubC
+  (apply_fun mult (a, c))
+  (apply_fun mult (b, c))
+  HacG
+  HbcG
+  Hinvbc_ac_in_C).
+Qed.
 
 (** Proven Bob **)
 (** Helper: quotient multiplication on principal left cosets matches multiplication of representatives. **)
