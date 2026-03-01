@@ -24746,6 +24746,25 @@ exact (Hfun t Ht).
 Qed.
 
 (** Proven Bob **)
+Theorem loop_at_endpoints_eq : forall X Tx x0 f:set,
+  loop_at X Tx x0 f ->
+  apply_fun f 0 = apply_fun f 1.
+let X Tx x0 f.
+assume Hloop.
+claim H0 : apply_fun f 0 = x0.
+{
+  exact (loop_at_at_zero X Tx x0 f Hloop).
+}
+claim H1 : apply_fun f 1 = x0.
+{
+  exact (loop_at_at_one X Tx x0 f Hloop).
+}
+rewrite H0.
+rewrite H1.
+reflexivity.
+Qed.
+
+(** Proven Bob **)
 Theorem loop_at_constant_path : forall X Tx x0:set,
   topology_on X Tx ->
   x0 :e X ->
@@ -24930,6 +24949,25 @@ exact (andER
 Qed.
 
 (** Proven Bob **)
+Theorem loop_space_endpoints_eq : forall X Tx x0 f:set,
+  f :e loop_space X Tx x0 ->
+  apply_fun f 0 = apply_fun f 1.
+let X Tx x0 f.
+assume Hf.
+claim H0 : apply_fun f 0 = x0.
+{
+  exact (loop_space_start X Tx x0 f Hf).
+}
+claim H1 : apply_fun f 1 = x0.
+{
+  exact (loop_space_end X Tx x0 f Hf).
+}
+rewrite H0.
+rewrite H1.
+reflexivity.
+Qed.
+
+(** Proven Bob **)
 Theorem loop_space_function_on : forall X Tx x0 f:set,
   f :e loop_space X Tx x0 ->
   function_on f unit_interval X.
@@ -25067,6 +25105,25 @@ exact (andER
   (apply_fun g 0 = x0)
   (apply_fun g 1 = x0)
   (path_homotopy_class_loop_endpoint_data X Tx x0 f g Hg)).
+Qed.
+
+(** Proven Bob **)
+Theorem path_homotopy_class_loop_endpoints_eq : forall X Tx x0 f g:set,
+  g :e path_homotopy_class_loop X Tx x0 f ->
+  apply_fun g 0 = apply_fun g 1.
+let X Tx x0 f g.
+assume Hg.
+claim H0 : apply_fun g 0 = x0.
+{
+  exact (path_homotopy_class_loop_start X Tx x0 f g Hg).
+}
+claim H1 : apply_fun g 1 = x0.
+{
+  exact (path_homotopy_class_loop_end X Tx x0 f g Hg).
+}
+rewrite H0.
+rewrite H1.
+reflexivity.
 Qed.
 
 (** Proven Bob **)
