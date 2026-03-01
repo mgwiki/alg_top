@@ -54900,6 +54900,33 @@ apply (union_subfamily_sub_union (Fam :\: {V}) Fam).
 exact (setminus_Subq Fam {V}).
 Qed.
 
+(** Infrastructure: if the union is empty, the union of the rest is empty **)
+(** Proven Bob **)
+Theorem union_rest_empty_if_union_empty : forall Fam V:set,
+  Union Fam = Empty ->
+  Union (Fam :\: {V}) = Empty.
+let Fam V.
+assume HUnionE.
+apply set_ext.
+- let x.
+  assume HxRest.
+  claim HxUnion : x :e Union Fam.
+  {
+    exact (union_rest_sub_union
+      Fam
+      V
+      x
+      HxRest).
+  }
+  exact (mem_eqR
+    x
+    (Union Fam)
+    Empty
+    HUnionE
+    HxUnion).
+- exact (Subq_Empty (Union (Fam :\: {V}))).
+Qed.
+
 
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
