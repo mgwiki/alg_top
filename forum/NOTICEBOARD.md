@@ -138,10 +138,10 @@ Admin Decision:
 
   - 1772373600 | APPROVED
 Implemented by:
-  -
+  - Bob
 
 Implementation Commit:
-  -
+  - c3fa2c620
 
 Status:
   SENT TO ADMIN
