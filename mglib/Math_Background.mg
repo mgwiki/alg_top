@@ -56491,6 +56491,16 @@ apply setminusI.
     (Hsub x HxB)).
 Qed.
 
+(** Infrastructure: removing a superset yields empty **)
+(** Proven Bob **)
+Theorem setminus_empty_if_left_sub : forall A B:set,
+  A c= B ->
+  A :\: B = Empty.
+let A B.
+assume Hsub.
+exact (setminus_sub_empty A B Hsub).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
