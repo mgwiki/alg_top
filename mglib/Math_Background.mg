@@ -1,5 +1,5 @@
 (** Balance Alice 3927 **)
-(** Balance Bob 4146 **)
+(** Balance Bob 4410 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
 
@@ -107324,7 +107324,8 @@ Qed.
 (** LATEX VERSION: Let H = p-star(pi_1(E,e0)). The lifting correspondence induces **)
 (** an injective map Phi: pi_1(B,b0)/H -> p^{-1}(b0), bijective if E is path connected. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
+(** Collected Bob 220 **)
+(** Proven Bob **)
 Theorem thm54_6b_coset_correspondence : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   exists Phi:set,
@@ -108901,11 +108902,12 @@ exact (andI
     c1 = c2)
   HPhiFun
   HPhiInj).
-Admitted. (** depends on admitted thm54_3_homotopic_lifts **)
+Qed.
 
 (** from S54 Thm 54.6b surjectivity when E is path connected **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 40 **)
-(** Bounty 44 **)
+(** Collected Bob 44 **)
+(** Proven Bob **)
 Theorem thm54_6b_coset_correspondence_surjective : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   path_connected_space E Te ->
@@ -110578,7 +110580,7 @@ exact (andI
   (forall y:set, y :e Fib -> exists c:set, c :e cosets /\ apply_fun Phi c = y)
   HPhiFun
   HPhiSurj).
-Admitted.
+Qed.
 
 (** Infrastructure: loop characterization (forward direction) **)
 Lemma thm54_6c_loop_characterization_forward : forall E Te B Tb p e0 f:set,
