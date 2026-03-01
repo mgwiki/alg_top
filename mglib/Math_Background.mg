@@ -190363,7 +190363,6 @@ apply iffI.
            forall j:set, j :e n2 -> apply_fun a2 j = alpha -> apply_fun x2 j = e)).
     { let x. assume HxG : x :e G.
       let n1 n2. assume Hn1O : n1 :e omega. assume Hn2O : n2 :e omega.
-      claim Hn1ne : n1 <> 0. { admit. } claim Hn2ne : n2 <> 0. { admit. }
       let a1 a2. assume Ha1_fn : function_on a1 n1 J. assume Ha2_fn : function_on a2 n2 J.
       let x1 x2. assume Hx1_fn : function_on x1 n1 G. assume Hx2_fn : function_on x2 n2 G.
       assume Hx1_in : forall i:set, i :e n1 -> apply_fun x1 i :e apply_fun Gfam (apply_fun a1 i).
@@ -193805,7 +193804,6 @@ apply iffI.
   + (** Prove uniqueness condition from zero-sum **)
     let x. assume Hx : x :e G.
     let n1 n2. assume Hn1 : n1 :e omega. assume Hn2 : n2 :e omega.
-    claim Hne1 : n1 <> 0. { admit. } claim Hne2 : n2 <> 0. { admit. }
     let a1 a2. assume Ha1 : function_on a1 n1 J. assume Ha2 : function_on a2 n2 J.
     let x1 x2. assume Hx1 : function_on x1 n1 G. assume Hx2 : function_on x2 n2 G.
     assume Hxfam1 : forall i:set, i :e n1 -> apply_fun x1 i :e apply_fun Gfam (apply_fun a1 i).
@@ -193814,43 +193812,62 @@ apply iffI.
     assume Hinj2 : forall i j:set, i :e n2 -> j :e n2 -> i <> j -> apply_fun a2 i <> apply_fun a2 j.
     assume Hrep1 : x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun x1 i)) n1.
     assume Hrep2 : x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun x2 i)) n2.
-    (** Helper claims **)
-    claim HmultCl : forall a b:set, a :e G -> b :e G -> apply_fun mult (a, b) :e G.
-    { let a b. assume Ha Hb.
-      exact (HmultFn (a, b) (tuple_2_setprod_by_pair_Sigma G G a b Ha Hb)). }
-    claim HinvCl : forall a:set, a :e G -> apply_fun inv a :e G.
-    { let a. assume Ha. exact (HinvFn a Ha). }
-    claim Hsub_inv : forall al:set, al :e J -> forall a:set,
-      a :e apply_fun Gfam al -> apply_fun inv a :e apply_fun Gfam al.
-    { let al. assume Hal. let a. assume Ha_sub.
-      claim Hsub : subgroup_of (apply_fun Gfam al) G mult e inv.
-      { exact (HsubGfam al Hal). }
-      apply Hsub. assume _ Hinv_cl. exact (Hinv_cl a Ha_sub). }
-    claim Hsub_mult : forall al:set, al :e J -> forall a b:set,
-      a :e apply_fun Gfam al -> b :e apply_fun Gfam al ->
-      apply_fun mult (a, b) :e apply_fun Gfam al.
-    { let al. assume Hal. let a b. assume Ha_sub Hb_sub.
-      claim Hsub : subgroup_of (apply_fun Gfam al) G mult e inv.
-      { exact (HsubGfam al Hal). }
-      apply Hsub. assume Hsub_ABC _.
-      apply Hsub_ABC. assume _ Hmult_cl.
-      exact (Hmult_cl a b Ha_sub Hb_sub). }
-    claim Hsub_in_G : forall al:set, al :e J -> forall a:set,
-      a :e apply_fun Gfam al -> a :e G.
-    { let al. assume Hal. let a. assume Ha_sub.
-      claim Hsub : subgroup_of (apply_fun Gfam al) G mult e inv.
-      { exact (HsubGfam al Hal). }
-      apply Hsub. assume Hsub_ABC _.
-      apply Hsub_ABC. assume Hsub_AB _.
-      apply Hsub_AB. assume Hsubset _. exact (Hsubset a Ha_sub). }
-    (** Use zero_sum_component_extraction helper **)
     claim Hprodeq : nat_primrec e (fun i r => apply_fun mult (r, apply_fun x1 i)) n1 =
       nat_primrec e (fun i r => apply_fun mult (r, apply_fun x2 i)) n2.
     { rewrite <- Hrep1. rewrite <- Hrep2. reflexivity. }
-    exact (zero_sum_component_extraction G mult e inv J Gfam HabG HsubGfam Hzs
-      n1 n2 Hn1 Hn2 Hne1 Hne2 a1 a2 Ha1 Ha2 x1 x2 Hx1 Hx2
-      Hxfam1 Hxfam2 Hinj1 Hinj2 Hprodeq).
-Admitted.
+    apply (xm (n1 = 0)).
+    - assume Hn1_eq0 : n1 = 0.
+      (** n1=0: clause 1,2 vacuous; clause 3 by zero-sum **)
+      claim Hprod1_e : nat_primrec e (fun i r => apply_fun mult (r, apply_fun x1 i)) n1 = e.
+      { rewrite Hn1_eq0. exact (nat_primrec_0 e (fun i r => apply_fun mult (r, apply_fun x1 i))). }
+      claim Hprod2_e : nat_primrec e (fun i r => apply_fun mult (r, apply_fun x2 i)) n2 = e.
+      { rewrite <- Hprodeq. exact Hprod1_e. }
+      let alpha. assume HalJ : alpha :e J.
+      apply and3I.
+      * let i j. assume Hi : i :e n1.
+        claim Hi0 : i :e 0. { rewrite <- Hn1_eq0. exact Hi. }
+        exact (FalseE (EmptyE i Hi0)
+          (j :e n2 -> apply_fun a1 i = alpha -> apply_fun a2 j = alpha -> apply_fun x1 i = apply_fun x2 j)).
+      * assume Hex. apply Hex. let i. assume Hand.
+        claim Hi : i :e n1. { exact (andEL (i :e n1) (apply_fun a1 i = alpha) Hand). }
+        claim Hi0 : i :e 0. { rewrite <- Hn1_eq0. exact Hi. }
+        exact (FalseE (EmptyE i Hi0)
+          (~(exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
+           forall i0:set, i0 :e n1 -> apply_fun a1 i0 = alpha -> apply_fun x1 i0 = e)).
+      * assume _. assume Hex_j. let j. assume Hj : j :e n2. assume Ha2j : apply_fun a2 j = alpha.
+        apply (xm (n2 = 0)).
+        + assume Hn2_eq0 : n2 = 0.
+          claim Hj0 : j :e 0. { rewrite <- Hn2_eq0. exact Hj. }
+          exact (FalseE (EmptyE j Hj0) (apply_fun x2 j = e)).
+        + assume Hn2_ne : n2 <> 0.
+          exact (Hzs n2 Hn2 Hn2_ne a2 Ha2 Hinj2 x2 Hx2 Hxfam2 Hprod2_e j Hj).
+    - assume Hn1_ne : n1 <> 0.
+      apply (xm (n2 = 0)).
+      + assume Hn2_eq0 : n2 = 0.
+        (** n2=0: clause 1,3 vacuous; clause 2 by zero-sum **)
+        claim Hprod2_e : nat_primrec e (fun i r => apply_fun mult (r, apply_fun x2 i)) n2 = e.
+        { rewrite Hn2_eq0. exact (nat_primrec_0 e (fun i r => apply_fun mult (r, apply_fun x2 i))). }
+        claim Hprod1_e : nat_primrec e (fun i r => apply_fun mult (r, apply_fun x1 i)) n1 = e.
+        { rewrite Hprodeq. exact Hprod2_e. }
+        let alpha. assume HalJ : alpha :e J.
+        apply and3I.
+        * let i j. assume Hi : i :e n1. assume Hj : j :e n2.
+          claim Hj0 : j :e 0. { rewrite <- Hn2_eq0. exact Hj. }
+          exact (FalseE (EmptyE j Hj0)
+            (apply_fun a1 i = alpha -> apply_fun a2 j = alpha -> apply_fun x1 i = apply_fun x2 j)).
+        * assume Hex_i. assume _.
+          let i. assume Hi : i :e n1. assume Ha1i : apply_fun a1 i = alpha.
+          exact (Hzs n1 Hn1 Hn1_ne a1 Ha1 Hinj1 x1 Hx1 Hxfam1 Hprod1_e i Hi).
+        * assume _. assume Hex_j. apply Hex_j. let j. assume Hand.
+          claim Hj : j :e n2. { exact (andEL (j :e n2) (apply_fun a2 j = alpha) Hand). }
+          claim Hj0 : j :e 0. { rewrite <- Hn2_eq0. exact Hj. }
+          exact (FalseE (EmptyE j Hj0)
+            (forall j0:set, j0 :e n2 -> apply_fun a2 j0 = alpha -> apply_fun x2 j0 = e)).
+      + assume Hn2_ne : n2 <> 0.
+        exact (zero_sum_component_extraction G mult e inv J Gfam HabG HsubGfam Hzs
+          n1 n2 Hn1 Hn2 Hn1_ne Hn2_ne a1 a2 Ha1 Ha2 x1 x2 Hx1 Hx2
+          Hxfam1 Hxfam2 Hinj1 Hinj2 Hprodeq).
+Qed.
 
 (** from S67 Exercise 3 (line 2706 in algtop.tex) **)
 (** LATEX VERSION: If G is free abelian with basis {x, y}, then {2x+3y, x-y} is also a basis. **)
