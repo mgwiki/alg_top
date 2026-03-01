@@ -56055,6 +56055,49 @@ exact (setminus_eq_if_binintersect_empty
   Hempty').
 Qed.
 
+(** Infrastructure: symmetric setminus pieces are disjoint **)
+(** Proven Bob **)
+Theorem binintersect_setminus_sym_empty : forall A B:set,
+  (A :\: B) :/\: (B :\: A) = Empty.
+let A B.
+apply Empty_eq.
+let x.
+assume HxInt.
+claim HxAB : x :e A :\: B.
+{
+  exact (binintersectE1
+    (A :\: B)
+    (B :\: A)
+    x
+    HxInt).
+}
+claim HxBA : x :e B :\: A.
+{
+  exact (binintersectE2
+    (A :\: B)
+    (B :\: A)
+    x
+    HxInt).
+}
+claim HxB : x :e B.
+{
+  exact (setminusE1
+    B
+    A
+    x
+    HxBA).
+}
+claim HxNotB : x /:e B.
+{
+  exact (setminusE2
+    A
+    B
+    x
+    HxAB).
+}
+exact (HxNotB HxB).
+Qed.
+
 (** Infrastructure: if V is not in the family, the union of the rest is unchanged **)
 (** Proven Bob **)
 Theorem union_rest_eq_union_if_nonmember : forall Fam V:set,
