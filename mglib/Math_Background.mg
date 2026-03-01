@@ -56092,6 +56092,25 @@ rewrite (binunion_comm A {x}).
 exact (binunion_singleton_eq_iff_mem A x).
 Qed.
 
+(** Infrastructure: if point not in set, union with singleton is different **)
+(** Proven Bob **)
+Theorem binunion_singleton_neq_of_not_mem_right : forall A x:set,
+  x /:e A ->
+  A :\/: {x} <> A.
+let A x.
+assume HxNotA.
+assume Heq.
+claim HxA : x :e A.
+{
+  exact (iffEL
+    (A :\/: {x} = A)
+    (x :e A)
+    (binunion_singleton_eq_iff_mem_right A x)
+    Heq).
+}
+exact (HxNotA HxA).
+Qed.
+
 
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
