@@ -9789,9 +9789,34 @@ exact (andER
       apply_fun F (s, 1) = apply_fun f' s) /\
     (forall t:set, t :e unit_interval ->
       apply_fun F (0, t) = x0) /\
-    (forall t:set, t :e unit_interval ->
-      apply_fun F (1, t) = x1))
+  (forall t:set, t :e unit_interval ->
+    apply_fun F (1, t) = x1))
   Htail).
+Qed.
+
+(** Proven Bob **)
+Theorem path_homotopic_has_continuous_square : forall X Tx x0 x1 f f':set,
+  path_homotopic X Tx x0 x1 f f' ->
+  exists F:set, continuous_map unit_square unit_square_topology X Tx F.
+let X Tx x0 x1 f f'.
+assume Hhom.
+apply (path_homotopic_has_square_witness X Tx x0 x1 f f' Hhom).
+let F.
+assume HFpack.
+witness F.
+apply (and5E
+  (continuous_map unit_square unit_square_topology X Tx F)
+  (forall s:set, s :e unit_interval ->
+    apply_fun F (s, 0) = apply_fun f s)
+  (forall s:set, s :e unit_interval ->
+    apply_fun F (s, 1) = apply_fun f' s)
+  (forall t:set, t :e unit_interval ->
+    apply_fun F (0, t) = x0)
+  (forall t:set, t :e unit_interval ->
+    apply_fun F (1, t) = x1)
+  HFpack).
+assume Hcont _ _ _ _.
+exact Hcont.
 Qed.
 
 (** Helper: change right endpoint in path homotopy when endpoints agree pointwise **)
