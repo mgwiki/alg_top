@@ -55989,6 +55989,43 @@ exact (binunion_singleton_eq_of_mem
   HxA).
 Qed.
 
+(** Infrastructure: binunion with singleton equals set iff point is in it **)
+(** Proven Bob **)
+Theorem binunion_singleton_eq_iff_mem : forall A x:set,
+  ({x} :\/: A = A <-> x :e A).
+let A x.
+apply iffI.
+- assume Hunion.
+  claim HxUnion : x :e {x} :\/: A.
+  {
+    exact (binunionI1
+      {x}
+      A
+      x
+      (SingI x)).
+  }
+  exact (mem_eqR
+    x
+    ({x} :\/: A)
+    A
+    Hunion
+    HxUnion).
+- assume HxA.
+  exact (binunion_singleton_eq_of_mem
+    A
+    x
+    HxA).
+Qed.
+
+(** Infrastructure: binunion with singleton equals set iff point is in it (right) **)
+(** Proven Bob **)
+Theorem binunion_singleton_eq_iff_mem_right : forall A x:set,
+  (A :\/: {x} = A <-> x :e A).
+let A x.
+rewrite (binunion_comm A {x}).
+exact (binunion_singleton_eq_iff_mem A x).
+Qed.
+
 
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
