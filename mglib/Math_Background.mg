@@ -45019,6 +45019,25 @@ exact (andER
 Qed.
 
 (** Proven Bob **)
+Theorem covering_map_surjective_value : forall E Te B Tb p b:set,
+  covering_map E Te B Tb p ->
+  b :e B ->
+  exists e:set, e :e E /\ apply_fun p e = b.
+let E Te B Tb p b.
+assume Hcov Hb.
+claim Hsurj : surjective_map E B p.
+{
+  exact (covering_map_surjective E Te B Tb p Hcov).
+}
+exact (andER
+  (function_on p E B)
+  (forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y)
+  Hsurj
+  b
+  Hb).
+Qed.
+
+(** Proven Bob **)
 Theorem covering_map_evenly_covered : forall E Te B Tb p b:set,
   covering_map E Te B Tb p -> b :e B ->
   exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U.
