@@ -9684,6 +9684,20 @@ apply andI.
 Qed.
 
 (** Proven Bob **)
+Theorem path_between_value_in_space : forall X x0 x1 p t:set,
+  path_between X x0 x1 p ->
+  t :e unit_interval ->
+  apply_fun p t :e X.
+let X x0 x1 p t.
+assume Hp Ht.
+claim Hfun : function_on p unit_interval X.
+{
+  exact (path_between_function_on X x0 x1 p Hp).
+}
+exact (Hfun t Ht).
+Qed.
+
+(** Proven Bob **)
 Theorem path_homotopic_endpoints_in_space : forall X Tx x0 x1 f f':set,
   path_homotopic X Tx x0 x1 f f' ->
   x0 :e X /\ x1 :e X.
