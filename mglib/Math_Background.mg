@@ -55839,6 +55839,120 @@ apply set_ext.
         HxNotB)).
 Qed.
 
+(** Infrastructure: intersection distributes over union (left) **)
+(** Proven Bob **)
+Theorem binintersect_binunion_distrib_left : forall A B C:set,
+  A :/\: (B :\/: C) = (A :/\: B) :\/: (A :/\: C).
+let A B C.
+apply set_ext.
+- let x.
+  assume HxInt.
+  claim HxA : x :e A.
+  {
+    exact (binintersectE1
+      A
+      (B :\/: C)
+      x
+      HxInt).
+  }
+  claim HxBC : x :e B :\/: C.
+  {
+    exact (binintersectE2
+      A
+      (B :\/: C)
+      x
+      HxInt).
+  }
+  apply (binunionE
+    B
+    C
+    x
+    HxBC).
+  + assume HxB.
+    exact (binunionI1
+      (A :/\: B)
+      (A :/\: C)
+      x
+      (binintersectI
+        A
+        B
+        x
+        HxA
+        HxB)).
+  + assume HxC.
+    exact (binunionI2
+      (A :/\: B)
+      (A :/\: C)
+      x
+      (binintersectI
+        A
+        C
+        x
+        HxA
+        HxC)).
+- let x.
+  assume HxUnion.
+  apply (binunionE
+    (A :/\: B)
+    (A :/\: C)
+    x
+    HxUnion).
+  + assume HxAB.
+    claim HxA : x :e A.
+    {
+      exact (binintersectE1
+        A
+        B
+        x
+        HxAB).
+    }
+    claim HxB : x :e B.
+    {
+      exact (binintersectE2
+        A
+        B
+        x
+        HxAB).
+    }
+    exact (binintersectI
+      A
+      (B :\/: C)
+      x
+      HxA
+      (binunionI1
+        B
+        C
+        x
+        HxB)).
+  + assume HxAC.
+    claim HxA : x :e A.
+    {
+      exact (binintersectE1
+        A
+        C
+        x
+        HxAC).
+    }
+    claim HxC : x :e C.
+    {
+      exact (binintersectE2
+        A
+        C
+        x
+        HxAC).
+    }
+    exact (binintersectI
+      A
+      (B :\/: C)
+      x
+      HxA
+      (binunionI2
+        B
+        C
+        x
+        HxC)).
+Qed.
+
 (** Infrastructure: intersecting with a setminus is empty **)
 (** Proven Bob **)
 Theorem binintersect_setminus_removed_empty : forall A B:set,
