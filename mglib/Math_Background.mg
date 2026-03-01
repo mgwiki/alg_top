@@ -172058,6 +172058,7 @@ exact (projective_plane_map_covering_from_evenly_covered
   (projective_plane_local_evenly_covered_from_pointwise HpointEven)).
 Qed.
 
+(** Proven Bob **)
 Theorem thm60_3_projective_plane_surface_covering_from_evenly_covered_parts :
   m_manifold projective_plane projective_plane_topology 2 ->
   compact_space (Sn 2) (Sn_topology 2) ->
@@ -172078,8 +172079,9 @@ exact (and3I
   Hmanifold
   (projective_plane_compact_from_s2_compact HcompactS2)
   (projective_plane_map_covering_from_evenly_covered HlocalEven)).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm60_3_projective_plane_surface_covering_from_pointwise_evenly_covered_parts :
   m_manifold projective_plane projective_plane_topology 2 ->
   compact_space (Sn 2) (Sn_topology 2) ->
@@ -172097,8 +172099,9 @@ exact (thm60_3_projective_plane_surface_covering_from_evenly_covered_parts
   Hmanifold
   HcompactS2
   (projective_plane_local_evenly_covered_from_pointwise HpointEven)).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm60_3_projective_plane_surface_covering_from_parts :
   m_manifold projective_plane projective_plane_topology 2 ->
   compact_space (Sn 2) (Sn_topology 2) ->
@@ -172117,7 +172120,7 @@ exact (and3I
   Hmanifold
   (projective_plane_compact_from_s2_compact HcompactS2)
   Hcover).
-Admitted.
+Qed.
 
 (** from S60 Thm 60.3 (line 1691 in algtop.tex) **)
 (** LATEX VERSION: P^2 is a compact surface, and the quotient map p: S^2 -> P^2 **)
@@ -231715,6 +231718,7 @@ Theorem closed_quotient_map_preserves_normality_helper :
 admit.
 Admitted.
 
+(** Proven Bob **)
 Theorem closed_quotient_map_preserves_normality_helper_from_quotient_map :
   forall E Te X Tx pi:set,
   quotient_map E Te X pi ->
@@ -231737,7 +231741,7 @@ exact (closed_quotient_map_preserves_normality_from_quotient_map
   HnormE
   Hcont
   Hclosed).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem closed_quotient_map_preserves_normality_from_surjective_map_via_bridges :
@@ -231816,6 +231820,7 @@ exact (closed_quotient_map_preserves_normality_from_quotient_map
   HclosedImg).
 Qed.
 
+(** Proven Bob **)
 Theorem closed_quotient_map_preserves_normality_helper_from_quotient_map_via_bridges :
   forall E Te X Tx pi:set,
   quotient_map E Te X pi ->
@@ -231839,8 +231844,9 @@ exact (closed_quotient_map_preserves_normality_helper_from_quotient_map
   Hcont
   Hclosed
   HpreimOpen).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem lemma73_3_closed_quotient_normal_with_surjective :
   forall E Te X Tx pi:set,
   topology_on E Te -> topology_on X Tx ->
@@ -231865,8 +231871,9 @@ exact (closed_quotient_map_preserves_normality_with_surjective
   Hclosed
   HpreimOpen
   Hsurj).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem lemma73_3_closed_quotient_normal_from_surjective_map :
   forall E Te X Tx pi:set,
   topology_on E Te -> topology_on X Tx ->
@@ -231891,8 +231898,9 @@ exact (closed_quotient_map_preserves_normality_from_surjective_map
   Hclosed
   HpreimOpen
   HsurjMap).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem lemma73_3_closed_quotient_normal_from_quotient_map :
   forall E Te X Tx pi:set,
   quotient_map E Te X pi ->
@@ -231916,8 +231924,9 @@ exact (closed_quotient_map_preserves_normality_helper_from_quotient_map
   Hcont
   Hclosed
   HpreimOpen).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem lemma73_3_closed_quotient_normal_with_surjective_via_bridges :
   forall E Te X Tx pi:set,
   topology_on E Te -> topology_on X Tx ->
@@ -231942,8 +231951,9 @@ exact (lemma73_3_closed_quotient_normal_with_surjective
   Hclosed
   HpreimOpen
   Hsurj).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem lemma73_3_closed_quotient_normal_from_surjective_map_via_bridges :
   forall E Te X Tx pi:set,
   topology_on E Te -> topology_on X Tx ->
@@ -231968,8 +231978,9 @@ exact (lemma73_3_closed_quotient_normal_from_surjective_map
   Hclosed
   HpreimOpen
   HsurjMap).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem lemma73_3_closed_quotient_normal_from_quotient_map_via_bridges :
   forall E Te X Tx pi:set,
   quotient_map E Te X pi ->
@@ -231993,7 +232004,7 @@ exact (lemma73_3_closed_quotient_normal_from_quotient_map
   Hcont
   Hclosed
   HpreimOpen).
-Admitted.
+Qed.
 
 (** from S73 Lem 73.3 (line 3736 in algtop.tex): closed quotient map preserves normality **)
 (** LATEX VERSION: If pi: E -> X is a closed quotient map and E is normal, then X is normal. **)
