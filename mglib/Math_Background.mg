@@ -1,5 +1,5 @@
 (** Balance Alice 3927 **)
-(** Balance Bob 4615 **)
+(** Balance Bob 4676 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
 
@@ -57981,7 +57981,8 @@ Qed.
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
 (** then the partition of p^{-1}(U) into slices is unique. **)
 (** EFFORT: 5 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 61 **)
+(** Collected Bob 61 **)
+(** Proven Bob **)
 (** NOTICE 1772355212: added U <> Empty hypothesis per admin approval **)
 Theorem ex53_2_unique_partition : forall E Te B Tb p U:set,
   topology_on E Te -> topology_on B Tb ->
@@ -58262,8 +58263,28 @@ apply set_ext.
   }
   apply xm (V = Empty).
   - assume HVE.
-    (** TODO Charlie: degenerate empty-slice case (U = Empty) still needs normalization to conclude Empty :e slices2. **)
-    admit.
+    claim HhomeV :
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun z:set => apply_fun p z)).
+    {
+      exact (Hhome1 V HV1).
+    }
+    claim HUempty : U = Empty.
+    {
+      exact (homeomorphism_empty_domain_implies_empty_codomain
+        V
+        (subspace_topology E Te V)
+        U
+        (subspace_topology B Tb U)
+        (graph V (fun z:set => apply_fun p z))
+        HhomeV
+        HVE).
+    }
+    claim Hfalse : False.
+    {
+      exact (HU_ne HUempty).
+    }
+    exact (FalseE Hfalse (V :e slices2)).
   - assume HVne.
     claim HhomeV :
       homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
@@ -59155,8 +59176,28 @@ apply set_ext.
   }
   apply xm (V = Empty).
   - assume HVE.
-    (** TODO Charlie: degenerate empty-slice case (U = Empty) still needs normalization to conclude Empty :e slices1. **)
-    admit.
+    claim HhomeV :
+      homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
+        (graph V (fun z:set => apply_fun p z)).
+    {
+      exact (Hhome2 V HV2).
+    }
+    claim HUempty : U = Empty.
+    {
+      exact (homeomorphism_empty_domain_implies_empty_codomain
+        V
+        (subspace_topology E Te V)
+        U
+        (subspace_topology B Tb U)
+        (graph V (fun z:set => apply_fun p z))
+        HhomeV
+        HVE).
+    }
+    claim Hfalse : False.
+    {
+      exact (HU_ne HUempty).
+    }
+    exact (FalseE Hfalse (V :e slices1)).
   - assume HVne.
     claim HhomeV :
       homeomorphism V (subspace_topology E Te V) U (subspace_topology B Tb U)
@@ -60014,7 +60055,7 @@ apply set_ext.
     }
     rewrite HVeqS0.
     exact HS0Slice.
-Admitted.
+Qed.
 
 (** Helper: homeomorphic sheet has unique fiber point (proved early for ex53_3 use) **)
 Theorem ex53_3_helper_sheet_unique_fiber : forall E Te B Tb p V U b:set,
