@@ -146872,6 +146872,111 @@ apply (xm (forall t:set, t :e unit_interval -> apply_fun f t :e U)).
         - [f] = [L1] then [L2]
         - Each piece needs further decomposition if mixed (by induction on chain length)
         This is the core technical construction; admitted for incremental progress. **)
+    apply Hsplit.
+    let f1.
+    assume Hf1_ex.
+    apply Hf1_ex.
+    let f2.
+    assume HsplitPack.
+    apply (and7E
+      (continuous_map unit_interval unit_interval_topology X Tx f1)
+      (continuous_map unit_interval unit_interval_topology X Tx f2)
+      (apply_fun f1 0 = x0)
+      (apply_fun f1 1 = apply_fun f a)
+      (apply_fun f2 0 = apply_fun f a)
+      (apply_fun f2 1 = x0)
+      (path_homotopic X Tx x0 x0 f (path_concat f1 f2))
+      HsplitPack).
+    assume Hf1Cont Hf2Cont Hf1_0 Hf1_1 Hf2_0 Hf2_1 Hf_hom_split.
+    apply Hgamma_ex.
+    let gamma.
+    assume HgammaPack.
+    claim HgammaPath : path_between (U :/\: V) x0 (apply_fun f a) gamma.
+    { exact (andEL
+        (path_between (U :/\: V) x0 (apply_fun f a) gamma)
+        (continuous_map unit_interval unit_interval_topology
+          (U :/\: V) (subspace_topology X Tx (U :/\: V)) gamma)
+        HgammaPack). }
+    claim HgammaCont :
+      continuous_map unit_interval unit_interval_topology
+        (U :/\: V) (subspace_topology X Tx (U :/\: V)) gamma.
+    { exact (andER
+        (path_between (U :/\: V) x0 (apply_fun f a) gamma)
+        (continuous_map unit_interval unit_interval_topology
+          (U :/\: V) (subspace_topology X Tx (U :/\: V)) gamma)
+        HgammaPack). }
+    claim HgammaFun : function_on gamma unit_interval (U :/\: V).
+    { exact (path_between_function_on
+        (U :/\: V) x0 (apply_fun f a) gamma HgammaPath). }
+    set incUV := graph (U :/\: V) (fun x:set => x).
+    claim HUVsubX : (U :/\: V) c= X.
+    { let x. assume HxUV.
+      exact (HUsub x (binintersectE1 U V x HxUV)). }
+    claim HincUVCont :
+      continuous_map (U :/\: V) (subspace_topology X Tx (U :/\: V)) X Tx incUV.
+    { exact (subspace_inclusion_continuous X Tx (U :/\: V) Htop HUVsubX). }
+    set gammaX := compose_fun unit_interval gamma incUV.
+    claim HgammaXCont :
+      continuous_map unit_interval unit_interval_topology X Tx gammaX.
+    { exact (composition_continuous unit_interval unit_interval_topology
+        (U :/\: V) (subspace_topology X Tx (U :/\: V)) X Tx
+        gamma incUV HgammaCont HincUVCont). }
+    claim Hgamma0 : apply_fun gammaX 0 = x0.
+    { rewrite (compose_fun_apply unit_interval gamma incUV 0 zero_in_unit_interval).
+      rewrite (apply_fun_graph (U :/\: V) (fun x:set => x)
+        (apply_fun gamma 0)
+        (HgammaFun 0 zero_in_unit_interval)).
+      exact (path_between_at_zero (U :/\: V) x0 (apply_fun f a) gamma HgammaPath). }
+    claim Hgamma1 : apply_fun gammaX 1 = apply_fun f a.
+    { rewrite (compose_fun_apply unit_interval gamma incUV 1 one_in_unit_interval).
+      rewrite (apply_fun_graph (U :/\: V) (fun x:set => x)
+        (apply_fun gamma 1)
+        (HgammaFun 1 one_in_unit_interval)).
+      exact (path_between_at_one (U :/\: V) x0 (apply_fun f a) gamma HgammaPath). }
+    set L1 := path_concat f1 (reverse_path gammaX).
+    set L2 := path_concat gammaX f2.
+    (** L1 and L2 are loops at x0 in X **)
+    claim Hrev0 : apply_fun (reverse_path gammaX) 0 = apply_fun f a.
+    { rewrite (reverse_path_at_zero gammaX). exact Hgamma1. }
+    claim Hrev1 : apply_fun (reverse_path gammaX) 1 = x0.
+    { rewrite (reverse_path_at_one gammaX). exact Hgamma0. }
+    claim HjoinL1 : apply_fun f1 1 = apply_fun (reverse_path gammaX) 0.
+    { rewrite Hrev0. exact Hf1_1. }
+    claim HjoinL2 : apply_fun gammaX 1 = apply_fun f2 0.
+    { rewrite Hgamma1. symmetry. exact Hf2_0. }
+    claim HL1_cont : continuous_map unit_interval unit_interval_topology X Tx L1.
+    { exact (path_concat_continuous X Tx x0 (apply_fun f a) x0
+        f1 (reverse_path gammaX) Hf1Cont
+        (reverse_path_continuous X Tx gammaX HgammaXCont)
+        Hf1_0 Hf1_1 Hrev0 Hrev1). }
+    claim HL2_cont : continuous_map unit_interval unit_interval_topology X Tx L2.
+    { exact (path_concat_continuous X Tx x0 (apply_fun f a) x0
+        gammaX f2 HgammaXCont Hf2Cont
+        Hgamma0 Hgamma1 Hf2_0 Hf2_1). }
+    claim HL1_0 : apply_fun L1 0 = x0.
+    { rewrite (path_concat_apply_left f1 (reverse_path gammaX) 0
+        HjoinL1 zero_in_unit_interval_left_half).
+      rewrite (mul_SNo_zeroR 2 SNo_2).
+      exact Hf1_0. }
+    claim H2m1 : add_SNo (mul_SNo 2 1) (minus_SNo 1) = 1.
+    { exact (double_minus_one_map_apply 1 one_in_unit_interval_right_half
+        (fun a b:set => a = 1) double_minus_one_map_at_1). }
+    claim HL1_1 : apply_fun L1 1 = x0.
+    { rewrite (path_concat_apply_right f1 (reverse_path gammaX) 1
+        HjoinL1 one_in_unit_interval_right_half).
+      rewrite H2m1.
+      rewrite (reverse_path_at_one gammaX). exact Hgamma0. }
+    claim HL2_0 : apply_fun L2 0 = x0.
+    { rewrite (path_concat_apply_left gammaX f2 0
+        HjoinL2 zero_in_unit_interval_left_half).
+      rewrite (mul_SNo_zeroR 2 SNo_2).
+      exact Hgamma0. }
+    claim HL2_1 : apply_fun L2 1 = x0.
+    { rewrite (path_concat_apply_right gammaX f2 1
+        HjoinL2 one_in_unit_interval_right_half).
+      rewrite H2m1.
+      exact Hf2_1. }
+    (** Remaining step: express [f] as product of classes from U and V **)
     admit.
 Admitted.
 
