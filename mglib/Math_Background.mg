@@ -284972,6 +284972,7 @@ exact (tree_in_graph_intro
   HnoloopTA).
 Qed.
 
+(** Proven Bob **)
 Theorem lemma84_2_tree_extension_iff_components :
   forall T ArcsT X Tx Arcs A:set,
   subgraph_of (T :\/: A) X Tx Arcs ->
@@ -285063,7 +285064,7 @@ apply iffI.
       (connected_space (T :\/: A) (subspace_topology X Tx (T :\/: A)))
       Hgc)
     Hnoloop).
-Admitted.
+Qed.
 
 Theorem lemma84_2_tree_extension_iff_components_from_hypotheses :
   forall T ArcsT X Tx Arcs A:set,
@@ -285251,6 +285252,7 @@ exact (andER
       HtreeExt))).
 Admitted.
 
+(** Proven Bob **)
 Theorem lemma84_2_tree_extension_from_hypotheses_and_components :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -285291,8 +285293,9 @@ exact (lemma84_2_tree_extension_from_components
   HglgTA
   HconnTA
   HnoloopTA).
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem lemma84_2_tree_extension_subgraph_part :
   forall T ArcsT X Tx Arcs A:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -285312,10 +285315,10 @@ exact (subgraph_of_union_with_arc
     ArcsT
     X
     Tx
-    Arcs
-    Htree)
+  Arcs
+  Htree)
   HA).
-Admitted.
+Qed.
 
 (** helper: general linear graph structure on the tree extension union **)
 (** Proven Bob **)
@@ -287935,6 +287938,7 @@ exact (and5I
 Admitted.
 
 (** helper: if A meets T exactly at v and v is a graph vertex, then A has a second endpoint outside T. **)
+(** Proven Bob **)
 Theorem lemma84_2_tree_extension_attaching_arc_has_endpoint_outside_T :
   forall T ArcsT X Tx Arcs A v:set,
   tree_in_graph T ArcsT X Tx Arcs ->
@@ -288056,7 +288060,7 @@ apply andI.
   claim HwEqv : w = v.
   { exact (SingE v w HwSing). }
   exact (Hwneq HwEqv).
-Admitted.
+Qed.
 
 (** Proven Charlie **)
 (** helper: each arc in ArcsT is contained in the underlying tree space T. **)
@@ -293088,6 +293092,7 @@ exact (maximal_tree_tree_extension_edge_excludes_outside_points
   HxNotT).
 Qed.
 
+(** Proven Bob **)
 Theorem maximal_tree_vertex_outside_not_attachable_by_single_vertex_edge_if_extension :
   forall T ArcsT X Tx Arcs x A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -293110,7 +293115,7 @@ exact (maximal_tree_vertex_outside_not_in_edge_if_tree_extension
   Hmax
   HtreeExt
   HxNotT).
-Admitted.
+Qed.
 
 (** Proven Bob **)
 Theorem maximal_tree_vertex_outside_in_extension_edge_iff_false :
@@ -294342,6 +294347,7 @@ exact (mem_eqR
   HxUnion).
 Qed.
 
+(** Proven Bob **)
 Theorem maximal_tree_edge_meeting_tree_forces_subset_from_extension_obligation :
   forall T ArcsT X Tx Arcs A:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -294365,7 +294371,7 @@ apply (xm (A c= T)).
     A
     Hmax
     (Hext Hnsub)).
-Admitted.
+Qed.
 
 Theorem maximal_tree_edge_meeting_tree_forces_subset :
   forall T ArcsT X Tx Arcs A:set,
@@ -295034,6 +295040,7 @@ exact (maximal_tree_all_vertices_if_noncontained_edges_meet_tree_and_extend
 (** blocked on admitted lemma84_2_tree_extension_general_linear_graph_part. **)
 Admitted.
 
+(** Proven Bob **)
 Theorem maximal_tree_all_vertices_if_noncontained_edges_meet_tree_in_single_vertex_and_extension_obligation :
   forall T ArcsT X Tx Arcs:set,
   maximal_tree T ArcsT X Tx Arcs ->
@@ -295084,8 +295091,8 @@ apply andI.
     A
     HA
     Hnsub
-    HmeetEx).
-Admitted.
+   HmeetEx).
+Qed.
 
 Theorem maximal_tree_all_vertices_if_noncontained_edges_meet_tree_in_single_vertex_and_component_extension_obligations :
   forall T ArcsT X Tx Arcs:set,
@@ -297584,6 +297591,7 @@ assume HASel Hend Hep.
     (A c= T)).
 Admitted.
 
+(** Proven Bob **)
 Theorem thm84_4_backward_selected_arc_endpoint_close_obligation_from_subset_from_rhs :
   forall T ArcsT T' ArcsT' X Tx Arcs:set,
   (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
@@ -297602,7 +297610,7 @@ assume HASel Hend Hep.
 exact (HsubsetSel
   A
   HASel).
-Admitted.
+Qed.
 
 Theorem thm84_4_backward_selected_arc_endpoint_obligation_pair_from_subset_from_rhs :
   forall T ArcsT T' ArcsT' X Tx Arcs:set,
@@ -298394,6 +298402,7 @@ exact (thm84_4_forward_component_witness_from_component_obligations
   (HnoloopFam A HA Hnsub)).
 Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_forward_meeting_obligation_from_component_witness_family :
   forall T ArcsT X Tx Arcs:set,
   (forall A:set, A :e Arcs -> ~(A c= T) ->
@@ -298433,8 +298442,9 @@ witness v.
 apply andI.
 - exact HvVert.
 - exact Hmeet.
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_forward_glg_obligation_from_component_witness_family :
   forall T ArcsT X Tx Arcs:set,
   (forall A:set, A :e Arcs -> ~(A c= T) ->
@@ -298471,8 +298481,9 @@ apply (and5E
   Hvpack).
 assume HvVert Hmeet HglgTA HconnTA HnoloopTA.
 exact HglgTA.
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_forward_connected_obligation_from_component_witness_family :
   forall T ArcsT X Tx Arcs:set,
   (forall A:set, A :e Arcs -> ~(A c= T) ->
@@ -298509,8 +298520,9 @@ apply (and5E
   Hvpack).
 assume HvVert Hmeet HglgTA HconnTA HnoloopTA.
 exact HconnTA.
-Admitted.
+Qed.
 
+(** Proven Bob **)
 Theorem thm84_4_forward_no_loop_obligation_from_component_witness_family :
   forall T ArcsT X Tx Arcs:set,
   (forall A:set, A :e Arcs -> ~(A c= T) ->
@@ -298552,7 +298564,7 @@ apply (and5E
   Hvpack).
 assume HvVert Hmeet HglgTA HconnTA HnoloopTA.
 exact HnoloopTA.
-Admitted.
+Qed.
 
 Theorem thm84_4_forward_obligation_families_from_component_witness_family :
   forall T ArcsT X Tx Arcs:set,
