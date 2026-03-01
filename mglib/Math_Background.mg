@@ -48297,6 +48297,7 @@ Definition covering_map_R_S1 : set :=
 
 (** Helper: 9-way conjunction elimination **)
 (** Proven Alice **)
+(** Proven Bob **)
 Theorem and9E : forall A1 A2 A3 A4 A5 A6 A7 A8 A9:prop,
   A1 /\ A2 /\ A3 /\ A4 /\ A5 /\ A6 /\ A7 /\ A8 /\ A9 ->
   forall p:prop,
