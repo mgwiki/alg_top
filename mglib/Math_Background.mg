@@ -56398,6 +56398,36 @@ apply set_ext.
     HxA).
 Qed.
 
+(** Infrastructure: (A\\B) union A equals A **)
+(** Proven Bob **)
+Theorem binunion_setminus_right_id : forall A B:set,
+  (A :\: B) :\/: A = A.
+let A B.
+apply set_ext.
+- let x.
+  assume Hx.
+  apply (binunionE
+    (A :\: B)
+    A
+    x
+    Hx).
+  + assume HxRest.
+    exact (setminusE1
+      A
+      B
+      x
+      HxRest).
+  + assume HxA.
+    exact HxA.
+- let x.
+  assume HxA.
+  exact (binunionI2
+    (A :\: B)
+    A
+    x
+    HxA).
+Qed.
+
 
 (** from S53 Exercise 2 (line 688 in algtop.tex) **)
 (** LATEX VERSION: If U is connected and evenly covered by p, **)
