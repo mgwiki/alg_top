@@ -310107,6 +310107,30 @@ claim Hcycle :
     (r <> q)
     HEpack).
   assume HrA HrNotT HrT' HEArcsT' HrE Hrnep Hrneq.
+  (** r is not an endpoint of A, so A \\ {r} is disconnected. **)
+  claim HArNotConn :
+    ~(connected_space (A :\: (Sing r))
+        (subspace_topology A (subspace_topology X Tx A) (A :\: (Sing r)))).
+  {
+    assume Hconn.
+    claim Heqpr : r = p \/ r = q.
+    {
+      exact (end_points_of_arc_connected_complement_implies_endpoint
+        A
+        (subspace_topology X Tx A)
+        p
+        q
+        r
+        Hend
+        HrA
+        Hconn).
+    }
+    apply Heqpr.
+    - assume Hrp.
+      exact (Hrnep Hrp).
+    - assume Hrq.
+      exact (Hrneq Hrq).
+  }
   claim HglgT' : general_linear_graph T' (subspace_topology X Tx T') ArcsT'.
   {
     exact (tree_in_graph_general_linear_graph
