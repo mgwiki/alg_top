@@ -82,6 +82,60 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772493676
+Created: 1772493676
+Status: PROPOSED
+
+Refers to Commit:
+  9aed705d92a9fcb2ce501c41d5a5204b3c85beee
+
+Target:
+  Line: 290707
+  Name: tree_in_graph (Definition)
+
+Problem:
+  The current definition allows T = Empty because connected_space does not
+  imply nonemptiness. This makes later results that conclude or require a
+  basepoint (e.g. simply_connected) unprovable/false in the Empty case.
+
+Proposed Replacement:
+  Definition tree_in_graph : set -> set -> set -> set -> set -> prop :=
+    fun T ArcsT X Tx Arcs =>
+      T <> Empty /\
+      subgraph_of T X Tx Arcs /\
+      general_linear_graph T (subspace_topology X Tx T) ArcsT /\
+      connected_space T (subspace_topology X Tx T) /\
+      ~(exists n path_seq x0:set,
+          n :e omega /\ n <> 0 /\
+          reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0)).
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1772493676 | Charlie: With Arcs = Empty and X = T = Empty, the current
+    conjuncts are satisfiable (general_linear_graph/connected_space are
+    compatible with Empty), but simply_connected explicitly requires a point.
+
+Approvals:
+  - 1772493676 | Alice:
+  - 1772493676 | Bob:
+  - 1772493676 | Charlie: YES
+  - 1772493676 | Dave:
+
+Result:
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1772491898
 Created: 1772491898
 Status: PROPOSED
