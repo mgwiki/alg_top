@@ -195957,6 +195957,77 @@ exact (nat_primrec_S
   Hn).
 Qed.
 
+(** Infrastructure: reduced word entries are non-e if the product is non-e **)
+(** Proven Bob **)
+Lemma reduced_word_no_eG_if_product_non_e :
+  forall G mult e inv J Gfam efam n xs x:set,
+  group_structure G mult e inv ->
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv) ->
+  reduced_word J Gfam efam n xs ->
+  n <> 0 ->
+  word_product mult e xs n = x ->
+  x <> e ->
+  forall i:set, i :e n -> apply_fun xs i <> e.
+let G mult e inv J Gfam efam n xs x.
+assume Hgrp Hsub Hred Hn_ne0 Hwp Hxne.
+apply (xm (n = 1)).
+- assume Hn1.
+  let i. assume Hi.
+  claim Hi1 : i :e 1.
+  { exact (eq_subst_mem_set i n 1 Hi Hn1). }
+  claim Hi1' : i :e ordsucc 0.
+  { exact (eq_subst_mem_set i 1 (ordsucc 0) Hi1
+      (eq_symm 1 (ordsucc 0) ordsucc_0_eq_1_nat)). }
+  apply (ordsuccE 0 i Hi1').
+  + assume Hi0 : i :e 0.
+    exact (FalseE (EmptyE i Hi0) (apply_fun xs i <> e)).
+  + assume Hi0eq : i = 0.
+    claim Hx0_G : apply_fun xs 0 :e G.
+    {
+      apply (reduced_word_in_G G mult e inv J Gfam efam n xs Hsub Hred 0).
+      rewrite Hn1.
+      exact (nat_0_in_ordsucc 0 nat_0).
+    }
+    claim Hwp1 : word_product mult e xs 1 =
+      apply_fun mult (word_product mult e xs 0, apply_fun xs 0).
+    { exact (word_product_succ mult e xs 0 nat_0). }
+    claim Hwp0 : word_product mult e xs 0 = e.
+    { exact (nat_primrec_0 e (fun i r => apply_fun mult (r, apply_fun xs i))). }
+    claim HidL : apply_fun mult (e, apply_fun xs 0) = apply_fun xs 0.
+    {
+      apply (and6E
+        (function_on mult (setprod G G) G)
+        (function_on inv G G)
+        (e :e G)
+        (forall u v w:set, u :e G -> v :e G -> w :e G ->
+          apply_fun mult (apply_fun mult (u, v), w) =
+            apply_fun mult (u, apply_fun mult (v, w)))
+        (forall u:set, u :e G -> apply_fun mult (e, u) = u /\ apply_fun mult (u, e) = u)
+        (forall u:set, u :e G ->
+          apply_fun mult (u, apply_fun inv u) = e /\
+          apply_fun mult (apply_fun inv u, u) = e)
+        Hgrp).
+      assume _ _ _ _ Hid _.
+      exact (andEL
+        (apply_fun mult (e, apply_fun xs 0) = apply_fun xs 0)
+        (apply_fun mult (apply_fun xs 0, e) = apply_fun xs 0)
+        (Hid (apply_fun xs 0) Hx0_G)).
+    }
+    claim Hwp1_eq : word_product mult e xs 1 = apply_fun xs 0.
+    { rewrite Hwp1. rewrite Hwp0. exact HidL. }
+    claim Hx_eq : apply_fun xs 0 = x.
+    { rewrite <- Hwp1_eq. rewrite <- Hn1. exact Hwp. }
+    rewrite Hi0eq.
+    assume Habs : apply_fun xs 0 = e.
+    apply Hxne.
+    rewrite <- Hx_eq.
+    exact Habs.
+- assume Hn_ne1.
+  let i. assume Hi.
+  exact (reduced_word_no_eG_all
+    G mult e inv J Gfam efam n xs Hgrp Hsub Hred Hn_ne0 Hn_ne1 i Hi).
+Qed.
+
 (** Infrastructure: reduced word of length 1 **)
 (** Proven Bob **)
 Theorem reduced_word_singleton : forall J Gfam efam alpha x:set,
