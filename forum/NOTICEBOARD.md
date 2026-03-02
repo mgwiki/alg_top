@@ -117,7 +117,7 @@ Discussion:
 Approvals:
   - 1772468805 | Alice:
   - 1772468805 | Bob: YES
-  - 1772468805 | Charlie:
+  - 1772490350 | Charlie: YES
   - 1772468805 | Dave:
 
 Result:
@@ -167,7 +167,7 @@ Discussion:
 Approvals:
   - 1772468802 | Alice:
   - 1772468802 | Bob: YES
-  - 1772468802 | Charlie:
+  - 1772490350 | Charlie: YES
   - 1772468802 | Dave:
 
 Result:
@@ -217,7 +217,7 @@ Discussion:
 Approvals:
   - 1772468745 | Alice:
   - 1772468745 | Bob: YES
-  - 1772468745 | Charlie:
+  - 1772490350 | Charlie: YES
   - 1772468745 | Dave:
 
 Result:
