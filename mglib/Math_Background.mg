@@ -213504,6 +213504,150 @@ apply (and5I
       { exact (HinterK alpha beta HaK HbK Hneq y HyHa HyHb). }
       exact (FalseE (Hyne Hy_e) (alpha = beta)).
   }
+  claim Hred_J_of_union :
+    forall n ys:set,
+      reduced_word (J :\/: K) Hfam efamH n ys ->
+      (forall i:set, i :e n -> apply_fun ys i :e G1) ->
+      (forall i:set, i :e n -> apply_fun ys i <> eG) ->
+      reduced_word J (graph J (fun a:set => apply_fun Hfam a))
+        (graph J (fun a:set => apply_fun efamH a)) n ys.
+  {
+    let n ys. assume Hred HallG1 HallNe.
+    apply (and3E
+      (n :e omega)
+      (forall i:set, i :e n ->
+        exists alpha:set, alpha :e J :\/: K /\
+          apply_fun ys i :e apply_fun Hfam alpha /\
+          apply_fun ys i <> apply_fun efamH alpha)
+      (forall i:set, i :e n -> ordsucc i :e n ->
+        forall alpha beta:set, alpha :e J :\/: K -> beta :e J :\/: K ->
+          apply_fun ys i :e apply_fun Hfam alpha ->
+          apply_fun ys (ordsucc i) :e apply_fun Hfam beta ->
+          alpha <> beta)
+      Hred).
+    assume HnO Hysfam Hadj.
+    prove n :e omega /\
+      (forall i:set, i :e n ->
+        exists alpha:set, alpha :e J /\
+          apply_fun ys i :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha /\
+          apply_fun ys i <> apply_fun (graph J (fun a:set => apply_fun efamH a)) alpha) /\
+      (forall i:set, i :e n -> ordsucc i :e n ->
+        forall alpha beta:set, alpha :e J -> beta :e J ->
+          apply_fun ys i :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha ->
+          apply_fun ys (ordsucc i) :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) beta ->
+          alpha <> beta).
+    apply and3I.
+    - exact HnO.
+    - let i. assume Hi.
+      apply (Hysfam i Hi).
+      let alpha. assume Halpha_pack.
+      apply (and3E
+        (alpha :e J :\/: K)
+        (apply_fun ys i :e apply_fun Hfam alpha)
+        (apply_fun ys i <> apply_fun efamH alpha)
+        Halpha_pack).
+      assume Hal Hyalpha Hyne.
+      claim HalJ : alpha :e J.
+      { exact (Hlabel_in_J (apply_fun ys i) alpha (HallG1 i Hi) (HallNe i Hi) Hal Hyalpha). }
+      witness alpha.
+      apply and3I.
+      + exact HalJ.
+      + rewrite (apply_fun_graph J (fun a:set => apply_fun Hfam a) alpha HalJ).
+        exact Hyalpha.
+      + rewrite (apply_fun_graph J (fun a:set => apply_fun efamH a) alpha HalJ).
+        exact Hyne.
+    - let i. assume Hi Hsi.
+      let alpha beta. assume HalJ HbeJ Hyi Hyis.
+      claim Hal : alpha :e J :\/: K.
+      { exact (binunionI1 J K alpha HalJ). }
+      claim Hbe : beta :e J :\/: K.
+      { exact (binunionI1 J K beta HbeJ). }
+      claim Hyi' :
+        apply_fun ys i :e apply_fun Hfam alpha.
+      {
+        rewrite <- (apply_fun_graph J (fun a:set => apply_fun Hfam a) alpha HalJ).
+        exact Hyi.
+      }
+      claim Hyis' :
+        apply_fun ys (ordsucc i) :e apply_fun Hfam beta.
+      {
+        rewrite <- (apply_fun_graph J (fun a:set => apply_fun Hfam a) beta HbeJ).
+        exact Hyis.
+      }
+      exact (Hadj i Hi Hsi alpha beta Hal Hbe Hyi' Hyis').
+  }
+  claim Hred_K_of_union :
+    forall n ys:set,
+      reduced_word (J :\/: K) Hfam efamH n ys ->
+      (forall i:set, i :e n -> apply_fun ys i :e G2) ->
+      (forall i:set, i :e n -> apply_fun ys i <> eG) ->
+      reduced_word K (graph K (fun b:set => apply_fun Hfam b))
+        (graph K (fun b:set => apply_fun efamH b)) n ys.
+  {
+    let n ys. assume Hred HallG2 HallNe.
+    apply (and3E
+      (n :e omega)
+      (forall i:set, i :e n ->
+        exists alpha:set, alpha :e J :\/: K /\
+          apply_fun ys i :e apply_fun Hfam alpha /\
+          apply_fun ys i <> apply_fun efamH alpha)
+      (forall i:set, i :e n -> ordsucc i :e n ->
+        forall alpha beta:set, alpha :e J :\/: K -> beta :e J :\/: K ->
+          apply_fun ys i :e apply_fun Hfam alpha ->
+          apply_fun ys (ordsucc i) :e apply_fun Hfam beta ->
+          alpha <> beta)
+      Hred).
+    assume HnO Hysfam Hadj.
+    prove n :e omega /\
+      (forall i:set, i :e n ->
+        exists beta:set, beta :e K /\
+          apply_fun ys i :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) beta /\
+          apply_fun ys i <> apply_fun (graph K (fun b:set => apply_fun efamH b)) beta) /\
+      (forall i:set, i :e n -> ordsucc i :e n ->
+        forall alpha beta:set, alpha :e K -> beta :e K ->
+          apply_fun ys i :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) alpha ->
+          apply_fun ys (ordsucc i) :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) beta ->
+          alpha <> beta).
+    apply and3I.
+    - exact HnO.
+    - let i. assume Hi.
+      apply (Hysfam i Hi).
+      let alpha. assume Halpha_pack.
+      apply (and3E
+        (alpha :e J :\/: K)
+        (apply_fun ys i :e apply_fun Hfam alpha)
+        (apply_fun ys i <> apply_fun efamH alpha)
+        Halpha_pack).
+      assume Hal Hyalpha Hyne.
+      claim HalK : alpha :e K.
+      { exact (Hlabel_in_K (apply_fun ys i) alpha (HallG2 i Hi) (HallNe i Hi) Hal Hyalpha). }
+      witness alpha.
+      apply and3I.
+      + exact HalK.
+      + rewrite (apply_fun_graph K (fun b:set => apply_fun Hfam b) alpha HalK).
+        exact Hyalpha.
+      + rewrite (apply_fun_graph K (fun b:set => apply_fun efamH b) alpha HalK).
+        exact Hyne.
+    - let i. assume Hi Hsi.
+      let alpha beta. assume HalK HbeK Hyi Hyis.
+      claim Hal : alpha :e J :\/: K.
+      { exact (binunionI2 J K alpha HalK). }
+      claim Hbe : beta :e J :\/: K.
+      { exact (binunionI2 J K beta HbeK). }
+      claim Hyi' :
+        apply_fun ys i :e apply_fun Hfam alpha.
+      {
+        rewrite <- (apply_fun_graph K (fun b:set => apply_fun Hfam b) alpha HalK).
+        exact Hyi.
+      }
+      claim Hyis' :
+        apply_fun ys (ordsucc i) :e apply_fun Hfam beta.
+      {
+        rewrite <- (apply_fun_graph K (fun b:set => apply_fun Hfam b) beta HbeK).
+        exact Hyis.
+      }
+      exact (Hadj i Hi Hsi alpha beta Hal Hbe Hyi' Hyis').
+  }
   claim Hadj_any_G1 :
     forall p ys:set,
       reduced_word (J :\/: K) Hfam efamH p ys ->
