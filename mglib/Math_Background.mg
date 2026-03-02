@@ -309735,6 +309735,19 @@ claim HqA : q :e A.
     q
     Hend).
 }
+claim Hpneqq : p <> q.
+{
+  apply (and6E
+    (arc A (subspace_topology X Tx A))
+    (p :e A)
+    (q :e A)
+    (p <> q)
+    (connected_space (A :\: (Sing p)) (subspace_topology A (subspace_topology X Tx A) (A :\: (Sing p))))
+    (connected_space (A :\: (Sing q)) (subspace_topology A (subspace_topology X Tx A) (A :\: (Sing q))))
+    Hend).
+  assume Harc HpA0 HqA0 Hneq Hconnp Hconnq.
+  exact Hneq.
+}
 claim HpX : p :e X. { exact (HAcX p HpA). }
 claim HqX : q :e X. { exact (HAcX q HqA). }
 claim HpV : p :e graph_vertices X Tx Arcs.
@@ -309773,6 +309786,14 @@ claim HqV : q :e graph_vertices X Tx Arcs.
 }
 claim HpT : p :e T. { exact (HvertSub p HpV). }
 claim HqT : q :e T. { exact (HvertSub q HqV). }
+(** Noncontainment witness in A \ T. **)
+claim HnotSubEx : exists r:set, r :e A /\ r /:e T.
+{
+  exact (not_subset_ex_elem
+    T
+    A
+    Hnsub).
+}
 (** Remaining backward S84.4 contradiction bridge:
     use tree/no-loop structure plus endpoint-in-T data to contradict noncontainment
     of selected arc A in T. **)
