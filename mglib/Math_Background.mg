@@ -309806,6 +309806,66 @@ claim HqV : q :e graph_vertices X Tx Arcs.
 }
 claim HpT : p :e T. { exact (HvertSub p HpV). }
 claim HqT : q :e T. { exact (HvertSub q HqV). }
+(** A is a selected arc in T'. **)
+claim HAsubT' : A c= T'.
+{
+  exact (selected_arc_subset_Y
+    Arcs
+    T'
+    A
+    HASel).
+}
+claim HpT' : p :e T'. { exact (HTsub p HpT). }
+claim HqT' : q :e T'. { exact (HTsub q HqT). }
+claim HunionT' : T' = Union ArcsT'.
+{
+  exact (tree_in_graph_union_arcsT
+    T'
+    ArcsT'
+    X
+    Tx
+    Arcs
+    Htree').
+}
+claim HArcInT' :
+  forall x:set, x :e T' -> exists E:set, E :e ArcsT' /\ x :e E.
+{
+  let x.
+  assume HxT'.
+  claim HxU : x :e Union ArcsT'.
+  {
+    exact (mem_eqR
+      x
+      T'
+      (Union ArcsT')
+      HunionT'
+      HxT').
+  }
+  apply (UnionE
+    ArcsT'
+    x
+    HxU).
+  let E.
+  assume HxEpack.
+  witness E.
+  apply andI.
+  - exact (andER
+      (x :e E)
+      (E :e ArcsT')
+      HxEpack).
+  - exact (andEL
+      (x :e E)
+      (E :e ArcsT')
+      HxEpack).
+}
+claim HpArcT' : exists E:set, E :e ArcsT' /\ p :e E.
+{
+  exact (HArcInT' p HpT').
+}
+claim HqArcT' : exists E:set, E :e ArcsT' /\ q :e E.
+{
+  exact (HArcInT' q HqT').
+}
 (** Distinct endpoint witnesses inside T :/\: A. **)
 claim HpTcap : p :e T :/\: A.
 { exact (binintersectI T A p HpT HpA). }
@@ -309848,6 +309908,30 @@ claim HnotSubEx : exists r:set, r :e A /\ r /:e T.
     T
     A
     Hnsub).
+}
+claim HnotSubEx' :
+  exists r:set, r :e A /\ r /:e T /\ r :e T' /\
+    exists E:set, E :e ArcsT' /\ r :e E.
+{
+  apply HnotSubEx.
+  let r.
+  assume Hrpack.
+  claim HrA : r :e A.
+  { exact (andEL (r :e A) (r /:e T) Hrpack). }
+  claim HrNotT : r /:e T.
+  { exact (andER (r :e A) (r /:e T) Hrpack). }
+  claim HrT' : r :e T'.
+  { exact (HAsubT' r HrA). }
+  claim HrArcT' : exists E:set, E :e ArcsT' /\ r :e E.
+  { exact (HArcInT' r HrT'). }
+  witness r.
+  apply andI.
+  - apply andI.
+    + apply andI.
+      * exact HrA.
+      * exact HrNotT.
+    + exact HrT'.
+  - exact HrArcT'.
 }
 claim HpArcEx : exists B:set, B :e {B :e Arcs | B c= T} /\ p :e B.
 {
