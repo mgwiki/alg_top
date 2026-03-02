@@ -1,5 +1,5 @@
 (** Balance Alice 4188 **)
-(** Balance Bob 5494 **)
+(** Balance Bob 5484 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
 
@@ -210580,7 +210580,8 @@ Admitted.
 (** i_alpha and i'_alpha, then there is a unique isomorphism phi: G -> G' **)
 (** with phi o i_alpha = i'_alpha. **)
 (** EFFORT: 10 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 97 **)
+(** Bounty 107 **)
+(** Lock Bob 1772500012 **)
 Theorem thm68_4_uniqueness_free_product :
   forall J Gfam multfam G multG eG invG ifam G' multG' eG' invG' ifam':set,
   external_free_product G multG eG invG J Gfam multfam ifam ->
