@@ -1289,9 +1289,10 @@ Discussion:
 Approvals:
   -
   - 1772417212 | Bob: YES
+  - 1772442281 | Dave: YES
 
 Result:
-  PENDING
+  SENT TO ADMIN
 
 Admin Decision:
   -
@@ -1303,13 +1304,13 @@ Implementation Commit:
   -
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 --------------------------------------------------------
 
 NOTICE ID: 1772418015
 Created: 1772418015
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   300b8c3461e0f1cbe5d3a9f3f9a2b7d3a8f6f0de
@@ -1340,9 +1341,10 @@ Discussion:
 Approvals:
   -
   - 1772418015 | Bob: YES
+  - 1772442281 | Dave: YES
 
 Result:
-  PENDING
+  SENT TO ADMIN
 
 Admin Decision:
   -
@@ -1354,13 +1356,13 @@ Implementation Commit:
   -
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 --------------------------------------------------------
 
 NOTICE ID: 1772418016
 Created: 1772418016
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   300b8c3461e0f1cbe5d3a9f3f9a2b7d3a8f6f0de
@@ -1392,9 +1394,10 @@ Discussion:
 Approvals:
   -
   - 1772418016 | Bob: YES
+  - 1772442281 | Dave: YES
 
 Result:
-  PENDING
+  SENT TO ADMIN
 
 Admin Decision:
   -
@@ -1406,13 +1409,13 @@ Implementation Commit:
   -
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 --------------------------------------------------------
 
 NOTICE ID: 1772418017
 Created: 1772418017
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   300b8c3461e0f1cbe5d3a9f3f9a2b7d3a8f6f0de
@@ -1442,9 +1445,10 @@ Discussion:
 Approvals:
   -
   - 1772418017 | Bob: YES
+  - 1772442281 | Dave: YES
 
 Result:
-  PENDING
+  SENT TO ADMIN
 
 Admin Decision:
   -
@@ -1456,7 +1460,7 @@ Implementation Commit:
   -
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 --------------------------------------------------------
 ========================================================
