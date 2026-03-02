@@ -213822,6 +213822,18 @@ apply (and5I
       exact (word_product_append_one
         multG eG xs b m HmO).
   }
+  claim Hnat_nonzero_succ :
+    forall n:set, nat_p n -> n <> 0 -> exists k:set, n = ordsucc k.
+  {
+    let n. assume Hn_nat Hn_ne.
+    apply (nat_ind (fun n0:set => n0 <> 0 -> exists k:set, n0 = ordsucc k)).
+    - assume H0ne.
+      exact (FalseE (H0ne (eq_refl 0)) (exists k:set, 0 = ordsucc k)).
+    - let k. assume _ _. assume _.
+      witness k. reflexivity.
+    - exact Hn_nat.
+    - exact Hn_ne.
+  }
   (** TODO: concatenate the expanded reduced words to get a reduced word in J \/ K, and prove uniqueness **)
   admit.
 Admitted.
