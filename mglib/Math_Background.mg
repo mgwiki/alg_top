@@ -213463,6 +213463,230 @@ apply (and5I
     { exact (eq_subst_mem_set alpha (J :/\: K) Empty Ha_inter HJKdisj). }
     exact (EmptyE alpha Ha_empty).
   }
+  claim Hlabel_unique_J :
+    forall y alpha beta:set,
+      y :e G1 -> y <> eG ->
+      alpha :e J :\/: K -> beta :e J :\/: K ->
+      y :e apply_fun Hfam alpha -> y :e apply_fun Hfam beta ->
+      alpha = beta.
+  {
+    let y alpha beta.
+    assume HyG1 Hyne Hal Hbe HyHa HyHb.
+    claim HaJ : alpha :e J.
+    { exact (Hlabel_in_J y alpha HyG1 Hyne Hal HyHa). }
+    claim HbJ : beta :e J.
+    { exact (Hlabel_in_J y beta HyG1 Hyne Hbe HyHb). }
+    apply (xm (alpha = beta)).
+    - assume Heq. exact Heq.
+    - assume Hneq.
+      claim Hy_e : y = eG.
+      { exact (HinterJ alpha beta HaJ HbJ Hneq y HyHa HyHb). }
+      exact (FalseE (Hyne Hy_e) (alpha = beta)).
+  }
+  claim Hlabel_unique_K :
+    forall y alpha beta:set,
+      y :e G2 -> y <> eG ->
+      alpha :e J :\/: K -> beta :e J :\/: K ->
+      y :e apply_fun Hfam alpha -> y :e apply_fun Hfam beta ->
+      alpha = beta.
+  {
+    let y alpha beta.
+    assume HyG2 Hyne Hal Hbe HyHa HyHb.
+    claim HaK : alpha :e K.
+    { exact (Hlabel_in_K y alpha HyG2 Hyne Hal HyHa). }
+    claim HbK : beta :e K.
+    { exact (Hlabel_in_K y beta HyG2 Hyne Hbe HyHb). }
+    apply (xm (alpha = beta)).
+    - assume Heq. exact Heq.
+    - assume Hneq.
+      claim Hy_e : y = eG.
+      { exact (HinterK alpha beta HaK HbK Hneq y HyHa HyHb). }
+      exact (FalseE (Hyne Hy_e) (alpha = beta)).
+  }
+  claim Hadj_any_G1 :
+    forall p ys:set,
+      reduced_word (J :\/: K) Hfam efamH p ys ->
+      (forall j:set, j :e p -> apply_fun ys j :e G1) ->
+      (forall j:set, j :e p -> apply_fun ys j <> eG) ->
+      forall i:set, i :e p -> ordsucc i :e p ->
+        forall alpha beta:set, alpha :e J :\/: K -> beta :e J :\/: K ->
+          apply_fun ys i :e apply_fun Hfam alpha ->
+          apply_fun ys (ordsucc i) :e apply_fun Hfam beta ->
+          alpha <> beta.
+  {
+    let p ys. assume Hred HallG1 HallNe.
+    apply (and3E
+      (p :e omega)
+      (forall j:set, j :e p ->
+        exists alpha0:set, alpha0 :e J :\/: K /\
+          apply_fun ys j :e apply_fun Hfam alpha0 /\
+          apply_fun ys j <> apply_fun efamH alpha0)
+      (forall j:set, j :e p -> ordsucc j :e p ->
+        forall alpha0 beta0:set, alpha0 :e J :\/: K -> beta0 :e J :\/: K ->
+          apply_fun ys j :e apply_fun Hfam alpha0 ->
+          apply_fun ys (ordsucc j) :e apply_fun Hfam beta0 ->
+          alpha0 <> beta0)
+      Hred).
+    assume _ _ Hadj.
+    let i. assume Hi Hsi.
+    let alpha beta. assume Hal Hbe Hyi Hyis.
+    claim Hys_i_ne : apply_fun ys i <> eG.
+    { exact (HallNe i Hi). }
+    claim Hys_si_ne : apply_fun ys (ordsucc i) <> eG.
+    { exact (HallNe (ordsucc i) Hsi). }
+    claim Hys_i_G1 : apply_fun ys i :e G1.
+    { exact (HallG1 i Hi). }
+    claim Hys_si_G1 : apply_fun ys (ordsucc i) :e G1.
+    { exact (HallG1 (ordsucc i) Hsi). }
+    claim Halpha0 : exists alpha0:set, alpha0 :e J :\/: K /\
+      apply_fun ys i :e apply_fun Hfam alpha0 /\
+      apply_fun ys i <> apply_fun efamH alpha0.
+    { apply (and3E
+        (p :e omega)
+        (forall j:set, j :e p ->
+          exists alpha0:set, alpha0 :e J :\/: K /\
+            apply_fun ys j :e apply_fun Hfam alpha0 /\
+            apply_fun ys j <> apply_fun efamH alpha0)
+        (forall j:set, j :e p -> ordsucc j :e p ->
+          forall alpha0 beta0:set, alpha0 :e J :\/: K -> beta0 :e J :\/: K ->
+            apply_fun ys j :e apply_fun Hfam alpha0 ->
+            apply_fun ys (ordsucc j) :e apply_fun Hfam beta0 ->
+            alpha0 <> beta0)
+        Hred).
+      assume _ Helem _. exact (Helem i Hi). }
+    claim Hbeta0 : exists beta0:set, beta0 :e J :\/: K /\
+      apply_fun ys (ordsucc i) :e apply_fun Hfam beta0 /\
+      apply_fun ys (ordsucc i) <> apply_fun efamH beta0.
+    { apply (and3E
+        (p :e omega)
+        (forall j:set, j :e p ->
+          exists alpha0:set, alpha0 :e J :\/: K /\
+            apply_fun ys j :e apply_fun Hfam alpha0 /\
+            apply_fun ys j <> apply_fun efamH alpha0)
+        (forall j:set, j :e p -> ordsucc j :e p ->
+          forall alpha0 beta0:set, alpha0 :e J :\/: K -> beta0 :e J :\/: K ->
+            apply_fun ys j :e apply_fun Hfam alpha0 ->
+            apply_fun ys (ordsucc j) :e apply_fun Hfam beta0 ->
+            alpha0 <> beta0)
+        Hred).
+      assume _ Helem _. exact (Helem (ordsucc i) Hsi). }
+    apply Halpha0. let alpha0. assume Halpha0_pack.
+    apply (and3E
+      (alpha0 :e J :\/: K)
+      (apply_fun ys i :e apply_fun Hfam alpha0)
+      (apply_fun ys i <> apply_fun efamH alpha0)
+      Halpha0_pack).
+    assume Hal0 Hy0 _.
+    apply Hbeta0. let beta0. assume Hbeta0_pack.
+    apply (and3E
+      (beta0 :e J :\/: K)
+      (apply_fun ys (ordsucc i) :e apply_fun Hfam beta0)
+      (apply_fun ys (ordsucc i) <> apply_fun efamH beta0)
+      Hbeta0_pack).
+    assume Hbe0 Hys0 _.
+    claim Halpha_eq : alpha = alpha0.
+    { exact (Hlabel_unique_J (apply_fun ys i) alpha alpha0 Hys_i_G1 Hys_i_ne Hal Hal0 Hyi Hy0). }
+    claim Hbeta_eq : beta = beta0.
+    { exact (Hlabel_unique_J (apply_fun ys (ordsucc i)) beta beta0 Hys_si_G1 Hys_si_ne Hbe Hbe0 Hyis Hys0). }
+    claim Hneq0 : alpha0 <> beta0.
+    { exact (Hadj i Hi Hsi alpha0 beta0 Hal0 Hbe0 Hy0 Hys0). }
+    assume Hab : alpha = beta.
+    claim Hab0 : alpha0 = beta0.
+    { rewrite <- Halpha_eq. rewrite <- Hbeta_eq. exact Hab. }
+    exact (Hneq0 Hab0).
+  }
+  claim Hadj_any_G2 :
+    forall p ys:set,
+      reduced_word (J :\/: K) Hfam efamH p ys ->
+      (forall j:set, j :e p -> apply_fun ys j :e G2) ->
+      (forall j:set, j :e p -> apply_fun ys j <> eG) ->
+      forall i:set, i :e p -> ordsucc i :e p ->
+        forall alpha beta:set, alpha :e J :\/: K -> beta :e J :\/: K ->
+          apply_fun ys i :e apply_fun Hfam alpha ->
+          apply_fun ys (ordsucc i) :e apply_fun Hfam beta ->
+          alpha <> beta.
+  {
+    let p ys. assume Hred HallG2 HallNe.
+    apply (and3E
+      (p :e omega)
+      (forall j:set, j :e p ->
+        exists alpha0:set, alpha0 :e J :\/: K /\
+          apply_fun ys j :e apply_fun Hfam alpha0 /\
+          apply_fun ys j <> apply_fun efamH alpha0)
+      (forall j:set, j :e p -> ordsucc j :e p ->
+        forall alpha0 beta0:set, alpha0 :e J :\/: K -> beta0 :e J :\/: K ->
+          apply_fun ys j :e apply_fun Hfam alpha0 ->
+          apply_fun ys (ordsucc j) :e apply_fun Hfam beta0 ->
+          alpha0 <> beta0)
+      Hred).
+    assume _ _ Hadj.
+    let i. assume Hi Hsi.
+    let alpha beta. assume Hal Hbe Hyi Hyis.
+    claim Hys_i_ne : apply_fun ys i <> eG.
+    { exact (HallNe i Hi). }
+    claim Hys_si_ne : apply_fun ys (ordsucc i) <> eG.
+    { exact (HallNe (ordsucc i) Hsi). }
+    claim Hys_i_G2 : apply_fun ys i :e G2.
+    { exact (HallG2 i Hi). }
+    claim Hys_si_G2 : apply_fun ys (ordsucc i) :e G2.
+    { exact (HallG2 (ordsucc i) Hsi). }
+    claim Halpha0 : exists alpha0:set, alpha0 :e J :\/: K /\
+      apply_fun ys i :e apply_fun Hfam alpha0 /\
+      apply_fun ys i <> apply_fun efamH alpha0.
+    { apply (and3E
+        (p :e omega)
+        (forall j:set, j :e p ->
+          exists alpha0:set, alpha0 :e J :\/: K /\
+            apply_fun ys j :e apply_fun Hfam alpha0 /\
+            apply_fun ys j <> apply_fun efamH alpha0)
+        (forall j:set, j :e p -> ordsucc j :e p ->
+          forall alpha0 beta0:set, alpha0 :e J :\/: K -> beta0 :e J :\/: K ->
+            apply_fun ys j :e apply_fun Hfam alpha0 ->
+            apply_fun ys (ordsucc j) :e apply_fun Hfam beta0 ->
+            alpha0 <> beta0)
+        Hred).
+      assume _ Helem _. exact (Helem i Hi). }
+    claim Hbeta0 : exists beta0:set, beta0 :e J :\/: K /\
+      apply_fun ys (ordsucc i) :e apply_fun Hfam beta0 /\
+      apply_fun ys (ordsucc i) <> apply_fun efamH beta0.
+    { apply (and3E
+        (p :e omega)
+        (forall j:set, j :e p ->
+          exists alpha0:set, alpha0 :e J :\/: K /\
+            apply_fun ys j :e apply_fun Hfam alpha0 /\
+            apply_fun ys j <> apply_fun efamH alpha0)
+        (forall j:set, j :e p -> ordsucc j :e p ->
+          forall alpha0 beta0:set, alpha0 :e J :\/: K -> beta0 :e J :\/: K ->
+            apply_fun ys j :e apply_fun Hfam alpha0 ->
+            apply_fun ys (ordsucc j) :e apply_fun Hfam beta0 ->
+            alpha0 <> beta0)
+        Hred).
+      assume _ Helem _. exact (Helem (ordsucc i) Hsi). }
+    apply Halpha0. let alpha0. assume Halpha0_pack.
+    apply (and3E
+      (alpha0 :e J :\/: K)
+      (apply_fun ys i :e apply_fun Hfam alpha0)
+      (apply_fun ys i <> apply_fun efamH alpha0)
+      Halpha0_pack).
+    assume Hal0 Hy0 _.
+    apply Hbeta0. let beta0. assume Hbeta0_pack.
+    apply (and3E
+      (beta0 :e J :\/: K)
+      (apply_fun ys (ordsucc i) :e apply_fun Hfam beta0)
+      (apply_fun ys (ordsucc i) <> apply_fun efamH beta0)
+      Hbeta0_pack).
+    assume Hbe0 Hys0 _.
+    claim Halpha_eq : alpha = alpha0.
+    { exact (Hlabel_unique_K (apply_fun ys i) alpha alpha0 Hys_i_G2 Hys_i_ne Hal Hal0 Hyi Hy0). }
+    claim Hbeta_eq : beta = beta0.
+    { exact (Hlabel_unique_K (apply_fun ys (ordsucc i)) beta beta0 Hys_si_G2 Hys_si_ne Hbe Hbe0 Hyis Hys0). }
+    claim Hneq0 : alpha0 <> beta0.
+    { exact (Hadj i Hi Hsi alpha0 beta0 Hal0 Hbe0 Hy0 Hys0). }
+    assume Hab : alpha = beta.
+    claim Hab0 : alpha0 = beta0.
+    { rewrite <- Halpha_eq. rewrite <- Hbeta_eq. exact Hab. }
+    exact (Hneq0 Hab0).
+  }
   claim Hsubfam_union :
     forall alpha:set, alpha :e J :\/: K ->
       subgroup_of (apply_fun Hfam alpha) G multG eG invG.
