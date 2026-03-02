@@ -89906,41 +89906,76 @@ claim HFt_54_cont :
         (forall z:set, z :e N0 -> apply_fun F z :e U)
         HN0Pack).
     }
-    claim HNconnEx :
-      exists N:set,
-        N :e unit_square_topology /\
-        connected_space N (subspace_topology unit_square unit_square_topology N) /\
-        q :e N /\
-        N c= N0.
+    claim Hq0I_local : q 0 :e unit_interval.
+    { exact (ap0_Sigma unit_interval (fun _ : set => unit_interval) q Hq). }
+    claim Hq1I_local : q 1 :e unit_interval.
+    { exact (ap1_Sigma unit_interval (fun _ : set => unit_interval) q Hq). }
+    claim HProdBallEx :
+      exists r0 r1:set,
+        r0 :e R /\ Rlt 0 r0 /\ Rlt r0 1 /\
+        r1 :e R /\ Rlt 0 r1 /\ Rlt r1 1 /\
+        setprod
+          (open_ball unit_interval R_bounded_metric (q 0) r0)
+          (open_ball unit_interval R_bounded_metric (q 1) r1) c= N0 /\
+        q :e setprod
+          (open_ball unit_interval R_bounded_metric (q 0) r0)
+          (open_ball unit_interval R_bounded_metric (q 1) r1).
     {
-      exact (unit_square_open_neighborhood_contains_connected_open_subset
-        N0
-        q
-        Hq
-        (andEL
-          (N0 :e unit_square_topology)
-          (q :e N0)
-          HN0pair)
-        (andER
-          (N0 :e unit_square_topology)
-          (q :e N0)
-          HN0pair)).
+      exact (unit_square_open_neighborhood_contains_product_balls
+        N0 q Hq
+        (andEL (N0 :e unit_square_topology) (q :e N0) HN0pair)
+        (andER (N0 :e unit_square_topology) (q :e N0) HN0pair)).
     }
-    apply HNconnEx.
-    let N.
-    assume HNPack.
-    apply (and4E
-      (N :e unit_square_topology)
-      (connected_space N (subspace_topology unit_square unit_square_topology N))
-      (q :e N)
+    apply HProdBallEx.
+    let r0_54.
+    assume Hr0Ex.
+    apply Hr0Ex.
+    let r1_54.
+    assume Hr0r1Pack.
+    set I1_54 := open_ball unit_interval R_bounded_metric (q 0) r0_54.
+    set I2_54 := open_ball unit_interval R_bounded_metric (q 1) r1_54.
+    set N := setprod I1_54 I2_54.
+    claim HqN : q :e N.
+    {
+      exact (andER
+        ((((((r0_54 :e R /\ Rlt 0 r0_54) /\ Rlt r0_54 1) /\ r1_54 :e R) /\ Rlt 0 r1_54) /\ Rlt r1_54 1) /\ N c= N0)
+        (q :e N)
+        Hr0r1Pack).
+    }
+    claim Hp7 :
+      (((((r0_54 :e R /\ Rlt 0 r0_54) /\ Rlt r0_54 1) /\ r1_54 :e R) /\ Rlt 0 r1_54) /\ Rlt r1_54 1) /\ N c= N0.
+    {
+      exact (andEL
+        ((((((r0_54 :e R /\ Rlt 0 r0_54) /\ Rlt r0_54 1) /\ r1_54 :e R) /\ Rlt 0 r1_54) /\ Rlt r1_54 1) /\ N c= N0)
+        (q :e N)
+        Hr0r1Pack).
+    }
+    apply (and7E
+      (r0_54 :e R)
+      (Rlt 0 r0_54)
+      (Rlt r0_54 1)
+      (r1_54 :e R)
+      (Rlt 0 r1_54)
+      (Rlt r1_54 1)
       (N c= N0)
-      HNPack).
-    assume HNopenN HNconnN HqN HNsubN0.
+      Hp7).
+    assume Hr0R Hr0pos Hr0lt1 Hr1R Hr1pos Hr1lt1 HNsubN0.
     claim HNpair : N :e unit_square_topology /\ q :e N.
     {
       apply andI.
-      - exact HNopenN.
+      - exact (unit_square_product_balls_open_lt1
+          (q 0) (q 1) r0_54 r1_54
+          Hq0I_local Hq1I_local Hr0R Hr0pos Hr0lt1 Hr1R Hr1pos Hr1lt1).
       - exact HqN.
+    }
+    claim HNopenN : N :e unit_square_topology.
+    { exact (andEL (N :e unit_square_topology) (q :e N) HNpair). }
+    claim HNconnN :
+      connected_space N (subspace_topology unit_square unit_square_topology N).
+    {
+      exact (unit_square_product_balls_connected_lt1
+        (q 0) (q 1) r0_54 r1_54
+        Hq0I_local Hq1I_local Hr0R Hr0pos Hr0lt1 Hr1R Hr1pos Hr1lt1).
     }
     claim HN_into_U : forall z:set, z :e N -> apply_fun F z :e U.
     {
