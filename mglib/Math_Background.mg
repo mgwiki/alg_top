@@ -310194,6 +310194,36 @@ claim Hcycle :
         (B :e {B :e Arcs | B c= T'})
         HrBpack).
   }
+  claim HrArcUnique :
+    forall B:set, B :e Arcs -> B c= T' -> r :e B -> B = A.
+  {
+    let B.
+    assume HBArcs HBsubT' HrB.
+    apply (xm (B = A)).
+    - assume Heq. exact Heq.
+    - assume Hneq.
+      claim Hneq' : A <> B.
+      { exact (neq_i_sym B A Hneq). }
+      claim HrV : r :e graph_vertices X Tx Arcs.
+      {
+        exact (general_linear_graph_intersection_point_is_vertex
+          X
+          Tx
+          Arcs
+          A
+          B
+          r
+          HglgX
+          HAT
+          HBArcs
+          Hneq'
+          HrA
+          HrB).
+      }
+      claim HrT : r :e T.
+      { exact (HvertSub r HrV). }
+      exact (FalseE (HrNotT HrT) (B = A)).
+  }
   claim HglgT' : general_linear_graph T' (subspace_topology X Tx T') ArcsT'.
   {
     exact (tree_in_graph_general_linear_graph
