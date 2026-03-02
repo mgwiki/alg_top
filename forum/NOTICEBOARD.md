@@ -82,6 +82,68 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772495150
+Created: 1772495150
+Status: PROPOSED
+
+Refers to Commit:
+  dacbb94da5190763f2e9ae981c1a0013e090cb32
+
+Target:
+  Line: 290707
+  Name: tree_in_graph (Definition)
+
+Problem:
+  The current definition places no relation between ArcsT (the arc family used to
+  witness general_linear_graph on T) and the ambient Arcs. In particular, ArcsT
+  may be an arbitrary refinement of the ambient arc family while still satisfying
+  general_linear_graph on T, so V :e ArcsT need not imply V :e Arcs. This blocks
+  S84.2/S84.4 progress (several proofs currently need an admit of ArcsT c= Arcs)
+  and makes "tree arc is an ambient arc" style steps impossible without adding
+  extra hypotheses everywhere.
+
+Proposed Replacement:
+  Definition tree_in_graph : set -> set -> set -> set -> set -> prop :=
+    fun T ArcsT X Tx Arcs =>
+      subgraph_of T X Tx Arcs /\
+      ArcsT c= Arcs /\
+      general_linear_graph T (subspace_topology X Tx T) ArcsT /\
+      connected_space T (subspace_topology X Tx T) /\
+      ~(exists n path_seq x0:set,
+          n :e omega /\ n <> 0 /\
+          reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0)).
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1772495150 | Charlie: This is the global version of the local fix already
+    needed in NOTICE 1772358892 (tree_in_graph_arc_in_ambient_arcs adds an
+    ArcsT c= Arcs hypothesis). Putting ArcsT c= Arcs into tree_in_graph avoids
+    repeating this hypothesis and removes several current admits in S84.2/S84.4.
+  - 1772495150 | Charlie: RESOLVED NOTICE 1772368914 claims tree_in_graph was
+    updated for this issue, but the current file still lacks any ArcsT/Arcs
+    relation; this notice requests the actual definitional correction.
+
+Approvals:
+  - 1772495150 | Alice:
+  - 1772495150 | Bob:
+  - 1772495150 | Charlie: YES
+  - 1772495150 | Dave:
+
+Result:
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1772494157
 Created: 1772494157
 Status: PROPOSED
