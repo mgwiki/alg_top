@@ -37705,6 +37705,225 @@ apply andI.
 	- exact Hseg_at_1.
 Qed.
 
+(** Proven Bob **)
+(** Helper: star-convex subsets are path connected in the subspace topology **)
+Theorem star_convex_path_connected_subspace : forall A a0:set,
+  star_convex A a0 ->
+  path_connected_space A (subspace_topology R R_standard_topology A).
+let A a0.
+assume Hstar.
+claim Hstar_left : A c= R /\ a0 :e A.
+{
+  exact (andEL
+    (A c= R /\ a0 :e A)
+    (forall a':set, a' :e A ->
+      forall t:set, t :e unit_interval ->
+        add_SNo (mul_SNo (add_SNo 1 (minus_SNo t)) a0) (mul_SNo t a') :e A)
+    Hstar).
+}
+claim HAsubR : A c= R.
+{ exact (andEL (A c= R) (a0 :e A) Hstar_left). }
+claim Ha0A : a0 :e A.
+{ exact (andER (A c= R) (a0 :e A) Hstar_left). }
+claim HtopA : topology_on A (subspace_topology R R_standard_topology A).
+{
+  exact (subspace_topology_is_topology
+    R
+    R_standard_topology
+    A
+    R_standard_topology_is_topology
+    HAsubR).
+}
+claim Hpaths :
+  forall x y:set, x :e A -> y :e A ->
+    exists p:set, path_between A x y p /\
+      continuous_map unit_interval unit_interval_topology
+        A (subspace_topology R R_standard_topology A) p.
+{
+  let x y.
+  assume HxA HyA.
+  claim Hsegx :
+    exists segx:set,
+      continuous_map unit_interval unit_interval_topology
+        A (subspace_topology R R_standard_topology A) segx /\
+      apply_fun segx 0 = a0 /\
+      apply_fun segx 1 = x.
+  {
+    exact (star_convex_segment_continuous
+      A a0 x Hstar HxA).
+  }
+  claim Hsegy :
+    exists segy:set,
+      continuous_map unit_interval unit_interval_topology
+        A (subspace_topology R R_standard_topology A) segy /\
+      apply_fun segy 0 = a0 /\
+      apply_fun segy 1 = y.
+  {
+    exact (star_convex_segment_continuous
+      A a0 y Hstar HyA).
+  }
+  apply Hsegx.
+  let segx.
+  assume HsegxPack.
+  apply Hsegy.
+  let segy.
+  assume HsegyPack.
+  claim HsegxCont :
+    continuous_map unit_interval unit_interval_topology
+      A (subspace_topology R R_standard_topology A) segx.
+  {
+    exact (andEL
+      (continuous_map unit_interval unit_interval_topology
+        A (subspace_topology R R_standard_topology A) segx)
+      (apply_fun segx 0 = a0)
+      (andEL
+        (continuous_map unit_interval unit_interval_topology
+          A (subspace_topology R R_standard_topology A) segx /\
+         apply_fun segx 0 = a0)
+        (apply_fun segx 1 = x)
+        HsegxPack)).
+  }
+  claim Hsegx0 : apply_fun segx 0 = a0.
+  {
+    exact (andER
+      (continuous_map unit_interval unit_interval_topology
+        A (subspace_topology R R_standard_topology A) segx)
+      (apply_fun segx 0 = a0)
+      (andEL
+        (continuous_map unit_interval unit_interval_topology
+          A (subspace_topology R R_standard_topology A) segx /\
+         apply_fun segx 0 = a0)
+        (apply_fun segx 1 = x)
+        HsegxPack)).
+  }
+  claim Hsegx1 : apply_fun segx 1 = x.
+  {
+    exact (andER
+      (continuous_map unit_interval unit_interval_topology
+        A (subspace_topology R R_standard_topology A) segx /\
+       apply_fun segx 0 = a0)
+      (apply_fun segx 1 = x)
+      HsegxPack).
+  }
+  claim HsegyCont :
+    continuous_map unit_interval unit_interval_topology
+      A (subspace_topology R R_standard_topology A) segy.
+  {
+    exact (andEL
+      (continuous_map unit_interval unit_interval_topology
+        A (subspace_topology R R_standard_topology A) segy)
+      (apply_fun segy 0 = a0)
+      (andEL
+        (continuous_map unit_interval unit_interval_topology
+          A (subspace_topology R R_standard_topology A) segy /\
+         apply_fun segy 0 = a0)
+        (apply_fun segy 1 = y)
+        HsegyPack)).
+  }
+  claim Hsegy0 : apply_fun segy 0 = a0.
+  {
+    exact (andER
+      (continuous_map unit_interval unit_interval_topology
+        A (subspace_topology R R_standard_topology A) segy)
+      (apply_fun segy 0 = a0)
+      (andEL
+        (continuous_map unit_interval unit_interval_topology
+          A (subspace_topology R R_standard_topology A) segy /\
+         apply_fun segy 0 = a0)
+        (apply_fun segy 1 = y)
+        HsegyPack)).
+  }
+  claim Hsegy1 : apply_fun segy 1 = y.
+  {
+    exact (andER
+      (continuous_map unit_interval unit_interval_topology
+        A (subspace_topology R R_standard_topology A) segy /\
+       apply_fun segy 0 = a0)
+      (apply_fun segy 1 = y)
+      HsegyPack).
+  }
+  set alpha := reverse_path segx.
+  set beta := segy.
+  claim HalphaCont :
+    continuous_map unit_interval unit_interval_topology
+      A (subspace_topology R R_standard_topology A) alpha.
+  {
+    exact (reverse_path_continuous
+      A
+      (subspace_topology R R_standard_topology A)
+      segx
+      HsegxCont).
+  }
+  claim Halpha0 : apply_fun alpha 0 = x.
+  {
+    rewrite (reverse_path_at_zero segx).
+    exact Hsegx1.
+  }
+  claim Halpha1 : apply_fun alpha 1 = a0.
+  {
+    rewrite (reverse_path_at_one segx).
+    exact Hsegx0.
+  }
+  claim HbetaCont :
+    continuous_map unit_interval unit_interval_topology
+      A (subspace_topology R R_standard_topology A) beta.
+  { exact HsegyCont. }
+  claim Hbeta0 : apply_fun beta 0 = a0.
+  { exact Hsegy0. }
+  claim Hbeta1 : apply_fun beta 1 = y.
+  { exact Hsegy1. }
+  set p := path_concat alpha beta.
+  claim HpCont :
+    continuous_map unit_interval unit_interval_topology
+      A (subspace_topology R R_standard_topology A) p.
+  {
+    exact (path_concat_continuous
+      A
+      (subspace_topology R R_standard_topology A)
+      x
+      a0
+      y
+      alpha
+      beta
+      HalphaCont
+      HbetaCont
+      Halpha0
+      Halpha1
+      Hbeta0
+      Hbeta1).
+  }
+  claim HpBetween : path_between A x y p.
+  {
+    exact (path_concat_between
+      A
+      (subspace_topology R R_standard_topology A)
+      x
+      a0
+      y
+      alpha
+      beta
+      HalphaCont
+      HbetaCont
+      Halpha0
+      Halpha1
+      Hbeta0
+      Hbeta1).
+  }
+  witness p.
+  apply andI.
+  - exact HpBetween.
+  - exact HpCont.
+}
+exact (andI
+  (topology_on A (subspace_topology R R_standard_topology A))
+  (forall x y:set, x :e A -> y :e A ->
+    exists p:set, path_between A x y p /\
+      continuous_map unit_interval unit_interval_topology
+        A (subspace_topology R R_standard_topology A) p)
+  HtopA
+  Hpaths).
+Qed.
+
 (** from S52 Exercise 1b (line 496 in algtop.tex) **)
 (** LATEX VERSION: If A is star convex, A is simply connected. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 60 **)
