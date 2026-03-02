@@ -211874,6 +211874,65 @@ apply (and5I
             (andI (n :e omega) (n <> 0) HnO HnNe)
             Hexistxs).
       }
+      apply Hxword.
+      let n. assume Hnpack.
+      claim HnpackL : n :e omega /\ n <> 0.
+      {
+        exact (andEL
+          (n :e omega /\ n <> 0)
+          (exists xs:set, function_on xs n G /\
+            (forall i:set, i :e n ->
+              exists alpha:set, alpha :e (UPair 0 1) /\ apply_fun xs i :e apply_fun Gfam12 alpha) /\
+            x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+          Hnpack).
+      }
+      claim HnO : n :e omega.
+      { exact (andEL (n :e omega) (n <> 0) HnpackL). }
+      claim HnNe : n <> 0.
+      { exact (andER (n :e omega) (n <> 0) HnpackL). }
+      apply (andER (n :e omega /\ n <> 0)
+        (exists xs:set, function_on xs n G /\
+          (forall i:set, i :e n ->
+            exists alpha:set, alpha :e (UPair 0 1) /\ apply_fun xs i :e apply_fun Gfam12 alpha) /\
+          x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+        Hnpack).
+      let xs. assume Hxspack.
+      claim HxspackL :
+        function_on xs n G /\
+        (forall i:set, i :e n ->
+          exists alpha:set, alpha :e (UPair 0 1) /\ apply_fun xs i :e apply_fun Gfam12 alpha).
+      {
+        exact (andEL
+          (function_on xs n G /\
+            (forall i:set, i :e n ->
+              exists alpha:set, alpha :e (UPair 0 1) /\ apply_fun xs i :e apply_fun Gfam12 alpha))
+          (x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+          Hxspack).
+      }
+      claim Hxsfun : function_on xs n G.
+      { exact (andEL
+          (function_on xs n G)
+          (forall i:set, i :e n ->
+            exists alpha:set, alpha :e (UPair 0 1) /\ apply_fun xs i :e apply_fun Gfam12 alpha)
+          HxspackL). }
+      claim Hxsfam12 :
+        forall i:set, i :e n ->
+          exists alpha:set, alpha :e (UPair 0 1) /\ apply_fun xs i :e apply_fun Gfam12 alpha.
+      { exact (andER
+          (function_on xs n G)
+          (forall i:set, i :e n ->
+            exists alpha:set, alpha :e (UPair 0 1) /\ apply_fun xs i :e apply_fun Gfam12 alpha)
+          HxspackL). }
+      claim Hxeq :
+        x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n.
+      {
+        exact (andER
+          (function_on xs n G /\
+            (forall i:set, i :e n ->
+              exists alpha:set, alpha :e (UPair 0 1) /\ apply_fun xs i :e apply_fun Gfam12 alpha))
+          (x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+          Hxspack).
+      }
       (** TODO: expand each factor in G1/G2 using HgenG1/HgenG2 and concatenate words **)
       admit.
 - (** TODO: reduced word uniqueness for the union family **)
