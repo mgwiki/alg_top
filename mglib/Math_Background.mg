@@ -310090,6 +310090,56 @@ claim Hcycle :
     (exists j:set, j :e n /\ ordsucc j /:e n /\
       (apply_fun path_seq j) 0 1 = x0).
 {
+  (** Extract a point r on A outside T and an ArcsT' arc E through r. **)
+  apply HrWitness'.
+  let r.
+  assume Hrpack.
+  apply Hrpack.
+  let E.
+  assume HEpack.
+  apply (and7E
+    (r :e A)
+    (r /:e T)
+    (r :e T')
+    (E :e ArcsT')
+    (r :e E)
+    (r <> p)
+    (r <> q)
+    HEpack).
+  assume HrA HrNotT HrT' HEArcsT' HrE Hrnep Hrneq.
+  claim HglgT' : general_linear_graph T' (subspace_topology X Tx T') ArcsT'.
+  {
+    exact (tree_in_graph_general_linear_graph
+      T'
+      ArcsT'
+      X
+      Tx
+      Arcs
+      Htree').
+  }
+  claim HarcE_T' : arc E (subspace_topology T' (subspace_topology X Tx T') E).
+  {
+    exact (andER
+      (E c= T')
+      (arc E (subspace_topology T' (subspace_topology X Tx T') E))
+      (general_linear_graph_arc_data
+        T'
+        (subspace_topology X Tx T')
+        ArcsT'
+        E
+        HglgT'
+        HEArcsT')).
+  }
+  claim HexpqE :
+    exists e1 e2:set,
+      end_points_of_arc E (subspace_topology T' (subspace_topology X Tx T') E) e1 e2.
+  {
+    exact (arc_has_end_points_of_arc
+      E
+      (subspace_topology T' (subspace_topology X Tx T') E)
+      HarcE_T').
+  }
+  (** Remaining work: build a closed reduced edge path in T' using E and A. **)
   admit.
 }
 exact (HnoloopT' Hcycle).
