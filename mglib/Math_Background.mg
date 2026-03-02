@@ -171774,6 +171774,88 @@ apply set_ext.
     HyInImg).
 Qed.
 
+(** Helper: Euclidean spaces of positive dimension are connected **)
+(** Proven Bob **)
+Theorem euclidean_space_connected_succ : forall n:set,
+  n :e omega ->
+  connected_space (euclidean_space (ordsucc n)) (euclidean_topology (ordsucc n)).
+let n. assume HnO.
+apply (nat_ind (fun k:set => connected_space (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k)))).
+- (** base: k = 0 (dimension 1) **)
+  claim Hhome :
+    homeomorphism
+      R
+      R_standard_topology
+      (euclidean_space (ordsucc 0))
+      (euclidean_topology (ordsucc 0))
+      R1_singleton_map.
+  {
+    rewrite ordsucc_0_eq_1_nat.
+    rewrite <- SingEmpty_eq_1.
+    exact R_homeomorphic_euclidean_space_1.
+  }
+  exact (homeomorphism_preserves_connected
+    R
+    R_standard_topology
+    (euclidean_space (ordsucc 0))
+    (euclidean_topology (ordsucc 0))
+    R1_singleton_map
+    Hhome
+    interval_connected).
+- (** step **)
+  let k.
+  assume HkNat : nat_p k.
+  assume HkConn : connected_space (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k)).
+  claim Hhome :
+    homeomorphism
+      (euclidean_space (ordsucc (ordsucc k)))
+      (euclidean_topology (ordsucc (ordsucc k)))
+      (setprod (euclidean_space (ordsucc k)) R)
+      (product_topology (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k)) R R_standard_topology)
+      (euclidean_space_succ_split_map (ordsucc k)).
+  {
+    exact (euclidean_space_succ_split_homeomorphism (ordsucc k)
+      (nat_ordsucc k HkNat)).
+  }
+  claim HconnProd :
+    connected_space
+      (setprod (euclidean_space (ordsucc k)) R)
+      (product_topology (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k)) R R_standard_topology).
+  {
+    exact (finite_product_connected
+      (euclidean_space (ordsucc k))
+      (euclidean_topology (ordsucc k))
+      R
+      R_standard_topology
+      HkConn
+      interval_connected).
+  }
+  apply (homeomorphism_inverse_is_homeomorphism_variant
+    (euclidean_space (ordsucc (ordsucc k)))
+    (euclidean_topology (ordsucc (ordsucc k)))
+    (setprod (euclidean_space (ordsucc k)) R)
+    (product_topology (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k)) R R_standard_topology)
+    (euclidean_space_succ_split_map (ordsucc k))
+    Hhome).
+  let g.
+  assume HgHome :
+    homeomorphism
+      (setprod (euclidean_space (ordsucc k)) R)
+      (product_topology (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k)) R R_standard_topology)
+      (euclidean_space (ordsucc (ordsucc k)))
+      (euclidean_topology (ordsucc (ordsucc k)))
+      g.
+  exact (homeomorphism_preserves_connected
+    (setprod (euclidean_space (ordsucc k)) R)
+    (product_topology (euclidean_space (ordsucc k)) (euclidean_topology (ordsucc k)) R R_standard_topology)
+    (euclidean_space (ordsucc (ordsucc k)))
+    (euclidean_topology (ordsucc (ordsucc k)))
+    g
+    HgHome
+    HconnProd).
+- exact (omega_nat_p n HnO).
+Qed.
+
 Theorem ex59_3a_R1_not_homeo_Rn : forall n:set,
   n :e omega -> 2 c= n ->
   ~(exists f:set, homeomorphism R R_standard_topology
