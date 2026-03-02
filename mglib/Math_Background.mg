@@ -91166,7 +91166,8 @@ Lemma column_lifts_same_sheet_on_product_ball :
   rewrite <- HVsEq.
   exact (HcolVs t HtI2).
 }
-Admitted.
+Admitted. (** TODO: requires continuity of the t0-column map; see
+  column_lifts_same_sheet_on_product_ball_with_col_cont. **)
 
 (** Infrastructure: column lift sheet constancy with explicit continuity of the t0-column map **)
 Lemma column_lifts_same_sheet_on_product_ball_with_col_cont :
