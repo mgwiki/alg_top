@@ -212708,7 +212708,9 @@ apply (and5I
     forall i:set, i :e n12 ->
       exists mi yi:set,
         reduced_word (J :\/: K) Hfam efamH mi yi /\ mi <> 0 /\
-        word_product multG eG yi mi = apply_fun xs12 i.
+        word_product multG eG yi mi = apply_fun xs12 i /\
+        ((forall j:set, j :e mi -> apply_fun yi j :e G1) \/
+         (forall j:set, j :e mi -> apply_fun yi j :e G2)).
   {
     let i. assume Hi.
     apply (and3E
@@ -212782,11 +212784,45 @@ apply (and5I
           mi = n' /\ (forall j:set, j :e mi -> apply_fun yi j = apply_fun xs' j))
         Hyi_pack).
       assume HredJ Hmi_ne Hwp_yi _.
+      claim HallG1 : forall j:set, j :e mi -> apply_fun yi j :e G1.
+      {
+        let j. assume Hj.
+        apply (and3E
+          (mi :e omega)
+          (forall j:set, j :e mi ->
+            exists alpha:set, alpha :e J /\
+              apply_fun yi j :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha /\
+              apply_fun yi j <> apply_fun (graph J (fun a:set => apply_fun efamH a)) alpha)
+          (forall j:set, j :e mi -> ordsucc j :e mi ->
+            forall alpha beta:set, alpha :e J -> beta :e J ->
+              apply_fun yi j :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha ->
+              apply_fun yi (ordsucc j) :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) beta ->
+              alpha <> beta)
+          HredJ).
+        assume _ HysfamJ _.
+        apply (HysfamJ j Hj).
+        let a. assume Ha_pack.
+        apply (and3E
+          (a :e J)
+          (apply_fun yi j :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) a)
+          (apply_fun yi j <> apply_fun (graph J (fun a:set => apply_fun efamH a)) a)
+          Ha_pack).
+        assume HaJ HyjG _.
+        claim HyjG' : apply_fun yi j :e apply_fun Hfam a.
+        {
+          rewrite <- (apply_fun_graph J (fun a:set => apply_fun Hfam a) a HaJ).
+          exact HyjG.
+        }
+        claim HsubA_sub : apply_fun Hfam a c= G1.
+        { exact (subgroup_of_subset (apply_fun Hfam a) G1 multG eG invG (Hsubfam1 a HaJ)). }
+        exact (HsubA_sub (apply_fun yi j) HyjG').
+      }
       witness mi. witness yi.
-      apply and3I.
+      apply and4I.
       + exact (Hlift_red_J mi yi HredJ).
       + exact Hmi_ne.
       + exact Hwp_yi.
+      + apply orIL. exact HallG1.
     - assume Halpha1 : alpha = 1.
       claim Halpha_ne0 : alpha <> 0.
       { rewrite Halpha1. exact neq_1_0. }
@@ -212833,11 +212869,45 @@ apply (and5I
           mi = n' /\ (forall j:set, j :e mi -> apply_fun yi j = apply_fun xs' j))
         Hyi_pack).
       assume HredK Hmi_ne Hwp_yi _.
+      claim HallG2 : forall j:set, j :e mi -> apply_fun yi j :e G2.
+      {
+        let j. assume Hj.
+        apply (and3E
+          (mi :e omega)
+          (forall j:set, j :e mi ->
+            exists beta:set, beta :e K /\
+              apply_fun yi j :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) beta /\
+              apply_fun yi j <> apply_fun (graph K (fun b:set => apply_fun efamH b)) beta)
+          (forall j:set, j :e mi -> ordsucc j :e mi ->
+            forall alpha beta:set, alpha :e K -> beta :e K ->
+              apply_fun yi j :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) alpha ->
+              apply_fun yi (ordsucc j) :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) beta ->
+              alpha <> beta)
+          HredK).
+        assume _ HysfamK _.
+        apply (HysfamK j Hj).
+        let b. assume Hb_pack.
+        apply (and3E
+          (b :e K)
+          (apply_fun yi j :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) b)
+          (apply_fun yi j <> apply_fun (graph K (fun b:set => apply_fun efamH b)) b)
+          Hb_pack).
+        assume HbK HyjG _.
+        claim HyjG' : apply_fun yi j :e apply_fun Hfam b.
+        {
+          rewrite <- (apply_fun_graph K (fun b:set => apply_fun Hfam b) b HbK).
+          exact HyjG.
+        }
+        claim HsubB_sub : apply_fun Hfam b c= G2.
+        { exact (subgroup_of_subset (apply_fun Hfam b) G2 multG eG invG (Hsubfam2 b HbK)). }
+        exact (HsubB_sub (apply_fun yi j) HyjG').
+      }
       witness mi. witness yi.
-      apply and3I.
+      apply and4I.
       + exact (Hlift_red_K mi yi HredK).
       + exact Hmi_ne.
       + exact Hwp_yi.
+      + apply orIR. exact HallG2.
   }
   (** TODO: concatenate the expanded reduced words to get a reduced word in J \/ K, and prove uniqueness **)
   admit.
