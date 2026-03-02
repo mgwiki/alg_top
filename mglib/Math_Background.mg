@@ -297144,8 +297144,42 @@ claim Hqshared : exists C:set, C :e ArcsT /\ C <> A /\ q :e C.
     apply (and3E (A1 :e ArcsT) (A2 :e ArcsT) (A1 <> A2) HA2pack). assume HA1 HA2 Hne12.
     claim HA1subA : A1 c= A. { rewrite Heq. exact (tree_in_graph_arc_subset_T T ArcsT X Tx Arcs A1 Htree HA1). }
     claim HA2subA : A2 c= A. { rewrite Heq. exact (tree_in_graph_arc_subset_T T ArcsT X Tx Arcs A2 Htree HA2). }
-    (** A1 ≠ A or A2 ≠ A. Whichever is ≠ A: disjoint with A yet subset of A, so empty, contradiction. **)
-    admit. }
+    (** At least one of A1, A2 ≠ A. Disjoint with A yet subset of A → empty → contradiction with arc. **)
+    apply (xm (A1 = A)).
+    - assume HA1eA : A1 = A.
+      claim HA2neA : A2 <> A.
+      { assume HA2eA.
+        claim HA1A2 : A1 = A2. { rewrite HA1eA. rewrite <- HA2eA. reflexivity. }
+        exact (Hne12 HA1A2). }
+      claim HA2disj : A :/\: A2 = Empty. { exact (Hdisjoint A2 HA2 HA2neA). }
+      claim HA2eq : A :/\: A2 = A2. { rewrite (binintersect_com A A2). exact (binintersect_Subq_eq_1 A2 A HA2subA). }
+      claim HA2empty : A2 = Empty.
+      { claim H : A2 = A :/\: A2. { exact (eq_symm (A :/\: A2) A2 HA2eq). }
+        rewrite H. exact HA2disj. }
+      claim HA2arc : arc A2 (subspace_topology T (subspace_topology X Tx T) A2).
+      { exact (andER (A2 c= T) (arc A2 (subspace_topology T (subspace_topology X Tx T) A2))
+          (general_linear_graph_arc_data T (subspace_topology X Tx T) ArcsT A2 HglgT HA2)). }
+      apply (arc_has_end_points_of_arc_pre A2 (subspace_topology T (subspace_topology X Tx T) A2) HA2arc).
+      let r. assume Hrpack. apply Hrpack. let s. assume Hrs.
+      claim HrA2 : r :e A2.
+      { exact (end_points_of_arc_left_in_set A2 (subspace_topology T (subspace_topology X Tx T) A2) r s Hrs). }
+      claim HrEmpty : r :e Empty. { rewrite <- HA2empty. exact HrA2. }
+      exact (EmptyE r HrEmpty False).
+    - assume HA1neA : A1 <> A.
+      claim HA1disj : A :/\: A1 = Empty. { exact (Hdisjoint A1 HA1 HA1neA). }
+      claim HA1eq : A :/\: A1 = A1. { rewrite (binintersect_com A A1). exact (binintersect_Subq_eq_1 A1 A HA1subA). }
+      claim HA1empty : A1 = Empty.
+      { claim H : A1 = A :/\: A1. { exact (eq_symm (A :/\: A1) A1 HA1eq). }
+        rewrite H. exact HA1disj. }
+      claim HA1arc : arc A1 (subspace_topology T (subspace_topology X Tx T) A1).
+      { exact (andER (A1 c= T) (arc A1 (subspace_topology T (subspace_topology X Tx T) A1))
+          (general_linear_graph_arc_data T (subspace_topology X Tx T) ArcsT A1 HglgT HA1)). }
+      apply (arc_has_end_points_of_arc_pre A1 (subspace_topology T (subspace_topology X Tx T) A1) HA1arc).
+      let r. assume Hrpack. apply Hrpack. let s. assume Hrs.
+      claim HrA1 : r :e A1.
+      { exact (end_points_of_arc_left_in_set A1 (subspace_topology T (subspace_topology X Tx T) A1) r s Hrs). }
+      claim HrEmpty : r :e Empty. { rewrite <- HA1empty. exact HrA1. }
+      exact (EmptyE r HrEmpty False). }
   (** Contradiction: A is non-trivial clopen in connected T **)
   claim Hno_clopen : ~(exists S:set, S <> Empty /\ S <> T /\ open_in T (subspace_topology X Tx T) S /\ closed_in T (subspace_topology X Tx T) S).
   { exact (iffEL
