@@ -541,6 +541,7 @@ Discussion:
 
 Approvals:
   - 1772451836 | Bob: YES
+  - 1772495720 | Charlie: YES
 
 Result:
 
