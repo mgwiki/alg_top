@@ -218656,7 +218656,231 @@ assume Hfree1 :
 assume Hfree2 :
   free_group_with_generators G2 mult e inv K
     (graph K (fun alpha:set => apply_fun gens alpha)).
-admit.
+claim HG1sub : G1 c= G.
+{
+  apply (and4E
+    (G1 c= G)
+    (e :e G1)
+    (forall x y:set, x :e G1 -> y :e G1 -> apply_fun mult (x, y) :e G1)
+    (forall x:set, x :e G1 -> apply_fun inv x :e G1)
+    Hsub1).
+  assume HG1sub0 _ _ _.
+  exact HG1sub0.
+}
+claim HG2sub : G2 c= G.
+{
+  apply (and4E
+    (G2 c= G)
+    (e :e G2)
+    (forall x y:set, x :e G2 -> y :e G2 -> apply_fun mult (x, y) :e G2)
+    (forall x:set, x :e G2 -> apply_fun inv x :e G2)
+    Hsub2).
+  assume HG2sub0 _ _ _.
+  exact HG2sub0.
+}
+claim Hgens1 :
+  function_on (graph J (fun alpha:set => apply_fun gens alpha)) J G1.
+{
+  apply (and4E
+    (group_structure G1 mult e inv)
+    (function_on (graph J (fun alpha:set => apply_fun gens alpha)) J G1)
+    (forall alpha:set, alpha :e J ->
+      infinite_cyclic_subgroup G1 mult e inv
+        (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+    (free_product_of_subgroups G1 mult e inv J
+      (graph J (fun alpha:set =>
+        {g :e G1 | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e
+            (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e
+              (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m)))}))
+      (graph J (fun alpha:set => e)))
+    Hfree1).
+  assume _ Hgens1 _ _.
+  exact Hgens1.
+}
+claim Hgens2 :
+  function_on (graph K (fun alpha:set => apply_fun gens alpha)) K G2.
+{
+  apply (and4E
+    (group_structure G2 mult e inv)
+    (function_on (graph K (fun alpha:set => apply_fun gens alpha)) K G2)
+    (forall alpha:set, alpha :e K ->
+      infinite_cyclic_subgroup G2 mult e inv
+        (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+    (free_product_of_subgroups G2 mult e inv K
+      (graph K (fun alpha:set =>
+        {g :e G2 | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e
+            (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e
+              (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m)))}))
+      (graph K (fun alpha:set => e)))
+    Hfree2).
+  assume _ Hgens2 _ _.
+  exact Hgens2.
+}
+claim Hinf1 :
+  forall alpha:set, alpha :e J ->
+    infinite_cyclic_subgroup G1 mult e inv (apply_fun gens alpha).
+{
+  let alpha.
+  assume Halpha : alpha :e J.
+  apply (and4E
+    (group_structure G1 mult e inv)
+    (function_on (graph J (fun alpha:set => apply_fun gens alpha)) J G1)
+    (forall alpha:set, alpha :e J ->
+      infinite_cyclic_subgroup G1 mult e inv
+        (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+    (free_product_of_subgroups G1 mult e inv J
+      (graph J (fun alpha:set =>
+        {g :e G1 | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e
+            (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e
+              (apply_fun inv (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m)))}))
+      (graph J (fun alpha:set => e)))
+    Hfree1).
+  assume _ _ Hinf1 _.
+  claim Hinf1raw :
+    infinite_cyclic_subgroup G1 mult e inv
+      (apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha).
+  { exact (Hinf1 alpha Halpha). }
+  claim Hinf1raw' :
+    infinite_cyclic_subgroup G1 mult e inv (apply_fun gens alpha).
+  {
+    rewrite <- (apply_fun_graph J (fun beta:set => apply_fun gens beta) alpha Halpha).
+    exact Hinf1raw.
+  }
+  exact Hinf1raw'.
+}
+claim Hinf2 :
+  forall alpha:set, alpha :e K ->
+    infinite_cyclic_subgroup G2 mult e inv (apply_fun gens alpha).
+{
+  let alpha.
+  assume Halpha : alpha :e K.
+  apply (and4E
+    (group_structure G2 mult e inv)
+    (function_on (graph K (fun alpha:set => apply_fun gens alpha)) K G2)
+    (forall alpha:set, alpha :e K ->
+      infinite_cyclic_subgroup G2 mult e inv
+        (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+    (free_product_of_subgroups G2 mult e inv K
+      (graph K (fun alpha:set =>
+        {g :e G2 | exists n:set, n :e int /\
+          ((n :e omega /\ g = group_power_nat mult e
+            (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha) n) \/
+           (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+            g = group_power_nat mult e
+              (apply_fun inv (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha))
+              (ordsucc m)))}))
+      (graph K (fun alpha:set => e)))
+    Hfree2).
+  assume _ _ Hinf2 _.
+  claim Hinf2raw :
+    infinite_cyclic_subgroup G2 mult e inv
+      (apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha).
+  { exact (Hinf2 alpha Halpha). }
+  claim Hinf2raw' :
+    infinite_cyclic_subgroup G2 mult e inv (apply_fun gens alpha).
+  {
+    rewrite <- (apply_fun_graph K (fun beta:set => apply_fun gens beta) alpha Halpha).
+    exact Hinf2raw.
+  }
+  exact Hinf2raw'.
+}
+apply (and4I
+  (group_structure G mult e inv)
+  (function_on gens (J :\/: K) G)
+  (forall alpha:set, alpha :e J :\/: K ->
+    infinite_cyclic_subgroup G mult e inv (apply_fun gens alpha))
+  (free_product_of_subgroups G mult e inv (J :\/: K)
+    (graph (J :\/: K) (fun alpha:set =>
+      {g :e G | exists n:set, n :e int /\
+        ((n :e omega /\ g = group_power_nat mult e (apply_fun gens alpha) n) \/
+         (exists m:set, m :e omega /\ n = minus_SNo (ordsucc m) /\
+          g = group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)))}))
+    (graph (J :\/: K) (fun _:set => e)))).
+- exact Hgrp.
+- let alpha.
+  assume Halpha : alpha :e J :\/: K.
+  apply (binunionE J K alpha Halpha).
+  * assume HalphaJ : alpha :e J.
+    claim HgenJ : apply_fun (graph J (fun beta:set => apply_fun gens beta)) alpha :e G1.
+    { exact (Hgens1 alpha HalphaJ). }
+    claim HgenJ' : apply_fun gens alpha :e G1.
+    {
+      rewrite <- (apply_fun_graph J (fun beta:set => apply_fun gens beta) alpha HalphaJ).
+      exact HgenJ.
+    }
+    exact (HG1sub (apply_fun gens alpha) HgenJ').
+  * assume HalphaK : alpha :e K.
+    claim HgenK : apply_fun (graph K (fun beta:set => apply_fun gens beta)) alpha :e G2.
+    { exact (Hgens2 alpha HalphaK). }
+    claim HgenK' : apply_fun gens alpha :e G2.
+    {
+      rewrite <- (apply_fun_graph K (fun beta:set => apply_fun gens beta) alpha HalphaK).
+      exact HgenK.
+    }
+    exact (HG2sub (apply_fun gens alpha) HgenK').
+- let alpha.
+  assume Halpha : alpha :e J :\/: K.
+  apply (binunionE J K alpha Halpha).
+  * assume HalphaJ : alpha :e J.
+    claim HinfJ : infinite_cyclic_subgroup G1 mult e inv (apply_fun gens alpha).
+    { exact (Hinf1 alpha HalphaJ). }
+    apply (and4E
+      (apply_fun gens alpha :e G1)
+      (forall n:set, n :e omega -> group_power_nat mult e (apply_fun gens alpha) n :e G1)
+      (forall m:set, m :e omega ->
+        group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) :e G1)
+      (~(exists n:set, n :e omega /\ n <> 0 /\ group_power_nat mult e (apply_fun gens alpha) n = e))
+      HinfJ).
+    assume HaG1 HpowG1 HpowInvG1 Hnontriv.
+    apply (and4I
+      (apply_fun gens alpha :e G)
+      (forall n:set, n :e omega -> group_power_nat mult e (apply_fun gens alpha) n :e G)
+      (forall m:set, m :e omega ->
+        group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) :e G)
+      (~(exists n:set, n :e omega /\ n <> 0 /\ group_power_nat mult e (apply_fun gens alpha) n = e))).
+    + exact (HG1sub (apply_fun gens alpha) HaG1).
+    + let n. assume Hn.
+      exact (HG1sub (group_power_nat mult e (apply_fun gens alpha) n) (HpowG1 n Hn)).
+    + let m. assume Hm.
+      exact (HG1sub (group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)) (HpowInvG1 m Hm)).
+    + assume Hbad. exact (Hnontriv Hbad).
+  * assume HalphaK : alpha :e K.
+    claim HinfK : infinite_cyclic_subgroup G2 mult e inv (apply_fun gens alpha).
+    { exact (Hinf2 alpha HalphaK). }
+    apply (and4E
+      (apply_fun gens alpha :e G2)
+      (forall n:set, n :e omega -> group_power_nat mult e (apply_fun gens alpha) n :e G2)
+      (forall m:set, m :e omega ->
+        group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) :e G2)
+      (~(exists n:set, n :e omega /\ n <> 0 /\ group_power_nat mult e (apply_fun gens alpha) n = e))
+      HinfK).
+    assume HaG2 HpowG2 HpowInvG2 Hnontriv.
+    apply (and4I
+      (apply_fun gens alpha :e G)
+      (forall n:set, n :e omega -> group_power_nat mult e (apply_fun gens alpha) n :e G)
+      (forall m:set, m :e omega ->
+        group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m) :e G)
+      (~(exists n:set, n :e omega /\ n <> 0 /\ group_power_nat mult e (apply_fun gens alpha) n = e))).
+    + exact (HG2sub (apply_fun gens alpha) HaG2).
+    + let n. assume Hn.
+      exact (HG2sub (group_power_nat mult e (apply_fun gens alpha) n) (HpowG2 n Hn)).
+    + let m. assume Hm.
+      exact (HG2sub (group_power_nat mult e (apply_fun inv (apply_fun gens alpha)) (ordsucc m)) (HpowInvG2 m Hm)).
+    + assume Hbad. exact (Hnontriv Hbad).
+- (** TODO: derive free_product_of_subgroups for the union of cyclic subgroups. **)
+  admit.
 Admitted.
 
 (** from S69 Thm 69.2 (line 3057 in algtop.tex): free product of free groups is free **)
