@@ -171774,6 +171774,271 @@ apply set_ext.
     HyInImg).
 Qed.
 
+(** Helper: complement of a singleton in a product space **)
+(** Proven Bob **)
+Theorem setprod_minus_singleton_eq_union :
+  forall X Y a b:set,
+  a :e X -> b :e Y ->
+  setprod X Y :\: {(a,b),(a,b)} =
+    (setprod (X :\: {a,a}) Y) :\/: (setprod X (Y :\: {b,b})).
+let X Y a b.
+assume HaX HbY.
+apply set_ext.
+- let z. assume Hz.
+  claim HzXY : z :e setprod X Y.
+  { exact (setminusE1 (setprod X Y) {(a,b),(a,b)} z Hz). }
+  claim HzNot : z /:e {(a,b),(a,b)}.
+  { exact (setminusE2 (setprod X Y) {(a,b),(a,b)} z Hz). }
+  set x := proj0 z.
+  set y := proj1 z.
+  claim HxX : x :e X.
+  { exact (proj0_Sigma X (fun _ : set => Y) z HzXY). }
+  claim HyY : y :e Y.
+  { exact (proj1_Sigma X (fun _ : set => Y) z HzXY). }
+  claim HzEq : z = (x,y).
+  {
+    claim HzEq0sum :
+      setsum (proj0 z) (proj1 z) = z.
+    {
+      exact (andEL
+        (setsum (proj0 z) (proj1 z) = z)
+        (proj0 z :e X)
+        (andEL
+          (setsum (proj0 z) (proj1 z) = z /\ proj0 z :e X)
+          (proj1 z :e Y)
+          (Sigma_eta_proj0_proj1 X (fun _ : set => Y) z HzXY))).
+    }
+    claim HzEq0 :
+      (proj0 z, proj1 z) = z.
+    {
+      exact (eq_i_tra
+        (proj0 z, proj1 z)
+        (setsum (proj0 z) (proj1 z))
+        z
+        (eq_symm
+          (setsum (proj0 z) (proj1 z))
+          (proj0 z, proj1 z)
+          (tuple_pair (proj0 z) (proj1 z)))
+        HzEq0sum).
+    }
+    exact (eq_symm (proj0 z, proj1 z) z HzEq0).
+  }
+  apply (xm (x = a)).
+  - assume HxEq.
+    claim HyNotEq : y <> b.
+    {
+      assume HyEq.
+      claim HzEqab : z = (a,b).
+      { exact (eq_i_tra z (x,y) (a,b) HzEq (tuple_2_ext x y a b HxEq HyEq)). }
+      claim HzIn : z :e {(a,b),(a,b)}.
+      { exact (eq_subst_mem z (a,b) {(a,b),(a,b)} HzEqab (UPairI1 (a,b) (a,b))). }
+      exact (HzNot HzIn).
+    }
+    claim HyNot : y /:e {b,b}.
+    {
+      assume HyIn.
+      claim HyInSing : y :e {b}.
+      {
+        exact (mem_eqR
+          y
+          {b,b}
+          {b}
+          (eq_symm {b} {b,b} (Sing_eq_UPair b))
+          HyIn).
+      }
+      claim HyEq : y = b.
+      { exact (SingE b y HyInSing). }
+      exact (HyNotEq HyEq).
+    }
+    claim HyIn2 : y :e Y :\: {b,b}.
+    { exact (setminusI Y {b,b} y HyY HyNot). }
+    claim HzIn2 : (x,y) :e setprod X (Y :\: {b,b}).
+    {
+      exact (tuple_2_Sigma
+        X
+        (fun _ : set => (Y :\: {b,b}))
+        x
+        HxX
+        y
+        HyIn2).
+    }
+    exact (binunionI2 (setprod (X :\: {a,a}) Y) (setprod X (Y :\: {b,b})) z
+      (eq_subst_mem z (x,y) (setprod X (Y :\: {b,b})) HzEq HzIn2)).
+  - assume HxNe.
+    claim HxNot : x /:e {a,a}.
+    {
+      assume HxIn.
+      claim HxInSing : x :e {a}.
+      {
+        exact (mem_eqR
+          x
+          {a,a}
+          {a}
+          (eq_symm {a} {a,a} (Sing_eq_UPair a))
+          HxIn).
+      }
+      claim HxEq : x = a.
+      { exact (SingE a x HxInSing). }
+      exact (HxNe HxEq).
+    }
+    claim HxIn2 : x :e X :\: {a,a}.
+    { exact (setminusI X {a,a} x HxX HxNot). }
+    claim HzIn2 : (x,y) :e setprod (X :\: {a,a}) Y.
+    {
+      exact (tuple_2_Sigma
+        (X :\: {a,a})
+        (fun _ : set => Y)
+        x
+        HxIn2
+        y
+        HyY).
+    }
+    exact (binunionI1 (setprod (X :\: {a,a}) Y) (setprod X (Y :\: {b,b})) z
+      (eq_subst_mem z (x,y) (setprod (X :\: {a,a}) Y) HzEq HzIn2)).
+- let z. assume Hz.
+  apply (binunionE (setprod (X :\: {a,a}) Y) (setprod X (Y :\: {b,b})) z Hz).
+  - assume HzIn1.
+    set x := proj0 z.
+    set y := proj1 z.
+    claim HxIn : x :e X :\: {a,a}.
+    { exact (proj0_Sigma (X :\: {a,a}) (fun _ : set => Y) z HzIn1). }
+    claim HyY : y :e Y.
+    { exact (proj1_Sigma (X :\: {a,a}) (fun _ : set => Y) z HzIn1). }
+    claim HzEq : z = (x,y).
+    {
+      claim HzEq0sum :
+        setsum (proj0 z) (proj1 z) = z.
+      {
+        exact (andEL
+          (setsum (proj0 z) (proj1 z) = z)
+          (proj0 z :e X :\: {a,a})
+          (andEL
+            (setsum (proj0 z) (proj1 z) = z /\ proj0 z :e X :\: {a,a})
+            (proj1 z :e Y)
+            (Sigma_eta_proj0_proj1 (X :\: {a,a}) (fun _ : set => Y) z HzIn1))).
+      }
+      claim HzEq0 :
+        (proj0 z, proj1 z) = z.
+      {
+        exact (eq_i_tra
+          (proj0 z, proj1 z)
+          (setsum (proj0 z) (proj1 z))
+          z
+          (eq_symm
+            (setsum (proj0 z) (proj1 z))
+            (proj0 z, proj1 z)
+            (tuple_pair (proj0 z) (proj1 z)))
+          HzEq0sum).
+      }
+      exact (eq_symm (proj0 z, proj1 z) z HzEq0).
+    }
+    claim HxX : x :e X.
+    { exact (setminusE1 X {a,a} x HxIn). }
+    claim HxNot : x /:e {a,a}.
+    { exact (setminusE2 X {a,a} x HxIn). }
+    claim HzXY : (x,y) :e setprod X Y.
+    {
+      exact (tuple_2_Sigma
+        X
+        (fun _ : set => Y)
+        x
+        HxX
+        y
+        HyY).
+    }
+    claim HzIn : z :e setprod X Y.
+    { exact (eq_subst_mem z (x,y) (setprod X Y) HzEq HzXY). }
+    claim HzNot : z /:e {(a,b),(a,b)}.
+    {
+      assume HzInS.
+      claim HzInSing : z :e {(a,b)}.
+      {
+        exact (mem_eqR
+          z
+          {(a,b),(a,b)}
+          {(a,b)}
+          (eq_symm {(a,b)} {(a,b),(a,b)} (Sing_eq_UPair (a,b)))
+          HzInS).
+      }
+      claim HzEqab : z = (a,b).
+      { exact (SingE (a,b) z HzInSing). }
+      claim HxEq : x = a.
+      { exact (pair_eq_fst x y a b (eq_i_tra (x,y) z (a,b) (eq_symm z (x,y) HzEq) HzEqab)). }
+      exact (HxNot (eq_subst_mem x a {a,a} HxEq (UPairI1 a a))).
+    }
+    exact (setminusI (setprod X Y) {(a,b),(a,b)} z HzIn HzNot).
+  - assume HzIn2.
+    set x := proj0 z.
+    set y := proj1 z.
+    claim HxX : x :e X.
+    { exact (proj0_Sigma X (fun _ : set => (Y :\: {b,b})) z HzIn2). }
+    claim HyIn : y :e Y :\: {b,b}.
+    { exact (proj1_Sigma X (fun _ : set => (Y :\: {b,b})) z HzIn2). }
+    claim HzEq : z = (x,y).
+    {
+      claim HzEq0sum :
+        setsum (proj0 z) (proj1 z) = z.
+      {
+        exact (andEL
+          (setsum (proj0 z) (proj1 z) = z)
+          (proj0 z :e X)
+          (andEL
+            (setsum (proj0 z) (proj1 z) = z /\ proj0 z :e X)
+            (proj1 z :e Y :\: {b,b})
+            (Sigma_eta_proj0_proj1 X (fun _ : set => (Y :\: {b,b})) z HzIn2))).
+      }
+      claim HzEq0 :
+        (proj0 z, proj1 z) = z.
+      {
+        exact (eq_i_tra
+          (proj0 z, proj1 z)
+          (setsum (proj0 z) (proj1 z))
+          z
+          (eq_symm
+            (setsum (proj0 z) (proj1 z))
+            (proj0 z, proj1 z)
+            (tuple_pair (proj0 z) (proj1 z)))
+          HzEq0sum).
+      }
+      exact (eq_symm (proj0 z, proj1 z) z HzEq0).
+    }
+    claim HyY : y :e Y.
+    { exact (setminusE1 Y {b,b} y HyIn). }
+    claim HyNot : y /:e {b,b}.
+    { exact (setminusE2 Y {b,b} y HyIn). }
+    claim HzXY : (x,y) :e setprod X Y.
+    {
+      exact (tuple_2_Sigma
+        X
+        (fun _ : set => Y)
+        x
+        HxX
+        y
+        HyY).
+    }
+    claim HzIn : z :e setprod X Y.
+    { exact (eq_subst_mem z (x,y) (setprod X Y) HzEq HzXY). }
+    claim HzNot : z /:e {(a,b),(a,b)}.
+    {
+      assume HzInS.
+      claim HzInSing : z :e {(a,b)}.
+      {
+        exact (mem_eqR
+          z
+          {(a,b),(a,b)}
+          {(a,b)}
+          (eq_symm {(a,b)} {(a,b),(a,b)} (Sing_eq_UPair (a,b)))
+          HzInS).
+      }
+      claim HzEqab : z = (a,b).
+      { exact (SingE (a,b) z HzInSing). }
+      claim HyEq : y = b.
+      { exact (pair_eq_snd x y a b (eq_i_tra (x,y) z (a,b) (eq_symm z (x,y) HzEq) HzEqab)). }
+      exact (HyNot (eq_subst_mem y b {b,b} HyEq (UPairI1 b b))).
+    }
+    exact (setminusI (setprod X Y) {(a,b),(a,b)} z HzIn HzNot).
+Qed.
+
 (** Helper: Euclidean spaces of positive dimension are connected **)
 (** Proven Bob **)
 Theorem euclidean_space_connected_succ : forall n:set,
