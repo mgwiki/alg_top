@@ -1,4 +1,4 @@
-(** Balance Alice 4103 **)
+(** Balance Alice 4092 **)
 (** Balance Bob 5494 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
@@ -189495,7 +189495,8 @@ Qed.
 (** group H and any family {y_alpha} of elements of H, there is a unique homomorphism **)
 (** h: G -> H with h(a_alpha) = y_alpha. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 107 **)
+(** Bounty 118 **)
+(** Lock Alice 1772497310 **)
 Theorem lemma67_7_extension_free_abelian :
   forall G mult e inv J basis:set,
   abelian_group G mult e inv ->
