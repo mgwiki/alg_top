@@ -171557,6 +171557,223 @@ exact (path_connected_implies_connected
   punctured_space_path_connected).
 Qed.
 
+(** Helper: image of punctured space under a homeomorphism **)
+(** Proven Bob **)
+Theorem homeomorphism_image_of_setminus_singleton :
+  forall X Tx Y Ty f a:set,
+  homeomorphism X Tx Y Ty f ->
+  a :e X ->
+  image_of f (X :\: {a,a}) = Y :\: {apply_fun f a, apply_fun f a}.
+let X Tx Y Ty f a.
+assume Hhome HaX.
+claim Hcontf : continuous_map X Tx Y Ty f.
+{
+  exact (andEL
+    (continuous_map X Tx Y Ty f)
+    (exists g : set,
+      continuous_map Y Ty X Tx g /\
+      (forall x : set , x :e X -> apply_fun g (apply_fun f x) = x) /\
+      (forall y : set , y :e Y -> apply_fun f (apply_fun g y) = y))
+    Hhome).
+}
+claim Hf_on : function_on f X Y.
+{ exact (continuous_map_function_on X Tx Y Ty f Hcontf). }
+claim Hginv :
+  exists g : set,
+    continuous_map Y Ty X Tx g /\
+    (forall x : set , x :e X -> apply_fun g (apply_fun f x) = x) /\
+    (forall y : set , y :e Y -> apply_fun f (apply_fun g y) = y).
+{
+  exact (andER
+    (continuous_map X Tx Y Ty f)
+    (exists g : set,
+      continuous_map Y Ty X Tx g /\
+      (forall x : set , x :e X -> apply_fun g (apply_fun f x) = x) /\
+      (forall y : set , y :e Y -> apply_fun f (apply_fun g y) = y))
+    Hhome).
+}
+set g := Eps_i (fun g:set =>
+  continuous_map Y Ty X Tx g /\
+  (forall x : set , x :e X -> apply_fun g (apply_fun f x) = x) /\
+  (forall y : set , y :e Y -> apply_fun f (apply_fun g y) = y)).
+claim Hgpack :
+  continuous_map Y Ty X Tx g /\
+  (forall x : set , x :e X -> apply_fun g (apply_fun f x) = x) /\
+  (forall y : set , y :e Y -> apply_fun f (apply_fun g y) = y).
+{
+  exact (Eps_i_ex
+    (fun g:set =>
+      continuous_map Y Ty X Tx g /\
+      (forall x : set , x :e X -> apply_fun g (apply_fun f x) = x) /\
+      (forall y : set , y :e Y -> apply_fun f (apply_fun g y) = y))
+    Hginv).
+}
+claim Hg1 :
+  continuous_map Y Ty X Tx g /\
+  (forall x : set , x :e X -> apply_fun g (apply_fun f x) = x).
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g /\ forall x : set , x :e X -> apply_fun g (apply_fun f x) = x)
+    (forall y : set , y :e Y -> apply_fun f (apply_fun g y) = y)
+    Hgpack).
+}
+claim Hcontg : continuous_map Y Ty X Tx g.
+{
+  exact (andEL
+    (continuous_map Y Ty X Tx g)
+    (forall x : set , x :e X -> apply_fun g (apply_fun f x) = x)
+    Hg1).
+}
+claim Hgf : forall x : set , x :e X -> apply_fun g (apply_fun f x) = x.
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g)
+    (forall x : set , x :e X -> apply_fun g (apply_fun f x) = x)
+    Hg1).
+}
+claim Hfg : forall y : set , y :e Y -> apply_fun f (apply_fun g y) = y.
+{
+  exact (andER
+    (continuous_map Y Ty X Tx g /\ forall x : set , x :e X -> apply_fun g (apply_fun f x) = x)
+    (forall y : set , y :e Y -> apply_fun f (apply_fun g y) = y)
+    Hgpack).
+}
+apply set_ext.
+- let y. assume HyImg.
+  apply (ReplE_impred
+    (X :\: {a,a})
+    (fun x:set => apply_fun f x)
+    y
+    HyImg).
+  let x. assume HxU HyEq.
+  claim HxX : x :e X.
+  { exact (setminusE1 X {a,a} x HxU). }
+  claim HxNot : x /:e {a,a}.
+  { exact (setminusE2 X {a,a} x HxU). }
+  claim HyY : y :e Y.
+  {
+    apply (eq_subst_mem
+      y
+      (apply_fun f x)
+      Y
+      HyEq
+      (Hf_on x HxX)).
+  }
+  claim HyNot : y /:e {apply_fun f a, apply_fun f a}.
+  {
+    assume HyIn : y :e {apply_fun f a, apply_fun f a}.
+    claim HyInSing : y :e {apply_fun f a}.
+    {
+      exact (mem_eqR
+        y
+        {apply_fun f a, apply_fun f a}
+        {apply_fun f a}
+        (eq_symm {apply_fun f a} {apply_fun f a, apply_fun f a}
+          (Sing_eq_UPair (apply_fun f a)))
+        HyIn).
+    }
+    claim HyEqfa : y = apply_fun f a.
+    { exact (SingE (apply_fun f a) y HyInSing). }
+    claim HfxEq : apply_fun f x = apply_fun f a.
+    {
+      exact (eq_i_tra
+        (apply_fun f x)
+        y
+        (apply_fun f a)
+        (eq_symm y (apply_fun f x) HyEq)
+        HyEqfa).
+    }
+    claim Hga : apply_fun g (apply_fun f a) = a.
+    { exact (Hgf a HaX). }
+    claim Hgx : apply_fun g (apply_fun f x) = x.
+    { exact (Hgf x HxX). }
+    claim HgxEq : apply_fun g (apply_fun f x) = apply_fun g (apply_fun f a).
+    { rewrite HfxEq. reflexivity. }
+    claim HxEq : x = a.
+    {
+      exact (eq_i_tra
+        x
+        (apply_fun g (apply_fun f x))
+        a
+        (eq_symm (apply_fun g (apply_fun f x)) x Hgx)
+        (eq_i_tra
+          (apply_fun g (apply_fun f x))
+          (apply_fun g (apply_fun f a))
+          a
+          HgxEq
+          Hga)).
+    }
+    claim HxIn : x :e {a,a}.
+    { exact (eq_subst_mem x a {a,a} HxEq (UPairI1 a a)). }
+    exact (HxNot HxIn).
+  }
+  exact (setminusI
+    Y
+    {apply_fun f a, apply_fun f a}
+    y
+    HyY
+    HyNot).
+- let y. assume HyYminus.
+  claim HyY : y :e Y.
+  { exact (setminusE1 Y {apply_fun f a, apply_fun f a} y HyYminus). }
+  claim HyNot : y /:e {apply_fun f a, apply_fun f a}.
+  { exact (setminusE2 Y {apply_fun f a, apply_fun f a} y HyYminus). }
+  set x := apply_fun g y.
+  claim HxX : x :e X.
+  {
+    exact (continuous_map_function_on
+      Y
+      Ty
+      X
+      Tx
+      g
+      Hcontg
+      y
+      HyY).
+  }
+  claim HxNot : x /:e {a,a}.
+  {
+    assume HxIn : x :e {a,a}.
+    claim HxInSing : x :e {a}.
+    {
+      exact (mem_eqR
+        x
+        {a,a}
+        {a}
+        (eq_symm {a} {a,a} (Sing_eq_UPair a))
+        HxIn).
+    }
+    claim HxEq : x = a.
+    { exact (SingE a x HxInSing). }
+    claim HfxEq : apply_fun f x = apply_fun f a.
+    { rewrite HxEq. reflexivity. }
+    claim HyEqfx : y = apply_fun f x.
+    { exact (eq_symm (apply_fun f x) y (Hfg y HyY)). }
+    claim HyEqfa : y = apply_fun f a.
+    {
+      exact (eq_i_tra
+        y
+        (apply_fun f x)
+        (apply_fun f a)
+        HyEqfx
+        HfxEq).
+    }
+    claim HyIn : y :e {apply_fun f a, apply_fun f a}.
+    { exact (eq_subst_mem y (apply_fun f a) {apply_fun f a, apply_fun f a} HyEqfa (UPairI1 (apply_fun f a) (apply_fun f a))). }
+    exact (HyNot HyIn).
+  }
+  claim HxU : x :e X :\: {a,a}.
+  { exact (setminusI X {a,a} x HxX HxNot). }
+  claim HyInImg : apply_fun f x :e image_of f (X :\: {a,a}).
+  { exact (ReplI (X :\: {a,a}) (fun t:set => apply_fun f t) x HxU). }
+  exact (eq_subst_mem_rev
+    (apply_fun f x)
+    y
+    (image_of f (X :\: {a,a}))
+    (Hfg y HyY)
+    HyInImg).
+Qed.
+
 Theorem ex59_3a_R1_not_homeo_Rn : forall n:set,
   n :e omega -> 2 c= n ->
   ~(exists f:set, homeomorphism R R_standard_topology
