@@ -91561,6 +91561,650 @@ Lemma column_lifts_same_sheet_on_product_ball_with_col_cont :
 }
 Qed.
 
+(** Proven Bob **)
+(** Infrastructure: column lift sheet constancy when 0 :e I2 (anchor at t=0). **)
+Lemma column_lifts_same_sheet_on_product_ball_with_zero :
+  forall E Te B Tb p U slices V0 e0 g0 start_lift I1 I2 vs_choice s0 t0:set,
+  covering_map E Te B Tb p ->
+  topology_on E Te ->
+  slices c= Te ->
+  pairwise_disjoint slices ->
+  Union slices = preimage_of E p U ->
+  V0 :e slices ->
+  continuous_map unit_interval unit_interval_topology B Tb g0 ->
+  e0 :e E ->
+  apply_fun p e0 = apply_fun g0 0 ->
+  start_lift = path_lift E Te B Tb p e0 g0 ->
+  I1 c= unit_interval ->
+  I2 c= unit_interval ->
+  connected_space I1 (subspace_topology unit_interval unit_interval_topology I1) ->
+  connected_space I2 (subspace_topology unit_interval unit_interval_topology I2) ->
+  (forall s:set, s :e I1 ->
+    continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
+  (forall s:set, s :e I1 -> forall t:set, t :e I2 ->
+    apply_fun (apply_fun vs_choice s) t :e U) ->
+  (forall s:set, s :e I1 ->
+    apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
+  s0 :e I1 ->
+  t0 :e I2 ->
+  0 :e I2 ->
+  apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t0 :e V0 ->
+  (forall s:set, s :e I1 -> apply_fun start_lift s :e E) ->
+  forall s:set, s :e I1 -> forall t:set, t :e I2 ->
+    apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t :e V0.
+{
+  let E Te B Tb p U slices V0 e0 g0 start_lift I1 I2 vs_choice s0 t0.
+  assume Hcov HtopE HslicesSub HpdSlices Hunion HV0Slice Hg0Cont He0 Hstart0 HstartLift.
+  assume HI1sub HI2sub HI1conn HI2conn HvsCont HvsU HstartComm Hs0 Ht0 H0I2 Hlift0V0 HstartE.
+  (** Each column over s stays in a single slice (possibly depending on s). **)
+  claim HcolInSlice :
+    forall s:set, s :e I1 ->
+      exists Vs:set, Vs :e slices /\
+        forall t:set, t :e I2 ->
+          apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t :e Vs.
+  {
+    let s.
+    assume HsI1.
+    set f_s := apply_fun vs_choice s.
+    set e_s := apply_fun start_lift s.
+    claim Hf_s_cont :
+      continuous_map unit_interval unit_interval_topology B Tb f_s.
+    { exact (HvsCont s HsI1). }
+    claim He_s_E : e_s :e E.
+    { exact (HstartE s HsI1). }
+    claim Hstart_s : apply_fun p e_s = apply_fun f_s 0.
+    { exact (HstartComm s HsI1). }
+    claim HfU_s : forall t:set, t :e I2 -> apply_fun f_s t :e U.
+    { let t. assume HtI2. exact (HvsU s HsI1 t HtI2). }
+    claim Ht0Pre :
+      apply_fun (path_lift E Te B Tb p e_s f_s) t0 :e preimage_of E p U.
+    {
+      exact (path_lift_pointwise_in_preimage_on_subset
+        E
+        Te
+        B
+        Tb
+        p
+        e_s
+        f_s
+        I2
+        U
+        Hcov
+        He_s_E
+        Hstart_s
+        Hf_s_cont
+        HI2sub
+        HfU_s
+        t0
+        Ht0).
+    }
+    claim Ht0Union :
+      apply_fun (path_lift E Te B Tb p e_s f_s) t0 :e Union slices.
+    {
+      rewrite Hunion.
+      exact Ht0Pre.
+    }
+    apply (UnionE slices (apply_fun (path_lift E Te B Tb p e_s f_s) t0) Ht0Union).
+    let Vs.
+    assume Ht0Pack.
+    claim Ht0Vs : apply_fun (path_lift E Te B Tb p e_s f_s) t0 :e Vs.
+    { exact (andEL
+        (apply_fun (path_lift E Te B Tb p e_s f_s) t0 :e Vs)
+        (Vs :e slices)
+        Ht0Pack). }
+    claim HVsSlice : Vs :e slices.
+    { exact (andER
+        (apply_fun (path_lift E Te B Tb p e_s f_s) t0 :e Vs)
+        (Vs :e slices)
+        Ht0Pack). }
+    witness Vs.
+    apply andI.
+    - exact HVsSlice.
+    - claim HftCont :
+        continuous_map I2 (subspace_topology unit_interval unit_interval_topology I2) E Te
+          (path_lift E Te B Tb p e_s f_s).
+      {
+        exact (path_lift_continuous_on_subset
+          E
+          Te
+          B
+          Tb
+          p
+          e_s
+          f_s
+          I2
+          Hcov
+          He_s_E
+          Hstart_s
+          Hf_s_cont
+          HI2sub).
+      }
+      claim Hcomm :
+        forall x:set, x :e I2 ->
+          apply_fun p (apply_fun (path_lift E Te B Tb p e_s f_s) x) = apply_fun f_s x.
+      {
+        exact (path_lift_commutes_on_subset
+          E
+          Te
+          B
+          Tb
+          p
+          e_s
+          f_s
+          I2
+          Hcov
+          He_s_E
+          Hstart_s
+          Hf_s_cont
+          HI2sub).
+      }
+      let t.
+      assume HtI2.
+      exact (connected_lift_stays_in_anchored_sheet
+        E
+        Te
+        B
+        Tb
+        p
+        U
+        slices
+        Vs
+        I2
+        (subspace_topology unit_interval unit_interval_topology I2)
+        f_s
+        (path_lift E Te B Tb p e_s f_s)
+        t0
+        HtopE
+        HslicesSub
+        HpdSlices
+        Hunion
+        HI2conn
+        HftCont
+        (fun x Hx => Hcomm x Hx)
+        (fun x Hx => HfU_s x Hx)
+        HVsSlice
+        Ht0
+        Ht0Vs
+        t
+        HtI2).
+  }
+  (** Show start_lift(s) lies in some slice, using t=0 in I2. **)
+  claim HstartInSlice :
+    forall s:set, s :e I1 -> exists Vs:set, Vs :e slices /\ apply_fun start_lift s :e Vs.
+  {
+    let s. assume HsI1.
+    claim HsSliceEx :
+      exists Vs:set, Vs :e slices /\
+        forall t:set, t :e I2 ->
+          apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t :e Vs.
+    { exact (HcolInSlice s HsI1). }
+    apply HsSliceEx.
+    let Vs. assume HVsPack.
+    claim HVsSlice : Vs :e slices.
+    { exact (andEL
+        (Vs :e slices)
+        (forall t:set, t :e I2 ->
+          apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t :e Vs)
+        HVsPack). }
+    claim HcolVs :
+      forall t:set, t :e I2 ->
+        apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t :e Vs.
+    { exact (andER
+        (Vs :e slices)
+        (forall t:set, t :e I2 ->
+          apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t :e Vs)
+        HVsPack). }
+    claim HliftPack :
+      continuous_map unit_interval unit_interval_topology E Te
+        (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) /\
+      apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0
+        = apply_fun start_lift s /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun p
+          (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t)
+        = apply_fun (apply_fun vs_choice s) t).
+    {
+      exact (lemma54_1_path_lifting
+        E
+        Te
+        B
+        Tb
+        p
+        (apply_fun start_lift s)
+        (apply_fun vs_choice s)
+        Hcov
+        (HstartE s HsI1)
+        (HstartComm s HsI1)
+        (HvsCont s HsI1)).
+    }
+    claim Hlift0 :
+      apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0
+        = apply_fun start_lift s.
+    {
+      claim HliftLeft :
+        continuous_map unit_interval unit_interval_topology E Te
+          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) /\
+        apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0
+          = apply_fun start_lift s.
+      { exact (andEL
+          (continuous_map unit_interval unit_interval_topology E Te
+            (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) /\
+           apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0
+             = apply_fun start_lift s)
+          (forall t:set, t :e unit_interval ->
+            apply_fun p
+              (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t)
+            = apply_fun (apply_fun vs_choice s) t)
+          HliftPack). }
+      exact (andER
+        (continuous_map unit_interval unit_interval_topology E Te
+          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)))
+        (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0
+          = apply_fun start_lift s)
+        HliftLeft).
+    }
+    claim Hlift0Vs :
+      apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) 0 :e Vs.
+    { exact (HcolVs 0 H0I2). }
+    witness Vs.
+    apply andI.
+    - exact HVsSlice.
+    - rewrite <- Hlift0.
+      exact Hlift0Vs.
+  }
+  (** Continuity of start_lift on I1. **)
+  claim HstartCont :
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te start_lift.
+  {
+    rewrite HstartLift.
+    exact (path_lift_continuous_on_subset
+      E
+      Te
+      B
+      Tb
+      p
+      e0
+      g0
+      I1
+      Hcov
+      He0
+      Hstart0
+      Hg0Cont
+      HI1sub).
+  }
+  (** start_lift image lies in Union slices. **)
+  claim HstartInUnion :
+    forall s:set, s :e I1 -> apply_fun start_lift s :e Union slices.
+  {
+    let s. assume HsI1.
+    claim HsSliceEx : exists Vs:set, Vs :e slices /\ apply_fun start_lift s :e Vs.
+    { exact (HstartInSlice s HsI1). }
+    apply HsSliceEx.
+    let Vs. assume HVsPack.
+    claim HVsSlice : Vs :e slices.
+    { exact (andEL
+        (Vs :e slices)
+        (apply_fun start_lift s :e Vs)
+        HVsPack). }
+    claim HsVs : apply_fun start_lift s :e Vs.
+    { exact (andER
+        (Vs :e slices)
+        (apply_fun start_lift s :e Vs)
+        HVsPack). }
+    exact (UnionI
+      slices
+      (apply_fun start_lift s)
+      Vs
+      HsVs
+      HVsSlice).
+  }
+  claim HstartImgSub : image_of start_lift I1 c= Union slices.
+  {
+    exact (ReplE' I1 (fun x:set => apply_fun start_lift x)
+      (fun y:set => y :e Union slices) HstartInUnion).
+  }
+  (** The start_lift stays in V0 on all of I1. **)
+  claim HstartInV0 :
+    forall s:set, s :e I1 -> apply_fun start_lift s :e V0.
+  {
+    let s. assume HsI1.
+    claim HsSliceEx : exists Vs:set, Vs :e slices /\ apply_fun start_lift s :e Vs.
+    { exact (HstartInSlice s HsI1). }
+    apply HsSliceEx.
+    let Vs. assume HVsPack.
+    claim HVsSlice : Vs :e slices.
+    { exact (andEL
+        (Vs :e slices)
+        (apply_fun start_lift s :e Vs)
+        HVsPack). }
+    claim HsVs : apply_fun start_lift s :e Vs.
+    { exact (andER
+        (Vs :e slices)
+        (apply_fun start_lift s :e Vs)
+        HVsPack). }
+    claim Hs0SliceEx : exists Vs0:set, Vs0 :e slices /\ apply_fun start_lift s0 :e Vs0.
+    { exact (HstartInSlice s0 Hs0). }
+    apply Hs0SliceEx.
+    let Vs0. assume HVs0Pack.
+    claim HVs0Slice : Vs0 :e slices.
+    { exact (andEL
+        (Vs0 :e slices)
+        (apply_fun start_lift s0 :e Vs0)
+        HVs0Pack). }
+    claim Hs0Vs0 : apply_fun start_lift s0 :e Vs0.
+    { exact (andER
+        (Vs0 :e slices)
+        (apply_fun start_lift s0 :e Vs0)
+        HVs0Pack). }
+    (** Identify Vs0 with V0 using the t0 anchor. **)
+    claim Hs0ColEx :
+      exists Vs1:set, Vs1 :e slices /\
+        forall t:set, t :e I2 ->
+          apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t :e Vs1.
+    { exact (HcolInSlice s0 Hs0). }
+    apply Hs0ColEx.
+    let Vs1. assume HVs1Pack.
+    claim HVs1Slice : Vs1 :e slices.
+    { exact (andEL
+        (Vs1 :e slices)
+        (forall t:set, t :e I2 ->
+          apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t :e Vs1)
+        HVs1Pack). }
+    claim HcolVs1 :
+      forall t:set, t :e I2 ->
+        apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t :e Vs1.
+    { exact (andER
+        (Vs1 :e slices)
+        (forall t:set, t :e I2 ->
+          apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t :e Vs1)
+        HVs1Pack). }
+    claim Ht0Vs1 :
+      apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t0 :e Vs1.
+    { exact (HcolVs1 t0 Ht0). }
+    claim Hs0InVs1 :
+      apply_fun start_lift s0 :e Vs1.
+    {
+      claim HliftPack0 :
+        continuous_map unit_interval unit_interval_topology E Te
+          (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) /\
+        apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) 0
+          = apply_fun start_lift s0 /\
+        (forall t:set, t :e unit_interval ->
+          apply_fun p
+            (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t)
+          = apply_fun (apply_fun vs_choice s0) t).
+      {
+        exact (lemma54_1_path_lifting
+          E
+          Te
+          B
+          Tb
+          p
+          (apply_fun start_lift s0)
+          (apply_fun vs_choice s0)
+          Hcov
+          (HstartE s0 Hs0)
+          (HstartComm s0 Hs0)
+          (HvsCont s0 Hs0)).
+      }
+    claim Hlift0s0 :
+      apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) 0
+        = apply_fun start_lift s0.
+    {
+      claim HliftLeft0 :
+        continuous_map unit_interval unit_interval_topology E Te
+          (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) /\
+        apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) 0
+          = apply_fun start_lift s0.
+      { exact (andEL
+          (continuous_map unit_interval unit_interval_topology E Te
+            (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) /\
+           apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) 0
+             = apply_fun start_lift s0)
+          (forall t:set, t :e unit_interval ->
+            apply_fun p
+              (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t)
+            = apply_fun (apply_fun vs_choice s0) t)
+          HliftPack0). }
+      exact (andER
+        (continuous_map unit_interval unit_interval_topology E Te
+          (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)))
+        (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) 0
+          = apply_fun start_lift s0)
+        HliftLeft0).
+    }
+      claim Hlift0Vs1 :
+        apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) 0 :e Vs1.
+      { exact (HcolVs1 0 H0I2). }
+      rewrite <- Hlift0s0.
+      exact Hlift0Vs1.
+    }
+    claim HVs1EqV0 : Vs1 = V0.
+    {
+      apply xm (Vs1 = V0).
+      - assume Heq. exact Heq.
+      - assume Hneq.
+        claim Hdisj : Vs1 :/\: V0 = Empty.
+        {
+          exact (HpdSlices
+            Vs1
+            V0
+            HVs1Slice
+            HV0Slice
+            Hneq).
+        }
+        claim Ht0Int :
+          apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t0
+            :e Vs1 :/\: V0.
+        {
+          exact (binintersectI
+            Vs1
+            V0
+            (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t0)
+            Ht0Vs1
+            Hlift0V0).
+        }
+        claim Ht0Empty :
+          apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t0 :e Empty.
+        {
+          exact (mem_eqR
+            (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t0)
+            (Vs1 :/\: V0)
+            Empty
+            Hdisj
+            Ht0Int).
+        }
+        exact (EmptyE
+          (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t0)
+          Ht0Empty
+          (Vs1 = V0)).
+    }
+    claim HVs0EqV0 : Vs0 = V0.
+    {
+      exact (eq_symm
+        V0
+        Vs0
+        (lemma54_2_sheet_non_switching_local
+          E
+          Te
+          I1
+          (subspace_topology unit_interval unit_interval_topology I1)
+          start_lift
+          slices
+          s0
+          s0
+          Vs0
+          V0
+          HtopE
+          HslicesSub
+          HpdSlices
+          HI1conn
+          HstartCont
+          HstartInUnion
+          Hs0
+          Hs0
+          Hs0Vs0
+          HVs0Slice
+          (mem_eqR (apply_fun start_lift s0) Vs1 V0 HVs1EqV0 Hs0InVs1)
+          HV0Slice)).
+    }
+    claim Hstart_s0_in_V0 : apply_fun start_lift s0 :e V0.
+    {
+      rewrite <- HVs0EqV0.
+      exact Hs0Vs0.
+    }
+    claim HVsEq :
+      Vs = V0.
+    {
+      exact (lemma54_2_sheet_non_switching_local
+        E
+        Te
+        I1
+        (subspace_topology unit_interval unit_interval_topology I1)
+        start_lift
+        slices
+        s0
+        s
+        V0
+        Vs
+        HtopE
+        HslicesSub
+        HpdSlices
+        HI1conn
+        HstartCont
+        HstartInUnion
+        Hs0
+        HsI1
+        Hstart_s0_in_V0
+        HV0Slice
+        HsVs
+        HVsSlice).
+    }
+    rewrite <- HVsEq.
+    exact HsVs.
+  }
+  (** Final: each column stays in V0 using anchor t=0. **)
+  let s. assume HsI1.
+  let t. assume HtI2.
+  set f_s := apply_fun vs_choice s.
+  set e_s := apply_fun start_lift s.
+  claim Hf_s_cont :
+    continuous_map unit_interval unit_interval_topology B Tb f_s.
+  { exact (HvsCont s HsI1). }
+  claim He_s_E : e_s :e E.
+  { exact (HstartE s HsI1). }
+  claim Hstart_s : apply_fun p e_s = apply_fun f_s 0.
+  { exact (HstartComm s HsI1). }
+  claim HfU_s : forall t:set, t :e I2 -> apply_fun f_s t :e U.
+  { let t0'. assume HtI2. exact (HvsU s HsI1 t0' HtI2). }
+  claim HftCont :
+    continuous_map I2 (subspace_topology unit_interval unit_interval_topology I2) E Te
+      (path_lift E Te B Tb p e_s f_s).
+  {
+    exact (path_lift_continuous_on_subset
+      E
+      Te
+      B
+      Tb
+      p
+      e_s
+      f_s
+      I2
+      Hcov
+      He_s_E
+      Hstart_s
+      Hf_s_cont
+      HI2sub).
+  }
+  claim Hcomm :
+    forall x:set, x :e I2 ->
+      apply_fun p (apply_fun (path_lift E Te B Tb p e_s f_s) x) = apply_fun f_s x.
+  {
+    exact (path_lift_commutes_on_subset
+      E
+      Te
+      B
+      Tb
+      p
+      e_s
+      f_s
+      I2
+      Hcov
+      He_s_E
+      Hstart_s
+      Hf_s_cont
+      HI2sub).
+  }
+  claim Hlift0 :
+    apply_fun (path_lift E Te B Tb p e_s f_s) 0 = e_s.
+  {
+    claim HliftPack :
+      continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e_s f_s) /\
+      apply_fun (path_lift E Te B Tb p e_s f_s) 0 = e_s /\
+      (forall t:set, t :e unit_interval ->
+        apply_fun p (apply_fun (path_lift E Te B Tb p e_s f_s) t) = apply_fun f_s t).
+    {
+      exact (lemma54_1_path_lifting
+        E
+        Te
+        B
+        Tb
+        p
+        e_s
+        f_s
+        Hcov
+        He_s_E
+        Hstart_s
+        Hf_s_cont).
+    }
+    claim HliftLeft :
+      continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e_s f_s) /\
+      apply_fun (path_lift E Te B Tb p e_s f_s) 0 = e_s.
+    { exact (andEL
+        (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e_s f_s) /\
+         apply_fun (path_lift E Te B Tb p e_s f_s) 0 = e_s)
+        (forall t:set, t :e unit_interval ->
+          apply_fun p (apply_fun (path_lift E Te B Tb p e_s f_s) t) = apply_fun f_s t)
+        HliftPack). }
+    exact (andER
+      (continuous_map unit_interval unit_interval_topology E Te (path_lift E Te B Tb p e_s f_s))
+      (apply_fun (path_lift E Te B Tb p e_s f_s) 0 = e_s)
+      HliftLeft).
+  }
+  claim Hstart_s_in_V0 : apply_fun start_lift s :e V0.
+  { exact (HstartInV0 s HsI1). }
+  claim Hlift0V0 : apply_fun (path_lift E Te B Tb p e_s f_s) 0 :e V0.
+  { rewrite Hlift0. exact Hstart_s_in_V0. }
+  exact (connected_lift_stays_in_anchored_sheet
+    E
+    Te
+    B
+    Tb
+    p
+    U
+    slices
+    V0
+    I2
+    (subspace_topology unit_interval unit_interval_topology I2)
+    f_s
+    (path_lift E Te B Tb p e_s f_s)
+    0
+    HtopE
+    HslicesSub
+    HpdSlices
+    Hunion
+    HI2conn
+    HftCont
+    (fun x Hx => Hcomm x Hx)
+    (fun x Hx => HfU_s x Hx)
+    HV0Slice
+    H0I2
+    Hlift0V0
+    t
+    HtI2).
+}
+Qed.
+
 (** Infrastructure: existence package for homotopy lifting in Lem 54.2 **)
 Theorem lemma54_2_homotopy_lifting_exists : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
