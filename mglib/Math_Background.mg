@@ -1,7 +1,7 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5480 **)
 (** Balance Charlie 2312 **)
-(** Balance Dave 1793 **)
+(** Balance Dave 1749 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -172718,7 +172718,8 @@ Admitted.
 (** If alpha in U from a in A to b in B, beta in V from b to a, **)
 (** then [alpha . beta] generates an infinite cyclic subgroup of pi_1(X, a). **)
 (** EFFORT: 30 lines textbook, difficulty 7/10, USD 400 **)
-(** Bounty 440 **)
+(** Bounty 484 **)
+(** Lock Dave 1772520373 **)
 Theorem thm63_1a_infinite_cyclic_subgroup : forall X Tx U V A B:set,
   topology_on X Tx -> U :e Tx -> V :e Tx -> X = U :\/: V ->
   A :e subspace_topology X Tx (U :/\: V) ->

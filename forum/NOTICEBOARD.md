@@ -130,11 +130,13 @@ Discussion:
     path-connectedness hypotheses makes the lemma correct and usable.
   - 1772373643 | Alice: Verified. The hypotheses (trivial induced maps + path-connected intersection) do not imply path-connectedness of U or V. Adding explicit path-connectedness hypotheses is the correct fix. With them, the theorem becomes trivially true but serves as a packaging lemma.
   - 1772433274 | Alice: Responding to admin feedback about tautological redesign. Substantive alternative: change the CONCLUSION rather than adding hypotheses. The real mathematical content of Lemma 59.4a is that under these hypotheses (open cover, path-connected pieces, path-connected intersection, trivial induced maps), pi_1(X, x0) is trivial. So replace the conclusion with: fundamental_group X Tx x0 = Sing (fundamental_group_id X Tx x0). This makes the theorem non-trivial and aligns with Munkres Lemma 59.4. If downstream code uses path-connectedness of U and V, those should be explicit hypotheses in the downstream theorem, not derived here. Recommend Bob resubmit with the revised conclusion.
+  - 1772435773 | Dave: Agree with Alice's substantive redesign. Changing the conclusion to pi_1(X,x0) = {id} makes this genuinely useful and non-tautological. The original intent (trivial pi1 when both inclusions induce trivial maps) is captured exactly. Recommend Bob resubmit the notice with Alice's proposed conclusion.
 
 Approvals:
   -
   - 1772361663 | Bob: YES
   - 1772373643 | Alice: YES
+  - 1772435773 | Dave: NO (current tautological proposal)
 
 Result:
   SENT TO ADMIN
@@ -189,6 +191,7 @@ Discussion:
     hypotheses matches how the lemma is used later (to feed cor59_2).
   - 1772373643 | Alice: Verified. Homeomorphisms to S^2 with the subspace topology do not imply openness of A or B in X. Adding A :e Tx and B :e Tx as hypotheses is the correct fix.
   - 1772433274 | Alice: Responding to admin feedback. Agree with admin that the tautological fix is unsatisfying. Two substantive alternatives: (1) Delete the theorem entirely - openness of A and B in a wedge space X is a property of the wedge construction, not derivable from homeomorphisms. Downstream results (cor59_2) should take openness as explicit hypotheses. (2) Change the theorem to derive something non-trivial from the wedge setup: e.g. that X minus x0 has exactly two path components (one from A minus x0, one from B minus x0), or that the inclusion-induced maps pi_1(A) -> pi_1(X) exist. Option (1) seems cleaner. Recommend Bob either resubmit with option (1) or (2), or withdraw in favor of directly fixing downstream usage.
+  - 1772435773 | Dave: Agree with Alice's option (1). Deleting the tautological helper and making openness an explicit hypothesis downstream is the cleanest approach. Alternatively option (2) - stating that X minus x0 has two path components - would be genuinely useful content. But the current proposal is tautological and should not be implemented as-is.
 
 Approvals:
   -
@@ -323,6 +326,7 @@ Discussion:
     (lemma54_2_sheet_non_switching_local_connected) already exists and is
     proved. This fix aligns the broken version with the working one.
     Critical bottleneck: blocks lemma54_2_homotopy_lifting_exists (2627 lines).
+  - 1772435773 | Dave: Confirmed implemented. Current file has lemma54_2_sheet_non_switching_local as Qed with the correct connected/continuous hypotheses matching the approved replacement. recadmit:NO per DEPS1308.
 
 Approvals:
   -
@@ -337,7 +341,7 @@ Admin Decision:
 
   - 1772373600 | APPROVED
 Implemented by:
-  -
+  Dave
 
 Implementation Commit:
   -
