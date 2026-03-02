@@ -308478,6 +308478,16 @@ claim Htree : tree_in_graph T ArcsT X Tx Arcs.
     (graph_vertices X Tx Arcs c= T)
     Hrhs).
 }
+claim HsubT : subgraph_of T X Tx Arcs.
+{
+  exact (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
 claim HVT : graph_vertices X Tx Arcs c= T.
 {
   exact (andER
@@ -309679,6 +309689,16 @@ claim Htree : tree_in_graph T ArcsT X Tx Arcs.
     (graph_vertices X Tx Arcs c= T)
     Hrhs).
 }
+claim HsubT : subgraph_of T X Tx Arcs.
+{
+  exact (tree_in_graph_subgraph_of
+    T
+    ArcsT
+    X
+    Tx
+    Arcs
+    Htree).
+}
 claim HvertSub : graph_vertices X Tx Arcs c= T.
 {
   exact (andER
@@ -309793,6 +309813,28 @@ claim HnotSubEx : exists r:set, r :e A /\ r /:e T.
     T
     A
     Hnsub).
+}
+claim HpArcEx : exists B:set, B :e {B :e Arcs | B c= T} /\ p :e B.
+{
+  exact (subgraph_of_point_in_Y_in_selected_arc
+    T
+    X
+    Tx
+    Arcs
+    p
+    HsubT
+    HpT).
+}
+claim HqArcEx : exists B:set, B :e {B :e Arcs | B c= T} /\ q :e B.
+{
+  exact (subgraph_of_point_in_Y_in_selected_arc
+    T
+    X
+    Tx
+    Arcs
+    q
+    HsubT
+    HqT).
 }
 (** Remaining backward S84.4 contradiction bridge:
     use tree/no-loop structure plus endpoint-in-T data to contradict noncontainment
