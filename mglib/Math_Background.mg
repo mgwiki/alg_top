@@ -215624,7 +215624,46 @@ apply (and5I
       + exact Hprod_eq.
   }
   (** TODO: concatenate the expanded reduced words to get a reduced word in J \/ K, and prove uniqueness **)
-  admit.
+  apply (xm (n12 = 1)).
+  - assume Hn12_1.
+    apply (Hexist_n12_1 Hn12_1).
+    let n. assume Hn_pack.
+    apply Hn_pack. let xs. assume Hxs_pack.
+    apply (and3E
+      (reduced_word (J :\/: K) Hfam efamH n xs)
+      (n <> 0)
+      (word_product multG eG xs n = x)
+      Hxs_pack).
+    assume Hred Hn_ne Hwp.
+    witness n. witness xs.
+    apply and4I.
+    + exact Hred.
+    + exact Hn_ne.
+    + exact Hwp.
+    + (** TODO: uniqueness for n12=1 case **)
+      admit.
+  - assume Hn12_ne1.
+    apply (xm (n12 = 2)).
+    + assume Hn12_2.
+      apply (Hexist_n12_2 Hn12_2).
+      let n. assume Hn_pack.
+      apply Hn_pack. let xs. assume Hxs_pack.
+      apply (and3E
+        (reduced_word (J :\/: K) Hfam efamH n xs)
+        (n <> 0)
+        (word_product multG eG xs n = x)
+        Hxs_pack).
+      assume Hred Hn_ne Hwp.
+      witness n. witness xs.
+      apply and4I.
+      * exact Hred.
+      * exact Hn_ne.
+      * exact Hwp.
+      * (** TODO: uniqueness for n12=2 case **)
+        admit.
+    + assume Hn12_ne2.
+      (** TODO: general concatenation + uniqueness for n12 >= 3 **)
+      admit.
 Admitted.
 
 (** from S68 Thm 68.7 (line 2972 in algtop.tex): quotient of free product **)
