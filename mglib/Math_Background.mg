@@ -216030,22 +216030,235 @@ apply (and5I
   (** TODO: concatenate the expanded reduced words to get a reduced word in J \/ K, and prove uniqueness **)
   apply (xm (n12 = 1)).
   - assume Hn12_1.
-    apply (Hexist_n12_1 Hn12_1).
+    apply (Hexist_n12_1_side Hn12_1).
     let n. assume Hn_pack.
     apply Hn_pack. let xs. assume Hxs_pack.
-    apply (and3E
+    apply (and5E
       (reduced_word (J :\/: K) Hfam efamH n xs)
       (n <> 0)
       (word_product multG eG xs n = x)
+      ((forall j:set, j :e n -> apply_fun xs j :e G1) \/
+       (forall j:set, j :e n -> apply_fun xs j :e G2))
+      (forall j:set, j :e n -> apply_fun xs j <> eG)
       Hxs_pack).
-    assume Hred Hn_ne Hwp.
+    assume Hred Hn_ne Hwp Hor HallNe.
     witness n. witness xs.
     apply and4I.
     + exact Hred.
     + exact Hn_ne.
     + exact Hwp.
     + (** TODO: uniqueness for n12=1 case **)
-      admit.
+      let n'. let xs'.
+      assume Hred' Hn'_ne Hwp'.
+      claim HallNe' : forall j:set, j :e n' -> apply_fun xs' j <> eG.
+      {
+        let j. assume Hj.
+        apply (xm (n' = 1)).
+        - assume Hn1.
+          claim Hj1 : j :e 1.
+          { exact (eq_subst_mem_set j n' 1 Hj Hn1). }
+          claim Hj1' : j :e ordsucc 0.
+          { exact (eq_subst_mem_set j 1 (ordsucc 0) Hj1
+              (eq_symm 1 (ordsucc 0) ordsucc_0_eq_1_nat)). }
+          apply (ordsuccE 0 j Hj1').
+          * assume Hj0 : j :e 0.
+            exact (FalseE (EmptyE j Hj0) (apply_fun xs' j <> eG)).
+          * assume Hj0eq : j = 0.
+            claim Hxs0_G : apply_fun xs' 0 :e G.
+            {
+              apply (reduced_word_in_G G multG eG invG (J :\/: K) Hfam efamH n' xs'
+                Hsubfam_union Hred' 0).
+              rewrite Hn1.
+              exact (nat_0_in_ordsucc 0 nat_0).
+            }
+            claim Hwp1' : word_product multG eG xs' 1 =
+              apply_fun multG (word_product multG eG xs' 0, apply_fun xs' 0).
+            { exact (word_product_succ multG eG xs' 0 nat_0). }
+            claim Hwp0' : word_product multG eG xs' 0 = eG.
+            { exact (nat_primrec_0 eG
+                (fun i r => apply_fun multG (r, apply_fun xs' i))). }
+            claim HidL :
+              apply_fun multG (eG, apply_fun xs' 0) = apply_fun xs' 0.
+            {
+              apply (and6E
+                (function_on multG (setprod G G) G)
+                (function_on invG G G)
+                (eG :e G)
+                (forall y z w:set, y :e G -> z :e G -> w :e G ->
+                  apply_fun multG (apply_fun multG (y, z), w) =
+                    apply_fun multG (y, apply_fun multG (z, w)))
+                (forall y:set, y :e G -> apply_fun multG (eG, y) = y /\ apply_fun multG (y, eG) = y)
+                (forall y:set, y :e G ->
+                  apply_fun multG (y, apply_fun invG y) = eG /\
+                  apply_fun multG (apply_fun invG y, y) = eG)
+                Hgrp).
+              assume _ _ _ _ Hid _.
+              exact (andEL
+                (apply_fun multG (eG, apply_fun xs' 0) = apply_fun xs' 0)
+                (apply_fun multG (apply_fun xs' 0, eG) = apply_fun xs' 0)
+                (Hid (apply_fun xs' 0) Hxs0_G)).
+            }
+            claim Hwp1_eq : word_product multG eG xs' 1 = apply_fun xs' 0.
+            { rewrite Hwp1'. rewrite Hwp0'. exact HidL. }
+            claim Hwp1_eq_x : word_product multG eG xs' 1 = x.
+            { rewrite <- Hn1. exact Hwp'. }
+            claim Hxs0_eq_x : apply_fun xs' 0 = x.
+            { exact (eq_i_tra (apply_fun xs' 0) (word_product multG eG xs' 1) x
+                (eq_symm (word_product multG eG xs' 1) (apply_fun xs' 0) Hwp1_eq)
+                Hwp1_eq_x). }
+            rewrite Hj0eq.
+            rewrite Hxs0_eq_x.
+            exact Hxne.
+        - assume Hn_ne1.
+          exact (reduced_word_no_eG_all
+            G multG eG invG (J :\/: K) Hfam efamH
+            n' xs' Hgrp Hsubfam_union Hred' Hn'_ne Hn_ne1 j Hj).
+      }
+      apply Hor.
+      * assume HallG1.
+        claim HxG1 : x :e G1.
+        { rewrite <- Hwp. exact (Hword_product_in_G1 n xs Hred HallG1). }
+        claim HredJ : reduced_word J (graph J (fun a:set => apply_fun Hfam a))
+          (graph J (fun a:set => apply_fun efamH a)) n xs.
+        { exact (Hred_J_of_union n xs Hred HallG1 HallNe). }
+        claim Hside_xs' : forall j:set, j :e n' -> apply_fun xs' j :e G1.
+        { admit. }
+        claim HredJ' : reduced_word J (graph J (fun a:set => apply_fun Hfam a))
+          (graph J (fun a:set => apply_fun efamH a)) n' xs'.
+        { exact (Hred_J_of_union n' xs' Hred' Hside_xs' HallNe'). }
+        apply (and5E
+          (group_structure G1 multG eG invG)
+          (forall alpha:set, alpha :e J ->
+            subgroup_of (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) G1 multG eG invG)
+          (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+            forall y:set, y :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha ->
+              y :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) beta -> y = eG)
+          (subgroups_generate G1 multG eG invG J (graph J (fun a:set => apply_fun Hfam a)))
+          (forall y:set, y :e G1 -> y <> eG ->
+            exists m ys:set,
+              reduced_word J (graph J (fun a:set => apply_fun Hfam a))
+                (graph J (fun a:set => apply_fun efamH a)) m ys /\ m <> 0 /\
+              word_product multG eG ys m = y /\
+              (forall m' ys':set,
+                reduced_word J (graph J (fun a:set => apply_fun Hfam a))
+                  (graph J (fun a:set => apply_fun efamH a)) m' ys' -> m' <> 0 ->
+                word_product multG eG ys' m' = y ->
+                m = m' /\ (forall i:set, i :e m -> apply_fun ys i = apply_fun ys' i)))
+          Hfp1).
+        assume _ _ _ _ HuniqJ.
+        apply (HuniqJ x HxG1 Hxne).
+        let m0. assume Hm0_pack.
+        apply Hm0_pack. let ys0. assume Hys0_pack.
+        apply (and4E
+          (reduced_word J (graph J (fun a:set => apply_fun Hfam a))
+            (graph J (fun a:set => apply_fun efamH a)) m0 ys0)
+          (m0 <> 0)
+          (word_product multG eG ys0 m0 = x)
+          (forall m' ys':set,
+            reduced_word J (graph J (fun a:set => apply_fun Hfam a))
+              (graph J (fun a:set => apply_fun efamH a)) m' ys' -> m' <> 0 ->
+            word_product multG eG ys' m' = x ->
+            m0 = m' /\ (forall i:set, i :e m0 -> apply_fun ys0 i = apply_fun ys' i))
+          Hys0_pack).
+        assume Hred0 Hm0_ne Hwp0 Huniq0.
+        claim Huniq_xs : m0 = n /\ (forall i:set, i :e m0 -> apply_fun ys0 i = apply_fun xs i).
+        { exact (Huniq0 n xs HredJ Hn_ne Hwp). }
+        claim Huniq_xs' : m0 = n' /\ (forall i:set, i :e m0 -> apply_fun ys0 i = apply_fun xs' i).
+        { exact (Huniq0 n' xs' HredJ' Hn'_ne Hwp'). }
+        claim Hn_eq : n = n'.
+        {
+          claim Hm0_eq_n : m0 = n.
+          { exact (andEL (m0 = n) (forall i:set, i :e m0 -> apply_fun ys0 i = apply_fun xs i) Huniq_xs). }
+          claim Hm0_eq_n' : m0 = n'.
+          { exact (andEL (m0 = n') (forall i:set, i :e m0 -> apply_fun ys0 i = apply_fun xs' i) Huniq_xs'). }
+          exact (eq_i_tra n m0 n'
+            (eq_symm m0 n Hm0_eq_n)
+            Hm0_eq_n').
+        }
+        apply andI.
+        - exact Hn_eq.
+        - let i. assume Hi : i :e n.
+          claim Hi0 : i :e m0.
+          { exact (eq_subst_mem_set i n m0 Hi (eq_symm m0 n (andEL (m0 = n) (forall i:set, i :e m0 -> apply_fun ys0 i = apply_fun xs i) Huniq_xs))). }
+          claim Hys0_xs : apply_fun ys0 i = apply_fun xs i.
+          { exact (andER (m0 = n) (forall i:set, i :e m0 -> apply_fun ys0 i = apply_fun xs i) Huniq_xs i Hi0). }
+          claim Hys0_xs' : apply_fun ys0 i = apply_fun xs' i.
+          { exact (andER (m0 = n') (forall i:set, i :e m0 -> apply_fun ys0 i = apply_fun xs' i) Huniq_xs' i Hi0). }
+          exact (eq_i_tra (apply_fun xs i) (apply_fun ys0 i) (apply_fun xs' i)
+            (eq_symm (apply_fun ys0 i) (apply_fun xs i) Hys0_xs)
+            Hys0_xs').
+      * assume HallG2.
+        claim HxG2 : x :e G2.
+        { rewrite <- Hwp. exact (Hword_product_in_G2 n xs Hred HallG2). }
+        claim HredK : reduced_word K (graph K (fun b:set => apply_fun Hfam b))
+          (graph K (fun b:set => apply_fun efamH b)) n xs.
+        { exact (Hred_K_of_union n xs Hred HallG2 HallNe). }
+        claim Hside_xs' : forall j:set, j :e n' -> apply_fun xs' j :e G2.
+        { admit. }
+        claim HredK' : reduced_word K (graph K (fun b:set => apply_fun Hfam b))
+          (graph K (fun b:set => apply_fun efamH b)) n' xs'.
+        { exact (Hred_K_of_union n' xs' Hred' Hside_xs' HallNe'). }
+        apply (and5E
+          (group_structure G2 multG eG invG)
+          (forall beta:set, beta :e K ->
+            subgroup_of (apply_fun (graph K (fun b:set => apply_fun Hfam b)) beta) G2 multG eG invG)
+          (forall beta gamma:set, beta :e K -> gamma :e K -> beta <> gamma ->
+            forall y:set, y :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) beta ->
+              y :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) gamma -> y = eG)
+          (subgroups_generate G2 multG eG invG K (graph K (fun b:set => apply_fun Hfam b)))
+          (forall y:set, y :e G2 -> y <> eG ->
+            exists m ys:set,
+              reduced_word K (graph K (fun b:set => apply_fun Hfam b))
+                (graph K (fun b:set => apply_fun efamH b)) m ys /\ m <> 0 /\
+              word_product multG eG ys m = y /\
+              (forall m' ys':set,
+                reduced_word K (graph K (fun b:set => apply_fun Hfam b))
+                  (graph K (fun b:set => apply_fun efamH b)) m' ys' -> m' <> 0 ->
+                word_product multG eG ys' m' = y ->
+                m = m' /\ (forall i:set, i :e m -> apply_fun ys i = apply_fun ys' i)))
+          Hfp2).
+        assume _ _ _ _ HuniqK.
+        apply (HuniqK x HxG2 Hxne).
+        let m0. assume Hm0_pack.
+        apply Hm0_pack. let ys0. assume Hys0_pack.
+        apply (and4E
+          (reduced_word K (graph K (fun b:set => apply_fun Hfam b))
+            (graph K (fun b:set => apply_fun efamH b)) m0 ys0)
+          (m0 <> 0)
+          (word_product multG eG ys0 m0 = x)
+          (forall m' ys':set,
+            reduced_word K (graph K (fun b:set => apply_fun Hfam b))
+              (graph K (fun b:set => apply_fun efamH b)) m' ys' -> m' <> 0 ->
+            word_product multG eG ys' m' = x ->
+            m0 = m' /\ (forall i:set, i :e m0 -> apply_fun ys0 i = apply_fun ys' i))
+          Hys0_pack).
+        assume Hred0 Hm0_ne Hwp0 Huniq0.
+        claim Huniq_xs : m0 = n /\ (forall i:set, i :e m0 -> apply_fun ys0 i = apply_fun xs i).
+        { exact (Huniq0 n xs HredK Hn_ne Hwp). }
+        claim Huniq_xs' : m0 = n' /\ (forall i:set, i :e m0 -> apply_fun ys0 i = apply_fun xs' i).
+        { exact (Huniq0 n' xs' HredK' Hn'_ne Hwp'). }
+        claim Hn_eq : n = n'.
+        {
+          claim Hm0_eq_n : m0 = n.
+          { exact (andEL (m0 = n) (forall i:set, i :e m0 -> apply_fun ys0 i = apply_fun xs i) Huniq_xs). }
+          claim Hm0_eq_n' : m0 = n'.
+          { exact (andEL (m0 = n') (forall i:set, i :e m0 -> apply_fun ys0 i = apply_fun xs' i) Huniq_xs'). }
+          exact (eq_i_tra n m0 n'
+            (eq_symm m0 n Hm0_eq_n)
+            Hm0_eq_n').
+        }
+        apply andI.
+        - exact Hn_eq.
+        - let i. assume Hi : i :e n.
+          claim Hi0 : i :e m0.
+          { exact (eq_subst_mem_set i n m0 Hi (eq_symm m0 n (andEL (m0 = n) (forall i:set, i :e m0 -> apply_fun ys0 i = apply_fun xs i) Huniq_xs))). }
+          claim Hys0_xs : apply_fun ys0 i = apply_fun xs i.
+          { exact (andER (m0 = n) (forall i:set, i :e m0 -> apply_fun ys0 i = apply_fun xs i) Huniq_xs i Hi0). }
+          claim Hys0_xs' : apply_fun ys0 i = apply_fun xs' i.
+          { exact (andER (m0 = n') (forall i:set, i :e m0 -> apply_fun ys0 i = apply_fun xs' i) Huniq_xs' i Hi0). }
+          exact (eq_i_tra (apply_fun xs i) (apply_fun ys0 i) (apply_fun xs' i)
+            (eq_symm (apply_fun ys0 i) (apply_fun xs i) Hys0_xs)
+            Hys0_xs').
   - assume Hn12_ne1.
     apply (xm (n12 = 2)).
     + assume Hn12_2.
