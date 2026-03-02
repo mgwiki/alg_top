@@ -310275,6 +310275,12 @@ claim Hcycle :
         HglgT'
         HEArcsT')).
   }
+  (** Bridge: ArcsT' arcs are ambient arcs (known formalization gap). **)
+  claim HArcsT'_sub : ArcsT' c= Arcs. { admit. }
+  claim HEArcs : E :e Arcs. { exact (HArcsT'_sub E HEArcsT'). }
+  claim HEeqA : E = A.
+  { exact (HrArcUnique E HEArcs HESubT' HrE). }
+  claim HAArcsT' : A :e ArcsT'. { rewrite <- HEeqA. exact HEArcsT'. }
   apply HexpqE.
   let e1.
   assume He1pack.
@@ -310332,6 +310338,76 @@ claim Hcycle :
       Htree'
       HEArcsT'
       HendE).
+  }
+  (** Convert A-endpoints to the T' subspace topology. **)
+  claim HtopX : topology_on X Tx.
+  {
+    exact (general_linear_graph_topology_on
+      X
+      Tx
+      Arcs
+      HglgX).
+  }
+  claim HT'subX : T' c= X.
+  {
+    exact (tree_in_graph_subset_X
+      T'
+      ArcsT'
+      X
+      Tx
+      Arcs
+      Htree').
+  }
+  claim HsubTopEqA :
+    subspace_topology T' (subspace_topology X Tx T') A =
+    subspace_topology X Tx A.
+  {
+    exact (ex16_1_subspace_transitive
+      X
+      Tx
+      T'
+      A
+      HtopX
+      HT'subX
+      HAsubT').
+  }
+  claim HendT' :
+    end_points_of_arc A (subspace_topology T' (subspace_topology X Tx T') A) p q.
+  {
+    rewrite HsubTopEqA.
+    exact Hend.
+  }
+  claim HpV_T' :
+    p :e graph_vertices T' (subspace_topology X Tx T') ArcsT'.
+  {
+    exact (tree_in_graph_arc_endpoint_left_vertex_T
+      T'
+      ArcsT'
+      X
+      Tx
+      Arcs
+      A
+      p
+      q
+      Htree'
+      HAArcsT'
+      HendT').
+  }
+  claim HqV_T' :
+    q :e graph_vertices T' (subspace_topology X Tx T') ArcsT'.
+  {
+    exact (tree_in_graph_arc_endpoint_right_vertex_T
+      T'
+      ArcsT'
+      X
+      Tx
+      Arcs
+      A
+      p
+      q
+      Htree'
+      HAArcsT'
+      HendT').
   }
   (** Remaining work: build a closed reduced edge path in T' using E and A. **)
   admit.
