@@ -211457,7 +211457,83 @@ apply (and5I
     + assume HbeK : beta :e K.
       exact (HinterK alpha beta HalK HbeK Hneq).
 - (** TODO: subgroups_generate for the union family **)
-  admit.
+  prove subgroups_generate G multG eG invG (J :\/: K) Hfam.
+  prove (group_structure G multG eG invG /\
+    (forall alpha:set, alpha :e J :\/: K ->
+      subgroup_of (apply_fun Hfam alpha) G multG eG invG) /\
+    (forall x:set, x :e G ->
+      x = eG \/
+      exists n:set, n :e omega /\ n <> 0 /\
+      exists xs:set, function_on xs n G /\
+        (forall i:set, i :e n ->
+          exists alpha:set, alpha :e J :\/: K /\ apply_fun xs i :e apply_fun Hfam alpha) /\
+        x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)).
+  apply and3I.
+  + exact Hgrp.
+  + let alpha. assume Hal : alpha :e J :\/: K.
+    apply (binunionE J K alpha Hal).
+    * assume HalJ : alpha :e J.
+      exact (subgroup_of_trans
+        (apply_fun Hfam alpha) G1 G multG eG invG
+        (Hsubfam1 alpha HalJ)
+        Hsub1).
+    * assume HalK : alpha :e K.
+      exact (subgroup_of_trans
+        (apply_fun Hfam alpha) G2 G multG eG invG
+        (Hsubfam2 alpha HalK)
+        Hsub2).
+  + let x. assume HxG : x :e G.
+    claim Hgen12 :
+      x = eG \/
+      exists n:set, n :e omega /\ n <> 0 /\
+      exists xs:set, function_on xs n G /\
+        (forall i:set, i :e n ->
+          exists alpha:set, alpha :e (UPair 0 1) /\ apply_fun xs i :e apply_fun Gfam12 alpha) /\
+        x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n.
+    {
+      apply (and5E
+        (group_structure G multG eG invG)
+        (forall alpha:set, alpha :e (UPair 0 1) ->
+          subgroup_of (apply_fun Gfam12 alpha) G multG eG invG)
+        (forall alpha beta:set, alpha :e (UPair 0 1) -> beta :e (UPair 0 1) -> alpha <> beta ->
+          forall y:set, y :e apply_fun Gfam12 alpha -> y :e apply_fun Gfam12 beta -> y = eG)
+        (subgroups_generate G multG eG invG (UPair 0 1) Gfam12)
+        (forall y:set, y :e G -> y <> eG ->
+          exists n xs:set,
+            reduced_word (UPair 0 1) Gfam12 (graph (UPair 0 1) (fun _:set => eG)) n xs /\ n <> 0 /\
+            word_product multG eG xs n = y /\
+            (forall n' xs':set,
+              reduced_word (UPair 0 1) Gfam12 (graph (UPair 0 1) (fun _:set => eG)) n' xs' -> n' <> 0 ->
+              word_product multG eG xs' n' = y ->
+              n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
+        Hfp).
+      assume _ _ _ Hgen _.
+      apply (and3E
+        (group_structure G multG eG invG)
+        (forall alpha:set, alpha :e (UPair 0 1) ->
+          subgroup_of (apply_fun Gfam12 alpha) G multG eG invG)
+        (forall y:set, y :e G ->
+          y = eG \/
+          exists n:set, n :e omega /\ n <> 0 /\
+          exists xs:set, function_on xs n G /\
+            (forall i:set, i :e n ->
+              exists alpha:set, alpha :e (UPair 0 1) /\ apply_fun xs i :e apply_fun Gfam12 alpha) /\
+            y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+        Hgen).
+      assume _ _ Hgenx.
+      exact (Hgenx x HxG).
+    }
+    apply (Hgen12
+      (x = eG \/
+       exists n:set, n :e omega /\ n <> 0 /\
+       exists xs:set, function_on xs n G /\
+         (forall i:set, i :e n ->
+           exists alpha:set, alpha :e J :\/: K /\ apply_fun xs i :e apply_fun Hfam alpha) /\
+         x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)).
+    - assume Hxe : x = eG. apply orIL. exact Hxe.
+    - assume Hxword.
+      (** TODO: expand each factor in G1/G2 using Hfp1/Hfp2 and concatenate words **)
+      admit.
 - (** TODO: reduced word uniqueness for the union family **)
   admit.
 Admitted.
