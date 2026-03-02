@@ -1,4 +1,4 @@
-(** Balance Alice 4092 **)
+(** Balance Alice 4210 **)
 (** Balance Bob 5494 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
@@ -189495,8 +189495,8 @@ Qed.
 (** group H and any family {y_alpha} of elements of H, there is a unique homomorphism **)
 (** h: G -> H with h(a_alpha) = y_alpha. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
-(** Bounty 118 **)
-(** Lock Alice 1772497310 **)
+(** Collected Alice 118 **)
+(** Proven Alice **)
 Theorem lemma67_7_extension_free_abelian :
   forall G mult e inv J basis:set,
   abelian_group G mult e inv ->
@@ -190453,9 +190453,162 @@ apply iffI.
           apply_fun alphas i <> apply_fun alphas j) /\
         x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun xs i)) n.
     { let x. assume HxG : x :e G.
-      (** TODO: J <> Empty needed - backward direction has statement bug for J = Empty **)
-      claim HJne : J <> Empty.
-      { admit. }
+      (** Case split on J = Empty: if J empty, G is trivial via universal property **)
+      apply (xm (J = Empty)).
+      + assume HJemp : J = Empty.
+        claim HgrpG_loc : group_structure G mult e inv.
+        { exact (andEL (group_structure G mult e inv)
+            (forall a b:set, a :e G -> b :e G ->
+              apply_fun mult (a, b) = apply_fun mult (b, a))
+            HabG). }
+        claim HeG : e :e G.
+        { apply (and6E
+            (function_on mult (setprod G G) G) (function_on inv G G)
+            (e :e G)
+            (forall a b c:set, a :e G -> b :e G -> c :e G ->
+              apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+            (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+            (forall a:set, a :e G ->
+              apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+            HgrpG_loc).
+          assume _ _ HeG0 _ _ _. exact HeG0. }
+        claim Hid_law : apply_fun mult (e, e) = e.
+        { apply (and6E
+            (function_on mult (setprod G G) G) (function_on inv G G)
+            (e :e G)
+            (forall a b c:set, a :e G -> b :e G -> c :e G ->
+              apply_fun mult (apply_fun mult (a, b), c) = apply_fun mult (a, apply_fun mult (b, c)))
+            (forall a:set, a :e G -> apply_fun mult (e, a) = a /\ apply_fun mult (a, e) = a)
+            (forall a:set, a :e G ->
+              apply_fun mult (a, apply_fun inv a) = e /\ apply_fun mult (apply_fun inv a, a) = e)
+            HgrpG_loc).
+          assume _ _ _ _ Hid_law0 _.
+          exact (andEL (apply_fun mult (e, e) = e) (apply_fun mult (e, e) = e) (Hid_law0 e HeG)). }
+        (** Use universal property with H = G, ys = empty function **)
+        set ys_empty := Empty.
+        claim Hys_fn : function_on ys_empty J G.
+        { rewrite HJemp. let y. assume Hy : y :e Empty.
+          exact (FalseE (EmptyE y Hy) (apply_fun ys_empty y :e G)). }
+        claim Hback_G :
+          exists h:set,
+            group_homomorphism G mult G mult h /\
+            (forall alpha:set, alpha :e J ->
+              apply_fun h (apply_fun basis alpha) = apply_fun ys_empty alpha) /\
+            (forall h':set, group_homomorphism G mult G mult h' ->
+              (forall alpha:set, alpha :e J ->
+                apply_fun h' (apply_fun basis alpha) = apply_fun ys_empty alpha) ->
+              forall y:set, y :e G -> apply_fun h' y = apply_fun h y).
+        { exact (Hback G mult e inv HabG ys_empty Hys_fn). }
+        apply Hback_G. let h. assume Hh.
+        claim Huniq : forall h':set, group_homomorphism G mult G mult h' ->
+          (forall alpha:set, alpha :e J ->
+            apply_fun h' (apply_fun basis alpha) = apply_fun ys_empty alpha) ->
+          forall y:set, y :e G -> apply_fun h' y = apply_fun h y.
+        { exact (andER
+            (group_homomorphism G mult G mult h /\
+             (forall alpha:set, alpha :e J ->
+               apply_fun h (apply_fun basis alpha) = apply_fun ys_empty alpha))
+            (forall h':set, group_homomorphism G mult G mult h' ->
+              (forall alpha:set, alpha :e J ->
+                apply_fun h' (apply_fun basis alpha) = apply_fun ys_empty alpha) ->
+              forall y:set, y :e G -> apply_fun h' y = apply_fun h y)
+            Hh). }
+        claim Hvac : forall alpha:set, alpha :e J -> False.
+        { rewrite HJemp. let alpha. assume Halpha : alpha :e Empty. exact (EmptyE alpha Halpha). }
+        (** Identity map id_G := graph G (fun y => y) is a group_homomorphism **)
+        set id_G := graph G (fun y:set => y).
+        claim Hid_fn : function_on id_G G G.
+        { let y. assume HyG : y :e G.
+          rewrite (apply_fun_graph G (fun z:set => z) y HyG). exact HyG. }
+        claim Hid_mult : forall a b:set, a :e G -> b :e G ->
+          apply_fun id_G (apply_fun mult (a, b)) =
+          apply_fun mult (apply_fun id_G a, apply_fun id_G b).
+        { let a. let b. assume HaG : a :e G. assume HbG : b :e G.
+          claim HmG : apply_fun mult (a, b) :e G.
+          { exact (group_source_mult_closure G mult e inv HgrpG_loc a b HaG HbG). }
+          rewrite (apply_fun_graph G (fun z:set => z) (apply_fun mult (a, b)) HmG).
+          rewrite (apply_fun_graph G (fun z:set => z) a HaG).
+          rewrite (apply_fun_graph G (fun z:set => z) b HbG).
+          reflexivity. }
+        claim Hid_hom : group_homomorphism G mult G mult id_G.
+        { exact (andI
+            (function_on id_G G G)
+            (forall a b:set, a :e G -> b :e G ->
+              apply_fun id_G (apply_fun mult (a, b)) =
+              apply_fun mult (apply_fun id_G a, apply_fun id_G b))
+            Hid_fn Hid_mult). }
+        claim Hid_sat : forall alpha:set, alpha :e J ->
+          apply_fun id_G (apply_fun basis alpha) = apply_fun ys_empty alpha.
+        { let alpha. assume Halpha : alpha :e J.
+          exact (FalseE (Hvac alpha Halpha)
+            (apply_fun id_G (apply_fun basis alpha) = apply_fun ys_empty alpha)). }
+        (** Constant-e map zero_G := graph G (fun y => e) is a group_homomorphism **)
+        set zero_G := graph G (fun y:set => e).
+        claim Hzero_fn : function_on zero_G G G.
+        { let y. assume HyG : y :e G.
+          rewrite (apply_fun_graph G (fun z:set => e) y HyG). exact HeG. }
+        claim Hzero_mult : forall a b:set, a :e G -> b :e G ->
+          apply_fun zero_G (apply_fun mult (a, b)) =
+          apply_fun mult (apply_fun zero_G a, apply_fun zero_G b).
+        { let a. let b. assume HaG : a :e G. assume HbG : b :e G.
+          claim HmG : apply_fun mult (a, b) :e G.
+          { exact (group_source_mult_closure G mult e inv HgrpG_loc a b HaG HbG). }
+          rewrite (apply_fun_graph G (fun z:set => e) (apply_fun mult (a, b)) HmG).
+          rewrite (apply_fun_graph G (fun z:set => e) a HaG).
+          rewrite (apply_fun_graph G (fun z:set => e) b HbG).
+          symmetry. exact Hid_law. }
+        claim Hzero_hom : group_homomorphism G mult G mult zero_G.
+        { exact (andI
+            (function_on zero_G G G)
+            (forall a b:set, a :e G -> b :e G ->
+              apply_fun zero_G (apply_fun mult (a, b)) =
+              apply_fun mult (apply_fun zero_G a, apply_fun zero_G b))
+            Hzero_fn Hzero_mult). }
+        claim Hzero_sat : forall alpha:set, alpha :e J ->
+          apply_fun zero_G (apply_fun basis alpha) = apply_fun ys_empty alpha.
+        { let alpha. assume Halpha : alpha :e J.
+          exact (FalseE (Hvac alpha Halpha)
+            (apply_fun zero_G (apply_fun basis alpha) = apply_fun ys_empty alpha)). }
+        (** By uniqueness, id and zero agree on all x => x = e **)
+        claim Hid_val : apply_fun id_G x = x.
+        { exact (apply_fun_graph G (fun y:set => y) x HxG). }
+        claim Hzero_val : apply_fun zero_G x = e.
+        { exact (apply_fun_graph G (fun y:set => e) x HxG). }
+        claim Hid_h : apply_fun id_G x = apply_fun h x.
+        { exact (Huniq id_G Hid_hom Hid_sat x HxG). }
+        claim Hzero_h : apply_fun zero_G x = apply_fun h x.
+        { exact (Huniq zero_G Hzero_hom Hzero_sat x HxG). }
+        (** Chain: x = id_G(x) = h(x) = zero_G(x) = e **)
+        claim Hx_eq_e : x = e.
+        { rewrite <- Hid_val.
+          rewrite Hid_h.
+          rewrite <- Hzero_h.
+          exact Hzero_val. }
+        (** Now x = e, use n = 0 for trivial representation **)
+        witness 0.
+        apply andI.
+        - exact (nat_p_omega 0 nat_0).
+        - witness Empty.
+          apply andI.
+          * let i. assume Hi : i :e 0. exact (FalseE (EmptyE i Hi) (apply_fun Empty i :e J)).
+          * witness Empty.
+            apply (and4I
+              (function_on Empty 0 G)
+              (forall i:set, i :e 0 -> apply_fun Empty i :e apply_fun Gfam (apply_fun Empty i))
+              (forall i j:set, i :e 0 -> j :e 0 -> i <> j -> apply_fun Empty i <> apply_fun Empty j)
+              (x = nat_primrec e (fun i r => apply_fun mult (r, apply_fun Empty i)) 0)).
+            - let i. assume Hi : i :e 0. exact (FalseE (EmptyE i Hi) (apply_fun Empty i :e G)).
+            - let i. assume Hi : i :e 0.
+              exact (FalseE (EmptyE i Hi)
+                (apply_fun Empty i :e apply_fun Gfam (apply_fun Empty i))).
+            - let i. let j. assume Hi : i :e 0.
+              exact (FalseE (EmptyE i Hi)
+                (j :e 0 -> i <> j -> apply_fun Empty i <> apply_fun Empty j)).
+            - rewrite Hx_eq_e.
+              symmetry.
+              exact (nat_primrec_0 e (fun i r => apply_fun mult (r, apply_fun Empty i))).
+      + (** Case J <> Empty: original proof **)
+        assume HJne : J <> Empty.
       set alpha0 := Eps_i (fun a:set => a :e J).
       claim Hal0 : alpha0 :e J.
       { exact (Eps_i_ex (fun a:set => a :e J) (nonempty_has_element J HJne)). }
@@ -192127,7 +192280,7 @@ apply iffI.
              (exists j:set, j :e n2 /\ apply_fun a2 j = alpha) ->
              forall j:set, j :e n2 -> apply_fun a2 j = alpha -> apply_fun x2 j = e)))
       Hsgab Huniq).
-Admitted.
+Qed.
 
 Infix * 355 right := mul_nat.
 
