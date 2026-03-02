@@ -481,13 +481,13 @@ Admin Decision:
   - 1772373600 | APPROVED
 
 Implemented by:
-  -
+  Dave
 
 Implementation Commit:
-  -
+  a731fbc26
 
 Status:
-  APPROVED
+  IMPLEMENTED
 
 ========================================================
 
