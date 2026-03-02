@@ -82,6 +82,56 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772468745
+Created: 1772468745
+Status: PROPOSED
+
+Refers to Commit:
+  baa4baa2af7a31c9d10951b858b80d139f8f1e19
+
+Target:
+  Line: 140124
+  Name: lemma58_sub_basepoint_change_id (Theorem)
+
+Problem:
+  The statement assumes only path_between, which does not include continuity.
+  The proof requires continuous_map for alpha to apply lemma52_1_basepoint_change_homomorphism,
+  and there is no lemma deriving continuity from path_between alone. As stated, the lemma
+  is unprovable without an additional continuity hypothesis.
+
+Proposed Replacement:
+  Theorem lemma58_sub_basepoint_change_id : forall X Tx x0 x1 alpha:set,
+    path_between X x0 x1 alpha ->
+    continuous_map unit_interval unit_interval_topology X Tx alpha ->
+    apply_fun (basepoint_change_map X Tx x0 x1 alpha)
+      (fundamental_group_id X Tx x0)
+    = fundamental_group_id X Tx x1.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1772468745 | Bob: The proof already assumes continuity to use
+    lemma52_1_basepoint_change_homomorphism. path_between only gives
+    function_on + endpoint equalities, so a continuity hypothesis is needed.
+
+Approvals:
+  - 1772468745 | Alice:
+  - 1772468745 | Bob: YES
+  - 1772468745 | Charlie:
+  - 1772468745 | Dave:
+
+Result:
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+
 --------------------------------------------------------
 
 NOTICE ID: 1772451836
