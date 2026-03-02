@@ -309933,6 +309933,79 @@ claim HnotSubEx' :
     + exact HrT'.
   - exact HrArcT'.
 }
+claim HrNotp :
+  forall r:set, r /:e T -> r <> p.
+{
+  let r.
+  assume HrNotT.
+  assume Hrp.
+  apply HrNotT.
+  rewrite Hrp.
+  exact HpT.
+}
+claim HrNotq :
+  forall r:set, r /:e T -> r <> q.
+{
+  let r.
+  assume HrNotT.
+  assume Hrq.
+  apply HrNotT.
+  rewrite Hrq.
+  exact HqT.
+}
+claim HrWitness :
+  exists r E:set, r :e A /\ r /:e T /\ r :e T' /\ E :e ArcsT' /\ r :e E.
+{
+  apply HnotSubEx'.
+  let r.
+  assume Hrpack.
+  claim HrAT' : (r :e A /\ r /:e T) /\ r :e T'.
+  {
+    exact (andEL
+      ((r :e A /\ r /:e T) /\ r :e T')
+      (exists E:set, E :e ArcsT' /\ r :e E)
+      Hrpack).
+  }
+  claim HrAandNotT : r :e A /\ r /:e T.
+  {
+    exact (andEL
+      (r :e A /\ r /:e T)
+      (r :e T')
+      HrAT').
+  }
+  claim HrT' : r :e T'.
+  {
+    exact (andER
+      (r :e A /\ r /:e T)
+      (r :e T')
+      HrAT').
+  }
+  claim HrA : r :e A.
+  { exact (andEL (r :e A) (r /:e T) HrAandNotT). }
+  claim HrNotT : r /:e T.
+  { exact (andER (r :e A) (r /:e T) HrAandNotT). }
+  claim HexE : exists E:set, E :e ArcsT' /\ r :e E.
+  {
+    exact (andER
+      ((r :e A /\ r /:e T) /\ r :e T')
+      (exists E:set, E :e ArcsT' /\ r :e E)
+      Hrpack).
+  }
+  apply HexE.
+  let E.
+  assume HEpack.
+  witness r.
+  witness E.
+  apply andI.
+  - apply andI.
+    + apply andI.
+      * apply andI.
+        { exact HrA. }
+        { exact HrNotT. }
+      * exact HrT'.
+    + exact (andEL (E :e ArcsT') (r :e E) HEpack).
+  - exact (andER (E :e ArcsT') (r :e E) HEpack).
+}
 claim HpArcEx : exists B:set, B :e {B :e Arcs | B c= T} /\ p :e B.
 {
   exact (subgraph_of_point_in_Y_in_selected_arc
