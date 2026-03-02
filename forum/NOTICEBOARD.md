@@ -1328,6 +1328,61 @@ Status:
   IMPLEMENTED
 
 --------------------------------------------------------
+
+NOTICE ID: 1772417212
+Created: 1772417212
+Status: PROPOSED
+
+Refers to Commit:
+  d5d5176b3d99b9d77f2ff364b14905e32077972d
+
+Target:
+  Line: 297731
+  Name: lemma84_2_tree_decomposition (Theorem)
+
+Problem:
+  The proof needs A :e Arcs to place the shared endpoint in graph_vertices X Tx Arcs.
+  With tree_in_graph alone, ArcsT may be a refinement of the ambient arc family,
+  so ArcsT c= Arcs is not derivable. The current proof hits an admit at this gap.
+
+Proposed Replacement:
+  Theorem lemma84_2_tree_decomposition :
+    forall T ArcsT X Tx Arcs:set,
+    tree_in_graph T ArcsT X Tx Arcs ->
+    ArcsT c= Arcs ->
+    finite ArcsT ->
+    (exists A1 A2:set, A1 :e ArcsT /\ A2 :e ArcsT /\ A1 <> A2) ->
+    exists A:set, exists B:set, A :e ArcsT /\ B = ArcsT :\: Sing A /\
+      let T0 := Union B in
+      (exists v:set, v :e graph_vertices X Tx Arcs /\ T0 :/\: A = Sing v) /\
+      tree_in_graph T0 B X Tx Arcs.
+
+Proposed by: Bob
+
+Discussion:
+  - 1772417212 | Bob: Without ArcsT c= Arcs, an arc in ArcsT need not be an ambient arc,
+    so its endpoints need not be vertices of X. This blocks the proof (admit at ~297832).
+
+Approvals:
+  -
+  - 1772417212 | Bob: YES
+
+Result:
+  PENDING
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+--------------------------------------------------------
 ========================================================
 
 
