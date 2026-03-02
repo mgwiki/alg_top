@@ -310131,6 +310131,69 @@ claim Hcycle :
     - assume Hrq.
       exact (Hrneq Hrq).
   }
+  (** r lies on some ambient arc inside T' (subgraph-of decomposition). **)
+  claim HrArcArcs :
+    exists B:set, B :e Arcs /\ B c= T' /\ r :e B.
+  {
+    claim HsubT' : subgraph_of T' X Tx Arcs.
+    {
+      exact (tree_in_graph_subgraph_of
+        T'
+        ArcsT'
+        X
+        Tx
+        Arcs
+        Htree').
+    }
+    claim HunionT' : T' = Union {B :e Arcs | B c= T'}.
+    {
+      exact (subgraph_of_union_of_contained_arcs
+        T'
+        X
+        Tx
+        Arcs
+        HsubT').
+    }
+    claim HrU : r :e Union {B :e Arcs | B c= T'}.
+    {
+      exact (mem_eqR
+        r
+        T'
+        (Union {B :e Arcs | B c= T'})
+        HunionT'
+        HrT').
+    }
+    apply (UnionE
+      {B :e Arcs | B c= T'}
+      r
+      HrU).
+    let B.
+    assume HrBpack.
+    witness B.
+    apply andI.
+    - claim HBsel : B :e {B :e Arcs | B c= T'}.
+      {
+        exact (andER
+          (r :e B)
+          (B :e {B :e Arcs | B c= T'})
+          HrBpack).
+      }
+      claim HBpack2 : B :e Arcs /\ B c= T'.
+      {
+        exact (SepE
+          Arcs
+          (fun B0:set => B0 c= T')
+          B
+          HBsel).
+      }
+      apply andI.
+      + exact (andEL (B :e Arcs) (B c= T') HBpack2).
+      + exact (andER (B :e Arcs) (B c= T') HBpack2).
+    - exact (andEL
+        (r :e B)
+        (B :e {B :e Arcs | B c= T'})
+        HrBpack).
+  }
   claim HglgT' : general_linear_graph T' (subspace_topology X Tx T') ArcsT'.
   {
     exact (tree_in_graph_general_linear_graph
