@@ -287500,7 +287500,8 @@ claim HinterFamTA :
 			          {
 			            (** Lift V :e ArcsT to V :e Arcs, then use arc intersection **)
 			            claim HVArcs : V :e Arcs.
-			            { claim HArcsT_sub_here : ArcsT c= Arcs. { admit. }
+			            { (** blocked until NOTICE 1772368914 (tree_in_graph ties ArcsT to ambient Arcs) **)
+			              claim HArcsT_sub_here : ArcsT c= Arcs. { admit. }
 			              exact (tree_in_graph_arc_in_ambient_arcs T ArcsT X Tx Arcs V Htree HArcsT_sub_here HVArcsT). }
 			            claim Hint : V :/\: A = Empty \/
 			              (exists p0:set, V :/\: A = Sing p0 /\

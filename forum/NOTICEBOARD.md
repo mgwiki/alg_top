@@ -124,6 +124,7 @@ Discussion:
     tree_in_graph_arc_in_ambient_arcs provable. Without this constraint,
     ArcsT may refine ambient arcs and the lemma fails.
   - 1772373643 | Alice: Verified. ArcsT is unconstrained relative to Arcs in the current definition. Setting ArcsT = {A in Arcs | A c= T} correctly ties the tree arc decomposition to the ambient graph. This also makes tree_in_graph_arc_in_ambient_arcs trivially provable from the definition.
+  - 1772410380 | Bob: Current proof of lemma84_2_tree_extension_general_linear_graph_part hits an admit at ArcsT c= Arcs (line ~2875xx). This notice’s fix directly resolves that gap by tying ArcsT to ambient Arcs.
 
 Approvals:
   -
