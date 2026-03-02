@@ -213784,6 +213784,44 @@ apply (and5I
             (eq_symm (ordsucc i) (ordsucc m) Hsi_eq) Hsi). }
         exact (FalseE (In_irref (ordsucc m) Hs_in) (alpha <> beta)).
   }
+  claim Happend_red_one_prod :
+    forall m xs b beta:set,
+      reduced_word (J :\/: K) Hfam efamH m xs ->
+      m <> 0 ->
+      beta :e J :\/: K ->
+      b :e apply_fun Hfam beta ->
+      b <> apply_fun efamH beta ->
+      (forall k alpha beta0:set, m = ordsucc k -> alpha :e J :\/: K -> beta0 :e J :\/: K ->
+        apply_fun xs k :e apply_fun Hfam alpha -> b :e apply_fun Hfam beta0 -> alpha <> beta0) ->
+      reduced_word (J :\/: K) Hfam efamH (ordsucc m)
+        (graph (ordsucc m) (fun i:set => if i :e m then apply_fun xs i else b)) /\
+      word_product multG eG
+        (graph (ordsucc m) (fun i:set => if i :e m then apply_fun xs i else b)) (ordsucc m) =
+        apply_fun multG (word_product multG eG xs m, b).
+  {
+    let m xs b beta.
+    assume Hred Hm_ne0 Hbeta HbG Hbne Hlast_diff.
+    apply andI.
+    - exact (Happend_red_one m xs b beta Hred Hm_ne0 Hbeta HbG Hbne Hlast_diff).
+    - claim HmO : m :e omega.
+      {
+        apply (and3E
+          (m :e omega)
+          (forall i:set, i :e m ->
+            exists alpha:set, alpha :e J :\/: K /\
+              apply_fun xs i :e apply_fun Hfam alpha /\
+              apply_fun xs i <> apply_fun efamH alpha)
+          (forall i:set, i :e m -> ordsucc i :e m ->
+            forall alpha beta:set, alpha :e J :\/: K -> beta :e J :\/: K ->
+              apply_fun xs i :e apply_fun Hfam alpha ->
+              apply_fun xs (ordsucc i) :e apply_fun Hfam beta ->
+              alpha <> beta)
+          Hred).
+        assume HmO _ _. exact HmO.
+      }
+      exact (word_product_append_one
+        multG eG xs b m HmO).
+  }
   (** TODO: concatenate the expanded reduced words to get a reduced word in J \/ K, and prove uniqueness **)
   admit.
 Admitted.
