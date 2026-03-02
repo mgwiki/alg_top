@@ -12485,6 +12485,63 @@ rewrite H2m1.
 exact (fun Q H => H).
 Qed.
 
+(** Proven Bob **)
+Theorem path_concat_between : forall X Tx x0 x1 x2 f g:set,
+  continuous_map unit_interval unit_interval_topology X Tx f ->
+  continuous_map unit_interval unit_interval_topology X Tx g ->
+  apply_fun f 0 = x0 -> apply_fun f 1 = x1 ->
+  apply_fun g 0 = x1 -> apply_fun g 1 = x2 ->
+  path_between X x0 x2 (path_concat f g).
+let X Tx x0 x1 x2 f g.
+assume Hf Hg Hf0 Hf1 Hg0 Hg1.
+claim HconcatCont :
+  continuous_map unit_interval unit_interval_topology X Tx (path_concat f g).
+{
+  exact (path_concat_continuous
+    X
+    Tx
+    x0
+    x1
+    x2
+    f
+    g
+    Hf
+    Hg
+    Hf0
+    Hf1
+    Hg0
+    Hg1).
+}
+claim HconcatFun : function_on (path_concat f g) unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    (path_concat f g)
+    HconcatCont).
+}
+claim Hconcat0 : apply_fun (path_concat f g) 0 = x0.
+{
+  rewrite (path_concat_at_zero f g).
+  exact Hf0.
+}
+claim Hconcat1 : apply_fun (path_concat f g) 1 = x2.
+{
+  rewrite (path_concat_at_one f g).
+  exact Hg1.
+}
+exact (path_betweenI
+  X
+  x0
+  x2
+  (path_concat f g)
+  HconcatFun
+  Hconcat0
+  Hconcat1).
+Qed.
+
 (** Helper: evaluate path_concat on the left half **)
 (** Proven Alice **)
 Theorem path_concat_apply_left : forall f g t:set,
