@@ -310224,6 +310224,11 @@ claim Hcycle :
       { exact (HvertSub r HrV). }
       exact (FalseE (HrNotT HrT) (B = A)).
   }
+  claim HrNotV : r /:e graph_vertices X Tx Arcs.
+  {
+    assume HrV.
+    exact (HrNotT (HvertSub r HrV)).
+  }
   claim HglgT' : general_linear_graph T' (subspace_topology X Tx T') ArcsT'.
   {
     exact (tree_in_graph_general_linear_graph
