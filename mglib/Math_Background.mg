@@ -46723,9 +46723,68 @@ apply iffI.
     Tb
     p
     V
-    Hcov
-    HVsub
-    HVne).
+  Hcov
+  HVsub
+  HVne).
+Qed.
+
+(** Proven Bob **)
+Theorem covering_map_image_nonempty_iff_codomain_nonempty : forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  (image_of p E <> Empty <-> B <> Empty).
+let E Te B Tb p.
+assume Hcov.
+apply iffI.
+- assume HimgNe.
+  apply (nonempty_has_element (image_of p E) HimgNe).
+  let y.
+  assume HyImg.
+  claim Hex : exists x:set, x :e E /\ y = apply_fun p x.
+  {
+    exact (ReplE
+      E
+      (fun x:set => apply_fun p x)
+      y
+      HyImg).
+  }
+  apply Hex.
+  let x.
+  assume HxPack.
+  claim HxE : x :e E.
+  { exact (andEL (x :e E) (y = apply_fun p x) HxPack). }
+  claim HyEq : y = apply_fun p x.
+  { exact (andER (x :e E) (y = apply_fun p x) HxPack). }
+  claim Hfun : function_on p E B.
+  {
+    exact (andEL
+      (function_on p E B)
+      (forall y0:set, y0 :e B -> exists x0:set, x0 :e E /\ apply_fun p x0 = y0)
+      (covering_map_surjective E Te B Tb p Hcov)).
+  }
+  claim HyB : y :e B.
+  {
+    rewrite HyEq.
+    exact (Hfun x HxE).
+  }
+  exact (elem_implies_nonempty B y HyB).
+- assume HBnon.
+  claim HEnon : E <> Empty.
+  {
+    exact (covering_map_domain_nonempty_of_codomain_nonempty
+      E
+      Te
+      B
+      Tb
+      p
+      Hcov
+      HBnon).
+  }
+  apply (nonempty_has_element E HEnon).
+  let e.
+  assume HeE.
+  claim Himg : apply_fun p e :e image_of p E.
+  { exact (ReplI E (fun x:set => apply_fun p x) e HeE). }
+  exact (elem_implies_nonempty (image_of p E) (apply_fun p e) Himg).
 Qed.
 
 (** Proven Bob **)
