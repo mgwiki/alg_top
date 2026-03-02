@@ -82,6 +82,107 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772494157
+Created: 1772494157
+Status: PROPOSED
+
+Refers to Commit:
+  fc5c1c7e043def12f69d73b8b300497e80bcf302
+
+Target:
+  Line: 308232
+  Name: thm84_3_tree_simply_connected (Theorem)
+
+Problem:
+  tree_in_graph permits T = Empty (connected_space does not imply nonempty),
+  but simply_connected explicitly requires existence of a point x0 :e T.
+  So the theorem is false/unprovable in the Empty case.
+
+Proposed Replacement:
+  Theorem thm84_3_tree_simply_connected :
+    forall T ArcsT X Tx Arcs:set,
+    tree_in_graph T ArcsT X Tx Arcs ->
+    T <> Empty ->
+    simply_connected T (subspace_topology X Tx T).
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1772494157 | Charlie: If NOTICE 1772493676 (adding T <> Empty to tree_in_graph)
+    is rejected/delayed, this local strengthening keeps the theorem statement
+    consistent with the current simply_connected definition.
+
+Approvals:
+  - 1772494157 | Alice:
+  - 1772494157 | Bob:
+  - 1772494157 | Charlie: YES
+  - 1772494157 | Dave:
+
+Result:
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+
+NOTICE ID: 1772494156
+Created: 1772494156
+Status: PROPOSED
+
+Refers to Commit:
+  fc5c1c7e043def12f69d73b8b300497e80bcf302
+
+Target:
+  Line: 308209
+  Name: thm84_3_trivial_pi1_witness_from_no_closed_reduced_edge_paths (Theorem)
+
+Problem:
+  tree_in_graph permits T = Empty (connected_space does not imply nonempty),
+  but the theorem concludes exists x0 :e T. So the theorem is false/unprovable
+  in the Empty case.
+
+Proposed Replacement:
+  Theorem thm84_3_trivial_pi1_witness_from_no_closed_reduced_edge_paths :
+    forall T ArcsT X Tx Arcs:set,
+    tree_in_graph T ArcsT X Tx Arcs ->
+    T <> Empty ->
+    ~(exists n path_seq x0:set,
+        n :e omega /\ n <> 0 /\
+        reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+        (exists j:set, j :e n /\ ordsucc j /:e n /\
+          (apply_fun path_seq j) 0 1 = x0)) ->
+    exists x0:set, x0 :e T /\
+      fundamental_group T (subspace_topology T (subspace_topology X Tx T) T) x0 =
+        {fundamental_group_id T (subspace_topology T (subspace_topology X Tx T) T) x0}.
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1772494156 | Charlie: This is a local alternative to NOTICE 1772493676.
+
+Approvals:
+  - 1772494156 | Alice:
+  - 1772494156 | Bob:
+  - 1772494156 | Charlie: YES
+  - 1772494156 | Dave:
+
+Result:
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1772493676
 Created: 1772493676
 Status: PROPOSED
