@@ -297016,6 +297016,187 @@ claim Hpfree : ~(exists C:set, C :e ArcsT /\ C <> A /\ p :e C).
     (end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) p q)
     (~(exists C:set, C :e ArcsT /\ C <> A /\ p :e C))
     HpqPack). }
+(** Bridge: ArcsT arcs are ambient arcs (known formalization gap, same admit as line 287501) **)
+claim HArcsT_sub : ArcsT c= Arcs. { admit. }
+claim HAArcs : A :e Arcs. { exact (HArcsT_sub A HAT). }
+claim Hend_X : end_points_of_arc A (subspace_topology X Tx A) p q.
+{ exact (tree_in_graph_end_points_of_arc_in_X T ArcsT X Tx Arcs A p q Htree HAT Hepaq). }
+claim HpA : p :e A.
+{ exact (end_points_of_arc_left_in_set A (subspace_topology T (subspace_topology X Tx T) A) p q Hepaq). }
+claim HqA : q :e A.
+{ exact (end_points_of_arc_right_in_set A (subspace_topology T (subspace_topology X Tx T) A) p q Hepaq). }
+claim HtopT : topology_on T (subspace_topology X Tx T).
+{ exact (tree_in_graph_topology_on_T T ArcsT X Tx Arcs Htree). }
+(** Connectivity argument: q must be shared with another arc (otherwise A is clopen in T) **)
+claim Hqshared : exists C:set, C :e ArcsT /\ C <> A /\ q :e C.
+{
+  apply dneg. assume Hnqs : ~(exists C:set, C :e ArcsT /\ C <> A /\ q :e C).
+  (** Both p and q are free: derive A is disjoint from all other arcs **)
+  claim HAsubT : A c= T. { exact (tree_in_graph_arc_subset_T T ArcsT X Tx Arcs A Htree HAT). }
+  claim Hdisjoint : forall C:set, C :e ArcsT -> C <> A -> A :/\: C = Empty.
+  { let C. assume HC HCneA.
+    claim HAneC : A <> C. { assume Heq. exact (HCneA (eq_symm A C Heq)). }
+    claim Hint : A :/\: C = Empty \/
+      (exists p0:set, (A :/\: C = Sing p0 /\
+        (exists q0:set, end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) p0 q0 \/
+                       end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) q0 p0)) /\
+        (exists r0:set, end_points_of_arc C (subspace_topology T (subspace_topology X Tx T) C) p0 r0 \/
+                       end_points_of_arc C (subspace_topology T (subspace_topology X Tx T) C) r0 p0)).
+    { exact (general_linear_graph_arc_intersection_case T (subspace_topology X Tx T) ArcsT A C HglgT HAT HC HAneC). }
+    apply Hint.
+    - assume HACemp. exact HACemp.
+    - assume HACsing. apply HACsing. let p0. assume Hp0pack.
+      apply (and3E
+        (A :/\: C = Sing p0)
+        (exists q0:set, end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) p0 q0 \/
+                       end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) q0 p0)
+        (exists r0:set, end_points_of_arc C (subspace_topology T (subspace_topology X Tx T) C) p0 r0 \/
+                       end_points_of_arc C (subspace_topology T (subspace_topology X Tx T) C) r0 p0)
+        Hp0pack).
+      assume Hp0eq Hp0endA _.
+      (** p0 is endpoint of A, so p0 = p or p0 = q **)
+      claim Hp0_is_pq : p0 = p \/ p0 = q.
+      { apply Hp0endA. let q0. assume Hq0.
+        apply Hq0.
+        - assume Hpq0.
+          claim Hp0A' : p0 :e A. { exact (end_points_of_arc_left_in_set A (subspace_topology T (subspace_topology X Tx T) A) p0 q0 Hpq0). }
+          claim HconnP0 : connected_space (A :\: (Sing p0)) (subspace_topology A (subspace_topology T (subspace_topology X Tx T) A) (A :\: (Sing p0))).
+          { apply (and6E (arc A (subspace_topology T (subspace_topology X Tx T) A)) (p0 :e A) (q0 :e A) (p0 <> q0)
+              (connected_space (A :\: (Sing p0)) (subspace_topology A (subspace_topology T (subspace_topology X Tx T) A) (A :\: (Sing p0))))
+              (connected_space (A :\: (Sing q0)) (subspace_topology A (subspace_topology T (subspace_topology X Tx T) A) (A :\: (Sing q0))))
+              Hpq0). assume _ _ _ _ Hcp0 _. exact Hcp0. }
+          exact (end_points_of_arc_connected_complement_implies_endpoint A (subspace_topology T (subspace_topology X Tx T) A) p q p0 Hepaq Hp0A' HconnP0).
+        - assume Hqp0.
+          claim Hp0A' : p0 :e A. { exact (end_points_of_arc_right_in_set A (subspace_topology T (subspace_topology X Tx T) A) q0 p0 Hqp0). }
+          claim HconnP0 : connected_space (A :\: (Sing p0)) (subspace_topology A (subspace_topology T (subspace_topology X Tx T) A) (A :\: (Sing p0))).
+          { apply (and6E (arc A (subspace_topology T (subspace_topology X Tx T) A)) (q0 :e A) (p0 :e A) (q0 <> p0)
+              (connected_space (A :\: (Sing q0)) (subspace_topology A (subspace_topology T (subspace_topology X Tx T) A) (A :\: (Sing q0))))
+              (connected_space (A :\: (Sing p0)) (subspace_topology A (subspace_topology T (subspace_topology X Tx T) A) (A :\: (Sing p0))))
+              Hqp0). assume _ _ _ _ _ Hcp0. exact Hcp0. }
+          exact (end_points_of_arc_connected_complement_implies_endpoint A (subspace_topology T (subspace_topology X Tx T) A) p q p0 Hepaq Hp0A' HconnP0). }
+      (** p0 = p contradicts Hpfree, p0 = q contradicts Hnqs **)
+      apply Hp0_is_pq.
+      + assume Hp0p : p0 = p.
+        claim Hp0AC : p0 :e A :/\: C. { rewrite Hp0eq. exact (SingI p0). }
+        claim Hp0C : p0 :e C. { exact (binintersectE2 A C p0 Hp0AC). }
+        claim HpC : p :e C. { rewrite <- Hp0p. exact Hp0C. }
+        claim Hfalse : False.
+        { apply Hpfree. witness C. apply andI. - apply andI. + exact HC. + exact HCneA. - exact HpC. }
+        exact (Hfalse (A :/\: C = Empty)).
+      + assume Hp0q : p0 = q.
+        claim Hp0AC : p0 :e A :/\: C. { rewrite Hp0eq. exact (SingI p0). }
+        claim Hp0C : p0 :e C. { exact (binintersectE2 A C p0 Hp0AC). }
+        claim HqC : q :e C. { rewrite <- Hp0q. exact Hp0C. }
+        claim Hfalse : False.
+        { apply Hnqs. witness C. apply andI. - apply andI. + exact HC. + exact HCneA. - exact HqC. }
+        exact (Hfalse (A :/\: C = Empty)). }
+  (** A is closed in T by GLG coherence **)
+  claim HtopTA : topology_on A (subspace_topology T (subspace_topology X Tx T) A).
+  { exact (subspace_topology_is_topology T (subspace_topology X Tx T) A HtopT HAsubT). }
+  claim HAclosed : closed_in T (subspace_topology X Tx T) A.
+  { apply (iffER
+      (closed_in T (subspace_topology X Tx T) A)
+      (forall C:set, C :e ArcsT -> closed_in C (subspace_topology T (subspace_topology X Tx T) C) (A :/\: C))
+      (general_linear_graph_coherence_closed T (subspace_topology X Tx T) ArcsT A HglgT HAsubT)).
+    let C. assume HC.
+    claim HCsubT : C c= T. { exact (tree_in_graph_arc_subset_T T ArcsT X Tx Arcs C Htree HC). }
+    claim HtopTC : topology_on C (subspace_topology T (subspace_topology X Tx T) C).
+    { exact (subspace_topology_is_topology T (subspace_topology X Tx T) C HtopT HCsubT). }
+    claim HCeqA_or_ne : C = A \/ C <> A. { exact (xm (C = A)). }
+    apply HCeqA_or_ne.
+    - assume HCeA : C = A.
+      (** A ∩ C = A ∩ A = A = C. Whole space C is closed. **)
+      claim HACeqC : A :/\: C = C.
+      { rewrite HCeA. exact (binintersect_idem A). }
+      rewrite HACeqC.
+      exact (space_is_closed C (subspace_topology T (subspace_topology X Tx T) C) HtopTC).
+    - assume HCneA : C <> A.
+      claim HACemp : A :/\: C = Empty. { exact (Hdisjoint C HC HCneA). }
+      rewrite HACemp.
+      exact (Empty_is_closed C (subspace_topology T (subspace_topology X Tx T) C) HtopTC). }
+  (** A is open in T by GLG coherence **)
+  claim HAopen : open_in T (subspace_topology X Tx T) A.
+  { apply (iffER
+      (open_in T (subspace_topology X Tx T) A)
+      (forall C:set, C :e ArcsT -> open_in C (subspace_topology T (subspace_topology X Tx T) C) (A :/\: C))
+      (general_linear_graph_coherence_open T (subspace_topology X Tx T) ArcsT A HglgT HAsubT)).
+    let C. assume HC.
+    claim HCsubT : C c= T. { exact (tree_in_graph_arc_subset_T T ArcsT X Tx Arcs C Htree HC). }
+    claim HtopTC : topology_on C (subspace_topology T (subspace_topology X Tx T) C).
+    { exact (subspace_topology_is_topology T (subspace_topology X Tx T) C HtopT HCsubT). }
+    claim HCeqA_or_ne : C = A \/ C <> A. { exact (xm (C = A)). }
+    apply HCeqA_or_ne.
+    - assume HCeA : C = A.
+      claim HACeqC : A :/\: C = C. { rewrite HCeA. exact (binintersect_idem A). }
+      rewrite HACeqC.
+      exact (open_inI C (subspace_topology T (subspace_topology X Tx T) C) C HtopTC
+        (topology_has_X C (subspace_topology T (subspace_topology X Tx T) C) HtopTC)).
+    - assume HCneA : C <> A.
+      claim HACemp : A :/\: C = Empty. { exact (Hdisjoint C HC HCneA). }
+      rewrite HACemp.
+      exact (Empty_is_open C (subspace_topology T (subspace_topology X Tx T) C) HtopTC). }
+  (** A ≠ Empty (it has endpoint p) **)
+  claim HAne : A <> Empty.
+  { assume Heq. claim HpE : p :e Empty. { rewrite <- Heq. exact HpA. } exact (EmptyE p HpE False). }
+  (** A ≠ T (ArcsT has ≥ 2 arcs) **)
+  claim HAneT : A <> T.
+  { assume Heq.
+    apply HtwoArcs. let A1. assume HA1pack. apply HA1pack. let A2. assume HA2pack.
+    apply (and3E (A1 :e ArcsT) (A2 :e ArcsT) (A1 <> A2) HA2pack). assume HA1 HA2 Hne12.
+    claim HA1subA : A1 c= A. { rewrite Heq. exact (tree_in_graph_arc_subset_T T ArcsT X Tx Arcs A1 Htree HA1). }
+    claim HA2subA : A2 c= A. { rewrite Heq. exact (tree_in_graph_arc_subset_T T ArcsT X Tx Arcs A2 Htree HA2). }
+    (** At least one of A1, A2 ≠ A. Disjoint with A yet subset of A → empty → contradiction with arc. **)
+    apply (xm (A1 = A)).
+    - assume HA1eA : A1 = A.
+      claim HA2neA : A2 <> A.
+      { assume HA2eA.
+        claim HA1A2 : A1 = A2. { rewrite HA1eA. rewrite <- HA2eA. reflexivity. }
+        exact (Hne12 HA1A2). }
+      claim HA2disj : A :/\: A2 = Empty. { exact (Hdisjoint A2 HA2 HA2neA). }
+      claim HA2eq : A :/\: A2 = A2. { rewrite (binintersect_com A A2). exact (binintersect_Subq_eq_1 A2 A HA2subA). }
+      claim HA2empty : A2 = Empty.
+      { claim H : A2 = A :/\: A2. { exact (eq_symm (A :/\: A2) A2 HA2eq). }
+        rewrite H. exact HA2disj. }
+      claim HA2arc : arc A2 (subspace_topology T (subspace_topology X Tx T) A2).
+      { exact (andER (A2 c= T) (arc A2 (subspace_topology T (subspace_topology X Tx T) A2))
+          (general_linear_graph_arc_data T (subspace_topology X Tx T) ArcsT A2 HglgT HA2)). }
+      apply (arc_has_end_points_of_arc_pre A2 (subspace_topology T (subspace_topology X Tx T) A2) HA2arc).
+      let r. assume Hrpack. apply Hrpack. let s. assume Hrs.
+      claim HrA2 : r :e A2.
+      { exact (end_points_of_arc_left_in_set A2 (subspace_topology T (subspace_topology X Tx T) A2) r s Hrs). }
+      claim HrEmpty : r :e Empty. { rewrite <- HA2empty. exact HrA2. }
+      exact (EmptyE r HrEmpty False).
+    - assume HA1neA : A1 <> A.
+      claim HA1disj : A :/\: A1 = Empty. { exact (Hdisjoint A1 HA1 HA1neA). }
+      claim HA1eq : A :/\: A1 = A1. { rewrite (binintersect_com A A1). exact (binintersect_Subq_eq_1 A1 A HA1subA). }
+      claim HA1empty : A1 = Empty.
+      { claim H : A1 = A :/\: A1. { exact (eq_symm (A :/\: A1) A1 HA1eq). }
+        rewrite H. exact HA1disj. }
+      claim HA1arc : arc A1 (subspace_topology T (subspace_topology X Tx T) A1).
+      { exact (andER (A1 c= T) (arc A1 (subspace_topology T (subspace_topology X Tx T) A1))
+          (general_linear_graph_arc_data T (subspace_topology X Tx T) ArcsT A1 HglgT HA1)). }
+      apply (arc_has_end_points_of_arc_pre A1 (subspace_topology T (subspace_topology X Tx T) A1) HA1arc).
+      let r. assume Hrpack. apply Hrpack. let s. assume Hrs.
+      claim HrA1 : r :e A1.
+      { exact (end_points_of_arc_left_in_set A1 (subspace_topology T (subspace_topology X Tx T) A1) r s Hrs). }
+      claim HrEmpty : r :e Empty. { rewrite <- HA1empty. exact HrA1. }
+      exact (EmptyE r HrEmpty False). }
+  (** Contradiction: A is non-trivial clopen in connected T **)
+  claim Hno_clopen : ~(exists S:set, S <> Empty /\ S <> T /\ open_in T (subspace_topology X Tx T) S /\ closed_in T (subspace_topology X Tx T) S).
+  { exact (iffEL
+      (connected_space T (subspace_topology X Tx T))
+      (~(exists S:set, S <> Empty /\ S <> T /\ open_in T (subspace_topology X Tx T) S /\ closed_in T (subspace_topology X Tx T) S))
+      (connected_iff_no_nontrivial_clopen T (subspace_topology X Tx T) HtopT)
+      HconnT). }
+  apply Hno_clopen. witness A.
+  apply andI.
+  - apply andI.
+    + apply andI.
+      * exact HAne.
+      * exact HAneT.
+    + exact HAopen.
+  - exact HAclosed.
+}
 set B := ArcsT :\: Sing A.
 witness A.
 witness B.
@@ -297032,10 +297213,109 @@ apply andI.
   apply andI.
   + (** Union B ∩ A = {q}: the non-free endpoint q is the unique intersection point **)
     claim HqVertex : q :e graph_vertices X Tx Arcs.
-    { admit. (** q is an endpoint of arc A in ArcsT c= Arcs, so q is a graph vertex **) }
+    { exact (graph_vertices_intro_from_endpoint_right X Tx Arcs A p q HglgX HAArcs Hend_X). }
     claim HmeetSingQ : Union B :/\: A = Sing q.
-    { admit. (** p is free (not in any other arc), q is shared,
-                 arcs intersect only at endpoints, so Union(ArcsT\{A}) ∩ A = {q} **) }
+    { apply (set_ext (Union B :/\: A) (Sing q)).
+      - (** ⊆: Union B ∩ A c= {q} **)
+        let x. assume Hx.
+        claim HxA : x :e A. { exact (binintersectE2 (Union B) A x Hx). }
+        claim HxUB : x :e Union B. { exact (binintersectE1 (Union B) A x Hx). }
+        apply (UnionE B x HxUB). let C. assume HxCpack.
+        claim HxC : x :e C. { exact (andEL (x :e C) (C :e B) HxCpack). }
+        claim HCB : C :e B. { exact (andER (x :e C) (C :e B) HxCpack). }
+        claim HCArcsT : C :e ArcsT. { exact (setminusE1 ArcsT (Sing A) C HCB). }
+        claim HCneA : C <> A.
+        { assume Heq : C = A.
+          claim HCsA : C :e Sing A. { rewrite Heq. exact (SingI A). }
+          exact ((setminusE2 ArcsT (Sing A) C HCB) HCsA). }
+        claim HAneC : A <> C. { assume Heq. exact (HCneA (eq_symm A C Heq)). }
+        claim HxAC : x :e A :/\: C. { exact (binintersectI A C x HxA HxC). }
+        (** By GLG on T, A ∩ C = Empty or Sing p0 with p0 endpoint of A **)
+        claim Hint : A :/\: C = Empty \/
+          (exists p0:set, (A :/\: C = Sing p0 /\
+            (exists q0:set, end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) p0 q0 \/
+                           end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) q0 p0)) /\
+            (exists r0:set, end_points_of_arc C (subspace_topology T (subspace_topology X Tx T) C) p0 r0 \/
+                           end_points_of_arc C (subspace_topology T (subspace_topology X Tx T) C) r0 p0)).
+        { exact (general_linear_graph_arc_intersection_case T (subspace_topology X Tx T) ArcsT A C HglgT HAT HCArcsT HAneC). }
+        apply Hint.
+        + (** Case: A ∩ C = Empty -- contradicts x :e A ∩ C **)
+          assume HACemp.
+          exact (EmptyE x (eq_subst_mem_set x (A :/\: C) Empty HxAC HACemp) (x :e Sing q)).
+        + (** Case: A ∩ C = Sing p0 **)
+          assume HACsing. apply HACsing. let p0. assume Hp0pack.
+          (** Hp0pack : ((A :/\: C = Sing p0) /\ (exists q0, ...)) /\ (exists r0, ...) **)
+          apply (and3E
+            (A :/\: C = Sing p0)
+            (exists q0:set, end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) p0 q0 \/
+                           end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) q0 p0)
+            (exists r0:set, end_points_of_arc C (subspace_topology T (subspace_topology X Tx T) C) p0 r0 \/
+                           end_points_of_arc C (subspace_topology T (subspace_topology X Tx T) C) r0 p0)
+            Hp0pack).
+          assume Hp0eq Hp0endA _.
+          (** x :e A ∩ C = Sing p0, so x = p0 **)
+          claim Hxp0 : x = p0. { exact (SingE p0 x (eq_subst_mem_set x (A :/\: C) (Sing p0) HxAC Hp0eq)). }
+          (** p0 is an endpoint of A, so p0 = p or p0 = q **)
+          claim Hp0_is_pq : p0 = p \/ p0 = q.
+          { apply Hp0endA. let q0. assume Hq0.
+            apply Hq0.
+            - assume Hpq0 : end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) p0 q0.
+              claim Hp0A' : p0 :e A.
+              { exact (end_points_of_arc_left_in_set A (subspace_topology T (subspace_topology X Tx T) A) p0 q0 Hpq0). }
+              claim HconnP0 : connected_space (A :\: (Sing p0))
+                (subspace_topology A (subspace_topology T (subspace_topology X Tx T) A) (A :\: (Sing p0))).
+              { apply (and6E (arc A (subspace_topology T (subspace_topology X Tx T) A))
+                  (p0 :e A) (q0 :e A) (p0 <> q0)
+                  (connected_space (A :\: (Sing p0)) (subspace_topology A (subspace_topology T (subspace_topology X Tx T) A) (A :\: (Sing p0))))
+                  (connected_space (A :\: (Sing q0)) (subspace_topology A (subspace_topology T (subspace_topology X Tx T) A) (A :\: (Sing q0))))
+                  Hpq0).
+                assume _ _ _ _ Hcp0 _. exact Hcp0. }
+              exact (end_points_of_arc_connected_complement_implies_endpoint A (subspace_topology T (subspace_topology X Tx T) A) p q p0 Hepaq Hp0A' HconnP0).
+            - assume Hqp0 : end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) q0 p0.
+              claim Hp0A' : p0 :e A.
+              { exact (end_points_of_arc_right_in_set A (subspace_topology T (subspace_topology X Tx T) A) q0 p0 Hqp0). }
+              claim HconnP0 : connected_space (A :\: (Sing p0))
+                (subspace_topology A (subspace_topology T (subspace_topology X Tx T) A) (A :\: (Sing p0))).
+              { apply (and6E (arc A (subspace_topology T (subspace_topology X Tx T) A))
+                  (q0 :e A) (p0 :e A) (q0 <> p0)
+                  (connected_space (A :\: (Sing q0)) (subspace_topology A (subspace_topology T (subspace_topology X Tx T) A) (A :\: (Sing q0))))
+                  (connected_space (A :\: (Sing p0)) (subspace_topology A (subspace_topology T (subspace_topology X Tx T) A) (A :\: (Sing p0))))
+                  Hqp0).
+                assume _ _ _ _ _ Hcp0. exact Hcp0. }
+              exact (end_points_of_arc_connected_complement_implies_endpoint A (subspace_topology T (subspace_topology X Tx T) A) p q p0 Hepaq Hp0A' HconnP0). }
+          apply Hp0_is_pq.
+          * (** p0 = p: contradicts Hpfree since p :e C **)
+            assume Hp0p : p0 = p.
+            claim Hp0AC : p0 :e A :/\: C. { rewrite Hp0eq. exact (SingI p0). }
+            claim Hp0C : p0 :e C. { exact (binintersectE2 A C p0 Hp0AC). }
+            claim HpC : p :e C. { rewrite <- Hp0p. exact Hp0C. }
+            claim Hfalse : False.
+            { apply Hpfree. witness C.
+              apply andI.
+              - apply andI.
+                + exact HCArcsT.
+                + exact HCneA.
+              - exact HpC. }
+            exact (Hfalse (x :e Sing q)).
+          * (** p0 = q: x = p0 = q, so x :e Sing q **)
+            assume Hp0q : p0 = q.
+            rewrite Hxp0. rewrite Hp0q. exact (SingI q).
+      - (** ⊇: {q} c= Union B ∩ A **)
+        let x. assume Hx.
+        claim Hxq : x = q. { exact (SingE q x Hx). }
+        rewrite Hxq.
+        apply binintersectI.
+        + (** q :e Union B **)
+          apply Hqshared. let C0. assume HC0pack.
+          apply (and3E (C0 :e ArcsT) (C0 <> A) (q :e C0) HC0pack).
+          assume HC0AT HC0neA HqC0.
+          claim HC0B : C0 :e B.
+          { apply setminusI.
+            - exact HC0AT.
+            - assume HCsA : C0 :e Sing A.
+              exact (HC0neA (SingE A C0 HCsA)). }
+          exact (UnionI B q C0 HqC0 HC0B).
+        + exact HqA. }
     witness q.
     exact (andI
       (q :e graph_vertices X Tx Arcs)
