@@ -33453,6 +33453,23 @@ exact (andER
   Hsimp).
 Qed.
 
+(** Proven Bob **)
+(** Helper: simply connected spaces are nonempty. **)
+Theorem simply_connected_has_point : forall X Tx:set,
+  simply_connected X Tx ->
+  exists x0:set, x0 :e X.
+let X Tx.
+assume Hsimp.
+apply (simply_connected_trivial_pi1_witness X Tx Hsimp).
+let x0.
+assume Hpack.
+witness x0.
+exact (andEL
+  (x0 :e X)
+  (fundamental_group X Tx x0 = {fundamental_group_id X Tx x0})
+  Hpack).
+Qed.
+
 (** Helper: bijection maps singleton domain to singleton codomain. **)
 Theorem bijection_singleton_domain_codomain_singleton :
   forall X Y f x0:set,
