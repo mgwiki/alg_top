@@ -232259,7 +232259,26 @@ Theorem lemma73_3_closed_quotient_normal :
 	  (forall C:set, closed_in E Te C -> closed_in X Tx (image_of pi C)) ->
 	  (forall V:set, V :e Tx -> {x :e E | apply_fun pi x :e V} :e Te) ->
   normal_space X Tx.
-admit. (** TODO: need surjectivity hypothesis to use closed_quotient_map_preserves_normality_helper **)
+let E Te X Tx pi.
+assume HtopE HtopX HnormE Hcont HclosedImg HpreimOpen.
+claim Hsurj : surjective_map E X pi.
+{
+  (** TODO: need surjectivity hypothesis (see NOTICEBOARD) **)
+  admit.
+}
+exact (closed_quotient_map_preserves_normality_helper
+  E
+  Te
+  X
+  Tx
+  pi
+  HtopE
+  HtopX
+  HnormE
+  Hsurj
+  Hcont
+  HclosedImg
+  HpreimOpen).
 Admitted.
 
 (** Infrastructure helper for S73 Thm 73.4:
