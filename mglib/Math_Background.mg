@@ -214036,9 +214036,65 @@ apply (and5I
       word_product multG eG ys n :e G1 ->
       forall i:set, i :e n -> apply_fun ys i :e G1.
   {
-    (** TODO: prove by compressing maximal G1/G2 blocks to a reduced word over UPair 0 1,
-        then use uniqueness in the free product of G1 and G2 (n12=1 case forces all G1). **)
-    admit.
+    let n ys. assume Hred HallNe HwpG1.
+    apply (xm (n = 0)).
+    - assume Hn0.
+      let i. assume Hi.
+      claim Hi0 : i :e 0.
+      { exact (eq_subst_mem_set i n 0 Hi Hn0). }
+      exact (FalseE (EmptyE i Hi0) (apply_fun ys i :e G1)).
+    - assume Hn0ne.
+      apply (xm (n = 1)).
+      + assume Hn1.
+        let i. assume Hi.
+        claim Hi1 : i :e 1.
+        { exact (eq_subst_mem_set i n 1 Hi Hn1). }
+        claim Hi1' : i :e ordsucc 0.
+        { exact (eq_subst_mem_set i 1 (ordsucc 0) Hi1
+            (eq_symm 1 (ordsucc 0) ordsucc_0_eq_1_nat)). }
+        apply (ordsuccE 0 i Hi1').
+        * assume Hi0 : i :e 0.
+          exact (FalseE (EmptyE i Hi0) (apply_fun ys i :e G1)).
+        * assume Hi0eq : i = 0.
+          claim Hy0_G : apply_fun ys 0 :e G.
+          {
+            apply (reduced_word_in_G G multG eG invG (J :\/: K) Hfam efamH n ys Hsubfam_union Hred 0).
+            rewrite Hn1.
+            exact (nat_0_in_ordsucc 0 nat_0).
+          }
+          claim Hwp1 : word_product multG eG ys 1 =
+            apply_fun multG (word_product multG eG ys 0, apply_fun ys 0).
+          { exact (word_product_succ multG eG ys 0 nat_0). }
+          claim Hwp0 : word_product multG eG ys 0 = eG.
+          { exact (nat_primrec_0 eG (fun k r => apply_fun multG (r, apply_fun ys k))). }
+          claim HidL : apply_fun multG (eG, apply_fun ys 0) = apply_fun ys 0.
+          {
+            apply (and6E
+              (function_on multG (setprod G G) G)
+              (function_on invG G G)
+              (eG :e G)
+              (forall u v w:set, u :e G -> v :e G -> w :e G ->
+                apply_fun multG (apply_fun multG (u, v), w) =
+                  apply_fun multG (u, apply_fun multG (v, w)))
+              (forall u:set, u :e G -> apply_fun multG (eG, u) = u /\ apply_fun multG (u, eG) = u)
+              (forall u:set, u :e G ->
+                apply_fun multG (u, apply_fun invG u) = eG /\
+                apply_fun multG (apply_fun invG u, u) = eG)
+              Hgrp).
+            assume _ _ _ _ Hid _.
+            exact (andEL
+              (apply_fun multG (eG, apply_fun ys 0) = apply_fun ys 0)
+              (apply_fun multG (apply_fun ys 0, eG) = apply_fun ys 0)
+              (Hid (apply_fun ys 0) Hy0_G)).
+          }
+          claim Hwp1_eq : word_product multG eG ys 1 = apply_fun ys 0.
+          { rewrite Hwp1. rewrite Hwp0. exact HidL. }
+          claim Hy0_G1 : apply_fun ys 0 :e G1.
+          { rewrite <- Hwp1_eq. rewrite <- Hn1. exact HwpG1. }
+          rewrite Hi0eq. exact Hy0_G1.
+      + assume Hn_ne1.
+        (** Remaining case: n >= 2 requires compressing G1/G2 blocks and using free product uniqueness **)
+        admit.
   }
   (** Helper: if a reduced word with nontrivial letters multiplies to G2, all letters are in G2 **)
   claim Hside_from_product_G2 :
@@ -214048,8 +214104,65 @@ apply (and5I
       word_product multG eG ys n :e G2 ->
       forall i:set, i :e n -> apply_fun ys i :e G2.
   {
-    (** TODO: symmetric to Hside_from_product_G1 **)
-    admit.
+    let n ys. assume Hred HallNe HwpG2.
+    apply (xm (n = 0)).
+    - assume Hn0.
+      let i. assume Hi.
+      claim Hi0 : i :e 0.
+      { exact (eq_subst_mem_set i n 0 Hi Hn0). }
+      exact (FalseE (EmptyE i Hi0) (apply_fun ys i :e G2)).
+    - assume Hn0ne.
+      apply (xm (n = 1)).
+      + assume Hn1.
+        let i. assume Hi.
+        claim Hi1 : i :e 1.
+        { exact (eq_subst_mem_set i n 1 Hi Hn1). }
+        claim Hi1' : i :e ordsucc 0.
+        { exact (eq_subst_mem_set i 1 (ordsucc 0) Hi1
+            (eq_symm 1 (ordsucc 0) ordsucc_0_eq_1_nat)). }
+        apply (ordsuccE 0 i Hi1').
+        * assume Hi0 : i :e 0.
+          exact (FalseE (EmptyE i Hi0) (apply_fun ys i :e G2)).
+        * assume Hi0eq : i = 0.
+          claim Hy0_G : apply_fun ys 0 :e G.
+          {
+            apply (reduced_word_in_G G multG eG invG (J :\/: K) Hfam efamH n ys Hsubfam_union Hred 0).
+            rewrite Hn1.
+            exact (nat_0_in_ordsucc 0 nat_0).
+          }
+          claim Hwp1 : word_product multG eG ys 1 =
+            apply_fun multG (word_product multG eG ys 0, apply_fun ys 0).
+          { exact (word_product_succ multG eG ys 0 nat_0). }
+          claim Hwp0 : word_product multG eG ys 0 = eG.
+          { exact (nat_primrec_0 eG (fun k r => apply_fun multG (r, apply_fun ys k))). }
+          claim HidL : apply_fun multG (eG, apply_fun ys 0) = apply_fun ys 0.
+          {
+            apply (and6E
+              (function_on multG (setprod G G) G)
+              (function_on invG G G)
+              (eG :e G)
+              (forall u v w:set, u :e G -> v :e G -> w :e G ->
+                apply_fun multG (apply_fun multG (u, v), w) =
+                  apply_fun multG (u, apply_fun multG (v, w)))
+              (forall u:set, u :e G -> apply_fun multG (eG, u) = u /\ apply_fun multG (u, eG) = u)
+              (forall u:set, u :e G ->
+                apply_fun multG (u, apply_fun invG u) = eG /\
+                apply_fun multG (apply_fun invG u, u) = eG)
+              Hgrp).
+            assume _ _ _ _ Hid _.
+            exact (andEL
+              (apply_fun multG (eG, apply_fun ys 0) = apply_fun ys 0)
+              (apply_fun multG (apply_fun ys 0, eG) = apply_fun ys 0)
+              (Hid (apply_fun ys 0) Hy0_G)).
+          }
+          claim Hwp1_eq : word_product multG eG ys 1 = apply_fun ys 0.
+          { rewrite Hwp1. rewrite Hwp0. exact HidL. }
+          claim Hy0_G2 : apply_fun ys 0 :e G2.
+          { rewrite <- Hwp1_eq. rewrite <- Hn1. exact HwpG2. }
+          rewrite Hi0eq. exact Hy0_G2.
+      + assume Hn_ne1.
+        (** Remaining case: n >= 2 requires compressing G1/G2 blocks and using free product uniqueness **)
+        admit.
   }
   (** Helper: expansions in G1/G2 with nontrivial entries **)
   claim Hexp_red_each_G1_non_e :
