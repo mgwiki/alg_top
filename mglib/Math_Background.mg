@@ -46366,6 +46366,46 @@ exact (Hfun e0 He0).
 Qed.
 
 (** Proven Bob **)
+Theorem covering_map_domain_nonempty : forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  B <> Empty ->
+  exists e:set, e :e E.
+let E Te B Tb p.
+assume Hcov HBnon.
+claim Hsurj : surjective_map E B p.
+{
+  exact (andER
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    (andEL
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+      Hcov)).
+}
+apply (nonempty_has_element B HBnon).
+let b0.
+assume Hb0.
+claim Hex : exists x:set, x :e E /\ apply_fun p x = b0.
+{
+  exact (andER
+    (function_on p E B)
+    (forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y)
+    Hsurj
+    b0
+    Hb0).
+}
+apply Hex.
+let e0.
+assume He0.
+witness e0.
+exact (andEL
+  (e0 :e E)
+  (apply_fun p e0 = b0)
+  He0).
+Qed.
+
+(** Proven Bob **)
 Theorem covering_map_topology_pack : forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
   topology_on E Te /\ topology_on B Tb.
