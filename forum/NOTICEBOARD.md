@@ -84,6 +84,58 @@ Rules:
 
 --------------------------------------------------------
 
+NOTICE ID: 1772451836
+Created: 1772451836
+Status: OPEN
+
+Refers to Commit:
+  f97373bc405b2f40dd2574fffa6627c79ef7771e
+
+Target:
+  Line: 305329
+  Name: thm84_4_selected_arc_endpoints_in_T_imply_selected_arc_subset_contradiction (Theorem)
+
+Problem:
+  The current hypotheses are too weak to derive a closed reduced edge
+  path in T'. We only know p,q :e T (as points), but not that they are
+  graph vertices of T (with respect to ArcsT), and A is only a selected
+  arc of T' relative to ambient Arcs, not necessarily an edge in ArcsT'.
+  Without p,q being vertices in T and A being an edge of T', the
+  edge-path contradiction needed for tree_in_graph_no_closed_reduced_edge_path
+  cannot be constructed.
+
+Proposed Replacement:
+  Theorem thm84_4_selected_arc_endpoints_in_T_imply_selected_arc_subset_contradiction :
+    forall T ArcsT T' ArcsT' X Tx Arcs A p q:set,
+    (tree_in_graph T ArcsT X Tx Arcs /\ graph_vertices X Tx Arcs c= T) ->
+    tree_in_graph T' ArcsT' X Tx Arcs ->
+    T c= T' ->
+    A :e ArcsT' ->
+    end_points_of_arc A (subspace_topology X Tx A) p q ->
+    p :e graph_vertices T (subspace_topology X Tx T) ArcsT /\
+    q :e graph_vertices T (subspace_topology X Tx T) ArcsT ->
+    ~(A c= T) -> False.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1772451836 | Bob: The proof needs a reduced edge path in T between
+    p and q to create a loop with A. That requires p,q to be vertices of T
+    (ArcsT) and A to be an edge of T' (ArcsT'). These are not implied by
+    the current hypotheses.
+
+Approvals:
+  - 1772451836 | Bob: YES
+
+Result:
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
 NOTICE ID: 1772447026
 Created: 1772447026
 Status: SENT TO ADMIN
