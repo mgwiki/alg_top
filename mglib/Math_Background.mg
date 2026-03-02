@@ -46591,6 +46591,47 @@ exact (elem_implies_nonempty
 Qed.
 
 (** Proven Bob **)
+Theorem covering_map_preimage_nonempty_of_nonempty_open : forall E Te B Tb p U:set,
+  covering_map E Te B Tb p ->
+  U :e Tb ->
+  U <> Empty ->
+  preimage_of E p U <> Empty.
+let E Te B Tb p U.
+assume Hcov HUopen HUne.
+claim HtopB : topology_on B Tb.
+{
+  exact (covering_map_topology_on_codomain E Te B Tb p Hcov).
+}
+claim HUinPower : U :e Power B.
+{
+  exact (topology_sub_Power
+    B
+    Tb
+    HtopB
+    U
+    HUopen).
+}
+claim HUsubB : U c= B.
+{
+  exact (iffEL
+    (U :e Power B)
+    (U c= B)
+    (PowerEq B U)
+    HUinPower).
+}
+exact (covering_map_preimage_nonempty_of_nonempty_subset
+  E
+  Te
+  B
+  Tb
+  p
+  U
+  Hcov
+  HUsubB
+  HUne).
+Qed.
+
+(** Proven Bob **)
 Theorem covering_map_evenly_covered : forall E Te B Tb p b:set,
   covering_map E Te B Tb p -> b :e B ->
   exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U.
