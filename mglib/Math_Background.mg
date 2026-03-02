@@ -1,5 +1,5 @@
 (** Balance Alice 4188 **)
-(** Balance Bob 5484 **)
+(** Balance Bob 5480 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
 
@@ -218664,7 +218664,8 @@ Admitted.
 (** and a_alpha_K respectively, and J,K disjoint, then G is free with generators **)
 (** a_alpha for J union K. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
-(** Bounty 33 **)
+(** Bounty 37 **)
+(** Lock Bob 1772502067 **)
 Theorem thm69_2_free_product_of_free_groups :
   forall G mult e inv G1 G2 J K gens:set,
   group_structure G mult e inv ->
