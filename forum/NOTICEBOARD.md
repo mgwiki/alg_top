@@ -82,6 +82,54 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772491898
+Created: 1772491898
+Status: PROPOSED
+
+Refers to Commit:
+  fb154d637
+
+Target:
+  Line: 38676
+  Name: ex52_1b_star_convex_simply_connected (Theorem)
+
+Problem:
+  The statement allows an arbitrary topology Ta on A. The intended proof uses
+  straight-line homotopies/segments in R and the existing helper
+  star_convex_segment_continuous, which is formulated for the subspace topology
+  on A c= R. With arbitrary Ta, the needed continuity steps into (A,Ta) are
+  unprovable.
+
+Proposed Replacement:
+  Theorem ex52_1b_star_convex_simply_connected : forall A a0:set,
+    star_convex A a0 ->
+    simply_connected A (subspace_topology R R_standard_topology A).
+
+Proposed by:
+  Charlie
+
+Discussion:
+  - 1772491898 | Charlie: Same topology gap as Example_51_1 and Example_52_1.
+    star_convex paths are continuous into R and hence into A with the subspace
+    topology; the current Ta-parametrized statement is too strong.
+
+Approvals:
+  - 1772491898 | Alice:
+  - 1772491898 | Bob:
+  - 1772491898 | Charlie: YES
+  - 1772491898 | Dave:
+
+Result:
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1772468805
 Created: 1772468805
 Status: PROPOSED
