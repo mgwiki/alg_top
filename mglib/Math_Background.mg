@@ -171545,6 +171545,18 @@ claim Hbad : exists U V:set, U :e Ty /\ V :e Ty /\ separation_of Y U V.
 exact (HnoSep Hbad).
 Qed.
 
+(** Proven Bob **)
+Theorem punctured_EuclidPlane_connected :
+  connected_space (EuclidPlane :\: {(0,0)})
+    (subspace_topology EuclidPlane R2_standard_topology
+      (EuclidPlane :\: {(0,0)})).
+exact (path_connected_implies_connected
+  (EuclidPlane :\: {(0,0)})
+  (subspace_topology EuclidPlane R2_standard_topology
+    (EuclidPlane :\: {(0,0)}))
+  punctured_space_path_connected).
+Qed.
+
 Theorem ex59_3a_R1_not_homeo_Rn : forall n:set,
   n :e omega -> 2 c= n ->
   ~(exists f:set, homeomorphism R R_standard_topology
