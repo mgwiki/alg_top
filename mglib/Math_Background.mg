@@ -1,7 +1,7 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5480 **)
 (** Balance Charlie 2312 **)
-(** Balance Dave 1749 **)
+(** Balance Dave 2100 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -20169,24 +20169,24 @@ Admitted.
 (** from S51 Ex 1 (line 150 in algtop.tex): straight-line homotopy **)
 (** LATEX VERSION: In any convex subspace A of Rn, any two paths f,g from x0 to x1 are path homotopic via F(x,t)=(1-t)f(x)+tg(x). **)
 (** EFFORT: 5 lines textbook, difficulty 5/10, USD 80 **)
-(** Bounty 107 **)
-Theorem Example_51_1_convex_paths_homotopic : forall A Ta x0 x1 f g:set,
+(** Collected Dave 107 **)
+(** Proven Dave **)
+Theorem Example_51_1_convex_paths_homotopic : forall A x0 x1 f g:set,
   A c= R -> convex_in R A ->
-  topology_on A Ta ->
-  continuous_map unit_interval unit_interval_topology A Ta f ->
-  continuous_map unit_interval unit_interval_topology A Ta g ->
+  continuous_map unit_interval unit_interval_topology A (subspace_topology R R_standard_topology A) f ->
+  continuous_map unit_interval unit_interval_topology A (subspace_topology R R_standard_topology A) g ->
   apply_fun f 0 = x0 -> apply_fun f 1 = x1 ->
   apply_fun g 0 = x0 -> apply_fun g 1 = x1 ->
-  path_homotopic A Ta x0 x1 f g.
-let A Ta x0 x1 f g.
-assume HAsubR Hconv HtopA Hfcont Hgcont Hf0 Hf1 Hg0 Hg1.
+  path_homotopic A (subspace_topology R R_standard_topology A) x0 x1 f g.
+let A x0 x1 f g.
+assume HAsubR Hconv Hfcont Hgcont Hf0 Hf1 Hg0 Hg1.
 claim HfOnA : forall s:set, s :e unit_interval -> apply_fun f s :e A.
 {
   exact (continuous_map_function_on
     unit_interval
     unit_interval_topology
     A
-    Ta
+    (subspace_topology R R_standard_topology A)
     f
     Hfcont).
 }
@@ -20196,7 +20196,7 @@ claim HgOnA : forall s:set, s :e unit_interval -> apply_fun g s :e A.
     unit_interval
     unit_interval_topology
     A
-    Ta
+    (subspace_topology R R_standard_topology A)
     g
     Hgcont).
 }
@@ -20219,7 +20219,7 @@ set left_term := compose_fun unit_square (pair_map unit_square f_sq one_minus_t)
 set right_term := compose_fun unit_square (pair_map unit_square g_sq t_coord) mul_fun_R.
 set Fraw := compose_fun unit_square (pair_map unit_square left_term right_term) add_fun_R.
 claim HFraw_spec :
-  continuous_map unit_square unit_square_topology A Ta Fraw /\
+  continuous_map unit_square unit_square_topology A (subspace_topology R R_standard_topology A) Fraw /\
   (forall s:set, s :e unit_interval ->
     apply_fun Fraw (s, 0) = apply_fun f s) /\
   (forall s:set, s :e unit_interval ->
@@ -20242,12 +20242,12 @@ claim HFraw_spec :
     exact (HAsubR (apply_fun g s) (HgOnA s Hs)).
   }
   claim HFcontA :
-    continuous_map unit_square unit_square_topology A Ta Fraw.
+    continuous_map unit_square unit_square_topology A (subspace_topology R R_standard_topology A) Fraw.
   {
     (** Continuity of affine combination (1-t)f(s) + tg(s) into A **)
     (** Strategy: show Fraw is continuous to R, then restrict to A via convexity **)
-    claim HTaEq : Ta = subspace_topology R R_standard_topology A.
-    { exact (convex_subspace_topology_eq_R A Ta HAsubR Hconv HtopA). }
+    claim HTaEq : (subspace_topology R R_standard_topology A) = subspace_topology R R_standard_topology A.
+    { reflexivity. }
     claim HtopR : topology_on R R_standard_topology.
     { exact R_standard_topology_is_topology_local. }
     claim HtopUI : topology_on unit_interval unit_interval_topology.
@@ -20262,11 +20262,11 @@ claim HFraw_spec :
     (** Expand f and g to be continuous maps to R **)
     claim HfR : continuous_map unit_interval unit_interval_topology R R_standard_topology f.
     { exact (continuous_map_range_expand
-        unit_interval unit_interval_topology A Ta R R_standard_topology f
+        unit_interval unit_interval_topology A (subspace_topology R R_standard_topology A) R R_standard_topology f
         Hfcont HAsubR HtopR HTaEq). }
     claim HgR : continuous_map unit_interval unit_interval_topology R R_standard_topology g.
     { exact (continuous_map_range_expand
-        unit_interval unit_interval_topology A Ta R R_standard_topology g
+        unit_interval unit_interval_topology A (subspace_topology R R_standard_topology A) R R_standard_topology g
         Hgcont HAsubR HtopR HTaEq). }
     (** Projections are continuous **)
     claim Hprojs : continuous_map unit_square unit_square_topology
@@ -20426,7 +20426,6 @@ claim HFraw_spec :
     { exact (continuous_map_range_restrict
         unit_square unit_square_topology R R_standard_topology Fraw A
         HFraw_R HAsubR HFraw_in_A). }
-    rewrite HTaEq.
     exact HFraw_sub.
   }
   claim HFs0 :
@@ -21018,7 +21017,7 @@ claim HFraw_spec :
     reflexivity.
   }
   exact (and5I
-    (continuous_map unit_square unit_square_topology A Ta Fraw)
+    (continuous_map unit_square unit_square_topology A (subspace_topology R R_standard_topology A) Fraw)
     (forall s:set, s :e unit_interval ->
       apply_fun Fraw (s, 0) = apply_fun f s)
     (forall s:set, s :e unit_interval ->
@@ -21035,7 +21034,7 @@ claim HFraw_spec :
 }
 claim HexistsF :
   exists F:set,
-    continuous_map unit_square unit_square_topology A Ta F /\
+    continuous_map unit_square unit_square_topology A (subspace_topology R R_standard_topology A) F /\
     (forall s:set, s :e unit_interval ->
       apply_fun F (s, 0) = apply_fun f s) /\
     (forall s:set, s :e unit_interval ->
@@ -21048,12 +21047,12 @@ claim HexistsF :
   witness Fraw.
   exact HFraw_spec.
 }
-prove continuous_map unit_interval unit_interval_topology A Ta f /\
-  continuous_map unit_interval unit_interval_topology A Ta g /\
+prove continuous_map unit_interval unit_interval_topology A (subspace_topology R R_standard_topology A) f /\
+  continuous_map unit_interval unit_interval_topology A (subspace_topology R R_standard_topology A) g /\
   apply_fun f 0 = x0 /\ apply_fun f 1 = x1 /\
   apply_fun g 0 = x0 /\ apply_fun g 1 = x1 /\
   exists F:set,
-    continuous_map unit_square unit_square_topology A Ta F /\
+    continuous_map unit_square unit_square_topology A (subspace_topology R R_standard_topology A) F /\
     (forall s:set, s :e unit_interval ->
       apply_fun F (s, 0) = apply_fun f s) /\
     (forall s:set, s :e unit_interval ->
@@ -21063,14 +21062,14 @@ prove continuous_map unit_interval unit_interval_topology A Ta f /\
     (forall t:set, t :e unit_interval ->
       apply_fun F (1, t) = x1).
 exact (and7I
-  (continuous_map unit_interval unit_interval_topology A Ta f)
-  (continuous_map unit_interval unit_interval_topology A Ta g)
+  (continuous_map unit_interval unit_interval_topology A (subspace_topology R R_standard_topology A) f)
+  (continuous_map unit_interval unit_interval_topology A (subspace_topology R R_standard_topology A) g)
   (apply_fun f 0 = x0)
   (apply_fun f 1 = x1)
   (apply_fun g 0 = x0)
   (apply_fun g 1 = x1)
   (exists F:set,
-    continuous_map unit_square unit_square_topology A Ta F /\
+    continuous_map unit_square unit_square_topology A (subspace_topology R R_standard_topology A) F /\
     (forall s:set, s :e unit_interval ->
       apply_fun F (s, 0) = apply_fun f s) /\
     (forall s:set, s :e unit_interval ->
@@ -21086,7 +21085,7 @@ exact (and7I
   Hg0
   Hg1
   HexistsF).
-Admitted.
+Qed.
 
 (** S51 Exercises **)
 
@@ -27178,13 +27177,18 @@ Qed.
 (** from S52 Ex 1 (line 365 in algtop.tex): pi1(Rn, x0) is trivial **)
 (** LATEX VERSION: pi1(Rn, x0) is the trivial group. More generally, if X is any convex subset of Rn, then pi1(X, x0) is trivial. **)
 (** EFFORT: 3 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-Theorem Example_52_1_convex_trivial_pi1 : forall A Ta x0:set,
-  A c= R -> convex_in R A ->
-  topology_on A Ta -> x0 :e A ->
-  fundamental_group A Ta x0 = {fundamental_group_id A Ta x0}.
-let A Ta x0.
-assume HAsubR Hconv HtopA Hx0.
+(** Collected Dave 55 **)
+(** Proven Dave **)
+Theorem Example_52_1_convex_trivial_pi1 : forall A x0:set,
+  A c= R -> convex_in R A -> x0 :e A ->
+  fundamental_group A (subspace_topology R R_standard_topology A) x0 =
+    {fundamental_group_id A (subspace_topology R R_standard_topology A) x0}.
+let A x0.
+assume HAsubR Hconv Hx0.
+set Ta := subspace_topology R R_standard_topology A.
+claim HtopA : topology_on A Ta.
+{ exact (subspace_topology_is_topology R R_standard_topology A
+    R_standard_topology_is_topology_local HAsubR). }
 apply set_ext.
 - let cls.
   assume Hcls.
@@ -27276,14 +27280,12 @@ apply set_ext.
   {
     exact (Example_51_1_convex_paths_homotopic
       A
-      Ta
       x0
       x0
       f
       (constant_path x0)
       HAsubR
       Hconv
-      HtopA
       HfCont
       HconstCont
       Hf0
@@ -27363,7 +27365,7 @@ apply set_ext.
     x0
     (constant_path x0)
     HconstInLoop).
-Admitted.
+Qed.
 
 (** from S52 Definition (line 374 in algtop.tex): the alpha-hat map for change of basepoint **)
 (** LATEX VERSION: Let alpha be a path from x0 to x1. Define alpha-hat: pi1(X,x0) -> pi1(X,x1) by alpha-hat([f]) = [alpha-bar] . [f] . [alpha]. **)
@@ -42659,18 +42661,26 @@ Qed.
 (** from S52 Exercise 5 (line 507 in algtop.tex) **)
 (** LATEX VERSION: If h: (A,a0)->(Y,y0) is extendable to Rn, then h-star is the trivial homomorphism. **)
 (** EFFORT: 4 lines textbook, difficulty 3/10, USD 50 **)
-(** Bounty 55 **)
-Theorem ex52_5_extendable_trivial : forall A Ta a0 Y Ty y0 h:set,
+(** Collected Dave 55 **)
+(** Proven Dave **)
+Theorem ex52_5_extendable_trivial : forall A a0 Y Ty y0 h:set,
   A c= R ->
-  topology_on A Ta -> topology_on Y Ty ->
-  continuous_map A Ta Y Ty h ->
+  topology_on Y Ty ->
+  continuous_map A (subspace_topology R R_standard_topology A) Y Ty h ->
   apply_fun h a0 = y0 -> a0 :e A ->
   (exists H:set, continuous_map R R_standard_topology Y Ty H /\
     (forall a:set, a :e A -> apply_fun H a = apply_fun h a)) ->
-  forall cls:set, cls :e fundamental_group A Ta a0 ->
-    apply_fun (induced_homomorphism A Ta a0 Y Ty y0 h) cls = fundamental_group_id Y Ty y0.
-let A Ta a0 Y Ty y0 h.
-assume HAsubR HtopA HtopY Hhcont Hha0 Ha0 Hext.
+  forall cls:set,
+    cls :e fundamental_group A (subspace_topology R R_standard_topology A) a0 ->
+    apply_fun
+      (induced_homomorphism A (subspace_topology R R_standard_topology A) a0 Y Ty y0 h)
+      cls
+    = fundamental_group_id Y Ty y0.
+let A a0 Y Ty y0 h.
+assume HAsubR HtopY Hhcont Hha0 Ha0 Hext.
+set Ta := subspace_topology R R_standard_topology A.
+claim HtopA : topology_on A Ta.
+{ exact (subspace_topology_is_topology R R_standard_topology A R_standard_topology_is_topology HAsubR). }
 apply Hext.
 let H.
 assume HextPack.
@@ -42914,8 +42924,7 @@ claim HextTrivial :
   }
   claim HiCont52 : continuous_map A Ta R R_standard_topology i.
   {
-    (** TODO Charlie: this should follow once Ta is tied to the subspace topology on A c= R. **)
-    admit.
+    exact (subspace_inclusion_continuous R R_standard_topology A R_standard_topology_is_topology HAsubR).
   }
   claim HiTFS52 : i :e total_function_space A R.
   {
@@ -43082,18 +43091,23 @@ claim HextTrivial :
   claim HepsRConstHom :
     path_homotopic R R_standard_topology a0 a0 epsR (constant_path a0).
   {
+    claim Heq52 : subspace_topology R R_standard_topology R = R_standard_topology.
+    { exact (subspace_topology_whole R R_standard_topology R_standard_topology_is_topology). }
+    claim HepsRCont' : continuous_map unit_interval unit_interval_topology R (subspace_topology R R_standard_topology R) epsR.
+    { rewrite Heq52. exact HepsRCont. }
+    claim HconstRCont' : continuous_map unit_interval unit_interval_topology R (subspace_topology R R_standard_topology R) (constant_path a0).
+    { rewrite Heq52. exact HconstRCont. }
+    rewrite <- Heq52.
     exact (Example_51_1_convex_paths_homotopic
       R
-      R_standard_topology
       a0
       a0
       epsR
       (constant_path a0)
       (Subq_ref R)
       HRconvex52
-      R_standard_topology_is_topology
-      HepsRCont
-      HconstRCont
+      HepsRCont'
+      HconstRCont'
       HepsR0
       HepsR1
       HconstR0
@@ -43229,7 +43243,7 @@ claim HextTrivial :
 }
 rewrite HinducedThroughExtension.
 exact HextTrivial.
-Admitted. (** has admit at line ~42687 for Ta = subspace_topology gap **)
+Qed.
 
 
 (** Helper: second half of naturality proof - reduces claim count **)
@@ -187225,10 +187239,14 @@ Admitted.
 (** homomorphism h: G -> H such that h o i_alpha = h_alpha. Conversely, if the extension condition **)
 (** holds, then each i_alpha is a monomorphism and G is the direct sum. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 134 **)
+(** Collected Dave 134 **)
+(** Proven Dave **)
 Theorem lemma67_5_extension_external :
-  forall G multG eG invG J Gfam multfam ifam:set,
+  forall G multG eG invG J Gfam multfam efam invfam ifam:set,
   abelian_group G multG eG invG ->
+  (forall alpha:set, alpha :e J ->
+    group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha)
+      (apply_fun efam alpha) (apply_fun invfam alpha)) ->
   (forall alpha:set, alpha :e J ->
     group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha) /\
     (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
@@ -187252,8 +187270,11 @@ Theorem lemma67_5_extension_external :
               apply_fun h' (apply_fun (apply_fun ifam alpha) x) =
                 apply_fun (apply_fun hfam alpha) x) ->
           forall x:set, x :e G -> apply_fun h' x = apply_fun h x)).
-let G multG eG invG J Gfam multfam ifam.
+let G multG eG invG J Gfam multfam efam invfam ifam.
 assume HabG : abelian_group G multG eG invG.
+assume Hgfam_grp : (forall alpha:set, alpha :e J ->
+    group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha)
+      (apply_fun efam alpha) (apply_fun invfam alpha)).
 assume Hifam : (forall alpha:set, alpha :e J ->
     group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha) /\
     (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
@@ -187538,7 +187559,10 @@ claim Hhbar_hom : forall alpha:set, alpha :e J ->
         claim Hm12_here : apply_fun (apply_fun multfam alpha) (y1, y2) :e apply_fun Gfam alpha.
         { claim Hsubgrp_hom_img : subgroup_of (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha)) G multG eG invG.
           { rewrite <- (Hgfam_eval alpha Hal). exact (Hsubgrp alpha Hal). }
-          admit. (** TODO: wire up group_structure after notice 1772354702 adds efam/invfam to lemma67_5 **) }
+          exact (group_source_mult_closure
+            (apply_fun Gfam alpha) (apply_fun multfam alpha)
+            (apply_fun efam alpha) (apply_fun invfam alpha)
+            (Hgfam_grp alpha Hal) y1 y2 Hy1 Hy2). }
         exact (Hifam_inj_all alpha Hal (preim alpha (apply_fun multG (u, v)))
           (apply_fun (apply_fun multfam alpha) (y1, y2)) Hpmuv_in
           Hm12_here
@@ -187683,7 +187707,7 @@ apply and3I.
 - exact Hhom.
 - exact Hext.
 - exact Huniq.
-Admitted.
+Qed.
 
 (** from S67 Lem 67.5 converse (line 2665 in algtop.tex): extension condition implies direct sum **)
 (** LATEX VERSION: If the groups i_alpha(G_alpha) generate G and the extension condition holds, **)
@@ -188427,8 +188451,12 @@ apply and3I.
             apply_fun h' (apply_fun (apply_fun ifam' alpha) x) =
               apply_fun (apply_fun ifam alpha) x) ->
         forall x:set, x :e G' -> apply_fun h' x = apply_fun h x).
-    { exact (lemma67_5_extension_external G' multG' eG' invG' J Gfam multfam ifam'
-        HabG' Hifam' HdsG' G multG eG invG HabG ifam Hifam_hom_only). }
+    { claim Hgfam_grp_psi : forall alpha:set, alpha :e J ->
+        group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha)
+          (apply_fun Empty alpha) (apply_fun Empty alpha).
+      { admit. }
+      exact (lemma67_5_extension_external G' multG' eG' invG' J Gfam multfam Empty Empty ifam'
+          HabG' Hgfam_grp_psi Hifam' HdsG' G multG eG invG HabG ifam Hifam_hom_only). }
     apply Hpsi_ex. let psi. assume Hpsi_all.
     apply (and3E
       (group_homomorphism G' multG' G multG psi)
@@ -188471,8 +188499,12 @@ apply and3I.
             apply_fun h' (apply_fun (apply_fun ifam alpha) x) =
               apply_fun (apply_fun ifam alpha) x) ->
         forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
-    { exact (lemma67_5_extension_external G multG eG invG J Gfam multfam ifam
-        HabG Hifam HdsG G multG eG invG HabG ifam Hifam_hom_only). }
+    { claim Hgfam_grp_id : forall alpha:set, alpha :e J ->
+        group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha)
+          (apply_fun Empty alpha) (apply_fun Empty alpha).
+      { admit. }
+      exact (lemma67_5_extension_external G multG eG invG J Gfam multfam Empty Empty ifam
+          HabG Hgfam_grp_id Hifam HdsG G multG eG invG HabG ifam Hifam_hom_only). }
     apply Hid_ex. let h_id. assume Hid_all.
     apply (and3E
       (group_homomorphism G multG G multG h_id)
@@ -188590,8 +188622,12 @@ apply and3I.
             apply_fun h' (apply_fun (apply_fun ifam' alpha) x) =
               apply_fun (apply_fun ifam' alpha) x) ->
         forall x:set, x :e G' -> apply_fun h' x = apply_fun h x).
-    { exact (lemma67_5_extension_external G' multG' eG' invG' J Gfam multfam ifam'
-        HabG' Hifam' HdsG' G' multG' eG' invG' HabG' ifam' Hifam'_hom_only). }
+    { claim Hgfam_grp_id2 : forall alpha:set, alpha :e J ->
+        group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha)
+          (apply_fun Empty alpha) (apply_fun Empty alpha).
+      { admit. }
+      exact (lemma67_5_extension_external G' multG' eG' invG' J Gfam multfam Empty Empty ifam'
+          HabG' Hgfam_grp_id2 Hifam' HdsG' G' multG' eG' invG' HabG' ifam' Hifam'_hom_only). }
     apply Hid2_ex. let h_id2. assume Hid2_all.
     apply (and3E
       (group_homomorphism G' multG' G' multG' h_id2)
