@@ -195926,6 +195926,55 @@ exact (nat_primrec_S
   Hn).
 Qed.
 
+(** Infrastructure: word_product after appending one element **)
+(** Proven Bob **)
+Lemma word_product_append_one : forall mult e xs b m:set,
+  m :e omega ->
+  word_product mult e
+    (graph (ordsucc m) (fun i:set => if i :e m then apply_fun xs i else b))
+    (ordsucc m) =
+    apply_fun mult (word_product mult e xs m, b).
+let mult e xs b m.
+assume HmO.
+claim Hm_nat : nat_p m. { exact (omega_nat_p m HmO). }
+set xs_ext := graph (ordsucc m) (fun i:set => if i :e m then apply_fun xs i else b).
+claim Hwp_succ :
+  word_product mult e xs_ext (ordsucc m) =
+    apply_fun mult (word_product mult e xs_ext m, apply_fun xs_ext m).
+{ exact (word_product_succ mult e xs_ext m Hm_nat). }
+claim Hxse_m : apply_fun xs_ext m = b.
+{
+  claim Hxse_m0 : apply_fun xs_ext m =
+    if m :e m then apply_fun xs m else b.
+  { exact (apply_fun_graph (ordsucc m)
+      (fun i:set => if i :e m then apply_fun xs i else b) m (ordsuccI2 m)). }
+  rewrite Hxse_m0.
+  rewrite (If_i_0 (m :e m) (apply_fun xs m) b (In_irref m)).
+  reflexivity.
+}
+claim Hwp_eq :
+  word_product mult e xs_ext m = word_product mult e xs m.
+{
+  apply (nat_primrec_ext e
+    (fun i r => apply_fun mult (r, apply_fun xs_ext i))
+    (fun i r => apply_fun mult (r, apply_fun xs i))
+    m
+    HmO).
+  let i r. assume Hi.
+  claim Hxse_i : apply_fun xs_ext i =
+    if i :e m then apply_fun xs i else b.
+  { exact (apply_fun_graph (ordsucc m)
+      (fun j:set => if j :e m then apply_fun xs j else b) i (ordsuccI1 m i Hi)). }
+  rewrite Hxse_i.
+  rewrite (If_i_1 (i :e m) (apply_fun xs i) b Hi).
+  reflexivity.
+}
+rewrite Hwp_succ.
+rewrite Hwp_eq.
+rewrite Hxse_m.
+reflexivity.
+Qed.
+
 (** Infrastructure: reduced word entries are non-e if the product is non-e **)
 (** Proven Bob **)
 Lemma reduced_word_no_eG_if_product_non_e :
