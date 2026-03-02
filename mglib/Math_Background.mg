@@ -90791,8 +90791,98 @@ claim HFt_54_cont :
       }
       claim Hft_54_N_in_Vq : forall z:set, z :e N -> apply_fun Ft_54 z :e Vq.
       {
-        (** chain argument: each column lift stays in one sheet, sheet locally constant **)
-        admit.
+        (** Argument: For each column s in I1_54, the column lift restricted to I2_54 maps
+            into a single slice (by connectivity of I2_54 and path_lift_stays_in_anchored_sheet_on_subset).
+            Since Ft_54(q) in Vq and q = (q0,q1) with q0 in I1_54, q1 in I2_54,
+            column q0 maps I2_54 into Vq. For other columns, Ft_local_N = gq o F maps N into Vq
+            and agrees with Ft_54 on each column at their shared starting point. **)
+        let z.
+        assume HzN.
+        claim HzSq : z :e unit_square.
+        { exact (HNsubSq z HzN). }
+        claim Hz0I : z 0 :e unit_interval.
+        { exact (ap0_Sigma unit_interval (fun _ : set => unit_interval) z HzSq). }
+        claim Hz1I : z 1 :e unit_interval.
+        { exact (ap1_Sigma unit_interval (fun _ : set => unit_interval) z HzSq). }
+        claim Hz0I1 : z 0 :e I1_54.
+        { exact (ap0_Sigma I1_54 (fun _ : set => I2_54) z HzN). }
+        claim Hz1I2 : z 1 :e I2_54.
+        { exact (ap1_Sigma I1_54 (fun _ : set => I2_54) z HzN). }
+        claim HI2subI : I2_54 c= unit_interval.
+        { exact (open_ball_subset_X unit_interval R_bounded_metric (q 1) r1_54). }
+        claim HI2conn :
+          connected_space I2_54 (subspace_topology unit_interval unit_interval_topology I2_54).
+        {
+          exact (open_ball_unit_interval_connected_lt1 (q 1) r1_54 Hq1I_local Hr1R Hr1pos Hr1lt1).
+        }
+        claim HstartZ0E :
+          apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0) :e E.
+        {
+          exact (continuous_map_function_on
+            unit_interval unit_interval_topology E Te
+            (path_lift E Te B Tb p e0 g0_54)
+            Hbottom_lift_54_cont
+            (z 0) Hz0I).
+        }
+        claim HvsZ0mapsI2intoU :
+          forall t:set, t :e I2_54 -> apply_fun (apply_fun vs_choice_54 (z 0)) t :e U.
+        {
+          let t.
+          assume HtI2.
+          claim HtI : t :e unit_interval.
+          { exact (HI2subI t HtI2). }
+          claim HvsEqF : apply_fun (apply_fun vs_choice_54 (z 0)) t = apply_fun F (z 0, t).
+          {
+            exact (Hvs_choice_54_eval (z 0) t Hz0I HtI).
+          }
+          rewrite HvsEqF.
+          claim Hz0tN : (z 0, t) :e N.
+          {
+            exact (tuple_2_setprod_by_pair_Sigma I1_54 I2_54 (z 0) t Hz0I1 HtI2).
+          }
+          exact (HN_into_U (z 0, t) Hz0tN).
+        }
+        (** The column lift at z0 restricted to I2_54 maps into one slice
+            (by connectivity + path_lift_stays_in_anchored_sheet_on_subset).
+            Determining which slice is the key difficulty:
+            for column q0 it is Vq by direct anchoring;
+            for other columns it requires the column-to-column transfer argument. **)
+        claim Hcolumn_in_Vq :
+          forall t:set, t :e I2_54 ->
+            apply_fun (path_lift E Te B Tb p
+              (apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0))
+              (apply_fun vs_choice_54 (z 0))) t :e Vq.
+        {
+          admit.
+        }
+        claim Hzeta : z = (z 0, z 1).
+        { exact (setprod_eta unit_interval unit_interval z HzSq). }
+        claim Hz0z1N : (z 0, z 1) :e N.
+        { rewrite <- Hzeta. exact HzN. }
+        claim HFt54z :
+          apply_fun Ft_54 z =
+            apply_fun (path_lift E Te B Tb p
+              (apply_fun (path_lift E Te B Tb p e0 g0_54) (z 0))
+              (apply_fun vs_choice_54 (z 0))) (z 1).
+        {
+          rewrite (apply_fun_graph
+            unit_square
+            (fun w:set =>
+              apply_fun
+                (path_lift E Te B Tb p
+                  (apply_fun (path_lift E Te B Tb p e0 g0_54)
+                    (apply_fun (projection_map1 unit_interval unit_interval) w))
+                  (apply_fun vs_choice_54
+                    (apply_fun (projection_map1 unit_interval unit_interval) w)))
+                (apply_fun (projection_map2 unit_interval unit_interval) w))
+            z
+            HzSq).
+          rewrite (projection1_apply unit_interval unit_interval z HzSq).
+          rewrite (projection2_apply unit_interval unit_interval z HzSq).
+          reflexivity.
+        }
+        rewrite HFt54z.
+        exact (Hcolumn_in_Vq (z 1) Hz1I2).
       }
       claim HFtEqOnN :
         forall z:set, z :e N -> apply_fun Ft_local_N z = apply_fun Ft_54 z.
