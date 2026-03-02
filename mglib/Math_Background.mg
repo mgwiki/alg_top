@@ -185103,6 +185103,15 @@ apply (and4I
   exact (homomorphism_image_intro G phi (apply_fun inv a) Hinv_aG).
 Qed.
 
+(** Helper: Pi elements lie in the underlying power set **)
+Lemma Pi_sub_Power : forall X:set, forall Y:set -> set, forall f:set,
+  f :e (Pi_ x :e X, Y x) ->
+  f :e Power (Sigma_ x :e X, Union (Y x)).
+let X Y f.
+assume Hf.
+admit. (** TODO: need Pi elimination/unfolding to extract Power membership **)
+Admitted.
+
 
 (** from S67 Thm 67.4 (line 2647 in algtop.tex): existence of external direct sum **)
 (** LATEX VERSION: Given a family of abelian groups {G_alpha}, there exists an abelian group G **)
@@ -185554,8 +185563,12 @@ claim HinvG_G : forall f:set, f :e G ->
 claim G_sub_Sigma : forall h:set, h :e G ->
   h c= Sigma_ alpha :e J, Union (Ga alpha).
 {
-  admit.
-  (** need Pi to Power elimination, Pi is opaque so SepE1 is blocked **)
+  let h. assume Hh : h :e G.
+  claim HhPi : h :e Pi_ alpha :e J, Ga alpha.
+  { exact (HG_sub_Pi h Hh). }
+  claim HhPow : h :e Power (Sigma_ alpha :e J, Union (Ga alpha)).
+  { exact (Pi_sub_Power J Ga h HhPi). }
+  exact (PowerE (Sigma_ alpha :e J, Union (Ga alpha)) h HhPow).
 }
 claim G_ext : forall f g:set, f :e G -> g :e G ->
   (forall alpha:set, alpha :e J -> f alpha = g alpha) -> f = g.
