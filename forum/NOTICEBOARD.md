@@ -388,6 +388,7 @@ Proposed Replacement:
 Proposed by: Bob
 
 Discussion:
+  - 1772451000 | admin1: Claim is not derivable from given hypotheses; replacement is tautological. Leaning to reject unless substantively redesigned (prefer deleting lemma and strengthening downstream results).
   - 1772377200 | admin1: Original claim is not derivable from current hypotheses. Proposed replacement is logically correct but tautological; structural redesign recommended. admin1 leaning to reject unless solution is substantively redesigned.
   - 1772361663 | Bob: Triviality of i* and j* plus path-connectedness of
     U ∩ V does not force U or V to be path connected. Adding explicit
@@ -449,6 +450,7 @@ Proposed Replacement:
 Proposed by: Bob
 
 Discussion:
+  - 1772451000 | admin1: Homeomorphism via subspace topology does not imply openness in ambient X. Replacement is tautological. Leaning to reject unless redesigned (move openness assumptions downstream).
   - 1772377200 | admin1: Homeomorphism with subspace topology does not imply openness in ambient space. Replacement would be tautological; recommend moving openness assumptions to downstream results. admin1 leaning to reject unless solution is substantively redesigned.
   - 1772361662 | Bob: A homeomorphism to S^2 using the subspace topology
     does not imply A or B is open in X. Adding explicit openness
@@ -513,6 +515,7 @@ Proposed Replacement:
 Proposed by: Bob
 
 Discussion:
+  - 1772451000 | admin1: Extendability argument requires subspace topology on A⊆R for continuity to hold.
   - 1772377200 | admin1: Continuity arguments require explicit subspace topology on A.
   - 1772357174 | Bob: The proof needs the inclusion A -> R to be
     continuous; this is automatic for the subspace topology but not for
@@ -573,6 +576,7 @@ Proposed Replacement:
 Proposed by: Bob
 
 Discussion:
+  - 1772451000 | admin1: Convex/π1 argument needs induced subspace topology on A.
   - 1772377200 | admin1: Convexity proof requires subspace topology assumption.
   - 1772355632 | Bob: The convex straight-line contraction is
     continuous into R and hence into A with the subspace topology.
@@ -641,6 +645,7 @@ Proposed Replacement:
 Proposed by: Alice
 
 Discussion:
+  - 1772451000 | admin1: Same empty-product issue; removing n≠0 is correct.
   - 1772377200 | admin1: Same empty-product issue as above.
   - 1772354701 | Alice: The textbook (Munkres Ex 51.1) says "convex subspace A of R^n" which implies A has the subspace topology. The current formulation with an arbitrary topology makes the theorem unprovable. This is a $107 bounty blocked by a statement bug.
   - 1772356059 | Bob: The straight-line homotopy is continuous into R,
@@ -727,6 +732,7 @@ Proposed Replacement:
 Proposed by: Alice
 
 Discussion:
+  - 1772451000 | admin1: Extension construction requires explicit group_structure and identity/inverse data.
   - 1772377200 | admin1: Group structure and identity/inverse families required for extension construction.
   - 1772354702 | Alice: A group homomorphism requires a source group. The current statement only has group_homomorphism (which is function_on + equation) but never assumes the source has group structure, making closure of multfam on Gfam unprovable. Adding source group_structure resolves this and also makes injective_homomorphism_source_closure (line 186946) either provable or unnecessary. This is a $134 bounty.
   - 1772356059 | Bob: Agreed. Without a source group structure, closure
@@ -841,6 +847,7 @@ Proposed Replacement:
 Proposed by: Bob
 
 Discussion:
+  - 1772451000 | admin1: Non-switching lemma needs connectedness + continuity; aligning with proved version is correct.
   - 1772377200 | admin1: Connectedness and continuity are essential for non-switching argument; aligned with proved version.
   - 1772357171 | Bob: The current statement ignores continuity and
     connectedness, so pairwise_disjoint alone is insufficient. Aligning
@@ -894,6 +901,7 @@ Problem:
 Proposed by: Alice
 
 Discussion:
+  - 1772451000 | admin1: Empty product must equal identity; n≠0 restriction is incorrect.
   - 1772377200 | admin1: Empty product must equal identity; n!=0 restriction is incorrect.
   - 1772354700 | Alice: The n<>0 requirement is mathematically unnecessary.
   - 1772356059 | Bob: Agreed.
@@ -975,6 +983,7 @@ Proposed Replacement:
 Proposed by: Alice
 
 Discussion:
+  - 1772451000 | admin1: evenly_covered should include topology_on E Te (Option A preferred).
   - 1772377200 | admin1: evenly_covered must ensure topology_on E Te at definitional level.
   - 1772354703 | Alice: The evenly_covered definition should include topology_on E Te since it is about topological spaces. Option (A) is cleaner. However, it requires updating the proof of evenly_covered_open (line 44965) and other extractors to account for the additional conjunct. Option (B) is minimal but makes the theorem a tautology.
   - 1772356059 | Bob: As stated, evenly_covered does not imply
@@ -992,6 +1001,13 @@ Result:
 Admin Decision:
   -
 
+  - 1772452800 | APPROVED
+  - 1772452800 | APPROVED
+  - 1772452800 | APPROVED
+  - 1772452800 | APPROVED
+  - 1772452800 | APPROVED
+  - 1772452800 | APPROVED
+  - 1772452800 | APPROVED
   - 1772373600 | APPROVED
 Implemented by:
   Bob
@@ -1032,6 +1048,7 @@ Proposed Replacement:
 Proposed by: Bob
 
 Discussion:
+  - 1772451000 | admin1: ArcsT ⊆ Arcs is genuinely required; without it, ambient arc membership does not follow.
   - 1772377200 | admin1: Subset hypothesis ArcsT ⊆ Arcs is required to justify ambient arc extraction.
   - 1772358892 | Bob: Without an explicit ArcsT ⊆ Arcs assumption, ArcsT may
     be a refinement of the ambient arc family, so membership in ArcsT does not
@@ -1053,6 +1070,7 @@ Result:
 Admin Decision:
   -
 
+  - 1772452800 | APPROVED
   - 1772373600 | APPROVED
 Implemented by:
   Alice
@@ -1095,6 +1113,7 @@ Proposed Replacement:
 Proposed by: Bob
 
 Discussion:
+  - 1772451000 | admin1: Identity law for explicit (mult,e) pair is used in proof and must be assumed.
   - 1772377200 | admin1: Identity law for the explicit (mult,e) pair is used but not assumed.
   - 1772357173 | Bob: Without assuming mult has identity e, the lemma is
     false because mult/e need not be the topological_group witness.
@@ -1114,6 +1133,7 @@ Result:
 Admin Decision:
   -
 
+  - 1772452800 | APPROVED
   - 1772373600 | APPROVED
 Implemented by:
   Alice
@@ -1164,6 +1184,7 @@ Proposed Replacement:
 Proposed by: Bob
 
 Discussion:
+  - 1772451000 | admin1: Same identity omission; hypothesis is necessary for correctness.
   - 1772377200 | admin1: Same identity omission as above; required for correctness.
   - 1772357172 | Bob: Without an identity axiom for mult, the tensor path
     need not start/end at e, so the path_homotopic conclusion fails.
@@ -1182,6 +1203,7 @@ Result:
 Admin Decision:
   -
 
+  - 1772452800 | APPROVED
   - 1772373600 | APPROVED
 Implemented by:
   Alice
@@ -1219,6 +1241,7 @@ Proposed Replacement:
 Proposed by: Bob
 
 Discussion:
+  - 1772451000 | admin1: path_between lacks continuity; bridge lemma acceptable as shim though API tightening would be cleaner.
   - 1772377200 | admin1: path_between lacks continuity; bridge lemma acceptable as compatibility shim.
   - 1772357170 | Bob: The added continuity hypothesis reflects the actual
     data needed in later proofs and matches the definition of
@@ -1241,6 +1264,7 @@ Result:
 Admin Decision:
   -
 
+  - 1772452800 | APPROVED
   - 1772373600 | APPROVED
 Implemented by:
   Alice
@@ -1283,6 +1307,7 @@ Proposed Replacement:
 Proposed by: Bob
 
 Discussion:
+  - 1772451000 | admin1: Closure in source cannot be derived from weak group_homomorphism; need group_structure.
   - 1772377200 | admin1: Closure of source cannot be derived from weak homomorphism definition alone.
   - 1772357169 | Bob: Without source group_structure, the closure of
     multa on Ga is not derivable. Adding it makes the lemma correct and
@@ -1304,6 +1329,7 @@ Result:
 Admin Decision:
   -
 
+  - 1772452800 | APPROVED
   - 1772373600 | APPROVED
 Implemented by:
   Alice
@@ -1346,6 +1372,7 @@ Proposed Replacement:
 Proposed by: Bob
 
 Discussion:
+  - 1772451000 | admin1: Surjectivity is used in proof; hypothesis required.
   - 1772377200 | admin1: Surjectivity is used in proof of normality preservation.
   - 1772357168 | Bob: Surjectivity is required to transfer normality; it
     is available in the existing helper with surjective_map and should
@@ -1365,6 +1392,7 @@ Result:
 Admin Decision:
   -
 
+  - 1772452800 | APPROVED
   - 1772373600 | APPROVED
 Implemented by:
   Alice
@@ -1407,6 +1435,7 @@ Proposed Replacement:
 Proposed by: Bob
 
 Discussion:
+  - 1772451000 | admin1: Segment continuity relies on correct subspace topology assumption.
   - 1772377200 | admin1: Segment continuity relies on correct induced topology.
   - 1772355631 | Bob: The segment is continuous into R and thus into A
     with the subspace topology. Arbitrary Ta makes this unprovable.
@@ -1428,6 +1457,7 @@ Result:
 Admin Decision:
   -
 
+  - 1772452800 | APPROVED
   - 1772373600 | APPROVED
 Implemented by:
   Alice
@@ -1481,6 +1511,7 @@ Proposed Replacement:
 Proposed by: Bob
 
 Discussion:
+  - 1772451000 | admin1: Since connected_space allows Empty, uniqueness requires U≠∅.
   - 1772377200 | admin1: Empty set is connected under current definition; uniqueness needs nonempty hypothesis.
   - 1772355212 | Bob: Without U <> Empty, uniqueness can fail because
     Empty and {Empty} can both satisfy the slice conditions when
@@ -1504,6 +1535,7 @@ Result:
 Admin Decision:
   -
 
+  - 1772452800 | APPROVED
   - 1772373600 | APPROVED
 Implemented by:
   Alice
