@@ -47098,6 +47098,19 @@ claim Hfun : function_on p E B.
 exact (Hfun e He).
 Qed.
 
+(** Proven Bob **)
+Theorem covering_map_preimage_of_whole : forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  preimage_of E p B = E.
+let E Te B Tb p.
+assume Hcov.
+claim Hfun : function_on p E B.
+{
+  exact (covering_map_function_on E Te B Tb p Hcov).
+}
+exact (preimage_of_whole E B p Hfun).
+Qed.
+
 (** Infrastructure: transitivity of subspace topology under subset (no topology_on hypothesis needed) **)
 (** Proven Charlie **)
 Theorem subspace_topology_transitive_weak : forall X Tx Y A:set,
@@ -186627,7 +186640,7 @@ Lemma Pi_mem_Sep : forall X:set, forall Y:set -> set, forall f:set,
   f :e {g :e Power (Sigma_ x :e X, Union (Y x)) | forall x :e X, g x :e Y x}.
 let X Y f.
 assume Hf.
-admit. (** TODO: need Pi elimination/unfolding to coerce to Sep **)
+admit. (** TODO: need Pi unfolding lemma (definition seems opaque to reflexivity) **)
 Admitted.
 
 (** Helper: Pi elements lie in the underlying power set **)
@@ -186636,7 +186649,7 @@ Lemma Pi_sub_Power : forall X:set, forall Y:set -> set, forall f:set,
   f :e Power (Sigma_ x :e X, Union (Y x)).
 let X Y f.
 assume Hf.
-admit. (** TODO: need Pi elimination/unfolding to extract Power membership **)
+admit. (** TODO: need Pi unfolding lemma to extract Power membership **)
 Admitted.
 
 
