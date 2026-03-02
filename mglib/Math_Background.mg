@@ -11975,6 +11975,42 @@ exact (path_betweenI
 Qed.
 
 (** Proven Bob **)
+Theorem path_between_reverse : forall X Tx x0 x1 f:set,
+  path_between X x0 x1 f ->
+  continuous_map unit_interval unit_interval_topology X Tx f ->
+  path_between X x1 x0 (reverse_path f).
+let X Tx x0 x1 f.
+assume Hpath Hcont.
+claim Hf0 : apply_fun f 0 = x0.
+{
+  exact (path_between_at_zero
+    X
+    x0
+    x1
+    f
+    Hpath).
+}
+claim Hf1 : apply_fun f 1 = x1.
+{
+  exact (path_between_at_one
+    X
+    x0
+    x1
+    f
+    Hpath).
+}
+exact (reverse_path_between
+  X
+  Tx
+  x0
+  x1
+  f
+  Hcont
+  Hf0
+  Hf1).
+Qed.
+
+(** Proven Bob **)
 Theorem compose_fun_apply_identity_graph : forall A X f a:set,
   function_on f A X ->
   a :e A ->
@@ -12540,6 +12576,67 @@ exact (path_betweenI
   HconcatFun
   Hconcat0
   Hconcat1).
+Qed.
+
+(** Proven Bob **)
+Theorem path_between_concat : forall X Tx x0 x1 x2 f g:set,
+  path_between X x0 x1 f ->
+  continuous_map unit_interval unit_interval_topology X Tx f ->
+  path_between X x1 x2 g ->
+  continuous_map unit_interval unit_interval_topology X Tx g ->
+  path_between X x0 x2 (path_concat f g).
+let X Tx x0 x1 x2 f g.
+assume Hpf Hcf Hpg Hcg.
+claim Hf0 : apply_fun f 0 = x0.
+{
+  exact (path_between_at_zero
+    X
+    x0
+    x1
+    f
+    Hpf).
+}
+claim Hf1 : apply_fun f 1 = x1.
+{
+  exact (path_between_at_one
+    X
+    x0
+    x1
+    f
+    Hpf).
+}
+claim Hg0 : apply_fun g 0 = x1.
+{
+  exact (path_between_at_zero
+    X
+    x1
+    x2
+    g
+    Hpg).
+}
+claim Hg1 : apply_fun g 1 = x2.
+{
+  exact (path_between_at_one
+    X
+    x1
+    x2
+    g
+    Hpg).
+}
+exact (path_concat_between
+  X
+  Tx
+  x0
+  x1
+  x2
+  f
+  g
+  Hcf
+  Hcg
+  Hf0
+  Hf1
+  Hg0
+  Hg1).
 Qed.
 
 (** Helper: evaluate path_concat on the left half **)
