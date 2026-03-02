@@ -273840,6 +273840,74 @@ exact (andI
   Hlocal).
 Qed.
 
+(** Infrastructure: any open neighborhood in the unit square contains an open path connected neighborhood **)
+(** Proven Bob **)
+Theorem unit_square_open_neighborhood_contains_path_connected_open_subset :
+  forall N q:set,
+  q :e unit_square ->
+  N :e unit_square_topology ->
+  q :e N ->
+  exists M:set,
+    M :e unit_square_topology /\
+    path_connected_space M (subspace_topology unit_square unit_square_topology M) /\
+    q :e M /\
+    M c= N.
+let N q.
+assume HqSq HNopen HqN.
+claim HtopSq : topology_on unit_square unit_square_topology.
+{
+  exact (product_topology_is_topology
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    unit_interval_topology_on
+    unit_interval_topology_on).
+}
+apply (unit_square_open_neighborhood_contains_connected_open_subset
+  N
+  q
+  HqSq
+  HNopen
+  HqN).
+let M.
+assume HMpack.
+apply (and4E
+  (M :e unit_square_topology)
+  (connected_space M (subspace_topology unit_square unit_square_topology M))
+  (q :e M)
+  (M c= N)
+  HMpack).
+assume HMopen HMconn HqM HMsub.
+claim HopenIn : open_in unit_square unit_square_topology M.
+{
+  exact (andI
+    (topology_on unit_square unit_square_topology)
+    (M :e unit_square_topology)
+    HtopSq
+    HMopen).
+}
+claim HpcM :
+  path_connected_space M (subspace_topology unit_square unit_square_topology M).
+{
+  exact (ex23_connected_open_sets_path_connected
+    unit_square
+    unit_square_topology
+    M
+    unit_square_locally_path_connected
+    HopenIn
+    HMconn).
+}
+witness M.
+apply andI.
+- apply andI.
+  + apply andI.
+    * exact HMopen.
+    * exact HpcM.
+  + exact HqM.
+- exact HMsub.
+Qed.
+
 (** Infrastructure: arcs are locally path connected (homeomorphic to [0,1]) **)
 (** Proven Alice **)
 Theorem arc_locally_path_connected : forall A Ta:set,
