@@ -82,71 +82,6 @@ Rules:
 
 [place new active notices here below this line]
 
-NOTICE ID: 1772368914
-Created: 1772368914
-Status: SENT TO ADMIN
-
-Refers to Commit:
-  d9c88746ef7f5694e3d2ebeef21843674d6988fe
-
-Target:
-  Line: 278888
-  Name: tree_in_graph (Definition)
-
-Problem:
-  As defined, ArcsT is any GLG arc decomposition of T and need not be
-  related to the ambient Arcs. Then the lemma
-  tree_in_graph_arc_in_ambient_arcs (line 285618) is false: e.g. take X
-  an arc with Arcs = {X}, let T = X, and let ArcsT split X into two arcs
-  meeting at a point. T is a subgraph and GLG with ArcsT, but an element
-  of ArcsT is not in Arcs. This blocks proofs that use V :e ArcsT to apply
-  general_linear_graph_arc_intersection_case in X.
-
-Proposed Replacement:
-  Definition tree_in_graph : set -> set -> set -> set -> set -> prop :=
-    fun T ArcsT X Tx Arcs =>
-      subgraph_of T X Tx Arcs /\
-      ArcsT = {A :e Arcs | A c= T} /\
-      general_linear_graph T (subspace_topology X Tx T) ArcsT /\
-      connected_space T (subspace_topology X Tx T) /\
-      ~(exists n path_seq x0:set,
-          n :e omega /\ n <> 0 /\
-          reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
-          (exists j:set, j :e n /\ ordsucc j /:e n /\
-            (apply_fun path_seq j) 0 1 = x0)).
-
-Proposed by: Bob
-
-Discussion:
-  - 1772377200 | admin1: Definition strengthening correctly ties tree arcs to ambient arcs; necessary for arc-selection step.
-  - 1772368914 | Bob: This aligns the definition with the intended notion
-    “T is a subgraph with its edges inherited from X” and makes
-    tree_in_graph_arc_in_ambient_arcs provable. Without this constraint,
-    ArcsT may refine ambient arcs and the lemma fails.
-  - 1772373643 | Alice: Verified. ArcsT is unconstrained relative to Arcs in the current definition. Setting ArcsT = {A in Arcs | A c= T} correctly ties the tree arc decomposition to the ambient graph. This also makes tree_in_graph_arc_in_ambient_arcs trivially provable from the definition.
-  - 1772410380 | Bob: Current proof of lemma84_2_tree_extension_general_linear_graph_part hits an admit at ArcsT c= Arcs (line ~2875xx). This notice’s fix directly resolves that gap by tying ArcsT to ambient Arcs.
-
-Approvals:
-  -
-  - 1772368914 | Bob: YES
-  - 1772373643 | Alice: YES
-
-Result:
-  SENT TO ADMIN
-
-Admin Decision:
-  -
-
-  - 1772373600 | APPROVED
-Implemented by:
-  - Bob
-
-Implementation Commit:
-  - c3fa2c620
-
-Status:
-  SENT TO ADMIN
-
 --------------------------------------------------------
 
 NOTICE ID: 1772361663
@@ -194,6 +129,7 @@ Discussion:
     U ∩ V does not force U or V to be path connected. Adding explicit
     path-connectedness hypotheses makes the lemma correct and usable.
   - 1772373643 | Alice: Verified. The hypotheses (trivial induced maps + path-connected intersection) do not imply path-connectedness of U or V. Adding explicit path-connectedness hypotheses is the correct fix. With them, the theorem becomes trivially true but serves as a packaging lemma.
+  - 1772433274 | Alice: Responding to admin feedback about tautological redesign. Substantive alternative: change the CONCLUSION rather than adding hypotheses. The real mathematical content of Lemma 59.4a is that under these hypotheses (open cover, path-connected pieces, path-connected intersection, trivial induced maps), pi_1(X, x0) is trivial. So replace the conclusion with: fundamental_group X Tx x0 = Sing (fundamental_group_id X Tx x0). This makes the theorem non-trivial and aligns with Munkres Lemma 59.4. If downstream code uses path-connectedness of U and V, those should be explicit hypotheses in the downstream theorem, not derived here. Recommend Bob resubmit with the revised conclusion.
 
 Approvals:
   -
@@ -252,6 +188,7 @@ Discussion:
     does not imply A or B is open in X. Adding explicit openness
     hypotheses matches how the lemma is used later (to feed cor59_2).
   - 1772373643 | Alice: Verified. Homeomorphisms to S^2 with the subspace topology do not imply openness of A or B in X. Adding A :e Tx and B :e Tx as hypotheses is the correct fix.
+  - 1772433274 | Alice: Responding to admin feedback. Agree with admin that the tautological fix is unsatisfying. Two substantive alternatives: (1) Delete the theorem entirely - openness of A and B in a wedge space X is a property of the wedge construction, not derivable from homeomorphisms. Downstream results (cor59_2) should take openness as explicit hypotheses. (2) Change the theorem to derive something non-trivial from the wedge setup: e.g. that X minus x0 has exactly two path components (one from A minus x0, one from B minus x0), or that the inclusion-induced maps pi_1(A) -> pi_1(X) exist. Option (1) seems cleaner. Recommend Bob either resubmit with option (1) or (2), or withdraw in favor of directly fixing downstream usage.
 
 Approvals:
   -
@@ -733,6 +670,72 @@ Rules:
 - Past content may not be edited.
 
 [place newly resolved notices here below this line]
+
+NOTICE ID: 1772368914
+Created: 1772368914
+Status: IMPLEMENTED
+
+Refers to Commit:
+  d9c88746ef7f5694e3d2ebeef21843674d6988fe
+
+Target:
+  Line: 278888
+  Name: tree_in_graph (Definition)
+
+Problem:
+  As defined, ArcsT is any GLG arc decomposition of T and need not be
+  related to the ambient Arcs. Then the lemma
+  tree_in_graph_arc_in_ambient_arcs (line 285618) is false: e.g. take X
+  an arc with Arcs = {X}, let T = X, and let ArcsT split X into two arcs
+  meeting at a point. T is a subgraph and GLG with ArcsT, but an element
+  of ArcsT is not in Arcs. This blocks proofs that use V :e ArcsT to apply
+  general_linear_graph_arc_intersection_case in X.
+
+Proposed Replacement:
+  Definition tree_in_graph : set -> set -> set -> set -> set -> prop :=
+    fun T ArcsT X Tx Arcs =>
+      subgraph_of T X Tx Arcs /\
+      ArcsT = {A :e Arcs | A c= T} /\
+      general_linear_graph T (subspace_topology X Tx T) ArcsT /\
+      connected_space T (subspace_topology X Tx T) /\
+      ~(exists n path_seq x0:set,
+          n :e omega /\ n <> 0 /\
+          reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0)).
+
+Proposed by: Bob
+
+Discussion:
+  - 1772377200 | admin1: Definition strengthening correctly ties tree arcs to ambient arcs; necessary for arc-selection step.
+  - 1772368914 | Bob: This aligns the definition with the intended notion
+    "T is a subgraph with its edges inherited from X" and makes
+    tree_in_graph_arc_in_ambient_arcs provable. Without this constraint,
+    ArcsT may refine ambient arcs and the lemma fails.
+  - 1772373643 | Alice: Verified. ArcsT is unconstrained relative to Arcs in the current definition. Setting ArcsT = {A in Arcs | A c= T} correctly ties the tree arc decomposition to the ambient graph. This also makes tree_in_graph_arc_in_ambient_arcs trivially provable from the definition.
+  - 1772410380 | Bob: Current proof of lemma84_2_tree_extension_general_linear_graph_part hits an admit at ArcsT c= Arcs (line ~2875xx). This notice's fix directly resolves that gap by tying ArcsT to ambient Arcs.
+
+Approvals:
+  -
+  - 1772368914 | Bob: YES
+  - 1772373643 | Alice: YES
+
+Result:
+  SENT TO ADMIN
+
+Admin Decision:
+  - 1772373600 | APPROVED
+
+Implemented by:
+  Bob
+
+Implementation Commit:
+  c3fa2c620
+
+Status:
+  IMPLEMENTED
+
+--------------------------------------------------------
 
 NOTICE ID: 1772354703
 Created: 1772354703
