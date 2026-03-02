@@ -1,4 +1,4 @@
-(** Balance Alice 4210 **)
+(** Balance Alice 4188 **)
 (** Balance Bob 5494 **)
 (** Balance Charlie 2312 **)
 (** Balance Dave 1793 **)
@@ -107591,7 +107591,8 @@ Qed.
 (** LATEX VERSION: Let H = p-star(pi_1(E,e0)). The lifting correspondence induces **)
 (** an injective map Phi: pi_1(B,b0)/H -> p^{-1}(b0), bijective if E is path connected. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Bounty 220 **)
+(** Bounty 242 **)
+(** Lock Alice 1772500949 **)
 Theorem thm54_6b_coset_correspondence : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   exists Phi:set,
