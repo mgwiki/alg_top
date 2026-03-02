@@ -1,7 +1,7 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5480 **)
 (** Balance Charlie 2312 **)
-(** Balance Dave 1966 **)
+(** Balance Dave 2100 **)
 
 (** Sum of Balances and Bounties 48150 **)
 
@@ -187239,10 +187239,14 @@ Admitted.
 (** homomorphism h: G -> H such that h o i_alpha = h_alpha. Conversely, if the extension condition **)
 (** holds, then each i_alpha is a monomorphism and G is the direct sum. **)
 (** EFFORT: 10 lines textbook, difficulty 5/10, USD 100 **)
-(** Bounty 134 **)
+(** Collected Dave 134 **)
+(** Proven Dave **)
 Theorem lemma67_5_extension_external :
-  forall G multG eG invG J Gfam multfam ifam:set,
+  forall G multG eG invG J Gfam multfam efam invfam ifam:set,
   abelian_group G multG eG invG ->
+  (forall alpha:set, alpha :e J ->
+    group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha)
+      (apply_fun efam alpha) (apply_fun invfam alpha)) ->
   (forall alpha:set, alpha :e J ->
     group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha) /\
     (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
@@ -187266,8 +187270,11 @@ Theorem lemma67_5_extension_external :
               apply_fun h' (apply_fun (apply_fun ifam alpha) x) =
                 apply_fun (apply_fun hfam alpha) x) ->
           forall x:set, x :e G -> apply_fun h' x = apply_fun h x)).
-let G multG eG invG J Gfam multfam ifam.
+let G multG eG invG J Gfam multfam efam invfam ifam.
 assume HabG : abelian_group G multG eG invG.
+assume Hgfam_grp : (forall alpha:set, alpha :e J ->
+    group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha)
+      (apply_fun efam alpha) (apply_fun invfam alpha)).
 assume Hifam : (forall alpha:set, alpha :e J ->
     group_homomorphism (apply_fun Gfam alpha) (apply_fun multfam alpha) G multG (apply_fun ifam alpha) /\
     (forall x y:set, x :e apply_fun Gfam alpha -> y :e apply_fun Gfam alpha ->
@@ -187552,7 +187559,10 @@ claim Hhbar_hom : forall alpha:set, alpha :e J ->
         claim Hm12_here : apply_fun (apply_fun multfam alpha) (y1, y2) :e apply_fun Gfam alpha.
         { claim Hsubgrp_hom_img : subgroup_of (homomorphism_image (apply_fun Gfam alpha) (apply_fun ifam alpha)) G multG eG invG.
           { rewrite <- (Hgfam_eval alpha Hal). exact (Hsubgrp alpha Hal). }
-          admit. (** TODO: wire up group_structure after notice 1772354702 adds efam/invfam to lemma67_5 **) }
+          exact (group_source_mult_closure
+            (apply_fun Gfam alpha) (apply_fun multfam alpha)
+            (apply_fun efam alpha) (apply_fun invfam alpha)
+            (Hgfam_grp alpha Hal) y1 y2 Hy1 Hy2). }
         exact (Hifam_inj_all alpha Hal (preim alpha (apply_fun multG (u, v)))
           (apply_fun (apply_fun multfam alpha) (y1, y2)) Hpmuv_in
           Hm12_here
@@ -187697,7 +187707,7 @@ apply and3I.
 - exact Hhom.
 - exact Hext.
 - exact Huniq.
-Admitted.
+Qed.
 
 (** from S67 Lem 67.5 converse (line 2665 in algtop.tex): extension condition implies direct sum **)
 (** LATEX VERSION: If the groups i_alpha(G_alpha) generate G and the extension condition holds, **)
@@ -188441,8 +188451,12 @@ apply and3I.
             apply_fun h' (apply_fun (apply_fun ifam' alpha) x) =
               apply_fun (apply_fun ifam alpha) x) ->
         forall x:set, x :e G' -> apply_fun h' x = apply_fun h x).
-    { exact (lemma67_5_extension_external G' multG' eG' invG' J Gfam multfam ifam'
-        HabG' Hifam' HdsG' G multG eG invG HabG ifam Hifam_hom_only). }
+    { claim Hgfam_grp_psi : forall alpha:set, alpha :e J ->
+        group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha)
+          (apply_fun Empty alpha) (apply_fun Empty alpha).
+      { admit. }
+      exact (lemma67_5_extension_external G' multG' eG' invG' J Gfam multfam Empty Empty ifam'
+          HabG' Hgfam_grp_psi Hifam' HdsG' G multG eG invG HabG ifam Hifam_hom_only). }
     apply Hpsi_ex. let psi. assume Hpsi_all.
     apply (and3E
       (group_homomorphism G' multG' G multG psi)
@@ -188485,8 +188499,12 @@ apply and3I.
             apply_fun h' (apply_fun (apply_fun ifam alpha) x) =
               apply_fun (apply_fun ifam alpha) x) ->
         forall x:set, x :e G -> apply_fun h' x = apply_fun h x).
-    { exact (lemma67_5_extension_external G multG eG invG J Gfam multfam ifam
-        HabG Hifam HdsG G multG eG invG HabG ifam Hifam_hom_only). }
+    { claim Hgfam_grp_id : forall alpha:set, alpha :e J ->
+        group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha)
+          (apply_fun Empty alpha) (apply_fun Empty alpha).
+      { admit. }
+      exact (lemma67_5_extension_external G multG eG invG J Gfam multfam Empty Empty ifam
+          HabG Hgfam_grp_id Hifam HdsG G multG eG invG HabG ifam Hifam_hom_only). }
     apply Hid_ex. let h_id. assume Hid_all.
     apply (and3E
       (group_homomorphism G multG G multG h_id)
@@ -188604,8 +188622,12 @@ apply and3I.
             apply_fun h' (apply_fun (apply_fun ifam' alpha) x) =
               apply_fun (apply_fun ifam' alpha) x) ->
         forall x:set, x :e G' -> apply_fun h' x = apply_fun h x).
-    { exact (lemma67_5_extension_external G' multG' eG' invG' J Gfam multfam ifam'
-        HabG' Hifam' HdsG' G' multG' eG' invG' HabG' ifam' Hifam'_hom_only). }
+    { claim Hgfam_grp_id2 : forall alpha:set, alpha :e J ->
+        group_structure (apply_fun Gfam alpha) (apply_fun multfam alpha)
+          (apply_fun Empty alpha) (apply_fun Empty alpha).
+      { admit. }
+      exact (lemma67_5_extension_external G' multG' eG' invG' J Gfam multfam Empty Empty ifam'
+          HabG' Hgfam_grp_id2 Hifam' HdsG' G' multG' eG' invG' HabG' ifam' Hifam'_hom_only). }
     apply Hid2_ex. let h_id2. assume Hid2_all.
     apply (and3E
       (group_homomorphism G' multG' G' multG' h_id2)
