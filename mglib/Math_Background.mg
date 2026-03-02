@@ -46840,6 +46840,61 @@ apply set_ext.
 Qed.
 
 (** Proven Bob **)
+Theorem covering_map_image_sub_codomain : forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  image_of p E c= B.
+let E Te B Tb p.
+assume Hcov.
+claim Hfun : function_on p E B.
+{
+  exact (andEL
+    (function_on p E B)
+    (forall y0:set, y0 :e B -> exists x0:set, x0 :e E /\ apply_fun p x0 = y0)
+    (covering_map_surjective E Te B Tb p Hcov)).
+}
+exact (image_of_sub_codomain
+  p
+  E
+  B
+  E
+  Hfun
+  (Subq_ref E)).
+Qed.
+
+(** Proven Bob **)
+Theorem covering_map_codomain_sub_image : forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  B c= image_of p E.
+let E Te B Tb p.
+assume Hcov.
+let b.
+assume HbB.
+claim Hex : exists e:set, e :e E /\ apply_fun p e = b.
+{
+  exact (covering_map_surjective_value
+    E
+    Te
+    B
+    Tb
+    p
+    b
+    Hcov
+    HbB).
+}
+apply Hex.
+let e.
+assume Hepack.
+claim HeE : e :e E.
+{ exact (andEL (e :e E) (apply_fun p e = b) Hepack). }
+claim HeEq : apply_fun p e = b.
+{ exact (andER (e :e E) (apply_fun p e = b) Hepack). }
+claim Himg : apply_fun p e :e image_of p E.
+{ exact (ReplI E (fun x:set => apply_fun p x) e HeE). }
+rewrite <- HeEq.
+exact Himg.
+Qed.
+
+(** Proven Bob **)
 Theorem covering_map_evenly_covered : forall E Te B Tb p b:set,
   covering_map E Te B Tb p -> b :e B ->
   exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U.
