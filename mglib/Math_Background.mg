@@ -211946,24 +211946,23 @@ apply (and5I
         (** Expand each factor in G1/G2 using HgenG1/HgenG2, then concatenate words **)
         claim HliftJ :
           forall y mi yi:set,
-            mi :e omega -> mi <> 0 ->
+            mi :e omega ->
             function_on yi mi G1 ->
             (forall j:set, j :e mi ->
               exists alpha:set, alpha :e J /\ apply_fun yi j :e apply_fun Hfam alpha) ->
             y = nat_primrec eG (fun k r => apply_fun multG (r, apply_fun yi k)) mi ->
             exists m ys:set,
-              m :e omega /\ m <> 0 /\
+              m :e omega /\
               function_on ys m G /\
               (forall j:set, j :e m ->
                 exists alpha:set, alpha :e J :\/: K /\ apply_fun ys j :e apply_fun Hfam alpha) /\
               y = nat_primrec eG (fun k r => apply_fun multG (r, apply_fun ys k)) m.
         {
           let y mi yi.
-          assume HmiO HmiNe HyiG1 HyiFam HyEq.
+          assume HmiO HyiG1 HyiFam HyEq.
           witness mi. witness yi.
-          apply and5I.
+          apply and4I.
           - exact HmiO.
-          - exact HmiNe.
           - let j. assume Hj.
             exact ((subgroup_of_subset G1 G multG eG invG Hsub1)
               (apply_fun yi j)
@@ -211980,24 +211979,23 @@ apply (and5I
         }
         claim HliftK :
           forall y mi yi:set,
-            mi :e omega -> mi <> 0 ->
+            mi :e omega ->
             function_on yi mi G2 ->
             (forall j:set, j :e mi ->
               exists beta:set, beta :e K /\ apply_fun yi j :e apply_fun Hfam beta) ->
             y = nat_primrec eG (fun k r => apply_fun multG (r, apply_fun yi k)) mi ->
             exists m ys:set,
-              m :e omega /\ m <> 0 /\
+              m :e omega /\
               function_on ys m G /\
               (forall j:set, j :e m ->
                 exists alpha:set, alpha :e J :\/: K /\ apply_fun ys j :e apply_fun Hfam alpha) /\
               y = nat_primrec eG (fun k r => apply_fun multG (r, apply_fun ys k)) m.
         {
           let y mi yi.
-          assume HmiO HmiNe HyiG2 HyiFam HyEq.
+          assume HmiO HyiG2 HyiFam HyEq.
           witness mi. witness yi.
-          apply and5I.
+          apply and4I.
           - exact HmiO.
-          - exact HmiNe.
           - let j. assume Hj.
             exact ((subgroup_of_subset G2 G multG eG invG Hsub2)
               (apply_fun yi j)
@@ -212015,7 +212013,7 @@ apply (and5I
         claim Hexp_each :
           forall i:set, i :e n ->
             exists mi yi:set,
-              mi :e omega /\ mi <> 0 /\
+              mi :e omega /\
               function_on yi mi G /\
               (forall j:set, j :e mi ->
                 exists alpha:set, alpha :e J :\/: K /\ apply_fun yi j :e apply_fun Hfam alpha) /\
@@ -212046,8 +212044,19 @@ apply (and5I
             { exact (eq_subst_mem_set (apply_fun xs i) (apply_fun Gfam12 alpha) G1 Hxsa Hfam_eq). }
             apply (HgenG1 (apply_fun xs i) HxG1).
             - assume Hxe.
-              (** TODO: identity element case **)
-              admit.
+              witness 0.
+              witness (graph 0 (fun _:set => eG)).
+              apply and4I.
+              + exact (nat_p_omega 0 nat_0).
+              + apply (graph_function_on 0 G (fun _:set => eG)).
+                let j. assume Hj.
+                exact (FalseE (EmptyE j Hj) ((fun _:set => eG) j :e G)).
+              + let j. assume Hj.
+                exact (FalseE (EmptyE j Hj)
+                  (exists alpha:set, alpha :e J :\/: K /\ apply_fun (graph 0 (fun _:set => eG)) j :e apply_fun Hfam alpha)).
+              + rewrite Hxe. symmetry.
+                exact (nat_primrec_0 eG
+                  (fun k r => apply_fun multG (r, apply_fun (graph 0 (fun _:set => eG)) k))).
             - assume Hword.
               apply Hword.
               let mi. assume Hmi_pack.
@@ -212110,7 +212119,7 @@ apply (and5I
                   (apply_fun xs i =
                     nat_primrec eG (fun k r => apply_fun multG (r, apply_fun yi k)) mi)
                   Hy_pack). }
-              exact (HliftJ (apply_fun xs i) mi yi HmiO HmiNe Hy_fun Hy_prop Hy_eq).
+              exact (HliftJ (apply_fun xs i) mi yi HmiO Hy_fun Hy_prop Hy_eq).
           - assume Halpha1 : alpha = 1.
             claim Halpha_ne0 : alpha <> 0.
             { rewrite Halpha1. exact neq_1_0. }
@@ -212123,8 +212132,19 @@ apply (and5I
             { exact (eq_subst_mem_set (apply_fun xs i) (apply_fun Gfam12 alpha) G2 Hxsa Hfam_eq). }
             apply (HgenG2 (apply_fun xs i) HxG2).
             - assume Hxe.
-              (** TODO: identity element case **)
-              admit.
+              witness 0.
+              witness (graph 0 (fun _:set => eG)).
+              apply and4I.
+              + exact (nat_p_omega 0 nat_0).
+              + apply (graph_function_on 0 G (fun _:set => eG)).
+                let j. assume Hj.
+                exact (FalseE (EmptyE j Hj) ((fun _:set => eG) j :e G)).
+              + let j. assume Hj.
+                exact (FalseE (EmptyE j Hj)
+                  (exists alpha:set, alpha :e J :\/: K /\ apply_fun (graph 0 (fun _:set => eG)) j :e apply_fun Hfam alpha)).
+              + rewrite Hxe. symmetry.
+                exact (nat_primrec_0 eG
+                  (fun k r => apply_fun multG (r, apply_fun (graph 0 (fun _:set => eG)) k))).
             - assume Hword.
               apply Hword.
               let mi. assume Hmi_pack.
@@ -212187,7 +212207,7 @@ apply (and5I
                   (apply_fun xs i =
                     nat_primrec eG (fun k r => apply_fun multG (r, apply_fun yi k)) mi)
                   Hy_pack). }
-              exact (HliftK (apply_fun xs i) mi yi HmiO HmiNe Hy_fun Hy_prop Hy_eq).
+              exact (HliftK (apply_fun xs i) mi yi HmiO Hy_fun Hy_prop Hy_eq).
         }
         (** TODO: concatenate words from Hexp_each along n **)
         admit.
