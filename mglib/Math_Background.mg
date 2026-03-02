@@ -211943,7 +211943,253 @@ apply (and5I
           nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys i)) m =
             nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n.
       {
-        (** TODO: expand each factor in G1/G2 using HgenG1/HgenG2 and concatenate words **)
+        (** Expand each factor in G1/G2 using HgenG1/HgenG2, then concatenate words **)
+        claim HliftJ :
+          forall y mi yi:set,
+            mi :e omega -> mi <> 0 ->
+            function_on yi mi G1 ->
+            (forall j:set, j :e mi ->
+              exists alpha:set, alpha :e J /\ apply_fun yi j :e apply_fun Hfam alpha) ->
+            y = nat_primrec eG (fun k r => apply_fun multG (r, apply_fun yi k)) mi ->
+            exists m ys:set,
+              m :e omega /\ m <> 0 /\
+              function_on ys m G /\
+              (forall j:set, j :e m ->
+                exists alpha:set, alpha :e J :\/: K /\ apply_fun ys j :e apply_fun Hfam alpha) /\
+              y = nat_primrec eG (fun k r => apply_fun multG (r, apply_fun ys k)) m.
+        {
+          let y mi yi.
+          assume HmiO HmiNe HyiG1 HyiFam HyEq.
+          witness mi. witness yi.
+          apply and5I.
+          - exact HmiO.
+          - exact HmiNe.
+          - let j. assume Hj.
+            exact ((subgroup_of_subset G1 G multG eG invG Hsub1)
+              (apply_fun yi j)
+              (HyiG1 j Hj)).
+          - let j. assume Hj.
+            apply (HyiFam j Hj).
+            let a. assume Ha_pack.
+            witness a.
+            apply andI.
+            + exact (binunionI1 J K a
+                (andEL (a :e J) (apply_fun yi j :e apply_fun Hfam a) Ha_pack)).
+            + exact (andER (a :e J) (apply_fun yi j :e apply_fun Hfam a) Ha_pack).
+          - exact HyEq.
+        }
+        claim HliftK :
+          forall y mi yi:set,
+            mi :e omega -> mi <> 0 ->
+            function_on yi mi G2 ->
+            (forall j:set, j :e mi ->
+              exists beta:set, beta :e K /\ apply_fun yi j :e apply_fun Hfam beta) ->
+            y = nat_primrec eG (fun k r => apply_fun multG (r, apply_fun yi k)) mi ->
+            exists m ys:set,
+              m :e omega /\ m <> 0 /\
+              function_on ys m G /\
+              (forall j:set, j :e m ->
+                exists alpha:set, alpha :e J :\/: K /\ apply_fun ys j :e apply_fun Hfam alpha) /\
+              y = nat_primrec eG (fun k r => apply_fun multG (r, apply_fun ys k)) m.
+        {
+          let y mi yi.
+          assume HmiO HmiNe HyiG2 HyiFam HyEq.
+          witness mi. witness yi.
+          apply and5I.
+          - exact HmiO.
+          - exact HmiNe.
+          - let j. assume Hj.
+            exact ((subgroup_of_subset G2 G multG eG invG Hsub2)
+              (apply_fun yi j)
+              (HyiG2 j Hj)).
+          - let j. assume Hj.
+            apply (HyiFam j Hj).
+            let b. assume Hb_pack.
+            witness b.
+            apply andI.
+            + exact (binunionI2 J K b
+                (andEL (b :e K) (apply_fun yi j :e apply_fun Hfam b) Hb_pack)).
+            + exact (andER (b :e K) (apply_fun yi j :e apply_fun Hfam b) Hb_pack).
+          - exact HyEq.
+        }
+        claim Hexp_each :
+          forall i:set, i :e n ->
+            exists mi yi:set,
+              mi :e omega /\ mi <> 0 /\
+              function_on yi mi G /\
+              (forall j:set, j :e mi ->
+                exists alpha:set, alpha :e J :\/: K /\ apply_fun yi j :e apply_fun Hfam alpha) /\
+              apply_fun xs i =
+                nat_primrec eG (fun k r => apply_fun multG (r, apply_fun yi k)) mi.
+        {
+          let i. assume Hi.
+          apply (Hxsfam12 i Hi).
+          let alpha. assume Halpack.
+          claim Hal : alpha :e UPair 0 1.
+          { exact (andEL
+              (alpha :e UPair 0 1)
+              (apply_fun xs i :e apply_fun Gfam12 alpha)
+              Halpack). }
+          claim Hxsa : apply_fun xs i :e apply_fun Gfam12 alpha.
+          { exact (andER
+              (alpha :e UPair 0 1)
+              (apply_fun xs i :e apply_fun Gfam12 alpha)
+              Halpack). }
+          apply (UPairE alpha 0 1 Hal).
+          - assume Halpha0 : alpha = 0.
+            claim Hfam_eq : apply_fun Gfam12 alpha = G1.
+            {
+              rewrite (apply_fun_graph (UPair 0 1) (fun j:set => if j = 0 then G1 else G2) alpha Hal).
+              exact (If_i_1 (alpha = 0) G1 G2 Halpha0).
+            }
+            claim HxG1 : apply_fun xs i :e G1.
+            { exact (eq_subst_mem_set (apply_fun xs i) (apply_fun Gfam12 alpha) G1 Hxsa Hfam_eq). }
+            apply (HgenG1 (apply_fun xs i) HxG1).
+            - assume Hxe.
+              (** TODO: identity element case **)
+              admit.
+            - assume Hword.
+              apply Hword.
+              let mi. assume Hmi_pack.
+              claim HmiL : mi :e omega /\ mi <> 0.
+              {
+                exact (andEL
+                  (mi :e omega /\ mi <> 0)
+                  (exists ys:set, function_on ys mi G1 /\
+                    (forall j:set, j :e mi ->
+                      exists alpha:set, alpha :e J /\ apply_fun ys j :e apply_fun Hfam alpha) /\
+                    apply_fun xs i =
+                      nat_primrec eG (fun k r => apply_fun multG (r, apply_fun ys k)) mi)
+                  Hmi_pack).
+              }
+              claim HmiO : mi :e omega. { exact (andEL (mi :e omega) (mi <> 0) HmiL). }
+              claim HmiNe : mi <> 0. { exact (andER (mi :e omega) (mi <> 0) HmiL). }
+              apply (andER
+                (mi :e omega /\ mi <> 0)
+                (exists ys:set, function_on ys mi G1 /\
+                  (forall j:set, j :e mi ->
+                    exists alpha:set, alpha :e J /\ apply_fun ys j :e apply_fun Hfam alpha) /\
+                  apply_fun xs i =
+                    nat_primrec eG (fun k r => apply_fun multG (r, apply_fun ys k)) mi)
+                Hmi_pack).
+              let yi. assume Hy_pack.
+              claim Hy_packL :
+                function_on yi mi G1 /\
+                (forall j:set, j :e mi ->
+                  exists alpha:set, alpha :e J /\ apply_fun yi j :e apply_fun Hfam alpha).
+              {
+                exact (andEL
+                  (function_on yi mi G1 /\
+                    (forall j:set, j :e mi ->
+                      exists alpha:set, alpha :e J /\ apply_fun yi j :e apply_fun Hfam alpha))
+                  (apply_fun xs i =
+                    nat_primrec eG (fun k r => apply_fun multG (r, apply_fun yi k)) mi)
+                  Hy_pack).
+              }
+              claim Hy_fun : function_on yi mi G1.
+              { exact (andEL
+                  (function_on yi mi G1)
+                  (forall j:set, j :e mi ->
+                    exists alpha:set, alpha :e J /\ apply_fun yi j :e apply_fun Hfam alpha)
+                  Hy_packL). }
+              claim Hy_prop :
+                (forall j:set, j :e mi ->
+                  exists alpha:set, alpha :e J /\ apply_fun yi j :e apply_fun Hfam alpha).
+              { exact (andER
+                  (function_on yi mi G1)
+                  (forall j:set, j :e mi ->
+                    exists alpha:set, alpha :e J /\ apply_fun yi j :e apply_fun Hfam alpha)
+                  Hy_packL). }
+              claim Hy_eq :
+                apply_fun xs i =
+                  nat_primrec eG (fun k r => apply_fun multG (r, apply_fun yi k)) mi.
+              { exact (andER
+                  (function_on yi mi G1 /\
+                    (forall j:set, j :e mi ->
+                      exists alpha:set, alpha :e J /\ apply_fun yi j :e apply_fun Hfam alpha))
+                  (apply_fun xs i =
+                    nat_primrec eG (fun k r => apply_fun multG (r, apply_fun yi k)) mi)
+                  Hy_pack). }
+              exact (HliftJ (apply_fun xs i) mi yi HmiO HmiNe Hy_fun Hy_prop Hy_eq).
+          - assume Halpha1 : alpha = 1.
+            claim Halpha_ne0 : alpha <> 0.
+            { rewrite Halpha1. exact neq_1_0. }
+            claim Hfam_eq : apply_fun Gfam12 alpha = G2.
+            {
+              rewrite (apply_fun_graph (UPair 0 1) (fun j:set => if j = 0 then G1 else G2) alpha Hal).
+              exact (If_i_0 (alpha = 0) G1 G2 Halpha_ne0).
+            }
+            claim HxG2 : apply_fun xs i :e G2.
+            { exact (eq_subst_mem_set (apply_fun xs i) (apply_fun Gfam12 alpha) G2 Hxsa Hfam_eq). }
+            apply (HgenG2 (apply_fun xs i) HxG2).
+            - assume Hxe.
+              (** TODO: identity element case **)
+              admit.
+            - assume Hword.
+              apply Hword.
+              let mi. assume Hmi_pack.
+              claim HmiL : mi :e omega /\ mi <> 0.
+              {
+                exact (andEL
+                  (mi :e omega /\ mi <> 0)
+                  (exists ys:set, function_on ys mi G2 /\
+                    (forall j:set, j :e mi ->
+                      exists beta:set, beta :e K /\ apply_fun ys j :e apply_fun Hfam beta) /\
+                    apply_fun xs i =
+                      nat_primrec eG (fun k r => apply_fun multG (r, apply_fun ys k)) mi)
+                  Hmi_pack).
+              }
+              claim HmiO : mi :e omega. { exact (andEL (mi :e omega) (mi <> 0) HmiL). }
+              claim HmiNe : mi <> 0. { exact (andER (mi :e omega) (mi <> 0) HmiL). }
+              apply (andER
+                (mi :e omega /\ mi <> 0)
+                (exists ys:set, function_on ys mi G2 /\
+                  (forall j:set, j :e mi ->
+                    exists beta:set, beta :e K /\ apply_fun ys j :e apply_fun Hfam beta) /\
+                  apply_fun xs i =
+                    nat_primrec eG (fun k r => apply_fun multG (r, apply_fun ys k)) mi)
+                Hmi_pack).
+              let yi. assume Hy_pack.
+              claim Hy_packL :
+                function_on yi mi G2 /\
+                (forall j:set, j :e mi ->
+                  exists beta:set, beta :e K /\ apply_fun yi j :e apply_fun Hfam beta).
+              {
+                exact (andEL
+                  (function_on yi mi G2 /\
+                    (forall j:set, j :e mi ->
+                      exists beta:set, beta :e K /\ apply_fun yi j :e apply_fun Hfam beta))
+                  (apply_fun xs i =
+                    nat_primrec eG (fun k r => apply_fun multG (r, apply_fun yi k)) mi)
+                  Hy_pack).
+              }
+              claim Hy_fun : function_on yi mi G2.
+              { exact (andEL
+                  (function_on yi mi G2)
+                  (forall j:set, j :e mi ->
+                    exists beta:set, beta :e K /\ apply_fun yi j :e apply_fun Hfam beta)
+                  Hy_packL). }
+              claim Hy_prop :
+                (forall j:set, j :e mi ->
+                  exists beta:set, beta :e K /\ apply_fun yi j :e apply_fun Hfam beta).
+              { exact (andER
+                  (function_on yi mi G2)
+                  (forall j:set, j :e mi ->
+                    exists beta:set, beta :e K /\ apply_fun yi j :e apply_fun Hfam beta)
+                  Hy_packL). }
+              claim Hy_eq :
+                apply_fun xs i =
+                  nat_primrec eG (fun k r => apply_fun multG (r, apply_fun yi k)) mi.
+              { exact (andER
+                  (function_on yi mi G2 /\
+                    (forall j:set, j :e mi ->
+                      exists beta:set, beta :e K /\ apply_fun yi j :e apply_fun Hfam beta))
+                  (apply_fun xs i =
+                    nat_primrec eG (fun k r => apply_fun multG (r, apply_fun yi k)) mi)
+                  Hy_pack). }
+              exact (HliftK (apply_fun xs i) mi yi HmiO HmiNe Hy_fun Hy_prop Hy_eq).
+        }
+        (** TODO: concatenate words from Hexp_each along n **)
         admit.
       }
       apply Hexpand_word.
