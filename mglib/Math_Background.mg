@@ -213496,6 +213496,205 @@ apply (and5I
           G multG eG invG (J :\/: K) Hfam efamH
           mi yi Hgrp Hsubfam_union Hred Hmi_ne Hmi_ne1 j Hj).
   }
+  claim Happend_red_one :
+    forall m xs b beta:set,
+      reduced_word (J :\/: K) Hfam efamH m xs ->
+      m <> 0 ->
+      beta :e J :\/: K ->
+      b :e apply_fun Hfam beta ->
+      b <> apply_fun efamH beta ->
+      (forall k alpha beta0:set, m = ordsucc k -> alpha :e J :\/: K -> beta0 :e J :\/: K ->
+        apply_fun xs k :e apply_fun Hfam alpha -> b :e apply_fun Hfam beta0 -> alpha <> beta0) ->
+      reduced_word (J :\/: K) Hfam efamH (ordsucc m)
+        (graph (ordsucc m) (fun i:set => if i :e m then apply_fun xs i else b)).
+  {
+    let m xs b beta.
+    assume Hred Hm_ne0 Hbeta HbG Hbne Hlast_diff.
+    set xs_ext := graph (ordsucc m) (fun i:set => if i :e m then apply_fun xs i else b).
+    claim HmO : m :e omega.
+    {
+      apply (and3E
+        (m :e omega)
+        (forall i:set, i :e m ->
+          exists alpha:set, alpha :e J :\/: K /\
+            apply_fun xs i :e apply_fun Hfam alpha /\
+            apply_fun xs i <> apply_fun efamH alpha)
+        (forall i:set, i :e m -> ordsucc i :e m ->
+          forall alpha beta:set, alpha :e J :\/: K -> beta :e J :\/: K ->
+            apply_fun xs i :e apply_fun Hfam alpha ->
+            apply_fun xs (ordsucc i) :e apply_fun Hfam beta ->
+            alpha <> beta)
+        Hred).
+      assume HmO _ _. exact HmO.
+    }
+    claim Hm_nat : nat_p m. { exact (omega_nat_p m HmO). }
+    prove (ordsucc m) :e omega /\
+      (forall i:set, i :e ordsucc m ->
+        exists alpha:set, alpha :e J :\/: K /\
+          apply_fun xs_ext i :e apply_fun Hfam alpha /\
+          apply_fun xs_ext i <> apply_fun efamH alpha) /\
+      (forall i:set, i :e ordsucc m -> ordsucc i :e ordsucc m ->
+        forall alpha beta:set, alpha :e J :\/: K -> beta :e J :\/: K ->
+          apply_fun xs_ext i :e apply_fun Hfam alpha ->
+          apply_fun xs_ext (ordsucc i) :e apply_fun Hfam beta ->
+          alpha <> beta).
+    apply and3I.
+    - exact (nat_p_omega (ordsucc m) (nat_ordsucc m Hm_nat)).
+    - let i. assume Hi : i :e ordsucc m.
+      apply (ordsuccE m i Hi).
+      + assume Hi_m : i :e m.
+        apply (and3E
+          (m :e omega)
+          (forall j:set, j :e m ->
+            exists alpha:set, alpha :e J :\/: K /\
+              apply_fun xs j :e apply_fun Hfam alpha /\
+              apply_fun xs j <> apply_fun efamH alpha)
+          (forall j:set, j :e m -> ordsucc j :e m ->
+            forall alpha beta:set, alpha :e J :\/: K -> beta :e J :\/: K ->
+              apply_fun xs j :e apply_fun Hfam alpha ->
+              apply_fun xs (ordsucc j) :e apply_fun Hfam beta ->
+              alpha <> beta)
+          Hred).
+        assume _ Helem _.
+        apply (Helem i Hi_m).
+        let alpha. assume Halpha_pack.
+        apply (and3E
+          (alpha :e J :\/: K)
+          (apply_fun xs i :e apply_fun Hfam alpha)
+          (apply_fun xs i <> apply_fun efamH alpha)
+          Halpha_pack).
+        assume Hal Hxsi Hxsi_ne.
+        witness alpha.
+        apply and3I.
+        * exact Hal.
+        * claim Hxse_i :
+            apply_fun xs_ext i = if i :e m then apply_fun xs i else b.
+          { exact (apply_fun_graph (ordsucc m)
+              (fun j:set => if j :e m then apply_fun xs j else b) i Hi). }
+          rewrite Hxse_i.
+          rewrite (If_i_1 (i :e m) (apply_fun xs i) b Hi_m).
+          exact Hxsi.
+        * claim Hxse_i :
+            apply_fun xs_ext i = if i :e m then apply_fun xs i else b.
+          { exact (apply_fun_graph (ordsucc m)
+              (fun j:set => if j :e m then apply_fun xs j else b) i Hi). }
+          rewrite Hxse_i.
+          rewrite (If_i_1 (i :e m) (apply_fun xs i) b Hi_m).
+          exact Hxsi_ne.
+      + assume Hi_eq : i = m.
+        witness beta.
+        apply and3I.
+        * exact Hbeta.
+        * claim Hxse_m :
+            apply_fun xs_ext m = if m :e m then apply_fun xs m else b.
+          { exact (apply_fun_graph (ordsucc m)
+              (fun j:set => if j :e m then apply_fun xs j else b) m (ordsuccI2 m)). }
+          rewrite Hi_eq.
+          rewrite Hxse_m.
+          rewrite (If_i_0 (m :e m) (apply_fun xs m) b (In_irref m)).
+          exact HbG.
+        * claim Hxse_m :
+            apply_fun xs_ext m = if m :e m then apply_fun xs m else b.
+          { exact (apply_fun_graph (ordsucc m)
+              (fun j:set => if j :e m then apply_fun xs j else b) m (ordsuccI2 m)). }
+          rewrite Hi_eq.
+          rewrite Hxse_m.
+          rewrite (If_i_0 (m :e m) (apply_fun xs m) b (In_irref m)).
+          exact Hbne.
+    - let i. assume Hi : i :e ordsucc m. assume Hsi : ordsucc i :e ordsucc m.
+      let alpha beta. assume Hal Hbe Hxi Hxsi.
+      apply (ordsuccE m i Hi).
+      + assume Hi_m : i :e m.
+        apply (ordsuccE m (ordsucc i) Hsi).
+        * assume Hsi_m : ordsucc i :e m.
+          claim Hxsi_xs :
+            apply_fun xs i :e apply_fun Hfam alpha.
+          {
+            claim Hxse_i :
+              apply_fun xs_ext i = if i :e m then apply_fun xs i else b.
+            { exact (apply_fun_graph (ordsucc m)
+                (fun j:set => if j :e m then apply_fun xs j else b) i Hi). }
+            claim Hxse_i_eq : apply_fun xs_ext i = apply_fun xs i.
+            { rewrite Hxse_i.
+              rewrite (If_i_1 (i :e m) (apply_fun xs i) b Hi_m).
+              reflexivity. }
+            exact (eq_subst_mem_rev
+              (apply_fun xs_ext i) (apply_fun xs i) (apply_fun Hfam alpha)
+              Hxse_i_eq Hxi).
+          }
+          claim Hxsi_xs1 :
+            apply_fun xs (ordsucc i) :e apply_fun Hfam beta.
+          {
+            claim Hxse_si :
+              apply_fun xs_ext (ordsucc i) =
+                if ordsucc i :e m then apply_fun xs (ordsucc i) else b.
+            { exact (apply_fun_graph (ordsucc m)
+                (fun j:set => if j :e m then apply_fun xs j else b) (ordsucc i) Hsi). }
+            claim Hxse_si_eq : apply_fun xs_ext (ordsucc i) = apply_fun xs (ordsucc i).
+            { rewrite Hxse_si.
+              rewrite (If_i_1 (ordsucc i :e m) (apply_fun xs (ordsucc i)) b Hsi_m).
+              reflexivity. }
+            exact (eq_subst_mem_rev
+              (apply_fun xs_ext (ordsucc i)) (apply_fun xs (ordsucc i))
+              (apply_fun Hfam beta) Hxse_si_eq Hxsi).
+          }
+          apply (and3E
+            (m :e omega)
+            (forall j:set, j :e m ->
+              exists alpha:set, alpha :e J :\/: K /\
+                apply_fun xs j :e apply_fun Hfam alpha /\
+                apply_fun xs j <> apply_fun efamH alpha)
+            (forall j:set, j :e m -> ordsucc j :e m ->
+              forall alpha beta:set, alpha :e J :\/: K -> beta :e J :\/: K ->
+                apply_fun xs j :e apply_fun Hfam alpha ->
+                apply_fun xs (ordsucc j) :e apply_fun Hfam beta ->
+                alpha <> beta)
+            Hred).
+          assume _ _ Hadj.
+          exact (Hadj i Hi_m Hsi_m alpha beta Hal Hbe Hxsi_xs Hxsi_xs1).
+        * assume Hsi_eq : ordsucc i = m.
+          claim Hxsi_xs :
+            apply_fun xs i :e apply_fun Hfam alpha.
+          {
+            claim Hxse_i :
+              apply_fun xs_ext i = if i :e m then apply_fun xs i else b.
+            { exact (apply_fun_graph (ordsucc m)
+                (fun j:set => if j :e m then apply_fun xs j else b) i Hi). }
+            claim Hxse_i_eq : apply_fun xs_ext i = apply_fun xs i.
+            { rewrite Hxse_i.
+              rewrite (If_i_1 (i :e m) (apply_fun xs i) b Hi_m).
+              reflexivity. }
+            exact (eq_subst_mem_rev
+              (apply_fun xs_ext i) (apply_fun xs i) (apply_fun Hfam alpha)
+              Hxse_i_eq Hxi).
+          }
+          claim Hxsi_beta :
+            b :e apply_fun Hfam beta.
+          {
+            claim Hxse_si :
+              apply_fun xs_ext (ordsucc i) =
+                if ordsucc i :e m then apply_fun xs (ordsucc i) else b.
+            { exact (apply_fun_graph (ordsucc m)
+                (fun j:set => if j :e m then apply_fun xs j else b) (ordsucc i) Hsi). }
+            claim Hxse_si_eq : apply_fun xs_ext (ordsucc i) = b.
+            { rewrite Hxse_si.
+              rewrite Hsi_eq.
+              rewrite (If_i_0 (m :e m) (apply_fun xs m) b (In_irref m)).
+              reflexivity. }
+            exact (eq_subst_mem_rev
+              (apply_fun xs_ext (ordsucc i)) b (apply_fun Hfam beta)
+              Hxse_si_eq Hxsi).
+          }
+          exact (Hlast_diff i alpha beta (eq_symm (ordsucc i) m Hsi_eq) Hal Hbe Hxsi_xs Hxsi_beta).
+      + assume Hi_eq : i = m.
+        claim Hsi_eq : ordsucc i = ordsucc m.
+        { rewrite Hi_eq. reflexivity. }
+        claim Hs_in : ordsucc m :e ordsucc m.
+        { exact (eq_subst_mem
+            (ordsucc m) (ordsucc i) (ordsucc m)
+            (eq_symm (ordsucc i) (ordsucc m) Hsi_eq) Hsi). }
+        exact (FalseE (In_irref (ordsucc m) Hs_in) (alpha <> beta)).
+  }
   (** TODO: concatenate the expanded reduced words to get a reduced word in J \/ K, and prove uniqueness **)
   admit.
 Admitted.
