@@ -185552,8 +185552,8 @@ claim HinvG_G : forall f:set, f :e G ->
 claim G_sub_Sigma : forall h:set, h :e G ->
   h c= Sigma_ alpha :e J, Union (Ga alpha).
 {
-  let h. assume Hh : h :e G.
   admit.
+  (** need Pi to Power elimination, Pi is opaque so SepE1 is blocked **)
 }
 claim G_ext : forall f g:set, f :e G -> g :e G ->
   (forall alpha:set, alpha :e J -> f alpha = g alpha) -> f = g.
@@ -214026,6 +214026,29 @@ apply (and5I
           (apply_fun Hfam alpha) G2 multG eG invG (Hsubfam2 alpha HalK)). }
       exact (HsubA (apply_fun ys i) Hyi).
   }
+  (** Helper: if a reduced word with nontrivial letters multiplies to G1, all letters are in G1 **)
+  claim Hside_from_product_G1 :
+    forall n ys:set,
+      reduced_word (J :\/: K) Hfam efamH n ys ->
+      (forall i:set, i :e n -> apply_fun ys i <> eG) ->
+      word_product multG eG ys n :e G1 ->
+      forall i:set, i :e n -> apply_fun ys i :e G1.
+  {
+    (** TODO: prove by compressing maximal G1/G2 blocks to a reduced word over UPair 0 1,
+        then use uniqueness in the free product of G1 and G2 (n12=1 case forces all G1). **)
+    admit.
+  }
+  (** Helper: if a reduced word with nontrivial letters multiplies to G2, all letters are in G2 **)
+  claim Hside_from_product_G2 :
+    forall n ys:set,
+      reduced_word (J :\/: K) Hfam efamH n ys ->
+      (forall i:set, i :e n -> apply_fun ys i <> eG) ->
+      word_product multG eG ys n :e G2 ->
+      forall i:set, i :e n -> apply_fun ys i :e G2.
+  {
+    (** TODO: symmetric to Hside_from_product_G1 **)
+    admit.
+  }
   (** Helper: expansions in G1/G2 with nontrivial entries **)
   claim Hexp_red_each_G1_non_e :
     forall i:set, i :e n12 -> apply_fun xs12 i :e G1 ->
@@ -216200,8 +216223,10 @@ apply (and5I
         claim HredJ : reduced_word J (graph J (fun a:set => apply_fun Hfam a))
           (graph J (fun a:set => apply_fun efamH a)) n xs.
         { exact (Hred_J_of_union n xs Hred HallG1 HallNe). }
+        claim Hwp'_G1 : word_product multG eG xs' n' :e G1.
+        { rewrite Hwp'. exact HxG1. }
         claim Hside_xs' : forall j:set, j :e n' -> apply_fun xs' j :e G1.
-        { admit. }
+        { exact (Hside_from_product_G1 n' xs' Hred' HallNe' Hwp'_G1). }
         claim HredJ' : reduced_word J (graph J (fun a:set => apply_fun Hfam a))
           (graph J (fun a:set => apply_fun efamH a)) n' xs'.
         { exact (Hred_J_of_union n' xs' Hred' Hside_xs' HallNe'). }
@@ -216272,8 +216297,10 @@ apply (and5I
         claim HredK : reduced_word K (graph K (fun b:set => apply_fun Hfam b))
           (graph K (fun b:set => apply_fun efamH b)) n xs.
         { exact (Hred_K_of_union n xs Hred HallG2 HallNe). }
+        claim Hwp'_G2 : word_product multG eG xs' n' :e G2.
+        { rewrite Hwp'. exact HxG2. }
         claim Hside_xs' : forall j:set, j :e n' -> apply_fun xs' j :e G2.
-        { admit. }
+        { exact (Hside_from_product_G2 n' xs' Hred' HallNe' Hwp'_G2). }
         claim HredK' : reduced_word K (graph K (fun b:set => apply_fun Hfam b))
           (graph K (fun b:set => apply_fun efamH b)) n' xs'.
         { exact (Hred_K_of_union n' xs' Hred' Hside_xs' HallNe'). }
