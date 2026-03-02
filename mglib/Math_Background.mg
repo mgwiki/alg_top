@@ -88883,6 +88883,55 @@ exact (connected_image_sheet_non_switching_in_pairwise_disjoint_union
   HqN HzN HFtqVq HVqSlice HFtzVz HVzSlice).
 Qed.
 
+(** Infrastructure: for column-by-column lifts on a product ball I1 x I2, if the bottom-edge
+    lift (start) maps I1 into one slice, and each column lift maps [0,1] into one slice
+    (by being anchored at t=0 via start), then all columns map I2 into that same slice.
+    This is the key column-to-column transfer used in Lemma 54.2. **)
+Lemma column_lifts_same_sheet_on_product_ball :
+  forall E Te B Tb p U slices V0 e0 g0 start_lift I1 I2 vs_choice s0 t0:set,
+  covering_map E Te B Tb p ->
+  topology_on E Te ->
+  slices c= Te ->
+  pairwise_disjoint slices ->
+  Union slices = preimage_of E p U ->
+  V0 :e slices ->
+  continuous_map unit_interval unit_interval_topology B Tb g0 ->
+  e0 :e E ->
+  apply_fun p e0 = apply_fun g0 0 ->
+  start_lift = path_lift E Te B Tb p e0 g0 ->
+  I1 c= unit_interval ->
+  I2 c= unit_interval ->
+  connected_space I1 (subspace_topology unit_interval unit_interval_topology I1) ->
+  connected_space I2 (subspace_topology unit_interval unit_interval_topology I2) ->
+  (forall s:set, s :e I1 ->
+    continuous_map unit_interval unit_interval_topology B Tb (apply_fun vs_choice s)) ->
+  (forall s:set, s :e I1 -> forall t:set, t :e I2 ->
+    apply_fun (apply_fun vs_choice s) t :e U) ->
+  (forall s:set, s :e I1 ->
+    apply_fun p (apply_fun start_lift s) = apply_fun (apply_fun vs_choice s) 0) ->
+  s0 :e I1 ->
+  t0 :e I2 ->
+  apply_fun (path_lift E Te B Tb p (apply_fun start_lift s0) (apply_fun vs_choice s0)) t0 :e V0 ->
+  (forall s:set, s :e I1 -> apply_fun start_lift s :e E) ->
+  forall s:set, s :e I1 -> forall t:set, t :e I2 ->
+    apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t :e V0.
+{
+  (** The proof uses:
+      1. For each column s, path_lift(start(s), vs(s)) restricted to I2 is continuous and maps
+         into Union slices (since vs(s)(t) in U for t in I2). By connectivity of I2,
+         all values stay in one slice.
+      2. At t=0, path_lift(start(s), vs(s))(0) = start(s). The map s -> start(s) is
+         continuous on I1 (start_lift is continuous on unit_interval). By connectivity of I1
+         and connected_lift_stays_in_anchored_sheet, start maps I1 into one slice.
+         But this requires p(start(s)) in U for all s in I1, i.e., g0(s) in U.
+         This is NOT guaranteed in general (g0(s) = F(s,0) may leave U).
+      3. The general argument requires a Lebesgue-number chain from t=0 through overlapping
+         evenly-covered neighborhoods along each column, showing the lift stays in V0 at each step.
+      This is the key difficulty in the homotopy lifting lemma. **)
+  admit.
+}
+Admitted.
+
 (** Infrastructure: existence package for homotopy lifting in Lem 54.2 **)
 Theorem lemma54_2_homotopy_lifting_exists : forall E Te B Tb p e0 F:set,
   covering_map E Te B Tb p ->
