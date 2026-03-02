@@ -46275,6 +46275,65 @@ exact (continuous_map_topology_cod E Te B Tb p Hcont).
 Qed.
 
 (** Proven Bob **)
+Theorem simply_connected_covering_codomain_nonempty : forall B Tb:set,
+  (exists E Te p:set,
+    covering_map E Te B Tb p /\ simply_connected E Te) ->
+  exists b0:set, b0 :e B.
+let B Tb.
+assume Huniv.
+apply Huniv.
+let E.
+assume HETePack.
+apply HETePack.
+let Te.
+assume HTepPack.
+apply HTepPack.
+let p.
+assume Hpack.
+claim Hcov : covering_map E Te B Tb p.
+{
+  exact (andEL
+    (covering_map E Te B Tb p)
+    (simply_connected E Te)
+    Hpack).
+}
+claim Hsimp : simply_connected E Te.
+{
+  exact (andER
+    (covering_map E Te B Tb p)
+    (simply_connected E Te)
+    Hpack).
+}
+claim HeEx : exists e0:set, e0 :e E.
+{
+  exact (simply_connected_has_point E Te Hsimp).
+}
+claim Hsurj : surjective_map E B p.
+{
+  exact (andER
+    (continuous_map E Te B Tb p)
+    (surjective_map E B p)
+    (andEL
+      (continuous_map E Te B Tb p /\ surjective_map E B p)
+      (forall b:set, b :e B ->
+        exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U)
+      Hcov)).
+}
+claim Hfun : function_on p E B.
+{
+  exact (andEL
+    (function_on p E B)
+    (forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y)
+    Hsurj).
+}
+apply HeEx.
+let e0.
+assume He0.
+witness (apply_fun p e0).
+exact (Hfun e0 He0).
+Qed.
+
+(** Proven Bob **)
 Theorem covering_map_topology_pack : forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
   topology_on E Te /\ topology_on B Tb.
