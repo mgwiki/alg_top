@@ -140253,6 +140253,125 @@ claim HidIfCont :
 admit. (** TODO: needs continuous_map for lemma58_path_between_continuous_bridge **)
 Admitted.
 
+(** Proven Bob **)
+(** helper sub-bounty for Cor 58.5: alpha-hat sends identity to identity (continuous case) **)
+Theorem lemma58_sub_basepoint_change_id_cont : forall X Tx x0 x1 alpha:set,
+  path_between X x0 x1 alpha ->
+  continuous_map unit_interval unit_interval_topology X Tx alpha ->
+  apply_fun (basepoint_change_map X Tx x0 x1 alpha)
+    (fundamental_group_id X Tx x0)
+  = fundamental_group_id X Tx x1.
+let X Tx x0 x1 alpha.
+assume HalphaPath HalphaCont.
+claim HalphaFun : function_on alpha unit_interval X.
+{
+  exact (path_between_function_on
+    X
+    x0
+    x1
+    alpha
+    HalphaPath).
+}
+claim Halpha0 : apply_fun alpha 0 = x0.
+{
+  exact (path_between_at_zero
+    X
+    x0
+    x1
+    alpha
+    HalphaPath).
+}
+claim Halpha1 : apply_fun alpha 1 = x1.
+{
+  exact (path_between_at_one
+    X
+    x0
+    x1
+    alpha
+    HalphaPath).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (continuous_map_topology_cod
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    alpha
+    HalphaCont).
+}
+claim Hx0X : x0 :e X.
+{
+  rewrite <- Halpha0.
+  exact (HalphaFun 0 zero_in_unit_interval).
+}
+claim Hx1X : x1 :e X.
+{
+  rewrite <- Halpha1.
+  exact (HalphaFun 1 one_in_unit_interval).
+}
+claim HalphaHom :
+  group_homomorphism
+    (fundamental_group X Tx x0)
+    (fundamental_group_mult X Tx x0)
+    (fundamental_group X Tx x1)
+    (fundamental_group_mult X Tx x1)
+    (basepoint_change_map X Tx x0 x1 alpha).
+{
+  exact (lemma52_1_basepoint_change_homomorphism
+    X
+    Tx
+    x0
+    x1
+    alpha
+    HtopX
+    HalphaCont
+    Halpha0
+    Halpha1).
+}
+claim Hgrp0 :
+  group_structure
+    (fundamental_group X Tx x0)
+    (fundamental_group_mult X Tx x0)
+    (fundamental_group_id X Tx x0)
+    (fundamental_group_inv X Tx x0).
+{
+  exact (fundamental_group_is_group
+    X
+    Tx
+    x0
+    HtopX
+    Hx0X).
+}
+claim Hgrp1 :
+  group_structure
+    (fundamental_group X Tx x1)
+    (fundamental_group_mult X Tx x1)
+    (fundamental_group_id X Tx x1)
+    (fundamental_group_inv X Tx x1).
+{
+  exact (fundamental_group_is_group
+    X
+    Tx
+    x1
+    HtopX
+    Hx1X).
+}
+exact (group_hom_maps_id_to_id_s58
+  (fundamental_group X Tx x0)
+  (fundamental_group_mult X Tx x0)
+  (fundamental_group_id X Tx x0)
+  (fundamental_group_inv X Tx x0)
+  (fundamental_group X Tx x1)
+  (fundamental_group_mult X Tx x1)
+  (fundamental_group_id X Tx x1)
+  (fundamental_group_inv X Tx x1)
+  (basepoint_change_map X Tx x0 x1 alpha)
+  Hgrp0
+  Hgrp1
+  HalphaHom).
+Qed.
+
 (** helper sub-bounty for Cor 58.5: alpha-hat is injective **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
 (** Bounty 10 **)
@@ -140378,6 +140497,84 @@ claim HinjIfCont :
 admit. (** TODO: needs continuous_map for lemma58_path_between_continuous_bridge **)
 Admitted.
 
+(** Proven Bob **)
+(** helper sub-bounty for Cor 58.5: alpha-hat is injective (continuous case) **)
+Theorem lemma58_sub_basepoint_change_injective_cont : forall X Tx x0 x1 alpha a b:set,
+  path_between X x0 x1 alpha ->
+  continuous_map unit_interval unit_interval_topology X Tx alpha ->
+  a :e fundamental_group X Tx x0 ->
+  b :e fundamental_group X Tx x0 ->
+  apply_fun (basepoint_change_map X Tx x0 x1 alpha) a =
+  apply_fun (basepoint_change_map X Tx x0 x1 alpha) b ->
+  a = b.
+let X Tx x0 x1 alpha a b.
+assume HalphaPath HalphaCont Ha Hb Hab.
+claim HalphaFun : function_on alpha unit_interval X.
+{
+  exact (path_between_function_on
+    X
+    x0
+    x1
+    alpha
+    HalphaPath).
+}
+claim Halpha0 : apply_fun alpha 0 = x0.
+{
+  exact (path_between_at_zero
+    X
+    x0
+    x1
+    alpha
+    HalphaPath).
+}
+claim Halpha1 : apply_fun alpha 1 = x1.
+{
+  exact (path_between_at_one
+    X
+    x0
+    x1
+    alpha
+    HalphaPath).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (continuous_map_topology_cod
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    alpha
+    HalphaCont).
+}
+claim Hbij :
+  bijection
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x1)
+    (basepoint_change_map X Tx x0 x1 alpha).
+{
+  exact (lemma52_1_basepoint_change_bijection
+    X
+    Tx
+    x0
+    x1
+    alpha
+    HtopX
+    HalphaCont
+    Halpha0
+    Halpha1).
+}
+exact (bijection_inj
+  (fundamental_group X Tx x0)
+  (fundamental_group X Tx x1)
+  (basepoint_change_map X Tx x0 x1 alpha)
+  a
+  b
+  Hbij
+  Ha
+  Hb
+  Hab).
+Qed.
+
 (** helper sub-bounty for Cor 58.5: alpha-hat is surjective **)
 (** EFFORT: 2 lines, difficulty 2/10, USD 8 **)
 (** Bounty 10 **)
@@ -140498,6 +140695,70 @@ claim HsurjIfCont :
 }
 admit. (** TODO: needs continuous_map for lemma58_path_between_continuous_bridge **)
 Admitted.
+
+(** Proven Bob **)
+(** helper sub-bounty for Cor 58.5: alpha-hat is surjective (continuous case) **)
+Theorem lemma58_sub_basepoint_change_surjective_cont : forall X Tx x0 x1 alpha c:set,
+  path_between X x0 x1 alpha ->
+  continuous_map unit_interval unit_interval_topology X Tx alpha ->
+  c :e fundamental_group X Tx x1 ->
+  exists a:set, a :e fundamental_group X Tx x0 /\
+    apply_fun (basepoint_change_map X Tx x0 x1 alpha) a = c.
+let X Tx x0 x1 alpha c.
+assume HalphaPath HalphaCont Hc.
+claim Halpha0 : apply_fun alpha 0 = x0.
+{
+  exact (path_between_at_zero
+    X
+    x0
+    x1
+    alpha
+    HalphaPath).
+}
+claim Halpha1 : apply_fun alpha 1 = x1.
+{
+  exact (path_between_at_one
+    X
+    x0
+    x1
+    alpha
+    HalphaPath).
+}
+claim HtopX : topology_on X Tx.
+{
+  exact (continuous_map_topology_cod
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    alpha
+    HalphaCont).
+}
+claim Hbij :
+  bijection
+    (fundamental_group X Tx x0)
+    (fundamental_group X Tx x1)
+    (basepoint_change_map X Tx x0 x1 alpha).
+{
+  exact (lemma52_1_basepoint_change_bijection
+    X
+    Tx
+    x0
+    x1
+    alpha
+    HtopX
+    HalphaCont
+    Halpha0
+    Halpha1).
+}
+exact (bijection_surj
+  (fundamental_group X Tx x0)
+  (fundamental_group X Tx x1)
+  (basepoint_change_map X Tx x0 x1 alpha)
+  c
+  Hbij
+  Hc).
+Qed.
 
 (** EFFORT: 2 lines textbook, difficulty 2/10, USD 30 **)
 (** Collected Bob 30 **)
