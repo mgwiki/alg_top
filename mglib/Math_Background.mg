@@ -171314,6 +171314,237 @@ Admitted.
 (** LATEX VERSION: R^1 and R^n are not homeomorphic if n > 1. **)
 (** EFFORT: 5 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 88 **)
+(** Proven Bob **)
+Theorem R_minus_singleton_not_connected : forall a:set,
+  a :e R ->
+  ~ connected_space (R :\: {a,a})
+    (subspace_topology R R_standard_topology (R :\: {a,a})).
+let a.
+assume HaR.
+set Y := R :\: {a,a}.
+set U := {x :e R | Rlt x a}.
+set V := {x :e R | Rlt a x}.
+claim HYsubR : Y c= R.
+{
+  let x. assume HxY.
+  exact (setminusE1 R {a,a} x HxY).
+}
+claim HUsubY : U c= Y.
+{
+  let x. assume HxU.
+  claim HxR : x :e R.
+  { exact (SepE1 R (fun x:set => Rlt x a) x HxU). }
+  claim Hlt : Rlt x a.
+  { exact (SepE2 R (fun x:set => Rlt x a) x HxU). }
+  claim HxNot : x /:e {a,a}.
+  {
+    assume HxIn : x :e {a,a}.
+    claim HxInSing : x :e {a}.
+    {
+      exact (mem_eqR
+        x
+        {a,a}
+        {a}
+        (eq_symm {a} {a,a} (Sing_eq_UPair a))
+        HxIn).
+    }
+    claim HxEq : x = a.
+    { exact (SingE a x HxInSing). }
+    claim Hfalse : False.
+    {
+      claim HxInSep : x :e {t :e R | Rlt t a}.
+      { exact (SepI R (fun t:set => Rlt t a) x HxR Hlt). }
+      claim HaInSep : a :e {t :e R | Rlt t a}.
+      { exact (eq_subst_mem_rev x a {t :e R | Rlt t a} HxEq HxInSep). }
+      claim HltEq : Rlt a a.
+      { exact (SepE2 R (fun t:set => Rlt t a) a HaInSep). }
+      exact (not_Rlt_refl a HaR HltEq).
+    }
+    exact Hfalse.
+  }
+  exact (setminusI R {a,a} x HxR HxNot).
+}
+claim HVsubY : V c= Y.
+{
+  let x. assume HxV.
+  claim HxR : x :e R.
+  { exact (SepE1 R (fun x:set => Rlt a x) x HxV). }
+  claim Hlt : Rlt a x.
+  { exact (SepE2 R (fun x:set => Rlt a x) x HxV). }
+  claim HxNot : x /:e {a,a}.
+  {
+    assume HxIn : x :e {a,a}.
+    claim HxInSing : x :e {a}.
+    {
+      exact (mem_eqR
+        x
+        {a,a}
+        {a}
+        (eq_symm {a} {a,a} (Sing_eq_UPair a))
+        HxIn).
+    }
+    claim HxEq : x = a.
+    { exact (SingE a x HxInSing). }
+    claim Hfalse : False.
+    {
+      claim HxInSep : x :e {t :e R | Rlt a t}.
+      { exact (SepI R (fun t:set => Rlt a t) x HxR Hlt). }
+      claim HaInSep : a :e {t :e R | Rlt a t}.
+      { exact (eq_subst_mem_rev x a {t :e R | Rlt a t} HxEq HxInSep). }
+      claim HltEq : Rlt a a.
+      { exact (SepE2 R (fun t:set => Rlt a t) a HaInSep). }
+      exact (not_Rlt_refl a HaR HltEq).
+    }
+    exact Hfalse.
+  }
+  exact (setminusI R {a,a} x HxR HxNot).
+}
+claim HUinPow : U :e Power Y.
+{ exact (PowerI Y U HUsubY). }
+claim HVinPow : V :e Power Y.
+{ exact (PowerI Y V HVsubY). }
+claim HUVempty : U :/\: V = Empty.
+{
+  apply set_ext.
+  - let x. assume HxUV.
+    claim HxU : x :e U.
+    { exact (binintersectE1 U V x HxUV). }
+    claim HxV : x :e V.
+    { exact (binintersectE2 U V x HxUV). }
+    claim Hlt1 : Rlt x a.
+    { exact (SepE2 R (fun t:set => Rlt t a) x HxU). }
+    claim Hlt2 : Rlt a x.
+    { exact (SepE2 R (fun t:set => Rlt a t) x HxV). }
+    claim Hfalse : False.
+    { exact (not_Rlt_sym x a Hlt1 Hlt2). }
+    exact (FalseE Hfalse (x :e Empty)).
+  - exact (Subq_Empty (U :/\: V)).
+}
+claim HUnion : Y = U :\/: V.
+{
+  exact (R_minus_singleton_eq_rays_union a HaR).
+}
+claim HUne : U <> Empty.
+{
+  assume HUe.
+  set a_left := add_SNo a (minus_SNo 1).
+  claim Hm1R : minus_SNo 1 :e R.
+  { exact (real_minus_SNo 1 real_1). }
+  claim Ha_leftR : a_left :e R.
+  { exact (real_add_SNo a HaR (minus_SNo 1) Hm1R). }
+  claim HaS : SNo a.
+  { exact (real_SNo a HaR). }
+  claim HleftEq :
+    add_SNo a_left 1 = a.
+  {
+    exact (add_SNo_minus_R2' a 1 HaS SNo_1).
+  }
+  claim HltLeft : Rlt a_left a.
+  {
+    rewrite <- HleftEq at 2.
+    exact (Rlt_add_1_R a_left Ha_leftR).
+  }
+  claim Ha_leftU : a_left :e U.
+  {
+    exact (SepI R (fun x:set => Rlt x a) a_left Ha_leftR HltLeft).
+  }
+  claim Ha_leftEmpty : a_left :e Empty.
+  { exact (eq_subst_mem_set a_left U Empty Ha_leftU HUe). }
+  exact (EmptyE a_left Ha_leftEmpty False).
+}
+claim HVne : V <> Empty.
+{
+  assume HVe.
+  set a_right := add_SNo a 1.
+  claim Ha_rightR : a_right :e R.
+  { exact (real_add_SNo a HaR 1 real_1). }
+  claim HltRight : Rlt a a_right.
+  { exact (Rlt_add_1_R a HaR). }
+  claim Ha_rightV : a_right :e V.
+  {
+    exact (SepI R (fun x:set => Rlt a x) a_right Ha_rightR HltRight).
+  }
+  claim Ha_rightEmpty : a_right :e Empty.
+  { exact (eq_subst_mem_set a_right V Empty Ha_rightV HVe). }
+  exact (EmptyE a_right Ha_rightEmpty False).
+}
+set Ty := subspace_topology R R_standard_topology Y.
+claim HtopR : topology_on R R_standard_topology.
+{ exact R_standard_topology_is_topology. }
+claim HopenU_in : open_in Y Ty U.
+{
+  apply (iffER
+    (open_in Y Ty U)
+    (exists W:set, W :e R_standard_topology /\ U = W :/\: Y)
+    (open_in_subspace_iff R R_standard_topology Y U HtopR HYsubR HUsubY)).
+  witness U.
+  apply andI.
+  - exact (open_left_ray_in_R_standard_topology a HaR).
+  - exact (eq_symm (U :/\: Y) U (binintersect_sub_eq_right U Y HUsubY)).
+}
+claim HopenV_in : open_in Y Ty V.
+{
+  apply (iffER
+    (open_in Y Ty V)
+    (exists W:set, W :e R_standard_topology /\ V = W :/\: Y)
+    (open_in_subspace_iff R R_standard_topology Y V HtopR HYsubR HVsubY)).
+  witness V.
+  apply andI.
+  - exact (open_ray_in_R_standard_topology a HaR).
+  - exact (eq_symm (V :/\: Y) V (binintersect_sub_eq_right V Y HVsubY)).
+}
+claim HUopen : U :e Ty.
+{
+  exact (andER
+    (topology_on Y Ty)
+    (U :e Ty)
+    HopenU_in).
+}
+claim HVopen : V :e Ty.
+{
+  exact (andER
+    (topology_on Y Ty)
+    (V :e Ty)
+    HopenV_in).
+}
+claim Hsep : separation_of Y U V.
+{
+  exact (and6I
+    (U :e Power Y)
+    (V :e Power Y)
+    (U :/\: V = Empty)
+    (U <> Empty)
+    (V <> Empty)
+    (U :\/: V = Y)
+    HUinPow
+    HVinPow
+    HUVempty
+    HUne
+    HVne
+    (eq_symm Y (U :\/: V) HUnion)).
+}
+assume Hconn : connected_space Y Ty.
+claim HnoSep :
+  ~ (exists U V:set, U :e Ty /\ V :e Ty /\ separation_of Y U V).
+{
+  exact (connected_space_no_separation Y Ty Hconn).
+}
+claim Hbad : exists U V:set, U :e Ty /\ V :e Ty /\ separation_of Y U V.
+{
+  witness U. witness V.
+  exact (andI
+    (U :e Ty /\ V :e Ty)
+    (separation_of Y U V)
+    (andI
+      (U :e Ty)
+      (V :e Ty)
+      HUopen
+      HVopen)
+    Hsep).
+}
+exact (HnoSep Hbad).
+Qed.
+
 Theorem ex59_3a_R1_not_homeo_Rn : forall n:set,
   n :e omega -> 2 c= n ->
   ~(exists f:set, homeomorphism R R_standard_topology
