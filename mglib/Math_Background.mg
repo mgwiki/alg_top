@@ -46406,6 +46406,29 @@ exact (andEL
 Qed.
 
 (** Proven Bob **)
+Theorem covering_map_domain_nonempty_iff_codomain_nonempty : forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  (E <> Empty <-> B <> Empty).
+let E Te B Tb p.
+assume Hcov.
+apply iffI.
+- assume HEnon.
+  claim Hb : exists b:set, b :e B.
+  { exact (covering_map_codomain_nonempty E Te B Tb p Hcov HEnon). }
+  apply Hb.
+  let b.
+  assume HbB.
+  exact (elem_implies_nonempty B b HbB).
+- assume HBnon.
+  claim He : exists e:set, e :e E.
+  { exact (covering_map_domain_nonempty E Te B Tb p Hcov HBnon). }
+  apply He.
+  let e.
+  assume HeE.
+  exact (elem_implies_nonempty E e HeE).
+Qed.
+
+(** Proven Bob **)
 Theorem covering_map_topology_pack : forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
   topology_on E Te /\ topology_on B Tb.
