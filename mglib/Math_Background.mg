@@ -211532,6 +211532,7 @@ apply (and5I
          x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)).
     - assume Hxe : x = eG. apply orIL. exact Hxe.
     - assume Hxword.
+      apply orIR.
       (** Helper: generation in G1 by Hfam on J **)
       claim HgenG1 :
         forall y:set, y :e G1 ->
@@ -211933,8 +211934,44 @@ apply (and5I
           (x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
           Hxspack).
       }
-      (** TODO: expand each factor in G1/G2 using HgenG1/HgenG2 and concatenate words **)
-      admit.
+      claim Hexpand_word :
+        exists m ys:set,
+          m :e omega /\ m <> 0 /\
+          function_on ys m G /\
+          (forall i:set, i :e m ->
+            exists alpha:set, alpha :e J :\/: K /\ apply_fun ys i :e apply_fun Hfam alpha) /\
+          nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys i)) m =
+            nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n.
+      {
+        (** TODO: expand each factor in G1/G2 using HgenG1/HgenG2 and concatenate words **)
+        admit.
+      }
+      apply Hexpand_word.
+      let m. assume Hmpack.
+      apply Hmpack.
+      let ys. assume Hyspack.
+      witness m.
+      apply (and5E
+        (m :e omega)
+        (m <> 0)
+        (function_on ys m G)
+        (forall i:set, i :e m ->
+          exists alpha:set, alpha :e J :\/: K /\ apply_fun ys i :e apply_fun Hfam alpha)
+        (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys i)) m =
+          nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+        Hyspack).
+      assume HmO HmNe Hysfun Hysfam Hyeq.
+      apply andI.
+      - exact (andI (m :e omega) (m <> 0) HmO HmNe).
+      - witness ys.
+        apply andI.
+        + exact (andI
+            (function_on ys m G)
+            (forall i:set, i :e m ->
+              exists alpha:set, alpha :e J :\/: K /\ apply_fun ys i :e apply_fun Hfam alpha)
+            Hysfun
+            Hysfam).
+        + rewrite Hyeq. exact Hxeq.
 - (** TODO: reduced word uniqueness for the union family **)
   admit.
 Admitted.
