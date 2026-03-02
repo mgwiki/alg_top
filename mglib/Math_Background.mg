@@ -185103,6 +185103,15 @@ apply (and4I
   exact (homomorphism_image_intro G phi (apply_fun inv a) Hinv_aG).
 Qed.
 
+(** Helper: unfold Pi membership as Sep membership **)
+Lemma Pi_mem_Sep : forall X:set, forall Y:set -> set, forall f:set,
+  f :e (Pi_ x :e X, Y x) ->
+  f :e {g :e Power (Sigma_ x :e X, Union (Y x)) | forall x :e X, g x :e Y x}.
+let X Y f.
+assume Hf.
+admit. (** TODO: need Pi elimination/unfolding to coerce to Sep **)
+Admitted.
+
 (** Helper: Pi elements lie in the underlying power set **)
 Lemma Pi_sub_Power : forall X:set, forall Y:set -> set, forall f:set,
   f :e (Pi_ x :e X, Y x) ->
