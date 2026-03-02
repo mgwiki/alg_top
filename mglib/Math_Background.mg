@@ -296984,6 +296984,36 @@ claim Hleaf : exists A:set, A :e ArcsT /\
 {
   (** Leaf existence: In a finite acyclic connected graph with >=2 arcs,
       not every endpoint can be shared. Proof by contradiction + finiteness. **)
+  apply dneg.
+  assume Hnoleaf : ~(exists A:set, A :e ArcsT /\
+    exists p q:set, end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) p q /\
+      ~(exists C:set, C :e ArcsT /\ C <> A /\ p :e C)).
+  (** Negation: every arc has every "first" endpoint shared with some other arc.
+      Since end_points_of_arc is symmetric (p,q can be swapped), this means BOTH endpoints are shared. **)
+  claim Hallshared : forall A:set, A :e ArcsT ->
+    forall p q:set, end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) p q ->
+    (exists C:set, C :e ArcsT /\ C <> A /\ p :e C) /\
+    (exists D:set, D :e ArcsT /\ D <> A /\ q :e D).
+  { let A. assume HA. let p. let q. assume Hepaq : end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) p q.
+    apply andI.
+    - apply dneg. assume Hpfree.
+      apply Hnoleaf. witness A. apply andI.
+      + exact HA.
+      + witness p. witness q. apply andI.
+        * exact Hepaq.
+        * exact Hpfree.
+    - apply dneg. assume Hqfree.
+      apply Hnoleaf. witness A. apply andI.
+      + exact HA.
+      + witness q. witness p.
+        claim Hepaq_swap : end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) q p.
+        { exact (end_points_of_arc_sym A (subspace_topology T (subspace_topology X Tx T) A) p q Hepaq). }
+        apply andI.
+        * exact Hepaq_swap.
+        * exact Hqfree. }
+  (** From Hallshared + finiteness + acyclicity, derive contradiction.
+      Build a non-backtracking walk through arcs; finiteness forces a repeat;
+      the repeat yields a closed reduced edge path, contradicting Hnoloop. **)
   admit.
 }
 apply Hleaf.
