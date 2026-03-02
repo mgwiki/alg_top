@@ -86,7 +86,7 @@ Rules:
 
 NOTICE ID: 1772447026
 Created: 1772447026
-Status: PROPOSED
+Status: SENT TO ADMIN
 
 Refers to Commit:
   47657369897c469dea3a0192c7ac3e80fa82a7a9
