@@ -84,6 +84,64 @@ Rules:
 
 --------------------------------------------------------
 
+NOTICE ID: 1772447026
+Created: 1772447026
+Status: PROPOSED
+
+Refers to Commit:
+  47657369897c469dea3a0192c7ac3e80fa82a7a9
+
+Target:
+  Line: 304584
+  Name: thm84_4_forward_meeting_obligation (Theorem)
+
+Problem:
+  The statement is false: in a triangle graph, a maximal tree T is a
+  two-edge path; the third edge A is not a subset of T but meets T in
+  two vertices, so T :/\: A is not a singleton. Thus the conclusion
+  fails for arbitrary A. This also blocks the forward direction proof
+  of thm84_4.
+
+Proposed Replacement:
+  Theorem thm84_4_forward_meeting_obligation :
+    forall T ArcsT X Tx Arcs:set,
+    maximal_tree T ArcsT X Tx Arcs ->
+    connected_space X Tx ->
+    (exists w:set, w :e graph_vertices X Tx Arcs /\ w /:e T) ->
+    exists A v:set,
+      A :e Arcs /\ ~(A c= T) /\
+      v :e graph_vertices X Tx Arcs /\ T :/\: A = Sing v.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1772447026 | Bob: Counterexample: triangle graph. A maximal tree is
+    two edges; the third edge A meets T in two vertices, not a singleton.
+    The replacement uses connectedness and a vertex outside T to select
+    a suitable arc A; this matches the intended forward direction strategy.
+
+Approvals:
+  - 1772447026 | Alice: 
+  - 1772447026 | Bob: YES
+  - 1772447026 | Charlie: 
+  - 1772447026 | Dave: 
+
+Result:
+  PROPOSED
+  SENT TO ADMIN
+  REJECTED
+
+Admin Decision:
+  - 
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1772361663
 Created: 1772361663
 Status: SENT TO ADMIN
