@@ -91031,12 +91031,140 @@ Lemma column_lifts_same_sheet_on_product_ball :
     rewrite <- HVs0Eq.
     exact (HcolVs0 t HtI2).
   }
-  (** TODO: show the slice does not vary with s (uses a Lebesgue-number chain argument). **)
+  (** Reduce to continuity of the t0-column map across s. **)
+  set Fcol := graph I1 (fun s:set =>
+    apply_fun
+      (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+      t0).
+  claim HcolCont :
+    continuous_map I1 (subspace_topology unit_interval unit_interval_topology I1) E Te Fcol.
+  { admit. }
+  claim HcolInUnion :
+    forall s:set, s :e I1 -> apply_fun Fcol s :e Union slices.
+  {
+    let s.
+    assume HsI1.
+    claim HsSliceEx :
+      exists Vs:set, Vs :e slices /\
+        forall t:set, t :e I2 ->
+          apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t :e Vs.
+    { exact (HcolInSlice s HsI1). }
+    apply HsSliceEx.
+    let Vs.
+    assume HVsPack.
+    claim HVsSlice : Vs :e slices.
+    { exact (andEL
+        (Vs :e slices)
+        (forall t:set, t :e I2 ->
+          apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t :e Vs)
+        HVsPack). }
+    claim HcolVs :
+      forall t:set, t :e I2 ->
+        apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t :e Vs.
+    { exact (andER
+        (Vs :e slices)
+        (forall t:set, t :e I2 ->
+          apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t :e Vs)
+        HVsPack). }
+    claim Ht0Vs :
+      apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t0 :e Vs.
+    { exact (HcolVs t0 Ht0). }
+    rewrite (apply_fun_graph
+      I1
+      (fun s:set =>
+        apply_fun
+          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+          t0)
+      s
+      HsI1).
+    exact (UnionI
+      slices
+      (apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t0)
+      Vs
+      Ht0Vs
+      HVsSlice).
+  }
   let s.
   assume HsI1.
   let t.
   assume HtI2.
-  admit.
+  claim HsSliceEx :
+    exists Vs:set, Vs :e slices /\
+      forall t:set, t :e I2 ->
+        apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t :e Vs.
+  { exact (HcolInSlice s HsI1). }
+  apply HsSliceEx.
+  let Vs.
+  assume HVsPack.
+  claim HVsSlice : Vs :e slices.
+  { exact (andEL
+      (Vs :e slices)
+      (forall t:set, t :e I2 ->
+        apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t :e Vs)
+      HVsPack). }
+  claim HcolVs :
+    forall t:set, t :e I2 ->
+      apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t :e Vs.
+  { exact (andER
+      (Vs :e slices)
+      (forall t:set, t :e I2 ->
+        apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t :e Vs)
+      HVsPack). }
+  claim Ht0Vs :
+    apply_fun (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s)) t0 :e Vs.
+  { exact (HcolVs t0 Ht0). }
+  claim HFcol_s : apply_fun Fcol s :e Vs.
+  {
+    rewrite (apply_fun_graph
+      I1
+      (fun s:set =>
+        apply_fun
+          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+          t0)
+      s
+      HsI1).
+    exact Ht0Vs.
+  }
+  claim HFcol_s0 : apply_fun Fcol s0 :e V0.
+  {
+    rewrite (apply_fun_graph
+      I1
+      (fun s:set =>
+        apply_fun
+          (path_lift E Te B Tb p (apply_fun start_lift s) (apply_fun vs_choice s))
+          t0)
+      s0
+      Hs0).
+    exact (Hs0col t0 Ht0).
+  }
+  claim HVsEq : Vs = V0.
+  {
+    exact (lemma54_2_sheet_non_switching_local
+      E
+      Te
+      I1
+      (subspace_topology unit_interval unit_interval_topology I1)
+      Fcol
+      slices
+      s0
+      s
+      V0
+      Vs
+      HtopE
+      HslicesSub
+      HpdSlices
+      HI1conn
+      HcolCont
+      HcolInUnion
+      Hs0
+      HsI1
+      HFcol_s0
+      HV0Slice
+      HFcol_s
+      HVsSlice).
+  }
+  rewrite <- HVsEq.
+  exact (HcolVs t HtI2).
 }
 Admitted.
 
