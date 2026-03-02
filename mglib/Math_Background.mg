@@ -267636,6 +267636,17 @@ Definition graph_vertices : set -> set -> set -> set :=
       exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
         (x = p \/ x = q)}.
 
+(** Helper: unfold graph_vertices **)
+(** Proven Bob **)
+Lemma graph_vertices_unfold : forall X Tx Arcs:set,
+  graph_vertices X Tx Arcs =
+  {x :e X | exists A:set, A :e Arcs /\
+    exists p q:set, end_points_of_arc A (subspace_topology X Tx A) p q /\
+      (x = p \/ x = q)}.
+let X Tx Arcs.
+reflexivity.
+Qed.
+
 (** Infrastructure: basic endpoint extractors for end_points_of_arc **)
 (** Proven Bob **)
 Theorem end_points_of_arc_implies_arc :
@@ -309660,10 +309671,136 @@ Theorem thm84_4_selected_arc_endpoints_in_T_imply_selected_arc_subset_contradict
   ~(A c= T) -> False.
 let T ArcsT T' ArcsT' X Tx Arcs A p q.
 assume Hrhs Htree' HTsub HASel Hend Hep Hnsub.
+(** Unpack basic data from hypotheses. **)
+claim Htree : tree_in_graph T ArcsT X Tx Arcs.
+{
+  exact (andEL
+    (tree_in_graph T ArcsT X Tx Arcs)
+    (graph_vertices X Tx Arcs c= T)
+    Hrhs).
+}
+claim HvertSub : graph_vertices X Tx Arcs c= T.
+{
+  exact (andER
+    (tree_in_graph T ArcsT X Tx Arcs)
+    (graph_vertices X Tx Arcs c= T)
+    Hrhs).
+}
+claim HAT : A :e Arcs.
+{
+  exact (selected_arc_in_arcs
+    Arcs
+    T'
+    A
+    HASel).
+}
+claim HglgX : general_linear_graph X Tx Arcs.
+{
+  exact (tree_in_graph_general_linear_graph_X
+    T'
+    ArcsT'
+    X
+    Tx
+    Arcs
+    Htree').
+}
+claim HAcX : A c= X.
+{
+  exact (andEL
+    (A c= X)
+    (arc A (subspace_topology X Tx A))
+    (general_linear_graph_arc_data
+      X
+      Tx
+      Arcs
+      A
+      HglgX
+      HAT)).
+}
+claim HpA : p :e A.
+{
+  exact (end_points_of_arc_left_in_set
+    A
+    (subspace_topology X Tx A)
+    p
+    q
+    Hend).
+}
+claim HqA : q :e A.
+{
+  exact (end_points_of_arc_right_in_set
+    A
+    (subspace_topology X Tx A)
+    p
+    q
+    Hend).
+}
+claim HpX : p :e X. { exact (HAcX p HpA). }
+claim HqX : q :e X. { exact (HAcX q HqA). }
+claim HpV : p :e graph_vertices X Tx Arcs.
+{
+  rewrite (graph_vertices_unfold X Tx Arcs).
+  apply (SepI
+    X
+    (fun x:set =>
+      exists A0:set, A0 :e Arcs /\
+        exists p0 q0:set, end_points_of_arc A0 (subspace_topology X Tx A0) p0 q0 /\
+          (x = p0 \/ x = q0))
+    p).
+  - exact HpX.
+  - witness A. apply andI.
+    + exact HAT.
+    + witness p. witness q. apply andI.
+      * exact Hend.
+      * apply orIL. reflexivity.
+}
+claim HqV : q :e graph_vertices X Tx Arcs.
+{
+  rewrite (graph_vertices_unfold X Tx Arcs).
+  apply (SepI
+    X
+    (fun x:set =>
+      exists A0:set, A0 :e Arcs /\
+        exists p0 q0:set, end_points_of_arc A0 (subspace_topology X Tx A0) p0 q0 /\
+          (x = p0 \/ x = q0))
+    q).
+  - exact HqX.
+  - witness A. apply andI.
+    + exact HAT.
+    + witness p. witness q. apply andI.
+      * exact Hend.
+      * apply orIR. reflexivity.
+}
+claim HpT : p :e T. { exact (HvertSub p HpV). }
+claim HqT : q :e T. { exact (HvertSub q HqV). }
 (** Remaining backward S84.4 contradiction bridge:
     use tree/no-loop structure plus endpoint-in-T data to contradict noncontainment
     of selected arc A in T. **)
-admit.
+claim HnoloopT' :
+  ~(exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path T' (subspace_topology X Tx T') ArcsT' n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0)).
+{
+  exact (tree_in_graph_no_closed_reduced_edge_path
+    T'
+    ArcsT'
+    X
+    Tx
+    Arcs
+    Htree').
+}
+claim Hcycle :
+  exists n path_seq x0:set,
+    n :e omega /\ n <> 0 /\
+    reduced_edge_path T' (subspace_topology X Tx T') ArcsT' n path_seq x0 /\
+    (exists j:set, j :e n /\ ordsucc j /:e n /\
+      (apply_fun path_seq j) 0 1 = x0).
+{
+  admit.
+}
+exact (HnoloopT' Hcycle).
 Admitted.
 
 Theorem thm84_4_backward_selected_arc_endpoint_close_obligation :
