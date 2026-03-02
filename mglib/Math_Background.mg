@@ -211532,7 +211532,349 @@ apply (and5I
          x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)).
     - assume Hxe : x = eG. apply orIL. exact Hxe.
     - assume Hxword.
-      (** TODO: expand each factor in G1/G2 using Hfp1/Hfp2 and concatenate words **)
+      (** Helper: generation in G1 by Hfam on J **)
+      claim HgenG1 :
+        forall y:set, y :e G1 ->
+          y = eG \/
+          exists n:set, n :e omega /\ n <> 0 /\
+          exists xs:set, function_on xs n G1 /\
+            (forall i:set, i :e n ->
+              exists alpha:set, alpha :e J /\ apply_fun xs i :e apply_fun Hfam alpha) /\
+            y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n.
+      {
+        let y. assume HyG1.
+        apply (and5E
+          (group_structure G1 multG eG invG)
+          (forall alpha:set, alpha :e J ->
+            subgroup_of (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) G1 multG eG invG)
+          (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+            forall z:set, z :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha ->
+              z :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) beta -> z = eG)
+          (subgroups_generate G1 multG eG invG J (graph J (fun a:set => apply_fun Hfam a)))
+          (forall x:set, x :e G1 -> x <> eG ->
+            exists n xs:set,
+              reduced_word J (graph J (fun a:set => apply_fun Hfam a))
+                (graph J (fun a:set => apply_fun efamH a)) n xs /\ n <> 0 /\
+              word_product multG eG xs n = x /\
+              (forall n' xs':set,
+                reduced_word J (graph J (fun a:set => apply_fun Hfam a))
+                  (graph J (fun a:set => apply_fun efamH a)) n' xs' -> n' <> 0 ->
+                word_product multG eG xs' n' = x ->
+                n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
+          Hfp1).
+        assume _ _ _ Hgen1 _.
+        apply (and3E
+          (group_structure G1 multG eG invG)
+          (forall alpha:set, alpha :e J ->
+            subgroup_of (apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) G1 multG eG invG)
+          (forall x:set, x :e G1 ->
+            x = eG \/
+            exists n:set, n :e omega /\ n <> 0 /\
+            exists xs:set, function_on xs n G1 /\
+              (forall i:set, i :e n ->
+                exists alpha:set, alpha :e J /\
+                  apply_fun xs i :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) /\
+              x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+          Hgen1).
+        assume _ _ Hgen1cl.
+        apply (Hgen1cl y HyG1).
+        - assume Hye. apply orIL. exact Hye.
+        - assume Hyword.
+          apply orIR.
+          apply Hyword.
+          let n. assume Hnpack.
+          claim HnpackL : n :e omega /\ n <> 0.
+          {
+            exact (andEL
+              (n :e omega /\ n <> 0)
+              (exists xs:set, function_on xs n G1 /\
+                (forall i:set, i :e n ->
+                  exists alpha:set, alpha :e J /\
+                    apply_fun xs i :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) /\
+                y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+              Hnpack).
+          }
+          claim HnO : n :e omega.
+          { exact (andEL (n :e omega) (n <> 0) HnpackL). }
+          claim HnNe : n <> 0.
+          { exact (andER (n :e omega) (n <> 0) HnpackL). }
+          claim Hexistxs :
+            exists xs:set, function_on xs n G1 /\
+              (forall i:set, i :e n ->
+                exists alpha:set, alpha :e J /\ apply_fun xs i :e apply_fun Hfam alpha) /\
+              y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n.
+          {
+            apply (andER (n :e omega /\ n <> 0)
+              (exists xs:set, function_on xs n G1 /\
+                (forall i:set, i :e n ->
+                  exists alpha:set, alpha :e J /\
+                    apply_fun xs i :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha) /\
+                y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+              Hnpack).
+            let xs. assume Hxspack.
+            claim HxspackL :
+              function_on xs n G1 /\
+              (forall i:set, i :e n ->
+                exists alpha:set, alpha :e J /\
+                  apply_fun xs i :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha).
+            {
+              exact (andEL
+                (function_on xs n G1 /\
+                  (forall i:set, i :e n ->
+                    exists alpha:set, alpha :e J /\
+                      apply_fun xs i :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha))
+                (y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+                Hxspack).
+            }
+            claim Hxsfun : function_on xs n G1.
+            { exact (andEL
+                (function_on xs n G1)
+                (forall i:set, i :e n ->
+                  exists alpha:set, alpha :e J /\
+                    apply_fun xs i :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha)
+                HxspackL). }
+            claim Hxsfam :
+              forall i:set, i :e n ->
+                exists alpha:set, alpha :e J /\
+                  apply_fun xs i :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha.
+            { exact (andER
+                (function_on xs n G1)
+                (forall i:set, i :e n ->
+                  exists alpha:set, alpha :e J /\
+                    apply_fun xs i :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha)
+                HxspackL). }
+            claim Hyeq :
+              y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n.
+            {
+              exact (andER
+                (function_on xs n G1 /\
+                  (forall i:set, i :e n ->
+                    exists alpha:set, alpha :e J /\
+                      apply_fun xs i :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha))
+                (y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+                Hxspack).
+            }
+            claim Hforall :
+              forall i:set, i :e n ->
+                exists alpha:set, alpha :e J /\ apply_fun xs i :e apply_fun Hfam alpha.
+            {
+              let i. assume Hi.
+              apply (Hxsfam i Hi).
+              let alpha. assume Halpack.
+              witness alpha.
+              apply andI.
+              { exact (andEL
+                  (alpha :e J)
+                  (apply_fun xs i :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha)
+                  Halpack). }
+              claim Hxsa :
+                apply_fun xs i :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha.
+              { exact (andER
+                  (alpha :e J)
+                  (apply_fun xs i :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha)
+                  Halpack). }
+              rewrite <- (apply_fun_graph J (fun a:set => apply_fun Hfam a) alpha
+                (andEL (alpha :e J)
+                  (apply_fun xs i :e apply_fun (graph J (fun a:set => apply_fun Hfam a)) alpha)
+                  Halpack)).
+              exact Hxsa.
+            }
+            witness xs.
+            exact (andI
+              (function_on xs n G1 /\
+                (forall i:set, i :e n ->
+                  exists alpha:set, alpha :e J /\ apply_fun xs i :e apply_fun Hfam alpha))
+              (y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+              (andI
+                (function_on xs n G1)
+                (forall i:set, i :e n ->
+                  exists alpha:set, alpha :e J /\ apply_fun xs i :e apply_fun Hfam alpha)
+                Hxsfun
+                Hforall)
+              Hyeq).
+          }
+          witness n.
+          exact (andI
+            (n :e omega /\ n <> 0)
+            (exists xs:set, function_on xs n G1 /\
+              (forall i:set, i :e n ->
+                exists alpha:set, alpha :e J /\ apply_fun xs i :e apply_fun Hfam alpha) /\
+              y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+            (andI (n :e omega) (n <> 0) HnO HnNe)
+            Hexistxs).
+      }
+      (** Helper: generation in G2 by Hfam on K **)
+      claim HgenG2 :
+        forall y:set, y :e G2 ->
+          y = eG \/
+          exists n:set, n :e omega /\ n <> 0 /\
+          exists xs:set, function_on xs n G2 /\
+            (forall i:set, i :e n ->
+              exists alpha:set, alpha :e K /\ apply_fun xs i :e apply_fun Hfam alpha) /\
+            y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n.
+      {
+        let y. assume HyG2.
+        apply (and5E
+          (group_structure G2 multG eG invG)
+          (forall beta:set, beta :e K ->
+            subgroup_of (apply_fun (graph K (fun b:set => apply_fun Hfam b)) beta) G2 multG eG invG)
+          (forall beta gamma:set, beta :e K -> gamma :e K -> beta <> gamma ->
+            forall z:set, z :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) beta ->
+              z :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) gamma -> z = eG)
+          (subgroups_generate G2 multG eG invG K (graph K (fun b:set => apply_fun Hfam b)))
+          (forall x:set, x :e G2 -> x <> eG ->
+            exists n xs:set,
+              reduced_word K (graph K (fun b:set => apply_fun Hfam b))
+                (graph K (fun b:set => apply_fun efamH b)) n xs /\ n <> 0 /\
+              word_product multG eG xs n = x /\
+              (forall n' xs':set,
+                reduced_word K (graph K (fun b:set => apply_fun Hfam b))
+                  (graph K (fun b:set => apply_fun efamH b)) n' xs' -> n' <> 0 ->
+                word_product multG eG xs' n' = x ->
+                n = n' /\ (forall i:set, i :e n -> apply_fun xs i = apply_fun xs' i)))
+          Hfp2).
+        assume _ _ _ Hgen2 _.
+        apply (and3E
+          (group_structure G2 multG eG invG)
+          (forall beta:set, beta :e K ->
+            subgroup_of (apply_fun (graph K (fun b:set => apply_fun Hfam b)) beta) G2 multG eG invG)
+          (forall x:set, x :e G2 ->
+            x = eG \/
+            exists n:set, n :e omega /\ n <> 0 /\
+            exists xs:set, function_on xs n G2 /\
+              (forall i:set, i :e n ->
+                exists alpha:set, alpha :e K /\
+                  apply_fun xs i :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) alpha) /\
+              x = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+          Hgen2).
+        assume _ _ Hgen2cl.
+        apply (Hgen2cl y HyG2).
+        - assume Hye. apply orIL. exact Hye.
+        - assume Hyword.
+          apply orIR.
+          apply Hyword.
+          let n. assume Hnpack.
+          claim HnpackL : n :e omega /\ n <> 0.
+          {
+            exact (andEL
+              (n :e omega /\ n <> 0)
+              (exists xs:set, function_on xs n G2 /\
+                (forall i:set, i :e n ->
+                  exists alpha:set, alpha :e K /\
+                    apply_fun xs i :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) alpha) /\
+                y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+              Hnpack).
+          }
+          claim HnO : n :e omega.
+          { exact (andEL (n :e omega) (n <> 0) HnpackL). }
+          claim HnNe : n <> 0.
+          { exact (andER (n :e omega) (n <> 0) HnpackL). }
+          claim Hexistxs :
+            exists xs:set, function_on xs n G2 /\
+              (forall i:set, i :e n ->
+                exists alpha:set, alpha :e K /\ apply_fun xs i :e apply_fun Hfam alpha) /\
+              y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n.
+          {
+            apply (andER (n :e omega /\ n <> 0)
+              (exists xs:set, function_on xs n G2 /\
+                (forall i:set, i :e n ->
+                  exists alpha:set, alpha :e K /\
+                    apply_fun xs i :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) alpha) /\
+                y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+              Hnpack).
+            let xs. assume Hxspack.
+            claim HxspackL :
+              function_on xs n G2 /\
+              (forall i:set, i :e n ->
+                exists alpha:set, alpha :e K /\
+                  apply_fun xs i :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) alpha).
+            {
+              exact (andEL
+                (function_on xs n G2 /\
+                  (forall i:set, i :e n ->
+                    exists alpha:set, alpha :e K /\
+                      apply_fun xs i :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) alpha))
+                (y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+                Hxspack).
+            }
+            claim Hxsfun : function_on xs n G2.
+            { exact (andEL
+                (function_on xs n G2)
+                (forall i:set, i :e n ->
+                  exists alpha:set, alpha :e K /\
+                    apply_fun xs i :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) alpha)
+                HxspackL). }
+            claim Hxsfam :
+              forall i:set, i :e n ->
+                exists alpha:set, alpha :e K /\
+                  apply_fun xs i :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) alpha.
+            { exact (andER
+                (function_on xs n G2)
+                (forall i:set, i :e n ->
+                  exists alpha:set, alpha :e K /\
+                    apply_fun xs i :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) alpha)
+                HxspackL). }
+            claim Hyeq :
+              y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n.
+            {
+              exact (andER
+                (function_on xs n G2 /\
+                  (forall i:set, i :e n ->
+                    exists alpha:set, alpha :e K /\
+                      apply_fun xs i :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) alpha))
+                (y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+                Hxspack).
+            }
+            claim Hforall :
+              forall i:set, i :e n ->
+                exists alpha:set, alpha :e K /\ apply_fun xs i :e apply_fun Hfam alpha.
+            {
+              let i. assume Hi.
+              apply (Hxsfam i Hi).
+              let alpha. assume Halpack.
+              witness alpha.
+              apply andI.
+              { exact (andEL
+                  (alpha :e K)
+                  (apply_fun xs i :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) alpha)
+                  Halpack). }
+              claim Hxsa :
+                apply_fun xs i :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) alpha.
+              { exact (andER
+                  (alpha :e K)
+                  (apply_fun xs i :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) alpha)
+                  Halpack). }
+              rewrite <- (apply_fun_graph K (fun b:set => apply_fun Hfam b) alpha
+                (andEL (alpha :e K)
+                  (apply_fun xs i :e apply_fun (graph K (fun b:set => apply_fun Hfam b)) alpha)
+                  Halpack)).
+              exact Hxsa.
+            }
+            witness xs.
+            exact (andI
+              (function_on xs n G2 /\
+                (forall i:set, i :e n ->
+                  exists alpha:set, alpha :e K /\ apply_fun xs i :e apply_fun Hfam alpha))
+              (y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+              (andI
+                (function_on xs n G2)
+                (forall i:set, i :e n ->
+                  exists alpha:set, alpha :e K /\ apply_fun xs i :e apply_fun Hfam alpha)
+                Hxsfun
+                Hforall)
+              Hyeq).
+          }
+          witness n.
+          exact (andI
+            (n :e omega /\ n <> 0)
+            (exists xs:set, function_on xs n G2 /\
+              (forall i:set, i :e n ->
+                exists alpha:set, alpha :e K /\ apply_fun xs i :e apply_fun Hfam alpha) /\
+              y = nat_primrec eG (fun i r => apply_fun multG (r, apply_fun xs i)) n)
+            (andI (n :e omega) (n <> 0) HnO HnNe)
+            Hexistxs).
+      }
+      (** TODO: expand each factor in G1/G2 using HgenG1/HgenG2 and concatenate words **)
       admit.
 - (** TODO: reduced word uniqueness for the union family **)
   admit.
