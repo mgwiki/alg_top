@@ -82,6 +82,105 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772468805
+Created: 1772468805
+Status: PROPOSED
+
+Refers to Commit:
+  e7f88eba4ad2b35db3f98953d1933ce12600867e
+
+Target:
+  Line: 140384
+  Name: lemma58_sub_basepoint_change_surjective (Theorem)
+
+Problem:
+  The statement assumes only path_between, which does not include continuity.
+  The proof needs continuous_map for alpha to apply lemma52_1_basepoint_change_homomorphism
+  and related group-structure lemmas. There is no lemma deriving continuity from
+  path_between alone, so the current statement is unprovable.
+
+Proposed Replacement:
+  Theorem lemma58_sub_basepoint_change_surjective : forall X Tx x0 x1 alpha c:set,
+    path_between X x0 x1 alpha ->
+    continuous_map unit_interval unit_interval_topology X Tx alpha ->
+    c :e fundamental_group X Tx x1 ->
+    exists a:set, a :e fundamental_group X Tx x0 /\
+      apply_fun (basepoint_change_map X Tx x0 x1 alpha) a = c.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1772468805 | Bob: path_between only gives function_on + endpoints; the proof
+    needs continuity to use basepoint-change homomorphism properties.
+
+Approvals:
+  - 1772468805 | Alice:
+  - 1772468805 | Bob: YES
+  - 1772468805 | Charlie:
+  - 1772468805 | Dave:
+
+Result:
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+
+NOTICE ID: 1772468802
+Created: 1772468802
+Status: PROPOSED
+
+Refers to Commit:
+  e7f88eba4ad2b35db3f98953d1933ce12600867e
+
+Target:
+  Line: 140259
+  Name: lemma58_sub_basepoint_change_injective (Theorem)
+
+Problem:
+  The statement assumes only path_between, which does not include continuity.
+  The proof requires continuous_map for alpha to use basepoint-change homomorphism
+  facts, and there is no lemma deriving continuity from path_between alone.
+
+Proposed Replacement:
+  Theorem lemma58_sub_basepoint_change_injective : forall X Tx x0 x1 alpha a b:set,
+    path_between X x0 x1 alpha ->
+    continuous_map unit_interval unit_interval_topology X Tx alpha ->
+    a :e fundamental_group X Tx x0 ->
+    b :e fundamental_group X Tx x0 ->
+    apply_fun (basepoint_change_map X Tx x0 x1 alpha) a =
+    apply_fun (basepoint_change_map X Tx x0 x1 alpha) b ->
+    a = b.
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1772468802 | Bob: continuity of alpha is needed to apply
+    lemma52_1_basepoint_change_homomorphism inside the proof.
+
+Approvals:
+  - 1772468802 | Alice:
+  - 1772468802 | Bob: YES
+  - 1772468802 | Charlie:
+  - 1772468802 | Dave:
+
+Result:
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1772468745
 Created: 1772468745
 Status: PROPOSED
