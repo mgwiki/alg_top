@@ -214854,6 +214854,80 @@ apply (and5I
     - exact Hred.
     - exact Hprod.
   }
+  (** Base case tool: if the G1/G2 reduced word has length 1, we can expand it directly **)
+  claim Hexist_n12_1 :
+    n12 = 1 ->
+    exists n xs:set,
+      reduced_word (J :\/: K) Hfam efamH n xs /\ n <> 0 /\
+      word_product multG eG xs n = x.
+  {
+    assume Hn12_1.
+    claim H0in : 0 :e n12.
+    { rewrite Hn12_1. exact (nat_0_in_ordsucc 0 nat_0). }
+    apply (Hexp_red_each 0 H0in).
+    let mi. assume Hmi_pack.
+    apply Hmi_pack.
+    let yi. assume Hyi_pack.
+    apply (and4E
+      (reduced_word (J :\/: K) Hfam efamH mi yi)
+      (mi <> 0)
+      (word_product multG eG yi mi = apply_fun xs12 0)
+      ((forall j:set, j :e mi -> apply_fun yi j :e G1) \/
+       (forall j:set, j :e mi -> apply_fun yi j :e G2))
+      Hyi_pack).
+    assume Hred Hmi_ne Hwp _.
+    witness mi. witness yi.
+    apply and3I.
+    - exact Hred.
+    - exact Hmi_ne.
+    - claim Hxs0_eq_x : apply_fun xs12 0 = x.
+      {
+        claim Hwp1 :
+          word_product multG eG xs12 1 =
+            apply_fun multG (word_product multG eG xs12 0, apply_fun xs12 0).
+        { exact (word_product_succ multG eG xs12 0 nat_0). }
+        claim Hwp0 : word_product multG eG xs12 0 = eG.
+        { exact (nat_primrec_0 eG
+            (fun i r => apply_fun multG (r, apply_fun xs12 i))). }
+        claim Hxs0_G : apply_fun xs12 0 :e G.
+        {
+          apply (reduced_word_in_G G multG eG invG (UPair 0 1) Gfam12
+            (graph (UPair 0 1) (fun _:set => eG)) n12 xs12 Hsubfam12 Hred12word 0).
+          rewrite Hn12_1.
+          exact (nat_0_in_ordsucc 0 nat_0).
+        }
+        claim HidL :
+          apply_fun multG (eG, apply_fun xs12 0) = apply_fun xs12 0.
+        {
+          apply (and6E
+            (function_on multG (setprod G G) G)
+            (function_on invG G G)
+            (eG :e G)
+            (forall y z w:set, y :e G -> z :e G -> w :e G ->
+              apply_fun multG (apply_fun multG (y, z), w) =
+                apply_fun multG (y, apply_fun multG (z, w)))
+            (forall y:set, y :e G -> apply_fun multG (eG, y) = y /\ apply_fun multG (y, eG) = y)
+            (forall y:set, y :e G ->
+              apply_fun multG (y, apply_fun invG y) = eG /\
+              apply_fun multG (apply_fun invG y, y) = eG)
+            Hgrp).
+          assume _ _ _ _ Hid _.
+          exact (andEL
+            (apply_fun multG (eG, apply_fun xs12 0) = apply_fun xs12 0)
+            (apply_fun multG (apply_fun xs12 0, eG) = apply_fun xs12 0)
+            (Hid (apply_fun xs12 0) Hxs0_G)).
+        }
+        claim Hwp1_eq : word_product multG eG xs12 1 = apply_fun xs12 0.
+        { rewrite Hwp1. rewrite Hwp0. exact HidL. }
+        claim Hwp1_eq_x : word_product multG eG xs12 1 = x.
+        { rewrite <- Hn12_1. exact Hwp12. }
+        exact (eq_i_tra (apply_fun xs12 0) (word_product multG eG xs12 1) x
+          (eq_symm (word_product multG eG xs12 1) (apply_fun xs12 0) Hwp1_eq)
+          Hwp1_eq_x).
+      }
+      rewrite Hwp.
+      exact Hxs0_eq_x.
+  }
   (** TODO: concatenate the expanded reduced words to get a reduced word in J \/ K, and prove uniqueness **)
   admit.
 Admitted.
