@@ -310139,6 +310139,78 @@ claim Hcycle :
       (subspace_topology T' (subspace_topology X Tx T') E)
       HarcE_T').
   }
+  (** Basic endpoint data for E. **)
+  claim HESubT' : E c= T'.
+  {
+    exact (andEL
+      (E c= T')
+      (arc E (subspace_topology T' (subspace_topology X Tx T') E))
+      (general_linear_graph_arc_data
+        T'
+        (subspace_topology X Tx T')
+        ArcsT'
+        E
+        HglgT'
+        HEArcsT')).
+  }
+  apply HexpqE.
+  let e1.
+  assume He1pack.
+  apply He1pack.
+  let e2.
+  assume HendE.
+  claim He1E : e1 :e E.
+  {
+    exact (end_points_of_arc_left_in_set
+      E
+      (subspace_topology T' (subspace_topology X Tx T') E)
+      e1
+      e2
+      HendE).
+  }
+  claim He2E : e2 :e E.
+  {
+    exact (end_points_of_arc_right_in_set
+      E
+      (subspace_topology T' (subspace_topology X Tx T') E)
+      e1
+      e2
+      HendE).
+  }
+  claim He1T' : e1 :e T'. { exact (HESubT' e1 He1E). }
+  claim He2T' : e2 :e T'. { exact (HESubT' e2 He2E). }
+  claim He1V :
+    e1 :e graph_vertices T' (subspace_topology X Tx T') ArcsT'.
+  {
+    exact (tree_in_graph_arc_endpoint_left_vertex_T
+      T'
+      ArcsT'
+      X
+      Tx
+      Arcs
+      E
+      e1
+      e2
+      Htree'
+      HEArcsT'
+      HendE).
+  }
+  claim He2V :
+    e2 :e graph_vertices T' (subspace_topology X Tx T') ArcsT'.
+  {
+    exact (tree_in_graph_arc_endpoint_right_vertex_T
+      T'
+      ArcsT'
+      X
+      Tx
+      Arcs
+      E
+      e1
+      e2
+      Htree'
+      HEArcsT'
+      HendE).
+  }
   (** Remaining work: build a closed reduced edge path in T' using E and A. **)
   admit.
 }
