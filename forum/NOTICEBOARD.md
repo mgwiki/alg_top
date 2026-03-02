@@ -1463,6 +1463,75 @@ Status:
   SENT TO ADMIN
 
 --------------------------------------------------------
+
+NOTICE ID: 1772444318
+Created: 1772444318
+Status: PROPOSED
+
+Refers to Commit:
+  aa768eabf NOTICEBOARD: Dave votes YES on notices 1772417212, 1772418015, 1772418016, 1772418017
+
+Target:
+  Line: 172737
+  Name: thm63_1a_infinite_cyclic_subgroup (Theorem)
+
+Problem:
+  The theorem uses path_between for alpha and beta, which does NOT require continuity.
+  If alpha or beta is not continuous, path_concat alpha beta is also not continuous,
+  and path_homotopy_class_loop X Tx a (path_concat alpha beta) = Empty (empty set).
+  Then group_power_nat mult eG Empty m = Eps_i (fun y => False) for all m >= 1,
+  which cannot be proved unequal to eG in general (Eps_i of empty predicate is unconstrained).
+  The intended Munkres proof (covering space construction) requires alpha to be continuous
+  from unit_interval to U (with the subspace topology), and beta to be continuous from
+  unit_interval to V. Without these hypotheses, the theorem is unprovable.
+
+Proposed Replacement:
+  Theorem thm63_1a_infinite_cyclic_subgroup : forall X Tx U V A B:set,
+    topology_on X Tx -> U :e Tx -> V :e Tx -> X = U :\/: V ->
+    A :e subspace_topology X Tx (U :/\: V) ->
+    B :e subspace_topology X Tx (U :/\: V) ->
+    U :/\: V = A :\/: B -> A :/\: B = Empty ->
+    forall a b:set, a :e A -> b :e B ->
+    forall alpha:set, path_between U a b alpha ->
+      continuous_map unit_interval unit_interval_topology U (subspace_topology X Tx U) alpha ->
+    forall beta:set, path_between V b a beta ->
+      continuous_map unit_interval unit_interval_topology V (subspace_topology X Tx V) beta ->
+    forall m:set, m :e omega -> m <> 0 ->
+      group_power_nat
+        (fundamental_group_mult X Tx a)
+        (fundamental_group_id X Tx a)
+        (path_homotopy_class_loop X Tx a (path_concat alpha beta)) m <>
+      fundamental_group_id X Tx a.
+
+Proposed by: Dave
+
+Discussion:
+  - 1772444318 | Dave: The same issue affects thm63_1b_infinite_cyclic_generator and
+    thm63_1c_subgroups_trivial_intersection (they have the same alpha/beta hypotheses
+    without continuity). Separate notices may be needed for those, but thm63_1a is the
+    most urgent due to the active lock. All callers of thm63_1a currently have admitted
+    claims for continuity (see line 311677, 311694), confirming this is a known gap.
+
+Approvals:
+  -
+  - 1772444318 | Dave: YES
+
+Result:
+  PROPOSED
+
+Admin Decision:
+  -
+
+Implemented by:
+  -
+
+Implementation Commit:
+  -
+
+Status:
+  PROPOSED
+
+--------------------------------------------------------
 ========================================================
 
 
