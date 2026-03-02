@@ -143165,6 +143165,7 @@ Admitted.
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
 (** Collected Bob 33 **)
 (** Proven Bob **)
+(** Admin-approved-refactored per noticeboard proposal batch1 **)
 Theorem ex58_2c_cylinder_pi1 : forall x0:set,
   x0 :e setprod S1 unit_interval ->
   exists phi:set,
@@ -143183,6 +143184,7 @@ Admitted.
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
 (** Collected Bob 33 **)
 (** Proven Bob **)
+(** Admin-approved-refactored per noticeboard proposal batch1 **)
 Theorem ex58_2d_infinite_cylinder_pi1 : forall x0:set,
   x0 :e setprod S1 R ->
   exists phi:set,
@@ -240535,6 +240537,7 @@ Qed.
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
 (** Collected Bob 33 **)
 (** Proven Bob **)
+(** Admin-approved-refactored per noticeboard proposal batch1 **)
 Theorem cor68_8_quotient_by_factor :
   forall G multG eG invG G1 G2:set,
   free_product_of_subgroups G multG eG invG (UPair 0 1)
