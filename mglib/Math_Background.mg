@@ -46876,6 +46876,16 @@ apply set_ext.
 Qed.
 
 (** Proven Bob **)
+Theorem covering_map_image_empty_iff_codomain_empty : forall E Te B Tb p:set,
+  covering_map E Te B Tb p ->
+  (image_of p E = Empty <-> B = Empty).
+let E Te B Tb p.
+assume Hcov.
+rewrite (covering_map_image_eq_codomain E Te B Tb p Hcov).
+exact (iff_refl (B = Empty)).
+Qed.
+
+(** Proven Bob **)
 Theorem covering_map_image_sub_codomain : forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
   image_of p E c= B.
