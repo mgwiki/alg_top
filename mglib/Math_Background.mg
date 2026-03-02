@@ -88886,7 +88886,7 @@ Qed.
 (** Infrastructure: for column-by-column lifts on a product ball I1 x I2, if the bottom-edge
     lift (start) maps I1 into one slice, and each column lift maps [0,1] into one slice
     (by being anchored at t=0 via start), then all columns map I2 into that same slice.
-    This is the key column-to-column transfer used in Lemma 54.2. **)
+    This is the key column-to-column transfer used in L54.2. **)
 Lemma column_lifts_same_sheet_on_product_ball :
   forall E Te B Tb p U slices V0 e0 g0 start_lift I1 I2 vs_choice s0 t0:set,
   covering_map E Te B Tb p ->
