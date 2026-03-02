@@ -273533,6 +273533,313 @@ exact (andI
   Hlocal).
 Qed.
 
+(** Infrastructure: unit square is locally path connected **)
+(** Proven Bob **)
+Theorem unit_square_locally_path_connected :
+  locally_path_connected unit_square unit_square_topology.
+claim HtopSq : topology_on unit_square unit_square_topology.
+{
+  exact (product_topology_is_topology
+    unit_interval
+    unit_interval_topology
+    unit_interval
+    unit_interval_topology
+    unit_interval_topology_on
+    unit_interval_topology_on).
+}
+claim Hlocal :
+  forall x:set, x :e unit_square -> forall U:set, U :e unit_square_topology -> x :e U ->
+    exists V:set, V :e unit_square_topology /\ x :e V /\ V c= U /\
+      path_connected_space V (subspace_topology unit_square unit_square_topology V).
+{
+  let x.
+  assume HxSq : x :e unit_square.
+  let U.
+  assume HU : U :e unit_square_topology.
+  assume HxU : x :e U.
+  apply (unit_square_open_neighborhood_contains_product_balls
+    U
+    x
+    HxSq
+    HU
+    HxU).
+  let r0.
+  assume Hr0Pack.
+  apply Hr0Pack.
+  let r1.
+  assume HradPack.
+  set V :=
+    setprod
+      (open_ball unit_interval R_bounded_metric (x 0) r0)
+      (open_ball unit_interval R_bounded_metric (x 1) r1).
+  claim HVpair :
+    ((((((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1) /\ r1 :e R) /\ Rlt 0 r1) /\ Rlt r1 1) /\
+      (V c= U)) /\ x :e V.
+  {
+    exact HradPack.
+  }
+  set HradProp :=
+    (((((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1) /\ r1 :e R) /\ Rlt 0 r1) /\ Rlt r1 1).
+  set HradLeft := HradProp /\ (V c= U).
+  claim HradSub :
+    (((((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1) /\ r1 :e R) /\ Rlt 0 r1) /\ Rlt r1 1) /\
+    (V c= U).
+  {
+    exact (andEL
+      HradLeft
+      (x :e V)
+      HVpair).
+  }
+  claim HxV : x :e V.
+  {
+    exact (andER
+      HradLeft
+      (x :e V)
+      HVpair).
+  }
+  claim HradCore : HradProp.
+  {
+    exact (andEL
+      HradProp
+      (V c= U)
+      HradSub).
+  }
+  claim HVsubU : V c= U.
+  {
+    exact (andER
+      HradProp
+      (V c= U)
+      HradSub).
+  }
+  claim HradCore1 :
+    ((((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1) /\ r1 :e R) /\ Rlt 0 r1).
+  {
+    exact (andEL
+      ((((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1) /\ r1 :e R) /\ Rlt 0 r1)
+      (Rlt r1 1)
+      HradCore).
+  }
+  claim Hr1lt1 : Rlt r1 1.
+  {
+    exact (andER
+      ((((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1) /\ r1 :e R) /\ Rlt 0 r1)
+      (Rlt r1 1)
+      HradCore).
+  }
+  claim HradCore2 :
+    (((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1) /\ r1 :e R).
+  {
+    exact (andEL
+      (((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1) /\ r1 :e R)
+      (Rlt 0 r1)
+      HradCore1).
+  }
+  claim Hr1pos : Rlt 0 r1.
+  {
+    exact (andER
+      (((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1) /\ r1 :e R)
+      (Rlt 0 r1)
+      HradCore1).
+  }
+  claim Hr0pair : (r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1.
+  {
+    exact (andEL
+      ((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1)
+      (r1 :e R)
+      HradCore2).
+  }
+  claim Hr1R : r1 :e R.
+  {
+    exact (andER
+      ((r0 :e R /\ Rlt 0 r0) /\ Rlt r0 1)
+      (r1 :e R)
+      HradCore2).
+  }
+  claim Hr0left : r0 :e R /\ Rlt 0 r0.
+  {
+    exact (andEL
+      (r0 :e R /\ Rlt 0 r0)
+      (Rlt r0 1)
+      Hr0pair).
+  }
+  claim Hr0R : r0 :e R.
+  {
+    exact (andEL
+      (r0 :e R)
+      (Rlt 0 r0)
+      Hr0left).
+  }
+  claim Hr0pos : Rlt 0 r0.
+  {
+    exact (andER
+      (r0 :e R)
+      (Rlt 0 r0)
+      Hr0left).
+  }
+  claim Hr0lt1 : Rlt r0 1.
+  {
+    exact (andER
+      (r0 :e R /\ Rlt 0 r0)
+      (Rlt r0 1)
+      Hr0pair).
+  }
+  claim Hx0I : x 0 :e unit_interval.
+  {
+    exact (ap0_Sigma
+      unit_interval
+      (fun _ : set => unit_interval)
+      x
+      HxSq).
+  }
+  claim Hx1I : x 1 :e unit_interval.
+  {
+    exact (ap1_Sigma
+      unit_interval
+      (fun _ : set => unit_interval)
+      x
+      HxSq).
+  }
+  claim HB0open : open_ball unit_interval R_bounded_metric (x 0) r0 :e unit_interval_topology.
+  {
+    claim Hmetric : metric_on unit_interval R_bounded_metric.
+    { exact R_bounded_metric_is_metric_on_unit_interval. }
+    claim HB0metric : open_ball unit_interval R_bounded_metric (x 0) r0 :e metric_topology unit_interval R_bounded_metric.
+    {
+      exact (open_ball_in_metric_topology
+        unit_interval
+        R_bounded_metric
+        (x 0)
+        r0
+        Hmetric
+        Hx0I
+        Hr0pos).
+    }
+    rewrite <- metric_topology_unit_interval_eq_I_topology.
+    exact HB0metric.
+  }
+  claim HB1open : open_ball unit_interval R_bounded_metric (x 1) r1 :e unit_interval_topology.
+  {
+    claim Hmetric : metric_on unit_interval R_bounded_metric.
+    { exact R_bounded_metric_is_metric_on_unit_interval. }
+    claim HB1metric : open_ball unit_interval R_bounded_metric (x 1) r1 :e metric_topology unit_interval R_bounded_metric.
+    {
+      exact (open_ball_in_metric_topology
+        unit_interval
+        R_bounded_metric
+        (x 1)
+        r1
+        Hmetric
+        Hx1I
+        Hr1pos).
+    }
+    rewrite <- metric_topology_unit_interval_eq_I_topology.
+    exact HB1metric.
+  }
+  claim HVopen : V :e unit_square_topology.
+  {
+    exact (rectangle_set_open_in_product_topology
+      unit_interval
+      unit_interval_topology
+      unit_interval
+      unit_interval_topology
+      (open_ball unit_interval R_bounded_metric (x 0) r0)
+      (open_ball unit_interval R_bounded_metric (x 1) r1)
+      unit_interval_topology_on
+      unit_interval_topology_on
+      HB0open
+      HB1open).
+  }
+  claim HpcB0 :
+    path_connected_space
+      (open_ball unit_interval R_bounded_metric (x 0) r0)
+      (subspace_topology
+        unit_interval
+        unit_interval_topology
+        (open_ball unit_interval R_bounded_metric (x 0) r0)).
+  {
+    exact (open_ball_unit_interval_path_connected_lt1_algtop
+      (x 0)
+      r0
+      Hx0I
+      Hr0R
+      Hr0pos
+      Hr0lt1).
+  }
+  claim HpcB1 :
+    path_connected_space
+      (open_ball unit_interval R_bounded_metric (x 1) r1)
+      (subspace_topology
+        unit_interval
+        unit_interval_topology
+        (open_ball unit_interval R_bounded_metric (x 1) r1)).
+  {
+    exact (open_ball_unit_interval_path_connected_lt1_algtop
+      (x 1)
+      r1
+      Hx1I
+      Hr1R
+      Hr1pos
+      Hr1lt1).
+  }
+  claim HpcProd :
+    path_connected_space
+      (setprod
+        (open_ball unit_interval R_bounded_metric (x 0) r0)
+        (open_ball unit_interval R_bounded_metric (x 1) r1))
+      (product_topology
+        (open_ball unit_interval R_bounded_metric (x 0) r0)
+        (subspace_topology unit_interval unit_interval_topology
+          (open_ball unit_interval R_bounded_metric (x 0) r0))
+        (open_ball unit_interval R_bounded_metric (x 1) r1)
+        (subspace_topology unit_interval unit_interval_topology
+          (open_ball unit_interval R_bounded_metric (x 1) r1))).
+  {
+    exact (finite_product_path_connected
+      (open_ball unit_interval R_bounded_metric (x 0) r0)
+      (subspace_topology unit_interval unit_interval_topology
+        (open_ball unit_interval R_bounded_metric (x 0) r0))
+      (open_ball unit_interval R_bounded_metric (x 1) r1)
+      (subspace_topology unit_interval unit_interval_topology
+        (open_ball unit_interval R_bounded_metric (x 1) r1))
+      HpcB0
+      HpcB1).
+  }
+  claim HpcV :
+    path_connected_space V (subspace_topology unit_square unit_square_topology V).
+  {
+    rewrite <- (product_subspace_topology
+      unit_interval
+      unit_interval_topology
+      unit_interval
+      unit_interval_topology
+      (open_ball unit_interval R_bounded_metric (x 0) r0)
+      (open_ball unit_interval R_bounded_metric (x 1) r1)
+      unit_interval_topology_on
+      unit_interval_topology_on
+      (open_ball_subset_X unit_interval R_bounded_metric (x 0) r0)
+      (open_ball_subset_X unit_interval R_bounded_metric (x 1) r1)).
+    exact HpcProd.
+  }
+  witness V.
+  exact (and4I
+    (V :e unit_square_topology)
+    (x :e V)
+    (V c= U)
+    (path_connected_space V (subspace_topology unit_square unit_square_topology V))
+    HVopen
+    HxV
+    HVsubU
+    HpcV).
+}
+exact (andI
+  (topology_on unit_square unit_square_topology)
+  (forall x:set, x :e unit_square -> forall U:set, U :e unit_square_topology -> x :e U ->
+    exists V:set, V :e unit_square_topology /\ x :e V /\ V c= U /\
+      path_connected_space V (subspace_topology unit_square unit_square_topology V))
+  HtopSq
+  Hlocal).
+Qed.
+
 (** Infrastructure: arcs are locally path connected (homeomorphic to [0,1]) **)
 (** Proven Alice **)
 Theorem arc_locally_path_connected : forall A Ta:set,
