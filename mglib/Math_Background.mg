@@ -46765,6 +46765,42 @@ apply iffI.
 Qed.
 
 (** Proven Bob **)
+Theorem covering_map_preimage_empty_implies_subset_empty : forall E Te B Tb p V:set,
+  covering_map E Te B Tb p ->
+  V c= B ->
+  preimage_of E p V = Empty ->
+  V = Empty.
+let E Te B Tb p V.
+assume Hcov HVsub HpreEmpty.
+claim Himp : preimage_of E p V = Empty -> V = Empty.
+{
+  exact (andEL
+    (preimage_of E p V = Empty -> V = Empty)
+    (V = Empty -> preimage_of E p V = Empty)
+    (covering_map_preimage_empty_iff_subset_empty E Te B Tb p V Hcov HVsub)).
+}
+exact (Himp HpreEmpty).
+Qed.
+
+(** Proven Bob **)
+Theorem covering_map_subset_empty_implies_preimage_empty : forall E Te B Tb p V:set,
+  covering_map E Te B Tb p ->
+  V c= B ->
+  V = Empty ->
+  preimage_of E p V = Empty.
+let E Te B Tb p V.
+assume Hcov HVsub HVempty.
+claim Himp : V = Empty -> preimage_of E p V = Empty.
+{
+  exact (andER
+    (preimage_of E p V = Empty -> V = Empty)
+    (V = Empty -> preimage_of E p V = Empty)
+    (covering_map_preimage_empty_iff_subset_empty E Te B Tb p V Hcov HVsub)).
+}
+exact (Himp HVempty).
+Qed.
+
+(** Proven Bob **)
 Theorem covering_map_image_nonempty_iff_codomain_nonempty : forall E Te B Tb p:set,
   covering_map E Te B Tb p ->
   (image_of p E <> Empty <-> B <> Empty).
