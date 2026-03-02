@@ -212209,6 +212209,303 @@ apply (and5I
                   Hy_pack). }
               exact (HliftK (apply_fun xs i) mi yi HmiO Hy_fun Hy_prop Hy_eq).
         }
+        (** Append a single element to a word **)
+        claim Happend_one :
+          forall m ys a:set,
+            m :e omega ->
+            function_on ys m G ->
+            (forall j:set, j :e m ->
+              exists alpha:set, alpha :e J :\/: K /\ apply_fun ys j :e apply_fun Hfam alpha) ->
+            a :e G ->
+            (exists alpha:set, alpha :e J :\/: K /\ a :e apply_fun Hfam alpha) ->
+            exists m' ys':set,
+              m' :e omega /\
+              function_on ys' m' G /\
+              (forall j:set, j :e m' ->
+                exists alpha:set, alpha :e J :\/: K /\ apply_fun ys' j :e apply_fun Hfam alpha) /\
+              nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys' i)) m' =
+                apply_fun multG (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys i)) m, a).
+        {
+          let m ys a.
+          assume HmO Hysfun Hysfam HaG Hahfam.
+          set ys' := graph (ordsucc m) (fun i:set => If_i (i :e m) (apply_fun ys i) a).
+          witness (ordsucc m). witness ys'.
+          apply and4I.
+          - exact (omega_ordsucc m HmO).
+          - let j. assume Hj.
+            claim Hys'j :
+              apply_fun ys' j = If_i (j :e m) (apply_fun ys j) a.
+            { exact (apply_fun_graph (ordsucc m)
+                (fun i:set => If_i (i :e m) (apply_fun ys i) a) j Hj). }
+            apply (ordsuccE m j Hj).
+            + assume Hj_m.
+              rewrite Hys'j.
+              rewrite (If_i_1 (j :e m) (apply_fun ys j) a Hj_m).
+              exact (Hysfun j Hj_m).
+            + assume Hj_eq.
+              claim Hj_notin : j /:e m.
+              { rewrite Hj_eq. exact (In_irref m). }
+              rewrite Hys'j.
+              rewrite (If_i_0 (j :e m) (apply_fun ys j) a Hj_notin).
+              exact HaG.
+          - let j. assume Hj.
+            claim Hys'j :
+              apply_fun ys' j = If_i (j :e m) (apply_fun ys j) a.
+            { exact (apply_fun_graph (ordsucc m)
+                (fun i:set => If_i (i :e m) (apply_fun ys i) a) j Hj). }
+            apply (ordsuccE m j Hj).
+            + assume Hj_m.
+              rewrite Hys'j.
+              rewrite (If_i_1 (j :e m) (apply_fun ys j) a Hj_m).
+              exact (Hysfam j Hj_m).
+            + assume Hj_eq.
+              rewrite Hys'j.
+              claim Hj_notin : j /:e m.
+              { rewrite Hj_eq. exact (In_irref m). }
+              rewrite (If_i_0 (j :e m) (apply_fun ys j) a Hj_notin).
+              exact Hahfam.
+          - claim Hm_nat : nat_p m. { exact (omega_nat_p m HmO). }
+            claim Hys'prefix :
+              nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys' i)) m =
+              nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys i)) m.
+            {
+              apply (nat_primrec_ext eG
+                (fun i r => apply_fun multG (r, apply_fun ys' i))
+                (fun i r => apply_fun multG (r, apply_fun ys i))
+                m
+                HmO).
+              let i r. assume Hi.
+              claim Hys'i :
+                apply_fun ys' i = If_i (i :e m) (apply_fun ys i) a.
+              { exact (apply_fun_graph (ordsucc m)
+                  (fun j:set => If_i (j :e m) (apply_fun ys j) a) i
+                  (ordsuccI1 m i Hi)). }
+              rewrite Hys'i.
+              rewrite (If_i_1 (i :e m) (apply_fun ys i) a Hi).
+              reflexivity.
+            }
+            claim Hys'm :
+              apply_fun ys' m = a.
+            {
+              claim Hys'm0 :
+                apply_fun ys' m = If_i (m :e m) (apply_fun ys m) a.
+              { exact (apply_fun_graph (ordsucc m)
+                  (fun j:set => If_i (j :e m) (apply_fun ys j) a) m
+                  (ordsuccI2 m)). }
+              rewrite Hys'm0.
+              rewrite (If_i_0 (m :e m) (apply_fun ys m) a (In_irref m)).
+              reflexivity.
+            }
+            rewrite (nat_primrec_S
+              eG
+              (fun i r => apply_fun multG (r, apply_fun ys' i))
+              m
+              Hm_nat).
+            rewrite Hys'prefix.
+            rewrite Hys'm.
+            reflexivity.
+        }
+        (** Append a word ys1 after ys0 **)
+        claim Happend_word :
+          forall m0 ys0:set,
+            m0 :e omega ->
+            function_on ys0 m0 G ->
+            (forall j:set, j :e m0 ->
+              exists alpha:set, alpha :e J :\/: K /\ apply_fun ys0 j :e apply_fun Hfam alpha) ->
+            forall m1 ys1:set,
+              m1 :e omega ->
+              function_on ys1 m1 G ->
+              (forall j:set, j :e m1 ->
+                exists alpha:set, alpha :e J :\/: K /\ apply_fun ys1 j :e apply_fun Hfam alpha) ->
+              exists m ys:set,
+                m :e omega /\
+                function_on ys m G /\
+                (forall j:set, j :e m ->
+                  exists alpha:set, alpha :e J :\/: K /\ apply_fun ys j :e apply_fun Hfam alpha) /\
+                nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys i)) m =
+                  apply_fun multG
+                    (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys0 i)) m0,
+                     nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys1 i)) m1).
+        {
+          let m0 ys0.
+          assume Hm0O Hys0fun Hys0fam.
+          claim HgrpE :
+            function_on multG (setprod G G) G /\
+            function_on invG G G /\
+            eG :e G /\
+            (forall x y z:set, x :e G -> y :e G -> z :e G ->
+              apply_fun multG (apply_fun multG (x, y), z) =
+                apply_fun multG (x, apply_fun multG (y, z))) /\
+            (forall x:set, x :e G -> apply_fun multG (eG, x) = x /\ apply_fun multG (x, eG) = x) /\
+            (forall x:set, x :e G ->
+              apply_fun multG (x, apply_fun invG x) = eG /\
+              apply_fun multG (apply_fun invG x, x) = eG).
+          { exact Hgrp. }
+          apply (and6E
+            (function_on multG (setprod G G) G)
+            (function_on invG G G)
+            (eG :e G)
+            (forall x y z:set, x :e G -> y :e G -> z :e G ->
+              apply_fun multG (apply_fun multG (x, y), z) =
+                apply_fun multG (x, apply_fun multG (y, z)))
+            (forall x:set, x :e G -> apply_fun multG (eG, x) = x /\ apply_fun multG (x, eG) = x)
+            (forall x:set, x :e G ->
+              apply_fun multG (x, apply_fun invG x) = eG /\
+              apply_fun multG (apply_fun invG x, x) = eG)
+            HgrpE).
+          assume _ _ HeG HassocG HidG _.
+          let m1 ys1.
+          assume Hm1O Hys1fun Hys1fam.
+          claim Hm1_nat : nat_p m1. { exact (omega_nat_p m1 Hm1O). }
+          claim Happend_word_nat :
+            forall k:set, nat_p k ->
+              forall ys1:set,
+                function_on ys1 k G ->
+                (forall j:set, j :e k ->
+                  exists alpha:set, alpha :e J :\/: K /\ apply_fun ys1 j :e apply_fun Hfam alpha) ->
+                exists m ys:set,
+                  m :e omega /\
+                  function_on ys m G /\
+                  (forall j:set, j :e m ->
+                    exists alpha:set, alpha :e J :\/: K /\ apply_fun ys j :e apply_fun Hfam alpha) /\
+                  nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys i)) m =
+                    apply_fun multG
+                      (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys0 i)) m0,
+                       nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys1 i)) k).
+          {
+            apply nat_ind.
+            - let ys1'. assume Hys1fun0 Hys1fam0.
+              witness m0. witness ys0.
+              apply and4I.
+              + exact Hm0O.
+              + exact Hys0fun.
+              + exact Hys0fam.
+              + rewrite (nat_primrec_0 eG (fun i r => apply_fun multG (r, apply_fun ys1' i))).
+                claim Hprod0_G :
+                  word_product multG eG ys0 m0 :e G.
+                {
+                  apply (word_product_in_G_group G multG eG invG m0 ys0 Hgrp (omega_nat_p m0 Hm0O)).
+                  let i. assume Hi. exact (Hys0fun i Hi).
+                }
+                symmetry.
+                exact (andER
+                  (apply_fun multG (eG,
+                    word_product multG eG ys0 m0) =
+                    word_product multG eG ys0 m0)
+                  (apply_fun multG
+                    (word_product multG eG ys0 m0, eG) =
+                    word_product multG eG ys0 m0)
+                  (HidG
+                    (word_product multG eG ys0 m0)
+                    Hprod0_G)).
+            - let k. assume Hk_nat IH.
+              let ys1'. assume Hys1funS Hys1famS.
+              claim Hys1fun_k : function_on ys1' k G.
+              { let j. assume Hj. exact (Hys1funS j (ordsuccI1 k j Hj)). }
+              claim Hys1fam_k :
+                forall j:set, j :e k ->
+                  exists alpha:set, alpha :e J :\/: K /\ apply_fun ys1' j :e apply_fun Hfam alpha.
+              { let j. assume Hj. exact (Hys1famS j (ordsuccI1 k j Hj)). }
+              claim Hpref :
+                exists m ys:set,
+                  m :e omega /\
+                  function_on ys m G /\
+                  (forall j:set, j :e m ->
+                    exists alpha:set, alpha :e J :\/: K /\ apply_fun ys j :e apply_fun Hfam alpha) /\
+                  nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys i)) m =
+                    apply_fun multG
+                      (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys0 i)) m0,
+                       nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys1' i)) k).
+              { exact (IH ys1' Hys1fun_k Hys1fam_k). }
+              apply Hpref.
+              let m. assume Hpack1.
+              apply Hpack1.
+              let ys. assume Hpack.
+              apply (and4E
+                (m :e omega)
+                (function_on ys m G)
+                (forall j:set, j :e m ->
+                  exists alpha:set, alpha :e J :\/: K /\ apply_fun ys j :e apply_fun Hfam alpha)
+                (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys i)) m =
+                  apply_fun multG
+                    (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys0 i)) m0,
+                     nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys1' i)) k))
+                Hpack).
+              assume HmO Hysfun Hysfam Hprod_eq.
+              claim Hk_in : k :e ordsucc k. { exact (ordsuccI2 k). }
+              claim HaG : apply_fun ys1' k :e G. { exact (Hys1funS k Hk_in). }
+              claim Hahfam :
+                exists alpha:set, alpha :e J :\/: K /\ apply_fun ys1' k :e apply_fun Hfam alpha.
+              { exact (Hys1famS k Hk_in). }
+              apply (Happend_one m ys (apply_fun ys1' k) HmO Hysfun Hysfam HaG Hahfam).
+              let m'. assume Happ1.
+              apply Happ1.
+              let ys'. assume Happ.
+              apply (and4E
+                (m' :e omega)
+                (function_on ys' m' G)
+                (forall j:set, j :e m' ->
+                  exists alpha:set, alpha :e J :\/: K /\ apply_fun ys' j :e apply_fun Hfam alpha)
+                (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys' i)) m' =
+                  apply_fun multG
+                    (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys i)) m,
+                     apply_fun ys1' k))
+                Happ).
+              assume Hm'O Hys'fun Hys'fam Hprod'.
+              witness m'. witness ys'.
+              apply and4I.
+              + exact Hm'O.
+              + exact Hys'fun.
+              + exact Hys'fam.
+              + (** Use associativity and word_product_succ for ys1' **)
+                rewrite Hprod'.
+                rewrite Hprod_eq.
+                claim Hprod0_G :
+                  word_product multG eG ys0 m0 :e G.
+                {
+                  apply (word_product_in_G_group G multG eG invG m0 ys0 Hgrp (omega_nat_p m0 Hm0O)).
+                  let i. assume Hi. exact (Hys0fun i Hi).
+                }
+                claim Hprod1_G :
+                  word_product multG eG ys1' k :e G.
+                {
+                  apply (word_product_in_G_group G multG eG invG k ys1' Hgrp Hk_nat).
+                  let i. assume Hi. exact (Hys1fun_k i Hi).
+                }
+                claim Hassoc_step :
+                  apply_fun multG
+                    (apply_fun multG
+                      (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys0 i)) m0,
+                       nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys1' i)) k),
+                     apply_fun ys1' k) =
+                  apply_fun multG
+                    (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys0 i)) m0,
+                     apply_fun multG
+                       (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys1' i)) k,
+                        apply_fun ys1' k)).
+                {
+                  exact (HassocG
+                    (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys0 i)) m0)
+                    (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys1' i)) k)
+                    (apply_fun ys1' k)
+                    Hprod0_G
+                    Hprod1_G
+                    HaG).
+                }
+                rewrite Hassoc_step.
+                claim Hwp_succ :
+                  nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys1' i)) (ordsucc k) =
+                    apply_fun multG
+                      (nat_primrec eG (fun i r => apply_fun multG (r, apply_fun ys1' i)) k,
+                       apply_fun ys1' k).
+                {
+                  exact (word_product_succ multG eG ys1' k Hk_nat).
+                }
+                rewrite <- Hwp_succ.
+                reflexivity.
+          }
+          exact (Happend_word_nat m1 Hm1_nat ys1 Hys1fun Hys1fam).
+        }
         (** TODO: concatenate words from Hexp_each along n **)
         admit.
       }
