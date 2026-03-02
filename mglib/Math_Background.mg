@@ -46905,6 +46905,69 @@ apply iffI.
 Qed.
 
 (** Proven Bob **)
+Theorem covering_map_preimage_singleton_empty_iff_no_preimage_point :
+  forall E Te B Tb p b:set,
+  covering_map E Te B Tb p ->
+  (preimage_of E p (Sing b) = Empty <->
+    ~ (exists e:set, e :e E /\ apply_fun p e = b)).
+let E Te B Tb p b.
+assume Hcov.
+apply iffI.
+- assume HpreEmpty.
+  assume Hex.
+  apply Hex.
+  let e.
+  assume Hepack.
+  claim HeE : e :e E.
+  { exact (andEL (e :e E) (apply_fun p e = b) Hepack). }
+  claim Hpeq : apply_fun p e = b.
+  { exact (andER (e :e E) (apply_fun p e = b) Hepack). }
+  claim HpeSing : apply_fun p e :e Sing b.
+  { rewrite Hpeq. exact (SingI b). }
+  claim HePre : e :e preimage_of E p (Sing b).
+  {
+    exact (SepI
+      E
+      (fun z:set => apply_fun p z :e Sing b)
+      e
+      HeE
+      HpeSing).
+  }
+  claim HeEmpty : e :e Empty.
+  {
+    rewrite <- HpreEmpty.
+    exact HePre.
+  }
+  exact (EmptyE e HeEmpty).
+- assume HnoPre.
+  apply set_ext.
+  * let e.
+    assume HePre.
+    claim Hepack : e :e E /\ apply_fun p e :e Sing b.
+    {
+      exact (SepE
+        E
+        (fun z:set => apply_fun p z :e Sing b)
+        e
+        HePre).
+    }
+    claim HeE : e :e E.
+    { exact (andEL (e :e E) (apply_fun p e :e Sing b) Hepack). }
+    claim Hpeb : apply_fun p e :e Sing b.
+    { exact (andER (e :e E) (apply_fun p e :e Sing b) Hepack). }
+    claim Hpeq : apply_fun p e = b.
+    { exact (SingE b (apply_fun p e) Hpeb). }
+    claim Hfalse : False.
+    {
+      apply HnoPre.
+      witness e.
+      exact (andI (e :e E) (apply_fun p e = b) HeE Hpeq).
+    }
+    exact (FalseE Hfalse (e :e Empty)).
+  * exact (Subq_Empty (preimage_of E p (Sing b))).
+Qed.
+
+(** Proven Bob **)
 Theorem covering_map_preimage_nonempty_iff_subset_nonempty : forall E Te B Tb p V:set,
   covering_map E Te B Tb p ->
   V c= B ->
