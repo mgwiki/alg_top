@@ -213947,6 +213947,49 @@ apply (and5I
         (Hsubfam2 alpha HalK)
         Hsub2).
   }
+  (** Helper: any letter in a reduced word over J \/ K lies in G1 or G2 **)
+  claim Hside_union :
+    forall n ys:set,
+      reduced_word (J :\/: K) Hfam efamH n ys ->
+      forall i:set, i :e n ->
+        (apply_fun ys i :e G1) \/ (apply_fun ys i :e G2).
+  {
+    let n ys. assume Hred. let i. assume Hi.
+    apply (and3E
+      (n :e omega)
+      (forall j:set, j :e n ->
+        exists alpha:set, alpha :e J :\/: K /\
+          apply_fun ys j :e apply_fun Hfam alpha /\
+          apply_fun ys j <> apply_fun efamH alpha)
+      (forall j:set, j :e n -> ordsucc j :e n ->
+        forall alpha beta:set, alpha :e J :\/: K -> beta :e J :\/: K ->
+          apply_fun ys j :e apply_fun Hfam alpha ->
+          apply_fun ys (ordsucc j) :e apply_fun Hfam beta ->
+          alpha <> beta)
+      Hred).
+    assume _ Hysfam _.
+    apply (Hysfam i Hi).
+    let alpha. assume Halpha_pack.
+    apply (and3E
+      (alpha :e J :\/: K)
+      (apply_fun ys i :e apply_fun Hfam alpha)
+      (apply_fun ys i <> apply_fun efamH alpha)
+      Halpha_pack).
+    assume Hal Hyi _.
+    apply (binunionE J K alpha Hal).
+    - assume HalJ.
+      apply orIL.
+      claim HsubA : apply_fun Hfam alpha c= G1.
+      { exact (subgroup_of_subset
+          (apply_fun Hfam alpha) G1 multG eG invG (Hsubfam1 alpha HalJ)). }
+      exact (HsubA (apply_fun ys i) Hyi).
+    - assume HalK.
+      apply orIR.
+      claim HsubA : apply_fun Hfam alpha c= G2.
+      { exact (subgroup_of_subset
+          (apply_fun Hfam alpha) G2 multG eG invG (Hsubfam2 alpha HalK)). }
+      exact (HsubA (apply_fun ys i) Hyi).
+  }
   (** Helper: expansions in G1/G2 with nontrivial entries **)
   claim Hexp_red_each_G1_non_e :
     forall i:set, i :e n12 -> apply_fun xs12 i :e G1 ->
