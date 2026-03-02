@@ -11918,6 +11918,63 @@ exact (composition_continuous
 Qed.
 
 (** Proven Bob **)
+Theorem reverse_path_between : forall X Tx x0 x1 f:set,
+  continuous_map unit_interval unit_interval_topology X Tx f ->
+  apply_fun f 0 = x0 ->
+  apply_fun f 1 = x1 ->
+  path_between X x1 x0 (reverse_path f).
+let X Tx x0 x1 f.
+assume HfCont Hf0 Hf1.
+claim HfFun : function_on f unit_interval X.
+{
+  exact (continuous_map_function_on
+    unit_interval
+    unit_interval_topology
+    X
+    Tx
+    f
+    HfCont).
+}
+claim HrevFS : reverse_path f :e function_space unit_interval X.
+{
+  exact (compose_fun_in_function_space
+    unit_interval
+    unit_interval
+    X
+    flip_unit_interval
+    f
+    flip_unit_interval_function_on
+    HfFun).
+}
+claim HrevFun : function_on (reverse_path f) unit_interval X.
+{
+  exact (function_on_of_function_space
+    (reverse_path f)
+    unit_interval
+    X
+    HrevFS).
+}
+claim Hrev0 : apply_fun (reverse_path f) 0 = x1.
+{
+  rewrite (reverse_path_at_zero f).
+  exact Hf1.
+}
+claim Hrev1 : apply_fun (reverse_path f) 1 = x0.
+{
+  rewrite (reverse_path_at_one f).
+  exact Hf0.
+}
+exact (path_betweenI
+  X
+  x1
+  x0
+  (reverse_path f)
+  HrevFun
+  Hrev0
+  Hrev1).
+Qed.
+
+(** Proven Bob **)
 Theorem compose_fun_apply_identity_graph : forall A X f a:set,
   function_on f A X ->
   a :e A ->
@@ -297516,7 +297573,6 @@ Qed.
 (** where T0 is a tree and A intersects T0 in a single vertex. **)
 (** EFFORT: 8 lines textbook, difficulty 4/10, USD 80 **)
 (** Bounty 97 **)
-(** Lock Alice 1772416030 **)
 Theorem lemma84_2_tree_decomposition :
   forall T ArcsT X Tx Arcs:set,
   tree_in_graph T ArcsT X Tx Arcs ->
