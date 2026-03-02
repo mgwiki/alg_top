@@ -46527,6 +46527,70 @@ exact (andER
 Qed.
 
 (** Proven Bob **)
+Theorem covering_map_preimage_nonempty_of_nonempty_subset : forall E Te B Tb p V:set,
+  covering_map E Te B Tb p ->
+  V c= B ->
+  V <> Empty ->
+  preimage_of E p V <> Empty.
+let E Te B Tb p V.
+assume Hcov HVsub HVne.
+apply (nonempty_has_element V HVne).
+let y.
+assume HyV.
+claim HyB : y :e B.
+{
+  exact (HVsub y HyV).
+}
+claim Hex : exists e:set, e :e E /\ apply_fun p e = y.
+{
+  exact (covering_map_surjective_value
+    E
+    Te
+    B
+    Tb
+    p
+    y
+    Hcov
+    HyB).
+}
+apply Hex.
+let e.
+assume Hepack.
+claim HeE : e :e E.
+{
+  exact (andEL
+    (e :e E)
+    (apply_fun p e = y)
+    Hepack).
+}
+claim HeEq : apply_fun p e = y.
+{
+  exact (andER
+    (e :e E)
+    (apply_fun p e = y)
+    Hepack).
+}
+claim HePre : e :e preimage_of E p V.
+{
+  claim HimgV : apply_fun p e :e V.
+  {
+    rewrite HeEq.
+    exact HyV.
+  }
+  exact (SepI
+    E
+    (fun z:set => apply_fun p z :e V)
+    e
+    HeE
+    HimgV).
+}
+exact (elem_implies_nonempty
+  (preimage_of E p V)
+  e
+  HePre).
+Qed.
+
+(** Proven Bob **)
 Theorem covering_map_evenly_covered : forall E Te B Tb p b:set,
   covering_map E Te B Tb p -> b :e B ->
   exists U:set, U :e Tb /\ b :e U /\ evenly_covered E Te B Tb p U.
