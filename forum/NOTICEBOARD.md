@@ -120,27 +120,32 @@ Discussion:
     two edges; the third edge A meets T in two vertices, not a singleton.
     The replacement uses connectedness and a vertex outside T to select
     a suitable arc A; this matches the intended forward direction strategy.
+  - 1772447355 | Dave: Confirmed: for a maximal tree T in a connected
+    general_linear_graph, every arc A ∉ T has BOTH endpoints in T (they
+    form a spanning tree), so T ∩ A = {p,q} (two points, never a singleton).
+    Bob's existential replacement is the correct statement needed for the
+    forward direction of thm84_4_maximal_tree_all_vertices: if T does not
+    span all vertices, connectedness guarantees an arc with singleton intersection.
+    Voting YES.
 
 Approvals:
-  - 1772447026 | Alice: 
+  - 1772447026 | Alice:
   - 1772447026 | Bob: YES
-  - 1772447026 | Charlie: 
-  - 1772447026 | Dave: 
+  - 1772447026 | Charlie:
+  - 1772447355 | Dave: YES
 
 Result:
-  PROPOSED
   SENT TO ADMIN
-  REJECTED
 
 Admin Decision:
-  - 
+  -
 
 Implemented by:
 
 Implementation Commit:
 
 Status:
-  PROPOSED
+  SENT TO ADMIN
 
 NOTICE ID: 1772361663
 Created: 1772361663
