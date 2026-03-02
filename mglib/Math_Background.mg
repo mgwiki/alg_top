@@ -310006,6 +310006,41 @@ claim HrWitness :
     + exact (andEL (E :e ArcsT') (r :e E) HEpack).
   - exact (andER (E :e ArcsT') (r :e E) HEpack).
 }
+claim HrWitness' :
+  exists r E:set, r :e A /\ r /:e T /\ r :e T' /\ E :e ArcsT' /\ r :e E /\ r <> p /\ r <> q.
+{
+  apply HrWitness.
+  let r.
+  assume Hrpack.
+  apply Hrpack.
+  let E.
+  assume HEpack.
+  apply (and5E
+    (r :e A)
+    (r /:e T)
+    (r :e T')
+    (E :e ArcsT')
+    (r :e E)
+    HEpack).
+  assume HrA HrNotT HrT' HEArcsT' HrE.
+  witness r.
+  witness E.
+  exact (and7I
+    (r :e A)
+    (r /:e T)
+    (r :e T')
+    (E :e ArcsT')
+    (r :e E)
+    (r <> p)
+    (r <> q)
+    HrA
+    HrNotT
+    HrT'
+    HEArcsT'
+    HrE
+    (HrNotp r HrNotT)
+    (HrNotq r HrNotT)).
+}
 claim HpArcEx : exists B:set, B :e {B :e Arcs | B c= T} /\ p :e B.
 {
   exact (subgraph_of_point_in_Y_in_selected_arc
