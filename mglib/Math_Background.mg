@@ -1,6 +1,6 @@
 (** Balance Alice 4188 **)
 (** Balance Bob 5480 **)
-(** Balance Charlie 2301 **)
+(** Balance Charlie 2268 **)
 (** Balance Dave 2064 **)
 
 (** Sum of Balances and Bounties 48150 **)
@@ -308204,6 +308204,8 @@ exact Hlpc.
 Qed.
 
 (** helper for S84.3: no closed reduced edge path in a tree should force trivial pi1 at some basepoint. **)
+(** Sub-bounty for Thm84.3 core bridge **)
+(** Bounty 33 **)
 Theorem thm84_3_trivial_pi1_witness_from_no_closed_reduced_edge_paths :
   forall T ArcsT X Tx Arcs:set,
   tree_in_graph T ArcsT X Tx Arcs ->
