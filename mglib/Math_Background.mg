@@ -309806,6 +309806,41 @@ claim HqV : q :e graph_vertices X Tx Arcs.
 }
 claim HpT : p :e T. { exact (HvertSub p HpV). }
 claim HqT : q :e T. { exact (HvertSub q HqV). }
+(** Distinct endpoint witnesses inside T :/\: A. **)
+claim HpTcap : p :e T :/\: A.
+{ exact (binintersectI T A p HpT HpA). }
+claim HqTcap : q :e T :/\: A.
+{ exact (binintersectI T A q HqT HqA). }
+claim HcapTwo :
+  exists u v:set, u :e T :/\: A /\ v :e T :/\: A /\ u <> v.
+{
+  witness p. witness q. apply andI.
+  - apply andI.
+    + exact HpTcap.
+    + exact HqTcap.
+  - exact Hpneqq.
+}
+claim HcapNotSingleton : ~(exists v:set, T :/\: A = Sing v).
+{
+  assume Hsing.
+  apply Hsing.
+  let v. assume HvEq.
+  claim HpEqv : p = v.
+  {
+    exact (SingE v p
+      (eq_subst_mem_set p (T :/\: A) (Sing v) HpTcap HvEq)).
+  }
+  claim HqEqv : q = v.
+  {
+    exact (SingE v q
+      (eq_subst_mem_set q (T :/\: A) (Sing v) HqTcap HvEq)).
+  }
+  claim Hpeq : p = q.
+  {
+    exact (eq_i_tra p v q HpEqv (eq_symm q v HqEqv)).
+  }
+  exact (Hpneqq Hpeq).
+}
 (** Noncontainment witness in A \ T. **)
 claim HnotSubEx : exists r:set, r :e A /\ r /:e T.
 {
