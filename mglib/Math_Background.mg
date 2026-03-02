@@ -93022,7 +93022,7 @@ exact (andI
     HFt_54_cont
   HFt_54_00)
   HFt_54_comm).
-Admitted. (** upstream bug: HNcontFt used inside its own proof block **)
+Admitted. (** TODO: needs parametric path-lift continuity to close HFt54ContOnN. **)
 
 (** from S54 Lem 54.2 (line 730 in algtop.tex) **)
 (** LATEX VERSION: Let p: E -> B be a covering map; p(e0) = b0. Let F: I x I -> B be **)
