@@ -320964,7 +320964,155 @@ apply andI.
     }
     claim HglgT0 : general_linear_graph T0 (subspace_topology X Tx T0) B.
     {
-      admit.
+      claim HtopX : topology_on X Tx.
+      { exact (general_linear_graph_topology_on X Tx Arcs HglgX). }
+      apply (and5I
+        (topology_on T0 (subspace_topology X Tx T0))
+        (forall A0:set, A0 :e B ->
+          A0 c= T0 /\ arc A0 (subspace_topology T0 (subspace_topology X Tx T0) A0))
+        (T0 = Union B)
+        (forall A0 B0:set, A0 :e B -> B0 :e B -> A0 <> B0 ->
+          A0 :/\: B0 = Empty \/
+          (exists p:set, A0 :/\: B0 = Sing p /\
+            (exists q:set, end_points_of_arc A0 (subspace_topology T0 (subspace_topology X Tx T0) A0) p q \/
+                           end_points_of_arc A0 (subspace_topology T0 (subspace_topology X Tx T0) A0) q p) /\
+            (exists r:set, end_points_of_arc B0 (subspace_topology T0 (subspace_topology X Tx T0) B0) p r \/
+                           end_points_of_arc B0 (subspace_topology T0 (subspace_topology X Tx T0) B0) r p)))
+        (forall C:set, C c= T0 ->
+          (closed_in T0 (subspace_topology X Tx T0) C <->
+           (forall A0:set, A0 :e B ->
+             closed_in A0 (subspace_topology T0 (subspace_topology X Tx T0) A0) (C :/\: A0))))).
+      - exact (subspace_topology_is_topology X Tx T0 HtopX HT0subX).
+      - let A0. assume HA0B.
+        claim HA0T : A0 :e ArcsT. { exact (HBsubArcsT A0 HA0B). }
+        claim HA0pack :
+          A0 c= T /\ arc A0 (subspace_topology T (subspace_topology X Tx T) A0).
+        { exact (general_linear_graph_arc_data
+            T (subspace_topology X Tx T) ArcsT A0 HglgT HA0T). }
+        claim HA0subT : A0 c= T.
+        { exact (andEL
+            (A0 c= T)
+            (arc A0 (subspace_topology T (subspace_topology X Tx T) A0))
+            HA0pack). }
+        claim HArcA0T : arc A0 (subspace_topology T (subspace_topology X Tx T) A0).
+        { exact (andER
+            (A0 c= T)
+            (arc A0 (subspace_topology T (subspace_topology X Tx T) A0))
+            HA0pack). }
+        claim HA0subT0 : A0 c= T0.
+        {
+          let x. assume HxA0.
+          exact (UnionI B x A0 HxA0 HA0B).
+        }
+        claim HsubTopoA0T :
+          subspace_topology T (subspace_topology X Tx T) A0 =
+          subspace_topology X Tx A0.
+        { exact (ex16_1_subspace_transitive X Tx T A0 HtopX HTsubX HA0subT). }
+        claim HsubTopoA0T0 :
+          subspace_topology T0 (subspace_topology X Tx T0) A0 =
+          subspace_topology X Tx A0.
+        { exact (ex16_1_subspace_transitive X Tx T0 A0 HtopX HT0subX HA0subT0). }
+        claim HArcA0X : arc A0 (subspace_topology X Tx A0).
+        { rewrite <- HsubTopoA0T. exact HArcA0T. }
+        claim HArcA0T0 : arc A0 (subspace_topology T0 (subspace_topology X Tx T0) A0).
+        { rewrite HsubTopoA0T0. exact HArcA0X. }
+        exact (andI
+          (A0 c= T0)
+          (arc A0 (subspace_topology T0 (subspace_topology X Tx T0) A0))
+          HA0subT0
+          HArcA0T0).
+      - reflexivity.
+      - let A0 B0. assume HA0B HB0B Hne.
+        claim HA0T : A0 :e ArcsT. { exact (HBsubArcsT A0 HA0B). }
+        claim HB0T : B0 :e ArcsT. { exact (HBsubArcsT B0 HB0B). }
+        claim Hcase :
+          A0 :/\: B0 = Empty \/
+          (exists p:set, A0 :/\: B0 = Sing p /\
+            (exists q:set, end_points_of_arc A0 (subspace_topology T (subspace_topology X Tx T) A0) p q \/
+                           end_points_of_arc A0 (subspace_topology T (subspace_topology X Tx T) A0) q p) /\
+            (exists r:set, end_points_of_arc B0 (subspace_topology T (subspace_topology X Tx T) B0) p r \/
+                           end_points_of_arc B0 (subspace_topology T (subspace_topology X Tx T) B0) r p)).
+        { exact (general_linear_graph_arc_intersection_case
+            T (subspace_topology X Tx T) ArcsT A0 B0 HglgT HA0T HB0T Hne). }
+        apply Hcase.
+        + assume Hempty. apply orIL. exact Hempty.
+        + assume Hsing. apply orIR. apply Hsing. let p. assume HpPack.
+          witness p.
+          apply (and3E
+            (A0 :/\: B0 = Sing p)
+            (exists q:set, end_points_of_arc A0 (subspace_topology T (subspace_topology X Tx T) A0) p q \/
+                           end_points_of_arc A0 (subspace_topology T (subspace_topology X Tx T) A0) q p)
+            (exists r:set, end_points_of_arc B0 (subspace_topology T (subspace_topology X Tx T) B0) p r \/
+                           end_points_of_arc B0 (subspace_topology T (subspace_topology X Tx T) B0) r p)
+            HpPack).
+          assume HpEq HpEndA HpEndB.
+          claim HA0subT : A0 c= T.
+          {
+            exact (andEL
+              (A0 c= T)
+              (arc A0 (subspace_topology T (subspace_topology X Tx T) A0))
+              (general_linear_graph_arc_data
+                T (subspace_topology X Tx T) ArcsT A0 HglgT HA0T)).
+          }
+          claim HB0subT : B0 c= T.
+          {
+            exact (andEL
+              (B0 c= T)
+              (arc B0 (subspace_topology T (subspace_topology X Tx T) B0))
+              (general_linear_graph_arc_data
+                T (subspace_topology X Tx T) ArcsT B0 HglgT HB0T)).
+          }
+          claim HA0subT0 : A0 c= T0.
+          { let x. assume HxA0. exact (UnionI B x A0 HxA0 HA0B). }
+          claim HB0subT0 : B0 c= T0.
+          { let x. assume HxB0. exact (UnionI B x B0 HxB0 HB0B). }
+          claim HsubTopoA0T :
+            subspace_topology T (subspace_topology X Tx T) A0 =
+            subspace_topology X Tx A0.
+          { exact (ex16_1_subspace_transitive X Tx T A0 HtopX HTsubX HA0subT). }
+          claim HsubTopoB0T :
+            subspace_topology T (subspace_topology X Tx T) B0 =
+            subspace_topology X Tx B0.
+          { exact (ex16_1_subspace_transitive X Tx T B0 HtopX HTsubX HB0subT). }
+          claim HsubTopoA0T0 :
+            subspace_topology T0 (subspace_topology X Tx T0) A0 =
+            subspace_topology X Tx A0.
+          { exact (ex16_1_subspace_transitive X Tx T0 A0 HtopX HT0subX HA0subT0). }
+          claim HsubTopoB0T0 :
+            subspace_topology T0 (subspace_topology X Tx T0) B0 =
+            subspace_topology X Tx B0.
+          { exact (ex16_1_subspace_transitive X Tx T0 B0 HtopX HT0subX HB0subT0). }
+          apply (and3I
+            (A0 :/\: B0 = Sing p)
+            (exists q:set, end_points_of_arc A0 (subspace_topology T0 (subspace_topology X Tx T0) A0) p q \/
+                           end_points_of_arc A0 (subspace_topology T0 (subspace_topology X Tx T0) A0) q p)
+            (exists r:set, end_points_of_arc B0 (subspace_topology T0 (subspace_topology X Tx T0) B0) p r \/
+                           end_points_of_arc B0 (subspace_topology T0 (subspace_topology X Tx T0) B0) r p)
+            HpEq).
+          * apply HpEndA. let q. assume Hq.
+            witness q.
+            apply Hq.
+            - assume Hpq : end_points_of_arc A0 (subspace_topology T (subspace_topology X Tx T) A0) p q.
+              claim HpqX : end_points_of_arc A0 (subspace_topology X Tx A0) p q.
+              { rewrite <- HsubTopoA0T. exact Hpq. }
+              apply orIL. rewrite HsubTopoA0T0. exact HpqX.
+            - assume Hqp : end_points_of_arc A0 (subspace_topology T (subspace_topology X Tx T) A0) q p.
+              claim HqpX : end_points_of_arc A0 (subspace_topology X Tx A0) q p.
+              { rewrite <- HsubTopoA0T. exact Hqp. }
+              apply orIR. rewrite HsubTopoA0T0. exact HqpX.
+          * apply HpEndB. let r. assume Hr.
+            witness r.
+            apply Hr.
+            - assume Hpr : end_points_of_arc B0 (subspace_topology T (subspace_topology X Tx T) B0) p r.
+              claim HprX : end_points_of_arc B0 (subspace_topology X Tx B0) p r.
+              { rewrite <- HsubTopoB0T. exact Hpr. }
+              apply orIL. rewrite HsubTopoB0T0. exact HprX.
+            - assume Hrp : end_points_of_arc B0 (subspace_topology T (subspace_topology X Tx T) B0) r p.
+              claim HrpX : end_points_of_arc B0 (subspace_topology X Tx B0) r p.
+              { rewrite <- HsubTopoB0T. exact Hrp. }
+              apply orIR. rewrite HsubTopoB0T0. exact HrpX.
+      - let C. assume HCsub.
+        admit.
     }
     claim HconnT0 : connected_space T0 (subspace_topology X Tx T0).
     {
