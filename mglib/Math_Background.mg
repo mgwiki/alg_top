@@ -150446,7 +150446,6 @@ Admitted.
 (** Helper: Given a loop fcls with a Lebesgue number for {preU, preV}, construct
     the word decomposition in pi_1(U) and pi_1(V). This is the key technical
     step for Seifert-van Kampen (lemma59_1). **)
-(** Lock Dave 1772537710 **)
 (** Bounty 61 **)
 Lemma loop_lebesgue_decomposition : forall X Tx U V x0 fcls Nleb:set,
   topology_on X Tx ->
@@ -151394,7 +151393,6 @@ Admitted.
 (** from S59 Thm 59.1 (line 1541 in algtop.tex) **)
 (** LATEX VERSION: Suppose X = U union V where U, V are open in X. If U intersect V is path connected and x0 in U intersect V, then the images of i-star and j-star generate pi_1(X, x0). **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
-(** Lock Dave 1772537710 **)
 (** Bounty 324 **)
 Theorem lemma59_1_open_cover_generates_pi1_core : forall X Tx U V x0 cls:set,
   topology_on X Tx ->
@@ -172459,6 +172457,688 @@ prove
       (setprod X Y) (product_topology X Tx Y Ty) g0 /\
     (forall x:set, x :e setprod X Y -> apply_fun g0 (apply_fun f x) = x) /\
     (forall y:set, y :e setprod Y X -> apply_fun f (apply_fun g0 y) = y).
+apply andI.
+- exact Hfcont.
+- witness g.
+  apply andI.
+  + apply andI.
+    * exact Hgcont.
+    * exact Hleft.
+  + exact Hright.
+Qed.
+
+(** Proven Bob **)
+(** Helper: associativity of product is a homeomorphism **)
+Theorem setprod_assoc_homeomorphism : forall X Tx Y Ty Z Tz:set,
+  topology_on X Tx ->
+  topology_on Y Ty ->
+  topology_on Z Tz ->
+  homeomorphism
+    (setprod (setprod X Y) Z)
+    (product_topology (setprod X Y) (product_topology X Tx Y Ty) Z Tz)
+    (setprod X (setprod Y Z))
+    (product_topology X Tx (setprod Y Z) (product_topology Y Ty Z Tz))
+    (pair_map (setprod (setprod X Y) Z)
+      (compose_fun (setprod (setprod X Y) Z)
+        (projection_map1 (setprod X Y) Z)
+        (projection_map1 X Y))
+      (pair_map (setprod (setprod X Y) Z)
+        (compose_fun (setprod (setprod X Y) Z)
+          (projection_map1 (setprod X Y) Z)
+          (projection_map2 X Y))
+        (projection_map2 (setprod X Y) Z))).
+let X Tx Y Ty Z Tz.
+assume HtopX HtopY HtopZ.
+set f1 :=
+  compose_fun (setprod (setprod X Y) Z)
+    (projection_map1 (setprod X Y) Z)
+    (projection_map1 X Y).
+set f2a :=
+  compose_fun (setprod (setprod X Y) Z)
+    (projection_map1 (setprod X Y) Z)
+    (projection_map2 X Y).
+set f2b := projection_map2 (setprod X Y) Z.
+set f2 := pair_map (setprod (setprod X Y) Z) f2a f2b.
+set f := pair_map (setprod (setprod X Y) Z) f1 f2.
+set g1b :=
+  compose_fun (setprod X (setprod Y Z))
+    (projection_map2 X (setprod Y Z))
+    (projection_map1 Y Z).
+set g1 :=
+  pair_map (setprod X (setprod Y Z))
+    (projection_map1 X (setprod Y Z))
+    g1b.
+set g2 :=
+  compose_fun (setprod X (setprod Y Z))
+    (projection_map2 X (setprod Y Z))
+    (projection_map2 Y Z).
+set g := pair_map (setprod X (setprod Y Z)) g1 g2.
+claim HtopXY :
+  topology_on (setprod X Y) (product_topology X Tx Y Ty).
+{ exact (product_topology_is_topology X Tx Y Ty HtopX HtopY). }
+claim HtopYZ :
+  topology_on (setprod Y Z) (product_topology Y Ty Z Tz).
+{ exact (product_topology_is_topology Y Ty Z Tz HtopY HtopZ). }
+claim Hfcont :
+  continuous_map
+    (setprod (setprod X Y) Z)
+    (product_topology (setprod X Y) (product_topology X Tx Y Ty) Z Tz)
+    (setprod X (setprod Y Z))
+    (product_topology X Tx (setprod Y Z) (product_topology Y Ty Z Tz))
+    f.
+{
+  claim HprojXY :
+    continuous_map
+      (setprod (setprod X Y) Z)
+      (product_topology (setprod X Y) (product_topology X Tx Y Ty) Z Tz)
+      (setprod X Y)
+      (product_topology X Tx Y Ty)
+      (projection_map1 (setprod X Y) Z) /\
+    continuous_map
+      (setprod (setprod X Y) Z)
+      (product_topology (setprod X Y) (product_topology X Tx Y Ty) Z Tz)
+      Z
+      Tz
+      (projection_map2 (setprod X Y) Z).
+  { exact (projection_maps_continuous (setprod X Y) (product_topology X Tx Y Ty) Z Tz HtopXY HtopZ). }
+  claim HprojXY1 :
+    continuous_map
+      (setprod (setprod X Y) Z)
+      (product_topology (setprod X Y) (product_topology X Tx Y Ty) Z Tz)
+      (setprod X Y)
+      (product_topology X Tx Y Ty)
+      (projection_map1 (setprod X Y) Z).
+  { exact (andEL
+      (continuous_map
+        (setprod (setprod X Y) Z)
+        (product_topology (setprod X Y) (product_topology X Tx Y Ty) Z Tz)
+        (setprod X Y)
+        (product_topology X Tx Y Ty)
+        (projection_map1 (setprod X Y) Z))
+      (continuous_map
+        (setprod (setprod X Y) Z)
+        (product_topology (setprod X Y) (product_topology X Tx Y Ty) Z Tz)
+        Z
+        Tz
+        (projection_map2 (setprod X Y) Z))
+      HprojXY). }
+  claim HprojXY2 :
+    continuous_map
+      (setprod (setprod X Y) Z)
+      (product_topology (setprod X Y) (product_topology X Tx Y Ty) Z Tz)
+      Z
+      Tz
+      (projection_map2 (setprod X Y) Z).
+  { exact (andER
+      (continuous_map
+        (setprod (setprod X Y) Z)
+        (product_topology (setprod X Y) (product_topology X Tx Y Ty) Z Tz)
+        (setprod X Y)
+        (product_topology X Tx Y Ty)
+        (projection_map1 (setprod X Y) Z))
+      (continuous_map
+        (setprod (setprod X Y) Z)
+        (product_topology (setprod X Y) (product_topology X Tx Y Ty) Z Tz)
+        Z
+        Tz
+        (projection_map2 (setprod X Y) Z))
+      HprojXY). }
+  claim HprojX :
+    continuous_map (setprod X Y) (product_topology X Tx Y Ty) X Tx (projection_map1 X Y) /\
+    continuous_map (setprod X Y) (product_topology X Tx Y Ty) Y Ty (projection_map2 X Y).
+  { exact (projection_maps_continuous X Tx Y Ty HtopX HtopY). }
+  claim HprojX1 :
+    continuous_map (setprod X Y) (product_topology X Tx Y Ty) X Tx (projection_map1 X Y).
+  { exact (andEL
+      (continuous_map (setprod X Y) (product_topology X Tx Y Ty) X Tx (projection_map1 X Y))
+      (continuous_map (setprod X Y) (product_topology X Tx Y Ty) Y Ty (projection_map2 X Y))
+      HprojX). }
+  claim HprojX2 :
+    continuous_map (setprod X Y) (product_topology X Tx Y Ty) Y Ty (projection_map2 X Y).
+  { exact (andER
+      (continuous_map (setprod X Y) (product_topology X Tx Y Ty) X Tx (projection_map1 X Y))
+      (continuous_map (setprod X Y) (product_topology X Tx Y Ty) Y Ty (projection_map2 X Y))
+      HprojX). }
+  claim Hf1cont :
+    continuous_map
+      (setprod (setprod X Y) Z)
+      (product_topology (setprod X Y) (product_topology X Tx Y Ty) Z Tz)
+      X
+      Tx
+      f1.
+  { exact (composition_continuous
+      (setprod (setprod X Y) Z)
+      (product_topology (setprod X Y) (product_topology X Tx Y Ty) Z Tz)
+      (setprod X Y)
+      (product_topology X Tx Y Ty)
+      X
+      Tx
+      (projection_map1 (setprod X Y) Z)
+      (projection_map1 X Y)
+      HprojXY1
+      HprojX1). }
+  claim Hf2acont :
+    continuous_map
+      (setprod (setprod X Y) Z)
+      (product_topology (setprod X Y) (product_topology X Tx Y Ty) Z Tz)
+      Y
+      Ty
+      f2a.
+  { exact (composition_continuous
+      (setprod (setprod X Y) Z)
+      (product_topology (setprod X Y) (product_topology X Tx Y Ty) Z Tz)
+      (setprod X Y)
+      (product_topology X Tx Y Ty)
+      Y
+      Ty
+      (projection_map1 (setprod X Y) Z)
+      (projection_map2 X Y)
+      HprojXY1
+      HprojX2). }
+  claim Hf2cont :
+    continuous_map
+      (setprod (setprod X Y) Z)
+      (product_topology (setprod X Y) (product_topology X Tx Y Ty) Z Tz)
+      (setprod Y Z)
+      (product_topology Y Ty Z Tz)
+      f2.
+  { exact (maps_into_products
+      (setprod (setprod X Y) Z)
+      (product_topology (setprod X Y) (product_topology X Tx Y Ty) Z Tz)
+      Y
+      Ty
+      Z
+      Tz
+      f2a
+      f2b
+      Hf2acont
+      HprojXY2). }
+  exact (maps_into_products
+    (setprod (setprod X Y) Z)
+    (product_topology (setprod X Y) (product_topology X Tx Y Ty) Z Tz)
+    X
+    Tx
+    (setprod Y Z)
+    (product_topology Y Ty Z Tz)
+    f1
+    f2
+    Hf1cont
+    Hf2cont).
+}
+claim Hgcont :
+  continuous_map
+    (setprod X (setprod Y Z))
+    (product_topology X Tx (setprod Y Z) (product_topology Y Ty Z Tz))
+    (setprod (setprod X Y) Z)
+    (product_topology (setprod X Y) (product_topology X Tx Y Ty) Z Tz)
+    g.
+{
+  claim HprojYZ :
+    continuous_map
+      (setprod X (setprod Y Z))
+      (product_topology X Tx (setprod Y Z) (product_topology Y Ty Z Tz))
+      X
+      Tx
+      (projection_map1 X (setprod Y Z)) /\
+    continuous_map
+      (setprod X (setprod Y Z))
+      (product_topology X Tx (setprod Y Z) (product_topology Y Ty Z Tz))
+      (setprod Y Z)
+      (product_topology Y Ty Z Tz)
+      (projection_map2 X (setprod Y Z)).
+  { exact (projection_maps_continuous X Tx (setprod Y Z) (product_topology Y Ty Z Tz) HtopX HtopYZ). }
+  claim HprojYZ1 :
+    continuous_map
+      (setprod X (setprod Y Z))
+      (product_topology X Tx (setprod Y Z) (product_topology Y Ty Z Tz))
+      X
+      Tx
+      (projection_map1 X (setprod Y Z)).
+  { exact (andEL
+      (continuous_map
+        (setprod X (setprod Y Z))
+        (product_topology X Tx (setprod Y Z) (product_topology Y Ty Z Tz))
+        X
+        Tx
+        (projection_map1 X (setprod Y Z)))
+      (continuous_map
+        (setprod X (setprod Y Z))
+        (product_topology X Tx (setprod Y Z) (product_topology Y Ty Z Tz))
+        (setprod Y Z)
+        (product_topology Y Ty Z Tz)
+        (projection_map2 X (setprod Y Z)))
+      HprojYZ). }
+  claim HprojYZ2 :
+    continuous_map
+      (setprod X (setprod Y Z))
+      (product_topology X Tx (setprod Y Z) (product_topology Y Ty Z Tz))
+      (setprod Y Z)
+      (product_topology Y Ty Z Tz)
+      (projection_map2 X (setprod Y Z)).
+  { exact (andER
+      (continuous_map
+        (setprod X (setprod Y Z))
+        (product_topology X Tx (setprod Y Z) (product_topology Y Ty Z Tz))
+        X
+        Tx
+        (projection_map1 X (setprod Y Z)))
+      (continuous_map
+        (setprod X (setprod Y Z))
+        (product_topology X Tx (setprod Y Z) (product_topology Y Ty Z Tz))
+        (setprod Y Z)
+        (product_topology Y Ty Z Tz)
+        (projection_map2 X (setprod Y Z)))
+      HprojYZ). }
+  claim HprojY :
+    continuous_map (setprod Y Z) (product_topology Y Ty Z Tz) Y Ty (projection_map1 Y Z) /\
+    continuous_map (setprod Y Z) (product_topology Y Ty Z Tz) Z Tz (projection_map2 Y Z).
+  { exact (projection_maps_continuous Y Ty Z Tz HtopY HtopZ). }
+  claim HprojY1 :
+    continuous_map (setprod Y Z) (product_topology Y Ty Z Tz) Y Ty (projection_map1 Y Z).
+  { exact (andEL
+      (continuous_map (setprod Y Z) (product_topology Y Ty Z Tz) Y Ty (projection_map1 Y Z))
+      (continuous_map (setprod Y Z) (product_topology Y Ty Z Tz) Z Tz (projection_map2 Y Z))
+      HprojY). }
+  claim HprojY2 :
+    continuous_map (setprod Y Z) (product_topology Y Ty Z Tz) Z Tz (projection_map2 Y Z).
+  { exact (andER
+      (continuous_map (setprod Y Z) (product_topology Y Ty Z Tz) Y Ty (projection_map1 Y Z))
+      (continuous_map (setprod Y Z) (product_topology Y Ty Z Tz) Z Tz (projection_map2 Y Z))
+      HprojY). }
+  claim Hg1bcont :
+    continuous_map
+      (setprod X (setprod Y Z))
+      (product_topology X Tx (setprod Y Z) (product_topology Y Ty Z Tz))
+      Y
+      Ty
+      g1b.
+  { exact (composition_continuous
+      (setprod X (setprod Y Z))
+      (product_topology X Tx (setprod Y Z) (product_topology Y Ty Z Tz))
+      (setprod Y Z)
+      (product_topology Y Ty Z Tz)
+      Y
+      Ty
+      (projection_map2 X (setprod Y Z))
+      (projection_map1 Y Z)
+      HprojYZ2
+      HprojY1). }
+  claim Hg1cont :
+    continuous_map
+      (setprod X (setprod Y Z))
+      (product_topology X Tx (setprod Y Z) (product_topology Y Ty Z Tz))
+      (setprod X Y)
+      (product_topology X Tx Y Ty)
+      g1.
+  { exact (maps_into_products
+      (setprod X (setprod Y Z))
+      (product_topology X Tx (setprod Y Z) (product_topology Y Ty Z Tz))
+      X
+      Tx
+      Y
+      Ty
+      (projection_map1 X (setprod Y Z))
+      g1b
+      HprojYZ1
+      Hg1bcont). }
+  claim Hg2cont :
+    continuous_map
+      (setprod X (setprod Y Z))
+      (product_topology X Tx (setprod Y Z) (product_topology Y Ty Z Tz))
+      Z
+      Tz
+      g2.
+  { exact (composition_continuous
+      (setprod X (setprod Y Z))
+      (product_topology X Tx (setprod Y Z) (product_topology Y Ty Z Tz))
+      (setprod Y Z)
+      (product_topology Y Ty Z Tz)
+      Z
+      Tz
+      (projection_map2 X (setprod Y Z))
+      (projection_map2 Y Z)
+      HprojYZ2
+      HprojY2). }
+  exact (maps_into_products
+    (setprod X (setprod Y Z))
+    (product_topology X Tx (setprod Y Z) (product_topology Y Ty Z Tz))
+    (setprod X Y)
+    (product_topology X Tx Y Ty)
+    Z
+    Tz
+    g1
+    g2
+    Hg1cont
+    Hg2cont).
+}
+claim HfFun : function_on f (setprod (setprod X Y) Z) (setprod X (setprod Y Z)).
+{
+  exact (continuous_map_function_on
+    (setprod (setprod X Y) Z)
+    (product_topology (setprod X Y) (product_topology X Tx Y Ty) Z Tz)
+    (setprod X (setprod Y Z))
+    (product_topology X Tx (setprod Y Z) (product_topology Y Ty Z Tz))
+    f
+    Hfcont).
+}
+claim HgFun : function_on g (setprod X (setprod Y Z)) (setprod (setprod X Y) Z).
+{
+  exact (continuous_map_function_on
+    (setprod X (setprod Y Z))
+    (product_topology X Tx (setprod Y Z) (product_topology Y Ty Z Tz))
+    (setprod (setprod X Y) Z)
+    (product_topology (setprod X Y) (product_topology X Tx Y Ty) Z Tz)
+    g
+    Hgcont).
+}
+claim Hleft : forall p:set, p :e setprod (setprod X Y) Z -> apply_fun g (apply_fun f p) = p.
+{
+  let p. assume Hp.
+  claim Hfp : apply_fun f p :e setprod X (setprod Y Z).
+  { exact (HfFun p Hp). }
+  rewrite (pair_map_apply (setprod X (setprod Y Z)) (setprod X Y) Z g1 g2 (apply_fun f p) Hfp).
+  rewrite (pair_map_apply (setprod X (setprod Y Z)) X (setprod Y Z)
+    (projection_map1 X (setprod Y Z)) g1b (apply_fun f p) Hfp).
+  rewrite (compose_fun_apply (setprod X (setprod Y Z))
+    (projection_map2 X (setprod Y Z)) (projection_map1 Y Z)
+    (apply_fun f p) Hfp).
+  rewrite (compose_fun_apply (setprod X (setprod Y Z))
+    (projection_map2 X (setprod Y Z)) (projection_map2 Y Z)
+    (apply_fun f p) Hfp).
+  rewrite (projection1_apply X (setprod Y Z) (apply_fun f p) Hfp).
+  rewrite (projection2_apply X (setprod Y Z) (apply_fun f p) Hfp).
+  claim Hfp1 : proj1 (apply_fun f p) :e setprod Y Z.
+  {
+    exact (andER
+      (setsum (proj0 (apply_fun f p)) (proj1 (apply_fun f p)) = apply_fun f p /\
+       proj0 (apply_fun f p) :e X)
+      (proj1 (apply_fun f p) :e (fun _ : set => setprod Y Z) (proj0 (apply_fun f p)))
+      (Sigma_eta_proj0_proj1 X (fun _ : set => setprod Y Z) (apply_fun f p) Hfp)).
+  }
+  claim Hfp1' : (apply_fun f p) 1 :e setprod Y Z.
+  {
+    exact (eq_subst_mem_rev
+      (proj1 (apply_fun f p))
+      ((apply_fun f p) 1)
+      (setprod Y Z)
+      (proj1_ap_1 (apply_fun f p))
+      Hfp1).
+  }
+  rewrite (projection1_apply Y Z ((apply_fun f p) 1) Hfp1').
+  rewrite (projection2_apply Y Z ((apply_fun f p) 1) Hfp1').
+  rewrite (pair_map_apply (setprod (setprod X Y) Z) X (setprod Y Z) f1 f2 p Hp).
+  rewrite tuple_2_0_eq.
+  rewrite tuple_2_1_eq.
+  rewrite (pair_map_apply (setprod (setprod X Y) Z) Y Z f2a f2b p Hp).
+  rewrite tuple_2_0_eq.
+  rewrite tuple_2_1_eq.
+  claim Hp0 : proj0 p :e setprod X Y.
+  {
+    exact (andER
+      (setsum (proj0 p) (proj1 p) = p)
+      (proj0 p :e setprod X Y)
+      (andEL
+        (setsum (proj0 p) (proj1 p) = p /\ proj0 p :e setprod X Y)
+        (proj1 p :e (fun _ : set => Z) (proj0 p))
+        (Sigma_eta_proj0_proj1 (setprod X Y) (fun _ : set => Z) p Hp))).
+  }
+  claim Hf1p : apply_fun f1 p = proj0 (proj0 p).
+  {
+    rewrite (compose_fun_apply (setprod (setprod X Y) Z)
+      (projection_map1 (setprod X Y) Z) (projection_map1 X Y) p Hp).
+    rewrite (projection1_apply (setprod X Y) Z p Hp).
+    rewrite <- (proj0_ap_0 p).
+    rewrite (projection1_apply X Y (proj0 p) Hp0).
+    rewrite <- (proj0_ap_0 (proj0 p)).
+    reflexivity.
+  }
+  claim Hf2ap : apply_fun f2a p = proj1 (proj0 p).
+  {
+    rewrite (compose_fun_apply (setprod (setprod X Y) Z)
+      (projection_map1 (setprod X Y) Z) (projection_map2 X Y) p Hp).
+    rewrite (projection1_apply (setprod X Y) Z p Hp).
+    rewrite <- (proj0_ap_0 p).
+    rewrite (projection2_apply X Y (proj0 p) Hp0).
+    rewrite <- (proj1_ap_1 (proj0 p)).
+    reflexivity.
+  }
+  claim Hf2bp : apply_fun f2b p = proj1 p.
+  {
+    rewrite (projection2_apply (setprod X Y) Z p Hp).
+    rewrite <- (proj1_ap_1 p).
+    reflexivity.
+  }
+  rewrite Hf1p.
+  rewrite Hf2ap.
+  rewrite Hf2bp.
+  claim Heta0sum : setsum (proj0 (proj0 p)) (proj1 (proj0 p)) = proj0 p.
+  {
+    exact (andEL
+      (setsum (proj0 (proj0 p)) (proj1 (proj0 p)) = proj0 p)
+      (proj0 (proj0 p) :e X)
+      (andEL
+        (setsum (proj0 (proj0 p)) (proj1 (proj0 p)) = proj0 p /\ proj0 (proj0 p) :e X)
+        (proj1 (proj0 p) :e (fun _ : set => Y) (proj0 (proj0 p)))
+        (Sigma_eta_proj0_proj1 X (fun _ : set => Y) (proj0 p) Hp0))).
+  }
+  claim Hpair0 : (proj0 (proj0 p), proj1 (proj0 p)) = proj0 p.
+  {
+    exact (eq_i_tra
+      (proj0 (proj0 p), proj1 (proj0 p))
+      (setsum (proj0 (proj0 p)) (proj1 (proj0 p)))
+      (proj0 p)
+      (eq_symm
+        (setsum (proj0 (proj0 p)) (proj1 (proj0 p)))
+        (proj0 (proj0 p), proj1 (proj0 p))
+        (tuple_pair (proj0 (proj0 p)) (proj1 (proj0 p))))
+      Heta0sum).
+  }
+  claim Hpairs : ((proj0 (proj0 p), proj1 (proj0 p)), proj1 p) = (proj0 p, proj1 p).
+  { exact (tuple_coords_eq
+      (proj0 (proj0 p), proj1 (proj0 p))
+      (proj1 p)
+      (proj0 p)
+      (proj1 p)
+      Hpair0
+      (eq_refl (proj1 p))). }
+  claim Heta1sum : setsum (proj0 p) (proj1 p) = p.
+  {
+    exact (andEL
+      (setsum (proj0 p) (proj1 p) = p)
+      (proj0 p :e setprod X Y)
+      (andEL
+        (setsum (proj0 p) (proj1 p) = p /\ proj0 p :e setprod X Y)
+        (proj1 p :e (fun _ : set => Z) (proj0 p))
+        (Sigma_eta_proj0_proj1 (setprod X Y) (fun _ : set => Z) p Hp))).
+  }
+  claim Heta2 : (proj0 p, proj1 p) = p.
+  {
+    exact (eq_i_tra
+      (proj0 p, proj1 p)
+      (setsum (proj0 p) (proj1 p))
+      p
+      (eq_symm
+        (setsum (proj0 p) (proj1 p))
+        (proj0 p, proj1 p)
+        (tuple_pair (proj0 p) (proj1 p)))
+      Heta1sum).
+  }
+  exact (eq_i_tra
+    ((proj0 (proj0 p), proj1 (proj0 p)), proj1 p)
+    (proj0 p, proj1 p)
+    p
+    Hpairs
+    Heta2).
+}
+claim Hright : forall p:set, p :e setprod X (setprod Y Z) -> apply_fun f (apply_fun g p) = p.
+{
+  let p. assume Hp.
+  claim Hgp : apply_fun g p :e setprod (setprod X Y) Z.
+  { exact (HgFun p Hp). }
+  rewrite (pair_map_apply (setprod (setprod X Y) Z) X (setprod Y Z) f1 f2 (apply_fun g p) Hgp).
+  rewrite (pair_map_apply (setprod (setprod X Y) Z) Y Z f2a f2b (apply_fun g p) Hgp).
+  rewrite (compose_fun_apply (setprod (setprod X Y) Z)
+    (projection_map1 (setprod X Y) Z) (projection_map1 X Y)
+    (apply_fun g p) Hgp).
+  rewrite (compose_fun_apply (setprod (setprod X Y) Z)
+    (projection_map1 (setprod X Y) Z) (projection_map2 X Y)
+    (apply_fun g p) Hgp).
+  rewrite (projection1_apply (setprod X Y) Z (apply_fun g p) Hgp).
+  rewrite (projection2_apply (setprod X Y) Z (apply_fun g p) Hgp).
+  claim Hgp0 : proj0 (apply_fun g p) :e setprod X Y.
+  {
+    exact (andER
+      (setsum (proj0 (apply_fun g p)) (proj1 (apply_fun g p)) = apply_fun g p)
+      (proj0 (apply_fun g p) :e setprod X Y)
+      (andEL
+        (setsum (proj0 (apply_fun g p)) (proj1 (apply_fun g p)) = apply_fun g p /\
+         proj0 (apply_fun g p) :e setprod X Y)
+        (proj1 (apply_fun g p) :e (fun _ : set => Z) (proj0 (apply_fun g p)))
+        (Sigma_eta_proj0_proj1 (setprod X Y) (fun _ : set => Z) (apply_fun g p) Hgp))).
+  }
+  claim Hgp0' : (apply_fun g p) 0 :e setprod X Y.
+  {
+    exact (eq_subst_mem_rev
+      (proj0 (apply_fun g p))
+      ((apply_fun g p) 0)
+      (setprod X Y)
+      (proj0_ap_0 (apply_fun g p))
+      Hgp0).
+  }
+  rewrite (projection1_apply X Y ((apply_fun g p) 0) Hgp0').
+  rewrite (projection2_apply X Y ((apply_fun g p) 0) Hgp0').
+  rewrite (pair_map_apply (setprod X (setprod Y Z)) (setprod X Y) Z g1 g2 p Hp).
+  rewrite (pair_map_apply (setprod X (setprod Y Z)) X (setprod Y Z)
+    (projection_map1 X (setprod Y Z)) g1b p Hp).
+  rewrite (compose_fun_apply (setprod X (setprod Y Z))
+    (projection_map2 X (setprod Y Z)) (projection_map1 Y Z)
+    p Hp).
+  rewrite (compose_fun_apply (setprod X (setprod Y Z))
+    (projection_map2 X (setprod Y Z)) (projection_map2 Y Z)
+    p Hp).
+  rewrite (projection1_apply X (setprod Y Z) p Hp).
+  rewrite (projection2_apply X (setprod Y Z) p Hp).
+  rewrite tuple_2_0_eq.
+  rewrite tuple_2_1_eq.
+  rewrite tuple_2_0_eq.
+  rewrite tuple_2_1_eq.
+  claim Hp1 : proj1 p :e setprod Y Z.
+  {
+    exact (andER
+      (setsum (proj0 p) (proj1 p) = p /\ proj0 p :e X)
+      (proj1 p :e (fun _ : set => setprod Y Z) (proj0 p))
+      (Sigma_eta_proj0_proj1 X (fun _ : set => setprod Y Z) p Hp)).
+  }
+  claim Hp1' : p 1 :e setprod Y Z.
+  {
+    exact (eq_subst_mem_rev
+      (proj1 p)
+      (p 1)
+      (setprod Y Z)
+      (proj1_ap_1 p)
+      Hp1).
+  }
+  rewrite (projection1_apply Y Z (p 1) Hp1').
+  rewrite (projection2_apply Y Z (p 1) Hp1').
+  claim Hp1eta0sum : setsum (proj0 (p 1)) (proj1 (p 1)) = p 1.
+  {
+    exact (andEL
+      (setsum (proj0 (p 1)) (proj1 (p 1)) = p 1)
+      (proj0 (p 1) :e Y)
+      (andEL
+        (setsum (proj0 (p 1)) (proj1 (p 1)) = p 1 /\ proj0 (p 1) :e Y)
+        (proj1 (p 1) :e (fun _ : set => Z) (proj0 (p 1)))
+        (Sigma_eta_proj0_proj1 Y (fun _ : set => Z) (p 1) Hp1'))).
+  }
+  claim Hp1eta1 : (proj0 (p 1), proj1 (p 1)) = p 1.
+  {
+    exact (eq_i_tra
+      (proj0 (p 1), proj1 (p 1))
+      (setsum (proj0 (p 1)) (proj1 (p 1)))
+      (p 1)
+      (eq_symm
+        (setsum (proj0 (p 1)) (proj1 (p 1)))
+        (proj0 (p 1), proj1 (p 1))
+        (tuple_pair (proj0 (p 1)) (proj1 (p 1))))
+      Hp1eta0sum).
+  }
+  claim Hp1eta : ((p 1) 0, (p 1) 1) = p 1.
+  {
+    exact (eq_i_tra
+      ((p 1) 0, (p 1) 1)
+      (proj0 (p 1), proj1 (p 1))
+      (p 1)
+      (tuple_coords_eq
+        ((p 1) 0)
+        ((p 1) 1)
+        (proj0 (p 1))
+        (proj1 (p 1))
+        (eq_symm (proj0 (p 1)) ((p 1) 0) (proj0_ap_0 (p 1)))
+        (eq_symm (proj1 (p 1)) ((p 1) 1) (proj1_ap_1 (p 1))))
+      Hp1eta1).
+  }
+  claim Hp1eta' : ((p 1) 0, (p 1) 1) = proj1 p.
+  {
+    exact (eq_i_tra
+      ((p 1) 0, (p 1) 1)
+      (p 1)
+      (proj1 p)
+      Hp1eta
+      (eq_symm (proj1 p) (p 1) (proj1_ap_1 p))).
+  }
+  claim Hpairs : (p 0, ((p 1) 0, (p 1) 1)) = (proj0 p, proj1 p).
+  { exact (tuple_coords_eq
+      (p 0)
+      ((p 1) 0, (p 1) 1)
+      (proj0 p)
+      (proj1 p)
+      (eq_symm (proj0 p) (p 0) (proj0_ap_0 p))
+      Hp1eta'). }
+  claim Heta1sum : setsum (proj0 p) (proj1 p) = p.
+  {
+    exact (andEL
+      (setsum (proj0 p) (proj1 p) = p)
+      (proj0 p :e X)
+      (andEL
+        (setsum (proj0 p) (proj1 p) = p /\ proj0 p :e X)
+        (proj1 p :e (fun _ : set => setprod Y Z) (proj0 p))
+        (Sigma_eta_proj0_proj1 X (fun _ : set => setprod Y Z) p Hp))).
+  }
+  claim Heta2 : (proj0 p, proj1 p) = p.
+  {
+    exact (eq_i_tra
+      (proj0 p, proj1 p)
+      (setsum (proj0 p) (proj1 p))
+      p
+      (eq_symm
+        (setsum (proj0 p) (proj1 p))
+        (proj0 p, proj1 p)
+        (tuple_pair (proj0 p) (proj1 p)))
+      Heta1sum).
+  }
+  exact (eq_i_tra
+    (p 0, ((p 1) 0, (p 1) 1))
+    (proj0 p, proj1 p)
+    p
+    Hpairs
+    Heta2).
+}
+prove
+  continuous_map
+    (setprod (setprod X Y) Z)
+    (product_topology (setprod X Y) (product_topology X Tx Y Ty) Z Tz)
+    (setprod X (setprod Y Z))
+    (product_topology X Tx (setprod Y Z) (product_topology Y Ty Z Tz))
+    f /\
+  exists g0:set,
+    continuous_map
+      (setprod X (setprod Y Z))
+      (product_topology X Tx (setprod Y Z) (product_topology Y Ty Z Tz))
+      (setprod (setprod X Y) Z)
+      (product_topology (setprod X Y) (product_topology X Tx Y Ty) Z Tz)
+      g0 /\
+    (forall x:set, x :e setprod (setprod X Y) Z -> apply_fun g0 (apply_fun f x) = x) /\
+    (forall y:set, y :e setprod X (setprod Y Z) -> apply_fun f (apply_fun g0 y) = y).
 apply andI.
 - exact Hfcont.
 - witness g.
