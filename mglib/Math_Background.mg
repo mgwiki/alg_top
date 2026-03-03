@@ -322480,6 +322480,110 @@ apply Hcase.
       Hfin15
       HoriC16).
   }
+  claim Hsharedh1 :
+    exists C17:set, C17 :e Arcs /\ C17 <> C16 /\ h1 :e C17.
+  {
+    exact (andER
+      (exists C:set, C :e Arcs /\ C <> C16 /\ g1 :e C)
+      (exists D:set, D :e Arcs /\ D <> C16 /\ h1 :e D)
+      (Hallshared C16 g1 h1 HC16 Hg1h1)).
+  }
+  apply Hsharedh1. let C17. assume HC17pack.
+  claim HC17pair : C17 :e Arcs /\ C17 <> C16.
+  { exact (andEL (C17 :e Arcs /\ C17 <> C16) (h1 :e C17) HC17pack). }
+  claim HC17 : C17 :e Arcs.
+  { exact (andEL (C17 :e Arcs) (C17 <> C16) HC17pair). }
+  claim HC17neC16 : C17 <> C16.
+  { exact (andER (C17 :e Arcs) (C17 <> C16) HC17pair). }
+  claim Hh1C17 : h1 :e C17.
+  { exact (andER (C17 :e Arcs /\ C17 <> C16) (h1 :e C17) HC17pack). }
+  claim Hh1C16 : h1 :e C16.
+  { exact (end_points_of_arc_right_in_set C16 (subspace_topology T Tx C16) g1 h1 Hg1h1). }
+  claim HC16neC17 : C16 <> C17.
+  { assume Heq. exact (HC17neC16 (eq_symm C16 C17 Heq)). }
+  claim HintC16C17 :
+    C16 :/\: C17 = Empty \/
+    (exists r17:set, C16 :/\: C17 = Sing r17 /\
+      (exists s17:set, end_points_of_arc C16 (subspace_topology T Tx C16) r17 s17 \/
+                     end_points_of_arc C16 (subspace_topology T Tx C16) s17 r17) /\
+      (exists t17:set, end_points_of_arc C17 (subspace_topology T Tx C17) r17 t17 \/
+                     end_points_of_arc C17 (subspace_topology T Tx C17) t17 r17)).
+  {
+    exact (general_linear_graph_arc_intersection_case
+      T
+      Tx
+      Arcs
+      C16
+      C17
+      Hglg
+      HC16
+      HC17
+      HC16neC17).
+  }
+  claim Hh1_is_endpoint_C17 :
+    exists i1:set, end_points_of_arc C17 (subspace_topology T Tx C17) h1 i1 \/
+                    end_points_of_arc C17 (subspace_topology T Tx C17) i1 h1.
+  {
+    apply HintC16C17.
+    - assume Hempty.
+      claim Hh1CC : h1 :e C16 :/\: C17. { exact (binintersectI C16 C17 h1 Hh1C16 Hh1C17). }
+      exact (EmptyE h1 (eq_subst_mem_set h1 (C16 :/\: C17) Empty Hh1CC Hempty)
+        (exists i1:set, end_points_of_arc C17 (subspace_topology T Tx C17) h1 i1 \/
+                        end_points_of_arc C17 (subspace_topology T Tx C17) i1 h1)).
+    - assume Hsing. apply Hsing. let r17. assume Hr17pack.
+      apply (and3E
+        (C16 :/\: C17 = Sing r17)
+        (exists s17:set, end_points_of_arc C16 (subspace_topology T Tx C16) r17 s17 \/
+                       end_points_of_arc C16 (subspace_topology T Tx C16) s17 r17)
+        (exists t17:set, end_points_of_arc C17 (subspace_topology T Tx C17) r17 t17 \/
+                       end_points_of_arc C17 (subspace_topology T Tx C17) t17 r17)
+        Hr17pack).
+      assume Hr17eq _ HC17end.
+      claim Hh1CC : h1 :e C16 :/\: C17. { exact (binintersectI C16 C17 h1 Hh1C16 Hh1C17). }
+      claim Hh1r17 : h1 = r17.
+      { exact (SingE r17 h1 (eq_subst_mem_set h1 (C16 :/\: C17) (Sing r17) Hh1CC Hr17eq)). }
+      apply HC17end. let t17. assume Ht17.
+      witness t17.
+      apply Ht17.
+      * assume Hr17t : end_points_of_arc C17 (subspace_topology T Tx C17) r17 t17.
+        apply orIL. rewrite Hh1r17. exact Hr17t.
+      * assume Ht17r : end_points_of_arc C17 (subspace_topology T Tx C17) t17 r17.
+        apply orIR. rewrite Hh1r17. exact Ht17r.
+  }
+  apply Hh1_is_endpoint_C17. let i1. assume Hi1cases.
+  claim Hh1i1 : end_points_of_arc C17 (subspace_topology T Tx C17) h1 i1.
+  { apply Hi1cases.
+    - assume Hh1i : end_points_of_arc C17 (subspace_topology T Tx C17) h1 i1. exact Hh1i.
+    - assume Hi1h : end_points_of_arc C17 (subspace_topology T Tx C17) i1 h1.
+      exact (end_points_of_arc_sym C17 (subspace_topology T Tx C17) i1 h1 Hi1h). }
+  claim HoriC17 : oriented_edge T Tx Arcs C17 h1 i1.
+  { exact (andI (C17 :e Arcs) (end_points_of_arc C17 (subspace_topology T Tx C17) h1 i1) HC17 Hh1i1). }
+  set n17 := ordsucc n16.
+  set path18 :=
+    (graph n17 (fun i:set => apply_fun path17 i)) :\/:
+    (graph {n17} (fun _:set => ((h1, i1), C17))).
+  claim Hep18 : edge_path T Tx Arcs (ordsucc n17) path18 q0.
+  {
+    exact (edge_path_append_oriented_edge
+      T Tx Arcs n17 path17 q0 n16 C17 h1 i1
+      Hglg
+      Hep17
+      (ordsuccI2 n16)
+      (In_irref (ordsucc n16))
+      Hfin16
+      HoriC17).
+  }
+  claim Hfin17 : (apply_fun path18 n17) 0 1 = i1.
+  {
+    exact (edge_path_append_oriented_edge_end_vertex
+      T Tx Arcs n17 path17 q0 n16 C17 h1 i1
+      Hglg
+      Hep17
+      (ordsuccI2 n16)
+      (In_irref (ordsucc n16))
+      Hfin16
+      HoriC17).
+  }
   (** TODO: recursively choose successive arcs through shared endpoints and close a loop via finiteness. **)
   admit.
 Admitted.
