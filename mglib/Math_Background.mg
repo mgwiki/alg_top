@@ -171556,6 +171556,206 @@ exact (path_connected_implies_connected
   punctured_space_path_connected).
 Qed.
 
+(** Helper: the punctured real line is disconnected **)
+(** Proven Bob **)
+Theorem punctured_R_not_connected :
+  ~ connected_space (R :\: {0,0})
+    (subspace_topology R R_standard_topology (R :\: {0,0})).
+set X := R :\: {0,0}.
+set Tx := subspace_topology R R_standard_topology X.
+set U := open_ray_lower R 0.
+set V := open_ray_upper R 0.
+assume Hconn : connected_space X Tx.
+claim HUsrc : U c= X.
+{
+  let x. assume HxU.
+  claim HxR : x :e R.
+  { exact (SepE1 R (fun t:set => order_rel R t 0) x HxU). }
+  claim Hxlt0 : order_rel R x 0.
+  { exact (SepE2 R (fun t:set => order_rel R t 0) x HxU). }
+  claim HxNe0 : x <> 0.
+  {
+    assume Hx0.
+    claim Hxlt00 : Rlt x 0.
+    { exact (order_rel_R_implies_Rlt x 0 Hxlt0). }
+    claim HxInSep : x :e {t :e R | Rlt t 0}.
+    { exact (SepI R (fun t:set => Rlt t 0) x HxR Hxlt00). }
+    claim H0InSep : 0 :e {t :e R | Rlt t 0}.
+    { exact (eq_subst_mem_rev x 0 {t :e R | Rlt t 0} Hx0 HxInSep). }
+    claim H0lt0 : Rlt 0 0.
+    { exact (SepE2 R (fun t:set => Rlt t 0) 0 H0InSep). }
+    exact (not_Rlt_refl 0 real_0 H0lt0).
+  }
+  claim HxNot : x /:e {0,0}.
+  {
+    assume HxIn.
+    claim HxEq : x = 0.
+    { exact (SingE 0 x
+        (mem_eqR x {0,0} {0}
+          (eq_symm {0} {0,0} (Sing_eq_UPair 0)) HxIn)). }
+    exact (HxNe0 HxEq).
+  }
+  exact (setminusI R {0,0} x HxR HxNot).
+}
+claim HVsrc : V c= X.
+{
+  let x. assume HxV.
+  claim HxR : x :e R.
+  { exact (SepE1 R (fun t:set => order_rel R 0 t) x HxV). }
+  claim H0ltx : order_rel R 0 x.
+  { exact (SepE2 R (fun t:set => order_rel R 0 t) x HxV). }
+  claim HxNe0 : x <> 0.
+  {
+    assume Hx0.
+    claim H0lt0 : Rlt 0 x.
+    { exact (order_rel_R_implies_Rlt 0 x H0ltx). }
+    claim HxInSep : x :e {t :e R | Rlt 0 t}.
+    { exact (SepI R (fun t:set => Rlt 0 t) x HxR H0lt0). }
+    claim H0InSep : 0 :e {t :e R | Rlt 0 t}.
+    { exact (eq_subst_mem_rev x 0 {t :e R | Rlt 0 t} Hx0 HxInSep). }
+    claim H0lt0' : Rlt 0 0.
+    { exact (SepE2 R (fun t:set => Rlt 0 t) 0 H0InSep). }
+    exact (not_Rlt_refl 0 real_0 H0lt0').
+  }
+  claim HxNot : x /:e {0,0}.
+  {
+    assume HxIn.
+    claim HxEq : x = 0.
+    { exact (SingE 0 x
+        (mem_eqR x {0,0} {0}
+          (eq_symm {0} {0,0} (Sing_eq_UPair 0)) HxIn)). }
+    exact (HxNe0 HxEq).
+  }
+  exact (setminusI R {0,0} x HxR HxNot).
+}
+claim HUeq : U = U :/\: X.
+{
+  apply set_ext.
+  - let x. assume HxU.
+    exact (binintersectI U X x HxU (HUsrc x HxU)).
+  - let x. assume HxUX.
+    exact (binintersectE1 U X x HxUX).
+}
+claim HVe
+: V = V :/\: X.
+{
+  apply set_ext.
+  - let x. assume HxV.
+    exact (binintersectI V X x HxV (HVsrc x HxV)).
+  - let x. assume HxVX.
+    exact (binintersectE1 V X x HxVX).
+}
+claim HUopen : U :e Tx.
+{
+  rewrite HUeq.
+  exact (subspace_topologyI
+    R
+    R_standard_topology
+    X
+    (open_ray_lower R 0)
+    (open_ray_lower_in_R_standard_topology 0 real_0)).
+}
+claim HVopen : V :e Tx.
+{
+  rewrite HVe.
+  exact (subspace_topologyI
+    R
+    R_standard_topology
+    X
+    (open_ray_upper R 0)
+    (open_ray_upper_in_R_standard_topology 0 real_0)).
+}
+claim HUVempty : U :/\: V = Empty.
+{
+  apply Empty_eq.
+  let x. assume HxUV.
+  claim HxU : x :e U.
+  { exact (binintersectE1 U V x HxUV). }
+  claim HxV : x :e V.
+  { exact (binintersectE2 U V x HxUV). }
+  claim HxR : x :e R.
+  { exact (SepE1 R (fun t:set => order_rel R t 0) x HxU). }
+  claim Hxlt0 : order_rel R x 0.
+  { exact (SepE2 R (fun t:set => order_rel R t 0) x HxU). }
+  claim H0ltx : order_rel R 0 x.
+  { exact (SepE2 R (fun t:set => order_rel R 0 t) x HxV). }
+  claim Hxltx : order_rel R x x.
+  {
+    exact (order_rel_trans R x 0 x
+      simply_ordered_set_R HxR real_0 HxR Hxlt0 H0ltx).
+  }
+  claim HxRlt : Rlt x x.
+  { exact (order_rel_R_implies_Rlt x x Hxltx). }
+  exact (not_Rlt_refl x HxR HxRlt).
+}
+claim HUne : U <> Empty.
+{
+  claim Hm1R : minus_SNo 1 :e R.
+  { exact (real_minus_SNo 1 real_1). }
+  claim Hm1lt0 : Rlt (minus_SNo 1) 0.
+  { exact (RltI (minus_SNo 1) 0 Hm1R real_0 minus_1_lt_0). }
+  claim Hm1U : minus_SNo 1 :e U.
+  { exact (SepI R (fun t:set => order_rel R t 0)
+      (minus_SNo 1) Hm1R (Rlt_implies_order_rel_R (minus_SNo 1) 0 Hm1lt0)). }
+  exact (elem_implies_nonempty U (minus_SNo 1) Hm1U).
+}
+claim HVne : V <> Empty.
+{
+  claim H1V : 1 :e V.
+  { exact (SepI R (fun t:set => order_rel R 0 t)
+      1 real_1 (Rlt_implies_order_rel_R 0 1 Rlt_0_1)). }
+  exact (elem_implies_nonempty V 1 H1V).
+}
+claim HUnion : U :\/: V = X.
+{
+  apply set_ext.
+  - let x. assume HxUV.
+    apply (binunionE U V x HxUV).
+    + assume HxU. exact (HUsrc x HxU).
+    + assume HxV. exact (HVsrc x HxV).
+  - let x. assume HxX.
+    claim HxR : x :e R.
+    { exact (setminusE1 R {0,0} x HxX). }
+    claim HxNot : x /:e {0,0}.
+    { exact (setminusE2 R {0,0} x HxX). }
+    claim HxNe0 : x <> 0.
+    {
+      assume Hx0.
+      apply HxNot.
+      exact (eq_subst_mem x 0 {0,0} Hx0 (UPairI1 0 0)).
+    }
+    apply (order_rel_trichotomy_or_impred R 0 x simply_ordered_set_R real_0 HxR).
+    * assume H0ltx : order_rel R 0 x.
+      exact (binunionI2 U V x
+        (SepI R (fun t:set => order_rel R 0 t) x HxR H0ltx)).
+    * assume Hx0 : 0 = x.
+      exact (FalseE (HxNe0 (eq_symm 0 x Hx0)) (x :e U :\/: V)).
+    * assume Hxlt0 : order_rel R x 0.
+      exact (binunionI1 U V x
+        (SepI R (fun t:set => order_rel R t 0) x HxR Hxlt0)).
+}
+claim Hsep : exists U0 V0:set, U0 :e Tx /\ V0 :e Tx /\ separation_of X U0 V0.
+{
+  witness U. witness V.
+  apply andI.
+  - exact (andI (U :e Tx) (V :e Tx) HUopen HVopen).
+  - exact (and6I
+      (U :e Power X)
+      (V :e Power X)
+      (U :/\: V = Empty)
+      (U <> Empty)
+      (V <> Empty)
+      (U :\/: V = X)
+      (subspace_topology_in_Power R R_standard_topology X U HUopen)
+      (subspace_topology_in_Power R R_standard_topology X V HVopen)
+      HUVempty
+      HUne
+      HVne
+      HUnion).
+}
+exact (connected_space_no_separation X Tx Hconn Hsep).
+Qed.
+
 (** Helper: image of punctured space under a homeomorphism **)
 (** Proven Bob **)
 Theorem homeomorphism_image_of_setminus_singleton :
