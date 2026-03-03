@@ -225714,7 +225714,6 @@ Qed.
 
 (** Helper bounties (correct-strength versions: also assume Hfp1/Hfp2 on G1 and G2) **)
 (** Bounty 17 **)
-(** Lock Charlie 1772648629 **)
 Theorem cor68_6_binary_collapse_mixed_not_in_G1 :
   forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
   group_structure G multG eG invG ->
@@ -225740,7 +225739,6 @@ admit.
 Admitted.
 
 (** Bounty 17 **)
-(** Lock Charlie 1772648629 **)
 Theorem cor68_6_binary_collapse_mixed_not_in_G2 :
   forall G multG eG invG G1 G2 J K Hfam efamH n ys:set,
   group_structure G multG eG invG ->
