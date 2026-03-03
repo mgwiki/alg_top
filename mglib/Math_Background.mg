@@ -177875,6 +177875,90 @@ apply iffI.
 	    exact (andER (topology_on X Tx) ((X :\: C) :e Tx) HUopen_in).
 	  }
 	  (** Hausdorff proof (pending): build disjoint open neighborhoods via coherence **)
+	  (** Reverse direction infrastructure: for each arc A, collect all intersection points of A with other arcs. **)
+	  set IntFam := fun A:set => Repl (Arcs :\: Sing A) (fun B:set => A :/\: B).
+	  set IntPts := fun A:set => Union (IntFam A).
+	  claim HIntPts_dat :
+	    forall A:set, A :e Arcs -> IntPts A c= A /\ finite (IntPts A).
+	  {
+	    let A.
+	    assume HAArcs.
+	    claim HArcsNoA_fin : finite (Arcs :\: Sing A).
+	    {
+	      apply (Subq_finite Arcs HfinArcs (Arcs :\: Sing A)).
+	      exact (setminus_Subq Arcs (Sing A)).
+	    }
+	    claim HFamFin : finite (IntFam A).
+	    {
+	      exact (Repl_finite
+	        (fun B0:set => A :/\: B0)
+	        (Arcs :\: Sing A)
+	        HArcsNoA_fin).
+	    }
+	    claim HFamElemFin : forall D:set, D :e IntFam A -> finite D.
+	    {
+	      let D.
+	      assume HDin.
+	      apply (ReplE (Arcs :\: Sing A) (fun B0:set => A :/\: B0) D HDin).
+	      let B.
+	      assume HBpack.
+	      claim HBArcsNoA : B :e (Arcs :\: Sing A).
+	      { exact (andEL (B :e (Arcs :\: Sing A)) (D = A :/\: B) HBpack). }
+	      claim HDeq : D = A :/\: B.
+	      { exact (andER (B :e (Arcs :\: Sing A)) (D = A :/\: B) HBpack). }
+	      rewrite HDeq.
+	      claim HBArcs : B :e Arcs.
+	      { exact (setminusE1 Arcs (Sing A) B HBArcsNoA). }
+	      claim HBneq : B <> A.
+	      {
+	        assume Heq.
+	        claim HBinSing : B :e Sing A.
+	        { rewrite Heq. exact (SingI A). }
+	        exact (setminusE2 Arcs (Sing A) B HBArcsNoA HBinSing).
+	      }
+	      claim HcapCase :
+	        exists p:set, (A :/\: B = Empty \/ A :/\: B = Sing p).
+	      { exact (HinterDat A B HAArcs HBArcs (neq_i_sym B A HBneq)). }
+	      apply HcapCase.
+	      let p.
+	      assume Hcase.
+	      apply Hcase.
+	      - assume Hem. rewrite Hem. exact finite_Empty.
+	      - assume Hsing. rewrite Hsing. exact (Sing_finite p).
+	    }
+	    claim HIntPts_fin : finite (IntPts A).
+	    {
+	      exact (finite_Union_of_finite_family
+	        (IntFam A)
+	        HFamFin
+	        HFamElemFin).
+	    }
+	    claim HIntPts_sub : IntPts A c= A.
+	    {
+	      let z.
+	      assume Hz.
+	      apply (UnionE (IntFam A) z Hz).
+	      let D.
+	      assume HDpack.
+	      claim HzD : z :e D.
+	      { exact (andEL (z :e D) (D :e IntFam A) HDpack). }
+	      claim HDin : D :e IntFam A.
+	      { exact (andER (z :e D) (D :e IntFam A) HDpack). }
+	      apply (ReplE (Arcs :\: Sing A) (fun B0:set => A :/\: B0) D HDin).
+	      let B.
+	      assume HBpack.
+	      claim HDeq : D = A :/\: B.
+	      { exact (andER (B :e (Arcs :\: Sing A)) (D = A :/\: B) HBpack). }
+	      claim HzD2 : z :e A :/\: B.
+	      { rewrite <- HDeq. exact HzD. }
+	      exact (binintersectE1 A B z HzD2).
+	    }
+	    exact (andI
+	      (IntPts A c= A)
+	      (finite (IntPts A))
+	      HIntPts_sub
+	      HIntPts_fin).
+	  }
 	  admit.
 	Admitted.
 
