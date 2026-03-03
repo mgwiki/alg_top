@@ -426,6 +426,8 @@ Proposed by:
 Discussion:
   - 1772468805 | Bob: path_between only gives function_on + endpoints; the proof
     needs continuity to use basepoint-change homomorphism properties.
+  - 1772499814 | Charlie: Bob+Charlie approvals are in; this notice is ready to
+    be marked SENT TO ADMIN.
 
 Approvals:
   - 1772468805 | Alice:
@@ -476,6 +478,8 @@ Proposed by:
 Discussion:
   - 1772468802 | Bob: continuity of alpha is needed to apply
     lemma52_1_basepoint_change_homomorphism inside the proof.
+  - 1772499814 | Charlie: Bob+Charlie approvals are in; this notice is ready to
+    be marked SENT TO ADMIN.
 
 Approvals:
   - 1772468802 | Alice:
@@ -526,6 +530,8 @@ Discussion:
   - 1772468745 | Bob: The proof already assumes continuity to use
     lemma52_1_basepoint_change_homomorphism. path_between only gives
     function_on + endpoint equalities, so a continuity hypothesis is needed.
+  - 1772499814 | Charlie: Bob+Charlie approvals are in; this notice is ready to
+    be marked SENT TO ADMIN.
 
 Approvals:
   - 1772468745 | Alice:
