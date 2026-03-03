@@ -310613,6 +310613,29 @@ claim Hcycle :
         rewrite Hxq.
         exact HqTcap.
   }
+  (** Reduced 1-edge path along A from p to q in T'. **)
+  claim HoriA : oriented_edge T' (subspace_topology X Tx T') ArcsT' A p q.
+  {
+    exact (andI
+      (A :e ArcsT')
+      (end_points_of_arc A (subspace_topology T' (subspace_topology X Tx T') A) p q)
+      HAArcsT'
+      HendT').
+  }
+  claim HredA :
+    reduced_edge_path T' (subspace_topology X Tx T') ArcsT'
+      (ordsucc 0) (graph (ordsucc 0) (fun _:set => ((p, q), A))) p.
+  {
+    exact (reduced_edge_path_1_from_oriented_edge
+      T'
+      (subspace_topology X Tx T')
+      ArcsT'
+      A
+      p
+      q
+      HglgT'
+      HoriA).
+  }
   (** There is an edge path in T' between p and q (graph vertices). **)
   claim HconnT' : connected_space T' (subspace_topology X Tx T').
   {
