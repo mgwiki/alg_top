@@ -177690,11 +177690,193 @@ apply iffI.
       U
       (topology_subset_axiom X Tx HtopX U HUopen)).
   }
-  rewrite (setminus_setminus_eq X U HUsubX).
-  exact HUopen.
-- assume HarcsClosed.
-  admit.
-Admitted.
+	  rewrite (setminus_setminus_eq X U HUsubX).
+	  exact HUopen.
+	- assume HarcsClosed.
+	  (** helper: each arc is closed in X (from its open complement) **)
+	  claim HarcClosedIn : forall A:set, A :e Arcs -> closed_in X Tx A.
+	  {
+	    let A.
+	    assume HAArcs.
+	    claim HAdat : A c= X /\ arc A (subspace_topology X Tx A).
+	    { exact (HarcDat A HAArcs). }
+	    claim HAsubX : A c= X.
+	    { exact (andEL (A c= X) (arc A (subspace_topology X Tx A)) HAdat). }
+	    claim HUopen : X :\: A :e Tx.
+	    { exact (HarcsClosed A HAArcs). }
+	    claim HclosedComp :
+	      closed_in X Tx (X :\: (X :\: A)).
+	    {
+	      exact (closed_of_open_complement
+	        X
+	        Tx
+	        (X :\: A)
+	        HtopX
+	        HUopen).
+	    }
+	    rewrite <- (setminus_setminus_eq X A HAsubX).
+	    exact HclosedComp.
+	  }
+	  (** helper: for a finite closed cover by arcs, openness is tested on arcs **)
+	  claim coherence_open_backward :
+	    forall U:set,
+	    U c= X ->
+	    (forall A:set, A :e Arcs -> U :/\: A :e subspace_topology X Tx A) ->
+	    U :e Tx.
+	  {
+	    let U.
+	    assume HUsubX HUArcsOpen.
+	    set C := X :\: U.
+	    set Fam := Repl Arcs (fun A:set => A :\: (U :/\: A)).
+	    claim HFamFin : finite Fam.
+	    {
+	      exact (Repl_finite
+	        (fun A:set => A :\: (U :/\: A))
+	        Arcs
+	        HfinArcs).
+	    }
+	    claim HFamClosed : forall D:set, D :e Fam -> closed_in X Tx D.
+	    {
+	      let D.
+	      assume HDin.
+	      apply (ReplE Arcs (fun A0:set => A0 :\: (U :/\: A0)) D HDin).
+	      let A.
+	      assume HApair.
+	      claim HAArcs : A :e Arcs.
+	      { exact (andEL (A :e Arcs) (D = A :\: (U :/\: A)) HApair). }
+	      claim HDeq : D = A :\: (U :/\: A).
+	      { exact (andER (A :e Arcs) (D = A :\: (U :/\: A)) HApair). }
+	      rewrite HDeq.
+	      set TA := subspace_topology X Tx A.
+	      claim HAdat : A c= X /\ arc A TA.
+	      { exact (HarcDat A HAArcs). }
+	      claim HAsubX : A c= X.
+	      { exact (andEL (A c= X) (arc A TA) HAdat). }
+	      claim HtopA : topology_on A TA.
+	      { exact (subspace_topology_is_topology X Tx A HtopX HAsubX). }
+	      claim HAClosed : closed_in X Tx A.
+	      { exact (HarcClosedIn A HAArcs). }
+	      claim HUcapA_open : U :/\: A :e TA.
+	      { exact (HUArcsOpen A HAArcs). }
+	      claim HDclosedA : closed_in A TA (A :\: (U :/\: A)).
+	      {
+	        exact (closed_of_open_complement
+	          A
+	          TA
+	          (U :/\: A)
+	          HtopA
+	          HUcapA_open).
+	      }
+	      exact (closed_in_closed_subspace
+	        X
+	        Tx
+	        A
+	        (A :\: (U :/\: A))
+	        HtopX
+	        HAClosed
+	        HDclosedA).
+	    }
+	    claim HCeq : C = Union Fam.
+	    {
+	      apply set_ext.
+	      - let x.
+	        assume HxC.
+	        claim HxX : x :e X.
+	        { exact (setminusE1 X U x HxC). }
+		        claim HxNotU : x /:e U.
+		        { exact (setminusE2 X U x HxC). }
+		        claim HxUnion : x :e Union Arcs.
+		        {
+		          rewrite <- HUnion.
+		          exact HxX.
+		        }
+		        apply (UnionE Arcs x HxUnion).
+	        let A.
+	        assume HxPack.
+	        claim HxA : x :e A.
+	        { exact (andEL (x :e A) (A :e Arcs) HxPack). }
+	        claim HAArcs : A :e Arcs.
+	        { exact (andER (x :e A) (A :e Arcs) HxPack). }
+	        claim HxNotUA : x /:e (U :/\: A).
+	        {
+	          assume Hbad.
+	          exact (HxNotU (binintersectE1 U A x Hbad)).
+	        }
+		        claim HxDiff : x :e A :\: (U :/\: A).
+		        { exact (setminusI A (U :/\: A) x HxA HxNotUA). }
+		        exact (UnionI
+		          Fam
+		          x
+		          (A :\: (U :/\: A))
+		          HxDiff
+		          (ReplI
+		            Arcs
+		            (fun A0:set => A0 :\: (U :/\: A0))
+		            A
+		            HAArcs)).
+	      - let x.
+	        assume HxUnion.
+	        apply (UnionE Fam x HxUnion).
+	        let D.
+	        assume HDpack.
+	        claim HxD : x :e D.
+	        { exact (andEL (x :e D) (D :e Fam) HDpack). }
+	        claim HDin : D :e Fam.
+	        { exact (andER (x :e D) (D :e Fam) HDpack). }
+	        apply (ReplE Arcs (fun A0:set => A0 :\: (U :/\: A0)) D HDin).
+	        let A.
+	        assume HApair.
+		        claim HAArcs : A :e Arcs.
+		        { exact (andEL (A :e Arcs) (D = A :\: (U :/\: A)) HApair). }
+		        claim HDeq : D = A :\: (U :/\: A).
+		        { exact (andER (A :e Arcs) (D = A :\: (U :/\: A)) HApair). }
+		        claim HxD2 : x :e A :\: (U :/\: A).
+		        {
+		          rewrite <- HDeq.
+		          exact HxD.
+		        }
+		        claim HxA : x :e A.
+		        { exact (setminusE1 A (U :/\: A) x HxD2). }
+		        claim HxNotUA : x /:e (U :/\: A).
+		        { exact (setminusE2 A (U :/\: A) x HxD2). }
+		        claim HxNotU : x /:e U.
+		        {
+		          assume HxU.
+		          exact (HxNotUA (binintersectI U A x HxU HxA)).
+		        }
+		        (** use A c= X from HarcDat **)
+		        claim HAdat : A c= X /\ arc A (subspace_topology X Tx A).
+		        { exact (HarcDat A HAArcs). }
+		        claim HAsubX : A c= X.
+	        { exact (andEL (A c= X) (arc A (subspace_topology X Tx A)) HAdat). }
+	        claim HxX0 : x :e X.
+	        { exact (HAsubX x HxA). }
+	        exact (setminusI X U x HxX0 HxNotU).
+	    }
+	    claim HCFamClosed : closed_in X Tx C.
+	    {
+	      rewrite HCeq.
+	      exact (finite_union_closed_in
+	        X
+	        Tx
+	        Fam
+	        HtopX
+	        HFamFin
+	        HFamClosed).
+	    }
+	    claim HUopen_in : open_in X Tx (X :\: C).
+	    { exact (open_of_closed_complement X Tx C HCFamClosed). }
+	    claim HUeq : X :\: C = U.
+	    {
+	      rewrite (setminus_setminus_eq X U HUsubX).
+	      exact (eq_refl U).
+	    }
+	    rewrite <- HUeq.
+	    exact (andER (topology_on X Tx) ((X :\: C) :e Tx) HUopen_in).
+	  }
+	  (** Hausdorff proof (pending): build disjoint open neighborhoods via coherence **)
+	  admit.
+	Admitted.
 
 (** from S64 Exercise 1(b) (line 2367 in algtop.tex) **)
 (** LATEX VERSION: Give an example to show that X (union of finitely many **)
