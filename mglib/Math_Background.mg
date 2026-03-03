@@ -313656,6 +313656,58 @@ rewrite <- Heq.
 exact Hlpc.
 Qed.
 
+(** helper for S84.3: T1_space is invariant under definitional equality of topologies. **)
+(** Proven Bob **)
+Theorem T1_space_topology_eq_transport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  T1_space X T1 ->
+  T1_space X T2.
+let X T1 T2.
+assume Heq HT1.
+rewrite <- Heq.
+exact HT1.
+Qed.
+
+(** helper for S84.3: regular_space is invariant under definitional equality of topologies. **)
+(** Proven Bob **)
+Theorem regular_space_topology_eq_transport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  regular_space X T1 ->
+  regular_space X T2.
+let X T1 T2.
+assume Heq Hreg.
+rewrite <- Heq.
+exact Hreg.
+Qed.
+
+(** helper for S84.3: normal_space is invariant under definitional equality of topologies. **)
+(** Proven Bob **)
+Theorem normal_space_topology_eq_transport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  normal_space X T1 ->
+  normal_space X T2.
+let X T1 T2.
+assume Heq Hnorm.
+rewrite <- Heq.
+exact Hnorm.
+Qed.
+
+(** helper for S84.3: completely_regular_space is invariant under definitional equality of topologies. **)
+(** Proven Bob **)
+Theorem completely_regular_space_topology_eq_transport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  completely_regular_space X T1 ->
+  completely_regular_space X T2.
+let X T1 T2.
+assume Heq Hcreg.
+rewrite <- Heq.
+exact Hcreg.
+Qed.
+
 (** helper for S84.3: simply_connected is invariant under definitional equality of topologies. **)
 (** Proven Bob **)
 Theorem simply_connected_topology_eq_i_traport :
@@ -313758,6 +313810,58 @@ let X T1 T2.
 assume Heq Hlpc.
 rewrite <- Heq.
 exact Hlpc.
+Qed.
+
+(** helper for S84.3: T1_space is invariant under definitional equality of topologies. **)
+(** Proven Bob **)
+Theorem T1_space_topology_eq_i_traport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  T1_space X T1 ->
+  T1_space X T2.
+let X T1 T2.
+assume Heq HT1.
+rewrite <- Heq.
+exact HT1.
+Qed.
+
+(** helper for S84.3: regular_space is invariant under definitional equality of topologies. **)
+(** Proven Bob **)
+Theorem regular_space_topology_eq_i_traport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  regular_space X T1 ->
+  regular_space X T2.
+let X T1 T2.
+assume Heq Hreg.
+rewrite <- Heq.
+exact Hreg.
+Qed.
+
+(** helper for S84.3: normal_space is invariant under definitional equality of topologies. **)
+(** Proven Bob **)
+Theorem normal_space_topology_eq_i_traport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  normal_space X T1 ->
+  normal_space X T2.
+let X T1 T2.
+assume Heq Hnorm.
+rewrite <- Heq.
+exact Hnorm.
+Qed.
+
+(** helper for S84.3: completely_regular_space is invariant under definitional equality of topologies. **)
+(** Proven Bob **)
+Theorem completely_regular_space_topology_eq_i_traport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  completely_regular_space X T1 ->
+  completely_regular_space X T2.
+let X T1 T2.
+assume Heq Hcreg.
+rewrite <- Heq.
+exact Hcreg.
 Qed.
 
 (** helper for S84.3: no closed reduced edge path in a tree should force trivial pi1 at some basepoint. **)
