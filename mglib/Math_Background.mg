@@ -180470,6 +180470,314 @@ claim Hjordan :
     HCsubSn
     HsimpleSn).
 }
+(** Unpack Jordan components W1 and W2; record the boundary/closure identities explicitly. **)
+apply Hjordan.
+let W1.
+assume HW1ex.
+apply HW1ex.
+let W2.
+assume HJpack.
+(** Peel the left-associated conjunction. **)
+claim HJ9 :
+  W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+  W1 :/\: W2 = Empty /\
+  Sn 2 :\: C = W1 :\/: W2 /\
+  W1 <> Empty /\ W2 <> Empty /\
+  connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1) /\
+  connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2) /\
+  closure_of (Sn 2) (Sn_topology 2) W1 :\: W1 = C.
+{
+  exact (andEL
+    (W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+     W1 :/\: W2 = Empty /\
+     Sn 2 :\: C = W1 :\/: W2 /\
+     W1 <> Empty /\ W2 <> Empty /\
+     connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1) /\
+     connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2) /\
+     closure_of (Sn 2) (Sn_topology 2) W1 :\: W1 = C)
+    (closure_of (Sn 2) (Sn_topology 2) W2 :\: W2 = C)
+    HJpack).
+}
+claim Hbd2 : closure_of (Sn 2) (Sn_topology 2) W2 :\: W2 = C.
+{
+  exact (andER
+    (W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+     W1 :/\: W2 = Empty /\
+     Sn 2 :\: C = W1 :\/: W2 /\
+     W1 <> Empty /\ W2 <> Empty /\
+     connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1) /\
+     connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2) /\
+     closure_of (Sn 2) (Sn_topology 2) W1 :\: W1 = C)
+    (closure_of (Sn 2) (Sn_topology 2) W2 :\: W2 = C)
+    HJpack).
+}
+claim HJ8 :
+  W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+  W1 :/\: W2 = Empty /\
+  Sn 2 :\: C = W1 :\/: W2 /\
+  W1 <> Empty /\ W2 <> Empty /\
+  connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1) /\
+  connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2).
+{
+  exact (andEL
+    (W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+     W1 :/\: W2 = Empty /\
+     Sn 2 :\: C = W1 :\/: W2 /\
+     W1 <> Empty /\ W2 <> Empty /\
+     connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1) /\
+     connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2))
+    (closure_of (Sn 2) (Sn_topology 2) W1 :\: W1 = C)
+    HJ9).
+}
+claim Hbd1 : closure_of (Sn 2) (Sn_topology 2) W1 :\: W1 = C.
+{
+  exact (andER
+    (W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+     W1 :/\: W2 = Empty /\
+     Sn 2 :\: C = W1 :\/: W2 /\
+     W1 <> Empty /\ W2 <> Empty /\
+     connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1) /\
+     connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2))
+    (closure_of (Sn 2) (Sn_topology 2) W1 :\: W1 = C)
+    HJ9).
+}
+claim HJ7 :
+  W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+  W1 :/\: W2 = Empty /\
+  Sn 2 :\: C = W1 :\/: W2 /\
+  W1 <> Empty /\ W2 <> Empty /\
+  connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1).
+{
+  exact (andEL
+    (W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+     W1 :/\: W2 = Empty /\
+     Sn 2 :\: C = W1 :\/: W2 /\
+     W1 <> Empty /\ W2 <> Empty /\
+     connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1))
+    (connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2))
+    HJ8).
+}
+claim HconnW2 :
+  connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2).
+{
+  exact (andER
+    (W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+     W1 :/\: W2 = Empty /\
+     Sn 2 :\: C = W1 :\/: W2 /\
+     W1 <> Empty /\ W2 <> Empty /\
+     connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1))
+    (connected_space W2 (subspace_topology (Sn 2) (Sn_topology 2) W2))
+    HJ8).
+}
+claim HJ6 :
+  W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+  W1 :/\: W2 = Empty /\
+  Sn 2 :\: C = W1 :\/: W2 /\
+  W1 <> Empty /\ W2 <> Empty.
+{
+  exact (andEL
+    (W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+     W1 :/\: W2 = Empty /\
+     Sn 2 :\: C = W1 :\/: W2 /\
+     W1 <> Empty /\ W2 <> Empty)
+    (connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1))
+    HJ7).
+}
+claim HconnW1 :
+  connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1).
+{
+  exact (andER
+    (W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+     W1 :/\: W2 = Empty /\
+     Sn 2 :\: C = W1 :\/: W2 /\
+     W1 <> Empty /\ W2 <> Empty)
+    (connected_space W1 (subspace_topology (Sn 2) (Sn_topology 2) W1))
+    HJ7).
+}
+claim HJ5 :
+  W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+  W1 :/\: W2 = Empty /\
+  Sn 2 :\: C = W1 :\/: W2 /\
+  W1 <> Empty.
+{
+  exact (andEL
+    (W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+     W1 :/\: W2 = Empty /\
+     Sn 2 :\: C = W1 :\/: W2 /\
+     W1 <> Empty)
+    (W2 <> Empty)
+    HJ6).
+}
+claim HW2ne : W2 <> Empty.
+{
+  exact (andER
+    (W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+     W1 :/\: W2 = Empty /\
+     Sn 2 :\: C = W1 :\/: W2 /\
+     W1 <> Empty)
+    (W2 <> Empty)
+    HJ6).
+}
+claim HJ4 :
+  W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+  W1 :/\: W2 = Empty /\
+  Sn 2 :\: C = W1 :\/: W2.
+{
+  exact (andEL
+    (W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+     W1 :/\: W2 = Empty /\
+     Sn 2 :\: C = W1 :\/: W2)
+    (W1 <> Empty)
+    HJ5).
+}
+claim HW1ne : W1 <> Empty.
+{
+  exact (andER
+    (W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+     W1 :/\: W2 = Empty /\
+     Sn 2 :\: C = W1 :\/: W2)
+    (W1 <> Empty)
+    HJ5).
+}
+claim HJ3 :
+  W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+  W1 :/\: W2 = Empty.
+{
+  exact (andEL
+    (W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+     W1 :/\: W2 = Empty)
+    (Sn 2 :\: C = W1 :\/: W2)
+    HJ4).
+}
+claim HYeqW : Y = W1 :\/: W2.
+{
+  exact (andER
+    (W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2 /\
+     W1 :/\: W2 = Empty)
+    (Sn 2 :\: C = W1 :\/: W2)
+    HJ4).
+}
+claim HJ2 : W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2.
+{
+  exact (andEL
+    (W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2)
+    (W1 :/\: W2 = Empty)
+    HJ3).
+}
+claim HW1W2Empty : W1 :/\: W2 = Empty.
+{
+  exact (andER
+    (W1 :e Sn_topology 2 /\ W2 :e Sn_topology 2)
+    (W1 :/\: W2 = Empty)
+    HJ3).
+}
+claim HW1openSn : W1 :e Sn_topology 2.
+{ exact (andEL (W1 :e Sn_topology 2) (W2 :e Sn_topology 2) HJ2). }
+claim HW2openSn : W2 :e Sn_topology 2.
+{ exact (andER (W1 :e Sn_topology 2) (W2 :e Sn_topology 2) HJ2). }
+(** Subset relations from the union decomposition. **)
+claim HW1subY : W1 c= Y.
+{
+  let z.
+  assume HzW1.
+  rewrite HYeqW.
+  exact (binunionI1 W1 W2 z HzW1).
+}
+claim HW2subY : W2 c= Y.
+{
+  let z.
+  assume HzW2.
+  rewrite HYeqW.
+  exact (binunionI2 W1 W2 z HzW2).
+}
+claim HW1subSn : W1 c= Sn 2.
+{ exact (topology_elem_subset (Sn 2) (Sn_topology 2) W1 HtopSn2 HW1openSn). }
+claim HW2subSn : W2 c= Sn 2.
+{ exact (topology_elem_subset (Sn 2) (Sn_topology 2) W2 HtopSn2 HW2openSn). }
+claim HW1CEmpty : W1 :/\: C = Empty.
+{
+  apply set_ext.
+  - let z.
+    assume HzInt : z :e W1 :/\: C.
+    claim HzW1 : z :e W1.
+    { exact (binintersectE1 W1 C z HzInt). }
+    claim HzC : z :e C.
+    { exact (binintersectE2 W1 C z HzInt). }
+    claim HzY : z :e Y.
+    { exact (HW1subY z HzW1). }
+    claim HzNotC : z /:e C.
+    { exact (setminusE2 (Sn 2) C z HzY). }
+    exact (FalseE (HzNotC HzC) (z :e Empty)).
+  - let z.
+    assume HzE : z :e Empty.
+    exact (FalseE (EmptyE z HzE) (z :e W1 :/\: C)).
+}
+claim HW2CEmpty : W2 :/\: C = Empty.
+{
+  apply set_ext.
+  - let z.
+    assume HzInt : z :e W2 :/\: C.
+    claim HzW2 : z :e W2.
+    { exact (binintersectE1 W2 C z HzInt). }
+    claim HzC : z :e C.
+    { exact (binintersectE2 W2 C z HzInt). }
+    claim HzY : z :e Y.
+    { exact (HW2subY z HzW2). }
+    claim HzNotC : z /:e C.
+    { exact (setminusE2 (Sn 2) C z HzY). }
+    exact (FalseE (HzNotC HzC) (z :e Empty)).
+  - let z.
+    assume HzE : z :e Empty.
+    exact (FalseE (EmptyE z HzE) (z :e W2 :/\: C)).
+}
+claim HclW1eq : closure_of (Sn 2) (Sn_topology 2) W1 = W1 :\/: C.
+{
+  apply set_ext.
+  - let z.
+    assume Hzcl : z :e closure_of (Sn 2) (Sn_topology 2) W1.
+    apply (xm (z :e W1)).
+    + assume HzW1 : z :e W1.
+      exact (binunionI1 W1 C z HzW1).
+    + assume HzNotW1 : ~(z :e W1).
+      claim Hzsetm : z :e closure_of (Sn 2) (Sn_topology 2) W1 :\: W1.
+      { exact (setminusI (closure_of (Sn 2) (Sn_topology 2) W1) W1 z Hzcl HzNotW1). }
+      claim HzC : z :e C.
+      { rewrite <- Hbd1. exact Hzsetm. }
+      exact (binunionI2 W1 C z HzC).
+  - let z.
+    assume HzWC : z :e W1 :\/: C.
+    apply (binunionE W1 C z HzWC).
+    + assume HzW1 : z :e W1.
+      exact ((subset_of_closure (Sn 2) (Sn_topology 2) W1 HtopSn2 HW1subSn) z HzW1).
+    + assume HzC : z :e C.
+      claim Hzsetm : z :e closure_of (Sn 2) (Sn_topology 2) W1 :\: W1.
+      { rewrite Hbd1. exact HzC. }
+      exact (setminusE1 (closure_of (Sn 2) (Sn_topology 2) W1) W1 z Hzsetm).
+}
+claim HclW2eq : closure_of (Sn 2) (Sn_topology 2) W2 = W2 :\/: C.
+{
+  apply set_ext.
+  - let z.
+    assume Hzcl : z :e closure_of (Sn 2) (Sn_topology 2) W2.
+    apply (xm (z :e W2)).
+    + assume HzW2 : z :e W2.
+      exact (binunionI1 W2 C z HzW2).
+    + assume HzNotW2 : ~(z :e W2).
+      claim Hzsetm : z :e closure_of (Sn 2) (Sn_topology 2) W2 :\: W2.
+      { exact (setminusI (closure_of (Sn 2) (Sn_topology 2) W2) W2 z Hzcl HzNotW2). }
+      claim HzC : z :e C.
+      { rewrite <- Hbd2. exact Hzsetm. }
+      exact (binunionI2 W2 C z HzC).
+  - let z.
+    assume HzWC : z :e W2 :\/: C.
+    apply (binunionE W2 C z HzWC).
+    + assume HzW2 : z :e W2.
+      exact ((subset_of_closure (Sn 2) (Sn_topology 2) W2 HtopSn2 HW2subSn) z HzW2).
+    + assume HzC : z :e C.
+      claim Hzsetm : z :e closure_of (Sn 2) (Sn_topology 2) W2 :\: W2.
+      { rewrite Hbd2. exact HzC. }
+      exact (setminusE1 (closure_of (Sn 2) (Sn_topology 2) W2) W2 z Hzsetm).
+}
 (** TODO: build the actual deformation retract homotopy using the Jordan curve theorem. **)
 prove deformation_retract X Tx C.
 claim Hdeform0 :
