@@ -46542,20 +46542,6 @@ claim Hsurj : surjective_map E B p.
 {
   exact (covering_map_surjective E Te B Tb p Hcov).
 }
-claim Hfun : function_on p E B.
-{
-  exact (andEL
-    (function_on p E B)
-    (forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y)
-    Hsurj).
-}
-claim Hsurj_val : forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y.
-{
-  exact (andER
-    (function_on p E B)
-    (forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y)
-    Hsurj).
-}
 exact (andER
   (function_on p E B)
   (forall y:set, y :e B -> exists x:set, x :e E /\ apply_fun p x = y)
