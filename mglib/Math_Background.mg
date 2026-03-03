@@ -321110,7 +321110,29 @@ apply andI.
               { rewrite <- HsubTopoB0T. exact Hrp. }
               apply orIR. rewrite HsubTopoB0T0. exact HrpX.
       - let C. assume HCsub.
-        admit.
+        apply iffI.
+        + assume HclosedT0.
+          let A0. assume HA0B.
+          claim HtopT0 : topology_on T0 (subspace_topology X Tx T0).
+          { exact (subspace_topology_is_topology X Tx T0 HtopX HT0subX). }
+          claim HA0subT0 : A0 c= T0.
+          { let x. assume HxA0. exact (UnionI B x A0 HxA0 HA0B). }
+          apply (iffER
+            (closed_in A0 (subspace_topology T0 (subspace_topology X Tx T0) A0) (C :/\: A0))
+            (exists D:set, closed_in T0 (subspace_topology X Tx T0) D /\ (C :/\: A0) = D :/\: A0)
+            (closed_in_subspace_iff_intersection
+              T0
+              (subspace_topology X Tx T0)
+              A0
+              (C :/\: A0)
+              HtopT0
+              HA0subT0)).
+          witness C.
+          apply andI.
+          * exact HclosedT0.
+          * reflexivity.
+        + assume HclosedA0.
+          admit.
     }
     claim HconnT0 : connected_space T0 (subspace_topology X Tx T0).
     {
