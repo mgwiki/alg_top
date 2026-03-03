@@ -172272,6 +172272,203 @@ apply set_ext.
     exact (setminusI (setprod X Y) {(a,b),(a,b)} z HzIn HzNot).
 Qed.
 
+(** Proven Bob **)
+(** Helper: swap map on a product is a homeomorphism **)
+Theorem setprod_swap_homeomorphism : forall X Tx Y Ty:set,
+  topology_on X Tx ->
+  topology_on Y Ty ->
+  homeomorphism
+    (setprod X Y)
+    (product_topology X Tx Y Ty)
+    (setprod Y X)
+    (product_topology Y Ty X Tx)
+    (pair_map (setprod X Y) (projection_map2 X Y) (projection_map1 X Y)).
+let X Tx Y Ty.
+assume HtopX HtopY.
+set f := pair_map (setprod X Y) (projection_map2 X Y) (projection_map1 X Y).
+set g := pair_map (setprod Y X) (projection_map2 Y X) (projection_map1 Y X).
+claim Hfcont :
+  continuous_map (setprod X Y) (product_topology X Tx Y Ty)
+    (setprod Y X) (product_topology Y Ty X Tx) f.
+{
+  claim Hproj :
+    continuous_map (setprod X Y) (product_topology X Tx Y Ty) X Tx (projection_map1 X Y) /\
+    continuous_map (setprod X Y) (product_topology X Tx Y Ty) Y Ty (projection_map2 X Y).
+  { exact (projection_maps_continuous X Tx Y Ty HtopX HtopY). }
+  claim Hproj1 :
+    continuous_map (setprod X Y) (product_topology X Tx Y Ty) X Tx (projection_map1 X Y).
+  { exact (andEL
+      (continuous_map (setprod X Y) (product_topology X Tx Y Ty) X Tx (projection_map1 X Y))
+      (continuous_map (setprod X Y) (product_topology X Tx Y Ty) Y Ty (projection_map2 X Y))
+      Hproj). }
+  claim Hproj2 :
+    continuous_map (setprod X Y) (product_topology X Tx Y Ty) Y Ty (projection_map2 X Y).
+  { exact (andER
+      (continuous_map (setprod X Y) (product_topology X Tx Y Ty) X Tx (projection_map1 X Y))
+      (continuous_map (setprod X Y) (product_topology X Tx Y Ty) Y Ty (projection_map2 X Y))
+      Hproj). }
+  exact (maps_into_products
+    (setprod X Y)
+    (product_topology X Tx Y Ty)
+    Y
+    Ty
+    X
+    Tx
+    (projection_map2 X Y)
+    (projection_map1 X Y)
+    Hproj2
+    Hproj1).
+}
+claim Hgcont :
+  continuous_map (setprod Y X) (product_topology Y Ty X Tx)
+    (setprod X Y) (product_topology X Tx Y Ty) g.
+{
+  claim Hproj :
+    continuous_map (setprod Y X) (product_topology Y Ty X Tx) Y Ty (projection_map1 Y X) /\
+    continuous_map (setprod Y X) (product_topology Y Ty X Tx) X Tx (projection_map2 Y X).
+  { exact (projection_maps_continuous Y Ty X Tx HtopY HtopX). }
+  claim Hproj1 :
+    continuous_map (setprod Y X) (product_topology Y Ty X Tx) Y Ty (projection_map1 Y X).
+  { exact (andEL
+      (continuous_map (setprod Y X) (product_topology Y Ty X Tx) Y Ty (projection_map1 Y X))
+      (continuous_map (setprod Y X) (product_topology Y Ty X Tx) X Tx (projection_map2 Y X))
+      Hproj). }
+  claim Hproj2 :
+    continuous_map (setprod Y X) (product_topology Y Ty X Tx) X Tx (projection_map2 Y X).
+  { exact (andER
+      (continuous_map (setprod Y X) (product_topology Y Ty X Tx) Y Ty (projection_map1 Y X))
+      (continuous_map (setprod Y X) (product_topology Y Ty X Tx) X Tx (projection_map2 Y X))
+      Hproj). }
+  exact (maps_into_products
+    (setprod Y X)
+    (product_topology Y Ty X Tx)
+    X
+    Tx
+    Y
+    Ty
+    (projection_map2 Y X)
+    (projection_map1 Y X)
+    Hproj2
+    Hproj1).
+}
+claim HfFun : function_on f (setprod X Y) (setprod Y X).
+{
+  exact (continuous_map_function_on
+    (setprod X Y)
+    (product_topology X Tx Y Ty)
+    (setprod Y X)
+    (product_topology Y Ty X Tx)
+    f
+    Hfcont).
+}
+claim HgFun : function_on g (setprod Y X) (setprod X Y).
+{
+  exact (continuous_map_function_on
+    (setprod Y X)
+    (product_topology Y Ty X Tx)
+    (setprod X Y)
+    (product_topology X Tx Y Ty)
+    g
+    Hgcont).
+}
+claim Hleft : forall p:set, p :e setprod X Y -> apply_fun g (apply_fun f p) = p.
+{
+  let p. assume Hp.
+  claim Hfp : apply_fun f p :e setprod Y X.
+  { exact (HfFun p Hp). }
+  rewrite (pair_map_apply (setprod Y X) X Y (projection_map2 Y X) (projection_map1 Y X)
+    (apply_fun f p) Hfp).
+  rewrite (projection2_apply Y X (apply_fun f p) Hfp).
+  rewrite (projection1_apply Y X (apply_fun f p) Hfp).
+  rewrite (pair_map_apply (setprod X Y) Y X (projection_map2 X Y) (projection_map1 X Y) p Hp).
+  rewrite tuple_2_1_eq.
+  rewrite tuple_2_0_eq.
+  rewrite (projection1_apply X Y p Hp).
+  rewrite (projection2_apply X Y p Hp).
+  claim Heta0sum : setsum (proj0 p) (proj1 p) = p.
+  {
+    exact (andEL
+      (setsum (proj0 p) (proj1 p) = p)
+      (proj0 p :e X)
+      (andEL
+        (setsum (proj0 p) (proj1 p) = p /\ proj0 p :e X)
+        (proj1 p :e (fun _ : set => Y) (proj0 p))
+        (Sigma_eta_proj0_proj1 X (fun _ : set => Y) p Hp))).
+  }
+  claim Heta2 : (proj0 p, proj1 p) = p.
+  {
+    exact (eq_i_tra
+      (proj0 p, proj1 p)
+      (setsum (proj0 p) (proj1 p))
+      p
+      (eq_symm
+        (setsum (proj0 p) (proj1 p))
+        (proj0 p, proj1 p)
+        (tuple_pair (proj0 p) (proj1 p)))
+      Heta0sum).
+  }
+  rewrite <- (proj0_ap_0 p).
+  rewrite <- (proj1_ap_1 p).
+  exact Heta2.
+}
+claim Hright : forall p:set, p :e setprod Y X -> apply_fun f (apply_fun g p) = p.
+{
+  let p. assume Hp.
+  claim Hgp : apply_fun g p :e setprod X Y.
+  { exact (HgFun p Hp). }
+  rewrite (pair_map_apply (setprod X Y) Y X (projection_map2 X Y) (projection_map1 X Y)
+    (apply_fun g p) Hgp).
+  rewrite (projection2_apply X Y (apply_fun g p) Hgp).
+  rewrite (projection1_apply X Y (apply_fun g p) Hgp).
+  rewrite (pair_map_apply (setprod Y X) X Y (projection_map2 Y X) (projection_map1 Y X) p Hp).
+  rewrite tuple_2_1_eq.
+  rewrite tuple_2_0_eq.
+  rewrite (projection1_apply Y X p Hp).
+  rewrite (projection2_apply Y X p Hp).
+  claim Heta0sum : setsum (proj0 p) (proj1 p) = p.
+  {
+    exact (andEL
+      (setsum (proj0 p) (proj1 p) = p)
+      (proj0 p :e Y)
+      (andEL
+        (setsum (proj0 p) (proj1 p) = p /\ proj0 p :e Y)
+        (proj1 p :e (fun _ : set => X) (proj0 p))
+        (Sigma_eta_proj0_proj1 Y (fun _ : set => X) p Hp))).
+  }
+  claim Heta2 : (proj0 p, proj1 p) = p.
+  {
+    exact (eq_i_tra
+      (proj0 p, proj1 p)
+      (setsum (proj0 p) (proj1 p))
+      p
+      (eq_symm
+        (setsum (proj0 p) (proj1 p))
+        (proj0 p, proj1 p)
+        (tuple_pair (proj0 p) (proj1 p)))
+      Heta0sum).
+  }
+  rewrite <- (proj0_ap_0 p).
+  rewrite <- (proj1_ap_1 p).
+  exact Heta2.
+}
+prove
+  continuous_map (setprod X Y) (product_topology X Tx Y Ty)
+    (setprod Y X) (product_topology Y Ty X Tx) f /\
+  exists g0:set,
+    continuous_map (setprod Y X) (product_topology Y Ty X Tx)
+      (setprod X Y) (product_topology X Tx Y Ty) g0 /\
+    (forall x:set, x :e setprod X Y -> apply_fun g0 (apply_fun f x) = x) /\
+    (forall y:set, y :e setprod Y X -> apply_fun f (apply_fun g0 y) = y).
+apply andI.
+- exact Hfcont.
+- witness g.
+  apply andI.
+  + apply andI.
+    * exact Hgcont.
+    * exact Hleft.
+  + exact Hright.
+Qed.
+
 (** Helper: Euclidean spaces of positive dimension are connected **)
 (** Proven Bob **)
 Theorem euclidean_space_connected_succ : forall n:set,
