@@ -180386,7 +180386,59 @@ Theorem lemma65_2_deformation_retract : forall C Tc p q:set,
     (subspace_topology (Sn 2) (Sn_topology 2)
       (Sn 2 :\: (Sing p :\/: Sing q)))
     C.
-admit.
+let C Tc p q.
+assume HCsubSn Hsimple HTc HpSnC HqSnC HcompNe.
+set X := Sn 2 :\: (Sing p :\/: Sing q).
+set Tx := subspace_topology (Sn 2) (Sn_topology 2) X.
+claim HCsubX : C c= X.
+{
+  let z.
+  assume HzC.
+  claim HzSn : z :e Sn 2.
+  { exact (HCsubSn z HzC). }
+  claim HzNotp : z /:e Sing p.
+  {
+    assume Hzp.
+    claim Hzeq : z = p.
+    { exact (SingE p z Hzp). }
+    claim HpC : p :e C.
+    { rewrite <- Hzeq. exact HzC. }
+    exact ((setminusE2 (Sn 2) C p HpSnC) HpC).
+  }
+  claim HzNotq : z /:e Sing q.
+  {
+    assume Hzq.
+    claim Hzeq : z = q.
+    { exact (SingE q z Hzq). }
+    claim HqC : q :e C.
+    { rewrite <- Hzeq. exact HzC. }
+    exact ((setminusE2 (Sn 2) C q HqSnC) HqC).
+  }
+  claim HzNot : z /:e (Sing p :\/: Sing q).
+  {
+    assume Hbad.
+    apply (binunionE (Sing p) (Sing q) z Hbad).
+    - assume Hzp. exact (HzNotp Hzp).
+    - assume Hzq. exact (HzNotq Hzq).
+  }
+  exact (setminusI (Sn 2) (Sing p :\/: Sing q) z HzSn HzNot).
+}
+(** TODO: build the actual deformation retract homotopy using the Jordan curve theorem. **)
+prove deformation_retract X Tx C.
+claim Hdeform0 :
+  C c= X /\
+  exists H:set,
+    continuous_map (setprod X unit_interval)
+      (product_topology X Tx unit_interval unit_interval_topology) X Tx H /\
+    (forall x:set, x :e X -> apply_fun H (x, 0) = x) /\
+    (forall x:set, x :e X -> apply_fun H (x, 1) :e C) /\
+    (forall a t:set, a :e C -> t :e unit_interval -> apply_fun H (a, t) = a).
+{
+  apply andI.
+  - exact HCsubX.
+  - admit.
+}
+exact Hdeform0.
 Admitted.
 
 (** from S65 Thm 65.2 (line 2437 in algtop.tex) **)
