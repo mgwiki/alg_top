@@ -180436,6 +180436,79 @@ claim Hx0Not : x0 /:e (Sing p :\/: Sing q).
 claim Hx0X : x0 :e X.
 { exact (setminusI (Sn 2) (Sing p :\/: Sing q) x0 Hx0Sn Hx0Not). }
 (** Reduce to the deformation retraction statement via S58 Thm 58.3. **)
+set Y := Sn 2 :\: C.
+set Ty := subspace_topology (Sn 2) (Sn_topology 2) Y.
+claim HYsubSn : Y c= Sn 2.
+{
+  let z.
+  assume HzY.
+  exact (setminusE1 (Sn 2) C z HzY).
+}
+claim HtopY : topology_on Y Ty.
+{
+  exact (subspace_topology_is_topology
+    (Sn 2) (Sn_topology 2) Y HtopSn2 HYsubSn).
+}
+claim HpY : p :e Y.
+{ exact HpSnC. }
+claim HqY : q :e Y.
+{ exact HqSnC. }
+set U := component_of Y Ty p.
+set V := component_of Y Ty q.
+claim HpU : p :e U.
+{
+  claim HpU0 :
+    p :e {y :e Y |
+      exists C0:set,
+        connected_space C0 (subspace_topology Y Ty C0) /\
+        p :e C0 /\ y :e C0}.
+  {
+    apply (SepI
+      Y
+      (fun y:set =>
+        exists C0:set,
+          connected_space C0 (subspace_topology Y Ty C0) /\
+          p :e C0 /\ y :e C0)
+      p).
+    - exact HpY.
+    - witness (Sing p).
+      apply andI.
+      + apply andI.
+        * exact (singleton_subspace_connected Y Ty p HtopY HpY).
+        * exact (SingI p).
+      + exact (SingI p).
+  }
+  exact HpU0.
+}
+claim HqV : q :e V.
+{
+  claim HqV0 :
+    q :e {y :e Y |
+      exists C0:set,
+        connected_space C0 (subspace_topology Y Ty C0) /\
+        q :e C0 /\ y :e C0}.
+  {
+    apply (SepI
+      Y
+      (fun y:set =>
+        exists C0:set,
+          connected_space C0 (subspace_topology Y Ty C0) /\
+          q :e C0 /\ y :e C0)
+      q).
+    - exact HqY.
+    - witness (Sing q).
+      apply andI.
+      + apply andI.
+        * exact (singleton_subspace_connected Y Ty q HtopY HqY).
+        * exact (SingI q).
+      + exact (SingI q).
+  }
+  exact HqV0.
+}
+claim HUVneq : U <> V.
+{ exact HcompNe. }
+(** TODO: show Y = U :\/: V (Jordan separation yields exactly two complementary components). **)
+(** TODO: build deformation retract of X = (Y :\\: (Sing p :\\/: Sing q)) :\\/: C onto C by retracting punctured components onto the common boundary. **)
 claim Hdeform : deformation_retract X Tx C.
 { admit. }
 rewrite HTcX.
