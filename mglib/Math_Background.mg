@@ -321324,7 +321324,84 @@ apply andI.
       claim HepT : edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0.
       {
         claim HfunT : function_on path_seq n (setprod (setprod T T) (Power T)).
-        { admit. }
+        {
+          let i.
+          assume Hi.
+          apply (edge_path_edge_decomposition
+            T0
+            (subspace_topology X Tx T0)
+            B
+            n
+            path_seq
+            x0
+            i
+            Hep0
+            Hi).
+          let E.
+          assume HE.
+          apply HE.
+          let ini.
+          assume Hini.
+          apply Hini.
+          let fin.
+          assume Hfin.
+          claim Happ : apply_fun path_seq i = ((ini, fin), E).
+          {
+            exact (andEL
+              (apply_fun path_seq i = ((ini, fin), E))
+              (oriented_edge T0 (subspace_topology X Tx T0) B E ini fin)
+              Hfin).
+          }
+          claim Hori0 : oriented_edge T0 (subspace_topology X Tx T0) B E ini fin.
+          {
+            exact (andER
+              (apply_fun path_seq i = ((ini, fin), E))
+              (oriented_edge T0 (subspace_topology X Tx T0) B E ini fin)
+              Hfin).
+          }
+          claim HEinB : E :e B.
+          { exact (oriented_edge_in_arcs
+              T0 (subspace_topology X Tx T0) B E ini fin Hori0). }
+          claim HEinArcsT : E :e ArcsT.
+          { exact (HBsubArcsT E HEinB). }
+          claim HEsT : E c= T.
+          { exact (tree_in_graph_arc_subset_T
+              T ArcsT X Tx Arcs E Htree HEinArcsT). }
+          claim Hend0 :
+            end_points_of_arc E
+              (subspace_topology T0 (subspace_topology X Tx T0) E) ini fin.
+          { exact (oriented_edge_endpoints
+              T0 (subspace_topology X Tx T0) B E ini fin Hori0). }
+          claim HiniE : ini :e E.
+          { exact (end_points_of_arc_left_in_set
+              E
+              (subspace_topology T0 (subspace_topology X Tx T0) E)
+              ini fin Hend0). }
+          claim HfinE : fin :e E.
+          { exact (end_points_of_arc_right_in_set
+              E
+              (subspace_topology T0 (subspace_topology X Tx T0) E)
+              ini fin Hend0). }
+          claim HiniT : ini :e T.
+          { exact (HEsT ini HiniE). }
+          claim HfinT : fin :e T.
+          { exact (HEsT fin HfinE). }
+          claim HinifinTT : (ini, fin) :e setprod T T.
+          {
+            exact (tuple_2_setprod_by_pair_Sigma
+              T T ini fin HiniT HfinT).
+          }
+          claim HEpow : E :e Power T.
+          { exact (PowerI T E HEsT). }
+          rewrite Happ.
+          exact (tuple_2_setprod_by_pair_Sigma
+            (setprod T T)
+            (Power T)
+            (ini, fin)
+            E
+            HinifinTT
+            HEpow).
+        }
         claim HdecT :
           forall i:set, i :e n ->
             exists E ini fin:set,
