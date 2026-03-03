@@ -211330,6 +211330,399 @@ apply and3I.
     Hxsi).
 Qed.
 
+(** Infrastructure: in a free product, a reduced word of length >= 2 cannot represent e **)
+(** Proven Charlie **)
+Lemma free_product_reduced_word_length_ge2_product_ne_e :
+  forall G mult e inv J Gfam efam n xs:set,
+  free_product_of_subgroups G mult e inv J Gfam efam ->
+  reduced_word J Gfam efam n xs ->
+  n <> 0 -> n <> 1 ->
+  word_product mult e xs n <> e.
+let G mult e inv J Gfam efam n xs.
+assume Hfp Hred Hn_ne0 Hn_ne1.
+assume Hwp_eq : word_product mult e xs n = e.
+(** Unpack free product structure. **)
+apply (and5E
+  (group_structure G mult e inv)
+  (forall alpha:set, alpha :e J -> subgroup_of (apply_fun Gfam alpha) G mult e inv)
+  (forall alpha beta:set, alpha :e J -> beta :e J -> alpha <> beta ->
+    forall x:set, x :e apply_fun Gfam alpha -> x :e apply_fun Gfam beta -> x = e)
+  (subgroups_generate G mult e inv J Gfam)
+  (forall x:set, x :e G -> x <> e ->
+    exists n0 xs0:set,
+      reduced_word J Gfam efam n0 xs0 /\ n0 <> 0 /\
+	      word_product mult e xs0 n0 = x /\
+	      (forall n' xs':set,
+	        reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+	        word_product mult e xs' n' = x ->
+	        n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i)))
+	  Hfp).
+assume Hgrp Hsubfam Hdisjoint _ Huniq_all.
+(** n is a natural number. **)
+claim HnO : n :e omega.
+{
+  apply (and3E
+    (n :e omega)
+    (forall i:set, i :e n ->
+      exists alpha:set, alpha :e J /\
+        apply_fun xs i :e apply_fun Gfam alpha /\
+        apply_fun xs i <> apply_fun efam alpha)
+    (forall i:set, i :e n -> ordsucc i :e n ->
+      forall alpha beta:set, alpha :e J -> beta :e J ->
+        apply_fun xs i :e apply_fun Gfam alpha ->
+        apply_fun xs (ordsucc i) :e apply_fun Gfam beta ->
+        alpha <> beta)
+    Hred).
+  assume HnO _ _. exact HnO.
+}
+claim Hn_nat : nat_p n. { exact (omega_nat_p n HnO). }
+(** Write n = ordsucc m with m <> 0, then m = ordsucc k to access the last two indices. **)
+claim Hm_pack : exists m:set, nat_p m /\ n = ordsucc m.
+{
+  claim Hinvn : n = 0 \/ exists m:set, nat_p m /\ n = ordsucc m.
+  { exact (nat_inv n Hn_nat). }
+  apply Hinvn.
+  - assume Hn0.
+    exact (FalseE (Hn_ne0 Hn0) (exists m:set, nat_p m /\ n = ordsucc m)).
+  - assume Hm. exact Hm.
+}
+apply Hm_pack. let m. assume Hm_pack2.
+claim Hm_nat : nat_p m.
+{ exact (andEL (nat_p m) (n = ordsucc m) Hm_pack2). }
+claim Hn_eq : n = ordsucc m.
+{ exact (andER (nat_p m) (n = ordsucc m) Hm_pack2). }
+claim Hm_ne0 : m <> 0.
+{
+  assume Hm0.
+  claim Hn1 : n = 1.
+  { rewrite Hn_eq. rewrite Hm0. exact ordsucc_0_eq_1_nat. }
+  exact (Hn_ne1 Hn1).
+}
+claim Hk_pack : exists k:set, nat_p k /\ m = ordsucc k.
+{
+  claim Hinv : m = 0 \/ exists k:set, nat_p k /\ m = ordsucc k.
+  { exact (nat_inv m Hm_nat). }
+  apply Hinv.
+  - assume Hm0.
+    exact (FalseE (Hm_ne0 Hm0) (exists k:set, nat_p k /\ m = ordsucc k)).
+  - assume Hk. exact Hk.
+}
+apply Hk_pack. let k. assume Hk_pack2.
+claim Hk_nat : nat_p k.
+{ exact (andEL (nat_p k) (m = ordsucc k) Hk_pack2). }
+claim Hm_eq : m = ordsucc k.
+{ exact (andER (nat_p k) (m = ordsucc k) Hk_pack2). }
+(** Indices: k is penultimate, m is last, and both lie in n. **)
+claim Hm_in_n : m :e n.
+{ rewrite Hn_eq. exact (ordsuccI2 m). }
+claim Hk_in_m : k :e m.
+{ rewrite Hm_eq. exact (ordsuccI2 k). }
+claim Hk_in_n : k :e n.
+{
+  rewrite Hn_eq.
+  exact (ordsuccI1 m k Hk_in_m).
+}
+(** Nontriviality of all entries (length >= 2). **)
+claim Hxs_ne_all : forall i:set, i :e n -> apply_fun xs i <> e.
+{
+  let i. assume Hi.
+  exact (reduced_word_no_eG_all
+    G mult e inv J Gfam efam n xs
+    Hgrp Hsubfam Hred Hn_ne0 Hn_ne1 i Hi).
+}
+set y := apply_fun xs k.
+claim Hy_ne : y <> e.
+{ exact (Hxs_ne_all k Hk_in_n). }
+claim Hxsm_ne : apply_fun xs m <> e.
+{ exact (Hxs_ne_all m Hm_in_n). }
+(** Extract labels alpha_y for y and alpha_m for xs(m). **)
+claim Hy_pack :
+  exists alpha:set, alpha :e J /\ y :e apply_fun Gfam alpha /\ y <> apply_fun efam alpha.
+{ exact (reduced_word_elem J Gfam efam n xs k Hred Hk_in_n). }
+apply Hy_pack. let alpha_y. assume Hy_pack2.
+apply (and3E (alpha_y :e J) (y :e apply_fun Gfam alpha_y) (y <> apply_fun efam alpha_y) Hy_pack2).
+assume Halpha_y Hy_in Hy_ne_efam.
+claim Hm_pack2 :
+  exists alpha:set, alpha :e J /\
+    apply_fun xs m :e apply_fun Gfam alpha /\ apply_fun xs m <> apply_fun efam alpha.
+{ exact (reduced_word_elem J Gfam efam n xs m Hred Hm_in_n). }
+apply Hm_pack2. let alpha_m. assume Hm_pack3.
+apply (and3E (alpha_m :e J) (apply_fun xs m :e apply_fun Gfam alpha_m) (apply_fun xs m <> apply_fun efam alpha_m) Hm_pack3).
+assume Halpha_m Hxsm_in Hxsm_ne_efam.
+(** alpha_y <> alpha_m because k and m are consecutive. **)
+claim Hm_eq_succ_k : m = ordsucc k.
+{ rewrite Hm_eq. reflexivity. }
+claim Halphaneq : alpha_y <> alpha_m.
+{
+  apply (and3E
+    (n :e omega)
+    (forall i:set, i :e n ->
+      exists alpha:set, alpha :e J /\
+        apply_fun xs i :e apply_fun Gfam alpha /\
+        apply_fun xs i <> apply_fun efam alpha)
+    (forall i:set, i :e n -> ordsucc i :e n ->
+      forall alpha beta:set, alpha :e J -> beta :e J ->
+        apply_fun xs i :e apply_fun Gfam alpha ->
+        apply_fun xs (ordsucc i) :e apply_fun Gfam beta ->
+        alpha <> beta)
+    Hred).
+  assume _ _ Hadj.
+  claim Hsk_in_n : ordsucc k :e n.
+  { rewrite <- Hm_eq_succ_k. exact Hm_in_n. }
+  claim Hxsk_in : apply_fun xs k :e apply_fun Gfam alpha_y.
+  { exact Hy_in. }
+  claim Hxssk_in : apply_fun xs (ordsucc k) :e apply_fun Gfam alpha_m.
+  { rewrite <- Hm_eq_succ_k. exact Hxsm_in. }
+  exact (Hadj k Hk_in_n Hsk_in_n alpha_y alpha_m Halpha_y Halpha_m Hxsk_in Hxssk_in).
+}
+(** Extend the reduced word by appending y. **)
+set xs_ext := graph (ordsucc n) (fun i:set => if i :e n then apply_fun xs i else y).
+claim Hred_ext : reduced_word J Gfam efam (ordsucc n) xs_ext.
+{
+  prove (ordsucc n) :e omega /\
+    (forall i:set, i :e ordsucc n ->
+      exists alpha:set, alpha :e J /\
+        apply_fun xs_ext i :e apply_fun Gfam alpha /\
+        apply_fun xs_ext i <> apply_fun efam alpha) /\
+    (forall i:set, i :e ordsucc n -> ordsucc i :e ordsucc n ->
+      forall alpha beta:set, alpha :e J -> beta :e J ->
+        apply_fun xs_ext i :e apply_fun Gfam alpha ->
+        apply_fun xs_ext (ordsucc i) :e apply_fun Gfam beta ->
+        alpha <> beta).
+  apply and3I.
+  - exact (nat_p_omega (ordsucc n) (nat_ordsucc n Hn_nat)).
+  - let i. assume Hi.
+    apply (xm (i :e n)).
+    + assume Hin.
+      apply (and3E
+        (n :e omega)
+        (forall j:set, j :e n ->
+          exists a:set, a :e J /\
+            apply_fun xs j :e apply_fun Gfam a /\
+            apply_fun xs j <> apply_fun efam a)
+        (forall j:set, j :e n -> ordsucc j :e n ->
+          forall a b:set, a :e J -> b :e J ->
+            apply_fun xs j :e apply_fun Gfam a ->
+            apply_fun xs (ordsucc j) :e apply_fun Gfam b ->
+            a <> b)
+        Hred).
+      assume _ Helem _.
+      apply (Helem i Hin).
+      let a. assume Ha_pack.
+      apply (and3E (a :e J) (apply_fun xs i :e apply_fun Gfam a) (apply_fun xs i <> apply_fun efam a) Ha_pack).
+      assume HaJ Hxi Hxne.
+      witness a.
+      apply and3I.
+      * exact HaJ.
+      * rewrite (apply_fun_graph (ordsucc n) (fun j:set => if j :e n then apply_fun xs j else y) i Hi).
+        rewrite (If_i_1 (i :e n) (apply_fun xs i) y Hin).
+        exact Hxi.
+      * rewrite (apply_fun_graph (ordsucc n) (fun j:set => if j :e n then apply_fun xs j else y) i Hi).
+        rewrite (If_i_1 (i :e n) (apply_fun xs i) y Hin).
+        exact Hxne.
+    + assume Hin_not.
+      (** i is the new last index n. **)
+      claim Hi_eq : i = n.
+      {
+        apply (ordsuccE n i Hi).
+        - assume Hi_n. exact (FalseE (Hin_not Hi_n) (i = n)).
+        - assume Heq. exact Heq.
+      }
+      witness alpha_y.
+      apply and3I.
+      * exact Halpha_y.
+      * rewrite Hi_eq.
+        rewrite (apply_fun_graph (ordsucc n) (fun j:set => if j :e n then apply_fun xs j else y) n (ordsuccI2 n)).
+        rewrite (If_i_0 (n :e n) (apply_fun xs n) y (In_irref n)).
+        exact Hy_in.
+      * rewrite Hi_eq.
+        rewrite (apply_fun_graph (ordsucc n) (fun j:set => if j :e n then apply_fun xs j else y) n (ordsuccI2 n)).
+        rewrite (If_i_0 (n :e n) (apply_fun xs n) y (In_irref n)).
+        exact Hy_ne_efam.
+  - let i. assume Hi Hsi.
+    let alpha beta. assume HaJ HbJ Hia Hib.
+    apply (xm (ordsucc i :e n)).
+    + assume Hsin.
+	    (** both i and succ i are in n, so use original adjacency **)
+	    claim Hi_n : i :e n.
+	    { exact (nat_trans n Hn_nat (ordsucc i) Hsin i (ordsuccI2 i)). }
+      apply (and3E
+        (n :e omega)
+        (forall j:set, j :e n ->
+          exists a:set, a :e J /\
+            apply_fun xs j :e apply_fun Gfam a /\
+            apply_fun xs j <> apply_fun efam a)
+        (forall j:set, j :e n -> ordsucc j :e n ->
+          forall a b:set, a :e J -> b :e J ->
+            apply_fun xs j :e apply_fun Gfam a ->
+            apply_fun xs (ordsucc j) :e apply_fun Gfam b ->
+            a <> b)
+        Hred).
+	      assume _ _ Hadj.
+	      claim Hxsi : apply_fun xs i :e apply_fun Gfam alpha.
+	      {
+	        claim Hexti : apply_fun xs_ext i = apply_fun xs i.
+	        {
+	          rewrite (apply_fun_graph (ordsucc n) (fun j:set => if j :e n then apply_fun xs j else y) i Hi).
+	          rewrite (If_i_1 (i :e n) (apply_fun xs i) y Hi_n).
+	          reflexivity.
+	        }
+	        rewrite <- Hexti.
+	        exact Hia.
+	      }
+	      claim Hxsi1 : apply_fun xs (ordsucc i) :e apply_fun Gfam beta.
+	      {
+	        claim Hextsi : apply_fun xs_ext (ordsucc i) = apply_fun xs (ordsucc i).
+	        {
+	          rewrite (apply_fun_graph (ordsucc n) (fun j:set => if j :e n then apply_fun xs j else y) (ordsucc i) Hsi).
+	          rewrite (If_i_1 (ordsucc i :e n) (apply_fun xs (ordsucc i)) y Hsin).
+	          reflexivity.
+	        }
+	        rewrite <- Hextsi.
+	        exact Hib.
+	      }
+      exact (Hadj i Hi_n Hsin alpha beta HaJ HbJ Hxsi Hxsi1).
+    + assume Hsin_not.
+      (** ordsucc i is the new last index n, so i = m and use label uniqueness. **)
+      claim Hsi_eq : ordsucc i = n.
+      {
+        apply (ordsuccE n (ordsucc i) Hsi).
+        - assume Hsi_n. exact (FalseE (Hsin_not Hsi_n) (ordsucc i = n)).
+        - assume Heq. exact Heq.
+      }
+      claim Hi_eq_m : i = m.
+      {
+        claim Hsi_eq_sm : ordsucc i = ordsucc m.
+        { rewrite Hsi_eq. exact Hn_eq. }
+        exact (ordsucc_inj i m Hsi_eq_sm).
+      }
+      (** Identify alpha = alpha_m using disjointness and xsm_ne, and beta = alpha_y similarly. **)
+      claim Halpha_eq : alpha = alpha_m.
+      {
+        claim Hxsm_in_alpha : apply_fun xs m :e apply_fun Gfam alpha.
+        {
+          claim Hext_eq : apply_fun xs_ext i = apply_fun xs m.
+          {
+            rewrite Hi_eq_m.
+            rewrite (apply_fun_graph (ordsucc n) (fun j:set => if j :e n then apply_fun xs j else y) m
+              (ordsuccI1 n m Hm_in_n)).
+            rewrite (If_i_1 (m :e n) (apply_fun xs m) y Hm_in_n).
+            reflexivity.
+          }
+          rewrite <- Hext_eq.
+          exact Hia.
+        }
+        apply (disjoint_subgroups_label_unique
+          G mult e inv J Gfam alpha alpha_m (apply_fun xs m)
+          Hdisjoint
+          HaJ
+          Halpha_m
+          Hxsm_in_alpha
+          Hxsm_in
+          Hxsm_ne).
+      }
+      claim Hbeta_eq : beta = alpha_y.
+      {
+        claim Hy_in_beta : y :e apply_fun Gfam beta.
+        {
+          claim Hext_last : apply_fun xs_ext (ordsucc i) = y.
+          {
+            rewrite Hsi_eq.
+            rewrite (apply_fun_graph (ordsucc n) (fun j:set => if j :e n then apply_fun xs j else y) n
+              (ordsuccI2 n)).
+            rewrite (If_i_0 (n :e n) (apply_fun xs n) y (In_irref n)).
+            reflexivity.
+          }
+          rewrite <- Hext_last.
+          exact Hib.
+        }
+        apply (disjoint_subgroups_label_unique
+          G mult e inv J Gfam beta alpha_y y
+          Hdisjoint
+          HbJ
+          Halpha_y
+          Hy_in_beta
+          Hy_in
+          Hy_ne).
+      }
+      rewrite Halpha_eq.
+      rewrite Hbeta_eq.
+      exact (neq_i_sym alpha_y alpha_m Halphaneq).
+}
+(** Singleton reduced word for y. **)
+claim Hred_single : reduced_word J Gfam efam 1 (graph 1 (fun _:set => y)).
+{ exact (reduced_word_singleton J Gfam efam alpha_y y Halpha_y Hy_in Hy_ne_efam). }
+(** Compute product of singleton: equals y. **)
+claim HyG : y :e G.
+{
+  claim Hsub_y : apply_fun Gfam alpha_y c= G.
+  { exact (subgroup_of_subset (apply_fun Gfam alpha_y) G mult e inv (Hsubfam alpha_y Halpha_y)). }
+  exact (Hsub_y y Hy_in).
+}
+claim Hwp_single : word_product mult e (graph 1 (fun _:set => y)) 1 = y.
+{ exact (word_product_singleton_group G mult e inv y Hgrp HyG). }
+(** Compute the product of the extended word: it equals y since the original product is e. **)
+claim Hwp_ext :
+  word_product mult e xs_ext (ordsucc n) =
+  apply_fun mult (word_product mult e xs n, y).
+{ exact (word_product_append_one mult e xs y n HnO). }
+claim Hwp_ext_y : word_product mult e xs_ext (ordsucc n) = y.
+{
+  apply (and6E
+    (function_on mult (setprod G G) G)
+    (function_on inv G G)
+    (e :e G)
+    (forall u v w:set, u :e G -> v :e G -> w :e G ->
+      apply_fun mult (apply_fun mult (u, v), w) = apply_fun mult (u, apply_fun mult (v, w)))
+    (forall u:set, u :e G -> apply_fun mult (e, u) = u /\ apply_fun mult (u, e) = u)
+    (forall u:set, u :e G ->
+      apply_fun mult (u, apply_fun inv u) = e /\ apply_fun mult (apply_fun inv u, u) = e)
+    Hgrp).
+  assume _ _ _ _ HidG _.
+  rewrite Hwp_ext.
+  rewrite Hwp_eq.
+  exact (andEL
+    (apply_fun mult (e, y) = y)
+    (apply_fun mult (y, e) = y)
+    (HidG y HyG)).
+}
+(** Use free product uniqueness for y to contradict existence of two reduced representations. **)
+apply (Huniq_all y HyG Hy_ne).
+let n0. assume Hn0_pack.
+apply Hn0_pack. let xs0. assume Hxs0_pack.
+apply (and4E
+  (reduced_word J Gfam efam n0 xs0)
+  (n0 <> 0)
+  (word_product mult e xs0 n0 = y)
+  (forall n' xs':set,
+    reduced_word J Gfam efam n' xs' -> n' <> 0 ->
+    word_product mult e xs' n' = y ->
+    n0 = n' /\ (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs' i))
+  Hxs0_pack).
+assume Hred0 _ Hwp0 Huniq0.
+claim Hn0_eq_1 : n0 = 1.
+{ exact (andEL (n0 = 1) (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun (graph 1 (fun _:set => y)) i)
+    (Huniq0 1 (graph 1 (fun _:set => y)) Hred_single (neq_ordsucc_0 0)
+      (eq_i_tra (word_product mult e (graph 1 (fun _:set => y)) 1) y y Hwp_single (eq_refl y)))). }
+claim Hn0_eq_sn : n0 = ordsucc n.
+{ exact (andEL (n0 = ordsucc n) (forall i:set, i :e n0 -> apply_fun xs0 i = apply_fun xs_ext i)
+    (Huniq0 (ordsucc n) xs_ext Hred_ext (neq_ordsucc_0 n)
+      (eq_i_tra (word_product mult e xs_ext (ordsucc n)) y y Hwp_ext_y (eq_refl y)))). }
+claim Hsn_eq1 : ordsucc n = 1.
+{
+  rewrite <- Hn0_eq_sn.
+  rewrite Hn0_eq_1.
+  reflexivity.
+}
+claim Hn_eq0 : n = 0.
+{
+  claim Hsn_eq_s0 : ordsucc n = ordsucc 0.
+  { rewrite Hsn_eq1. symmetry. exact ordsucc_0_eq_1_nat. }
+  exact (ordsucc_inj n 0 Hsn_eq_s0).
+}
+exact (Hn_ne0 Hn_eq0).
+Qed.
+
 (** Infrastructure: the least normal subgroup of G containing a subset S **)
 Definition least_normal_subgroup : set -> set -> set -> set -> set -> set :=
   fun G mult e inv S =>
