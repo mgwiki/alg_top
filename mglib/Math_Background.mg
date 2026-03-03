@@ -110471,7 +110471,6 @@ Qed.
 (** an injective map Phi: pi_1(B,b0)/H -> p^{-1}(b0), bijective if E is path connected. **)
 (** EFFORT: 15 lines textbook, difficulty 6/10, USD 200 **)
 (** Bounty 242 **)
-(** Lock Alice 1772500949 **)
 Theorem thm54_6b_coset_correspondence : forall E Te B Tb p e0:set,
   covering_map E Te B Tb p -> e0 :e E ->
   exists Phi:set,
@@ -228555,7 +228554,6 @@ Admitted.
 (** a_alpha for J union K. **)
 (** EFFORT: 3 lines textbook, difficulty 2/10, USD 30 **)
 (** Bounty 37 **)
-(** Lock Bob 1772502067 **)
 Theorem thm69_2_free_product_of_free_groups :
   forall G mult e inv G1 G2 J K gens:set,
   group_structure G mult e inv ->
@@ -289064,6 +289062,223 @@ apply andI.
     (ini :e Union Arcs)
     (fin :e Union Arcs)
     HendU).
+Qed.
+
+(** helper: prefix of an edge path is an edge path **)
+(** Proven Bob **)
+Theorem edge_path_prefix :
+  forall X Tx Arcs n path_seq x0 k:set,
+  edge_path X Tx Arcs n path_seq x0 ->
+  k :e n ->
+  edge_path X Tx Arcs k (graph k (fun i:set => apply_fun path_seq i)) x0.
+let X Tx Arcs n path_seq x0 k.
+assume Hep HkIn.
+claim HnOm : n :e omega.
+{
+  exact (edge_path_n_in_omega
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    Hep).
+}
+claim HnOrd : ordinal n.
+{
+  exact (nat_p_ordinal
+    n
+    (omega_nat_p n HnOm)).
+}
+claim HnSubOmega : n c= omega.
+{
+  exact (ordinal_TransSet
+    omega
+    omega_ordinal
+    n
+    HnOm).
+}
+claim HkOm : k :e omega.
+{
+  exact (HnSubOmega
+    k
+    HkIn).
+}
+claim HkSubn : k c= n.
+{
+  exact (ordinal_TransSet
+    n
+    HnOrd
+    k
+    HkIn).
+}
+claim Hfun : function_on path_seq n (setprod (setprod X X) (Power X)).
+{
+  exact (edge_path_function_on
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    Hep).
+}
+claim HfunPref :
+  function_on (graph k (fun i:set => apply_fun path_seq i))
+    k
+    (setprod (setprod X X) (Power X)).
+{
+  let i.
+  assume Hi.
+  rewrite (apply_fun_graph
+    k
+    (fun i0:set => apply_fun path_seq i0)
+    i
+    Hi).
+  exact (Hfun
+    i
+    (HkSubn i Hi)).
+}
+claim HdecPref :
+  forall i:set, i :e k ->
+    exists A ini fin:set,
+      apply_fun (graph k (fun i0:set => apply_fun path_seq i0)) i = ((ini, fin), A) /\
+      oriented_edge X Tx Arcs A ini fin.
+{
+  let i.
+  assume Hi.
+  claim HiN : i :e n.
+  { exact (HkSubn i Hi). }
+  apply (edge_path_edge_decomposition
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    i
+    Hep
+    HiN).
+  let A.
+  assume HA.
+  apply HA.
+  let ini.
+  assume Hini.
+  apply Hini.
+  let fin.
+  assume Hfin.
+  witness A.
+  witness ini.
+  witness fin.
+  apply andI.
+  - rewrite (apply_fun_graph
+      k
+      (fun i0:set => apply_fun path_seq i0)
+      i
+      Hi).
+    exact (andEL
+      (apply_fun path_seq i = ((ini, fin), A))
+      (oriented_edge X Tx Arcs A ini fin)
+      Hfin).
+  - exact (andER
+      (apply_fun path_seq i = ((ini, fin), A))
+      (oriented_edge X Tx Arcs A ini fin)
+      Hfin).
+}
+claim HstartPref :
+  k <> 0 -> (apply_fun (graph k (fun i:set => apply_fun path_seq i)) 0) 0 0 = x0.
+{
+  assume HkNe0.
+  claim HkNat : nat_p k.
+  { exact (omega_nat_p k HkOm). }
+  claim HkSucc : exists k0, nat_p k0 /\ k = ordsucc k0.
+  {
+    apply (nat_inv k HkNat).
+    - assume Hk0.
+      exact (FalseE (HkNe0 Hk0) (exists k0, nat_p k0 /\ k = ordsucc k0)).
+    - assume Hex.
+      exact Hex.
+  }
+  apply HkSucc.
+  let k0.
+  assume Hk0pack.
+  claim HkEq : k = ordsucc k0.
+  { exact (andER (nat_p k0) (k = ordsucc k0) Hk0pack). }
+  claim H0k : 0 :e k.
+  {
+    rewrite HkEq.
+    exact (nat_0_in_ordsucc
+      k0
+      (andEL (nat_p k0) (k = ordsucc k0) Hk0pack)).
+  }
+  rewrite (apply_fun_graph
+    k
+    (fun i0:set => apply_fun path_seq i0)
+    0
+    H0k).
+  claim Hn0 : n <> 0.
+  {
+    assume Hn0eq.
+    exact (EmptyE
+      k
+      (eq_subst_mem_set k n Empty HkIn Hn0eq)
+      False).
+  }
+  exact (edge_path_start_vertex
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    Hep
+    Hn0).
+}
+claim HstepPref :
+  forall i:set, i :e k -> ordsucc i :e k ->
+    (apply_fun (graph k (fun i0:set => apply_fun path_seq i0)) i) 0 1 =
+    (apply_fun (graph k (fun i0:set => apply_fun path_seq i0)) (ordsucc i)) 0 0.
+{
+  let i.
+  assume Hi His.
+  rewrite (apply_fun_graph
+    k
+    (fun i0:set => apply_fun path_seq i0)
+    i
+    Hi).
+  rewrite (apply_fun_graph
+    k
+    (fun i0:set => apply_fun path_seq i0)
+    (ordsucc i)
+    His).
+  exact (edge_path_consecutive_match
+    X
+    Tx
+    Arcs
+    n
+    path_seq
+    x0
+    i
+    Hep
+    (HkSubn i Hi)
+    (HkSubn (ordsucc i) His)).
+}
+exact (and5I
+  (k :e omega)
+  (function_on (graph k (fun i:set => apply_fun path_seq i)) k (setprod (setprod X X) (Power X)))
+  (forall i:set, i :e k ->
+    exists A ini fin:set,
+      apply_fun (graph k (fun i0:set => apply_fun path_seq i0)) i = ((ini, fin), A) /\
+      oriented_edge X Tx Arcs A ini fin)
+  (k <> 0 -> (apply_fun (graph k (fun i:set => apply_fun path_seq i)) 0) 0 0 = x0)
+  (forall i:set, i :e k -> ordsucc i :e k ->
+    (apply_fun (graph k (fun i:set => apply_fun path_seq i)) i) 0 1 =
+    (apply_fun (graph k (fun i:set => apply_fun path_seq i)) (ordsucc i)) 0 0)
+  HkOm
+  HfunPref
+  HdecPref
+  HstartPref
+  HstepPref).
 Qed.
 
 (** Proven Bob **)
