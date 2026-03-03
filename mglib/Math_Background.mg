@@ -172341,6 +172341,29 @@ apply (nat_ind (fun k:set => connected_space (euclidean_space (ordsucc k)) (eucl
 - exact (omega_nat_p n HnO).
 Qed.
 
+(** Helper: product with Euclidean space preserves connectedness of punctured plane **)
+(** Proven Bob **)
+Theorem punctured_EuclidPlane_product_euclidean_connected : forall n:set,
+  n :e omega ->
+  connected_space
+    (setprod (EuclidPlane :\: {(0,0)}) (euclidean_space (ordsucc n)))
+    (product_topology
+      (EuclidPlane :\: {(0,0)})
+      (subspace_topology EuclidPlane R2_standard_topology
+        (EuclidPlane :\: {(0,0)}))
+      (euclidean_space (ordsucc n))
+      (euclidean_topology (ordsucc n))).
+let n. assume Hn.
+exact (finite_product_connected
+  (EuclidPlane :\: {(0,0)})
+  (subspace_topology EuclidPlane R2_standard_topology
+    (EuclidPlane :\: {(0,0)}))
+  (euclidean_space (ordsucc n))
+  (euclidean_topology (ordsucc n))
+  punctured_EuclidPlane_connected
+  (euclidean_space_connected_succ n Hn)).
+Qed.
+
 Theorem ex59_3a_R1_not_homeo_Rn : forall n:set,
   n :e omega -> 2 c= n ->
   ~(exists f:set, homeomorphism R R_standard_topology
