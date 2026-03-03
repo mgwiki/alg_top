@@ -173254,6 +173254,111 @@ exact (finite_product_connected
   (euclidean_space_connected_succ n Hn)).
 Qed.
 
+(** Helper: Euclidean plane is connected. **)
+(** Proven Bob **)
+Theorem EuclidPlane_connected :
+  connected_space EuclidPlane R2_standard_topology.
+exact (finite_product_connected
+  R
+  R_standard_topology
+  R
+  R_standard_topology
+  interval_connected
+  interval_connected).
+Qed.
+
+(** Helper: any n >= 2 can be written as ordsucc (ordsucc k). **)
+(** Proven Bob **)
+Theorem nat_ge2_ordsucc_ordsucc : forall n:set,
+  n :e omega -> 2 c= n ->
+  exists k:set, k :e omega /\ n = ordsucc (ordsucc k).
+let n.
+assume HnO Hge2.
+claim H1In : 1 :e n.
+{
+  exact (Hge2 1 In_1_2).
+}
+claim HnNot0 : n <> 0.
+{
+  assume Hn0.
+  claim H1In0 : 1 :e 0.
+  {
+    exact (eq_subst_mem_set 1 n 0 H1In Hn0).
+  }
+  exact (EmptyE 1 H1In0).
+}
+apply (nat_inv n (omega_nat_p n HnO)).
+- assume Hn0.
+  claim Hfalse : False.
+  { exact (HnNot0 Hn0). }
+  exact (FalseE Hfalse (exists k:set, k :e omega /\ n = ordsucc (ordsucc k))).
+- assume HnSCase.
+  apply HnSCase.
+  let m.
+  assume HmPack.
+  claim HmNat : nat_p m.
+  {
+    exact (andEL
+      (nat_p m)
+      (n = ordsucc m)
+      HmPack).
+  }
+  claim HnEq : n = ordsucc m.
+  {
+    exact (andER
+      (nat_p m)
+      (n = ordsucc m)
+      HmPack).
+  }
+  claim HmNot0 : m <> 0.
+  {
+    assume Hm0.
+    claim HnEq0 : n = ordsucc 0.
+    {
+      rewrite <- Hm0.
+      exact HnEq.
+    }
+    claim H1InSucc : 1 :e ordsucc 0.
+    {
+      exact (eq_subst_mem_set 1 n (ordsucc 0) H1In HnEq0).
+    }
+    apply (ordsuccE 0 1 H1InSucc).
+    * assume H1in0.
+      exact (EmptyE 1 H1in0).
+    * assume H1eq0.
+      exact (neq_1_0 H1eq0).
+  }
+  apply (nat_inv m HmNat).
+  - assume Hm0.
+    claim Hfalse : False.
+    { exact (HmNot0 Hm0). }
+    exact (FalseE Hfalse (exists k:set, k :e omega /\ n = ordsucc (ordsucc k))).
+  - assume HmSCase.
+    apply HmSCase.
+    let k.
+    assume HkPack.
+    claim HkNat : nat_p k.
+    {
+      exact (andEL
+        (nat_p k)
+        (m = ordsucc k)
+        HkPack).
+    }
+    claim HmEq : m = ordsucc k.
+    {
+      exact (andER
+        (nat_p k)
+        (m = ordsucc k)
+        HkPack).
+    }
+    witness k.
+    apply andI.
+    - exact (nat_p_omega k HkNat).
+    - rewrite HnEq.
+      rewrite HmEq.
+      reflexivity.
+Qed.
+
 (** Helper: punctured Euclidean space is connected in dimension >= 2. **)
 Theorem punctured_euclidean_space_connected_ge2 :
   forall n a:set,
