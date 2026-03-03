@@ -313076,6 +313076,19 @@ rewrite <- Heq.
 exact Hsimp.
 Qed.
 
+(** helper for S84.3: connected_space is invariant under definitional equality of topologies. **)
+(** Proven Bob **)
+Theorem connected_space_topology_eq_transport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  connected_space X T1 ->
+  connected_space X T2.
+let X T1 T2.
+assume Heq Hconn.
+rewrite <- Heq.
+exact Hconn.
+Qed.
+
 (** helper for S84.3: path_connected_space is invariant under definitional equality of topologies. **)
 (** Proven Bob **)
 Theorem path_connected_space_topology_eq_transport :
@@ -313113,6 +313126,19 @@ let X T1 T2.
 assume Heq Hsimp.
 rewrite <- Heq.
 exact Hsimp.
+Qed.
+
+(** helper for S84.3: connected_space is invariant under definitional equality of topologies. **)
+(** Proven Bob **)
+Theorem connected_space_topology_eq_i_traport :
+  forall X T1 T2:set,
+  T1 = T2 ->
+  connected_space X T1 ->
+  connected_space X T2.
+let X T1 T2.
+assume Heq Hconn.
+rewrite <- Heq.
+exact Hconn.
 Qed.
 
 (** helper for S84.3: path_connected_space is invariant under definitional equality of topologies. **)
