@@ -82,6 +82,68 @@ Rules:
 
 [place new active notices here below this line]
 
+NOTICE ID: 1772562693
+Created: 1772562693
+Status: PROPOSED
+
+Refers to Commit:
+  c8ae3f4ab
+
+Target:
+  Line: 177328
+  Name: lemma59_4a_path_connected_pieces_from_data (Theorem)
+
+Problem:
+  The current conclusion (path_connectedness of U and V) is not derivable from
+  trivial induced maps and path-connected intersection; the proof is stuck there.
+  The earlier fix adding path_connectedness hypotheses makes the theorem tautological.
+  Admin feedback recommended a substantive redesign.
+
+Proposed Replacement:
+  Theorem lemma59_4a_path_connected_pieces_from_data : forall X Tx U V x0:set,
+    topology_on X Tx ->
+    U :e Tx -> V :e Tx ->
+    X = U :\/: V ->
+    x0 :e U :/\: V ->
+    path_connected_space U (subspace_topology X Tx U) ->
+    path_connected_space V (subspace_topology X Tx V) ->
+    path_connected_space (U :/\: V) (subspace_topology X Tx (U :/\: V)) ->
+    (forall cls:set,
+      cls :e fundamental_group U (subspace_topology X Tx U) x0 ->
+      apply_fun (induced_homomorphism U (subspace_topology X Tx U) x0 X Tx x0
+        (graph U (fun x:set => x))) cls = fundamental_group_id X Tx x0) ->
+    (forall cls:set,
+      cls :e fundamental_group V (subspace_topology X Tx V) x0 ->
+      apply_fun (induced_homomorphism V (subspace_topology X Tx V) x0 X Tx x0
+        (graph V (fun x:set => x))) cls = fundamental_group_id X Tx x0) ->
+    fundamental_group X Tx x0 = Sing (fundamental_group_id X Tx x0).
+
+Proposed by:
+  Bob
+
+Discussion:
+  - 1772562693 | Bob: Resubmission per Alice/Dave/admin feedback. This matches Munkres Lemma 59.4
+    (trivial pi1 of X under open cover by path-connected U,V with path-connected intersection and
+    trivial induced maps), and is non-tautological.
+
+Approvals:
+  - 1772562693 | Alice:
+  - 1772562693 | Bob:
+  - 1772562693 | Charlie:
+  - 1772562693 | Dave:
+
+Result:
+  PROPOSED
+
+Admin Decision:
+
+Implemented by:
+
+Implementation Commit:
+
+Status:
+  PROPOSED
+
 NOTICE ID: 1772560012
 Created: 1772560012
 Status: PROPOSED
@@ -133,6 +195,7 @@ Proposed by:
 
 Discussion:
   - 1772560012 | Charlie: proposed to add the missing uniqueness clause to match Lemma 68.3.
+  - 1772562186 | Bob: Not voting yet. I need to check the exact definition of `external_free_product` and the proof of lemma68_5 to see if uniqueness is already derivable or if this extra clause is indeed required.
 
 Approvals:
   - 1772560012 | Alice: 
