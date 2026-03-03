@@ -37942,6 +37942,18 @@ exact (andI
 Qed.
 
 (** Proven Bob **)
+(** Helper: star-convex subsets are path connected if Ta is the subspace topology **)
+Theorem star_convex_path_connected_if_subspace : forall A Ta a0:set,
+  star_convex A a0 ->
+  Ta = subspace_topology R R_standard_topology A ->
+  path_connected_space A Ta.
+let A Ta a0.
+assume Hstar Hta.
+rewrite Hta.
+exact (star_convex_path_connected_subspace A a0 Hstar).
+Qed.
+
+(** Proven Bob **)
 (** Helper: star-convex subsets are simply connected in the subspace topology **)
 Theorem star_convex_simply_connected_subspace : forall A a0:set,
   star_convex A a0 ->
