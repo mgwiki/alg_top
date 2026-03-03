@@ -251546,6 +251546,51 @@ rewrite <- Himg.
 exact Hiff.
 Qed.
 
+(** Helper: non-connectedness of punctured spaces is preserved by homeomorphism. **)
+(** Proven Bob **)
+Theorem homeomorphism_punctured_not_connected_iff :
+  forall X Tx Y Ty f a:set,
+  homeomorphism X Tx Y Ty f ->
+  a :e X ->
+  (~ connected_space (X :\: {a,a}) (subspace_topology X Tx (X :\: {a,a})) <->
+   ~ connected_space (Y :\: {apply_fun f a, apply_fun f a})
+     (subspace_topology Y Ty (Y :\: {apply_fun f a, apply_fun f a}))).
+let X Tx Y Ty f a.
+assume Hhome HaX.
+set C := X :\: {a,a}.
+claim HCsub : C c= X.
+{ exact (setminus_Subq X {a,a}). }
+claim Himg :
+  image_of f C = Y :\: {apply_fun f a, apply_fun f a}.
+{
+  exact (homeomorphism_image_of_setminus_singleton
+    X
+    Tx
+    Y
+    Ty
+    f
+    a
+    Hhome
+    HaX).
+}
+claim Hiff :
+  ~ connected_space C (subspace_topology X Tx C) <->
+  ~ connected_space (image_of f C) (subspace_topology Y Ty (image_of f C)).
+{
+  exact (homeomorphism_not_connected_subspace_iff
+    X
+    Tx
+    Y
+    Ty
+    f
+    C
+    Hhome
+    HCsub).
+}
+rewrite <- Himg.
+exact Hiff.
+Qed.
+
 (** Helper: non-connectedness equivalence from existence of a homeomorphism. **)
 (** Proven Bob **)
 Theorem exists_homeomorphism_not_connected_space_iff :
