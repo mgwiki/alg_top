@@ -320856,6 +320856,59 @@ apply Hcase.
       - assume Htr : end_points_of_arc C1 (subspace_topology T Tx C1) t r.
         apply orIR. rewrite Hp0r. exact Htr.
   }
+  apply Hp0_is_endpoint_C1. let r1. assume Hr1cases.
+  claim Hp0r1 : end_points_of_arc C1 (subspace_topology T Tx C1) p0 r1.
+  { apply Hr1cases.
+    - assume Hpr : end_points_of_arc C1 (subspace_topology T Tx C1) p0 r1.
+      exact Hpr.
+    - assume Hrp : end_points_of_arc C1 (subspace_topology T Tx C1) r1 p0.
+      exact (end_points_of_arc_sym C1 (subspace_topology T Tx C1) r1 p0 Hrp). }
+  claim HoriA0 : oriented_edge T Tx Arcs A0 q0 p0.
+  {
+    claim Hendqp : end_points_of_arc A0 (subspace_topology T Tx A0) q0 p0.
+    { exact (end_points_of_arc_sym A0 (subspace_topology T Tx A0) p0 q0 Hpq0). }
+    exact (andI
+      (A0 :e Arcs)
+      (end_points_of_arc A0 (subspace_topology T Tx A0) q0 p0)
+      HA0
+      Hendqp).
+  }
+  claim HoriC1 : oriented_edge T Tx Arcs C1 p0 r1.
+  {
+    exact (andI
+      (C1 :e Arcs)
+      (end_points_of_arc C1 (subspace_topology T Tx C1) p0 r1)
+      HC1
+      Hp0r1).
+  }
+  claim Hep1 :
+    edge_path T Tx Arcs (ordsucc 0)
+      (graph (ordsucc 0) (fun _:set => ((q0, p0), A0)))
+      q0.
+  { exact (edge_path_1_from_oriented_edge T Tx Arcs A0 q0 p0 Hglg HoriA0). }
+  claim Hfin0 : (apply_fun (graph (ordsucc 0) (fun _:set => ((q0, p0), A0))) 0) 0 1 = p0.
+  {
+    rewrite (apply_fun_graph (ordsucc 0) (fun _:set => ((q0, p0), A0)) 0 (ordsuccI2 0)).
+    rewrite (tuple_2_0_eq (q0, p0) A0).
+    rewrite tuple_2_1_eq.
+    reflexivity.
+  }
+  set n1 := ordsucc 0.
+  set path1 := graph n1 (fun _:set => ((q0, p0), A0)).
+  set path2 :=
+    (graph n1 (fun i:set => apply_fun path1 i)) :\/:
+    (graph {n1} (fun _:set => ((p0, r1), C1))).
+  claim Hep2 : edge_path T Tx Arcs (ordsucc n1) path2 q0.
+  {
+    exact (edge_path_append_oriented_edge
+      T Tx Arcs n1 path1 q0 0 C1 p0 r1
+      Hglg
+      Hep1
+      (ordsuccI2 0)
+      (In_irref (ordsucc 0))
+      Hfin0
+      HoriC1).
+  }
   (** TODO: recursively choose successive arcs through shared endpoints and close a loop via finiteness. **)
   admit.
 Admitted.
