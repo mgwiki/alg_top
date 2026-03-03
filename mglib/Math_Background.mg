@@ -320901,7 +320901,85 @@ apply andI.
       HqVertex
       HmeetSingQ).
   + (** tree_in_graph (Union B) B X Tx Arcs **)
-    admit.
+    set T0 := Union B.
+    claim HBsubArcsT : B c= ArcsT.
+    {
+      let C. assume HC.
+      exact (setminusE1 ArcsT (Sing A) C HC).
+    }
+    claim HBsubArcs : B c= Arcs.
+    {
+      let C. assume HC.
+      exact (HArcsT_sub C (HBsubArcsT C HC)).
+    }
+    claim HT0subT : T0 c= T.
+    {
+      let x. assume HxT0.
+      apply (UnionE B x HxT0). let C. assume HxCpack.
+      claim HxC : x :e C. { exact (andEL (x :e C) (C :e B) HxCpack). }
+      claim HCB : C :e B. { exact (andER (x :e C) (C :e B) HxCpack). }
+      claim HCAT : C :e ArcsT. { exact (HBsubArcsT C HCB). }
+      claim HCsubT : C c= T. { exact (tree_in_graph_arc_subset_T T ArcsT X Tx Arcs C Htree HCAT). }
+      exact (HCsubT x HxC).
+    }
+    claim HTsubX : T c= X.
+    {
+      exact (subgraph_of_subset T X Tx Arcs HsubT).
+    }
+    claim HT0subX : T0 c= X.
+    {
+      let x. assume HxT0.
+      exact (HTsubX x (HT0subT x HxT0)).
+    }
+    claim HsubT0 : subgraph_of T0 X Tx Arcs.
+    {
+      apply (and3I
+        (general_linear_graph X Tx Arcs)
+        (T0 c= X)
+        (T0 = Union {A0 :e Arcs | A0 c= T0})).
+      - exact HglgX.
+      - exact HT0subX.
+      - apply set_ext.
+        + let x. assume HxT0.
+          apply (UnionE B x HxT0). let C. assume HxCpack.
+          claim HxC : x :e C. { exact (andEL (x :e C) (C :e B) HxCpack). }
+          claim HCB : C :e B. { exact (andER (x :e C) (C :e B) HxCpack). }
+          claim HCArcs : C :e Arcs. { exact (HBsubArcs C HCB). }
+          claim HCsubT0 : C c= T0.
+          {
+            let y. assume HyC.
+            exact (UnionI B y C HyC HCB).
+          }
+          apply (UnionI {A0 :e Arcs | A0 c= T0} x C).
+          * exact HxC.
+          * apply (SepI Arcs (fun A0:set => A0 c= T0) C HCArcs HCsubT0).
+        + let x. assume HxUnion.
+          apply (UnionE {A0 :e Arcs | A0 c= T0} x HxUnion). let C. assume HxCpack.
+          claim HxC : x :e C. { exact (andEL (x :e C) (C :e {A0 :e Arcs | A0 c= T0}) HxCpack). }
+          claim HCsel : C :e {A0 :e Arcs | A0 c= T0}.
+          { exact (andER (x :e C) (C :e {A0 :e Arcs | A0 c= T0}) HxCpack). }
+          claim HCsubT0 : C c= T0.
+          { exact (SepE2 Arcs (fun A0:set => A0 c= T0) C HCsel). }
+          exact (HCsubT0 x HxC).
+    }
+    claim HglgT0 : general_linear_graph T0 (subspace_topology X Tx T0) B.
+    {
+      admit.
+    }
+    claim HconnT0 : connected_space T0 (subspace_topology X Tx T0).
+    {
+      admit.
+    }
+    claim HnoloopT0 :
+      ~(exists n path_seq x0:set,
+          n :e omega /\ n <> 0 /\
+          reduced_edge_path T0 (subspace_topology X Tx T0) B n path_seq x0 /\
+          (exists j:set, j :e n /\ ordsucc j /:e n /\
+            (apply_fun path_seq j) 0 1 = x0)).
+    {
+      admit.
+    }
+    exact (tree_in_graph_intro T0 B X Tx Arcs HsubT0 HglgT0 HconnT0 HnoloopT0).
 Admitted.
 
 (** helper for S84.3: a tree is path-connected once local path-connectedness is available on T. **)
