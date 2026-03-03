@@ -320485,6 +320485,26 @@ exact (selected_arc_subset_from_endpoint_witness_and_endpoint_target_obligation
   HendpointClose).
 Qed.
 
+(** helper: finite GLG with all endpoints shared yields a closed reduced edge path **)
+Theorem finite_glg_all_endpoints_shared_has_closed_reduced_edge_path :
+  forall T Tx Arcs:set,
+  general_linear_graph T Tx Arcs ->
+  finite Arcs ->
+  (forall A p q:set, A :e Arcs ->
+    end_points_of_arc A (subspace_topology T Tx A) p q ->
+    (exists C:set, C :e Arcs /\ C <> A /\ p :e C) /\
+    (exists D:set, D :e Arcs /\ D <> A /\ q :e D)) ->
+  exists n path_seq x0:set,
+    n :e omega /\ n <> 0 /\
+    reduced_edge_path T Tx Arcs n path_seq x0 /\
+    (exists j:set, j :e n /\ ordsucc j /:e n /\
+      (apply_fun path_seq j) 0 1 = x0).
+let T Tx Arcs.
+assume Hglg Hfin Hallshared.
+(** TODO: build a non-backtracking walk through arcs and use finiteness to force a repeat. **)
+admit.
+Admitted.
+
 (** from S84 Lem 84.2 converse (line 5601 in algtop.tex): finite tree decomposition **)
 (** LATEX VERSION: If T is a finite tree with more than one edge, then T = T0 union A **)
 (** where T0 is a tree and A intersects T0 in a single vertex. **)
@@ -320558,7 +320578,31 @@ claim Hleaf : exists A:set, A :e ArcsT /\
   (** From Hallshared + finiteness + acyclicity, derive contradiction.
       Build a non-backtracking walk through arcs; finiteness forces a repeat;
       the repeat yields a closed reduced edge path, contradicting Hnoloop. **)
-  admit.
+  claim Hcycle :
+    exists n path_seq x0:set,
+      n :e omega /\ n <> 0 /\
+      reduced_edge_path T (subspace_topology X Tx T) ArcsT n path_seq x0 /\
+      (exists j:set, j :e n /\ ordsucc j /:e n /\
+        (apply_fun path_seq j) 0 1 = x0).
+  {
+    claim Hallshared' :
+      forall A p q:set, A :e ArcsT ->
+        end_points_of_arc A (subspace_topology T (subspace_topology X Tx T) A) p q ->
+        (exists C:set, C :e ArcsT /\ C <> A /\ p :e C) /\
+        (exists D:set, D :e ArcsT /\ D <> A /\ q :e D).
+    {
+      let A. let p. let q. assume HA Hep.
+      exact (Hallshared A HA p q Hep).
+    }
+    exact (finite_glg_all_endpoints_shared_has_closed_reduced_edge_path
+      T
+      (subspace_topology X Tx T)
+      ArcsT
+      HglgT
+      HfinArcsT
+      Hallshared').
+  }
+  exact (Hnoloop Hcycle).
 }
 apply Hleaf.
 let A. assume HleafPack.
